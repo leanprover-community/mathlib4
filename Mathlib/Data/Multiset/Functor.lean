@@ -27,7 +27,11 @@ theorem fmap_def {α' β'} {s : Multiset α'} (f : α' → β') : f <$> s = s.ma
   rfl
 #align multiset.fmap_def Multiset.fmap_def
 
-instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> (try simp); rfl
+instance : LawfulFunctor Multiset := by
+  refine' { .. } <;>
+    intros <;>
+    (try simp only [fmap_def, Function.comp_apply, map_map, id_eq, map_id'])
+  rfl
 
 open LawfulTraversable CommApplicative
 

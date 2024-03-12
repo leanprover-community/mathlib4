@@ -1196,8 +1196,7 @@ theorem map_congr {f g : α → β} {s t : Multiset α} :
 
 theorem map_hcongr {β' : Type v} {m : Multiset α} {f : α → β} {f' : α → β'} (h : β = β')
     (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (map f m) (map f' m) := by
-  subst h; simp at hf
-  simp [map_congr rfl hf]
+  subst h; simp_all
 #align multiset.map_hcongr Multiset.map_hcongr
 
 theorem forall_mem_map_iff {f : α → β} {p : β → Prop} {s : Multiset α} :
@@ -2144,7 +2143,9 @@ theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) 
 #align multiset.filter_add_not Multiset.filter_add_not
 
 theorem map_filter (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
-  Quot.inductionOn s fun l => by simp [List.map_filter]; rfl
+  Quot.inductionOn s fun l => by
+    simp only [quot_mk_to_coe'', map_coe, filter_coe, List.map_filter, comp_apply, coe_eq_coe]
+    rfl
 #align multiset.map_filter Multiset.map_filter
 
 lemma map_filter' {f : α → β} (hf : Injective f) (s : Multiset α)

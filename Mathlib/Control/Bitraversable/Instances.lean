@@ -46,7 +46,10 @@ instance : Bitraversable Prod where bitraverse := @Prod.bitraverse
 
 instance : LawfulBitraversable Prod := by
   constructor <;> intros <;> casesm _ × _ <;>
-    simp [bitraverse, Prod.bitraverse, functor_norm] <;> rfl
+    simp only [bitraverse, Prod.bitraverse, Function.comp_apply, Functor.Comp.map_mk,
+      Functor.map_map, Comp.seq_mk, seq_map_assoc, map_seq,
+      ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_map] <;>
+    rfl
 
 open Functor
 
@@ -60,8 +63,10 @@ instance : Bitraversable Sum where bitraverse := @Sum.bitraverse
 
 instance : LawfulBitraversable Sum := by
   constructor <;> intros <;> casesm _ ⊕ _ <;>
-    simp [bitraverse, Sum.bitraverse, functor_norm] <;> rfl
-
+    simp only [bitraverse, Sum.bitraverse, ApplicativeTransformation.preserves_map,
+      Function.comp_apply, bitraverse, Sum.bitraverse, Function.comp_apply, Id.pure_eq, Id.map_eq,
+      Comp.map_mk, map_map] <;>
+  rfl
 
 set_option linter.unusedVariables false in
 /-- The bitraverse function for `Const`. It throws away the second map. -/

@@ -744,7 +744,10 @@ theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) = map f s := by
     match c₁, c₂, h with
     | _, c₂, Or.inl (Eq.refl _) => cases' destruct c₂ with b cb <;> simp
     | _, _, Or.inr ⟨s, rfl, rfl⟩ =>
-      apply recOn s <;> intro s <;> simp
+      apply recOn s <;>
+        intro s <;>
+        simp only [BisimO, ret_bind, comp_apply, destruct_pure, map_pure, think_bind,
+          destruct_think, map_think]
       exact Or.inr ⟨s, rfl, rfl⟩
   · exact Or.inr ⟨s, rfl, rfl⟩
 #align computation.bind_ret Computation.bind_pure
@@ -771,10 +774,10 @@ theorem bind_assoc (s : Computation α) (f : α → Computation β) (g : β → 
     match c₁, c₂, h with
     | _, c₂, Or.inl (Eq.refl _) => cases' destruct c₂ with b cb <;> simp
     | _, _, Or.inr ⟨s, rfl, rfl⟩ =>
-      apply recOn s <;> intro s <;> simp
+      apply recOn s <;> intro s <;> simp only [BisimO, ret_bind, think_bind, destruct_think]
       · generalize f s = fs
-        apply recOn fs <;> intro t <;> simp
-        · cases' destruct (g t) with b cb <;> simp
+        apply recOn fs <;> intro t <;> simp only [think_bind, destruct_think, true_or, ret_bind]
+        · cases' destruct (g t) with b cb <;> simp only [true_or]
       · exact Or.inr ⟨s, rfl, rfl⟩
   · exact Or.inr ⟨s, rfl, rfl⟩
 #align computation.bind_assoc Computation.bind_assoc
@@ -951,7 +954,10 @@ theorem orElse_think (c₁ c₂ : Computation α) : (think c₁ <|> think c₂) 
 theorem empty_orElse (c) : (empty α <|> c) = c := by
   apply eq_of_bisim (fun c₁ c₂ => (empty α <|> c₂) = c₁) _ rfl
   intro s' s h; rw [← h]
-  apply recOn s <;> intro s <;> rw [think_empty] <;> simp
+  apply recOn s <;>
+    intro s <;>
+    rw [think_empty] <;>
+    simp only [BisimO, orElse_think, destruct_think, ret_orElse, destruct_pure, orElse_pure]
   rw [← think_empty]
 #align computation.empty_orelse Computation.empty_orElse
 
@@ -959,7 +965,10 @@ theorem empty_orElse (c) : (empty α <|> c) = c := by
 theorem orElse_empty (c : Computation α) : (c <|> empty α) = c := by
   apply eq_of_bisim (fun c₁ c₂ => (c₂ <|> empty α) = c₁) _ rfl
   intro s' s h; rw [← h]
-  apply recOn s <;> intro s <;> rw [think_empty] <;> simp
+  apply recOn s <;>
+    intro s <;>
+    rw [think_empty] <;>
+    simp only [BisimO, orElse_think, destruct_think, ret_orElse, destruct_pure]
   rw [← think_empty]
 #align computation.orelse_empty Computation.orElse_empty
 
@@ -1284,8 +1293,11 @@ theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computat
     simp [h]
   · simp only [liftRel_think_left]
     revert h
-    apply cb.recOn (fun b => _) fun cb' => _ <;> intros _ h <;> simp at h <;> simp [h]
-    exact IH _ h
+    apply cb.recOn (fun b => _) fun cb' => _ <;>
+      intros _ h <;>
+      simp only [destruct_think, destruct_pure, liftRelAux_inr_inl] at h
+    · simpa
+    · simpa [h] using IH _ h
 #align computation.lift_rel_rec.lem Computation.LiftRelRec.lem
 
 theorem liftRel_rec {R : α → β → Prop} (C : Computation α → Computation β → Prop)

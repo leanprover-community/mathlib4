@@ -269,8 +269,8 @@ theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : Left
   intro b
   induction p using Perm.recOnSwap' generalizing b with
   | nil => rfl
-  | cons _ _ r  => simp; rw [r b]
-  | swap' _ _ _ r => simp; rw [lcomm, r b]
+  | cons _ _ r  => simp only [foldr_cons]; rw [r b]
+  | swap' _ _ _ r => simp only [foldr_cons]; rw [lcomm, r b]
   | trans _ _ r₁ r₂ => exact Eq.trans (r₁ b) (r₂ b)
 #align list.perm.foldr_eq List.Perm.foldr_eq
 
@@ -544,7 +544,7 @@ theorem Perm.bind_left (l : List α) {f g : α → List β} (h : ∀ a ∈ l, f 
 
 theorem bind_append_perm (l : List α) (f g : α → List β) :
     l.bind f ++ l.bind g ~ l.bind fun x => f x ++ g x := by
-  induction' l with a l IH <;> simp
+  induction' l with a l IH <;> simp only [nil_bind, append_nil, Perm.refl, cons_bind, append_assoc]
   refine' (Perm.trans _ (IH.append_left _)).append_left _
   rw [← append_assoc, ← append_assoc]
   exact perm_append_comm.append_right _
@@ -576,19 +576,14 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
     lookmap f l₁ ~ lookmap f l₂ := by
   induction' p with a l₁ l₂ p IH a b l l₁ l₂ l₃ p₁ _ IH₁ IH₂; · simp
   · cases h : f a
-    · simp [h]
-      exact IH (pairwise_cons.1 H).2
+    · simpa [h] using IH (pairwise_cons.1 H).2
     · simp [lookmap_cons_some _ _ h, p]
   · cases' h₁ : f a with c <;> cases' h₂ : f b with d
-    · simp [h₁, h₂]
-      apply swap
-    · simp [h₁, lookmap_cons_some _ _ h₂]
-      apply swap
-    · simp [lookmap_cons_some _ _ h₁, h₂]
-      apply swap
-    · simp [lookmap_cons_some _ _ h₁, lookmap_cons_some _ _ h₂]
-      rcases (pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
-      exact Perm.refl _
+    · simpa [h₁, h₂] using swap ..
+    · simpa [h₁, lookmap_cons_some _ _ h₂] using swap ..
+    · simpa [lookmap_cons_some _ _ h₁, h₂] using swap ..
+    · rcases (pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
+      simpa only [lookmap_cons_some _ _ h₂, lookmap_cons_some _ _ h₁] using Perm.refl _
   · refine' (IH₁ H).trans (IH₂ ((p₁.pairwise_iff _).1 H))
     intro x y h c hc d hd
     rw [@eq_comm _ y, @eq_comm _ c]

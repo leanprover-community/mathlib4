@@ -84,7 +84,7 @@ end
 @[simp]
 theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
     size (shiftLeft' b m n) = size m + n := by
-  induction' n with n IH <;> simp [shiftLeft'] at h ⊢
+  induction' n with n IH <;> simp only [shiftLeft', ne_eq, zero_eq, add_zero] at h ⊢
   rw [size_bit h, Nat.add_succ]
   by_cases s0 : shiftLeft' b m n = 0 <;> [skip; rw [IH s0]]
   rw [s0] at h ⊢
