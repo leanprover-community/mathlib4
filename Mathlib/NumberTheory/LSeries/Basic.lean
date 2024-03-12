@@ -36,6 +36,13 @@ Given a sequence `f: ℕ → ℂ`, we define the corresponding L-series.
  * `LSeriesSummable.isBigO_rpow`: if the `LSeries` of `f` is summable at `s`,
     then `f = O(n^(re s))`.
 
+## Notation
+
+We introduce `L` as notation for `LSeries` and `↗f` as notation for `fun n : ℕ ↦ (f n : ℂ)`,
+both scoped to `LSeries.notation`. The latter makes it convenient to use arithmetic functions
+or Dirichlet characters (or anything that coerces to a function `N → R`, where `ℕ` coerces
+to `N` and `R` coerces to `ℂ`) as arguments to `LSeries` etc.
+
 ## Tags
 
 L-series
@@ -47,7 +54,6 @@ L-series
 
 * Move `LSeries_add` and friends to a new file on algebraic operations on L-series
 -/
-
 
 open scoped BigOperators
 
@@ -184,6 +190,21 @@ theorem LSeriesSummable_iff_of_re_eq_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re
     LSeriesSummable f s ↔ LSeriesSummable f s' :=
   ⟨fun H ↦ H.of_re_le_re h.le, fun H ↦ H.of_re_le_re h.symm.le⟩
 #align nat.arithmetic_function.l_series_summable_iff_of_re_eq_re LSeriesSummable_iff_of_re_eq_re
+
+
+/-!
+### Notation
+-/
+
+@[inherit_doc]
+scoped[LSeries.notation] notation "L" => LSeries
+
+/-- We introduce notation `↗f` for `f` interpreted as a function `ℕ → ℂ`.
+
+Let `R` be a ring with a coercion to `ℂ`. Then we can write `↗χ` when `χ : DirichletCharacter R`
+or `↗f` when `f : ArithmeticFunction R` or simply `f : N → R` with a coercion from `ℕ` to `N`
+as an argument to `LSeries`, `LSeriesHasSum`, `LSeriesSummable` etc. -/
+scoped[LSeries.notation] notation:max "↗" f:max => fun n : ℕ ↦ (f n : ℂ)
 
 
 /-!

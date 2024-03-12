@@ -96,7 +96,7 @@ protected def le' (a b : ℚ) := Rat.Nonneg (b - a)
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
 numbers of the form `mk' n d` with `d ≠ 0`. -/
--- Porting note: TODO move
+-- Porting note (#11215): TODO move
 @[elab_as_elim]
 def numDenCasesOn''.{u} {C : ℚ → Sort u} (a : ℚ)
     (H : ∀ (n : ℤ) (d : ℕ) (nz red), C (mk' n d nz red)) :
@@ -105,7 +105,7 @@ def numDenCasesOn''.{u} {C : ℚ → Sort u} (a : ℚ)
     rw [← mk_eq_divInt _ _ h.ne' h']
     exact H n d h.ne' _
 
--- Porting note: TODO can this be shortened?
+-- Porting note (#11215): TODO can this be shortened?
 protected theorem le_iff_Nonneg (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) :=
   numDenCasesOn'' a fun na da ha hared =>
     numDenCasesOn'' b fun nb db hb hbred => by
@@ -128,7 +128,7 @@ protected theorem le_iff_Nonneg (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) :=
           apply mul_pos <;> rwa [pos_iff_ne_zero]
       · simp only [divInt_ofNat, ← zero_iff_num_zero, mkRat_eq_zero hb] at h'
         simp [h', Rat.Nonneg]
-      · simp [Rat.Nonneg, Rat.sub_def, normalize_eq]
+      · simp only [Rat.Nonneg, sub_def, normalize_eq]
         refine ⟨fun H => ?_, fun H _ => ?_⟩
         · refine Int.ediv_nonneg ?_ (Nat.cast_nonneg _)
           rw [sub_nonneg]

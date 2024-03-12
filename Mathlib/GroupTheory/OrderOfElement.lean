@@ -405,6 +405,16 @@ theorem orderOf_pow' (h : n ≠ 0) : orderOf (x ^ n) = orderOf x / gcd (orderOf 
 #align order_of_pow' orderOf_pow'
 #align add_order_of_nsmul' addOrderOf_nsmul'
 
+@[to_additive]
+lemma orderOf_pow_of_dvd {x : G} {n : ℕ} (hn : n ≠ 0) (dvd : n ∣ orderOf x) :
+    orderOf (x ^ n) = orderOf x / n := by rw [orderOf_pow' _ hn, Nat.gcd_eq_right dvd]
+
+@[to_additive]
+lemma orderOf_pow_orderOf_div {x : G} {n : ℕ} (hx : orderOf x ≠ 0) (hn : n ∣ orderOf x) :
+    orderOf (x ^ (orderOf x / n)) = n := by
+  rw [orderOf_pow_of_dvd _ (Nat.div_dvd_of_dvd hn), Nat.div_div_self hn hx]
+  rw [← Nat.div_mul_cancel hn] at hx; exact left_ne_zero_of_mul hx
+
 variable (n)
 
 @[to_additive]

@@ -50,7 +50,7 @@ theorem midpoint_fixed {x y : PE} :
   haveI : Nonempty s := ⟨⟨IsometryEquiv.refl PE, rfl, rfl⟩⟩
   -- On the one hand, `e` cannot send the midpoint `z` of `[x, y]` too far
   have h_bdd : BddAbove (range fun e : s => dist ((e : PE ≃ᵢ PE) z) z) := by
-    refine' ⟨dist x z + dist x z, forall_range_iff.2 <| Subtype.forall.2 _⟩
+    refine' ⟨dist x z + dist x z, forall_mem_range.2 <| Subtype.forall.2 _⟩
     rintro e ⟨hx, _⟩
     calc
       dist (e z) z ≤ dist (e z) x + dist x z := dist_triangle (e z) x z

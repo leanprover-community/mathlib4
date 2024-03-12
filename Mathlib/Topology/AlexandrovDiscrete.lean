@@ -62,17 +62,17 @@ variable [AlexandrovDiscrete α] {S : Set (Set α)} {f : ι → Set α}
 lemma isOpen_sInter : (∀ s ∈ S, IsOpen s) → IsOpen (⋂₀ S) := AlexandrovDiscrete.isOpen_sInter _
 
 lemma isOpen_iInter (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) :=
-  isOpen_sInter <| forall_range_iff.2 hf
+  isOpen_sInter <| forall_mem_range.2 hf
 
 lemma isOpen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsOpen (f i j)) :
     IsOpen (⋂ i, ⋂ j, f i j) :=
   isOpen_iInter fun _ ↦ isOpen_iInter <| hf _
 
 lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) := by
-  simp only [← isOpen_compl_iff, compl_sUnion] at hS ⊢; exact isOpen_sInter <| ball_image_iff.2 hS
+  simp only [← isOpen_compl_iff, compl_sUnion] at hS ⊢; exact isOpen_sInter <| forall_mem_image.2 hS
 
 lemma isClosed_iUnion (hf : ∀ i, IsClosed (f i)) : IsClosed (⋃ i, f i) :=
-  isClosed_sUnion <| forall_range_iff.2 hf
+  isClosed_sUnion <| forall_mem_range.2 hf
 
 lemma isClosed_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClosed (f i j)) :
     IsClosed (⋃ i, ⋃ j, f i j) :=
