@@ -985,7 +985,7 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     · rw [PosNum.cast_one', ← bit1_zero, ← Nat.bit_true]
       -- FIXME adaptation for nightly-2024-03-11
       -- Hacky proof, can someone please replace? Obvious simp lemmas seem to be missing.
-      simp
+      simp only [Nat.bit_true, bit1_zero, Bool.false_eq]
       erw [Nat.testBit_succ]
       simp
     · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_succ, IH]
