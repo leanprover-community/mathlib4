@@ -56,7 +56,7 @@ lemma totalFlipIsoX_hom_D₁ (j j' : J) :
       rw [K.d₁_eq _ h₂ _ _ h₄, K.flip.d₂_eq _ _ h₂ _ h₃, Linear.units_smul_comp,
         assoc, ι_totalDesc, Linear.comp_units_smul, smul_smul, smul_smul,
         ComplexShape.σ_ε₁ c₂ c h₂ i₂]
-      rfl
+      dsimp only [flip_X_X, flip_X_d]
     · rw [K.d₁_eq_zero _ _ _ _ h₂, K.flip.d₂_eq_zero _ _ _ _ h₂, smul_zero, zero_comp]
   · rw [K.D₁_shape _ _ _ h₀, K.flip.D₂_shape c _ _ h₀, zero_comp, comp_zero]
 
