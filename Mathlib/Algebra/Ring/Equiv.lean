@@ -1,3 +1,4 @@
+
 /-
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -5,7 +6,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
@@ -831,30 +832,21 @@ def ofHomInv {R S F G : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
 end SemiringHom
 
-section GroupPower
-
-variable {F : Type*} {M : Type*} {N : Type*} [EquivLike F M N]
-
-protected
-theorem map_isUnit_iff {M N} [Monoid M] [Monoid N] [EquivLike F M N] [MonoidHomClass F M N]
-    (f : F) {m : M} : IsUnit m ↔ IsUnit (f m) := by
-  refine ⟨(IsUnit.map f ·), fun h ↦ ?_⟩
-  let g := MonoidHom.inverse (A := M) (B := N) f (EquivLike.inv f) (EquivLike.left_inv f)
-    (EquivLike.right_inv f)
-  exact (EquivLike.left_inv f m) ▸ IsUnit.map g h
-
 variable [Semiring R] [Semiring S]
+
+section GroupPower
 
 protected theorem map_pow (f : R ≃+* S) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n :=
   map_pow f a
 #align ring_equiv.map_pow RingEquiv.map_pow
 
-protected theorem isUnit_iff (f : R ≃+* S) {a} : IsUnit a ↔ IsUnit (f a) :=
-  RingEquiv.map_isUnit_iff f
-
 end GroupPower
 
+protected theorem isUnit_iff (f : R ≃+* S) {a} : IsUnit (f a) ↔ IsUnit a :=
+  MulEquiv.map_isUnit_iff f
+
 end RingEquiv
+
 namespace MulEquiv
 
 /-- Gives a `RingEquiv` from an element of a `MulEquivClass` preserving addition.-/
