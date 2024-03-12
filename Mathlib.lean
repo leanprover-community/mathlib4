@@ -796,6 +796,7 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.ConstantSpeed
+import Mathlib.Analysis.Convex.AmpleSet
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.Body
