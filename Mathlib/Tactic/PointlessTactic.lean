@@ -5,80 +5,93 @@ Authors: Damiano Testa
 -/
 import Lean.Elab.Command
 import Lean.Linter.Util
-import Std.Data.Array.Basic
 
 /-!
 #  The pointless tactic linter
 
 The pointless linter makes sure that every tactic call actually changes *something*.
+
+##  Implementation notes
+
+Yet another linter copied from the `unreachableTactic` linter!
 -/
 
 open Lean Elab
 
 namespace Mathlib.Linter
 
-/-- The non-terminal `simp` linter makes sure that `simp` is not used as a finishing tactic. -/
+/-- The pointless tactic linter makes sure that every tactic call actually changes *something*. -/
 register_option linter.pointless : Bool := {
   defValue := true
-  descr := "enable the 'non-terminal `simp`' linter"
+  descr := "enable the pointless tactic linter"
 }
 
 namespace pointless
-
-/-- `onlyOrNotSimp stx` if `stx` is syntax for `simp` *without* `only`, then returns `false` else
-returs `true`. -/
-def onlyOrNotSimp : Syntax → Bool
-  | .node _info `Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal == "only"
-  | _ => true
 
 /-- The monad for collecting `simp`s that are not `simp only`. -/
 abbrev M := StateRefT (HashMap String.Range Syntax) IO
 
 /-- `Parser`s allowed to not change the tactic state. -/
 abbrev allowed := [
-  `cdotTk, `«]»,
-  `Lean.Parser.Tactic.«tactic_<;>_»,
-  `Lean.Parser.Tactic.induction,
-  `Lean.Parser.Tactic.exact,
-  `Lean.Parser.Tactic.cases,
-  `Lean.Parser.Tactic.tacticSeq1Indented,
-  `Lean.Parser.Tactic.tacticSeq,
-  `Lean.Parser.Tactic.tacticTry_,
-  `Mathlib.Tactic.casesM,
-  `Lean.Parser.Tactic.paren,
-  `«{»,
-  `«<;>»,
-  `«;»,
-  `Lean.Parser.Tactic.tacticRfl,
-  `Lean.Parser.Tactic.contradiction,
-  `Lean.Parser.Tactic.first,
-  -- revise decision
-  `Lean.Parser.Tactic.simp
+  ``Lean.Parser.Tactic.«tactic_<;>_»,
+  ``Lean.Parser.Tactic.tacticSeq,
+  ``Lean.Parser.Tactic.tacticSeq1Indented,
+  `Mathlib.Tactic.Says.says,
+  `Std.Tactic.«tacticOn_goal-_=>_»
 ]
 
+/--
+A list of blacklisted syntax kinds, which are expected to have subterms that contain
+unevaluated tactics.
+-/
+initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
+  IO.mkRef <| HashSet.empty
+    |>.insert `Mathlib.Tactic.Says.says
+    |>.insert ``Parser.Term.binderTactic
+    |>.insert ``Lean.Parser.Term.dynamicQuot
+    |>.insert ``Lean.Parser.Tactic.quotSeq
+    |>.insert ``Lean.Parser.Tactic.tacticStop_
+    |>.insert ``Lean.Parser.Command.notation
+    |>.insert ``Lean.Parser.Command.mixfix
+    |>.insert ``Lean.Parser.Tactic.discharger
+
+/-- Is this a syntax kind that contains intentionally unevaluated tactic subterms? -/
+def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeKind) : Bool :=
+  match k with
+  | .str _ "quot" => true
+  | _ => ignoreTacticKinds.contains k
+
+/--
+Adds a new syntax kind whose children will be ignored by the `unreachableTactic` linter.
+This should be called from an `initialize` block.
+-/
+def addIgnoreTacticKind (kind : SyntaxNodeKind) : IO Unit :=
+  ignoreTacticKindsRef.modify (·.insert kind)
+
+variable (ignoreTacticKinds : NameHashSet) (isTacKind : SyntaxNodeKind → Bool) in
+/-- Accumulates the set of tactic syntaxes that should be evaluated at least once. -/
+@[specialize] partial def getTactics (stx : Syntax) : M Unit := do
+  if let .node _ k args := stx then
+    if !isIgnoreTacticKind ignoreTacticKinds k then
+      args.forM getTactics
+    if isTacKind k then
+      if let some r := stx.getRange? true then
+        modify fun m => m.insert r stx
+
 mutual
-/-- Search for `simp`s that
-* are not `simp only` and
-* do not close a goal.
+/-- Search for tactic executions in the info tree and remove executed tactic syntaxes. -/
+partial def eraseUsedTacticsList (trees : PersistentArray InfoTree) : M Unit :=
+  trees.forM eraseUsedTactics
 
-Add such `simp`s to the state. -/
-partial def pointlessList (trees : PersistentArray InfoTree) : M Unit :=
-  trees.forM pointless
-
-@[inherit_doc pointlessList]
-partial def pointless : InfoTree → M Unit
+/-- Search for tactic executions in the info tree and remove executed tactic syntaxes. -/
+partial def eraseUsedTactics : InfoTree → M Unit
   | .node i c => do
     if let .ofTacticInfo i := i then
       if let some r := i.stx.getRange? true then
-        if i.goalsAfter == i.goalsBefore &&
-           ! i.stx[0].getKind == `simp_rw &&
-           ! i.stx.getKind ∈ allowed
-        then
-          dbg_trace i.stx.getKind
-          dbg_trace i.stx[0].getKind
-          modify (·.insert r i.stx)
-    pointlessList c
-  | .context _ t => pointless t
+        if i.goalsAfter != i.goalsBefore || i.stx.getKind ∈ allowed then
+          modify (·.erase r)
+    eraseUsedTacticsList c
+  | .context _ t => eraseUsedTactics t
   | .hole _ => pure ()
 
 end
@@ -87,19 +100,30 @@ end
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.pointless o
 
 /-- The main entry point to the pointless tactic linter. -/
-def pointlessLinter : Linter where run := withSetOptionIn fun _stx => do
+def pointlessLinter : Linter where run := withSetOptionIn fun stx => do
   unless getLinterHash (← getOptions) && (← getInfoState).enabled do
     return
   if (← get).messages.hasErrors then
     return
-  let (_, map) ← (pointlessList (← getInfoTrees)).run {}
-  let simps := map.toArray
+  let cats := (Parser.parserExtension.getState (← getEnv)).categories
+  -- These lookups may fail when the linter is run in a fresh, empty environment
+  let some tactics := Parser.ParserCategory.kinds <$> cats.find? `tactic
+    | return
+  let some convs := Parser.ParserCategory.kinds <$> cats.find? `conv
+    | return
+  let trees ← getInfoTrees
+  let go : M Unit := do
+    getTactics (← ignoreTacticKindsRef.get) (fun k => tactics.contains k || convs.contains k) stx
+    eraseUsedTacticsList trees
+  let (_, map) ← go.run {}
+  let unreachable := map.toArray
   let key (r : String.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
   let mut last : String.Range := ⟨0, 0⟩
-  for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; simps.qsort (key ·.1 < key ·.1) do
+  for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unreachable.qsort (key ·.1 < key ·.1) do
+--    if stx.getKind ∈ [``Std.Tactic.unreachable, ``Std.Tactic.unreachableConv] then continue
+--    dbg_trace "appearing: {stx.getKind}"
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
-    Linter.logLint linter.pointless stx
-      "pointless tactic: consider removing it!"
+    Linter.logLint linter.pointless stx "this tactic does nothing"
     last := r
 
 initialize addLinter pointlessLinter
