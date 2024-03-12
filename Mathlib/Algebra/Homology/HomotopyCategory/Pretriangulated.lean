@@ -183,7 +183,8 @@ noncomputable def rotateHomotopyEquiv :
   hom := lift (inr φ) (-(Cocycle.ofHom φ).leftShift 1 1 (zero_add 1))
     (-(inl φ).leftShift 1 0 (neg_add_self 1)) (by
       simp? [Cochain.δ_leftShift _ 1 0 1 (neg_add_self 1) 0 (zero_add 1)] says
-        simp only [Int.reduceNeg, δ_neg, Cochain.δ_leftShift _ 1 0 1 (neg_add_self 1) 0 (zero_add 1),
+        simp only [Int.reduceNeg, δ_neg,
+          Cochain.δ_leftShift _ 1 0 1 (neg_add_self 1) 0 (zero_add 1),
           Int.negOnePow_one, δ_inl, Cochain.ofHom_comp, Cochain.leftShift_comp_zero_cochain,
           Units.neg_smul, one_smul, neg_neg, Cocycle.coe_neg, Cocycle.leftShift_coe,
           Cocycle.ofHom_coe, Cochain.neg_comp, add_right_neg])

@@ -1421,7 +1421,6 @@ theorem norm_pos_iff''' [T0Space E] {a : E} : 0 < ‖a‖ ↔ a ≠ 1 := by
 theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ} {l : Filter ι} :
     TendstoUniformlyOn f 1 l s ↔ ∀ ε > 0, ∀ᶠ i in l, ∀ x ∈ s, ‖f i x‖ < ε := by
   -- Adaptation note: nightly-2024-03-11.
-  -- There seems to be a bug in a dsimproc.
   -- Originally this was `simp_rw` instead of `simp only`,
   -- but this creates a bad proof term with nested `OfNat.ofNat` that trips up `@[to_additive]`.
   simp only [tendstoUniformlyOn_iff, Pi.one_apply, dist_one_left]
