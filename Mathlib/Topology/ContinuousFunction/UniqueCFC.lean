@@ -51,59 +51,63 @@ open NNReal
 variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℝ A] [TopologicalRing A]
 variable {X : Type*} [TopologicalSpace X]
 
-lemma max_neg_zero {α : Type*} [AddCommGroup α] [LinearOrder α] [CovariantClass α α (· + ·) (· ≤ ·)]
-    (a : α) : max (-a) 0 = max a 0 - a := by
+lemma max_neg_zero {α : Type*} [AddGroup α] [LinearOrder α] [CovariantClass α α (· + ·) (· ≤ ·)]
+    (a : α) : max (-a) 0 = -a + max a 0 := by
   have := congr(-$(max_zero_sub_eq_self a))
-  rwa [neg_sub, sub_eq_iff_eq_add', ← sub_eq_add_neg] at this
+  rwa [neg_sub, sub_eq_iff_eq_add] at this
+namespace ContinuousMap
 
-/-- This map sends `f : C(X, ℝ)` to `f ⊔ 0`, bundled as a continuous map `C(X, ℝ≥0)`. -/
+/-- This map sends `f : C(X, ℝ)` to `Real.toNNReal ∘ f`, bundled as a continuous map `C(X, ℝ≥0)`. -/
 @[pp_dot]
-noncomputable def ContinuousMap.toNNReal (f : C(X, ℝ)) : C(X, ℝ≥0) :=
-  .realToNNReal |>.comp f
+noncomputable def toNNReal (f : C(X, ℝ)) : C(X, ℝ≥0) := .realToNNReal |>.comp f
 
 @[fun_prop]
-lemma ContinuousMap.continuous_toNNReal : Continuous (ContinuousMap.toNNReal (X := X)) :=
-  ContinuousMap.continuous_comp _
+lemma continuous_toNNReal : Continuous (toNNReal (X := X)) := continuous_comp _
 
 @[simp]
-lemma ContinuousMap.toNNReal_apply (f : C(X, ℝ)) (x : X) : f.toNNReal x = (f x).toNNReal := rfl
+lemma toNNReal_apply (f : C(X, ℝ)) (x : X) : f.toNNReal x = (f x).toNNReal := rfl
 
-lemma ContinuousMap.toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)) :
+lemma toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)) :
     (f + g).toNNReal + (-f).toNNReal + (-g).toNNReal =
       (-(f + g)).toNNReal + f.toNNReal + g.toNNReal := by
   ext x
   simp [max_neg_zero, -neg_add_rev]
   abel
 
-lemma ContinuousMap.toNNReal_mul_add_neg_mul_add_mul_neg_eq (f g : C(X, ℝ)) :
+lemma toNNReal_mul_add_neg_mul_add_mul_neg_eq (f g : C(X, ℝ)) :
     (f * g).toNNReal + (-f).toNNReal * g.toNNReal + f.toNNReal * (-g).toNNReal =
       (-(f * g)).toNNReal + f.toNNReal * g.toNNReal + (-f).toNNReal * (-g).toNNReal := by
   ext x
-  simp [max_neg_zero, mul_sub, sub_mul]
+  simp [max_neg_zero, add_mul, mul_add]
   abel
 
 @[simp]
-lemma ContinuousMap.toNNReal_algebraMap (r : ℝ≥0) :
+lemma toNNReal_algebraMap (r : ℝ≥0) :
     (algebraMap ℝ C(X, ℝ) r).toNNReal = algebraMap ℝ≥0 C(X, ℝ≥0) r := by
   ext; simp
 
 @[simp]
-lemma ContinuousMap.toNNReal_neg_algebraMap (r : ℝ≥0) :
-    (- algebraMap ℝ C(X, ℝ) r).toNNReal = 0 := by
+lemma toNNReal_neg_algebraMap (r : ℝ≥0) : (- algebraMap ℝ C(X, ℝ) r).toNNReal = 0 := by
   ext; simp
+
+@[simp]
+lemma toNNReal_one : (1 : C(X, ℝ)).toNNReal = 1 := toNNReal_algebraMap 1
+
+@[simp]
+lemma toNNReal_neg_one : (-1 : C(X, ℝ)).toNNReal = 0 := toNNReal_neg_algebraMap 1
+
+end ContinuousMap
+
+namespace StarAlgHom
 
 /-- Given a star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)` into an `ℝ`-algebra `A`, this is
 the unique extension of `φ` from `C(X, ℝ)` to `A` as a star `ℝ`-algebra homomorphism. -/
 @[simps]
-noncomputable def StarAlgHom.realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A) :
+noncomputable def realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A) :
     C(X, ℝ) →⋆ₐ[ℝ] A where
   toFun f := φ f.toNNReal - φ (-f).toNNReal
-  map_one' := by
-    have h₁ : (1 : C(X, ℝ)).toNNReal = 1 := ?_
-    have h₂ : (-1 : C(X, ℝ)).toNNReal = 0 := ?_
-    · simp only [h₁, map_one φ, h₂, map_zero φ, sub_zero]
-    all_goals ext x; simp
-  map_zero' := by simp only [neg_zero, sub_self]
+  map_one' := by simp
+  map_zero' := by simp
   map_mul' f g := by
     have := congr(φ $(f.toNNReal_mul_add_neg_mul_add_mul_neg_eq g))
     simp only [map_add, map_mul, sub_mul, mul_sub] at this ⊢
@@ -130,13 +134,13 @@ noncomputable def StarAlgHom.realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →�
   map_star' f := by simp only [star_trivial, star_sub, ← map_star]
 
 @[fun_prop]
-lemma StarAlgHom.continuous_realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A)
+lemma continuous_realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A)
     (hφ : Continuous φ) : Continuous φ.realContinuousMapOfNNReal := by
   simp [realContinuousMapOfNNReal]
   fun_prop
 
 @[simp high]
-lemma StarAlgHom.realContinuousMapOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A)
+lemma realContinuousMapOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A)
     (f : C(X, ℝ≥0)) :
     φ.realContinuousMapOfNNReal ((ContinuousMap.mk toReal continuous_coe).comp f) = φ f := by
   simp only [realContinuousMapOfNNReal_apply]
@@ -147,11 +151,13 @@ lemma StarAlgHom.realContinuousMapOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0)
     ext x
     simp
 
-lemma StarAlgHom.injective_realContinuousMapOfNNReal :
+lemma realContinuousMapOfNNReal_injective :
     Function.Injective (realContinuousMapOfNNReal (X := X) (A := A)) := by
   intro φ ψ h
   ext f
   simpa using congr($(h) ((ContinuousMap.mk toReal continuous_coe).comp f))
+
+end StarAlgHom
 
 instance NNReal.instUniqueContinuousFunctionalCalculus [UniqueContinuousFunctionalCalculus ℝ A] :
     UniqueContinuousFunctionalCalculus ℝ≥0 A where
@@ -189,7 +195,7 @@ instance NNReal.instUniqueContinuousFunctionalCalculus [UniqueContinuousFunction
         (ContinuousMap.compStarAlgHom' ℝ ℝ (e.symm : C(s', s))) = StarAlgHom.id _ _ := by
       ext1; simp
     simp only [StarAlgHom.comp_assoc, this, StarAlgHom.comp_id] at h''
-    exact StarAlgHom.injective_realContinuousMapOfNNReal h''
+    exact StarAlgHom.realContinuousMapOfNNReal_injective h''
 
 end NNReal
 
