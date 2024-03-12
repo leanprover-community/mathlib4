@@ -50,6 +50,7 @@ variable (M : Type v) [MulOneClass M]
 We put only the typeclasses needed for the definition to work, although we will restrict to the
 case that both are commutative rings for most applications. The trivial additive character (sending
 everything to `1`) is `(1 : AddChar A M).` -/
+
 def AddChar : Type max u v :=
   Multiplicative A →* M
 #align add_char AddChar
@@ -60,6 +61,7 @@ namespace AddChar
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section DerivedInstances
+
 
 variable (A : Type u) (M : Type v)
 
