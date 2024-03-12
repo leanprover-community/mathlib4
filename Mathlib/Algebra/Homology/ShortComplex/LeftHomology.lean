@@ -433,7 +433,8 @@ lemma cycles_ext_iff {A : C} (f₁ f₂ : A ⟶ S.cycles) :
   rw [cancel_mono]
 
 @[ext]
-lemma cycles_ext {A : C} (f₁ f₂ : A ⟶ S.cycles) (h : f₁ ≫ S.iCycles = f₂ ≫ S.iCycles) : f₁ = f₂ := by
+lemma cycles_ext {A : C} (f₁ f₂ : A ⟶ S.cycles) (h : f₁ ≫ S.iCycles = f₂ ≫ S.iCycles) :
+    f₁ = f₂ := by
   simpa only [cycles_ext_iff] using h
 
 lemma isIso_iCycles (hg : S.g = 0) : IsIso S.iCycles :=

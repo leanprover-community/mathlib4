@@ -22,8 +22,6 @@ the present file is about their interaction.
 For the definitions of semirings and rings see `Algebra.Ring.Defs`.
 -/
 
---set_option autoImplicit true
-
 variable {R : Type*}
 
 open Function
@@ -50,7 +48,8 @@ end AddHom
 
 section AddHomClass
 
-variable {α β F : Type*} [NonAssocSemiring α] [NonAssocSemiring β] [FunLike F α β] [AddHomClass F α β]
+variable {α β F : Type*} [NonAssocSemiring α] [NonAssocSemiring β]
+  [FunLike F α β] [AddHomClass F α β]
 
 set_option linter.deprecated false in
 /-- Additive homomorphisms preserve `bit0`. -/
