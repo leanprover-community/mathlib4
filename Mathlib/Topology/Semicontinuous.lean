@@ -438,14 +438,20 @@ theorem Continuous.comp_lowerSemicontinuous_antitone {g : γ → δ} {f : α →
   hg.continuousAt.comp_lowerSemicontinuousAt_antitone (hf x) gmon
 #align continuous.comp_lower_semicontinuous_antitone Continuous.comp_lowerSemicontinuous_antitone
 
-theorem LowerSemicontinuousAt.comp {f : α → β} {g : ι → α} {x : ι}
+theorem LowerSemicontinuousAt.comp_continuousAt {f : α → β} {g : ι → α} {x : ι}
     (hf : LowerSemicontinuousAt f (g x)) (hg : ContinuousAt g x) :
     LowerSemicontinuousAt (fun x ↦ f (g x)) x :=
   fun _ lt ↦ hg.eventually (hf _ lt)
 
-theorem LowerSemicontinuous.comp {f : α → β} {g : ι → α}
+theorem LowerSemicontinuousAt.comp_continuousAt_of_eq {f : α → β} {g : ι → α} {y : α} {x : ι}
+    (hf : LowerSemicontinuousAt f y) (hg : ContinuousAt g x) (hy : g x = y) :
+    LowerSemicontinuousAt (fun x ↦ f (g x)) x := by
+  rw [← hy] at hf
+  exact comp_continuousAt hf hg
+
+theorem LowerSemicontinuous.comp_continuous {f : α → β} {g : ι → α}
     (hf : LowerSemicontinuous f) (hg : Continuous g) : LowerSemicontinuous fun x ↦ f (g x) :=
-  fun x ↦ (hf (g x)).comp hg.continuousAt
+  fun x ↦ (hf (g x)).comp_continuousAt hg.continuousAt
 
 end
 
@@ -1003,14 +1009,20 @@ theorem Continuous.comp_upperSemicontinuous_antitone {g : γ → δ} {f : α →
   hg.continuousAt.comp_upperSemicontinuousAt_antitone (hf x) gmon
 #align continuous.comp_upper_semicontinuous_antitone Continuous.comp_upperSemicontinuous_antitone
 
-theorem UpperSemicontinuousAt.comp {f : α → β} {g : ι → α} {x : ι}
+theorem UpperSemicontinuousAt.comp_continuousAt {f : α → β} {g : ι → α} {x : ι}
     (hf : UpperSemicontinuousAt f (g x)) (hg : ContinuousAt g x) :
     UpperSemicontinuousAt (fun x ↦ f (g x)) x :=
   fun _ lt ↦ hg.eventually (hf _ lt)
 
-theorem UpperSemicontinuous.comp {f : α → β} {g : ι → α}
+theorem UpperSemicontinuousAt.comp_continuousAt_of_eq {f : α → β} {g : ι → α} {y : α} {x : ι}
+    (hf : UpperSemicontinuousAt f y) (hg : ContinuousAt g x) (hy : g x = y) :
+    UpperSemicontinuousAt (fun x ↦ f (g x)) x := by
+  rw [← hy] at hf
+  exact comp_continuousAt hf hg
+
+theorem UpperSemicontinuous.comp_continuous {f : α → β} {g : ι → α}
     (hf : UpperSemicontinuous f) (hg : Continuous g) : UpperSemicontinuous fun x ↦ f (g x) :=
-  fun x ↦ (hf (g x)).comp hg.continuousAt
+  fun x ↦ (hf (g x)).comp_continuousAt hg.continuousAt
 
 end
 
