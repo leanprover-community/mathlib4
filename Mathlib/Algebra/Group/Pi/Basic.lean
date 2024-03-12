@@ -548,8 +548,8 @@ theorem bijective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Bijective (F i)) 
   ⟨injective_pi_map fun i => (hF i).injective, surjective_pi_map fun i => (hF i).surjective⟩
 #align function.bijective_pi_map Function.bijective_pi_map
 
-lemma comp_eq_const_iff (b : β) (f : α → β) {g : β → γ}
-    (hg : Injective g) : g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=
+lemma comp_eq_const_iff (b : β) (f : α → β) {g : β → γ} (hg : Injective g) :
+    g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=
   hg.comp_left.eq_iff' rfl
 
 @[to_additive]
