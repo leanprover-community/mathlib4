@@ -520,8 +520,8 @@ variable [Small.{u} J]
 and the "concrete" definition as a quotient.
 -/
 noncomputable def colimitEquivQuot (F : J ⥤ Type u) : colimit F ≃ Quot F :=
-  (IsColimit.coconePointUniqueUpToIso (colimit.isColimit F) (colimitCoconeIsColimit F)).toEquiv.trans
-    (equivShrink _).symm
+  (IsColimit.coconePointUniqueUpToIso
+    (colimit.isColimit F) (colimitCoconeIsColimit F)).toEquiv.trans (equivShrink _).symm
 #align category_theory.limits.types.colimit_equiv_quot CategoryTheory.Limits.Types.colimitEquivQuot
 
 @[simp]

@@ -277,7 +277,8 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
 @[to_additive (attr := simp)]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism.{v, u} F j' = coconeMorphism F j :=
-  MonoidHom.ext fun x => congr_fun ((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
+  MonoidHom.ext fun x =>
+    congr_fun ((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
 #align Mon.filtered_colimits.cocone_naturality MonCat.FilteredColimits.cocone_naturality
 #align AddMon.filtered_colimits.cocone_naturality AddMonCat.FilteredColimits.cocone_naturality
 
@@ -299,7 +300,8 @@ The only thing left to see is that it is a monoid homomorphism.
       corresponding cocone in `Type`. The only thing left to see is that it is an additive monoid
       homomorphism."]
 def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
-  toFun := (Types.TypeMax.colimitCoconeIsColimit.{v, max v u, v} (F ⋙ forget MonCat)).desc ((forget MonCat).mapCocone t)
+  toFun := (Types.TypeMax.colimitCoconeIsColimit.{v, max v u, v} (F ⋙ forget MonCat)).desc
+    ((forget MonCat).mapCocone t)
   map_one' := by
     rw [colimit_one_eq F IsFiltered.nonempty.some]
     exact MonoidHom.map_one _

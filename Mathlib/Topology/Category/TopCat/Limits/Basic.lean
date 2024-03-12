@@ -158,7 +158,8 @@ def colimitCocone (F : J ⥤ TopCatMax.{v, u}) : Cocone F where
     { app := fun j =>
         ⟨(Types.TypeMax.colimitCocone (F ⋙ forget)).ι.app j, continuous_iff_coinduced_le.mpr <|
           -- Porting note: didn't need function before
-          le_iSup (fun j => coinduced ((Types.TypeMax.colimitCocone (F ⋙ forget)).ι.app j) (F.obj j).str) j⟩
+          le_iSup (fun j =>
+            coinduced ((Types.TypeMax.colimitCocone (F ⋙ forget)).ι.app j) (F.obj j).str) j⟩
       naturality := fun _ _ f =>
         ContinuousMap.coe_injective ((Types.TypeMax.colimitCocone (F ⋙ forget)).ι.naturality f) }
 #align Top.colimit_cocone TopCat.colimitCocone

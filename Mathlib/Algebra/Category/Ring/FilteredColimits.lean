@@ -299,8 +299,8 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
         ((forget RingCat).mapCocone t) j
   uniq t _ h :=
     RingHom.coe_inj <|
-      (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget RingCat)).uniq ((forget RingCat).mapCocone t) _
-        fun j => funext fun x => RingHom.congr_fun (h j) x
+      (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget RingCat)).uniq
+        ((forget RingCat).mapCocone t) _ fun j => funext fun x => RingHom.congr_fun (h j) x
 set_option linter.uppercaseLean3 false in
 #align Ring.filtered_colimits.colimit_cocone_is_colimit RingCat.FilteredColimits.colimitCoconeIsColimit
 

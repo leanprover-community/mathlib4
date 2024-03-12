@@ -168,7 +168,8 @@ def colimitCocone : Cocone F where
   ι :=
     { app := coconeMorphism F
       naturality := fun _ _' f =>
-        LinearMap.coe_injective ((Types.TypeMax.colimitCocone (F ⋙ forget (ModuleCat R))).ι.naturality f) }
+        LinearMap.coe_injective
+          ((Types.TypeMax.colimitCocone (F ⋙ forget (ModuleCat R))).ι.naturality f) }
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_cocone ModuleCat.FilteredColimits.colimitCocone
 
