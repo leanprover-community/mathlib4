@@ -153,9 +153,11 @@ theorem isEmpty_pi {π : α → Sort*} : IsEmpty (∀ a, π a) ↔ ∃ a, IsEmpt
   simp only [← not_nonempty_iff, Classical.nonempty_pi, not_forall]
 #align is_empty_pi isEmpty_pi
 
-@[simp]
-theorem isEmpty_fun : IsEmpty (α → β) ↔ Nonempty α ∧ IsEmpty β := by
-  rw [isEmpty_pi, ← exists_true_iff_nonempty, ← exists_and_right, true_and]
+@[simp] -- simp normal form of `isEmpty_fun`
+theorem isEmpty_exists_isempty_fun : (∃ (_ : α), IsEmpty β) ↔ Nonempty α ∧ IsEmpty β := by
+  rw [← exists_true_iff_nonempty, ← exists_and_right, true_and]
+
+theorem isEmpty_fun : IsEmpty (α → β) ↔ Nonempty α ∧ IsEmpty β := by simp
 
 @[simp]
 theorem nonempty_fun : Nonempty (α → β) ↔ IsEmpty α ∨ Nonempty β :=
