@@ -133,8 +133,8 @@ instance : Bitraversable (bicompl t F G) where bitraverse := @Bicompl.bitraverse
 instance [LawfulTraversable F] [LawfulTraversable G] [LawfulBitraversable t] :
     LawfulBitraversable (bicompl t F G) := by
   constructor <;> intros <;>
-    simp only [bitraverse, Bicompl.bitraverse, bimap, traverse_id, bitraverse_id_id, comp_bitraverse,
-      functor_norm]
+    simp only [bitraverse, Bicompl.bitraverse, bimap, traverse_id, bitraverse_id_id,
+      comp_bitraverse, functor_norm]
   · simp [traverse_eq_map_id', bitraverse_eq_bimap_id]
   · dsimp only [bicompl]
     simp [binaturality, naturality_pf]

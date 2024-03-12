@@ -84,8 +84,8 @@ protected theorem comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (
     List.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
       Comp.mk (List.traverse f <$> List.traverse g x) := by
   induction x <;>
-  simp! only [List.traverse, map_pure, Function.comp_apply, Comp.map_mk, Functor.map_map, Comp.seq_mk,
-       seq_map_assoc, map_seq, *] <;>
+  simp! only [List.traverse, map_pure, Function.comp_apply, Comp.map_mk, Functor.map_map,
+    Comp.seq_mk, seq_map_assoc, map_seq, *] <;>
   rfl
 #align list.comp_traverse List.comp_traverse
 
