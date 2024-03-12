@@ -134,16 +134,16 @@ end CoeToFun
 section Constructor
 
 /-- Construct an `AddChar` from a function satisfying `f (a + b) = f a * f b` and `f 0 = 1`. -/
-def mk {A M : Type*} [AddMonoid A] [Monoid M] {f : A → M}
-    (map_add_mul' : ∀ a b : A, f (a + b) = f a * f b) (map_zero_one' : f 0 = 1) :
+def mk {A M : Type*} [AddMonoid A] [Monoid M]
+    (f : A → M) (map_add_mul' : ∀ a b : A, f (a + b) = f a * f b) (map_zero_one' : f 0 = 1) :
     AddChar A M where
   map_one' := map_zero_one'
   map_mul' := map_add_mul'
 
 @[simp]
-lemma coe_mk {A M : Type*} [AddMonoid A] [Monoid M] {f : A → M}
+lemma coe_mk {A M : Type*} [AddMonoid A] [Monoid M] (f : A → M)
     (map_add_mul' : ∀ a b : A, f (a + b) = f a * f b) (map_zero_one' : f 0 = 1) :
-    (mk map_add_mul' map_zero_one' : A → M) = f := by rfl
+    (mk f map_add_mul' map_zero_one' : A → M) = f := by rfl
 
 end Constructor
 
