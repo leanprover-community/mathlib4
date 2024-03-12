@@ -479,7 +479,7 @@ section TotalAndTransitive
 
 variable {r} [IsTotal α r] [IsTrans α r]
 
-theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sorted r (merge' r l l')
+theorem Sorted.merge' : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sorted r (merge' r l l')
   | [], [], _, _ => by simp [List.merge']
   | [], b :: l', _, h₂ => by simpa [List.merge'] using h₂
   | a :: l, [], h₁, _ => by simpa [List.merge'] using h₁
@@ -506,7 +506,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
       · exact _root_.trans ba (rel_of_sorted_cons h₁ _ bl)
       · exact rel_of_sorted_cons h₂ _ bl'
   termination_by l₁ l₂ => length l₁ + length l₂
-#align list.sorted.merge List.Sorted.merge
+#align list.sorted.merge List.Sorted.merge'
 
 variable (r)
 
@@ -517,7 +517,7 @@ theorem sorted_mergeSort : ∀ l : List α, Sorted r (mergeSort r l)
     cases' e : split (a :: b :: l) with l₁ l₂
     cases' length_split_lt e with h₁ h₂
     rw [mergeSort_cons_cons r e]
-    exact (sorted_mergeSort l₁).merge (sorted_mergeSort l₂)
+    exact (sorted_mergeSort l₁).merge' (sorted_mergeSort l₂)
   termination_by l => length l
 #align list.sorted_merge_sort List.sorted_mergeSort
 
