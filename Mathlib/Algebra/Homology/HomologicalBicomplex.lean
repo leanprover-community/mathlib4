@@ -158,6 +158,9 @@ def flip (K : HomologicalComplex₂ C c₁ c₂) : HomologicalComplex₂ C c₂ 
     exact (K.X j).shape i i' w
 #align homological_complex.flip_obj HomologicalComplex₂.flip
 
+@[simp]
+lemma flip_flip (K : HomologicalComplex₂ C c₁ c₂) : K.flip.flip = K := rfl
+
 variable (C c₁ c₂)
 
 /-- Flipping a complex of complexes over the diagonal, as a functor. -/
