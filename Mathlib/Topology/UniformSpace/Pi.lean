@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.UniformSpace.Separation
 
 #align_import topology.uniform_space.pi from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
@@ -118,12 +117,6 @@ instance Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i)
     rwa [nhds_pi, le_pi]
 #align Pi.complete Pi.complete
 
-instance Pi.separated [∀ i, SeparatedSpace (α i)] : SeparatedSpace (∀ i, α i) :=
-  separated_def.2 fun x y H => by
-    ext i
-    -- Porting note: should be `eq_ofSeparated_ofUniformContinuous`?
-    apply eq_of_separated_of_uniformContinuous (Pi.uniformContinuous_proj α i)
-    apply H
-#align Pi.separated Pi.separated
+#align Pi.separated Pi.instT0Space
 
 end

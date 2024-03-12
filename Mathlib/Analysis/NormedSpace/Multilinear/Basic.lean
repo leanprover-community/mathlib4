@@ -105,20 +105,10 @@ does not satisfy this condition. -/
 lemma norm_map_coord_zero (hf : Continuous f) {m : ∀ i, E i} {i : ι} (hi : ‖m i‖ = 0) :
     ‖f m‖ = 0 := by
   classical
-  have : Nonempty ι := ⟨i⟩
-  set m' : 𝕜 → ∀ i, E i := fun ε : 𝕜 ↦ update (ε • m) i (ε⁻¹ ^ (Fintype.card ι) • ((ε • m) i))
-  have A : Tendsto m' (𝓝[≠] 0) (𝓝 0) := by
-    rw [← update_eq_self i (0 : ∀ i, E i)]
-    refine (Tendsto.mono_left ?_ inf_le_left).update i ?_
-    · exact (continuous_id.smul continuous_const).tendsto' _ _ (zero_smul _ m)
-    · refine NormedAddCommGroup.tendsto_nhds_zero.2 fun r hr ↦ eventually_mem_nhdsWithin.mono ?_
-      simp [norm_smul, *]
-  have B : Tendsto (‖f <| m' ·‖) (𝓝[≠] 0) (𝓝 0) := by
-    simpa only [f.map_zero, norm_zero] using ((hf.tendsto 0).comp A).norm
-  refine tendsto_nhds_unique (tendsto_const_nhds.congr' ?_) B
-  refine eventually_mem_nhdsWithin.mono fun ε (hε : ε ≠ 0) ↦ ?_
-  simp_rw [f.map_smul, Pi.smul_def, update_eq_self, f.map_smul_univ, prod_const, smul_smul,
-    Fintype.card, ← mul_pow, inv_mul_cancel hε, one_pow, one_smul]
+  rw [← inseparable_zero_iff_norm] at hi ⊢
+  have : Inseparable (update m i 0) m := inseparable_pi.2 <|
+    (forall_update_iff m fun i a ↦ Inseparable a (m i)).2 ⟨hi.symm, fun _ _ ↦ rfl⟩
+  simpa only [map_update_zero] using this.symm.map hf
 
 theorem bound_of_shell_of_norm_map_coord_zero (hf₀ : ∀ {m i}, ‖m i‖ = 0 → ‖f m‖ = 0)
     {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)

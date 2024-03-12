@@ -631,6 +631,8 @@ lemma add_assoc (P Q R : W.Point) : P + Q + R = P + (Q + R) :=
 #align weierstrass_curve.point.add_assoc WeierstrassCurve.Affine.Point.add_assoc
 
 noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
+  nsmul := nsmulRec
+  zsmul := zsmulRec
   zero_add := zero_add
   add_zero := add_zero
   add_left_neg := add_left_neg
