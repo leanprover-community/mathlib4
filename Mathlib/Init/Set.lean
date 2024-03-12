@@ -80,7 +80,7 @@ instance : HasSubset (Set α) :=
   ⟨(· ≤ ·)⟩
 
 instance : EmptyCollection (Set α) :=
-  ⟨fun _ ↦  False⟩
+  ⟨fun _ ↦ False⟩
 
 syntax "{" extBinder " | " term "}" : term
 

@@ -95,7 +95,7 @@ open Random Gen
 /-- Given an example `x : α`, `Shrinkable α` gives us a way to shrink it
 and suggest simpler examples. -/
 class Shrinkable (α : Type u) where
-  shrink : (x : α) → List α := fun _ ↦  []
+  shrink : (x : α) → List α := fun _ ↦ []
 
 /-- `SampleableExt` can be used in two ways. The first (and most common)
 is to simply generate values of a type directly using the `Gen` monad,
@@ -269,7 +269,7 @@ instance inhabited [inst : Inhabited α] : Inhabited (NoShrink α) := inst
 instance repr [inst : Repr α] : Repr (NoShrink α) := inst
 
 instance shrinkable : Shrinkable (NoShrink α) where
-  shrink := fun _ ↦  []
+  shrink := fun _ ↦ []
 
 instance sampleableExt [SampleableExt α] [Repr α] : SampleableExt (NoShrink α) :=
   SampleableExt.mkSelfContained <| (NoShrink.mk ∘ SampleableExt.interp) <$> SampleableExt.sample

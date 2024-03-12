@@ -244,7 +244,7 @@ open TestResult
 def runProp (p : Prop) [Testable p] : Configuration → Bool → Gen (TestResult p) := Testable.run
 
 /-- A `dbgTrace` with special formatting -/
-def slimTrace [Pure m] (s : String) : m PUnit := dbgTrace s!"[SlimCheck: {s}]" (fun _ ↦  pure ())
+def slimTrace [Pure m] (s : String) : m PUnit := dbgTrace s!"[SlimCheck: {s}]" (fun _ ↦ pure ())
 
 instance andTestable [Testable p] [Testable q] : Testable (p ∧ q) where
   run := fun cfg min ↦ do
@@ -279,7 +279,7 @@ instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀
       let s := printProp p
       (fun r ↦ addInfo s!"guard: {s}" (· <| h) r (PSum.inr <| fun q _ ↦ q)) <$> res
     else if cfg.traceDiscarded || cfg.traceSuccesses then
-      let res := (fun _ ↦  pure <| gaveUp 1)
+      let res := (fun _ ↦ pure <| gaveUp 1)
       let s := printProp p
       slimTrace s!"discard: Guard {s} does not hold"; res
     else

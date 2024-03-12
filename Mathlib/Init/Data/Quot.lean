@@ -46,7 +46,7 @@ theorem Quot.EqvGen_sound {r : α → α → Prop} {a b : α} (H : EqvGen r a b)
     Quot.mk r a = Quot.mk r b :=
   EqvGen.rec
     (fun _ _ h ↦ Quot.sound h)
-    (fun _ ↦  rfl)
+    (fun _ ↦ rfl)
     (fun _ _ _ IH ↦ Eq.symm IH)
     (fun _ _ _ _ _ IH₁ IH₂ ↦ Eq.trans IH₁ IH₂)
     H
