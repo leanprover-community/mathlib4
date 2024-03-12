@@ -117,11 +117,11 @@ instance {α : Type} [Fintype α] (X : α → Profinite.{u}) [∀ a, (X a).IsLig
       (fun f ↦ ⟨⋃ (a : α), Sigma.mk a '' (f a).1, ?_⟩) ?_
     · apply isClopen_iUnion_of_finite
       intro i
-      exact ⟨isOpenMap_sigmaMk _ (f i).2.1, isClosedMap_sigmaMk _ (f i).2.2⟩
-    · intro ⟨s, ⟨hso, hsc⟩⟩
+      exact ⟨isClosedMap_sigmaMk _ (f i).2.1, isOpenMap_sigmaMk _ (f i).2.2⟩
+    · intro ⟨s, ⟨hsc, hso⟩⟩
       rw [isOpen_sigma_iff] at hso
       rw [isClosed_sigma_iff] at hsc
-      refine ⟨fun i ↦ ⟨_, ⟨hso i, hsc i⟩⟩, ?_⟩
+      refine ⟨fun i ↦ ⟨_, ⟨hsc i, hso i⟩⟩, ?_⟩
       simp only [Subtype.mk.injEq]
       ext ⟨i, xi⟩
       refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
