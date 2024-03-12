@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Data.Option.Basic
 import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.Data.Nat.Pairing
 
 #align_import computability.encoding from "leanprover-community/mathlib"@"b6395b3a5acd655b16385fa0cdbf1961d6c34b3e"
 
@@ -240,6 +241,35 @@ instance inhabitedEncoding : Inhabited (Encoding Bool) :=
   ⟨finEncodingBoolBool.toEncoding⟩
 #align computability.inhabited_encoding Computability.inhabitedEncoding
 
+/-- Binary string as shorthand for List Bool -/
+def BitString := List Bool
+
+/-- An (identity) encoding function of `List Bool` in `List Bool`. -/
+def encodeBitString : BitString → BitString := id
+
+/-- An (identity) decoding function from `List Bool` to `List Bool`. -/
+def decodeBitString : BitString → BitString := id
+
+theorem decode_encodeBitString : ∀ b, id (encodeBitString b) = b := by
+  intro
+  exact rfl
+
+/-- A fin_encoding of `List Bool` in `List Bool`. -/
+def finEncodingBitString : FinEncoding (BitString) where
+  Γ := Bool
+  encode := encodeBitString
+  decode x := some (decodeBitString x)
+  decode_encode x := congr_arg _ (decode_encodeBitString x)
+  ΓFin := Bool.fintype
+
+/-- Encode a pair of binary strings as one binary string -/
+def Bpair (aString bString : BitString) : BitString :=
+  encodeNat (Nat.pair (decodeNat aString) (decodeNat bString))
+
+/-- Unpair a binary string into two binary strings -/
+def Bunpair (aString : BitString) : BitString × BitString :=
+  (encodeNat (decodeNat aString).unpair.1, encodeNat (decodeNat aString).unpair.2)
+
 theorem Encoding.card_le_card_list {α : Type u} (e : Encoding.{u, v} α) :
     Cardinal.lift.{v} #α ≤ Cardinal.lift.{u} #(List e.Γ) :=
   Cardinal.lift_mk_le'.2 ⟨⟨e.encode, e.encode_injective⟩⟩
@@ -258,5 +288,6 @@ theorem FinEncoding.card_le_aleph0 {α : Type u} (e : FinEncoding α) : #α ≤ 
   haveI : Encodable e.Γ := Fintype.toEncodable _
   e.toEncoding.card_le_aleph0
 #align computability.fin_encoding.card_le_aleph_0 Computability.FinEncoding.card_le_aleph0
+
 
 end Computability
