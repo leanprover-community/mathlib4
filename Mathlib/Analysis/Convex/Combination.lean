@@ -477,7 +477,7 @@ noncomputable def convexHullAddMonoidHom : Set E →+ Set E where
 variable {R E}
 
 theorem convexHull_sub (s t : Set E) : convexHull R (s - t) = convexHull R s - convexHull R t := by
-  simp_rw [sub_eq_add_neg, convexHull_add, convexHull_neg]
+  simp_rw [sub_eq_add_neg, convexHull_add, ← convexHull_neg]
 #align convex_hull_sub convexHull_sub
 
 theorem convexHull_list_sum (l : List (Set E)) : convexHull R l.sum = (l.map <| convexHull R).sum :=

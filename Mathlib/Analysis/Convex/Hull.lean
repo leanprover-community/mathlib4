@@ -181,8 +181,8 @@ section OrderedCommSemiring
 
 variable [OrderedCommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
 
-theorem convexHull_smul (a : 𝕜) (s : Set E) : convexHull 𝕜 (a • s) = a • convexHull 𝕜 s :=
-  ((LinearMap.lsmul _ _ a).image_convexHull _).symm
+theorem convexHull_smul (a : 𝕜) (s : Set E) : a • convexHull 𝕜 s = convexHull 𝕜 (a • s) :=
+  (LinearMap.lsmul _ _ a).image_convexHull _
 #align convex_hull_smul convexHull_smul
 
 end OrderedCommSemiring
@@ -217,9 +217,9 @@ theorem affineSpan_convexHull (s : Set E) : affineSpan 𝕜 (convexHull 𝕜 s) 
   exact convexHull_subset_affineSpan s
 #align affine_span_convex_hull affineSpan_convexHull
 
-theorem convexHull_neg (s : Set E) : convexHull 𝕜 (-s) = -convexHull 𝕜 s := by
+theorem convexHull_neg (s : Set E) : -convexHull 𝕜 s = convexHull 𝕜 (-s) := by
   simp_rw [← image_neg]
-  exact (AffineMap.image_convexHull (-1) _).symm
+  exact AffineMap.image_convexHull (-1) _
 #align convex_hull_neg convexHull_neg
 
 end AddCommGroup
