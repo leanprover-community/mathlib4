@@ -528,7 +528,7 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
   rw [edist_comm, Nat.sub_sub, add_comm, Nat.sub_succ, Nat.add_one, Nat.succ_eq_add_one]
   simp only [Function.comp_apply, Nat.pred_eq_sub_one, Nat.sub_add_eq]
   congr
-  simp at hx
+  simp? at hx
   omega
 #align evariation_on.comp_le_of_antitone_on eVariationOn.comp_le_of_antitoneOn
 

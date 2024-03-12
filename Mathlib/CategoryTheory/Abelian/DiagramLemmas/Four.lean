@@ -135,6 +135,9 @@ variable {R₁ R₂ : ComposableArrows C 4} (hR₁ : R₁.Exact) (hR₂ : R₂.E
 
 -- Adaptation note: nightly-2024-03-11
 -- We turn off simprocs here.
+-- Ideally someone will investigate whether `simp` lemmas can be rearranged
+-- so that this works without the `set_option`,
+-- *or* come up with a proposal regarding finer control of disabling simprocs.
 set_option simprocs false in
 /-- The five lemma. -/
 theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : IsIso (app' φ 1))
