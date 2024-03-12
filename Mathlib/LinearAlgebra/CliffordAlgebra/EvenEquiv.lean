@@ -130,16 +130,15 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     rw [Subtype.coe_mk, pow_two]
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
   · ext1
-    rw [Subalgebra.coe_mul]  -- porting note: was part of the `dsimp only` below
-    erw [LinearMap.codRestrict_apply] -- porting note: was part of the `dsimp only` below
+    rw [Subalgebra.coe_mul]  -- Porting note: was part of the `dsimp only` below
+    erw [LinearMap.codRestrict_apply] -- Porting note: was part of the `dsimp only` below
     dsimp only [LinearMap.comp_apply, LinearMap.mulLeft_apply, Subalgebra.coe_algebraMap]
     rw [← mul_assoc, e0_mul_v_mul_e0, v_sq_scalar]
 #align clifford_algebra.to_even CliffordAlgebra.toEven
 
-@[simp]
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
   rw [toEven, CliffordAlgebra.lift_ι_apply]
-  -- porting note: was `rw`
+  -- Porting note (#10691): was `rw`
   erw [LinearMap.codRestrict_apply]
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.mulLeft_apply]
 #align clifford_algebra.to_even_ι CliffordAlgebra.toEven_ι
@@ -177,12 +176,12 @@ def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
 theorem ofEven_ι (x y : M × R) :
     ofEven Q ((even.ι (Q' Q)).bilin x y) =
       (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) := by
-  -- porting note: entire proof was the term-mode `even.lift_ι (Q' Q) _ x y`
+  -- Porting note: entire proof was the term-mode `even.lift_ι (Q' Q) _ x y`
   unfold ofEven
   lift_lets
   intro f
   -- TODO: replacing `?_` with `_` takes way longer?
-  refine @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, ?_, ?_⟩ x y
+  exact @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, ?_, ?_⟩ x y
 #align clifford_algebra.of_even_ι CliffordAlgebra.ofEven_ι
 
 theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
@@ -233,64 +232,68 @@ theorem ofEven_comp_toEven : (ofEven Q).comp (toEven Q) = AlgHom.id R _ :=
 /-- Any clifford algebra is isomorphic to the even subalgebra of a clifford algebra with an extra
 dimension (that is, with vector space `M × R`), with a quadratic form evaluating to `-1` on that new
 basis vector. -/
-@[simps!]
 def equivEven : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra.even (Q' Q) :=
   AlgEquiv.ofAlgHom (toEven Q) (ofEven Q) (toEven_comp_ofEven Q) (ofEven_comp_toEven Q)
 #align clifford_algebra.equiv_even CliffordAlgebra.equivEven
 
--- Note: times out on linting CI
-attribute [nolint simpNF] equivEven_symm_apply
-
-set_option synthInstance.maxHeartbeats 30000 in
 /-- The representation of the clifford conjugate (i.e. the reverse of the involute) in the even
 subalgebra is just the reverse of the representation. -/
 theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
     ↑(toEven Q (reverse (involute x))) =
       reverse (Q := Q' Q) (toEven Q x : CliffordAlgebra (Q' Q)) := by
   induction x using CliffordAlgebra.induction with
-  | h_grade0 r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]
-  | h_grade1 m =>
-    -- porting note: added `letI`
+  | algebraMap r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]
+  | ι m =>
+    -- Porting note: added `letI`
     letI : SubtractionMonoid (even (Q' Q)) := AddGroup.toSubtractionMonoid
     simp only [involute_ι, Subalgebra.coe_neg, toEven_ι, reverse.map_mul, reverse_v, reverse_e0,
       reverse_ι, neg_e0_mul_v, map_neg]
-  | h_mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
-  | h_add x y hx hy => simp only [map_add, Subalgebra.coe_add, hx, hy]
+  | mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
+  | add x y hx hy =>
+    -- TODO: The `()` around `map_add` are a regression from leanprover/lean4#2478
+    rw [map_add, map_add]
+    erw [RingHom.map_add, RingHom.map_add]
+    dsimp
+    -- The line below used to be sufficient but we need to use `RingHom.map_add` to avoid a timeout
+    -- and it only unifies at `default` transparency #8386
+    simp only [(map_add), Subalgebra.coe_add, hx, hy]
 #align clifford_algebra.coe_to_even_reverse_involute CliffordAlgebra.coe_toEven_reverse_involute
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
 
-set_option synthInstance.maxHeartbeats 30000 in
 /-- One direction of `CliffordAlgebra.evenEquivEvenNeg` -/
 def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
   even.lift Q <|
-    -- porting note: added `letI`s
+    -- Porting note: added `letI`s
     letI : AddCommGroup (even Q') := AddSubgroupClass.toAddCommGroup _;
     letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg;
     { bilin := -(even.ι Q' : _).bilin
       contract := fun m => by
-        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticForm.neg_apply, map_neg,
+      -- Not sure what causes the timeout with unqualified `map_neg`,
+      -- the synthInstance trace looks okay #8386
+        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticForm.neg_apply, RingHom.map_neg,
           neg_neg]
       contract_mid := fun m₁ m₂ m₃ => by
         simp_rw [LinearMap.neg_apply, neg_mul_neg, EvenHom.contract_mid, h,
           QuadraticForm.neg_apply, smul_neg, neg_smul] }
 #align clifford_algebra.even_to_neg CliffordAlgebra.evenToNeg
 
--- porting note: `simpNF` times out, but only in CI where all of `Mathlib` is imported
+-- Porting note: `simpNF` times out, but only in CI where all of `Mathlib` is imported
 @[simp, nolint simpNF]
 theorem evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :
     evenToNeg Q Q' h ((even.ι Q).bilin m₁ m₂) = -(even.ι Q').bilin m₁ m₂ :=
   even.lift_ι _ _ m₁ m₂
 #align clifford_algebra.even_to_neg_ι CliffordAlgebra.evenToNeg_ι
 
-set_option synthInstance.maxHeartbeats 100000 in
 theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q = -Q') :
     (evenToNeg Q' Q h').comp (evenToNeg Q Q' h) = AlgHom.id R _ := by
   ext m₁ m₂ : 4
   dsimp only [EvenHom.compr₂_bilin, LinearMap.compr₂_apply, AlgHom.toLinearMap_apply,
     AlgHom.comp_apply, AlgHom.id_apply]
-  rw [evenToNeg_ι, map_neg, evenToNeg_ι, neg_neg]
+  rw [evenToNeg_ι]
+  -- Needed to use `RingHom.map_neg` to avoid a timeout and now `erw` #8386
+  erw [RingHom.map_neg, evenToNeg_ι, neg_neg]
 #align clifford_algebra.even_to_neg_comp_even_to_neg CliffordAlgebra.evenToNeg_comp_evenToNeg
 
 /-- The even subalgebras of the algebras with quadratic form `Q` and `-Q` are isomorphic.

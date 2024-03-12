@@ -5,8 +5,7 @@ Authors: Scott Morrison, Adam Topaz, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.Free
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.RingTheory.Adjoin.Basic
 
 #align_import algebra.free_algebra from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
@@ -267,7 +266,8 @@ instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra
     exact Quot.sound Rel.central_scalar
   smul_def' _ _ := rfl
 
--- verify there is no diamond
+-- verify there is no diamond at `default` transparency but we will need
+-- `reducible_and_instances` which currently fails #10906
 variable (S : Type) [CommSemiring S] in
 example : (algebraNat : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
@@ -288,7 +288,8 @@ instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A] [Algebra R A
 instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
 
--- verify there is no diamond
+-- verify there is no diamond but we will need
+-- `reducible_and_instances` which currently fails #10906
 variable (S : Type) [CommRing S] in
 example : (algebraInt _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
@@ -472,8 +473,17 @@ noncomputable def equivMonoidAlgebraFreeMonoid :
       simp)
 #align free_algebra.equiv_monoid_algebra_free_monoid FreeAlgebra.equivMonoidAlgebraFreeMonoid
 
+/-- `FreeAlgebra R X` is nontrivial when `R` is. -/
 instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
   equivMonoidAlgebraFreeMonoid.surjective.nontrivial
+
+/-- `FreeAlgebra R X` has no zero-divisors when `R` has no zero-divisors. -/
+instance instNoZeroDivisors [NoZeroDivisors R] : NoZeroDivisors (FreeAlgebra R X) :=
+  equivMonoidAlgebraFreeMonoid.toMulEquiv.noZeroDivisors
+
+/-- `FreeAlgebra R X` is a domain when `R` is an integral domain. -/
+instance instIsDomain {R X} [CommRing R] [IsDomain R] : IsDomain (FreeAlgebra R X) :=
+  NoZeroDivisors.to_isDomain _
 
 section
 
@@ -569,10 +579,10 @@ theorem induction {C : FreeAlgebra R X → Prop}
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) := by
     ext
-    simp [Subtype.coind]
+    simp [of, Subtype.coind]
   -- finding a proof is finding an element of the subalgebra
-  suffices : a = lift R of a
-  · rw [this]
+  suffices a = lift R of a by
+    rw [this]
     exact Subtype.prop (lift R of a)
   simp [AlgHom.ext_iff] at of_id
   exact of_id a

@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Data.Int.Defs
 import Mathlib.Algebra.Group.Basic
 
 #align_import data.int.cast.basic from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
@@ -142,15 +141,15 @@ theorem cast_bit1 (n : ℤ) : ((bit1 n : ℤ) : R) = bit1 (n : R) :=
 end deprecated
 
 theorem cast_two : ((2 : ℤ) : R) = 2 :=
-  show (((2 : ℕ) : ℤ) : R) = ((2 : ℕ) : R) by rw [cast_ofNat, Nat.cast_ofNat]
+  show (((2 : ℕ) : ℤ) : R) = ((2 : ℕ) : R) by rw [cast_ofNat]
 #align int.cast_two Int.cast_two
 
 theorem cast_three : ((3 : ℤ) : R) = 3 :=
-  show (((3 : ℕ) : ℤ) : R) = ((3 : ℕ) : R) by rw [cast_ofNat, Nat.cast_ofNat]
+  show (((3 : ℕ) : ℤ) : R) = ((3 : ℕ) : R) by rw [cast_ofNat]
 #align int.cast_three Int.cast_three
 
 theorem cast_four : ((4 : ℤ) : R) = 4 :=
-  show (((4 : ℕ) : ℤ) : R) = ((4 : ℕ) : R) by rw [cast_ofNat, Nat.cast_ofNat]
+  show (((4 : ℕ) : ℤ) : R) = ((4 : ℕ) : R) by rw [cast_ofNat]
 #align int.cast_four Int.cast_four
 
 end Int

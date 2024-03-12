@@ -255,7 +255,7 @@ theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
     intro x hx; dsimp only
     rw [norm_eq_abs, map_mul, abs.map_neg, abs_cpow_eq_rpow_re_of_pos hx,
       abs_of_nonneg (exp_pos (-x)).le, neg_mul, one_mul]
-  exact (tendsto_congr' this).mpr (tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 _ _ zero_lt_one)
+  exact (tendsto_congr' this).mpr (tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero _ _ zero_lt_one)
 #align complex.Gamma_integral_add_one Complex.GammaIntegral_add_one
 
 end GammaRecurrence
@@ -324,7 +324,7 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
   by_cases h : 0 ≤ 1 - s.re
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
-  · rw [Nat.floor_of_nonpos]; linarith; linarith
+  · rw [Nat.floor_of_nonpos]; omega; linarith
 #align complex.Gamma_eq_Gamma_aux Complex.Gamma_eq_GammaAux
 
 /-- The recurrence relation for the `Γ` function. -/
@@ -398,17 +398,15 @@ lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr 
     rw [← cpow_add _ _ (one_div_ne_zero <| ofReal_ne_zero.mpr hr.ne'), add_sub_cancel'_right]
   calc
     _ = ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a - 1) * (r * t) ^ (a - 1) * exp (-(r * t)) := by
-      refine MeasureTheory.set_integral_congr measurableSet_Ioi (fun x (hx : 0 < x) ↦ ?_)
+      refine MeasureTheory.set_integral_congr measurableSet_Ioi (fun x hx ↦ ?_)
+      rw [mem_Ioi] at hx
       rw [mul_cpow_ofReal_nonneg hr.le hx.le, ← mul_assoc, one_div, ← ofReal_inv,
         ← mul_cpow_ofReal_nonneg (inv_pos.mpr hr).le hr.le, ← ofReal_mul r⁻¹, inv_mul_cancel hr.ne',
         ofReal_one, one_cpow, one_mul]
-    _ = |1 / r| * ∫ (t : ℝ) in Ioi (r * 0), (1 / r) ^ (a - 1) * t ^ (a - 1) * exp (-t) := by
+    _ = 1 / r * ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a - 1) * t ^ (a - 1) * exp (-t) := by
       simp_rw [← ofReal_mul]
       rw [integral_comp_mul_left_Ioi (fun x ↦ _ * x ^ (a - 1) * exp (-x)) _ hr, mul_zero,
-        real_smul, ← one_div]
-    _ = 1 / r * ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a - 1) * t ^ (a - 1) * exp (-t) := by
-      rw [congr_arg Ioi (mul_zero r), _root_.abs_of_nonneg (one_div_pos.mpr hr).le, ofReal_div,
-        ofReal_one]
+        real_smul, ← one_div, ofReal_div, ofReal_one]
     _ = 1 / r * (1 / r : ℂ) ^ (a - 1) * (∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-t)) := by
       simp_rw [← integral_mul_left, mul_assoc]
     _ = (1 / r) ^ a * Gamma a := by
@@ -476,7 +474,7 @@ theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : Differen
     have : S = re ⁻¹' Ioi (1 - n : ℝ) := by
       ext; rw [preimage, Ioi, mem_setOf_eq, mem_setOf_eq, mem_setOf_eq]; exact sub_lt_comm
     rw [this]
-    refine' Continuous.isOpen_preimage continuous_re _ isOpen_Ioi
+    exact Continuous.isOpen_preimage continuous_re _ isOpen_Ioi
   apply eventuallyEq_of_mem this
   intro t ht; rw [mem_setOf_eq] at ht
   apply Gamma_eq_GammaAux; linarith
@@ -524,7 +522,7 @@ theorem Gamma_eq_integral {s : ℝ} (hs : 0 < s) :
 
 theorem Gamma_add_one {s : ℝ} (hs : s ≠ 0) : Gamma (s + 1) = s * Gamma s := by
   simp_rw [Gamma]
-  rw [Complex.ofReal_add, Complex.ofReal_one, Complex.Gamma_add_one, Complex.ofReal_mul_re]
+  rw [Complex.ofReal_add, Complex.ofReal_one, Complex.Gamma_add_one, Complex.re_ofReal_mul]
   rwa [Complex.ofReal_ne_zero]
 #align real.Gamma_add_one Real.Gamma_add_one
 
@@ -593,18 +591,21 @@ lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
   rw [← ofReal_cpow (le_of_lt ht), IsROrC.ofReal_mul]
   rfl
 
-open Lean.Meta Qq in
+open Lean.Meta Qq Mathlib.Meta.Positivity in
 /-- The `positivity` extension which identifies expressions of the form `Gamma a`. -/
 @[positivity Gamma (_ : ℝ)]
-def _root_.Mathlib.Meta.Positivity.evalGamma :
-    Mathlib.Meta.Positivity.PositivityExt where eval {_ _α} zα pα (e : Q(ℝ)) := do
-  let ~q(Gamma $a) := e | throwError "failed to match on Gamma application"
-  match ← Mathlib.Meta.Positivity.core zα pα a with
-  | .positive (pa : Q(0 < $a)) =>
-    pure (.positive (q(Gamma_pos_of_pos $pa) : Q(0 < $e)))
-  | .nonnegative (pa : Q(0 ≤ $a)) =>
-    pure (.nonnegative (q(Gamma_nonneg_of_nonneg $pa) : Q(0 ≤ $e)))
-  | _ => pure .none
+def _root_.Mathlib.Meta.Positivity.evalGamma : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Gamma $a) =>
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+      assertInstancesCommute
+      pure (.positive q(Gamma_pos_of_pos $pa))
+    | .nonnegative pa =>
+      assertInstancesCommute
+      pure (.nonnegative q(Gamma_nonneg_of_nonneg $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Gamma application"
 
 /-- The Gamma function does not vanish on `ℝ` (except at non-positive integers, where the function
 is mathematically undefined and we set it to `0` by convention). -/

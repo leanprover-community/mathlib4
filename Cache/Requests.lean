@@ -87,6 +87,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
     let failed ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
       let args := #["--request", "GET", "--parallel", "--fail", "--silent",
+          "--retry", "5", -- there seem to be some intermittent failures
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
       let (_, success, failed, done) ←
           IO.runCurlStreaming args (← IO.monoMsNow, 0, 0, 0) fun a line => do
@@ -194,17 +195,17 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
   if size > 0 then
     IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames token)
     IO.println s!"Attempting to upload {size} file(s)"
-    if useFROCache then
+    let args := if useFROCache then
       -- TODO: reimplement using HEAD requests?
       let _ := overwrite
-      discard <| IO.runCurl #["-s", "-X", "PUT", "--aws-sigv4", "aws:amz:auto:s3", "--user", token,
-        "--parallel", "-K", IO.CURLCFG.toString]
+      #["--aws-sigv4", "aws:amz:auto:s3", "--user", token]
     else if overwrite then
-      discard <| IO.runCurl #["-s", "-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "--parallel",
-        "-K", IO.CURLCFG.toString]
+      #["-H", "x-ms-blob-type: BlockBlob"]
     else
-      discard <| IO.runCurl #["-s", "-X", "PUT", "-H", "x-ms-blob-type: BlockBlob",
-        "-H", "If-None-Match: *", "--parallel", "-K", IO.CURLCFG.toString]
+      #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
+    _ ← IO.runCurl (stderrAsErr := false) (args ++ #[
+      "--retry", "5", -- there seem to be some intermittent failures
+      "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString])
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
 
@@ -230,8 +231,8 @@ def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit 
   if useFROCache then
     -- TODO: reimplement using HEAD requests?
     let _ := overwrite
-    discard <| IO.runCurl <| #["-T", path.toString, "--aws-sigv4", "aws:amz:auto:s3",
-      "--user", token, s!"{UPLOAD_URL}/c/{hash}"]
+    discard <| IO.runCurl #["-T", path.toString,
+      "--aws-sigv4", "aws:amz:auto:s3", "--user", token, s!"{UPLOAD_URL}/c/{hash}"]
   else
     let params := if overwrite
       then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]

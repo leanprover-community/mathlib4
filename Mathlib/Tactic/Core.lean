@@ -3,8 +3,10 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
-import Std.Tactic.Simpa
-import Mathlib.Lean.Expr
+import Lean.Elab.PreDefinition.Basic
+import Lean.Util.Paths
+import Mathlib.Lean.Expr.Basic
+import Std.Tactic.OpenPrivate
 
 /-!
 #
@@ -61,7 +63,8 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr) (newDoc : Option
     modifiers := mods
     declName := newNm
     type := newType
-    value := newValue }
+    value := newValue
+    termination := .none }
   return predef
 
 /-- Make `nm` protected. -/

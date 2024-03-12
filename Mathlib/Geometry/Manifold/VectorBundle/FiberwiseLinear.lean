@@ -265,7 +265,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
       exact (h2φ.mono <| inter_subset_left _ _).clm_comp (h2φ'.mono <| inter_subset_right _ _)
     · apply FiberwiseLinear.source_trans_partialHomeomorph
     · rintro ⟨b, v⟩ -; apply FiberwiseLinear.trans_partialHomeomorph_apply
-  -- porting note: without introducing `e` first, the first `simp only` fails
+  -- Porting note: without introducing `e` first, the first `simp only` fails
   symm' := fun e ↦ by
     simp only [mem_iUnion]
     rintro ⟨φ, U, hU, hφ, h2φ, heφ⟩
@@ -279,7 +279,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
     -/
     refine mem_iUnion.2 ⟨fun _ ↦ .refl 𝕜 F, mem_iUnion.2 ⟨univ, mem_iUnion.2 ⟨isOpen_univ, ?_⟩⟩⟩
     refine mem_iUnion.2 ⟨contMDiffOn_const, mem_iUnion.2 ⟨contMDiffOn_const, ?_, ?_⟩⟩
-    · simp only [FiberwiseLinear.partialHomeomorph, PartialHomeomorph.refl_localEquiv,
+    · simp only [FiberwiseLinear.partialHomeomorph, PartialHomeomorph.refl_partialEquiv,
         PartialEquiv.refl_source, univ_prod_univ]
     · exact eqOn_refl id _
   locality' := by
@@ -288,7 +288,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
     intro e he
     obtain ⟨U, hU, h⟩ := SmoothFiberwiseLinear.locality_aux₁ e he
     exact SmoothFiberwiseLinear.locality_aux₂ e U hU h
-  eq_on_source' := by
+  mem_of_eqOnSource' := by
     simp only [mem_aux]
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ hee'
     exact ⟨φ, U, hU, hφ, h2φ, Setoid.trans hee' heφ⟩

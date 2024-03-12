@@ -39,7 +39,7 @@ instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring 
     · simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]
 #align non_unital_non_assoc_semiring.nat_is_scalar_tower NonUnitalNonAssocSemiring.nat_isScalarTower
 
-/-- Note that `AddGroup.int_smulCommClass` requires stronger assumptions on `α`. -/
+/-- Note that `AddMonoid.int_smulCommClass` requires stronger assumptions on `α`. -/
 instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing α] :
     SMulCommClass ℤ α α where
   smul_comm n x y :=

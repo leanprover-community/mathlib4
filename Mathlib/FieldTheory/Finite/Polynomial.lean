@@ -73,7 +73,7 @@ theorem eval_indicator_apply_eq_one (a : σ → K) : eval a (indicator a) = 1 :=
   nontriviality
   have : 0 < Fintype.card K - 1 := tsub_pos_of_lt Fintype.one_lt_card
   simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C, sub_self,
-    zero_pow this, sub_zero, Finset.prod_const_one]
+    zero_pow this.ne', sub_zero, Finset.prod_const_one]
 #align mv_polynomial.eval_indicator_apply_eq_one MvPolynomial.eval_indicator_apply_eq_one
 
 theorem degrees_indicator (c : σ → K) :
@@ -166,7 +166,7 @@ universe u
 
 variable (σ : Type u) (K : Type u) [Fintype K]
 
---Porting note: `@[derive [add_comm_group, module K, inhabited]]` done by hand.
+-- Porting note: `@[derive [add_comm_group, module K, inhabited]]` done by hand.
 /-- The submodule of multivariate polynomials whose degree of each variable is strictly less
 than the cardinality of K. -/
 def R [CommRing K] : Type u :=
@@ -239,7 +239,7 @@ theorem range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
   exact map_restrict_dom_evalₗ K σ
 #align mv_polynomial.range_evalᵢ MvPolynomial.range_evalᵢ
 
---Porting note: was `(evalᵢ σ K).ker`.
+-- Porting note: was `(evalᵢ σ K).ker`.
 theorem ker_evalₗ [Finite σ] : ker (evalᵢ σ K) = ⊥ := by
   cases nonempty_fintype σ
   refine' (ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank _).mpr (range_evalᵢ σ K)

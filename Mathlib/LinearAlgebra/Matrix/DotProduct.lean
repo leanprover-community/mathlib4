@@ -45,7 +45,7 @@ theorem dotProduct_stdBasis_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n)
   exact fun hi => False.elim (hi <| Finset.mem_univ _)
 #align matrix.dot_product_std_basis_eq_mul Matrix.dotProduct_stdBasis_eq_mul
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem dotProduct_stdBasis_one [DecidableEq n] (v : n → R) (i : n) :
     dotProduct v (LinearMap.stdBasis R (fun _ => R) i 1) = v i := by
   rw [dotProduct_stdBasis_eq_mul, mul_one]
@@ -69,6 +69,23 @@ theorem dotProduct_eq_zero_iff {v : n → R} : (∀ w, dotProduct v w = 0) ↔ v
 #align matrix.dot_product_eq_zero_iff Matrix.dotProduct_eq_zero_iff
 
 end Semiring
+
+section OrderedSemiring
+
+variable [OrderedSemiring R] [Fintype n]
+
+lemma dotProduct_nonneg_of_nonneg {v w : n → R} (hv : 0 ≤ v) (hw : 0 ≤ w) : 0 ≤ dotProduct v w :=
+  Finset.sum_nonneg (fun i _ => mul_nonneg (hv i) (hw i))
+
+lemma dotProduct_le_dotProduct_of_nonneg_right {u v w : n → R} (huv : u ≤ v) (hw : 0 ≤ w) :
+    dotProduct u w ≤ dotProduct v w :=
+  Finset.sum_le_sum (fun i _ => mul_le_mul_of_nonneg_right (huv i) (hw i))
+
+lemma dotProduct_le_dotProduct_of_nonneg_left {u v w : n → R} (huv : u ≤ v) (hw : 0 ≤ w) :
+    dotProduct w u ≤ dotProduct w v :=
+  Finset.sum_le_sum (fun i _ => mul_le_mul_of_nonneg_left (huv i) (hw i))
+
+end OrderedSemiring
 
 section Self
 
@@ -131,21 +148,21 @@ lemma mul_conjTranspose_mul_self_eq_zero (A : Matrix m n R) (B : Matrix p n R) :
   simpa only [conjTranspose_conjTranspose] using mul_self_mul_conjTranspose_eq_zero Aᴴ _
 
 lemma conjTranspose_mul_self_mulVec_eq_zero (A : Matrix m n R) (v : n → R) :
-    (Aᴴ * A).mulVec v = 0 ↔ A.mulVec v = 0 := by
+    (Aᴴ * A) *ᵥ v = 0 ↔ A *ᵥ v = 0 := by
   simpa only [← Matrix.col_mulVec, col_eq_zero] using
     conjTranspose_mul_self_mul_eq_zero A (col v)
 
 lemma self_mul_conjTranspose_mulVec_eq_zero (A : Matrix m n R) (v : m → R) :
-    (A * Aᴴ).mulVec v = 0 ↔ Aᴴ.mulVec v = 0 := by
+    (A * Aᴴ) *ᵥ v = 0 ↔ Aᴴ *ᵥ v = 0 := by
   simpa only [conjTranspose_conjTranspose] using conjTranspose_mul_self_mulVec_eq_zero Aᴴ _
 
 lemma vecMul_conjTranspose_mul_self_eq_zero (A : Matrix m n R) (v : n → R) :
-    vecMul v (Aᴴ * A) = 0 ↔ vecMul v Aᴴ = 0 := by
+    v ᵥ* (Aᴴ * A) = 0 ↔ v ᵥ* Aᴴ = 0 := by
   simpa only [← Matrix.row_vecMul, row_eq_zero] using
     mul_conjTranspose_mul_self_eq_zero A (row v)
 
 lemma vecMul_self_mul_conjTranspose_eq_zero (A : Matrix m n R) (v : m → R) :
-    vecMul v (A * Aᴴ) = 0 ↔ vecMul v A = 0 := by
+    v ᵥ* (A * Aᴴ) = 0 ↔ v ᵥ* A = 0 := by
   simpa only [conjTranspose_conjTranspose] using vecMul_conjTranspose_mul_self_eq_zero Aᴴ _
 
 end StarOrderedRing

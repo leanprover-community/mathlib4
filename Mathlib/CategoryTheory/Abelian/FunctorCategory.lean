@@ -28,7 +28,7 @@ section
 
 universe z w v u
 
--- porting note: removed restrictions on universes
+-- Porting note: removed restrictions on universes
 
 variable {C : Type u} [Category.{v} C]
 
@@ -102,7 +102,7 @@ noncomputable instance functorCategoryAbelian : Abelian (C ⥤ D) :=
 
 end
 
---porting note: the following section should be unnecessary because there are no longer
+-- Porting note: the following section should be unnecessary because there are no longer
 --any universe restrictions for `functorCategoryAbelian`
 --
 --section

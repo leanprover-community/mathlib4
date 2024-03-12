@@ -265,7 +265,6 @@ protected def mulZeroClass [MulZeroClass β] : MulZeroClass α := by
   apply e.injective.mulZeroClass _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.mul_zero_class Equiv.mulZeroClass
 
-@[to_additive]
 noncomputable instance [Small.{v} α] [MulZeroClass α] : MulZeroClass (Shrink.{v} α) :=
   (equivShrink α).symm.mulZeroClass
 
@@ -278,6 +277,7 @@ protected def mulOneClass [MulOneClass β] : MulOneClass α := by
 #align equiv.mul_one_class Equiv.mulOneClass
 #align equiv.add_zero_class Equiv.addZeroClass
 
+@[to_additive]
 noncomputable instance [Small.{v} α] [MulOneClass α] : MulOneClass (Shrink.{v} α) :=
   (equivShrink α).symm.mulOneClass
 
@@ -740,3 +740,16 @@ end R
 end Instances
 
 end Equiv
+
+namespace Finite
+
+attribute [-instance] Fin.instMulFin
+
+/-- Any finite group in universe `u` is equivalent to some finite group in universe `0`. -/
+lemma exists_type_zero_nonempty_mulEquiv (G : Type u) [Group G] [Finite G] :
+    ∃ (G' : Type) (_ : Group G') (_ : Fintype G'), Nonempty (G ≃* G') := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin G
+  letI groupH : Group (Fin n) := Equiv.group e.symm
+  exact ⟨Fin n, inferInstance, inferInstance, ⟨MulEquiv.symm <| Equiv.mulEquiv e.symm⟩⟩
+
+end Finite
