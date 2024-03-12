@@ -158,7 +158,7 @@ theorem ascPochhammer_mul (n m : ℕ) :
   induction' m with m ih
   · simp
   · rw [ascPochhammer_succ_right, Polynomial.mul_X_add_nat_cast_comp, ← mul_assoc, ih,
-      Nat.succ_eq_add_one, ← add_assoc, ascPochhammer_succ_right, Nat.cast_add, add_assoc]
+      ← add_assoc, ascPochhammer_succ_right, Nat.cast_add, add_assoc]
 #align pochhammer_mul ascPochhammer_mul
 
 theorem ascPochhammer_nat_eq_ascFactorial (n : ℕ) :
@@ -309,8 +309,7 @@ theorem descPochhammer_succ_right (n : ℕ) :
   · conv_lhs =>
       rw [descPochhammer_succ_left, ih, mul_comp, ← mul_assoc, ← descPochhammer_succ_left, sub_comp,
           X_comp, nat_cast_comp]
-    nth_rw 1 [Nat.succ_eq_add_one]
-    rw [Nat.succ_eq_one_add, Nat.cast_add, Nat.cast_one, sub_add_eq_sub_sub]
+    rw [Nat.add_comm, Nat.cast_add, Nat.cast_one, sub_add_eq_sub_sub]
 
 @[simp]
 theorem descPochhammer_natDegree (n : ℕ) [NoZeroDivisors R] [Nontrivial R] :
@@ -353,8 +352,8 @@ theorem descPochhammer_mul (n m : ℕ) :
     descPochhammer R n * (descPochhammer R m).comp (X - (n : R[X])) = descPochhammer R (n + m) := by
   induction' m with m ih
   · simp
-  · rw [descPochhammer_succ_right, Polynomial.mul_X_sub_int_cast_comp, ← mul_assoc, ih,
-      Nat.succ_eq_add_one, ← add_assoc, descPochhammer_succ_right, Nat.cast_add, sub_add_eq_sub_sub]
+  · rw [descPochhammer_succ_right, Polynomial.mul_X_sub_int_cast_comp, ← mul_assoc, ih, ← add_assoc,
+      descPochhammer_succ_right, Nat.cast_add, sub_add_eq_sub_sub]
 
 theorem ascPochhammer_eval_neg_eq_descPochhammer (r : R) : ∀ (k : ℕ),
     (ascPochhammer R k).eval (-r) = (-1)^k * (descPochhammer R k).eval r
