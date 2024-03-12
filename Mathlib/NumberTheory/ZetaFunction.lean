@@ -732,7 +732,7 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
   rcases Nat.even_or_odd' k with ⟨m, rfl | rfl⟩
   · cases' m with m m
     ·-- k = 0 : evaluate explicitly
-      rw [Nat.zero_eq, mul_zero, Nat.cast_zero, pow_zero, one_mul, zero_add, neg_zero, zero_add,
+      rw [mul_zero, Nat.cast_zero, pow_zero, one_mul, zero_add, neg_zero, zero_add,
         div_one, bernoulli_one, riemannZeta_zero]
       norm_num
     · -- k = 2 * (m + 1) : both sides "trivially" zero
