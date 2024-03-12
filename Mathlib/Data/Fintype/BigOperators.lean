@@ -147,7 +147,6 @@ theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
   rw [Fintype.card_pi, Finset.prod_const]; rfl
 #align fintype.card_fun Fintype.card_fun
 
--- Adaptation note: as of `nightly-2024-03-11`, `Fintype.card_fun` does not have LHS in simp normal form
 @[simp]
 theorem Fintype.card_exp_univ_card_eq [DecidableEq α] [Fintype α] [Fintype β] :
     card β ^ univ.card (α := α) = card β ^ card α := rfl
