@@ -6,6 +6,7 @@ Authors: Benjamin Davidson
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.GroupTheory.Submonoid.Membership
 
