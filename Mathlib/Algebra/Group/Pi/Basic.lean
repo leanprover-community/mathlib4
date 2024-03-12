@@ -552,7 +552,7 @@ lemma comp_eq_const_iff {α β γ : Type*} (b : β) (f : α → β) {g : β → 
     (hg : Injective g) : g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=
   hg.comp_left.eq_iff' rfl
 
-lemma comp_eq_zero_iff {α β γ : Type*} [OfNat β 0] [ OfNat γ 0] (f : α → β) {g : β → γ}
+lemma comp_eq_zero_iff {α β γ : Type*} [OfNat β 0] [OfNat γ 0] (f : α → β) {g : β → γ}
     (hg : Injective g) (hg0 : g 0 = 0) : g ∘ f = 0 ↔ f = 0 := by
   simpa [hg0, const_zero] using comp_eq_const_iff 0 f hg
 
