@@ -571,7 +571,7 @@ private theorem toMonoidHom_symm (a : PresentedGroup (CoxeterGroup.Relations.toS
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
   _ = _                                           := by simp
 
-theorem lift_apply_simpleReflection {G : Type*} [Monoid G] {f : B → G}
+theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G}
     (hf : IsLiftable M f) (i : B) : cs.lift hf (s i) = f i := by
   dsimp only [simpleReflection, lift, groupLift, MonoidHom.comp_apply]
   rw [← MonoidHom.toFun_eq_coe]
@@ -728,17 +728,17 @@ private def lengthParity (cs : CoxeterSystem M W) : W →* Multiplicative (ZMod 
       simp
   )
 
-private theorem lengthParity_simpleReflection :
+private theorem lengthParity_simple :
     ⇑(CoxeterSystem.lengthParity cs) ∘ simpleReflection cs = fun _ ↦ Multiplicative.ofAdd 1 := by
   ext x
   simp
-  rw [lengthParity, lift_apply_simpleReflection]
+  rw [lengthParity, lift_apply_simple]
 
 private theorem parity_length_eq' (w : W) :
     Multiplicative.toAdd (cs.lengthParity w) = ((↑) : ℕ → ZMod 2) (ℓ w) := by
   rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
   nth_rw 1 [wordProd]
-  rw [MonoidHom.map_list_prod, List.map_map, lengthParity_simpleReflection]
+  rw [MonoidHom.map_list_prod, List.map_map, lengthParity_simple]
   simp
   tauto
 
@@ -756,7 +756,7 @@ theorem length_mul_mod_two (w₁ w₂ : W) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ +
     tauto
   · show 1 ≤ length cs (s i)
     by_contra! length_lt_1
-    have := congrArg Multiplicative.toAdd (congrFun cs.lengthParity_simpleReflection i)
+    have := congrArg Multiplicative.toAdd (congrFun cs.lengthParity_simple i)
     simp [parity_length_eq'] at this
     rw [Nat.lt_one_iff.mp length_lt_1] at this
     contradiction
@@ -800,14 +800,33 @@ theorem length_simple_mul (w : W) (i : B) :
   have := cs.length_mul_simple w⁻¹ i
   rwa [(by simp : w⁻¹ * (s i) = ((s i) * w)⁻¹), length_inv, length_inv] at this
 
+/-- The word of length `m` that alternates between `i` and `i'`, ending with `i'`.-/
+def alternatingWord (i i' : B) (m : ℕ) : List B := sorry
+
+theorem length_alternatingWord (i i' : B) (m : ℕ) : List.length (alternatingWord i i' m) = m := by
+  sorry
+
+theorem prod_alternatingWord_eq (i i' : B) (m : ℕ) (hm : m ≤ 2 * (M i i')) :
+    π (alternatingWord i i' m) = π (alternatingWord i' i (2 * M i i' - m)) := by
+  sorry
+
 /-! ### Reduced words -/
 
 def IsReduced (ω : List B) : Prop := ℓ (π ω) = ω.length
+
+theorem exists_reduced_word' (w : W) : ∃ ω : List B, cs.IsReduced ω ∧ w = π ω := by
+  rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
+  use ω
+  tauto
 
 theorem isReduced_take (ω : List B) (rω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.take j) := by
   sorry
 
 theorem isReduced_drop (ω : List B) (rω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.drop j) := by
+  sorry
+
+theorem alternatingWord_not_reduced (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) (hm : m > M i i') :
+    ¬ cs.IsReduced (alternatingWord i i' m) := by
   sorry
 
 /-! ### Reflections, inversions, and inversion sequences -/
@@ -943,20 +962,6 @@ theorem SGR_simpleReflection_simpleRoot (i : B) : cs.SGR (s i) (α i) = -α i :=
   sorry
 
 theorem SGR_bilin_eq_bilin (w : W) (v v' : B →₀ ℝ) : ⟪cs.SGR w v, cs.SGR w v'⟫ = ⟪v, v'⟫ := by
-  sorry
-
-/-- The word of length `m` that alternates between `i` and `i'`, ending with `i'`.-/
-def alternatingWord (i i' : B) (m : ℕ) : List B := sorry
-
-theorem length_alternatingWord (i i' : B) (m : ℕ) : List.length (alternatingWord i i' m) = m := by
-  sorry
-
-theorem prod_alternatingWord_eq (i i' : B) (m : ℕ) (hm : m ≤ 2 * (M i i')) :
-    π (alternatingWord i i' m) = π (alternatingWord i' i (2 * M i i' - m)) := by
-  sorry
-
-theorem alternatingWord_not_reduced (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) (hm : m > M i i') :
-    ¬ cs.IsReduced (alternatingWord i i' m) := by
   sorry
 
 theorem SGR_alternatingWord_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) :
