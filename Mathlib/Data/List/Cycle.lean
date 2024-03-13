@@ -189,7 +189,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     exact hy (Eq.symm hk')
     rw [Nat.zero_eq, length_cons, Nat.pred_succ]
     exact length_pos_of_mem (by assumption)
-  suffices k.succ = l.length by simp [this] at hk
+  suffices k + 1 = l.length by simp [this] at hk
   cases' l with hd tl
   · simp at hk
   · rw [nodup_iff_injective_get] at hl

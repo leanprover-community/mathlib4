@@ -266,7 +266,8 @@ theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
 theorem add_ofNat' (m n) : Num.ofNat' (m + n) = Num.ofNat' m + Num.ofNat' n := by
   -- Porting note: `simp` fails to unify `ofNat' (n + 1)` with `ofNat' n.succ`
   have : ∀ {n}, ofNat' n.succ = ofNat' n + 1 := ofNat'_succ
-  induction n <;> simp [Nat.add_zero, this, add_zero, Nat.add_succ, add_one, add_succ, *]
+  induction n <;> simp only [Nat.add_zero, this, add_zero, Nat.add_succ, add_one, add_succ,
+    ofNat'_zero, *]
 #align num.add_of_nat' Num.add_ofNat'
 
 @[simp, norm_cast]
