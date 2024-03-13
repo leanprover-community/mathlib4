@@ -44,11 +44,9 @@ alias ⟨lt_of_ofNat_lt_ofNat, ofNat_lt_ofNat_of_lt⟩ := ofNat_lt
 #align int.coe_nat_lt_coe_nat_of_lt Int.ofNat_lt_ofNat_of_lt
 
 instance instLinearOrderInt : LinearOrder ℤ where
-  le := (·≤·)
   le_refl := Int.le_refl
   le_trans := @Int.le_trans
   le_antisymm := @Int.le_antisymm
-  lt := (·<·)
   lt_iff_le_not_le := @Int.lt_iff_le_not_le
   le_total := Int.le_total
   decidableEq := by infer_instance

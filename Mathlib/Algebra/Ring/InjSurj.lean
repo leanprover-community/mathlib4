@@ -32,8 +32,6 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.distrib {S} [Mul R] [Add R] [Distrib S] (f : R → S)
     (hf : Injective f) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y) :
     Distrib R where
-  mul := (· * ·)
-  add := (· + ·)
   left_distrib x y z := hf <| by simp only [*, left_distrib]
   right_distrib x y z := hf <| by simp only [*, right_distrib]
 #align function.injective.distrib Function.Injective.distrib
@@ -44,8 +42,6 @@ See note [reducible non-instances]. -/
 protected def Function.Surjective.distrib {S} [Distrib R] [Add S] [Mul S] (f : R → S)
     (hf : Surjective f) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y) :
     Distrib S where
-  mul := (· * ·)
-  add := (· + ·)
   left_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, left_distrib]
   right_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, right_distrib]
 #align function.surjective.distrib Function.Surjective.distrib

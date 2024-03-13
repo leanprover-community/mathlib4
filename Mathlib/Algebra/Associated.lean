@@ -853,7 +853,6 @@ theorem exists_rep [Monoid α] (a : Associates α) : ∃ a0 : α, Associates.mk 
 
 instance [Monoid α] [Subsingleton α] :
     Unique (Associates α) where
-  default := 1
   uniq a := by
     apply Quotient.recOnSubsingleton₂
     intro a b
@@ -880,8 +879,6 @@ theorem mk_mul_mk {x y : α} : Associates.mk x * Associates.mk y = Associates.mk
 #align associates.mk_mul_mk Associates.mk_mul_mk
 
 instance instCommMonoid : CommMonoid (Associates α) where
-  one := 1
-  mul := (· * ·)
   mul_one a' := Quotient.inductionOn a' fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
   one_mul a' := Quotient.inductionOn a' fun a => show ⟦1 * a⟧ = ⟦a⟧ by simp
   mul_assoc a' b' c' :=
@@ -890,8 +887,10 @@ instance instCommMonoid : CommMonoid (Associates α) where
   mul_comm a' b' :=
     Quotient.inductionOn₂ a' b' fun a b => show ⟦a * b⟧ = ⟦b * a⟧ by rw [mul_comm]
 
-instance instPreorder : Preorder (Associates α) where
+instance instLE : LE (Associates α) where
   le := Dvd.dvd
+
+instance instPreorder : Preorder (Associates α) where
   le_refl := dvd_refl
   le_trans a b c := dvd_trans
 
@@ -934,7 +933,6 @@ theorem units_eq_one (u : (Associates α)ˣ) : u = 1 :=
 #align associates.units_eq_one Associates.units_eq_one
 
 instance uniqueUnits : Unique (Associates α)ˣ where
-  default := 1
   uniq := Associates.units_eq_one
 #align associates.unique_units Associates.uniqueUnits
 
@@ -978,7 +976,6 @@ theorem le_mul_left {a b : Associates α} : a ≤ b * a := by rw [mul_comm]; exa
 #align associates.le_mul_left Associates.le_mul_left
 
 instance instOrderBot : OrderBot (Associates α) where
-  bot := 1
   bot_le _ := one_le
 
 end Order
@@ -1074,7 +1071,6 @@ instance instCommMonoidWithZero : CommMonoidWithZero (Associates α) where
       rw [mul_zero]
 
 instance instOrderTop : OrderTop (Associates α) where
-  top := 0
   le_top a := ⟨0, (mul_zero a).symm⟩
 
 instance instBoundedOrder : BoundedOrder (Associates α) where

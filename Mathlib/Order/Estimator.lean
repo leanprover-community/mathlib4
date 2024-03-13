@@ -82,11 +82,13 @@ instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
   let f' : Estimator.trivial a ↪o Unit := f.toOrderEmbedding
   f'.wellFoundedGT
 
-instance {a : α} : Estimator (Thunk.pure a) (Estimator.trivial a) where
-  bound b := b.val
+instance {a : α} : EstimatorData (Thunk.pure a) (Estimator.trivial a) where
+  bound _ := a
   improve _ := none
-  bound_le b := b.prop.le
-  improve_spec b := b.prop
+
+instance {a : α} : Estimator (Thunk.pure a) (Estimator.trivial a) where
+  bound_le _ := le_refl _
+  improve_spec _ := rfl
 
 end trivial
 

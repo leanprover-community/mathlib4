@@ -245,7 +245,6 @@ instance : LE Cardinal.{u} :=
       propext ⟨fun ⟨e⟩ => ⟨e.congr e₁ e₂⟩, fun ⟨e⟩ => ⟨e.congr e₁.symm e₂.symm⟩⟩⟩
 
 instance partialOrder : PartialOrder Cardinal.{u} where
-  le := (· ≤ ·)
   le_refl := by
     rintro ⟨α⟩
     exact ⟨Embedding.refl _⟩
@@ -514,10 +513,6 @@ theorem power_add {a b c : Cardinal} : a ^ (b + c) = a ^ b * a ^ c :=
 #align cardinal.power_add Cardinal.power_add
 
 instance commSemiring : CommSemiring Cardinal.{u} where
-  zero := 0
-  one := 1
-  add := (· + ·)
-  mul := (· * ·)
   zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum (ULift (Fin 0)) α
   add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α (ULift (Fin 0))
   add_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumAssoc α β γ
@@ -535,7 +530,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   npow_zero := @power_zero
   npow_succ n c := show c ^ (↑(n + 1) : Cardinal) = c * c ^ (↑n : Cardinal)
     by rw [Cardinal.cast_succ, power_add, power_one, mul_comm']
-  natCast := (fun n => lift.{u} #(Fin n) : ℕ → Cardinal.{u})
+  toNatCast := instNatCastCardinal
   natCast_zero := rfl
   natCast_succ := Cardinal.cast_succ
 
@@ -676,7 +671,6 @@ instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + 
 instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.partialOrder with
-    bot := 0
     bot_le := Cardinal.zero_le
     add_le_add_left := fun a b => add_le_add_left
     exists_add_of_le := fun {a b} =>

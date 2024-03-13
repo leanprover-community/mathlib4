@@ -84,9 +84,13 @@ protected theorem ext {x y : ContT r m α} (h : ∀ f, x.run f = y.run f) : x = 
   unfold ContT; ext; apply h
 #align cont_t.ext ContT.ext
 
+instance : Pure (ContT r m) where
+  pure x := fun f => f x
+
+instance : Bind (ContT r m) where
+  bind x f := fun g => x (fun i => f i g)
+
 instance : Monad (ContT r m) where
-  pure x f := f x
-  bind x f g := x fun i => f i g
 
 instance : LawfulMonad (ContT r m) := LawfulMonad.mk'
   (id_map := by intros; rfl)

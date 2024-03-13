@@ -37,27 +37,29 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
 
 namespace Pi
 
+instance instNatCast [∀ i, NatCast <| f i] : NatCast (∀ i : I, f i) :=
+  { natCast := fun n _ => n }
+
 instance addMonoidWithOne [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (∀ i : I, f i) :=
   { addMonoid with
-    natCast := fun n _ => n
+    toNatCast := instNatCast,
     natCast_zero := funext fun _ => AddMonoidWithOne.natCast_zero
     natCast_succ := fun n => funext fun _ => AddMonoidWithOne.natCast_succ n
   }
 
+instance instIntCast [∀ i, IntCast <| f i] : IntCast (∀ i : I, f i) :=
+  { intCast := fun z _ => z }
+
 instance addGroupWithOne [∀ i, AddGroupWithOne <| f i] : AddGroupWithOne (∀ i : I, f i) :=
   { addGroup, addMonoidWithOne with
-    intCast := fun z _ => z
+    toIntCast := instIntCast,
     intCast_ofNat := fun n => funext fun _ => AddGroupWithOne.intCast_ofNat n
     intCast_negSucc := fun n => funext fun _ => AddGroupWithOne.intCast_negSucc n
   }
 
 instance mulZeroClass [∀ i, MulZeroClass <| f i] : MulZeroClass (∀ i : I, f i) :=
-  { zero := (0 : ∀ i, f i)
-    mul := (· * ·)
-    --pi_instance
-    zero_mul := by intros; ext; exact zero_mul _
-    mul_zero := by intros; ext; exact mul_zero _
-}
+  { zero_mul := by intros; ext; exact zero_mul _
+    mul_zero := by intros; ext; exact mul_zero _ }
 #align pi.mul_zero_class Pi.mulZeroClass
 
 instance mulZeroOneClass [∀ i, MulZeroOneClass <| f i] : MulZeroOneClass (∀ i : I, f i) :=

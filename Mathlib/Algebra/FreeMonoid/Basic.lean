@@ -74,10 +74,15 @@ theorem ofList_comp_toList : @ofList α ∘ toList = id := rfl
 #align free_add_monoid.of_list_comp_to_list FreeAddMonoid.ofList_comp_toList
 
 @[to_additive]
-instance : CancelMonoid (FreeMonoid α)
-    where
-  one := ofList []
+instance : Mul (FreeMonoid α) where
   mul x y := ofList (toList x ++ toList y)
+
+@[to_additive]
+instance : One (FreeMonoid α) where
+  one := ofList []
+
+@[to_additive]
+instance : CancelMonoid (FreeMonoid α) where
   mul_one := List.append_nil
   one_mul := List.nil_append
   mul_assoc := List.append_assoc
@@ -275,10 +280,15 @@ theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift
 #align free_monoid.hom_map_lift FreeMonoid.hom_map_lift
 #align free_add_monoid.hom_map_lift FreeAddMonoid.hom_map_lift
 
+/-- Define a scalar multiplication of `FreeMonoid α` on `β`. -/
+@[to_additive "Define a scalar multiplication of `FreeAddMonoid α` on `β`."]
+def mkSMul (f : α → β → β) : SMul (FreeMonoid α) β where
+  smul l b := l.toList.foldr f b
+
 /-- Define a multiplicative action of `FreeMonoid α` on `β`. -/
 @[to_additive "Define an additive action of `FreeAddMonoid α` on `β`."]
 def mkMulAction (f : α → β → β) : MulAction (FreeMonoid α) β where
-  smul l b := l.toList.foldr f b
+  toSMul := mkSMul f
   one_smul _ := rfl
   mul_smul _ _ _ := List.foldr_append _ _ _ _
 #align free_monoid.mk_mul_action FreeMonoid.mkMulAction

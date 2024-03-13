@@ -82,14 +82,18 @@ variable {C : Type u} [Category.{v} C]
 
 open Opposite
 
-instance mulActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
+instance instSMul {X Y : C} : SMul (End Y) (X ⟶ Y) where
   smul r f := f ≫ r
+
+instance mulActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
   one_smul := Category.comp_id
   mul_smul _ _ _ := Eq.symm <| Category.assoc _ _ _
 #align category_theory.End.mul_action_right CategoryTheory.End.mulActionRight
 
-instance mulActionLeft {X : Cᵒᵖ} {Y : C} : MulAction (End X) (unop X ⟶ Y) where
+instance instSMulLeft {X : Cᵒᵖ} {Y : C} : SMul (End X) (unop X ⟶ Y) where
   smul r f := r.unop ≫ f
+
+instance mulActionLeft {X : Cᵒᵖ} {Y : C} : MulAction (End X) (unop X ⟶ Y) where
   one_smul := Category.id_comp
   mul_smul _ _ _ := Category.assoc _ _ _
 #align category_theory.End.mul_action_left CategoryTheory.End.mulActionLeft
@@ -107,7 +111,6 @@ end MulAction
 /-- In a groupoid, endomorphisms form a group -/
 instance group {C : Type u} [Groupoid.{v} C] (X : C) : Group (End X) where
   mul_left_inv := Groupoid.comp_inv
-  inv := Groupoid.inv
 #align category_theory.End.group CategoryTheory.End.group
 
 end End
@@ -140,10 +143,16 @@ protected instance inhabited : Inhabited (Aut X) := ⟨Iso.refl X⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.inhabited CategoryTheory.Aut.inhabited
 
-instance : Group (Aut X) where
+instance instOneAut : One (Aut X) where
   one := Iso.refl X
+
+instance instInvAut : Inv (Aut X) where
   inv := Iso.symm
+
+instance instMulAut : Mul (Aut X) where
   mul x y := Iso.trans y x
+
+instance : Group (Aut X) where
   mul_assoc _ _ _ := (Iso.trans_assoc _ _ _).symm
   one_mul := Iso.trans_refl
   mul_one := Iso.refl_trans

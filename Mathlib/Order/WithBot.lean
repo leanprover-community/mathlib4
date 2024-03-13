@@ -226,9 +226,10 @@ theorem none_le {a : WithBot α} : @LE.le (WithBot α) _ none a := fun _ h => Op
 instance orderBot : OrderBot (WithBot α) :=
   { WithBot.bot with bot_le := fun _ => none_le }
 
+instance instTop [Top α] : Top (WithBot α) where
+  top := some ⊤
 
 instance orderTop [OrderTop α] : OrderTop (WithBot α) where
-  top := some ⊤
   le_top o a ha := by cases ha; exact ⟨_, rfl, le_top⟩
 
 instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) :=
@@ -341,8 +342,6 @@ theorem unbot'_lt_iff {a : WithBot α} {b c : α} (h : a = ⊥ → b < c) :
 end LT
 
 instance preorder [Preorder α] : Preorder (WithBot α) where
-  le := (· ≤ ·)
-  lt := (· < ·)
   lt_iff_le_not_le := by
     intros a b
     cases a <;> cases b <;> simp [lt_iff_le_not_le]; simp [LE.le, LT.lt]
@@ -432,11 +431,15 @@ theorem lt_coe_bot [OrderBot α] : ∀ {x : WithBot α}, x < (⊥ : α) ↔ x = 
 
 end Preorder
 
+instance instSup [Sup α] : Sup (WithBot α) :=
+  ⟨Option.liftOrGet (· ⊔ ·)⟩
+
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) :=
   { WithBot.partialOrder, @WithBot.orderBot α _ with
-    sup := Option.liftOrGet (· ⊔ ·),
-    le_sup_left := fun o₁ o₂ a ha => by cases ha; cases o₂ <;> simp [Option.liftOrGet],
-    le_sup_right := fun o₁ o₂ a ha => by cases ha; cases o₁ <;> simp [Option.liftOrGet],
+    le_sup_left := fun o₁ o₂ a ha => by
+      cases ha; cases o₂ <;> simp [Sup.sup, Option.liftOrGet],
+    le_sup_right := fun o₁ o₂ a ha => by
+      cases ha; cases o₁ <;> simp [Sup.sup, Option.liftOrGet],
     sup_le := fun o₁ o₂ o₃ h₁ h₂ a ha => by
       cases' o₁ with b <;> cases' o₂ with c <;> cases ha
       · exact h₂ a rfl
@@ -449,9 +452,11 @@ theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithBot α) =
   rfl
 #align with_bot.coe_sup WithBot.coe_sup
 
+instance instInf [Inf α] : Inf (WithBot α) where
+  inf := Option.map₂ (· ⊓ ·)
+
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithBot α) :=
   { WithBot.partialOrder, @WithBot.orderBot α _ with
-    inf := Option.map₂ (· ⊓ ·),
     inf_le_left := fun o₁ o₂ a ha => by
       rcases Option.mem_map₂_iff.1 ha with ⟨a, b, (rfl : _ = _), (rfl : _ = _), rfl⟩
       exact ⟨_, rfl, inf_le_left⟩,
@@ -902,8 +907,10 @@ theorem le_none {a : WithTop α} : @LE.le (WithTop α) _ a none :=
 instance orderTop : OrderTop (WithTop α) :=
   { WithTop.top with le_top := fun _ => le_none }
 
-instance orderBot [OrderBot α] : OrderBot (WithTop α) where
+instance instBot [Bot α] : Bot (WithTop α) where
   bot := some ⊥
+
+instance orderBot [OrderBot α] : OrderBot (WithTop α) where
   bot_le o a ha := by cases ha; exact ⟨_, rfl, bot_le⟩
 #align with_top.order_bot WithTop.orderBot
 
@@ -1178,8 +1185,6 @@ protected theorem lt_top_iff_ne_top {x : WithTop α} : x < ⊤ ↔ x ≠ ⊤ :=
 end LT
 
 instance preorder [Preorder α] : Preorder (WithTop α) where
-  le := (· ≤ ·)
-  lt := (· < ·)
   lt_iff_le_not_le := @lt_iff_le_not_le (WithBot αᵒᵈ)ᵒᵈ _
   le_refl := @le_refl (WithBot αᵒᵈ)ᵒᵈ _
   le_trans := @le_trans (WithBot αᵒᵈ)ᵒᵈ _
@@ -1250,9 +1255,11 @@ theorem coe_top_lt [OrderTop α] {x : WithTop α} : (⊤ : α) < x ↔ x = ⊤ :
 
 end Preorder
 
+instance instInf [Inf α] : Inf (WithTop α) where
+  inf := Option.liftOrGet (· ⊓ ·)
+
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
   { WithTop.partialOrder with
-    inf := Option.liftOrGet (· ⊓ ·),
     inf_le_left := @inf_le_left (WithBot αᵒᵈ)ᵒᵈ _
     inf_le_right := @inf_le_right (WithBot αᵒᵈ)ᵒᵈ _
     le_inf := @le_inf (WithBot αᵒᵈ)ᵒᵈ _ }
@@ -1261,9 +1268,11 @@ theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithTop α) =
   rfl
 #align with_top.coe_inf WithTop.coe_inf
 
+instance instSup [Sup α] : Sup (WithTop α) where
+  sup := Option.map₂ (· ⊔ ·)
+
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithTop α) :=
   { WithTop.partialOrder with
-    sup := Option.map₂ (· ⊔ ·),
     le_sup_left := @le_sup_left (WithBot αᵒᵈ)ᵒᵈ _
     le_sup_right := @le_sup_right (WithBot αᵒᵈ)ᵒᵈ _
     sup_le := @sup_le (WithBot αᵒᵈ)ᵒᵈ _ }

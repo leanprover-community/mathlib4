@@ -77,9 +77,13 @@ instance addCommGroup [AddCommGroup α] : AddCommGroup αᵐᵒᵖ :=
   unop_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
+-- `ToAdditive` failures with weeaker assumptions
+instance instIntCast [AddGroupWithOne α] : IntCast αᵐᵒᵖ :=
+  ⟨fun n => op n⟩
+
 instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne αᵐᵒᵖ :=
   { MulOpposite.addMonoidWithOne α, MulOpposite.addGroup α with
-    intCast := fun n => op n,
+    toIntCast := instIntCast α, -- Cannot infer this with `‹IntCast α›`
     intCast_ofNat := fun n => show op ((n : ℤ) : α) = op (n : α) by rw [Int.cast_ofNat],
     intCast_negSucc := fun n =>
       show op _ = op (-unop (op ((n + 1 : ℕ) : α))) by simp }

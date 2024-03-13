@@ -25,10 +25,16 @@ variable {α : Type u} {β : Type v}
 
 namespace Perm
 
-instance permGroup : Group (Perm α) where
+instance instMul : Mul (Perm α) where
   mul f g := Equiv.trans g f
+
+instance instOne : One (Perm α) where
   one := Equiv.refl α
-  inv := Equiv.symm
+
+instance instInv : Inv (Perm α) where
+  inv f := Equiv.symm f
+
+instance permGroup : Group (Perm α) where
   mul_assoc f g h := (trans_assoc _ _ _).symm
   one_mul := trans_refl
   mul_one := refl_trans

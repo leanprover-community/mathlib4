@@ -49,7 +49,7 @@ noncomputable def nontrivialPSumUnique (α : Type*) [Inhabited α] :
   if h : Nontrivial α then PSum.inl h
   else
     PSum.inr
-      { default := default,
+      { toInhabited := ‹Inhabited α›,
         uniq := fun x : α ↦ by
           by_contra H
           exact h ⟨_, _, H⟩ }

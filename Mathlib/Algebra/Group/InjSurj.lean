@@ -125,6 +125,8 @@ protected def monoid [Monoid M₂] (f : M₁ → M₂) (hf : Injective f) (one :
 #align function.injective.monoid Function.Injective.monoid
 #align function.injective.add_monoid Function.Injective.addMonoid
 
+
+
 /-- A type endowed with `0`, `1` and `+` is an additive monoid with one,
 if it admits an injective map that preserves `0`, `1` and `+` to an additive monoid with one.
 See note [reducible non-instances]. -/
@@ -134,9 +136,10 @@ protected def addMonoidWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul �
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (nat_cast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₁ :=
   { hf.addMonoid f zero add nsmul with
-    natCast := Nat.cast,
+    toOne := ‹One M₁›,
+    toNatCast := ‹NatCast M₁›,
     natCast_zero := hf (by erw [nat_cast, Nat.cast_zero, zero]),
-    natCast_succ := fun n => hf (by erw [nat_cast, Nat.cast_succ, add, one, nat_cast]), one := 1 }
+    natCast_succ := fun n => hf (by erw [nat_cast, Nat.cast_succ, add, one, nat_cast]) }
 #align function.injective.add_monoid_with_one Function.Injective.addMonoidWithOne
 
 /-- A type endowed with `1` and `*` is a left cancel monoid, if it admits an injective map that
@@ -217,7 +220,7 @@ which has an involutive inversion. See note [reducible non-instances] -/
 preserves `-` to a type which has an involutive negation."]
 protected def involutiveInv {M₁ : Type*} [Inv M₁] [InvolutiveInv M₂] (f : M₁ → M₂)
     (hf : Injective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₁ where
-  inv := Inv.inv
+  toInv := ‹Inv M₁›
   inv_inv x := hf <| by rw [inv, inv, inv_inv]
 #align function.injective.has_involutive_inv Function.Injective.involutiveInv
 #align function.injective.has_involutive_neg Function.Injective.involutiveNeg
@@ -330,7 +333,7 @@ protected def addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ
     (int_cast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₁ :=
   { hf.addGroup f zero add neg sub nsmul zsmul,
     hf.addMonoidWithOne f zero one add nsmul nat_cast with
-    intCast := Int.cast,
+    toIntCast := ‹IntCast M₁›,
     intCast_ofNat := fun n => hf (by rw [nat_cast, ← Int.cast, int_cast, Int.cast_ofNat]),
     intCast_negSucc := fun n => hf (by erw [int_cast, neg, nat_cast, Int.cast_negSucc] ) }
 #align function.injective.add_group_with_one Function.Injective.addGroupWithOne
@@ -448,10 +451,10 @@ protected def addMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [SMul �
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (nat_cast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₂ :=
   { hf.addMonoid f zero add nsmul with
-    natCast := Nat.cast,
+    toOne := ‹One M₂›,
+    toNatCast := ‹NatCast M₂›,
     natCast_zero := by rw [← Nat.cast, ← nat_cast, Nat.cast_zero, zero]
-    natCast_succ := fun n => by rw [← Nat.cast, ← nat_cast, Nat.cast_succ, add, one, nat_cast]
-    one := 1 }
+    natCast_succ := fun n => by rw [← Nat.cast, ← nat_cast, Nat.cast_succ, add, one, nat_cast] }
 #align function.surjective.add_monoid_with_one Function.Surjective.addMonoidWithOne
 
 /-- A type endowed with `1` and `*` is a commutative monoid, if it admits a surjective map that
@@ -484,7 +487,6 @@ which has an involutive inversion. See note [reducible non-instances] -/
 preserves `-` to a type which has an involutive negation."]
 protected def involutiveInv {M₂ : Type*} [Inv M₂] [InvolutiveInv M₁] (f : M₁ → M₂)
     (hf : Surjective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₂ where
-  inv := Inv.inv
   inv_inv := hf.forall.2 fun x => by erw [← inv, ← inv, inv_inv]
 #align function.surjective.has_involutive_inv Function.Surjective.involutiveInv
 #align function.surjective.has_involutive_neg Function.Surjective.involutiveNeg
@@ -540,7 +542,7 @@ protected def addGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M₂
     (int_cast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₂ :=
   { hf.addMonoidWithOne f zero one add nsmul nat_cast,
     hf.addGroup f zero add neg sub nsmul zsmul with
-    intCast := Int.cast,
+    toIntCast := ‹IntCast M₂›,
     intCast_ofNat := fun n => by rw [← Int.cast, ← int_cast, Int.cast_ofNat, nat_cast],
     intCast_negSucc := fun n => by
       rw [← Int.cast, ← int_cast, Int.cast_negSucc, neg, nat_cast] }

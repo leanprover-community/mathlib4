@@ -255,8 +255,7 @@ theorem ad_conj {R : Type*} [Rack R] (x y : R) : act' (x ◃ y) = act' x * act' 
 
 /-- The opposite rack, swapping the roles of `◃` and `◃⁻¹`.
 -/
-instance oppositeRack : Rack Rᵐᵒᵖ
-    where
+instance oppositeRack : Rack Rᵐᵒᵖ where
   act x y := op (invAct (unop x) (unop y))
   self_distrib := by
     intro x y z
@@ -668,17 +667,21 @@ def EnvelGroup (R : Type*) [Rack R] :=
   Quotient (PreEnvelGroup.setoid R)
 #align rack.envel_group Rack.EnvelGroup
 
+instance instMul (R : Type*) [Rack R] : Mul (EnvelGroup R) where
+  mul a b :=
+    Quotient.liftOn₂ a b (fun a b => ⟦PreEnvelGroup.mul a b⟧) fun _ _ _ _ ⟨ha⟩ ⟨hb⟩ =>
+      Quotient.sound (PreEnvelGroupRel'.congr_mul ha hb).rel
+
+instance instOne (R : Type*) [Rack R] : One (EnvelGroup R) where
+  one := ⟦unit⟧
+
+instance instInv (R : Type*) [Rack R] : Inv (EnvelGroup R) where
+  inv a := Quotient.liftOn a (fun a => ⟦PreEnvelGroup.inv a⟧) fun _ _ ⟨ha⟩ =>
+    Quotient.sound (PreEnvelGroupRel'.congr_inv ha).rel
+
 -- Define the `Group` instances in two steps so `inv` can be inferred correctly.
 -- TODO: is there a non-invasive way of defining the instance directly?
-instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R)
-    where
-  mul a b :=
-    Quotient.liftOn₂ a b (fun a b => ⟦PreEnvelGroup.mul a b⟧) fun a b a' b' ⟨ha⟩ ⟨hb⟩ =>
-      Quotient.sound (PreEnvelGroupRel'.congr_mul ha hb).rel
-  one := ⟦unit⟧
-  inv a :=
-    Quotient.liftOn a (fun a => ⟦PreEnvelGroup.inv a⟧) fun a a' ⟨ha⟩ =>
-      Quotient.sound (PreEnvelGroupRel'.congr_inv ha).rel
+instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R) where
   mul_assoc a b c :=
     Quotient.inductionOn₃ a b c fun a b c => Quotient.sound (PreEnvelGroupRel'.assoc a b c).rel
   one_mul a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.one_mul a).rel

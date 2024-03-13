@@ -212,12 +212,17 @@ protected def AddMonoidWithOne.unary {R : Type*} [AddMonoid R] [One R] : AddMono
   { ‹One R›, ‹AddMonoid R› with }
 #align add_monoid_with_one.unary AddMonoidWithOne.unary
 
+/-- `NatCast` implementation using unary recursion. -/
+@[reducible]
+protected def NatCast.binary {R : Type*} [Zero R] [One R] [Add R] : NatCast R where
+  natCast := Nat.binCast
+
 /-- `AddMonoidWithOne` implementation using binary recursion. -/
 @[reducible]
 protected def AddMonoidWithOne.binary {R : Type*} [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
-    natCast := Nat.binCast,
-    natCast_zero := by simp only [Nat.binCast, Nat.cast],
+    toNatCast := NatCast.binary,
+    natCast_zero := by simp only [NatCast.natCast, Nat.binCast, Nat.cast],
     natCast_succ := fun n => by
       dsimp only [NatCast.natCast]
       letI : AddMonoidWithOne R := AddMonoidWithOne.unary

@@ -52,14 +52,12 @@ class SMulWithZero [Zero R] [Zero M] extends SMulZeroClass R M where
 #align smul_with_zero SMulWithZero
 
 instance MulZeroClass.toSMulWithZero [MulZeroClass R] : SMulWithZero R R where
-  smul := (· * ·)
   smul_zero := mul_zero
   zero_smul := zero_mul
 #align mul_zero_class.to_smul_with_zero MulZeroClass.toSMulWithZero
 
 /-- Like `MulZeroClass.toSMulWithZero`, but multiplies on the right. -/
 instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass R] : SMulWithZero Rᵐᵒᵖ R where
-  smul := (· • ·)
   smul_zero _ := zero_mul _
   zero_smul := mul_zero
 #align mul_zero_class.to_opposite_smul_with_zero MulZeroClass.toOppositeSMulWithZero
@@ -86,7 +84,6 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.smulWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
     (smul : ∀ (a : R) (b), f (a • b) = a • f b) :
     SMulWithZero R M' where
-  smul := (· • ·)
   zero_smul a := hf <| by simp [smul]
   smul_zero a := hf <| by simp [smul]
 #align function.injective.smul_with_zero Function.Injective.smulWithZero
@@ -97,7 +94,6 @@ See note [reducible non-instances]. -/
 protected def Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function.Surjective f)
     (smul : ∀ (a : R) (b), f (a • b) = a • f b) :
     SMulWithZero R M' where
-  smul := (· • ·)
   zero_smul m := by
     rcases hf m with ⟨x, rfl⟩
     simp [← smul]
@@ -108,7 +104,6 @@ variable (M)
 
 /-- Compose a `SMulWithZero` with a `ZeroHom`, with action `f r' • m` -/
 def SMulWithZero.compHom (f : ZeroHom R' R) : SMulWithZero R' M where
-  smul := (f · • ·)
   smul_zero m := smul_zero (f m)
   zero_smul m := by show (f 0) • m = 0; rw [map_zero, zero_smul]
 #align smul_with_zero.comp_hom SMulWithZero.compHom

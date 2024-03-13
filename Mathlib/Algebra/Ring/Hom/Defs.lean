@@ -289,13 +289,16 @@ theorem id_comp (f : α →ₙ+* β) : (NonUnitalRingHom.id β).comp f = f :=
   ext fun _ => rfl
 #align non_unital_ring_hom.id_comp NonUnitalRingHom.id_comp
 
+instance : One (α →ₙ+* α) :=
+  ⟨NonUnitalRingHom.id α⟩
+
+instance : Mul (α →ₙ+* α) :=
+  ⟨NonUnitalRingHom.comp⟩
+
 instance : MonoidWithZero (α →ₙ+* α) where
-  one := NonUnitalRingHom.id α
-  mul := comp
   mul_one := comp_id
   one_mul := id_comp
   mul_assoc f g h := comp_assoc _ _ _
-  zero := 0
   mul_zero := comp_zero
   zero_mul := zero_comp
 
@@ -681,9 +684,13 @@ theorem id_comp (f : α →+* β) : (id β).comp f = f :=
   ext fun _ => rfl
 #align ring_hom.id_comp RingHom.id_comp
 
+instance : One (α →+* α) :=
+  ⟨id α⟩
+
+instance : Mul (α →+* α) :=
+  ⟨comp⟩
+
 instance : Monoid (α →+* α) where
-  one := id α
-  mul := comp
   mul_one := comp_id
   one_mul := id_comp
   mul_assoc f g h := comp_assoc _ _ _

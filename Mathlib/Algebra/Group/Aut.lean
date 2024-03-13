@@ -43,22 +43,28 @@ namespace MulAut
 
 variable (M) [Mul M]
 
+instance instMul : Mul (MulAut M) where
+  mul := fun g h => MulEquiv.trans h g
+
+instance instOne : One (MulAut M) where
+  one := MulEquiv.refl M
+
+instance instInv : Inv (MulAut M) where
+  inv := MulEquiv.symm
+
+instance instDiv : Div (MulAut M) where
+  div := fun g h => MulEquiv.trans h.symm g
+
 /-- The group operation on multiplicative automorphisms is defined by `g h => MulEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance : Group (MulAut M) := by
-  refine'
-  { mul := fun g h => MulEquiv.trans h g
-    one := MulEquiv.refl M
-    inv := MulEquiv.symm
-    div := fun g h => MulEquiv.trans h.symm g
-    npow := @npowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩
-    zpow := @zpowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩ ⟨MulEquiv.symm⟩
-    .. } <;>
-  intros <;>
-  ext <;>
-  try rfl
-  apply Equiv.left_inv
+instance : Group (MulAut M) where
+  npow := @npowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩
+  zpow := @zpowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩ ⟨MulEquiv.symm⟩
+  mul_assoc := fun _ _ _ => rfl
+  one_mul := fun _ => rfl
+  mul_one := fun _ => rfl
+  mul_left_inv := fun _ => by ext; apply Equiv.left_inv
 
 instance : Inhabited (MulAut M) :=
   ⟨1⟩
@@ -110,11 +116,13 @@ def toPerm : MulAut M →* Equiv.Perm M := by
   refine' { toFun := MulEquiv.toEquiv, ..} <;> intros <;> rfl
 #align mul_aut.to_perm MulAut.toPerm
 
+instance instSMul {M} [Monoid M] : SMul (MulAut M) M where
+  smul := (· <| ·)
+
 /-- The tautological action by `MulAut M` on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyMulDistribMulAction {M} [Monoid M] : MulDistribMulAction (MulAut M) M where
-  smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
   smul_one := MulEquiv.map_one
@@ -170,22 +178,28 @@ namespace AddAut
 
 variable (A) [Add A]
 
+instance instMul : Mul (AddAut A) where
+  mul := fun g h => AddEquiv.trans h g
+
+instance instOne : One (AddAut A) where
+  one := AddEquiv.refl A
+
+instance instInv : Inv (AddAut A) where
+  inv := AddEquiv.symm
+
+instance instDiv : Div (AddAut A) where
+  div := fun g h => AddEquiv.trans h.symm g
+
 /-- The group operation on additive automorphisms is defined by `g h => AddEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance group : Group (AddAut A) := by
-  refine'
-  { mul := fun g h => AddEquiv.trans h g
-    one := AddEquiv.refl A
-    inv := AddEquiv.symm
-    div := fun g h => AddEquiv.trans h.symm g
-    npow := @npowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩
-    zpow := @zpowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩ ⟨AddEquiv.symm⟩
-    .. } <;>
-  intros <;>
-  ext <;>
-  try rfl
-  apply Equiv.left_inv
+instance group : Group (AddAut A) where
+  npow := @npowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩
+  zpow := @zpowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩ ⟨AddEquiv.symm⟩
+  mul_assoc := fun _ _ _ => rfl
+  one_mul := fun _ => rfl
+  mul_one := fun _ => rfl
+  mul_left_inv := fun _ => by ext; apply Equiv.left_inv
 #align add_aut.group AddAut.group
 
 instance : Inhabited (AddAut A) :=
@@ -238,11 +252,13 @@ def toPerm : AddAut A →* Equiv.Perm A := by
   refine' { toFun := AddEquiv.toEquiv, .. } <;> intros <;> rfl
 #align add_aut.to_perm AddAut.toPerm
 
+instance instSMul {A} [AddMonoid A] : SMul (AddAut A) A where
+  smul := (· <| ·)
+
 /-- The tautological action by `AddAut A` on `A`.
 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyDistribMulAction {A} [AddMonoid A] : DistribMulAction (AddAut A) A where
-  smul := (· <| ·)
   smul_zero := AddEquiv.map_zero
   smul_add := AddEquiv.map_add
   one_smul _ := rfl

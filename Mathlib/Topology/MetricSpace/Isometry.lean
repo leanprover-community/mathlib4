@@ -536,11 +536,17 @@ theorem comp_continuous_iff' {γ} [TopologicalSpace γ] (h : α ≃ᵢ β) {f : 
   h.toHomeomorph.comp_continuous_iff'
 #align isometry_equiv.comp_continuous_iff' IsometryEquiv.comp_continuous_iff'
 
+instance instMul : Mul (α ≃ᵢ α) where
+  mul e₁ e₂ := e₂.trans e₁
+
+instance instOne : One (α ≃ᵢ α) where
+  one := IsometryEquiv.refl _
+
+instance instInv : Inv (α ≃ᵢ α) where
+  inv e := e.symm
+
 /-- The group of isometries. -/
 instance : Group (α ≃ᵢ α) where
-  one := IsometryEquiv.refl _
-  mul e₁ e₂ := e₂.trans e₁
-  inv := IsometryEquiv.symm
   mul_assoc e₁ e₂ e₃ := rfl
   one_mul e := ext fun _ => rfl
   mul_one e := ext fun _ => rfl

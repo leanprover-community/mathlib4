@@ -16,12 +16,15 @@ namespace Prod
 
 variable {α β : Type*} [AddGroupWithOne α] [AddGroupWithOne β]
 
-instance : AddGroupWithOne (α × β) :=
+instance instIntCast : IntCast (α × β) where
+  intCast := fun n => (n,n)
+
+instance instAddGroupWithOne : AddGroupWithOne (α × β) :=
   { Prod.instAddMonoidWithOne, Prod.instAddGroup with
-    intCast := fun n => (n, n)
-    intCast_ofNat := fun _ => by simp only [Int.cast_ofNat]; rfl
-    intCast_negSucc := fun _ => by simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one,
-                                    neg_add_rev]; rfl }
+    toIntCast := instIntCast, -- cannot directly infer this instance with ‹IntCast (α × β)›
+    intCast_ofNat := fun _ => by simp only [IntCast.intCast, Int.cast_ofNat]; rfl
+    intCast_negSucc := fun _ => by
+      simp only [IntCast.intCast, Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev]; rfl }
 
 @[simp]
 theorem fst_intCast (n : ℤ) : (n : α × β).fst = n :=

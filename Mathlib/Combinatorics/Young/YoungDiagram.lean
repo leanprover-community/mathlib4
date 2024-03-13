@@ -153,16 +153,19 @@ theorem mem_inf {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊓ ν ↔ x 
 #align young_diagram.mem_inf YoungDiagram.mem_inf
 
 /-- The empty Young diagram is (⊥ : young_diagram). -/
-instance : OrderBot YoungDiagram where
+instance : Bot YoungDiagram where
   bot :=
     { cells := ∅
       isLowerSet := by
         intros a b _ h
         simp only [Finset.coe_empty, Set.mem_empty_iff_false]
         simp only [Finset.coe_empty, Set.mem_empty_iff_false] at h }
+
+/-- The empty Young diagram is (⊥ : young_diagram). -/
+instance : OrderBot YoungDiagram where
   bot_le _ _ := by
     intro y
-    simp only [mem_mk, Finset.not_mem_empty] at y
+    simp only [Bot.bot, SetLike.mem_coe, mem_mk, Finset.not_mem_empty] at y
 
 @[simp]
 theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=

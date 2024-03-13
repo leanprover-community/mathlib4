@@ -185,8 +185,6 @@ attribute [elab_as_elim] WithZero.cases_on
 
 @[to_additive]
 instance mulOneClass [Mul α] : MulOneClass (WithOne α) where
-  mul := (· * ·)
-  one := 1
   one_mul := (Option.liftOrGet_isId _).left_id
   mul_one := (Option.liftOrGet_isId _).right_id
 
@@ -230,9 +228,11 @@ theorem coe_one [One α] : ((1 : α) : WithZero α) = 1 :=
   rfl
 #align with_zero.coe_one WithZero.coe_one
 
+instance instMul [Mul α] : Mul (WithZero α) where
+  mul := Option.map₂ (· * ·)
+
 instance mulZeroClass [Mul α] : MulZeroClass (WithZero α) :=
   { WithZero.zero with
-    mul := Option.map₂ (· * ·),
     zero_mul := Option.map₂_none_left (· * ·),
     mul_zero := Option.map₂_none_right (· * ·) }
 
@@ -366,9 +366,12 @@ end Group
 instance commGroupWithZero [CommGroup α] : CommGroupWithZero (WithZero α) :=
   { WithZero.groupWithZero, WithZero.commMonoidWithZero with }
 
+instance instNatCast [NatCast α] : NatCast (WithZero α) where
+    natCast := fun n => if n = 0 then 0 else (n.cast : α)
+
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α) :=
   { WithZero.addMonoid, WithZero.one with
-    natCast := fun n => if n = 0 then 0 else (n.cast : α),
+    toNatCast := instNatCast,
     natCast_zero := rfl,
     natCast_succ := fun n => by
       cases n with

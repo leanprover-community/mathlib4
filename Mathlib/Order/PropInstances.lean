@@ -17,25 +17,28 @@ Instances on `Prop` such as `DistribLattice`, `BoundedOrder`, `LinearOrder`.
 
 set_option autoImplicit true
 
+instance Prop.instSup : Sup Prop := ⟨Or⟩
+
+instance Prop.instInf : Inf Prop := ⟨And⟩
 
 /-- Propositions form a distributive lattice. -/
 instance Prop.instDistribLattice : DistribLattice Prop where
-  sup := Or
   le_sup_left := @Or.inl
   le_sup_right := @Or.inr
   sup_le := fun _ _ _ => Or.rec
-  inf := And
   inf_le_left := @And.left
   inf_le_right := @And.right
   le_inf := fun _ _ _ Hab Hac Ha => And.intro (Hab Ha) (Hac Ha)
   le_sup_inf := fun _ _ _ => or_and_left.2
 #align Prop.distrib_lattice Prop.instDistribLattice
 
+instance Prop.instTop : Top Prop := ⟨True⟩
+
+instance Prop.instBot : Bot Prop := ⟨False⟩
+
 /-- Propositions form a bounded order. -/
 instance Prop.instBoundedOrder : BoundedOrder Prop where
-  top := True
   le_top _ _ := True.intro
-  bot := False
   bot_le := @False.elim
 #align Prop.bounded_order Prop.instBoundedOrder
 

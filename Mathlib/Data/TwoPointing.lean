@@ -84,10 +84,14 @@ section Pi
 
 variable (α) [Nonempty α]
 
-/-- The two-pointing of constant functions. -/
-def pi : TwoPointing (α → β) where
+/-- The product on functions. -/
+def prodFun : (α → β) × (α → β) where
   fst _ := q.fst
   snd _ := q.snd
+
+/-- The two-pointing of constant functions. -/
+def pi : TwoPointing (α → β) where
+  toProd := prodFun α q
   fst_ne_snd h := q.fst_ne_snd (congr_fun h (Classical.arbitrary α))
 #align two_pointing.pi TwoPointing.pi
 
@@ -103,10 +107,14 @@ theorem pi_snd : (q.pi α).snd = const α q.snd :=
 
 end Pi
 
-/-- The product of two two-pointings. -/
-def prod : TwoPointing (α × β) where
+/-- The product on products. -/
+def prodProd : (α × β) × (α × β) where
   fst := (p.fst, q.fst)
   snd := (p.snd, q.snd)
+
+/-- The product of two two-pointings. -/
+def prod : TwoPointing (α × β) where
+  toProd := prodProd p q
   fst_ne_snd h := p.fst_ne_snd (congr_arg Prod.fst h)
 #align two_pointing.prod TwoPointing.prod
 

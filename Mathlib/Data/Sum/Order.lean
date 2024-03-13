@@ -429,9 +429,12 @@ instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ 
 #align sum.lex.linear_order Sum.Lex.linearOrder
 
 /-- The lexicographical bottom of a sum is the bottom of the left component. -/
+instance instBot [Bot α] : Bot (α ⊕ₗ β) where
+  bot := inl ⊥
+
+/-- The lexicographical bottom of a sum is the bottom of the left component. -/
 instance orderBot [LE α] [OrderBot α] [LE β] :
     OrderBot (α ⊕ₗ β) where
-  bot := inl ⊥
   bot_le := by
     rintro (a | b)
     · exact Lex.inl bot_le
@@ -439,14 +442,17 @@ instance orderBot [LE α] [OrderBot α] [LE β] :
 #align sum.lex.order_bot Sum.Lex.orderBot
 
 @[simp]
-theorem inl_bot [LE α] [OrderBot α] [LE β] : toLex (inl ⊥ : Sum α β) = ⊥ :=
+theorem inl_bot [LE α] [OrderBot α] : toLex (inl ⊥ : Sum α β) = ⊥ :=
   rfl
 #align sum.lex.inl_bot Sum.Lex.inl_bot
 
 /-- The lexicographical top of a sum is the top of the right component. -/
+instance instTop [Top β] : Top (α ⊕ₗ β) where
+  top := inr ⊤
+
+/-- The lexicographical top of a sum is the top of the right component. -/
 instance orderTop [LE α] [LE β] [OrderTop β] :
     OrderTop (α ⊕ₗ β) where
-  top := inr ⊤
   le_top := by
     rintro (a | b)
     · exact Lex.sep _ _
@@ -454,7 +460,7 @@ instance orderTop [LE α] [LE β] [OrderTop β] :
 #align sum.lex.order_top Sum.Lex.orderTop
 
 @[simp]
-theorem inr_top [LE α] [LE β] [OrderTop β] : toLex (inr ⊤ : Sum α β) = ⊤ :=
+theorem inr_top [LE β] [OrderTop β] : toLex (inr ⊤ : Sum α β) = ⊤ :=
   rfl
 #align sum.lex.inr_top Sum.Lex.inr_top
 

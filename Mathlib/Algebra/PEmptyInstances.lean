@@ -19,8 +19,11 @@ that it is a semigroup.
 universe u
 
 @[to_additive]
-instance SemigroupPEmpty : Semigroup PEmpty.{u + 1} where
+instance instMulPEmpty : Mul PEmpty.{u + 1} where
   mul x _ := by cases x
+
+@[to_additive]
+instance SemigroupPEmpty : Semigroup PEmpty.{u + 1} where
   mul_assoc x y z := by cases x
 #align semigroup_pempty SemigroupPEmpty
 #align add_semigroup_pempty AddSemigroupPEmpty

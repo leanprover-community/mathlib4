@@ -64,7 +64,6 @@ instance instMulAction [Monoid M] [MulAction M α] : MulAction Mˣ α where
   mul_smul m n := mul_smul (m : M) n
 
 instance instSMulZeroClass [Monoid M] [Zero α] [SMulZeroClass M α] : SMulZeroClass Mˣ α where
-  smul := (· • ·)
   smul_zero m := smul_zero (m : M)
 
 instance instDistribSMulUnits [Monoid M] [AddZeroClass α] [DistribSMul M α] :
@@ -94,20 +93,23 @@ instance [Monoid M] [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
 
 /-! ### Action of a group `G` on units of `M` -/
 
+/-- If a scalar multiplication `G` associates and commutes with multiplication on `M`, then it lifts to
+to a scalar multiplication on `Mˣ. -/
+instance instSMul' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M] :
+    SMul G Mˣ where
+  smul g m :=
+    ⟨g • (m : M), (g⁻¹ • ((m⁻¹ : Mˣ) : M)),
+      by rw [smul_mul_smul, Units.mul_inv, mul_right_inv, one_smul],
+      by rw [smul_mul_smul, Units.inv_mul, mul_left_inv, one_smul]⟩
 
 /-- If an action `G` associates and commutes with multiplication on `M`, then it lifts to an
 action on `Mˣ`. Notably, this provides `MulAction Mˣ Nˣ` under suitable
 conditions.
 -/
-instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
-    [IsScalarTower G M M] :
+instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M] :
     MulAction G Mˣ where
-  smul g m :=
-    ⟨g • (m : M), (g⁻¹ • ((m⁻¹ : Mˣ) : M)),
-      by rw [smul_mul_smul, Units.mul_inv, mul_right_inv, one_smul],
-      by rw [smul_mul_smul, Units.inv_mul, mul_left_inv, one_smul]⟩
-  one_smul m := Units.ext <| one_smul _ _
-  mul_smul g₁ g₂ m := Units.ext <| mul_smul _ _ _
+  one_smul _ := Units.ext <| one_smul _ _
+  mul_smul _ _ _ := Units.ext <| mul_smul _ _ _
 #align units.mul_action' Units.mulAction'
 
 @[simp]
@@ -152,7 +154,6 @@ example [Monoid M] [Monoid N] [MulAction M N] [SMulCommClass M N N] [IsScalarTow
 instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SMulCommClass G M M]
     [IsScalarTower G M M] : MulDistribMulAction G Mˣ :=
   { Units.mulAction' with
-    smul := (· • ·),
     smul_one := fun _ => Units.ext <| smul_one _,
     smul_mul := fun _ _ _ => Units.ext <| smul_mul' _ _ _ }
 #align units.mul_distrib_mul_action' Units.mulDistribMulAction'

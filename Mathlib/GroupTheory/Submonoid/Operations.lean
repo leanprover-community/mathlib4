@@ -444,7 +444,7 @@ variable {ι : Type*} {f : F} (hf : Function.Surjective f)
 def giMapComap : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
     let ⟨y, hy⟩ := hf x
-    mem_map.2 ⟨y, by simp [hy, h]⟩
+    mem_map.2 ⟨y, by simp only [mem_comap, hy, and_true]; exact h⟩
 #align submonoid.gi_map_comap Submonoid.giMapComap
 #align add_submonoid.gi_map_comap AddSubmonoid.giMapComap
 

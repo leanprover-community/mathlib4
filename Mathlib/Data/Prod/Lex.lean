@@ -145,13 +145,17 @@ instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearO
 instance [Ord α] [Ord β] : Ord (α ×ₗ β) where
   compare := compareLex (compareOn (·.1)) (compareOn (·.2))
 
-instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where
+instance [Bot α] [Bot β] : Bot (α ×ₗ β) where
   bot := toLex ⊥
+
+instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where
   bot_le _ := toLex_mono bot_le
 #align prod.lex.order_bot Prod.Lex.orderBot
 
-instance orderTop [PartialOrder α] [Preorder β] [OrderTop α] [OrderTop β] : OrderTop (α ×ₗ β) where
+instance [Top α] [Top β] : Top (α ×ₗ β) where
   top := toLex ⊤
+
+instance orderTop [PartialOrder α] [Preorder β] [OrderTop α] [OrderTop β] : OrderTop (α ×ₗ β) where
   le_top _ := toLex_mono le_top
 #align prod.lex.order_top Prod.Lex.orderTop
 

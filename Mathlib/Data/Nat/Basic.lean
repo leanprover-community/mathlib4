@@ -24,32 +24,32 @@ namespace Nat
 
 /-! ### Instances -/
 
-instance commSemiring : CommSemiring ℕ where
-  add := Nat.add
-  add_assoc := Nat.add_assoc
-  zero := Nat.zero
-  zero_add := Nat.zero_add
+instance : One ℕ := ⟨Nat.succ Nat.zero⟩
+
+instance : AddMonoid ℕ where
   add_zero := Nat.add_zero
-  add_comm := Nat.add_comm
-  mul := Nat.mul
-  mul_assoc := Nat.mul_assoc
-  one := Nat.succ Nat.zero
-  one_mul := Nat.one_mul
-  mul_one := Nat.mul_one
-  left_distrib := Nat.left_distrib
-  right_distrib := Nat.right_distrib
-  zero_mul := Nat.zero_mul
-  mul_zero := Nat.mul_zero
-  mul_comm := Nat.mul_comm
-  natCast n := n
-  natCast_zero := rfl
-  natCast_succ n := rfl
+  zero_add := Nat.zero_add
+  add_assoc := Nat.add_assoc
   nsmul m n := m * n
   nsmul_zero := Nat.zero_mul
   nsmul_succ _ _ := by dsimp only; rw [Nat.add_comm, Nat.right_distrib, Nat.one_mul]
+
+instance : Semiring ℕ where
+  toNatCast := instNatCastNat
+  add_comm := Nat.add_comm
+  mul_assoc := Nat.mul_assoc
+  zero_mul := Nat.zero_mul
+  mul_zero := Nat.mul_zero
+  left_distrib := Nat.left_distrib
+  right_distrib := Nat.right_distrib
+  one_mul := Nat.one_mul
+  mul_one := Nat.mul_one
   npow m n := n ^ m
   npow_zero := Nat.pow_zero
   npow_succ _ _ := Nat.pow_succ'
+
+instance commSemiring : CommSemiring ℕ where
+  mul_comm := Nat.mul_comm
 
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 

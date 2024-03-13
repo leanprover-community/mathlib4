@@ -132,10 +132,16 @@ def map {α β} (f : α → β) (a : Erased α) : Erased β :=
 theorem map_out {α β} {f : α → β} (a : Erased α) : (a.map f).out = f a.out := by simp [map]
 #align erased.map_out Erased.map_out
 
-protected instance Monad : Monad Erased where
+protected instance instPure : Pure Erased where
   pure := @mk
+
+protected instance instBind : Bind Erased where
   bind := @bind
+
+protected instance instMap : Functor Erased where
   map := @map
+
+protected instance Monad : Monad Erased where
 #align erased.monad Erased.Monad
 
 @[simp]

@@ -679,15 +679,21 @@ def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = alg
 
 end OfRingEquiv
 
+instance instMul : Mul (A₁ ≃ₐ[R] A₁) where
+  mul ϕ ψ := ψ.trans ϕ
+
+instance instOne : One (A₁ ≃ₐ[R] A₁) where
+  one := refl
+
+instance instInv : Inv (A₁ ≃ₐ[R] A₁) where
+  inv ϕ := ϕ.symm
+
 -- Porting note: projections mul & one not found, removed [simps] and added theorems manually
 -- @[simps (config := .lemmasOnly) one]
 instance aut : Group (A₁ ≃ₐ[R] A₁) where
-  mul ϕ ψ := ψ.trans ϕ
   mul_assoc ϕ ψ χ := rfl
-  one := refl
   one_mul ϕ := ext fun x => rfl
   mul_one ϕ := ext fun x => rfl
-  inv := symm
   mul_left_inv ϕ := ext <| symm_apply_apply ϕ
 #align alg_equiv.aut AlgEquiv.aut
 
@@ -737,11 +743,13 @@ theorem autCongr_trans (ϕ : A₁ ≃ₐ[R] A₂) (ψ : A₂ ≃ₐ[R] A₃) :
   rfl
 #align alg_equiv.aut_congr_trans AlgEquiv.autCongr_trans
 
+instance instSMul : SMul (A₁ ≃ₐ[R] A₁) A₁ where
+  smul := (· <| ·)
+
 /-- The tautological action by `A₁ ≃ₐ[R] A₁` on `A₁`.
 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁ where
-  smul := (· <| ·)
   smul_zero := AlgEquiv.map_zero
   smul_add := AlgEquiv.map_add
   smul_one := AlgEquiv.map_one
@@ -767,8 +775,10 @@ instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁ where
   smul_comm e r a := e.map_smul r a
 #align alg_equiv.apply_smul_comm_class' AlgEquiv.apply_smulCommClass'
 
-instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
+instance instSMulUnits : SMul (A₁ ≃ₐ[R] A₁) A₁ˣ where
   smul := fun f => Units.map f
+
+instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
   one_smul := fun x => by ext; rfl
   mul_smul := fun x y z => by ext; rfl
   smul_mul := fun x y z => by ext; exact x.map_mul _ _

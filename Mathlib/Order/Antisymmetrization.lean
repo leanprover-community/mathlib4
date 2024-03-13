@@ -137,14 +137,18 @@ theorem AntisymmRel.image {a b : α} (h : AntisymmRel (· ≤ ·) a b) {f : α �
   ⟨hf h.1, hf h.2⟩
 #align antisymm_rel.image AntisymmRel.image
 
-instance instPartialOrderAntisymmetrization : PartialOrder (Antisymmetrization α (· ≤ ·)) where
+instance instLE : LE (Antisymmetrization α (· ≤ ·)) where
   le a b :=
     (Quotient.liftOn₂' a b (· ≤ ·)) fun (_ _ _ _ : α) h₁ h₂ =>
       propext ⟨fun h => h₁.2.trans <| h.trans h₂.1, fun h => h₁.1.trans <| h.trans h₂.2⟩
+
+instance instLT : LT (Antisymmetrization α (· ≤ ·)) where
   lt a b :=
     (Quotient.liftOn₂' a b (· < ·)) fun (_ _ _ _ : α) h₁ h₂ =>
       propext ⟨fun h => h₁.2.trans_lt <| h.trans_le h₂.1, fun h =>
                 h₁.1.trans_lt <| h.trans_le h₂.2⟩
+
+instance instPartialOrderAntisymmetrization : PartialOrder (Antisymmetrization α (· ≤ ·)) where
   le_refl a := Quotient.inductionOn' a <| le_refl
   le_trans a b c := Quotient.inductionOn₃' a b c fun _ _ _ => le_trans
   lt_iff_le_not_le a b := Quotient.inductionOn₂' a b fun _ _ => lt_iff_le_not_le

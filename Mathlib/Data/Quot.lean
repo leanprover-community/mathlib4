@@ -536,9 +536,13 @@ def map (f : α → β) (q : Trunc α) : Trunc β :=
   bind q (Trunc.mk ∘ f)
 #align trunc.map Trunc.map
 
-instance : Monad Trunc where
+instance : Pure Trunc where
   pure := @Trunc.mk
+
+instance : Bind Trunc where
   bind := @Trunc.bind
+
+instance : Monad Trunc where
 
 instance : LawfulMonad Trunc where
   id_map _ := Trunc.eq _ _

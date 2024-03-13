@@ -240,10 +240,14 @@ theorem comp_id (f : A →⋆ₙₐ[R] B) : f.comp (NonUnitalStarAlgHom.id _ _) 
   ext fun _ => rfl
 #align non_unital_star_alg_hom.comp_id NonUnitalStarAlgHom.comp_id
 
-instance : Monoid (A →⋆ₙₐ[R] A) where
+instance instMul : Mul (A →⋆ₙₐ[R] A) where
   mul := comp
-  mul_assoc := comp_assoc
+
+instance instOne : One (A →⋆ₙₐ[R] A) where
   one := NonUnitalStarAlgHom.id R A
+
+instance : Monoid (A →⋆ₙₐ[R] A) where
+  mul_assoc := comp_assoc
   one_mul := id_comp
   mul_one := comp_id
 
@@ -504,10 +508,14 @@ theorem comp_id (f : A →⋆ₐ[R] B) : f.comp (StarAlgHom.id _ _) = f :=
   ext fun _ => rfl
 #align star_alg_hom.comp_id StarAlgHom.comp_id
 
-instance : Monoid (A →⋆ₐ[R] A) where
+instance instMul : Mul (A →⋆ₐ[R] A) where
   mul := comp
-  mul_assoc := comp_assoc
+
+instance instOne : One (A →⋆ₐ[R] A) where
   one := StarAlgHom.id R A
+
+instance : Monoid (A →⋆ₐ[R] A) where
+  mul_assoc := comp_assoc
   one_mul := id_comp
   mul_one := comp_id
 

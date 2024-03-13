@@ -310,7 +310,7 @@ protected def Function.Injective.divisionRing [DivisionRing K] {K'} [Zero K'] [O
     DivisionRing K' :=
   { hf.groupWithZero f zero one mul inv div npow zpow,
     hf.ring f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
-    ratCast := Rat.cast,
+    toRatCast := ‹RatCast K'›,
     ratCast_mk := fun a b h1 h2 ↦
       hf
         (by
@@ -348,7 +348,7 @@ protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'
     Field K' :=
   { hf.commGroupWithZero f zero one mul inv div npow zpow,
     hf.commRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
-    ratCast := Rat.cast,
+    toRatCast := ‹RatCast K'›,
     ratCast_mk := fun a b h1 h2 ↦
       hf
         (by

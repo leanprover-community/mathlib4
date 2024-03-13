@@ -210,9 +210,7 @@ private theorem nsmul_succ' (n : ℕ) (x : LocalizedModule S M) : n.succ • x =
   LocalizedModule.induction_on (fun _ _ => rfl) x
 
 instance : AddCommMonoid (LocalizedModule S M) where
-  add := (· + ·)
   add_assoc := add_assoc'
-  zero := 0
   zero_add := zero_add'
   add_zero := add_zero'
   nsmul := (· • ·)
@@ -227,7 +225,7 @@ instance {M : Type*} [AddCommGroup M] [Module R M] : Neg (LocalizedModule S M) w
       exact ⟨u, by simpa⟩
 
 instance {M : Type*} [AddCommGroup M] [Module R M] : AddCommGroup (LocalizedModule S M) :=
-  { show AddCommMonoid (LocalizedModule S M) by infer_instance with
+  { instAddCommMonoidLocalizedModule with
     add_left_neg := by
       rintro ⟨m, s⟩
       change
@@ -245,9 +243,9 @@ theorem mk_neg {M : Type*} [AddCommGroup M] [Module R M] {m : M} {s : S} : mk (-
   rfl
 #align localized_module.mk_neg LocalizedModule.mk_neg
 
-instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
-    Monoid (LocalizedModule S A) :=
-  { mul := fun m₁ m₂ =>
+instance instMul {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
+    Mul (LocalizedModule S A) where
+  mul := fun m₁ m₂ =>
       liftOn₂ m₁ m₂ (fun x₁ x₂ => LocalizedModule.mk (x₁.1 * x₂.1) (x₁.2 * x₂.2))
         (by
           rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨b₁, t₁⟩ ⟨b₂, t₂⟩ ⟨u₁, e₁⟩ ⟨u₂, e₂⟩
@@ -260,8 +258,14 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
           all_goals
             rw [smul_smul, mul_mul_mul_comm, ← smul_eq_mul, ← smul_eq_mul A, smul_smul_smul_comm,
               mul_smul, mul_smul])
-    one := mk 1 (1 : S)
-    one_mul := by
+
+instance instOne {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
+    One (LocalizedModule S A) where
+  one := mk 1 (1 : S)
+
+instance instMonoid {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
+    Monoid (LocalizedModule S A) :=
+  { one_mul := by
       rintro ⟨a, s⟩
       exact mk_eq.mpr ⟨1, by simp only [one_mul, one_smul]⟩
     mul_one := by
@@ -275,8 +279,7 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
 
 instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Semiring (LocalizedModule S A) :=
-  { show (AddCommMonoid (LocalizedModule S A)) by infer_instance,
-    show (Monoid (LocalizedModule S A)) by infer_instance with
+  { instMonoid, instAddCommMonoidLocalizedModule with
     left_distrib := by
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
       apply mk_eq.mpr _
@@ -395,7 +398,6 @@ private theorem zero_smul_aux (p : LocalizedModule S M) : (0 : T) • p = 0 := b
     zero_smul, zero_mk]
 
 noncomputable instance isModule : Module T (LocalizedModule S M) where
-  smul := (· • ·)
   one_smul := one_smul_aux
   mul_smul := mul_smul_aux
   smul_add := smul_add_aux

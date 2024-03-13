@@ -426,11 +426,15 @@ theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
   φ.toRingHom.map_list_prod s
 #align alg_hom.map_list_prod AlgHom.map_list_prod
 
-@[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
-instance End : Monoid (A →ₐ[R] A) where
-  mul := comp
-  mul_assoc ϕ ψ χ := rfl
+instance instOne : One (A →ₐ[R] A) where
   one := AlgHom.id R A
+
+instance instMul : Mul (A →ₐ[R] A) where
+  mul := AlgHom.comp
+
+@[simps! (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
+instance End : Monoid (A →ₐ[R] A) where
+  mul_assoc ϕ ψ χ := rfl
   one_mul ϕ := ext fun x => rfl
   mul_one ϕ := ext fun x => rfl
 #align alg_hom.End AlgHom.End
@@ -575,8 +579,10 @@ theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 
 section MulDistribMulAction
 
-instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
+instance instSMul : SMul (A →ₐ[R] A) Aˣ where
   smul := fun f => Units.map f
+
+instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
   one_smul := fun x => by ext; rfl
   mul_smul := fun x y z => by ext; rfl
   smul_mul := fun x y z => by ext; exact x.map_mul _ _

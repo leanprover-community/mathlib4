@@ -317,11 +317,6 @@ The `Rat.field` instance and any field-specific lemmas can be found in `Mathlib.
 -/
 
 instance commRing : CommRing ℚ where
-  zero := 0
-  add := (· + ·)
-  neg := Neg.neg
-  one := 1
-  mul := (· * ·)
   zero_add := Rat.zero_add
   add_zero := Rat.add_zero
   add_comm := Rat.add_comm
@@ -338,12 +333,12 @@ instance commRing : CommRing ℚ where
   sub_eq_add_neg := Rat.sub_eq_add_neg
   nsmul := nsmulRec
   zsmul := zsmulRec
-  intCast := fun n => n
-  natCast n := Int.cast n
+  toNatCast := instNatCastRat
   natCast_zero := rfl
   natCast_succ n := by
-    simp only [coe_int_eq_divInt, add_def'' one_ne_zero one_ne_zero,
-      ← divInt_one_one, Nat.cast_add, Nat.cast_one, mul_one]
+    dsimp [NatCast.natCast]
+    simp only [Nat.cast_add, Nat.cast_one, intCast_add]
+    rfl
 
 instance commGroupWithZero : CommGroupWithZero ℚ :=
   { exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩

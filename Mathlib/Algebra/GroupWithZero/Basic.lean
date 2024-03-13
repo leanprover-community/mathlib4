@@ -115,7 +115,6 @@ theorem eq_zero_of_zero_eq_one (h : (0 : M₀) = 1) (a : M₀) : a = 0 := by
 Somewhat arbitrarily, we define the default element to be `0`.
 All other elements will be provably equal to it, but not necessarily definitionally equal. -/
 def uniqueOfZeroEqOne (h : (0 : M₀) = 1) : Unique M₀ where
-  default := 0
   uniq := eq_zero_of_zero_eq_one h
 #align unique_of_zero_eq_one uniqueOfZeroEqOne
 
@@ -311,20 +310,15 @@ private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b := by
 -- See note [lower instance priority]
 instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ :=
   { ‹GroupWithZero G₀› with
-    inv := Inv.inv,
     inv_inv := fun a => by
       by_cases h : a = 0
       · simp [h]
-
-      · exact left_inv_eq_right_inv (inv_mul_cancel <| inv_ne_zero h) (inv_mul_cancel h)
-        ,
+      · exact left_inv_eq_right_inv (inv_mul_cancel <| inv_ne_zero h) (inv_mul_cancel h),
     mul_inv_rev := fun a b => by
       by_cases ha : a = 0
       · simp [ha]
-
       by_cases hb : b = 0
       · simp [hb]
-
       refine' inv_eq_of_mul _
       simp [mul_assoc, ha, hb],
     inv_eq_of_mul := fun _ _ => inv_eq_of_mul }

@@ -265,14 +265,10 @@ theorem toAdd_one [Zero α] : toAdd (1 : Multiplicative α) = 0 :=
 #align to_add_one toAdd_one
 
 instance Additive.addZeroClass [MulOneClass α] : AddZeroClass (Additive α) where
-  zero := 0
-  add := (· + ·)
   zero_add := @one_mul α _
   add_zero := @mul_one α _
 
 instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicative α) where
-  one := 1
-  mul := (· * ·)
   one_mul := @zero_add α _
   mul_one := @add_zero α _
 
