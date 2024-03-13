@@ -46,7 +46,7 @@ variable {N₁ : Type*} {N₂ : Type*} {N₃ : Type*} {N₄ : Type*} {ι : Type*
 section
 
 /-- A linear equivalence is an invertible linear map. -/
---Porting note: TODO @[nolint has_nonempty_instance]
+-- Porting note (#11215): TODO @[nolint has_nonempty_instance]
 structure LinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
   {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
   [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
@@ -186,8 +186,8 @@ instance : FunLike (M ≃ₛₗ[σ] M₂) M M₂ where
   coe_injective' := DFunLike.coe_injective
 
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
-  map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
-  map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
+  map_add := (·.map_add') --map_add' Porting note (#11215): TODO why did I need to change this?
+  map_smulₛₗ := (·.map_smul') --map_smul' Porting note (#11215): TODO why did I need to change this?
 
 -- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
 @[simp]
@@ -232,7 +232,7 @@ theorem coe_toLinearMap : ⇑e.toLinearMap = e :=
   rfl
 #align linear_equiv.coe_to_linear_map LinearEquiv.coe_toLinearMap
 
--- porting note: no longer a `simp`
+-- Porting note: no longer a `simp`
 theorem toFun_eq_coe : e.toFun = e := rfl
 #align linear_equiv.to_fun_eq_coe LinearEquiv.toFun_eq_coe
 

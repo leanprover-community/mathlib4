@@ -31,7 +31,8 @@ We prove the following theorems:
 
 open Set LinearMap
 
-open Classical Pointwise
+open scoped Classical
+open Pointwise
 
 variable {𝕜 E F G : Type*}
 

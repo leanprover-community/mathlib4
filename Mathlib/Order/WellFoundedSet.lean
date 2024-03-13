@@ -412,7 +412,7 @@ theorem PartiallyWellOrderedOn.wellFoundedOn [IsPreorder α r] (h : s.PartiallyW
       le_refl := refl_of r
       le_trans := fun _ _ _ => trans_of r }
   change s.WellFoundedOn (· < ·)
-  replace h : s.PartiallyWellOrderedOn (· ≤ ·) := h -- porting note: was `change _ at h`
+  replace h : s.PartiallyWellOrderedOn (· ≤ ·) := h -- Porting note: was `change _ at h`
   rw [wellFoundedOn_iff_no_descending_seq]
   intro f hf
   obtain ⟨m, n, hlt, hle⟩ := h f hf
@@ -552,7 +552,7 @@ protected theorem IsWF.isPWO (hs : s.IsWF) : s.IsPWO := by
   intro f hf
   lift f to ℕ → s using hf
   rcases hs.has_min (range f) (range_nonempty _) with ⟨_, ⟨m, rfl⟩, hm⟩
-  simp only [forall_range_iff, not_lt] at hm
+  simp only [forall_mem_range, not_lt] at hm
   exact ⟨m, m + 1, lt_add_one m, hm _⟩
 #align set.is_wf.is_pwo Set.IsWF.isPWO
 

@@ -49,7 +49,8 @@ noncomputable section
 
 open Function Cardinal Set Order
 
-open Classical Cardinal Ordinal
+open scoped Classical
+open Cardinal Ordinal
 
 universe u v w
 
@@ -515,7 +516,6 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
 @[simp]
 theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
   ⟨inductionOn o fun α r _ z => by
-      skip
       rcases cof_eq r with ⟨S, hl, e⟩; rw [z] at e
       cases' mk_ne_zero_iff.1 (by rw [e]; exact one_ne_zero) with a
       refine'
@@ -770,7 +770,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       let o := succ (sup.{u, u} g)
       rcases H o with ⟨b, h, l⟩
       refine' l (lt_succ_iff.2 _)
-      rw [← show g (f.symm ⟨b, h⟩) = b by simp]
+      rw [← show g (f.symm ⟨b, h⟩) = b by simp [g]]
       apply le_sup)
 #align ordinal.cof_univ Ordinal.cof_univ
 
@@ -975,7 +975,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
     succ_le_of_lt
       (by
         cases' Quotient.exists_rep (@succ Cardinal _ _ c) with α αe; simp at αe
-        rcases ord_eq α with ⟨r, wo, re⟩; skip
+        rcases ord_eq α with ⟨r, wo, re⟩
         have := ord_isLimit (h.trans (le_succ _))
         rw [← αe, re] at this ⊢
         rcases cof_eq' r this with ⟨S, H, Se⟩
@@ -1045,7 +1045,7 @@ theorem le_range_of_union_finset_eq_top {α β : Type*} [Infinite β] (f : α �
   let u' : β → range f := fun b => ⟨f (u b).choose, by simp⟩
   have v' : ∀ a, u' ⁻¹' {⟨f a, by simp⟩} ≤ f a := by
     rintro a p m
-    simp? at m says simp only [mem_preimage, mem_singleton_iff, Subtype.mk.injEq] at m
+    simp? [u']  at m says simp only [mem_preimage, mem_singleton_iff, Subtype.mk.injEq, u'] at m
     rw [← m]
     apply fun b => (u b).choose_spec
   obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h k
@@ -1221,7 +1221,7 @@ theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
 
 theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < (c^cof c.ord) :=
   Quotient.inductionOn c fun α h => by
-    rcases ord_eq α with ⟨r, wo, re⟩; skip
+    rcases ord_eq α with ⟨r, wo, re⟩
     have := ord_isLimit h
     rw [mk'_def, re] at this ⊢
     rcases cof_eq' r this with ⟨S, H, Se⟩

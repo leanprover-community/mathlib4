@@ -73,7 +73,7 @@ protected theorem withDensity_apply' (κ : kernel α β) [IsSFiniteKernel κ]
 #align probability_theory.kernel.with_density_apply' ProbabilityTheory.kernel.withDensity_apply'
 
 nonrec lemma withDensity_congr_ae (κ : kernel α β) [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞}
-  (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g))
+    (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g))
     (hfg : ∀ a, f a =ᵐ[κ a] g a) :
     withDensity κ f = withDensity κ g := by
   ext a
@@ -226,7 +226,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
   have h_zero : ∀ a b n, ⌈(f a b).toReal⌉₊ ≤ n → fs n a b = 0 := by
     intro a b n hn
     suffices min (f a b) (n + 1) = f a b ∧ min (f a b) n = f a b by
-      simp_rw [this.1, this.2, tsub_self (f a b)]
+      simp_rw [fs, this.1, this.2, tsub_self (f a b)]
     exact ⟨min_eq_left ((h_le a b n hn).trans (le_add_of_nonneg_right zero_le_one)),
       min_eq_left (h_le a b n hn)⟩
   have hf_eq_tsum : f = ∑' n, fs n := by
@@ -245,7 +245,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
       induction' n with n hn
       · simp
       rw [Finset.sum_range_succ, hn]
-      simp
+      simp [fs]
     simp_rw [h_finset_sum]
     refine' (Filter.Tendsto.liminf_eq _).symm
     refine' Filter.Tendsto.congr' _ tendsto_const_nhds

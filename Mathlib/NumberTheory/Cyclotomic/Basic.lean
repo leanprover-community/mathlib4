@@ -524,15 +524,15 @@ def CyclotomicField : Type w :=
 
 namespace CyclotomicField
 
---Porting note: could not be derived
+-- Porting note: could not be derived
 instance : Field (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
---Porting note: could not be derived
+-- Porting note: could not be derived
 instance algebra : Algebra K (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
---Porting note: could not be derived
+-- Porting note: could not be derived
 instance : Inhabited (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
@@ -603,15 +603,15 @@ def CyclotomicRing : Type w :=
 
 namespace CyclotomicRing
 
---Porting note: could not be derived
+-- Porting note: could not be derived
 instance : CommRing (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
---Porting note: could not be derived
+-- Porting note: could not be derived
 instance : IsDomain (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
---Porting note: could not be derived
+-- Porting note: could not be derived
 instance : Inhabited (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 

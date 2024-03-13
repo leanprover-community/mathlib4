@@ -116,7 +116,7 @@ variable {J : Type u} [Category.{v} J]
 
 /-- The sections of a functor `J ⥤ Type` are
 the choices of a point `u j : F.obj j` for each `j`,
-such that `F.map f (u j) = u j` for every morphism `f : j ⟶ j'`.
+such that `F.map f (u j) = u j'` for every morphism `f : j ⟶ j'`.
 
 We later use these to define limits in `Type` and in many concrete categories.
 -/
@@ -129,6 +129,9 @@ def sections (F : J ⥤ Type w) : Set (∀ j, F.obj j) :=
 lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
     {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
   s.property f
+
+lemma sections_ext_iff {F : J ⥤ Type w} {x y : F.sections} : x = y ↔ ∀ j, x.val j = y.val j :=
+  Subtype.ext_iff.trans Function.funext_iff
 
 variable (J)
 
@@ -255,7 +258,6 @@ See <https://stacks.math.columbia.edu/tag/003C>.
 theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro H x x' h
-    skip
     rw [← homOfElement_eq_iff] at h ⊢
     exact (cancel_mono f).mp h
   · exact fun H => ⟨fun g g' h => H.comp_left h⟩

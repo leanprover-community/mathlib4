@@ -54,14 +54,20 @@ end Preadditive
 with the addition. -/
 def preadditive : Preadditive (Quotient r) where
   homGroup P Q :=
-    { add := Preadditive.add r hr
-      add_assoc := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact congr_arg (functor r).map (add_assoc _ _ _)
-      zero := Quot.mk _ 0
+    let iZ : Zero (P ⟶ Q) :=
+      { zero := Quot.mk _ 0 }
+    let iA : Add (P ⟶ Q) :=
+      { add := Preadditive.add r hr }
+    let iN : Neg (P ⟶ Q) :=
+      { neg := Preadditive.neg r hr }
+    { add_assoc := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact congr_arg (functor r).map (add_assoc _ _ _)
       zero_add := by rintro ⟨_⟩; exact congr_arg (functor r).map (zero_add _)
       add_zero := by rintro ⟨_⟩; exact congr_arg (functor r).map (add_zero _)
       add_comm := by rintro ⟨_⟩ ⟨_⟩; exact congr_arg (functor r).map (add_comm _ _)
-      neg := Preadditive.neg r hr
-      add_left_neg := by rintro ⟨_⟩; exact congr_arg (functor r).map (add_left_neg _) }
+      add_left_neg := by rintro ⟨_⟩; exact congr_arg (functor r).map (add_left_neg _)
+      -- todo: use a better defeq
+      nsmul := nsmulRec
+      zsmul := zsmulRec }
   add_comp := by
     rintro _ _ _ ⟨_⟩ ⟨_⟩ ⟨_⟩
     exact congr_arg (functor r).map (by apply Preadditive.add_comp)
