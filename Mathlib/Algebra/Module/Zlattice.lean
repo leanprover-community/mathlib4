@@ -55,6 +55,8 @@ variable [NormedAddCommGroup E] [NormedSpace K E]
 
 variable (b : Basis ι K E)
 
+theorem span_top : span K (span ℤ (Set.range b) : Set E) = ⊤ := by simp [span_span_of_tower]
+
 /-- The fundamental domain of the ℤ-lattice spanned by `b`. See `Zspan.isAddFundamentalDomain`
 for the proof that it is a fundamental domain. -/
 def fundamentalDomain : Set E := {m | ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1}
@@ -309,6 +311,10 @@ instance [Fintype ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   · exact discreteTopology_pi_basisFun
   · refine Subtype.map_injective _ (Basis.equivFun b).injective
 
+instance [Fintype ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup := by
+  change DiscreteTopology (span ℤ (Set.range b))
+  infer_instance
+
 @[measurability]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
     MeasurableSet (fundamentalDomain b) := by
@@ -368,12 +374,18 @@ section Zlattice
 
 open Submodule
 
-/-- Docstring. -/
+/-- An `L : Addsubgroup E` where `E` is a finite dimension vector over a suitable normed field `K`,
+say `ℝ` for example, is a `ℤ`-lattice if it is discrete and spans `E` over `K`. -/
 class IsZlattice (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E] [ProperSpace E]
   (L : AddSubgroup E) [DiscreteTopology L] : Prop where
   /-- `L` spans the full space `E` over `K`. -/
   span_top : span K (L : Set E) = ⊤
+
+theorem _root_.Zspan.isZlattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] [Fintype ι] (b : Basis ι ℝ E) :
+    IsZlattice ℝ (span ℤ (Set.range b)).toAddSubgroup where
+  span_top := Zspan.span_top b
 
 variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
