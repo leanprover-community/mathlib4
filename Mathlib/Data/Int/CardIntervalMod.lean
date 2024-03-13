@@ -12,7 +12,7 @@ import Mathlib.Data.Rat.Floor
 /-!
 # Counting elements in an interval with given residue
 
-The theorems in this file generalise `card_multiples` in `Data.Nat.Factorization.Basic` to
+The theorems in this file generalise `Nat.card_multiples` in `Data.Nat.Factorization.Basic` to
 all integer intervals and any fixed residue (not just zero, which reduces to the multiples).
 Theorems are given for `Ico` and `Ioc` intervals.
 -/
@@ -25,14 +25,14 @@ namespace Int
 variable (a b : ℤ) {r : ℤ} (hr : 0 < r)
 
 lemma Ico_filter_dvd_eq : (Ico a b).filter (r ∣ ·) =
-    (Ico ⌈a / (r : ℚ)⌉ ⌈b / (r : ℚ)⌉).map ⟨_, mul_left_injective₀ hr.ne'⟩ := by
+    (Ico ⌈a / (r : ℚ)⌉ ⌈b / (r : ℚ)⌉).map ⟨(· * r), mul_left_injective₀ hr.ne'⟩ := by
   ext x
   simp only [mem_map, mem_filter, mem_Ico, ceil_le, lt_ceil, div_le_iff, lt_div_iff,
     dvd_iff_exists_eq_mul_left, cast_pos.2 hr, ← cast_mul, cast_lt, cast_le]
   aesop
 
 lemma Ioc_filter_dvd_eq : (Ioc a b).filter (r ∣ ·) =
-    (Ioc ⌊a / (r : ℚ)⌋ ⌊b / (r : ℚ)⌋).map ⟨_, mul_left_injective₀ hr.ne'⟩ := by
+    (Ioc ⌊a / (r : ℚ)⌋ ⌊b / (r : ℚ)⌋).map ⟨(· * r), mul_left_injective₀ hr.ne'⟩ := by
   ext x
   simp only [mem_map, mem_filter, mem_Ioc, floor_lt, le_floor, div_lt_iff, le_div_iff,
     dvd_iff_exists_eq_mul_left, cast_pos.2 hr, ← cast_mul, cast_lt, cast_le]
@@ -49,13 +49,13 @@ theorem Ioc_filter_dvd_card : ((Ioc a b).filter (r ∣ ·)).card =
   rw [Ioc_filter_dvd_eq _ _ hr, card_map, card_Ioc, toNat_eq_max]
 
 lemma Ico_filter_modEq_eq (v : ℤ) : (Ico a b).filter (· ≡ v [ZMOD r]) =
-    ((Ico (a - v) (b - v)).filter (r ∣ ·)).map ⟨_, add_left_injective v⟩ := by
+    ((Ico (a - v) (b - v)).filter (r ∣ ·)).map ⟨(· + v), add_left_injective v⟩ := by
   ext x
   simp_rw [mem_map, mem_filter, mem_Ico, Function.Embedding.coeFn_mk, ← eq_sub_iff_add_eq,
     exists_eq_right, modEq_comm, modEq_iff_dvd, sub_lt_sub_iff_right, sub_le_sub_iff_right]
 
 lemma Ioc_filter_modEq_eq (v : ℤ) : (Ioc a b).filter (· ≡ v [ZMOD r]) =
-    ((Ioc (a - v) (b - v)).filter (r ∣ ·)).map ⟨_, add_left_injective v⟩ := by
+    ((Ioc (a - v) (b - v)).filter (r ∣ ·)).map ⟨(· + v), add_left_injective v⟩ := by
   ext x
   simp_rw [mem_map, mem_filter, mem_Ioc, Function.Embedding.coeFn_mk, ← eq_sub_iff_add_eq,
     exists_eq_right, modEq_comm, modEq_iff_dvd, sub_lt_sub_iff_right, sub_le_sub_iff_right]
@@ -94,13 +94,15 @@ lemma Ioc_filter_modEq_cast {v : ℕ} : ((Ioc a b).filter (· ≡ v [MOD r])).ma
   · simp_rw [forall_exists_index, ← coe_nat_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
   · intro h; lift x to ℕ using (by linarith); exact ⟨x, by simp_all [coe_nat_modEq_iff]⟩
 
-/-- `Int.Ico_filter_modEq_card` restricted to natural numbers. -/
+/-- There are `⌈(b - v) / r⌉ - ⌈(a - v) / r⌉` numbers congruent to `v` mod `r` in `[a, b)`,
+if `a ≤ b`. `Nat` version of `Int.Ico_filter_modEq_card`. -/
 theorem Ico_filter_modEq_card (v : ℕ) : ((Ico a b).filter (· ≡ v [MOD r])).card =
     max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
   simp_rw [← Ico_filter_modEq_cast _ _ ▸ card_map _,
     Int.Ico_filter_modEq_card _ _ (cast_lt.mpr hr), Int.cast_ofNat]
 
-/-- `Int.Ioc_filter_modEq_card` restricted to natural numbers. -/
+/-- There are `⌊(b - v) / r⌋ - ⌊(a - v) / r⌋` numbers congruent to `v` mod `r` in `(a, b]`,
+if `a ≤ b`. `Nat` version of `Int.Ioc_filter_modEq_card`. -/
 theorem Ioc_filter_modEq_card (v : ℕ) : ((Ioc a b).filter (· ≡ v [MOD r])).card =
     max (⌊(b - v) / (r : ℚ)⌋ - ⌊(a - v) / (r : ℚ)⌋) 0 := by
   simp_rw [← Ioc_filter_modEq_cast _ _ ▸ card_map _,
