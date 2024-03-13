@@ -240,7 +240,7 @@ theorem _root_.IsPrimitiveRoot.dvd_of_isCyclotomicExtension [NumberField K]
 and `ζ` is a primitive `n`-th root of unity, then there exist `r` such that `x = (-1)^r * ζ^r`. -/
 theorem _root_.IsPrimitiveRoot.exists_neg_pow_mul_pow_of_pow_eq_one [NumberField K]
     [IsCyclotomicExtension {n} ℚ K] (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+}
-    (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) : ∃ (r : ℕ), x = (-1) ^ r * ζ ^ r :=  by
+    (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) : ∃ r : ℕ, x = (-1) ^ r * ζ ^ r :=  by
   have hnegζ : IsPrimitiveRoot (-ζ) (2 * n) := by
     convert IsPrimitiveRoot.orderOf (-ζ)
     rw [neg_eq_neg_one_mul, (Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
