@@ -312,8 +312,7 @@ variable [Abelian C] [EnoughInjectives C] (Z : C)
 /-- Auxiliary definition for `InjectiveResolution.of`. -/
 def ofCocomplex : CochainComplex C ℕ :=
   CochainComplex.mk' (Injective.under Z) (Injective.syzygies (Injective.ι Z))
-    (Injective.d (Injective.ι Z)) fun ⟨_, _, f⟩ =>
-    ⟨Injective.syzygies f, Injective.d f, by simp⟩
+    (Injective.d (Injective.ι Z)) fun f => ⟨_, Injective.d f, by simp⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.of_cocomplex CategoryTheory.InjectiveResolution.ofCocomplex
 

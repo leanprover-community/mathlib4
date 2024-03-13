@@ -395,7 +395,7 @@ theorem node3R_size {l x m y r} : size (@node3R α l x m y r) = size l + size m 
 
 theorem node4L_size {l x m y r} (hm : Sized m) :
     size (@node4L α l x m y r) = size l + size m + size r + 2 := by
-  cases m <;> simp [node4L, node3L, node'] <;> [skip; simp [size, hm.1]] <;> abel
+  cases m <;> simp [node4L, node3L, node'] <;> [abel; (simp [size, hm.1]; abel)]
 #align ordnode.node4_l_size Ordnode.node4L_size
 
 theorem Sized.dual : ∀ {t : Ordnode α}, Sized t → Sized (dual t)

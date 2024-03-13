@@ -203,7 +203,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
 /-- **Rice's Theorem** -/
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
-  cases' h with _ h; skip
+  cases' h with _ h
   obtain ⟨c, e⟩ :=
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
