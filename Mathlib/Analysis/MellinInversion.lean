@@ -11,7 +11,7 @@ import Mathlib.Analysis.Fourier.Inversion
 We derive the Mellin inversion formula as a consequence of the Fourier inversion formula.
 
 ## Main results
-- `mellin_inversion`: The inverse Mellin transform of the Mellin transform applied to `x > 0` is x.
+- `mellinInversion`: The inverse Mellin transform of the Mellin transform applied to `x > 0` is x.
 -/
 
 open Real Complex Set MeasureTheory
@@ -44,7 +44,8 @@ private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
 theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
     mellin f s = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) :=
   calc
-    _ = ∫ (u : ℝ), Complex.exp (-s * u) • f (Real.exp (-u)) := by
+    mellin f s
+      = ∫ (u : ℝ), Complex.exp (-s * u) • f (Real.exp (-u)) := by
       rw [mellin, ← rexp_neg_image_aux, integral_image_eq_integral_abs_deriv_smul
         MeasurableSet.univ rexp_neg_deriv_aux rexp_neg_injOn_aux]
       simp [rexp_cexp_aux]
@@ -62,15 +63,16 @@ theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
       rw [mul_comm (-s.im : ℂ) (u : ℂ), mul_comm (-2 * π)]
       have : 2 * (π : ℂ) ≠ 0 := by norm_num; exact pi_ne_zero
       field_simp
-    _ = _ := by
+    _ = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) := by
       simp [fourierIntegral_eq']
 
-theorem mellin_inv_eq_fourierIntegral_inv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
-    mellin_inv σ f x =
+theorem mellinInv_eq_fourierIntegral_inv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
+    mellinInv σ f x =
     (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := calc
-  _ = (x : ℂ) ^ (-σ : ℂ) •
+  mellinInv σ f x
+    = (x : ℂ) ^ (-σ : ℂ) •
       (∫ (y : ℝ), Complex.exp (2 * π * (y * (-Real.log x)) * I) • f (σ + 2 * π * y * I)) := by
-    rw [mellin_inv, one_div, ← abs_of_pos (show 0 < (2 * π)⁻¹ by norm_num; exact pi_pos)]
+    rw [mellinInv, one_div, ← abs_of_pos (show 0 < (2 * π)⁻¹ by norm_num; exact pi_pos)]
     have hx0 : (x : ℂ) ≠ 0 := ofReal_ne_zero.mpr (ne_of_gt hx)
     simp_rw [neg_add, cpow_add _ _ hx0, mul_smul, integral_smul]
     rw [smul_comm, ← Measure.integral_comp_mul_left]
@@ -78,14 +80,15 @@ theorem mellin_inv_eq_fourierIntegral_inv (σ : ℝ) (f : ℂ → E) {x : ℝ} (
     rw [cpow_def_of_ne_zero hx0, ← Complex.ofReal_log hx.le]
     push_cast
     ring_nf
-  _ = _ := by simp [fourierIntegralInv_eq']
+  _ = (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := by
+    simp [fourierIntegralInv_eq']
 
 variable [CompleteSpace E]
 
 /-- The inverse Mellin transform of the Mellin transform applied to `x > 0` is x. -/
-theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf : MellinConvergent f σ)
+theorem mellinInversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf : MellinConvergent f σ)
     (hFf : VerticalIntegrable (mellin f) σ) (hfx : ContinuousAt f x) :
-    mellin_inv σ (mellin f) x = f x := by
+    mellinInv σ (mellin f) x = f x := by
   let g := fun (u : ℝ) => Real.exp (-σ * u) • f (Real.exp (-u))
   replace hf : Integrable g := by
     rw [MellinConvergent, ← rexp_neg_image_aux, integrableOn_image_iff_integrableOn_abs_deriv_smul
@@ -95,20 +98,24 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
     norm_cast at hf
   replace hFf : Integrable (𝓕 g) := by
     have h2π : 2 * π ≠ 0 := by norm_num; exact pi_ne_zero
-    haveI : HasDistribNeg ℝ := inferInstance
-    simpa [VerticalIntegrable, mellin_eq_fourierIntegral, mul_div_cancel _ h2π] using
-      hFf.comp_mul_right' h2π
+    simpa? [VerticalIntegrable, mellin_eq_fourierIntegral, mul_div_cancel _ h2π] using
+        hFf.comp_mul_right' h2π
+      says simpa only [ofReal_mul, ofReal_ofNat, mellin_eq_fourierIntegral, add_re,
+        ofReal_re, mul_re, re_ofNat, im_ofNat, ofReal_im, mul_zero, sub_zero, mul_im, zero_mul,
+        add_zero, I_re, I_im, mul_one, sub_self, add_im, zero_add, mul_div_cancel _ h2π] using
+        hFf.comp_mul_right' h2π
   replace hfx : ContinuousAt g (-Real.log x) := by
     refine ContinuousAt.smul (by fun_prop) (ContinuousAt.comp ?_ (by fun_prop))
     simpa [Real.exp_log hx] using hfx
   calc
-    _ = mellin_inv σ (fun s ↦ 𝓕 g (s.im / (2 * π))) x := by
-      simp [g, mellin_inv, mellin_eq_fourierIntegral]
+    mellinInv σ (mellin f) x
+      = mellinInv σ (fun s ↦ 𝓕 g (s.im / (2 * π))) x := by
+      simp [g, mellinInv, mellin_eq_fourierIntegral]
     _ = (x : ℂ) ^ (-σ : ℂ) • g (-Real.log x) := by
-      rw [mellin_inv_eq_fourierIntegral_inv _ _ hx, ← hf.fourier_inversion hFf hfx]
+      rw [mellinInv_eq_fourierIntegral_inv _ _ hx, ← hf.fourier_inversion hFf hfx]
       simp [mul_div_cancel_left _ (show 2 * π ≠ 0 by norm_num; exact pi_ne_zero)]
-    _ = _ := by
-      suffices (x : ℂ) ^ (-σ : ℂ) • rexp (σ * Real.log x) • f (rexp (Real.log x)) = f x by simpa [g]
+    _ = (x : ℂ) ^ (-σ : ℂ) • rexp (σ * Real.log x) • f (rexp (Real.log x)) := by simp [g]
+    _ = f x := by
       norm_cast
       rw [mul_comm σ, ← rpow_def_of_pos hx, Real.exp_log hx, ← Complex.ofReal_cpow hx.le]
       norm_cast

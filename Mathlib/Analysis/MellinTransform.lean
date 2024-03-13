@@ -111,7 +111,7 @@ def mellin (f : ℝ → E) (s : ℂ) : E :=
 
 /-- The Mellin inverse transform of a function `f`, defined as `1 / (2π)` times
 the integral of `y ↦ x ^ -(σ + yi) • f (σ + yi)`. -/
-def mellin_inv (σ : ℝ) (f : ℂ → E) (x : ℝ) : E :=
+def mellinInv (σ : ℝ) (f : ℂ → E) (x : ℝ) : E :=
   (1 / (2 * π)) • ∫ y : ℝ, (x : ℂ) ^ (-(σ + y * I)) • f (σ + y * I)
 
 -- next few lemmas don't require convergence of the Mellin transform (they are just 0 = 0 otherwise)
