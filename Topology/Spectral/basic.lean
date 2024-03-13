@@ -30,79 +30,40 @@ See the [StacksProject], tag 08YF for details.
 
 -/
 
-variable (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] (f: X → Y)
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+
+open TopologicalSpace
 
 /-- Let X be an open subspace of a topological space Y. If the quasi-compact opens
 of Y form a basis of Y, then the quasi-compact opens of X form a basis of X.-/
-theorem openEmbedding_of_qcOpenBasis_has_qcOpenBasis (X Y: Type*) [TopologicalSpace X] 
-  [TopologicalSpace Y] (f: X → Y) (hf : OpenEmbedding f) 
-  (hYb: TopologicalSpace.IsTopologicalBasis {S : Set Y | IsOpen S ∧ IsCompact S}) : 
-  (TopologicalSpace.IsTopologicalBasis {S : Set X | IsOpen S ∧ IsCompact S}) := by
-    apply TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
-    · intro U hU
-      cases' hU with hoU hcU
-      exact hoU
-    · intro x S hx hS
-      have hfS : IsOpen (f '' S) := by exact (OpenEmbedding.open_iff_image_open hf).mp hS
-      apply (TopologicalSpace.IsTopologicalBasis.isOpen_iff hYb).mp at hfS
-      specialize hfS (f x) 
-      have hxinhfS : f x ∈ f '' S := by exact Exists.intro x { left := hx, right := rfl }
-      apply hfS at hxinhfS
-      cases' hxinhfS with W hW
-      cases' hW with hocW hdummyW
-      cases' hocW with hoW hcW
-      cases' hdummyW with hfxW hWfS
-      use (f ⁻¹' W)
-      constructor
-      · constructor
-        · have hfcont : Continuous f := by exact OpenEmbedding.continuous hf
-          exact IsOpen.preimage hfcont hoW
-        · apply Inducing.isCompact_preimage'
-          exact hf.toInducing
-          exact hcW
-          exact Set.SurjOn.subset_range hWfS
-      constructor
-      · exact hfxW
-      · have hemb : Embedding f := by exact hf.toEmbedding
-        cases' hemb with hind hinj
-        intro y hy
-        exact (Function.Injective.mem_set_image hinj).mp (hWfS hy)
+theorem OpenEmbedding.has_qcOpenBasis_of_qcOpenBasis (hf : OpenEmbedding f)
+    (hYb : IsTopologicalBasis {S : Set Y | IsOpen S ∧ IsCompact S}) :
+    IsTopologicalBasis {S : Set X | IsOpen S ∧ IsCompact S} := by
+  apply isTopologicalBasis_of_isOpen_of_nhds (fun U hU ↦ hU.1) <| fun x S hx hS ↦ ?_
+  obtain ⟨W, ⟨hoW, hcW⟩, ⟨hfx, hWf⟩⟩ : ∃ t ∈ {S | IsOpen S ∧ IsCompact S}, f x ∈ t ∧ t ⊆ f '' S :=
+    hYb.isOpen_iff.mp (hf.open_iff_image_open.mp hS) (f x) ⟨x, hx, rfl⟩
+  refine ⟨f ⁻¹' W, ⟨hoW.preimage hf.continuous, ?_⟩, ⟨hfx, fun y hy ↦ ?_⟩⟩
+  · exact hf.toInducing.isCompact_preimage' hcW <| Set.SurjOn.subset_range hWf
+  · exact hf.inj.mem_set_image.mp (hWf hy)
 
 /-- This defines a spectral space as a sober (i.e. quasi-sober and T0), (quasi)-compact,
 quasi-separated topological space such that all quasi-compact opens form a basis-/
 class SpectralSpace (X : Type*) [TopologicalSpace X] extends CompactSpace X,
     QuasiSober X, QuasiSeparatedSpace X, T0Space X : Prop where
-  qc_open_basis: TopologicalSpace.IsTopologicalBasis {S : Set X | IsOpen S ∧ IsCompact S}
+  qc_open_basis : IsTopologicalBasis {S : Set X | IsOpen S ∧ IsCompact S}
 
-theorem compact_openEmbedding_of_SpectralSpace_is_SpectralSpace [TopologicalSpace X]
-  [SpectralSpace Y] (hf: OpenEmbedding f) (hX: CompactSpace X) :
-  SpectralSpace X where
-    isCompact_univ := by exact isCompact_univ
-    sober := by
-      have h1: QuasiSober Y := by exact SpectralSpace.toQuasiSober
-      apply OpenEmbedding.quasiSober at hf
-      exact fun {S} a a_1 ↦ QuasiSober.sober a a_1
-    inter_isCompact := by
-      have hY : QuasiSeparatedSpace Y := by exact SpectralSpace.toQuasiSeparatedSpace
-      have hYuniv : IsQuasiSeparated (Set.univ : Set Y) := by exact isQuasiSeparated_univ
-      have hsub : (f '' (Set.univ : Set X)) ⊆ (Set.univ : Set Y) := by exact fun ⦃a⦄ a ↦ trivial
-      have hfuniv : IsQuasiSeparated (f '' (Set.univ : Set X)) := by exact
-        (IsQuasiSeparated.of_subset hYuniv hsub)
-      have hXiqs : IsQuasiSeparated (Set.univ : Set X) := by exact
-        ((OpenEmbedding.isQuasiSeparated_iff hf).mpr hfuniv)
-      have hXqs : QuasiSeparatedSpace X := by exact isQuasiSeparated_univ_iff.mp hXiqs
-      exact fun U V a a_1 a_2 a_3 ↦ QuasiSeparatedSpace.inter_isCompact U V a a_1 a_2 a_3
-    t0 := by
-      have h1: T0Space Y := by exact SpectralSpace.toT0Space
-      cases' hf with hfemb hfopen
-      cases' hfemb with hfind hfinj
-      rw [t0Space_iff_inseparable] at h1
-      intro x y hins
-      specialize h1 (f x) (f y)
-      have hxy : Inseparable (f x) (f y) := by exact (Inducing.inseparable_iff hfind).mpr hins
-      apply h1 at hxy
-      exact hfinj (h1 (congrArg nhds hxy))
-    qc_open_basis := by 
-      have hYb : TopologicalSpace.IsTopologicalBasis {S : Set Y | IsOpen S ∧ IsCompact S} := by 
-        exact SpectralSpace.qc_open_basis
-      exact openEmbedding_of_qcOpenBasis_has_qcOpenBasis X Y f hf hYb
+theorem compact_openEmbedding_of_SpectralSpace_is_SpectralSpace
+    [SpectralSpace Y] [CompactSpace X] (hf : OpenEmbedding f) :
+    SpectralSpace X where
+  isCompact_univ := isCompact_univ
+  sober {_} := QuasiSober.sober (self := hf.quasiSober)
+  inter_isCompact :=
+    have hsub : (f '' (Set.univ : Set X)) ⊆ (Set.univ : Set Y) := fun ⦃_⦄ _ ↦ Set.mem_univ _
+    have hfuniv : IsQuasiSeparated (f '' (Set.univ : Set X)) := isQuasiSeparated_univ.of_subset hsub
+    have hXiqs : IsQuasiSeparated (Set.univ : Set X) := hf.isQuasiSeparated_iff.mpr hfuniv
+    have hXqs : QuasiSeparatedSpace X := isQuasiSeparated_univ_iff.mp hXiqs
+    QuasiSeparatedSpace.inter_isCompact
+  t0 x y hins :=
+    have h1 := (t0Space_iff_inseparable Y).mp SpectralSpace.toT0Space (f x) (f y)
+    hf.inj (h1 (hf.toInducing.inseparable_iff.mpr hins))
+  qc_open_basis := hf.has_qcOpenBasis_of_qcOpenBasis SpectralSpace.qc_open_basis
