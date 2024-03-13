@@ -42,13 +42,16 @@ lemma equalizerCondition_w (P : Cᵒᵖ ⥤ D) {X B : C} {π : X ⟶ B} (c : Pul
     P.map π.op ≫ P.map c.fst.op = P.map π.op ≫ P.map c.snd.op := by
   simp only [← Functor.map_comp, ← op_comp, c.condition]
 
+def SingleEqualizerCondition (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B) : Prop :=
+  ∀ (c : PullbackCone π π) (_ : IsLimit c),
+    Nonempty (IsLimit (Fork.ofι (P.map π.op) (equalizerCondition_w P c)))
+
 /--
 A contravariant functor on `C` satisfies `EqualizerCondition` if it takes kernel pairs of effective
 epimorphisms to equalizer diagrams.
 -/
 def EqualizerCondition (P : Cᵒᵖ ⥤ D) : Prop :=
-  ∀ ⦃X B : C⦄ (π : X ⟶ B) [EffectiveEpi π] (c : PullbackCone π π) (_ : IsLimit c),
-    Nonempty (IsLimit (Fork.ofι (P.map π.op) (equalizerCondition_w P c)))
+  ∀ ⦃X B : C⦄ (π : X ⟶ B) [EffectiveEpi π], SingleEqualizerCondition P π
 
 /-- The equalizer condition is preserved by natural isomorphism. -/
 theorem equalizerCondition_of_natIso {P P' : Cᵒᵖ ⥤ D} (i : P ≅ P')
@@ -145,6 +148,24 @@ theorem equalizerCondition_iff_of_equivalence (P : Cᵒᵖ ⥤ D)
   ⟨fun h ↦ equalizerCondition_precomp_of_preservesPullback P e.inverse h, fun h ↦
     equalizerCondition_of_natIso (e.op.funInvIdAssoc P)
       (equalizerCondition_precomp_of_preservesPullback (e.op.inverse ⋙ P) e.functor h)⟩
+
+lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B)
+    [EffectiveEpi π] [HasPullback π π]:
+    SingleEqualizerCondition P π ↔
+      Nonempty (IsLimit (P.mapCone
+        (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows.cocone.op)) := by
+  sorry
+
+lemma equalizerCondition_iff_isSheaf (F : Cᵒᵖ ⥤ D) [Preregular C]
+    [∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f] :
+    EqualizerCondition F ↔ Presheaf.IsSheaf (regularTopology C) F := by
+  dsimp [regularTopology]
+  rw [Presheaf.isSheaf_iff_isLimit_coverage]
+  constructor
+  · rintro hF X _ ⟨Y, f, rfl, _⟩
+    exact (equalizerConditionMap_iff_nonempty_isLimit F f).1 (hF f)
+  · intro hF Y X f _
+    exact (equalizerConditionMap_iff_nonempty_isLimit F f).2 (hF _ ⟨_, f, rfl, inferInstance⟩)
 
 lemma EqualizerCondition.isSheafFor {B : C} {S : Presieve B} [S.regular] [S.hasPullbacks]
     {F : Cᵒᵖ ⥤ Type*} (hF : EqualizerCondition F) : S.IsSheafFor F := by
