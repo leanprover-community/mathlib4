@@ -17,9 +17,6 @@ import Mathlib.Order.Hom.Lattice
 # Lattice operations on finsets
 -/
 
-set_option autoImplicit true
-
-
 variable {F α β γ ι κ : Type*}
 
 namespace Finset
@@ -1029,7 +1026,8 @@ theorem inf'_le {b : β} (h : b ∈ s) : s.inf' ⟨b, h⟩ f ≤ f b :=
   le_sup' (α := αᵒᵈ) f h
 #align finset.inf'_le Finset.inf'_le
 
-theorem inf'_le_of_le (hb : b ∈ s) (h : f b ≤ a) : s.inf' ⟨b, hb⟩ f ≤ a := (inf'_le _ hb).trans h
+theorem inf'_le_of_le {a : α} {b : β} (hb : b ∈ s) (h : f b ≤ a) :
+    s.inf' ⟨b, hb⟩ f ≤ a := (inf'_le _ hb).trans h
 #align finset.inf'_le_of_le Finset.inf'_le_of_le
 
 @[simp]

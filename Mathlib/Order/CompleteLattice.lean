@@ -45,8 +45,6 @@ In lemma names,
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
 
-set_option autoImplicit true
-
 open Function OrderDual Set
 
 variable {α β β₂ γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
@@ -1971,6 +1969,8 @@ protected def Function.Injective.completeLattice [Sup α] [Inf α] [SupSet α] [
 #align function.injective.complete_lattice Function.Injective.completeLattice
 
 namespace ULift
+
+universe v
 
 instance supSet [SupSet α] : SupSet (ULift.{v} α) where sSup s := ULift.up (sSup <| ULift.up ⁻¹' s)
 

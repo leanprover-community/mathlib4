@@ -21,9 +21,6 @@ Use the notation `X _[n]` in the `Simplicial` locale to obtain the `n`-th term o
 
 -/
 
-set_option autoImplicit true
-
-
 open Opposite
 
 open CategoryTheory
@@ -233,7 +230,7 @@ def Truncated (n : ℕ) :=
   (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
 #align category_theory.simplicial_object.truncated CategoryTheory.SimplicialObject.Truncated
 
-instance : Category (Truncated C n) := by
+instance {n : ℕ} : Category (Truncated C n) := by
   dsimp [Truncated]
   infer_instance
 
@@ -605,7 +602,7 @@ def Truncated (n : ℕ) :=
   SimplexCategory.Truncated n ⥤ C
 #align category_theory.cosimplicial_object.truncated CategoryTheory.CosimplicialObject.Truncated
 
-instance : Category (Truncated C n) := by
+instance {n : ℕ} : Category (Truncated C n) := by
   dsimp [Truncated]
   infer_instance
 

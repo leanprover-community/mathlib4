@@ -23,9 +23,6 @@ This file defines bundled homomorphisms of `R`-algebras.
 * `A →ₐ[R] B` : `R`-algebra homomorphism from `A` to `B`.
 -/
 
-set_option autoImplicit true
-
-
 open BigOperators
 
 universe u v w u₁ v₁
@@ -62,7 +59,7 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 
 namespace AlgHomClass
 
-variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] [FunLike F A B]
 
 -- see Note [lower instance priority]
