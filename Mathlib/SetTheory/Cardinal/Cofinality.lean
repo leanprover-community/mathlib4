@@ -514,7 +514,6 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
 @[simp]
 theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
   ⟨inductionOn o fun α r _ z => by
-      skip
       rcases cof_eq r with ⟨S, hl, e⟩; rw [z] at e
       cases' mk_ne_zero_iff.1 (by rw [e]; exact one_ne_zero) with a
       refine'
@@ -1217,7 +1216,7 @@ theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
 
 theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < (c^cof c.ord) :=
   Quotient.inductionOn c fun α h => by
-    rcases ord_eq α with ⟨r, wo, re⟩; skip
+    rcases ord_eq α with ⟨r, wo, re⟩
     have := ord_isLimit h
     rw [mk'_def, re] at this ⊢
     rcases cof_eq' r this with ⟨S, H, Se⟩
