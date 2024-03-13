@@ -337,7 +337,7 @@ lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf
   obtain ⟨g, hg⟩ := h.exists_generator
   use g
   rw [← card_zpowers g, (eq_top_iff' (zpowers g)).mpr hg]
-  exact (Nat.card_congr (Equiv.Set.univ α).symm).symm
+  exact (Nat.card_congr (Equiv.Set.univ α))
 
 section
 

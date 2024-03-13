@@ -206,19 +206,30 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   have : IsPrimitiveRoot z k := hx.pow_mul_pow_lcm hy hppos.ne' hqpos.ne'
   haveI := IsPrimitiveRoot.adjoin_isCyclotomicExtension K this
   convert Submodule.finrank_le (Subalgebra.toSubmodule (adjoin K {z}))
-  replace hirr : Irreducible (cyclotomic k K) := hirr
+  rw [show Nat.lcm p q = (k : ℕ) from rfl] at hirr
   simpa using (IsCyclotomicExtension.finrank (Algebra.adjoin K {z}) hirr).symm
+
+end IsCyclotomicExtension
+
+end NoOrder
+
+section Norm
+
+namespace IsPrimitiveRoot
+
+section Field
+
+variable {K} [Field K] [NumberField K]
 
 variable (n) in
 /-- If a `n`-th cyclotomic extension of `ℚ` contains a primitive `l`-th root of unity, then
 `l ∣ 2 * n`. -/
-theorem _root_.IsPrimitiveRoot.dvd_of_isCyclotomicExtension [NumberField K]
-    [IsCyclotomicExtension {n} ℚ K] {ζ : K} {l : ℕ} (hζ : IsPrimitiveRoot ζ l) (hl : l ≠ 0) :
-    l ∣ 2 * n := by
+theorem dvd_of_isCyclotomicExtension [NumberField K] [IsCyclotomicExtension {n} ℚ K] {ζ : K}
+    {l : ℕ} (hζ : IsPrimitiveRoot ζ l) (hl : l ≠ 0) : l ∣ 2 * n := by
   have hl : NeZero l := ⟨hl⟩
   have hroot := IsCyclotomicExtension.zeta_spec n ℚ K
-  have key := IsPrimitiveRoot.lcm_totient_le_finrank hζ hroot (cyclotomic.irreducible_rat
-    <| Nat.lcm_pos (Nat.pos_of_ne_zero hl.1) n.2)
+  have key := IsPrimitiveRoot.lcm_totient_le_finrank hζ hroot
+    (cyclotomic.irreducible_rat <| Nat.lcm_pos (Nat.pos_of_ne_zero hl.1) n.2)
   rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat n.2)] at key
   rcases _root_.dvd_lcm_right l n with ⟨r, hr⟩
   have ineq := Nat.totient_super_multiplicative n r
@@ -228,7 +239,7 @@ theorem _root_.IsPrimitiveRoot.dvd_of_isCyclotomicExtension [NumberField K]
     refine Nat.pos_of_ne_zero (fun h ↦ ?_)
     simp only [h, mul_zero, _root_.lcm_eq_zero_iff, PNat.ne_zero, or_false] at hr
     exact hl.1 hr
-  replace key := (Nat.dvd_prime Nat.prime_two).1 (Nat.totient_le_one_dvd_two rpos key)
+  replace key := (Nat.dvd_prime Nat.prime_two).1 (Nat.dvd_two_of_totient_le_one rpos key)
   rcases key with (key | key)
   · rw [key, mul_one] at hr
     rw [← hr]
@@ -238,9 +249,9 @@ theorem _root_.IsPrimitiveRoot.dvd_of_isCyclotomicExtension [NumberField K]
 
 /-- If `x` is a `k`-th root of unity in an `n`-th cyclotomic extension of `ℚ`, where `n` is odd,
 and `ζ` is a primitive `n`-th root of unity, then there exist `r` such that `x = (-1)^r * ζ^r`. -/
-theorem _root_.IsPrimitiveRoot.exists_neg_pow_mul_pow_of_pow_eq_one [NumberField K]
-    [IsCyclotomicExtension {n} ℚ K] (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+}
-    (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) : ∃ (r : ℕ), x = (-1) ^ r * ζ ^ r :=  by
+theorem exists_neg_pow_of_pow_eq_one [NumberField K] [IsCyclotomicExtension {n} ℚ K]
+    (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+} (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) :
+    ∃ r : ℕ, x = (-ζ) ^ r :=  by
   have hnegζ : IsPrimitiveRoot (-ζ) (2 * n) := by
     convert IsPrimitiveRoot.orderOf (-ζ)
     rw [neg_eq_neg_one_mul, (Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
@@ -253,28 +264,20 @@ theorem _root_.IsPrimitiveRoot.exists_neg_pow_mul_pow_of_pow_eq_one [NumberField
   obtain ⟨a, ha⟩ := hlroot.dvd_of_isCyclotomicExtension n hlzero.1
   replace hlroot : x ^ (2 * (n : ℕ)) = 1 := by rw [ha, pow_mul, hlroot.pow_eq_one, one_pow]
   obtain ⟨s, -, hs⟩ := hnegζ.eq_pow_of_pow_eq_one hlroot (by simp)
-  rw [neg_pow] at hs
   exact ⟨s, hs.symm⟩
 
 /-- If `x` is a `k`-th root of unity in an `n`-th cyclotomic extension of `ℚ`, where `n` is odd,
 and `ζ` is a primitive `n`-th root of unity, then there exists `r < n` such that
 `x = ζ^r` or `x = -ζ^r`. -/
-theorem _root_.IsPrimitiveRoot.exists_pow_or_neg_mul_pow_of_pow_eq_one [NumberField K]
-    [IsCyclotomicExtension {n} ℚ K] (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+}
-    (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) :
-    ∃ (r : ℕ), r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) :=  by
-  obtain ⟨r, hr⟩ := hζ.exists_neg_pow_mul_pow_of_pow_eq_one hno hx
+theorem exists_pow_or_neg_mul_pow_of_pow_eq_one [NumberField K] [IsCyclotomicExtension {n} ℚ K]
+    (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+} (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) :
+    ∃ r : ℕ, r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) :=  by
+  obtain ⟨r, hr⟩ := hζ.exists_neg_pow_of_pow_eq_one hno hx
   refine ⟨r % n, Nat.mod_lt _ n.2, ?_⟩
   rw [show ζ ^ (r % ↑n) = ζ ^ r from (IsPrimitiveRoot.eq_orderOf hζ).symm ▸ pow_mod_orderOf .., hr]
-  rcases Nat.even_or_odd r with (h | h) <;> simp [h.neg_one_pow]
+  rcases Nat.even_or_odd r with (h | h) <;> simp [neg_pow, h.neg_one_pow]
 
-end IsCyclotomicExtension
-
-end NoOrder
-
-section Norm
-
-namespace IsPrimitiveRoot
+end Field
 
 section CommRing
 
