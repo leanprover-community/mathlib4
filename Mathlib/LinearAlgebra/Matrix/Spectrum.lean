@@ -56,9 +56,18 @@ noncomputable def eigenvectorBasis : OrthonormalBasis n 𝕜 (EuclideanSpace �
 #align matrix.is_hermitian.eigenvector_basis Matrix.IsHermitian.eigenvectorBasis
 
 /-- A matrix whose columns are an orthonormal basis of eigenvectors of a hermitian matrix. -/
-noncomputable def eigenvectorMatrix : Matrix n n 𝕜 :=
-  (PiLp.basisFun _ 𝕜 n).toMatrix (eigenvectorBasis hA).toBasis
-#align matrix.is_hermitian.eigenvector_matrix Matrix.IsHermitian.eigenvectorMatrix
+--noncomputable def eigenvectorMatrix : Matrix n n 𝕜 :=
+--  (PiLp.basisFun _ 𝕜 n).toMatrix (eigenvectorBasis hA).toBasis
+--#align matrix.is_hermitian.eigenvector_matrix Matrix.IsHermitian.eigenvectorMatrix
+
+/--Find out the right kind of docstring for this!-/
+noncomputable def Matrix.IsHermitian.eigenvectorUnitary {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
+    {A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
+    Matrix.unitaryGroup n 𝕜 :=
+    ⟨(EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (eigenvectorBasis hA).toBasis,
+    OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary
+    (EuclideanSpace.basisFun n 𝕜) (eigenvectorBasis hA)⟩
+
 
 /-- The inverse of `eigenvectorMatrix` -/
 noncomputable def eigenvectorMatrixInv : Matrix n n 𝕜 :=
