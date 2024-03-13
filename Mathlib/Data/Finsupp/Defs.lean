@@ -662,7 +662,7 @@ theorem erase_ne {a a' : α} {f : α →₀ M} (h : a' ≠ a) : (f.erase a) a' =
 #align finsupp.erase_ne Finsupp.erase_ne
 
 theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
-    (f.erase a) a' = if a' = a then 0 else f a' := by
+    f.erase a a' = if a' = a then 0 else f a' := by
   rw [erase, coe_mk]
   convert rfl
 
