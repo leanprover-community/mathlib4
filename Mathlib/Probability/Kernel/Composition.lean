@@ -319,6 +319,18 @@ theorem ae_ae_of_ae_compProd {p : β × γ → Prop} (h : ∀ᵐ bc ∂(κ ⊗�
   ae_null_of_compProd_null h
 #align probability_theory.kernel.ae_ae_of_ae_comp_prod ProbabilityTheory.kernel.ae_ae_of_ae_compProd
 
+lemma ae_compProd_of_ae_ae {p : β × γ → Prop} (hp : MeasurableSet {x | p x})
+    (h : ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c)) :
+    ∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc := by
+  simp_rw [ae_iff] at h ⊢
+  rw [compProd_null]
+  · exact h
+  · exact hp.compl
+
+lemma ae_compProd_iff {p : β × γ → Prop} (hp : MeasurableSet {x | p x}) :
+    (∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc) ↔ ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c) :=
+  ⟨fun h ↦ ae_ae_of_ae_compProd h, fun h ↦ ae_compProd_of_ae_ae hp h⟩
+
 end Ae
 
 section Restrict
