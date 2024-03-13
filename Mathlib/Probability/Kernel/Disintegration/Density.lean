@@ -677,7 +677,8 @@ section UnivFst
 /-! We specialize to `ν = fst κ`, for which `density κ (fst κ) a t univ = 1` almost everywhere. -/
 
 lemma densityProcess_univ [IsFiniteKernel κ] (n : ℕ) (a : α) (x : γ) :
-    densityProcess κ (fst κ) n a x univ = if fst κ a (countablePartitionSet n x) = 0 then 0 else 1 := by
+    densityProcess κ (fst κ) n a x univ
+      = if fst κ a (countablePartitionSet n x) = 0 then 0 else 1 := by
   rw [densityProcess]
   by_cases h : fst κ a (countablePartitionSet n x) = 0
   · simp [h]
@@ -709,7 +710,8 @@ lemma densityProcess_univ_ae (κ : kernel α (γ × β)) [IsFiniteKernel κ] (n 
       ⊆ ⋃ (u) (_ : u ∈ countablePartition γ n) (_ : fst κ a u = 0), u := by
     intro t ht
     simp only [mem_setOf_eq, mem_iUnion, exists_prop] at ht ⊢
-    exact ⟨countablePartitionSet n t, countablePartitionSet_mem _ _, ht, mem_countablePartitionSet _ _⟩
+    exact ⟨countablePartitionSet n t, countablePartitionSet_mem _ _, ht,
+      mem_countablePartitionSet _ _⟩
   refine measure_mono_null this ?_
   rw [measure_biUnion]
   · simp
