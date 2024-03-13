@@ -136,7 +136,6 @@ lemma le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1 
 #align nat.succ_eq_one_add Nat.succ_eq_one_add
 #align nat.one_add Nat.one_add
 
-lemma pred_eq_sub_one (n : ℕ) : pred n = n - 1 := rfl
 #align nat.pred_eq_sub_one Nat.pred_eq_sub_one
 
 /-- This ensures that `simp` succeeds on `pred (n + 1) = n`. -/

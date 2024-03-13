@@ -112,7 +112,8 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
   left_inv x := ext (by simp) <| by ext; apply List.get_ofFn
   right_inv x := by
     refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => List.get_ofFn _ _)
-    simp [Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1]
+    have := Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1
+    simp_all
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
 

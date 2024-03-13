@@ -884,8 +884,8 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       erw [length_insertNth _ _ hk.le, Nat.succ_lt_succ_iff, Nat.succ_add] at hn
       rw [nthLe_insertNth_add_succ]
       convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
-      · simp [Nat.add_succ, Nat.succ_add]
-      · simp [add_left_comm, add_comm, succ_eq_add_one]
+      · simp [Nat.add_assoc, Nat.add_left_comm]
+      · simp [add_left_comm, add_comm]
       · simpa [Nat.succ_add] using hn
 #align list.nodup_permutations'_aux_iff List.nodup_permutations'Aux_iff
 

@@ -109,7 +109,7 @@ protected def const : ℕ → Code
 theorem const_inj : ∀ {n₁ n₂}, Nat.Partrec.Code.const n₁ = Nat.Partrec.Code.const n₂ → n₁ = n₂
   | 0, 0, _ => by simp
   | n₁ + 1, n₂ + 1, h => by
-    dsimp [Nat.add_one, Nat.Partrec.Code.const] at h
+    dsimp [Nat.Partrec.Code.const] at h
     injection h with h₁ h₂
     simp only [const_inj h₂]
 #align nat.partrec.code.const_inj Nat.Partrec.Code.const_inj
