@@ -3,6 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
+import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
@@ -154,7 +155,33 @@ lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C�
     SingleEqualizerCondition P π ↔
       Nonempty (IsLimit (P.mapCone
         (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows.cocone.op)) := by
-  sorry
+  unfold SingleEqualizerCondition
+  constructor
+  · intro h
+    let c : PullbackCone π π := PullbackCone.mk pullback.fst pullback.snd pullback.condition
+    let hc : IsLimit c := pullbackIsPullback π π
+    refine ⟨?_⟩
+    specialize h c hc
+    let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
+    let E := @FullSubcategory (Over B) (fun f ↦ S f.hom)
+    let F : Eᵒᵖ ⥤ D := S.diagram.op ⋙ P
+    let G := parallelPair (P.map (PullbackCone.fst c).op) (P.map (PullbackCone.snd c).op)
+    let X' : E := ⟨Over.mk π, ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩⟩
+    let P' : E := ⟨Over.mk ((pullback.fst (f := π) (g := π)) ≫ π),
+      ⟨_, pullback.fst, π, ofArrows.mk (), rfl⟩⟩
+    let fst : P' ⟶ X' := Over.homMk pullback.fst
+    let snd : P' ⟶ X' := Over.homMk pullback.snd pullback.condition.symm
+    let H := parallelPair fst.op snd.op
+    let i : H ⋙ F ≅ G := sorry
+    have : H.Initial := sorry
+    apply (Functor.Initial.isLimitWhiskerEquiv H _).toFun
+    refine IsLimit.equivOfNatIsoOfIso i.symm _ _ ?_ h.some
+    refine Cones.ext ?_ ?_
+    · rfl
+    · rintro ⟨_ | _⟩
+      · sorry
+      · sorry
+  · sorry
 
 lemma equalizerCondition_iff_isSheaf (F : Cᵒᵖ ⥤ D) [Preregular C]
     [∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f] :
@@ -209,13 +236,16 @@ lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Pro
       op_id, FunctorToTypes.map_id_apply]
 
 /-- A presheaf is a sheaf for the regular topology iff it satisfies `EqualizerCondition` -/
-theorem EqualizerCondition.isSheaf_iff (F : Cᵒᵖ ⥤ Type*)
-    [∀ ⦃X Y : C⦄ (π : X ⟶ Y) [EffectiveEpi π], HasPullback π π] [Preregular C] :
+theorem EqualizerCondition.isSheaf_iff (F : Cᵒᵖ ⥤ Type*) [Preregular C]
+    [h : ∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f]  :
     Presieve.IsSheaf (regularTopology C) F ↔ EqualizerCondition F := by
-  rw [regularTopology, Presieve.isSheaf_coverage]
-  refine ⟨fun h ↦ equalizerCondition_of_regular fun S ⟨Y, f, hh⟩ _ ↦ h S ⟨Y, f, hh⟩, ?_⟩
-  rintro h X S ⟨Y, f, rfl, hf⟩
-  exact @isSheafFor _ _ _ _ ⟨Y, f, rfl, hf⟩ ⟨fun g _ h ↦ by cases g; cases h; infer_instance⟩ _ h
+  rw [← isSheaf_iff_isSheaf_of_type]
+  exact (@equalizerCondition_iff_isSheaf _ _ _ _ F _ h).symm
+    -- why doesn't typeclass inference find `h`?
+  -- rw [regularTopology, Presieve.isSheaf_coverage]
+  -- refine ⟨fun h ↦ equalizerCondition_of_regular fun S ⟨Y, f, hh⟩ _ ↦ h S ⟨Y, f, hh⟩, ?_⟩
+  -- rintro h X S ⟨Y, f, rfl, hf⟩
+  -- exact @isSheafFor _ _ _ _ ⟨Y, f, rfl, hf⟩ ⟨fun g _ h ↦ by cases g; cases h; infer_instance⟩ _ h
 
 /-- Every presheaf is a sheaf for the regular topology if every object of `C` is projective. -/
 theorem isSheaf_of_projective (F : Cᵒᵖ ⥤ Type*) [Preregular C] [∀ (X : C), Projective X] :
