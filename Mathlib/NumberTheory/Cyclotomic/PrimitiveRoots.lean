@@ -228,7 +228,7 @@ theorem _root_.IsPrimitiveRoot.dvd_of_isCyclotomicExtension [NumberField K]
     refine Nat.pos_of_ne_zero (fun h ↦ ?_)
     simp only [h, mul_zero, _root_.lcm_eq_zero_iff, PNat.ne_zero, or_false] at hr
     exact hl.1 hr
-  replace key := (Nat.dvd_prime Nat.prime_two).1 (Nat.totient_le_one_dvd_two rpos key)
+  replace key := (Nat.dvd_prime Nat.prime_two).1 (Nat.dvd_two_of_totient_le_one rpos key)
   rcases key with (key | key)
   · rw [key, mul_one] at hr
     rw [← hr]
