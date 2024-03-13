@@ -13,9 +13,9 @@ import Mathlib.Algebra.Group.Units
 # Units in ordered monoids
 -/
 
-set_option autoImplicit true
-
 namespace Units
+
+variable {α : Type*}
 
 @[to_additive]
 instance [Monoid α] [Preorder α] : Preorder αˣ :=
