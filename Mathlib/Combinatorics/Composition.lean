@@ -310,12 +310,12 @@ theorem coe_embedding (i : Fin c.length) (j : Fin (c.blocksFun i)) :
 /-- `index_exists` asserts there is some `i` with `j < c.size_up_to (i+1)`.
 In the next definition `index` we use `nat.find` to produce the minimal such index.
 -/
-theorem index_exists {j : ℕ} (h : j < n) : ∃ i : ℕ, j < c.sizeUpTo i.succ ∧ i < c.length := by
+theorem index_exists {j : ℕ} (h : j < n) : ∃ i : ℕ, j < c.sizeUpTo (i + 1) ∧ i < c.length := by
   have n_pos : 0 < n := lt_of_le_of_lt (zero_le j) h
   have : 0 < c.blocks.sum := by rwa [← c.blocks_sum] at n_pos
   have length_pos : 0 < c.blocks.length := length_pos_of_sum_pos (blocks c) this
-  refine' ⟨c.length.pred, _, Nat.pred_lt (ne_of_gt length_pos)⟩
-  have : c.length.pred.succ = c.length := Nat.succ_pred_eq_of_pos length_pos
+  refine' ⟨c.length - 1, _, Nat.pred_lt (ne_of_gt length_pos)⟩
+  have : c.length - 1 + 1 = c.length := Nat.succ_pred_eq_of_pos length_pos
   simp [this, h]
 #align composition.index_exists Composition.index_exists
 
@@ -338,7 +338,7 @@ theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
     simp [nonpos_iff_eq_zero.1 i_pos, c.sizeUpTo_zero]
   let i₁ := (i : ℕ).pred
   have i₁_lt_i : i₁ < i := Nat.pred_lt (ne_of_gt i_pos)
-  have i₁_succ : i₁.succ = i := Nat.succ_pred_eq_of_pos i_pos
+  have i₁_succ : i₁ + 1 = i := Nat.succ_pred_eq_of_pos i_pos
   have := Nat.find_min (c.index_exists j.2) i₁_lt_i
   simp [lt_trans i₁_lt_i (c.index j).2, i₁_succ] at this
   exact Nat.lt_le_asymm H this

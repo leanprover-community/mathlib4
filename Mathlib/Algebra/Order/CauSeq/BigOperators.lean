@@ -214,7 +214,7 @@ lemma series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1
   obtain rfl | hr := hr0.eq_or_lt
   · have m_pos := lt_of_lt_of_le (Nat.succ_pos n) hmn
     have := h m.pred (Nat.le_of_succ_le_succ (by rwa [Nat.succ_pred_eq_of_pos m_pos]))
-    simpa [Nat.succ_pred_eq_of_pos m_pos, pow_succ] using this
+    simpa [Nat.sub_add_cancel m_pos, pow_succ] using this
   generalize hk : m - n.succ = k
   replace hk : m = k + n.succ := (tsub_eq_iff_eq_add_of_le hmn).1 hk
   induction' k with k ih generalizing m n
