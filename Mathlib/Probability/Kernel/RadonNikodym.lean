@@ -709,49 +709,59 @@ lemma rnDeriv_singularPart (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFiniteK
     (Measure.rnDeriv_eq_zero _ _).mpr (mutuallySingular_singularPart κ ν a)] with x h1 h2
   rw [h1, h2]
 
+lemma todo1 (μ ν : Measure α) (κ η : kernel α γ)
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel κ] [IsFiniteKernel η] :
+    ∂(ν.withDensity (∂μ/∂ν) ⊗ₘ withDensity η (rnDeriv κ η))/∂(ν ⊗ₘ η)
+      =ᵐ[ν ⊗ₘ η] ∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η) := by
+  let μ' := ν.withDensity (∂μ/∂ν)
+  let κ' := withDensity η (rnDeriv κ η)
+  have h1 : μ = μ' + μ.singularPart ν := by
+    conv_lhs => rw [μ.haveLebesgueDecomposition_add ν, add_comm]
+  have h2 : μ ⊗ₘ κ = μ' ⊗ₘ κ' + (μ.singularPart ν) ⊗ₘ κ + μ' ⊗ₘ (singularPart κ η) := by
+    conv_lhs => rw [h1, Measure.compProd_add_left]
+    conv_lhs => conv in μ' ⊗ₘ κ => rw [← rnDeriv_add_singularPart κ η]
+    rw [Measure.compProd_add_right, add_assoc, add_comm (μ' ⊗ₘ singularPart κ η), ← add_assoc]
+  rw [h2]
+  have h_add := Measure.rnDeriv_add (μ' ⊗ₘ κ' + μ.singularPart ν ⊗ₘ κ)
+    (μ' ⊗ₘ (singularPart κ η)) (ν ⊗ₘ η)
+  have h_add' := Measure.rnDeriv_add (μ' ⊗ₘ κ') (μ.singularPart ν ⊗ₘ κ) (ν ⊗ₘ η)
+  have h01 : ∂(μ.singularPart ν ⊗ₘ κ)/∂(ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η] 0 := by
+    rw [Measure.rnDeriv_eq_zero]
+    exact Measure.mutuallySingular_compProd_left (Measure.mutuallySingular_singularPart _ _) κ η
+  have h02 : ∂(μ' ⊗ₘ (singularPart κ η))/∂(ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η] 0 := by
+    rw [Measure.rnDeriv_eq_zero]
+    exact Measure.mutuallySingular_compProd_right μ' ν (mutuallySingular_singularPart _ _)
+  filter_upwards [h_add, h_add', h01, h02] with a h_add h_add' h01 h02
+  rw [h_add, Pi.add_apply, h_add', Pi.add_apply, h01, h02]
+  simp
+
+lemma todo2 (μ ν : Measure α) (κ η : kernel α γ)
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel κ] [IsFiniteKernel η] :
+    (fun p ↦ (∂(ν.withDensity (∂μ/∂ν))/∂ν) p.1 * rnDeriv (withDensity η (rnDeriv κ η)) η p.1 p.2)
+      =ᵐ[ν ⊗ₘ η] (fun p ↦ (∂μ/∂ν) p.1 * rnDeriv κ η p.1 p.2) := by
+  let μ' := ν.withDensity (∂μ/∂ν)
+  let κ' := withDensity η (rnDeriv κ η)
+  refine EventuallyEq.mul ?_ ?_
+  · have h := Measure.rnDeriv_withDensity ν (Measure.measurable_rnDeriv μ ν)
+    rw [EventuallyEq, ae_iff] at h ⊢
+    exact ENNReal.ae_eq_compProd_of_ae_eq_fst ν η (Measure.measurable_rnDeriv μ' ν)
+      (Measure.measurable_rnDeriv μ ν) h
+  · have : ∀ a, rnDeriv κ' η a =ᵐ[η a] rnDeriv κ η a := by
+      intro a
+      rw [← rnDeriv_add_singularPart κ η]
+      filter_upwards [rnDeriv_add κ' (singularPart κ η) η a,
+        rnDeriv_singularPart κ η a] with x hx1 hx2
+      rw [hx1, Pi.add_apply, hx2, Pi.zero_apply, add_zero]
+    exact ENNReal.ae_eq_compProd_of_forall_ae_eq _ _ (measurable_rnDeriv κ' η)
+      (measurable_rnDeriv κ η) this
+
 lemma rnDeriv_measure_compProd (μ ν : Measure α) (κ η : kernel α γ)
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel κ] [IsFiniteKernel η] :
     ∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η] fun p ↦ (∂μ/∂ν) p.1 * rnDeriv κ η p.1 p.2 := by
   let μ' := ν.withDensity (∂μ/∂ν)
   let κ' := withDensity η (rnDeriv κ η)
-  have h1 : μ = μ' + μ.singularPart ν := by
-    conv_lhs => rw [μ.haveLebesgueDecomposition_add ν, add_comm]
-  have h2 : κ = κ' + singularPart κ η := by
-    conv_lhs => rw [← rnDeriv_add_singularPart κ η]
-  have h3 : μ ⊗ₘ κ = μ' ⊗ₘ κ' + (μ.singularPart ν) ⊗ₘ κ + μ' ⊗ₘ (singularPart κ η) := by
-    conv_lhs => rw [h1, Measure.compProd_add_left]
-    conv_lhs => conv in μ' ⊗ₘ κ => rw [h2]
-    rw [Measure.compProd_add_right, add_assoc, add_comm (μ' ⊗ₘ singularPart κ η), ← add_assoc]
-  have h_left : ∂(μ' ⊗ₘ κ')/∂(ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η] ∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η) := by
-    rw [h3]
-    have h_add := Measure.rnDeriv_add (μ' ⊗ₘ κ' + μ.singularPart ν ⊗ₘ κ)
-      (μ' ⊗ₘ (singularPart κ η)) (ν ⊗ₘ η)
-    have h_add' := Measure.rnDeriv_add (μ' ⊗ₘ κ') (μ.singularPart ν ⊗ₘ κ) (ν ⊗ₘ η)
-    have h01 : ∂(μ.singularPart ν ⊗ₘ κ)/∂(ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η] 0 := by
-      rw [Measure.rnDeriv_eq_zero]
-      exact Measure.mutuallySingular_compProd_left (Measure.mutuallySingular_singularPart _ _) κ η
-    have h02 : ∂(μ' ⊗ₘ (singularPart κ η))/∂(ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η] 0 := by
-      rw [Measure.rnDeriv_eq_zero]
-      exact Measure.mutuallySingular_compProd_right μ' ν (mutuallySingular_singularPart _ _)
-    filter_upwards [h_add, h_add', h01, h02] with a h_add h_add' h01 h02
-    rw [h_add, Pi.add_apply, h_add', Pi.add_apply, h01, h02]
-    simp
-  have h_right : (fun p ↦ (∂μ'/∂ν) p.1 * rnDeriv κ' η p.1 p.2)
-      =ᵐ[ν ⊗ₘ η] (fun p ↦ (∂μ/∂ν) p.1 * rnDeriv κ η p.1 p.2) := by
-    refine EventuallyEq.mul ?_ ?_
-    · have h := Measure.rnDeriv_withDensity ν (Measure.measurable_rnDeriv μ ν)
-      rw [EventuallyEq, ae_iff] at h ⊢
-      exact ENNReal.ae_eq_compProd_of_ae_eq_fst ν η (Measure.measurable_rnDeriv μ' ν)
-        (Measure.measurable_rnDeriv μ ν) h
-    · have : ∀ a, rnDeriv κ' η a =ᵐ[η a] rnDeriv κ η a := by
-        intro a
-        rw [h2]
-        filter_upwards [rnDeriv_add κ' (singularPart κ η) η a,
-          rnDeriv_singularPart κ η a] with x hx1 hx2
-        rw [hx1, Pi.add_apply, hx2, Pi.zero_apply, add_zero]
-      exact ENNReal.ae_eq_compProd_of_forall_ae_eq _ _ (measurable_rnDeriv κ' η)
-        (measurable_rnDeriv κ η) this
-  refine h_left.symm.trans (EventuallyEq.trans ?_ h_right)
+  suffices ∂(μ' ⊗ₘ κ')/∂(ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η] fun p ↦ (∂μ'/∂ν) p.1 * rnDeriv κ' η p.1 p.2 from
+    (todo1 μ ν κ η).symm.trans (this.trans (todo2 μ ν κ η))
   refine rnDeriv_measure_compProd_aux ?_ ?_
   · exact MeasureTheory.withDensity_absolutelyContinuous _ _
   · exact ae_of_all _ (fun _ ↦ withDensity_absolutelyContinuous _ _)
