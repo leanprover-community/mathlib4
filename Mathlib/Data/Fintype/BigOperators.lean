@@ -148,7 +148,7 @@ theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
 #align fintype.card_fun Fintype.card_fun
 
 @[simp]
-theorem Fintype.card_exp_univ_card_eq [DecidableEq α] [Fintype α] [Fintype β] :
+theorem Fintype.card_exp_univ_card_eq [Fintype α] [Fintype β] :
     card β ^ univ.card (α := α) = card β ^ card α := rfl
 
 @[simp]
