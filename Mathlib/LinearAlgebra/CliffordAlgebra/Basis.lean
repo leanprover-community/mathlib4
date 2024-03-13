@@ -41,6 +41,83 @@ theorem List.sublist_orderedInsert {α} (r : α → α → Prop)
   rw [orderedInsert_eq_take_drop]
   refine Sublist.trans ?_ (.append_left (.cons _ (.refl _)) _)
   rw [takeWhile_append_dropWhile]
+namespace List
+
+variable {α : Type*} {r : α → α → Prop} [DecidableRel r]
+
+theorem orderedInsert_eq_cons_of_forall_rel {l : List α} {x : α}
+    (h : ∀ y ∈ l, r x y) :
+    l.orderedInsert r x = x :: l :=
+  match l with
+  | [] => rfl
+  | _ :: _ => if_pos <| h _ <| mem_cons_self _ _
+
+theorem Sublist.orderedInsert_of_sorted [IsTrans α r]
+    {l₁ l₂ : List α} (hl : l₁ <+ l₂) (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) (x : α) :
+    l₁.orderedInsert r x <+ l₂.orderedInsert r x :=
+  match l₁, l₂ with
+  | [], [] => .refl _
+  | [], _ :: l₂ => by
+    simp_rw [orderedInsert]
+    split_ifs
+    · exact .cons₂ _ (nil_sublist _)
+    · exact .cons _ (by simp)
+  | x₁ :: l₁, x₂ :: l₂ => by
+    simp_rw [orderedInsert]
+    cases hl with
+    | cons₂ a ha =>
+      split_ifs
+      · exact (ha.cons₂ _).cons₂ _
+      · rw [sorted_cons] at h₁ h₂
+        exact (ha.orderedInsert_of_sorted h₁.2 h₂.2 _).cons₂ _
+    | cons a ha =>
+      rw [sorted_cons] at h₂
+      have hx₂x₁:= h₂.1 _ <| ha.subset (mem_cons_self _ _)
+      have haih := ha.orderedInsert_of_sorted h₁ h₂.2 x
+      rw [orderedInsert] at haih
+      split_ifs at * with hxx₁ hxx₂ hxx₂
+      · exact (ha.cons _).cons₂ _
+      · exact haih.cons _
+      · exfalso
+        exact (hxx₁ <| _root_.trans hxx₂ hx₂x₁).elim
+      · exact haih.cons _
+
+theorem orderedInsert_sublist_orderedInsert_iff_of_sorted [IsTrans α r] [IsRefl α r]
+    {l₁ l₂ : List α} (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) (x : α) :
+    l₁.orderedInsert r x <+ l₂.orderedInsert r x ↔ l₁ <+ l₂ :=
+  ⟨fun h => by classical simpa [erase_orderedInsert] using h.erase x,
+    fun h => h.orderedInsert_of_sorted h₁ h₂ _⟩
+
+theorem orderedInsert_sublist_orderedInsert_iff_of_sorted_of_not_mem [IsTrans α r] [IsAntisymm α r]
+    {l₁ l₂ : List α} (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) {x : α} (hx₁ : x ∉ l₁) (hx₂ : x ∉ l₂) :
+    l₁.orderedInsert r x <+ l₂.orderedInsert r x ↔ l₁ <+ l₂ := by
+  refine ⟨fun h => ?_, fun h => h.orderedInsert_of_sorted h₁ h₂ _⟩
+  classical
+  have := h.erase x
+  rwa [erase_orderedInsert_of_not_mem hx₁, erase_orderedInsert_of_not_mem hx₂] at this
+
+theorem erase_sublist_iff_sublist_orderedInsert_of_sorted_of_not_mem
+    [DecidableEq α] [IsTrans α r] [IsAntisymm α r]
+    (l₁ l₂ : List α) (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) (x : α) (hx₂ : x ∉ l₂) :
+    l₁.erase x <+ l₂ ↔ l₁ <+ l₂.orderedInsert r x := by
+  by_cases hx₁ : x ∈ l₁; swap
+  · rw [List.erase_of_not_mem hx₁]
+    constructor
+    · intro h
+      exact h.trans <| sublist_orderedInsert x l₂
+    · intro h
+      have := h.erase x
+      rwa [List.erase_of_not_mem hx₁, erase_orderedInsert_of_not_mem hx₂] at this
+  constructor
+  · intro h
+    have := h.orderedInsert_of_sorted ?ot h₂ x
+    rwa [orderedInsert_erase _ _ hx₁ h₁] at this
+    exact h₁.sublist (erase_sublist x l₁)
+  · intro h
+    have := h.erase x
+    rwa [erase_orderedInsert_of_not_mem hx₂] at this
+
+end List
 
 noncomputable section
 namespace CliffordAlgebra
@@ -133,6 +210,77 @@ example {ι} [LinearOrder ι] (i j : ι) (xs ys zs : List ι)
     ys.erase i <+ j :: xs := by
 sorry
 
+/-- Prepend to an index. -/
+@[simps]
+def Index.cons (i : ι) (l : Model.Index ι) (h : ∀ j ∈ l.1, i < j) : Model.Index ι :=
+  ⟨i :: l, l.2.cons h⟩
+
+theorem Index.single_eq_cons (i : ι) : Index.single i = .cons i nil (by simp) := rfl
+
+/-- Append to an index. -/
+@[simps]
+def Index.concat (l : Model.Index ι) (i : ι) (h : ∀ j ∈ l.1, j < i) : Model.Index ι :=
+  ⟨l.val ++ [i], List.pairwise_reverse.mp <| by
+    rw [List.reverse_append, List.reverse_singleton, List.singleton_append]
+    exact .cons (by simpa only [List.mem_reverse] using h) (List.pairwise_reverse.mpr l.prop)⟩
+
+theorem Index.single_eq_concat (i : ι) : Index.single i = .concat nil i (by simp) := rfl
+
+@[elab_as_elim]
+def Index.recOn {motive : Model.Index ι → Sort*}
+    (nil : motive .nil) (cons : ∀ i l h, motive l → motive (.cons i l h))
+    (l : Model.Index ι) : motive l :=
+  match l with
+  | .nil => nil
+  | ⟨j :: xs, h⟩ =>
+    letI xsi : Model.Index ι := ⟨xs, .of_cons h⟩
+    cons j xsi (List.rel_of_sorted_cons h) (Index.recOn nil cons xsi)
+
+@[simp]
+theorem Index.recOn_nil {motive : Model.Index ι → Sort*}
+    (nil : motive .nil) (cons : ∀ i l h, motive l → motive (.cons i l h)) :
+    Index.recOn nil cons .nil = nil := rfl
+
+@[simp]
+theorem Index.recOn_cons {motive : Model.Index ι → Sort*}
+    (nil : motive .nil) (cons : ∀ i l h, motive l → motive (.cons i l h))
+    (i : ι) (l : Model.Index ι) (h) :
+    Index.recOn nil cons (.cons i l h) = (cons i l h <| Index.recOn nil cons l) := by
+  simp [Index.recOn, Index.cons]
+
+@[elab_as_elim]
+def Index.reverseRecOn {motive : Model.Index ι → Sort*}
+    (nil : motive .nil) (concat : ∀ l i h, motive l → motive (.concat l i h))
+    (l : Model.Index ι) : motive l := by
+  let ⟨l, hl⟩ := l
+  induction l using List.reverseRecOn with
+  | H0 => exact nil
+  | H1 xs a ih =>
+    letI xsi : Model.Index ι := ⟨xs, sorry⟩
+    exact concat xsi a sorry (ih xsi.prop)
+
+@[simp]
+theorem Index.reverseRecOn_nil {motive : Model.Index ι → Sort*}
+    (nil : motive .nil) (concat : ∀ l i h, motive l → motive (.concat l i h)) :
+    Index.reverseRecOn nil concat .nil = nil := rfl
+
+@[simp]
+theorem Index.reverseRecOn_concat {motive : Model.Index ι → Sort*}
+    (nil : motive .nil) (concat : ∀ l i h, motive l → motive (.concat l i h))
+    (i : ι) (l : Model.Index ι) (h) :
+    Index.reverseRecOn nil concat (.concat l i h) = (concat l i h <| Index.reverseRecOn nil concat l) := by
+  simp [Index.reverseRecOn, Index.concat]
+  rw [List.reverseRecOn]
+  simp
+  sorry
+
+open List in
+def Index.mulOfLt (i : ι) (l : Model.Index ι) (h : ∀ j ∈ l.1, i < j) :
+      (Finsupp.supported _ R {i' | i'.1.erase i <+ l}).comap
+        (Model.ofFinsupp (ι := ι) (B := B)).symm :=
+    ⟨.single B (.cons i l h) 1,
+      Finsupp.single_mem_supported R _ <| show _ <+ _ by simp [Index.cons]⟩
+
 open List in
 /-- Multiply a single vector `i` by a basis element `l`.
 
@@ -140,49 +288,34 @@ The support of the result is `l` with `i` inserted at the appropriate point. -/
 def Index.singleMul (i : ι) (l : Model.Index ι) :
     (Finsupp.supported _ R {i' | i'.1.erase i <+ l}).comap
       (Model.ofFinsupp (ι := ι) (B := B)).symm :=
-  match l with
-  | .nil => ⟨.single B (.single i) 1, Finsupp.single_mem_supported _ _ <| show _ <+ _ by simp⟩
-  | ⟨j :: xs, h⟩ =>
+  l.recOn
+    (nil := ⟨.single B (.single i) 1, Finsupp.single_mem_supported _ _ <| show _ <+ _ by simp⟩)
+    (cons := fun j xs h ih =>
     ltByCases i j
       (fun hlt : i < j =>
-        ofLt i ⟨j :: xs, h⟩ <|
-          forall_mem_cons.mpr ⟨hlt, fun x hx => hlt.trans <| List.rel_of_sorted_cons h _ hx⟩)
+        mulOfLt B i (cons j xs h) <|
+          forall_mem_cons.mpr ⟨hlt, fun x hx => hlt.trans <| h _ hx⟩)
       (fun heq : i = j =>
-        let restI : Model.Index ι := ⟨xs, .of_cons h⟩
-        ⟨.ofFinsupp (Finsupp.single restI (B i j)),
+        ⟨.single B xs (B i j),
           Finsupp.single_mem_supported _ _  <| (erase_sublist _ _).trans (sublist_cons _ _)⟩)
       (fun hgt : j < i =>
-        let restI : Model.Index ι := ⟨xs, .of_cons h⟩
         -- vᵢ vⱼ ⋯ = (polar vᵢ vⱼ - vⱼ vᵢ) ⋯
-        ⟨Model.ofFinsupp (Finsupp.single restI (B i j)),
-          Finsupp.single_mem_supported _ _  <| (erase_sublist _ _).trans (sublist_cons _ _)⟩ -
-          (let rest := Model.ofFinsupp.symm (singleMul i restI).1
-          have prest := (singleMul i restI).2
-          rest.support.attach.sum (fun newind =>
-              rest (↑newind) • (
-                haveI aux : _ <+ xs := prest newind.prop
-                let foo := ofLt j (↑newind) fun j' hj' => by
+        ⟨Model.single B xs (B i j),
+          Finsupp.single_mem_supported _ _ <| (erase_sublist _ _).trans (sublist_cons _ _)⟩ -
+          (let rest := Model.ofFinsupp.symm ih.1
+          rest.support.attach.sum (fun ⟨js, hjs⟩ =>
+              rest js • (
+                haveI aux : _ <+ xs.val := ih.2 hjs
+                ⟨mulOfLt B j js fun j' hj' => by
                   obtain rfl | hij' := eq_or_ne i j'
                   · exact hgt
-                  · exact List.rel_of_sorted_cons h _ <|
-                      aux.subset <| (List.mem_erase_of_ne hij'.symm).2 hj'
-                haveI pfoo := foo.prop
-                ⟨foo, fun i' hi' => show _ <+ _ from
-                  have pfooi : _ <+ _ := ((pfoo hi').erase i).trans aux; by
-                    have pf' := pfoo hi'
-                    dsimp at *
-                    rw [List.erase_comm] at pfooi
-                    replace aux := aux
-                    replace hgt := hgt
-                    replace h := h
-                    have := i'.prop
-                    sorry⟩))))
-where
-  ofLt (i : ι) (l : Model.Index ι) (h : ∀ j ∈ l.1, i < j) :
-      (Finsupp.supported _ R {i' | i'.1.erase i <+ l}).comap
-        (Model.ofFinsupp (ι := ι) (B := B)).symm :=
-    ⟨.ofFinsupp <| Finsupp.single ⟨i :: l, List.sorted_cons.mpr ⟨h, l.prop⟩⟩ 1,
-      Finsupp.single_mem_supported R _ <| show _ <+ _ by simp⟩
+                  · exact h _ <|
+                      aux.subset <| (List.mem_erase_of_ne hij'.symm).2 hj',
+                fun i' hi' => show _ <+ _ by
+                  replace hi' := Finsupp.support_single_subset hi'
+                  rw [Finset.mem_singleton] at hi'
+                  rw [hi', Index.cons, erase_cons_tail _ (not_beq_of_ne hgt.ne)]
+                  exact aux.cons₂ _⟩)))))
 
 @[simp]
 lemma Index.singleMul_nil (i : ι) :
@@ -190,30 +323,55 @@ lemma Index.singleMul_nil (i : ι) :
 
 lemma Index.singleMul_single_same (i : ι) :
     Model.Index.singleMul B i (.single i) = B i i • (1 : Model ι B) := by
-  erw [Model.Index.singleMul]
+  erw [Model.Index.singleMul, Index.recOn]
   rw [ltByCases]
   simp only [single_coe, Submodule.comap_coe, lt_self_iff_false, ↓reduceDite, ofFinsupp_single,
     Model.single_nil_eq_smul_one]
 
+@[simp]
+lemma Index.singleMul_of_forall_le (i : ι) (l : Model.Index ι) (h) :
+    Model.Index.singleMul B i l = Model.single B (.cons i l h) 1 := by
+  induction l using Model.Index.recOn with
+  | nil => simp only [Submodule.comap_coe, singleMul_nil, single_eq_cons]
+  | cons j l h' ih =>
+    rw [singleMul, Index.recOn_cons, ltByCases, dif_pos (h _ <| List.mem_cons_self _ _), mulOfLt]
+
+
 /-- Multiply two basis elements together to get an element of the model. -/
 def Index.mul (l₁ l₂ : Model.Index ι) : Model ι B :=
-  l₁.val.reverseRecOn
+  l₁.reverseRecOn
     (.single B l₂ 1)
-    (fun _ i x => (Model.ofFinsupp.symm x).sum fun ind val => val • ind.singleMul B i)
+    (fun _ i _ x => (Model.ofFinsupp.symm x).sum fun ind val => val • ind.singleMul B i)
 
 @[simp]
 lemma Index.nil_mul_single (is : Model.Index ι) :
     Model.Index.mul B (.nil) is = .single B is 1 := by
-  rw [Model.Index.mul]
-  rw [List.reverseRecOn]
-  simp_rw [List.reverse_nil]
-  simp [Model.Index.singleMul_single_same]
+  rw [Model.Index.mul, Index.reverseRecOn_nil]
 
 @[simp]
 lemma Index.single_mul_nil (is : Model.Index ι) :
     Model.Index.mul B is (.nil) = .single B is 1 := by
   rw [Model.Index.mul]
-  sorry
+  induction is using Index.reverseRecOn with
+  | nil => simp
+  | concat is i h ih =>
+    rw [Index.reverseRecOn_concat]
+    simp only [Submodule.comap_coe, ih, ofFinsupp_symm_single, zero_smul, Finsupp.sum_single_index,
+      one_smul]
+    rw [Index.singleMul_of_forall_le]
+    sorry
+  -- obtain ⟨il, hi⟩ := is
+  -- induction il using List.reverseRecOn with
+  -- | H0 => simp only [Submodule.comap_coe, List.reverseRecOn, List.reverse_nil, eq_mpr_eq_cast,
+  --   cast_eq]
+  -- | H1 x xs ih =>
+  --   dsimp
+  --   rw [List.reverseRecOn]
+  --   simp
+  --   rw [List.reverse_append, List.reverse_singleton, List.singleton_append]
+  --   dsimp
+  --   rw [List.reverse_reverse]
+  --   sorry
 
 @[simp]
 lemma Index.single_mul_single_same (i : ι) :

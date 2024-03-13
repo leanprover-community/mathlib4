@@ -292,7 +292,7 @@ to prevent `rw_search` from using the names theorems.
 -/
 syntax "rw_search" (forbidden)? : tactic
 
-open Std.Tactic.TryThis
+open Lean.Meta.Tactic.TryThis
 
 elab_rules : tactic |
     `(tactic| rw_search%$tk $[[ $[-$forbidden],* ]]?) => withMainContext do

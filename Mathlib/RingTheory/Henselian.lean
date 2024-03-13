@@ -184,7 +184,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * Ring.inverse (f'.eval b)
       have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * Ring.inverse (f'.eval (c n)) := by
         intro n
-        simp only [Nat.rec_add_one]
+        simp only [c, Nat.rec_add_one]
       -- we now spend some time determining properties of the sequence `c : ℕ → R`
       -- `hc_mod`: for every `n`, we have `c n ≡ a₀ [SMOD I]`
       -- `hf'c`  : for every `n`, `f'.eval (c n)` is a unit
@@ -228,7 +228,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
           have aux : n + 2 ≤ i * (n + 1) := by trans 2 * (n + 1) <;> nlinarith only [h2i]
           refine' Ideal.mul_mem_left _ _ (Ideal.pow_le_pow_right aux _)
           rw [pow_mul']
-          refine' Ideal.pow_mem_pow ((Ideal.neg_mem_iff _).2 <| Ideal.mul_mem_right _ _ ih) _
+          exact Ideal.pow_mem_pow ((Ideal.neg_mem_iff _).2 <| Ideal.mul_mem_right _ _ ih) _
       -- we are now in the position to show that `c : ℕ → R` is a Cauchy sequence
       have aux : ∀ m n, m ≤ n → c m ≡ c n [SMOD (I ^ m • ⊤ : Ideal R)] := by
         intro m n hmn

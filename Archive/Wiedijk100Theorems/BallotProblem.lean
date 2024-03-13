@@ -315,7 +315,7 @@ theorem ballot_pos (p q : ℕ) :
   have : (1 :: ·) '' countedSequence p (q + 1) ∩ staysPositive =
       (1 :: ·) '' (countedSequence p (q + 1) ∩ staysPositive) := by
     simp only [image_inter List.cons_injective, Set.ext_iff, mem_inter_iff, and_congr_right_iff,
-      ball_image_iff, List.cons_injective.mem_set_image, staysPositive_cons_pos _ one_pos]
+      forall_mem_image, List.cons_injective.mem_set_image, staysPositive_cons_pos _ one_pos]
     exact fun _ _ ↦ trivial
   rw [this, count_injective_image]
   exact List.cons_injective
@@ -344,7 +344,7 @@ theorem ballot_neg (p q : ℕ) (qp : q < p) :
   have : List.cons (-1) '' countedSequence (p + 1) q ∩ staysPositive =
       List.cons (-1) '' (countedSequence (p + 1) q ∩ staysPositive) := by
     simp only [image_inter List.cons_injective, Set.ext_iff, mem_inter_iff, and_congr_right_iff,
-      ball_image_iff, List.cons_injective.mem_set_image, staysPositive_cons, and_iff_left_iff_imp]
+      forall_mem_image, List.cons_injective.mem_set_image, staysPositive_cons, and_iff_left_iff_imp]
     intro l hl _
     simp [sum_of_mem_countedSequence hl, lt_sub_iff_add_lt', qp]
   rw [this, count_injective_image]

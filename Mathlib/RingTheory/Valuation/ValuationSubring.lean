@@ -47,7 +47,7 @@ instance : SetLike (ValuationSubring K) K where
     replace h := SetLike.coe_injective' h
     congr
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove that
+@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove that
 theorem mem_carrier (x : K) : x ∈ A.carrier ↔ x ∈ A := Iff.refl _
 #align valuation_subring.mem_carrier ValuationSubring.mem_carrier
 
@@ -205,8 +205,8 @@ theorem valuation_unit (a : Aˣ) : A.valuation a = 1 := by
 
 theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 :=
   ⟨fun h => A.valuation_unit h.unit, fun h => by
-    have ha : (a : K) ≠ 0
-    · intro c
+    have ha : (a : K) ≠ 0 := by
+      intro c
       rw [c, A.valuation.map_zero] at h
       exact zero_ne_one h
     have ha' : (a : K)⁻¹ ∈ A := by rw [← valuation_le_one_iff, map_inv₀, h, inv_one]
@@ -307,7 +307,7 @@ instance ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
 #align valuation_subring.of_prime_algebra ValuationSubring.ofPrimeAlgebra
 
 instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
-    -- Porting note: added instance
+    -- porting note (#10754): added instance
     letI : SMul A (A.ofPrime P) := SMulZeroClass.toSMul
     IsScalarTower A (A.ofPrime P) K :=
   IsScalarTower.subalgebra' A K K
@@ -513,7 +513,7 @@ theorem unitGroup_le_unitGroup {A B : ValuationSubring K} : A.unitGroup ≤ B.un
         B.add_mem _ _ (show 1 + x ∈ B from SetLike.coe_mem (B.unitGroupMulEquiv ⟨_, this⟩ : B))
           (B.neg_mem _ B.one_mem)
     · have := h (show Units.mk0 x h_1 ∈ A.unitGroup from hx)
-      refine' SetLike.coe_mem (B.unitGroupMulEquiv ⟨_, this⟩ : B)
+      exact SetLike.coe_mem (B.unitGroupMulEquiv ⟨_, this⟩ : B)
   · rintro h x (hx : A.valuation x = 1)
     apply_fun A.mapOfLE B h at hx
     simpa using hx

@@ -242,7 +242,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     exact ⟨n, hn.le⟩
   show Monotone F
   · intro m n hmn x hx
-    simp only [mem_Ici, mem_preimage] at hx ⊢
+    simp only [F, mem_Ici, mem_preimage] at hx ⊢
     apply le_trans (pow_le_pow_right_of_le_one' a_lt_one.le hmn) hx
 #align is_open.exists_Union_is_closed IsOpen.exists_iUnion_isClosed
 
@@ -425,7 +425,7 @@ theorem hausdorffEdist_closure₂ : hausdorffEdist s (closure t) = hausdorffEdis
 #align emetric.Hausdorff_edist_closure₂ EMetric.hausdorffEdist_closure₂
 
 /-- The Hausdorff edistance between sets or their closures is the same. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem hausdorffEdist_closure : hausdorffEdist (closure s) (closure t) = hausdorffEdist s t := by
   simp
 #align emetric.Hausdorff_edist_closure EMetric.hausdorffEdist_closure
@@ -508,7 +508,8 @@ theorem infEdist_ne_top (h : s.Nonempty) : infEdist x s ≠ ⊤ := by
   exact ne_top_of_le_ne_top (edist_ne_top _ _) (infEdist_le_edist_of_mem hy)
 #align metric.inf_edist_ne_top Metric.infEdist_ne_top
 
--- porting note: new lemma; todo: make it a `simp` lemma
+-- Porting note: new lemma;
+-- Porting note (#11215): TODO: make it a `simp` lemma
 theorem infEdist_eq_top_iff : infEdist x s = ∞ ↔ s = ∅ := by
   rcases s.eq_empty_or_nonempty with rfl | hs <;> simp [*, Nonempty.ne_empty, infEdist_ne_top]
 
@@ -622,7 +623,7 @@ theorem _root_.IsClosed.not_mem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempt
   simp [h.mem_iff_infDist_zero hs, infDist_nonneg.gt_iff_ne]
 #align is_closed.not_mem_iff_inf_dist_pos IsClosed.not_mem_iff_infDist_pos
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
     ContinuousAt (fun x ↦ (infDist x s)⁻¹) x := by
   rcases s.eq_empty_or_nonempty with (rfl | hs)
@@ -885,7 +886,7 @@ theorem hausdorffDist_closure₂ : hausdorffDist s (closure t) = hausdorffDist s
 #align metric.Hausdorff_dist_closure₂ Metric.hausdorffDist_closure₂
 
 /-- The Hausdorff distances between two sets and their closures coincide. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem hausdorffDist_closure : hausdorffDist (closure s) (closure t) = hausdorffDist s t := by
   simp [hausdorffDist]
 #align metric.Hausdorff_dist_closure Metric.hausdorffDist_closure

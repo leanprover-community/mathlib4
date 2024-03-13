@@ -16,14 +16,11 @@ such that for `x ≠ 0`, `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / 
 while `arg 0` defaults to `0`
 -/
 
-
-noncomputable section
+open Filter Metric Set
+open scoped ComplexConjugate Real Topology
 
 namespace Complex
-
-open ComplexConjugate Real Topology
-
-open Filter Set
+variable {a x z : ℂ}
 
 /-- `arg` returns values in the range (-π, π], such that for `x ≠ 0`,
   `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
@@ -122,6 +119,14 @@ theorem arg_cos_add_sin_mul_I {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) : arg (
   rw [← one_mul (_ + _), ← ofReal_one, arg_mul_cos_add_sin_mul_I zero_lt_one hθ]
 set_option linter.uppercaseLean3 false in
 #align complex.arg_cos_add_sin_mul_I Complex.arg_cos_add_sin_mul_I
+
+lemma arg_exp_mul_I (θ : ℝ) :
+    arg (exp (θ * I)) = toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ := by
+  convert arg_cos_add_sin_mul_I (θ := toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ) _ using 2
+  · rw [← exp_mul_I, eq_sub_of_add_eq $ toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
+      ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
+  · convert toIocMod_mem_Ioc _ _ _
+    ring
 
 @[simp]
 theorem arg_zero : arg 0 = 0 := by simp [arg, le_refl]
@@ -347,6 +352,24 @@ theorem arg_inv (x : ℂ) : arg x⁻¹ = if arg x = π then π else -arg x := by
   · exact arg_real_mul (conj x) (by simp [hx])
 #align complex.arg_inv Complex.arg_inv
 
+@[simp] lemma abs_arg_inv (x : ℂ) : |x⁻¹.arg| = |x.arg| := by rw [arg_inv]; split_ifs <;> simp [*]
+
+-- TODO: Replace the next two lemmas by general facts about periodic functions
+lemma abs_eq_one_iff' : abs x = 1 ↔ ∃ θ ∈ Set.Ioc (-π) π, exp (θ * I) = x := by
+  rw [abs_eq_one_iff]
+  constructor
+  · rintro ⟨θ, rfl⟩
+    refine ⟨toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ, ?_, ?_⟩
+    · convert toIocMod_mem_Ioc _ _ _
+      ring
+    · rw [eq_sub_of_add_eq $ toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
+      ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
+  · rintro ⟨θ, _, rfl⟩
+    exact ⟨θ, rfl⟩
+
+lemma image_exp_Ioc_eq_sphere : (fun θ : ℝ ↦ exp (θ * I)) '' Set.Ioc (-π) π = sphere 0 1 := by
+  ext; simpa using abs_eq_one_iff'.symm
+
 theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im z < 0 := by
   rcases le_or_lt 0 (re z) with hre | hre
   · simp only [hre, arg_of_re_nonneg hre, Real.arcsin_le_pi_div_two, true_or_iff]
@@ -568,16 +591,14 @@ end slitPlane
 
 section Continuity
 
-variable {x z : ℂ}
-
 theorem arg_eq_nhds_of_re_pos (hx : 0 < x.re) : arg =ᶠ[𝓝 x] fun x => Real.arcsin (x.im / abs x) :=
   ((continuous_re.tendsto _).eventually (lt_mem_nhds hx)).mono fun _ hy => arg_of_re_nonneg hy.le
 #align complex.arg_eq_nhds_of_re_pos Complex.arg_eq_nhds_of_re_pos
 
 theorem arg_eq_nhds_of_re_neg_of_im_pos (hx_re : x.re < 0) (hx_im : 0 < x.im) :
     arg =ᶠ[𝓝 x] fun x => Real.arcsin ((-x).im / abs x) + π := by
-  suffices h_forall_nhds : ∀ᶠ y : ℂ in 𝓝 x, y.re < 0 ∧ 0 < y.im
-  exact h_forall_nhds.mono fun y hy => arg_of_re_neg_of_im_nonneg hy.1 hy.2.le
+  suffices h_forall_nhds : ∀ᶠ y : ℂ in 𝓝 x, y.re < 0 ∧ 0 < y.im from
+    h_forall_nhds.mono fun y hy => arg_of_re_neg_of_im_nonneg hy.1 hy.2.le
   refine' IsOpen.eventually_mem _ (⟨hx_re, hx_im⟩ : x.re < 0 ∧ 0 < x.im)
   exact
     IsOpen.and (isOpen_lt continuous_re continuous_zero) (isOpen_lt continuous_zero continuous_im)
@@ -585,8 +606,8 @@ theorem arg_eq_nhds_of_re_neg_of_im_pos (hx_re : x.re < 0) (hx_im : 0 < x.im) :
 
 theorem arg_eq_nhds_of_re_neg_of_im_neg (hx_re : x.re < 0) (hx_im : x.im < 0) :
     arg =ᶠ[𝓝 x] fun x => Real.arcsin ((-x).im / abs x) - π := by
-  suffices h_forall_nhds : ∀ᶠ y : ℂ in 𝓝 x, y.re < 0 ∧ y.im < 0
-  exact h_forall_nhds.mono fun y hy => arg_of_re_neg_of_im_neg hy.1 hy.2
+  suffices h_forall_nhds : ∀ᶠ y : ℂ in 𝓝 x, y.re < 0 ∧ y.im < 0 from
+    h_forall_nhds.mono fun y hy => arg_of_re_neg_of_im_neg hy.1 hy.2
   refine' IsOpen.eventually_mem _ (⟨hx_re, hx_im⟩ : x.re < 0 ∧ x.im < 0)
   exact
     IsOpen.and (isOpen_lt continuous_re continuous_zero) (isOpen_lt continuous_im continuous_zero)
@@ -619,9 +640,9 @@ theorem continuousAt_arg (h : x ∈ slitPlane) : ContinuousAt arg x := by
 
 theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
     (him : z.im = 0) : Tendsto arg (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) := by
-  suffices H :
-    Tendsto (fun x : ℂ => Real.arcsin ((-x).im / abs x) - π) (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π))
-  · refine' H.congr' _
+  suffices H : Tendsto (fun x : ℂ => Real.arcsin ((-x).im / abs x) - π)
+      (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) by
+    refine' H.congr' _
     have : ∀ᶠ x : ℂ in 𝓝 z, x.re < 0 := continuous_re.tendsto z (gt_mem_nhds hre)
     -- Porting note: need to specify the `nhdsWithin` set
     filter_upwards [self_mem_nhdsWithin (s := { z : ℂ | z.im < 0 }),

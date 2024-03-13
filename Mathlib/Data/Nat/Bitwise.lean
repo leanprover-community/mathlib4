@@ -86,7 +86,7 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   have h1 x :     (x + x) % 2 = 0 := by rw [← two_mul, mul_comm]; apply mul_mod_left
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
   have h3 x :     (x + x) / 2 = x := by rw [← two_mul, mul_comm]; apply mul_div_left _ zero_lt_two
-  have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]; rfl
+  have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
   cases a <;> cases b <;> simp [h1, h2, h3, h4] <;> split_ifs
     <;> simp_all (config := {decide := true})
 #align nat.bitwise_bit Nat.bitwise_bit
@@ -362,7 +362,7 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction' m using Nat.binaryRec with b' m hm
   · simp
   induction' k using Nat.binaryRec with b'' k hk
-  -- Porting note: was `simp [hn]`
+  -- porting note (#10745): was `simp [hn]`
   -- This is necessary because these are simp lemmas in mathlib
   <;> simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
 

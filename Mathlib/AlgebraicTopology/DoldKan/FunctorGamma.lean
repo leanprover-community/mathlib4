@@ -158,13 +158,13 @@ theorem mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
   -- then the RHS is always zero
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i h₁)
   obtain ⟨k', hk'⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i' h₂)
-  have eq : Δ.len = Δ''.len + (k + k' + 2) := by linarith
+  have eq : Δ.len = Δ''.len + (k + k' + 2) := by omega
   rw [mapMono_eq_zero K (i' ≫ i) _ _]; rotate_left
   · by_contra h
     simp only [self_eq_add_right, h, add_eq_zero_iff, and_false] at eq
   · by_contra h
     simp only [h.1, add_right_inj] at eq
-    linarith
+    omega
   -- in all cases, the LHS is also zero, either by definition, or because d ≫ d = 0
   by_cases h₃ : Isδ₀ i
   · by_cases h₄ : Isδ₀ i'
