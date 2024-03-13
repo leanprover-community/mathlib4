@@ -338,7 +338,7 @@ theorem core_id (s : Set α) : core (@Eq α) s = s := by simp [core]
 #align rel.core_id Rel.core_id
 
 theorem core_comp (s : Rel β γ) (t : Set γ) : core (r • s) t = core r (core s t) := by
-  ext x; simp [core, comp]; constructor
+  ext x; simp only [core, comp, forall_exists_index, and_imp, Set.mem_setOf_eq]; constructor
   · exact fun h y rxy z => h z y rxy
   · exact fun h z y rzy => h y rzy z
 #align rel.core_comp Rel.core_comp

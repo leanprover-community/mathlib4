@@ -39,6 +39,21 @@ lemma toMatrix_directSum_collectedBasis_eq_blockDiagonal' {R M₁ M₂ : Type*} 
   · simp [h₂.collectedBasis_repr_of_mem _ (hf _ (Subtype.mem _)), restrict_apply]
   · simp [hij, h₂.collectedBasis_repr_of_mem_ne _ hij.symm (hf _ (Subtype.mem _))]
 
+lemma diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne
+    {κ : ι → Type*} [∀ i, Fintype (κ i)] [∀ i, DecidableEq (κ i)]
+    {s : Finset ι} (h : IsInternal fun i : s ↦ N i)
+    (b : (i : s) → Basis (κ i) R (N i)) (σ : ι → ι) (hσ : ∀ i, σ i ≠ i)
+    {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N <| σ i)) (hN : ∀ i, i ∉ s → N i = ⊥) :
+    Matrix.diag (toMatrix (h.collectedBasis b) (h.collectedBasis b) f) = 0 := by
+  ext ⟨i, k⟩
+  simp only [Matrix.diag_apply, Pi.zero_apply, toMatrix_apply, IsInternal.collectedBasis_coe]
+  by_cases hi : σ i ∈ s
+  · let j : s := ⟨σ i, hi⟩
+    replace hσ : j ≠ i := fun hij ↦ hσ i <| Subtype.ext_iff.mp hij
+    exact h.collectedBasis_repr_of_mem_ne b hσ <| hf _ <| Subtype.mem (b i k)
+  · suffices f (b i k) = 0 by simp [this]
+    simpa [hN _ hi] using hf i <| Subtype.mem (b i k)
+
 variable [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)]
 
 /-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
@@ -59,6 +74,21 @@ lemma trace_eq_sum_trace_restrict' (hN : {i | N i ≠ ⊥}.Finite)
   let _ : Fintype {i | N i ≠ ⊥} := hN.fintype
   rw [← Finset.sum_coe_sort, trace_eq_sum_trace_restrict (isInternal_ne_bot_iff.mpr h) _]
   exact Fintype.sum_equiv hN.subtypeEquivToFinset _ _ (fun i ↦ rfl)
+
+lemma trace_eq_zero_of_mapsTo_ne [IsNoetherian R M]
+    (σ : ι → ι) (hσ : ∀ i, σ i ≠ i) {f : Module.End R M}
+    (hf : ∀ i, MapsTo f (N i) (N <| σ i)) :
+    trace R M f = 0 := by
+  have hN : {i | N i ≠ ⊥}.Finite := CompleteLattice.WellFounded.finite_ne_bot_of_independent
+    (wellFounded_submodule_gt R M) h.submodule_independent
+  let s := hN.toFinset
+  let κ := fun i ↦ Module.Free.ChooseBasisIndex R (N i)
+  let b : (i : s) → Basis (κ i) R (N i) := fun i ↦ Module.Free.chooseBasis R (N i)
+  replace h : IsInternal fun i : s ↦ N i := by
+    convert DirectSum.isInternal_ne_bot_iff.mpr h <;> simp [s]
+  simp_rw [trace_eq_matrix_trace R (h.collectedBasis b), Matrix.trace,
+    diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne h b σ hσ hf (by simp [s]),
+    Pi.zero_apply, Finset.sum_const_zero]
 
 /-- If `f` and `g` are commuting endomorphisms of a finite, free `R`-module `M`, such that `f`
 is triangularizable, then to prove that the trace of `g ∘ f` vanishes, it is sufficient to prove

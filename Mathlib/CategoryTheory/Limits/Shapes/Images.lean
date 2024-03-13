@@ -465,7 +465,6 @@ instance [HasImage f] [∀ {Z : C} (g h : image f ⟶ Z), HasLimit (parallelPair
 
 theorem epi_image_of_epi {X Y : C} (f : X ⟶ Y) [HasImage f] [E : Epi f] : Epi (image.ι f) := by
   rw [← image.fac f] at E
-  skip
   exact epi_of_epi (factorThruImage f) (image.ι f)
 #align category_theory.limits.epi_image_of_epi CategoryTheory.Limits.epi_image_of_epi
 
