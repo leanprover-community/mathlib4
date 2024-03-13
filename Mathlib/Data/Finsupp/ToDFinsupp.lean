@@ -357,8 +357,8 @@ attribute [-instance] Finsupp.instAddZeroClass
 
 @[simp]
 theorem sigmaFinsuppEquivDFinsupp_smul {R} [Monoid R] [AddMonoid N] [DistribMulAction R N] (r : R)
-    (f : (Σi, η i) →₀ N) :
-    sigmaFinsuppEquivDFinsupp (r • f) = r • (sigmaFinsuppEquivDFinsupp f) := by
+    (f : (Σ i, η i) →₀ N) :
+    sigmaFinsuppEquivDFinsupp (r • f) = r • sigmaFinsuppEquivDFinsupp f := by
   ext
   rfl
 #align sigma_finsupp_equiv_dfinsupp_smul sigmaFinsuppEquivDFinsupp_smul
