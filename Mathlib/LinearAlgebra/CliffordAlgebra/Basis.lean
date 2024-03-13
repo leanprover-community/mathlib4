@@ -89,6 +89,10 @@ theorem erase_sublist_iff_sublist_orderedInsert_of_sorted_of_not_mem
     have := h.erase x
     rwa [erase_orderedInsert_of_not_mem hx₂] at this
 
+-- -- theorem Pairwise
+
+-- theorem pairwise_concat (R) (l : List α) (x) (h : List.pairwise)
+
 end List
 
 noncomputable section
@@ -280,12 +284,40 @@ def Index.singleMul (i : ι) (l : Model.Index ι) :
 lemma Index.singleMul_nil (i : ι) :
     Model.Index.singleMul B i (.nil) = Model.single B (.single i) 1 := rfl
 
-lemma Index.singleMul_single_same (i : ι) :
-    Model.Index.singleMul B i (.single i) = B i i • (1 : Model ι B) := by
+@[simp]
+lemma Index.singleMul_cons_same (i : ι) (is) (h) :
+    Model.Index.singleMul B i (.cons i is h) = Model.single B is (B i i) := by
   erw [Model.Index.singleMul, Index.recOn]
   rw [ltByCases]
   simp only [single_coe, Submodule.comap_coe, lt_self_iff_false, ↓reduceDite, ofFinsupp_single,
     Model.single_nil_eq_smul_one]
+
+@[simp]
+lemma Index.singleMul_cons_of_lt (i j : ι) (hij : i < j) (l : Model.Index ι) (h) :
+    Model.Index.singleMul B i (.cons j l h) =
+      Model.single B (.cons i (.cons j l h) sorry) 1 := by
+  erw [Model.Index.singleMul, Index.recOn]
+  rw [ltByCases, dif_pos hij]
+  dsimp [mulOfLt]
+
+open scoped BigOperators
+@[simp]
+lemma Index.singleMul_cons_of_gt (i j : ι) (hij : i > j) (l : Model.Index ι) (h) :
+    Model.Index.singleMul B i (.cons j l h) =
+      Model.single B l (B i j) -
+        (Model.ofFinsupp.symm ↑(Model.Index.singleMul B i l : Model ι B)).sum fun js fjs =>
+          Model.single B (.cons i js) fjs
+          := by
+  erw [Model.Index.singleMul, Index.recOn]
+  rw [ltByCases, dif_pos hij, dif_neg hij.not_lt]
+  dsimp
+  rw [←Model.Index.singleMul]
+  simp
+
+
+lemma Index.singleMul_single_same (i : ι) :
+    Model.Index.singleMul B i (.single i) = B i i • (1 : Model ι B) := by
+  rw [single_eq_cons, singleMul_cons_same, single_nil_eq_smul_one]
 
 @[simp]
 lemma Index.singleMul_of_forall_le (i : ι) (l : Model.Index ι) (h) :
