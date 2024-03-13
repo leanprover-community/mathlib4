@@ -65,6 +65,7 @@ theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
   simp_rw [toMultiset_sum, Finsupp.toMultiset_single, sum_nsmul, sum_multiset_singleton]
 #align finsupp.to_multiset_sum_single Finsupp.toMultiset_sum_single
 
+@[simp]
 theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.sum fun _ => id := by
   simp [toMultiset_apply, map_finsupp_sum, Function.id_def]
 #align finsupp.card_to_multiset Finsupp.card_toMultiset
@@ -192,6 +193,10 @@ theorem toFinsupp_inter (s t : Multiset α) : toFinsupp (s ∩ t) = toFinsupp s 
   ext
   simp [inf_eq_min]
 
+@[simp]
+theorem toFinsupp_sum_eq (s : Multiset α) : s.toFinsupp.sum (fun _ ↦ id) = Multiset.card s := by
+  rw [← Finsupp.card_toMultiset, toFinsupp_toMultiset]
+
 end Multiset
 
 @[simp]
@@ -251,3 +256,46 @@ end Finsupp
 theorem Multiset.toFinsupp_strictMono [DecidableEq ι] : StrictMono (@Multiset.toFinsupp ι _) :=
   (@Finsupp.orderIsoMultiset ι).symm.strictMono
 #align multiset.to_finsupp_strict_mono Multiset.toFinsupp_strictMono
+
+namespace Sym
+
+variable (α)
+variable [DecidableEq α] (n : ℕ)
+
+/-- The `n`th symmetric power of a type `α` is naturally equivalent to the subtype of
+finitely-supported maps `α →₀ ℕ` with total mass `n`.
+
+See also `Sym.equivNatSumOfFintype` when `α` is finite. -/
+def equivNatSum :
+    Sym α n ≃ {P : α →₀ ℕ // P.sum (fun _ ↦ id) = n} :=
+  (Multiset.toFinsupp.toEquiv.image _).trans <| Equiv.Set.ofEq <| by
+  ext P
+  refine ⟨?_, ?_⟩
+  · rintro ⟨s, rfl, rfl⟩
+    simp [Set.mem_def]
+  · rintro rfl
+    exact ⟨Multiset.toFinsupp.symm P, by simp [Set.mem_def], by simp⟩
+
+@[simp] lemma coe_equivNatSum_apply_apply (s : Sym α n) (a : α) :
+    (equivNatSum α n s : α →₀ ℕ) a = (s : Multiset α).count a :=
+  rfl
+
+/-- The `n`th symmetric power of a finite type `α` is naturally equivalent to the subtype of maps
+`α → ℕ` with total mass `n`.
+
+See also `Sym.equivNatSum` when `α` is not necessarily finite. -/
+noncomputable def equivNatSumOfFintype [Fintype α] :
+    Sym α n ≃ {P : α → ℕ // ∑ i, P i = n} :=
+  (equivNatSum α n).trans <| (Finsupp.equivFunOnFinite.image _).trans <| Equiv.Set.ofEq <| by
+    ext P
+    refine ⟨?_, ?_⟩
+    · rintro ⟨Q, rfl, rfl⟩
+      simp [Set.mem_def, Finsupp.sum_fintype]
+    · rintro rfl
+      exact ⟨Finsupp.equivFunOnFinite.symm P, by simp [Set.mem_def, Finsupp.sum_fintype], by simp⟩
+
+@[simp] lemma coe_equivNatSumOfFintype_apply_apply [Fintype α] (s : Sym α n) (a : α) :
+    (equivNatSumOfFintype α n s : α → ℕ) a = (s : Multiset α).count a :=
+  rfl
+
+end Sym
