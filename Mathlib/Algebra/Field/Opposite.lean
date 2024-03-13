@@ -46,7 +46,8 @@ instance divisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ :=
   { MulOpposite.divisionSemiring α, MulOpposite.ring α, MulOpposite.ratCast α with
     ratCast_mk := fun a b hb h => unop_injective <| by
       rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv, unop_natCast, unop_intCast,
-        Int.commute_cast, div_eq_mul_inv] }
+        Int.commute_cast, div_eq_mul_inv]
+    qsmul := qsmulRec _ }
 
 instance semifield [Semifield α] : Semifield αᵐᵒᵖ :=
   { MulOpposite.divisionSemiring α, MulOpposite.commSemiring α with }
@@ -65,7 +66,8 @@ instance divisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ :=
   { AddOpposite.ring α, AddOpposite.groupWithZero α, AddOpposite.ratCast α with
     ratCast_mk := fun a b hb h => unop_injective <| by
       rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv, unop_natCast, unop_intCast,
-        div_eq_mul_inv] }
+        div_eq_mul_inv]
+    qsmul := qsmulRec _ }
 
 instance semifield [Semifield α] : Semifield αᵃᵒᵖ :=
   { AddOpposite.divisionSemiring, AddOpposite.commSemiring α with }

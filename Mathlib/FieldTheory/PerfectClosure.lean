@@ -290,7 +290,9 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
         simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, RingHom.iterate_map_neg, add_left_neg, mk_zero]
     add_comm := fun e f =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
-        Quot.inductionOn f fun ⟨n, y⟩ => congr_arg (Quot.mk _) <| by simp only [add_comm] }
+        Quot.inductionOn f fun ⟨n, y⟩ => congr_arg (Quot.mk _) <| by simp only [add_comm]
+    nsmul := nsmulRec
+    zsmul := zsmulRec }
 
 instance instCommRing : CommRing (PerfectClosure K p) :=
   { instAddCommGroup K p, AddMonoidWithOne.unary,
@@ -393,17 +395,7 @@ theorem frobenius_mk (x : ℕ × K) :
     (frobenius (PerfectClosure K p) p : PerfectClosure K p → PerfectClosure K p) (mk K p x) =
       mk _ _ (x.1, x.2 ^ p) := by
   simp only [frobenius_def]
-  cases' x with n x
-  dsimp only
-  suffices ∀ p' : ℕ, mk K p (n, x) ^ p' = mk K p (n, x ^ p') by apply this
-  intro p
-  induction p with
-  | zero => apply R.sound; rw [(frobenius _ _).iterate_map_one, pow_zero]
-  | succ p ih =>
-    rw [pow_succ, ih]
-    symm
-    apply R.sound
-    simp only [pow_succ, iterate_map_mul]
+  exact mk_pow K p x p
 #align perfect_closure.frobenius_mk PerfectClosure.frobenius_mk
 
 /-- Embedding of `K` into `PerfectClosure K p` -/
@@ -435,7 +427,8 @@ instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
       match x, y, H with
       | _, _, R.intro n x => Quot.sound (R.intro _ _)
     refine bijective_iff_has_inverse.mpr ⟨f, fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_,
-      fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_⟩ <;> simp only [liftOn_mk, frobenius_mk, mk_succ_pow]
+      fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_⟩ <;>
+      simp only [f, liftOn_mk, frobenius_mk, mk_succ_pow]
 
 @[simp]
 theorem iterate_frobenius_mk (n : ℕ) (x : K) :
@@ -517,7 +510,8 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) :=
         simp only [(frobenius _ _).iterate_map_one, (frobenius K p).iterate_map_zero,
             iterate_zero_apply, ← iterate_map_mul] at this ⊢
         rw [mul_inv_cancel this, (frobenius _ _).iterate_map_one]
-    inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero]) }
+    inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
+    qsmul := qsmulRec _ }
 
 instance instField : Field (PerfectClosure K p) :=
   { (inferInstance : DivisionRing (PerfectClosure K p)),
