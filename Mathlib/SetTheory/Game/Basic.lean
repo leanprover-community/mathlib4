@@ -660,8 +660,7 @@ def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
     refine ⟨(Equiv.sumEmpty _ _).trans (Equiv.prodPUnit _),
       (Equiv.emptySum _ _).trans (Equiv.prodPUnit _), ?_, ?_⟩ <;>
     (try rintro (⟨i, ⟨⟩⟩ | ⟨i, ⟨⟩⟩)) <;>
-    { (try intro i)
-      dsimp
+    { dsimp
       apply (Relabelling.subCongr (Relabelling.refl _) (mulZeroRelabelling _)).trans
       rw [sub_zero]
       exact (addZeroRelabelling _).trans <|

@@ -205,9 +205,7 @@ instance listShortGet :
     ∀ (L : List PGame.{u}) [ListShort L] (i : Fin (List.length L)), Short (List.get L i)
   | [], _, n => by
     exfalso
-    rcases n with ⟨_, ⟨⟩⟩
-    -- Porting note: The proof errors unless `done` or a `;` is added after `rcases`
-    done
+    rcases n with ⟨_, ⟨⟩⟩;
   | _::_, ListShort.cons' S _, ⟨0, _⟩ => S
   | hd::tl, ListShort.cons' _ S, ⟨n + 1, h⟩ =>
     @listShortGet tl S ⟨n, (add_lt_add_iff_right 1).mp h⟩
