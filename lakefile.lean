@@ -18,6 +18,7 @@ package mathlib where
       #["-DwarningAsError=true"]
     else
       #[]
+  precompileModules := true
 
 /-!
 ## Mathlib dependencies on upstream projects.
