@@ -11,7 +11,7 @@ import Mathlib.Analysis.Fourier.Inversion
 We derive the Mellin inversion formula as a consequence of the Fourier inversion formula.
 
 ## Main results
-- `mellinInversion`: The inverse Mellin transform of the Mellin transform applied to `x > 0` is x.
+- `mellin_inversion`: The inverse Mellin transform of the Mellin transform applied to `x > 0` is x.
 -/
 
 open Real Complex Set MeasureTheory
