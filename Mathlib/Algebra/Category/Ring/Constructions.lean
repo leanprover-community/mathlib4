@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
@@ -147,7 +147,7 @@ section Terminal
 /-- The trivial ring is the (strict) terminal object of `CommRingCat`. -/
 def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
   refine IsTerminal.ofUnique (h := fun X => ⟨⟨⟨⟨1, rfl⟩, fun _ _ => rfl⟩, ?_, ?_⟩, ?_⟩)
-  · dsimp
+  · rfl
   · intros; dsimp
   · intros f; ext; rfl
 set_option linter.uppercaseLean3 false in

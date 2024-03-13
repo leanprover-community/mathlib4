@@ -583,6 +583,7 @@ instance (n) : AddCommSemigroup (Fin n) where
 instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   zero_add := Fin.zero_add
   add_zero := Fin.add_zero
+  nsmul := nsmulRec
   __ := Fin.addCommSemigroup n
 #align fin.add_comm_monoid Fin.addCommMonoid
 
@@ -1515,7 +1516,8 @@ instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
         exact le_of_lt ha
     sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ =>
       Fin.ext <| show (a + (n - b)) % n = (a + (n - b) % n) % n by simp
-    sub := Fin.sub }
+    sub := Fin.sub
+    zsmul := zsmulRec }
 
 /-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
 instance instInvolutiveNeg (n : ℕ) : InvolutiveNeg (Fin n) where
@@ -1585,7 +1587,7 @@ theorem lt_sub_one_iff {n : ℕ} {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   simp only [zero_eq, zero_eta, zero_sub, lt_iff_val_lt_val, val_zero, coe_neg_one, add_pos_iff,
     _root_.zero_lt_one, or_true]
   have : (k + 1 + (n + 1)) % (n + 2) = k % (n + 2) := by
-    rw [add_right_comm, add_assoc, add_mod_right]
+    rw [add_right_comm, add_assoc, add_assoc, one_add_one_eq_two, add_mod_right]
   simp [lt_iff_val_lt_val, ext_iff, Fin.coe_sub, succ_eq_add_one, this,
     mod_eq_of_lt ((lt_succ_self _).trans hk)]
 #align fin.lt_sub_one_iff Fin.lt_sub_one_iff

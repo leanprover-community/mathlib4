@@ -227,9 +227,9 @@ theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
   simp [Polynomial.eval_comp, h]
   obtain rfl | h' := h.eq_or_lt
   · simp
-  · congr
-    norm_cast
-    rw [← tsub_add_eq_tsub_tsub, tsub_tsub_cancel_of_le (Nat.succ_le_iff.mpr h')]
+  · norm_cast
+    congr
+    omega
 #align bernstein_polynomial.iterate_derivative_at_1 bernsteinPolynomial.iterate_derivative_at_1
 
 theorem iterate_derivative_at_1_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
@@ -244,8 +244,7 @@ open Submodule
 theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
     LinearIndependent ℚ fun ν : Fin k => bernsteinPolynomial ℚ n ν := by
   induction' k with k ih
-  · simp [Nat.zero_eq]
-    apply linearIndependent_empty_type
+  · apply linearIndependent_empty_type
   · apply linearIndependent_fin_succ'.mpr
     fconstructor
     · exact ih (le_of_lt h)

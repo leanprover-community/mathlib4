@@ -254,7 +254,8 @@ theorem succ_ascFactorial (n : ℕ) :
     ∀ k, n * n.succ.ascFactorial k = (n + k) * n.ascFactorial k
   | 0 => by rw [add_zero, ascFactorial_zero, ascFactorial_zero]
   | k + 1 => by
-    rw [ascFactorial, mul_left_comm, succ_ascFactorial n k, ascFactorial, succ_add, ← add_assoc]
+    rw [ascFactorial, mul_left_comm, succ_ascFactorial n k, ascFactorial, succ_add, ← add_assoc,
+      succ_eq_add_one]
 #align nat.succ_asc_factorial Nat.succ_ascFactorial
 
 /-- `(n + 1).ascFactorial k = (n + k) ! / n !` but without ℕ-division. See

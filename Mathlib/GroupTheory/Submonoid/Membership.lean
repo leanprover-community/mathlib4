@@ -483,7 +483,7 @@ noncomputable instance decidableMemPowers : DecidablePred (· ∈ Submonoid.powe
   Classical.decPred _
 #align decidable_powers Submonoid.decidableMemPowers
 
--- Porting note: TODO the following instance should follow from a more general principle
+-- Porting note (#11215): TODO the following instance should follow from a more general principle
 -- See also mathlib4#2417
 noncomputable instance fintypePowers [Fintype M] : Fintype (powers a) :=
   inferInstanceAs <| Fintype {y // y ∈ powers a}

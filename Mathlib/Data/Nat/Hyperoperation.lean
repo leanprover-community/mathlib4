@@ -77,7 +77,7 @@ theorem hyperoperation_two : hyperoperation 2 = (· * ·) := by
     -- Porting note: was `ring`
     dsimp only
     nth_rewrite 1 [← mul_one m]
-    rw [← mul_add, add_comm, Nat.succ_eq_add_one]
+    rw [← mul_add, add_comm]
 #align hyperoperation_two hyperoperation_two
 
 @[simp]

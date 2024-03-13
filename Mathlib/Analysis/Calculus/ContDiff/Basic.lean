@@ -1086,7 +1086,7 @@ theorem ContDiffWithinAt.iteratedFderivWithin_right {i : ℕ} (hf : ContDiffWith
     (hs : UniqueDiffOn 𝕜 s) (hmn : (m + i : ℕ∞) ≤ n) (hx₀s : x₀ ∈ s) :
     ContDiffWithinAt 𝕜 m (iteratedFDerivWithin 𝕜 i f s) s x₀ := by
   induction' i with i hi generalizing m
-  · rw [Nat.zero_eq, ENat.coe_zero, add_zero] at hmn
+  · rw [ENat.coe_zero, add_zero] at hmn
     exact (hf.of_le hmn).continuousLinearMap_comp
       ((continuousMultilinearCurryFin0 𝕜 E F).symm : _ →L[𝕜] E [×0]→L[𝕜] F)
   · rw [Nat.cast_succ, add_comm _ 1, ← add_assoc] at hmn
@@ -1365,7 +1365,7 @@ theorem ContDiffOn.neg {s : Set E} {f : E → F} (hf : ContDiffOn 𝕜 n f s) :
 
 variable {i : ℕ}
 
--- Porting note: TODO: define `Neg` instance on `ContinuousLinearEquiv`,
+-- Porting note (#11215): TODO: define `Neg` instance on `ContinuousLinearEquiv`,
 -- prove it from `ContinuousLinearEquiv.iteratedFDerivWithin_comp_left`
 theorem iteratedFDerivWithin_neg_apply {f : E → F} (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 i (-f) s x = -iteratedFDerivWithin 𝕜 i f s x := by
@@ -1617,7 +1617,7 @@ end SMul
 
 /-! ### Constant scalar multiplication
 
-Porting note: TODO: generalize results in this section.
+Porting note (#11215): TODO: generalize results in this section.
 
 1. It should be possible to assume `[Monoid R] [DistribMulAction R F] [SMulCommClass 𝕜 R F]`.
 2. If `c` is a unit (or `R` is a group), then one can drop `ContDiff*` assumptions in some

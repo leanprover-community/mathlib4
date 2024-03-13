@@ -94,8 +94,7 @@ theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
   cases e : n - m
   · simp only [ofNat_eq_coe]
     simp [e, Nat.le_of_sub_eq_zero e]
-  · rw [cast_negSucc, Nat.add_one, ← e, Nat.cast_sub <| _root_.le_of_lt <| Nat.lt_of_sub_eq_succ e,
-      neg_sub]
+  · rw [cast_negSucc, ← e, Nat.cast_sub <| _root_.le_of_lt <| Nat.lt_of_sub_eq_succ e, neg_sub]
 #align int.cast_sub_nat_nat Int.cast_subNatNatₓ
 -- type had `HasLiftT`
 

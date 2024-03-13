@@ -268,7 +268,14 @@ theorem comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
     HasCompactMulSupport fun x => m (f x) (f₂ x) := by
   rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂ ⊢
-  filter_upwards [hf, hf₂] using fun x hx hx₂ => by simp_rw [hx, hx₂, Pi.one_apply, hm]
+  /- Adaptation note: (`nightly-2024-03-11`) If we *either* (1) remove the type annotations on the
+  binders in the following `fun` or (2) revert `simp only` to `simp_rw`, `to_additive` fails
+  because an `OfNat.ofNat 1` is not replaced with `0`. Notably, as of this nightly, what used to
+  look like `OfNat.ofNat (nat_lit 1) x` in the proof term now looks like
+  `OfNat.ofNat (OfNat.ofNat (α := ℕ) (nat_lit 1)) x`, and this seems to trip up `to_additive`.
+  -/
+  filter_upwards [hf, hf₂] using fun x (hx : f x = (1 : α → β) x) (hx₂ : f₂ x = (1 : α → γ) x) => by
+    simp only [hx, hx₂, Pi.one_apply, hm]
 #align has_compact_mul_support.comp₂_left HasCompactMulSupport.comp₂_left
 #align has_compact_support.comp₂_left HasCompactSupport.comp₂_left
 
@@ -385,7 +392,7 @@ section LocallyFinite
 
 variable {ι : Type*} [TopologicalSpace X]
 
--- Porting note: todo: reformulate for any locally finite family of sets
+-- Porting note (#11215): TODO: reformulate for any locally finite family of sets
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family
 of open sets, then for any point we can find a neighbourhood on which only finitely-many members of
 `f` are not equal to 1. -/

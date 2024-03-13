@@ -350,18 +350,10 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         · apply Finset.sum_congr rfl fun i hi => ?_
           rw [Finset.mem_Ico] at hi
           dsimp only [w]
-          have A : ¬1 + i + 1 < N := fun h => by
-            rw [add_assoc, add_comm] at h
-            exact hi.left.not_lt (i.lt_succ_self.trans (i.succ.lt_succ_self.trans h))
-          have B : ¬1 + i + 1 = N := fun h => by
-            rw [← h, add_assoc, add_comm] at hi
-            exact Nat.not_succ_le_self i (i.succ.le_succ.trans hi.left)
-          have C : ¬1 + i < N := fun h => by
-            rw [add_comm] at h
-            exact hi.left.not_lt (i.lt_succ_self.trans h)
-          have D : ¬1 + i = N := fun h => by
-            rw [← h, add_comm, Nat.succ_le_iff] at hi
-            exact hi.left.ne rfl
+          have A : ¬1 + i + 1 < N := by omega
+          have B : ¬1 + i + 1 = N := by omega
+          have C : ¬1 + i < N := by omega
+          have D : ¬1 + i = N := by omega
           rw [if_neg A, if_neg B, if_neg C, if_neg D]
           congr 3 <;> · rw [add_comm, Nat.sub_one]; apply Nat.pred_succ
       _ = (∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
@@ -532,10 +524,10 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
     ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left xy n),
       fun i => φst (ut _)⟩
     le_rfl
-  dsimp only [Subtype.coe_mk]
-  rw [edist_comm, Nat.sub_sub, add_comm, Nat.sub_succ, Nat.add_one, Nat.succ_pred_eq_of_pos]
-  simp only [Function.comp_apply]
-  simpa only [tsub_pos_iff_lt, Finset.mem_range] using hx
+  rw [Finset.mem_range] at hx
+  dsimp only [Subtype.coe_mk, Function.comp_apply]
+  rw [edist_comm]
+  congr 4 <;> omega
 #align evariation_on.comp_le_of_antitone_on eVariationOn.comp_le_of_antitoneOn
 
 theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t) :

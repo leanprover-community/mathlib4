@@ -97,7 +97,7 @@ theorem superFactorial_four_mul (n : ℕ) :
     sf (4 * n) = ((∏ i in range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! :=
   calc
     sf (4 * n) = (∏ i in range (2 * n), (2 * i + 1) !) ^ 2 * 2 ^ (2 * n) * (2 * n) ! := by
-      rw [← superFactorial_two_mul, ← mul_assoc]
+      rw [← superFactorial_two_mul, ← mul_assoc]; rfl
     _ = ((∏ i in range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! := by
       rw [pow_mul', mul_pow]
 

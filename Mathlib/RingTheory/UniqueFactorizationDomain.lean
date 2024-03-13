@@ -1830,8 +1830,8 @@ theorem pow_factors [Nontrivial α] {a : Associates α} {k : ℕ} :
 theorem count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0) {p : Associates α}
     (hp : Irreducible p) (k : ℕ) : count p (a ^ k).factors = k * count p a.factors := by
   induction' k with n h
-  · rw [pow_zero, factors_one, Nat.zero_eq, zero_mul, count_zero hp]
-  · rw [pow_succ, count_mul ha (pow_ne_zero _ ha) hp, h, Nat.succ_eq_add_one]
+  · rw [pow_zero, factors_one, zero_mul, count_zero hp]
+  · rw [pow_succ, count_mul ha (pow_ne_zero _ ha) hp, h]
     ring
 #align associates.count_pow Associates.count_pow
 
@@ -2074,3 +2074,17 @@ theorem associated_of_factorization_eq (a b : α) (ha : a ≠ 0) (hb : b ≠ 0)
 #align associated_of_factorization_eq associated_of_factorization_eq
 
 end Finsupp
+
+open UniqueFactorizationMonoid in
+/-- Every non-zero prime ideal in a unique factorization domain contains a prime element. -/
+theorem Ideal.IsPrime.exists_mem_prime_of_ne_bot {R : Type*} [CommSemiring R] [IsDomain R]
+    [UniqueFactorizationMonoid R] {I : Ideal R} (hI₂ : I.IsPrime) (hI : I ≠ ⊥) :
+    ∃ x ∈ I, Prime x := by
+  classical
+  obtain ⟨a : R, ha₁ : a ∈ I, ha₂ : a ≠ 0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hI
+  replace ha₁ : (factors a).prod ∈ I := by
+    obtain ⟨u : Rˣ, hu : (factors a).prod * u = a⟩ := factors_prod ha₂
+    rwa [← hu, mul_unit_mem_iff_mem _ u.isUnit] at ha₁
+  obtain ⟨p : R, hp₁ : p ∈ factors a, hp₂ : p ∈ I⟩ :=
+    (hI₂.multiset_prod_mem_iff_exists_mem <| factors a).1 ha₁
+  exact ⟨p, hp₂, prime_of_factor p hp₁⟩

@@ -10,6 +10,7 @@ import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
+import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
@@ -172,6 +173,7 @@ import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.GradedMulAction
+import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
@@ -239,6 +241,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
+import Mathlib.Algebra.Homology.Bifunctor
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.ComplexShapeSigns
 import Mathlib.Algebra.Homology.ConcreteCategory
@@ -290,6 +293,7 @@ import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.Algebra.Homology.TotalComplex
+import Mathlib.Algebra.Homology.TotalComplexSymmetry
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Algebra.Invertible.Defs
 import Mathlib.Algebra.Invertible.GroupWithZero
@@ -333,7 +337,6 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Bimodule
 import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.Algebra.Module.DedekindDomain
-import Mathlib.Algebra.Module.DirectLimitAndTensorProduct
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.GradedModule
 import Mathlib.Algebra.Module.Hom
@@ -906,6 +909,8 @@ import Mathlib.Analysis.NormedSpace.Spectrum
 import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
+import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Instances
+import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Restrict
 import Mathlib.Analysis.NormedSpace.Star.Exponential
 import Mathlib.Analysis.NormedSpace.Star.GelfandDuality
 import Mathlib.Analysis.NormedSpace.Star.Matrix
@@ -981,6 +986,7 @@ import Mathlib.Analysis.SpecificLimits.IsROrC
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.Subadditive
 import Mathlib.Analysis.SumIntegralComparisons
+import Mathlib.Analysis.SumOverResidueClass
 import Mathlib.Analysis.VonNeumannAlgebra.Basic
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
@@ -1210,6 +1216,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Shapes.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
@@ -2195,6 +2202,7 @@ import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Classification
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+import Mathlib.FieldTheory.IsPerfectClosure
 import Mathlib.FieldTheory.IsSepClosed
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.KummerExtension
@@ -2648,7 +2656,9 @@ import Mathlib.LinearAlgebra.TensorAlgebra.Basis
 import Mathlib.LinearAlgebra.TensorAlgebra.Grading
 import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 import Mathlib.LinearAlgebra.TensorPower
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Basis
+import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 import Mathlib.LinearAlgebra.TensorProduct.Matrix
@@ -2656,7 +2666,6 @@ import Mathlib.LinearAlgebra.TensorProduct.Opposite
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.LinearAlgebra.TensorProductBasis
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.LinearAlgebra.Vandermonde
@@ -2932,6 +2941,7 @@ import Mathlib.NumberTheory.Harmonic.Int
 import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.LSeries.Basic
 import Mathlib.NumberTheory.LSeries.Convergence
+import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 import Mathlib.NumberTheory.LegendreSymbol.Basic
 import Mathlib.NumberTheory.LegendreSymbol.GaussEisensteinLemmas
@@ -3400,7 +3410,7 @@ import Mathlib.RingTheory.Subring.Units
 import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Order
 import Mathlib.RingTheory.Subsemiring.Pointwise
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.Trace
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Valuation.Basic
@@ -3771,6 +3781,7 @@ import Mathlib.Topology.Category.CompHaus.Limits
 import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.Compactum
 import Mathlib.Topology.Category.LightProfinite.Basic
+import Mathlib.Topology.Category.LightProfinite.IsLight
 import Mathlib.Topology.Category.Locale
 import Mathlib.Topology.Category.Profinite.AsLimit
 import Mathlib.Topology.Category.Profinite.Basic
@@ -3818,6 +3829,7 @@ import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.ContinuousFunction.CocompactMap
 import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Topology.ContinuousFunction.ContinuousMapZero
 import Mathlib.Topology.ContinuousFunction.FunctionalCalculus
 import Mathlib.Topology.ContinuousFunction.Ideals
 import Mathlib.Topology.ContinuousFunction.LocallyConstant
@@ -3826,6 +3838,7 @@ import Mathlib.Topology.ContinuousFunction.Polynomial
 import Mathlib.Topology.ContinuousFunction.Sigma
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 import Mathlib.Topology.ContinuousFunction.T0Sierpinski
+import Mathlib.Topology.ContinuousFunction.UniqueCFC
 import Mathlib.Topology.ContinuousFunction.Units
 import Mathlib.Topology.ContinuousFunction.Weierstrass
 import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
@@ -3924,6 +3937,7 @@ import Mathlib.Topology.MetricSpace.ShrinkingLemma
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.Metrizable.ContinuousMap
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Metrizable.Urysohn
 import Mathlib.Topology.NhdsSet

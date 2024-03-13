@@ -310,8 +310,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
         exact False.elim h
       · rw [destruct_pure, destruct_think] at h
         exact False.elim h
-      · simp at h
-        simp [*]
+      · simp_all
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 #align computation.eq_of_bisim Computation.eq_of_bisim
 
@@ -581,7 +580,7 @@ theorem of_results_think {s : Computation α} {a n} (h : Results (think s) a n) 
 theorem results_think_iff {s : Computation α} {a n} : Results (think s) a (n + 1) ↔ Results s a n :=
   ⟨fun h => by
     let ⟨n', r, e⟩ := of_results_think h
-    injection e with h'; rw [Nat.add, Nat.add] at h'; rwa [h'], results_think⟩
+    injection e with h'; rwa [h'], results_think⟩
 #align computation.results_think_iff Computation.results_think_iff
 
 theorem results_thinkN {s : Computation α} {a m} :
@@ -705,7 +704,7 @@ theorem destruct_map (f : α → β) (s) : destruct (map f s) = lmap f (rmap (ma
 @[simp]
 theorem map_id : ∀ s : Computation α, map id s = s
   | ⟨f, al⟩ => by
-    apply Subtype.eq; simp [map, Function.comp]
+    apply Subtype.eq; simp only [map, comp_apply, id_eq]
     have e : @Option.rec α (fun _ => Option α) none some = id := by ext ⟨⟩ <;> rfl
     have h : ((fun x: Option α => x) = id) := rfl
     simp [e, h, Stream'.map_id]
