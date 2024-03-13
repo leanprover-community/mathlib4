@@ -21,7 +21,6 @@ bicomplex `(((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂)`.
 
 -/
 
-set_option profiler true
 
 open CategoryTheory Limits
 
