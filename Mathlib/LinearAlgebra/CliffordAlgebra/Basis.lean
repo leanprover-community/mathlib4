@@ -215,10 +215,11 @@ def Index.reverseRecOn {motive : Model.Index ι → Sort*}
     (l : Model.Index ι) : motive l := by
   let ⟨l, hl⟩ := l
   induction l using List.reverseRecOn with
-  | H0 => exact nil
-  | H1 xs a ih =>
-    letI xsi : Model.Index ι := ⟨xs, sorry⟩
-    exact concat xsi a sorry (ih xsi.prop)
+  | nil => exact nil
+  | append_singleton xs a ih =>
+    letI xsi : Model.Index ι := ⟨xs, (List.pairwise_append.mp hl).1⟩
+    refine concat xsi a ?_ (ih xsi.prop)
+    simpa using (List.pairwise_append.mp hl).2.2
 
 @[simp]
 theorem Index.reverseRecOn_nil {motive : Model.Index ι → Sort*}
@@ -231,9 +232,6 @@ theorem Index.reverseRecOn_concat {motive : Model.Index ι → Sort*}
     (i : ι) (l : Model.Index ι) (h) :
     Index.reverseRecOn nil concat (.concat l i h) = (concat l i h <| Index.reverseRecOn nil concat l) := by
   simp [Index.reverseRecOn, Index.concat]
-  rw [List.reverseRecOn]
-  simp
-  sorry
 
 open List in
 def Index.mulOfLt (i : ι) (l : Model.Index ι) (h : ∀ j ∈ l.1, i < j) :
@@ -294,55 +292,55 @@ lemma Index.singleMul_of_forall_le (i : ι) (l : Model.Index ι) (h) :
     Model.Index.singleMul B i l = Model.single B (.cons i l h) 1 := by
   induction l using Model.Index.recOn with
   | nil => simp only [Submodule.comap_coe, singleMul_nil, single_eq_cons]
-  | cons j l h' ih =>
+  | cons j l h' _ih =>
     rw [singleMul, Index.recOn_cons, ltByCases, dif_pos (h _ <| List.mem_cons_self _ _), mulOfLt]
 
 
 /-- Multiply two basis elements together to get an element of the model. -/
 def Index.mul (l₁ l₂ : Model.Index ι) : Model ι B :=
-  l₁.reverseRecOn
+  l₁.recOn
     (.single B l₂ 1)
-    (fun _ i _ x => (Model.ofFinsupp.symm x).sum fun ind val => val • ind.singleMul B i)
+    (fun i _ _ x => (Model.ofFinsupp.symm x).sum fun ind val => val • ind.singleMul B i)
 
 @[simp]
 lemma Index.nil_mul_single (is : Model.Index ι) :
     Model.Index.mul B (.nil) is = .single B is 1 := by
-  rw [Model.Index.mul, Index.reverseRecOn_nil]
+  rw [Model.Index.mul, Index.recOn_nil]
+
+
+/-- (xX)Y = x(XY)-/
+lemma Index.cons_mul (l₁ l₂ : Model.Index ι) (a : ι) (h) :
+  (l₁.cons a h).mul B l₂ =
+    (Model.ofFinsupp.symm (Index.mul B l₁ l₂ : Model ι B)).sum fun ind val => val • ind.singleMul B a := by
+  rw [mul, recOn_cons]
+  rfl
 
 @[simp]
-lemma Index.single_mul_nil (is : Model.Index ι) :
+lemma Index.mul_nil (is : Model.Index ι) :
     Model.Index.mul B is (.nil) = .single B is 1 := by
-  rw [Model.Index.mul]
-  induction is using Index.reverseRecOn with
+  induction is using Index.recOn with
   | nil => simp
-  | concat is i h ih =>
-    rw [Index.reverseRecOn_concat]
+  | cons is i h ih =>
+    rw [Index.cons_mul]
+    simp
     simp only [Submodule.comap_coe, ih, ofFinsupp_symm_single, zero_smul, Finsupp.sum_single_index,
       one_smul]
     rw [Index.singleMul_of_forall_le]
-    sorry
-  -- obtain ⟨il, hi⟩ := is
-  -- induction il using List.reverseRecOn with
-  -- | H0 => simp only [Submodule.comap_coe, List.reverseRecOn, List.reverse_nil, eq_mpr_eq_cast,
-  --   cast_eq]
-  -- | H1 x xs ih =>
-  --   dsimp
-  --   rw [List.reverseRecOn]
-  --   simp
-  --   rw [List.reverse_append, List.reverse_singleton, List.singleton_append]
-  --   dsimp
-  --   rw [List.reverse_reverse]
-  --   sorry
+
+/-- (Xx)Y = X(xY)-/
+lemma Index.concat_mul (l₁ l₂ : Model.Index ι) (a : ι) (h) :
+  (l₁.concat a h).mul B l₂ =
+    (Model.ofFinsupp.symm (Index.singleMul B a l₂ : Model ι B)).sum fun ind val => val • l₁.mul B ind := by
+  rw [mul]
+  simp
+  sorry
 
 @[simp]
 lemma Index.single_mul_single_same (i : ι) :
     Model.Index.mul B (.single i) (.single i) = B i i • (1 : Model ι B) := by
-  rw [Model.Index.mul, single_coe]
-  rw [List.reverseRecOn]
-  simp_rw [List.reverse_singleton, List.reverse_nil]
-  rw [List.reverseRecOn]
-  simp_rw [List.reverse_nil]
-  simp [Model.Index.singleMul_single_same]
+  rw [Model.Index.mul, single_eq_cons, recOn_cons, recOn_nil, ofFinsupp_symm_single,
+    Finsupp.sum_single_index, one_smul, ←single_eq_cons, singleMul_single_same]
+  rw [zero_smul]
 
 open scoped BigOperators
 
