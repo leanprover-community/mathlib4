@@ -66,7 +66,7 @@ theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
     _ = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) := by
       simp [fourierIntegral_eq']
 
-theorem mellinInv_eq_fourierIntegral_inv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
+theorem mellinInv_eq_fourierIntegralInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
     mellinInv σ f x =
     (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := calc
   mellinInv σ f x
@@ -112,7 +112,7 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
       = mellinInv σ (fun s ↦ 𝓕 g (s.im / (2 * π))) x := by
       simp [g, mellinInv, mellin_eq_fourierIntegral]
     _ = (x : ℂ) ^ (-σ : ℂ) • g (-Real.log x) := by
-      rw [mellinInv_eq_fourierIntegral_inv _ _ hx, ← hf.fourier_inversion hFf hfx]
+      rw [mellinInv_eq_fourierIntegralInv _ _ hx, ← hf.fourier_inversion hFf hfx]
       simp [mul_div_cancel_left _ (show 2 * π ≠ 0 by norm_num; exact pi_ne_zero)]
     _ = (x : ℂ) ^ (-σ : ℂ) • rexp (σ * Real.log x) • f (rexp (Real.log x)) := by simp [g]
     _ = f x := by
