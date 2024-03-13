@@ -479,9 +479,10 @@ protected theorem not_iff : ¬IsPrimitiveRoot ζ k ↔ orderOf ζ ≠ k :=
 #align is_primitive_root.not_iff IsPrimitiveRoot.not_iff
 
 theorem pow_mul_pow_lcm {ζ' : M} {k' : ℕ} (hζ : IsPrimitiveRoot ζ k) (hζ' : IsPrimitiveRoot ζ' k')
-    (hk : k ≠ 0) (hk' : k' ≠ 0) : IsPrimitiveRoot
-    (ζ ^ (k / Nat.factorizationLCMLeft k k') * ζ' ^ (k' / Nat.factorizationLCMRight k k'))
-    (Nat.lcm k k') := by
+    (hk : k ≠ 0) (hk' : k' ≠ 0) :
+    IsPrimitiveRoot
+      (ζ ^ (k / Nat.factorizationLCMLeft k k') * ζ' ^ (k' / Nat.factorizationLCMRight k k'))
+      (Nat.lcm k k') := by
   convert IsPrimitiveRoot.orderOf _
   convert ((Commute.all ζ ζ').orderOf_mul_pow_eq_lcm
     (by simpa [← hζ.eq_orderOf]) (by simpa [← hζ'.eq_orderOf])).symm using 2
