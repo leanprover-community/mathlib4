@@ -217,8 +217,8 @@ theorem _root_.IsPrimitiveRoot.dvd_of_isCyclotomicExtension [NumberField K]
     l ∣ 2 * n := by
   have hl : NeZero l := ⟨hl⟩
   have hroot := IsCyclotomicExtension.zeta_spec n ℚ K
-  have key := IsPrimitiveRoot.lcm_totient_le_finrank hζ hroot (cyclotomic.irreducible_rat
-    <| Nat.lcm_pos (Nat.pos_of_ne_zero hl.1) n.2)
+  have key := IsPrimitiveRoot.lcm_totient_le_finrank hζ hroot
+    (cyclotomic.irreducible_rat <| Nat.lcm_pos (Nat.pos_of_ne_zero hl.1) n.2)
   rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat n.2)] at key
   rcases _root_.dvd_lcm_right l n with ⟨r, hr⟩
   have ineq := Nat.totient_super_multiplicative n r
