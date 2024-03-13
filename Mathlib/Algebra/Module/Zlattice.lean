@@ -374,20 +374,17 @@ section Zlattice
 
 open Submodule
 
-/-- An `L : Addsubgroup E` where `E` is a finite dimension vector over a suitable normed field `K`,
-say `ℝ` for example, is a `ℤ`-lattice if it is discrete and spans `E` over `K`. -/
-class IsZlattice (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E] [ProperSpace E]
-  (L : AddSubgroup E) [DiscreteTopology L] : Prop where
+/-- An `L : Addsubgroup E` where `E` is a vector space over a normed field `K` is a `ℤ`-lattice if
+it is discrete and spans `E` over `K`. -/
+class IsZlattice (K : Type*) [NormedField K] {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
+    (L : AddSubgroup E) [DiscreteTopology L] : Prop where
   /-- `L` spans the full space `E` over `K`. -/
   span_top : span K (L : Set E) = ⊤
 
 theorem _root_.Zspan.isZlattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [Fintype ι] (b : Basis ι ℝ E) :
-    have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
-    IsZlattice ℝ (span ℤ (Set.range b)).toAddSubgroup := by
-  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
-  exact ⟨Zspan.span_top b⟩
+    IsZlattice ℝ (span ℤ (Set.range b)).toAddSubgroup where
+  span_top := Zspan.span_top b
 
 variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
