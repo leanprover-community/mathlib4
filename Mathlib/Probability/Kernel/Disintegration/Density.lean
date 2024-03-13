@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Martingale.Convergence
-import Mathlib.Probability.Process.CountablyGenerated
+import Mathlib.Probability.Process.PartitionFiltration
 
 /-!
 # Kernel density
