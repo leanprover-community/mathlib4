@@ -197,8 +197,6 @@ namespace Matroid
 
 variable {α : Type _} {M : Matroid α}
 
-attribute [pp_dot] Base E
-
 /-- Typeclass for a matroid having finite ground set. Just a wrapper for `M.E.Finite`-/
 protected class Finite (M : Matroid α) : Prop where
   /-- The ground set is finite -/

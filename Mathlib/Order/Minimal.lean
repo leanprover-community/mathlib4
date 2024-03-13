@@ -160,11 +160,11 @@ theorem mem_maximals_iff_forall_lt_not_mem [PartialOrder α] {s : Set α} :
     x ∈ maximals (· ≤ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, x < y → y ∉ s :=
   mem_maximals_iff_forall_lt_not_mem' (· < ·)
 
--- porting note: new theorem
+-- Porting note: new theorem
 theorem maximals_of_symm [IsSymm α r] : maximals r s = s :=
   sep_eq_self_iff_mem_true.2 fun _ _ _ _ => symm
 
--- porting note: new theorem
+-- Porting note: new theorem
 theorem minimals_of_symm [IsSymm α r] : minimals r s = s :=
   sep_eq_self_iff_mem_true.2 fun _ _ _ _ => symm
 
@@ -174,7 +174,7 @@ theorem maximals_eq_minimals [IsSymm α r] : maximals r s = minimals r s := by
 
 variable {r r₁ r₂ s t a}
 
--- porting note: todo: use `h.induction_on`
+-- Porting note (#11215): TODO: use `h.induction_on`
 theorem Set.Subsingleton.maximals_eq (h : s.Subsingleton) : maximals r s = s := by
   rcases h.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩)
   exacts [minimals_empty _, maximals_singleton _ _]
