@@ -238,9 +238,9 @@ theorem _root_.IsPrimitiveRoot.dvd_of_isCyclotomicExtension [NumberField K]
 
 /-- If `x` is a `k`-th root of unity in an `n`-th cyclotomic extension of `ℚ`, where `n` is odd,
 and `ζ` is a primitive `n`-th root of unity, then there exist `r` such that `x = (-1)^r * ζ^r`. -/
-theorem _root_.IsPrimitiveRoot.exists_neg_pow_mul_pow_of_pow_eq_one [NumberField K]
+theorem _root_.IsPrimitiveRoot.exists_neg_pow_of_pow_eq_one [NumberField K]
     [IsCyclotomicExtension {n} ℚ K] (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+}
-    (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) : ∃ r : ℕ, x = (-1) ^ r * ζ ^ r :=  by
+    (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) : ∃ r : ℕ, x = (-ζ) ^ r :=  by
   have hnegζ : IsPrimitiveRoot (-ζ) (2 * n) := by
     convert IsPrimitiveRoot.orderOf (-ζ)
     rw [neg_eq_neg_one_mul, (Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
@@ -253,7 +253,6 @@ theorem _root_.IsPrimitiveRoot.exists_neg_pow_mul_pow_of_pow_eq_one [NumberField
   obtain ⟨a, ha⟩ := hlroot.dvd_of_isCyclotomicExtension n hlzero.1
   replace hlroot : x ^ (2 * (n : ℕ)) = 1 := by rw [ha, pow_mul, hlroot.pow_eq_one, one_pow]
   obtain ⟨s, -, hs⟩ := hnegζ.eq_pow_of_pow_eq_one hlroot (by simp)
-  rw [neg_pow] at hs
   exact ⟨s, hs.symm⟩
 
 /-- If `x` is a `k`-th root of unity in an `n`-th cyclotomic extension of `ℚ`, where `n` is odd,
@@ -263,10 +262,10 @@ theorem _root_.IsPrimitiveRoot.exists_pow_or_neg_mul_pow_of_pow_eq_one [NumberFi
     [IsCyclotomicExtension {n} ℚ K] (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+}
     (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) :
     ∃ r : ℕ, r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) :=  by
-  obtain ⟨r, hr⟩ := hζ.exists_neg_pow_mul_pow_of_pow_eq_one hno hx
+  obtain ⟨r, hr⟩ := hζ.exists_neg_pow_of_pow_eq_one hno hx
   refine ⟨r % n, Nat.mod_lt _ n.2, ?_⟩
   rw [show ζ ^ (r % ↑n) = ζ ^ r from (IsPrimitiveRoot.eq_orderOf hζ).symm ▸ pow_mod_orderOf .., hr]
-  rcases Nat.even_or_odd r with (h | h) <;> simp [h.neg_one_pow]
+  rcases Nat.even_or_odd r with (h | h) <;> simp [neg_pow, h.neg_one_pow]
 
 end IsCyclotomicExtension
 
