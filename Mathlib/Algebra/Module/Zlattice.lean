@@ -417,6 +417,10 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
 theorem Zlattice.module_finite : Module.Finite ℤ L :=
   Module.Finite.iff_addGroup_fg.mpr ((AddGroup.fg_iff_addSubgroup_fg L).mpr (FG K L))
 
+instance instModuleFinite_Zlattice {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] [ProperSpace E] (L : AddSubgroup E) [DiscreteTopology L]
+    [IsZlattice ℝ L] : Module.Finite ℤ L := Zlattice.module_finite ℝ L
+
 theorem Zlattice.module_free : Module.Free ℤ L := by
   have : Module.Finite ℤ L := module_finite K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
@@ -425,6 +429,10 @@ theorem Zlattice.module_free : Module.Free ℤ L := by
     change NoZeroSMulDivisors ℤ (AddSubgroup.toIntSubmodule L)
     exact noZeroSMulDivisors _
   infer_instance
+
+instance instModuleFree_Zlattice {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] [ProperSpace E] (L : AddSubgroup E) [DiscreteTopology L]
+    [IsZlattice ℝ L] : Module.Free ℤ L := Zlattice.module_free ℝ L
 
 open FiniteDimensional
 

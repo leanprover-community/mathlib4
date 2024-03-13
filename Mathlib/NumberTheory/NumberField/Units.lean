@@ -486,11 +486,6 @@ protected theorem finrank_eq_rank :
   simp only [finrank_fintype_fun_eq_card, Fintype.card_subtype_compl,
     Fintype.card_ofSubsingleton, rank]
 
-instance instModuleFree_unitLattice : Module.Free ℤ (unitLattice K) := Zlattice.module_free ℝ _
-
-instance instModuleFinite_unitLattice : Module.Finite ℤ (unitLattice K) :=
-  Zlattice.module_finite ℝ _
-
 @[simp]
 theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
