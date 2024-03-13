@@ -3207,7 +3207,6 @@ import Mathlib.Probability.ProbabilityMassFunction.Constructions
 import Mathlib.Probability.ProbabilityMassFunction.Integrals
 import Mathlib.Probability.ProbabilityMassFunction.Monad
 import Mathlib.Probability.Process.Adapted
-import Mathlib.Probability.Process.CountablyGenerated
 import Mathlib.Probability.Process.Filtration
 import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Process.PartitionFiltration
