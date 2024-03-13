@@ -253,7 +253,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe]
   rw [← show _ = (𝖣.ι i).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) i, ←
     show _ = (𝖣.ι j).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) j]
-  -- Porting note: change `rw` to `erw` on `coe_comp`
+  -- Porting note (#11224): change `rw` to `erw` on `coe_comp`
   erw [coe_comp, coe_comp, coe_comp]
   rw [Set.image_comp, Set.preimage_comp]
   erw [Set.preimage_image_eq]
@@ -474,7 +474,7 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
   rw [congr_app (D.t_id _), id_c_app]
   simp_rw [Category.assoc]
   rw [← Functor.map_comp_assoc]
-  -- Porting note: change `rw` to `erw`
+  -- Porting note (#11224): change `rw` to `erw`
   erw [IsOpenImmersion.inv_naturality_assoc]
   erw [IsOpenImmersion.app_invApp_assoc]
   iterate 3 rw [← Functor.map_comp_assoc]
@@ -538,7 +538,7 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
         replace this := reassoc_of% this
         exact this _
       rw [← Set.image_subset_iff, ← Set.image_univ, ← Set.image_comp, Set.image_univ]
-      -- Porting note: change `rw` to `erw`
+      -- Porting note (#11224): change `rw` to `erw`
       erw [← coe_comp]
       rw [this, coe_comp, ← Set.image_univ, Set.image_comp]
       exact Set.image_subset_range _ _

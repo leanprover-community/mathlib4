@@ -118,7 +118,7 @@ instance (r : α → α → Prop) : Inhabited (r ≼i r) :=
 @[trans]
 protected def trans (f : r ≼i s) (g : s ≼i t) : r ≼i t :=
   ⟨f.1.trans g.1, fun a c h => by
-    simp at h ⊢
+    simp only [RelEmbedding.coe_trans, coe_coe_fn, comp_apply] at h ⊢
     rcases g.2 _ _ h with ⟨b, rfl⟩; have h := g.map_rel_iff.1 h
     rcases f.2 _ _ h with ⟨a', rfl⟩; exact ⟨a', rfl⟩⟩
 #align initial_seg.trans InitialSeg.trans

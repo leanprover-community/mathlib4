@@ -417,7 +417,8 @@ theorem riemannZeta_neg_two_mul_nat_add_one (n : ℕ) : riemannZeta (-2 * (n + 1
 /-- A formal statement of the **Riemann hypothesis** – constructing a term of this type is worth a
 million dollars. -/
 def RiemannHypothesis : Prop :=
-  ∀ (s : ℂ) (_ : riemannCompletedZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)), s.re = 1 / 2
+  ∀ (s : ℂ) (_ : s ≠ 1) (_ : riemannCompletedZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)),
+  s.re = 1 / 2
 #align riemann_hypothesis RiemannHypothesis
 
 /-!
@@ -616,7 +617,7 @@ theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :
     · refine one_lt_two.trans_le ?_
       conv_lhs => rw [← mul_one 2]
       rwa [mul_le_mul_left (zero_lt_two' ℕ), Nat.one_le_iff_ne_zero]
-  · norm_num
+  · set_option tactic.skipAssignedInstances false in norm_num
 #align riemann_zeta_two_mul_nat riemannZeta_two_mul_nat
 
 theorem riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
@@ -749,7 +750,9 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
       rw [(by norm_cast : 2 * (m : ℂ) + 2 = ↑(2 * m + 2)), ← Int.cast_neg_natCast, ← Int.cast_ofNat,
         Ne.def, Int.cast_inj]
       apply ne_of_gt
-      exact lt_of_le_of_lt (by norm_num : (-n : ℤ) ≤ 0) (by positivity)
+      exact lt_of_le_of_lt
+        (by set_option tactic.skipAssignedInstances false in norm_num : (-n : ℤ) ≤ 0)
+        (by positivity)
     · rw [(by norm_cast : 2 * (m : ℂ) + 2 = ↑(2 * m + 2)), Ne.def, Nat.cast_eq_one]; norm_num
     -- get rid of sine term
     rw [show Complex.sin (↑π * (1 - (2 * ↑m + 2)) / 2) = -(-1 : ℂ) ^ m by

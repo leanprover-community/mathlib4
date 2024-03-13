@@ -56,7 +56,8 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 noncomputable section
 
 open Set Function Filter
-open Classical BigOperators NNReal Topology ENNReal MeasureTheory
+open scoped Classical
+open BigOperators NNReal Topology ENNReal MeasureTheory
 
 namespace MeasureTheory
 
@@ -124,7 +125,7 @@ theorem sUnion_null_iff (m : OuterMeasure α) {S : Set (Set α)} (hS : S.Countab
 @[simp]
 theorem iUnion_null_iff {ι : Sort*} [Countable ι] (m : OuterMeasure α) {s : ι → Set α} :
     m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 := by
-  rw [← sUnion_range, m.sUnion_null_iff (countable_range s), forall_range_iff]
+  rw [← sUnion_range, m.sUnion_null_iff (countable_range s), forall_mem_range]
 #align measure_theory.outer_measure.Union_null_iff MeasureTheory.OuterMeasure.iUnion_null_iff
 
 alias ⟨_, iUnion_null⟩ := iUnion_null_iff
@@ -199,7 +200,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   clear hx i
   rcases le_or_lt j n with hjn | hnj
   · exact Or.inl (h' hjn hj)
-  have : j - (n + 1) + n + 1 = j := by rw [add_assoc, tsub_add_cancel_of_le hnj.nat_succ_le]
+  have : j - (n + 1) + n + 1 = j := by omega
   refine' Or.inr (mem_iUnion.2 ⟨j - (n + 1), _, hlt _ _⟩)
   · rwa [this]
   · rw [← Nat.succ_le_iff, Nat.succ_eq_add_one, this]
@@ -640,7 +641,7 @@ end Basic
 
 section OfFunction
 
---porting note: "set_option eqn_compiler.zeta true" removed
+-- Porting note: "set_option eqn_compiler.zeta true" removed
 
 variable {α : Type*} (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
 
@@ -1600,7 +1601,7 @@ theorem le_trim : m ≤ m.trim := by
   apply extend_empty <;> simp
 #align measure_theory.outer_measure.le_trim MeasureTheory.OuterMeasure.le_trim
 
-@[simp] --porting note: added `simp`
+@[simp] -- Porting note: added `simp`
 theorem trim_eq {s : Set α} (hs : MeasurableSet s) : m.trim s = m s :=
   inducedOuterMeasure_eq' MeasurableSet.iUnion (fun f _hf => m.iUnion_nat f)
     (fun _ _ _ _ h => m.mono h) hs
