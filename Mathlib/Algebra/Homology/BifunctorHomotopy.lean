@@ -65,6 +65,26 @@ lemma zero₁ (j j' : J) (h : ¬ c.Rel j' j) :
   · dsimp
     rw [h₁.zero _ _ h₃, Functor.map_zero, zero_app, zero_comp, smul_zero]
 
+lemma comm₁_aux {i₁ i₁' : I₁} (hi₁ : c₁.Rel i₁ i₁') {i₂ i₂' : I₂} (hi₂ : c₂.Rel i₂ i₂') (j : J)
+    (hj : ComplexShape.π c₁ c₂ c (i₁', i₂) = j) :
+    ComplexShape.ε₁ c₁ c₂ c (i₁, i₂) • (F.map (h₁.hom i₁' i₁)).app (K₂.X i₂) ≫
+      (F.obj (L₁.X i₁)).map (f₂.f i₂) ≫
+        (((F.mapBifunctorHomologicalComplex c₁ c₂).obj L₁).obj L₂).d₂ c i₁ i₂ j =
+    -(((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).d₂ c i₁' i₂ (c.next j) ≫
+      hom₁ h₁ f₂ F c (c.next j) j := by
+  have hj' : ComplexShape.π c₁ c₂ c ⟨i₁, i₂'⟩ = j := by
+    rw [← hj, ← ComplexShape.next_π₂ c₁ c i₁ hi₂, ComplexShape.next_π₁ c₂ c hi₁ i₂]
+  rw [HomologicalComplex₂.d₂_eq _ _ _ hi₂ _ hj', HomologicalComplex₂.d₂_eq _ _ _ hi₂ _
+        (by rw [← c.next_eq' (ComplexShape.rel_π₂ c₁ c i₁' hi₂), hj]),
+    Linear.comp_units_smul, Linear.comp_units_smul, Linear.units_smul_comp, assoc,
+    ιMapBifunctor_hom₁ _ _ _ _ _ _ _ _ _ _ (c₁.prev_eq' hi₁),
+    ιMapBifunctorOrZero_eq _ _ _ _ _ _ _ hj',
+    Linear.comp_units_smul, smul_smul, smul_smul]
+  dsimp
+  rw [NatTrans.naturality_assoc, ComplexShape.ε₁_ε₂ c hi₁ hi₂, neg_mul, Units.neg_smul, neg_inj,
+    smul_left_cancel_iff, ← Functor.map_comp_assoc, ← Functor.map_comp_assoc, f₂.comm]
+  rfl
+
 lemma comm₁ (j : J) :
     (mapBifunctorMap f₁ f₂ F c).f j =
     (mapBifunctor K₁ K₂ F c).d j (c.next j) ≫
@@ -113,45 +133,19 @@ lemma comm₁ (j : J) :
         HomologicalComplex₂.ι_D₂]
       dsimp
       by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
-      · have eq : ComplexShape.ε₁ c₁ c₂ c (ComplexShape.prev c₁ i₁, i₂) *
-          ComplexShape.ε₂ c₁ c₂ c (ComplexShape.prev c₁ i₁, i₂) =
-            - ComplexShape.ε₂ c₁ c₂ c (i₁, i₂) *
-            ComplexShape.ε₁ c₁ c₂ c (ComplexShape.prev c₁ i₁, ComplexShape.next c₂ i₂) := by
-          refine' Eq.trans (mul_one _).symm _
-          rw [← Int.units_mul_self (ComplexShape.ε₁ c₁ c₂ c (ComplexShape.prev c₁ i₁,
-            ComplexShape.next c₂ i₂)), mul_assoc]
-          conv_lhs =>
-            congr
-            · skip
-            · rw [← mul_assoc, ComplexShape.ε₂_ε₁ c h₃ h₄]
-          rw [neg_mul, neg_mul, neg_mul, mul_neg, neg_inj, ← mul_assoc, ← mul_assoc,
-            Int.units_mul_self, one_mul]
-        have h₅ : ComplexShape.π c₁ c₂ c (ComplexShape.prev c₁ i₁,
-          ComplexShape.next c₂ i₂) = j := by
-            rw [← h, ← ComplexShape.next_π₂ c₁ c (c₁.prev i₁) h₄,
-              c.next_eq' (ComplexShape.rel_π₁ c₂ c h₃ i₂)]
-        rw [HomologicalComplex₂.d₂_eq _ _ _ h₄ _ h₅,
-          HomologicalComplex₂.d₂_eq _ _ _ h₄ _
-            (by rw [← c.next_eq' (ComplexShape.rel_π₂ c₁ c i₁ h₄), h]),
-          Linear.comp_units_smul, Linear.comp_units_smul, Linear.units_smul_comp, assoc,
-          ιMapBifunctor_hom₁ _ _ _ _ _ _ _ _ _ _ rfl, ιMapBifunctorOrZero_eq _ _ _ _ _ _ _ h₅,
-          Linear.comp_units_smul, smul_smul, smul_smul]
-        dsimp
-        rw [NatTrans.naturality_assoc, eq, neg_mul, Units.neg_smul, ← Functor.map_comp_assoc,
-          ← Functor.map_comp_assoc, Hom.comm]
-        rfl
+      · exact comm₁_aux h₁ f₂ F c h₃ h₄ j h
       · rw [HomologicalComplex₂.d₂_eq_zero _ _ _ _ _ h₄, comp_zero, comp_zero, smul_zero,
           HomologicalComplex₂.d₂_eq_zero _ _ _ _ _ h₄, zero_comp, neg_zero]
-    · rw [h₁.zero _ _ h₃, Functor.map_zero, zero_app, zero_comp, smul_zero, zero_comp,
-        zero_eq_neg]
+    · rw [h₁.zero _ _ h₃, Functor.map_zero, zero_app, zero_comp,
+        smul_zero, zero_comp, zero_eq_neg]
       by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
       · by_cases h₅ : c.Rel j (c.next j)
         · rw [HomologicalComplex₂.d₂_eq _ _ _ h₄ _ (by rw [← ComplexShape.next_π₂ c₁ c i₁ h₄, h]),
             Linear.units_smul_comp, assoc]
           dsimp
           erw [ιMapBifunctor_hom₁ _ _ _ _ _ _ _ _ _ _ rfl]
-          rw [h₁.zero _ _ h₃, Functor.map_zero, zero_app, zero_comp, smul_zero,
-            comp_zero, smul_zero]
+          rw [h₁.zero _ _ h₃, Functor.map_zero, zero_app, zero_comp,
+            smul_zero, comp_zero, smul_zero]
         · rw [zero₁ _ _ _ _ _ _ h₅, comp_zero]
       · rw [HomologicalComplex₂.d₂_eq_zero _ _ _ _ _ h₄, zero_comp]
 
