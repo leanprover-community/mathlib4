@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.Data.MvPolynomial.Basic
-import Mathlib.RingTheory.TensorProduct
+Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.Data.MvPolynomial.Equiv
 /-!
 

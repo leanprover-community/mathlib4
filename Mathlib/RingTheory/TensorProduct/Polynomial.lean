@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.RingTheory.TensorProduct
+Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.Data.Polynomial.Eval
 
 /-! # Tensor products of a polynomial ring
