@@ -268,13 +268,7 @@ finitely-supported maps `α →₀ ℕ` with total mass `n`.
 See also `Sym.equivNatSumOfFintype` when `α` is finite. -/
 def equivNatSum :
     Sym α n ≃ {P : α →₀ ℕ // P.sum (fun _ ↦ id) = n} :=
-  (Multiset.toFinsupp.toEquiv.image _).trans <| Equiv.Set.ofEq <| by
-  ext P
-  refine ⟨?_, ?_⟩
-  · rintro ⟨s, rfl, rfl⟩
-    simp [Set.mem_def]
-  · rintro rfl
-    exact ⟨Multiset.toFinsupp.symm P, by simp [Set.mem_def], by simp⟩
+  Multiset.toFinsupp.toEquiv.subtypeEquiv <| by simp
 
 @[simp] lemma coe_equivNatSum_apply_apply (s : Sym α n) (a : α) :
     (equivNatSum α n s : α →₀ ℕ) a = (s : Multiset α).count a :=
@@ -286,13 +280,7 @@ def equivNatSum :
 See also `Sym.equivNatSum` when `α` is not necessarily finite. -/
 noncomputable def equivNatSumOfFintype [Fintype α] :
     Sym α n ≃ {P : α → ℕ // ∑ i, P i = n} :=
-  (equivNatSum α n).trans <| (Finsupp.equivFunOnFinite.image _).trans <| Equiv.Set.ofEq <| by
-    ext P
-    refine ⟨?_, ?_⟩
-    · rintro ⟨Q, rfl, rfl⟩
-      simp [Set.mem_def, Finsupp.sum_fintype]
-    · rintro rfl
-      exact ⟨Finsupp.equivFunOnFinite.symm P, by simp [Set.mem_def, Finsupp.sum_fintype], by simp⟩
+  (equivNatSum α n).trans <| Finsupp.equivFunOnFinite.subtypeEquiv <| by simp [Finsupp.sum_fintype]
 
 @[simp] lemma coe_equivNatSumOfFintype_apply_apply [Fintype α] (s : Sym α n) (a : α) :
     (equivNatSumOfFintype α n s : α → ℕ) a = (s : Multiset α).count a :=
