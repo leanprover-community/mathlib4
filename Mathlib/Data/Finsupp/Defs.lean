@@ -663,11 +663,8 @@ theorem erase_ne {a a' : α} {f : α →₀ M} (h : a' ≠ a) : (f.erase a) a' =
 
 theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
     (f.erase a) a' = if a' = a then 0 else f a' := by
-  classical
-  split_ifs with h
-  · rw [h]
-    exact erase_same
-  · exact erase_ne h
+  rw [erase, coe_mk]
+  convert rfl
 
 @[simp]
 theorem erase_single {a : α} {b : M} : erase a (single a b) = 0 := by
