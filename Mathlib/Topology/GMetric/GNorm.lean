@@ -3,7 +3,7 @@ import Mathlib.Algebra.Module.Basic
 
 
 variable {α:Type*}
-variable {γ:Type*} [AddCommMonoid γ] [CompleteLinearOrder γ]
+variable {γ:Type*} [AddCommMonoid γ] [LinearOrder γ]
 variable [CovariantClass γ γ (.+.) (.≤.)]
 variable {T:Type*} [FunLike T α (α → γ)] [GPseudoMetricClass T α γ]
 
@@ -15,7 +15,7 @@ variable [Monoid α]
 -- adding a constant is an isometry
 -- i'm not sure if you can specify this explicitly some way, with the isometry structure i defined...
 -- but it can probably be a conclusion/instance/something
-class GNorm (α : Type*) (γ : Type*) [AddCommMonoid γ] [CompleteLinearOrder γ]
+class GNorm (α : Type*) (γ : Type*) [AddCommMonoid γ] [LinearOrder γ]
   [CovariantClass γ γ (. + .) (. ≤ .)] {T : Type*} [FunLike T α (α → γ)] [GPseudoMetricClass T α γ]
   [Monoid α] (gdist:T) : Prop where
   gdist_absorb_mul : ∀ z, (gdist on (.*z)) = gdist
@@ -42,8 +42,8 @@ end multiplicative
 section additive
 section addmonoid
 variable [AddMonoid α]
-#where
-class AddGNorm (α : Type*) (γ : Type*) [AddCommMonoid γ] [CompleteLinearOrder γ] [CovariantClass γ γ (. + .) (. ≤ .)]
+
+class AddGNorm (α : Type*) (γ : Type*) [AddCommMonoid γ] [LinearOrder γ] [CovariantClass γ γ (. + .) (. ≤ .)]
   {T : Type*} [FunLike T α (α → γ)] [GPseudoMetricClass T α γ] [AddMonoid α] (gdist:T) :Prop where
   gdist_absorb_add : ∀ z, (gdist on (.+z)) = gdist
 
@@ -54,6 +54,7 @@ lemma gdist_absorb_add
 def addGNorm (gdist:T) [AddGNorm α γ gdist] (x:α) : γ :=
   gdist x 0
 end addmonoid
+
 section addcommgroup
 variable [AddGroup α]
 

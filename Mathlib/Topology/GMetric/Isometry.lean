@@ -1,4 +1,5 @@
 import Mathlib.Topology.GMetric.Basic
+import Mathlib.Topology.GMetric.GNorm
 
 open GMetric
 
@@ -126,3 +127,9 @@ theorem comp_id (f : GIsometry gdist₁ gdist₂) : f.comp (id gdist₁) = f :=
 @[simp]
 theorem id_comp (f : GIsometry gdist₁ gdist₂) : (id gdist₂).comp f = f :=
   ext fun _ => rfl
+
+
+lemma map_norm {T:Type*} [AddMonoid α₁] [AddMonoid α₂] [AddGNorm α₁ γ gdist₁] [AddGNorm α₂ γ gdist₂]
+    [FunLike T α₁ α₂] [GIsometryClass T gdist₁ gdist₂] [ZeroHomClass T α₁ α₂] (f:T) (x:α₁):
+    addGNorm gdist₂ (f x) = addGNorm gdist₁ x := by
+  simp_rw [addGNorm,GIsometryClass.map_dist' f,map_zero]

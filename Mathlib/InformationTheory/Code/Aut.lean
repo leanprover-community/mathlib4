@@ -1,50 +1,66 @@
 import Mathlib.InformationTheory.Code.Equiv
 open Code
 
-section code
 variable {α γ T :Type*} (gdist:T) (s:Set α)
 variable--? [_Code γ gdist s] =>
   [CompleteLinearOrder γ] [AddCommMonoid γ]
   [CovariantClass γ γ (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1] [FunLike T α (α → γ)]
   [GPseudoMetricClass T α γ] [Set.IsDelone gdist s]
 
+@[reducible]
 def CodeAut [_Code γ gdist s] :Type _ := CodeEquiv gdist s gdist s
 
-instance CodeAutGroup [_Code γ gdist s] : Group (CodeAut gdist s) where
-  mul := CodeEquiv.trans
-  mul_assoc := _
-  one := CodeEquiv.refl gdist s
-  one_mul := _
-  mul_one := _
-  inv := CodeEquiv.symm
-  mul_left_inv := _
+namespace CodeAut
 
-end code
+instance instGroup [_Code γ gdist s] : Group (CodeAut gdist s) := {
+    mul := fun a b => b.trans a
+    mul_assoc := fun a b c ↦ rfl
+    one := CodeEquiv.refl gdist s
+    one_mul := fun a ↦ rfl
+    mul_one := fun a ↦ rfl
+    inv := CodeEquiv.symm
+    mul_left_inv := CodeEquiv.self_trans_symm
+    }
 
-section linearcode
 
-variable {γ Tₖ Tₘ M:Type} (K:Type) [Field K] (gdist_k:Tₖ) (gdist_m:Tₘ)
-variable--? [Module K M] =>
-  [AddCommMonoid M] [Module K M]
-variable (s:Submodule K M)
--- set_option variable?.maxSteps 20
-variable--? [_LinearCode γ K gdist_k gdist_m s] =>
-  [CompleteLinearOrder γ] [Semiring γ]
-  [CovariantClass γ γ (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1] [FunLike Tₖ K (K → γ)]
-  [GPseudoMetricClass Tₖ K γ] [AddGNorm K γ gdist_k] [FunLike Tₘ M (M → γ)]
-  [GPseudoMetricClass Tₘ M γ] [AddGNorm M γ gdist_m] [Set.IsDelone gdist_m ↑s] [Nontrivial γ]
-  [PosMulMono γ] [MulPosMono γ] [ZeroLEOneClass γ] [StrictModuleGNorm K K gdist_k gdist_k]
-  [StrictModuleGNorm K M gdist_k gdist_m]
+@[simp]
+theorem coe_mul (e₁ e₂ : CodeAut gdist s) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
+  rfl
 
-def LinearCodeAut [_LinearCode γ K gdist_k gdist_m s] := LinearCodeEquiv K gdist_k gdist_m s gdist_m s
+@[simp]
+theorem coe_one : ⇑(1 : CodeAut gdist s) = id :=
+  rfl
 
--- instance LinearCodeAutGroup [_LinearCode γ K gdist_k gdist_m s] : Group (LinearCodeAut K gdist_k gdist_m s) where
---   mul := LinearCodeEquiv.trans K gdist_k
---   mul_assoc := _
---   one := LinearCodeEquiv.refl K gdist_k
---   one_mul := _
---   mul_one := _
---   inv := LinearCodeEquiv.symm
---   mul_left_inv := _
+theorem mul_def (e₁ e₂ : CodeAut gdist s) : e₁ * e₂ = e₂.trans e₁ :=
+  rfl
 
-end linearcode
+theorem one_def : (1 : CodeAut gdist s) = CodeEquiv.refl _ _ :=
+  rfl
+
+theorem inv_def (e₁ : CodeAut gdist s) : e₁⁻¹ = e₁.symm :=
+  rfl
+
+
+@[simp]
+theorem mul_apply (e₁ e₂ : CodeAut gdist s) (a : α) : (e₁ * e₂) a = e₁ (e₂ a) :=
+  rfl
+
+@[simp]
+theorem one_apply (a : α) : (1 : CodeAut gdist s) a = a :=
+  rfl
+
+@[simp]
+theorem apply_inv_self (e : CodeAut gdist s) (a : α) : e (e⁻¹ a) = a :=
+  CodeEquiv.apply_symm_apply _ _
+
+@[simp]
+theorem inv_apply_self (e : CodeAut gdist s) (a : α) : e⁻¹ (e a) = a :=
+  CodeEquiv.apply_symm_apply _ _
+
+def toPerm : CodeAut gdist s →* Equiv.Perm α where
+  toFun := fun f => EquivLike.toEquiv f
+  map_one' := by simp_all only; rfl
+  map_mul' := fun x y => by simp_all only; rfl
+
+
+end CodeAut
