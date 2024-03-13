@@ -28,6 +28,8 @@ example : 2^10 = eval% 2^10 := by
   sorry
 ```
 This only works if a `Lean.ToExpr X` instance is available.
+
+Tip: you can use `show_term eval% x` to see the value of `eval% x`.
 -/
 syntax (name := eval_expr) "eval% " term : term
 
