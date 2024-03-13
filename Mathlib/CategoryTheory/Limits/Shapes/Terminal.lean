@@ -602,7 +602,7 @@ def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
     IsLimit (coneOfDiagramInitial tX F) where
   lift s := s.π.app X
   uniq s m w := by
-    show m = s.π.app X
+    conv_lhs => dsimp
     simp_rw [← w X, coneOfDiagramInitial_π_app, tX.hom_ext (tX.to X) (𝟙 _)]
     simp
 #align category_theory.limits.limit_of_diagram_initial CategoryTheory.Limits.limitOfDiagramInitial
