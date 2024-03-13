@@ -41,7 +41,8 @@ rectangular box, partition
 
 open Set Finset Function
 
-open Classical NNReal BigOperators
+open scoped Classical
+open NNReal BigOperators
 
 noncomputable section
 

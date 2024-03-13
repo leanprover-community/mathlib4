@@ -1157,8 +1157,7 @@ theorem setToL1_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
     (hTT' : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, T s x ≤ T' s x) (f : α →₁[μ] E) :
     setToL1 hT f ≤ setToL1 hT' f := by
-  induction f using Lp.induction with
-  | hp_ne_top h => exact one_ne_top h
+  induction f using Lp.induction (hp_ne_top := one_ne_top) with
   | @h_ind c s hs hμs =>
     rw [setToL1_simpleFunc_indicatorConst hT hs hμs, setToL1_simpleFunc_indicatorConst hT' hs hμs]
     exact hTT' s hs hμs c
@@ -1519,12 +1518,12 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
       filter_upwards [hfsi] with i hi
       refine' lintegral_congr_ae _
       filter_upwards [hi.coeFn_toL1, hfi.coeFn_toL1] with x hxi hxf
-      simp_rw [dif_pos hi, hxi, hxf]
+      simp_rw [F_lp, dif_pos hi, hxi, hxf]
     suffices Tendsto (fun i => setToFun μ T hT (F_lp i)) l (𝓝 (setToFun μ T hT f)) by
       refine' (tendsto_congr' _).mp this
       filter_upwards [hfsi] with i hi
       suffices h_ae_eq : F_lp i =ᵐ[μ] fs i from setToFun_congr_ae hT h_ae_eq
-      simp_rw [dif_pos hi]
+      simp_rw [F_lp, dif_pos hi]
       exact hi.coeFn_toL1
     rw [setToFun_congr_ae hT hfi.coeFn_toL1.symm]
     exact ((continuous_setToFun hT).tendsto f_lp).comp tendsto_L1

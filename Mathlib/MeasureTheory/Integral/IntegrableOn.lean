@@ -91,7 +91,7 @@ def IntegrableOn (f : α → E) (s : Set α) (μ : Measure α := by volume_tac) 
   Integrable f (μ.restrict s)
 #align measure_theory.integrable_on MeasureTheory.IntegrableOn
 
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
+-- Porting note (#11215): TODO Delete this when leanprover/lean4#2243 is fixed.
 theorem integrableOn_def (f : α → E) (s : Set α) (μ : Measure α) :
     IntegrableOn f s μ ↔ Integrable f (μ.restrict s) :=
   Iff.rfl
@@ -318,9 +318,8 @@ theorem IntegrableOn.restrict_toMeasurable (hf : IntegrableOn f s μ) (h's : ∀
   apply Measure.restrict_toMeasurable_of_cover _ A
   intro x hx
   have : 0 < ‖f x‖ := by simp only [h's x hx, norm_pos_iff, Ne.def, not_false_iff]
-  obtain ⟨n, hn⟩ : ∃ n, u n < ‖f x‖; exact ((tendsto_order.1 u_lim).2 _ this).exists
-  refine' mem_iUnion.2 ⟨n, _⟩
-  exact subset_toMeasurable _ _ hn.le
+  obtain ⟨n, hn⟩ : ∃ n, u n < ‖f x‖ := ((tendsto_order.1 u_lim).2 _ this).exists
+  exact mem_iUnion.2 ⟨n, subset_toMeasurable _ _ hn.le⟩
 #align measure_theory.integrable_on.restrict_to_measurable MeasureTheory.IntegrableOn.restrict_toMeasurable
 
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`

@@ -74,7 +74,7 @@ theorem Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax {f : M →
     exact hy₂.2
   convert norm_eventually_eq_of_isLocalMax hd _
   · exact congr_arg f (extChartAt_to_inv _ _).symm
-  · simpa only [IsLocalMax, IsMaxFilter, ← H₂, (· ∘ ·), extChartAt_to_inv] using hc
+  · simpa only [e, IsLocalMax, IsMaxFilter, ← H₂, (· ∘ ·), extChartAt_to_inv] using hc
 
 /-!
 ### Functions holomorphic on a set

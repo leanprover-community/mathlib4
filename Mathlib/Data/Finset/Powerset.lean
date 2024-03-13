@@ -44,17 +44,17 @@ theorem coe_powerset (s : Finset α) :
   simp
 #align finset.coe_powerset Finset.coe_powerset
 
---Porting note: remove @[simp], simp can prove it
+-- Porting note: remove @[simp], simp can prove it
 theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s :=
   mem_powerset.2 (empty_subset _)
 #align finset.empty_mem_powerset Finset.empty_mem_powerset
 
---Porting note: remove @[simp], simp can prove it
+-- Porting note: remove @[simp], simp can prove it
 theorem mem_powerset_self (s : Finset α) : s ∈ powerset s :=
   mem_powerset.2 Subset.rfl
 #align finset.mem_powerset_self Finset.mem_powerset_self
 
-@[aesop safe apply (rule_sets [finsetNonempty])]
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem powerset_nonempty (s : Finset α) : s.powerset.Nonempty :=
   ⟨∅, empty_mem_powerset _⟩
 #align finset.powerset_nonempty Finset.powerset_nonempty
@@ -272,7 +272,7 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
   simp [card_insert_of_not_mem this, Nat.succ_inj']
 #align finset.powerset_len_succ_insert Finset.powersetCard_succ_insert
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma powersetCard_nonempty : (powersetCard n s).Nonempty ↔ n ≤ s.card := by
   aesop (add simp [Finset.Nonempty, exists_smaller_set, card_le_card])
 #align finset.powerset_len_nonempty Finset.powersetCard_nonempty
@@ -343,7 +343,7 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
       dsimp [RelEmbedding.coe_toEmbedding]
-      --Porting note: Why is `rw` required here and not `simp`?
+      -- Porting note: Why is `rw` required here and not `simp`?
       rw [mapEmbedding_apply]
       simp [has]
 #align finset.powerset_len_map Finset.powersetCard_map

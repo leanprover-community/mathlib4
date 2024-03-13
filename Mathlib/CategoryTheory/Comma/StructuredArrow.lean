@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Comma.Basic
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.Logic.Small.Set
 
 #align_import category_theory.structured_arrow from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
@@ -53,7 +54,7 @@ def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
 
 variable {S S' S'' : D} {Y Y' Y'' : C} {T T' : C ⥤ D}
 
--- porting note: this lemma was added because `Comma.hom_ext`
+-- Porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
@@ -396,7 +397,7 @@ def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
 
 variable {T T' T'' : D} {Y Y' Y'' : C} {S S' : C ⥤ D}
 
--- porting note: this lemma was added because `Comma.hom_ext`
+-- Porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]

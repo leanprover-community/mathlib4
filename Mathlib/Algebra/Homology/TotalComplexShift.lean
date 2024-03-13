@@ -10,7 +10,7 @@ import Mathlib.Algebra.Homology.TotalComplex
 
 There are two ways to shift objects in `HomologicalComplex₂ C (up ℤ) (up ℤ)`:
 * by shifting the first indices (and changing signs of horizontal differentials),
-with corresponds to the shift by `ℤ` on `CochainComplex (CochainComplex C ℤ) ℤ`.
+which corresponds to the shift by `ℤ` on `CochainComplex (CochainComplex C ℤ) ℤ`.
 * by shifting the second indices (and changing signs of vertical differentials).
 
 These two sorts of shift functors shall be abbreviated as
@@ -83,9 +83,7 @@ lemma D₁_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x 
       ((shiftFunctor₁ C x).obj K).d₁_eq _ rfl _ _ (by dsimp; omega),
       K.d₁_eq _ (show p + x + 1 = p + 1 + x by omega) _ _ (by dsimp; omega)]
     dsimp
-    rw [one_smul, assoc, ι_totalDesc, one_smul]
-    erw [Linear.smul_comp]
-    rfl
+    rw [one_smul, assoc, ι_totalDesc, one_smul, Linear.units_smul_comp]
   · rw [D₁_shape _ _ _ _ h, zero_comp, D₁_shape, comp_zero, smul_zero]
     intro h'
     apply h

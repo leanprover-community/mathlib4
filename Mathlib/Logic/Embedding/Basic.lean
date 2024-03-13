@@ -20,7 +20,7 @@ universe u v w x
 
 namespace Function
 
--- port note: in Lean 3 this was tagged @[nolint has_nonempty_instance]
+-- Porting note: in Lean 3 this was tagged @[nolint has_nonempty_instance]
 /-- `α ↪ β` is a bundled injective function. -/
 structure Embedding (α : Sort*) (β : Sort*) where
   /-- An embedding as a function. Use coercion instead. -/
@@ -41,7 +41,7 @@ instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
 
 initialize_simps_projections Embedding (toFun → apply)
 
--- porting note: this needs `tactic.lift`.
+-- Porting note: this needs `tactic.lift`.
 --instance {α β : Sort*} : CanLift (α → β) (α ↪ β) coeFn Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
 theorem exists_surjective_iff :
@@ -96,7 +96,7 @@ instance Equiv.Perm.coeEmbedding : Coe (Equiv.Perm α) (α ↪ α) :=
   Equiv.coeEmbedding
 #align equiv.perm.coe_embedding Equiv.Perm.coeEmbedding
 
--- port note : `theorem Equiv.coe_eq_to_embedding : ↑f = f.toEmbedding` is a
+-- Porting note : `theorem Equiv.coe_eq_to_embedding : ↑f = f.toEmbedding` is a
 -- syntactic tautology in Lean 4
 
 end Equiv
@@ -114,7 +114,7 @@ theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align function.embedding.ext Function.Embedding.ext
 
--- port note : in Lean 3 `DFunLike.ext_iff.symm` works
+-- Porting note : in Lean 3 `DFunLike.ext_iff.symm` works
 theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
   Iff.symm (DFunLike.ext_iff)
 #align function.embedding.ext_iff Function.Embedding.ext_iff
@@ -233,7 +233,7 @@ protected def some {α} : α ↪ Option α :=
 #align function.embedding.some Function.Embedding.some
 #align function.embedding.some_apply Function.Embedding.some_apply
 
--- porting note: Lean 4 unfolds coercion `α → Option α` to `some`, so there is no separate
+-- Porting note: Lean 4 unfolds coercion `α → Option α` to `some`, so there is no separate
 -- `Function.Embedding.coeOption`.
 #align function.embedding.coe_option Function.Embedding.some
 
@@ -427,7 +427,7 @@ def subtypeInjectiveEquivEmbedding (α β : Sort*) :
   right_inv _ := rfl
 #align equiv.subtype_injective_equiv_embedding Equiv.subtypeInjectiveEquivEmbedding
 
--- porting note: in Lean 3 this had `@[congr]`
+-- Porting note: in Lean 3 this had `@[congr]`
 /-- If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then the type of embeddings `α₁ ↪ β₁`
 is equivalent to the type of embeddings `α₂ ↪ β₂`. -/
 @[simps apply]

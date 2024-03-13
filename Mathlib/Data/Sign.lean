@@ -14,7 +14,7 @@ This file defines the sign function for types with zero and a decidable less-tha
 proves some basic theorems about it.
 -/
 
--- Porting note: Cannot automatically derive Fintype, added manually
+-- Porting note (#11081): cannot automatically derive Fintype, added manually
 /-- The type of signs. -/
 inductive SignType
   | zero
@@ -250,6 +250,18 @@ instance : CoeTC SignType α :=
 
 -- Porting note: `cast_eq_coe` removed, syntactic equality
 
+/-- Casting out of `SignType` respects composition with functions preserving `0, 1, -1`. -/
+lemma map_cast' {β : Type*} [One β] [Neg β] [Zero β]
+    (f : α → β) (h₁ : f 1 = 1) (h₂ : f 0 = 0) (h₃ : f (-1) = -1) (s : SignType) :
+    f s = s := by
+  cases s <;> simp only [SignType.cast, h₁, h₂, h₃]
+
+/-- Casting out of `SignType` respects composition with suitable bundled homomorphism types. -/
+lemma map_cast {α β F : Type*} [AddGroupWithOne α] [One β] [SubtractionMonoid β]
+    [FunLike F α β] [AddMonoidHomClass F α β] [OneHomClass F α β] (f : F) (s : SignType) :
+    f s = s := by
+  apply map_cast' <;> simp
+
 @[simp]
 theorem coe_zero : ↑(0 : SignType) = (0 : α) :=
   rfl
@@ -265,6 +277,11 @@ theorem coe_neg_one : ↑(-1 : SignType) = (-1 : α) :=
   rfl
 #align sign_type.coe_neg_one SignType.coe_neg_one
 
+@[simp, norm_cast]
+lemma coe_neg {α : Type*} [One α] [SubtractionMonoid α] (s : SignType) :
+    (↑(-s) : α) = -↑s := by
+  cases s <;> simp
+
 end cast
 
 /-- `SignType.cast` as a `MulWithZeroHom`. -/
@@ -276,7 +293,7 @@ def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α w
   map_mul' x y := by cases x <;> cases y <;> simp [zero_eq_zero, pos_eq_one, neg_eq_neg_one]
 #align sign_type.cast_hom SignType.castHom
 
---Porting note: new theorem
+-- Porting note: new theorem
 theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} := by
   decide
 
@@ -353,6 +370,12 @@ end Preorder
 section LinearOrder
 
 variable [Zero α] [LinearOrder α] {a : α}
+
+/-- `SignType.sign` respects strictly monotone zero-preserving maps. -/
+lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableRel ((· < ·) : β → β → _)]
+    [FunLike F α β] [ZeroHomClass F α β] {f : F} (hf : StrictMono f) (a : α) :
+    sign (f a) = sign a := by
+  simp only [sign_apply, ← map_zero f, hf.lt_iff_lt]
 
 @[simp]
 theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by

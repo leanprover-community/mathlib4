@@ -203,7 +203,7 @@ theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.restrict s
 #align antilipschitz_with.subtype_coe AntilipschitzWith.subtype_coe
 
-@[nontriviality] -- porting note: added `nontriviality`
+@[nontriviality] -- Porting note: added `nontriviality`
 theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
   simp only [Subsingleton.elim x y, edist_self, zero_le]
 #align antilipschitz_with.of_subsingleton AntilipschitzWith.of_subsingleton

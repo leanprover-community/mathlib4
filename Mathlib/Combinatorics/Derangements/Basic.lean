@@ -86,7 +86,7 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
       (Equiv.sumCompl _).symm
     _ ≃ Sum { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∈ fixedPoints f }
           { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } := by
-      -- porting note: `subtypeSubtypeEquivSubtypeInter` no longer works with placeholder `_`s.
+      -- Porting note: `subtypeSubtypeEquivSubtypeInter` no longer works with placeholder `_`s.
       refine' Equiv.sumCongr _ _
       · exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})
@@ -101,7 +101,7 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
       · rw [Set.eq_empty_iff_forall_not_mem]
         exact ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
     _ ≃ Sum (derangements ({a}ᶜ : Set α)) (derangements α) := by
-      -- porting note: was `subtypeEquiv _` but now needs the placeholder to be provided explicitly
+      -- Porting note: was `subtypeEquiv _` but now needs the placeholder to be provided explicitly
       refine'
         Equiv.sumCongr ((derangements.subtypeEquiv (· ∈ ({a}ᶜ : Set α))).trans <|
             subtypeEquivRight fun x => _).symm

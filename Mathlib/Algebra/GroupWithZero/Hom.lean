@@ -3,8 +3,9 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.NeZero
 
 #align_import algebra.hom.group from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -34,6 +35,19 @@ monoid homomorphism
 -/
 
 open Function
+
+namespace NeZero
+variable {F α β  : Type*} [Zero α] [Zero β] [FunLike F α β] [ZeroHomClass F α β] {a : α}
+
+lemma of_map (f : F) [neZero : NeZero (f a)] : NeZero a :=
+  ⟨fun h ↦ ne (f a) <| by rw [h]; exact ZeroHomClass.map_zero f⟩
+#align ne_zero.of_map NeZero.of_map
+
+lemma of_injective {f : F} (hf : Injective f) [NeZero a] : NeZero (f a) :=
+  ⟨by rw [← ZeroHomClass.map_zero f]; exact hf.ne NeZero.out⟩
+#align ne_zero.of_injective NeZero.of_injective
+
+end NeZero
 
 variable {F α β γ δ : Type*} [MulZeroOneClass α] [MulZeroOneClass β] [MulZeroOneClass γ]
   [MulZeroOneClass δ]
@@ -234,3 +248,34 @@ lemma toZeroHom_injective : Injective (toZeroHom : (α →*₀ β) → ZeroHom �
 
 -- Unlike the other homs, `MonoidWithZeroHom` does not have a `1` or `0`
 instance : Inhabited (α →*₀ α) := ⟨id α⟩
+
+/-- Given two monoid with zero morphisms `f`, `g` to a commutative monoid with zero, `f * g` is the
+monoid with zero morphism sending `x` to `f x * g x`. -/
+instance {β} [CommMonoidWithZero β] : Mul (α →*₀ β) where
+  mul f g :=
+    { (f * g : α →* β) with
+      map_zero' := by dsimp; rw [map_zero, zero_mul] }
+
+end MonoidWithZeroHom
+
+/-! ### Equivalences -/
+
+namespace MulEquivClass
+variable {F α β : Type*} [EquivLike F α β]
+
+-- See note [lower instance priority]
+instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [MulEquivClass F α β] :
+    ZeroHomClass F α β where
+  map_zero f :=
+    calc
+      f 0 = f 0 * f (EquivLike.inv f 0) := by rw [← map_mul, zero_mul]
+        _ = 0 := by simp
+
+-- See note [lower instance priority]
+instance (priority := 100) toMonoidWithZeroHomClass
+    [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
+    MonoidWithZeroHomClass F α β :=
+  { MulEquivClass.instMonoidHomClass F, MulEquivClass.toZeroHomClass with }
+#align mul_equiv_class.to_monoid_with_zero_hom_class MulEquivClass.toMonoidWithZeroHomClass
+
+end MulEquivClass

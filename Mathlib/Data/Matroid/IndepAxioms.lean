@@ -104,8 +104,6 @@ structure IndepMatroid (α : Type*) where
 
 namespace IndepMatroid
 
-attribute [pp_dot] Indep E
-
 /-- An `M : IndepMatroid α` gives a `Matroid α` whose bases are the maximal `M`-independent sets. -/
 @[simps] protected def matroid (M : IndepMatroid α) : Matroid α where
   E := M.E

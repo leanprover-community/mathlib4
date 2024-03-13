@@ -122,7 +122,7 @@ def Adjunction.ofRightAdjoint (right : C ⥤ D) [IsRightAdjoint right] :
 
 namespace Adjunction
 
--- porting note: Workaround not needed in Lean 4
+-- Porting note: Workaround not needed in Lean 4
 -- restate_axiom homEquiv_unit'
 
 -- restate_axiom homEquiv_counit'
