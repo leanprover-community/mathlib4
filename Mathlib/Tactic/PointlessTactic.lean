@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 import Lean.Elab.Command
 import Lean.Linter.Util
+import Std.Tactic.Unreachable
 
 /-!
 #  The pointless tactic linter
@@ -120,10 +121,9 @@ def pointlessLinter : Linter where run := withSetOptionIn fun stx => do
   let key (r : String.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
   let mut last : String.Range := ⟨0, 0⟩
   for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unreachable.qsort (key ·.1 < key ·.1) do
---    if stx.getKind ∈ [``Std.Tactic.unreachable, ``Std.Tactic.unreachableConv] then continue
---    dbg_trace "appearing: {stx.getKind}"
+    if stx.getKind ∈ [``Std.Tactic.unreachable, ``Std.Tactic.unreachableConv] then continue
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
-    Linter.logLint linter.pointless stx "this tactic does nothing"
+    Linter.logLint linter.pointless stx m!"'{stx}' tactic does nothing"
     last := r
 
 initialize addLinter pointlessLinter
