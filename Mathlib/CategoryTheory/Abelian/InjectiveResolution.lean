@@ -28,6 +28,7 @@ When the underlying category is abelian:
   is injective, we can apply `Injective.d` repeatedly to obtain an injective resolution of `X`.
 -/
 
+set_option profiler true
 
 noncomputable section
 
@@ -322,6 +323,7 @@ lemma ofCocomplex_d_0_1 :
     (ofCocomplex Z).d 0 1 = d (Injective.ι Z) := by
   simp [ofCocomplex]
 
+--Adaptation note: nightly-2024-03-11. This takes takes forever now
 lemma ofCocomplex_exactAt_succ (n : ℕ) :
     (ofCocomplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ n (n + 1) (n + 1 + 1) (by simp) (by simp)]
