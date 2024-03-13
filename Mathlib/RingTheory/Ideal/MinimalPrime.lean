@@ -228,22 +228,17 @@ namespace Localization.AtPrime
 
 variable {R : Type*} [CommSemiring R] {I : Ideal R} [hI : I.IsPrime] (hMin : I ∈ minimalPrimes R)
 
-theorem prime_unique_of_minimal (J : Ideal (Localization I.primeCompl)) [hPrime : J.IsPrime] :
-    J = LocalRing.maximalIdeal (Localization I.primeCompl) := by
-  let i_sub : {p : Ideal (Localization I.primeCompl) // Ideal.IsPrime p} :=
-    ⟨_, Ideal.IsMaximal.isPrime' <| LocalRing.maximalIdeal (Localization (Ideal.primeCompl I))⟩
-  let j_sub : {p : Ideal (Localization I.primeCompl) // Ideal.IsPrime p} := ⟨_, hPrime⟩
-  suffices h: j_sub ≤ i_sub → i_sub ≤ j_sub by
-    apply le_antisymm (LocalRing.le_maximalIdeal hPrime.ne_top)
-    rw [← Subtype.mk_le_mk]
-    apply h
-    exact LocalRing.le_maximalIdeal hPrime.ne_top
-  rw [← (IsLocalization.orderIsoOfPrime I.primeCompl (Localization I.primeCompl)).le_iff_le,
-     ← (IsLocalization.orderIsoOfPrime I.primeCompl (Localization I.primeCompl)).le_iff_le]
-  unfold IsLocalization.orderIsoOfPrime at *
-  simp only [RelIso.coe_fn_mk, Equiv.coe_fn_mk, Subtype.mk_le_mk,
-             Localization.AtPrime.comap_maximalIdeal] at *
-  exact hMin.2 ⟨Ideal.comap_isPrime (algebraMap R (Localization (Ideal.primeCompl I))) J, bot_le⟩
+theorem _root_.IsLocalization.AtPrime.prime_unique_of_minimal {S} [CommSemiring S] [Algebra R S]
+    [IsLocalization.AtPrime S I] {J K : Ideal S} [J.IsPrime] [K.IsPrime] : J = K :=
+  haveI : Subsingleton {i : Ideal R // i.IsPrime ∧ i ≤ I} := ⟨fun i₁ i₂ ↦ Subtype.ext <| by
+    rw [minimalPrimes_eq_minimals] at hMin
+    rw [← eq_of_mem_minimals hMin i₁.2.1 i₁.2.2, ← eq_of_mem_minimals hMin i₂.2.1 i₂.2.2]⟩
+  Subtype.ext_iff.mp <| (IsLocalization.AtPrime.orderIsoOfPrime S I).injective
+    (a₁ := ⟨J, ‹_›⟩) (a₂ := ⟨K, ‹_›⟩) (Subsingleton.elim _ _)
+
+theorem prime_unique_of_minimal (J : Ideal (Localization I.primeCompl)) [J.IsPrime] :
+    J = LocalRing.maximalIdeal (Localization I.primeCompl) :=
+  IsLocalization.AtPrime.prime_unique_of_minimal hMin
 
 theorem nilpotent_iff_mem_maximal_of_minimal {x : _} :
     IsNilpotent x ↔ x ∈ LocalRing.maximalIdeal (Localization I.primeCompl) := by
