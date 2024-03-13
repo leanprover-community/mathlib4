@@ -90,7 +90,7 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
   let x₀ := b₀ - a₀
   let C := x₀ +ᵥ (s - t)
   have : (0 : E) ∈ C :=
-    ⟨a₀ - b₀, sub_mem_sub ha₀ hb₀, by simp_rw [vadd_eq_add, sub_add_sub_cancel', sub_self]⟩
+    ⟨a₀ - b₀, sub_mem_sub ha₀ hb₀, by simp_rw [x₀, vadd_eq_add, sub_add_sub_cancel', sub_self]⟩
   have : Convex ℝ C := (hs₁.sub ht).vadd _
   have : x₀ ∉ C := by
     intro hx₀
@@ -106,10 +106,10 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
   refine' ⟨f, sInf (f '' t), image_subset_iff.1 (_ : f '' s ⊆ Iio (sInf (f '' t))), fun b hb => _⟩
   · rw [← interior_Iic]
     refine' interior_maximal (image_subset_iff.2 fun a ha => _) (f.isOpenMap_of_ne_zero _ _ hs₂)
-    · exact le_csInf (Nonempty.image _ ⟨_, hb₀⟩) (ball_image_of_ball <| forall_le _ ha)
+    · exact le_csInf (Nonempty.image _ ⟨_, hb₀⟩) (forall_mem_image.2 <| forall_le _ ha)
     · rintro rfl
       simp at hf₁
-  · exact csInf_le ⟨f a₀, ball_image_of_ball <| forall_le _ ha₀⟩ (mem_image_of_mem _ hb)
+  · exact csInf_le ⟨f a₀, forall_mem_image.2 <| forall_le _ ha₀⟩ (mem_image_of_mem _ hb)
 #align geometric_hahn_banach_open geometric_hahn_banach_open
 
 theorem geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (disj : x ∉ s) :

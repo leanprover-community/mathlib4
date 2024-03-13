@@ -27,7 +27,7 @@ namespace ModuleCat
 
 universe u
 
-open Classical
+open scoped Classical
 
 variable (R : Type u)
 
@@ -126,7 +126,7 @@ theorem left_unitality (X : Type u) :
   let q : X →₀ R := ((λ_ (of R (X →₀ R))).hom) (1 ⊗ₜ[R] Finsupp.single x 1)
   change q x' = Finsupp.mapDomain (λ_ X).hom (finsuppTensorFinsupp' R (𝟙_ (Type u)) X
     (Finsupp.single PUnit.unit 1 ⊗ₜ[R] Finsupp.single x 1)) x'
-  simp_rw [finsuppTensorFinsupp'_single_tmul_single,
+  simp_rw [q, finsuppTensorFinsupp'_single_tmul_single,
     ModuleCat.MonoidalCategory.leftUnitor_hom_apply, mul_one,
     Finsupp.mapDomain_single, CategoryTheory.leftUnitor_hom_apply, one_smul]
 #align Module.free.left_unitality ModuleCat.Free.left_unitality
@@ -147,7 +147,7 @@ theorem right_unitality (X : Type u) :
   let q : X →₀ R := ((ρ_ (of R (X →₀ R))).hom) (Finsupp.single x 1 ⊗ₜ[R] 1)
   change q x' = Finsupp.mapDomain (ρ_ X).hom (finsuppTensorFinsupp' R X (𝟙_ (Type u))
     (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single PUnit.unit 1)) x'
-  simp_rw [finsuppTensorFinsupp'_single_tmul_single,
+  simp_rw [q, finsuppTensorFinsupp'_single_tmul_single,
     ModuleCat.MonoidalCategory.rightUnitor_hom_apply, mul_one,
     Finsupp.mapDomain_single, CategoryTheory.rightUnitor_hom_apply, one_smul]
 #align Module.free.right_unitality ModuleCat.Free.right_unitality
@@ -285,7 +285,7 @@ section
 -- accordingly
 
 instance : Preadditive (Free R C) where
-  homGroup X Y := Finsupp.addCommGroup
+  homGroup X Y := Finsupp.instAddCommGroup
   add_comp X Y Z f f' g := by
     dsimp [CategoryTheory.categoryFree]
     rw [Finsupp.sum_add_index'] <;> · simp [add_mul]

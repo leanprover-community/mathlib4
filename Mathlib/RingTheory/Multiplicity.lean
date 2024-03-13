@@ -299,7 +299,7 @@ theorem finite_nat_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 < b := by
               match a with
               | 0 => ha rfl
               | 1 => ha1 rfl
-              | b+2 => by linarith
+              | b+2 => by omega
           not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (lt_pow_self ha_gt_one b),
       fun h => by cases h <;> simp [*]⟩
 #align multiplicity.finite_nat_iff multiplicity.finite_nat_iff
@@ -333,7 +333,7 @@ theorem unit_right {a : α} (ha : ¬IsUnit a) (u : αˣ) : multiplicity a u = 0 
   isUnit_right ha u.isUnit
 #align multiplicity.unit_right multiplicity.unit_right
 
-open Classical
+open scoped Classical
 
 theorem multiplicity_le_multiplicity_of_dvd_left {a b c : α} (hdvd : a ∣ b) :
     multiplicity b c ≤ multiplicity a c :=
@@ -577,7 +577,7 @@ protected theorem mul' {p a b : α} (hp : Prime p) (h : (multiplicity p (a * b))
   rw [← PartENat.natCast_inj, PartENat.natCast_get, eq_coe_iff]; exact ⟨hdiv, hsucc⟩
 #align multiplicity.mul' multiplicity.mul'
 
-open Classical
+open scoped Classical
 
 protected theorem mul {p a b : α} (hp : Prime p) :
     multiplicity p (a * b) = multiplicity p a + multiplicity p b :=

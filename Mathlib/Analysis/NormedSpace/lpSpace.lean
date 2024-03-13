@@ -763,7 +763,7 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     rcases p.trichotomy with (rfl | rfl | h)
     · exfalso
       have := ENNReal.toReal_mono ENNReal.zero_ne_top hp.elim
-      norm_num at this
+      set_option tactic.skipAssignedInstances false in norm_num at this
     · simp only [lp.norm_eq_ciSup, lp.star_apply, norm_star]
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
@@ -1174,8 +1174,7 @@ theorem norm_le_of_tendsto {C : ℝ} {F : ι → lp E p} (hCF : ∀ᶠ k in l, �
 /-- If `f` is the pointwise limit of a bounded sequence in `lp E p`, then `f` is in `lp E p`. -/
 theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Bornology.IsBounded (Set.range F)) {f : ∀ a, E a}
     (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) : Memℓp f p := by
-  obtain ⟨C, _, hCF'⟩ := hF.exists_pos_norm_le
-  have hCF : ∀ k, ‖F k‖ ≤ C := fun k => hCF' _ ⟨k, rfl⟩
+  obtain ⟨C, hCF⟩ : ∃ C, ∀ k, ‖F k‖ ≤ C := hF.exists_norm_le.imp fun _ ↦ Set.forall_mem_range.1
   rcases eq_top_or_lt_top p with (rfl | hp)
   · apply memℓp_infty
     use C

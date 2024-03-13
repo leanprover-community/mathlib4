@@ -48,7 +48,8 @@ with additional properties:
 
 noncomputable section
 
-open Classical Topology Filter TopologicalSpace Set Metric Function
+open scoped Classical
+open Topology Filter TopologicalSpace Set Metric Function
 
 variable {α : Type*} {β : Type*}
 
@@ -202,7 +203,7 @@ def AuxCopy (α : Type*) {ι : Type*} (_i : ι) : Type _ := α
 /-- Given a Polish space, and countably many finer Polish topologies, there exists another Polish
 topology which is finer than all of them.
 
-Porting note: TODO: the topology `t'` is `t ⊓ ⨅ i, m i`. -/
+Porting note (#11215): TODO: the topology `t'` is `t ⊓ ⨅ i, m i`. -/
 theorem exists_polishSpace_forall_le {ι : Type*} [Countable ι] [t : TopologicalSpace α]
     [p : PolishSpace α] (m : ι → TopologicalSpace α) (hm : ∀ n, m n ≤ t)
     (h'm : ∀ n, @PolishSpace α (m n)) :
@@ -273,7 +274,7 @@ variable [MetricSpace α] {s : Opens α}
 
 /-- A type synonym for a subset `s` of a metric space, on which we will construct another metric
 for which it will be complete. -/
--- porting note: was @[nolint has_nonempty_instance]
+-- Porting note: was @[nolint has_nonempty_instance]
 def CompleteCopy {α : Type*} [MetricSpace α] (s : Opens α) : Type _ := s
 #align polish_space.complete_copy TopologicalSpace.Opens.CompleteCopyₓ
 
@@ -425,7 +426,7 @@ theorem _root_.IsOpen.isClopenable [TopologicalSpace α] [PolishSpace α] {s : S
   simpa using hs.isClosed_compl.isClopenable.compl
 #align is_open.is_clopenable IsOpen.isClopenable
 
--- porting note: TODO: generalize for free to `[Countable ι] {s : ι → Set α}`
+-- Porting note (#11215): TODO: generalize for free to `[Countable ι] {s : ι → Set α}`
 theorem IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ → Set α}
     (hs : ∀ n, IsClopenable (s n)) : IsClopenable (⋃ n, s n) := by
   choose m mt m_polish _ m_open using hs

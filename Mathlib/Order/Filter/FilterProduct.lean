@@ -25,7 +25,7 @@ universe u v
 
 variable {α : Type u} {β : Type v} {φ : Ultrafilter α}
 
-open Classical
+open scoped Classical
 
 namespace Filter
 
@@ -51,7 +51,7 @@ instance divisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
   __ := Germ.groupWithZero
 
 instance divisionRing [DivisionRing β] : DivisionRing β* :=
-  { Germ.ring, Germ.divisionSemiring with }
+  { Germ.ring, Germ.divisionSemiring with qsmul := qsmulRec _ }
 
 instance semifield [Semifield β] : Semifield β* :=
   { Germ.commSemiring, Germ.divisionSemiring with }
