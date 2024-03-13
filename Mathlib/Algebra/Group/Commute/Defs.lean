@@ -193,7 +193,7 @@ theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
 #align add_commute.nsmul_nsmul AddCommute.nsmul_nsmulₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- porting note: `simpNF` told me to remove the `simp` attribute
+-- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
   (Commute.refl a).pow_right n
@@ -201,7 +201,7 @@ theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
 #align add_commute.self_nsmul AddCommute.self_nsmulₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- porting note: `simpNF` told me to remove the `simp` attribute
+-- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
   (Commute.refl a).pow_left n
@@ -209,7 +209,7 @@ theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 #align commute.pow_self Commute.pow_self
 
--- porting note: `simpNF` told me to remove the `simp` attribute
+-- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
   (Commute.refl a).pow_pow m n

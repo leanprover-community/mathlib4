@@ -535,7 +535,7 @@ theorem adjoin_toSubmodule (s : Set A) :
     (adjoin R s).toSubmodule = Submodule.span R (NonUnitalSubsemiring.closure s : Set A) :=
   rfl
 
-@[aesop safe 20 apply (rule_sets [SetLike])]
+@[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin {s : Set A} : s ⊆ adjoin R s :=
   NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span
 
@@ -567,6 +567,7 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
     H0_left H0_right Hadd_left Hadd_right Hsmul_left Hsmul_right
 
 /-- The difference with `NonUnitalAlgebra.adjoin_induction` is that this acts on the subtype. -/
+@[elab_as_elim]
 lemma adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (Hs : ∀ x (h : x ∈ s), p ⟨x, subset_adjoin R h⟩)
     (Hadd : ∀ x y, p x → p y → p (x + y)) (H0 : p 0)
@@ -714,7 +715,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubalgebra R A} :
     (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by simp [iInf]
 
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubalgebra R A} {x : A} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
+    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
 theorem iInf_toSubmodule {ι : Sort*} (S : ι → NonUnitalSubalgebra R A) :

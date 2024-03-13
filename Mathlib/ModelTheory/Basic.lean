@@ -96,7 +96,8 @@ theorem lift_mk {i : ℕ} :
     Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
       = #(Sequence₂ (ULift.{v,u} a₀) (ULift.{v,u} a₁) (ULift.{v,u} a₂) i) := by
   rcases i with (_ | _ | _ | i) <;>
-    simp only [Sequence₂, mk_uLift, mk_fintype, Nat.cast_zero, lift_zero, Fintype.card_pempty]
+    simp only [Sequence₂, mk_uLift, Nat.succ_ne_zero, IsEmpty.forall_iff, Nat.succ.injEq,
+      add_eq_zero, OfNat.ofNat_ne_zero, and_false, one_ne_zero, mk_eq_zero, lift_zero]
 #align first_order.sequence₂.lift_mk FirstOrder.Sequence₂.lift_mk
 
 @[simp]
@@ -364,7 +365,7 @@ scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L
 -- The former reported an error.
 variable {L M N} {P : Type*} [Structure L P] {Q : Type*} [Structure L Q]
 
---Porting note: new definition
+-- Porting note: new definition
 /-- Interpretation of a constant symbol -/
 @[coe]
 def constantMap (c : L.Constants) : M := funMap c default
@@ -469,7 +470,7 @@ class StrongHomClass (L : outParam Language) (F M N : Type*)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
 #align first_order.language.strong_hom_class FirstOrder.Language.StrongHomClass
 
---Porting note: using implicit brackets for `Structure` arguments
+-- Porting note: using implicit brackets for `Structure` arguments
 instance (priority := 100) StrongHomClass.homClass [L.Structure M]
     [L.Structure N] [FunLike F M N] [StrongHomClass L F M N] : HomClass L F M N where
   map_fun := StrongHomClass.map_fun

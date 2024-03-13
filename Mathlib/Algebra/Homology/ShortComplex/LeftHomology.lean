@@ -308,7 +308,7 @@ instance : Inhabited (LeftHomologyMapData φ h₁ h₂) := ⟨by
       LeftHomologyData.f'_i_assoc, LeftHomologyData.f'_i, φ.comm₁₂]
   let φH : h₁.H ⟶ h₂.H := h₁.descH (φK ≫ h₂.π)
     (by rw [reassoc_of% commf', h₂.f'_π, comp_zero])
-  exact ⟨φK, φH, by simp, commf', by simp⟩⟩
+  exact ⟨φK, φH, by simp [φK], commf', by simp [φH]⟩⟩
 
 instance : Unique (LeftHomologyMapData φ h₁ h₂) := Unique.mk' _
 
@@ -805,11 +805,11 @@ the same `K` and `H` fields. The inverse construction is `ofEpiOfIsIsoOfMono'`. 
 noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : LeftHomologyData S₂ := by
   let i : h.K ⟶ S₂.X₂ := h.i ≫ φ.τ₂
-  have wi : i ≫ S₂.g = 0 := by simp only [assoc, φ.comm₂₃, h.wi_assoc, zero_comp]
+  have wi : i ≫ S₂.g = 0 := by simp only [i, assoc, φ.comm₂₃, h.wi_assoc, zero_comp]
   have hi : IsLimit (KernelFork.ofι i wi) := KernelFork.IsLimit.ofι _ _
     (fun x hx => h.liftK (x ≫ inv φ.τ₂) (by rw [assoc, ← cancel_mono φ.τ₃, assoc,
       assoc, ← φ.comm₂₃, IsIso.inv_hom_id_assoc, hx, zero_comp]))
-    (fun x hx => by simp) (fun x hx b hb => by
+    (fun x hx => by simp [i]) (fun x hx b hb => by
       dsimp
       rw [← cancel_mono h.i, ← cancel_mono φ.τ₂, assoc, assoc, liftK_i_assoc,
         assoc, IsIso.inv_hom_id, comp_id, hb])
@@ -844,7 +844,7 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData
   have hi : IsLimit (KernelFork.ofι i wi) := KernelFork.IsLimit.ofι _ _
     (fun x hx => h.liftK (x ≫ φ.τ₂)
       (by rw [assoc, φ.comm₂₃, reassoc_of% hx, zero_comp]))
-    (fun x hx => by simp )
+    (fun x hx => by simp [i])
     (fun x hx b hb => by rw [← cancel_mono h.i, ← cancel_mono (inv φ.τ₂), assoc, assoc,
       hb, liftK_i_assoc, assoc, IsIso.hom_inv_id, comp_id])
   let f' := hi.lift (KernelFork.ofι S₁.f S₁.zero)
