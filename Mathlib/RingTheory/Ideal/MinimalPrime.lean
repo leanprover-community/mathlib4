@@ -236,7 +236,7 @@ theorem _root_.IsLocalization.AtPrime.prime_unique_of_minimal {S} [CommSemiring 
   Subtype.ext_iff.mp <| (IsLocalization.AtPrime.orderIsoOfPrime S I).injective
     (a₁ := ⟨J, ‹_›⟩) (a₂ := ⟨K, ‹_›⟩) (Subsingleton.elim _ _)
 
-theorem prime_unique_of_minimal (J : Ideal (Localization I.primeCompl)) :
+theorem prime_unique_of_minimal (J : Ideal (Localization I.primeCompl)) [J.IsPrime] :
     J = LocalRing.maximalIdeal (Localization I.primeCompl) :=
   IsLocalization.AtPrime.prime_unique_of_minimal hMin
 
