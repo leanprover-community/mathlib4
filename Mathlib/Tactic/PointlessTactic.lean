@@ -8,9 +8,9 @@ import Lean.Linter.Util
 import Std.Tactic.Unreachable
 
 /-!
-#  The pointless tactic linter
+#  The unused tactic linter
 
-The pointless linter makes sure that every tactic call actually changes *something*.
+The unused linter makes sure that every tactic call actually changes *something*.
 
 ##  Implementation notes
 
@@ -21,13 +21,13 @@ open Lean Elab
 
 namespace Mathlib.Linter
 
-/-- The pointless tactic linter makes sure that every tactic call actually changes *something*. -/
-register_option linter.pointless : Bool := {
+/-- The unused tactic linter makes sure that every tactic call actually changes *something*. -/
+register_option linter.unusedTactic : Bool := {
   defValue := true
-  descr := "enable the pointless tactic linter"
+  descr := "enable the unused tactic linter"
 }
 
-namespace pointless
+namespace unusedTactic
 
 /-- The monad for collecting `simp`s that are not `simp only`. -/
 abbrev M := StateRefT (HashMap String.Range Syntax) IO
@@ -63,7 +63,7 @@ def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeKind) : 
   | _ => ignoreTacticKinds.contains k
 
 /--
-Adds a new syntax kind whose children will be ignored by the `unreachableTactic` linter.
+Adds a new syntax kind whose children will be ignored by the `unusedTactic` linter.
 This should be called from an `initialize` block.
 -/
 def addIgnoreTacticKind (kind : SyntaxNodeKind) : IO Unit :=
@@ -97,11 +97,11 @@ partial def eraseUsedTactics : InfoTree → M Unit
 
 end
 
-/-- Gets the value of the `linter.pointless` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.pointless o
+/-- Gets the value of the `linter.unused` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.unusedTactic o
 
-/-- The main entry point to the pointless tactic linter. -/
-def pointlessLinter : Linter where run := withSetOptionIn fun stx => do
+/-- The main entry point to the unused tactic linter. -/
+def unusedTactic : Linter where run := withSetOptionIn fun stx => do
   unless getLinterHash (← getOptions) && (← getInfoState).enabled do
     return
   if (← get).messages.hasErrors then
@@ -117,13 +117,13 @@ def pointlessLinter : Linter where run := withSetOptionIn fun stx => do
     getTactics (← ignoreTacticKindsRef.get) (fun k => tactics.contains k || convs.contains k) stx
     eraseUsedTacticsList trees
   let (_, map) ← go.run {}
-  let unreachable := map.toArray
+  let unused := map.toArray
   let key (r : String.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
   let mut last : String.Range := ⟨0, 0⟩
-  for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unreachable.qsort (key ·.1 < key ·.1) do
+  for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
     if stx.getKind ∈ [``Std.Tactic.unreachable, ``Std.Tactic.unreachableConv] then continue
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
-    Linter.logLint linter.pointless stx m!"'{stx}' tactic does nothing"
+    Linter.logLint linter.unusedTactic stx m!"'{stx}' tactic does nothing"
     last := r
 
-initialize addLinter pointlessLinter
+initialize addLinter unusedTactic
