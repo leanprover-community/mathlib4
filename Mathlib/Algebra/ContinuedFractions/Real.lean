@@ -7,6 +7,8 @@ import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 import Mathlib.Data.Nat.Parity
 import Mathlib.Topology.List
 import Mathlib.Topology.Instances.Irrational
+import Mathlib.Topology.MetricSpace.PiNat
+import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # Correspondence between integer continued fractions and real numbers
@@ -16,13 +18,13 @@ This file proves that integer continued fractions converge to a real number.
 
 universe u v
 
-open Nat Real Equiv Stream' Seq' Set Filter Topology TopologicalSpace
+open Nat Int Real Equiv Stream' Seq' Set Filter Topology TopologicalSpace FCF
 
 open CF (of)
 
 noncomputable section
 
-namespace CF
+namespace FCF
 
 variable {K : Type u} [LinearOrderedField K]
 
@@ -232,56 +234,24 @@ theorem convergents_ge_convergents_of_odd
           exact le_of_lt (convergents_gt_convergents_of_odd hg'' hme hmf)
     · exact le_of_lt (convergents_gt_convergents_of_odd hg hme hmn)
 
-theorem cauchySeq'_convergents [Archimedean K] {c : CF K} :
-    ∀ n m : ℕ, n ≤ m → |c.convergents n - c.convergents m| < ε := by
-  intro ε hε
-  rcases exists_nat_gt ε⁻¹ with ⟨N', hN'⟩
-  let N := max N' 5
-  exists N + 1
-  intro m hm n hn
-  apply lt_of_le_of_lt (b := |g.convergents N - g.convergents (N + 1)|)
-  · rw [← max_sub_min_eq_abs, ← max_sub_min_eq_abs]
-    apply And.elim sub_le_sub
-    cases N.even_or_odd with
-    | inl heN =>
-      rw [max_eq_left (convergents_le_convergents_of_even (g := g) heN (N.le_add_right 1)),
-        min_eq_right (convergents_le_convergents_of_even (g := g) heN (N.le_add_right 1)),
-        max_le_iff, le_min_iff]
-      exact
-        ⟨⟨convergents_ge_convergents_of_odd (heN.add_odd odd_one) hn,
-          convergents_ge_convergents_of_odd (heN.add_odd odd_one) hm⟩,
-          ⟨convergents_le_convergents_of_even heN (le_trans (N.le_add_right 1) hn),
-            convergents_le_convergents_of_even heN (le_trans (N.le_add_right 1) hm)⟩⟩
-    | inr hoN =>
-      rw [max_eq_right (convergents_ge_convergents_of_odd (g := g) hoN (N.le_add_right 1)),
-        min_eq_left (convergents_ge_convergents_of_odd (g := g) hoN (N.le_add_right 1)),
-        max_le_iff, le_min_iff]
-      exact
-        ⟨⟨convergents_ge_convergents_of_odd hoN (le_trans (N.le_add_right 1) hn),
-          convergents_ge_convergents_of_odd hoN (le_trans (N.le_add_right 1) hm)⟩,
-          ⟨convergents_le_convergents_of_even (hoN.add_odd odd_one) hn,
-            convergents_le_convergents_of_even (hoN.add_odd odd_one) hm⟩⟩
-  · by_cases hg : g.TerminatedAt N
-    · rwa [← convergents_stable_of_terminated (N.le_add_right 1) hg, sub_self, abs_zero]
-    · rw [convergents_sub_convergents_succ hg, abs_mul, abs_mul, abs_neg_one_pow, one_mul,
-        abs_of_pos (inv_pos_of_pos (zero_lt_denom N)),
-        abs_of_pos (inv_pos_of_pos (zero_lt_denom (N + 1))), ← mul_inv,
-        inv_lt (mul_pos (zero_lt_denom N) (zero_lt_denom (N + 1))) hε]
-      calc
-        ε⁻¹ < (N' : K) := hN'
-        _   ≤ ↑N := by exact_mod_cast le_max_left N' 5
-        _   ≤ ↑(Nat.fib N) := by exact_mod_cast le_fib_self (le_max_right N' 5)
-        _   ≤ ↑(Nat.fib (N + 1)) := by exact_mod_cast fib_le_fib_succ
-        _   ≤ ↑(Nat.fib (N + 1)) * ↑(Nat.fib (N + 1)) := by exact_mod_cast (fib (N + 1)).le_mul_self
-        _   ≤ ↑(Nat.fib (N + 1)) * ↑(Nat.fib (N + 2)) :=
-          mul_le_mul_of_nonneg_left
-            (by exact_mod_cast fib_le_fib_succ) (by exact_mod_cast (fib (N + 1)).zero_le)
-        _   ≤ g.denominators N * g.denominators (N + 1) :=
-          mul_le_mul
-            (succ_nth_fib_le_of_nth_denom (Or.inr (mt (terminated_stable N.pred_le) hg)))
-            (succ_nth_fib_le_of_nth_denom (Or.inr hg))
-            (by exact_mod_cast (fib (N + 2)).zero_le)
-            zero_le_denom
+theorem eval_bounded_by_inv_fib (f : FCF K) (l : List ℕ+) :
+      |f.eval - (f ++ l).eval| ≤ (↑(fib (f.l.length + 1)) : ℚ)⁻¹ * (↑(fib (f.l.length + 2)))⁻¹ := by
+  sorry
+
+end FCF
+
+namespace CF
+
+variable {K : Type u} [LinearOrderedField K]
+
+theorem take_add (m n : ℕ) (c : CF K) :
+    c.take (m + n) = c.take m ++ (c.s.drop m).take n :=
+  sorry
+
+@[simp]
+theorem _root_.Seq'.take_ofStream {α : Type u} (n : ℕ) (s : Stream' α) :
+    (↑s : Seq' α).take n = s.take n :=
+  sorry
 
 theorem cauchySeq_convergents {c : CF ℝ} : CauchySeq c.convergents := by
   by_cases hct : c.s.Terminates
@@ -307,9 +277,7 @@ theorem cauchySeq_convergents {c : CF ℝ} : CauchySeq c.convergents := by
 def toReal (c : CF ℝ) : ℝ :=
   limUnder atTop c.convergents
 
-variable {g : GeneralizedContinuedFraction ℝ} [g.IsIntegerContinuedFraction]
-
-theorem convergents_tendsTo_toReal : Tendsto g.convergents atTop (nhds g.toReal) :=
+theorem convergents_tendsTo_toReal (c : CF ℝ) : Tendsto c.convergents atTop (nhds c.toReal) :=
   cauchySeq_convergents.tendsto_limUnder
 
 theorem toReal_eq_of_terminatedAt {n} (hg : g.TerminatedAt n) : g.toReal = g.convergents n :=
@@ -376,6 +344,9 @@ theorem of_isC0' [FloorRing K] (v : K) : (of v).IsC0' :=
 instance : TopologicalSpace ℕ+ := ⊥
 instance : DiscreteTopology ℕ+ := ⟨rfl⟩
 
+instance {α : Type u} [TopologicalSpace α] [DiscreteTopology α] : DiscreteTopology (List α) :=
+  sorry
+
 @[simps]
 def toRealE : { c : CF ℝ // c.IsC0' } ≃ ℝ where
   toFun s := s.1.toReal
@@ -394,20 +365,72 @@ def toIrrH.equiv : { c : CF ℝ // ¬c.s.Terminates } ≃ ℤ × (ℕ → ℕ+) 
   left_inv s := sorry
   right_inv p := sorry
 
+theorem _root_.Nat.fib_tendsto_atTop : Tendsto fib atTop atTop :=
+  tendsto_atTop_mono' _ (eventually_atTop.mpr ⟨5, λ _n hn => le_fib_self hn⟩) tendsto_id
+
 def toIrrH : ℤ × (ℕ → ℕ+) ≃ₜ { x // Irrational x } where
   toEquiv := toIrrH.equiv.symm.trans toIrrE
   continuous_toFun := by
     apply Continuous.subtype_mk
-    let F (n : ℕ) (p : ℤ × (ℕ → ℕ+)) : ℝ := convergents (⟨p.1, ↑(⟨p.2⟩ : Stream' ℕ+)⟩ : CF ℝ) n
-    let f (p : ℤ × (ℕ → ℕ+)) : ℝ := toReal ⟨p.1, ↑(⟨p.2⟩ : Stream' ℕ+)⟩
-    have hctt : TendstoUniformly F f atTop
-    · simp_rw [tendstoUniformly_iff_tendsto, tendsto_uniformity_iff_dist_tendsto_zero, dist_eq,
+    have hctt : TendstoUniformly
+        (λ (n : ℕ) (p : ℤ × (ℕ → ℕ+)) => convergents (⟨p.1, ↑(⟨p.2⟩ : Stream' ℕ+)⟩ : CF ℝ) n)
+        (λ (p : ℤ × (ℕ → ℕ+)) => toReal ⟨p.1, ↑(⟨p.2⟩ : Stream' ℕ+)⟩) atTop
+    · simp_rw [tendstoUniformly_iff_tendsto, tendsto_uniformity_iff_dist_tendsto_zero, Real.dist_eq,
         abs_sub_comm]
-      sorry
-    have hcc : ∀ n, Continuous (F n)
-    · sorry
+      refine squeeze_zero
+        (g := λ (p : ℕ × (ℤ × (ℕ → ℕ+))) => (↑(fib (p.1 + 1)) : ℝ)⁻¹ * (↑(fib (p.1 + 2)))⁻¹)
+        (λ _ => by positivity) ?hb ?ht
+      case ht =>
+        suffices ht : Tendsto (λ n => (↑(fib (n + 1)) : ℝ)⁻¹ * (↑(fib (n + 2)))⁻¹) atTop (𝓝 0)
+        · exact Tendsto.comp ht tendsto_fst
+        have ht₁ := (tendsto_add_atTop_iff_nat 1).mpr fib_tendsto_atTop
+        replace ht₁ := (tendsto_nat_cast_atTop_atTop (R := ℝ)).comp ht₁
+        replace ht₁ := ht₁.inv_tendsto_atTop
+        have ht₂ := (tendsto_add_atTop_iff_nat 2).mpr fib_tendsto_atTop
+        replace ht₂ := (tendsto_nat_cast_atTop_atTop (R := ℝ)).comp ht₂
+        replace ht₂ := ht₂.inv_tendsto_atTop
+        convert ht₁.mul ht₂; simp
+      case hb =>
+        rintro ⟨n, h, f⟩
+        let c : CF ℝ := ⟨h, ↑(⟨f⟩ : Stream' ℕ+)⟩
+        have hb := λ m => eval_bounded_by_inv_fib (c.take n) ((c.s.drop n).take m)
+        simp_rw (config := { proj := false, zeta := false })
+          [← take_add, ← Rat.cast_le (K := ℝ)] at hb
+        simp at hb; simp_rw [← take_ofStream] at hb
+        have ht := (((tendsto_add_atTop_iff_nat n).mpr (convergents_tendsTo_toReal c)).const_sub
+          (convergents c n)).abs
+        conv at ht => enter [1, m]; rw [add_comm]
+        exact le_of_tendsto' ht hb
+    have hcc : ∀ n, Continuous
+        (λ (p : ℤ × (ℕ → ℕ+)) => convergents (⟨p.1, ↑(⟨p.2⟩ : Stream' ℕ+)⟩ : CF ℝ) n)
+    · intro n
+      have hcc₁ : Continuous
+          (λ (f : ℕ → ℕ+) => (↑(⟨f⟩ : Stream' ℕ+) : Seq' ℕ+).take n)
+      · refine (isTopologicalBasis_singletons _).continuous _ ?_
+        rintro _ ⟨l, rfl⟩
+        refine (PiNat.isTopologicalBasis_cylinders _).isOpen_iff.mpr ?_
+        rintro f rfl
+        refine ⟨_, ⟨f, n, rfl⟩, ?_⟩
+        simp [PiNat.cylinder, subset_def]
+        intro g hg
+        apply List.ext_get
+        · simp
+        · intro m hm₁ hm₂
+          simp only [get_take]; simp only [length_take] at hm₁; exact hg m hm₁
+      have hcc₂ : Continuous (λ p : ℤ × List ℕ+ => (↑(⟨p.1, p.2⟩ : FCF ℝ).eval : ℝ))
+      · exact continuous_of_discreteTopology
+      exact hcc₂.comp (continuous_id.prod_map hcc₁)
     exact hctt.continuous (eventually_of_forall hcc)
-  continuous_invFun := sorry
+  continuous_invFun := by
+    apply Continuous.prod_mk
+    · change Continuous (restrict { r | Irrational r } Int.floor)
+      apply ContinuousOn.restrict; apply ContinuousAt.continuousOn
+      intro r hr
+      refine ((continuousOn_congr (floor_eq_on_Ico ⌊r⌋)).mpr continuousOn_const).continuousAt ?_
+      exact Ico_mem_nhds (lt_of_le_of_ne (Int.floor_le r) (hr.ne_int _).symm)
+        (Int.lt_floor_add_one r)
+    · simp
+      sorry
 
 end CF
 
