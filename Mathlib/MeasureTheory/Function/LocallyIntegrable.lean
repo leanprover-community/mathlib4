@@ -422,6 +422,23 @@ theorem integrableOn_Ici_iff_integrableAtFilter_atTop [LinearOrder X] [CompactIc
     IntegrableOn f (Ici a) μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrableOn f (Ici a) μ :=
   integrableOn_Iic_iff_integrableAtFilter_atBot (X := Xᵒᵈ)
 
+theorem integrableOn_Iio_iff_integrableAtFilter_atBot_nhdsWithin
+    [LinearOrder X] [CompactIccSpace X] [NoMinOrder X] [OrderTopology X] :
+    IntegrableOn f (Iio a) μ ↔ IntegrableAtFilter f atBot μ ∧
+    IntegrableAtFilter f (𝓝[<] a) μ ∧ LocallyIntegrableOn f (Iio a) μ := by
+  use fun h ↦ ⟨⟨Iio a, Iio_mem_atBot a, h⟩, ⟨Iio a, self_mem_nhdsWithin, h⟩, h.locallyIntegrableOn⟩
+  intro ⟨hbot, ⟨s, hsl, hs⟩, hlocal⟩
+  obtain ⟨s', ⟨hs'_mono, hs'⟩⟩ := mem_nhdsWithin_Iio_iff_exists_Ioo_subset.mp hsl
+  refine (integrableOn_union.mpr ⟨?_, hs.mono hs' le_rfl⟩).mono Iio_subset_Iic_union_Ioo le_rfl
+  exact integrableOn_Iic_iff_integrableAtFilter_atBot.mpr
+    ⟨hbot, hlocal.mono_set (Iic_subset_Iio.mpr hs'_mono)⟩
+
+theorem integrableOn_Ioi_iff_integrableAtFilter_atTop_nhdsWithin
+    [LinearOrder X] [CompactIccSpace X] [NoMaxOrder X] [OrderTopology X] :
+    IntegrableOn f (Ioi a) μ ↔ IntegrableAtFilter f atTop μ ∧
+    IntegrableAtFilter f (𝓝[>] a) μ ∧ LocallyIntegrableOn f (Ioi a) μ :=
+  integrableOn_Iio_iff_integrableAtFilter_atBot_nhdsWithin (X := Xᵒᵈ)
+
 end MeasureTheory
 
 open MeasureTheory
