@@ -15,9 +15,6 @@ import Mathlib.Algebra.Ring.Defs
 
 -/
 
-set_option autoImplicit true
-
-
 universe u
 
 variable {α : Type u}
