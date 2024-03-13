@@ -288,11 +288,11 @@ theorem exists_reduced_word (w : W) : ∃ ω : List B, ω.length = ℓ w ∧ w =
   have := Nat.find_spec (cs.exists_word_with_prod w)
   tauto
 
-theorem wordProd_length_le (ω : List B) : ℓ (π ω) ≤ ω.length := by
+theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length := by
   apply Nat.find_min' (cs.exists_word_with_prod (π ω))
   use ω
 
-@[simp] theorem length_one : ℓ (1 : W) = 0 := Nat.eq_zero_of_le_zero (cs.wordProd_length_le [])
+@[simp] theorem length_one : ℓ (1 : W) = 0 := Nat.eq_zero_of_le_zero (cs.length_wordProd_le [])
 
 theorem length_eq_zero_iff {w : W} : ℓ w = 0 ↔ w = 1 := by
   constructor
@@ -307,11 +307,11 @@ theorem length_eq_zero_iff {w : W} : ℓ w = 0 ↔ w = 1 := by
 @[simp] theorem length_inv (w : W) : ℓ (w⁻¹) = ℓ w := by
   apply Nat.le_antisymm
   · rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
-    have := cs.wordProd_length_le (List.reverse ω)
+    have := cs.length_wordProd_le (List.reverse ω)
     simp at this
     rwa [hω] at this
   · rcases cs.exists_reduced_word w⁻¹ with ⟨ω, hω, h'ω⟩
-    have := cs.wordProd_length_le (List.reverse ω)
+    have := cs.length_wordProd_le (List.reverse ω)
     simp at this
     rwa [← h'ω, hω, inv_inv] at this
 
@@ -319,7 +319,7 @@ theorem length_mul_le (w₁ w₂ : W) :
     ℓ (w₁ * w₂) ≤ ℓ w₁ + ℓ w₂ := by
   rcases cs.exists_reduced_word w₁ with ⟨ω₁, hω₁, rfl⟩
   rcases cs.exists_reduced_word w₂ with ⟨ω₂, hω₂, rfl⟩
-  have := cs.wordProd_length_le (ω₁ ++ ω₂)
+  have := cs.length_wordProd_le (ω₁ ++ ω₂)
   simp at this
   rwa [hω₁, hω₂] at this
 
@@ -368,7 +368,7 @@ theorem length_mul_mod_two (w₁ w₂ : W) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ +
 @[simp] theorem length_simple (i : B) : ℓ (s i) = 1 := by
   apply Nat.le_antisymm
   · show length cs (s i) ≤ 1
-    have := cs.wordProd_length_le [i]
+    have := cs.length_wordProd_le [i]
     simp at this
     tauto
   · show 1 ≤ length cs (s i)
@@ -512,6 +512,9 @@ theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : 
 
 def IsReduced (ω : List B) : Prop := ℓ (π ω) = ω.length
 
+theorem isReduced_reverse (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
+  simp [IsReduced]
+
 theorem exists_reduced_word' (w : W) : ∃ ω : List B, cs.IsReduced ω ∧ w = π ω := by
   rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
   use ω
@@ -524,8 +527,8 @@ private theorem isReduced_take_and_drop {ω : List B} (rω : cs.IsReduced ω) (j
     rw [← wordProd_append]
     nth_rw 1 [take_append_drop]
 
-  have take_length : ℓ (π (ω.take j)) ≤ (ω.take j).length    := cs.wordProd_length_le (ω.take j)
-  have drop_length : ℓ (π (ω.drop j)) ≤ (ω.drop j).length    := cs.wordProd_length_le (ω.drop j)
+  have take_length : ℓ (π (ω.take j)) ≤ (ω.take j).length    := cs.length_wordProd_le (ω.take j)
+  have drop_length : ℓ (π (ω.drop j)) ≤ (ω.drop j).length    := cs.length_wordProd_le (ω.drop j)
 
   have length_add_ge := calc
     ℓ (π (ω.take j)) + ℓ (π (ω.drop j))
@@ -571,7 +574,7 @@ theorem alternatingWord_not_reduced (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) (hm
 
     calc
       ℓ (π (alternatingWord i' i (M i i' - 1)))
-      _ ≤ (alternatingWord i' i (M i i' - 1)).length  := cs.wordProd_length_le _
+      _ ≤ (alternatingWord i' i (M i i' - 1)).length  := cs.length_wordProd_le _
       _ = M i i' - 1                                  := length_alternatingWord _ _ _
       _ ≤ M i i'                                      := Nat.sub_le _ _
       _ < M i i' + 1                                  := Nat.lt_succ_self _
@@ -592,7 +595,7 @@ def reflections : Set W := {t : W | cs.IsReflection t}
 
 theorem isReflection_simple (i : B) : cs.IsReflection (s i) := by use 1, i; simp
 
-theorem isInvolution_of_isReflection {t : W} (rt : cs.IsReflection t) : t ^ 2 = 1 := by
+theorem pow_two_eq_one_of_isReflection {t : W} (rt : cs.IsReflection t) : t ^ 2 = 1 := by
   rcases rt with ⟨w, i, rfl⟩
   rw [pow_two]
   group
@@ -602,7 +605,9 @@ theorem isInvolution_of_isReflection {t : W} (rt : cs.IsReflection t) : t ^ 2 = 
 theorem inv_reflection_eq {t : W} (rt : cs.IsReflection t) : t⁻¹ = t := by
   apply inv_eq_of_mul_eq_one_right
   rw [← pow_two]
-  exact cs.isInvolution_of_isReflection rt
+  exact cs.pow_two_eq_one_of_isReflection rt
+
+alias inv_eq_self_of_isReflection := inv_reflection_eq
 
 theorem length_reflection_odd {t : W} (rt : cs.IsReflection t) : Odd (ℓ t) := by
   rw [Nat.odd_iff]
@@ -611,6 +616,8 @@ theorem length_reflection_odd {t : W} (rt : cs.IsReflection t) : Odd (ℓ t) := 
   simp
   rw [add_comm, ← add_assoc, ← two_mul, Nat.mul_add_mod]
   norm_num
+
+alias odd_length_of_isReflection := length_reflection_odd
 
 theorem isReflection_conjugate_iff (w t : W) :
     cs.IsReflection (w * t * w⁻¹) ↔ cs.IsReflection t := by
@@ -680,18 +687,18 @@ theorem leftInvSeq_concat (ω : List B) (i : B) :
     group
     simp [mul_assoc]
 
-@[local simp] private theorem leftInvSeq_eq_rev_leftInvSeq_rev (ω : List B) :
+@[local simp] private theorem leftInvSeq_eq_reverse_rightInvSeq_reverse (ω : List B) :
     lis ω = (ris ω.reverse).reverse := by
   induction' ω with i ω ih
   · simp
   · rw [leftInvSeq, reverse_cons, ← concat_eq_append, rightInvSeq_concat, ih]
     simp [map_reverse]
 
-theorem rightInvSeq_rev (ω : List B) :
+theorem rightInvSeq_reverse (ω : List B) :
     ris (ω.reverse) = (lis ω).reverse := by
   simp
 
-theorem leftInvSeq_rev (ω : List B) :
+theorem leftInvSeq_reverse (ω : List B) :
     lis (ω.reverse) = (ris ω).reverse := by
   simp
 
@@ -703,7 +710,8 @@ theorem leftInvSeq_rev (ω : List B) :
 @[simp] theorem length_leftInvSeq (ω : List B) : (lis ω).length = ω.length := by
   simp
 
-theorem all_rightInvSeq_isReflection (ω : List B) (t : W) (ht : t ∈ ris ω) : cs.IsReflection t := by
+theorem isReflection_of_mem_rightInvSeq (ω : List B) (t : W) (ht : t ∈ ris ω) :
+    cs.IsReflection t := by
   induction' ω with i ω ih
   · simp at ht
   · dsimp [rightInvSeq] at ht
@@ -711,9 +719,10 @@ theorem all_rightInvSeq_isReflection (ω : List B) (t : W) (ht : t ∈ ris ω) :
     · use (π ω)⁻¹, i
     · exact ih mem
 
-theorem all_leftInvSeq_isReflection (ω : List B) (t : W) (ht : t ∈ lis ω) : cs.IsReflection t := by
+theorem isReflection_of_mem_leftInvSeq (ω : List B) (t : W) (ht : t ∈ lis ω) :
+    cs.IsReflection t := by
   simp at ht
-  exact cs.all_rightInvSeq_isReflection ω.reverse t ht
+  exact cs.isReflection_of_mem_rightInvSeq ω.reverse t ht
 
 theorem rightInvSeq_drop (ω : List B) (j : ℕ) :
     ris (ω.drop j) = (ris ω).drop j := by
@@ -811,7 +820,7 @@ theorem leftInvSeq_get_mul_wordProd (ω : List B) (j : Fin (lis ω).length) :
     simp
     group
 
-  rw [get_of_eq (cs.leftInvSeq_eq_rev_leftInvSeq_rev _) j]
+  rw [get_of_eq (cs.leftInvSeq_eq_reverse_rightInvSeq_reverse _) j]
   rw [get_reverse' _ _ (by simpa)]
   simp
   apply @mul_left_cancel _ _ _ (π (ω.reverse))
@@ -838,20 +847,83 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
     _ = List.map id (ris ω.reverse)             := by
         apply List.map_congr
         intro t ht
-        exact cs.inv_reflection_eq (cs.all_rightInvSeq_isReflection _ t ht)
+        exact cs.inv_reflection_eq (cs.isReflection_of_mem_rightInvSeq _ t ht)
     _ = ris ω.reverse                           := map_id _
   rw [this]
   nth_rw 2 [← reverse_reverse ω]
   rw [wordProd_reverse]
   exact cs.prod_rightInvSeq _
 
-private lemma nodup_rightInvSeq_of_reduced (ω : List B) (rω : cs.IsReduced ω) :
+private lemma nodup_rightInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω) :
     List.Nodup (ris ω) := by
-  sorry
+  apply List.nodup_iff_get?_ne_get?.mpr
+  intro j j' j_lt_j' j'_lt_length dup
+  -- dup : get? (rightInvSeq cs ω) j = get? (rightInvSeq cs ω) j'
+  -- ⊢ False
 
-private lemma nodup_leftInvSeq_of_reduced (ω : List B) (rω : cs.IsReduced ω) :
-    List.Nodup (lis ω) := by
-  sorry
+  have h₀ : j < (ris ω).length                        := lt_trans j_lt_j' j'_lt_length
+  let t := get (ris ω) { val := j, isLt := h₀ }
+
+  have h₁ : j' < ω.length                             := by simp at j'_lt_length; assumption
+  have h₂ : j' - 1 < (ris (ω.eraseIdx j)).length      := by
+    simp
+    apply (add_lt_add_iff_right 1).mp
+    rw [length_eraseIdx_add_one (lt_trans j_lt_j' h₁)]
+    rwa [Nat.sub_add_cancel (by linarith)]
+  let t' := get (ris (ω.eraseIdx j)) { val := j' - 1, isLt := h₂ }
+
+  have h₃ : t = t'                                    := by apply Option.some_injective; calc
+    some t = get? (ris ω) j                                     := (get?_eq_get h₀).symm
+    _      = get? (ris ω) j'                                    := dup
+    _      = get? ((ris ω).drop (j + 1)) (j' - (j + 1))         := by
+        symm
+        rw [get?_drop]
+        congr
+        rw [add_comm, Nat.sub_add_cancel (by linarith)]
+    _      = get? (ris (ω.drop (j + 1))) (j' - (j + 1))         := by
+        congr
+        symm
+        exact rightInvSeq_drop _ _ _
+    _      = get? (ris ((ω.eraseIdx j).drop j)) (j' - (j + 1))  := by
+        congr 2
+        show ω.drop (j + 1) = (ω.eraseIdx j).drop j
+        rw [eraseIdx_eq_take_drop_succ, drop_left' (length_take_of_le (by linarith))]
+    _      = get? ((ris (ω.eraseIdx j)).drop j) (j' - (j + 1))  := by
+        congr
+        exact rightInvSeq_drop _ _ _
+    _      = get? (ris (ω.eraseIdx j)) (j' - 1)                 := by
+        rw [get?_drop]
+        congr
+        show j + (j' - (j + 1)) = j' - 1
+        apply @Nat.add_left_cancel 1
+        rw [← add_assoc 1, add_comm 1]
+        rw [Nat.add_sub_cancel' (by linarith), Nat.add_sub_cancel' (by linarith)]
+    _      = t'                                                 := get?_eq_get h₂
+
+  have h₄ : t * t' = 1                                := by
+    rw [← h₃, ← pow_two]
+    apply cs.pow_two_eq_one_of_isReflection
+    apply cs.isReflection_of_mem_rightInvSeq ω
+    apply List.mem_iff_get.mpr
+    use { val := j, isLt := h₀ }
+
+  have h₅ := calc
+    π ω   = π ω * t * t'                              := by rw [mul_assoc, h₄]; group
+    _     = (π (ω.eraseIdx j)) * t'                   :=
+        congrArg (· * t') (cs.wordProd_mul_rightInvSeq_get _ _)
+    _     = π ((ω.eraseIdx j).eraseIdx (j' - 1))      :=
+        cs.wordProd_mul_rightInvSeq_get _ _
+
+  have h₆ := calc
+    ω.length = ℓ (π ω)                                    := rω.symm
+    _        = ℓ (π ((ω.eraseIdx j).eraseIdx (j' - 1)))   := congrArg cs.length h₅
+    _        ≤ ((ω.eraseIdx j).eraseIdx (j' - 1)).length  := cs.length_wordProd_le _
+
+  have h₇ := add_le_add_right (add_le_add_right h₆ 1) 1
+  rw [length_eraseIdx_add_one (by simp at h₂; assumption)] at h₇
+  rw [length_eraseIdx_add_one (lt_trans j_lt_j' h₁)] at h₇
+  linarith
+
 
 /-! ### The standard geometric representation
 Given a Coxeter group `W` whose simple reflections are indexed by a set `B`, we define
@@ -866,16 +938,25 @@ local prefix:100 "α" => simpleRoot
 /-- The standard bilinear form on `B →₀ ℝ`. Given by `⟪αᵢ, αⱼ⟫ = -cos (π / Mᵢⱼ)`
 for `i j : B`, where {αᵢ} is the standard basis of `B →₀ ℝ` and `M` is the Coxeter matrix.
 This is positive definite if and only if the associated Coxeter group is finite. -/
-def standardBilinForm (M : Matrix B B ℕ) : LinearMap.BilinForm ℝ (B →₀ ℝ) := sorry
+def standardBilinForm (M : Matrix B B ℕ) : LinearMap.BilinForm ℝ (B →₀ ℝ) :=
+    (Finsupp.lift ((B →₀ ℝ) →ₗ[ℝ] ℝ) ℝ B)
+        (fun i ↦ ((Finsupp.lift ℝ ℝ B)
+            (fun i' ↦ -cos (Real.pi / M i i'))))
 
 local notation:max "⟪"  a  ","  b  "⟫" => standardBilinForm M a b
 
-theorem standardBilinForm_symm (M : Matrix B B ℕ) : LinearMap.IsSymm (standardBilinForm M) := by
-  sorry
-
 @[simp] theorem standardBilinForm_simpleRoots (i i' : B) :
-    ⟪α i, α i'⟫ = Real.cos (Real.pi / M i i') := by
-  sorry
+    ⟪α i, α i'⟫ = - cos (Real.pi / M i i') := by simp [standardBilinForm, simpleRoot]
+
+theorem standardBilinForm_symm :
+    LinearMap.IsSymm (standardBilinForm M) := by
+  apply LinearMap.isSymm_iff_eq_flip.mpr
+  apply (Finsupp.basisSingleOne).ext
+  intro i
+  apply (Finsupp.basisSingleOne).ext
+  intro i'
+  simp [standardBilinForm]
+  rw [cs.isCoxeter.symmetric.apply i i']
 
 /-- The orthogonal reflection in the vector `v` under the standard bilinear form.
 -/
@@ -922,6 +1003,10 @@ theorem SGR_alternatingWord_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' = 0) :
     cs.SGR (π (alternatingWord i i' m)) (α i) = if Even m
       then (m + 1) • (α i) + m • (α i')
       else m • (α i) + (m + 1) • (α i') := by
+  sorry
+
+theorem SGR_alternatingWord_simpleRoot_pos (i i' : B) (m : ℕ) (hM : m < M i i' ∨ M i i' = 0) :
+    ∃ μ ≥ 0, ∃ μ' ≥ 0, cs.SGR (π (alternatingWord i i' m)) (α i) = μ • (α i) + μ' • (α i') := by
   sorry
 
 /-- The roots of the standard geometric representation; i.e. the vectors that can be written
@@ -1002,7 +1087,7 @@ The following are equivalent:
   except $s_{i_j}$).
 \end{enumerate}
 -/
-theorem right_exchange_property (ω : List B) (t : W) (rω : cs.IsReduced ω) :
+theorem right_exchange_property {ω : List B} (t : W) (rω : cs.IsReduced ω) :
     List.TFAE [
       cs.IsRightInversion (π ω) t,
       t ∈ ris ω,
@@ -1022,7 +1107,7 @@ The following are equivalent:
   (i.e. the result of multiplying all of the simple reflections $s_{i_1}, \ldots, s_{i_\ell}$
   except $s_{i_j}$).
 -/
-theorem left_exchange_property (ω : List B) (t : W) (rω : cs.IsReduced ω) :
+theorem left_exchange_property {ω : List B} (t : W) (rω : cs.IsReduced ω) :
     List.TFAE [
       cs.IsLeftInversion (π ω) t,
       t ∈ lis ω,
