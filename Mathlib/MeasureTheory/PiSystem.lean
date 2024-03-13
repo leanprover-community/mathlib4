@@ -58,7 +58,8 @@ import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
 open MeasurableSpace Set
 
-open Classical MeasureTheory
+open scoped Classical
+open MeasureTheory
 
 /-- A π-system is a collection of subsets of `α` that is closed under binary intersection of
   non-disjoint sets. Usually it is also required that the collection is nonempty, but we don't do

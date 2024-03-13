@@ -42,7 +42,7 @@ variable {R : Type u} [Ring R]
 
 variable {ι : Type v}
 
-variable [dec_ι : DecidableEq ι] [Preorder ι]
+variable [Preorder ι]
 
 variable (G : ι → Type w)
 
@@ -84,6 +84,7 @@ nonrec theorem DirectedSystem.map_map [DirectedSystem G fun i j h => f i j h] {i
 #align module.directed_system.map_map Module.DirectedSystem.map_map
 
 variable (G)
+variable [DecidableEq ι]
 
 /-- The direct limit of a directed system is the modules glued together along the maps. -/
 def DirectLimit : Type max v w :=
@@ -264,7 +265,7 @@ end functorial
 
 section Totalize
 
-open Classical
+open scoped Classical
 
 variable (G f)
 
@@ -289,7 +290,7 @@ end Totalize
 
 variable [DirectedSystem G fun i j h => f i j h]
 
-open Classical
+open scoped Classical
 
 theorem toModule_totalize_of_le {x : DirectSum ι G} {i j : ι} (hij : i ≤ j)
     (hx : ∀ k ∈ x.support, k ≤ i) :
@@ -365,11 +366,11 @@ end Module
 
 namespace AddCommGroup
 
-variable [∀ i, AddCommGroup (G i)]
+variable [DecidableEq ι] [∀ i, AddCommGroup (G i)]
 
 /-- The direct limit of a directed system is the abelian groups glued together along the maps. -/
 def DirectLimit (f : ∀ i j, i ≤ j → G i →+ G j) : Type _ :=
-  @Module.DirectLimit ℤ _ ι _ _ G _ _ fun i j hij => (f i j hij).toIntLinearMap
+  @Module.DirectLimit ℤ _ ι _ G _ _ (fun i j hij => (f i j hij).toIntLinearMap) _
 #align add_comm_group.direct_limit AddCommGroup.DirectLimit
 
 namespace DirectLimit
@@ -633,7 +634,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
 
 section
 
-open Classical
+open scoped Classical
 
 open Polynomial
 
@@ -667,7 +668,7 @@ theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : DirectLimit 
 
 section OfZeroExact
 
-open Classical
+open scoped Classical
 
 variable (f' : ∀ i j, i ≤ j → G i →+* G j)
 
@@ -708,8 +709,7 @@ variable {G f f'}
 theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCommRing (Σi, G i)}
     (H : (Ideal.Quotient.mk _ x : DirectLimit G fun i j h => f' i j h)
         = (0 : DirectLimit G fun i j h => f' i j h)) :
-    ∃ j s,
-      ∃ H : ∀ k : Σi, G i, k ∈ s → k.1 ≤ j,
+    ∃ j s, ∃ H : ∀ k : Σ i, G i, k ∈ s → k.1 ≤ j,
         IsSupported x s ∧
           lift (fun ix : s => f' ix.1.1 j (H ix ix.2) ix.1.2) (restriction s x) = (0 : G j) := by
   refine' span_induction (Ideal.Quotient.eq_zero_iff_mem.1 H) _ _ _ _
@@ -1003,7 +1003,7 @@ theorem exists_inv {p : Ring.DirectLimit G f} : p ≠ 0 → ∃ y, p * y = 1 :=
 
 section
 
-open Classical
+open scoped Classical
 
 /-- Noncomputable multiplicative inverse in a direct limit of fields. -/
 noncomputable def inv (p : Ring.DirectLimit G f) : Ring.DirectLimit G f :=
@@ -1027,7 +1027,8 @@ protected noncomputable def field [DirectedSystem G fun i j h => f' i j h] :
   -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
   { inv := inv G fun i j h => f' i j h
     mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
-    inv_zero := dif_pos rfl }
+    inv_zero := dif_pos rfl
+    qsmul := qsmulRec _ }
 #align field.direct_limit.field Field.DirectLimit.field
 
 end

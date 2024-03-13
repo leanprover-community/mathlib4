@@ -185,7 +185,7 @@ theorem measurable_compProdFun (κ : kernel α β) [IsSFiniteKernel κ] (η : ke
   exact h_meas.lintegral_kernel_prod_right
 #align probability_theory.kernel.measurable_comp_prod_fun ProbabilityTheory.kernel.measurable_compProdFun
 
-open Classical
+open scoped Classical
 
 /-- Composition-Product of kernels. For s-finite kernels, it satisfies
 `∫⁻ bc, f bc ∂(compProd κ η a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
@@ -558,6 +558,19 @@ instance IsSFiniteKernel.compProd (κ : kernel α β) (η : kernel (α × β) γ
   exact kernel.isSFiniteKernel_sum fun n => kernel.isSFiniteKernel_sum inferInstance
 #align probability_theory.kernel.is_s_finite_kernel.comp_prod ProbabilityTheory.kernel.IsSFiniteKernel.compProd
 
+lemma compProd_add_left (μ κ : kernel α β) (η : kernel (α × β) γ)
+    [IsSFiniteKernel μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+    (μ + κ) ⊗ₖ η = μ ⊗ₖ η + κ ⊗ₖ η := by ext _ _ hs; simp [compProd_apply _ _ _ hs]
+
+lemma compProd_add_right (μ : kernel α β) (κ η : kernel (α × β) γ)
+    [IsSFiniteKernel μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+    μ ⊗ₖ (κ + η) = μ ⊗ₖ κ + μ ⊗ₖ η := by
+  ext a s hs
+  simp only [compProd_apply _ _ _ hs, coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure,
+    OuterMeasure.coe_add]
+  rw [lintegral_add_left]
+  exact measurable_kernel_prod_mk_left' hs a
+
 end CompositionProduct
 
 section MapComap
@@ -736,6 +749,14 @@ lemma prodMkLeft_zero : kernel.prodMkLeft α (0 : kernel β γ) = 0 := by
 @[simp]
 lemma prodMkRight_zero : kernel.prodMkRight α (0 : kernel β γ) = 0 := by
   ext x s _; simp
+
+@[simp]
+lemma prodMkLeft_add (κ η : kernel α β) :
+    prodMkLeft γ (κ + η) = prodMkLeft γ κ + prodMkLeft γ η := by ext; simp
+
+@[simp]
+lemma prodMkRight_add (κ η : kernel α β) :
+    prodMkRight γ (κ + η) = prodMkRight γ κ + prodMkRight γ η := by ext; simp
 
 theorem lintegral_prodMkLeft (κ : kernel α β) (ca : γ × α) (g : β → ℝ≥0∞) :
     ∫⁻ b, g b ∂prodMkLeft γ κ ca = ∫⁻ b, g b ∂κ ca.snd := rfl

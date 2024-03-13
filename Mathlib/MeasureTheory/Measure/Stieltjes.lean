@@ -26,7 +26,8 @@ a Borel measure `f.measure`.
 
 noncomputable section
 
-open Classical Set Filter Function BigOperators ENNReal NNReal Topology MeasureTheory
+open scoped Classical
+open Set Filter Function BigOperators ENNReal NNReal Topology MeasureTheory
 
 open ENNReal (ofReal)
 

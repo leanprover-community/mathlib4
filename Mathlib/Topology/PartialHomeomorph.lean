@@ -1189,7 +1189,7 @@ theorem continuousAt_iff_continuousAt_comp_right {f : Y → Z} {x : Y} (h : x �
 on the right is continuous on the corresponding set. -/
 theorem continuousOn_iff_continuousOn_comp_right {f : Y → Z} {s : Set Y} (h : s ⊆ e.target) :
     ContinuousOn f s ↔ ContinuousOn (f ∘ e) (e.source ∩ e ⁻¹' s) := by
-  simp only [← e.symm_image_eq_source_inter_preimage h, ContinuousOn, ball_image_iff]
+  simp only [← e.symm_image_eq_source_inter_preimage h, ContinuousOn, forall_mem_image]
   refine' forall₂_congr fun x hx => _
   rw [e.continuousWithinAt_iff_continuousWithinAt_comp_right (h hx),
     e.symm_image_eq_source_inter_preimage h, inter_comm, continuousWithinAt_inter]
@@ -1246,7 +1246,7 @@ def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) 
     s ≃ₜ t :=
   have h₁ : MapsTo e s t := mapsTo'.2 ht.subset
   have h₂ : t ⊆ e.target := ht ▸ e.image_source_eq_target ▸ image_subset e hs
-  have h₃ : MapsTo e.symm t s := ht ▸ ball_image_iff.2 fun _x hx =>
+  have h₃ : MapsTo e.symm t s := ht ▸ forall_mem_image.2 fun _x hx =>
       (e.left_inv (hs hx)).symm ▸ hx
   { toFun := MapsTo.restrict e s t h₁
     invFun := MapsTo.restrict e.symm t s h₃
@@ -1276,7 +1276,8 @@ theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
 
 /-- If a partial homeomorphism has source and target equal to univ, then it induces a homeomorphism
 between the whole spaces, expressed in this definition. -/
-@[simps (config := mfld_cfg) apply symm_apply] -- Porting note: todo: add a `PartialEquiv` version
+@[simps (config := mfld_cfg) apply symm_apply]
+-- Porting note (#11215): TODO: add a `PartialEquiv` version
 def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' : e.target = univ) :
     X ≃ₜ Y where
   toFun := e

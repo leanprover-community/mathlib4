@@ -1304,7 +1304,7 @@ def SupportsStmt (S : Finset Λ) : Stmt₁ → Prop
   | halt => True
 #align turing.TM1.supports_stmt Turing.TM1.SupportsStmt
 
-open Classical
+open scoped Classical
 
 /-- The subterm closure of a statement. -/
 noncomputable def stmts₁ : Stmt₁ → Finset Stmt₁
@@ -1528,7 +1528,7 @@ noncomputable def trStmts (S : Finset Λ) : Finset Λ'₁₀ :=
   (TM1.stmts M S) ×ˢ Finset.univ
 #align turing.TM1to0.tr_stmts Turing.TM1to0.trStmts
 
-open Classical
+open scoped Classical
 
 attribute [local simp] TM1.stmts₁_self
 
@@ -1616,18 +1616,16 @@ section
 
 variable {Γ : Type*} [Inhabited Γ]
 
-theorem exists_enc_dec [Fintype Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ),
+theorem exists_enc_dec [Finite Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ),
     enc default = Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
-  letI := Classical.decEq Γ
-  let n := Fintype.card Γ
-  obtain ⟨F⟩ := Fintype.truncEquivFin Γ
+  rcases Finite.exists_equiv_fin Γ with ⟨n, ⟨e⟩⟩
+  letI : DecidableEq Γ := e.decidableEq
   let G : Fin n ↪ Fin n → Bool :=
     ⟨fun a b ↦ a = b, fun a b h ↦
       Bool.of_decide_true <| (congr_fun h b).trans <| Bool.decide_true rfl⟩
-  let H := (F.toEmbedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
-  classical
-    let enc := H.setValue default (Vector.replicate n false)
-    exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
+  let H := (e.toEmbedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
+  let enc := H.setValue default (Vector.replicate n false)
+  exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
 #align turing.TM1to1.exists_enc_dec Turing.TM1to1.exists_enc_dec
 
 variable {Λ : Type*} [Inhabited Λ]
@@ -1888,7 +1886,7 @@ theorem tr_respects {enc₀} :
       apply ReflTransGen.refl
 #align turing.TM1to1.tr_respects Turing.TM1to1.tr_respects
 
-open Classical
+open scoped Classical
 
 variable [Fintype Γ]
 
@@ -2172,7 +2170,7 @@ def SupportsStmt (S : Finset Λ) : Stmt₂ → Prop
   | halt => True
 #align turing.TM2.supports_stmt Turing.TM2.SupportsStmt
 
-open Classical
+open scoped Classical
 
 /-- The set of subtree statements in a statement. -/
 noncomputable def stmts₁ : Stmt₂ → Finset Stmt₂
@@ -2529,7 +2527,7 @@ theorem trNormal_run {k : K} (s : StAct₂ k) (q : Stmt₂) :
   cases s <;> rfl
 #align turing.TM2to1.tr_normal_run Turing.TM2to1.trNormal_run
 
-open Classical
+open scoped Classical
 
 /-- The set of machine states accessible from an initial TM2 statement. -/
 noncomputable def trStmts₁ : Stmt₂ → Finset Λ'₂₁

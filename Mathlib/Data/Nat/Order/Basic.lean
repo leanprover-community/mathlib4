@@ -171,16 +171,12 @@ theorem add_eq_one_iff : m + n = 1 ↔ m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 := by
 #align nat.add_eq_one_iff Nat.add_eq_one_iff
 
 theorem add_eq_two_iff : m + n = 2 ↔ m = 0 ∧ n = 2 ∨ m = 1 ∧ n = 1 ∨ m = 2 ∧ n = 0 := by
-  cases n <;>
-  simp [(succ_ne_zero 1).symm, (show 2 = Nat.succ 1 from rfl),
-    succ_eq_add_one, ← add_assoc, succ_inj', add_eq_one_iff]
+  omega
 #align nat.add_eq_two_iff Nat.add_eq_two_iff
 
 theorem add_eq_three_iff :
     m + n = 3 ↔ m = 0 ∧ n = 3 ∨ m = 1 ∧ n = 2 ∨ m = 2 ∧ n = 1 ∨ m = 3 ∧ n = 0 := by
-  cases n <;>
-  simp [(succ_ne_zero 1).symm, succ_eq_add_one, (show 3 = Nat.succ 2 from rfl),
-    ← add_assoc, succ_inj', add_eq_two_iff]
+  omega
 #align nat.add_eq_three_iff Nat.add_eq_three_iff
 
 theorem le_add_one_iff : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 := by
@@ -457,7 +453,7 @@ theorem dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
 
 theorem add_mod_eq_ite :
     (m + n) % k = if k ≤ m % k + n % k then m % k + n % k - k else m % k + n % k := by
-  cases k; simp [mod_zero]
+  cases k; simp only [zero_eq, mod_zero, _root_.zero_le, ↓reduceIte, tsub_zero]
   rw [Nat.add_mod]
   split_ifs with h
   · rw [Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt]
