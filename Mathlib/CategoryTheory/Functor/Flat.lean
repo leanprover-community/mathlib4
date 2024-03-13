@@ -133,15 +133,7 @@ end RepresentablyFlat
 
 section HasLimit
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
-
-attribute [local instance] hasFiniteLimits_of_hasFiniteLimits_of_size
-
-theorem cofiltered_of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
-  { cone_objs := fun A B => ⟨Limits.prod A B, Limits.prod.fst, Limits.prod.snd, trivial⟩
-    cone_maps := fun _ _ f g => ⟨equalizer f g, equalizer.ι f g, equalizer.condition f g⟩
-    nonempty := ⟨⊤_ C⟩ }
-#align category_theory.cofiltered_of_has_finite_limits CategoryTheory.cofiltered_of_hasFiniteLimits
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [PreservesFiniteLimits F] :
     RepresentablyFlat F :=
@@ -152,7 +144,7 @@ theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [Preserv
       constructor
       -- Porting note: instance was inferred automatically in Lean 3
       infer_instance
-    cofiltered_of_hasFiniteLimits⟩
+    IsCofiltered.of_hasFiniteLimits _⟩
 #align category_theory.flat_of_preserves_finite_limits CategoryTheory.flat_of_preservesFiniteLimits
 
 namespace PreservesFiniteLimitsOfFlat

@@ -478,8 +478,7 @@ theorem predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H
   · calc
       _ ≤ _ := Nat.pred_le _
       _ ≤ _ := H
-  · simp at ha
-    exact le_pred_of_lt (lt_of_le_of_lt ha hb)
+  · exact le_pred_of_lt ((not_lt.mp ha).trans_lt hb)
   · exact H
 #align fin.pred_above_right_monotone Fin.predAbove_right_monotone
 
