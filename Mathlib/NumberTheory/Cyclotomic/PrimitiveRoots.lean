@@ -206,7 +206,7 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   have : IsPrimitiveRoot z k := hx.pow_mul_pow_lcm hy hppos.ne' hqpos.ne'
   haveI := IsPrimitiveRoot.adjoin_isCyclotomicExtension K this
   convert Submodule.finrank_le (Subalgebra.toSubmodule (adjoin K {z}))
-  replace hirr : Irreducible (cyclotomic k K) := hirr
+  rw [show Nat.lcm p q = (k : ℕ) from rfl] at hirr
   simpa using (IsCyclotomicExtension.finrank (Algebra.adjoin K {z}) hirr).symm
 
 variable (n) in
