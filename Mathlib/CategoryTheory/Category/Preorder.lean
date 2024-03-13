@@ -73,7 +73,7 @@ abbrev _root_.LE.le.hom := @homOfLE
 #align has_le.le.hom LE.le.hom
 
 @[simp]
-theorem homOfLE_refl {x : X} (h : x ≤ x): h.hom = 𝟙 x :=
+theorem homOfLE_refl {x : X} (h : x ≤ x) : h.hom = 𝟙 x :=
   rfl
 #align category_theory.hom_of_le_refl CategoryTheory.homOfLE_refl
 
@@ -89,7 +89,10 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 #align category_theory.le_of_hom CategoryTheory.leOfHom
 
+<<<<<<< HEAD
 @[nolint defLemma, inherit_doc leOfHom]
+=======
+>>>>>>> origin/bump/nightly-2024-03-13
 abbrev _root_.Quiver.Hom.le := @leOfHom
 #align quiver.hom.le Quiver.Hom.le
 
