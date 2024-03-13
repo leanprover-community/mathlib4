@@ -576,7 +576,7 @@ theorem SGR_simple (i : B) : cs.SGR (s i) = orthoReflection M (α i) := by
   sorry
 
 theorem SGR_simple_simpleRoot (i i' : B) :
-    cs.SGR (s i) (α i') = α i' - ((2 : ℝ) * cos (Real.pi / M i i')) • α i := by
+    cs.SGR (s i) (α i') = α i' + ((2 : ℝ) * cos (Real.pi / M i i')) • α i := by
   sorry
 
 theorem SGR_simple_simpleRoot_self (i : B) : cs.SGR (s i) (α i) = -α i := by
@@ -718,7 +718,7 @@ theorem nodup_rightInvSeq_iff (ω : List B) :
 If $s_{i_1} \cdots s_{i_\ell}$ is not a reduced expression, then there are $i, j$ with
 $1 \leq j < j' \leq \ell$ such that
 $$s_{i_1} \cdots s_{i_\ell} =
-s_{i_1} \cdots \widehat{s_{i_j}} \cdots \widehat{s_{i_{j'}}} \cdots s_{i_\ell}$$.
+s_{i_1} \cdots \widehat{s_{i_j}} \cdots \widehat{s_{i_{j'}}} \cdots s_{i_\ell}.$$
 -/
 theorem deletion_property (ω : List B) (nrω : ¬ cs.IsReduced ω) :
     ∃ j' < ω.length, ∃ j < j', π ((ω.eraseIdx j').eraseIdx j) = π ω := by
