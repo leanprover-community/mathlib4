@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Algebra.Equiv
 
 /-! # TensorProduct of a monoid algebra
