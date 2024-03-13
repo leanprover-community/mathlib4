@@ -1,7 +1,6 @@
 import Mathlib.Tactic.Eval
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Sort
-import Std.Tactic.GuardExpr
 
 #guard_expr eval% 2^10 =ₛ 1024
 
