@@ -6,7 +6,7 @@ Authors: Eric Wieser
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # The monoidal category structure on R-algebras
@@ -85,7 +85,7 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R
       leftUnitor_eq := fun X => by
         dsimp only [forget₂_module_obj, forget₂_module_map, Iso.refl_symm, Iso.trans_hom,
           Iso.refl_hom, tensorIso_hom]
-        simp only [MonoidalCategory.leftUnitor_conjugation, Category.id_comp, Iso.hom_inv_id]
+        erw [Category.id_comp, MonoidalCategory.tensor_id, Category.id_comp]
         rfl
       rightUnitor_eq := fun X => by
         dsimp

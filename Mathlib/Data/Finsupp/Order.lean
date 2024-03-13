@@ -19,7 +19,7 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
--- porting notes: removed from module documentation because it moved to `data.finsupp.multiset`
+-- Porting note: removed from module documentation because it moved to `data.finsupp.multiset`
 -- TODO: move to `Data.Finsupp.Multiset` when that is ported
 -- * `Finsupp.orderIsoMultiset`: The order isomorphism between `ℕ`-valued finitely supported
 --   functions and multisets.
@@ -94,7 +94,7 @@ instance partialorder [PartialOrder α] : PartialOrder (ι →₀ α) :=
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (ι →₀ α) :=
   { Finsupp.partialorder with
-    inf := zipWith (· ⊓ ·) inf_idem
+    inf := zipWith (· ⊓ ·) (inf_idem _)
     inf_le_left := fun _f _g _i => inf_le_left
     inf_le_right := fun _f _g _i => inf_le_right
     le_inf := fun _f _g _i h1 h2 s => le_inf (h1 s) (h2 s) }
@@ -106,7 +106,7 @@ theorem inf_apply [SemilatticeInf α] {i : ι} {f g : ι →₀ α} : (f ⊓ g) 
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (ι →₀ α) :=
   { Finsupp.partialorder with
-    sup := zipWith (· ⊔ ·) sup_idem
+    sup := zipWith (· ⊔ ·) (sup_idem _)
     le_sup_left := fun _f _g _i => le_sup_left
     le_sup_right := fun _f _g _i => le_sup_right
     sup_le := fun _f _g _h hf hg i => sup_le (hf i) (hg i) }
@@ -138,7 +138,7 @@ end Zero
 
 
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (ι →₀ α) :=
-  { Finsupp.addCommMonoid, Finsupp.partialorder with
+  { Finsupp.instAddCommMonoid, Finsupp.partialorder with
     add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
 
 instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :

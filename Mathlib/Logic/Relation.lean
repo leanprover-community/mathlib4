@@ -201,7 +201,7 @@ theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f 
     (ha : Acc (InvImage rβ f) a) : Acc rβ (f a) :=
   ha.of_fibration f fun a _ h ↦
     let ⟨a', he⟩ := dc h
-    -- porting note: Lean 3 did not need the motive
+    -- Porting note: Lean 3 did not need the motive
     ⟨a', he.substr (p := λ x => rβ x (f a)) h, he⟩
 #align acc.of_downward_closed Acc.of_downward_closed
 
@@ -379,7 +379,7 @@ theorem to_reflTransGen {a b} (h : TransGen r a b) : ReflTransGen r a b := by
   induction' h with b h b c _ bc ab
   exact ReflTransGen.single h
   exact ReflTransGen.tail ab bc
--- porting note: in Lean 3 this function was called `to_refl` which seems wrong.
+-- Porting note: in Lean 3 this function was called `to_refl` which seems wrong.
 #align relation.trans_gen.to_refl Relation.TransGen.to_reflTransGen
 
 theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen r a c := by

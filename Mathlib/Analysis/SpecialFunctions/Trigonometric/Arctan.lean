@@ -81,7 +81,8 @@ theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
       mul_le_mul_right (half_pos pi_pos)]
     have hr_le : r ≤ -1 := by rwa [Int.lt_iff_add_one_le, ← le_neg_iff_add_nonpos_right] at h
     rw [← le_sub_iff_add_le, mul_comm, ← le_div_iff]
-    · norm_num; rw [← Int.cast_one, ← Int.cast_neg]; norm_cast
+    · set_option tactic.skipAssignedInstances false in norm_num
+      rw [← Int.cast_one, ← Int.cast_neg]; norm_cast
     · exact zero_lt_two
 #align real.continuous_on_tan_Ioo Real.continuousOn_tan_Ioo
 
@@ -167,6 +168,21 @@ theorem arcsin_eq_arctan {x : ℝ} (h : x ∈ Ioo (-(1 : ℝ)) 1) :
 @[simp]
 theorem arctan_zero : arctan 0 = 0 := by simp [arctan_eq_arcsin]
 #align real.arctan_zero Real.arctan_zero
+
+@[mono]
+theorem arctan_strictMono : StrictMono arctan := tanOrderIso.symm.strictMono
+
+theorem arctan_injective : arctan.Injective := arctan_strictMono.injective
+
+@[simp]
+theorem arctan_eq_zero_iff {x : ℝ} : arctan x = 0 ↔ x = 0 :=
+  .trans (by rw [arctan_zero]) arctan_injective.eq_iff
+
+theorem tendsto_arctan_atTop : Tendsto arctan atTop (𝓝[<] (π / 2)) :=
+  tendsto_Ioo_atTop.mp tanOrderIso.symm.tendsto_atTop
+
+theorem tendsto_arctan_atBot : Tendsto arctan atBot (𝓝[>] (-(π / 2))) :=
+  tendsto_Ioo_atBot.mp tanOrderIso.symm.tendsto_atBot
 
 theorem arctan_eq_of_tan_eq {x y : ℝ} (h : tan x = y) (hx : x ∈ Ioo (-(π / 2)) (π / 2)) :
     arctan y = x :=

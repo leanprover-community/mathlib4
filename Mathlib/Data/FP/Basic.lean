@@ -13,7 +13,7 @@ import Mathlib.Tactic.Ring.RingNF
 # Implementation of floating-point numbers (experimental).
 -/
 
--- Porting note: TODO add docs and remove `@[nolint docBlame]`
+-- Porting note (#11215): TODO add docs and remove `@[nolint docBlame]`
 
 @[nolint docBlame]
 def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ
