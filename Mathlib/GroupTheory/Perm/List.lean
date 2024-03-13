@@ -280,7 +280,7 @@ theorem formPerm_rotate (l : List α) (h : Nodup l) (n : ℕ) :
     formPerm (l.rotate n) = formPerm l := by
   induction' n with n hn
   · simp
-  · rw [Nat.succ_eq_add_one, ← rotate_rotate, formPerm_rotate_one, hn]
+  · rw [← rotate_rotate, formPerm_rotate_one, hn]
     rwa [IsRotated.nodup_iff]
     exact IsRotated.forall l n
 #align list.form_perm_rotate List.formPerm_rotate
@@ -364,14 +364,12 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
     · refine' Eq.trans _ hx'
       congr
       simpa using hn
-    · have : k.succ = (k + 1) % (x' :: y' :: l').length := by
-        rw [← Nat.succ_eq_add_one, Nat.mod_eq_of_lt hk']
-      simp_rw [this]
-      rw [← formPerm_apply_nthLe _ hd' k (k.lt_succ_self.trans hk'), ←
-        IH (k.lt_succ_self.trans hk), ← h, formPerm_apply_nthLe _ hd]
+    · conv => congr <;> · arg 2; rw [← Nat.mod_eq_of_lt hk']
+      rw [← formPerm_apply_nthLe _ hd' k (k.lt_succ_self.trans hk'),
+        ← IH (k.lt_succ_self.trans hk), ← h, formPerm_apply_nthLe _ hd]
       congr 1
-      have h1 : 1 = 1 % (x' :: y' :: l').length := by simp
-      rw [hl, Nat.mod_eq_of_lt hk', h1, ← Nat.add_mod, Nat.succ_add, Nat.succ_eq_add_one]
+      rw [hl, Nat.mod_eq_of_lt hk', add_right_comm]
+      apply Nat.add_mod
 #align list.form_perm_ext_iff List.formPerm_ext_iff
 
 set_option linter.deprecated false in
@@ -385,7 +383,7 @@ theorem formPerm_apply_mem_eq_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
     rcases (Nat.le_of_lt_succ hk).eq_or_lt with hk' | hk'
     · simp [← hk', Nat.succ_le_succ_iff, eq_comm]
     · simpa [Nat.mod_eq_of_lt (Nat.succ_lt_succ hk'), Nat.succ_lt_succ_iff] using
-        k.zero_le.trans_lt hk'
+        (k.zero_le.trans_lt hk').ne.symm
 #align list.form_perm_apply_mem_eq_self_iff List.formPerm_apply_mem_eq_self_iff
 
 theorem formPerm_apply_mem_ne_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :

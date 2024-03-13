@@ -956,7 +956,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
       exact Or.inl (a.val_eq_zero.1 he)
     cases m
     · right
-      rwa [show Nat.succ Nat.zero = 1 from rfl, mul_one] at he
+      rwa [show 0 + 1 = 1 from rfl, mul_one] at he
     refine' (a.val_lt.not_le <| Nat.le_of_mul_le_mul_left _ zero_lt_two).elim
     rw [he, mul_comm]
     apply Nat.mul_le_mul_left

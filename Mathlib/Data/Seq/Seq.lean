@@ -842,7 +842,7 @@ theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
 @[simp]
 theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
   induction' n with n IH generalizing s; · rfl
-  rw [Nat.succ_eq_add_one, ← get?_tail, ← dropn_tail]; apply IH
+  rw [← get?_tail, ← dropn_tail]; apply IH
 #align stream.seq.head_dropn Stream'.Seq.head_dropn
 
 theorem mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈ map f s

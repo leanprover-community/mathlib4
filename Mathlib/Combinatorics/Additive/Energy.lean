@@ -74,8 +74,8 @@ theorem le_multiplicativeEnergy : s.card * t.card ≤ multiplicativeEnergy s t :
   refine'
     card_le_card_of_inj_on (@fun x => ((x.1, x.1), x.2, x.2)) (by
     -- Porting note: changed this from a `simp` proof without `only` because of a timeout
-      simp only [ ← and_imp, mem_product, and_imp, Prod.forall, mem_filter,
-        and_self, and_true, imp_self, implies_true]) fun a _ b _ => _
+      simp only [← and_imp, mem_product, Prod.forall, mem_filter, and_self, and_true, imp_self,
+        implies_true]) fun a _ b _ => _
   simp only [Prod.mk.inj_iff, and_self_iff, and_imp]
   exact Prod.ext
 #align finset.le_multiplicative_energy Finset.le_multiplicativeEnergy

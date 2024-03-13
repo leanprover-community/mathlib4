@@ -28,7 +28,6 @@ When the underlying category is abelian:
   is injective, we can apply `Injective.d` repeatedly to obtain an injective resolution of `X`.
 -/
 
-
 noncomputable section
 
 open CategoryTheory Category Limits
@@ -322,14 +321,15 @@ lemma ofCocomplex_d_0_1 :
     (ofCocomplex Z).d 0 1 = d (Injective.ι Z) := by
   simp [ofCocomplex]
 
+--Adaptation note: nightly-2024-03-11. This takes takes forever now
 lemma ofCocomplex_exactAt_succ (n : ℕ) :
     (ofCocomplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ n (n + 1) (n + 1 + 1) (by simp) (by simp)]
   cases n
   all_goals
-    dsimp [ofCocomplex, HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor',
-      CochainComplex.mk', CochainComplex.mk]
-    simp only [CochainComplex.of_d]
+    dsimp only [ofCocomplex, CochainComplex.mk', CochainComplex.mk, CochainComplex.of,
+      HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor', eqToHom_refl, dite_eq_ite]
+    simp only [Nat.reduceAdd, zero_add, ↓reduceIte, comp_id]
     apply exact_f_d
 
 instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := by

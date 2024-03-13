@@ -55,7 +55,6 @@ theorem multinomial_spec : (∏ i in s, (f i)!) * multinomial s f = (∑ i in s,
 @[simp]
 theorem multinomial_nil : multinomial ∅ f = 1 := by
   dsimp [multinomial]
-  rfl
 #align nat.multinomial_nil Nat.multinomial_nil
 
 variable {s f}

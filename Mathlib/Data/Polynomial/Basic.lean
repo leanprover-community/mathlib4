@@ -646,7 +646,7 @@ theorem monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) :
     monomial n r * X ^ k = monomial (n + k) r := by
   induction' k with k ih
   · simp
-  · simp [ih, pow_succ', ← mul_assoc, add_assoc]
+  · simp [ih, pow_succ', ← mul_assoc, add_assoc, Nat.succ_eq_add_one]
 #align polynomial.monomial_mul_X_pow Polynomial.monomial_mul_X_pow
 
 @[simp]

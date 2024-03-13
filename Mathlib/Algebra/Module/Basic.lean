@@ -364,8 +364,8 @@ variable (R)
 /-- `nsmul` is equal to any other module structure via a cast. -/
 theorem nsmul_eq_smul_cast (n : ℕ) (b : M) : n • b = (n : R) • b := by
   induction' n with n ih
-  · rw [Nat.zero_eq, Nat.cast_zero, zero_smul, zero_smul]
-  · rw [Nat.succ_eq_add_one, Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
+  · rw [Nat.cast_zero, zero_smul, zero_smul]
+  · rw [Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
 #align nsmul_eq_smul_cast nsmul_eq_smul_cast
 
 end

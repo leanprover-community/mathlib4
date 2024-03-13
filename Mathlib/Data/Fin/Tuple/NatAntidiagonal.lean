@@ -74,7 +74,7 @@ theorem antidiagonalTuple_zero_zero : antidiagonalTuple 0 0 = [![]] :=
 #align list.nat.antidiagonal_tuple_zero_zero List.Nat.antidiagonalTuple_zero_zero
 
 @[simp]
-theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = [] :=
+theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 (n + 1) = [] :=
   rfl
 #align list.nat.antidiagonal_tuple_zero_succ List.Nat.antidiagonalTuple_zero_succ
 

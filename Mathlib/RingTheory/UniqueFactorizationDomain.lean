@@ -1830,8 +1830,8 @@ theorem pow_factors [Nontrivial α] {a : Associates α} {k : ℕ} :
 theorem count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0) {p : Associates α}
     (hp : Irreducible p) (k : ℕ) : count p (a ^ k).factors = k * count p a.factors := by
   induction' k with n h
-  · rw [pow_zero, factors_one, Nat.zero_eq, zero_mul, count_zero hp]
-  · rw [pow_succ, count_mul ha (pow_ne_zero _ ha) hp, h, Nat.succ_eq_add_one]
+  · rw [pow_zero, factors_one, zero_mul, count_zero hp]
+  · rw [pow_succ, count_mul ha (pow_ne_zero _ ha) hp, h]
     ring
 #align associates.count_pow Associates.count_pow
 
