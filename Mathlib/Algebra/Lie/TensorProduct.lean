@@ -93,7 +93,7 @@ def lift : (M →ₗ[R] N →ₗ[R] P) ≃ₗ⁅R,L⁆ M ⊗[R] N →ₗ[R] P :=
   { TensorProduct.lift.equiv R M N P with
     map_lie' := fun {x f} => by
       ext m n
-      simp
+      simp?
       abel }
 #align tensor_product.lie_module.lift TensorProduct.LieModule.lift
 
