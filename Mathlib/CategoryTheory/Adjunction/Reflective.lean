@@ -97,7 +97,6 @@ theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
     refine @epi_of_epi _ _ _ _ _ (retraction (η.app A)) (η.app A) ?_
     rw [show retraction _ ≫ η.app A = _ from η.naturality (retraction (η.app A))]
     apply epi_comp (η.app (i.obj ((leftAdjoint i).obj A)))
-  skip
   haveI := isIso_of_epi_of_isSplitMono (η.app A)
   exact mem_essImage_of_unit_isIso A
 #align category_theory.mem_ess_image_of_unit_is_split_mono CategoryTheory.mem_essImage_of_unit_isSplitMono
