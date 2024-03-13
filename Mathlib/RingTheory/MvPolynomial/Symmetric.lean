@@ -487,7 +487,7 @@ theorem rename_msymm {n : ℕ} (μ : n.Partition) (e : σ ≃ τ) :
   rw [← Multiset.prod_hom, Multiset.map_map]
   congr
   simp only [Sym.equivCongr_apply, Equiv.coe_fn_mk, Sym.coe_map, Multiset.map_map,
-    Function.comp_apply, rename_X]
+    Function.comp_apply, rename_X, f]
 
 theorem msymm_isSymmetric {n : ℕ} (μ : n.Partition) : IsSymmetric (msymm σ R μ) :=
  rename_msymm _ _ μ
