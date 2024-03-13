@@ -890,6 +890,7 @@ instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
           rcases a with (⟨a | a⟩ | a) <;> rcases b with (⟨b | b⟩ | b) <;>
             simp only [sumAssoc_apply_inl_inl, sumAssoc_apply_inl_inr, sumAssoc_apply_inr,
               Sum.lex_inl_inl, Sum.lex_inr_inr, Sum.Lex.sep, Sum.lex_inr_inl]⟩⟩
+  nsmul := nsmulRec
 
 @[simp]
 theorem card_add (o₁ o₂ : Ordinal) : card (o₁ + o₂) = card o₁ + card o₂ :=
@@ -1054,9 +1055,7 @@ theorem succ_zero : succ (0 : Ordinal) = 1 :=
 
 -- Porting note: Proof used to be rfl
 @[simp]
-theorem succ_one : succ (1 : Ordinal) = 2 := by
-  unfold instOfNatAtLeastTwo OfNat.ofNat
-  simpa using by rfl
+theorem succ_one : succ (1 : Ordinal) = 2 := by congr; simp only [Nat.unaryCast, zero_add]
 #align ordinal.succ_one Ordinal.succ_one
 
 theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=

@@ -142,11 +142,14 @@ theorem Fintype.card_pi {β : α → Type*} [DecidableEq α] [Fintype α] [∀ a
 #align fintype.card_pi Fintype.card_pi
 
 -- FIXME ouch, this should be in the main file.
-@[simp]
 theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
     Fintype.card (α → β) = Fintype.card β ^ Fintype.card α := by
   rw [Fintype.card_pi, Finset.prod_const]; rfl
 #align fintype.card_fun Fintype.card_fun
+
+@[simp]
+theorem Fintype.card_exp_univ_card_eq [Fintype α] [Fintype β] :
+    card β ^ univ.card (α := α) = card β ^ card α := rfl
 
 @[simp]
 theorem card_vector [Fintype α] (n : ℕ) : Fintype.card (Vector α n) = Fintype.card α ^ n := by

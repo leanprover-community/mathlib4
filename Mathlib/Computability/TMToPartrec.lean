@@ -570,7 +570,7 @@ theorem stepNormal_then (c) (k k' : Cont) (v) :
   induction c generalizing k v with simp only [Cont.then, stepNormal, *]
   | cons c c' ih _ => rw [← ih, Cont.then]
   | comp c c' _ ih' => rw [← ih', Cont.then]
-  | case => cases v.headI <;> simp only [Nat.rec]
+  | case => cases v.headI <;> simp only [Nat.rec_zero]
   | fix c ih => rw [← ih, Cont.then]
   | _ => simp only [Cfg.then]
 #align turing.to_partrec.step_normal_then Turing.ToPartrec.stepNormal_then
@@ -618,7 +618,7 @@ theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' 
   | case f g IHf IHg =>
     rw [stepNormal]
     simp only []
-    cases v.headI <;> simp only [] <;> [apply IHf; apply IHg]
+    cases v.headI <;> [apply IHf; apply IHg]
   | fix f IHf => apply IHf
   | _ => exact ⟨_, _, rfl⟩
 #align turing.to_partrec.step_normal.is_ret Turing.ToPartrec.stepNormal.is_ret
@@ -711,7 +711,7 @@ theorem code_is_ok (c) : Code.Ok c := by
     rw [stepRet, IHf]
   | case f g IHf IHg =>
     simp only [Code.eval]
-    cases v.headI <;> simp only [Code.eval] <;> [apply IHf; apply IHg]
+    cases v.headI <;> simp only [Nat.rec_zero, Part.bind_eq_bind] <;> [apply IHf; apply IHg]
   | fix f IHf => rw [cont_eval_fix IHf]
   | _ => simp only [Code.eval, pure_bind]
 #align turing.to_partrec.code_is_ok Turing.ToPartrec.code_is_ok

@@ -179,7 +179,7 @@ def matchTypeOf (matchTy : Matcher) : Matcher := fun s => do
 
 /-- Matches raw nat lits. -/
 def natLitMatcher (n : Nat) : Matcher := fun s => do
-  guard <| (← getExpr).natLit? == n
+  guard <| (← getExpr).rawNatLit? == n
   return s
 
 /-- Matches applications. -/

@@ -228,7 +228,9 @@ elab tk:"compile_inductive% " i:ident : command => Command.liftTermElabM do
 
 end Mathlib.Util
 
-compile_inductive% Nat
+-- `Nat.rec` already has a `@[csimp]` lemma in Lean.
+compile_def% Nat.recOn
+compile_def% Nat.brecOn
 compile_inductive% List
 compile_inductive% PUnit
 compile_inductive% PEmpty
