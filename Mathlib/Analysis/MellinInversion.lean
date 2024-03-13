@@ -98,12 +98,10 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
     norm_cast at hf
   replace hFf : Integrable (𝓕 g) := by
     have h2π : 2 * π ≠ 0 := by norm_num; exact pi_ne_zero
-    simpa? [VerticalIntegrable, mellin_eq_fourierIntegral, mul_div_cancel _ h2π] using
-        hFf.comp_mul_right' h2π
-      says simpa only [ofReal_mul, ofReal_ofNat, mellin_eq_fourierIntegral, add_re,
-        ofReal_re, mul_re, re_ofNat, im_ofNat, ofReal_im, mul_zero, sub_zero, mul_im, zero_mul,
-        add_zero, I_re, I_im, mul_one, sub_self, add_im, zero_add, mul_div_cancel _ h2π] using
-        hFf.comp_mul_right' h2π
+    have : Integrable (𝓕 (fun u ↦ rexp (-(σ * u)) • f (rexp (-u)))) := by
+      simpa [mellin_eq_fourierIntegral, mul_div_cancel _ h2π] using hFf.comp_mul_right' h2π
+    simp_rw [neg_mul_eq_neg_mul] at this
+    exact this
   replace hfx : ContinuousAt g (-Real.log x) := by
     refine ContinuousAt.smul (by fun_prop) (ContinuousAt.comp ?_ (by fun_prop))
     simpa [Real.exp_log hx] using hfx
