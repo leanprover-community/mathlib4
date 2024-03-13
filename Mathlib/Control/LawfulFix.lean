@@ -24,7 +24,7 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
 
 universe u v
 
-open Classical
+open scoped Classical
 
 variable {α : Type*} {β : α → Type*}
 
@@ -282,13 +282,13 @@ theorem uncurry_curry_continuous :
 
 end Curry
 
-instance Pi.lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
+instance lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
     LawfulFix ((x y : _) → γ x y) where
   fix_eq {_f} hc := by
     dsimp [fix]
     conv =>
       lhs
       erw [LawfulFix.fix_eq (uncurry_curry_continuous hc)]
-#align pi.pi.lawful_fix' Pi.Pi.lawfulFix'
+#align pi.pi.lawful_fix' Pi.lawfulFix'
 
 end Pi

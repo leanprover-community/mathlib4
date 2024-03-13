@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Std.Data.MLList.Basic
 import Mathlib.Control.Basic
-import Mathlib.Tactic.RunCmd
 
 @[reducible] def S (α : Type) := StateT (List Nat) Option α
 def append (x : Nat) : S Unit :=

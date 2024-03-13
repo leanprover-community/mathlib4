@@ -121,7 +121,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
   have fpow :
     ∀ {c x : ℝ} (_ : 0 < c) (u : ℝ) (_ : 0 < x), exp (-x) * x ^ (u - 1) = f c u x ^ (1 / c) := by
     intro c x hc u hx
-    dsimp only
+    dsimp only [f]
     rw [mul_rpow (exp_pos _).le ((rpow_nonneg hx.le) _), ← exp_mul, ← rpow_mul hx.le]
     congr 2 <;> · field_simp [hc.ne']; ring
   -- show `f c u` is in `ℒp` for `p = 1/c`:
@@ -285,8 +285,7 @@ theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
   · rw [f_nat_eq @hf_feq, Nat.add_sub_cancel, Nat.cast_add_one, add_sub_cancel]
     · ring
     · exact Nat.succ_ne_zero _
-  · apply Nat.succ_le_succ
-    linarith [Nat.pos_of_ne_zero hn]
+  · omega
 #align real.bohr_mollerup.ge_log_gamma_seq Real.BohrMollerup.ge_logGammaSeq
 
 theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)

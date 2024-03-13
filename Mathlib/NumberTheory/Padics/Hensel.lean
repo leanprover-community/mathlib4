@@ -36,7 +36,8 @@ p-adic, p adic, padic, p-adic integer
 
 noncomputable section
 
-open Classical Topology
+open scoped Classical
+open Topology
 
 -- We begin with some general lemmas that are used below in the computation.
 theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] (F : Polynomial ℤ_[p]) (x y : ℤ_[p]) :
@@ -224,7 +225,7 @@ private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n
   let z' : ℤ_[p] := z - z1
   ⟨z',
     have hdist : ‖F.derivative.eval z' - F.derivative.eval z‖ < ‖F.derivative.eval a‖ :=
-      calc_deriv_dist hnorm rfl (by simp [hz.1]) hz
+      calc_deriv_dist hnorm rfl (by simp [z1, hz.1]) hz
     have hfeq : ‖F.derivative.eval z'‖ = ‖F.derivative.eval a‖ := by
       rw [sub_eq_add_neg, ← hz.1, ← norm_neg (F.derivative.eval z)] at hdist
       have := PadicInt.norm_eq_of_norm_add_lt_right hdist
@@ -417,7 +418,7 @@ private theorem soln_unique (z : ℤ_[p]) (hev : F.eval z = 0)
   have : (F.derivative.eval soln + q * h) * h = 0 :=
     Eq.symm
       (calc
-        0 = F.eval (soln + h) := by simp [hev]
+        0 = F.eval (soln + h) := by simp [h, hev]
         _ = F.derivative.eval soln * h + q * h ^ 2 := by rw [hq, eval_soln, zero_add]
         _ = (F.derivative.eval soln + q * h) * h := by rw [sq, right_distrib, mul_assoc]
         )

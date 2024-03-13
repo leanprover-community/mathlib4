@@ -238,6 +238,8 @@ theorem uniformEmbedding_equivRealProd : UniformEmbedding equivRealProd :=
 instance : CompleteSpace ℂ :=
   (completeSpace_congr uniformEmbedding_equivRealProd).mpr inferInstance
 
+instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpace
+
 /-- The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
 def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
@@ -399,6 +401,10 @@ theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
 theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
   ofRealLI.continuous
 #align complex.continuous_of_real Complex.continuous_ofReal
+
+lemma _root_.Filter.Tendsto.ofReal {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ}
+    (hf : Tendsto f l (𝓝 x)) : Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) :=
+  (continuous_ofReal.tendsto _).comp hf
 
 /-- The only continuous ring homomorphism from `ℝ` to `ℂ` is the identity. -/
 theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = Complex.ofReal := by
@@ -724,8 +730,8 @@ lemma nat_cast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
   simpa [pos_iff_ne_zero] using @ofReal_mem_slitPlane n
 
 @[simp]
-lemma ofNat_mem_slitPlane (n : ℕ) [h : n.AtLeastTwo] : no_index (OfNat.ofNat n) ∈ slitPlane :=
-  nat_cast_mem_slitPlane.2 h.ne_zero
+lemma ofNat_mem_slitPlane (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n) ∈ slitPlane :=
+  nat_cast_mem_slitPlane.2 (NeZero.ne n)
 
 lemma mem_slitPlane_iff_not_le_zero {z : ℂ} : z ∈ slitPlane ↔ ¬z ≤ 0 :=
   mem_slitPlane_iff.trans not_le_zero_iff.symm

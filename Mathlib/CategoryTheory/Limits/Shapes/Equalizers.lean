@@ -436,7 +436,7 @@ theorem Cofork.IsColimit.π_desc {s t : Cofork f g} (hs : IsColimit s) : s.π �
   hs.fac _ _
 #align category_theory.limits.cofork.is_colimit.π_desc CategoryTheory.Limits.Cofork.IsColimit.π_desc
 
--- porting note: `Fork.IsLimit.lift` was added in order to ease the port
+-- Porting note: `Fork.IsLimit.lift` was added in order to ease the port
 /-- If `s` is a limit fork over `f` and `g`, then a morphism `k : W ⟶ X` satisfying
     `k ≫ f = k ≫ g` induces a morphism `l : W ⟶ s.pt` such that `l ≫ fork.ι s = k`. -/
 def Fork.IsLimit.lift {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
@@ -455,7 +455,7 @@ def Fork.IsLimit.lift' {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h 
   ⟨Fork.IsLimit.lift hs k h, by simp⟩
 #align category_theory.limits.fork.is_limit.lift' CategoryTheory.Limits.Fork.IsLimit.lift'
 
--- porting note: `Cofork.IsColimit.desc` was added in order to ease the port
+-- Porting note: `Cofork.IsColimit.desc` was added in order to ease the port
 /-- If `s` is a colimit cofork over `f` and `g`, then a morphism `k : Y ⟶ W` satisfying
     `f ≫ k = g ≫ k` induces a morphism `l : s.pt ⟶ W` such that `cofork.π s ≫ l = k`. -/
 def Cofork.IsColimit.desc {s : Cofork f g} (hs : IsColimit s) {W : C} (k : Y ⟶ W)

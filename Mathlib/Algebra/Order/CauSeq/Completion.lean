@@ -198,7 +198,7 @@ instance Cauchy.commRing : CommRing (Cauchy abv) :=
 
 end
 
-open Classical
+open scoped Classical
 
 section
 
@@ -263,11 +263,11 @@ protected theorem mul_inv_cancel {x : (Cauchy abv)} : x ≠ 0 → x * x⁻¹ = 1
 #align cau_seq.completion.mul_inv_cancel CauSeq.Completion.mul_inv_cancel
 
 theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
-  congr_arg mk <| by split_ifs with h <;> [simp [const_limZero.1 h]; rfl]
+  congr_arg mk <| by split_ifs with h <;>
+    [simp only [const_limZero.1 h, GroupWithZero.inv_zero, const_zero]; rfl]
 #align cau_seq.completion.of_rat_inv CauSeq.Completion.ofRat_inv
 
-/- porting note: This takes a long time to compile.
-   Also needed to rewrite the proof of ratCast_mk due to simp issues -/
+/- porting note: needed to rewrite the proof of ratCast_mk due to simp issues -/
 /-- The Cauchy completion forms a division ring. -/
 noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
@@ -275,6 +275,9 @@ noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   mul_inv_cancel x := CauSeq.Completion.mul_inv_cancel
   ratCast q := ofRat q
   ratCast_mk n d hd hnd := by rw [← ofRat_ratCast, Rat.cast_mk', ofRat_mul, ofRat_inv]; rfl
+  qsmul := (· • ·)
+  qsmul_eq_mul' q x := Quotient.inductionOn x fun f =>
+    congr_arg mk <| ext fun i => DivisionRing.qsmul_eq_mul' _ _
 
 theorem ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) := by
   simp only [div_eq_mul_inv, ofRat_inv, ofRat_mul]
