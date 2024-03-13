@@ -433,32 +433,6 @@ lemma measurableSet_mutuallySingular (κ ν : kernel α γ) [IsFiniteKernel κ] 
     (measurableSet_singleton 0)
 
 -- ok
-lemma set_lintegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α → ℝ≥0∞}
-    (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g (μ.withDensity f))
-    {s : Set α} (hs : MeasurableSet s) :
-    ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ := by
-  rw [restrict_withDensity hs, lintegral_withDensity_eq_lintegral_mul₀' hf.restrict]
-  rw [← restrict_withDensity hs]
-  exact hg.restrict
-
--- ok
-lemma set_lintegral_withDensity_eq_lintegral_mul₀ {μ : Measure α} {f : α → ℝ≥0∞}
-    (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g μ)
-    {s : Set α} (hs : MeasurableSet s) :
-    ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ :=
-  set_lintegral_withDensity_eq_lintegral_mul₀' hf
-    (hg.mono' (MeasureTheory.withDensity_absolutelyContinuous μ f)) hs
-
--- ok
-lemma set_lintegral_rnDeriv_mul {μ ν : Measure α} [Measure.HaveLebesgueDecomposition μ ν]
-    (hμν : μ ≪ ν) {f : α → ℝ≥0∞} (hf : AEMeasurable f ν) {s : Set α} (hs : MeasurableSet s) :
-    ∫⁻ x in s, μ.rnDeriv ν x * f x ∂ν = ∫⁻ x in s, f x ∂μ := by
-  nth_rw 2 [← Measure.withDensity_rnDeriv_eq μ ν hμν]
-  rw [set_lintegral_withDensity_eq_lintegral_mul₀ (Measure.measurable_rnDeriv μ ν).aemeasurable hf
-    hs]
-  rfl
-
--- ok
 lemma Measure.absolutelyContinuous_compProd_left {μ ν : Measure α} [SFinite μ] [SFinite ν]
     (hμν : μ ≪ ν) (κ : kernel α γ) [IsSFiniteKernel κ]  :
     μ ⊗ₘ κ ≪ ν ⊗ₘ κ := by
@@ -540,42 +514,6 @@ lemma Measure.fst_map_compProd (μ : Measure α) [SFinite μ] (κ : kernel α γ
   rw [lintegral_indicator _ hs]
   simp
 
--- ok
-lemma ae_compProd_of_ae_ae {β : Type*} {_ : MeasurableSpace β}
-    {κ : kernel α β} {η : kernel (α × β) γ} [IsSFiniteKernel κ] [IsSFiniteKernel η] {a : α}
-    {p : β × γ → Prop} (hp : MeasurableSet {x | p x}) (h : ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c)) :
-    ∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc := by
-  simp_rw [ae_iff] at h ⊢
-  rw [compProd_null]
-  · exact h
-  · exact hp.compl
-
--- ok
-lemma ae_compProd_iff {β : Type*} {_ : MeasurableSpace β}
-    {κ : kernel α β} {η : kernel (α × β) γ} [IsSFiniteKernel κ] [IsSFiniteKernel η] {a : α}
-    {p : β × γ → Prop} (hp : MeasurableSet {x | p x}) :
-    (∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc) ↔ ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c) :=
-  ⟨fun h ↦ ae_ae_of_ae_compProd h, fun h ↦ ae_compProd_of_ae_ae hp h⟩
-
--- ok
-lemma Measure.ae_compProd_of_ae_ae {μ : Measure α}
-    [SFinite μ] [IsSFiniteKernel κ] {p : α × γ → Prop} (hp : MeasurableSet {x | p x})
-    (h : ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b)) :
-    ∀ᵐ x ∂(μ ⊗ₘ κ), p x :=
-  kernel.ae_compProd_of_ae_ae hp h
-
--- ok
-lemma Measure.ae_ae_of_ae_compProd {μ : Measure α} [SFinite μ] [IsSFiniteKernel κ]
-    {p : α × γ → Prop} (h : ∀ᵐ x ∂(μ ⊗ₘ κ), p x) :
-    ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b) :=
-  kernel.ae_ae_of_ae_compProd h
-
--- ok
-lemma Measure.ae_compProd_iff {μ : Measure α}
-    [SFinite μ] [IsSFiniteKernel κ] {p : α × γ → Prop} (hp : MeasurableSet {x | p x}) :
-    (∀ᵐ x ∂(μ ⊗ₘ κ), p x) ↔ ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b) :=
-  kernel.ae_compProd_iff hp
-
 lemma ae_compProd_of_ae_fst {μ : Measure α} (κ : kernel α γ)
     [SFinite μ] [IsSFiniteKernel κ] {p : α → Prop} (hp : MeasurableSet {x | p x})
     (h : ∀ᵐ a ∂μ, p a) :
@@ -601,18 +539,6 @@ lemma ae_eq_compProd_of_forall_ae_eq {β : Type*} {_ : MeasurableSpace β} [AddG
     (fun p ↦ f p.1 p.2) =ᵐ[μ ⊗ₘ κ] (fun p ↦ g p.1 p.2) :=
   ae_compProd_of_ae_ae (measurableSet_eq_fun hf hg)
     (ae_of_all _ (fun a ↦ measure_mono_null (fun x ↦ by simp) (h a)))
-
--- ok
-lemma measurableSet_eq_fun' {β : Type*} [CanonicallyOrderedAddCommMonoid β] [Sub β] [OrderedSub β]
-    {_ : MeasurableSpace β} [MeasurableSub₂ β] [MeasurableSingletonClass β]
-    {f g : α → β} (hf : Measurable f) (hg : Measurable g) :
-    MeasurableSet {x | f x = g x} := by
-  have : {a | f a = g a} = {a | (f - g) a = 0} ∩ {a | (g - f) a = 0} := by
-    ext a
-    simp only [mem_setOf_eq, Pi.sub_apply, tsub_eq_zero_iff_le, mem_inter_iff]
-    exact ⟨fun h ↦ ⟨h.le, h.symm.le⟩, fun h ↦ le_antisymm h.1 h.2⟩
-  rw [this]
-  exact ((hf.sub hg) (measurableSet_singleton 0)).inter ((hg.sub hf) (measurableSet_singleton 0))
 
 lemma ENNReal.ae_eq_compProd_of_ae_eq_fst (μ : Measure α) (κ : kernel α γ)
     [SFinite μ] [IsSFiniteKernel κ] {f g : α → ℝ≥0∞}
