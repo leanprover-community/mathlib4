@@ -810,7 +810,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       refine' ⟨⟨i - 1, _⟩, _, _⟩
       · have : (i : ℕ) < n + 1 := i.2
         simp? [Nat.lt_succ_iff_lt_or_eq, i_ne_last] at this says
-          simp only [Nat.lt_succ_iff_lt_or_eq, i_ne_last, or_false] at this
+          simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, i_ne_last, or_false] at this
         exact Nat.pred_lt_pred i_ne_zero this
       · convert i_mem
         simp only [ge_iff_le]
