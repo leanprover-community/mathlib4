@@ -28,8 +28,6 @@ When the underlying category is abelian:
   is injective, we can apply `Injective.d` repeatedly to obtain an injective resolution of `X`.
 -/
 
-set_option profiler true
-
 noncomputable section
 
 open CategoryTheory Category Limits
