@@ -1975,8 +1975,8 @@ noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
     gcd_mul_lcm := fun a b => by
       rw [← out_mul, mul_comm, sup_mul_inf, mk_mul_mk, out_mk]
       exact normalize_associated (a * b)
-    normalize_gcd := fun a b => by congr; apply normalize_out _
-    normalize_lcm := fun a b => by congr; apply normalize_out _ }
+    normalize_gcd := fun a b => by apply normalize_out _
+    normalize_lcm := fun a b => by apply normalize_out _ }
 #align unique_factorization_monoid.to_normalized_gcd_monoid UniqueFactorizationMonoid.toNormalizedGCDMonoid
 
 instance (α) [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] :
