@@ -383,9 +383,11 @@ class IsZlattice (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [Floo
   span_top : span K (L : Set E) = ⊤
 
 theorem _root_.Zspan.isZlattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] [Fintype ι] (b : Basis ι ℝ E) :
-    IsZlattice ℝ (span ℤ (Set.range b)).toAddSubgroup where
-  span_top := Zspan.span_top b
+    [Fintype ι] (b : Basis ι ℝ E) :
+    have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
+    IsZlattice ℝ (span ℤ (Set.range b)).toAddSubgroup := by
+  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
+  exact ⟨Zspan.span_top b⟩
 
 variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
