@@ -157,7 +157,7 @@ add_decl_doc Subring.toAddSubgroup
 
 namespace Subring
 
--- porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
+-- Porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
 -- projection `s.toSubmonoid`
 #noalign subring.to_submonoid
 
@@ -683,7 +683,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subring R} : (↑(⨅ i, S i) : Set R)
 #align subring.coe_infi Subring.coe_iInf
 
 theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_range_iff]
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align subring.mem_infi Subring.mem_iInf
 
 @[simp]
@@ -771,7 +771,9 @@ instance : Field (center K) :=
     mul_inv_cancel := fun ⟨a, ha⟩ h => Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne h
     div := fun a b => ⟨a / b, Set.div_mem_center₀ a.prop b.prop⟩
     div_eq_mul_inv := fun a b => Subtype.ext <| div_eq_mul_inv _ _
-    inv_zero := Subtype.ext inv_zero }
+    inv_zero := Subtype.ext inv_zero
+    -- TODO: use a nicer defeq
+    qsmul := qsmulRec _ }
 
 @[simp]
 theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹ :=
@@ -1107,7 +1109,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS
   let U : Subring R :=
     Subring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubmonoid) (⨆ i, (S i).toAddSubgroup)
       (Submonoid.coe_iSup_of_directed hS) (AddSubgroup.coe_iSup_of_directed hS)
-  suffices ⨆ i, S i ≤ U by simpa using @this x
+  suffices ⨆ i, S i ≤ U by simpa [U] using @this x
   exact iSup_le fun i x hx ↦ Set.mem_iUnion.2 ⟨i, hx⟩
 #align subring.mem_supr_of_directed Subring.mem_iSup_of_directed
 

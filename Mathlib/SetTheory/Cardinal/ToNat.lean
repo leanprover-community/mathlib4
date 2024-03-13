@@ -63,7 +63,7 @@ theorem cast_toNat_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : ↑(toNat c)
 #align cardinal.cast_to_nat_of_aleph_0_le Cardinal.cast_toNat_of_aleph0_le
 
 theorem toNat_strictMonoOn : StrictMonoOn toNat (Iio ℵ₀) := by
-  simp only [← range_natCast, StrictMonoOn, forall_range_iff, toNat_natCast, Nat.cast_lt]
+  simp only [← range_natCast, StrictMonoOn, forall_mem_range, toNat_natCast, Nat.cast_lt]
   exact fun _ _ ↦ id
 
 theorem toNat_monotoneOn : MonotoneOn toNat (Iio ℵ₀) := toNat_strictMonoOn.monotoneOn

@@ -23,7 +23,7 @@ default values for `sSup` and `sInf`.
 -/
 
 
-open Classical
+open scoped Classical
 
 open Set
 
@@ -218,7 +218,7 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
 /-- Complete linear order structure on `Set.Icc` -/
 noncomputable def Set.Icc.completeLinearOrder [ConditionallyCompleteLinearOrder α]
     {a b : α} (h : a ≤ b) : CompleteLinearOrder (Set.Icc a b) :=
-  { Set.Icc.completeLattice h, Subtype.linearOrder _ with }
+  { Set.Icc.completeLattice h, Subtype.instLinearOrder _ with }
 
 lemma Set.Icc.coe_sSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     {S : Set (Set.Icc a b)} (hS : S.Nonempty) : letI := Set.Icc.completeLattice h

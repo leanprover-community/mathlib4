@@ -553,8 +553,8 @@ lemma SigmaFinite.withDensity_of_ne_top [SigmaFinite μ] {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     SigmaFinite (μ.withDensity f) := by
   let f' := fun x ↦ if f x = ∞ then 0 else f x
-  have hff' : f =ᵐ[μ] f' := by filter_upwards [hf_ne_top] with x hx using by simp [hx]
-  have hf'_ne_top : ∀ x, f' x ≠ ∞ := fun x ↦ by by_cases hfx : f x = ∞ <;> simp [hfx]
+  have hff' : f =ᵐ[μ] f' := by filter_upwards [hf_ne_top] with x hx using by simp [f', hx]
+  have hf'_ne_top : ∀ x, f' x ≠ ∞ := fun x ↦ by by_cases hfx : f x = ∞ <;> simp [f', hfx]
   rw [withDensity_congr_ae hff']
   exact SigmaFinite.withDensity_of_ne_top' (hf.congr hff') hf'_ne_top
 
@@ -571,7 +571,7 @@ lemma IsLocallyFiniteMeasure.withDensity_coe {f : α → ℝ≥0} (hf : Continuo
     (eventually_le_of_tendsto_lt (lt_add_one _) (hf.tendsto x))) with ⟨U, ⟨⟨hUx, hUo⟩, hUf⟩, hμU⟩
   refine ⟨U, hUx, ?_⟩
   rw [withDensity_apply _ hUo.measurableSet]
-  exact set_lintegral_lt_top_of_bddAbove hμU.ne hf.measurable ⟨f x + 1, ball_image_iff.2 hUf⟩
+  exact set_lintegral_lt_top_of_bddAbove hμU.ne hf.measurable ⟨f x + 1, forall_mem_image.2 hUf⟩
 
 lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuous f) :
     IsLocallyFiniteMeasure (μ.withDensity fun x ↦ .ofReal (f x)) :=

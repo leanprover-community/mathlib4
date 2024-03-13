@@ -473,10 +473,7 @@ theorem coe_map (f : R →+* S) (s : Subsemiring R) : (s.map f : Set S) = f '' s
 #align subsemiring.coe_map Subsemiring.coe_map
 
 @[simp]
-theorem mem_map {f : R →+* S} {s : Subsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
-  -- Porting note: was `exact Set.mem_image_iff_bex`
-  convert Set.mem_image_iff_bex (f := f) (s := s.carrier) (y := y) using 1
-  simp
+lemma mem_map {f : R →+* S} {s : Subsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := Iff.rfl
 #align subsemiring.mem_map Subsemiring.mem_map
 
 @[simp]
@@ -1050,7 +1047,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subsemiring R}
       (⨆ i, (S i).toSubmonoid) (Submonoid.coe_iSup_of_directed hS)
       (⨆ i, (S i).toAddSubmonoid) (AddSubmonoid.coe_iSup_of_directed hS)
   -- Porting note: gave the hypothesis an explicit name because `@this` doesn't work
-  suffices h : ⨆ i, S i ≤ U by simpa using @h x
+  suffices h : ⨆ i, S i ≤ U by simpa [U] using @h x
   exact iSup_le fun i x hx ↦ Set.mem_iUnion.2 ⟨i, hx⟩
 #align subsemiring.mem_supr_of_directed Subsemiring.mem_iSup_of_directed
 

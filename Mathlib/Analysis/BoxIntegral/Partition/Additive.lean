@@ -23,7 +23,7 @@ integrable function over a box.
 In this file we define box-additive functions and prove that a function such that
 `f J = f (J ∩ {x | x i < y}) + f (J ∩ {x | y ≤ x i})` is box-additive.
 
-### Tags
+## Tags
 
 rectangular box, additive function
 -/
@@ -31,7 +31,8 @@ rectangular box, additive function
 
 noncomputable section
 
-open Classical BigOperators Function Set
+open scoped Classical
+open BigOperators Function Set
 
 namespace BoxIntegral
 
@@ -78,7 +79,7 @@ theorem coe_injective : Injective fun (f : ι →ᵇᵃ[I₀] M) x => f x :=
   DFunLike.coe_injective
 #align box_integral.box_additive_map.coe_injective BoxIntegral.BoxAdditiveMap.coe_injective
 
--- porting note: was @[simp], now can be proved by `simp`
+-- Porting note (#10618): was @[simp], now can be proved by `simp`
 theorem coe_inj {f g : ι →ᵇᵃ[I₀] M} : (f : Box ι → M) = g ↔ f = g := DFunLike.coe_fn_eq
 #align box_integral.box_additive_map.coe_inj BoxIntegral.BoxAdditiveMap.coe_inj
 

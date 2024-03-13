@@ -52,7 +52,7 @@ theorem id_def : @id α = fun x ↦ x :=
   rfl
 #align function.id_def Function.id_def
 
--- porting note: `Function.onFun` is now reducible
+-- Porting note: `Function.onFun` is now reducible
 -- @[simp]
 theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
   rfl
@@ -77,6 +77,12 @@ theorem funext_iff {β : α → Sort*} {f₁ f₂ : ∀ x : α, β x} : f₁ = f
 theorem ne_iff {β : α → Sort*} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ ↔ ∃ a, f₁ a ≠ f₂ a :=
   funext_iff.not.trans not_forall
 #align function.ne_iff Function.ne_iff
+
+lemma funext_iff_of_subsingleton [Subsingleton α] {g : α → β} (x y : α) :
+    f x = g y ↔ f = g := by
+  refine ⟨fun h ↦ funext fun z ↦ ?_, fun h ↦ ?_⟩
+  · rwa [Subsingleton.elim x z, Subsingleton.elim y z] at h
+  · rw [h, Subsingleton.elim x y]
 
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
 #align function.bijective.injective Function.Bijective.injective
