@@ -368,10 +368,16 @@ section Zlattice
 
 open Submodule
 
+/-- Docstring. -/
+class IsZlattice (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E] [ProperSpace E]
+  (L : AddSubgroup E) [DiscreteTopology L] : Prop where
+  /-- `L` spans the full space `E` over `K`. -/
+  span_top : span K (L : Set E) = ⊤
+
 variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
-variable [ProperSpace E] {L : AddSubgroup E} [DiscreteTopology L]
-variable (hs : span K (L : Set E) = ⊤)
+variable [ProperSpace E] (L : AddSubgroup E) [DiscreteTopology L] [hs : IsZlattice K L]
 
 theorem Zlattice.FG : AddSubgroup.FG L := by
   suffices (AddSubgroup.toIntSubmodule L).FG by exact (fg_iff_add_subgroup_fg _).mp this
@@ -385,7 +391,7 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
     -- so there are finitely many since `fundamentalDomain b` is bounded.
     refine fg_def.mpr ⟨map (span ℤ s).mkQ (AddSubgroup.toIntSubmodule L), ?_, span_eq _⟩
     let b := Basis.mk h_lind (by
-      rw [← hs, ← h_span]
+      rw [← hs.span_top, ← h_span]
       exact span_mono (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, subset_rfl]))
     rw [show span ℤ s = span ℤ (Set.range b) by simp [b, Basis.coe_mk, Subtype.range_coe_subtype]]
     have : Fintype s := h_lind.setFinite.fintype
@@ -409,10 +415,10 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
     exact fg_span (LinearIndependent.setFinite h_lind)
 
 theorem Zlattice.module_finite : Module.Finite ℤ L :=
-  Module.Finite.iff_addGroup_fg.mpr ((AddGroup.fg_iff_addSubgroup_fg L).mpr (FG K hs))
+  Module.Finite.iff_addGroup_fg.mpr ((AddGroup.fg_iff_addSubgroup_fg L).mpr (FG K L))
 
 theorem Zlattice.module_free : Module.Free ℤ L := by
-  have : Module.Finite ℤ L := module_finite K hs
+  have : Module.Finite ℤ L := module_finite K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
   have : NoZeroSMulDivisors ℤ E := RatModule.noZeroSMulDivisors
   have : NoZeroSMulDivisors ℤ L := by
@@ -424,8 +430,8 @@ open FiniteDimensional
 
 theorem Zlattice.rank : finrank ℤ L = finrank K E := by
   classical
-  have : Module.Finite ℤ L := module_finite K hs
-  have : Module.Free ℤ L := module_free K hs
+  have : Module.Finite ℤ L := module_finite K L
+  have : Module.Free ℤ L := module_free K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
   let b₀ := Module.Free.chooseBasis ℤ L
   -- Let `b` be a `ℤ`-basis of `L` formed of vectors of `E`
@@ -438,7 +444,9 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
     · rw [map_span, Set.range_comp]
       rfl
     · exact (map_subtype_top _).symm
-  have h_spanE : span K (Set.range b) = ⊤ := by rwa [← span_span_of_tower (R := ℤ), h_spanL]
+  have h_spanE : span K (Set.range b) = ⊤ := by
+    rw [← span_span_of_tower (R := ℤ), h_spanL]
+    exact hs.span_top
   have h_card : Fintype.card (Module.Free.ChooseBasisIndex ℤ L) =
       (Set.range b).toFinset.card := by
     rw [Set.toFinset_range, Finset.univ.card_image_of_injective]
