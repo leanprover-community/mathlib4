@@ -119,7 +119,8 @@ circle homeomorphism, rotation number
 -/
 
 
-open Filter Set Int Topology Classical
+open scoped Classical
+open Filter Set Int Topology
 open Function hiding Commute
 
 /-!
@@ -803,8 +804,8 @@ theorem tendsto_translation_number' (x : ℝ) :
 #align circle_deg1_lift.tendsto_translation_number' CircleDeg1Lift.tendsto_translation_number'
 
 theorem translationNumber_mono : Monotone τ := fun f g h =>
-  le_of_tendsto_of_tendsto' f.tendsto_translation_number₀ g.tendsto_translation_number₀ fun n =>
-    div_le_div_of_le n.cast_nonneg (pow_mono h n 0)
+  le_of_tendsto_of_tendsto' f.tendsto_translation_number₀ g.tendsto_translation_number₀ fun n => by
+    gcongr; exact pow_mono h _ _
 #align circle_deg1_lift.translation_number_mono CircleDeg1Lift.translationNumber_mono
 
 theorem translationNumber_translate (x : ℝ) : τ (translate <| Multiplicative.ofAdd x) = x :=

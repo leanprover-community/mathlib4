@@ -208,6 +208,42 @@ theorem domRestrict₁₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂]
     (x : p) (y : q) : f.domRestrict₁₂ p q x y = f x y := rfl
 #align linear_map.dom_restrict₁₂_apply LinearMap.domRestrict₁₂_apply
 
+section restrictScalars
+
+variable (R' S' : Type*)
+
+variable [Semiring R'] [Semiring S'] [Module R' M] [Module S' N] [Module R' Pₗ] [Module S' Pₗ]
+
+variable [SMulCommClass S' R' Pₗ]
+
+variable [SMul S' S] [IsScalarTower S' S N] [IsScalarTower S' S Pₗ]
+
+variable [SMul R' R] [IsScalarTower R' R M] [IsScalarTower R' R Pₗ]
+
+/-- If `B : M → N → Pₗ` is `R`-`S` bilinear and `R'` and `S'` are compatible scalar multiplications,
+then the restriction of scalars is a `R'`-`S'` bilinear map.-/
+@[simps!]
+def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →ₗ[S'] Pₗ :=
+  LinearMap.mk₂' R' S'
+    (B · ·)
+    B.map_add₂
+    (fun r' m _ ↦ by
+      dsimp only
+      rw [← smul_one_smul R r' m, map_smul₂, smul_one_smul])
+    (fun _ ↦ map_add _)
+    (fun _ x ↦ (B x).map_smul_of_tower _)
+
+theorem restrictScalars₁₂_injective : Function.Injective
+    (LinearMap.restrictScalars₁₂ R' S' : (M →ₗ[R] N →ₗ[S] Pₗ) → (M →ₗ[R'] N →ₗ[S'] Pₗ)) :=
+  fun _ _ h ↦ ext₂ (congr_fun₂ h : _)
+
+@[simp]
+theorem restrictScalars₁₂_inj {B B' : M →ₗ[R] N →ₗ[S] Pₗ} :
+    B.restrictScalars₁₂ R' S' = B'.restrictScalars₁₂ R' S' ↔ B = B' :=
+  (restrictScalars₁₂_injective R' S').eq_iff
+
+end restrictScalars
+
 end Semiring
 
 section CommSemiring
@@ -399,9 +435,15 @@ variable {R M}
 theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
 
+variable (R M) in
+/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`.
+
+This should eventually replace `_root_.BilinForm`. -/
+protected abbrev BilinForm : Type _ := M →ₗ[R] M →ₗ[R] R
+
 /-- The restriction of a bilinear form to a submodule. -/
-abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : M →ₗ[R] M →ₗ[R] R) :
-    p →ₗ[R] p →ₗ[R] R :=
+abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : LinearMap.BilinForm R M) :
+    LinearMap.BilinForm R p :=
   f.compl₁₂ p.subtype p.subtype
 
 end CommSemiring

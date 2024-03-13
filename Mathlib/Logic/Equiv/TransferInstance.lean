@@ -265,7 +265,6 @@ protected def mulZeroClass [MulZeroClass β] : MulZeroClass α := by
   apply e.injective.mulZeroClass _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.mul_zero_class Equiv.mulZeroClass
 
-@[to_additive]
 noncomputable instance [Small.{v} α] [MulZeroClass α] : MulZeroClass (Shrink.{v} α) :=
   (equivShrink α).symm.mulZeroClass
 
@@ -278,6 +277,7 @@ protected def mulOneClass [MulOneClass β] : MulOneClass α := by
 #align equiv.mul_one_class Equiv.mulOneClass
 #align equiv.add_zero_class Equiv.addZeroClass
 
+@[to_additive]
 noncomputable instance [Small.{v} α] [MulOneClass α] : MulOneClass (Shrink.{v} α) :=
   (equivShrink α).symm.mulOneClass
 
