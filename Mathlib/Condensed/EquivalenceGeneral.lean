@@ -69,15 +69,14 @@ lemma generate_singleton_mem_coherentTopology (B : C) :
     exact π_effectiveEpi _
 
 instance isCoverDense : (projsIncl C).IsCoverDense (coherentTopology _) := by
-  let F := fullSubcategoryInclusion (fun (X : C) ↦ Projective X)
   constructor
   intro B
   convert generate_singleton_mem_coherentTopology B
   ext Y f
   refine ⟨fun ⟨⟨obj, lift, map, fact⟩⟩ ↦ ?_, fun ⟨Z, h, g, hypo1, hf⟩ ↦ ?_⟩
-  · have : Projective (F.obj obj) := obj.property
+  · have : Projective ((projsIncl C).obj obj) := obj.property
     obtain ⟨p, p_factors⟩ := Projective.factors map (π B)
-    refine ⟨(F.obj (⟨over B, inferInstance⟩)), ⟨lift ≫ p, ⟨(π B),
+    refine ⟨((projsIncl C).obj (⟨over B, inferInstance⟩)), ⟨lift ≫ p, ⟨(π B),
       ⟨Presieve.singleton.mk, by rw [← fact, ← p_factors, Category.assoc]⟩⟩⟩⟩
   · cases hypo1
     exact ⟨⟨⟨over B, inferInstance⟩, h, π B, hf⟩⟩
