@@ -262,7 +262,7 @@ and `ζ` is a primitive `n`-th root of unity, then there exists `r < n` such tha
 theorem _root_.IsPrimitiveRoot.exists_pow_or_neg_mul_pow_of_pow_eq_one [NumberField K]
     [IsCyclotomicExtension {n} ℚ K] (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+}
     (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) :
-    ∃ (r : ℕ), r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) :=  by
+    ∃ r : ℕ, r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) :=  by
   obtain ⟨r, hr⟩ := hζ.exists_neg_pow_mul_pow_of_pow_eq_one hno hx
   refine ⟨r % n, Nat.mod_lt _ n.2, ?_⟩
   rw [show ζ ^ (r % ↑n) = ζ ^ r from (IsPrimitiveRoot.eq_orderOf hζ).symm ▸ pow_mod_orderOf .., hr]
