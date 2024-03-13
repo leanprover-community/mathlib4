@@ -68,8 +68,6 @@ theorem Units.mem : ↑u ∈
 
 theorem Units.not_exists_int_three_dvd_sub : ¬(∃ n : ℤ, (3 : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := by
   intro ⟨n, x, h⟩
-  have h3pos : 0 < 3 := by decide
-  have hp : Fact (Nat.Prime (⟨3, h3pos⟩ : ℕ+)) := ⟨show Nat.Prime 3 from by decide⟩
   let pB := hζ.integralPowerBasis'
   have hdim : pB.dim = 2 := by
     simp only [IsPrimitiveRoot.power_basis_int'_dim, PNat.val_ofNat, Nat.reduceSucc, pB]
@@ -80,12 +78,12 @@ theorem Units.not_exists_int_three_dvd_sub : ¬(∃ n : ℤ, (3 : 𝓞 K) ∣ (h
   have := pB.basis_eq_pow ⟨1, hdim⟩
   rw [hζ.integralPowerBasis'_gen] at this
   simp only [PowerBasis.coe_basis, pow_one] at this
-  rw [← this, show pB.gen = pB.gen ^ (⟨1, hdim⟩: Fin pB.dim).1 from by simp, ← pB.basis_eq_pow,
+  rw [← this, show pB.gen = pB.gen ^ (⟨1, hdim⟩: Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
     pB.basis.repr_self_apply] at h
   simp only [↓reduceIte, map_add, Finsupp.coe_add, Pi.add_apply] at h
-  rw [show (3 : 𝓞 K) * x = (3 : ℤ) • x from by simp, ← pB.basis.coord_apply,
+  rw [show (3 : 𝓞 K) * x = (3 : ℤ) • x by simp, ← pB.basis.coord_apply,
     LinearMap.map_smul, ← zsmul_one, ← pB.basis.coord_apply, LinearMap.map_smul,
-    show 1 = pB.gen ^ (⟨0, by linarith⟩: Fin pB.dim).1 from by simp, ← pB.basis_eq_pow,
+    show 1 = pB.gen ^ (⟨0, by linarith⟩: Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
     pB.basis.coord_apply, pB.basis.coord_apply, pB.basis.repr_self_apply] at h
   simp only [smul_eq_mul, Fin.mk.injEq, zero_ne_one, ↓reduceIte, mul_zero, add_zero] at h
   have hdvd : ¬ ((3 : ℤ) ∣ 1) := by norm_num
