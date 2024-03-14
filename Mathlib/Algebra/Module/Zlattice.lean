@@ -481,7 +481,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
     have h_mapsto : Set.MapsTo (fun n : ℤ => Zspan.fract e (n • v)) Set.univ
         (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
       rw [Set.mapsTo_inter, Set.mapsTo_univ_iff, Set.mapsTo_univ_iff]
-      refine ⟨fun _ =>  mem_closedBall_zero_iff.mpr (Zspan.norm_fract_le e _), fun _ => ?_⟩
+      refine ⟨fun _ ↦ mem_closedBall_zero_iff.mpr (Zspan.norm_fract_le e _), fun _ => ?_⟩
       · change _ ∈ AddSubgroup.toIntSubmodule L
         rw [← h_spanL]
         refine sub_mem ?_ ?_
