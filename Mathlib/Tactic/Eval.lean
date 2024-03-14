@@ -43,6 +43,3 @@ unsafe def elabEvalExpr : Lean.Elab.Term.TermElab
 | _ => fun _ => Elab.throwUnsupportedSyntax
 
 end Mathlib.Meta
-
-
-run_cmd dbg_trace 0
