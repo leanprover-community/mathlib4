@@ -33,8 +33,8 @@ theorem decide_False {h} : @decide False h = false :=
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
   match d with
-  | isTrue hp => ⟨λ _ => hp, λ _ => rfl⟩
-  | isFalse hnp => ⟨λ h => Bool.noConfusion h, λ hp => (hnp hp).elim⟩
+  | isTrue hp => ⟨fun _ ↦ hp, fun _ ↦ rfl⟩
+  | isFalse hnp => ⟨fun h ↦ Bool.noConfusion h, fun hp ↦ (hnp hp).elim⟩
 #align bool.coe_to_bool Bool.coe_decide
 
 theorem of_decide_iff {p : Prop} [Decidable p] : decide p ↔ p :=

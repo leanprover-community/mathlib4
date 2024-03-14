@@ -2011,8 +2011,8 @@ lemma erase_eq_iff_eq_insert (hs : a ∈ s) (ht : a ∉ t) : erase s a = t ↔ s
   aesop
 
 lemma insert_erase_invOn :
-    Set.InvOn (insert a) (λ s ↦ erase s a) {s : Finset α | a ∈ s} {s : Finset α | a ∉ s} :=
-  ⟨λ _s ↦ insert_erase, λ _s ↦ erase_insert⟩
+    Set.InvOn (insert a) (fun s ↦ erase s a) {s : Finset α | a ∈ s} {s : Finset α | a ∉ s} :=
+  ⟨fun _s ↦ insert_erase, fun _s ↦ erase_insert⟩
 
 theorem erase_subset_erase (a : α) {s t : Finset α} (h : s ⊆ t) : erase s a ⊆ erase t a :=
   val_le_iff.1 <| erase_le_erase _ <| val_le_iff.2 h
@@ -2728,10 +2728,10 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
 -- Porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
 -- needed. In lean4 it seems this is not the case.
 instance instDecidableRelSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊆ ·) :=
-  λ _ _ ↦ decidableDforallFinset
+  fun _ _ ↦ decidableDforallFinset
 
 instance instDecidableRelSSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊂ ·) :=
-  λ _ _ ↦ instDecidableAnd
+  fun _ _ ↦ instDecidableAnd
 
 instance instDecidableLE [DecidableEq α] : @DecidableRel (Finset α) (· ≤ ·) :=
   instDecidableRelSubset
