@@ -1378,9 +1378,7 @@ theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
   simp only [Set.Subset.antisymm_iff, Set.insert_subset_iff, Set.mem_insert_iff,
     Set.mem_singleton_iff, Set.singleton_subset_iff]
-  constructor
-  · rintro ⟨⟨rfl | rfl, rfl | rfl⟩, ⟨h₁, h₂⟩⟩ <;> simp [h₁, h₂] at * <;> simp [h₁, h₂]
-  · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp
+  tauto
 #align set.pair_eq_pair_iff Set.pair_eq_pair_iff
 
 /-! ### Lemmas about sets defined as `{x ∈ s | p x}`. -/
@@ -1612,7 +1610,7 @@ lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.sy
 #align set.subset_diff Set.subset_diff
 
 lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
-  simp [ssubset_iff_insert, subset_diff, insert_subset_iff]; aesop
+  simp only [ssubset_iff_insert, insert_subset_iff, subset_diff, disjoint_singleton_right]; aesop
 
 theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (s ∩ u) :=
   inf_sdiff_distrib_left _ _ _

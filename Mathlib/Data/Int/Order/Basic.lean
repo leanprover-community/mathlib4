@@ -109,9 +109,7 @@ theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
 
 theorem sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
   have : (1 : ℤ) ≠ -1 := by decide
-  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm, Int.negSucc_add_negSucc]
-  rw [Int.sign_eq_one_iff_pos]
-  apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| coe_nat_nonneg _)
+  rintro ((_ | m) | m) ((_ | n) | n) <;> tauto
 #align int.sign_add_eq_of_sign_eq Int.sign_add_eq_of_sign_eq
 
 /-- Note this holds in marginally more generality than `Int.cast_mul` -/

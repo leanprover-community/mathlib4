@@ -202,6 +202,7 @@ theorem cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q :=
 
 -- TODO: variables `x y` should be not included in this definition;
 -- not sure how to exclude them
+set_option linter.nonTerminalSimp false in
 instance commRing : CommRing ℝ := by
   refine' { natCast := fun n => ⟨n⟩
             intCast := fun z => ⟨z⟩

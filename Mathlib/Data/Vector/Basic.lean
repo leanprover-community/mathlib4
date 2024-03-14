@@ -132,7 +132,7 @@ theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a :=
 @[simp]
 theorem get_map {β : Type*} (v : Vector α n) (f : α → β) (i : Fin n) :
     (v.map f).get i = f (v.get i) := by
-  cases v; simp [Vector.map, get_eq_get]; rfl
+  cases v; simp only [map, get_eq_get, toList_mk, List.get_map, Fin.coe_cast]; rfl
 #align vector.nth_map Vector.get_map
 
 @[simp]
@@ -175,7 +175,10 @@ theorem get_tail (x : Vector α n) (i) :
 
 @[simp]
 theorem get_tail_succ : ∀ (v : Vector α n.succ) (i : Fin n), get (tail v) i = get v i.succ
-  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [get_eq_get]; rfl
+  | ⟨a :: l, e⟩, ⟨i, h⟩ => by
+    simp only [get_eq_get, Fin.cast_mk, Fin.succ_mk, toList_mk, List.length_cons,
+      List.get_cons_succ]
+    rfl
 #align vector.nth_tail_succ Vector.get_tail_succ
 
 @[simp]
@@ -393,7 +396,9 @@ theorem scanl_get (i : Fin n) :
   · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
-    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get, List.get]
+    simp only [Nat.zero_eq, scanl_singleton, i0, Fin.isValue, Fin.succ_zero_eq_one,
+      Fin.castSucc_zero, get_zero, head_cons]
+    simp only [Fin.isValue, get_eq_get, List.get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine' Fin.cases _ _ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
@@ -582,7 +587,7 @@ theorem removeNth_insertNth' {v : Vector α (n + 1)} :
     · rcases Nat.exists_eq_succ_of_ne_zero
         (Nat.pos_iff_ne_zero.1 (lt_of_le_of_lt (Nat.zero_le _) hij)) with ⟨j, rfl⟩
       rw [← List.insertNth_removeNth_of_ge]
-      · simp; rfl
+      · simp only [Fin.pred_mk_succ']; rfl
       · simpa
       · simpa [Nat.lt_succ_iff] using hij
     · dsimp
@@ -635,7 +640,7 @@ theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
 
 theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
     (v.set i a).get j = if i = j then a else v.get j := by
-  split_ifs <;> (try simp [*]); rwa [get_set_of_ne]
+  split_ifs <;> (try simp only [get_set_same, *]); rwa [get_set_of_ne]
 #align vector.nth_update_nth_eq_if Vector.get_set_eq_if
 
 @[to_additive]
@@ -649,7 +654,9 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine' (List.prod_set' v.toList i a).trans _
-  simp [get_eq_get, mul_assoc]; rfl
+  simp only [toList_length, Fin.is_lt, ↓reduceDite, get_eq_get, mul_assoc, mul_right_inj,
+    mul_left_inj, inv_inj]
+  rfl
 #align vector.prod_update_nth' Vector.prod_set'
 
 end ModifyNth
@@ -692,7 +699,7 @@ protected theorem traverse_def (f : α → F β) (x : α) :
 protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure : _ → Id _) = x := by
   rintro ⟨x, rfl⟩; dsimp [Vector.traverse, cast]
   induction' x with x xs IH; · rfl
-  simp! [IH]; rfl
+  simp! only [List.length_cons, traverseAux, Id.pure_eq, Id.map_eq, IH]; rfl
 #align vector.id_traverse Vector.id_traverse
 
 end
@@ -710,7 +717,7 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
     Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Vector.traverse f <$> Vector.traverse g x) := by
   induction' x using Vector.inductionOn with n x xs ih
-  simp! [cast, *, functor_norm]
+  simp! only [Vector.traverse, cast, List.length_nil, cast_eq, map_pure]
   · rfl
   · rw [Vector.traverse_def, ih]
     simp [functor_norm, (· ∘ ·)]
@@ -718,7 +725,12 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure: _ → Id _) ∘ f) = (pure: _ → Id _) (map f x) := by
-  rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm] <;> rfl
+  rintro ⟨x, rfl⟩
+  simp! only [Vector.traverse, cast_eq, Id.pure_eq]
+  induction x <;>
+    simp! only [List.length_nil, List.map_nil, List.length_cons, traverseAux, Seq.seq, comp_apply,
+      Id.pure_eq, Id.map_eq, List.map_cons, *]
+  rfl
 #align vector.traverse_eq_map_id Vector.traverse_eq_map_id
 
 variable (η : ApplicativeTransformation F G)
