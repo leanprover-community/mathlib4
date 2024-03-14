@@ -21,7 +21,7 @@ to a specific `Fin` instance.
 namespace Fin
 
 instance : ∀ {n : ℕ}, SuccOrder (Fin n)
-  | 0 => by constructor <;> exact elim0
+  | 0 => by constructor <;> intro a <;> exact elim0 a
   | n + 1 =>
     SuccOrder.ofCore (fun i => if i < Fin.last n then i + 1 else i)
       (by
