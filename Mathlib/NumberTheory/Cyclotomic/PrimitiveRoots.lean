@@ -269,7 +269,8 @@ theorem exists_neg_pow_of_isOfFinOrder [NumberField K] [IsCyclotomicExtension {n
   exact ⟨s, hs.symm⟩
 
 /-- If `x` is a root of unity (spelled as `IsOfFinOrder x`) in an `n`-th cyclotomic extension of
-`ℚ`, where `n` is odd, and `ζ` is a primitive `n`-th root of unity, then there exists `r < n` such that `x = ζ^r` or `x = -ζ^r`. -/
+`ℚ`, where `n` is odd, and `ζ` is a primitive `n`-th root of unity, then there exists `r < n`
+such that `x = ζ^r` or `x = -ζ^r`. -/
 theorem exists_pow_or_neg_mul_pow_of_isOfFinOrder [NumberField K] [IsCyclotomicExtension {n} ℚ K]
     (hno : Odd (n : ℕ)) {ζ x : K} (hζ : IsPrimitiveRoot ζ n) (hx : IsOfFinOrder x) :
     ∃ r : ℕ, r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) :=  by
