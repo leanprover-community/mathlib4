@@ -61,9 +61,8 @@ theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f 
 lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀a, β a} {f' : ∀a, β' a}
     (hα : α = α') (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by
   subst hα
-  have : ∀a, HEq (f a) (f' a) := λ a => h a a (HEq.refl a)
-  have : β = β' := by funext a
-                      exact type_eq_of_heq (this a)
+  have : ∀a, HEq (f a) (f' a) := fun a ↦ h a a (HEq.refl a)
+  have : β = β' := by funext a; exact type_eq_of_heq (this a)
   subst this
   apply heq_of_eq
   funext a
@@ -159,7 +158,7 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
     {f : {a : α // p a} → β} {f' : {a : α // ¬ p a} → β}
     (hf : Injective f) (hf' : Injective f')
     (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
-    Function.Injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
+    Function.Injective (fun x ↦ if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
  dsimp only at h
  by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
  · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
@@ -291,7 +290,7 @@ theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
 to `α`. -/
 theorem cantor_injective {α : Type*} (f : Set α → α) : ¬Injective f
   | i => cantor_surjective (fun a ↦ {b | ∀ U, a = f U → U b}) <|
-         RightInverse.surjective (λ U => Set.ext fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
+         RightInverse.surjective (fun U ↦ Set.ext fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
 #align function.cantor_injective Function.cantor_injective
 
 /-- There is no surjection from `α : Type u` into `Type (max u v)`. This theorem
