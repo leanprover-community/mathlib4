@@ -38,3 +38,5 @@ theorem withZero_unit_not_charZero : ¬CharZero (WithZero Unit) := fun ⟨h⟩ =
 #align counterexample.with_zero_unit_not_char_zero Counterexample.withZero_unit_not_charZero
 
 end Counterexample
+
+run_cmd dbg_trace 0

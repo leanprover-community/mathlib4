@@ -118,5 +118,3 @@ lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
   obtain ⟨⟨φ, supφ, difφ⟩, hφ⟩ :=
     LinearMap.flip_surjective_iff₁.2 this ((aeval 0).toLinearMap.comp <| Submodule.subtype _)
   exact ⟨φ, supφ, difφ, fun P hP ↦ congr($hφ ⟨P, (mem_restrictTotalDegree ι N P).mpr hP⟩)⟩
-
-run_cmd dbg_trace 0
