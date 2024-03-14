@@ -43,14 +43,16 @@ TODO: add `NonUnitalAlgEquiv` when needed.
 non-unital, algebra, morphism
 -/
 
-universe u v w w₁ w₂ w₃
+universe u u₁ v w w₁ w₂ w₃
 
-variable (R : Type u) (A : Type v) (B : Type w) (C : Type w₁)
+variable (R : Type u) (S : Type u₁)  (A : Type v) (B : Type w) (C : Type w₁)
 
+variable {R S}
 /-- A morphism respecting addition, multiplication, and scalar multiplication. When these arise from
 algebra structures, this is the same as a not-necessarily-unital morphism of algebras. -/
-structure NonUnitalAlgHom [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-  [NonUnitalNonAssocSemiring B] [DistribMulAction R B] extends A →ₑ+[φ] B, A →ₙ* B
+structure NonUnitalAlgHom [Monoid R] [Monoid S] (φ : R →* S)(A : Type v) [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+  (B : Type w) [NonUnitalNonAssocSemiring B] [DistribMulAction S B] extends A →+[R] B, A →ₙ* B
+
 #align non_unital_alg_hom NonUnitalAlgHom
 
 @[inherit_doc NonUnitalAlgHom]
