@@ -45,13 +45,14 @@ non-unital, algebra, morphism
 
 universe u u₁ v w w₁ w₂ w₃
 
-variable (R : Type u) (S : Type u₁)  (A : Type v) (B : Type w) (C : Type w₁)
+variable {R : Type u} {S : Type u₁}
+-- (A : Type v) (B : Type w) (C : Type w₁)
 
-variable {R S}
 /-- A morphism respecting addition, multiplication, and scalar multiplication. When these arise from
 algebra structures, this is the same as a not-necessarily-unital morphism of algebras. -/
-structure NonUnitalAlgHom [Monoid R] [Monoid S] (φ : R →* S)(A : Type v) [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-  (B : Type w) [NonUnitalNonAssocSemiring B] [DistribMulAction S B] extends A →+[R] B, A →ₙ* B
+structure NonUnitalAlgHom [Monoid R] [Monoid S] (φ : R →* S) (A : Type v) (B : Type w)
+    [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+    [NonUnitalNonAssocSemiring B] [DistribMulAction S B] extends A →ₑ+[φ] B, A →ₙ* B
 
 #align non_unital_alg_hom NonUnitalAlgHom
 
@@ -98,13 +99,14 @@ instance (priority := 100) toNonUnitalRingHomClass
   { ‹NonUnitalAlgSemiHomClass F φ A B› with }
 #align non_unital_alg_hom_class.non_unital_alg_hom_class.to_non_unital_ring_hom_class NonUnitalAlgHomClass.toNonUnitalRingHomClass
 
-variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
-  [Semiring S] [NonUnitalNonAssocSemiring B] [Module S B] {φ : R →+* S}
+variable [Semiring R] [Semiring S] {φ : R →+* S}
+  {A B : Type*} [NonUnitalNonAssocSemiring A] [Module R A]
+  [NonUnitalNonAssocSemiring B] [Module S B]
 
 -- see Note [lower instance priority]
 instance (priority := 100) {F R S A B : Type*}
     {_ : Semiring R} {_ : Semiring S} {φ : R →+* S}
-    {NonUnitalSemiring A} {_ : NonUnitalSemiring B} [Module R A] [Module S B] [FunLike F A B]
+    {_ : NonUnitalSemiring A} {_ : NonUnitalSemiring B} [Module R A] [Module S B] [FunLike F A B]
     [NonUnitalAlgSemiHomClass (R := R) (S := S) F φ A B] :
     SemilinearMapClass F φ A B :=
   { ‹NonUnitalAlgSemiHomClass F φ A B› with map_smulₛₗ := map_smulₛₗ }
@@ -116,7 +118,7 @@ instance (priority := 100) {F : Type*} [FunLike F A B] [Module R B] [NonUnitalAl
 /-- Turn an element of a type `F` satisfying `NonUnitalAlgSemiHomClass F φ A B` into an actual
 `NonUnitalAlgSemiHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[φ] B`. -/
 @[coe]
-def toNonUnitalAlgSemiHom {F R S A B : Type*} [Monoid R] [Monoid S] {φ : R →* S}
+def toNonUnitalAlgSemiHom {F R S : Type*} [Monoid R] [Monoid S] {φ : R →* S} {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction S B] [FunLike F A B]
     [NonUnitalAlgSemiHomClass F φ A B] (f : F) : A →ₛₙₐ[φ] B :=
@@ -133,7 +135,7 @@ instance {F R S A B : Type*} [Monoid R] [Monoid S] {φ : R →* S}
 
 /-- Turn an element of a type `F` satisfying `NonUnitalAlgHomClass F R A B` into an actual
 `NonUnitalAlgSemiHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[R] B`. -/
-def toNonUnitalAlgHom {F R A B : Type*} [Monoid R]
+def toNonUnitalAlgHom {F R : Type*} [Monoid R] {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
     [FunLike F A B] [NonUnitalAlgHomClass F R A B] (f : F) : A →ₙₐ[R] B :=
@@ -141,7 +143,7 @@ def toNonUnitalAlgHom {F R A B : Type*} [Monoid R]
     toFun := f
     map_smul' := map_smulₛₗ f }
 
-instance {F R : Type*} {A B : Type*} [Monoid R]
+instance {F R : Type*} [Monoid R] {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
     [FunLike F A B] [NonUnitalAlgHomClass F R A B] :
@@ -509,7 +511,8 @@ end NonUnitalAlgHom
 
 namespace AlgHom
 
-variable {A B} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+variable {F R : Type*} [CommSemiring R]
+variable {A B : Type*} [Semiring A] [Semiring B] [Algebra R A]
   [Algebra R B]
 
 -- see Note [lower instance priority]
