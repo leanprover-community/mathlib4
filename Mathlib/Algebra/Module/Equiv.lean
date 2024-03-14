@@ -510,7 +510,7 @@ protected theorem map_smulₛₗ (c : R) (x : M) : e (c • x) = (σ : R → S) 
 #align linear_equiv.map_smulₛₗ LinearEquiv.map_smulₛₗ
 
 theorem map_smul (e : N₁ ≃ₗ[R₁] N₂) (c : R₁) (x : N₁) : e (c • x) = c • e x :=
-  e.map_smul' c x
+  e.map_smulₛₗ c x
 #align linear_equiv.map_smul LinearEquiv.map_smul
 
 theorem map_eq_zero_iff {x : M} : e x = 0 ↔ x = 0 :=
