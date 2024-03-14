@@ -372,7 +372,7 @@ lemma cfcₙ_comp_star (f : R → R) (ha : p a := by cfc_tac)
     cfcₙ a (f <| star ·) = cfcₙ (star a) f := by
   rw [cfcₙ_comp' a f star, cfcₙ_star_id a]
 
-lemma eq_zero_of_quasispectrum_eq_zero (h_spec : σₙ R a = {0}) (ha : p a := by cfc_tac) :
+lemma eq_zero_of_quasispectrum_eq_zero (h_spec : σₙ R a ⊆ {0}) (ha : p a := by cfc_tac) :
     a = 0 := by
   simpa [cfcₙ_id R a] using cfcₙ_congr a (f := id) (g := fun _ : R ↦ 0) <| by rw [h_spec]; simp
 
