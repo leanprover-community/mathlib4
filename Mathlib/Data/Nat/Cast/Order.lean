@@ -34,6 +34,12 @@ theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
 #align nat.mono_cast Nat.mono_cast
 
+@[deprecated mono_cast] -- Since 2024-02-10
+theorem cast_le_cast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
+
+@[gcongr]
+theorem _root_.GCongr.natCast_le_natCast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
+
 /-- See also `Nat.cast_nonneg`, specialised for an `OrderedSemiring`. -/
 @[simp low]
 theorem cast_nonneg' (n : ℕ) : 0 ≤ (n : α) :=
@@ -107,7 +113,7 @@ theorem one_le_cast : 1 ≤ (n : α) ↔ 1 ≤ n := by rw [← cast_one, cast_le
 
 @[simp, norm_cast]
 theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by
-  rw [← cast_one, cast_lt, lt_succ_iff, ← bot_eq_zero, le_bot_iff]
+  rw [← cast_one, cast_lt, Nat.lt_succ_iff, ← bot_eq_zero, le_bot_iff]
 #align nat.cast_lt_one Nat.cast_lt_one
 
 @[simp, norm_cast]
@@ -140,11 +146,11 @@ instance [AddMonoidWithOne α] [CharZero α] : Nontrivial α where exists_pair_n
 
 section RingHomClass
 
-variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
+variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S] [FunLike F R S]
 
 theorem NeZero.nat_of_injective {n : ℕ} [h : NeZero (n : R)] [RingHomClass F R S] {f : F}
     (hf : Function.Injective f) : NeZero (n : S) :=
-  ⟨fun h ↦ NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f] ⟩
+  ⟨fun h ↦ NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f]⟩
 #align ne_zero.nat_of_injective NeZero.nat_of_injective
 
 end RingHomClass

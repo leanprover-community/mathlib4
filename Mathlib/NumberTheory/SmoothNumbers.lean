@@ -181,9 +181,9 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
     simp only [Set.coe_setOf, Set.mem_setOf_eq, Subtype.mk.injEq]
     rw [← factors_count_eq, ← prod_replicate, ← prod_append]
     nth_rw 3 [← prod_factors hm₀]
-    have : m.factors.filter (· = p) = m.factors.filter (¬ · < p)
-    · refine (filter_congr' fun q hq ↦ ?_).symm
-      have H : ¬ p < q := fun hf ↦ Nat.lt_le_asymm hf <| lt_succ_iff.mp (hm q hq)
+    have : m.factors.filter (· = p) = m.factors.filter (¬ · < p) := by
+      refine (filter_congr' fun q hq ↦ ?_).symm
+      have H : ¬ p < q := fun hf ↦ Nat.lt_le_asymm hf <| Nat.lt_succ_iff.mp (hm q hq)
       simp only [not_lt, le_iff_eq_or_lt, H, or_false, eq_comm, true_eq_decide_iff]
     refine prod_eq <| (filter_eq m.factors p).symm ▸ this ▸ perm_append_comm.trans ?_
     convert filter_append_perm ..
@@ -213,14 +213,14 @@ def roughNumbersUpTo (N k : ℕ) : Finset ℕ :=
 lemma smoothNumbersUpTo_card_add_roughNumbersUpTo_card (N k : ℕ) :
     (smoothNumbersUpTo N k).card + (roughNumbersUpTo N k).card = N := by
   rw [smoothNumbersUpTo, roughNumbersUpTo,
-    ← Finset.card_union_eq <| Finset.disjoint_filter.mpr fun n _ hn₂ h ↦ h.2 hn₂,
+    ← Finset.card_union_of_disjoint <| Finset.disjoint_filter.mpr fun n _ hn₂ h ↦ h.2 hn₂,
     Finset.filter_union_right]
-  suffices : Finset.card (Finset.filter (fun x ↦ x ≠ 0) (Finset.range (succ N))) = N
-  · convert this with n
+  suffices Finset.card (Finset.filter (fun x ↦ x ≠ 0) (Finset.range (succ N))) = N by
+    convert this with n
     have hn : n ∈ smoothNumbers k → n ≠ 0 := ne_zero_of_mem_smoothNumbers
     tauto
-  · rw [Finset.filter_ne', Finset.card_erase_of_mem <| Finset.mem_range_succ_iff.mpr <| zero_le N]
-    simp
+  rw [Finset.filter_ne', Finset.card_erase_of_mem <| Finset.mem_range_succ_iff.mpr <| zero_le N]
+  simp
 
 /-- A `k`-smooth number can be written as a square times a product of distinct primes `< k`. -/
 lemma eq_prod_primes_mul_sq_of_mem_smoothNumbers {n k : ℕ} (h : n ∈ smoothNumbers k) :
@@ -250,7 +250,7 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
     Finset.mem_product, Finset.mem_powerset, Finset.mem_erase, Prod.exists]
   refine ⟨s, m, ⟨Finset.mem_powerset.mp hs, ?_, ?_⟩, hm.symm⟩
   · have := hm ▸ ne_zero_of_mem_smoothNumbers hn₂
-    simp only [ne_eq, _root_.mul_eq_zero, zero_lt_two, pow_eq_zero_iff, not_or] at this
+    simp only [ne_eq, _root_.mul_eq_zero, sq_eq_zero_iff, not_or] at this
     exact this.1
   · rw [lt_succ, le_sqrt']
     refine LE.le.trans ?_ (hm ▸ hn₁)

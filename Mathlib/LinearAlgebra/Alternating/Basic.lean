@@ -22,7 +22,7 @@ arguments of the same type.
 * `f.map_perm` expresses how `f` varies by a sign change under a permutation of its inputs.
 * An `AddCommMonoid`, `AddCommGroup`, and `Module` structure over `AlternatingMap`s that
   matches the definitions over `MultilinearMap`s.
-* `MultilinearMap.domDomCongr`, for permutating the elements within a family.
+* `MultilinearMap.domDomCongr`, for permuting the elements within a family.
 * `MultilinearMap.alternatization`, which makes an alternating map out of a non-alternating one.
 * `AlternatingMap.curryLeft`, for binding the leftmost argument of an alternating map indexed
   by `Fin n.succ`.
@@ -135,7 +135,7 @@ theorem coe_injective : Injective ((↑) : M [Λ^ι]→ₗ[R] N → (ι → M) �
   DFunLike.coe_injective
 #align alternating_map.coe_injective AlternatingMap.coe_injective
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem coe_inj {f g : M [Λ^ι]→ₗ[R] N} : (f : (ι → M) → N) = g ↔ f = g :=
   coe_injective.eq_iff
 #align alternating_map.coe_inj AlternatingMap.coe_inj

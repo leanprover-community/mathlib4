@@ -83,8 +83,8 @@ section dual
     rw [and_iff_left hJE]
     rw [diff_eq, inter_right_comm, ← diff_eq, diff_subset_iff] at hssJ
 
-    have hI' : (B'' ∩ X) ∪ (B' \ X) ⊆ B'
-    · rw [union_subset_iff, and_iff_left (diff_subset _ _),
+    have hI' : (B'' ∩ X) ∪ (B' \ X) ⊆ B' := by
+      rw [union_subset_iff, and_iff_left (diff_subset _ _),
         ← inter_eq_self_of_subset_left hB''.subset_ground, inter_right_comm, inter_assoc]
 
       calc _ ⊆ _ := inter_subset_inter_right _ hssJ
@@ -94,14 +94,14 @@ section dual
     obtain ⟨B₁,hB₁,hI'B₁,hB₁I⟩ := (hB'.indep.subset hI').exists_base_subset_union_base hB''
     rw [union_comm, ← union_assoc, union_eq_self_of_subset_right (inter_subset_left _ _)] at hB₁I
 
-    have : B₁ = B'
-    · refine hB₁.eq_of_subset_indep hB'.indep (fun e he ↦ ?_)
+    have : B₁ = B' := by
+      refine hB₁.eq_of_subset_indep hB'.indep (fun e he ↦ ?_)
       refine (hB₁I he).elim (fun heB'' ↦ ?_) (fun h ↦ h.1)
       refine (em (e ∈ X)).elim (fun heX ↦ hI' (Or.inl ⟨heB'', heX⟩)) (fun heX ↦ hIB' ?_)
       refine hI.mem_of_insert_indep ⟨hB₁.subset_ground he, heX⟩
         (hB₁.indep.subset (insert_subset he ?_))
       refine (subset_union_of_subset_right (subset_diff.mpr ⟨hIB',?_⟩) _).trans hI'B₁
-      refine disjoint_of_subset_left hI.subset disjoint_sdiff_left
+      exact disjoint_of_subset_left hI.subset disjoint_sdiff_left
 
     subst this
 
@@ -193,8 +193,8 @@ theorem Base.compl_inter_basis_of_inter_basis (hB : M.Base B) (hBX : M.Basis (B 
    diff_eq_empty] at hem
   obtain ⟨f, hfb, hBf⟩ := hB.exchange hB' ⟨he.2, hem.2⟩
 
-  have hi : M.Indep (insert f (B ∩ X))
-  · refine' hBf.indep.subset (insert_subset_insert _)
+  have hi : M.Indep (insert f (B ∩ X)) := by
+    refine' hBf.indep.subset (insert_subset_insert _)
     simp_rw [subset_diff, and_iff_right (inter_subset_left _ _), disjoint_singleton_right,
       mem_inter_iff, iff_false_intro he.1.2, and_false, not_false_iff]
   exact hfb.2 (hBX.mem_of_insert_indep (Or.elim (hem.1 hfb.1) (False.elim ∘ hfb.2) id) hi).1

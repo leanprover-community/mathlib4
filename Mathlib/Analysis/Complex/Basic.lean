@@ -81,13 +81,19 @@ instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_eq_abs, abs_ofReal, ← Real.norm_eq_abs,
       norm_algebraMap']
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
 
 -- see Note [lower instance priority]
 /-- The module structure from `Module.complexToReal` is a normed space. -/
 instance (priority := 900) _root_.NormedSpace.complexToReal : NormedSpace ℝ E :=
   NormedSpace.restrictScalars ℝ ℂ E
 #align normed_space.complex_to_real NormedSpace.complexToReal
+
+-- see Note [lower instance priority]
+/-- The algebra structure from `Algebra.complexToReal` is a normed algebra. -/
+instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [SeminormedRing A]
+    [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
+  NormedAlgebra.restrictScalars ℝ ℂ A
 
 theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
   rfl
@@ -105,7 +111,7 @@ theorem dist_mk (x₁ y₁ x₂ y₂ : ℝ) :
 #align complex.dist_mk Complex.dist_mk
 
 theorem dist_of_re_eq {z w : ℂ} (h : z.re = w.re) : dist z w = dist z.im w.im := by
-  rw [dist_eq_re_im, h, sub_self, zero_pow two_pos, zero_add, Real.sqrt_sq_eq_abs, Real.dist_eq]
+  rw [dist_eq_re_im, h, sub_self, zero_pow two_ne_zero, zero_add, Real.sqrt_sq_eq_abs, Real.dist_eq]
 #align complex.dist_of_re_eq Complex.dist_of_re_eq
 
 theorem nndist_of_re_eq {z w : ℂ} (h : z.re = w.re) : nndist z w = nndist z.im w.im :=
@@ -117,7 +123,7 @@ theorem edist_of_re_eq {z w : ℂ} (h : z.re = w.re) : edist z w = edist z.im w.
 #align complex.edist_of_re_eq Complex.edist_of_re_eq
 
 theorem dist_of_im_eq {z w : ℂ} (h : z.im = w.im) : dist z w = dist z.re w.re := by
-  rw [dist_eq_re_im, h, sub_self, zero_pow two_pos, add_zero, Real.sqrt_sq_eq_abs, Real.dist_eq]
+  rw [dist_eq_re_im, h, sub_self, zero_pow two_ne_zero, add_zero, Real.sqrt_sq_eq_abs, Real.dist_eq]
 #align complex.dist_of_im_eq Complex.dist_of_im_eq
 
 theorem nndist_of_im_eq {z w : ℂ} (h : z.im = w.im) : nndist z w = nndist z.re w.re :=
@@ -165,7 +171,7 @@ theorem norm_nat (n : ℕ) : ‖(n : ℂ)‖ = n :=
 #align complex.norm_nat Complex.norm_nat
 
 @[simp 1100]
-theorem norm_int {n : ℤ} : ‖(n : ℂ)‖ = |(n : ℝ)| := (int_cast_abs n).symm
+lemma norm_int {n : ℤ} : ‖(n : ℂ)‖ = |(n : ℝ)| := abs_intCast n
 #align complex.norm_int Complex.norm_int
 
 theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
@@ -263,7 +269,7 @@ def reCLM : ℂ →L[ℝ] ℝ :=
   reLm.mkContinuous 1 fun x => by simp [abs_re_le_abs]
 #align complex.re_clm Complex.reCLM
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 #align complex.continuous_re Complex.continuous_re
@@ -283,7 +289,7 @@ def imCLM : ℂ →L[ℝ] ℝ :=
   imLm.mkContinuous 1 fun x => by simp [abs_im_le_abs]
 #align complex.im_clm Complex.imCLM
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 #align complex.continuous_im Complex.continuous_im
@@ -389,7 +395,7 @@ theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
   ofRealLI.isometry
 #align complex.isometry_of_real Complex.isometry_ofReal
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
   ofRealLI.continuous
 #align complex.continuous_of_real Complex.continuous_ofReal
@@ -490,6 +496,15 @@ theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
   lift z to ℝ using hz.2.symm
   rw [norm_eq_abs, abs_ofReal, _root_.abs_of_nonneg (id hz.1 : 0 ≤ z)]
 #align complex.eq_coe_norm_of_nonneg Complex.eq_coe_norm_of_nonneg
+
+/-- We show that the partial order and the topology on `ℂ` are compatible.
+We turn this into an instance scoped to `ComplexOrder`. -/
+lemma orderClosedTopology : OrderClosedTopology ℂ where
+  isClosed_le' := by
+    simp_rw [le_def, Set.setOf_and]
+    refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> continuity
+
+scoped[ComplexOrder] attribute [instance] Complex.orderClosedTopology
 
 end ComplexOrder
 
@@ -685,9 +700,9 @@ open scoped ComplexOrder
 /-- The *slit plane* is the complex plane with the closed negative real axis removed. -/
 def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
 
-lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Iff.rfl
+lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_setOf
 
-lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := rfl
+lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := Set.setOf_or.symm
 
 lemma isOpen_slitPlane : IsOpen slitPlane :=
   (isOpen_lt continuous_const continuous_re).union (isOpen_ne_fun continuous_im continuous_const)

@@ -310,6 +310,12 @@ and adds them to the set `s`.
 A pair `(a, true)` is added to `s` when `a^2` appears in `e`,
 and `(a, false)` is added to `s` when `a*a` appears in `e`.  -/
 partial def findSquares (s : HashSet (Expr × Bool)) (e : Expr) : MetaM (HashSet (Expr × Bool)) :=
+  -- Completely traversing the expression is non-ideal,
+  -- as we can descend into expressions that could not possibly be seen by `linarith`.
+  -- As a result we visit expressions with bvars, which then cause panics.
+  -- Ideally this preprocessor would be reimplemented so it only visits things that could be atoms.
+  -- In the meantime we just bail out if we ever encounter loose bvars.
+  if e.hasLooseBVars then return s else
   match e.getAppFnArgs with
   | (``HPow.hPow, #[_, _, _, _, a, b]) => match b.numeral? with
     | some 2 => do

@@ -191,7 +191,7 @@ instance : SubfieldClass (Subfield K) K where
   one_mem s := s.one_mem'
   inv_mem {s} := s.inv_mem' _
 
--- @[simp] -- Porting note: simp can prove this (with `coe_toSubring`, which comes later)
+-- @[simp] -- Porting note (#10618): simp can prove this (with `coe_toSubring`, which comes later)
 theorem mem_carrier {s : Subfield K} {x : K} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subfield.mem_carrier Subfield.mem_carrier
@@ -431,7 +431,7 @@ theorem toSubring_subtype_eq_subtype (S : Subfield K) :
 /-! # Partial order -/
 
 
---@[simp] -- Porting note: simp can prove this
+--@[simp] -- Porting note (#10618): simp can prove this
 theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 #align subfield.mem_to_submonoid Subfield.mem_toSubmonoid
@@ -476,6 +476,9 @@ theorem coe_top : ((⊤ : Subfield K) : Set K) = Set.univ :=
 def topEquiv : (⊤ : Subfield K) ≃+* K :=
   Subsemiring.topEquiv
 #align subfield.top_equiv Subfield.topEquiv
+
+-- This triggers a timeout since #8386.
+attribute [nolint simpNF] topEquiv_apply
 
 /-! # comap -/
 
@@ -942,7 +945,7 @@ private def commClosure (s : Set K) : Subfield K where
   neg_mem' {x} := by
     rintro ⟨y, hy, z, hz, x_eq⟩
     exact ⟨-y, Subring.neg_mem _ hy, z, hz, x_eq ▸ neg_div _ _⟩
-  inv_mem' x := by rintro ⟨y, hy, z, hz, x_eq⟩; exact ⟨z, hz, y, hy, x_eq ▸ (inv_div _ _).symm ⟩
+  inv_mem' x := by rintro ⟨y, hy, z, hz, x_eq⟩; exact ⟨z, hz, y, hy, x_eq ▸ (inv_div _ _).symm⟩
   add_mem' x_mem y_mem := by
     -- Use `id` in the next 2 `obtain`s so that assumptions stay there for the `rwa`s below
     obtain ⟨nx, hnx, dx, hdx, rfl⟩ := id x_mem

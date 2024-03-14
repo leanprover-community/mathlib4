@@ -211,14 +211,14 @@ theorem encode_lt_pair (cf cg) :
 
 theorem encode_lt_comp (cf cg) :
     encode cf < encode (comp cf cg) ∧ encode cg < encode (comp cf cg) := by
-  suffices; exact (encode_lt_pair cf cg).imp (fun h => lt_trans h this) fun h => lt_trans h this
-  change _; simp [encodeCode_eq, encodeCode]
+  have : encode (pair cf cg) < encode (comp cf cg) := by simp [encodeCode_eq, encodeCode]
+  exact (encode_lt_pair cf cg).imp (fun h => lt_trans h this) fun h => lt_trans h this
 #align nat.partrec.code.encode_lt_comp Nat.Partrec.Code.encode_lt_comp
 
 theorem encode_lt_prec (cf cg) :
     encode cf < encode (prec cf cg) ∧ encode cg < encode (prec cf cg) := by
-  suffices; exact (encode_lt_pair cf cg).imp (fun h => lt_trans h this) fun h => lt_trans h this
-  change _; simp [encodeCode_eq, encodeCode]
+  have : encode (pair cf cg) < encode (prec cf cg) := by simp [encodeCode_eq, encodeCode]
+  exact (encode_lt_pair cf cg).imp (fun h => lt_trans h this) fun h => lt_trans h this
 #align nat.partrec.code.encode_lt_prec Nat.Partrec.Code.encode_lt_prec
 
 theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
@@ -770,8 +770,8 @@ def evaln : ℕ → Code → ℕ → Option ℕ
         pure m
       else
         evaln k (rfind' cf) (Nat.pair a (m + 1))
-  termination_by evaln k c => (k, c)
-  decreasing_by { decreasing_with (dsimp; omega) }
+  termination_by k c => (k, c)
+  decreasing_by all_goals { decreasing_with (dsimp; omega) }
 #align nat.partrec.code.evaln Nat.Partrec.Code.evaln
 
 theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k
@@ -1106,7 +1106,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
       · simp [evaln]
       let k := k' + 1
       simp only [show k'.succ = k from rfl]
-      simp? [Nat.lt_succ_iff] at nk says simp only [List.mem_range, lt_succ_iff] at nk
+      simp? [Nat.lt_succ_iff] at nk says simp only [List.mem_range, Nat.lt_succ_iff] at nk
       have hg :
         ∀ {k' c' n},
           Nat.pair k' (encode c') < Nat.pair k (encode c) →

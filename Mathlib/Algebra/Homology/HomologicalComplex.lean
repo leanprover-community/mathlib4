@@ -351,6 +351,11 @@ def forget : HomologicalComplex V c ⥤ GradedObject ι V where
   map f := f.f
 #align homological_complex.forget HomologicalComplex.forget
 
+instance : Faithful (forget V c) where
+  map_injective h := by
+    ext i
+    exact congr_fun h i
+
 /-- Forgetting the differentials than picking out the `i`-th object is the same as
 just picking out the `i`-th object. -/
 @[simps!]
@@ -599,7 +604,7 @@ theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
   simp only [xNextIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 #align homological_complex.hom.next_eq HomologicalComplex.Hom.next_eq
 
-@[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
+@[reassoc, elementwise] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
   f.comm _ _
 #align homological_complex.hom.comm_from HomologicalComplex.Hom.comm_from
@@ -607,7 +612,7 @@ theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.d
 attribute [simp 1100] comm_from_assoc
 attribute [simp] comm_from_apply
 
-@[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
+@[reassoc, elementwise] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem comm_to (f : Hom C₁ C₂) (j : ι) : f.prev j ≫ C₂.dTo j = C₁.dTo j ≫ f.f j :=
   f.comm _ _
 #align homological_complex.hom.comm_to HomologicalComplex.Hom.comm_to

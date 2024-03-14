@@ -121,6 +121,11 @@ lemma cast_mul_eq_zsmul_cast {α : Type*} [AddCommGroupWithOne α] :
     simp only [sub_mul, one_mul, cast_sub, ih, sub_zsmul, one_zsmul, ← sub_eq_add_neg, forall_const]
 #align int.cast_mul_eq_zsmul_cast Int.cast_mul_eq_zsmul_cast
 
+theorem natAbs_sub_pos_iff {i j : ℤ} : 0 < natAbs (i - j) ↔ i ≠ j := by
+  rw [natAbs_pos, ne_eq, sub_eq_zero]
+
+theorem natAbs_sub_ne_zero_iff {i j : ℤ} : natAbs (i - j) ≠ 0 ↔ i ≠ j :=
+  Nat.ne_zero_iff_zero_lt.trans natAbs_sub_pos_iff
 
 /-! ### succ and pred -/
 
@@ -415,7 +420,7 @@ theorem exists_lt_and_lt_iff_not_dvd (m : ℤ) {n : ℤ} (hn : 0 < n) :
   · intro h
     rw [dvd_iff_emod_eq_zero, ← Ne.def] at h
     have := (emod_nonneg m hn.ne.symm).lt_of_ne h.symm
-    simp (config := { singlePass := true }) only [← emod_add_ediv m n]
+    rw [← emod_add_ediv m n]
     refine' ⟨m / n, lt_add_of_pos_left _ this, _⟩
     rw [add_comm _ (1 : ℤ), left_distrib, mul_one]
     exact add_lt_add_right (emod_lt_of_pos _ hn) _
@@ -575,6 +580,15 @@ theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - 
 #align int.to_nat_sub_of_le Int.toNat_sub_of_le
 
 end Int
+
+section Group
+variable {G : Type*} [Group G]
+
+@[to_additive (attr := simp) abs_zsmul_eq_zero]
+lemma zpow_abs_eq_one (a : G) (n : ℤ) : a ^ |n| = 1 ↔ a ^ n = 1 := by
+  rw [← Int.coe_natAbs, zpow_ofNat, pow_natAbs_eq_one]
+
+end Group
 
 section bit0_bit1
 variable {R}

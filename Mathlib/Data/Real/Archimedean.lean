@@ -177,17 +177,17 @@ theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
   dif_neg <| by simp
 #align real.Sup_empty Real.sSup_empty
 
-theorem ciSup_empty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨆ i, f i = 0 := by
+@[simp] lemma iSup_of_isEmpty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨆ i, f i = 0 := by
   dsimp [iSup]
   convert Real.sSup_empty
   rw [Set.range_eq_empty_iff]
   infer_instance
-#align real.csupr_empty Real.ciSup_empty
+#align real.csupr_empty Real.iSup_of_isEmpty
 
 @[simp]
 theorem ciSup_const_zero {α : Sort*} : ⨆ _ : α, (0 : ℝ) = 0 := by
   cases isEmpty_or_nonempty α
-  · exact Real.ciSup_empty _
+  · exact Real.iSup_of_isEmpty _
   · exact ciSup_const
 #align real.csupr_const_zero Real.ciSup_const_zero
 
@@ -200,22 +200,21 @@ theorem iSup_of_not_bddAbove {α : Sort*} {f : α → ℝ} (hf : ¬BddAbove (Set
   sSup_of_not_bddAbove hf
 #align real.supr_of_not_bdd_above Real.iSup_of_not_bddAbove
 
-theorem sSup_univ : sSup (@Set.univ ℝ) = 0 :=
-  Real.sSup_of_not_bddAbove fun ⟨_, h⟩ => not_le_of_lt (lt_add_one _) <| h (Set.mem_univ _)
+theorem sSup_univ : sSup (@Set.univ ℝ) = 0 := Real.sSup_of_not_bddAbove not_bddAbove_univ
 #align real.Sup_univ Real.sSup_univ
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set ℝ) = 0 := by simp [sInf_def, sSup_empty]
 #align real.Inf_empty Real.sInf_empty
 
-theorem ciInf_empty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨅ i, f i = 0 := by
-  rw [iInf_of_empty', sInf_empty]
-#align real.cinfi_empty Real.ciInf_empty
+@[simp] nonrec lemma iInf_of_isEmpty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨅ i, f i = 0 := by
+  rw [iInf_of_isEmpty, sInf_empty]
+#align real.cinfi_empty Real.iInf_of_isEmpty
 
 @[simp]
 theorem ciInf_const_zero {α : Sort*} : ⨅ _ : α, (0 : ℝ) = 0 := by
   cases isEmpty_or_nonempty α
-  · exact Real.ciInf_empty _
+  · exact Real.iInf_of_isEmpty _
   · exact ciInf_const
 #align real.cinfi_const_zero Real.ciInf_const_zero
 

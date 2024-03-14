@@ -36,8 +36,7 @@ open Function
 
 namespace ZMod
 
-instance charZero : CharZero (ZMod 0) :=
-  (by infer_instance : CharZero ℤ)
+instance charZero : CharZero (ZMod 0) := inferInstanceAs (CharZero ℤ)
 
 /-- `val a` is a natural number defined as:
   - for `a : ZMod 0` it is the absolute value of `a`
@@ -89,6 +88,13 @@ theorem val_nat_cast {n : ℕ} (a : ℕ) : (a : ZMod n).val = a % n := by
   · apply Fin.val_nat_cast
 #align zmod.val_nat_cast ZMod.val_nat_cast
 
+theorem val_unit' {n : ZMod 0} : IsUnit n ↔ n.val = 1 := by
+  simp only [val]
+  rw [Int.isUnit_iff, Int.natAbs_eq_iff, Nat.cast_one]
+
+lemma eq_one_of_isUnit_natCast {n : ℕ} (h : IsUnit (n : ZMod 0)) : n = 1 := by
+  rw [← Nat.mod_zero n, ← val_nat_cast, val_unit'.mp h]
+
 theorem val_nat_cast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
   rwa [val_nat_cast, Nat.mod_eq_of_lt]
 
@@ -127,7 +133,7 @@ theorem ringChar_zmod_n (n : ℕ) : ringChar (ZMod n) = n := by
   exact ZMod.charP n
 #align zmod.ring_char_zmod_n ZMod.ringChar_zmod_n
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem nat_cast_self (n : ℕ) : (n : ZMod n) = 0 :=
   CharP.cast_eq_zero (ZMod n) n
 #align zmod.nat_cast_self ZMod.nat_cast_self
@@ -748,6 +754,19 @@ theorem val_coe_unit_coprime {n : ℕ} (u : (ZMod n)ˣ) : Nat.Coprime (u : ZMod 
   rw [Units.val_mul, val_mul, nat_cast_mod]
 #align zmod.val_coe_unit_coprime ZMod.val_coe_unit_coprime
 
+lemma isUnit_iff_coprime (m n : ℕ) : IsUnit (m : ZMod n) ↔ m.Coprime n := by
+  refine ⟨fun H ↦ ?_, fun H ↦ (unitOfCoprime m H).isUnit⟩
+  have H' := val_coe_unit_coprime H.unit
+  rw [IsUnit.unit_spec, val_nat_cast m, Nat.coprime_iff_gcd_eq_one] at H'
+  rw [Nat.coprime_iff_gcd_eq_one, Nat.gcd_comm, ← H']
+  exact Nat.gcd_rec n m
+
+lemma isUnit_prime_iff_not_dvd {n p : ℕ} (hp : p.Prime) : IsUnit (p : ZMod n) ↔ ¬p ∣ n := by
+  rw [isUnit_iff_coprime, Nat.Prime.coprime_iff_not_dvd hp]
+
+lemma isUnit_prime_of_not_dvd {n p : ℕ} (hp : p.Prime) (h : ¬ p ∣ n) : IsUnit (p : ZMod n) :=
+  (isUnit_prime_iff_not_dvd hp).mpr h
+
 @[simp]
 theorem inv_coe_unit {n : ℕ} (u : (ZMod n)ˣ) : (u : ZMod n)⁻¹ = (u⁻¹ : (ZMod n)ˣ) := by
   have := congr_arg ((↑) : ℕ → ZMod n) (val_coe_unit_coprime u)
@@ -834,6 +853,18 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
     left_inv := inv.1
     right_inv := inv.2 }
 #align zmod.chinese_remainder ZMod.chineseRemainder
+
+lemma subsingleton_iff {n : ℕ} : Subsingleton (ZMod n) ↔ n = 1 := by
+  constructor
+  · obtain (_ | _ | n) := n
+    · simpa [ZMod] using not_subsingleton _
+    · simp [ZMod]
+    · simpa [ZMod] using not_subsingleton _
+  · rintro rfl
+    infer_instance
+
+lemma nontrivial_iff {n : ℕ} : Nontrivial (ZMod n) ↔ n ≠ 1 := by
+  rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
 -- todo: this can be made a `Unique` instance.
 instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
@@ -1266,7 +1297,7 @@ def lift : { f : ℤ →+ A // f n = 0 } ≃ (ZMod n →+ A) :=
         · rintro hf _ ⟨x, rfl⟩
           simp only [f.map_zsmul, zsmul_zero, f.mem_ker, hf]
         · intro h
-          refine' h (AddSubgroup.mem_zmultiples _)).trans <|
+          exact h (AddSubgroup.mem_zmultiples _)).trans <|
     (Int.castAddHom (ZMod n)).liftOfRightInverse cast int_cast_zmod_cast
 #align zmod.lift ZMod.lift
 

@@ -99,7 +99,7 @@ noncomputable def stalk (X : LocallyRingedSpace) (x : X) : CommRingCat :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.stalk AlgebraicGeometry.LocallyRingedSpace.stalk
 
--- Porting note : added this instance to help Lean realize stalks are local (so that `0 ≠ 1`
+-- Porting note: added this instance to help Lean realize stalks are local (so that `0 ≠ 1`
 -- works below)
 instance stalkLocal (x : X) : LocalRing <| X.stalk x := X.localRing x
 
@@ -171,7 +171,7 @@ theorem comp_val {X Y Z : LocallyRingedSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.comp_val AlgebraicGeometry.LocallyRingedSpace.comp_val
 
--- Porting note : complains that `(f ≫ g).val.c` can be further simplified
+-- Porting note: complains that `(f ≫ g).val.c` can be further simplified
 -- so changed to its simp normal form `(f.val ≫ g.val).c`
 @[simp]
 theorem comp_val_c {X Y Z : LocallyRingedSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :

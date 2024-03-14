@@ -55,8 +55,8 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Quotient.mk_surjective M'
   let g : s ⊕ t → M := Sum.elim (f ·) (·)
-  suffices : LinearIndependent R g
-  · refine le_trans ?_ (le_ciSup (bddAbove_range.{v, v} _) ⟨_, this.to_subtype_range⟩)
+  suffices LinearIndependent R g by
+    refine le_trans ?_ (le_ciSup (bddAbove_range.{v, v} _) ⟨_, this.to_subtype_range⟩)
     rw [mk_range_eq _ this.injective, mk_sum, lift_id, lift_id]
   refine .sum_type (.of_comp M'.mkQ ?_) (ht.map' M'.subtype M'.ker_subtype) ?_
   · convert hs; ext x; exact hf x
@@ -209,7 +209,7 @@ theorem rank_matrix' (m n : Type v) [Finite m] [Finite n] :
 
 /-- If `m` and `n` are `Fintype` that lie in the same universe as `R`, the rank of `m × n` matrices
   is `# m * # n`. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem rank_matrix'' (m n : Type u) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = #m * #n := by simp
 #align rank_matrix'' rank_matrix''
@@ -304,7 +304,7 @@ theorem rank_fun_eq_lift_mul : Module.rank R (η → M) =
 #align rank_fun_eq_lift_mul rank_fun_eq_lift_mul
 
 theorem rank_fun' : Module.rank R (η → R) = Fintype.card η := by
-  rw [rank_fun_eq_lift_mul, rank_self, Cardinal.lift_one, mul_one, Cardinal.natCast_inj]
+  rw [rank_fun_eq_lift_mul, rank_self, Cardinal.lift_one, mul_one]
 #align rank_fun' rank_fun'
 
 theorem rank_fin_fun (n : ℕ) : Module.rank R (Fin n → R) = n := by simp [rank_fun']
@@ -399,17 +399,15 @@ variable [StrongRankCondition R]
 
 /-- The dimension of a submodule is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_le [Module.Finite R M] (s : Submodule R M) :
-    finrank R s ≤ finrank R M := by
-  simpa only [Cardinal.toNat_lift] using
-    toNat_le_of_le_of_lt_aleph0 (rank_lt_aleph0 _ _) (rank_submodule_le s)
+    finrank R s ≤ finrank R M :=
+  toNat_le_toNat (rank_submodule_le s) (rank_lt_aleph0 _ _)
 #align submodule.finrank_le Submodule.finrank_le
 
 /-- The dimension of a quotient is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_quotient_le [Module.Finite R M] (s : Submodule R M) :
-    finrank R (M ⧸ s) ≤ finrank R M := by
-  simpa only [Cardinal.toNat_lift] using
-    toNat_le_of_le_of_lt_aleph0 (rank_lt_aleph0 _ _)
-      ((Submodule.mkQ s).rank_le_of_surjective (surjective_quot_mk _))
+    finrank R (M ⧸ s) ≤ finrank R M :=
+  toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective (surjective_quot_mk _))
+    (rank_lt_aleph0 _ _)
 #align submodule.finrank_quotient_le Submodule.finrank_quotient_le
 
 /-- Pushforwards of finite submodules have a smaller finrank. -/

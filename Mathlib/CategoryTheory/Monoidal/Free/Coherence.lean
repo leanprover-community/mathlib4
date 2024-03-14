@@ -252,9 +252,8 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
         simp only [← Category.assoc]
         congr 4
         simp only [Category.assoc, ← cancel_epi (𝟙 (inclusionObj n.as) ⊗ (α_ X₁ X₂ X₃).inv),
-          pentagon_inv_assoc (inclusionObj n.as) X₁ X₂ X₃,
-          tensor_inv_hom_id_assoc, tensor_id, Category.id_comp, Iso.inv_hom_id,
-          Category.comp_id]
+          tensor_inv_hom_id_assoc, tensor_id, Category.id_comp,
+          pentagon_inv_assoc (inclusionObj n.as) X₁ X₂ X₃, Iso.inv_hom_id, Category.comp_id]
       · ext n
         dsimp
         rw [mk_α_inv, NatTrans.comp_app, NatTrans.comp_app]
@@ -272,7 +271,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
         dsimp [Functor.comp]
         rw [mk_l_inv, NatTrans.comp_app, NatTrans.comp_app]
         dsimp [NatIso.ofComponents, normalizeMapAux, whiskeringRight, whiskerRight, Functor.comp]
-        simp only [triangle_assoc_comp_left_inv_assoc, inv_hom_id_tensor_assoc, tensor_id,
+        simp only [triangle_assoc_comp_right_assoc, tensor_inv_hom_id_assoc, tensor_id,
           Category.id_comp, Category.comp_id]
         rfl
       · ext n

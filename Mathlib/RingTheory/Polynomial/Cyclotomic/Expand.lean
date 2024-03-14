@@ -143,7 +143,7 @@ theorem cyclotomic_mul_prime_dvd_eq_pow (R : Type*) {p n : ℕ} [hp : Fact (Nat.
     rw [← map_cyclotomic _ (algebraMap (ZMod p) R), ← map_cyclotomic _ (algebraMap (ZMod p) R),
       this, Polynomial.map_pow]
   rw [← ZMod.expand_card, ← map_cyclotomic_int n, ← map_expand,
-    cyclotomic_expand_eq_cyclotomic hp.out hn, map_cyclotomic, mul_comm]
+    cyclotomic_expand_eq_cyclotomic hp.out hn, map_cyclotomic]
 #align polynomial.cyclotomic_mul_prime_dvd_eq_pow Polynomial.cyclotomic_mul_prime_dvd_eq_pow
 
 /-- If `R` is of characteristic `p` and `¬p ∣ m`, then
@@ -175,8 +175,7 @@ theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [
   · rw [← isRoot_cyclotomic_iff, IsRoot.def] at h
     rw [cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, IsRoot.def, eval_pow, h,
       zero_pow]
-    simp only [tsub_pos_iff_lt]
-    apply pow_right_strictMono hp.out.one_lt (Nat.pred_lt hk.ne')
+    exact Nat.sub_ne_zero_of_lt $ pow_right_strictMono hp.out.one_lt $ Nat.pred_lt hk.ne'
 #align polynomial.is_root_cyclotomic_prime_pow_mul_iff_of_char_p Polynomial.isRoot_cyclotomic_prime_pow_mul_iff_of_charP
 
 end CharP

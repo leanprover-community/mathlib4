@@ -82,10 +82,8 @@ theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
   rfl
 #align enat.coe_sub ENat.coe_sub
 
---Porting note: `simp` and `norm_cast` can prove it
---@[simp, norm_cast]
-theorem coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) :=
-  WithTop.coe_mul
+-- Eligible for dsimp
+@[simp, nolint simpNF] lemma coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
 #align enat.coe_mul ENat.coe_mul
 
 @[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
@@ -115,6 +113,8 @@ theorem toNat_coe (n : ℕ) : toNat n = n :=
 theorem toNat_top : toNat ⊤ = 0 :=
   rfl
 #align enat.to_nat_top ENat.toNat_top
+
+@[simp] theorem toNat_eq_zero : toNat n = 0 ↔ n = 0 ∨ n = ⊤ := WithTop.untop'_eq_self_iff
 
 --Porting note: new definition copied from `WithTop`
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
