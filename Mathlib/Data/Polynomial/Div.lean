@@ -112,7 +112,7 @@ noncomputable def divModByMonicAux : ∀ (_p : R[X]) {q : R[X]}, Monic q → R[X
       let dm := divModByMonicAux (p - q * z) hq
       ⟨z + dm.1, dm.2⟩
     else ⟨0, p⟩
-  termination_by p q hq => p
+  termination_by p => p
 #align polynomial.div_mod_by_monic_aux Polynomial.divModByMonicAux
 
 /-- `divByMonic` gives the quotient of `p` by a monic polynomial `q`. -/
