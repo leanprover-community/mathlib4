@@ -4,6 +4,8 @@ example : ∀ a b : Nat, a = b → b = a := by
   introv h
   exact h.symm
 
+-- mutes `'exacts []' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 example (n : Nat) : n = n := by
   induction n
   exacts [rfl, rfl]
@@ -44,6 +46,8 @@ example (n m : Nat) : Unit := by
   cases m
   iterate exact ()
 
+-- mutes `'iterate exact ()' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 example (n : Nat) : Nat := by
   iterate exact () -- silently succeeds, after iterating 0 times
   iterate exact n

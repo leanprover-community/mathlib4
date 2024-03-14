@@ -549,6 +549,8 @@ section norm_num_erase
 
 example : 3 ^ 3 + 4 = 31 := by norm_num1
 
+-- mutes `'norm_num1' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 attribute [-norm_num] Mathlib.Meta.NormNum.evalPow in
 example : 3 ^ 3 + 4 = 31 := by
   norm_num1

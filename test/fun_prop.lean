@@ -73,6 +73,8 @@ A silly example on which `measurability` fails and `fun_prop` succeeds. Let's tu
 set_option trace.Meta.Tactic.fun_prop true in
 -/
 
+-- mutes `'(try measurability)' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 example {α} [MeasurableSpace α] (f : α → α → α) (hf : Measurable fun (x,y) => f x y) (a : α) :
     Measurable (fun x => (f x a, f (f x x) (f (f x x) x))) := by (try measurability); fun_prop
 
