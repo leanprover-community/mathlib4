@@ -1,10 +1,19 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
 
+/-!
+# The category of simplicial objects is simplicial
+
+-/
 universe w v u
 
 namespace CategoryTheory
 
-open Simplicial Limits PresimplicialCategory
+open Simplicial Limits SimplicialCategory
 
 variable {C : Type u} [Category.{v} C]
 
@@ -54,7 +63,6 @@ def simplicialHomFunctor : SSet.{w}ᵒᵖ ⥤ Type (max v w) where
   obj A := SimplicialHomObj K L A.unop
   map {A A'} f x := x.map f.unop
 
-@[simps! obj map]
 def simplicialHom : SSet.{v} := yoneda.op ⋙ simplicialHomFunctor.{0} K L
 
 variable {K L} in
@@ -78,7 +86,7 @@ def simplicialHomEquiv₀ : simplicialHom K L _[0] ≃ (K ⟶ L) where
         obtain rfl := Subsingleton.elim s (SimplexCategory.const' _ _ 0)
         exact φ.naturality f }
   left_inv x := by
-    dsimp
+    dsimp [simplicialHom]
     ext Δ (s : _ ⟶ _)
     obtain rfl := Subsingleton.elim s (SimplexCategory.const' _ _ 0)
     rfl
@@ -113,28 +121,38 @@ def simplicialHomEquiv (A : SSet.{v}) :
     dsimp
     erw [FunctorToTypes.map_id_apply _ _]
 
--- it would be better to define first homotopies between 0-simplicies of simplicial sets
--- and then apply that construction to the simplicial set `simplicialHom K L`
-variable {K L} in
-structure Homotopy (φ₀ φ₁ : K ⟶ L) where
-  h : simplicialHom K L _[1]
-  h₀ : (simplicialHom K L).δ 1 h = (simplicialHomEquiv₀ K L).symm φ₀
-  h₁ : (simplicialHom K L).δ 0 h = (simplicialHomEquiv₀ K L).symm φ₁
+@[simp]
+lemma _root_.SSet.comp_app_apply {X Y Z : SSet.{v}} (f : X ⟶ Y) (g : Y ⟶ Z)
+    {Δ : SimplexCategoryᵒᵖ} (x : X.obj Δ) :
+    (f ≫ g).app Δ x = g.app Δ (f.app Δ x) := rfl
+
+@[simp]
+lemma _root_.SSet.id_app_apply (X : SSet.{v}) {Δ : SimplexCategoryᵒᵖ} (x : X.obj Δ) :
+    NatTrans.app (𝟙 X) Δ x = x := rfl
+
+@[simp]
+lemma unitHomEquiv_symm_simplicialHomEquiv₀_symm_app_app {K L : SimplicialObject C} (φ : K ⟶ L)
+    (Δ : SimplexCategoryᵒᵖ) (Δ' : SimplexCategoryᵒᵖ) (f : Δ'.unop ⟶ Δ.unop) :
+    (((simplicialHom K L).unitHomEquiv.symm ((simplicialHomEquiv₀ K L).symm φ)).app Δ PUnit.unit).app Δ' f =
+      φ.app Δ' := by
+  rfl
 
 noncomputable instance : EnrichedCategory SSet.{v} (SimplicialObject C) where
   Hom := simplicialHom
   id K := (SSet.unitHomEquiv _).symm ((simplicialHomEquiv₀ K K).symm (𝟙 _))
   comp K L M :=
-    { app := fun Δ ⟨x, y⟩ => x.comp y
-      naturality := sorry }
-  id_comp := sorry
-  comp_id := sorry
-  assoc := sorry
+    { app := fun Δ ⟨x, y⟩ => x.comp y }
 
-noncomputable instance : PresimplicialCategory (SimplicialObject C) where
+noncomputable instance : SimplicialCategory (SimplicialObject C) where
   homEquiv K L := by
     exact (simplicialHomEquiv₀ K L).symm.trans (simplicialHom K L).unitHomEquiv.symm
 
+noncomputable instance : SimplicialCategory SSet.{v} := by
+  dsimp [SSet]
+  infer_instance
+
 end SimplicialObject
+
+abbrev SSet.Homotopy {K L : SSet.{v}} (f g : K ⟶ L) := SimplicialCategory.Homotopy f g
 
 end CategoryTheory
