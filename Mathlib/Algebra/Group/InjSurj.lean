@@ -183,7 +183,10 @@ admits an injective map that preserves `0` and `+` to an additive commutative mo
 protected def commMonoid [CommMonoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CommMonoid M₁ :=
-  { hf.commSemigroup f mul, hf.monoid f one mul npow with }
+  { toMonoid := hf.monoid f one mul npow
+    mul_comm := (hf.commSemigroup f mul).mul_comm
+  }
+--  { hf.commSemigroup f mul, hf.monoid f one mul npow with }
 #align function.injective.comm_monoid Function.Injective.commMonoid
 #align function.injective.add_comm_monoid Function.Injective.addCommMonoid
 
