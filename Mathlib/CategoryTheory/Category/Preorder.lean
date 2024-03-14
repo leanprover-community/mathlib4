@@ -68,6 +68,7 @@ def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
 #align category_theory.hom_of_le CategoryTheory.homOfLE
 
+@[inherit_doc homOfLE]
 abbrev _root_.LE.le.hom := @homOfLE
 #align has_le.le.hom LE.le.hom
 
@@ -88,6 +89,7 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 #align category_theory.le_of_hom CategoryTheory.leOfHom
 
+@[nolint defLemma, inherit_doc leOfHom]
 abbrev _root_.Quiver.Hom.le := @leOfHom
 #align quiver.hom.le Quiver.Hom.le
 
