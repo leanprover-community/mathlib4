@@ -211,7 +211,8 @@ structure RewriteApplication extends RewriteLemma where
 def rewriteCall (rwLemma : RewriteLemma)
     (loc : SubExpr.GoalLocation) (subExpr : Expr) (occ : Option Nat) :
     MetaM (Option RewriteApplication) := do
-  let thm ← mkConstWithFreshMVarLevels rwLemma.name
+  -- the lemma might not be imported, so we use a try-catch block here.
+  let thm ← try mkConstWithFreshMVarLevels rwLemma.name catch _ => return none
   let (mvars, bis, eqn) ← forallMetaTelescope (← inferType thm)
   let some (lhs, rhs) := matchEqn? eqn | return none
   let (lhs, rhs) := if rwLemma.symm then (rhs, lhs) else (lhs, rhs)
@@ -248,7 +249,7 @@ def rewriteCall (rwLemma : RewriteLemma)
   let tactic := s! "rw{cfg} [{symm}{← printRewriteLemma lemmaApplication !allAssigned}]{location}"
   return some { rwLemma with tactic, extraGoals, replacement }
 
-/-- The library results are displayed to the user in sections, each section corresponding to
+/-- The library results are displayed to the user in sections. Each section corresponds to
 a particular pattern and to whether the lemma is defined in the file that the user is in. -/
 structure Section where
   pattern : CodeWithInfos
