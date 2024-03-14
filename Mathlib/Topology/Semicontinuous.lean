@@ -31,8 +31,8 @@ We introduce 4 definitions related to lower semicontinuity:
 
 We build a basic API using dot notation around these notions, and we prove that
 * constant functions are lower semicontinuous;
-* `indicator s (λ _, y)` is lower semicontinuous when `s` is open and `0 ≤ y`, or when `s` is closed
-  and `y ≤ 0`;
+* `indicator s (fun _ ↦ y)` is lower semicontinuous when `s` is open and `0 ≤ y`,
+  or when `s` is closed and `y ≤ 0`;
 * continuous functions are lower semicontinuous;
 * composition with a continuous monotone functions maps lower semicontinuous functions to lower
   semicontinuous functions. If the function is anti-monotone, it instead maps lower semicontinuous
