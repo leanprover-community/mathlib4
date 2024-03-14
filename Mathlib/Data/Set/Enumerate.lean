@@ -72,6 +72,8 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
         this.left
 #align set.enumerate_mem Set.enumerate_mem
 
+-- fix me: `on_goal 2 => swap_var n₁ ↔ n₂, h₁ ↔ h₂` confuses the `unusedTactic` linter
+set_option linter.unusedTactic false in
 theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, sel s = some a → a ∈ s)
     (h₁ : enumerate sel s n₁ = some a) (h₂ : enumerate sel s n₂ = some a) : n₁ = n₂ := by
   /- Porting note: The `rcase, on_goal, all_goals` has been used instead of

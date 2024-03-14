@@ -296,6 +296,7 @@ example {R S : CommMonCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by sim
 
 -- We verify that when constructing a morphism in `CommMonCat`,
 -- when we construct the `toFun` field, the types are presented as `↑R`.
+set_option linter.unusedTactic false in
 example (R : CommMonCat.{u}) : R ⟶ R :=
   { toFun := fun x => by
       match_target (R : Type u)
