@@ -177,7 +177,7 @@ theorem mulEquiv_apply (e : α ≃ β) [Mul β] (a : α) : (mulEquiv e) a = e a 
 theorem mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
     letI := Equiv.mul e
     (mulEquiv e).symm b = e.symm b :=
-  by intros; rfl
+  rfl
 #align equiv.mul_equiv_symm_apply Equiv.mulEquiv_symm_apply
 #align equiv.add_equiv_symm_apply Equiv.addEquiv_symm_apply
 
@@ -213,7 +213,7 @@ theorem ringEquiv_apply (e : α ≃ β) [Add β] [Mul β] (a : α) : (ringEquiv 
 theorem ringEquiv_symm_apply (e : α ≃ β) [Add β] [Mul β] (b : β) : by
     letI := Equiv.add e
     letI := Equiv.mul e
-    exact (ringEquiv e).symm b = e.symm b := by intros; rfl
+    exact (ringEquiv e).symm b = e.symm b := rfl
 #align equiv.ring_equiv_symm_apply Equiv.ringEquiv_symm_apply
 
 variable (α) in
