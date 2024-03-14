@@ -1238,8 +1238,9 @@ section DistribLattice
 variable [DistribLattice α] {s : Finset ι} {t : Finset κ} (hs : s.Nonempty) (ht : t.Nonempty)
   {f : ι → α} {g : κ → α} {a : α}
 
-theorem sup'_inf_distrib_left (f : ι → α) (a : α) : a ⊓ s.sup' hs f = s.sup' hs λ i => a ⊓ f i := by
-  refine' hs.cons_induction (fun i => _) fun i s hi hs ih => _
+theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
+    a ⊓ s.sup' hs f = s.sup' hs fun i ↦ a ⊓ f i := by
+  refine' hs.cons_induction (fun i ↦ ?_) fun i s hi hs ih ↦ ?_
   · simp
   · simp_rw [sup'_cons hs, inf_sup_left]
     rw [ih]

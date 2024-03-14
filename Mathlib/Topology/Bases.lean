@@ -212,7 +212,7 @@ lemma IsTopologicalBasis.subset_of_forall_subset {t : Set α} (hB : IsTopologica
 lemma IsTopologicalBasis.eq_of_forall_subset_iff {t : Set α} (hB : IsTopologicalBasis B)
     (hs : IsOpen s) (ht : IsOpen t) (h : ∀ U ∈ B, U ⊆ s ↔ U ⊆ t) : s = t := by
   rw [hB.open_eq_sUnion' hs, hB.open_eq_sUnion' ht]
-  exact congr_arg _ (Set.ext λ U ↦ and_congr_right <| h _)
+  exact congr_arg _ (Set.ext fun U ↦ and_congr_right <| h _)
 
 /-- A point `a` is in the closure of `s` iff all basis sets containing `a` intersect `s`. -/
 theorem IsTopologicalBasis.mem_closure_iff {b : Set (Set α)} (hb : IsTopologicalBasis b) {s : Set α}

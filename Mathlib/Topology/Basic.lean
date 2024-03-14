@@ -1857,11 +1857,11 @@ However, lemmas with this conclusion are not nice to use in practice because
   elaboration process.
   ```
   variable {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
-  example : Continuous (λ x : M, x + x) :=
-  continuous_add.comp _
+  example : Continuous (fun x : M ↦ x + x) :=
+    continuous_add.comp _
 
-  example : Continuous (λ x : M, x + x) :=
-  continuous_add.comp (continuous_id.prod_mk continuous_id)
+  example : Continuous (fun x : M ↦ x + x) :=
+    continuous_add.comp (continuous_id.prod_mk continuous_id)
   ```
   The second is a valid proof, which is accepted if you write it as
   `continuous_add.comp (continuous_id.prod_mk continuous_id : _)`
@@ -1873,7 +1873,8 @@ However, lemmas with this conclusion are not nice to use in practice because
 
 A much more convenient way to write continuity lemmas is like `Continuous.add`:
 ```
-Continuous.add {f g : X → M} (hf : Continuous f) (hg : Continuous g) : Continuous (λ x, f x + g x)
+Continuous.add {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
+  Continuous (fun x ↦ f x + g x)
 ```
 The conclusion can be `Continuous (f + g)`, which is definitionally equal.
 This has the following advantages

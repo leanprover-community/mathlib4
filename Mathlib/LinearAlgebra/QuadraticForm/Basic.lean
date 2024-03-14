@@ -352,9 +352,9 @@ def ofPolar (toFun : M → R) (toFun_smul : ∀ (a : R) (x : M), toFun (a • x)
   { toFun
     toFun_smul
     exists_companion' := ⟨LinearMap.mk₂ R (polar toFun) (polar_add_left) (polar_smul_left)
-      (fun x _ _ => by simp_rw [polar_comm _ x, polar_add_left])
-      (fun _ _ _ => by rw [polar_comm, polar_smul_left, polar_comm]),
-      fun _ _ =>  by
+      (fun x _ _ ↦ by simp_rw [polar_comm _ x, polar_add_left])
+      (fun _ _ _ ↦ by rw [polar_comm, polar_smul_left, polar_comm]),
+      fun _ _ ↦ by
         simp only [LinearMap.mk₂_apply]
         rw [polar, sub_sub, add_sub_cancel'_right]⟩ }
 #align quadratic_form.of_polar QuadraticForm.ofPolar
