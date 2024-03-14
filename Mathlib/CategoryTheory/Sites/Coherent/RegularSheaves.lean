@@ -160,8 +160,6 @@ lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C�
   · intro h
     let c : PullbackCone π π := PullbackCone.mk pullback.fst pullback.snd pullback.condition
     let hc : IsLimit c := pullbackIsPullback π π
-    refine ⟨?_⟩
-    specialize h c hc
     let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
     let E := @FullSubcategory (Over B) (fun f ↦ S f.hom)
     let F : Eᵒᵖ ⥤ D := S.diagram.op ⋙ P
@@ -172,15 +170,59 @@ lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C�
     let fst : P' ⟶ X' := Over.homMk pullback.fst
     let snd : P' ⟶ X' := Over.homMk pullback.snd pullback.condition.symm
     let H := parallelPair fst.op snd.op
-    let i : H ⋙ F ≅ G := sorry
-    have : H.Initial := sorry
-    apply (Functor.Initial.isLimitWhiskerEquiv H _).toFun
-    refine IsLimit.equivOfNatIsoOfIso i.symm _ _ ?_ h.some
-    refine Cones.ext ?_ ?_
-    · rfl
-    · rintro ⟨_ | _⟩
-      · sorry
-      · sorry
+    obtain ⟨(lift : ∀ s : Cone G, _), fac : ∀ s : Cone G, _, uniq : ∀ s : Cone G, _⟩ := (h c hc).some
+    let i : H ⋙ F ≅ G := by
+      refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_
+      all_goals simp only [id_obj, comp_obj, parallelPair_obj_zero, op_obj, unop_op,
+          fullSubcategoryInclusion.obj, Over.forget_obj, Over.mk_left, parallelPair_obj_one,
+          Functor.comp_map, parallelPair_map_left, op_map, Quiver.Hom.unop_op,
+          fullSubcategoryInclusion.map, Over.forget_map, Over.homMk_left, Iso.refl_hom,
+          Category.comp_id, Category.id_comp, H, fst, snd, F, G]; rfl
+    refine ⟨?_⟩
+    let hhh : IsLimit
+        ((P.mapCone (Sieve.ofArrows (fun x ↦ X) fun x ↦ π).arrows.cocone.op).whisker H) := by
+      refine IsLimit.equivOfNatIsoOfIso i.symm _ _ ?_ (h c hc).some
+      refine Cones.ext ?_ ?_
+      · rfl
+      · rintro ⟨_ | _⟩
+        · simp only [id_obj, comp_obj, Functor.comp_map, Iso.refl_hom, id_eq, eq_mpr_eq_cast,
+            const_obj_obj, parallelPair_map_right, Quiver.Hom.unop_op, Over.homMk_left, Iso.symm_hom,
+            Cones.postcompose_obj_pt, Fork.ofι_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
+            Fork.ofι_π_app, parallelPair.ext_inv_app, Iso.refl_inv, Sieve.generate_apply,
+            Cone.whisker_pt, mapCone_pt, Cocone.op_pt, Cocone.whisker_pt, Over.forgetCocone_pt,
+            Cone.whisker_π, whiskerLeft_app, mapCone_π_app, op_obj, fullSubcategoryInclusion.obj,
+            Over.forget_obj, Cocone.op_π, Cocone.whisker_ι, NatTrans.op_app, Over.forgetCocone_ι_app,
+            Category.id_comp, i]
+          erw [Category.comp_id]
+          congr
+        · simp only [id_obj, comp_obj, Functor.comp_map, Iso.refl_hom, id_eq, eq_mpr_eq_cast,
+            const_obj_obj, parallelPair_map_right, Quiver.Hom.unop_op, Over.homMk_left, Iso.symm_hom,
+            Cones.postcompose_obj_pt, Fork.ofι_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
+            Fork.ofι_π_app, parallelPair_obj_one, parallelPair.ext_inv_app, Iso.refl_inv,
+            Category.assoc, Sieve.generate_apply, Cone.whisker_pt, mapCone_pt, Cocone.op_pt,
+            Cocone.whisker_pt, Over.forgetCocone_pt, Cone.whisker_π, whiskerLeft_app, mapCone_π_app,
+            op_obj, fullSubcategoryInclusion.obj, Over.forget_obj, Cocone.op_π, Cocone.whisker_ι,
+            NatTrans.op_app, Over.forgetCocone_ι_app, Category.id_comp, i]
+          erw [Category.comp_id, ← Functor.map_comp]
+          congr
+    refine ⟨fun s ↦ hhh.lift (s.whisker H), fun s d ↦ ?_, fun s m h ↦ ?_⟩
+    · simp
+      have h₁ := hhh.fac (s.whisker H) WalkingParallelPair.zero
+      have h₂ := hhh.fac (s.whisker H) WalkingParallelPair.one
+      simp [H] at h₁
+      simp [H] at h₂
+      obtain ⟨_, f, g, h, w⟩ := d.unop.property
+      cases h
+      rw [← w]
+      simp [H]
+      rw [← Category.assoc, h₁]
+      have := s.w (j := op X') (j' := d)
+      let ff : d.unop ⟶ X' := Over.homMk (f : _ ⟶ X'.obj.left) w
+      rw [← this ff.op]
+      rfl
+    · refine hhh.uniq (s.whisker H) m ?_
+      rintro ⟨_ | _⟩
+      exacts [h _, h _]
   · sorry
 
 lemma equalizerCondition_iff_isSheaf (F : Cᵒᵖ ⥤ D) [Preregular C]
