@@ -294,9 +294,8 @@ jobs:
           scripts/lean-pr-testing-comments.sh
 
   lean4checker:
-    name: check environments using lean4checker
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
-    name: BuildJOB_NAME
+    name: check environments using lean4checker
     runs-on: RUNS_ON
     steps:
       - name: cleanup
@@ -338,20 +337,18 @@ jobs:
           lean --version
           lake --version
 
-    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
-    steps:
-      id: lean4checker
-      run: |
-        git clone https://github.com/leanprover/lean4checker
-        cd lean4checker
-        git checkout toolchain/v4.7.0-rc1
-        # Now that the git hash is embedded in each olean,
-        # we need to compile lean4checker on the same toolchain
-        cp ../lean-toolchain .
-        lake build
-        ./test.sh
-        cd ..
-        lake env lean4checker/.lake/build/bin/lean4checker
+      - name: start
+        run: |
+          git clone https://github.com/leanprover/lean4checker
+          cd lean4checker
+          git checkout toolchain/v4.7.0-rc1
+          # Now that the git hash is embedded in each olean,
+          # we need to compile lean4checker on the same toolchain
+          cp ../lean-toolchain .
+          lake build
+          ./test.sh
+          cd ..
+          lake env lean4checker/.lake/build/bin/lean4checker
 
   final:
     name: Post-CI jobJOB_NAME
