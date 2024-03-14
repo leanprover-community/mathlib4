@@ -71,12 +71,12 @@ lemma mul_eq_top_iff : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ ∨ a = ⊤ ∧ b ≠
 #align with_top.mul_eq_top_iff WithTop.mul_eq_top_iff
 
 lemma mul_coe_eq_bind {b : α} (hb : b ≠ 0) : ∀ a, (a * b : WithTop α) = a.bind fun a ↦ ↑(a * b)
-  | ⊤ => by simp [top_mul, hb]; rfl
+  | ⊤ => by aesop
   | (a : α) => rfl
 #align with_top.mul_coe WithTop.mul_coe_eq_bind
 
 lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithTop α) = b.bind fun b ↦ ↑(a * b)
-  | ⊤ => by simp [top_mul, ha]; rfl
+  | ⊤ => by aesop
   | (b : α) => rfl
 
 @[simp] lemma untop'_zero_mul (a b : WithTop α) : (a * b).untop' 0 = a.untop' 0 * b.untop' 0 := by

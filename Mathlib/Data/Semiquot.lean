@@ -219,7 +219,7 @@ theorem get_mem {q : Semiquot α} (p) : get q p ∈ q := by
 #align semiquot.get_mem Semiquot.get_mem
 
 theorem eq_pure {q : Semiquot α} (p) : q = pure (get q p) :=
-  ext.2 fun a => by simp; exact ⟨fun h => p _ h _ (get_mem _), fun e => e.symm ▸ get_mem _⟩
+  ext.2 fun a => by simpa using ⟨fun h => p _ h _ (get_mem _), fun e => e.symm ▸ get_mem _⟩
 #align semiquot.eq_pure Semiquot.eq_pure
 
 @[simp]
@@ -240,7 +240,7 @@ theorem IsPure.mono {s t : Semiquot α} (st : s ≤ t) (h : IsPure t) : IsPure s
 theorem IsPure.min {s t : Semiquot α} (h : IsPure t) : s ≤ t ↔ s = t :=
   ⟨fun st =>
     le_antisymm st <| by
-      rw [eq_pure h, eq_pure (h.mono st)]; simp; exact h _ (get_mem _) _ (st <| get_mem _),
+      rw [eq_pure h, eq_pure (h.mono st)]; simpa using h _ (get_mem _) _ (st <| get_mem _),
     le_of_eq⟩
 #align semiquot.is_pure.min Semiquot.IsPure.min
 

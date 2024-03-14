@@ -676,8 +676,12 @@ theorem cast_mul [Semiring α] (m n) : ((m * n : PosNum) : α) = m * n := by
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
-  revert this; cases cmp m n <;> intro this <;> simp at this ⊢ <;> try { exact this } <;>
-    simp [show m ≠ n from fun e => by rw [e] at this;exact lt_irrefl _ this]
+  revert this
+  cases cmp m n <;>
+    intro this <;>
+    simp only [false_iff, true_iff, ne_eq] at this ⊢ <;>
+    try { exact this } <;>
+    simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
 #align pos_num.cmp_eq PosNum.cmp_eq
 
 @[simp, norm_cast]
@@ -841,7 +845,11 @@ theorem cmp_swap (m n) : (cmp m n).swap = cmp n m := by
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
-  revert this; cases cmp m n <;> intro this <;> simp at this ⊢ <;> try { exact this } <;>
+  revert this
+  cases cmp m n <;>
+    intro this <;>
+    simp only [false_iff, true_iff, ne_eq] at this ⊢ <;>
+    try { exact this } <;>
     simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
 #align num.cmp_eq Num.cmp_eq
 
@@ -1557,7 +1565,8 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * _ro
     apply Num.mem_ofZNum'.trans
     rw [← ZNum.to_int_inj, Num.cast_toZNum, Num.cast_sub', sub_eq_iff_eq_add, ← Int.coe_nat_inj']
     simp
-  cases' e : Num.ofZNum' (Num.sub' r (Num.pos d)) with r₂ <;> simp [divModAux]
+  cases' e : Num.ofZNum' (Num.sub' r (Num.pos d)) with r₂ <;>
+    simp only [Num.cast_bit0, Num.cast_bit1]
   · refine' ⟨h₁, lt_of_not_ge fun h => _⟩
     cases' Nat.le.dest h with r₂ e'
     rw [← Num.to_of_nat r₂, add_comm] at e'
@@ -1578,7 +1587,7 @@ theorem divMod_to_nat (d n : PosNum) :
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; cases' divMod d n with q r; intro IH
     simp only [divMod] at IH ⊢
-    apply divMod_to_nat_aux <;> simp
+    apply divMod_to_nat_aux <;> simp only [Num.cast_bit1, cast_bit1]
     · rw [_root_.bit1, _root_.bit1, add_right_comm, bit0_eq_two_mul (n : ℕ), ← IH.1, mul_add, ←
         bit0_eq_two_mul, mul_left_comm, ← bit0_eq_two_mul]
     · rw [← bit0_eq_two_mul]
@@ -1587,7 +1596,7 @@ theorem divMod_to_nat (d n : PosNum) :
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; cases' divMod d n with q r; intro IH
     simp only [divMod] at IH ⊢
-    apply divMod_to_nat_aux <;> simp
+    apply divMod_to_nat_aux <;> simp only [Num.cast_bit0, cast_bit0]
     · rw [bit0_eq_two_mul (n : ℕ), ← IH.1, mul_add, ← bit0_eq_two_mul, mul_left_comm, ←
         bit0_eq_two_mul]
     · rw [← bit0_eq_two_mul]

@@ -94,9 +94,9 @@ theorem pair_eq_pair {a b c d : ℕ} : pair a b = pair c d ↔ a = c ∧ b = d :
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
   simp only [unpair, ge_iff_le, tsub_le_iff_right, gt_iff_lt]
-  by_cases h : n - s * s < s <;> simp [h]
+  by_cases h : n - s * s < s <;> simp only [h, ↓reduceIte]
   · exact lt_of_lt_of_le h (sqrt_le_self _)
-  · simp at h
+  · simp only [not_lt] at h
     have s0 : 0 < s := sqrt_pos.2 n1
     exact lt_of_le_of_lt h (tsub_lt_self n1 (mul_pos s0 s0))
 #align nat.unpair_lt Nat.unpair_lt
@@ -116,7 +116,7 @@ theorem left_le_pair (a b : ℕ) : a ≤ pair a b := by simpa using unpair_left_
 #align nat.left_le_mkpair Nat.left_le_pair
 
 theorem right_le_pair (a b : ℕ) : b ≤ pair a b := by
-  by_cases h : a < b <;> simp [pair, h]
+  by_cases h : a < b <;> simp only [pair, h, ↓reduceIte, le_add_iff_nonneg_left, _root_.zero_le]
   exact le_trans (le_mul_self _) (Nat.le_add_right _ _)
 #align nat.right_le_mkpair Nat.right_le_pair
 
@@ -125,13 +125,13 @@ theorem unpair_right_le (n : ℕ) : (unpair n).2 ≤ n := by
 #align nat.unpair_right_le Nat.unpair_right_le
 
 theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair a₂ b := by
-  by_cases h₁ : a₁ < b <;> simp [pair, h₁, add_assoc]
-  · by_cases h₂ : a₂ < b <;> simp [pair, h₂, h]
+  by_cases h₁ : a₁ < b <;> simp only [pair, h₁, ↓reduceIte, add_assoc]
+  · by_cases h₂ : a₂ < b <;> simp only [h₂, ↓reduceIte, add_lt_add_iff_left, h]
     simp? at h₂ says simp only [not_lt] at h₂
     apply add_lt_add_of_le_of_lt
     exact mul_self_le_mul_self h₂
     exact Nat.lt_add_right _ h
-  · simp at h₁
+  · simp only [not_lt] at h₁
     simp only [not_lt_of_gt (lt_of_le_of_lt h₁ h), ite_false]
     apply add_lt_add
     exact mul_self_lt_mul_self h
@@ -139,10 +139,10 @@ theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair
 #align nat.mkpair_lt_mkpair_left Nat.pair_lt_pair_left
 
 theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pair a b₂ := by
-  by_cases h₁ : a < b₁ <;> simp [pair, h₁, add_assoc]
-  · simp [pair, lt_trans h₁ h, h]
+  by_cases h₁ : a < b₁ <;> simp only [pair, h₁, ↓reduceIte, add_assoc]
+  · simp only [lt_trans h₁ h, ↓reduceIte, add_lt_add_iff_right]
     exact mul_self_lt_mul_self h
-  · by_cases h₂ : a < b₂ <;> simp [pair, h₂, h]
+  · by_cases h₂ : a < b₂ <;> simp only [h₂, ↓reduceIte, add_lt_add_iff_left, h]
     simp? at h₁ says simp only [not_lt] at h₁
     rw [add_comm, add_comm _ a, add_assoc, add_lt_add_iff_left]
     rwa [add_comm, ← sqrt_lt, sqrt_add_eq]

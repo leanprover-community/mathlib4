@@ -407,7 +407,7 @@ theorem kerase_cons_ne {a} {s : Sigma β} {l : List (Sigma β)} (h : a ≠ s.1) 
 
 @[simp]
 theorem kerase_of_not_mem_keys {a} {l : List (Sigma β)} (h : a ∉ l.keys) : kerase a l = l := by
-  induction' l with _ _ ih <;> [rfl; (simp [not_or] at h; simp [h.1, ih h.2])]
+  induction' l with _ _ ih <;> [rfl; simp_all [keys_cons, mem_cons, not_or]]
 #align list.kerase_of_not_mem_keys List.kerase_of_not_mem_keys
 
 theorem kerase_sublist (a : α) (l : List (Sigma β)) : kerase a l <+ l :=
@@ -525,7 +525,9 @@ theorem kerase_append_left {a} :
   | [], _, h => by cases h
   | s :: l₁, l₂, h₁ => by
     if h₂ : a = s.1 then simp [h₂]
-    else simp at h₁; cases' h₁ with h₁ h₁ <;> [exact absurd h₁ h₂; simp [h₂, kerase_append_left h₁]]
+    else
+      simp only [keys_cons, mem_cons] at h₁
+      cases' h₁ with h₁ h₁ <;> [exact absurd h₁ h₂; simp [h₂, kerase_append_left h₁]]
 #align list.kerase_append_left List.kerase_append_left
 
 theorem kerase_append_right {a} :
@@ -749,7 +751,9 @@ theorem Perm.kunion {l₁ l₂ l₃ l₄ : List (Sigma β)} (nd₃ : l₃.NodupK
 @[simp]
 theorem dlookup_kunion_left {a} {l₁ l₂ : List (Sigma β)} (h : a ∈ l₁.keys) :
     dlookup a (kunion l₁ l₂) = dlookup a l₁ := by
-  induction' l₁ with s _ ih generalizing l₂ <;> simp at h; cases' h with h h <;> cases' s with a'
+  induction' l₁ with s _ ih generalizing l₂ <;>
+    simp only [keys_cons, keys_nil, not_mem_nil, mem_cons] at h
+  cases' h with h h <;> cases' s with a'
   · subst h
     simp
   · rw [kunion_cons]

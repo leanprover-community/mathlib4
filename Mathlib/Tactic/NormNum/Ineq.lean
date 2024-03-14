@@ -49,7 +49,9 @@ theorem isRat_le_true [LinearOrderedRing α] : {a b : α} → {na nb : ℤ} → 
     have hb : 0 ≤ ⅟(db : α) := invOf_nonneg.mpr <| Nat.cast_nonneg db
     have h := (mul_le_mul_of_nonneg_left · hb) <| mul_le_mul_of_nonneg_right h ha
     rw [← mul_assoc, Int.commute_cast] at h
-    simp at h; rwa [Int.commute_cast] at h
+    simp only [Int.ofNat_eq_coe, Int.mul_def, Int.cast_mul, Int.cast_ofNat,
+      mul_mul_invOf_self_cancel'] at h
+    rwa [Int.commute_cast] at h
 
 theorem isRat_lt_true [LinearOrderedRing α] [Nontrivial α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db < nb * da) → a < b

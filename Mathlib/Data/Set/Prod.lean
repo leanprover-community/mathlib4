@@ -671,7 +671,8 @@ theorem offDiag_union (h : Disjoint s t) :
   simp only [mem_offDiag, mem_union, ne_eq, mem_prod]
   constructor
   · rintro ⟨h0|h0, h1|h1, h2⟩ <;> simp [h0, h1, h2]
-  · rintro (((⟨h0, h1, h2⟩|⟨h0, h1, h2⟩)|⟨h0, h1⟩)|⟨h0, h1⟩) <;> simp [*]
+  · rintro (((⟨h0, h1, h2⟩|⟨h0, h1, h2⟩)|⟨h0, h1⟩)|⟨h0, h1⟩) <;>
+      simp only [or_true, true_or, true_and, not_false_eq_true, and_self, *]
     · rintro h3
       rw [h3] at h0
       exact (Set.disjoint_left.mp h h0 h1)
@@ -1005,6 +1006,6 @@ theorem sumPiEquivProdPi_symm_preimage_univ_pi (π : ι ⊕ ι' → Type*) (t : 
   simp_rw [mem_preimage, mem_prod, mem_univ_pi, sumPiEquivProdPi_symm_apply]
   constructor
   · intro h; constructor <;> intro i <;> apply h
-  · rintro ⟨h₁, h₂⟩ (i|i) <;> simp <;> apply_assumption
+  · rintro ⟨h₁, h₂⟩ (i|i) <;> simp only <;> solve_by_elim
 
 end Equiv
