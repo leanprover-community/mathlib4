@@ -358,7 +358,7 @@ instance instSetoidLists : Setoid (Lists α) :=
 section Decidable
 
 /-- Auxiliary function to prove termination of decidability checking -/
-@[simp, deprecated] -- Porting note: replaced by termination_by
+@[simp, deprecated]
 def Equiv.decidableMeas :
     (PSum (Σ' _l₁ : Lists α, Lists α) <|
         PSum (Σ' _l₁ : Lists' α true, Lists' α true) (Σ' _a : Lists α, Lists' α true)) →
