@@ -556,9 +556,7 @@ theorem PosSemidef.fromBlocks₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A :
   rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
   convert PosSemidef.fromBlocks₁₁ Bᴴ A hD <;>
-    first
-    | infer_instance
-    | simp
+    simp
 #align matrix.pos_semidef.from_blocks₂₂ Matrix.PosSemidef.fromBlocks₂₂
 
 end StarOrderedRing
