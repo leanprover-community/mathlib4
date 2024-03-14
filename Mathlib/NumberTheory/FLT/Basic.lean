@@ -3,9 +3,11 @@ Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Yaël Dillies
 -/
+import Mathlib.Algebra.GCDMonoid.Div
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Rat.Defs
+import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.TFAE
 
@@ -117,3 +119,24 @@ lemma fermatLastTheoremFor_iff_int {n : ℕ} : FermatLastTheoremFor n ↔ Fermat
 
 lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℚ n :=
   (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 2
+
+open Finset in
+/-- To prove Fermat Last Theorem one can assume that `a`, `b` and `c` are coprime. -/
+lemma FermatLastTheoremFor_of_FermatLastTheoremFor_coprime {n : ℕ}
+    (hn : ∀ a b c, ({a, b, c} : Finset ℕ).gcd id = 1 → a ^ n + b ^ n ≠ c ^ n) :
+    FermatLastTheoremFor n := by
+  intro a b c ha _ _ habc
+  let s : Finset ℕ := {a, b, c}; let d := s.gcd id
+  have hadiv : d ∣ a := gcd_dvd (by simp [s])
+  have hbdiv : d ∣ b := gcd_dvd (by simp [s])
+  have hcdiv : d ∣ c := gcd_dvd (by simp [s])
+  refine hn (a / d) (b / d) (c / d) ?_ ?_
+  · simpa [gcd_eq_gcd_image, d] using
+      Nat.gcd_div_id_eq_one (show a ∈ ({a, b, c} : Finset ℕ) by simp) ha
+  · have hdzero : 0 < d := Nat.pos_of_ne_zero <| fun hdzero => by
+      simpa [ha] using Finset.gcd_eq_zero_iff.1 hdzero a (by simp [s])
+    have hdp : d ^ n ≠ 0 := fun hdn => hdzero.ne' (pow_eq_zero hdn)
+    obtain ⟨na, hna⟩ := hadiv; obtain ⟨nb, hnb⟩ := hbdiv; obtain ⟨nc, hnc⟩ := hcdiv
+    rwa [← mul_left_inj' hdp, add_mul, ← mul_pow, ← mul_pow, ← mul_pow, hna, hnb, hnc,
+      Nat.mul_div_cancel_left _ hdzero, Nat.mul_div_cancel_left _ hdzero,
+      Nat.mul_div_cancel_left _ hdzero, mul_comm, ← hna, mul_comm, ← hnb, mul_comm, ← hnc]
