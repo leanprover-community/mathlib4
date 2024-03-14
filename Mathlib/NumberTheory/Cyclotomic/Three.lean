@@ -31,11 +31,14 @@ namespace IsCyclotomicExtension.Rat.Three
 variable {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+)) (u : (𝓞 K)ˣ)
 
+local notation "η" => hζ.toInteger
+
+local notation "λ" => hζ.toInteger - 1
+
 /-- Given a unit `u : (𝓞 K)ˣ`, where `K` is a number field such that
 `IsCyclotomicExtension {3} ℚ K`, then `u ∈ ({1, -1, ζ, -ζ, ζ^2, -ζ^2}`, where `ζ` is any
 primitive `3`-rd root of unity in `K`. -/
-theorem Units.mem : ↑u ∈
-    ({1, -1, hζ.toInteger, -hζ.toInteger, hζ.toInteger ^ 2, -hζ.toInteger ^ 2} : Set (𝓞 K)) := by
+theorem Units.mem : ↑u ∈({1, -1, η, -η, η ^ 2, -η ^ 2} : Set (𝓞 K)) := by
   have hrank : rank K = 0 := by
     dsimp [rank]
     rw [card_eq_NrRealPlaces_add_NrComplexPlaces, nrRealPlaces_eq_zero (n := 3) K (by decide),
@@ -56,7 +59,7 @@ theorem Units.mem : ↑u ∈
   obtain ⟨r, hr3, hru⟩ := hζ.exists_pow_or_neg_mul_pow_of_isOfFinOrder hodd
     (isOfFinOrder_iff_pow_eq_one.2 ⟨n, hnpos, hn⟩)
   replace hr : r ∈ Finset.Ico 0 3 := Finset.mem_Ico.2 ⟨by simp, hr3⟩
-  replace hru : ↑u = hζ.toInteger ^ r ∨ ↑u = -hζ.toInteger ^ r := by
+  replace hru : ↑u = η ^ r ∨ ↑u = -η ^ r := by
     rcases hru with (h | h)
     · left; ext; exact h
     · right; ext; exact h
@@ -67,7 +70,7 @@ theorem Units.mem : ↑u ∈
     · apply Set.mem_insert_of_mem; apply Set.mem_insert_of_mem; simp [h]
     · apply Set.mem_insert_of_mem; apply Set.mem_insert_of_mem; simp [h]
 
-theorem Units.not_exists_int_three_dvd_sub : ¬(∃ n : ℤ, (3 : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := by
+theorem Units.not_exists_int_three_dvd_sub : ¬(∃ n : ℤ, (3 : 𝓞 K) ∣ (η - n : 𝓞 K)) := by
   intro ⟨n, x, h⟩
   let pB := hζ.integralPowerBasis'
   have hdim : pB.dim = 2 := by
@@ -128,20 +131,13 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, (3 : 𝓞 K
     simp only [Int.cast_neg, sub_neg_eq_add, neg_sub]
     ring
 
-local notation "η" => hζ.toInteger
-
-local notation "λ" => hζ.toInteger - 1
-
 noncomputable
 instance : Fintype (𝓞 K ⧸ Ideal.span {λ}) := by
   refine Ideal.fintypeQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
   simp only [Ideal.span_singleton_eq_bot, sub_eq_zero, ← Subtype.coe_inj] at h
   exact hζ.ne_one (by decide) h
 
-
-lemma card_quot : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
-  rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply, Ideal.absNorm_span_singleton]
-  suffices Algebra.norm ℤ λ = 3 by simp [this]
+lemma norm_lambda : Algebra.norm ℤ λ = 3 := by
   apply (algebraMap ℤ ℚ).injective_int
   have : algebraMap (𝓞 K) K λ = ζ - 1 := by
     simp only [map_sub, map_one, sub_left_inj]
@@ -150,13 +146,29 @@ lemma card_quot : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
     (cyclotomic.irreducible_rat (n := 3) (by decide)) (by decide)]
   simp
 
+lemma lambda_dvd_three : λ ∣ 3 := by
+  suffices λ ∣ (3 : ℤ) by simpa
+  rw [← Ideal.norm_dvd_iff, norm_lambda hζ]
+  rw [norm_lambda hζ]
+  exact Int.prime_three
+
+lemma card_quot : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
+  rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply, Ideal.absNorm_span_singleton]
+  simp [norm_lambda hζ]
+
 lemma two_ne_zero : (2 : 𝓞 K ⧸ Ideal.span {λ}) ≠ 0 := by
   suffices 2 ∉ Ideal.span {λ} by
     intro h
     refine this (Ideal.Quotient.eq_zero_iff_mem.1 <| by simp [h])
   intro h
   rw [Ideal.mem_span_singleton] at h
-  sorry
+  replace h : λ ∣ ↑(2 : ℤ) := by simp [h]
+  rw [← Ideal.norm_dvd_iff, norm_lambda hζ] at h
+  · norm_num at h
+  · rw [norm_lambda hζ]
+    exact Int.prime_three
+
+instance : Nontrivial (𝓞 K ⧸ Ideal.span {λ}) := nontrivial_of_ne 2 0 <| two_ne_zero hζ
 
 open Classical Finset in
 lemma univ_quot : (univ : Finset ((𝓞 K ⧸ Ideal.span {λ}))) = {0, 1, -1} := by
@@ -166,9 +178,25 @@ lemma univ_quot : (univ : Finset ((𝓞 K ⧸ Ideal.span {λ}))) = {0, 1, -1} :=
     intro h
     rw [← add_eq_zero_iff_eq_neg, one_add_one_eq_two] at h
     exact two_ne_zero hζ h
-  · sorry
+  · intro h
+    simp only [mem_insert, mem_singleton, zero_eq_neg] at h
+    rcases h with (h | h)
+    · exact zero_ne_one h
+    · exact zero_ne_one h.symm
 
-
+lemma dvd_or_dvd_sub_one_or_dvd_add_one (x : 𝓞 K) : λ ∣ x ∨ λ ∣ x - 1 ∨ λ ∣ x + 1 := by
+  have := Finset.mem_univ (Ideal.Quotient.mk (Ideal.span {λ}) x)
+  rw [univ_quot hζ] at this
+  simp only [Finset.mem_insert, Finset.mem_singleton] at this
+  rcases this with (h | h | h)
+  · left
+    exact Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 h
+  · right; left
+    refine Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 ?_
+    rw [RingHom.map_sub, h, RingHom.map_one, sub_self]
+  · right; right
+    refine Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 ?_
+    rw [RingHom.map_add, h, RingHom.map_one, add_left_neg]
 
 lemma _root_.IsPrimitiveRoot.toInteger_coe : hζ.toInteger.1 = ζ := rfl
 
@@ -180,9 +208,28 @@ lemma _root_.IsPrimitiveRoot.toInteger_cube_eq_one : η ^ 3 = 1 := by
 lemma _root_.IsPrimitiveRoot.toInteger_eval_cyclo : η ^ 2 + η + 1 = 0 := by
   ext; simpa using hζ.isRoot_cyclotomic (by decide)
 
-example {x : 𝓞 K} : (x - 1) * (x - η) * (x - η ^ 2) = x ^ 3 - 1 :=
+lemma cube_sub_one (x : 𝓞 K) : x ^ 3 - 1 = (x - 1) * (x - η) * (x - η ^ 2) := by
+  symm
   calc _ = x ^ 3 - x ^ 2 * (η ^ 2 + η + 1) + x * (η ^ 2 + η + η ^ 3) - η ^ 3 := by ring
   _ = x ^ 3 - x ^ 2 * (η ^ 2 + η + 1) + x * (η ^ 2 + η + 1) - 1 := by rw [hζ.toInteger_cube_eq_one]
   _ = x ^ 3 - 1 := by rw [hζ.toInteger_eval_cyclo]; ring
+
+lemma lambda_dvd_mul_sub_one_mul_sub_eta_add_one (x : 𝓞 K) :
+    λ ∣ x * (x - 1) * (x - (η + 1)) := by
+  rcases dvd_or_dvd_sub_one_or_dvd_add_one hζ x with (h | h | h)
+  · exact dvd_mul_of_dvd_left (dvd_mul_of_dvd_left h _) _
+  · exact dvd_mul_of_dvd_left (dvd_mul_of_dvd_right h _) _
+  · refine dvd_mul_of_dvd_right ?_ _
+    rw [show x - (η + 1) = x + 1 - (η - 1 + 3) by ring]
+    exact dvd_sub h (dvd_add dvd_rfl <| lambda_dvd_three hζ)
+
+lemma lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one {x : 𝓞 K} (h : λ ∣ x - 1) :
+    λ ^ 4 ∣ x ^ 3 - 1 := by
+  obtain ⟨y, hy⟩ := h
+  have : x ^ 3 - 1 = λ ^ 3 * (y * (y - 1) * (y - (η + 1))) := by
+    calc _ =  (x - 1) * (x - 1 - λ) * (x - 1 - λ * (η + 1)) := by rw [cube_sub_one hζ x]; ring
+    _ = _ := by rw [hy]; ring
+  rw [this, show λ ^ 4 = λ ^ 3 * λ by ring]
+  exact mul_dvd_mul dvd_rfl (lambda_dvd_mul_sub_one_mul_sub_eta_add_one hζ y)
 
 end IsCyclotomicExtension.Rat.Three
