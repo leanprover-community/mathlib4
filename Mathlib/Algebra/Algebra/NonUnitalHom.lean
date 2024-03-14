@@ -45,16 +45,12 @@ non-unital, algebra, morphism
 
 universe u v w w₁ w₂ w₃
 
-variable {R : Type*} {S : Type*}
+variable (R : Type u) (A : Type v) (B : Type w) (C : Type w₁)
 
 /-- A morphism respecting addition, multiplication, and scalar multiplication. When these arise from
 algebra structures, this is the same as a not-necessarily-unital morphism of algebras. -/
-structure NonUnitalAlgHom
-    [Monoid R] [Monoid S] (φ : R →* S)
-    (A : Type v) (B : Type w)
-    [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-    [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
-    extends A →ₑ+[φ] B, A →ₙ* B
+structure NonUnitalAlgHom [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+  [NonUnitalNonAssocSemiring B] [DistribMulAction R B] extends A →ₑ+[φ] B, A →ₙ* B
 #align non_unital_alg_hom NonUnitalAlgHom
 
 @[inherit_doc NonUnitalAlgHom]
@@ -70,21 +66,18 @@ attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
 /-- `NonUnitalAlgSemiHomClass F φ A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are equivariant with respect to `φ`.  -/
-class NonUnitalAlgSemiHomClass (F : Type*)
-    {R S : outParam (Type*)} [Monoid R] [Monoid S] (φ : outParam (R →* S))
-    (A : outParam (Type*)) (B : outParam (Type*))
-    [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
+class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam (Type*)} [Monoid R] [Monoid S] (φ : outParam (R →* S))
+    (A B : outParam (Type*)) [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B]
     extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B : Prop
 #align non_unital_alg_hom_class NonUnitalAlgSemiHomClass
 
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
-  from `A` to `B` which are `R`-linear.
+from `A` to `B` which are `R`-linear.
 
   This is an abbreviation to `NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B` -/
-abbrev NonUnitalAlgHomClass (F : Type*) (R : outParam (Type*)) [Monoid R]
-    (A : outParam (Type*)) (B : outParam (Type*))
-    [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
+abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam (Type*))
+    [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] :=
   NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B
 
@@ -96,20 +89,20 @@ namespace NonUnitalAlgHomClass
 -- Porting note: Made following instance non-dangerous through [...] -> [...] replacement
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass
-  {F R S : Type*} [Monoid R] [Monoid S] {φ : outParam (R →* S)} {A B : Type*}
-    [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-    [NonUnitalNonAssocSemiring B] [DistribMulAction S B] [FunLike F A B]
+  {F R S A B : Type*} {_ : Monoid R} {_ : Monoid S} {φ : outParam (R →* S)}
+    {_ : NonUnitalNonAssocSemiring A} [DistribMulAction R A]
+    {_ : NonUnitalNonAssocSemiring B} [DistribMulAction S B] [FunLike F A B]
     [NonUnitalAlgSemiHomClass F φ A B] : NonUnitalRingHomClass F A B :=
-  { ‹NonUnitalAlgSemiHomClass F φ A B› with } -- coe := (⇑) }
+  { ‹NonUnitalAlgSemiHomClass F φ A B› with }
 #align non_unital_alg_hom_class.non_unital_alg_hom_class.to_non_unital_ring_hom_class NonUnitalAlgHomClass.toNonUnitalRingHomClass
 
 variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
-  [Semiring S] [NonUnitalNonAssocSemiring B] [Module S B]
-  {φ : R →+* S}
+  [Semiring S] [NonUnitalNonAssocSemiring B] [Module S B] {φ : R →+* S}
 
--- Why do I need to specify R and S ?
 -- see Note [lower instance priority]
-instance (priority := 100) {F : Type*} [FunLike F A B]
+instance (priority := 100) {F R S A B : Type*}
+    {_ : Semiring R} {_ : Semiring S} {φ : R →+* S}
+    {NonUnitalSemiring A} {_ : NonUnitalSemiring B} [Module R A] [Module S B] [FunLike F A B]
     [NonUnitalAlgSemiHomClass (R := R) (S := S) F φ A B] :
     SemilinearMapClass F φ A B :=
   { ‹NonUnitalAlgSemiHomClass F φ A B› with map_smulₛₗ := map_smulₛₗ }
@@ -118,27 +111,40 @@ instance (priority := 100) {F : Type*} [FunLike F A B] [Module R B] [NonUnitalAl
     LinearMapClass F R A B :=
   { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := map_smulₛₗ }
 
-instance {F R S : Type*} [Monoid R] [Monoid S] {φ : R →* S}
-    {A B : Type*}
+/-- Turn an element of a type `F` satisfying `NonUnitalAlgSemiHomClass F φ A B` into an actual
+`NonUnitalAlgSemiHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[φ] B`. -/
+@[coe]
+def toNonUnitalAlgSemiHom {F R S A B : Type*} [Monoid R] [Monoid S] {φ : R →* S}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-    [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
-    [FunLike F A B] [NonUnitalAlgSemiHomClass F φ A B] :
-    CoeTC F (A →ₛₙₐ[φ] B)
-    where coe f :=
-    { (f : A →ₙ+* B) with
-      toFun := f
-      map_smul' := map_smulₛₗ f }
+    [NonUnitalNonAssocSemiring B] [DistribMulAction S B] [FunLike F A B]
+    [NonUnitalAlgSemiHomClass F φ A B] (f : F) : A →ₛₙₐ[φ] B :=
+  { (f : A →ₙ+* B) with
+    toFun := f
+    map_smul' := map_smulₛₗ f }
 
--- TODO (ACL) : Why is this needed ? Adjust priority ?
+instance {F R S A B : Type*} [Monoid R] [Monoid S] {φ : R →* S}
+    [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+    [NonUnitalNonAssocSemiring B] [DistribMulAction S B] [FunLike F A B]
+    [NonUnitalAlgSemiHomClass F φ A B] :
+      CoeTC F (A →ₛₙₐ[φ] B) :=
+  ⟨toNonUnitalAlgSemiHom⟩
+
+/-- Turn an element of a type `F` satisfying `NonUnitalAlgHomClass F R A B` into an actual
+`NonUnitalAlgSemiHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[R] B`. -/
+def toNonUnitalAlgHom {F R A B : Type*} [Monoid R]
+    [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+    [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
+    [FunLike F A B] [NonUnitalAlgHomClass F R A B] (f : F) : A →ₙₐ[R] B :=
+  { (f : A →ₙ+* B) with
+    toFun := f
+    map_smul' := map_smulₛₗ f }
+
 instance {F R : Type*} {A B : Type*} [Monoid R]
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
     [FunLike F A B] [NonUnitalAlgHomClass F R A B] :
-    CoeTC F (A →ₙₐ[R] B)
-    where coe f :=
-    { (f : A →ₙ+* B) with
-      toFun := f
-      map_smul' := map_smulₛₗ f }
+    CoeTC F (A →ₙₐ[R] B) :=
+  ⟨toNonUnitalAlgHom⟩
 
 end NonUnitalAlgHomClass
 
@@ -147,7 +153,9 @@ namespace NonUnitalAlgHom
 variable [Monoid R] [Monoid S] (φ : R →* S)
 variable {A B C}
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
+
 variable {T : Type*} [Monoid T] [NonUnitalNonAssocSemiring C] [DistribMulAction T C]
 
 -- Porting note: Replaced with DFunLike instance
@@ -182,12 +190,17 @@ protected theorem coe_coe {F : Type*} [FunLike F A B]
 theorem coe_injective : @Function.Injective (A →ₛₙₐ[φ] B) (A → B) (↑) := by
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 #align non_unital_alg_hom.coe_injective NonUnitalAlgHom.coe_injective
+instance : FunLike (A →ₛₙₐ[φ] B) A B
+    where
+  coe f := f.toFun
+  coe_injective' := coe_injective
 
-instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B where
-  map_smulₛₗ f := f.map_smul'
+instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B
+    where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
+  map_smulₛₗ f := f.map_smul'
 
 @[ext]
 theorem ext {f g : A →ₛₙₐ[φ] B} (h : ∀ x, f x = g x) : f = g :=
@@ -221,8 +234,8 @@ instance : CoeOut (A →ₛₙₐ[φ] B) (A →ₙ* B) :=
   ⟨toMulHom⟩
 
 @[simp]
-theorem toDistribMulActionHom_eq_coe (f : A →ₛₙₐ[φ] B) :
-    f.toDistribMulActionHom = ↑f := rfl
+theorem toDistribMulActionHom_eq_coe (f : A →ₛₙₐ[φ] B) : f.toDistribMulActionHom = ↑f :=
+  rfl
 #align non_unital_alg_hom.to_distrib_mul_action_hom_eq_coe NonUnitalAlgHom.toDistribMulActionHom_eq_coe
 
 @[simp]
@@ -351,6 +364,7 @@ theorem comp'_apply (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) (x : A
     f.comp' g x = f (g x) := rfl
 
 variable {B₁: Type*} [NonUnitalNonAssocSemiring B₁] [DistribMulAction R B₁]
+
 /-- The inverse of a bijective morphism is a morphism. -/
 def inverse (f : A →ₙₐ[R] B₁) (g : B₁ → A)
     (h₁ : Function.LeftInverse g f)
