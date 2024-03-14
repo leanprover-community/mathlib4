@@ -23,10 +23,7 @@ definition, which is made irreducible for this purpose.
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
 
-set_option autoImplicit true
-
-
-universe uR uS uT uA
+universe uR uS uT uA u₄
 
 variable {R : Type uR} [Semiring R]
 

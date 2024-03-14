@@ -218,7 +218,7 @@ theorem sInter_mem {s : Set (Set α)} (hfin : s.Finite) : ⋂₀ s ∈ f ↔ ∀
 
 @[simp]
 theorem iInter_mem {β : Sort v} {s : β → Set α} [Finite β] : (⋂ i, s i) ∈ f ↔ ∀ i, s i ∈ f :=
-  (sInter_mem (finite_range _)).trans forall_range_iff
+  (sInter_mem (finite_range _)).trans forall_mem_range
 #align filter.Inter_mem Filter.iInter_mem
 
 theorem exists_mem_subset_iff : (∃ t ∈ f, t ⊆ s) ↔ s ∈ f :=
@@ -394,7 +394,7 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
 #align filter.mem_generate_iff Filter.mem_generate_iff
 
 @[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
-  le_antisymm (λ _t ht ↦ mem_of_superset (mem_generate_of_mem <| mem_singleton _) ht) <|
+  le_antisymm (fun _t ht ↦ mem_of_superset (mem_generate_of_mem <| mem_singleton _) ht) <|
     le_generate_iff.2 <| singleton_subset_iff.2 Subset.rfl
 
 /-- `mk_of_closure s hs` constructs a filter on `α` whose elements set is exactly
@@ -487,7 +487,7 @@ section CompleteLattice
   we want to have different definitional equalities for some lattice operations. So we define them
   upfront and change the lattice operations for the complete lattice instance. -/
 instance instCompleteLatticeFilter : CompleteLattice (Filter α) :=
-  { @OrderDual.completeLattice _ (giGenerate α).liftCompleteLattice with
+  { @OrderDual.instCompleteLattice _ (giGenerate α).liftCompleteLattice with
     le := (· ≤ ·)
     top := ⊤
     le_top := fun _ _s hs => (mem_top.1 hs).symm ▸ univ_mem

@@ -376,8 +376,8 @@ theorem coe_mono : Monotone (fun (a : α) => (a : WithBot α)) := fun _ _ => coe
 #align with_bot.coe_mono WithBot.coe_mono
 
 theorem monotone_iff {f : WithBot α → β} :
-    Monotone f ↔ Monotone (λ a => f a : α → β) ∧ ∀ x : α, f ⊥ ≤ f x :=
-  ⟨fun h => ⟨h.comp WithBot.coe_mono, fun _ => h bot_le⟩, fun h =>
+    Monotone f ↔ Monotone (fun a ↦ f a : α → β) ∧ ∀ x : α, f ⊥ ≤ f x :=
+  ⟨fun h ↦ ⟨h.comp WithBot.coe_mono, fun _ ↦ h bot_le⟩, fun h ↦
     WithBot.forall.2
       ⟨WithBot.forall.2 ⟨fun _ => le_rfl, fun x _ => h.2 x⟩, fun _ =>
         WithBot.forall.2 ⟨fun h => (not_coe_le_bot _ h).elim,
@@ -401,7 +401,7 @@ theorem strictMono_iff {f : WithBot α → β} :
 #align with_bot.strict_mono_iff WithBot.strictMono_iff
 
 theorem strictAnti_iff {f : WithBot α → β} :
-    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f x < f ⊥ :=
+    StrictAnti f ↔ StrictAnti (fun a ↦ f a : α → β) ∧ ∀ x : α, f x < f ⊥ :=
   strictMono_iff (β := βᵒᵈ)
 
 @[simp]
@@ -442,7 +442,7 @@ instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) :=
       · exact h₂ a rfl
       · exact h₁ a rfl
       · rcases h₁ b rfl with ⟨d, ⟨⟩, h₁'⟩
-        simp at h₂
+        simp only [some_le_some] at h₂
         exact ⟨d, rfl, sup_le h₁' h₂⟩ }
 
 theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithBot α) = (a : WithBot α) ⊔ b :=
@@ -1223,7 +1223,7 @@ theorem strictMono_iff {f : WithTop α → β} :
 #align with_top.strict_mono_iff WithTop.strictMono_iff
 
 theorem strictAnti_iff {f : WithTop α → β} :
-    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f ⊤ < f x :=
+    StrictAnti f ↔ StrictAnti (fun a ↦ f a : α → β) ∧ ∀ x : α, f ⊤ < f x :=
   strictMono_iff (β := βᵒᵈ)
 
 @[simp]

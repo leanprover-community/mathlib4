@@ -1248,7 +1248,8 @@ instance : Field (ZMod p) :=
   { inferInstanceAs (CommRing (ZMod p)), inferInstanceAs (Inv (ZMod p)),
     ZMod.nontrivial p with
     mul_inv_cancel := mul_inv_cancel_aux p
-    inv_zero := inv_zero p }
+    inv_zero := inv_zero p
+    qsmul := qsmulRec _ }
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
 instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by

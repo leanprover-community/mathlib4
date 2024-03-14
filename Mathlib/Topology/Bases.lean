@@ -212,7 +212,7 @@ lemma IsTopologicalBasis.subset_of_forall_subset {t : Set α} (hB : IsTopologica
 lemma IsTopologicalBasis.eq_of_forall_subset_iff {t : Set α} (hB : IsTopologicalBasis B)
     (hs : IsOpen s) (ht : IsOpen t) (h : ∀ U ∈ B, U ⊆ s ↔ U ⊆ t) : s = t := by
   rw [hB.open_eq_sUnion' hs, hB.open_eq_sUnion' ht]
-  exact congr_arg _ (Set.ext λ U ↦ and_congr_right <| h _)
+  exact congr_arg _ (Set.ext fun U ↦ and_congr_right <| h _)
 
 /-- A point `a` is in the closure of `s` iff all basis sets containing `a` intersect `s`. -/
 theorem IsTopologicalBasis.mem_closure_iff {b : Set (Set α)} (hb : IsTopologicalBasis b) {s : Set α}
@@ -311,8 +311,9 @@ latter should be used as a typeclass argument in theorems because Lean can autom
 `TopologicalSpace.SeparableSpace` from `SecondCountableTopology` but it can't
 deduce `SecondCountableTopology` from `TopologicalSpace.SeparableSpace`.
 
-Porting note: TODO: the previous paragraph describes the state of the art in Lean 3. We can have
-instance cycles in Lean 4 but we might want to postpone adding them till after the port. -/
+Porting note (#11215): TODO: the previous paragraph describes the state of the art in Lean 3.
+We can have instance cycles in Lean 4 but we might want to
+postpone adding them till after the port. -/
 @[mk_iff] class SeparableSpace : Prop where
   /-- There exists a countable dense set. -/
   exists_countable_dense : ∃ s : Set α, s.Countable ∧ Dense s

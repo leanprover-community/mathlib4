@@ -253,7 +253,7 @@ attribute [simp] lmap rmap
 theorem corec_eq (f : β → Sum α β) (b : β) : destruct (corec f b) = rmap (corec f) (f b) := by
   dsimp [corec, destruct]
   rw [show Stream'.corec' (Corec.f f) (Sum.inr b) 0 =
-    Sum.rec Option.some (λ _ => none) (f b) by
+    Sum.rec Option.some (fun _ ↦ none) (f b) by
     dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.get, Stream'.iterate]
     match (f b) with
     | Sum.inl x => rfl
@@ -310,8 +310,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
         exact False.elim h
       · rw [destruct_pure, destruct_think] at h
         exact False.elim h
-      · simp at h
-        simp [*]
+      · simp_all
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 #align computation.eq_of_bisim Computation.eq_of_bisim
 
@@ -705,7 +704,7 @@ theorem destruct_map (f : α → β) (s) : destruct (map f s) = lmap f (rmap (ma
 @[simp]
 theorem map_id : ∀ s : Computation α, map id s = s
   | ⟨f, al⟩ => by
-    apply Subtype.eq; simp [map, Function.comp]
+    apply Subtype.eq; simp only [map, comp_apply, id_eq]
     have e : @Option.rec α (fun _ => Option α) none some = id := by ext ⟨⟩ <;> rfl
     have h : ((fun x: Option α => x) = id) := rfl
     simp [e, h, Stream'.map_id]
@@ -1279,8 +1278,8 @@ theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computat
     (H : ∀ {ca cb}, C ca cb → LiftRelAux R C (destruct ca) (destruct cb)) (ca cb) (Hc : C ca cb) (a)
     (ha : a ∈ ca) : LiftRel R ca cb := by
   revert cb
-  refine' memRecOn (C := (λ ca => ∀ (cb : Computation β), C ca cb → LiftRel R ca cb))
-    ha _ (fun ca' IH => _) <;> intro cb Hc <;> have h := H Hc
+  refine memRecOn (C := (fun ca ↦ ∀ (cb : Computation β), C ca cb → LiftRel R ca cb))
+    ha ?_ (fun ca' IH => ?_) <;> intro cb Hc <;> have h := H Hc
   · simp only [destruct_pure, LiftRelAux.ret_left] at h
     simp [h]
   · simp only [liftRel_think_left]

@@ -333,7 +333,7 @@ theorem nnnorm_symm_pos [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[
 
 theorem subsingleton_or_norm_symm_pos [RingHomIsometric σ₁₂] (e : E ≃SL[σ₁₂] F) :
     Subsingleton E ∨ 0 < ‖(e.symm : F →SL[σ₂₁] E)‖ := by
-  rcases subsingleton_or_nontrivial E with (_i | _i) <;> skip
+  rcases subsingleton_or_nontrivial E with (_i | _i)
   · left
     infer_instance
   · right
@@ -403,9 +403,9 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
   · refine exists_congr (fun C ↦ and_congr_right fun hC ↦ forall_congr' fun i ↦ ?_)
     rw [ContinuousLinearMap.opNorm_le_iff hC]
   tfae_have 7 ↔ 8
-  · simp_rw [bddAbove_iff_exists_ge (0 : ℝ), Set.forall_range_iff]
+  · simp_rw [bddAbove_iff_exists_ge (0 : ℝ), Set.forall_mem_range]
   tfae_have 6 ↔ 8
-  · simp_rw [bddAbove_def, Set.forall_range_iff]
+  · simp_rw [bddAbove_def, Set.forall_mem_range]
   tfae_have 8 ↔ 9
   · rw [ENNReal.iSup_coe_lt_top, ← NNReal.bddAbove_coe, ← Set.range_comp]
     rfl

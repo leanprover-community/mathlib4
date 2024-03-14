@@ -105,7 +105,7 @@ theorem isOpen_fold {t : TopologicalSpace X} : t.IsOpen s = IsOpen[t] s :=
 variable [TopologicalSpace X]
 
 theorem isOpen_iUnion {f : ι → Set X} (h : ∀ i, IsOpen (f i)) : IsOpen (⋃ i, f i) :=
-  isOpen_sUnion (forall_range_iff.2 h)
+  isOpen_sUnion (forall_mem_range.2 h)
 #align is_open_Union isOpen_iUnion
 
 theorem isOpen_biUnion {s : Set α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
@@ -137,12 +137,12 @@ theorem Set.Finite.isOpen_sInter {s : Set (Set X)} (hs : s.Finite) :
 theorem Set.Finite.isOpen_biInter {s : Set α} {f : α → Set X} (hs : s.Finite)
     (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
-  sInter_image f s ▸ (hs.image _).isOpen_sInter (ball_image_iff.2 h)
+  sInter_image f s ▸ (hs.image _).isOpen_sInter (forall_mem_image.2 h)
 #align is_open_bInter Set.Finite.isOpen_biInter
 
 theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsOpen (s i)) :
     IsOpen (⋂ i, s i) :=
-  (finite_range _).isOpen_sInter  (forall_range_iff.2 h)
+  (finite_range _).isOpen_sInter  (forall_mem_range.2 h)
 #align is_open_Inter isOpen_iInter_of_finite
 
 theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
@@ -169,7 +169,7 @@ theorem TopologicalSpace.ext_iff_isClosed {t₁ t₂ : TopologicalSpace X} :
 
 alias ⟨_, TopologicalSpace.ext_isClosed⟩ := TopologicalSpace.ext_iff_isClosed
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem isClosed_const {p : Prop} : IsClosed { _x : X | p } := ⟨isOpen_const (p := ¬p)⟩
 
 @[simp] theorem isClosed_empty : IsClosed (∅ : Set X) := isClosed_const
@@ -187,7 +187,7 @@ theorem isClosed_sInter {s : Set (Set X)} : (∀ t ∈ s, IsClosed t) → IsClos
 #align is_closed_sInter isClosed_sInter
 
 theorem isClosed_iInter {f : ι → Set X} (h : ∀ i, IsClosed (f i)) : IsClosed (⋂ i, f i) :=
-  isClosed_sInter <| forall_range_iff.2 h
+  isClosed_sInter <| forall_mem_range.2 h
 #align is_closed_Inter isClosed_iInter
 
 theorem isClosed_biInter {s : Set α} {f : α → Set X} (h : ∀ i ∈ s, IsClosed (f i)) :
@@ -1713,7 +1713,7 @@ theorem image_closure_subset_closure_image (h : Continuous f) :
   ((mapsTo_image f s).closure h).image_subset
 #align image_closure_subset_closure_image image_closure_subset_closure_image
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem closure_image_closure (h : Continuous f) :
     closure (f '' closure s) = closure (f '' s) :=
   Subset.antisymm
@@ -1857,11 +1857,11 @@ However, lemmas with this conclusion are not nice to use in practice because
   elaboration process.
   ```
   variable {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
-  example : Continuous (λ x : M, x + x) :=
-  continuous_add.comp _
+  example : Continuous (fun x : M ↦ x + x) :=
+    continuous_add.comp _
 
-  example : Continuous (λ x : M, x + x) :=
-  continuous_add.comp (continuous_id.prod_mk continuous_id)
+  example : Continuous (fun x : M ↦ x + x) :=
+    continuous_add.comp (continuous_id.prod_mk continuous_id)
   ```
   The second is a valid proof, which is accepted if you write it as
   `continuous_add.comp (continuous_id.prod_mk continuous_id : _)`
@@ -1873,7 +1873,8 @@ However, lemmas with this conclusion are not nice to use in practice because
 
 A much more convenient way to write continuity lemmas is like `Continuous.add`:
 ```
-Continuous.add {f g : X → M} (hf : Continuous f) (hg : Continuous g) : Continuous (λ x, f x + g x)
+Continuous.add {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
+  Continuous (fun x ↦ f x + g x)
 ```
 The conclusion can be `Continuous (f + g)`, which is definitionally equal.
 This has the following advantages

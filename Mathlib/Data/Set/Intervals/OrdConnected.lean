@@ -159,7 +159,7 @@ theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s
 
 theorem ordConnected_iInter {ι : Sort*} {s : ι → Set α} (hs : ∀ i, OrdConnected (s i)) :
     OrdConnected (⋂ i, s i) :=
-  ordConnected_sInter <| forall_range_iff.2 hs
+  ordConnected_sInter <| forall_mem_range.2 hs
 #align set.ord_connected_Inter Set.ordConnected_iInter
 
 instance ordConnected_iInter' {ι : Sort*} {s : ι → Set α} [∀ i, OrdConnected (s i)] :

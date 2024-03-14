@@ -76,7 +76,8 @@ noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) 
         dsimp
         rw [dif_neg h]
         haveI := isIso_of_hom_simple h
-        exact IsIso.inv_hom_id f }
+        exact IsIso.inv_hom_id f
+      qsmul := qsmulRec _ }
 
 open FiniteDimensional
 
