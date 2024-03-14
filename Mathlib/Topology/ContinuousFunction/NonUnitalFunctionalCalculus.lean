@@ -14,7 +14,7 @@ This file defines a generic API for the *continuous functional calculus* in *non
 which is suitable in a wide range of settings. The design is intended to match as closely as
 possible that for unital algebras in `Topology.ContinuousFunction.FunctionalCalculus`. Changes to
 either file should be mirrored in its counterpart whenever possible. The underlying reasons for the
-design decisions in the unital case apply equally in the non-unital case. See that module
+design decisions in the unital case apply equally in the non-unital case. See the module
 documentation in that file for more information.
 
 A continuous functional calculus for an element `a : A` in a non-unital topological `R`-algebra is
@@ -32,8 +32,8 @@ encoded in the `UniqueNonUnitalContinuousFunctionalCalculus` class.
   satisfying `p a` has a non-unital star algebra homomorphism from the continuous `R`-valued
   functions on the `R`-quasispectrum of `a` vanishing at zero into the algebra `A`. This map is a
   closed embedding, and satisfies the **spectral mapping theorem**.
-+ `cfcₙHom : p a → C(quasispectrum R a, R)₀ →⋆ₐ[R] A`: the underlying star algebra homomorphism for
-  an element satisfying property `p`.
++ `cfcₙHom : p a → C(quasispectrum R a, R)₀ →⋆ₐ[R] A`: the underlying non-unital star algebra
+  homomorphism for an element satisfying property `p`.
 + `cfcₙ : A → (R → R) → A`: an unbundled version of `cfcₙHom` which takes the junk value `0` when
   `cfcₙHom` is not defined.
 
@@ -73,8 +73,14 @@ class NonUnitalContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outPara
     ClosedEmbedding φ ∧ φ ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a ∧
       (∀ f, σₙ R (φ f) = Set.range f) ∧ ∀ f, p (φ f)
 
-/-- we really don't actually want a separate class for this, but for now we'll use this hack to
-write the rest of the file. -/
+-- TODO: try to unify with the unital version. The `ℝ≥0` case makes it tricky.
+/-- A class guaranteeing that the non-unital continuous functional calculus is uniquely determined
+by the properties that it is a continuous non-unital star algebra homomorphism mapping the
+(restriction of) the identity to `a`. This is the necessary tool used to establish `cfcₙHom_comp`
+and the more common variant `cfcₙ_comp`.
+
+This class will have instances in each of the common cases `ℂ`, `ℝ` and `ℝ≥0` as a consequence of
+the Stone-Weierstrass theorem. -/
 class UniqueNonUnitalContinuousFunctionalCalculus (R A : Type*) [Semifield R] [StarRing R]
     [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
     [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] : Prop where
@@ -114,10 +120,10 @@ lemma cfcₙHom_closedEmbedding :
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
 
 lemma cfcₙHom_id :
-    cfcₙHom ha ⟨(ContinuousMap.id R).restrict <| σₙ R a, by simp⟩ = a :=
+    cfcₙHom ha ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1
 
-/-- The **spectral mapping theorem** for the continuous functional calculus. -/
+/-- The **spectral mapping theorem** for the non-unital continuous functional calculus. -/
 lemma cfcₙHom_map_quasispectrum (f : C(σₙ R a, R)₀) :
     σₙ R (cfcₙHom ha f) = Set.range f :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.1 f
@@ -128,7 +134,7 @@ lemma cfcₙHom_predicate (f : C(σₙ R a, R)₀) :
 
 lemma cfcₙHom_eq_of_continuous_of_map_id [UniqueNonUnitalContinuousFunctionalCalculus R A]
     (φ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) (hφ₁ : Continuous φ)
-    (hφ₂ : φ ⟨.restrict (σₙ R a) <| .id R, by simp⟩ = a) : cfcₙHom ha = φ :=
+    (hφ₂ : φ ⟨.restrict (σₙ R a) <| .id R, rfl⟩ = a) : cfcₙHom ha = φ :=
   (cfcₙHom ha).ext_continuousMap a φ (cfcₙHom_closedEmbedding ha).continuous hφ₁ <| by
     rw [cfcₙHom_id ha, hφ₂]
 
@@ -163,8 +169,8 @@ open Classical in
 /-- This is the *continuous functional calculus* of an element `a : A` in a non-unital algebra
 applied to bare functions.  When either `a` does not satisfy the predicate `p` (i.e., `a` is not
 `IsStarNormal`, `IsSelfAdjoint`, or `0 ≤ a` when `R` is `ℂ`, `ℝ`, or `ℝ≥0`, respectively), or when
-`f : R → R` is not continuous on the σₙ of `a` or `f 0 ≠ 0`, then `cfc a f` returns the junk
-value `0`.
+`f : R → R` is not continuous on the quasispectrum of `a` or `f 0 ≠ 0`, then `cfc a f` returns the
+junk value `0`.
 
 This is the primary declaration intended for widespread use of the continuous functional calculus
 for non-unital algebras, and all the API applies to this declaration. For more information, see the
@@ -212,7 +218,7 @@ variable (R) in
 lemma cfcₙ_id' (ha : p a := by cfc_tac) : cfcₙ a (fun x : R ↦ x) = a :=
   cfcₙ_id R a
 
-/-- The **spectral mapping theorem** for the continuous functional calculus. -/
+/-- The **spectral mapping theorem** for the non-unital continuous functional calculus. -/
 lemma cfc_map_quasispectrum (f : R → R) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (h0 : f 0 = 0 := by cfc_zero_tac) :
     σₙ R (cfcₙ a f) = f '' σₙ R a := by
@@ -374,7 +380,7 @@ lemma cfcₙ_comp_star (f : R → R) (ha : p a := by cfc_tac)
 
 lemma eq_zero_of_quasispectrum_eq_zero (h_spec : σₙ R a ⊆ {0}) (ha : p a := by cfc_tac) :
     a = 0 := by
-  simpa [cfcₙ_id R a] using cfcₙ_congr a (f := id) (g := fun _ : R ↦ 0) <| by rw [h_spec]; simp
+  simpa [cfcₙ_id R a] using cfcₙ_congr a (f := id) (g := fun _ : R ↦ 0) fun x ↦ by simp_all
 
 end CFCn
 section Neg
