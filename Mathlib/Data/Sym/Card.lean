@@ -5,8 +5,10 @@ Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Finset.Sym
+import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Prod
+import Mathlib.SetTheory.Cardinal.Finite
 
 #align_import data.sym.card from "leanprover-community/mathlib"@"0bd2ea37bcba5769e14866170f251c9bc64e35d7"
 
@@ -54,7 +56,7 @@ stars and bars, multichoose
 -/
 
 
-open Finset Fintype Function Sum Nat
+open BigOperators Finset Fintype Function Sum Nat
 
 variable {α β : Type*}
 
@@ -100,7 +102,7 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
   | 1, k + 1 => by simp
   | n + 2, k + 1 => by
     rw [multichoose_succ_succ, ← card_sym_fin_eq_multichoose (n + 1) (k + 1),
-      ← card_sym_fin_eq_multichoose (n + 2) k, add_comm (Fintype.card _), ← card_sum]
+      ← card_sym_fin_eq_multichoose (n + 2) k, add_comm (Fintype.card _), ← Fintype.card_sum]
     refine Fintype.card_congr (Equiv.symm ?_)
     apply (Sym.e1.symm.sumCongr Sym.e2.symm).trans
     apply Equiv.sumCompl
@@ -125,13 +127,20 @@ end Sym
 
 end Sym
 
+@[simp]
+lemma Nat.card_sum_eq_choose (ι : Type*) [Fintype ι] (k : ℕ) :
+    Nat.card {P : ι → ℕ // ∑ i, P i = k} = Nat.choose (Fintype.card ι + k - 1) k := by
+  classical
+  rw [Nat.card_congr (Sym.equivNatSumOfFintype ι k).symm, card_eq_fintype_card,
+    Sym.card_sym_eq_choose]
+
 namespace Sym2
 
 variable [DecidableEq α]
 
 /-- The `diag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.card`. -/
 theorem card_image_diag (s : Finset α) : (s.diag.image Sym2.mk).card = s.card := by
-  rw [card_image_of_injOn, diag_card]
+  rw [Finset.card_image_of_injOn, diag_card]
   rintro ⟨x₀, x₁⟩ hx _ _ h
   cases Sym2.eq.1 h
   · rfl
