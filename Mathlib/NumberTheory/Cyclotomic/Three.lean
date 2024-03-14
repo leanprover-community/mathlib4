@@ -53,7 +53,8 @@ theorem Units.mem : ↑u ∈
     norm_cast
     simp [hxu, hn]
   have hodd : Odd ((3 : ℕ+) : ℕ) := by decide
-  obtain ⟨r, hr3, hru⟩ := hζ.exists_pow_or_neg_mul_pow_of_pow_eq_one hodd hn
+  obtain ⟨r, hr3, hru⟩ := hζ.exists_pow_or_neg_mul_pow_of_isOfFinOrder hodd
+    (isOfFinOrder_iff_pow_eq_one.2 ⟨n, hnpos, hn⟩)
   replace hr : r ∈ Finset.Ico 0 3 := Finset.mem_Ico.2 ⟨by simp, hr3⟩
   replace hru : ↑u = hζ.toInteger ^ r ∨ ↑u = -hζ.toInteger ^ r := by
     rcases hru with (h | h)
