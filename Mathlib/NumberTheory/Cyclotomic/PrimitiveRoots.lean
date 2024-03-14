@@ -247,17 +247,19 @@ theorem dvd_of_isCyclotomicExtension [NumberField K] [IsCyclotomicExtension {n} 
   · rw [key, mul_comm] at hr
     simpa [← hr] using _root_.dvd_lcm_left _ _
 
-/-- If `x` is a `k`-th root of unity in an `n`-th cyclotomic extension of `ℚ`, where `n` is odd,
-and `ζ` is a primitive `n`-th root of unity, then there exist `r` such that `x = (-ζ)^r`. -/
-theorem exists_neg_pow_of_pow_eq_one [NumberField K] [IsCyclotomicExtension {n} ℚ K]
-    (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+} (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) :
+/-- If `x` is a root of unity (spelled as `IsOfFinOrder x`) in an `n`-th cyclotomic extension of
+`ℚ`, where `n` is odd, and `ζ` is a primitive `n`-th root of unity, then there exist `r`
+such that `x = (-ζ)^r`. -/
+theorem exists_neg_pow_of_isOfFinOrder [NumberField K] [IsCyclotomicExtension {n} ℚ K]
+    (hno : Odd (n : ℕ)) {ζ x : K} (hζ : IsPrimitiveRoot ζ n) (hx : IsOfFinOrder x) :
     ∃ r : ℕ, x = (-ζ) ^ r :=  by
   have hnegζ : IsPrimitiveRoot (-ζ) (2 * n) := by
     convert IsPrimitiveRoot.orderOf (-ζ)
     rw [neg_eq_neg_one_mul, (Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
     · simp [hζ.eq_orderOf]
     · simp [← hζ.eq_orderOf, Nat.odd_iff_not_even.1 hno]
-  obtain ⟨l, hl, hlroot⟩ := (isRoot_of_unity_iff k.2 _).1 hx
+  obtain ⟨k, hkpos, hkn⟩ := isOfFinOrder_iff_pow_eq_one.1 hx
+  obtain ⟨l, hl, hlroot⟩ := (isRoot_of_unity_iff hkpos _).1 hkn
   have hlzero : NeZero l := ⟨fun h ↦ by simp [h] at hl⟩
   have : NeZero (l : K) := ⟨NeZero.natCast_ne l K⟩
   rw [isRoot_cyclotomic_iff] at hlroot
@@ -266,13 +268,12 @@ theorem exists_neg_pow_of_pow_eq_one [NumberField K] [IsCyclotomicExtension {n} 
   obtain ⟨s, -, hs⟩ := hnegζ.eq_pow_of_pow_eq_one hlroot (by simp)
   exact ⟨s, hs.symm⟩
 
-/-- If `x` is a `k`-th root of unity in an `n`-th cyclotomic extension of `ℚ`, where `n` is odd,
-and `ζ` is a primitive `n`-th root of unity, then there exists `r < n` such that
-`x = ζ^r` or `x = -ζ^r`. -/
-theorem exists_pow_or_neg_mul_pow_of_pow_eq_one [NumberField K] [IsCyclotomicExtension {n} ℚ K]
-    (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+} (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) :
+/-- If `x` is a root of unity (spelled as `IsOfFinOrder x`) in an `n`-th cyclotomic extension of
+`ℚ`, where `n` is odd, and `ζ` is a primitive `n`-th root of unity, then there exists `r < n` such that `x = ζ^r` or `x = -ζ^r`. -/
+theorem exists_pow_or_neg_mul_pow_of_isOfFinOrder [NumberField K] [IsCyclotomicExtension {n} ℚ K]
+    (hno : Odd (n : ℕ)) {ζ x : K} (hζ : IsPrimitiveRoot ζ n) (hx : IsOfFinOrder x) :
     ∃ r : ℕ, r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) :=  by
-  obtain ⟨r, hr⟩ := hζ.exists_neg_pow_of_pow_eq_one hno hx
+  obtain ⟨r, hr⟩ := hζ.exists_neg_pow_of_isOfFinOrder hno hx
   refine ⟨r % n, Nat.mod_lt _ n.2, ?_⟩
   rw [show ζ ^ (r % ↑n) = ζ ^ r from (IsPrimitiveRoot.eq_orderOf hζ).symm ▸ pow_mod_orderOf .., hr]
   rcases Nat.even_or_odd r with (h | h) <;> simp [neg_pow, h.neg_one_pow]
