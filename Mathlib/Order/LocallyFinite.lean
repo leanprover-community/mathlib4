@@ -239,7 +239,7 @@ def LocallyFiniteOrderBot.ofIic (α : Type*) [PartialOrder α] [DecidableEq α]
     finsetIio := fun a => (finsetIic a).filter fun x => x ≠ a
     finset_mem_Iic := mem_Iic
     finset_mem_Iio := fun a x => by rw [mem_filter, mem_Iic, lt_iff_le_and_ne] }
--- Note: this is in the wrong namespace in Mathlib 3.
+-- Note: this was in the wrong namespace in Mathlib 3.
 #align locally_finite_order_top.of_Iic LocallyFiniteOrderBot.ofIic
 
 variable {α β : Type*}
