@@ -375,10 +375,10 @@ where
     return none
 
 /--
-Try to apply `pi_congr`. This is similar to `Lean.MVar.congrImplies?`.
+Try to apply `forall_congr`. This is similar to `Lean.MVar.congrImplies?`.
 -/
 def Lean.MVarId.congrPi? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
-  observing? do withReducible <| mvarId.apply (← mkConstWithFreshMVarLevels `pi_congr)
+  observing? do withReducible <| mvarId.apply (← mkConstWithFreshMVarLevels `forall_congr)
 
 /--
 Try to apply `funext`, but only if it is an equality of two functions where at least one is
@@ -407,7 +407,7 @@ def Lean.MVarId.obviousHfunext? (mvarId : MVarId) : MetaM (Option (List MVarId))
     mvarId.apply (← mkConstWithFreshMVarLevels `Function.hfunext)
 
 /-- Like `implies_congr` but provides an additional assumption to the second hypothesis.
-This is a non-dependent version of `pi_congr` that allows the domains to be different. -/
+This is a non-dependent version of `forall_congr` that allows the domains to be different. -/
 private theorem implies_congr' {α α' : Sort u} {β β' : Sort v} (h : α = α') (h' : α' → β = β') :
     (α → β) = (α' → β') := by
   cases h
@@ -671,7 +671,7 @@ to right-hand sides of goals. Here is a list of things it can try:
   If there is a subexpression that can be rewritten by `simp`, then `congr!` should be able
   to generate an equality for it.
 
-- It can do congruences of pi types using lemmas like `implies_congr` and `pi_congr`.
+- It can do congruences of pi types using lemmas like `implies_congr` and `forall_congr`.
 
 - Before applying congruences, it will run the `intros` tactic automatically.
   The introduced variables can be given names using a `with` clause.

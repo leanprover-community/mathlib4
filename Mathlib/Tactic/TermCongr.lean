@@ -578,7 +578,7 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
           return {lhs, rhs, pf? := none}
         else
           let pf ← mkLambdaFVars #[x] (← resBody.eq)
-          return CongrResult.mk' lhs rhs (← mkAppM ``pi_congr #[pf])
+          return CongrResult.mk' lhs rhs (← mkAppM ``forall_congr #[pf])
   | .letE .., .letE .. =>
     trace[Elab.congr] "letE"
     -- Just zeta reduce for now. Could look at `Lean.Meta.Simp.simp.simpLet`

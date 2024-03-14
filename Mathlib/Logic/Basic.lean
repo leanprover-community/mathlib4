@@ -618,9 +618,8 @@ section Dependent
 variable {β : α → Sort*} {γ : ∀ a, β a → Sort*} {δ : ∀ a b, γ a b → Sort*}
   {ε : ∀ a b c, δ a b c → Sort*}
 
-theorem pi_congr {β' : α → Sort _} (h : ∀ a, β a = β' a) : (∀ a, β a) = ∀ a, β' a :=
-  (funext h : β = β') ▸ rfl
-#align pi_congr pi_congr
+@[deprecated] alias pi_congr := forall_congr
+#align pi_congr forall_congr
 
 -- Porting note: some higher order lemmas such as `forall₂_congr` and `exists₂_congr`
 -- were moved to `Std4`
