@@ -508,7 +508,6 @@ end NonUnitalAlgHom
 
 /-! ### Interaction with `AlgHom` -/
 
-
 namespace AlgHom
 
 variable {F R : Type*} [CommSemiring R]
