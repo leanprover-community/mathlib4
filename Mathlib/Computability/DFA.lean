@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson
+Authors: Fox Thomson, Chris Wong
 -/
-import Mathlib.Data.Fintype.Card
 import Mathlib.Computability.Language
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.List.Indexes
 import Mathlib.Tactic.NormNum
 
 #align_import computability.DFA from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
@@ -90,12 +91,22 @@ theorem evalFrom_of_append (start : σ) (x y : List α) :
   x.foldl_append _ _ y
 #align DFA.eval_from_of_append DFA.evalFrom_of_append
 
+/--
+`M.acceptsFrom start` is the language of `x` such that `M.evalFrom start x` is an accept state.
+-/
+def acceptsFrom (start : σ) : Language α := {x | M.evalFrom start x ∈ M.accept}
+
+theorem mem_acceptsFrom (start : σ) (x : List α) :
+    x ∈ M.acceptsFrom start ↔ M.evalFrom start x ∈ M.accept := by rfl
+
 /-- `M.accepts` is the language of `x` such that `M.eval x` is an accept state. -/
-def accepts : Language α := {x | M.eval x ∈ M.accept}
+def accepts : Language α := M.acceptsFrom M.start
 #align DFA.accepts DFA.accepts
 
-theorem mem_accepts (x : List α) : x ∈ M.accepts ↔ M.evalFrom M.start x ∈ M.accept := by rfl
-#align DFA.mem_accepts DFA.mem_accepts
+theorem mem_accepts (x : List α) : x ∈ M.accepts ↔ M.eval x ∈ M.accept := by rfl
+
+theorem mem_accepts' (x : List α) : x ∈ M.accepts ↔ M.evalFrom M.start x ∈ M.accept := by rfl
+#align DFA.mem_accepts DFA.mem_accepts'
 
 theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.card σ ≤ x.length)
     (hx : M.evalFrom s x = t) :
@@ -106,8 +117,8 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
   obtain ⟨n, m, hneq, heq⟩ :=
     Fintype.exists_ne_map_eq_of_card_lt
       (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by norm_num)
-  wlog hle : (n : ℕ) ≤ m
-  · exact this _ hlen hx _ _ hneq.symm heq.symm (le_of_not_le hle)
+  wlog hle : (n : ℕ) ≤ m generalizing n m
+  · exact this m n hneq.symm heq.symm (le_of_not_le hle)
   have hm : (m : ℕ) ≤ Fintype.card σ := Fin.is_le m
   refine
     ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n,
@@ -162,7 +173,50 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
   rw [Set.mem_singleton_iff] at ha' hc'
   substs ha' hc'
   have h := M.evalFrom_of_pow hb hb'
-  rwa [mem_accepts, evalFrom_of_append, evalFrom_of_append, h, hc]
+  rwa [mem_accepts', evalFrom_of_append, evalFrom_of_append, h, hc]
 #align DFA.pumping_lemma DFA.pumping_lemma
+
+section Maps
+
+universe u' v'
+variable {α' : Type u'} {σ' : Type v'} (f : α ≃ α') (g : σ ≃ σ') (s : σ') (a : α') (x : List α')
+
+/-- Transforms the alphabet and states of a DFA. -/
+@[simps]
+def map (f : α' → α) (g : σ → σ') (h : σ' → σ) : DFA α' σ' where
+  step s a := g (M.step (h s) (f a))
+  start := g M.start
+  accept := g '' M.accept
+
+/-- Lifts equivalences on the alphabet and states to an equivalence on DFAs. -/
+def equiv (f : α ≃ α') (g : σ ≃ σ') : DFA α σ ≃ DFA α' σ' where
+  toFun M := M.map f.symm g g.symm
+  invFun M := M.map f g.symm g
+  left_inv M := by simp [map]
+  right_inv M := by simp [map]
+
+@[simp]
+theorem equiv_step : (equiv f g M).step s a = g (M.step (g.symm s) (f.symm a)) := by simp [equiv]
+
+@[simp] theorem equiv_start : (equiv f g M).start = g M.start := by simp [equiv]
+
+@[simp] theorem equiv_accept : (equiv f g M).accept = g '' M.accept := by simp [equiv]
+
+@[simp]
+theorem equiv_evalFrom : (equiv f g M).evalFrom s x = g (M.evalFrom (g.symm s) (x.map f.symm)) := by
+  induction x using List.list_reverse_induction with
+  | base => simp
+  | ind x a ih => simp [ih]
+
+@[simp]
+theorem equiv_eval : (equiv f g M).eval x = g (M.eval (x.map f.symm)) := by simp [eval]
+
+@[simp]
+theorem equiv_accepts : (equiv f g M).accepts = List.map f '' M.accepts := by
+  ext x
+  suffices List.map f.symm x ∈ M.accepts ↔ x ∈ List.map f '' M.accepts by simpa [mem_accepts]
+  exact Set.mem_image_equiv (f := Equiv.listEquivOfEquiv f) |>.symm
+
+end Maps
 
 end DFA
