@@ -248,7 +248,7 @@ theorem dvd_of_isCyclotomicExtension [NumberField K] [IsCyclotomicExtension {n} 
     simpa [← hr] using _root_.dvd_lcm_left _ _
 
 /-- If `x` is a `k`-th root of unity in an `n`-th cyclotomic extension of `ℚ`, where `n` is odd,
-and `ζ` is a primitive `n`-th root of unity, then there exist `r` such that `x = (-1)^r * ζ^r`. -/
+and `ζ` is a primitive `n`-th root of unity, then there exist `r` such that `x = (-ζ)^r`. -/
 theorem exists_neg_pow_of_pow_eq_one [NumberField K] [IsCyclotomicExtension {n} ℚ K]
     (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+} (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) :
     ∃ r : ℕ, x = (-ζ) ^ r :=  by
