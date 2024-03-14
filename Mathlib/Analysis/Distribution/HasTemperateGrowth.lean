@@ -1,6 +1,5 @@
 import Mathlib.Analysis.Distribution.SchwartzSpace
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.SpecialFunctions.Sqrt
+import Mathlib.Analysis.InnerProductSpace.Basic
 
 open scoped Real NNReal SchwartzSpace BigOperators  -- TODO: Check
 
@@ -250,10 +249,10 @@ theorem HasTemperateGrowth.comp {g : F → G} (hg : g.HasTemperateGrowth) {f : E
     refine le_self_pow ?_ (Nat.one_le_iff_ne_zero.mp hi)
     simp [one_le_mul_of_one_le_of_one_le, one_le_pow_of_one_le]
   have hgf (x) : 1 + ‖f x‖ ≤ 2 * max 1 Cf * (1 + ‖x‖) ^ kf
-  . rw [mul_assoc, two_mul]
+  · rw [mul_assoc, two_mul]
     refine add_le_add ?_ ?_
-    . simp [one_le_mul_of_one_le_of_one_le, one_le_pow_of_one_le]
-    . exact le_trans (hCf₀ x) <| mul_le_mul_of_nonneg_right (by simp) (by simp [add_nonneg])
+    · simp [one_le_mul_of_one_le_of_one_le, one_le_pow_of_one_le]
+    · exact le_trans (hCf₀ x) <| mul_le_mul_of_nonneg_right (by simp) (by simp [add_nonneg])
   have hC (x) : ∀ i ≤ n, ‖iteratedFDeriv ℝ i g (f x)‖ ≤
       Cg * (2 * max 1 Cf * (1 + ‖x‖) ^ kf) ^ kg := fun i hi ↦ by
     refine le_trans (hCg i hi (f x)) ?_
@@ -397,9 +396,9 @@ theorem HasTemperateGrowth.add {f : E → F} (hf : f.HasTemperateGrowth) {g : E 
   refine le_trans (norm_add_le _ _) ?_
   rw [add_mul]
   refine add_le_add ?_ ?_
-  . refine le_trans (hCf x) (mul_le_mul_of_nonneg_left ?_ hCf_nn)
+  · refine le_trans (hCf x) (mul_le_mul_of_nonneg_left ?_ hCf_nn)
     simp [pow_le_pow_right]
-  . refine le_trans (hCg x) (mul_le_mul_of_nonneg_left ?_ hCg_nn)
+  · refine le_trans (hCg x) (mul_le_mul_of_nonneg_left ?_ hCg_nn)
     simp [pow_le_pow_right]
 
 theorem HasTemperateGrowth.sub {f : E → F} (hf : f.HasTemperateGrowth) {g : E → F}
