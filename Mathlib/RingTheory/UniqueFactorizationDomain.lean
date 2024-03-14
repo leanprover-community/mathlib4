@@ -1939,7 +1939,7 @@ open Associates UniqueFactorizationMonoid
 
 /-- `toGCDMonoid` constructs a GCD monoid out of a unique factorization domain. -/
 noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CancelCommMonoidWithZero α]
-    [UniqueFactorizationMonoid α] [DecidableEq (Associates α)] : GCDMonoid α where
+    [UniqueFactorizationMonoid α] : GCDMonoid α where
   gcd a b := Quot.out (Associates.mk a ⊓ Associates.mk b : Associates α)
   lcm a b := Quot.out (Associates.mk a ⊔ Associates.mk b : Associates α)
   gcd_dvd_left a b := by
@@ -1971,7 +1971,7 @@ noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CancelComm
   unique factorization domain. -/
 noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
     [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] [NormalizationMonoid α]
-    [DecidableEq (Associates α)] : NormalizedGCDMonoid α :=
+    : NormalizedGCDMonoid α :=
   { ‹NormalizationMonoid α› with
     gcd := fun a b => (Associates.mk a ⊓ Associates.mk b).out
     lcm := fun a b => (Associates.mk a ⊔ Associates.mk b).out
