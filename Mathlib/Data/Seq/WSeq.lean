@@ -1449,7 +1449,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
   · induction' s using WSeq.recOn with b' s s <;>
       [induction' S using WSeq.recOn with s S S; skip; skip] <;>
       intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;>
-      simp at this; try cases this; try contradiction
+      simp at this; cases this
     substs b' ss
     simp? at m ⊢ says simp only [cons_append, mem_cons_iff] at m ⊢
     cases' o with e IH
@@ -1460,7 +1460,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
   · induction' s using WSeq.recOn with b' s s <;>
       [induction' S using WSeq.recOn with s S S; skip; skip] <;>
       intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;> simp at this <;>
-      try { try { have := this.1 }; contradiction } <;> subst ss
+      subst ss
     · apply Or.inr
       -- Porting note: `exists_eq_or_imp` should be excluded.
       simp [-exists_eq_or_imp] at m ⊢

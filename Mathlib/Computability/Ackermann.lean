@@ -145,7 +145,7 @@ theorem ack_strictMono_right : ∀ m, StrictMono (ack m)
     rw [ack_succ_succ, ack_succ_succ]
     apply ack_strictMono_right _ (ack_strictMono_right _ _)
     rwa [add_lt_add_iff_right] at h
-  termination_by m x y h => (m, x)
+  termination_by m x => (m, x)
 #align ack_strict_mono_right ack_strictMono_right
 
 theorem ack_mono_right (m : ℕ) : Monotone (ack m) :=
