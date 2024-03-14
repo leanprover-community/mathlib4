@@ -5,7 +5,6 @@ Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Algebra.GroupWithZero.Bitwise
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
 
@@ -201,44 +200,18 @@ theorem add_im (z w : ℂ) : (z + w).im = z.im + w.im :=
   rfl
 #align complex.add_im Complex.add_im
 
-section
-set_option linter.deprecated false
-@[simp]
-theorem bit0_re (z : ℂ) : (bit0 z).re = bit0 z.re :=
-  rfl
-#align complex.bit0_re Complex.bit0_re
-
-@[simp]
-theorem bit1_re (z : ℂ) : (bit1 z).re = bit1 z.re :=
-  rfl
-#align complex.bit1_re Complex.bit1_re
-
-@[simp]
-theorem bit0_im (z : ℂ) : (bit0 z).im = bit0 z.im :=
-  Eq.refl _
-#align complex.bit0_im Complex.bit0_im
-
-@[simp]
-theorem bit1_im (z : ℂ) : (bit1 z).im = bit0 z.im :=
-  add_zero _
-#align complex.bit1_im Complex.bit1_im
+#noalign complex.bit0_re
+#noalign complex.bit1_re
+#noalign complex.bit0_im
+#noalign complex.bit1_im
 
 @[simp, norm_cast]
 theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_add Complex.ofReal_add
 
-@[simp, norm_cast]
-theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 (r : ℂ) :=
-  ext_iff.2 <| by simp [bit0]
-#align complex.of_real_bit0 Complex.ofReal_bit0
-
-@[simp, norm_cast]
-theorem ofReal_bit1 (r : ℝ) : ((bit1 r : ℝ) : ℂ) = bit1 (r : ℂ) :=
-  ext_iff.2 <| by simp [bit1]
-#align complex.of_real_bit1 Complex.ofReal_bit1
-
-end
+#noalign complex.of_real_bit0
+#noalign complex.of_real_bit1
 
 instance : Neg ℂ :=
   ⟨fun z => ⟨-z.re, -z.im⟩⟩
@@ -490,17 +463,8 @@ theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
   rfl
 #align complex.coe_im_add_group_hom Complex.coe_imAddGroupHom
 
-section
-set_option linter.deprecated false
-@[simp]
-theorem I_pow_bit0 (n : ℕ) : I ^ bit0 n = (-1 : ℂ) ^ n := by rw [pow_bit0', Complex.I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_pow_bit0 Complex.I_pow_bit0
-
-@[simp]
-theorem I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [pow_bit1', Complex.I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_pow_bit1 Complex.I_pow_bit1
+#noalign complex.I_pow_bit0
+#noalign complex.I_pow_bit1
 
 -- Porting note: new theorem
 -- See note [no_index around OfNat.ofNat]
@@ -521,8 +485,6 @@ theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).im 
 
 noncomputable instance : RatCast ℂ where
   ratCast q := ofReal' q
-
-end
 
 /-! ### Complex conjugation -/
 
@@ -556,17 +518,9 @@ theorem conj_I : conj I = -I :=
   set_option linter.uppercaseLean3 false in
 #align complex.conj_I Complex.conj_I
 
+#noalign complex.conj_bit0
+#noalign complex.conj_bit1
 
-section
-set_option linter.deprecated false
-theorem conj_bit0 (z : ℂ) : conj (bit0 z) = bit0 (conj z) :=
-  ext_iff.2 <| by simp [bit0]
-#align complex.conj_bit0 Complex.conj_bit0
-
-theorem conj_bit1 (z : ℂ) : conj (bit1 z) = bit1 (conj z) :=
-  ext_iff.2 <| by simp [bit0]
-#align complex.conj_bit1 Complex.conj_bit1
-end
 -- @[simp]
 /- Porting note (#11119): `simp` attribute removed as the result could be proved
 by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
@@ -854,19 +808,8 @@ noncomputable instance instField : Field ℂ :=
   inv_zero := Complex.inv_zero }
 #align complex.field Complex.instField
 
-section
-set_option linter.deprecated false
-@[simp]
-theorem I_zpow_bit0 (n : ℤ) : I ^ bit0 n = (-1 : ℂ) ^ n := by rw [zpow_bit0', I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_zpow_bit0 Complex.I_zpow_bit0
-
-@[simp]
-theorem I_zpow_bit1 (n : ℤ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [zpow_bit1', I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_zpow_bit1 Complex.I_zpow_bit1
-
-end
+#noalign complex.I_zpow_bit0
+#noalign complex.I_zpow_bit1
 
 theorem div_re (z w : ℂ) : (z / w).re = z.re * w.re / normSq w + z.im * w.im / normSq w := by
   simp [div_eq_mul_inv, mul_assoc, sub_eq_add_neg]
