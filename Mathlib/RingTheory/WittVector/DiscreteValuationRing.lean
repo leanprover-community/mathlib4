@@ -55,6 +55,7 @@ noncomputable def inverseCoeff (a : Units k) (A : 𝕎 k) : ℕ → k
   | n + 1 => succNthValUnits n a A fun i => inverseCoeff a A i.val
 #align witt_vector.inverse_coeff WittVector.inverseCoeff
 
+set_option linter.unusedTactic false in
 /--
 Upgrade a Witt vector `A` whose first entry `A.coeff 0` is a unit to be, itself, a unit in `𝕎 k`.
 -/
