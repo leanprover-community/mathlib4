@@ -1025,63 +1025,75 @@ section Integration
 
 open Real Complex Filter MeasureTheory MeasureTheory.Measure FiniteDimensional
 
-variable [NormedAddCommGroup D] [NormedSpace ℝ D] [NormedAddCommGroup V] [NormedSpace ℂ V]
-variable [MeasurableSpace D] [BorelSpace D] [FiniteDimensional ℝ D]
+variable [IsROrC 𝕜]
+variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
+variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D]
 
-lemma integrable_pow_mul (f : 𝓢(D, V)) {μ : Measure D} (k : ℕ) [IsAddHaarMeasure μ] :
+section
+
+variable {μ : Measure D} {n : ℕ} (h : Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ)
+
+lemma integrable_pow_mul (f : 𝓢(D, V)) (k : ℕ) :
     Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
-  let l := finrank ℝ D + 1 + k
+  let l := n + k
   obtain ⟨C, C_nonneg, hC⟩ : ∃ C, 0 ≤ C ∧ ∀ x, (1 + ‖x‖) ^ l * ‖f x‖ ≤ C := by
     use 2 ^ l * (Finset.Iic (l, 0)).sup (fun m ↦ SchwartzMap.seminorm ℝ m.1 m.2) f, by positivity
     simpa using f.one_add_le_sup_seminorm_apply (m := (l, 0)) (k := l) (n := 0) le_rfl le_rfl
-  have : Integrable (fun x : D ↦ C * (1 + ‖x‖) ^ (-((finrank ℝ D + 1 : ℕ) : ℝ))) μ := by
-    apply (integrable_one_add_norm ?_).const_mul
-    exact Nat.cast_lt.mpr Nat.le.refl
+  have : Integrable (fun x : D ↦ C * (1 + ‖x‖) ^ (-(n : ℝ))) μ := by
+    apply h.const_mul
   apply this.mono ((aestronglyMeasurable_id.norm.pow _).mul f.continuous.aestronglyMeasurable.norm)
     (eventually_of_forall (fun x ↦ ?_))
   conv_rhs => rw [norm_of_nonneg (by positivity), rpow_neg (by positivity), ← div_eq_mul_inv]
   rw [le_div_iff' (by positivity)]
   simp only [id_eq, Pi.mul_apply, Pi.pow_apply, norm_mul, norm_pow, norm_norm, rpow_nat_cast]
   calc
-    (1 + ‖x‖) ^ (finrank ℝ D + 1) * (‖x‖ ^ k * ‖f x‖)
-      ≤ (1 + ‖x‖) ^ (finrank ℝ D + 1) * ((1 + ‖x‖) ^ k * ‖f x‖) := by gcongr; simp
-    _ = (1 + ‖x‖) ^ (finrank ℝ D + 1 + k) * ‖f x‖ := by simp only [pow_add, mul_assoc]
+    (1 + ‖x‖) ^ n * (‖x‖ ^ k * ‖f x‖)
+      ≤ (1 + ‖x‖) ^ n * ((1 + ‖x‖) ^ k * ‖f x‖) := by gcongr; simp
+    _ = (1 + ‖x‖) ^ (n + k) * ‖f x‖ := by simp only [pow_add, mul_assoc]
     _ ≤ C := hC x
 
-lemma integrable (f : 𝓢(D, V)) {μ : Measure D} [IsAddHaarMeasure μ] :
-    Integrable f μ :=
-  (f.integrable_pow_mul (μ := μ) 0).mono f.continuous.aestronglyMeasurable
+lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
+  (f.integrable_pow_mul h 0).mono f.continuous.aestronglyMeasurable
     (eventually_of_forall (fun _ ↦ by simp))
 
+variable (𝕜)
+
+open scoped Classical in
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/
-def integralCLM (μ : Measure D) [IsAddHaarMeasure μ] : 𝓢(D, V) →L[ℝ] V :=
+def integralCLM (μ : Measure D) : 𝓢(D, V) →L[𝕜] V :=
+  if h : ∃ m : ℕ, Integrable (fun x ↦ (1 + ‖x‖) ^ (- (m : ℝ))) μ then
   mkCLMtoNormedSpace (∫ x, · x ∂μ)
-    (fun f g ↦ integral_add f.integrable g.integrable)
+    (fun f g ↦ by
+      rcases h with ⟨n, h⟩
+      exact integral_add (f.integrable h) (g.integrable h))
     (integral_smul · ·)
     (by
-      let l := finrank ℝ D + 1
-      let m := (l, 0)
-      use Finset.Iic (l, 0), 2 ^ l * ∫ x : D, (1 + ‖x‖) ^ (- (l : ℝ)) ∂μ
-      have hpos : 0 ≤ ∫ x : D, (1 + ‖x‖) ^ (- (l : ℝ)) ∂μ := by
+      rcases h with ⟨n, h⟩
+      let m := (n, 0)
+      use Finset.Iic m, 2 ^ n * ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ
+      have hpos : 0 ≤ ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ := by
         apply integral_nonneg
         intro
         positivity
       refine ⟨by positivity, fun f ↦ (norm_integral_le_integral_norm f).trans ?_⟩
-      have h : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(l : ℝ)) *
-          (2^l * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm ℝ m'.1 m'.2) f)) := by
+      have h' : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(n : ℝ)) *
+          (2 ^ n * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm 𝕜 m'.1 m'.2) f)) := by
         intro x
         rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff' (by positivity), rpow_nat_cast]
-        simpa using one_add_le_sup_seminorm_apply (m := m) (k := l) (n := 0) le_rfl le_rfl f x
-      apply (integral_mono (by simpa using f.integrable_pow_mul (μ := μ) 0) _ h).trans
-      · rw [integral_mul_right, ← mul_assoc]
-        gcongr ?_ * ?_
-        · rw [mul_comm]
-        · rfl
-      apply (integrable_one_add_norm (by simp)).mul_const)
+        simpa using one_add_le_sup_seminorm_apply (m := m) (k := n) (n := 0) le_rfl le_rfl f x
+      apply (integral_mono (by simpa using f.integrable_pow_mul h 0) _ h').trans
+      · rw [integral_mul_right, ← mul_assoc, mul_comm (2 ^ n)]
+        rfl
+      apply h.mul_const)
+  else 0
 
-@[simp]
-lemma integralCLM_apply {μ : Measure D} [IsAddHaarMeasure μ] (f : 𝓢(D, V)) :
-    integralCLM μ f = ∫ x, f x ∂μ := rfl
+lemma integralCLM_apply (f : 𝓢(D, V)) : integralCLM 𝕜 μ f = ∫ x, f x ∂μ := by
+  have : ∃ m : ℕ, Integrable (fun x ↦ (1 + ‖x‖) ^ (- (m : ℝ))) μ := ⟨n, h⟩
+  simp only [integralCLM, this, reduceDite]
+  rfl
+
+end
 
 end Integration
 
@@ -1137,6 +1149,8 @@ theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
 
 variable {E}
 
+section DiracDelta
+
 /-- The Dirac delta distribution -/
 def delta (x : E) : 𝓢(E, F) →L[𝕜] F :=
   (BoundedContinuousFunction.evalCLM 𝕜 x).comp (toBoundedContinuousFunctionCLM 𝕜 E F)
@@ -1146,6 +1160,20 @@ def delta (x : E) : 𝓢(E, F) →L[𝕜] F :=
 theorem delta_apply (x₀ : E) (f : 𝓢(E, F)) : delta 𝕜 F x₀ f = f x₀ :=
   rfl
 #align schwartz_map.delta_apply SchwartzMap.delta_apply
+
+open MeasureTheory MeasureTheory.Measure
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [CompleteSpace F]
+
+/-- Integrating against the Dirac measure is equal to the delta distribution. -/
+@[simp]
+theorem integralCLM_dirac_eq_delta (x : E) :
+    integralCLM 𝕜 (dirac x) = delta 𝕜 F x := by
+  ext f
+  have : Integrable (fun x ↦ (1 + ‖x‖) ^ (- ((0 : ℕ) : ℝ))) (dirac x) := by simp
+  simp [integralCLM_apply 𝕜 this]
+
+end DiracDelta
 
 end BoundedContinuousFunction
 
