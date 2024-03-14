@@ -160,7 +160,7 @@ theorem degree_modByMonic_lt [Nontrivial R] :
           dsimp
           rw [dif_pos hq, if_neg h, Classical.not_not.1 hp]
           exact lt_of_le_of_ne bot_le (Ne.symm (mt degree_eq_bot.1 hq.ne_zero)))
-  termination_by p q hq => p
+  termination_by p => p
 #align polynomial.degree_mod_by_monic_lt Polynomial.degree_modByMonic_lt
 
 theorem natDegree_modByMonic_lt (p : R[X]) {q : R[X]} (hmq : Monic q) (hq : q ≠ 1) :
