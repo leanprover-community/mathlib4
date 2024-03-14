@@ -702,7 +702,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
         -- Porting note: `dsimp` is required for beta reduction.
         dsimp only []
         rw [Finsupp.smul_sum, sum_smul_index']
-        · simp_rw [smul_assoc, MonoidHom.id_apply]
+        · simp_rw [smul_assoc]
         · intro m
           exact zero_smul k (f m)
       map_mul' := fun a₁ a₂ => by
