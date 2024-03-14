@@ -202,7 +202,7 @@ theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f 
   ha.of_fibration f fun a _ h ↦
     let ⟨a', he⟩ := dc h
     -- Porting note: Lean 3 did not need the motive
-    ⟨a', he.substr (p := λ x => rβ x (f a)) h, he⟩
+    ⟨a', he.substr (p := fun x ↦ rβ x (f a)) h, he⟩
 #align acc.of_downward_closed Acc.of_downward_closed
 
 end Fibration

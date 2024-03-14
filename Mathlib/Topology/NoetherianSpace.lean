@@ -231,9 +231,9 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
   have hι' : Finite ι := by rwa [Set.finite_coe_iff]
 
   let U := Z \ ⋃ (x : ι), x
-  have hU0 : U ≠ ∅ := λ r ↦ by
+  have hU0 : U ≠ ∅ := fun r ↦ by
     obtain ⟨Z', hZ'⟩ := isIrreducible_iff_sUnion_closed.mp H.1 hι.toFinset
-      (λ z hz ↦ by
+      (fun z hz ↦ by
         simp only [Set.Finite.mem_toFinset, Set.mem_diff, Set.mem_singleton_iff] at hz
         exact isClosed_of_mem_irreducibleComponents _ hz.1)
       (by
@@ -262,6 +262,6 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
       · exact ⟨i, Or.inr i.2, hi⟩
 
   refine ⟨U, hU1 ▸ isOpen_compl_iff.mpr ?_, hU0, sdiff_le⟩
-  exact isClosed_iUnion_of_finite λ i ↦ isClosed_of_mem_irreducibleComponents i.1 i.2.1
+  exact isClosed_iUnion_of_finite fun i ↦ isClosed_of_mem_irreducibleComponents i.1 i.2.1
 
 end TopologicalSpace
