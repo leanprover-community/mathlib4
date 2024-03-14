@@ -184,7 +184,6 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
       mul_one, zero_add, one_smul]
     simp only [iteratedDerivWithin_zero] at hf'
     rw [iteratedDerivWithin_one (hs_unique _ (h hy))]
-    norm_num
     exact hf'.hasDerivWithinAt.mono h
   simp_rw [Nat.add_succ, taylorWithinEval_succ]
   simp only [add_zero, Nat.factorial_succ, Nat.cast_mul, Nat.cast_add, Nat.cast_one]

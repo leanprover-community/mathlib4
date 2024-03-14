@@ -107,6 +107,9 @@ instance (priority := 100) hasFiniteColimits_of_hasColimitsOfSize [HasColimitsOf
     (@FinCategory.categoryAsType J (@FinCategory.fintypeObj J hJ hJ') hJ hJ') _ _ J hJ F _
 #align category_theory.limits.has_finite_colimits_of_has_colimits_of_size CategoryTheory.Limits.hasFiniteColimits_of_hasColimitsOfSize
 
+instance (priority := 100) hasFiniteColimits_of_hasColimits [HasColimits C] : HasFiniteColimits C :=
+  inferInstance
+
 /-- We can always derive `HasFiniteColimits C` by providing colimits at an
 arbitrary universe. -/
 theorem hasFiniteColimits_of_hasFiniteColimits_of_size

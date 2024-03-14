@@ -75,7 +75,6 @@ theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.mi
 @[simp]
 theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes := by
   rw [Ideal.minimalPrimes, Ideal.minimalPrimes]
-  congr
   ext p
   refine' ⟨_, _⟩ <;> rintro ⟨⟨a, ha⟩, b⟩
   · refine' ⟨⟨a, a.radical_le_iff.1 ha⟩, _⟩

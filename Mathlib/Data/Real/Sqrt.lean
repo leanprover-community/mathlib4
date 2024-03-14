@@ -155,7 +155,7 @@ begin
   { intros }
 end -/
 
--- Porting note: todo: was @[pp_nodot]
+-- Porting note (#11215): TODO: was @[pp_nodot]
 /-- The square root of a real number. This returns 0 for negative inputs. -/
 noncomputable def sqrt (x : ℝ) : ℝ :=
   NNReal.sqrt (Real.toNNReal x)
