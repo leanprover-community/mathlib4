@@ -255,6 +255,7 @@ jobs:
         id: noisy
         run: |
           ! grep --after-context=1 "stdout:" stdout.log
+          ! grep --after-context=1 "stderr:" stdout.log
 
       - name: check declarations in db files
         run: |
