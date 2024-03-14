@@ -21,6 +21,7 @@ bicomplex `(((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂)`.
 
 -/
 
+
 open CategoryTheory Limits
 
 variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
@@ -59,12 +60,13 @@ def mapBifunctorHomologicalComplexObj (K₁ : HomologicalComplex C₁ c₁) :
         dsimp
         rw [NatTrans.naturality])
   map {K₂ K₂' φ} := HomologicalComplex₂.homMk
-      (((GradedObject.mapBifunctor F I₁ I₂).obj K₁.X).map φ.f) (by simp) (by
-        intros
-        dsimp
-        simp only [← Functor.map_comp, φ.comm])
-  map_id K₂ := by ext; dsimp; rw [Functor.map_id]
-  map_comp f g := by ext; dsimp; rw [Functor.map_comp]
+      (((GradedObject.mapBifunctor F I₁ I₂).obj K₁.X).map φ.f)
+        (by dsimp; intros; rw [NatTrans.naturality]) (by
+          dsimp
+          intros
+          simp only [← Functor.map_comp, φ.comm])
+  map_id K₂ := by dsimp; ext; dsimp; rw [Functor.map_id]
+  map_comp f g := by dsimp; ext; dsimp; rw [Functor.map_comp]
 
 /-- Given a functor `F : C₁ ⥤ C₂ ⥤ D`, this is the bifunctor which sends
 `K₁ : HomologicalComplex C₁ c₁` and `K₂ : HomologicalComplex C₂ c₂` to the bicomplex
