@@ -172,16 +172,18 @@ theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
     c • f x = f (σ' c • x) := by simp [map_smulₛₗ _]
 #align semilinear_map_class.map_smul_inv SemilinearMapClass.map_smul_inv
 
+-- ACL : was @[coe] def
 /-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
-@[coe]
-def semilinearMap : M →ₛₗ[σ] M₃ where
+abbrev semilinearMap : M →ₛₗ[σ] M₃ where
   toFun := f
   map_add' := map_add f
   map_smul' := map_smulₛₗ f
 
+/-  ACL : delete
 /-- Reinterpret an element of a type of semilinear maps as a semilinear map. -/
 instance instCoeToSemilinearMap : CoeHead F (M →ₛₗ[σ] M₃) where
   coe f := semilinearMap f
+-/
 
 end SemilinearMapClass
 
@@ -192,9 +194,11 @@ variable {F : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Mod
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
 abbrev linearMap : M₁ →ₗ[R] M₂ := SemilinearMapClass.semilinearMap f
 
+/-  ACL : delete
 /-- Reinterpret an element of a type of linear maps as a linear map. -/
 instance instCoeToLinearMap : CoeHead F (M₁ →ₗ[R] M₂) where
   coe f := SemilinearMapClass.semilinearMap f
+-/
 
 end LinearMapClass
 
@@ -276,6 +280,7 @@ theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
     ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : AddHom M M₃) = f :=
   rfl
 
+/- ACL : delete
 theorem coe_semilinearMap {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] (f : F) :
     ((f : M →ₛₗ[σ] M₃) : M → M₃) = f :=
   rfl
@@ -286,6 +291,7 @@ theorem toLinearMap_injective {F : Type*} [FunLike F M M₃] [SemilinearMapClass
   apply DFunLike.ext
   intro m
   exact DFunLike.congr_fun h m
+-/
 
 /-- Identity map as a `LinearMap` -/
 def id : M →ₗ[R] M :=
@@ -674,19 +680,19 @@ variable {σ : R →+* S}
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 @[coe]
-def toSemilinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₗ[σ] M₂ :=
+def toSemilinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M₂ :=
   { fₗ with }
 
-instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
+/- instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where -/
 
-instance : CoeTC (M →ₑ+[σ.toMonoidHom] M₂) (M →ₛₗ[σ] M₂) where
+instance : CoeTC (M →ₑ+[σ.toMonoidHom] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toSemilinearMap⟩
 
-def toLinearMap (fₗ : M →+[R] M₂) : M →ₗ[R] M₂ :=
+def toLinearMap (fₗ : M →+[R] M₃) : M →ₗ[R] M₃ :=
   { fₗ with }
 #align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
 
-instance : CoeTC (M →+[R] M₃) (M →ₗ[R] M₃) where
+instance : CoeTC (M →+[R] M₃) (M →ₗ[R] M₃) :=
   ⟨toLinearMap⟩
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
