@@ -1140,7 +1140,6 @@ theorem pathConnectedSpace_iff_zerothHomotopy :
     exact Quotient.sound (PathConnectedSpace.joined x y)
   · unfold ZerothHomotopy
     rintro ⟨h, h'⟩
-    skip
     exact ⟨(nonempty_quotient_iff _).mp h, fun x y => Quotient.exact <| Subsingleton.elim ⟦x⟧ ⟦y⟧⟩
 #align path_connected_space_iff_zeroth_homotopy pathConnectedSpace_iff_zerothHomotopy
 

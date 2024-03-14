@@ -333,7 +333,7 @@ theorem nnnorm_symm_pos [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[
 
 theorem subsingleton_or_norm_symm_pos [RingHomIsometric σ₁₂] (e : E ≃SL[σ₁₂] F) :
     Subsingleton E ∨ 0 < ‖(e.symm : F →SL[σ₂₁] E)‖ := by
-  rcases subsingleton_or_nontrivial E with (_i | _i) <;> skip
+  rcases subsingleton_or_nontrivial E with (_i | _i)
   · left
     infer_instance
   · right
