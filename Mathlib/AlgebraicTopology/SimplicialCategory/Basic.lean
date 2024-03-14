@@ -14,12 +14,13 @@ A simplicial category is a category `C` that is enriched over the
 category of simplicial sets, in such a way that morphisms in
 `C` identify to the `0`-simplices of the enriched hom.
 
--/
+TODO: add reference to the original source by Quillen, Homotopical algebra
 
+-/
 
 universe v u
 
-open CategoryTheory Simplicial MonoidalCategory
+open CategoryTheory Category Simplicial MonoidalCategory
 
 namespace SimplexCategory
 
@@ -134,34 +135,61 @@ abbrev sHom (K L : C) : SSet.{v} := EnrichedCategory.Hom K L
 def homEquiv' (K L : C) : (K ⟶ L) ≃ sHom K L _[0] :=
   (homEquiv K L).trans (sHom K L).unitHomEquiv
 
-noncomputable def sHomMap₂ (K : C) {L L' : C} (g : L ⟶ L') :
-    sHom K L ⟶ sHom K L' :=
-  (ρ_ _).inv ≫ _ ◁ homEquiv L L' g ≫ eComp SSet K L L'
-
 noncomputable def sHomMap₁ {K K' : C} (f : K ⟶ K') (L : C) :
     sHom K' L ⟶ sHom K L :=
   (λ_ _).inv ≫ homEquiv K K' f ▷ _ ≫ eComp SSet K K' L
 
-/-@[simps]
+@[simp]
+lemma sHomMap₁_id (K L : C) :
+    sHomMap₁ (𝟙 K) L = 𝟙 _ := by
+  simp [sHomMap₁, homEquiv_id]
+
+@[simp, reassoc]
+lemma sHomMap₁_comp {K K' K'' : C} (f : K ⟶ K') (f' : K' ⟶ K'') (L : C) :
+    sHomMap₁ (f ≫ f') L = sHomMap₁ f' L ≫ sHomMap₁ f L := by
+  dsimp [sHomMap₁]
+  simp only [assoc, homEquiv_comp, comp_whiskerRight, leftUnitor_inv_whiskerRight, ← e_assoc']
+  rfl
+
+noncomputable def sHomMap₂ (K : C) {L L' : C} (g : L ⟶ L') :
+    sHom K L ⟶ sHom K L' :=
+  (ρ_ _).inv ≫ _ ◁ homEquiv L L' g ≫ eComp SSet K L L'
+
+@[simp]
+lemma sHomMap₂_id (K L : C) :
+    sHomMap₂ K (𝟙 L) = 𝟙 _ := by
+  simp [sHomMap₂, homEquiv_id]
+
+@[simp, reassoc]
+lemma sHomMap₂_comp (K : C) {L L' L'' : C} (g : L ⟶ L') (g' : L' ⟶ L'') :
+    sHomMap₂ K (g ≫ g') = sHomMap₂ K g ≫ sHomMap₂ K g' := by
+  dsimp [sHomMap₂]
+  simp only [homEquiv_comp, MonoidalCategory.whiskerLeft_comp, assoc, ← e_assoc]
+  rfl
+
+@[reassoc]
+lemma sHomMap₂_sHomMap₁ {K K' L L' : C} (f : K ⟶ K') (g : L ⟶ L') :
+    sHomMap₂ K' g ≫ sHomMap₁ f L' = sHomMap₁ f L ≫ sHomMap₂ K g :=
+  ((ρ_ _).inv ≫ _ ◁ homEquiv L L' g ≫ (λ_ _).inv ≫ homEquiv K K' f ▷ _) ≫=
+    (e_assoc SSet.{v} K K' L L').symm
+
+attribute [local simp] sHomMap₂_sHomMap₁
+
+@[simps]
 noncomputable def sHomFunctor : Cᵒᵖ ⥤ C ⥤ SSet.{v} where
   obj K :=
     { obj := fun L => sHom K.unop L
-      map := fun φ => sHomMap₂ K.unop φ
-      map_id := by
-        sorry
-      map_comp := sorry }
+      map := fun φ => sHomMap₂ K.unop φ }
   map φ :=
-    { app := fun L => sHomMap₁ φ.unop L
-      naturality := sorry }
-  map_id := sorry
-  map_comp := sorry-/
+    { app := fun L => sHomMap₁ φ.unop L }
 
 abbrev Homotopy {K L : C} (f g : K ⟶ L) :=
   (sHom K L).Path (homEquiv' K L f) (homEquiv' K L g)
 
 -- TODO: develop API for the "adjoint functors"
 -- especially, introduce a *data valued* class containing the data
--- of a representative of `A ⊗ K` for `A : SSet.{v}` and `K`.
+-- of a representative of `A ⊗ K` for `A : SSet.{v}` and `K : C`, so
+-- it can be chosen to be definitionnaly the constructed product in case `K : SSet.{v}`
 
 end SimplicialCategory
 
