@@ -432,18 +432,16 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
 theorem tfae [FiniteDimensional F E] :
     List.TFAE [IsGalois F E, IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥,
       Fintype.card (E ≃ₐ[F] E) = finrank F E, ∃ p: F[X], p.Separable ∧ p.IsSplittingField F E] := by
-  tfae_have 1 → 2
-  · exact fun h => OrderIso.map_bot (@intermediateFieldEquivSubgroup F _ E _ _ _ h).symm
+  tfae_have 1 → 2 :=
+    fun h => OrderIso.map_bot (@intermediateFieldEquivSubgroup F _ E _ _ _ h).symm
   tfae_have 1 → 3
-  · intro; exact card_aut_eq_finrank F E
+  | _ => card_aut_eq_finrank F E
   tfae_have 1 → 4
-  · intro; exact is_separable_splitting_field F E
-  tfae_have 2 → 1
-  · exact of_fixedField_eq_bot F E
-  tfae_have 3 → 1
-  · exact of_card_aut_eq_finrank F E
-  tfae_have 4 → 1
-  · rintro ⟨h, hp1, _⟩; exact of_separable_splitting_field hp1
+  | _ => is_separable_splitting_field F E
+  tfae_have 2 → 1 := of_fixedField_eq_bot F E
+  tfae_have 3 → 1 := of_card_aut_eq_finrank F E
+  tfae_have 4 → 1 := by
+    rintro ⟨h, hp1, _⟩; exact of_separable_splitting_field hp1
   tfae_finish
 #align is_galois.tfae IsGalois.tfae
 
