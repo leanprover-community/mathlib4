@@ -89,10 +89,7 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 #align category_theory.le_of_hom CategoryTheory.leOfHom
 
-<<<<<<< HEAD
 @[nolint defLemma, inherit_doc leOfHom]
-=======
->>>>>>> origin/bump/nightly-2024-03-13
 abbrev _root_.Quiver.Hom.le := @leOfHom
 #align quiver.hom.le Quiver.Hom.le
 
