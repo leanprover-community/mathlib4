@@ -256,7 +256,7 @@ theorem modByMonic_eq_sub_mul_div :
       unfold modByMonic divByMonic divModByMonicAux
       dsimp
       rw [dif_pos hq, if_neg h, dif_pos hq, if_neg h, mul_zero, sub_zero]
-  termination_by p q hq => p
+  termination_by p => p
 #align polynomial.mod_by_monic_eq_sub_mul_div Polynomial.modByMonic_eq_sub_mul_div
 
 theorem modByMonic_add_div (p : R[X]) {q : R[X]} (hq : Monic q) : p %ₘ q + q * (p /ₘ q) = p :=
