@@ -266,13 +266,16 @@ variable [DecidableEq α] (n : ℕ)
 finitely-supported maps `α →₀ ℕ` with total mass `n`.
 
 See also `Sym.equivNatSumOfFintype` when `α` is finite. -/
-@[simps! symm_apply_coe]
 def equivNatSum :
     Sym α n ≃ {P : α →₀ ℕ // P.sum (fun _ ↦ id) = n} :=
   Multiset.toFinsupp.toEquiv.subtypeEquiv <| by simp
 
 @[simp] lemma coe_equivNatSum_apply_apply (s : Sym α n) (a : α) :
     (equivNatSum α n s : α →₀ ℕ) a = (s : Multiset α).count a :=
+  rfl
+
+@[simp] lemma coe_equivNatSum_symm_apply (P : {P : α →₀ ℕ // P.sum (fun _ ↦ id) = n}) :
+    ((equivNatSum α n).symm P : Multiset α) = Finsupp.toMultiset P :=
   rfl
 
 /-- The `n`th symmetric power of a finite type `α` is naturally equivalent to the subtype of maps
@@ -286,5 +289,13 @@ noncomputable def equivNatSumOfFintype [Fintype α] :
 @[simp] lemma coe_equivNatSumOfFintype_apply_apply [Fintype α] (s : Sym α n) (a : α) :
     (equivNatSumOfFintype α n s : α → ℕ) a = (s : Multiset α).count a :=
   rfl
+
+@[simp] lemma coe_equivNatSumOfFintype_symm_apply [Fintype α] (P : {P : α → ℕ // ∑ i, P i = n}) :
+    ((equivNatSumOfFintype α n).symm P : Multiset α) = ∑ a, ((P : α → ℕ) a) • {a} := by
+  obtain ⟨P, hP⟩ := P
+  change Finsupp.toMultiset (Finsupp.equivFunOnFinite.symm P) = Multiset.sum _
+  ext a
+  rw [Multiset.count_sum]
+  simp [Multiset.count_singleton]
 
 end Sym
