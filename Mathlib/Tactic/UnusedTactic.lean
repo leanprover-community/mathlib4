@@ -35,7 +35,14 @@ abbrev M := StateRefT (HashMap String.Range Syntax) IO
 /-- `Parser`s allowed to not change the tactic state. -/
 abbrev allowed := [
   `Mathlib.Tactic.Says.says,
-  `Std.Tactic.«tacticOn_goal-_=>_»
+  `Std.Tactic.«tacticOn_goal-_=>_»,
+  -- the following `SyntaxNodeKind`s were added to silence `test`
+  ``Lean.Parser.Tactic.guardHyp,
+  ``Lean.Parser.Tactic.guardTarget,
+  ``Lean.Parser.Tactic.failIfSuccess,
+  `Mathlib.Tactic.successIfFailWithMsg,
+  `Mathlib.Tactic.failIfNoProgress,
+  `Mathlib.Tactic.ExtractGoal.extractGoal
 ]
 
 /--
@@ -55,8 +62,11 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     |>.insert ``Lean.Parser.Tactic.Conv.conv
     |>.insert `Std.Tactic.seq_focus
     |>.insert `Mathlib.Tactic.Hint.registerHintStx
+    -- the following `SyntaxNodeKind`s were added to silence `test`
+    |>.insert ``Lean.Parser.Tactic.failIfSuccess
+    |>.insert `Mathlib.Tactic.successIfFailWithMsg
 
-/-- Is this a syntax kind that contains intentionally unused tactic subterms? -/
+ -- Is this a syntax kind that contains intentionally unused tactic subterms? -/
 def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeKind) : Bool :=
   k.components.contains `Conv ||
   "slice".isPrefixOf k.toString ||
