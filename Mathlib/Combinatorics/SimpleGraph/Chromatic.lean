@@ -1,6 +1,6 @@
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 
-/-
+/-!
 If G is a graph with finite chromatic number r then any r-coloring of G
 is surjective and has edges joining any two distinct color classes.
 
@@ -82,7 +82,7 @@ def Coloring.not_colorClasses_adj_toColoring {i j: Fin (r + 1)} (C : G.Coloring 
   intro v hvj; simp only at hvj
   split_ifs at hvj with h1
   · apply hij  hvj
-  . exact h1 hvj
+  · exact h1 hvj
 
 
 /-- If χ(G) = r then any r-coloring has edges between any pair of distinct color classes -/
