@@ -473,10 +473,7 @@ theorem coe_map (f : R →+* S) (s : Subsemiring R) : (s.map f : Set S) = f '' s
 #align subsemiring.coe_map Subsemiring.coe_map
 
 @[simp]
-theorem mem_map {f : R →+* S} {s : Subsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
-  -- Porting note: was `exact Set.mem_image_iff_bex`
-  convert Set.mem_image_iff_bex (f := f) (s := s.carrier) (y := y) using 1
-  simp
+lemma mem_map {f : R →+* S} {s : Subsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := Iff.rfl
 #align subsemiring.mem_map Subsemiring.mem_map
 
 @[simp]

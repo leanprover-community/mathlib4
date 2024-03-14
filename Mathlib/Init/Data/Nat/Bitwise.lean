@@ -80,7 +80,7 @@ theorem bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
 theorem bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
   induction' n with n IH
   · simp
-  · simp [mul_succ, IH]
+  · simp only [mul_succ, bodd_add, IH, bodd_succ]
     cases bodd m <;> cases bodd n <;> rfl
 #align nat.bodd_mul Nat.bodd_mul
 
@@ -187,7 +187,7 @@ theorem shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
   | 0 => rfl
   | n + 1 => by
     have : 2 * (m * 2^n) = 2^(n+1)*m := by
-      rw [Nat.mul_comm, Nat.mul_assoc, ← pow_succ]; simp
+      rw [Nat.mul_comm, Nat.mul_assoc, ← Nat.pow_succ]; simp
     simp [shiftLeft_eq, shiftLeft', bit_val, shiftLeft'_false, this]
 
 /-- Std4 takes the unprimed name for `Nat.shiftLeft_eq m n : m <<< n = m * 2 ^ n`. -/

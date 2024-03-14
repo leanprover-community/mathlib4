@@ -28,7 +28,8 @@ lemmas unconditional on the sum of the weights being `1`.
 
 open Set Function
 
-open BigOperators Classical Pointwise
+open scoped Classical
+open BigOperators Pointwise
 
 universe u u'
 
@@ -241,7 +242,7 @@ theorem Finset.centerMass_mem_convexHull (t : Finset ι) {w : ι → R} (hw₀ :
 lemma Finset.centerMass_mem_convexHull_of_nonpos (t : Finset ι) (hw₀ : ∀ i ∈ t, w i ≤ 0)
     (hws : ∑ i in t, w i < 0) (hz : ∀ i ∈ t, z i ∈ s) : t.centerMass w z ∈ convexHull R s := by
   rw [← centerMass_neg_left]
-  exact Finset.centerMass_mem_convexHull _ (λ _i hi ↦ neg_nonneg.2 <| hw₀ _ hi) (by simpa) hz
+  exact Finset.centerMass_mem_convexHull _ (fun _i hi ↦ neg_nonneg.2 <| hw₀ _ hi) (by simpa) hz
 
 /-- A refinement of `Finset.centerMass_mem_convexHull` when the indexed family is a `Finset` of
 the space. -/
@@ -464,10 +465,9 @@ theorem convexHull_add (s t : Set E) : convexHull R (s + t) = convexHull R s + c
 
 variable (R E)
 
--- Porting note: needs `noncomputable` due to `OrderHom.toFun`!?
 /-- `convexHull` is an additive monoid morphism under pointwise addition. -/
 @[simps]
-noncomputable def convexHullAddMonoidHom : Set E →+ Set E where
+def convexHullAddMonoidHom : Set E →+ Set E where
   toFun := convexHull R
   map_add' := convexHull_add
   map_zero' := convexHull_zero
@@ -526,8 +526,7 @@ theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull 
   apply congr_arg
   simp_rw [Function.comp]
   convert Subtype.range_coe.symm
-  -- Porting note: Original proof didn't need to specify `(1 : R)`
-  simp [LinearMap.sum_apply, ite_smul _ _ (1 : R), Finset.filter_eq, Finset.mem_univ]
+  simp [LinearMap.sum_apply, ite_smul, Finset.filter_eq, Finset.mem_univ]
 #align set.finite.convex_hull_eq_image Set.Finite.convexHull_eq_image
 
 /-- All values of a function `f ∈ stdSimplex 𝕜 ι` belong to `[0, 1]`. -/

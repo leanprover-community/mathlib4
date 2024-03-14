@@ -28,7 +28,7 @@ natural inclusion into the prime spectrum to avoid API duplication for zero loci
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 universe u v
 

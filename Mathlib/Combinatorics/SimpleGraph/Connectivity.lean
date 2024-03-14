@@ -833,12 +833,12 @@ inductive Nil : {v w : V} → G.Walk v w → Prop
 
 @[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
 
-@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := fun.
+@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := nofun
 
 instance (p : G.Walk v w) : Decidable p.Nil :=
   match p with
   | nil => isTrue .nil
-  | cons _ _ => isFalse fun.
+  | cons _ _ => isFalse nofun
 
 protected lemma Nil.eq {p : G.Walk v w} : p.Nil → v = w | .nil => rfl
 
@@ -2590,7 +2590,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   let puw := (c.takeUntil v hv).takeUntil w hw
   let pwv := (c.takeUntil v hv).dropUntil w hw
   let pvu := c.dropUntil v hv
-  have : c = (puw.append pwv).append pvu := by simp
+  have : c = (puw.append pwv).append pvu := by simp [puw, pwv, pvu]
   -- We have two walks from v to w
   --      pvu     puw
   --   v ----> u ----> w

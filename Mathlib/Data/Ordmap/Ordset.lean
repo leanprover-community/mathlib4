@@ -395,7 +395,7 @@ theorem node3R_size {l x m y r} : size (@node3R α l x m y r) = size l + size m 
 
 theorem node4L_size {l x m y r} (hm : Sized m) :
     size (@node4L α l x m y r) = size l + size m + size r + 2 := by
-  cases m <;> simp [node4L, node3L, node'] <;> [skip; simp [size, hm.1]] <;> abel
+  cases m <;> simp [node4L, node3L, node'] <;> [abel; (simp [size, hm.1]; abel)]
 #align ordnode.node4_l_size Ordnode.node4L_size
 
 theorem Sized.dual : ∀ {t : Ordnode α}, Sized t → Sized (dual t)
@@ -1776,7 +1776,7 @@ instance mem.decidable (x : α) (s : Ordset α) : Decidable (x ∈ s) :=
 
 theorem pos_size_of_mem {x : α} {t : Ordset α} (h_mem : x ∈ t) : 0 < size t := by
   simp? [Membership.mem, mem] at h_mem says
-    simp only [Membership.mem, mem, Bool.decide_coe] at h_mem
+    simp only [Membership.mem, mem, Bool.decide_eq_true] at h_mem
   apply Ordnode.pos_size_of_mem t.property.sz h_mem
 #align ordset.pos_size_of_mem Ordset.pos_size_of_mem
 

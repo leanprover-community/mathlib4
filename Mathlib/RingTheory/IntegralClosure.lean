@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
@@ -33,7 +33,8 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 -/
 
 
-open Classical BigOperators Polynomial Submodule
+open scoped Classical
+open BigOperators Polynomial Submodule
 
 section Ring
 

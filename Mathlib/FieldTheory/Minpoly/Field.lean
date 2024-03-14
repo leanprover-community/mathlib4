@@ -19,7 +19,8 @@ are irreducible, and uniquely determined by their defining property.
 -/
 
 
-open Classical Polynomial Set Function minpoly
+open scoped Classical
+open Polynomial Set Function minpoly
 
 namespace minpoly
 
@@ -81,6 +82,9 @@ theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
 variable {A x} in
 lemma dvd_iff {p : A[X]} : minpoly A x ∣ p ↔ Polynomial.aeval x p = 0 :=
   ⟨fun ⟨q, hq⟩ ↦ by rw [hq, map_mul, aeval, zero_mul], minpoly.dvd A x⟩
+
+theorem isRadical [IsReduced B] : IsRadical (minpoly A x) := fun n p dvd ↦ by
+  rw [dvd_iff] at dvd ⊢; rw [map_pow] at dvd; exact IsReduced.eq_zero _ ⟨n, dvd⟩
 
 theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :

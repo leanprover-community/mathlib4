@@ -58,7 +58,6 @@ instance : Std.Associative (α := List α) Append.append where
 #align list.cons_injective List.cons_injective
 
 #align list.cons_inj List.cons_inj
-
 #align list.cons_eq_cons List.cons_eq_cons
 
 theorem singleton_injective : Injective fun a : α => [a] := fun _ _ h => (cons_eq_cons.1 h).1
@@ -273,7 +272,7 @@ theorem forall_mem_of_forall_mem_cons {p : α → Prop} {a : α} {l : List α} (
 #align list.forall_mem_append List.forall_mem_append
 
 theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
-  fun.
+  nofun
 #align list.not_exists_mem_nil List.not_exists_mem_nilₓ -- bExists change
 
 -- Porting note: bExists in Lean3 and And in Lean4
@@ -1431,7 +1430,7 @@ theorem modifyNth_eq_set (f : α → α) :
   | 0, l => by cases l <;> rfl
   | n + 1, [] => rfl
   | n + 1, b :: l =>
-    (congr_arg (cons b) (modifyNth_eq_set f n l)).trans <| by cases get? l n <;> rfl
+    (congr_arg (cons b) (modifyNth_eq_set f n l)).trans <| by cases h : get? l n <;> simp [h]
 #align list.modify_nth_eq_update_nth List.modifyNth_eq_set
 
 #align list.nth_modify_nth List.get?_modifyNth
@@ -1704,7 +1703,6 @@ theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) 
   induction l <;>
     simp (config := { unfoldPartialApp := true })
       [map, join, List.ret, cons_append, nil_append, *] at *
-  assumption
 #align list.bind_ret_eq_map List.bind_ret_eq_map
 
 theorem bind_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
@@ -1940,7 +1938,7 @@ theorem nthLe_take (L : List α) {i j : ℕ} (hi : i < L.length) (hj : i < j) :
 length `> i`. Version designed to rewrite from the small list to the big list. -/
 theorem get_take' (L : List α) {j i} :
     get (L.take j) i = get L ⟨i.1, lt_of_lt_of_le i.2 (by simp [le_refl])⟩ := by
-  let ⟨i, hi⟩ := i; simp at hi; rw [get_take L _ hi.1]
+  let ⟨i, hi⟩ := i; simp only [length_take, lt_min_iff] at hi; rw [get_take L _ hi.1]
 
 set_option linter.deprecated false in
 /-- The `i`-th element of a list coincides with the `i`-th element of any of its prefixes of
@@ -3222,7 +3220,7 @@ theorem lookmap_map_eq (g : α → β) (h : ∀ (a), ∀ b ∈ f a, g a = g b) :
   | [] => rfl
   | a :: l => by
     cases' h' : f a with b
-    · simp [h']; exact lookmap_map_eq _ h l
+    · simpa [h'] using lookmap_map_eq _ h l
     · simp [lookmap_cons_some _ _ h', h _ _ h']
 #align list.lookmap_map_eq List.lookmap_map_eq
 
@@ -3352,7 +3350,6 @@ theorem reduceOption_length_lt_iff {l : List (Option α)} :
   rw [(reduceOption_length_le l).lt_iff_ne, Ne, reduceOption_length_eq_iff]
   induction l <;> simp [*]
   rw [@eq_comm _ none, ← Option.not_isSome_iff_eq_none, Decidable.imp_iff_not_or]
-  simp [Option.isNone_iff_eq_none]
 #align list.reduce_option_length_lt_iff List.reduceOption_length_lt_iff
 
 theorem reduceOption_singleton (x : Option α) : [x].reduceOption = x.toList := by cases x <;> rfl
@@ -4210,7 +4207,10 @@ theorem forall_iff_forall_mem : ∀ {l : List α}, Forall p l ↔ ∀ x ∈ l, p
 
 theorem Forall.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, Forall p l → Forall q l
   | [] => id
-  | x :: l => by simp; rw [← and_imp]; exact And.imp (h x) (Forall.imp h)
+  | x :: l => by
+    simp only [forall_cons, and_imp]
+    rw [← and_imp]
+    exact And.imp (h x) (Forall.imp h)
 #align list.all₂.imp List.Forall.imp
 
 @[simp]
@@ -4286,11 +4286,11 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
         | cons _ xs_tl =>
           cases n
           · simp
-          · simp [drop]
+          · simp only [drop, cons.sizeOf_spec]
             rw [← Nat.zero_add (sizeOf (drop _ xs_tl))]
             exact Nat.add_le_add (Nat.zero_le _) (drop_sizeOf_le xs_tl _)
         · simp
-    · simp
+    · simp only [cons.sizeOf_spec, add_lt_add_iff_left]
       apply xs_ih _ j hj
       apply lt_of_succ_lt_succ hi
 #align list.sizeof_slice_lt List.sizeOf_dropSlice_lt

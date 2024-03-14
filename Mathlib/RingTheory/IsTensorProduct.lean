@@ -3,7 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Module.ULift
 
 #align_import ring_theory.is_tensor_product from "leanprover-community/mathlib"@"c4926d76bb9c5a4a62ed2f03d998081786132105"

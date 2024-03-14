@@ -6,6 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
@@ -25,11 +26,11 @@ open BigOperators Pointwise
 
 namespace Submodule
 
-variable {R : Type u} {M : Type v} {F : Type*} {G : Type*}
+variable {R : Type u} {M : Type v} {M' F G : Type*}
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
 
 open Pointwise
 
@@ -43,16 +44,39 @@ protected theorem _root_.Ideal.smul_eq_mul (I J : Ideal R) : I • J = I * J :=
   rfl
 #align ideal.smul_eq_mul Ideal.smul_eq_mul
 
+variable (R M) in
+/-- `Module.annihilator R M` is the ideal of all elements `r : R` such that `r • M = 0`. -/
+def _root_.Module.annihilator : Ideal R := LinearMap.ker (LinearMap.lsmul R M)
+
+theorem _root_.Module.mem_annihilator {r} : r ∈ Module.annihilator R M ↔ ∀ m : M, r • m = 0 :=
+  ⟨fun h ↦ (congr($h ·)), (LinearMap.ext ·)⟩
+
+theorem _root_.LinearMap.annihilator_le_of_injective (f : M →ₗ[R] M') (hf : Function.Injective f) :
+    Module.annihilator R M' ≤ Module.annihilator R M := fun x h ↦ by
+  rw [Module.mem_annihilator] at h ⊢; exact fun m ↦ hf (by rw [map_smul, h, f.map_zero])
+
+theorem _root_.LinearMap.annihilator_le_of_surjective (f : M →ₗ[R] M')
+    (hf : Function.Surjective f) : Module.annihilator R M ≤ Module.annihilator R M' := fun x h ↦ by
+  rw [Module.mem_annihilator] at h ⊢
+  intro m; obtain ⟨m, rfl⟩ := hf m
+  rw [← map_smul, h, f.map_zero]
+
+theorem _root_.LinearEquiv.annihilator_eq (e : M ≃ₗ[R] M') :
+    Module.annihilator R M = Module.annihilator R M' :=
+  (e.annihilator_le_of_surjective e.surjective).antisymm (e.annihilator_le_of_injective e.injective)
+
 /-- `N.annihilator` is the ideal of all elements `r : R` such that `r • N = 0`. -/
-def annihilator (N : Submodule R M) : Ideal R :=
-  LinearMap.ker (LinearMap.lsmul R N)
+abbrev annihilator (N : Submodule R M) : Ideal R :=
+  Module.annihilator R N
 #align submodule.annihilator Submodule.annihilator
+
+theorem annihilator_top : (⊤ : Submodule R M).annihilator = Module.annihilator R M :=
+  topEquiv.annihilator_eq
 
 variable {I J : Ideal R} {N P : Submodule R M}
 
-theorem mem_annihilator {r} : r ∈ N.annihilator ↔ ∀ n ∈ N, r • n = (0 : M) :=
-  ⟨fun hr n hn => congr_arg Subtype.val (LinearMap.ext_iff.1 (LinearMap.mem_ker.1 hr) ⟨n, hn⟩),
-    fun h => LinearMap.mem_ker.2 <| LinearMap.ext fun n => Subtype.eq <| h n.1 n.2⟩
+theorem mem_annihilator {r} : r ∈ N.annihilator ↔ ∀ n ∈ N, r • n = (0 : M) := by
+  simp_rw [annihilator, Module.mem_annihilator, Subtype.forall, Subtype.ext_iff]; rfl
 #align submodule.mem_annihilator Submodule.mem_annihilator
 
 theorem mem_annihilator' {r} : r ∈ N.annihilator ↔ N ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) ⊥ :=
@@ -376,6 +400,15 @@ theorem mem_colon' {r} : r ∈ N.colon P ↔ P ≤ comap (r • (LinearMap.id : 
   mem_colon
 #align submodule.mem_colon' Submodule.mem_colon'
 
+@[simp]
+theorem colon_top {I : Ideal R} : I.colon ⊤ = I := by
+  simp_rw [SetLike.ext_iff, mem_colon, smul_eq_mul]
+  exact fun x ↦ ⟨fun h ↦ mul_one x ▸ h 1 trivial, fun h _ _ ↦ I.mul_mem_right _ h⟩
+
+@[simp]
+theorem colon_bot : colon ⊥ N = N.annihilator := by
+  simp_rw [SetLike.ext_iff, mem_colon, mem_annihilator, mem_bot, forall_const]
+
 theorem colon_mono (hn : N₁ ≤ N₂) (hp : P₁ ≤ P₂) : N₁.colon P₂ ≤ N₂.colon P₁ := fun _ hrnp =>
   mem_colon.2 fun p₁ hp₁ => hn <| mem_colon.1 hrnp p₁ <| hp hp₁
 #align submodule.colon_mono Submodule.colon_mono
@@ -408,6 +441,14 @@ theorem _root_.Ideal.mem_colon_singleton {I : Ideal R} {x r : R} :
     r ∈ I.colon (Ideal.span {x}) ↔ r * x ∈ I := by
   simp only [← Ideal.submodule_span_eq, Submodule.mem_colon_singleton, smul_eq_mul]
 #align ideal.mem_colon_singleton Ideal.mem_colon_singleton
+
+theorem annihilator_quotient {N : Submodule R M} :
+    Module.annihilator R (M ⧸ N) = N.colon ⊤ := by
+  simp_rw [SetLike.ext_iff, Module.mem_annihilator, colon, mem_annihilator, map_top,
+    LinearMap.range_eq_top.mpr (mkQ_surjective N), mem_top, forall_true_left, forall_const]
+
+theorem _root_.Ideal.annihilator_quotient {I : Ideal R} : Module.annihilator R (R ⧸ I) = I := by
+  rw [Submodule.annihilator_quotient, colon_top]
 
 end CommRing
 
@@ -729,13 +770,11 @@ theorem sup_iInf_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s
 #align ideal.sup_infi_eq_top Ideal.sup_iInf_eq_top
 
 theorem prod_sup_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → J i ⊔ I = ⊤) :
-    (∏ i in s, J i) ⊔ I = ⊤ :=
-  sup_comm.trans (sup_prod_eq_top fun i hi => sup_comm.trans <| h i hi)
+    (∏ i in s, J i) ⊔ I = ⊤ := by rw [sup_comm, sup_prod_eq_top]; intro i hi; rw [sup_comm, h i hi]
 #align ideal.prod_sup_eq_top Ideal.prod_sup_eq_top
 
 theorem iInf_sup_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → J i ⊔ I = ⊤) :
-    (⨅ i ∈ s, J i) ⊔ I = ⊤ :=
-  sup_comm.trans (sup_iInf_eq_top fun i hi => sup_comm.trans <| h i hi)
+    (⨅ i ∈ s, J i) ⊔ I = ⊤ := by rw [sup_comm, sup_iInf_eq_top]; intro i hi; rw [sup_comm, h i hi]
 #align ideal.infi_sup_eq_top Ideal.iInf_sup_eq_top
 
 theorem sup_pow_eq_top {n : ℕ} (h : I ⊔ J = ⊤) : I ⊔ J ^ n = ⊤ := by
@@ -940,6 +979,8 @@ def radical (I : Ideal R) : Ideal R where
   smul_mem' {r s} := by exact fun ⟨n, h⟩ ↦ ⟨n, (mul_pow r s n).symm ▸ I.mul_mem_left (r ^ n) h⟩
 #align ideal.radical Ideal.radical
 
+theorem mem_radical_iff {r : R} : r ∈ I.radical ↔ ∃ n : ℕ, r ^ n ∈ I := Iff.rfl
+
 /-- An ideal is radical if it contains its radical. -/
 def IsRadical (I : Ideal R) : Prop :=
   I.radical ≤ I
@@ -955,6 +996,10 @@ theorem radical_eq_iff : I.radical = I ↔ I.IsRadical := by
 
 alias ⟨_, IsRadical.radical⟩ := radical_eq_iff
 #align ideal.is_radical.radical Ideal.IsRadical.radical
+
+theorem isRadical_iff_pow_one_lt (k : ℕ) (hk : 1 < k) : I.IsRadical ↔ ∀ r, r ^ k ∈ I → r ∈ I :=
+  ⟨fun h _r hr ↦ h ⟨k, hr⟩, fun h x ⟨n, hx⟩ ↦
+    k.pow_imp_self_of_one_lt hk _ (fun _ _ ↦ .inr ∘ I.smul_mem _) h n x hx⟩
 
 variable (R)
 
@@ -1017,6 +1062,17 @@ theorem radical_inf : radical (I ⊓ J) = radical I ⊓ radical J :=
     ⟨m + n, (pow_add r m n).symm ▸ I.mul_mem_right _ hrm,
       (pow_add r m n).symm ▸ J.mul_mem_left _ hrn⟩
 #align ideal.radical_inf Ideal.radical_inf
+
+variable {I J} in
+theorem IsRadical.inf (hI : IsRadical I) (hJ : IsRadical J) : IsRadical (I ⊓ J) := by
+  rw [IsRadical, radical_inf]; exact inf_le_inf hI hJ
+
+/-- The reverse inclusion does not hold for e.g. `I := fun n : ℕ ↦ Ideal.span {(2 ^ n : ℤ)}`. -/
+theorem radical_iInf_le {ι} (I : ι → Ideal R) : radical (⨅ i, I i) ≤ ⨅ i, radical (I i) :=
+  le_iInf fun _ ↦ radical_mono (iInf_le _ _)
+
+theorem isRadical_iInf {ι} (I : ι → Ideal R) (hI : ∀ i, IsRadical (I i)) : IsRadical (⨅ i, I i) :=
+  (radical_iInf_le I).trans (iInf_mono hI)
 
 theorem radical_mul : radical (I * J) = radical I ⊓ radical J := by
   refine le_antisymm ?_ fun r ⟨⟨m, hrm⟩, ⟨n, hrn⟩⟩ =>
@@ -1116,10 +1172,19 @@ theorem IsPrime.multiset_prod_map_le {s : Multiset ι} (f : ι → Ideal R) {P :
   simp_rw [hp.multiset_prod_le, Multiset.mem_map, exists_exists_and_eq_and]
 #align ideal.is_prime.multiset_prod_map_le Ideal.IsPrime.multiset_prod_map_le
 
+theorem IsPrime.multiset_prod_mem_iff_exists_mem {I : Ideal R} (hI : I.IsPrime) (s : Multiset R) :
+    s.prod ∈ I ↔ ∃ p ∈ s, p ∈ I := by
+  simpa [span_singleton_le_iff_mem] using (hI.multiset_prod_map_le (span {·}))
+
 theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :
     s.prod f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   hp.multiset_prod_map_le f
 #align ideal.is_prime.prod_le Ideal.IsPrime.prod_le
+
+theorem IsPrime.prod_mem_iff_exists_mem {I : Ideal R} (hI : I.IsPrime) (s : Finset R) :
+    s.prod (fun x ↦ x) ∈ I ↔ ∃ p ∈ s, p ∈ I := by
+  rw [Finset.prod_eq_multiset_prod, Multiset.map_id']
+  exact hI.multiset_prod_mem_iff_exists_mem s.val
 
 theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :
     s.inf f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
@@ -1355,7 +1420,7 @@ def comap (I : Ideal S) : Ideal R where
 #align ideal.comap Ideal.comap
 
 -- Porting note: new theorem
--- @[simp] -- Porting note: TODO enable simp after the port
+-- @[simp] -- Porting note (#11215): TODO enable simp after the port
 theorem coe_comap (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
 
 variable {f}

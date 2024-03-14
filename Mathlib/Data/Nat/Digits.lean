@@ -407,7 +407,6 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
       mul_le_mul (IH fun x hx => hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp only [zero_le])
         (Nat.zero_le _)
     suffices ↑hd < b + 2 by linarith
-    norm_cast
     exact hl hd (List.mem_cons_self _ _)
 #align nat.of_digits_lt_base_pow_length' Nat.ofDigits_lt_base_pow_length'
 
@@ -803,7 +802,7 @@ lemma toDigitsCore_length (b : Nat) (h : 2 <= b) (f n e : Nat)
           exact Nat.succ_le_succ ih
       else
         obtain rfl : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos
-        have _ : b ^ 1 = b := by simp only [pow_succ, pow_zero, Nat.one_mul]
+        have _ : b ^ 1 = b := by simp only [Nat.pow_succ, pow_zero, Nat.one_mul]
         have _ : n < b := ‹b ^ 1 = b› ▸ hlt
         simp [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0)]
 -- deprecated 2024-02-19

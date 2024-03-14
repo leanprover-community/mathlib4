@@ -1442,8 +1442,12 @@ section LinearOrder
 variable [LinearOrder α]
 
 section SuccOrder
+variable [SuccOrder α]
 
-variable [SuccOrder α] [IsSuccArchimedean α] {a b : α}
+lemma succ_max (a b : α) : succ (max a b) = max (succ a) (succ b) := succ_mono.map_max
+lemma succ_min (a b : α) : succ (min a b) = min (succ a) (succ b) := succ_mono.map_min
+
+variable [IsSuccArchimedean α] {a b : α}
 
 theorem exists_succ_iterate_or : (∃ n, succ^[n] a = b) ∨ ∃ n, succ^[n] b = a :=
   (le_total a b).imp exists_succ_iterate_of_le exists_succ_iterate_of_le
@@ -1456,8 +1460,12 @@ theorem Succ.rec_linear {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) (a
 end SuccOrder
 
 section PredOrder
+variable [PredOrder α]
 
-variable [PredOrder α] [IsPredArchimedean α] {a b : α}
+lemma pred_max (a b : α) : pred (max a b) = max (pred a) (pred b) := pred_mono.map_max
+lemma pred_min (a b : α) : pred (min a b) = min (pred a) (pred b) := pred_mono.map_min
+
+variable [IsPredArchimedean α] {a b : α}
 
 theorem exists_pred_iterate_or : (∃ n, pred^[n] b = a) ∨ ∃ n, pred^[n] a = b :=
   (le_total a b).imp exists_pred_iterate_of_le exists_pred_iterate_of_le
@@ -1477,16 +1485,16 @@ variable [Preorder α] [Nonempty α] [Preorder β] {f : α → β}
 lemma StrictMono.not_bddAbove_range [NoMaxOrder α] [SuccOrder β] [IsSuccArchimedean β]
     (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
   rintro ⟨m, hm⟩
-  have hm' : ∀ a, f a ≤ m := λ a ↦ hm <| Set.mem_range_self _
+  have hm' : ∀ a, f a ≤ m := fun a ↦ hm <| Set.mem_range_self _
   obtain ⟨a₀⟩ := ‹Nonempty α›
   suffices ∀ b, f a₀ ≤ b → ∃ a, b < f a by
     obtain ⟨a, ha⟩ : ∃ a, m < f a := this m (hm' a₀)
     exact ha.not_le (hm' a)
-  have h : ∀ a, ∃ a', f a < f a' := λ a ↦ (exists_gt a).imp (λ a' h ↦ hf h)
+  have h : ∀ a, ∃ a', f a < f a' := fun a ↦ (exists_gt a).imp (fun a' h ↦ hf h)
   apply Succ.rec
   · exact h a₀
   rintro b _ ⟨a, hba⟩
-  exact (h a).imp (λ a' ↦ (succ_le_of_lt hba).trans_lt)
+  exact (h a).imp (fun a' ↦ (succ_le_of_lt hba).trans_lt)
 
 lemma StrictMono.not_bddBelow_range [NoMinOrder α] [PredOrder β] [IsPredArchimedean β]
     (hf : StrictMono f) : ¬ BddBelow (Set.range f) := hf.dual.not_bddAbove_range

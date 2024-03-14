@@ -306,12 +306,12 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
     dsimp
     simp? [ext_from_iff _ (p + 1) _ rfl, ext_to_iff _ _ (p + 1) rfl,
         Cochain.shift_v', smul_smul] says
-      simp only [ext_to_iff _ _ (p + 1) rfl, shiftFunctor_obj_X', assoc, lift_f_fst_v,
-        Cocycle.coe_units_smul, Cocycle.shift_coe, Cochain.units_smul_v, Cochain.shift_v',
-        Linear.comp_units_smul, id_comp, ext_from_iff _ (p + 1) _ rfl, inl_v_desc_f_assoc,
-        Linear.units_smul_comp, inl_v_fst_v, smul_smul, Int.units_mul_self, one_smul,
-        inr_f_desc_f_assoc, shiftFunctor_map_f', inr_f_fst_v, smul_zero, and_self, lift_f_snd_v,
-        inl_v_snd_v, inr_f_snd_v]
+      simp only [ext_from_iff _ (p + 1) _ rfl, shiftFunctor_obj_X', inl_v_desc_f_assoc,
+        Cochain.units_smul_v, Cochain.shift_v', Linear.units_smul_comp, comp_id,
+        ext_to_iff _ _ (p + 1) rfl, assoc, lift_f_fst_v,
+        Cocycle.coe_units_smul, Cocycle.shift_coe, Linear.comp_units_smul, inl_v_fst_v, smul_smul,
+        Int.units_mul_self, one_smul, lift_f_snd_v, inl_v_snd_v, smul_zero, and_self,
+        inr_f_desc_f_assoc, shiftFunctor_map_f', inr_f_fst_v, inr_f_snd_v]
 
 set_option maxHeartbeats 800000 in
 /-- The canonical isomorphism `(triangle φ)⟦n⟧ ≅ triangle (φ⟦n⟧')`. -/
@@ -324,12 +324,13 @@ noncomputable def shiftTriangleIso (n : ℤ) :
         Triangle.mk_obj₂, Triangle.mk_mor₁, Preadditive.smul_iso_hom, Iso.refl_hom,
         Linear.comp_smul, comp_id, smul_smul, Int.units_coe_mul_self, one_smul, id_comp]
   · ext p
+    set_option tactic.skipAssignedInstances false in
     dsimp
     simp? [shiftIso, Units.smul_def, ext_to_iff _ _ (p + 1) rfl, Cochain.shift_v'] says
-      simp only [Units.smul_def, HomologicalComplex.zsmul_f_apply, shiftFunctor_obj_X',
-        shiftFunctor_map_f', shiftIso, Linear.smul_comp, id_comp, ext_to_iff _ _ (p + 1) rfl, assoc,
-        lift_f_fst_v, Cocycle.coe_smul, Cocycle.shift_coe, Cochain.smul_v, Cochain.shift_v',
-        Linear.comp_smul, inr_f_fst_v, smul_zero, lift_f_snd_v, inr_f_snd_v, and_true]
+      simp only [Units.smul_def, shiftIso, Linear.smul_comp, id_comp,
+        ext_to_iff _ _ (p + 1) rfl, shiftFunctor_obj_X', assoc, lift_f_fst_v, Cocycle.coe_smul,
+        Cocycle.shift_coe, Cochain.smul_v, Cochain.shift_v', Linear.comp_smul, inr_f_fst_v,
+        smul_zero, lift_f_snd_v, inr_f_snd_v, and_true]
     rw [smul_zero]
   · ext p
     dsimp
@@ -337,13 +338,12 @@ noncomputable def shiftTriangleIso (n : ℤ) :
       (fst (φ⟦n⟧')).1.rightShift_v 1 0 (zero_add 1) p p (add_zero p) (p + 1) rfl,
       (fst φ).1.rightShift_v 1 0 (zero_add 1) (p + n) (p + n)
         (add_zero (p + n)) (p + 1 + n) (by omega)] says
-      simp only [triangle, Triangle.mk_mor₃, Units.smul_def, HomologicalComplex.zsmul_f_apply,
-        shiftFunctor_obj_X', HomologicalComplex.comp_f, shiftFunctor_map_f', Cocycle.homOf_f,
-        Cocycle.rightShift_coe, Cocycle.coe_neg, Cochain.rightShift_neg, Cochain.neg_v,
+      simp only [triangle, Triangle.mk_mor₃, Cocycle.homOf_f, Cocycle.rightShift_coe,
+        Cocycle.coe_neg, Cochain.rightShift_neg, Cochain.neg_v, shiftFunctor_obj_X',
         (fst φ).1.rightShift_v 1 0 (zero_add 1) (p + n) (p + n) (add_zero (p + n)) (p + 1 + n)
           (by omega),
         shiftFunctor_obj_X, shiftFunctorObjXIso, shiftFunctorComm_hom_app_f, Preadditive.neg_comp,
-        assoc, Iso.inv_hom_id, comp_id, smul_neg, shiftIso,
+        assoc, Iso.inv_hom_id, comp_id, smul_neg, Units.smul_def, shiftIso,
         (fst (φ⟦n⟧')).1.rightShift_v 1 0 (zero_add 1) p p (add_zero p) (p + 1) rfl,
         HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, Preadditive.comp_neg, lift_f_fst_v,
         Cocycle.coe_smul, Cocycle.shift_coe, Cochain.smul_v, Cochain.shift_v']
@@ -460,6 +460,8 @@ instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
   rotate_distinguished_triangle := Pretriangulated.rotate_distinguished_triangle
   complete_distinguished_triangle_morphism :=
     Pretriangulated.complete_distinguished_triangle_morphism
+
+variable {C}
 
 lemma mappingCone_triangleh_distinguished {X Y : CochainComplex C ℤ} (f : X ⟶ Y) :
     CochainComplex.mappingCone.triangleh f ∈ distTriang (HomotopyCategory _ _) :=

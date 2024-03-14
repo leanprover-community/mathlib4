@@ -69,6 +69,7 @@
   "Mathlib.Tactic.Find",
   "Mathlib.Tactic.GCongr",
   "Mathlib.Tactic.GCongr.Core",
+  "Mathlib.Tactic.Generalize",
   "Mathlib.Tactic.GeneralizeProofs",
   "Mathlib.Tactic.Group",
   "Mathlib.Tactic.GuardHypNums",
@@ -267,6 +268,7 @@
    "Mathlib.Tactic.FunProp",
    "Mathlib.Tactic.FunProp.Measurable"],
   "Mathlib.Tactic.FinCases": ["Mathlib.Data.Fintype.Basic"],
+  "Mathlib.Tactic.Eval": ["Qq.Macro"],
   "Mathlib.Tactic.DeriveFintype":
   ["Mathlib.Data.Fintype.Basic",
    "Mathlib.Data.Fintype.Sigma",
@@ -277,6 +279,8 @@
   ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.CategoryTheory.Reassoc":
   ["Mathlib.CategoryTheory.Functor.Basic"],
+  "Mathlib.Tactic.CategoryTheory.Coherence":
+  ["Mathlib.Tactic.CategoryTheory.MonoidalComp"],
   "Mathlib.Tactic.Basic": ["Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
@@ -296,7 +300,9 @@
   "Mathlib.Logic.Equiv.Defs": ["Mathlib.Init.Data.Bool.Lemmas"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.LinearAlgebra.AffineSpace.Basic": ["Mathlib.Algebra.AddTorsor"],
+  "Mathlib.Lean.Expr.Basic": ["Std.Logic"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
+  "Mathlib.Lean.Meta": ["Std.Logic"],
   "Mathlib.Init.Data.Nat.GCD": ["Std.Data.Nat.Gcd"],
   "Mathlib.Init.Data.Int.Basic": ["Std.Data.Int.Order"],
   "Mathlib.Init.Core": ["Std.Classes.Dvd"],
@@ -314,8 +320,6 @@
   "Mathlib.Control.Basic": ["Mathlib.Init.Function"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
-  "Mathlib.Analysis.Complex.UpperHalfPlane.Basic":
-  ["Mathlib.Data.Fintype.Parity"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Basic"],
@@ -324,7 +328,6 @@
   "Mathlib.Algebra.Module.Submodule.Order":
   ["Mathlib.GroupTheory.Subgroup.Order", "Mathlib.GroupTheory.Submonoid.Order"],
   "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
-  "Mathlib.Algebra.Module.LinearMap": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],

@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Chris Hughes, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Order.Group.Prod
 import Mathlib.Algebra.Order.Ring.Defs
@@ -201,6 +202,9 @@ def fst : R × S →+* R :=
 def snd : R × S →+* S :=
   { MonoidHom.snd R S, AddMonoidHom.snd R S with toFun := Prod.snd }
 #align ring_hom.snd RingHom.snd
+
+instance (R S) [Semiring R] [Semiring S] : RingHomSurjective (fst R S) := ⟨(⟨⟨·, 0⟩, rfl⟩)⟩
+instance (R S) [Semiring R] [Semiring S] : RingHomSurjective (snd R S) := ⟨(⟨⟨0, ·⟩, rfl⟩)⟩
 
 variable {R S}
 

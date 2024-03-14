@@ -144,7 +144,7 @@ theorem mul : Nat.Primrec (unpaired (· * ·)) :=
 
 theorem pow : Nat.Primrec (unpaired (· ^ ·)) :=
   (prec (const 1) (mul.comp (pair (right.comp right) left))).of_eq fun p => by
-    simp; induction p.unpair.2 <;> simp [*, pow_succ]
+    simp; induction p.unpair.2 <;> simp [*, Nat.pow_succ]
 #align nat.primrec.pow Nat.Primrec.pow
 
 end Primrec
@@ -169,7 +169,7 @@ instance (priority := 10) ofDenumerable (α) [Denumerable α] : Primcodable α :
 
 /-- Builds a `Primcodable` instance from an equivalence to a `Primcodable` type. -/
 def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
-  { Encodable.ofEquiv α e with
+  { __ := Encodable.ofEquiv α e
     prim := (@Primcodable.prim α _).of_eq fun n => by
       rw [decode_ofEquiv]
       cases (@decode α _ n) <;>
@@ -781,7 +781,7 @@ theorem list_indexOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.inde
   list_findIdx₁ (.swap .beq) l
 #align primrec.list_index_of₁ Primrec.list_indexOf₁
 
-theorem dom_fintype [Fintype α] (f : α → σ) : Primrec f :=
+theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   let ⟨l, _, m⟩ := Finite.exists_univ_list α
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
@@ -839,7 +839,7 @@ theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=
 
 theorem nat_bodd : Primrec Nat.bodd :=
   (Primrec.beq.comp (nat_mod.comp .id (const 2)) (const 1)).of_eq fun n => by
-    cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]; rfl
+    cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]
 #align primrec.nat_bodd Primrec.nat_bodd
 
 theorem nat_div2 : Primrec Nat.div2 :=

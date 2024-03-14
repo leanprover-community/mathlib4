@@ -477,7 +477,7 @@ DistribMulActionHomClass.toAddMonoidHomClass not dangerous due to `outParam`s -/
 
 namespace DistribMulActionHom
 
-/- porting note: TODO decide whether the next two instances should be removed
+/- Porting note (#11215): TODO decide whether the next two instances should be removed
 Coercion is already handled by all the HomClass constructions I believe -/
 -- instance coe : Coe (A →+[M] B) (A →+ B) :=
 --   ⟨toAddMonoidHom⟩
@@ -810,7 +810,7 @@ abbrev MulSemiringActionHomClass
 
 namespace MulSemiringActionHom
 
-/- porting note: TODO decide whether the next two instances should be removed
+/- Porting note (#11215): TODO decide whether the next two instances should be removed
 Coercion is already handled by all the HomClass constructions I believe -/
 -- @[coe]
 -- instance coe : Coe (R →+*[M] S) (R →+* S) :=

@@ -3,7 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison
 -/
-import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.FinCategory.Basic
 import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Adjunction.Basic
@@ -387,6 +387,9 @@ theorem of_cocone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory 
       have h₂ := c.ι.naturality ⟨WalkingParallelPairHom.right⟩
       simp_all
   apply IsFiltered.mk
+
+theorem of_hasFiniteColimits [HasFiniteColimits C] : IsFiltered C :=
+  of_cocone_nonempty.{v} C fun F => ⟨colimit.cocone F⟩
 
 /-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape
     in `w` admits a cocone. -/
@@ -865,6 +868,13 @@ theorem of_cone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J]
       have h₂ := c.π.naturality ⟨WalkingParallelPairHom.right⟩
       simp_all
   apply IsCofiltered.mk
+
+theorem of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
+  of_cone_nonempty.{v} C fun F => ⟨limit.cone F⟩
+#align category_theory.cofiltered_of_has_finite_limits CategoryTheory.IsCofiltered.of_hasFiniteLimits
+
+@[deprecated] -- 2024-03-11
+alias _root_.CategoryTheory.cofiltered_of_hasFiniteLimits := of_hasFiniteLimits
 
 /-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape
     in `w` admits a cocone. -/

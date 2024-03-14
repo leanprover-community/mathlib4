@@ -563,7 +563,7 @@ theorem le_generateFrom {t : TopologicalSpace α} {g : Set (Set α)} (h : ∀ s 
 
 theorem induced_generateFrom_eq {α β} {b : Set (Set β)} {f : α → β} :
     (generateFrom b).induced f = generateFrom (preimage f '' b) :=
-  le_antisymm (le_generateFrom <| ball_image_iff.2 fun s hs => ⟨s, GenerateOpen.basic _ hs, rfl⟩)
+  le_antisymm (le_generateFrom <| forall_mem_image.2 fun s hs => ⟨s, GenerateOpen.basic _ hs, rfl⟩)
     (coinduced_le_iff_le_induced.1 <| le_generateFrom fun _s hs => .basic _ (mem_image_of_mem _ hs))
 #align induced_generate_from_eq induced_generateFrom_eq
 
@@ -652,7 +652,7 @@ theorem nhds_sInf {s : Set (TopologicalSpace α)} {a : α} :
   (gc_nhds a).u_sInf
 #align nhds_Inf nhds_sInf
 
--- Porting note: todo: timeouts without `b₁ := t₁`
+-- Porting note (#11215): TODO: timeouts without `b₁ := t₁`
 theorem nhds_inf {t₁ t₂ : TopologicalSpace α} {a : α} :
     @nhds α (t₁ ⊓ t₂) a = @nhds α t₁ a ⊓ @nhds α t₂ a :=
   (gc_nhds a).u_inf (b₁ := t₁)
@@ -985,6 +985,7 @@ theorem isOpen_iSup_iff {s : Set α} : IsOpen[⨆ i, t i] s ↔ ∀ i, IsOpen[t 
     simp [setOf_isOpen_iSup]
 #align is_open_supr_iff isOpen_iSup_iff
 
+set_option tactic.skipAssignedInstances false in
 theorem isClosed_iSup_iff {s : Set α} : IsClosed[⨆ i, t i] s ↔ ∀ i, IsClosed[t i] s := by
   simp [← @isOpen_compl_iff _ _ (⨆ i, t i), ← @isOpen_compl_iff _ _ (t _), isOpen_iSup_iff]
 #align is_closed_supr_iff isClosed_iSup_iff
