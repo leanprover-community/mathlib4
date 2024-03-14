@@ -1123,8 +1123,8 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   by_contra hmn
   have hmn : m < n := lt_of_le_of_ne hmlen hmn
   refine (Classical.choose_spec (exists_not_mem_finset
-    ((Multiset.range n).pmap (λ m (_ : m < n) => natEmbeddingAux α m)
-      (fun _ => Multiset.mem_range.1)).toFinset)) ?_
+    ((Multiset.range n).pmap (fun m (_ : m < n) ↦ natEmbeddingAux α m)
+      (fun _ ↦ Multiset.mem_range.1)).toFinset)) ?_
   refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, ?_⟩)
   rw [h, natEmbeddingAux]
 
