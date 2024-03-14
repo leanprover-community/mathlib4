@@ -120,9 +120,7 @@ theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length)
   cases' i with i hi
   · simp
     rfl
-  have : i < tail.length := by
-    simp? at hi says simp only [length_cons] at hi
-    exact Nat.lt_of_succ_lt_succ hi
+  have : i < tail.length := by simpa using hi
   simp [*]
   rfl
 #align list.drop_take_succ_eq_cons_nth_le List.drop_take_succ_eq_cons_nthLe

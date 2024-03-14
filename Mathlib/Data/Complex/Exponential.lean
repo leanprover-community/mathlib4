@@ -168,7 +168,7 @@ theorem exp_zero : exp 0 = 1 := by
   · dsimp [exp']
     induction' j with j ih
     · dsimp [exp']; simp [show Nat.succ 0 = 1 from rfl]
-    · rw [← ih (by simp [show 1 = Nat.succ 0 from rfl, Nat.succ_le_succ])]
+    · rw [← ih (by simp [Nat.succ_le_succ])]
       simp only [sum_range_succ, pow_succ]
       simp
 #align complex.exp_zero Complex.exp_zero

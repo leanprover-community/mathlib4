@@ -1161,7 +1161,7 @@ theorem reduce.not {p : Prop} :
       simp? [List.length] at this says
         simp only [List.length, zero_add, List.length_append] at this
       rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
-      simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
+      omega
     | cons hd tail =>
       cases' hd with y c
       dsimp only
