@@ -59,9 +59,6 @@ parentheses. More precisely,
 
 Note that `X₁ ◁ X₂ ◁ X₃ ◁ f ▷ X₄ ▷ X₅` is actually `X₁ ◁ (X₂ ◁ (X₃ ◁ ((f ▷ X₄) ▷ X₅)))`.
 
-Currently, the simp lemmas don't rewrite `𝟙 X ⊗ f` and `f ⊗ 𝟙 Y` into `X ◁ f` and `f ▷ Y`,
-respectively, since it requires a huge refactoring. We hope to add these simp lemmas soon.
-
 ## References
 * Tensor categories, Etingof, Gelaki, Nikshych, Ostrik,
   http://www-math.mit.edu/~etingof/egnobookfinal.pdf
@@ -158,36 +155,45 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCate
   tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂) :
     f ⊗ g = (f ▷ X₂) ≫ (Y₁ ◁ g) := by
       aesop_cat
-  /-- Tensor product of identity maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
-  tensor_id : ∀ X₁ X₂ : C, 𝟙 X₁ ⊗ 𝟙 X₂ = 𝟙 (X₁ ⊗ X₂) := by aesop_cat
-  /--
-  Composition of tensor products is tensor product of compositions:
-  `(f₁ ⊗ g₁) ∘ (f₂ ⊗ g₂) = (f₁ ∘ f₂) ⊗ (g₁ ⊗ g₂)`
-  -/
-  tensor_comp :
-    ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
-      (f₁ ≫ g₁) ⊗ (f₂ ≫ g₂) = (f₁ ⊗ f₂) ≫ (g₁ ⊗ g₂) := by
+  whiskerLeft_id : ∀ (X Y : C), whiskerLeft X (𝟙 Y) = 𝟙 (tensorObj X Y) := by
     aesop_cat
-  whiskerLeft_id : ∀ (X Y : C), X ◁ 𝟙 Y = 𝟙 (X ⊗ Y) := by
+  whiskerLeft_comp :
+    ∀ (W : C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z),
+      whiskerLeft W (f ≫ g) = whiskerLeft W f ≫ whiskerLeft W g := by
     aesop_cat
-  id_whiskerRight : ∀ (X Y : C), 𝟙 X ▷ Y = 𝟙 (X ⊗ Y) := by
+  id_whiskerLeft :
+    ∀ {X Y : C} (f : X ⟶ Y),
+      whiskerLeft tensorUnit f = (leftUnitor X).hom ≫ f ≫ (leftUnitor Y).inv := by
     aesop_cat
-  /-- Naturality of the associator isomorphism: `(f₁ ⊗ f₂) ⊗ f₃ ≃ f₁ ⊗ (f₂ ⊗ f₃)` -/
-  associator_naturality :
-    ∀ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃),
-      ((f₁ ⊗ f₂) ⊗ f₃) ≫ (α_ Y₁ Y₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ⊗ (f₂ ⊗ f₃)) := by
+  tensor_whiskerLeft :
+    ∀ (X Y : C) {Z Z' : C} (f : Z ⟶ Z'),
+      whiskerLeft (tensorObj X Y) f =
+        (associator X Y Z).hom ≫ whiskerLeft X (whiskerLeft Y f) ≫ (associator X Y Z').inv := by
     aesop_cat
-  /--
-  Naturality of the left unitor, commutativity of `𝟙_ C ⊗ X ⟶ 𝟙_ C ⊗ Y ⟶ Y` and `𝟙_ C ⊗ X ⟶ X ⟶ Y`
-  -/
-  leftUnitor_naturality :
-    ∀ {X Y : C} (f : X ⟶ Y), 𝟙_ _ ◁ f ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
+  id_whiskerRight : ∀ (X Y : C), whiskerRight (𝟙 X) Y = 𝟙 (tensorObj X Y) := by
     aesop_cat
-  /--
-  Naturality of the right unitor: commutativity of `X ⊗ 𝟙_ C ⟶ Y ⊗ 𝟙_ C ⟶ Y` and `X ⊗ 𝟙_ C ⟶ X ⟶ Y`
-  -/
-  rightUnitor_naturality :
-    ∀ {X Y : C} (f : X ⟶ Y), f ▷ 𝟙_ _ ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
+  comp_whiskerRight :
+    ∀ {W X Y : C} (f : W ⟶ X) (g : X ⟶ Y) (Z : C),
+      whiskerRight (f ≫ g) Z = whiskerRight f Z ≫ whiskerRight g Z := by
+    aesop_cat
+  whiskerRight_id :
+    ∀ {X Y : C} (f : X ⟶ Y),
+      whiskerRight f tensorUnit = (rightUnitor X).hom ≫ f ≫ (rightUnitor Y).inv := by
+    aesop_cat
+  whiskerRight_tensor :
+    ∀ {X X' : C} (f : X ⟶ X') (Y Z : C),
+      whiskerRight f (tensorObj Y Z) =
+        (associator X Y Z).inv ≫ whiskerRight (whiskerRight f Y) Z ≫ (associator X' Y Z).hom := by
+    aesop_cat
+  whisker_assoc :
+    ∀ (X : C) {Y Y' : C} (f : Y ⟶ Y') (Z : C),
+      whiskerRight (whiskerLeft X f) Z =
+        (associator X Y Z).hom ≫ whiskerLeft X (whiskerRight f Z) ≫ (associator X Y' Z).inv := by
+    aesop_cat
+  /-- The exchange identity for the left and right whiskerings -/
+  whisker_exchange :
+    ∀ {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z),
+      whiskerLeft W g ≫ whiskerRight f Z = whiskerRight f Y ≫ whiskerLeft X g := by
     aesop_cat
   /--
   The pentagon identity relating the isomorphism between `X ⊗ (Y ⊗ (Z ⊗ W))` and `((X ⊗ Y) ⊗ Z) ⊗ W`
@@ -205,20 +211,40 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCate
     aesop_cat
 #align category_theory.monoidal_category CategoryTheory.MonoidalCategory
 
-attribute [reassoc] MonoidalCategory.tensorHom_def
-attribute [reassoc, simp] MonoidalCategory.whiskerLeft_id
-attribute [reassoc, simp] MonoidalCategory.id_whiskerRight
-attribute [reassoc] MonoidalCategory.tensor_comp
-attribute [simp] MonoidalCategory.tensor_comp
-attribute [reassoc] MonoidalCategory.associator_naturality
-attribute [reassoc] MonoidalCategory.leftUnitor_naturality
-attribute [reassoc] MonoidalCategory.rightUnitor_naturality
 attribute [reassoc (attr := simp)] MonoidalCategory.pentagon
 attribute [reassoc (attr := simp)] MonoidalCategory.triangle
 
 namespace MonoidalCategory
 
+attribute [reassoc]
+  whiskerLeft_comp id_whiskerLeft tensor_whiskerLeft comp_whiskerRight whiskerRight_id
+  whiskerRight_tensor whisker_assoc whisker_exchange tensorHom_def
+
+attribute [simp]
+  whiskerLeft_id whiskerRight_id
+  whiskerLeft_comp id_whiskerLeft tensor_whiskerLeft comp_whiskerRight id_whiskerRight
+  whiskerRight_tensor whisker_assoc
+
 variable {C : Type u} [𝒞 : Category.{v} C] [MonoidalCategory C]
+
+@[reassoc]
+theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
+    f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ :=
+  whisker_exchange f g ▸ tensorHom_def f g
+
+/-- Tensor product of identity maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
+theorem tensor_id (X₁ X₂ : C) : (𝟙 X₁) ⊗ (𝟙 X₂) = 𝟙 (X₁ ⊗ X₂) := by
+  simp [tensorHom_def]
+
+/--
+Composition of tensor products is tensor product of compositions:
+`(f₁ ≫ g₁) ⊗ (f₂ ≫ g₂) = (f₁ ⊗ f₂) ≫ (g₁ ⊗ g₂)`
+-/
+@[reassoc, simp]
+theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C}
+    (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
+      (f₁ ≫ g₁) ⊗ (f₂ ≫ g₂) = (f₁ ⊗ f₂) ≫ (g₁ ⊗ g₂) := by
+  simp [tensorHom_def, whisker_exchange_assoc]
 
 @[simp]
 theorem id_tensorHom (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) :
@@ -229,62 +255,6 @@ theorem id_tensorHom (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) :
 theorem tensorHom_id {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
     f ⊗ 𝟙 Y = f ▷ Y := by
   simp [tensorHom_def]
-
-@[reassoc, simp]
-theorem whiskerLeft_comp (W : C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    W ◁ (f ≫ g) = W ◁ f ≫ W ◁ g := by
-  intros; simp only [← id_tensorHom, ← tensor_comp, comp_id]
-
-@[reassoc, simp]
-theorem id_whiskerLeft {X Y : C} (f : X ⟶ Y) :
-    𝟙_ C ◁ f = (λ_ X).hom ≫ f ≫ (λ_ Y).inv := by
-  intros; rw [← assoc, ← leftUnitor_naturality]; simp [id_tensorHom]
-#align category_theory.monoidal_category.left_unitor_conjugation CategoryTheory.MonoidalCategory.id_whiskerLeft
-
-@[reassoc, simp]
-theorem tensor_whiskerLeft (X Y : C) {Z Z' : C} (f : Z ⟶ Z') :
-    (X ⊗ Y) ◁ f = (α_ X Y Z).hom ≫ X ◁ Y ◁ f ≫ (α_ X Y Z').inv := by
-  intros
-  simp only [← id_tensorHom, ← tensorHom_id]
-  rw [← assoc, ← associator_naturality]
-  simp
-
-@[reassoc, simp]
-theorem comp_whiskerRight {W X Y : C} (f : W ⟶ X) (g : X ⟶ Y) (Z : C) :
-    (f ≫ g) ▷ Z = f ▷ Z ≫ g ▷ Z := by
-  intros; simp only [← tensorHom_id, ← tensor_comp, id_comp]
-
-@[reassoc, simp]
-theorem whiskerRight_id {X Y : C} (f : X ⟶ Y) :
-    f ▷ 𝟙_ C = (ρ_ X).hom ≫ f ≫ (ρ_ Y).inv := by
-   intros; rw [← assoc, ← rightUnitor_naturality]; simp [tensorHom_id]
-#align category_theory.monoidal_category.right_unitor_conjugation CategoryTheory.MonoidalCategory.whiskerRight_id
-
-@[reassoc, simp]
-theorem whiskerRight_tensor {X X' : C} (f : X ⟶ X') (Y Z : C) :
-    f ▷ (Y ⊗ Z) = (α_ X Y Z).inv ≫ f ▷ Y ▷ Z ≫ (α_ X' Y Z).hom := by
-  intros
-  simp only [← id_tensorHom, ← tensorHom_id]
-  rw [associator_naturality]
-  simp [tensor_id]
-
-@[reassoc, simp]
-theorem whisker_assoc (X : C) {Y Y' : C} (f : Y ⟶ Y') (Z : C) :
-    (X ◁ f) ▷ Z = (α_ X Y Z).hom ≫ X ◁ f ▷ Z ≫ (α_ X Y' Z).inv := by
-  intros
-  simp only [← id_tensorHom, ← tensorHom_id]
-  rw [← assoc, ← associator_naturality]
-  simp
-
-@[reassoc]
-theorem whisker_exchange {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) :
-    W ◁ g ≫ f ▷ Z = f ▷ Y ≫ X ◁ g := by
-  simp only [← id_tensorHom, ← tensorHom_id, ← tensor_comp, id_comp, comp_id]
-
-@[reassoc]
-theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
-    f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ :=
-  whisker_exchange f g ▸ tensorHom_def f g
 
 end MonoidalCategory
 
@@ -493,14 +463,21 @@ theorem tensor_whiskerLeft_symm (X Y : C) {Z Z' : C} (f : Z ⟶ Z') :
     X ◁ Y ◁ f = (α_ X Y Z).inv ≫ (X ⊗ Y) ◁ f ≫ (α_ X Y Z').hom := by simp
 
 @[reassoc]
+theorem leftUnitor_naturality {X Y : C} (f : X ⟶ Y) :
+    𝟙_ C ◁ f ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by simp
+
+@[reassoc]
 theorem leftUnitor_inv_naturality {X Y : C} (f : X ⟶ Y) :
     f ≫ (λ_ Y).inv = (λ_ X).inv ≫ _ ◁ f := by simp
 #align category_theory.monoidal_category.left_unitor_inv_naturality CategoryTheory.MonoidalCategory.leftUnitor_inv_naturality
 
 @[reassoc]
 theorem id_whiskerLeft_symm {X X' : C} (f : X ⟶ X') :
-    f = (λ_ X).inv ≫ 𝟙_ C ◁ f ≫ (λ_ X').hom := by
-  simp only [id_whiskerLeft, assoc, inv_hom_id, comp_id, inv_hom_id_assoc]
+    f = (λ_ X).inv ≫ 𝟙_ C ◁ f ≫ (λ_ X').hom := by simp
+
+@[reassoc]
+theorem rightUnitor_naturality {X Y : C} (f : X ⟶ Y) :
+    f ▷ 𝟙_ C ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by simp
 
 @[reassoc]
 theorem rightUnitor_inv_naturality {X X' : C} (f : X ⟶ X') :
@@ -509,8 +486,7 @@ theorem rightUnitor_inv_naturality {X X' : C} (f : X ⟶ X') :
 
 @[reassoc]
 theorem whiskerRight_id_symm {X Y : C} (f : X ⟶ Y) :
-    f = (ρ_ X).inv ≫ f ▷ 𝟙_ C ≫ (ρ_ Y).hom := by
-  simp
+    f = (ρ_ X).inv ≫ f ▷ 𝟙_ C ≫ (ρ_ Y).hom := by simp
 
 theorem whiskerLeft_iff {X Y : C} (f g : X ⟶ Y) : 𝟙_ C ◁ f = 𝟙_ C ◁ g ↔ f = g := by simp
 
@@ -544,8 +520,8 @@ theorem pentagon_inv_hom_hom_hom_inv :
 @[reassoc (attr := simp)]
 theorem pentagon_hom_inv_inv_inv_inv :
     W ◁ (α_ X Y Z).hom ≫ (α_ W X (Y ⊗ Z)).inv ≫ (α_ (W ⊗ X) Y Z).inv =
-      (α_ W (X ⊗ Y) Z).inv ≫ (α_ W X Y).inv ▷ Z :=
-  by simp [← cancel_epi (W ◁ (α_ X Y Z).inv)]
+      (α_ W (X ⊗ Y) Z).inv ≫ (α_ W X Y).inv ▷ Z := by
+  simp [← cancel_epi (W ◁ (α_ X Y Z).inv)]
 
 @[reassoc (attr := simp)]
 theorem pentagon_hom_hom_inv_hom_hom :
@@ -569,8 +545,8 @@ theorem pentagon_hom_hom_inv_inv_hom :
 @[reassoc (attr := simp)]
 theorem pentagon_inv_hom_hom_hom_hom :
     (α_ W X Y).inv ▷ Z ≫ (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom =
-      (α_ W (X ⊗ Y) Z).hom ≫ W ◁ (α_ X Y Z).hom :=
-  by simp [← cancel_epi ((α_ W X Y).hom ▷ Z)]
+      (α_ W (X ⊗ Y) Z).hom ≫ W ◁ (α_ X Y Z).hom := by
+  simp [← cancel_epi ((α_ W X Y).hom ▷ Z)]
 
 @[reassoc (attr := simp)]
 theorem pentagon_inv_inv_hom_inv_inv :
@@ -645,6 +621,12 @@ theorem rightUnitor_tensor_inv (X Y : C) :
 end
 
 @[reassoc]
+theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C}
+    (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
+      ((f₁ ⊗ f₂) ⊗ f₃) ≫ (α_ Y₁ Y₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ⊗ (f₂ ⊗ f₃)) := by
+  simp [tensorHom_def]
+
+@[reassoc]
 theorem associator_inv_naturality {X Y Z X' Y' Z' : C} (f : X ⟶ X') (g : Y ⟶ Y') (h : Z ⟶ Z') :
     (f ⊗ g ⊗ h) ≫ (α_ X' Y' Z').inv = (α_ X Y Z).inv ≫ ((f ⊗ g) ⊗ h) := by
   simp [tensorHom_def]
@@ -662,66 +644,52 @@ theorem associator_inv_conjugation {X X' Y Y' Z Z' : C} (f : X ⟶ X') (g : Y �
   rw [associator_naturality, inv_hom_id_assoc]
 #align category_theory.monoidal_category.associator_inv_conjugation CategoryTheory.MonoidalCategory.associator_inv_conjugation
 
--- TODO these next two lemmas aren't so fundamental, and perhaps could be removed
--- (replacing their usages by their proofs).
-@[reassoc]
-theorem id_tensor_associator_naturality {X Y Z Z' : C} (h : Z ⟶ Z') :
-    (𝟙 (X ⊗ Y) ⊗ h) ≫ (α_ X Y Z').hom = (α_ X Y Z).hom ≫ (𝟙 X ⊗ 𝟙 Y ⊗ h) := by
-  rw [← tensor_id, associator_naturality]
-#align category_theory.monoidal_category.id_tensor_associator_naturality CategoryTheory.MonoidalCategory.id_tensor_associator_naturality
-
-@[reassoc]
-theorem id_tensor_associator_inv_naturality {X Y Z X' : C} (f : X ⟶ X') :
-    (f ⊗ 𝟙 (Y ⊗ Z)) ≫ (α_ X' Y Z).inv = (α_ X Y Z).inv ≫ ((f ⊗ 𝟙 Y) ⊗ 𝟙 Z) := by
-  rw [← tensor_id, associator_inv_naturality]
-#align category_theory.monoidal_category.id_tensor_associator_inv_naturality CategoryTheory.MonoidalCategory.id_tensor_associator_inv_naturality
-
 @[reassoc (attr := simp)]
 theorem hom_inv_id_tensor {V W X Y Z : C} (f : V ≅ W) (g : X ⟶ Y) (h : Y ⟶ Z) :
-    (f.hom ⊗ g) ≫ (f.inv ⊗ h) = (𝟙 V ⊗ g) ≫ (𝟙 V ⊗ h) := by
-  rw [← tensor_comp, f.hom_inv_id]; simp [id_tensorHom]
+    (f.hom ⊗ g) ≫ (f.inv ⊗ h) = V ◁ g ≫ V ◁ h := by
+  rw [← tensor_comp, f.hom_inv_id, id_tensorHom, whiskerLeft_comp]
 #align category_theory.monoidal_category.hom_inv_id_tensor CategoryTheory.MonoidalCategory.hom_inv_id_tensor
 
 @[reassoc (attr := simp)]
 theorem inv_hom_id_tensor {V W X Y Z : C} (f : V ≅ W) (g : X ⟶ Y) (h : Y ⟶ Z) :
-    (f.inv ⊗ g) ≫ (f.hom ⊗ h) = (𝟙 W ⊗ g) ≫ (𝟙 W ⊗ h) := by
-  rw [← tensor_comp, f.inv_hom_id]; simp [id_tensorHom]
+    (f.inv ⊗ g) ≫ (f.hom ⊗ h) = W ◁ g ≫ W ◁ h := by
+  rw [← tensor_comp, f.inv_hom_id, id_tensorHom, whiskerLeft_comp]
 #align category_theory.monoidal_category.inv_hom_id_tensor CategoryTheory.MonoidalCategory.inv_hom_id_tensor
 
 @[reassoc (attr := simp)]
 theorem tensor_hom_inv_id {V W X Y Z : C} (f : V ≅ W) (g : X ⟶ Y) (h : Y ⟶ Z) :
-    (g ⊗ f.hom) ≫ (h ⊗ f.inv) = (g ⊗ 𝟙 V) ≫ (h ⊗ 𝟙 V) := by
-  rw [← tensor_comp, f.hom_inv_id]; simp [tensorHom_id]
+    (g ⊗ f.hom) ≫ (h ⊗ f.inv) = g ▷ V ≫ h ▷ V := by
+  rw [← tensor_comp, f.hom_inv_id, tensorHom_id, comp_whiskerRight]
 #align category_theory.monoidal_category.tensor_hom_inv_id CategoryTheory.MonoidalCategory.tensor_hom_inv_id
 
 @[reassoc (attr := simp)]
 theorem tensor_inv_hom_id {V W X Y Z : C} (f : V ≅ W) (g : X ⟶ Y) (h : Y ⟶ Z) :
-    (g ⊗ f.inv) ≫ (h ⊗ f.hom) = (g ⊗ 𝟙 W) ≫ (h ⊗ 𝟙 W) := by
-  rw [← tensor_comp, f.inv_hom_id]; simp [tensorHom_id]
+    (g ⊗ f.inv) ≫ (h ⊗ f.hom) = g ▷ W ≫ h ▷ W := by
+  rw [← tensor_comp, f.inv_hom_id, tensorHom_id, comp_whiskerRight]
 #align category_theory.monoidal_category.tensor_inv_hom_id CategoryTheory.MonoidalCategory.tensor_inv_hom_id
 
 @[reassoc (attr := simp)]
 theorem hom_inv_id_tensor' {V W X Y Z : C} (f : V ⟶ W) [IsIso f] (g : X ⟶ Y) (h : Y ⟶ Z) :
-    (f ⊗ g) ≫ (inv f ⊗ h) = (𝟙 V ⊗ g) ≫ (𝟙 V ⊗ h) := by
-  rw [← tensor_comp, IsIso.hom_inv_id]; simp [id_tensorHom]
+    (f ⊗ g) ≫ (inv f ⊗ h) = V ◁ g ≫ V ◁ h := by
+  rw [← tensor_comp, IsIso.hom_inv_id, id_tensorHom, whiskerLeft_comp]
 #align category_theory.monoidal_category.hom_inv_id_tensor' CategoryTheory.MonoidalCategory.hom_inv_id_tensor'
 
 @[reassoc (attr := simp)]
 theorem inv_hom_id_tensor' {V W X Y Z : C} (f : V ⟶ W) [IsIso f] (g : X ⟶ Y) (h : Y ⟶ Z) :
-    (inv f ⊗ g) ≫ (f ⊗ h) = (𝟙 W ⊗ g) ≫ (𝟙 W ⊗ h) := by
-  rw [← tensor_comp, IsIso.inv_hom_id]; simp [id_tensorHom]
+    (inv f ⊗ g) ≫ (f ⊗ h) = W ◁ g ≫ W ◁ h := by
+  rw [← tensor_comp, IsIso.inv_hom_id, id_tensorHom, whiskerLeft_comp]
 #align category_theory.monoidal_category.inv_hom_id_tensor' CategoryTheory.MonoidalCategory.inv_hom_id_tensor'
 
 @[reassoc (attr := simp)]
 theorem tensor_hom_inv_id' {V W X Y Z : C} (f : V ⟶ W) [IsIso f] (g : X ⟶ Y) (h : Y ⟶ Z) :
-    (g ⊗ f) ≫ (h ⊗ inv f) = (g ⊗ 𝟙 V) ≫ (h ⊗ 𝟙 V) := by
-  rw [← tensor_comp, IsIso.hom_inv_id]; simp [tensorHom_id]
+    (g ⊗ f) ≫ (h ⊗ inv f) = g ▷ V ≫ h ▷ V := by
+  rw [← tensor_comp, IsIso.hom_inv_id, tensorHom_id, comp_whiskerRight]
 #align category_theory.monoidal_category.tensor_hom_inv_id' CategoryTheory.MonoidalCategory.tensor_hom_inv_id'
 
 @[reassoc (attr := simp)]
 theorem tensor_inv_hom_id' {V W X Y Z : C} (f : V ⟶ W) [IsIso f] (g : X ⟶ Y) (h : Y ⟶ Z) :
-    (g ⊗ inv f) ≫ (h ⊗ f) = (g ⊗ 𝟙 W) ≫ (h ⊗ 𝟙 W) := by
-  rw [← tensor_comp, IsIso.inv_hom_id]; simp [tensorHom_id]
+    (g ⊗ inv f) ≫ (h ⊗ f) = g ▷ W ≫ h ▷ W := by
+  rw [← tensor_comp, IsIso.inv_hom_id, tensorHom_id, comp_whiskerRight]
 #align category_theory.monoidal_category.tensor_inv_hom_id' CategoryTheory.MonoidalCategory.tensor_inv_hom_id'
 
 /--
@@ -766,7 +734,27 @@ abbrev ofTensorHom [MonoidalCategoryStruct C]
       MonoidalCategory C where
   tensorHom_def := by intros; simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
   whiskerLeft_id := by intros; simp [← id_tensorHom, ← tensor_id]
+  whiskerLeft_comp := by intros; simp [← id_tensorHom, ← tensor_comp]
+  id_whiskerLeft := by intros; rw [← assoc, ← leftUnitor_naturality]; simp [← id_tensorHom]
+  tensor_whiskerLeft := by
+    intros
+    simp only [← id_tensorHom, ← tensorHom_id]
+    rw [← assoc, ← associator_naturality]
+    simp [tensor_id]
   id_whiskerRight := by intros; simp [← tensorHom_id, tensor_id]
+  comp_whiskerRight := by intros; simp [← tensorHom_id, ← tensor_comp]
+  whiskerRight_id := by intros; rw [← assoc, ← rightUnitor_naturality]; simp [← tensorHom_id]
+  whiskerRight_tensor := by
+    intros
+    simp only [← id_tensorHom, ← tensorHom_id]
+    rw [associator_naturality]
+    simp [tensor_id]
+  whisker_assoc := by
+    intros
+    simp only [← id_tensorHom, ← tensorHom_id]
+    rw [← assoc, ← associator_naturality]
+    simp
+  whisker_exchange := by simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
   pentagon := by intros; simp [← id_tensorHom, ← tensorHom_id, pentagon]
   triangle := by intros; simp [← id_tensorHom, ← tensorHom_id, triangle]
 
@@ -804,11 +792,16 @@ section
 
 variable (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C]
 
+attribute [local simp] tensorHom_def
+
 /-- The tensor product expressed as a functor. -/
 @[simps]
 def tensor : C × C ⥤ C where
   obj X := X.1 ⊗ X.2
   map {X Y : C × C} (f : X ⟶ Y) := f.1 ⊗ f.2
+  map_comp := by
+    intro X Y Z f g
+    simp [whisker_exchange_assoc]
 #align category_theory.monoidal_category.tensor CategoryTheory.MonoidalCategory.tensor
 
 /-- The left-associated triple tensor product as a functor. -/
@@ -816,6 +809,10 @@ def leftAssocTensor : C × C × C ⥤ C
     where
   obj X := (X.1 ⊗ X.2.1) ⊗ X.2.2
   map {X Y : C × C × C} (f : X ⟶ Y) := (f.1 ⊗ f.2.1) ⊗ f.2.2
+  map_comp := by
+    intro X Y Z f g
+    simp [-tensorHom_def, tensor_comp]
+
 #align category_theory.monoidal_category.left_assoc_tensor CategoryTheory.MonoidalCategory.leftAssocTensor
 
 @[simp]
@@ -833,6 +830,9 @@ def rightAssocTensor : C × C × C ⥤ C
     where
   obj X := X.1 ⊗ X.2.1 ⊗ X.2.2
   map {X Y : C × C × C} (f : X ⟶ Y) := f.1 ⊗ f.2.1 ⊗ f.2.2
+  map_comp := by
+    intro X Y Z f g
+    simp [-tensorHom_def, tensor_comp]
 #align category_theory.monoidal_category.right_assoc_tensor CategoryTheory.MonoidalCategory.rightAssocTensor
 
 @[simp]
@@ -1006,19 +1006,26 @@ variable (C₁ : Type u₁) [Category.{v₁} C₁] [MonoidalCategory.{v₁} C₁
 variable (C₂ : Type u₂) [Category.{v₂} C₂] [MonoidalCategory.{v₂} C₂]
 
 attribute [local simp] associator_naturality leftUnitor_naturality rightUnitor_naturality pentagon
+attribute [local simp] tensorHom_def
 
-@[simps! tensorObj tensorHom tensorUnit whiskerLeft whiskerRight associator]
+@[simps! tensorObj tensorUnit whiskerLeft whiskerRight associator]
 instance prodMonoidal : MonoidalCategory (C₁ × C₂) where
   tensorObj X Y := (X.1 ⊗ Y.1, X.2 ⊗ Y.2)
   tensorHom f g := (f.1 ⊗ g.1, f.2 ⊗ g.2)
   whiskerLeft X _ _ f := (whiskerLeft X.1 f.1, whiskerLeft X.2 f.2)
   whiskerRight f X := (whiskerRight f.1 X.1, whiskerRight f.2 X.2)
+  whisker_exchange := by simp [whisker_exchange]
   tensorHom_def := by simp [tensorHom_def]
   tensorUnit := (𝟙_ C₁, 𝟙_ C₂)
   associator X Y Z := (α_ X.1 Y.1 Z.1).prod (α_ X.2 Y.2 Z.2)
   leftUnitor := fun ⟨X₁, X₂⟩ => (λ_ X₁).prod (λ_ X₂)
   rightUnitor := fun ⟨X₁, X₂⟩ => (ρ_ X₁).prod (ρ_ X₂)
 #align category_theory.monoidal_category.prod_monoidal CategoryTheory.MonoidalCategory.prodMonoidal
+
+@[simp]
+theorem prodMonoidal_tensorHom {X₁ Y₁ X₂ Y₂ : C₁ × C₂} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
+    f ⊗ g = (f.1 ⊗ g.1, f.2 ⊗ g.2) :=
+  rfl
 
 @[simp]
 theorem prodMonoidal_leftUnitor_hom_fst (X : C₁ × C₂) :

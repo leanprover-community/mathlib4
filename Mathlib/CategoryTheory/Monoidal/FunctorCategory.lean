@@ -169,6 +169,7 @@ where `(F ⊗ G).obj X = F.obj X ⊗ G.obj X`.
 -/
 instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
+  whisker_exchange := by intros; ext; simp [whisker_exchange]
   pentagon F G H K := by ext X; dsimp; rw [pentagon]
 #align category_theory.monoidal.functor_category_monoidal CategoryTheory.Monoidal.functorCategoryMonoidal
 
@@ -183,7 +184,7 @@ the natural pointwise monoidal structure on the functor category `C ⥤ D`
 is also braided.
 -/
 instance functorCategoryBraided : BraidedCategory (C ⥤ D) where
-  braiding F G := NatIso.ofComponents fun X => β_ _ _
+  braiding F G := NatIso.ofComponents (fun X ↦ β_ _ _) (by simp [whisker_exchange])
   hexagon_forward F G H := by ext X; apply hexagon_forward
   hexagon_reverse F G H := by ext X; apply hexagon_reverse
 #align category_theory.monoidal.functor_category_braided CategoryTheory.Monoidal.functorCategoryBraided

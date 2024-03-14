@@ -131,9 +131,6 @@ def normalizeMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (normalizeObj' X ⟶ nor
   | _, _, ρ_hom _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, ρ_inv _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, (@comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
-  | _, _, (@Hom.tensor _ T _ _ W f g) =>
-    Discrete.natTrans <| fun ⟨X⟩ => (normalizeMapAux g).app ⟨normalizeObj T X⟩ ≫
-      (normalizeObj' W).map ((normalizeMapAux f).app ⟨X⟩)
   | _, _, (@Hom.whiskerLeft _ T _ W f) =>
     Discrete.natTrans <| fun ⟨X⟩ => (normalizeMapAux f).app ⟨normalizeObj T X⟩
   | _, _, (@Hom.whiskerRight _ T _ f W) =>
@@ -189,7 +186,6 @@ theorem tensorFunc_obj_map (Z : F C) {n n' : N C} (f : n ⟶ n') :
   dsimp at h
   subst h
   simp
-
 #align category_theory.free_monoidal_category.tensor_func_obj_map CategoryTheory.FreeMonoidalCategory.tensorFunc_obj_map
 
 /-- Auxiliary definition for `normalizeIso`. Here we construct the isomorphism between
@@ -277,9 +273,6 @@ theorem normalizeObj_congr (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y
   | comp _ _ _ _ => apply Eq.trans <;> assumption
   | whiskerLeft  _ _ ih => funext; apply congr_fun ih
   | whiskerRight _ _ ih => funext; apply congr_arg₂ _ rfl (congr_fun ih _)
-  | @tensor W X Y Z _ _ ih₁ ih₂ =>
-      funext n
-      simp [congr_fun ih₁ n, congr_fun ih₂ (normalizeObj Y n)]
   | _ => funext; rfl
 
 theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y) :
@@ -326,7 +319,7 @@ def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=
       intro X Y f
       dsimp
       rw [leftUnitor_inv_naturality_assoc, Category.assoc, Iso.cancel_iso_inv_left]
-      exact
+      convert
         congr_arg (fun f => NatTrans.app f (Discrete.mk NormalMonoidalObject.unit))
           ((normalizeIso.{u} C).hom.naturality f))
 #align category_theory.free_monoidal_category.full_normalize_iso CategoryTheory.FreeMonoidalCategory.fullNormalizeIso
@@ -359,9 +352,8 @@ def inverseAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (Y ⟶ᵐ X)
   | _, _, l_hom _ => l_inv _
   | _, _, l_inv _ => l_hom _
   | _, _, comp f g => (inverseAux g).comp (inverseAux f)
-  | _, _, Hom.whiskerLeft X f => (inverseAux f).whiskerLeft X
-  | _, _, Hom.whiskerRight f X => (inverseAux f).whiskerRight X
-  | _, _, Hom.tensor f g => (inverseAux f).tensor (inverseAux g)
+  | _, _, .whiskerLeft X f => (inverseAux f).whiskerLeft X
+  | _, _, .whiskerRight f X => (inverseAux f).whiskerRight X
 #align category_theory.free_monoidal_category.inverse_aux CategoryTheory.FreeMonoidalCategory.inverseAux
 
 end

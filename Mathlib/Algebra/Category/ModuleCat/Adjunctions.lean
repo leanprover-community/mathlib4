@@ -220,8 +220,8 @@ variable [CommRing R]
 /-- The free functor `Type u ⥤ ModuleCat R`, as a monoidal functor. -/
 def monoidalFree : MonoidalFunctor (Type u) (ModuleCat.{u} R) :=
   { LaxMonoidalFunctor.of (free R).obj with
-    -- Porting note (#10934): used to be dsimp
-    ε_isIso := (by infer_instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _))
+    -- Porting note: used to be dsimp
+    ε_isIso := inferInstanceAs <| IsIso LaxMonoidal.ε
     μ_isIso := fun X Y => by dsimp; infer_instance }
 #align Module.monoidal_free ModuleCat.monoidalFree
 

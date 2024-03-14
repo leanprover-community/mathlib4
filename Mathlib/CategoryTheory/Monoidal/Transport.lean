@@ -96,10 +96,32 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
   tensorHom_def {X₁ Y₁ X₂ Y₂} f g := F.map_injective <| by
     rw [fData.tensorHom_eq, Functor.map_comp, fData.whiskerRight_eq, fData.whiskerLeft_eq]
     simp only [tensorHom_def, assoc, Iso.hom_inv_id_assoc]
-  tensor_id X₁ X₂ := F.map_injective <| by cases fData; aesop_cat
-  tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ := F.map_injective <| by cases fData; aesop_cat
   whiskerLeft_id X Y := F.map_injective <| by simp [fData.whiskerLeft_eq]
+  whiskerLeft_comp W X Y Z f g := F.map_injective <| by cases fData; aesop_cat
+  id_whiskerLeft {X Y} f := by
+    rw [← Category.assoc, Iso.eq_comp_inv]
+    apply F.map_injective
+    simp [fData.leftUnitor_eq, fData.whiskerLeft_eq, whisker_exchange_assoc]
   id_whiskerRight X Y := F.map_injective <| by simp [fData.whiskerRight_eq]
+  tensor_whiskerLeft X Y Z Z' f := by
+    rw [← Category.assoc, Iso.eq_comp_inv]
+    apply F.map_injective
+    simp [fData.associator_eq, fData.whiskerLeft_eq, whisker_exchange_assoc]
+  comp_whiskerRight {W X Y} f g Z := F.map_injective <| by cases fData; aesop_cat
+  whiskerRight_id {X Y} f := by
+    rw [← Category.assoc, Iso.eq_comp_inv]
+    apply F.map_injective
+    simp [fData.rightUnitor_eq, fData.whiskerRight_eq, ← whisker_exchange_assoc]
+  whiskerRight_tensor {X X'} f Y Z := by
+    rw [Iso.eq_inv_comp]
+    apply F.map_injective
+    simp [fData.associator_eq, fData.whiskerRight_eq, whisker_exchange_assoc]
+  whisker_assoc X Y Y' f Z := by
+    rw [← Category.assoc, Iso.eq_comp_inv]
+    apply F.map_injective
+    simp [fData.associator_eq, fData.whiskerLeft_eq, fData.whiskerRight_eq, whisker_exchange_assoc]
+  whisker_exchange f g := F.map_injective <| by
+    simp [fData.whiskerLeft_eq, fData.whiskerRight_eq, whisker_exchange_assoc]
   triangle X Y := F.map_injective <| by cases fData; aesop_cat
   pentagon W X Y Z := F.map_injective <| by
     simp only [Functor.map_comp, fData.whiskerRight_eq, fData.associator_eq, Iso.trans_assoc,
@@ -111,12 +133,6 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
       rw [← MonoidalCategory.whiskerLeft_comp, hom_inv_whiskerRight]
     rw [whisker_exchange_assoc]
     simp
-  leftUnitor_naturality {X Y : D} f := F.map_injective <| by
-    simp [fData.leftUnitor_eq, fData.whiskerLeft_eq, whisker_exchange_assoc]
-  rightUnitor_naturality {X Y : D} f := F.map_injective <| by
-    simp [fData.rightUnitor_eq, fData.whiskerRight_eq, ← whisker_exchange_assoc]
-  associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := F.map_injective <| by
-    simp [fData.tensorHom_eq, fData.associator_eq, tensorHom_def, whisker_exchange_assoc]
 
 /--
 We can upgrade `F` to a monoidal functor from `D` to `E` with the induced structure.

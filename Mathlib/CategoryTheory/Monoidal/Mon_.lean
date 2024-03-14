@@ -528,6 +528,7 @@ theorem associator_inv_hom (X Y Z : Mon_ C) : (α_ X Y Z).inv.hom = (α_ X.X Y.X
 
 instance monMonoidal : MonoidalCategory (Mon_ C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
+  whisker_exchange := by intros; ext; simp [whisker_exchange]
 #align Mon_.Mon_monoidal Mon_.monMonoidal
 
 end Mon_

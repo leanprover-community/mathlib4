@@ -71,9 +71,8 @@ inductive Hom : F C → F C → Type u
   | ρ_hom (X : F C) : Hom (X.tensor unit) X
   | ρ_inv (X : F C) : Hom X (X.tensor unit)
   | comp {X Y Z} (f : Hom X Y) (g : Hom Y Z) : Hom X Z
-  | whiskerLeft (X : F C) {Y₁ Y₂} (f : Hom Y₁ Y₂) : Hom (X.tensor Y₁) (X.tensor Y₂)
-  | whiskerRight {X₁ X₂} (f : Hom X₁ X₂) (Y : F C) : Hom (X₁.tensor Y) (X₂.tensor Y)
-  | tensor {W X Y Z} (f : Hom W Y) (g : Hom X Z) : Hom (W.tensor X) (Y.tensor Z)
+  | whiskerLeft (X : F C) {Y Z : F C} (f : Hom Y Z) : Hom (X.tensor Y) (X.tensor Z)
+  | whiskerRight {X Y : F C} (f : Hom X Y) (Z : F C) : Hom (X.tensor Z) (Y.tensor Z)
 #align category_theory.free_monoidal_category.hom CategoryTheory.FreeMonoidalCategory.Hom
 
 local infixr:10 " ⟶ᵐ " => Hom
@@ -86,37 +85,42 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
   | trans {X Y} {f g h : X ⟶ᵐ Y} : HomEquiv f g → HomEquiv g h → HomEquiv f h
   | comp {X Y Z} {f f' : X ⟶ᵐ Y} {g g' : Y ⟶ᵐ Z} :
       HomEquiv f f' → HomEquiv g g' → HomEquiv (f.comp g) (f'.comp g')
-  | whiskerLeft (X) {Y Z} (f f' : Y ⟶ᵐ Z) :
+  | whisker_left (X) {Y Z} (f f' : Y ⟶ᵐ Z) :
       HomEquiv f f' → HomEquiv (f.whiskerLeft X) (f'.whiskerLeft X)
-  | whiskerRight {Y Z} (f f' : Y ⟶ᵐ Z) (X) :
+  | whisker_right {Y Z} (f f' : Y ⟶ᵐ Z) (X) :
       HomEquiv f f' → HomEquiv (f.whiskerRight X) (f'.whiskerRight X)
-  | tensor {W X Y Z} {f f' : W ⟶ᵐ X} {g g' : Y ⟶ᵐ Z} :
-      HomEquiv f f' → HomEquiv g g' → HomEquiv (f.tensor g) (f'.tensor g')
-  | tensorHom_def {X₁ Y₁ X₂ Y₂} (f : X₁ ⟶ᵐ Y₁) (g : X₂ ⟶ᵐ Y₂) :
-      HomEquiv (f.tensor g) ((f.whiskerRight X₂).comp (g.whiskerLeft Y₁))
   | comp_id {X Y} (f : X ⟶ᵐ Y) : HomEquiv (f.comp (Hom.id _)) f
   | id_comp {X Y} (f : X ⟶ᵐ Y) : HomEquiv ((Hom.id _).comp f) f
   | assoc {X Y U V : F C} (f : X ⟶ᵐ U) (g : U ⟶ᵐ V) (h : V ⟶ᵐ Y) :
       HomEquiv ((f.comp g).comp h) (f.comp (g.comp h))
-  | tensor_id {X Y} : HomEquiv ((Hom.id X).tensor (Hom.id Y)) (Hom.id _)
-  | tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : F C} (f₁ : X₁ ⟶ᵐ Y₁) (f₂ : X₂ ⟶ᵐ Y₂) (g₁ : Y₁ ⟶ᵐ Z₁)
-      (g₂ : Y₂ ⟶ᵐ Z₂) :
-    HomEquiv ((f₁.comp g₁).tensor (f₂.comp g₂)) ((f₁.tensor f₂).comp (g₁.tensor g₂))
-  | whiskerLeft_id (X Y) : HomEquiv ((Hom.id Y).whiskerLeft X) (Hom.id (X.tensor Y))
-  | id_whiskerRight (X Y) : HomEquiv ((Hom.id X).whiskerRight Y) (Hom.id (X.tensor Y))
+  | whisker_left_id (X Y) : HomEquiv ((Hom.id Y).whiskerLeft X) (Hom.id (X.tensor Y))
+  | whisker_left_comp (W) {X Y Z} (f : X ⟶ᵐ Y) (g : Y ⟶ᵐ Z) :
+      HomEquiv ((f.comp g).whiskerLeft W) ((f.whiskerLeft W).comp (g.whiskerLeft W))
+  | id_whisker_left {X Y} (f : X ⟶ᵐ Y) :
+      HomEquiv (f.whiskerLeft unit) ((Hom.l_hom X).comp <| f.comp (Hom.l_inv Y))
+  | tensor_whisker_left (X Y) {Z Z'} (f : Z ⟶ᵐ Z') :
+     HomEquiv (f.whiskerLeft (X.tensor Y))
+      ((Hom.α_hom X Y Z).comp <| ((f.whiskerLeft Y).whiskerLeft X).comp <| Hom.α_inv X Y Z')
+  | id_whisker_right (X Y) : HomEquiv ((Hom.id X).whiskerRight Y) (Hom.id (X.tensor Y))
+  | comp_whisker_right {X Y Z} (W) (f : X ⟶ᵐ Y) (g : Y ⟶ᵐ Z) :
+      HomEquiv ((f.comp g).whiskerRight W) ((f.whiskerRight W).comp <| g.whiskerRight W)
+  | whisker_right_id {X Y} (f : X ⟶ᵐ Y) :
+      HomEquiv (f.whiskerRight unit) ((Hom.ρ_hom X).comp <| f.comp <| Hom.ρ_inv Y)
+  | whisker_right_tensor {X X'} (f : X ⟶ᵐ X') (Y Z) :
+      HomEquiv (f.whiskerRight <| Y.tensor Z)
+        ((Hom.α_inv X Y Z).comp <| ((f.whiskerRight Y).whiskerRight Z).comp <| Hom.α_hom X' Y Z)
+  | whisker_assoc (X) {Y Y'} (f : Y ⟶ᵐ Y') (Z) :
+      HomEquiv ((f.whiskerLeft X).whiskerRight Z)
+        ((Hom.α_hom X Y Z).comp <| ((f.whiskerRight Z).whiskerLeft X).comp <| Hom.α_inv X Y' Z)
+  | whisker_exchange {W X Y Z} (f : W ⟶ᵐ X) (g : Y ⟶ᵐ Z) :
+      HomEquiv ((g.whiskerLeft W).comp <| f.whiskerRight Z)
+        ((f.whiskerRight Y).comp <| g.whiskerLeft X)
   | α_hom_inv {X Y Z} : HomEquiv ((Hom.α_hom X Y Z).comp (Hom.α_inv X Y Z)) (Hom.id _)
   | α_inv_hom {X Y Z} : HomEquiv ((Hom.α_inv X Y Z).comp (Hom.α_hom X Y Z)) (Hom.id _)
-  | associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} (f₁ : X₁ ⟶ᵐ Y₁) (f₂ : X₂ ⟶ᵐ Y₂) (f₃ : X₃ ⟶ᵐ Y₃) :
-      HomEquiv (((f₁.tensor f₂).tensor f₃).comp (Hom.α_hom Y₁ Y₂ Y₃))
-        ((Hom.α_hom X₁ X₂ X₃).comp (f₁.tensor (f₂.tensor f₃)))
   | ρ_hom_inv {X} : HomEquiv ((Hom.ρ_hom X).comp (Hom.ρ_inv X)) (Hom.id _)
   | ρ_inv_hom {X} : HomEquiv ((Hom.ρ_inv X).comp (Hom.ρ_hom X)) (Hom.id _)
-  | ρ_naturality {X Y} (f : X ⟶ᵐ Y) :
-      HomEquiv ((f.whiskerRight unit).comp (Hom.ρ_hom Y)) ((Hom.ρ_hom X).comp f)
   | l_hom_inv {X} : HomEquiv ((Hom.l_hom X).comp (Hom.l_inv X)) (Hom.id _)
   | l_inv_hom {X} : HomEquiv ((Hom.l_inv X).comp (Hom.l_hom X)) (Hom.id _)
-  | l_naturality {X Y} (f : X ⟶ᵐ Y) :
-      HomEquiv ((f.whiskerLeft unit).comp (Hom.l_hom Y)) ((Hom.l_hom X).comp f)
   | pentagon {W X Y Z} :
       HomEquiv
         (((Hom.α_hom W X Y).whiskerRight Z).comp
@@ -160,33 +164,52 @@ instance categoryFreeMonoidalCategory : Category.{u} (F C) where
 
 instance : MonoidalCategory (F C) where
   tensorObj X Y := FreeMonoidalCategory.tensor X Y
-  tensorHom := Quotient.map₂ Hom.tensor (fun _ _ hf _ _ hg ↦ HomEquiv.tensor hf hg)
-  whiskerLeft X _ _ f := Quot.map (fun f ↦ Hom.whiskerLeft X f) (fun f f' ↦ .whiskerLeft X f f') f
-  whiskerRight f Y := Quot.map (fun f ↦ Hom.whiskerRight f Y) (fun f f' ↦ .whiskerRight f f' Y) f
-  tensorHom_def := by
-    rintro W X Y Z ⟨f⟩ ⟨g⟩
-    exact Quotient.sound (tensorHom_def _ _)
-  tensor_id X Y := Quot.sound tensor_id
-  tensor_comp := @fun X₁ Y₁ Z₁ X₂ Y₂ Z₂ => by
-    rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩
-    exact Quotient.sound (tensor_comp _ _ _ _)
-  whiskerLeft_id X Y := Quot.sound (HomEquiv.whiskerLeft_id X Y)
-  id_whiskerRight X Y := Quot.sound (HomEquiv.id_whiskerRight X Y)
+  whiskerLeft := fun X _ _ f => Quotient.map (Hom.whiskerLeft X) (HomEquiv.whisker_left X) f
+  whiskerRight := fun f Y =>
+    Quotient.map (fun f' => Hom.whiskerRight f' Y) (fun _ _ h => HomEquiv.whisker_right _ _ _ h) f
   tensorUnit := FreeMonoidalCategory.unit
   associator X Y Z :=
     ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, Quotient.sound α_hom_inv, Quotient.sound α_inv_hom⟩
-  associator_naturality := @fun X₁ X₂ X₃ Y₁ Y₂ Y₃ => by
-    rintro ⟨f₁⟩ ⟨f₂⟩ ⟨f₃⟩
-    exact Quotient.sound (associator_naturality _ _ _)
   leftUnitor X := ⟨⟦Hom.l_hom X⟧, ⟦Hom.l_inv X⟧, Quotient.sound l_hom_inv, Quotient.sound l_inv_hom⟩
-  leftUnitor_naturality := @fun X Y => by
-    rintro ⟨f⟩
-    exact Quotient.sound (l_naturality _)
   rightUnitor X :=
     ⟨⟦Hom.ρ_hom X⟧, ⟦Hom.ρ_inv X⟧, Quotient.sound ρ_hom_inv, Quotient.sound ρ_inv_hom⟩
-  rightUnitor_naturality := @fun X Y => by
-    rintro ⟨f⟩
-    exact Quotient.sound (ρ_naturality _)
+  whisker_exchange := by
+    rintro W X Y Z ⟨f⟩ ⟨g⟩
+    apply Quotient.sound
+    apply HomEquiv.whisker_exchange
+  whiskerLeft_id := fun X Y ↦ Quotient.sound (HomEquiv.whisker_left_id X Y)
+  whiskerLeft_comp := by
+    rintro W X Y Z ⟨f⟩ ⟨g⟩
+    apply Quotient.sound
+    apply HomEquiv.whisker_left_comp
+  id_whiskerLeft := by
+    rintro X Y ⟨f⟩
+    apply Quotient.sound
+    apply HomEquiv.id_whisker_left
+  tensor_whiskerLeft := by
+    rintro X Y Z Z' ⟨f⟩
+    apply Quotient.sound
+    apply HomEquiv.tensor_whisker_left
+  id_whiskerRight := by
+    intro X Y
+    apply Quotient.sound
+    apply HomEquiv.id_whisker_right
+  comp_whiskerRight := by
+    rintro W X Y ⟨f⟩ ⟨g⟩ Z
+    apply Quotient.sound
+    apply HomEquiv.comp_whisker_right
+  whiskerRight_id := by
+    rintro X Y ⟨f⟩
+    apply Quotient.sound
+    apply HomEquiv.whisker_right_id
+  whiskerRight_tensor := by
+    rintro X X' ⟨f⟩ Y Z
+    apply Quotient.sound
+    apply HomEquiv.whisker_right_tensor
+  whisker_assoc := by
+    rintro X Y Y' ⟨f⟩ Z
+    apply Quotient.sound
+    apply HomEquiv.whisker_assoc
   pentagon W X Y Z := Quotient.sound pentagon
   triangle X Y := Quotient.sound triangle
 
@@ -196,11 +219,7 @@ theorem mk_comp {X Y Z : F C} (f : X ⟶ᵐ Y) (g : Y ⟶ᵐ Z) :
   rfl
 #align category_theory.free_monoidal_category.mk_comp CategoryTheory.FreeMonoidalCategory.mk_comp
 
-@[simp]
-theorem mk_tensor {X₁ Y₁ X₂ Y₂ : F C} (f : X₁ ⟶ᵐ Y₁) (g : X₂ ⟶ᵐ Y₂) :
-    ⟦f.tensor g⟧ = @MonoidalCategory.tensorHom (F C) _ _ _ _ _ _ ⟦f⟧ ⟦g⟧ :=
-  rfl
-#align category_theory.free_monoidal_category.mk_tensor CategoryTheory.FreeMonoidalCategory.mk_tensor
+#noalign category_theory.free_monoidal_category.mk_tensor
 
 @[simp]
 theorem mk_whiskerLeft (X : F C) {Y₁ Y₂ : F C} (f : Y₁ ⟶ᵐ Y₂) :
@@ -288,12 +307,6 @@ theorem Hom.inductionOn {motive : {X Y : F C} → (X ⟶ Y) → Prop} {X Y : F C
   | comp f g hf hg => exact comp _ _ (hf ⟦f⟧) (hg ⟦g⟧)
   | whiskerLeft X f hf => exact whiskerLeft X _ (hf ⟦f⟧)
   | whiskerRight f X hf => exact whiskerRight _ X (hf ⟦f⟧)
-  | @tensor W X Y Z f g hf hg =>
-      have : homMk f ⊗ homMk g = homMk f ▷ X ≫ Y ◁ homMk g :=
-        Quotient.sound (HomEquiv.tensorHom_def f g)
-      change motive (homMk f ⊗ homMk g)
-      rw [this]
-      exact comp _ _ (whiskerRight _ _ (hf ⟦f⟧)) (whiskerLeft _ _ (hg ⟦g⟧))
 
 section Functor
 
@@ -325,7 +338,6 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
   | _, _, Hom.comp f g => projectMapAux f ≫ projectMapAux g
   | _, _, Hom.whiskerLeft X p => projectObj f X ◁ projectMapAux p
   | _, _, Hom.whiskerRight p X => projectMapAux p ▷ projectObj f X
-  | _, _, Hom.tensor f g => projectMapAux f ⊗ projectMapAux g
 #align category_theory.free_monoidal_category.project_map_aux CategoryTheory.FreeMonoidalCategory.projectMapAux
 
 -- Porting note: this declaration generates the same panic.
@@ -338,42 +350,27 @@ def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :
     | symm _ _ _ hfg' => exact hfg'.symm
     | trans _ _ hfg hgh => exact hfg.trans hgh
     | comp _ _ hf hg => dsimp only [projectMapAux]; rw [hf, hg]
-    | whiskerLeft _ _ _ _ hf => dsimp only [projectMapAux, projectObj]; rw [hf]
-    | whiskerRight _ _ _ _ hf => dsimp only [projectMapAux, projectObj]; rw [hf]
-    | tensor _ _ hfg hfg' => dsimp only [projectMapAux]; rw [hfg, hfg']
-    | tensorHom_def _ _ =>
-        dsimp only [projectMapAux, projectObj]; rw [MonoidalCategory.tensorHom_def]
+    | whisker_left _ _ _ _ h => dsimp only [projectMapAux]; rw [h]
+    | whisker_right _ _ _ _ h => dsimp only [projectMapAux]; rw [h]
     | comp_id => dsimp only [projectMapAux]; rw [Category.comp_id]
     | id_comp => dsimp only [projectMapAux]; rw [Category.id_comp]
     | assoc => dsimp only [projectMapAux]; rw [Category.assoc]
-    | tensor_id => dsimp only [projectMapAux]; rw [MonoidalCategory.tensor_id]; rfl
-    | tensor_comp => dsimp only [projectMapAux]; rw [MonoidalCategory.tensor_comp]
-    | whiskerLeft_id =>
-        dsimp only [projectMapAux, projectObj]
-        rw [MonoidalCategory.whiskerLeft_id]
-    | id_whiskerRight =>
-        dsimp only [projectMapAux, projectObj]
-        rw [MonoidalCategory.id_whiskerRight]
     | α_hom_inv => dsimp only [projectMapAux]; rw [Iso.hom_inv_id]
     | α_inv_hom => dsimp only [projectMapAux]; rw [Iso.inv_hom_id]
-    | associator_naturality =>
-        dsimp only [projectMapAux]; rw [MonoidalCategory.associator_naturality]
     | ρ_hom_inv => dsimp only [projectMapAux]; rw [Iso.hom_inv_id]
     | ρ_inv_hom => dsimp only [projectMapAux]; rw [Iso.inv_hom_id]
-    | ρ_naturality =>
-        dsimp only [projectMapAux, projectObj]
-        rw [MonoidalCategory.rightUnitor_naturality]
     | l_hom_inv => dsimp only [projectMapAux]; rw [Iso.hom_inv_id]
     | l_inv_hom => dsimp only [projectMapAux]; rw [Iso.inv_hom_id]
-    | l_naturality =>
-        dsimp only [projectMapAux, projectObj]
-        rw [MonoidalCategory.leftUnitor_naturality]
     | pentagon =>
-        dsimp only [projectMapAux, projectObj]
-        rw [MonoidalCategory.pentagon]
+        dsimp only [projectMapAux]
+        exact MonoidalCategory.pentagon _ _ _ _
     | triangle =>
-        dsimp only [projectMapAux, projectObj]
-        rw [MonoidalCategory.triangle]
+        dsimp only [projectMapAux]
+        exact MonoidalCategory.triangle _ _
+    | whisker_exchange =>
+        dsimp only [projectMapAux, projectObj]; simp [MonoidalCategory.whisker_exchange]
+    | _ =>
+        dsimp only [projectMapAux, projectObj]; simp
 #align category_theory.free_monoidal_category.project_map CategoryTheory.FreeMonoidalCategory.projectMap
 
 end
@@ -392,15 +389,13 @@ def project : MonoidalFunctor (F C) D where
   μ_natural_left := fun f _ => by
     induction' f using Quotient.recOn
     · dsimp
-      simp only [Category.comp_id, Category.id_comp]
-      rw [← tensorHom_id, ← tensorHom_id]
+      simp
       rfl
     · rfl
   μ_natural_right := fun _ f => by
     induction' f using Quotient.recOn
     · dsimp
-      simp only [Category.comp_id, Category.id_comp]
-      rw [← id_tensorHom, ← id_tensorHom]
+      simp
       rfl
     · rfl
 #align category_theory.free_monoidal_category.project CategoryTheory.FreeMonoidalCategory.project

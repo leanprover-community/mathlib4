@@ -275,7 +275,12 @@ theorem map_leftUnitor (X : C) :
     rw [← comp_whiskerRight]
     simp
   simp
-#align category_theory.monoidal_functor.map_left_unitor CategoryTheory.MonoidalFunctor.map_leftUnitor
+
+theorem map_leftUnitor' (X : C) :
+    F.map (λ_ X).hom = inv (F.μ (𝟙_ C) X) ≫ (inv F.ε ⊗ 𝟙 (F.obj X)) ≫ (λ_ (F.obj X)).hom := by
+  rw [tensorHom_id]
+  apply map_leftUnitor
+#align category_theory.monoidal_functor.map_left_unitor CategoryTheory.MonoidalFunctor.map_leftUnitor'
 
 @[reassoc]
 theorem map_rightUnitor (X : C) :
@@ -285,6 +290,11 @@ theorem map_rightUnitor (X : C) :
     rw [← MonoidalCategory.whiskerLeft_comp]
     simp
   simp
+
+theorem map_rightUnitor' (X : C) :
+    F.map (ρ_ X).hom = inv (F.μ X (𝟙_ C)) ≫ (𝟙 (F.obj X) ⊗ inv F.ε) ≫ (ρ_ (F.obj X)).hom := by
+  rw [id_tensorHom]
+  apply map_rightUnitor
 #align category_theory.monoidal_functor.map_right_unitor CategoryTheory.MonoidalFunctor.map_rightUnitor
 
 /-- The tensorator as a natural isomorphism. -/
@@ -296,7 +306,7 @@ noncomputable def μNatIso :
       apply F.μIso)
     (by
       intros
-      apply F.toLaxMonoidalFunctor.μ_natural)
+      apply F.μ_natural)
 #align category_theory.monoidal_functor.μ_nat_iso CategoryTheory.MonoidalFunctor.μNatIso
 
 @[simp]

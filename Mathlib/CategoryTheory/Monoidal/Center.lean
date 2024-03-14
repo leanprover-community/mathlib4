@@ -258,6 +258,7 @@ instance : MonoidalCategory (Center C) where
   associator := associator
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor
+  whisker_exchange := by intros; ext; simp [whisker_exchange]
 
 @[simp]
 theorem tensor_fst (X Y : Center C) : (X ⊗ Y).1 = X.1 ⊗ Y.1 :=
