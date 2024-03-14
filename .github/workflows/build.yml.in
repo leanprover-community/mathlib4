@@ -295,18 +295,63 @@ jobs:
 
   lean4checker:
     name: check environments using lean4checker
-    id: lean4checker
-    run: |
-      git clone https://github.com/leanprover/lean4checker
-      cd lean4checker
-      git checkout toolchain/v4.7.0-rc1
-      # Now that the git hash is embedded in each olean,
-      # we need to compile lean4checker on the same toolchain
-      cp ../lean-toolchain .
-      lake build
-      ./test.sh
-      cd ..
-      lake env lean4checker/.lake/build/bin/lean4checker
+    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+    name: BuildJOB_NAME
+    runs-on: RUNS_ON
+    steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+          # Delete all but the 5 most recent toolchains.
+          # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
+          # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
+          cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"' || true
+
+      # The Hoskinson runners may not have jq installed, so do that now.
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@v1.0.1
+
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - uses: actions/checkout@v3
+
+      # We update `Mathlib.lean` as a convenience here,
+      # but verify that this didn't change anything in the `check_imported` job.
+      - name: update Mathlib.lean
+        run: |
+          find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+
+      - name: If using a lean-pr-release toolchain, uninstall
+        run: |
+          if [[ `cat lean-toolchain` =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+            echo "Uninstalling transient toolchain `cat lean-toolchain`"
+            elan toolchain uninstall `cat lean-toolchain`
+          fi
+
+      - name: print lean and lake versions
+        run: |
+          lean --version
+          lake --version
+
+    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+    steps:
+      id: lean4checker
+      run: |
+        git clone https://github.com/leanprover/lean4checker
+        cd lean4checker
+        git checkout toolchain/v4.7.0-rc1
+        # Now that the git hash is embedded in each olean,
+        # we need to compile lean4checker on the same toolchain
+        cp ../lean-toolchain .
+        lake build
+        ./test.sh
+        cd ..
+        lake env lean4checker/.lake/build/bin/lean4checker
 
   final:
     name: Post-CI jobJOB_NAME
