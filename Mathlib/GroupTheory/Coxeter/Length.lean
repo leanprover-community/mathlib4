@@ -294,7 +294,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : 
 
 def IsReduced (ω : List B) : Prop := ℓ (π ω) = ω.length
 
-theorem isReduced_reverse (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
+@[simp] theorem isReduced_reverse (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
   simp [IsReduced]
 
 theorem exists_reduced_word' (w : W) : ∃ ω : List B, cs.IsReduced ω ∧ w = π ω := by
@@ -616,8 +616,7 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
   rw [wordProd_reverse]
   exact cs.prod_rightInvSeq _
 
-private lemma nodup_rightInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω) :
-    List.Nodup (ris ω) := by
+theorem nodup_rightInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (ris ω) := by
   apply List.nodup_iff_get?_ne_get?.mpr
   intro j j' j_lt_j' j'_lt_length dup
   -- dup : get? (rightInvSeq cs ω) j = get? (rightInvSeq cs ω) j'
@@ -684,6 +683,11 @@ private lemma nodup_rightInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω)
   rw [length_eraseIdx_add_one h₇] at h₆
   rw [length_eraseIdx_add_one (by linarith)] at h₆
   linarith
+
+theorem nodup_leftInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (lis ω) := by
+  simp [leftInvSeq_eq_reverse_rightInvSeq_reverse]
+  apply nodup_rightInvSeq_of_reduced
+  simpa
 
 end CoxeterSystem
 
