@@ -204,9 +204,9 @@ where
 
 structure RewriteApplication extends RewriteLemma where
   tactic : String
-  replacement : CodeWithInfos
-  replacementS : String := replacement.stripTags
+  replacement : String
   extraGoals : Array CodeWithInfos
+  prettyLemma : CodeWithInfos
 
 def rewriteCall (rwLemma : RewriteLemma)
     (loc : SubExpr.GoalLocation) (subExpr : Expr) (occ : Option Nat) :
@@ -235,7 +235,7 @@ def rewriteCall (rwLemma : RewriteLemma)
         let extraGoal ← instantiateMVars (← mvarId.getType)
         extraGoals := extraGoals.push (← ppExprTagged extraGoal)
 
-  let replacement ← ppExprTagged (← instantiateMVars rhs)
+  let replacement := (← ppExprTagged (← instantiateMVars rhs)).stripTags
   let lemmaApplication ← instantiateMVars (mkAppN thm mvars)
 
   let location ← (do match loc with
@@ -247,7 +247,11 @@ def rewriteCall (rwLemma : RewriteLemma)
     | none => ""
     | some occ => s! " (config := \{ occs := .pos [{occ}]})"
   let tactic := s! "rw{cfg} [{symm}{← printRewriteLemma lemmaApplication !allAssigned}]{location}"
-  return some { rwLemma with tactic, extraGoals, replacement }
+  -- we pretty print the lemma without `@` before the name
+  let prettyLemma := match ← ppExprTagged (← mkConstWithLevelParams rwLemma.name) with
+    | .tag tag _ => .tag tag (.text rwLemma.name.toString)
+    | code => code
+  return some { rwLemma with tactic, extraGoals, replacement, prettyLemma }
 
 /-- The library results are displayed to the user in sections. Each section corresponds to
 a particular pattern and to whether the lemma is defined in the file that the user is in. -/
@@ -256,36 +260,42 @@ structure Section where
   isLocal : Bool
   results : Array RewriteApplication
 
-def renderResults (results : Array Section)
+def renderResults (results : Array Section) (showNames : Bool)
     (range : Lsp.Range) (doc : FileWorker.EditableDocument) : Html :=
-  let htmls := results.map renderSection;
-  <details «open»={true}>
-    <summary className="mv2 pointer"> Rewrite suggestions: </summary>
-    {.element "div" #[("style", json% {"marginLeft" : "4px"})] htmls}
-  </details>
+  if results.isEmpty then
+    .text "No applicable rewrite lemmata found."
+  else
+    let htmls := results.map renderSection;
+    <details «open»={true}>
+      <summary className="mv2 pointer"> Rewrite suggestions: </summary>
+      {.element "div" #[("style", json% {"marginLeft" : "4px"})] htmls}
+    </details>
 where
   renderSection (sec : Section) : Html :=
-    let core :=
-      .element "ul" #[] <|
-      sec.results.map fun rw =>
-        let button := Html.ofComponent MakeEditLink
-              (.ofReplaceRange doc.meta range rw.tactic none)
-              #[.text rw.replacementS]
-        let extraGoals := rw.extraGoals.concatMap fun extraGoal => #[
-          <br/>,
-          <strong className="goal-vdash">⊢ </strong>,
-          <InteractiveCode fmt={extraGoal}/>];
-        <li>
-          {.element "p" #[] (#[button] ++ extraGoals)}
-        </li>;
     <details «open»={true}>
       <summary className="mv2 pointer">
         {.text "Pattern "}
         <InteractiveCode fmt={sec.pattern}/>
         {.text (if sec.isLocal then " (local results)" else "")}
       </summary>
-      {core}
+      {renderSectionCore sec}
     </details>
+
+  renderSectionCore (sec : Section) : Html :=
+    .element "ul" #[("style", json% { "padding-left" : "30px"})] <|
+    sec.results.map fun rw =>
+      <li> { .element "p" #[] <|
+        let button :=
+          <span className="font-code"> {
+            Html.ofComponent MakeEditLink
+              (.ofReplaceRange doc.meta range rw.tactic none)
+              #[.text rw.replacement] }
+          </span>
+        let extraGoals := rw.extraGoals.concatMap fun extraGoal =>
+          #[<br/>, <strong className="goal-vdash">⊢ </strong>, <InteractiveCode fmt={extraGoal}/>]
+        #[button] ++ extraGoals ++
+          if showNames then #[<br/>, <InteractiveCode fmt={rw.prettyLemma}/>] else #[] }
+      </li>
 
 /-- Return all potenital rewrite lemmata -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
@@ -294,59 +304,67 @@ def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
   let allResults := localResults.map (·.1, true) ++ cachedResults.map (·.1, false)
   return allResults
 
+structure Config where
+  showNames : Bool := false
+  deriving ToJson
+
+structure LibraryRewriteParams extends Config, SelectInsertParams
+  deriving RpcEncodable
+
 def checkLemmata (ass : Array (Array RewriteLemma × Bool))
     (loc : SubExpr.GoalLocation) (subExpr : Expr) (occ : Option Nat) :
-    MetaM (Array Section) := do
+    MetaM (Array Section × Array Section) := do
   let subExprString := (← ppExprTagged subExpr).stripTags
-  let mut bss := #[]
+  let mut results := #[]
+  let mut dedups := #[]
   for (as, isLocal) in ass do
     let mut bs := #[]
     for a in as do
       if let some b ← rewriteCall a loc subExpr occ then
         bs := bs.push b
-
-    bs := dedupLemmata bs subExprString
-    if h : bs.size > 0 then do
+    if h : bs.size > 0 then
       let pattern ← bs[0].pattern
-      bss := bss.push { pattern, isLocal, results := bs }
-  return bss
+      results := results.push { pattern, isLocal, results := bs }
+      bs := dedupLemmata bs subExprString
+      if bs.size > 0 then
+        dedups := dedups.push { pattern, isLocal, results := bs }
+  return (dedups, results)
 where
   /-- Remove duplicate lemmata and lemmata that do not change the expression. -/
   dedupLemmata (lemmata : Array RewriteApplication) (subExprString : String) :
       Array RewriteApplication :=
     let replacements : HashMap String Name := lemmata.foldl (init := .empty) fun map lem =>
-      if lem.extraGoals.isEmpty && !map.contains lem.replacementS then
-        map.insert lem.replacementS lem.name
+      if lem.extraGoals.isEmpty && !map.contains lem.replacement then
+        map.insert lem.replacement lem.name
       else
         map
     lemmata.filter fun lem =>
-      if lem.replacementS == subExprString then
+      if lem.replacement == subExprString then
         false
       else
-        match replacements.find? lem.replacementS with
+        match replacements.find? lem.replacement with
         | some name => name == lem.name
         | none      => true
 
-def getLibraryRewrites (loc : SubExpr.GoalsLocation) : ExceptT String MetaM (Array Section) := do
+def getLibraryRewrites (loc : SubExpr.GoalsLocation) (showNames : Bool) :
+    ExceptT String MetaM (Array Section) := do
   let e ← loc.rootExpr
   let pos := loc.pos
   let loc := loc.loc
   let subExpr ← Core.viewSubexpr pos e
   if subExpr.hasLooseBVars then
-    throwThe _ "rw doesn't work on expressions with bound variables."
+    throwThe String "rw doesn't work on expressions with bound variables."
   let rwLemmas ← getCandidates subExpr
   if rwLemmas.isEmpty then
-    throwThe _ "No rewrite lemmata found."
+    throwThe String "No rewrite lemmata found."
   let positions ← kabstractPositions subExpr e
   let occurrence := if positions.size == 1 then none else
     positions.findIdx? (· == pos) |>.map (· + 1)
-  let results ← checkLemmata rwLemmas loc subExpr occurrence
-  if results.isEmpty then
-    throwThe _ "No applicable rewrite lemmata found."
-  return results
+  let (dedups, results) ← checkLemmata rwLemmas loc subExpr occurrence
+  return if showNames then results else dedups
 
 @[server_rpc_method_cancellable]
-def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
+def LibraryRewrite.rpc (props : LibraryRewriteParams) : RequestM (RequestTask Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
   let some loc := props.selectedLocations.back? |
@@ -363,20 +381,26 @@ def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html
     Meta.withLCtx lctx md.localInstances do
       profileitM Exception "libraryRewrite" (← getOptions) do
         (fun
-          | .ok results => renderResults results props.replaceRange doc
+          | .ok results => renderResults results props.showNames props.replaceRange doc
           | .error msg  => .text msg)
-        <$> getLibraryRewrites loc
+        <$> getLibraryRewrites loc props.showNames
 
 @[widget_module]
-def LibraryRewrite : Component SelectInsertParams :=
+def LibraryRewrite : Component LibraryRewriteParams :=
   mk_rpc_widget% LibraryRewrite.rpc
 
+declare_config_elab elabLibraryRewriteConfig Config
+
 /--
-After writing `rw??`, shift-click an expression in the tactic state.
-This creates a list of rewrite suggestions for the selected expression.
-Clicking on a suggestion will paste the `rw` tactic into the editor.
+To use `rw??`, shift-click an expression in the tactic state.
+This gives a list of rewrite suggestions for the selected expression.
+Clicking on a suggestion will replace `rw??` by a tactic that performs this rewrite.
 -/
-elab stx:"rw??" : tactic => do
+syntax (name := rw??) "rw??" (Lean.Parser.Tactic.config)? : tactic
+
+@[tactic Mathlib.Tactic.LibraryRewrite.rw??]
+def elabRw?? : Elab.Tactic.Tactic := fun stx => do
+  let cfg ← elabLibraryRewriteConfig stx[1]
   let some range := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash LibraryRewrite.javascript)
-    (pure $ json% { replaceRange : $(range) }) stx
+    (pure $ Json.mergeObj (json% { replaceRange : $range }) (json% $cfg)) stx
