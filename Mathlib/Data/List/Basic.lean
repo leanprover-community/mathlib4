@@ -2601,7 +2601,7 @@ theorem foldl_eq_of_comm_of_assoc : ∀ a b l, foldl f a (b :: l) = f b (foldl f
   | a, b, nil => hcomm.comm a b
   | a, b, c :: l => by
     simp only [foldl_cons]
-    rw [← foldl_eq_of_comm_of_assoc .., right_comm _ hcomm hassoc]; rfl
+    rw [← foldl_eq_of_comm_of_assoc .., Binary.right_comm _ hcomm hassoc]; rfl
 #align list.foldl_eq_of_comm_of_assoc List.foldl_eq_of_comm_of_assoc
 
 theorem foldl_eq_foldr : ∀ a l, foldl f a l = foldr f a l
