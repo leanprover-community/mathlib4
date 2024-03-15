@@ -119,7 +119,7 @@ structure Matrix.IsCoxeter : Prop where
   diagonal : ∀ i : B, M i i  = 1 := by aesop
   off_diagonal : ∀ i i' : B, i ≠ i' → M i i' ≠ 1 := by aesop
 
-theorem Matrix.reindex_isCoxeter {B B' : Type*} (M : Matrix B B ℕ)
+theorem Matrix.reindex_isCoxeter {B B' : Type*} [DecidableEq B'] (M : Matrix B B ℕ)
     (e : B ≃ B') (hM : M.IsCoxeter) : (Matrix.reindex e e M).IsCoxeter where
   symmetric := by dsimp only [Matrix.IsSymm]; rw [Matrix.transpose_reindex, hM.symmetric]
   diagonal := by intro b; dsimp [Matrix.reindex]; exact hM.diagonal (e.symm b)
@@ -589,7 +589,7 @@ def lift {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) : W →* G :
       (show ∀ i i' : B, ((cs.restrictUnit hf) i * (cs.restrictUnit hf) i') ^ M i i' = 1 by
     intro i i'
     apply Units.ext
-    simp
+    simp only [Units.val_pow_eq_pow_val, Units.val_mul, Units.val_one]
     exact hf i i'))
 
 private theorem toMonoidHom_symm (a : PresentedGroup (CoxeterGroup.Relations.toSet M)):
@@ -618,7 +618,7 @@ local prefix:100 "π" => cs.wordProd
 @[simp] theorem wordProd_cons (i : B) (ω : List B) :
     π (i :: ω) = s i * π ω := by simp [wordProd]
 
-theorem wordProd_concat (i : B) (ω : List B) :
+@[simp] theorem wordProd_concat (i : B) (ω : List B) :
     π (ω.concat i) = π ω * s i := by simp [wordProd]
 
 @[simp] theorem wordProd_append (ω ω' : List B) :
@@ -636,12 +636,12 @@ private lemma freeGroup_wordProd (ω : List (B × Bool)) :
   induction' ω with x ω' ih
   · simp [← FreeGroup.one_eq_mk]
   · rw [← List.singleton_append, ← FreeGroup.mul_mk, QuotientGroup.mk_mul, ← ih]
-    simp
+    simp only [singleton_append, map_cons, comp_apply, prod_cons, mul_left_inj]
     rcases x with ⟨i, b⟩
     rcases b
     · have : [(i, false)] = FreeGroup.invRev [(i, true)] := by simp [FreeGroup.invRev]
       rw [this, ← FreeGroup.inv_mk, ← FreeGroup.of, QuotientGroup.mk_inv]
-      simp
+      dsimp
       rw [PresentedGroup.of]
       apply eq_inv_of_mul_eq_one_right
       rw [← QuotientGroup.mk_mul]
@@ -674,10 +674,10 @@ theorem wordProd_surjective : Surjective (cs.wordProd) := by
     _ = cs.mulEquiv.symm (prod (List.map
             ((@PresentedGroup.of B (CoxeterGroup.Relations.toSet M)) ∘ Prod.fst)
         (FreeGroup.toWord w)))          := by rw[map_list_prod]
-    _ = cs.mulEquiv.symm (QuotientGroup.mk (FreeGroup.mk (FreeGroup.toWord w)))
-                                        := by rw[cs.freeGroup_wordProd]
-    _ = cs.mulEquiv.symm (QuotientGroup.mk w)
-                                        := by rw[FreeGroup.mk_toWord]
+    _ = cs.mulEquiv.symm (QuotientGroup.mk (FreeGroup.mk (FreeGroup.toWord w))) := by
+                                              rw[cs.freeGroup_wordProd]
+    _ = cs.mulEquiv.symm (QuotientGroup.mk w) := by
+                                              rw[FreeGroup.mk_toWord]
     _ = u                               := by rw[hw]; dsimp [v]; simp
 
 end CoxeterSystem
