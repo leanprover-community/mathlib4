@@ -119,7 +119,7 @@ structure Matrix.IsCoxeter : Prop where
   diagonal : ∀ i : B, M i i  = 1 := by aesop
   off_diagonal : ∀ i i' : B, i ≠ i' → M i i' ≠ 1 := by aesop
 
-theorem Matrix.reindex_isCoxeter {B B' : Type*} [DecidableEq B'] (M : Matrix B B ℕ)
+theorem Matrix.reindex_isCoxeter {B B' : Type*} (M : Matrix B B ℕ)
     (e : B ≃ B') (hM : M.IsCoxeter) : (Matrix.reindex e e M).IsCoxeter where
   symmetric := by dsimp only [Matrix.IsSymm]; rw [Matrix.transpose_reindex, hM.symmetric]
   diagonal := by intro b; dsimp [Matrix.reindex]; exact hM.diagonal (e.symm b)
@@ -618,7 +618,7 @@ local prefix:100 "π" => cs.wordProd
 @[simp] theorem wordProd_cons (i : B) (ω : List B) :
     π (i :: ω) = s i * π ω := by simp [wordProd]
 
-@[simp] theorem wordProd_concat (i : B) (ω : List B) :
+theorem wordProd_concat (i : B) (ω : List B) :
     π (ω.concat i) = π ω * s i := by simp [wordProd]
 
 @[simp] theorem wordProd_append (ω ω' : List B) :
