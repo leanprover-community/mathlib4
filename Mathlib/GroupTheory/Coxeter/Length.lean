@@ -3,27 +3,21 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
-import Mathlib.GroupTheory.SpecificGroups.Coxeter
-import Mathlib.Data.ZMod.Defs
-import Mathlib.RepresentationTheory.Basic
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Complex.Exponential
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.GroupTheory.Coxeter.Basic
+import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Int.Parity
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Group
 
 /-!
-# Properties of Coxeter groups
-This file states and proves some properties of Coxeter systems.
-
+# The length function, reduced words, reflections, inversions, and inversion sequences
 Throughout this file, `B` is a type and `M : Matrix B B ℕ` is a Coxeter matrix.
 `cs : CoxeterSystem M W` is a Coxeter system; that is, `W` is a group, and `cs` holds the data
 of a group isomorphism `W ≃* Matrix.CoxeterGroup M`, where `Matrix.CoxeterGroup M` refers to
 the quotient of the free group on `B` by the Coxeter relations given by the matrix `M`. See
-`Mathlib.GroupTheory.SpecificGroups.Coxeter` for more details.
+`Mathlib.GroupTheory.Coxeter.Basic` for more details.
 
-We define the simple reflections $s_i$ of the Coxeter group $W$ for `i : B`. Using this, we define
-the length function $\ell : W → \mathbb{N}$, and we prove that
+We define the length function $\ell : W → \mathbb{N}$, and we prove that
 $\ell (w_1 w_2) \leq \ell (w_1) + \ell (w_2)$
 and that $\ell (w_1 w_2)$ and $\ell (w_1) + \ell (w_2)$ have the same parity.
 
@@ -33,258 +27,43 @@ $t = u s_i u^{-1}$, where $u \in W$ and $s_i$ is a simple reflection. We say tha
 is a *left inversion* of an element $w \in W$ if $\ell(t w) < \ell (w)$, and we say it is a
 *right inversion* of $w$ if $\ell(w t) > \ell(w)$.
 
-We prove that, given a reduced word for $w$, one can recover the set of left inversions or right
-inversions by taking the *inversion sequence* of the reduced word. We prove that $\ell(w)$ is
-equal to the number of left inversions of $w$ and equal to the number of right inversions of $w$.
-We also prove the *deletion property*: every non-reduced word for an element $w$ can be decreased
-in length by deleting two of its simple reflections.
-
-Central to our approach is the *standard geometric representation* of $W$, which is a faithful
-representation of $W$ on the free vector space over `B`. Every reflection of $W$ acts by a
-reflection in the standard geometric representation. We also define the associated set of *roots*
-(which is not necessarily a root system in the sense of `Mathlib.LinearAlgebra.RootSystem`),
-and prove that they correspond two-to-one to the reflections of $W$.
+Given a word, we define its *left inversion sequence* and its *right inversion sequence*. We prove
+that if a word is reduced, then both of its inversion sequences contain no duplicates.
+In fact, the right (respectively, left) inversion sequence of a reduced word for $w$ consists of all
+of the right (respectively, left) inversions of $w$ in some order, but we do not prove that in this
+file.
 
 ## Main definitions
-* `cs.simpleReflection `: The simple reflection corresponding to an index `i : B`.
-* `cs.lift`: Given `f : B → G`, where `G` is a monoid and `f` is a function whose values satisfy
-the Coxeter relations, extend it to a monoid homomorphism `f' : W → G` satisfying
-`f' (s i) = f i` for all `i`.
-* `cs.wordProd`: Given a `List B`, returns the product of the corresponding simple reflections.
 * `cs.length`
 * `cs.IsReflection`
 * `cs.IsLeftInversion`
 * `cs.IsRightInversion`
-* `cs.standardBilinForm`: The invariant bilinear form associated to the standard geometric
-representation.
-* `cs.standardGeometricRepresentation`: The standard geometric representation of `W`. This has type
-`Representation ℝ W (B →₀ ℝ)`.
-* `cs.roots`
-* `cs.posRoots`
-* `cs.negRoots`
 * `cs.leftInvSeq`
 * `cs.rightInvSeq`
 
-## Implementation notes
-In most texts on Coxeter groups, each entry $M_{i,i'}$ of the Coxeter matrix can be either a positive
-integer or $\infty$. A value of $\infty$ indicates that there is no relation between the
-corresponding simple reflections. In our treatment of Coxeter groups, we use the value $0$ instead
-of $\infty$. This decision has two fortunate consequences. First, the Coxeter relation
-$(s_i s_{i'})^{M_{i, i'}}$ is automatically the identity if $M_{i, i'} = 0$. Second, when we define
-the standard bilinear form by $\langle \alpha_i, \alpha_{i'}\rangle = - \cos(\pi / M_{i,i'})$, Lean
-computes $- \cos(\pi / M_{i,i'})$ to have the correct value of $-1$ if $M_{i, i'} = 0$.
-
 ## References
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*][bjorner2005]
-
-## TODO
-* Introduce some ways to actually construct some Coxeter groups. For example, given a Coxeter matrix
-$M : B \times B \to \mathbb{N}$, a real vector space $V$, a basis $\{\alpha_i : i \in B\}$
-and a bilinear form $\langle \cdot, \cdot \rangle \colon V \times V \to \mathbb{R}$ satisfying
-$$\langle \alpha_i, \alpha_{i'}\rangle = - \cos(\pi / M_{i,i'}),$$ one can form the subgroup of
-$GL(V)$ generated by the reflections in the $\alpha_i$, and it is a Coxeter group. We can use this
-to combinatorially describe the Coxeter groups of type $A$, $B$, $D$, and $I$.
-* State and prove Matsumoto's theorem.
-* Classify the finite Coxeter groups.
 -/
 
 noncomputable section
 
 namespace CoxeterSystem
 
-open List Matrix Function Real
+open List Matrix Function
 
 variable {B : Type*} [DecidableEq B]
 variable {M : Matrix B B ℕ}
 variable {W : Type*} [Group W]
 variable (cs : CoxeterSystem M W)
 
-/-! ### Simple reflections and lifting homomorphisms -/
-
-/-- The simple reflection of `W` corresponding to the index `i`. -/
-def simpleReflection (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
-
 local prefix:100 "s" => cs.simpleReflection
-
-private lemma coxeterGroup_simple_mul_self (i : B) :
-    (QuotientGroup.mk ((FreeGroup.of i) * (FreeGroup.of i)) : CoxeterGroup M) = 1 := by
-  have : (FreeGroup.of i) * (FreeGroup.of i) ∈ CoxeterGroup.Relations.toSet M := by
-    use (i, i)
-    dsimp [CoxeterGroup.Relations.ofMatrix]
-    rw [cs.isCoxeter.diagonal i, pow_one]
-  apply (QuotientGroup.eq_one_iff _).mpr
-  exact Subgroup.subset_normalClosure this
-
-@[simp] theorem simple_mul_self (i : B) : s i * s i = 1 := by
-  dsimp [simpleReflection]
-  rw [← _root_.map_mul, PresentedGroup.of, ← QuotientGroup.mk_mul]
-  rw [cs.coxeterGroup_simple_mul_self i]
-  simp
-
-@[simp] theorem mul_simple_mul_self {w : W} (i : B) : w * s i * s i = w := by
-  simp [mul_assoc]
-
-@[simp] theorem simple_sqr (i : B) : s i ^ 2 = 1 := by
-  rw [pow_two]
-  exact cs.simple_mul_self i
-
-@[simp] theorem simple_inv (i : B) : (s i)⁻¹ = s i :=
-  (eq_inv_of_mul_eq_one_right (cs.simple_mul_self i)).symm
-
-@[simp] theorem simple_mul_pow (i i' : B) : ((s i) * (s i')) ^ M i i' = 1 := by
-  dsimp [simpleReflection]
-  rw [← _root_.map_mul, ← map_pow, PresentedGroup.of, PresentedGroup.of,
-      ← QuotientGroup.mk_mul, ← QuotientGroup.mk_pow]
-  have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ CoxeterGroup.Relations.toSet M := by
-    use (i, i')
-    rfl
-  have : (QuotientGroup.mk ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : CoxeterGroup M) = 1 := by
-    apply (QuotientGroup.eq_one_iff _).mpr
-    exact Subgroup.subset_normalClosure this
-  rw [this]
-  simp
-
-@[simp] theorem simple_mul_pow' (i i' : B) : ((s i') * (s i)) ^ M i i' = 1 := by
-  rw [cs.isCoxeter.symmetric.apply i' i]
-  exact cs.simple_mul_pow i' i
-
-/-- The proposition that the values of the function `f : B → G` satisfy the Coxeter relations
-corresponding to the matrix `M`. -/
-def IsLiftable {G : Type*} [Monoid G] (M : Matrix B B ℕ) (f : B → G) : Prop :=
-    ∀ i i' : B, (f i * f i') ^ M i i' = 1
-
-private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) :
-    ∀ r ∈ CoxeterGroup.Relations.toSet M, (FreeGroup.lift f) r = 1 := by
-  rintro r ⟨⟨i, i'⟩, rfl⟩
-  dsimp [CoxeterGroup.Relations.ofMatrix]
-  rw [map_pow, _root_.map_mul, FreeGroup.lift.of, FreeGroup.lift.of]
-  exact hf i i'
-
-private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
-  MonoidHom.comp (PresentedGroup.toGroup (relations_liftable hf)) cs.mulEquiv.toMonoidHom
-
-private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) : B → Gˣ :=
-  fun i ↦ {
-    val := f i,
-    inv := f i,
-    val_inv := by
-      have := hf i i
-      rwa [cs.isCoxeter.diagonal, pow_one] at this,
-    inv_val := by
-      have := hf i i
-      rwa [cs.isCoxeter.diagonal, pow_one] at this
-  }
-/-- Extend the function `f : B → G` to a monoid homomorphism
-`f' : W → G` satisfying `f' (s i) = f i` for all `i`.
--/
-def lift {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
-  MonoidHom.comp (Units.coeHom G) (cs.groupLift
-      (show ∀ i i' : B, ((cs.restrictUnit hf) i * (cs.restrictUnit hf) i') ^ M i i' = 1 by
-    intro i i'
-    apply Units.ext
-    simp
-    exact hf i i'))
-
-private theorem toMonoidHom_symm (a : PresentedGroup (CoxeterGroup.Relations.toSet M)):
-    (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (CoxeterGroup.Relations.toSet M))
-    ((MulEquiv.symm cs.mulEquiv) a) = a := calc
-  _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
-  _ = _                                           := by simp
-
-theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G}
-    (hf : IsLiftable M f) (i : B) : cs.lift hf (s i) = f i := by
-  dsimp only [simpleReflection, lift, groupLift, MonoidHom.comp_apply]
-  rw [← MonoidHom.toFun_eq_coe]
-  rw [toMonoidHom_symm cs (PresentedGroup.of i)]
-  simp
-  rfl
-
-/-! ### Words and length -/
-/-- The product of the simple reflections of `W` corresponding to the indices in `ω`.-/
-def wordProd (ω : List B) : W := prod (map cs.simpleReflection ω)
-
 local prefix:100 "π" => cs.wordProd
 
-@[simp] theorem wordProd_nil :
-    π [] = 1 := by simp [wordProd]
-
-@[simp] theorem wordProd_cons (i : B) (ω : List B) :
-    π (i :: ω) = s i * π ω := by simp [wordProd]
-
-@[simp] theorem wordProd_concat (i : B) (ω : List B) :
-    π (ω.concat i) = π ω * s i := by simp [wordProd]
-
-@[simp] theorem wordProd_append (ω ω' : List B) :
-    π (ω ++ ω') = π ω * π ω' := by simp [wordProd]
-
-@[simp] theorem wordProd_reverse (ω : List B) :
-    π (reverse ω) = (π ω)⁻¹ := by
-  induction' ω with x ω' ih
-  · simp
-  · simp; exact ih
-
-private lemma freeGroup_wordProd (ω : List (B × Bool)) :
-    prod (map ((@PresentedGroup.of B (CoxeterGroup.Relations.toSet M)) ∘ Prod.fst) ω)
-    = QuotientGroup.mk (FreeGroup.mk ω) := by
-  induction' ω with x ω' ih
-  · simp [← FreeGroup.one_eq_mk]
-  · rw [← List.singleton_append, ← FreeGroup.mul_mk, QuotientGroup.mk_mul, ← ih]
-    simp
-    rcases x with ⟨i, b⟩
-    rcases b
-    · have : [(i, false)] = FreeGroup.invRev [(i, true)] := by simp [FreeGroup.invRev]
-      rw [this, ← FreeGroup.inv_mk, ← FreeGroup.of, QuotientGroup.mk_inv]
-      simp
-      rw [PresentedGroup.of]
-      apply eq_inv_of_mul_eq_one_right
-      rw [← QuotientGroup.mk_mul]
-      exact cs.coxeterGroup_simple_mul_self i
-    · rfl
-
-theorem wordProd_surjective : Surjective (cs.wordProd) := by
-  intro u
-  let v : CoxeterGroup M := cs.mulEquiv.toFun u
-  rcases (QuotientGroup.mk'_surjective _) v with ⟨w, hw⟩
-  simp at hw -- hw: ↑w = v
-  let ω := List.map Prod.fst w.toWord
-  use ω
-  simp [ω, wordProd]
-  calc
-    prod (List.map (simpleReflection cs ∘ Prod.fst) (FreeGroup.toWord w))
-    _ = prod (List.map (
-          cs.mulEquiv.symm
-          ∘ (@PresentedGroup.of B (CoxeterGroup.Relations.toSet M))
-          ∘ Prod.fst)
-        (FreeGroup.toWord w))           := by congr
-    _ = prod (List.map (
-          cs.mulEquiv.symm
-          ∘ ((@PresentedGroup.of B (CoxeterGroup.Relations.toSet M))
-          ∘ Prod.fst))
-        (FreeGroup.toWord w))           := by congr
-    _ = prod (List.map cs.mulEquiv.symm
-        (List.map ((@PresentedGroup.of B (CoxeterGroup.Relations.toSet M)) ∘ Prod.fst)
-          (FreeGroup.toWord w)))        := by rw[List.map_map]
-    _ = cs.mulEquiv.symm (prod (List.map
-            ((@PresentedGroup.of B (CoxeterGroup.Relations.toSet M)) ∘ Prod.fst)
-        (FreeGroup.toWord w)))          := by rw[map_list_prod]
-    _ = cs.mulEquiv.symm (QuotientGroup.mk (FreeGroup.mk (FreeGroup.toWord w)))
-                                        := by rw[cs.freeGroup_wordProd]
-    _ = cs.mulEquiv.symm (QuotientGroup.mk w)
-                                        := by rw[FreeGroup.mk_toWord]
-    _ = u                               := by rw[hw]; dsimp [v]; simp
-
-
-instance (w : W) : DecidablePred (fun n ↦ ∃ ω : List B, ω.length = n ∧ π ω = w)
-  := Classical.decPred _
-
-private theorem exists_word_with_prod (w : W) : ∃ n : ℕ, ∃ ω : List B, ω.length = n ∧ π ω = w := by
-  rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
-  use ω.length, ω
+/-! ### Length -/
 
 /-- The length of `w`; i.e., the minimum number of simple reflections that
 must be multiplied to form `w`. -/
 def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
-
 local prefix:100 "ℓ" => cs.length
 
 theorem exists_reduced_word (w : W) : ∃ ω : List B, ω.length = ℓ w ∧ w = π ω := by
@@ -536,7 +315,7 @@ private theorem isReduced_take_and_drop {ω : List B} (rω : cs.IsReduced ω) (j
   have length_add_ge := calc
     ℓ (π (ω.take j)) + ℓ (π (ω.drop j))
     _ ≥ ℓ (π ω)                                              := by
-        rw[mul_take_drop]
+        rw [mul_take_drop]
         exact cs.length_mul_le _ _
     _ = ω.length                                             := rω
     _ = (ω.take j).length + (ω.drop j).length                := by
@@ -549,11 +328,11 @@ private theorem isReduced_take_and_drop {ω : List B} (rω : cs.IsReduced ω) (j
   · unfold IsReduced
     linarith
 
-theorem isReduced_take {ω : List B} (rω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.take j) := by
-  exact (isReduced_take_and_drop _ rω _).1
+theorem isReduced_take {ω : List B} (rω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.take j) :=
+  (isReduced_take_and_drop _ rω _).1
 
-theorem isReduced_drop {ω : List B} (rω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.drop j) := by
-  exact (isReduced_take_and_drop _ rω _).2
+theorem isReduced_drop {ω : List B} (rω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.drop j) :=
+  (isReduced_take_and_drop _ rω _).2
 
 theorem alternatingWord_not_reduced (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) (hm : m > M i i') :
     ¬ cs.IsReduced (alternatingWord i i' m) := by
@@ -906,258 +685,6 @@ private lemma nodup_rightInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω)
   rw [length_eraseIdx_add_one (by linarith)] at h₆
   linarith
 
-
-/-! ### The standard geometric representation
-Given a Coxeter group `W` whose simple reflections are indexed by a set `B`, we define
-the standard geometric representation of `W`, which is a representation of `W` with underlying
-vector space `B →₀ ℝ`. We then use this to define the set of roots, which is a subset of
-`B →₀ ℝ`. The roots correspond two-to-one to the reflections of `W`.
--/
-
-def simpleRoot (i : B) : B →₀ ℝ := Finsupp.single i 1
-local prefix:100 "α" => simpleRoot
-
-/-- The standard bilinear form on `B →₀ ℝ`. Given by `⟪αᵢ, αⱼ⟫ = -cos (π / Mᵢⱼ)`
-for `i j : B`, where {αᵢ} is the standard basis of `B →₀ ℝ` and `M` is the Coxeter matrix.
-This is positive definite if and only if the associated Coxeter group is finite. -/
-def standardBilinForm (M : Matrix B B ℕ) : LinearMap.BilinForm ℝ (B →₀ ℝ) :=
-    (Finsupp.lift ((B →₀ ℝ) →ₗ[ℝ] ℝ) ℝ B)
-        (fun i ↦ ((Finsupp.lift ℝ ℝ B)
-            (fun i' ↦ -cos (Real.pi / M i i'))))
-
-local notation:max "⟪"  a  ","  b  "⟫" => standardBilinForm M a b
-
-@[simp] theorem standardBilinForm_simpleRoot_self (i : B) :
-    ⟪α i, α i⟫ = 1 := by simp [standardBilinForm, simpleRoot, cs.isCoxeter.diagonal i]
-
-@[simp] theorem standardBilinForm_simpleRoot_simpleRoot (i i' : B) :
-    ⟪α i, α i'⟫ = - cos (Real.pi / M i i') := by simp [standardBilinForm, simpleRoot]
-
-theorem standardBilinForm_symm :
-    LinearMap.IsSymm (standardBilinForm M) := by
-  apply LinearMap.isSymm_iff_eq_flip.mpr
-  apply (Finsupp.basisSingleOne).ext
-  intro i
-  apply (Finsupp.basisSingleOne).ext
-  intro i'
-  simp [standardBilinForm]
-  rw [cs.isCoxeter.symmetric.apply i i']
-
-/-- The orthogonal reflection in the vector `v` under the standard bilinear form.
--/
-def orthoReflection (cs : CoxeterSystem M W) (v : B →₀ ℝ) :
-    (B →₀ ℝ) →ₗ[ℝ] (B →₀ ℝ) := sorry
-
-theorem orthoReflection_sqr_eq_id {v : B →₀ ℝ} (hv : ⟪v, v⟫ = 1) :
-    (cs.orthoReflection v) * (cs.orthoReflection v) = LinearMap.id := by
-  sorry
-
-theorem orthoReflection_eq_iff {v v' : B →₀ ℝ} (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) :
-    cs.orthoReflection v = cs.orthoReflection v' ↔ ∃ μ : ℝ, v' = μ • v := by
-  sorry
-
-/-- The standard geometric representation on `B →₀ ℝ`. For `i : B`, the simple reflection `sᵢ`
-acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`.
--/
-def standardGeometricRepresentation (cs : CoxeterSystem M W) : Representation ℝ W (B →₀ ℝ) := sorry
-
-alias SGR := standardGeometricRepresentation
-
-theorem SGR_simple (i : B) : cs.SGR (s i) = cs.orthoReflection (α i) := by
-  sorry
-
-theorem SGR_simple_simpleRoot (i i' : B) :
-    cs.SGR (s i) (α i') = α i' + ((2 : ℝ) * cos (Real.pi / M i i')) • α i := by
-  sorry
-
-theorem SGR_simple_simpleRoot_self (i : B) : cs.SGR (s i) (α i) = -α i := by
-  sorry
-
-theorem SGR_bilin_eq_bilin (w : W) (v v' : B →₀ ℝ) : ⟪cs.SGR w v, cs.SGR w v'⟫ = ⟪v, v'⟫ := by
-  sorry
-
-theorem SGR_alternatingWord_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) :
-    cs.SGR (π (alternatingWord i i' m)) (α i) = if Even m
-      then (sin ((m + 1) * Real.pi / M i i') / sin (Real.pi / M i i')) • (α i)
-        + (sin (m * Real.pi / M i i') / sin (Real.pi / M i i')) • (α i')
-      else (sin (m * Real.pi / M i i') / sin (Real.pi / M i i')) • (α i)
-        + (sin ((m + 1) * Real.pi / M i i') / sin (Real.pi / M i i')) • (α i') := by
-  sorry
-
-theorem SGR_alternatingWord_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' = 0) :
-    cs.SGR (π (alternatingWord i i' m)) (α i) = if Even m
-      then (m + 1) • (α i) + m • (α i')
-      else m • (α i) + (m + 1) • (α i') := by
-  sorry
-
-theorem SGR_alternatingWord_simpleRoot_pos (i i' : B) (m : ℕ) (hM : m < M i i' ∨ M i i' = 0) :
-    ∃ (μ μ' : ℝ), μ ≥ 0 ∧ μ' ≥ 0 ∧
-      cs.SGR (π (alternatingWord i i' m)) (α i) = μ • (α i) + μ' • (α i') := by
-  sorry
-
-/-- The roots of the standard geometric representation; i.e. the vectors that can be written
-in the form w αᵢ, where `w : W` and {αᵢ} is the standard basis of `B →₀ ℝ`. If `W` is infinite,
-then this is not a root system in the sense of `Mathlib.LinearAlgebra.RootSystem` because it is
-infinite and because `B →₀ ℝ` is not an inner product space.
--/
-def roots : Set (B →₀ ℝ) := {v : B →₀ ℝ | ∃ w : W, ∃ i : B, v = cs.SGR w (α i)}
-
-/-- The roots that can be written as a nonnegative linear combination of the standard basis vectors
-`αᵢ`.-/
-def posRoots : Set (B →₀ ℝ) := cs.roots ∩ {v : B →₀ ℝ | ∀ i : B, v i ≥ 0}
-/-- The roots that can be written as a nonpositive linear combination of the standard basis vectors
-`αᵢ`.-/
-def negRoots : Set (B →₀ ℝ) := cs.roots ∩ {v : B →₀ ℝ | ∀ i : B, v i ≤ 0}
-
-
-@[simp] theorem roots_invariant (w : W) (v : B →₀ ℝ) : cs.SGR w v ∈ cs.roots ↔ v ∈ cs.roots := by
-  sorry
-
-@[simp] theorem roots_eq_neg_roots : -cs.roots = cs.roots := by
-  sorry
-
-theorem negRoots_eq_neg_posRoots : cs.negRoots = -cs.posRoots := by
-  sorry
-
-theorem SGR_simpleRoot_mem_posRoot_of (w : W) (i : B) :
-    ℓ (w * s i) = ℓ w + 1 → cs.SGR w (α i) ∈ cs.posRoots := by
-  sorry
-
-theorem SGR_simpleRoot_mem_negRoot_of (w : W) (i : B) :
-    ℓ (w * s i) + 1 = ℓ w → cs.SGR w (α i) ∈ cs.negRoots := by
-  sorry
-
-theorem SGR_simpleRoot_mem_posRoot_iff (w : W) (i : B) :
-    ℓ (w * s i) = ℓ w + 1 ↔ cs.SGR w (α i) ∈ cs.posRoots := by
-  sorry
-
-theorem SGR_simpleRoot_mem_negRoot_iff (w : W) (i : B) :
-    ℓ (w * s i) + 1 = ℓ w ↔ cs.SGR w (α i) ∈ cs.negRoots := by
-  sorry
-
-theorem root_pos_or_neg : cs.roots = cs.posRoots ∪ cs.negRoots := by
-  sorry
-
-theorem root_not_pos_and_neg : cs.posRoots ∩ cs.negRoots = ∅ := by
-  sorry
-
-theorem SGR_injective : Injective cs.SGR := by
-  sorry
-
-def reflectionToRoot : cs.reflections ≃ cs.posRoots := sorry
-
-theorem reflection_by_smul (w : W) (v : B →₀ ℝ) :
-    cs.orthoReflection (cs.SGR w v) = (cs.SGR w) ∘ (cs.orthoReflection v) ∘ (cs.SGR w⁻¹) := by
-  sorry
-
-theorem reflection_by_root (γ : cs.posRoots) :
-    cs.orthoReflection γ = cs.SGR (cs.reflectionToRoot.invFun γ) := by
-  sorry
-
-theorem isRightInversion_iff (w : W) (t : cs.reflections) : cs.IsRightInversion w t ↔
-    cs.SGR w (cs.reflectionToRoot.toFun t) ∈ cs.negRoots := by
-  sorry
-
-/-! ### The (strong) exchange properties and deletion property -/
-
-/-- The (strong) right exchange property:
-Let $w = s_{i_1} \cdots s_{i_\ell}$ be a reduced expression for an element $w \in W$
-and let $t \in W$.
-The following are equivalent:
-
-* $t$ is a right inversion of $w$.
-* $t$ appears in the right inversion sequence of the word $s_{i_1} \cdots s_{i_\ell}$.
-* There exists $j$ with $1 \leq j \leq \ell$ such that
-  $$wt = s_{i_1} \cdots \widehat{s_{i_j}} \cdots s_{i_\ell}$$
-  (i.e. the result of multiplying all of the simple reflections $s_{i_1}, \ldots, s_{i_\ell}$
-  except $s_{i_j}$).
-\end{enumerate}
--/
-theorem right_exchange_property {ω : List B} (t : W) (rω : cs.IsReduced ω) :
-    List.TFAE [
-      cs.IsRightInversion (π ω) t,
-      t ∈ ris ω,
-      ∃ j < ω.length, (π ω) * t = π (ω.eraseIdx j)
-    ] := by
-  sorry
-
-/-- The (strong) left exchange property:
-Let $w = s_{i_1} \cdots s_{i_\ell}$ be a reduced expression for an element $w \in W$
-and let $t \in W$.
-The following are equivalent:
-
-* $t$ is a left inversion of $w$.
-* $t$ appears in the left inversion sequence of the word $s_{i_1} \cdots s_{i_\ell}$.
-* There exists $j$ with $1 \leq j \leq \ell$ such that
-  $$tw = s_{i_1} \cdots \widehat{s_{i_j}} \cdots s_{i_\ell}$$
-  (i.e. the result of multiplying all of the simple reflections $s_{i_1}, \ldots, s_{i_\ell}$
-  except $s_{i_j}$).
--/
-theorem left_exchange_property {ω : List B} (t : W) (rω : cs.IsReduced ω) :
-    List.TFAE [
-      cs.IsLeftInversion (π ω) t,
-      t ∈ lis ω,
-      ∃ j < ω.length, t * (π ω) = π (ω.eraseIdx j)
-    ] := by
-  sorry
-
-theorem nodup_rightInvSeq_iff (ω : List B) :
-    List.Nodup (ris ω) ↔ cs.IsReduced ω := by
-  sorry
-
-theorem nodup_leftInvSeq_iff (ω : List B) :
-    List.Nodup (lis ω) ↔ cs.IsReduced ω := by
-  sorry
-
-/-- The deletion property:
-If $s_{i_1} \cdots s_{i_\ell}$ is not a reduced expression, then there are $i, j$ with
-$1 \leq j < j' \leq \ell$ such that
-$$s_{i_1} \cdots s_{i_\ell} =
-s_{i_1} \cdots \widehat{s_{i_j}} \cdots \widehat{s_{i_{j'}}} \cdots s_{i_\ell}.$$
--/
-theorem deletion_property (ω : List B) (nrω : ¬ cs.IsReduced ω) :
-    ∃ j' < ω.length, ∃ j < j', π ((ω.eraseIdx j').eraseIdx j) = π ω := by
-  sorry
-
 end CoxeterSystem
-/-
-TODO: Inversion set is finite. Size of inversion set = length.
-Matsumoto's theorem.
-Simple reflections are distinct.
-Order of s_i s_j is exactly M i j.
 
-Eₙ for n > 8.
-
-Irreducibility. Irreducible components.
-Parabolic subgroups.
-Poincare series.
-
-The standard geometric representation. It is faithful.
-Height of a root.
-Standard geometric representation is orthogonal if and only if W is finite.
-Classification of irreducible finite Coxeter groups.
-Classification of irreducible affine Coxeter groups.
-
-Small roots.
-Coxeter groups are automatic.
-
-Long element has all reflections as inversions. Long element is an involution.
-Properties of Coxeter number.
-
-The weak order. Ungar moves. Ungar's problem.
-
-Bruhat order.
-
-Combinatorially describe finite and affine Coxeter groups of types A, B, C, D.
-Interpret inversions, descents, length, convex sets, parabolic subgroups, Bruhat order.
-
-Schubert polynomials.
-
-Associated hyperplane arrangements and partition lattices and their characteristic polynomials.
-Folding.
-Convex sets.
-Coxeter elements, c-sorting words.
-Powers of Coxeter elements in infinite groups are reduced.
-Futuristic Coxeter groups.
--/
 end
