@@ -176,47 +176,89 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
   rwa [mem_accepts', evalFrom_of_append, evalFrom_of_append, h, hc]
 #align DFA.pumping_lemma DFA.pumping_lemma
 
-section Maps
+section Comap
 
-universe u' v'
-variable {α' : Type u'} {σ' : Type v'} (f : α ≃ α') (g : σ ≃ σ') (s : σ') (a : α') (x : List α')
+variable {α' : Type*} (f : α' → α)
 
-/-- Transforms the alphabet and states of a DFA. -/
+/-- Transforms the alphabet of a DFA. -/
 @[simps]
-def map (f : α' → α) (g : σ → σ') (h : σ' → σ) : DFA α' σ' where
-  step s a := g (M.step (h s) (f a))
-  start := g M.start
-  accept := g '' M.accept
-
-/-- Lifts equivalences on the alphabet and states to an equivalence on DFAs. -/
-def equiv (f : α ≃ α') (g : σ ≃ σ') : DFA α σ ≃ DFA α' σ' where
-  toFun M := M.map f.symm g g.symm
-  invFun M := M.map f g.symm g
-  left_inv M := by simp [map]
-  right_inv M := by simp [map]
+def comap : DFA α' σ where
+  step s a := M.step s (f a)
+  start := M.start
+  accept := M.accept
 
 @[simp]
-theorem equiv_step : (equiv f g M).step s a = g (M.step (g.symm s) (f.symm a)) := by simp [equiv]
-
-@[simp] theorem equiv_start : (equiv f g M).start = g M.start := by simp [equiv]
-
-@[simp] theorem equiv_accept : (equiv f g M).accept = g '' M.accept := by simp [equiv]
+theorem comap_id : M.comap id = M := rfl
 
 @[simp]
-theorem equiv_evalFrom : (equiv f g M).evalFrom s x = g (M.evalFrom (g.symm s) (x.map f.symm)) := by
+theorem comap_evalFrom (s : σ) (x : List α') :
+    (M.comap f).evalFrom s x = M.evalFrom s (x.map f) := by
   induction x using List.list_reverse_induction with
   | base => simp
   | ind x a ih => simp [ih]
 
 @[simp]
-theorem equiv_eval : (equiv f g M).eval x = g (M.eval (x.map f.symm)) := by simp [eval]
+theorem comap_eval (x : List α') : (M.comap f).eval x = M.eval (x.map f) := by simp [eval]
 
 @[simp]
-theorem equiv_accepts : (equiv f g M).accepts = List.map f '' M.accepts := by
+theorem comap_accepts : (M.comap f).accepts = List.map f ⁻¹' M.accepts := by
   ext x
-  suffices List.map f.symm x ∈ M.accepts ↔ x ∈ List.map f '' M.accepts by simpa [mem_accepts]
-  exact Set.mem_image_equiv (f := Equiv.listEquivOfEquiv f) |>.symm
+  conv =>
+    rhs
+    rw [Set.mem_preimage, mem_accepts]
+  simp [mem_accepts]
 
-end Maps
+end Comap
+
+section Reindex
+
+variable {σ' : Type*} (g : σ ≃ σ')
+
+/-- Lifts an equivalence on states to an equivalence on DFAs. -/
+def reindex : DFA α σ ≃ DFA α σ' where
+  toFun M := {
+    step := fun s a => g (M.step (g.symm s) a)
+    start := g M.start
+    accept := g.symm ⁻¹' M.accept
+  }
+  invFun M := {
+    step := fun s a => g.symm (M.step (g s) a)
+    start := g.symm M.start
+    accept := g ⁻¹' M.accept
+  }
+  left_inv M := by simp
+  right_inv M := by simp
+
+@[simp]
+theorem reindex_refl : reindex (Equiv.refl σ) M = M := rfl
+
+@[simp]
+theorem reindex_symm : (reindex (α := α) g).symm = reindex g.symm := rfl
+
+@[simp]
+theorem reindex_step (s : σ') (a : α) : (reindex g M).step s a = g (M.step (g.symm s) a) := rfl
+
+@[simp]
+theorem reindex_start : (reindex g M).start = g M.start := rfl
+
+@[simp]
+theorem reindex_accept : (reindex g M).accept = g.symm ⁻¹' M.accept := rfl
+
+@[simp]
+theorem reindex_evalFrom (s : σ') (x : List α) :
+    (reindex g M).evalFrom s x = g (M.evalFrom (g.symm s) x) := by
+  induction x using List.list_reverse_induction with
+  | base => simp
+  | ind x a ih => simp [ih]
+
+@[simp]
+theorem reindex_eval (x : List α) : (reindex g M).eval x = g (M.eval x) := by simp [eval]
+
+@[simp]
+theorem reindex_accepts : (reindex g M).accepts = M.accepts := by
+  ext x
+  simp [mem_accepts]
+
+end Reindex
 
 end DFA
