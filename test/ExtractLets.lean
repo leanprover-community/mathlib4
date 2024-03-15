@@ -75,5 +75,6 @@ example (h : let x := 1; let y := 2; x + 1 = y) : let _z := 3; ∀ (_ : Nat), Tr
   guard_hyp u : Nat := 3
   fail_if_success extract_lets x
   guard_target =ₛ ∀ (_ : Nat), True
+  guard_hyp h : let x := 1; let y := 2; x + 1 = y
   intro
   trivial
