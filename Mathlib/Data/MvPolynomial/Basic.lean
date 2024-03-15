@@ -835,7 +835,7 @@ theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 :=
 #align mv_polynomial.support_eq_empty MvPolynomial.support_eq_empty
 
 @[simp]
-lemma support_nonempty_iff {F σ} [CommSemiring F] (p : MvPolynomial σ F) :
+lemma support_nonempty_iff {p : MvPolynomial σ R} :
     p.support.Nonempty ↔ p ≠ 0 := by
   rw [ne_eq, ← support_eq_empty, Finset.nonempty_iff_ne_empty]
 
