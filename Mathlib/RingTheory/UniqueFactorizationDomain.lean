@@ -1970,8 +1970,8 @@ noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CancelComm
 /-- `toNormalizedGCDMonoid` constructs a GCD monoid out of a normalization on a
   unique factorization domain. -/
 noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
-    [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] [NormalizationMonoid α]
-    : NormalizedGCDMonoid α :=
+    [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] [NormalizationMonoid α] :
+    NormalizedGCDMonoid α :=
   { ‹NormalizationMonoid α› with
     gcd := fun a b => (Associates.mk a ⊓ Associates.mk b).out
     lcm := fun a b => (Associates.mk a ⊔ Associates.mk b).out
