@@ -31,9 +31,11 @@ namespace IsCyclotomicExtension.Rat.Three
 variable {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+)) (u : (𝓞 K)ˣ)
 
-local notation "η" => hζ.toInteger
+local notation3 "η" => hζ.toInteger
 
-local notation "λ" => hζ.toInteger - 1
+local notation3 "λ" => hζ.toInteger - 1
+
+local notation3 "f" => algebraMap (𝓞 K) (𝓞 K ⧸ Ideal.span {λ})
 
 /-- Given a unit `u : (𝓞 K)ˣ`, where `K` is a number field such that
 `IsCyclotomicExtension {3} ℚ K`, then `u ∈ ({1, -1, ζ, -ζ, ζ^2, -ζ^2}`, where `ζ` is any
@@ -152,6 +154,11 @@ lemma lambda_dvd_three : λ ∣ 3 := by
   rw [norm_lambda hζ]
   exact Int.prime_three
 
+lemma lambda_sq : λ ^ 2 = -3 * η := by
+  calc λ ^ 2 = η ^ 2 + η + 1 - 3 * η := by ring
+  _ = 0 - 3 * η := by ext; simpa using hζ.isRoot_cyclotomic (by decide)
+  _ = -3 * η := by ring
+
 lemma card_quot : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
   rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply, Ideal.absNorm_span_singleton]
   simp [norm_lambda hζ]
@@ -231,5 +238,17 @@ lemma lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one {x : 𝓞 K} (h : λ ∣ x
     _ = _ := by rw [hy]; ring
   rw [this, show λ ^ 4 = λ ^ 3 * λ by ring]
   exact mul_dvd_mul dvd_rfl (lambda_dvd_mul_sub_one_mul_sub_eta_add_one hζ y)
+
+lemma lambda_pow_four_dvd_cube_add_one_of_dvd_add_one {x : 𝓞 K} (h : λ ∣ x + 1) :
+    λ ^ 4 ∣ x ^ 3 + 1 := by
+  replace h : λ ∣ -x - 1 := by
+    obtain ⟨y, hy⟩ := h
+    refine ⟨-y, ?_⟩
+    rw [mul_neg, ← hy]
+    ring
+  obtain ⟨y, hy⟩ := lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ h
+  refine ⟨-y, ?_⟩
+  rw [mul_neg, ← hy]
+  ring
 
 end IsCyclotomicExtension.Rat.Three
