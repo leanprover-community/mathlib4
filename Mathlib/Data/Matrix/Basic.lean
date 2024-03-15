@@ -1942,6 +1942,11 @@ theorem mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : A *ᵥ (-v) 
   apply dotProduct_neg
 #align matrix.mul_vec_neg Matrix.mulVec_neg
 
+theorem mulVec_sub [Fintype n] (A : Matrix m n α) (x y : n → α) :
+    A *ᵥ (x - y) = A *ᵥ x - A *ᵥ y := by
+  ext
+  apply dotProduct_sub
+
 theorem sub_mulVec [Fintype n] (A B : Matrix m n α) (x : n → α) :
     (A - B) *ᵥ x = A *ᵥ x - B *ᵥ x := by simp [sub_eq_add_neg, add_mulVec, neg_mulVec]
 #align matrix.sub_mul_vec Matrix.sub_mulVec
