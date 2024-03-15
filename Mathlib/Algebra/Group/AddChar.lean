@@ -134,6 +134,8 @@ def toAddMonoidHom (φ : AddChar A M) : A →+ Additive M where
   map_zero' := φ.map_zero_one'
   map_add' := φ.map_add_mul'
 
+@[simp] lemma toAddMonoidHom_apply (ψ : AddChar A M) (a : A) : ψ.toAddMonoidHom a = ψ a := rfl
+
 variable (A M) in
 /-- Additive characters `A → M` are the same thing as additive homomorphisms from `A` to
 `Additive M`. -/
@@ -192,9 +194,16 @@ instance instCommMonoid : CommMonoid (AddChar A M) := (toMonoidHomEquiv A M).com
 
 @[simp] lemma pow_apply (ψ : AddChar A M) (n : ℕ) (a : A) : (ψ ^ n) a = (ψ a) ^ n := rfl
 
+variable (A M)
+
 /-- The natural equivalence to `(Multiplicative A →* M)` is a monoid isomorphism. -/
 def toMonoidHomMulEquiv : AddChar A M ≃* (Multiplicative A →* M) :=
-  { toMonoidHomEquiv A M with map_mul' := fun φ ψ ↦ by ext1 a; simp [toMonoidHomEquiv] }
+  { toMonoidHomEquiv A M with map_mul' := fun φ ψ ↦ by rfl }
+
+/-- Additive characters `A → M` are the same thing as additive homomorphisms from `A` to
+`Additive M`. -/
+def toAddMonoidAddEquiv : Additive (AddChar A M) ≃+ (A →+ Additive M) :=
+  { toAddMonoidHomEquiv A M with map_add' := fun φ ψ ↦ by rfl }
 
 end toCommMonoid
 
