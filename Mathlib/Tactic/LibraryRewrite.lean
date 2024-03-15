@@ -202,14 +202,29 @@ where
     let paramKinds ← getParamKinds e.getAppFn e.getAppArgs
     delabAppExplicitCore e.getAppNumArgs delabConst paramKinds
 
+partial def getUnusedMVarName (suggestion : Name) (names : PersistentHashMap Name MVarId)
+    (i : Option Nat := none) : Name :=
+  let name := match i with
+    | some i => match suggestion with
+      | .str p s => .str p s! "{s}_{i}"
+      | n => .str n s! "_{i}"
+    | none => suggestion
+  if names.contains name then
+    let i' : Nat := match i with
+      | some i => i+1
+      | none => 1
+    getUnusedMVarName suggestion names i'
+  else
+    name
+
 structure RewriteApplication extends RewriteLemma where
   tactic : String
   replacement : String
   extraGoals : Array CodeWithInfos
   prettyLemma : CodeWithInfos
 
-def rewriteCall (rwLemma : RewriteLemma)
-    (loc : SubExpr.GoalLocation) (subExpr : Expr) (occ : Option Nat) :
+def rewriteCall (rwLemma : RewriteLemma) (loc : SubExpr.GoalLocation) (subExpr : Expr)
+    (occ : Option Nat) (names : PersistentHashMap Name MVarId) :
     MetaM (Option RewriteApplication) := do
   -- the lemma might not be imported, so we use a try-catch block here.
   let thm ← try mkConstWithFreshMVarLevels rwLemma.name catch _ => return none
@@ -220,17 +235,24 @@ def rewriteCall (rwLemma : RewriteLemma)
 
   let mut extraGoals := #[]
   let mut allAssigned := true
+  let mut names := names
   for mvar in mvars, bi in bis do
     let mvarId := mvar.mvarId!
     -- we need to check that all instances can be synthesized
     if bi.isInstImplicit then
-      let .some _  ← trySynthInstance (← mvarId.getType) | return none
-      -- maybe check that the synthesized instance and `mvar` are `isDefEq`
+      let .some _ ← trySynthInstance (← mvarId.getType) | return none
+      -- maybe check that the synthesized instance and `mvar` are `isDefEq`?
     else if !(← mvarId.isAssigned) then
       allAssigned := false
-      -- if the userName has macro scopes, we can't use the name, so we use `?_` instead
-      if (← mvarId.getDecl).userName.hasMacroScopes then
-        mvarId.setUserName `«_»
+      let name ← mvarId.getTag
+      -- if the userName has macro scopes, it comes from a non-dependent arrow,
+      -- so we use `?_` instead
+      if name.hasMacroScopes then
+        mvarId.setTag `«_»
+      else
+        let name := getUnusedMVarName name names
+        mvarId.setTag name
+        names := names.insert name mvarId
       if bi.isExplicit then
         let extraGoal ← instantiateMVars (← mvarId.getType)
         extraGoals := extraGoals.push (← ppExprTagged extraGoal)
@@ -315,12 +337,13 @@ def checkLemmata (ass : Array (Array RewriteLemma × Bool))
     (loc : SubExpr.GoalLocation) (subExpr : Expr) (occ : Option Nat) :
     MetaM (Array Section × Array Section) := do
   let subExprString := (← ppExprTagged subExpr).stripTags
+  let { userNames, .. } ← getMCtx
   let mut results := #[]
   let mut dedups := #[]
   for (as, isLocal) in ass do
     let mut bs := #[]
     for a in as do
-      if let some b ← rewriteCall a loc subExpr occ then
+      if let some b ← rewriteCall a loc subExpr occ userNames then
         bs := bs.push b
     if h : bs.size > 0 then
       let pattern ← bs[0].pattern
