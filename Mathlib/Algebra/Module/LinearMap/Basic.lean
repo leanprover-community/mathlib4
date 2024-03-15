@@ -161,7 +161,8 @@ instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearM
         rw [← zero_smul R (0 : M), map_smulₛₗ]
         simp }
 
-instance (priority := 100) distribMulActionSemiHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
+instance (priority := 100) distribMulActionSemiHomClass
+    [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     DistribMulActionSemiHomClass F σ M M₃ :=
   { SemilinearMapClass.toAddHomClass with
     map_smulₛₗ := fun f c x ↦ by rw [map_smulₛₗ] }

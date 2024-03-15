@@ -450,7 +450,8 @@ def _root_.DistribMulActionSemiHomClass.toDistribMulActionHom
     (f : F) : A →ₑ+[φ] B :=
   { (f : A →+ B),  (f : A →ₑ[φ] B) with }
 
-/-- Any type satisfying `MulActionHomClass` can be cast into `MulActionHom` via `MulActionHomClass.toMulActionHom`. -/
+/-- Any type satisfying `MulActionHomClass` can be cast into `MulActionHom` 
+via `MulActionHomClass.toMulActionHom`. -/
 instance [DistribMulActionSemiHomClass F φ A B] :
   CoeTC F (A →ₑ+[φ] B) :=
   ⟨DistribMulActionSemiHomClass.toDistribMulActionHom⟩
