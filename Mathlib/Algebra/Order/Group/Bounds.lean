@@ -12,11 +12,9 @@ import Mathlib.Algebra.Order.Group.Defs
 # Least upper bound and the greatest lower bound in linear ordered additive commutative groups
 -/
 
-set_option autoImplicit true
-
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α] {s : Set α} {a ε : α}
+variable {α : Type*} [LinearOrderedAddCommGroup α] {s : Set α} {a ε : α}
 
 theorem IsGLB.exists_between_self_add (h : IsGLB s a) (hε : 0 < ε) : ∃ b ∈ s, a ≤ b ∧ b < a + ε :=
   h.exists_between <| lt_add_of_pos_right _ hε
