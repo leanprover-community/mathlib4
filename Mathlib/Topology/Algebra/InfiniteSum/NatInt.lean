@@ -422,9 +422,8 @@ lemma tsum_natCast_add_neg_natCast [T2Space M] {f : ℤ → M} (hf : Summable f)
 theorem HasSum.of_succ_negSucc {f : ℤ → M}
     (hf₁ : HasSum (fun n : ℕ ↦ f (n + 1)) m) (hf₂ : HasSum (fun n : ℕ ↦ f (Int.negSucc n)) m') :
     HasSum f (m + f 0 + m') :=
-  haveI : ∀ g : ℕ → M, HasSum (fun k ↦ g (k + 1)) m → HasSum g (m + g 0) :=
-    fun g hg ↦ by simpa using (add_comm _ m ▸ hg.sum_range_add :)
-  (this (fun n ↦ f n) hf₁).nonneg_add_neg hf₂
+  HasSum.of_natCast_negSucc (add_comm _ m ▸ HasSum.zero_add hf₁) hf₂
+
 #align has_sum.pos_add_zero_add_neg HasSum.of_succ_negSucc
 
 -- deprecated 2024-03-04
