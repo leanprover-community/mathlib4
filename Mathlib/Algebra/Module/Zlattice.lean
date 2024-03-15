@@ -372,7 +372,7 @@ end Zspan
 
 section Zlattice
 
-open Submodule
+open Submodule FiniteDimensional
 
 /-- An `L : Addsubgroup E` where `E` is a vector space over a normed field `K` is a `ℤ`-lattice if
 it is discrete and spans `E` over `K`. -/
@@ -388,9 +388,9 @@ theorem _root_.Zspan.isZlattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpa
 
 variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
-variable [ProperSpace E] (L : AddSubgroup E) [DiscreteTopology L] [hs : IsZlattice K L]
+variable [ProperSpace E] (L : AddSubgroup E) [DiscreteTopology L]
 
-theorem Zlattice.FG : AddSubgroup.FG L := by
+theorem Zlattice.FG [hs : IsZlattice K L] : AddSubgroup.FG L := by
   suffices (AddSubgroup.toIntSubmodule L).FG by exact (fg_iff_add_subgroup_fg _).mp this
   obtain ⟨s, ⟨h_incl, ⟨h_span, h_lind⟩⟩⟩ := exists_linearIndependent K (L : Set E)
   -- Let `s` be a maximal `K`-linear independent family of elements of `L`. We show that
@@ -425,14 +425,37 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]
     exact fg_span (LinearIndependent.setFinite h_lind)
 
-theorem Zlattice.module_finite : Module.Finite ℤ L :=
+theorem Zlattice.module_finite [IsZlattice K L] : Module.Finite ℤ L :=
   Module.Finite.iff_addGroup_fg.mpr ((AddGroup.fg_iff_addSubgroup_fg L).mpr (FG K L))
 
 instance instModuleFinite_Zlattice {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] [ProperSpace E] (L : AddSubgroup E) [DiscreteTopology L]
-    [IsZlattice ℝ L] : Module.Finite ℤ L := Zlattice.module_finite ℝ L
+    [FiniteDimensional ℝ E] (L : AddSubgroup E) [DiscreteTopology L] :
+    Module.Finite ℤ L := by
+  let f := (span ℝ (L : Set E)).subtype
+  let L₀ := (AddSubgroup.toIntSubmodule L).comap (f.restrictScalars ℤ)
+  have h_img : f '' L₀ = L := by
+    rw [← LinearMap.coe_restrictScalars ℤ f, ← Submodule.map_coe (f.restrictScalars ℤ),
+      Submodule.map_comap_eq_self, AddSubgroup.coe_toIntSubmodule]
+    exact fun x hx ↦ LinearMap.mem_range.mpr ⟨⟨x, Submodule.subset_span hx⟩, rfl⟩
+  suffices Module.Finite ℤ L₀ by
+    have : L₀.map (f.restrictScalars ℤ) = (AddSubgroup.toIntSubmodule L) :=
+      SetLike.ext'_iff.mpr h_img
+    convert this ▸ Module.Finite.map L₀ (f.restrictScalars ℤ)
+  have : DiscreteTopology L₀.toAddSubgroup := by
+    refine DiscreteTopology.preimage_of_continuous_injective (L : Set E) ?_ ?_
+    · exact LinearMap.continuous_of_finiteDimensional f
+    · exact injective_subtype _
+  have : IsZlattice ℝ L₀.toAddSubgroup := by
+    refine ⟨?_⟩
+    have : Function.Injective (Submodule.map f) :=
+      Submodule.map_injective_of_injective (injective_subtype _)
+    rw [← this.eq_iff]
+    rw [Submodule.map_span]
+    rw [Submodule.map_top, range_subtype]
+    erw [h_img]
+  exact Zlattice.module_finite ℝ L₀.toAddSubgroup
 
-theorem Zlattice.module_free : Module.Free ℤ L := by
+theorem Zlattice.module_free [IsZlattice K L] : Module.Free ℤ L := by
   have : Module.Finite ℤ L := module_finite K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
   have : NoZeroSMulDivisors ℤ E := RatModule.noZeroSMulDivisors
@@ -442,12 +465,16 @@ theorem Zlattice.module_free : Module.Free ℤ L := by
   infer_instance
 
 instance instModuleFree_Zlattice {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] [ProperSpace E] (L : AddSubgroup E) [DiscreteTopology L]
-    [IsZlattice ℝ L] : Module.Free ℤ L := Zlattice.module_free ℝ L
+    [FiniteDimensional ℝ E] (L : AddSubgroup E) [DiscreteTopology L] :
+    Module.Free ℤ L := by
+  have : Module ℚ E := Module.compHom E (algebraMap ℚ ℝ)
+  have : NoZeroSMulDivisors ℤ E := RatModule.noZeroSMulDivisors
+  have : NoZeroSMulDivisors ℤ L := by
+    change NoZeroSMulDivisors ℤ (AddSubgroup.toIntSubmodule L)
+    exact noZeroSMulDivisors _
+  infer_instance
 
-open FiniteDimensional
-
-theorem Zlattice.rank : finrank ℤ L = finrank K E := by
+theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L
   have : Module.Free ℤ L := module_free K L
