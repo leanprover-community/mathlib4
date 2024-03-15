@@ -64,8 +64,7 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
         simp only [Ideal.span_singleton_le_iff_mem, pow_one] <;>
       assumption
   by_cases hQp : IsPrime Q
-  · skip
-    refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
+  · refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
       -- Porting note: included `zero_add` in the simp arguments
       simp only [Ideal.span_singleton_le_iff_mem, zero_add, pow_one, pow_zero, one_eq_top,
                  Submodule.mem_top]
