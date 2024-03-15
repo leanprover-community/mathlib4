@@ -22,7 +22,7 @@ jobs:
         type: 'stream'
         topic: 'Mathlib status updates'
         content: |
-          ❌ The latest CI for branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}).
+          ❌ The latest CI for Mathlib's branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}).
 
   handle_success:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'nightly-testing' }}
@@ -95,13 +95,13 @@ jobs:
         }
         response = client.get_messages(request)
         messages = response['messages']
-        if not messages or messages[0]['content'] != "✅ The latest CI for branch#nightly-testing has succeeded!":
+        if not messages or messages[0]['content'] != "✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!":
             # Post the success message
             request = {
                 'type': 'stream',
                 'to': 'nightly-testing',
                 'topic': 'Mathlib status updates',
-                'content': '✅ The latest CI for branch#nightly-testing has succeeded!'
+                'content': '✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!'
             }
             result = client.send_message(request)
             print(result)
