@@ -483,20 +483,15 @@ theorem ArzelaAscoli.isCompact_closure_of_closedEmbedding [TopologicalSpace ι] 
     (F_clemb.comp isClosed_closure.closedEmbedding_subtype_val) cls_eqcont
     fun K hK x hx ↦ (cls_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, by simpa using hQ.2⟩
 
-theorem arzela_ascoli {X Y : Type*} [TopologicalSpace X] [UniformSpace Y] [T0Space Y]
+theorem arzela_ascoli {X Y : Type*} [TopologicalSpace X] [UniformSpace Y]
     (S : Set C(X, Y)) (hS1 : IsCompact (ContinuousMap.toFun '' S))
     (hS2 : Equicontinuous ((↑) : S → X → Y)) :
     IsCompact S := by
-  refine' isCompact_iff_compactSpace.mpr (ArzelaAscoli.compactSpace_of_closed_inducing'
-    (fun _ ↦ id) _ _ (fun K _ ↦ hS2.equicontinuousOn K)
-    (fun K _ x _ ↦ ⟨(eval x) '' (ContinuousMap.toFun '' S),
-      hS1.image (continuous_apply x), fun f ↦ ⟨f, ⟨f, f.2, rfl⟩, rfl⟩⟩))
-  · change Inducing ((UniformOnFun.ofFun {K | IsCompact K} ∘ ContinuousMap.toFun) ∘ Subtype.val)
-    exact (inducing_iff_nhds.mpr (fun _ ↦ eq_of_forall_le_iff
-      (fun _ ↦ ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn.trans
-        (UniformOnFun.tendsto_iff_tendstoUniformlyOn.symm.trans tendsto_iff_comap)))).comp
-          inducing_subtype_val
-  · exact (EquicontinuousOn.isClosed_range_uniformOnFun_iff_pi (fun _ ↦ id)
-      (eq_univ_iff_forall.mpr <| fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
-        (fun K _ ↦ hS2.equicontinuousOn K)).mpr
-          (image_eq_range ContinuousMap.toFun S ▸ hS1.isClosed)
+  suffices h : Inducing (Equiv.Set.image (↑) S DFunLike.coe_injective) by
+    rw [isCompact_iff_compactSpace] at hS1 ⊢
+    exact (Equiv.toHomeomorphOfInducing _ h).symm.compactSpace
+  refine' inducing_subtype_val.inducing_iff.mpr _
+  refine' (EquicontinuousOn.inducing_uniformOnFun_iff_pi (𝔖 := {K : Set X | IsCompact K})
+    (eq_univ_iff_forall.mpr <| fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
+      (fun _ ↦ id) (fun K _ ↦ hS2.equicontinuousOn K)).mp
+        (ContinuousMap.uniformEmbedding_toUniformOnFunIsCompact.inducing.comp inducing_subtype_val)
