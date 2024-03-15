@@ -61,6 +61,13 @@ local prefix:100 "π" => cs.wordProd
 
 /-! ### Length -/
 
+local instance (w : W) : DecidablePred (fun n ↦ ∃ ω : List B, ω.length = n ∧ π ω = w)
+  := Classical.decPred _
+
+private theorem exists_word_with_prod (w : W) : ∃ n : ℕ, ∃ ω : List B, ω.length = n ∧ π ω = w := by
+  rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
+  use ω.length, ω
+
 /-- The length of `w`; i.e., the minimum number of simple reflections that
 must be multiplied to form `w`. -/
 def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
@@ -172,26 +179,28 @@ theorem length_eq_one_iff {w : W} : ℓ w = 1 ↔ ∃ i : B, w = s i := by
 
 theorem length_mul_simple (w : W) (i : B) :
     ℓ (w * s i) = ℓ w + 1 ∨ ℓ (w * s i) + 1 = ℓ w := by
-  have length_le := cs.length_mul_le w (s i)
-  simp at length_le
-  have length_ge := (max_le_iff.mp (cs.length_mul_ge w (s i))).left
-  simp at length_ge
-  have length_mod_two := cs.length_mul_mod_two w (s i)
-
-  have h : ℓ (w * s i) ≠ ℓ w := by
-    intro eq
+  rcases Nat.lt_trichotomy (ℓ (w * s i)) (ℓ w) with lt | eq | gt
+  · -- lt : ℓ (w * s i) < ℓ w
+    right
+    have length_ge := (max_le_iff.mp (cs.length_mul_ge w (s i))).left
+    simp at length_ge
+    -- length_ge : ℓ w ≤ ℓ (w * s i) + 1
+    linarith
+  · -- eq : ℓ (w * s i) = ℓ w
+    have length_mod_two := cs.length_mul_mod_two w (s i)
     rw [eq] at length_mod_two
     simp at length_mod_two
+    -- length_mod_two : (ℓ w) % 2 = (ℓ w + 1) % 2
     rcases Nat.mod_two_eq_zero_or_one (ℓ w) with even | odd
     · rw [even, Nat.succ_mod_two_eq_one_iff.mpr even] at length_mod_two
       contradiction
     · rw [odd, Nat.succ_mod_two_eq_zero_iff.mpr odd] at length_mod_two
       contradiction
-
-  rcases Nat.ne_iff_lt_or_gt.mp h with less | greater
-  · right
-    linarith
-  · left
+  · -- gt : ℓ w < ℓ (w * s i)
+    left
+    have length_le := cs.length_mul_le w (s i)
+    simp at length_le
+    -- length_le : ℓ (w * s i) ≤ ℓ w + 1
     linarith
 
 theorem length_simple_mul (w : W) (i : B) :
@@ -294,7 +303,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : 
 
 def IsReduced (ω : List B) : Prop := ℓ (π ω) = ω.length
 
-theorem isReduced_reverse (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
+@[simp] theorem isReduced_reverse (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
   simp [IsReduced]
 
 theorem exists_reduced_word' (w : W) : ∃ ω : List B, cs.IsReduced ω ∧ w = π ω := by
@@ -616,8 +625,7 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
   rw [wordProd_reverse]
   exact cs.prod_rightInvSeq _
 
-private lemma nodup_rightInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω) :
-    List.Nodup (ris ω) := by
+theorem nodup_rightInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (ris ω) := by
   apply List.nodup_iff_get?_ne_get?.mpr
   intro j j' j_lt_j' j'_lt_length dup
   -- dup : get? (rightInvSeq cs ω) j = get? (rightInvSeq cs ω) j'
@@ -684,6 +692,11 @@ private lemma nodup_rightInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω)
   rw [length_eraseIdx_add_one h₇] at h₆
   rw [length_eraseIdx_add_one (by linarith)] at h₆
   linarith
+
+theorem nodup_leftInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (lis ω) := by
+  simp [leftInvSeq_eq_reverse_rightInvSeq_reverse]
+  apply nodup_rightInvSeq_of_reduced
+  simpa
 
 end CoxeterSystem
 
