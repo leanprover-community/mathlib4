@@ -13,7 +13,7 @@ import Std.Data.List.Basic
 
 The unused linter makes sure that every tactic call actually changes *something*.
 
-The inner workings of the linter as as follows.
+The inner workings of the linter are as follows.
 
 The linter inspects the goals before and after each tactic execution.
 If they are not identical, the linter is happy.
