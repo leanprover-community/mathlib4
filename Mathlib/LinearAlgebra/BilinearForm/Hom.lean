@@ -130,7 +130,7 @@ variable {B}
 /-- The linear map obtained from a `BilinForm` by fixing the right co-ordinate and evaluating in
 the left. -/
 def toLinHomFlip : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R :=
-  toLinHom.comp (flipHom R).toLinearMap
+  toLinHom.comp flipHom.toLinearMap
 #align bilin_form.to_lin_hom_flip BilinForm.toLinHomFlip
 
 @[simp]

@@ -148,7 +148,7 @@ theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
 #align bilin_form.is_symm_neg BilinForm.isSymm_neg
 
 variable (R₂) in
-theorem isSymm_iff_flip [Algebra R₂ R] : B.IsSymm ↔ flipHom R₂ B = B :=
+theorem isSymm_iff_flip : B.IsSymm ↔ flipHom B = B :=
   (forall₂_congr fun _ _ => by exact eq_comm).trans ext_iff.symm
 #align bilin_form.is_symm_iff_flip' BilinForm.isSymm_iff_flip
 
@@ -512,7 +512,7 @@ lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
   ext i
   refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
-  rw [toLin_apply, apply_dualBasis_left, toLin_apply, ← B.flip_apply (R₂ := K),
+  rw [toLin_apply, apply_dualBasis_left, toLin_apply, ← B.flip_apply,
     apply_dualBasis_left]
   simp_rw [@eq_comm _ i j]
 
