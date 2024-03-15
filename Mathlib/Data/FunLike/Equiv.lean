@@ -16,21 +16,20 @@ This typeclass is primarily for use by isomorphisms like `MonoidEquiv` and `Line
 
 A typical type of morphisms should be declared as:
 ```
-structure MyIso (A B : Type*) [MyClass A] [MyClass B]
-  extends Equiv A B :=
-(map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
+structure MyIso (A B : Type*) [MyClass A] [MyClass B] extends Equiv A B :=
+  (map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
 namespace MyIso
 
 variables (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Isomorphism class" design below:
-instance : EquivLike (MyIso A B) A (λ _, B) :=
-  { coe := MyIso.toEquiv.toFun,
-    inv := MyIso.toEquiv.invFun,
-    left_inv := MyIso.toEquiv.left_inv,
-    right_inv := MyIso.toEquiv.right_inv,
-    coe_injective' := λ f g h, by cases f; cases g; congr' }
+instance : EquivLike (MyIso A B) A (fun _ ↦ B) :=
+  { coe := MyIso.toEquiv.toFun
+    inv := MyIso.toEquiv.invFun
+    left_inv := MyIso.toEquiv.left_inv
+    right_inv := MyIso.toEquiv.right_inv
+    coe_injective' := fun f g h ↦ by cases f; cases g; congr' }
 
 /-- Helper instance for when there's too many metavariables to apply `EquivLike.coe` directly. -/
 instance : CoeFun (MyIso A B) := DFunLike.instCoeFunForAll
@@ -40,10 +39,10 @@ instance : CoeFun (MyIso A B) := DFunLike.instCoeFunForAll
 /-- Copy of a `MyIso` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : MyIso A B) (f' : A → B) (f_inv : B → A) (h : f' = ⇑f) : MyIso A B :=
-  { toFun := f',
-    invFun := f_inv,
-    left_inv := h.symm ▸ f.left_inv,
-    right_inv := h.symm ▸ f.right_inv,
+  { toFun := f'
+    invFun := f_inv
+    left_inv := h.symm ▸ f.left_inv
+    right_inv := h.symm ▸ f.right_inv
     map_op' := h.symm ▸ f.map_op' }
 
 end MyIso
@@ -64,17 +63,17 @@ Continuing the example above:
 /-- `MyIsoClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyIso`. -/
 class MyIsoClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
-  extends EquivLike F A (λ _, B), MyHomClass F A B
+  extends EquivLike F A (fun _ ↦ B), MyHomClass F A B
 
 end
 
 -- You can replace `MyIso.EquivLike` with the below instance:
 instance : MyIsoClass (MyIso A B) A B :=
-  { coe := MyIso.toFun,
-    inv := MyIso.invFun,
-    left_inv := MyIso.left_inv,
-    right_inv := MyIso.right_inv,
-    coe_injective' := λ f g h, by cases f; cases g; congr',
+  { coe := MyIso.toFun
+    inv := MyIso.invFun
+    left_inv := MyIso.left_inv
+    right_inv := MyIso.right_inv
+    coe_injective' := fun f g h ↦ by cases f; cases g; congr'
     map_op := MyIso.map_op' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
@@ -84,27 +83,26 @@ The second step is to add instances of your new `MyIsoClass` for all types exten
 Typically, you can just declare a new class analogous to `MyIsoClass`:
 
 ```
-structure CoolerIso (A B : Type*) [CoolClass A] [CoolClass B]
-  extends MyIso A B :=
-(map_cool' : toFun CoolClass.cool = CoolClass.cool)
+structure CoolerIso (A B : Type*) [CoolClass A] [CoolClass B] extends MyIso A B :=
+  (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 section
 set_option old_structure_cmd true
 
 class CoolerIsoClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
-  extends MyIsoClass F A B :=
-(map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
+    extends MyIsoClass F A B :=
+  (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
 end
 
-@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerIsoClass F A B]
-  (f : F) : f CoolClass.cool = CoolClass.cool :=
-CoolerIsoClass.map_cool
+@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerIsoClass F A B] (f : F) :
+    f CoolClass.cool = CoolClass.cool :=
+  CoolerIsoClass.map_cool
 
 instance : CoolerIsoClass (CoolerIso A B) A B :=
-  { coe := CoolerIso.toFun,
-    coe_injective' := λ f g h, by cases f; cases g; congr',
-    map_op := CoolerIso.map_op',
+  { coe := CoolerIso.toFun
+    coe_injective' := fun f g h ↦ by cases f; cases g; congr'
+    map_op := CoolerIso.map_op'
     map_cool := CoolerIso.map_cool' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]

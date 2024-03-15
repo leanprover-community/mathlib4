@@ -27,20 +27,20 @@ variables (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Embedding class" design below:
 instance : EmbeddingLike (MyEmbedding A B) A B :=
-  { coe := MyEmbedding.toFun,
-    coe_injective' := λ f g h, by cases f; cases g; congr',
+  { coe := MyEmbedding.toFun
+    coe_injective' := fun f g h ↦ by cases f; cases g; congr'
     injective' := MyEmbedding.injective' }
 
 /-- Helper instance for when there's too many metavariables to `EmbeddingLike.coe` directly. -/
-instance : CoeFun (MyEmbedding A B) (λ _, A → B) := ⟨MyEmbedding.toFun⟩
+instance : CoeFun (MyEmbedding A B) (fun _ ↦ A → B) := ⟨MyEmbedding.toFun⟩
 
 @[ext] theorem ext {f g : MyEmbedding A B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
 /-- Copy of a `MyEmbedding` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : MyEmbedding A B) (f' : A → B) (h : f' = ⇑f) : MyEmbedding A B :=
-  { toFun := f',
-    injective' := h.symm ▸ f.injective',
+  { toFun := f'
+    injective' := h.symm ▸ f.injective'
     map_op' := h.symm ▸ f.map_op' }
 
 end MyEmbedding
@@ -62,20 +62,21 @@ section
 /-- `MyEmbeddingClass F A B` states that `F` is a type of `MyClass.op`-preserving embeddings.
 You should extend this class when you extend `MyEmbedding`. -/
 class MyEmbeddingClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
-  extends EmbeddingLike F A B :=
-(map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
+    extends EmbeddingLike F A B :=
+  (map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
 
 end
 
-@[simp] lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [MyEmbeddingClass F A B]
-  (f : F) (x y : A) : f (MyClass.op x y) = MyClass.op (f x) (f y) :=
-MyEmbeddingClass.map_op
+@[simp]
+lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [MyEmbeddingClass F A B] (f : F) (x y : A) :
+    f (MyClass.op x y) = MyClass.op (f x) (f y) :=
+  MyEmbeddingClass.map_op
 
 -- You can replace `MyEmbedding.EmbeddingLike` with the below instance:
 instance : MyEmbeddingClass (MyEmbedding A B) A B :=
-  { coe := MyEmbedding.toFun,
-    coe_injective' := λ f g h, by cases f; cases g; congr',
-    injective' := MyEmbedding.injective',
+  { coe := MyEmbedding.toFun
+    coe_injective' := fun f g h ↦ by cases f; cases g; congr'
+    injective' := MyEmbedding.injective'
     map_op := MyEmbedding.map_op' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
@@ -86,29 +87,29 @@ The second step is to add instances of your new `MyEmbeddingClass` for all types
 Typically, you can just declare a new class analogous to `MyEmbeddingClass`:
 
 ```
-structure CoolerEmbedding (A B : Type*) [CoolClass A] [CoolClass B]
-  extends MyEmbedding A B :=
-(map_cool' : toFun CoolClass.cool = CoolClass.cool)
+structure CoolerEmbedding (A B : Type*) [CoolClass A] [CoolClass B] extends MyEmbedding A B :=
+  (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 section
 set_option old_structure_cmd true
 
 class CoolerEmbeddingClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
-  extends MyEmbeddingClass F A B :=
-(map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
+    extends MyEmbeddingClass F A B :=
+  (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
 end
 
-@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerEmbeddingClass F A B]
-  (f : F) : f CoolClass.cool = CoolClass.cool :=
-MyEmbeddingClass.map_op
+@[simp]
+lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerEmbeddingClass F A B] (f : F) :
+    f CoolClass.cool = CoolClass.cool :=
+  MyEmbeddingClass.map_op
 
 -- You can also replace `MyEmbedding.EmbeddingLike` with the below instance:
 instance : CoolerEmbeddingClass (CoolerEmbedding A B) A B :=
-  { coe := CoolerEmbedding.toFun,
-    coe_injective' := λ f g h, by cases f; cases g; congr',
-    injective' := MyEmbedding.injective',
-    map_op := CoolerEmbedding.map_op',
+  { coe := CoolerEmbedding.toFun
+    coe_injective' := fun f g h ↦ by cases f; cases g; congr'
+    injective' := MyEmbedding.injective'
+    map_op := CoolerEmbedding.map_op'
     map_cool := CoolerEmbedding.map_cool' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]

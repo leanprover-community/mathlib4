@@ -40,7 +40,7 @@ instance : CoeFun (MyHom A B) (fun _ => A → B) := ⟨MyHom.toFun⟩
 /-- Copy of a `MyHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : MyHom A B) (f' : A → B) (h : f' = ⇑f) : MyHom A B :=
-  { toFun := f',
+  { toFun := f'
     map_op' := h.symm ▸ f.map_op' }
 
 end MyHom
@@ -59,18 +59,18 @@ Continuing the example above:
 ```
 /-- `MyHomClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyHom`. -/
-class MyHomClass (F : Type*) (A B : outParam Type*) [MyClass A] [MyClass B]
-  [FunLike F A B] : Prop :=
-(map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
+class MyHomClass (F : Type*) (A B : outParam Type*) [MyClass A] [MyClass B] [FunLike F A B] : Prop :=
+  (map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
 
-@[simp] lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [MyHomClass F A B]
-  (f : F) (x y : A) : f (MyClass.op x y) = MyClass.op (f x) (f y) :=
-MyHomClass.map_op
+@[simp]
+lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [MyHomClass F A B] (f : F) (x y : A) :
+    f (MyClass.op x y) = MyClass.op (f x) (f y) :=
+  MyHomClass.map_op
 
 -- You can add the below instance next to `MyHomClass.instFunLike`:
 instance : MyHomClass (MyHom A B) A B :=
-  { coe := MyHom.toFun,
-    coe_injective' := λ f g h, by cases f; cases g; congr',
+  { coe := MyHom.toFun
+    coe_injective' := fun f g h ↦ by cases f; cases g; congr'
     map_op := MyHom.map_op' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
@@ -85,25 +85,22 @@ The second step is to add instances of your new `MyHomClass` for all types exten
 Typically, you can just declare a new class analogous to `MyHomClass`:
 
 ```
-structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B]
-  extends MyHom A B :=
-(map_cool' : toFun CoolClass.cool = CoolClass.cool)
+structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B] extends MyHom A B :=
+  (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 class CoolerHomClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass B]
-  [FunLike F A B]
-  extends MyHomClass F A B :=
-(map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
+  [FunLike F A B] extends MyHomClass F A B :=
+    (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
 @[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [FunLike F A (fun _ => B)]
-    [CoolerHomClass F A B] (f : F) :
-    f CoolClass.cool = CoolClass.cool :=
-MyHomClass.map_op
+    [CoolerHomClass F A B] (f : F) : f CoolClass.cool = CoolClass.cool :=
+  MyHomClass.map_op
 
 -- You can add the below instance next to `MyHom.instFunLike`:
 instance : CoolerHomClass (CoolHom A B) A B :=
-  { coe := CoolHom.toFun,
-    coe_injective' := λ f g h, by cases f; cases g; congr',
-    map_op := CoolHom.map_op',
+  { coe := CoolHom.toFun
+    coe_injective' := fun f g h ↦ by cases f; cases g; congr'
+    map_op := CoolHom.map_op'
     map_cool := CoolHom.map_cool' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
