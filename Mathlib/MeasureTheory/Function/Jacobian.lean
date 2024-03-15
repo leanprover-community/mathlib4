@@ -446,8 +446,8 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
   have hf' : ApproximatesLinearOn f (B : E →L[ℝ] E) s δ := by convert hf
   let F := hf'.toPartialEquiv h1δ
   -- the condition to be checked can be reformulated in terms of the inverse maps
-  suffices H : μ (F.symm '' F.target) ≤ (m⁻¹ : ℝ≥0) * μ F.target
-  · change (m : ℝ≥0∞) * μ F.source ≤ μ F.target
+  suffices H : μ (F.symm '' F.target) ≤ (m⁻¹ : ℝ≥0) * μ F.target by
+    change (m : ℝ≥0∞) * μ F.source ≤ μ F.target
     rwa [← F.symm_image_target_eq_source, mul_comm, ← ENNReal.le_div_iff_mul_le, div_eq_mul_inv,
       mul_comm, ← ENNReal.coe_inv mpos.ne']
     · apply Or.inl
@@ -475,8 +475,8 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
   apply ContinuousLinearMap.opNorm_le_bound _ δ.2 fun z => ?_
   -- to show that `‖(f' x - A) z‖ ≤ δ ‖z‖`, it suffices to do it up to some error that vanishes
   -- asymptotically in terms of `ε > 0`.
-  suffices H : ∀ ε, 0 < ε → ‖(f' x - A) z‖ ≤ (δ + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ε
-  · have :
+  suffices H : ∀ ε, 0 < ε → ‖(f' x - A) z‖ ≤ (δ + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ε by
+    have :
       Tendsto (fun ε : ℝ => ((δ : ℝ) + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ε) (𝓝[>] 0)
         (𝓝 ((δ + 0) * (‖z‖ + 0) + ‖f' x - A‖ * 0)) :=
       Tendsto.mono_left (Continuous.tendsto (by continuity) 0) nhdsWithin_le_nhds
@@ -567,7 +567,7 @@ theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : Diffe
     intro A
     let m : ℝ≥0 := Real.toNNReal |A.det| + 1
     have I : ENNReal.ofReal |A.det| < m := by
-      simp only [ENNReal.ofReal, lt_add_iff_pos_right, zero_lt_one, ENNReal.coe_lt_coe]
+      simp only [m, ENNReal.ofReal, lt_add_iff_pos_right, zero_lt_one, ENNReal.coe_lt_coe]
     rcases ((addHaar_image_le_mul_of_det_lt μ A I).and self_mem_nhdsWithin).exists with ⟨δ, h, h'⟩
     exact ⟨δ, h', fun t ht => h t f ht⟩
   choose δ hδ using this
@@ -610,7 +610,7 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero_aux
     intro A
     let m : ℝ≥0 := Real.toNNReal |A.det| + ε
     have I : ENNReal.ofReal |A.det| < m := by
-      simp only [ENNReal.ofReal, lt_add_iff_pos_right, εpos, ENNReal.coe_lt_coe]
+      simp only [m, ENNReal.ofReal, lt_add_iff_pos_right, εpos, ENNReal.coe_lt_coe]
     rcases ((addHaar_image_le_mul_of_det_lt μ A I).and self_mem_nhdsWithin).exists with ⟨δ, h, h'⟩
     exact ⟨δ, h', fun t ht => h t f ht⟩
   choose δ hδ using this
@@ -655,8 +655,8 @@ a set where the differential is not invertible, then the image of this set has z
 theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (h'f' : ∀ x ∈ s, (f' x).det = 0) :
     μ (f '' s) = 0 := by
-  suffices H : ∀ R, μ (f '' (s ∩ closedBall 0 R)) = 0
-  · apply le_antisymm _ (zero_le _)
+  suffices H : ∀ R, μ (f '' (s ∩ closedBall 0 R)) = 0 by
+    apply le_antisymm _ (zero_le _)
     rw [← iUnion_inter_closedBall_nat s 0]
     calc
       μ (f '' ⋃ n : ℕ, s ∩ closedBall 0 n) ≤ ∑' n : ℕ, μ (f '' (s ∩ closedBall 0 n)) := by
@@ -723,8 +723,8 @@ theorem aemeasurable_fderivWithin (hs : MeasurableSet s)
       t_disj.mono fun i j h => by simp only [h.inter_eq, eqOn_empty]
   refine' ⟨g, g_meas.aemeasurable, _⟩
   -- reduce to checking that `f'` and `g` are close on almost all of `s ∩ t n`, for all `n`.
-  suffices H : ∀ᵐ x : E ∂sum fun n => μ.restrict (s ∩ t n), dist (g x) (f' x) ≤ ε
-  · have : μ.restrict s ≤ sum fun n => μ.restrict (s ∩ t n) := by
+  suffices H : ∀ᵐ x : E ∂sum fun n ↦ μ.restrict (s ∩ t n), dist (g x) (f' x) ≤ ε by
+    have : μ.restrict s ≤ sum fun n => μ.restrict (s ∩ t n) := by
       have : s = ⋃ n, s ∩ t n := by
         rw [← inter_iUnion]
         exact Subset.antisymm (subset_inter Subset.rfl t_cover) (inter_subset_left _ _)
@@ -811,7 +811,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
     intro A
     let m : ℝ≥0 := Real.toNNReal |A.det| + ε
     have I : ENNReal.ofReal |A.det| < m := by
-      simp only [ENNReal.ofReal, lt_add_iff_pos_right, εpos, ENNReal.coe_lt_coe]
+      simp only [m, ENNReal.ofReal, lt_add_iff_pos_right, εpos, ENNReal.coe_lt_coe]
     rcases ((addHaar_image_le_mul_of_det_lt μ A I).and self_mem_nhdsWithin).exists with ⟨δ, h, δpos⟩
     obtain ⟨δ', δ'pos, hδ'⟩ : ∃ (δ' : ℝ), 0 < δ' ∧ ∀ B, dist B A < δ' → dist B.det A.det < ↑ε :=
       continuousAt_iff.1 ContinuousLinearMap.continuous_det.continuousAt ε εpos
@@ -957,7 +957,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
         zero_le, abs_zero]
     let m : ℝ≥0 := Real.toNNReal |A.det| - ε
     have I : (m : ℝ≥0∞) < ENNReal.ofReal |A.det| := by
-      simp only [ENNReal.ofReal, ENNReal.coe_sub]
+      simp only [m, ENNReal.ofReal, ENNReal.coe_sub]
       apply ENNReal.sub_lt_self ENNReal.coe_ne_top
       · simpa only [abs_nonpos_iff, Real.toNNReal_eq_zero, ENNReal.coe_eq_zero, Ne.def] using hA
       · simp only [εpos.ne', ENNReal.coe_eq_zero, Ne.def, not_false_iff]

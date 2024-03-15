@@ -52,7 +52,7 @@ theorem id_def : @id α = fun x ↦ x :=
   rfl
 #align function.id_def Function.id_def
 
--- porting note: `Function.onFun` is now reducible
+-- Porting note: `Function.onFun` is now reducible
 -- @[simp]
 theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
   rfl
@@ -61,9 +61,8 @@ theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f 
 lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀a, β a} {f' : ∀a, β' a}
     (hα : α = α') (h : ∀a a', HEq a a' → HEq (f a) (f' a')) : HEq f f' := by
   subst hα
-  have : ∀a, HEq (f a) (f' a) := λ a => h a a (HEq.refl a)
-  have : β = β' := by funext a
-                      exact type_eq_of_heq (this a)
+  have : ∀a, HEq (f a) (f' a) := fun a ↦ h a a (HEq.refl a)
+  have : β = β' := by funext a; exact type_eq_of_heq (this a)
   subst this
   apply heq_of_eq
   funext a
@@ -77,6 +76,12 @@ theorem funext_iff {β : α → Sort*} {f₁ f₂ : ∀ x : α, β x} : f₁ = f
 theorem ne_iff {β : α → Sort*} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ ↔ ∃ a, f₁ a ≠ f₂ a :=
   funext_iff.not.trans not_forall
 #align function.ne_iff Function.ne_iff
+
+lemma funext_iff_of_subsingleton [Subsingleton α] {g : α → β} (x y : α) :
+    f x = g y ↔ f = g := by
+  refine ⟨fun h ↦ funext fun z ↦ ?_, fun h ↦ ?_⟩
+  · rwa [Subsingleton.elim x z, Subsingleton.elim y z] at h
+  · rw [h, Subsingleton.elim x y]
 
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
 #align function.bijective.injective Function.Bijective.injective
@@ -153,7 +158,7 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
     {f : {a : α // p a} → β} {f' : {a : α // ¬ p a} → β}
     (hf : Injective f) (hf' : Injective f')
     (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
-    Function.Injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
+    Function.Injective (fun x ↦ if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
  dsimp only at h
  by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
  · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
@@ -285,7 +290,7 @@ theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
 to `α`. -/
 theorem cantor_injective {α : Type*} (f : Set α → α) : ¬Injective f
   | i => cantor_surjective (fun a ↦ {b | ∀ U, a = f U → U b}) <|
-         RightInverse.surjective (λ U => Set.ext fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
+         RightInverse.surjective (fun U ↦ Set.ext fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
 #align function.cantor_injective Function.cantor_injective
 
 /-- There is no surjection from `α : Type u` into `Type (max u v)`. This theorem
@@ -681,8 +686,8 @@ theorem update_comm {α} [DecidableEq α] {β : α → Sort*} {a b : α} (h : a 
   · rw [dif_pos h₁, dif_pos h₂]
     cases h (h₂.symm.trans h₁)
   · rw [dif_pos h₁, dif_pos h₁, dif_neg h₂]
-  · rw [dif_neg h₁, dif_neg h₁, dif_pos h₂]
-  · rw [dif_neg h₁, dif_neg h₁, dif_neg h₂]
+  · rw [dif_neg h₁, dif_neg h₁]
+  · rw [dif_neg h₁, dif_neg h₁]
 #align function.update_comm Function.update_comm
 
 @[simp]
@@ -1047,17 +1052,17 @@ theorem eq_mp_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.
   -- TODO: mathlib3 uses `eq_rec_on_bijective`, difference in elaboration here
   -- due to `@[macro_inline]` possibly?
   cases h
-  refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
+  exact ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align eq_mp_bijective eq_mp_bijective
 
 theorem eq_mpr_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mpr h) := by
   cases h
-  refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
+  exact ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align eq_mpr_bijective eq_mpr_bijective
 
 theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast h) := by
   cases h
-  refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
+  exact ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align cast_bijective cast_bijective
 
 /-! Note these lemmas apply to `Type*` not `Sort*`, as the latter interferes with `simp`, and

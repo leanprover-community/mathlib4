@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.asymptotics.theta from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -84,7 +85,7 @@ theorem IsTheta.trans {f : α → E} {g : α → F'} {k : α → G} (h₁ : f =�
   ⟨h₁.1.trans h₂.1, h₂.2.trans h₁.2⟩
 #align asymptotics.is_Theta.trans Asymptotics.IsTheta.trans
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsTheta l) (IsTheta l) :=
   ⟨IsTheta.trans⟩
 
@@ -94,7 +95,7 @@ theorem IsBigO.trans_isTheta {f : α → E} {g : α → F'} {k : α → G} (h₁
   h₁.trans h₂.1
 #align asymptotics.is_O.trans_is_Theta Asymptotics.IsBigO.trans_isTheta
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsBigO l) (IsTheta l) (IsBigO l) :=
   ⟨IsBigO.trans_isTheta⟩
 
@@ -104,7 +105,7 @@ theorem IsTheta.trans_isBigO {f : α → E} {g : α → F'} {k : α → G} (h₁
   h₁.1.trans h₂
 #align asymptotics.is_Theta.trans_is_O Asymptotics.IsTheta.trans_isBigO
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsBigO l) (IsBigO l) :=
   ⟨IsTheta.trans_isBigO⟩
 
@@ -114,7 +115,7 @@ theorem IsLittleO.trans_isTheta {f : α → E} {g : α → F} {k : α → G'} (h
   h₁.trans_isBigO h₂.1
 #align asymptotics.is_o.trans_is_Theta Asymptotics.IsLittleO.trans_isTheta
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G') (IsLittleO l) (IsTheta l) (IsLittleO l) :=
   ⟨IsLittleO.trans_isTheta⟩
 
@@ -124,7 +125,7 @@ theorem IsTheta.trans_isLittleO {f : α → E} {g : α → F'} {k : α → G} (h
   h₁.1.trans_isLittleO h₂
 #align asymptotics.is_Theta.trans_is_o Asymptotics.IsTheta.trans_isLittleO
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsLittleO l) (IsLittleO l) :=
   ⟨IsTheta.trans_isLittleO⟩
 
@@ -134,7 +135,7 @@ theorem IsTheta.trans_eventuallyEq {f : α → E} {g₁ g₂ : α → F} (h : f 
   ⟨h.1.trans_eventuallyEq hg, hg.symm.trans_isBigO h.2⟩
 #align asymptotics.is_Theta.trans_eventually_eq Asymptotics.IsTheta.trans_eventuallyEq
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F) (γ := α → F) (IsTheta l) (EventuallyEq l) (IsTheta l) :=
   ⟨IsTheta.trans_eventuallyEq⟩
 
@@ -144,7 +145,7 @@ theorem _root_.Filter.EventuallyEq.trans_isTheta {f₁ f₂ : α → E} {g : α 
   ⟨hf.trans_isBigO h.1, h.2.trans_eventuallyEq hf.symm⟩
 #align filter.eventually_eq.trans_is_Theta Filter.EventuallyEq.trans_isTheta
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → E) (γ := α → F) (EventuallyEq l) (IsTheta l) (IsTheta l) :=
   ⟨EventuallyEq.trans_isTheta⟩
 
@@ -325,8 +326,20 @@ alias ⟨IsTheta.of_const_mul_right, IsTheta.const_mul_right⟩ := isTheta_const
 #align asymptotics.is_Theta.of_const_mul_right Asymptotics.IsTheta.of_const_mul_right
 #align asymptotics.is_Theta.const_mul_right Asymptotics.IsTheta.const_mul_right
 
-lemma IsTheta.add_isLittleO {f₁ f₂ : α → E'}
-    (h : f₂ =o[l] f₁) : (f₁ + f₂) =Θ[l] f₁ :=
-  ⟨(isBigO_refl _ _).add_isLittleO h, by rw [add_comm]; exact h.right_isBigO_add⟩
+theorem IsLittleO.right_isTheta_add {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
+    f₂ =Θ[l] (f₁ + f₂) :=
+  ⟨h.right_isBigO_add, h.add_isBigO (isBigO_refl _ _)⟩
+
+theorem IsLittleO.right_isTheta_add' {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
+    f₂ =Θ[l] (f₂ + f₁) :=
+  add_comm f₁ f₂ ▸ h.right_isTheta_add
+
+lemma IsTheta.add_isLittleO {f₁ f₂ : α → E'} {g : α → F}
+    (hΘ : f₁ =Θ[l] g) (ho : f₂ =o[l] g) : (f₁ + f₂) =Θ[l] g :=
+  (ho.trans_isTheta hΘ.symm).right_isTheta_add'.symm.trans hΘ
+
+lemma IsLittleO.add_isTheta {f₁ f₂ : α → E'} {g : α → F}
+    (ho : f₁ =o[l] g) (hΘ : f₂ =Θ[l] g) : (f₁ + f₂) =Θ[l] g :=
+  add_comm f₁ f₂ ▸ hΘ.add_isLittleO ho
 
 end Asymptotics

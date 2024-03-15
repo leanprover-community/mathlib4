@@ -148,6 +148,23 @@ theorem WfDvdMonoid.iff_wellFounded_associates [CancelCommMonoidWithZero α] :
   ⟨by apply WfDvdMonoid.wellFounded_associates, WfDvdMonoid.of_wellFounded_associates⟩
 #align wf_dvd_monoid.iff_well_founded_associates WfDvdMonoid.iff_wellFounded_associates
 
+theorem WfDvdMonoid.max_power_factor' [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
+    (h : a₀ ≠ 0) (hx : ¬IsUnit x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a := by
+  obtain ⟨a, ⟨n, rfl⟩, hm⟩ := wellFounded_dvdNotUnit.has_min
+    {a | ∃ n, x ^ n * a = a₀} ⟨a₀, 0, by rw [pow_zero, one_mul]⟩
+  refine ⟨n, a, ?_, rfl⟩; rintro ⟨d, rfl⟩
+  exact hm d ⟨n + 1, by rw [pow_succ', mul_assoc]⟩
+    ⟨(right_ne_zero_of_mul <| right_ne_zero_of_mul h), x, hx, mul_comm _ _⟩
+
+theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
+    (h : a₀ ≠ 0) (hx : Irreducible x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
+  max_power_factor' h hx.not_unit
+
+theorem multiplicity.finite_of_not_isUnit [CancelCommMonoidWithZero α] [WfDvdMonoid α]
+    {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : multiplicity.Finite a b := by
+  obtain ⟨n, c, ndvd, rfl⟩ := WfDvdMonoid.max_power_factor' hb ha
+  exact ⟨n, by rwa [pow_succ', mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
+
 section Prio
 
 -- set_option default_priority 100
@@ -832,8 +849,8 @@ theorem dvdNotUnit_iff_normalizedFactors_lt_normalizedFactors {x y : α} (hx : x
 theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
     normalizedFactors (s.prod) = (s.map normalizedFactors).sum := by
   cases subsingleton_or_nontrivial α
-  · obtain rfl : s = 0
-    · apply Multiset.eq_zero_of_forall_not_mem
+  · obtain rfl : s = 0 := by
+      apply Multiset.eq_zero_of_forall_not_mem
       intro _
       convert hs
     simp
@@ -850,7 +867,7 @@ end UniqueFactorizationMonoid
 
 namespace UniqueFactorizationMonoid
 
-open Classical
+open scoped Classical
 
 open Multiset Associates
 
@@ -1046,19 +1063,11 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
   · exact count_normalizedFactors_eq hp hnorm hle hlt
 #align unique_factorization_monoid.count_normalized_factors_eq' UniqueFactorizationMonoid.count_normalizedFactors_eq'
 
-
-theorem max_power_factor {a₀ : R} {x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
-    ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := by
-  classical
-    let n := (normalizedFactors a₀).count (normalize x)
-    obtain ⟨a, ha1, ha2⟩ := @exists_eq_pow_mul_and_not_dvd R _ _ x a₀
-      (ne_top_iff_finite.mp (PartENat.ne_top_iff.mpr
-        -- Porting note: this was a hole that was filled at the end of the proof with `use`:
-        ⟨n, multiplicity_eq_count_normalizedFactors hx h⟩))
-    simp_rw [← (multiplicity_eq_count_normalizedFactors hx h).symm] at ha1
-    use n, a, ha2, ha1
+/-- Deprecated. Use `WfDvdMonoid.max_power_factor` instead. -/
+@[deprecated WfDvdMonoid.max_power_factor]
+theorem max_power_factor {a₀ x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
+    ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := WfDvdMonoid.max_power_factor h hx
 #align unique_factorization_monoid.max_power_factor UniqueFactorizationMonoid.max_power_factor
-
 
 end multiplicity
 
@@ -1966,8 +1975,8 @@ noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
     gcd_mul_lcm := fun a b => by
       rw [← out_mul, mul_comm, sup_mul_inf, mk_mul_mk, out_mk]
       exact normalize_associated (a * b)
-    normalize_gcd := fun a b => by congr; apply normalize_out _
-    normalize_lcm := fun a b => by congr; apply normalize_out _ }
+    normalize_gcd := fun a b => by apply normalize_out _
+    normalize_lcm := fun a b => by apply normalize_out _ }
 #align unique_factorization_monoid.to_normalized_gcd_monoid UniqueFactorizationMonoid.toNormalizedGCDMonoid
 
 instance (α) [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] :
@@ -2065,3 +2074,17 @@ theorem associated_of_factorization_eq (a b : α) (ha : a ≠ 0) (hb : b ≠ 0)
 #align associated_of_factorization_eq associated_of_factorization_eq
 
 end Finsupp
+
+open UniqueFactorizationMonoid in
+/-- Every non-zero prime ideal in a unique factorization domain contains a prime element. -/
+theorem Ideal.IsPrime.exists_mem_prime_of_ne_bot {R : Type*} [CommSemiring R] [IsDomain R]
+    [UniqueFactorizationMonoid R] {I : Ideal R} (hI₂ : I.IsPrime) (hI : I ≠ ⊥) :
+    ∃ x ∈ I, Prime x := by
+  classical
+  obtain ⟨a : R, ha₁ : a ∈ I, ha₂ : a ≠ 0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hI
+  replace ha₁ : (factors a).prod ∈ I := by
+    obtain ⟨u : Rˣ, hu : (factors a).prod * u = a⟩ := factors_prod ha₂
+    rwa [← hu, mul_unit_mem_iff_mem _ u.isUnit] at ha₁
+  obtain ⟨p : R, hp₁ : p ∈ factors a, hp₂ : p ∈ I⟩ :=
+    (hI₂.multiset_prod_mem_iff_exists_mem <| factors a).1 ha₁
+  exact ⟨p, hp₂, prime_of_factor p hp₁⟩

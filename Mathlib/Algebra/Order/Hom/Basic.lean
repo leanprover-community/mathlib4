@@ -77,7 +77,7 @@ variable {ι F α β γ δ : Type*}
 /-- `NonnegHomClass F α β` states that `F` is a type of nonnegative morphisms. -/
 class NonnegHomClass (F α β : Type*) [Zero β] [LE β] [FunLike F α β] : Prop where
   /-- the image of any element is non negative. -/
-  map_nonneg (f : F) : ∀ a, 0 ≤ f a
+  apply_nonneg (f : F) : ∀ a, 0 ≤ f a
 #align nonneg_hom_class NonnegHomClass
 
 /-- `SubadditiveHomClass F α β` states that `F` is a type of subadditive morphisms. -/
@@ -107,7 +107,7 @@ class NonarchimedeanHomClass (F α β : Type*) [Add α] [LinearOrder β] [FunLik
   map_add_le_max (f : F) : ∀ a b, f (a + b) ≤ max (f a) (f b)
 #align nonarchimedean_hom_class NonarchimedeanHomClass
 
-export NonnegHomClass (map_nonneg)
+export NonnegHomClass (apply_nonneg)
 
 export SubadditiveHomClass (map_add_le_add)
 
@@ -117,7 +117,7 @@ export MulLEAddHomClass (map_mul_le_add)
 
 export NonarchimedeanHomClass (map_add_le_max)
 
-attribute [simp] map_nonneg
+attribute [simp] apply_nonneg
 
 variable [FunLike F α β]
 
@@ -133,7 +133,8 @@ theorem le_map_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHom
     (a b : α) : f a ≤ f b + f (a / b) := by
   simpa only [add_comm, div_mul_cancel'] using map_mul_le_add f (a / b) b
 #align le_map_add_map_div le_map_add_map_div
--- #align le_map_add_map_sub le_map_add_map_sub -- Porting note: TODO: `to_additive` clashes
+-- #align le_map_add_map_sub le_map_add_map_sub
+-- Porting note (#11215): TODO: `to_additive` clashes
 
 @[to_additive]
 theorem le_map_div_mul_map_div [Group α] [CommSemigroup β] [LE β] [SubmultiplicativeHomClass F α β]
@@ -147,7 +148,8 @@ theorem le_map_div_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAd
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) + f (b / c) := by
     simpa only [div_mul_div_cancel'] using map_mul_le_add f (a / b) (b / c)
 #align le_map_div_add_map_div le_map_div_add_map_div
--- #align le_map_sub_add_map_sub le_map_sub_add_map_sub -- Porting note: TODO: `to_additive` clashes
+-- #align le_map_sub_add_map_sub le_map_sub_add_map_sub
+-- Porting note (#11215): TODO: `to_additive` clashes
 
 namespace Mathlib.Meta.Positivity
 
@@ -158,7 +160,7 @@ open Lean Meta Qq Function
 def evalMap : PositivityExt where eval {_ β} _ _ e := do
   let .app (.app _ f) a ← whnfR e
     | throwError "not ↑f · where f is of NonnegHomClass"
-  let pa ← mkAppOptM ``map_nonneg #[none, none, β, none, none, none, none, f, a]
+  let pa ← mkAppOptM ``apply_nonneg #[none, none, β, none, none, none, none, f, a]
   pure (.nonnegative pa)
 
 end Mathlib.Meta.Positivity
@@ -218,11 +220,11 @@ export AddGroupNormClass (eq_zero_of_map_eq_zero)
 
 export GroupNormClass (eq_one_of_map_eq_zero)
 
-attribute [simp] map_one_eq_zero -- porting note: `to_additive` translation already exists
+attribute [simp] map_one_eq_zero -- Porting note: `to_additive` translation already exists
 
 attribute [simp] map_neg_eq_map
 
-attribute [simp] map_inv_eq_map -- porting note: `to_additive` translation already exists
+attribute [simp] map_inv_eq_map -- Porting note: `to_additive` translation already exists
 
 attribute [to_additive] GroupSeminormClass.toMulLEAddHomClass
 
@@ -272,7 +274,7 @@ theorem abs_sub_map_le_div [Group α] [LinearOrderedAddCommGroup β] [GroupSemin
 instance (priority := 100) GroupSeminormClass.toNonnegHomClass [Group α]
     [LinearOrderedAddCommMonoid β] [GroupSeminormClass F α β] : NonnegHomClass F α β :=
   { ‹GroupSeminormClass F α β› with
-    map_nonneg := fun f a =>
+    apply_nonneg := fun f a =>
       (nsmul_nonneg_iff two_ne_zero).1 <| by
         rw [two_nsmul, ← map_one_eq_zero f, ← div_self' a]
         exact map_div_le_add _ _ _ }
@@ -302,7 +304,7 @@ end GroupNormClass
 @[to_additive]
 theorem map_pos_of_ne_one [Group α] [LinearOrderedAddCommMonoid β] [GroupNormClass F α β] (f : F)
     {x : α} (hx : x ≠ 1) : 0 < f x :=
-  (map_nonneg _ _).lt_of_ne <| ((map_ne_zero_iff_ne_one _).2 hx).symm
+  (apply_nonneg _ _).lt_of_ne <| ((map_ne_zero_iff_ne_one _).2 hx).symm
 #align map_pos_of_ne_one map_pos_of_ne_one
 #align map_pos_of_ne_zero map_pos_of_ne_zero
 

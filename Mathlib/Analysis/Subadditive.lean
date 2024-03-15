@@ -37,7 +37,7 @@ variable {u : ℕ → ℝ} (h : Subadditive u)
 
 /-- The limit of a bounded-below subadditive sequence. The fact that the sequence indeed tends to
 this limit is given in `Subadditive.tendsto_lim` -/
-@[nolint unusedArguments] -- porting note: was irreducible
+@[nolint unusedArguments] -- Porting note: was irreducible
 protected def lim (_h : Subadditive u) :=
   sInf ((fun n : ℕ => u n / n) '' Ici 1)
 #align subadditive.lim Subadditive.lim
@@ -78,7 +78,7 @@ theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n
   rw [mul_comm]
   refine lt_of_le_of_lt ?_ hk
   simp only [(· ∘ ·), ← Nat.cast_add, ← Nat.cast_mul]
-  exact div_le_div_of_le (Nat.cast_nonneg _) (h.apply_mul_add_le _ _ _)
+  exact div_le_div_of_nonneg_right (h.apply_mul_add_le _ _ _) (Nat.cast_nonneg _)
 #align subadditive.eventually_div_lt_of_div_lt Subadditive.eventually_div_lt_of_div_lt
 
 /-- Fekete's lemma: a subadditive sequence which is bounded below converges. -/

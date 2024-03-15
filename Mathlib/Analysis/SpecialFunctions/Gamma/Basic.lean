@@ -324,7 +324,7 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
   by_cases h : 0 ≤ 1 - s.re
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
-  · rw [Nat.floor_of_nonpos]; linarith; linarith
+  · rw [Nat.floor_of_nonpos]; omega; linarith
 #align complex.Gamma_eq_Gamma_aux Complex.Gamma_eq_GammaAux
 
 /-- The recurrence relation for the `Γ` function. -/
@@ -403,13 +403,10 @@ lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr 
       rw [mul_cpow_ofReal_nonneg hr.le hx.le, ← mul_assoc, one_div, ← ofReal_inv,
         ← mul_cpow_ofReal_nonneg (inv_pos.mpr hr).le hr.le, ← ofReal_mul r⁻¹, inv_mul_cancel hr.ne',
         ofReal_one, one_cpow, one_mul]
-    _ = |1 / r| * ∫ (t : ℝ) in Ioi (r * 0), (1 / r) ^ (a - 1) * t ^ (a - 1) * exp (-t) := by
+    _ = 1 / r * ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a - 1) * t ^ (a - 1) * exp (-t) := by
       simp_rw [← ofReal_mul]
       rw [integral_comp_mul_left_Ioi (fun x ↦ _ * x ^ (a - 1) * exp (-x)) _ hr, mul_zero,
-        real_smul, ← one_div]
-    _ = 1 / r * ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a - 1) * t ^ (a - 1) * exp (-t) := by
-      rw [congr_arg Ioi (mul_zero r), _root_.abs_of_nonneg (one_div_pos.mpr hr).le, ofReal_div,
-        ofReal_one]
+        real_smul, ← one_div, ofReal_div, ofReal_one]
     _ = 1 / r * (1 / r : ℂ) ^ (a - 1) * (∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-t)) := by
       simp_rw [← integral_mul_left, mul_assoc]
     _ = (1 / r) ^ a * Gamma a := by
@@ -477,7 +474,7 @@ theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : Differen
     have : S = re ⁻¹' Ioi (1 - n : ℝ) := by
       ext; rw [preimage, Ioi, mem_setOf_eq, mem_setOf_eq, mem_setOf_eq]; exact sub_lt_comm
     rw [this]
-    refine' Continuous.isOpen_preimage continuous_re _ isOpen_Ioi
+    exact Continuous.isOpen_preimage continuous_re _ isOpen_Ioi
   apply eventuallyEq_of_mem this
   intro t ht; rw [mem_setOf_eq] at ht
   apply Gamma_eq_GammaAux; linarith

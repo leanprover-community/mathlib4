@@ -338,7 +338,7 @@ def cancelDenominatorsTarget : TacticM Unit := do
 
 def cancelDenominators (loc : Location) : TacticM Unit := do
   withLocation loc cancelDenominatorsAt cancelDenominatorsTarget
-    (λ _ => throwError "Failed to cancel any denominators")
+    (fun _ ↦ throwError "Failed to cancel any denominators")
 
 elab "cancel_denoms" loc?:(location)? : tactic => do
   cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))

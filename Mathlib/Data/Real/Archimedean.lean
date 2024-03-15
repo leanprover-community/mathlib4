@@ -15,7 +15,8 @@ import Mathlib.Algebra.Bounds
 
 -/
 
-open Pointwise CauSeq Classical
+open scoped Classical
+open Pointwise CauSeq
 
 namespace Real
 
@@ -242,7 +243,7 @@ As `0` is the default value for `Real.sSup` of the empty set or sets which are n
 suffices to show that `f i` is nonnegative to show that `0 ≤ ⨆ i, f i`.
 -/
 protected theorem iSup_nonneg {ι : Sort*} {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i :=
-  sSup_nonneg _ <| Set.forall_range_iff.2 hf
+  sSup_nonneg _ <| Set.forall_mem_range.2 hf
 #align real.supr_nonneg Real.iSup_nonneg
 
 /--
@@ -257,7 +258,7 @@ protected theorem sSup_le {S : Set ℝ} {a : ℝ} (hS : ∀ x ∈ S, x ≤ a) (h
 
 protected theorem iSup_le {ι : Sort*} {f : ι → ℝ} {a : ℝ} (hS : ∀ i, f i ≤ a) (ha : 0 ≤ a) :
     ⨆ i, f i ≤ a :=
-  Real.sSup_le (Set.forall_range_iff.2 hS) ha
+  Real.sSup_le (Set.forall_mem_range.2 hS) ha
 #align real.supr_le Real.iSup_le
 
 /-- As `0` is the default value for `Real.sSup` of the empty set, it suffices to show that `S` is
@@ -279,7 +280,7 @@ theorem sInf_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ sI
 bounded below by `0` to show that `0 ≤ iInf f`.
 -/
 theorem iInf_nonneg {ι} {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) : 0 ≤ iInf f :=
-  sInf_nonneg _ <| Set.forall_range_iff.2 hf
+  sInf_nonneg _ <| Set.forall_mem_range.2 hf
 
 /--
 As `0` is the default value for `Real.sInf` of the empty set or sets which are not bounded below, it

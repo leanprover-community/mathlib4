@@ -39,8 +39,8 @@ Appropriate definitions and results are also transported to the additive theory 
 ## Implementation notes
 
 * The following expressions are considered in simp-normal form in a group:
-  `(λ h, h * g) ⁻¹' s`, `(λ h, g * h) ⁻¹' s`, `(λ h, h * g⁻¹) ⁻¹' s`, `(λ h, g⁻¹ * h) ⁻¹' s`,
-  `s * t`, `s⁻¹`, `(1 : Set _)` (and similarly for additive variants).
+  `(fun h ↦ h * g) ⁻¹' s`, `(fun h ↦ g * h) ⁻¹' s`, `(fun h ↦ h * g⁻¹) ⁻¹' s`,
+  `(fun h ↦ g⁻¹ * h) ⁻¹' s`, `s * t`, `s⁻¹`, `(1 : Set _)` (and similarly for additive variants).
   Expressions equal to one of these will be simplified.
 * We put all instances in the locale `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
@@ -409,7 +409,7 @@ theorem singleton_mul : {a} * t = (a * ·) '' t :=
 #align set.singleton_mul Set.singleton_mul
 #align set.singleton_add Set.singleton_add
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
   image2_singleton
@@ -675,7 +675,7 @@ theorem singleton_div : {a} / t = (· / ·) a '' t :=
 #align set.singleton_div Set.singleton_div
 #align set.singleton_sub Set.singleton_sub
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
   image2_singleton

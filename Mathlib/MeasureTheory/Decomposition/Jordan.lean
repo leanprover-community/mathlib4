@@ -217,7 +217,8 @@ end JordanDecomposition
 
 namespace SignedMeasure
 
-open Classical JordanDecomposition Measure Set VectorMeasure
+open scoped Classical
+open JordanDecomposition Measure Set VectorMeasure
 
 variable {s : SignedMeasure α} {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
@@ -226,8 +227,8 @@ such that `s = j.toSignedMeasure`. This property is known as the Jordan decompos
 theorem, and is shown by
 `MeasureTheory.SignedMeasure.toSignedMeasure_toJordanDecomposition`. -/
 def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
-  let i := choose s.exists_compl_positive_negative
-  let hi := choose_spec s.exists_compl_positive_negative
+  let i := s.exists_compl_positive_negative.choose
+  let hi := s.exists_compl_positive_negative.choose_spec
   { posPart := s.toMeasureOfZeroLE i hi.1 hi.2.1
     negPart := s.toMeasureOfLEZero iᶜ hi.1.compl hi.2.2
     posPart_finite := inferInstance
@@ -243,8 +244,8 @@ theorem toJordanDecomposition_spec (s : SignedMeasure α) :
     ∃ (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : 0 ≤[i] s) (hi₃ : s ≤[iᶜ] 0),
       s.toJordanDecomposition.posPart = s.toMeasureOfZeroLE i hi₁ hi₂ ∧
         s.toJordanDecomposition.negPart = s.toMeasureOfLEZero iᶜ hi₁.compl hi₃ := by
-  set i := choose s.exists_compl_positive_negative
-  obtain ⟨hi₁, hi₂, hi₃⟩ := choose_spec s.exists_compl_positive_negative
+  set i := s.exists_compl_positive_negative.choose
+  obtain ⟨hi₁, hi₂, hi₃⟩ := s.exists_compl_positive_negative.choose_spec
   exact ⟨i, hi₁, hi₂, hi₃, rfl, rfl⟩
 #align measure_theory.signed_measure.to_jordan_decomposition_spec MeasureTheory.SignedMeasure.toJordanDecomposition_spec
 
@@ -311,7 +312,7 @@ theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv 
       (hu.diff hv) (hv.diff hu)] at hs
   rw [zero_apply] at a b
   constructor
-  all_goals first | linarith | infer_instance | assumption
+  all_goals first | linarith | assumption
 #align measure_theory.signed_measure.of_diff_eq_zero_of_symm_diff_eq_zero_positive MeasureTheory.SignedMeasure.of_diff_eq_zero_of_symmDiff_eq_zero_positive
 
 /-- If the symmetric difference of two negative sets is a null-set, then so are the differences
