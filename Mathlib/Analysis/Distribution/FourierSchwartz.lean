@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
+import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 
 /-!
 # Fourier transform on Schwartz functions
