@@ -16,8 +16,6 @@ import Mathlib.Order.Monotone.Basic
 This file contains instances on `ℤ`. The stronger one is `Int.linearOrderedCommRing`.
 -/
 
-set_option autoImplicit true
-
 open Nat
 
 namespace Int
@@ -57,10 +55,10 @@ instance instCommRingInt : CommRing ℤ where
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
 
-@[simp, norm_cast] lemma cast_id : Int.cast n = n := rfl
+@[simp, norm_cast] lemma cast_id {n : ℤ} : Int.cast n = n := rfl
 
 @[simp, norm_cast]
-theorem cast_mul [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fun m => by
+theorem cast_mul {α : Type*} [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fun m => by
   obtain ⟨m, rfl | rfl⟩ := Int.eq_nat_or_neg m
   · induction m with
     | zero => simp
@@ -70,10 +68,12 @@ theorem cast_mul [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fu
     | succ m ih => simp_all [add_mul]
 #align int.cast_mul Int.cast_mulₓ -- dubious translation, type involves HasLiftT
 
-lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
+lemma cast_Nat_cast {n : ℕ} {R : Type*} [AddGroupWithOne R] :
+    (Int.cast (Nat.cast n) : R) = Nat.cast n :=
   Int.cast_ofNat _
 
-@[simp, norm_cast] lemma cast_pow [Ring R] (n : ℤ) (m : ℕ) : ↑(n ^ m) = (n ^ m : R) := by
+@[simp, norm_cast] lemma cast_pow {R : Type*} [Ring R] (n : ℤ) (m : ℕ) :
+    ↑(n ^ m) = (n ^ m : R) := by
   induction' m with m ih <;> simp [_root_.pow_succ, *]
 #align int.cast_pow Int.cast_pow
 

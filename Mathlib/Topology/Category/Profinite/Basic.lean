@@ -370,7 +370,6 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     dsimp [Function.Surjective]
     contrapose!
     rintro ⟨y, hy⟩ hf
-    skip
     let C := Set.range f
     have hC : IsClosed C := (isCompact_range f.continuous).isClosed
     let U := Cᶜ

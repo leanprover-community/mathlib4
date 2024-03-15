@@ -266,7 +266,7 @@ def precomp [TopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurj
     haveI : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
     rw [(strongTopology.embedding_coeFn _ _ _).continuous_iff]
     -- Porting note: without this, the following doesn't work
-    change Continuous ((λ f ↦ UniformOnFun.ofFun _ (f ∘ L)) ∘ DFunLike.coe)
+    change Continuous ((fun f ↦ UniformOnFun.ofFun _ (f ∘ L)) ∘ DFunLike.coe)
     exact (UniformOnFun.precomp_uniformContinuous fun S hS => hS.image L).continuous.comp
         (strongTopology.embedding_coeFn _ _ _).continuous
 #align continuous_linear_map.precomp ContinuousLinearMap.precomp
