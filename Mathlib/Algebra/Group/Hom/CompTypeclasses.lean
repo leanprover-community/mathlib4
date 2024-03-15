@@ -34,7 +34,6 @@ TODO :
 
 -/
 
-
 section MonoidHomCompTriple
 
 namespace MonoidHom
@@ -47,6 +46,7 @@ class CompTriple  {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
 
 attribute [simp] CompTriple.comp_eq
 
+namespace CompTriple
 
 variable {M' : Type*} [Monoid M']
 variable {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
@@ -55,27 +55,26 @@ variable {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
 class IsId (σ : M →* M) : Prop where
   eq_id : σ = MonoidHom.id M
 
-instance {M : Type*} [Monoid M] : IsId (MonoidHom.id M) where
+instance instIsId {M : Type*} [Monoid M] : IsId (MonoidHom.id M) where
   eq_id := rfl
 
-instance {σ : M →* M} [IsId σ] : IsId σ where
-  eq_id := by simp only [IsId.eq_id, MonoidHom.coe_mk, OneHom.coe_mk]
-namespace CompTriple
+instance {σ : M →* M} [h : _root_.CompTriple.IsId σ] : IsId σ  where
+  eq_id := by ext; exact _root_.congr_fun h.eq_id _
 
 instance {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ : CompTriple φ ψ χ] :
     _root_.CompTriple φ ψ χ where
   comp_eq := by rw [← MonoidHom.coe_comp, κ.comp_eq]
 
-lemma comp {φ : M →* N} {ψ : N →* P} :
+instance comp {φ : M →* N} {ψ : N →* P} :
     CompTriple φ ψ (ψ.comp φ) where
   comp_eq := rfl
 
-lemma comp_id {N P : Type*} [Monoid N] [Monoid P]
+instance comp_id {N P : Type*} [Monoid N] [Monoid P]
     {φ : N →* N} [IsId φ] {ψ : N →* P} :
     CompTriple φ ψ ψ where
   comp_eq := by simp only [IsId.eq_id, MonoidHom.comp_id]
 
-lemma id_comp {M N : Type*} [Monoid M] [Monoid N]
+instance id_comp {M N : Type*} [Monoid M] [Monoid N]
     {φ : M →* N} {ψ : N →* N} [IsId ψ] :
     CompTriple φ ψ φ where
   comp_eq := by simp only [IsId.eq_id, MonoidHom.id_comp]
