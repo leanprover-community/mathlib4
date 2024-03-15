@@ -392,6 +392,42 @@ theorem chromaticNumber_eq_card_of_forall_surj [Fintype α] (C : G.Coloring α)
     exact Nat.lt_le_asymm hc h2
 #align simple_graph.chromatic_number_eq_card_of_forall_surj SimpleGraph.chromaticNumber_eq_card_of_forall_surj
 
+
+/-- If r ≤ χ(G) and C is an r-coloring of G then C is surjective -/
+lemma le_chromaticNumber_surj {r : ℕ} (C : G.Coloring (Fin r)) (hc : r ≤ G.chromaticNumber) :
+    Function.Surjective C := by
+  intro i
+  cases r with
+  | zero => exact i.elim0
+  | succ r =>
+    contrapose! hc
+    let C' : G.Coloring (Fin r) :=
+      ⟨fun v ↦ if hcv : C v = Fin.last r then ⟨i, Fin.val_lt_last (hcv ▸ (hc v)).symm⟩
+       else ⟨C v, Fin.val_lt_last hcv⟩, by
+    intro _ b had
+    dsimp
+    split_ifs with h1 h2 h3
+    · exfalso; exact C.valid had (h2 ▸ h1)
+    all_goals intro hne; simp only [Fin.mk.injEq, Fin.val_eq_val, hc] at hne
+    · exact hc b hne.symm
+    · exact C.valid had hne⟩
+    apply lt_of_le_of_lt (Colorable.chromaticNumber_le ⟨C'⟩)
+    rw [Nat.cast_lt]
+    exact Nat.lt_succ_self _
+
+/-- If G has a α-Coloring then χ(G) = ‖α‖ ↔ every α-Coloring of G is surjective -/
+theorem chromaticNumber_eq_card_iff_forall_surj [Fintype α] (C : G.Coloring α) :
+    G.chromaticNumber = Fintype.card α  ↔ (∀ C' : G.Coloring α, Function.Surjective C') := by
+  refine ⟨fun h C' ↦ ?_,fun h ↦ chromaticNumber_eq_card_of_forall_surj C h⟩
+  let e := Fintype.equivFin α
+  let D := G.recolorOfEquiv e C'
+  convert (e.symm.comp_surjective D).2 <| le_chromaticNumber_surj D h.symm.le
+  ext
+  apply_fun e
+  rw [Function.comp_apply, Equiv.apply_symm_apply]
+  rfl
+
+
 theorem chromaticNumber_bot [Nonempty V] : (⊥ : SimpleGraph V).chromaticNumber = 1 := by
   let C : (⊥ : SimpleGraph V).Coloring (Fin 1) :=
       Coloring.mk (fun _ => 0) fun {v w} h => False.elim h
