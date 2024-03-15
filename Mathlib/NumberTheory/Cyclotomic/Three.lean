@@ -156,6 +156,12 @@ lemma norm_lambda : Algebra.norm ℤ λ = 3 := by
     (cyclotomic.irreducible_rat (n := 3) (by decide)) (by decide)]
   simp
 
+lemma lambda_dvd_three : λ ∣ 3 := by
+  suffices λ ∣ (3 : ℤ) by simpa
+  rw [← Ideal.norm_dvd_iff, norm_lambda hζ]
+  rw [norm_lambda hζ]
+  exact Int.prime_three
+
 lemma card_quot : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
   rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply, Ideal.absNorm_span_singleton]
   simp [norm_lambda hζ]
