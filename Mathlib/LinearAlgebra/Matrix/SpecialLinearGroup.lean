@@ -239,7 +239,7 @@ def toGL : SpecialLinearGroup n R →* GeneralLinearGroup R (n → R) :=
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.to_GL Matrix.SpecialLinearGroup.toGL
 
--- Porting note: broken dot notation
+-- Porting note (#11036): broken dot notation
 theorem coe_toGL (A : SpecialLinearGroup n R) : SpecialLinearGroup.toGL A = A.toLin'.toLinearMap :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -285,7 +285,7 @@ the scalars are the `n`-th roots of unity.-/
 theorem mem_center_iff {A : SpecialLinearGroup n R} :
     A ∈ center (SpecialLinearGroup n R) ↔ ∃ (r : R), r ^ (Fintype.card n) = 1 ∧ scalar n r = A := by
   rcases isEmpty_or_nonempty n with hn | ⟨⟨i⟩⟩; · exact ⟨by aesop, by simp [Subsingleton.elim A 1]⟩
-  refine ⟨fun h ↦  ⟨A i i, ?_, ?_⟩, fun ⟨r, _, hr⟩ ↦ mem_center_iff.mpr fun B ↦ ?_⟩
+  refine ⟨fun h ↦ ⟨A i i, ?_, ?_⟩, fun ⟨r, _, hr⟩ ↦ mem_center_iff.mpr fun B ↦ ?_⟩
   · have : det ((scalar n) (A i i)) = 1 := (scalar_eq_self_of_mem_center h i).symm ▸ A.property
     simpa using this
   · exact scalar_eq_self_of_mem_center h i
@@ -317,7 +317,7 @@ def center_equiv_rootsOfUnity' (i : n) :
     rw [← scalar_eq_coe_self_center A i, ← scalar_eq_coe_self_center B i]
     simp
 
-open Classical in
+open scoped Classical in
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity.
 
 See also `center_equiv_rootsOfUnity'`. -/

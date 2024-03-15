@@ -63,7 +63,7 @@ structure IsTree : Prop where
 
 variable {G}
 
-@[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := λ _a _w hw ↦ hw.ne_bot rfl
+@[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
@@ -182,8 +182,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
         congrArg (·.snd) h
       have h3 := congrArg length (hf' _ (((f _).tail _).copy h1 rfl) ?_)
       rw [length_copy, ← add_left_inj 1, length_tail_add_one] at h3
-      · exfalso
-        linarith
+      · omega
       · simp only [ne_eq, eq_mp_eq_cast, id_eq, isPath_copy]
         exact (hf _).tail _
   case surj =>

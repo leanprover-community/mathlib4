@@ -274,64 +274,65 @@ theorem intervalIntegrable_inv_one_add_sq :
 /-! ### Integrals of the form `c * ∫ x in a..b, f (c * x + d)` -/
 
 
--- Porting note: was @[simp]; simpNF says LHS does not simplify when applying lemma on itself
+-- Porting note (#10618): was @[simp];
+-- simpNF says LHS does not simplify when applying lemma on itself
 theorem mul_integral_comp_mul_right : (c * ∫ x in a..b, f (x * c)) = ∫ x in a * c..b * c, f x :=
   smul_integral_comp_mul_right f c
 #align interval_integral.mul_integral_comp_mul_right intervalIntegral.mul_integral_comp_mul_right
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem mul_integral_comp_mul_left : (c * ∫ x in a..b, f (c * x)) = ∫ x in c * a..c * b, f x :=
   smul_integral_comp_mul_left f c
 #align interval_integral.mul_integral_comp_mul_left intervalIntegral.mul_integral_comp_mul_left
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem inv_mul_integral_comp_div : (c⁻¹ * ∫ x in a..b, f (x / c)) = ∫ x in a / c..b / c, f x :=
   inv_smul_integral_comp_div f c
 #align interval_integral.inv_mul_integral_comp_div intervalIntegral.inv_mul_integral_comp_div
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem mul_integral_comp_mul_add :
     (c * ∫ x in a..b, f (c * x + d)) = ∫ x in c * a + d..c * b + d, f x :=
   smul_integral_comp_mul_add f c d
 #align interval_integral.mul_integral_comp_mul_add intervalIntegral.mul_integral_comp_mul_add
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem mul_integral_comp_add_mul :
     (c * ∫ x in a..b, f (d + c * x)) = ∫ x in d + c * a..d + c * b, f x :=
   smul_integral_comp_add_mul f c d
 #align interval_integral.mul_integral_comp_add_mul intervalIntegral.mul_integral_comp_add_mul
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem inv_mul_integral_comp_div_add :
     (c⁻¹ * ∫ x in a..b, f (x / c + d)) = ∫ x in a / c + d..b / c + d, f x :=
   inv_smul_integral_comp_div_add f c d
 #align interval_integral.inv_mul_integral_comp_div_add intervalIntegral.inv_mul_integral_comp_div_add
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem inv_mul_integral_comp_add_div :
     (c⁻¹ * ∫ x in a..b, f (d + x / c)) = ∫ x in d + a / c..d + b / c, f x :=
   inv_smul_integral_comp_add_div f c d
 #align interval_integral.inv_mul_integral_comp_add_div intervalIntegral.inv_mul_integral_comp_add_div
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem mul_integral_comp_mul_sub :
     (c * ∫ x in a..b, f (c * x - d)) = ∫ x in c * a - d..c * b - d, f x :=
   smul_integral_comp_mul_sub f c d
 #align interval_integral.mul_integral_comp_mul_sub intervalIntegral.mul_integral_comp_mul_sub
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem mul_integral_comp_sub_mul :
     (c * ∫ x in a..b, f (d - c * x)) = ∫ x in d - c * b..d - c * a, f x :=
   smul_integral_comp_sub_mul f c d
 #align interval_integral.mul_integral_comp_sub_mul intervalIntegral.mul_integral_comp_sub_mul
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem inv_mul_integral_comp_div_sub :
     (c⁻¹ * ∫ x in a..b, f (x / c - d)) = ∫ x in a / c - d..b / c - d, f x :=
   inv_smul_integral_comp_div_sub f c d
 #align interval_integral.inv_mul_integral_comp_div_sub intervalIntegral.inv_mul_integral_comp_div_sub
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem inv_mul_integral_comp_sub_div :
     (c⁻¹ * ∫ x in a..b, f (d - x / c)) = ∫ x in d - b / c..d - a / c, f x :=
   inv_smul_integral_comp_sub_div f c d
@@ -407,7 +408,7 @@ theorem integral_zpow {n : ℤ} (h : 0 ≤ n ∨ n ≠ -1 ∧ (0 : ℝ) ∉ [[a,
 
 @[simp]
 theorem integral_pow : ∫ x in a..b, x ^ n = (b ^ (n + 1) - a ^ (n + 1)) / (n + 1) := by
-  simpa only [← Int.ofNat_succ, zpow_ofNat] using integral_zpow (Or.inl (Int.coe_nat_nonneg n))
+  simpa only [← Int.ofNat_succ, zpow_coe_nat] using integral_zpow (Or.inl (Int.coe_nat_nonneg n))
 #align integral_pow integral_pow
 
 /-- Integral of `|x - a| ^ n` over `Ι a b`. This integral appears in the proof of the
@@ -674,7 +675,7 @@ theorem integral_sin_pow :
     (∫ x in a..b, sin x ^ (n + 2)) =
       (sin a ^ (n + 1) * cos a - sin b ^ (n + 1) * cos b) / (n + 2) +
         (n + 1) / (n + 2) * ∫ x in a..b, sin x ^ n := by
-  have : n + 2 ≠ 0 := by linarith
+  have : n + 2 ≠ 0 := by omega
   have : (n : ℝ) + 2 ≠ 0 := by norm_cast
   field_simp
   convert eq_sub_iff_add_eq.mp (integral_sin_pow_aux n) using 1
@@ -707,7 +708,7 @@ theorem integral_sin_pow_pos : 0 < ∫ x in (0)..π, sin x ^ n := by
   simp only [integral_sin_pow_even, integral_sin_pow_odd] <;>
   refine' mul_pos (by norm_num [pi_pos]) (prod_pos fun n _ => div_pos _ _) <;>
   norm_cast <;>
-  linarith
+  omega
 #align integral_sin_pow_pos integral_sin_pow_pos
 
 theorem integral_sin_pow_succ_le : (∫ x in (0)..π, sin x ^ (n + 1)) ≤ ∫ x in (0)..π, sin x ^ n := by
@@ -755,7 +756,7 @@ theorem integral_cos_pow :
     (∫ x in a..b, cos x ^ (n + 2)) =
       (cos b ^ (n + 1) * sin b - cos a ^ (n + 1) * sin a) / (n + 2) +
         (n + 1) / (n + 2) * ∫ x in a..b, cos x ^ n := by
-  have : n + 2 ≠ 0 := by linarith
+  have : n + 2 ≠ 0 := by omega
   have : (n : ℝ) + 2 ≠ 0 := by norm_cast
   field_simp
   convert eq_sub_iff_add_eq.mp (integral_cos_pow_aux n) using 1

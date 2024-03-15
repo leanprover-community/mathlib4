@@ -45,7 +45,8 @@ vector measure, signed measure, complex measure
 
 noncomputable section
 
-open Classical BigOperators NNReal ENNReal MeasureTheory
+open scoped Classical
+open BigOperators NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 
@@ -172,7 +173,7 @@ theorem hasSum_of_disjoint_iUnion [Countable β] {f : β → Set α} (hf₁ : �
     · exact (v.m_iUnion hg₁ hg₂).summable
     · intro x hx
       convert v.empty
-      simp only [Set.iUnion_eq_empty, Option.mem_def, not_exists, Set.mem_range] at hx ⊢
+      simp only [g, Set.iUnion_eq_empty, Option.mem_def, not_exists, Set.mem_range] at hx ⊢
       intro i hi
       exact False.elim ((hx i) ((Encodable.decode₂_is_partial_inv _ _).1 hi))
 #align measure_theory.vector_measure.has_sum_of_disjoint_Union MeasureTheory.VectorMeasure.hasSum_of_disjoint_iUnion

@@ -21,9 +21,6 @@ Use the notation `X _[n]` in the `Simplicial` locale to obtain the `n`-th term o
 
 -/
 
-set_option autoImplicit true
-
-
 open Opposite
 
 open CategoryTheory
@@ -36,7 +33,7 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- The category of simplicial objects valued in a category `C`.
 This is the category of contravariant functors from `SimplexCategory` to `C`. -/
 def SimplicialObject :=
@@ -227,13 +224,13 @@ def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ S
   whiskeringRight _ _ _
 #align category_theory.simplicial_object.whiskering CategoryTheory.SimplicialObject.whiskering
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Truncated simplicial objects. -/
 def Truncated (n : ℕ) :=
   (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
 #align category_theory.simplicial_object.truncated CategoryTheory.SimplicialObject.Truncated
 
-instance : Category (Truncated C n) := by
+instance {n : ℕ} : Category (Truncated C n) := by
   dsimp [Truncated]
   infer_instance
 
@@ -285,7 +282,7 @@ abbrev const : C ⥤ SimplicialObject C :=
   CategoryTheory.Functor.const _
 #align category_theory.simplicial_object.const CategoryTheory.SimplicialObject.const
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- The category of augmented simplicial objects, defined as a comma category. -/
 def Augmented :=
   Comma (𝟭 (SimplicialObject C)) (const C)
@@ -399,7 +396,7 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀)
         simpa only [← X.map_comp, ← Category.assoc, Category.comp_id, ← op_comp] using w _ _ _ }
 #align category_theory.simplicial_object.augment CategoryTheory.SimplicialObject.augment
 
--- porting note: removed @[simp] as the linter complains
+-- Porting note: removed @[simp] as the linter complains
 theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀) (w) :
     (X.augment X₀ f w).hom.app (op [0]) = f := by
   dsimp
@@ -408,7 +405,7 @@ theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X�
 
 end SimplicialObject
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Cosimplicial objects. -/
 def CosimplicialObject :=
   SimplexCategory ⥤ C
@@ -599,13 +596,13 @@ def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ CosimplicialObject C ⥤
   whiskeringRight _ _ _
 #align category_theory.cosimplicial_object.whiskering CategoryTheory.CosimplicialObject.whiskering
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Truncated cosimplicial objects. -/
 def Truncated (n : ℕ) :=
   SimplexCategory.Truncated n ⥤ C
 #align category_theory.cosimplicial_object.truncated CategoryTheory.CosimplicialObject.Truncated
 
-instance : Category (Truncated C n) := by
+instance {n : ℕ} : Category (Truncated C n) := by
   dsimp [Truncated]
   infer_instance
 
@@ -657,7 +654,7 @@ abbrev const : C ⥤ CosimplicialObject C :=
   CategoryTheory.Functor.const _
 #align category_theory.cosimplicial_object.const CategoryTheory.CosimplicialObject.const
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Augmented cosimplicial objects. -/
 def Augmented :=
   Comma (const C) (𝟭 (CosimplicialObject C))
@@ -763,7 +760,7 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0])
         simpa [← X.map_comp] using w _ _ _ }
 #align category_theory.cosimplicial_object.augment CategoryTheory.CosimplicialObject.augment
 
--- porting note: removed @[simp] as the linter complains
+-- Porting note: removed @[simp] as the linter complains
 theorem augment_hom_zero (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0]) (w) :
     (X.augment X₀ f w).hom.app [0] = f := by
   dsimp

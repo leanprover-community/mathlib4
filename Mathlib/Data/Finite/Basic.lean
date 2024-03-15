@@ -33,7 +33,7 @@ instances or other `Fintype` instances, then we need to "lower" the instance
 to be a `Finite` instance by removing the `Decidable` instances and switching
 the `Fintype` instances to `Finite` instances. These are precisely the ones
 that cannot be inferred using `Finite.of_fintype`. (However, when using
-`open Classical` or the `classical` tactic the instances relying only
+`open scoped Classical` or the `classical` tactic the instances relying only
 on `Decidable` instances will give `Finite` instances.) In the future we might
 consider writing automation to create these "lowered" instances.
 
@@ -45,7 +45,7 @@ finiteness, finite types
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 variable {α β γ : Type*}
 
@@ -104,11 +104,6 @@ instance [Finite α] : Finite (Set α) := by
   infer_instance
 
 end Finite
-
-/-- This instance also provides `[Finite s]` for `s : Set α`. -/
-instance Subtype.finite {α : Sort*} [Finite α] {p : α → Prop} : Finite { x // p x } :=
-  Finite.of_injective (↑) Subtype.coe_injective
-#align subtype.finite Subtype.finite
 
 instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (β a)] :
     Finite (∀ a, β a) := by

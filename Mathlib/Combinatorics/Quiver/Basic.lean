@@ -64,8 +64,6 @@ structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{
   map : ∀ {X Y : V}, (X ⟶ Y) → (obj X ⟶ obj Y)
 #align prefunctor Prefunctor
 
-attribute [pp_dot] Prefunctor.obj Prefunctor.map
-
 namespace Prefunctor
 
 -- Porting note: added during port.

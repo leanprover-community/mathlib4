@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
@@ -33,7 +33,8 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 -/
 
 
-open Classical BigOperators Polynomial Submodule
+open scoped Classical
+open BigOperators Polynomial Submodule
 
 section Ring
 
@@ -264,13 +265,13 @@ theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R 
   let f : A' →ₐ[R] Module.End R N :=
     AlgHom.ofLinearMap
       { toFun := fun x => (DistribMulAction.toLinearMap R M x).restrict x.prop
-        -- porting note: was
+        -- Porting note: was
                 -- `fun x y => LinearMap.ext fun n => Subtype.ext <| add_smul x y n`
         map_add' := by intros x y; ext; exact add_smul _ _ _
-        -- porting note: was
+        -- Porting note: was
                 --  `fun r s => LinearMap.ext fun n => Subtype.ext <| smul_assoc r s n`
         map_smul' := by intros r s; ext; apply smul_assoc }
-      -- porting note: the next two lines were
+      -- Porting note: the next two lines were
       --`(LinearMap.ext fun n => Subtype.ext <| one_smul _ _) fun x y =>`
       --`LinearMap.ext fun n => Subtype.ext <| mul_smul x y n`
       (by ext; apply one_smul)
@@ -614,7 +615,7 @@ theorem leadingCoeff_smul_normalizeScaleRoots (p : R[X]) :
   ext
   simp only [coeff_scaleRoots, normalizeScaleRoots, coeff_monomial, coeff_smul, Finset.smul_sum,
     Ne.def, Finset.sum_ite_eq', finset_sum_coeff, smul_ite, smul_zero, mem_support_iff]
-  -- porting note: added the following `simp only`
+  -- Porting note: added the following `simp only`
   simp only [ge_iff_le, tsub_le_iff_right, smul_eq_mul, mul_ite, mul_one, mul_zero,
     Finset.sum_ite_eq', mem_support_iff, ne_eq, ite_not]
   split_ifs with h₁ h₂

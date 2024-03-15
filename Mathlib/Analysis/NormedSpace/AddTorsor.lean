@@ -212,9 +212,8 @@ theorem nndist_right_midpoint (p₁ p₂ : P) :
 theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
     dist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (dist p₁ p₃ + dist p₂ p₄) / ‖(2 : 𝕜)‖ := by
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, midpoint_vsub_midpoint]
-  try infer_instance
   rw [midpoint_eq_smul_add, norm_smul, invOf_eq_inv, norm_inv, ← div_eq_inv_mul]
-  exact div_le_div_of_le (norm_nonneg _) (norm_add_le _ _)
+  exact div_le_div_of_nonneg_right (norm_add_le _ _) (norm_nonneg _)
 #align dist_midpoint_midpoint_le' dist_midpoint_midpoint_le'
 
 theorem nndist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
@@ -300,7 +299,8 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
   AffineMap.mk' f (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
     ((AffineEquiv.vaddConst ℝ (f <| c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
     fun x y => by -- Porting note: was `by simp [h]`
-      simp only [Function.comp_apply, AffineEquiv.vaddConst_apply, AffineEquiv.vaddConst_symm_apply]
+      simp only [c, Function.comp_apply, AffineEquiv.vaddConst_apply,
+        AffineEquiv.vaddConst_symm_apply]
       conv_lhs => rw [(midpoint_self ℝ (Classical.arbitrary P)).symm, midpoint_vadd_midpoint, h, h,
           midpoint_vsub_midpoint]).toRealLinearMap <| by
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))
