@@ -16,7 +16,7 @@ in the spirit what was initially developed by Frédéric Dupuis and Heather Macb
 However, we do not expect that all maps should be guessed automatically,
 as it happens for linear maps.
 
-If `φ`, `ψ`… are monoid homs and `M`, `N`… are monoids, we define two classes:
+If `φ`, `ψ`… are monoid homs and `M`, `N`… are monoids, we add two instances:
 * `MonoidHom.CompTriple φ ψ χ`, which expresses that `ψ.comp φ = χ`
 * `MonoidHom.IsId φ`, which expresses that `φ = id`
 
@@ -25,10 +25,6 @@ Some basic lemmas are proved:
 * `MonoidHom.CompTriple.id_comp` asserts `MonoidHom.CompTriple φ ψ ψ`
   in the presence of `MonoidHom.IsId φ`
 * its variant `MonoidHom.CompTriple.comp_id`
-
-It also introduces instances:
-* `MonoidHom.IsId (MonoidHom.id M)`
-* `MonoidHom.CompTriple φ ψ χ`, which expresses that `ψ.comp φ = χ`
 
 TODO :
 * align with RingHomCompTriple
