@@ -6,7 +6,6 @@ Authors: Ali Ramsey, Eric Wieser
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.TensorProduct
-import Mathlib.Algebra.Algebra.Bilinear
 
 /-!
 # Coalgebras
@@ -24,12 +23,14 @@ In this file we define `Coalgebra`, and provide instances for:
 
 suppress_compilation
 
+universe u v w
+
 open scoped TensorProduct
 
 /-- Data fields for `Coalgebra`, to allow API to be constructed before proving `Coalgebra.coassoc`.
 
 See `Coalgebra` for documentation. -/
-class CoalgebraStruct (R A : Type*)
+class CoalgebraStruct (R : Type u) (A : Type v)
     [CommSemiring R] [AddCommMonoid A] [Module R A] where
   /-- The comultiplication of the coalgebra -/
   comul : A →ₗ[R] A ⊗[R] A
@@ -42,7 +43,7 @@ end Coalgebra
 
 /-- A coalgebra over a commutative (semi)ring `R` is an `R`-module equipped with a coassociative
 comultiplication `Δ` and a counit `ε` obeying the left and right counitality laws. -/
-class Coalgebra (R A : Type*)
+class Coalgebra (R : Type u) (A : Type v)
     [CommSemiring R] [AddCommMonoid A] [Module R A] extends CoalgebraStruct R A where
   /-- The comultiplication is coassociative -/
   coassoc : TensorProduct.assoc R A A A ∘ₗ comul.rTensor A ∘ₗ comul = comul.lTensor A ∘ₗ comul
@@ -52,7 +53,7 @@ class Coalgebra (R A : Type*)
   lTensor_counit_comp_comul : counit.lTensor A ∘ₗ comul = (TensorProduct.mk R _ _).flip 1
 
 namespace Coalgebra
-variable {R A : Type*}
+variable {R : Type u} {A : Type v}
 variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
 
 @[simp]
@@ -86,7 +87,8 @@ def ofLinearEquiv {B : Type*} [AddCommMonoid B] [Module R B] (f : A ≃ₗ[R] B)
   comul := comul
   counit := counit
   coassoc := by
-    rw [(f.eq_comp_toLinearMap_symm _ _).2 hcounit, ← (f.comp_toLinearMap_symm_eq _ _).2 hcomul]
+    --rw [(f.eq_comp_toLinearMap_symm _ _).2 hcounit]
+    rw [← (f.comp_toLinearMap_symm_eq _ _).2 hcomul]
     simp only [← LinearMap.comp_assoc]
     congr 1
     simp only [LinearMap.lTensor_comp_map,

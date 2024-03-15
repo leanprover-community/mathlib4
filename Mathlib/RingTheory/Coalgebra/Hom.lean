@@ -7,7 +7,7 @@ universe u v w u₁ v₁
 /-- hm -/
 structure CoalgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R]
   [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
-  [Coalgebra R A] [Coalgebra R B] extends A →ₗ[R] B where
+  [CoalgebraStruct R A] [CoalgebraStruct R B] extends A →ₗ[R] B where
   counit_comp : counit ∘ₗ toLinearMap = counit
   map_comp_comul : TensorProduct.map toLinearMap toLinearMap ∘ₗ comul = comul ∘ₗ toLinearMap
 
@@ -21,7 +21,7 @@ notation:25 A " →c[" R "] " B => CoalgHom R A B
 from `A` to `B`.  -/
 class CoalgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
-    [Coalgebra R A] [Coalgebra R B]
+    [CoalgebraStruct R A] [CoalgebraStruct R B]
     [FunLike F A B] extends SemilinearMapClass F (RingHom.id R) A B : Prop where
   counit_comp : ∀ f : F, counit (R := R) (A := B) ∘ₗ LinearMapClass.linearMap f = counit (R := R) (A := A)
   map_comp_comul : ∀ f : F, TensorProduct.map (LinearMapClass.linearMap f) (LinearMapClass.linearMap f) ∘ₗ comul = comul ∘ₗ LinearMapClass.linearMap f
@@ -36,7 +36,7 @@ namespace CoalgHomClass
 
 variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R]
   [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
-  [Coalgebra R A] [Coalgebra R B] [FunLike F A B]
+  [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
 
 -- see Note [lower instance priority]
 instance (priority := 100) linearMapClass [CoalgHomClass F R A B] : LinearMapClass F R A B := by
@@ -66,7 +66,7 @@ section AddCommMonoid
 variable [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
   [AddCommMonoid C] [Module R C] [AddCommMonoid D] [Module R D]
 
-variable [Coalgebra R A] [Coalgebra R B] [Coalgebra R C] [Coalgebra R D]
+variable [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C] [CoalgebraStruct R D]
 
 
 instance funLike : FunLike (A →c[R] B) A B where
@@ -86,7 +86,7 @@ instance coalgHomClass : CoalgHomClass (A →c[R] B) R A B where
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
     [AddCommMonoid α] [AddCommMonoid β]
-    [Module R α] [Module R β] [Coalgebra R α] [Coalgebra R β] (f : α →c[R] β) : α → β := f
+    [Module R α] [Module R β] [CoalgebraStruct R α] [CoalgebraStruct R β] (f : α →c[R] β) : α → β := f
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) :
@@ -339,7 +339,7 @@ section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
 
-variable [Coalgebra R A] [Coalgebra R B] (φ : A →c[R] B)
+variable [CoalgebraStruct R A] [CoalgebraStruct R B] (φ : A →c[R] B)
 
 protected theorem map_multiset_prod (s : Multiset A) : φ s.prod = (s.map φ).prod :=
   map_multiset_prod _ _
@@ -361,7 +361,7 @@ section AddCommGroup
 
 variable [CommSemiring R] [AddCommGroup A] [AddCommGroup B] [Module R A] [Module R B]
 
-variable [Coalgebra R A] [Coalgebra R B] (φ : A →c[R] B)
+variable [CoalgebraStruct R A] [CoalgebraStruct R B] (φ : A →c[R] B)
 
 protected theorem map_neg (x) : φ (-x) = -φ x :=
   map_neg _ _
@@ -433,7 +433,7 @@ namespace Coalgebra
 
 variable (R : Type u) (A : Type v)
 
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+variable [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A]
 /-
 /-- `CoalgebraMap` as an `CoalgHom`. -/
 def ofId : R →c[R] A :=
