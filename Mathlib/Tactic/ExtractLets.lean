@@ -70,11 +70,14 @@ Just like `intros`, the `extract_lets` tactic either takes a list of names, in w
 that specifies the number of `let` bindings that must be extracted, or it takes no names, in which
 case all the `let` bindings are extracted.
 
-The tactic `extract_let at ⊢` is a weaker form of `intros` that only introduces obvious `let`s. -/
-syntax (name := extractLets) "extract_lets " (colGt (ident <|> hole))* (ppSpace location) : tactic
+The tactic `extract_let` (without `at`) is a weaker form of `intros` that only
+introduces obvious `let`s. -/
+syntax (name := extractLets) "extract_lets " (colGt (ident <|> hole))* (ppSpace location)? : tactic
 
 @[tactic Mathlib.extractLets] def evalExtractLet : Tactic := fun stx => do
   match stx with
+  | `(tactic| extract_lets)                       => doExtract none none
+  | `(tactic| extract_lets $hs*)                  => doExtract hs none
   | `(tactic| extract_lets $loc:location)         => doExtract none loc
   | `(tactic| extract_lets $hs* $loc:location)    => doExtract hs loc
   | _ => throwUnsupportedSyntax
@@ -86,7 +89,7 @@ where
     else
       return Array.mkArray (← instantiateMVars ty).cleanupAnnotations.letDepth `_
   doExtract (ids? : Option (TSyntaxArray [`ident, `Lean.Parser.Term.hole]))
-      (loc : TSyntax `Lean.Parser.Tactic.location) :
+      (loc? : Option <| TSyntax `Lean.Parser.Tactic.location) :
       TacticM Unit := do
     let process (f : MVarId → Array Name → MetaM (Array FVarId × MVarId))
         (ty : MVarId → MetaM Expr) : TacticM Unit := do
@@ -98,7 +101,7 @@ where
         withMainContext do
           for stx in ids, fvarId in fvarIds do
             Term.addLocalVarInfo stx (.fvar fvarId)
-    withLocation (expandOptLocation (mkOptionalNode loc))
+    withLocation (expandOptLocation (mkOptionalNode loc?))
       (atLocal := fun h ↦ do
         process (fun mvarId ids => mvarId.extractLetsAt h ids) (fun _ => h.getType))
       (atTarget := do
