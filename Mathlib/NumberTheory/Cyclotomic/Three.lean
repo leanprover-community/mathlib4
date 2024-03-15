@@ -96,13 +96,21 @@ theorem Units.not_exists_int_three_dvd_sub : ¬(∃ n : ℤ, (3 : 𝓞 K) ∣ (�
   apply hdvd
   exact ⟨_, h⟩
 
+lemma lambda_sq : λ ^ 2 = -3 * η :=
+  calc λ ^ 2 = η ^ 2 + η + 1 - 3 * η := by ring
+  _ = 0 - 3 * η := by ext; simpa using hζ.isRoot_cyclotomic (by decide)
+  _ = -3 * η := by ring
+
 /-- Given a unit `u : (𝓞 K)ˣ`, where `K` is a number field such that
-`IsCyclotomicExtension {3} ℚ K`, if `u` is congruent to an integer modulo `3`, then `u = 1` or
+`IsCyclotomicExtension {3} ℚ K`, if `u` is congruent to an integer modulo `λ ^ 2`, then `u = 1` or
 `u = -1`.
 
 This is a special case of the so-called *Kummer's lemma*. -/
-theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, (3 : 𝓞 K) ∣ (↑u - n : 𝓞 K)) :
+theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ (↑u - n : 𝓞 K)) :
     u = 1 ∨ u = -1 := by
+  replace hcong : ∃ n : ℤ, (3 : 𝓞 K) ∣ (↑u - n : 𝓞 K) := by
+    obtain ⟨n, x, hx⟩ := hcong
+    exact ⟨n, -η * x, by rw [← mul_assoc, mul_neg, ← neg_mul, ← lambda_sq, hx]⟩
   have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have := Units.mem hζ u
   have h2 : (hζ.pow_of_coprime 2 (by decide)).toInteger = hζ.toInteger ^ 2 := by ext; simp
@@ -147,17 +155,6 @@ lemma norm_lambda : Algebra.norm ℤ λ = 3 := by
   rw [← Algebra.norm_localization (Sₘ := K) ℤ ℤ⁰, this, hζ.sub_one_norm_prime
     (cyclotomic.irreducible_rat (n := 3) (by decide)) (by decide)]
   simp
-
-lemma lambda_dvd_three : λ ∣ 3 := by
-  suffices λ ∣ (3 : ℤ) by simpa
-  rw [← Ideal.norm_dvd_iff, norm_lambda hζ]
-  rw [norm_lambda hζ]
-  exact Int.prime_three
-
-lemma lambda_sq : λ ^ 2 = -3 * η := by
-  calc λ ^ 2 = η ^ 2 + η + 1 - 3 * η := by ring
-  _ = 0 - 3 * η := by ext; simpa using hζ.isRoot_cyclotomic (by decide)
-  _ = -3 * η := by ring
 
 lemma card_quot : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
   rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply, Ideal.absNorm_span_singleton]
