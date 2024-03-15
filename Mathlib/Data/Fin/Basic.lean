@@ -673,9 +673,9 @@ theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).
   Nat.mod_eq_of_lt h
 #align fin.coe_val_of_lt Fin.val_cast_of_lt
 
-/-- Converting the value of a `Fin (n + 1)` to `Fin (n + 1)` results
+/-- If `n` is non-zero, converting the value of a `Fin n` to `Fin n` results
 in the same value.  -/
-theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
+@[simp] theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
   ext <| val_cast_of_lt a.isLt
 #align fin.coe_val_eq_self Fin.cast_val_eq_self
 
