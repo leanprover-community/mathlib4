@@ -430,7 +430,7 @@ lemma single_le_prod_of_canonicallyOrdered {i : ι} (hi : i ∈ s) :
 @[to_additive]
 lemma _root_.Fintype.single_le_prod_of_canonicallyOrdered [Fintype ι] (i : ι) :
     f i ≤ ∏ j, f j :=
-  single_le_prod_of_canonicallyOrdered (mem_univ i)
+  Finset.single_le_prod_of_canonicallyOrdered (mem_univ i)
 
 @[to_additive sum_le_sum_of_ne_zero]
 theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
