@@ -208,6 +208,7 @@
   ["ProofWidgets.Component.OfRpcMethod"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.Use": ["Std.Logic"],
+  "Mathlib.Tactic.UnusedTactic": ["Std.Tactic.Unreachable"],
   "Mathlib.Tactic.TypeStar": ["Std"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic"],
@@ -281,7 +282,7 @@
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.CategoryTheory.Coherence":
   ["Mathlib.Tactic.CategoryTheory.MonoidalComp"],
-  "Mathlib.Tactic.Basic": ["Std"],
+  "Mathlib.Tactic.Basic": ["Mathlib.Tactic.UnusedTactic", "Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.RingTheory.Subsemiring.Order":
@@ -300,9 +301,9 @@
   "Mathlib.Logic.Equiv.Defs": ["Mathlib.Init.Data.Bool.Lemmas"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.LinearAlgebra.AffineSpace.Basic": ["Mathlib.Algebra.AddTorsor"],
-  "Mathlib.Lean.Expr.Basic": ["Std.Logic"],
-  "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
   "Mathlib.Lean.Meta": ["Std.Logic"],
+  "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
+  "Mathlib.Lean.Expr.Basic": ["Std.Logic"],
   "Mathlib.Init.Data.Nat.GCD": ["Std.Data.Nat.Gcd"],
   "Mathlib.Init.Data.Int.Basic": ["Std.Data.Int.Order"],
   "Mathlib.Init.Core": ["Std.Classes.Dvd"],
