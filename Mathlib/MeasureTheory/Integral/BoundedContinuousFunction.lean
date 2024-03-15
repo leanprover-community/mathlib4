@@ -154,7 +154,7 @@ lemma tendsto_integral_of_forall_limsup_integral_le_integral {ι : Type*} {L : F
     isBounded_le_map_of_bounded_range _ obs
   have bdd_below : IsBoundedUnder (· ≥ ·) L (fun i ↦ ∫ x, f x ∂μs i) :=
     isBounded_ge_map_of_bounded_range _ obs
-  apply @tendsto_of_le_liminf_of_limsup_le ℝ ι _ _ _ L (fun i ↦ ∫ x, f x ∂ (μs i)) (∫ x, f x ∂μ)
+  apply tendsto_of_le_liminf_of_limsup_le _ _ bdd_above bdd_below
   · have key := h _ (f.norm_sub_nonneg)
     simp_rw [f.integral_const_sub ‖f‖] at key
     simp only [measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul] at key
@@ -165,8 +165,6 @@ lemma tendsto_integral_of_forall_limsup_integral_le_integral {ι : Type*} {L : F
     simp only [measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul] at key
     have := limsup_add_const L (fun i ↦ ∫ x, f x ∂ (μs i)) ‖f‖ bdd_above bdd_below
     rwa [this, add_le_add_iff_right] at key
-  · exact bdd_above
-  · exact bdd_below
 
 lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : Filter ι}
     {μ : Measure X} [IsProbabilityMeasure μ] {μs : ι → Measure X} [∀ i, IsProbabilityMeasure (μs i)]
