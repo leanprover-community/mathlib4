@@ -9,7 +9,7 @@ import Mathlib.Tactic.SimpRw
 private axiom test_sorry : ∀ {α}, α
 
 -- `simp_rw` can perform rewrites under binders:
-example : (λ (x y : Nat) => x + y) = (λ x y => y + x) := by simp_rw [Nat.add_comm]
+example : (fun (x y : Nat) ↦ x + y) = (fun x y ↦ y + x) := by simp_rw [Nat.add_comm]
 
 -- `simp_rw` can apply reverse rules:
 example (f : Nat → Nat) {a b c : Nat} (ha : f b = a) (hc : f b = c) : a = c := by simp_rw [← ha, hc]

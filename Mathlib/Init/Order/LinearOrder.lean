@@ -159,15 +159,15 @@ theorem max_eq_right_of_lt {a b : α} (h : a < b) : max a b = b :=
 theorem lt_min {a b c : α} (h₁ : a < b) (h₂ : a < c) : a < min b c :=
   -- Porting note: no `min_tac` tactic
   Or.elim (le_or_gt b c)
-    (λ h : b ≤ c => by rwa [min_eq_left h])
-    (λ h : b > c => by rwa [min_eq_right_of_lt h])
+    (fun h : b ≤ c ↦ by rwa [min_eq_left h])
+    (fun h : b > c ↦ by rwa [min_eq_right_of_lt h])
 #align lt_min lt_min
 
 theorem max_lt {a b c : α} (h₁ : a < c) (h₂ : b < c) : max a b < c :=
   -- Porting note: no `min_tac` tactic
   Or.elim (le_or_gt a b)
-    (λ h : a ≤ b => by rwa [max_eq_right h])
-    (λ h : a > b => by rwa [max_eq_left_of_lt h])
+    (fun h : a ≤ b ↦ by rwa [max_eq_right h])
+    (fun h : a > b ↦ by rwa [max_eq_left_of_lt h])
 #align max_lt max_lt
 
 end
