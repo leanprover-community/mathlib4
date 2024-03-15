@@ -135,6 +135,8 @@ def getNames (mctx : MetavarContext) : List Name :=
   let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).join.reduceOption
   locDecls.map LocalDecl.userName
 
+initialize registerTraceClass `unused_tactic
+
 mutual
 /-- Search for tactic executions in the info tree and remove the syntax of the tactics that
 changed something. -/
@@ -147,17 +149,26 @@ partial def eraseUsedTactics : InfoTree → M Unit
   | .node i c => do
     if let .ofTacticInfo i := i then
       if let some r := i.stx.getRange? true then
-        -- if the tactic is allowed to not change the goals
-        if i.stx.getKind ∈ allowed
-        then modify (·.erase r)
         -- if the goals have changed
-        else if i.goalsAfter != i.goalsBefore
-        then modify (·.erase r)
+        if i.goalsAfter != i.goalsBefore
+        then
+          --dbg_trace "'{i.stx.getKind}' modifies the goals"
+          modify (·.erase r)
         -- bespoke check for `swap_var`: the only change that it does is
         -- in the usernames of local declarations, so we check the names before and after
+        else
+        -- if the tactic is allowed to not change the goals
+        if i.stx.getKind ∈ allowed
+        then
+          --dbg_trace "'{i.stx.getKind}' is whitelisted"
+          modify (·.erase r)
         else if (i.stx.getKind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
                 (getNames i.mctxBefore != getNames i.mctxAfter)
-        then modify (·.erase r)
+        then
+          --dbg_trace "'{i.stx.getKind}' is 'swap_var' and it is swapping!"
+          modify (·.erase r)
+        else
+          --dbg_trace "\n* '{i.stx.getKind}' does nothing!\n"
         --
         --if actual_change || name_change then
         --  modify (·.erase r)
