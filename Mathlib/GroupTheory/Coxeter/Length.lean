@@ -400,9 +400,8 @@ alias inv_eq_self_of_isReflection := inv_reflection_eq
 theorem length_reflection_odd {t : W} (rt : cs.IsReflection t) : Odd (ℓ t) := by
   rw [Nat.odd_iff]
   rcases rt with ⟨w, i, rfl⟩
-  rw [length_mul_mod_two, Nat.add_mod, length_mul_mod_two, ← Nat.add_mod]
-  simp
-  rw [add_comm, ← add_assoc, ← two_mul, Nat.mul_add_mod]
+  rw [length_mul_mod_two, Nat.add_mod, length_mul_mod_two, ← Nat.add_mod,
+      length_simple, length_inv, add_comm, ← add_assoc, ← two_mul, Nat.mul_add_mod]
   norm_num
 
 alias odd_length_of_isReflection := length_reflection_odd
@@ -462,7 +461,8 @@ theorem rightInvSeq_concat (ω : List B) (i : B) :
   · simp
   · dsimp [rightInvSeq]
     rw [ih]
-    simp
+    simp only [concat_eq_append, wordProd_append, wordProd_cons, wordProd_nil, mul_one, mul_inv_rev,
+      simple_inv, cons_append, cons.injEq, and_true]
     group
 
 theorem leftInvSeq_concat (ω : List B) (i : B) :
