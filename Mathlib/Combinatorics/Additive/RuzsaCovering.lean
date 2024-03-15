@@ -49,8 +49,8 @@ theorem exists_subset_mul_div (ht : t.Nonempty) :
   push_neg at H
   simp_rw [not_disjoint_iff, ← inv_smul_mem_iff] at H
   obtain ⟨b, hb, c, hc₁, hc₂⟩ := H
-  refine' mem_mul.2 ⟨b, a / b, hb, _, by simp⟩
-  exact mem_div.2 ⟨_, _, hc₂, hc₁, by simp [div_eq_mul_inv a b, mul_comm]⟩
+  refine' mem_mul.2 ⟨b, hb, a / b, _, by simp⟩
+  exact mem_div.2 ⟨_, hc₂, _, hc₁, by simp [inv_mul_eq_div]⟩
 #align finset.exists_subset_mul_div Finset.exists_subset_mul_div
 #align finset.exists_subset_add_sub Finset.exists_subset_add_sub
 

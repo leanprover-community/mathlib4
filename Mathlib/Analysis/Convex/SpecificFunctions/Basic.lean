@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Heather Macbeth
 -/
-import Mathlib.Analysis.Convex.Mul
 import Mathlib.Analysis.Convex.Slope
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Tactic.LinearCombination
@@ -68,10 +67,6 @@ theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
 theorem convexOn_exp : ConvexOn ℝ univ exp :=
   strictConvexOn_exp.convexOn
 #align convex_on_exp convexOn_exp
-
-#align convex_on_pow convexOn_pow
-#align even.convex_on_pow Even.convexOn_pow
-#align convex_on_zpow convexOn_zpow
 
 /- `Real.log` is strictly concave on $(0, +∞)$.
 
@@ -225,7 +220,7 @@ lemma exp_mul_le_cosh_add_mul_sinh {t : ℝ} (ht : |t| ≤ 1) (x : ℝ) :
   calc
     _ = exp ((1 + t) / 2 * x + (1 - t) / 2 * (-x)) := by ring_nf
     _ ≤ (1 + t) / 2 * exp x + (1 - t) / 2 * exp (-x) :=
-        convexOn_exp.2 (Set.mem_univ _) (Set.mem_univ _) (by linarith) (by linarith) $ by ring
+        convexOn_exp.2 (Set.mem_univ _) (Set.mem_univ _) (by linarith) (by linarith) <| by ring
     _ = _ := by rw [cosh_eq, sinh_eq]; ring
 
 end Real

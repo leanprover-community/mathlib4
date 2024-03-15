@@ -34,7 +34,7 @@ section FiniteCoproducts
 
 open Limits
 
-variable {α : Type} [Fintype α] {B : Stonean.{u}}
+variable {α : Type} [Finite α] {B : Stonean.{u}}
   (X : α → Stonean.{u})
 
 /--
@@ -127,12 +127,12 @@ Limits.IsColimit.coconePointUniqueUpToIso
   (finiteCoproduct.isColimit' X) (Limits.colimit.isColimit _)
 
 /-- The inclusion maps into the explicit finite coproduct are open embeddings. -/
-lemma finiteCoproduct.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
+lemma finiteCoproduct.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a : α) :
     OpenEmbedding (finiteCoproduct.ι Z a) :=
   openEmbedding_sigmaMk (σ := fun a => (Z a))
 
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
-lemma Sigma.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
+lemma Sigma.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a : α) :
     OpenEmbedding (Sigma.ι Z a) := by
   refine' OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding _
   convert finiteCoproduct.openEmbedding_ι Z a
@@ -143,8 +143,8 @@ lemma Sigma.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (
 
 instance : PreservesFiniteCoproducts Stonean.toCompHaus := by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
-  suffices : PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) Stonean.toCompHaus
-  · exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) Stonean.toCompHaus from
+    preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (Stonean.finiteCoproduct.isColimit _)
   exact CompHaus.finiteCoproduct.isColimit _
 
@@ -180,18 +180,18 @@ def pullback : Stonean where
     constructor
     intro U hU
     dsimp at U
-    have h : IsClopen (f ⁻¹' (Set.range i))
-    · constructor
-      · exact IsOpen.preimage f.continuous hi.open_range
+    have h : IsClopen (f ⁻¹' (Set.range i)) := by
+      constructor
       · refine' IsClosed.preimage f.continuous _
         apply IsCompact.isClosed
         simp only [← Set.image_univ]
         exact IsCompact.image isCompact_univ i.continuous
-    have hU' : IsOpen (Subtype.val '' U) := h.1.openEmbedding_subtype_val.isOpenMap U hU
+      · exact IsOpen.preimage f.continuous hi.open_range
+    have hU' : IsOpen (Subtype.val '' U) := h.2.openEmbedding_subtype_val.isOpenMap U hU
     have := ExtremallyDisconnected.open_closure _ hU'
-    rw [h.2.closedEmbedding_subtype_val.closure_image_eq U] at this
-    suffices hhU : closure U = Subtype.val ⁻¹' (Subtype.val '' (closure U))
-    · rw [hhU]
+    rw [h.1.closedEmbedding_subtype_val.closure_image_eq U] at this
+    suffices hhU : closure U = Subtype.val ⁻¹' (Subtype.val '' (closure U)) by
+      rw [hhU]
       exact isOpen_induced this
     exact ((closure U).preimage_image_eq Subtype.coe_injective).symm
 
@@ -218,7 +218,7 @@ def pullback.lift {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbe
   toFun := fun z => ⟨a z, by
     simp only [Set.mem_preimage]
     use (b z)
-    exact congr_fun (FunLike.ext'_iff.mp w.symm) z⟩
+    exact congr_fun (DFunLike.ext'_iff.mp w.symm) z⟩
   continuous_toFun := by
     apply Continuous.subtype_mk
     exact a.continuous
@@ -248,10 +248,10 @@ lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : Op
     pullback.lift f hi a b w ≫ Stonean.pullback.snd f hi = b := by
   congr
   ext z
-  have := congr_fun (FunLike.ext'_iff.mp w.symm) z
+  have := congr_fun (DFunLike.ext'_iff.mp w.symm) z
   have h : i (b z) = f (a z) := this
-  suffices : b z = (Homeomorph.ofEmbedding i hi.toEmbedding).symm (⟨f (a z), by rw [← h]; simp⟩)
-  · exact this.symm
+  suffices b z = (Homeomorph.ofEmbedding i hi.toEmbedding).symm (⟨f (a z), by rw [← h]; simp⟩) from
+    this.symm
   apply_fun (Homeomorph.ofEmbedding i hi.toEmbedding)
   simpa only [Homeomorph.ofEmbedding, Homeomorph.homeomorph_mk_coe, Equiv.ofInjective_apply,
     Homeomorph.homeomorph_mk_coe_symm, Equiv.apply_symm_apply, Subtype.mk.injEq]

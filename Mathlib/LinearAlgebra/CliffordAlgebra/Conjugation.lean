@@ -92,8 +92,8 @@ theorem reverseOp_ι (m : M) : reverseOp (ι Q m) = op (ι Q m) := lift_ι_apply
 @[simps! apply]
 def reverseOpEquiv : CliffordAlgebra Q ≃ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
   AlgEquiv.ofAlgHom reverseOp (AlgHom.opComm reverseOp)
-    (AlgHom.unop.injective <| hom_ext <| LinearMap.ext <| fun _ => by simp)
-    (hom_ext <| LinearMap.ext <| fun _ => by simp)
+    (AlgHom.unop.injective <| hom_ext <| LinearMap.ext fun _ => by simp)
+    (hom_ext <| LinearMap.ext fun _ => by simp)
 
 @[simp]
 theorem reverseOpEquiv_opComm :
@@ -156,11 +156,11 @@ theorem reverse_comp_involute :
       (involute.toLinearMap.comp reverse : _ →ₗ[R] CliffordAlgebra Q) := by
   ext x
   simp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply]
-  induction x using CliffordAlgebra.induction
-  case h_grade0 => simp
-  case h_grade1 => simp
-  case h_mul a b ha hb => simp only [ha, hb, reverse.map_mul, AlgHom.map_mul]
-  case h_add a b ha hb => simp only [ha, hb, reverse.map_add, AlgHom.map_add]
+  induction x using CliffordAlgebra.induction with
+  | algebraMap => simp
+  | ι => simp
+  | mul a b ha hb => simp only [ha, hb, reverse.map_mul, AlgHom.map_mul]
+  | add a b ha hb => simp only [ha, hb, reverse.map_add, AlgHom.map_add]
 #align clifford_algebra.reverse_comp_involute CliffordAlgebra.reverse_comp_involute
 
 /-- `CliffordAlgebra.reverse` and `CliffordAlgebra.involute` commute. Note that the composition
@@ -336,18 +336,20 @@ TODO: show that these are `iff`s when `Invertible (2 : R)`.
 
 
 theorem involute_eq_of_mem_even {x : CliffordAlgebra Q} (h : x ∈ evenOdd Q 0) : involute x = x := by
-  refine' even_induction Q (AlgHom.commutes _) _ _ x h
-  · rintro x y _hx _hy ihx ihy
+  induction x, h using even_induction with
+  | algebraMap r => exact AlgHom.commutes _ _
+  | add x y _hx _hy ihx ihy =>
     rw [map_add, ihx, ihy]
-  · intro m₁ m₂ x _hx ihx
+  | ι_mul_ι_mul m₁ m₂ x _hx ihx =>
     rw [map_mul, map_mul, involute_ι, involute_ι, ihx, neg_mul_neg]
 #align clifford_algebra.involute_eq_of_mem_even CliffordAlgebra.involute_eq_of_mem_even
 
 theorem involute_eq_of_mem_odd {x : CliffordAlgebra Q} (h : x ∈ evenOdd Q 1) : involute x = -x := by
-  refine' odd_induction Q involute_ι _ _ x h
-  · rintro x y _hx _hy ihx ihy
+  induction x, h using odd_induction with
+  | ι m => exact involute_ι _
+  | add x y _hx _hy ihx ihy =>
     rw [map_add, ihx, ihy, neg_add]
-  · intro m₁ m₂ x _hx ihx
+  | ι_mul_ι_mul m₁ m₂ x _hx ihx =>
     rw [map_mul, map_mul, involute_ι, involute_ι, ihx, neg_mul_neg, mul_neg]
 #align clifford_algebra.involute_eq_of_mem_odd CliffordAlgebra.involute_eq_of_mem_odd
 

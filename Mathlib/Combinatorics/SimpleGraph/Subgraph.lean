@@ -3,7 +3,8 @@ Copyright (c) 2021 Hunter Monroe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Init.Core
+import Mathlib.Combinatorics.SimpleGraph.Maps
 
 #align_import combinatorics.simple_graph.subgraph from "leanprover-community/mathlib"@"c6ef6387ede9983aee397d442974e61f89dfd87b"
 
@@ -467,7 +468,7 @@ instance : CompletelyDistribLattice G.Subgraph :=
     le_top := fun G' => ⟨Set.subset_univ _, fun a b => G'.adj_sub⟩
     bot_le := fun G' => ⟨Set.empty_subset _, fun a b => False.elim⟩
     sSup := sSup
-    -- porting note: needed `apply` here to modify elaboration; previously the term itself was fine.
+    -- Porting note: needed `apply` here to modify elaboration; previously the term itself was fine.
     le_sSup := fun s G' hG' => ⟨by apply Set.subset_iUnion₂ G' hG', fun a b hab => ⟨G', hG', hab⟩⟩
     sSup_le := fun s G' hG' =>
       ⟨Set.iUnion₂_subset fun H hH => (hG' _ hH).1, by
@@ -720,7 +721,7 @@ def inclusion {x y : Subgraph G} (h : x ≤ y) : x.coe →g y.coe where
 
 theorem inclusion.injective {x y : Subgraph G} (h : x ≤ y) : Function.Injective (inclusion h) := by
   intro v w h
-  rw [inclusion, FunLike.coe, Subtype.mk_eq_mk] at h
+  rw [inclusion, DFunLike.coe, Subtype.mk_eq_mk] at h
   exact Subtype.ext h
 #align simple_graph.subgraph.inclusion.injective SimpleGraph.Subgraph.inclusion.injective
 

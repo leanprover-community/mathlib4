@@ -1,7 +1,6 @@
 import Mathlib.Lean.Expr.ReplaceRec
-import Mathlib.Tactic.RunCmd
 import Mathlib.Init.Data.Nat.Notation
-import Std.Tactic.GuardMsgs
+import Lean.Elab.Command
 
 open Lean Meta Elab Command
 
@@ -42,6 +41,6 @@ run_cmd liftTermElabM <| do
   logInfo m!"new type: {t}"
   let d ← getConstInfo `bar
   logInfo m!"after: {d.value!}"
-  guard $ e == d.value!
+  guard <| e == d.value!
 
 end replaceRec

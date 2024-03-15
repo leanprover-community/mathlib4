@@ -87,9 +87,24 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   apply Finset.sum_bij φ
   · -- φ(S) is contained in Sᶜ
     intro ij hij
-    simp only [Finset.mem_univ, Finset.compl_filter, Finset.mem_filter, true_and_iff, Fin.val_succ,
-      Fin.coe_castLT] at hij ⊢
+    simp only [S, Finset.mem_univ, Finset.compl_filter, Finset.mem_filter, true_and_iff,
+      Fin.val_succ, Fin.coe_castLT] at hij ⊢
     linarith
+  · -- φ : S → Sᶜ is injective
+    rintro ⟨i, j⟩ hij ⟨i', j'⟩ hij' h
+    rw [Prod.mk.inj_iff]
+    exact ⟨by simpa using congr_arg Prod.snd h,
+      by simpa [Fin.castSucc_castLT] using congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
+  · -- φ : S → Sᶜ is surjective
+    rintro ⟨i', j'⟩ hij'
+    simp only [S, Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.compl_filter,
+      not_le, Finset.mem_filter, true_and] at hij'
+    refine' ⟨(j'.pred <| _, Fin.castSucc i'), _, _⟩
+    · rintro rfl
+      simp only [Fin.val_zero, not_lt_zero'] at hij'
+    · simpa only [S, Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.mem_filter,
+        Fin.coe_castSucc, Fin.coe_pred, true_and] using Nat.le_sub_one_of_lt hij'
+    · simp only [φ, Fin.castLT_castSucc, Fin.succ_pred]
   · -- identification of corresponding terms in both sums
     rintro ⟨i, j⟩ hij
     dsimp
@@ -98,22 +113,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
     · simp only [Fin.val_succ, pow_add, pow_one, mul_neg, neg_neg, mul_one]
       apply mul_comm
     · rw [CategoryTheory.SimplicialObject.δ_comp_δ'']
-      simpa using hij
-  · -- φ : S → Sᶜ is injective
-    rintro ⟨i, j⟩ ⟨i', j'⟩ hij hij' h
-    rw [Prod.mk.inj_iff]
-    exact ⟨by simpa using congr_arg Prod.snd h,
-      by simpa [Fin.castSucc_castLT] using congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
-  · -- φ : S → Sᶜ is surjective
-    rintro ⟨i', j'⟩ hij'
-    simp only [Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.compl_filter,
-      not_le, Finset.mem_filter, true_and] at hij'
-    refine' ⟨(j'.pred <| _, Fin.castSucc i'), _, _⟩
-    · rintro rfl
-      simp only [Fin.val_zero, not_lt_zero'] at hij'
-    · simpa only [Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.mem_filter,
-        Fin.coe_castSucc, Fin.coe_pred, true_and] using Nat.le_sub_one_of_lt hij'
-    · simp only [Fin.castLT_castSucc, Fin.succ_pred]
+      simpa [S] using hij
 #align algebraic_topology.alternating_face_map_complex.d_squared AlgebraicTopology.AlternatingFaceMapComplex.d_squared
 
 /-!

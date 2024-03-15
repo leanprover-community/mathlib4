@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Yury G. Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
@@ -31,7 +30,7 @@ section Left
 
 variable [CovariantClass M M (· * ·) (· ≤ ·)] {x : M}
 
-@[to_additive (attr := mono) nsmul_le_nsmul_right]
+@[to_additive (attr := mono, gcongr) nsmul_le_nsmul_right]
 theorem pow_le_pow_left' [CovariantClass M M (swap (· * ·)) (· ≤ ·)] {a b : M} (hab : a ≤ b) :
     ∀ i : ℕ, a ^ i ≤ b ^ i
   | 0 => by simp
@@ -56,7 +55,7 @@ theorem pow_le_one' {a : M} (H : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 :=
 #align pow_le_one' pow_le_one'
 #align nsmul_nonpos nsmul_nonpos
 
-@[to_additive nsmul_le_nsmul_left]
+@[to_additive (attr := gcongr) nsmul_le_nsmul_left]
 theorem pow_le_pow_right' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
   let ⟨k, hk⟩ := Nat.le.dest h
   calc
@@ -88,7 +87,7 @@ theorem pow_lt_one' {a : M} (ha : a < 1) {k : ℕ} (hk : k ≠ 0) : a ^ k < 1 :=
 #align pow_lt_one' pow_lt_one'
 #align nsmul_neg nsmul_neg
 
-@[to_additive nsmul_lt_nsmul_left]
+@[to_additive (attr := gcongr) nsmul_lt_nsmul_left]
 theorem pow_lt_pow_right' [CovariantClass M M (· * ·) (· < ·)] {a : M} {n m : ℕ} (ha : 1 < a)
     (h : n < m) : a ^ n < a ^ m := by
   rcases Nat.le.dest h with ⟨k, rfl⟩; clear h
@@ -167,6 +166,10 @@ theorem pow_left_strictMono (hn : n ≠ 0) : StrictMono (· ^ n : M → M) := st
 #align pow_strict_mono_right' pow_left_strictMono
 #align nsmul_strict_mono_left nsmul_right_strictMono
 
+@[to_additive (attr := mono, gcongr) nsmul_lt_nsmul_right]
+lemma pow_lt_pow_left' (hn : n ≠ 0) {a b : M} (hab : a < b) : a ^ n < b ^ n :=
+  pow_left_strictMono hn hab
+
 end CovariantLTSwap
 
 section CovariantLESwap
@@ -222,6 +225,7 @@ section CovariantLE
 
 variable [CovariantClass M M (· * ·) (· ≤ ·)]
 
+-- This generalises to lattices. See `pow_two_semiclosed`
 @[to_additive nsmul_nonneg_iff]
 theorem one_le_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 ≤ x ^ n ↔ 1 ≤ x :=
   ⟨le_imp_le_of_lt_imp_lt fun h => pow_lt_one' h hn, fun h => one_le_pow_of_one_le' h n⟩
@@ -350,7 +354,7 @@ variable [DivInvMonoid G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)
 @[to_additive zsmul_nonneg]
 theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n := by
   lift n to ℕ using hn
-  rw [zpow_ofNat]
+  rw [zpow_coe_nat]
   apply one_le_pow_of_one_le' H
 #align one_le_zpow one_le_zpow
 #align zsmul_nonneg zsmul_nonneg

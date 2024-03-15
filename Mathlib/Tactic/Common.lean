@@ -8,6 +8,9 @@ Authors: Scott Morrison
 import Aesop
 import Qq
 
+-- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
+import ImportGraph.Imports
+
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.ApplyCongr
@@ -19,8 +22,8 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.Check
 import Mathlib.Tactic.Choose
-import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
@@ -45,18 +48,16 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
-import Mathlib.Tactic.Have
 import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.Hint
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Lint
 import Mathlib.Tactic.MkIffOfInductiveProp
--- NormNum imports `Mathlib.Algebra.GroupPower.Lemmas` and `Mathlib.Algebra.Order.Invertible`
+-- NormNum imports `Algebra.Order.Invertible`, `Data.Int.Basic`, `Data.Nat.Cast.Commute`
 -- import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
@@ -67,13 +68,10 @@ import Mathlib.Tactic.Propose
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recover
-import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
-import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Rewrites
-import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
@@ -84,7 +82,6 @@ import Mathlib.Tactic.Simps.Basic
 -- `Gen` / `Testable` / `Sampleable` instances for types should be out in the library,
 -- rather than the theory for those types being imported into `SlimCheck`.
 -- import Mathlib.Tactic.SlimCheck
-import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs
@@ -98,7 +95,6 @@ import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace
-import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
@@ -109,7 +105,6 @@ import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
-import Mathlib.Util.Imports
 import Mathlib.Util.WhatsNew
 
 /-!
@@ -133,5 +128,6 @@ register_hint aesop
 register_hint simp_all?
 register_hint exact?
 register_hint decide
+register_hint omega
 
 end Hint

@@ -30,7 +30,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} [UniformSpace α] [UniformSpa
 /-- A map `f : α → β` between uniform spaces is called *uniform inducing* if the uniformity filter
 on `α` is the pullback of the uniformity filter on `β` under `Prod.map f f`. If `α` is a separated
 space, then this implies that `f` is injective, hence it is a `UniformEmbedding`. -/
-@[mk_iff uniformInducing_iff]
+@[mk_iff]
 structure UniformInducing (f : α → β) : Prop where
   /-- The uniformity filter on the domain is the pullback of the uniformity filter on the codomain
   under `Prod.map f f`. -/
@@ -38,15 +38,13 @@ structure UniformInducing (f : α → β) : Prop where
 #align uniform_inducing UniformInducing
 #align uniform_inducing_iff uniformInducing_iff
 
-protected lemma UniformInducing.comap_uniformSpace {f : α → β} (hf : UniformInducing f) :
-    ‹UniformSpace β›.comap f = ‹UniformSpace α› :=
-  UniformSpace.ext hf.1
-#align uniform_inducing.comap_uniform_space UniformInducing.comap_uniformSpace
-
 lemma uniformInducing_iff_uniformSpace {f : α → β} :
     UniformInducing f ↔ ‹UniformSpace β›.comap f = ‹UniformSpace α› := by
   rw [uniformInducing_iff, UniformSpace.ext_iff, Filter.ext_iff]
   rfl
+
+protected alias ⟨UniformInducing.comap_uniformSpace, _⟩ := uniformInducing_iff_uniformSpace
+#align uniform_inducing.comap_uniform_space UniformInducing.comap_uniformSpace
 
 lemma uniformInducing_iff' {f : α → β} :
     UniformInducing f ↔ UniformContinuous f ∧ comap (Prod.map f f) (𝓤 β) ≤ 𝓤 α := by
@@ -107,7 +105,7 @@ theorem UniformInducing.uniformContinuousOn_iff {f : α → β} {g : β → γ} 
     (hg : UniformInducing g) :
     UniformContinuousOn f S ↔ UniformContinuousOn (g ∘ f) S := by
   dsimp only [UniformContinuousOn, Tendsto]
-  rw [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map]; rfl
+  rw [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map, comp_def, comp_def]
 
 theorem UniformInducing.inducing {f : α → β} (h : UniformInducing f) : Inducing f := by
   obtain rfl := h.comap_uniformSpace
@@ -136,7 +134,7 @@ protected theorem UniformInducing.injective [T0Space α] {f : α → β} (h : Un
 
 /-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
 injective. If `α` is a separated space, then the latter assumption follows from the former. -/
-@[mk_iff uniformEmbedding_iff]
+@[mk_iff]
 structure UniformEmbedding (f : α → β) extends UniformInducing f : Prop where
   /-- A uniform embedding is injective. -/
   inj : Function.Injective f

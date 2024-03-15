@@ -331,7 +331,7 @@ theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [H
     (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp ?_
   refine ((this.precompose_isIso (spanCompIso _ _ _).hom).map_reflective adj).of_iso
     (IsColimit.uniqueUpToIso ?_ ?_)
-  · exact isColimitOfPreserves Gl ((IsColimit.precomposeHomEquiv _ _).symm $ pushoutIsPushout _ _)
+  · exact isColimitOfPreserves Gl ((IsColimit.precomposeHomEquiv _ _).symm <| pushoutIsPushout _ _)
   · exact (IsColimit.precomposeHomEquiv _ _).symm H.isColimit
 
 end functor

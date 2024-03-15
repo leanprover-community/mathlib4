@@ -179,10 +179,6 @@ instance instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (Wea
     refine' cast (congr_arg _ _) (eval_continuous B (-y))
     ext x
     simp only [map_neg, Function.comp_apply, LinearMap.neg_apply]
-    -- Porting note: mathlib3 proof was done here
-    rw [← (B x).neg_apply]
-    congr
-    exact (map_neg B x).symm
 
 end Ring
 
@@ -233,14 +229,17 @@ instance instContinuousAdd : ContinuousAdd (WeakDual 𝕜 E) :=
 instance instInhabited : Inhabited (WeakDual 𝕜 E) :=
   ContinuousLinearMap.inhabited
 
+instance instFunLike : FunLike (WeakDual 𝕜 E) E 𝕜 :=
+  ContinuousLinearMap.funLike
+
 instance instContinuousLinearMapClass : ContinuousLinearMapClass (WeakDual 𝕜 E) 𝕜 E 𝕜 :=
   ContinuousLinearMap.continuousSemilinearMapClass
 #align weak_dual.weak_dual.continuous_linear_map_class WeakDual.instContinuousLinearMapClass
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun (WeakDual 𝕜 E) fun _ => E → 𝕜 :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/

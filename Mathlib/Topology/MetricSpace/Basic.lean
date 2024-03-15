@@ -3,7 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.MetricSpace.ProperSpace
 
 #align_import topology.metric_space.basic from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
@@ -287,7 +287,7 @@ instance : MetricSpace Empty where
   dist_self _ := rfl
   dist_comm _ _ := rfl
   edist _ _ := 0
-  edist_dist _ _ := ENNReal.ofReal_zero.symm -- porting note: should not be needed
+  edist_dist _ _ := ENNReal.ofReal_zero.symm -- Porting note: should not be needed
   eq_of_dist_eq_zero _ := Subsingleton.elim _ _
   dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
   toUniformSpace := inferInstance
@@ -298,7 +298,7 @@ instance : MetricSpace PUnit.{u + 1} where
   dist_self _ := rfl
   dist_comm _ _ := rfl
   edist _ _ := 0
-  edist_dist _ _ := ENNReal.ofReal_zero.symm -- porting note: should not be needed
+  edist_dist _ _ := ENNReal.ofReal_zero.symm -- Porting note: should not be needed
   eq_of_dist_eq_zero _ := Subsingleton.elim _ _
   dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
   toUniformSpace := inferInstance
@@ -348,7 +348,7 @@ section SecondCountable
 
 open TopologicalSpace
 
--- porting note: todo: use `Countable` instead of `Encodable`
+-- Porting note: todo: use `Countable` instead of `Encodable`
 /-- A metric space is second countable if one can reconstruct up to any `ε>0` any element of the
 space from countably many data. -/
 theorem secondCountable_of_countable_discretization {α : Type u} [MetricSpace α]
@@ -371,7 +371,7 @@ end Metric
 section EqRel
 
 instance {α : Type u} [PseudoMetricSpace α] : Dist (UniformSpace.SeparationQuotient α) where
-  dist p q := Quotient.liftOn₂' p q dist <| fun x y x' y' hx hy => by
+  dist p q := Quotient.liftOn₂' p q dist fun x y x' y' hx hy => by
     rw [dist_edist, dist_edist, ← UniformSpace.SeparationQuotient.edist_mk x,
       ← UniformSpace.SeparationQuotient.edist_mk x', Quot.sound hx, Quot.sound hy]
 

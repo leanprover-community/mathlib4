@@ -112,7 +112,7 @@ private lemma pairwiseDisjoint_distinctPairs :
   rw [mem_offDiag] at hs ht
   obtain ⟨a, ha⟩ := Finpartition.nonempty_of_mem_parts _ huv₁.1
   obtain ⟨b, hb⟩ := Finpartition.nonempty_of_mem_parts _ huv₁.2
-  exact hst $ Subtype.ext_val <| Prod.ext
+  exact hst <| Subtype.ext_val <| Prod.ext
     (P.disjoint.elim_finset hs.1 ht.1 a (Finpartition.le _ huv₁.1 ha) <|
       Finpartition.le _ huv₂.1 ha) <|
         P.disjoint.elim_finset hs.2.1 ht.2.1 b (Finpartition.le _ huv₁.2 hb) <|
@@ -146,8 +146,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
           P.parts.card ^ 2 * (ε ^ 5 / 4) : ℝ) / P.parts.card ^ 2 := by
         rw [coe_energy, add_div, mul_div_cancel_left]; positivity
     _ ≤ (∑ x in P.parts.offDiag.attach, (∑ i in distinctPairs G ε hP x,
-          G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ P.parts.card) / P.parts.card ^ 2 :=
-        div_le_div_of_le_of_nonneg ?_ $ by positivity
+          G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ P.parts.card) / P.parts.card ^ 2 := ?_
     _ = (∑ x in P.parts.offDiag.attach, ∑ i in distinctPairs G ε hP x,
           G.edgeDensity i.1 i.2 ^ 2 : ℝ) / (increment hP G ε).parts.card ^ 2 := by
         rw [card_increment hPα hPG, coe_stepBound, mul_pow, pow_right_comm,
@@ -157,6 +156,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
         gcongr
         rw [← sum_biUnion pairwiseDisjoint_distinctPairs]
         exact sum_le_sum_of_subset_of_nonneg distinctPairs_increment fun i _ _ ↦ sq_nonneg _
+  gcongr
   rw [Finpartition.IsUniform, not_le, mul_tsub, mul_one, ← offDiag_card] at hPG
   calc
     _ ≤ ∑ x in P.parts.offDiag, (edgeDensity G x.1 x.2 : ℝ) ^ 2 +
@@ -180,8 +180,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
           nlinarith
         · norm_num
     _ = (P.parts.offDiag.card * ε * (ε ^ 4 / 3) - P.parts.offDiag.card * (ε ^ 5 / 25)) := by ring
-    _ ≤ ((nonUniforms P G ε).card * (ε ^ 4 / 3) - P.parts.offDiag.card * (ε ^ 5 / 25)) := by
-        gcongr
+    _ ≤ ((nonUniforms P G ε).card * (ε ^ 4 / 3) - P.parts.offDiag.card * (ε ^ 5 / 25)) := by gcongr
 #align szemeredi_regularity.energy_increment SzemerediRegularity.energy_increment
 
 end SzemerediRegularity

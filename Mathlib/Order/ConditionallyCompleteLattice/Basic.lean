@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.WellFounded
+import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Lattice
 
@@ -42,7 +43,7 @@ Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot
 -/
 
 
-open Classical
+open scoped Classical
 
 noncomputable instance WithTop.instSupSet {α : Type*} [Preorder α] [SupSet α] :
     SupSet (WithTop α) :=
@@ -62,7 +63,7 @@ noncomputable instance WithBot.instInfSet {α : Type*} [Preorder α] [InfSet α]
 
 theorem WithTop.sSup_eq [Preorder α] [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
     (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
-  (if_neg hs).trans $ if_pos hs'
+  (if_neg hs).trans <| if_pos hs'
 #align with_top.Sup_eq WithTop.sSup_eq
 
 theorem WithTop.sInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) :
@@ -72,7 +73,7 @@ theorem WithTop.sInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) 
 
 theorem WithBot.sInf_eq [Preorder α] [InfSet α] {s : Set (WithBot α)} (hs : ⊥ ∉ s)
     (hs' : BddBelow ((↑) ⁻¹' s : Set α)) : sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
-  (if_neg hs).trans $ if_pos hs'
+  (if_neg hs).trans <| if_pos hs'
 #align with_bot.Inf_eq WithBot.sInf_eq
 
 theorem WithBot.sSup_eq [SupSet α] {s : Set (WithBot α)} (hs : ¬s ⊆ {⊥}) :
@@ -268,7 +269,7 @@ instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrde
 
 section
 
-open Classical
+open scoped Classical
 
 /-- A well founded linear order is conditionally complete, with a bottom element. -/
 @[reducible]
@@ -863,11 +864,11 @@ theorem ciInf_unique [Unique ι] {s : ι → α} : ⨅ i, s i = s default :=
   ciSup_unique (α := αᵒᵈ)
 #align infi_unique ciInf_unique
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s i = s i :=
   @ciSup_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
   @ciInf_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
@@ -975,7 +976,7 @@ lemma Set.Ici_ciSup [Nonempty ι] {f : ι → α} (hf : BddAbove (range f)) :
 
 end ConditionallyCompleteLattice
 
-instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ∀ _i : ι, Type*}
+instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ι → Type*}
     [∀ i, ConditionallyCompleteLattice (α i)] : ConditionallyCompleteLattice (∀ i, α i) :=
   { Pi.lattice, Pi.supSet, Pi.infSet with
     le_csSup := fun s f ⟨g, hg⟩ hf i =>
@@ -1270,7 +1271,7 @@ end ConditionallyCompleteLinearOrderBot
 
 namespace WithTop
 
-open Classical
+open scoped Classical
 
 variable [ConditionallyCompleteLinearOrderBot α]
 
@@ -1618,7 +1619,7 @@ This result can be used to show that the extended reals `[-∞, ∞]` are a comp
 -/
 
 
-open Classical
+open scoped Classical
 
 /-- Adding a top element to a conditionally complete lattice
 gives a conditionally complete lattice -/
@@ -1654,7 +1655,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
         · rw [h] at h₁
           cases h₁
         · convert bot_le (a := a)
-          -- porting note: previous proof relied on convert unfolding
+          -- Porting note: previous proof relied on convert unfolding
           -- the definition of ⊥
           apply congr_arg
           simp only [h, preimage_empty, WithBot.csSup_empty]

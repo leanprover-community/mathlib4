@@ -12,7 +12,7 @@ import Mathlib.RingTheory.EuclideanDomain
 /-!
 # Theory of univariate polynomials
 
-This file starts looking like the ring theory of $ R[X] $
+This file starts looking like the ring theory of $R[X]$
 
 -/
 
@@ -73,7 +73,7 @@ theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
   · intro b hb hb0
     rw [iterate_derivative_X_sub_pow, eval_smul, eval_mul, eval_smul, eval_pow,
       Nat.sub_sub_self (mem_range_succ_iff.mp hb), eval_sub, eval_X, eval_C, sub_self,
-      zero_pow' b hb0, smul_zero, zero_mul, smul_zero]
+      zero_pow hb0, smul_zero, zero_mul, smul_zero]
 
 theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors
     {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
@@ -127,7 +127,7 @@ theorem one_lt_rootMultiplicity_iff_isRoot
   rw [one_lt_rootMultiplicity_iff_isRoot_iterate_derivative h]
   refine ⟨fun h ↦ ⟨h 0 (by norm_num), h 1 (by norm_num)⟩, fun ⟨h0, h1⟩ m hm ↦ ?_⟩
   obtain (_|_|m) := m
-  exacts [h0, h1, by linarith [hm]]
+  exacts [h0, h1, by omega]
 
 end CommRing
 
@@ -224,17 +224,6 @@ theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 <
     rw [eq_C_of_degree_le_zero h] at hp0 hp
     exact hp (IsUnit.map C (IsUnit.mk0 (coeff p 0) (mt C_inj.2 (by simpa using hp0))))
 #align polynomial.degree_pos_of_ne_zero_of_nonunit Polynomial.degree_pos_of_ne_zero_of_nonunit
-
-theorem monic_mul_leadingCoeff_inv (h : p ≠ 0) : Monic (p * C (leadingCoeff p)⁻¹) := by
-  rw [Monic, leadingCoeff_mul, leadingCoeff_C,
-    mul_inv_cancel (show leadingCoeff p ≠ 0 from mt leadingCoeff_eq_zero.1 h)]
-#align polynomial.monic_mul_leading_coeff_inv Polynomial.monic_mul_leadingCoeff_inv
-
-theorem degree_mul_leadingCoeff_inv (p : R[X]) (h : q ≠ 0) :
-    degree (p * C (leadingCoeff q)⁻¹) = degree p := by
-  have h₁ : (leadingCoeff q)⁻¹ ≠ 0 := inv_ne_zero (mt leadingCoeff_eq_zero.1 h)
-  rw [degree_mul, degree_C h₁, add_zero]
-#align polynomial.degree_mul_leading_coeff_inv Polynomial.degree_mul_leadingCoeff_inv
 
 @[simp]
 theorem map_eq_zero [Semiring S] [Nontrivial S] (f : R →+* S) : p.map f = 0 ↔ p = 0 := by
@@ -507,7 +496,7 @@ theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
     have : p.coeff 1 ≠ 0 := by
       have h' := natDegree_eq_of_degree_eq_some h
       change natDegree p = 1 at h'; rw [← h']
-      exact mt leadingCoeff_eq_zero.1 fun h0 => by simp [h0] at h; contradiction
+      exact mt leadingCoeff_eq_zero.1 fun h0 => by simp [h0] at h
     conv in p => rw [eq_X_add_C_of_degree_le_one (show degree p ≤ 1 by rw [h])]
     simp [IsRoot, mul_div_cancel' _ this]⟩
 #align polynomial.exists_root_of_degree_eq_one Polynomial.exists_root_of_degree_eq_one
@@ -590,7 +579,7 @@ theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
   have : Prime (normalize p) :=
     Monic.prime_of_degree_eq_one (hp1 ▸ degree_normalize)
-      (monic_normalize fun hp0 => absurd hp1 (hp0.symm ▸ by simp [degree_zero, ← WithBot.coe_one]))
+      (monic_normalize fun hp0 => absurd hp1 (hp0.symm ▸ by simp [degree_zero]))
   exact (normalize_associated _).prime this
 #align polynomial.prime_of_degree_eq_one Polynomial.prime_of_degree_eq_one
 
@@ -655,6 +644,43 @@ theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f
   rwa [← C_inj, C_0]
 #align polynomial.is_coprime_of_is_root_of_eval_derivative_ne_zero Polynomial.isCoprime_of_is_root_of_eval_derivative_ne_zero
 
+/-- To check a polynomial over a field is irreducible, it suffices to check only for
+divisors that have smaller degree.
+
+See also: `Polynomial.Monic.irreducible_iff_natDegree`.
+-/
+theorem irreducible_iff_degree_lt (p : R[X]) (hp0 : p ≠ 0) (hpu : ¬ IsUnit p) :
+    Irreducible p ↔ ∀ q, q.degree ≤ ↑(natDegree p / 2) → q ∣ p → IsUnit q := by
+  rw [← irreducible_mul_leadingCoeff_inv,
+      (monic_mul_leadingCoeff_inv hp0).irreducible_iff_degree_lt]
+  simp [hp0, natDegree_mul_leadingCoeff_inv]
+  · contrapose! hpu
+    exact isUnit_of_mul_eq_one _ _ hpu
+
+/-- To check a polynomial `p` over a field is irreducible, it suffices to check there are no
+divisors of degree `0 < d ≤ degree p / 2`.
+
+See also: `Polynomial.Monic.irreducible_iff_natDegree'`.
+-/
+theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsUnit p) :
+    Irreducible p ↔ ∀ q, Monic q → natDegree q ∈ Finset.Ioc 0 (natDegree p / 2) → ¬ q ∣ p := by
+  have : p * C (leadingCoeff p)⁻¹ ≠ 1 := by
+    contrapose! hpu
+    exact isUnit_of_mul_eq_one _ _ hpu
+  rw [← irreducible_mul_leadingCoeff_inv,
+      (monic_mul_leadingCoeff_inv hp0).irreducible_iff_lt_natDegree_lt this,
+      natDegree_mul_leadingCoeff_inv _ hp0]
+  simp only [IsUnit.dvd_mul_right
+    (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
+
 end Field
 
 end Polynomial
+
+/-- An irreducible polynomial over a field must have positive degree. -/
+theorem Irreducible.natDegree_pos {F : Type*} [Field F] {f : F[X]} (h : Irreducible f) :
+    0 < f.natDegree := Nat.pos_of_ne_zero fun H ↦ by
+  obtain ⟨x, hf⟩ := natDegree_eq_zero.1 H
+  by_cases hx : x = 0
+  · rw [← hf, hx, map_zero] at h; exact not_irreducible_zero h
+  exact h.1 (hf ▸ isUnit_C.2 (Ne.isUnit hx))

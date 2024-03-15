@@ -1,8 +1,9 @@
 /-
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Alistair Tucker
+Authors: Yury G. Kudryashov, Alistair Tucker, Wen Yang
 -/
+import Mathlib.Data.Set.Intervals.Image
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Topology.Order.Basic
 
@@ -32,6 +33,9 @@ on intervals.
   is included `s`, then `[a, b] ⊆ s`.
 * `IsClosed.Icc_subset_of_forall_exists_gt`, `IsClosed.mem_of_ge_of_forall_exists_gt` : two
   other versions of the “continuous induction” principle.
+* `ContinuousOn.StrictMonoOn_of_InjOn_Ioo` :
+  Every continuous injective `f : (a, b) → δ` is strictly monotone
+  or antitone (increasing or decreasing).
 
 ## Tags
 
@@ -341,8 +345,7 @@ on a closed subset, contains `a`, and the set `s ∩ [a, b)` has no maximal poin
 theorem IsClosed.mem_of_ge_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
     (ha : a ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ico a b, (s ∩ Ioc x b).Nonempty) : b ∈ s := by
   let S := s ∩ Icc a b
-  replace ha : a ∈ S
-  exact ⟨ha, left_mem_Icc.2 hab⟩
+  replace ha : a ∈ S := ⟨ha, left_mem_Icc.2 hab⟩
   have Sbd : BddAbove S := ⟨b, fun z hz => hz.2.2⟩
   let c := sSup (s ∩ Icc a b)
   have c_mem : c ∈ S := hs.csSup_mem ⟨_, ha⟩ Sbd
@@ -392,8 +395,8 @@ theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : I
     (Icc a b ∩ (s ∩ t)).Nonempty := by
   have xyab : Icc x y ⊆ Icc a b := Icc_subset_Icc hx.1.1 hy.1.2
   by_contra hst
-  suffices : Icc x y ⊆ s
-  exact hst ⟨y, xyab <| right_mem_Icc.2 hxy, this <| right_mem_Icc.2 hxy, hy.2⟩
+  suffices Icc x y ⊆ s from
+    hst ⟨y, xyab <| right_mem_Icc.2 hxy, this <| right_mem_Icc.2 hxy, hy.2⟩
   apply (IsClosed.inter hs isClosed_Icc).Icc_subset_of_forall_mem_nhdsWithin hx.2
   rintro z ⟨zs, hz⟩
   have zt : z ∈ tᶜ := fun zt => hst ⟨z, xyab <| Ico_subset_Icc_self hz, zs, zt⟩
@@ -644,3 +647,123 @@ theorem ContinuousOn.surjOn_of_tendsto' {f : α → δ} {s : Set α} [OrdConnect
     (htop : Tendsto (fun x : s => f x) atTop atBot) : SurjOn f s univ :=
   @ContinuousOn.surjOn_of_tendsto α _ _ _ _ δᵒᵈ _ _ _ _ _ _ hs hf hbot htop
 #align continuous_on.surj_on_of_tendsto' ContinuousOn.surjOn_of_tendsto'
+
+theorem Continuous.strictMono_of_inj_boundedOrder [BoundedOrder α] {f : α → δ}
+    (hf_c : Continuous f) (hf : f ⊥ ≤ f ⊤) (hf_i : Injective f) : StrictMono f := by
+  intro a b hab
+  by_contra! h
+  have H : f b < f a := lt_of_le_of_ne h <| hf_i.ne hab.ne'
+  by_cases ha : f a ≤ f ⊥
+  · obtain ⟨u, hu⟩ := intermediate_value_Ioc le_top hf_c.continuousOn ⟨H.trans_le ha, hf⟩
+    have : u = ⊥ := hf_i hu.2
+    aesop
+  · by_cases hb : f ⊥ < f b
+    · obtain ⟨u, hu⟩ := intermediate_value_Ioo bot_le hf_c.continuousOn ⟨hb, H⟩
+      rw [hf_i hu.2] at hu
+      exact (hab.trans hu.1.2).false
+    · push_neg at ha hb
+      replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (lt_of_lt_of_le' hab bot_le).ne'
+      obtain ⟨u, hu⟩ := intermediate_value_Ioo' hab.le hf_c.continuousOn ⟨hb, ha⟩
+      have : u = ⊥ := hf_i hu.2
+      aesop
+
+theorem Continuous.strictAnti_of_inj_boundedOrder [BoundedOrder α] {f : α → δ}
+    (hf_c : Continuous f) (hf : f ⊤ ≤ f ⊥) (hf_i : Injective f) : StrictAnti f :=
+  hf_c.strictMono_of_inj_boundedOrder (δ := δᵒᵈ) hf hf_i
+
+theorem Continuous.strictMono_of_inj_boundedOrder' [BoundedOrder α] {f : α → δ}
+    (hf_c : Continuous f) (hf_i : Injective f) : StrictMono f ∨ StrictAnti f :=
+  (le_total (f ⊥) (f ⊤)).imp
+    (hf_c.strictMono_of_inj_boundedOrder · hf_i)
+    (hf_c.strictAnti_of_inj_boundedOrder · hf_i)
+
+/-- Suppose `α` is equipped with a conditionally complete linear dense order and `f : α → δ` is
+continuous and injective. Then `f` is strictly monotone (increasing) if
+it is strictly monotone (increasing) on some closed interval `[a, b]`.-/
+theorem Continuous.strictMonoOn_of_inj_rigidity {f : α → δ}
+    (hf_c : Continuous f) (hf_i : Injective f) {a b : α} (hab : a < b)
+    (hf_mono : StrictMonoOn f (Icc a b)) : StrictMono f := by
+  intro x y hxy
+  let s := min a x
+  let t := max b y
+  have hsa : s ≤ a := min_le_left a x
+  have hbt : b ≤ t := le_max_left b y
+  have hst : s ≤ t := hsa.trans $ hbt.trans' hab.le
+  have hf_mono_st : StrictMonoOn f (Icc s t) ∨ StrictAntiOn f (Icc s t) := by
+    letI := Icc.completeLinearOrder hst
+    have := Continuous.strictMono_of_inj_boundedOrder' (f := Set.restrict (Icc s t) f)
+      hf_c.continuousOn.restrict (hf_i.injOn _).injective
+    exact this.imp strictMono_restrict.mp strictAntiOn_iff_strictAnti.mpr
+  have (h : StrictAntiOn f (Icc s t)) : False := by
+    have : Icc a b ⊆ Icc s t := Icc_subset_Icc hsa hbt
+    replace : StrictAntiOn f (Icc a b) := StrictAntiOn.mono h this
+    replace : IsAntichain (· ≤ ·) (Icc a b) :=
+      IsAntichain.of_strictMonoOn_antitoneOn hf_mono this.antitoneOn
+    exact this.not_lt (left_mem_Icc.mpr (le_of_lt hab)) (right_mem_Icc.mpr (le_of_lt hab)) hab
+  replace hf_mono_st : StrictMonoOn f (Icc s t) := hf_mono_st.resolve_right this
+  have hsx : s ≤ x := min_le_right a x
+  have hyt : y ≤ t := le_max_right b y
+  replace : Icc x y ⊆ Icc s t := Icc_subset_Icc hsx hyt
+  replace : StrictMonoOn f (Icc x y) := StrictMonoOn.mono hf_mono_st this
+  exact this (left_mem_Icc.mpr (le_of_lt hxy)) (right_mem_Icc.mpr (le_of_lt hxy)) hxy
+
+/-- Suppose `f : [a, b] → δ` is
+continuous and injective. Then `f` is strictly monotone (increasing) if `f(a) ≤ f(b)`.-/
+theorem ContinuousOn.strictMonoOn_of_injOn_Icc {a b : α} {f : α → δ}
+    (hab : a ≤ b) (hfab : f a ≤ f b)
+    (hf_c : ContinuousOn f (Icc a b)) (hf_i : InjOn f (Icc a b)) :
+    StrictMonoOn f (Icc a b) := by
+  letI := Icc.completeLinearOrder hab
+  refine StrictMono.of_restrict ?_
+  set g : Icc a b → δ := Set.restrict (Icc a b) f
+  have hgab : g ⊥ ≤ g ⊤ := by aesop
+  exact Continuous.strictMono_of_inj_boundedOrder (f := g) hf_c.restrict hgab hf_i.injective
+
+/-- Suppose `f : [a, b] → δ` is
+continuous and injective. Then `f` is strictly antitone (decreasing) if `f(b) ≤ f(a)`.-/
+theorem ContinuousOn.strictAntiOn_of_injOn_Icc {a b : α} {f : α → δ}
+    (hab : a ≤ b) (hfab : f b ≤ f a)
+    (hf_c : ContinuousOn f (Icc a b)) (hf_i : InjOn f (Icc a b)) :
+    StrictAntiOn f (Icc a b) := ContinuousOn.strictMonoOn_of_injOn_Icc (δ := δᵒᵈ) hab hfab hf_c hf_i
+
+/-- Suppose `f : [a, b] → δ` is continuous and injective. Then `f` is strictly monotone
+or antitone (increasing or decreasing).-/
+theorem ContinuousOn.strictMonoOn_of_injOn_Icc' {a b : α} {f : α → δ} (hab : a ≤ b)
+    (hf_c : ContinuousOn f (Icc a b)) (hf_i : InjOn f (Icc a b)) :
+    StrictMonoOn f (Icc a b) ∨ StrictAntiOn f (Icc a b) :=
+  (le_total (f a) (f b)).imp
+    (ContinuousOn.strictMonoOn_of_injOn_Icc hab · hf_c hf_i)
+    (ContinuousOn.strictAntiOn_of_injOn_Icc hab · hf_c hf_i)
+
+/-- Suppose `α` is equipped with a conditionally complete linear dense order and `f : α → δ` is
+continuous and injective. Then `f` is strictly monotone or antitone (increasing or decreasing).-/
+theorem Continuous.strictMono_of_inj {f : α → δ}
+    (hf_c : Continuous f) (hf_i : Injective f) : StrictMono f ∨ StrictAnti f := by
+  have H {c d : α} (hcd : c < d) : StrictMono f ∨ StrictAnti f :=
+    (hf_c.continuousOn.strictMonoOn_of_injOn_Icc' hcd.le (hf_i.injOn _)).imp
+      (hf_c.strictMonoOn_of_inj_rigidity hf_i hcd)
+      (hf_c.strictMonoOn_of_inj_rigidity (δ := δᵒᵈ) hf_i hcd)
+  by_cases hn : Nonempty α
+  · let a : α := Classical.choice ‹_›
+    by_cases h : ∃ b : α, a ≠ b
+    · choose b hb using h
+      by_cases hab : a < b
+      · exact H hab
+      · push_neg at hab
+        have : b < a := by exact Ne.lt_of_le (id (Ne.symm hb)) hab
+        exact H this
+    · push_neg at h
+      haveI : Subsingleton α := ⟨fun c d => Trans.trans (h c).symm (h d)⟩
+      exact Or.inl <| Subsingleton.strictMono f
+  · aesop
+
+/-- Every continuous injective `f : (a, b) → δ` is strictly monotone
+or antitone (increasing or decreasing).-/
+theorem ContinuousOn.strictMonoOn_of_injOn_Ioo {a b : α} {f : α → δ} (hab : a < b)
+    (hf_c : ContinuousOn f (Ioo a b)) (hf_i : InjOn f (Ioo a b)) :
+    StrictMonoOn f (Ioo a b) ∨ StrictAntiOn f (Ioo a b) := by
+  haveI : Inhabited (Ioo a b) := Classical.inhabited_of_nonempty (nonempty_Ioo_subtype hab)
+  let g : Ioo a b → δ := Set.restrict (Ioo a b) f
+  have : StrictMono g ∨ StrictAnti g :=
+    Continuous.strictMono_of_inj hf_c.restrict hf_i.injective
+  exact this.imp strictMono_restrict.mp strictAntiOn_iff_strictAnti.mpr

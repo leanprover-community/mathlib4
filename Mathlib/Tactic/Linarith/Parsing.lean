@@ -42,7 +42,7 @@ and returns the value associated with this key if it exists.
 Otherwise, it fails.
 -/
 def List.findDefeq (red : TransparencyMode) (m : List (Expr × v)) (e : Expr) : MetaM v := do
-  if let some (_, n) ← m.findM? $ fun ⟨e', _⟩ => withTransparency red (isDefEq e e') then
+  if let some (_, n) ← m.findM? fun ⟨e', _⟩ => withTransparency red (isDefEq e e') then
     return n
   else
     failure

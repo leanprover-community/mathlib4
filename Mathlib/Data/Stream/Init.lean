@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Std.Tactic.Ext
 import Mathlib.Data.Stream.Defs
 import Mathlib.Logic.Function.Basic
 import Mathlib.Init.Data.List.Basic
@@ -606,8 +605,9 @@ theorem get?_take_succ (n : Nat) (s : Stream' α) :
 
 @[simp] theorem dropLast_take {xs : Stream' α} :
     (Stream'.take n xs).dropLast = Stream'.take (n-1) xs := by
-  cases n; case zero => simp
-  case succ n => rw [take_succ', List.dropLast_concat, Nat.add_one_sub_one]
+  cases n with
+  | zero => simp
+  | succ n => rw [take_succ', List.dropLast_concat, Nat.add_one_sub_one]
 
 @[simp]
 theorem append_take_drop : ∀ (n : Nat) (s : Stream' α),

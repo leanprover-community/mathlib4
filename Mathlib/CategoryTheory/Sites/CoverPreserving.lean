@@ -66,7 +66,7 @@ variable {L : GrothendieckTopology A}
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
 if for all covering sieves `R` in `C`, `R.functorPushforward G` is a covering sieve in `D`.
 -/
--- porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note: removed `@[nolint has_nonempty_instance]`
 structure CoverPreserving (G : C ⥤ D) : Prop where
   cover_preserve : ∀ {U : C} {S : Sieve U} (_ : S ∈ J U), S.functorPushforward G ∈ K (G.obj U)
 #align category_theory.cover_preserving CategoryTheory.CoverPreserving
@@ -90,7 +90,7 @@ compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each comm
 This is actually stronger than merely preserving compatible families because of the definition of
 `functorPushforward` used.
 -/
--- porting note: this doesn't work yet @[nolint has_nonempty_instance]
+-- Porting note: this doesn't work yet @[nolint has_nonempty_instance]
 structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop where
   compatible :
     ∀ (ℱ : SheafOfTypes.{w} K) {Z} {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T}
@@ -120,7 +120,7 @@ theorem Presieve.FamilyOfElements.Compatible.functorPushforward :
 theorem CompatiblePreserving.apply_map {Y : C} {f : Y ⟶ Z} (hf : T f) :
     x.functorPushforward G (G.map f) (image_mem_functorPushforward G T hf) = x f hf := by
   unfold FamilyOfElements.functorPushforward
-  rcases e₁ : getFunctorPushforwardStructure (image_mem_functorPushforward G T hf) with
+  rcases getFunctorPushforwardStructure (image_mem_functorPushforward G T hf) with
     ⟨X, g, f', hg, eq⟩
   simpa using hG.compatible ℱ h f' (𝟙 _) hg hf (by simp [eq])
 #align category_theory.compatible_preserving.apply_map CategoryTheory.CompatiblePreserving.apply_map
@@ -142,16 +142,16 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
   let c' := IsCofiltered.cone (c.toStructuredArrow ⋙ StructuredArrow.pre _ _ _)
   have eq₁ : f₁ = (c'.pt.hom ≫ G.map (c'.π.app left).right) ≫ eqToHom (by simp) := by
     erw [← (c'.π.app left).w]
-    dsimp
+    dsimp [c]
     simp
   have eq₂ : f₂ = (c'.pt.hom ≫ G.map (c'.π.app right).right) ≫ eqToHom (by simp) := by
     erw [← (c'.π.app right).w]
-    dsimp
+    dsimp [c]
     simp
   conv_lhs => rw [eq₁]
   conv_rhs => rw [eq₂]
   simp only [op_comp, Functor.map_comp, types_comp_apply, eqToHom_op, eqToHom_map]
-  apply congr_arg -- porting note: was `congr 1` which for some reason doesn't do anything here
+  apply congr_arg -- Porting note: was `congr 1` which for some reason doesn't do anything here
   -- despite goal being of the form f a = f b, with f=`ℱ.val.map (Quiver.Hom.op c'.pt.hom)`
   /-
     Since everything now falls in the image of `u`,

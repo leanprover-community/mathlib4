@@ -23,7 +23,7 @@ open List
 
 variable (F : PFunctor.{u})
 
--- porting note: the ♯ tactic is never used
+-- Porting note: the ♯ tactic is never used
 -- local prefix:0 "♯" => cast (by first |simp [*]|cc|solve_by_elim)
 
 namespace PFunctor
@@ -105,7 +105,7 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
   · -- cases' h with _ _ _ _ _ h₀ h₁
     cases h
     simp only [truncate, Function.comp, true_and_iff, eq_self_iff_true, heq_iff_eq]
-    -- porting note: used to be `ext y`
+    -- Porting note: used to be `ext y`
     rename_i n_ih a f y h₁
     suffices (fun x => truncate (y x)) = f
       by simp [this]; try (exact HEq.rfl;)
@@ -129,7 +129,7 @@ def sCorec : X → ∀ n, CofixA F n
 theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
   induction' n with n n_ih generalizing i
   constructor
-  cases' h : f i with y g
+  cases' f i with y g
   constructor
   introv
   apply n_ih
@@ -578,7 +578,7 @@ theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map 
   cases' n with n
   · dsimp only [sCorec, Approx.sMk]
   · dsimp only [sCorec, Approx.sMk]
-    cases h : f x₀
+    cases f x₀
     dsimp only [PFunctor.map]
     congr
 set_option linter.uppercaseLean3 false in

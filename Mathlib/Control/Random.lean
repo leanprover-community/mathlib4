@@ -3,15 +3,8 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
-
-import Mathlib.Init.Order.Defs
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.Int.Order
 import Mathlib.Control.ULiftable
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Nat.Basic
-import Mathlib.Order.ULift
-import Mathlib.Logic.Equiv.Functor
 
 #align_import control.random from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
@@ -126,13 +119,13 @@ instance : BoundedRandom m Nat where
 
 instance : BoundedRandom m Int where
   randomR lo hi h _ := do
-    let ⟨z, _, h2⟩ ← randBound Nat 0 (Int.natAbs $ hi - lo) (Nat.zero_le _)
+    let ⟨z, _, h2⟩ ← randBound Nat 0 (Int.natAbs <| hi - lo) (Nat.zero_le _)
     pure ⟨
       z + lo,
       Int.le_add_of_nonneg_left (Int.ofNat_zero_le z),
-      Int.add_le_of_le_sub_right $ Int.le_trans
+      Int.add_le_of_le_sub_right <| Int.le_trans
         (Int.ofNat_le.mpr h2)
-        (le_of_eq $ Int.natAbs_of_nonneg $ Int.sub_nonneg_of_le h)⟩
+        (le_of_eq <| Int.natAbs_of_nonneg <| Int.sub_nonneg_of_le h)⟩
 
 instance {n : Nat} : BoundedRandom m (Fin n) where
   randomR lo hi h _ := do
@@ -168,6 +161,6 @@ def runRand (cmd : RandT m α) : m α := do
   pure res
 
 def runRandWith (seed : Nat) (cmd : RandT m α) : m α := do
-  pure $ (← cmd.run (ULift.up $ mkStdGen seed)).1
+  pure <| (← cmd.run (ULift.up <| mkStdGen seed)).1
 
 end IO

@@ -176,9 +176,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     (ENNReal.mul_le_mul_right (measure_ball_pos _ _ zero_lt_one).ne' measure_ball_lt_top.ne).1 I
   have K : (s.card : ℝ) ≤ (5 : ℝ) ^ finrank ℝ E := by
     have := ENNReal.toReal_le_of_le_ofReal (pow_nonneg ρpos.le _) J
-    simp? [ENNReal.toReal_mul] at this says
-      simp only [one_div, inv_pow, ENNReal.toReal_mul, ENNReal.toReal_nat, div_pow] at this
-    simpa [div_eq_mul_inv, zero_le_two] using this
+    simpa [ρ, δ, div_eq_mul_inv, mul_pow] using this
   exact mod_cast K
 #align besicovitch.card_le_of_separated Besicovitch.card_le_of_separated
 
@@ -224,9 +222,9 @@ theorem exists_goodδ :
         rcases Function.Embedding.exists_of_card_le_finset this with ⟨f, hf⟩
         exact ⟨f, f.injective, hf⟩
       simp only [range_subset_iff, Finset.mem_coe] at hfs
-      refine' ⟨f, fun i => hs _ (hfs i), fun i j hij => h's _ (hfs i) _ (hfs j) (f_inj.ne hij)⟩
+      exact ⟨f, fun i => hs _ (hfs i), fun i j hij => h's _ (hfs i) _ (hfs j) (f_inj.ne hij)⟩
     · exact
-        ⟨fun _ => 0, fun i => by simp; norm_num, fun i j _ => by
+        ⟨fun _ => 0, by simp, fun i j _ => by
           simpa only [norm_zero, sub_nonpos, sub_self]⟩
   -- For `δ > 0`, `F δ` is a function from `fin N` to the ball of radius `2` for which two points
   -- in the image are separated by `1 - δ`.
@@ -265,10 +263,10 @@ theorem exists_goodδ :
   let s := Finset.image f Finset.univ
   have s_card : s.card = N := by rw [Finset.card_image_of_injective _ finj]; exact Finset.card_fin N
   have hs : ∀ c ∈ s, ‖c‖ ≤ 2 := by
-    simp only [hf, forall_apply_eq_imp_iff, forall_const, forall_exists_index, Finset.mem_univ,
+    simp only [s, hf, forall_apply_eq_imp_iff, forall_const, forall_exists_index, Finset.mem_univ,
       Finset.mem_image, true_and]
   have h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖ := by
-    simp only [forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
+    simp only [s, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
       Ne.def, exists_true_left, forall_apply_eq_imp_iff, forall_true_left, true_and]
     intro i j hij
     have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
@@ -318,10 +316,10 @@ theorem le_multiplicity_of_δ_of_fin {n : ℕ} (f : Fin n → E) (h : ∀ i, ‖
   let s := Finset.image f Finset.univ
   have s_card : s.card = n := by rw [Finset.card_image_of_injective _ finj]; exact Finset.card_fin n
   have hs : ∀ c ∈ s, ‖c‖ ≤ 2 := by
-    simp only [h, forall_apply_eq_imp_iff, forall_const, forall_exists_index, Finset.mem_univ,
+    simp only [s, h, forall_apply_eq_imp_iff, forall_const, forall_exists_index, Finset.mem_univ,
       Finset.mem_image, imp_true_iff, true_and]
   have h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 - goodδ E ≤ ‖c - d‖ := by
-    simp only [forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
+    simp only [s, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
       Ne.def, exists_true_left, forall_apply_eq_imp_iff, forall_true_left, true_and]
     intro i j hij
     have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
@@ -368,7 +366,7 @@ theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       _ ≤ 1 := by linarith only [sq_nonneg δ]
   have J : 1 - δ ≤ 1 - δ / 4 := by linarith only [δnonneg]
   have K : 1 - δ / 4 ≤ τ⁻¹ := by rw [inv_eq_one_div, le_div_iff τpos]; exact I
-  suffices L : τ⁻¹ ≤ ‖a.c i - a.c j‖; · linarith only [J, K, L]
+  suffices L : τ⁻¹ ≤ ‖a.c i - a.c j‖ by linarith only [J, K, L]
   have hτ' : ∀ k, τ⁻¹ ≤ a.r k := by
     intro k
     rw [inv_eq_one_div, div_le_iff τpos, ← lastr, mul_comm]
@@ -383,6 +381,10 @@ theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
 
 variable [NormedSpace ℝ E]
 
+-- Adaptation note: after v4.7.0-rc1, there is a performance problem in `field_simp`.
+-- (Part of the code was ignoring the `maxDischargeDepth` setting: now that we have to increase it,
+-- other paths becomes slow.)
+set_option maxHeartbeats 400000 in
 theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastc : a.c (last N) = 0) (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4)
     (hδ2 : δ ≤ 1) (i j : Fin N.succ) (inej : i ≠ j) (hi : ‖a.c i‖ ≤ 2) (hj : 2 < ‖a.c j‖) :
@@ -502,26 +504,26 @@ theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (las
   let c' : Fin N.succ → E := fun i => if ‖a.c i‖ ≤ 2 then a.c i else (2 / ‖a.c i‖) • a.c i
   have norm_c'_le : ∀ i, ‖c' i‖ ≤ 2 := by
     intro i
-    simp only
+    simp only [c']
     split_ifs with h; · exact h
-    by_cases hi : ‖a.c i‖ = 0 <;> field_simp [norm_smul, hi]; norm_num
+    by_cases hi : ‖a.c i‖ = 0 <;> field_simp [norm_smul, hi]
   refine' ⟨c', fun n => norm_c'_le n, fun i j inej => _⟩
   -- up to exchanging `i` and `j`, one can assume `‖c i‖ ≤ ‖c j‖`.
   wlog hij : ‖a.c i‖ ≤ ‖a.c j‖ generalizing i j
   · rw [norm_sub_rev]; exact this j i inej.symm (le_of_not_le hij)
   rcases le_or_lt ‖a.c j‖ 2 with (Hj | Hj)
   -- case `‖c j‖ ≤ 2` (and therefore also `‖c i‖ ≤ 2`)
-  · simp_rw [Hj, hij.trans Hj, if_true]
+  · simp_rw [c', Hj, hij.trans Hj, if_true]
     exact exists_normalized_aux1 a lastr hτ δ hδ1 hδ2 i j inej
   -- case `2 < ‖c j‖`
   · have H'j : ‖a.c j‖ ≤ 2 ↔ False := by simpa only [not_le, iff_false_iff] using Hj
     rcases le_or_lt ‖a.c i‖ 2 with (Hi | Hi)
     · -- case `‖c i‖ ≤ 2`
-      simp_rw [Hi, if_true, H'j, if_false]
+      simp_rw [c', Hi, if_true, H'j, if_false]
       exact exists_normalized_aux2 a lastc lastr hτ δ hδ1 hδ2 i j inej Hi Hj
     · -- case `2 < ‖c i‖`
       have H'i : ‖a.c i‖ ≤ 2 ↔ False := by simpa only [not_le, iff_false_iff] using Hi
-      simp_rw [H'i, if_false, H'j, if_false]
+      simp_rw [c', H'i, if_false, H'j, if_false]
       exact exists_normalized_aux3 a lastc lastr hτ δ hδ1 i j inej Hi hij
 #align besicovitch.satellite_config.exists_normalized Besicovitch.SatelliteConfig.exists_normalized
 
