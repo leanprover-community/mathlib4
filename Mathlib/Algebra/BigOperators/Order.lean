@@ -424,9 +424,8 @@ See also `Finset.single_le_prod'`.-/
 
 See also `Finset.single_le_sum`."]
 lemma single_le_prod_of_canonicallyOrdered {i : ι} (hi : i ∈ s) :
-    f i ≤ ∏ j in s, f j := by
-  rw [← prod_singleton f i]
-  exact prod_mono_set' _ <| by simp [hi]
+    f i ≤ ∏ j in s, f j :=
+  single_le_prod' (fun _ _ ↦ one_le _) hi
 
 @[to_additive]
 lemma single_le_prod_of_canonicallyOrdered_of_fintype [Fintype ι] (i : ι) :
