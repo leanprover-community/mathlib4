@@ -135,7 +135,8 @@ instance {F R S A B : Type*} [Monoid R] [Monoid S] {φ : R →* S}
   ⟨toNonUnitalAlgSemiHom⟩
 
 /-- Turn an element of a type `F` satisfying `NonUnitalAlgHomClass F R A B` into an actual
-`NonUnitalAlgSemiHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[R] B`. -/
+@[coe]
+`NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[R] B`. -/
 def toNonUnitalAlgHom {F R : Type*} [Monoid R] {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
