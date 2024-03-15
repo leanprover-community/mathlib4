@@ -147,16 +147,17 @@ partial def eraseUsedTactics : InfoTree → M Unit
   | .node i c => do
     if let .ofTacticInfo i := i then
       if let some r := i.stx.getRange? true then
-        let namesBefore := getNames i.mctxBefore
-        let namesAfter  := getNames i.mctxAfter
-        -- the goals have changed, or the tactic is allowed to not change the goals
-        let actual_change := i.goalsAfter != i.goalsBefore || i.stx.getKind ∈ allowed
+        -- if the goals have changed
+        if i.goalsAfter != i.goalsBefore
+        then modify (·.erase r)
+        else if i.stx.getKind ∈ allowed
+        -- if the tactic is allowed to not change the goals
+        then modify (·.erase r)
         -- bespoke check for `swap_var`: the only change that it does is
         -- in the usernames of local declarations, so we check the names before and after
-        let name_change := (i.stx.getKind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
-                           (namesBefore != namesAfter)
-        if actual_change || name_change then
-          modify (·.erase r)
+        else if (i.stx.getKind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
+                (getNames i.mctxBefore != getNames i.mctxAfter)
+        then modify (·.erase r)
     eraseUsedTacticsList c
   | .context _ t => eraseUsedTactics t
   | .hole _ => pure ()
