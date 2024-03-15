@@ -224,7 +224,7 @@ structure RewriteApplication extends RewriteLemma where
   prettyLemma : CodeWithInfos
 
 def rewriteCall (rwLemma : RewriteLemma) (loc : SubExpr.GoalLocation) (subExpr : Expr)
-    (occ : Option Nat) (names : PersistentHashMap Name MVarId) :
+    (occ : Option Nat) (initNames : PersistentHashMap Name MVarId) :
     MetaM (Option RewriteApplication) := do
   -- the lemma might not be imported, so we use a try-catch block here.
   let thm ← try mkConstWithFreshMVarLevels rwLemma.name catch _ => return none
@@ -235,7 +235,7 @@ def rewriteCall (rwLemma : RewriteLemma) (loc : SubExpr.GoalLocation) (subExpr :
 
   let mut extraGoals := #[]
   let mut allAssigned := true
-  let mut names := names
+  let mut initNames := initNames
   for mvar in mvars, bi in bis do
     let mvarId := mvar.mvarId!
     -- we need to check that all instances can be synthesized
@@ -250,9 +250,9 @@ def rewriteCall (rwLemma : RewriteLemma) (loc : SubExpr.GoalLocation) (subExpr :
       if name.hasMacroScopes then
         mvarId.setTag `«_»
       else
-        let name := getUnusedMVarName name names
+        let name := getUnusedMVarName name initNames
         mvarId.setTag name
-        names := names.insert name mvarId
+        initNames := initNames.insert name mvarId
       if bi.isExplicit then
         let extraGoal ← instantiateMVars (← mvarId.getType)
         extraGoals := extraGoals.push (← ppExprTagged extraGoal)
@@ -333,17 +333,16 @@ structure Config where
 structure LibraryRewriteParams extends Config, SelectInsertParams
   deriving RpcEncodable
 
-def checkLemmata (ass : Array (Array RewriteLemma × Bool))
-    (loc : SubExpr.GoalLocation) (subExpr : Expr) (occ : Option Nat) :
+def checkLemmata (ass : Array (Array RewriteLemma × Bool)) (loc : SubExpr.GoalLocation)
+    (subExpr : Expr) (occ : Option Nat) (initNames : PersistentHashMap Name MVarId) :
     MetaM (Array Section × Array Section) := do
   let subExprString := (← ppExprTagged subExpr).stripTags
-  let { userNames, .. } ← getMCtx
   let mut results := #[]
   let mut dedups := #[]
   for (as, isLocal) in ass do
     let mut bs := #[]
     for a in as do
-      if let some b ← rewriteCall a loc subExpr occ userNames then
+      if let some b ← rewriteCall a loc subExpr occ initNames then
         bs := bs.push b
     if h : bs.size > 0 then
       let pattern ← bs[0].pattern
@@ -371,6 +370,7 @@ where
 
 def getLibraryRewrites (loc : SubExpr.GoalsLocation) (showNames : Bool) :
     ExceptT String MetaM (Array Section) := do
+  let { userNames := initNames, .. } ← getMCtx
   let e ← loc.rootExpr
   let pos := loc.pos
   let loc := loc.loc
@@ -383,7 +383,7 @@ def getLibraryRewrites (loc : SubExpr.GoalsLocation) (showNames : Bool) :
   let positions ← kabstractPositions subExpr e
   let occurrence := if positions.size == 1 then none else
     positions.findIdx? (· == pos) |>.map (· + 1)
-  let (dedups, results) ← checkLemmata rwLemmas loc subExpr occurrence
+  let (dedups, results) ← checkLemmata rwLemmas loc subExpr occurrence initNames
   return if showNames then results else dedups
 
 @[server_rpc_method_cancellable]
