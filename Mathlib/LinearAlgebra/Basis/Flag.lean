@@ -81,7 +81,7 @@ theorem flag_le_ker_coord (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n}
   exact b.flag_le_ker_coord_iff.2 h
 
 theorem flag_le_ker_dual (b : Basis (Fin n) R M) (k : Fin n) :
-    b.flag k ≤ LinearMap.ker (b.dualBasis k) := by
+    b.flag k.castSucc ≤ LinearMap.ker (b.dualBasis k) := by
   erw [span_le]
   rintro _ ⟨j, hj : j.castSucc < k, rfl⟩
   have : j < k := by rw [← Fin.coe_eq_castSucc, Fin.coe_succ_lt_iff_lt] at hj; exact hj
