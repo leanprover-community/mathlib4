@@ -65,8 +65,6 @@ variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower 
 
 variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
 
-variable {R₃ : Type*} {M₃ : Type*} [CommRing R₃] [AddCommGroup M₃] [Module R₃ M₃]
-
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
