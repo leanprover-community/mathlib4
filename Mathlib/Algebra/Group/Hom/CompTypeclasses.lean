@@ -65,16 +65,16 @@ instance {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ : CompTriple φ ψ
     _root_.CompTriple φ ψ χ where
   comp_eq := by rw [← MonoidHom.coe_comp, κ.comp_eq]
 
-instance comp {φ : M →* N} {ψ : N →* P} :
+theorem comp {φ : M →* N} {ψ : N →* P} :
     CompTriple φ ψ (ψ.comp φ) where
   comp_eq := rfl
 
-instance comp_id {N P : Type*} [Monoid N] [Monoid P]
+theorem comp_id {N P : Type*} [Monoid N] [Monoid P]
     {φ : N →* N} [IsId φ] {ψ : N →* P} :
     CompTriple φ ψ ψ where
   comp_eq := by simp only [IsId.eq_id, MonoidHom.comp_id]
 
-instance id_comp {M N : Type*} [Monoid M] [Monoid N]
+theorem id_comp {M N : Type*} [Monoid M] [Monoid N]
     {φ : M →* N} {ψ : N →* N} [IsId ψ] :
     CompTriple φ ψ φ where
   comp_eq := by simp only [IsId.eq_id, MonoidHom.id_comp]
