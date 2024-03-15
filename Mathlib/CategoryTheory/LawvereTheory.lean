@@ -93,10 +93,10 @@ abbrev of (X : ProdWord S) : L := .mk X
 open ChosenFiniteProducts MonoidalCategory
 
 @[simp]
-lemma Carrier.mk_nil : L.of .nil = 𝟙_ _ := rfl
+lemma Carrier.of_nil : L.of .nil = 𝟙_ _ := rfl
 
 @[simp]
-lemma Carrier.mk_prod (X Y : ProdWord S) : L.of (X.prod Y) = L.of X ⊗ L.of Y := rfl
+lemma Carrier.of_prod (X Y : ProdWord S) : L.of (X.prod Y) = L.of X ⊗ L.of Y := rfl
 
 structure Algebra (C : Type u') [Category.{v'} C] where
   functor : L ⥤ C
@@ -108,6 +108,11 @@ structure Algebra (C : Type u') [Category.{v'} C] where
 
 instance (C : Type u') [Category.{v'} C] : Category (L.Algebra C) :=
   InducedCategory.category fun A => A.functor
+
+def Algebra.forget (C : Type u') [Category.{v'} C] :
+    L.Algebra C ⥤ (S → C) where
+  obj A X := A.functor.obj <| L.of <| .of X
+  map f X := f.app _
 
 end LawvereTheory
 end CategoryTheory
