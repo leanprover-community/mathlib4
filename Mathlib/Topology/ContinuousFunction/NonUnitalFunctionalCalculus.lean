@@ -88,7 +88,7 @@ class UniqueNonUnitalContinuousFunctionalCalculus (R A : Type*) [Semifield R] [S
     (φ ψ : C(s, R)₀ →⋆ₙₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (⟨.restrict s <| .id R, h0⟩) = ψ (⟨.restrict s <| .id R, h0⟩)) :
     φ = ψ
-  compactSpace_qausispectrum (a : A) : CompactSpace (σₙ R a)
+  compactSpace_quasispectrum (a : A) : CompactSpace (σₙ R a)
 
 variable {R A : Type*} {p : A → Prop} [Semifield R] [StarRing R] [MetricSpace R]
 variable [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
@@ -99,7 +99,7 @@ lemma NonUnitalStarAlgHom.ext_continuousMap [UniqueNonUnitalContinuousFunctional
     (a : A) (φ ψ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ ⟨.restrict (σₙ R a) <| .id R, rfl⟩ = ψ ⟨.restrict (σₙ R a) <| .id R, rfl⟩) :
     φ = ψ :=
-  have := UniqueNonUnitalContinuousFunctionalCalculus.compactSpace_qausispectrum (R := R) a
+  have := UniqueNonUnitalContinuousFunctionalCalculus.compactSpace_quasispectrum (R := R) a
   UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id _ (by simp) φ ψ hφ hψ h
 
 section cfcₙHom
