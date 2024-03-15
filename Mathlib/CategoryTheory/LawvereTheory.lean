@@ -89,6 +89,7 @@ instance : ChosenFiniteProducts L where
     (.mk (fun S => L.toNil _) (fun _ x => x.as.elim) (fun _ _ _ => L.toNil_unique _ _))
 
 abbrev of (X : ProdWord S) : L := .mk X
+abbrev singleton (X : S) : L := .mk <| .of X
 
 open ChosenFiniteProducts MonoidalCategory
 
@@ -98,21 +99,72 @@ lemma Carrier.of_nil : L.of .nil = 𝟙_ _ := rfl
 @[simp]
 lemma Carrier.of_prod (X Y : ProdWord S) : L.of (X.prod Y) = L.of X ⊗ L.of Y := rfl
 
+@[simp]
+lemma Carrier.of_of (X : S) : L.of (.of X) = L.singleton X := rfl
+
 structure Algebra (C : Type u') [Category.{v'} C] where
   functor : L ⥤ C
-  prod (X Y : L) :
+  isLimit (X Y : L) :
     Limits.IsLimit (Limits.BinaryFan.mk
       (functor.map <| fst X Y)
       (functor.map <| snd X Y))
-  unit : Limits.IsTerminal (functor.obj <| 𝟙_ _)
+  isTerminal : Limits.IsTerminal (functor.obj <| 𝟙_ _)
+
+variable {L}
+def Algebra.lift
+    {C : Type u'} [Category.{v'} C] (A : L.Algebra C) {T : C} {X Y : L}
+    (f : T ⟶ A.functor.obj X)
+    (g : T ⟶ A.functor.obj Y) :
+    T ⟶ A.functor.obj (X ⊗ Y) :=
+  (A.isLimit _ _).lift <| Limits.BinaryFan.mk f g
+
+@[reassoc (attr := simp)]
+lemma Algebra.lift_fst
+    {C : Type u'} [Category.{v'} C] (A : L.Algebra C) {T : C} {X Y : L}
+    (f : T ⟶ A.functor.obj X) (g : T ⟶ A.functor.obj Y) :
+    A.lift f g ≫ A.functor.map (fst _ _) = f :=
+  (A.isLimit _ _).fac _ <| .mk .left
+
+@[reassoc (attr := simp)]
+lemma Algebra.lift_snd
+    {C : Type u'} [Category.{v'} C] (A : L.Algebra C) {T : C} {X Y : L}
+    (f : T ⟶ A.functor.obj X) (g : T ⟶ A.functor.obj Y) :
+    A.lift f g ≫ A.functor.map (snd _ _) = g :=
+  (A.isLimit _ _).fac _ <| .mk .right
+
+@[ext 1050]
+def Algebra.hom_ext
+    {C : Type u'} [Category.{v'} C] (A : L.Algebra C) {T : C} {X Y : L}
+    (f g : T ⟶ A.functor.obj (X ⊗ Y))
+    (h_fst : f ≫ A.functor.map (fst _ _) = g ≫ A.functor.map (fst _ _))
+    (h_snd : f ≫ A.functor.map (snd _ _) = g ≫ A.functor.map (snd _ _)) : f = g := by
+  apply (A.isLimit _ _).hom_ext
+  rintro (_|_)
+  · exact h_fst
+  · exact h_snd
 
 instance (C : Type u') [Category.{v'} C] : Category (L.Algebra C) :=
   InducedCategory.category fun A => A.functor
 
-def Algebra.forget (C : Type u') [Category.{v'} C] :
+variable (L) in
+@[simps]
+def algebraForget (C : Type u') [Category.{v'} C] :
     L.Algebra C ⥤ (S → C) where
-  obj A X := A.functor.obj <| L.of <| .of X
+  obj A X := A.functor.obj <| L.singleton X
   map f X := f.app _
+
+instance (C : Type u') [Category.{v'} C] : Faithful (L.algebraForget C) where
+  map_injective {X Y f g} h := by
+    apply NatTrans.ext ; funext ⟨P⟩
+    induction P with
+    | of T =>
+      apply congr_fun h
+    | prod U V h1 h2 =>
+      dsimp
+      apply Y.hom_ext
+      · simp only [← NatTrans.naturality, h1]
+      · simp only [← NatTrans.naturality, h2]
+    | nil => apply Y.isTerminal.hom_ext
 
 end LawvereTheory
 end CategoryTheory
