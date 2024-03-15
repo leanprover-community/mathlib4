@@ -91,7 +91,7 @@ jobs:
           'num_before': 1,
           'num_after': 0,
           'narrow': [{'operator': 'stream', 'operand': 'mathlib reviewers'}, {'operator': 'topic', 'operand': 'CI failure on the nightly-testing branch'}],
-          'apply_markdown': True
+          'apply_markdown': False    # Otherwise the content test below fails.
         }
         response = client.get_messages(request)
         messages = response['messages']
