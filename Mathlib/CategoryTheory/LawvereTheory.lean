@@ -110,6 +110,16 @@ structure Algebra (C : Type u') [Category.{v'} C] where
       (functor.map <| snd X Y))
   isTerminal : Limits.IsTerminal (functor.obj <| 𝟙_ _)
 
+def Algebra.toUnit
+    {C : Type u'} [Category.{v'} C] (A : L.Algebra C) (T : C) :
+    T ⟶ A.functor.obj (𝟙_ _) :=
+  A.isTerminal.lift <| .mk _ <| .mk (fun j => j.as.elim) (fun j => j.as.elim)
+
+lemma Algebra.toUnit_unique
+    {C : Type u'} [Category.{v'} C] (A : L.Algebra C) {T : C}
+    (f g : T ⟶ A.functor.obj (𝟙_ _)) : f = g :=
+  A.isTerminal.hom_ext _ _
+
 variable {L}
 def Algebra.lift
     {C : Type u'} [Category.{v'} C] (A : L.Algebra C) {T : C} {X Y : L}
@@ -298,6 +308,40 @@ def FreeAlgebra : L.Algebra (Type (max v u u')) where
     (fun S _ => Quotient.mk _ <| .unit)
     (fun S j => j.as.elim)
     (fun S _ _ => funext fun _ => Free.unit_ext _ _)
+
+variable {L X} {Y : S → Type u'} (f : X ⟶ Y)
+
+def liftRep
+    (Y : L.Algebra (Type max v u u'))
+    (f : (A : S) → X A → Y.functor.obj (L.singleton A)) :
+    (A : ProdWord S) → L.FreeRep X A ⟶ Y.functor.obj (L.of A)
+  | .of _, .of x => f _ x
+  | .of _, .map e x => Y.functor.map e (liftRep _ f _ x)
+  | .prod _ _, .map e x => Y.functor.map e (liftRep _ f _ x)
+  | .prod _ _, .lift x y =>
+    Y.lift (fun t => t.fst) (fun t => t.snd) (liftRep Y f _ x, liftRep Y f _ y)
+  | .nil, .map e x => Y.functor.map e (liftRep _ f _ x)
+  | .nil, .unit => Y.toUnit _ _ PUnit.unit
+
+def liftObj
+    (Y : L.Algebra (Type max v u u'))
+    (f : (A : S) → X A → Y.functor.obj (L.singleton A)) (A : ProdWord S) :
+    L.Free X A → Y.functor.obj (L.of A) :=
+  Quotient.lift
+    (liftRep _ f _)
+    fun a b h => by
+      induction h with
+      | rfl f => rfl
+      | symm _ h => exact h.symm
+      | trans _ _ h1 h2 => exact h1.trans h2
+      | map_congr h1 h2 => sorry
+      | map_id x => sorry
+      | map_comp f g x => sorry
+      | lift_fst x y => sorry
+      | lift_snd x y => sorry
+      | lift_unique x y _ _ _ _ => sorry
+      | lift_congr _ _ _ _ => sorry
+      | unit_unique x y => sorry
 
 end free
 
