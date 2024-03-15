@@ -861,10 +861,7 @@ set_option linter.deprecated false -- TODO(Mario): make replacements for theorem
 @[simp] theorem nthLe_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simpa [← lt_tsub_iff_right] using h)) :
     l.tail.nthLe i h = l.nthLe (i + 1) h' := by
-  -- Porting note: cases l <;> [cases h; rfl] fails
-  cases l
-  · cases h
-  · rfl
+  cases l <;> [cases h; rfl]
 #align list.nth_le_tail List.nthLe_tail
 
 theorem nthLe_cons_aux {l : List α} {a : α} {n} (hn : n ≠ 0) (h : n < (a :: l).length) :
@@ -1625,9 +1622,7 @@ theorem nthLe_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.leng
 
 theorem get_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (insertNth n x l).length := (by
-      -- Porting note: the original proof fails
-      -- rwa [length_insertNth _ _ (le_self_add.trans hk'.le), Nat.succ_lt_succ_iff]
-      rw [length_insertNth _ _ (le_self_add.trans hk'.le)]; exact Nat.succ_lt_succ_iff.2 hk')) :
+      rwa [length_insertNth _ _ (le_self_add.trans hk'.le), Nat.succ_lt_succ_iff])):
     (insertNth n x l).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ := by
   induction' l with hd tl IH generalizing n k
   · simp at hk'
@@ -1639,9 +1634,7 @@ set_option linter.deprecated false in
 @[deprecated get_insertNth_add_succ]
 theorem nthLe_insertNth_add_succ : ∀ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (insertNth n x l).length := (by
-      -- Porting note: the original proof fails
-      -- rwa [length_insertNth _ _ (le_self_add.trans hk'.le), Nat.succ_lt_succ_iff]
-      rw [length_insertNth _ _ (le_self_add.trans hk'.le)]; exact Nat.succ_lt_succ_iff.2 hk')),
+      rwa [length_insertNth _ _ (le_self_add.trans hk'.le), Nat.succ_lt_succ_iff])),
     (insertNth n x l).nthLe (n + k + 1) hk = nthLe l (n + k) hk' :=
   @get_insertNth_add_succ _
 #align list.nth_le_insert_nth_add_succ List.nthLe_insertNth_add_succ
