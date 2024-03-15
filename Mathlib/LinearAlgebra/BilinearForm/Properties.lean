@@ -21,7 +21,6 @@ the notation `B x y` to refer to the function field, ie. `B x y = B.bilin x y`.
 In this file we use the following type variables:
  - `M`, `M'`, ... are modules over the commutative semiring `R`,
  - `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
- - `M₃`, `M₃'`, ... are modules over the commutative ring `R₃`,
  - `V`, ... is a vector space over the field `K`.
 
 ## References
@@ -41,8 +40,6 @@ universe u v w
 variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
-
-variable {R₃ : Type*} {M₃ : Type*} [CommRing R₃] [AddCommGroup M₃] [Module R₃ M₃]
 
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
 
@@ -344,17 +341,15 @@ theorem mem_selfAdjointSubmodule (f : Module.End R M) :
   Iff.rfl
 #align bilin_form.mem_self_adjoint_submodule BilinForm.mem_selfAdjointSubmodule
 
-variable (B₃ : BilinForm R₃ M₃)
-
 /-- The set of skew-adjoint endomorphisms of a module with bilinear form is a submodule. (In fact
 it is a Lie subalgebra.) -/
 def skewAdjointSubmodule :=
-  isPairSelfAdjointSubmodule (-B₃) B₃
+  isPairSelfAdjointSubmodule (-B₁) B₁
 #align bilin_form.skew_adjoint_submodule BilinForm.skewAdjointSubmodule
 
 @[simp]
-theorem mem_skewAdjointSubmodule (f : Module.End R₃ M₃) :
-    f ∈ B₃.skewAdjointSubmodule ↔ B₃.IsSkewAdjoint f := by
+theorem mem_skewAdjointSubmodule (f : Module.End R₁ M₁) :
+    f ∈ B₁.skewAdjointSubmodule ↔ B₁.IsSkewAdjoint f := by
   rw [isSkewAdjoint_iff_neg_self_adjoint]
   exact Iff.rfl
 #align bilin_form.mem_skew_adjoint_submodule BilinForm.mem_skewAdjointSubmodule
