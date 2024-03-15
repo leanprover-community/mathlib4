@@ -459,7 +459,7 @@ theorem convexHull_prod (s : Set E) (t : Set F) :
 #align convex_hull_prod convexHull_prod
 
 theorem convexHull_add (s t : Set E) : convexHull R (s + t) = convexHull R s + convexHull R t := by
-  simp_rw [← image2_add, ← image_prod, IsLinearMap.isLinearMap_add.convexHull_image,
+  simp_rw [← image2_add, ← image_prod, ← IsLinearMap.isLinearMap_add.image_convexHull,
     convexHull_prod]
 #align convex_hull_add convexHull_add
 
@@ -476,7 +476,7 @@ def convexHullAddMonoidHom : Set E →+ Set E where
 variable {R E}
 
 theorem convexHull_sub (s t : Set E) : convexHull R (s - t) = convexHull R s - convexHull R t := by
-  simp_rw [sub_eq_add_neg, convexHull_add, convexHull_neg]
+  simp_rw [sub_eq_add_neg, convexHull_add, ← convexHull_neg]
 #align convex_hull_sub convexHull_sub
 
 theorem convexHull_list_sum (l : List (Set E)) : convexHull R l.sum = (l.map <| convexHull R).sum :=
@@ -522,7 +522,7 @@ theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull 
     haveI := hs.fintype
     (⇑(∑ x : s, (@LinearMap.proj R s _ (fun _ => R) _ _ x).smulRight x.1)) '' stdSimplex R s := by
   letI := hs.fintype
-  rw [← convexHull_basis_eq_stdSimplex, ← LinearMap.convexHull_image, ← Set.range_comp]
+  rw [← convexHull_basis_eq_stdSimplex, LinearMap.image_convexHull, ← Set.range_comp]
   apply congr_arg
   simp_rw [Function.comp]
   convert Subtype.range_coe.symm
