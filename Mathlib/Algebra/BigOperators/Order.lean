@@ -399,6 +399,16 @@ section CanonicallyOrderedCommMonoid
 
 variable [CanonicallyOrderedCommMonoid M] {f : ι → M} {s t : Finset ι}
 
+/-- In a canonically-ordered monoid, a product bounds each of its terms.
+
+See also `Finset.single_le_prod'`.-/
+@[to_additive "In a canonically-ordered additive monoid, a sum bounds each of its terms.
+
+See also `Finset.single_le_sum`."]
+lemma _root_.CanonicallyOrderedCommMonoid.single_le_prod {i : ι} (hi : i ∈ s) :
+    f i ≤ ∏ j in s, f j :=
+  single_le_prod' (fun _ _ ↦ one_le _) hi
+
 @[to_additive (attr := simp) sum_eq_zero_iff]
 theorem prod_eq_one_iff' : ∏ x in s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
   prod_eq_one_iff_of_one_le' fun x _ ↦ one_le (f x)
@@ -416,21 +426,6 @@ theorem prod_mono_set' (f : ι → M) : Monotone fun s ↦ ∏ x in s, f x := fu
   prod_le_prod_of_subset' hs
 #align finset.prod_mono_set' Finset.prod_mono_set'
 #align finset.sum_mono_set Finset.sum_mono_set
-
-/-- In a canonically-ordered monoid, a product bounds each of its terms.
-
-See also `Finset.single_le_prod'`.-/
-@[to_additive "In a canonically-ordered additive monoid, a sum bounds each of its terms.
-
-See also `Finset.single_le_sum`."]
-lemma single_le_prod_of_canonicallyOrdered {i : ι} (hi : i ∈ s) :
-    f i ≤ ∏ j in s, f j :=
-  single_le_prod' (fun _ _ ↦ one_le _) hi
-
-@[to_additive]
-lemma _root_.Fintype.single_le_prod_of_canonicallyOrdered [Fintype ι] (i : ι) :
-    f i ≤ ∏ j, f j :=
-  Finset.single_le_prod_of_canonicallyOrdered (mem_univ i)
 
 @[to_additive sum_le_sum_of_ne_zero]
 theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
