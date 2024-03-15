@@ -179,26 +179,28 @@ theorem length_eq_one_iff {w : W} : ℓ w = 1 ↔ ∃ i : B, w = s i := by
 
 theorem length_mul_simple (w : W) (i : B) :
     ℓ (w * s i) = ℓ w + 1 ∨ ℓ (w * s i) + 1 = ℓ w := by
-  have length_le := cs.length_mul_le w (s i)
-  simp at length_le
-  have length_ge := (max_le_iff.mp (cs.length_mul_ge w (s i))).left
-  simp at length_ge
-  have length_mod_two := cs.length_mul_mod_two w (s i)
-
-  have h : ℓ (w * s i) ≠ ℓ w := by
-    intro eq
+  rcases Nat.lt_trichotomy (ℓ (w * s i)) (ℓ w) with lt | eq | gt
+  · -- lt : ℓ (w * s i) < ℓ w
+    right
+    have length_ge := (max_le_iff.mp (cs.length_mul_ge w (s i))).left
+    simp at length_ge
+    -- length_ge : ℓ w ≤ ℓ (w * s i) + 1
+    linarith
+  · -- eq : ℓ (w * s i) = ℓ w
+    have length_mod_two := cs.length_mul_mod_two w (s i)
     rw [eq] at length_mod_two
     simp at length_mod_two
+    -- length_mod_two : (ℓ w) % 2 = (ℓ w + 1) % 2
     rcases Nat.mod_two_eq_zero_or_one (ℓ w) with even | odd
     · rw [even, Nat.succ_mod_two_eq_one_iff.mpr even] at length_mod_two
       contradiction
     · rw [odd, Nat.succ_mod_two_eq_zero_iff.mpr odd] at length_mod_two
       contradiction
-
-  rcases Nat.ne_iff_lt_or_gt.mp h with less | greater
-  · right
-    linarith
-  · left
+  · -- gt : ℓ w < ℓ (w * s i)
+    left
+    have length_le := cs.length_mul_le w (s i)
+    simp at length_le
+    -- length_le : ℓ (w * s i) ≤ ℓ w + 1
     linarith
 
 theorem length_simple_mul (w : W) (i : B) :
