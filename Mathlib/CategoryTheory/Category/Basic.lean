@@ -42,12 +42,12 @@ specified explicitly, as `Category.{v} C`.
 Typically any concrete example will either be a `SmallCategory`, where `v = u`,
 which can be introduced as
 ```
-universes u
+universe u
 variable {C : Type u} [SmallCategory C]
 ```
 or a `LargeCategory`, where `u = v+1`, which can be introduced as
 ```
-universes u
+universe u
 variable {C : Type (u+1)} [LargeCategory C]
 ```
 
@@ -61,11 +61,11 @@ can not be automatically inferred, through the category theory library
 we introduce universe parameters with morphism levels listed first,
 as in
 ```
-universes v u
+universe v u
 ```
 or
 ```
-universes v₁ v₂ u₁ u₂
+universe v₁ v₂ u₁ u₂
 ```
 when multiple independent universes are needed.
 
