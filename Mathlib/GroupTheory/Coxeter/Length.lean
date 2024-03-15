@@ -61,6 +61,13 @@ local prefix:100 "π" => cs.wordProd
 
 /-! ### Length -/
 
+local instance (w : W) : DecidablePred (fun n ↦ ∃ ω : List B, ω.length = n ∧ π ω = w)
+  := Classical.decPred _
+
+private theorem exists_word_with_prod (w : W) : ∃ n : ℕ, ∃ ω : List B, ω.length = n ∧ π ω = w := by
+  rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
+  use ω.length, ω
+
 /-- The length of `w`; i.e., the minimum number of simple reflections that
 must be multiplied to form `w`. -/
 def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)

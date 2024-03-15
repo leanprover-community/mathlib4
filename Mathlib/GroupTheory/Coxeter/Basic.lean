@@ -680,12 +680,4 @@ theorem wordProd_surjective : Surjective (cs.wordProd) := by
                                         := by rw[FreeGroup.mk_toWord]
     _ = u                               := by rw[hw]; dsimp [v]; simp
 
-
-instance (w : W) : DecidablePred (fun n ↦ ∃ ω : List B, ω.length = n ∧ π ω = w)
-  := Classical.decPred _
-
-theorem exists_word_with_prod (w : W) : ∃ n : ℕ, ∃ ω : List B, ω.length = n ∧ π ω = w := by
-  rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
-  use ω.length, ω
-
 end CoxeterSystem
