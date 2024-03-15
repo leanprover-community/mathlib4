@@ -14,7 +14,7 @@ equivariant maps in the spirit what was initially developed
 by Frédéric Dupuis and Heather Macbeth for linear maps.
 
 * `CompTriple φ ψ χ`, which expresses that `ψ.comp φ = χ`
-* `IsId φ`, which expresses that `φ = id`
+* `CompTriple.IsId φ`, which expresses that `φ = id`
 
 TODO :
 * align with RingHomCompTriple
