@@ -420,7 +420,7 @@ theorem prod_mono_set' (f : ι → M) : Monotone fun s ↦ ∏ x in s, f x := fu
 /-- In a canonically-ordered monoid, a product bounds each of its terms.
 
 See also `Finset.single_le_prod'`.-/
-@[to_additive "In a canonically-ordered additive monoid, a sum bounds of its terms.
+@[to_additive "In a canonically-ordered additive monoid, a sum bounds each of its terms.
 
 See also `Finset.single_le_sum`."]
 lemma single_le_prod_of_canonicallyOrdered {i : ι} (hi : i ∈ s) :
