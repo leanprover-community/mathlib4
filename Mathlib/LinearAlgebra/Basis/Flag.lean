@@ -82,11 +82,8 @@ theorem flag_le_ker_coord (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n}
 
 theorem flag_le_ker_dual (b : Basis (Fin n) R M) (k : Fin n) :
     b.flag k.castSucc ≤ LinearMap.ker (b.dualBasis k) := by
-  erw [span_le]
-  rintro _ ⟨j, hj : j < k, rfl⟩
-  simp only [coe_dualBasis, SetLike.mem_coe, LinearMap.mem_ker, coord_apply, repr_self]
-  rw [Finsupp.single_apply_eq_zero]
-  exact fun h ↦ False.elim (by omega)
+  nontriviality R
+  rw [coe_dualBasis, b.flag_le_ker_coord_iff]
 
 end CommRing
 
