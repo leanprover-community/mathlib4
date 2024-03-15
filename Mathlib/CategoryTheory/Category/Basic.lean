@@ -43,12 +43,12 @@ Typically any concrete example will either be a `SmallCategory`, where `v = u`,
 which can be introduced as
 ```
 universes u
-variables {C : Type u} [SmallCategory C]
+variable {C : Type u} [SmallCategory C]
 ```
 or a `LargeCategory`, where `u = v+1`, which can be introduced as
 ```
 universes u
-variables {C : Type (u+1)} [LargeCategory C]
+variable {C : Type (u+1)} [LargeCategory C]
 ```
 
 In order for the library to handle these cases uniformly,
