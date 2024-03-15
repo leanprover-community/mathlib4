@@ -837,7 +837,7 @@ theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 :=
 @[simp]
 lemma support_nonempty_iff {p : MvPolynomial σ R} :
     p.support.Nonempty ↔ p ≠ 0 := by
-  rw [ne_eq, ← support_eq_empty, Finset.nonempty_iff_ne_empty]
+  rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty]
 
 theorem exists_coeff_ne_zero {p : MvPolynomial σ R} (h : p ≠ 0) : ∃ d, coeff d p ≠ 0 :=
   ne_zero_iff.mp h
