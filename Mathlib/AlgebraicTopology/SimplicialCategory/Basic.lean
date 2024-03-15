@@ -127,6 +127,8 @@ variable {C}
 
 abbrev sHom (K L : C) : SSet.{v} := EnrichedCategory.Hom K L
 
+abbrev sHomComp (K L M : C) : sHom K L ⊗ sHom L M ⟶ sHom K M := eComp SSet K L M
+
 def homEquiv' (K L : C) : (K ⟶ L) ≃ sHom K L _[0] :=
   (homEquiv K L).trans (sHom K L).unitHomEquiv
 
@@ -170,6 +172,7 @@ lemma sHomMap₂_sHomMap₁ {K K' L L' : C} (f : K ⟶ K') (g : L ⟶ L') :
 
 attribute [local simp] sHomMap₂_sHomMap₁
 
+variable (C) in
 @[simps]
 noncomputable def sHomFunctor : Cᵒᵖ ⥤ C ⥤ SSet.{v} where
   obj K :=
