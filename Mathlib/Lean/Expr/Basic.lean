@@ -191,12 +191,18 @@ def getAppApps (e : Expr) : Array Expr :=
 
 /-- Erase proofs in an expression by replacing them with `sorry`s.
 
-Useful, e.g., to verify if the proof-irrelevant part of a definition depends on a variable. -/
+This function replaces all proofs in the expression
+and in the types that appear in the expression
+by `sorryAx`s.
+The resulting expression has the same type as the old one.
+
+It is useful, e.g., to verify if the proof-irrelevant part of a definition depends on a variable.
+-/
 def eraseProofs (e : Expr) : MetaM Expr :=
   Meta.transform e
     (pre := fun e => do
       if (← Meta.isProof e) then
-        return .done (← mkSyntheticSorry (← inferType e))
+        return .continue (← mkSyntheticSorry (← inferType e))
       else
         return .continue)
 
