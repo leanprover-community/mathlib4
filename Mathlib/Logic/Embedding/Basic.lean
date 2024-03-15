@@ -105,7 +105,7 @@ namespace Function
 
 namespace Embedding
 
-theorem coe_injective {α β} : @Injective (α ↪ β) (α → β) (λ f => ↑f) :=
+theorem coe_injective {α β} : @Injective (α ↪ β) (α → β) (fun f ↦ ↑f) :=
   DFunLike.coe_injective
 #align function.embedding.coe_injective Function.Embedding.coe_injective
 

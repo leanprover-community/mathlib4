@@ -130,7 +130,7 @@ injective coercion to bijections between `α` and `β`.
 Note that this does not directly extend `FunLike`, nor take `FunLike` as a parameter,
 so we can state `coe_injective'` in a nicer way.
 
-This typeclass is used in the definition of the homomorphism typeclasses,
+This typeclass is used in the definition of the isomorphism (or equivalence) typeclasses,
 such as `ZeroEquivClass`, `MulEquivClass`, `MonoidEquivClass`, ....
 -/
 class EquivLike (E : Sort*) (α β : outParam (Sort*)) where

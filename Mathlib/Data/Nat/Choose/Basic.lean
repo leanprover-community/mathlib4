@@ -372,7 +372,6 @@ where `choose` is the generalized binomial coefficient.
 
 -/
 
--- Porting note: `termination_by` required here where it wasn't before
 /--
 `multichoose n k` is the number of multisets of cardinality `k` from a type of cardinality `n`. -/
 def multichoose : ℕ → ℕ → ℕ
@@ -380,7 +379,6 @@ def multichoose : ℕ → ℕ → ℕ
   | 0, _ + 1 => 0
   | n + 1, k + 1 =>
     multichoose n (k + 1) + multichoose (n + 1) k
-  termination_by a b => (a, b)
 #align nat.multichoose Nat.multichoose
 
 @[simp]

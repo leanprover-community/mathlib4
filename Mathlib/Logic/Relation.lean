@@ -202,7 +202,7 @@ theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f 
   ha.of_fibration f fun a _ h ↦
     let ⟨a', he⟩ := dc h
     -- Porting note: Lean 3 did not need the motive
-    ⟨a', he.substr (p := λ x => rβ x (f a)) h, he⟩
+    ⟨a', he.substr (p := fun x ↦ rβ x (f a)) h, he⟩
 #align acc.of_downward_closed Acc.of_downward_closed
 
 end Fibration
@@ -329,7 +329,7 @@ theorem head_induction_on {P : ∀ a : α, ReflTransGen r a b → Prop} {a : α}
   | refl => exact refl
   | @tail b c _ hbc ih =>
   -- Porting note: Lean 3 figured out the motive and `apply ih` worked
-  refine @ih (λ {a : α} (hab : ReflTransGen r a b) => P a (ReflTransGen.tail hab hbc)) ?_ ?_
+  refine @ih (fun {a : α} (hab : ReflTransGen r a b) ↦ P a (ReflTransGen.tail hab hbc)) ?_ ?_
   · exact head hbc _ refl
   · exact fun h1 h2 ↦ head h1 (h2.tail hbc)
 #align relation.refl_trans_gen.head_induction_on Relation.ReflTransGen.head_induction_on
@@ -421,7 +421,7 @@ theorem head_induction_on {P : ∀ a : α, TransGen r a b → Prop} {a : α} (h 
   | single h => exact base h
   | @tail b c _ hbc h_ih =>
   -- Lean 3 could figure out the motive and `apply h_ih` worked
-  refine @h_ih (λ {a : α} (hab : @TransGen α r a b) => P a (TransGen.tail hab hbc)) ?_ ?_;
+  refine @h_ih (fun {a : α} (hab : @TransGen α r a b) ↦ P a (TransGen.tail hab hbc)) ?_ ?_;
   exact fun h ↦ ih h (single hbc) (base hbc)
   exact fun hab hbc ↦ ih hab _
 #align relation.trans_gen.head_induction_on Relation.TransGen.head_induction_on

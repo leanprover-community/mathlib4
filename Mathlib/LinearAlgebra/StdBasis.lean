@@ -18,7 +18,7 @@ which is the `Σ j, ι j`-indexed basis of `Π j, M j`. The basis vectors are gi
 
 The standard basis on `R^η`, i.e. `η → R` is called `Pi.basisFun`.
 
-To give a concrete example, `LinearMap.stdBasis R (λ (i : Fin 3), R) i 1`
+To give a concrete example, `LinearMap.stdBasis R (fun (i : Fin 3) ↦ R) i 1`
 gives the `i`th unit basis vector in `R³`, and `Pi.basisFun R (Fin 3)` proves
 this is a basis over `Fin 3 → R`.
 

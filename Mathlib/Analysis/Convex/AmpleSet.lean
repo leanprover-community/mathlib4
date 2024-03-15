@@ -20,7 +20,7 @@ differential relations.
 - `AmpleSet.vadd`: in particular, ampleness is invariant under affine translations
 
 ## TODO
-`AmpleSet.of_two_le_codim`: a linear subspace of codimension at least two has an ample complement.
+`AmpleSet.of_two_le_codim`: a linear subspace of codimension at least two has ample complement.
 This is the crucial geometric ingredient which allows to apply convex integration
 to the theory of immersions in positive codimension.
 
@@ -84,7 +84,7 @@ theorem AmpleSet.image {s : Set E} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) :
     conv_rhs => rw [← L.apply_symm_apply x]
     exact (L.toHomeomorph).image_connectedComponentIn hx
   rw [← this]
-  refine (AffineMap.image_convexHull _ L.toAffineMap).symm.trans ?_
+  refine (L.toAffineMap.image_convexHull _).symm.trans ?_
   rw [h (L.symm x) hx, image_univ]
   exact L.surjective.range_eq
 

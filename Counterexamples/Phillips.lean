@@ -498,7 +498,6 @@ We need the continuum hypothesis to construct it.
 theorem sierpinski_pathological_family (Hcont : #ℝ = aleph 1) :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
   rcases Cardinal.ord_eq ℝ with ⟨r, hr, H⟩
-  skip
   refine' ⟨fun x => {y | r x y}, fun x => _, fun y => _⟩
   · have : univ \ {y | r x y} = {y | r y x} ∪ {x} := by
       ext y

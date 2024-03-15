@@ -22,7 +22,6 @@ import Mathlib.RingTheory.Localization.FractionRing
 
 -/
 
-
 open scoped Classical
 open HahnSeries BigOperators Polynomial
 
@@ -35,7 +34,7 @@ abbrev LaurentSeries (R : Type*) [Zero R] :=
   HahnSeries ℤ R
 #align laurent_series LaurentSeries
 
-variable {R : Type u}
+variable {R : Type*}
 
 namespace LaurentSeries
 

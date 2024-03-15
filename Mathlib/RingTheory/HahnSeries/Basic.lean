@@ -350,4 +350,47 @@ end Domain
 
 end Zero
 
+section LocallyFiniteLinearOrder
+
+variable [Zero R] [LinearOrder Γ] [LocallyFiniteOrder Γ]
+
+theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
+    (Function.support f).IsPWO := Set.isWF_iff_isPWO.mp hf.wellFoundedOn_lt
+
+theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
+    BddBelow (Function.support f) := by
+  unfold BddBelow Set.Nonempty lowerBounds
+  use n
+  intro m hm
+  rw [Function.mem_support, ne_eq] at hm
+  exact not_lt.mp (mt (hn m) hm)
+
+/-- Construct a Hahn series from any function whose support is bounded below. -/
+@[simps]
+def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : HahnSeries Γ R where
+  coeff := f
+  isPWO_support' := suppBddBelow_supp_PWO f hf
+
+theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
+  simp only [support_zero', bddBelow_empty]
+
+@[simp]
+theorem zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 BddBelow_zero = (0 : HahnSeries Γ R) :=
+  rfl
+
+theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
+    (hn : ∀(m : Γ), m < n → f m = 0) :
+    n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
+  dsimp only [order]
+  by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0
+  cases h
+  exact (hf rfl).elim
+  simp_all only [dite_false]
+  rw [Set.IsWF.le_min_iff]
+  intro m hm
+  rw [HahnSeries.support, Function.mem_support, ne_eq] at hm
+  exact not_lt.mp (mt (hn m) hm)
+
+end LocallyFiniteLinearOrder
+
 end HahnSeries

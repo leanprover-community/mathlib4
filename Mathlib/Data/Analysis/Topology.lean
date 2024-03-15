@@ -280,4 +280,4 @@ instance [TopologicalSpace α] : Inhabited (Compact.Realizer (∅ : Set α)) :=
   ⟨fun {f} F x h hF ↦ by
     suffices f = ⊥ from absurd this h
     rw [← F.eq, eq_bot_iff]
-    exact λ s _ ↦ ⟨x, hF.trans s.empty_subset⟩⟩
+    exact fun s _ ↦ ⟨x, hF.trans s.empty_subset⟩⟩

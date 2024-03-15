@@ -193,7 +193,7 @@ open scoped Classical
 If either of the kernels is not s-finite, `compProd` is given the junk value 0. -/
 noncomputable def compProd (κ : kernel α β) (η : kernel (α × β) γ) : kernel α (β × γ) :=
 if h : IsSFiniteKernel κ ∧ IsSFiniteKernel η then
-{ val := λ a ↦
+{ val := fun a ↦
     Measure.ofMeasurable (fun s _ => compProdFun κ η a s) (compProdFun_empty κ η a)
       (@compProdFun_iUnion _ _ _ _ _ _ κ η h.2 a)
   property := by
@@ -318,6 +318,18 @@ theorem ae_ae_of_ae_compProd {p : β × γ → Prop} (h : ∀ᵐ bc ∂(κ ⊗�
     ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c) :=
   ae_null_of_compProd_null h
 #align probability_theory.kernel.ae_ae_of_ae_comp_prod ProbabilityTheory.kernel.ae_ae_of_ae_compProd
+
+lemma ae_compProd_of_ae_ae {p : β × γ → Prop} (hp : MeasurableSet {x | p x})
+    (h : ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c)) :
+    ∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc := by
+  simp_rw [ae_iff] at h ⊢
+  rw [compProd_null]
+  · exact h
+  · exact hp.compl
+
+lemma ae_compProd_iff {p : β × γ → Prop} (hp : MeasurableSet {x | p x}) :
+    (∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc) ↔ ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c) :=
+  ⟨fun h ↦ ae_ae_of_ae_compProd h, fun h ↦ ae_compProd_of_ae_ae hp h⟩
 
 end Ae
 

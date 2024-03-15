@@ -752,8 +752,6 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
       erw [Fin.predAbove_of_castSucc_lt _ _ (by rwa [Fin.castSucc_castPred])]
       dsimp [δ]
       rw [Fin.succAbove_of_le_castSucc i _]
-      -- This was not needed before leanprover/lean4#2644
-      conv_rhs => dsimp
       erw [Fin.succ_pred]
       simpa only [Fin.le_iff_val_le_val, Fin.coe_castSucc, Fin.coe_pred] using
         Nat.le_sub_one_of_lt (Fin.lt_iff_val_lt_val.mp h')

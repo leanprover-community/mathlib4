@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Tactic.Polyrith
 
 #align_import algebra.star.chsh from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -104,12 +105,11 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
     (B₀_inv : B₀ ^ 2 = 1) (B₁_inv : B₁ ^ 2 = 1) :
     (2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁) * (2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁) =
       4 * (2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁) := by
-  -- If we had a Gröbner basis algorithm, this would be trivial.
-  -- Without one, it is somewhat tedious!
-  rw [← sub_eq_zero]
-  ring_nf
-  simp_all
-  ring_nf
+  -- polyrith suggests:
+  linear_combination
+    (2 * B₀ * B₁ + 2) * A₀_inv + (B₀ ^ 2 - 2 * B₀ * B₁ + B₁ ^ 2) * A₁_inv +
+        (A₀ ^ 2 + 2 * A₀ * A₁ + 1) * B₀_inv +
+      (A₀ ^ 2 - 2 * A₀ * A₁ + 1) * B₁_inv
 set_option linter.uppercaseLean3 false in
 #align CHSH_id CHSH_id
 

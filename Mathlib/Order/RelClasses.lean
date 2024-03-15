@@ -258,8 +258,8 @@ theorem isStrictWeakOrder_of_isOrderConnected [IsAsymm α r] [IsOrderConnected �
 -- see Note [lower instance priority]
 instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStrictTotalOrder α r] :
     IsOrderConnected α r :=
-  ⟨λ _ _ _ h => (trichotomous _ _).imp_right
-    fun o => o.elim (fun e => e ▸ h) fun h' => _root_.trans h' h⟩
+  ⟨fun _ _ _ h ↦ (trichotomous _ _).imp_right
+    fun o ↦ o.elim (fun e ↦ e ▸ h) fun h' ↦ _root_.trans h' h⟩
 #align is_order_connected_of_is_strict_total_order isStrictOrderConnected_of_isStrictTotalOrder
 
 -- see Note [lower instance priority]

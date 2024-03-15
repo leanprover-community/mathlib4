@@ -68,7 +68,7 @@ theorem locally_lipschitz_exp {r : ℝ} (hr_nonneg : 0 ≤ r) (hr_le : r ≤ 1) 
 theorem continuous_exp : Continuous exp :=
   continuous_iff_continuousAt.mpr fun x =>
     continuousAt_of_locally_lipschitz zero_lt_one (2 * ‖exp x‖)
-      (λ y => by
+      (fun y ↦ by
         convert locally_lipschitz_exp zero_le_one le_rfl x y using 2
         congr
         ring)

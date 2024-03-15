@@ -189,7 +189,7 @@ but each monomial key is replaced with its index according to `map`.
 If any new monomials are encountered, they are assigned variable numbers and `map` is updated.
  -/
 def elimMonom (s : Sum) (m : Map Monom ℕ) : Map Monom ℕ × Map ℕ ℤ :=
-  s.foldr (λ mn coeff ⟨map, out⟩ =>
+  s.foldr (fun mn coeff ⟨map, out⟩ ↦
     match map.find? mn with
     | some n => ⟨map, out.insert n coeff⟩
     | none =>

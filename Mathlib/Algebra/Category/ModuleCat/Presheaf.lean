@@ -22,13 +22,12 @@ as a presheaf of abelian groups with additional data.
 * Pushforward and pullback.
 -/
 
-universe v₁ u₁ u
+universe v₁ u₁ u v
 
 open CategoryTheory LinearMap Opposite
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-set_option autoImplicit true in
 /-- A presheaf of modules over a given presheaf of rings,
 described as a presheaf of abelian groups, and the extra data of the action at each object,
 and a condition relating functoriality and scalar multiplication. -/

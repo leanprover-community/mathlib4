@@ -126,7 +126,6 @@ lemma le_sum_distinctPairs_edgeDensity_sq (x : {i // i ∈ P.parts.offDiag}) (h�
       ((if G.IsUniform ε x.1.1 x.1.2 then 0 else ε ^ 4 / 3) - ε ^ 5 / 25) ≤
     (∑ i in distinctPairs G ε hP x, G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ P.parts.card := by
   rw [distinctPairs, ← add_sub_assoc, add_sub_right_comm]
-  push_cast
   split_ifs with h
   · rw [add_zero]
     exact edgeDensity_chunk_uniform hPα hPε _ _

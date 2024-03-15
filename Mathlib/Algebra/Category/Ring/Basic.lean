@@ -20,9 +20,6 @@ We introduce the bundled categories:
 along with the relevant forgetful functors between them.
 -/
 
-set_option autoImplicit true
-
-
 universe u v
 
 open CategoryTheory
@@ -92,7 +89,8 @@ lemma coe_id {X : SemiRingCat} : (𝟙 X : X → X) = id := rfl
 lemma coe_comp {X Y Z : SemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note (#10756): added lemma
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget SemiRingCat).map f = (f : X → Y) := rfl
+@[simp] lemma forget_map {X Y : SemiRingCat} (f : X ⟶ Y) :
+    (forget SemiRingCat).map f = (f : X → Y) := rfl
 
 lemma ext {X Y : SemiRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
   RingHom.ext w
@@ -150,6 +148,7 @@ theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x 
 set_option linter.uppercaseLean3 false in
 #align SemiRing.of_hom_apply SemiRingCat.ofHom_apply
 
+set_option autoImplicit true in
 /--
 Ring equivalence are isomorphisms in category of semirings
 -/
@@ -216,7 +215,7 @@ lemma coe_id {X : RingCat} : (𝟙 X : X → X) = id := rfl
 lemma coe_comp {X Y Z : RingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note (#10756): added lemma
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget RingCat).map f = (f : X → Y) := rfl
+@[simp] lemma forget_map {X Y : RingCat} (f : X ⟶ Y) : (forget RingCat).map f = (f : X → Y) := rfl
 
 lemma ext {X Y : RingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
   RingHom.ext w
@@ -322,7 +321,8 @@ lemma coe_id {X : CommSemiRingCat} : (𝟙 X : X → X) = id := rfl
 lemma coe_comp {X Y Z : CommSemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note (#10756): added lemma
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget CommSemiRingCat).map f = (f : X → Y) := rfl
+@[simp] lemma forget_map {X Y : CommSemiRingCat} (f : X ⟶ Y) :
+  (forget CommSemiRingCat).map f = (f : X → Y) := rfl
 
 lemma ext {X Y : CommSemiRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
   RingHom.ext w
@@ -379,6 +379,7 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.has_forget_to_CommMon CommSemiRingCat.hasForgetToCommMonCat
 
+set_option autoImplicit true in
 /--
 Ring equivalence are isomorphisms in category of commutative semirings
 -/
@@ -442,7 +443,8 @@ lemma coe_id {X : CommRingCat} : (𝟙 X : X → X) = id := rfl
 lemma coe_comp {X Y Z : CommRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note (#10756): added lemma
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget CommRingCat).map f = (f : X → Y) := rfl
+@[simp] lemma forget_map {X Y : CommRingCat} (f : X ⟶ Y) :
+    (forget CommRingCat).map f = (f : X → Y) := rfl
 
 lemma ext {X Y : CommRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
   RingHom.ext w

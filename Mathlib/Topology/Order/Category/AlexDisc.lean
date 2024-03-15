@@ -59,8 +59,8 @@ end AlexDisc
 @[simps]
 def alexDiscEquivPreord : AlexDisc ≌ Preord where
   functor := forget₂ _ _ ⋙ topToPreord
-  inverse := { obj := λ X ↦ AlexDisc.of (WithUpperSet X), map := WithUpperSet.map }
-  unitIso := NatIso.ofComponents λ X ↦ AlexDisc.Iso.mk <| by
+  inverse := { obj := fun X ↦ AlexDisc.of (WithUpperSet X), map := WithUpperSet.map }
+  unitIso := NatIso.ofComponents fun X ↦ AlexDisc.Iso.mk <| by
     dsimp; exact homeoWithUpperSetTopologyorderIso X
-  counitIso := NatIso.ofComponents λ X ↦ Preord.Iso.mk <| by
+  counitIso := NatIso.ofComponents fun X ↦ Preord.Iso.mk <| by
     dsimp; exact (orderIsoSpecializationWithUpperSetTopology X).symm

@@ -136,7 +136,7 @@ def ofPred (f : α → α) (p : α → Prop) (hf : ∀ x, x ≤ f x) (hfp : ∀ 
     (hmin : ∀ ⦃x y⦄, x ≤ y → p y → f x ≤ y) : ClosureOperator α where
   __ := mk₂ f hf fun _ y hxy => hmin hxy (hfp y)
   IsClosed := p
-  isClosed_iff := ⟨λ hx ↦ (hmin le_rfl hx).antisymm <| hf _, λ hx ↦ hx ▸ hfp _⟩
+  isClosed_iff := ⟨fun hx ↦ (hmin le_rfl hx).antisymm <| hf _, fun hx ↦ hx ▸ hfp _⟩
 #align closure_operator.mk₃ ClosureOperator.ofPred
 #align closure_operator.mk₃_apply ClosureOperator.ofPred_apply
 #align closure_operator.mem_mk₃_closed ClosureOperator.ofPred_isClosed

@@ -18,16 +18,13 @@ Current selection of inequalities is motivated by formalization of the rotation 
 a circle homeomorphism.
 -/
 
-set_option autoImplicit true
-
-
 open Function
 
 open Function (Commute)
 
 namespace Monotone
 
-variable [Preorder α] {f : α → α} {x y : ℕ → α}
+variable {α : Type*} [Preorder α] {f : α → α} {x y : ℕ → α}
 
 /-!
 ### Comparison of two sequences
@@ -90,7 +87,7 @@ Then we specialize these two lemmas to the case `β = α`, `h = id`.
 -/
 
 
-variable {g : β → β} {h : β → α}
+variable {β : Type*} {g : β → β} {h : β → α}
 
 open Function
 
@@ -130,7 +127,7 @@ namespace Function
 
 section Preorder
 
-variable [Preorder α] {f : α → α}
+variable {α : Type*} [Preorder α] {f : α → α}
 
 /-- If $x ≤ f x$ for all $x$ (we write this as `id ≤ f`), then the same is true for any iterate
 `f^[n]` of `f`. -/
@@ -167,7 +164,7 @@ namespace Commute
 
 section Preorder
 
-variable [Preorder α] {f g : α → α}
+variable {α : Type*} [Preorder α] {f g : α → α}
 
 theorem iterate_le_of_map_le (h : Commute f g) (hf : Monotone f) (hg : Monotone g) {x}
     (hx : f x ≤ g x) (n : ℕ) : f^[n] x ≤ g^[n] x := by
@@ -192,7 +189,7 @@ theorem iterate_pos_lt_of_map_lt' (h : Commute f g) (hf : StrictMono f) (hg : Mo
 
 end Preorder
 
-variable [LinearOrder α] {f g : α → α}
+variable {α : Type*} [LinearOrder α] {f g : α → α}
 
 theorem iterate_pos_lt_iff_map_lt (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x n}
     (hn : 0 < n) : f^[n] x < g^[n] x ↔ f x < g x := by
@@ -229,7 +226,7 @@ end Function
 
 namespace Monotone
 
-variable [Preorder α] {f : α → α} {x : α}
+variable {α : Type*} [Preorder α] {f : α → α} {x : α}
 
 /-- If `f` is a monotone map and `x ≤ f x` at some point `x`, then the iterates `f^[n] x` form
 a monotone sequence. -/
@@ -249,7 +246,7 @@ end Monotone
 
 namespace StrictMono
 
-variable [Preorder α] {f : α → α} {x : α}
+variable {α : Type*} [Preorder α] {f : α → α} {x : α}
 
 /-- If `f` is a strictly monotone map and `x < f x` at some point `x`, then the iterates `f^[n] x`
 form a strictly monotone sequence. -/

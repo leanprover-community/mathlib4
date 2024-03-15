@@ -128,12 +128,12 @@ theorem comp_left_bot (r : Rel α β) : (⊥ : Rel γ α) • r = ⊥ := by
   simp [comp, Bot.bot]
 
 @[simp]
-theorem comp_right_top (r : Rel α β) : r • (⊤ : Rel β γ) = λ x _ ↦ x ∈ r.dom := by
+theorem comp_right_top (r : Rel α β) : r • (⊤ : Rel β γ) = fun x _ ↦ x ∈ r.dom := by
   ext x z
   simp [comp, Top.top, dom]
 
 @[simp]
-theorem comp_left_top (r : Rel α β) : (⊤ : Rel γ α) • r = λ _ y ↦ y ∈ r.codom := by
+theorem comp_left_top (r : Rel α β) : (⊤ : Rel γ α) • r = fun _ y ↦ y ∈ r.codom := by
   ext x z
   simp [comp, Top.top, codom]
 
@@ -213,7 +213,7 @@ theorem image_bot (s : Set α) : (⊥ : Rel α β).image s = ∅ := by
 @[simp]
 theorem image_top {s : Set α} (h : Set.Nonempty s) :
     (⊤ : Rel α β).image s = Set.univ :=
-  Set.eq_univ_of_forall λ x ↦ ⟨h.some, by simp [h.some_mem, Top.top]⟩
+  Set.eq_univ_of_forall fun x ↦ ⟨h.some, by simp [h.some_mem, Top.top]⟩
 
 /-- Preimage of a set under a relation `r`. Same as the image of `s` under `r.inv` -/
 def preimage (s : Set β) : Set α :=

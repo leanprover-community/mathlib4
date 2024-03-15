@@ -1230,7 +1230,8 @@ theorem contDiff_pi : ContDiff 𝕜 n Φ ↔ ∀ i, ContDiff 𝕜 n fun x => Φ 
   simp only [← contDiffOn_univ, contDiffOn_pi]
 #align cont_diff_pi contDiff_pi
 
-theorem contDiff_update (k : ℕ∞) (x : ∀ i, F' i) (i : ι) : ContDiff 𝕜 k (update x i) := by
+theorem contDiff_update [DecidableEq ι] (k : ℕ∞) (x : ∀ i, F' i) (i : ι) :
+    ContDiff 𝕜 k (update x i) := by
   rw [contDiff_pi]
   intro j
   dsimp [Function.update]
@@ -1240,7 +1241,8 @@ theorem contDiff_update (k : ℕ∞) (x : ∀ i, F' i) (i : ι) : ContDiff 𝕜 
   · exact contDiff_const
 
 variable (F') in
-theorem contDiff_single (k : ℕ∞) (i : ι) : ContDiff 𝕜 k (Pi.single i : F' i → ∀ i, F' i) :=
+theorem contDiff_single [DecidableEq ι] (k : ℕ∞) (i : ι) :
+    ContDiff 𝕜 k (Pi.single i : F' i → ∀ i, F' i) :=
   contDiff_update k 0 i
 
 variable (𝕜 E)

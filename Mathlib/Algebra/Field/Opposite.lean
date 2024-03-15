@@ -13,8 +13,6 @@ import Mathlib.Data.Int.Cast.Lemmas
 # Field structure on the multiplicative/additive opposite
 -/
 
-set_option autoImplicit true
-
 namespace MulOpposite
 
 variable (α : Type*)
@@ -58,6 +56,8 @@ instance field [Field α] : Field αᵐᵒᵖ :=
 end MulOpposite
 
 namespace AddOpposite
+
+variable {α : Type*}
 
 instance divisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ :=
   { AddOpposite.groupWithZero α, AddOpposite.semiring α with }

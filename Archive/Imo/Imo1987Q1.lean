@@ -24,9 +24,6 @@ The original problem assumes `n ≥ 1`. It turns out that a version with `n * (n
 holds true for `n = 0` as well, so we first prove it, then deduce the original version in the case
 `n ≥ 1`. -/
 
-
-set_option autoImplicit true
-
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
 open scoped BigOperators Nat
@@ -62,7 +59,7 @@ def fiber (k : ℕ) : Set (Perm α) :=
   {σ : Perm α | card (fixedPoints σ) = k}
 #align imo1987_q1.fiber Imo1987Q1.fiber
 
-instance : Fintype (fiber α k) := by unfold fiber; infer_instance
+instance {k : ℕ} : Fintype (fiber α k) := by unfold fiber; infer_instance
 
 @[simp]
 theorem mem_fiber {σ : Perm α} {k : ℕ} : σ ∈ fiber α k ↔ card (fixedPoints σ) = k :=

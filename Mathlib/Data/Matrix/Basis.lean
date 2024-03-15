@@ -251,8 +251,7 @@ theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rfl
     · exact diag_eq_of_commute_stdBasisMatrix (hM hij)
-  · push_neg at hkl
-    rw [diagonal_apply_ne _ hkl]
+  · rw [diagonal_apply_ne _ hkl]
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rw [col_eq_zero_of_commute_stdBasisMatrix (hM hkl.symm) hkl]
     · rw [row_eq_zero_of_commute_stdBasisMatrix (hM hij) hkl.symm]

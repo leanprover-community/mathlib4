@@ -15,9 +15,6 @@ Instances on `Prop` such as `DistribLattice`, `BoundedOrder`, `LinearOrder`.
 
 -/
 
-set_option autoImplicit true
-
-
 /-- Propositions form a distributive lattice. -/
 instance Prop.instDistribLattice : DistribLattice Prop where
   sup := Or
@@ -113,6 +110,8 @@ theorem Prop.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
 
 -- Porting note: Lean 3 would unfold these for us, but we need to do it manually now
 section decidable_instances
+
+universe u
 variable {α : Type u}
 
 instance Prop.decidablePredBot : DecidablePred (⊥ : α → Prop) := fun _ => instDecidableFalse

@@ -1482,6 +1482,9 @@ theorem eventually_closedBall_subset {x : α} {u : Set α} (hu : u ∈ 𝓝 x) :
   filter_upwards [this] with _ hr using Subset.trans (closedBall_subset_closedBall hr) hε
 #align eventually_closed_ball_subset eventually_closedBall_subset
 
+theorem tendsto_closedBall_smallSets (x : α) : Tendsto (closedBall x) (𝓝 0) (𝓝 x).smallSets :=
+  tendsto_smallSets_iff.2 fun _ ↦ eventually_closedBall_subset
+
 end Real
 
 /-- Pseudometric space structure pulled back by a function. -/

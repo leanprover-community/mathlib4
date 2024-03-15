@@ -32,12 +32,10 @@ where `forget C` reflects isomorphisms, itself reflects isomorphisms.
 theorem reflectsIsomorphisms_forget₂ [HasForget₂ C D] [ReflectsIsomorphisms (forget C)] :
     ReflectsIsomorphisms (forget₂ C D) :=
   { reflects := fun X Y f {i} => by
-      skip
       haveI i' : IsIso ((forget D).map ((forget₂ C D).map f)) := Functor.map_isIso (forget D) _
       haveI : IsIso ((forget C).map f) := by
         have := @HasForget₂.forget_comp C D
-        rw [← this]
-        exact i'
+        rwa [← this]
       apply isIso_of_reflects_iso f (forget C) }
 #align category_theory.reflects_isomorphisms_forget₂ CategoryTheory.reflectsIsomorphisms_forget₂
 
