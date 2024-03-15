@@ -139,7 +139,7 @@ lemma FermatLastTheoremWith_of_FermatLastTheoremWith_coprime {n : ℕ} {R : Type
   refine hn A B C (fun h ↦ ha <| by simpa [h] using hA) (fun h ↦ hb <| by simpa [h] using hB)
     (fun h ↦ hc <| by simpa [h] using hC) ?_ ?_
   · have : d = (GCDMonoid.gcd a (GCDMonoid.gcd b (c * ↑(normUnit c)))) := by
-      simp [d]
+      simp only [d]
       rw [gcd_insert, id_eq]
       simp only [gcd_insert, id_eq, gcd_singleton, normalize_apply]
     simp only [gcd_insert, id_eq, gcd_singleton, normalize_apply]
