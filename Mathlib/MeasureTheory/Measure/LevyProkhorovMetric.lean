@@ -43,7 +43,7 @@ section Levy_Prokhorov
 
 /-! ### Lévy-Prokhorov metric -/
 
-variable {ι : Type*} {Ω : Type*} [MeasurableSpace Ω] [PseudoMetricSpace Ω]
+variable {ι : Type*} {Ω : Type*} [MeasurableSpace Ω] [PseudoEMetricSpace Ω]
 
 /-- The Lévy-Prokhorov edistance between measures:
 `d(μ,ν) = inf {r ≥ 0 | ∀ B, μ B ≤ ν Bᵣ + r ∧ ν B ≤ μ Bᵣ + r}`. -/
@@ -263,7 +263,7 @@ lemma BoundedContinuousFunction.integral_eq_integral_meas_le_of_hasFiniteIntegra
 lemma BoundedContinuousFunction.integral_eq_integral_meas_le
     {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α]
     (f : α →ᵇ ℝ) (μ : Measure α) [IsFiniteMeasure μ] (f_nn : 0 ≤ᵐ[μ] f) :
-    (∫ ω, f ω ∂μ) = ∫ t in Ioc 0 ‖f‖, ENNReal.toReal (μ {a : α | t ≤ f a}) :=
+    ∫ ω, f ω ∂μ = ∫ t in Ioc 0 ‖f‖, ENNReal.toReal (μ {a : α | t ≤ f a}) :=
   integral_eq_integral_meas_le_of_hasFiniteIntegral _ _ f_nn (f.integrable μ).2
 
 /-- Assuming `levyProkhorovEDist μ ν < ε`, we can bound `∫ f ∂μ` in terms of
@@ -316,7 +316,7 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
 lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
     (εs : ℕ → ℝ) (εs_lim : Tendsto εs atTop (𝓝[>] 0))
     {A : Set ℝ} (A_finmeas : volume A ≠ ∞) (μ : ProbabilityMeasure Ω) :
-    Tendsto (fun n ↦ (∫ t in A, ENNReal.toReal (μ (thickening (εs n) {a | t ≤ f a})))) atTop
+    Tendsto (fun n ↦ ∫ t in A, ENNReal.toReal (μ (thickening (εs n) {a | t ≤ f a}))) atTop
       (𝓝 (∫ t in A, ENNReal.toReal (μ {a | t ≤ f a}))) := by
   apply tendsto_integral_of_dominated_convergence (G := ℝ) (μ := volume.restrict A)
       (F := fun n t ↦ (μ (thickening (εs n) {a | t ≤ f a}))) (f := fun t ↦ (μ {a | t ≤ f a})) 1
