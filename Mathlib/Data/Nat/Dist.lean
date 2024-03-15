@@ -21,8 +21,10 @@ def dist (n m : ℕ) :=
   n - m + (m - n)
 #align nat.dist Nat.dist
 
-theorem dist.def (n m : ℕ) : dist n m = n - m + (m - n) :=
-  rfl
+-- FIXME nightly-testing
+-- How to we trigger creation of the `.def` declaration?
+#print Nat.dist.def
+
 #align nat.dist.def Nat.dist.def
 
 theorem dist_comm (n m : ℕ) : dist n m = dist m n := by simp [dist.def, add_comm]
