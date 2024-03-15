@@ -484,18 +484,33 @@ theorem ArzelaAscoli.isCompact_closure_of_closedEmbedding [TopologicalSpace ι] 
     (F_clemb.comp isClosed_closure.closedEmbedding_subtype_val) cls_eqcont
     fun K hK x hx ↦ (cls_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, by simpa using hQ.2⟩
 
-theorem keyThm {X Y : Type*} [TopologicalSpace X] [UniformSpace Y] [CompactSpace Y] :
+theorem keyThm {X Y : Type*} [TopologicalSpace X] [UniformSpace Y] :
     Inducing (fun f ↦ UniformOnFun.ofFun {K | IsCompact K} f : C(X, Y) → (X →ᵤ[{K | IsCompact K}] Y)) :=
   inducing_iff_nhds.mpr <| fun _ ↦ eq_of_forall_le_iff <| fun _ ↦
     ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn.trans <| UniformOnFun.tendsto_iff_tendstoUniformlyOn.symm.trans tendsto_iff_comap
 
-theorem ArzelaAscoli.ofEquicontinuous {X Y : Type*} [TopologicalSpace X] [UniformSpace Y]
-    [CompactSpace Y] (S : Set C(X, Y)) (hS1 : IsClosed (ContinuousMap.toFun '' S))
+theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖 : Set (Set X)}
+    (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (𝔖_covers : ⋃₀ 𝔖 = univ)
+    (F_ind : Inducing (UniformOnFun.ofFun 𝔖 ∘ F))
+    (F_cl : IsClosed (range F))
+    (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K)
+    (F_pointwiseCompact : ∀ x, ∃ K, IsCompact K ∧ ∀ i, F i x ∈ K) :
+    CompactSpace ι := by
+  have : Inducing F := by
+    rwa [EquicontinuousOn.inducing_uniformOnFun_iff_pi 𝔖_covers 𝔖_compact F_eqcont] at F_ind
+  choose K K_compact F_in_K using F_pointwiseCompact
+  rw [← isCompact_univ_iff, this.isCompact_iff, image_univ]
+  refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ K_compact x) F_cl
+    (range_subset_iff.mpr fun i x _ ↦ F_in_K x i)
+
+theorem arzela_ascoli {X Y : Type*} [TopologicalSpace X] [UniformSpace Y] [CompactSpace Y]
+    (S : Set C(X, Y)) (hS1 : IsClosed (ContinuousMap.toFun '' S))
     (hS2 : Equicontinuous ((↑) : S → X → Y)) :
-    IsCompact S :=
-  isCompact_iff_compactSpace.mpr <| ArzelaAscoli.compactSpace_of_closed_inducing (fun _ ↦ id)
+    IsCompact S := by
+  refine' isCompact_iff_compactSpace.mpr <| ArzelaAscoli.compactSpace_of_closed_inducing
+    (fun _ ↦ id)
     (eq_univ_iff_forall.mpr <| fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
     (keyThm.comp inducing_subtype_val)
     (image_eq_range ContinuousMap.toFun S ▸ hS1)
-    (fun K _ ↦ (equicontinuous_restrict_iff _).mpr (hS2.equicontinuousOn K))
+    (fun K _ ↦ hS2.equicontinuousOn K)
     (fun _ ↦ ⟨univ, isCompact_univ, mem_univ⟩)
