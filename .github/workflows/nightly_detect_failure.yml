@@ -18,11 +18,11 @@ jobs:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
         organization-url: 'https://leanprover.zulipchat.com'
-        to: 'mathlib reviewers'
+        to: 'nightly-testing'
         type: 'stream'
-        topic: 'CI failure on the nightly-testing branch'
+        topic: 'Mathlib status updates'
         content: |
-          ❌ The latest CI for branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}).
+          ❌ The latest CI for Mathlib's branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}).
 
   handle_success:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'nightly-testing' }}
@@ -85,23 +85,23 @@ jobs:
         import zulip
         client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key='${{ secrets.ZULIP_API_KEY }}', site='https://leanprover.zulipchat.com')
 
-        # Get the last message in the 'CI failure on the nightly-testing branch' topic
+        # Get the last message in the 'status updates' topic
         request = {
           'anchor': 'newest',
           'num_before': 1,
           'num_after': 0,
-          'narrow': [{'operator': 'stream', 'operand': 'mathlib reviewers'}, {'operator': 'topic', 'operand': 'CI failure on the nightly-testing branch'}],
+          'narrow': [{'operator': 'stream', 'operand': 'nightly-testing'}, {'operator': 'topic', 'operand': 'Mathlib status updates'}],
           'apply_markdown': False    # Otherwise the content test below fails.
         }
         response = client.get_messages(request)
         messages = response['messages']
-        if not messages or messages[0]['content'] != "✅ The latest CI for branch#nightly-testing has succeeded!":
+        if not messages or messages[0]['content'] != "✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!":
             # Post the success message
             request = {
                 'type': 'stream',
-                'to': 'mathlib reviewers',
-                'topic': 'CI failure on the nightly-testing branch',
-                'content': '✅ The latest CI for branch#nightly-testing has succeeded!'
+                'to': 'nightly-testing',
+                'topic': 'Mathlib status updates',
+                'content': '✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!'
             }
             result = client.send_message(request)
             print(result)
