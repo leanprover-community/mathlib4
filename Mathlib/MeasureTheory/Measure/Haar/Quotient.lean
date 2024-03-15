@@ -116,63 +116,6 @@ end smulInvariantMeasure
 
 section normal
 
-section additive
-
-variable {G : Type*} [AddGroup G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalAddGroup G]
-  [BorelSpace G] [PolishSpace G] {Γ : AddSubgroup G} [Countable Γ] [AddSubgroup.Normal Γ]
-  [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
-  (ν : Measure G) [IsAddLeftInvariant ν] [IsAddRightInvariant ν] [SigmaFinite ν]
-
-/-- If `μ` on `G ⧸ Γ` satisfies `AddQuotientMeasureEqMeasurePreimage` relative to a both left- and
-right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a left-invariant measure.-/
-lemma MeasureTheory.AddQuotientMeasureEqMeasurePreimage.addInvariantMeasure_quotient
-    [hasFun : HasAddFundamentalDomain Γ.op G ν]
-    [AddQuotientMeasureEqMeasurePreimage ν μ] : μ.IsAddLeftInvariant where
-  map_add_left_eq_self x := by
-    apply Measure.ext
-    intro A hA
-    obtain ⟨x₁, h⟩ := @Quotient.exists_rep _ (QuotientAddGroup.leftRel Γ) x
-    convert measure_preimage_vadd x₁ μ A using 1
-    · rw [← h, Measure.map_apply (measurable_const_add _) hA]
-      rfl
-    exact vaddInvariantMeasure_quotient ν
-
-variable [IsAddLeftInvariant μ] [SigmaFinite μ]
-
-local notation "π" => @QuotientAddGroup.mk G _ Γ
-
-/-- Assume that a measure `μ` is `IsAddLeftInvariant`, that the action of `Γ` on `G` has a
-measurable fundamental domain `s` with positive finite volume, and that there is a single measurable
-set `V ⊆ G ⧸ Γ` along which the pullback of `μ` and `ν` agree (so the scaling is right). Then
-`μ` satisfies `AddQuotientMeasureEqMeasurePreimage`. The main tool of the proof is the uniqueness of
-left invariant measures, if normalized by a single positive finite-measured set. -/
-theorem MeasureTheory.Measure.IsAddLeftInvariant.addQuotientMeasureEqMeasurePreimage_of_set
-    {s : Set G} (fund_dom_s : IsAddFundamentalDomain Γ.op s ν) {V : Set (G ⧸ Γ)}
-    (meas_V : MeasurableSet V) (neZeroV : μ V ≠ 0) (hV : μ V = ν (π ⁻¹' V ∩ s))
-    (neTopV : μ V ≠ ⊤) : AddQuotientMeasureEqMeasurePreimage ν μ := by
-  apply fund_dom_s.addQuotientMeasureEqMeasurePreimage
-  ext U _
-  have meas_π : Measurable (QuotientAddGroup.mk : G → G ⧸ Γ) := continuous_quotient_mk'.measurable
-  let μ' : Measure (G ⧸ Γ) := (ν.restrict s).map π
-  haveI has_fund : HasAddFundamentalDomain Γ.op G ν := ⟨⟨s, fund_dom_s⟩⟩
-  have i : AddQuotientMeasureEqMeasurePreimage ν μ' :=
-    fund_dom_s.addQuotientMeasureEqMeasurePreimage_addQuotientMeasure
-  have : μ'.IsAddLeftInvariant :=
-    MeasureTheory.AddQuotientMeasureEqMeasurePreimage.addInvariantMeasure_quotient ν
-  suffices μ = μ' by
-    rw [this]; rfl
-  have : SigmaFinite μ' := i.sigmaFiniteQuotient
-  rw [measure_eq_sub_vadd μ' μ meas_V neZeroV neTopV, hV]
-  symm
-  convert one_smul ENNReal μ
-  rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
-  · convert ENNReal.div_self ..
-    · exact trans hV.symm neZeroV
-    · exact trans hV.symm neTopV
-  exact measurableSet_quotient.mp meas_V
-
-end additive
-
 variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
   [BorelSpace G] [PolishSpace G] {Γ : Subgroup G} [Countable Γ] [Subgroup.Normal Γ]
   [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
@@ -185,6 +128,9 @@ variable (ν : Measure G) [IsMulLeftInvariant ν] [IsMulRightInvariant ν]
 /-- If `μ` on `G ⧸ Γ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and
   right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a left-invariant
   measure.-/
+@[to_additive "If `μ` on `G ⧸ Γ` satisfies `AddQuotientMeasureEqMeasurePreimage` relative to a both
+  left- and right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a
+  left-invariant measure."]
 lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient
     [hasFun : HasFundamentalDomain Γ.op G ν] [QuotientMeasureEqMeasurePreimage ν μ] :
     μ.IsMulLeftInvariant where
@@ -197,9 +143,6 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotien
       rfl
     exact smulInvariantMeasure_quotient ν
 
-attribute [to_additive existing]
-  MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient
-
 variable [IsMulLeftInvariant μ] [SigmaFinite μ]
 
 local notation "π" => @QuotientGroup.mk G _ Γ
@@ -209,6 +152,12 @@ measurable fundamental domain `s` with positive finite volume, and that there is
 set `V ⊆ G ⧸ Γ` along which the pullback of `μ` and `ν` agree (so the scaling is right). Then
 `μ` satisfies `QuotientMeasureEqMeasurePreimage`. The main tool of the proof is the uniqueness of
 left invariant measures, if normalized by a single positive finite-measured set. -/
+@[to_additive MeasureTheory.Measure.IsAddLeftInvariant.addQuotientMeasureEqMeasurePreimage_of_set
+"Assume that a measure `μ` is `IsAddLeftInvariant`, that the action of `Γ` on `G` has a
+measurable fundamental domain `s` with positive finite volume, and that there is a single measurable
+set `V ⊆ G ⧸ Γ` along which the pullback of `μ` and `ν` agree (so the scaling is right). Then
+`μ` satisfies `AddQuotientMeasureEqMeasurePreimage`. The main tool of the proof is the uniqueness of
+left invariant measures, if normalized by a single positive finite-measured set."]
 theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimage_of_set {s : Set G}
     (fund_dom_s : IsFundamentalDomain Γ.op s ν) {V : Set (G ⧸ Γ)}
     (meas_V : MeasurableSet V) (neZeroV : μ V ≠ 0) (hV : μ V = ν (π ⁻¹' V ∩ s))
@@ -228,16 +177,12 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
   have : SigmaFinite μ' := i.sigmaFiniteQuotient
   rw [measure_eq_div_smul μ' μ meas_V neZeroV neTopV, hV]
   symm
-  convert one_smul ENNReal μ
+  suffices (μ' V / ν (QuotientGroup.mk ⁻¹' V ∩ s)) = 1 by rw [this, one_smul]
   rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
   · convert ENNReal.div_self ..
     · exact trans hV.symm neZeroV
     · exact trans hV.symm neTopV
   exact measurableSet_quotient.mp meas_V
-
-attribute [to_additive existing
-  MeasureTheory.Measure.IsAddLeftInvariant.addQuotientMeasureEqMeasurePreimage_of_set]
-  MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimage_of_set
 
 /-- If a measure `μ` is left-invariant and satisfies the right scaling condition, then it
   satisfies `QuotientMeasureEqMeasurePreimage`. -/
@@ -373,7 +318,7 @@ end haarMeasure
 
 end normal
 
-section
+section UnfoldingTrick
 
 variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
   [BorelSpace G] {μ : Measure G} {Γ : Subgroup G}
@@ -482,7 +427,7 @@ lemma QuotientGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [Norme
     exact hg.mul F_ae_measurable
   apply QuotientGroup.integral_eq_integral_automorphize h𝓕 H₁ H₂
 
-end
+end UnfoldingTrick
 
 section
 
