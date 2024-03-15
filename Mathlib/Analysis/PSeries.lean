@@ -228,17 +228,16 @@ theorem summable_one_div_nat_pow {p : ℕ} :
 
 /-- Summability of the `p`-series over `ℤ`. -/
 theorem summable_one_div_int_pow {p : ℕ} :
-    (Summable fun n : ℤ => 1 / (n : ℝ) ^ p) ↔ 1 < p := by
+    (Summable fun n : ℤ ↦ 1 / (n : ℝ) ^ p) ↔ 1 < p := by
   refine ⟨fun h ↦ summable_one_div_nat_pow.mp (h.comp_injective Nat.cast_injective),
-     fun h ↦ (summable_one_div_nat_pow.mpr h).of_natCast_neg_natCast
-        (((summable_one_div_nat_pow.mpr h).mul_left <| 1 / (-1 : ℝ) ^ p).congr fun n ↦ ?_)⟩
-  conv_rhs => rw [Int.cast_neg, neg_eq_neg_one_mul, mul_pow, ← div_div]
-  conv_lhs => rw [mul_div, mul_one]
+    fun h ↦ .of_nat_of_neg (summable_one_div_nat_pow.mpr h)
+      (((summable_one_div_nat_pow.mpr h).mul_left <| 1 / (-1 : ℝ) ^ p).congr fun n ↦ ?_)⟩
+  rw [Int.cast_neg, Int.cast_ofNat, neg_eq_neg_one_mul (n : ℝ), mul_pow, mul_one_div, div_div]
 #align real.summable_one_div_int_pow Real.summable_one_div_int_pow
 
 theorem summable_abs_int_rpow {b : ℝ} (hb : 1 < b) :
     Summable fun n : ℤ => |(n : ℝ)| ^ (-b) := by
-  apply Summable.of_natCast_neg_natCast
+  apply Summable.of_nat_of_neg
   on_goal 2 => simp_rw [Int.cast_neg, abs_neg]
   all_goals
     simp_rw [Int.cast_ofNat, fun n : ℕ => abs_of_nonneg (n.cast_nonneg : 0 ≤ (n : ℝ))]
