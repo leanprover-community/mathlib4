@@ -437,8 +437,7 @@ theorem lift.tprod (f : Π i, s i) : lift φ (tprod R f) = φ f :=
 #align pi_tensor_product.lift.tprod PiTensorProduct.lift.tprod
 
 theorem lift.unique' {φ' : (⨂[R] i, s i) →ₗ[R] E}
-    (H : φ'.compMultilinearMap (PiTensorProduct.tprod R) = φ) :
-    φ' = lift φ :=
+    (H : φ'.compMultilinearMap (PiTensorProduct.tprod R) = φ) : φ' = lift φ :=
   ext <| H.symm ▸ (lift.symm_apply_apply φ).symm
 #align pi_tensor_product.lift.unique' PiTensorProduct.lift.unique'
 
@@ -448,8 +447,7 @@ theorem lift.unique {φ' : (⨂[R] i, s i) →ₗ[R] E} (H : ∀ f, φ' (PiTenso
 #align pi_tensor_product.lift.unique PiTensorProduct.lift.unique
 
 @[simp]
-theorem lift_symm (φ' : (⨂[R] i, s i) →ₗ[R] E) :
-    lift.symm φ' = φ'.compMultilinearMap (tprod R) :=
+theorem lift_symm (φ' : (⨂[R] i, s i) →ₗ[R] E) : lift.symm φ' = φ'.compMultilinearMap (tprod R) :=
   rfl
 #align pi_tensor_product.lift_symm PiTensorProduct.lift_symm
 
@@ -751,7 +749,7 @@ theorem reindex_refl : reindex R s (Equiv.refl ι) = LinearEquiv.refl R _ := by
   ext
   simp only [Equiv.refl_symm, Equiv.refl_apply, reindex, domDomCongrLinearEquiv',
     LinearEquiv.coe_symm_mk, LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe,
-    LinearEquiv.refl_toLinearMap, LinearMap.id_coe]
+    LinearEquiv.refl_toLinearMap, LinearMap.id_coe, id_eq]
   erw [lift.tprod]
   congr
 #align pi_tensor_product.reindex_refl PiTensorProduct.reindex_refl
@@ -835,7 +833,7 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
     · intro x y hx hy
       rw [LinearMap.map_add, this 0 (_ + _), MultilinearMap.map_add, ← this 0 (lift _ _), hx,
         ← this 0 (lift _ _), hy]
-  right_inv t := by simp only [lift.tprod, ofSubsingleton_apply_apply, LinearMap.id_coe, id_eq]
+  right_inv t := by simp only [ofSubsingleton_apply_apply, LinearMap.id_apply, lift.tprod]
   map_add' := LinearMap.map_add _
   map_smul' := fun r x => by
     simp only

@@ -54,12 +54,6 @@ theorem iterate_zero : f^[0] = id :=
   rfl
 #align function.iterate_zero Function.iterate_zero
 
--- can be proved by simp but this is shorter and more natural
-@[simp, nolint simpNF]
-theorem iterate_one : f^[1] = f :=
-  funext fun _ ↦ rfl
-#align function.iterate_one Function.iterate_one
-
 theorem iterate_zero_apply (x : α) : f^[0] x = x :=
   rfl
 #align function.iterate_zero_apply Function.iterate_zero_apply
@@ -87,6 +81,12 @@ theorem iterate_add_apply (m n : ℕ) (x : α) : f^[m + n] x = f^[m] (f^[n] x) :
   rw [iterate_add f m n]
   rfl
 #align function.iterate_add_apply Function.iterate_add_apply
+
+-- can be proved by simp but this is shorter and more natural
+@[simp high]
+theorem iterate_one : f^[1] = f :=
+  funext fun _ ↦ rfl
+#align function.iterate_one Function.iterate_one
 
 theorem iterate_mul (m : ℕ) : ∀ n, f^[m * n] = f^[m]^[n]
   | 0 => by simp only [Nat.mul_zero, iterate_zero]

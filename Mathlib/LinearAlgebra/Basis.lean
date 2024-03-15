@@ -1247,8 +1247,8 @@ theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     trans ((unitsSMul e w).coord i) ((w j)⁻¹ • (unitsSMul e w) j)
     · congr
       simp [Basis.unitsSMul, ← mul_smul]
-    simp only [Basis.coord_apply, LinearMap.smul_apply, Basis.repr_self,
-      Units.smul_def, map_smul, Finsupp.single_apply]
+    simp only [Basis.coord_apply, LinearMap.smul_apply, Basis.repr_self, Units.smul_def,
+      map_smul, Finsupp.single_apply]
     split_ifs with h <;> simp [h]
 #align basis.coord_units_smul Basis.coord_unitsSMul
 
