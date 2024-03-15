@@ -13,7 +13,7 @@ universe w v u
 
 namespace CategoryTheory
 
-open Simplicial Limits SimplicialCategory
+open Simplicial Limits
 
 variable {C : Type u} [Category.{v} C]
 

@@ -39,12 +39,9 @@ structure Path (X : SSet.{v}) (x y : X _[0]) where
   p₀ : X.δ 1 p = x
   p₁ : X.δ 1 p = x
 
-noncomputable def monoidalCategory :
-  MonoidalCategory SSet.{v} := monoidalOfChosenFiniteProducts
-    (FunctorToTypes.functorEmptyLimitCone _)
-    (fun K L => FunctorToTypes.binaryProductLimitCone K L)
-
-attribute [local instance] SSet.monoidalCategory
+instance : ChosenFiniteProducts SSet.{v} where
+  terminal := FunctorToTypes.functorEmptyLimitCone _
+  product := FunctorToTypes.binaryProductLimitCone
 
 def unitHomEquiv (K : SSet.{v}) : (𝟙_ _ ⟶ K) ≃ K _[0] where
   toFun φ := φ.app _ PUnit.unit
@@ -107,8 +104,6 @@ variable (C : Type u) [Category.{v} C]
 
 section
 
-attribute [local instance] SSet.monoidalCategory
-
 /-- A (pre)simplicial category is a category `C` that is enriched in the category
 of simplicial sets in such a way that the `0`-simplicies of this simplicial hom
 identifies to morphisms in `C`. -/
@@ -124,7 +119,7 @@ end
 
 namespace SimplicialCategory
 
-attribute [scoped instance] enrichedCategory SSet.monoidalCategory
+attribute [instance] enrichedCategory
 
 variable [SimplicialCategory C]
 
