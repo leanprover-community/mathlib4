@@ -3,7 +3,6 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.UniformSpace.CompactConvergence
 import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.UniformSpace.Equiv
@@ -435,15 +434,6 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
     (EquicontinuousOn.isClosed_range_pi_of_uniformOnFun' 𝔖_compact F_eqcont F_cl)
     (range_subset_iff.mpr fun i x _ ↦ F_in_Q x x.2 i)
 
-/-- A version of the **Arzela-Ascoli theorem**.
-
-Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
-and `F : ι → (X → α)`. Assume that:
-* `F`, viewed as a function `ι → (X →ᵤ[𝔖] α)`, is closed and inducing
-* `F` is equicontinuous on each `K ∈ 𝔖`
-* For all `x ∈ ⋃₀ 𝔖`, the range of `i ↦ F i x` is contained in some fixed compact subset.
-
-Then `ι` is compact. -/
 theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖 : Set (Set X)}
     (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (𝔖_covers : ⋃₀ 𝔖 = univ)
     (F_ind : Inducing F)
@@ -508,13 +498,23 @@ theorem ArzelaAscoli.isCompact_closure_of_closedEmbedding [TopologicalSpace ι] 
 
 theorem arzela_ascoli {X Y : Type*} [TopologicalSpace X] [UniformSpace Y] [T0Space Y]
     (S : Set C(X, Y)) (hS1 : IsCompact (ContinuousMap.toFun '' S))
-    (hS2 : Equicontinuous ((↑) : S → X → Y))
-    (hS3 : Inducing ((↑) : S → X → Y)) :
+    (hS2 : Equicontinuous ((↑) : S → X → Y)) :
     IsCompact S := by
   refine' isCompact_iff_compactSpace.mpr <| ArzelaAscoli.compactSpace_of_closed_inducing
     (𝔖 := {K | IsCompact K})
     (fun _ ↦ id)
     (eq_univ_iff_forall.mpr <| fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
-    hS3 (image_eq_range ContinuousMap.toFun S ▸ hS1.isClosed) (fun K _ ↦ hS2.equicontinuousOn K)
+    _ (image_eq_range ContinuousMap.toFun S ▸ hS1.isClosed) (fun K _ ↦ hS2.equicontinuousOn K)
     (fun K _ x _ ↦ ⟨(eval x) '' (ContinuousMap.toFun '' S),
       hS1.image (continuous_apply x), fun f ↦ ⟨f, ⟨f, f.2, rfl⟩, rfl⟩⟩)
+
+  have key := EquicontinuousOn.inducing_uniformOnFun_iff_pi (𝔖 := {K : Set X | IsCompact K})
+    (eq_univ_iff_forall.mpr <| fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
+    (fun _ ↦ id)
+    (fun K _ ↦ hS2.equicontinuousOn K)
+  refine' key.mp _
+  change Inducing ((UniformOnFun.ofFun {K | IsCompact K} ∘ ContinuousMap.toFun) ∘ Subtype.val)
+  refine' Inducing.comp _ inducing_subtype_val
+  refine' inducing_iff_nhds.mpr <| fun _ ↦ eq_of_forall_le_iff <| fun _ ↦
+    ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn.trans <|
+      UniformOnFun.tendsto_iff_tendstoUniformlyOn.symm.trans tendsto_iff_comap
