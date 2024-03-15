@@ -94,7 +94,7 @@ instance instFunLike : FunLike (AddChar A M) A M where
 #align add_char.map_zero_one AddChar.map_zero_one
 
 /-- An additive character maps sums to products. -/
-@[simp] lemma map_add_mul (ψ : AddChar A M) (x y : A) : ψ (x + y) = ψ x * ψ y := ψ.map_add_mul' x y
+lemma map_add_mul (ψ : AddChar A M) (x y : A) : ψ (x + y) = ψ x * ψ y := ψ.map_add_mul' x y
 #align add_char.map_add_mul AddChar.map_add_mul
 
 /-- Interpret an additive character as a monoid homomorphism. -/
@@ -112,7 +112,7 @@ def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
 #align add_char.coe_to_fun_apply AddChar.toMonoidHom_apply
 
 /-- An additive character maps multiples by natural numbers to powers. -/
-@[simp] lemma map_nsmul_pow (ψ : AddChar A M) (n : ℕ) (x : A) : ψ (n • x) = ψ x ^ n :=
+lemma map_nsmul_pow (ψ : AddChar A M) (n : ℕ) (x : A) : ψ (n • x) = ψ x ^ n :=
   ψ.toMonoidHom.map_pow x n
 #align add_char.map_nsmul_pow AddChar.map_nsmul_pow
 
@@ -226,12 +226,12 @@ section fromAddGrouptoDivisionMonoid
 variable {A M : Type*} [AddGroup A] [DivisionMonoid M]
 
 /-- An additive character maps negatives to inverses (when defined) -/
-@[simp] lemma map_neg_inv (ψ : AddChar A M) (a : A) : ψ (-a) = (ψ a)⁻¹ := by
+lemma map_neg_inv (ψ : AddChar A M) (a : A) : ψ (-a) = (ψ a)⁻¹ := by
   apply eq_inv_of_mul_eq_one_left
   simp only [← map_add_mul, add_left_neg, map_zero_one]
 
 /-- An additive character maps integer scalar multiples to integer powers. -/
-@[simp] lemma map_zsmul_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (ψ a) ^ n :=
+lemma map_zsmul_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (ψ a) ^ n :=
   ψ.toMonoidHom.map_zpow a n
 #align add_char.map_zsmul_zpow AddChar.map_zsmul_zpow
 
