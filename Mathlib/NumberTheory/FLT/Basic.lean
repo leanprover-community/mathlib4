@@ -143,7 +143,7 @@ lemma FermatLastTheoremWith_of_FermatLastTheoremWith_coprime {n : ℕ} {R : Type
       rw [gcd_insert, id_eq]
       simp only [gcd_insert, id_eq, gcd_singleton, normalize_apply]
     simp only [gcd_insert, id_eq, gcd_singleton, normalize_apply]
-    apply isUnit_gcd_of_eq_mul_gcd (x := a) (y := GCDMonoid.gcd b (c * ↑(normUnit c)))
+    apply isUnit_gcd_of_eq_mul_gcd (x := a) (y := GCDMonoid.gcd b (c * (normUnit c)))
     · rw [← this, hA]
     · have H := Finset.normalize_gcd (s := s) (f := id)
       rw [← this, hB, hC, mul_assoc, _root_.gcd_mul_left, H,
@@ -152,7 +152,6 @@ lemma FermatLastTheoremWith_of_FermatLastTheoremWith_coprime {n : ℕ} {R : Type
       simp only [Units.val_mul, ne_eq, Units.ne_zero, not_false_eq_true, mul_eq_right₀,
         Units.val_eq_one]
       nth_rewrite 2 [← mul_one (s.gcd id)] at H
-      rw [normalize_apply] at H
       exact Units.ext <| by simpa using mul_left_cancel₀ hdzero H
     · simp [hc]
   · rw [hA, hB, hC, mul_pow, mul_pow, mul_pow, ← mul_add] at habc
