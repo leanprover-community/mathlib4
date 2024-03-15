@@ -312,31 +312,40 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
 
 /-- A monotone decreasing convergence lemma for integrals of measures of thickenings:
 `∫ t in (0, ‖f‖], μ (thickening ε {x | f(x) ≥ t}) dt` tends to
-`∫ t in (0, ‖f‖], μ {x | f(x) ≥ t} dt` as `ε → 0` along a sequence. -/
+`∫ t in (0, ‖f‖], μ {x | f(x) ≥ t} dt` as `ε → 0`. -/
 lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
+    {A : Set ℝ} (A_finmeas : volume A ≠ ∞) (μ : ProbabilityMeasure Ω) :
+    Tendsto (fun ε ↦ ∫ t in A, ENNReal.toReal (μ (thickening ε {a | t ≤ f a}))) (𝓝[>] (0 : ℝ))
+      (𝓝 (∫ t in A, ENNReal.toReal (μ {a | t ≤ f a}))) := by
+  apply tendsto_integral_filter_of_dominated_convergence (G := ℝ) (μ := volume.restrict A)
+        (F := fun ε t ↦ (μ (thickening ε {a | t ≤ f a}))) (f := fun t ↦ (μ {a | t ≤ f a})) 1
+  · apply eventually_of_forall fun n ↦ Measurable.aestronglyMeasurable ?_
+    simp only [measurable_coe_nnreal_real_iff]
+    apply measurable_toNNReal.comp <| Antitone.measurable (fun s t hst ↦ ?_)
+    exact measure_mono <| thickening_subset_of_subset _ <| fun ω h ↦ hst.trans h
+  · apply eventually_of_forall (fun i ↦ ?_)
+    apply eventually_of_forall (fun t ↦ ?_)
+    simp only [Real.norm_eq_abs, NNReal.abs_eq, Pi.one_apply]
+    exact (ENNReal.toReal_le_toReal (measure_ne_top _ _) one_ne_top).mpr prob_le_one
+  · have aux : IsFiniteMeasure (volume.restrict A) := ⟨by simp [lt_top_iff_ne_top, A_finmeas]⟩
+    apply integrable_const
+  · apply eventually_of_forall (fun t ↦ ?_)
+    simp only [NNReal.tendsto_coe]
+    apply (ENNReal.tendsto_toNNReal _).comp
+    apply (tendsto_measure_thickening_of_isClosed ?_ ?_)
+    · exact ⟨1, ⟨Real.zero_lt_one, measure_ne_top _ _⟩⟩
+    · exact isClosed_le continuous_const f.continuous
+    · exact measure_ne_top _ _
+
+/-- A monotone decreasing convergence lemma for integrals of measures of thickenings:
+`∫ t in (0, ‖f‖], μ (thickening ε {x | f(x) ≥ t}) dt` tends to
+`∫ t in (0, ‖f‖], μ {x | f(x) ≥ t} dt` as `ε → 0` along a sequence. -/
+lemma tendsto_integral_meas_thickening_le' (f : Ω →ᵇ ℝ)
     (εs : ℕ → ℝ) (εs_lim : Tendsto εs atTop (𝓝[>] 0))
     {A : Set ℝ} (A_finmeas : volume A ≠ ∞) (μ : ProbabilityMeasure Ω) :
     Tendsto (fun n ↦ ∫ t in A, ENNReal.toReal (μ (thickening (εs n) {a | t ≤ f a}))) atTop
       (𝓝 (∫ t in A, ENNReal.toReal (μ {a | t ≤ f a}))) := by
-  apply tendsto_integral_of_dominated_convergence (G := ℝ) (μ := volume.restrict A)
-      (F := fun n t ↦ (μ (thickening (εs n) {a | t ≤ f a}))) (f := fun t ↦ (μ {a | t ≤ f a})) 1
-  · apply fun n ↦ Measurable.aestronglyMeasurable ?_
-    simp only [measurable_coe_nnreal_real_iff]
-    apply measurable_toNNReal.comp <| Antitone.measurable (fun s t hst ↦ ?_)
-    exact measure_mono <| thickening_subset_of_subset _ <| fun ω h ↦ hst.trans h
-  · have aux : IsFiniteMeasure (volume.restrict A) := ⟨by simp [lt_top_iff_ne_top, A_finmeas]⟩
-    apply integrable_const
-  · intro n
-    apply eventually_of_forall (fun t ↦ ?_)
-    simp only [Real.norm_eq_abs, NNReal.abs_eq, Pi.one_apply]
-    exact (ENNReal.toReal_le_toReal (measure_ne_top _ _) one_ne_top).mpr prob_le_one
-  · apply eventually_of_forall (fun t ↦ ?_)
-    simp only [NNReal.tendsto_coe]
-    apply (ENNReal.tendsto_toNNReal _).comp
-    apply (tendsto_measure_thickening_of_isClosed ?_ ?_).comp εs_lim
-    · exact ⟨1, ⟨Real.zero_lt_one, measure_ne_top _ _⟩⟩
-    · exact isClosed_le continuous_const f.continuous
-    · exact measure_ne_top _ _
+  exact (tendsto_integral_meas_thickening_le f A_finmeas μ).comp εs_lim
 
 /-- The coercion `LevyProkhorov (ProbabilityMeasure Ω) → ProbabilityMeasure Ω` is continuous. -/
 lemma continuous_levyProkhorov_to_probabilityMeasure :
@@ -358,9 +367,13 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
   apply limsup_le_of_le ?_
   · obtain ⟨εs, ⟨_, ⟨εs_pos, εs_lim⟩⟩⟩ := exists_seq_strictAnti_tendsto (0 : ℝ)
     have ε_of_room := Tendsto.add (tendsto_iff_dist_tendsto_zero.mp hμs) εs_lim
+    have ε_of_room' : Tendsto (fun n ↦ dist (μs n) ν + εs n) atTop (𝓝[>] 0) := by
+      rw [tendsto_nhdsWithin_iff]
+      refine ⟨by simpa using ε_of_room, eventually_of_forall fun n ↦ ?_⟩
+      · rw [mem_Ioi]
+        linarith [εs_pos n, dist_nonneg (x := μs n) (y := ν)]
     rw [add_zero] at ε_of_room
-    have key := tendsto_integral_meas_thickening_le f (fun n ↦ dist (μs n) ν + εs n)
-                 ?_ (A := Ioc 0 ‖f‖) (by simp) P
+    have key := (tendsto_integral_meas_thickening_le f (A := Ioc 0 ‖f‖) (by simp) P).comp ε_of_room'
     · have aux : ∀ (z : ℝ), Iio (z + δ/2) ∈ 𝓝 z := fun z ↦ Iio_mem_nhds (by linarith)
       filter_upwards [key (aux _), ε_of_room <| Iio_mem_nhds <| half_pos <|
                         Real.mul_pos (inv_pos.mpr norm_f_pos) δ_pos]
@@ -391,11 +404,6 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
             ofReal_toReal (levyProkhorovEDist_ne_top _ _)]
         rfl
       · exact eventually_of_forall f_nn
-    · apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ε_of_room
-      apply eventually_of_forall (fun n ↦ ?_)
-      simp only [mem_Ioi]
-      specialize εs_pos n
-      positivity
   · simp only [IsCoboundedUnder, IsCobounded, eventually_map, eventually_atTop,
                ge_iff_le, forall_exists_index]
     refine ⟨0, fun a i hia ↦ le_trans (integral_nonneg f_nn) (hia i rfl.le)⟩
