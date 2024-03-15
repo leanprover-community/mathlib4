@@ -2,7 +2,7 @@ import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
 
 universe v u
 
-namespace CategoryTheory
+/-namespace CategoryTheory
 
 open Simplicial SimplicialCategory MonoidalCategory
 
@@ -57,8 +57,10 @@ variable {K L : SSet.{v}} (f : K ⟶ L) {X Y : C} (g : X ⟶ Y)
 noncomputable def sTensorMap :
     K ⊗ₛ X ⟶ L ⊗ₛ Y := sTensorDesc (f ≫ sTensorα L Y ≫ sHomMap₁ g _)
 
+scoped infixr:70 " ⊗ₛ " => sTensorMap
+
 end
 
 end SimplicialCategory
 
-end CategoryTheory
+end CategoryTheory-/

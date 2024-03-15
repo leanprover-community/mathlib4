@@ -78,17 +78,17 @@ instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ [0]) where
 
 def simplicialHomEquiv₀ : simplicialHom K L _[0] ≃ (K ⟶ L) where
   toFun x :=
-    { app := fun Δ => x.app Δ (SimplexCategory.const' _ _ 0)
+    { app := fun Δ => x.app Δ (SimplexCategory.const _ _ 0)
       naturality := fun Δ Δ' f => by rw [← x.naturality f]; rfl }
   invFun φ :=
     { app := fun Δ _ => φ.app Δ
       naturality := fun {Δ Δ'} f (s : Δ.unop ⟶ [0]) => by
-        obtain rfl := Subsingleton.elim s (SimplexCategory.const' _ _ 0)
+        obtain rfl := Subsingleton.elim s (SimplexCategory.const _ _ 0)
         exact φ.naturality f }
   left_inv x := by
     dsimp [simplicialHom]
     ext Δ (s : _ ⟶ _)
-    obtain rfl := Subsingleton.elim s (SimplexCategory.const' _ _ 0)
+    obtain rfl := Subsingleton.elim s (SimplexCategory.const _ _ 0)
     rfl
   right_inv φ := rfl
 
@@ -153,6 +153,6 @@ noncomputable instance : SimplicialCategory SSet.{v} := by
 
 end SimplicialObject
 
-abbrev SSet.Homotopy {K L : SSet.{v}} (f g : K ⟶ L) := SimplicialCategory.Homotopy f g
+--abbrev SSet.Homotopy {K L : SSet.{v}} (f g : K ⟶ L) := SimplicialCategory.Homotopy f g
 
 end CategoryTheory
