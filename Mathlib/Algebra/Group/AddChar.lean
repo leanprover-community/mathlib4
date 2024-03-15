@@ -52,16 +52,13 @@ interested in much more specific cases (e.g. when `A` is a group and `M` a commu
  -/
 structure AddChar where
   /-- The underlying function.
-  
   Do not use this function directly. Instead use the coercion coming from the `FunLike`
   instance. -/
   toFun : A → M
   /-- The function maps `0` to `1`.
-  
   Do not use this directly. Instead use `AddChar.map_zero_one`. -/
   map_zero_one' : toFun 0 = 1
   /- The function maps addition in `A` to multiplication in `M`.
-  
   Do not use this directly. Instead use `AddChar.map_add_mul`. -/
   map_add_mul' : ∀ a b : A, toFun (a + b) = toFun a * toFun b
 
