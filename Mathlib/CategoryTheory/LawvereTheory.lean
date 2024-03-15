@@ -174,86 +174,86 @@ lemma Algebra.morphism_ext {C : Type u'} [Category.{v'} C] {X Y : L.Algebra C}
 
 section free
 
-variable (L)
+variable (L) (X : S → Type u')
+inductive FreeRep : ProdWord S → Type (max v u u') where
+  | of {T : S} : X T → FreeRep (.of T)
+  | map {A B : ProdWord S} : L.hom A B → FreeRep A → FreeRep B
+  | lift {A B : ProdWord S} : FreeRep A → FreeRep B → FreeRep (A.prod B)
+  | unit : FreeRep .nil
 
-inductive FreeRep (L : LawvereTheory S) (X : S → Type u') : ProdWord S → Type _ where
-  | of {T : S} : X T → FreeRep L X (.of T)
-  | map {A B : ProdWord S} : L.hom A B → FreeRep L X A → FreeRep L X B
-  | lift {A B : ProdWord S} : FreeRep L X A → FreeRep L X B → FreeRep L X (A.prod B)
-  | unit : FreeRep L X .nil
-
-inductive FreeRel (L : LawvereTheory S) (X : S → Type u') :
+inductive FreeRel :
     {A : ProdWord S} → L.FreeRep X A → L.FreeRep X A → Prop where
-  | rfl {A : ProdWord S} (f : L.FreeRep X A) : L.FreeRel X f f
-  | symm {A : ProdWord S} {f g : L.FreeRep X A} : L.FreeRel X f g → L.FreeRel X g f
+  | rfl {A : ProdWord S} (f : L.FreeRep X A) : FreeRel f f
+  | symm {A : ProdWord S} {f g : L.FreeRep X A} : FreeRel f g → FreeRel g f
   | trans {A : ProdWord S} {f g h : L.FreeRep X A} :
-    L.FreeRel X f g → L.FreeRel X g h → L.FreeRel X f h
+    FreeRel f g → FreeRel g h → FreeRel f h
   | map_congr {A B : ProdWord S} {x y : L.FreeRep X A} {f : L.hom A B} :
-      L.FreeRel X x y → L.FreeRel X (x.map f) (y.map f)
+      FreeRel x y → FreeRel (x.map f) (y.map f)
   | map_id {A : ProdWord S} (x : L.FreeRep X A) :
-      L.FreeRel X (x.map <| L.id A) x
+      FreeRel (x.map <| L.id A) x
   | map_comp {A B C : ProdWord S} (f : L.hom A B) (g : L.hom B C) (x : L.FreeRep X A) :
-      L.FreeRel X (x.map <| L.comp f g) ((x.map f).map g)
+      FreeRel (x.map <| L.comp f g) ((x.map f).map g)
   | lift_fst {A B : ProdWord S} (x : L.FreeRep X A) (y : L.FreeRep X B) :
-      L.FreeRel X ((FreeRep.lift x y).map <| L.fst' _ _) x
+      FreeRel ((FreeRep.lift x y).map <| L.fst' _ _) x
   | lift_snd {A B : ProdWord S} (x : L.FreeRep X A) (y : L.FreeRep X B) :
-      L.FreeRel X ((FreeRep.lift x y).map <| L.snd' _ _) y
+      FreeRel ((FreeRep.lift x y).map <| L.snd' _ _) y
   | lift_unique {A B : ProdWord S} (x y : L.FreeRep X (A.prod B)) :
-      L.FreeRel X (x.map <| L.fst' _ _) (y.map <| L.fst' _ _) →
-      L.FreeRel X (x.map <| L.snd' _ _) (y.map <| L.snd' _ _) →
-      L.FreeRel X x y
+      FreeRel (x.map <| L.fst' _ _) (y.map <| L.fst' _ _) →
+      FreeRel (x.map <| L.snd' _ _) (y.map <| L.snd' _ _) →
+      FreeRel x y
   | lift_congr {A B : ProdWord S}
       {x x' : L.FreeRep X A}
       {y y' : L.FreeRep X B} :
-      L.FreeRel X x x' →
-      L.FreeRel X y y' →
-      L.FreeRel X (x.lift y) (x'.lift y')
-  | unit_unique (x y : L.FreeRep X .nil) : L.FreeRel X x y
+      FreeRel x x' →
+      FreeRel y y' →
+      FreeRel (x.lift y) (x'.lift y')
+  | unit_unique (x y : L.FreeRep X .nil) : FreeRel x y
 
-def FreeSetoid (L : LawvereTheory S) (X : S → Type u') (A : ProdWord S) :
+def FreeSetoid (A : ProdWord S) :
     Setoid (L.FreeRep X A) where
   r := L.FreeRel _
   iseqv := ⟨.rfl, .symm, .trans⟩
 
-def Free (L : LawvereTheory S) (X : S → Type u') : ProdWord S → Type _ :=
-  fun A => Quotient <| L.FreeSetoid X A
+def Free (A : ProdWord S) : Type _ :=
+  Quotient <| L.FreeSetoid X A
 
-def Free.fst (L : LawvereTheory S) (X : S → Type u') (A B : ProdWord S) :
+variable {L X}
+def Free.fst {A B : ProdWord S} :
     L.Free X (A.prod B) → L.Free X A :=
   Quotient.lift (fun a => Quotient.mk _ <| a.map <| L.fst' _ _)
   fun _ _ h => Quotient.sound <| .map_congr h
 
-def Free.snd (L : LawvereTheory S) (X : S → Type u') (A B : ProdWord S) :
+def Free.snd {A B : ProdWord S} :
     L.Free X (A.prod B) → L.Free X B :=
   Quotient.lift (fun a => Quotient.mk _ <| a.map <| L.snd' _ _)
   fun _ _ h => Quotient.sound <| .map_congr h
 
-def Free.lift (L : LawvereTheory S) (X : S → Type u') (A B : ProdWord S)
-    (x : L.Free X A) (y :  L.Free X B) :
+def Free.lift {A B : ProdWord S}
+    (x : L.Free X A) (y : L.Free X B) :
     L.Free X (A.prod B) :=
   Quotient.liftOn₂ x y (fun a b => Quotient.mk _ <| .lift a b)
   fun _ _ _ _ h₁ h₂ => Quotient.sound <| .lift_congr h₁ h₂
 
-lemma Free.lift_fst (L : LawvereTheory S) (X : S → Type u') (A B : ProdWord S)
+lemma Free.lift_fst {A B : ProdWord S}
     (x : L.Free X A) (y :  L.Free X B) :
-    Free.fst _ _ _ _ (Free.lift _ _ _ _ x y) = x := by
+    (x.lift y).fst = x := by
   rcases x with ⟨x⟩
   rcases y with ⟨y⟩
   apply Quotient.sound
   apply FreeRel.lift_fst
 
-lemma Free.lift_snd (L : LawvereTheory S) (X : S → Type u') (A B : ProdWord S)
+lemma Free.lift_snd {A B : ProdWord S}
     (x : L.Free X A) (y :  L.Free X B) :
-    Free.snd _ _ _ _ (Free.lift _ _ _ _ x y) = y := by
+    (x.lift y).snd = y := by
   rcases x with ⟨x⟩
   rcases y with ⟨y⟩
   apply Quotient.sound
   apply FreeRel.lift_snd
 
-lemma Free.lift_ext (L : LawvereTheory S) (X : S → Type u') (A B : ProdWord S)
+lemma Free.lift_ext {A B : ProdWord S}
     (x y : L.Free X (A.prod B))
-    (h_fst : fst _ _ _ _ x = fst _ _ _ _ y)
-    (h_snd : snd _ _ _ _ x = snd _ _ _ _ y) :
+    (h_fst : x.fst = y.fst)
+    (h_snd : x.snd = y.snd) :
     x = y := by
   rcases x with ⟨x⟩
   rcases y with ⟨y⟩
@@ -262,14 +262,15 @@ lemma Free.lift_ext (L : LawvereTheory S) (X : S → Type u') (A B : ProdWord S)
   exact Quotient.exact h_fst
   exact Quotient.exact h_snd
 
-lemma Free.unit_unique (L : LawvereTheory S) (X : S → Type u')
+lemma Free.unit_ext
     (x y : L.Free X .nil) : x = y := by
   rcases x with ⟨x⟩
   rcases y with ⟨x⟩
   apply Quotient.sound
   apply FreeRel.unit_unique
 
-def FreeAlgebra (L : LawvereTheory S) (X : S → Type u') : L.Algebra (Type _) where
+variable (L X)
+def FreeAlgebra : L.Algebra (Type (max v u u')) where
   functor := {
     obj := fun A => L.Free X A.as
     map := fun f =>
@@ -285,19 +286,18 @@ def FreeAlgebra (L : LawvereTheory S) (X : S → Type u') : L.Algebra (Type _) w
       rintro ⟨A⟩ ⟨B⟩ ⟨C⟩ f g
       ext ⟨T⟩
       apply Quotient.sound
-      apply FreeRel.map_comp
-  }
+      apply FreeRel.map_comp }
   isLimit := fun ⟨A⟩ ⟨B⟩ => Limits.BinaryFan.isLimitMk
-    (fun S x => Free.lift _ _ _ _ _ _)
-    (fun S => funext fun x => Free.lift_fst _ _ _ _ _ _)
-    (fun S => funext fun x => Free.lift_snd _ _ _ _ _ _)
-    (fun S m h1 h2 => funext fun x => Free.lift_ext _ _ _ _ _ _
+    (fun S x => Free.lift _ _)
+    (fun S => funext fun x => Free.lift_fst _ _)
+    (fun S => funext fun x => Free.lift_snd _ _)
+    (fun S m h1 h2 => funext fun x => Free.lift_ext _ _
       (by simp only [Free.lift_fst] ; exact congr_fun h1 _)
       (by simp only [Free.lift_snd] ; exact congr_fun h2 _))
   isTerminal := .mk
     (fun S _ => Quotient.mk _ <| .unit)
     (fun S j => j.as.elim)
-    (fun S _ _ => funext fun _ => Free.unit_unique _ _ _ _)
+    (fun S _ _ => funext fun _ => Free.unit_ext _ _)
 
 end free
 
