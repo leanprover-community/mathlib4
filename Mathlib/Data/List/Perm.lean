@@ -259,12 +259,14 @@ lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePre
 
 #align list.perm.foldl_eq' List.Perm.foldl_eq'
 
-theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} (rcomm : Binary.RightCommutative f) (p : l₁ ~ l₂) :
+theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} (rcomm : Binary.RightCommutative f)
+    (p : l₁ ~ l₂) :
     ∀ b, foldl f b l₁ = foldl f b l₂ :=
   p.foldl_eq' fun x _hx y _hy z => rcomm z x y
 #align list.perm.foldl_eq List.Perm.foldl_eq
 
-theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : Binary.LeftCommutative f) (p : l₁ ~ l₂) :
+theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : Binary.LeftCommutative f)
+    (p : l₁ ~ l₂) :
     ∀ b, foldr f b l₁ = foldr f b l₂ := by
   intro b
   induction p using Perm.recOnSwap' generalizing b with
