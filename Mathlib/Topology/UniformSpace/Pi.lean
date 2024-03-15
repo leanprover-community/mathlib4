@@ -31,7 +31,7 @@ instance Pi.uniformSpace : UniformSpace (∀ i, α i) :=
 #align Pi.uniform_space Pi.uniformSpace
 
 lemma Pi.uniformSpace_eq :
-    Pi.uniformSpace α = ⨅ i, UniformSpace.comap (fun a : (∀ i, α i) ↦ a i) (U i) := by
+    Pi.uniformSpace α = ⨅ i, UniformSpace.comap (eval i) (U i) := by
   ext : 1; rfl
 
 theorem Pi.uniformity :
@@ -118,5 +118,10 @@ instance Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i)
 #align Pi.complete Pi.complete
 
 #align Pi.separated Pi.instT0Space
+
+lemma Pi.uniformSpace_comap_restrict_sUnion (𝔖 : Set (Set ι)) :
+    UniformSpace.comap ((⋃₀ 𝔖).restrict) (Pi.uniformSpace (fun i : (⋃₀ 𝔖) ↦ α i)) =
+    ⨅ S ∈ 𝔖, UniformSpace.comap S.restrict (Pi.uniformSpace (fun i : S ↦ α i)) := by
+  simp_rw [Pi.uniformSpace_comap_restrict α, iInf_sUnion]
 
 end
