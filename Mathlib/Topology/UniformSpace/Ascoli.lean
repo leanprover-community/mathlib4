@@ -437,6 +437,28 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
 
 /-- A version of the **Arzela-Ascoli theorem**.
 
+Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
+and `F : ι → (X → α)`. Assume that:
+* `F`, viewed as a function `ι → (X →ᵤ[𝔖] α)`, is closed and inducing
+* `F` is equicontinuous on each `K ∈ 𝔖`
+* For all `x ∈ ⋃₀ 𝔖`, the range of `i ↦ F i x` is contained in some fixed compact subset.
+
+Then `ι` is compact. -/
+theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖 : Set (Set X)}
+    (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (𝔖_covers : ⋃₀ 𝔖 = univ)
+    (F_ind : Inducing F)
+    (F_cl : IsClosed <| range F)
+    (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K)
+    (F_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ ∀ i, F i x ∈ Q) :
+    CompactSpace ι :=
+  ArzelaAscoli.compactSpace_of_closed_inducing' 𝔖_compact
+    ((EquicontinuousOn.inducing_uniformOnFun_iff_pi 𝔖_covers 𝔖_compact F_eqcont).mpr F_ind)
+    ((EquicontinuousOn.isClosed_range_uniformOnFun_iff_pi 𝔖_compact 𝔖_covers F_eqcont).mpr F_cl)
+    F_eqcont F_pointwiseCompact
+
+
+/-- A version of the **Arzela-Ascoli theorem**.
+
 Let `X, ι` be topological spaces, `𝔖` a covering of `X` by compact subsets, `α` a uniform space,
 and `F : ι → (X → α)`. Assume that:
 * `F`, viewed as a function `ι → (X →ᵤ[𝔖] α)`, is a closed embedding (in other words, `ι`
@@ -484,33 +506,15 @@ theorem ArzelaAscoli.isCompact_closure_of_closedEmbedding [TopologicalSpace ι] 
     (F_clemb.comp isClosed_closure.closedEmbedding_subtype_val) cls_eqcont
     fun K hK x hx ↦ (cls_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, by simpa using hQ.2⟩
 
-theorem keyThm {X Y : Type*} [TopologicalSpace X] [UniformSpace Y] :
-    Inducing (fun f ↦ UniformOnFun.ofFun {K | IsCompact K} f : C(X, Y) → (X →ᵤ[{K | IsCompact K}] Y)) :=
-  inducing_iff_nhds.mpr <| fun _ ↦ eq_of_forall_le_iff <| fun _ ↦
-    ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn.trans <| UniformOnFun.tendsto_iff_tendstoUniformlyOn.symm.trans tendsto_iff_comap
-
-theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖 : Set (Set X)}
-    (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K) (𝔖_covers : ⋃₀ 𝔖 = univ)
-    (F_ind : Inducing (UniformOnFun.ofFun 𝔖 ∘ F))
-    (F_cl : IsClosed (range F))
-    (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K)
-    (F_pointwiseCompact : ∀ x, ∃ K, IsCompact K ∧ ∀ i, F i x ∈ K) :
-    CompactSpace ι := by
-  have : Inducing F := by
-    rwa [EquicontinuousOn.inducing_uniformOnFun_iff_pi 𝔖_covers 𝔖_compact F_eqcont] at F_ind
-  choose K K_compact F_in_K using F_pointwiseCompact
-  rw [← isCompact_univ_iff, this.isCompact_iff, image_univ]
-  refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ K_compact x) F_cl
-    (range_subset_iff.mpr fun i x _ ↦ F_in_K x i)
-
-theorem arzela_ascoli {X Y : Type*} [TopologicalSpace X] [UniformSpace Y] [CompactSpace Y]
-    (S : Set C(X, Y)) (hS1 : IsClosed (ContinuousMap.toFun '' S))
-    (hS2 : Equicontinuous ((↑) : S → X → Y)) :
+theorem arzela_ascoli {X Y : Type*} [TopologicalSpace X] [UniformSpace Y] [T0Space Y]
+    (S : Set C(X, Y)) (hS1 : IsCompact (ContinuousMap.toFun '' S))
+    (hS2 : Equicontinuous ((↑) : S → X → Y))
+    (hS3 : Inducing ((↑) : S → X → Y)) :
     IsCompact S := by
   refine' isCompact_iff_compactSpace.mpr <| ArzelaAscoli.compactSpace_of_closed_inducing
+    (𝔖 := {K | IsCompact K})
     (fun _ ↦ id)
     (eq_univ_iff_forall.mpr <| fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
-    (keyThm.comp inducing_subtype_val)
-    (image_eq_range ContinuousMap.toFun S ▸ hS1)
-    (fun K _ ↦ hS2.equicontinuousOn K)
-    (fun _ ↦ ⟨univ, isCompact_univ, mem_univ⟩)
+    hS3 (image_eq_range ContinuousMap.toFun S ▸ hS1.isClosed) (fun K _ ↦ hS2.equicontinuousOn K)
+    (fun K _ x _ ↦ ⟨(eval x) '' (ContinuousMap.toFun '' S),
+      hS1.image (continuous_apply x), fun f ↦ ⟨f, ⟨f, f.2, rfl⟩, rfl⟩⟩)
