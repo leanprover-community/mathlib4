@@ -199,7 +199,7 @@ The resulting expression has the same type as the old one.
 It is useful, e.g., to verify if the proof-irrelevant part of a definition depends on a variable.
 -/
 def eraseProofs (e : Expr) : MetaM Expr :=
-  Meta.transform e
+  Meta.transform (skipConstInApp := true) e
     (pre := fun e => do
       if (← Meta.isProof e) then
         return .continue (← mkSyntheticSorry (← inferType e))
