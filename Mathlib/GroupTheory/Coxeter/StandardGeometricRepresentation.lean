@@ -11,6 +11,7 @@ import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.Data.Int.Parity
+
 /-!
 # The standard geometric representation
 Throughout this file, `B` is a type and `M : Matrix B B ℕ` is a Coxeter matrix.
@@ -94,7 +95,7 @@ local notation:max "⟪"  a  ","  b  "⟫" => standardBilinForm M a b
 @[simp] theorem standardBilinForm_simpleRoot_simpleRoot (i i' : B) :
     ⟪α i, α i'⟫ = - cos (Real.pi / M i i') := by simp [standardBilinForm, simpleRoot]
 
-theorem standardBilinForm_symm :
+theorem isSymm_standardBilinForm :
     LinearMap.IsSymm (standardBilinForm M) := by
   apply LinearMap.isSymm_iff_eq_flip.mpr
   apply (Finsupp.basisSingleOne).ext
