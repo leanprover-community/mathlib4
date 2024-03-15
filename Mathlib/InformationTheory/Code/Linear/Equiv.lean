@@ -51,7 +51,6 @@ class LinearCodeEquivClass (T:Type*)
   extends EquivLike T M M₂, LinearCodeHomClass T K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂ where
   invMap_code' : ∀ (φ:T), ∀ x, φ x ∈ sₘ₂ → x ∈ sₘ
 
-
 instance LinearCodeEquivClass.toCodeEquivClass (T:Type*)
   {γ :outParam Type*} [Semiring γ] [CompleteLinearOrder γ] [ContravariantClass γ γ (.+.) (.<.)]
   [CovariantClass γ γ (.+.) (.≤.)] [Nontrivial γ] [PosMulMono γ] [MulPosMono γ] [ZeroLEOneClass γ]
