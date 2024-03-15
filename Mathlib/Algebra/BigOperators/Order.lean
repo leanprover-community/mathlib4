@@ -417,16 +417,21 @@ theorem prod_mono_set' (f : ι → M) : Monotone fun s ↦ ∏ x in s, f x := fu
 #align finset.prod_mono_set' Finset.prod_mono_set'
 #align finset.sum_mono_set Finset.sum_mono_set
 
-@[to_additive]
-lemma apply_le_prod_of_mem (i : ι) (hi : i ∈ s) :
+/-- In a canonically-ordered monoid, a product bounds each of its terms.
+
+See also `Finset.single_le_prod'`.-/
+@[to_additive "In a canonically-ordered additive monoid, a sum bounds of its terms.
+
+See also `Finset.single_le_sum`."]
+lemma single_le_prod_of_canonicallyOrdered {i : ι} (hi : i ∈ s) :
     f i ≤ ∏ j in s, f j := by
   rw [← prod_singleton f i]
   exact prod_mono_set' _ <| by simp [hi]
 
 @[to_additive]
-lemma apply_le_prod [Fintype ι] (i : ι) :
+lemma single_le_prod_of_canonicallyOrdered_of_fintype [Fintype ι] (i : ι) :
     f i ≤ ∏ j, f j :=
-  apply_le_prod_of_mem i (mem_univ i)
+  single_le_prod_of_canonicallyOrdered (mem_univ i)
 
 @[to_additive sum_le_sum_of_ne_zero]
 theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
