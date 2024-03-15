@@ -704,7 +704,9 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
     (s : Finset ι) (comm) (h : s.SupIndep fun i ↦ ker (f i)) :
     ker (s.noncommProd f comm) = ⨆ i ∈ s, ker (f i) := by
   classical
-  induction' s using Finset.induction_on with i s hi ih; simpa using LinearMap.ker_id
+  induction' s using Finset.induction_on with i s hi ih
+  · set_option tactic.skipAssignedInstances false in
+    simpa using LinearMap.ker_id
   replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
       ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
   rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, mul_eq_comp,
@@ -854,7 +856,8 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [h : R
       show x * dite _ (h := _) _ = _ by
         rw [dif_neg hx]
         exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
-    inv_zero := dif_pos rfl }
+    inv_zero := dif_pos rfl
+    qsmul := qsmulRec _ }
 #align division_ring_of_finite_dimensional divisionRingOfFiniteDimensional
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/

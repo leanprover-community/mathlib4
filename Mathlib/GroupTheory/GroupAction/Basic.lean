@@ -440,6 +440,8 @@ def orbitRel.Quotient : Type _ :=
 
 /-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
 subsingleton. -/
+@[to_additive "An additive action is pretransitive if and only if the quotient by
+`AddAction.orbitRel` is a subsingleton."]
 theorem pretransitive_iff_subsingleton_quotient :
     IsPretransitive G α ↔ Subsingleton (orbitRel.Quotient G α) := by
   refine ⟨fun _ ↦ ⟨fun a b ↦ ?_⟩, fun _ ↦ ⟨fun a b ↦ ?_⟩⟩
@@ -450,6 +452,8 @@ theorem pretransitive_iff_subsingleton_quotient :
 
 /-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
 element. -/
+@[to_additive "If `α` is non-empty, an additive action is pretransitive if and only if the
+quotient has exactly one element."]
 theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
     IsPretransitive G α ↔ Nonempty (Unique <| orbitRel.Quotient G α) := by
   rw [unique_iff_subsingleton_and_nonempty, pretransitive_iff_subsingleton_quotient, iff_self_and]

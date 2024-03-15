@@ -383,7 +383,7 @@ theorem DirectedOn.inf_sSup_eq (h : DirectedOn (· ≤ ·) s) : a ⊓ sSup s = �
 /-- This property is sometimes referred to as `α` being upper continuous. -/
 protected theorem DirectedOn.sSup_inf_eq (h : DirectedOn (· ≤ ·) s) :
     sSup s ⊓ a = ⨆ b ∈ s, b ⊓ a := by
-  simp_rw [@inf_comm _ _ _ a, h.inf_sSup_eq]
+  simp_rw [inf_comm _ a, h.inf_sSup_eq]
 #align directed_on.Sup_inf_eq DirectedOn.sSup_inf_eq
 
 protected theorem Directed.inf_iSup_eq (h : Directed (· ≤ ·) f) :
@@ -456,11 +456,12 @@ lemma CompleteLattice.independent_iff_supIndep_of_injOn {ι : Type*} {f : ι →
   classical
   rw [← Finset.sup_erase_bot]
   set t := s.erase ⊥
-  replace hf : InjOn f (f ⁻¹' t) := fun i hi j _ hij ↦ by refine hf ?_ ?_ hij <;> aesop
+  replace hf : InjOn f (f ⁻¹' t) := fun i hi j _ hij ↦ by
+    refine hf ?_ ?_ hij <;> aesop (add norm simp [t])
   have : (Finset.erase (insert i (t.preimage _ hf)) i).image f = t := by
     ext a
     simp only [Finset.mem_preimage, Finset.mem_erase, ne_eq, Finset.mem_insert, true_or, not_true,
-      Finset.erase_insert_eq_erase, not_and, Finset.mem_image]
+      Finset.erase_insert_eq_erase, not_and, Finset.mem_image, t]
     refine ⟨by aesop, fun ⟨ha, has⟩ ↦ ?_⟩
     obtain ⟨j, hj, rfl⟩ := hs has
     exact ⟨j, ⟨hj, ha, has⟩, rfl⟩

@@ -368,12 +368,12 @@ theorem independent_def'' :
 
 @[simp]
 theorem independent_empty (t : Empty → α) : Independent t :=
-  fun.
+  nofun
 #align complete_lattice.independent_empty CompleteLattice.independent_empty
 
 @[simp]
 theorem independent_pempty (t : PEmpty → α) : Independent t :=
-  fun.
+  nofun
 #align complete_lattice.independent_pempty CompleteLattice.independent_pempty
 
 /-- If the elements of a set are independent, then any pair within that set is disjoint. -/
@@ -432,7 +432,7 @@ theorem Independent.injOn (ht : Independent t) : InjOn t {i | t i ≠ ⊥} := by
     rwa [h, disjoint_self] at ht
   replace contra : j ≠ i := Ne.symm contra
   -- Porting note: needs explicit `f`
-  exact @le_iSup₂ _ _ _ _ (fun x _ => t x) j contra
+  exact le_iSup₂ (f := fun x _ ↦ t x) j contra
 
 theorem Independent.injective (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Injective t := by
   suffices univ = {i | t i ≠ ⊥} by rw [injective_iff_injOn_univ, this]; exact ht.injOn

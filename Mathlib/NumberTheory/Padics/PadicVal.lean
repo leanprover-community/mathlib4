@@ -72,7 +72,7 @@ open Rat
 open multiplicity
 
 /-- For `p ≠ 1`, the `p`-adic valuation of a natural `n ≠ 0` is the largest natural number `k` such
-that `p^k` divides `z`. If `n = 0` or `p = 1`, then `padicValNat p q` defaults to `0`. -/
+that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p q` defaults to `0`. -/
 def padicValNat (p : ℕ) (n : ℕ) : ℕ :=
   if h : p ≠ 1 ∧ 0 < n then (multiplicity p n).get (multiplicity.finite_nat_iff.2 h) else 0
 #align padic_val_nat padicValNat
@@ -605,7 +605,7 @@ lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicVa
   rw [Ne, log_eq_iff (by simp [hn])]
   rintro ⟨h1, h2⟩
   rw [← lt_add_one_iff, ← mul_one (2 ^ _)] at h1
-  rw [← add_one_le_iff, pow_succ] at h2
+  rw [← add_one_le_iff, Nat.pow_succ] at h2
   refine' not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 _) pow_padicValNat_dvd
   -- TODO(kmill): Why is this `p := 2` necessary?
   exact pow_succ_padicValNat_not_dvd (p := 2) n.succ_ne_zero ∘ dvd_of_eq

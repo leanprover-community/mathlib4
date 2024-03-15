@@ -34,14 +34,16 @@ variable {X Y Z : TopCat.{u}}
 
 /-- The first projection from the pullback. -/
 abbrev pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ X :=
-  ⟨Prod.fst ∘ Subtype.val, by apply Continuous.comp <;> continuity⟩
+  ⟨Prod.fst ∘ Subtype.val, by
+    apply Continuous.comp <;> set_option tactic.skipAssignedInstances false in continuity⟩
 #align Top.pullback_fst TopCat.pullbackFst
 
 @[simp] lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.1.1 := rfl
 
 /-- The second projection from the pullback. -/
 abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ Y :=
-  ⟨Prod.snd ∘ Subtype.val, by apply Continuous.comp <;> continuity⟩
+  ⟨Prod.snd ∘ Subtype.val, by
+    apply Continuous.comp <;> set_option tactic.skipAssignedInstances false in continuity⟩
 #align Top.pullback_snd TopCat.pullbackSnd
 
 @[simp] lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.1.2 := rfl
@@ -333,7 +335,6 @@ theorem embedding_of_pullback_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y �
     (H₂ : Embedding g) : Embedding (limit.π (cospan f g) WalkingCospan.one) := by
   convert H₂.comp (snd_embedding_of_left_embedding H₁ g)
   erw [← coe_comp]
-  congr
   rw [← limit.w _ WalkingCospan.Hom.inr]
   rfl
 #align Top.embedding_of_pullback_embeddings TopCat.embedding_of_pullback_embeddings
@@ -362,7 +363,6 @@ theorem openEmbedding_of_pullback_open_embeddings {X Y S : TopCat} {f : X ⟶ S}
     OpenEmbedding (limit.π (cospan f g) WalkingCospan.one) := by
   convert H₂.comp (snd_openEmbedding_of_left_openEmbedding H₁ g)
   erw [← coe_comp]
-  congr
   rw [← limit.w _ WalkingCospan.Hom.inr]
   rfl
 #align Top.open_embedding_of_pullback_open_embeddings TopCat.openEmbedding_of_pullback_open_embeddings
