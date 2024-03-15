@@ -90,8 +90,7 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
       h𝓕_translate_fundom.projection_respects_measure_apply (μ := μ) hA]
     change ν ((π ⁻¹' _) ∩ _) = ν ((π ⁻¹' _) ∩ _)
     set π_preA := π ⁻¹' A
-    have : π ⁻¹' ((fun x : G ⧸ Γ => g • x) ⁻¹' A) = (g * ·) ⁻¹' π_preA := by
-      ext1; sorry -- simp [π_preA, π] FAILING
+    have : π ⁻¹' ((fun x : G ⧸ Γ => g • x) ⁻¹' A) = (g * ·) ⁻¹' π_preA := by ext1; simp [π_preA]
     rw [this]
     have : ν ((g * ·) ⁻¹' π_preA ∩ 𝓕) = ν (π_preA ∩ (g⁻¹ * ·) ⁻¹' 𝓕) := by
       trans ν ((g * ·) ⁻¹' (π_preA ∩ (g⁻¹ * ·) ⁻¹' 𝓕))
@@ -99,19 +98,9 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
         congr 2
         simp [Set.preimage]
       rw [measure_preimage_mul]
-    rw [this]
-    sorry
-    -- below is FAILING
---     have h𝓕_translate_fundom : IsFundamentalDomain Γ.op (g • 𝓕) μ :=
---       h𝓕.smul_of_comm g
---     rw [h𝓕.measure_set_eq h𝓕_translate_fundom meas_πA, ← preimage_smul_inv]; rfl
---     rintro ⟨γ, γ_in_Γ⟩
---     ext x
---     have : π (x * MulOpposite.unop γ) = π x := by simpa [π, QuotientGroup.eq'] using γ_in_Γ
---     simp only [π_preA, (· • ·), ← this, mem_preimage]
---     rfl
--- #align measure_theory.is_fundamental_domain.smul_invariant_measure_map MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map
--- #align measure_theory.is_add_fundamental_domain.vadd_invariant_measure_map MeasureTheory.IsAddFundamentalDomain.vaddInvariantMeasure_map
+    rw [this, ← preimage_smul_inv]; rfl
+#align measure_theory.is_fundamental_domain.smul_invariant_measure_map MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotient
+#align measure_theory.is_add_fundamental_domain.vadd_invariant_measure_map MeasureTheory.AddQuotientMeasureEqMeasurePreimage.vaddInvariantMeasure_quotient
 
 /-- Given a subgroup `Γ` of a topological group `G` with measure `ν`, and a measure 'μ' on the
   quotient `G ⧸ Γ` satisfying `QuotientMeasureEqMeasurePreimage`, the restriction
@@ -170,20 +159,17 @@ theorem MeasureTheory.Measure.IsAddLeftInvariant.addQuotientMeasureEqMeasurePrei
     fund_dom_s.addQuotientMeasureEqMeasurePreimage_addQuotientMeasure
   have : μ'.IsAddLeftInvariant :=
     MeasureTheory.AddQuotientMeasureEqMeasurePreimage.addInvariantMeasure_quotient ν
-  sorry
-  -- below is FAILING
-  -- suffices : μ = μ'
-  -- · rw [this]
-  --   rfl
-  -- · have : SigmaFinite μ' := i.sigmaFiniteQuotient
-  --   rw [measure_eq_sub_vadd μ' μ meas_V neZeroV neTopV, hV]
-  --   symm
-  --   convert one_smul ENNReal μ
-  --   rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
-  --   · convert ENNReal.div_self ..
-  --     · exact trans hV.symm neZeroV
-  --     · exact trans hV.symm neTopV
-  --   exact measurableSet_quotient.mp meas_V
+  suffices μ = μ' by
+    rw [this]; rfl
+  have : SigmaFinite μ' := i.sigmaFiniteQuotient
+  rw [measure_eq_sub_vadd μ' μ meas_V neZeroV neTopV, hV]
+  symm
+  convert one_smul ENNReal μ
+  rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
+  · convert ENNReal.div_self ..
+    · exact trans hV.symm neZeroV
+    · exact trans hV.symm neTopV
+  exact measurableSet_quotient.mp meas_V
 
 end additive
 
@@ -233,23 +219,21 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
   let μ' : Measure (G ⧸ Γ) := (ν.restrict s).map π
   haveI has_fund : HasFundamentalDomain Γ.op G ν := ⟨⟨s, fund_dom_s⟩⟩
   have i : QuotientMeasureEqMeasurePreimage ν μ' :=
-    fund_dom_s.QuotientMeasureEqMeasurePreimage_quotientMeasure
+    fund_dom_s.quotientMeasureEqMeasurePreimage_quotientMeasure
   have : μ'.IsMulLeftInvariant :=
     MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient ν
-  sorry
-  -- below is FAILING
-  -- suffices : μ = μ'
-  -- · rw [this]
-  --   rfl
-  -- · have : SigmaFinite μ' := i.sigmaFiniteQuotient
-  --   rw [measure_eq_div_smul μ' μ meas_V neZeroV neTopV, hV]
-  --   symm
-  --   convert one_smul ENNReal μ
-  --   rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
-  --   · convert ENNReal.div_self ..
-  --     · exact trans hV.symm neZeroV
-  --     · exact trans hV.symm neTopV
-  --   exact measurableSet_quotient.mp meas_V
+  suffices μ = μ' by
+    rw [this]
+    rfl
+  have : SigmaFinite μ' := i.sigmaFiniteQuotient
+  rw [measure_eq_div_smul μ' μ meas_V neZeroV neTopV, hV]
+  symm
+  convert one_smul ENNReal μ
+  rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
+  · convert ENNReal.div_self ..
+    · exact trans hV.symm neZeroV
+    · exact trans hV.symm neTopV
+  exact measurableSet_quotient.mp meas_V
 
 attribute [to_additive existing
   MeasureTheory.Measure.IsAddLeftInvariant.addQuotientMeasureEqMeasurePreimage_of_set]
@@ -373,7 +357,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_smulHaarMeasure {�
     rw [h𝓕_finite] at this
     exact top_unique this
   set μ := c • haarMeasure K
-  have hμK : μ K = c := by sorry -- simp [haarMeasure_self]
+  have hμK : μ K = c := by simp [μ, haarMeasure_self]
   haveI : SigmaFinite μ := by
     clear_value c
     lift c to NNReal using c_ne_top

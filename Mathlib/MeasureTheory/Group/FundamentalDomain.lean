@@ -758,9 +758,7 @@ lemma IsFundamentalDomain.quotientMeasure_eq [Countable G] [MeasurableSpace G] {
     have : Quotient.mk α_mod_G (g • x) = Quotient.mk α_mod_G x := by
       apply Quotient.sound
       use g
-    aesop -- no longer closing the goal!
-    sorry
-    sorry
+    simp only [mem_preimage, this]
 
 end FundamentalDomainMeasure
 
@@ -801,6 +799,8 @@ noncomputable def covolume (G α : Type*) [One G] [SMul G α] [MeasurableSpace �
   by_cases funDom : HasFundamentalDomain G α ν
   · exact ν funDom.ExistsIsFundamentalDomain.choose
   · exact 0
+-- Note: The below fails, because it requires `[Decidable (HasFundamentalDomain G α ν)]`
+-- if funDom : HasFundamentalDomain G α ν then ν funDom.ExistsIsFundamentalDomain.choose else 0
 
 variable [Group G] [MulAction G α] [MeasurableSpace G] [MeasurableSpace α]
 
@@ -814,12 +814,11 @@ lemma IsFundamentalDomain.hasFundamentalDomain (ν : Measure α) {s : Set α}
 @[to_additive]
 lemma IsFundamentalDomain.covolume_eq_volume (ν : Measure α) [Countable G]
     [MeasurableSMul G α] [SMulInvariantMeasure G α ν] {s : Set α}
-    (fund_dom_s : IsFundamentalDomain G s ν) :
-  sorry := by sorry
-  --   covolume (ν := ν) = ν s := by
-  -- dsimp [covolume]
-  -- rw [fund_dom_s.measure_eq]
-  -- exact (fund_dom_s.hasFundamentalDomain ν).ExistsIsFundamentalDomain.choose_spec
+    (fund_dom_s : IsFundamentalDomain G s ν) : covolume G α ν = ν s := by
+  dsimp [covolume]
+  simp only [(fund_dom_s.hasFundamentalDomain ν), ↓reduceDite]
+  rw [fund_dom_s.measure_eq]
+  exact (fund_dom_s.hasFundamentalDomain ν).ExistsIsFundamentalDomain.choose_spec
 
 end HasFundamentalDomain
 
@@ -979,8 +978,7 @@ theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
   have : Fact (ν 𝓕 < ∞) := by
     apply Fact.mk
     convert Ne.lt_top h
-    sorry
---    exact (h𝓕.covolume_eq_volume ν).symm
+    exact (h𝓕.covolume_eq_volume ν).symm
   infer_instance
 
 /-- A finite measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` has finite
@@ -993,8 +991,7 @@ theorem QuotientMeasureEqMeasurePreimage.covolume_ne_top
   obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
   have H : μ univ < ∞ := IsFiniteMeasure.measure_univ_lt_top
   rw [h𝓕.projection_respects_measure_apply (μ := μ) MeasurableSet.univ] at H
-  sorry
-  --simpa [h𝓕.covolume_eq_volume ν] using H
+  simpa [h𝓕.covolume_eq_volume ν] using H
 
 end QuotientMeasureEqMeasurePreimage
 
