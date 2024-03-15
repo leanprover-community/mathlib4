@@ -231,15 +231,15 @@ theorem min_lt_min (h₁ : a < c) (h₂ : b < d) : min a b < min c d :=
 #align min_lt_min min_lt_min
 
 theorem min_right_comm (a b c : α) : min (min a b) c = min (min a c) b :=
-  right_comm min min_comm min_assoc a b c
+  right_comm min ⟨min_comm⟩ ⟨min_assoc⟩ a b c
 #align min_right_comm min_right_comm
 
 theorem Max.left_comm (a b c : α) : max a (max b c) = max b (max a c) :=
-  _root_.left_comm max max_comm max_assoc a b c
+  _root_.left_comm max ⟨max_comm⟩ ⟨max_assoc⟩ a b c
 #align max.left_comm Max.left_comm
 
 theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b :=
-  _root_.right_comm max max_comm max_assoc a b c
+  _root_.right_comm max ⟨max_comm⟩ ⟨max_assoc⟩ a b c
 #align max.right_comm Max.right_comm
 
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
@@ -291,12 +291,12 @@ theorem le_of_max_le_right {a b c : α} (h : max a b ≤ c) : b ≤ c :=
   le_trans (le_max_right _ _) h
 #align le_of_max_le_right le_of_max_le_right
 
-theorem max_commutative : Commutative (max : α → α → α) :=
-  max_comm
+theorem max_commutative : Std.Commutative (max : α → α → α) :=
+  ⟨max_comm⟩
 #align max_commutative max_commutative
 
-theorem max_associative : Associative (max : α → α → α) :=
-  max_assoc
+theorem max_associative : Std.Associative (max : α → α → α) :=
+  ⟨max_assoc⟩
 #align max_associative max_associative
 
 instance : Std.Commutative (α := α) max where
@@ -305,16 +305,16 @@ instance : Std.Commutative (α := α) max where
 instance : Std.Associative (α := α) max where
   assoc := max_assoc
 
-theorem max_left_commutative : LeftCommutative (max : α → α → α) :=
+theorem max_left_commutative : Binary.LeftCommutative (max : α → α → α) :=
   max_left_comm
 #align max_left_commutative max_left_commutative
 
-theorem min_commutative : Commutative (min : α → α → α) :=
-  min_comm
+theorem min_commutative : Std.Commutative (min : α → α → α) :=
+  ⟨min_comm⟩
 #align min_commutative min_commutative
 
-theorem min_associative : Associative (α := α) min :=
-  min_assoc
+theorem min_associative : Std.Associative (α := α) min :=
+  ⟨min_assoc⟩
 #align min_associative min_associative
 
 instance : Std.Commutative (α := α) min where
@@ -323,7 +323,7 @@ instance : Std.Commutative (α := α) min where
 instance : Std.Associative (α := α) min where
   assoc := min_assoc
 
-theorem min_left_commutative : LeftCommutative (min : α → α → α) :=
+theorem min_left_commutative : Binary.LeftCommutative (min : α → α → α) :=
   min_left_comm
 #align min_left_commutative min_left_commutative
 

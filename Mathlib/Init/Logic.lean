@@ -510,31 +510,22 @@ variable (g : α → α → α)
 /-- Local notation for `g`, high priority to avoid ambiguity with `HAdd.hAdd`. -/
 local infix:65 (priority := high) " + " => g
 
-def _root_.Commutative       := ∀ a b, a * b = b * a
-def _root_.Associative       := ∀ a b c, (a * b) * c = a * (b * c)
-def LeftIdentity      := ∀ a, one * a = a
-def RightIdentity     := ∀ a, a * one = a
-def RightInverse      := ∀ a, a * a⁻¹ = one
-def LeftCancelative   := ∀ a b c, a * b = a * c → b = c
-def RightCancelative  := ∀ a b c, a * b = c * b → a = c
-def LeftDistributive  := ∀ a b c, a * (b + c) = a * b + a * c
-def RightDistributive := ∀ a b c, (a + b) * c = a * c + b * c
-def _root_.RightCommutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a₂ = h (h b a₂) a₁
-def _root_.LeftCommutative  (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
+def RightCommutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a₂ = h (h b a₂) a₁
+def LeftCommutative  (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
 
-theorem _root_.left_comm : Commutative f → Associative f → LeftCommutative f :=
+theorem left_comm : Std.Commutative f → Std.Associative f → LeftCommutative f :=
   fun hcomm hassoc a b c ↦
     calc  a*(b*c)
-      _ = (a*b)*c := Eq.symm (hassoc a b c)
-      _ = (b*a)*c := hcomm a b ▸ rfl
-      _ = b*(a*c) := hassoc b a c
+      _ = (a*b)*c := Eq.symm (hassoc.assoc a b c)
+      _ = (b*a)*c := hcomm.comm a b ▸ rfl
+      _ = b*(a*c) := hassoc.assoc b a c
 
-theorem _root_.right_comm : Commutative f → Associative f → RightCommutative f :=
+theorem right_comm : Std.Commutative f → Std.Associative f → RightCommutative f :=
   fun hcomm hassoc a b c ↦
     calc  (a*b)*c
-      _ = a*(b*c) := hassoc a b c
-      _ = a*(c*b) := hcomm b c ▸ rfl
-      _ = (a*c)*b := Eq.symm (hassoc a c b)
+      _ = a*(b*c) := hassoc.assoc a b c
+      _ = a*(c*b) := hcomm.comm b c ▸ rfl
+      _ = (a*c)*b := Eq.symm (hassoc.assoc a c b)
 
 end Binary
 

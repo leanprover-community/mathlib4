@@ -67,7 +67,7 @@ theorem noncommFoldr_cons (s : Multiset α) (a : α) (h h') (b : β) :
   simp
 #align multiset.noncomm_foldr_cons Multiset.noncommFoldr_cons
 
-theorem noncommFoldr_eq_foldr (s : Multiset α) (h : LeftCommutative f) (b : β) :
+theorem noncommFoldr_eq_foldr (s : Multiset α) (h : Binary.LeftCommutative f) (b : β) :
     noncommFoldr f s (fun x _ y _ _ => h x y) b = foldr f h b s := by
   induction s using Quotient.inductionOn
   simp

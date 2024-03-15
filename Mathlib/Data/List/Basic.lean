@@ -2589,16 +2589,16 @@ theorem scanr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
 section FoldlEqFoldr
 
 -- foldl and foldr coincide when f is commutative and associative
-variable {f : α → α → α} (hcomm : Commutative f) (hassoc : Associative f)
+variable {f : α → α → α} (hcomm : Std.Commutative f) (hassoc : Std.Associative f)
 
 theorem foldl1_eq_foldr1 : ∀ a b l, foldl f a (l ++ [b]) = foldr f b (a :: l)
   | a, b, nil => rfl
   | a, b, c :: l => by
-    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 _ _ l]; rw [hassoc]
+    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 _ _ l]; rw [hassoc.assoc]
 #align list.foldl1_eq_foldr1 List.foldl1_eq_foldr1
 
 theorem foldl_eq_of_comm_of_assoc : ∀ a b l, foldl f a (b :: l) = f b (foldl f a l)
-  | a, b, nil => hcomm a b
+  | a, b, nil => hcomm.comm a b
   | a, b, c :: l => by
     simp only [foldl_cons]
     rw [← foldl_eq_of_comm_of_assoc .., right_comm _ hcomm hassoc]; rfl
