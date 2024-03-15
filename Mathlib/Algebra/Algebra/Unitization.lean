@@ -735,8 +735,8 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ :A →ₙₐ[R] C) : Unitization R A →
 def lift : (A →ₙₐ[R] C) ≃ (Unitization R A →ₐ[R] C) where
   toFun := NonUnitalAlgHom.toAlgHom
   invFun φ := φ.toNonUnitalAlgHom.comp (inrNonUnitalAlgHom R A)
-  left_inv φ := by ext; simp
-  right_inv φ := by ext; simp
+  left_inv φ := by ext; simp [NonUnitalAlgHomClass.toNonUnitalAlgHom]
+  right_inv φ := by ext; simp [NonUnitalAlgHomClass.toNonUnitalAlgHom]
 #align unitization.lift Unitization.lift
 
 theorem lift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
