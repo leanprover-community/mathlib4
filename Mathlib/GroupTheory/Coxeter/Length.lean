@@ -42,7 +42,7 @@ file.
 * `cs.rightInvSeq`
 
 ## References
-* [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*][bjorner2005]
+* [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
 -/
 
 noncomputable section
