@@ -490,8 +490,8 @@ theorem arzela_ascoli {X Y : Type*} [TopologicalSpace X] [UniformSpace Y]
   suffices h : Inducing (Equiv.Set.image (↑) S DFunLike.coe_injective) by
     rw [isCompact_iff_compactSpace] at hS1 ⊢
     exact (Equiv.toHomeomorphOfInducing _ h).symm.compactSpace
-  refine' inducing_subtype_val.inducing_iff.mpr _
-  refine' (EquicontinuousOn.inducing_uniformOnFun_iff_pi (𝔖 := {K : Set X | IsCompact K})
-    (eq_univ_iff_forall.mpr <| fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
-      (fun _ ↦ id) (fun K _ ↦ hS2.equicontinuousOn K)).mp
-        (ContinuousMap.uniformEmbedding_toUniformOnFunIsCompact.inducing.comp inducing_subtype_val)
+  rw [inducing_subtype_val.inducing_iff, ← EquicontinuousOn.inducing_uniformOnFun_iff_pi _ _ _]
+  · exact ContinuousMap.uniformEmbedding_toUniformOnFunIsCompact.inducing.comp inducing_subtype_val
+  · exact eq_univ_iff_forall.mpr (fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
+  · exact fun _ ↦ id
+  · exact fun K _ ↦ hS2.equicontinuousOn K
