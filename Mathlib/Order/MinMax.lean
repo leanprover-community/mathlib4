@@ -231,15 +231,15 @@ theorem min_lt_min (h₁ : a < c) (h₂ : b < d) : min a b < min c d :=
 #align min_lt_min min_lt_min
 
 theorem min_right_comm (a b c : α) : min (min a b) c = min (min a c) b :=
-  right_comm min ⟨min_comm⟩ ⟨min_assoc⟩ a b c
+  Binary.right_comm min ⟨min_comm⟩ ⟨min_assoc⟩ a b c
 #align min_right_comm min_right_comm
 
 theorem Max.left_comm (a b c : α) : max a (max b c) = max b (max a c) :=
-  _root_.left_comm max ⟨max_comm⟩ ⟨max_assoc⟩ a b c
+  Binary.left_comm max ⟨max_comm⟩ ⟨max_assoc⟩ a b c
 #align max.left_comm Max.left_comm
 
 theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b :=
-  _root_.right_comm max ⟨max_comm⟩ ⟨max_assoc⟩ a b c
+  Binary.right_comm max ⟨max_comm⟩ ⟨max_assoc⟩ a b c
 #align max.right_comm Max.right_comm
 
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
