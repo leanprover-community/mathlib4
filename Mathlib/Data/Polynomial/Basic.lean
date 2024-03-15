@@ -423,6 +423,11 @@ theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
   simp [support]
 #align polynomial.support_eq_empty Polynomial.support_eq_empty
 
+@[simp]
+lemma support_nonempty_iff :
+    p.support.Nonempty ↔ p ≠ 0 := by
+  rw [ne_eq, ← support_eq_empty, Finset.nonempty_iff_ne_empty]
+
 theorem card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
 #align polynomial.card_support_eq_zero Polynomial.card_support_eq_zero
 
