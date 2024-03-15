@@ -210,7 +210,7 @@ noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Fintype F] 
       exact fun hf => Nat.Prime.ne_zero hp.1 (zero_dvd_iff.mp hf)
   let ψ := primitiveZModChar pp F' (neZero_iff.mp (NeZero.of_not_dvd F' hp₂))
   letI : Algebra (ZMod p) F := ZMod.algebra _ _
-  let ψ' := ψ.char.comp_addMonoidHom (Algebra.trace (ZMod p) F).toAddMonoidHom
+  let ψ' := ψ.char.compAddMonoidHom (Algebra.trace (ZMod p) F).toAddMonoidHom
   have hψ' : IsNontrivial ψ' := by
     obtain ⟨a, ha⟩ := FiniteField.trace_to_zmod_nondegenerate F one_ne_zero
     rw [one_mul] at ha

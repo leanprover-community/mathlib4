@@ -157,18 +157,21 @@ instance instOne : One (AddChar A M) := (toMonoidHomEquiv A M).one
 instance instInhabited : Inhabited (AddChar A M) := ⟨1⟩
 
 /-- Composing a `MonoidHom` with an `AddChar` yields another `AddChar`. -/
-def monoidHom_comp {N : Type*} [Monoid N] (f : M →* N) (φ : AddChar A M) : AddChar A N :=
+def _root_.MonoidHom.compAddChar {N : Type*} [Monoid N] (f : M →* N) (φ : AddChar A M) :
+    AddChar A N :=
   (toMonoidHomEquiv A N).symm (f.comp φ.toMonoidHom)
 
-@[simp] lemma coe_monoidHom_comp {N : Type*} [Monoid N] (f : M →* N) (φ : AddChar A M) :
-    monoidHom_comp f φ = f ∘ φ := rfl
+@[simp]
+lemma _root_.MonoidHom.coe_compAddChar {N : Type*} [Monoid N] (f : M →* N) (φ : AddChar A M) :
+    f.compAddChar φ = f ∘ φ :=
+  rfl
 
 /-- Composing an `AddChar` with an `AddMonoidHom` yields another `AddChar`. -/
-def comp_addMonoidHom {B : Type*} [AddMonoid B] (φ : AddChar B M) (f : A →+ B) : AddChar A M :=
+def compAddMonoidHom {B : Type*} [AddMonoid B] (φ : AddChar B M) (f : A →+ B) : AddChar A M :=
   (toAddMonoidHomEquiv A M).symm (φ.toAddMonoidHom.comp f)
 
-@[simp] lemma coe_comp_addMonoidHom {B : Type*} [AddMonoid B] (φ : AddChar B M) (f : A →+ B) :
-    φ.comp_addMonoidHom f = φ ∘ f := rfl
+@[simp] lemma coe_compAddMonoidHom {B : Type*} [AddMonoid B] (φ : AddChar B M) (f : A →+ B) :
+    φ.compAddMonoidHom f = φ ∘ f := rfl
 
 /-- An additive character is *nontrivial* if it takes a value `≠ 1`. -/
 def IsNontrivial (ψ : AddChar A M) : Prop := ∃ a : A, ψ a ≠ 1
@@ -220,7 +223,7 @@ Note that the inverse is defined using negation on the domain; we do not assume 
 inversion operation for the definition (but see `AddChar.map_neg_inv` below). -/
 instance instCommGroup : CommGroup (AddChar A M) :=
   { instCommMonoid with
-    inv := fun ψ ↦ ψ.comp_addMonoidHom negAddMonoidHom
+    inv := fun ψ ↦ ψ.compAddMonoidHom negAddMonoidHom
     mul_left_inv := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_mul]}
 #align add_char.comm_group AddChar.instCommGroup
 #align add_char.has_inv AddChar.instCommGroup
@@ -265,7 +268,7 @@ variable {R M : Type*} [Ring R] [CommMonoid M]
 /-- Define the multiplicative shift of an additive character.
 This satisfies `mulShift ψ a x = ψ (a * x)`. -/
 def mulShift (ψ : AddChar R M) (r : R) : AddChar R M :=
-  ψ.comp_addMonoidHom (AddMonoidHom.mulLeft r)
+  ψ.compAddMonoidHom (AddMonoidHom.mulLeft r)
 #align add_char.mul_shift AddChar.mulShift
 
 @[simp] lemma mulShift_apply {ψ : AddChar R M} {r : R} {x : R} : mulShift ψ r x = ψ (r * x) :=
