@@ -428,7 +428,7 @@ lemma single_le_prod_of_canonicallyOrdered {i : ι} (hi : i ∈ s) :
   single_le_prod' (fun _ _ ↦ one_le _) hi
 
 @[to_additive]
-lemma single_le_prod_of_canonicallyOrdered_of_fintype [Fintype ι] (i : ι) :
+lemma _root_.Fintype.single_le_prod_of_canonicallyOrdered [Fintype ι] (i : ι) :
     f i ≤ ∏ j, f j :=
   single_le_prod_of_canonicallyOrdered (mem_univ i)
 
