@@ -55,7 +55,7 @@ variable {K L : SSet.{v}} (f : K ⟶ L) {X Y : C} (g : X ⟶ Y)
   [SimplicialTensor K X] [SimplicialTensor L Y]
 
 noncomputable def sTensorMap :
-    K ⊗ₛ X ⟶ L ⊗ₛ Y := sTensorDesc (f ≫ sTensorα L Y ≫ sHomMap₁ g _)
+    K ⊗ₛ X ⟶ L ⊗ₛ Y := sTensorDesc (f ≫ sTensorα L Y ≫ sHomWhiskerRight g _)
 
 scoped infixr:70 " ⊗ₛ " => sTensorMap
 
