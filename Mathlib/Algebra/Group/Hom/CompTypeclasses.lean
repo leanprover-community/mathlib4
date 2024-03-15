@@ -18,7 +18,7 @@ as it happens for linear maps.
 
 If `φ`, `ψ`… are monoid homs and `M`, `N`… are monoids, we define two classes:
 * `MonoidHom.CompTriple φ ψ χ`, which expresses that `ψ.comp φ = χ`
-* `MonoidHom.CompTriple.IsId φ`, which expresses that `φ = id`
+* `MonoidHom.IsId φ`, which expresses that `φ = id`
 
 Some basic lemmas are proved:
 * `MonoidHom.CompTriple.comp` asserts `MonoidHom.CompTriple φ ψ (ψ.comp φ)`
@@ -27,7 +27,7 @@ Some basic lemmas are proved:
 * its variant `MonoidHom.CompTriple.comp_id`
 
 It also introduces instances:
-* `MonoidHom.CompTriple.IsId (MonoidHom.id M)`
+* `MonoidHom.IsId (MonoidHom.id M)`
 * `MonoidHom.CompTriple φ ψ χ`, which expresses that `ψ.comp φ = χ`
 
 TODO :
@@ -51,7 +51,6 @@ class CompTriple  {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
 
 attribute [simp] CompTriple.comp_eq
 
-namespace CompTriple
 
 variable {M' : Type*} [Monoid M']
 variable {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
@@ -63,8 +62,9 @@ class IsId (σ : M →* M) : Prop where
 instance {M : Type*} [Monoid M] : IsId (MonoidHom.id M) where
   eq_id := rfl
 
-instance {σ : M →* M} [IsId σ] : CompTriple.IsId σ where
+instance {σ : M →* M} [IsId σ] : IsId σ where
   eq_id := by simp only [IsId.eq_id, MonoidHom.coe_mk, OneHom.coe_mk]
+namespace CompTriple
 
 instance {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ : CompTriple φ ψ χ] :
     _root_.CompTriple φ ψ χ where
