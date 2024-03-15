@@ -332,9 +332,7 @@ theorem flip_flip_aux (A : BilinForm R M) :
 
 variable (R₂)
 
-/-- The flip of a bilinear form, obtained by exchanging the left and right arguments. This is a
-less structured version of the equiv which applies to general (noncommutative) rings `R` with a
-distinguished commutative subring `R₂`; over a commutative ring use `flip`. -/
+/-- The flip of a bilinear form, obtained by exchanging the left and right arguments. -/
 def flipHom : BilinForm R M ≃ₗ[R] BilinForm R M :=
   { flipHomAux with
     invFun := flipHomAux
