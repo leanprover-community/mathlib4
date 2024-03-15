@@ -99,7 +99,7 @@ protected theorem measurePreserving_mk (t : ℝ) :
 
 lemma add_projection_respects_measure (t : ℝ) {U : Set (AddCircle T)} (meas_U : MeasurableSet U) :
     volume U = volume (QuotientAddGroup.mk ⁻¹' U ∩ (Ioc t (t + T))) :=
-  (isAddFundamentalDomain_Ioc' hT.out _).add_projection_respects_measure_apply
+  (isAddFundamentalDomain_Ioc' hT.out _).addProjection_respects_measure_apply
     (volume : Measure (AddCircle T)) meas_U
 
 theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
