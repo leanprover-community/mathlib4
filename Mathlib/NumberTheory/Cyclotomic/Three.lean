@@ -182,6 +182,10 @@ lemma two_ne_zero : (2 : 𝓞 K ⧸ Ideal.span {λ}) ≠ 0 := by
   · rw [norm_lambda hζ]
     exact Int.prime_three
 
+lemma lambda_not_dvd_two : ¬ λ ∣ 2 := by
+  intro h
+  exact two_ne_zero hζ (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 h)
+
 instance : Nontrivial (𝓞 K ⧸ Ideal.span {λ}) := nontrivial_of_ne 2 0 <| two_ne_zero hζ
 
 open Classical Finset in
