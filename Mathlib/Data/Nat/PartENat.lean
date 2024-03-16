@@ -728,7 +728,6 @@ noncomputable def withTopEquiv : PartENat ≃ ℕ∞ where
   invFun x := ↑x
   left_inv x := by
     induction x using PartENat.casesOn <;>
-    intros <;>
     simp <;>
     rfl
   right_inv x := by

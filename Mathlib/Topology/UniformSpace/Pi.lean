@@ -3,8 +3,7 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.UniformSpace.Separation
+import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 #align_import topology.uniform_space.pi from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
@@ -15,11 +14,8 @@ import Mathlib.Topology.UniformSpace.Separation
 
 noncomputable section
 
-open Uniformity Topology
-
-section
-
-open Filter UniformSpace Function
+open scoped Uniformity Topology
+open Filter UniformSpace Function Set
 
 universe u
 
@@ -118,12 +114,29 @@ instance Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i)
     rwa [nhds_pi, le_pi]
 #align Pi.complete Pi.complete
 
-instance Pi.separated [∀ i, SeparatedSpace (α i)] : SeparatedSpace (∀ i, α i) :=
-  separated_def.2 fun x y H => by
-    ext i
-    -- Porting note: should be `eq_ofSeparated_ofUniformContinuous`?
-    apply eq_of_separated_of_uniformContinuous (Pi.uniformContinuous_proj α i)
-    apply H
-#align Pi.separated Pi.separated
+#align Pi.separated Pi.instT0Space
 
-end
+/- An infimum of complete uniformities is complete,
+as long as the whole family is bounded by some common T2 topology. -/
+protected theorem CompleteSpace.iInf {ι X : Type*} {u : ι → UniformSpace X}
+    (hu : ∀ i, @CompleteSpace X (u i))
+    (ht : ∃ t, @T2Space X t ∧ ∀ i, (u i).toTopologicalSpace ≤ t) :
+    @CompleteSpace X (⨅ i, u i) := by
+  -- We can assume `X` is nonempty.
+  nontriviality X
+  rcases ht with ⟨t, ht, hut⟩
+  -- The diagonal map `(X, ⨅ i, u i) → ∀ i, (X, u i)` is a uniform embedding.
+  have : @UniformInducing X (ι → X) (⨅ i, u i) (Pi.uniformSpace (U := u)) (const ι) := by
+    simp_rw [uniformInducing_iff, iInf_uniformity, Pi.uniformity, Filter.comap_iInf,
+      Filter.comap_comap, (· ∘ ·), const, Prod.eta, comap_id']
+  -- Hence, it suffices to show that its range, the diagonal, is closed in `Π i, (X, u i)`.
+  simp_rw [@completeSpace_iff_isComplete_range _ _ (_) (_) _ this, range_const_eq_diagonal,
+    setOf_forall]
+  -- The separation of `t` ensures that this is the case in `Π i, (X, t)`, hence the result
+  -- since the topology associated to each `u i` is finer than `t`.
+  have : Pi.topologicalSpace (t₂ := fun i ↦ (u i).toTopologicalSpace) ≤
+         Pi.topologicalSpace (t₂ := fun _ ↦ t) :=
+    iInf_mono fun i ↦ induced_mono <| hut i
+  refine IsClosed.isComplete <| .mono ?_ this
+  exact isClosed_iInter fun i ↦ isClosed_iInter fun j ↦
+    isClosed_eq (continuous_apply _) (continuous_apply _)

@@ -591,7 +591,8 @@ instance [Field R] : Field (HahnSeries Γ R) :=
         SummableFamily.one_sub_self_mul_hsum_powers
           (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))
       rw [sub_sub_cancel] at h
-      rw [← mul_assoc, mul_comm x, h] }
+      rw [← mul_assoc, mul_comm x, h]
+    qsmul := qsmulRec _ }
 
 end Inversion
 
