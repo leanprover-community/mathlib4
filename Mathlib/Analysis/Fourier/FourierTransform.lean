@@ -376,7 +376,7 @@ theorem fourierIntegral_real_eq (f : ℝ → E) (w : ℝ) :
 
 theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
     𝓕 f w = ∫ v : ℝ, Complex.exp (↑(-2 * π * v * w) * Complex.I) • f v := by
-  simp_rw [fourierIntegral_real_eq, Real.fourierChar_apply, mul_neg, neg_mul,mul_assoc]
+  simp_rw [fourierIntegral_real_eq, Real.fourierChar_apply, mul_neg, neg_mul, mul_assoc]
 #align real.fourier_integral_eq_integral_exp_smul Real.fourierIntegral_real_eq_integral_exp_smul
 
 @[deprecated] alias fourierIntegral_eq_integral_exp_smul :=
