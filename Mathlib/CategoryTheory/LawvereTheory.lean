@@ -115,12 +115,14 @@ def Algebra.toUnit
     T ⟶ A.functor.obj (𝟙_ _) :=
   A.isTerminal.lift <| .mk _ <| .mk (fun j => j.as.elim) (fun j => j.as.elim)
 
+
+variable {L}
+
 lemma Algebra.toUnit_unique
     {C : Type u'} [Category.{v'} C] (A : L.Algebra C) {T : C}
     (f g : T ⟶ A.functor.obj (𝟙_ _)) : f = g :=
   A.isTerminal.hom_ext _ _
 
-variable {L}
 def Algebra.lift
     {C : Type u'} [Category.{v'} C] (A : L.Algebra C) {T : C} {X Y : L}
     (f : T ⟶ A.functor.obj X)
@@ -197,23 +199,23 @@ inductive FreeRel :
   | symm {A : ProdWord S} {f g : L.FreeRep X A} : FreeRel f g → FreeRel g f
   | trans {A : ProdWord S} {f g h : L.FreeRep X A} :
     FreeRel f g → FreeRel g h → FreeRel f h
-  | map_congr {A B : ProdWord S} {x y : L.FreeRep X A} {f : L.hom A B} :
+  | map_congr (A B : ProdWord S) {x y : L.FreeRep X A} {f : L.hom A B} :
       FreeRel x y → FreeRel (x.map f) (y.map f)
-  | map_id {A : ProdWord S} (x : L.FreeRep X A) :
+  | map_id (A : ProdWord S) (x : L.FreeRep X A) :
       FreeRel (x.map <| L.id A) x
-  | map_comp {A B C : ProdWord S} (f : L.hom A B) (g : L.hom B C) (x : L.FreeRep X A) :
+  | map_comp (A B C : ProdWord S) (f : L.hom A B) (g : L.hom B C) (x : L.FreeRep X A) :
       FreeRel (x.map <| L.comp f g) ((x.map f).map g)
-  | lift_fst {A B : ProdWord S} (x : L.FreeRep X A) (y : L.FreeRep X B) :
+  | lift_fst (A B : ProdWord S) (x : L.FreeRep X A) (y : L.FreeRep X B) :
       FreeRel ((FreeRep.lift x y).map <| L.fst' _ _) x
-  | lift_snd {A B : ProdWord S} (x : L.FreeRep X A) (y : L.FreeRep X B) :
+  | lift_snd (A B : ProdWord S) (x : L.FreeRep X A) (y : L.FreeRep X B) :
       FreeRel ((FreeRep.lift x y).map <| L.snd' _ _) y
-  | lift_unique {A B : ProdWord S} (x y : L.FreeRep X (A.prod B)) :
+  | lift_unique (A B : ProdWord S) (x y : L.FreeRep X (A.prod B)) :
       FreeRel (x.map <| L.fst' _ _) (y.map <| L.fst' _ _) →
       FreeRel (x.map <| L.snd' _ _) (y.map <| L.snd' _ _) →
       FreeRel x y
-  | lift_congr {A B : ProdWord S}
-      {x x' : L.FreeRep X A}
-      {y y' : L.FreeRep X B} :
+  | lift_congr (A B : ProdWord S)
+      (x x' : L.FreeRep X A)
+      (y y' : L.FreeRep X B) :
       FreeRel x x' →
       FreeRel y y' →
       FreeRel (x.lift y) (x'.lift y')
@@ -231,18 +233,18 @@ variable {L X}
 def Free.fst {A B : ProdWord S} :
     L.Free X (A.prod B) → L.Free X A :=
   Quotient.lift (fun a => Quotient.mk _ <| a.map <| L.fst' _ _)
-  fun _ _ h => Quotient.sound <| .map_congr h
+  fun _ _ h => Quotient.sound <| .map_congr _ _ h
 
 def Free.snd {A B : ProdWord S} :
     L.Free X (A.prod B) → L.Free X B :=
   Quotient.lift (fun a => Quotient.mk _ <| a.map <| L.snd' _ _)
-  fun _ _ h => Quotient.sound <| .map_congr h
+  fun _ _ h => Quotient.sound <| .map_congr _ _ h
 
 def Free.lift {A B : ProdWord S}
     (x : L.Free X A) (y : L.Free X B) :
     L.Free X (A.prod B) :=
   Quotient.liftOn₂ x y (fun a b => Quotient.mk _ <| .lift a b)
-  fun _ _ _ _ h₁ h₂ => Quotient.sound <| .lift_congr h₁ h₂
+  fun _ _ _ _ h₁ h₂ => Quotient.sound <| .lift_congr _ _ _ _ _ _ h₁ h₂
 
 lemma Free.lift_fst {A B : ProdWord S}
     (x : L.Free X A) (y :  L.Free X B) :
@@ -286,7 +288,7 @@ def FreeAlgebra : L.Algebra (Type (max v u u')) where
     map := fun f =>
       Quotient.lift
       (fun r => Quotient.mk _ <| FreeRep.map f r)
-      fun a b h => Quotient.sound <| .map_congr h
+      fun a b h => Quotient.sound <| .map_congr _ _ h
     map_id := by
       rintro ⟨A⟩
       ext ⟨T⟩
@@ -334,14 +336,41 @@ def liftObj
       | rfl f => rfl
       | symm _ h => exact h.symm
       | trans _ _ h1 h2 => exact h1.trans h2
-      | map_congr h1 h2 => sorry
-      | map_id x => sorry
-      | map_comp f g x => sorry
-      | lift_fst x y => sorry
-      | lift_snd x y => sorry
-      | lift_unique x y _ _ _ _ => sorry
-      | lift_congr _ _ _ _ => sorry
-      | unit_unique x y => sorry
+      | map_congr _ B _ h => cases B <;> simp [liftRep, h]
+      | map_id A x => cases A <;> { change Y.functor.map (𝟙 _) _ = _ ; simp }
+      | map_comp A B C f g x =>
+        cases C <;> {
+          show Y.functor.map (_ ≫ _) _ = _
+          simp only [Carrier.of_of, FunctorToTypes.map_comp_apply, liftRep]
+          cases B with
+          | of _ => simp [liftRep]
+          | prod _ _ => simp [liftRep]
+          | nil => simp [liftRep] }
+      | lift_fst A B x y =>
+        cases A <;> {
+          show (Y.lift _ _ ≫ Y.functor.map (fst _ _)) _ = _
+          rw [Y.lift_fst] }
+      | lift_snd A B x y =>
+        cases B <;> {
+          show (Y.lift _ _ ≫ Y.functor.map (snd _ _)) _ = _
+          rw [Y.lift_snd] }
+      | lift_unique A B x y _ _ h1 h2 =>
+        dsimp [liftRep]
+        let ex : PUnit ⟶ Y.functor.obj (L.of A ⊗ L.of B) := fun _ =>
+          liftRep Y f (ProdWord.prod A B) x
+        let ey : PUnit ⟶ Y.functor.obj (L.of A ⊗ L.of B) := fun _ =>
+          liftRep Y f (ProdWord.prod A B) y
+        suffices ex = ey from congr_fun this .unit
+        apply Y.hom_ext
+        · funext ; cases A <;> exact h1
+        · funext ; cases B <;> exact h2
+      | lift_congr A B x x' y y' _ _ h1 h2 => simp [liftRep, h1,h2]
+      | unit_unique x y =>
+        let ex : PUnit ⟶ Y.functor.obj (𝟙_ _) := fun _ => liftRep Y f ProdWord.nil x
+        let ey : PUnit ⟶ Y.functor.obj (𝟙_ _) := fun _ => liftRep Y f ProdWord.nil y
+        have : ex = ey := Y.toUnit_unique _ _
+        change ex .unit = ey .unit
+        rw [this]
 
 end free
 
