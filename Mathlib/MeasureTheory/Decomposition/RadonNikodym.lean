@@ -199,7 +199,7 @@ theorem rnDeriv_restrict (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
   · filter_upwards with x
     simp only [Set.indicator_apply, Pi.one_apply, ne_eq]
     split_ifs <;> simp [ENNReal.zero_ne_top]
-  · filter_upwards with x using simp [Set.indicator_apply]
+  · filter_upwards with x; simp [Set.indicator_apply]
 
 lemma rnDeriv_eq_zero_of_mutuallySingular [SigmaFinite μ] {ν' : Measure α}
     [SigmaFinite ν'] (h : μ ⟂ₘ ν) (hνν' : ν ≪ ν') :
