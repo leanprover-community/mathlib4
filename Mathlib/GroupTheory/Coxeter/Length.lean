@@ -61,7 +61,7 @@ local prefix:100 "π" => cs.wordProd
 
 /-! ### Length -/
 
-local instance (w : W) : DecidablePred (fun n ↦ ∃ ω : List B, ω.length = n ∧ π ω = w) :=
+private local instance (w : W) : DecidablePred (fun n ↦ ∃ ω : List B, ω.length = n ∧ π ω = w) :=
   Classical.decPred _
 
 private theorem exists_word_with_prod (w : W) : ∃ n : ℕ, ∃ ω : List B, ω.length = n ∧ π ω = w := by
@@ -301,6 +301,8 @@ theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : 
 
 /-! ### Reduced words -/
 
+/-- The proposition that `ω` is reduced; that is, it has minimal length among all words that
+represent the same element of `W`. -/
 def IsReduced (ω : List B) : Prop := ℓ (π ω) = ω.length
 
 @[simp] theorem isReduced_reverse (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
@@ -379,6 +381,7 @@ theorem not_isReduced_alternatingWord (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) (
 $w s_i w^{-1}$, where $w \in W$ and $s_i$ is a simple reflection. -/
 def IsReflection (t : W) : Prop := ∃ w : W, ∃ i : B, t = w * s i * w⁻¹
 
+/-- The set of all reflections of the Coxeter group `W`. -/
 def reflections : Set W := {t : W | cs.IsReflection t}
 
 theorem isReflection_simple (i : B) : cs.IsReflection (s i) := by use 1, i; simp
