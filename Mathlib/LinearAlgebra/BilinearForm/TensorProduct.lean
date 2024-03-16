@@ -40,7 +40,6 @@ variable [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Algebra R A] [Module R M₁] [Module A M₁]
 variable [SMulCommClass R A M₁] [SMulCommClass A R M₁] [IsScalarTower R A M₁]
 variable [Module R M₂]
-
 variable (R A) in
 /-- The tensor product of two bilinear forms injects into bilinear forms on tensor products.
 
@@ -100,17 +99,11 @@ end CommSemiring
 section CommRing
 
 variable [CommRing R]
-
 variable [AddCommGroup M₁] [AddCommGroup M₂]
-
 variable [Module R M₁] [Module R M₂]
-
 variable [Module.Free R M₁] [Module.Finite R M₁]
-
 variable [Module.Free R M₂] [Module.Finite R M₂]
-
 variable [Nontrivial R]
-
 variable (R) in
 /-- `tensorDistrib` as an equivalence. -/
 noncomputable def tensorDistribEquiv :

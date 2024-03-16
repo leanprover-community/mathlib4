@@ -29,11 +29,8 @@ namespace Polynomial
 section Semiring
 
 variable [CommSemiring R] [CommSemiring A] [Semiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B]
-
 variable [IsScalarTower R A B]
-
 variable {R B}
 
 @[simp]
@@ -51,9 +48,7 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [Semiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
-
 variable {R A}
 
 theorem aeval_algebraMap_apply (x : A) (p : R[X]) :

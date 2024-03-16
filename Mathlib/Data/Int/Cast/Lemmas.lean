@@ -75,7 +75,6 @@ theorem coe_castAddHom [AddGroupWithOne α] : ⇑(castAddHom α) = fun x : ℤ =
 
 section NonAssocRing
 variable [NonAssocRing α] {a b : α} {n : ℤ}
-
 variable (α) in
 /-- `coe : ℤ → α` as a `RingHom`. -/
 def castRingHom : ℤ →+* α where

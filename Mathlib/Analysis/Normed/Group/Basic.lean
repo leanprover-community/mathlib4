@@ -1459,7 +1459,6 @@ end SeminormedGroup
 section Induced
 
 variable (E F)
-
 variable [FunLike 𝓕 E F]
 
 -- See note [reducible non-instances]

@@ -815,7 +815,6 @@ end CommRing
 end Ideal
 
 variable {σ : Type v} {M : Type w}
-
 variable [CommRing R] [CommRing S] [AddCommGroup M] [Module R M]
 
 section Prime

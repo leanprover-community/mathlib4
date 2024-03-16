@@ -64,9 +64,7 @@ open TopologicalSpace
 open Opposite
 
 variable {C : Type u} [Category.{v} C]
-
 variable [HasColimits.{v} C]
-
 variable {X Y Z : TopCat.{v}}
 
 namespace TopCat.Presheaf
@@ -388,7 +386,6 @@ end stalkSpecializes
 section Concrete
 
 variable {C}
-
 variable [ConcreteCategory.{v} C]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort

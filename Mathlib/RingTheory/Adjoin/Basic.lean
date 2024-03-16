@@ -36,7 +36,6 @@ namespace Algebra
 section Semiring
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-
 variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower R S A]
 variable {s t : Set A}
 
@@ -342,9 +341,7 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A]
-
 variable [Algebra R A] {s t : Set A}
-
 variable (R s t)
 
 theorem adjoin_union_eq_adjoin_adjoin :
@@ -395,7 +392,6 @@ end CommSemiring
 section Ring
 
 variable [CommRing R] [Ring A]
-
 variable [Algebra R A] {s t : Set A}
 
 theorem mem_adjoin_iff {s : Set A} {x : A} :

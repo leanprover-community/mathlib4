@@ -69,17 +69,11 @@ open Function
 section Semiring
 
 variable {ι ι₂ ι₃ : Type*}
-
 variable {R : Type*} [CommSemiring R]
-
 variable {R₁ R₂ : Type*}
-
 variable {s : ι → Type*} [∀ i, AddCommMonoid (s i)] [∀ i, Module R (s i)]
-
 variable {M : Type*} [AddCommMonoid M] [Module R M]
-
 variable {E : Type*} [AddCommMonoid E] [Module R E]
-
 variable {F : Type*} [AddCommMonoid F]
 
 namespace PiTensorProduct
@@ -222,7 +216,6 @@ protected theorem induction_on' {motive : (⨂[R] i, s i) → Prop} (z : ⨂[R] 
 section DistribMulAction
 
 variable [Monoid R₁] [DistribMulAction R₁ R] [SMulCommClass R₁ R R]
-
 variable [Monoid R₂] [DistribMulAction R₂ R] [SMulCommClass R₂ R R]
 
 -- Most of the time we want the instance below this one, which is easier for typeclass resolution
@@ -665,7 +658,6 @@ end map
 section
 
 variable (R M)
-
 variable (s) in
 /-- Re-index the components of the tensor power by `e`.-/
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
@@ -927,7 +919,6 @@ open PiTensorProduct
 open TensorProduct
 
 variable {ι : Type*} {R : Type*} [CommRing R]
-
 variable {s : ι → Type*} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
 
 /- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise

@@ -213,7 +213,6 @@ end Module
 section Maps
 
 variable [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G]
-
 variable [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
 
 /-- The image of a convex cone under a `𝕜`-linear map is a convex cone. -/
@@ -285,7 +284,6 @@ variable [LinearOrderedField 𝕜]
 section MulAction
 
 variable [AddCommMonoid E]
-
 variable [MulAction 𝕜 E] (S : ConvexCone 𝕜 E)
 
 theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : E} : c • x ∈ S ↔ x ∈ S :=

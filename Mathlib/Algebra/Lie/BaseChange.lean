@@ -192,7 +192,6 @@ lemma coe_baseChange :
   rfl
 
 variable {N}
-
 variable {R A L M} in
 lemma tmul_mem_baseChange_of_mem (a : A) {m : M} (hm : m ∈ N) :
     a ⊗ₜ[R] m ∈ N.baseChange A :=

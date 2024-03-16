@@ -148,7 +148,6 @@ open Matrix
 namespace SimpleGraph
 
 variable (G : SimpleGraph V) [DecidableRel G.Adj]
-
 variable (α)
 
 /-- `adjMatrix G α` is the matrix `A` such that `A i j = (1 : α)` if `i` and `j` are
@@ -304,7 +303,6 @@ end SimpleGraph
 namespace Matrix.IsAdjMatrix
 
 variable [MulZeroOneClass α] [Nontrivial α]
-
 variable {A : Matrix V V α} (h : IsAdjMatrix A)
 
 /-- If `A` is qualified as an adjacency matrix,

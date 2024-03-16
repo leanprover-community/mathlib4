@@ -379,7 +379,6 @@ section Surjective
 open Submodule
 
 variable {S N : Type*} [Ring R] [AddCommGroup M] [AddCommGroup N] [Ring S]
-
 variable [Module R M] [Module R N]
 
 theorem Submodule.IsPrincipal.of_comap (f : M →ₗ[R] N) (hf : Function.Surjective f)

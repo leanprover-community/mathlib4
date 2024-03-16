@@ -412,7 +412,6 @@ end Monoid
 section Submonoid
 
 variable [Monoid G]
-
 variable (G) in
 @[to_additive (attr := simp)]
 theorem _root_.Submonoid.exponent_top :

@@ -34,7 +34,6 @@ local infixl:50 " ≺ " => EuclideanDomain.r
 namespace AbsoluteValue
 
 variable {R : Type*} [EuclideanDomain R]
-
 variable (abv : AbsoluteValue R ℤ)
 
 /-- An absolute value `R → ℤ` is admissible if it respects the Euclidean domain

@@ -39,7 +39,6 @@ open Limits Category
 section Ideal
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₁} D] {i : D ⥤ C}
-
 variable (i) [HasFiniteProducts C] [CartesianClosed C]
 
 /-- The subcategory `D` of `C` expressed as an inclusion functor is an *exponential ideal* if
@@ -103,7 +102,6 @@ end Ideal
 section
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₁} D]
-
 variable (i : D ⥤ C)
 
 -- Porting note: this used to be used as a local instance,

@@ -25,7 +25,6 @@ universe w v u
 open CategoryTheory CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X : C}
 
 namespace CategoryTheory.Over

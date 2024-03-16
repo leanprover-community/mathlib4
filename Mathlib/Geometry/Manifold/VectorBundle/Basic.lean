@@ -279,7 +279,6 @@ variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormedAddCommGroup EB] [No
 section WithTopology
 
 variable [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] (F E)
-
 variable [FiberBundle F E] [VectorBundle 𝕜 F E]
 
 /-- When `B` is a smooth manifold with corners with respect to a model `IB` and `E` is a

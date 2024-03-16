@@ -42,7 +42,6 @@ open Matrix
 universe u v
 
 variable {k l m n : Type*}
-
 variable {α : Type v}
 
 open Matrix

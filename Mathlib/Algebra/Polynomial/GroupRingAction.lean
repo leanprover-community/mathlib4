@@ -25,7 +25,6 @@ open Polynomial
 namespace Polynomial
 
 variable (R : Type*) [Semiring R]
-
 variable {M}
 
 -- Porting note: changed `(· • ·) m` to `HSMul.hSMul m`
@@ -50,7 +49,6 @@ noncomputable instance [MulSemiringAction M R] : MulSemiringAction M R[X] :=
       smul_eq_map R m ▸ Polynomial.map_mul (MulSemiringAction.toRingHom M R m) }
 
 variable {M R}
-
 variable [MulSemiringAction M R]
 
 @[simp]
@@ -86,7 +84,6 @@ section CommRing
 set_option linter.uppercaseLean3 false  -- Porting note: `prod_X_*`
 
 variable (G : Type*) [Group G] [Fintype G]
-
 variable (R : Type*) [CommRing R] [MulSemiringAction G R]
 
 open MulAction
@@ -125,9 +122,7 @@ end CommRing
 namespace MulSemiringActionHom
 
 variable {M}
-
 variable {P : Type*} [CommSemiring P] [MulSemiringAction M P]
-
 variable {Q : Type*} [CommSemiring Q] [MulSemiringAction M Q]
 
 open Polynomial

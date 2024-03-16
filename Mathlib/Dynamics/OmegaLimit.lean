@@ -60,7 +60,6 @@ scoped[omegaLimit] notation "ω⁺" => omegaLimit Filter.atTop
 scoped[omegaLimit] notation "ω⁻" => omegaLimit Filter.atBot
 
 variable [TopologicalSpace β]
-
 variable (f : Filter τ) (ϕ : τ → α → β) (s s₁ s₂ : Set α)
 
 /-!

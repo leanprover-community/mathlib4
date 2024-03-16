@@ -68,9 +68,7 @@ open scoped BigOperators
 universe u v w z
 
 variable (n : ℕ+) (S T : Set ℕ+) (A : Type u) (B : Type v) (K : Type w) (L : Type z)
-
 variable [CommRing A] [CommRing B] [Algebra A B]
-
 variable [Field K] [Field L] [Algebra K L]
 
 noncomputable section

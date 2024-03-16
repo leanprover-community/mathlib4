@@ -134,7 +134,6 @@ noncomputable section
 universe u v w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
-
 variable (K : Type w) [Field K] [Algebra F K]
 
 section IsPurelyInseparable
@@ -881,7 +880,6 @@ end separableClosure
 section TowerLaw
 
 variable [Algebra E K] [IsScalarTower F E K]
-
 variable {F K} in
 /-- If `K / E / F` is a field extension tower such that `E / F` is purely inseparable,
 if `{ u_i }` is a family of separable elements of `K` which is `F`-linearly independent,

@@ -51,7 +51,6 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
 namespace MeasureTheory
 
 variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0}
-
 variable {a b : ℝ} {f : ℕ → Ω → ℝ} {ω : Ω} {R : ℝ≥0}
 
 section AeConvergence

@@ -34,7 +34,6 @@ Submonoid, Submonoids, IsSubmonoid
 open BigOperators
 
 variable {M : Type*} [Monoid M] {s : Set M}
-
 variable {A : Type*} [AddMonoid A] {t : Set A}
 
 /-- `s` is an additive submonoid: a set containing 0 and closed under addition.

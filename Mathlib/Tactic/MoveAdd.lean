@@ -242,7 +242,6 @@ end ExprProcessing
 open Meta
 
 variable (op : Name)
-
 variable (R : Expr) in
 /-- If `sum` is an expression consisting of repeated applications of `op`, then `getAddends`
 returns the Array of those recursively determined arguments whose type is DefEq to `R`. -/

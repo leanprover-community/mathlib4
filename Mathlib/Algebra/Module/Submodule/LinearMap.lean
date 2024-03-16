@@ -65,11 +65,8 @@ variable [Semiring R] [AddCommMonoid M]
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
 variable {module_M : Module R M}
-
 variable {p q : Submodule R M}
-
 variable {r : R} {x y : M}
-
 variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
@@ -293,9 +290,7 @@ end AddCommMonoid
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂]
-
 variable [Module R M] [Module R M₂]
-
 variable (f g : M →ₗ[R] M₂)
 
 /-- Alternative version of `domRestrict` as a linear map. -/

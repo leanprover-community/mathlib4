@@ -39,13 +39,9 @@ open IsROrC
 open ComplexConjugate
 
 variable {𝕜 E E' F G : Type*} [IsROrC 𝕜]
-
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-
 variable [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-
 variable [NormedAddCommGroup E'] [InnerProductSpace ℝ E']
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y

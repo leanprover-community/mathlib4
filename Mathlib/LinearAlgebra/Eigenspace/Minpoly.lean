@@ -70,7 +70,6 @@ theorem isRoot_of_hasEigenvalue {f : End K V} {μ : K} (h : f.HasEigenvalue μ) 
 #align module.End.is_root_of_has_eigenvalue Module.End.isRoot_of_hasEigenvalue
 
 variable [FiniteDimensional K V] (f : End K V)
-
 variable {f} {μ : K}
 
 theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue μ := by

@@ -2016,9 +2016,7 @@ end
 section PasteLemma
 
 variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃) (g₁ : Y₁ ⟶ Y₂) (g₂ : Y₂ ⟶ Y₃)
-
 variable (i₁ : X₁ ⟶ Y₁) (i₂ : X₂ ⟶ Y₂) (i₃ : X₃ ⟶ Y₃)
-
 variable (h₁ : i₁ ≫ g₁ = f₁ ≫ i₂) (h₂ : i₂ ≫ g₂ = f₂ ≫ i₃)
 
 /-- Given
@@ -2172,9 +2170,7 @@ end PasteLemma
 section
 
 variable (f : X ⟶ Z) (g : Y ⟶ Z) (f' : W ⟶ X)
-
 variable [HasPullback f g] [HasPullback f' (pullback.fst : pullback f g ⟶ _)]
-
 variable [HasPullback (f' ≫ f) g]
 
 /-- The canonical isomorphism `W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y` -/
@@ -2223,9 +2219,7 @@ end
 section
 
 variable (f : X ⟶ Y) (g : X ⟶ Z) (g' : Z ⟶ W)
-
 variable [HasPushout f g] [HasPushout (pushout.inr : _ ⟶ pushout f g) g']
-
 variable [HasPushout f (g ≫ g')]
 
 /-- The canonical isomorphism `(Y ⨿[X] Z) ⨿[Z] W ≅ Y ×[X] W` -/
@@ -2316,7 +2310,6 @@ X₁ -  f₁ -> Y₁
 We will show that both `W` and `W'` are pullbacks over `g₁, g₂`, and thus we may construct a
 canonical isomorphism between them. -/
 variable {X₁ X₂ X₃ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₁) (f₃ : X₂ ⟶ Y₂)
-
 variable (f₄ : X₃ ⟶ Y₂) [HasPullback f₁ f₂] [HasPullback f₃ f₄]
 
 local notation "Z₁" => pullback f₁ f₂
@@ -2515,7 +2508,6 @@ Y₁ - l₁' -> W'
 We will show that both `W` and `W'` are pushouts over `f₂, f₃`, and thus we may construct a
 canonical isomorphism between them. -/
 variable {X₁ X₂ X₃ Z₁ Z₂ : C} (g₁ : Z₁ ⟶ X₁) (g₂ : Z₁ ⟶ X₂) (g₃ : Z₂ ⟶ X₂)
-
 variable (g₄ : Z₂ ⟶ X₃) [HasPushout g₁ g₂] [HasPushout g₃ g₄]
 
 local notation "Y₁" => pushout g₁ g₂

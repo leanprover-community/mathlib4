@@ -23,7 +23,6 @@ namespace IsLocalization
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
-
 variable [Algebra R S] [IsLocalization M S]
 
 /-- Explicit characterization of the ideal given by `Ideal.map (algebraMap R S) I`.
@@ -164,7 +163,6 @@ end CommSemiring
 section CommRing
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
-
 variable [Algebra R S] [IsLocalization M S]
 
 /-- `quotientMap` applied to maximal ideals of a localization is `surjective`.

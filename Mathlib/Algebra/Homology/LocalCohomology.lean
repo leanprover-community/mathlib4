@@ -119,7 +119,6 @@ end
 section
 
 variable {R : Type max u v v'} [CommRing R] {D : Type v} [SmallCategory D]
-
 variable {E : Type v'} [SmallCategory E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 
 /-- Local cohomology along a composition of diagrams. -/

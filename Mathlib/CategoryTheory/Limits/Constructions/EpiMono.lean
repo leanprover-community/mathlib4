@@ -26,7 +26,6 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
-
 variable (F : C ⥤ D)
 
 /-- If `F` preserves pullbacks, then it preserves monomorphisms. -/

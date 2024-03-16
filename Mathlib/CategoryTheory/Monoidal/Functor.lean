@@ -249,9 +249,7 @@ namespace MonoidalFunctor
 section
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
-
 variable (F : MonoidalFunctor.{v₁, v₂} C D)
 
 @[reassoc]
@@ -367,9 +365,7 @@ end
 end MonoidalFunctor
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
-
 variable {E : Type u₃} [Category.{v₃} E] [MonoidalCategory.{v₃} E]
 
 namespace LaxMonoidalFunctor
@@ -407,7 +403,6 @@ namespace LaxMonoidalFunctor
 universe v₀ u₀
 
 variable {B : Type u₀} [Category.{v₀} B] [MonoidalCategory.{v₀} B]
-
 variable (F : LaxMonoidalFunctor.{v₀, v₁} B C) (G : LaxMonoidalFunctor.{v₂, v₃} D E)
 
 attribute [local simp] μ_natural associativity left_unitality right_unitality
@@ -495,7 +490,6 @@ namespace MonoidalFunctor
 universe v₀ u₀
 
 variable {B : Type u₀} [Category.{v₀} B] [MonoidalCategory.{v₀} B]
-
 variable (F : MonoidalFunctor.{v₀, v₁} B C) (G : MonoidalFunctor.{v₂, v₃} D E)
 
 /-- The cartesian product of two monoidal functors is monoidal. -/

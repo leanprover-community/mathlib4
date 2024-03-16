@@ -45,7 +45,6 @@ open scoped BigOperators NNReal ENNReal
 open Set MeasureTheory Classical
 
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
-
 variable (f : ℝ → E) (s : Set ℝ) (l : ℝ≥0)
 
 /-- `f` has constant speed `l` on `s` if the variation of `f` on `s ∩ Icc x y` is equal to

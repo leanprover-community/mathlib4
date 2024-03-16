@@ -106,9 +106,7 @@ end
 namespace Valuation
 
 variable {Γ₀ : Type*}
-
 variable {Γ'₀ : Type*}
-
 variable {Γ''₀ : Type*} [LinearOrderedCommMonoidWithZero Γ''₀]
 
 section Basic
@@ -532,9 +530,7 @@ end
 section Supp
 
 variable [CommRing R]
-
 variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
-
 variable (v : Valuation R Γ₀)
 
 /-- The support of a valuation `v : R → Γ₀` is the ideal of `R` where `v` vanishes. -/
@@ -622,7 +618,6 @@ variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCom
 section
 
 variable (f : R → Γ₀) (h0 : f 0 = ⊤) (h1 : f 1 = 0)
-
 variable (hadd : ∀ x y, min (f x) (f y) ≤ f (x + y)) (hmul : ∀ x y, f (x * y) = f x + f y)
 
 /-- An alternate constructor of `AddValuation`, that doesn't reference `Multiplicative Γ₀ᵒᵈ` -/
@@ -866,9 +861,7 @@ end IsEquiv
 section Supp
 
 variable [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
-
 variable [CommRing R]
-
 variable (v : AddValuation R Γ₀)
 
 /-- The support of an additive valuation `v : R → Γ₀` is the ideal of `R` where `v x = ⊤` -/

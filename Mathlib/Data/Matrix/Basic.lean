@@ -62,7 +62,6 @@ def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
 #align matrix Matrix
 
 variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-
 variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 namespace Matrix
@@ -1320,7 +1319,6 @@ end CommSemiring
 section Algebra
 
 variable [Fintype n] [DecidableEq n]
-
 variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
 
 instance instAlgebra : Algebra R (Matrix n n α) where
@@ -1471,7 +1469,6 @@ end AddEquiv
 namespace LinearMap
 
 variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
-
 variable [Module R α] [Module R β] [Module R γ]
 
 /-- The `LinearMap` between spaces of matrices induced by a `LinearMap` between their
@@ -1499,7 +1496,6 @@ end LinearMap
 namespace LinearEquiv
 
 variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
-
 variable [Module R α] [Module R β] [Module R γ]
 
 /-- The `LinearEquiv` between spaces of matrices induced by a `LinearEquiv` between their
@@ -1534,7 +1530,6 @@ end LinearEquiv
 namespace RingHom
 
 variable [Fintype m] [DecidableEq m]
-
 variable [NonAssocSemiring α] [NonAssocSemiring β] [NonAssocSemiring γ]
 
 /-- The `RingHom` between spaces of square matrices induced by a `RingHom` between their
@@ -1563,7 +1558,6 @@ end RingHom
 namespace RingEquiv
 
 variable [Fintype m] [DecidableEq m]
-
 variable [NonAssocSemiring α] [NonAssocSemiring β] [NonAssocSemiring γ]
 
 /-- The `RingEquiv` between spaces of square matrices induced by a `RingEquiv` between their
@@ -1597,9 +1591,7 @@ end RingEquiv
 namespace AlgHom
 
 variable [Fintype m] [DecidableEq m]
-
 variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
-
 variable [Algebra R α] [Algebra R β] [Algebra R γ]
 
 /-- The `AlgHom` between spaces of square matrices induced by an `AlgHom` between their
@@ -1627,9 +1619,7 @@ end AlgHom
 namespace AlgEquiv
 
 variable [Fintype m] [DecidableEq m]
-
 variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
-
 variable [Algebra R α] [Algebra R β] [Algebra R γ]
 
 /-- The `AlgEquiv` between spaces of square matrices induced by an `AlgEquiv` between their
@@ -2111,7 +2101,6 @@ theorem transposeLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] 
 #align matrix.transpose_linear_equiv_symm Matrix.transposeLinearEquiv_symm
 
 variable {m n R α}
-
 variable (m α)
 
 /-- `Matrix.transpose` as a `RingEquiv` to the opposite ring -/
@@ -2383,7 +2372,6 @@ theorem conjTransposeLinearEquiv_symm [CommSemiring R] [StarRing R] [AddCommMono
 #align matrix.conj_transpose_linear_equiv_symm Matrix.conjTransposeLinearEquiv_symm
 
 variable {m n R α}
-
 variable (m α)
 
 /-- `Matrix.conjTranspose` as a `RingEquiv` to the opposite ring -/

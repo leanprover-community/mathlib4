@@ -295,7 +295,6 @@ end TopologicalGroup
 section UniformGroup
 
 variable [AddCommGroup α] [UniformSpace α]
-
 variable [UniformAddGroup α] {f g : β → α} {a a₁ a₂ : α}
 
 theorem cauchySeq_finset_iff_nat_tsum_vanishing {f : ℕ → α} :

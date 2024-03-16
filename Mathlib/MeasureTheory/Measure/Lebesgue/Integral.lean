@@ -17,7 +17,6 @@ open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 section regionBetween
 
 variable {α : Type*}
-
 variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
 
 theorem volume_regionBetween_eq_integral' [SigmaFinite μ] (f_int : IntegrableOn f s μ)

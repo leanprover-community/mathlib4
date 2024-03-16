@@ -27,7 +27,6 @@ open CategoryTheory
 namespace CategoryTheory.Functor
 
 variable (J : Type u₁) [Category.{v₁} J]
-
 variable {C : Type u₂} [Category.{v₂} C]
 
 /-- The functor sending `X : C` to the constant functor `J ⥤ C` sending everything to `X`.

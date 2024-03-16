@@ -99,11 +99,8 @@ theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
 section Center
 
 variable (R : Type u) (L : Type v) (M : Type w) (N : Type w₁)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable [AddCommGroup N] [Module R N] [LieRingModule L N] [LieModule R L N]
 
 namespace LieModule
@@ -307,11 +304,8 @@ section IdealOperations
 open LieSubmodule LieSubalgebra
 
 variable {R : Type u} {L : Type v} {M : Type w}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-
 variable [LieRingModule L M] [LieModule R L M]
-
 variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 @[simp]

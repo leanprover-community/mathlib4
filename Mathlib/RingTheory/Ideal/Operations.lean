@@ -382,7 +382,6 @@ end CommSemiring
 section CommRing
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
-
 variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
 
 /-- `N.colon P` is the ideal of all elements `r : R` such that `r • P ⊆ N`. -/
@@ -480,7 +479,6 @@ end Add
 section MulAndRadical
 
 variable {R : Type u} {ι : Type*} [CommSemiring R]
-
 variable {I J K L : Ideal R}
 
 instance : Mul (Ideal R) :=
@@ -1145,7 +1143,6 @@ theorem top_pow (n : ℕ) : (⊤ ^ n : Ideal R) = ⊤ :=
 #align ideal.top_pow Ideal.top_pow
 
 variable {R}
-
 variable (I)
 
 lemma radical_pow : ∀ {n}, n ≠ 0 → radical (I ^ n) = radical I
@@ -1394,11 +1391,8 @@ variable {R : Type u} {S : Type v}
 section Semiring
 
 variable {F : Type*} [Semiring R] [Semiring S]
-
 variable [FunLike F R S] [rc : RingHomClass F R S]
-
 variable (f : F)
-
 variable {I J : Ideal R} {K L : Ideal S}
 
 /-- `I.map f` is the span of the image of the ideal `I` under `f`, which may be bigger than
@@ -1780,7 +1774,6 @@ end Semiring
 section Ring
 
 variable {F : Type*} [Ring R] [Ring S]
-
 variable [FunLike F R S] [RingHomClass F R S] (f : F) {I : Ideal R}
 
 section Surjective
@@ -1891,13 +1884,9 @@ end Ring
 section CommRing
 
 variable {F : Type*} [CommRing R] [CommRing S]
-
 variable [FunLike F R S] [rc : RingHomClass F R S]
-
 variable (f : F)
-
 variable {I J : Ideal R} {K L : Ideal S}
-
 variable (I J K L)
 
 theorem map_mul : map f (I * J) = map f I * map f J :=
@@ -2005,9 +1994,7 @@ end IsPrimary
 section Total
 
 variable (ι : Type*)
-
 variable (M : Type*) [AddCommGroup M] {R : Type*} [CommRing R] [Module R M] (I : Ideal R)
-
 variable (v : ι → M) (hv : Submodule.span R (Set.range v) = ⊤)
 
 open BigOperators
@@ -2130,7 +2117,6 @@ variable {R : Type u} {S : Type v} {T : Type w}
 section Semiring
 
 variable {F : Type*} {G : Type*} [Semiring R] [Semiring S] [Semiring T]
-
 variable [FunLike F R S] [rcf : RingHomClass F R S] [FunLike G T S] [rcg : RingHomClass G T S]
 variable (f : F) (g : G)
 
@@ -2349,7 +2335,6 @@ end Ideal
 namespace Submodule
 
 variable {R : Type u} {M : Type v}
-
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 -- TODO: show `[Algebra R A] : Algebra (Ideal R) A` too
@@ -2372,7 +2357,6 @@ end Submodule
 namespace RingHom
 
 variable {A B C : Type*} [Ring A] [Ring B] [Ring C]
-
 variable (f : A →+* B) (f_inv : B → A)
 
 /-- Auxiliary definition used to define `liftOfRightInverse` -/

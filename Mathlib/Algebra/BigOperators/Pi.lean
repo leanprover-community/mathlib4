@@ -78,7 +78,6 @@ theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [S
 section MulSingle
 
 variable {I : Type*} [DecidableEq I] {Z : I → Type*}
-
 variable [∀ i, CommMonoid (Z i)]
 
 @[to_additive]
@@ -117,7 +116,6 @@ section RingHom
 open Pi
 
 variable {I : Type*} [DecidableEq I] {f : I → Type*}
-
 variable [∀ i, NonAssocSemiring (f i)]
 
 @[ext]

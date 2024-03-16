@@ -22,7 +22,6 @@ section Ring
 namespace Submodule
 
 variable {R M : Type*} {r : R} {x y : M} [Ring R] [AddCommGroup M] [Module R M]
-
 variable (p p' : Submodule R M)
 
 open LinearMap QuotientAddGroup
@@ -572,15 +571,10 @@ namespace LinearMap
 section Ring
 
 variable {R M R₂ M₂ R₃ M₃ : Type*}
-
 variable [Ring R] [Ring R₂] [Ring R₃]
-
 variable [AddCommMonoid M] [AddCommGroup M₂] [AddCommMonoid M₃]
-
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
-
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
-
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃] [RingHomSurjective τ₁₂]
 
 theorem range_mkQ_comp (f : M →ₛₗ[τ₁₂] M₂) : f.range.mkQ.comp f = 0 :=
@@ -609,7 +603,6 @@ open LinearMap
 namespace Submodule
 
 variable {R M : Type*} {r : R} {x y : M} [Ring R] [AddCommGroup M] [Module R M]
-
 variable (p p' : Submodule R M)
 
 /-- If `p = ⊥`, then `M / p ≃ₗ[R] M`. -/

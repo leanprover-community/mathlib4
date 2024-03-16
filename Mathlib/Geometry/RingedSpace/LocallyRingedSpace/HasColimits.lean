@@ -30,7 +30,6 @@ open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 namespace SheafedSpace
 
 variable {C : Type u} [Category.{v} C] [HasLimits C]
-
 variable {J : Type v} [Category.{v} J] (F : J ⥤ SheafedSpace.{_, _, v} C)
 
 theorem isColimit_exists_rep {c : Cocone F} (hc : IsColimit c) (x : c.pt) :
@@ -175,7 +174,6 @@ are local ring homs.
 
 
 variable (U : Opens (coequalizer f.1 g.1).carrier)
-
 variable (s : (coequalizer f.1 g.1).presheaf.obj (op U))
 
 /-- (Implementation). The basic open set of the section `π꙳ s`. -/

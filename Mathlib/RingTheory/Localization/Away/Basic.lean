@@ -32,7 +32,6 @@ commutative ring, field of fractions
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S]
-
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 namespace IsLocalization
@@ -179,7 +178,6 @@ section NumDen
 open IsLocalization
 
 variable (x : R)
-
 variable (B : Type*) [CommRing B] [Algebra R B] [IsLocalization.Away x B]
 
 /-- `selfZPow x (m : ℤ)` is `x ^ m` as an element of the localization away from `x`. -/

@@ -35,7 +35,6 @@ namespace Matrix.charpoly
 
 variable {R S : Type*} (n : Type*) [CommRing R] [CommRing S] [Fintype n] [DecidableEq n]
 variable (f : R →+* S)
-
 variable (R)
 
 /-- The universal characteristic polynomial for `n × n`-matrices,

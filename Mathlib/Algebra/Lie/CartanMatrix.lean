@@ -87,7 +87,6 @@ universe u v w
 noncomputable section
 
 variable (R : Type u) {B : Type v} [CommRing R] [DecidableEq B] [Fintype B]
-
 variable (A : Matrix B B ℤ)
 
 namespace CartanMatrix

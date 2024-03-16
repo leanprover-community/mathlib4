@@ -26,7 +26,6 @@ variable {R α β δ γ ι : Type*}
 namespace MeasureTheory
 
 variable {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
-
 variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : Measure α} {s s' t : Set α}
 
 namespace Measure

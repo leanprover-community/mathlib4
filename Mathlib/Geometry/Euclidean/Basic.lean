@@ -66,9 +66,7 @@ Euclidean affine spaces.
 
 
 variable {V : Type*} {P : Type*}
-
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-
 variable [NormedAddTorsor V P]
 
 /-- The midpoint of the segment AB is the same distance from A as it is from B. -/

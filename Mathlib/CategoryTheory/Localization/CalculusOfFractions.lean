@@ -114,7 +114,6 @@ structure RightFraction (W : MorphismProperty C) (X Y : C) where
 namespace RightFraction
 
 variable (W : MorphismProperty C)
-
 variable {X Y : C}
 
 /-- The right fraction from `X` to `Y` given by a morphism `f : X ⟶ Y`. -/

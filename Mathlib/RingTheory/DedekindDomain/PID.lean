@@ -192,17 +192,11 @@ theorem IsPrincipalIdealRing.of_finite_primes [IsDomain R] [IsDedekindDomain R]
 #align is_principal_ideal_ring.of_finite_primes IsPrincipalIdealRing.of_finite_primes
 
 variable [IsDomain R] [IsDedekindDomain R]
-
 variable (S : Type*) [CommRing S] [IsDomain S]
-
 variable [Algebra R S] [Module.Free R S] [Module.Finite R S]
-
 variable (p : Ideal R) (hp0 : p ≠ ⊥) [IsPrime p]
-
 variable {Sₚ : Type*} [CommRing Sₚ] [Algebra S Sₚ]
-
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
-
 variable [Algebra R Sₚ] [IsScalarTower R S Sₚ]
 
 /- The first hypothesis below follows from properties of the localization but is needed for the

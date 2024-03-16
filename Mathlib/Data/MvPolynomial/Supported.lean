@@ -32,7 +32,6 @@ variable {σ τ : Type*} {R : Type u} {S : Type v} {r : R} {e : ℕ} {n m : σ}
 section CommSemiring
 
 variable [CommSemiring R] {p q : MvPolynomial σ R}
-
 variable (R)
 
 /-- The set of polynomials whose variables are contained in `s` as a `Subalgebra` over `R`. -/

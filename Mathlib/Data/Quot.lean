@@ -216,7 +216,6 @@ end Quot
 namespace Quotient
 
 variable [sa : Setoid α] [sb : Setoid β]
-
 variable {φ : Quotient sa → Quotient sb → Sort*}
 
 -- Porting note: in mathlib3 this notation took the Setoid as an instance-implicit argument,

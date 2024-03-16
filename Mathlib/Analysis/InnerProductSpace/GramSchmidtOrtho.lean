@@ -42,7 +42,6 @@ open scoped BigOperators
 open Finset Submodule FiniteDimensional
 
 variable (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [IsWellOrder ι (· < ·)]
 
 attribute [local instance] IsWellOrder.toHasWellFounded

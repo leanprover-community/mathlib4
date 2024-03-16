@@ -57,9 +57,7 @@ namespace FirstOrder
 namespace Language
 
 variable {L : Language.{u, v}} {L' : Language}
-
 variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
-
 variable {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder Cardinal
@@ -257,7 +255,6 @@ def Realize : ∀ {l} (_f : L.BoundedFormula α l) (_v : α → M) (_xs : Fin l 
 #align first_order.language.bounded_formula.realize FirstOrder.Language.BoundedFormula.Realize
 
 variable {l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}
-
 variable {v : α → M} {xs : Fin l → M}
 
 @[simp]

@@ -26,9 +26,7 @@ variable {R : Type*} [CommRing R]
 variable {ι : Type*}
 variable [DecidableEq ι] [Preorder ι]
 variable {G : ι → Type*}
-
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
-
 variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 variable (M : Type*) [AddCommGroup M] [Module R M]
 

@@ -64,7 +64,6 @@ theorem finallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : FinallySmall
   FinallySmall.mk' (equivSmallModel.{w} J).inverse
 
 variable {J}
-
 variable {K : Type u₁} [Category.{v₁} K] (F : K ⥤ J) [Final F]
 
 theorem finallySmall_of_final_of_finallySmall [FinallySmall.{w} K] : FinallySmall.{w} J :=
@@ -112,7 +111,6 @@ theorem initiallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : InitiallyS
   InitiallySmall.mk' (equivSmallModel.{w} J).inverse
 
 variable {J}
-
 variable {K : Type u₁} [Category.{v₁} K] (F : K ⥤ J) [Initial F]
 
 theorem initiallySmall_of_initial_of_initiallySmall [InitiallySmall.{w} K] : InitiallySmall.{w} J :=

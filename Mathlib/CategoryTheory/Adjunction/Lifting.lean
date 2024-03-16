@@ -60,14 +60,12 @@ open Category Limits
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
-
 variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C]
 
 -- Hide implementation details in this namespace
 namespace LiftAdjoint
 
 variable {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (F' : C ⥤ A)
-
 variable (adj₁ : F ⊣ U) (adj₂ : F' ⊣ R ⋙ U)
 
 /-- To show that `ε_X` is a coequalizer for `(FUε_X, ε_FUX)`, it suffices to assume it's always a
@@ -208,7 +206,6 @@ noncomputable def monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint 
 #align category_theory.monadic_adjoint_triangle_lift CategoryTheory.monadicAdjointTriangleLift
 
 variable {D : Type u₄}
-
 variable [Category.{v₄} D]
 
 /-- Suppose we have a commutative square of functors

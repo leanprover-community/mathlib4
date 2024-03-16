@@ -202,7 +202,6 @@ theorem walkingParallelPairOpEquiv_counitIso_one :
 #align category_theory.limits.walking_parallel_pair_op_equiv_counit_iso_one CategoryTheory.Limits.walkingParallelPairOpEquiv_counitIso_one
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : C}
 
 /-- `parallelPair f g` is the diagram in `C` consisting of the two morphisms `f` and `g` with

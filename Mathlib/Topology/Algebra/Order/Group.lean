@@ -22,7 +22,6 @@ open Set Filter
 open Topology Filter
 
 variable {α G : Type*} [TopologicalSpace G] [LinearOrderedAddCommGroup G] [OrderTopology G]
-
 variable {l : Filter α} {f g : α → G}
 
 -- see Note [lower instance priority]

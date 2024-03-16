@@ -69,7 +69,6 @@ open scoped IntermediateField
 universe u v w z
 
 variable {p n : ℕ+} (A : Type w) (B : Type z) (K : Type u) {L : Type v} (C : Type w)
-
 variable [CommRing A] [CommRing B] [Algebra A B] [IsCyclotomicExtension {n} A B]
 
 section Zeta
@@ -200,7 +199,6 @@ namespace IsPrimitiveRoot
 section CommRing
 
 variable [CommRing L] {ζ : L} (hζ : IsPrimitiveRoot ζ n)
-
 variable {K} [Field K] [Algebra K L]
 
 /-- This mathematically trivial result is complementary to `norm_eq_one` below. -/
@@ -250,7 +248,6 @@ end CommRing
 section Field
 
 variable [Field L] {ζ : L} (hζ : IsPrimitiveRoot ζ n)
-
 variable {K} [Field K] [Algebra K L]
 
 /-- If `Irreducible (cyclotomic n K)` (in particular for `K = ℚ`), then the norm of

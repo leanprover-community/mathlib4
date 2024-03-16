@@ -44,7 +44,6 @@ namespace CategoryTheory
 open Limits
 
 variable {J : Type v}
-
 variable {C : Type u} [Category.{v} C]
 
 /-- The functor `G : D ⥤ C` satisfies the *solution set condition* if for every `A : C`, there is a
@@ -64,7 +63,6 @@ def SolutionSetCondition {D : Type u} [Category.{v} D] (G : D ⥤ C) : Prop :=
 section GeneralAdjointFunctorTheorem
 
 variable {D : Type u} [Category.{v} D]
-
 variable (G : D ⥤ C)
 
 /-- If `G : D ⥤ C` is a right adjoint it satisfies the solution set condition.  -/

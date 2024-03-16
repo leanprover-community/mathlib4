@@ -17,7 +17,6 @@ universe v₁ v₂ u₁ u₂
 open CategoryTheory MonoidalCategory
 
 variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
-
 variable {C}
 
 /-- A module object for a monoid object, all internal to some monoidal category. -/

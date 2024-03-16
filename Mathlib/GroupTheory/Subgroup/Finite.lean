@@ -21,7 +21,6 @@ subgroup, subgroups
 open BigOperators
 
 variable {G : Type*} [Group G]
-
 variable {A : Type*} [AddGroup A]
 
 namespace Subgroup
