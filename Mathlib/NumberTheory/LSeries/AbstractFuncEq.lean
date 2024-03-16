@@ -89,8 +89,8 @@ structure WeakFEPair where
   (hk : 0 < k)
   (hε : ε ≠ 0)
   (h_feq : ∀ x ∈ Ioi 0, f (1 / x) = (ε * ↑(x ^ k)) • g x)
-  (hf_top (r : ℝ) : (f · - f₀) =O[atTop] (· ^ (-r)))
-  (hg_top (r : ℝ) : (g · - g₀) =O[atTop] (· ^ (-r)))
+  (hf_top (r : ℝ) : (f · - f₀) =O[atTop] (· ^ r))
+  (hg_top (r : ℝ) : (g · - g₀) =O[atTop] (· ^ r))
 
 /-- A structure designed to hold the hypotheses for the Mellin-functional-equation argument
 (version without constant terms) -/
