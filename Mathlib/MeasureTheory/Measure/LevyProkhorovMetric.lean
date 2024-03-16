@@ -355,8 +355,7 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
   set P := levyProkhorov_to_probabilityMeasure Ω ν -- more palatable notation
   set Ps := fun n ↦ levyProkhorov_to_probabilityMeasure Ω (μs n) -- more palatable notation
   rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto]
-  refine fun f ↦ @tendsto_integral_of_forall_limsup_integral_le_integral Ω _ _ _ ℕ atTop
-                  P _ (fun n ↦ Ps n) _ ?_ f
+  refine fun f ↦ tendsto_integral_of_forall_limsup_integral_le_integral ?_ f
   intro f f_nn
   by_cases f_zero : ‖f‖ = 0
   · simp only [norm_eq_zero] at f_zero
