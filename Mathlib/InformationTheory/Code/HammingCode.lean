@@ -145,86 +145,119 @@ instance {G α β : Type*} [Monoid G] [Monoid β] [MulAction G α] :
 
 def apply_perm : (ι ≃ ι)ᵈᵐᵃ →* MulAut (ι → Kˣ) := MulDistribMulAction.toMulAut (ι ≃ ι)ᵈᵐᵃ (ι → Kˣ)
 
+instance : MulDistribMulAction (ι ≃ ι) (ι → K) where
+  smul := fun σ f => f ∘ σ.symm
+  one_smul := fun x => by
+    simp_rw [HSMul.hSMul]
+    simp only [Equiv.Perm.one_symm, Equiv.Perm.coe_one, Function.comp_id]
+  mul_smul := fun x y f => by
+    simp_rw [HSMul.hSMul]
+    ext i
+    simp only [Function.comp_apply]
+    simp_rw [HMul.hMul,Mul.mul]
+    simp only [Equiv.symm_trans_apply]
+  smul_mul := fun r x y => by
+    simp only
+    simp_rw [HSMul.hSMul,HMul.hMul,Mul.mul]
+    ext i
+    simp only [Function.comp_apply, Units.val_mul]
+  smul_one := fun r => by
+    simp only
+    simp_rw [HSMul.hSMul]
+    simp only [Pi.one_comp]
+
+instance : DistribMulAction ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)ᵐᵒᵖ (ι → K) where
+  smul := fun z f => DomMulAct.mk.symm (MulOpposite.unop z).right • ((MulOpposite.unop z).left • f)
+  one_smul := fun x => by
+    simp_rw [HSMul.hSMul,SMul.smul]
+    simp only [MulOpposite.unop_one, SemidirectProduct.one_left, Pi.one_apply, one_smul,
+      SemidirectProduct.one_right, DomMulAct.symm_mk_one, Equiv.Perm.one_symm, Equiv.Perm.coe_one,
+      Function.comp_id]
+  mul_smul := fun z₁' z₂' f => by
+    ext i
+    simp_rw [HMul.hMul,Mul.mul]
+    simp_rw [HSMul.hSMul,SMul.smul]
+    obtain ⟨d₁,σ₁'⟩ := MulOpposite.unop z₁' -- surely there should be a better way to do this.
+    obtain ⟨d₂,σ₂'⟩ := MulOpposite.unop z₂'
+    simp only [SemidirectProduct.mk_eq_inl_mul_inr, MulOpposite.op_mul, MulOpposite.unop_mul,
+      MulOpposite.unop_op, SemidirectProduct.mul_left, SemidirectProduct.left_inl,
+      SemidirectProduct.right_inl, map_one, SemidirectProduct.left_inr, mul_one,
+      SemidirectProduct.mul_right, SemidirectProduct.right_inr, one_mul, Pi.mul_apply,
+      DomMulAct.symm_mk_mul, Function.comp_apply]
+    simp_rw [apply_perm,MulDistribMulAction.toMulAut]
+    simp only [MonoidHom.coe_mk, OneHom.coe_mk, MulDistribMulAction.toMulEquiv_apply]
+    simp_rw [HSMul.hSMul,SMul.smul]
+    simp only [Equiv.Perm.smul_def, Units.val_mul, smul_eq_mul]
+    obtain σ₁ := DomMulAct.mk.symm σ₁'
+    obtain σ₂ := DomMulAct.mk.symm σ₂'
+    nth_rewrite 3 [HMul.hMul,instHMul]
+    nth_rewrite 3 [HMul.hMul,instHMul]
+    nth_rewrite 3 [HMul.hMul,instHMul]
+    simp_rw [Mul.mul]
+    simp only [Equiv.symm_trans_apply, Equiv.apply_symm_apply]
+    ring_nf
+  smul_zero := fun z => by
+    ext i
+    simp_rw [HSMul.hSMul,SMul.smul]
+    simp only [Pi.zero_apply, smul_zero, Function.comp_apply]
+  smul_add := fun z f g => by
+    ext i
+    simp_rw [HSMul.hSMul,SMul.smul]
+    simp only [Pi.add_apply, smul_add, Function.comp_apply]
 
 -- now LinearAut (ι → K) has a subgroup
 
--- #synth MulAction (((ι → Kˣ) ⋊[f] (ι ≃ ι)ᵈᵐᵃ))ᵈᵐᵃ ((ι → K) ≃ₗ[K] (ι → K))
+-- #synth MulAction ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)ᵐᵒᵖ (ι → K)
 --(ι → K ≃ₗ[K] ι → K)
 
-private abbrev g_toFun : ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ) → ((ι → K) ≃ₗ[K] (ι → K)) := fun ⟨d,σ⟩ => {
-    toFun := fun φ => d • (σ • φ)
-    map_add' := fun x y => by simp only [smul_add]
-    map_smul' := fun k x => by
-      simp only [RingHom.id_apply]; ext i
-      simp only [Pi.smul_apply', Pi.smul_apply, smul_eq_mul,HSMul.hSMul,SMul.smul]
-      ring_nf
-    invFun := fun φ => σ⁻¹ • (d⁻¹ • φ)
-    left_inv := fun x => by simp only [inv_smul_smul]
-    right_inv := fun y => by simp
-  }
+/-
+It is important to note that here, `(σ:(ι≃ι)ᵈᵐᵃ) • (d:(ι → Kˣ))` means something different from
+`(σ : ι ≃ ι) • (x:ι → K)`.
 
-private lemma g_map_one' : g_toFun (1: ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)) = 1 := by
-    rw [g_toFun]
-    ring_nf; ext f i
-    simp only [LinearEquiv.coe_one, id_eq, OfNat.ofNat, One.one,MulOpposite.op]
-    simp only [LinearEquiv.coe_mk, Pi.smul_apply', Units.smul_mk_apply, smul_eq_mul,
-      LinearEquiv.refl_apply]
-    ring_nf
-    rfl
+More precisely, in the first case we have `σ • d = d ∘ σ`,
+while in the second case we have `σ • x = x ∘ σ.symm`
 
--- this probably could use some golfing
-private lemma g_map_mul' (x y:((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)): g_toFun (x * y) = g_toFun x * g_toFun y := by
-  obtain ⟨d₁,σ₁⟩ := x; obtain ⟨d₂,σ₂⟩ := y; simp_rw [g_toFun]; ext f i
-  simp only [mul_inv_rev, LinearEquiv.coe_mk, Pi.smul_apply', Pi.mul_apply]
-  nth_rw 3 [HMul.hMul,instHMul]
-  simp only
-  simp_rw [Mul.mul,LinearEquiv.trans]
-  simp only [Equiv.invFun_as_coe]
-  have h₁ (z:(ι → K) ≃ₗ[K] (ι → K)) : z f = z.toLinearMap f:= rfl
-  rw [h₁]
-  simp only
-  rw [LinearMap.comp]
-  simp only [LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, Pi.smul_apply']
-  simp only [HSMul.hSMul,SMul.smul]
-  ring_nf
-  rfl
+this is all needed to have the proper DistribMulActions and accompanying properties, *and*
+to be able to more easily and directly characterise arbitrary LinearCodeAuts in terms of this group.
 
-instance : DistribMulAction ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ) (ι → K) where
-  smul := fun z => g_toFun z
-  one_smul := fun b => by
-    simp_rw [HSMul.hSMul]
-    rw [g_map_one']
-    simp only [LinearEquiv.coe_one, id_eq]
-  mul_smul := fun x y z => by
-    simp_rw [HSMul.hSMul]
-    rw [g_map_mul']
-    rfl
-  smul_zero := fun z => (g_toFun z).map_zero
-  smul_add := fun z => (g_toFun z).map_add
-
+all of these definitions hinge on the choice of how we want (d,σ) to act on an element (x:ι → K).
+there are several possibilities, among which:
+- `fun (d,σ) x => (d • (x ∘ σ))`
+- `fun (d,σ) x => ((d • x) ∘ σ)`
+- `fun (d,σ) x => (d • (x ∘ σ.symm))`
+- `fun (d,σ) x => ((d • x) ∘ σ.symm)` -- this is the one used in this file.
+by using the chosen definition,
+you can derive the appropriate definitions of (σ • d) and (σ • x) by looking at
+the property for DistribMulAction mul_smul, which says that you want the following to hold:
+  `((d₁,σ₁) * (d₂,σ₂)) • x = (d₁,σ₁) • ((d₂,σ₂) • x)`
+rewrite the right hand side using the chosen definition, then pick the left hand side multiplication
+to match. in our case, this results in the group `(ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)ᵐᵒᵖ` with
+an instance `DistribMulAction ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)ᵐᵒᵖ (ι → K)`, such that
+`(⟨⟨d,⟨σ⟩⟩⟩ • x) i = (d (σ.symm i) * x (σ.symm i)), which means in particular that
+the `i`th basis vector gets mapped to the `σ i`th one, and multiplied with `d i`.
+this characterisation allows for an easy recovery of `σ` and `d` from the action.
+-/
 lemma SMul_def (d:(ι → Kˣ)) (σ :(ι ≃ ι)) (x: ι → K) :
-  (⟨d,⟨σ⟩⟩:((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)) • x = d • (x ∘ σ) := rfl
+  (MulOpposite.op ⟨d,DomMulAct.mk σ⟩:((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)ᵐᵒᵖ) • x = σ • d • x  := rfl
 
-instance : SMulCommClass ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ) K (ι → K) where
+instance : SMulCommClass ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)ᵐᵒᵖ K (ι → K) where
   smul_comm := fun m n a => by
     ext i
-    simp only [Pi.smul_apply]
-    obtain ⟨d,⟨σ⟩⟩ := m
-    simp_rw [SMul_def]
-    simp only [Pi.smul_apply', Function.comp_apply, Pi.smul_apply, smul_eq_mul]
-    rw [HSMul.hSMul,instHSMul]
-    simp_rw [SMul.smul]
+    simp_rw [HSMul.hSMul,SMul.smul]
+    simp only [smul_eq_mul]
+    simp_rw [HSMul.hSMul,SMul.smul]
+    simp only [Function.comp_apply]
+    obtain ⟨d,σ'⟩ := MulOpposite.unop m
+    simp only
+    obtain σ := DomMulAct.mk.symm σ'
+    simp_rw [HSMul.hSMul,SMul.smul]
     simp only [smul_eq_mul]
     ring_nf
 
-def toModuleAut : ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ) →* ((ι → K) ≃ₗ[K] (ι → K)) :=
+def toModuleAut : ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)ᵐᵒᵖ →* ((ι → K) ≃ₗ[K] (ι → K)) :=
   DistribMulAction.toModuleAut K (ι → K)
 
-
-lemma toModuleAut_def (d:(ι → Kˣ)) (σ :(ι ≃ ι)) (x: ι → K) : toModuleAut ⟨d,⟨σ⟩⟩ x = d • (x ∘ σ) := rfl
-
-lemma toModuleAut_def_symm (d:(ι → Kˣ)) (σ :(ι ≃ ι)) (x: ι → K) :
-  (toModuleAut ⟨d,⟨σ⟩⟩).symm x = (d⁻¹ • x) ∘ σ.symm := rfl
+lemma toModuleAut_def (d:(ι → Kˣ)) (σ :(ι ≃ ι)) (x: ι → K) : toModuleAut ⟨⟨d,⟨σ⟩⟩⟩ x = σ • (d • x) := rfl
 
 noncomputable def b : Basis ι K (ι → K) := Basis.ofEquivFun (LinearEquiv.refl K (ι → K))
 
@@ -235,32 +268,37 @@ lemma toModuleAut.inj [DecidableEq ι] [DecidableEq K]: Function.Injective (@toM
   rw [LinearEquiv.ext_iff]
   simp_rw [toModuleAut_def]
   intro h
-  have hd : d₁ = d₂ := by
+  have hd :∀ i, σ₁ i = σ₂ i ∧ d₁ i = d₂ i:= by
+    intro i
+    obtain hz := h (b i)
+    have hz₁ : ∀ j, (σ₁ • d₁ • (b i:ι → K)) j = (σ₂ • d₂ • (b i:ι → K)) j := by
+      simp_rw [hz,implies_true]
+    simp_rw [HSMul.hSMul, SMul.smul] at hz₁
+    simp only [Function.comp_apply] at hz₁
+    obtain hz₂ := hz₁ (σ₁ i)
+    simp only [Equiv.symm_apply_apply] at hz₂
+    rw [b] at hz₂
+    simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply] at hz₂
+    simp_rw [Function.update_apply] at hz₂
+    simp only [↓reduceIte, Pi.zero_apply, smul_ite, smul_zero] at hz₂
+    simp_rw [HSMul.hSMul,SMul.smul] at hz₂
+    simp only [smul_eq_mul, mul_one] at hz₂
+    split at hz₂
+    . rename_i h
+      nth_rw 2 [h.symm]
+      rw [h] at hz₂
+      simp only [Equiv.apply_symm_apply, true_and]
+      ext
+      exact hz₂
+    . simp only [Units.ne_zero] at hz₂
+  simp only at hd
+  have hσ : σ₁ = σ₂ := by
     ext i
-    obtain hz := h (Function.const ι 1)
-    simp only [Function.const_one, Pi.one_comp] at hz
-    simp only [HSMul.hSMul,instHSMul,SMul.smul,Pi.one_apply,funext] at hz
-    ring_nf at hz
-    have hsimp : (↑(d₁ i) = (fun i ↦ ((d₁ i):K)) i) := rfl
-    rw [hsimp,hz]
-  rw [hd] at h ⊢
-  simp only [SemidirectProduct.mk_eq_inl_mul_inr, mul_right_inj, SemidirectProduct.inr_inj]
-  suffices hsuf : (σ₁=σ₂) by rw [hsuf]
-  ext i
-  obtain hz := h (b (σ₂ i))
-  simp only [dite_eq_ite, smul_left_cancel_iff] at hz
-  have hyp : (b (σ₂ i) ∘ σ₁) i = (1:K) := by
-    rw [hz]
-    simp only [Function.comp_apply]
-    rw [b]
-    simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
-      Function.update_same]
-  simp only [Function.comp_apply,b] at hyp
-  simp_all only [smul_left_cancel_iff, Basis.coe_ofEquivFun, LinearEquiv.refl_symm,
-    LinearEquiv.refl_apply]
-  simp_rw [Function.update] at hyp
-  simp_all only [eq_rec_constant, Pi.zero_apply, dite_eq_ite, ite_eq_left_iff, zero_ne_one,
-    imp_false, not_not]
+    exact (hd i).left
+  have hd' : d₁ = d₂ := by
+    ext i : 1
+    exact (hd i).right
+  rw [hσ,hd']
 
 variable [Fintype K] [DecidableEq K] [DecidableEq ι] (f:LinearCodeAut K trivdist hdist s)
 
@@ -322,7 +360,7 @@ theorem norm_one_basis_mul {x:ι → K} : addGNorm hdist x = 1 ↔ ∃! (c:ι ×
       rw [b]
       simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
         Function.update_same]
-      simp_rw [HSMul.hSMul,instHSMul,SMul.smul]
+      simp_rw [HSMul.hSMul,SMul.smul]
       simp only [smul_eq_mul, mul_one, Units.ne_zero, not_false_eq_true]
     use h₂
     ext
@@ -331,7 +369,7 @@ theorem norm_one_basis_mul {x:ι → K} : addGNorm hdist x = 1 ↔ ∃! (c:ι ×
     rw [b]
     simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
       Function.update_same]
-    simp_rw [HSMul.hSMul,instHSMul,SMul.smul]
+    simp_rw [HSMul.hSMul,SMul.smul]
     simp only [smul_eq_mul, mul_one]
   . intro ⟨⟨i,k⟩,⟨hi₁,hi₂⟩⟩
     rw [addGNorm]
@@ -353,7 +391,7 @@ theorem norm_one_basis_mul {x:ι → K} : addGNorm hdist x = 1 ↔ ∃! (c:ι ×
       simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply]
       intro h
       contrapose! h
-      simp_rw [Function.update, HSMul.hSMul,instHSMul,SMul.smul]
+      simp_rw [Function.update, HSMul.hSMul,SMul.smul]
       simp only [eq_rec_constant, Pi.zero_apply, dite_eq_ite, smul_eq_mul, mul_ite, mul_one,
         mul_zero, ite_eq_right_iff, Units.ne_zero, imp_false]
       exact h
@@ -361,7 +399,7 @@ theorem norm_one_basis_mul {x:ι → K} : addGNorm hdist x = 1 ↔ ∃! (c:ι ×
       rw [h,b]
       simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply,
         Function.update_same]
-      simp_rw [HSMul.hSMul,instHSMul,SMul.smul]
+      simp_rw [HSMul.hSMul,SMul.smul]
       simp only [smul_eq_mul, mul_one, ne_eq, Units.ne_zero, not_false_eq_true]
 
 
@@ -374,13 +412,13 @@ lemma map_index_to_stuff (i:ι): ∃! (c:ι × Kˣ), (f (b i)) = (c.2 • b c.1)
 
 noncomputable def extract_perm' (i:ι) : ι := (map_index_to_stuff f i).exists.choose.1
 
-noncomputable def extract_diag_after (i:ι) : Kˣ := (map_index_to_stuff f i).exists.choose.2
+noncomputable def extract_diag (i:ι) : Kˣ := (map_index_to_stuff f i).exists.choose.2
 
-lemma extract_gives_stuff' (i:ι) : f (b i) = (extract_diag_after f i • b (extract_perm' f i)) := by
+lemma extract_gives_stuff' (i:ι) : f (b i) = (extract_diag f i • b (extract_perm' f i)) := by
   exact (map_index_to_stuff f i).exists.choose_spec
 
 lemma extract_gives_unique {i:ι} (j:ι) (k:Kˣ) :
-  f (b i) = k • b j → (j,k) = (extract_perm' f i, extract_diag_after f i) := by
+  f (b i) = k • b j → (j,k) = (extract_perm' f i, extract_diag f i) := by
   intro h
   apply (map_index_to_stuff f i).unique
   . exact h
@@ -394,32 +432,18 @@ lemma extract_gives_unique_perm' (i:ι) (j:ι) (k:Kˣ) : f (b i) = k • b j →
   exact hz.left
 
 
-lemma extract_gives_unique_diag (i:ι) (j:ι) (k:Kˣ) : f (b i) = k • b j → (k = extract_diag_after f i) := by
+lemma extract_gives_unique_diag (i:ι) (j:ι) (k:Kˣ) : f (b i) = k • b j → (k = extract_diag f i) := by
   intro h
   have hz := (extract_gives_unique f j k h)
   simp only [Prod.mk.injEq] at hz
   exact hz.right
 
 noncomputable def extract_perm : ι ≃ ι where
-  toFun := extract_perm' f.symm
-  invFun := extract_perm' f
-  left_inv :=  by
+  toFun := extract_perm' f
+  invFun := extract_perm' f.symm
+  left_inv := by
     intro i
-    apply (extract_gives_unique_perm' f _ i (extract_diag_after (LinearCodeEquiv.symm f) i)⁻¹ _).symm
-    rw [← f.right_inv (b i)]
-    simp only [LinearCodeEquiv.toCodeEquiv_eq_coe, CodeEquiv.toGIsometryEquiv_eq_coe,
-      GIsometryEquiv.toEquiv_eq_coe, Equiv.invFun_as_coe, GIsometryEquiv.coe_toEquiv_symm,
-      CodeEquiv.coe_toGIsometryEquiv_symm, LinearCodeEquiv.coe_toCodeEquiv_symm,
-      Equiv.toFun_as_coe, EquivLike.coe_coe, CodeEquiv.coe_toGIsometryEquiv,
-      LinearCodeEquiv.coe_toCodeEquiv]
-    rw [extract_gives_stuff' f.symm i]
-    simp_rw [HSMul.hSMul, instHSMul, SMul.smul]
-    rw [SemilinearMapClass.map_smulₛₗ f]
-    simp only [Units.val_inv_eq_inv_val, RingHom.id_apply, ne_eq, Units.ne_zero,
-      not_false_eq_true, inv_smul_smul₀]
-  right_inv := by
-    intro i
-    apply (extract_gives_unique_perm' f.symm _ i (extract_diag_after f i)⁻¹ _).symm
+    apply (extract_gives_unique_perm' f.symm _ i (extract_diag f i)⁻¹ _).symm
     rw [← f.left_inv (b i)]
     simp only [LinearCodeEquiv.toCodeEquiv_eq_coe, CodeEquiv.toGIsometryEquiv_eq_coe,
       GIsometryEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
@@ -427,23 +451,34 @@ noncomputable def extract_perm : ι ≃ ι where
       GIsometryEquiv.coe_toEquiv_symm, CodeEquiv.coe_toGIsometryEquiv_symm,
       LinearCodeEquiv.coe_toCodeEquiv_symm]
     rw [extract_gives_stuff' f i]
-    simp_rw [HSMul.hSMul, instHSMul, SMul.smul]
+    simp_rw [HSMul.hSMul, SMul.smul]
     rw [SemilinearMapClass.map_smulₛₗ f.symm]
     simp only [Units.val_inv_eq_inv_val, RingHom.id_apply, ne_eq, Units.ne_zero,
       not_false_eq_true, inv_smul_smul₀]
+  right_inv := by
+    intro i
+    apply (extract_gives_unique_perm' f _ i (extract_diag (LinearCodeEquiv.symm f) i)⁻¹ _).symm
+    rw [← f.right_inv (b i)]
+    simp only [LinearCodeEquiv.toCodeEquiv_eq_coe, CodeEquiv.toGIsometryEquiv_eq_coe,
+      GIsometryEquiv.toEquiv_eq_coe, Equiv.invFun_as_coe, GIsometryEquiv.coe_toEquiv_symm,
+      CodeEquiv.coe_toGIsometryEquiv_symm, LinearCodeEquiv.coe_toCodeEquiv_symm,
+      Equiv.toFun_as_coe, EquivLike.coe_coe, CodeEquiv.coe_toGIsometryEquiv,
+      LinearCodeEquiv.coe_toCodeEquiv]
+    rw [extract_gives_stuff' f.symm i]
+    simp_rw [HSMul.hSMul, SMul.smul]
+    rw [SemilinearMapClass.map_smulₛₗ f]
+    simp only [Units.val_inv_eq_inv_val, RingHom.id_apply, ne_eq, Units.ne_zero,
+      not_false_eq_true, inv_smul_smul₀]
 
-lemma extract_perm_is_perm': extract_perm' f = (extract_perm f).symm := by rfl
-
-noncomputable def extract_diag_before (i:ι) : Kˣ := extract_diag_after f (extract_perm f i)
+lemma extract_perm_is_perm': extract_perm' f = (extract_perm f) := by rfl
 
 lemma extract_gives_stuff (i:ι) :
-    f (b i) = (extract_diag_before f • ((DomMulAct.mk (extract_perm f)) • b i)) := by
+    f (b i) = extract_perm f • (extract_diag f • (b i:ι → K)) := by
   ext j
-  simp only [Pi.smul_apply', Function.comp_apply]
   calc
-    f (b i) j = (extract_diag_after f i • b ((extract_perm f).symm i):ι → K) j:= by
+    f (b i) j = ((extract_diag f i) • (b (extract_perm f i): ι → K)) j:= by
       rw [extract_gives_stuff' f i, extract_perm_is_perm']
-    _ = extract_diag_after f ((extract_perm f) j) • b ((extract_perm f).symm i) j := by
+    _ = extract_diag f ((extract_perm f).symm j) • b i ((extract_perm f).symm j) := by
       simp only [Pi.smul_apply]
       simp_rw [b]
       simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply]
@@ -451,29 +486,19 @@ lemma extract_gives_stuff (i:ι) :
       split
       . rename_i h
         rw [h]
-        simp only [Equiv.apply_symm_apply]
-      . rfl
-    _ = extract_diag_before f j • b ((extract_perm f).symm i) j := by rw [extract_diag_before]
-    _ =  extract_diag_before f j • b i ((extract_perm f) j) := by
-      simp only [smul_left_cancel_iff]
-      simp_rw [b]
-      simp only [Basis.coe_ofEquivFun, LinearEquiv.refl_symm, LinearEquiv.refl_apply]
-      simp only [Function.update, eq_rec_constant, Pi.zero_apply, dite_eq_ite]
-      split
-      . rename_i h
-        rw [h]
-        simp only [Equiv.apply_symm_apply, ↓reduceIte]
+        simp only [Equiv.symm_apply_apply, ↓reduceIte]
       . rename_i h
         split
-        . rename_i h2
-          rw [← h2] at h
-          simp only [Equiv.symm_apply_apply, not_true_eq_false] at h
+        . rename_i h₂
+          rw [← h₂] at h
+          simp only [Equiv.apply_symm_apply, not_true_eq_false] at h
         . rfl
+    _ = (extract_diag f • (b i:ι → K)) ((extract_perm f).symm j) := by rw [Pi.smul_apply']
+    _ = (extract_perm f • (extract_diag f • (b i:ι → K))) j := by rfl
 
 noncomputable def toSemidirectProd' (f:LinearCodeAut K trivdist hdist s) :
-    ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ) where
-  right := ⟨(extract_perm (f))⟩
-  left := extract_diag_before (f)
+    ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)ᵐᵒᵖ :=
+  MulOpposite.op ⟨extract_diag f,DomMulAct.mk (extract_perm f)⟩
 
 @[simp]
 lemma toModuleAut_apply_eq_smul
@@ -493,10 +518,6 @@ lemma toModuleAut_toSemiProd_eq_coe (f:LinearCodeAut K trivdist hdist s) :
   simp only [AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, Equiv.invFun_as_coe,
     AddEquiv.coe_toEquiv_symm, LinearEquiv.coe_mk, DistribMulAction.toAddEquiv_apply]
   rw [SMul_def]
-  ext j
-  simp only [Pi.smul_apply', Function.comp_apply, smul_left_cancel_iff]
-  simp_rw [HSMul.hSMul,instHSMul,SMul.smul]
-  simp only [Equiv.symm_apply_apply, Equiv.Perm.smul_def]
 
 @[simp]
 lemma coe_toSemidirectProd'
@@ -508,7 +529,7 @@ lemma coe_toSemidirectProd'
   rfl
 
 lemma toSemidirectProd'_inj : Function.Injective (toSemidirectProd': LinearCodeAut K trivdist hdist s →
-    ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)) := fun x y h => by
+    ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)ᵐᵒᵖ) := fun x y h => by
   ext f i
   suffices hsuf1 :(x:(ι → K) ≃ₗ[K] (ι → K)) = (y: (ι → K) ≃ₗ[K] (ι → K)) by
     rw [← LinearCodeEquiv.coe_toLinearEquiv x, ← LinearCodeEquiv.coe_toLinearEquiv y]
@@ -518,7 +539,7 @@ lemma toSemidirectProd'_inj : Function.Injective (toSemidirectProd': LinearCodeA
   rw [← toModuleAut_toSemiProd_eq_coe,← toModuleAut_toSemiProd_eq_coe]
   rw [h]
 
-noncomputable def toSemidirectProd : (LinearCodeAut K trivdist hdist s) →* ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ) where
+noncomputable def toSemidirectProd : (LinearCodeAut K trivdist hdist s) →* ((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)ᵐᵒᵖ where
   toFun := toSemidirectProd'
   map_one' := by
     apply toModuleAut.inj
@@ -530,7 +551,6 @@ noncomputable def toSemidirectProd : (LinearCodeAut K trivdist hdist s) →* ((�
     simp only [SemidirectProduct.mk_eq_inl_mul_inr]
     apply toModuleAut.inj
     simp only [map_mul]
-
     apply b.ext'
     intro i
     ext j
@@ -541,7 +561,7 @@ noncomputable def toSemidirectProd : (LinearCodeAut K trivdist hdist s) →* ((�
 
 
 def lift_toLinearCodeAut
-    (c:(ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ) (hc: ∀ x, x ∈ s ↔ c • x ∈ s) :
+    (c:((ι → Kˣ) ⋊[apply_perm] (ι ≃ ι)ᵈᵐᵃ)ᵐᵒᵖ) (hc: ∀ x, x ∈ s ↔ c • x ∈ s) :
     LinearCodeAut K trivdist hdist s := {
       toModuleAut c with
       map_code := fun x => (hc x).mp
@@ -560,29 +580,37 @@ def lift_toLinearCodeAut
           exact Finset.card_eq_of_equiv hsuf
         simp only [Finset.mem_filter, Finset.mem_univ, true_and]
         obtain ⟨d,⟨σ⟩⟩ := c
-        refine' {
-          toFun := fun ⟨i,hi⟩ => ⟨σ.symm i, by
-            simp_rw [toModuleAut,DistribMulAction.toModuleAut]
-            simp only [MonoidHom.coe_mk, OneHom.coe_mk, DistribMulAction.toLinearEquiv_apply,
-              Pi.sub_apply]
-            rw [SMul_def]
-            simp only [Pi.smul_apply', Function.comp_apply, Equiv.apply_symm_apply]
-            exact (smul_ne_zero_iff_ne (d (σ.symm i))).mpr hi⟩
-          invFun := fun ⟨i,hi⟩ => ⟨σ i, by
-            simp_rw [toModuleAut,DistribMulAction.toModuleAut] at hi
-            simp only [MonoidHom.coe_mk, OneHom.coe_mk, DistribMulAction.toLinearEquiv_apply,
-              Pi.sub_apply] at hi
-            rw [SMul_def] at hi
-            simp only [Pi.smul_apply', Function.comp_apply, Equiv.apply_symm_apply] at hi
-            contrapose! hi
-            simp_rw [HSMul.hSMul,instHSMul,SMul.smul,HSMul.hSMul,instHSMul,SMul.smul]
-            rw [hi]
-            simp only [mul_zero]
+        exact {
+          toFun := fun ⟨i,hi⟩ => ⟨σ i, by
+            rw [toModuleAut]
+            simp_rw [DistribMulAction.toModuleAut]
+            simp only [MonoidHom.coe_mk, OneHom.coe_mk, DistribMulAction.toLinearEquiv_apply]
+            simp_rw [HSMul.hSMul,SMul.smul,MulOpposite.unop]
+            simp_rw [HSMul.hSMul,SMul.smul]
+            simp only [Function.comp_apply]
+            simp_rw [DomMulAct.mk,MulOpposite.opEquiv]
+            simp only [Equiv.coe_fn_symm_mk]
+            simp_rw [MulOpposite.unop]
+            simp only [Equiv.symm_apply_apply]
+            simp_rw [HSMul.hSMul,SMul.smul]
+            simp_all only [SemidirectProduct.mk_eq_inl_mul_inr, Pi.sub_apply, ne_eq, smul_eq_mul,
+              mul_eq_zero, Units.ne_zero, or_self, not_false_eq_true]
             ⟩
+          invFun := fun ⟨i,hi⟩ => ⟨σ.symm i, by
+            simp_rw [toModuleAut,DistribMulAction.toModuleAut] at hi
+            simp only [MonoidHom.coe_mk, OneHom.coe_mk,DistribMulAction.toLinearEquiv_apply] at hi
+            simp_rw [HSMul.hSMul,SMul.smul] at hi
+            simp_rw [DomMulAct.mk,MulOpposite.opEquiv] at hi
+            simp only [Equiv.coe_fn_symm_mk] at hi
+            simp_rw [MulOpposite.unop] at hi
+            simp_rw [HSMul.hSMul,SMul.smul] at hi
+            simp only [Function.comp_apply] at hi
+            simp_rw [HSMul.hSMul,SMul.smul] at hi
+            simp_all⟩
           left_inv := fun x => by
-            simp only [Pi.sub_apply, ne_eq, Equiv.apply_symm_apply, Subtype.coe_eta]
+            simp only [Pi.sub_apply, ne_eq, Equiv.symm_apply_apply, Subtype.coe_eta]
           right_inv := fun x => by
-            simp only [ne_eq, Equiv.symm_apply_apply, Subtype.coe_eta]}
+            simp only [ne_eq, Equiv.apply_symm_apply, Subtype.coe_eta]
+        }
     }
-
 end linear
