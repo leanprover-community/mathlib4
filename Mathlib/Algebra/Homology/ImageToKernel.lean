@@ -24,10 +24,7 @@ renamed `homology'`. It is planned that this definition shall be removed and rep
 
 -/
 
-set_option autoImplicit true
-
-
-universe v u
+universe v u w
 
 open CategoryTheory CategoryTheory.Limits
 
