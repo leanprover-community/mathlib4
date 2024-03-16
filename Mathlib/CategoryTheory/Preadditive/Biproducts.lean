@@ -79,6 +79,8 @@ variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 namespace Limits
 
+section Fintype
+
 variable {J : Type} [Fintype J]
 
 /-- In a preadditive category, we can construct a biproduct for `f : J → C` from
@@ -155,16 +157,6 @@ def biconeIsBilimitOfLimitConeOfIsLimit {f : J → C} {t : Cone (Discrete.functo
           aesop_cat)
 #align category_theory.limits.bicone_is_bilimit_of_limit_cone_of_is_limit CategoryTheory.Limits.biconeIsBilimitOfLimitConeOfIsLimit
 
-/-- In a preadditive category, if the product over `f : J → C` exists,
-    then the biproduct over `f` exists. -/
-theorem HasBiproduct.of_hasProduct {J : Type} [Finite J] (f : J → C) [HasProduct f] :
-    HasBiproduct f := by
-  cases nonempty_fintype J;
-    apply HasBiproduct.mk
-      { bicone := _
-        isBilimit := biconeIsBilimitOfLimitConeOfIsLimit (limit.isLimit _) }
-#align category_theory.limits.has_biproduct.of_has_product CategoryTheory.Limits.HasBiproduct.of_hasProduct
-
 /-- In a preadditive category, any finite bicone which is a colimit cocone is in fact a bilimit
     bicone. -/
 def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit t.toCocone) : t.IsBilimit :=
@@ -182,16 +174,31 @@ def biconeIsBilimitOfColimitCoconeOfIsColimit {f : J → C} {t : Cocone (Discret
     rintro ⟨j⟩; simp
 #align category_theory.limits.bicone_is_bilimit_of_colimit_cocone_of_is_colimit CategoryTheory.Limits.biconeIsBilimitOfColimitCoconeOfIsColimit
 
+end Fintype
+
+section Finite
+
+variable {J : Type} [Finite J]
+
+/-- In a preadditive category, if the product over `f : J → C` exists,
+    then the biproduct over `f` exists. -/
+theorem HasBiproduct.of_hasProduct (f : J → C) [HasProduct f] : HasBiproduct f := by
+  cases nonempty_fintype J
+  exact HasBiproduct.mk
+    { bicone := _
+      isBilimit := biconeIsBilimitOfLimitConeOfIsLimit (limit.isLimit _) }
+#align category_theory.limits.has_biproduct.of_has_product CategoryTheory.Limits.HasBiproduct.of_hasProduct
+
 /-- In a preadditive category, if the coproduct over `f : J → C` exists,
     then the biproduct over `f` exists. -/
-theorem HasBiproduct.of_hasCoproduct {J : Type} [Finite J] (f : J → C) [HasCoproduct f] :
-    HasBiproduct f := by
-  cases nonempty_fintype J;
-    exact
-      HasBiproduct.mk
-        { bicone := _
-          isBilimit := biconeIsBilimitOfColimitCoconeOfIsColimit (colimit.isColimit _) }
+theorem HasBiproduct.of_hasCoproduct (f : J → C) [HasCoproduct f] : HasBiproduct f := by
+  cases nonempty_fintype J
+  exact HasBiproduct.mk
+    { bicone := _
+      isBilimit := biconeIsBilimitOfColimitCoconeOfIsColimit (colimit.isColimit _) }
 #align category_theory.limits.has_biproduct.of_has_coproduct CategoryTheory.Limits.HasBiproduct.of_hasCoproduct
+
+end Finite
 
 /-- A preadditive category with finite products has finite biproducts. -/
 theorem HasFiniteBiproducts.of_hasFiniteProducts [HasFiniteProducts C] : HasFiniteBiproducts C :=
@@ -204,9 +211,9 @@ theorem HasFiniteBiproducts.of_hasFiniteCoproducts [HasFiniteCoproducts C] :
   ⟨fun _ => { has_biproduct := fun _ => HasBiproduct.of_hasCoproduct _ }⟩
 #align category_theory.limits.has_finite_biproducts.of_has_finite_coproducts CategoryTheory.Limits.HasFiniteBiproducts.of_hasFiniteCoproducts
 
-section
+section HasBiproduct
 
-variable {f : J → C} [HasBiproduct f]
+variable {J : Type} [Fintype J] {f : J → C} [HasBiproduct f]
 
 /-- In any preadditive category, any biproduct satsifies
 `∑ j : J, biproduct.π f j ≫ biproduct.ι f j = 𝟙 (⨁ f)`
@@ -243,44 +250,51 @@ theorem biproduct.map_eq [HasFiniteBiproducts C] {f g : J → C} {h : ∀ j, f j
 #align category_theory.limits.biproduct.map_eq CategoryTheory.Limits.biproduct.map_eq
 
 @[reassoc]
-theorem biproduct.matrix_desc {K : Type} [Fintype K] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
-    (m : ∀ j k, f j ⟶ g k) {P} (x : ∀ k, g k ⟶ P) :
-    biproduct.matrix m ≫ biproduct.desc x = biproduct.desc fun j => ∑ k, m j k ≫ x k := by
-  ext
-  simp [lift_desc]
-#align category_theory.limits.biproduct.matrix_desc CategoryTheory.Limits.biproduct.matrix_desc
-
-@[reassoc]
-theorem biproduct.lift_matrix {K : Type} [Fintype K] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
+theorem biproduct.lift_matrix {K : Type} [Finite K] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
     {P} (x : ∀ j, P ⟶ f j) (m : ∀ j k, f j ⟶ g k) :
     biproduct.lift x ≫ biproduct.matrix m = biproduct.lift fun k => ∑ j, x j ≫ m j k := by
   ext
   simp [biproduct.lift_desc]
 #align category_theory.limits.biproduct.lift_matrix CategoryTheory.Limits.biproduct.lift_matrix
 
+end HasBiproduct
+
+section HasFiniteBiproducts
+
+variable {J K : Type} [Finite J] {f : J → C} [HasFiniteBiproducts C]
+
 @[reassoc]
-theorem biproduct.matrix_map {K : Type} [Fintype K] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
-    {h : K → C} (m : ∀ j k, f j ⟶ g k) (n : ∀ k, g k ⟶ h k) :
+theorem biproduct.matrix_desc [Fintype K] {f : J → C} {g : K → C}
+    (m : ∀ j k, f j ⟶ g k) {P} (x : ∀ k, g k ⟶ P) :
+    biproduct.matrix m ≫ biproduct.desc x = biproduct.desc fun j => ∑ k, m j k ≫ x k := by
+  ext
+  simp [lift_desc]
+#align category_theory.limits.biproduct.matrix_desc CategoryTheory.Limits.biproduct.matrix_desc
+
+variable [Finite K] [HasFiniteBiproducts C]
+
+@[reassoc]
+theorem biproduct.matrix_map {f : J → C} {g : K → C} {h : K → C} (m : ∀ j k, f j ⟶ g k)
+    (n : ∀ k, g k ⟶ h k) :
     biproduct.matrix m ≫ biproduct.map n = biproduct.matrix fun j k => m j k ≫ n k := by
   ext
   simp
 #align category_theory.limits.biproduct.matrix_map CategoryTheory.Limits.biproduct.matrix_map
 
 @[reassoc]
-theorem biproduct.map_matrix {K : Type} [Fintype K] [HasFiniteBiproducts C] {f : J → C} {g : J → C}
-    {h : K → C} (m : ∀ k, f k ⟶ g k) (n : ∀ j k, g j ⟶ h k) :
+theorem biproduct.map_matrix {f : J → C} {g : J → C} {h : K → C} (m : ∀ k, f k ⟶ g k)
+    (n : ∀ j k, g j ⟶ h k) :
     biproduct.map m ≫ biproduct.matrix n = biproduct.matrix fun j k => m j ≫ n j k := by
   ext
   simp
 #align category_theory.limits.biproduct.map_matrix CategoryTheory.Limits.biproduct.map_matrix
 
-end
+end HasFiniteBiproducts
 
 /-- Reindex a categorical biproduct via an equivalence of the index types. -/
 @[simps]
-def biproduct.reindex {β γ : Type} [Fintype β] [DecidableEq β] [DecidableEq γ] (ε : β ≃ γ)
-    (f : γ → C) [HasBiproduct f] [HasBiproduct (f ∘ ε)] : ⨁ f ∘ ε ≅ ⨁ f
-    where
+def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
+    (f : γ → C) [HasBiproduct f] [HasBiproduct (f ∘ ε)] : ⨁ f ∘ ε ≅ ⨁ f where
   hom := biproduct.desc fun b => biproduct.ι f (ε b)
   inv := biproduct.lift fun b => biproduct.π f (ε b)
   hom_inv_id := by
@@ -290,6 +304,7 @@ def biproduct.reindex {β γ : Type} [Fintype β] [DecidableEq β] [DecidableEq 
     · have : ε b' ≠ ε b := by simp [h]
       simp [biproduct.ι_π_ne _ h, biproduct.ι_π_ne _ this]
   inv_hom_id := by
+    cases nonempty_fintype β
     ext g g'
     by_cases h : g' = g <;>
       simp [Preadditive.sum_comp, Preadditive.comp_sum, biproduct.lift_desc,
