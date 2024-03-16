@@ -1202,4 +1202,13 @@ def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
 
 end ZeroAtInfty
 
+open Bornology
+
+theorem foo (S : Set (𝓢(E, F))) (hClosed : IsClosed S) (hBounded : IsVonNBounded ℝ S) :
+    IsCompact S := by
+  haveI := UniformAddGroup.uniformity_countably_generated (α := 𝓢(E, F))
+  rw [UniformSpace.isCompact_iff_isSeqCompact]
+  intro a ha
+  sorry
+
 end SchwartzMap
