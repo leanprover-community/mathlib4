@@ -149,11 +149,17 @@ theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv
 
 @[simp]
 theorem inv_bot : (⊥ : Rel α β).inv = (⊥ : Rel β α) := by
+  -- FIXME nightly-testing: Why does simp no longer unfold flip?
   simp [Bot.bot, inv, flip]
+  unfold flip
+  simp
 
 @[simp]
 theorem inv_top : (⊤ : Rel α β).inv = (⊤ : Rel β α) := by
+  -- FIXME nightly-testing: Why does simp no longer unfold flip?
   simp [Top.top, inv, flip]
+  unfold flip
+  simp
 
 /-- Image of a set under a relation -/
 def image (s : Set α) : Set β := { y | ∃ x ∈ s, r x y }
