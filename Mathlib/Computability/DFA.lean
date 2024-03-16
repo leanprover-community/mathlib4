@@ -104,9 +104,7 @@ def accepts : Language α := M.acceptsFrom M.start
 #align DFA.accepts DFA.accepts
 
 theorem mem_accepts (x : List α) : x ∈ M.accepts ↔ M.eval x ∈ M.accept := by rfl
-
-theorem mem_accepts' (x : List α) : x ∈ M.accepts ↔ M.evalFrom M.start x ∈ M.accept := by rfl
-#align DFA.mem_accepts DFA.mem_accepts'
+#align DFA.mem_accepts DFA.mem_accepts
 
 theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.card σ ≤ x.length)
     (hx : M.evalFrom s x = t) :
@@ -173,7 +171,7 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
   rw [Set.mem_singleton_iff] at ha' hc'
   substs ha' hc'
   have h := M.evalFrom_of_pow hb hb'
-  rwa [mem_accepts', evalFrom_of_append, evalFrom_of_append, h, hc]
+  rwa [mem_accepts, eval, evalFrom_of_append, evalFrom_of_append, h, hc]
 #align DFA.pumping_lemma DFA.pumping_lemma
 
 section Comap
