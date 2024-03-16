@@ -698,13 +698,24 @@ protected def algebra (e : α ≃ β) [Semiring β] :
     let semiring := Equiv.semiring e
     ∀ [Algebra R β], Algebra R α := by
   intros
-  fapply RingHom.toAlgebra'
-  · exact ((ringEquiv e).symm : β →+* α).comp (algebraMap R β)
-  · intro r x
-    rw [RingHom.coe_comp, Function.comp_apply, RingHom.coe_coe, ringEquiv_symm_apply e]
-    apply (ringEquiv e).injective
-    simp [Algebra.commutes]
+  letI : Module R α := e.module R
+  fapply Algebra.ofModule
+  · intro r x y
+    show e.symm (e (e.symm (r • e x)) * e y) = e.symm (r • e.ringEquiv (x * y))
+    simp only [apply_symm_apply, Algebra.smul_mul_assoc, map_mul, ringEquiv_apply]
+  · intro r x y
+    show e.symm (e x * e (e.symm (r • e y))) = e.symm (r • e (e.symm (e x * e y)))
+    simp only [apply_symm_apply, Algebra.mul_smul_comm]
 #align equiv.algebra Equiv.algebra
+
+lemma algebraMap_def (e : α ≃ β) [Semiring β] [Algebra R β] (r : R) :
+    let semiring := Equiv.semiring e
+    let algebra := Equiv.algebra R e
+    (algebraMap R α) r = e.symm ((algebraMap R β) r) := by
+  intros
+  simp only [Algebra.algebraMap_eq_smul_one]
+  show e.symm (r • e 1) = e.symm (r • 1)
+  simp only [Equiv.one_def, apply_symm_apply]
 
 noncomputable instance [Small.{v} α] [Semiring α] [Algebra R α] :
     Algebra R (Shrink.{v} α) :=
@@ -723,8 +734,8 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
     { Equiv.ringEquiv e with
       commutes' := fun r => by
         apply e.symm.injective
-        simp
-        rfl }
+        simp only [RingEquiv.toEquiv_eq_coe, toFun_as_coe, EquivLike.coe_coe, ringEquiv_apply,
+          symm_apply_apply, algebraMap_def] }
 #align equiv.alg_equiv Equiv.algEquiv
 
 variable (α) in
