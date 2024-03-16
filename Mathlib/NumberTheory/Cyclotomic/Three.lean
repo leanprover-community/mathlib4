@@ -156,6 +156,10 @@ lemma norm_lambda : Algebra.norm ℤ λ = 3 := by
     (cyclotomic.irreducible_rat (n := 3) (by decide)) (by decide)]
   simp
 
+lemma norm_lambda_prime : Prime (Algebra.norm ℤ λ) := by
+  rw [norm_lambda]
+  exact Int.prime_three
+
 lemma lambda_dvd_three : λ ∣ 3 := by
   suffices λ ∣ (3 : ℤ) by simpa
   rw [← Ideal.norm_dvd_iff, norm_lambda hζ]
