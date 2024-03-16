@@ -40,9 +40,8 @@ namespace SemiRingCat
 variable {J : Type v} [Category.{w} J]
 
 instance semiringObj (F : J ⥤ SemiRingCat.{u}) (j) :
-    Semiring ((F ⋙ forget SemiRingCat).obj j) := by
-  change Semiring (F.obj j)
-  infer_instance
+    Semiring ((F ⋙ forget SemiRingCat).obj j) :=
+  inferInstanceAs <| Semiring (F.obj j)
 set_option linter.uppercaseLean3 false in
 #align SemiRing.semiring_obj SemiRingCat.semiringObj
 
@@ -66,10 +65,9 @@ instance sectionsSemiring (F : J ⥤ SemiRingCat.{u}) :
 variable [Small.{u} J]
 
 instance limitSemiring (F : J ⥤ SemiRingCat.{u}) :
-    Semiring (Types.Small.limitCone.{v, u} (F ⋙ forget SemiRingCat.{u})).pt := by
-  change Semiring (Shrink (F ⋙ forget SemiRingCat).sections)
+    Semiring (Types.Small.limitCone.{v, u} (F ⋙ forget SemiRingCat.{u})).pt :=
   letI : Semiring (F ⋙ forget SemiRingCat).sections := (sectionsSubsemiring F).toSemiring
-  infer_instance
+  inferInstanceAs <| Semiring (Shrink (F ⋙ forget SemiRingCat).sections)
 set_option linter.uppercaseLean3 false in
 #align SemiRing.limit_semiring SemiRingCat.limitSemiring
 
@@ -222,21 +220,19 @@ namespace CommSemiRingCat
 variable {J : Type v} [Category.{w} J]
 
 instance commSemiringObj (F : J ⥤ CommSemiRingCat.{u}) (j) :
-    CommSemiring ((F ⋙ forget CommSemiRingCat).obj j) := by
-  change CommSemiring (F.obj j)
-  infer_instance
+    CommSemiring ((F ⋙ forget CommSemiRingCat).obj j) :=
+  inferInstanceAs <| CommSemiring (F.obj j)
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.comm_semiring_obj CommSemiRingCat.commSemiringObj
 
 variable [Small.{u} J]
 
 instance limitCommSemiring (F : J ⥤ CommSemiRingCat.{u}) :
-    CommSemiring (Types.Small.limitCone.{v, u} (F ⋙ forget CommSemiRingCat.{u})).pt := by
+    CommSemiring (Types.Small.limitCone.{v, u} (F ⋙ forget CommSemiRingCat.{u})).pt :=
   letI : CommSemiring (F ⋙ forget CommSemiRingCat.{u}).sections :=
     @Subsemiring.toCommSemiring (∀ j, F.obj j) _
       (SemiRingCat.sectionsSubsemiring.{v, u} (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u}))
-  change CommSemiring (Shrink (F ⋙ forget CommSemiRingCat.{u}).sections)
-  infer_instance
+  inferInstanceAs <| CommSemiring (Shrink (F ⋙ forget CommSemiRingCat.{u}).sections)
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.limit_comm_semiring CommSemiRingCat.limitCommSemiring
 
@@ -345,9 +341,8 @@ namespace RingCat
 
 variable {J : Type v} [Category.{w} J]
 
-instance ringObj (F : J ⥤ RingCat.{u}) (j) : Ring ((F ⋙ forget RingCat).obj j) := by
-  change Ring (F.obj j)
-  infer_instance
+instance ringObj (F : J ⥤ RingCat.{u}) (j) : Ring ((F ⋙ forget RingCat).obj j) :=
+  inferInstanceAs <| Ring (F.obj j)
 set_option linter.uppercaseLean3 false in
 #align Ring.ring_obj RingCat.ringObj
 
@@ -367,10 +362,9 @@ set_option linter.uppercaseLean3 false in
 variable [Small.{u} J]
 
 instance limitRing (F : J ⥤ RingCat.{u}) :
-    Ring.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget RingCat.{u})).pt := by
+    Ring.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget RingCat.{u})).pt :=
   letI : Ring (F ⋙ forget RingCat.{u}).sections := (sectionsSubring F).toRing
-  change Ring (Shrink _)
-  infer_instance
+  inferInstanceAs <| Ring (Shrink _)
 set_option linter.uppercaseLean3 false in
 #align Ring.limit_ring RingCat.limitRing
 
@@ -499,20 +493,18 @@ namespace CommRingCat
 variable {J : Type v} [Category.{w} J]
 
 instance commRingObj (F : J ⥤ CommRingCat.{u}) (j) :
-    CommRing ((F ⋙ forget CommRingCat).obj j) := by
-  change CommRing (F.obj j)
-  infer_instance
+    CommRing ((F ⋙ forget CommRingCat).obj j) :=
+  inferInstanceAs <| CommRing (F.obj j)
 set_option linter.uppercaseLean3 false in
 #align CommRing.comm_ring_obj CommRingCat.commRingObj
 
 variable [Small.{u} J]
 
 instance limitCommRing (F : J ⥤ CommRingCat.{u}) :
-    CommRing.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget CommRingCat.{u})).pt := by
+    CommRing.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget CommRingCat.{u})).pt :=
   letI : CommRing (F ⋙ forget CommRingCat).sections := @Subring.toCommRing (∀ j, F.obj j) _
     (RingCat.sectionsSubring.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{u}))
-  change CommRing (Shrink _)
-  infer_instance
+  inferInstanceAs <| CommRing (Shrink _)
 set_option linter.uppercaseLean3 false in
 #align CommRing.limit_comm_ring CommRingCat.limitCommRing
 

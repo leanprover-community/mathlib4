@@ -41,9 +41,8 @@ namespace MonCat
 variable {J : Type v} [Category.{w} J]
 
 @[to_additive]
-instance monoidObj (F : J ⥤ MonCat.{u} ) (j) : Monoid ((F ⋙ forget MonCat).obj j) := by
-  change Monoid (F.obj j)
-  infer_instance
+instance monoidObj (F : J ⥤ MonCat.{u} ) (j) : Monoid ((F ⋙ forget MonCat).obj j) :=
+  inferInstanceAs <| Monoid (F.obj j)
 #align Mon.monoid_obj MonCat.monoidObj
 #align AddMon.add_monoid_obj AddMonCat.addMonoidObj
 
@@ -69,9 +68,8 @@ variable [Small.{u} J]
 
 @[to_additive]
 noncomputable instance limitMonoid (F : J ⥤ MonCat.{u}) :
-    Monoid (Types.Small.limitCone.{v, u} (F ⋙ forget MonCat.{u})).pt := by
-  change Monoid (Shrink (F ⋙ forget MonCat.{u}).sections)
-  infer_instance
+    Monoid (Types.Small.limitCone.{v, u} (F ⋙ forget MonCat.{u})).pt :=
+  inferInstanceAs <| Monoid (Shrink (F ⋙ forget MonCat.{u}).sections)
 #align Mon.limit_monoid MonCat.limitMonoid
 #align AddMon.limit_add_monoid AddMonCat.limitAddMonoid
 
@@ -194,20 +192,18 @@ variable [Small.{u} J]
 
 @[to_additive]
 instance commMonoidObj (F : J ⥤ CommMonCat.{u}) (j) :
-    CommMonoid ((F ⋙ forget CommMonCat.{u}).obj j) := by
-  change CommMonoid (F.obj j)
-  infer_instance
+    CommMonoid ((F ⋙ forget CommMonCat.{u}).obj j) :=
+  inferInstanceAs <| CommMonoid (F.obj j)
 #align CommMon.comm_monoid_obj CommMonCat.commMonoidObj
 #align AddCommMon.add_comm_monoid_obj AddCommMonCat.addCommMonoidObj
 
 @[to_additive]
 noncomputable instance limitCommMonoid (F : J ⥤ CommMonCat.{u}) :
-    CommMonoid (Types.Small.limitCone (F ⋙ forget CommMonCat.{u})).pt := by
+    CommMonoid (Types.Small.limitCone (F ⋙ forget CommMonCat.{u})).pt :=
   letI : CommMonoid (F ⋙ forget CommMonCat.{u}).sections :=
     @Submonoid.toCommMonoid (∀ j, F.obj j) _
       (MonCat.sectionsSubmonoid (F ⋙ forget₂ CommMonCat.{u} MonCat.{u}))
-  change CommMonoid (Shrink (F ⋙ forget CommMonCat.{u}).sections)
-  infer_instance
+  inferInstanceAs <| CommMonoid (Shrink (F ⋙ forget CommMonCat.{u}).sections)
 #align CommMon.limit_comm_monoid CommMonCat.limitCommMonoid
 #align AddCommMon.limit_add_comm_monoid AddCommMonCat.limitAddCommMonoid
 

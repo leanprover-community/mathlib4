@@ -35,16 +35,14 @@ variable {J : Type v} [Category.{t} J]
 variable {R}
 
 instance addCommGroupObj (F : J ⥤ ModuleCat.{w} R) (j) :
-    AddCommGroup ((F ⋙ forget (ModuleCat R)).obj j) := by
-  change AddCommGroup (F.obj j)
-  infer_instance
+    AddCommGroup ((F ⋙ forget (ModuleCat R)).obj j) :=
+  inferInstanceAs <| AddCommGroup (F.obj j)
 set_option linter.uppercaseLean3 false
 #align Module.add_comm_group_obj ModuleCat.addCommGroupObj
 
 instance moduleObj (F : J ⥤ ModuleCat.{w} R) (j) :
-    Module.{u, w} R ((F ⋙ forget (ModuleCat R)).obj j) := by
-  change Module R (F.obj j)
-  infer_instance
+    Module.{u, w} R ((F ⋙ forget (ModuleCat R)).obj j) :=
+  inferInstanceAs <| Module R (F.obj j)
 #align Module.module_obj ModuleCat.moduleObj
 
 /-- The flat sections of a functor into `ModuleCat R` form a submodule of all sections.
@@ -60,13 +58,11 @@ def sectionsSubmodule (F : J ⥤ ModuleCat.{w} R) : Submodule R (∀ j, F.obj j)
       rw [sh f] }
 #align Module.sections_submodule ModuleCat.sectionsSubmodule
 
-instance (F : J ⥤ ModuleCat.{w} R) : AddCommMonoid (F ⋙ forget (ModuleCat R)).sections := by
-  show AddCommMonoid (sectionsSubmodule F)
-  infer_instance
+instance (F : J ⥤ ModuleCat.{w} R) : AddCommMonoid (F ⋙ forget (ModuleCat R)).sections :=
+  inferInstanceAs <| AddCommMonoid (sectionsSubmodule F)
 
-instance (F : J ⥤ ModuleCat.{w} R) : Module R (F ⋙ forget (ModuleCat R)).sections := by
-  show Module R (sectionsSubmodule F)
-  infer_instance
+instance (F : J ⥤ ModuleCat.{w} R) : Module R (F ⋙ forget (ModuleCat R)).sections :=
+  inferInstanceAs <| Module R (sectionsSubmodule F)
 
 variable [Small.{w} J]
 
@@ -74,17 +70,17 @@ variable [Small.{w} J]
 -- by preventing a bad unfold of `limitAddCommGroup`.
 instance limitAddCommMonoid (F : J ⥤ ModuleCat.{w} R) :
     AddCommMonoid (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
-  show AddCommMonoid (Shrink (sectionsSubmodule F)) by infer_instance
+  inferInstanceAs <| AddCommMonoid (Shrink (sectionsSubmodule F))
 #align Module.limit_add_comm_monoid ModuleCat.limitAddCommMonoid
 
 instance limitAddCommGroup (F : J ⥤ ModuleCat.{w} R) :
     AddCommGroup (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
-  show AddCommGroup (Shrink (sectionsSubmodule F)) by infer_instance
+  inferInstanceAs <| AddCommGroup (Shrink (sectionsSubmodule F))
 #align Module.limit_add_comm_group ModuleCat.limitAddCommGroup
 
 instance limitModule (F : J ⥤ ModuleCat.{w} R) :
     Module R (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
-  show Module R (Shrink (sectionsSubmodule F)) by infer_instance
+  inferInstanceAs <| Module R (Shrink (sectionsSubmodule F))
 #align Module.limit_module ModuleCat.limitModule
 
 /-- `limit.π (F ⋙ forget (ModuleCat.{w} R)) j` as an `R`-linear map. -/

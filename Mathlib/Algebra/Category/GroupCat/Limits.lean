@@ -31,9 +31,8 @@ variable {J : Type v} [Category.{w} J]
 namespace GroupCat
 
 @[to_additive]
-instance groupObj (F : J ⥤ GroupCat.{u}) (j) : Group ((F ⋙ forget GroupCat).obj j) := by
-  change Group (F.obj j)
-  infer_instance
+instance groupObj (F : J ⥤ GroupCat.{u}) (j) : Group ((F ⋙ forget GroupCat).obj j) :=
+  inferInstanceAs <| Group (F.obj j)
 set_option linter.uppercaseLean3 false in
 #align Group.group_obj GroupCat.groupObj
 set_option linter.uppercaseLean3 false in
@@ -63,9 +62,8 @@ variable [Small.{u} J]
 
 @[to_additive]
 noncomputable instance limitGroup (F : J ⥤ GroupCat.{u}) :
-    Group (Types.Small.limitCone.{v, u} (F ⋙ forget GroupCat.{u})).pt := by
-  change Group (Shrink (F ⋙ forget GroupCat.{u}).sections)
-  infer_instance
+    Group (Types.Small.limitCone.{v, u} (F ⋙ forget GroupCat.{u})).pt :=
+  inferInstanceAs <| Group (Shrink (F ⋙ forget GroupCat.{u}).sections)
 set_option linter.uppercaseLean3 false in
 #align Group.limit_group GroupCat.limitGroup
 set_option linter.uppercaseLean3 false in
@@ -216,9 +214,8 @@ namespace CommGroupCat
 
 @[to_additive]
 instance commGroupObj (F : J ⥤ CommGroupCat.{u}) (j) :
-    CommGroup ((F ⋙ forget CommGroupCat).obj j) := by
-  change CommGroup (F.obj j)
-  infer_instance
+    CommGroup ((F ⋙ forget CommGroupCat).obj j) :=
+  inferInstanceAs <| CommGroup (F.obj j)
 set_option linter.uppercaseLean3 false in
 #align CommGroup.comm_group_obj CommGroupCat.commGroupObj
 set_option linter.uppercaseLean3 false in
@@ -228,12 +225,11 @@ variable [Small.{u} J]
 
 @[to_additive]
 noncomputable instance limitCommGroup (F : J ⥤ CommGroupCat.{u}) :
-    CommGroup (Types.Small.limitCone.{v, u} (F ⋙ forget CommGroupCat.{u})).pt := by
+    CommGroup (Types.Small.limitCone.{v, u} (F ⋙ forget CommGroupCat.{u})).pt :=
   letI : CommGroup (F ⋙ forget CommGroupCat.{u}).sections :=
     @Subgroup.toCommGroup (∀ j, F.obj j) _
       (GroupCat.sectionsSubgroup (F ⋙ forget₂ CommGroupCat.{u} GroupCat.{u}))
-  change CommGroup (Shrink (F ⋙ forget CommGroupCat.{u}).sections)
-  infer_instance
+  inferInstanceAs <| CommGroup (Shrink (F ⋙ forget CommGroupCat.{u}).sections)
 set_option linter.uppercaseLean3 false in
 #align CommGroup.limit_comm_group CommGroupCat.limitCommGroup
 set_option linter.uppercaseLean3 false in
