@@ -85,7 +85,7 @@ instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F
         StructuredArrow.homMk ((H.map f).right) (congrArg CommaMorphism.right (c₁.w f)) }
   obtain ⟨c₂⟩ := IsCofiltered.cone_nonempty H₂
   exact ⟨⟨StructuredArrow.mk (c₁.pt.hom ≫ G.map c₂.pt.hom),
-    ⟨fun j => StructuredArrow.homMk (c₂.π.app j).right (by simp [←G.map_comp, (c₂.π.app j).w]),
+    ⟨fun j => StructuredArrow.homMk (c₂.π.app j).right (by simp [← G.map_comp, (c₂.π.app j).w]),
      fun j j' f => by simpa using (c₂.w f).symm⟩⟩⟩
 #align category_theory.representably_flat.comp CategoryTheory.RepresentablyFlat.comp
 
