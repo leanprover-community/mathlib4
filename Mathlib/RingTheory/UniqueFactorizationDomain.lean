@@ -1446,8 +1446,6 @@ theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
       ((factors_prod ha).trans <| h.trans <| (factors_prod hb).symm)
 #align associates.factors'_cong Associates.factors'_cong
 
-variable [DecidableEq (Associates α)]
-
 /-- This returns the multiset of irreducible factors of an associate as a `FactorSet`,
   a multiset of irreducible associates `WithTop`. -/
 noncomputable def factors (a : Associates α) : FactorSet α := by
@@ -1549,17 +1547,11 @@ theorem count_le_count_of_factors_le [DecidableEq (Associates α)] {a b p : Asso
   exact Multiset.count_le_of_le _ h
 #align associates.count_le_count_of_factors_le Associates.count_le_count_of_factors_le
 
-end DecidableEq
-
 theorem eq_of_prod_eq_prod [Nontrivial α] {a b : FactorSet α} (h : a.prod = b.prod) : a = b := by
   classical
     have : a.prod.factors = b.prod.factors := by rw [h]
     rwa [prod_factors, prod_factors] at this
 #align associates.eq_of_prod_eq_prod Associates.eq_of_prod_eq_prod
-
-section DecidableEq
-
-variable [DecidableEq α] [DecidableEq (Associates α)]
 
 @[simp]
 theorem factors_mul (a b : Associates α) : (a * b).factors = a.factors + b.factors := by
@@ -1944,8 +1936,6 @@ theorem eq_pow_find_of_dvd_irreducible_pow {a p : Associates α} (hp : Irreducib
   exact h
 #align associates.eq_pow_find_of_dvd_irreducible_pow Associates.eq_pow_find_of_dvd_irreducible_pow
 
-end DecidableEq
-
 theorem prod_le [Nontrivial α] {a b : FactorSet α} : a.prod ≤ b.prod ↔ a ≤ b := by
   classical
     exact
@@ -1955,7 +1945,6 @@ theorem prod_le [Nontrivial α] {a b : FactorSet α} : a.prod ≤ b.prod ↔ a �
           rwa [prod_factors, prod_factors] at this)
         prod_mono
 #align associates.prod_le Associates.prod_le
-
 
 end Associates
 
