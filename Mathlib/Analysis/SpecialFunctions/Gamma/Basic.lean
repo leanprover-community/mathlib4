@@ -105,8 +105,8 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
     exact ContinuousAt.comp this continuous_ofReal.continuousAt
   · rw [← hasFiniteIntegral_norm_iff]
     refine' HasFiniteIntegral.congr (Real.GammaIntegral_convergent hs).2 _
-    refine' (ae_restrict_iff' measurableSet_Ioi).mpr (ae_of_all _ fun x hx => _)
-    dsimp only
+    apply (ae_restrict_iff' measurableSet_Ioi).mpr
+    filter_upwards with x hx
     rw [norm_eq_abs, map_mul, abs_of_nonneg <| le_of_lt <| exp_pos <| -x,
       abs_cpow_eq_rpow_re_of_pos hx _]
     simp
