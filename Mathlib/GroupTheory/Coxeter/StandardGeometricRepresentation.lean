@@ -9,6 +9,8 @@ import Mathlib.RepresentationTheory.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.RingTheory.Polynomial.Chebyshev
+import Mathlib.LinearAlgebra.Reflection
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.Data.Int.Parity
 
@@ -58,7 +60,7 @@ noncomputable section
 
 namespace CoxeterSystem
 
-open List Matrix Function Real
+open List Real
 
 variable {B : Type*} [DecidableEq B]
 variable {M : Matrix B B ℕ}
@@ -75,15 +77,18 @@ the standard geometric representation of `W`, which is a representation of `W` w
 vector space `B →₀ ℝ`. We then use this to define the set of roots, which is a subset of
 `B →₀ ℝ`. The roots correspond two-to-one to the reflections of `W`.
 -/
+local notation "V" => B →₀ ℝ
+instance : AddCommMonoid V := Finsupp.instAddCommMonoid
 
-def simpleRoot (i : B) : B →₀ ℝ := Finsupp.single i 1
+def simpleRoot (i : B) : V := Finsupp.single i 1
 local prefix:100 "α" => simpleRoot
+
 
 /-- The standard bilinear form on `B →₀ ℝ`. Given by `⟪αᵢ, αⱼ⟫ = -cos (π / Mᵢⱼ)`
 for `i j : B`, where {αᵢ} is the standard basis of `B →₀ ℝ` and `M` is the Coxeter matrix.
 This is positive definite if and only if the associated Coxeter group is finite. -/
-def standardBilinForm (M : Matrix B B ℕ) : LinearMap.BilinForm ℝ (B →₀ ℝ) :=
-    (Finsupp.lift ((B →₀ ℝ) →ₗ[ℝ] ℝ) ℝ B)
+def standardBilinForm (M : Matrix B B ℕ) : LinearMap.BilinForm ℝ V :=
+    (Finsupp.lift (V →ₗ[ℝ] ℝ) ℝ B)
         (fun i ↦ ((Finsupp.lift ℝ ℝ B)
             (fun i' ↦ -cos (Real.pi / M i i'))))
 
@@ -102,30 +107,144 @@ theorem isSymm_standardBilinForm :
   intro i
   apply (Finsupp.basisSingleOne).ext
   intro i'
-  simp [standardBilinForm]
-  rw [cs.isCoxeter.symmetric.apply i i']
+  simp [standardBilinForm, cs.isCoxeter.symmetric.apply i i']
 
 /-- The orthogonal reflection in the vector `v` under the standard bilinear form.
 -/
-def orthoReflection (cs : CoxeterSystem M W) (v : B →₀ ℝ) :
-    (B →₀ ℝ) →ₗ[ℝ] (B →₀ ℝ) := sorry
+def orthoReflection (_ : CoxeterSystem M W) {v : V} (hv : ⟪v, v⟫ = 1) :
+    V →ₗ[ℝ] V := Module.reflection (show ((2 : ℝ) • (standardBilinForm M v)) v = 2 by
+      rw [LinearMap.smul_apply, hv]; norm_num)
 
-theorem orthoReflection_sqr_eq_id {v : B →₀ ℝ} (hv : ⟪v, v⟫ = 1) :
-    (cs.orthoReflection v) * (cs.orthoReflection v) = LinearMap.id := by
-  sorry
+local prefix:100 "r" => cs.orthoReflection
 
-theorem orthoReflection_eq_iff {v v' : B →₀ ℝ} (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) :
-    cs.orthoReflection v = cs.orthoReflection v' ↔ ∃ μ : ℝ, v' = μ • v := by
-  sorry
+attribute [local simp] Module.reflection
+attribute [local simp] Module.preReflection
+
+@[simp] theorem orthoReflection_apply_self {v : V} (hv : ⟪v, v⟫ = 1) : (r hv) v = -v :=
+  Module.reflection_apply_self _
+
+theorem orthoReflection_sqr_eq_id {v : V} (hv : ⟪v, v⟫ = 1) :
+    (r hv) * (r hv) = LinearMap.id := by
+  apply LinearMap.ext
+  exact Module.involutive_reflection _
+
+theorem orthoReflection_eq_iff {v v' : V} (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) :
+    r hv = r hv' ↔ ∃ μ : ℝ, v' = μ • v := by
+  constructor
+  · intro h
+    have h₁ : (r hv) v' = (r hv') v' := LinearMap.ext_iff.mp h v'
+    rw [cs.orthoReflection_apply_self hv'] at h₁
+    dsimp [orthoReflection] at h₁
+    apply congrArg (v' + ·) at h₁
+    rw [mul_smul, add_right_neg, add_sub, ← two_smul ℝ v'] at h₁
+    apply sub_eq_zero.mp at h₁
+    apply congrArg (((1 : ℝ) / 2) • ·) at h₁
+    rw [← mul_smul, ← mul_smul] at h₁
+    norm_num at h₁
+    use ⟪v, v'⟫
+  · rintro ⟨μ, rfl⟩
+    rw [map_smul, map_smul, LinearMap.smul_apply, smul_eq_mul, smul_eq_mul, hv, mul_one] at hv'
+    -- hv': μ * μ = 1
+    apply LinearMap.ext
+    intro w
+    dsimp [orthoReflection]
+    rw [smul_smul, map_smul, LinearMap.smul_apply, smul_eq_mul, mul_assoc 2, mul_comm _ μ,
+        ← mul_assoc μ, hv']
+    simp
+
+section
+open Polynomial Polynomial.Chebyshev
+/-- The Chebyshev polynomial of the second kind corresponding to the index n - 1. Correctly
+yields U₋₁ = 0 if n = 0.
+-/
+@[local simp] private def USubOne (R : Type u_1) [CommRing R] (n : ℕ) :=
+    U R (n + 1) - 2 * (T R (n + 1))
+
+private lemma USubOne_add_one (R : Type u_1) [CommRing R] (n : ℕ) :
+    USubOne R (n + 1) = U R n := by
+  dsimp
+  rw [T_eq_U_sub_X_mul_U]
+  rw [(by ring : n + 1 + 1 = n + 2), U_add_two]
+  ring
+
+
+theorem orthoReflection_mul_orthoReflection_pow_apply {v v' : V} (k : ℕ)
+    (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) :
+        (((r hv) * (r hv')) ^ k) v
+        = eval ⟪v, v'⟫ (U ℝ (2 * k)) • v - eval ⟪v, v'⟫ (USubOne ℝ (2 * k)) • v' := by
+  induction' k with k ih
+  · simp
+  · /- Apply inductive hypothesis. -/
+    rw [pow_succ, LinearMap.mul_apply, ih, LinearMap.mul_apply]
+
+    /- Expand everything out. -/
+    simp only [map_sub, map_add, map_smul]
+    dsimp [orthoReflection]
+    simp only [map_sub, map_add, map_smul, smul_sub, smul_add, smul_smul, hv, hv']
+
+    /- Move all terms to the left-hand side. -/
+    apply sub_eq_zero.mp
+
+    /- Rewrite using μ = ⟪v, v'⟫. -/
+    rw [(by rw[← cs.isSymm_standardBilinForm.eq v' v]; simp : ⟪v', v⟫ = ⟪v, v'⟫)]
+    let μ := ⟪v, v'⟫
+    rw [← (by rfl : μ = ⟪v, v'⟫)]
+
+    /- Sort the terms and write the entire expression as a • v + b • v'. -/
+    simp only [sub_eq_add_neg, neg_add, ← neg_smul, smul_eq_mul]
+    have h₁ : ∀ a b : ℝ, a • v + b • v = (a + b) • v :=
+      fun _ _ ↦ (add_smul _ _ _).symm
+    have h₂ : ∀ a b : ℝ, a • v' + b • v' = (a + b) • v' :=
+      fun _ _ ↦ (add_smul _ _ _).symm
+    have h₃ : ∀ a b : ℝ, a • v' + b • v = b • v + a • v' :=
+      fun _ _ ↦ add_comm _ _
+    have h₄ : ∀ a b c : ℝ, a • v + b • v' + c • v = (a + c) • v + b • v' :=
+      fun a b c ↦ (add_right_comm _ _ _).trans (congrArg (· + _) (h₁ a c))
+    have h₅ : ∀ a b c : ℝ, a • v + b • v' + c • v' = a • v + (b + c) • v' :=
+      fun a b c ↦ (add_assoc _ _ _).trans (congrArg (_ + ·) (h₂ b c))
+    simp only [← add_assoc, h₁, h₂, h₃, h₄, h₅]
+
+    /- Put everything remaining in ring normal form. -/
+    rw [Nat.succ_eq_add_one]
+    ring_nf
+
+    /- Write the coefficients of v and v' as polynomials in μ. -/
+    have h₁ : ∀ P : ℝ[X], eval μ P * μ ^ 2 = eval μ (X ^ 2 * P) := by simp [mul_comm]
+    have h₂ : ∀ P : ℝ[X], μ * eval μ P = eval μ (X * P) := by simp
+    have h₃ : ∀ P : ℝ[X], μ * eval μ P = eval μ (X * P) := by simp
+    have h₄ : ∀ P : ℝ[X], eval μ P * 2 = eval μ (2 * P) := by simp [mul_comm]
+    have h₅ : ∀ P : ℝ[X], eval μ P * 4 = eval μ (4 * P) := by simp [mul_comm]
+    simp only [← eval_add, ← eval_mul_X, ← eval_sub, ← eval_neg, h₁, h₂, h₃, h₄, h₅]
+
+    /- Use the recurrence relations for the Chebyshev polynomials to rewrite
+    all the occurrences of U ℝ (3 + k * 2), U ℝ (2 + k * 2), U ℝ (1 + k * 2).
+    -/
+    rw [(by ring : 1 + k * 2 = k * 2 + 1),
+        (by ring : 2 + k * 2 = k * 2 + 1 + 1),
+        (by ring : 3 + k * 2 = k * 2 + 1 + 1 + 1)]
+    simp only [U_eq_X_mul_U_add_T]
+    ring_nf
+
+    /- Then do the same for T ℝ (2 + k * 2) and T ℝ (3 + k * 2). -/
+    rw [(by ring : 2 + k * 2 = k * 2 + 2),
+        (by ring : 3 + k * 2 = k * 2 + 1 + 2)]
+    simp only [T_eq_X_mul_T_sub_pol_U]
+    simp only [U_eq_X_mul_U_add_T]
+
+    ring_nf
+    simp
+
 
 /-- The standard geometric representation on `B →₀ ℝ`. For `i : B`, the simple reflection `sᵢ`
 acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`.
 -/
-def standardGeometricRepresentation (cs : CoxeterSystem M W) : Representation ℝ W (B →₀ ℝ) := sorry
+def standardGeometricRepresentation (cs : CoxeterSystem M W) : Representation ℝ W V := sorry
+
+end
 
 alias SGR := standardGeometricRepresentation
 
-theorem SGR_simple (i : B) : cs.SGR (s i) = cs.orthoReflection (α i) := by
+theorem SGR_simple (i : B) : cs.SGR (s i) = r (cs.standardBilinForm_simpleRoot_self i) := by
   sorry
 
 theorem SGR_simple_simpleRoot (i i' : B) :
@@ -135,7 +254,7 @@ theorem SGR_simple_simpleRoot (i i' : B) :
 theorem SGR_simple_simpleRoot_self (i : B) : cs.SGR (s i) (α i) = -α i := by
   sorry
 
-theorem SGR_bilin_eq_bilin (w : W) (v v' : B →₀ ℝ) : ⟪cs.SGR w v, cs.SGR w v'⟫ = ⟪v, v'⟫ := by
+theorem SGR_bilin_eq_bilin (w : W) (v v' : V) : ⟪cs.SGR w v, cs.SGR w v'⟫ = ⟪v, v'⟫ := by
   sorry
 
 theorem SGR_alternatingWord_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) :
@@ -162,16 +281,16 @@ in the form w αᵢ, where `w : W` and {αᵢ} is the standard basis of `B →�
 then this is not a root system in the sense of `Mathlib.LinearAlgebra.RootSystem` because it is
 infinite and because `B →₀ ℝ` is not an inner product space.
 -/
-def roots : Set (B →₀ ℝ) := {v : B →₀ ℝ | ∃ w : W, ∃ i : B, v = cs.SGR w (α i)}
+def roots : Set V := {v : V | ∃ w : W, ∃ i : B, v = cs.SGR w (α i)}
 
 /-- The roots that can be written as a nonnegative linear combination of the standard basis vectors
 `αᵢ`.-/
-def posRoots : Set (B →₀ ℝ) := cs.roots ∩ {v : B →₀ ℝ | ∀ i : B, v i ≥ 0}
+def posRoots : Set V := cs.roots ∩ {v : V | ∀ i : B, v i ≥ 0}
 /-- The roots that can be written as a nonpositive linear combination of the standard basis vectors
 `αᵢ`.-/
-def negRoots : Set (B →₀ ℝ) := cs.roots ∩ {v : B →₀ ℝ | ∀ i : B, v i ≤ 0}
+def negRoots : Set V := cs.roots ∩ {v : V | ∀ i : B, v i ≤ 0}
 
-@[simp] theorem roots_invariant (w : W) (v : B →₀ ℝ) : cs.SGR w v ∈ cs.roots ↔ v ∈ cs.roots := by
+@[simp] theorem roots_invariant (w : W) (v : V) : cs.SGR w v ∈ cs.roots ↔ v ∈ cs.roots := by
   sorry
 
 @[simp] theorem roots_eq_neg_roots : -cs.roots = cs.roots := by
@@ -202,21 +321,23 @@ theorem root_pos_or_neg : cs.roots = cs.posRoots ∪ cs.negRoots := by
 theorem root_not_pos_and_neg : cs.posRoots ∩ cs.negRoots = ∅ := by
   sorry
 
-theorem SGR_injective : Injective cs.SGR := by
+theorem SGR_injective : Function.Injective cs.SGR := by
   sorry
 
-def reflectionToRoot : cs.reflections ≃ cs.posRoots := sorry
+def reflectionsEquivPosRoots : cs.reflections ≃ cs.posRoots := sorry
+-- TODO reflections equiv neg roots and associated theorems
 
-theorem reflection_by_smul (w : W) (v : B →₀ ℝ) :
+theorem reflection_by_smul (w : W) (v : V) :
     cs.orthoReflection (cs.SGR w v) = (cs.SGR w) ∘ (cs.orthoReflection v) ∘ (cs.SGR w⁻¹) := by
   sorry
 
 theorem reflection_by_root (γ : cs.posRoots) :
-    cs.orthoReflection γ = cs.SGR (cs.reflectionToRoot.invFun γ) := by
+    cs.orthoReflection γ = cs.SGR (cs.reflectionsEquivPosRoots.invFun γ) := by
   sorry
+-- TODO the theorem (trivial from the above) that says how a reflection acts under the SGR
 
 theorem isRightInversion_iff (w : W) (t : cs.reflections) : cs.IsRightInversion w t ↔
-    cs.SGR w (cs.reflectionToRoot.toFun t) ∈ cs.negRoots := by
+    cs.SGR w (cs.reflectionsEquivPosRoots.toFun t) ∈ cs.negRoots := by
   sorry
 
 end CoxeterSystem
