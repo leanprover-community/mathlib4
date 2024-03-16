@@ -317,18 +317,18 @@ theorem integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
       f hf h'f
 
 @[to_additive addHaarScalarFactor_eq_integral_div]
-lemma haarScalarFactor_eq_integral_div (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ]
-    [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ] [IsMulLeftInvariant μ']
-    [IsOpenPosMeasure μ] {f : G → ℝ} (hf : Continuous f) (h'f : HasCompactSupport f)
-    (int_nonzero : ∫ x, f x ∂μ ≠ 0) : haarScalarFactor μ' μ = (∫ x, f x ∂μ') / ∫ x, f x ∂μ := by
+lemma haarScalarFactor_eq_integral_div (μ' μ : Measure G) [IsHaarMeasure μ]
+    [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] {f : G → ℝ} (hf : Continuous f)
+    (h'f : HasCompactSupport f) (int_nonzero : ∫ x, f x ∂μ ≠ 0) :
+    haarScalarFactor μ' μ = (∫ x, f x ∂μ') / ∫ x, f x ∂μ := by
   have := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ hf h'f
   rw [integral_smul_nnreal_measure] at this
   exact EuclideanDomain.eq_div_of_mul_eq_left int_nonzero this.symm
 
 @[to_additive (attr := simp) addHaarScalarFactor_smul]
-lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ]
-    [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ] [IsMulLeftInvariant μ']
-    [IsOpenPosMeasure μ] {c : ℝ≥0} : haarScalarFactor (c • μ') μ = c • haarScalarFactor μ' μ := by
+lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsHaarMeasure μ]
+    [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] {c : ℝ≥0} :
+    haarScalarFactor (c • μ') μ = c • haarScalarFactor μ' μ := by
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
     ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
   have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
@@ -343,8 +343,8 @@ lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsFini
       rw [← haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero]
 
 @[to_additive (attr := simp) addHaarScalarFactor_self_eq_one]
-lemma haarScalarFactor_self_eq_one (μ : Measure G) [IsFiniteMeasureOnCompacts μ]
-    [IsMulLeftInvariant μ] [IsOpenPosMeasure μ] : haarScalarFactor μ μ = 1 := by
+lemma haarScalarFactor_self_eq_one (μ : Measure G) [IsHaarMeasure μ] : haarScalarFactor μ μ = 1 :=
+by
   by_cases hG : LocallyCompactSpace G; swap
   · simp [haarScalarFactor, hG]
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
@@ -366,14 +366,6 @@ lemma haarScalarFactor_eq_mul (μ' μ ν : Measure G)
   · simp [haarScalarFactor, hG]
   -- Fix some nonzero continuous function with compact support `g`.
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
-      ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
-  have int_g_pos : 0 < ∫ x, g x ∂μ' :=
-    g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one
-  have := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ g_cont g_comp
-  simp only [H, zero_smul, integral_zero_measure] at this
-  linarith
-
-/--
   ∃ (g : C(G, ℝ)), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
   have Z := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ g_cont g_comp
   simp only [integral_smul_nnreal_measure, smul_smul,
@@ -386,7 +378,7 @@ lemma haarScalarFactor_eq_mul (μ' μ ν : Measure G)
   change (haarScalarFactor μ' ν : ℝ) * ∫ (x : G), g x ∂ν =
     (haarScalarFactor μ' μ * haarScalarFactor μ ν : ℝ≥0) * ∫ (x : G), g x ∂ν at Z
   simpa only [mul_eq_mul_right_iff (M₀ := ℝ), int_g_pos.ne', or_false, NNReal.eq_iff] using Z
--/
+
 @[to_additive (attr := simp)]
 lemma haarScalarFactor_self (μ : Measure G) [IsHaarMeasure μ] :
     haarScalarFactor μ μ = 1 := by
