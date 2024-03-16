@@ -189,17 +189,17 @@ def comap : DFA α' σ where
 theorem comap_id : M.comap id = M := rfl
 
 @[simp]
-theorem comap_evalFrom (s : σ) (x : List α') :
+theorem evalFrom_comap (s : σ) (x : List α') :
     (M.comap f).evalFrom s x = M.evalFrom s (x.map f) := by
   induction x using List.list_reverse_induction with
   | base => simp
   | ind x a ih => simp [ih]
 
 @[simp]
-theorem comap_eval (x : List α') : (M.comap f).eval x = M.eval (x.map f) := by simp [eval]
+theorem eval_comap (x : List α') : (M.comap f).eval x = M.eval (x.map f) := by simp [eval]
 
 @[simp]
-theorem comap_accepts : (M.comap f).accepts = List.map f ⁻¹' M.accepts := by
+theorem accepts_comap : (M.comap f).accepts = List.map f ⁻¹' M.accepts := by
   ext x
   conv =>
     rhs
@@ -226,24 +226,24 @@ def reindex : DFA α σ ≃ DFA α σ' where
 theorem reindex_refl : reindex (Equiv.refl σ) M = M := rfl
 
 @[simp]
-theorem reindex_symm : (reindex (α := α) g).symm = reindex g.symm := rfl
+theorem symm_reindex : (reindex (α := α) g).symm = reindex g.symm := rfl
 
 @[simp]
-theorem reindex_evalFrom (s : σ') (x : List α) :
+theorem evalFrom_reindex (s : σ') (x : List α) :
     (reindex g M).evalFrom s x = g (M.evalFrom (g.symm s) x) := by
   induction x using List.list_reverse_induction with
   | base => simp
   | ind x a ih => simp [ih]
 
 @[simp]
-theorem reindex_eval (x : List α) : (reindex g M).eval x = g (M.eval x) := by simp [eval]
+theorem eval_reindex (x : List α) : (reindex g M).eval x = g (M.eval x) := by simp [eval]
 
 @[simp]
-theorem reindex_accepts : (reindex g M).accepts = M.accepts := by
+theorem accepts_reindex : (reindex g M).accepts = M.accepts := by
   ext x
   simp [mem_accepts]
 
-theorem reindex_comap : (reindex g M).comap f = reindex g (M.comap f) := by simp [comap, reindex]
+theorem comap_reindex : (reindex g M).comap f = reindex g (M.comap f) := by simp [comap, reindex]
 
 end Maps
 
