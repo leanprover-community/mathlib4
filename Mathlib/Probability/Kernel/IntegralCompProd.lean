@@ -262,9 +262,9 @@ theorem integral_compProd :
   · intro f g hfg _ hf
     convert hf using 1
     · exact integral_congr_ae hfg.symm
-    · refine' integral_congr_ae _
-      refine' (ae_ae_of_ae_compProd hfg).mp (eventually_of_forall _)
-      exact fun x hfgx => integral_congr_ae (ae_eq_symm hfgx)
+    · apply integral_congr_ae
+      filter_upwards [ae_ae_of_ae_compProd hfg] with x hfgx using
+        integral_congr_ae (ae_eq_symm hfgx)
 #align probability_theory.integral_comp_prod ProbabilityTheory.integral_compProd
 
 theorem set_integral_compProd {f : β × γ → E} {s : Set β} {t : Set γ} (hs : MeasurableSet s)

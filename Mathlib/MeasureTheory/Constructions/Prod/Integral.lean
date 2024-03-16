@@ -473,10 +473,8 @@ theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
   · exact isClosed_eq continuous_integral continuous_integral_integral
   · rintro f g hfg - hf; convert hf using 1
     · exact integral_congr_ae hfg.symm
-    · refine integral_congr_ae ?_
-      refine (ae_ae_of_ae_prod hfg).mp ?_
-      filter_upwards with x hfgx
-      exact integral_congr_ae (ae_eq_symm hfgx)
+    · apply integral_congr_ae
+      filter_upwards [ae_ae_of_ae_prod hfg] with x hfgx using integral_congr_ae (ae_eq_symm hfgx)
 #align measure_theory.integral_prod MeasureTheory.integral_prod
 
 /-- Symmetric version of **Fubini's Theorem**: For integrable functions on `α × β`,
