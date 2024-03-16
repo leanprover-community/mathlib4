@@ -166,6 +166,13 @@ lemma lambda_dvd_three : λ ∣ 3 := by
   rw [norm_lambda hζ]
   exact Int.prime_three
 
+lemma lambda_not_unit : ¬ IsUnit λ := by
+  intro h
+  rw [isUnit_iff_dvd_one, show (1 : 𝓞 K) = ((1 : ℤ) : 𝓞 K) by simp, show η - ((1 : ℤ) : 𝓞 K) = λ
+    by simp, ← Ideal.norm_dvd_iff (norm_lambda_prime hζ), norm_lambda hζ] at h
+  have h3 : ¬((3 : ℤ) ∣ 1) := by decide
+  exact h3 h
+
 lemma card_quot : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
   rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply, Ideal.absNorm_span_singleton]
   simp [norm_lambda hζ]
