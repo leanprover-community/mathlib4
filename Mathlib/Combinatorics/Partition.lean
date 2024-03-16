@@ -109,18 +109,19 @@ def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition w
   parts := (s.1.toFinset).val.map s.1.count
   parts_pos := by simp [Multiset.count_pos]
   parts_sum := by
-    have : sum (map (fun a ↦ count a s.1) (toFinset s.1).val) = Finset.sum (toFinset s.1) fun a ↦ count a s.1 := rfl
+    have : sum (map (fun a ↦ count a s.1) (toFinset s.1).val) =
+      Finset.sum (toFinset s.1) fun a ↦ count a s.1 := rfl
     rw [this, Multiset.toFinset_sum_count_eq]
     exact s.2
 
 lemma ofSymEquiv {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ] (e : σ ≃ τ) (s : Sym σ n) :
-  Nat.Partition.ofSym (s.map e) = Nat.Partition.ofSym s := by
-    simp only [ofSym, Sym.val_eq_coe, Sym.coe_map, toFinset_val, mk.injEq]
-    rw [Multiset.dedup_map_dedup_eq_injective]
-    simp only [map_map, Function.comp_apply]
-    congr; funext i
-    rw [← Multiset.count_map_eq_count' e]
-    all_goals exact e.injective
+    Nat.Partition.ofSym (s.map e) = Nat.Partition.ofSym s := by
+  simp only [ofSym, Sym.val_eq_coe, Sym.coe_map, toFinset_val, mk.injEq]
+  rw [Multiset.dedup_map_dedup_eq_injective]
+  simp only [map_map, Function.comp_apply]
+  congr; funext i
+  rw [← Multiset.count_map_eq_count' e]
+  all_goals exact e.injective
 
 /-- The partition of exactly one part. -/
 def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl

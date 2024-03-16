@@ -40,7 +40,8 @@ We also prove some basic facts about them.
 + `psum σ R n` is the degree-`n` power sum in `MvPolynomial σ R`, i.e. the sum of monomials
   `(X i)^n` over `i ∈ σ`.
 
-+ `msymm σ R μ` is the monomial symmetric polynomial whose exponents set are the parts of `μ ⊢ n` in `MvPolynomial σ R`.
++ `msymm σ R μ` is the monomial symmetric polynomial whose exponents set are the parts
+  of `μ ⊢ n` in `MvPolynomial σ R`.
 
 As in other polynomial files, we typically use the notation:
 
