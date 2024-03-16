@@ -210,7 +210,7 @@ open MulActionHom
 
 variable {φ ψ χ X Y Z}
 
-attribute [instance] CompTriple.id_comp CompTriple.comp_id
+-- attribute [instance] CompTriple.id_comp CompTriple.comp_id
 
 /-- Composition of two equivariant maps. -/
 def comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [κ : CompTriple φ ψ χ] :
@@ -225,11 +225,11 @@ def comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) [κ : CompTriple φ ψ χ] :
 
 /-- Composition of two equivariant maps. -/
 def comp' (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) : X →ₑ[ψ ∘ φ] Z :=
-  g.comp f (κ := CompTriple.comp)
+  g.comp f -- (κ := CompTriple.comp)
 
 @[simp]
 lemma comp'_eq_comp (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y) :
-    g.comp' f = g.comp f (κ := CompTriple.comp) := rfl
+    g.comp' f = g.comp f := rfl -- (κ := CompTriple.comp) := rfl
 
 @[simp]
 theorem comp_apply
@@ -566,8 +566,6 @@ theorem one_apply (a : A) : (1 : A →+[M] A) a = a :=
 instance : Inhabited (A →ₑ+[φ] B) :=
   ⟨0⟩
 
-attribute [instance] MonoidHom.CompTriple.id_comp MonoidHom.CompTriple.comp_id
-
 set_option linter.unusedVariables false in
 /-- Composition of two equivariant additive monoid homomorphisms. -/
 def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [κ : MonoidHom.CompTriple φ ψ χ] :
@@ -579,10 +577,10 @@ def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [κ : MonoidHom.CompTriple 
 /-- Composition of two equivariant additive monoid homomorphisms. -/
 def comp' (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) :
     A →ₑ+[ψ.comp φ] C :=
-    g.comp f (κ := MonoidHom.CompTriple.comp)
+    g.comp f -- (κ := MonoidHom.CompTriple.comp)
 
 lemma comp'_eq_comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) :
-    g.comp' f = g.comp f (κ := MonoidHom.CompTriple.comp) := rfl
+    g.comp' f = g.comp f := rfl -- (κ := MonoidHom.CompTriple.comp) := rfl
 
 @[simp]
 theorem comp_apply
@@ -874,11 +872,11 @@ def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [κ : MonoidHom.CompTripl
 
 /-- Composition of two equivariant additive ring homomorphisms. -/
 def comp' (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) : R →ₑ+*[ψ.comp φ] T :=
-  g.comp f (κ := MonoidHom.CompTriple.comp)
+  g.comp f -- (κ := MonoidHom.CompTriple.comp)
 #align mul_semiring_action_hom.comp MulSemiringActionHom.comp
 
 theorem comp'_eq_comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) :
-    g.comp' f = g.comp f (κ := MonoidHom.CompTriple.comp) := rfl
+    g.comp' f = g.comp f := rfl -- (κ := MonoidHom.CompTriple.comp) := rfl
 
 @[simp]
 theorem comp_apply (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) [MonoidHom.CompTriple φ ψ χ] (x : R) :
