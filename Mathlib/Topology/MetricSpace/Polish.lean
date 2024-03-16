@@ -76,12 +76,12 @@ class UpgradedPolishSpace (α : Type*) extends MetricSpace α, SecondCountableTo
   CompleteSpace α
 #align upgraded_polish_space UpgradedPolishSpace
 
-instance (priority := 100) polishSpace_of_complete_second_countable [UniformSpace α]
+instance (priority := 100) PolishSpace.of_separableSpace_completeSpace_metrizable [UniformSpace α]
     [SeparableSpace α] [CompleteSpace α] [(𝓤 α).IsCountablyGenerated] [T0Space α] :
     PolishSpace α where
   toSecondCountableTopology := UniformSpace.secondCountable_of_separable α
   complete := ⟨UniformSpace.metricSpace α, rfl, ‹_›⟩
-#align polish_space_of_complete_second_countable polishSpace_of_complete_second_countable
+#align polish_space_of_complete_second_countable PolishSpace.of_separableSpace_completeSpace_metrizable
 
 /-- Construct on a Polish space a metric (compatible with the topology) which is complete. -/
 def polishSpaceMetric (α : Type*) [TopologicalSpace α] [h : PolishSpace α] : MetricSpace α :=
