@@ -174,9 +174,9 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
   rwa [mem_accepts, eval, evalFrom_of_append, evalFrom_of_append, h, hc]
 #align DFA.pumping_lemma DFA.pumping_lemma
 
-section Comap
+section Maps
 
-variable {α' : Type*} (f : α' → α)
+variable {α' σ' : Type*} (f : α' → α) (g : σ ≃ σ')
 
 /-- Transforms the alphabet of a DFA. -/
 @[simps]
@@ -205,12 +205,6 @@ theorem comap_accepts : (M.comap f).accepts = List.map f ⁻¹' M.accepts := by
     rhs
     rw [Set.mem_preimage, mem_accepts]
   simp [mem_accepts]
-
-end Comap
-
-section Reindex
-
-variable {σ' : Type*} (g : σ ≃ σ')
 
 /-- Lifts an equivalence on states to an equivalence on DFAs. -/
 @[simps apply_step apply_start apply_accept]
@@ -249,6 +243,8 @@ theorem reindex_accepts : (reindex g M).accepts = M.accepts := by
   ext x
   simp [mem_accepts]
 
-end Reindex
+theorem reindex_comap : (reindex g M).comap f = reindex g (M.comap f) := by simp [comap, reindex]
+
+end Maps
 
 end DFA
