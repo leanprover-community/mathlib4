@@ -397,7 +397,7 @@ theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoi
   have hdrv {g} (hg : IsIntegralCurveAt g v t₀) (h' : γ t₀ = g t₀) : ∀ᶠ t in 𝓝 t₀,
       HasDerivAt ((extChartAt I (g t₀)) ∘ g) ((fun _ ↦ v') t (((extChartAt I (g t₀)) ∘ g) t)) t ∧
       ((extChartAt I (g t₀)) ∘ g) t ∈ (fun _ ↦ s) t := by
-    apply Filter.Eventually.and
+    filter_upwards
     · apply (hsrc hg |>.and hg.eventually_hasDerivAt).mono
       rintro t ⟨ht1, ht2⟩
       rw [hv', h']

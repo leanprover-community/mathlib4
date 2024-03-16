@@ -295,8 +295,8 @@ theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
   -- Porting note: `show` no longer reorders goals
   pick_goal 4
   show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
-  · refine' Eventually.mp (eventually_ne_atTop 0) (eventually_of_forall fun n hn => _)
-    exact le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv (@hf_feq) hx hn)
+  · filter_upwards [eventually_ne_atTop 0] with n hn using
+      le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv hf_feq hx hn)
   -- Porting note: `show` no longer reorders goals
   pick_goal 3
   show ∀ᶠ n : ℕ in atTop, f x - f 1 - x * (log (n + 1) - log n) ≤ logGammaSeq x n

@@ -166,7 +166,7 @@ theorem integrable_measure_prod_mk_left {s : Set (α × β)} (hs : MeasurableSet
   -- Porting note: was `simp_rw`
   rw [prod_apply hs]
   apply lintegral_congr_ae
-  refine (ae_measure_lt_top hs h2s).mp ?_; filter_upwards with x hx
+  filter_upwards [ae_measure_lt_top hs h2s] with x hx
   rw [lt_top_iff_ne_top] at hx; simp [ofReal_toReal, hx]
 #align measure_theory.measure.integrable_measure_prod_mk_left MeasureTheory.Measure.integrable_measure_prod_mk_left
 
@@ -250,7 +250,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
     rw [← and_congr_right_iff, and_iff_right_of_imp h1]
   rw [this]
   · intro h2f; rw [lintegral_congr_ae]
-    refine h2f.mp ?_; filter_upwards with x hx
+    filter_upwards [h2f] with x hx
     rw [ofReal_toReal]; rw [← lt_top_iff_ne_top]; exact hx
   · intro h2f; refine' ae_lt_top _ h2f.ne; exact h1f.ennnorm.lintegral_prod_right'
 #align measure_theory.has_finite_integral_prod_iff MeasureTheory.hasFiniteIntegral_prod_iff
