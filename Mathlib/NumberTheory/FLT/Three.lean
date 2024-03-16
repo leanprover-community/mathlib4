@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.NumberTheory.Cyclotomic.Three
+import Mathlib.NumberTheory.Cyclotomic.PID
 import Mathlib.NumberTheory.FLT.Basic
 
 /-!
@@ -193,8 +194,79 @@ lemma FermatLastTheoremForThree_of_FermatLastTheoremThreeGen :
   · simp only [val_one, one_mul]
     exact_mod_cast h
 
+section FermatLastTheoremForThreeGen
+
+variable {a b c : 𝓞 K} {u : (𝓞 K)ˣ} (hc : c ≠ 0) (H : a ^ 3 + b ^ 3 = u * c ^ 3)
+
+lemma a_cube_b_cube_same_congr (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) :
+    λ ^ 4 ∣ a ^ 3 - 1 ∧ λ ^ 4 ∣ b ^ 3 + 1 ∨  λ ^ 4 ∣ a ^ 3 + 1 ∧ λ ^ 4 ∣ b ^ 3 - 1 := by
+  obtain ⟨z, hz⟩ := hcdvd
+  rcases lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd hζ ha with
+    (⟨x, hx⟩ | ⟨x, hx⟩) <;>
+  rcases lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd hζ hb with
+    (⟨y, hy⟩ | ⟨y, hy⟩)
+  · exfalso
+    refine lambda_not_dvd_two hζ ⟨u * λ ^ 2 * z ^ 3 - λ ^ 3 * (x + y), ?_⟩
+    symm
+    calc _ = u * (λ * z) ^ 3 - λ ^ 4 * x - λ ^ 4 * y := by ring
+    _ = (a ^ 3 + b ^ 3) - (a ^ 3 - 1) - (b ^ 3 - 1) := by rw [← hx, ← hy, ← hz, ← H]
+    _ = 2 := by ring
+  · left
+    exact ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
+  · right
+    exact ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
+  · exfalso
+    refine lambda_not_dvd_two hζ ⟨λ ^ 3 * (x + y) - u * λ ^ 2 * z ^ 3, ?_⟩
+    symm
+    calc _ =  λ ^ 4 * x + λ ^ 4 * y - u * (λ * z) ^ 3 := by ring
+    _ = (a ^ 3 + 1) + (b ^ 3 + 1) - (a ^ 3 + b ^ 3) := by rw [← hx, ← hy, ← hz, ← H]
+    _ = 2 := by ring
+
+lemma lambda_pow_four_dvd_c_cube (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) :
+    λ ^ 4 ∣ c ^ 3 := by
+  rcases a_cube_b_cube_same_congr hζ H ha hb hcdvd with
+    (⟨⟨x, hx⟩, ⟨y, hy⟩⟩ | ⟨⟨x, hx⟩, ⟨y, hy⟩⟩) <;> {
+  refine ⟨u⁻¹ * (x + y), ?_⟩
+  symm
+  calc _ = u⁻¹ * (λ ^ 4 * x + λ ^ 4 * y) := by ring
+  _ = u⁻¹ * (a ^ 3 + b ^ 3) := by rw [← hx, ← hy]; ring
+  _ = u⁻¹ * (u * c ^ 3) := by rw [H]
+  _ = c ^ 3 := by simp }
+
+lemma lambda_pow_two_dvd_c (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) :
+    λ ^ 2 ∣ c := by
+  classical
+  have hm : multiplicity.Finite (hζ.toInteger - 1) c := by
+    have := IsCyclotomicExtension.Rat.three_pid K
+    refine multiplicity.finite_of_not_isUnit (lambda_not_unit hζ) hc
+  suffices 2 ≤ (multiplicity ((hζ.toInteger - 1)) c).get hm by
+    · obtain ⟨x, hx⟩ := multiplicity.pow_multiplicity_dvd hm
+      refine ⟨λ ^ ((multiplicity ((hζ.toInteger - 1)) c).get hm - 2) * x, ?_⟩
+      rw [← mul_assoc, ← pow_add]
+      convert hx using 3
+      simp [this]
+  have := lambda_pow_four_dvd_c_cube hζ H ha hb hcdvd
+  have hm1 :(multiplicity (hζ.toInteger - 1) (c ^ 3)).get
+    (multiplicity.finite_pow hζ.zeta_sub_one_prime' hm) =
+    multiplicity (hζ.toInteger - 1) (c ^ 3) := by simp
+  rw [multiplicity.pow_dvd_iff_le_multiplicity, ← hm1, multiplicity.pow' hζ.zeta_sub_one_prime' hm,
+    Nat.cast_ofNat, Nat.ofNat_le_cast] at this
+  linarith
+
+theorem final (hc : c ≠ 0) (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c)
+    (H : a ^ 3 + b ^ 3 = u * c ^ 3) : False := by
+  sorry
+
+end FermatLastTheoremForThreeGen
+
 end eisenstein
 
-
-
 end case2
+
+theorem fermatLastTheoremThree : FermatLastTheoremFor 3 := by
+  let K := CyclotomicField 3 ℚ
+  have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ (CyclotomicField 3 ℚ)
+  have : NumberField K := IsCyclotomicExtension.numberField {3} ℚ _
+  apply FermatLastTheoremForThree_of_FermatLastTheoremThreeGen hζ
+  intro a b c u hc ha hb hcdvd H
+  exact final hζ hc ha hb hcdvd H
