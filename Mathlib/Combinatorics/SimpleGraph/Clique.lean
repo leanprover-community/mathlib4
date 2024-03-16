@@ -225,10 +225,7 @@ theorem is3Clique_exists_walk_isCycle (h : G.IsNClique 3 s) :
     · intro; apply Adj.ne' h
     · apply Adj.ne h''
   · simp only [ne_eq, not_false_eq_true]
-  · have : List.tail (Walk.support w) = [b, c, a] := by
-      simp_all only [w, exists_and_left, support_cons, support_nil]
-      rw [List.tail_cons]
-    have : List.Nodup [b, c, a] := by
+  · have hn : List.Nodup [b, c, a] := by
       simp only [List.nodup_cons, List.mem_cons, List.mem_singleton, List.not_mem_nil,
         not_false_eq_true, List.nodup_nil, and_self, and_true]
       push_neg
@@ -238,7 +235,7 @@ theorem is3Clique_exists_walk_isCycle (h : G.IsNClique 3 s) :
         · apply Adj.ne h''
         · apply Adj.ne' h
       · apply Adj.ne' h'
-    assumption
+    exact hn
 
 end NClique
 
