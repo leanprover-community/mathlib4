@@ -686,11 +686,11 @@ instance : Coe ℕ∞ PartENat := ⟨ofENat⟩
 -- Porting note: new. This could probably be moved to tests or removed.
 example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
 
--- Porting note: new
+-- Porting note (#10756): new lemma
 @[simp]
 lemma ofENat_none : ofENat Option.none = ⊤ := rfl
 
--- Porting note: new
+-- Porting note (#10756): new lemma
 @[simp]
 lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := rfl
 
