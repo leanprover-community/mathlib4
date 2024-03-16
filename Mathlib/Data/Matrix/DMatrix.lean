@@ -3,7 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Algebra.Group.Hom.Defs
 
 #align_import data.matrix.dmatrix from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
