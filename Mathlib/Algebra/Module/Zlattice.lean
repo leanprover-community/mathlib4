@@ -442,17 +442,11 @@ instance instModuleFinite_Zlattice {E : Type*} [NormedAddCommGroup E] [NormedSpa
       SetLike.ext'_iff.mpr h_img
     convert this ▸ Module.Finite.map L₀ (f.restrictScalars ℤ)
   have : DiscreteTopology L₀.toAddSubgroup := by
-    refine DiscreteTopology.preimage_of_continuous_injective (L : Set E) ?_ ?_
-    · exact LinearMap.continuous_of_finiteDimensional f
-    · exact injective_subtype _
-  have : IsZlattice ℝ L₀.toAddSubgroup := by
-    refine ⟨?_⟩
-    have : Function.Injective (Submodule.map f) :=
-      Submodule.map_injective_of_injective (injective_subtype _)
-    rw [← this.eq_iff]
-    rw [Submodule.map_span]
-    rw [Submodule.map_top, range_subtype]
-    erw [h_img]
+    refine DiscreteTopology.preimage_of_continuous_injective (L : Set E) ?_ (injective_subtype _)
+    exact LinearMap.continuous_of_finiteDimensional f
+  have : IsZlattice ℝ L₀.toAddSubgroup := ⟨by
+    rw [← (Submodule.map_injective_of_injective (injective_subtype _)).eq_iff, Submodule.map_span,
+      Submodule.map_top, range_subtype, coe_toAddSubgroup, h_img]⟩
   exact Zlattice.module_finite ℝ L₀.toAddSubgroup
 
 theorem Zlattice.module_free [IsZlattice K L] : Module.Free ℤ L := by
