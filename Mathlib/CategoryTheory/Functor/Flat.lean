@@ -10,7 +10,6 @@ import Mathlib.CategoryTheory.Limits.Bicones
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Filtered.Final
 
 #align_import category_theory.functor.flat from "leanprover-community/mathlib"@"39478763114722f0ec7613cb2f3f7701f9b86c8d"
 /-!
