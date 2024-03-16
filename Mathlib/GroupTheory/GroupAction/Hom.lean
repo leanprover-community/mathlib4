@@ -55,7 +55,9 @@ variable (X : Type*) [SMul M X] [SMul M' X]
 variable (Y : Type*) [SMul N Y] [SMul M' Y]
 variable (Z : Type*) [SMul P Z]
 
-/-- Equivariant functions. -/
+/-- Equivariant functions :
+When `φ : M → N` is a function, and types `X` and `Y` are endowed with actions of `M` and `N`,
+a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`.  -/
 -- Porting note: This linter does not exist yet
 -- @[nolint has_nonempty_instance]
 structure MulActionHom where
@@ -66,17 +68,16 @@ structure MulActionHom where
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
  see https://github.com/leanprover/lean4/issues/2000 -/
-@[inherit_doc]
+/-- `φ`-equivariant functions `X → Y`,
+where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively -/
 notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => MulActionHom φ X Y
 
-@[inherit_doc]
+/-- `M`-equivariant functions `X → Y` with respect to the action of `M`
+
+This is the same as `X →ₑ[@id M] Y` -/
 notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulActionHom (@id M) X Y
 
 
-/-
-/-- Equivariant functions -/
-abbrev MulActionHom (M : Type*) (X Y : Type*) [SMul M X] [SMul M Y] := MulActionHom (@id M) X Y
--/
 
 /-- `MulActionSemiHomClass F φ X Y` states that
   `F` is a type of morphisms which are `φ`-equivariant.
