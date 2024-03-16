@@ -321,10 +321,9 @@ theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t�
   exact fun hs a ha => h _ (hs _ ha)
 #align le_of_nhds_le_nhds le_of_nhds_le_nhds
 
-theorem eq_of_nhds_eq_nhds (h : ∀ x, @nhds α t₁ x = @nhds α t₂ x) : t₁ = t₂ :=
-  le_antisymm (le_of_nhds_le_nhds fun x => (h x).le)
-    (le_of_nhds_le_nhds fun x => (h x).ge)
-#align eq_of_nhds_eq_nhds eq_of_nhds_eq_nhds
+@[deprecated] -- Since 2024-03-01
+alias eq_of_nhds_eq_nhds := TopologicalSpace.ext_nhds
+#align eq_of_nhds_eq_nhds TopologicalSpace.ext_nhds
 
 theorem eq_bot_of_singletons_open {t : TopologicalSpace α} (h : ∀ x, IsOpen[t] {x}) : t = ⊥ :=
   bot_unique fun s _ => biUnion_of_singleton s ▸ isOpen_biUnion fun x _ => h x
@@ -814,7 +813,7 @@ theorem continuous_id_of_le {t t' : TopologicalSpace α} (h : t ≤ t') : Contin
 theorem mem_nhds_induced [T : TopologicalSpace α] (f : β → α) (a : β) (s : Set β) :
     s ∈ @nhds β (TopologicalSpace.induced f T) a ↔ ∃ u ∈ 𝓝 (f a), f ⁻¹' u ⊆ s := by
   letI := T.induced f
-  simp only [mem_nhds_iff, isOpen_induced_iff, exists_prop, Set.mem_setOf_eq]
+  simp_rw [mem_nhds_iff, isOpen_induced_iff]
   constructor
   · rintro ⟨u, usub, ⟨v, openv, rfl⟩, au⟩
     exact ⟨v, ⟨v, Subset.rfl, openv, au⟩, usub⟩
@@ -829,9 +828,8 @@ theorem nhds_induced [T : TopologicalSpace α] (f : β → α) (a : β) :
 #align nhds_induced nhds_induced
 
 theorem induced_iff_nhds_eq [tα : TopologicalSpace α] [tβ : TopologicalSpace β] (f : β → α) :
-    tβ = tα.induced f ↔ ∀ b, 𝓝 b = comap f (𝓝 <| f b) :=
-  ⟨fun h a => h.symm ▸ nhds_induced f a, fun h =>
-    eq_of_nhds_eq_nhds fun x => by rw [h, nhds_induced]⟩
+    tβ = tα.induced f ↔ ∀ b, 𝓝 b = comap f (𝓝 <| f b) := by
+  simp only [ext_iff_nhds, nhds_induced]
 #align induced_iff_nhds_eq induced_iff_nhds_eq
 
 theorem map_nhds_induced_of_surjective [T : TopologicalSpace α] {f : β → α} (hf : Surjective f)
