@@ -586,11 +586,9 @@ noncomputable abbrev NrComplexPlaces := card { w : InfinitePlace K // IsComplex 
 
 theorem card_eq_NrRealPlaces_add_NrComplexPlaces : Fintype.card (InfinitePlace K) =
     NrRealPlaces K + NrComplexPlaces K := by
-  dsimp [InfinitePlace, NrRealPlaces, NrComplexPlaces]
   convert Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
     (disjoint_isReal_isComplex K) using 1
-  symm
-  exact Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)
+  exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
 
 theorem card_real_embeddings :
     card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } = NrRealPlaces K := Fintype.card_congr mkReal
