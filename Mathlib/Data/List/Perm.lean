@@ -289,7 +289,7 @@ local notation a " * " b => op a b
 local notation l " <*> " a => foldl op a l
 
 theorem Perm.fold_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l₁ <*> a) = l₂ <*> a :=
-  h.foldl_eq (right_comm _ IC.comm IA.assoc) _
+  h.foldl_eq (Binary.right_comm _ IC IA) _
 #align list.perm.fold_op_eq List.Perm.fold_op_eq
 
 end
