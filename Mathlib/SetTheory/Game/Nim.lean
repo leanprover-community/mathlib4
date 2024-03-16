@@ -261,7 +261,6 @@ theorem nim_equiv_iff_eq {o₁ o₂ : Ordinal} : (nim o₁ ≈ nim o₂) ↔ o�
 noncomputable def grundyValue : PGame.{u} → Ordinal.{u}
   | G => Ordinal.mex.{u, u} fun i => grundyValue (G.moveLeft i)
 termination_by G => G
-decreasing_by pgame_wf_tac
 #align pgame.grundy_value SetTheory.PGame.grundyValue
 
 theorem grundyValue_eq_mex_left (G : PGame) :
