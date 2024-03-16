@@ -42,7 +42,7 @@ variable [Monoid G] {a b x y : G} {n m : ℕ}
 
 section IsOfFinOrder
 
--- porting note: we need a `dsimp` in the middle of the rewrite to do beta reduction
+-- Porting note: we need a `dsimp` in the middle of the rewrite to do beta reduction
 @[to_additive]
 theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt (x * ·) n 1 ↔ x ^ n = 1 := by
   rw [IsPeriodicPt, IsFixedPt, mul_left_iterate]; dsimp; rw [mul_one]
@@ -174,9 +174,9 @@ protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
 
 @[to_additive addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
-  -- porting note: was `convert`, but the `1` in the lemma is equal only after unfolding
+  -- Porting note: was `convert`, but the `1` in the lemma is equal only after unfolding
   refine Eq.trans ?_ (isPeriodicPt_minimalPeriod (x * ·) 1)
-  -- porting note: we need a `dsimp` in the middle of the rewrite to do beta reduction
+  -- Porting note: we need a `dsimp` in the middle of the rewrite to do beta reduction
   rw [orderOf, mul_left_iterate]; dsimp; rw [mul_one]
 #align pow_order_of_eq_one pow_orderOf_eq_one
 #align add_order_of_nsmul_eq_zero addOrderOf_nsmul_eq_zero
@@ -404,6 +404,16 @@ theorem orderOf_pow' (h : n ≠ 0) : orderOf (x ^ n) = orderOf x / gcd (orderOf 
   rw [← minimalPeriod_iterate_eq_div_gcd h, mul_left_iterate]
 #align order_of_pow' orderOf_pow'
 #align add_order_of_nsmul' addOrderOf_nsmul'
+
+@[to_additive]
+lemma orderOf_pow_of_dvd {x : G} {n : ℕ} (hn : n ≠ 0) (dvd : n ∣ orderOf x) :
+    orderOf (x ^ n) = orderOf x / n := by rw [orderOf_pow' _ hn, Nat.gcd_eq_right dvd]
+
+@[to_additive]
+lemma orderOf_pow_orderOf_div {x : G} {n : ℕ} (hx : orderOf x ≠ 0) (hn : n ∣ orderOf x) :
+    orderOf (x ^ (orderOf x / n)) = n := by
+  rw [orderOf_pow_of_dvd _ (Nat.div_dvd_of_dvd hn), Nat.div_div_self hn hx]
+  rw [← Nat.div_mul_cancel hn] at hx; exact left_ne_zero_of_mul hx
 
 variable (n)
 

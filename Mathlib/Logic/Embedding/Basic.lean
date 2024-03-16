@@ -41,7 +41,7 @@ instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
 
 initialize_simps_projections Embedding (toFun → apply)
 
--- porting note: this needs `tactic.lift`.
+-- Porting note: this needs `tactic.lift`.
 --instance {α β : Sort*} : CanLift (α → β) (α ↪ β) coeFn Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
 theorem exists_surjective_iff :
@@ -105,7 +105,7 @@ namespace Function
 
 namespace Embedding
 
-theorem coe_injective {α β} : @Injective (α ↪ β) (α → β) (λ f => ↑f) :=
+theorem coe_injective {α β} : @Injective (α ↪ β) (α → β) (fun f ↦ ↑f) :=
   DFunLike.coe_injective
 #align function.embedding.coe_injective Function.Embedding.coe_injective
 
@@ -233,7 +233,7 @@ protected def some {α} : α ↪ Option α :=
 #align function.embedding.some Function.Embedding.some
 #align function.embedding.some_apply Function.Embedding.some_apply
 
--- porting note: Lean 4 unfolds coercion `α → Option α` to `some`, so there is no separate
+-- Porting note: Lean 4 unfolds coercion `α → Option α` to `some`, so there is no separate
 -- `Function.Embedding.coeOption`.
 #align function.embedding.coe_option Function.Embedding.some
 
@@ -427,7 +427,7 @@ def subtypeInjectiveEquivEmbedding (α β : Sort*) :
   right_inv _ := rfl
 #align equiv.subtype_injective_equiv_embedding Equiv.subtypeInjectiveEquivEmbedding
 
--- porting note: in Lean 3 this had `@[congr]`
+-- Porting note: in Lean 3 this had `@[congr]`
 /-- If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then the type of embeddings `α₁ ↪ β₁`
 is equivalent to the type of embeddings `α₂ ↪ β₂`. -/
 @[simps apply]

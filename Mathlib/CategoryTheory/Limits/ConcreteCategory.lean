@@ -114,7 +114,7 @@ theorem Concrete.isColimit_exists_of_rep_eq {D : Cocone F} {i j : J} (hD : IsCol
     ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y := by
   let E := (forget C).mapCocone D
   let hE : IsColimit E := isColimitOfPreserves _ hD
-  exact (Types.FilteredColimit.isColimit_eq_iff.{w, t, r} (F ⋙ forget C) hE).mp h
+  exact (Types.FilteredColimit.isColimit_eq_iff (F ⋙ forget C) hE).mp h
 #align category_theory.limits.concrete.is_colimit_exists_of_rep_eq CategoryTheory.Limits.Concrete.isColimit_exists_of_rep_eq
 
 theorem Concrete.isColimit_rep_eq_iff_exists {D : Cocone F} {i j : J} (hD : IsColimit D)

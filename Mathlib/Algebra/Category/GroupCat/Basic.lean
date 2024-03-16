@@ -19,9 +19,6 @@ We introduce the bundled categories:
 along with the relevant forgetful functors between them, and to the bundled monoid categories.
 -/
 
-set_option autoImplicit true
-
-
 universe u v
 
 open CategoryTheory
@@ -80,7 +77,7 @@ lemma coe_comp {X Y Z : GroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X →
 lemma comp_def {X Y Z : GroupCat} {f : X ⟶ Y} {g : Y ⟶ Z} : f ≫ g = g.comp f := rfl
 
 -- porting note (#10756): added lemma
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupCat).map f = (f : X → Y) := rfl
+@[simp] lemma forget_map {X Y : GroupCat} (f : X ⟶ Y) : (forget GroupCat).map f = (f : X → Y) := rfl
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : GroupCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

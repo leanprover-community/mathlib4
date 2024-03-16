@@ -24,7 +24,8 @@ The inverse function theorem is in `Mathlib/Analysis/Calculus/InverseFunctionThe
 
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
-open Topology Classical NNReal Filter Asymptotics ENNReal
+open scoped Classical
+open Topology NNReal Filter Asymptotics ENNReal
 
 noncomputable section
 
@@ -59,22 +60,27 @@ namespace ContinuousLinearEquiv
 
 variable (iso : E ≃L[𝕜] F)
 
+@[fun_prop]
 protected theorem hasStrictFDerivAt : HasStrictFDerivAt iso (iso : E →L[𝕜] F) x :=
   iso.toContinuousLinearMap.hasStrictFDerivAt
 #align continuous_linear_equiv.has_strict_fderiv_at ContinuousLinearEquiv.hasStrictFDerivAt
 
+@[fun_prop]
 protected theorem hasFDerivWithinAt : HasFDerivWithinAt iso (iso : E →L[𝕜] F) s x :=
   iso.toContinuousLinearMap.hasFDerivWithinAt
 #align continuous_linear_equiv.has_fderiv_within_at ContinuousLinearEquiv.hasFDerivWithinAt
 
+@[fun_prop]
 protected theorem hasFDerivAt : HasFDerivAt iso (iso : E →L[𝕜] F) x :=
   iso.toContinuousLinearMap.hasFDerivAtFilter
 #align continuous_linear_equiv.has_fderiv_at ContinuousLinearEquiv.hasFDerivAt
 
+@[fun_prop]
 protected theorem differentiableAt : DifferentiableAt 𝕜 iso x :=
   iso.hasFDerivAt.differentiableAt
 #align continuous_linear_equiv.differentiable_at ContinuousLinearEquiv.differentiableAt
 
+@[fun_prop]
 protected theorem differentiableWithinAt : DifferentiableWithinAt 𝕜 iso s x :=
   iso.differentiableAt.differentiableWithinAt
 #align continuous_linear_equiv.differentiable_within_at ContinuousLinearEquiv.differentiableWithinAt
@@ -87,9 +93,11 @@ protected theorem fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithi
   iso.toContinuousLinearMap.fderivWithin hxs
 #align continuous_linear_equiv.fderiv_within ContinuousLinearEquiv.fderivWithin
 
+@[fun_prop]
 protected theorem differentiable : Differentiable 𝕜 iso := fun _ => iso.differentiableAt
 #align continuous_linear_equiv.differentiable ContinuousLinearEquiv.differentiable
 
+@[fun_prop]
 protected theorem differentiableOn : DifferentiableOn 𝕜 iso s :=
   iso.differentiable.differentiableOn
 #align continuous_linear_equiv.differentiable_on ContinuousLinearEquiv.differentiableOn
@@ -262,22 +270,27 @@ namespace LinearIsometryEquiv
 
 variable (iso : E ≃ₗᵢ[𝕜] F)
 
+@[fun_prop]
 protected theorem hasStrictFDerivAt : HasStrictFDerivAt iso (iso : E →L[𝕜] F) x :=
   (iso : E ≃L[𝕜] F).hasStrictFDerivAt
 #align linear_isometry_equiv.has_strict_fderiv_at LinearIsometryEquiv.hasStrictFDerivAt
 
+@[fun_prop]
 protected theorem hasFDerivWithinAt : HasFDerivWithinAt iso (iso : E →L[𝕜] F) s x :=
   (iso : E ≃L[𝕜] F).hasFDerivWithinAt
 #align linear_isometry_equiv.has_fderiv_within_at LinearIsometryEquiv.hasFDerivWithinAt
 
+@[fun_prop]
 protected theorem hasFDerivAt : HasFDerivAt iso (iso : E →L[𝕜] F) x :=
   (iso : E ≃L[𝕜] F).hasFDerivAt
 #align linear_isometry_equiv.has_fderiv_at LinearIsometryEquiv.hasFDerivAt
 
+@[fun_prop]
 protected theorem differentiableAt : DifferentiableAt 𝕜 iso x :=
   iso.hasFDerivAt.differentiableAt
 #align linear_isometry_equiv.differentiable_at LinearIsometryEquiv.differentiableAt
 
+@[fun_prop]
 protected theorem differentiableWithinAt : DifferentiableWithinAt 𝕜 iso s x :=
   iso.differentiableAt.differentiableWithinAt
 #align linear_isometry_equiv.differentiable_within_at LinearIsometryEquiv.differentiableWithinAt
@@ -290,9 +303,11 @@ protected theorem fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithi
   (iso : E ≃L[𝕜] F).fderivWithin hxs
 #align linear_isometry_equiv.fderiv_within LinearIsometryEquiv.fderivWithin
 
+@[fun_prop]
 protected theorem differentiable : Differentiable 𝕜 iso := fun _ => iso.differentiableAt
 #align linear_isometry_equiv.differentiable LinearIsometryEquiv.differentiable
 
+@[fun_prop]
 protected theorem differentiableOn : DifferentiableOn 𝕜 iso s :=
   iso.differentiable.differentiableOn
 #align linear_isometry_equiv.differentiable_on LinearIsometryEquiv.differentiableOn
@@ -507,7 +522,7 @@ theorem HasFDerivWithinAt.uniqueDiffWithinAt {x : E} (h : HasFDerivWithinAt f f'
 theorem UniqueDiffOn.image {f' : E → E →L[𝕜] F} (hs : UniqueDiffOn 𝕜 s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hd : ∀ x ∈ s, DenseRange (f' x)) :
     UniqueDiffOn 𝕜 (f '' s) :=
-  ball_image_iff.2 fun x hx => (hf' x hx).uniqueDiffWithinAt (hs x hx) (hd x hx)
+  forall_mem_image.2 fun x hx => (hf' x hx).uniqueDiffWithinAt (hs x hx) (hd x hx)
 #align unique_diff_on.image UniqueDiffOn.image
 
 theorem HasFDerivWithinAt.uniqueDiffWithinAt_of_continuousLinearEquiv {x : E} (e' : E ≃L[𝕜] F)

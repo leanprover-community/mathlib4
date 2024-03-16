@@ -134,7 +134,7 @@ theorem ker_mk' : MonoidHom.ker (QuotientGroup.mk' N : G →* G ⧸ N) = N :=
   Subgroup.ext eq_one_iff
 #align quotient_group.ker_mk QuotientGroup.ker_mk'
 #align quotient_add_group.ker_mk QuotientAddGroup.ker_mk'
--- porting note: I think this is misnamed without the prime
+-- Porting note: I think this is misnamed without the prime
 
 @[to_additive]
 theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
@@ -569,7 +569,7 @@ def equivQuotientZPowOfEquiv :
   MonoidHom.toMulEquiv _ _
     (homQuotientZPowOfHom_comp_of_rightInverse (e.symm : B →* A) (e : A →* B) n e.left_inv)
     (homQuotientZPowOfHom_comp_of_rightInverse (e : A →* B) (e.symm : B →* A) n e.right_inv)
-    -- porting note: had to explicitly coerce the `MulEquiv`s to `MonoidHom`s
+    -- Porting note: had to explicitly coerce the `MulEquiv`s to `MonoidHom`s
 #align quotient_group.equiv_quotient_zpow_of_equiv QuotientGroup.equivQuotientZPowOfEquiv
 #align quotient_add_group.equiv_quotient_zsmul_of_equiv QuotientAddGroup.equivQuotientZSMulOfEquiv
 
@@ -626,7 +626,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
       use ⟨h, hh⟩
       let _ : Setoid ↑(H ⊔ N) :=
         (@leftRel ↑(H ⊔ N) (H ⊔ N : Subgroup G).toGroup (N.subgroupOf (H ⊔ N)))
-      -- porting note: Lean couldn't find this automatically
+      -- Porting note: Lean couldn't find this automatically
       refine Quotient.eq.mpr ?_
       change Setoid.r _ _
       rw [leftRel_apply]
@@ -726,7 +726,7 @@ end QuotientGroup
 
 namespace Group
 
-open Classical
+open scoped Classical
 
 open QuotientGroup Subgroup
 

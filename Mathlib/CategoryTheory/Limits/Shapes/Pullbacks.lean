@@ -647,7 +647,7 @@ def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t
   WalkingCospan.ext i w₁ w₂
 #align category_theory.limits.pullback_cone.ext CategoryTheory.Limits.PullbackCone.ext
 
--- porting note: `IsLimit.lift` and the two following simp lemmas were introduced to ease the port
+-- Porting note: `IsLimit.lift` and the two following simp lemmas were introduced to ease the port
 /-- If `t` is a limit pullback cone over `f` and `g` and `h : W ⟶ X` and `k : W ⟶ Y` are such that
     `h ≫ f = k ≫ g`, then we get `l : W ⟶ t.pt`, which satisfies `l ≫ fst t = h`
     and `l ≫ snd t = k`, see `IsLimit.lift_fst` and `IsLimit.lift_snd`. -/
@@ -896,7 +896,7 @@ theorem IsColimit.hom_ext {t : PushoutCocone f g} (ht : IsColimit t) {W : C} {k 
   ht.hom_ext <| coequalizer_ext _ h₀ h₁
 #align category_theory.limits.pushout_cocone.is_colimit.hom_ext CategoryTheory.Limits.PushoutCocone.IsColimit.hom_ext
 
--- porting note: `IsColimit.desc` and the two following simp lemmas were introduced to ease the port
+-- Porting note: `IsColimit.desc` and the two following simp lemmas were introduced to ease the port
 /-- If `t` is a colimit pushout cocone over `f` and `g` and `h : Y ⟶ W` and `k : Z ⟶ W` are
     morphisms satisfying `f ≫ h = g ≫ k`, then we have a factorization `l : t.pt ⟶ W` such that
     `inl t ≫ l = h` and `inr t ≫ l = k`, see `IsColimit.inl_desc` and `IsColimit.inr_desc`-/
@@ -1468,7 +1468,7 @@ variable (G : C ⥤ D)
 
 /-- The comparison morphism for the pullback of `f,g`.
 This is an isomorphism iff `G` preserves the pullback of `f,g`; see
-`CategoryTheory/Limits/Preserves/Shapes/Pullbacks.lean`
+`Mathlib/CategoryTheory/Limits/Preserves/Shapes/Pullbacks.lean`
 -/
 def pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] [HasPullback (G.map f) (G.map g)] :
     G.obj (pullback f g) ⟶ pullback (G.map f) (G.map g) :=
@@ -1500,7 +1500,7 @@ theorem map_lift_pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g
 
 /-- The comparison morphism for the pushout of `f,g`.
 This is an isomorphism iff `G` preserves the pushout of `f,g`; see
-`CategoryTheory/Limits/Preserves/Shapes/Pullbacks.lean`
+`Mathlib/CategoryTheory/Limits/Preserves/Shapes/Pullbacks.lean`
 -/
 def pushoutComparison (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] [HasPushout (G.map f) (G.map g)] :
     pushout (G.map f) (G.map g) ⟶ G.obj (pushout f g) :=
@@ -2398,8 +2398,8 @@ def pullbackAssocSymmIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
         (show l₁' ≫ g₂ ≫ f₃ = (l₂' ≫ g₄) ≫ f₄ by
           rw [pullback.lift_snd_assoc, Category.assoc, Category.assoc, pullback.condition])) := by
   apply bigSquareIsPullback
-  exact pullbackIsPullback f₃ f₄
-  apply pullbackPullbackRightIsPullback
+  · exact pullbackIsPullback f₃ f₄
+  · apply pullbackPullbackRightIsPullback
 #align category_theory.limits.pullback_assoc_symm_is_pullback CategoryTheory.Limits.pullbackAssocSymmIsPullback
 
 theorem hasPullback_assoc_symm [HasPullback f₁ (g₃ ≫ f₂)] : HasPullback (g₂ ≫ f₃) f₄ :=
@@ -2424,10 +2424,10 @@ theorem pullbackAssoc_inv_fst_fst [HasPullback ((pullback.snd : Z₁ ⟶ X₂) �
     [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
     (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.fst ≫ pullback.fst = pullback.fst := by
   trans l₁' ≫ pullback.fst
-  rw [← Category.assoc]
-  congr 1
-  exact IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.left
-  exact pullback.lift_fst _ _ _
+  · rw [← Category.assoc]
+    congr 1
+    exact IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.left
+  · exact pullback.lift_fst _ _ _
 #align category_theory.limits.pullback_assoc_inv_fst_fst CategoryTheory.Limits.pullbackAssoc_inv_fst_fst
 
 @[reassoc (attr := simp)]
@@ -2442,10 +2442,10 @@ theorem pullbackAssoc_hom_snd_fst [HasPullback ((pullback.snd : Z₁ ⟶ X₂) �
     [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] : (pullbackAssoc f₁ f₂ f₃ f₄).hom ≫
     pullback.snd ≫ pullback.fst = pullback.fst ≫ pullback.snd := by
   trans l₂ ≫ pullback.fst
-  rw [← Category.assoc]
-  congr 1
-  exact IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
-  exact pullback.lift_fst _ _ _
+  · rw [← Category.assoc]
+    congr 1
+    exact IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
+  · exact pullback.lift_fst _ _ _
 #align category_theory.limits.pullback_assoc_hom_snd_fst CategoryTheory.Limits.pullbackAssoc_hom_snd_fst
 
 @[reassoc (attr := simp)]
@@ -2453,10 +2453,10 @@ theorem pullbackAssoc_hom_snd_snd [HasPullback ((pullback.snd : Z₁ ⟶ X₂) �
     [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
     (pullbackAssoc f₁ f₂ f₃ f₄).hom ≫ pullback.snd ≫ pullback.snd = pullback.snd := by
   trans l₂ ≫ pullback.snd
-  rw [← Category.assoc]
-  congr 1
-  exact IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
-  exact pullback.lift_snd _ _ _
+  · rw [← Category.assoc]
+    congr 1
+    exact IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
+  · exact pullback.lift_snd _ _ _
 #align category_theory.limits.pullback_assoc_hom_snd_snd CategoryTheory.Limits.pullbackAssoc_hom_snd_snd
 
 @[reassoc (attr := simp)]

@@ -176,7 +176,7 @@ theorem ofList_subset {l₁ l₂ : List (Lists α)} (h : l₁ ⊆ l₂) :
     Lists'.ofList l₁ ⊆ Lists'.ofList l₂ := by
   induction' l₁ with _ _ l₁_ih; · exact Subset.nil
   refine' Subset.cons (Lists.Equiv.refl _) _ (l₁_ih (List.subset_of_cons_subset h))
-  simp at h; simp [h]
+  simp only [List.cons_subset] at h; simp [h]
 #align lists'.of_list_subset Lists'.ofList_subset
 
 @[refl]
@@ -358,7 +358,7 @@ instance instSetoidLists : Setoid (Lists α) :=
 section Decidable
 
 /-- Auxiliary function to prove termination of decidability checking -/
-@[simp, deprecated] -- porting note: replaced by termination_by
+@[simp, deprecated]
 def Equiv.decidableMeas :
     (PSum (Σ' _l₁ : Lists α, Lists α) <|
         PSum (Σ' _l₁ : Lists' α true, Lists' α true) (Σ' _a : Lists α, Lists' α true)) →
@@ -387,7 +387,7 @@ mutual
       decidable_of_iff' (l₁ = l₂) <| by
         cases l₁
         apply equiv_atom.trans
-        simp [atom]
+        simp only [atom]
         constructor <;> (rintro ⟨rfl⟩; rfl)
     | ⟨false, l₁⟩, ⟨true, l₂⟩ => isFalse <| by rintro ⟨⟩
     | ⟨true, l₁⟩, ⟨false, l₂⟩ => isFalse <| by rintro ⟨⟩

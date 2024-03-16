@@ -177,7 +177,7 @@ theorem mulEquiv_apply (e : α ≃ β) [Mul β] (a : α) : (mulEquiv e) a = e a 
 theorem mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
     letI := Equiv.mul e
     (mulEquiv e).symm b = e.symm b :=
-  by intros; rfl
+  rfl
 #align equiv.mul_equiv_symm_apply Equiv.mulEquiv_symm_apply
 #align equiv.add_equiv_symm_apply Equiv.addEquiv_symm_apply
 
@@ -213,7 +213,7 @@ theorem ringEquiv_apply (e : α ≃ β) [Add β] [Mul β] (a : α) : (ringEquiv 
 theorem ringEquiv_symm_apply (e : α ≃ β) [Add β] [Mul β] (b : β) : by
     letI := Equiv.add e
     letI := Equiv.mul e
-    exact (ringEquiv e).symm b = e.symm b := by intros; rfl
+    exact (ringEquiv e).symm b = e.symm b := rfl
 #align equiv.ring_equiv_symm_apply Equiv.ringEquiv_symm_apply
 
 variable (α) in
@@ -265,7 +265,6 @@ protected def mulZeroClass [MulZeroClass β] : MulZeroClass α := by
   apply e.injective.mulZeroClass _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.mul_zero_class Equiv.mulZeroClass
 
-@[to_additive]
 noncomputable instance [Small.{v} α] [MulZeroClass α] : MulZeroClass (Shrink.{v} α) :=
   (equivShrink α).symm.mulZeroClass
 
@@ -278,6 +277,7 @@ protected def mulOneClass [MulOneClass β] : MulOneClass α := by
 #align equiv.mul_one_class Equiv.mulOneClass
 #align equiv.add_zero_class Equiv.addZeroClass
 
+@[to_additive]
 noncomputable instance [Small.{v} α] [MulOneClass α] : MulOneClass (Shrink.{v} α) :=
   (equivShrink α).symm.mulOneClass
 

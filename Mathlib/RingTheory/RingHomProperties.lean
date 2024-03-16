@@ -109,11 +109,9 @@ theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition 
     RingHom.RespectsIso @P := by
   constructor
   · introv H
-    skip
     apply hP
     exacts [H, hP' e]
   · introv H
-    skip
     apply hP
     exacts [hP' e, H]
 #align ring_hom.stable_under_composition.respects_iso RingHom.StableUnderComposition.respectsIso
@@ -161,7 +159,7 @@ theorem StableUnderBaseChange.mk (h₁ : RespectsIso @P)
     exact map_mul f' _ _
   · ext x
     change _ = e (x ⊗ₜ[R] 1)
-    --Porting note: Had `dsimp only [e]` here, which didn't work anymore
+    -- Porting note: Had `dsimp only [e]` here, which didn't work anymore
     rw [h.symm.1.equiv_tmul, Algebra.smul_def, AlgHom.toLinearMap_apply, map_one, mul_one]
 #align ring_hom.stable_under_base_change.mk RingHom.StableUnderBaseChange.mk
 

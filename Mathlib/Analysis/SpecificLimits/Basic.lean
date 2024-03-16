@@ -22,9 +22,11 @@ instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 
 noncomputable section
 
-open Classical Set Function Filter Finset Metric
+open scoped Classical
+open Set Function Filter Finset Metric
 
-open Classical Topology Nat BigOperators uniformity NNReal ENNReal
+open scoped Classical
+open Topology Nat BigOperators uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -626,7 +628,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
       · positivity
       · refine' (div_le_one <| mod_cast hn).mpr _
         norm_cast
-        linarith)
+        omega)
 #align tendsto_factorial_div_pow_self_at_top tendsto_factorial_div_pow_self_atTop
 
 /-!
@@ -691,7 +693,7 @@ theorem tendsto_nat_ceil_div_atTop : Tendsto (fun x ↦ (⌈x⌉₊ : R) / x) at
   simpa using tendsto_nat_ceil_mul_div_atTop (zero_le_one' R)
 #align tendsto_nat_ceil_div_at_top tendsto_nat_ceil_div_atTop
 
-lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (λ x ↦ x / n) atTop atTop := by
+lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (· / n) atTop atTop := by
   rw [Tendsto, map_div_atTop_eq_nat n hn.bot_lt]
 
 end
