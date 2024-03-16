@@ -212,20 +212,20 @@ theorem is3Clique_exists_walk_isCycle (h : G.IsNClique 3 s) :
   apply Exists.intro w
   rw [isCycle_def]
   refine' ⟨_, _, _⟩
-  . simp only [w, cons_isTrail_iff, IsTrail.nil, edges_nil, List.not_mem_nil, not_false_eq_true,
+  · simp only [w, cons_isTrail_iff, IsTrail.nil, edges_nil, List.not_mem_nil, not_false_eq_true,
       and_self, edges_cons, List.mem_singleton, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
       Prod.swap_prod_mk, and_true, true_and, List.mem_cons]
     push_neg
     rw [not_false_eq_true, and_true, and_true]
     refine' ⟨_, _, _⟩ <;> apply And.intro
-    . intro; apply Adj.ne' h'
-    . apply Adj.ne' h
-    . intro; apply Adj.ne h''
-    . apply Adj.ne h'
-    . intro; apply Adj.ne' h
-    . apply Adj.ne h''
-  . simp only [ne_eq, not_false_eq_true]
-  . have : List.tail (Walk.support w) = [b, c, a] := by
+    · intro; apply Adj.ne' h'
+    · apply Adj.ne' h
+    · intro; apply Adj.ne h''
+    · apply Adj.ne h'
+    · intro; apply Adj.ne' h
+    · apply Adj.ne h''
+  · simp only [ne_eq, not_false_eq_true]
+  · have : List.tail (Walk.support w) = [b, c, a] := by
       simp_all only [w, exists_and_left, support_cons, support_nil]
       rw [List.tail_cons]
     have : List.Nodup [b, c, a] := by
@@ -234,10 +234,10 @@ theorem is3Clique_exists_walk_isCycle (h : G.IsNClique 3 s) :
       push_neg
       rw [not_false_eq_true, and_true, and_true]
       apply And.intro
-      . apply And.intro
-        . apply Adj.ne h''
-        . apply Adj.ne' h
-      . apply Adj.ne' h'
+      · apply And.intro
+        · apply Adj.ne h''
+        · apply Adj.ne' h
+      · apply Adj.ne' h'
     assumption
 
 end NClique
