@@ -165,7 +165,6 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
     3 :: reciprocalFactors (n / 2)
   else
     n % 4 * n :: reciprocalFactors (n / 4 + 1)
-decreasing_by all_goals { simp_wf; omega }
 
 @[simp] lemma reciprocalFactors_zero : reciprocalFactors 0 = [0] := rfl
 

@@ -24,7 +24,7 @@ section stub_lemmas
 structure PartialHomeomorph (α : Type u) (β : Type u) extends PartialEquiv α β
 
 noncomputable
-instance PartialHomeomorph.has_coe_to_fun : CoeFun (PartialHomeomorph α β) (λ _ => α → β) := test_sorry
+instance PartialHomeomorph.has_coe_to_fun : CoeFun (PartialHomeomorph α β) (fun _ ↦ α → β) := test_sorry
 
 noncomputable
 def PartialHomeomorph.symm (_e : PartialHomeomorph α β) : PartialHomeomorph β α := test_sorry
@@ -55,7 +55,7 @@ noncomputable
 def ModelWithCorners.symm (_I : ModelWithCorners 𝕜 E H) : PartialEquiv E H := test_sorry
 
 noncomputable
-instance ModelWithCorners.has_coe_to_fun : CoeFun (ModelWithCorners 𝕜 E H) (λ _ => H → E) := test_sorry
+instance ModelWithCorners.has_coe_to_fun : CoeFun (ModelWithCorners 𝕜 E H) (fun _ ↦ H → E) := test_sorry
 
 @[mfld_simps] lemma ModelWithCorners.left_inv (I : ModelWithCorners 𝕜 E H) (x : H) :
   I.symm (I x) = x :=

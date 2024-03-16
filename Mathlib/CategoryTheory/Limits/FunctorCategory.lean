@@ -321,7 +321,7 @@ theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W 
 
 instance evaluationPreservesLimits [HasLimits C] (k : K) :
     PreservesLimits ((evaluation K C).obj k) where
-  preservesLimitsOfShape {J} 𝒥 := by skip; infer_instance
+  preservesLimitsOfShape {_} _𝒥 := inferInstance
 #align category_theory.limits.evaluation_preserves_limits CategoryTheory.Limits.evaluationPreservesLimits
 
 /-- `F : D ⥤ K ⥤ C` preserves the limit of some `G : J ⥤ D` if it does for each `k : K`. -/
@@ -358,7 +358,7 @@ instance preservesLimitsConst : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _
 
 instance evaluationPreservesColimits [HasColimits C] (k : K) :
     PreservesColimits ((evaluation K C).obj k) where
-  preservesColimitsOfShape := by skip; infer_instance
+  preservesColimitsOfShape := inferInstance
 #align category_theory.limits.evaluation_preserves_colimits CategoryTheory.Limits.evaluationPreservesColimits
 
 /-- `F : D ⥤ K ⥤ C` preserves the colimit of some `G : J ⥤ D` if it does for each `k : K`. -/
