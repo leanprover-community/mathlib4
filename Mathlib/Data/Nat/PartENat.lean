@@ -694,7 +694,7 @@ lemma ofENat_none : ofENat Option.none = ⊤ := rfl
 @[simp]
 lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := rfl
 
--- Porting note (#11431): new theorem
+-- Porting note (#10756): new theorem
 @[simp, norm_cast]
 theorem toWithTop_ofENat (n : ℕ∞) {_ : Decidable (n : PartENat).Dom} : toWithTop (↑n) = n := by
   induction n with
