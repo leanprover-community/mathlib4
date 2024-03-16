@@ -258,4 +258,13 @@ lemma lambda_pow_four_dvd_cube_add_one_of_dvd_add_one {x : 𝓞 K} (h : λ ∣ x
   rw [mul_neg, ← hy]
   ring
 
+lemma lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd {x : 𝓞 K} (h : ¬ λ ∣ x) :
+    λ ^ 4 ∣ x ^ 3 - 1 ∨ λ ^ 4 ∣ x ^ 3 + 1 := by
+  rcases dvd_or_dvd_sub_one_or_dvd_add_one hζ x with (H | H | H)
+  · contradiction
+  · left
+    exact lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ H
+  · right
+    exact lambda_pow_four_dvd_cube_add_one_of_dvd_add_one hζ H
+
 end IsCyclotomicExtension.Rat.Three
