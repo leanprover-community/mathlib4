@@ -26,7 +26,8 @@ Hahn decomposition
 
 open Set Filter
 
-open Classical Topology ENNReal
+open scoped Classical
+open Topology ENNReal
 
 namespace MeasureTheory
 
@@ -46,7 +47,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   have to_nnreal_ν : ∀ s, ((ν s).toNNReal : ℝ≥0∞) = ν s := fun s => ENNReal.coe_toNNReal <| hν _
   have d_split : ∀ s t, MeasurableSet s → MeasurableSet t → d s = d (s \ t) + d (s ∩ t) := by
     intro s t _hs ht
-    dsimp only
+    dsimp only [d]
     rw [← measure_inter_add_diff s ht, ← measure_inter_add_diff s ht,
       ENNReal.toNNReal_add (hμ _) (hμ _), ENNReal.toNNReal_add (hν _) (hν _), NNReal.coe_add,
       NNReal.coe_add]
@@ -89,22 +90,22 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   let f : ℕ → ℕ → Set α := fun n m => (Finset.Ico n (m + 1)).inf e
   have hf : ∀ n m, MeasurableSet (f n m) := by
     intro n m
-    simp only [Finset.inf_eq_iInf]
+    simp only [f, Finset.inf_eq_iInf]
     exact MeasurableSet.biInter (to_countable _) fun i _ => he₁ _
   have f_subset_f : ∀ {a b c d}, a ≤ b → c ≤ d → f a d ⊆ f b c := by
     intro a b c d hab hcd
-    simp_rw [Finset.inf_eq_iInf]
+    simp_rw [f, Finset.inf_eq_iInf]
     exact biInter_subset_biInter_left (Finset.Ico_subset_Ico hab <| Nat.succ_le_succ hcd)
   have f_succ : ∀ n m, n ≤ m → f n (m + 1) = f n m ∩ e (m + 1) := by
     intro n m hnm
     have : n ≤ m + 1 := le_of_lt (Nat.succ_le_succ hnm)
-    simp_rw [Nat.Ico_succ_right_eq_insert_Ico this, Finset.inf_insert, Set.inter_comm]
+    simp_rw [f, Nat.Ico_succ_right_eq_insert_Ico this, Finset.inf_insert, Set.inter_comm]
     rfl
   have le_d_f : ∀ n m, m ≤ n → γ - 2 * (1 / 2) ^ m + (1 / 2) ^ n ≤ d (f m n) := by
     intro n m h
     refine' Nat.le_induction _ _ n h
     · have := he₂ m
-      simp_rw [Nat.Ico_succ_singleton, Finset.inf_singleton]
+      simp_rw [f, Nat.Ico_succ_singleton, Finset.inf_singleton]
       linarith
     · intro n (hmn : m ≤ n) ih
       have : γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) ≤ γ + d (f m (n + 1)) := by
@@ -163,7 +164,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
           _ ≤ γ + d t := add_le_add (d_le_γ _ (hs.diff ht)) le_rfl
 
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
-    simpa only [le_sub_iff_add_le, zero_add] using this
+    simpa only [d, le_sub_iff_add_le, zero_add] using this
   · intro t ht hts
     have : d t ≤ 0 :=
       (add_le_add_iff_left γ).1 <|
@@ -175,7 +176,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
           _ ≤ γ + 0 := by rw [add_zero]; exact d_le_γ _ (hs.union ht)
 
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
-    simpa only [sub_le_iff_le_add, zero_add] using this
+    simpa only [d, sub_le_iff_le_add, zero_add] using this
 #align measure_theory.hahn_decomposition MeasureTheory.hahn_decomposition
 
 end MeasureTheory

@@ -261,7 +261,6 @@ theorem nim_equiv_iff_eq {o₁ o₂ : Ordinal} : (nim o₁ ≈ nim o₂) ↔ o�
 noncomputable def grundyValue : PGame.{u} → Ordinal.{u}
   | G => Ordinal.mex.{u, u} fun i => grundyValue (G.moveLeft i)
 termination_by G => G
-decreasing_by pgame_wf_tac
 #align pgame.grundy_value SetTheory.PGame.grundyValue
 
 theorem grundyValue_eq_mex_left (G : PGame) :
@@ -395,7 +394,7 @@ theorem grundyValue_nim_add_nim (n m : ℕ) :
       simp [Nat.lxor_cancel_right, hn _ h]
     -- In the second case, reducing the `n` pile to `u ^^^ m` gives the desired Grundy value.
     · refine' ⟨toLeftMovesAdd (Sum.inr <| toLeftMovesNim ⟨_, Ordinal.nat_cast_lt.2 h⟩), _⟩
-      have : n ^^^ (u ^^^ n) = u; rw [Nat.xor_comm u, Nat.xor_cancel_left]
+      have : n ^^^ (u ^^^ n) = u := by rw [Nat.xor_comm u, Nat.xor_cancel_left]
       simpa [hm _ h] using this
 #align pgame.grundy_value_nim_add_nim SetTheory.PGame.grundyValue_nim_add_nim
 

@@ -102,7 +102,7 @@ theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x
 #align ring_invo.involution RingInvo.involution
 
--- porting note: remove Coe instance, not needed
+-- Porting note: remove Coe instance, not needed
 -- instance hasCoeToRingEquiv : Coe (RingInvo R) (R ≃+* Rᵐᵒᵖ) :=
 --   ⟨RingInvo.toRingEquiv⟩
 -- #align ring_invo.has_coe_to_ring_equiv RingInvo.hasCoeToRingEquiv
@@ -112,7 +112,7 @@ theorem coe_ringEquiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f 
   rfl
 #align ring_invo.coe_ring_equiv RingInvo.coe_ringEquiv
 
--- porting Note: simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem map_eq_zero_iff (f : RingInvo R) {x : R} : f x = 0 ↔ x = 0 :=
   f.toRingEquiv.map_eq_zero_iff

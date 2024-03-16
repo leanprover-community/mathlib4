@@ -22,13 +22,12 @@ as a presheaf of abelian groups with additional data.
 * Pushforward and pullback.
 -/
 
-universe v₁ u₁ u
+universe v₁ u₁ u v
 
 open CategoryTheory LinearMap Opposite
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-set_option autoImplicit true in
 /-- A presheaf of modules over a given presheaf of rings,
 described as a presheaf of abelian groups, and the extra data of the action at each object,
 and a condition relating functoriality and scalar multiplication. -/
@@ -169,6 +168,8 @@ instance : AddCommGroup (P ⟶ Q) where
   add_zero := by intros; ext1; simp only [add_app, zero_app, add_zero]
   add_comm := by intros; ext1; simp only [add_app]; apply add_comm
   sub_eq_add_neg := by intros; ext1; simp only [add_app, sub_app, neg_app, sub_eq_add_neg]
+  nsmul := nsmulRec
+  zsmul := zsmulRec
 
 instance : Preadditive (PresheafOfModules R) where
   add_comp := by intros; ext1; simp only [comp_app, add_app, comp_add]

@@ -25,7 +25,8 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open Classical BigOperators NNReal ENNReal
+open scoped Classical
+open BigOperators NNReal ENNReal
 
 open MeasureTheory
 
@@ -53,7 +54,7 @@ theorem support_pure : (pure a).support = {a} :=
 theorem mem_support_pure_iff : a' ∈ (pure a).support ↔ a' = a := by simp
 #align pmf.mem_support_pure_iff PMF.mem_support_pure_iff
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem pure_apply_self : pure a a = 1 :=
   if_pos rfl
 #align pmf.pure_apply_self PMF.pure_apply_self

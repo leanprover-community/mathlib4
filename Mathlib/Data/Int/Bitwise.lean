@@ -193,30 +193,30 @@ theorem bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using
 end deprecated
 
 @[simp]
-theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_zero
+theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_zero
   | -[n+1] => by
-    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_zero]; clear testBit_zero;
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero]; clear testBit_bit_zero;
         cases b <;>
       rfl
-#align int.test_bit_zero Int.testBit_zero
+#align int.test_bit_zero Int.testBit_bit_zero
 
 @[simp]
-theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_succ
+theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_succ
   | -[n+1] => by
     dsimp only [testBit]
     simp only [bit_negSucc]
-    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_succ]
-#align int.test_bit_succ Int.testBit_succ
+    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_bit_succ]
+#align int.test_bit_succ Int.testBit_bit_succ
 
--- Porting note: TODO
+-- Porting note (#11215): TODO
 -- /- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/
 -- private unsafe def bitwise_tac : tactic Unit :=
 --   sorry
 -- #align int.bitwise_tac int.bitwise_tac
 
---Porting note : Was `bitwise_tac` in mathlib
+-- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_or : bitwise or = lor := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -234,7 +234,7 @@ theorem bitwise_or : bitwise or = lor := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_or Int.bitwise_or
 
---Porting note : Was `bitwise_tac` in mathlib
+-- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_and : bitwise and = land := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -250,7 +250,7 @@ theorem bitwise_and : bitwise and = land := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_and Int.bitwise_and
 
---Porting note : Was `bitwise_tac` in mathlib
+-- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -269,7 +269,7 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_diff Int.bitwise_diff
 
---Porting note : Was `bitwise_tac` in mathlib
+-- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_xor : bitwise xor = Int.xor := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -414,7 +414,8 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
         by dsimp; simp [← Nat.shiftLeft_sub _ , add_tsub_cancel_left])
       fun i n => by
         dsimp
-        simp [Nat.shiftLeft_zero, Nat.shiftRight_add, ← Nat.shiftLeft_sub]
+        simp only [Nat.shiftLeft'_false, Nat.shiftRight_add, le_refl, ← Nat.shiftLeft_sub,
+          tsub_eq_zero_of_le, Nat.shiftLeft_zero]
         rfl
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ

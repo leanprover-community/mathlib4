@@ -15,8 +15,9 @@ import Mathlib.Topology.Homotopy.Basic
 This file defines H-spaces mainly following the approach proposed by Serre in his paper
 *Homologie singulière des espaces fibrés*. The idea beneath `H-spaces` is that they are topological
 spaces with a binary operation `⋀ : X → X → X` that is a homotopic-theoretic weakening of an
-operation what would make `X` into a topological monoid. In particular, there exists a "neutral
-element" `e : X` such that `λ x, e ⋀ x` and `λ x, x ⋀ e` are homotopic to the identity on `X`, see
+operation what would make `X` into a topological monoid.
+In particular, there exists a "neutral element" `e : X` such that `fun x ↦e ⋀ x` and
+`fun x ↦x ⋀ e` are homotopic to the identity on `X`, see
 [the Wikipedia page of H-spaces](https://en.wikipedia.org/wiki/H-space).
 
 Some notable properties of `H-spaces` are
@@ -35,7 +36,7 @@ equal to the product of `H-space` structures on `G` and `G'`.
 
 ## To Do
 * Prove that for every `NormedAddTorsor Z` and every `z : Z`, the operation
-`λ x y, midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
+`fun x y ↦ midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the
 first three inherit the structure because they are topological groups (they are Lie groups,
 actually), isomorphic to the invertible elements in `ℤ`, in `ℂ` and in the quaternion; and the
@@ -47,7 +48,7 @@ particular, only has an instance of `MulOneClass`).
 * [J.-P. Serre, *Homologie singulière des espaces fibrés. Applications*,
   Ann. of Math (2) 1951, 54, 425–505][serre1951]
 -/
--- porting note: `H_space` already contains an upper case letter
+-- Porting note: `H_space` already contains an upper case letter
 set_option linter.uppercaseLean3 false
 universe u v
 
@@ -73,13 +74,13 @@ class HSpace (X : Type u) [TopologicalSpace X] where
 -- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on an H-space
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
--- porting note: opening `HSpaces` so that the above notation works
+-- Porting note: opening `HSpaces` so that the above notation works
 open HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
     [HSpace Y] : HSpace (X × Y) where
   hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by
-    -- porting note: was `continuity`
+    -- Porting note: was `continuity`
     exact ((map_continuous HSpace.hmul).comp ((continuous_fst.comp continuous_fst).prod_mk
         (continuous_fst.comp continuous_snd))).prod_mk ((map_continuous HSpace.hmul).comp
         ((continuous_snd.comp continuous_fst).prod_mk (continuous_snd.comp continuous_snd)))

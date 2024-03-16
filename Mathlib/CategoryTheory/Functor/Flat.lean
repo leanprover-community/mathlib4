@@ -69,22 +69,11 @@ attribute [instance] RepresentablyFlat.cofiltered
 
 attribute [local instance] IsCofiltered.nonempty
 
-instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
-  constructor
-  intro X
-  haveI : Nonempty (StructuredArrow X (𝟭 C)) := ⟨StructuredArrow.mk (𝟙 _)⟩
-  suffices : IsCofilteredOrEmpty (StructuredArrow X (𝟭 C))
-  · constructor
-  constructor
-  · intro Y Z
-    use StructuredArrow.mk (𝟙 _)
-    use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
-    use StructuredArrow.homMk Z.hom (by erw [Functor.id_map, Category.id_comp])
-  · intro Y Z f g
-    use StructuredArrow.mk (𝟙 _)
-    use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
-    ext
-    trans Z.hom <;> simp
+instance RepresentablyFlat.of_isRightAdjoint (F : C ⥤ D) [IsRightAdjoint F] :
+    RepresentablyFlat F where
+  cofiltered _ := IsCofiltered.of_isInitial _ (mkInitialOfLeftAdjoint _ (.ofRightAdjoint F) _)
+
+theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 #align category_theory.representably_flat.id CategoryTheory.RepresentablyFlat.id
 
 instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F]
@@ -95,8 +84,7 @@ instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F
     have f₁ : StructuredArrow X G := Nonempty.some inferInstance
     have f₂ : StructuredArrow f₁.right F := Nonempty.some inferInstance
     exact ⟨StructuredArrow.mk (f₁.hom ≫ G.map f₂.hom)⟩
-  suffices : IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G))
-  · constructor
+  suffices IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G)) by constructor
   constructor
   · intro Y Z
     let W :=
@@ -135,15 +123,7 @@ end RepresentablyFlat
 
 section HasLimit
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
-
-attribute [local instance] hasFiniteLimits_of_hasFiniteLimits_of_size
-
-theorem cofiltered_of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
-  { cone_objs := fun A B => ⟨Limits.prod A B, Limits.prod.fst, Limits.prod.snd, trivial⟩
-    cone_maps := fun _ _ f g => ⟨equalizer f g, equalizer.ι f g, equalizer.condition f g⟩
-    nonempty := ⟨⊤_ C⟩ }
-#align category_theory.cofiltered_of_has_finite_limits CategoryTheory.cofiltered_of_hasFiniteLimits
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [PreservesFiniteLimits F] :
     RepresentablyFlat F :=
@@ -152,9 +132,9 @@ theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [Preserv
       apply hasFiniteLimits_of_hasFiniteLimits_of_size.{v₁} (StructuredArrow X F)
       intro J sJ fJ
       constructor
-      -- porting note: instance was inferred automatically in Lean 3
+      -- Porting note: instance was inferred automatically in Lean 3
       infer_instance
-    cofiltered_of_hasFiniteLimits⟩
+    IsCofiltered.of_hasFiniteLimits _⟩
 #align category_theory.flat_of_preserves_finite_limits CategoryTheory.flat_of_preservesFiniteLimits
 
 namespace PreservesFiniteLimitsOfFlat
@@ -206,15 +186,14 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     intro j
     injection c₀.π.naturality (BiconeHom.left j) with _ e₁
     injection c₀.π.naturality (BiconeHom.right j) with _ e₂
-    convert e₁.symm.trans e₂ <;> simp
+    convert e₁.symm.trans e₂ <;> simp [c₁, c₂]
   have : c.extend g₁.right = c.extend g₂.right := by
     unfold Cone.extend
     congr 1
     ext x
     apply this
   -- And thus they are equal as `c` is the limit.
-  have : g₁.right = g₂.right
-  calc
+  have : g₁.right = g₂.right := calc
     g₁.right = hc.lift (c.extend g₁.right) := by
       apply hc.uniq (c.extend _)
       -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
@@ -270,7 +249,7 @@ noncomputable def preservesFiniteLimitsIffFlat [HasFiniteLimits C] (F : C ⥤ D)
     unfold preservesFiniteLimitsOfFlat
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
     congr
-    -- porting note: this next line wasn't needed in lean 3
+    -- Porting note: this next line wasn't needed in lean 3
     apply Subsingleton.elim
 
 #align category_theory.preserves_finite_limits_iff_flat CategoryTheory.preservesFiniteLimitsIffFlat
@@ -292,7 +271,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
   NatIso.ofComponents (fun G => colim.mapIso (Iso.refl _))
     (by
       intro G H i
-      -- porting note: was `ext` in lean 3
+      -- Porting note: was `ext` in lean 3
       -- Now `ext` can't see that `lan` is a colimit.
       -- Uncertain whether it makes sense to add another `@[ext]` lemma.
       -- See https://github.com/leanprover-community/mathlib4/issues/5229
@@ -300,7 +279,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       intro j
       simp only [Functor.comp_map, Functor.mapIso_refl, evaluation_obj_map, whiskeringLeft_obj_map,
         lan_map_app, colimit.ι_desc_assoc, Category.comp_id, Category.assoc]
-      -- porting note: this deals with the fact that the type of `lan_map_app` has changed
+      -- Porting note: this deals with the fact that the type of `lan_map_app` has changed
       -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/change.20in.20behaviour.20with.20.60simps.60/near/354350606
       erw [show ((Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left =
         colimit.ι (Lan.diagram F H (F.obj j.left))
@@ -325,7 +304,7 @@ variable [PreservesLimits (forget E)]
 noncomputable instance lanPreservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F] :
     PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
-  intro J _ _; skip
+  intro J _ _
   apply preservesLimitsOfShapeOfEvaluation (lan F.op : (Cᵒᵖ ⥤ E) ⥤ Dᵒᵖ ⥤ E) J
   intro K
   haveI : IsFiltered (CostructuredArrow F.op K) :=
@@ -352,11 +331,10 @@ set_option linter.uppercaseLean3 false in
 theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
   ⟨fun H => inferInstance, fun H => by
-    skip
     haveI := preservesFiniteLimitsOfFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁)
     haveI : PreservesFiniteLimits F := by
       apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
-      intros; skip; apply preservesLimitOfLanPreservesLimit
+      intros; apply preservesLimitOfLanPreservesLimit
     apply flat_of_preservesFiniteLimits⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.flat_iff_Lan_flat CategoryTheory.flat_iff_lan_flat
@@ -371,20 +349,20 @@ noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D)
     apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
     intros; apply preservesLimitOfLanPreservesLimit
   left_inv x := by
-    -- porting note: `cases x` and an `unfold` not necessary in lean 4.
+    -- Porting note: `cases x` and an `unfold` not necessary in lean 4.
     -- Remark : in mathlib3 we had `unfold preservesFiniteLimitsOfFlat`
     -- but there was no `preservesFiniteLimitsOfFlat` in the goal! Experimentation
     -- indicates that it was doing the same as `dsimp only`
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]; congr
-    -- porting note: next line wasn't necessary in lean 3
+    -- Porting note: next line wasn't necessary in lean 3
     apply Subsingleton.elim
   right_inv x := by
-    -- cases x; -- porting note: not necessary in lean 4
+    -- cases x; -- Porting note: not necessary in lean 4
     dsimp only [lanPreservesFiniteLimitsOfPreservesFiniteLimits,
       lanPreservesFiniteLimitsOfFlat,
       preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
     congr
-    -- porting note: next line wasn't necessary in lean 3
+    -- Porting note: next line wasn't necessary in lean 3
     apply Subsingleton.elim
 set_option linter.uppercaseLean3 false in
 #align category_theory.preserves_finite_limits_iff_Lan_preserves_finite_limits CategoryTheory.preservesFiniteLimitsIffLanPreservesFiniteLimits

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Data.Set.Intervals.OrderEmbedding
-import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Antichain
+import Mathlib.Order.SetNotation
 
 #align_import data.set.intervals.ord_connected from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
 
@@ -154,12 +154,12 @@ theorem ordConnected_dual {s : Set α} : OrdConnected (OrderDual.ofDual ⁻¹' s
 
 theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
     OrdConnected (⋂₀ S) :=
-  ⟨fun _ hx _ hy => subset_sInter fun s hs => (hS s hs).out (hx s hs) (hy s hs)⟩
+  ⟨fun _x hx _y hy _z hz s hs => (hS s hs).out (hx s hs) (hy s hs) hz⟩
 #align set.ord_connected_sInter Set.ordConnected_sInter
 
 theorem ordConnected_iInter {ι : Sort*} {s : ι → Set α} (hs : ∀ i, OrdConnected (s i)) :
     OrdConnected (⋂ i, s i) :=
-  ordConnected_sInter <| forall_range_iff.2 hs
+  ordConnected_sInter <| forall_mem_range.2 hs
 #align set.ord_connected_Inter Set.ordConnected_iInter
 
 instance ordConnected_iInter' {ι : Sort*} {s : ι → Set α} [∀ i, OrdConnected (s i)] :
@@ -260,7 +260,7 @@ theorem ordConnected_image {E : Type*} [EquivLike E α β] [OrderIsoClass E α �
   apply ordConnected_preimage (e : α ≃o β).symm
 #align set.ord_connected_image Set.ordConnected_image
 
--- porting note: split up `simp_rw [← image_univ, OrdConnected_image e]`, would not work otherwise
+-- Porting note: split up `simp_rw [← image_univ, OrdConnected_image e]`, would not work otherwise
 @[instance]
 theorem ordConnected_range {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
     OrdConnected (range e) := by

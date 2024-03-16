@@ -87,7 +87,7 @@ variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
 variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
 
 instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G α :=
-  ⟨λ η => η.app _⟩
+  ⟨fun η ↦ η.app _⟩
 
 variable {F G}
 
@@ -188,7 +188,7 @@ theorem comp_apply (η' : ApplicativeTransformation G H) (η : ApplicativeTransf
   rfl
 #align applicative_transformation.comp_apply ApplicativeTransformation.comp_apply
 
--- porting note: in mathlib3 we also had the assumption `[LawfulApplicative I]` because
+-- Porting note: in mathlib3 we also had the assumption `[LawfulApplicative I]` because
 -- this was assumed
 theorem comp_assoc {I : Type u → Type t} [Applicative I]
     (η'' : ApplicativeTransformation H I) (η' : ApplicativeTransformation G H)
@@ -292,7 +292,7 @@ variable {F : Type u → Type u}
 
 variable [Applicative F]
 
--- porting note: this was marked as a dubious translation but the only issue seems to be
+-- Porting note: this was marked as a dubious translation but the only issue seems to be
 -- a universe issue; this may be a bug in mathlib3port. I've carefully checked the universes
 -- in mathlib3 and mathlib4 and they seem to match up exactly. Discussion here
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/why.20dubious.3F/

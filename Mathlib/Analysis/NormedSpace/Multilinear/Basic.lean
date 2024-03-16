@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
 #align_import analysis.normed_space.multilinear from "leanprover-community/mathlib"@"f40476639bac089693a489c9e354ebd75dc0f886"
@@ -105,20 +105,10 @@ does not satisfy this condition. -/
 lemma norm_map_coord_zero (hf : Continuous f) {m : ∀ i, E i} {i : ι} (hi : ‖m i‖ = 0) :
     ‖f m‖ = 0 := by
   classical
-  have : Nonempty ι := ⟨i⟩
-  set m' : 𝕜 → ∀ i, E i := fun ε : 𝕜 ↦ update (ε • m) i (ε⁻¹ ^ (Fintype.card ι) • ((ε • m) i))
-  have A : Tendsto m' (𝓝[≠] 0) (𝓝 0) := by
-    rw [← update_eq_self i (0 : ∀ i, E i)]
-    refine (Tendsto.mono_left ?_ inf_le_left).update i ?_
-    · exact (continuous_id.smul continuous_const).tendsto' _ _ (zero_smul _ m)
-    · refine NormedAddCommGroup.tendsto_nhds_zero.2 fun r hr ↦ eventually_mem_nhdsWithin.mono ?_
-      simp [norm_smul, *]
-  have B : Tendsto (‖f <| m' ·‖) (𝓝[≠] 0) (𝓝 0) := by
-    simpa only [f.map_zero, norm_zero] using ((hf.tendsto 0).comp A).norm
-  refine tendsto_nhds_unique (tendsto_const_nhds.congr' ?_) B
-  refine eventually_mem_nhdsWithin.mono fun ε (hε : ε ≠ 0) ↦ ?_
-  simp_rw [f.map_smul, Pi.smul_def, update_eq_self, f.map_smul_univ, prod_const, smul_smul,
-    Fintype.card, ← mul_pow, inv_mul_cancel hε, one_pow, one_smul]
+  rw [← inseparable_zero_iff_norm] at hi ⊢
+  have : Inseparable (update m i 0) m := inseparable_pi.2 <|
+    (forall_update_iff m fun i a ↦ Inseparable a (m i)).2 ⟨hi.symm, fun _ _ ↦ rfl⟩
+  simpa only [map_update_zero] using this.symm.map hf
 
 theorem bound_of_shell_of_norm_map_coord_zero (hf₀ : ∀ {m i}, ‖m i‖ = 0 → ‖f m‖ = 0)
     {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
@@ -256,8 +246,8 @@ continuous. -/
 theorem continuous_of_bound (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : Continuous f := by
   let D := max C 1
   have D_pos : 0 ≤ D := le_trans zero_le_one (le_max_right _ _)
-  replace H : ∀ m, ‖f m‖ ≤ D * ∏ i, ‖m i‖
-  · intro m
+  replace H : ∀ m, ‖f m‖ ≤ D * ∏ i, ‖m i‖ := by
+    intro m
     apply le_trans (H m) (mul_le_mul_of_nonneg_right (le_max_left _ _) _)
     exact prod_nonneg fun (i : ι) _ => norm_nonneg (m i)
   refine' continuous_iff_continuousAt.2 fun m => _
@@ -881,7 +871,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 theorem norm_mkPiAlgebraFin_succ_le : ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n.succ A‖ ≤ 1 := by
   refine opNorm_le_bound _ zero_le_one fun m => ?_
   simp only [ContinuousMultilinearMap.mkPiAlgebraFin_apply, one_mul, List.ofFn_eq_map,
-    Fin.prod_univ_def, Multiset.coe_map, Multiset.coe_prod]
+    Fin.prod_univ_def, Multiset.map_coe, Multiset.prod_coe]
   refine' (List.norm_prod_le' _).trans_eq _
   · rw [Ne.def, List.map_eq_nil, List.finRange_eq_nil]
     exact Nat.succ_ne_zero _
@@ -916,48 +906,31 @@ theorem norm_mkPiAlgebraFin [NormOneClass A] :
 
 end
 
-variable (𝕜 ι)
-
-/-- The canonical continuous multilinear map on `𝕜^ι`, associating to `m` the product of all the
-`m i` (multiplied by a fixed reference element `z` in the target module) -/
-protected def mkPiField (z : G) : ContinuousMultilinearMap 𝕜 (fun _ : ι => 𝕜) G :=
-  MultilinearMap.mkContinuous (MultilinearMap.mkPiRing 𝕜 ι z) ‖z‖ fun m => by
-    simp only [MultilinearMap.mkPiRing_apply, norm_smul, norm_prod, mul_comm, le_rfl]
-#align continuous_multilinear_map.mk_pi_field ContinuousMultilinearMap.mkPiField
-
-variable {𝕜 ι}
+@[simp]
+theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
+    ‖f.smulRight z‖₊ = ‖f‖₊ * ‖z‖₊ := by
+  refine le_antisymm ?_ ?_
+  · refine (opNNNorm_le_iff _ |>.2 fun m => (nnnorm_smul_le _ _).trans ?_)
+    rw [mul_right_comm]
+    gcongr
+    exact le_opNNNorm _ _
+  · obtain hz | hz := eq_or_ne ‖z‖₊ 0
+    · simp [hz]
+    rw [← NNReal.le_div_iff hz, opNNNorm_le_iff]
+    intro m
+    rw [div_mul_eq_mul_div, NNReal.le_div_iff hz]
+    refine le_trans ?_ ((f.smulRight z).le_opNNNorm m)
+    rw [smulRight_apply, nnnorm_smul]
 
 @[simp]
-theorem mkPiField_apply (z : G) (m : ι → 𝕜) :
-    (ContinuousMultilinearMap.mkPiField 𝕜 ι z : (ι → 𝕜) → G) m = (∏ i, m i) • z :=
-  rfl
-#align continuous_multilinear_map.mk_pi_field_apply ContinuousMultilinearMap.mkPiField_apply
-
-theorem mkPiField_apply_one_eq_self (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => 𝕜) G) :
-    ContinuousMultilinearMap.mkPiField 𝕜 ι (f fun _ => 1) = f :=
-  toMultilinearMap_injective f.toMultilinearMap.mkPiRing_apply_one_eq_self
-#align continuous_multilinear_map.mk_pi_field_apply_one_eq_self ContinuousMultilinearMap.mkPiField_apply_one_eq_self
+theorem norm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
+    ‖f.smulRight z‖ = ‖f‖ * ‖z‖ :=
+  congr_arg NNReal.toReal (nnnorm_smulRight f z)
 
 @[simp]
-theorem norm_mkPiField (z : G) : ‖ContinuousMultilinearMap.mkPiField 𝕜 ι z‖ = ‖z‖ :=
-  (MultilinearMap.mkContinuous_norm_le _ (norm_nonneg z) _).antisymm <| by
-    simpa using (ContinuousMultilinearMap.mkPiField 𝕜 ι z).le_opNorm fun _ => 1
-#align continuous_multilinear_map.norm_mk_pi_field ContinuousMultilinearMap.norm_mkPiField
-
-theorem mkPiField_eq_iff {z₁ z₂ : G} :
-    ContinuousMultilinearMap.mkPiField 𝕜 ι z₁ = ContinuousMultilinearMap.mkPiField 𝕜 ι z₂ ↔
-      z₁ = z₂ := by
-  rw [← toMultilinearMap_injective.eq_iff]
-  exact MultilinearMap.mkPiRing_eq_iff
-#align continuous_multilinear_map.mk_pi_field_eq_iff ContinuousMultilinearMap.mkPiField_eq_iff
-
-theorem mkPiField_zero : ContinuousMultilinearMap.mkPiField 𝕜 ι (0 : G) = 0 := by
-  ext; rw [mkPiField_apply, smul_zero, ContinuousMultilinearMap.zero_apply]
-#align continuous_multilinear_map.mk_pi_field_zero ContinuousMultilinearMap.mkPiField_zero
-
-theorem mkPiField_eq_zero_iff (z : G) : ContinuousMultilinearMap.mkPiField 𝕜 ι z = 0 ↔ z = 0 := by
-  rw [← mkPiField_zero, mkPiField_eq_iff]
-#align continuous_multilinear_map.mk_pi_field_eq_zero_iff ContinuousMultilinearMap.mkPiField_eq_zero_iff
+theorem norm_mkPiRing (z : G) : ‖ContinuousMultilinearMap.mkPiRing 𝕜 ι z‖ = ‖z‖ := by
+  rw [ContinuousMultilinearMap.mkPiRing, norm_smulRight, norm_mkPiAlgebra, one_mul]
+#align continuous_multilinear_map.norm_mk_pi_field ContinuousMultilinearMap.norm_mkPiRing
 
 variable (𝕜 ι G)
 
@@ -966,7 +939,7 @@ continuous multilinear map is completely determined by its value on the constant
 ones. We register this bijection as a linear isometry in
 `ContinuousMultilinearMap.piFieldEquiv`. -/
 protected def piFieldEquiv : G ≃ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι => 𝕜) G where
-  toFun z := ContinuousMultilinearMap.mkPiField 𝕜 ι z
+  toFun z := ContinuousMultilinearMap.mkPiRing 𝕜 ι z
   invFun f := f fun i => 1
   map_add' z z' := by
     ext m
@@ -975,8 +948,8 @@ protected def piFieldEquiv : G ≃ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fu
     ext m
     simp [smul_smul, mul_comm]
   left_inv z := by simp
-  right_inv f := f.mkPiField_apply_one_eq_self
-  norm_map' := norm_mkPiField
+  right_inv f := f.mkPiRing_apply_one_eq_self
+  norm_map' := norm_mkPiRing
 #align continuous_multilinear_map.pi_field_equiv ContinuousMultilinearMap.piFieldEquiv
 
 end ContinuousMultilinearMap
@@ -1414,13 +1387,11 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
   let Fmult : MultilinearMap 𝕜 E G :=
     { toFun := F
       map_add' := fun v i x y => by
-        skip
         have A := hF (Function.update v i (x + y))
         have B := (hF (Function.update v i x)).add (hF (Function.update v i y))
         simp? at A B says simp only [map_add] at A B
         exact tendsto_nhds_unique A B
       map_smul' := fun v i c x => by
-        skip
         have A := hF (Function.update v i (c • x))
         have B := Filter.Tendsto.smul (tendsto_const_nhds (x := c)) (hF (Function.update v i x))
         simp? at A B says simp only [map_smul] at A B
