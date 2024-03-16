@@ -1547,12 +1547,6 @@ theorem count_le_count_of_factors_le [DecidableEq (Associates α)] {a b p : Asso
   exact Multiset.count_le_of_le _ h
 #align associates.count_le_count_of_factors_le Associates.count_le_count_of_factors_le
 
-theorem eq_of_prod_eq_prod [Nontrivial α] {a b : FactorSet α} (h : a.prod = b.prod) : a = b := by
-  classical
-    have : a.prod.factors = b.prod.factors := by rw [h]
-    rwa [prod_factors, prod_factors] at this
-#align associates.eq_of_prod_eq_prod Associates.eq_of_prod_eq_prod
-
 @[simp]
 theorem factors_mul (a b : Associates α) : (a * b).factors = a.factors + b.factors := by
   cases subsingleton_or_nontrivial α
@@ -1935,16 +1929,6 @@ theorem eq_pow_find_of_dvd_irreducible_pow {a p : Associates α} (hp : Irreducib
   classical rw [count_factors_eq_find_of_dvd_pow hp, ← eq_pow_count_factors_of_dvd_pow hp h]
   exact h
 #align associates.eq_pow_find_of_dvd_irreducible_pow Associates.eq_pow_find_of_dvd_irreducible_pow
-
-theorem prod_le [Nontrivial α] {a b : FactorSet α} : a.prod ≤ b.prod ↔ a ≤ b := by
-  classical
-    exact
-      Iff.intro
-        (fun h => by
-          have : a.prod.factors ≤ b.prod.factors := factors_mono h
-          rwa [prod_factors, prod_factors] at this)
-        prod_mono
-#align associates.prod_le Associates.prod_le
 
 end Associates
 
