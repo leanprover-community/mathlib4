@@ -3,10 +3,7 @@ Tests for norm_cast
 -/
 
 import Mathlib.Tactic.Ring
-import Mathlib.Data.Option.Defs
 import Mathlib.Data.Complex.Basic
-import Mathlib.Data.Rat.Cast.Order
-
 import Mathlib.Data.ENNReal.Inv
 
 -- set_option trace.Tactic.norm_cast true
@@ -129,15 +126,14 @@ example (a b : ℕ) (h2 : ((a + b + 0 : ℕ) : ℤ) = 10) :
 
 namespace ENNReal
 
--- --TODO: debug
--- open ENNReal
--- lemma half_lt_self_bis {a : ℝ≥0∞} (hz : a ≠ 0) (ht : a ≠ ⊤) : a / 2 < a := by
---   lift a to NNReal using ht
---   have h : (2 : ℝ≥0∞) = ((2 : NNReal) : ℝ≥0∞) := rfl
---   have h' : (2 : NNReal) ≠ 0 := two_ne_zero
---   rw [h, ← coe_div h', coe_lt_coe] -- `norm_cast` fails to apply `coe_div`
---   norm_cast at hz
---   exact NNReal.half_lt_self hz
+open ENNReal
+lemma half_lt_self_bis {a : ℝ≥0∞} (hz : a ≠ 0) (ht : a ≠ ⊤) : a / 2 < a := by
+  lift a to NNReal using ht
+  have h : (2 : ℝ≥0∞) = ((2 : NNReal) : ℝ≥0∞) := rfl
+  have h' : (2 : NNReal) ≠ 0 := two_ne_zero
+  rw [h, ← coe_div h', coe_lt_coe] -- `norm_cast` fails to apply `coe_div`
+  norm_cast at hz
+  exact NNReal.half_lt_self hz
 
 end ENNReal
 
