@@ -42,7 +42,7 @@ file.
 * `cs.rightInvSeq`
 
 ## References
-* [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*][bjorner2005]
+* [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
 -/
 
 noncomputable section
@@ -61,8 +61,8 @@ local prefix:100 "π" => cs.wordProd
 
 /-! ### Length -/
 
-local instance (w : W) : DecidablePred (fun n ↦ ∃ ω : List B, ω.length = n ∧ π ω = w)
-  := Classical.decPred _
+private local instance (w : W) : DecidablePred (fun n ↦ ∃ ω : List B, ω.length = n ∧ π ω = w) :=
+  Classical.decPred _
 
 private theorem exists_word_with_prod (w : W) : ∃ n : ℕ, ∃ ω : List B, ω.length = n ∧ π ω = w := by
   rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
@@ -137,15 +137,15 @@ private def lengthParity (cs : CoxeterSystem M W) : W →* Multiplicative (ZMod 
 private theorem lengthParity_simple :
     ⇑(CoxeterSystem.lengthParity cs) ∘ simpleReflection cs = fun _ ↦ Multiplicative.ofAdd 1 := by
   ext x
-  simp
+  dsimp
   rw [lengthParity, lift_apply_simple]
 
 private theorem parity_length_eq' (w : W) :
     Multiplicative.toAdd (cs.lengthParity w) = ((↑) : ℕ → ZMod 2) (ℓ w) := by
   rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
   nth_rw 1 [wordProd]
-  rw [MonoidHom.map_list_prod, List.map_map, lengthParity_simple]
-  simp
+  rw [MonoidHom.map_list_prod, List.map_map, lengthParity_simple,
+      map_const', prod_replicate, toAdd_pow, toAdd_ofAdd, nsmul_eq_mul, mul_one]
   tauto
 
 theorem length_mul_mod_two (w₁ w₂ : W) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ + ℓ w₂) % 2 := by
@@ -301,6 +301,8 @@ theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : 
 
 /-! ### Reduced words -/
 
+/-- The proposition that `ω` is reduced; that is, it has minimal length among all words that
+represent the same element of `W`. -/
 def IsReduced (ω : List B) : Prop := ℓ (π ω) = ω.length
 
 @[simp] theorem isReduced_reverse (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
@@ -343,18 +345,15 @@ theorem isReduced_take {ω : List B} (rω : cs.IsReduced ω) (j : ℕ) : cs.IsRe
 theorem isReduced_drop {ω : List B} (rω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.drop j) :=
   (isReduced_take_and_drop _ rω _).2
 
-theorem alternatingWord_not_reduced (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) (hm : m > M i i') :
+theorem not_isReduced_alternatingWord (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) (hm : m > M i i') :
     ¬ cs.IsReduced (alternatingWord i i' m) := by
   induction' hm with m _ ih
   · -- Base case; m = M i i' + 1
     suffices h : ℓ (π (alternatingWord i i' (M i i' + 1))) < M i i' + 1 by
       unfold IsReduced
-      simp
+      rw [Nat.succ_eq_add_one, length_alternatingWord]
       linarith
-    have : M i i' + 1 ≤ M i i' * 2 := by
-      rw [mul_two]
-      apply add_le_add_left
-      exact Nat.one_le_iff_ne_zero.mpr hM
+    have : M i i' + 1 ≤ M i i' * 2 := by linarith [Nat.one_le_iff_ne_zero.mpr hM]
     rw [cs.prod_alternatingWord_eq_prod_alternatingWord i i' _ this]
 
     have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by
@@ -382,6 +381,7 @@ theorem alternatingWord_not_reduced (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) (hm
 $w s_i w^{-1}$, where $w \in W$ and $s_i$ is a simple reflection. -/
 def IsReflection (t : W) : Prop := ∃ w : W, ∃ i : B, t = w * s i * w⁻¹
 
+/-- The set of all reflections of the Coxeter group `W`. -/
 def reflections : Set W := {t : W | cs.IsReflection t}
 
 theorem isReflection_simple (i : B) : cs.IsReflection (s i) := by use 1, i; simp
@@ -403,9 +403,8 @@ alias inv_eq_self_of_isReflection := inv_reflection_eq
 theorem length_reflection_odd {t : W} (rt : cs.IsReflection t) : Odd (ℓ t) := by
   rw [Nat.odd_iff]
   rcases rt with ⟨w, i, rfl⟩
-  rw [length_mul_mod_two, Nat.add_mod, length_mul_mod_two, ← Nat.add_mod]
-  simp
-  rw [add_comm, ← add_assoc, ← two_mul, Nat.mul_add_mod]
+  rw [length_mul_mod_two, Nat.add_mod, length_mul_mod_two, ← Nat.add_mod,
+      length_simple, length_inv, add_comm, ← add_assoc, ← two_mul, Nat.mul_add_mod]
   norm_num
 
 alias odd_length_of_isReflection := length_reflection_odd
@@ -465,7 +464,8 @@ theorem rightInvSeq_concat (ω : List B) (i : B) :
   · simp
   · dsimp [rightInvSeq]
     rw [ih]
-    simp
+    simp only [concat_eq_append, wordProd_append, wordProd_cons, wordProd_nil, mul_one, mul_inv_rev,
+      simple_inv, cons_append, cons.injEq, and_true]
     group
 
 theorem leftInvSeq_concat (ω : List B) (i : B) :
@@ -474,7 +474,9 @@ theorem leftInvSeq_concat (ω : List B) (i : B) :
   · simp
   · dsimp [leftInvSeq]
     rw [ih]
-    simp
+    simp only [concat_eq_append, map_append, map_cons, _root_.map_mul, MulAut.conj_apply,
+      simple_inv, map_inv, mul_inv_rev, map_nil, wordProd_cons, cons_append, cons.injEq,
+      append_cancel_left_eq, and_true, true_and]
     group
     simp [mul_assoc]
 
@@ -650,17 +652,17 @@ theorem nodup_rightInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω) : Lis
     rw [eraseIdx_eq_take_drop_succ]
     rw [drop_append_eq_append_drop]
     rw [drop_length_le (by simp; left; linarith)]
-    simp
+    rw [length_take, drop_drop, nil_append]
     rw [min_eq_left_of_lt (j_lt_j'.trans j'_lt_length)]
     rw [Nat.succ_eq_add_one, ← add_assoc, Nat.sub_add_cancel (by linarith)]
-    simp
+    rw [mul_left_inj, mul_right_inj]
     congr 2
     -- ⊢ get? (take j ω ++ drop (j + 1) ω) (j' - 1) = get? ω j'
     rw [get?_append_right (by simp; left; exact Nat.le_sub_one_of_lt j_lt_j')]
     rw [get?_drop]
     congr
     -- ⊢ j + 1 + (j' - 1 - List.length (take j ω)) = j'
-    simp
+    rw [length_take]
     rw [min_eq_left_of_lt (j_lt_j'.trans j'_lt_length)]
     rw [Nat.sub_sub, add_comm 1, Nat.add_sub_cancel' (by linarith)]
 
