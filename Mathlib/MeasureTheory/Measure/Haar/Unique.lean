@@ -342,9 +342,9 @@ lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsHaar
     _ = c • haarScalarFactor μ' μ := by
       rw [← haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero]
 
-@[to_additive (attr := simp) addHaarScalarFactor_self_eq_one]
-lemma haarScalarFactor_self_eq_one (μ : Measure G) [IsHaarMeasure μ] :
-  haarScalarFactor μ μ = 1 := by
+@[to_additive (attr := simp)]
+lemma haarScalarFactor_self (μ : Measure G) [IsHaarMeasure μ] :
+    haarScalarFactor μ μ = 1 := by
   by_cases hG : LocallyCompactSpace G; swap
   · simp [haarScalarFactor, hG]
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
@@ -378,24 +378,6 @@ lemma haarScalarFactor_eq_mul (μ' μ ν : Measure G)
   change (haarScalarFactor μ' ν : ℝ) * ∫ (x : G), g x ∂ν =
     (haarScalarFactor μ' μ * haarScalarFactor μ ν : ℝ≥0) * ∫ (x : G), g x ∂ν at Z
   simpa only [mul_eq_mul_right_iff (M₀ := ℝ), int_g_pos.ne', or_false, NNReal.eq_iff] using Z
-
-@[to_additive (attr := simp)]
-lemma haarScalarFactor_self (μ : Measure G) [IsHaarMeasure μ] :
-    haarScalarFactor μ μ = 1 := by
-  -- The group has to be locally compact, otherwise the scalar factor is 1 by definition.
-  by_cases hG : LocallyCompactSpace G; swap
-  · simp [haarScalarFactor, hG]
-  -- Fix some nonzero continuous function with compact support `g`.
-  obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
-    ∃ (g : C(G, ℝ)), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
-  have Z := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ μ g_cont g_comp
-  have int_g_pos : 0 < ∫ x, g x ∂μ := by
-    apply (integral_pos_iff_support_of_nonneg g_nonneg _).2
-    · exact IsOpen.measure_pos μ g_cont.isOpen_support ⟨1, g_one⟩
-    · exact g_cont.integrable_of_hasCompactSupport g_comp
-  rw [integral_smul_nnreal_measure, eq_comm] at Z
-  change (haarScalarFactor μ μ : ℝ) * ∫ (x : G), g x ∂μ = ∫ (x : G), g x ∂μ at Z
-  simpa [mul_eq_right₀ (M₀ := ℝ), int_g_pos.ne'] using Z
 
   /-- The scalar factor between two left-invariant measures is non-zero when both measures are
 positive on open sets. -/
