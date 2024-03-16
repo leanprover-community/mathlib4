@@ -150,8 +150,8 @@ end tauto₃
 /-
 section closer
 
-example {α : Type*} {β : Type*} (a : α) {s_1 : set α} :
-    (∃ (a_1 : α), a_1 = a ∨ a_1 ∈ s_1) :=
+example {α : Type*} {β : Type*} (a : α) {s_1 : Set α} :
+    (∃ (a_1 : α), a_1 = a ∨ a_1 ∈ s_1) := by
   tauto {closer := `[simp]}
 
 variable {p q r : Prop} {α : Type} {x y z w : α}
@@ -159,7 +159,7 @@ variable (h : x = y) (h₁ : y = z) (h₂ : z = w)
 variable (h'' : (p ∧ q ↔ q ∨ r) ↔ (r ∧ p ↔ r ∨ q))
 -- include h h₁ h₂ h''
 
-example : (((r ∧ p ↔ r ∨ q) ∧ (q ∨ r)) → (p ∧ (x = w) ∧ (¬ x = w → p ∧ q ∧ r))) :=
+example : (((r ∧ p ↔ r ∨ q) ∧ (q ∨ r)) → (p ∧ (x = w) ∧ (¬ x = w → p ∧ q ∧ r))) := by
   tauto {closer := `[cc]}
 
 end closer
