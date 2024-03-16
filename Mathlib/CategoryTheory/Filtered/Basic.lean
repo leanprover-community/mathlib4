@@ -391,6 +391,12 @@ theorem of_cocone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory 
 theorem of_hasFiniteColimits [HasFiniteColimits C] : IsFiltered C :=
   of_cocone_nonempty.{v} C fun F => ⟨colimit.cocone F⟩
 
+theorem of_isTerminal {X : C} (h : IsTerminal X) : IsFiltered C :=
+  of_cocone_nonempty.{v} _ fun {_} _ _ _ => ⟨⟨X, ⟨fun _ => h.from _, fun _ _ _ => h.hom_ext _ _⟩⟩⟩
+
+instance (priority := 100) of_hasTerminal [HasTerminal C] : IsFiltered C :=
+  of_isTerminal _ terminalIsTerminal
+
 /-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape
     in `w` admits a cocone. -/
 theorem iff_cocone_nonempty : IsFiltered C ↔
@@ -872,6 +878,12 @@ theorem of_cone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J]
 theorem of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
   of_cone_nonempty.{v} C fun F => ⟨limit.cone F⟩
 #align category_theory.cofiltered_of_has_finite_limits CategoryTheory.IsCofiltered.of_hasFiniteLimits
+
+theorem of_isInitial {X : C} (h : IsInitial X) : IsCofiltered C :=
+  of_cone_nonempty.{v} _ fun {_} _ _ _ => ⟨⟨X, ⟨fun _ => h.to _, fun _ _ _ => h.hom_ext _ _⟩⟩⟩
+
+instance (priority := 100) of_hasInitial [HasInitial C] : IsCofiltered C :=
+  of_isInitial _ initialIsInitial
 
 @[deprecated] -- 2024-03-11
 alias _root_.CategoryTheory.cofiltered_of_hasFiniteLimits := of_hasFiniteLimits
