@@ -60,7 +60,7 @@ theorem even_add_odd {f : ℕ → M} (he : HasSum (fun k ↦ f (2 * k)) m)
     (ho : HasSum (fun k ↦ f (2 * k + 1)) m') : HasSum f (m + m') := by
   have := mul_right_injective₀ (two_ne_zero' ℕ)
   replace ho := ((add_left_injective 1).comp this).hasSum_range_iff.2 ho
-  refine' (this.hasSum_range_iff.2 he).add_isCompl _ ho
+  refine (this.hasSum_range_iff.2 he).add_isCompl ?_ ho
   simpa [(· ∘ ·)] using Nat.isCompl_even_odd
 #align has_sum.even_add_odd HasSum.even_add_odd
 
@@ -189,7 +189,7 @@ variable [TopologicalSpace G] [TopologicalAddGroup G]
 
 theorem hasSum_nat_add_iff {f : ℕ → G} (k : ℕ) :
     HasSum (fun n ↦ f (n + k)) g ↔ HasSum f (g + ∑ i in range k, f i) := by
-  refine' Iff.trans _ (range k).hasSum_compl_iff
+  refine Iff.trans ?_ (range k).hasSum_compl_iff
   rw [← (notMemRangeEquiv k).symm.hasSum_iff]
   rfl
 #align has_sum_nat_add_iff hasSum_nat_add_iff
@@ -285,8 +285,9 @@ section Int
 
 section Monoid
 
-lemma HasSum.natCast_add_negSucc {f : ℤ → M} (hf : HasSum f m) :
-    HasSum (fun n : ℕ ↦ f n + f (Int.negSucc n)) m := by
+lemma HasSum.nat_add_neg_add_one {f : ℤ → M} (hf : HasSum f m) :
+    HasSum (fun n : ℕ ↦ f n + f (-(n + 1))) m := by
+  change HasSum (fun n : ℕ ↦ f n + f (Int.negSucc n)) m
   have : Injective Int.negSucc := @Int.negSucc.inj
   refine hf.hasSum_of_sum_eq fun u ↦ ?_
   refine ⟨u.preimage _ (Nat.cast_injective.injOn _) ∪ u.preimage _ (this.injOn _),
@@ -300,20 +301,20 @@ lemma HasSum.natCast_add_negSucc {f : ℤ → M} (hf : HasSum f m) :
     simp only [disjoint_iff_ne, mem_image, ne_eq, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂, not_false_eq_true, implies_true, forall_const]
 
-lemma Summable.natCast_add_negSucc {f : ℤ → M} (hf : Summable f) :
-    Summable (fun n : ℕ ↦ f n + f (Int.negSucc n)) :=
-  hf.hasSum.natCast_add_negSucc.summable
+lemma Summable.nat_add_neg_add_one {f : ℤ → M} (hf : Summable f) :
+    Summable (fun n : ℕ ↦ f n + f (-(n + 1))) :=
+  hf.hasSum.nat_add_neg_add_one.summable
 
-lemma tsum_natCast_add_negSucc [T2Space M] {f : ℤ → M} (hf : Summable f) :
-    ∑' (n : ℕ), (f n + f (Int.negSucc n)) = ∑' (n : ℤ), f n :=
-  hf.hasSum.natCast_add_negSucc.tsum_eq
+lemma tsum_nat_add_neg_add_one [T2Space M] {f : ℤ → M} (hf : Summable f) :
+    ∑' (n : ℕ), (f n + f (-(n + 1))) = ∑' (n : ℤ), f n :=
+  hf.hasSum.nat_add_neg_add_one.tsum_eq
 
 section ContinuousAdd
 
 variable [ContinuousAdd M]
 
-lemma HasSum.of_natCast_negSucc {f : ℤ → M}
-    (hf₁ : HasSum (fun n : ℕ ↦ f n) m) (hf₂ : HasSum (fun n : ℕ ↦ f (Int.negSucc n)) m') :
+lemma HasSum.of_nat_of_neg_add_one {f : ℤ → M}
+    (hf₁ : HasSum (fun n : ℕ ↦ f n) m) (hf₂ : HasSum (fun n : ℕ ↦ f (-(n + 1))) m') :
     HasSum f (m + m') := by
   have hi₁ : Injective ((↑) : ℕ → ℤ) := @Int.ofNat.inj
   have hi₂ : Injective Int.negSucc := @Int.negSucc.inj
@@ -324,32 +325,32 @@ lemma HasSum.of_natCast_negSucc {f : ℤ → M}
     · rw [codisjoint_iff_le_sup]
       rintro (i | j) <;> simp
   exact (hi₁.hasSum_range_iff.mpr hf₁).add_isCompl this (hi₂.hasSum_range_iff.mpr hf₂)
-#align has_sum.nonneg_add_neg HasSum.of_natCast_negSucc
+#align has_sum.nonneg_add_neg HasSum.of_nat_of_neg_add_one
 
 -- deprecated 2024-03-04
-@[deprecated] alias HasSum.nonneg_add_neg := HasSum.of_natCast_negSucc
+@[deprecated] alias HasSum.nonneg_add_neg := HasSum.of_nat_of_neg_add_one
 
-lemma Summable.of_natCast_negSucc {f : ℤ → M}
-    (hf₁ : Summable fun n : ℕ ↦ f n)  (hf₂ : Summable fun n : ℕ ↦ f (Int.negSucc n)) :
+lemma Summable.of_nat_of_neg_add_one {f : ℤ → M}
+    (hf₁ : Summable fun n : ℕ ↦ f n)  (hf₂ : Summable fun n : ℕ ↦ f (-(n + 1))) :
     Summable f :=
-  (hf₁.hasSum.of_natCast_negSucc hf₂.hasSum).summable
+  (hf₁.hasSum.of_nat_of_neg_add_one hf₂.hasSum).summable
 
-lemma tsum_of_natCast_negSucc [T2Space M] {f : ℤ → M}
-    (hf₁ : Summable fun n : ℕ ↦ f n) (hf₂ : Summable fun n : ℕ ↦ f (Int.negSucc n)) :
-    ∑' n : ℤ, f n = ∑' n : ℕ, f n + ∑' n : ℕ, f (Int.negSucc n) :=
-  (hf₁.hasSum.of_natCast_negSucc hf₂.hasSum).tsum_eq
+lemma tsum_of_nat_of_neg_add_one [T2Space M] {f : ℤ → M}
+    (hf₁ : Summable fun n : ℕ ↦ f n) (hf₂ : Summable fun n : ℕ ↦ f (-(n + 1))) :
+    ∑' n : ℤ, f n = ∑' n : ℕ, f n + ∑' n : ℕ, f (-(n + 1)) :=
+  (hf₁.hasSum.of_nat_of_neg_add_one hf₂.hasSum).tsum_eq
 
 /-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` have sums `a`, `b` respectively, then the `ℤ`-indexed
 sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position) has sum `a + b`. -/
 lemma HasSum.int_rec {f g : ℕ → M} (hf : HasSum f m) (hg : HasSum g m') :
     HasSum (Int.rec f g) (m + m') :=
-  HasSum.of_natCast_negSucc hf hg
+  HasSum.of_nat_of_neg_add_one hf hg
 #align has_sum.int_rec HasSum.int_rec
 
 /-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` are both summable then so is the `ℤ`-indexed
 sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position). -/
 lemma Summable.int_rec {f g : ℕ → M} (hf : Summable f) (hg : Summable g) : Summable (Int.rec f g) :=
-  .of_natCast_negSucc hf hg
+  .of_nat_of_neg_add_one hf hg
 
 /-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` are both summable, then the sum of the `ℤ`-indexed
 sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position) is
@@ -358,35 +359,28 @@ lemma tsum_int_rec [T2Space M] {f g : ℕ → M} (hf : Summable f) (hg : Summabl
     ∑' n : ℤ, Int.rec f g n = ∑' n : ℕ, f n + ∑' n : ℕ, g n :=
   (hf.hasSum.int_rec hg.hasSum).tsum_eq
 
-theorem HasSum.natCast_add_neg_natCast {f : ℤ → M} (hf : HasSum f m) :
+theorem HasSum.nat_add_neg {f : ℤ → M} (hf : HasSum f m) :
     HasSum (fun n : ℕ ↦ f n + f (-n)) (m + f 0) := by
   -- Note this is much easier to prove if you assume more about the target space, but we have to
   -- work hard to prove it under the very minimal assumptions here.
   apply (hf.add (hasSum_ite_eq (0 : ℤ) (f 0))).hasSum_of_sum_eq fun u ↦ ?_
-  refine' ⟨u.image Int.natAbs, fun v' hv' ↦ _⟩
+  refine ⟨u.image Int.natAbs, fun v' hv' ↦ ?_⟩
   let u1 := v'.image fun x : ℕ ↦ (x : ℤ)
   let u2 := v'.image fun x : ℕ ↦ -(x : ℤ)
   have A : u ⊆ u1 ∪ u2 := by
     intro x hx
     simp only [u1, u2, mem_union, mem_image, exists_prop]
     rcases le_total 0 x with (h'x | h'x)
-    · left
-      refine' ⟨Int.natAbs x, hv' _, _⟩
-      · simp only [mem_image, exists_prop]
-        exact ⟨x, hx, rfl⟩
-      · simp only [h'x, Int.coe_natAbs, abs_eq_self]
-    · right
-      refine' ⟨Int.natAbs x, hv' _, _⟩
-      · simp only [mem_image, exists_prop]
-        exact ⟨x, hx, rfl⟩
-      · simp only [abs_of_nonpos h'x, Int.coe_natAbs, neg_neg]
-  refine' ⟨u1 ∪ u2, A, _⟩
-  calc
-    (∑ x in u1 ∪ u2, (f x + ite (x = 0) (f 0) 0)) =
+    · refine Or.inl ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, ?_⟩
+      simp only [Int.coe_natAbs, abs_eq_self, h'x]
+    · refine Or.inr ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, ?_⟩
+      simp only [abs_of_nonpos h'x, Int.coe_natAbs, neg_neg]
+  exact ⟨_, A, calc
+    (∑ x in u1 ∪ u2, (f x + if x = 0 then f 0 else 0)) =
         (∑ x in u1 ∪ u2, f x) + ∑ x in u1 ∩ u2, f x := by
       rw [sum_add_distrib]
       congr 1
-      refine' (sum_subset_zero_on_sdiff inter_subset_union _ _).symm
+      refine (sum_subset_zero_on_sdiff inter_subset_union ?_ ?_).symm
       · intro x hx
         suffices x ≠ 0 by simp only [this, if_false]
         rintro rfl
@@ -394,52 +388,49 @@ theorem HasSum.natCast_add_neg_natCast {f : ℤ → M} (hf : HasSum f m) :
           or_self, mem_inter, and_self, and_not_self, u1, u2] at hx
       · intro x hx
         simp only [u1, u2, mem_inter, mem_image, exists_prop] at hx
-        have : x = 0 := by
-          apply le_antisymm
-          · rcases hx.2 with ⟨a, _, rfl⟩
-            simp only [Right.neg_nonpos_iff, Nat.cast_nonneg]
-          · rcases hx.1 with ⟨a, _, rfl⟩
-            simp only [Nat.cast_nonneg]
-        simp only [this, eq_self_iff_true, if_true]
+        suffices x = 0 by simp only [this, eq_self_iff_true, if_true]
+        apply le_antisymm
+        · rcases hx.2 with ⟨a, _, rfl⟩
+          simp only [Right.neg_nonpos_iff, Nat.cast_nonneg]
+        · rcases hx.1 with ⟨a, _, rfl⟩
+          simp only [Nat.cast_nonneg]
     _ = (∑ x in u1, f x) + ∑ x in u2, f x := sum_union_inter
     _ = (∑ b in v', f b) + ∑ b in v', f (-b) := by
       simp only [u1, u2, Nat.cast_inj, imp_self, implies_true, forall_const, sum_image, neg_inj]
-    _ = ∑ b in v', (f b + f (-b)) := sum_add_distrib.symm
-#align has_sum.sum_nat_of_sum_int HasSum.natCast_add_neg_natCast
+    _ = ∑ b in v', (f b + f (-b)) := sum_add_distrib.symm⟩
+#align has_sum.sum_nat_of_sum_int HasSum.nat_add_neg
 
 -- deprecated 2024-03-04
-@[deprecated HasSum.natCast_add_neg_natCast] alias HasSum.sum_nat_of_sum_int :=
-  HasSum.natCast_add_neg_natCast
+@[deprecated HasSum.nat_add_neg] alias HasSum.sum_nat_of_sum_int :=
+  HasSum.nat_add_neg
 
-theorem Summable.natCast_add_neg_natCast {f : ℤ → M} (hf : Summable f) :
+theorem Summable.nat_add_neg {f : ℤ → M} (hf : Summable f) :
     Summable fun n : ℕ ↦ f n + f (-n) :=
-  hf.hasSum.natCast_add_neg_natCast.summable
+  hf.hasSum.nat_add_neg.summable
 
-lemma tsum_natCast_add_neg_natCast [T2Space M] {f : ℤ → M} (hf : Summable f) :
+lemma tsum_nat_add_neg [T2Space M] {f : ℤ → M} (hf : Summable f) :
     ∑' n : ℕ, (f n + f (-n)) = (∑' n : ℤ, f n) + f 0 :=
-  hf.hasSum.natCast_add_neg_natCast.tsum_eq
+  hf.hasSum.nat_add_neg.tsum_eq
 
-theorem HasSum.of_succ_negSucc {f : ℤ → M}
-    (hf₁ : HasSum (fun n : ℕ ↦ f (n + 1)) m) (hf₂ : HasSum (fun n : ℕ ↦ f (Int.negSucc n)) m') :
+theorem HasSum.of_add_one_of_neg_add_one {f : ℤ → M}
+    (hf₁ : HasSum (fun n : ℕ ↦ f (n + 1)) m) (hf₂ : HasSum (fun n : ℕ ↦ f (-(n + 1))) m') :
     HasSum f (m + f 0 + m') :=
-  haveI : ∀ g : ℕ → M, HasSum (fun k ↦ g (k + 1)) m → HasSum g (m + g 0) :=
-    fun g hg ↦ by simpa using (add_comm _ m ▸ hg.sum_range_add :)
-  (this (fun n ↦ f n) hf₁).nonneg_add_neg hf₂
-#align has_sum.pos_add_zero_add_neg HasSum.of_succ_negSucc
+  HasSum.of_nat_of_neg_add_one (add_comm _ m ▸ HasSum.zero_add hf₁) hf₂
+#align has_sum.pos_add_zero_add_neg HasSum.of_add_one_of_neg_add_one
 
 -- deprecated 2024-03-04
-@[deprecated HasSum.of_succ_negSucc] alias HasSum.pos_add_zero_add_neg :=
-  HasSum.of_succ_negSucc
+@[deprecated HasSum.of_add_one_of_neg_add_one] alias HasSum.pos_add_zero_add_neg :=
+  HasSum.of_add_one_of_neg_add_one
 
-lemma Summable.of_succ_negSucc {f : ℤ → M}
-    (hf₁ : Summable fun n : ℕ ↦ f (n + 1)) (hf₂ : Summable fun n : ℕ ↦ f (Int.negSucc n)) :
+lemma Summable.of_add_one_of_neg_add_one {f : ℤ → M}
+    (hf₁ : Summable fun n : ℕ ↦ f (n + 1)) (hf₂ : Summable fun n : ℕ ↦ f (-(n + 1))) :
     Summable f :=
-  (hf₁.hasSum.of_succ_negSucc hf₂.hasSum).summable
+  (hf₁.hasSum.of_add_one_of_neg_add_one hf₂.hasSum).summable
 
-lemma tsum_of_succ_negSucc [T2Space M] {f : ℤ → M}
-    (hf₁ : Summable fun n : ℕ ↦ f (n + 1)) (hf₂ : Summable fun n : ℕ ↦ f (Int.negSucc n)) :
-    ∑' n : ℤ, f n = ∑' n : ℕ, f (n + 1) + f 0 + ∑' n : ℕ, f (Int.negSucc n) :=
-  (hf₁.hasSum.of_succ_negSucc hf₂.hasSum).tsum_eq
+lemma tsum_of_add_one_of_neg_add_one [T2Space M] {f : ℤ → M}
+    (hf₁ : Summable fun n : ℕ ↦ f (n + 1)) (hf₂ : Summable fun n : ℕ ↦ f (-(n + 1))) :
+    ∑' n : ℤ, f n = ∑' n : ℕ, f (n + 1) + f 0 + ∑' n : ℕ, f (-(n + 1)) :=
+  (hf₁.hasSum.of_add_one_of_neg_add_one hf₂.hasSum).tsum_eq
 
 end ContinuousAdd
 
@@ -449,24 +440,24 @@ section TopologicalGroup
 
 variable [TopologicalSpace G] [TopologicalAddGroup G]
 
-lemma HasSum.of_natCast_neg_natCast {f : ℤ → G} (hf₁ : HasSum (fun n : ℕ ↦ f n) g)
+lemma HasSum.of_nat_of_neg {f : ℤ → G} (hf₁ : HasSum (fun n : ℕ ↦ f n) g)
     (hf₂ : HasSum (fun n : ℕ ↦ f (-n)) g') : HasSum f (g + g' - f 0) := by
   refine add_sub_assoc' g .. ▸ hf₁.nonneg_add_neg (m' := g' - f 0) ?_
   rwa [← hasSum_nat_add_iff' 1, sum_range_one, Nat.cast_zero, neg_zero] at hf₂
 
-lemma Summable.of_natCast_neg_natCast {f : ℤ → G} (hf₁ : Summable fun n : ℕ ↦ f n)
+lemma Summable.of_nat_of_neg {f : ℤ → G} (hf₁ : Summable fun n : ℕ ↦ f n)
     (hf₂ : Summable fun n : ℕ ↦ f (-n)) : Summable f :=
-  (hf₁.hasSum.of_natCast_neg_natCast hf₂.hasSum).summable
-#align summable_int_of_summable_nat Summable.of_natCast_neg_natCast
+  (hf₁.hasSum.of_nat_of_neg hf₂.hasSum).summable
+#align summable_int_of_summable_nat Summable.of_nat_of_neg
 
 -- deprecated 2024-03-04
-@[deprecated Summable.of_natCast_neg_natCast] alias summable_int_of_summable_nat :=
-  Summable.of_natCast_neg_natCast
+@[deprecated Summable.of_nat_of_neg] alias summable_int_of_summable_nat :=
+  Summable.of_nat_of_neg
 
-lemma tsum_of_natCast_neg_natCast [T2Space G] {f : ℤ → G}
+lemma tsum_of_nat_of_neg [T2Space G] {f : ℤ → G}
     (hf₁ : Summable fun n : ℕ ↦ f n) (hf₂ : Summable fun n : ℕ ↦ f (-n)) :
     ∑' n : ℤ, f n = ∑' n : ℕ, f n + ∑' n : ℕ, f (-n) - f 0 :=
-  (hf₁.hasSum.of_natCast_neg_natCast hf₂.hasSum).tsum_eq
+  (hf₁.hasSum.of_nat_of_neg hf₂.hasSum).tsum_eq
 
 end TopologicalGroup
 
@@ -474,17 +465,17 @@ section UniformGroup -- results which depend on completeness
 
 variable [UniformSpace G] [UniformAddGroup G] [CompleteSpace G]
 
-/-- "iff" version of `Summable.of_natCast_negSucc`. -/
-lemma summable_int_iff_summable_natCast_negSucc {f : ℤ → G} :
-    Summable f ↔ (Summable fun n : ℕ ↦ f n) ∧ (Summable fun n : ℕ ↦ f (Int.negSucc n)) := by
-  refine ⟨fun p ↦ ⟨?_, ?_⟩, fun ⟨hf₁, hf₂⟩ ↦ Summable.of_natCast_negSucc hf₁ hf₂⟩ <;>
+/-- "iff" version of `Summable.of_nat_of_neg_add_one`. -/
+lemma summable_int_iff_summable_nat_and_neg_add_one {f : ℤ → G} :
+    Summable f ↔ (Summable fun n : ℕ ↦ f n) ∧ (Summable fun n : ℕ ↦ f (-(n + 1))) := by
+  refine ⟨fun p ↦ ⟨?_, ?_⟩, fun ⟨hf₁, hf₂⟩ ↦ Summable.of_nat_of_neg_add_one hf₁ hf₂⟩ <;>
   apply p.comp_injective
   exacts [Nat.cast_injective, @Int.negSucc.inj]
 
 /-- "iff" version of `Summable.of_natCast_neg_natCast`. -/
-lemma summable_int_iff_summable_natCast_neg_natCast {f : ℤ → G} :
+lemma summable_int_iff_summable_nat_and_neg {f : ℤ → G} :
     Summable f ↔ (Summable fun n : ℕ ↦ f n) ∧ (Summable fun n : ℕ ↦ f (-n)) := by
-  refine ⟨fun p ↦ ⟨?_, ?_⟩, fun ⟨hf₁, hf₂⟩ ↦ Summable.of_natCast_neg_natCast hf₁ hf₂⟩ <;>
+  refine ⟨fun p ↦ ⟨?_, ?_⟩, fun ⟨hf₁, hf₂⟩ ↦ Summable.of_nat_of_neg hf₁ hf₂⟩ <;>
   apply p.comp_injective
   exacts [Nat.cast_injective, neg_injective.comp Nat.cast_injective]
 
