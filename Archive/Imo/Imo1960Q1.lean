@@ -94,7 +94,7 @@ theorem right_direction {n : ℕ} : ProblemPredicate n → SolutionPredicate n :
   have := searchUpTo_start
   iterate 82
     replace :=
-      searchUpTo_step this (by norm_num1; rfl) (by norm_num1; rfl) (by norm_num1; rfl)
+      searchUpTo_step this (by norm_num1; rfl) (by norm_num1; rfl) rfl
         (by norm_num <;> decide)
   exact searchUpTo_end this
 #align imo1960_q1.right_direction Imo1960Q1.right_direction

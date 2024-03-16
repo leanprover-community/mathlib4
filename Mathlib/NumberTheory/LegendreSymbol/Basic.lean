@@ -127,8 +127,6 @@ theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) :
       · tauto
       · simp
   · convert quadraticChar_eq_pow_of_char_ne_two' hc (a : ZMod p)
-    norm_cast
-    congr
     exact (card p).symm
 #align legendre_sym.eq_pow legendreSym.eq_pow
 

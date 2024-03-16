@@ -355,12 +355,10 @@ def sigmaFinsuppAddEquivDFinsupp [AddZeroClass N] : ((Σi, η i) →₀ N) ≃+ 
 
 attribute [-instance] Finsupp.instAddZeroClass
 
---tofix: r • (sigma_finsupp_equiv_dfinsupp f) doesn't work.
 @[simp]
 theorem sigmaFinsuppEquivDFinsupp_smul {R} [Monoid R] [AddMonoid N] [DistribMulAction R N] (r : R)
-    (f : (Σi, η i) →₀ N) :
-    sigmaFinsuppEquivDFinsupp (r • f) =
-      @SMul.smul R (Π₀ i, η i →₀ N) MulAction.toSMul r (sigmaFinsuppEquivDFinsupp f) := by
+    (f : (Σ i, η i) →₀ N) :
+    sigmaFinsuppEquivDFinsupp (r • f) = r • sigmaFinsuppEquivDFinsupp f := by
   ext
   rfl
 #align sigma_finsupp_equiv_dfinsupp_smul sigmaFinsuppEquivDFinsupp_smul

@@ -69,21 +69,11 @@ attribute [instance] RepresentablyFlat.cofiltered
 
 attribute [local instance] IsCofiltered.nonempty
 
-instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
-  constructor
-  intro X
-  haveI : Nonempty (StructuredArrow X (𝟭 C)) := ⟨StructuredArrow.mk (𝟙 _)⟩
-  suffices IsCofilteredOrEmpty (StructuredArrow X (𝟭 C)) by constructor
-  constructor
-  · intro Y Z
-    use StructuredArrow.mk (𝟙 _)
-    use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
-    use StructuredArrow.homMk Z.hom (by erw [Functor.id_map, Category.id_comp])
-  · intro Y Z f g
-    use StructuredArrow.mk (𝟙 _)
-    use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
-    ext
-    trans Z.hom <;> simp
+instance RepresentablyFlat.of_isRightAdjoint (F : C ⥤ D) [IsRightAdjoint F] :
+    RepresentablyFlat F where
+  cofiltered _ := IsCofiltered.of_isInitial _ (mkInitialOfLeftAdjoint _ (.ofRightAdjoint F) _)
+
+theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 #align category_theory.representably_flat.id CategoryTheory.RepresentablyFlat.id
 
 instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F]
@@ -133,15 +123,7 @@ end RepresentablyFlat
 
 section HasLimit
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
-
-attribute [local instance] hasFiniteLimits_of_hasFiniteLimits_of_size
-
-theorem cofiltered_of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
-  { cone_objs := fun A B => ⟨Limits.prod A B, Limits.prod.fst, Limits.prod.snd, trivial⟩
-    cone_maps := fun _ _ f g => ⟨equalizer f g, equalizer.ι f g, equalizer.condition f g⟩
-    nonempty := ⟨⊤_ C⟩ }
-#align category_theory.cofiltered_of_has_finite_limits CategoryTheory.cofiltered_of_hasFiniteLimits
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [PreservesFiniteLimits F] :
     RepresentablyFlat F :=
@@ -152,7 +134,7 @@ theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [Preserv
       constructor
       -- Porting note: instance was inferred automatically in Lean 3
       infer_instance
-    cofiltered_of_hasFiniteLimits⟩
+    IsCofiltered.of_hasFiniteLimits _⟩
 #align category_theory.flat_of_preserves_finite_limits CategoryTheory.flat_of_preservesFiniteLimits
 
 namespace PreservesFiniteLimitsOfFlat
@@ -322,7 +304,7 @@ variable [PreservesLimits (forget E)]
 noncomputable instance lanPreservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F] :
     PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
-  intro J _ _; skip
+  intro J _ _
   apply preservesLimitsOfShapeOfEvaluation (lan F.op : (Cᵒᵖ ⥤ E) ⥤ Dᵒᵖ ⥤ E) J
   intro K
   haveI : IsFiltered (CostructuredArrow F.op K) :=
@@ -349,11 +331,10 @@ set_option linter.uppercaseLean3 false in
 theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
   ⟨fun H => inferInstance, fun H => by
-    skip
     haveI := preservesFiniteLimitsOfFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁)
     haveI : PreservesFiniteLimits F := by
       apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
-      intros; skip; apply preservesLimitOfLanPreservesLimit
+      intros; apply preservesLimitOfLanPreservesLimit
     apply flat_of_preservesFiniteLimits⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.flat_iff_Lan_flat CategoryTheory.flat_iff_lan_flat
