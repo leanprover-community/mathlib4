@@ -55,14 +55,10 @@ open TensorProduct
 section Semiring
 
 variable {R A B M N P : Type*} [CommSemiring R]
-
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 variable [Module R M] [Module R N] [Module R P]
-
 variable (r : R) (f g : M →ₗ[R] N)
-
 variable (A)
 
 /-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`.
@@ -144,11 +140,8 @@ end Semiring
 section Ring
 
 variable {R A B M N : Type*} [CommRing R]
-
 variable [Ring A] [Algebra R A] [Ring B] [Algebra R B]
-
 variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-
 variable (f g : M →ₗ[R] N)
 
 @[simp]
@@ -976,11 +969,8 @@ end
 section
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
-
 variable [Algebra R A] [Algebra R B] [Algebra R S]
-
 variable (f : A →ₐ[R] S) (g : B →ₐ[R] S)
-
 variable (R)
 
 /-- `LinearMap.mul'` is an `AlgHom` on commutative rings. -/
@@ -1061,7 +1051,6 @@ universe uM uι
 variable {M : Type uM} {ι : Type uι}
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 variable [AddCommMonoid M] [Module R M] (b : Basis ι R M)
-
 variable (A)
 
 /-- Given an `R`-algebra `A` and an `R`-basis of `M`, this is an `R`-linear isomorphism
@@ -1141,9 +1130,7 @@ end LinearMap
 namespace Module
 
 variable {R S A M N : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
-
 variable [AddCommMonoid M] [AddCommMonoid N]
-
 variable [Algebra R S] [Algebra S A] [Algebra R A]
 variable [Module R M] [Module S M] [Module A M] [Module R N]
 variable [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S M]
@@ -1178,13 +1165,9 @@ theorem Subalgebra.finiteDimensional_sup {K L : Type*} [Field K] [CommRing L] [A
 namespace TensorProduct.Algebra
 
 variable {R A B M : Type*}
-
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable [Semiring A] [Semiring B] [Module A M] [Module B M]
-
 variable [Algebra R A] [Algebra R B]
-
 variable [IsScalarTower R A M] [IsScalarTower R B M]
 
 /-- An auxiliary definition, used for constructing the `Module (A ⊗[R] B) M` in

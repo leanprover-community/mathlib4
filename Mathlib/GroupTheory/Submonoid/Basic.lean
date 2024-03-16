@@ -58,13 +58,11 @@ submonoid, submonoids
 -- Only needed for notation
 -- Only needed for notation
 variable {M : Type*} {N : Type*}
-
 variable {A : Type*}
 
 section NonAssoc
 
 variable [MulOneClass M] {s : Set M}
-
 variable [AddZeroClass A] {t : Set A}
 
 /-- `OneMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. -/

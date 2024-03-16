@@ -29,25 +29,17 @@ open Topology BigOperators Filter ENNReal
 open Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {f f₀ f₁ g : 𝕜 → F}
-
 variable {f' f₀' f₁' g' : F}
-
 variable {x : 𝕜}
-
 variable {s t : Set 𝕜}
-
 variable {L L₁ L₂ : Filter 𝕜}
 
 /-! ### Derivative of `x ↦ x^n` for `n : ℕ` -/
 
 variable {c : 𝕜 → 𝕜} {c' : 𝕜}
-
 variable (n : ℕ)
 
 theorem hasStrictDerivAt_pow :

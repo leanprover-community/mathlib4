@@ -24,7 +24,6 @@ def DMatrix (m : Type u) (n : Type u') [Fintype m] [Fintype n] (α : m → n →
 #align dmatrix DMatrix
 
 variable {l m n o : Type*} [Fintype l] [Fintype m] [Fintype n] [Fintype o]
-
 variable {α : m → n → Type v}
 
 namespace DMatrix

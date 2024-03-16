@@ -287,7 +287,6 @@ end Generic
 section Nat
 
 variable {M : Type*}
-
 variable (f g : ℕ → M) {m n : ℕ}
 
 section Group

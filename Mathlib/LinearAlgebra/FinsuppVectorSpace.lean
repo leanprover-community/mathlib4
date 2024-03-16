@@ -29,7 +29,6 @@ namespace Finsupp
 section Ring
 
 variable {R : Type*} {M : Type*} {ι : Type*}
-
 variable [Ring R] [AddCommGroup M] [Module R M]
 
 theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
@@ -57,7 +56,6 @@ end Ring
 section Semiring
 
 variable {R : Type*} {M : Type*} {ι : Type*}
-
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 open LinearMap Submodule
@@ -158,9 +156,7 @@ end DFinsupp
 namespace Basis
 
 variable {R M n : Type*}
-
 variable [DecidableEq n]
-
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 theorem _root_.Finset.sum_single_ite [Fintype n] (a : R) (i : n) :

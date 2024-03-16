@@ -90,7 +90,6 @@ end Metric
 namespace AntilipschitzWith
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-
 variable {K : ℝ≥0} {f : α → β}
 
 open EMetric

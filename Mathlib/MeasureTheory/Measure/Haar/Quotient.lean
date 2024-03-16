@@ -51,7 +51,6 @@ instance QuotientGroup.measurableSMul [MeasurableSpace (G ⧸ Γ)] [BorelSpace (
 #align quotient_add_group.has_measurable_vadd QuotientAddGroup.measurableVAdd
 
 variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 μ)
-
 variable [Countable Γ] [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)]
 
 /-- The pushforward to the coset space `G ⧸ Γ` of the restriction of a both left- and right-

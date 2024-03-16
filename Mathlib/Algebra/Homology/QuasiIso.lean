@@ -29,9 +29,7 @@ variable {ι : Type*}
 section
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V] [HasZeroObject V]
-
 variable [HasEqualizers V] [HasImages V] [HasImageMaps V] [HasCokernels V]
-
 variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
 
 /-- A chain map is a quasi-isomorphism if it induces isomorphisms on homology.

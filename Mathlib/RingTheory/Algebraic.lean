@@ -88,9 +88,7 @@ end
 section zero_ne_one
 
 variable {R : Type u} {S : Type*} {A : Type v} [CommRing R]
-
 variable [CommRing S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
-
 variable [IsScalarTower R S A]
 
 /-- An integral element of an algebra is algebraic.-/
@@ -245,7 +243,6 @@ section Ring
 section CommRing
 
 variable [CommRing R] [CommRing S] [Ring A]
-
 variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
 /-- If x is algebraic over R, then x is algebraic over S when S is an extension of R,
@@ -270,9 +267,7 @@ end CommRing
 section Field
 
 variable [Field K] [Field L] [Ring A]
-
 variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
-
 variable (L)
 
 /-- If x is algebraic over K, then x is algebraic over L when L is an extension of K -/
@@ -305,7 +300,6 @@ end Ring
 section CommRing
 
 variable [Field K] [Field L] [Ring A]
-
 variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 
 /-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
@@ -323,7 +317,6 @@ section NoZeroSMulDivisors
 namespace Algebra.IsAlgebraic
 
 variable [CommRing K] [Field L]
-
 variable [Algebra K L] [NoZeroSMulDivisors K L]
 
 theorem algHom_bijective (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] L) :
@@ -373,7 +366,6 @@ end NoZeroSMulDivisors
 section Field
 
 variable [Field K] [Field L]
-
 variable [Algebra K L]
 
 theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=

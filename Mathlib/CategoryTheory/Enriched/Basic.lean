@@ -344,7 +344,6 @@ end
 section
 
 variable {V}
-
 variable {D : Type u₂} [EnrichedCategory V D]
 
 /-!

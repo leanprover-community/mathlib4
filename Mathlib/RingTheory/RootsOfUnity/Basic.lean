@@ -71,7 +71,6 @@ open Polynomial
 open Finset
 
 variable {M N G R S F : Type*}
-
 variable [CommMonoid M] [CommMonoid N] [DivisionCommMonoid G]
 
 section rootsOfUnity
@@ -632,7 +631,6 @@ end CommRing
 section IsDomain
 
 variable {ζ : R}
-
 variable [CommRing R] [IsDomain R]
 
 @[simp]
@@ -677,7 +675,6 @@ end IsDomain
 section IsDomain
 
 variable [CommRing R]
-
 variable {ζ : Rˣ} (h : IsPrimitiveRoot ζ k)
 
 theorem eq_neg_one_of_two_right [NoZeroDivisors R] {ζ : R} (h : IsPrimitiveRoot ζ 2) : ζ = -1 := by

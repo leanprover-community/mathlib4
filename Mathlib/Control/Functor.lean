@@ -33,9 +33,7 @@ universe u v w
 section Functor
 
 variable {F : Type u → Type v}
-
 variable {α β γ : Type u}
-
 variable [Functor F] [LawfulFunctor F]
 
 theorem Functor.map_id : (id <$> ·) = (id : F α → F α) := funext id_map
@@ -199,7 +197,6 @@ protected theorem run_map {α β} (h : α → β) (x : Comp F G α) :
 #align functor.comp.run_map Functor.Comp.run_map
 
 variable [LawfulFunctor F] [LawfulFunctor G]
-
 variable {α β γ : Type v}
 
 protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
@@ -238,7 +235,6 @@ open Function hiding comp
 open Functor
 
 variable {F : Type u → Type w} {G : Type v → Type u}
-
 variable [Applicative F] [Applicative G]
 
 /-- The `<*>` operation for the composition of applicative functors. -/

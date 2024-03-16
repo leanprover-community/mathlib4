@@ -24,9 +24,7 @@ universe w v u -- morphism levels before object levels. See note [category_theor
 open CategoryTheory CategoryTheory.Limits
 
 variable {J : Type w}
-
 variable {C : Type u} [Category.{v} C]
-
 variable {X : C}
 
 namespace CategoryTheory.Over

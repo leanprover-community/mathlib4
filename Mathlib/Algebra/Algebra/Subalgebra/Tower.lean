@@ -38,9 +38,7 @@ variable (R : Type u) (S : Type v) (A : Type w) (B : Type u₁) (M : Type v₁)
 namespace Algebra
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
-
 variable {A}
 
 theorem lmul_algebraMap (x : R) : Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R R A x :=
@@ -54,7 +52,6 @@ namespace IsScalarTower
 section Semiring
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A]
-
 variable [Algebra R S] [Algebra S A]
 
 instance subalgebra (S₀ : Subalgebra R S) : IsScalarTower S₀ S A :=
@@ -79,9 +76,7 @@ open IsScalarTower
 section Semiring
 
 variable {S A B} [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-
 variable [Algebra R S] [Algebra S A] [Algebra R A] [Algebra S B] [Algebra R B]
-
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
 /-- Given a tower `A / ↥U / S / R` of algebras, where `U` is an `S`-subalgebra of `A`, reinterpret
@@ -149,7 +144,6 @@ namespace IsScalarTower
 open Subalgebra
 
 variable [CommSemiring R] [CommSemiring S] [CommSemiring A]
-
 variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
 theorem adjoin_range_toAlgHom (t : Set A) :

@@ -46,9 +46,7 @@ open Polynomial
 open Polynomial
 
 variable {R S T : Type*} [CommRing R] [Ring S] [Algebra R S]
-
 variable {A B : Type*} [CommRing A] [CommRing B] [IsDomain B] [Algebra A B]
-
 variable {K : Type*} [Field K]
 
 /-- `pb : PowerBasis R S` states that `1, pb.gen, ..., pb.gen ^ (pb.dim - 1)`

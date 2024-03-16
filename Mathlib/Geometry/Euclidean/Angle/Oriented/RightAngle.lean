@@ -30,7 +30,6 @@ namespace Orientation
 open FiniteDimensional
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
-
 variable [hd2 : Fact (finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2))
 
 /-- An angle in a right-angled triangle expressed using `arccos`. -/

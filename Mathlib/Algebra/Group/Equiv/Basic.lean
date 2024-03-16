@@ -124,7 +124,6 @@ infixl:25 " ≃+ " => AddEquiv
 namespace MulEquivClass
 
 variable (F)
-
 variable [EquivLike F M N]
 
 -- See note [lower instance priority]
@@ -148,7 +147,6 @@ instance (priority := 100) instMonoidHomClass
         _ = 1 := EquivLike.right_inv e 1 }
 
 variable [EquivLike F α β]
-
 variable {F}
 
 @[to_additive (attr := simp)]

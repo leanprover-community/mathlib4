@@ -214,7 +214,6 @@ end Sum
 section Map
 
 variable [CommSemiring S] (f : R →+* S)
-
 variable (p)
 
 theorem vars_map : (map f p).vars ⊆ p.vars := by classical simp [vars_def, degrees_map]

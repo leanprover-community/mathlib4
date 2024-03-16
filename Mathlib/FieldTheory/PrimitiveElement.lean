@@ -97,7 +97,6 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
 #align field.primitive_element_inf_aux_exists_c Field.primitive_element_inf_aux_exists_c
 
 variable (F)
-
 variable [Algebra F E]
 
 /-- This is the heart of the proof of the primitive element theorem. It shows that if `F` is
@@ -205,7 +204,6 @@ private theorem primitive_element_inf_aux_of_finite_intermediateField
 end PrimitiveElementInf
 
 variable (F E : Type*) [Field F] [Field E]
-
 variable [Algebra F E]
 
 section SeparableAssumption

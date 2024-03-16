@@ -709,7 +709,6 @@ variable {R k V1 P1 V2 : Type*}
 section Ring
 
 variable [Ring k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
-
 variable [Module k V1] [Module k V2]
 
 section DistribMulAction
@@ -762,7 +761,6 @@ end Ring
 section CommRing
 
 variable [CommRing k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
-
 variable [Module k V1] [Module k V2]
 
 /-- `homothety c r` is the homothety (also known as dilation) about `c` with scale factor `r`. -/

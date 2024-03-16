@@ -29,13 +29,9 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (G : C ⥤ D)
-
 variable {J : Type w} [Category.{w'} J]
-
 variable (F : J ⥤ C)
 
 section

@@ -106,7 +106,6 @@ end CommSemiring
 section HasDistribNeg
 
 variable [Monoid R] [HasDistribNeg R]
-
 variable (R)
 
 theorem neg_one_pow_eq_or : ∀ n : ℕ, (-1 : R) ^ n = 1 ∨ (-1 : R) ^ n = -1

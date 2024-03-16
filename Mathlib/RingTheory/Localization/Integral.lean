@@ -28,7 +28,6 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
-
 variable [Algebra R S] {P : Type*} [CommRing P]
 
 open BigOperators Polynomial
@@ -125,7 +124,6 @@ namespace IsFractionRing
 open IsLocalization
 
 variable {A K C : Type*} [CommRing A] [IsDomain A] [Field K] [Algebra A K] [IsFractionRing A K]
-
 variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
@@ -177,11 +175,8 @@ open IsLocalization
 section IsIntegral
 
 variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
-
 variable [Algebra R Rₘ] [IsLocalization M Rₘ]
-
 variable [Algebra S Sₘ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
-
 variable {M}
 
 open Polynomial
@@ -307,9 +302,7 @@ namespace IsIntegralClosure
 
 variable (A)
 variable {L : Type*} [Field K] [Field L] [Algebra A K] [Algebra A L] [IsFractionRing A K]
-
 variable (C : Type*) [CommRing C] [IsDomain C] [Algebra C L] [IsIntegralClosure C A L]
-
 variable [Algebra A C] [IsScalarTower A C L]
 
 open Algebra

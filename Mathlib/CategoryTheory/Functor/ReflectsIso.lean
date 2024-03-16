@@ -31,7 +31,6 @@ variable {C : Type u₁} [Category.{v₁} C]
 section ReflectsIso
 
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {E : Type u₃} [Category.{v₃} E]
 
 /-- Define what it means for a functor `F : C ⥤ D` to reflect isomorphisms: for any

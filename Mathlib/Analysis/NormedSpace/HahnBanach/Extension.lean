@@ -141,7 +141,6 @@ end IsROrC
 section DualVector
 
 variable (𝕜 : Type v) [IsROrC 𝕜]
-
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 open ContinuousLinearEquiv Submodule

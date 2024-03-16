@@ -343,9 +343,7 @@ variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
 section
 
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
-
 variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
-
 variable [PreservesLimitsOfShape J (forget C)]
 
 noncomputable instance filteredColimPreservesFiniteLimits :
@@ -369,9 +367,7 @@ noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesFilteredColi
 section
 
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
-
 variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
-
 variable [PreservesLimitsOfShape J (forget C)]
 
 /-- A curried version of the fact that filtered colimits commute with finite limits. -/

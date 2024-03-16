@@ -859,7 +859,6 @@ theorem contDiffWithinAt_snd {s : Set (E × F)} {p : E × F} :
 section NAry
 
 variable {E₁ E₂ E₃ E₄ : Type*}
-
 variable [NormedAddCommGroup E₁] [NormedAddCommGroup E₂] [NormedAddCommGroup E₃]
   [NormedAddCommGroup E₄] [NormedSpace 𝕜 E₁] [NormedSpace 𝕜 E₂] [NormedSpace 𝕜 E₃]
   [NormedSpace 𝕜 E₄]
@@ -1629,7 +1628,6 @@ Porting note (#11215): TODO: generalize results in this section.
 section ConstSMul
 
 variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F]
-
 variable [ContinuousConstSMul R F]
 
 -- The scalar multiplication with a constant is smooth.
@@ -1682,7 +1680,6 @@ end ConstSMul
 section Prod_map
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-
 variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
@@ -2140,11 +2137,8 @@ over `𝕜`.
 variable (𝕜) {𝕜' : Type*} [NontriviallyNormedField 𝕜']
 -- Porting note: this couldn't be on the same line as the binder type update of `𝕜`
 variable [NormedAlgebra 𝕜 𝕜']
-
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
-
 variable [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
-
 variable {p' : E → FormalMultilinearSeries 𝕜' E F}
 
 theorem HasFTaylorSeriesUpToOn.restrictScalars (h : HasFTaylorSeriesUpToOn n f p' s) :

@@ -32,11 +32,8 @@ namespace CategoryTheory.Limits
 universe w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {E : Type u₃} [Category.{v₃} E]
-
 variable {J : Type w} [SmallCategory J] {K : J ⥤ C}
 
 /-- A functor is said to preserve finite limits, if it preserves all limits of shape `J`,

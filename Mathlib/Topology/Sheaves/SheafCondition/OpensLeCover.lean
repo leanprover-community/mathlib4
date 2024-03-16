@@ -42,7 +42,6 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Open
 namespace TopCat
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X : TopCat.{w}} (F : Presheaf C X) {ι : Type w} (U : ι → Opens X)
 
 namespace Presheaf

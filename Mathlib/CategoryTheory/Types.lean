@@ -147,7 +147,6 @@ end Functor
 namespace FunctorToTypes
 
 variable {C : Type u} [Category.{v} C] (F G H : C ⥤ Type w) {X Y Z : C}
-
 variable (σ : F ⟶ G) (τ : G ⟶ H)
 
 @[simp]

@@ -126,7 +126,6 @@ theorem transitive_oneOneReducible {α} [Primcodable α] : Transitive (@OneOneRe
 namespace ComputablePred
 
 variable {α : Type*} {β : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Computable
@@ -322,9 +321,7 @@ theorem disjoin_le {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ]
 #align disjoin_le disjoin_le
 
 variable {α : Type u} [Primcodable α] [Inhabited α]
-
 variable {β : Type v} [Primcodable β] [Inhabited β]
-
 variable {γ : Type w} [Primcodable γ] [Inhabited γ]
 
 /-- Computable and injective mapping of predicates to sets of natural numbers.

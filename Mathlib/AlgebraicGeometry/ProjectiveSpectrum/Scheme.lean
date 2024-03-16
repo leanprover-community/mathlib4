@@ -84,11 +84,8 @@ open DirectSum SetLike.GradedMonoid Localization
 open Finset hiding mk_zero
 
 variable {R A : Type*}
-
 variable [CommRing R] [CommRing A] [Algebra R A]
-
 variable (𝒜 : ℕ → Submodule R A)
-
 variable [GradedAlgebra 𝒜]
 
 open TopCat TopologicalSpace

@@ -32,9 +32,7 @@ namespace Language
 open Structure Set
 
 variable {L : Language} {ι : Type v} [Preorder ι]
-
 variable {G : ι → Type w} [∀ i, L.Structure (G i)]
-
 variable (f : ∀ i j, i ≤ j → G i ↪[L] G j)
 
 namespace DirectedSystem
@@ -338,9 +336,7 @@ protected theorem inductionOn {C : DirectLimit G f → Prop} (z : DirectLimit G 
 #align first_order.language.direct_limit.induction_on FirstOrder.Language.DirectLimit.inductionOn
 
 variable {P : Type u₁} [L.Structure P] (g : ∀ i, G i ↪[L] P)
-
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
-
 variable (L ι G f)
 
 /-- The universal property of the direct limit: maps from the components to another module

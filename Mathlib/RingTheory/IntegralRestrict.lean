@@ -166,7 +166,6 @@ lemma Algebra.map_intTraceAux [IsIntegrallyClosed A] (x : B) :
   IsIntegralClosure.algebraMap_equiv A (integralClosure A K) K A _
 
 variable (A B)
-
 variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
 variable [Module.Finite A B] [NoZeroSMulDivisors A B]
 
@@ -301,7 +300,6 @@ lemma Algebra.map_intNormAux [IsIntegrallyClosed A] [IsSeparable K L] (x : B) :
   exact IsIntegralClosure.algebraMap_mk' _ _ _
 
 variable (A B)
-
 variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
 variable [Module.Finite A B] [NoZeroSMulDivisors A B]
 variable [IsSeparable (FractionRing A) (FractionRing B)] -- TODO: remove this

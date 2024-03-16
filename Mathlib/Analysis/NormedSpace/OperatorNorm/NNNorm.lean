@@ -260,7 +260,6 @@ end ContinuousLinearMap
 namespace ContinuousLinearEquiv
 
 variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] [RingHomIsometric σ₁₂]
-
 variable (e : E ≃SL[σ₁₂] F)
 
 protected theorem lipschitz : LipschitzWith ‖(e : E →SL[σ₁₂] F)‖₊ e :=

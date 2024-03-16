@@ -580,7 +580,6 @@ end Lift
 namespace Homeomorph
 
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
-
 variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 
 /-- The forward direction of a homeomorphism, as a bundled continuous map. -/

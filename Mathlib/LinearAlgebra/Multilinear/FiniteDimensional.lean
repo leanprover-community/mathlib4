@@ -24,11 +24,8 @@ there.
 namespace MultilinearMap
 
 variable {ι R M₂ : Type*} {M₁ : ι → Type*}
-
 variable [Finite ι]
-
 variable [CommRing R] [AddCommGroup M₂] [Module R M₂]
-
 variable [Module.Finite R M₂] [Module.Free R M₂]
 
 -- Porting note: split out from `free_and_finite` because of inscrutable typeclass errors
@@ -51,7 +48,6 @@ private theorem free_and_finite_fin (n : ℕ) (N : Fin n → Type*) [∀ i, AddC
     exact ⟨Module.Free.linearMap _ _ _ _, Module.Finite.linearMap _ _ _ _⟩
 
 variable [∀ i, AddCommGroup (M₁ i)] [∀ i, Module R (M₁ i)]
-
 variable [∀ i, Module.Finite R (M₁ i)] [∀ i, Module.Free R (M₁ i)]
 
 -- the induction requires us to show both at once

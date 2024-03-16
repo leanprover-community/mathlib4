@@ -38,9 +38,7 @@ open MulAction Finset FiniteDimensional
 universe u v w
 
 variable {M : Type u} [Monoid M]
-
 variable (G : Type u) [Group G]
-
 variable (F : Type v) [Field F] [MulSemiringAction M F] [MulSemiringAction G F] (m : M)
 
 /-- The subfield of F fixed by the field endomorphism `m`. -/

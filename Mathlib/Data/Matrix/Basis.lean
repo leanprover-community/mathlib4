@@ -17,7 +17,6 @@ at position `(i, j)`, and zeroes elsewhere.
 
 
 variable {l m n : Type*}
-
 variable {R α : Type*}
 
 namespace Matrix
@@ -27,7 +26,6 @@ open Matrix
 open BigOperators
 
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
-
 variable [Semiring α]
 
 /-- `stdBasisMatrix i j a` is the matrix with `a` in the `i`-th row, `j`-th column,

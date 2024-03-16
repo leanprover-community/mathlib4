@@ -268,7 +268,6 @@ section Exact
 open CategoryTheory.Limits
 
 variable (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D] [Preadditive C]
-
 variable [Preadditive D] [HasZeroObject C] [HasZeroObject D] [HasBinaryBiproducts C]
 
 section

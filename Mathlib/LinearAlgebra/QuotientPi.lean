@@ -28,11 +28,8 @@ namespace Submodule
 open LinearMap
 
 variable {ι R : Type*} [CommRing R]
-
 variable {Ms : ι → Type*} [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
-
 variable {N : Type*} [AddCommGroup N] [Module R N]
-
 variable {Ns : ι → Type*} [∀ i, AddCommGroup (Ns i)] [∀ i, Module R (Ns i)]
 
 /-- Lift a family of maps to the direct sum of quotients. -/

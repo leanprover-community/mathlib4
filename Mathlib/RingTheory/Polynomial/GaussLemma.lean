@@ -110,7 +110,6 @@ namespace Polynomial
 section
 
 variable {S : Type*} [CommRing S] [IsDomain S]
-
 variable {φ : R →+* S} (hinj : Function.Injective φ) {f : R[X]} (hf : f.IsPrimitive)
 
 theorem IsPrimitive.isUnit_iff_isUnit_map_of_injective : IsUnit f ↔ IsUnit (map φ f) := by

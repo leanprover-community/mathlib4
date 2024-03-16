@@ -95,7 +95,6 @@ instance : CoeFun (GrothendieckTopology C) fun _ => ∀ X : C, Set (Sieve X) :=
 
 variable {C}
 variable {X Y : C} {S R : Sieve X}
-
 variable (J : GrothendieckTopology C)
 
 /-- An extensionality lemma in terms of the coercion to a pi-type.

@@ -29,7 +29,6 @@ lie subalgebra, normalizer, idealizer, cartan subalgebra
 universe u v w w₁ w₂
 
 variable {R : Type u} {L : Type v}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] (H : LieSubalgebra R L)
 
 /-- Given a Lie module `M` of a Lie algebra `L`, `LieSubmodule.IsUcsLimit` is the proposition

@@ -57,9 +57,7 @@ namespace AlternatingFaceMapComplex
 
 
 variable {C : Type*} [Category C] [Preadditive C]
-
 variable (X : SimplicialObject C)
-
 variable (Y : SimplicialObject C)
 
 /-- The differential on the alternating face map complex is the alternate

@@ -278,15 +278,10 @@ argument of `f`.
 
 
 variable {R : Type*}
-
 variable {𝕜₂ 𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NontriviallyNormedField 𝕜₂]
-
 variable {M : Type*} [TopologicalSpace M]
-
 variable {σ₁₂ : 𝕜 →+* 𝕜₂}
-
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜₂ G'] [NormedSpace 𝕜' G']
-
 variable [SMulCommClass 𝕜₂ 𝕜' G']
 
 section Semiring
@@ -340,7 +335,6 @@ structure IsBoundedBilinearMap (f : E × F → G) : Prop where
 #align is_bounded_bilinear_map IsBoundedBilinearMap
 
 variable {𝕜}
-
 variable {f : E × F → G}
 
 theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] G) :

@@ -28,11 +28,8 @@ namespace MvPolynomial
 section Semiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B]
-
 variable [IsScalarTower R A B]
-
 variable {R B}
 
 theorem aeval_map_algebraMap (x : σ → B) (p : MvPolynomial σ R) :
@@ -45,9 +42,7 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
-
 variable {R A}
 
 theorem aeval_algebraMap_apply (x : σ → A) (p : MvPolynomial σ R) :

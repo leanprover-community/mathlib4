@@ -1464,7 +1464,6 @@ section subtypeRestr
 open TopologicalSpace
 
 variable (e : PartialHomeomorph X Y)
-
 variable {s : Opens X} (hs : Nonempty s)
 
 /-- The restriction of a partial homeomorphism `e` to an open subset `s` of the domain type

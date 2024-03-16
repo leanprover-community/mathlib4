@@ -105,7 +105,6 @@ variable {B : Type*}
 section Defs
 
 variable (F₁ : Type*) (E₁ : B → Type*) (F₂ : Type*) (E₂ : B → Type*)
-
 variable [TopologicalSpace (TotalSpace F₁ E₁)] [TopologicalSpace (TotalSpace F₂ E₂)]
 
 /-- Equip the total space of the fiberwise product of two fiber bundles `E₁`, `E₂` with

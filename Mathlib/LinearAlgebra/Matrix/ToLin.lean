@@ -79,7 +79,6 @@ instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (R) [Fint
 section ToMatrixRight
 
 variable {R : Type*} [Semiring R]
-
 variable {l m n : Type*}
 
 /-- `Matrix.vecMul M` is a linear map. -/
@@ -214,7 +213,6 @@ This should eventually be remedied.
 section mulVec
 
 variable {R : Type*} [CommSemiring R]
-
 variable {k l m n : Type*}
 
 /-- `Matrix.mulVec M` is a linear map. -/
@@ -312,7 +310,6 @@ end mulVec
 section ToMatrix'
 
 variable {R : Type*} [CommSemiring R]
-
 variable {k l m n : Type*} [DecidableEq n] [Fintype n]
 
 /-- Linear maps `(n → R) →ₗ[R] (m → R)` are linearly equivalent to `Matrix m n R`. -/
@@ -550,11 +547,8 @@ end ToMatrix'
 section ToMatrix
 
 variable {R : Type*} [CommSemiring R]
-
 variable {l m n : Type*} [Fintype n] [Fintype m] [DecidableEq n]
-
 variable {M₁ M₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
-
 variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 
 /-- Given bases of two modules `M₁` and `M₂` over a commutative ring `R`, we get a linear
@@ -886,7 +880,6 @@ namespace Algebra
 section Lmul
 
 variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
-
 variable {m : Type*} [Fintype m] [DecidableEq m] (b : Basis m R S)
 
 theorem toMatrix_lmul' (x : S) (i j) :
@@ -961,11 +954,8 @@ end Lmul
 section LmulTower
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [Ring T]
-
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
-
 variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
-
 variable (b : Basis m R S) (c : Basis n S T)
 
 theorem smul_leftMulMatrix (x) (ik jk) :
@@ -999,9 +989,7 @@ end Algebra
 section
 
 variable {R : Type v} [CommRing R] {n : Type*} [DecidableEq n]
-
 variable {M M₁ M₂ : Type*} [AddCommGroup M] [Module R M]
-
 variable [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
 
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices

@@ -58,7 +58,6 @@ variable {𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type*}
 section FilterBasis
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable (𝕜 E ι)
 
 /-- An abbreviation for indexed families of seminorms. This is mainly to allow for dot-notation. -/
@@ -215,9 +214,7 @@ section Bounded
 namespace Seminorm
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [NormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
-
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 -- Todo: This should be phrased entirely in terms of the von Neumann bornology.
@@ -278,7 +275,6 @@ theorem WithSeminorms.withSeminorms_eq {p : SeminormFamily 𝕜 E ι} [t : Topol
 #align with_seminorms.with_seminorms_eq WithSeminorms.withSeminorms_eq
 
 variable [TopologicalSpace E]
-
 variable {p : SeminormFamily 𝕜 E ι}
 
 theorem WithSeminorms.topologicalAddGroup (hp : WithSeminorms p) : TopologicalAddGroup E := by
@@ -374,7 +370,6 @@ end Topology
 section Tendsto
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonempty ι] [TopologicalSpace E]
-
 variable {p : SeminormFamily 𝕜 E ι}
 
 /-- Convergence along filters for `WithSeminorms`.
@@ -409,7 +404,6 @@ end Tendsto
 section TopologicalAddGroup
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [Nonempty ι]
 
 section TopologicalSpace
@@ -504,9 +498,7 @@ end NormedSpace
 section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonempty ι]
-
 variable {p : SeminormFamily 𝕜 E ι}
-
 variable [TopologicalSpace E]
 
 theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp : WithSeminorms p) :
@@ -584,17 +576,11 @@ section continuous_of_bounded
 namespace Seminorm
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [NormedField 𝕝] [Module 𝕝 E]
-
 variable [NontriviallyNormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
-
 variable [NormedField 𝕝₂] [Module 𝕝₂ F]
-
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
-
 variable {τ₁₂ : 𝕝 →+* 𝕝₂} [RingHomIsometric τ₁₂]
-
 variable [Nonempty ι] [Nonempty ι']
 
 theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [TopologicalSpace E]
@@ -899,9 +885,7 @@ end NormedSpace
 section TopologicalConstructions
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [NormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
-
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 /-- The family of seminorms obtained by composing each seminorm by a linear map. -/
@@ -960,9 +944,7 @@ end TopologicalConstructions
 section TopologicalProperties
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonempty ι] [Countable ι]
-
 variable {p : SeminormFamily 𝕜 E ι}
-
 variable [TopologicalSpace E]
 
 /-- If the topology of a space is induced by a countable family of seminorms, then the topology

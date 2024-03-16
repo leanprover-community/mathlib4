@@ -20,7 +20,6 @@ The main result is `ExteriorAlgebra.gradedAlgebra`, which says that the exterior
 namespace ExteriorAlgebra
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-
 variable (R M)
 
 open scoped DirectSum

@@ -48,9 +48,7 @@ universe w v u
 namespace CategoryTheory
 
 variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E]
-
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-
 variable {L : GrothendieckTopology E}
 
 /-- An auxiliary structure that witnesses the fact that `f` factors through an image object of `G`.
@@ -107,7 +105,6 @@ open Presieve Opposite
 namespace Functor.IsCoverDense
 
 variable {K}
-
 variable {A : Type*} [Category A] (G : C ⥤ D) [G.IsCoverDense K]
 
 -- this is not marked with `@[ext]` because `H` can not be inferred from the type
@@ -519,13 +516,9 @@ namespace CategoryTheory.Functor.IsCoverDense
 open CategoryTheory
 
 variable {C D : Type u} [Category.{v} C] [Category.{v} D]
-
 variable (G : C ⥤ D) [Full G] [Faithful G]
-
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-
 variable {A : Type w} [Category.{max u v} A] [Limits.HasLimits A]
-
 variable [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K]
 
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by

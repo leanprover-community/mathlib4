@@ -21,7 +21,6 @@ for those subobjects.
 
 
 variable {M G R : Type*}
-
 variable [Monoid M] [Group G] [Semiring R]
 
 /-- A stronger version of `Submonoid.distribMulAction`. -/

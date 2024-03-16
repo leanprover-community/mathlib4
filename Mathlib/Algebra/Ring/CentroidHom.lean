@@ -469,7 +469,6 @@ Let `α` be an algebra over `R`, such that the canonical ring homomorphism of `R
 -/
 
 variable {R : Type*}
-
 variable [CommSemiring R]
 variable [Module R α] [SMulCommClass R α α] [IsScalarTower R α α]
 

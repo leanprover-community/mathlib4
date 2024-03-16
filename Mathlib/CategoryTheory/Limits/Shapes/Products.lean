@@ -45,7 +45,6 @@ open CategoryTheory
 namespace CategoryTheory.Limits
 
 variable {β : Type w} {α : Type w₂} {γ : Type w₃}
-
 variable {C : Type u} [Category.{v} C]
 
 -- We don't need an analogue of `Pair` (for binary products), `ParallelPair` (for equalizers),
@@ -517,7 +516,6 @@ def sigmaSigmaIso (f : ι → Type*) (g : (i : ι) → (f i) → C)
 section Comparison
 
 variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)
-
 variable (f : β → C)
 
 /-- The comparison morphism for the product of `f`. This is an iso iff `G` preserves the product

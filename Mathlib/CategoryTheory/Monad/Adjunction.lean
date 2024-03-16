@@ -34,7 +34,6 @@ universe v₁ v₂ u₁ u₂
 
 -- morphism levels before object levels. See note [category_theory universes].
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
 variable {L : C ⥤ D} {R : D ⥤ C}
 
 namespace Adjunction
