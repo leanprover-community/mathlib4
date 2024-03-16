@@ -202,7 +202,6 @@ noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coef
     (ha₂ : a₂.coeff 0 ≠ 0) : ℕ → k
   | 0 => solution p a₁ a₂
   | n + 1 => succNthVal p n a₁ a₂ (fun i => frobeniusRotationCoeff ha₁ ha₂ i.val) ha₁ ha₂
-decreasing_by apply Fin.is_lt
 #align witt_vector.frobenius_rotation_coeff WittVector.frobeniusRotationCoeff
 
 /-- For nonzero `a₁` and `a₂`, `frobeniusRotation a₁ a₂` is a Witt vector that satisfies the

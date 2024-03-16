@@ -1056,6 +1056,7 @@ import Mathlib.CategoryTheory.Category.Quiv
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.Functor
 import Mathlib.CategoryTheory.Closed.FunctorCategory
@@ -1719,6 +1720,7 @@ import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.Data.Int.Associated
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Bitwise
+import Mathlib.Data.Int.CardIntervalMod
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Cast.Field
@@ -3838,6 +3840,7 @@ import Mathlib.Topology.ContinuousFunction.ContinuousMapZero
 import Mathlib.Topology.ContinuousFunction.FunctionalCalculus
 import Mathlib.Topology.ContinuousFunction.Ideals
 import Mathlib.Topology.ContinuousFunction.LocallyConstant
+import Mathlib.Topology.ContinuousFunction.NonUnitalFunctionalCalculus
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.ContinuousFunction.Polynomial
 import Mathlib.Topology.ContinuousFunction.Sigma

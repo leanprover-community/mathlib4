@@ -30,7 +30,6 @@ namespace PGame
 def ImpartialAux : PGame → Prop
   | G => (G ≈ -G) ∧ (∀ i, ImpartialAux (G.moveLeft i)) ∧ ∀ j, ImpartialAux (G.moveRight j)
 termination_by G => G -- Porting note: Added `termination_by`
-decreasing_by all_goals pgame_wf_tac
 #align pgame.impartial_aux SetTheory.PGame.ImpartialAux
 
 theorem impartialAux_def {G : PGame} :
@@ -89,7 +88,6 @@ theorem impartial_congr : ∀ {G H : PGame} (_ : G ≡r H) [G.Impartial], H.Impa
       ⟨Equiv.trans e.symm.equiv (Equiv.trans (neg_equiv_self G) (neg_equiv_neg_iff.2 e.equiv)),
         fun i => impartial_congr (e.moveLeftSymm i), fun j => impartial_congr (e.moveRightSymm j)⟩
 termination_by G H => (G, H)
-decreasing_by all_goals pgame_wf_tac
 #align pgame.impartial.impartial_congr SetTheory.PGame.Impartial.impartial_congr
 
 instance impartial_add : ∀ (G H : PGame) [G.Impartial] [H.Impartial], (G + H).Impartial
@@ -106,7 +104,6 @@ instance impartial_add : ∀ (G H : PGame) [G.Impartial] [H.Impartial], (G + H).
         intro i; simp only [add_moveRight_inl, add_moveRight_inr]
         apply impartial_add
 termination_by G H => (G, H)
-decreasing_by all_goals pgame_wf_tac
 #align pgame.impartial.impartial_add SetTheory.PGame.Impartial.impartial_add
 
 instance impartial_neg : ∀ (G : PGame) [G.Impartial], (-G).Impartial
@@ -120,7 +117,6 @@ instance impartial_neg : ∀ (G : PGame) [G.Impartial], (-G).Impartial
     · rw [moveRight_neg']
       apply impartial_neg
 termination_by G => G
-decreasing_by all_goals pgame_wf_tac
 #align pgame.impartial.impartial_neg SetTheory.PGame.Impartial.impartial_neg
 
 variable (G : PGame) [Impartial G]

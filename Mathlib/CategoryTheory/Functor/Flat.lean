@@ -69,21 +69,11 @@ attribute [instance] RepresentablyFlat.cofiltered
 
 attribute [local instance] IsCofiltered.nonempty
 
-instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
-  constructor
-  intro X
-  haveI : Nonempty (StructuredArrow X (𝟭 C)) := ⟨StructuredArrow.mk (𝟙 _)⟩
-  suffices IsCofilteredOrEmpty (StructuredArrow X (𝟭 C)) by constructor
-  constructor
-  · intro Y Z
-    use StructuredArrow.mk (𝟙 _)
-    use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
-    use StructuredArrow.homMk Z.hom (by erw [Functor.id_map, Category.id_comp])
-  · intro Y Z f g
-    use StructuredArrow.mk (𝟙 _)
-    use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
-    ext
-    trans Z.hom <;> simp
+instance RepresentablyFlat.of_isRightAdjoint (F : C ⥤ D) [IsRightAdjoint F] :
+    RepresentablyFlat F where
+  cofiltered _ := IsCofiltered.of_isInitial _ (mkInitialOfLeftAdjoint _ (.ofRightAdjoint F) _)
+
+theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 #align category_theory.representably_flat.id CategoryTheory.RepresentablyFlat.id
 
 instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F]
