@@ -150,6 +150,192 @@ theorem equalizerCondition_iff_of_equivalence (P : Cᵒᵖ ⥤ D)
     equalizerCondition_of_natIso (e.op.funInvIdAssoc P)
       (equalizerCondition_precomp_of_preservesPullback (e.op.inverse ⋙ P) e.functor h)⟩
 
+theorem PullbackCone.IsLimit.uniq {X₁ X₂ Y B : C} {f₁ : X₁ ⟶ B} {f₂ : X₂ ⟶ B}
+    (c : PullbackCone f₁ f₂) (hc : IsLimit c) (g₁ : Y ⟶ X₁) (g₂ : Y ⟶ X₂) (w : g₁ ≫ f₁ = g₂ ≫ f₂)
+    (h : Y ⟶ c.pt) (w₁ : h ≫ c.fst = g₁) (w₂ : h ≫ c.snd = g₂) :
+    h = PullbackCone.IsLimit.lift hc g₁ g₂ w := by
+  apply hc.uniq (PullbackCone.mk _ _ w)
+  intro j
+  cases j with
+  | none =>
+    simp only [PullbackCone.mk_pt, cospan_one, PullbackCone.condition_one, PullbackCone.mk_π_app,
+      const_obj_obj]
+    rw [← Category.assoc, w₁]
+  | some val =>
+    cases val with
+    | left =>
+      simpa using w₁
+    | right =>
+      simpa using w₂
+
+open WalkingParallelPair WalkingParallelPairHom in
+theorem extracted_1 (P : Cᵒᵖ ⥤ D) {X B : C} (π : X ⟶ B)
+    [EffectiveEpi π] [HasPullback π π]
+    (h : IsLimit (P.mapCone (Sieve.ofArrows (fun (_ : Unit) ↦ X) fun _ ↦ π).arrows.cocone.op))
+    (c : PullbackCone π π) (hc : IsLimit c) :
+    Nonempty (IsLimit (Fork.ofι (P.map π.op) (equalizerCondition_w P c))) := by
+  let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
+  let E := @FullSubcategory (Over B) (fun f ↦ S f.hom)
+  let F : Eᵒᵖ ⥤ D := S.diagram.op ⋙ P
+  let G := parallelPair (P.map c.fst.op) (P.map c.snd.op)
+  let X' : E := ⟨Over.mk π, ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩⟩
+  let P' : E := ⟨Over.mk (c.fst ≫ π),
+    ⟨_, c.fst, π, ofArrows.mk (), rfl⟩⟩
+  let fst : P' ⟶ X' := Over.homMk c.fst
+  let snd : P' ⟶ X' := Over.homMk c.snd c.condition.symm
+  let H := parallelPair fst.op snd.op
+  have : H.Initial := {
+    out := by
+      intro ⟨Z⟩
+      refine @isConnected_of_zigzag _ _ ?_ ?_
+      · obtain ⟨_, f, g, ⟨⟩, hh⟩ := Z.property
+        refine ⟨CostructuredArrow.mk (Y := zero) ?_⟩
+        let f' : Z.obj.left ⟶ X'.obj.left := f
+        refine (Over.homMk f').op
+      · rintro ⟨⟨_ | _⟩, _, ⟨i⟩⟩ ⟨⟨_ | _⟩, _, ⟨j⟩⟩
+        · have hi : i.left ≫ π = _ := i.w
+          have hj : j.left ≫ π = _ := j.w
+          have hij : i.left ≫ π = j.left ≫ π := by rw [hi, hj]; rfl
+          let ij := PullbackCone.IsLimit.lift hc i.left j.left hij
+          let cij : CostructuredArrow H ⟨Z⟩ :=
+            CostructuredArrow.mk (⟨ij, (𝟙 _), (by simpa [H, ij] using hi)⟩ : H.obj one ⟶ ⟨Z⟩)
+          let fig : (⟨zero, _, ⟨i⟩⟩ : CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := left
+          let fjg : (⟨zero, _, ⟨j⟩⟩ : CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := right
+          let fi : ⟨zero, _, ⟨i⟩⟩ ⟶ cij := CostructuredArrow.homMk fig (by
+            erw [← op_comp]
+            congr
+            apply CostructuredArrow.hom_ext
+            change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.fst = _
+            simp)
+          let fj : ⟨zero, _, ⟨j⟩⟩ ⟶ cij := CostructuredArrow.homMk fjg (by
+            erw [← op_comp]
+            congr
+            apply CostructuredArrow.hom_ext
+            change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.snd = _
+            simp)
+          refine ⟨[⟨zero, _, ⟨i⟩⟩, cij, ⟨zero, _, ⟨j⟩⟩], ?_⟩
+          simp only [id_obj, const_obj_obj, List.chain_cons, or_self, List.Chain.nil, and_true,
+            ne_eq, not_false_eq_true, List.getLast_cons, List.getLast_singleton']
+          refine ⟨⟨𝟙 _⟩, ?_, ?_⟩
+          · left
+            exact ⟨fi⟩
+          · right
+            exact ⟨fj⟩
+        · have hi : i.left ≫ π = _ := i.w
+          let j' := j ≫ (H.map right).unop
+          have hj : j'.left ≫ π = _ := j'.w
+          have hij : i.left ≫ π = j'.left ≫ π := by rw [hi, hj]; rfl
+          let ij := PullbackCone.IsLimit.lift hc i.left j'.left hij
+          let cij : CostructuredArrow H ⟨Z⟩ :=
+            CostructuredArrow.mk (⟨ij, (𝟙 _), (by simpa [H, ij] using hi)⟩ : H.obj one ⟶ ⟨Z⟩)
+          let fig : (⟨zero, _, ⟨i⟩⟩ : CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := left
+          let fjg : (⟨zero, _, ⟨j'⟩⟩ : CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := right
+          let fi : ⟨zero, _, ⟨i⟩⟩ ⟶ cij := CostructuredArrow.homMk fig (by
+            erw [← op_comp]
+            congr
+            apply CostructuredArrow.hom_ext
+            change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.fst = _
+            simp)
+          let fj : ⟨zero, _, ⟨j'⟩⟩ ⟶ cij := CostructuredArrow.homMk fjg (by
+            erw [← op_comp]
+            congr 1
+            apply CostructuredArrow.hom_ext
+            change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.snd = _
+            simp)
+          refine ⟨[cij, ⟨zero, _, ⟨j ≫ (H.map right).unop⟩⟩, ⟨one, _, ⟨j⟩⟩], ?_⟩
+          simp only [id_obj, const_obj_obj, List.chain_cons, List.Chain.nil, and_true, ne_eq,
+            not_false_eq_true, List.getLast_cons, List.getLast_singleton']
+          exact ⟨Or.inl ⟨fi⟩, Or.inr ⟨fj⟩, Or.inl
+            ⟨CostructuredArrow.homMk right rfl⟩⟩
+        · have hi := i.w
+          have hj := j.w
+          simp [- Over.w, H] at hi
+          simp [- Over.w, H] at hj
+          have hij : (i.left ≫ c.fst) ≫ π = j.left ≫ π := by simp [hi, hj]
+          let ij := PullbackCone.IsLimit.lift hc (i.left ≫ c.fst) j.left hij
+          let cij : CostructuredArrow H ⟨Z⟩ :=
+            CostructuredArrow.mk (⟨ij, (𝟙 _), (by simpa [H, ij] using hi)⟩ : H.obj one ⟶ ⟨Z⟩)
+          let fig : (⟨zero, _, ⟨i ≫ (H.map left).unop⟩⟩ : CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := left
+          let fjg : (⟨zero, _, ⟨j⟩⟩ : CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := right
+          let fi : ⟨zero, _, ⟨_⟩⟩ ⟶ cij := CostructuredArrow.homMk fig (by
+            erw [← op_comp]
+            congr 1
+            apply CostructuredArrow.hom_ext
+            change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.fst = _
+            simp only [id_obj, const_obj_obj, PullbackCone.IsLimit.lift_fst]
+            rfl)
+          let fj : ⟨zero, _, ⟨_⟩⟩ ⟶ cij := CostructuredArrow.homMk fjg (by
+            erw [← op_comp]
+            congr 1
+            apply CostructuredArrow.hom_ext
+            change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.snd = _
+            simp)
+          refine ⟨[⟨zero, _, ⟨i ≫ (H.map left).unop⟩⟩, cij, ⟨zero, _, ⟨j⟩⟩], ?_⟩
+          simp only [id_obj, const_obj_obj, List.chain_cons, List.Chain.nil, and_true, ne_eq,
+            not_false_eq_true, List.getLast_cons, List.getLast_singleton']
+          exact ⟨Or.inr ⟨CostructuredArrow.homMk left rfl⟩, Or.inl ⟨fi⟩, Or.inr ⟨fj⟩⟩
+        · have hi := i.w
+          have hj := j.w
+          simp [- Over.w, H] at hi
+          simp [- Over.w, H, c.condition] at hj
+          have hij : (i.left ≫ c.fst) ≫ π = (j.left ≫ c.snd) ≫ π := by simp [hi, hj]
+          let ij := PullbackCone.IsLimit.lift hc _ _ hij
+          let cij : CostructuredArrow H ⟨Z⟩ :=
+            CostructuredArrow.mk (⟨ij, (𝟙 _), (by simpa [H, ij] using hi)⟩ : H.obj one ⟶ ⟨Z⟩)
+          let fig : (⟨zero, _, ⟨i ≫ (H.map left).unop⟩⟩ :
+            CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := left
+          let fjg : (⟨zero, _, ⟨j ≫ (H.map right).unop⟩⟩ :
+            CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := right
+          let fi : ⟨zero, _, ⟨_⟩⟩ ⟶ cij := CostructuredArrow.homMk fig (by
+            erw [← op_comp]
+            congr 1
+            apply CostructuredArrow.hom_ext
+            change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.fst = _
+            simp only [id_obj, const_obj_obj, PullbackCone.IsLimit.lift_fst]
+            rfl)
+          let fj : ⟨zero, _, ⟨_⟩⟩ ⟶ cij := CostructuredArrow.homMk fjg (by
+            erw [← op_comp]
+            congr 1
+            apply CostructuredArrow.hom_ext
+            change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.snd = _
+            simp only [id_obj, const_obj_obj, PullbackCone.IsLimit.lift_snd]
+            rfl)
+          refine ⟨[⟨zero, _, ⟨i ≫ (H.map left).unop⟩⟩, cij, ⟨zero, _, ⟨j ≫ (H.map right).unop⟩⟩,
+            ⟨one, _, ⟨j⟩⟩], ?_⟩
+          simp only [id_obj, const_obj_obj, List.chain_cons, List.Chain.nil, and_true, ne_eq,
+            not_false_eq_true, List.getLast_cons, List.getLast_singleton']
+          exact ⟨Or.inr ⟨CostructuredArrow.homMk left rfl⟩, Or.inl ⟨fi⟩, Or.inr ⟨fj⟩, Or.inl
+            ⟨CostructuredArrow.homMk right rfl⟩⟩
+  }
+  let i : H ⋙ F ≅ G := parallelPair.ext (Iso.refl _) (Iso.refl _) (by aesop) (by aesop)
+  refine ⟨IsLimit.equivOfNatIsoOfIso i _ _ ?_ ((Functor.Initial.isLimitWhiskerEquiv H _).symm h)⟩
+  refine Cones.ext ?_ ?_
+  · rfl
+  · rintro ⟨_ | _⟩
+    · simp only [id_obj, comp_obj, Functor.comp_map, Iso.refl_hom, id_eq, eq_mpr_eq_cast,
+        const_obj_obj, parallelPair_map_right, Quiver.Hom.unop_op, Over.homMk_left, Iso.symm_hom,
+        Cones.postcompose_obj_pt, Fork.ofι_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
+        Fork.ofι_π_app, parallelPair.ext_inv_app, Iso.refl_inv, Sieve.generate_apply,
+        Cone.whisker_pt, mapCone_pt, Cocone.op_pt, Cocone.whisker_pt, Over.forgetCocone_pt,
+        Cone.whisker_π, whiskerLeft_app, mapCone_π_app, op_obj, fullSubcategoryInclusion.obj,
+        Over.forget_obj, Cocone.op_π, Cocone.whisker_ι, NatTrans.op_app, Over.forgetCocone_ι_app,
+        Category.id_comp, i]
+      erw [Category.comp_id]
+      congr
+    · simp only [id_obj, comp_obj, Functor.comp_map, Iso.refl_hom, id_eq, eq_mpr_eq_cast,
+        const_obj_obj, parallelPair_map_right, Quiver.Hom.unop_op, Over.homMk_left, Iso.symm_hom,
+        Cones.postcompose_obj_pt, Fork.ofι_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
+        Fork.ofι_π_app, parallelPair_obj_one, parallelPair.ext_inv_app, Iso.refl_inv,
+        Category.assoc, Sieve.generate_apply, Cone.whisker_pt, mapCone_pt, Cocone.op_pt,
+        Cocone.whisker_pt, Over.forgetCocone_pt, Cone.whisker_π, whiskerLeft_app, mapCone_π_app,
+        op_obj, fullSubcategoryInclusion.obj, Over.forget_obj, Cocone.op_π, Cocone.whisker_ι,
+        NatTrans.op_app, Over.forgetCocone_ι_app, Category.id_comp, i]
+      erw [Category.comp_id, ← Functor.map_comp]
+      congr
+
+  -- refine ⟨⟨fun s ↦ h.lift (s.whisker H), fun s d ↦ ?_, fun s m h ↦ ?_⟩⟩
+  -- obtain ⟨(lift : ∀ s : Cone G, _), fac : ∀ s : Cone G, _, uniq : ∀ s : Cone G, _⟩ := (h c hc).some
+
 lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B)
     [EffectiveEpi π] [HasPullback π π]:
     SingleEqualizerCondition P π ↔
@@ -170,7 +356,6 @@ lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C�
     let fst : P' ⟶ X' := Over.homMk pullback.fst
     let snd : P' ⟶ X' := Over.homMk pullback.snd pullback.condition.symm
     let H := parallelPair fst.op snd.op
-    obtain ⟨(lift : ∀ s : Cone G, _), fac : ∀ s : Cone G, _, uniq : ∀ s : Cone G, _⟩ := (h c hc).some
     let i : H ⋙ F ≅ G := by
       refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_
       all_goals simp only [id_obj, comp_obj, parallelPair_obj_zero, op_obj, unop_op,
@@ -180,7 +365,7 @@ lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C�
           Category.comp_id, Category.id_comp, H, fst, snd, F, G]; rfl
     refine ⟨?_⟩
     let hhh : IsLimit
-        ((P.mapCone (Sieve.ofArrows (fun x ↦ X) fun x ↦ π).arrows.cocone.op).whisker H) := by
+        ((P.mapCone (Sieve.ofArrows (fun _ ↦ X) fun _ ↦ π).arrows.cocone.op).whisker H) := by
       refine IsLimit.equivOfNatIsoOfIso i.symm _ _ ?_ (h c hc).some
       refine Cones.ext ?_ ?_
       · rfl
@@ -223,7 +408,8 @@ lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C�
     · refine hhh.uniq (s.whisker H) m ?_
       rintro ⟨_ | _⟩
       exacts [h _, h _]
-  · sorry
+  · intro ⟨h⟩
+    exact extracted_1 _ _ h
 
 lemma equalizerCondition_iff_isSheaf (F : Cᵒᵖ ⥤ D) [Preregular C]
     [∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f] :
