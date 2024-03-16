@@ -215,7 +215,6 @@ section Reindex
 variable {σ' : Type*} (g : σ ≃ σ')
 
 /-- Lifts an equivalence on states to an equivalence on DFAs. -/
-@[simps]
 def reindex : DFA α σ ≃ DFA α σ' where
   toFun M := {
     step := fun s a => g (M.step (g.symm s) a)
@@ -235,6 +234,15 @@ theorem reindex_refl : reindex (Equiv.refl σ) M = M := rfl
 
 @[simp]
 theorem reindex_symm : (reindex (α := α) g).symm = reindex g.symm := rfl
+
+@[simp]
+theorem reindex_step (s : σ') (a : α) : (reindex g M).step s a = g (M.step (g.symm s) a) := rfl
+
+@[simp]
+theorem reindex_start : (reindex g M).start = g M.start := rfl
+
+@[simp]
+theorem reindex_accept : (reindex g M).accept = g.symm ⁻¹' M.accept := rfl
 
 @[simp]
 theorem reindex_evalFrom (s : σ') (x : List α) :
