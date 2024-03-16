@@ -325,7 +325,7 @@ def liftRep
   | .nil, .map e x => Y.functor.map e (liftRep _ f _ x)
   | .nil, .unit => Y.toUnit _ _ PUnit.unit
 
-def liftObj
+def liftAppAux
     (Y : L.Algebra (Type max v u u'))
     (f : (A : S) → X A → Y.functor.obj (L.singleton A)) (A : ProdWord S) :
     L.Free X A → Y.functor.obj (L.of A) :=
@@ -371,6 +371,22 @@ def liftObj
         have : ex = ey := Y.toUnit_unique _ _
         change ex .unit = ey .unit
         rw [this]
+
+def lift
+    (Y : L.Algebra (Type max v u u'))
+    (f : (A : S) → X A → Y.functor.obj (L.singleton A)) :
+    L.FreeAlgebra X ⟶ Y where
+  app := fun ⟨A⟩ => liftAppAux Y f A
+  naturality := by
+    rintro ⟨A⟩ ⟨B⟩ f
+    apply funext
+    rintro ⟨x⟩
+    dsimp [FreeAlgebra] at x ⊢
+    cases x with
+    | of _ => cases B <;> rfl
+    | map _ => cases B <;> rfl
+    | lift _ _ => cases B <;> rfl
+    | unit => cases B <;> rfl
 
 end free
 
