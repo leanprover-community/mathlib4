@@ -134,8 +134,8 @@ namespace WeakFEPair
 
 /-- As `x → 0`, we have `F x = x ^ (-P.k) • constant` up to a rapidly decaying error. -/
 lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
-    (fun x ↦ P.f x - (P.ε * ↑(x ^ (-P.k))) • P.g₀) =O[𝓝[>] 0] (· ^ (-r)) := by
-  have := (P.hg_top (-(r - P.k))).comp_tendsto tendsto_inv_zero_atTop
+    (fun x ↦ P.f x - (P.ε * ↑(x ^ (-P.k))) • P.g₀) =O[𝓝[>] 0] (· ^ r) := by
+  have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_zero_atTop
   simp_rw [IsBigO, IsBigOWith, eventually_nhdsWithin_iff] at this ⊢
   obtain ⟨C, hC⟩ := this
   use ‖P.ε‖ * C
@@ -143,15 +143,15 @@ lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
   have h_nv2 : ↑(x ^ P.k) ≠ (0 : ℂ) := ofReal_ne_zero.mpr (rpow_pos_of_pos hx _).ne'
   have h_nv : P.ε⁻¹ * ↑(x ^ P.k) ≠ 0 := mul_ne_zero P.symm.hε h_nv2
   specialize hC' hx
-  simp_rw [Function.comp_apply, ← one_div, neg_neg, P.h_feq' _ hx] at hC'
+  simp_rw [Function.comp_apply, ← one_div, P.h_feq' _ hx] at hC'
   rw [← ((mul_inv_cancel h_nv).symm ▸ one_smul ℂ P.g₀ :), mul_smul _ _ P.g₀, ← smul_sub, norm_smul,
     ← le_div_iff' (lt_of_le_of_ne (norm_nonneg _) (norm_ne_zero_iff.mpr h_nv).symm)] at hC'
   convert hC' using 1
   · congr 3
     rw [rpow_neg hx.le]
     field_simp
-  · simp_rw [norm_mul, norm_real, rpow_neg hx.le, one_div, inv_rpow hx.le, norm_inv,
-      norm_of_nonneg (rpow_pos_of_pos hx _).le, rpow_sub hx]
+  · simp_rw [norm_mul, norm_real, one_div, inv_rpow hx.le, rpow_neg hx.le, inv_inv, norm_inv,
+      norm_of_nonneg (rpow_pos_of_pos hx _).le, rpow_add hx]
     field_simp
     ring
 
@@ -176,11 +176,11 @@ namespace StrongFEPair
 variable (P : StrongFEPair E)
 
 /-- As `x → ∞`, `f x` decays faster than any power of `x`. -/
-lemma hf_top' (r : ℝ) : P.f =O[atTop] (· ^ (-r)) := by
+lemma hf_top' (r : ℝ) : P.f =O[atTop] (· ^ r) := by
   simpa only [P.hf₀, sub_zero] using P.hf_top r
 
 /-- As `x → 0`, `f x` decays faster than any power of `x`. -/
-lemma hf_zero' (r : ℝ) : P.f =O[𝓝[>] 0] (· ^ (-r)) := by
+lemma hf_zero' (r : ℝ) : P.f =O[𝓝[>] 0] (· ^ r) := by
   have := P.hg₀ ▸ P.hf_zero r
   simpa only [smul_zero, sub_zero]
 
@@ -193,9 +193,9 @@ def Λ : ℂ → E := mellin P.f
 
 /-- The Mellin transform of `f` is well-defined and equal to `P.Λ s`, for all `s`. -/
 lemma hasMellin (s : ℂ) : HasMellin P.f s (P.Λ s) :=
-  let ⟨t, ht⟩ := exists_gt s.re
-  let ⟨u, hu⟩ := exists_lt s.re
-  ⟨mellinConvergent_of_isBigO_rpow P.hf_int (P.hf_top' t) ht (P.hf_zero' u) hu, rfl⟩
+  let ⟨_, ht⟩ := exists_gt s.re
+  let ⟨_, hu⟩ := exists_lt s.re
+  ⟨mellinConvergent_of_isBigO_rpow P.hf_int (P.hf_top' _) ht (P.hf_zero' _) hu, rfl⟩
 
 lemma Λ_eq : P.Λ = mellin P.f := rfl
 
@@ -323,12 +323,11 @@ lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
   intro x (hx : 0 < x)
   simp_rw [f_modif, Pi.add_apply]
   rcases lt_trichotomy x 1 with hx' | rfl | hx'
-  · simp_rw [indicator_of_not_mem (not_mem_Ioi.mpr hx'.le), zero_add,
-      indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩)]
-    rw [indicator_of_not_mem (mem_singleton_iff.not.mpr hx'.ne), add_zero]
+  · simp_rw [indicator_of_not_mem (not_mem_Ioi.mpr hx'.le),
+      indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩),
+      indicator_of_not_mem (mem_singleton_iff.not.mpr hx'.ne)]
     abel
   · simp [add_comm, sub_eq_add_neg]
-    abel
   · simp_rw [indicator_of_mem (mem_Ioi.mpr hx'),
       indicator_of_not_mem (not_mem_Ioo_of_ge hx'.le),
       indicator_of_not_mem (mem_singleton_iff.not.mpr hx'.ne')]
