@@ -1123,8 +1123,11 @@ end
 section
 
 variable {Γ : Type*} [Inhabited Γ]
+
 variable {Γ' : Type*} [Inhabited Γ']
+
 variable {Λ : Type*} [Inhabited Λ]
+
 variable {Λ' : Type*} [Inhabited Λ']
 
 /-- Map a TM statement across a function. This does nothing to move statements and maps the write
@@ -1435,7 +1438,9 @@ set_option linter.uppercaseLean3 false
 section
 
 variable {Γ : Type*} [Inhabited Γ]
+
 variable {Λ : Type*} [Inhabited Λ]
+
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => TM1.Stmt Γ Λ σ
@@ -1624,6 +1629,7 @@ theorem exists_enc_dec [Finite Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n) 
 #align turing.TM1to1.exists_enc_dec Turing.TM1to1.exists_enc_dec
 
 variable {Λ : Type*} [Inhabited Λ]
+
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => Stmt Γ Λ σ
@@ -1971,6 +1977,7 @@ set_option linter.uppercaseLean3 false
 section
 
 variable {Γ : Type*} [Inhabited Γ]
+
 variable {Λ : Type*} [Inhabited Λ]
 
 /-- The machine states for a TM1 emulating a TM0 machine. States of the TM0 machine are embedded
@@ -2325,8 +2332,11 @@ theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option
 section
 
 variable {K : Type*} [DecidableEq K]
+
 variable {Γ : K → Type*}
+
 variable {Λ : Type*} [Inhabited Λ]
+
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₂" => TM2.Stmt Γ Λ σ

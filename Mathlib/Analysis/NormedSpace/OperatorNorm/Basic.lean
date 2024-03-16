@@ -487,7 +487,9 @@ end OpNorm
 section RestrictScalars
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜' 𝕜 E]
+
 variable [NormedSpace 𝕜' Fₗ] [IsScalarTower 𝕜' 𝕜 Fₗ]
 
 @[simp]
@@ -497,6 +499,7 @@ theorem norm_restrictScalars (f : E →L[𝕜] Fₗ) : ‖f.restrictScalars 𝕜
 #align continuous_linear_map.norm_restrict_scalars ContinuousLinearMap.norm_restrictScalars
 
 variable (𝕜 E Fₗ 𝕜') (𝕜'' : Type*) [Ring 𝕜'']
+
 variable [Module 𝕜'' Fₗ] [ContinuousConstSMul 𝕜'' Fₗ]
   [SMulCommClass 𝕜 𝕜'' Fₗ] [SMulCommClass 𝕜' 𝕜'' Fₗ]
 

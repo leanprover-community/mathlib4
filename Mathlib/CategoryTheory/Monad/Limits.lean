@@ -36,7 +36,9 @@ universe v u v₁ v₂ u₁ u₂
 namespace Monad
 
 variable {C : Type u₁} [Category.{v₁} C]
+
 variable {T : Monad C}
+
 variable {J : Type u} [Category.{v} J]
 
 namespace ForgetCreatesLimits
@@ -277,6 +279,7 @@ theorem forget_creates_colimits_of_monad_preserves [PreservesColimitsOfShape J (
 end Monad
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+
 variable {J : Type u} [Category.{v} J]
 
 instance comp_comparison_forget_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]

@@ -47,6 +47,7 @@ open scoped EuclideanGeometry RealInnerProductSpace Real
 namespace EuclideanGeometry
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+
 variable {P : Type*} [MetricSpace P] [NormedAddTorsor V P]
 
 /-- **Ptolemy’s Theorem**. -/

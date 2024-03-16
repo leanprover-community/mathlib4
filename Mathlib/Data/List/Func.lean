@@ -38,6 +38,7 @@ namespace List
 namespace Func
 
 variable {a : α}
+
 variable {as as1 as2 as3 : List α}
 
 /-- Elementwise negation of a list -/

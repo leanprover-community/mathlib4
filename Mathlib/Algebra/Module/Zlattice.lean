@@ -50,7 +50,9 @@ variable {E ι : Type*}
 section NormedLatticeField
 
 variable {K : Type*} [NormedLinearOrderedField K]
+
 variable [NormedAddCommGroup E] [NormedSpace K E]
+
 variable (b : Basis ι K E)
 
 /-- The fundamental domain of the ℤ-lattice spanned by `b`. See `Zspan.isAddFundamentalDomain`

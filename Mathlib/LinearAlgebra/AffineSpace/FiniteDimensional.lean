@@ -30,6 +30,7 @@ open BigOperators Affine
 section AffineSpace'
 
 variable (k : Type*) {V : Type*} {P : Type*}
+
 variable {ι : Type*}
 
 open AffineSubspace FiniteDimensional Module
@@ -822,6 +823,7 @@ namespace AffineBasis
 universe u₁ u₂ u₃ u₄
 
 variable {ι : Type u₁} {k : Type u₂} {V : Type u₃} {P : Type u₄}
+
 variable [AddCommGroup V] [AffineSpace V P]
 
 section DivisionRing

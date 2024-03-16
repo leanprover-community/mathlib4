@@ -65,6 +65,7 @@ open CategoryTheory.Limits.WalkingParallelPair
 namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
+
 variable {X Y : C} (f : X ⟶ Y)
 
 /-- A factorisation of a morphism `f = e ≫ m`, with `m` monic. -/
@@ -806,6 +807,7 @@ theorem image.map_homMk'_ι {X Y P Q : C} {k : X ⟶ Y} [HasImage k] {l : P ⟶ 
 section
 
 variable {h : Arrow C} [HasImage h.hom] (sq' : g ⟶ h)
+
 variable [HasImageMap sq']
 
 /-- Image maps for composable commutative squares induce an image map in the composite square. -/
@@ -1004,6 +1006,7 @@ instance (priority := 100) hasStrongEpiImages_of_hasPullbacks_of_hasEqualizers [
 end HasStrongEpiImages
 
 variable [HasStrongEpiMonoFactorisations C]
+
 variable {X Y : C} {f : X ⟶ Y}
 
 /--

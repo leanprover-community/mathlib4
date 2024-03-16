@@ -54,6 +54,7 @@ universe u v
 section Ring
 
 variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
+
 variable {ι : Type*} (b : Basis ι R M)
 
 open Submodule.IsPrincipal Submodule
@@ -88,6 +89,7 @@ end Ring
 section IsDomain
 
 variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R]
+
 variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
 
 open Submodule.IsPrincipal Set Submodule
@@ -107,6 +109,7 @@ section PrincipalIdealDomain
 open Submodule.IsPrincipal Set Submodule
 
 variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+
 variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
 
 open Submodule.IsPrincipal

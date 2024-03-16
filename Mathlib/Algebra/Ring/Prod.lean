@@ -163,6 +163,7 @@ end Prod
 section Prod_map
 
 variable [NonUnitalNonAssocSemiring R'] [NonUnitalNonAssocSemiring S'] [NonUnitalNonAssocSemiring T]
+
 variable (f : R →ₙ+* R') (g : S →ₙ+* S')
 
 /-- `Prod.map` as a `NonUnitalRingHom`. -/
@@ -252,6 +253,7 @@ end Prod
 section Prod_map
 
 variable [NonAssocSemiring R'] [NonAssocSemiring S'] [NonAssocSemiring T]
+
 variable (f : R →+* R') (g : S →+* S')
 
 /-- `Prod.map` as a `RingHom`. -/

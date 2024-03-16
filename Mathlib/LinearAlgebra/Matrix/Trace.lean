@@ -29,6 +29,7 @@ open BigOperators Matrix
 namespace Matrix
 
 variable {ι m n p : Type*} {α R S : Type*}
+
 variable [Fintype m] [Fintype n] [Fintype p]
 
 section AddCommMonoid

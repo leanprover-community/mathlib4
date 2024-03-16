@@ -84,6 +84,7 @@ def CartesianClosed.mk (C : Type u) [Category.{v} C] [HasFiniteProducts C]
   ⟨fun X => ⟨h X⟩⟩
 
 variable {C : Type u} [Category.{v} C] (A B : C) {X X' Y Y' Z : C}
+
 variable [HasFiniteProducts C] [Exponentiable A]
 
 /-- This is (-)^A. -/

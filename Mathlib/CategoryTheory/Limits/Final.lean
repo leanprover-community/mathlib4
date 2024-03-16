@@ -78,6 +78,7 @@ open CategoryTheory.Limits
 section ArbitraryUniverse
 
 variable {C : Type u₁} [Category.{v₁} C]
+
 variable {D : Type u₂} [Category.{v₂} D]
 
 /--
@@ -830,6 +831,7 @@ section Filtered
 open Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
+
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-- Final functors preserve filteredness.

@@ -44,7 +44,9 @@ open CategoryTheory
 namespace CategoryTheory.Limits
 
 variable {J K : Type v} [SmallCategory J] [SmallCategory K]
+
 variable {C : Type u} [Category.{v} C]
+
 variable (F : J ⥤ K ⥤ C)
 
 -- We could try introducing a "dependent functor type" to handle this?
@@ -244,6 +246,7 @@ def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimi
 section
 
 variable (F)
+
 variable [HasLimitsOfShape K C]
 
 /-- Given a functor `F : J ⥤ K ⥤ C`, with all needed limits,
@@ -268,6 +271,7 @@ theorem DiagramOfCones.mkOfHasLimits_conePoints :
 #align category_theory.limits.diagram_of_cones.mk_of_has_limits_cone_points CategoryTheory.Limits.DiagramOfCones.mkOfHasLimits_conePoints
 
 variable [HasLimit (uncurry.obj F)]
+
 variable [HasLimit (F ⋙ lim)]
 
 /-- The Fubini theorem for a functor `F : J ⥤ K ⥤ C`,
@@ -305,6 +309,7 @@ end
 section
 
 variable (F)
+
 variable [HasColimitsOfShape K C]
 
 /-- Given a functor `F : J ⥤ K ⥤ C`, with all needed colimits,
@@ -326,6 +331,7 @@ theorem DiagramOfCocones.mkOfHasColimits_coconePoints :
   rfl
 
 variable [HasColimit (uncurry.obj F)]
+
 variable [HasColimit (F ⋙ colim)]
 
 /-- The Fubini theorem for a functor `F : J ⥤ K ⥤ C`,
@@ -399,6 +405,7 @@ end
 section
 
 variable (F) [HasColimitsOfShape J C] [HasColimitsOfShape K C]
+
 variable [HasColimitsOfShape (J × K) C] [HasColimitsOfShape (K × J) C]
 
 /-- The colimit of `F.flip ⋙ colim` is isomorphic to the colimit of `F ⋙ colim`. -/
@@ -435,7 +442,9 @@ variable (G : J × K ⥤ C)
 section
 
 variable [HasLimitsOfShape K C]
+
 variable [HasLimit G]
+
 variable [HasLimit (curry.obj G ⋙ lim)]
 
 /-- The Fubini theorem for a functor `G : J × K ⥤ C`,
@@ -471,7 +480,9 @@ end
 section
 
 variable [HasColimitsOfShape K C]
+
 variable [HasColimit G]
+
 variable [HasColimit (curry.obj G ⋙ colim)]
 
 /-- The Fubini theorem for a functor `G : J × K ⥤ C`,

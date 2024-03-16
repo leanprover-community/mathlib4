@@ -228,6 +228,7 @@ theorem coe_to_submodule : ((L' : Submodule R L) : Set L) = L' :=
 section LieModule
 
 variable {M : Type w} [AddCommGroup M] [LieRingModule L M]
+
 variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N] [LieModule R L N]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
@@ -756,6 +757,7 @@ end LieSubalgebra
 namespace LieEquiv
 
 variable {R : Type u} {L₁ : Type v} {L₂ : Type w}
+
 variable [CommRing R] [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂]
 
 /-- An injective Lie algebra morphism is an equivalence onto its range. -/

@@ -23,7 +23,9 @@ universe u v w
 open Polynomial Matrix
 
 variable {R : Type u} [CommRing R]
+
 variable {n : Type v} [DecidableEq n] [Fintype n]
+
 variable {N : Type w} [AddCommGroup N] [Module R N]
 
 open Finset

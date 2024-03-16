@@ -35,7 +35,9 @@ universe v u
 open CategoryTheory CategoryTheory.Limits
 
 variable {ι : Type*}
+
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
+
 variable {c : ComplexShape ι} (C : HomologicalComplex V c)
 
 open scoped Classical
@@ -201,6 +203,7 @@ open HomologicalComplex
 section
 
 variable [HasKernels V]
+
 variable {C₁ C₂ C₃ : HomologicalComplex V c} (f : C₁ ⟶ C₂)
 
 /-- The morphism between cycles induced by a chain map. -/
@@ -247,6 +250,7 @@ end
 section
 
 variable [HasImages V] [HasImageMaps V]
+
 variable {C₁ C₂ C₃ : HomologicalComplex V c} (f : C₁ ⟶ C₂)
 
 /-- The morphism between boundaries induced by a chain map. -/
@@ -271,6 +275,7 @@ section
 
 
 variable [HasEqualizers V] [HasImages V] [HasImageMaps V]
+
 variable {C₁ C₂ : HomologicalComplex V c} (f : C₁ ⟶ C₂)
 
 -- Porting note: Originally `@[simp, reassoc.1]`

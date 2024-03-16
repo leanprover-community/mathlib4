@@ -91,6 +91,7 @@ variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
 section Module
 
 variable {v : ι → M}
+
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M'']
 variable [Module R M] [Module R M'] [Module R M'']
 variable {a b : R} {x y : M}
@@ -1240,7 +1241,9 @@ end Module
 section Nontrivial
 
 variable [Ring R] [Nontrivial R] [AddCommGroup M] [AddCommGroup M']
+
 variable [Module R M] [NoZeroSMulDivisors R M] [Module R M']
+
 variable {v : ι → M} {s t : Set M} {x y z : M}
 
 theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :
@@ -1271,7 +1274,9 @@ These can be considered generalizations of properties of linear independence in 
 section Module
 
 variable [DivisionRing K] [AddCommGroup V] [AddCommGroup V']
+
 variable [Module K V] [Module K V']
+
 variable {v : ι → V} {s t : Set V} {x y z : V}
 
 open Submodule

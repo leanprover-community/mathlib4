@@ -377,6 +377,7 @@ end MonoidWithZero
 section CommMonoidWithZero
 
 variable [CommMonoidWithZero α]
+
 variable [DecidableRel ((· ∣ ·) : α → α → Prop)]
 
 theorem multiplicity_mk_eq_multiplicity

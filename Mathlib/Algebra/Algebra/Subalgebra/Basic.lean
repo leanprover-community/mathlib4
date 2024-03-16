@@ -38,7 +38,9 @@ add_decl_doc Subalgebra.toSubsemiring
 namespace Subalgebra
 
 variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
+
 variable [CommSemiring R]
+
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
 
 instance : SetLike (Subalgebra R A) A where
@@ -508,6 +510,7 @@ end Subalgebra
 namespace Submodule
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+
 variable (p : Submodule R A)
 
 /-- A submodule containing `1` and closed under multiplication is a subalgebra. -/
@@ -557,8 +560,11 @@ end Submodule
 namespace AlgHom
 
 variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
+
 variable [CommSemiring R]
+
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
+
 variable (φ : A →ₐ[R] B)
 
 /-- Range of an `AlgHom` as a subalgebra. -/
@@ -659,6 +665,7 @@ end AlgHom
 namespace AlgEquiv
 
 variable {R : Type u} {A : Type v} {B : Type w}
+
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 /-- Restrict an algebra homomorphism with a left inverse to an algebra isomorphism to its range.
@@ -719,6 +726,7 @@ end AlgEquiv
 namespace Algebra
 
 variable (R : Type u) {A : Type v} {B : Type w}
+
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- The minimal subalgebra that includes `s`. -/
@@ -942,7 +950,9 @@ namespace Subalgebra
 open Algebra
 
 variable {R : Type u} {A : Type v} {B : Type w}
+
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+
 variable (S : Subalgebra R A)
 
 /-- The top subalgebra is isomorphic to the algebra.

@@ -19,6 +19,7 @@ imports.
 universe u v w
 
 variable {ι α : Type*}
+
 variable {I : Type u}
 
 -- The indexing type

@@ -225,7 +225,9 @@ section
 -- attribute [local tidy] tactic.case_bash
 
 variable {C}
+
 variable (𝒯 : LimitCone (Functor.empty.{v} C))
+
 variable (ℬ : ∀ X Y : C, LimitCone (pair X Y))
 
 namespace MonoidalOfChosenFiniteProducts

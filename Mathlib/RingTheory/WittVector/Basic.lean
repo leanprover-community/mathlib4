@@ -54,6 +54,7 @@ open MvPolynomial Function
 open scoped BigOperators
 
 variable {p : ℕ} {R S T : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S] [CommRing T]
+
 variable {α : Type*} {β : Type*}
 
 -- mathport name: expr𝕎

@@ -30,12 +30,15 @@ continuous linear maps will require importing `Analysis/LocallyConvex/Bounded` i
 open TopologicalSpace Bornology Filter Topology Pointwise
 
 variable {𝕜 𝕜' E F : Type*}
+
 variable [AddCommGroup E] [UniformSpace E] [UniformAddGroup E]
+
 variable [AddCommGroup F] [UniformSpace F]
 
 section NontriviallyNormedField
 
 variable [UniformAddGroup F]
+
 variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [ContinuousSMul 𝕜 E]
 
 /-- Construct a continuous linear map from a linear map `f : E →ₗ[𝕜] F` and the existence of a
@@ -89,8 +92,11 @@ section IsROrC
 open TopologicalSpace Bornology
 
 variable [FirstCountableTopology E]
+
 variable [IsROrC 𝕜] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+
 variable [IsROrC 𝕜'] [Module 𝕜' F] [ContinuousSMul 𝕜' F]
+
 variable {σ : 𝕜 →+* 𝕜'}
 
 theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)

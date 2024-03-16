@@ -27,6 +27,7 @@ noncomputable section
 open CategoryTheory Limits HomologicalComplex
 
 variable {R : Type v} [Ring R]
+
 variable {ι : Type*} {c : ComplexShape ι} {C D : HomologicalComplex (ModuleCat.{u} R) c}
 
 namespace ModuleCat

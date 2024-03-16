@@ -22,6 +22,7 @@ open Filter Finset
 open Topology BigOperators
 
 variable {G : Type*} [NormedAddCommGroup G] [CompleteSpace G]
+
 variable {H : Type*} [NormedAddCommGroup H]
 
 /-- Given `f : NormedAddGroupHom G H` for some complete `G` and a subgroup `K` of `H`, if every

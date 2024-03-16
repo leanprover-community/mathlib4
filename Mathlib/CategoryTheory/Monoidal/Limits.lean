@@ -31,6 +31,7 @@ universe v u
 noncomputable section
 
 variable {J : Type v} [SmallCategory J]
+
 variable {C : Type u} [Category.{v} C] [HasLimits C]
 
 instance limitFunctorial : Functorial fun F : J ⥤ C => limit F where

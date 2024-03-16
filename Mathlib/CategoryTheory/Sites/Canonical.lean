@@ -46,7 +46,9 @@ variable {C : Type u} [Category.{v} C]
 namespace Sheaf
 
 variable {P : Cᵒᵖ ⥤ Type v}
+
 variable {X Y : C} {S : Sieve X} {R : Presieve X}
+
 variable (J J₂ : GrothendieckTopology C)
 
 /--

@@ -36,7 +36,9 @@ open Pointwise
 namespace Submodule
 
 variable {ι : Sort uι} {R M N P : Type*}
+
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+
 variable [Module R M] [Module R N] [Module R P]
 
 /-- Map a pair of submodules under a bilinear map.

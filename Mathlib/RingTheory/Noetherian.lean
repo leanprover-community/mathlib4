@@ -66,7 +66,9 @@ attribute [inherit_doc IsNoetherian] IsNoetherian.noetherian
 section
 
 variable {R : Type*} {M : Type*} {P : Type*}
+
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid P]
+
 variable [Module R M] [Module R P]
 
 open IsNoetherian
@@ -145,7 +147,9 @@ end
 namespace Module
 
 variable {R M N : Type*}
+
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+
 variable (R M)
 
 -- see Note [lower instance priority]
@@ -169,7 +173,9 @@ end Module
 section
 
 variable {R : Type*} {M : Type*} {P : Type*}
+
 variable [Ring R] [AddCommGroup M] [AddCommGroup P]
+
 variable [Module R M] [Module R P]
 
 open IsNoetherian

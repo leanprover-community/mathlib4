@@ -25,7 +25,9 @@ section Option
 open Functor
 
 variable {F G : Type u → Type u}
+
 variable [Applicative F] [Applicative G]
+
 variable [LawfulApplicative F] [LawfulApplicative G]
 
 theorem Option.id_traverse {α} (x : Option α) : Option.traverse (pure : α → Id α) x = x := by
@@ -63,6 +65,7 @@ instance : LawfulTraversable Option :=
 namespace List
 
 variable {F G : Type u → Type u}
+
 variable [Applicative F] [Applicative G]
 
 section
@@ -144,7 +147,9 @@ namespace Sum
 section Traverse
 
 variable {σ : Type u}
+
 variable {F G : Type u → Type u}
+
 variable [Applicative F] [Applicative G]
 
 open Applicative Functor

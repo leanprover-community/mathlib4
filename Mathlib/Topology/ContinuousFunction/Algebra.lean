@@ -41,6 +41,7 @@ one should use `C(α, β)` with the appropriate instance of the structure.
 namespace ContinuousFunctions
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+
 variable {f g : { f : α → β | Continuous f }}
 
 instance : CoeFun { f : α → β | Continuous f } fun _ => α → β :=
@@ -51,6 +52,7 @@ end ContinuousFunctions
 namespace ContinuousMap
 
 variable {α : Type*} {β : Type*} {γ : Type*}
+
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 /-! ### `mul` and `add` -/
@@ -570,8 +572,11 @@ topological semiring `R` inherit the structure of a module.
 section Subtype
 
 variable (α : Type*) [TopologicalSpace α]
+
 variable (R : Type*) [Semiring R]
+
 variable (M : Type*) [TopologicalSpace M] [AddCommGroup M]
+
 variable [Module R M] [ContinuousConstSMul R M] [TopologicalAddGroup M]
 
 /-- The `R`-submodule of continuous maps `α → M`. -/
@@ -648,7 +653,9 @@ instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [ContinuousAdd M]
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
+
 variable [ContinuousAdd M] [Module R M] [ContinuousConstSMul R M]
+
 variable [ContinuousAdd M₂] [Module R M₂] [ContinuousConstSMul R M₂]
 
 instance module : Module R C(α, M) :=
@@ -787,6 +794,7 @@ theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = k • (1
 #align algebra_map_apply algebraMap_apply
 
 variable {𝕜 : Type*} [TopologicalSpace 𝕜]
+
 variable (s : Set C(α, 𝕜)) (f : s) (x : α)
 
 /-- A set of continuous maps "separates points strongly"
@@ -894,6 +902,7 @@ namespace ContinuousMap
 section Lattice
 
 variable {α : Type*} [TopologicalSpace α]
+
 variable {β : Type*} [TopologicalSpace β]
 
 /-! `C(α, β)`is a lattice ordered group -/
@@ -938,6 +947,7 @@ is a ⋆-module over `R`.
 section StarStructure
 
 variable {R α β : Type*}
+
 variable [TopologicalSpace α] [TopologicalSpace β]
 
 section Star
@@ -1088,8 +1098,11 @@ end ContinuousMap
 namespace Homeomorph
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+
 variable (𝕜 : Type*) [CommSemiring 𝕜]
+
 variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [StarRing A]
+
 variable [ContinuousStar A] [Algebra 𝕜 A]
 
 /-- `ContinuousMap.compStarAlgHom'` as a `StarAlgEquiv` when the continuous map `f` is

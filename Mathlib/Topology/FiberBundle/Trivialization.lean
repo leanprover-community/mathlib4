@@ -54,6 +54,7 @@ open TopologicalSpace Filter Set Bundle Function
 open scoped Topology Classical Bundle
 
 variable {ι : Type*} {B : Type*} {F : Type*} {E : B → Type*}
+
 variable (F) {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
 
 /-- This structure contains the information left for a local trivialization (which is implemented

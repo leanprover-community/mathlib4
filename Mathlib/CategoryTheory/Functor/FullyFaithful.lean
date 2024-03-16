@@ -272,6 +272,7 @@ instance Faithful.id : Faithful (𝟭 C) := { }
 #align category_theory.faithful.id CategoryTheory.Faithful.id
 
 variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
+
 variable (F F' : C ⥤ D) (G : D ⥤ E)
 
 instance Faithful.comp [Faithful F] [Faithful G] :

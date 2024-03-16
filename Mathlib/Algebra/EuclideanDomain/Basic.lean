@@ -26,6 +26,7 @@ universe u
 namespace EuclideanDomain
 
 variable {R : Type u}
+
 variable [EuclideanDomain R]
 
 /-- The well founded relation in a Euclidean Domain satisfying `a % b ≺ b` for `b ≠ 0`  -/

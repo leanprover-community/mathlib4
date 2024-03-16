@@ -25,6 +25,7 @@ def Vector (α : Type u) (n : ℕ) :=
 namespace Vector
 
 variable {α : Type u} {β : Type v} {φ : Type w}
+
 variable {n : ℕ}
 
 instance [DecidableEq α] : DecidableEq (Vector α n) :=

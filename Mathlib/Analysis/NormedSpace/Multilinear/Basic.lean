@@ -682,7 +682,9 @@ end
 section RestrictScalars
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+
 variable [NormedSpace 𝕜' G] [IsScalarTower 𝕜' 𝕜 G]
+
 variable [∀ i, NormedSpace 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)]
 
 @[simp]

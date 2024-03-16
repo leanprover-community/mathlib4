@@ -770,6 +770,7 @@ end Right
 section Left
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)]
+
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
 @[to_additive]

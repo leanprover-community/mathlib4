@@ -48,6 +48,7 @@ universe v v₂ u u₂
 open CategoryTheory CategoryTheory.Limits
 
 variable {V : Type u} [Category.{v} V]
+
 variable [HasImages V]
 
 namespace CategoryTheory
@@ -352,6 +353,7 @@ end
 namespace Functor
 
 variable [HasZeroMorphisms V] [HasKernels V] {W : Type u₂} [Category.{v₂} W]
+
 variable [HasImages W] [HasZeroMorphisms W] [HasKernels W]
 
 /-- A functor reflects exact sequences if any composable pair of morphisms that is mapped to an

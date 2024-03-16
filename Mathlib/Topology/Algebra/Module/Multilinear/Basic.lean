@@ -655,6 +655,7 @@ variable {M : Type*}
 variable [Fintype ι] [CommRing R] [AddCommMonoid M] [Module R M]
 variable [TopologicalSpace R] [TopologicalSpace M]
 variable [ContinuousMul R] [ContinuousSMul R M]
+
 variable (R ι) in
 /-- The canonical continuous multilinear map on `R^ι`, associating to `m` the product of all the
 `m i` (multiplied by a fixed reference element `z` in the target module) -/

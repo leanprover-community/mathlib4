@@ -264,6 +264,7 @@ open ContinuousMultilinearMap ENNReal FormalMultilinearSeries
 open scoped NNReal ENNReal
 
 variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+
 variable (𝕜)
 
 /-- In a Banach algebra `A` over a nontrivially normed field `𝕜`, for any `a : A` the
@@ -561,6 +562,7 @@ namespace WeakDual
 namespace CharacterSpace
 
 variable [NontriviallyNormedField 𝕜] [NormedRing A] [CompleteSpace A]
+
 variable [NormedAlgebra 𝕜 A]
 
 /-- The equivalence between characters and algebra homomorphisms into the base field. -/

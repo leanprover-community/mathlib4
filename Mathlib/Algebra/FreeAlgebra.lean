@@ -51,6 +51,7 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
 
 
 variable (R : Type*) [CommSemiring R]
+
 variable (X : Type*)
 
 namespace FreeAlgebra

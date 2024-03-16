@@ -899,6 +899,7 @@ theorem constantCoeff_C (r : R) : constantCoeff (C r : MvPolynomial σ R) = r :=
 #align mv_polynomial.constant_coeff_C MvPolynomial.constantCoeff_C
 
 variable {σ}
+
 variable (R)
 
 @[simp]
@@ -1454,6 +1455,7 @@ section Aeval
 
 
 variable [Algebra R S₁] [CommSemiring S₂]
+
 variable (f : σ → S₁)
 
 theorem algebraMap_apply (r : R) : algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
@@ -1612,6 +1614,7 @@ end Aeval
 section AevalTower
 
 variable {S A B : Type*} [CommSemiring S] [CommSemiring A] [CommSemiring B]
+
 variable [Algebra S R] [Algebra S A] [Algebra S B]
 
 /-- Version of `aeval` for defining algebra homs out of `MvPolynomial σ R` over a smaller base ring

@@ -23,6 +23,7 @@ open CategoryTheory
 namespace ModuleCat
 
 variable {R : Type u} [Ring R] {X Y : ModuleCat.{v} R} (f : X ⟶ Y)
+
 variable {M : Type v} [AddCommGroup M] [Module R M]
 
 theorem ker_eq_bot_of_mono [Mono f] : LinearMap.ker f = ⊥ :=

@@ -740,6 +740,7 @@ open ENNReal MeasureTheory Fintype
 open scoped Real Classical BigOperators NNReal
 
 variable [NumberField K] (B : ℝ)
+
 variable {K}
 
 /-- The function that sends `x : ({w // IsReal w} → ℝ) × ({w // IsComplex w} → ℂ)` to

@@ -998,6 +998,7 @@ namespace RingEquiv
 open NonUnitalRingHom NonUnitalSubsemiringClass
 
 variable {s t : NonUnitalSubsemiring R}
+
 variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Makes the identity isomorphism from a proof two non-unital subsemirings of a multiplicative

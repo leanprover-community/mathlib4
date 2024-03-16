@@ -715,6 +715,7 @@ section
 synthesizing instances in `MeasureSpace` section. -/
 
 variable {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
+
 variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : Measure α} {s s' t : Set α}
 namespace Measure
 
@@ -810,6 +811,7 @@ theorem add_apply {_m : MeasurableSpace α} (μ₁ μ₂ : Measure α) (s : Set 
 section SMul
 
 variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+
 variable [SMul R' ℝ≥0∞] [IsScalarTower R' ℝ≥0∞ ℝ≥0∞]
 
 -- TODO: refactor

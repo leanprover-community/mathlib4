@@ -19,6 +19,7 @@ namespace CategoryTheory
 open Limits Opposite
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C)
+
 variable (D : Type*) [Category D]
 
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/

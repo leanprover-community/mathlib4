@@ -40,6 +40,7 @@ variable {α β γ : Type*}
 
 -- The families of types already equipped with instances
 variable {f : I → Type v₁} {g : I → Type v₂} {h : I → Type v₃}
+
 variable (x y : ∀ i, f i) (i : I)
 
 namespace Pi
@@ -351,6 +352,7 @@ instance cancelCommMonoid [∀ i, CancelCommMonoid (f i)] : CancelCommMonoid (�
 section
 
 variable [DecidableEq I]
+
 variable [∀ i, One (f i)] [∀ i, One (g i)] [∀ i, One (h i)]
 
 /-- The function supported at `i`, with value `x` there, and `1` elsewhere. -/

@@ -242,6 +242,7 @@ set_option linter.uppercaseLean3 false in
 namespace IsWeightedHomogeneous
 
 variable {R}
+
 variable {φ ψ : MvPolynomial σ R} {m n : M}
 
 /-- The weighted degree of a weighted homogeneous polynomial controls its support. -/

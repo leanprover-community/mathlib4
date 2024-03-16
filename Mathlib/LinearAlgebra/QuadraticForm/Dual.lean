@@ -129,6 +129,7 @@ end Semiring
 section Ring
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
+
 variable {R M}
 
 /-- The isometry sending `(Q.prod <| -Q)` to `(QuadraticForm.dualProd R M)`.

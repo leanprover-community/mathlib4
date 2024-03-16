@@ -29,6 +29,7 @@ locale.
 universe u v w x
 
 variable {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
+
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
 namespace ContinuousMap

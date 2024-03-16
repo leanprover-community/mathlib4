@@ -354,6 +354,7 @@ section Classical
 open scoped Classical
 
 variable [hG : IsNilpotent G]
+
 variable (G)
 
 /-- The nilpotency class of a nilpotent group is the smallest natural `n` such that

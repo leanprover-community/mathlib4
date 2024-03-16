@@ -25,7 +25,9 @@ noncomputable section
 open CategoryTheory CategoryTheory.Limits
 
 variable {J : Type v} [SmallCategory J]
+
 variable {C : Type u} [Category.{v} C]
+
 variable {X : C}
 
 namespace CategoryTheory.Over

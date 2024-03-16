@@ -168,6 +168,7 @@ section IsDomain
 -- all of these are true for `NoZeroDivisors S`; but it doesn't work smoothly with the
 -- `IsDomain`/`CancelMonoidWithZero` API
 variable {R S : Type*} [Semiring R] [OrderedRing S] (abv : AbsoluteValue R S)
+
 variable [IsDomain S] [Nontrivial R]
 
 -- Porting note: was `@[simp]` but `simp` can prove it
@@ -223,6 +224,7 @@ end OrderedRing
 
 section OrderedCommRing
 variable [OrderedCommRing S] [Ring R] (abv : AbsoluteValue R S)
+
 variable [NoZeroDivisors S]
 
 @[simp]
@@ -309,6 +311,7 @@ namespace IsAbsoluteValue
 section OrderedSemiring
 
 variable {S : Type*} [OrderedSemiring S]
+
 variable {R : Type*} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 
 lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
@@ -378,6 +381,7 @@ variable {S : Type*} [OrderedRing S]
 section Semiring
 
 variable {R : Type*} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
+
 variable [IsDomain S]
 
 theorem abv_one [Nontrivial R] : abv 1 = 1 :=

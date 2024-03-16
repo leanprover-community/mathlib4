@@ -503,6 +503,7 @@ end CommRing
 namespace PerfectClosure
 
 variable [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p]
+
 variable (K)
 
 /-- The absolute perfect closure `PerfectClosure` is a `p`-radical extension over the base ring.
@@ -522,6 +523,7 @@ end PerfectClosure
 section Field
 
 variable [Field K] [Field L] [Algebra K L] (p : ℕ) [ExpChar K p]
+
 variable (K L)
 
 /-- If `L / K` is a `p`-radical field extension, then it is purely inseparable. -/

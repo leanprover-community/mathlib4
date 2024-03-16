@@ -34,7 +34,9 @@ universe w' w v u
 open CategoryTheory CategoryTheory.Limits
 
 variable {J : Type w} [Category.{w'} J]
+
 variable {C : Type u} [Category.{v} C]
+
 variable {X : C}
 
 namespace CategoryTheory.Over

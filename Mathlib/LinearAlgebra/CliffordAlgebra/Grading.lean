@@ -20,6 +20,7 @@ The main result is `CliffordAlgebra.gradedAlgebra`, which says that the clifford
 namespace CliffordAlgebra
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+
 variable {Q : QuadraticForm R M}
 
 open scoped DirectSum

@@ -71,6 +71,7 @@ namespace PrimeSpectrum
 section CommSemiRing
 
 variable [CommSemiring R] [CommSemiring S]
+
 variable {R S}
 
 instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=

@@ -45,6 +45,7 @@ variable {C : Type u} [Category.{v} C]
 namespace CategoryTheory.Arrow
 
 variable (f : Arrow C)
+
 variable [∀ n : ℕ, HasWidePullback.{0} f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
 
 /-- The Čech nerve associated to an arrow. -/
@@ -196,6 +197,7 @@ end CategoryTheory
 namespace CategoryTheory.Arrow
 
 variable (f : Arrow C)
+
 variable [∀ n : ℕ, HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fun _ => f.hom]
 
 /-- The Čech conerve associated to an arrow. -/

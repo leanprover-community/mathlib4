@@ -43,6 +43,7 @@ noncomputable section
 universe u v w w'
 
 variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
+
 variable {ι : Type w} {ι' : Type w'}
 
 open BigOperators Cardinal Basis Submodule Function Set

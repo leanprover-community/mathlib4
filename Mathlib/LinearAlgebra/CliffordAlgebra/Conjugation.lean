@@ -34,7 +34,9 @@ https://en.wikipedia.org/wiki/Clifford_algebra#Antiautomorphisms
 
 
 variable {R : Type*} [CommRing R]
+
 variable {M : Type*} [AddCommGroup M] [Module R M]
+
 variable {Q : QuadraticForm R M}
 
 namespace CliffordAlgebra

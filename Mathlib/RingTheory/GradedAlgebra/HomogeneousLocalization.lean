@@ -70,9 +70,13 @@ open DirectSum BigOperators Pointwise
 open DirectSum SetLike
 
 variable {ι R A : Type*}
+
 variable [AddCommMonoid ι] [DecidableEq ι]
+
 variable [CommRing R] [CommRing A] [Algebra R A]
+
 variable (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
+
 variable (x : Submonoid A)
 
 local notation "at " x => Localization x
@@ -331,6 +335,7 @@ instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
 section SMul
 
 variable {α : Type*} [SMul α R] [SMul α A] [IsScalarTower α R A]
+
 variable [IsScalarTower α A A]
 
 instance : SMul α (HomogeneousLocalization 𝒜 x) where

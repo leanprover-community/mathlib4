@@ -20,7 +20,9 @@ subgroup, subgroups
 
 
 variable {G : Type*} [Group G]
+
 variable {A : Type*} [AddGroup A]
+
 variable {N : Type*} [Group N]
 
 namespace Subgroup

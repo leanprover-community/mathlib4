@@ -585,6 +585,7 @@ end CommSemiring
 section Ring
 
 variable [CommRing R]
+
 variable (R)
 
 /-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.

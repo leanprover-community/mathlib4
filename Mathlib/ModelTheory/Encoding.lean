@@ -38,7 +38,9 @@ namespace FirstOrder
 namespace Language
 
 variable {L : Language.{u, v}}
+
 variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
+
 variable {α : Type u'} {β : Type v'}
 
 open FirstOrder Cardinal

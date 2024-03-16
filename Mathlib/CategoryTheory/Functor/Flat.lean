@@ -55,6 +55,7 @@ namespace CategoryTheory
 section RepresentablyFlat
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+
 variable {E : Type u₃} [Category.{v₃} E]
 
 /-- A functor `F : C ⥤ D` is representably-flat functor if the comma category `(X/F)`
@@ -141,6 +142,7 @@ namespace PreservesFiniteLimitsOfFlat
 open StructuredArrow
 
 variable {J : Type v₁} [SmallCategory J] [FinCategory J] {K : J ⥤ C}
+
 variable (F : C ⥤ D) [RepresentablyFlat F] {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
 
 /-- (Implementation).
@@ -291,7 +293,9 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_evaluation_iso_colim CategoryTheory.lanEvaluationIsoColim
 
 variable [ConcreteCategory.{u₁} E] [HasLimits E] [HasColimits E]
+
 variable [ReflectsLimits (forget E)] [PreservesFilteredColimits (forget E)]
+
 variable [PreservesLimits (forget E)]
 
 /-- If `F : C ⥤ D` is a representably flat functor between small categories, then the functor

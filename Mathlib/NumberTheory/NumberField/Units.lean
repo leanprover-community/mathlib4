@@ -182,6 +182,7 @@ open scoped Classical
 open Finset
 
 variable [NumberField K]
+
 variable {K}
 
 /-- The distinguished infinite place. -/

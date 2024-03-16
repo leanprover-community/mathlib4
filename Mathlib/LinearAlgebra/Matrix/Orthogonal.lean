@@ -28,7 +28,9 @@ orthogonal
 namespace Matrix
 
 variable {α n m : Type*}
+
 variable [Mul α] [AddCommMonoid α]
+
 variable (A : Matrix m n α)
 
 open Matrix

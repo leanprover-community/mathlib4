@@ -32,6 +32,7 @@ open BoundedContinuousFunction NNReal ENNReal
 open Set Function TopologicalSpace
 
 variable {X : Type*} [TopologicalSpace X]
+
 variable (Λ : (X →ᵇ ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
 /-! ### Construction of the content: -/

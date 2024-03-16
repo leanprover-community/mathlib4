@@ -86,6 +86,7 @@ open Filter
 section Preorder
 
 variable [Preorder β] [Preorder γ]
+
 variable (f : α → β) (s : Set α) (l : Filter α) (a : α)
 
 /-! ### Definitions -/

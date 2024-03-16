@@ -1073,7 +1073,9 @@ end Subsemiring
 namespace RingHom
 
 variable [NonAssocSemiring T] {s : Subsemiring R}
+
 variable {σR σS : Type*}
+
 variable [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R] [SubsemiringClass σS S]
 
 open Subsemiring

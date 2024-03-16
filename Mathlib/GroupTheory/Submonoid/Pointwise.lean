@@ -46,6 +46,7 @@ on `Set`s.
 open Set Pointwise
 
 variable {α : Type*} {G : Type*} {M : Type*} {R : Type*} {A : Type*}
+
 variable [Monoid M] [AddMonoid A]
 
 /-! Some lemmas about pointwise multiplication and submonoids. Ideally we put these in

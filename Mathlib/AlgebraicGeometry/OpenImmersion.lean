@@ -100,6 +100,7 @@ structure OpenCover (X : Scheme.{u}) where
 attribute [instance] OpenCover.IsOpen
 
 variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z)
+
 variable [∀ x, HasPullback (𝒰.map x ≫ f) g]
 
 /-- The affine cover of a scheme. -/
@@ -316,6 +317,7 @@ namespace PresheafedSpace.IsOpenImmersion
 section ToScheme
 
 variable {X : PresheafedSpace CommRingCat.{u}} (Y : Scheme.{u})
+
 variable (f : X ⟶ Y.toPresheafedSpace) [H : PresheafedSpace.IsOpenImmersion f]
 
 /-- If `X ⟶ Y` is an open immersion, and `Y` is a scheme, then so is `X`. -/
@@ -396,6 +398,7 @@ instance IsOpenImmersion.ofRestrict {U : TopCat} (X : Scheme) {f : U ⟶ TopCat.
 namespace IsOpenImmersion
 
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
+
 variable [H : IsOpenImmersion f]
 
 instance (priority := 100) of_isIso [IsIso g] : IsOpenImmersion g :=

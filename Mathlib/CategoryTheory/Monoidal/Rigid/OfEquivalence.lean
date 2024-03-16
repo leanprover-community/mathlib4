@@ -19,6 +19,7 @@ namespace CategoryTheory
 open MonoidalCategory
 
 variable {C D : Type*} [Category C] [Category D] [MonoidalCategory C] [MonoidalCategory D]
+
 variable (F : MonoidalFunctor C D)
 
 /-- Given candidate data for an exact pairing,

@@ -159,6 +159,7 @@ end Pi
 section PartialOrder
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
+
 variable [∀ i, PartialOrder (α i)] [∀ i, Zero (α i)] [∀ i, LocallyFiniteOrder (α i)]
 
 instance instLocallyFiniteOrder : LocallyFiniteOrder (Π₀ i, α i) :=
@@ -205,7 +206,9 @@ end Lattice
 section CanonicallyOrdered
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
+
 variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)] [∀ i, LocallyFiniteOrder (α i)]
+
 variable (f : Π₀ i, α i)
 
 theorem card_Iic : (Iic f).card = ∏ i in f.support, (Iic (f i)).card := by

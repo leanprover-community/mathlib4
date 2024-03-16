@@ -327,6 +327,7 @@ noncomputable def InnerProductSpace.ofNorm
 #align inner_product_space.of_norm InnerProductSpace.ofNorm
 
 variable (E)
+
 variable [InnerProductSpaceable E]
 
 /-- **Fréchet–von Neumann–Jordan Theorem**. A normed space `E` whose norm satisfies the
@@ -342,6 +343,7 @@ theorem nonempty_innerProductSpace : Nonempty (InnerProductSpace 𝕜 E) :=
 #align nonempty_inner_product_space nonempty_innerProductSpace
 
 variable {𝕜 E}
+
 variable [NormedSpace ℝ E]
 
 -- TODO: Replace `InnerProductSpace.toUniformConvexSpace`

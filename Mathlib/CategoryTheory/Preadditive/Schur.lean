@@ -29,6 +29,7 @@ namespace CategoryTheory
 open CategoryTheory.Limits
 
 variable {C : Type*} [Category C]
+
 variable [Preadditive C]
 
 -- See also `epi_of_nonzero_to_simple`, which does not require `Preadditive C`.
@@ -100,6 +101,7 @@ theorem finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜
 end
 
 variable (𝕜 : Type*) [Field 𝕜]
+
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
 -- Porting note: the defeq issue in lean3 described below is no longer a problem in Lean4.

@@ -40,6 +40,7 @@ instance [∀ p, HasBinaryBiproduct (F.X (p + 1)) (G.X p)] :
 end
 
 variable {F G : CochainComplex C ℤ} (φ : F ⟶ G)
+
 variable [HasHomotopyCofiber φ]
 
 /-- The mapping cone of a morphism of cochain complexes indexed by `ℤ`. -/

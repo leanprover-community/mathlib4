@@ -154,6 +154,7 @@ section NilpotencyClass
 section ZeroPow
 
 variable [Zero R] [Pow R ℕ]
+
 variable (x) in
 /-- If `x` is nilpotent, the nilpotency class is the smallest natural number `k` such that
 `x ^ k = 0`. If `x` is not nilpotent, the nilpotency class takes the junk value `0`. -/
@@ -451,6 +452,7 @@ end LinearMap
 namespace Module.End
 
 variable {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
+
 variable {f : Module.End R M} {p : Submodule R M} (hp : p ≤ p.comap f)
 
 theorem IsNilpotent.mapQ (hnp : IsNilpotent f) : IsNilpotent (p.mapQ p f hp) := by

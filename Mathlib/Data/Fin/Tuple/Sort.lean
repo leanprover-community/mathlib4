@@ -31,6 +31,7 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 namespace Tuple
 
 variable {n : ℕ}
+
 variable {α : Type*} [LinearOrder α]
 
 /-- `graph f` produces the finset of pairs `(f i, i)`

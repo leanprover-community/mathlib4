@@ -42,7 +42,9 @@ open Topology InnerProductSpace Set
 noncomputable section
 
 variable {𝕜 F : Type*} [IsROrC 𝕜]
+
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
+
 variable {f : F → 𝕜} {f' x : F}
 
 /-- A function `f` has the gradient `f'` as derivative along the filter `L` if

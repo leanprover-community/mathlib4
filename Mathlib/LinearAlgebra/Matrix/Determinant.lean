@@ -51,6 +51,7 @@ namespace Matrix
 open Matrix BigOperators
 
 variable {m n : Type*} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
+
 variable {R : Type v} [CommRing R]
 
 -- mathport name: «exprε »

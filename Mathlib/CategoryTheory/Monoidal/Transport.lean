@@ -37,6 +37,7 @@ open CategoryTheory.MonoidalCategory
 namespace CategoryTheory.Monoidal
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
+
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-- The data needed to induce a `MonoidalCategory` via the functor `F`; namely, pre-existing

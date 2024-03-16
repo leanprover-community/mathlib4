@@ -57,6 +57,7 @@ end ContinuousLinearMap
 
 variable [DenselyNormedField 𝕜] [NonUnitalNormedRing E] [StarRing E] [CstarRing E]
 variable [NormedSpace 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E]
+
 variable (E)
 
 /-- A C⋆-algebra over a densely normed field is a regular normed algebra. -/
@@ -83,6 +84,7 @@ instance CstarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
 section CStarProperty
 
 variable [StarRing 𝕜] [CstarRing 𝕜] [StarModule 𝕜 E]
+
 variable {E}
 
 /-- This is the key lemma used to establish the instance `Unitization.instCstarRing`

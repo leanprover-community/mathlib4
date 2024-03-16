@@ -62,6 +62,7 @@ open FiniteDimensional
 namespace WittVector
 
 variable (p : ℕ) [Fact p.Prime]
+
 variable (k : Type*) [CommRing k]
 
 scoped[Isocrystal] notation "K(" p ", " k ")" => FractionRing (WittVector p k)
@@ -117,7 +118,9 @@ class Isocrystal (V : Type*) [AddCommGroup V] extends Module K(p, k) V where
 open WittVector
 
 variable (V : Type*) [AddCommGroup V] [Isocrystal p k V]
+
 variable (V₂ : Type*) [AddCommGroup V₂] [Isocrystal p k V₂]
+
 variable {V}
 
 /--

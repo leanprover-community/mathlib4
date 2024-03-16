@@ -34,6 +34,7 @@ open BigOperators
 section OrderedRing
 
 variable [OrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- The segment of points weakly between `x` and `y`. When convexity is refactored to support
@@ -553,6 +554,7 @@ end OrderedRing
 section StrictOrderedCommRing
 
 variable [StrictOrderedCommRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+
 variable {R}
 
 theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ y) := by
@@ -581,6 +583,7 @@ end StrictOrderedCommRing
 section LinearOrderedRing
 
 variable [LinearOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+
 variable {R}
 
 /-- Suppose lines from two vertices of a triangle to interior points of the opposite side meet at
@@ -667,6 +670,7 @@ end LinearOrderedRing
 section LinearOrderedField
 
 variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+
 variable {R}
 
 theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :

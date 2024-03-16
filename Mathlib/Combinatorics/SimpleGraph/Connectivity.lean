@@ -76,6 +76,7 @@ universe u v w
 namespace SimpleGraph
 
 variable {V : Type u} {V' : Type v} {V'' : Type w}
+
 variable (G : SimpleGraph V) (G' : SimpleGraph V') (G'' : SimpleGraph V'')
 
 /-- A walk is a sequence of adjacent vertices.  For vertices `u v : V`,

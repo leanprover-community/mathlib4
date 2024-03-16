@@ -57,7 +57,9 @@ open scoped DirectSum BigOperators Pointwise
 open DirectSum SetLike Localization TopCat TopologicalSpace CategoryTheory Opposite
 
 variable {R A : Type*}
+
 variable [CommRing R] [CommRing A] [Algebra R A]
+
 variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
 
 local notation3 "at " x =>

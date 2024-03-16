@@ -26,7 +26,9 @@ noncomputable section
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
+
 variable {D : Type u₂} [Category.{v₂} D]
+
 variable (G : C ⥤ D)
 
 namespace CategoryTheory.Limits

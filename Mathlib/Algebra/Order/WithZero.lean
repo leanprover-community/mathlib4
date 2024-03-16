@@ -37,6 +37,7 @@ class LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoi
 #align linear_ordered_comm_group_with_zero LinearOrderedCommGroupWithZero
 
 variable {α : Type*}
+
 variable {a b c d x y z : α}
 
 instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual

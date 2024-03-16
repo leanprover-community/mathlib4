@@ -42,6 +42,7 @@ universe v
 noncomputable section
 
 variable {X : TopCat.{v}}
+
 variable (T : X → Type v)
 
 open TopologicalSpace

@@ -46,7 +46,9 @@ end Ring
 section CommRing
 
 variable [CommRing R] [AddCommGroup M] [Module R M] [Module.Free R M]
+
 variable [AddCommGroup N] [Module R N] [Module.Free R N]
+
 variable {R}
 
 /-- A free module with a basis indexed by a `Fintype` is finite. -/

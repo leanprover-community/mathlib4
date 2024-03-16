@@ -41,8 +41,11 @@ open Category Limits CartesianClosed
 universe v u u'
 
 variable {C : Type u} [Category.{v} C]
+
 variable {D : Type u'} [Category.{v} D]
+
 variable [HasFiniteProducts C] [HasFiniteProducts D]
+
 variable (F : C ⥤ D) {L : D ⥤ C}
 
 /-- The Frobenius morphism for an adjunction `L ⊣ F` at `A` is given by the morphism
@@ -71,6 +74,7 @@ instance frobeniusMorphism_iso_of_preserves_binary_products (h : L ⊣ F) (A : C
 #align category_theory.frobenius_morphism_iso_of_preserves_binary_products CategoryTheory.frobeniusMorphism_iso_of_preserves_binary_products
 
 variable [CartesianClosed C] [CartesianClosed D]
+
 variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 
 /-- The exponential comparison map.

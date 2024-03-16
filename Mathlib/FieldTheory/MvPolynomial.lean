@@ -31,6 +31,7 @@ namespace MvPolynomial
 universe u v
 
 variable {σ : Type u} {K : Type v}
+
 variable (σ K) [Field K]
 
 theorem quotient_mk_comp_C_injective (I : Ideal (MvPolynomial σ K)) (hI : I ≠ ⊤) :

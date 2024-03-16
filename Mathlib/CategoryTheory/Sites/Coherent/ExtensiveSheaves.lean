@@ -25,6 +25,7 @@ namespace CategoryTheory
 open Limits
 
 variable {C : Type u} [Category.{v} C]
+
 variable [FinitaryPreExtensive C]
 
 /-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the

@@ -40,6 +40,7 @@ namespace DirectSum
 section AddCommMonoid
 
 variable [DecidableEq ι] [AddCommMonoid M]
+
 variable [SetLike σ M] [AddSubmonoidClass σ M] (ℳ : ι → σ)
 
 /-- A decomposition is an equivalence between an additive monoid `M` and a direct sum of additive
@@ -218,7 +219,9 @@ instance addCommGroupSetLike [AddCommGroup M] [SetLike σ M] [AddSubgroupClass �
 section AddCommGroup
 
 variable [DecidableEq ι] [AddCommGroup M]
+
 variable [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ)
+
 variable [Decomposition ℳ]
 
 @[simp]
@@ -247,6 +250,7 @@ end AddCommGroup
 section Module
 
 variable [DecidableEq ι] [Semiring R] [AddCommMonoid M] [Module R M]
+
 variable (ℳ : ι → Submodule R M)
 
 /-- A convenience method to construct a decomposition from an `LinearMap`, such that the proofs

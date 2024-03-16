@@ -25,6 +25,7 @@ open Polynomial
 section DenomsClearable
 
 variable {R K : Type*} [Semiring R] [CommSemiring K] {i : R →+* K}
+
 variable {a b : R} {bi : K}
 
 -- TODO: use hypothesis (ub : IsUnit (i b)) to work with localizations.

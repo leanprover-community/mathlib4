@@ -46,6 +46,7 @@ universe u v
 section ScalarRing
 
 variable {R : Type u} {A : Type v}
+
 variable [CommRing R] [Ring A] [Algebra R A]
 
 local notation "σ" => spectrum R
@@ -68,6 +69,7 @@ end ScalarRing
 section ScalarField
 
 variable {𝕜 : Type u} {A : Type v}
+
 variable [Field 𝕜] [Ring A] [Algebra 𝕜 A]
 
 local notation "σ" => spectrum 𝕜

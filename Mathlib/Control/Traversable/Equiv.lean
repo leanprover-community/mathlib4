@@ -33,6 +33,7 @@ section Functor
 
 -- Porting note: `parameter` doesn't seem to work yet.
 variable {t t' : Type u → Type u} (eqv : ∀ α, t α ≃ t' α)
+
 variable [Functor t]
 
 open Functor
@@ -87,8 +88,11 @@ end Functor
 section Traversable
 
 variable {t t' : Type u → Type u} (eqv : ∀ α, t α ≃ t' α)
+
 variable [Traversable t]
+
 variable {m : Type u → Type u} [Applicative m]
+
 variable {α β : Type u}
 
 /-- Like `Equiv.map`, a function `t' : Type u → Type u` can be given
@@ -117,9 +121,13 @@ variable {t t' : Type u → Type u} (eqv : ∀ α, t α ≃ t' α)
 
 -- Is this to do with the fact it lives in `Type (u+1)` not `Prop`?
 variable [Traversable t] [LawfulTraversable t]
+
 variable {F G : Type u → Type u} [Applicative F] [Applicative G]
+
 variable [LawfulApplicative F] [LawfulApplicative G]
+
 variable (η : ApplicativeTransformation F G)
+
 variable {α β γ : Type u}
 
 open LawfulTraversable Functor

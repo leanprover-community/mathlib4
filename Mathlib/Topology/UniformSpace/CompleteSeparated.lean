@@ -37,6 +37,7 @@ namespace DenseInducing
 open Filter
 
 variable [TopologicalSpace α] {β : Type*} [TopologicalSpace β]
+
 variable {γ : Type*} [UniformSpace γ] [CompleteSpace γ] [T0Space γ]
 
 theorem continuous_extend_of_cauchy {e : α → β} {f : α → γ} (de : DenseInducing e)

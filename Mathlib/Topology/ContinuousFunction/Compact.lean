@@ -344,6 +344,7 @@ namespace ContinuousMap
 section UniformContinuity
 
 variable {α β : Type*}
+
 variable [MetricSpace α] [CompactSpace α] [MetricSpace β]
 
 /-!
@@ -480,6 +481,7 @@ of `C(X, E)` (i.e. locally uniform convergence). -/
 open TopologicalSpace
 
 variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X]
+
 variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
@@ -511,6 +513,7 @@ Furthermore, if `α` is compact and `β` is a C⋆-ring, then `C(α, β)` is a C
 section NormedSpace
 
 variable {α : Type*} {β : Type*}
+
 variable [TopologicalSpace α] [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 theorem _root_.BoundedContinuousFunction.mkOfCompact_star [CompactSpace α] (f : C(α, β)) :
@@ -528,6 +531,7 @@ end NormedSpace
 section CstarRing
 
 variable {α : Type*} {β : Type*}
+
 variable [TopologicalSpace α] [NormedRing β] [StarRing β]
 
 instance [CompactSpace α] [CstarRing β] : CstarRing C(α, β) where

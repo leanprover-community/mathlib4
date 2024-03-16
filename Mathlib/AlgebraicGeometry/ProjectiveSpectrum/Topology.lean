@@ -43,7 +43,9 @@ noncomputable section
 open DirectSum BigOperators Pointwise SetLike TopCat TopologicalSpace CategoryTheory Opposite
 
 variable {R A : Type*}
+
 variable [CommSemiring R] [CommRing A] [Algebra R A]
+
 variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
 
 -- porting note (#10927): removed @[nolint has_nonempty_instance]

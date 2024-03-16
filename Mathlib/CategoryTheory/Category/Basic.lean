@@ -363,6 +363,7 @@ end
 section
 
 variable (C : Type u)
+
 variable [Category.{v} C]
 
 universe u'

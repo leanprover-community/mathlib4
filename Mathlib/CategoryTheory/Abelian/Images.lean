@@ -35,6 +35,7 @@ open CategoryTheory.Limits
 namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C] [HasKernels C] [HasCokernels C]
+
 variable {P Q : C} (f : P ⟶ Q)
 
 section Image

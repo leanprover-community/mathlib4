@@ -132,6 +132,7 @@ end ComplexBanachAlgebra
 section ComplexCstarAlgebra
 
 variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
+
 variable [StarRing A] [CstarRing A] [StarModule ℂ A]
 
 theorem gelfandTransform_map_star (a : A) :

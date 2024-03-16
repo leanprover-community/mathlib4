@@ -38,6 +38,7 @@ This file provides some notable isomorphisms regarding the even subalgebra, `Cli
 namespace CliffordAlgebra
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+
 variable (Q : QuadraticForm R M)
 
 /-! ### Constructions needed for `CliffordAlgebra.equivEven` -/

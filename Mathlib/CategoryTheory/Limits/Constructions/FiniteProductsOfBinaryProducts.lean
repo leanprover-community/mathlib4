@@ -33,7 +33,9 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 namespace CategoryTheory
 
 variable {J : Type v} [SmallCategory J]
+
 variable {C : Type u} [Category.{v} C]
+
 variable {D : Type u'} [Category.{v'} D]
 
 /--
@@ -115,8 +117,11 @@ end
 section Preserves
 
 variable (F : C ⥤ D)
+
 variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
+
 variable [PreservesLimitsOfShape (Discrete.{0} PEmpty) F]
+
 variable [HasFiniteProducts.{v} C]
 
 /-- If `F` preserves the terminal object and binary products, then it preserves products indexed by
@@ -254,8 +259,11 @@ end
 section Preserves
 
 variable (F : C ⥤ D)
+
 variable [PreservesColimitsOfShape (Discrete WalkingPair) F]
+
 variable [PreservesColimitsOfShape (Discrete.{0} PEmpty) F]
+
 variable [HasFiniteCoproducts.{v} C]
 
 /-- If `F` preserves the initial object and binary coproducts, then it preserves products indexed by

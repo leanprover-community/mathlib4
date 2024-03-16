@@ -35,6 +35,7 @@ In this file, we define a `Homotopy` between two `Path`s. In addition, we define
 universe u v
 
 variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
+
 variable {x₀ x₁ x₂ x₃ : X}
 
 noncomputable section

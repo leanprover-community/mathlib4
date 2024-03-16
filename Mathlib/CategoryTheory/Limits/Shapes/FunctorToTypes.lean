@@ -22,6 +22,7 @@ universe w v u
 namespace CategoryTheory.FunctorToTypes
 
 variable {C : Type u} [Category.{v} C]
+
 variable (F G : C ⥤ Type w)
 
 section prod

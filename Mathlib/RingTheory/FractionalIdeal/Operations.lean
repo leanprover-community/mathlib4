@@ -40,11 +40,13 @@ namespace FractionalIdeal
 open Set Submodule
 
 variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
+
 variable [Algebra R P] [loc : IsLocalization S P]
 
 section
 
 variable {P' : Type*} [CommRing P'] [Algebra R P'] [loc' : IsLocalization S P']
+
 variable {P'' : Type*} [CommRing P''] [Algebra R P''] [loc'' : IsLocalization S P'']
 
 theorem _root_.IsFractional.map (g : P →ₐ[R] P') {I : Submodule R P} :
@@ -299,7 +301,9 @@ i.e. the type `FractionalIdeal R⁰ K` where `IsFractionRing R K`.
 
 
 variable {K K' : Type*} [Field K] [Field K']
+
 variable [Algebra R K] [IsFractionRing R K] [Algebra R K'] [IsFractionRing R K']
+
 variable {I J : FractionalIdeal R⁰ K} (h : K →ₐ[R] K')
 
 /-- Nonzero fractional ideals contain a nonzero integer. -/
@@ -378,6 +382,7 @@ is a field because `R` is a domain.
 open scoped Classical
 
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
+
 variable [Algebra R₁ K] [frac : IsFractionRing R₁ K]
 
 instance : Nontrivial (FractionalIdeal R₁⁰ K) :=
@@ -540,6 +545,7 @@ end Quotient
 section Field
 
 variable {R₁ K L : Type*} [CommRing R₁] [Field K] [Field L]
+
 variable [Algebra R₁ K] [IsFractionRing R₁ K] [Algebra K L] [IsFractionRing K L]
 
 theorem eq_zero_or_one (I : FractionalIdeal K⁰ L) : I = 0 ∨ I = 1 := by
@@ -568,6 +574,7 @@ end Field
 section PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
+
 variable [Algebra R₁ K] [IsFractionRing R₁ K]
 
 open scoped Classical
@@ -892,6 +899,7 @@ theorem num_le (I : FractionalIdeal S P) :
 end PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁]
+
 variable {K : Type*} [Field K] [Algebra R₁ K] [frac : IsFractionRing R₁ K]
 
 attribute [local instance] Classical.propDecidable

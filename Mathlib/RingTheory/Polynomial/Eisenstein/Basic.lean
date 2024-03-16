@@ -74,6 +74,7 @@ end CommSemiring
 section CommRing
 
 variable [CommRing R] {𝓟 : Ideal R} {f : R[X]} (hf : f.IsWeaklyEisensteinAt 𝓟)
+
 variable {S : Type v} [CommRing S] [Algebra R S]
 
 section Principal

@@ -26,6 +26,7 @@ open scoped Bicategory
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
+
 variable {F G H I : OplaxFunctor B C}
 
 namespace OplaxNatTrans

@@ -371,6 +371,7 @@ theorem snoc_smul (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M (castSucc 
 section
 
 variable {M₁' : ι → Type*} [∀ i, AddCommMonoid (M₁' i)] [∀ i, Module R (M₁' i)]
+
 variable {M₁'' : ι → Type*} [∀ i, AddCommMonoid (M₁'' i)] [∀ i, Module R (M₁'' i)]
 
 /-- If `g` is a multilinear map and `f` is a collection of linear maps,
@@ -675,6 +676,7 @@ def codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂) (h : ∀
 section RestrictScalar
 
 variable (R)
+
 variable {A : Type*} [Semiring A] [SMul R A] [∀ i : ι, Module A (M₁ i)] [Module A M₂]
   [∀ i, IsScalarTower R A (M₁ i)] [IsScalarTower R A M₂]
 

@@ -30,7 +30,9 @@ namespace IsLocalization
 section LocalizationLocalization
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S]
+
 variable [Algebra R S] {P : Type*} [CommSemiring P]
+
 variable (N : Submonoid S) (T : Type*) [CommSemiring T] [Algebra R T]
 
 

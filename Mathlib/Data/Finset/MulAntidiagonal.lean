@@ -53,6 +53,7 @@ namespace Finset
 open Pointwise
 
 variable {α : Type*}
+
 variable [OrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsPWO) (ht : t.IsPWO) (a : α)
 
 /-- `Finset.mulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an

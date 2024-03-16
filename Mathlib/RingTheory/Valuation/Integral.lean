@@ -26,6 +26,7 @@ namespace Integers
 section CommRing
 
 variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZero Γ₀]
+
 variable {v : Valuation R Γ₀} {O : Type w} [CommRing O] [Algebra O R] (hv : Integers v O)
 
 open Polynomial
@@ -55,8 +56,11 @@ end CommRing
 section FractionField
 
 variable {K : Type u} {Γ₀ : Type v} [Field K] [LinearOrderedCommGroupWithZero Γ₀]
+
 variable {v : Valuation K Γ₀} {O : Type w} [CommRing O] [IsDomain O]
+
 variable [Algebra O K] [IsFractionRing O K]
+
 variable (hv : Integers v O)
 
 theorem integrallyClosed : IsIntegrallyClosed O :=

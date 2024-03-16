@@ -32,7 +32,9 @@ namespace CategoryTheory.Pretriangulated
 open CategoryTheory.Category
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
+
 variable [HasShift C ℤ]
+
 variable (X : C)
 
 /-- If you rotate a triangle, you get another triangle.
@@ -118,6 +120,7 @@ def invRotate : Triangle C ⥤ Triangle C
 #align category_theory.pretriangulated.inv_rotate CategoryTheory.Pretriangulated.invRotate
 
 variable {C}
+
 variable [∀ n : ℤ, Functor.Additive (shiftFunctor C n)]
 
 /-- The unit isomorphism of the auto-equivalence of categories `triangleRotation C` of

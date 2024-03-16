@@ -31,6 +31,7 @@ namespace Matrix
 open Equiv Matrix
 
 variable {l m n o : Type*} {l' m' n' o' : Type*} {m'' n'' : Type*}
+
 variable (R A : Type*)
 
 section AddCommMonoid

@@ -28,6 +28,7 @@ namespace CategoryTheory
 open Category Adjunction
 
 variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
+
 variable [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E]
 
 /--

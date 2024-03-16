@@ -35,6 +35,7 @@ namespace MeasureTheory
 open TopologicalSpace
 
 variable {μ ν : Measure α}
+
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- Given a measure `μ` and an integrable function `f`, `μ.withDensityᵥ f` is

@@ -34,6 +34,7 @@ namespace MvPolynomial
 open MvPolynomial
 
 variable {k : Type*} [Field k]
+
 variable {σ : Type*}
 
 /-- Set of points that are zeroes of all polynomials in an ideal -/

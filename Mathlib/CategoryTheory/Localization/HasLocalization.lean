@@ -41,6 +41,7 @@ universe w v u
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
+
 variable (W : MorphismProperty C)
 
 namespace MorphismProperty

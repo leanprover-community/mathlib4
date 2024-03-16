@@ -25,6 +25,7 @@ open CategoryTheory
 universe u v
 
 variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
+
 variable {x₀ x₁ : X}
 
 noncomputable section

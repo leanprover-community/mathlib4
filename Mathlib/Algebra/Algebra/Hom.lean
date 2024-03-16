@@ -91,6 +91,7 @@ variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁} {D : Type v₁}
 section Semiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
+
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
 -- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
@@ -451,6 +452,7 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
+
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
 protected theorem map_multiset_prod (s : Multiset A) : φ s.prod = (s.map φ).prod :=
@@ -472,6 +474,7 @@ end CommSemiring
 section Ring
 
 variable [CommSemiring R] [Ring A] [Ring B]
+
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
 protected theorem map_neg (x) : φ (-x) = -φ x :=
@@ -545,6 +548,7 @@ end
 namespace Algebra
 
 variable (R : Type u) (A : Type v)
+
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
@@ -585,6 +589,7 @@ end Algebra
 namespace MulSemiringAction
 
 variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
 /-- Each element of the monoid defines an algebra homomorphism.

@@ -30,6 +30,7 @@ projection, idempotent
 
 
 variable {M N S M₀ M₁ R G G₀ : Type*}
+
 variable [Mul M] [Monoid N] [Semigroup S] [MulZeroClass M₀] [MulOneClass M₁] [NonAssocRing R]
   [Group G] [CancelMonoidWithZero G₀]
 

@@ -29,6 +29,7 @@ open CategoryTheory
 open CategoryTheory.Category
 
 variable {C : Type u} [Category.{v} C]
+
 variable {D : Type u'} [Category.{v'} D]
 
 namespace CategoryTheory

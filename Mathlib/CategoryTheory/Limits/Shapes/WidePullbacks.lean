@@ -328,6 +328,7 @@ noncomputable abbrev widePushout (B : C) (objs : J → C) (arrows : ∀ j : J, B
 namespace WidePullback
 
 variable {D} [Category.{v₂} D] {B : D} {objs : J → D} (arrows : ∀ j : J, objs j ⟶ B)
+
 variable [HasWidePullback B objs arrows]
 
 /-- The `j`-th projection from the pullback. -/
@@ -355,6 +356,7 @@ noncomputable abbrev lift {X : D} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j)
 #align category_theory.limits.wide_pullback.lift CategoryTheory.Limits.WidePullback.lift
 
 variable (arrows)
+
 variable {X : D} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j ≫ arrows j = f)
 
 -- Porting note (#10618): simp can prove this so removed simp attribute
@@ -402,6 +404,7 @@ end WidePullback
 namespace WidePushout
 
 variable {D} [Category.{v₂} D] {B : D} {objs : J → D} (arrows : ∀ j : J, B ⟶ objs j)
+
 variable [HasWidePushout B objs arrows]
 
 /-- The `j`-th inclusion to the pushout. -/
@@ -431,6 +434,7 @@ noncomputable abbrev desc {X : D} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X)
 #align category_theory.limits.wide_pushout.desc CategoryTheory.Limits.WidePushout.desc
 
 variable (arrows)
+
 variable {X : D} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows j ≫ fs j = f)
 
 -- Porting note (#10618): simp can prove this so removed simp attribute

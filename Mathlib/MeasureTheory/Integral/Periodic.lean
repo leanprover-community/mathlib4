@@ -301,6 +301,7 @@ section RealValued
 open Filter
 
 variable {g : ℝ → ℝ}
+
 variable (hg : Periodic g T) (h_int : ∀ t₁ t₂, IntervalIntegrable g MeasureSpace.volume t₁ t₂)
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0`, then for any `t : ℝ`, the function

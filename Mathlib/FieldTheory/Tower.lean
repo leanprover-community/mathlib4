@@ -42,6 +42,7 @@ variable (F : Type u) (K : Type v) (A : Type w)
 section Field
 
 variable [DivisionRing F] [DivisionRing K] [AddCommGroup A]
+
 variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
 
 namespace FiniteDimensional

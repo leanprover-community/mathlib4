@@ -21,6 +21,7 @@ open Metric
 open scoped Convex
 
 variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+
 variable [StrictConvexSpace ℝ V]
 
 section PseudoMetricSpace

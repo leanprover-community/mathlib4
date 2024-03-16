@@ -294,6 +294,7 @@ theorem roots_expand_image_frobenius_subset [DecidableEq R] :
   apply pow_one
 
 variable {p n f}
+
 variable [PerfectRing R p]
 
 theorem roots_expand_pow :

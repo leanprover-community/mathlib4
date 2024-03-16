@@ -54,6 +54,7 @@ open Set
 section
 
 variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+
 variable [AffineSpace V P]
 
 /-- The submodule spanning the differences of a (possibly empty) set of points. -/
@@ -1512,8 +1513,11 @@ end AffineSubspace
 section MapComap
 
 variable {k V₁ P₁ V₂ P₂ V₃ P₃ : Type*} [Ring k]
+
 variable [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
+
 variable [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+
 variable [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃]
 
 section
@@ -1793,6 +1797,7 @@ namespace AffineSubspace
 open AffineEquiv
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+
 variable [AffineSpace V P]
 
 /-- Two affine subspaces are parallel if one is related to the other by adding the same vector

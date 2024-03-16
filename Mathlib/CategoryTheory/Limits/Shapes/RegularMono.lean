@@ -37,6 +37,7 @@ open CategoryTheory.Limits
 universe v₁ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C]
+
 variable {X Y : C}
 
 /-- A regular monomorphism is a morphism which is the equalizer of some parallel pair. -/

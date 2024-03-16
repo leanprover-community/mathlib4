@@ -391,6 +391,7 @@ section Coprime
 open BigOperators
 
 variable {ι : Type*} {p : ι → Ideal R} {S : Finset ι}
+
 variable (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
 
 -- Porting note: mem_iSup_finset_iff_exists_sum now requires DecidableEq ι
@@ -620,6 +621,7 @@ section Torsion'
 open Module
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+
 variable (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M]
 
 @[simp]

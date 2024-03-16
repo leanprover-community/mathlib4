@@ -51,7 +51,9 @@ open LinearMap (ker range)
 open BigOperators Topology
 
 variable {𝕜 E F : Type*} [IsROrC 𝕜]
+
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 
 -- mathport name: «expr⟪ , ⟫»

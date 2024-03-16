@@ -34,6 +34,7 @@ variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N] [Module R M
 variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
 variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
 variable (hp : p ≤ R⁰)
+
 variable (M' : Submodule R M)
 
 /-- Let `S` be the localization of `R` at `p` and `N` be the localization of `M` at `p`.

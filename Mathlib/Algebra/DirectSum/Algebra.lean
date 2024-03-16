@@ -36,7 +36,9 @@ namespace DirectSum
 open DirectSum
 
 variable (R : Type uR) (A : ι → Type uA) {B : Type uB} [DecidableEq ι]
+
 variable [CommSemiring R] [∀ i, AddCommMonoid (A i)] [∀ i, Module R (A i)]
+
 variable [AddMonoid ι] [GSemiring A]
 
 section

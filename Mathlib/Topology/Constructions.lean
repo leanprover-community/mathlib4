@@ -1214,6 +1214,7 @@ end Subtype
 section Quotient
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+
 variable {r : X → X → Prop} {s : Setoid X}
 
 theorem quotientMap_quot_mk : QuotientMap (@Quot.mk X r) :=

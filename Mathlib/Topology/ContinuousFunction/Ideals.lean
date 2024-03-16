@@ -79,7 +79,9 @@ open TopologicalSpace
 section TopologicalRing
 
 variable {X R : Type*} [TopologicalSpace X] [Semiring R]
+
 variable [TopologicalSpace R] [TopologicalSemiring R]
+
 variable (R)
 
 /-- Given a topological ring `R` and `s : Set X`, construct the ideal in `C(X, R)` of functions
@@ -406,6 +408,7 @@ variable (X 𝕜 : Type*) [TopologicalSpace X]
 section ContinuousMapEval
 
 variable [LocallyCompactSpace X] [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
+
 variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 
 /-- The natural continuous map from a locally compact topological space `X` to the

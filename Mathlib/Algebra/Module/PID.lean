@@ -55,7 +55,9 @@ universe u v
 open scoped BigOperators Classical
 
 variable {R : Type u} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+
 variable {M : Type v} [AddCommGroup M] [Module R M]
+
 variable {N : Type max u v} [AddCommGroup N] [Module R N]
 
 open scoped DirectSum
@@ -105,6 +107,7 @@ namespace Module
 section PTorsion
 
 variable {p : R} (hp : Irreducible p) (hM : Module.IsTorsion' M (Submonoid.powers p))
+
 variable [dec : ∀ x : M, Decidable (x = 0)]
 
 open Ideal Submodule.IsPrincipal

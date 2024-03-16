@@ -33,6 +33,7 @@ namespace CategoryTheory
 attribute [instance 100] IsConnected.is_nonempty
 
 variable {J : Type u₁} [Category.{v₁} J]
+
 variable {C : Type u₂} [Category.{u₁} C]
 
 /-- This type indexes the connected components of the category `J`. -/
