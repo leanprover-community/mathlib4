@@ -87,6 +87,11 @@ lemma reflection_apply_self :
 lemma reflection_self (x : M) : P.reflection i (P.reflection i x) = x :=
   Module.involutive_reflection (P.coroot_root_two i) x
 
+lemma reflection_eq (x y : M) (h : P.reflection i x = P.reflection i y) : x = y := by
+  simp only [reflection, Module.reflection, Equiv.invFun_as_coe, Involutive.toPerm_symm,
+    Involutive.coe_toPerm, EmbeddingLike.apply_eq_iff_eq] at h
+  exact h
+
 lemma reflection_invOn_self : InvOn (P.reflection i) (P.reflection i) (range P.root)
     (range P.root) := by
   constructor <;>
@@ -150,8 +155,6 @@ lemma coreflection_eq_imp_scalar (j : ι) (h: P.coreflection i = P.coreflection 
     rw [LinearMap.map_neg, neg_smul, sub_neg_eq_add]
   rw [two_nsmul, eq_neg_add_iff_add_eq.mp hij]
 
-variable [Finite ι]
-
 lemma reflection_mul (x : M) :
     (P.reflection i * P.reflection j) x = P.reflection i (P.reflection j x) := rfl
 
@@ -188,6 +191,41 @@ lemma IsOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.r
     root_coroot_eq_pairing, smul_eq_mul, mul_zero, sub_zero]
   exact sub_right_comm v ((P.toLin v) (P.coroot j) • P.root j)
       ((P.toLin v) (P.coroot i) • P.root i)
+
+lemma reflection_apply_lin_comb (x : M) (a b : R) :
+    P.reflection i (x + a • P.root i + b • P.root j) =
+    x + (- a - P.toLin x (P.coroot i) - b * P.pairing j i) • P.root i + b • P.root j := by
+  rw [reflection_apply, LinearMap.map_add₂, LinearMap.map_add₂, map_smul, LinearMap.smul_apply,
+    root_coroot_eq_pairing, pairing_same, smul_eq_mul, mul_comm, two_mul]
+  simp only [map_smul, LinearMap.smul_apply, root_coroot_eq_pairing, smul_eq_mul, sub_smul,
+    add_smul, neg_smul]
+  abel
+
+lemma reflection_reflection (x : M) : P.reflection i (P.reflection j x) =
+    x - P.toLin x (P.coroot j) • P.root j - (P.toLin x (P.coroot i) -
+    P.toLin x (P.coroot j) • (P.pairing j i)) • P.root i := by
+  rw [reflection_apply P j, reflection_apply P i]
+  simp only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, root_coroot_eq_pairing,
+    smul_eq_mul]
+
+lemma linearDependent_of_eq_reflection (h : P.reflection i = P.reflection j) (h₁ : ¬ (2 : R) = 0) :
+    ¬ LinearIndependent R ![P.root i, P.root j] := by
+  have h₂ : ∀ (x : M), P.reflection i x = P.reflection j x := congrFun (congrArg DFunLike.coe h)
+  have h₃ : ∀ (x : M), P.toLin x (P.coroot i) • P.root i = P.toLin x (P.coroot j) • P.root j := by
+    intro x
+    specialize h₂ x
+    rw [reflection_apply, reflection_apply, sub_eq_sub_iff_add_eq_add, add_left_cancel_iff] at h₂
+    exact id h₂.symm
+  have h₄ : (2 : R) • P.root i + (-P.pairing i j) • P.root j = 0 := by
+    specialize h₃ (P.root i)
+    rw [root_coroot_two, root_coroot_eq_pairing] at h₃
+    rw [h₃, neg_smul, add_neg_eq_zero]
+  rw [@LinearIndependent.pair_iff]
+  intro h'
+  specialize h' 2 (-P.pairing i j)
+  specialize h' h₄
+  apply h₁ h'.left
+
 /-!
 lemma coxeterWeight_one (h: coxeterWeight P i j = 1) :
     orderOf (P.reflection i * P.reflection j) = 3 := by
