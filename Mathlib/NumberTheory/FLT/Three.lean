@@ -3,7 +3,7 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Data.ZMod.Basic
+import Mathlib.NumberTheory.Cyclotomic.Three
 import Mathlib.NumberTheory.FLT.Basic
 
 /-!
@@ -17,6 +17,10 @@ The goal of this file is to prove Fermat Last theorem in the case `n = 3`.
 ## TODO
 Prove case 2.
 -/
+
+open NumberField Units InfinitePlace nonZeroDivisors Polynomial IsCyclotomicExtension.Rat.Three
+
+section case1
 
 open ZMod
 
@@ -40,6 +44,13 @@ theorem fermatLastTheoremThree_case_1 {a b c : ℕ} (hdvd : ¬ 3 ∣ a * b * c) 
   rcases cube_of_not_dvd hdvd.2 with hc | hc <;>
   rw [ha, hb, hc] <;> decide
 
+end case1
+
+section case2
+
+section misc
+
+/-- To prove `FermatLastTheoremFor 3`, we may assume that `3 ∣ c`. -/
 theorem fermatLastTheoremThree_of_three_dvd_c
     (H : ∀ a b c : ℤ, a ≠ 0 → b ≠ 0 → c ≠ 0 → 3 ∣ c → a ^ 3 + b ^ 3 ≠ c ^ 3) :
     FermatLastTheoremFor 3 := by
@@ -113,8 +124,9 @@ lemma three_dvd_gcd_of_dvd_b_of_dvd_c {a b c : ℕ} (hb : 3 ∣ b) (hc : 3 ∣ c
   · exact hx ▸ hb
   · exact hx ▸ hc
 
+/-- To prove `FermatLastTheoremFor 3`, we may assume that `¬ 3 ∣ a`, `¬ 3 ∣ b` and `3 ∣ c`. -/
 theorem fermatLastTheoremThree_of_three_dvd_only_c
-    (H : ∀ a b c : ℤ, a ≠ 0 → b ≠ 0 → c ≠ 0 → ¬(3 ∣ a) → ¬(3 ∣ b) → 3 ∣ c → a ^ 3 + b ^ 3 ≠ c ^ 3) :
+    (H : ∀ a b c : ℤ, c ≠ 0 → ¬ 3 ∣ a → ¬ 3 ∣ b  → 3 ∣ c → a ^ 3 + b ^ 3 ≠ c ^ 3) :
     FermatLastTheoremFor 3 := by
   apply FermatLastTheoremFor_of_FermatLastTheoremFor_coprime
   intro a b c ha hb hc Hgcd hF
@@ -124,8 +136,7 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
   rw [Nat.Prime.dvd_mul (Nat.prime_three), Nat.Prime.dvd_mul (Nat.prime_three)] at h1
   have h3 : ¬(3 ∣ 1) := by decide
   rcases h1 with ((⟨k, hk⟩ | ⟨k, hk⟩) | ⟨k, hk⟩)
-  · refine H (-(c : ℤ)) b (-(a : ℤ)) (by simp [hc]) (by simp [hb]) (by simp [ha]) (fun hdvd ↦ h3 ?_)
-      (fun hdvd ↦ h3 ?_) ?_ ?_
+  · refine H (-(c : ℤ)) b (-(a : ℤ)) (by simp [ha]) (fun hdvd ↦ h3 ?_) (fun hdvd ↦ h3 ?_) ?_ ?_
     · rw [← Hgcd]
       exact three_dvd_gcd_of_dvd_a_of_dvd_c ⟨k, hk⟩ (Int.coe_nat_dvd.1 (dvd_neg.1 hdvd)) hF
     · rw [← Hgcd]
@@ -134,8 +145,7 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
     · rw [Odd.neg_pow (by decide), Odd.neg_pow (by decide), add_comm, ← sub_eq_add_neg,
         sub_eq_iff_eq_add, add_comm, ← sub_eq_add_neg, eq_sub_iff_add_eq, add_comm]
       exact_mod_cast hF
-  · refine H a (-(c : ℤ)) ((-(b : ℤ))) (by simp [ha]) (by simp [hc]) (by simp [hb])
-      (fun hdvd ↦ h3 ?_) (fun hdvd ↦ h3 ?_) ?_ ?_
+  · refine H a (-(c : ℤ)) ((-(b : ℤ))) (by simp [hb]) (fun hdvd ↦ h3 ?_) (fun hdvd ↦ h3 ?_) ?_ ?_
     · rw [← Hgcd]
       exact three_dvd_gcd_of_dvd_a_of_dvd_b (by exact_mod_cast hdvd) ⟨k, hk⟩ hF
     · rw [← Hgcd]
@@ -144,11 +154,47 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
     · rw [Odd.neg_pow (by decide), Odd.neg_pow (by decide), ← sub_eq_add_neg, sub_eq_iff_eq_add,
         add_comm, ← sub_eq_add_neg, eq_sub_iff_add_eq]
       exact_mod_cast hF
-  · refine H a b c (by simp [ha]) (by simp [hb]) (by simp [hc]) (fun hdvd ↦ h3 ?_)
-      (fun hdvd ↦ h3 ?_) ?_ ?_
+  · refine H a b c (by simp [hc]) (fun hdvd ↦ h3 ?_) (fun hdvd ↦ h3 ?_) ?_ ?_
     · rw [← Hgcd]
       exact three_dvd_gcd_of_dvd_a_of_dvd_c (by exact_mod_cast hdvd) ⟨k, hk⟩ hF
     · rw [← Hgcd]
       exact three_dvd_gcd_of_dvd_b_of_dvd_c (by exact_mod_cast hdvd) ⟨k, hk⟩ hF
     · exact ⟨k, by simp [hk]⟩
     · exact_mod_cast hF
+
+end misc
+
+section eisenstein
+
+variable {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {3} ℚ K]
+variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+)) (u : (𝓞 K)ˣ)
+
+local notation3 "η" => hζ.toInteger
+
+local notation3 "λ" => hζ.toInteger - 1
+
+/-- Let `K` be a `3`-rd cyclotomic extension of `ℚ` and let `ζ : K` be such that
+`hζ : IsPrimitiveRoot ζ 3`. Setting `λ = ζ - 1` (in `𝓞 K`), `FermatLastTheoremForThreeGen hζ`
+is the statement that `a ^ 3 + b ^ 3 = u * c ^ 3` has no nontrivial solutions in `𝓞 K` for all
+`u : (𝓞 K)ˣ` such that `¬ λ ∣ a`, `¬ λ ∣ b` and `λ ∣ c`.
+The reason to consider `FermatLastTheoremForThreeGen hζ` is to make a descent argument working. -/
+def FermatLastTheoremForThreeGen : Prop :=
+  ∀ a b c : 𝓞 K, ∀ u : (𝓞 K)ˣ, c ≠ 0 → ¬ λ ∣ a → ¬ λ ∣ b  → λ ∣ c → a ^ 3 + b ^ 3 ≠ u * c ^ 3
+
+/-- To prove `FermatLastTheoremFor 3`, it is enough to prove `FermatLastTheoremForThreeGen hζ`. -/
+lemma FermatLastTheoremForThree_of_FermatLastTheoremThreeGen :
+    FermatLastTheoremForThreeGen hζ → FermatLastTheoremFor 3 := by
+  intro H
+  refine fermatLastTheoremThree_of_three_dvd_only_c (fun a b c hc ha hb ⟨x, hx⟩ h ↦ ?_)
+  refine H a b c 1 (by simp [hc]) (fun hdvd ↦ ha ?_) (fun hdvd ↦ hb ?_) ?_ ?_
+  · rwa [← Ideal.norm_dvd_iff (norm_lambda_prime hζ), norm_lambda hζ] at hdvd
+  · rwa [← Ideal.norm_dvd_iff (norm_lambda_prime hζ), norm_lambda hζ] at hdvd
+  · exact dvd_trans (lambda_dvd_three hζ) ⟨x, by simp [hx]⟩
+  · simp only [val_one, one_mul]
+    exact_mod_cast h
+
+end eisenstein
+
+
+
+end case2
