@@ -343,8 +343,8 @@ lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsHaar
       rw [← haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero]
 
 @[to_additive (attr := simp) addHaarScalarFactor_self_eq_one]
-lemma haarScalarFactor_self_eq_one (μ : Measure G) [IsHaarMeasure μ] : haarScalarFactor μ μ = 1 :=
-by
+lemma haarScalarFactor_self_eq_one (μ : Measure G) [IsHaarMeasure μ] :
+  haarScalarFactor μ μ = 1 := by
   by_cases hG : LocallyCompactSpace G; swap
   · simp [haarScalarFactor, hG]
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
