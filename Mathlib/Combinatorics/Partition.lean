@@ -106,29 +106,21 @@ def ofMultiset (l : Multiset ℕ) : Partition l.sum := ofSums _ l rfl
 /-- An element `s` of `Sym σ n` induces a partition given by its multiplicities.
 -/
 def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition where
-  parts := (s.1.dedup).map s.1.count
+  parts := (s.1.toFinset).val.map s.1.count
   parts_pos := by simp [Multiset.count_pos]
   parts_sum := by
-    simp only [Sym.val_eq_coe, card_eq_sum_count]
+    have : sum (map (fun a ↦ count a s.1) (toFinset s.1).val) = Finset.sum (toFinset s.1) fun a ↦ count a s.1 := rfl
+    rw [this, Multiset.toFinset_sum_count_eq]
     exact s.2
 
 lemma ofSymEquiv {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ] (e : σ ≃ τ) (s : Sym σ n) :
-    Nat.Partition.ofSym (s.map e) = Nat.Partition.ofSym s := by
-  simp only [Nat.Partition.ofSym, Nat.Partition.ext_iff]
-  have dedup_eq : (s.map e).1.dedup = s.1.dedup.map e := by
-    simp only [Sym.val_eq_coe, Sym.coe_map]
-    rw [← Multiset.dedup_map_dedup_eq]
-    apply Multiset.Nodup.dedup
-    rw [Multiset.nodup_map_iff_of_injective e.injective]
-    exact Multiset.nodup_dedup s.1
-  rw [dedup_eq]
-  have : (fun x ↦ Multiset.count x s.1) = fun x ↦ Multiset.count (e x) (s.map e).1 := by
-    funext x
+  Nat.Partition.ofSym (s.map e) = Nat.Partition.ofSym s := by
+    simp only [ofSym, Sym.val_eq_coe, Sym.coe_map, toFinset_val, mk.injEq]
+    rw [Multiset.dedup_map_dedup_eq_injective]
+    simp only [map_map, Function.comp_apply]
+    congr; funext i
     rw [← Multiset.count_map_eq_count' e]
-    congr
-    exact e.injective
-  rw [this]
-  simp only [Sym.val_eq_coe, Sym.coe_map, Multiset.map_map, Function.comp_apply]
+    all_goals exact e.injective
 
 /-- The partition of exactly one part. -/
 def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl

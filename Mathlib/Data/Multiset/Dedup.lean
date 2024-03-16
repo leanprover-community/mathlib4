@@ -132,6 +132,13 @@ theorem dedup_map_dedup_eq [DecidableEq β] (f : α → β) (s : Multiset α) :
   simp [dedup_ext]
 #align multiset.dedup_map_dedup_eq Multiset.dedup_map_dedup_eq
 
+theorem dedup_map_dedup_eq_injective [DecidableEq β] (f : α → β) (hinj : Function.Injective f) (s : Multiset α) :
+    dedup (map f s) = map f (dedup s) := by
+  rw [← dedup_map_dedup_eq]
+  apply Multiset.dedup_eq_self.mpr
+  rw [Multiset.nodup_map_iff_of_injective hinj]
+  exact Multiset.nodup_dedup s
+
 @[simp]
 theorem dedup_nsmul {s : Multiset α} {n : ℕ} (h0 : n ≠ 0) : (n • s).dedup = s.dedup := by
   ext a
@@ -141,27 +148,6 @@ theorem dedup_nsmul {s : Multiset α} {n : ℕ} (h0 : n ≠ 0) : (n • s).dedup
 theorem Nodup.le_dedup_iff_le {s t : Multiset α} (hno : s.Nodup) : s ≤ t.dedup ↔ s ≤ t := by
   simp [le_dedup, hno]
 #align multiset.nodup.le_dedup_iff_le Multiset.Nodup.le_dedup_iff_le
-
-theorem card_eq_sum_count {α : Type*} {s : Multiset α} [DecidableEq α] :
-    sum (Multiset.map (fun x ↦ count x ↑s) (s.dedup)) = card s := by
-  induction' s using Multiset.induction_on with a s ih
-  · simp
-  · simp_rw [count_cons, sum_map_add, card_cons]
-    by_cases h : a ∈ s
-    · rw [dedup_cons_of_mem h]
-      congr
-      rw [Multiset.sum_map_eq_nsmul_single a]
-      · simp only [Multiset.nodup_dedup, ↓reduceIte, smul_eq_mul, mul_one, Multiset.mem_dedup, h,
-      Multiset.count_eq_one_of_mem]
-      · simp only [ne_eq, mem_dedup, ite_eq_right_iff, one_ne_zero, imp_false]
-        tauto
-    · congr
-      · rw [dedup_cons_of_not_mem h]
-        simp only [map_cons, sum_cons, ih, count_eq_zero_of_not_mem h, zero_add]
-      · rw [Multiset.sum_map_eq_nsmul_single a]
-        · simp [h]
-        · simp only [ne_eq, mem_dedup, ite_eq_right_iff, one_ne_zero, imp_false]
-          tauto
 
 end Multiset
 
