@@ -13,11 +13,9 @@ This file defines systems of simple roots in a root system.
 ## Main definitions
 
 * `Thin` : A root system is thin if it admits a functional such that there are only finitely many
-roots in the preimage of any interval.  This lets us do inductive constructions of the Cartan
-matrix given a basis.
-* `RegularElement` : Given a thin root system, a regular element is a linear functional on the
-root space that takes no roots to zero.  This corresponds to an element of a Lie algebra with
-minimal centralizer.
+roots in the preimage of any interval.  This lets us prove some properties by induction on height.
+* `RegularElement` : A regular element is a linear functional on the root space that takes no roots
+to zero.  This corresponds to an element of a Lie algebra with minimal centralizer.
 * `Separation` : A subset of `positive` elements, closed under addition, such that any root is
 either positive, or minus one times a positive root.
 * `IsIrreducible` : Given a regular element, a root is irreducible if it is positive and is not the
@@ -31,16 +29,15 @@ None yet
 
 ## Todo
 
-* Any regular element yields a separation
 * Any base is made of irreducible elements - reducibles would violate minimality?
 * The irreducible elements of a separation form a base.
 * Any separation (satisfying some condition) comes from some regular element.
 
-* A base is linearly independent in the positive definite case. (use obtuse lemma)
+* A base is linearly independent in the positive definite case (use obtuse angle lemma).
+* Simple reflections change positivity exactly one root pair (may need linear independence).
+* Weyl orbits of bases : unique for finite and affine case.
 
-* Define: Cartan Matrices.
-
-
+* Define: Cartan Matrix for a base.
 
 ## References
 
@@ -55,32 +52,33 @@ noncomputable section
 
 namespace RootPairing
 
-/-- An element in the coroot space is preregular if any interval in `R` has finite preimage. -/
-def IsPreregular (x : N) : Prop := ∀ (n : R), 0 ≤ n →
+/-- An element in the coroot space is thin-slicing if any interval in `R` has finite preimage. -/
+def IsThinSlicing (x : N) : Prop := ∀ (n : R), 0 ≤ n →
   Finite { i | 0 ≤ (P.toLin (P.root i) x) ∧ (P.toLin (P.root i) x) ≤ n}
 
-theorem finite_preregular [Finite ι] (x : N) : IsPreregular P x :=
+theorem thinSlicing_ofFinite [Finite ι] (x : N) : IsThinSlicing P x :=
   fun n _ ↦ Finite.Set.finite_inter_of_left (fun i ↦ Preorder.toLE.1 0 ((P.toLin (P.root i)) x))
     fun i ↦ Preorder.toLE.1 ((P.toLin (P.root i)) x) n
 
-/-- A root pairing is thin if there is a preregular element.  Borcherds-Kac-Moody Lie
-algebras more or less admit a `ℤ`-grading with finite dimensional pieces (except for Cartan), so
+/-- A root pairing is thin if there is a thin-slicing element.  Borcherds-Kac-Moody Lie
+algebras admit a `ℤ`-grading with finite dimensional pieces (except possibly for Cartan), so
 their root systems are always thin. -/
-def IsThin : Prop := ∃ (x : N), IsPreregular P x
+def IsThin : Prop := ∃ (x : N), IsThinSlicing P x
 
-/-- A regular element is a preregular element that takes no roots to zero. -/
-def IsRegularElement (x : N) : Prop := (IsPreregular P x) ∧ ∀(i : ι), P.toLin (P.root i) x ≠ 0
+/-- A regular element is a linear functional that takes no roots to zero. -/
+def IsRegularElement (x : N) : Prop := ∀(i : ι), P.toLin (P.root i) x ≠ 0
 
 /-- A separation is a subset of roots, called `positive`, such that all roots are either positive or
-minus one times positive, and any root that is the sums of positive roots is positive.-/
+minus one times positive, and any root that is the sum of positive roots is positive.-/
 structure Separation (P : RootPairing ι R M N) where
+  /-- The positivity predicate. -/
   pos : ι → Prop
+  /-- A root is either positive or minus one times a positive root. -/
   pos_iff : ∀ i j, P.root i + P.root j = 0 → (pos i ↔ ¬ pos j)
+  /-- A root that is the sum of positive roots is positive. -/
   add_pos : ∀ i j k, pos i → pos j → P.root k = P.root i + P.root j → pos k
 
-/-- Produce a separation from a regular element. (This does not use the preregular property, and
-perhaps we should remove and rename that property.  Such a property only makes the separation robust
-against small perturbations.)-/
+/-- Produce a separation from a regular element. -/
 def separation_of_regular (x : N) (hx : IsRegularElement P x) :
     Separation P where
   pos := fun i => P.toLin (P.root i) x > 0
@@ -100,6 +98,8 @@ def separation_of_regular (x : N) (hx : IsRegularElement P x) :
   add_pos := fun i j k hi hj hijk => by
     simp_all only [gt_iff_lt, map_add, LinearMap.add_apply]
     linarith
+
+-- Thin-slicing property for regular elements gives stability of separation against small changes.
 
 /-- A root is decomposable (with respect to a regular element `x`) if it is positive, and is the
 sum of two positive roots. -/
