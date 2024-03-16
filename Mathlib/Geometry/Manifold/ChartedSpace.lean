@@ -827,7 +827,7 @@ end prodChartedSpace
 
 /-- The product of a finite family of charted spaces is naturally a charted space, with the
 canonical construction of the atlas of finite product maps. -/
-instance piChartedSpace {ι : Type*} [Fintype ι] (H : ι → Type*) [∀ i, TopologicalSpace (H i)]
+instance piChartedSpace {ι : Type*} [Finite ι] (H : ι → Type*) [∀ i, TopologicalSpace (H i)]
     (M : ι → Type*) [∀ i, TopologicalSpace (M i)] [∀ i, ChartedSpace (H i) (M i)] :
     ChartedSpace (ModelPi H) (∀ i, M i) where
   atlas := PartialHomeomorph.pi '' Set.pi univ fun _ ↦ atlas (H _) (M _)
@@ -837,7 +837,7 @@ instance piChartedSpace {ι : Type*} [Fintype ι] (H : ι → Type*) [∀ i, Top
 #align pi_charted_space piChartedSpace
 
 @[simp, mfld_simps]
-theorem piChartedSpace_chartAt {ι : Type*} [Fintype ι] (H : ι → Type*)
+theorem piChartedSpace_chartAt {ι : Type*} [Finite ι] (H : ι → Type*)
     [∀ i, TopologicalSpace (H i)] (M : ι → Type*) [∀ i, TopologicalSpace (M i)]
     [∀ i, ChartedSpace (H i) (M i)] (f : ∀ i, M i) :
     chartAt (H := ModelPi H) f = PartialHomeomorph.pi fun i ↦ chartAt (H i) (f i) :=
