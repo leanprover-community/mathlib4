@@ -81,7 +81,7 @@ instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F
   let H₂ : J ⥤ StructuredArrow c₁.pt.right F :=
     { obj := fun j => StructuredArrow.mk (c₁.π.app j).right
       map := fun {j j'} f =>
-        StructuredArrow.homMk ((H.map f).right) (congrArg CommaMorphism.right (c₁.w f)) }
+        StructuredArrow.homMk (H.map f).right (congrArg CommaMorphism.right (c₁.w f)) }
   obtain ⟨c₂⟩ := IsCofiltered.cone_nonempty H₂
   exact ⟨⟨StructuredArrow.mk (c₁.pt.hom ≫ G.map c₂.pt.hom),
     ⟨fun j => StructuredArrow.homMk (c₂.π.app j).right (by simp [← G.map_comp, (c₂.π.app j).w]),
