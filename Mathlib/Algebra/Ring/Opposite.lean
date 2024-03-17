@@ -39,7 +39,8 @@ instance instSemigroupWithZero [SemigroupWithZero α] : SemigroupWithZero αᵐ�
 instance instMonoidWithZero [MonoidWithZero α] : MonoidWithZero αᵐᵒᵖ :=
   { MulOpposite.monoid α, MulOpposite.instMulZeroOneClass α with }
 
-instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] : NonUnitalNonAssocSemiring αᵐᵒᵖ :=
+instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] :
+    NonUnitalNonAssocSemiring αᵐᵒᵖ :=
   { MulOpposite.addCommMonoid α, MulOpposite.instMulZeroClass α, MulOpposite.instDistrib α with }
 
 instance instNonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring αᵐᵒᵖ :=
@@ -119,7 +120,8 @@ instance instSemigroupWithZero [SemigroupWithZero α] : SemigroupWithZero αᵃ�
 instance instMonoidWithZero [MonoidWithZero α] : MonoidWithZero αᵃᵒᵖ :=
   { AddOpposite.monoid α, AddOpposite.instMulZeroOneClass α with }
 
-instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] : NonUnitalNonAssocSemiring αᵃᵒᵖ :=
+instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] :
+    NonUnitalNonAssocSemiring αᵃᵒᵖ :=
   { AddOpposite.addCommMonoid α, AddOpposite.instMulZeroClass α, AddOpposite.instDistrib α with }
 
 instance instNonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring αᵃᵒᵖ :=
@@ -143,10 +145,12 @@ instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing α] : NonUnitalNonAsso
   { AddOpposite.addCommGroup α, AddOpposite.instMulZeroClass α, AddOpposite.instDistrib α with }
 
 instance instNonUnitalRing [NonUnitalRing α] : NonUnitalRing αᵃᵒᵖ :=
-  { AddOpposite.addCommGroup α, AddOpposite.instSemigroupWithZero α, AddOpposite.instDistrib α with }
+  { AddOpposite.addCommGroup α, AddOpposite.instSemigroupWithZero α,
+    AddOpposite.instDistrib α with }
 
 instance instNonAssocRing [NonAssocRing α] : NonAssocRing αᵃᵒᵖ :=
-  { AddOpposite.addCommGroupWithOne α, AddOpposite.instMulZeroOneClass α, AddOpposite.instDistrib α with }
+  { AddOpposite.addCommGroupWithOne α, AddOpposite.instMulZeroOneClass α,
+    AddOpposite.instDistrib α with }
 
 instance instRing [Ring α] : Ring αᵃᵒᵖ :=
   { AddOpposite.instNonAssocRing α, AddOpposite.instSemiring α with }
