@@ -32,7 +32,7 @@ This file comes across as confusing to those who haven't yet used it, so here is
 walkthrough:
 1. Know what relation on which type/set you're looking for. See Variants above. You can discharge
   some conditions to Zorn's lemma directly using a `_nonempty` variant.
-2. Write down the definition of your type/set, put a `suffices : ∃ m, ∀ a, m ≺ a → a ≺ m by ...`
+2. Write down the definition of your type/set, put a `suffices ∃ m, ∀ a, m ≺ a → a ≺ m by ...`
   (or whatever you actually need) followed by an `apply some_version_of_zorn`.
 3. Fill in the details. This is where you start talking about chains.
 
@@ -40,7 +40,7 @@ A typical proof using Zorn could look like this
 ```lean
 lemma zorny_lemma : zorny_statement := by
   let s : Set α := {x | whatever x}
-  suffices : ∃ x ∈ s, ∀ y ∈ s, y ⊆ x → y = x from -- or with another operator xxx
+  suffices ∃ x ∈ s, ∀ y ∈ s, y ⊆ x → y = x by -- or with another operator xxx
     proof_post_zorn
   apply zorn_subset -- or another variant
   rintro c hcs hc
