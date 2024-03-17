@@ -227,9 +227,15 @@ structure isRatCondKernelCDFAux (f : α × β → ℚ → ℝ) (κ : kernel α (
   (mono' (a : α) {q r : ℚ} (_hqr : q ≤ r) : ∀ᵐ c ∂(ν a), f (a, c) q ≤ f (a, c) r)
   (nonneg' (a : α) (q : ℚ) : ∀ᵐ c ∂(ν a), 0 ≤ f (a, c) q)
   (le_one' (a : α) (q : ℚ) : ∀ᵐ c ∂(ν a), f (a, c) q ≤ 1)
+  /- Same as `Tendsto (fun q : ℚ ↦ ∫ c, f (a, c) q ∂(ν a)) atBot atBot` but slightly easier
+  to prove in the current applications of this definition (some integral convergence lemmas
+  currently apply only to `ℕ`, not `ℚ`) -/
   (tendsto_integral_of_antitone (a : α) (seq : ℕ → ℚ) (_hs : Antitone seq)
     (_hs_tendsto : Tendsto seq atTop atBot) :
     Tendsto (fun m ↦ ∫ c, f (a, c) (seq m) ∂(ν a)) atTop (𝓝 0))
+  /- Same as `Tendsto (fun q : ℚ ↦ ∫ c, f (a, c) q ∂(ν a)) atTop atTop` but slightly easier
+  to prove in the current applications of this definition (some integral convergence lemmas
+  currently apply only to `ℕ`, not `ℚ`) -/
   (tendsto_integral_of_monotone (a : α) (seq : ℕ → ℚ) (_hs : Monotone seq)
     (_hs_tendsto : Tendsto seq atTop atTop) :
     Tendsto (fun m ↦ ∫ c, f (a, c) (seq m) ∂(ν a)) atTop (𝓝 (ν a univ).toReal))
