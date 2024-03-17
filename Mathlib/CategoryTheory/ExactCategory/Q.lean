@@ -96,9 +96,7 @@ lemma Hom.comp_eq {X₁ X₂ X₃ : Q C} {Z₁₂ Z₂₃ Z₁₃ : C} (j₁ : Z
     aesop_cat
   symm
   refine' Hom.ext' _ _ _ _ (asIso φ) _ _
-  all_goals
-    dsimp [mk', asIso]
-    simp
+  all_goals dsimp [φ, mk', asIso]; simp
 
 noncomputable instance : Category (Q C) where
   Hom := Hom
