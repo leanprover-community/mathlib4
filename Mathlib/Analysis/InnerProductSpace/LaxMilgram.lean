@@ -78,7 +78,7 @@ theorem ker_eq_bot (coercive : IsCoercive B) : ker B♯ = ⊥ := by
   exact antilipschitz.injective
 #align is_coercive.ker_eq_bot IsCoercive.ker_eq_bot
 
-theorem closed_range (coercive : IsCoercive B) : IsClosed (range B♯ : Set V) := by
+theorem isClosed_range (coercive : IsCoercive B) : IsClosed (range B♯ : Set V) := by
   rcases coercive.antilipschitz with ⟨_, _, antilipschitz⟩
   exact antilipschitz.isClosed_range B♯.uniformContinuous
 #align is_coercive.closed_range IsCoercive.closed_range
