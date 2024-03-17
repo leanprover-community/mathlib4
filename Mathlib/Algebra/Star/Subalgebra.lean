@@ -501,8 +501,8 @@ theorem adjoin_induction {s : Set A} {p : A → Prop} {a : A} (h : a ∈ adjoin 
     (add : ∀ x y : A, p x → p y → p (x + y)) (Hmul : ∀ x y : A, p x → p y → p (x * y))
     (star : ∀ x : A, p x → p (star x)) : p a :=
   Algebra.adjoin_induction h
-    (fun x hx => hx.elim (fun hx => mem x hx) fun hx => star_star x ▸ star _ (Hs _ hx)) algebraMap add
-    Hmul
+    (fun x hx => hx.elim (fun hx => mem x hx) fun hx => star_star x ▸ star _ (mem _ hx))
+    algebraMap add Hmul
 #align star_subalgebra.adjoin_induction StarSubalgebra.adjoin_induction
 
 theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin R s)

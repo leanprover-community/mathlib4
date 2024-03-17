@@ -883,7 +883,8 @@ theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s)
 
 @[elab_as_elim]
 theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
-    (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (zero : p 0 (zero_mem _)) (one : p 1 (one_mem _))
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h))
+    (zero : p 0 (zero_mem _)) (one : p 1 (one_mem _))
     (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (neg : ∀ x hx, p x hx → p (-x) (neg_mem hx))
     (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))

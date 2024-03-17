@@ -695,8 +695,8 @@ theorem closure_induction' {s : Set R} {p : closure s → Prop} (a : closure s)
   Subtype.recOn a fun b hb => by
     refine' Exists.elim _ fun (hb : b ∈ closure s) (hc : p ⟨b, hb⟩) => hc
     refine'
-      closure_induction hb (fun x hx => ⟨subset_closure hx, mem x hx⟩) ⟨zero_mem (closure s), zero⟩ _ _
-        _
+      closure_induction hb (fun x hx => ⟨subset_closure hx, mem x hx⟩)
+        ⟨zero_mem (closure s), zero⟩ _ _ _
     · rintro x y ⟨hx, hpx⟩ ⟨hy, hpy⟩
       exact ⟨add_mem hx hy, add _ _ hpx hpy⟩
     · rintro x ⟨hx, hpx⟩
