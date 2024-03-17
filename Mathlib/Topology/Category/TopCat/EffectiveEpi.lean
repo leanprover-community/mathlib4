@@ -3,7 +3,8 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic.Basic
+import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic.RegularEpi
+import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic.Comp
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 /-!
 
