@@ -150,24 +150,6 @@ theorem equalizerCondition_iff_of_equivalence (P : Cᵒᵖ ⥤ D)
     equalizerCondition_of_natIso (e.op.funInvIdAssoc P)
       (equalizerCondition_precomp_of_preservesPullback (e.op.inverse ⋙ P) e.functor h)⟩
 
-theorem PullbackCone.IsLimit.uniq {X₁ X₂ Y B : C} {f₁ : X₁ ⟶ B} {f₂ : X₂ ⟶ B}
-    (c : PullbackCone f₁ f₂) (hc : IsLimit c) (g₁ : Y ⟶ X₁) (g₂ : Y ⟶ X₂) (w : g₁ ≫ f₁ = g₂ ≫ f₂)
-    (h : Y ⟶ c.pt) (w₁ : h ≫ c.fst = g₁) (w₂ : h ≫ c.snd = g₂) :
-    h = PullbackCone.IsLimit.lift hc g₁ g₂ w := by
-  apply hc.uniq (PullbackCone.mk _ _ w)
-  intro j
-  cases j with
-  | none =>
-    simp only [PullbackCone.mk_pt, cospan_one, PullbackCone.condition_one, PullbackCone.mk_π_app,
-      const_obj_obj]
-    rw [← Category.assoc, w₁]
-  | some val =>
-    cases val with
-    | left =>
-      simpa using w₁
-    | right =>
-      simpa using w₂
-
 open WalkingParallelPair WalkingParallelPairHom in
 theorem initial_H {X B : C} (π : X ⟶ B) (c : PullbackCone π π) (hc : IsLimit c) :
     let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
@@ -231,7 +213,7 @@ theorem initial_H {X B : C} (π : X ⟶ B) (c : PullbackCone π π) (hc : IsLimi
           (Relation.ReflTransGen.single (Or.inl ⟨CostructuredArrow.homMk right rfl⟩))
         exact Relation.ReflTransGen.single (Or.inr ⟨CostructuredArrow.homMk left rfl⟩)
 
-noncomputable def blablabla (P : Cᵒᵖ ⥤ D) {X B : C} (π : X ⟶ B)
+noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X ⟶ B)
     (c : PullbackCone π π) (hc : IsLimit c) :
     IsLimit (Fork.ofι (P.map π.op) (equalizerCondition_w P c)) ≃
     IsLimit (P.mapCone (Sieve.ofArrows (fun (_ : Unit) ↦ X) fun _ ↦ π).arrows.cocone.op) := by
@@ -279,9 +261,9 @@ lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C�
         (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows.cocone.op)) := by
   constructor
   · intro h
-    exact ⟨blablabla _ _ _ (pullbackIsPullback π π) (h _ (pullbackIsPullback π π)).some⟩
+    exact ⟨isLimit_forkOfι_equiv _ _ _ (pullbackIsPullback π π) (h _ (pullbackIsPullback π π)).some⟩
   · intro ⟨h⟩
-    exact fun c hc ↦ ⟨(blablabla _ _ _ hc).symm h⟩
+    exact fun c hc ↦ ⟨(isLimit_forkOfι_equiv _ _ _ hc).symm h⟩
 
 lemma equalizerCondition_iff_isSheaf (F : Cᵒᵖ ⥤ D) [Preregular C]
     [∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f] :
