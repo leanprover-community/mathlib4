@@ -169,12 +169,13 @@ theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [
   rcases k.eq_zero_or_pos with (rfl | hk)
   · rw [pow_zero, one_mul, isRoot_cyclotomic_iff]
   refine' ⟨fun h => _, fun h => _⟩
-  · rw [IsRoot.definition, cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, eval_pow] at h
+  · rw [IsRoot.definition, cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, eval_pow]
+      at h
     replace h := pow_eq_zero h
     rwa [← IsRoot.definition, isRoot_cyclotomic_iff] at h
   · rw [← isRoot_cyclotomic_iff, IsRoot.definition] at h
-    rw [cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, IsRoot.definition, eval_pow, h,
-      zero_pow]
+    rw [cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, IsRoot.definition, eval_pow,
+      h, zero_pow]
     exact Nat.sub_ne_zero_of_lt $ pow_right_strictMono hp.out.one_lt $ Nat.pred_lt hk.ne'
 #align polynomial.is_root_cyclotomic_prime_pow_mul_iff_of_char_p Polynomial.isRoot_cyclotomic_prime_pow_mul_iff_of_charP
 
