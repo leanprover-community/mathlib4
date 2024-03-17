@@ -322,7 +322,7 @@ theorem sin_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : sin (n * (2 * π) - x) = -s
   sin_neg x ▸ sin_periodic.int_mul_sub_eq n
 #align real.sin_int_mul_two_pi_sub Real.sin_int_mul_two_pi_sub
 
-theorem sin_add_int_mul_pi (x : ℝ) (n : ℤ) : sin (x + n * π) = (n.negOnePow) * sin x := by
+theorem sin_add_int_mul_pi (x : ℝ) (n : ℤ) : sin (x + n * π) = n.negOnePow * sin x := by
   rcases Int.even_or_odd' n with ⟨k, hk⟩
   rcases hk with rfl | rfl
   · rw [Int.cast_mul, Int.cast_two, mul_comm 2, mul_assoc]
@@ -430,7 +430,7 @@ theorem cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = co
   cos_neg x ▸ cos_periodic.int_mul_sub_eq n
 #align real.cos_int_mul_two_pi_sub Real.cos_int_mul_two_pi_sub
 
-theorem cos_add_int_mul_pi (x : ℝ) (n : ℤ) : cos (x + n * π) = (n.negOnePow) * cos x := by
+theorem cos_add_int_mul_pi (x : ℝ) (n : ℤ) : cos (x + n * π) = n.negOnePow * cos x := by
   rcases Int.even_or_odd' n with ⟨k, hk⟩
   rcases hk with rfl | rfl
   · rw [Int.cast_mul, Int.cast_two, mul_comm 2, mul_assoc]
