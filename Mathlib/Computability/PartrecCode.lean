@@ -181,7 +181,7 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
     have IH1 := encode_ofNatCode m.unpair.1
     have IH2 := encode_ofNatCode m.unpair.2
     conv_rhs => rw [← Nat.bit_decomp n, ← Nat.bit_decomp n.div2]
-    simp only [ofNatCode._eq_5]
+    simp only [ofNatCode.eq_5]
     cases n.bodd <;> cases n.div2.bodd <;>
       simp [encodeCode, ofNatCode, IH, IH1, IH2, Nat.bit_val]
 
@@ -768,7 +768,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
             le_trans (le_max_left _ (Nat.pair n₁ m)) nk₁, y,
           evaln_mono (Nat.succ_le_succ <| le_max_left _ _) _,
           evaln_mono (Nat.succ_le_succ <| Nat.le_succ_of_le <| le_max_right _ _) hk₂⟩
-      simp only [evaln._eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some,
+      simp only [evaln.eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some,
         Option.guard_eq_some', exists_and_left, exists_const]
       exact ⟨le_trans (le_max_right _ _) nk₁, hk₁⟩
   | rfind' cf hf =>
