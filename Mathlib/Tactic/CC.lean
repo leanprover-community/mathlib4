@@ -3,10 +3,12 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Init.CCLemmas
+import Mathlib.Tactic.CC.Lemmas
 import Mathlib.Data.Option.Defs
 import Mathlib.Lean.Meta.Basic
+import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.Relation.Symm
 
 #align_import init.meta.smt.congruence_closure from "leanprover-community/lean"@"9eae65f7144bcc692858b9dadf2e48181f4270b9"
 
@@ -398,7 +400,7 @@ structure ParentOcc where
       performance reasons. -/
   symmTable : Bool
 
-abbrev ParentOccSet := Std.RBSet ParentOcc (byKey ParentOcc.expr compare)
+abbrev ParentOccSet := Std.RBSet ParentOcc (Ordering.byKey ParentOcc.expr compare)
 
 abbrev Parents := RBExprMap ParentOccSet
 
@@ -1358,9 +1360,9 @@ def isAC (e : Expr) : CCM (Option Expr) := do
       return bif b then some cop else none
   let b ←
     try
-      let aop ← mkAppM ``Lean.IsAssociative #[op]
+      let aop ← mkAppM ``Std.Associative #[op]
       let some _ ← synthInstance? aop | failure
-      let cop ← mkAppM ``Lean.IsCommutative #[op]
+      let cop ← mkAppM ``Std.Commutative #[op]
       let some _ ← synthInstance? cop | failure
       pure true
     catch _ =>
@@ -1952,9 +1954,8 @@ partial def propagateEqUp (e : Expr) : CCM Unit := do
       raNeRb := some
         (Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[ra, rb])) (← mkEqRefl (.const ``true [])))
     else
-      let env ← getEnv
-      if let some c₁ := ra.isConstructorApp? env then
-      if let some c₂ := rb.isConstructorApp? env then
+      if let some c₁ ← isConstructorApp? ra then
+      if let some c₂ ← isConstructorApp? rb then
       if c₁.name != c₂.name then
         raNeRb ← withLocalDeclD `h (← mkEq ra rb) fun h => do
           mkLambdaFVars #[h] (← mkNoConfusion (.const ``False []) h)
@@ -2071,7 +2072,7 @@ partial def processSubsingletonElem (e : Expr) : CCM Unit := do
 
 partial def mkEntry (e : Expr) (interpreted : Bool) (gen : Nat) : CCM Unit := do
   if (← getEntry e).isSome then return
-  let constructor := e.isConstructorApp (← getEnv)
+  let constructor ← isConstructorApp e
   modifyState fun ccs => ccs.mkEntryCore e interpreted constructor gen
   processSubsingletonElem e
 end
@@ -2201,8 +2202,7 @@ equal to `c`, then propagate new equality.
 Example: if `p` is of the form `b.fst`, `c` is of the form `(x, y)`, and `b = c`, we add the
 equality `(x, y).fst = x` -/
 def propagateProjectionConstructor (p c : Expr) : CCM Unit := do
-  let env ← getEnv
-  guard (c.isConstructorApp env)
+  guard (← isConstructorApp c)
   p.withApp fun pFn pArgs => do
     let some pFnN := pFn.constName? | return
     let some info ← getProjectionFnInfo? pFnN | return
@@ -2229,8 +2229,8 @@ c₁ ... = c₂ ... => False
 where `c`, `c₁` and `c₂` are constructors -/
 partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
   let env ← getEnv
-  let some c₁ := e₁.isConstructorApp? env | failure
-  let some c₂ := e₂.isConstructorApp? env | failure
+  let some c₁ ← isConstructorApp? e₁ | failure
+  let some c₂ ← isConstructorApp? e₂ | failure
   unless ← pureIsDefEq (← inferType e₁) (← inferType e₂) do
     -- The implications above only hold if the types are equal.
     -- TODO(Leo): if the types are different, we may still propagate by searching the equivalence

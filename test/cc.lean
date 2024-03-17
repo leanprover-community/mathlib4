@@ -332,11 +332,6 @@ example (f : Nat → Nat → Nat) (a b c d : Nat) :
 
 end cc7
 
-instance naa : IsAssociative ℕ (· + ·) := ⟨Nat.add_assoc⟩
-instance nac : IsCommutative ℕ (· + ·) := ⟨Nat.add_comm⟩
-instance nma : IsAssociative ℕ (· * ·) := ⟨Nat.mul_assoc⟩
-instance nmc : IsCommutative ℕ (· * ·) := ⟨Nat.mul_comm⟩
-
 section cc_ac1
 
 example (a b c : Nat) (f : Nat → Nat) : f (a + b + c) = f (c + b + a) := by
@@ -368,8 +363,8 @@ section
 universe u
 variable {α : Type u}
 variable (op : α → α → α)
-variable [IsAssociative α op]
-variable [IsCommutative α op]
+variable [Std.Associative op]
+variable [Std.Commutative op]
 
 lemma ex₁ (a b c d e : α) (f : α → α → α) :
     op b a = op d d → op b c = op e e →
