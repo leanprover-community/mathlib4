@@ -11,7 +11,7 @@ import Mathlib.Algebra.Parity
 # Associated, prime, and irreducible elements.
 
 In this file we define the predicate `Prime p`
-saying that an element of a comutative monoid with zero is prime.
+saying that an element of a commutative monoid with zero is prime.
 Namely, `Prime p` means that `p` isn't zero, it isn't a unit,
 and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`;
 
