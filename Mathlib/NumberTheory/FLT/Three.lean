@@ -227,6 +227,7 @@ lemma FermatLastTheoremForThree_of_FermatLastTheoremThreeGen :
 section FermatLastTheoremForThreeGen
 
 variable {a b c : 𝓞 K} {u : (𝓞 K)ˣ} (hc : c ≠ 0) (H : a ^ 3 + b ^ 3 = u * c ^ 3)
+  (hcoprime : IsCoprime a b)
 
 lemma a_cube_b_cube_same_congr (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) :
     λ ^ 4 ∣ a ^ 3 - 1 ∧ λ ^ 4 ∣ b ^ 3 + 1 ∨  λ ^ 4 ∣ a ^ 3 + 1 ∧ λ ^ 4 ∣ b ^ 3 - 1 := by
@@ -263,12 +264,14 @@ lemma lambda_pow_four_dvd_c_cube (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : 
   _ = u⁻¹ * (u * c ^ 3) := by rw [H]
   _ = c ^ 3 := by simp }
 
+lemma multiplicity_lambda_c_finite : multiplicity.Finite (hζ.toInteger - 1) c := by
+  have := IsCyclotomicExtension.Rat.three_pid K
+  exact multiplicity.finite_of_not_isUnit (lambda_not_unit hζ) hc
+
 lemma lambda_pow_two_dvd_c (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) :
     λ ^ 2 ∣ c := by
   classical
-  have hm : multiplicity.Finite (hζ.toInteger - 1) c := by
-    have := IsCyclotomicExtension.Rat.three_pid K
-    refine multiplicity.finite_of_not_isUnit (lambda_not_unit hζ) hc
+  have  hm := multiplicity_lambda_c_finite hζ hc
   suffices 2 ≤ (multiplicity ((hζ.toInteger - 1)) c).get hm by
     · obtain ⟨x, hx⟩ := multiplicity.pow_multiplicity_dvd hm
       refine ⟨λ ^ ((multiplicity ((hζ.toInteger - 1)) c).get hm - 2) * x, ?_⟩
@@ -282,6 +285,55 @@ lemma lambda_pow_two_dvd_c (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣
   rw [multiplicity.pow_dvd_iff_le_multiplicity, ← hm1, multiplicity.pow' hζ.zeta_sub_one_prime' hm,
     Nat.cast_ofNat, Nat.ofNat_le_cast] at this
   linarith
+
+variable (a b) in
+lemma cube_add_cube_eq_mul : a ^ 3 + b ^ 3 = (a + b) * (a + η * b) * (a + η ^ 2 * b) := by
+  symm
+  calc _ = a^3+a^2*b*(η^2+η+1)+a*b^2*(η^2+η+η^3)+η^3*b^3 := by ring
+  _ = a^3+a^2*b*(η^2+η+1)+a*b^2*(η^2+η+1)+b^3 := by rw [hζ.toInteger_cube_eq_one, one_mul]
+  _ = a ^ 3 + b ^ 3 := by rw [hζ.toInteger_eval_cyclo]; ring
+
+open PartENat in
+lemma lambda_sq_dvd_or_dvd_or_dvd (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) :
+    λ ^ 2 ∣ a + b ∨ λ ^ 2 ∣ a + η * b ∨ λ ^ 2 ∣ a + η ^ 2 * b := by
+  classical
+  by_contra! h
+  rcases h with ⟨h1, h2, h3⟩
+  rw [← multiplicity.multiplicity_lt_iff_not_dvd] at h1 h2 h3
+  have h1' : multiplicity.Finite (hζ.toInteger - 1) (a + b) :=
+    multiplicity.ne_top_iff_finite.1 (fun ht ↦ by simp [ht] at h1)
+  have h2' : multiplicity.Finite (hζ.toInteger - 1) (a + η * b) :=
+    multiplicity.ne_top_iff_finite.1 (fun ht ↦ by simp [ht] at h2)
+  have h3' : multiplicity.Finite (hζ.toInteger - 1) (a + η ^ 2 * b) :=
+    multiplicity.ne_top_iff_finite.1 (fun ht ↦ by simp [ht] at h3)
+  replace h1' : (multiplicity (hζ.toInteger - 1) (a + b)).get h1' =
+    multiplicity (hζ.toInteger - 1) (a + b) := by simp
+  replace h2' : (multiplicity (hζ.toInteger - 1) (a + η * b)).get h2' =
+    multiplicity (hζ.toInteger - 1) (a + η * b) := by simp
+  replace h3' : (multiplicity (hζ.toInteger - 1) (a + η ^ 2 * b)).get h3' =
+    multiplicity (hζ.toInteger - 1) (a + η ^ 2 * b) := by simp
+  rw [← h1', coe_lt_coe] at h1; rw [← h2', coe_lt_coe] at h2; rw [← h3', coe_lt_coe] at h3
+  have := (pow_dvd_pow_of_dvd (lambda_pow_two_dvd_c hζ hc H ha hb hcdvd) 3).mul_left u
+  rw [← pow_mul, ← H, cube_add_cube_eq_mul hζ, multiplicity.pow_dvd_iff_le_multiplicity,
+    multiplicity.mul hζ.zeta_sub_one_prime', multiplicity.mul hζ.zeta_sub_one_prime', ← h1', ← h2',
+    ← h3', ← Nat.cast_add, ← Nat.cast_add, coe_le_coe] at this
+  linarith
+
+lemma ex_dvd_a_add_b (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) :
+    ∃ (a' b' c' : 𝓞 K) (u' : (𝓞 K)ˣ), c' ≠ 0 ∧  a' ^ 3 + b' ^ 3 = u' * c' ^ 3 ∧ IsCoprime a' b' ∧
+    ¬ λ ∣ a' ∧ ¬ λ ∣ b' ∧ λ ^ 2 ∣ a' + b' := by
+  rcases lambda_sq_dvd_or_dvd_or_dvd hζ hc H ha hb  hcdvd with (h | h | h)
+  · exact ⟨a, b, c, u, hc, H, hcoprime, ha, hb, h⟩
+  · refine ⟨a, η * b, c, u, hc, ?_, ?_, ha, fun ⟨x, hx⟩ ↦ hb ⟨η ^ 2 * x, ?_⟩, h⟩
+    · rwa [mul_pow, hζ.toInteger_cube_eq_one, one_mul]
+    · exact (isCoprime_mul_unit_left_right hζ.eta_isUnit _ _).2 hcoprime
+    · rw [mul_comm _ x, ← mul_assoc, ← hx, mul_comm _ b, mul_assoc, ← pow_succ,
+        hζ.toInteger_cube_eq_one, mul_one]
+  · refine ⟨a, η ^ 2 * b, c, u, hc, ?_, ?_, ha, fun ⟨x, hx⟩ ↦ hb ⟨η * x, ?_⟩, h⟩
+    · rwa [mul_pow, ← pow_mul, mul_comm 2, pow_mul, hζ.toInteger_cube_eq_one, one_pow, one_mul]
+    · exact (isCoprime_mul_unit_left_right (hζ.eta_isUnit.pow _) _ _).2 hcoprime
+    · rw [mul_comm _ x, ← mul_assoc, ← hx, mul_comm _ b, mul_assoc, ← pow_succ',
+        hζ.toInteger_cube_eq_one, mul_one]
 
 theorem final (hc : c ≠ 0) (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) (hcoprime : IsCoprime a b)
     (H : a ^ 3 + b ^ 3 = u * c ^ 3) : False := by

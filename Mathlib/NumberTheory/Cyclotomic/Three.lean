@@ -230,7 +230,7 @@ lemma _root_.IsPrimitiveRoot.toInteger_cube_eq_one : η ^ 3 = 1 := by
   simp only [SubmonoidClass.coe_pow, OneMemClass.coe_one]
   exact hζ.pow_eq_one
 
-lemma eta_isUnit : IsUnit η :=
+lemma _root_.IsPrimitiveRoot.eta_isUnit : IsUnit η :=
   isUnit_of_mul_eq_one _ (η ^ 2) (by simp [← pow_succ, hζ.toInteger_cube_eq_one])
 
 lemma _root_.IsPrimitiveRoot.toInteger_eval_cyclo : η ^ 2 + η + 1 = 0 := by
