@@ -169,7 +169,11 @@ theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α
   · exact ⟨∅, Subset.refl _, pairwiseDisjoint_empty, by simp⟩
   by_cases ht : ∀ a ∈ t, r a < 0
   · exact ⟨t, Subset.rfl, fun a ha b _ _ => by
-      simp only [Function.onFun, closedBall_eq_empty.2 (ht a ha), empty_disjoint],
+      -- FIXME nightly-testing
+      -- simp not working?
+      sorry
+      -- simp only [Function.onFun, closedBall_eq_empty.2 (ht a ha), empty_disjoint]
+      ,
       fun a ha => ⟨a, ha, by simp only [closedBall_eq_empty.2 (ht a ha), empty_subset]⟩⟩
   push_neg at ht
   let t' := { a ∈ t | 0 ≤ r a }

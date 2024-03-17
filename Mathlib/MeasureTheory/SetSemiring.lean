@@ -173,7 +173,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
   · rw [Finset.coe_biUnion]
     refine PairwiseDisjoint.biUnion ?_ ?_
     · simp only [univ_eq_attach, mem_coe, id.def, iSup_eq_iUnion]
-      simp_rw [PairwiseDisjoint, Set.Pairwise, Function.onFun]
+      simp_rw [PairwiseDisjoint, Set.Pairwise]
       intro x _ y _ hxy
       have hxy_disj : Disjoint (x : Set α) y := by
         by_contra h_contra

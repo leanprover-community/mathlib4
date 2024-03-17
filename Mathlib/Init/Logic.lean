@@ -46,8 +46,6 @@ attribute [symm] Eq.symm
 
 /- Ne -/
 
-theorem Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
-
 attribute [symm] Ne.symm
 
 /- HEq -/

@@ -57,6 +57,9 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
     have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
       refine' List.Forall₂.flip _
       replace hv := hv.flip
+      -- FIXME nightly-testing: Why does simp no longer unfold flip?
+      simp only [List.forall₂_and_left, flip] at hv ⊢
+      unfold flip
       simp only [List.forall₂_and_left, flip] at hv ⊢
       exact ⟨hv.1, hu.flip⟩
     refine' mem_of_superset _ hvs

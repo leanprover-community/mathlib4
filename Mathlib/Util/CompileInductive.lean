@@ -85,7 +85,7 @@ for which Lean does not generate compiled code by default
 (since it is not used 99% of the time).
 -/
 elab tk:"compile_def% " i:ident : command => Command.liftTermElabM do
-  let n ← resolveGlobalConstNoOverloadWithInfo i
+  let n ← realizeGlobalConstNoOverloadWithInfo i
   if isCompiled (← getEnv) n then
     logWarningAt tk m!"already compiled {n}"
     return
@@ -222,7 +222,7 @@ so that `Foo.rec` can be used in a definition
 without having to mark the definition as `noncomputable`.
 -/
 elab tk:"compile_inductive% " i:ident : command => Command.liftTermElabM do
-  let n ← resolveGlobalConstNoOverloadWithInfo i
+  let n ← realizeGlobalConstNoOverloadWithInfo i
   let iv ← withRef i <| getConstInfoInduct n
   withRef tk <| compileInductive iv
 
