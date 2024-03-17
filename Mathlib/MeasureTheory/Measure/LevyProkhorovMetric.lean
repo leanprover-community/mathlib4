@@ -335,16 +335,6 @@ lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
     · exact isClosed_le continuous_const f.continuous
     · exact measure_ne_top _ _
 
-/-- A monotone decreasing convergence lemma for integrals of measures of thickenings:
-`∫ t in (0, ‖f‖], μ (thickening ε {x | f(x) ≥ t}) dt` tends to
-`∫ t in (0, ‖f‖], μ {x | f(x) ≥ t} dt` as `ε → 0` along a sequence. -/
-lemma tendsto_integral_meas_thickening_le' (f : Ω →ᵇ ℝ)
-    (εs : ℕ → ℝ) (εs_lim : Tendsto εs atTop (𝓝[>] 0))
-    {A : Set ℝ} (A_finmeas : volume A ≠ ∞) (μ : ProbabilityMeasure Ω) :
-    Tendsto (fun n ↦ ∫ t in A, ENNReal.toReal (μ (thickening (εs n) {a | t ≤ f a}))) atTop
-      (𝓝 (∫ t in A, ENNReal.toReal (μ {a | t ≤ f a}))) :=
-  (tendsto_integral_meas_thickening_le f A_finmeas μ).comp εs_lim
-
 /-- The coercion `LevyProkhorov (ProbabilityMeasure Ω) → ProbabilityMeasure Ω` is continuous. -/
 lemma continuous_levyProkhorov_to_probabilityMeasure :
     Continuous (LevyProkhorov.probabilityMeasure (Ω := Ω)) := by
