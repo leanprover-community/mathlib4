@@ -22,7 +22,7 @@ structure MyIso (A B : Type*) [MyClass A] [MyClass B]
 
 namespace MyIso
 
-variables (A B : Type*) [MyClass A] [MyClass B]
+variable (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Isomorphism class" design below:
 instance : EquivLike (MyIso A B) A (λ _, B) :=
