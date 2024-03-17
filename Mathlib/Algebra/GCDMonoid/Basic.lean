@@ -207,8 +207,6 @@ namespace Associates
 
 variable [CancelCommMonoidWithZero α] [NormalizationMonoid α]
 
-attribute [local instance] Associated.setoid
-
 /-- Maps an element of `Associates` back to the normalized element of its associate class -/
 protected def out : Associates α → α :=
   (Quotient.lift (normalize : α → α)) fun a _ ⟨_, hu⟩ =>

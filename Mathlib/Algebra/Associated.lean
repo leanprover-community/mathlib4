@@ -1043,6 +1043,9 @@ theorem mk_eq_zero {a : α} : Associates.mk a = 0 ↔ a = 0 :=
   ⟨fun h => (associated_zero_iff_eq_zero a).1 <| Quotient.exact h, fun h => h.symm ▸ rfl⟩
 #align associates.mk_eq_zero Associates.mk_eq_zero
 
+@[simp]
+theorem quot_out_zero : Quot.out (0 : Associates α) = 0 := by rw [← mk_eq_zero, quot_out]
+
 theorem mk_ne_zero {a : α} : Associates.mk a ≠ 0 ↔ a ≠ 0 :=
   not_congr mk_eq_zero
 #align associates.mk_ne_zero Associates.mk_ne_zero
