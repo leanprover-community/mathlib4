@@ -62,6 +62,23 @@ instance : PartialOrder (Subpresheaf F) :=
 instance : Top (Subpresheaf F) :=
   ⟨⟨fun U => ⊤, @fun U V _ x _ => by aesop_cat⟩⟩
 
+instance : OrderTop (Subpresheaf F) where
+  le_top _ := by tauto
+
+instance : SemilatticeSup (Subpresheaf F) where
+  sup F G :=
+    { obj := fun U => F.obj U ⊔ G.obj U
+      map := fun _ _ => by
+        rintro (h|h)
+        · exact Or.inl (F.map _ h)
+        · exact Or.inr (G.map _ h) }
+  le_sup_left _ _ _ := by simp
+  le_sup_right _ _ _ := by simp
+  sup_le F G H h₁ h₂ U := by
+    rintro x (h|h)
+    · exact h₁ _ h
+    · exact h₂ _ h
+
 instance : Nonempty (Subpresheaf F) :=
   inferInstance
 
