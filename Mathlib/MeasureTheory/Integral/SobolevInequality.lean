@@ -382,6 +382,8 @@ theorem measure_eq_measure_subtype_mul {s : Finset ι} (t : Set (∀ i : s, A i)
     Measure.pi μ ((· ∘' _) ⁻¹' t) = Measure.pi (fun i : s ↦ μ i) t * ∏ j in sᶜ, μ j univ := by
   rw [← lintegral_indicator_one, ← lintegral_indicator_one]
   sorry
+  sorry
+  sorry
 
 variable {μ} in
 theorem ae_pi_of_ae_pi_subtype {s : Finset ι} {p : (∀ i : s, A i) → Prop}
@@ -812,7 +814,7 @@ compactly-supported function `u` on a normed space `E` of finite dimension `n �
 with Haar measure. There exists a constant `C` depending only on `E`, such that the `Lᵖ` norm of
 `u`, where `p := n / (n - 1)`, is bounded above by `C` times the `L¹` norm of the Fréchet derivative
 of `u`. -/
-theorem snorm_le_snorm_fderiv' (hE : 2 ≤ finrank ℝ E)
+theorem snorm_le_snorm_one_fderiv' (hE : 2 ≤ finrank ℝ E)
     {p : ℝ≥0} (hp : NNReal.IsConjExponent (finrank ℝ E) p) :
     ∃ C : ℝ≥0, ∀ (u : E → F) (hu : Differentiable ℝ u)
     (h2u : ∀ v : E, Integrable (fderiv ℝ u · v) μ)
@@ -837,11 +839,11 @@ compactly-supported function `u` on a normed space `E` of finite dimension `n �
 with Haar measure. There exists a constant `C` depending only on `E`, such that the `Lᵖ` norm of
 `u`, where `p := n / (n - 1)`, is bounded above by `C` times the `L¹` norm of the Fréchet derivative
 of `u`. -/
-theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
+theorem snorm_le_snorm_one_fderiv (hE : 2 ≤ finrank ℝ E)
     {p : ℝ≥0} (hp : NNReal.IsConjExponent (finrank ℝ E) p) :
     ∃ C : ℝ≥0, ∀ (u : E → F) (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
     snorm u p μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
-  refine snorm_le_snorm_fderiv' F μ hE hp |>.imp fun C hC u hu h2u ↦ ?_
+  refine snorm_le_snorm_one_fderiv' F μ hE hp |>.imp fun C hC u hu h2u ↦ ?_
   refine hC u (hu.differentiable le_rfl) ?_ h2u.is_zero_at_infty
   exact fun v ↦ hu.continuous_fderiv le_rfl |>.clm_apply continuous_const
     |>.integrable_of_hasCompactSupport <| h2u.fderiv_apply ℝ v
@@ -850,13 +852,13 @@ variable (F' : Type*) [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [Comple
 set_option linter.unusedVariables false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
-with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
+with Haar measure, and let `1 < p < n`.
 There exists a constant `C` depending only on `E` and `p`, such that the `Lᵖ'` norm of `u`
 is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
 
 Note: The codomain of `u` needs to be an inner product space.
 -/
-theorem snorm_le_snorm_fderiv_of_eq' {p p' : ℝ≥0} (hp : 1 ≤ p)
+theorem snorm_conjugate_le_snorm_fderiv_of_eq' {p p' : ℝ≥0} (hp : 1 ≤ p)
     (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
     ∃ C : ℝ≥0, ∀ (u : E → F') (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
@@ -869,7 +871,7 @@ theorem snorm_le_snorm_fderiv_of_eq' {p p' : ℝ≥0} (hp : 1 ≤ p)
   have hnp : (0 : ℝ) < n - p := by simp_rw [sub_pos]; exact h2p
   rcases hp.eq_or_lt with rfl|hp
   -- the case `p = 1`
-  · obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv F' μ h0n hn
+  · obtain ⟨C, hC⟩ := snorm_le_snorm_one_fderiv F' μ h0n hn
     refine ⟨C, @fun u hu h2u ↦ ?_⟩
     convert hC u hu h2u
     ext
@@ -903,7 +905,7 @@ theorem snorm_le_snorm_fderiv_of_eq' {p p' : ℝ≥0} (hp : 1 ≤ p)
     have : (p : ℝ) * (n - 1) - (n - p) = n * (p - 1) := by ring
     field_simp; rw [this]; field_simp; ring
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
-  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv ℝ μ h0n hn
+  obtain ⟨C, hC⟩ := snorm_le_snorm_one_fderiv ℝ μ h0n hn
   refine ⟨C * γ, @fun u hu h2u ↦ ?_⟩
   by_cases h3u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ = 0
   · rw [snorm_nnreal_eq_lintegral h0p', h3u, ENNReal.zero_rpow_of_pos] <;> positivity
@@ -952,3 +954,73 @@ theorem snorm_le_snorm_fderiv_of_eq' {p p' : ℝ≥0} (hp : 1 ≤ p)
     _ ≤ C * γ * (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
       by rwa [← h2q, ENNReal.rpow_sub _ _ h3u h4u, ENNReal.div_le_iff h5u h6u]
     _ = C * γ *  snorm (fderiv ℝ u) (↑p) μ := by rw [snorm_nnreal_eq_lintegral h0p]
+
+set_option linter.unusedVariables false in
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
+with Haar measure, and let `1 < p < n` and `1 ≤ q ≤ (p⁻¹ - (finrank ℝ E : ℝ)⁻¹)⁻¹`.
+There exists a constant `C` depending only on `E`, `s`, `p` and `q`, such that the `L^q` norm of `u`
+is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
+
+Note: The codomain of `u` needs to be an inner product space.
+-/
+theorem snorm_le_snorm_fderiv_of_le {p q : ℝ≥0} (hp : 1 ≤ p) (hq : 1 ≤ q)
+    (h2p : p < finrank ℝ E) (hpq : p⁻¹ - (finrank ℝ E : ℝ)⁻¹ ≤ (q : ℝ)⁻¹) {s : Set E}
+    (hs : IsCompact s) :
+    ∃ C : ℝ≥0, ∀ (u : E → F') (hu : ContDiff ℝ 1 u) (h2u : Function.support u ⊆ s),
+    snorm u q μ ≤ C * snorm (fderiv ℝ u) p μ := by
+  have h3p : 0 < p :=
+    calc 0 < 1 := by norm_num
+      _ ≤ p := hp
+  have hdim : (0:ℝ≥0) < finrank ℝ E := h3p.trans h2p
+  let p' : ℝ≥0 := (p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹)⁻¹
+  have hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹ := by
+    rw [inv_inv, NNReal.coe_sub]
+    · simp
+    · gcongr
+  have : (q : ℝ≥0∞) ≤ p' := by
+    have H : (p':ℝ)⁻¹ ≤ (↑q)⁻¹ := trans hp' hpq
+    norm_cast at H ⊢
+    rwa [inv_le_inv] at H
+    · dsimp
+      have : 0 < p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹ := by
+        simp only [tsub_pos_iff_lt]
+        gcongr
+      positivity
+    · positivity
+  obtain ⟨C, hC⟩ := snorm_conjugate_le_snorm_fderiv_of_eq' μ F' hp h2p hp'
+  set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)
+  use t * C
+  intro u hu h2u
+  calc snorm u q μ = snorm u q (μ.restrict s) := sorry
+    _ ≤ snorm u p' (μ.restrict s) * t := by
+        have' := snorm_le_snorm_mul_rpow_measure_univ this (f := u) (μ := μ.restrict s)
+        convert this ?_
+        · simp
+          norm_cast
+          congr
+          sorry
+        sorry
+    _ = snorm u p' μ * t := sorry
+    _ ≤ (C * snorm (fderiv ℝ u) p μ) * t := by
+        have h2u' : HasCompactSupport u := sorry
+        rel [hC u hu h2u']
+    _ = (t * C) * snorm (fderiv ℝ u) p μ := by ring
+
+set_option linter.unusedVariables false in
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
+with Haar measure, and let `1 < p < n`.
+There exists a constant `C` depending only on `E` and `p`, such that the `Lᵖ` norm of `u`
+is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
+
+Note: The codomain of `u` needs to be an inner product space.
+-/
+theorem snorm_le_snorm_fderiv {p : ℝ≥0} (hp : 1 ≤ p) (h2p : p < finrank ℝ E) {s : Set E}
+    (hs : IsCompact s) :
+    ∃ C : ℝ≥0, ∀ (u : E → F') (hu : ContDiff ℝ 1 u) (h2u : Function.support u ⊆ s),
+    snorm u p μ ≤ C * snorm (fderiv ℝ u) p μ := by
+  refine snorm_le_snorm_fderiv_of_le μ F' hp hp h2p ?_ hs
+  norm_cast
+  simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
+  positivity
