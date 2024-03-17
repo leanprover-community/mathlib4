@@ -336,7 +336,7 @@ theorem val_preimage_orbit {p : SubMulAction R M} (m : p) :
 
 lemma mem_orbit_subMul_iff {p : SubMulAction R M} {x m : p} :
     x ∈ MulAction.orbit R m ↔ (x : M) ∈ MulAction.orbit R (m : M) := by
-  rw [←val_preimage_orbit, Set.mem_preimage]
+  rw [← val_preimage_orbit, Set.mem_preimage]
 
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
