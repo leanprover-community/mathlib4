@@ -496,6 +496,7 @@ theorem _root_.Subalgebra.starClosure_eq_adjoin (S : Subalgebra R A) :
 
 /-- If some predicate holds for all `x ∈ (s : Set A)` and this predicate is closed under the
 `algebraMap`, addition, multiplication and star operations, then it holds for `a ∈ adjoin R s`. -/
+@[elab_as_elim]
 theorem adjoin_induction {s : Set A} {p : A → Prop} {a : A} (h : a ∈ adjoin R s)
     (mem : ∀ x : A, x ∈ s → p x) (algebraMap : ∀ r : R, p (algebraMap R A r))
     (add : ∀ x y : A, p x → p y → p (x + y)) (mul : ∀ x y : A, p x → p y → p (x * y))
@@ -505,6 +506,7 @@ theorem adjoin_induction {s : Set A} {p : A → Prop} {a : A} (h : a ∈ adjoin 
     algebraMap add mul
 #align star_subalgebra.adjoin_induction StarSubalgebra.adjoin_induction
 
+@[elab_as_elim]
 theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin R s)
     (hb : b ∈ adjoin R s) (Hs : ∀ x : A, x ∈ s → ∀ y : A, y ∈ s → p x y)
     (Halg : ∀ r₁ r₂ : R, p (algebraMap R A r₁) (algebraMap R A r₂))
@@ -540,7 +542,7 @@ theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (star : ∀ x, p x → p (star x)) : p a :=
   Subtype.recOn a fun b hb => by
     refine' Exists.elim _ fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc
-    apply adjoin_induction hb
+    refine adjoin_induction hb ?_ ?_ ?_ ?_ ?_
     exacts [fun x hx => ⟨subset_adjoin R s hx, mem x hx⟩, fun r =>
       ⟨StarSubalgebra.algebraMap_mem _ r, algebraMap r⟩, fun x y hx hy =>
       Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy => ⟨add_mem hx' hy', add _ _ hx hy⟩,

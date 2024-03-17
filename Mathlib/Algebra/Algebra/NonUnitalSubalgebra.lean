@@ -546,12 +546,14 @@ variable {R}
 
 /-- If some predicate holds for all `x ∈ (s : Set A)` and this predicate is closed under the
 `algebraMap`, addition, multiplication and star operations, then it holds for `a ∈ adjoin R s`. -/
+@[elab_as_elim]
 theorem adjoin_induction {s : Set A} {p : A → Prop} {a : A} (h : a ∈ adjoin R s)
     (mem : ∀ x ∈ s, p x) (add : ∀ x y, p x → p y → p (x + y)) (zero : p 0)
     (mul : ∀ x y, p x → p y → p (x * y)) (smul : ∀ (r : R) x, p x → p (r • x)) : p a :=
   Submodule.span_induction h
     (fun _a ha => NonUnitalSubsemiring.closure_induction ha mem zero add mul) zero add smul
 
+@[elab_as_elim]
 theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin R s)
     (hb : b ∈ adjoin R s) (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y) (H0_left : ∀ y, p 0 y)
     (H0_right : ∀ x, p x 0) (Hadd_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
@@ -574,7 +576,7 @@ lemma adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (mul : ∀ x y, p x → p y → p (x * y)) (smul : ∀ (r : R) x, p x → p (r • x)) : p a :=
   Subtype.recOn a fun b hb => by
     refine Exists.elim ?_ (fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc)
-    apply adjoin_induction hb
+    apply adjoin_induction hb ?_ ?_ ?_ ?_ ?_
     · exact fun x hx => ⟨subset_adjoin R hx, mem x hx⟩
     · exact fun x y hx hy => Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy =>
         ⟨add_mem hx' hy', add _ _ hx hy⟩
