@@ -43,6 +43,10 @@ lemma equalizerCondition_w (P : Cᵒᵖ ⥤ D) {X B : C} {π : X ⟶ B} (c : Pul
     P.map π.op ≫ P.map c.fst.op = P.map π.op ≫ P.map c.snd.op := by
   simp only [← Functor.map_comp, ← op_comp, c.condition]
 
+/--
+A contravariant functor on `C` satisifies `SingleEqualizerCondition` with respect to a morphism `π`
+if it takes its kernel pair to an equalizer diagram.
+-/
 def SingleEqualizerCondition (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B) : Prop :=
   ∀ (c : PullbackCone π π) (_ : IsLimit c),
     Nonempty (IsLimit (Fork.ofι (P.map π.op) (equalizerCondition_w P c)))
@@ -151,68 +155,73 @@ theorem equalizerCondition_iff_of_equivalence (P : Cᵒᵖ ⥤ D)
       (equalizerCondition_precomp_of_preservesPullback (e.op.inverse ⋙ P) e.functor h)⟩
 
 open WalkingParallelPair WalkingParallelPairHom in
-theorem initial_H {X B : C} (π : X ⟶ B) (c : PullbackCone π π) (hc : IsLimit c) :
-    let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
-    let E := @FullSubcategory (Over B) (fun f ↦ S f.hom)
-    let X' : E := ⟨Over.mk π, ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩⟩
-    let P' : E := ⟨Over.mk (c.fst ≫ π),
-      ⟨_, c.fst, π, ofArrows.mk (), rfl⟩⟩
-    let fst : P' ⟶ X' := Over.homMk c.fst
-    let snd : P' ⟶ X' := Over.homMk c.snd c.condition.symm
-    (parallelPair fst.op snd.op).Initial where
-  out := by
-    let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
-    let E := @FullSubcategory (Over B) (fun f ↦ S f.hom)
-    let X' : E := ⟨Over.mk π, ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩⟩
-    let P' : E := ⟨Over.mk (c.fst ≫ π),
-      ⟨_, c.fst, π, ofArrows.mk (), rfl⟩⟩
-    let fst : P' ⟶ X' := Over.homMk c.fst
-    let snd : P' ⟶ X' := Over.homMk c.snd c.condition.symm
-    let H := parallelPair fst.op snd.op
-    intro ⟨Z⟩
-    refine @zigzag_isConnected _ _ ?_ ?_
-    · obtain ⟨_, f, g, ⟨⟩, hh⟩ := Z.property
-      refine ⟨CostructuredArrow.mk (Y := zero) ?_⟩
-      let f' : Z.obj.left ⟶ X'.obj.left := f
-      refine (Over.homMk f').op
-    · have : ∀ (i j : ((fromPUnit (⟨Z⟩ : Eᵒᵖ)).obj ⟨()⟩).unop ⟶ (H.obj zero).unop),
-          Zigzag (⟨zero, ⟨()⟩, ⟨i⟩⟩ : CostructuredArrow H ⟨Z⟩) (CostructuredArrow.mk ⟨j⟩) := by
-        intro i j
-        have hi : i.left ≫ π = _ := i.w
-        have hj : j.left ≫ π = _ := j.w
-        have hij : i.left ≫ π = j.left ≫ π := by rw [hi, hj]; rfl
-        let ij := PullbackCone.IsLimit.lift hc i.left j.left hij
-        let cij : CostructuredArrow H ⟨Z⟩ :=
-          CostructuredArrow.mk (⟨ij, (𝟙 _), (by simpa [H, ij] using hi)⟩ : H.obj one ⟶ ⟨Z⟩)
-        let fig : (⟨zero, _, ⟨i⟩⟩ : CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := left
-        let fjg : (⟨zero, _, ⟨j⟩⟩ : CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := right
-        let fi : ⟨zero, _, ⟨i⟩⟩ ⟶ cij := CostructuredArrow.homMk fig (by
-          erw [← op_comp]
-          congr
-          apply CostructuredArrow.hom_ext
-          change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.fst = _
-          simp)
-        let fj : ⟨zero, _, ⟨j⟩⟩ ⟶ cij := CostructuredArrow.homMk fjg (by
-          erw [← op_comp]
-          congr
-          apply CostructuredArrow.hom_ext
-          change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.snd = _
-          simp)
-        refine List.relationReflTransGen_of_exists_chain
-          [cij, ⟨zero, _, ⟨j⟩⟩] ?_ rfl
-        simp only [id_obj, const_obj_obj, List.chain_cons, List.Chain.nil, and_true]
-        refine ⟨Or.inl ⟨fi⟩, Or.inr ⟨fj⟩⟩
-      rintro ⟨⟨_ | _⟩, _, ⟨i⟩⟩ ⟨⟨_ | _⟩, _, ⟨j⟩⟩
-      · exact this i j
-      · exact (this i (j ≫ (H.map right).unop)).trans (Relation.ReflTransGen.single
-          (Or.inl ⟨CostructuredArrow.homMk right rfl⟩))
-      · refine (?_ : Zigzag _ _).trans (this (i ≫ (H.map left).unop) j)
-        exact Relation.ReflTransGen.single (Or.inr ⟨CostructuredArrow.homMk left rfl⟩)
-      · refine ((?_ : Zigzag _ _).trans
-          (this (i ≫ (H.map left).unop) (j ≫ (H.map right).unop))).trans
-          (Relation.ReflTransGen.single (Or.inl ⟨CostructuredArrow.homMk right rfl⟩))
-        exact Relation.ReflTransGen.single (Or.inr ⟨CostructuredArrow.homMk left rfl⟩)
+theorem parallelPair_initial_of_zigzag_zero {X Y : C} (f g : X ⟶ Y)
+    [∀ (Z : C), Nonempty (CostructuredArrow (parallelPair f.op g.op) ⟨Z⟩)]
+    (h : ∀ {Z : C} (i j : Z ⟶ Y), Zigzag
+      (⟨zero, ⟨()⟩, i.op⟩ : CostructuredArrow (parallelPair f.op g.op) ⟨Z⟩) ⟨zero, ⟨()⟩, j.op⟩) :
+    (parallelPair f.op g.op).Initial where
+  out _ := by
+    let H := parallelPair f.op g.op
+    apply zigzag_isConnected
+    rintro ⟨⟨_ | _⟩, _, ⟨i⟩⟩ ⟨⟨_ | _⟩, _, ⟨j⟩⟩
+    · exact h i j
+    · exact (h i (j ≫ (H.map right).unop)).trans (Relation.ReflTransGen.single
+        (Or.inl ⟨CostructuredArrow.homMk right rfl⟩))
+    · refine (?_ : Zigzag _ _).trans (h (i ≫ (H.map left).unop) j)
+      exact Relation.ReflTransGen.single (Or.inr ⟨CostructuredArrow.homMk left rfl⟩)
+    · refine ((?_ : Zigzag _ _).trans
+        (h (i ≫ (H.map left).unop) (j ≫ (H.map right).unop))).trans
+        (Relation.ReflTransGen.single (Or.inl ⟨CostructuredArrow.homMk right rfl⟩))
+      exact Relation.ReflTransGen.single (Or.inr ⟨CostructuredArrow.homMk left rfl⟩)
 
+open WalkingParallelPair WalkingParallelPairHom in
+theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B) (c : PullbackCone π π)
+    (hc : IsLimit c) : let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
+    let E := @FullSubcategory (Over B) (fun f ↦ S f.hom)
+    let X' : E := ⟨Over.mk π, ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩⟩
+    let P' : E := ⟨Over.mk (c.fst ≫ π),
+      ⟨_, c.fst, π, ofArrows.mk (), rfl⟩⟩
+    let fst : P' ⟶ X' := Over.homMk c.fst
+    let snd : P' ⟶ X' := Over.homMk c.snd c.condition.symm
+    (parallelPair fst.op snd.op).Initial := by
+  let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
+  let E := @FullSubcategory (Over B) (fun f ↦ S f.hom)
+  let X' : E := ⟨Over.mk π, ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩⟩
+  let P' : E := ⟨Over.mk (c.fst ≫ π),
+    ⟨_, c.fst, π, ofArrows.mk (), rfl⟩⟩
+  let fst : P' ⟶ X' := Over.homMk c.fst
+  let snd : P' ⟶ X' := Over.homMk c.snd c.condition.symm
+  let H := parallelPair fst.op snd.op
+  refine @parallelPair_initial_of_zigzag_zero _ _ _ _ fst snd (fun Z ↦ ?_) fun {Z} i j ↦ ?_
+  · obtain ⟨_, f, g, ⟨⟩, hh⟩ := Z.property
+    refine ⟨CostructuredArrow.mk (Y := zero) ?_⟩
+    let f' : Z.obj.left ⟶ X'.obj.left := f
+    refine (Over.homMk f').op
+  · let ij := PullbackCone.IsLimit.lift hc i.left j.left (by erw [i.w, j.w]; rfl)
+    let cij : CostructuredArrow H ⟨Z⟩ :=
+      CostructuredArrow.mk (⟨ij, (𝟙 _), (by simpa [H, ij] using i.w)⟩ : H.obj one ⟶ ⟨Z⟩)
+    let fig : (⟨zero, ⟨()⟩, ⟨i⟩⟩ : CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := left
+    let fjg : (⟨zero, ⟨()⟩, ⟨j⟩⟩ : CostructuredArrow H ⟨Z⟩).left ⟶ cij.left := right
+    let fi : ⟨zero, _, ⟨i⟩⟩ ⟶ cij := CostructuredArrow.homMk fig (by
+      erw [← op_comp]
+      congr
+      apply CostructuredArrow.hom_ext
+      change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.fst = _
+      simp)
+    let fj : ⟨zero, _, ⟨j⟩⟩ ⟶ cij := CostructuredArrow.homMk fjg (by
+      erw [← op_comp]
+      congr
+      apply CostructuredArrow.hom_ext
+      change PullbackCone.IsLimit.lift _ _ _ _ ≫ c.snd = _
+      simp)
+    refine List.relationReflTransGen_of_exists_chain [cij, ⟨zero, _, ⟨j⟩⟩] ?_ rfl
+    simp only [id_obj, const_obj_obj, List.chain_cons, List.Chain.nil, and_true]
+    exact ⟨Or.inl ⟨fi⟩, Or.inr ⟨fj⟩⟩
+
+/--
+Given a limiting pullback cone, the fork in `SingleEqualizerCondition` is limiting iff the diagram
+in `Presheaf.isSheaf_iff_isLimit_coverage` is limiting.
+-/
 noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X ⟶ B)
     (c : PullbackCone π π) (hc : IsLimit c) :
     IsLimit (Fork.ofι (P.map π.op) (equalizerCondition_w P c)) ≃
@@ -227,7 +236,7 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
   let fst : P' ⟶ X' := Over.homMk c.fst
   let snd : P' ⟶ X' := Over.homMk c.snd c.condition.symm
   let H := parallelPair fst.op snd.op
-  have : H.Initial := initial_H π c hc
+  have : H.Initial := parallelPair_pullback_initial π c hc
   let i : H ⋙ F ≅ G := parallelPair.ext (Iso.refl _) (Iso.refl _) (by aesop) (by aesop)
   refine (IsLimit.equivOfNatIsoOfIso i.symm _ _ ?_).trans (Functor.Initial.isLimitWhiskerEquiv H _)
   refine Cones.ext ?_ ?_
@@ -255,8 +264,7 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
       congr
 
 lemma equalizerConditionMap_iff_nonempty_isLimit (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B)
-    [EffectiveEpi π] [HasPullback π π]:
-    SingleEqualizerCondition P π ↔
+    [HasPullback π π]: SingleEqualizerCondition P π ↔
       Nonempty (IsLimit (P.mapCone
         (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows.cocone.op)) := by
   constructor
