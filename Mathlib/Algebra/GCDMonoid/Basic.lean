@@ -413,8 +413,10 @@ theorem gcd_one_left [NormalizedGCDMonoid α] (a : α) : gcd 1 a = 1 :=
 #align gcd_one_left gcd_one_left
 
 @[simp]
-theorem gcd_one_left' [GCDMonoid α] (a : α) : Associated (gcd 1 a) 1 :=
-  associated_of_dvd_dvd (gcd_dvd_left _ _) (one_dvd _)
+theorem isUnit_gcd_one_left [GCDMonoid α] (a : α) : IsUnit (gcd 1 a) :=
+  isUnit_of_dvd_one (gcd_dvd_left _ _)
+
+theorem gcd_one_left' [GCDMonoid α] (a : α) : Associated (gcd 1 a) 1 := by simp
 #align gcd_one_left' gcd_one_left'
 
 @[simp]
@@ -423,8 +425,10 @@ theorem gcd_one_right [NormalizedGCDMonoid α] (a : α) : gcd a 1 = 1 :=
 #align gcd_one_right gcd_one_right
 
 @[simp]
-theorem gcd_one_right' [GCDMonoid α] (a : α) : Associated (gcd a 1) 1 :=
-  associated_of_dvd_dvd (gcd_dvd_right _ _) (one_dvd _)
+theorem isUnit_gcd_one_right [GCDMonoid α] (a : α) : IsUnit (gcd a 1) :=
+  isUnit_of_dvd_one (gcd_dvd_right _ _)
+
+theorem gcd_one_right' [GCDMonoid α] (a : α) : Associated (gcd a 1) 1 := by simp
 #align gcd_one_right' gcd_one_right'
 
 theorem gcd_dvd_gcd [GCDMonoid α] {a b c d : α} (hab : a ∣ b) (hcd : c ∣ d) : gcd a c ∣ gcd b d :=
