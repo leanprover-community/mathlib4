@@ -243,7 +243,6 @@ lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
     (p.append q connect).last = q.last := by
   delta last
   convert append_apply_right p q connect (Fin.last _)
-  congr
   ext
   change _ = _ % _
   simp only [append_length, Fin.val_last, Fin.natAdd_last, Nat.one_mod, Nat.mod_add_mod,

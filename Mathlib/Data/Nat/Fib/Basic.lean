@@ -171,8 +171,7 @@ theorem fib_coprime_fib_succ (n : ℕ) : Nat.Coprime (fib n) (fib (n + 1)) := by
 theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fib (n + 1) := by
   induction' n with n ih generalizing m
   · simp
-  · intros
-    specialize ih (m + 1)
+  · specialize ih (m + 1)
     rw [add_assoc m 1 n, add_comm 1 n] at ih
     simp only [fib_add_two, succ_eq_add_one, ih]
     ring
