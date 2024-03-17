@@ -33,8 +33,8 @@ pseudofunctors can be defined by using the composition of oplax functors as foll
 ```lean
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
   mkOfOplax ((F : OplaxFunctor B C).comp G)
-  { mapIdIso := λ a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
-    mapCompIso := λ f g =>
+  { mapIdIso := fun a ↦ (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
+    mapCompIso := fun f g ↦
       (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
 ```
 although the composition of pseudofunctors in this file is defined by using the default constructor
