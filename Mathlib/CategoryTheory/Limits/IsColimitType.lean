@@ -1,7 +1,7 @@
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.HasLimits
 
-universe v u w
+/-universe v u w
 
 namespace CategoryTheory
 
@@ -236,4 +236,4 @@ end Types
 
 end Limits
 
-end CategoryTheory
+end CategoryTheory-/
