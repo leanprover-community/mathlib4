@@ -863,18 +863,18 @@ theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s)
 
 @[elab_as_elim]
 theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
-    (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (H0 : p 0 (zero_mem _)) (H1 : p 1 (one_mem _))
-    (Hadd : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (zero : p 0 (zero_mem _)) (one : p 1 (one_mem _))
+    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {a : R} (ha : a ∈ closure s) : p a ha := by
   refine' Exists.elim _ fun (ha : a ∈ closure s) (hc : p a ha) => hc
   refine'
-    closure_induction ha (fun m hm => ⟨subset_closure hm, Hs m hm⟩) ⟨zero_mem _, H0⟩
-      ⟨one_mem _, H1⟩ ?_ ?_
+    closure_induction ha (fun m hm => ⟨subset_closure hm, mem m hm⟩) ⟨zero_mem _, zero⟩
+      ⟨one_mem _, one⟩ ?_ ?_
   · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
-      ⟨add_mem hx' hy', Hadd _ _ _ _ hx hy⟩)
+      ⟨add_mem hx' hy', add _ _ _ _ hx hy⟩)
   · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
-      ⟨mul_mem hx' hy', Hmul _ _ _ _ hx hy⟩)
+      ⟨mul_mem hx' hy', mul _ _ _ _ hx hy⟩)
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[elab_as_elim]
