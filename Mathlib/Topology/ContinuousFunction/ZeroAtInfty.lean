@@ -484,7 +484,7 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
 complete space. -/
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace C₀(α, β) :=
   (completeSpace_iff_isComplete_range isometry_toBCF.uniformInducing).mpr
-    closed_range_toBCF.isComplete
+    isClosed_range_toBCF.isComplete
 
 end Metric
 
