@@ -119,11 +119,11 @@ then it holds for all elements of the supremum of `S`. -/
 elements of `S i` for all `i`, and is preserved under addition, then it holds for all elements of
 the supremum of `S`."]
 theorem iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (hx₁ : x₁ ∈ ⨆ i, S i)
-    (hp : ∀ i, ∀ x₂ ∈ S i, C x₂) (hmul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
+    (mem : ∀ i, ∀ x₂ ∈ S i, C x₂) (mul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
   rw [iSup_eq_closure] at hx₁
-  refine' closure_induction hx₁ (fun x₂ hx₂ => _) hmul
+  refine' closure_induction hx₁ (fun x₂ hx₂ => _) mul
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx₂
-  exact hp _ _ hi
+  exact mem _ _ hi
 #align subsemigroup.supr_induction Subsemigroup.iSup_induction
 #align add_subsemigroup.supr_induction AddSubsemigroup.iSup_induction
 
@@ -131,15 +131,15 @@ theorem iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (
 @[to_additive (attr := elab_as_elim)
 "A dependent version of `AddSubsemigroup.iSup_induction`."]
 theorem iSup_induction' (S : ι → Subsemigroup M) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
-    (hp : ∀ (i) (x) (hxS : x ∈ S i), C x (mem_iSup_of_mem i ‹_›))
-    (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x₁ : M}
+    (mem : ∀ (i) (x) (hxS : x ∈ S i), C x (mem_iSup_of_mem i ‹_›))
+    (mul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x₁ : M}
     (hx₁ : x₁ ∈ ⨆ i, S i) : C x₁ hx₁ := by
   refine Exists.elim ?_ fun (hx₁' : x₁ ∈ ⨆ i, S i) (hc : C x₁ hx₁') => hc
   refine @iSup_induction _ _ _ S (fun x' => ∃ hx'', C x' hx'') _ hx₁
       (fun i x₂ hx₂ => ?_) fun x₃ y => ?_
-  · exact ⟨_, hp _ _ hx₂⟩
+  · exact ⟨_, mem _ _ hx₂⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
-    exact ⟨_, hmul _ _ _ _ Cx Cy⟩
+    exact ⟨_, mul _ _ _ _ Cx Cy⟩
 #align subsemigroup.supr_induction' Subsemigroup.iSup_induction'
 #align add_subsemigroup.supr_induction' AddSubsemigroup.iSup_induction'
 
