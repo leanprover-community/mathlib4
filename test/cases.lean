@@ -126,3 +126,16 @@ example (a b : ℕ) (h : a + b = a) : b = 0 := by
     rw [Nat.succ_add, Nat.succ.injEq] at h
     apply hd
     assumption
+
+/-- error: unnecessary 'generalizing' argument, variable 'a' is generalized automatically -/
+#guard_msgs in
+example (n : ℕ) (a : Fin n) : True := by
+  induction' n generalizing a
+
+/--
+error: variable cannot be generalized because target depends on it
+  m
+-/
+#guard_msgs in
+example (m : ℕ) : True := by
+  induction' m generalizing m

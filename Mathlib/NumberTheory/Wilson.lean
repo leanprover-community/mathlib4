@@ -48,7 +48,7 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
         -- simp_rw [← Units.coeHom_apply, ← (Units.coeHom (ZMod p)).map_prod,
         --   prod_univ_units_id_eq_neg_one, Units.coeHom_apply, Units.val_neg, Units.val_one]
         simp_rw [← Units.coeHom_apply]
-        rw [← (Units.coeHom (ZMod p)).map_prod]
+        rw [← map_prod (Units.coeHom (ZMod p))]
         simp_rw [prod_univ_units_id_eq_neg_one, Units.coeHom_apply, Units.val_neg, Units.val_one]
   have hp : 0 < p := (Fact.out (p := p.Prime)).pos
   symm
@@ -59,7 +59,6 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
     · apply Nat.pos_of_ne_zero; rw [← @val_zero p]
       intro h; apply Units.ne_zero a (val_injective p h)
     · exact val_lt _
-  · rintro a -; simp only [cast_id, nat_cast_val]
   · intro _ _ _ _ h; rw [Units.ext_iff]; exact val_injective p h
   · intro b hb
     rw [mem_Ico, Nat.succ_le_iff, ← succ_sub hp, Nat.add_one_sub_one, pos_iff_ne_zero] at hb
@@ -67,6 +66,7 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
     · intro h; apply hb.1; apply_fun val at h
       simpa only [val_cast_of_lt hb.right, val_zero] using h
     · simp only [val_cast_of_lt hb.right, Units.val_mk0]
+  · rintro a -; simp only [cast_id, nat_cast_val]
 #align zmod.wilsons_lemma ZMod.wilsons_lemma
 
 @[simp]

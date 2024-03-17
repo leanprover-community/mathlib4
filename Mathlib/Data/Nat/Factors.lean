@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
+import Mathlib.Data.List.Chain
 
 #align_import data.nat.factors from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -129,6 +130,7 @@ theorem factors_eq_nil (n : ℕ) : n.factors = [] ↔ n = 0 ∨ n = 1 := by
     · exact factors_one
 #align nat.factors_eq_nil Nat.factors_eq_nil
 
+open scoped List in
 theorem eq_of_perm_factors {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (h : a.factors ~ b.factors) :
     a = b := by simpa [prod_factors ha, prod_factors hb] using List.Perm.prod_eq h
 #align nat.eq_of_perm_factors Nat.eq_of_perm_factors
@@ -242,7 +244,7 @@ theorem dvd_of_factors_subperm {a b : ℕ} (ha : a ≠ 0) (h : a.factors <+~ b.f
   rcases a with (_ | _ | a)
   · exact (ha rfl).elim
   · exact one_dvd _
-  --Porting note: previous proof
+  -- Porting note: previous proof
   --use (b.factors.diff a.succ.succ.factors).prod
   use (@List.diff _ instBEq b.factors a.succ.succ.factors).prod
   nth_rw 1 [← Nat.prod_factors ha]
@@ -308,7 +310,7 @@ theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
   obtain ⟨_ | _ | k, rfl⟩ | ⟨p, hp, hdvd, hodd⟩ := n.eq_two_pow_or_exists_odd_prime_and_dvd
   · contradiction
   · contradiction
-  · simp [pow_succ, mul_assoc]
+  · simp [Nat.pow_succ, mul_assoc]
   · exact Or.inr ⟨p, hp, hdvd, hodd⟩
 
 end Nat

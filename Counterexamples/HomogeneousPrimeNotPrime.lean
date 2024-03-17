@@ -65,7 +65,7 @@ def submoduleZ : Submodule R (R × R) where
   carrier := {zz | zz.1 = zz.2}
   zero_mem' := rfl
   add_mem' := @fun _ _ ha hb => congr_arg₂ (· + ·) ha hb
-  smul_mem' a _ hb := congr_arg ((· * ·) a) hb
+  smul_mem' a _ hb := congr_arg (a * ·) hb
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.submodule_z Counterexample.CounterexampleNotPrimeButHomogeneousPrime.submoduleZ
 
 /-- The grade 1 part of `R²` is `{(0, b) | b ∈ R}`. -/
@@ -144,7 +144,7 @@ instance : GradedAlgebra (grading R) where
   left_inv := by convert grading.left_inv
   right_inv := by convert grading.right_inv
 
--- porting note: `I` upper case
+-- Porting note: `I` upper case
 set_option linter.uppercaseLean3 false
 
 /-- The counterexample is the ideal `I = span {(2, 2)}`. -/

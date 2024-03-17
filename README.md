@@ -1,6 +1,5 @@
 # mathlib4
 
-![](https://github.com/leanprover-community/mathlib4/workflows/continuous%20integration/badge.svg?branch=master)
 ![GitHub CI](https://github.com/leanprover-community/mathlib4/workflows/continuous%20integration/badge.svg?branch=master)
 [![Bors enabled](https://bors.tech/images/badge_small.svg)](https://mathlib-bors-ca18eefec4cb.herokuapp.com/repositories/16)
 [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://leanprover.zulipchat.com)
@@ -15,6 +14,11 @@ as well as tactics that use the former and allow to develop the latter.
 ## Installation
 
 You can find detailed instructions to install Lean, mathlib, and supporting tools on [our website](https://leanprover-community.github.io/get_started.html).
+
+## Using `mathlib4` as a dependency
+
+Please refer to
+[https://github.com/leanprover-community/mathlib4/wiki/Using-mathlib4-as-a-dependency](https://github.com/leanprover-community/mathlib4/wiki/Using-mathlib4-as-a-dependency)
 
 ## Experimenting
 
@@ -105,11 +109,6 @@ If you are a mathlib contributor and want to update dependencies, use `lake upda
 This will update the `lake-manifest.json` file correctly.
 You will need to make a PR after committing the changes to this file.
 
-## Using `mathlib4` as a dependency
-
-Please refer to
-[https://github.com/leanprover-community/mathlib4/wiki/Using-mathlib4-as-a-dependency](https://github.com/leanprover-community/mathlib4/wiki/Using-mathlib4-as-a-dependency)
-
 ## Maintainers:
 
 For a list containing more detailed information, see https://leanprover-community.github.io/teams/maintainers.html
@@ -135,7 +134,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Heather Macbeth (@hrmacbeth): geometry, analysis
 * Patrick Massot (@patrickmassot): documentation, topology, geometry
 * Bhavik Mehta (@b-mehta): category theory, combinatorics
-* Kyle Miller (@kmill): combinatorics, documentation
+* Kyle Miller (@kmill): combinatorics, tactics, metaprogramming
 * Scott Morrison (@semorrison): category theory, tactics
 * Oliver Nash (@ocfnash): algebra, geometry, topology
 * Joël Riou (@joelriou): category theory, homology, algebraic geometry

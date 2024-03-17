@@ -6,7 +6,6 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Order.Monoid.Lemmas
-import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Tactic.NthRewrite
 
 #align_import algebra.regular.basic from "leanprover-community/mathlib"@"5cd3c25312f210fec96ba1edb2aebfb2ccf2010f"
@@ -88,6 +87,15 @@ theorem IsLeftRegular.right_of_commute {a : R}
   fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
 #align is_left_regular.right_of_commute IsLeftRegular.right_of_commute
 
+theorem IsRightRegular.left_of_commute {a : R}
+    (ca : ∀ b, Commute a b) (h : IsRightRegular a) : IsLeftRegular a := by
+  simp_rw [@Commute.symm_iff R _ a] at ca
+  exact fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
+
+theorem Commute.isRightRegular_iff {a : R} (ca : ∀ b, Commute a b) :
+    IsRightRegular a ↔ IsLeftRegular a :=
+  ⟨IsRightRegular.left_of_commute ca, IsLeftRegular.right_of_commute ca⟩
+
 theorem Commute.isRegular_iff {a : R} (ca : ∀ b, Commute a b) : IsRegular a ↔ IsLeftRegular a :=
   ⟨fun h => h.left, fun h => ⟨h, h.right_of_commute ca⟩⟩
 #align commute.is_regular_iff Commute.isRegular_iff
@@ -140,7 +148,7 @@ an add-right-regular element, then `b` is add-right-regular."]
 theorem IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b := by
   refine' fun x y xy => ab (_ : x * (b * a) = y * (b * a))
   rw [← mul_assoc, ← mul_assoc]
-  exact congr_fun (congr_arg (· * ·) xy) a
+  exact congr_arg (· * a) xy
 #align is_right_regular.of_mul IsRightRegular.of_mul
 #align is_add_right_regular.of_add IsAddRightRegular.of_add
 
@@ -272,11 +280,11 @@ theorem not_isRegular_zero [Nontrivial R] : ¬IsRegular (0 : R) := fun h => IsRe
 
 @[simp] lemma IsLeftRegular.mul_left_eq_zero_iff (hb : IsLeftRegular b) : b * a = 0 ↔ a = 0 := by
   nth_rw 1 [← mul_zero b]
-  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha, mul_zero]⟩
+  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha]⟩
 
 @[simp] lemma IsRightRegular.mul_right_eq_zero_iff (hb : IsRightRegular b) : a * b = 0 ↔ a = 0 := by
   nth_rw 1 [← zero_mul b]
-  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha, zero_mul]⟩
+  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha]⟩
 
 end MulZeroClass
 
@@ -302,7 +310,7 @@ variable [CommSemigroup R] {a b : R}
 @[to_additive "A sum is add-regular if and only if the summands are."]
 theorem isRegular_mul_iff : IsRegular (a * b) ↔ IsRegular a ∧ IsRegular b := by
   refine' Iff.trans _ isRegular_mul_and_mul_iff
-  refine' ⟨fun ab => ⟨ab, by rwa [mul_comm]⟩, fun rab => rab.1⟩
+  exact ⟨fun ab => ⟨ab, by rwa [mul_comm]⟩, fun rab => rab.1⟩
 #align is_regular_mul_iff isRegular_mul_iff
 #align is_add_regular_add_iff isAddRegular_add_iff
 

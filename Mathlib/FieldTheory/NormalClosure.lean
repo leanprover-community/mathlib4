@@ -102,7 +102,7 @@ lemma isNormalClosure_normalClosure : IsNormalClosure F K (normalClosure F K L) 
   rw [IntermediateField.map_iSup]
   refine (iSup_le fun f ↦ ?_ : normalClosure F K L ≤ _) x.2
   refine le_iSup_of_le (f.codRestrict _ fun x ↦ f.fieldRange_le_normalClosure ⟨x, rfl⟩) ?_
-  erw [AlgHom.map_fieldRange, AlgHom.val_comp_codRestrict]
+  rw [AlgHom.map_fieldRange, val, AlgHom.val_comp_codRestrict]
 
 end Algebra.IsAlgebraic
 
@@ -216,7 +216,7 @@ noncomputable def Algebra.IsAlgebraic.algHomEmbeddingOfSplits (alg : IsAlgebraic
   { toFun := (φ.comp <| inclusion <| normalClosure_le_iSup_adjoin alg).comp ∘
       (normalClosure.algHomEquiv F K L').symm
     inj' := fun _ _ h ↦ (normalClosure.algHomEquiv F K L').symm.injective <| by
-      rw [FunLike.ext'_iff] at h ⊢
+      rw [DFunLike.ext'_iff] at h ⊢
       exact (φ.comp _).injective.comp_left h }
 
 namespace IntermediateField

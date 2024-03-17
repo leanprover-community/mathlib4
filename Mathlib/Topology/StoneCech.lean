@@ -96,9 +96,9 @@ instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   intro B hB
   rw [← Ultrafilter.coe_le_coe]
   intro s hs
-  rw [connectedComponent_eq_iInter_clopen, Set.mem_iInter] at hB
+  rw [connectedComponent_eq_iInter_isClopen, Set.mem_iInter] at hB
   let Z := { F : Ultrafilter α | s ∈ F }
-  have hZ : IsClopen Z := ⟨ultrafilter_isOpen_basic s, ultrafilter_isClosed_basic s⟩
+  have hZ : IsClopen Z := ⟨ultrafilter_isClosed_basic s, ultrafilter_isOpen_basic s⟩
   exact hB ⟨Z, hZ, hs⟩
 
 @[simp] theorem Ultrafilter.tendsto_pure_self (b : Ultrafilter α) : Tendsto pure b (𝓝 b) := by
@@ -297,7 +297,6 @@ end Extension
 
 theorem convergent_eqv_pure {u : Ultrafilter α} {x : α} (ux : ↑u ≤ 𝓝 x) : u ≈ pure x :=
   fun γ tγ h₁ h₂ f hf => by
-  skip
   trans f x; swap; symm
   all_goals refine' ultrafilter_extend_eq_iff.mpr (le_trans (map_mono _) (hf.tendsto _))
   · apply pure_le_nhds
@@ -319,7 +318,6 @@ instance StoneCech.t2Space : T2Space (StoneCech α) := by
   rintro ⟨x⟩ ⟨y⟩ g gx gy
   apply Quotient.sound
   intro γ tγ h₁ h₂ f hf
-  skip
   let ff := stoneCechExtend hf
   change ff ⟦x⟧ = ff ⟦y⟧
   have lim := fun (z : Ultrafilter α) (gz : (g : Filter (StoneCech α)) ≤ 𝓝 ⟦z⟧) =>

@@ -26,7 +26,7 @@ noncomputable section
 
 open Function Polynomial Finsupp Finset
 
-open BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 namespace Polynomial
 
@@ -177,7 +177,7 @@ theorem trailingDegree_ne_of_natTrailingDegree_ne {n : ℕ} :
     p.natTrailingDegree ≠ n → trailingDegree p ≠ n := by
   -- Porting note: Needed to account for different coercion behaviour & add the lemma below
   have : Nat.cast n = WithTop.some n := rfl
-  exact mt fun h => by rw [natTrailingDegree, h, this, ←WithTop.some_eq_coe, Option.getD_some]
+  exact mt fun h => by rw [natTrailingDegree, h, this, ← WithTop.some_eq_coe, Option.getD_some]
 #align polynomial.trailing_degree_ne_of_nat_trailing_degree_ne Polynomial.trailingDegree_ne_of_natTrailingDegree_ne
 
 theorem natTrailingDegree_le_of_trailingDegree_le {n : ℕ} {hp : p ≠ 0}
@@ -450,6 +450,16 @@ theorem natTrailingDegree_X : (X : R[X]).natTrailingDegree = 1 :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.nat_trailing_degree_X Polynomial.natTrailingDegree_X
 
+@[simp]
+lemma trailingDegree_X_pow (n : ℕ) :
+    (X ^ n : R[X]).trailingDegree = n := by
+  rw [X_pow_eq_monomial, trailingDegree_monomial one_ne_zero]
+
+@[simp]
+lemma natTrailingDegree_X_pow (n : ℕ) :
+    (X ^ n : R[X]).natTrailingDegree = n := by
+  rw [X_pow_eq_monomial, natTrailingDegree_monomial one_ne_zero]
+
 end NonzeroSemiring
 
 section Ring
@@ -501,7 +511,7 @@ end Semiring
 
 section Semiring
 
-variable [Semiring R] {p q : R[X]} {ι : Type*}
+variable [Semiring R] {p q : R[X]}
 
 theorem coeff_natTrailingDegree_eq_zero_of_trailingDegree_lt
     (h : trailingDegree p < trailingDegree q) : coeff q (natTrailingDegree p) = 0 :=
@@ -511,6 +521,20 @@ theorem coeff_natTrailingDegree_eq_zero_of_trailingDegree_lt
 theorem ne_zero_of_trailingDegree_lt {n : ℕ∞} (h : trailingDegree p < n) : p ≠ 0 := fun h₀ =>
   h.not_le (by simp [h₀])
 #align polynomial.ne_zero_of_trailing_degree_lt Polynomial.ne_zero_of_trailingDegree_lt
+
+lemma natTrailingDegree_eq_zero_of_constantCoeff_ne_zero (h : constantCoeff p ≠ 0) :
+    p.natTrailingDegree = 0 :=
+  le_antisymm (natTrailingDegree_le_of_ne_zero h) zero_le'
+
+lemma Monic.eq_X_pow_of_natTrailingDegree_eq_natDegree
+    (h₁ : p.Monic) (h₂ : p.natTrailingDegree = p.natDegree) :
+    p = X ^ p.natDegree := by
+  ext n
+  rw [coeff_X_pow]
+  obtain hn | rfl | hn := lt_trichotomy n p.natDegree
+  · rw [if_neg hn.ne, coeff_eq_zero_of_lt_natTrailingDegree (h₂ ▸ hn)]
+  · simpa only [if_pos rfl] using h₁.leadingCoeff
+  · rw [if_neg hn.ne', coeff_eq_zero_of_natDegree_lt hn]
 
 end Semiring
 

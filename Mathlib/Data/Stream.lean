@@ -374,7 +374,7 @@ theorem drop_const (n : Nat) (a : α) : drop n (const a) = const a :=
   Stream'.ext fun _ => rfl
 #align stream.drop_const Stream'.drop_const
 
--- porting note: used to be implemented using RecOn
+-- Porting note: used to be implemented using RecOn
 /-- Iterates of a function as a stream. -/
 def iterate (f : α → α) (a : α) : Stream' α
   | 0 => a
@@ -465,7 +465,7 @@ theorem corec'_eq (f : α → β × α) (a : α) : corec' f a = (f a).1::corec' 
 
 end Corec'
 
--- porting note: this `#align` should be elsewhere but idk where
+-- Porting note: this `#align` should be elsewhere but idk where
 #align state StateM
 
 /-- Use a state monad to generate a stream through corecursion -/
@@ -522,7 +522,6 @@ theorem get_interleave_left : ∀ (n : Nat) (s₁ s₂ : Stream' α),
   | n + 1, s₁, s₂ => by
     change get (s₁ ⋈ s₂) (succ (succ (2 * n))) = get s₁ (succ n)
     rw [get_succ, get_succ, interleave_eq, tail_cons, tail_cons]
-    have : n < succ n := Nat.lt_succ_self n
     rw [get_interleave_left n (tail s₁) (tail s₂)]
     rfl
 #align stream.nth_interleave_left Stream'.get_interleave_left
@@ -721,8 +720,9 @@ theorem get?_take_succ (n : Nat) (s : Stream' α) :
 
 @[simp] theorem dropLast_take {xs : Stream' α} :
     (Stream'.take n xs).dropLast = Stream'.take (n-1) xs := by
-  cases n; case zero => simp
-  case succ n => rw [take_succ', List.dropLast_concat, Nat.add_one_sub_one]
+  cases n with
+  | zero => simp
+  | succ n => rw [take_succ', List.dropLast_concat, Nat.add_one_sub_one]
 
 @[simp]
 theorem append_take_drop : ∀ (n : Nat) (s : Stream' α),
@@ -741,7 +741,8 @@ theorem take_theorem (s₁ s₂ : Stream' α) : (∀ n : Nat, take n s₁ = take
   intro h; apply Stream'.ext; intro n
   induction' n with n _
   · have aux := h 1
-    simp [take] at aux
+    simp? [take] at aux says
+      simp only [take, List.cons.injEq, and_true] at aux
     exact aux
   · have h₁ : some (get s₁ (succ n)) = some (get s₂ (succ n)) := by
       rw [← get?_take_succ, ← get?_take_succ, h (succ (succ n))]

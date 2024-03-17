@@ -162,6 +162,23 @@ lemma Triangle.hom_ext {A B : Triangle C} (f g : A ⟶ B)
     (h₁ : f.hom₁ = g.hom₁) (h₂ : f.hom₂ = g.hom₂) (h₃ : f.hom₃ = g.hom₃) : f = g :=
   TriangleMorphism.ext _ _ h₁ h₂ h₃
 
+@[simp]
+lemma id_hom₁ (A : Triangle C) : TriangleMorphism.hom₁ (𝟙 A) = 𝟙 _ := rfl
+@[simp]
+lemma id_hom₂ (A : Triangle C) : TriangleMorphism.hom₂ (𝟙 A) = 𝟙 _ := rfl
+@[simp]
+lemma id_hom₃ (A : Triangle C) : TriangleMorphism.hom₃ (𝟙 A) = 𝟙 _ := rfl
+
+@[simp, reassoc]
+lemma comp_hom₁ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom₁ = f.hom₁ ≫ g.hom₁ := rfl
+@[simp, reassoc]
+lemma comp_hom₂ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom₂ = f.hom₂ ≫ g.hom₂ := rfl
+@[simp, reassoc]
+lemma comp_hom₃ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom₃ = f.hom₃ ≫ g.hom₃ := rfl
+
 @[simps]
 def Triangle.homMk (A B : Triangle C)
     (hom₁ : A.obj₁ ⟶ B.obj₁) (hom₂ : A.obj₂ ⟶ B.obj₂) (hom₃ : A.obj₃ ⟶ B.obj₃)
@@ -199,6 +216,26 @@ lemma Triangle.isIso_of_isIsos {A B : Triangle C} (f : A ⟶ B)
   let e := Triangle.isoMk A B (asIso f.hom₁) (asIso f.hom₂) (asIso f.hom₃)
     (by simp) (by simp) (by simp)
   exact (inferInstance : IsIso e.hom)
+
+@[reassoc (attr := simp)]
+lemma _root_.CategoryTheory.Iso.hom_inv_id_triangle_hom₁ {A B : Triangle C} (e : A ≅ B) :
+    e.hom.hom₁ ≫ e.inv.hom₁ = 𝟙 _ := by rw [← comp_hom₁, e.hom_inv_id, id_hom₁]
+@[reassoc (attr := simp)]
+lemma _root_.CategoryTheory.Iso.hom_inv_id_triangle_hom₂ {A B : Triangle C} (e : A ≅ B) :
+    e.hom.hom₂ ≫ e.inv.hom₂ = 𝟙 _ := by rw [← comp_hom₂, e.hom_inv_id, id_hom₂]
+@[reassoc (attr := simp)]
+lemma _root_.CategoryTheory.Iso.hom_inv_id_triangle_hom₃ {A B : Triangle C} (e : A ≅ B) :
+    e.hom.hom₃ ≫ e.inv.hom₃ = 𝟙 _ := by rw [← comp_hom₃, e.hom_inv_id, id_hom₃]
+
+@[reassoc (attr := simp)]
+lemma _root_.CategoryTheory.Iso.inv_hom_id_triangle_hom₁ {A B : Triangle C} (e : A ≅ B) :
+    e.inv.hom₁ ≫ e.hom.hom₁ = 𝟙 _ := by rw [← comp_hom₁, e.inv_hom_id, id_hom₁]
+@[reassoc (attr := simp)]
+lemma _root_.CategoryTheory.Iso.inv_hom_id_triangle_hom₂ {A B : Triangle C} (e : A ≅ B) :
+    e.inv.hom₂ ≫ e.hom.hom₂ = 𝟙 _ := by rw [← comp_hom₂, e.inv_hom_id, id_hom₂]
+@[reassoc (attr := simp)]
+lemma _root_.CategoryTheory.Iso.inv_hom_id_triangle_hom₃ {A B : Triangle C} (e : A ≅ B) :
+    e.inv.hom₃ ≫ e.hom.hom₃ = 𝟙 _ := by rw [← comp_hom₃, e.inv_hom_id, id_hom₃]
 
 lemma Triangle.eqToHom_hom₁ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₁ = eqToHom (by subst h; rfl) := by subst h; rfl
@@ -293,5 +330,37 @@ lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
     limMap_π_assoc, Discrete.natTrans_app, h j, comp_zero]
 
 end
+
+namespace Triangle
+
+/-- The first projection `Triangle C ⥤ C`. -/
+@[simps]
+def π₁ : Triangle C ⥤ C where
+  obj T := T.obj₁
+  map f := f.hom₁
+
+/-- The second projection `Triangle C ⥤ C`. -/
+@[simps]
+def π₂ : Triangle C ⥤ C where
+  obj T := T.obj₂
+  map f := f.hom₂
+
+/-- The third projection `Triangle C ⥤ C`. -/
+@[simps]
+def π₃ : Triangle C ⥤ C where
+  obj T := T.obj₃
+  map f := f.hom₃
+
+section
+
+variable {A B : Triangle C} (φ : A ⟶ B) [IsIso φ]
+
+instance : IsIso φ.hom₁ := (inferInstance : IsIso (π₁.map φ))
+instance : IsIso φ.hom₂ := (inferInstance : IsIso (π₂.map φ))
+instance : IsIso φ.hom₃ := (inferInstance : IsIso (π₃.map φ))
+
+end
+
+end Triangle
 
 end CategoryTheory.Pretriangulated

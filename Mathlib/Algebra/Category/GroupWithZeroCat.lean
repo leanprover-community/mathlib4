@@ -14,9 +14,6 @@ import Mathlib.Algebra.Category.MonCat.Basic
 This file defines `GroupWithZeroCat`, the category of groups with zero.
 -/
 
-set_option autoImplicit true
-
-
 universe u
 
 open CategoryTheory Order
@@ -52,29 +49,30 @@ instance : LargeCategory.{u} GroupWithZeroCat where
   comp_id := MonoidWithZeroHom.id_comp
   assoc _ _ _ := MonoidWithZeroHom.comp_assoc _ _ _
 
--- porting note: was not necessary in mathlib
-instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M (fun _ => N) :=
+instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M N :=
   ⟨fun f => f.toFun, fun f g h => by
     cases f
     cases g
     congr
-    apply FunLike.coe_injective'
+    apply DFunLike.coe_injective'
     exact h⟩
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : GroupWithZeroCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
   forget :=
   { obj := fun G => G
     map := fun f => f.toFun }
-  forget_faithful := ⟨fun h => FunLike.coe_injective h⟩
+  forget_faithful := ⟨fun h => DFunLike.coe_injective h⟩
 
--- porting note: added
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupWithZeroCat).map f = f := rfl
+-- porting note (#10756): added lemma
+@[simp] lemma forget_map {X Y : GroupWithZeroCat} (f : X ⟶ Y) :
+  (forget GroupWithZeroCat).map f = f := rfl
+
 instance hasForgetToBipointed : HasForget₂ GroupWithZeroCat Bipointed where
   forget₂ :=
       { obj := fun X => ⟨X, 0, 1⟩
@@ -88,10 +86,6 @@ instance hasForgetToMon : HasForget₂ GroupWithZeroCat MonCat where
         map := fun f => f.toMonoidHom }
 set_option linter.uppercaseLean3 false in
 #align GroupWithZero.has_forget_to_Mon GroupWithZeroCat.hasForgetToMon
-
--- porting note: this instance was not necessary in mathlib
-instance {X Y : GroupWithZeroCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →*₀ Y) := f
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
