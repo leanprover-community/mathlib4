@@ -264,6 +264,11 @@ instance pow [One α] [Pow α ℕ] : Pow (WithZero α) ℕ :=
     | none, _ + 1 => 0
     | some x, n => ↑(x ^ n)⟩
 
+example [Monoid α] (n : ℕ) :
+    (0 : WithZero α) ^ (n + 1) = (0 : WithZero α) ^ n * 0 :=  by
+  simp only [mul_zero]; rfl
+
+
 @[simp, norm_cast]
 theorem coe_pow [One α] [Pow α ℕ] {a : α} (n : ℕ) :
     ↑(a ^ n : α) = ((a : WithZero α) ^ n : WithZero α) :=
@@ -279,7 +284,9 @@ instance monoidWithZero [Monoid α] : MonoidWithZero (WithZero α) :=
       | some x => congr_arg some <| pow_zero x,
     npow_succ := fun n x =>
       match x with
-      | none => rfl
+      | none => by
+        change 0 ^ (n + 1) = 0 ^ n * 0
+        simp only [mul_zero]; rfl
       | some x => congr_arg some <| pow_succ x n }
 
 instance commMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :=
@@ -338,7 +345,10 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) :=
       | some x => congr_arg some <| zpow_zero x,
     zpow_succ' := fun n x =>
       match x with
-      | none => rfl
+      | none => by
+        change 0 ^ _ = 0 ^ _ * 0
+        simp only [mul_zero]
+        rfl
       | some x => congr_arg some <| DivInvMonoid.zpow_succ' n x,
     zpow_neg' := fun n x =>
       match x with
