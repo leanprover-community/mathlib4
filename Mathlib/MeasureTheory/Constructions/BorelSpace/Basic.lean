@@ -2154,8 +2154,6 @@ instance instMeasurableInv : MeasurableInv ℝ≥0∞ :=
   ⟨continuous_inv.measurable⟩
 #align ennreal.has_measurable_inv ENNReal.instMeasurableInv
 
-attribute [-instance] measurableSingletonClass_of_hasCountableSeparatingOn
-
 instance : MeasurableSMul ℝ≥0 ℝ≥0∞ where
   measurable_const_smul := by
     simp_rw [ENNReal.smul_def]

@@ -210,7 +210,8 @@ theorem measurable_injection_nat_bool_of_hasCountableSeparatingOn [MeasurableSpa
 
 variable {α}
 
-instance (priority := 1) measurableSingletonClass_of_hasCountableSeparatingOn
+--TODO: Make this an instance
+theorem measurableSingletonClass_of_hasCountableSeparatingOn
     [MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
     MeasurableSingletonClass α := by
   rcases measurable_injection_nat_bool_of_hasCountableSeparatingOn α with ⟨f, fmeas, finj⟩
