@@ -284,38 +284,6 @@ lemma equalizerCondition_iff_isSheaf (F : Cᵒᵖ ⥤ D) [Preregular C]
   · intro hF Y X f _
     exact (equalizerConditionMap_iff_nonempty_isLimit F f).2 (hF _ ⟨_, f, rfl, inferInstance⟩)
 
--- lemma EqualizerCondition.isSheafFor {B : C} {S : Presieve B} [S.regular] [S.hasPullbacks]
---     {F : Cᵒᵖ ⥤ Type*} (hF : EqualizerCondition F) : S.IsSheafFor F := by
---   obtain ⟨X, π, hS, πsurj⟩ := Presieve.regular.single_epi (R := S)
---   subst hS
---   rw [isSheafFor_arrows_iff_pullbacks]
---   intro y h
---   have : (Presieve.singleton π).hasPullbacks := by rw [← ofArrows_pUnit]; infer_instance
---   have : HasPullback π π := hasPullbacks.has_pullbacks Presieve.singleton.mk Presieve.singleton.mk
---   let c : PullbackCone π π := (IsPullback.of_hasPullback π π).cone
---   have hc : IsLimit c := IsPullback.isLimit _
---   specialize hF π c hc
---   rw [Types.type_equalizer_iff_unique] at hF
---   obtain ⟨t, ht⟩ := hF (y ()) (h () ())
---   exact ⟨t, fun _ ↦ ht.1, fun _ h ↦ ht.2 _ (h _)⟩
-
--- lemma equalizerCondition_of_regular {F : Cᵒᵖ ⥤ Type*}
---     (hSF : ∀ {B : C} (S : Presieve B) [S.regular] [S.hasPullbacks], S.IsSheafFor F) :
---     EqualizerCondition F := by
---   apply EqualizerCondition.mk
---   intro X B π _ _
---   have : (ofArrows (fun _ ↦ X) (fun _ ↦ π)).regular := ⟨X, π, rfl, inferInstance⟩
---   have : (ofArrows (fun () ↦ X) (fun _ ↦ π)).hasPullbacks := ⟨
---       fun hf _ hg ↦ (by cases hf; cases hg; infer_instance)⟩
---   specialize hSF (ofArrows (fun () ↦ X) (fun _ ↦ π))
---   rw [isSheafFor_arrows_iff_pullbacks] at hSF
---   rw [Function.bijective_iff_existsUnique]
---   intro ⟨x, hx⟩
---   obtain ⟨t, ht, ht'⟩ := hSF (fun _ ↦ x) (fun _ _ ↦ hx)
---   refine ⟨t, ?_, fun y h ↦ ht' y ?_⟩
---   · simpa [MapToEqualizer] using ht ()
---   · simpa [MapToEqualizer] using h
-
 lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Projective X]
     (F : Cᵒᵖ ⥤ Type*) : S.IsSheafFor F := by
   obtain ⟨Y, f, rfl, hf⟩ := Presieve.regular.single_epi (R := S)
@@ -324,24 +292,6 @@ lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Pro
   · simpa using (hx () () Y (𝟙 Y) (f ≫ (Projective.factorThru (𝟙 _) f)) (by simp)).symm
   · simp only [← h (), ← FunctorToTypes.map_comp_apply, ← op_comp, Projective.factorThru_comp,
       op_id, FunctorToTypes.map_id_apply]
-
--- /-- A presheaf is a sheaf for the regular topology iff it satisfies `EqualizerCondition` -/
--- theorem EqualizerCondition.isSheaf_iff (F : Cᵒᵖ ⥤ Type*) [Preregular C]
---     [h : ∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f]  :
---     Presieve.IsSheaf (regularTopology C) F ↔ EqualizerCondition F := by
---   rw [← isSheaf_iff_isSheaf_of_type]
---   exact (@equalizerCondition_iff_isSheaf _ _ _ _ F _ h).symm
---     -- why doesn't typeclass inference find `h`?
---   -- rw [regularTopology, Presieve.isSheaf_coverage]
---   -- refine ⟨fun h ↦ equalizerCondition_of_regular fun S ⟨Y, f, hh⟩ _ ↦ h S ⟨Y, f, hh⟩, ?_⟩
---   -- rintro h X S ⟨Y, f, rfl, hf⟩
---   -- exact @isSheafFor _ _ _ _ ⟨Y, f, rfl, hf⟩ ⟨fun g _ h ↦ by cases g; cases h; infer_instance⟩ _ h
-
--- /-- Every presheaf is a sheaf for the regular topology if every object of `C` is projective. -/
--- theorem isSheaf_of_projective (F : Cᵒᵖ ⥤ Type*) [Preregular C] [∀ (X : C), Projective X] :
---     IsSheaf (regularTopology C) F :=
---   (isSheaf_coverage _ _).mpr fun S ⟨_, h⟩ ↦ have : S.regular := ⟨_, h⟩
---     isSheafFor_regular_of_projective _ _
 
 /-- Every presheaf is a sheaf for the regular topology if every object of `C` is projective. -/
 theorem isSheaf_of_projective (F : Cᵒᵖ ⥤ D) [Preregular C] [∀ (X : C), Projective X] :
