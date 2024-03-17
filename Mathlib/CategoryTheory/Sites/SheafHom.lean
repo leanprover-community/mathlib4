@@ -263,10 +263,10 @@ lemma GrothendieckTopology.CoversTop.jointlyReflectIsomorphisms (hY : J.CoversTo
         rw [← J.overMapPullback_map_overPullback_map a φ]
         infer_instance
       rw [← cancel_mono ((J.overPullback A Z).map φ)]
-      simp [sheafHom, sheafHom']
+      simp [f, sheafHom, sheafHom']
     refine' ⟨(sheafHomSectionsEquiv G F) (hf.section_ hY (Sheaf.cond _)), _, _⟩
     all_goals
       exact (sheafHomSectionsEquiv _ _).symm.injective
-        (hY.sections_ext _ (fun i => (by simp)))
+        (hY.sections_ext _ (fun i => (by simp [f])))
 
 end CategoryTheory
