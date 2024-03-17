@@ -88,7 +88,6 @@ def μ (α β : Type u) : (free R).obj α ⊗ (free R).obj β ≅ (free R).obj (
 
 theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
     ((free R).map f ⊗ (free R).map g) ≫ (μ R Y Y').hom = (μ R X X').hom ≫ (free R).map (f ⊗ g) := by
-  intros
   -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply Finsupp.lhom_ext'
@@ -113,7 +112,6 @@ theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
 theorem left_unitality (X : Type u) :
     (λ_ ((free R).obj X)).hom =
       (ε R ⊗ 𝟙 ((free R).obj X)) ≫ (μ R (𝟙_ (Type u)) X).hom ≫ map (free R).obj (λ_ X).hom := by
-  intros
   -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply LinearMap.ext_ring
@@ -134,7 +132,6 @@ theorem left_unitality (X : Type u) :
 theorem right_unitality (X : Type u) :
     (ρ_ ((free R).obj X)).hom =
       (𝟙 ((free R).obj X) ⊗ ε R) ≫ (μ R X (𝟙_ (Type u))).hom ≫ map (free R).obj (ρ_ X).hom := by
-  intros
   -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply Finsupp.lhom_ext'
@@ -156,7 +153,6 @@ theorem associativity (X Y Z : Type u) :
     ((μ R X Y).hom ⊗ 𝟙 ((free R).obj Z)) ≫ (μ R (X ⊗ Y) Z).hom ≫ map (free R).obj (α_ X Y Z).hom =
       (α_ ((free R).obj X) ((free R).obj Y) ((free R).obj Z)).hom ≫
         (𝟙 ((free R).obj X) ⊗ (μ R Y Z).hom) ≫ (μ R X (Y ⊗ Z)).hom := by
-  intros
   -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply TensorProduct.ext

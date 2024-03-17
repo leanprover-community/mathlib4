@@ -235,7 +235,7 @@ theorem pbind_eq_some {f : ∀ a : α, a ∈ x → Option β} {y : β} :
     intro z h
     simp at h
   · simp only [pbind]
-    refine ⟨λ h => ⟨x, rfl, h⟩, ?_⟩
+    refine ⟨fun h ↦ ⟨x, rfl, h⟩, ?_⟩
     rintro ⟨z, H, hz⟩
     simp only [mem_def, Option.some_inj] at H
     simpa [H] using hz
