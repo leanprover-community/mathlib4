@@ -97,7 +97,7 @@ A full test suite is provided at the bottom of the file.
 -- -/
 
 -- example (x y : ℚ) (h1 : x*y + 2*x = 1) (h2 : x = y) :
---   x*y = -2*y + 1 := by
+--     x*y = -2*y + 1 := by
 --   test_sage_output "{\"data\":[\"(poly.const 1/1)\",\"(poly.const -2/1)\"],\"success\":true}"
 --   linear_combination h1 - 2 * h2
 
