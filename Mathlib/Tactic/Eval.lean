@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 
 import Qq.Macro
+import Mathlib.Data.Nat.Basic
 
 /-!
 # The `eval%` term elaborator
