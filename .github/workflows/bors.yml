@@ -220,6 +220,7 @@ jobs:
 
       - name: make an artifact of the cache
         uses: actions/checkout@v1
+      - name: tar cache
         run: tar -zcvf MathlibCache.tar.gz .lake/build/lib/Mathlib
       - name: upload the artifact of the cache
         uses: actions/upload-artifact@master
@@ -298,12 +299,14 @@ jobs:
   lint_mathlib_with_cache:
     if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/download-artifact@master
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: download artifact
+        uses: actions/download-artifact@master
         with:
           name: untar Mathlib Cache
           path: MathlibCache.tar.gz
-
+      - name: untar artifact
         run: |
           tar -xzvf MathlibCache.tar.gz -C .lake/build/lib/Mathlib
       - uses: liskin/gh-problem-matcher-wrap@v2
