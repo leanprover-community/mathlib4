@@ -135,6 +135,8 @@ theorem ofNat_zero : ofNat 0 = 0 :=
 theorem ofNat_succ (n) : ofNat (Nat.succ n) = oadd 0 n.succPNat 0 :=
   rfl
 
+attribute [eqns ofNat_zero ofNat_succ] ofNat
+
 attribute [simp] ofNat
 
 instance nat (n : ℕ) : OfNat ONote n where
