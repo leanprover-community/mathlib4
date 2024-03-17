@@ -257,13 +257,13 @@ lemma nonneg_iff_isSelfAdjoint_and_spectrumRestricts {a : A} :
   refine ⟨fun ha ↦ ?_, ?_⟩
   · rw [StarOrderedRing.nonneg_iff] at ha
     induction ha using AddSubmonoid.closure_induction' with
-    | Hs x hx =>
+    | mem x hx =>
       obtain ⟨b, rfl⟩ := hx
       exact ⟨IsSelfAdjoint.star_mul_self b, spectrum_star_mul_self_nonneg⟩
-    | H1 =>
+    | one =>
       nontriviality A
       simp
-    | Hmul x _ y _ hx hy =>
+    | mul x _ y _ hx hy =>
       rw [← SpectrumRestricts.nnreal_iff] at hx hy ⊢
       exact ⟨hx.1.add hy.1, hx.2.nnreal_add hx.1 hy.1 hy.2⟩
   · rintro ⟨ha₁, ha₂⟩
