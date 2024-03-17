@@ -316,7 +316,7 @@ jobs:
             run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
 
   lean4checker_job:
-    step: lean4checker
+    lean4checker:
       if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
       steps:
         - uses: actions/checkout@master
@@ -338,6 +338,8 @@ jobs:
             cd ..
             lake env lean4checker/.lake/build/bin/lean4checker
 
+  final_checks:
+    final1:
       - name: Post comments for lean-pr-testing branch
         if: always()
         env:
