@@ -5,6 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Creates
 
 #align_import category_theory.limits.preserves.opposites from "leanprover-community/mathlib"@"9ed4366659f4fcca0ee70310d26ac5518dcb6dd0"
 
@@ -99,6 +100,40 @@ def preservesColimitUnop (K : J ⥤ C) (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesLimit
   preserves {_} hc :=
     isColimitCoconeUnopOfCone _ (isLimitOfPreserves F (isLimitCoconeOp _ hc))
 #align category_theory.limits.preserves_colimit_unop CategoryTheory.Limits.preservesColimitUnop
+
+def reflectsLimitOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ D) [ReflectsColimit K.leftOp F] :
+    ReflectsLimit K F.op where
+  reflects {c} hc := isLimitConeRightOpOfCocone _
+    (isColimitOfReflects F (c := coconeLeftOpOfCone c) (isColimitCoconeLeftOpOfCone _ hc))
+
+def reflectsColimitLeftOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ Dᵒᵖ) [ReflectsLimit K.leftOp F] :
+    ReflectsColimit K F.leftOp where
+  reflects {c} hc := by
+    -- let x := hc.op
+    let i : (F.leftOp.mapCocone c).op ≅ F.mapCone (coneLeftOpOfCocone c) := Iso.refl _
+    let q : IsLimit (F.mapCone (coneLeftOpOfCocone c)) := IsLimit.ofIsoLimit hc.op i
+    let r := isLimitOfReflects F q
+    exact isColimitCoconeRightOpOfCone _ r
+    -- let r := F.leftOp.mapCocone c ≅
+    -- let q := isLimitConeOpOfCocone (K ⋙ F.leftOp) hc
+
+  -- isColimitCoconeUnopOfCone _
+  --   (isLimitOfReflects F (c := coneLeftOpOfCocone c) (isLimitConeLeftOpOfCocone _ hc))
+
+def createsColimitLeftOp (K : J ⥤ Cᵒᵖ) (F : C ⥤ Dᵒᵖ) [CreatesLimit K.leftOp F] :
+    CreatesColimit K F.leftOp :=
+  { reflectsColimitLeftOp K F with
+    lifts := fun c hc =>
+      { liftedCocone := coconeRightOpOfCone (liftLimit (K := K.leftOp) (F := F) hc.op)
+        validLift := by
+          let i := liftedLimitMapsToOriginal (K := K.leftOp) (F := F) hc.op
+          let i₂ := i.op
+          let i₃ := (coconeEquivalenceOpConeOp (K ⋙ F.leftOp)).inverse.mapIso i₂
+          dsimp at i₃
+          refine ?_ ≪≫ i₃.symm ≪≫ ?_
+          · exact Iso.refl _
+          · exact Iso.refl _ } }
+
 
 section
 
