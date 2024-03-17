@@ -102,9 +102,9 @@ def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
     PushoutI φ →* K :=
   Con.lift _ (Coprod.lift (CoprodI.lift f) k) <| by
-    apply Con.conGen_le <| fun x y => ?_
+    apply Con.conGen_le fun x y => ?_
     rintro ⟨i, x', rfl, rfl⟩
-    simp only [FunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
+    simp only [DFunLike.ext_iff, MonoidHom.coe_comp, comp_apply] at hf
     simp [hf]
 
 @[simp]
@@ -143,7 +143,7 @@ theorem hom_ext_nonempty [hn : Nonempty ι]
       rw [← of_comp_eq_base i, ← MonoidHom.comp_assoc, h, MonoidHom.comp_assoc]
 
 /-- The equivalence that is part of the universal property of the pushout. A hom out of
-the pushout is just a morphism out of all groups in the pushout that satsifies a commutativity
+the pushout is just a morphism out of all groups in the pushout that satisfies a commutativity
 condition. -/
 @[simps]
 def homEquiv :
@@ -151,9 +151,9 @@ def homEquiv :
   { toFun := fun f => ⟨(fun i => f.comp (of i), f.comp (base φ)),
       fun i => by rw [MonoidHom.comp_assoc, of_comp_eq_base]⟩
     invFun := fun f => lift f.1.1 f.1.2 f.2,
-    left_inv := fun _ => hom_ext (by simp [FunLike.ext_iff])
-      (by simp [FunLike.ext_iff])
-    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [FunLike.ext_iff, Function.funext_iff] }
+    left_inv := fun _ => hom_ext (by simp [DFunLike.ext_iff])
+      (by simp [DFunLike.ext_iff])
+    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, Function.funext_iff] }
 
 /-- The map from the coproduct into the pushout -/
 def ofCoprodI : CoprodI G →* PushoutI φ :=
@@ -220,18 +220,16 @@ variable (φ)
 canonical element of each coset. We also need all the maps in the diagram to be injective  -/
 structure Transversal : Type _ where
   /-- All maps in the diagram are injective -/
-  ( injective : ∀ i, Injective (φ i) )
+  injective : ∀ i, Injective (φ i)
   /-- The underlying set, containing exactly one element of each coset of the base group -/
-  ( set : ∀ i, Set (G i) )
+  set : ∀ i, Set (G i)
   /-- The chosen element of the base group itself is the identity -/
-  ( one_mem : ∀ i, 1 ∈ set i )
+  one_mem : ∀ i, 1 ∈ set i
   /-- We have exactly one element of each coset of the base group -/
-  ( compl : ∀ i, IsComplement (φ i).range (set i) )
+  compl : ∀ i, IsComplement (φ i).range (set i)
 
 theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transversal φ) := by
-  have := fun i => exists_right_transversal (H := (φ i).range) 1
-  simp only [Classical.skolem] at this
-  rcases this with ⟨t, ht⟩
+  choose t ht using fun i => (φ i).range.exists_right_transversal 1
   apply Nonempty.intro
   exact
     { injective := hφ
@@ -357,7 +355,7 @@ noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some
   { toWord := w'
     head := (MonoidHom.ofInjective (d.injective i)).symm n.1
     normalized := fun i g hg => by
-      simp only [Word.cons, mem_cons, Sigma.mk.inj_iff] at hg
+      simp only [w', Word.cons, mem_cons, Sigma.mk.inj_iff] at hg
       rcases hg with ⟨rfl, hg | hg⟩
       · simp
       · exact w.normalized _ _ (by assumption) }
@@ -371,7 +369,7 @@ noncomputable def rcons (i : ι) (p : Pair d i) : NormalWord d :=
   { toWord := w
     head := (MonoidHom.ofInjective (d.injective i)).symm n.1
     normalized := fun i g hg => by
-        dsimp at hg
+        dsimp [w] at hg
         rw [Word.equivPair_symm, Word.mem_rcons_iff] at hg
         rcases hg with hg | ⟨_, rfl, rfl⟩
         · exact p.normalized _ _ hg
@@ -397,7 +395,7 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
       letI p := Word.equivPair i (CoprodI.of (φ i w.head) • w.toWord)
       { toPair := p
         normalized := fun j g hg => by
-          dsimp only at hg
+          dsimp only [p] at hg
           rw [Word.of_smul_def, ← Word.equivPair_symm, Equiv.apply_symm_apply] at hg
           dsimp at hg
           exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail _ hg) }
@@ -444,7 +442,7 @@ noncomputable instance mulAction [DecidableEq ι] [∀ i, DecidableEq (G i)] :
       (fun i => MulAction.toEndHom)
       MulAction.toEndHom <| by
     intro i
-    simp only [MulAction.toEndHom, FunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
+    simp only [MulAction.toEndHom, DFunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
       OneHom.coe_mk, comp_apply]
     intro h
     funext w
@@ -653,11 +651,11 @@ theorem Reduced.eq_empty_of_mem_range (hφ : ∀ i, Injective (φ i))
   have : (NormalWord.prod (d := d) ⟨.empty, h, by simp⟩) = base φ h := by
     simp [NormalWord.prod]
   rw [← hw'prod, ← this] at heq
-  suffices : w'.toWord = .empty
-  · simp [this, @eq_comm _ []] at hw'map
+  suffices w'.toWord = .empty by
+    simp [this, @eq_comm _ []] at hw'map
     ext
     simp [hw'map]
-  · rw [← prod_injective heq]
+  rw [← prod_injective heq]
 
 end Reduced
 
@@ -691,7 +689,7 @@ theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (h
         simp only [Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
           List.map_nil, map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, map_one, mul_one,
           mul_inv_self, one_mem])
-      simp [Word.empty] at this)
+      simp [w, Word.empty] at this)
     (le_inf
       (by rw [← of_comp_eq_base i]
           rintro _ ⟨h, rfl⟩

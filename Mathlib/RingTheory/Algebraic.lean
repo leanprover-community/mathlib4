@@ -21,7 +21,8 @@ a tower of algebraic field extensions is algebraic.
 
 universe u v w
 
-open Classical Polynomial
+open scoped Classical
+open Polynomial
 
 section
 
@@ -192,6 +193,24 @@ theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r
 theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 < n) :
     Transcendental R (r ^ n) := fun ht' ↦ ht <| ht'.of_pow hn
 #align transcendental.pow Transcendental.pow
+
+lemma IsAlgebraic.invOf {x : S} [Invertible x] (h : IsAlgebraic R x) : IsAlgebraic R (⅟ x) := by
+  obtain ⟨p, hp, hp'⟩ := h
+  refine ⟨p.reverse, by simpa using hp, ?_⟩
+  rwa [Polynomial.aeval_def, Polynomial.eval₂_reverse_eq_zero_iff, ← Polynomial.aeval_def]
+
+lemma IsAlgebraic.invOf_iff {x : S} [Invertible x] :
+    IsAlgebraic R (⅟ x) ↔ IsAlgebraic R x :=
+  ⟨IsAlgebraic.invOf, IsAlgebraic.invOf⟩
+
+lemma IsAlgebraic.inv_iff {K} [Field K] [Algebra R K] {x : K} :
+    IsAlgebraic R (x⁻¹) ↔ IsAlgebraic R x := by
+  by_cases hx : x = 0
+  · simp [hx]
+  letI := invertibleOfNonzero hx
+  exact IsAlgebraic.invOf_iff (R := R) (x := x)
+
+alias ⟨_, IsAlgebraic.inv⟩ := IsAlgebraic.inv_iff
 
 end zero_ne_one
 
@@ -435,7 +454,7 @@ theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
     rw [this]
     exact A.smul_mem (aeval x _).2 _
   have : aeval (x : L) p = 0 := by rw [Subalgebra.aeval_coe, aeval_eq, Subalgebra.coe_zero]
-  -- porting note: this was a long sequence of `rw`.
+  -- Porting note: this was a long sequence of `rw`.
   rw [inv_eq_of_root_of_coeff_zero_ne_zero this coeff_zero_ne, div_eq_inv_mul, Algebra.smul_def]
   simp only [aeval_coe, Submonoid.coe_mul, Subsemiring.coe_toSubmonoid, coe_toSubsemiring,
     coe_algebraMap]
@@ -506,7 +525,7 @@ theorem polynomial_smul_apply' [CommSemiring R'] [Semiring S'] [Algebra R' S'] [
 
 variable [CommSemiring R'] [CommSemiring S'] [CommSemiring T'] [Algebra R' S'] [Algebra S' T']
 
--- porting note: the proofs in this definition used `funext` in term-mode, but I was not able
+-- Porting note: the proofs in this definition used `funext` in term-mode, but I was not able
 -- to get them to work anymore.
 /-- This is not an instance for the same reasons as `Polynomial.hasSMulPi'`. -/
 noncomputable def Polynomial.algebraPi : Algebra R'[X] (S' → T') :=

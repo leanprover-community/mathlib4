@@ -99,14 +99,14 @@ theorem comp_mk {a b c : Quotient r} (f : a.as ⟶ b.as) (g : b.as ⟶ c.as) :
   rfl
 #align category_theory.quotient.comp_mk CategoryTheory.Quotient.comp_mk
 
--- porting note: Had to manually add the proofs of `comp_id` `id_comp` and `assoc`
+-- Porting note: Had to manually add the proofs of `comp_id` `id_comp` and `assoc`
 instance category : Category (Quotient r) where
   Hom := Hom r
   id a := Quot.mk _ (𝟙 a.as)
   comp := @comp _ _ r
-  comp_id f := Quot.inductionOn f $ by simp
-  id_comp f := Quot.inductionOn f $ by simp
-  assoc f g h := Quot.inductionOn f $ Quot.inductionOn g $ Quot.inductionOn h $ by simp
+  comp_id f := Quot.inductionOn f <| by simp
+  id_comp f := Quot.inductionOn f <| by simp
+  assoc f g h := Quot.inductionOn f <| Quot.inductionOn g <| Quot.inductionOn h <| by simp
 #align category_theory.quotient.category CategoryTheory.Quotient.category
 
 /-- The functor from a category to its quotient. -/
@@ -121,7 +121,7 @@ noncomputable instance fullFunctor : Full (functor r) where
     dsimp [functor]
     simp
 
-instance : EssSurj (functor r) where
+instance essSurj_functor : EssSurj (functor r) where
   mem_essImage Y :=
     ⟨Y.as, ⟨eqToIso (by
             ext
@@ -194,10 +194,19 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
     congr
   · rintro _ _ f
     dsimp [lift, Functor]
-    refine Quot.inductionOn f (fun _ ↦ ?_) -- porting note: this line was originally an `apply`
+    refine Quot.inductionOn f (fun _ ↦ ?_) -- Porting note: this line was originally an `apply`
     simp only [Quot.liftOn_mk, Functor.comp_map]
     congr
 #align category_theory.quotient.lift_unique CategoryTheory.Quotient.lift_unique
+
+lemma lift_unique' (F₁ F₂ : Quotient r ⥤ D) (h : functor r ⋙ F₁ = functor r ⋙ F₂) :
+    F₁ = F₂ := by
+  rw [lift_unique r (functor r ⋙ F₂) _ F₂ rfl]; swap
+  · rintro X Y f g h
+    dsimp
+    rw [Quotient.sound r h]
+  apply lift_unique
+  rw [h]
 
 /-- The original functor factors through the induced functor. -/
 def lift.isLift : functor r ⋙ lift r F H ≅ F :=

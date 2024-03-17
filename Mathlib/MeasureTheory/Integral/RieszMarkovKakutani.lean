@@ -51,7 +51,7 @@ section RieszMonotone
 functions f on X such that `f ≥ 1` on K. -/
 theorem rieszContentAux_image_nonempty (K : Compacts X) :
     (Λ '' { f : X →ᵇ ℝ≥0 | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x }).Nonempty := by
-  rw [nonempty_image_iff]
+  rw [image_nonempty]
   use (1 : X →ᵇ ℝ≥0)
   intro x _
   simp only [BoundedContinuousFunction.coe_one, Pi.one_apply]; rfl

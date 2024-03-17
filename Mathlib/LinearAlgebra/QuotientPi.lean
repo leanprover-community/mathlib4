@@ -79,7 +79,7 @@ theorem quotientPiLift_mk (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →�
   rfl
 #align submodule.quotient_pi_lift_mk Submodule.quotientPiLift_mk
 
--- Porting note: split up the definition to avoid timeouts. Still slow.
+-- Porting note (#11083): split up the definition to avoid timeouts. Still slow.
 namespace quotientPi_aux
 
 variable [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))

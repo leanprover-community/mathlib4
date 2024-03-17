@@ -6,9 +6,8 @@ Authors: Adam Topaz, Nick Kuhn, Dagur Asgeirsson
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
 import Mathlib.Condensed.Basic
-import Mathlib.CategoryTheory.Sites.DenseSubsite
+import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 import Mathlib.CategoryTheory.Sites.InducedTopology
-import Mathlib.CategoryTheory.Sites.Closed
 /-!
 # Sheaves on CompHaus are equivalent to sheaves on Stonean
 
@@ -23,7 +22,7 @@ construction of the equivalence of the categories of sheaves, given these three 
 
 ## Main theorems
 
-* `Condensed.StoneanCompHaus.coverDense`, `Condensed.StoneanCompHaus.coverPreserving`,
+* `Condensed.StoneanCompHaus.isCoverDense`, `Condensed.StoneanCompHaus.coverPreserving`,
   `Condensed.StoneanCompHaus.coverLifting`: the three conditions needed to guarantee the equivalence
   of the categories of sheaves on the coherent site on `Stonean` on the one hand and `CompHaus` on
   the other.
@@ -64,14 +63,14 @@ lemma generate_singleton_mem_coherentTopology (B : CompHaus) :
     exact ⟨(), (CompHaus.epi_iff_surjective (presentation.π B)).mp (presentation.epi_π B) b⟩
 
 open CompHaus in
-lemma coverDense : CoverDense (coherentTopology _) Stonean.toCompHaus := by
+instance isCoverDense : Stonean.toCompHaus.IsCoverDense (coherentTopology _)  := by
   constructor
   intro B
   convert generate_singleton_mem_coherentTopology B
   ext Y f
   refine ⟨fun ⟨⟨obj, lift, map, fact⟩⟩ ↦ ?_, fun ⟨Z, h, g, hypo1, hf⟩ ↦ ?_⟩
-  · have : Projective (Stonean.toCompHaus.obj obj) -- Lean should find this instance?
-    · simp only [Stonean.toCompHaus, inducedFunctor_obj]
+  · have : Projective (Stonean.toCompHaus.obj obj) := by -- Lean should find this instance?
+      simp only [Stonean.toCompHaus, inducedFunctor_obj]
       exact inferInstance
     obtain ⟨p, p_factors⟩ := Projective.factors map (CompHaus.presentation.π B)
     exact ⟨(Stonean.toCompHaus.obj (presentation B)), ⟨lift ≫ p, ⟨(presentation.π B),
@@ -80,9 +79,9 @@ lemma coverDense : CoverDense (coherentTopology _) Stonean.toCompHaus := by
     exact ⟨⟨presentation B, h, presentation.π B, hf⟩⟩
 
 theorem coverDense.inducedTopology_Sieve_iff_EffectiveEpiFamily (X : Stonean) (S : Sieve X) :
-    (∃ (α : Type) (_ : Fintype α) (Y : α → Stonean) (π : (a : α) → (Y a ⟶ X)),
-    EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
-    (S ∈ coverDense.inducedTopology X) := by
+    (∃ (α : Type) (_ : Finite α) (Y : α → Stonean) (π : (a : α) → (Y a ⟶ X)),
+      EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
+    (S ∈ Stonean.toCompHaus.inducedTopologyOfIsCoverDense (coherentTopology _) X) := by
   refine ⟨fun ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
   · apply (coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (Sieve.functorPushforward _ S)).mpr
     refine ⟨α, inferInstance, fun i => Stonean.toCompHaus.obj (Y i),
@@ -106,7 +105,8 @@ theorem coverDense.inducedTopology_Sieve_iff_EffectiveEpiFamily (X : Stonean) (S
     rfl
 
 lemma coherentTopology_is_induced :
-    coherentTopology Stonean.{u} = coverDense.inducedTopology := by
+    coherentTopology Stonean.{u} =
+      Stonean.toCompHaus.inducedTopologyOfIsCoverDense (coherentTopology _) := by
   ext X S
   rw [← coverDense.inducedTopology_Sieve_iff_EffectiveEpiFamily X]
   rw [← coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily S]
@@ -114,18 +114,22 @@ lemma coherentTopology_is_induced :
 lemma coverPreserving :
     CoverPreserving (coherentTopology _) (coherentTopology _) Stonean.toCompHaus := by
   rw [coherentTopology_is_induced]
-  exact LocallyCoverDense.inducedTopology_coverPreserving (CoverDense.locallyCoverDense coverDense)
+  apply LocallyCoverDense.inducedTopology_coverPreserving
 
-lemma coverLifting : CoverLifting (coherentTopology _) (coherentTopology _) Stonean.toCompHaus := by
+instance coverLifting :
+    Stonean.toCompHaus.IsCocontinuous (coherentTopology _) (coherentTopology _) := by
   rw [coherentTopology_is_induced]
-  exact LocallyCoverDense.inducedTopology_coverLifting (CoverDense.locallyCoverDense coverDense)
+  apply LocallyCoverDense.inducedTopology_isCocontinuous
+
+instance : Stonean.toCompHaus.IsContinuous (coherentTopology _) (coherentTopology _) :=
+  Functor.IsCoverDense.isContinuous _ _ _ coverPreserving
 
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
     (i.e. condensed sets). -/
 noncomputable
 def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] :
     Sheaf (coherentTopology Stonean) A ≌ Condensed.{u} A :=
-  CoverDense.sheafEquivOfCoverPreservingCoverLifting coverDense coverPreserving coverLifting
+  Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting Stonean.toCompHaus _ _ _
 
 end StoneanCompHaus
 
@@ -155,7 +159,7 @@ lemma generate_singleton_mem_coherentTopology (B : Profinite) :
     exact ⟨(), (Profinite.epi_iff_surjective (presentation.π B)).mp (presentation.epi_π B) b⟩
 
 open Profinite in
-lemma coverDense : CoverDense (coherentTopology _) Stonean.toProfinite := by
+instance coverDense : Stonean.toProfinite.IsCoverDense (coherentTopology _) := by
   constructor
   intro B
   convert generate_singleton_mem_coherentTopology B
@@ -168,9 +172,9 @@ lemma coverDense : CoverDense (coherentTopology _) Stonean.toProfinite := by
     exact ⟨⟨presentation B, h, presentation.π B, hf⟩⟩
 
 theorem coverDense.inducedTopology_Sieve_iff_EffectiveEpiFamily (X : Stonean) (S : Sieve X) :
-    (∃ (α : Type) (_ : Fintype α) (Y : α → Stonean) (π : (a : α) → (Y a ⟶ X)),
-    EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
-    (S ∈ coverDense.inducedTopology X) := by
+    (∃ (α : Type) (_ : Finite α) (Y : α → Stonean) (π : (a : α) → (Y a ⟶ X)),
+      EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
+    (S ∈ Stonean.toProfinite.inducedTopologyOfIsCoverDense (coherentTopology _) X) := by
   refine ⟨fun ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
   · apply (coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (Sieve.functorPushforward _ S)).mpr
     refine ⟨α, inferInstance, fun i => Stonean.toProfinite.obj (Y i),
@@ -194,7 +198,8 @@ theorem coverDense.inducedTopology_Sieve_iff_EffectiveEpiFamily (X : Stonean) (S
     rfl
 
 lemma coherentTopology_is_induced :
-    coherentTopology Stonean.{u} = coverDense.inducedTopology := by
+    coherentTopology Stonean.{u} =
+      Stonean.toProfinite.inducedTopologyOfIsCoverDense (coherentTopology _) := by
   ext X S
   rw [← coverDense.inducedTopology_Sieve_iff_EffectiveEpiFamily X,
     ← coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily S]
@@ -202,18 +207,21 @@ lemma coherentTopology_is_induced :
 lemma coverPreserving :
     CoverPreserving (coherentTopology _) (coherentTopology _) Stonean.toProfinite := by
   rw [coherentTopology_is_induced]
-  exact LocallyCoverDense.inducedTopology_coverPreserving (CoverDense.locallyCoverDense coverDense)
+  apply LocallyCoverDense.inducedTopology_coverPreserving
 
-lemma coverLifting :
-    CoverLifting (coherentTopology _) (coherentTopology _) Stonean.toProfinite := by
+instance isCocontinuous :
+    Stonean.toProfinite.IsCocontinuous (coherentTopology _) (coherentTopology _) := by
   rw [coherentTopology_is_induced]
-  exact LocallyCoverDense.inducedTopology_coverLifting (CoverDense.locallyCoverDense coverDense)
+  apply LocallyCoverDense.inducedTopology_isCocontinuous
+
+instance : Stonean.toProfinite.IsContinuous (coherentTopology _) (coherentTopology _) :=
+  Functor.IsCoverDense.isContinuous _ _ _ coverPreserving
 
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `Profinite`. -/
 noncomputable
 def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] :
     Sheaf (coherentTopology Stonean) A ≌ Sheaf (coherentTopology Profinite) A :=
-  CoverDense.sheafEquivOfCoverPreservingCoverLifting coverDense coverPreserving coverLifting
+  Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting Stonean.toProfinite _ _ _
 
 end StoneanProfinite
 

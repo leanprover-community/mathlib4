@@ -8,6 +8,7 @@ import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.Data.Set.Basic
 
 #align_import topology.category.CompHaus.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -96,15 +97,15 @@ theorem coe_of : (CompHaus.of X : Type _) = X :=
 set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_of CompHaus.coe_of
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
   show TopologicalSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
   show CompactSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
   show T2Space X.toTop from inferInstance
 
@@ -190,11 +191,11 @@ instance : Full compHausToTop :=
 instance : Faithful compHausToTop :=
   show Faithful <| inducedFunctor _ from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
   show CompactSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
   show T2Space X.toTop from inferInstance
 
@@ -340,7 +341,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       rw [Set.disjoint_singleton_right]
       rintro ⟨y', hy'⟩
       exact hy y' hy'
-    obtain ⟨φ, hφ0, hφ1, hφ01⟩ := exists_continuous_zero_one_of_closed hC hD hCD
+    obtain ⟨φ, hφ0, hφ1, hφ01⟩ := exists_continuous_zero_one_of_isClosed hC hD hCD
     haveI : CompactSpace (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.compactSpace
     haveI : T2Space (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.t2Space
     let Z := of (ULift.{u} <| Set.Icc (0 : ℝ) 1)
@@ -363,7 +364,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       change 0 = φ (f x)
       simp only [hφ0 (Set.mem_range_self x), Pi.zero_apply]
     apply_fun fun e => (e y).down.1 at H
-    dsimp at H
+    dsimp [Z] at H
     change 0 = φ y at H
     simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H
     exact zero_ne_one H

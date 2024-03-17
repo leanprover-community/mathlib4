@@ -208,7 +208,7 @@ private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
     restrictNonposSeq s i n ∩ restrictNonposSeq s i m = ∅ := by
   rw [Set.eq_empty_iff_forall_not_mem]
   rintro x ⟨hx₁, hx₂⟩
-  cases m; · rw [Nat.zero_eq] at h; linarith
+  cases m; · rw [Nat.zero_eq] at h; omega
   · rw [restrictNonposSeq] at hx₂
     exact
       (someExistsOneDivLT_subset hx₂).2
@@ -342,7 +342,7 @@ theorem zero_mem_measureOfNegatives : (0 : ℝ) ∈ s.measureOfNegatives :=
 
 theorem bddBelow_measureOfNegatives : BddBelow s.measureOfNegatives := by
   simp_rw [BddBelow, Set.Nonempty, mem_lowerBounds]
-  by_contra' h
+  by_contra! h
   have h' : ∀ n : ℕ, ∃ y : ℝ, y ∈ s.measureOfNegatives ∧ y < -n := fun n => h (-n)
   choose f hf using h'
   have hf' : ∀ n : ℕ, ∃ B, MeasurableSet B ∧ s ≤[B] 0 ∧ s B < -n := by
@@ -395,7 +395,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
   refine' ⟨Aᶜ, hA₁.compl, _, (compl_compl A).symm ▸ hA₂⟩
   rw [restrict_le_restrict_iff _ _ hA₁.compl]
   intro C _ hC₁
-  by_contra' hC₂
+  by_contra! hC₂
   rcases exists_subset_restrict_nonpos hC₂ with ⟨D, hD₁, hD, hD₂, hD₃⟩
   have : s (A ∪ D) < sInf s.measureOfNegatives := by
     rw [← hA₃,
@@ -416,6 +416,7 @@ theorem exists_isCompl_positive_negative (s : SignedMeasure α) :
   ⟨i, iᶜ, hi₁, hi₂, hi₁.compl, hi₃, isCompl_compl⟩
 #align measure_theory.signed_measure.exists_is_compl_positive_negative MeasureTheory.SignedMeasure.exists_isCompl_positive_negative
 
+open scoped symmDiff in
 /-- The symmetric difference of two Hahn decompositions has measure zero. -/
 theorem of_symmDiff_compl_positive_negative {s : SignedMeasure α} {i j : Set α}
     (hi : MeasurableSet i) (hj : MeasurableSet j) (hi' : 0 ≤[i] s ∧ s ≤[iᶜ] 0)

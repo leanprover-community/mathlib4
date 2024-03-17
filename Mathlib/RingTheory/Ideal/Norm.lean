@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
 import Mathlib.Algebra.CharP.Quotient
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.Data.Int.Associated
@@ -81,7 +82,7 @@ theorem cardQuot_bot [Infinite M] : cardQuot (⊥ : Submodule R M) = 0 :=
   AddSubgroup.index_bot.trans Nat.card_eq_zero_of_infinite
 #align submodule.card_quot_bot Submodule.cardQuot_bot
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem cardQuot_top : cardQuot (⊤ : Submodule R M) = 1 :=
   AddSubgroup.index_top
 #align submodule.card_quot_top Submodule.cardQuot_top
@@ -151,8 +152,8 @@ Inspired by [Neukirch], proposition 6.1 -/
 theorem Ideal.exists_mul_add_mem_pow_succ [IsDedekindDomain S] {i : ℕ} (a c : S) (a_mem : a ∈ P ^ i)
     (a_not_mem : a ∉ P ^ (i + 1)) (c_mem : c ∈ P ^ i) :
     ∃ d : S, ∃ e ∈ P ^ (i + 1), a * d + e = c := by
-  suffices eq_b : P ^ i = Ideal.span {a} ⊔ P ^ (i + 1)
-  · rw [eq_b] at c_mem
+  suffices eq_b : P ^ i = Ideal.span {a} ⊔ P ^ (i + 1) by
+    rw [eq_b] at c_mem
     simp only [mul_comm a]
     exact Ideal.mem_span_singleton_sup.mp c_mem
   refine (Ideal.eq_prime_pow_of_succ_lt_of_le hP (lt_of_le_of_ne le_sup_right ?_)
@@ -193,8 +194,8 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] [Module.Finite ℤ S] [Module
   letI := Ideal.fintypeQuotientOfFreeOfNeBot (P ^ i) (pow_ne_zero _ hP)
   letI := Ideal.fintypeQuotientOfFreeOfNeBot P hP
   have : P ^ (i + 1) < P ^ i := Ideal.pow_succ_lt_pow hP i
-  suffices hquot : map (P ^ i.succ).mkQ (P ^ i) ≃ S ⧸ P
-  · rw [pow_succ (cardQuot P), ← ih, cardQuot_apply (P ^ i.succ), ←
+  suffices hquot : map (P ^ i.succ).mkQ (P ^ i) ≃ S ⧸ P by
+    rw [pow_succ (cardQuot P), ← ih, cardQuot_apply (P ^ i.succ), ←
       card_quotient_mul_card_quotient (P ^ i) (P ^ i.succ) this.le, cardQuot_apply (P ^ i),
       cardQuot_apply P]
     congr 1
@@ -243,21 +244,23 @@ theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ
         cardQuot_pow_of_prime hI.ne_zero)
       fun {I J} hIJ => cardQuot_mul_of_coprime <| Ideal.isCoprime_iff_sup_eq.mpr
         (Ideal.isUnit_iff.mp
-          (hIJ _ (Ideal.dvd_iff_le.mpr le_sup_left) (Ideal.dvd_iff_le.mpr le_sup_right)))
+          (hIJ (Ideal.dvd_iff_le.mpr le_sup_left) (Ideal.dvd_iff_le.mpr le_sup_right)))
 #align card_quot_mul cardQuot_mul
 
 /-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`. -/
-noncomputable def Ideal.absNorm [Infinite S] [IsDedekindDomain S] [Module.Free ℤ S]
+noncomputable def Ideal.absNorm [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S]
     [Module.Finite ℤ S] : Ideal S →*₀ ℕ where
   toFun := Submodule.cardQuot
   map_mul' I J := by dsimp only; rw [cardQuot_mul]
   map_one' := by dsimp only; rw [Ideal.one_eq_top, cardQuot_top]
-  map_zero' := by rw [Ideal.zero_eq_bot, cardQuot_bot]
+  map_zero' := by
+    have : Infinite S := Module.Free.infinite ℤ S
+    rw [Ideal.zero_eq_bot, cardQuot_bot]
 #align ideal.abs_norm Ideal.absNorm
 
 namespace Ideal
 
-variable [Infinite S] [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ S]
+variable [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ S]
 
 theorem absNorm_apply (I : Ideal S) : absNorm I = cardQuot I := rfl
 #align ideal.abs_norm_apply Ideal.absNorm_apply
@@ -283,7 +286,7 @@ theorem absNorm_ne_zero_iff (I : Ideal S) : Ideal.absNorm I ≠ 0 ↔ Finite (S 
 /-- Let `e : S ≃ I` be an additive isomorphism (therefore a `ℤ`-linear equiv).
 Then an alternative way to compute the norm of `I` is given by taking the determinant of `e`.
 See `natAbs_det_basis_change` for a more familiar formulation of this result. -/
-theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [AddEquivClass E S I] (e : E) :
+theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivClass E S I] (e : E) :
     Int.natAbs
         (LinearMap.det
           ((Submodule.subtype I).restrictScalars ℤ ∘ₗ AddMonoidHom.toIntLinearMap (e : S →+ I))) =
@@ -404,6 +407,9 @@ theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := b
     rwa [Ideal.span_singleton_le_iff_mem]
   · rintro rfl
     exact absNorm_bot
+
+theorem absNorm_ne_zero_of_nonZeroDivisors (I : (Ideal S)⁰) : Ideal.absNorm (I : Ideal S) ≠ 0 :=
+  Ideal.absNorm_eq_zero_iff.not.mpr <| nonZeroDivisors.coe_ne_zero _
 
 theorem irreducible_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Ideal.absNorm I)) :
     Irreducible I :=
@@ -553,7 +559,7 @@ theorem spanNorm_localization (I : Ideal S) [Module.Finite R S] [Module.Free R S
     [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
     [IsLocalization M Rₘ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ] :
     spanNorm Rₘ (I.map (algebraMap S Sₘ)) = (spanNorm R I).map (algebraMap R Rₘ) := by
-  cases h : subsingleton_or_nontrivial R
+  cases subsingleton_or_nontrivial R
   · haveI := IsLocalization.unique R Rₘ M
     simp [eq_iff_true_of_subsingleton]
   let b := Module.Free.chooseBasis R S
@@ -580,7 +586,7 @@ theorem spanNorm_mul_spanNorm_le (I J : Ideal S) :
     spanNorm R I * spanNorm R J ≤ spanNorm R (I * J) := by
   rw [spanNorm, spanNorm, spanNorm, Ideal.span_mul_span', ← Set.image_mul]
   refine Ideal.span_mono (Set.monotone_image ?_)
-  rintro _ ⟨x, y, hxI, hyJ, rfl⟩
+  rintro _ ⟨x, hxI, y, hyJ, rfl⟩
   exact Ideal.mul_mem_mul hxI hyJ
 #align ideal.span_norm_mul_span_norm_le Ideal.spanNorm_mul_spanNorm_le
 

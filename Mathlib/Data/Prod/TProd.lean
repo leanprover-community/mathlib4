@@ -10,7 +10,7 @@ import Mathlib.Data.List.Nodup
 # Finite products of types
 
 This file defines the product of types over a list. For `l : List ι` and `α : ι → Type v` we define
-`List.TProd α l = l.foldr (λ i β, α i × β) PUnit`.
+`List.TProd α l = l.foldr (fun i β ↦ α i × β) PUnit`.
 This type should not be used if `∀ i, α i` or `∀ i ∈ l, α i` can be used instead
 (in the last expression, we could also replace the list `l` by a set or a finset).
 This type is used as an intermediary between binary products and finitary products.
@@ -24,7 +24,7 @@ construction/theorem that is easier to define/prove on binary products than on f
 * Then we can use the equivalence `List.TProd.piEquivTProd` below (or enhanced versions of it,
   like a `MeasurableEquiv` for product measures) to get the construction on `∀ i : ι, α i`, at
   least when assuming `[Fintype ι] [Encodable ι]` (using `Encodable.sortedUniv`).
-  Using `local attribute [instance] Fintype.toEncodable` we can get rid of the argument
+  Using `attribute [local instance] Fintype.toEncodable` we can get rid of the argument
   `[Encodable ι]`.
 
 ## Main definitions
@@ -109,7 +109,6 @@ theorem elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (
     · subst hji
       simp
     · rw [TProd.elim_of_ne _ hji, snd_mk, elim_mk is]
-    termination_by elim_mk l f j hj => l.length
 #align list.tprod.elim_mk List.TProd.elim_mk
 
 @[ext]

@@ -59,6 +59,10 @@ theorem natDegree_sum_le (f : ι → S[X]) :
   simpa using natDegree_multiset_sum_le (s.val.map f)
 #align polynomial.nat_degree_sum_le Polynomial.natDegree_sum_le
 
+lemma natDegree_sum_le_of_forall_le {n : ℕ} (f : ι → S[X]) (h : ∀ i ∈ s, natDegree (f i) ≤ n) :
+    natDegree (∑ i in s, f i) ≤ n :=
+  le_trans (natDegree_sum_le s f) <| (Finset.fold_max_le n).mpr <| by simpa
+
 theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).maximum := by
   by_cases h : l.sum = 0
   · simp [h]
@@ -99,7 +103,7 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
       simpa using hl'
     have hdn : natDegree hd ≤ n := hl _ (List.mem_cons_self _ _)
     rcases hdn.eq_or_lt with (rfl | hdn')
-    · cases' h.eq_or_lt with h' h'
+    · rcases h.eq_or_lt with h' | h'
       · rw [← h', coeff_mul_degree_add_degree, leadingCoeff, leadingCoeff]
       · rw [coeff_eq_zero_of_natDegree_lt, coeff_eq_zero_of_natDegree_lt h', mul_zero]
         exact natDegree_mul_le.trans_lt (add_lt_add_left h' _)

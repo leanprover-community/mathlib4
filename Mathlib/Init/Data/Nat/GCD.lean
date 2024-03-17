@@ -5,8 +5,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 
 -/
 
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Meta.WellFoundedTactics
+import Std.Data.Nat.Gcd
+import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Mathport.Rename
 
 #align_import init.data.nat.gcd from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 

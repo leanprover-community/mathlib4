@@ -6,7 +6,8 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.Field.Pi
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Topology.Algebra.Order.UpperLower
+import Mathlib.Algebra.Order.UpperLower
+import Mathlib.Data.Real.Sqrt
 
 #align_import analysis.normed.order.upper_lower from "leanprover-community/mathlib"@"992efbda6f85a5c9074375d3c7cb9764c64d8f72"
 

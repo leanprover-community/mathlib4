@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.Order.Copy
+import Mathlib.Data.Set.Basic
 
 #align_import category_theory.sites.grothendieck from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
@@ -25,8 +26,9 @@ Two explicit examples of Grothendieck topologies are given:
 as well as the complete lattice structure on Grothendieck topologies (which gives two additional
 explicit topologies: the discrete and trivial topologies.)
 
-A pretopology, or a basis for a topology is defined in `Pretopology.lean`. The topology associated
-to a topological space is defined in `Spaces.lean`.
+A pretopology, or a basis for a topology is defined in
+`Mathlib/CategoryTheory/Sites/Pretopology.lean`. The topology associated
+to a topological space is defined in `Mathlib/CategoryTheory/Sites/Spaces.lean`.
 
 ## Tags
 
@@ -306,7 +308,7 @@ instance : CompleteLattice (GrothendieckTopology C) :=
       · intro X S hS
         rw [trivial_covering] at hS
         apply covering_of_eq_top _ hS
-      · refine' @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_sInf) (trivial C))
+      · exact @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_sInf) (trivial C))
     _ rfl _ rfl _ rfl sInf rfl
 
 instance : Inhabited (GrothendieckTopology C) :=
@@ -400,7 +402,7 @@ def atomic (hro : RightOreCondition C) : GrothendieckTopology C
 
 /-- `J.Cover X` denotes the poset of covers of `X` with respect to the
 Grothendieck topology `J`. -/
--- porting note : Lean 3 inferred `Type max u v`, Lean 4 by default gives `Type (max 0 u v)`
+-- Porting note: Lean 3 inferred `Type max u v`, Lean 4 by default gives `Type (max 0 u v)`
 def Cover (X : C) : Type max u v :=
   { S : Sieve X // S ∈ J X } -- deriving Preorder
 #align category_theory.grothendieck_topology.cover CategoryTheory.GrothendieckTopology.Cover
@@ -606,7 +608,7 @@ def bind {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : J.Cover X 
     J.bind_covering S.condition fun _ _ _ => (T _).condition⟩
 #align category_theory.grothendieck_topology.cover.bind CategoryTheory.GrothendieckTopology.Cover.bind
 
-/-- The canonical moprhism from `S.bind T` to `T`. -/
+/-- The canonical morphism from `S.bind T` to `T`. -/
 def bindToBase {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : S.bind T ⟶ S :=
   homOfLE <| by
     rintro Y f ⟨Z, e1, e2, h1, _, h3⟩

@@ -89,8 +89,9 @@ theorem lie_abelian_iff_equiv_lie_abelian {R : Type u} {L₁ : Type v} {L₂ : T
 #align lie_abelian_iff_equiv_lie_abelian lie_abelian_iff_equiv_lie_abelian
 
 theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
-    IsCommutative A (· * ·) ↔ IsLieAbelian A := by
-  have h₁ : IsCommutative A (· * ·) ↔ ∀ a b : A, a * b = b * a := ⟨fun h => h.1, fun h => ⟨h⟩⟩
+    Std.Commutative (α := A) (· * ·) ↔ IsLieAbelian A := by
+  have h₁ : Std.Commutative (α := A) (· * ·) ↔ ∀ a b : A, a * b = b * a :=
+    ⟨fun h => h.1, fun h => ⟨h⟩⟩
   have h₂ : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
   simp only [h₁, h₂, LieRing.of_associative_ring_bracket, sub_eq_zero]
 #align commutative_ring_iff_abelian_lie_ring commutative_ring_iff_abelian_lie_ring
@@ -284,11 +285,20 @@ theorem isLieAbelian_iff_center_eq_top : IsLieAbelian L ↔ center R L = ⊤ :=
 
 end LieAlgebra
 
-variable {R L} in
-lemma LieModule.commute_toEndomorphism_of_mem_center_left
-    {x : L} (hx : x ∈ LieAlgebra.center R L) (y : L) :
+namespace LieModule
+
+variable {R L}
+variable {x : L} (hx : x ∈ LieAlgebra.center R L) (y : L)
+
+lemma commute_toEndomorphism_of_mem_center_left :
     Commute (toEndomorphism R L M x) (toEndomorphism R L M y) := by
   rw [Commute.symm_iff, commute_iff_lie_eq, ← LieHom.map_lie, hx y, LieHom.map_zero]
+
+lemma commute_toEndomorphism_of_mem_center_right :
+    Commute (toEndomorphism R L M y) (toEndomorphism R L M x) :=
+  (LieModule.commute_toEndomorphism_of_mem_center_left M hx y).symm
+
+end LieModule
 
 end Center
 
@@ -306,7 +316,7 @@ variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 @[simp]
 theorem LieSubmodule.trivial_lie_oper_zero [LieModule.IsTrivial L M] : ⁅I, N⁆ = ⊥ := by
-  suffices : ⁅I, N⁆ ≤ ⊥; exact le_bot_iff.mp this
+  suffices ⁅I, N⁆ ≤ ⊥ from le_bot_iff.mp this
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
   rintro m ⟨x, n, h⟩; rw [trivial_lie_zero] at h; simp [← h]
 #align lie_submodule.trivial_lie_oper_zero LieSubmodule.trivial_lie_oper_zero

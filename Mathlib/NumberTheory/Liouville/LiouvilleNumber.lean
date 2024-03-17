@@ -131,7 +131,7 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
     -- factor the constant `(1 / m ^ (n + 1)!)` out of the series
     _ = (∑' i, (1 / m) ^ i) * (1 / m ^ (n + 1)!) := tsum_mul_right
     -- the series is the geometric series
-    _ = (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) := by rw [tsum_geometric_of_lt_1 (by positivity) mi]
+    _ = (1 - 1 / m)⁻¹ * (1 / m ^ (n + 1)!) := by rw [tsum_geometric_of_lt_one (by positivity) mi]
 #align liouville_number.remainder_lt' LiouvilleNumber.remainder_lt'
 
 theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
@@ -142,7 +142,7 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
       -- the first factors satisfy the inequality `sub_one_div_inv_le_two`
       mul_le_mul_of_nonneg_right (sub_one_div_inv_le_two hm) (by positivity)
     _ = 2 / m ^ (n + 1)! := (mul_one_div 2 _)
-    _ = 2 / m ^ (n ! * (n + 1)) := (congr_arg ((· / ·) 2) (congr_arg (Pow.pow m) (mul_comm _ _)))
+    _ = 2 / m ^ (n ! * (n + 1)) := (congr_arg (2 / ·) (congr_arg (Pow.pow m) (mul_comm _ _)))
     _ ≤ 1 / m ^ (n ! * n) := by
       -- [NB: in this block, I do not follow the brace convention for subgoals -- I wait until
       -- I solve all extraneous goals at once with `exact pow_pos (zero_lt_two.trans_le hm) _`.]
@@ -155,8 +155,8 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
       any_goals exact pow_pos (zero_lt_two.trans_le hm) _
       -- `2 ≤ m ^ n!` is a consequence of monotonicity of exponentiation at `2 ≤ m`.
       exact _root_.trans (_root_.trans hm (pow_one _).symm.le)
-        (pow_mono (one_le_two.trans hm) n.factorial_pos)
-    _ = 1 / (m ^ n !) ^ n := congr_arg ((· / ·) 1) (pow_mul m n ! n)
+        (pow_right_mono (one_le_two.trans hm) n.factorial_pos)
+    _ = 1 / (m ^ n !) ^ n := congr_arg (1 / ·) (pow_mul m n ! n)
 #align liouville_number.aux_calc LiouvilleNumber.aux_calc
 
 /-- An upper estimate on the remainder. This estimate works with `m ∈ ℝ` satisfying `2 ≤ m` and is

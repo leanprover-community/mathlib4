@@ -3,7 +3,7 @@ Copyright (c) 2022 Dagur Tómas Ásgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Tómas Ásgeirsson, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Basic
 
 #align_import data.set.bool_indicator from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
@@ -42,7 +42,7 @@ theorem preimage_boolIndicator_false : s.boolIndicator ⁻¹' {false} = sᶜ :=
   ext fun x ↦ (s.not_mem_iff_boolIndicator x).symm
 #align set.preimage_bool_indicator_false Set.preimage_boolIndicator_false
 
-open Classical
+open scoped Classical
 
 theorem preimage_boolIndicator_eq_union (t : Set Bool) :
     s.boolIndicator ⁻¹' t = (if true ∈ t then s else ∅) ∪ if false ∈ t then sᶜ else ∅ := by

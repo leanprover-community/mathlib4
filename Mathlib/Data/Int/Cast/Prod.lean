@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Nat.Cast.Prod
 
 #align_import data.int.cast.prod from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
@@ -20,8 +19,9 @@ variable {α β : Type*} [AddGroupWithOne α] [AddGroupWithOne β]
 instance : AddGroupWithOne (α × β) :=
   { Prod.instAddMonoidWithOne, Prod.instAddGroup with
     intCast := fun n => (n, n)
-    intCast_ofNat := fun _ => by simp; rfl
-    intCast_negSucc := fun _ => by simp; rfl }
+    intCast_ofNat := fun _ => by simp only [Int.cast_ofNat]; rfl
+    intCast_negSucc := fun _ => by simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one,
+                                    neg_add_rev]; rfl }
 
 @[simp]
 theorem fst_intCast (n : ℤ) : (n : α × β).fst = n :=

@@ -56,12 +56,11 @@ Lots is missing!
 -- A "better" definition of `trunc` would be as an `R`-linear map.  This works:
 --  ```
 --  def trunc : R[T;T⁻¹] →[R] R[X] :=
---  begin
---    refine (_ : R[ℕ] →[R] R[X]).comp _,
---    { exact ⟨(toFinsuppIso R).symm, by simp⟩ },
---    { refine ⟨λ r, comapDomain _ r (Set.injOn_of_injective (λ a b ab, Int.ofNat.inj ab) _), _⟩,
---      exact λ r f, comapDomain_smul _ _ _ }
---  end
+--    refine (?_ : R[ℕ] →[R] R[X]).comp ?_
+--    · exact ⟨(toFinsuppIso R).symm, by simp⟩
+--    · refine ⟨fun r ↦ comapDomain _ r
+--        (Set.injOn_of_injective (fun _ _ ↦ Int.ofNat.inj) _), ?_⟩
+--      exact fun r f ↦ comapDomain_smul ..
 --  ```
 --  but it would make sense to bundle the maps better, for a smoother user experience.
 --  I (DT) did not have the strength to embark on this (possibly short!) journey, after getting to
@@ -243,25 +242,25 @@ theorem _root_.Polynomial.toLaurent_X : (toLaurent Polynomial.X : R[T;T⁻¹]) =
 set_option linter.uppercaseLean3 false in
 #align polynomial.to_laurent_X Polynomial.toLaurent_X
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem _root_.Polynomial.toLaurent_one : (Polynomial.toLaurent : R[X] → R[T;T⁻¹]) 1 = 1 :=
   map_one Polynomial.toLaurent
 #align polynomial.to_laurent_one Polynomial.toLaurent_one
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem _root_.Polynomial.toLaurent_C_mul_eq (r : R) (f : R[X]) :
     toLaurent (Polynomial.C r * f) = C r * toLaurent f := by
   simp only [_root_.map_mul, Polynomial.toLaurent_C]
 set_option linter.uppercaseLean3 false in
 #align polynomial.to_laurent_C_mul_eq Polynomial.toLaurent_C_mul_eq
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem _root_.Polynomial.toLaurent_X_pow (n : ℕ) : toLaurent (X ^ n : R[X]) = T n := by
   simp only [map_pow, Polynomial.toLaurent_X, T_pow, mul_one]
 set_option linter.uppercaseLean3 false in
 #align polynomial.to_laurent_X_pow Polynomial.toLaurent_X_pow
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem _root_.Polynomial.toLaurent_C_mul_X_pow (n : ℕ) (r : R) :
     toLaurent (Polynomial.C r * X ^ n) = C r * T n := by
   simp only [_root_.map_mul, Polynomial.toLaurent_C, Polynomial.toLaurent_X_pow]
@@ -356,7 +355,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
   have : Function.Injective Int.ofNat := fun x y h => Int.ofNat_inj.mp h
   apply (toFinsuppIso R).injective
   rw [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply]
-  -- Porting note: was `rw`
+  -- Porting note (#10691): was `rw`
   erw [comapDomain.addMonoidHom_apply this]
   rw [toFinsuppIso_apply]
   -- Porting note: rewrote proof below relative to mathlib3.

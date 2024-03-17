@@ -28,11 +28,11 @@ open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Bornology
 
 open scoped Topology Interval ENNReal BigOperators
 
-variable {X Y E R : Type*} [MeasurableSpace X] [TopologicalSpace X]
+variable {X Y E F R : Type*} [MeasurableSpace X] [TopologicalSpace X]
 
 variable [MeasurableSpace Y] [TopologicalSpace Y]
 
-variable [NormedAddCommGroup E] {f g : X → E} {μ : Measure X} {s : Set X}
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] {f g : X → E} {μ : Measure X} {s : Set X}
 
 namespace MeasureTheory
 
@@ -45,16 +45,23 @@ def LocallyIntegrableOn (f : X → E) (s : Set X) (μ : Measure X := by volume_t
   ∀ x : X, x ∈ s → IntegrableAtFilter f (𝓝[s] x) μ
 #align measure_theory.locally_integrable_on MeasureTheory.LocallyIntegrableOn
 
-theorem LocallyIntegrableOn.mono (hf : MeasureTheory.LocallyIntegrableOn f s μ) {t : Set X}
+theorem LocallyIntegrableOn.mono_set (hf : LocallyIntegrableOn f s μ) {t : Set X}
     (hst : t ⊆ s) : LocallyIntegrableOn f t μ := fun x hx =>
   (hf x <| hst hx).filter_mono (nhdsWithin_mono x hst)
-#align measure_theory.locally_integrable_on.mono MeasureTheory.LocallyIntegrableOn.mono
+#align measure_theory.locally_integrable_on.mono MeasureTheory.LocallyIntegrableOn.mono_set
 
 theorem LocallyIntegrableOn.norm (hf : LocallyIntegrableOn f s μ) :
     LocallyIntegrableOn (fun x => ‖f x‖) s μ := fun t ht =>
   let ⟨U, hU_nhd, hU_int⟩ := hf t ht
   ⟨U, hU_nhd, hU_int.norm⟩
 #align measure_theory.locally_integrable_on.norm MeasureTheory.LocallyIntegrableOn.norm
+
+theorem LocallyIntegrableOn.mono (hf : LocallyIntegrableOn f s μ) {g : X → F}
+    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖g x‖ ≤ ‖f x‖) :
+    LocallyIntegrableOn g s μ := by
+  intro x hx
+  rcases hf x hx with ⟨t, t_mem, ht⟩
+  exact ⟨t, t_mem, Integrable.mono ht hg.restrict (ae_restrict_of_ae h)⟩
 
 theorem IntegrableOn.locallyIntegrableOn (hf : IntegrableOn f s μ) : LocallyIntegrableOn f s μ :=
   fun _ _ => ⟨s, self_mem_nhdsWithin, hf⟩
@@ -69,7 +76,7 @@ theorem LocallyIntegrableOn.integrableOn_isCompact (hf : LocallyIntegrableOn f s
 
 theorem LocallyIntegrableOn.integrableOn_compact_subset (hf : LocallyIntegrableOn f s μ) {t : Set X}
     (hst : t ⊆ s) (ht : IsCompact t) : IntegrableOn f t μ :=
-  (hf.mono hst).integrableOn_isCompact ht
+  (hf.mono_set hst).integrableOn_isCompact ht
 #align measure_theory.locally_integrable_on.integrable_on_compact_subset MeasureTheory.LocallyIntegrableOn.integrableOn_compact_subset
 
 /-- If a function `f` is locally integrable on a set `s` in a second countable topological space,
@@ -82,7 +89,7 @@ theorem LocallyIntegrableOn.exists_countable_integrableOn [SecondCountableTopolo
     rintro ⟨x, hx⟩
     rcases hf x hx with ⟨t, ht, h't⟩
     rcases mem_nhdsWithin.1 ht with ⟨u, u_open, x_mem, u_sub⟩
-    refine' ⟨u, u_open, x_mem, h't.mono_set u_sub⟩
+    exact ⟨u, u_open, x_mem, h't.mono_set u_sub⟩
   choose u u_open xu hu using this
   obtain ⟨T, T_count, hT⟩ : ∃ T : Set s, T.Countable ∧ s ⊆ ⋃ i ∈ T, u i := by
     have : s ⊆ ⋃ x : s, u x := fun y hy => mem_iUnion_of_mem ⟨y, hy⟩ (xu ⟨y, hy⟩)
@@ -103,7 +110,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
   rcases hf.exists_countable_integrableOn with ⟨T, T_count, T_open, sT, hT⟩
   let T' : Set (Set X) := insert ∅ T
   have T'_count : T'.Countable := Countable.insert ∅ T_count
-  have T'_ne : T'.Nonempty := by simp only [insert_nonempty]
+  have T'_ne : T'.Nonempty := by simp only [T', insert_nonempty]
   rcases T'_count.exists_eq_range T'_ne with ⟨u, hu⟩
   refine' ⟨u, _, _, _⟩
   · intro n
@@ -171,6 +178,11 @@ def LocallyIntegrable (f : X → E) (μ : Measure X := by volume_tac) : Prop :=
   ∀ x : X, IntegrableAtFilter f (𝓝 x) μ
 #align measure_theory.locally_integrable MeasureTheory.LocallyIntegrable
 
+theorem locallyIntegrable_comap (hs : MeasurableSet s) :
+    LocallyIntegrable (fun x : s ↦ f x) (μ.comap Subtype.val) ↔ LocallyIntegrableOn f s μ := by
+  simp_rw [LocallyIntegrableOn, Subtype.forall', ← map_nhds_subtype_val]
+  exact forall_congr' fun _ ↦ (MeasurableEmbedding.subtype_coe hs).integrableAtFilter_iff_comap.symm
+
 theorem locallyIntegrableOn_univ : LocallyIntegrableOn f univ μ ↔ LocallyIntegrable f μ := by
   simp only [LocallyIntegrableOn, nhdsWithin_univ, mem_univ, true_imp_iff]; rfl
 #align measure_theory.locally_integrable_on_univ MeasureTheory.locallyIntegrableOn_univ
@@ -182,6 +194,12 @@ theorem LocallyIntegrable.locallyIntegrableOn (hf : LocallyIntegrable f μ) (s :
 theorem Integrable.locallyIntegrable (hf : Integrable f μ) : LocallyIntegrable f μ := fun _ =>
   hf.integrableAtFilter _
 #align measure_theory.integrable.locally_integrable MeasureTheory.Integrable.locallyIntegrable
+
+theorem LocallyIntegrable.mono (hf : LocallyIntegrable f μ) {g : X → F}
+    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖g x‖ ≤ ‖f x‖) :
+    LocallyIntegrable g μ := by
+  rw [← locallyIntegrableOn_univ] at hf ⊢
+  exact hf.mono hg h
 
 /-- If `f` is locally integrable with respect to `μ.restrict s`, it is locally integrable on `s`.
 (See `locallyIntegrableOn_iff_locallyIntegrable_restrict` for an iff statement when `s` is
@@ -364,6 +382,15 @@ theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
     exact hf.integrableOn_isCompact hK
   · exact hg.memℒp_top_of_hasCompactSupport h'g μ
 
+open Filter
+
+theorem integrable_iff_integrableAtFilter_cocompact :
+    Integrable f μ ↔ (IntegrableAtFilter f (cocompact X) μ ∧ LocallyIntegrable f μ) := by
+  refine ⟨fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩, fun ⟨⟨s, hsc, hs⟩, hloc⟩ ↦ ?_⟩
+  obtain ⟨t, htc, ht⟩ := mem_cocompact'.mp hsc
+  rewrite [← integrableOn_univ, ← compl_union_self s, integrableOn_union]
+  exact ⟨(hloc.integrableOn_isCompact htc).mono ht le_rfl, hs⟩
+
 end MeasureTheory
 
 open MeasureTheory
@@ -494,8 +521,8 @@ theorem Monotone.locallyIntegrable [IsLocallyFiniteMeasure μ] (hmono : Monotone
     LocallyIntegrable f μ := by
   intro x
   rcases μ.finiteAt_nhds x with ⟨U, hU, h'U⟩
-  obtain ⟨a, b, xab, hab, abU⟩ : ∃ a b : X, x ∈ Icc a b ∧ Icc a b ∈ 𝓝 x ∧ Icc a b ⊆ U
-  exact exists_Icc_mem_subset_of_mem_nhds hU
+  obtain ⟨a, b, xab, hab, abU⟩ : ∃ a b : X, x ∈ Icc a b ∧ Icc a b ∈ 𝓝 x ∧ Icc a b ⊆ U :=
+    exists_Icc_mem_subset_of_mem_nhds hU
   have ab : a ≤ b := xab.1.trans xab.2
   refine' ⟨Icc a b, hab, _⟩
   exact

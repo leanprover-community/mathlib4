@@ -504,7 +504,7 @@ theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module
 
 /-- The determinant of a family of vectors with respect to some basis, as an alternating
 multilinear map. -/
-nonrec def Basis.det : AlternatingMap R M R ι where
+nonrec def Basis.det : M [⋀^ι]→ₗ[R] R where
   toFun v := det (e.toMatrix v)
   map_add' := by
     intro inst v i x y
@@ -553,7 +553,7 @@ theorem is_basis_iff_det {v : ι → M} :
     rw [e.det_apply]
     convert LinearEquiv.isUnit_det (LinearEquiv.refl R M) v' e using 2
     ext i j
-    simp
+    simp [v']
   · intro h
     rw [Basis.det_apply, Basis.toMatrix_eq_toMatrix_constr] at h
     set v' := Basis.map e (LinearEquiv.ofIsUnitDet h) with v'_def
@@ -570,7 +570,7 @@ theorem Basis.isUnit_det (e' : Basis ι R M) : IsUnit (e.det e') :=
 
 /-- Any alternating map to `R` where `ι` has the cardinality of a basis equals the determinant
 map with respect to that basis, multiplied by the value of that alternating map on that basis. -/
-theorem AlternatingMap.eq_smul_basis_det (f : AlternatingMap R M R ι) : f = f e • e.det := by
+theorem AlternatingMap.eq_smul_basis_det (f : M [⋀^ι]→ₗ[R] R) : f = f e • e.det := by
   refine' Basis.ext_alternating e fun i h => _
   let σ : Equiv.Perm ι := Equiv.ofBijective i (Finite.injective_iff_bijective.1 h)
   change f (e ∘ σ) = (f e • e.det) (e ∘ σ)
@@ -579,7 +579,7 @@ theorem AlternatingMap.eq_smul_basis_det (f : AlternatingMap R M R ι) : f = f e
 
 @[simp]
 theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
-    (f : AlternatingMap R M R ι) : f e = 0 ↔ f = 0 :=
+    (f : M [⋀^ι]→ₗ[R] R) : f e = 0 ↔ f = 0 :=
   ⟨fun h => by
     cases nonempty_fintype ι
     letI := Classical.decEq ι
@@ -588,7 +588,7 @@ theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis
 #align alternating_map.map_basis_eq_zero_iff AlternatingMap.map_basis_eq_zero_iff
 
 theorem AlternatingMap.map_basis_ne_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
-    (f : AlternatingMap R M R ι) : f e ≠ 0 ↔ f ≠ 0 :=
+    (f : M [⋀^ι]→ₗ[R] R) : f e ≠ 0 ↔ f ≠ 0 :=
   not_congr <| f.map_basis_eq_zero_iff e
 #align alternating_map.map_basis_ne_zero_iff AlternatingMap.map_basis_ne_zero_iff
 
@@ -623,7 +623,7 @@ theorem Basis.det_reindex' {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Ba
 
 theorem Basis.det_reindex_symm {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M)
     (v : ι → M) (e : ι' ≃ ι) : (b.reindex e.symm).det (v ∘ e) = b.det v := by
-  rw [Basis.det_reindex, Function.comp.assoc, e.self_comp_symm, Function.comp.right_id]
+  rw [Basis.det_reindex, Function.comp.assoc, e.self_comp_symm, Function.comp_id]
 #align basis.det_reindex_symm Basis.det_reindex_symm
 
 @[simp]
@@ -669,7 +669,8 @@ theorem Basis.det_unitsSMul (e : Basis ι R M) (w : ι → Rˣ) :
       (↑(∏ i, w i)⁻¹ : R) • Matrix.det fun i j => e.repr (f j) i
   simp only [e.repr_unitsSMul]
   convert Matrix.det_mul_column (fun i => (↑(w i)⁻¹ : R)) fun i j => e.repr (f j) i
-  simp only [← Finset.prod_inv_distrib] -- Porting note: was `simp [← Finset.prod_inv_distrib]`
+  -- porting note (#10745): was `simp [← Finset.prod_inv_distrib]`
+  simp only [← Finset.prod_inv_distrib]
   norm_cast
 #align basis.det_units_smul Basis.det_unitsSMul
 

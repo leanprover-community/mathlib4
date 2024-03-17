@@ -42,7 +42,7 @@ and returns the value associated with this key if it exists.
 Otherwise, it fails.
 -/
 def List.findDefeq (red : TransparencyMode) (m : List (Expr × v)) (e : Expr) : MetaM v := do
-  if let some (_, n) ← m.findM? $ fun ⟨e', _⟩ => withTransparency red (isDefEq e e') then
+  if let some (_, n) ← m.findM? fun ⟨e', _⟩ => withTransparency red (isDefEq e e') then
     return n
   else
     failure
@@ -189,7 +189,7 @@ but each monomial key is replaced with its index according to `map`.
 If any new monomials are encountered, they are assigned variable numbers and `map` is updated.
  -/
 def elimMonom (s : Sum) (m : Map Monom ℕ) : Map Monom ℕ × Map ℕ ℤ :=
-  s.foldr (λ mn coeff ⟨map, out⟩ =>
+  s.foldr (fun mn coeff ⟨map, out⟩ ↦
     match map.find? mn with
     | some n => ⟨map, out.insert n coeff⟩
     | none =>

@@ -35,7 +35,7 @@ theorem Option.id_traverse {α} (x : Option α) : Option.traverse (pure : α →
 #align option.id_traverse Option.id_traverse
 
 theorem Option.comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : Option α) :
-    Option.traverse (Comp.mk ∘ (· <$> ·) f ∘ g) x =
+    Option.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
       Comp.mk (Option.traverse f <$> Option.traverse g x) :=
   by cases x <;> simp! [functor_norm] <;> rfl
 #align option.comp_traverse Option.comp_traverse
@@ -79,7 +79,7 @@ protected theorem id_traverse {α} (xs : List α) : List.traverse (pure : α →
 #align list.id_traverse List.id_traverse
 
 protected theorem comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : List α) :
-    List.traverse (Comp.mk ∘ (· <$> ·) f ∘ g) x = Comp.mk (List.traverse f <$> List.traverse g x) :=
+    List.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x = Comp.mk (List.traverse f <$> List.traverse g x) :=
   by induction x <;> simp! [*, functor_norm] <;> rfl
 #align list.comp_traverse List.comp_traverse
 
@@ -166,7 +166,7 @@ protected theorem id_traverse {σ α} (x : σ ⊕ α) :
 #align sum.id_traverse Sum.id_traverse
 
 protected theorem comp_traverse {α β γ : Type u} (f : β → F γ) (g : α → G β) (x : σ ⊕ α) :
-    Sum.traverse (Comp.mk ∘ (· <$> ·) f ∘ g) x =
+    Sum.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
     Comp.mk.{u} (Sum.traverse f <$> Sum.traverse g x) := by
   cases x <;> simp! [Sum.traverse, map_id, functor_norm] <;> rfl
 #align sum.comp_traverse Sum.comp_traverse
@@ -177,7 +177,7 @@ protected theorem traverse_eq_map_id {α β} (f : α → β) (x : σ ⊕ α) :
 #align sum.traverse_eq_map_id Sum.traverse_eq_map_id
 
 protected theorem map_traverse {α β γ} (g : α → G β) (f : β → γ) (x : σ ⊕ α) :
-    (· <$> ·) f <$> Sum.traverse g x = Sum.traverse ((· <$> ·) f ∘ g) x := by
+    (f <$> ·) <$> Sum.traverse g x = Sum.traverse (f <$> g ·) x := by
   cases x <;> simp [Sum.traverse, id_map, functor_norm] <;> congr
 #align sum.map_traverse Sum.map_traverse
 

@@ -3,11 +3,10 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-
-import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
-import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
+import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Relating unital and non-unital substructures
@@ -127,11 +126,12 @@ are a commutative ring. When the scalars are a field, one should use the more na
 `NonUnitalStarSubalgebra.unitization_injective` whose hypothesis is easier to verify. -/
 theorem _root_.AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R] [Ring A]
     [Algebra R A] [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A]
-    (s : S) (h : ∀ r, r ≠ 0 → algebraMap R A r ∉ s) [AlgHomClass F R (Unitization R s) A] (f : F)
-    (hf : ∀ x : s, f x = x) : Function.Injective f := by
-  refine' (injective_iff_map_eq_zero _).mpr fun x hx => _
+    (s : S) (h : ∀ r, r ≠ 0 → algebraMap R A r ∉ s)
+    [FunLike F (Unitization R s) A] [AlgHomClass F R (Unitization R s) A]
+    (f : F) (hf : ∀ x : s, f x = x) : Function.Injective f := by
+  refine' (injective_iff_map_eq_zero f).mpr fun x hx => _
   induction' x using Unitization.ind with r a
-  simp_rw [map_add, hf, ←Unitization.algebraMap_eq_inl, AlgHomClass.commutes] at hx
+  simp_rw [map_add, hf, ← Unitization.algebraMap_eq_inl, AlgHomClass.commutes] at hx
   rw [add_eq_zero_iff_eq_neg] at hx ⊢
   by_cases hr : r = 0
   · ext <;> simp [hr] at hx ⊢
@@ -142,8 +142,8 @@ theorem _root_.AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R]
 `NonUnitalSubalgebra.unitization_injective` and `NonUnitalStarSubalgebra.unitization_injective`. -/
 theorem _root_.AlgHomClass.unitization_injective {F R S A : Type*} [Field R] [Ring A]
     [Algebra R A] [SetLike S A] [hSA : NonUnitalSubringClass S A] [hSRA : SMulMemClass S R A]
-    (s : S) (h1 : 1 ∉ s) [AlgHomClass F R (Unitization R s) A] (f : F)
-    (hf : ∀ x : s, f x = x) : Function.Injective f := by
+    (s : S) (h1 : 1 ∉ s) [FunLike F (Unitization R s) A] [AlgHomClass F R (Unitization R s) A]
+    (f : F) (hf : ∀ x : s, f x = x) : Function.Injective f := by
   refine AlgHomClass.unitization_injective' s (fun r hr hr' ↦ ?_) f hf
   rw [Algebra.algebraMap_eq_smul_one] at hr'
   exact h1 <| inv_smul_smul₀ hr (1 : A) ▸ SMulMemClass.smul_mem r⁻¹ hr'
@@ -167,7 +167,7 @@ noncomputable def unitizationAlgEquiv (h1 : (1 : A) ∉ s) :
   AlgEquiv.ofBijective algHom <| by
     refine ⟨?_, fun x ↦ ?_⟩
     · have := AlgHomClass.unitization_injective s h1
-        ((Subalgebra.val _).comp algHom) fun _ ↦ by simp
+        ((Subalgebra.val _).comp algHom) fun _ ↦ by simp [algHom]
       rw [AlgHom.coe_comp] at this
       exact this.of_comp
     · obtain (⟨a, ha⟩ : (x : A) ∈ (unitization s).range) :=
@@ -379,7 +379,7 @@ noncomputable def unitizationStarAlgEquiv (h1 : (1 : A) ∉ s) :
   StarAlgEquiv.ofBijective starAlgHom <| by
     refine ⟨?_, fun x ↦ ?_⟩
     · have := AlgHomClass.unitization_injective s h1 ((StarSubalgebra.subtype _).comp starAlgHom)
-        fun _ ↦ by simp
+        fun _ ↦ by simp [starAlgHom]
       rw [StarAlgHom.coe_comp] at this
       exact this.of_comp
     · obtain (⟨a, ha⟩ : (x : A) ∈ (unitization s).range) :=

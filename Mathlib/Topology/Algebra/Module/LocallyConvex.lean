@@ -83,7 +83,7 @@ variable (𝕜 E : Type*) [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E
 theorem LocallyConvexSpace.ofBasisZero {ι : Type*} (b : ι → Set E) (p : ι → Prop)
     (hbasis : (𝓝 0).HasBasis p b) (hconvex : ∀ i, p i → Convex 𝕜 (b i)) :
     LocallyConvexSpace 𝕜 E := by
-  refine' LocallyConvexSpace.ofBases 𝕜 E (fun (x : E) (i : ι) => (· + ·) x '' b i) (fun _ => p)
+  refine' LocallyConvexSpace.ofBases 𝕜 E (fun (x : E) (i : ι) => (x + ·) '' b i) (fun _ => p)
     (fun x => _) fun x i hi => (hconvex i hi).translate x
   rw [← map_add_left_nhds_zero]
   exact hbasis.map _
@@ -165,7 +165,7 @@ theorem locallyConvexSpace_iInf {ts' : ι → TopologicalSpace E}
     (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ (ts' i)) :
     @LocallyConvexSpace 𝕜 E _ _ _ (⨅ i, ts' i) := by
   refine' locallyConvexSpace_sInf _
-  rwa [forall_range_iff]
+  rwa [forall_mem_range]
 #align locally_convex_space_infi locallyConvexSpace_iInf
 
 theorem locallyConvexSpace_inf {t₁ t₂ : TopologicalSpace E} (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ t₁)
@@ -193,7 +193,7 @@ instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMo
 
 instance Prod.locallyConvexSpace [TopologicalSpace E] [TopologicalSpace F] [LocallyConvexSpace 𝕜 E]
     [LocallyConvexSpace 𝕜 F] : LocallyConvexSpace 𝕜 (E × F) :=
--- Porting note : had to specify `t₁` and `t₂`
+-- Porting note: had to specify `t₁` and `t₂`
   locallyConvexSpace_inf (t₁ := induced Prod.fst _) (t₂ := induced Prod.snd _)
     (locallyConvexSpace_induced (LinearMap.fst _ _ _))
     (locallyConvexSpace_induced (LinearMap.snd _ _ _))

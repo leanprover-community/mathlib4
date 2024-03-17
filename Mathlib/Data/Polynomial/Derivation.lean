@@ -6,7 +6,7 @@ Authors: Kevin Buzzard, Richard Hill
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Module
+import Mathlib.Data.Polynomial.Module.Basic
 /-!
 # Derivations of univariate polynomials
 
@@ -131,7 +131,7 @@ def compAEval : Derivation R R[X] <| AEval R M a where
 -/
 theorem compAEval_eq (d : Derivation R A M) (f : R[X]) :
     d.compAEval a f = derivative f • (AEval.of R M a (d a)) := by
-  rw [←mkDerivation_apply]
+  rw [← mkDerivation_apply]
   congr
   apply derivation_ext
   simp
