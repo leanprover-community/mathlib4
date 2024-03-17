@@ -43,7 +43,7 @@ def Sym (α : Type*) (n : ℕ) :=
   { s : Multiset α // Multiset.card s = n }
 #align sym Sym
 
--- Porting note: new definition
+-- Porting note (#11445): new definition
 /-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1

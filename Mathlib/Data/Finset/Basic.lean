@@ -200,7 +200,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 /-! ### set coercion -/
 
--- Porting note: new definition
+-- Porting note (#11445): new definition
 /-- Convert a finset to a set in the natural way. -/
 @[coe] def toSet (s : Finset α) : Set α :=
   { a | a ∈ s }

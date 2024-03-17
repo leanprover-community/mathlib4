@@ -453,7 +453,7 @@ namespace Cycle
 
 variable {α : Type*}
 
--- Porting note: new definition
+-- Porting note (#11445): new definition
 /-- The coercion from `List α` to `Cycle α` -/
 @[coe] def ofList : List α → Cycle α :=
   Quot.mk _
