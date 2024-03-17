@@ -207,6 +207,7 @@ jobs:
       - name: make an artifact of the cache
         uses: actions/checkout@v1
         run: tar -zcvf MathlibCache.tar.gz .lake/build/lib/Mathlib
+      - name: upload the artifact of the cache
         uses: actions/upload-artifact@master
         with:
           name: upload Mathlib Cache
