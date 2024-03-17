@@ -273,7 +273,7 @@ theorem openEmbedding_coe : OpenEmbedding ((↑) : X → OnePoint X) :=
 #align alexandroff.open_embedding_coe OnePoint.openEmbedding_coe
 
 theorem isOpen_range_coe : IsOpen (range ((↑) : X → OnePoint X)) :=
-  openEmbedding_coe.open_range
+  openEmbedding_coe.isOpen_range
 #align alexandroff.is_open_range_coe OnePoint.isOpen_range_coe
 
 theorem isClosed_infty : IsClosed ({∞} : Set (OnePoint X)) := by

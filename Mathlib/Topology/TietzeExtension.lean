@@ -73,7 +73,7 @@ continuous function `g : C(X₂, Y)` such that `g ∘ e = f`. -/
 theorem ContinuousMap.exists_extension (f : C(X₁, Y)) :
     ∃ (g : C(X, Y)), g.comp ⟨e, he.continuous⟩ = f := by
   let e' : X₁ ≃ₜ Set.range e := Homeomorph.ofEmbedding _ he.toEmbedding
-  obtain ⟨g, hg⟩ := (f.comp e'.symm).exists_restrict_eq he.closed_range
+  obtain ⟨g, hg⟩ := (f.comp e'.symm).exists_restrict_eq he.isClosed_range
   exact ⟨g, by ext x; simpa using congr($(hg) ⟨e' x, x, rfl⟩)⟩
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
@@ -354,7 +354,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         exact ha' ⟨x, (congr_fun hgf x).symm⟩
       · exact Set.disjoint_singleton_right.2 hac.not_le
     rcases exists_bounded_mem_Icc_of_closed_of_le
-        (he.closed_range.union <| isClosed_Ici.preimage g.continuous)
+        (he.isClosed_range.union <| isClosed_Ici.preimage g.continuous)
         (isClosed_singleton.preimage g.continuous) hd (sub_nonneg.2 hac.le) with
       ⟨dg, dg0, dga, dgmem⟩
     replace hgf : ∀ x, (g + dg) (e x) = f x := by
@@ -387,7 +387,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
       exact hb' ⟨x, (congr_fun hgf x).symm⟩
     · exact Set.disjoint_singleton_right.2 hcb.not_le
   rcases exists_bounded_mem_Icc_of_closed_of_le
-      (he.closed_range.union <| isClosed_Iic.preimage g.continuous)
+      (he.isClosed_range.union <| isClosed_Iic.preimage g.continuous)
       (isClosed_singleton.preimage g.continuous) hd (sub_nonneg.2 hcb.le) with
     ⟨dg, dg0, dgb, dgmem⟩
   replace hgf : ∀ x, (g - dg) (e x) = f x := by

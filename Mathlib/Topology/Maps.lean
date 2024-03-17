@@ -535,12 +535,12 @@ section OpenEmbedding
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 theorem OpenEmbedding.isOpenMap (hf : OpenEmbedding f) : IsOpenMap f :=
-  hf.toEmbedding.toInducing.isOpenMap hf.open_range
+  hf.toEmbedding.toInducing.isOpenMap hf.isOpen_range
 #align open_embedding.is_open_map OpenEmbedding.isOpenMap
 
 theorem OpenEmbedding.map_nhds_eq (hf : OpenEmbedding f) (x : X) :
     map f (𝓝 x) = 𝓝 (f x) :=
-  hf.toEmbedding.map_nhds_of_mem _ <| hf.open_range.mem_nhds <| mem_range_self _
+  hf.toEmbedding.map_nhds_of_mem _ <| hf.isOpen_range.mem_nhds <| mem_range_self _
 #align open_embedding.map_nhds_eq OpenEmbedding.map_nhds_eq
 
 theorem OpenEmbedding.open_iff_image_open (hf : OpenEmbedding f) {s : Set X} :
@@ -648,7 +648,7 @@ theorem continuous (hf : ClosedEmbedding f) : Continuous f :=
 #align closed_embedding.continuous ClosedEmbedding.continuous
 
 theorem isClosedMap (hf : ClosedEmbedding f) : IsClosedMap f :=
-  hf.toEmbedding.toInducing.isClosedMap hf.closed_range
+  hf.toEmbedding.toInducing.isClosedMap hf.isClosed_range
 #align closed_embedding.is_closed_map ClosedEmbedding.isClosedMap
 
 theorem closed_iff_image_closed (hf : ClosedEmbedding f) {s : Set X} :

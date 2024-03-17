@@ -354,7 +354,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
             apply Continuous.comp
             · exact f.continuous_toFun
             · continuity
-          · exact h₁.open_range
+          · exact h₁.isOpen_range
         · revert h x
           apply (IsOpen.continuousOn_iff _).mp
           · rw [continuousOn_iff_continuous_restrict]
@@ -373,7 +373,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
                 exact continuous_subtype_val
           · change IsOpen (Set.range c.inl)ᶜ
             rw [← eq_compl_iff_isCompl.mpr h₃.symm]
-            exact h₂.open_range
+            exact h₂.isOpen_range
       · intro T f g
         ext x
         refine' (dif_pos _).trans _

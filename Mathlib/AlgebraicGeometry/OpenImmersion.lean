@@ -53,7 +53,7 @@ protected def scheme (X : LocallyRingedSpace)
   local_affine := by
     intro x
     obtain ⟨R, f, h₁, h₂⟩ := h x
-    refine' ⟨⟨⟨_, h₂.base_open.open_range⟩, h₁⟩, R, ⟨_⟩⟩
+    refine' ⟨⟨⟨_, h₂.base_open.isOpen_range⟩, h₁⟩, R, ⟨_⟩⟩
     apply LocallyRingedSpace.isoOfSheafedSpaceIso
     refine' SheafedSpace.forgetToPresheafedSpace.preimageIso _
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
@@ -66,7 +66,7 @@ end LocallyRingedSpace.IsOpenImmersion
 theorem IsOpenImmersion.open_range {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] :
     IsOpen (Set.range f.1.base) :=
   H.base_open.open_range
-#align algebraic_geometry.IsOpenImmersion.open_range AlgebraicGeometry.IsOpenImmersion.open_range
+#align algebraisOpen_rangey.IsOpenImmersion.open_range AlgebraicGeometry.IsOpenImmersion.open_range
 
 section OpenCover
 
@@ -327,7 +327,7 @@ def toScheme : Scheme := by
   obtain ⟨_, ⟨i, rfl⟩, hx, hi⟩ :=
     Y.affineBasisCover_is_basis.exists_subset_of_mem_open (Set.mem_range_self x)
       H.base_open.open_range
-  use Y.affineBasisCoverRing i
+  use Y.affineBasiisOpen_range i
   use LocallyRingedSpace.IsOpenImmersion.lift (toLocallyRingedSpaceHom _ f) _ hi
   constructor
   · rw [LocallyRingedSpace.IsOpenImmersion.lift_range]; exact hx
@@ -555,7 +555,7 @@ instance forgetToTopPreservesOfRight : PreservesLimit (cospan g f) Scheme.forget
 theorem range_pullback_snd_of_left :
     Set.range (pullback.snd : pullback f g ⟶ Y).1.base =
       ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.open_range⟩).1 := by
-  rw [←
+  rw [←isOpen_range
     show _ = (pullback.snd : pullback f g ⟶ _).1.base from
       PreservesPullback.iso_hom_snd Scheme.forgetToTop f g]
   -- Porting note (#10691): was `rw`
@@ -573,7 +573,7 @@ theorem range_pullback_snd_of_left :
 theorem range_pullback_fst_of_right :
     Set.range (pullback.fst : pullback g f ⟶ Y).1.base =
       ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.open_range⟩).1 := by
-  rw [←
+  rw [←isOpen_range
     show _ = (pullback.fst : pullback g f ⟶ _).1.base from
       PreservesPullback.iso_hom_fst Scheme.forgetToTop g f]
   -- Porting note (#10691): was `rw`
@@ -722,7 +722,7 @@ theorem image_basicOpen {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] {U 
 @[simps]
 def Hom.opensRange {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] : Opens Y :=
   ⟨_, H.base_open.open_range⟩
-#align algebraic_geometry.Scheme.hom.opens_range AlgebraicGeometry.Scheme.Hom.opensRange
+#align algebraic_gisOpen_rangeheme.hom.opens_range AlgebraicGeometry.Scheme.Hom.opensRange
 
 end Scheme
 
@@ -796,7 +796,7 @@ theorem Scheme.OpenCover.compactSpace {X : Scheme} (𝒰 : X.OpenCover) [Finite 
         (asIso
           (IsOpenImmersion.isoOfRangeEq (𝒰.map i)
                   (X.ofRestrict (Opens.openEmbedding ⟨_, (𝒰.IsOpen i).base_open.open_range⟩))
-                  Subtype.range_coe.symm).hom.1.base))
+                  Subtype.range_coe.symm).hom.1.base))isOpen_range
 #align algebraic_geometry.Scheme.open_cover.compact_space AlgebraicGeometry.Scheme.OpenCover.compactSpace
 
 /-- Given open covers `{ Uᵢ }` and `{ Uⱼ }`, we may form the open cover `{ Uᵢ ∩ Uⱼ }`. -/

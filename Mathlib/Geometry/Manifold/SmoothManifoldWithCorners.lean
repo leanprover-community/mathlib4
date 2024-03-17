@@ -302,7 +302,7 @@ protected theorem closedEmbedding : ClosedEmbedding I :=
 #align model_with_corners.closed_embedding ModelWithCorners.closedEmbedding
 
 theorem closed_range : IsClosed (range I) :=
-  I.closedEmbedding.closed_range
+  I.closedEmbedding.isClosed_range
 #align model_with_corners.closed_range ModelWithCorners.closed_range
 
 theorem map_nhds_eq (x : H) : map I (𝓝 x) = 𝓝[range I] I x :=

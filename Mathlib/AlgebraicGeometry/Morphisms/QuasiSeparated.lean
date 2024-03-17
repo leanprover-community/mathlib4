@@ -109,8 +109,8 @@ theorem quasi_compact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsA
     simp_rw [isCompact_iff_compactSpace] at H
     exact
       @Homeomorph.compactSpace _ _ _ _
-        (H ⟨⟨_, h₁.base_open.open_range⟩, rangeIsAffineOpenOfOpenImmersion _⟩
-          ⟨⟨_, h₂.base_open.open_range⟩, rangeIsAffineOpenOfOpenImmersion _⟩)
+        (H ⟨⟨_, h₁.base_open.isOpen_range⟩, rangeIsAffineOpenOfOpenImmersion _⟩
+          ⟨⟨_, h₂.base_open.isOpen_range⟩, rangeIsAffineOpenOfOpenImmersion _⟩)
         e.symm
 #align algebraic_geometry.quasi_compact_affine_property_iff_quasi_separated_space AlgebraicGeometry.quasi_compact_affineProperty_iff_quasiSeparatedSpace
 
