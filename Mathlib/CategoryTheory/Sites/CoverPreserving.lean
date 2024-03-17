@@ -125,7 +125,7 @@ lemma CompatiblePreserving.of_iso {G : C ⥤ D} (hG : CompatiblePreserving.{w} K
       have H := hx g₁ g₂ h₁ h₂ fac
       dsimp at H
       rw [H]
-    simpa only [← FunctorToTypes.map_comp_apply, ← op_comp, Category.assoc,
+    simpa only [x', ← FunctorToTypes.map_comp_apply, ← op_comp, Category.assoc,
       e.inv_hom_id_app, Category.comp_id] using hG.compatible ℱ hx'
       (f₁ ≫ e.inv.app Y₁) (f₂ ≫ e.inv.app Y₂) hg₁ hg₂
       (by simp only [Category.assoc, ← e.inv.naturality, reassoc_of% fac])
