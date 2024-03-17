@@ -1263,14 +1263,19 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
     intro j i
     -- FIXME nightly-testing
     -- Proof failing
-    sorry
-    -- refine' Fin.cases _ (fun i => _) i <;> refine' Fin.cases _ (fun j => _) j <;> intro hij <;>
-    --   simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
-    -- · exact (hij rfl).elim
-    -- · rw [IsOrtho, ← hB₂]
-    --   exact (v' j).prop _ (Submodule.mem_span_singleton_self x)
-    -- · exact (v' i).prop _ (Submodule.mem_span_singleton_self x)
-    -- · exact hv₁ (ne_of_apply_ne _ hij)
+    -- sorry
+    refine' Fin.cases _ (fun i => _) i <;> refine' Fin.cases _ (fun j => _) j <;> intro hij <;>
+      -- Adaptation note: nightly-2024-03-16
+      -- Previously `Function.onFun` unfolded in the following `simp only`,
+      -- but now needs a separate `rw`.
+      -- This may be a bug: a no import minimization may be required.
+      (try rw [Function.onFun]) <;>
+      simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
+    · exact (hij rfl).elim
+    · rw [IsOrtho, ← hB₂]
+      exact (v' j).prop _ (Submodule.mem_span_singleton_self x)
+    · exact (v' i).prop _ (Submodule.mem_span_singleton_self x)
+    · exact hv₁ (ne_of_apply_ne _ hij)
 #align bilin_form.exists_orthogonal_basis LinearMap.BilinForm.exists_orthogonal_basis
 
 end BilinForm
