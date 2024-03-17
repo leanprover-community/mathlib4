@@ -1,3 +1,4 @@
+import Mathlib.CategoryTheory.Limits.EpiMono
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 import Mathlib.CategoryTheory.MorphismProperty
@@ -8,82 +9,6 @@ open Category Limits
 
 variable {C : Type*} [Category C] {I : Type*} {D : I → Type*} [∀ i, Category (D i)]
   (F : ∀ i, C ⥤ D i)
-
-lemma mono_iff_fst_eq_snd {X Y : C} {f : X ⟶ Y} {c : PullbackCone f f} (hc : IsLimit c) :
-    Mono f ↔ c.fst = c.snd := by
-  constructor
-  · intro hf
-    rw [← cancel_mono f]
-    exact c.condition
-  · intro hf
-    constructor
-    intro Z g g' h
-    obtain ⟨φ, rfl, rfl⟩ := PullbackCone.IsLimit.lift' hc g g' h
-    rw [hf]
-
-lemma mono_iff_isIso_fst {X Y : C} {f : X ⟶ Y} {c : PullbackCone f f} (hc : IsLimit c) :
-    Mono f ↔ IsIso c.fst := by
-  rw [mono_iff_fst_eq_snd hc]
-  constructor
-  · intro h
-    obtain ⟨φ, hφ₁, hφ₂⟩ := PullbackCone.IsLimit.lift' hc (𝟙 X) (𝟙 X) (by simp)
-    refine' ⟨φ, PullbackCone.IsLimit.hom_ext hc _ _, hφ₁⟩
-    · dsimp
-      simp only [assoc, hφ₁, id_comp, comp_id]
-    · dsimp
-      simp only [assoc, hφ₂, id_comp, comp_id, h]
-  · intro
-    obtain ⟨φ, hφ₁, hφ₂⟩ := PullbackCone.IsLimit.lift' hc (𝟙 X) (𝟙 X) (by simp)
-    have : IsSplitEpi φ := IsSplitEpi.mk ⟨SplitEpi.mk c.fst (by
-      rw [← cancel_mono c.fst, assoc, id_comp, hφ₁, comp_id])⟩
-    rw [← cancel_epi φ, hφ₁, hφ₂]
-
-lemma mono_iff_isPullback {X Y : C} (f : X ⟶ Y) : Mono f ↔ IsPullback (𝟙 X) (𝟙 X) f f := by
-  constructor
-  · intro
-    exact
-      { w := by simp
-        isLimit' := ⟨PullbackCone.isLimitMkIdId f⟩ }
-  · intro hf
-    exact (mono_iff_fst_eq_snd hf.isLimit).2 rfl
-
-lemma epi_iff_inl_eq_inr {X Y : C} {f : X ⟶ Y} {c : PushoutCocone f f} (hc : IsColimit c) :
-    Epi f ↔ c.inl = c.inr := by
-  constructor
-  · intro hf
-    rw [← cancel_epi f]
-    exact c.condition
-  · intro hf
-    constructor
-    intro Z g g' h
-    obtain ⟨φ, rfl, rfl⟩ := PushoutCocone.IsColimit.desc' hc g g' h
-    rw [hf]
-
-lemma epi_iff_isIso_inl {X Y : C} {f : X ⟶ Y} {c : PushoutCocone f f} (hc : IsColimit c) :
-    Epi f ↔ IsIso c.inl := by
-  rw [epi_iff_inl_eq_inr hc]
-  constructor
-  · intro h
-    obtain ⟨φ, hφ₁, hφ₂⟩ := PushoutCocone.IsColimit.desc' hc (𝟙 Y) (𝟙 Y) (by simp)
-    refine' ⟨φ, hφ₁, PushoutCocone.IsColimit.hom_ext hc _ _⟩
-    · dsimp
-      simp only [comp_id, reassoc_of% hφ₁]
-    · dsimp
-      simp only [comp_id, h, reassoc_of% hφ₂]
-  · intro
-    obtain ⟨φ, hφ₁, hφ₂⟩ := PushoutCocone.IsColimit.desc' hc (𝟙 Y) (𝟙 Y) (by simp)
-    have : IsSplitMono φ := IsSplitMono.mk ⟨SplitMono.mk c.inl (by
-      rw [← cancel_epi c.inl, reassoc_of% hφ₁, comp_id])⟩
-    rw [← cancel_mono φ, hφ₁, hφ₂]
-
-lemma epi_iff_isPushout {X Y : C} (f : X ⟶ Y) : Epi f ↔ IsPushout f f (𝟙 Y) (𝟙 Y) := by
-  constructor
-  · intro
-    exact
-      { w := by simp
-        isColimit' := ⟨PushoutCocone.isColimitMkIdId f⟩ }
-  · intro hf
-    exact (epi_iff_inl_eq_inr hf.isColimit).2 rfl
 
 structure JointlyReflectIsomorphisms : Prop where
   isIso {X Y : C} (f : X ⟶ Y) [∀ i, IsIso ((F i).map f)] : IsIso f
