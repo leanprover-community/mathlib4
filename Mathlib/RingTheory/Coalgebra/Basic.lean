@@ -6,7 +6,6 @@ Authors: Ali Ramsey, Eric Wieser
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.TensorProduct
-import Mathlib.Algebra.Algebra.Bilinear
 
 /-!
 # Coalgebras
@@ -24,12 +23,14 @@ In this file we define `Coalgebra`, and provide instances for:
 
 suppress_compilation
 
+universe u v w
+
 open scoped TensorProduct
 
 /-- Data fields for `Coalgebra`, to allow API to be constructed before proving `Coalgebra.coassoc`.
 
 See `Coalgebra` for documentation. -/
-class CoalgebraStruct (R A : Type*)
+class CoalgebraStruct (R : Type u) (A : Type v)
     [CommSemiring R] [AddCommMonoid A] [Module R A] where
   /-- The comultiplication of the coalgebra -/
   comul : A →ₗ[R] A ⊗[R] A
@@ -42,7 +43,7 @@ end Coalgebra
 
 /-- A coalgebra over a commutative (semi)ring `R` is an `R`-module equipped with a coassociative
 comultiplication `Δ` and a counit `ε` obeying the left and right counitality laws. -/
-class Coalgebra (R A : Type*)
+class Coalgebra (R : Type u) (A : Type v)
     [CommSemiring R] [AddCommMonoid A] [Module R A] extends CoalgebraStruct R A where
   /-- The comultiplication is coassociative -/
   coassoc : TensorProduct.assoc R A A A ∘ₗ comul.rTensor A ∘ₗ comul = comul.lTensor A ∘ₗ comul
@@ -52,7 +53,7 @@ class Coalgebra (R A : Type*)
   lTensor_counit_comp_comul : counit.lTensor A ∘ₗ comul = (TensorProduct.mk R _ _).flip 1
 
 namespace Coalgebra
-variable {R A : Type*}
+variable {R : Type u} {A : Type v}
 variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
 
 @[simp]
@@ -79,51 +80,13 @@ theorem rTensor_counit_comul (a : A) : counit.rTensor A (comul a) = 1 ⊗ₜ[R] 
 theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 1 :=
   LinearMap.congr_fun lTensor_counit_comp_comul a
 
-def ofLinearEquiv {B : Type*} [AddCommMonoid B] [Module R B] (f : A ≃ₗ[R] B)
-    [CoalgebraStruct R B] (hcounit : counit (R := R) (A := B) ∘ₗ f = counit (R := R) (A := A))
-    (hcomul : TensorProduct.map f f ∘ₗ comul (R := R) (A := A) = comul (R := R) (A := B) ∘ₗ f) :
-    Coalgebra R B where
-  comul := comul
-  counit := counit
-  coassoc := by
-    rw [(f.eq_comp_toLinearMap_symm _ _).2 hcounit, ← (f.comp_toLinearMap_symm_eq _ _).2 hcomul]
-    simp only [← LinearMap.comp_assoc]
-    congr 1
-    simp only [LinearMap.lTensor_comp_map,
-      LinearMap.comp_assoc, LinearMap.rTensor_comp_map, LinearEquiv.comp_coe,
-      LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, LinearMap.comp_id,
-      ← LinearMap.lTensor_comp_map, ← LinearMap.rTensor_comp_lTensor A (f : A →ₗ[R] B)
-      (Coalgebra.comul)]
-    simp only [LinearMap.comp_assoc, ← Coalgebra.coassoc]
-    simp only [← LinearMap.comp_assoc, LinearMap.lTensor_comp_rTensor,
-      TensorProduct.map_map_comp_assoc_eq]
-    simp only [LinearMap.comp_assoc, LinearMap.map_comp_rTensor]
-  rTensor_counit_comp_comul := by
-    rw [(f.eq_comp_toLinearMap_symm _ _).2 hcounit, ← (f.comp_toLinearMap_symm_eq _ _).2 hcomul]
-    simp only [← LinearMap.comp_assoc, LinearMap.rTensor_comp_map]
-    simp only [LinearMap.comp_assoc, LinearEquiv.comp_coe, LinearEquiv.self_trans_symm,
-      LinearEquiv.refl_toLinearMap, LinearMap.comp_id, ← LinearMap.lTensor_comp_rTensor]
-    simp only [← LinearMap.comp_assoc _ Coalgebra.comul, Coalgebra.rTensor_counit_comp_comul]
-    ext
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      TensorProduct.mk_apply, LinearMap.lTensor_tmul, LinearEquiv.apply_symm_apply]
-  lTensor_counit_comp_comul := by
-      rw [(f.eq_comp_toLinearMap_symm _ _).2 hcounit, ← (f.comp_toLinearMap_symm_eq _ _).2 hcomul]
-      simp only [← LinearMap.comp_assoc, LinearMap.lTensor_comp_map]
-      simp only [LinearMap.comp_assoc, LinearEquiv.comp_coe, LinearEquiv.self_trans_symm,
-        LinearEquiv.refl_toLinearMap, LinearMap.comp_id, ← LinearMap.rTensor_comp_lTensor]
-      simp only [← LinearMap.comp_assoc _ Coalgebra.comul, Coalgebra.lTensor_counit_comp_comul]
-      ext
-      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearMap.flip_apply,
-        TensorProduct.mk_apply, LinearMap.rTensor_tmul, LinearEquiv.apply_symm_apply]
-
 end Coalgebra
 section CommSemiring
 
 open Coalgebra
 
 namespace CommSemiring
-variable (R : Type*) [CommSemiring R]
+variable (R : Type u) [CommSemiring R]
 
 /-- Every commutative (semi)ring is a coalgebra over itself, with `Δ r = 1 ⊗ₜ r`. -/
 instance toCoalgebra : Coalgebra R R where
@@ -142,7 +105,7 @@ theorem counit_apply (r : R) : counit r = r := rfl
 end CommSemiring
 
 namespace Prod
-variable (R A B : Type*)
+variable (R : Type u) (A : Type v) (B : Type w)
 variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
 variable [Coalgebra R A] [Coalgebra R B]
 
@@ -219,7 +182,7 @@ instance instCoalgebra : Coalgebra R (A × B) where
 end Prod
 
 namespace Finsupp
-variable (R ι A : Type*)
+variable (R : Type u) (ι : Type v) (A : Type w)
 variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
 
 open LinearMap
@@ -276,4 +239,5 @@ instance instCoalgebra : Coalgebra R (ι →₀ A) where
         TensorProduct.map_map_comp_assoc_eq]
 
 end Finsupp
+
 end CommSemiring

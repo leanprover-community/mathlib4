@@ -1,5 +1,5 @@
 import Mathlib.RingTheory.Coalgebra.Equiv
-import Mathlib.RingTheory.Coalgebra.Bialgebra.Hom
+import Mathlib.RingTheory.Bialgebra.Hom
 
 set_option autoImplicit true
 

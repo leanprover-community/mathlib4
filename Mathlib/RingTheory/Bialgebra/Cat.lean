@@ -1,4 +1,4 @@
-import Mathlib.RingTheory.Coalgebra.Bialgebra.Equiv
+import Mathlib.RingTheory.Bialgebra.Equiv
 import Mathlib.RingTheory.Coalgebra.Cat
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 

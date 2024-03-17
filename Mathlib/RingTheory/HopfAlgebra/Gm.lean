@@ -1,5 +1,5 @@
-import Mathlib.RingTheory.Coalgebra.HopfAlgebra.Basic
-import Mathlib.RingTheory.Coalgebra.Bialgebra.Hom
+import Mathlib.RingTheory.HopfAlgebra.Basic
+import Mathlib.RingTheory.Bialgebra.Hom
 import Mathlib.Data.Polynomial.Laurent
 import Mathlib.Data.Polynomial.RingDivision
 open scoped LaurentPolynomial TensorProduct

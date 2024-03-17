@@ -1,4 +1,4 @@
-import Mathlib.RingTheory.Coalgebra.Bialgebra.Hom
+import Mathlib.RingTheory.Bialgebra.Hom
 import Mathlib.RingTheory.Coalgebra.ChangeOfRings
 
 universe v u

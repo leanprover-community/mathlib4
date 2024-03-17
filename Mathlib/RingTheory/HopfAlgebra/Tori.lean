@@ -1,11 +1,11 @@
-import Mathlib.RingTheory.Coalgebra.HopfAlgebra.Cat
+import Mathlib.RingTheory.HopfAlgebra.Cat
 import Mathlib.FieldTheory.SeparableClosure
 import Mathlib.RingTheory.Flat.Algebra
 import Mathlib.FieldTheory.AbsoluteGaloisGroup
 import Mathlib.RepresentationTheory.Basic
-import Mathlib.RingTheory.Coalgebra.HopfAlgebra.Gm
-import Mathlib.RingTheory.Coalgebra.HopfAlgebra.Monoidal
-import Mathlib.RingTheory.Coalgebra.Bialgebra.ChangeOfRings
+import Mathlib.RingTheory.HopfAlgebra.Gm
+import Mathlib.RingTheory.HopfAlgebra.Monoidal
+import Mathlib.RingTheory.Bialgebra.ChangeOfRings
 universe v u
 set_option autoImplicit false
 section Split

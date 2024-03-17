@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Category.AlgebraCat.Symmetric
 import Mathlib.RingTheory.TensorProduct
-import Mathlib.RingTheory.Coalgebra.Bialgebra.Cat
+import Mathlib.RingTheory.Bialgebra.Cat
 import Mathlib.RingTheory.Coalgebra.Monoidal
 
 universe v u

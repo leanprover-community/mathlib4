@@ -1,5 +1,5 @@
-import Mathlib.RingTheory.Coalgebra.Bialgebra.Cat
-import Mathlib.RingTheory.Coalgebra.HopfAlgebra.Basic
+import Mathlib.RingTheory.Bialgebra.Cat
+import Mathlib.RingTheory.HopfAlgebra.Basic
 open CategoryTheory
 
 open CategoryTheory.Limits

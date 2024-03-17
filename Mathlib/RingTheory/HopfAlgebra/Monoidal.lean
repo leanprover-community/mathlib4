@@ -1,6 +1,6 @@
-import Mathlib.RingTheory.Coalgebra.HopfAlgebra.Cat
-import Mathlib.RingTheory.Coalgebra.Bialgebra.Monoidal
-import Mathlib.RingTheory.Coalgebra.Bialgebra.ChangeOfRings
+import Mathlib.RingTheory.HopfAlgebra.Cat
+import Mathlib.RingTheory.Bialgebra.Monoidal
+import Mathlib.RingTheory.Bialgebra.ChangeOfRings
 
 universe v u
 namespace HopfAlgebra
