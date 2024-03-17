@@ -688,11 +688,11 @@ elements of the closure of `s`. -/
 @[elab_as_elim]
 theorem closure_induction {s : Set K} {p : K → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
     (one : p 1) (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x, p x → p (-x))
-    (Hinv : ∀ x, p x → p x⁻¹) (mul : ∀ x y, p x → p y → p (x * y)) : p x := by
+    (inv : ∀ x, p x → p x⁻¹) (mul : ∀ x y, p x → p y → p (x * y)) : p x := by
     letI : Subfield K :=
       ⟨⟨⟨⟨⟨p, by intro _ _; exact mul _ _⟩, one⟩,
         by intro _ _; exact add _ _, @add_neg_self K _ 1 ▸ add _ _ one (neg _ one)⟩,
-          by intro _; exact neg _⟩, Hinv⟩
+          by intro _; exact neg _⟩, inv⟩
     exact (closure_le (t := this)).2 mem h
 #align subfield.closure_induction Subfield.closure_induction
 
