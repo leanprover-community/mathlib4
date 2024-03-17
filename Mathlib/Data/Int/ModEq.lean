@@ -208,7 +208,7 @@ protected theorem mul (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a * 
 @[gcongr] protected theorem pow (m : ℕ) (h : a ≡ b [ZMOD n]) : a ^ m ≡ b ^ m [ZMOD n] := by
   induction' m with d hd; · rfl
   rw [pow_succ, pow_succ]
-  exact h.mul hd
+  exact hd.mul h
 #align int.modeq.pow Int.ModEq.pow
 
 lemma of_mul_left (m : ℤ) (h : a ≡ b [ZMOD m * n]) : a ≡ b [ZMOD n] := by

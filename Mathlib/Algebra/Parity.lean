@@ -327,7 +327,7 @@ theorem Even.pow_of_ne_zero (hm : Even m) : ∀ {a : ℕ}, a ≠ 0 → Even (m ^
   | 0, a0 => (a0 rfl).elim
   | a + 1, _ => by
     rw [pow_succ]
-    exact hm.mul_right _
+    exact hm.mul_left _
 #align even.pow_of_ne_zero Even.pow_of_ne_zero
 
 section WithOdd
@@ -419,7 +419,7 @@ theorem Odd.pow (hm : Odd m) : ∀ {a : ℕ}, Odd (m ^ a)
     exact odd_one
   | a + 1 => by
     rw [pow_succ]
-    exact hm.mul <| Odd.pow hm
+    exact (Odd.pow hm).mul hm
 #align odd.pow Odd.pow
 
 end WithOdd
