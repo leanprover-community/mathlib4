@@ -10,6 +10,7 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.RingTheory.Polynomial.Chebyshev
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
 import Mathlib.LinearAlgebra.Reflection
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.Data.Int.Parity
@@ -83,22 +84,21 @@ instance : AddCommMonoid V := Finsupp.instAddCommMonoid
 def simpleRoot (i : B) : V := Finsupp.single i 1
 local prefix:100 "α" => simpleRoot
 
-
 /-- The standard bilinear form on `B →₀ ℝ`. Given by `⟪αᵢ, αⱼ⟫ = -cos (π / Mᵢⱼ)`
 for `i j : B`, where {αᵢ} is the standard basis of `B →₀ ℝ` and `M` is the Coxeter matrix.
 This is positive definite if and only if the associated Coxeter group is finite. -/
 def standardBilinForm (M : Matrix B B ℕ) : LinearMap.BilinForm ℝ V :=
     (Finsupp.lift (V →ₗ[ℝ] ℝ) ℝ B)
         (fun i ↦ ((Finsupp.lift ℝ ℝ B)
-            (fun i' ↦ -cos (Real.pi / M i i'))))
+            (fun i' ↦ -cos (π / M i i'))))
 
 local notation:max "⟪"  a  ","  b  "⟫" => standardBilinForm M a b
 
 @[simp] theorem standardBilinForm_simpleRoot_self (i : B) :
     ⟪α i, α i⟫ = 1 := by simp [standardBilinForm, simpleRoot, cs.isCoxeter.diagonal i]
 
-@[simp] theorem standardBilinForm_simpleRoot_simpleRoot (i i' : B) :
-    ⟪α i, α i'⟫ = - cos (Real.pi / M i i') := by simp [standardBilinForm, simpleRoot]
+@[simp] theorem standardBilinForm_simpleRoot_simpleRoot (_ : CoxeterSystem M W) (i i' : B) :
+    ⟪α i, α i'⟫ = - cos (π / M i i') := by simp [standardBilinForm, simpleRoot]
 
 theorem isSymm_standardBilinForm :
     LinearMap.IsSymm (standardBilinForm M) := by
@@ -153,7 +153,9 @@ theorem orthoReflection_eq_iff {v v' : V} (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'
     simp
 
 section
+
 open Polynomial Polynomial.Chebyshev
+
 /-- The Chebyshev polynomial of the second kind corresponding to the index n - 1. Correctly
 yields U₋₁ = 0 if n = 0.
 -/
@@ -166,6 +168,41 @@ private lemma USubOne_add_one (R : Type u_1) [CommRing R] (n : ℕ) :
   rw [T_eq_U_sub_X_mul_U]
   rw [(by ring : n + 1 + 1 = n + 2), U_add_two]
   ring
+
+private lemma sin_pi_div_m_ne_zero {m : ℕ} (hm : m > 1) : sin (π / m) ≠ 0 := by
+  intro eq0
+  have h₀ : 0 < π / m := by positivity
+  have h₁ := calc
+    π / m ≤ π / 2                   := by
+      apply (div_le_div_left (by positivity) (by positivity) (by positivity)).mpr
+      apply Nat.cast_le.mpr
+      linarith
+    _     ≤ 2                       := by linarith [Real.pi_le_four]
+  linarith [Real.sin_pos_of_pos_of_le_two h₀ h₁]
+
+private lemma USubOne_real_cos (θ : ℝ) (n : ℕ) :
+    eval (cos θ) (USubOne ℝ n) * sin θ = sin (n * θ) := by
+  rcases n with _ | n
+  · simp
+  · rw [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, USubOne_add_one]
+    exact U_real_cos _ _
+
+private lemma USubOne_real_neg_cos_eq {m : ℕ} (n : ℕ) (hm : m > 1) :
+    eval (- cos (π / m)) (USubOne ℝ n) = -((-1) ^ n * sin (π * (n / m)) / sin (π / m)) := by
+  rw [← Real.cos_add_pi (π / m)]
+
+  have sin_ne_zero : sin (π / m) ≠ 0 := sin_pi_div_m_ne_zero hm
+  have sin_ne_zero' : sin (π / m + π) ≠ 0 := by rw [sin_add_pi]; simpa
+
+  rw [(eq_div_iff sin_ne_zero').mpr (USubOne_real_cos (π / m + π) n)]
+  rw [mul_add, sin_add_nat_mul_pi, sin_add_pi]
+  field_simp [sin_ne_zero]
+  ring_nf
+
+private lemma U_real_neg_cos_eq {m : ℕ} (n : ℕ) (hm : m > 1) :
+    eval (- cos (π / m)) (U ℝ n) = (-1) ^ n * sin (π * ((n + 1) / m)) / sin (π / m) := by
+  rw [← USubOne_add_one, USubOne_real_neg_cos_eq _ hm, pow_succ]
+  simp [neg_mul, neg_div]
 
 
 theorem orthoReflection_mul_orthoReflection_pow_apply {v v' : V} (k : ℕ)
@@ -234,15 +271,108 @@ theorem orthoReflection_mul_orthoReflection_pow_apply {v v' : V} (k : ℕ)
     ring_nf
     simp
 
+private lemma orthoReflection_mul_orthoReflection_pow_order_apply_v {v v' : V} {m : ℕ}
+    (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) (hvv' : ⟪v, v'⟫ = -cos (π / m)) (hm : m > 1) :
+        (((r hv) * (r hv')) ^ m) v = v := by
+  rw [orthoReflection_mul_orthoReflection_pow_apply, hvv']
+  rw [U_real_neg_cos_eq _ hm, USubOne_real_neg_cos_eq _ hm]
+  rw [Nat.cast_mul, Nat.cast_two, add_div, mul_div_cancel 2 (by positivity : (m : ℝ) ≠ 0),
+    mul_add π, mul_comm π, mul_one_div, add_comm (2 * π)]
+  rw [sin_add_two_pi, sin_two_pi]
+  rw [mul_div_cancel _ (sin_pi_div_m_ne_zero hm)]
+  simp
+
+private lemma orthoReflection_mul_orthoReflection_pow_order_apply_v' {v v' : V} {m : ℕ}
+    (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) (hvv' : ⟪v, v'⟫ = -cos (π / m)) (hm : m > 1) :
+        (((r hv) * (r hv')) ^ m) v' = v' := let a := r hv; let b := r hv'; calc
+  ((a * b) ^ m) v'
+  _ = (b * b * (a * b) ^ m) v'         := by simp [cs.orthoReflection_sqr_eq_id hv']
+  _ = (b * (b * (a * b) ^ m)) v'       := by rw [mul_assoc]
+  _ = (b * ((b * a) ^ m * b)) v'       := by
+    congr 2
+    exact (SemiconjBy.eq (SemiconjBy.pow_right (by unfold SemiconjBy; group) m))
+  _ = (b * (b * a) ^ m * b) v'         := by rw [mul_assoc]
+  _ = (b * (b * a) ^ m) (b v')         := LinearMap.mul_apply _ _ _
+  _ = (b * (b * a) ^ m) (-v')          := congrArg _ (cs.orthoReflection_apply_self hv')
+  _ = -((b * (b * a) ^ m) v')          := map_neg _ _
+  _ = -(b (((b * a) ^ m) v'))          := congrArg _ (LinearMap.mul_apply _ _ _)
+  _ = -(b v')                          := by
+    congr
+    apply orthoReflection_mul_orthoReflection_pow_order_apply_v
+    · rwa [← cs.isSymm_standardBilinForm.eq v v', RingHom.id_apply]
+    · assumption
+  _ = -(-v')                           := congrArg _ (cs.orthoReflection_apply_self hv')
+  _ = v'                               := neg_neg v'
+
+private lemma can_decomp_into_parallel_and_orthogonal {v v' : V} (w : V) {m : ℕ}
+    (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) (hvv' : ⟪v, v'⟫ = -cos (π / m)) (hm : m > 1) :
+    ∃ μ₁ μ₂ : ℝ, ⟪v, w - μ₁ • v - μ₂ • v'⟫ = 0 ∧ ⟪v', w - μ₁ • v - μ₂ • v'⟫ = 0 := by
+  use (1 / (sin (π / m)) ^ 2) * (⟪v, w⟫ + cos (π / m) * ⟪v', w⟫)
+  use (1 / (sin (π / m)) ^ 2) * (⟪v', w⟫ + cos (π / m) * ⟪v, w⟫)
+
+  -- Expand everything out.
+  simp only [mul_add, LinearMap.map_sub, LinearMap.map_add, LinearMap.map_smul, smul_eq_mul]
+
+  -- Use known values of bilinear form.
+  rw [(by rw[← cs.isSymm_standardBilinForm.eq v' v]; simp : ⟪v', v⟫ = ⟪v, v'⟫)]
+  simp only [hv, hv', hvv']
+  field_simp [sin_pi_div_m_ne_zero hm]
+  ring_nf
+
+  constructor
+  all_goals {
+    simp [Real.sin_sq]
+    ring
+  }
+
+private lemma fixed_of_orthogonal {v v' : V} (w : V) {m : ℕ}
+    (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) (hvw : ⟪v, w⟫ = 0) (hv'w : ⟪v', w⟫ = 0) :
+    (((r hv) * (r hv')) ^ m) w = w := by
+  induction' m with m ih
+  · simp
+  · rw [pow_succ, LinearMap.mul_apply, ih, LinearMap.mul_apply]
+    dsimp [orthoReflection]
+    simp [hvw, hv'w]
+
+private lemma orthoReflection_mul_orthoReflection_pow_order {v v' : V} {m : ℕ}
+    (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) (hvv' : ⟪v, v'⟫ = -cos (π / m)) (hm : m ≠ 1) :
+    ((r hv) * (r hv')) ^ m = 1 := by
+  rcases Nat.lt_or_gt_of_ne hm with mlt | mgt
+  · simp [Nat.lt_one_iff.mp mlt]
+  · apply LinearMap.ext
+    intro w
+    rcases cs.can_decomp_into_parallel_and_orthogonal w hv hv' hvv' mgt with ⟨μ₁, μ₂, hμ⟩
+    let w' := w - μ₁ • v - μ₂ • v'
+    rw [← (by rfl : w' = w - μ₁ • v - μ₂ • v')] at hμ
+    rcases hμ with ⟨h₁, h₂⟩
+
+    have h₃ : w = w' + μ₁ • v + μ₂ • v' := by rw [(by rfl : w' = w - μ₁ • v - μ₂ • v')]; abel
+    simp only [h₃, LinearMap.map_add, LinearMap.map_smul, LinearMap.one_apply]
+    congr
+    · exact cs.fixed_of_orthogonal w' hv hv' h₁ h₂
+    · exact cs.orthoReflection_mul_orthoReflection_pow_order_apply_v hv hv' hvv' mgt
+    · exact cs.orthoReflection_mul_orthoReflection_pow_order_apply_v' hv hv' hvv' mgt
 
 /-- The standard geometric representation on `B →₀ ℝ`. For `i : B`, the simple reflection `sᵢ`
 acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`.
 -/
-def standardGeometricRepresentation (cs : CoxeterSystem M W) : Representation ℝ W V := sorry
+def standardGeometricRepresentation : Representation ℝ W V := cs.lift (
+    show IsLiftable M (fun i ↦ (r (cs.standardBilinForm_simpleRoot_self i))) by
+      unfold IsLiftable
+      intro i i'
+      dsimp
+      rcases em (i = i') with rfl | ne
+      · simp [orthoReflection_sqr_eq_id, ← LinearMap.one_eq_id]
+      · let m := M i i'
+        have hm : m ≠ 1 := cs.isCoxeter.off_diagonal i i' ne
+        apply cs.orthoReflection_mul_orthoReflection_pow_order
+        · exact cs.standardBilinForm_simpleRoot_simpleRoot i i'
+        · exact hm
+  )
 
 end
 
-alias SGR := standardGeometricRepresentation
+noncomputable alias SGR := standardGeometricRepresentation
 
 theorem SGR_simple (i : B) : cs.SGR (s i) = r (cs.standardBilinForm_simpleRoot_self i) := by
   sorry
