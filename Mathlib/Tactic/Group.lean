@@ -82,12 +82,10 @@ is manipulated.
 
 Example:
 ```lean
-example {G : Type} [Group G] (a b c d : G) (h : c = (a*b^2)*((b*b)⁻¹*a⁻¹)*d) : a*c*d⁻¹ = a :=
-begin
-  group at h, -- normalizes `h` which becomes `h : c = d`
-  rw h,       -- the goal is now `a*d*d⁻¹ = a`
-  group,      -- which then normalized and closed
-end
+example {G : Type} [Group G] (a b c d : G) (h : c = (a*b^2)*((b*b)⁻¹*a⁻¹)*d) : a*c*d⁻¹ = a := by
+  group at h -- normalizes `h` which becomes `h : c = d`
+  rw [h]     -- the goal is now `a*d*d⁻¹ = a`
+  group      -- which then normalized and closed
 ```
 -/
 syntax (name := group) "group" (location)? : tactic
