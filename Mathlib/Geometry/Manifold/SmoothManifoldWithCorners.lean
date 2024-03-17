@@ -301,7 +301,7 @@ protected theorem closedEmbedding : ClosedEmbedding I :=
   I.leftInverse.closedEmbedding I.continuous_symm I.continuous
 #align model_with_corners.closed_embedding ModelWithCorners.closedEmbedding
 
-theorem closed_range : IsClosed (range I) :=
+theorem isClosed_range : IsClosed (range I) :=
   I.closedEmbedding.isClosed_range
 #align model_with_corners.closed_range ModelWithCorners.closed_range
 
