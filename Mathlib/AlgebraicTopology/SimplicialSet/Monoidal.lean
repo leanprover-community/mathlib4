@@ -14,7 +14,7 @@ This file defines an instance of chosen finite products
 for the category `SSet` using the explicit terminal object
 and binary products from the file
 `Mathlib.CategoryTheory.Limits.Shapes.FunctorToTypes`.
-As a result, these constructions gives the unit object
+As a result, these constructions give the unit object
 and the tensor product for the monoidal category structure
 on `SSet`.
 
