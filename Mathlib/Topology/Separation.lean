@@ -1630,7 +1630,8 @@ theorem Function.LeftInverse.isClosed_range [T2Space X] {f : X → Y} {g : Y →
   isClosed_of_closure_subset fun x hx => ⟨f x, this hx⟩
 #align function.left_inverse.closed_range Function.LeftInverse.isClosed_range
 
-@[deprecated] alias Function.LeftInverse.closed_range := Function.LeftInverse.isClosed_range -- 2024-03-17
+@[deprecated] alias Function.LeftInverse.closed_range :=
+  Function.LeftInverse.isClosed_range -- 2024-03-17
 
 theorem Function.LeftInverse.closedEmbedding [T2Space X] {f : X → Y} {g : Y → X}
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : ClosedEmbedding g :=
