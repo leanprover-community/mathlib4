@@ -542,7 +542,7 @@ theorem adjoin_induction {s : Set E} {p : E → Prop} {x} (h : x ∈ adjoin F s)
     p x :=
   Subfield.closure_induction h
     (fun x hx => Or.casesOn hx (fun ⟨x, hx⟩ => hx ▸ algebraMap x) (mem x))
-    ((algebraMap F E).map_one ▸ Hmap 1) add neg inv mul
+    ((_root_.algebraMap F E).map_one ▸ algebraMap 1) add neg inv mul
 #align intermediate_field.adjoin_induction IntermediateField.adjoin_induction
 
 /- Porting note (kmill): this notation is replacing the typeclass-based one I had previously

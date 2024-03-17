@@ -576,7 +576,7 @@ lemma adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (mul : ∀ x y, p x → p y → p (x * y)) (smul : ∀ (r : R) x, p x → p (r • x)) : p a :=
   Subtype.recOn a fun b hb => by
     refine Exists.elim ?_ (fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc)
-    apply adjoin_induction hb ?_ ?_ ?_ ?_ ?_
+    refine adjoin_induction hb ?_ ?_ ?_ ?_ ?_
     · exact fun x hx => ⟨subset_adjoin R hx, mem x hx⟩
     · exact fun x y hx hy => Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy =>
         ⟨add_mem hx' hy', add _ _ hx hy⟩
