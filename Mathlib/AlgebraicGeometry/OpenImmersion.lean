@@ -555,7 +555,7 @@ instance forgetToTopPreservesOfRight : PreservesLimit (cospan g f) Scheme.forget
 theorem range_pullback_snd_of_left :
     Set.range (pullback.snd : pullback f g ⟶ Y).1.base =
       ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.isOpen_range⟩).1 := by
-  rw [←show _ = (pullback.snd : pullback f g ⟶ _).1.base from
+  rw [← show _ = (pullback.snd : pullback f g ⟶ _).1.base from
       PreservesPullback.iso_hom_snd Scheme.forgetToTop f g]
   -- Porting note (#10691): was `rw`
   erw [coe_comp]
@@ -572,8 +572,7 @@ theorem range_pullback_snd_of_left :
 theorem range_pullback_fst_of_right :
     Set.range (pullback.fst : pullback g f ⟶ Y).1.base =
       ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.isOpen_range⟩).1 := by
-  rw [←isOpen_range
-    show _ = (pullback.fst : pullback g f ⟶ _).1.base from
+  rw [← show _ = (pullback.fst : pullback g f ⟶ _).1.base from
       PreservesPullback.iso_hom_fst Scheme.forgetToTop g f]
   -- Porting note (#10691): was `rw`
   erw [coe_comp]
