@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou, Johan Commelin
+Authors: Joël Riou, Johan Commelin, Mitchell Lee
 -/
 import Mathlib.Data.Int.Parity
 import Mathlib.Data.ZMod.IntUnitsPower
@@ -48,6 +48,10 @@ lemma negOnePow_two_mul (n : ℤ) : (2 * n).negOnePow = 1 :=
 lemma negOnePow_odd (n : ℤ) (hn : Odd n) : n.negOnePow = -1 := by
   obtain ⟨k, rfl⟩ := hn
   simp only [negOnePow_add, negOnePow_two_mul, negOnePow_one, mul_neg, mul_one]
+
+@[simp]
+lemma negOnePow_two_mul_add_one (n : ℤ) : (2 * n + 1).negOnePow = -1 :=
+  negOnePow_odd _ ⟨n, rfl⟩
 
 lemma negOnePow_eq_one_iff (n : ℤ) : n.negOnePow = 1 ↔ Even n := by
   constructor
