@@ -262,7 +262,7 @@ lemma toDualContinuousMultilinearMap_injective : Function.Injective
     (toDualContinuousMultilinearMap (𝕜 := 𝕜) (E := E) (F := 𝕜)) := by
   rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff]
   intro x hx
-  obtain ⟨W, hW, hWx⟩ := mem_piTensorProduct_is_mem_finite r x
+  obtain ⟨p, hp, hpx⟩ := mem_piTensorProduct_is_mem_finite x
 
   sorry
 
