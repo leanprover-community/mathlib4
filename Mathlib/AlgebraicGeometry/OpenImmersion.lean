@@ -65,8 +65,8 @@ end LocallyRingedSpace.IsOpenImmersion
 
 theorem IsOpenImmersion.open_range {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] :
     IsOpen (Set.range f.1.base) :=
-  H.base_open.open_range
-#align algebraisOpen_rangey.IsOpenImmersion.open_range AlgebraicGeometry.IsOpenImmersion.open_range
+  H.base_open.isOpen_range
+#align algebraic_geometry.IsOpenImmersion.open_range AlgebraicGeometry.IsOpenImmersion.isOpen_range
 
 section OpenCover
 
@@ -326,8 +326,8 @@ def toScheme : Scheme := by
   intro x
   obtain ⟨_, ⟨i, rfl⟩, hx, hi⟩ :=
     Y.affineBasisCover_is_basis.exists_subset_of_mem_open (Set.mem_range_self x)
-      H.base_open.open_range
-  use Y.affineBasiisOpen_range i
+      H.base_open.isOpen_range
+  use Y.affineBasisCoverRing i
   use LocallyRingedSpace.IsOpenImmersion.lift (toLocallyRingedSpaceHom _ f) _ hi
   constructor
   · rw [LocallyRingedSpace.IsOpenImmersion.lift_range]; exact hx
@@ -795,8 +795,8 @@ theorem Scheme.OpenCover.compactSpace {X : Scheme} (𝒰 : X.OpenCover) [Finite 
       (TopCat.homeoOfIso
         (asIso
           (IsOpenImmersion.isoOfRangeEq (𝒰.map i)
-                  (X.ofRestrict (Opens.openEmbedding ⟨_, (𝒰.IsOpen i).base_open.open_range⟩))
-                  Subtype.range_coe.symm).hom.1.base))isOpen_range
+                  (X.ofRestrict (Opens.openEmbedding ⟨_, (𝒰.IsOpen i).base_open.isOpen_range⟩))
+                  Subtype.range_coe.symm).hom.1.base))
 #align algebraic_geometry.Scheme.open_cover.compact_space AlgebraicGeometry.Scheme.OpenCover.compactSpace
 
 /-- Given open covers `{ Uᵢ }` and `{ Uⱼ }`, we may form the open cover `{ Uᵢ ∩ Uⱼ }`. -/
