@@ -225,10 +225,10 @@ jobs:
             lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building Mathlib" && kill $! ))
           fi
 
-      - uses: actions/checkout@v1
       - name: make an artifact of the cache
+        uses: actions/checkout@v1
         run: tar -zcvf MathlibCache.tar.gz .lake/build/lib/Mathlib
-      - uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@master
         with:
           name: upload Mathlib Cache
           path: MathlibCache.tar.gz
