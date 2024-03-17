@@ -125,6 +125,7 @@ lemma three_dvd_gcd_of_dvd_b_of_dvd_c {a b c : ℕ} (hb : 3 ∣ b) (hc : 3 ∣ c
   · exact hx ▸ hb
   · exact hx ▸ hc
 
+open Finset Int Nat in
 /-- To prove `FermatLastTheoremFor 3`, we may assume that `¬ 3 ∣ a`, `¬ 3 ∣ b`, `a` and `b`
 are coprime and `3 ∣ c`. -/
 theorem fermatLastTheoremThree_of_three_dvd_only_c
@@ -137,14 +138,12 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
   have h3 : ¬(3 ∣ 1) := by decide
   rcases h1 with ((⟨k, hk⟩ | ⟨k, hk⟩) | ⟨k, hk⟩)
   · refine H (-(c : ℤ)) b (-(a : ℤ)) (by simp [ha]) (fun hdvd ↦ h3 ?_) (fun hdvd ↦ h3 ?_) ?_ ?_ ?_
-    · exact Hgcd.symm ▸ three_dvd_gcd_of_dvd_a_of_dvd_c ⟨k, hk⟩
-        (Int.coe_nat_dvd.1 (dvd_neg.1 hdvd)) hF
+    · exact Hgcd.symm ▸ three_dvd_gcd_of_dvd_a_of_dvd_c ⟨k, hk⟩ (coe_nat_dvd.1 (dvd_neg.1 hdvd)) hF
     · exact Hgcd.symm ▸ three_dvd_gcd_of_dvd_a_of_dvd_b ⟨k, hk⟩ (by exact_mod_cast hdvd) hF
     · exact ⟨-k, by simp [hk]⟩
-    · refine (Nat.isCoprime_iff_coprime.2 (Nat.coprime_of_dvd' (fun p hp hpc hpb ↦ ?_))).neg_left
-      rw [← Hgcd]
-      refine Finset.dvd_gcd (fun x hx ↦ ?_)
-      simp only [Finset.mem_insert, Finset.mem_singleton] at hx
+    · refine (isCoprime_iff_coprime.2 (coprime_of_dvd' (fun p hp hpc hpb ↦ ?_))).neg_left
+      rw [← Hgcd]; refine dvd_gcd (fun x hx ↦ ?_)
+      simp only [mem_insert, mem_singleton] at hx
       rcases hx with (hx | hx | hx)
       · refine hx ▸ (hp.dvd_of_dvd_pow <| (Nat.dvd_add_iff_right (m := b ^ 3) (n := a ^ 3)
           (dvd_pow hpb (by decide))).2 ?_)
@@ -157,12 +156,11 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
       exact_mod_cast hF
   · refine H a (-(c : ℤ)) ((-(b : ℤ))) (by simp [hb]) (fun hdvd ↦ h3 ?_) (fun hdvd ↦ h3 ?_) ?_ ?_ ?_
     · exact Hgcd.symm ▸ three_dvd_gcd_of_dvd_a_of_dvd_b (by exact_mod_cast hdvd) ⟨k, hk⟩ hF
-    · exact Hgcd.symm ▸ three_dvd_gcd_of_dvd_b_of_dvd_c ⟨k, hk⟩ (Int.coe_nat_dvd.1 (dvd_neg.1 hdvd)) hF
+    · exact Hgcd.symm ▸ three_dvd_gcd_of_dvd_b_of_dvd_c ⟨k, hk⟩ (coe_nat_dvd.1 (dvd_neg.1 hdvd)) hF
     · exact ⟨-k, by simp [hk]⟩
-    · refine (Nat.isCoprime_iff_coprime.2 (Nat.coprime_of_dvd' (fun p hp hpa hpc ↦ ?_))).neg_right
-      rw [← Hgcd]
-      refine Finset.dvd_gcd (fun x hx ↦ ?_)
-      simp only [Finset.mem_insert, Finset.mem_singleton] at hx
+    · refine (Nat.isCoprime_iff_coprime.2 (coprime_of_dvd' (fun p hp hpa hpc ↦ ?_))).neg_right
+      rw [← Hgcd]; refine dvd_gcd (fun x hx ↦ ?_)
+      simp only [mem_insert, mem_singleton] at hx
       rcases hx with (hx | hx | hx)
       · exact hx ▸ hpa
       · exact hx ▸ (hp.dvd_of_dvd_pow <| (Nat.dvd_add_iff_right (m := a ^ 3) (n := b ^ 3)
@@ -175,10 +173,9 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
     · exact Hgcd.symm ▸ three_dvd_gcd_of_dvd_a_of_dvd_c (by exact_mod_cast hdvd) ⟨k, hk⟩ hF
     · exact Hgcd.symm ▸ three_dvd_gcd_of_dvd_b_of_dvd_c (by exact_mod_cast hdvd) ⟨k, hk⟩ hF
     · exact ⟨k, by simp [hk]⟩
-    · refine Nat.isCoprime_iff_coprime.2 (Nat.coprime_of_dvd' (fun p hp hpa hpb ↦ ?_))
-      rw [← Hgcd]
-      refine Finset.dvd_gcd (fun x hx ↦ ?_)
-      simp only [Finset.mem_insert, Finset.mem_singleton] at hx
+    · refine isCoprime_iff_coprime.2 (coprime_of_dvd' (fun p hp hpa hpb ↦ ?_))
+      rw [← Hgcd]; refine dvd_gcd (fun x hx ↦ ?_)
+      simp only [mem_insert, mem_singleton] at hx
       rcases hx with (hx | hx | hx)
       · exact hx ▸ hpa
       · exact hx ▸ hpb
