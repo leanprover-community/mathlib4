@@ -67,13 +67,13 @@ end Module
 
 namespace FormalMultilinearSeries
 
-@[simp] -- Porting note: new; was not needed in Lean 3
+@[simp] -- Porting note (#10756): new theorem; was not needed in Lean 3
 theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
 
-@[simp] -- Porting note: new; was not needed in Lean 3
+@[simp] -- Porting note (#10756): new theorem; was not needed in Lean 3
 theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
 
-@[ext] -- Porting note: new theorem
+@[ext] -- Porting note (#10756): new theorem
 protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=
   funext h
 
