@@ -227,12 +227,12 @@ structure isRatCondKernelCDFAux (f : α × β → ℚ → ℝ) (κ : kernel α (
   (mono' (a : α) {q r : ℚ} (_hqr : q ≤ r) : ∀ᵐ c ∂(ν a), f (a, c) q ≤ f (a, c) r)
   (nonneg' (a : α) (q : ℚ) : ∀ᵐ c ∂(ν a), 0 ≤ f (a, c) q)
   (le_one' (a : α) (q : ℚ) : ∀ᵐ c ∂(ν a), f (a, c) q ≤ 1)
-  (tendsto_integral_of_antitone (a : α) (s : ℕ → ℚ) (_hs : Antitone s)
-    (_hs_tendsto : Tendsto s atTop atBot) :
-    Tendsto (fun m ↦ ∫ c, f (a, c) (s m) ∂(ν a)) atTop (𝓝 0))
-  (tendsto_integral_of_monotone (a : α) (s : ℕ → ℚ) (_hs : Monotone s)
-    (_hs_tendsto : Tendsto s atTop atTop) :
-    Tendsto (fun m ↦ ∫ c, f (a, c) (s m) ∂(ν a)) atTop (𝓝 (ν a univ).toReal))
+  (tendsto_integral_of_antitone (a : α) (seq : ℕ → ℚ) (_hs : Antitone seq)
+    (_hs_tendsto : Tendsto seq atTop atBot) :
+    Tendsto (fun m ↦ ∫ c, f (a, c) (seq m) ∂(ν a)) atTop (𝓝 0))
+  (tendsto_integral_of_monotone (a : α) (seq : ℕ → ℚ) (_hs : Monotone seq)
+    (_hs_tendsto : Tendsto seq atTop atTop) :
+    Tendsto (fun m ↦ ∫ c, f (a, c) (seq m) ∂(ν a)) atTop (𝓝 (ν a univ).toReal))
   (integrable (a : α) (q : ℚ) : Integrable (fun c ↦ f (a, c) q) (ν a))
   (set_integral (a : α) {A : Set β} (_hA : MeasurableSet A) (q : ℚ) :
     ∫ c in A, f (a, c) q ∂(ν a) = (κ a (A ×ˢ Iic ↑q)).toReal)
@@ -256,24 +256,26 @@ lemma isRatCondKernelCDFAux.le_one (hf : isRatCondKernelCDFAux f κ ν) (a : α)
     ∀ᵐ c ∂(ν a), ∀ q, f (a, c) q ≤ 1 := ae_all_iff.mpr <| hf.le_one' a
 
 lemma isRatCondKernelCDFAux.tendsto_zero_of_antitone (hf : isRatCondKernelCDFAux f κ ν)
-    [IsFiniteKernel ν] (a : α) (s : ℕ → ℚ) (hs : Antitone s) (hs_tendsto : Tendsto s atTop atBot) :
-    ∀ᵐ c ∂(ν a), Tendsto (fun m ↦ f (a, c) (s m)) atTop (𝓝 0) := by
+    [IsFiniteKernel ν] (a : α) (seq : ℕ → ℚ) (hseq : Antitone seq)
+    (hseq_tendsto : Tendsto seq atTop atBot) :
+    ∀ᵐ c ∂(ν a), Tendsto (fun m ↦ f (a, c) (seq m)) atTop (𝓝 0) := by
   refine tendsto_of_integral_tendsto_of_antitone ?_ (integrable_const _) ?_ ?_ ?_
-  · exact fun n ↦ hf.integrable a (s n)
+  · exact fun n ↦ hf.integrable a (seq n)
   · rw [integral_zero]
-    exact hf.tendsto_integral_of_antitone a s hs hs_tendsto
-  · filter_upwards [hf.mono a] with t ht using fun n m hnm ↦ ht (hs hnm)
-  · filter_upwards [hf.nonneg a] with c hc using fun i ↦ hc (s i)
+    exact hf.tendsto_integral_of_antitone a seq hseq hseq_tendsto
+  · filter_upwards [hf.mono a] with t ht using fun n m hnm ↦ ht (hseq hnm)
+  · filter_upwards [hf.nonneg a] with c hc using fun i ↦ hc (seq i)
 
 lemma isRatCondKernelCDFAux.tendsto_one_of_monotone (hf : isRatCondKernelCDFAux f κ ν)
-    [IsFiniteKernel ν] (a : α) (s : ℕ → ℚ) (hs : Monotone s) (hs_tendsto : Tendsto s atTop atTop) :
-    ∀ᵐ c ∂(ν a), Tendsto (fun m ↦ f (a, c) (s m)) atTop (𝓝 1) := by
+    [IsFiniteKernel ν] (a : α) (seq : ℕ → ℚ) (hseq : Monotone seq)
+    (hseq_tendsto : Tendsto seq atTop atTop) :
+    ∀ᵐ c ∂(ν a), Tendsto (fun m ↦ f (a, c) (seq m)) atTop (𝓝 1) := by
   refine tendsto_of_integral_tendsto_of_monotone ?_ (integrable_const _) ?_ ?_ ?_
-  · exact fun n ↦ hf.integrable a (s n)
+  · exact fun n ↦ hf.integrable a (seq n)
   · rw [MeasureTheory.integral_const, smul_eq_mul, mul_one]
-    exact hf.tendsto_integral_of_monotone a s hs hs_tendsto
-  · filter_upwards [hf.mono a] with t ht using fun n m hnm ↦ ht (hs hnm)
-  · filter_upwards [hf.le_one a] with c hc using fun i ↦ hc (s i)
+    exact hf.tendsto_integral_of_monotone a seq hseq hseq_tendsto
+  · filter_upwards [hf.mono a] with t ht using fun n m hnm ↦ ht (hseq hnm)
+  · filter_upwards [hf.le_one a] with c hc using fun i ↦ hc (seq i)
 
 lemma isRatCondKernelCDFAux.tendsto_atTop_one (hf : isRatCondKernelCDFAux f κ ν) [IsFiniteKernel ν]
     (a : α) :
@@ -282,10 +284,10 @@ lemma isRatCondKernelCDFAux.tendsto_atTop_one (hf : isRatCondKernelCDFAux f κ �
     filter_upwards [this, hf.mono a] with t ht h_mono
     rw [tendsto_iff_tendsto_subseq_of_monotone h_mono tendsto_nat_cast_atTop_atTop]
     exact ht
-  let s : ℕ → ℚ := fun n ↦ n
-  have hs : Monotone s := fun i j hij ↦ by simp [s, hij]
-  have hs_tendsto : Tendsto s atTop atTop := tendsto_nat_cast_atTop_atTop
-  filter_upwards [hf.tendsto_one_of_monotone a s hs hs_tendsto] with x hx using hx
+  let seq : ℕ → ℚ := fun n ↦ n
+  have hseq : Monotone seq := fun i j hij ↦ by simp [seq, hij]
+  have hseq_tendsto : Tendsto seq atTop atTop := tendsto_nat_cast_atTop_atTop
+  filter_upwards [hf.tendsto_one_of_monotone a seq hseq hseq_tendsto] with x hx using hx
 
 lemma isRatCondKernelCDFAux.tendsto_atBot_zero (hf : isRatCondKernelCDFAux f κ ν) [IsFiniteKernel ν]
     (a : α) :
@@ -301,12 +303,12 @@ lemma isRatCondKernelCDFAux.tendsto_atBot_zero (hf : isRatCondKernelCDFAux f κ 
     filter_upwards [this, hf.mono a] with t ht h_mono
     have h_anti : Antitone (fun q ↦ f (a, t) (-q)) := h_mono.comp_antitone monotone_id.neg
     exact (tendsto_iff_tendsto_subseq_of_antitone h_anti tendsto_nat_cast_atTop_atTop).mpr ht
-  let s : ℕ → ℚ := fun n ↦ -n
-  have hs : Antitone s := fun i j hij ↦ neg_le_neg (by exact mod_cast hij)
-  have hs_tendsto : Tendsto s atTop atBot := by
-    simp only [s, tendsto_neg_atBot_iff]
+  let seq : ℕ → ℚ := fun n ↦ -n
+  have hseq : Antitone seq := fun i j hij ↦ neg_le_neg (by exact mod_cast hij)
+  have hseq_tendsto : Tendsto seq atTop atBot := by
+    simp only [seq, tendsto_neg_atBot_iff]
     exact tendsto_nat_cast_atTop_atTop
-  convert hf.tendsto_zero_of_antitone a s hs hs_tendsto with x n
+  convert hf.tendsto_zero_of_antitone a seq hseq hseq_tendsto with x n
 
 lemma isRatCondKernelCDFAux.bddBelow_range (hf : isRatCondKernelCDFAux f κ ν) (a : α) :
     ∀ᵐ t ∂(ν a), ∀ q : ℚ, BddBelow (range fun (r : Ioi q) ↦ f (a, t) r) := by
