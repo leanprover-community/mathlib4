@@ -2,6 +2,8 @@ import Mathlib.Tactic.CC
 import Mathlib.Data.Vector
 import Mathlib.Data.Set.Basic
 
+set_option linter.unusedVariables false
+
 section cc1
 
 open Mathlib.Tactic.CC
