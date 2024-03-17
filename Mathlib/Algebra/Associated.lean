@@ -807,7 +807,7 @@ namespace Associates
 open Associated
 
 /-- The canonical quotient map from a monoid `α` into the `Associates` of `α` -/
-protected def mk {α : Type*} [Monoid α] (a : α) : Associates α :=
+protected abbrev mk {α : Type*} [Monoid α] (a : α) : Associates α :=
   ⟦a⟧
 #align associates.mk Associates.mk
 
@@ -1180,7 +1180,7 @@ theorem one_or_eq_of_le_of_prime {p m : Associates α} (hp : Prime p) (hle : m �
     m = 1 ∨ m = p := by
   rcases mk_surjective p with ⟨p, rfl⟩
   rcases mk_surjective m with ⟨m, rfl⟩
-  simpa [mk_eq_mk_iff_associated, Associated.comm]
+  simpa [mk_eq_mk_iff_associated, Associated.comm, -Quotient.eq]
     using (prime_mk.1 hp).irreducible.dvd_iff.mp (mk_le_mk_iff_dvd.1 hle)
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
 
