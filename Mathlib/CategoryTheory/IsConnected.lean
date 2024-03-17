@@ -453,15 +453,15 @@ lemma Functor.isConnected_of_isConnected_costructuredArrow
       ∀ (x : CostructuredArrow F X₂) (y : CostructuredArrow F Y₂), Zigzag x.left y.left := by
     intro X₂ Y₂ f x y
     exact (zigzag_obj_of_zigzag (CostructuredArrow.proj _ _)
-        (isConnected_zigzag x (Classical.arbitrary (CostructuredArrow F X₂)))).trans
+        (isPreconnected_zigzag x (Classical.arbitrary (CostructuredArrow F X₂)))).trans
       (zigzag_obj_of_zigzag (CostructuredArrow.proj _ _)
-        (isConnected_zigzag ((CostructuredArrow.map f).obj _) y))
+        (isPreconnected_zigzag ((CostructuredArrow.map f).obj _) y))
   have : ∀ ⦃X₂ Y₂ : C₂⦄ (_ : Zigzag X₂ Y₂),
       ∀ (x : CostructuredArrow F X₂) (y : CostructuredArrow F Y₂), Zigzag x.left y.left := by
     intro X₂ Y₂ z
     induction' z with Z₂ T₂ hxz hzt HXZ
     · intro x y
-      exact zigzag_obj_of_zigzag (CostructuredArrow.proj _ _) (isConnected_zigzag x y)
+      exact zigzag_obj_of_zigzag (CostructuredArrow.proj _ _) (isPreconnected_zigzag x y)
     · intro x t
       have z : CostructuredArrow F Z₂ := Nonempty.some inferInstance
       change Zigzag _ _ at hxz
@@ -470,7 +470,7 @@ lemma Functor.isConnected_of_isConnected_costructuredArrow
       · exact H f z t
       · exact zigzag_symmetric (H f t z)
   refine' zigzag_isConnected (fun X₁ Y₁ => _)
-  exact this (isConnected_zigzag (F.obj X₁) (F.obj Y₁)) (CostructuredArrow.mk (𝟙 _))
+  exact this (isPreconnected_zigzag (F.obj X₁) (F.obj Y₁)) (CostructuredArrow.mk (𝟙 _))
     (CostructuredArrow.mk (𝟙 _))
 
 end CategoryTheory
