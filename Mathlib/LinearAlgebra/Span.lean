@@ -167,40 +167,40 @@ theorem span_closure {s : Set M} : span R (AddSubmonoid.closure s : Set M) = spa
 preserved under addition and scalar multiplication, then `p` holds for all elements of the span of
 `s`. -/
 @[elab_as_elim]
-theorem span_induction {p : M → Prop} (h : x ∈ span R s) (Hs : ∀ x ∈ s, p x) (H0 : p 0)
-    (H1 : ∀ x y, p x → p y → p (x + y)) (H2 : ∀ (a : R) (x), p x → p (a • x)) : p x :=
-  ((@span_le (p := ⟨⟨⟨p, by intros x y; exact H1 x y⟩, H0⟩, H2⟩)) s).2 Hs h
+theorem span_induction {p : M → Prop} (h : x ∈ span R s) (mem : ∀ x ∈ s, p x) (zero : p 0)
+    (add : ∀ x y, p x → p y → p (x + y)) (smul : ∀ (a : R) (x), p x → p (a • x)) : p x :=
+  ((@span_le (p := ⟨⟨⟨p, by intros x y; exact add x y⟩, zero⟩, smul⟩)) s).2 mem h
 #align submodule.span_induction Submodule.span_induction
 
 /-- An induction principle for span membership. This is a version of `Submodule.span_induction`
 for binary predicates. -/
 theorem span_induction₂ {p : M → M → Prop} {a b : M} (ha : a ∈ Submodule.span R s)
-    (hb : b ∈ Submodule.span R s) (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y)
-    (H0_left : ∀ y, p 0 y) (H0_right : ∀ x, p x 0)
-    (Hadd_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
-    (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
-    (Hsmul_left : ∀ (r : R) x y, p x y → p (r • x) y)
-    (Hsmul_right : ∀ (r : R) x y, p x y → p x (r • y)) : p a b :=
+    (hb : b ∈ Submodule.span R s) (mem_mem : ∀ x ∈ s, ∀ y ∈ s, p x y)
+    (zero_left : ∀ y, p 0 y) (zero_right : ∀ x, p x 0)
+    (add_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
+    (add_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
+    (smul_left : ∀ (r : R) x y, p x y → p (r • x) y)
+    (smul_right : ∀ (r : R) x y, p x y → p x (r • y)) : p a b :=
   Submodule.span_induction ha
-    (fun x hx => Submodule.span_induction hb (Hs x hx) (H0_right x) (Hadd_right x) fun r =>
-      Hsmul_right r x)
-    (H0_left b) (fun x₁ x₂ => Hadd_left x₁ x₂ b) fun r x => Hsmul_left r x b
+    (fun x hx => Submodule.span_induction hb (mem_mem x hx) (zero_right x) (add_right x) fun r =>
+      smul_right r x)
+    (zero_left b) (fun x₁ x₂ => add_left x₁ x₂ b) fun r x => smul_left r x b
 
 /-- A dependent version of `Submodule.span_induction`. -/
 @[elab_as_elim]
 theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
-    (Hs : ∀ (x) (h : x ∈ s), p x (subset_span h))
-    (H0 : p 0 (Submodule.zero_mem _))
-    (H1 : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
-    (H2 : ∀ (a : R) (x hx), p x hx → p (a • x) (Submodule.smul_mem _ _ ‹_›)) {x}
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_span h))
+    (zero : p 0 (Submodule.zero_mem _))
+    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
+    (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (Submodule.smul_mem _ _ ‹_›)) {x}
     (hx : x ∈ span R s) : p x hx := by
   refine' Exists.elim _ fun (hx : x ∈ span R s) (hc : p x hx) => hc
   refine'
-    span_induction hx (fun m hm => ⟨subset_span hm, Hs m hm⟩) ⟨zero_mem _, H0⟩
+    span_induction hx (fun m hm => ⟨subset_span hm, mem m hm⟩) ⟨zero_mem _, zero⟩
       (fun x y hx hy =>
         Exists.elim hx fun hx' hx =>
-          Exists.elim hy fun hy' hy => ⟨add_mem hx' hy', H1 _ _ _ _ hx hy⟩)
-      fun r x hx => Exists.elim hx fun hx' hx => ⟨smul_mem _ _ hx', H2 r _ _ hx⟩
+          Exists.elim hy fun hy' hy => ⟨add_mem hx' hy', add _ _ _ _ hx hy⟩)
+      fun r x hx => Exists.elim hx fun hx' hx => ⟨smul_mem _ _ hx', smul r _ _ hx⟩
 #align submodule.span_induction' Submodule.span_induction'
 
 open AddSubmonoid in
@@ -217,25 +217,25 @@ theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ
 /-- A variant of `span_induction` that combines `∀ x ∈ s, p x` and `∀ r x, p x → p (r • x)`
 into a single condition `∀ r, ∀ x ∈ s, p (r • x)`, which can be easier to verify. -/
 @[elab_as_elim]
-theorem closure_induction {p : M → Prop} (h : x ∈ span R s) (H0 : p 0)
-    (H1 : ∀ x y, p x → p y → p (x + y)) (H2 : ∀ r : R, ∀ x ∈ s, p (r • x)) : p x := by
+theorem closure_induction {p : M → Prop} (h : x ∈ span R s) (zero : p 0)
+    (add : ∀ x y, p x → p y → p (x + y)) (smul_mem : ∀ r : R, ∀ x ∈ s, p (r • x)) : p x := by
   rw [← mem_toAddSubmonoid, span_eq_closure] at h
-  refine AddSubmonoid.closure_induction h ?_ H0 H1
+  refine AddSubmonoid.closure_induction h ?_ zero add
   rintro _ ⟨r, -, m, hm, rfl⟩
-  exact H2 r m hm
+  exact smul_mem r m hm
 
 /-- A dependent version of `Submodule.closure_induction`. -/
 @[elab_as_elim]
 theorem closure_induction' {p : ∀ x, x ∈ span R s → Prop}
-    (H0 : p 0 (Submodule.zero_mem _))
-    (H1 : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
-    (H2 : ∀ (r x) (h : x ∈ s), p (r • x) (Submodule.smul_mem _ _ <| subset_span h)) {x}
+    (zero : p 0 (Submodule.zero_mem _))
+    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
+    (smul_mem : ∀ (r x) (h : x ∈ s), p (r • x) (Submodule.smul_mem _ _ <| subset_span h)) {x}
     (hx : x ∈ span R s) : p x hx := by
   refine Exists.elim ?_ fun (hx : x ∈ span R s) (hc : p x hx) ↦ hc
-  refine closure_induction hx ⟨zero_mem _, H0⟩
+  refine closure_induction hx ⟨zero_mem _, zero⟩
     (fun x y hx hy ↦ Exists.elim hx fun hx' hx ↦
-      Exists.elim hy fun hy' hy ↦ ⟨add_mem hx' hy', H1 _ _ _ _ hx hy⟩)
-    fun r x hx ↦ ⟨smul_mem _ _ (subset_span hx), H2 r x hx⟩
+      Exists.elim hy fun hy' hy ↦ ⟨add_mem hx' hy', add _ _ _ _ hx hy⟩)
+    fun r x hx ↦ ⟨Submodule.smul_mem _ _ (subset_span hx), smul_mem r x hx⟩
 
 @[simp]
 theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = ⊤ :=
