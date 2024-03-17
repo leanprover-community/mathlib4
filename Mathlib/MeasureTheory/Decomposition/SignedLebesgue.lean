@@ -178,6 +178,7 @@ def rnDeriv (s : SignedMeasure α) (μ : Measure α) : α → ℝ := fun x =>
     (s.toJordanDecomposition.negPart.rnDeriv μ x).toReal
 #align measure_theory.signed_measure.rn_deriv MeasureTheory.SignedMeasure.rnDeriv
 
+-- The generated equation theorem is the form of `rnDeriv s μ x = ...`.
 theorem rnDeriv_def (s : SignedMeasure α) (μ : Measure α) : rnDeriv s μ = fun x =>
     (s.toJordanDecomposition.posPart.rnDeriv μ x).toReal -
       (s.toJordanDecomposition.negPart.rnDeriv μ x).toReal :=
