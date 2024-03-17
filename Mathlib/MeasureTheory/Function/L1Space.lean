@@ -108,10 +108,6 @@ def HasFiniteIntegral {_ : MeasurableSpace α} (f : α → β) (μ : Measure α 
   (∫⁻ a, ‖f a‖₊ ∂μ) < ∞
 #align measure_theory.has_finite_integral MeasureTheory.HasFiniteIntegral
 
-theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
-    HasFiniteIntegral f μ ↔ ((∫⁻ a, ‖f a‖₊ ∂μ) < ∞) :=
-  Iff.rfl
-
 theorem hasFiniteIntegral_iff_norm (f : α → β) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) < ∞ := by
   simp only [HasFiniteIntegral, ofReal_norm_eq_coe_nnnorm]
@@ -439,10 +435,6 @@ end NormedSpace
 def Integrable {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ
 #align measure_theory.integrable MeasureTheory.Integrable
-
-theorem integrable_def {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
-    Integrable f μ ↔ (AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ) :=
-  Iff.rfl
 
 theorem memℒp_one_iff_integrable {f : α → β} : Memℒp f 1 μ ↔ Integrable f μ := by
   simp_rw [Integrable, HasFiniteIntegral, Memℒp, snorm_one_eq_lintegral_nnnorm]
