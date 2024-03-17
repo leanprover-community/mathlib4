@@ -30,7 +30,7 @@ instance instCommRingInt : CommRing ℤ where
   one_mul := Int.one_mul
   npow n x := x ^ n
   npow_zero _ := rfl
-  npow_succ _ _ := by rw [Int.mul_comm]; rfl
+  npow_succ n x := rfl
   mul_assoc := Int.mul_assoc
   add_comm := Int.add_comm
   add_assoc := Int.add_assoc
@@ -40,8 +40,8 @@ instance instCommRingInt : CommRing ℤ where
   nsmul := (·*·)
   nsmul_zero := Int.zero_mul
   nsmul_succ n x :=
-    show (n + 1 : ℤ) * x = x + n * x
-    by rw [Int.add_mul, Int.add_comm, Int.one_mul]
+    show (n + 1 : ℤ) * x = n * x + x
+    by rw [Int.add_mul, Int.one_mul]
   zsmul := (·*·)
   zsmul_zero' := Int.zero_mul
   zsmul_succ' m n := by
