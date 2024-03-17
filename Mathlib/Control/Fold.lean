@@ -351,10 +351,10 @@ theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMon
       _ = FreeMonoid.toList (List.foldr cons [] (foldMap FreeMonoid.of xs).reverse).reverse :=
           by simp only [List.foldr_eta]
       _ = (unop (Foldl.ofFreeMonoid (flip cons) (foldMap FreeMonoid.of xs)) []).reverse := by
-            simp [flip, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op]{
+            simp [flip, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op]
             -- FIXME nightly-testing: Why does simp no longer unfold flip?
             unfold flip
-            simp}
+            simp
       _ = toList xs := by
             rw [foldMap_hom_free (Foldl.ofFreeMonoid (flip <| @cons α))]
             simp only [toList, foldl, List.reverse_inj, Foldl.get, foldl.ofFreeMonoid_comp_of,
