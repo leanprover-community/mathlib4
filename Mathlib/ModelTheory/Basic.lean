@@ -365,7 +365,7 @@ scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L
 -- The former reported an error.
 variable {L M N} {P : Type*} [Structure L P] {Q : Type*} [Structure L Q]
 
--- Porting note: new definition
+-- Porting note (#11445): new definition
 /-- Interpretation of a constant symbol -/
 @[coe]
 def constantMap (c : L.Constants) : M := funMap c default

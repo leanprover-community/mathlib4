@@ -572,7 +572,7 @@ theorem congr_fun_congr_arg (f : α → β → γ) {a a' : α} (p : a = a') (b :
 theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
     h ▸ z = cast (congr_arg P h) z := by induction h; rfl
 
--- Porting note: new theorem. More general version of `eqRec_heq`
+-- Porting note (#10756): new theorem. More general version of `eqRec_heq`
 theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → Sort u}
     (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
     HEq (@Eq.rec α a' motive p a t) p :=

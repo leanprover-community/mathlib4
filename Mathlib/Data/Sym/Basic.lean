@@ -43,7 +43,7 @@ def Sym (α : Type*) (n : ℕ) :=
   { s : Multiset α // Multiset.card s = n }
 #align sym Sym
 
--- Porting note: new definition
+-- Porting note (#11445): new definition
 /-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
@@ -79,11 +79,11 @@ theorem coe_inj {s₁ s₂ : Sym α n} : (s₁ : Multiset α) = s₂ ↔ s₁ = 
   coe_injective.eq_iff
 #align sym.coe_inj Sym.coe_inj
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[ext] theorem ext {s₁ s₂ : Sym α n} (h : (s₁ : Multiset α) = ↑s₂) : s₁ = s₂ :=
   coe_injective h
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem val_eq_coe (s : Sym α n) : s.1 = ↑s :=
   rfl
@@ -657,12 +657,12 @@ def decode : Sum (Sym (Option α) n) (Sym α n.succ) → Sym (Option α) n.succ
   | Sum.inr s => s.map Embedding.some
 #align sym_option_succ_equiv.decode SymOptionSuccEquiv.decode
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem decode_inl (s : Sym (Option α) n) : decode (Sum.inl s) = none ::ₛ s :=
   rfl
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.some :=
   rfl

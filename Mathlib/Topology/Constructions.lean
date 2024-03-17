@@ -949,7 +949,7 @@ theorem isOpen_sum_iff {s : Set (X ⊕ Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) 
   Iff.rfl
 #align is_open_sum_iff isOpen_sum_iff
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem isClosed_sum_iff {s : Set (X ⊕ Y)} :
     IsClosed s ↔ IsClosed (inl ⁻¹' s) ∧ IsClosed (inr ⁻¹' s) := by
   simp only [← isOpen_compl_iff, isOpen_sum_iff, preimage_compl]
