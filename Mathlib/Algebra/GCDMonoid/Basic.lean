@@ -230,12 +230,12 @@ theorem out_mul (a b : Associates α) : (a * b).out = a.out * b.out :=
 
 theorem dvd_out_iff (a : α) (b : Associates α) : a ∣ b.out ↔ Associates.mk a ≤ b :=
   Quotient.inductionOn b <| by
-    simp [Associates.out_mk, Associates.quotient_mk_eq_mk, mk_le_mk_iff_dvd_iff]
+    simp [Associates.out_mk, Associates.quotient_mk_eq_mk, mk_le_mk_iff_dvd]
 #align associates.dvd_out_iff Associates.dvd_out_iff
 
 theorem out_dvd_iff (a : α) (b : Associates α) : b.out ∣ a ↔ b ≤ Associates.mk a :=
   Quotient.inductionOn b <| by
-    simp [Associates.out_mk, Associates.quotient_mk_eq_mk, mk_le_mk_iff_dvd_iff]
+    simp [Associates.out_mk, Associates.quotient_mk_eq_mk, mk_le_mk_iff_dvd]
 #align associates.out_dvd_iff Associates.out_dvd_iff
 
 @[simp]
