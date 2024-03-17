@@ -454,7 +454,7 @@ end IsCondKernelCDF
 section ToKernel
 
 variable {_ : MeasurableSpace β} {f : α × β → StieltjesFunction}
-  {κ : kernel α (β × ℝ)} {ν : kernel α β} {hf : IsCondKernelCDF f κ ν}
+  {κ : kernel α (β × ℝ)} {ν : kernel α β}
 
 /-- A measurable function `α → StieltjesFunction` with limits 0 at -∞ and 1 at +∞ gives a measurable
 function `α → Measure ℝ` by taking `StieltjesFunction.measure` at each point. -/
@@ -496,12 +496,14 @@ def IsCondKernelCDF.toKernel (f : α × β → StieltjesFunction) (hf : IsCondKe
   property := StieltjesFunction.measurable_measure hf.measurable
     hf.tendsto_atBot_zero hf.tendsto_atTop_one
 
-lemma IsCondKernelCDF.toKernel_apply (p : α × β) : hf.toKernel f p = (f p).measure := rfl
+lemma IsCondKernelCDF.toKernel_apply {hf : IsCondKernelCDF f κ ν} (p : α × β) :
+    hf.toKernel f p = (f p).measure := rfl
 
-instance instIsMarkovKernel_toKernel : IsMarkovKernel (hf.toKernel f) :=
+instance instIsMarkovKernel_toKernel {hf : IsCondKernelCDF f κ ν} :
+    IsMarkovKernel (hf.toKernel f) :=
   ⟨fun _ ↦ (f _).isProbabilityMeasure (hf.tendsto_atBot_zero _) (hf.tendsto_atTop_one _)⟩
 
-lemma IsCondKernelCDF.toKernel_Iic (p : α × β) (x : ℝ) :
+lemma IsCondKernelCDF.toKernel_Iic {hf : IsCondKernelCDF f κ ν} (p : α × β) (x : ℝ) :
     hf.toKernel f p (Iic x) = ENNReal.ofReal (f p x) := by
   rw [IsCondKernelCDF.toKernel_apply p, (f p).measure_Iic (hf.tendsto_atBot_zero p)]
   simp
@@ -510,7 +512,7 @@ end ToKernel
 
 section
 
-variable {f : α × β → StieltjesFunction} {hf : IsCondKernelCDF f κ ν}
+variable {f : α × β → StieltjesFunction}
 
 lemma set_lintegral_toKernel_Iic [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     (a : α) (x : ℝ) {s : Set β} (hs : MeasurableSet s) :
