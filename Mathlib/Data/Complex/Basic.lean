@@ -521,15 +521,11 @@ theorem conj_I : conj I = -I :=
 #noalign complex.conj_bit0
 #noalign complex.conj_bit1
 
-@[simp]
-theorem conj_nat_cast (n : ℕ) : conj (n : ℂ) = n :=
-  ext_iff.2 <| by simp [star]
+theorem conj_nat_cast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
 
 -- See note [no_index around OfNat.ofNat]
-@[simp]
-theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] :
-    conj (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
-  conj_nat_cast _
+theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
+  map_ofNat _ _
 
 -- @[simp]
 /- Porting note (#11119): `simp` attribute removed as the result could be proved

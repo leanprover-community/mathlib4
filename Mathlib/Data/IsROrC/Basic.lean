@@ -344,15 +344,11 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
 #noalign is_R_or_C.conj_bit0
 #noalign is_R_or_C.conj_bit1
 
-@[simp]
-theorem conj_nat_cast (n : ℕ) : conj (n : K) = n :=
-  ext_iff.2 <| by simp [star]
+theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
 
 -- See note [no_index around OfNat.ofNat]
-@[simp]
-theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] :
-    conj (no_index (OfNat.ofNat n : K)) = OfNat.ofNat n :=
-  conj_nat_cast _
+theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : K)) = OfNat.ofNat n :=
+  map_ofNat _ _
 
 @[isROrC_simps] -- Porting note: was a `simp` but `simp` can prove it
 theorem conj_neg_I : conj (-I) = (I : K) := by rw [map_neg, conj_I, neg_neg]
