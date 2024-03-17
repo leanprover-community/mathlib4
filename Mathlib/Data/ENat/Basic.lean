@@ -121,7 +121,7 @@ theorem toNat_top : toNat ⊤ = 0 :=
 
 @[simp] theorem toNat_eq_zero : toNat n = 0 ↔ n = 0 ∨ n = ⊤ := WithTop.untop'_eq_self_iff
 
--- Porting note: new definition copied from `WithTop`
+-- Porting note (#11445): new definition copied from `WithTop`
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
 def recTopCoe {C : ℕ∞ → Sort*} (top : C ⊤) (coe : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
