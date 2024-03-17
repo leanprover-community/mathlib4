@@ -476,10 +476,13 @@ theorem factors_prod {a : α} (ane0 : a ≠ 0) : Associated (factors a).prod a :
   exact (Classical.choose_spec (exists_prime_factors a ane0)).2
 #align unique_factorization_monoid.factors_prod UniqueFactorizationMonoid.factors_prod
 
+@[simp]
+theorem factors_zero : factors (0 : α) = 0 := by simp [factors]
+#align unique_factorization_monoid.factors_zero UniqueFactorizationMonoid.factors_zero
+
 theorem ne_zero_of_mem_factors {p a : α} (h : p ∈ factors a) : a ≠ 0 := by
-  intro ha
-  rw [factors, dif_pos ha] at h
-  exact Multiset.not_mem_zero _ h
+  rintro rfl
+  simp at h
 #align unique_factorization_monoid.ne_zero_of_mem_factors UniqueFactorizationMonoid.ne_zero_of_mem_factors
 
 theorem dvd_of_mem_factors {p a : α} (h : p ∈ factors a) : p ∣ a :=
@@ -495,10 +498,6 @@ theorem prime_of_factor {a : α} (x : α) (hx : x ∈ factors a) : Prime x := by
 theorem irreducible_of_factor {a : α} : ∀ x : α, x ∈ factors a → Irreducible x := fun x h =>
   (prime_of_factor x h).irreducible
 #align unique_factorization_monoid.irreducible_of_factor UniqueFactorizationMonoid.irreducible_of_factor
-
-@[simp]
-theorem factors_zero : factors (0 : α) = 0 := by simp [factors]
-#align unique_factorization_monoid.factors_zero UniqueFactorizationMonoid.factors_zero
 
 @[simp]
 theorem factors_one : factors (1 : α) = 0 := by
