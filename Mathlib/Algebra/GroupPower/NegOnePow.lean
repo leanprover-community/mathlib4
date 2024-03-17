@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou, Johan Commelin
+Authors: Joël Riou, Johan Commelin, Mitchell Lee
 -/
 import Mathlib.Data.Int.Parity
 import Mathlib.Data.ZMod.IntUnitsPower
