@@ -196,7 +196,8 @@ alias ⟨IsLittleO.bound, IsLittleO.of_bound⟩ := isLittleO_iff
 #align asymptotics.is_o.bound Asymptotics.IsLittleO.bound
 #align asymptotics.is_o.of_bound Asymptotics.IsLittleO.of_bound
 
--- FIXME nightly-testing: this was called `def`. Should lean be changed to allow that as a name again?
+-- FIXME nightly-testing: this was called `def`.
+-- Should lean be changed to allow that as a name again?
 theorem IsLittleO.definition (h : f =o[l] g) (hc : 0 < c) : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ :=
   isLittleO_iff.1 h hc
 #align asymptotics.is_o.def Asymptotics.IsLittleO.definition
