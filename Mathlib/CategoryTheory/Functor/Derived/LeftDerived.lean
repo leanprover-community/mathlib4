@@ -118,7 +118,7 @@ variable {F L W}
 lemma HasLeftDerivedFunctor.mk' [LF.IsLeftDerivedFunctor α W] :
     HasLeftDerivedFunctor F W := by
   have := IsLeftDerivedFunctor.isRightKanExtension LF α W
-  simpa only [hasLeftDerivedFunctor_iff F L W] using HasRightKanExtension.mk' LF α
+  simpa only [hasLeftDerivedFunctor_iff F L W] using HasRightKanExtension.mk LF α
 
 section
 
@@ -148,7 +148,7 @@ instance [IsIso α] : LF.IsLeftDerivedFunctor α W where
           ext X
           dsimp
           simp only [Localization.liftNatTrans_app, comp_obj, assoc]
-          dsimp [Localization.Lifting.iso]
+          dsimp [Localization.Lifting.iso, Localization.Lifting.iso']
           simp only [NatIso.isIso_inv_app, comp_obj, IsIso.inv_hom_id, comp_id, id_comp]))
       (fun G φ => by
         ext1
@@ -156,7 +156,7 @@ instance [IsIso α] : LF.IsLeftDerivedFunctor α W where
         intro X
         dsimp
         simp only [Localization.liftNatTrans_app, comp_obj]
-        dsimp [Localization.Lifting.iso]
+        dsimp [Localization.Lifting.iso, Localization.Lifting.iso']
         simpa using NatTrans.congr_app φ.w X)⟩⟩
 
 example (G : H ⥤ D) : G.IsLeftDerivedFunctor (𝟙 (L ⋙ G)) W := inferInstance
