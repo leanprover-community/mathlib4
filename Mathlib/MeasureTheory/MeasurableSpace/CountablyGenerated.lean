@@ -220,7 +220,6 @@ instance (priority := 50) measurableSingletonClass_of_hasCountableSeparatingOn
 
 end SeparatesPoints
 
-
 instance [MeasurableSpace α] {s : Set α} [h : CountablyGenerated s] [MeasurableSingletonClass s] :
     HasCountableSeparatingOn α MeasurableSet s := by
   suffices HasCountableSeparatingOn s MeasurableSet univ from this.of_subtype fun _ ↦ id
