@@ -280,7 +280,7 @@ jobs:
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
 
-  lint mathlib with cache:
+  lint_mathlib_with_cache:
     if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
     steps:
       - uses: actions/checkout@master
@@ -296,7 +296,7 @@ jobs:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
 
-  check environments using lean4checker:
+  check_environments_using_lean4checker:
     if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
     steps:
       - uses: actions/checkout@master
