@@ -1282,12 +1282,14 @@ theorem prod_add : ∀ a b : FactorSet α, (a + b).prod = a.prod * b.prod
     rw [← FactorSet.coe_add, prod_coe, prod_coe, prod_coe, Multiset.map_add, Multiset.prod_add]
 #align associates.prod_add Associates.prod_add
 
+@[gcongr]
 theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
   | ⊤, b, h => by
     have : b = ⊤ := top_unique h
     rw [this, prod_top]
   | a, ⊤, _ => show a.prod ≤ (⊤ : FactorSet α).prod by simp
-  | WithTop.some a, some b, h => prod_le_prod <| Multiset.map_le_map <| WithTop.coe_le_coe.1 <| h
+  | WithTop.some a, WithTop.some b, h =>
+    prod_le_prod <| Multiset.map_le_map <| WithTop.coe_le_coe.1 <| h
 #align associates.prod_mono Associates.prod_mono
 
 theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
@@ -1305,8 +1307,8 @@ variable [DecidableEq (Associates α)]
 /-- `bcount p s` is the multiplicity of `p` in the FactorSet `s` (with bundled `p`)-/
 def bcount (p : { a : Associates α // Irreducible a }) :
     FactorSet α → ℕ
-  | none => 0
-  | some s => s.count p
+  | ⊤ => 0
+  | WithTop.some s => s.count p
 #align associates.bcount Associates.bcount
 
 variable [∀ p : Associates α, Decidable (Irreducible p)] {p : Associates α}
@@ -1452,7 +1454,7 @@ theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
 /-- This returns the multiset of irreducible factors of an associate as a `FactorSet`,
   a multiset of irreducible associates `WithTop`. -/
 noncomputable def factors (a : Associates α) : FactorSet α := by
-  classical refine' if h : a = 0 then ⊤ else Quotient.hrecOn a (fun x _ => some <| factors' x) _ h
+  classical refine' if h : a = 0 then ⊤ else Quotient.hrecOn a (fun x _ => factors' x) _ h
   intro a b hab
   apply Function.hfunext
   · have : a ~ᵤ 0 ↔ b ~ᵤ 0 := Iff.intro (fun ha0 => hab.symm.trans ha0) fun hb0 => hab.trans hb0
@@ -1476,17 +1478,14 @@ theorem factors_mk (a : α) (h : a ≠ 0) : (Associates.mk a).factors = factors'
 #align associates.factors_mk Associates.factors_mk
 
 @[simp]
-theorem factors_prod (a : Associates α) : a.factors.prod = a :=
-  Quotient.inductionOn a fun b => by
-    if this : Associates.mk b = 0 then
-      simp [quotient_mk_eq_mk, this]
-    else
-      have : b ≠ 0 := by simp_all
-      simp [this, quotient_mk_eq_mk, prod_mk,
-          mk_eq_mk_iff_associated.2 (UniqueFactorizationMonoid.factors_prod this)]
-
+theorem factors_prod (a : Associates α) : a.factors.prod = a := by
+  rcases Associates.mk_surjective a with ⟨a, rfl⟩
+  rcases eq_or_ne a 0 with rfl | ha
+  · simp
+  · simp [ha, prod_mk, mk_eq_mk_iff_associated, UniqueFactorizationMonoid.factors_prod]
 #align associates.factors_prod Associates.factors_prod
 
+@[simp]
 theorem prod_factors [Nontrivial α] (s : FactorSet α) : s.prod.factors = s :=
   FactorSet.unique <| factors_prod _
 #align associates.prod_factors Associates.prod_factors
@@ -1618,23 +1617,22 @@ theorem sup_mul_inf (a b : Associates α) : (a ⊔ b) * (a ⊓ b) = a * b :=
     rw [← prod_add, prod_factors, factors_mul, FactorSet.sup_add_inf_eq_add]
 #align associates.sup_mul_inf Associates.sup_mul_inf
 
-theorem dvd_of_mem_factors {a p : Associates α} {hp : Irreducible p} (hm : p ∈ factors a) :
+theorem dvd_of_mem_factors {a p : Associates α} (hm : p ∈ factors a) :
     p ∣ a := by
-  by_cases ha0 : a = 0
-  · rw [ha0]
-    exact dvd_zero p
+  rcases eq_or_ne a 0 with rfl | ha0
+  · exact dvd_zero p
   obtain ⟨a0, nza, ha'⟩ := exists_non_zero_rep ha0
   rw [← Associates.factors_prod a]
   rw [← ha', factors_mk a0 nza] at hm ⊢
   rw [prod_coe]
   apply Multiset.dvd_prod; apply Multiset.mem_map.mpr
-  exact ⟨⟨p, hp⟩, mem_factorSet_some.mp hm, rfl⟩
+  exact ⟨⟨p, irreducible_of_mem_factorSet hm⟩, mem_factorSet_some.mp hm, rfl⟩
 #align associates.dvd_of_mem_factors Associates.dvd_of_mem_factors
 
 theorem dvd_of_mem_factors' {a : α} {p : Associates α} {hp : Irreducible p} {hz : a ≠ 0}
     (h_mem : Subtype.mk p hp ∈ factors' a) : p ∣ Associates.mk a := by
   haveI := Classical.decEq (Associates α)
-  apply dvd_of_mem_factors (hp := hp)
+  apply dvd_of_mem_factors
   rw [factors_mk _ hz]
   apply mem_factorSet_some.2 h_mem
 #align associates.dvd_of_mem_factors' Associates.dvd_of_mem_factors'
@@ -1666,7 +1664,6 @@ theorem mem_factors_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
   constructor
   · rw [← mk_dvd_mk]
     apply dvd_of_mem_factors
-    exact irreducible_mk.mpr hp
   · apply mem_factors_of_dvd ha0 hp
 #align associates.mem_factors_iff_dvd Associates.mem_factors_iff_dvd
 

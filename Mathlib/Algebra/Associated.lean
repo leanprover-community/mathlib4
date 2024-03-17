@@ -9,8 +9,20 @@ import Mathlib.Algebra.Parity
 
 /-!
 # Associated, prime, and irreducible elements.
--/
 
+In this file we define the predicate `Prime p`
+saying that an element of a comutative monoid with zero is prime.
+Namely, `Prime p` means that `p` isn't zero, it isn't a unit,
+and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`;
+
+In decomposition monoids (e.g., `ℕ`, `ℤ`), this predicate is equivalent to `Irreducible`,
+however this is not true in general.
+
+We also define an equivalence relation `Associated`
+saying that two elements of a monoid differ by a multiplication by a unit.
+Then we show that the quotient type `Associates` is a monoid
+and prove basic properties of this quotient.
+-/
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
@@ -18,7 +30,8 @@ section Prime
 
 variable [CommMonoidWithZero α]
 
-/-- prime element of a `CommMonoidWithZero` -/
+/-- An element `p` of a commutative monoid with zero (e.g., a ring) is called *prime*,
+if it's not zero, not a unit, and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`. -/
 def Prime (p : α) : Prop :=
   p ≠ 0 ∧ ¬IsUnit p ∧ ∀ a b, p ∣ a * b → p ∣ a ∨ p ∣ b
 #align prime Prime
