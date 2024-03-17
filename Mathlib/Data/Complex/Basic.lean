@@ -502,7 +502,7 @@ theorem I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [pow_bit
 set_option linter.uppercaseLean3 false in
 #align complex.I_pow_bit1 Complex.I_pow_bit1
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
