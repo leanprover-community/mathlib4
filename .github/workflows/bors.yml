@@ -218,6 +218,14 @@ jobs:
             lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building Mathlib" && kill $! ))
           fi
 
+      - uses: actions/checkout@v1
+      - name: make an artifact of the cache
+        run: tar -zcvf MathlibCache.tar.gz .lake/build/lib/Mathlib
+      - uses: actions/upload-artifact@master
+        with:
+          name: upload Mathlib Cache
+          path: MathlibCache.tar.gz
+
       - name: find `#`-commands
         id: hash_commands
         run: |
@@ -285,16 +293,34 @@ jobs:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
-      - name: lint mathlib
-        id: lint
-        uses: liskin/gh-problem-matcher-wrap@v2
+
+  lint mathlib with cache:
+    if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/download-artifact@master
+        with:
+          name: untar Mathlib Cache
+          path: MathlibCache.tar.gz
+
+        run: |
+          tar -xzvf MathlibCache.tar.gz -C .lake/build/lib/Mathlib
+      - uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
 
-      - name: check environments using lean4checker
-        id: lean4checker
+  check environments using lean4checker:
+    if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/download-artifact@master
+        with:
+          name: untar Mathlib Cache
+          path: MathlibCache.tar.gz
+
         run: |
+          tar -xzvf MathlibCache.tar.gz -C .lake/build/lib/Mathlib
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
           git checkout toolchain/v4.7.0-rc1
