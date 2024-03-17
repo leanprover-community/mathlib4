@@ -157,7 +157,7 @@ section MonoidWithZero
 variable [MonoidWithZero M₀] {a : M₀} {m n : ℕ}
 
 @[simp] lemma zero_pow : ∀ {n : ℕ}, n ≠ 0 → (0 : M₀) ^ n = 0
-  | n + 1, _ => by rw [pow_succ, zero_mul]
+  | n + 1, _ => by rw [pow_succ, mul_zero]
 #align zero_pow zero_pow
 #align zero_pow' zero_pow
 
