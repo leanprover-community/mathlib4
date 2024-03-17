@@ -1,8 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson,
-    Mitchell Lee
+Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Tactic.Positivity.Core
@@ -323,8 +322,7 @@ theorem sin_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : sin (n * (2 * π) - x) = -s
 #align real.sin_int_mul_two_pi_sub Real.sin_int_mul_two_pi_sub
 
 theorem sin_add_int_mul_pi (x : ℝ) (n : ℤ) : sin (x + n * π) = n.negOnePow * sin x := by
-  rcases Int.even_or_odd' n with ⟨k, hk⟩
-  rcases hk with rfl | rfl
+  rcases Int.even_or_odd' n with ⟨k, rfl | rfl⟩
   · rw [Int.cast_mul, Int.cast_two, mul_comm 2, mul_assoc]
     simp
   · rw [Int.cast_add, Int.cast_one, Int.cast_mul, Int.cast_two,
@@ -332,8 +330,7 @@ theorem sin_add_int_mul_pi (x : ℝ) (n : ℤ) : sin (x + n * π) = n.negOnePow 
     simp
 
 theorem sin_add_nat_mul_pi (x : ℝ) (n : ℕ) : sin (x + n * π) = (-1) ^ n * sin x := by
-  have := sin_add_int_mul_pi x n
-  simpa [Int.negOnePow_def]
+  simpa [Int.negOnePow_def] using sin_add_int_mul_pi x n
 
 theorem sin_sub_int_mul_pi (x : ℝ) (n : ℤ) : sin (x - n * π) = n.negOnePow * sin x := by
   convert sin_add_int_mul_pi x (-n) using 2
@@ -341,8 +338,7 @@ theorem sin_sub_int_mul_pi (x : ℝ) (n : ℤ) : sin (x - n * π) = n.negOnePow 
   · simp
 
 theorem sin_sub_nat_mul_pi (x : ℝ) (n : ℕ) : sin (x - n * π) = (-1) ^ n * sin x := by
-  have := sin_sub_int_mul_pi x n
-  simpa [Int.negOnePow_def]
+  simpa [Int.negOnePow_def] using sin_sub_int_mul_pi x n
 
 theorem sin_int_mul_pi_sub (x : ℝ) (n : ℤ) : sin (n * π - x) = -(n.negOnePow * sin x) := by
   convert sin_add_int_mul_pi (-x) n using 1
@@ -350,8 +346,7 @@ theorem sin_int_mul_pi_sub (x : ℝ) (n : ℤ) : sin (n * π - x) = -(n.negOnePo
   · simp
 
 theorem sin_nat_mul_pi_sub (x : ℝ) (n : ℕ) : sin (n * π - x) = -((-1) ^ n * sin x) := by
-  have := sin_int_mul_pi_sub x n
-  simpa [Int.negOnePow_def]
+  simpa [Int.negOnePow_def] using sin_int_mul_pi_sub x n
 
 theorem cos_antiperiodic : Function.Antiperiodic cos π := by simp [cos_add]
 #align real.cos_antiperiodic Real.cos_antiperiodic
@@ -431,8 +426,7 @@ theorem cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = co
 #align real.cos_int_mul_two_pi_sub Real.cos_int_mul_two_pi_sub
 
 theorem cos_add_int_mul_pi (x : ℝ) (n : ℤ) : cos (x + n * π) = n.negOnePow * cos x := by
-  rcases Int.even_or_odd' n with ⟨k, hk⟩
-  rcases hk with rfl | rfl
+  rcases Int.even_or_odd' n with ⟨k, rfl | rfl⟩
   · rw [Int.cast_mul, Int.cast_two, mul_comm 2, mul_assoc]
     simp
   · rw [Int.cast_add, Int.cast_one, Int.cast_mul, Int.cast_two,
@@ -440,8 +434,7 @@ theorem cos_add_int_mul_pi (x : ℝ) (n : ℤ) : cos (x + n * π) = n.negOnePow 
     simp
 
 theorem cos_add_nat_mul_pi (x : ℝ) (n : ℕ) : cos (x + n * π) = (-1) ^ n * cos x := by
-  have := cos_add_int_mul_pi x n
-  simpa [Int.negOnePow_def]
+  simpa [Int.negOnePow_def] using cos_add_int_mul_pi x n
 
 theorem cos_sub_int_mul_pi (x : ℝ) (n : ℤ) : cos (x - n * π) = n.negOnePow * cos x := by
   convert cos_add_int_mul_pi x (-n) using 2
@@ -449,8 +442,7 @@ theorem cos_sub_int_mul_pi (x : ℝ) (n : ℤ) : cos (x - n * π) = n.negOnePow 
   · simp
 
 theorem cos_sub_nat_mul_pi (x : ℝ) (n : ℕ) : cos (x - n * π) = (-1) ^ n * cos x := by
-  have := cos_sub_int_mul_pi x n
-  simpa [Int.negOnePow_def]
+  simpa [Int.negOnePow_def] using cos_sub_int_mul_pi x n
 
 theorem cos_int_mul_pi_sub (x : ℝ) (n : ℤ) : cos (n * π - x) = n.negOnePow * cos x := by
   convert cos_add_int_mul_pi (-x) n using 1
@@ -458,8 +450,7 @@ theorem cos_int_mul_pi_sub (x : ℝ) (n : ℤ) : cos (n * π - x) = n.negOnePow 
   · simp
 
 theorem cos_nat_mul_pi_sub (x : ℝ) (n : ℕ) : cos (n * π - x) = (-1) ^ n * cos x := by
-  have := cos_int_mul_pi_sub x n
-  simpa [Int.negOnePow_def]
+  simpa [Int.negOnePow_def] using cos_int_mul_pi_sub x n
 
 -- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_nat_mul_two_pi_add_pi (n : ℕ) : cos (n * (2 * π) + π) = -1 := by
