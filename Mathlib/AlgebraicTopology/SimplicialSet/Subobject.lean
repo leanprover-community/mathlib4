@@ -3,7 +3,7 @@ import Mathlib.CategoryTheory.Sites.Subsheaf
 
 universe u
 
-open CategoryTheory MonoidalCategory
+open CategoryTheory MonoidalCategory Simplicial
 
 namespace SSet
 
@@ -18,6 +18,11 @@ variable {X Y}
 variable (S : X.Subobject) (T : Y.Subobject)
 
 abbrev toSSet : SSet.{u} := S.toPresheaf
+
+variable {S} in
+@[ext]
+lemma toSSet_ext {Δ : SimplexCategoryᵒᵖ} {x y : S.toSSet.obj Δ} (h : x.val = y.val) : x = y :=
+  Subtype.ext h
 
 abbrev ι : S.toSSet ⟶ X := GrothendieckTopology.Subpresheaf.ι S
 
@@ -74,5 +79,50 @@ lemma prod_le_unionProd : S.prod T ≤ S.unionProd T :=
   (prod_le_prod_top S T).trans (prod_top_le_unionProd S T)
 
 end Subobject
+
+def subobjectBoundary (n : ℕ) : (Δ[n] : SSet.{u}).Subobject where
+  obj _ s := ¬Function.Surjective (asOrderHom s)
+  map φ s hs := ((boundary n).map φ ⟨s, hs⟩).2
+
+lemma subobjectBoundary_toSSet (n : ℕ) : (subobjectBoundary.{u} n).toSSet = ∂Δ[n] := rfl
+
+lemma subobjectBoundary_ι (n : ℕ) :
+    (subobjectBoundary.{u} n).ι = boundaryInclusion n := rfl
+
+def subobjectHorn (n : ℕ) (i : Fin (n + 1)) : (Δ[n] : SSet.{u}).Subobject where
+  obj _ s := Set.range (asOrderHom s) ∪ {i} ≠ Set.univ
+  map φ s hs := ((horn n i).map φ ⟨s, hs⟩).2
+
+lemma subobjectHorn_toSSet (n : ℕ) (i : Fin (n + 1)) :
+    (subobjectHorn.{u} n i).toSSet = Λ[n, i] := rfl
+
+lemma subobjectHorn_ι (n : ℕ) (i : Fin (n + 1)) :
+    (subobjectHorn.{u} n i).ι = hornInclusion n i := rfl
+
+section
+
+variable {X Y}
+variable (f : X ⟶ Y)
+
+attribute [local simp] FunctorToTypes.naturality
+
+@[simps]
+def Subobject.image : Y.Subobject where
+  obj Δ := Set.range (f.app Δ)
+  map := by
+    rintro Δ Δ' φ _ ⟨x, rfl⟩
+    exact ⟨X.map φ x, by simp⟩
+
+def toImageSubobject : X ⟶ (Subobject.image f).toSSet where
+  app Δ x := ⟨f.app Δ x, ⟨x, rfl⟩⟩
+
+@[simp]
+lemma toImageSubobject_apply_val {Δ : SimplexCategoryᵒᵖ} (x : X.obj Δ) :
+    ((toImageSubobject f).app Δ x).val = f.app Δ x := rfl
+
+@[reassoc (attr := simp)]
+lemma toImageSubobject_ι : toImageSubobject f ≫ (Subobject.image f).ι = f := rfl
+
+end
 
 end SSet
