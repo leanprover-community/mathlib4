@@ -603,8 +603,8 @@ theorem Integrable.integral_eq_integral_meas_le
   filter_upwards [meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f] with t ht
   exact congrArg ENNReal.toReal ht.symm
 
-lemma integral_eq_integral_Ioc_meas_le {f : α → ℝ} (f_nn : 0 ≤ᵐ[μ] f)
-    {M : ℝ} (f_bdd : f ≤ᵐ[μ] (fun _ ↦ M)) (f_intble : Integrable f μ) :
+lemma Integrable.integral_eq_integral_Ioc_meas_le {f : α → ℝ} {M : ℝ}
+    (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) (f_bdd : f ≤ᵐ[μ] (fun _ ↦ M)) :
     ∫ ω, f ω ∂μ = ∫ t in Ioc 0 M, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
   rw [f_intble.integral_eq_integral_meas_le f_nn]
   rw [set_integral_eq_of_subset_of_ae_diff_eq_zero

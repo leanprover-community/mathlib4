@@ -252,9 +252,9 @@ lemma BoundedContinuousFunction.integral_eq_integral_meas_le_of_hasFiniteIntegra
     {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α]
     (f : α →ᵇ ℝ) (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f) (hf : HasFiniteIntegral f μ) :
     ∫ ω, f ω ∂μ = ∫ t in Ioc 0 ‖f‖, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
-  rw [integral_eq_integral_Ioc_meas_le f_nn (M := ‖f‖) ?_ ?_]
-  · exact eventually_of_forall (fun x ↦ BoundedContinuousFunction.apply_le_norm f x)
+  rw [Integrable.integral_eq_integral_Ioc_meas_le (M := ‖f‖) ?_ f_nn ?_]
   · refine ⟨f.continuous.measurable.aestronglyMeasurable, hf⟩
+  · exact eventually_of_forall (fun x ↦ BoundedContinuousFunction.apply_le_norm f x)
 
 /-- A version of the layer cake formula for bounded continuous functions and finite measures:
 ∫ f dμ = ∫ t in (0, ‖f‖], μ {x | f(x) ≥ t} dt. -/
