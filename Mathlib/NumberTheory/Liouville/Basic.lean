@@ -132,7 +132,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
       (fR0.trans (Polynomial.map_zero _).symm)
   -- reformulating assumption `fa`: `α` is a root of `fR`.
   have ar : α ∈ (fR.roots.toFinset : Set ℝ) :=
-    Finset.mem_coe.mpr (Multiset.mem_toFinset.mpr ((mem_roots fR0).mpr (IsRoot.def.mpr fa)))
+    Finset.mem_coe.mpr (Multiset.mem_toFinset.mpr ((mem_roots fR0).mpr (IsRoot.definition.mpr fa)))
   -- Since the polynomial `fR` has finitely many roots, there is a closed interval centered at `α`
   -- such that `α` is the only root of `fR` in the interval.
   obtain ⟨ζ, z0, U⟩ : ∃ ζ > 0, closedBall α ζ ∩ fR.roots.toFinset = {α} :=
@@ -170,7 +170,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     refine' (irrational_iff_ne_rational α).mp ha z (a + 1) (mem_singleton_iff.mp _).symm
     refine' U.subset _
     refine' ⟨hq, Finset.mem_coe.mp (Multiset.mem_toFinset.mpr _)⟩
-    exact (mem_roots fR0).mpr (IsRoot.def.mpr hy)
+    exact (mem_roots fR0).mpr (IsRoot.definition.mpr hy)
 #align liouville.exists_pos_real_of_irrational_root Liouville.exists_pos_real_of_irrational_root
 
 /-- **Liouville's Theorem** -/
