@@ -329,10 +329,10 @@ lemma cokernelSequenceE_exact :
   dsimp at y₁ hy₁
   let z := π₁ ≫ x₂ - y₁ ≫ X.δ n₀ n₁ hn₁ f₁₂ f₃
   obtain ⟨A₂, π₂, _, x₁, hx₁⟩ := (X.exact₂ n₁ f₁ f₂ f₁₂ h₁₂).exact_up_to_refinements z (by
-      have : z ≫ X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ = 0 := by simp [hy₁]
+      have : z ≫ X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ = 0 := by simp [z, hy₁]
       simpa only [zero_comp, assoc, toCycles_i] using this =≫ X.iCycles n₁ n₂ hn₂ f₁ f₂)
   dsimp at x₁ hx₁
-  exact ⟨A₂, π₂ ≫ π₁, epi_comp _ _, biprod.lift x₁ (π₂ ≫ y₁), by simp [← hx₁]⟩
+  exact ⟨A₂, π₂ ≫ π₁, epi_comp _ _, biprod.lift x₁ (π₂ ≫ y₁), by simp [z, ← hx₁]⟩
 
 section
 

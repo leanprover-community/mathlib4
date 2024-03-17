@@ -15,7 +15,7 @@ lemma Full.ofCompLeft {C D E : Type _} [Category C] [Category D] [Category E]
   have hf' : G.map (F.map f') = _ := (F ⋙ G).image_preimage φ
   refine' ⟨(F.objObjPreimageIso X').inv ≫ F.map f' ≫ (F.objObjPreimageIso Y').hom, _⟩
   rw [G.map_comp, G.map_comp, hf']
-  simp only [Functor.comp_obj, assoc, ← G.map_comp, ← G.map_comp_assoc,
+  simp only [φ, Functor.comp_obj, assoc, ← G.map_comp, ← G.map_comp_assoc,
     Iso.inv_hom_id, G.map_id, id_comp, comp_id])
 
 lemma Faithful.ofCompLeft {C D E : Type _} [Category C] [Category D] [Category E]

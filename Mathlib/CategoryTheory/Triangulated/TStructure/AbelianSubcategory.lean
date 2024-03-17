@@ -204,7 +204,10 @@ noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : A}
   have hT' : Triangle.mk (0 : ((ι ⋙ shiftFunctor C (1 : ℤ)).obj 0) ⟶ _) (𝟙 (ι.obj X₃)) 0 ∈
       distTriang C := by
     refine' isomorphic_distinguished _ (inv_rot_of_distTriang _ (contractible_distinguished (ι.obj X₃))) _ _
-    refine' Triangle.isoMk _ _ (IsZero.iso _ _) (Iso.refl _) (Iso.refl _) (by simp) (by simp) (by simp)
+    refine' Triangle.isoMk _ _ (IsZero.iso _ _) (Iso.refl _) (Iso.refl _) (by
+      dsimp
+      simp only [comp_id, comp_neg, zero_eq_neg, IsIso.comp_left_eq_zero, IsIso.comp_right_eq_zero]
+      rw [Functor.map_zero]) (by simp) (by simp)
     · dsimp
       rw [IsZero.iff_id_eq_zero, ← Functor.map_id, ← Functor.map_id, id_zero,
         Functor.map_zero, Functor.map_zero]

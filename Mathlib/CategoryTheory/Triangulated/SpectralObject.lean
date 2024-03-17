@@ -41,7 +41,7 @@ lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
     (by simpa only [hαβ] using naturality' β 0 1)
   have h := X.δ'.naturality φ
   dsimp at h
-  simp only [hαβ] at h
+  simp only [φ, hαβ] at h
   convert h <;> aesop_cat
 
 section

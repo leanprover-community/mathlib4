@@ -18,14 +18,14 @@ abbrev subcategoryAcyclic :
     Triangulated.Subcategory (HomotopyCategory.Plus C) :=
   (HomotopyCategory.subcategoryAcyclic C).inverseImage (HomotopyCategory.Plus.ι C)
 
-lemma qis_eq_subcategoryAcyclic_W :
-    HomotopyCategory.Plus.qis C = (subcategoryAcyclic C).W := by
+lemma quasiIso_eq_subcategoryAcyclic_W :
+    HomotopyCategory.Plus.quasiIso C = (subcategoryAcyclic C).W := by
   ext K L f
   obtain ⟨M, g, h, mem⟩ := CategoryTheory.Pretriangulated.distinguished_cocone_triangle f
   have mem' := (HomotopyCategory.Plus.ι C).map_distinguished _ mem
   erw [(subcategoryAcyclic C).mem_W_iff_of_distinguished _ mem,
     ← (HomotopyCategory.subcategoryAcyclic C).mem_W_iff_of_distinguished _ mem',
-    ← HomotopyCategory.qis_eq_subcategoryAcyclic_W]
+    ← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
   rfl
 
 end Plus
@@ -62,10 +62,10 @@ lemma Qh_map_bijective_of_isKInjective (K L : HomotopyCategory.Plus C)
 
 variable (C)
 
-lemma Qh_inverts : (HomotopyCategory.Plus.qis C).IsInvertedBy Plus.Qh := by
+lemma Qh_inverts : (HomotopyCategory.Plus.quasiIso C).IsInvertedBy Plus.Qh := by
   intro X Y f hf
   have : IsIso (ι.map (Qh.map f)) :=
-    Localization.inverts DerivedCategory.Qh (HomotopyCategory.qis C _) _ hf
+    Localization.inverts DerivedCategory.Qh (HomotopyCategory.quasiIso C _) _ hf
   exact isIso_of_reflects_iso (Qh.map f) ι
 
 namespace QhIsLocalization
@@ -82,7 +82,7 @@ lemma locQ_obj_surjective (X : Loc C) : ∃ (K : HomotopyCategory.Plus C), X = L
 variable (C)
 
 lemma Qh_inverts' : (HomotopyCategory.Plus.subcategoryAcyclic C).W.IsInvertedBy Plus.Qh := by
-  rw [← HomotopyCategory.Plus.qis_eq_subcategoryAcyclic_W]
+  rw [← HomotopyCategory.Plus.quasiIso_eq_subcategoryAcyclic_W]
   apply Plus.Qh_inverts
 
 noncomputable def π : Loc C ⥤ DerivedCategory.Plus C :=
@@ -145,7 +145,7 @@ noncomputable instance : Full (π C) := Functor.fullOfSurjective _ (fun K L => b
     ψ = (QhObjIso K hK).inv ≫ DerivedCategory.Plus.ι.map φ ≫ (QhObjIso L hL).hom := ⟨_, rfl⟩
   have hψ' : DerivedCategory.Plus.ι.map φ =
     (QhObjIso K hK).hom ≫ ψ ≫ (QhObjIso L hL).inv := by simp [hψ]
-  obtain ⟨γ, hγ⟩ :=  Localization.exists_leftFraction DerivedCategory.Qh (HomotopyCategory.qis C _) ψ
+  obtain ⟨γ, hγ⟩ :=  Localization.exists_leftFraction DerivedCategory.Qh (HomotopyCategory.quasiIso C _) ψ
   obtain ⟨K', g, s, hs, rfl⟩ := γ.cases
   dsimp only [MorphismProperty.LeftFraction.map] at hγ
   rw [← isIso_Qh_map_iff] at hs
@@ -155,8 +155,8 @@ noncomputable instance : Full (π C) := Functor.fullOfSurjective _ (fun K L => b
   let β' : L ⟶ K'' := s ≫ f
   let β : (⟨L, hL⟩ : HomotopyCategory.Plus C) ⟶ ⟨K'', hK''⟩ := β'
   let e := Localization.isoOfHom LocQ (HomotopyCategory.Plus.subcategoryAcyclic C).W β (by
-    rw [← HomotopyCategory.Plus.qis_eq_subcategoryAcyclic_W]
-    dsimp [HomotopyCategory.Plus.qis, MorphismProperty.inverseImage, HomotopyCategory.Plus.ι, Subcategory.ι]
+    rw [← HomotopyCategory.Plus.quasiIso_eq_subcategoryAcyclic_W]
+    dsimp [HomotopyCategory.Plus.quasiIso, MorphismProperty.inverseImage, HomotopyCategory.Plus.ι, Subcategory.ι]
     rw [← isIso_Qh_map_iff, Functor.map_comp]
     infer_instance)
   refine' ⟨LocQ.map α ≫ e.inv, _⟩
@@ -168,7 +168,8 @@ noncomputable instance : Full (π C) := Functor.fullOfSurjective _ (fun K L => b
   simp only [assoc]
   rw [ι_π_LocQ_map_eq (g ≫ f) hK hK'', Functor.map_comp, assoc]
   congr 2
-  rw [ι_π_LocQ_map_eq (s ≫ f) hL hK'', Iso.inv_hom_id_assoc,
+  erw [ι_π_LocQ_map_eq (s ≫ f) hL hK'']
+  rw [Iso.inv_hom_id_assoc,
     Functor.map_comp, assoc, IsIso.inv_hom_id_assoc])
 
 instance : (π C ⋙ Plus.ι).Additive := by
@@ -205,14 +206,14 @@ instance : Faithful (π C ⋙ Plus.ι) := by
   simp only [zero_comp] at hφ
   obtain ⟨L', s, hs, eq⟩ := hφ
   have : IsIso (DerivedCategory.Qh.map s) := by
-    rw [isIso_Qh_map_iff, HomotopyCategory.qis_eq_subcategoryAcyclic_W]
+    rw [isIso_Qh_map_iff, HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
     exact hs
   obtain ⟨L'', hL'', t, ht⟩ := right_localizing s L.2 inferInstance
   rw [← LocQ.map_zero, MorphismProperty.map_eq_iff_postcomp LocQ
       (HomotopyCategory.Plus.subcategoryAcyclic C).W]
   refine' ⟨⟨L'', hL''⟩, (s ≫ t : L.1 ⟶ L''), _, _⟩
-  · rw [← HomotopyCategory.Plus.qis_eq_subcategoryAcyclic_W]
-    dsimp [HomotopyCategory.Plus.qis, MorphismProperty.inverseImage, HomotopyCategory.Plus.ι, Subcategory.ι]
+  · rw [← HomotopyCategory.Plus.quasiIso_eq_subcategoryAcyclic_W]
+    dsimp [HomotopyCategory.Plus.quasiIso, MorphismProperty.inverseImage, HomotopyCategory.Plus.ι, Subcategory.ι]
     rw [← isIso_Qh_map_iff, Functor.map_comp]
     infer_instance
   · erw [zero_comp, reassoc_of% eq, zero_comp]
@@ -244,8 +245,8 @@ noncomputable instance : Pretriangulated (Loc C) := inferInstance
 
 end QhIsLocalization
 
-instance : Qh.IsLocalization (HomotopyCategory.Plus.qis C) := by
-  rw [HomotopyCategory.Plus.qis_eq_subcategoryAcyclic_W]
+instance : Qh.IsLocalization (HomotopyCategory.Plus.quasiIso C) := by
+  rw [HomotopyCategory.Plus.quasiIso_eq_subcategoryAcyclic_W]
   exact Functor.IsLocalization.of_equivalence_target
     (HomotopyCategory.Plus.subcategoryAcyclic C).W.Q (HomotopyCategory.Plus.subcategoryAcyclic C).W Qh
     (QhIsLocalization.π C).asEquivalence (Localization.fac _ _ _)

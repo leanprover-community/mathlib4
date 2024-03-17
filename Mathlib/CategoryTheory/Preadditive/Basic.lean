@@ -203,7 +203,7 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 #align category_theory.preadditive.preadditive_has_zero_morphisms CategoryTheory.Preadditive.preadditiveHasZeroMorphisms
 
-/--Porting note: adding this before the ring instance allowed moduleEndRight to find
+/-- Porting note: adding this before the ring instance allowed moduleEndRight to find
 the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms
 to make use of them -/
 instance {X : C} : Semiring (End X) :=

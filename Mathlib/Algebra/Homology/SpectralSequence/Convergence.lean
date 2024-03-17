@@ -292,9 +292,9 @@ lemma exists_sub_eq (n : σ) (i j : α n) (hij : i ≤ j) :
   let S : Set ℕ := fun k => (WithBot.some i) ≤ s.sub n (WithBot.some j) k
   have hS : S.Finite := by
     let φ : S → s.segment' n i j := fun x => ⟨s.sub n j x.1, x.2, s.sub_le_self _ _ _⟩
-    refine' ⟨Fintype.ofInjective φ _⟩
+    refine' Finite.of_injective φ _
     intro k₁ k₂ h
-    simp only [Subtype.mk.injEq] at h
+    simp only [φ, Subtype.mk.injEq] at h
     obtain h' | h' := s.sub_injective n _ _ _ h
     · exfalso
       have h₁ : WithBot.some i ≤ s.sub n j k₁ := k₁.2
@@ -977,7 +977,7 @@ lemma Hom.isIso_τ_of_isIso_mapPageInfinity  :
     obtain ⟨d, hd⟩ := s.exists_sub_le n j k
     let l := (s.sub n j (d + 1))
     have hlk : l ≤ s.pred n k := by
-      dsimp
+      dsimp [l]
       rw [← s.sub_sub n j d 1 _ rfl, ← s.pred'_some, s.sub_one]
       exact s.pred'_monotone _ _ _ hd
     have : IsIso (β.τ.app l) := ⟨0, (h.isZero_filtration_obj_of_LE l _ hlk z).eq_of_src _ _,

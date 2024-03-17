@@ -13,14 +13,14 @@ variable {C D D' H : Type _} [Category C] [Category D] [Category D'] [Category H
   (F' : D ⥤ H) (F : C ⥤ H) (L : C ⥤ D) (α : F ⟶ L ⋙ F') (W : MorphismProperty C)
 
 class HasPointwiseRightDerivedFunctorAt (X : C) : Prop where
-  hasColimit' : F.HasPointwiseLeftKanExtensionAt W.Q (W.Q.obj X)
+  hasColimit' : HasPointwiseLeftKanExtensionAt W.Q F (W.Q.obj X)
 
 abbrev HasPointwiseRightDerivedFunctor := ∀ (X : C), F.HasPointwiseRightDerivedFunctorAt W X
 
 lemma hasPointwiseRightDerivedFunctorAt_iff [L.IsLocalization W] (X : C) :
     F.HasPointwiseRightDerivedFunctorAt W X ↔
-      F.HasPointwiseLeftKanExtensionAt L (L.obj X) := by
-  rw [← F.hasPointwiseLeftKanExtensionAt_iff_of_equivalence W.Q L
+      HasPointwiseLeftKanExtensionAt L F (L.obj X) := by
+  rw [← hasPointwiseLeftKanExtensionAt_iff_of_equivalence W.Q L F
     (Localization.uniq W.Q L W) (Localization.compUniqFunctor W.Q L W) (W.Q.obj X) (L.obj X)
     ((Localization.compUniqFunctor W.Q L W).app X)]
   exact ⟨fun h => h.hasColimit', fun h => ⟨h⟩⟩
@@ -29,23 +29,23 @@ lemma hasPointwiseRightDerivedFunctorAt_iff_of_mem {X Y : C} (w : X ⟶ Y) (hw :
     F.HasPointwiseRightDerivedFunctorAt W X ↔
       F.HasPointwiseRightDerivedFunctorAt W Y := by
   simp only [F.hasPointwiseRightDerivedFunctorAt_iff W.Q W]
-  exact F.hasPointwiseLeftKanExtensionAt_iff_of_iso W.Q (Localization.isoOfHom W.Q W w hw)
+  exact hasPointwiseLeftKanExtensionAt_iff_of_iso W.Q F (Localization.isoOfHom W.Q W w hw)
 
 section
 
 variable [F.HasPointwiseRightDerivedFunctor W]
 
 lemma hasPointwiseLeftKanExtension [L.IsLocalization W] :
-      F.HasPointwiseLeftKanExtension L := fun Y => by
+      HasPointwiseLeftKanExtension L F := fun Y => by
     have := Localization.essSurj L W
-    rw [← F.hasPointwiseLeftKanExtensionAt_iff_of_iso _ (L.objObjPreimageIso Y),
+    rw [← hasPointwiseLeftKanExtensionAt_iff_of_iso _ F (L.objObjPreimageIso Y),
       ← F.hasPointwiseRightDerivedFunctorAt_iff L W]
     infer_instance
 
 lemma hasRightDerivedFunctor_of_pointwise :
     F.HasRightDerivedFunctor W where
   hasLeftKanExtension' := by
-    have pif := F.hasPointwiseLeftKanExtension W.Q W
+    have := F.hasPointwiseLeftKanExtension W.Q W
     infer_instance
 
 attribute [instance] hasRightDerivedFunctor_of_pointwise
@@ -115,7 +115,7 @@ lemma Localization.induction_structuredArrow [L.IsLocalization W] : S = ⊤ := b
     have hφ : S' (StructuredArrow.mk (E.functor.preimage (e.hom.app X ≫ φ.hom ≫ e.inv.app φ.right))) := by
       rw [this]
       tauto
-    simpa using hφ
+    simpa [S'] using hφ
   apply induction_structuredArrow'
   · change S _
     simp

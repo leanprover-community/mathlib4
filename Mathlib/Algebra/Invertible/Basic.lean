@@ -15,9 +15,6 @@ import Mathlib.Algebra.Ring.Defs
 
 -/
 
-set_option autoImplicit true
-
-
 universe u
 
 variable {α : Type u}
@@ -213,7 +210,7 @@ def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) 
   ⟨b / a, by simp [← mul_div_assoc], by simp [← mul_div_assoc]⟩
 #align invertible_div invertibleDiv
 
--- Porting note: removed `simp` attribute as `simp` can prove it
+-- Porting note (#11119): removed `simp` attribute as `simp` can prove it
 theorem invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
     ⅟ (a / b) = b / a :=
   invOf_eq_right_inv (by simp [← mul_div_assoc])
@@ -223,7 +220,7 @@ end GroupWithZero
 
 /-- Monoid homs preserve invertibility. -/
 def Invertible.map {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [MulOneClass S]
-    [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] :
+    [FunLike F R S] [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] :
     Invertible (f r) where
   invOf := f (⅟ r)
   invOf_mul_self := by rw [← map_mul, invOf_mul_self, map_one]
@@ -233,7 +230,8 @@ def Invertible.map {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [MulOneCl
 /-- Note that the `Invertible (f r)` argument can be satisfied by using `letI := Invertible.map f r`
 before applying this lemma. -/
 theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
-    [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] [ifr : Invertible (f r)] :
+    [FunLike F R S] [MonoidHomClass F R S] (f : F) (r : R)
+    [Invertible r] [ifr : Invertible (f r)] :
     f (⅟ r) = ⅟ (f r) :=
   have h : ifr = Invertible.map f r := Subsingleton.elim _ _
   by subst h; rfl
@@ -245,8 +243,8 @@ theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
 The inverse is computed as `g (⅟(f r))` -/
 @[simps! (config := .lemmasOnly)]
 def Invertible.ofLeftInverse {R : Type*} {S : Type*} {G : Type*} [MulOneClass R] [MulOneClass S]
-    [MonoidHomClass G S R] (f : R → S) (g : G) (r : R) (h : Function.LeftInverse g f)
-    [Invertible (f r)] : Invertible r :=
+    [FunLike G S R] [MonoidHomClass G S R] (f : R → S) (g : G) (r : R)
+    (h : Function.LeftInverse g f) [Invertible (f r)] : Invertible r :=
   (Invertible.map g (f r)).copy _ (h r).symm
 #align invertible.of_left_inverse Invertible.ofLeftInverse
 #align invertible.of_left_inverse_inv_of Invertible.ofLeftInverse_invOf
@@ -254,8 +252,8 @@ def Invertible.ofLeftInverse {R : Type*} {S : Type*} {G : Type*} [MulOneClass R]
 /-- Invertibility on either side of a monoid hom with a left-inverse is equivalent. -/
 @[simps]
 def invertibleEquivOfLeftInverse {R : Type*} {S : Type*} {F G : Type*} [Monoid R] [Monoid S]
-    [MonoidHomClass F R S] [MonoidHomClass G S R] (f : F) (g : G) (r : R)
-    (h : Function.LeftInverse g f) :
+    [FunLike F R S] [MonoidHomClass F R S] [FunLike G S R] [MonoidHomClass G S R]
+    (f : F) (g : G) (r : R) (h : Function.LeftInverse g f) :
     Invertible (f r) ≃
       Invertible r where
   toFun _ := Invertible.ofLeftInverse f _ _ h

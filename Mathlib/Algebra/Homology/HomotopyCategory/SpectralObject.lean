@@ -32,8 +32,7 @@ noncomputable def spectralObjectMappingCone :
         simp only [assoc, ← Functor.map_comp_assoc]
         erw [eq]
         simp only [Functor.map_comp, assoc]
-        rw [Functor.commShiftIso_hom_naturality]
-        rfl }
+        rw [Functor.commShiftIso_hom_naturality] }
   distinguished' D := by
     obtain ⟨_, _, _, f, g, rfl⟩ := ComposableArrows.mk₂_surjective D
     exact HomotopyCategory.mappingConeCompTriangleh_distinguished f g

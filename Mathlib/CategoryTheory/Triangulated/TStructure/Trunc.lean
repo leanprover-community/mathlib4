@@ -31,12 +31,12 @@ lemma triangle_map_ext' (a b : ℤ) (hab : a ≤ b) {T T' : Triangle C} (f₁ f�
       rw [← eq, hf, comp_zero])
     have hg' : g = 0 := t.zero_of_isLE_of_isGE g a (b+1) (by linarith) h₀
       (t.isGE_shift T'.obj₃ b (-1) (b+1) (by linarith))
-    rw [instAddCommGroupTriangleHom_zero_hom₁, hg, hg', zero_comp]
-  · rw [hf, instAddCommGroupTriangleHom_zero_hom₂]
+    simp [hg, hg']
+  · simp [hf]
   · obtain ⟨g, hg⟩ := T.yoneda_exact₃ hT f.hom₃ (by rw [f.comm₂, hf, zero_comp])
     have hg' : g = 0 := t.zero_of_isLE_of_isGE g (a-1) b (by linarith)
       (t.isLE_shift _ a 1 (a-1) (by linarith)) inferInstance
-    rw [instAddCommGroupTriangleHom_zero_hom₃, hg, hg', comp_zero]
+    simp [hg, hg']
 
 lemma triangle_map_exists (n₀ n₁ : ℤ) (h : n₀ < n₁) (T T' : Triangle C)
     (hT : T ∈ distTriang C) (hT' : T' ∈ distTriang C)
@@ -1503,7 +1503,7 @@ instance (a b : ℤ) (X : C) : IsIso ((t.natTransTruncGELTTruncLTGE a b).app X) 
   · let u₁₂ := (t.natTransTruncLTOfLE a b h).app X
     let u₂₃ : (t.truncLT b).obj X ⟶ X := (t.truncLTι b).app X
     let u₁₃ : _ ⟶ X := (t.truncLTι a).app X
-    have eq : u₁₂ ≫ u₂₃ = u₁₃ := by simp
+    have eq : u₁₂ ≫ u₂₃ = u₁₃ := by simp [u₁₂, u₂₃, u₁₃]
     have H := someOctahedron eq (t.triangleLTLTGELT_distinguished a b h X)
       (t.triangleLTGE_distinguished b X) (t.triangleLTGE_distinguished a X)
     let m₁ : (t.truncGELT a b).obj X ⟶  _ := H.m₁

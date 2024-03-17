@@ -146,17 +146,17 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
   change T₃ ∈ distTriang C at hT₃
   have hβγσ : W (β.s ≫ γ.s ≫ σ) := W.comp_mem _ _ β.hs (W.comp_mem _ _ γ.hs hσ)
   obtain ⟨ψ₃, hψ₃, hψ₁, hψ₂⟩ := MorphismProperty.IsCompatibleWithTriangulation.condition
-    T₂ T₃ hT₂ hT₃ α.s (β.s ≫ γ.s ≫ σ) α.hs hβγσ (by dsimp; rw [reassoc_of% hβ])
-  let ψ : T₂ ⟶ T₃ := Triangle.homMk _ _ α.s (β.s ≫ γ.s ≫ σ) ψ₃ (by dsimp; rw [reassoc_of% hβ]) hψ₁ hψ₂
+    T₂ T₃ hT₂ hT₃ α.s (β.s ≫ γ.s ≫ σ) α.hs hβγσ (by dsimp [T₃]; rw [reassoc_of% hβ])
+  let ψ : T₂ ⟶ T₃ := Triangle.homMk _ _ α.s (β.s ≫ γ.s ≫ σ) ψ₃ (by dsimp [T₃]; rw [reassoc_of% hβ]) hψ₁ hψ₂
   have : IsIso (L.mapTriangle.map ψ) := Triangle.isIso_of_isIsos _
     (Localization.inverts L W α.s α.hs) (Localization.inverts L W _ hβγσ)
     (Localization.inverts L W ψ₃ hψ₃)
   refine' ⟨L.mapTriangle.map (completeDistinguishedTriangleMorphism T₁ T₃ hT₁ hT₃ α.f (γ.f ≫ σ) fac.symm) ≫ inv (L.mapTriangle.map ψ), _, _⟩
   · rw [← cancel_mono (L.mapTriangle.map ψ).hom₁, ← comp_hom₁, assoc, IsIso.inv_hom_id, comp_id]
-    dsimp
+    dsimp [ψ]
     rw [hα, MorphismProperty.LeftFraction.map_comp_map_s]
   · rw [← cancel_mono (L.mapTriangle.map ψ).hom₂, ← comp_hom₂, assoc, IsIso.inv_hom_id, comp_id]
-    dsimp
+    dsimp [ψ]
     simp only [Functor.map_comp, reassoc_of% hγ,
       MorphismProperty.LeftFraction.map_comp_map_s_assoc]
 
@@ -192,7 +192,7 @@ lemma isTriangulated_of_exists_lifting_composable_morphisms [Pretriangulated D]
   let H := Triangulated.someOctahedron rfl h₁₂ h₂₃ h₁₃
   let T₁₃' := Triangle.mk (L.map f' ≫ L.map g') (L.map v₁₃) (L.map w₁₃ ≫ (L.commShiftIso (1 : ℤ)).hom.app Y₁)
   have h₁₃' : T₁₃' ∈ distTriang D := isomorphic_distinguished _ (L.map_distinguished _ h₁₃) _
-      (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp) (by simp))
+      (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp [T₁₃']) (by simp [T₁₃']) (by simp [T₁₃']))
   refine' ⟨L.obj Y₁, L.obj Y₂, L.obj Y₃, L.obj Z₁₂, L.obj Z₂₃, L.obj Z₁₃, L.map f', L.map g',
     e₁.symm, e₂.symm, e₃.symm, _, _,
       _, _, L.map_distinguished _ h₁₂,
@@ -236,65 +236,6 @@ lemma isTriangulated [Pretriangulated D] [L.IsTriangulated] [IsTriangulated C] :
       Iso.hom_inv_id, comp_id, MorphismProperty.LeftFraction.map_eq]
 
 end
-
-/-
-instance [is_triangulated C] : is_triangulated (localization L W) :=
-is_triangulated.mk'
-(λ X₁' X₂' X₃' u₁₂' u₂₃', begin
-  haveI := localization.ess_surj L W,
-  let Y₁' := L.obj_preimage X₁',
-  let X₂ := L.obj_preimage X₂',
-  let Y₃' := L.obj_preimage X₃',
-  let e₁ : L.obj Y₁' ≅ X₁' := functor.obj_obj_preimage_iso L X₁',
-  let e₂ : L.obj X₂ ≅ X₂' := functor.obj_obj_preimage_iso L X₂',
-  let e₃ : L.obj Y₃' ≅ X₃' := functor.obj_obj_preimage_iso L X₃',
-  let y₁₂' : L.obj Y₁' ⟶ L.obj X₂ := e₁.hom ≫ u₁₂' ≫ e₂.inv,
-  let y₂₃' : L.obj X₂ ⟶ L.obj Y₃' := e₂.hom ≫ u₂₃' ≫ e₃.inv,
-  obtain ⟨⟨X₁, s₁, u₁₂, hs₁⟩, hz₁⟩ := right_calculus_of_fractions.L_map_fac L W y₁₂',
-  obtain ⟨⟨X₃, u₂₃, s₂, hs₂⟩, hz₂⟩ := left_calculus_of_fractions.L_map_fac L W y₂₃',
-  haveI := localization.inverts L W _ hs₁,
-  haveI := localization.inverts L W _ hs₂,
-  dsimp [right_calculus_of_fractions.map_roof] at hz₁,
-  dsimp [left_calculus_of_fractions.map_roof] at hz₂,
-  obtain ⟨Z₁₂, v₁₂, w₁₂, h₁₂⟩ := pretriangulated.distinguished_cocone_triangle _ _ u₁₂,
-  obtain ⟨Z₂₃, v₂₃, w₂₃, h₂₃⟩ := pretriangulated.distinguished_cocone_triangle _ _ u₂₃,
-  obtain ⟨Z₁₃, v₁₃, w₁₃, h₁₃⟩ := pretriangulated.distinguished_cocone_triangle _ _ (u₁₂ ≫ u₂₃),
-  let H := (is_triangulated.octahedron_axiom rfl h₁₂ h₂₃ h₁₃).some,
-  refine ⟨L.obj X₁, L.obj X₂, L.obj X₃, L.obj Z₁₂, L.obj Z₂₃, L.obj Z₁₃,
-    L.map u₁₂, L.map u₂₃, e₁.symm ≪≫ (as_iso (L.map s₁)).symm, e₂.symm,
-    e₃.symm ≪≫ (as_iso (L.map s₂)), _, _, _, _, ⟨_, by refl, h₁₂⟩,
-    _, _, ⟨_, by refl, h₂₃⟩,
-    L.map v₁₃, L.map w₁₃ ≫ (L.comm_shift_iso 1).hom.app X₁,
-      ⟨_, _, h₁₃⟩, _⟩,
-  { dsimp,
-    rw [assoc, ← hz₁, e₁.inv_hom_id_assoc], },
-  { dsimp,
-    rw [← cancel_mono (inv (L.map s₂)), assoc, assoc, assoc, is_iso.hom_inv_id, comp_id, ← hz₂,
-      e₂.inv_hom_id_assoc], },
-  { refine triangle.mk_iso _ _ (iso.refl _) (iso.refl _) (iso.refl _) _ _ _,
-    { dsimp, simp only [comp_id, functor.map_comp, id_comp], },
-    { dsimp, simp only [comp_id, id_comp], },
-    { dsimp, simp only [functor.map_id, comp_id, id_comp], }, },
-  have comm₁₂ := congr_arg (λ (f : _ ⟶ _), L.map f) H.triangle_morphism₁.comm₂,
-  have comm₁₃ := congr_arg (λ (f : _ ⟶ _), L.map f) H.triangle_morphism₁.comm₃,
-  have comm₂₂ := congr_arg (λ (f : _ ⟶ _), L.map f) H.triangle_morphism₂.comm₂,
-  have comm₂₃ := congr_arg (λ (f : _ ⟶ _), L.map f) H.triangle_morphism₂.comm₃,
-  dsimp at comm₁₂ comm₁₃ comm₂₂ comm₂₃,
-  simp only [L.map_comp, functor.map_id, id_comp, comp_id] at comm₁₂ comm₁₃ comm₂₂ comm₂₃,
-  refine ⟨⟨L.map H.m₁, L.map H.m₃, comm₁₂, _, comm₂₂, _, _⟩⟩,
-  { dsimp,
-    rw reassoc_of comm₁₃, },
-  { dsimp,
-    rw [← reassoc_of comm₂₃, assoc],
-    erw ← nat_trans.naturality,
-    refl, },
-  refine ⟨_, _, H.mem⟩,
-  refine triangle.mk_iso _ _ (iso.refl _) (iso.refl _) (iso.refl _) _ _ _,
-  { dsimp, simp only [comp_id, id_comp], },
-  { dsimp, simp only [comp_id, id_comp], },
-  { dsimp, simp only [assoc, functor.map_id, comp_id, functor.map_comp, id_comp],
-    erw ← nat_trans.naturality, refl, },
-end)-/
 
 noncomputable example : HasShift W.Localization ℤ := inferInstance
 noncomputable example : W.Q.CommShift ℤ := inferInstance

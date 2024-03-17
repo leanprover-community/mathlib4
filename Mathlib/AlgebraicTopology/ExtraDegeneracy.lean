@@ -40,7 +40,7 @@ the augmentation on the alternating face map complex of `X` is a homotopy
 equivalence.
 
 ## References
-* [Paul G. Goerss, John F. Jardine, *Simplical Homotopy Theory*][goerss-jardine-2009]
+* [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/
 
@@ -53,7 +53,7 @@ namespace Augmented
 
 variable {C : Type*} [Category C]
 
--- porting note: in the formulation of the axioms `s_comp_δ₀`, etc, `drop.obj X` has been
+-- Porting note: in the formulation of the axioms `s_comp_δ₀`, etc, `drop.obj X` has been
 -- replaced by `X.left` in order to have lemmas with LHS/RHS in normal form
 /-- The datum of an extra degeneracy is a technical condition on
 augmented simplicial objects. The morphisms `s'` and `s n` of the
@@ -78,7 +78,7 @@ attribute [reassoc (attr := simp)] s'_comp_ε s_comp_δ₀
 
 /-- If `ed` is an extra degeneracy for `X : SimplicialObject.Augmented C` and
 `F : C ⥤ D` is a functor, then `ed.map F` is an extra degeneracy for the
-augmented simplical object in `D` obtained by applying `F` to `X`. -/
+augmented simplicial object in `D` obtained by applying `F` to `X`. -/
 def map {D : Type*} [Category D] {X : SimplicialObject.Augmented C} (ed : ExtraDegeneracy X)
     (F : C ⥤ D) : ExtraDegeneracy (((whiskering _ _).obj F).obj X) where
   s' := F.map ed.s'
@@ -284,7 +284,7 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
       · simp only [WidePullback.π_arrow]
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s
 
--- porting note: @[simp] removed as the linter complains the LHS is not in normal form
+-- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ 0 =
       @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ ≫
@@ -293,7 +293,7 @@ theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
   simp only [WidePullback.lift_π]
   rfl
 
--- porting note: @[simp] removed as the linter complains the LHS is not in normal form
+-- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
     ExtraDegeneracy.s f S n ≫ WidePullback.π _ i.succ =
       @WidePullback.π _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ i := by
@@ -304,7 +304,7 @@ theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :
   · simp only [Fin.pred_succ]
 #align category_theory.arrow.augmented_cech_nerve.extra_degeneracy.s_comp_π_succ CategoryTheory.Arrow.AugmentedCechNerve.ExtraDegeneracy.s_comp_π_succ
 
--- porting note: @[simp] removed as the linter complains the LHS is not in normal form
+-- Porting note (#11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_base (n : ℕ) :
     ExtraDegeneracy.s f S n ≫ WidePullback.base _ = WidePullback.base _ := by
   apply WidePullback.lift_base

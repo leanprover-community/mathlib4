@@ -45,11 +45,11 @@ noncomputable def iso₂ :
       dsimp
       simp only [← Functor.map_comp, id_comp]
       congr 1
-      ext <;> simp; rfl) (by
+      ext <;> simp) (by
       dsimp
       simp only [← Functor.map_comp, comp_id]
       congr 1
-      ext <;> simp; rfl)
+      ext <;> simp)
 
 @[reassoc (attr := simp)]
 lemma zero₂ (fg : i ⟶ k) (h : f ≫ g = fg) :

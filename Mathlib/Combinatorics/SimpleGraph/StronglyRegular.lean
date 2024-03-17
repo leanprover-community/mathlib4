@@ -86,7 +86,7 @@ theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k �
       2 * k - Fintype.card (G.commonNeighbors v w) := by
   apply Nat.add_right_cancel (m := Fintype.card (G.commonNeighbors v w))
   rw [Nat.sub_add_cancel, ← Set.toFinset_card]
-  -- porting note: Set.toFinset_inter needs workaround to use unification to solve for one of the
+  -- Porting note: Set.toFinset_inter needs workaround to use unification to solve for one of the
   -- instance arguments:
   · simp [commonNeighbors, @Set.toFinset_inter _ _ _ _ _ _ (_),
       ← neighborFinset_def, Finset.card_union_add_card_inter, card_neighborFinset_eq_degree,
@@ -190,8 +190,11 @@ theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
   · simp [h.compl.regular v]
   · intro w hw
     rw [mem_neighborFinset] at hw
-    simp_rw [bipartiteAbove, show G.Adj w = fun a => G.Adj w a by rfl, ← mem_neighborFinset,
-      filter_mem_eq_inter]
+    simp_rw [bipartiteAbove]
+    -- This used to be part of the enclosing `simp_rw` chain,
+    -- but after leanprover/lean4#3124 it caused a maximum recursion depth error.
+    change Finset.card (filter (fun a => Adj G w a) _) = _
+    simp_rw [← mem_neighborFinset, filter_mem_eq_inter]
     have s : {v} ⊆ G.neighborFinset w \ G.neighborFinset v := by
       rw [singleton_subset_iff, mem_sdiff, mem_neighborFinset]
       exact ⟨hw.symm, G.not_mem_neighborFinset_self v⟩

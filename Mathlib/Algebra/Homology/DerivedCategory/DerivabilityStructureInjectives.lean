@@ -82,11 +82,11 @@ variable (C)
 @[simps]
 def localizerMorphism : LocalizerMorphism
   (MorphismProperty.isomorphisms (HomotopyCategory.Plus (Injectives C)))
-    (HomotopyCategory.Plus.qis C) where
+    (HomotopyCategory.Plus.quasiIso C) where
   functor := (ι C).mapHomotopyCategoryPlus
   map K L f (hf : IsIso f) := by
-    dsimp [MorphismProperty.inverseImage, HomotopyCategory.Plus.qis]
-    rw [HomotopyCategory.mem_qis_iff]
+    dsimp [MorphismProperty.inverseImage, HomotopyCategory.Plus.quasiIso]
+    rw [HomotopyCategory.mem_quasiIso_iff]
     infer_instance
 
 noncomputable instance : CatCommSq (localizerMorphism C).functor
@@ -148,8 +148,8 @@ noncomputable def rightResolution_localizerMorphism (K : CochainComplex C ℤ) (
   X₁ := liftHomotopyCategoryPlusOfInjective ⟨⟨K.injectiveResolution n⟩, ⟨n, inferInstance⟩⟩
   w := (HomotopyCategory.quotient _ _).map (K.ιInjectiveResolution n)
   hw := by
-    dsimp [HomotopyCategory.Plus.qis, MorphismProperty.inverseImage, HomotopyCategory.Plus.ι, Triangulated.Subcategory.ι]
-    rw [HomotopyCategory.quotient_map_mem_qis_iff, HomologicalComplex.qis_iff]
+    dsimp [HomotopyCategory.Plus.quasiIso, MorphismProperty.inverseImage, HomotopyCategory.Plus.ι, Triangulated.Subcategory.ι]
+    rw [HomotopyCategory.quotient_map_mem_quasiIso_iff, HomologicalComplex.mem_quasiIso_iff]
     infer_instance
 
 instance [EnoughInjectives C] : (Injectives.localizerMorphism C).HasRightResolutions := by
@@ -210,12 +210,12 @@ variable [EnoughInjectives C] (F : HomotopyCategory.Plus C ⥤ H)
 
 /-- Any functor the homotopy category `K^+` has a right derived functor with respect
 to quasi-isomorphisms.  -/
-instance : F.HasPointwiseRightDerivedFunctor (HomotopyCategory.Plus.qis C) :=
+instance : F.HasPointwiseRightDerivedFunctor (HomotopyCategory.Plus.quasiIso C) :=
   (localizerMorphism C).hasPointwiseRightDerivedFunctor F
     (MorphismProperty.isomorphisms_isInvertedBy _)
 
 variable (F' : DerivedCategory.Plus C ⥤ H) (α : F ⟶ DerivedCategory.Plus.Qh ⋙ F')
-  [F'.IsRightDerivedFunctor α (HomotopyCategory.Plus.qis C)]
+  [F'.IsRightDerivedFunctor α (HomotopyCategory.Plus.quasiIso C)]
 
 instance (K : HomotopyCategory.Plus C) [(∀ (n : ℤ), Injective (K.obj.as.X n))] : IsIso (α.app K) := by
   have : ∀ (Y : HomotopyCategory.Plus (Injectives C)),
@@ -228,7 +228,7 @@ instance (K : HomotopyCategory.Plus C) [(∀ (n : ℤ), Injective (K.obj.as.X n)
 
 example (X : HomotopyCategory.Plus (Injectives C)) :
     IsIso ((F.totalRightDerivedUnit DerivedCategory.Plus.Qh
-      (HomotopyCategory.Plus.qis C)).app ((ι C).mapHomotopyCategoryPlus.obj X)) := by
+      (HomotopyCategory.Plus.quasiIso C)).app ((ι C).mapHomotopyCategoryPlus.obj X)) := by
   infer_instance
 
 end
@@ -247,17 +247,17 @@ variable [EnoughInjectives C]
 noncomputable def rightDerivedFunctorPlus :
     DerivedCategory.Plus C ⥤ DerivedCategory.Plus D :=
   (F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).totalRightDerived DerivedCategory.Plus.Qh
-    (HomotopyCategory.Plus.qis C)
+    (HomotopyCategory.Plus.quasiIso C)
 
 noncomputable def rightDerivedFunctorPlusUnit :
     F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh ⟶
       DerivedCategory.Plus.Qh ⋙ F.rightDerivedFunctorPlus :=
   (F.mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).totalRightDerivedUnit DerivedCategory.Plus.Qh
-    (HomotopyCategory.Plus.qis C)
+    (HomotopyCategory.Plus.quasiIso C)
 
 instance :
     F.rightDerivedFunctorPlus.IsRightDerivedFunctor
-      F.rightDerivedFunctorPlusUnit (HomotopyCategory.Plus.qis C) := by
+      F.rightDerivedFunctorPlusUnit (HomotopyCategory.Plus.quasiIso C) := by
   dsimp only [rightDerivedFunctorPlus, rightDerivedFunctorPlusUnit]
   infer_instance
 

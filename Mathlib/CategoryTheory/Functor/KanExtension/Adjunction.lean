@@ -39,9 +39,9 @@ instance (G : C ⥤ E) : ((lan F).obj G).IsLeftKanExtension ((lanUnit F).app G) 
   infer_instance
 
 noncomputable def isPointwiseLeftKanExtensionLanUnit
-    (G : C ⥤ E) [G.HasPointwiseLeftKanExtension F] :
+    (G : C ⥤ E) [HasPointwiseLeftKanExtension F G] :
     (LeftExtension.mk _ ((lanUnit F).app G)).IsPointwiseLeftKanExtension := by
-  have : HasPointwiseLeftKanExtension ((𝟭 (C ⥤ E)).obj G) F := by
+  have : HasPointwiseLeftKanExtension F ((𝟭 (C ⥤ E)).obj G) := by
     dsimp
     infer_instance
   exact isPointwiseLeftKanExtensionOfIsLeftKanExtension _ ((lanUnit F).app G)
@@ -95,19 +95,19 @@ section
 
 variable [Full F] [Faithful F]
 
-instance (G : C ⥤ E) (X : C) [G.HasPointwiseLeftKanExtension F] :
+instance (G : C ⥤ E) (X : C) [HasPointwiseLeftKanExtension F G] :
     IsIso (((Lan.adjunction F).unit.app G).app X) := by
   simpa using (isPointwiseLeftKanExtensionLanUnit F G (F.obj X)).isIso_hom_app
 
-instance (G : C ⥤ E) [G.HasPointwiseLeftKanExtension F] :
+instance (G : C ⥤ E) [HasPointwiseLeftKanExtension F G] :
     IsIso ((Lan.adjunction F).unit.app G) :=
   NatIso.isIso_of_isIso_app _
 
-instance coreflective [∀ (G : C ⥤ E), G.HasPointwiseLeftKanExtension F] :
+instance coreflective [∀ (G : C ⥤ E), HasPointwiseLeftKanExtension F G] :
     IsIso ((Lan.adjunction F).unit : (𝟭 (C ⥤ E)) ⟶ _) :=
   NatIso.isIso_of_isIso_app _
 
-instance coreflective' [∀ (G : C ⥤ E), G.HasPointwiseLeftKanExtension F] :
+instance coreflective' [∀ (G : C ⥤ E), HasPointwiseLeftKanExtension F G] :
     IsIso (lanUnit F : (𝟭 (C ⥤ E)) ⟶ _) := by
   rw [← Lan.adjunction_unit]
   infer_instance

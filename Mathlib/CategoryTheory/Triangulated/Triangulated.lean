@@ -136,7 +136,7 @@ def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' �
   have rel₁₃ := H.triangleMorphism₁.comm₃
   have rel₂₂ := H.triangleMorphism₂.comm₂
   have rel₂₃ := H.triangleMorphism₂.comm₃
-  dsimp at eq₁₂ eq₁₂' eq₁₃ eq₁₃' eq₂₃ eq₂₃' rel₁₂ rel₁₃ rel₂₂ rel₂₃
+  dsimp [iso₁₂, iso₂₃, iso₁₃] at eq₁₂ eq₁₂' eq₁₃ eq₁₃' eq₂₃ eq₂₃' rel₁₂ rel₁₃ rel₂₂ rel₂₃
   rw [Functor.map_id, comp_id] at rel₁₃
   rw [id_comp] at rel₂₂
   refine' ⟨iso₁₂.hom.hom₃ ≫ H.m₁ ≫ iso₁₃.inv.hom₃,
@@ -156,15 +156,7 @@ def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' �
       Functor.map_comp, reassoc_of% eq₁₃']
   · refine' isomorphic_distinguished _ H.mem _ _
     refine' Triangle.isoMk _ _ (Triangle.π₃.mapIso iso₁₂) (Triangle.π₃.mapIso iso₁₃)
-      (Triangle.π₃.mapIso iso₂₃) _ _ _
-    · dsimp
-      simp only [assoc, assoc, Iso.inv_hom_id_triangle_hom₃]
-      dsimp
-      rw [comp_id]
-    · dsimp
-      simp only [assoc, assoc, Iso.inv_hom_id_triangle_hom₃]
-      dsimp
-      rw [comp_id]
+      (Triangle.π₃.mapIso iso₂₃) (by simp) (by simp) _
     · dsimp
       rw [assoc, ← Functor.map_comp, eq₁₂, Functor.map_comp, reassoc_of% eq₂₃']
 

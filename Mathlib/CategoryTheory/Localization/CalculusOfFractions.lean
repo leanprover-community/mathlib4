@@ -12,18 +12,12 @@ import Mathlib.CategoryTheory.Localization.Opposite
 Following the definitions by [Gabriel and Zisman][gabriel-zisman-1967],
 given a morphism property `W : MorphismProperty C` on a category `C`,
 we introduce the class `W.HasLeftCalculusOfFractions`. The main
-result is that if `L : C ⥤ D` is a localization functor for `W`,
-then for any morphism `L.obj X ⟶ L.obj Y` in `D`, there exists an auxiliary
-object `Y' : C` and morphisms `g : X ⟶ Y'` and `s : Y ⟶ Y'`, with `W s`, such
-that the given morphism is a sort of fraction `g / s`, or more precisely of
-the form `L.map g ≫ (Localization.isoOfHom L W s hs).inv`. This is stated
-as `MorphismProperty.HasLeftCalculusOfFractions.fac`. Similarly as for
-the localization of rings, we have lemmas which give necessary and sufficient
-conditions for the equality of two fractions.
-
-In order to obtain these results, we construct a candidate for the
-localized category in which the morphisms are defined as equivalence classes
-of fractions.
+result `Localization.exists_leftFraction` is that if `L : C ⥤ D`
+is a localization functor for `W`, then for any morphism `L.obj X ⟶ L.obj Y` in `D`,
+there exists an auxiliary object `Y' : C` and morphisms `g : X ⟶ Y'` and `s : Y ⟶ Y'`,
+with `W s`, such that the given morphism is a sort of fraction `g / s`,
+or more precisely of the form `L.map g ≫ (Localization.isoOfHom L W s hs).inv`.
+We also show that the functor `L.mapArrow : Arrow C ⥤ Arrow D` is essentially surjective.
 
 ## References
 
@@ -32,6 +26,8 @@ of fractions.
 -/
 
 namespace CategoryTheory
+
+variable {C D : Type*} [Category C] [Category D]
 
 open Category
 
@@ -44,8 +40,6 @@ lemma congr_map_conjugate {C D : Type _} [Category C] [Category D] {F₁ F₂ : 
   simp
 
 end Functor
-
-variable {C D : Type _} [Category C] [Category D]
 
 namespace MorphismProperty
 
@@ -696,9 +690,7 @@ lemma map_compatibility {X Y : C}
   have := Localization.inverts L₂ W φ.s φ.hs
   rw [← cancel_mono (e.hom.app Y), assoc, assoc, e.inv_hom_id_app, comp_id,
     ← cancel_mono (L₂.map φ.s), assoc, assoc, map_comp_map_s, ← e.hom.naturality]
-  dsimp
-  rw [← Functor.map_comp_assoc, map_comp_map_s]
-  exact e.hom.naturality φ.f
+  simpa [← Functor.map_comp_assoc, map_comp_map_s] using e.hom.naturality φ.f
 
 lemma map_eq_of_map_eq {X Y : C}
     (φ₁ φ₂ : W.LeftFraction X Y) {E : Type*} [Category E]

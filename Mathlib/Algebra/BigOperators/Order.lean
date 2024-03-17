@@ -3,10 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.AbsoluteValue
-import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Ring
 
@@ -178,7 +176,7 @@ theorem prod_le_univ_prod_of_one_le' [Fintype ι] {s : Finset ι} (w : ∀ x, 1 
 #align finset.prod_le_univ_prod_of_one_le' Finset.prod_le_univ_prod_of_one_le'
 #align finset.sum_le_univ_sum_of_nonneg Finset.sum_le_univ_sum_of_nonneg
 
--- Porting Note: TODO -- The two next lemmas give the same lemma in additive version
+-- Porting note (#11215): TODO -- The two next lemmas give the same lemma in additive version
 @[to_additive sum_eq_zero_iff_of_nonneg]
 theorem prod_eq_one_iff_of_one_le' :
     (∀ i ∈ s, 1 ≤ f i) → ((∏ i in s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) := by
@@ -401,6 +399,16 @@ section CanonicallyOrderedCommMonoid
 
 variable [CanonicallyOrderedCommMonoid M] {f : ι → M} {s t : Finset ι}
 
+/-- In a canonically-ordered monoid, a product bounds each of its terms.
+
+See also `Finset.single_le_prod'`.-/
+@[to_additive "In a canonically-ordered additive monoid, a sum bounds each of its terms.
+
+See also `Finset.single_le_sum`."]
+lemma _root_.CanonicallyOrderedCommMonoid.single_le_prod {i : ι} (hi : i ∈ s) :
+    f i ≤ ∏ j in s, f j :=
+  single_le_prod' (fun _ _ ↦ one_le _) hi
+
 @[to_additive (attr := simp) sum_eq_zero_iff]
 theorem prod_eq_one_iff' : ∏ x in s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
   prod_eq_one_iff_of_one_le' fun x _ ↦ one_le (f x)
@@ -473,7 +481,7 @@ This is a variant (beta-reduced) version of the standard lemma `Finset.sum_lt_su
 convenient for the `gcongr` tactic. -/
 add_decl_doc GCongr.sum_lt_sum_of_nonempty
 
--- Porting note: TODO -- calc indentation
+-- Porting note (#11215): TODO -- calc indentation
 @[to_additive sum_lt_sum_of_subset]
 theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i ∉ s) (hlt : 1 < f i)
     (hle : ∀ j ∈ t, j ∉ s → 1 ≤ f j) : ∏ j in s, f j < ∏ j in t, f j := by
@@ -589,13 +597,12 @@ theorem exists_one_lt_of_prod_one_of_exists_ne_one' (f : ι → M) (h₁ : ∏ i
 
 end LinearOrderedCancelCommMonoid
 
-section OrderedCommSemiring
+section CommMonoidWithZero
+variable [CommMonoidWithZero R] [PartialOrder R] [ZeroLEOneClass R]
 
-variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
+section PosMulMono
+variable [PosMulMono R] {f g : ι → R} {s t : Finset ι}
 
-open Classical
-
--- this is also true for an ordered commutative multiplicative monoid with zero
 theorem prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i in s, f i :=
   prod_induction f (fun i ↦ 0 ≤ i) (fun _ _ ha hb ↦ mul_nonneg ha hb) zero_le_one h0
 #align finset.prod_nonneg Finset.prod_nonneg
@@ -605,14 +612,15 @@ product of `f i` is less than or equal to the product of `g i`. See also `Finset
 the case of an ordered commutative multiplicative monoid. -/
 theorem prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
     ∏ i in s, f i ≤ ∏ i in s, g i := by
-  induction' s using Finset.induction with a s has ih h
+  induction' s using Finset.cons_induction with a s has ih h
   · simp
-  · simp only [prod_insert has]
+  · simp only [prod_cons]
+    have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
     apply mul_le_mul
-    · exact h1 a (mem_insert_self a s)
-    · refine ih (fun x H ↦ h0 _ ?_) (fun x H ↦ h1 _ ?_) <;> exact mem_insert_of_mem H
-    · apply prod_nonneg fun x H ↦ h0 x (mem_insert_of_mem H)
-    · apply le_trans (h0 a (mem_insert_self a s)) (h1 a (mem_insert_self a s))
+    · exact h1 a (mem_cons_self a s)
+    · refine ih (fun x H ↦ h0 _ ?_) (fun x H ↦ h1 _ ?_) <;> exact subset_cons _ H
+    · apply prod_nonneg fun x H ↦ h0 x (subset_cons _ H)
+    · apply le_trans (h0 a (mem_cons_self a s)) (h1 a (mem_cons_self a s))
 #align finset.prod_le_prod Finset.prod_le_prod
 
 /-- If all `f i`, `i ∈ s`, are nonnegative and each `f i` is less than or equal to `g i`, then the
@@ -632,33 +640,11 @@ theorem prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) 
   exact Finset.prod_const_one
 #align finset.prod_le_one Finset.prod_le_one
 
-/-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
-  sum of the products of `g` and `h`. This is the version for `OrderedCommSemiring`. -/
-theorem prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h i ≤ f i)
-    (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j) (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) (hg : ∀ i ∈ s, 0 ≤ g i)
-    (hh : ∀ i ∈ s, 0 ≤ h i) : ((∏ i in s, g i) + ∏ i in s, h i) ≤ ∏ i in s, f i := by
-  simp_rw [prod_eq_mul_prod_diff_singleton hi]
-  refine le_trans ?_ (mul_le_mul_of_nonneg_right h2i ?_)
-  · rw [right_distrib]
-    refine add_le_add ?_ ?_ <;>
-    · refine mul_le_mul_of_nonneg_left ?_ ?_
-      · refine prod_le_prod ?_ ?_
-        <;> simp (config := { contextual := true }) [*]
-      · try apply_assumption
-        try assumption
-  · apply prod_nonneg
-    simp only [and_imp, mem_sdiff, mem_singleton]
-    intro j h1j h2j
-    exact le_trans (hg j h1j) (hgf j h1j h2j)
-#align finset.prod_add_prod_le Finset.prod_add_prod_le
+end PosMulMono
 
-end OrderedCommSemiring
+section PosMulStrictMono
+variable [PosMulStrictMono R] [Nontrivial R] {f g : ι → R} {s t : Finset ι}
 
-section StrictOrderedCommSemiring
-
-variable [StrictOrderedCommSemiring R] {f g : ι → R} {s : Finset ι}
-
--- This is also true for an ordered commutative multiplicative monoid with zero
 theorem prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i in s, f i :=
   prod_induction f (fun x ↦ 0 < x) (fun _ _ ha hb ↦ mul_pos ha hb) zero_lt_one h0
 #align finset.prod_pos Finset.prod_pos
@@ -669,11 +655,12 @@ theorem prod_lt_prod (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i ≤ g i
   classical
   obtain ⟨i, hi, hilt⟩ := hlt
   rw [← insert_erase hi, prod_insert (not_mem_erase _ _), prod_insert (not_mem_erase _ _)]
-  apply mul_lt_mul hilt
+  have := posMulStrictMono_iff_mulPosStrictMono.1 ‹PosMulStrictMono R›
+  refine mul_lt_mul_of_le_of_lt' hilt ?_ ?_ ?_
   · exact prod_le_prod (fun j hj => le_of_lt (hf j (mem_of_mem_erase hj)))
       (fun _ hj ↦ hfg _ <| mem_of_mem_erase hj)
+  · exact (hf i hi).le.trans hilt.le
   · exact prod_pos fun j hj => hf j (mem_of_mem_erase hj)
-  · exact le_of_lt <| (hf i hi).trans hilt
 
 theorem prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i < g i)
     (h_ne : s.Nonempty) :
@@ -682,11 +669,41 @@ theorem prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s,
   obtain ⟨i, hi⟩ := h_ne
   exact ⟨i, hi, hfg i hi⟩
 
+end PosMulStrictMono
+end CommMonoidWithZero
+
+section StrictOrderedCommSemiring
+
 end StrictOrderedCommSemiring
+
+section OrderedCommSemiring
+variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
+
+/-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
+  sum of the products of `g` and `h`. This is the version for `OrderedCommSemiring`. -/
+lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h i ≤ f i)
+    (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j) (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) (hg : ∀ i ∈ s, 0 ≤ g i)
+    (hh : ∀ i ∈ s, 0 ≤ h i) : ((∏ i in s, g i) + ∏ i in s, h i) ≤ ∏ i in s, f i := by
+  classical
+  simp_rw [prod_eq_mul_prod_diff_singleton hi]
+  refine le_trans ?_ (mul_le_mul_of_nonneg_right h2i ?_)
+  · rw [right_distrib]
+    refine add_le_add ?_ ?_ <;>
+    · refine mul_le_mul_of_nonneg_left ?_ ?_
+      · refine prod_le_prod ?_ ?_ <;> simp (config := { contextual := true }) [*]
+      · try apply_assumption
+        try assumption
+  · apply prod_nonneg
+    simp only [and_imp, mem_sdiff, mem_singleton]
+    exact fun j hj hji ↦ le_trans (hg j hj) (hgf j hj hji)
+#align finset.prod_add_prod_le Finset.prod_add_prod_le
+
+end OrderedCommSemiring
 
 section LinearOrderedCommSemiring
 variable [LinearOrderedCommSemiring α] [ExistsAddOfLE α]
 
+/-- **Cauchy-Schwarz inequality** for finsets. -/
 lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → α) :
     (∑ i in s, f i * g i) ^ 2 ≤ (∑ i in s, f i ^ 2) * ∑ i in s, g i ^ 2 := by
   nontriviality α
@@ -747,9 +764,9 @@ theorem prod_mono' : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
 #align fintype.sum_mono Fintype.sum_mono
 
 @[to_additive sum_nonneg]
-lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' λ _ _ ↦ hf _
+lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' fun _ _ ↦ hf _
 
-@[to_additive] lemma prod_le_one (hf : f ≤ 1) : ∏ i, f i ≤ 1 := Finset.prod_le_one' λ _ _ ↦ hf _
+@[to_additive] lemma prod_le_one (hf : f ≤ 1) : ∏ i, f i ≤ 1 := Finset.prod_le_one' fun _ _ ↦ hf _
 
 @[to_additive]
 lemma prod_eq_one_iff_of_one_le (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
@@ -774,11 +791,11 @@ theorem prod_strictMono' : StrictMono fun f : ι → M ↦ ∏ x, f x :=
 
 @[to_additive sum_pos]
 lemma one_lt_prod (hf : 1 < f) : 1 < ∏ i, f i :=
-  Finset.one_lt_prod' (λ _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
+  Finset.one_lt_prod' (fun _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
 
 @[to_additive]
 lemma prod_lt_one (hf : f < 1) : ∏ i, f i < 1 :=
-  Finset.prod_lt_one' (λ _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
+  Finset.prod_lt_one' (fun _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
 
 @[to_additive sum_pos_iff_of_nonneg]
 lemma one_lt_prod_iff_of_one_le (hf : 1 ≤ f) : 1 < ∏ i, f i ↔ 1 < f := by
@@ -790,37 +807,6 @@ lemma prod_lt_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i < 1 ↔ f < 1 := by
 
 end OrderedCancelCommMonoid
 end Fintype
-
-namespace WithTop
-
-open Finset
-
-/-- A product of finite numbers is still finite -/
-theorem prod_lt_top [CommMonoidWithZero R] [NoZeroDivisors R] [Nontrivial R] [DecidableEq R] [LT R]
-    {s : Finset ι} {f : ι → WithTop R} (h : ∀ i ∈ s, f i ≠ ⊤) : ∏ i in s, f i < ⊤ :=
-  prod_induction f (fun a ↦ a < ⊤) (fun _ _ h₁ h₂ ↦ mul_lt_top' h₁ h₂) (coe_lt_top 1)
-    fun a ha ↦ WithTop.lt_top_iff_ne_top.2 (h a ha)
-#align with_top.prod_lt_top WithTop.prod_lt_top
-
-/-- A sum of numbers is infinite iff one of them is infinite -/
-theorem sum_eq_top_iff [AddCommMonoid M] {s : Finset ι} {f : ι → WithTop M} :
-    ∑ i in s, f i = ⊤ ↔ ∃ i ∈ s, f i = ⊤ := by
-  induction s using Finset.cons_induction <;> simp [*]
-#align with_top.sum_eq_top_iff WithTop.sum_eq_top_iff
-
-/-- A sum of finite numbers is still finite -/
-theorem sum_lt_top_iff [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M} :
-    ∑ i in s, f i < ⊤ ↔ ∀ i ∈ s, f i < ⊤ := by
-  simp only [WithTop.lt_top_iff_ne_top, ne_eq, sum_eq_top_iff, not_exists, not_and]
-#align with_top.sum_lt_top_iff WithTop.sum_lt_top_iff
-
-/-- A sum of finite numbers is still finite -/
-theorem sum_lt_top [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M}
-    (h : ∀ i ∈ s, f i ≠ ⊤) : ∑ i in s, f i < ⊤ :=
-  sum_lt_top_iff.2 fun i hi => WithTop.lt_top_iff_ne_top.2 (h i hi)
-#align with_top.sum_lt_top WithTop.sum_lt_top
-
-end WithTop
 
 section AbsoluteValue
 
@@ -836,6 +822,9 @@ theorem IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S)
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 #align is_absolute_value.abv_sum IsAbsoluteValue.abv_sum
 
+--  2024-02-14
+@[deprecated] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum
+
 nonrec theorem AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
     abv (∏ i in s, f i) = ∏ i in s, abv (f i) :=
@@ -849,3 +838,43 @@ theorem IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedC
 #align is_absolute_value.map_prod IsAbsoluteValue.map_prod
 
 end AbsoluteValue
+
+namespace Mathlib.Meta.Positivity
+open Qq Lean Meta Finset
+
+/-- The `positivity` extension which proves that `∑ i in s, f i` is nonnegative if `f` is, and
+positive if each `f i` is and `s` is nonempty.
+
+TODO: The following example does not work
+```
+example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.sum f := by positivity
+```
+because `compareHyp` can't look for assumptions behind binders.
+-/
+@[positivity Finset.sum _ _]
+def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
+  match e with
+  | ~q(@Finset.sum _ $ι $instα $s $f) =>
+    let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
+    have body : Q($α) := .betaRev f #[i]
+    let rbody ← core zα pα body
+    let p_pos : Option Q(0 < $e) := ← (do
+      let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
+      let .some ps ← proveFinsetNonempty s | pure none
+      let .some pα' ← trySynthInstanceQ q(OrderedCancelAddCommMonoid $α) | pure none
+      assertInstancesCommute
+      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
+      return some q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $ps))
+    -- Try to show that the sum is positive
+    if let some p_pos := p_pos then
+      return .positive p_pos
+    -- Fall back to showing that the sum is nonnegative
+    else
+      let pbody ← rbody.toNonneg
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+      let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
+      assertInstancesCommute
+      return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
+  | _ => throwError "not Finset.sum"
+
+end Mathlib.Meta.Positivity

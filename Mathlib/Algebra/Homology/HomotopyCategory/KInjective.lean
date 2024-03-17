@@ -154,7 +154,7 @@ lemma isKInjective_of_injective_aux
   let u := f.f (n + 1) - α.v (n+1) n (by linarith) ≫ L.d n (n+1) -
     K.d (n+1) (n+2) ≫ α.v (n+2) (n+1) (by linarith)
   have hu : K.d n (n+1) ≫ u = 0 := by
-    dsimp
+    dsimp [u]
     have eq := hα n n (add_zero n) (by rfl)
     simp only [δ_v (-1) 0 (neg_add_self 1) α n n (add_zero _) (n-1) (n+1) (by linarith) (by linarith),
       neg_add_self, Int.negOnePow_zero, one_smul, Cochain.ofHom_v] at eq
@@ -179,7 +179,7 @@ lemma isKInjective_of_injective_aux
       comp_add, Cochain.ofHom_v, Cochain.single_v]
     rw [Cochain.single_v_eq_zero _ _ _ _ _ (by linarith)]
     simp only [ComplexShape.up_Rel, not_true, zero_comp, add_zero, Cochain.single_v,
-      Cochain.ofHom_v, hh]
+      Cochain.ofHom_v, hh, u]
     abel
 
 variable (L)

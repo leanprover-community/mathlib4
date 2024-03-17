@@ -65,16 +65,18 @@ lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
     have : w = (w.vComp w'.hom).vComp' w''.hom α β := NatTrans.ext _ _ (by
       ext X₁
       dsimp
-      simp only [vComp'_app, Functor.comp_obj, Iso.trans_inv, isoWhiskerLeft_inv, Iso.symm_inv, assoc,
-        NatTrans.comp_app, Functor.id_obj, Functor.rightUnitor_inv_app, whiskerLeft_app, Functor.associator_inv_app,
-        comp_id, id_comp, vComp_app, Functor.map_comp, Equivalence.inv_fun_map, Iso.trans_hom, isoWhiskerLeft_hom,
-        Iso.symm_hom, Functor.associator_hom_app, Functor.rightUnitor_hom_app, Iso.hom_inv_id_app_assoc]
+      simp? [w'', β, α] says
+        simp only [vComp'_app, Functor.comp_obj, Iso.trans_inv, isoWhiskerLeft_inv, Iso.symm_inv,
+          assoc, NatTrans.comp_app, Functor.id_obj, Functor.rightUnitor_inv_app, whiskerLeft_app,
+          Functor.associator_inv_app, comp_id, id_comp, vComp_app, Functor.map_comp,
+          Equivalence.inv_fun_map, Iso.trans_hom, isoWhiskerLeft_hom, Iso.symm_hom,
+          Functor.associator_hom_app, Functor.rightUnitor_hom_app, Iso.hom_inv_id_app_assoc, w'', α, β]
       convert (comp_id _).symm
       erw [CatCommSq.vInv_iso'_hom_app, hw']
       simp only [assoc, ← eR.inverse.map_comp_assoc]
       erw [Equivalence.counitInv_app_functor, ← NatTrans.naturality_assoc, Iso.hom_inv_id_app,
         comp_id, ← NatTrans.naturality_assoc, Iso.hom_inv_id_app_assoc, ← H₂.map_comp,
-        Iso.hom_inv_id_app, H₂.map_id])
+          Iso.hom_inv_id_app, H₂.map_id])
     rw [this]
     infer_instance
   · intro

@@ -187,7 +187,7 @@ lemma d₂Sequence_exact : (d₂Sequence E).Exact := by
     have hS : S.Exact := by
       apply ShortComplex.exact_of_f_is_kernel
       exact (E.page 2).cyclesIsKernel ⟨0, 1⟩ ⟨2, 0⟩
-        (ComplexShape.next_eq' _ (by simp; linarith))
+        (ComplexShape.next_eq' _ (by simp))
     refine ShortComplex.exact_of_iso ?_ hS
     exact ShortComplex.isoMk ((E.page 2).isoHomologyπ _ ⟨0, 1⟩ rfl (by
         apply (E.page 2).shape_from
@@ -199,7 +199,7 @@ lemma d₂Sequence_exact : (d₂Sequence E).Exact := by
     have hS : S.Exact := by
       apply ShortComplex.exact_of_g_is_cokernel
       exact (E.page 2).opcyclesIsCokernel ⟨0, 1⟩ ⟨2, 0⟩
-        (ComplexShape.prev_eq' _ (by simp; linarith))
+        (ComplexShape.prev_eq' _ (by simp))
     refine ShortComplex.exact_of_iso (Iso.symm ?_) hS
     exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
       (((E.iso 2 3 rfl) ⟨2, 0⟩).symm ≪≫ (E.page 2).isoHomologyι ⟨2, 0⟩ _ rfl (by

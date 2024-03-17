@@ -308,16 +308,16 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       simp only [not_exists, mem_iUnion, mem_diff]
       tauto
     · congr 1
-      simp only [Function.iterate_succ', Subtype.coe_mk, union_diff_left, Function.comp]
+      simp only [s, Function.iterate_succ', Subtype.coe_mk, union_diff_left, Function.comp]
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
     induction' n with n IH
-    · simp only [BoundedAdditiveMeasure.empty, id.def, Nat.cast_zero, zero_mul,
+    · simp only [s, BoundedAdditiveMeasure.empty, id.def, Nat.cast_zero, zero_mul,
         Function.iterate_zero, Subtype.coe_mk, Nat.zero_eq]
       rfl
-    · have : (↑(s (n + 1)) : Set α) = ↑(s (n + 1)) \ ↑(s n) ∪ ↑(s n) := by
-        simp only [Function.iterate_succ', union_comm, union_diff_self, Subtype.coe_mk,
-          union_diff_left, Function.comp]
+    · have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
+        simpa only [s, Function.iterate_succ', union_diff_self]
+          using (diff_union_of_subset <| subset_union_left _ _).symm
       rw [Nat.succ_eq_add_one, this, f.additive]
       swap; · exact disjoint_sdiff_self_left
       calc
@@ -413,7 +413,8 @@ section
 
 
 theorem norm_indicator_le_one (s : Set α) (x : α) : ‖(indicator s (1 : α → ℝ)) x‖ ≤ 1 := by
-  simp only [indicator, Pi.one_apply]; split_ifs <;> norm_num
+  simp only [indicator, Pi.one_apply]; split_ifs <;>
+  set_option tactic.skipAssignedInstances false in norm_num
 #align counterexample.phillips_1940.norm_indicator_le_one Counterexample.Phillips1940.norm_indicator_le_one
 
 /-- A functional in the dual space of bounded functions gives rise to a bounded additive measure,
@@ -434,7 +435,7 @@ def _root_.ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [D
       have I :
         ‖ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s)‖ ≤ 1 := by
         apply norm_ofNormedAddCommGroup_le _ zero_le_one
-      apply le_trans (f.le_op_norm _)
+      apply le_trans (f.le_opNorm _)
       simpa using mul_le_mul_of_nonneg_left I (norm_nonneg f)⟩
 #align continuous_linear_map.to_bounded_additive_measure ContinuousLinearMap.toBoundedAdditiveMeasure
 
@@ -497,7 +498,6 @@ We need the continuum hypothesis to construct it.
 theorem sierpinski_pathological_family (Hcont : #ℝ = aleph 1) :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
   rcases Cardinal.ord_eq ℝ with ⟨r, hr, H⟩
-  skip
   refine' ⟨fun x => {y | r x y}, fun x => _, fun y => _⟩
   · have : univ \ {y | r x y} = {y | r y x} ∪ {x} := by
       ext y

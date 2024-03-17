@@ -77,9 +77,9 @@ lemma homologyRightTExact₀_map_exact (h : S.Exact) [hf : Mono S.f] :
   have hS' : S'.ShortExact :=
     { exact := (ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ).2 h }
   let ψ := (F.homologyRightTExact t₁ t₂ 0).mapShortComplex.map φ
-  have : IsIso ψ.τ₁ := by dsimp; infer_instance
-  have : IsIso ψ.τ₂ := by dsimp; infer_instance
-  have : Mono ψ.τ₃ := by dsimp; infer_instance
+  have : IsIso ψ.τ₁ := by dsimp [ψ]; infer_instance
+  have : IsIso ψ.τ₂ := by dsimp [ψ]; infer_instance
+  have : Mono ψ.τ₃ := by dsimp [ψ]; infer_instance
   apply (ShortComplex.exact_iff_of_epi_of_isIso_of_mono ψ).1
   exact F.homologyRightTExact_exact₂ t₁ t₂ S' hS' 0
 

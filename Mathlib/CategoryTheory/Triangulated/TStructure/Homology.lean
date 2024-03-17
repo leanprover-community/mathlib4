@@ -164,7 +164,7 @@ noncomputable def isEquivalenceFullSubcategoryLift (S : Set D) (hi : i.essImage 
       (fun X => by rw [← hi]; exact obj_mem_essImage i X)) := by
   let F := FullSubcategory.lift S i
       (fun X => by rw [← hi]; exact obj_mem_essImage i X)
-  have : Full F := fullOfSurjective _ (fun X Y f => ⟨i.preimage f, by simp⟩)
+  have : Full F := fullOfSurjective _ (fun X Y f => ⟨i.preimage f, by simp [F]⟩)
   have : Faithful F := ⟨fun {X Y} f g h => i.map_injective h⟩
   have : EssSurj F := ⟨by
     rintro ⟨X, hX⟩
@@ -428,7 +428,7 @@ lemma truncLETriangle_distinguished :
   let a : T.obj₁ ⟶ (t.truncLE n).obj T.obj₂ :=
     (asIso ((t.truncLEι n).app T.obj₁)).inv ≫ (t.truncLE n).map T.mor₁
   let b := (t.truncLEι n).app T.obj₂
-  have comm : a ≫ b = T.mor₁ := by simp
+  have comm : a ≫ b = T.mor₁ := by simp [a, b]
   obtain ⟨Z, f₂, f₃, h₁⟩ := distinguished_cocone_triangle a
   have h₂ := (t.triangleLEGT_distinguished n T.obj₂)
   have H := someOctahedron comm h₁ h₂ hT
@@ -462,7 +462,7 @@ lemma truncLETriangle_distinguished :
       Functor.map_id, comp_id, eq₂, assoc, eq₁]
   refine' isomorphic_distinguished _ h₁ _ _
   exact Triangle.isoMk _ _ (asIso ((t.truncLEι n).app T.obj₁))
-    (Iso.refl _) (Triangle.π₁.mapIso e) (by simp) (by simp [he₁]) he₂
+    (Iso.refl _) (Triangle.π₁.mapIso e) (by simp [a]) (by simp [he₁]) he₂
 
 end
 
@@ -491,7 +491,7 @@ lemma truncGETriangle_distinguished :
   let a := (t.truncGEπ n).app T.obj₂
   let b : (t.truncGE n).obj T.obj₂ ⟶ T.obj₃ :=
     (t.truncGE n).map T.mor₂ ≫ (asIso ((t.truncGEπ n).app T.obj₃)).inv
-  have comm : a ≫ b = T.mor₂ := by simp
+  have comm : a ≫ b = T.mor₂ := by simp [a, b]
   have h₁ := rot_of_distTriang _ (t.triangleLEGE_distinguished (n-1) n (by linarith) T.obj₂)
   obtain ⟨Z, f₁, f₃, h₂⟩ := distinguished_cocone_triangle₁ b
   have H := someOctahedron comm h₁ (rot_of_distTriang _ h₂) (rot_of_distTriang _ hT)
@@ -505,18 +505,18 @@ lemma truncGETriangle_distinguished :
     refine' isomorphic_distinguished _ H.mem _ _
     refine' Triangle.isoMk _ _ (Iso.refl _) (-(Iso.refl _)) (Iso.refl _) _ _ _
     · dsimp
-      simp [hm₁]
+      simp [hm₁, T']
     · dsimp
-      simp [hm₃]
+      simp [hm₃, T']
     · dsimp
-      simp
+      simp [T']
   have : t.IsGE Z n := t.isGE₂ _ (inv_rot_of_distTriang _ h₂) n
     (by dsimp; infer_instance) (by dsimp; infer_instance)
   obtain ⟨e, he : _ = 𝟙 _⟩ :=
     t.triangle_iso_exists (n-1) n (by linarith) _ _
       (t.triangleLEGE_distinguished (n - 1) n (by linarith) T.obj₁)
       Hmem' (Iso.refl _) (by dsimp; infer_instance) (by dsimp; infer_instance)
-      (by dsimp; infer_instance) (by dsimp; infer_instance)
+      (by dsimp [T']; infer_instance) (by dsimp [T']; infer_instance)
   refine' isomorphic_distinguished _ h₂ _ _
   refine' Triangle.isoMk _ _ (Triangle.π₃.mapIso e) (Iso.refl _)
     (asIso ((t.truncGEπ n).app T.obj₃)).symm _ _ _
@@ -524,24 +524,24 @@ lemma truncGETriangle_distinguished :
     simp only [comp_id]
     have eq₁ := e.hom.comm₂
     have eq₂ := H.comm₄
-    dsimp at eq₁ eq₂
+    dsimp [a] at eq₁ eq₂
     simp only [neg_comp, comp_neg, neg_inj] at eq₂
     apply from_truncGE_obj_ext
     rw [reassoc_of% eq₁, he]
     dsimp
     rw [id_comp, ← NatTrans.naturality]
-    dsimp
+    dsimp [T']
     apply (shiftFunctor C (1 : ℤ)).map_injective
     simpa only [Functor.map_comp, hm₃] using eq₂
   · dsimp
-    simp
+    simp [b]
   · dsimp [truncGETriangle]
     simp only [assoc, IsIso.eq_inv_comp, IsIso.hom_inv_id_assoc]
     have eq₁ := H.comm₃
     have eq₂ := e.hom.comm₂
     dsimp at eq₁ eq₂
     rw [← eq₁, ← Functor.map_comp, eq₂, he]
-    dsimp
+    dsimp [T']
     rw [id_comp, hm₃]
 
 end
@@ -1012,7 +1012,7 @@ lemma exists_distTriang_of_shortExact :
   have h' : Triangle.mk (t.ιHeart.map S.f) (t.ιHeart.map g') δ' ∈ distTriang C := by
     refine' isomorphic_distinguished _ h _ _
     refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (t.ιHeartObjHeartMkIso _ hZ) _ _ _
-    all_goals simp
+    all_goals simp [g']
   obtain ⟨e, he⟩ : ∃ (e : S.X₃ ≅ Y), S.g ≫ e.hom = g' := by
     have h₁ := hS.gIsCokernel
     have h₂ := (t.shortExact_of_distTriang _ h').gIsCokernel

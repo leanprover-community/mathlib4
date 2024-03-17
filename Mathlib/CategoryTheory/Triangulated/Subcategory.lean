@@ -104,7 +104,7 @@ def isoClosure (S : Subcategory C) : Subcategory C where
     let T' := Triangle.mk (e₁.inv ≫ T.mor₁) (T.mor₂ ≫ e₃.hom) (e₃.inv ≫ T.mor₃ ≫ e₁.hom⟦1⟧')
     have hT' : T' ∈ distTriang C := isomorphic_distinguished _ hT _ (by
       refine' Triangle.isoMk _ _ e₁.symm (Iso.refl _) e₃.symm (by aesop_cat) (by aesop_cat) _
-      dsimp
+      dsimp [T']
       simp only [assoc, ← Functor.map_comp, e₁.hom_inv_id, Functor.map_id, comp_id])
     exact Set.subset_isoClosure _ (S.ext₂' T' hT' h₁ h₃)
 
@@ -359,7 +359,7 @@ instance [IsTriangulated C] : S.W.IsCompatibleWithTriangulation := ⟨by
   let φ : T₁ ⟶ T₃ := H.triangleMorphism₁ ≫ H'.triangleMorphism₂
   exact ⟨φ.hom₃,
     S.W.comp_mem _ _ (W.mk H.mem mem₄') (W.mk' H'.mem mem₅'),
-    ⟨by simpa using φ.comm₂, by simpa using φ.comm₃⟩⟩⟩
+    ⟨by simpa [φ] using φ.comm₂, by simpa [φ] using φ.comm₃⟩⟩⟩
 
 lemma ext₁ [S.set.RespectsIso] (T : Triangle C) (hT : T ∈ distTriang C) (h₂ : T.obj₂ ∈ S.set)
     (h₃ : T.obj₃ ∈ S.set) : T.obj₁ ∈ S.set :=

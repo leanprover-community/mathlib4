@@ -29,8 +29,8 @@ lemma small_X₂ (h₁ : Small.{w} S.X₁) (h₃ : Small.{w} S.X₃) : Small.{w}
     rintro x₂
     let x₃ : S.g.range := ⟨S.g x₂, ⟨_, rfl⟩⟩
     obtain ⟨x₁, hx₁⟩ := hS (x₂ - s x₃) (by
-      simpa only [map_sub, sub_eq_zero, Subtype.mk.injEq] using (hs x₃).symm)
-    exact ⟨⟨x₁, x₃⟩, by simp only [hx₁, sub_add_cancel]⟩
+      simpa only [x₃, g', map_sub, sub_eq_zero, Subtype.mk.injEq] using (hs x₃).symm)
+    exact ⟨⟨x₁, x₃⟩, by simp [π, hx₁]⟩
   exact small_of_surjective.{w} hπ
 
 end Exact
@@ -133,17 +133,17 @@ variable [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} C]
 
 noncomputable abbrev uniq : DerivedCategory.{w} C ≌ DerivedCategory.{w'} C :=
   (Localization.uniq DerivedCategory.Q DerivedCategory.Q
-    (HomologicalComplex.qis C (ComplexShape.up ℤ)))
+    (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)))
 
 instance : (uniq.{w, w'} C).functor.Additive :=
   Functor.additive_of_preserves_binary_products _
 
 noncomputable instance : (uniq.{w, w'} C).functor.CommShift ℤ :=
   Functor.CommShift.localized' (uniq.{w, w'} C).functor DerivedCategory.Q
-    (HomologicalComplex.qis C (ComplexShape.up ℤ)) ℤ DerivedCategory.Q
+    (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) ℤ DerivedCategory.Q
 
 noncomputable def QCompUniqFunctorIso : DerivedCategory.Q ⋙ (uniq.{w, w'} C).functor ≅ DerivedCategory.Q :=
-  Localization.Lifting.iso _ (HomologicalComplex.qis C (ComplexShape.up ℤ)) _ _
+  Localization.Lifting.iso _ (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) _ _
 
 instance : NatTrans.CommShift (QCompUniqFunctorIso.{w, w'} C).hom ℤ := by
   apply Functor.CommShift.localized'_compatibility
@@ -181,14 +181,14 @@ variable (C : Type u) [Category.{v} C] [Abelian C]
 class HasSmallExt : Prop where
   hasSmallLocalizedHom (X Y : C) (n : ℕ) :
     MorphismProperty.HasSmallLocalizedHom.{w}
-      (HomologicalComplex.qis C (ComplexShape.up ℤ))
+      (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))
       ((CochainComplex.singleFunctor C 0).obj X)
       ((CochainComplex.singleFunctor C (-n)).obj Y)
 
 lemma hasSmallExt_iff_hasSmallLocalizedHom :
     HasSmallExt.{w} C ↔
       ∀ (X Y : C) (n : ℕ), MorphismProperty.HasSmallLocalizedHom.{w}
-      (HomologicalComplex.qis C (ComplexShape.up ℤ))
+      (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))
       ((CochainComplex.singleFunctor C 0).obj X)
       ((CochainComplex.singleFunctor C (-n)).obj Y) :=
   ⟨fun h => h.hasSmallLocalizedHom, fun h => ⟨h⟩⟩
@@ -304,9 +304,11 @@ lemma smallExtAddEquivLargeExt_γhmul [HasDerivedCategory.{w'} C] {X Y Z : C} {p
     smallExtAddEquivLargeExt X Z r (α •[h] β) =
       smallExtAddEquivLargeExt Y Z p α •[h] smallExtAddEquivLargeExt X Y q β  := by
   letI : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
-  dsimp [smallExtAddEquivLargeExt, addEquivShrink, AddEquiv.trans, DFunLike.coe]
-  dsimp [EquivLike.coe]
-  rw [SmallExt.γhmul_eq, Equiv.symm_apply_apply, largeExtAddEquivLargeExt_γhmul]
+  dsimp [smallExtAddEquivLargeExt]
+  rw [SmallExt.γhmul_eq]
+  erw [Equiv.symm_apply_apply]
+  rw [largeExtAddEquivLargeExt_γhmul]
+  rfl
 
 lemma smallExtAddEquivLargeExt_symm_γhmul [HasDerivedCategory.{w'} C] {X Y Z : C} {p q r : ℕ}
     (α : LargeExt.{w'} Y Z p) (β : LargeExt.{w'} X Y q) (h : p + q = r) :

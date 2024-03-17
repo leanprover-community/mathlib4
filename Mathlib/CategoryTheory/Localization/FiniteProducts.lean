@@ -1,147 +1,126 @@
-import Mathlib.CategoryTheory.Limits.HasLimitsConstAdj
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Localization.Pi
 import Mathlib.CategoryTheory.Localization.Adjunction
-import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.HasLocalization
+import Mathlib.CategoryTheory.Localization.Pi
+
+/-! The localized category has finite products
+
+In this file, it is shown that if `L : C ⥤ D` is
+a localization functor for `W : MorphismProperty C` and that
+`W` is stable under finite products, then `D` has finite
+products, and `L` preserves finite products.
+
+-/
+
+universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Limits
-
-universe v u v' u'
-
-@[simps]
-def piEquivalenceFunctorDiscrete (J : Type u') (C : Type u) [Category.{v} C] :
-    (∀ (_ : J), C) ≌ (Discrete J ⥤ C) where
-  functor :=
-    { obj := fun F => Discrete.functor F
-      map := fun f => Discrete.natTrans (fun j => f j.as) }
-  inverse :=
-    { obj := fun F j => F.obj ⟨j⟩
-      map := fun f j => f.app ⟨j⟩ }
-  unitIso := Iso.refl _
-  counitIso := NatIso.ofComponents (fun F => (NatIso.ofComponents (fun j => Iso.refl _)
-    (by
-      rintro ⟨x⟩ ⟨y⟩ f
-      obtain rfl : x = y := Discrete.eq_of_hom f
-      obtain rfl : f = 𝟙 _ := by cases f ; rfl
-      dsimp
-      simp))) (by aesop_cat)
+open Limits
 
 namespace Localization
 
-variable {C : Type u} {D : Type u'} [Category.{v} C] [Category.{v'} D] (L : C ⥤ D) (W : MorphismProperty C)
-  [L.IsLocalization W]
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] (L : C ⥤ D)
+  {W : MorphismProperty C} [L.IsLocalization W] [W.ContainsIdentities]
 
-instance whiskeringRightDiscrete_isLocalization (J : Type) [Finite J] [W.ContainsIdentities]:
-    ((whiskeringRight (Discrete J) C D).obj L).IsLocalization (W.functorCategory _) := by
-  let E := piEquivalenceFunctorDiscrete J C
-  let E' := piEquivalenceFunctorDiscrete J D
-  let L₂ := (whiskeringRight (Discrete J) C D).obj L
-  let L₁ := Functor.pi (fun (_ : J) => L)
-  let W₁ := MorphismProperty.pi (fun (_ : J) => W)
-  let W₂ := MorphismProperty.functorCategory W (Discrete J)
-  have : CatCommSq E.functor L₁ L₂ E'.functor :=
-    ⟨(Functor.rightUnitor _).symm ≪≫ isoWhiskerLeft _ E'.counitIso.symm ≪≫
-      Functor.associator _ _ _≪≫ isoWhiskerLeft _ ((Functor.associator _ _ _).symm ≪≫
-      isoWhiskerRight (by exact Iso.refl _) _) ≪≫ (Functor.associator _ _ _).symm ≪≫
-      isoWhiskerRight ((Functor.associator _ _ _).symm ≪≫
-      isoWhiskerRight E.unitIso.symm L₁) _ ≪≫ isoWhiskerRight L₁.leftUnitor _⟩
-  refine' Functor.IsLocalization.of_equivalences L₁ W₁ L₂ W₂ E E' _ _
-  · intro X Y f hf
-    exact MorphismProperty.subset_isoClosure _ _ (fun ⟨j⟩ => hf j)
-  · intro X Y f hf
-    have : ∀ (j : Discrete J), IsIso ((L₂.map f).app j) :=
-      fun j => Localization.inverts L W _ (hf j)
-    apply NatIso.isIso_of_isIso_app
+namespace HasProductsOfShapeAux
 
+variable {J : Type} [Finite J] [HasProductsOfShape J C]
+  (hW : W.IsStableUnderProductsOfShape J)
 
-namespace FiniteProductsAux
+lemma inverts :
+    (W.functorCategory (Discrete J)).IsInvertedBy (lim ⋙ L) :=
+  fun _ _ f hf => Localization.inverts L W _ (hW.lim_map f hf)
 
-variable (C)
-variable (J : Type) [Finite J] [W.ContainsIdentities]
-  [HasProductsOfShape J C] (hW : W.IsStableUnderProductsOfShape J)
+/-- The (candidate) limit functor for the localized category.
+It is induced by `lim ⋙ L : (Discrete J ⥤ C) ⥤ D`. -/
+noncomputable abbrev limitFunctor :
+    (Discrete J ⥤ D) ⥤ D :=
+  Localization.lift _ (inverts L hW)
+    ((whiskeringRight (Discrete J) C D).obj L)
 
-def G : C ⥤ (Discrete J ⥤ C) := Functor.const (Discrete J)
-noncomputable def F : ((Discrete J) ⥤ C) ⥤ C := lim
-noncomputable def adj : G C J ⊣ F C J := constLimAdj
-variable {C}
-def L' : (Discrete J ⥤ C) ⥤ (Discrete J ⥤ D) := (whiskeringRight (Discrete J) C D).obj L
-variable (D)
-def G' : D ⥤ (Discrete J ⥤ D) := Functor.const (Discrete J)
-def W' := W.functorCategory (Discrete J)
-variable {D}
-lemma hF : (W' W J).IsInvertedBy (F C J ⋙ L) := fun _ _ f hf =>
-  Localization.inverts L W ((F C J).map f) (hW.lim_map f hf)
-instance : (L' L J).IsLocalization (W' W J) := by
-  dsimp [L', W']
-  infer_instance
-variable {J}
-noncomputable def F' : (Discrete J ⥤ D) ⥤ D :=
-  Localization.lift (F C J ⋙ L) (hF L W J hW) (L' L J)
-@[simp] instance : CatCommSq (G C J) L (L' L J) (G' D J) := ⟨(Functor.compConstIso _ _).symm⟩
-noncomputable instance : CatCommSq (F C J) (L' L J) L (F' L W hW) :=
-  ⟨(Localization.fac _ _ _).symm⟩
-noncomputable def adj' : G' D J ⊣ F' L W hW := (adj C J).localization L W (L' L J) (W' W J) _ _
+/-- The functor `limitFunctor L hW` is induced by `lim ⋙ L`. -/
+noncomputable def compLimitFunctorIso :
+    ((whiskeringRight (Discrete J) C D).obj L) ⋙ limitFunctor L hW ≅
+      lim ⋙ L := by
+  apply Localization.fac
 
-lemma isIso_limitComparisonOfConstAdjunction :
-  IsIso (limitComparisonOfConstAdjunction (adj C J) (adj' L W hW) L) := by
-  have : ∀ (X : Discrete J ⥤ C),
-    IsIso ((limitComparisonOfConstAdjunction (adj C J) (adj' L W hW) L).app X) := by
-      intro X
-      simp only [limitComparisonOfConstAdjunction, Functor.comp_obj, whiskeringRight_obj_obj,
-        Adjunction.natTransHomEquiv_apply_app, whiskeringRight_obj_map, adj',
-        Adjunction.localization_unit_app, assoc]
-      dsimp [CatCommSq.iso]
-      simp only [← Functor.map_comp, Iso.inv_hom_id_app_assoc]
-      erw [← NatTrans.naturality, ← L.map_comp_assoc, Adjunction.right_triangle_components]
-      infer_instance
-  exact NatIso.isIso_of_isIso_app _
+instance :
+    CatCommSq (Functor.const (Discrete J)) L
+      ((whiskeringRight (Discrete J) C D).obj L) (Functor.const (Discrete J)) where
+  iso' := (Functor.compConstIso _ _).symm
 
-end FiniteProductsAux
+noncomputable instance :
+    CatCommSq lim ((whiskeringRight (Discrete J) C D).obj L) L (limitFunctor L hW) where
+  iso' := (compLimitFunctorIso L hW).symm
 
-lemma hasProductsOfShape (J : Type) [Finite J] [W.ContainsIdentities] [HasProductsOfShape J C]
-    (hW : W.IsStableUnderProductsOfShape J):
-  HasProductsOfShape J D := hasLimitsOfShape_of_const_adjunction (FiniteProductsAux.adj' L W hW)
+/-- The adjunction between the constant functor `D ⥤ (Discrete J ⥤ D)`
+and `limitFunctor L hW`. -/
+noncomputable def adj :
+    Functor.const _ ⊣ limitFunctor L hW :=
+  constLimAdj.localization L W ((whiskeringRight (Discrete J) C D).obj L)
+    (W.functorCategory (Discrete J)) (Functor.const _) (limitFunctor L hW)
 
-lemma hasFiniteProducts [W.ContainsIdentities] [HasFiniteProducts C]
-    [W.IsStableUnderFiniteProducts] : HasFiniteProducts D :=
-  ⟨fun _ => hasProductsOfShape L W _
-    (MorphismProperty.IsStableUnderFiniteProducts.isStableUnderProductsOfShape W _)⟩
+lemma adj_counit_app (F : Discrete J ⥤ C) :
+    (adj L hW).counit.app (F ⋙ L) =
+      (Functor.const (Discrete J)).map ((compLimitFunctorIso L hW).hom.app F) ≫
+        (Functor.compConstIso (Discrete J) L).hom.app (lim.obj F) ≫
+        whiskerRight (constLimAdj.counit.app F) L := by
+  apply constLimAdj.localization_counit_app
 
-noncomputable def preservesProductsOfShape (J : Type) [Finite J] [W.ContainsIdentities]
+/-- Auxiliary definition for `Localization.preservesProductsOfShape`. -/
+noncomputable def isLimitMapCone (F : Discrete J ⥤ C) :
+    IsLimit (L.mapCone (limit.cone F)) :=
+  IsLimit.ofIsoLimit (isLimitConeOfAdj (adj L hW) (F ⋙ L))
+    (Cones.ext ((compLimitFunctorIso L hW).app F) (by simp [adj_counit_app, constLimAdj]))
+
+end HasProductsOfShapeAux
+
+variable (W)
+
+lemma hasProductsOfShape (J : Type) [Finite J] [HasProductsOfShape J C]
+    (hW : W.IsStableUnderProductsOfShape J) :
+    HasProductsOfShape J D :=
+  hasLimitsOfShape_iff_isLeftAdjoint_const.2
+    ⟨⟨_, HasProductsOfShapeAux.adj L hW⟩⟩
+
+/-- When `C` has finite products indexed by `J`, `W : MorphismProperty C` contains
+identities and is stable by products indexed by `J`,
+then any localization functor for `W` preserves finite products indexed by `J`. -/
+noncomputable def preservesProductsOfShape (J : Type) [Finite J]
     [HasProductsOfShape J C] (hW : W.IsStableUnderProductsOfShape J) :
-    PreservesLimitsOfShape (Discrete J) L := by
-  have := FiniteProductsAux.isIso_limitComparisonOfConstAdjunction L W hW
-  exact preservesLimitsOfShape_of_const_adjunction (FiniteProductsAux.adj C J)
-    (FiniteProductsAux.adj' L W hW) L
+    PreservesLimitsOfShape (Discrete J) L where
+  preservesLimit {F} := preservesLimitOfPreservesLimitCone (limit.isLimit F)
+    (HasProductsOfShapeAux.isLimitMapCone L hW F)
 
-noncomputable def preservesFiniteProducts [W.ContainsIdentities]
-    [HasFiniteProducts C] [W.IsStableUnderFiniteProducts] :
-    PreservesFiniteProducts L := ⟨by
-  intro J hJ
-  exact preservesProductsOfShape L W J
-    (MorphismProperty.IsStableUnderFiniteProducts.isStableUnderProductsOfShape W _)⟩
+variable [HasFiniteProducts C] [W.IsStableUnderFiniteProducts]
 
-instance [W.ContainsIdentities] [HasFiniteProducts C] [W.IsStableUnderFiniteProducts] :
-    HasFiniteProducts (W.Localization) := hasFiniteProducts W.Q W
+lemma hasFiniteProducts : HasFiniteProducts D :=
+  ⟨fun _ => hasProductsOfShape L W _
+    (W.isStableUnderProductsOfShape_of_isStableUnderFiniteProducts _)⟩
 
-noncomputable instance [W.ContainsIdentities] [HasFiniteProducts C]
-    [W.IsStableUnderFiniteProducts] : PreservesFiniteProducts W.Q := preservesFiniteProducts W.Q W
+/-- When `C` has finite products and `W : MorphismProperty C` contains
+identities and is stable by finite products,
+then any localization functor for `W` preserves finite products. -/
+noncomputable def preservesFiniteProducts :
+    PreservesFiniteProducts L where
+  preserves J _ := preservesProductsOfShape L W J
+      (W.isStableUnderProductsOfShape_of_isStableUnderFiniteProducts _)
 
-section
+instance : HasFiniteProducts (W.Localization) := hasFiniteProducts W.Q W
 
-variable [W.HasLocalization]
+noncomputable instance : PreservesFiniteProducts W.Q := preservesFiniteProducts W.Q W
 
-instance [W.ContainsIdentities] [HasFiniteProducts C] [W.IsStableUnderFiniteProducts] :
-    HasFiniteProducts (W.Localization') := hasFiniteProducts W.Q' W
+instance [W.HasLocalization] :
+    HasFiniteProducts (W.Localization') :=
+  hasFiniteProducts W.Q' W
 
-noncomputable instance [W.ContainsIdentities] [HasFiniteProducts C]
-    [W.IsStableUnderFiniteProducts] : PreservesFiniteProducts W.Q' := preservesFiniteProducts W.Q' W
-
-end
-
-end Localization
-
-end CategoryTheory
+noncomputable instance [W.HasLocalization] :
+    PreservesFiniteProducts W.Q' :=
+  preservesFiniteProducts W.Q' W

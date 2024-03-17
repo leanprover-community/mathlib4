@@ -3,6 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init.Algebra.Classes
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Order.RelClasses
@@ -64,8 +65,8 @@ satisfy `r a b → s (f a) (f b)`.
 The relations `r` and `s` are `outParam`s since figuring them out from a goal is a higher-order
 matching problem that Lean usually can't do unaided.
 -/
-class RelHomClass (F : Type*) {α β : outParam <| Type*} (r : outParam <| α → α → Prop)
-  (s : outParam <| β → β → Prop) extends DFunLike F α fun _ => β where
+class RelHomClass (F : Type*) {α β : Type*} (r : outParam <| α → α → Prop)
+  (s : outParam <| β → β → Prop) [FunLike F α β] : Prop where
   /-- A `RelHomClass` sends related elements to related elements -/
   map_rel : ∀ (f : F) {a b}, r a b → s (f a) (f b)
 #align rel_hom_class RelHomClass
@@ -76,7 +77,7 @@ end
 
 namespace RelHomClass
 
-variable {F : Type*}
+variable {F : Type*} [FunLike F α β]
 
 protected theorem isIrrefl [RelHomClass F r s] (f : F) : ∀ [IsIrrefl β s], IsIrrefl α r
   | ⟨H⟩ => ⟨fun _ h => H _ (map_rel f h)⟩
@@ -102,12 +103,14 @@ end RelHomClass
 
 namespace RelHom
 
-instance : RelHomClass (r →r s) r s where
+instance : FunLike (r →r s) α β where
   coe o := o.toFun
   coe_injective' f g h := by
     cases f
     cases g
     congr
+
+instance : RelHomClass (r →r s) r s where
   map_rel := map_rel'
 
 initialize_simps_projections RelHom (toFun → apply)
@@ -225,19 +228,22 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
---Porting note: removed
+-- Porting note: removed
 -- see Note [function coercion]
 -- instance : CoeFun (r ↪r s) fun _ => α → β :=
 --   ⟨fun o => o.toEmbedding⟩
 
--- TODO: define and instantiate a `RelEmbeddingClass`
-instance : RelHomClass (r ↪r s) r s where
+-- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
+instance : FunLike (r ↪r s) α β where
   coe := fun x => x.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
     rcases g with ⟨⟨⟩⟩
     congr
-  map_rel f a b := Iff.mpr (map_rel_iff' f)
+
+-- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
+instance : RelHomClass (r ↪r s) r s where
+  map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
 initialize_simps_projections RelEmbedding (toFun → apply)
 
@@ -634,10 +640,13 @@ instance : CoeOut (r ≃r s) (r ↪r s) :=
 -- instance : CoeFun (r ≃r s) fun _ => α → β :=
 --   ⟨fun f => f⟩
 
--- TODO: define and instantiate a `RelIsoClass`
-instance : RelHomClass (r ≃r s) r s where
+-- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
+instance : FunLike (r ≃r s) α β where
   coe := fun x => x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
+
+-- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
+instance : RelHomClass (r ≃r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
 instance : EquivLike (r ≃r s) α β where
@@ -647,7 +656,7 @@ instance : EquivLike (r ≃r s) α β where
   right_inv f := f.right_inv
   coe_injective' _ _ hf _ := DFunLike.ext' hf
 
---Porting note: helper instance
+-- Porting note: helper instance
 -- see Note [function coercion]
 instance : CoeFun (r ≃r s) fun _ => α → β :=
   ⟨DFunLike.coe⟩
@@ -676,7 +685,7 @@ theorem coe_fn_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
 #align rel_iso.coe_fn_to_equiv RelIso.coe_fn_toEquiv
 
 /-- The map `coe_fn : (r ≃r s) → (α → β)` is injective. Lean fails to parse
-`function.injective (λ e : r ≃r s, (e : α → β))`, so we use a trick to say the same. -/
+`function.injective (fun e : r ≃r s ↦ (e : α → β))`, so we use a trick to say the same. -/
 theorem coe_fn_injective : Injective fun f : r ≃r s => (f : α → β) :=
   DFunLike.coe_injective
 #align rel_iso.coe_fn_injective RelIso.coe_fn_injective

@@ -11,18 +11,30 @@ open ConcreteCategory
 
 variable {C D : Type _} [Category C] [Category D]
 
-def addCommGroup (G : Internal AddCommGroupCat C) (X : C) :
-    AddCommGroup (X ⟶ G.obj) :=
-{ zero := (addCommGroupCat_zero.onInternal G).app _ PUnit.unit
+def zero (G : Internal AddCommGroupCat C) (X : C) : Zero (X ⟶ G.obj) where
+  zero := (addCommGroupCat_zero.onInternal G).app _ PUnit.unit
+
+def add (G : Internal AddCommGroupCat C) (X : C) : Add (X ⟶ G.obj) where
   add := fun a b => (addCommGroupCat_add.onInternal G).app _ ⟨a, b⟩
-  add_zero := congr_fun (congr_app (addCommGroupCat_add_zero.onInternal G) (Opposite.op X))
-  zero_add := congr_fun (congr_app (addCommGroupCat_zero_add.onInternal G) (Opposite.op X))
-  add_assoc := fun a b c =>
-    congr_fun (congr_app (addCommGroupCat_add_assoc.onInternal G) _) ⟨a, ⟨b, c⟩⟩
+
+def neg (G : Internal AddCommGroupCat C) (X : C) : Neg (X ⟶ G.obj) where
   neg := (addCommGroupCat_neg.onInternal G).app (Opposite.op X)
-  add_left_neg := congr_fun (congr_app (addCommGroupCat_add_left_neg.onInternal G) (Opposite.op X))
-  add_comm := fun a b =>
-    congr_fun (congr_app (addCommGroupCat_add_comm.onInternal G) (Opposite.op X)) ⟨a, b⟩ }
+
+def addCommGroup (G : Internal AddCommGroupCat C) (X : C) :
+    AddCommGroup (X ⟶ G.obj) := by
+  letI := zero G
+  letI := add G
+  letI := neg G
+  exact
+    { zero_add := congr_fun (congr_app (addCommGroupCat_zero_add.onInternal G) (Opposite.op X))
+      add_assoc := fun a b c =>
+        congr_fun (congr_app (addCommGroupCat_add_assoc.onInternal G) _) ⟨a, ⟨b, c⟩⟩
+      add_zero := congr_fun (congr_app (addCommGroupCat_add_zero.onInternal G) (Opposite.op X))
+      add_left_neg := congr_fun (congr_app (addCommGroupCat_add_left_neg.onInternal G) (Opposite.op X))
+      add_comm := fun a b =>
+         congr_fun (congr_app (addCommGroupCat_add_comm.onInternal G) (Opposite.op X)) ⟨a, b⟩
+      nsmul := nsmulRec
+      zsmul := zsmulRec }
 
 @[simp]
 lemma addCommGroup_add (G : Internal AddCommGroupCat C) {X : C} (a b : X ⟶ G.obj) :
@@ -69,28 +81,40 @@ section
 variable {G : C} [HasTerminal C] [HasBinaryProduct G G] [HasBinaryProduct G (G ⨯ G)]
   (h : AddCommGroupCatObjOperations G)
 
-noncomputable def presheaf_obj (Y : C) : AddCommGroup (Y ⟶ G) where
+noncomputable def presheafObjZero (Y : C) : Zero (Y ⟶ G) where
   zero := ((ObjOperation₀.yonedaEquiv G) h.zero).app (Opposite.op Y) PUnit.unit
+
+noncomputable def presheafObjNeg (Y : C) : Neg (Y ⟶ G) where
   neg := ((ObjOperation₁.yonedaEquiv G) h.neg).app (Opposite.op Y)
+
+noncomputable def presheafObjAdd (Y : C) : Add (Y ⟶ G) where
   add a b := ((ObjOperation₂.yonedaEquiv G) h.add).app (Opposite.op Y) ⟨a, b⟩
-  add_assoc a b c := congr_fun (congr_app ((ObjOperation₂.assoc_iff h.add).1 h.add_assoc) (Opposite.op Y)) ⟨a, b, c⟩
-  add_zero a := congr_fun (congr_app ((ObjOperation₂.add_zero_iff h.add h.zero).1 h.add_zero) (Opposite.op Y)) a
-  zero_add a := congr_fun (congr_app ((ObjOperation₂.zero_add_iff h.add h.zero).1 h.zero_add) (Opposite.op Y)) a
-  add_left_neg a := congr_fun (congr_app ((ObjOperation₂.add_left_neg_iff h.add h.neg h.zero).1 h.add_left_neg) (Opposite.op Y)) a
-  add_comm a b := congr_fun (congr_app ((ObjOperation₂.comm_iff h.add).1 h.add_comm) (Opposite.op Y)) ⟨a, b⟩
+
+noncomputable def presheafObj (Y : C) : AddCommGroup (Y ⟶ G) := by
+  letI := presheafObjZero h Y
+  letI := presheafObjNeg h Y
+  letI := presheafObjAdd h Y
+  exact
+    { add_assoc := fun a b c => congr_fun (congr_app ((ObjOperation₂.assoc_iff h.add).1 h.add_assoc) (Opposite.op Y)) ⟨a, b, c⟩
+      add_zero := congr_fun (congr_app ((ObjOperation₂.add_zero_iff h.add h.zero).1 h.add_zero) (Opposite.op Y))
+      zero_add := congr_fun (congr_app ((ObjOperation₂.zero_add_iff h.add h.zero).1 h.zero_add) (Opposite.op Y))
+      add_left_neg := congr_fun (congr_app ((ObjOperation₂.add_left_neg_iff h.add h.neg h.zero).1 h.add_left_neg) (Opposite.op Y))
+      add_comm := fun a b => congr_fun (congr_app ((ObjOperation₂.comm_iff h.add).1 h.add_comm) (Opposite.op Y)) ⟨a, b⟩
+      nsmul := nsmulRec
+      zsmul := zsmulRec }
 
 @[simp]
 noncomputable def presheaf_map {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) :
-    letI := h.presheaf_obj Y₁
-    letI := h.presheaf_obj Y₂
+    letI := h.presheafObj Y₁
+    letI := h.presheafObj Y₂
     AddCommGroupCat.of (Y₂ ⟶ G) ⟶ AddCommGroupCat.of (Y₁ ⟶ G) := by
-  letI := h.presheaf_obj Y₁
-  letI := h.presheaf_obj Y₂
+  letI := h.presheafObj Y₁
+  letI := h.presheafObj Y₂
   refine' AddCommGroupCat.ofHom (AddMonoidHom.mk' (fun g => f ≫ g)
     (fun a b => (congr_fun (((ObjOperation₂.yonedaEquiv G) h.add).naturality f.op) ⟨a, b⟩).symm))
 
 noncomputable def presheaf : Cᵒᵖ ⥤ AddCommGroupCat := by
-  letI := fun (Y : C) => h.presheaf_obj Y
+  letI := fun (Y : C) => h.presheafObj Y
   exact
   { obj := fun Y => AddCommGroupCat.of (Y.unop ⟶ G)
     map := fun f => h.presheaf_map f.unop }
@@ -187,8 +211,8 @@ def comp (φ : Hom h₁ h₂) (ψ : Hom h₂ h₃) : Hom h₁ h₃ where
 
 def internal (φ : Hom h₁ h₂) : h₁.internal ⟶ h₂.internal where
   app X :=
-    letI := h₁.presheaf_obj X.unop
-    letI := h₂.presheaf_obj X.unop
+    letI := h₁.presheafObj X.unop
+    letI := h₂.presheafObj X.unop
     show (X.unop ⟶ G₁) →+ (X.unop ⟶ G₂) from AddMonoidHom.mk' (fun x₁ => x₁ ≫ φ.map)
       (fun a b => by
         dsimp

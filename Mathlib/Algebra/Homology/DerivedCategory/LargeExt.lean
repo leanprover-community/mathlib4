@@ -330,7 +330,7 @@ lemma singleTriangle_distinguished :
     refine' Triangle.isoMk _ _ (e.app S.X₁) (e.app S.X₂) (e.app S.X₃) _ _ _
     · aesop_cat
     · aesop_cat
-    · dsimp [singleδ]
+    · dsimp [singleδ, e]
       simp only [assoc, ← Functor.map_comp, SingleFunctors.inv_hom_id_hom_app,
         SingleFunctors.postComp_functor, Functor.comp_obj]
       erw [Functor.map_id, comp_id]

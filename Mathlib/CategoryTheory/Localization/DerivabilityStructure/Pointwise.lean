@@ -90,7 +90,7 @@ lemma hasPointwiseRightDerivedFunctorAt_iff_of_isRightDerivabilityStructure (X :
   let e : W₂.Q.obj _ ≅ (Φ.localizedFunctor W₁.Q W₂.Q).obj _  := ((Φ.catCommSq W₁.Q W₂.Q).iso).app X
   rw [F.hasPointwiseRightDerivedFunctorAt_iff W₂.Q W₂ (Φ.functor.obj X),
     (Φ.functor ⋙ F).hasPointwiseRightDerivedFunctorAt_iff W₁.Q W₁ X]
-  rw [F.hasPointwiseLeftKanExtensionAt_iff_of_iso W₂.Q e]
+  rw [Functor.hasPointwiseLeftKanExtensionAt_iff_of_iso W₂.Q F e]
   dsimp [Functor.HasPointwiseLeftKanExtensionAt]
   let w : TwoSquare _ _ _ _ := ((Φ.catCommSq W₁.Q W₂.Q).iso).hom
   have h : w.GuitartExact := inferInstance

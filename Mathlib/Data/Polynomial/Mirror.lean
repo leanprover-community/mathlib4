@@ -163,7 +163,7 @@ theorem coeff_mul_mirror :
   rw [coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
   refine'
     (Finset.sum_congr rfl fun n hn => _).trans
-      (p.sum_eq_of_subset (fun _ => (· ^ 2)) (fun _ => zero_pow zero_lt_two) fun n hn =>
+      (p.sum_eq_of_subset (fun _ ↦ (· ^ 2)) (fun _ ↦ zero_pow two_ne_zero) fun n hn ↦
           Finset.mem_range_succ_iff.mpr
             ((le_natDegree_of_mem_supp n hn).trans (Nat.le_add_right _ _))).symm
   rw [coeff_mirror, ← revAt_le (Finset.mem_range_succ_iff.mp hn), revAt_invol, ← sq]
@@ -218,7 +218,7 @@ variable {R : Type*} [CommRing R] [NoZeroDivisors R] {f : R[X]}
 
 theorem irreducible_of_mirror (h1 : ¬IsUnit f)
     (h2 : ∀ k, f * f.mirror = k * k.mirror → k = f ∨ k = -f ∨ k = f.mirror ∨ k = -f.mirror)
-    (h3 : ∀ g, g ∣ f → g ∣ f.mirror → IsUnit g) : Irreducible f := by
+    (h3 : IsRelPrime f f.mirror) : Irreducible f := by
   constructor
   · exact h1
   · intro g h fgh
@@ -238,10 +238,10 @@ theorem irreducible_of_mirror (h1 : ¬IsUnit f)
       exact dvd_mul_left h g.mirror
     have hk := h2 k key
     rcases hk with (hk | hk | hk | hk)
-    · exact Or.inr (h3 h h_dvd_f (by rwa [← hk]))
-    · exact Or.inr (h3 h h_dvd_f (by rwa [← neg_eq_iff_eq_neg.mpr hk, mirror_neg, dvd_neg]))
-    · exact Or.inl (h3 g g_dvd_f (by rwa [← hk]))
-    · exact Or.inl (h3 g g_dvd_f (by rwa [← neg_eq_iff_eq_neg.mpr hk, dvd_neg]))
+    · exact Or.inr (h3 h_dvd_f (by rwa [← hk]))
+    · exact Or.inr (h3 h_dvd_f (by rwa [← neg_eq_iff_eq_neg.mpr hk, mirror_neg, dvd_neg]))
+    · exact Or.inl (h3 g_dvd_f (by rwa [← hk]))
+    · exact Or.inl (h3 g_dvd_f (by rwa [← neg_eq_iff_eq_neg.mpr hk, dvd_neg]))
 #align polynomial.irreducible_of_mirror Polynomial.irreducible_of_mirror
 
 end CommRing

@@ -1,72 +1,55 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.CategoryTheory.Quotient.Linear
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 
-universe w' w v u
+/-!
+# The category of homological complexes is linear
+
+In this file, we define the instance `Linear R (HomologicalComplex C c)` when the
+category `C` is `R`-linear.
+
+## TODO
+
+- show lemmas like `HomologicalComplex.homologyMap_smul` (after doing the same
+for short complexes in `Mathlib.Algebra.Homology.ShortComplex.Linear`)
+
+-/
 
 open CategoryTheory
 
-variable {R : Type w} [Ring R]
-  {C : Type u} [Category.{v} C] [Preadditive C] [Linear R C]
-  {ι : Type w'} {c : ComplexShape ι}
+variable {R : Type*} [Semiring R] {C D : Type*} [Category C] [Preadditive C]
+  [Category D] [Preadditive D] [CategoryTheory.Linear R C]  [CategoryTheory.Linear R D]
+  {ι : Type*} {c : ComplexShape ι}
 
 namespace HomologicalComplex
 
 variable {X Y : HomologicalComplex C c}
 
 instance : SMul R (X ⟶ Y) where
-  smul r f :=
-    { f := fun n => r • f.f n }
+  smul r f := { f := fun n => r • f.f n }
 
 @[simp]
-lemma smul_f (r : R) (f : X ⟶ Y) (n : ι) : (r • f).f n = r • f.f n := rfl
+lemma smul_f_apply (r : R) (f : X ⟶ Y) (n : ι) : (r • f).f n = r • f.f n := rfl
 
 @[simp]
-lemma units_smul_f (r : Rˣ) (f : X ⟶ Y) (n : ι) : (r • f).f n = r • f.f n := rfl
+lemma units_smul_f_apply (r : Rˣ) (f : X ⟶ Y) (n : ι) : (r • f).f n = r • f.f n := rfl
 
 instance (X Y : HomologicalComplex C c) : Module R (X ⟶ Y) where
   one_smul a := by aesop_cat
   smul_zero := by aesop_cat
   smul_add := by aesop_cat
   zero_smul := by aesop_cat
-  add_smul := by
-    intros
-    ext
-    apply add_smul
-  mul_smul := by
-    intros
-    ext
-    apply mul_smul
+  add_smul _ _ _ := by ext; apply add_smul
+  mul_smul _ _ _ := by ext; apply mul_smul
 
 instance : Linear R (HomologicalComplex C c) where
 
 end HomologicalComplex
 
-namespace HomotopyCategory
-
--- the next two instances should be moved to `Algebra.Homology.HomotopyCategory`
-instance : Preadditive (CategoryTheory.Quotient (homotopic C c)) :=
-  (inferInstance : Preadditive (HomotopyCategory C c))
-
-instance : Functor.Additive (Quotient.functor (homotopic C c)) :=
-  (inferInstance : (HomotopyCategory.quotient C c).Additive)
-
-instance : Linear R (HomotopyCategory C c) :=
-  Quotient.linear R (homotopic C c) (by
-    rintro a X Y f g ⟨h⟩
-    -- this should be a definition `Homotopy.smul` in `Algebra.Homology.Homotopy`
-    exact
-    ⟨{  hom := fun i j => a • h.hom i j
-        zero := fun i j hij => by
-          dsimp
-          rw [h.zero i j hij, smul_zero]
-        comm := fun i => by
-          dsimp
-          rw [h.comm]
-          dsimp [fromNext, toPrev]
-          simp only [smul_add, Linear.comp_smul, Linear.smul_comp] }⟩)
-
-instance : Functor.Linear R (HomotopyCategory.quotient C c) :=
-  Quotient.linear_functor _ _ _
-
-end HomotopyCategory
+instance CategoryTheory.Functor.mapHomologicalComplex_linear
+    (F : C ⥤ D) [F.Additive] [Functor.Linear R F] (c : ComplexShape ι) :
+  Functor.Linear R (F.mapHomologicalComplex c) where

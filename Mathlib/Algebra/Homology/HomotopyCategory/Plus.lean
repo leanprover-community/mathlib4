@@ -34,7 +34,7 @@ def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) whe
     have hT₂ : T₂ ∈ distTriang _ := by exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
     have e := isoTriangleOfIso₁₂ T₁ T₂ hT₁ hT₂ (Iso.refl _)
       (((quotient C (ComplexShape.up ℤ)).commShiftIso (1 : ℤ)).symm.app T.obj₁.as)
-      (by dsimp; rw [id_comp, hf])
+      (by dsimp [T₁, T₂]; rw [id_comp, hf])
     refine' ⟨(quotient C (ComplexShape.up ℤ)).obj ((shiftFunctor (CochainComplex C ℤ) (-1)).obj
       (CochainComplex.mappingCone f)), _, ⟨_⟩⟩
     · let n₀ : ℤ := min n₁ n₃ - 1
@@ -43,12 +43,10 @@ def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) whe
       have : (CochainComplex.mappingCone f).IsStrictlyGE n₀ := ⟨fun i hi => by
         simp only [CochainComplex.mappingCone.isZero_X_iff]
         constructor
-        · exact CochainComplex.isZero_of_isStrictlyGE T.obj₃.as n₃ (i + 1)
-            (by dsimp at hi; linarith)
-        · exact CochainComplex.isZero_of_isStrictlyGE T.obj₁.as n₁ (i + 1)
-            (by dsimp at hi; linarith)⟩
+        · exact CochainComplex.isZero_of_isStrictlyGE T.obj₃.as n₃ (i + 1) (by omega)
+        · exact CochainComplex.isZero_of_isStrictlyGE T.obj₁.as n₁ (i + 1) (by omega)⟩
       exact ⟨_,
-        (CochainComplex.mappingCone f).isStrictlyGE_shift n₀ (-1) (n₀ + 1) (by linarith)⟩
+        (CochainComplex.mappingCone f).isStrictlyGE_shift n₀ (-1) (n₀ + 1) (by omega)⟩
     · exact (shiftEquiv _ (1 : ℤ)).unitIso.app T.obj₂ ≪≫
         (shiftFunctor _ (-1)).mapIso (Triangle.π₃.mapIso e) ≪≫
         ((quotient _ _).commShiftIso (-1)).symm.app (CochainComplex.mappingCone f)
@@ -59,10 +57,10 @@ namespace Plus
 
 abbrev ι : Plus C ⥤ HomotopyCategory C (ComplexShape.up ℤ) := (subcategoryPlus C).ι
 
-def qis : MorphismProperty (Plus A) := (HomotopyCategory.qis A _).inverseImage (ι A)
+def quasiIso : MorphismProperty (Plus A) := (HomotopyCategory.quasiIso A _).inverseImage (ι A)
 
-instance : (qis A).IsMultiplicative := by
-  dsimp only [qis]
+instance : (quasiIso A).IsMultiplicative := by
+  dsimp only [quasiIso]
   infer_instance
 
 end Plus

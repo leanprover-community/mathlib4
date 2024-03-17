@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Arrow
+import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 namespace CategoryTheory

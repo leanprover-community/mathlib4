@@ -32,7 +32,7 @@ end Multiset
 lemma CanonicallyOrderedCommSemiring.multiset_prod_pos {R} [CanonicallyOrderedCommSemiring R]
     [Nontrivial R] {m : Multiset R} : 0 < m.prod ↔ (∀ x ∈ m, (0 : R) < x) := by
   rcases m with ⟨l⟩
-  rw [Multiset.quot_mk_to_coe'', Multiset.coe_prod]
+  rw [Multiset.quot_mk_to_coe'', Multiset.prod_coe]
   exact CanonicallyOrderedCommSemiring.list_prod_pos
 
 open Multiset
@@ -43,7 +43,7 @@ variable [NonUnitalNonAssocSemiring α] (s : Multiset α)
 
 theorem multiset_sum_right (a : α) (h : ∀ b ∈ s, Commute a b) : Commute a s.sum := by
   induction s using Quotient.inductionOn
-  rw [quot_mk_to_coe, coe_sum]
+  rw [quot_mk_to_coe, sum_coe]
   exact Commute.list_sum_right _ _ h
 #align commute.multiset_sum_right Commute.multiset_sum_right
 

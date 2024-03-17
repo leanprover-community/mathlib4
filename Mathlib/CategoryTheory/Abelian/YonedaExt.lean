@@ -385,7 +385,7 @@ lemma compShortComplex₄_exact :
   apply ShortComplex₄.connectShortComplex_exact
   · rw [← E'.K.exactAt_iff' n' (n'+1) (n'+2) (by simp) (by simp; linarith)]
     exact E'.hK _
-  · rw [← E.K.exactAt_iff' 0 1 2 (by simp) (by simp; rfl)]
+  · rw [← E.K.exactAt_iff' 0 1 2 (by simp) (by simp)]
     exact E.hK _
 
 def comp : IteratedExtCategory X₁ X₃ n'' where

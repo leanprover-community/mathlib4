@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 #align_import category_theory.triangulated.basic from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -399,36 +399,121 @@ end Triangle
 
 section Preadditive
 
-variable [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+variable [Preadditive C]
 
-@[simps]
-instance instAddCommGroupTriangleHom (T₁ T₂ : Triangle C) : AddCommGroup (T₁ ⟶ T₂) where
-  add f g :=
-    { hom₁ := f.hom₁ + g.hom₁
-      hom₂ := f.hom₂ + g.hom₂
-      hom₃ := f.hom₃ + g.hom₃ }
-  neg f :=
-    { hom₁ := -f.hom₁
-      hom₂ := -f.hom₂
-      hom₃ := -f.hom₃ }
+attribute [local simp] Preadditive.comp_zsmul Preadditive.zsmul_comp
+  Preadditive.comp_nsmul Preadditive.nsmul_comp Functor.map_zsmul Functor.map_nsmul
+
+variable (T₁ T₂) {C}
+variable [∀ (n : ℤ), (shiftFunctor C n).Additive]
+
+section
+
+instance : Zero (T₁ ⟶ T₂) where
   zero :=
     { hom₁ := 0
       hom₂ := 0
       hom₃ := 0 }
+
+
+@[simp] lemma Triangle.zero_hom₁ : (0 : T₁ ⟶ T₂).hom₁ = 0 := rfl
+@[simp] lemma Triangle.zero_hom₂ : (0 : T₁ ⟶ T₂).hom₂ = 0 := rfl
+@[simp] lemma Triangle.zero_hom₃ : (0 : T₁ ⟶ T₂).hom₃ = 0 := rfl
+
+variable {T₁ T₂}
+
+@[simps]
+instance : Add (T₁ ⟶ T₂) where
+  add f g :=
+    { hom₁ := f.hom₁ + g.hom₁
+      hom₂ := f.hom₂ + g.hom₂
+      hom₃ := f.hom₃ + g.hom₃ }
+
+@[simp] lemma Triangle.add_hom₁ (f g : T₁ ⟶ T₂) : (f + g).hom₁ = f.hom₁ + g.hom₁ := rfl
+@[simp] lemma Triangle.add_hom₂ (f g : T₁ ⟶ T₂) : (f + g).hom₂ = f.hom₂ + g.hom₂ := rfl
+@[simp] lemma Triangle.add_hom₃ (f g : T₁ ⟶ T₂) : (f + g).hom₃ = f.hom₃ + g.hom₃ := rfl
+
+@[simps]
+instance : Neg (T₁ ⟶ T₂) where
+  neg f :=
+    { hom₁ := -f.hom₁
+      hom₂ := -f.hom₂
+      hom₃ := -f.hom₃ }
+
+@[simp] lemma Triangle.neg_hom₁ (f : T₁ ⟶ T₂) : (-f).hom₁ = -f.hom₁ := rfl
+@[simp] lemma Triangle.neg_hom₂ (f : T₁ ⟶ T₂) : (-f).hom₂ = -f.hom₂ := rfl
+@[simp] lemma Triangle.neg_hom₃ (f : T₁ ⟶ T₂) : (-f).hom₃ = -f.hom₃ := rfl
+
+@[simps]
+instance : Sub (T₁ ⟶ T₂) where
   sub f g :=
     { hom₁ := f.hom₁ - g.hom₁
       hom₂ := f.hom₂ - g.hom₂
       hom₃ := f.hom₃ - g.hom₃ }
+
+@[simp] lemma Triangle.sub_hom₁ (f g : T₁ ⟶ T₂) : (f - g).hom₁ = f.hom₁ - g.hom₁ := rfl
+@[simp] lemma Triangle.sub_hom₂ (f g : T₁ ⟶ T₂) : (f - g).hom₂ = f.hom₂ - g.hom₂ := rfl
+@[simp] lemma Triangle.sub_hom₃ (f g : T₁ ⟶ T₂) : (f - g).hom₃ = f.hom₃ - g.hom₃ := rfl
+
+end
+
+section
+
+variable {R : Type*} [Semiring R] [Linear R C]
+  [∀ (n : ℤ), Functor.Linear R (shiftFunctor C n)]
+
+@[simps!]
+instance  :
+    SMul R (T₁ ⟶ T₂) where
+  smul n f :=
+    { hom₁ := n • f.hom₁
+      hom₂ := n • f.hom₂
+      hom₃ := n • f.hom₃ }
+
+@[simp] lemma Triangle.smul_hom₁ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₁ = n • f.hom₁ := rfl
+@[simp] lemma Triangle.smul_hom₂ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₂ = n • f.hom₂ := rfl
+@[simp] lemma Triangle.smul_hom₃ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₃ = n • f.hom₃ := rfl
+
+end
+
+instance instAddCommGroupTriangleHom : AddCommGroup (T₁ ⟶ T₂) where
   zero_add f := by ext <;> apply zero_add
   add_assoc f g h := by ext <;> apply add_assoc
   add_zero f := by ext <;> apply add_zero
   add_comm f g := by ext <;> apply add_comm
   add_left_neg f := by ext <;> apply add_left_neg
   sub_eq_add_neg f g := by ext <;> apply sub_eq_add_neg
+  nsmul n f := n • f
+  nsmul_zero f := by aesop_cat
+  nsmul_succ n f := by ext <;> apply AddMonoid.nsmul_succ
+  zsmul n f := n • f
+  zsmul_zero' := by aesop_cat
+  zsmul_succ' n f := by ext <;> apply SubNegMonoid.zsmul_succ'
+  zsmul_neg' n f := by ext <;> apply SubNegMonoid.zsmul_neg'
 
 instance instPreadditiveTriangle : Preadditive (Triangle C) where
 
 end Preadditive
+
+section Linear
+
+variable [Preadditive C] {R : Type*} [Semiring R] [Linear R C]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive]
+  [∀ (n : ℤ), Functor.Linear R (shiftFunctor C n)]
+
+attribute [local simp] mul_smul add_smul
+
+instance (T₁ T₂ : Triangle C) : Module R (T₁ ⟶ T₂) where
+  one_smul := by aesop
+  mul_smul := by aesop
+  smul_zero := by aesop
+  smul_add := by aesop
+  add_smul := by aesop
+  zero_smul := by aesop
+
+instance : Linear R (Triangle C) where
+
+end Linear
 
 section
 

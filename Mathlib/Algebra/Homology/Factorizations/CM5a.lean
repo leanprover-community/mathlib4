@@ -439,28 +439,28 @@ lemma inr_fst (p q : ℤ) (hpq : p + 1 = q) : (inr f).1.v p q hpq ≫ (fst f).f 
 
 @[reassoc (attr := simp)]
 lemma inl_snd (p q : ℤ) (hpq : p + (-1) = q) : (inl f).v p p (add_zero _) ≫ (snd f).v p q hpq = 0 := by
-    dsimp [inl, snd]
-    rw [Cochain.rightShift_v _ (-1) 0 _ p p _ q (by linarith),
-      Cochain.leftShift_v _ (-1) (-1) _ p q _ q (by linarith)]
-    simp
+  dsimp [inl, snd]
+  rw [Cochain.rightShift_v _ (-1) 0 _ p p _ q (by linarith),
+    Cochain.leftShift_v _ (-1) (-1) _ p q _ q (by linarith)]
+  simp
 
 @[reassoc (attr := simp)]
 lemma inr_snd (p q : ℤ) (hpq : p + 1 = q) : (inr f).1.v p q hpq ≫ (snd f).v q p (by linarith) = 𝟙 _ := by
-    dsimp [inr, snd]
-    have : ((1 : ℤ) + 1)/2 = 1 := rfl
-    rw [Cochain.rightShift_v _ (-1) 1 _ p q _ p (by linarith),
-      Cochain.leftShift_v _ (-1) (-1) _ q p _ p (by linarith)]
-    simp [this, Int.negOnePow_succ]
+  dsimp [inr, snd]
+  have : ((1 : ℤ) + 1)/2 = 1 := rfl
+  rw [Cochain.rightShift_v _ (-1) 1 _ p q _ p (by linarith),
+    Cochain.leftShift_v _ (-1) (-1) _ q p _ p (by linarith)]
+  simp [this, Int.negOnePow_succ, show Int.negOnePow 2 = 1 by rfl]
 
 @[reassoc (attr := simp)]
 lemma inl_fst (p : ℤ) : (inl f).v p p (add_zero _) ≫ (fst f).f p = 𝟙 _ := by
-    dsimp [inl, fst]
-    have : ((1 : ℤ) + 1)/2 = 1 := rfl
-    rw [Cochain.rightShift_v _ (-1) 0 _ p p _ (p-1) (by linarith),
-      Cochain.leftShift_v _ (-1) 0 _ p p _ (p-1) (by linarith)]
-    simp [this]
-    erw [id_comp]
-    simp
+  dsimp [inl, fst]
+  have : ((1 : ℤ) + 1)/2 = 1 := rfl
+  rw [Cochain.rightShift_v _ (-1) 0 _ p p _ (p-1) (by linarith),
+    Cochain.leftShift_v _ (-1) 0 _ p p _ (p-1) (by linarith)]
+  simp [this]
+  erw [id_comp]
+  simp
 
 lemma id (p q : ℤ) (hpq : p + (-1) = q) : (fst f).f p ≫ (inl f).v p p (add_zero _) +
       (snd f).v p q hpq ≫ (inr f).1.v q p (by linarith) = 𝟙 _ := by
@@ -470,7 +470,7 @@ lemma id (p q : ℤ) (hpq : p + (-1) = q) : (fst f).f p ≫ (inl f).v p p (add_z
       Cochain.rightShift_v _ (-1) 1 _ q p _ q (by linarith),
       Cochain.leftShift_v _ (-1) 0 _ p p _ q (by linarith),
       Cochain.leftShift_v _ (-1) (-1) _ p q _ q (by linarith)]
-    simp [this, Int.negOnePow_succ]
+    simp [this, Int.negOnePow_succ, show Int.negOnePow 2 = 1 by rfl]
     rw [← comp_add]
     conv_lhs =>
       congr
@@ -681,12 +681,12 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
   let i : K ⟶ M := biprod.lift i₁ f
   let p : M ⟶ L := biprod.snd
   let σ : L ⟶ M := biprod.inr
-  have σp : σ ≫ p = 𝟙 _ := by simp
+  have σp : σ ≫ p = 𝟙 _ := by simp [σ, p]
   have hp : degreewiseEpiWithInjectiveKernel p := fun n => by
     rw [epiWithInjectiveKernel_iff]
     refine' ⟨S.X n, _, (biprod.inl : _ ⟶ M).f n, (biprod.inr : _ ⟶ M).f n,
         (biprod.fst : M ⟶ _).f n, _, _, _ , _, _⟩
-    · dsimp [single]
+    · dsimp [S, single]
       by_cases h : n = n₁
       · rw [if_pos h]
         infer_instance
@@ -697,13 +697,13 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     · rw [← comp_f, biprod.inl_fst, id_f]
     · rw [← comp_f, biprod.inr_snd, id_f]
     · rw [← id_f, ← biprod.total, add_f_apply, comp_f, comp_f]
-  have fac : i ≫ p = f := by simp
+  have fac : i ≫ p = f := by simp [i, p]
   have hp' : ∀ (n : ℤ) (_ : n ≤ n₀), IsIso (p.f n) := fun n hn => by
     refine' ⟨(biprod.inr : _ ⟶ M).f n, _, _⟩
     · rw [← cancel_mono ((HomologicalComplex.eval C (ComplexShape.up ℤ) n).mapBiprod _ _).hom]
       ext
       · apply IsZero.eq_of_tgt
-        dsimp [single]
+        dsimp [S, single]
         rw [if_neg (by linarith)]
         exact isZero_zero C
       · dsimp
@@ -723,7 +723,7 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
       · have : cyclesMap (biprod.inl : _ ⟶ M) n = 0 := by
           have : (biprod.inl : _ ⟶ M).f n = 0 := by
             apply IsZero.eq_of_src
-            dsimp [single]
+            dsimp [S, single]
             rw [if_neg (by linarith)]
             exact Limits.isZero_zero C
           rw [← cancel_mono (M.iCycles n), zero_comp, cyclesMap_i, this, comp_zero]
@@ -750,7 +750,7 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     have := S.isIso_pOpcycles _ n₁ rfl rfl
     have : opcyclesMap i₁ n₁ = Injective.ι (K.opcycles n₁) ≫ α ≫ S.pOpcycles n₁ := by
       rw [← (cancel_epi (K.pOpcycles n₁)), p_opcyclesMap, ← assoc, ← assoc]
-      simp [toSingleEquiv]
+      simp [i₁, toSingleEquiv]
     rw [this]
     infer_instance
   have hx₁' : (x₁ ≫ K.iCycles n₁) ≫ K.pOpcycles n₁ = 0 := by
@@ -1124,10 +1124,10 @@ lemma isIso_inverseSystemI_map' (n n' : ℕ) (h : n ≤ n')
   · intro n n'' h q hq
     let n' := n + k
     have := hk n n' rfl q hq
-    rw [← homOfLE_comp (show n ≤ n' by linarith) (show n' ≤ n'' by linarith), op_comp,
+    rw [← homOfLE_comp (show n ≤ n' by omega) (show n' ≤ n'' by omega), op_comp,
       (inverseSystemI f n₀).map_comp, comp_f]
-    obtain rfl : n'' = n' + 1 := by linarith
-    have := isIso_inverseSystemI_map_succ f n₀ n' q (by rw [Nat.cast_add]; linarith)
+    obtain rfl : n'' = n' + 1 := by omega
+    have := isIso_inverseSystemI_map_succ f n₀ n' q (by omega)
     infer_instance
 
 lemma isIso_inverseSystemI_map {n n' : ℕ} (φ : Opposite.op n' ⟶ Opposite.op n)
@@ -1245,11 +1245,11 @@ lemma CM5a_cof (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] [Mono f] :
     ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n) (i : K ⟶ L') (p : L' ⟶ L)
       (_hi : Mono i) (_hi' : QuasiIso i) (_hp : degreewiseEpiWithInjectiveKernel p), i ≫ p = f := by
   let n₀ := n - 1
-  have : K.IsStrictlyGE (n₀ + 1) := K.isStrictlyGE_of_GE (n₀ + 1) (n + 1) (by dsimp; linarith)
-  have : L.IsStrictlyGE (n₀ + 1) := L.isStrictlyGE_of_GE (n₀ + 1) n (by dsimp; linarith)
+  have : K.IsStrictlyGE (n₀ + 1) := K.isStrictlyGE_of_GE (n₀ + 1) (n + 1) (by omega)
+  have : L.IsStrictlyGE (n₀ + 1) := L.isStrictlyGE_of_GE (n₀ + 1) n (by omega)
   have : (CM5aCof.I f n₀).IsStrictlyGE n := ⟨fun q hq =>
     IsZero.of_iso (L.isZero_of_isStrictlyGE n q hq) (by
-      have := CM5aCof.isIso_p_f f n₀ q (by dsimp; linarith)
+      have := CM5aCof.isIso_p_f f n₀ q (by omega)
       exact asIso ((CM5aCof.p f n₀).f q))⟩
   exact ⟨_, inferInstance, CM5aCof.i f n₀, CM5aCof.p f n₀, inferInstance, inferInstance,
     CM5aCof.degreewiseEpiWithInjectiveKernel_p f n₀, CM5aCof.fac f n₀⟩

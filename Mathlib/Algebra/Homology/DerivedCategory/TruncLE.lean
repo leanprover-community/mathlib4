@@ -246,14 +246,14 @@ lemma isIso_homologyMap_truncLEι (n i : ℤ) (hi : i ≤ n) :
     rw [isIso_homologyMap_iff' _ (i-1) i (i+1) (by simp) (by simp)]
     change IsIso (ShortComplex.homologyMap α)
     have : IsIso α.τ₁ := by
-      dsimp
+      dsimp [α]
       rw [K.truncLEιf_eq_truncLEXIso_hom _ _ (by linarith)]
       infer_instance
     have : IsIso α.τ₂ := by
-      dsimp
+      dsimp [α]
       rw [K.truncLEιf_eq_truncLEXIso_hom _ _ hi']
       infer_instance
-    have : Mono α.τ₃ := by dsimp ; infer_instance
+    have : Mono α.τ₃ := by dsimp [α]; infer_instance
     apply ShortComplex.isIso_homologyMap_of_epi_of_isIso_of_mono
   · apply isIso_homologyMap_of_isIso_cyclesMap_of_epi _ (i-1) i (by simp)
     · refine' ⟨⟨(K.truncLE i).liftCycles (K.truncLEXIsoCycles i i rfl).inv (i+1) (by simp) _,
@@ -327,8 +327,8 @@ lemma quasiIso_truncLEι_iff (n : ℤ) :
       · apply (K.isZero_of_isLE n i hi).eq_of_src
 
 instance (n : ℤ) [K.IsLE n] : IsIso (DerivedCategory.Q.map (K.truncLEι n)) := by
-  apply Localization.inverts DerivedCategory.Q (qis C _)
-  rw [qis_iff, quasiIso_truncLEι_iff]
+  apply Localization.inverts DerivedCategory.Q (quasiIso C _)
+  rw [mem_quasiIso_iff, quasiIso_truncLEι_iff]
   infer_instance
 
 variable (C)
@@ -342,10 +342,10 @@ noncomputable def functorTruncLE (n : ℤ) : CochainComplex C ℤ ⥤ CochainCom
 noncomputable def natTransTruncLEι (n : ℤ) : functorTruncLE C n ⟶ 𝟭 _ where
   app K := K.truncLEι n
 
-lemma qis_isInvertedBy_functorTruncLE_comp_Q (n : ℤ) :
-    (qis C _).IsInvertedBy (functorTruncLE C n ⋙ DerivedCategory.Q) := fun K L f hf => by
+lemma quasiIso_isInvertedBy_functorTruncLE_comp_Q (n : ℤ) :
+    (quasiIso C _).IsInvertedBy (functorTruncLE C n ⋙ DerivedCategory.Q) := fun K L f hf => by
   dsimp
-  rw [qis_iff] at hf
+  rw [mem_quasiIso_iff] at hf
   rw [DerivedCategory.isIso_Q_map_iff_quasiIso, quasiIso_truncLEmap_iff]
   infer_instance
 
@@ -402,18 +402,18 @@ namespace DerivedCategory
 variable (C)
 
 noncomputable def functorTruncLE (n : ℤ) : DerivedCategory C ⥤ DerivedCategory C :=
-  Localization.lift _ (CochainComplex.qis_isInvertedBy_functorTruncLE_comp_Q C n) Q
+  Localization.lift _ (CochainComplex.quasiIso_isInvertedBy_functorTruncLE_comp_Q C n) Q
 
 noncomputable def functorTruncLEFactors (n : ℤ) :
     Q ⋙ functorTruncLE C n ≅ CochainComplex.functorTruncLE C n ⋙ Q :=
   Localization.fac _ _ _
 
-noncomputable instance (n : ℤ) : Localization.Lifting Q (HomologicalComplex.qis C _)
+noncomputable instance (n : ℤ) : Localization.Lifting Q (HomologicalComplex.quasiIso C _)
     (CochainComplex.functorTruncLE C n ⋙ Q) (functorTruncLE C n) :=
   ⟨functorTruncLEFactors C n⟩
 
 noncomputable def natTransTruncLEι (n : ℤ) : functorTruncLE C n ⟶ 𝟭 _  :=
-  Localization.liftNatTrans Q (HomologicalComplex.qis C _)
+  Localization.liftNatTrans Q (HomologicalComplex.quasiIso C _)
     (CochainComplex.functorTruncLE C n ⋙ Q) Q _ _
       (whiskerRight (CochainComplex.natTransTruncLEι C n) Q)
 

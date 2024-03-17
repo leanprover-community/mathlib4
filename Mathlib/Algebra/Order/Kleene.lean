@@ -288,7 +288,7 @@ end KleeneAlgebra
 namespace Prod
 
 instance instIdemSemiring [IdemSemiring α] [IdemSemiring β] : IdemSemiring (α × β) :=
-  { Prod.instSemiring, Prod.semilatticeSup _ _, Prod.orderBot _ _ with
+  { Prod.instSemiring, Prod.instSemilatticeSup _ _, Prod.instOrderBot _ _ with
     add_eq_sup := fun _ _ ↦ ext (add_eq_sup _ _) (add_eq_sup _ _) }
 
 instance [IdemCommSemiring α] [IdemCommSemiring β] : IdemCommSemiring (α × β) :=
@@ -324,7 +324,7 @@ end Prod
 namespace Pi
 
 instance instIdemSemiring [∀ i, IdemSemiring (π i)] : IdemSemiring (∀ i, π i) :=
-  { Pi.semiring, Pi.semilatticeSup, Pi.orderBot with
+  { Pi.semiring, Pi.instSemilatticeSup, Pi.instOrderBot with
     add_eq_sup := fun _ _ ↦ funext fun _ ↦ add_eq_sup _ _ }
 
 instance [∀ i, IdemCommSemiring (π i)] : IdemCommSemiring (∀ i, π i) :=

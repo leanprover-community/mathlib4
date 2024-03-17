@@ -14,7 +14,7 @@ namespace DerivedCategory
 
 noncomputable instance : Linear R (DerivedCategory C) :=
   Localization.linear R (DerivedCategory.Qh : _ ⥤ DerivedCategory C)
-    (HomotopyCategory.qis C _)
+    (HomotopyCategory.quasiIso C _)
 
 instance : Functor.Linear R (DerivedCategory.Qh : _ ⥤ DerivedCategory C) :=
   Localization.functor_linear _ _ _

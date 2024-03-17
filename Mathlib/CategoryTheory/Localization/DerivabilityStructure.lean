@@ -44,8 +44,9 @@ lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e' : Φ.functor
   have : TwoSquare.vComp' e.hom e'''.hom e₁ e₂ = e'.hom := by
     ext X₁
     rw [TwoSquare.vComp'_app, liftNatIso_hom, liftNatTrans_app]
-    simp only [Functor.comp_obj, Iso.trans_hom, isoWhiskerLeft_hom, isoWhiskerRight_hom, Iso.symm_hom,
-      NatTrans.comp_app, Functor.associator_hom_app, whiskerLeft_app, whiskerRight_app, id_comp, assoc]
+    simp only [Functor.comp_obj, Iso.trans_hom, isoWhiskerLeft_hom, isoWhiskerRight_hom,
+      Iso.symm_hom, NatTrans.comp_app, Functor.associator_hom_app, whiskerLeft_app,
+      whiskerRight_app, id_comp, assoc, e'']
     dsimp [Lifting.iso]
     rw [F.map_id, id_comp, ← F.map_comp, Iso.inv_hom_id_app, F.map_id, comp_id,
       ← Functor.map_comp_assoc]
