@@ -224,7 +224,7 @@ noncomputable instance levyProkhorovDist_pseudoMetricSpace_probabilityMeasure :
   dist_triangle μ ν κ := levyProkhorovDist_triangle _ _ _
   edist_dist μ ν := by simp [← ENNReal.ofReal_coe_nnreal]
 
-lemma levyProkhorov_dist_def (μ ν : LevyProkhorov (ProbabilityMeasure Ω)) :
+lemma LevyProkhorov.dist_def (μ ν : LevyProkhorov (ProbabilityMeasure Ω)) :
     dist μ ν = levyProkhorovDist μ.toMeasure ν.toMeasure := rfl
 
 end Levy_Prokhorov --section
@@ -233,20 +233,18 @@ section Levy_Prokhorov_comparison
 
 open BoundedContinuousFunction
 
-variable {ι : Type*} (Ω : Type*) [MeasurableSpace Ω]
+variable {ι : Type*} {Ω : Type*} [MeasurableSpace Ω]
 
 /-- Coercion from the type synonym `LevyProkhorov (ProbabilityMeasure Ω)`
 to `ProbabilityMeasure Ω`. -/
-def levyProkhorov_to_probabilityMeasure (μ : LevyProkhorov (ProbabilityMeasure Ω)) :
+def LevyProkhorov.probabilityMeasure (μ : LevyProkhorov (ProbabilityMeasure Ω)) :
     ProbabilityMeasure Ω := μ
 
 /-- Coercion from the type synonym `LevyProkhorov (FiniteMeasure Ω)` to `FiniteMeasure Ω`. -/
-def levyProkhorov_to_finiteMeasure (μ : LevyProkhorov (FiniteMeasure Ω)) :
+def LevyProkhorov.finiteMeasure (μ : LevyProkhorov (FiniteMeasure Ω)) :
     FiniteMeasure Ω := μ
 
 variable [PseudoMetricSpace Ω] [OpensMeasurableSpace Ω]
-
-variable {Ω}
 
 /-- A version of the layer cake formula for bounded continuous functions which have finite integral:
 ∫ f dμ = ∫ t in (0, ‖f‖], μ {x | f(x) ≥ t} dt. -/
@@ -349,11 +347,11 @@ lemma tendsto_integral_meas_thickening_le' (f : Ω →ᵇ ℝ)
 
 /-- The coercion `LevyProkhorov (ProbabilityMeasure Ω) → ProbabilityMeasure Ω` is continuous. -/
 lemma continuous_levyProkhorov_to_probabilityMeasure :
-    Continuous (levyProkhorov_to_probabilityMeasure Ω) := by
+    Continuous (LevyProkhorov.probabilityMeasure (Ω := Ω)) := by
   refine SeqContinuous.continuous ?_
   intro μs ν hμs
-  set P := levyProkhorov_to_probabilityMeasure Ω ν -- more palatable notation
-  set Ps := fun n ↦ levyProkhorov_to_probabilityMeasure Ω (μs n) -- more palatable notation
+  set P := ν.probabilityMeasure -- more palatable notation
+  set Ps := fun n ↦ (μs n).probabilityMeasure -- more palatable notation
   rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto]
   refine fun f ↦ tendsto_integral_of_forall_limsup_integral_le_integral ?_ f
   intro f f_nn
@@ -399,7 +397,7 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
       · rw [ENNReal.ofReal_add (by positivity) (by positivity), ← add_zero (levyProkhorovEDist _ _)]
         apply ENNReal.add_lt_add_of_le_of_lt (levyProkhorovEDist_ne_top _ _)
               (le_of_eq ?_) (ofReal_pos.mpr εs_pos)
-        rw [levyProkhorov_dist_def, levyProkhorovDist,
+        rw [LevyProkhorov.dist_def, levyProkhorovDist,
             ofReal_toReal (levyProkhorovEDist_ne_top _ _)]
         rfl
       · exact eventually_of_forall f_nn
@@ -410,7 +408,7 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
 /-- The topology of the Lévy-Prokhorov metric is finer than the topology of convergence in
 distribution. -/
 theorem levyProkhorov_le_convergenceInDistribution :
-    TopologicalSpace.coinduced (levyProkhorov_to_probabilityMeasure Ω) inferInstance
+    TopologicalSpace.coinduced (LevyProkhorov.probabilityMeasure (Ω := Ω)) inferInstance
       ≤ (inferInstance : TopologicalSpace (ProbabilityMeasure Ω)) :=
   (continuous_levyProkhorov_to_probabilityMeasure).coinduced_le
 
