@@ -160,7 +160,7 @@ protected theorem isOpen [TopologicalSpace α] (F : Realizer α) (s : F.σ) : Is
 
 theorem ext' [T : TopologicalSpace α] {σ : Type*} {F : Ctop α σ}
     (H : ∀ a s, s ∈ 𝓝 a ↔ ∃ b, a ∈ F b ∧ F b ⊆ s) : F.toTopsp = T := by
-  refine' eq_of_nhds_eq_nhds fun x ↦ _
+  refine TopologicalSpace.ext_nhds fun x ↦ ?_
   ext s
   rw [mem_nhds_toTopsp, H]
 #align ctop.realizer.ext' Ctop.Realizer.ext'
