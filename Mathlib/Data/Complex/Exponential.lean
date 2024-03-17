@@ -195,7 +195,7 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
   exact cauchy_product (isCauSeq_abs_exp x) (isCauSeq_exp y)
 #align complex.exp_add Complex.exp_add
 
--- Porting note: New definition
+-- Porting note (#11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℂ` to `ℂ` -/
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
   { toFun := fun z => exp (Multiplicative.toAdd z),
@@ -816,7 +816,7 @@ theorem exp_zero : exp 0 = 1 := by simp [Real.exp]
 nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
 #align real.exp_add Real.exp_add
 
--- Porting note: New definition
+-- Porting note (#11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℝ` to `ℝ` -/
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℝ) ℝ :=
   { toFun := fun x => exp (Multiplicative.toAdd x),
