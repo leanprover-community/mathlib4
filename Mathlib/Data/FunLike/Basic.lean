@@ -25,7 +25,7 @@ structure MyHom (A B : Type*) [MyClass A] [MyClass B] :=
 
 namespace MyHom
 
-variables (A B : Type*) [MyClass A] [MyClass B]
+variable (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "morphism class" design below:
 instance : FunLike (MyHom A B) A B :=

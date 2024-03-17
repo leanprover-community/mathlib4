@@ -23,7 +23,7 @@ structure MyEmbedding (A B : Type*) [MyClass A] [MyClass B] :=
 
 namespace MyEmbedding
 
-variables (A B : Type*) [MyClass A] [MyClass B]
+variable (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Embedding class" design below:
 instance : EmbeddingLike (MyEmbedding A B) A B :=
