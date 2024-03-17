@@ -63,7 +63,7 @@ protected def scheme (X : LocallyRingedSpace)
 
 end LocallyRingedSpace.IsOpenImmersion
 
-theorem IsOpenImmersion.open_range {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] :
+theorem IsOpenImmersion.isOpen_range {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] :
     IsOpen (Set.range f.1.base) :=
   H.base_open.isOpen_range
 #align algebraic_geometry.IsOpenImmersion.open_range AlgebraicGeometry.IsOpenImmersion.isOpen_range
@@ -268,7 +268,7 @@ theorem affineBasisCover_is_basis (X : Scheme) :
         ∃ a : X.affineBasisCover.J, x = Set.range (X.affineBasisCover.map a).1.base} := by
   apply TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
   · rintro _ ⟨a, rfl⟩
-    exact IsOpenImmersion.open_range (X.affineBasisCover.map a)
+    exact IsOpenImmersion.isOpen_range (X.affineBasisCover.map a)
   · rintro a U haU hU
     rcases X.affineCover.Covers a with ⟨x, e⟩
     let U' := (X.affineCover.map (X.affineCover.f a)).1.base ⁻¹' U
@@ -289,7 +289,7 @@ def OpenCover.finiteSubcover {X : Scheme} (𝒰 : OpenCover X) [H : CompactSpace
     OpenCover X := by
   have :=
     @CompactSpace.elim_nhds_subcover _ _ H (fun x : X => Set.range (𝒰.map (𝒰.f x)).1.base)
-      fun x => (IsOpenImmersion.open_range (𝒰.map (𝒰.f x))).mem_nhds (𝒰.Covers x)
+      fun x => (IsOpenImmersion.isOpen_range (𝒰.map (𝒰.f x))).mem_nhds (𝒰.Covers x)
   let t := this.choose
   have h : ∀ x : X, ∃ y : t, x ∈ Set.range (𝒰.map (𝒰.f y)).1.base := by
     intro x
@@ -554,9 +554,8 @@ instance forgetToTopPreservesOfRight : PreservesLimit (cospan g f) Scheme.forget
 
 theorem range_pullback_snd_of_left :
     Set.range (pullback.snd : pullback f g ⟶ Y).1.base =
-      ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.open_range⟩).1 := by
-  rw [←isOpen_range
-    show _ = (pullback.snd : pullback f g ⟶ _).1.base from
+      ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.isOpen_range⟩).1 := by
+  rw [←show _ = (pullback.snd : pullback f g ⟶ _).1.base from
       PreservesPullback.iso_hom_snd Scheme.forgetToTop f g]
   -- Porting note (#10691): was `rw`
   erw [coe_comp]
@@ -572,7 +571,7 @@ theorem range_pullback_snd_of_left :
 
 theorem range_pullback_fst_of_right :
     Set.range (pullback.fst : pullback g f ⟶ Y).1.base =
-      ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.open_range⟩).1 := by
+      ((Opens.map g.1.base).obj ⟨Set.range f.1.base, H.base_open.isOpen_range⟩).1 := by
   rw [←isOpen_range
     show _ = (pullback.fst : pullback g f ⟶ _).1.base from
       PreservesPullback.iso_hom_fst Scheme.forgetToTop g f]
@@ -721,7 +720,7 @@ theorem image_basicOpen {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] {U 
 /-- The image of an open immersion as an open set. -/
 @[simps]
 def Hom.opensRange {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] : Opens Y :=
-  ⟨_, H.base_open.open_range⟩
+  ⟨_, H.base_open.isOpen_range⟩
 #align algebraic_gisOpen_rangeheme.hom.opens_range AlgebraicGeometry.Scheme.Hom.opensRange
 
 end Scheme
