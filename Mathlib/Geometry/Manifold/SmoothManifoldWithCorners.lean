@@ -303,7 +303,7 @@ protected theorem closedEmbedding : ClosedEmbedding I :=
 
 theorem isClosed_range : IsClosed (range I) :=
   I.closedEmbedding.isClosed_range
-#align model_with_corners.closed_range ModelWithCorners.closed_range
+#align model_with_corners.closed_range ModelWithCorners.isClosed_range
 
 theorem map_nhds_eq (x : H) : map I (𝓝 x) = 𝓝[range I] I x :=
   I.closedEmbedding.toEmbedding.map_nhds_eq x
@@ -359,7 +359,7 @@ protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorn
     exact ((compact_basis_nhds (I x)).inf_principal _).map _
   refine' .of_hasBasis this _
   rintro x s ⟨-, hsc⟩
-  exact (hsc.inter_right I.closed_range).image I.continuous_symm
+  exact (hsc.inter_right I.isClosed_range).image I.continuous_symm
 #align model_with_corners.locally_compact ModelWithCorners.locallyCompactSpace
 
 open TopologicalSpace
