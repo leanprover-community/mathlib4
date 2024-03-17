@@ -344,8 +344,8 @@ lemma tendsto_integral_meas_thickening_le' (f : Ω →ᵇ ℝ)
     (εs : ℕ → ℝ) (εs_lim : Tendsto εs atTop (𝓝[>] 0))
     {A : Set ℝ} (A_finmeas : volume A ≠ ∞) (μ : ProbabilityMeasure Ω) :
     Tendsto (fun n ↦ ∫ t in A, ENNReal.toReal (μ (thickening (εs n) {a | t ≤ f a}))) atTop
-      (𝓝 (∫ t in A, ENNReal.toReal (μ {a | t ≤ f a}))) := by
-  exact (tendsto_integral_meas_thickening_le f A_finmeas μ).comp εs_lim
+      (𝓝 (∫ t in A, ENNReal.toReal (μ {a | t ≤ f a}))) :=
+  (tendsto_integral_meas_thickening_le f A_finmeas μ).comp εs_lim
 
 /-- The coercion `LevyProkhorov (ProbabilityMeasure Ω) → ProbabilityMeasure Ω` is continuous. -/
 lemma continuous_levyProkhorov_to_probabilityMeasure :
