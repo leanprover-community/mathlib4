@@ -1157,7 +1157,6 @@ theorem liftRel_flatten {R : α → β → Prop} {c1 : Computation (WSeq α)} {c
   ⟨S, ⟨c1, c2, rfl, rfl, h⟩, fun {s t} h =>
     match s, t, h with
     | _, _, ⟨c1, c2, rfl, rfl, h⟩ => by
-      -- Porting note: `exists_and_left` should be excluded.
       simp only [destruct_flatten]; apply liftRel_bind _ _ h
       intro a b ab; apply Computation.LiftRel.imp _ _ _ (liftRel_destruct ab)
       intro a b; apply LiftRelO.imp_right
@@ -1362,8 +1361,7 @@ theorem destruct_ofSeq (s : Seq α) :
 
 @[simp]
 theorem head_ofSeq (s : Seq α) : head (ofSeq s) = Computation.pure s.head := by
-  simp only [head, Option.map_eq_map, destruct_ofSeq, Computation.map_pure, Option.map_map]
-  cases Seq.head s <;> rfl
+  simp [head]; cases Seq.head s <;> rfl
 #align stream.wseq.head_of_seq Stream'.WSeq.head_ofSeq
 
 @[simp]
