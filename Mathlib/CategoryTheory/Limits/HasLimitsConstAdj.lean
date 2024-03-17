@@ -1,19 +1,8 @@
---import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 namespace CategoryTheory
 
 open Category
-
-namespace Functor
-
-variable {C₁ C₂ : Type _} [Category C₁] [Category C₂] (L : C₁ ⥤ C₂) (J : Type _) [Category J]
-
-@[simps!]
-def compConstIso : L ⋙ Functor.const J ≅ Functor.const J ⋙ (whiskeringRight J C₁ C₂).obj L :=
-  NatIso.ofComponents (fun X => NatIso.ofComponents (fun j => Iso.refl _) (by aesop_cat)) (by aesop_cat)
-
-end Functor
 
 namespace Adjunction
 
