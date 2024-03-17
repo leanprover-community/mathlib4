@@ -3,8 +3,7 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Logic.Equiv.TransferInstance
 
 #align_import number_theory.legendre_symbol.add_character from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
@@ -31,170 +30,252 @@ see `Mathlib.NumberTheory.LegendreSymbol.AddCharacter`.
 additive character
 -/
 
-
-universe u v
-
 /-!
 ### Definitions related to and results on additive characters
 -/
 
+open Multiplicative
+
 section AddCharDef
 
 -- The domain of our additive characters
-variable (A : Type u) [AddMonoid A]
+variable (A : Type*) [AddMonoid A]
 
 -- The target
-variable (M : Type v) [CommMonoid M]
+variable (M : Type*) [Monoid M]
 
-/-- Define `AddChar A M` as `(Multiplicative A) →* M`.
-The definition works for an additive monoid `A` and a monoid `M`,
-but we will restrict to the case that both are commutative rings for most applications.
-The trivial additive character (sending everything to `1`) is `(1 : AddChar A M).` -/
-def AddChar : Type max u v :=
-  Multiplicative A →* M
+/-- `AddChar A M` is the type of maps `A → M`, for `A` an additive monoid and `M` a multiplicative
+monoid, which intertwine addition in `A` with multiplication in `M`.
+
+We only put the typeclasses needed for the definition, although in practice we are usually
+interested in much more specific cases (e.g. when `A` is a group and `M` a commutative ring).
+ -/
+structure AddChar where
+  /-- The underlying function.
+
+  Do not use this function directly. Instead use the coercion coming from the `FunLike`
+  instance. -/
+  toFun : A → M
+  /-- The function maps `0` to `1`.
+
+  Do not use this directly. Instead use `AddChar.map_zero_one`. -/
+  map_zero_one' : toFun 0 = 1
+  /- The function maps addition in `A` to multiplication in `M`.
+
+  Do not use this directly. Instead use `AddChar.map_add_mul`. -/
+  map_add_mul' : ∀ a b : A, toFun (a + b) = toFun a * toFun b
+
 #align add_char AddChar
 
 end AddCharDef
 
 namespace AddChar
 
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
-section DerivedInstances
+section Basic
+-- results which don't require commutativity or inverses
 
-variable (A : Type u) [AddMonoid A] (M : Type v) [CommMonoid M]
+variable {A M : Type*} [AddMonoid A] [Monoid M]
 
-instance : CommMonoid (AddChar A M) :=
-  inferInstanceAs (CommMonoid (Multiplicative A →* M))
+/-- Define coercion to a function. -/
+instance instFunLike : FunLike (AddChar A M) A M where
+  coe := AddChar.toFun
+  coe_injective' φ ψ h := by cases φ; cases ψ; congr
 
-instance : Inhabited (AddChar A M) :=
-  inferInstanceAs (Inhabited (Multiplicative A →* M))
-
-end DerivedInstances
-
-section CoeToFun
-
-variable {A : Type u} [AddMonoid A] {M : Type v} [CommMonoid M]
-
-/-- Interpret an additive character as a monoid homomorphism. -/
-def toMonoidHom : AddChar A M → Multiplicative A →* M :=
-  id
-#align add_char.to_monoid_hom AddChar.toMonoidHom
-
-open Multiplicative
-
-/-- Define coercion to a function so that it includes the move from `A` to `Multiplicative A`.
-After we have proved the API lemmas below, we don't need to worry about writing `ofAdd a`
-when we want to apply an additive character. -/
-instance instFunLike : FunLike (AddChar A M) A M :=
-  inferInstanceAs (FunLike (Multiplicative A →* M) A M)
 #noalign add_char.has_coe_to_fun
 
-theorem coe_to_fun_apply (ψ : AddChar A M) (a : A) : ψ a = ψ.toMonoidHom (ofAdd a) :=
-  rfl
-#align add_char.coe_to_fun_apply AddChar.coe_to_fun_apply
+-- Porting note(https://github.com/leanprover-community/mathlib4/issues/5229): added.
+@[ext] lemma ext (f g : AddChar A M) (h : ∀ x : A, f x = g x) : f = g :=
+  DFunLike.ext f g h
 
--- Porting note: added
-theorem mul_apply (ψ φ : AddChar A M) (a : A) : (ψ * φ) a = ψ a * φ a :=
+@[simp] lemma coe_mk (f : A → M)
+    (map_zero_one' : f 0 = 1) (map_add_mul' : ∀ a b : A, f (a + b) = f a * f b) :
+    AddChar.mk f map_zero_one' map_add_mul' = f := by
   rfl
 
--- Porting note: added
-@[simp]
-theorem one_apply (a : A) : (1 : AddChar A M) a = 1 := rfl
+/-- An additive character maps `0` to `1`. -/
+@[simp] lemma map_zero_one (ψ : AddChar A M) : ψ 0 = 1 := ψ.map_zero_one'
+#align add_char.map_zero_one AddChar.map_zero_one
+
+/-- An additive character maps sums to products. -/
+lemma map_add_mul (ψ : AddChar A M) (x y : A) : ψ (x + y) = ψ x * ψ y := ψ.map_add_mul' x y
+#align add_char.map_add_mul AddChar.map_add_mul
+
+/-- Interpret an additive character as a monoid homomorphism. -/
+def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
+  toFun := φ.toFun
+  map_one' := φ.map_zero_one'
+  map_mul' := φ.map_add_mul'
+#align add_char.to_monoid_hom AddChar.toMonoidHom
 
 -- this instance was a bad idea and conflicted with `instFunLike` above
 #noalign add_char.monoid_hom_class
 
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5229): added.
-@[ext]
-theorem ext (f g : AddChar A M) (h : ∀ x : A, f x = g x) : f = g :=
-  MonoidHom.ext h
-
-/-- An additive character maps `0` to `1`. -/
-@[simp]
-theorem map_zero_one (ψ : AddChar A M) : ψ 0 = 1 := by rw [coe_to_fun_apply, ofAdd_zero, map_one]
-#align add_char.map_zero_one AddChar.map_zero_one
-
-/-- An additive character maps sums to products. -/
-@[simp]
-theorem map_add_mul (ψ : AddChar A M) (x y : A) : ψ (x + y) = ψ x * ψ y := by
-  rw [coe_to_fun_apply, coe_to_fun_apply _ x, coe_to_fun_apply _ y, ofAdd_add, map_mul]
-#align add_char.map_add_mul AddChar.map_add_mul
+@[simp] lemma toMonoidHom_apply (ψ : AddChar A M) (a : Multiplicative A) :
+  ψ.toMonoidHom a = ψ (Multiplicative.toAdd a) :=
+  rfl
+#align add_char.coe_to_fun_apply AddChar.toMonoidHom_apply
 
 /-- An additive character maps multiples by natural numbers to powers. -/
-@[simp]
-theorem map_nsmul_pow (ψ : AddChar A M) (n : ℕ) (x : A) : ψ (n • x) = ψ x ^ n := by
-  rw [coe_to_fun_apply, coe_to_fun_apply _ x, ofAdd_nsmul, map_pow]
+lemma map_nsmul_pow (ψ : AddChar A M) (n : ℕ) (x : A) : ψ (n • x) = ψ x ^ n :=
+  ψ.toMonoidHom.map_pow x n
 #align add_char.map_nsmul_pow AddChar.map_nsmul_pow
 
-end CoeToFun
+variable (A M) in
+/-- Additive characters `A → M` are the same thing as monoid homomorphisms from `Multiplicative A`
+to `M`. -/
+def toMonoidHomEquiv : AddChar A M ≃ (Multiplicative A →* M) where
+  toFun φ := φ.toMonoidHom
+  invFun f :=
+  { toFun := f.toFun
+    map_zero_one' := f.map_one'
+    map_add_mul' := f.map_mul' }
+  left_inv _ := rfl
+  right_inv _ := rfl
 
-section GroupStructure
+/-- Interpret an additive character as a monoid homomorphism. -/
+def toAddMonoidHom (φ : AddChar A M) : A →+ Additive M where
+  toFun := φ.toFun
+  map_zero' := φ.map_zero_one'
+  map_add' := φ.map_add_mul'
 
-open Multiplicative
+@[simp] lemma toAddMonoidHom_apply (ψ : AddChar A M) (a : A) : ψ.toAddMonoidHom a = ψ a := rfl
 
-variable {A : Type u} [AddCommGroup A] {M : Type v} [CommMonoid M]
+variable (A M) in
+/-- Additive characters `A → M` are the same thing as additive homomorphisms from `A` to
+`Additive M`. -/
+def toAddMonoidHomEquiv : AddChar A M ≃ (A →+ Additive M) where
+  toFun φ := φ.toAddMonoidHom
+  invFun f :=
+  { toFun := f.toFun
+    map_zero_one' := f.map_zero'
+    map_add_mul' := f.map_add' }
+  left_inv _ := rfl
+  right_inv _ := rfl
 
-/-- An additive character on a commutative additive group has an inverse.
+/-- The trivial additive character (sending everything to `1`) is `(1 : AddChar A M).` -/
+instance instOne : One (AddChar A M) := (toMonoidHomEquiv A M).one
 
-Note that this is a different inverse to the one provided by `MonoidHom.inv`,
-as it acts on the domain instead of the codomain. -/
-instance hasInv : Inv (AddChar A M) :=
-  ⟨fun ψ => ψ.comp invMonoidHom⟩
-#align add_char.has_inv AddChar.hasInv
+-- Porting note: added
+@[simp] lemma one_apply (a : A) : (1 : AddChar A M) a = 1 := rfl
 
-theorem inv_apply (ψ : AddChar A M) (x : A) : ψ⁻¹ x = ψ (-x) :=
-  rfl
-#align add_char.inv_apply AddChar.inv_apply
+instance instInhabited : Inhabited (AddChar A M) := ⟨1⟩
 
-/-- An additive character maps multiples by integers to powers. -/
+/-- Composing a `MonoidHom` with an `AddChar` yields another `AddChar`. -/
+def _root_.MonoidHom.compAddChar {N : Type*} [Monoid N] (f : M →* N) (φ : AddChar A M) :
+    AddChar A N :=
+  (toMonoidHomEquiv A N).symm (f.comp φ.toMonoidHom)
+
 @[simp]
-theorem map_zsmul_zpow {M : Type v} [CommGroup M] (ψ : AddChar A M) (n : ℤ) (x : A) :
-    ψ (n • x) = ψ x ^ n := by rw [coe_to_fun_apply, coe_to_fun_apply _ x, ofAdd_zsmul, map_zpow]
-#align add_char.map_zsmul_zpow AddChar.map_zsmul_zpow
+lemma _root_.MonoidHom.coe_compAddChar {N : Type*} [Monoid N] (f : M →* N) (φ : AddChar A M) :
+    f.compAddChar φ = f ∘ φ :=
+  rfl
 
-/-- The additive characters on a commutative additive group form a commutative group. -/
-instance commGroup : CommGroup (AddChar A M) :=
-  { MonoidHom.commMonoid with
-    inv := Inv.inv
-    mul_left_inv := fun ψ => by
-      ext x
-      rw [AddChar.mul_apply, AddChar.one_apply, inv_apply, ← map_add_mul, add_left_neg,
-        map_zero_one] }
-#align add_char.comm_group AddChar.commGroup
+/-- Composing an `AddChar` with an `AddMonoidHom` yields another `AddChar`. -/
+def compAddMonoidHom {B : Type*} [AddMonoid B] (φ : AddChar B M) (f : A →+ B) : AddChar A M :=
+  (toAddMonoidHomEquiv A M).symm (φ.toAddMonoidHom.comp f)
 
-end GroupStructure
-
-section nontrivial
-
-variable {A : Type u} [AddMonoid A] {M : Type v} [CommMonoid M]
+@[simp] lemma coe_compAddMonoidHom {B : Type*} [AddMonoid B] (φ : AddChar B M) (f : A →+ B) :
+    φ.compAddMonoidHom f = φ ∘ f := rfl
 
 /-- An additive character is *nontrivial* if it takes a value `≠ 1`. -/
-def IsNontrivial (ψ : AddChar A M) : Prop :=
-  ∃ a : A, ψ a ≠ 1
+def IsNontrivial (ψ : AddChar A M) : Prop := ∃ a : A, ψ a ≠ 1
 #align add_char.is_nontrivial AddChar.IsNontrivial
 
 /-- An additive character is nontrivial iff it is not the trivial character. -/
-theorem isNontrivial_iff_ne_trivial (ψ : AddChar A M) : IsNontrivial ψ ↔ ψ ≠ 1 := by
-  refine' not_forall.symm.trans (Iff.not _)
-  rw [DFunLike.ext_iff]
-  rfl
+lemma isNontrivial_iff_ne_trivial (ψ : AddChar A M) : IsNontrivial ψ ↔ ψ ≠ 1 :=
+  not_forall.symm.trans (DFunLike.ext_iff (f := ψ) (g := 1)).symm.not
+
 #align add_char.is_nontrivial_iff_ne_trivial AddChar.isNontrivial_iff_ne_trivial
 
-end nontrivial
+end Basic
 
+section toCommMonoid
+
+variable {A M : Type*} [AddMonoid A] [CommMonoid M]
+
+/-- When `M` is commutative, `AddChar A M` is a commutative monoid. -/
+instance instCommMonoid : CommMonoid (AddChar A M) := (toMonoidHomEquiv A M).commMonoid
+
+-- Porting note: added
+@[simp] lemma mul_apply (ψ φ : AddChar A M) (a : A) : (ψ * φ) a = ψ a * φ a := rfl
+
+@[simp] lemma pow_apply (ψ : AddChar A M) (n : ℕ) (a : A) : (ψ ^ n) a = (ψ a) ^ n := rfl
+
+variable (A M)
+
+/-- The natural equivalence to `(Multiplicative A →* M)` is a monoid isomorphism. -/
+def toMonoidHomMulEquiv : AddChar A M ≃* (Multiplicative A →* M) :=
+  { toMonoidHomEquiv A M with map_mul' := fun φ ψ ↦ by rfl }
+
+/-- Additive characters `A → M` are the same thing as additive homomorphisms from `A` to
+`Additive M`. -/
+def toAddMonoidAddEquiv : Additive (AddChar A M) ≃+ (A →+ Additive M) :=
+  { toAddMonoidHomEquiv A M with map_add' := fun φ ψ ↦ by rfl }
+
+end toCommMonoid
+
+/-!
+## Additive characters of additive abelian groups
+-/
+section fromAddCommGroup
+
+variable {A M : Type*} [AddCommGroup A] [CommMonoid M]
+
+/-- The additive characters on a commutative additive group form a commutative group.
+
+Note that the inverse is defined using negation on the domain; we do not assume `M` has an
+inversion operation for the definition (but see `AddChar.map_neg_inv` below). -/
+instance instCommGroup : CommGroup (AddChar A M) :=
+  { instCommMonoid with
+    inv := fun ψ ↦ ψ.compAddMonoidHom negAddMonoidHom
+    mul_left_inv := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_mul]}
+#align add_char.comm_group AddChar.instCommGroup
+#align add_char.has_inv AddChar.instCommGroup
+
+@[simp] lemma inv_apply (ψ : AddChar A M) (x : A) : ψ⁻¹ x = ψ (-x) := rfl
+#align add_char.inv_apply AddChar.inv_apply
+
+end fromAddCommGroup
+
+section fromAddGrouptoDivisionMonoid
+
+variable {A M : Type*} [AddGroup A] [DivisionMonoid M]
+
+/-- An additive character maps negatives to inverses (when defined) -/
+lemma map_neg_inv (ψ : AddChar A M) (a : A) : ψ (-a) = (ψ a)⁻¹ := by
+  apply eq_inv_of_mul_eq_one_left
+  simp only [← map_add_mul, add_left_neg, map_zero_one]
+
+/-- An additive character maps integer scalar multiples to integer powers. -/
+lemma map_zsmul_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (ψ a) ^ n :=
+  ψ.toMonoidHom.map_zpow a n
+#align add_char.map_zsmul_zpow AddChar.map_zsmul_zpow
+
+end fromAddGrouptoDivisionMonoid
+
+section fromAddGrouptoDivisionCommMonoid
+
+variable {A M : Type*} [AddCommGroup A] [DivisionCommMonoid M]
+
+lemma inv_apply' (ψ : AddChar A M) (x : A) : ψ⁻¹ x = (ψ x)⁻¹ := by rw [inv_apply, map_neg_inv]
+
+end fromAddGrouptoDivisionCommMonoid
+
+/-!
+## Additive characters of rings
+-/
 section Ring
 
 -- The domain and target of our additive characters. Now we restrict to a ring in the domain.
-variable {R : Type u} [CommRing R] {M : Type v} [CommMonoid M]
+variable {R M : Type*} [Ring R] [CommMonoid M]
 
 /-- Define the multiplicative shift of an additive character.
 This satisfies `mulShift ψ a x = ψ (a * x)`. -/
 def mulShift (ψ : AddChar R M) (r : R) : AddChar R M :=
-  ψ.comp (AddMonoidHom.toMultiplicative (AddMonoidHom.mulLeft r))
+  ψ.compAddMonoidHom (AddMonoidHom.mulLeft r)
 #align add_char.mul_shift AddChar.mulShift
 
-@[simp]
-theorem mulShift_apply {ψ : AddChar R M} {r : R} {x : R} : mulShift ψ r x = ψ (r * x) :=
+@[simp] lemma mulShift_apply {ψ : AddChar R M} {r : R} {x : R} : mulShift ψ r x = ψ (r * x) :=
   rfl
 #align add_char.mul_shift_apply AddChar.mulShift_apply
 
@@ -212,7 +293,7 @@ theorem mulShift_spec' (ψ : AddChar R M) (n : ℕ) (x : R) : mulShift ψ n x = 
 /-- If `n` is a natural number, then `ψ ^ n = mulShift ψ n`. -/
 theorem pow_mulShift (ψ : AddChar R M) (n : ℕ) : ψ ^ n = mulShift ψ n := by
   ext x
-  rw [show (ψ ^ n) x = ψ x ^ n from rfl, ← mulShift_spec']
+  rw [pow_apply, ← mulShift_spec']
 #align add_char.pow_mul_shift AddChar.pow_mulShift
 
 /-- The product of `mulShift ψ r` and `mulShift ψ s` is `mulShift ψ (r + s)`. -/
@@ -225,8 +306,7 @@ theorem mulShift_mul (ψ : AddChar R M) (r s : R) :
 /-- `mulShift ψ 0` is the trivial character. -/
 @[simp]
 theorem mulShift_zero (ψ : AddChar R M) : mulShift ψ 0 = 1 := by
-  ext
-  rw [mulShift_apply, zero_mul, map_zero_one]; norm_cast
+  ext; rw [mulShift_apply, zero_mul, map_zero_one, one_apply]
 #align add_char.mul_shift_zero AddChar.mulShift_zero
 
 end Ring
