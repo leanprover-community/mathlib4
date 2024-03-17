@@ -418,7 +418,6 @@ theorem eval_smul [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S
 
 @[simp]
 theorem eval_C_mul : (C a * p).eval x = a * p.eval x := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q ph qh =>
     simp only [mul_add, eval_add, ph, qh]
@@ -466,7 +465,6 @@ theorem eval_nat_cast_mul {n : ℕ} : ((n : R[X]) * p).eval x = n * p.eval x := 
 
 @[simp]
 theorem eval_mul_X : (p * X).eval x = p.eval x * x := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q ph qh =>
     simp only [add_mul, eval_add, ph, qh]
@@ -603,7 +601,6 @@ theorem monomial_comp (n : ℕ) : (monomial n a).comp p = C a * p ^ n :=
 
 @[simp]
 theorem mul_X_comp : (p * X).comp r = p.comp r * r := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [hp, hq, add_mul, add_comp]
@@ -627,7 +624,6 @@ theorem mul_X_pow_comp {k : ℕ} : (p * X ^ k).comp r = p.comp r * r ^ k := by
 
 @[simp]
 theorem C_mul_comp : (C a * p).comp r = C a * p.comp r := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp [hp, hq, mul_add]
@@ -849,7 +845,6 @@ def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
           contrapose! hn; exact funext hn), by ext i n; exact coeff_map _ _⟩⟩
 
 theorem eval₂_eq_eval_map {x : S} : p.eval₂ f x = (p.map f).eval x := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp [hp, hq]
@@ -999,7 +994,6 @@ theorem eval_zero_map (f : R →+* S) (p : R[X]) : (p.map f).eval 0 = f (p.eval 
 
 @[simp]
 theorem eval_one_map (f : R →+* S) (p : R[X]) : (p.map f).eval 1 = f (p.eval 1) := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
@@ -1010,7 +1004,6 @@ theorem eval_one_map (f : R →+* S) (p : R[X]) : (p.map f).eval 1 = f (p.eval 1
 @[simp]
 theorem eval_nat_cast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
     (p.map f).eval (n : S) = f (p.eval n) := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
@@ -1021,7 +1014,6 @@ theorem eval_nat_cast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
 @[simp]
 theorem eval_int_cast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[X]) (i : ℤ) :
     (p.map f).eval (i : S) = f (p.eval i) := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
@@ -1137,7 +1129,6 @@ theorem eval_pow (n : ℕ) : (p ^ n).eval x = p.eval x ^ n :=
 
 @[simp]
 theorem eval_comp : (p.comp q).eval x = p.eval (q.eval x) := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add r s hr hs =>
     simp [add_comp, hr, hs]
