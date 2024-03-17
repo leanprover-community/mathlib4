@@ -240,7 +240,7 @@ theorem pow_dvd_pow_of_dvd {a b : α} (h : a ∣ b) : ∀ n : ℕ, a ^ n ∣ b ^
   | 0 => by rw [pow_zero, pow_zero]
   | n + 1 => by
     rw [pow_succ, pow_succ]
-    exact mul_dvd_mul h (pow_dvd_pow_of_dvd h n)
+    exact mul_dvd_mul (pow_dvd_pow_of_dvd h n) h
 #align pow_dvd_pow_of_dvd pow_dvd_pow_of_dvd
 
 end CommMonoid
