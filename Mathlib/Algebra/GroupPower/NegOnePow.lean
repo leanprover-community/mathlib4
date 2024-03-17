@@ -49,6 +49,10 @@ lemma negOnePow_odd (n : ℤ) (hn : Odd n) : n.negOnePow = -1 := by
   obtain ⟨k, rfl⟩ := hn
   simp only [negOnePow_add, negOnePow_two_mul, negOnePow_one, mul_neg, mul_one]
 
+@[simp]
+lemma negOnePow_two_mul_add_one (n : ℤ) : (2 * n + 1).negOnePow = -1 :=
+  negOnePow_odd _ ⟨n, rfl⟩
+
 lemma negOnePow_eq_one_iff (n : ℤ) : n.negOnePow = 1 ↔ Even n := by
   constructor
   · intro h

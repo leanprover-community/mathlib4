@@ -1,10 +1,12 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
+Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson,
+    Mitchell Lee
 -/
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.GroupPower.NegOnePow
 
 #align_import analysis.special_functions.trigonometric.basic from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
@@ -320,6 +322,37 @@ theorem sin_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : sin (n * (2 * π) - x) = -s
   sin_neg x ▸ sin_periodic.int_mul_sub_eq n
 #align real.sin_int_mul_two_pi_sub Real.sin_int_mul_two_pi_sub
 
+theorem sin_add_int_mul_pi (x : ℝ) (n : ℤ) : sin (x + n * π) = (n.negOnePow) * sin x := by
+  rcases Int.even_or_odd' n with ⟨k, hk⟩
+  rcases hk with rfl | rfl
+  · rw [Int.cast_mul, Int.cast_two, mul_comm 2, mul_assoc]
+    simp
+  · rw [Int.cast_add, Int.cast_one, Int.cast_mul, Int.cast_two,
+      add_mul, ← add_assoc, mul_comm 2, mul_assoc]
+    simp
+
+theorem sin_add_nat_mul_pi (x : ℝ) (n : ℕ) : sin (x + n * π) = (-1) ^ n * sin x := by
+  have := sin_add_int_mul_pi x n
+  simpa [Int.negOnePow_def]
+
+theorem sin_sub_int_mul_pi (x : ℝ) (n : ℤ) : sin (x - n * π) = n.negOnePow * sin x := by
+  convert sin_add_int_mul_pi x (-n) using 2
+  · rw [Int.cast_neg]; ring
+  · simp
+
+theorem sin_sub_nat_mul_pi (x : ℝ) (n : ℕ) : sin (x - n * π) = (-1) ^ n * sin x := by
+  have := sin_sub_int_mul_pi x n
+  simpa [Int.negOnePow_def]
+
+theorem sin_int_mul_pi_sub (x : ℝ) (n : ℤ) : sin (n * π - x) = -(n.negOnePow * sin x) := by
+  convert sin_add_int_mul_pi (-x) n using 1
+  · ring_nf
+  · simp
+
+theorem sin_nat_mul_pi_sub (x : ℝ) (n : ℕ) : sin (n * π - x) = -((-1) ^ n * sin x) := by
+  have := sin_int_mul_pi_sub x n
+  simpa [Int.negOnePow_def]
+
 theorem cos_antiperiodic : Function.Antiperiodic cos π := by simp [cos_add]
 #align real.cos_antiperiodic Real.cos_antiperiodic
 
@@ -396,6 +429,37 @@ theorem cos_nat_mul_two_pi_sub (x : ℝ) (n : ℕ) : cos (n * (2 * π) - x) = co
 theorem cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = cos x :=
   cos_neg x ▸ cos_periodic.int_mul_sub_eq n
 #align real.cos_int_mul_two_pi_sub Real.cos_int_mul_two_pi_sub
+
+theorem cos_add_int_mul_pi (x : ℝ) (n : ℤ) : cos (x + n * π) = (n.negOnePow) * cos x := by
+  rcases Int.even_or_odd' n with ⟨k, hk⟩
+  rcases hk with rfl | rfl
+  · rw [Int.cast_mul, Int.cast_two, mul_comm 2, mul_assoc]
+    simp
+  · rw [Int.cast_add, Int.cast_one, Int.cast_mul, Int.cast_two,
+      add_mul, ← add_assoc, mul_comm 2, mul_assoc]
+    simp
+
+theorem cos_add_nat_mul_pi (x : ℝ) (n : ℕ) : cos (x + n * π) = (-1) ^ n * cos x := by
+  have := cos_add_int_mul_pi x n
+  simpa [Int.negOnePow_def]
+
+theorem cos_sub_int_mul_pi (x : ℝ) (n : ℤ) : cos (x - n * π) = n.negOnePow * cos x := by
+  convert cos_add_int_mul_pi x (-n) using 2
+  · rw [Int.cast_neg]; ring
+  · simp
+
+theorem cos_sub_nat_mul_pi (x : ℝ) (n : ℕ) : cos (x - n * π) = (-1) ^ n * cos x := by
+  have := cos_sub_int_mul_pi x n
+  simpa [Int.negOnePow_def]
+
+theorem cos_int_mul_pi_sub (x : ℝ) (n : ℤ) : cos (n * π - x) = n.negOnePow * cos x := by
+  convert cos_add_int_mul_pi (-x) n using 1
+  · ring_nf
+  · simp
+
+theorem cos_nat_mul_pi_sub (x : ℝ) (n : ℕ) : cos (n * π - x) = (-1) ^ n * cos x := by
+  have := cos_int_mul_pi_sub x n
+  simpa [Int.negOnePow_def]
 
 -- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_nat_mul_two_pi_add_pi (n : ℕ) : cos (n * (2 * π) + π) = -1 := by
