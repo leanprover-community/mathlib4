@@ -1753,7 +1753,7 @@ end Induction
 variable {S : Profinite} {ι : S → I → Bool} (hι : ClosedEmbedding ι)
 
 /--
-Given a profinite set `S` and a closed embedding `SisClosed_range)`, the `ℤ`-module
+Given a profinite set `S` and a closed embedding `S → (I → Bool)`, the `ℤ`-module
 `LocallyConstant C ℤ` is free.
 -/
 theorem Nobeling_aux : Module.Free ℤ (LocallyConstant S ℤ) := Module.Free.of_equiv'

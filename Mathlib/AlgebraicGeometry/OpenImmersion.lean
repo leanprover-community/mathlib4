@@ -68,6 +68,8 @@ theorem IsOpenImmersion.isOpen_range {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImm
   H.base_open.isOpen_range
 #align algebraic_geometry.IsOpenImmersion.open_range AlgebraicGeometry.IsOpenImmersion.isOpen_range
 
+@[deprecated] alias IsOpenImmersion.open_range := IsOpenImmersion.isOpen_range -- 2024-03-17
+
 section OpenCover
 
 namespace Scheme
@@ -720,7 +722,7 @@ theorem image_basicOpen {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] {U 
 @[simps]
 def Hom.opensRange {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] : Opens Y :=
   ⟨_, H.base_open.isOpen_range⟩
-#align algebraic_gisOpen_rangeheme.hom.opens_range AlgebraicGeometry.Scheme.Hom.opensRange
+#align algebraic_geometry.Scheme.hom.opens_range AlgebraicGeometry.Scheme.Hom.opensRange
 
 end Scheme
 

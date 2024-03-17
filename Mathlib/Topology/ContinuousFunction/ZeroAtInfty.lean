@@ -480,6 +480,8 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
   exact ⟨⟨f.toContinuousMap, this⟩, rfl⟩
 #align zero_at_infty_continuous_map.closed_range_to_bcf ZeroAtInftyContinuousMap.isClosed_range_toBCF
 
+@[deprecated] alias ZeroAtInftyContinuousMap.closed_range_toBCF := ZeroAtInftyContinuousMap.isClosed_range_toBCF -- 2024-03-17
+
 /-- Continuous functions vanishing at infinity taking values in a complete space form a
 complete space. -/
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace C₀(α, β) :=

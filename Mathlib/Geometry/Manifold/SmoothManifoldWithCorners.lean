@@ -305,6 +305,8 @@ theorem isClosed_range : IsClosed (range I) :=
   I.closedEmbedding.isClosed_range
 #align model_with_corners.closed_range ModelWithCorners.isClosed_range
 
+@[deprecated] alias ModelWithCorners.closed_range := ModelWithCorners.isClosed_range -- 2024-03-17
+
 theorem map_nhds_eq (x : H) : map I (𝓝 x) = 𝓝[range I] I x :=
   I.closedEmbedding.toEmbedding.map_nhds_eq x
 #align model_with_corners.map_nhds_eq ModelWithCorners.map_nhds_eq

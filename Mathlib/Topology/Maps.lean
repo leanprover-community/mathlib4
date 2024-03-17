@@ -476,6 +476,8 @@ theorem isClosed_range (hf : IsClosedMap f) : IsClosed (range f) :=
   @image_univ _ _ f ▸ hf _ isClosed_univ
 #align is_closed_map.closed_range IsClosedMap.isClosed_range
 
+@[deprecated] alias IsClosedMap.closed_range := IsClosedMap.isClosed_range -- 2024-03-17
+
 theorem to_quotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
     (hsurj : Surjective f) : QuotientMap f :=
   quotientMap_iff_closed.2 ⟨hsurj, fun s =>
