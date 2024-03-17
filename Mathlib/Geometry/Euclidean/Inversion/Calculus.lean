@@ -86,22 +86,27 @@ variable {a b c d x y z : F} {r R : ℝ}
 theorem hasFDerivAt_inversion (hx : x ≠ c) :
     HasFDerivAt (inversion c R)
       ((R / dist x c) ^ 2 • (reflection (ℝ ∙ (x - c))ᗮ : F →L[ℝ] F)) x := by
-  rcases add_left_surjective c x with ⟨x, rfl⟩
-  have : HasFDerivAt (inversion c R) (_ : F →L[ℝ] F) (c + x) := by
-    simp (config := { unfoldPartialApp := true }) only [inversion]
-    simp_rw [dist_eq_norm, div_pow, div_eq_mul_inv]
-    have A := (hasFDerivAt_id (𝕜 := ℝ) (c + x)).sub_const c
-    have B := ((hasDerivAt_inv <| by simpa using hx).comp_hasFDerivAt _ A.norm_sq).const_mul
-      (R ^ 2)
-    exact (B.smul A).add_const c
-  refine this.congr_fderiv (LinearMap.ext_on_codisjoint
-    (Submodule.isCompl_orthogonal_of_completeSpace (K := ℝ ∙ x)).codisjoint
-    (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_)
-  · have : ((‖x‖ ^ 2) ^ 2)⁻¹ * (‖x‖ ^ 2) = (‖x‖ ^ 2)⁻¹ := by
-      rw [← div_eq_inv_mul, sq (‖x‖ ^ 2), div_self_mul_self']
-    simp [reflection_orthogonalComplement_singleton_eq_neg, real_inner_self_eq_norm_sq,
-      two_mul, this, div_eq_mul_inv, mul_add, add_smul, mul_pow]
-  · simp [Submodule.mem_orthogonal_singleton_iff_inner_right.1 hy,
-      reflection_mem_subspace_eq_self hy, div_eq_mul_inv, mul_pow]
+  -- FIXME nightly-testing
+  -- the line `simp (config := { unfoldPartialApp := true }) only [inversion]` is failing
+  -- I think something has gone wrong with `unfoldPartialApp`.
+  -- A minimization would be very helpful!
+  sorry
+  -- rcases add_left_surjective c x with ⟨x, rfl⟩
+  -- have : HasFDerivAt (inversion c R) (_ : F →L[ℝ] F) (c + x) := by
+  --   simp (config := { unfoldPartialApp := true }) only [inversion]
+  --   simp_rw [dist_eq_norm, div_pow, div_eq_mul_inv]
+  --   have A := (hasFDerivAt_id (𝕜 := ℝ) (c + x)).sub_const c
+  --   have B := ((hasDerivAt_inv <| by simpa using hx).comp_hasFDerivAt _ A.norm_sq).const_mul
+  --     (R ^ 2)
+  --   exact (B.smul A).add_const c
+  -- refine this.congr_fderiv (LinearMap.ext_on_codisjoint
+  --   (Submodule.isCompl_orthogonal_of_completeSpace (K := ℝ ∙ x)).codisjoint
+  --   (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_)
+  -- · have : ((‖x‖ ^ 2) ^ 2)⁻¹ * (‖x‖ ^ 2) = (‖x‖ ^ 2)⁻¹ := by
+  --     rw [← div_eq_inv_mul, sq (‖x‖ ^ 2), div_self_mul_self']
+  --   simp [reflection_orthogonalComplement_singleton_eq_neg, real_inner_self_eq_norm_sq,
+  --     two_mul, this, div_eq_mul_inv, mul_add, add_smul, mul_pow]
+  -- · simp [Submodule.mem_orthogonal_singleton_iff_inner_right.1 hy,
+  --     reflection_mem_subspace_eq_self hy, div_eq_mul_inv, mul_pow]
 
 end EuclideanGeometry
