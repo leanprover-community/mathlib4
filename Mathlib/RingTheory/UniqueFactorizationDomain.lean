@@ -1482,7 +1482,8 @@ theorem factors_prod (a : Associates α) : a.factors.prod = a := by
   rcases Associates.mk_surjective a with ⟨a, rfl⟩
   rcases eq_or_ne a 0 with rfl | ha
   · simp
-  · simp [ha, prod_mk, mk_eq_mk_iff_associated, UniqueFactorizationMonoid.factors_prod]
+  · simp [ha, prod_mk, mk_eq_mk_iff_associated, UniqueFactorizationMonoid.factors_prod,
+      -Quotient.eq]
 #align associates.factors_prod Associates.factors_prod
 
 @[simp]
