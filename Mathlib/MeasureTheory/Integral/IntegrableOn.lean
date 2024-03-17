@@ -531,6 +531,11 @@ alias _root_.Filter.Tendsto.integrableAtFilter :=
   Measure.FiniteAtFilter.integrableAtFilter_of_tendsto
 #align filter.tendsto.integrable_at_filter Filter.Tendsto.integrableAtFilter
 
+lemma Measure.integrableOn_of_bounded (s_finite : μ s ≠ ∞) (f_mble : AEStronglyMeasurable f μ)
+    {M : ℝ} (f_bdd : ∀ᵐ a ∂(μ.restrict s), ‖f a‖ ≤ M) :
+    IntegrableOn f s μ :=
+  ⟨f_mble.restrict, hasFiniteIntegral_restrict_of_bounded (C := M) s_finite.lt_top f_bdd⟩
+
 theorem integrable_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     Integrable (f + g) μ ↔ Integrable f μ ∧ Integrable g μ := by
