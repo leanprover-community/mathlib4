@@ -585,19 +585,19 @@ theorem padicValNat_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne
     (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.1 hq.1))).mp neq
 #align padic_val_nat_primes padicValNat_primes
 
+theorem padicValNat_prime_prime_pow {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
+    (n : ℕ) (neq : p ≠ q) : padicValNat p (q ^ n) = 0 := by
+  rw [padicValNat.pow _ <| Nat.Prime.ne_zero hq.elim, padicValNat_primes neq, mul_zero]
+
 theorem padicValNat_prod_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
     (n m : ℕ) (neq : p ≠ q) : padicValNat p (p^n * q^m) = n := by
-  have padic_p_qm_eq_0 : padicValNat p (q ^ m) = 0 := by
-    rw [padicValNat.pow _ <| Nat.Prime.ne_zero hq.elim, padicValNat_primes neq, mul_zero]
   rw [padicValNat.mul (NeZero.ne' (p^n)).symm (NeZero.ne' (q^m)).symm,
-    padicValNat.prime_pow, padic_p_qm_eq_0, add_zero]
+    padicValNat.prime_pow, padicValNat_prime_prime_pow m neq, add_zero]
 
 theorem padicValNat_prod_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
     (n m : ℕ) (neq : q ≠ p) : padicValNat q (p^n * q^m) = m := by
-  have padic_q_pn_eq_0 : padicValNat q (p ^ n) = 0 := by
-    rw [padicValNat.pow _ <| Nat.Prime.ne_zero hp.elim, padicValNat_primes neq, mul_zero]
   rw [padicValNat.mul (NeZero.ne' (p^n)).symm (NeZero.ne' (q^m)).symm,
-    padicValNat.prime_pow, padic_q_pn_eq_0, zero_add]
+    padicValNat.prime_pow, padicValNat_prime_prime_pow n neq, zero_add]
 
 /-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`.-/
 lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
