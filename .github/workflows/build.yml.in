@@ -282,7 +282,7 @@ jobs:
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
 
-  lint_mathlib_with_cache:
+  lint:
     if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
     steps:
       - name: Checkout
@@ -300,7 +300,7 @@ jobs:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
 
-  check_environments_using_lean4checker:
+  lean4checker:
     if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
     steps:
       - uses: actions/checkout@master
@@ -332,9 +332,9 @@ jobs:
           NOISY_OUTCOME: ${{ steps.noisy.outcome }}
           ARCHIVE_OUTCOME: ${{ steps.archive.outcome }}
           COUNTEREXAMPLE_OUTCOME: ${{ steps.counterexamples.outcome }}
-          LINT_OUTCOME: ${{ steps.lint.outcome }}
+          LINT_OUTCOME: ${{ jobs.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
-          CHECK_OUTCOME: ${{ steps.lean4checker.outcome }}
+          CHECK_OUTCOME: ${{ jobs.lean4checker.outcome }}
         run: |
           scripts/lean-pr-testing-comments.sh
 
