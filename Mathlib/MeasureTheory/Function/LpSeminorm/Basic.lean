@@ -114,8 +114,6 @@ theorem memℒp_def {α} {_ : MeasurableSpace α} (f : α → E) (p : ℝ≥0∞
     Memℒp f p μ ↔ (AEStronglyMeasurable f μ ∧ snorm f p μ < ∞) :=
   Iff.rfl
 
-attribute [eqns memℒp_def] Memℒp
-
 theorem Memℒp.aestronglyMeasurable {f : α → E} {p : ℝ≥0∞} (h : Memℒp f p μ) :
     AEStronglyMeasurable f μ :=
   h.1

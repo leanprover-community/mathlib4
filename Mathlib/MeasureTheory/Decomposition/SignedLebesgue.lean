@@ -185,13 +185,11 @@ theorem rnDeriv_def (s : SignedMeasure α) (μ : Measure α) : rnDeriv s μ = fu
       (s.toJordanDecomposition.negPart.rnDeriv μ x).toReal :=
   rfl
 
-attribute [eqns rnDeriv_def] rnDeriv
-
 variable {s t : SignedMeasure α}
 
 @[measurability]
 theorem measurable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Measurable (rnDeriv s μ) := by
-  rw [rnDeriv]
+  rw [rnDeriv_def]
   measurability
 #align measure_theory.signed_measure.measurable_rn_deriv MeasureTheory.SignedMeasure.measurable_rnDeriv
 
@@ -213,7 +211,7 @@ theorem singularPart_add_withDensity_rnDeriv_eq [s.HaveLebesgueDecomposition μ]
     s.singularPart μ + μ.withDensityᵥ (s.rnDeriv μ) = s := by
   conv_rhs =>
     rw [← toSignedMeasure_toJordanDecomposition s, JordanDecomposition.toSignedMeasure]
-  rw [singularPart, rnDeriv,
+  rw [singularPart, rnDeriv_def,
     withDensityᵥ_sub' (integrable_toReal_of_lintegral_ne_top _ _)
       (integrable_toReal_of_lintegral_ne_top _ _),
     withDensityᵥ_toReal, withDensityᵥ_toReal, sub_eq_add_neg, sub_eq_add_neg,

@@ -96,8 +96,6 @@ theorem integrableOn_def (f : α → E) (s : Set α) (μ : Measure α) :
     IntegrableOn f s μ ↔ Integrable f (μ.restrict s) :=
   Iff.rfl
 
-attribute [eqns integrableOn_def] IntegrableOn
-
 theorem IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ.restrict s) :=
   h
 #align measure_theory.integrable_on.integrable MeasureTheory.IntegrableOn.integrable
