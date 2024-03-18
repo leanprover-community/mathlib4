@@ -450,7 +450,7 @@ theorem nndist_eq_hammingDist (x y : Hamming β) :
   rfl
 #align hamming.nndist_eq_hamming_dist Hamming.nndist_eq_hammingDist
 
--- Porting note: new
+-- Porting note (#10754): new instance
 instance : DiscreteTopology (Hamming β) := ⟨rfl⟩
 
 instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _

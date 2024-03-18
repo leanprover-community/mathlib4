@@ -90,7 +90,7 @@ variable (b : Basis ι R S)
 
 variable (R S)
 
-/-- The trace of an element `s` of an `R`-algebra is the trace of `(*) s`,
+/-- The trace of an element `s` of an `R`-algebra is the trace of `(s * ·)`,
 as an `R`-linear map. -/
 noncomputable def trace : S →ₗ[R] R :=
   (LinearMap.trace R S).comp (lmul R S).toLinearMap
@@ -156,7 +156,7 @@ theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*}
 #align algebra.trace_trace_of_basis Algebra.trace_trace_of_basis
 
 theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
-    [Fintype κ] (b : Basis ι R S) (c : Basis κ S T) :
+    [Finite κ] (b : Basis ι R S) (c : Basis κ S T) :
     (trace R S).comp ((trace S T).restrictScalars R) = trace R T := by
   ext
   rw [LinearMap.comp_apply, LinearMap.restrictScalars_apply, trace_trace_of_basis b c]

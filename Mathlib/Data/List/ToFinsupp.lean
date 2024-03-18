@@ -107,7 +107,7 @@ theorem toFinsupp_cons_apply_succ (x : M) (xs : List M) (n : ℕ)
   rfl
 #align list.to_finsupp_cons_apply_succ List.toFinsupp_cons_apply_succ
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
     [DecidablePred (getD (l₁ ++ l₂) · 0 ≠ 0)] [DecidablePred (getD l₁ · 0 ≠ 0)]
     [DecidablePred (getD l₂ · 0 ≠ 0)] :

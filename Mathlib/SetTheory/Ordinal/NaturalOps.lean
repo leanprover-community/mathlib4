@@ -270,7 +270,6 @@ theorem nadd_comm : ∀ a b, a ♯ b = b ♯ a
   | a, b => by
     rw [nadd_def, nadd_def, max_comm]
     congr <;> ext <;> apply nadd_comm
-    -- Porting note: below was decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
   termination_by a b => (a,b)
 #align ordinal.nadd_comm Ordinal.nadd_comm
 
@@ -297,8 +296,6 @@ theorem nadd_assoc (a b c) : a ♯ b ♯ c = a ♯ (b ♯ c) := by
   · exact fun _ _ h => nadd_le_nadd_left h a
   · exact fun _ _ h => nadd_le_nadd_right h c
 termination_by (a, b, c)
--- Porting note: above lines replaces
--- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
 #align ordinal.nadd_assoc Ordinal.nadd_assoc
 
 @[simp]
@@ -386,7 +383,8 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
     zero := 0
     zero_add := zero_nadd
     add_zero := nadd_zero
-    add_comm := nadd_comm }
+    add_comm := nadd_comm
+    nsmul := nsmulRec }
 
 instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary

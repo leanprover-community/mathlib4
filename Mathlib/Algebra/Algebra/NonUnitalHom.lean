@@ -43,9 +43,6 @@ TODO: add `NonUnitalAlgEquiv` when needed.
 non-unital, algebra, morphism
 -/
 
-set_option autoImplicit true
-
-
 universe u v w w₁ w₂ w₃
 
 variable (R : Type u) (A : Type v) (B : Type w) (C : Type w₁)
@@ -442,7 +439,7 @@ variable {R A B} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
   [Algebra R B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) [FunLike F A B] [AlgHomClass F R A B] :
+instance (priority := 100) {F : Type*} [FunLike F A B] [AlgHomClass F R A B] :
     NonUnitalAlgHomClass F R A B :=
   { ‹AlgHomClass F R A B› with map_smul := map_smul }
 

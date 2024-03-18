@@ -781,7 +781,7 @@ theorem list_indexOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.inde
   list_findIdx₁ (.swap .beq) l
 #align primrec.list_index_of₁ Primrec.list_indexOf₁
 
-theorem dom_fintype [Fintype α] (f : α → σ) : Primrec f :=
+theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   let ⟨l, _, m⟩ := Finite.exists_univ_list α
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α

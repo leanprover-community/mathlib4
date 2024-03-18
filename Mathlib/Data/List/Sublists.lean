@@ -165,7 +165,7 @@ theorem sublists_append (l₁ l₂ : List α) :
     simp [List.bind, join_join, Function.comp]
 #align list.sublists_append List.sublists_append
 
--- Porting note: New theorem
+-- Porting note (#10756): new theorem
 theorem sublists_cons (a : α) (l : List α) :
     sublists (a :: l) = sublists l >>= (fun x => [x, a :: x]) :=
   show sublists ([a] ++ l) = _ by
@@ -305,8 +305,7 @@ theorem sublistsLen_sublist_of_sublist {α : Type*} (n) {l₁ l₂ : List α} (h
   · refine' IH.trans _
     rw [sublistsLen_succ_cons]
     apply sublist_append_left
-  · simp [sublistsLen_succ_cons]
-    exact IH.append ((IHn s).map _)
+  · simpa only [sublistsLen_succ_cons] using IH.append ((IHn s).map _)
 #align list.sublists_len_sublist_of_sublist List.sublistsLen_sublist_of_sublist
 
 theorem length_of_sublistsLen {α : Type*} :
@@ -400,7 +399,7 @@ theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n
   exact this.sublist (sublistsLen_sublist_sublists' _ _)
 #align list.nodup_sublists_len List.nodup_sublistsLen
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem sublists_map (f : α → β) : ∀ (l : List α),
     sublists (map f l) = map (map f) (sublists l)
   | [] => by simp
@@ -409,7 +408,7 @@ theorem sublists_map (f : α → β) : ∀ (l : List α),
       bind_eq_bind, map_eq_bind, map_eq_bind]
     induction sublists l <;> simp [*]
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem sublists'_map (f : α → β) : ∀ (l : List α),
     sublists' (map f l) = map (map f) (sublists' l)
   | [] => by simp
@@ -456,10 +455,11 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
 theorem revzip_sublists' (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l.sublists' → l₁ ++ l₂ ~ l := by
   rw [revzip]
   induction' l with a l IH <;> intro l₁ l₂ h
-  · simp at h
-    simp [h]
+  · simp_all only [sublists'_nil, reverse_cons, reverse_nil, nil_append, zip_cons_cons,
+      zip_nil_right, mem_singleton, Prod.mk.injEq, append_nil, Perm.refl]
   · rw [sublists'_cons, reverse_append, zip_append, ← map_reverse, zip_map_right, zip_map_left] at *
-      <;> [simp at h; simp]
+      <;> [simp only [mem_append, mem_map, Prod_map, id_eq, Prod.mk.injEq, Prod.exists,
+        exists_eq_right_right] at h; simp]
     rcases h with (⟨l₁, l₂', h, rfl, rfl⟩ | ⟨l₁', h, rfl⟩)
     · exact perm_middle.trans ((IH _ _ h).cons _)
     · exact (IH _ _ h).cons _

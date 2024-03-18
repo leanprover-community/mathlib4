@@ -64,8 +64,7 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
         simp only [Ideal.span_singleton_le_iff_mem, pow_one] <;>
       assumption
   by_cases hQp : IsPrime Q
-  · skip
-    refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
+  · refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
       -- Porting note: included `zero_add` in the simp arguments
       simp only [Ideal.span_singleton_le_iff_mem, zero_add, pow_one, pow_zero, one_eq_top,
                  Submodule.mem_top]
@@ -212,9 +211,8 @@ variable [IsDomain Sₚ] [IsDedekindDomain Sₚ]
 
 /-- If `p` is a prime in the Dedekind domain `R`, `S` an extension of `R` and `Sₚ` the localization
 of `S` at `p`, then all primes in `Sₚ` are factors of the image of `p` in `Sₚ`. -/
-theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [DecidableEq (Ideal Sₚ)]
-    {P : Ideal Sₚ} (hP : IsPrime P) (hP0 : P ≠ ⊥) :
-    P ∈ normalizedFactors (Ideal.map (algebraMap R Sₚ) p) := by
+theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime {P : Ideal Sₚ} (hP : IsPrime P)
+    (hP0 : P ≠ ⊥) : P ∈ normalizedFactors (Ideal.map (algebraMap R Sₚ) p) := by
   have non_zero_div : Algebra.algebraMapSubmonoid S p.primeCompl ≤ S⁰ :=
     map_le_nonZeroDivisors_of_injective _ (NoZeroSMulDivisors.algebraMap_injective _ _)
       p.primeCompl_le_nonZeroDivisors

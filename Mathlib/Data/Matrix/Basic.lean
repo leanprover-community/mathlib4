@@ -458,15 +458,14 @@ theorem diagonal_add [AddZeroClass α] (d₁ d₂ : n → α) :
 #align matrix.diagonal_add Matrix.diagonal_add
 
 @[simp]
-theorem diagonal_smul [Monoid R] [AddMonoid α] [DistribMulAction R α] (r : R) (d : n → α) :
+theorem diagonal_smul [Zero α] [SMulZeroClass R α] (r : R) (d : n → α) :
     diagonal (r • d) = r • diagonal d := by
   ext i j
-  by_cases h : i = j <;>
-  simp [h]
+  by_cases h : i = j <;> simp [h]
 #align matrix.diagonal_smul Matrix.diagonal_smul
 
 @[simp]
-theorem diagonal_neg [DecidableEq n] [NegZeroClass α] (d : n → α) :
+theorem diagonal_neg [NegZeroClass α] (d : n → α) :
     -diagonal d = diagonal fun i => -d i := by
   ext i j
   by_cases h : i = j <;>
@@ -1159,13 +1158,13 @@ theorem map_mul [Fintype n] {L : Matrix m n α} {M : Matrix n o α} [NonAssocSem
   simp [mul_apply, map_sum]
 #align matrix.map_mul Matrix.map_mul
 
-theorem smul_one_eq_diagonal [Fintype m] [DecidableEq m] (a : α) :
+theorem smul_one_eq_diagonal [DecidableEq m] (a : α) :
     a • (1 : Matrix m m α) = diagonal fun _ => a := by
-  rw [smul_eq_diagonal_mul, mul_one]
+  simp_rw [← diagonal_one, ← diagonal_smul, Pi.smul_def, smul_eq_mul, mul_one]
 
-theorem op_smul_one_eq_diagonal [Fintype m] [DecidableEq m] (a : α) :
+theorem op_smul_one_eq_diagonal [DecidableEq m] (a : α) :
     MulOpposite.op a • (1 : Matrix m m α) = diagonal fun _ => a := by
-  rw [op_smul_eq_mul_diagonal, one_mul]
+  simp_rw [← diagonal_one, ← diagonal_smul, Pi.smul_def, op_smul_eq_mul, one_mul]
 
 variable (α n)
 

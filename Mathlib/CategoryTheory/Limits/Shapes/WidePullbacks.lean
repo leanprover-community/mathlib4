@@ -144,7 +144,7 @@ def mkCone {F : WidePullbackShape J ⥤ C} {X : C} (f : X ⟶ F.obj none) (π : 
           | none => f
           | some j => π j
         naturality := fun j j' f => by
-          cases j <;> cases j' <;> cases f <;> refine id _ <;> dsimp <;> simp [w] } }
+          cases j <;> cases j' <;> cases f <;> dsimp <;> simp [w] } }
 #align category_theory.limits.wide_pullback_shape.mk_cone CategoryTheory.Limits.WidePullbackShape.mkCone
 
 /-- Wide pullback diagrams of equivalent index types are equivalent. -/
@@ -264,7 +264,7 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
           | none => f
           | some j => ι j
         naturality := fun j j' f => by
-          cases j <;> cases j' <;> cases f <;> refine id _ <;> dsimp <;> simp [w] } }
+          cases j <;> cases j' <;> cases f <;> dsimp <;> simp [w] } }
 #align category_theory.limits.wide_pushout_shape.mk_cocone CategoryTheory.Limits.WidePushoutShape.mkCocone
 
 /-- Wide pushout diagrams of equivalent index types are equivalent. -/
