@@ -102,7 +102,7 @@ theorem lfpApprox_add_one (a : Ordinal.{u}) : lfpApprox f (a+1) = f (lfpApprox f
 
 /-- The ordinal approximants of the least fixed points are stabilizing
   when reaching a fixed point of f -/
-theorem lfpApprox_eq_of_mem_fixedPoint {a b : Ordinal.{u}} (h_ab : a < b)
+theorem lfpApprox_eq_of_mem_fixedPoint {a b : Ordinal.{u}} (h_ab : a ≤ b)
     (h: lfpApprox f a ∈ fixedPoints f) : lfpApprox f b = lfpApprox f a := by
   rw [mem_fixedPoints_iff] at h
   induction b using Ordinal.induction with | h b IH =>
@@ -119,9 +119,9 @@ theorem lfpApprox_eq_of_mem_fixedPoint {a b : Ordinal.{u}} (h_ab : a < b)
       exact haa
     · simp only [not_lt] at haa
       cases le_iff_lt_or_eq.mp haa with
-      | inl haa => specialize IH a' ha'b haa; rw [IH, h]
+      | inl haa => specialize IH a' ha'b (le_of_lt haa); rw [IH, h]
       | inr haa => rw [← haa, h]
-  · exact lfpApprox_monotone f (le_of_lt h_ab)
+  · exact lfpApprox_monotone f h_ab
 
 /-- There are distinct ordinals smaller than the successor of the domains cardinals
   with equal value -/
@@ -146,12 +146,10 @@ lemma lfpApprox_mem_fixedPoints_of_eq {a b c : Ordinal.{u}} (h_ab : a < b) (h_ac
     rw [mem_fixedPoints_iff, ← lfpApprox_add_one]
     exact Monotone.eq_of_le_of_le (lfpApprox_monotone f)
       h_fab (SuccOrder.le_succ a) (SuccOrder.succ_le_of_lt h_ab)
-  obtain rfl | h_eq_ne := eq_or_ne c a
+  rw [lfpApprox_eq_of_mem_fixedPoint f]
   · exact lfpApprox_has_one_fixedPoint
-  · rw [lfpApprox_eq_of_mem_fixedPoint f]
-    · exact lfpApprox_has_one_fixedPoint
-    · exact Ne.lt_of_le' h_eq_ne h_ac
-    · exact lfpApprox_has_one_fixedPoint
+  · exact h_ac
+  · exact lfpApprox_has_one_fixedPoint
 
 /-- A fixed point of f is reached after the successor of the domains cardinality -/
 theorem lfpApprox_has_fixedPoint_cardinal : lfpApprox f (ord <| succ #α) ∈ fixedPoints f := by
