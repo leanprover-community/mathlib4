@@ -175,7 +175,7 @@ lemma ι_functorMapTgt (i : I) (t : A i ⟶ X) (b : B i ⟶ S) (w : t ≫ πX = 
       Sigma.ι (functorObjTgtFamily f πY)
         (FunctorObjIndex.mk i t' b (by rw [← w, ← fac, assoc, hφ])) := by
   subst fac
-  erw [Sigma.ι_comp_map', id_comp]
+  simp [functorMapTgt]
 
 lemma functorMap_comm :
     functorObjLeft f πX ≫ functorMapTgt f πX πY φ hφ =
