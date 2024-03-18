@@ -759,7 +759,7 @@ instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
     simp
   nsmul_succ n f := by
     ext
-    simp [Nat.add_comm n 1, add_smul]
+    simp [add_smul]
 #align continuous_linear_map.add_comm_monoid ContinuousLinearMap.addCommMonoid
 
 @[simp, norm_cast]
