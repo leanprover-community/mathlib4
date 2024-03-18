@@ -36,7 +36,7 @@ structure MySubobject (X : Type*) [ObjectTypeclass X] :=
 
 namespace MySubobject
 
-variables {X : Type*} [ObjectTypeclass X] {x : X}
+variable {X : Type*} [ObjectTypeclass X] {x : X}
 
 instance : SetLike (MySubobject X) X :=
   ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
