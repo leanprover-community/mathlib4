@@ -352,6 +352,15 @@ theorem tendsto_WeakSpace_of_tendsto
   rw [tendsto_nhds] at hf
   exact hf (id U : Set E) (isOpen_of_isOpen_WeakSpace (id U : Set E) hpU) hU
 
+/-- If `f : E → α` is continuous in the weak topology,
+then it is convergent in the original topology. -/
+theorem continuous_of_continuous_WeakSpace
+    {α : Type*} [TopologicalSpace α] {f : E → α} (hf : Continuous (f ∘ (id : (WeakSpace 𝕜 E) → E)))
+    : Continuous f := by
+  refine { isOpen_preimage := ?isOpen_preimage }
+  intro U hU
+  exact (isOpen_of_isOpen_WeakSpace (f⁻¹' U) (hf.isOpen_preimage U hU))
+
 /-- If `f : α → E` is convergent in the original topology,
 then `y ∘ f` is convergent for any `y : E →L[𝕜] 𝕜`. -/
 theorem eval_tendsto_of_tendsto
