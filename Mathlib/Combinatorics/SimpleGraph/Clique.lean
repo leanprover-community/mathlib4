@@ -214,7 +214,7 @@ theorem is3Clique_exists_walk_isCycle_length_three (h : G.IsNClique 3 s) :
   refine' ⟨⟨_, _, _⟩, _⟩
   · simp [w]
     push_neg
-    refine' ⟨_, _, _⟩ <;> (apply And.intro; intro;)
+    refine' ⟨_, _, _⟩ <;> (apply And.intro; intro)
     · apply Adj.ne' hac
     · apply Adj.ne' hab
     · apply Adj.ne hbc
