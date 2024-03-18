@@ -8,6 +8,19 @@ import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 
+/-!
+# Injective seminorm on the tensor of a finite family of normed spaces.
+
+Let `𝕜` be a nontrivially normed field and `E i` be a family of normed `𝕜`-vector spaces,
+indexed by a finite type `ι`. We define a seminorm on `⨂[𝕜] i, E i`, which we call the
+"injective seminorm". It is chosen to satisfy the following property: for every
+normed `𝕜`-vector space `F`, the linear equivalence
+`MultilinearMap 𝕜 E F ≃ₗ[𝕜] (⨂[𝕜] i, E i) →ₗ[𝕜] F`
+expressing the universal property of the tensor product induces an isometric linear equivalence
+`ContinuusMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F`.
+
+-/
+
 variable {ι : Type*} [Fintype ι]
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
