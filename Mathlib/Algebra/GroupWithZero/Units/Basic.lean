@@ -20,7 +20,6 @@ We also define `Ring.inverse`, a globally defined function on any ring
 
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
-
 variable [MonoidWithZero M₀]
 
 namespace Units
@@ -173,7 +172,6 @@ theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
 namespace Units
 
 variable [GroupWithZero G₀]
-
 variable {a b : G₀}
 
 /-- Embed a non-zero element of a `GroupWithZero` into the unit group.

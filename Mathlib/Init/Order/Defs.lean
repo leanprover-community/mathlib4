@@ -129,7 +129,7 @@ theorem gt_of_ge_of_gt {a b c : α} (h₁ : a ≥ b) (h₂ : b > c) : a > c :=
   lt_of_lt_of_le h₂ h₁
 #align gt_of_ge_of_gt gt_of_ge_of_gt
 
--- Porting note: new
+-- Porting note (#10754): new instance
 instance (priority := 900) : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
 instance (priority := 900) : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
 instance (priority := 900) : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩

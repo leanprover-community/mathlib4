@@ -19,7 +19,6 @@ import Mathlib.GroupTheory.GroupAction.Units
 
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
-
 variable [MonoidWithZero M₀]
 
 section GroupWithZero
@@ -311,7 +310,6 @@ def invMonoidWithZeroHom {G₀ : Type*} [CommGroupWithZero G₀] : G₀ →*₀ 
 namespace Units
 
 variable [GroupWithZero G₀]
-
 variable {a b : G₀}
 
 @[simp]

@@ -58,13 +58,9 @@ structure BilinForm (R : Type*) (M : Type*) [CommSemiring R] [AddCommMonoid M] [
 #align bilin_form BilinForm
 
 variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
-
 variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
-
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
-
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace BilinForm

@@ -36,11 +36,8 @@ open BigOperators
 universe u v w
 
 variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
-
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
-
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace BilinForm
@@ -96,7 +93,6 @@ set_option linter.uppercaseLean3 false in
 section
 
 variable {R₄ M₄ : Type*} [CommRing R₄] [IsDomain R₄]
-
 variable [AddCommGroup M₄] [Module R₄ M₄] {G : BilinForm R₄ M₄}
 
 @[simp]
@@ -214,7 +210,6 @@ theorem isCompl_span_singleton_orthogonal {B : BilinForm K V} {x : V} (hx : ¬B.
 end Orthogonal
 
 variable {M₂' : Type*}
-
 variable [AddCommMonoid M₂'] [Module R M₂']
 
 /-- The restriction of a reflexive bilinear form `B` onto a submodule `W` is

@@ -37,11 +37,8 @@ open BigOperators
 universe u v w
 
 variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
-
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
-
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace BilinForm
@@ -328,7 +325,6 @@ theorem comp_inj (B₁ B₂ : BilinForm R M') {l r : M →ₗ[R] M'} (hₗ : Fun
 end Comp
 
 variable {M' M'' : Type*}
-
 variable [AddCommMonoid M'] [AddCommMonoid M''] [Module R M'] [Module R M'']
 
 section congr
@@ -427,7 +423,6 @@ end LinMulLin
 section Basis
 
 variable {F₂ : BilinForm R M}
-
 variable {ι : Type*} (b : Basis ι R M)
 
 /-- Two bilinear forms are equal when they are equal on all basis vectors. -/

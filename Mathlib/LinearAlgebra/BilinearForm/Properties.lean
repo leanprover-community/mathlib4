@@ -38,11 +38,8 @@ open BigOperators
 universe u v w
 
 variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
-
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
-
 variable {M' M'' : Type*}
 variable [AddCommMonoid M'] [AddCommMonoid M''] [Module R M'] [Module R M'']
 
@@ -203,9 +200,7 @@ theorem isAlt_neg {B : BilinForm R₁ M₁} : (-B).IsAlt ↔ B.IsAlt :=
 section LinearAdjoints
 
 variable (B) (F : BilinForm R M)
-
 variable {M' : Type*} [AddCommMonoid M'] [Module R M']
-
 variable (B' : BilinForm R M') (f f' : M →ₗ[R] M') (g g' : M' →ₗ[R] M)
 
 /-- Given a pair of modules equipped with bilinear forms, this is the condition for a pair of
@@ -244,7 +239,6 @@ theorem IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' 
 #align bilin_form.is_adjoint_pair.add BilinForm.IsAdjointPair.add
 
 variable {M₁' : Type*} [AddCommGroup M₁'] [Module R₁ M₁']
-
 variable {B₁' : BilinForm R₁ M₁'} {f₁ f₁' : M₁ →ₗ[R₁] M₁'} {g₁ g₁' : M₁' →ₗ[R₁] M₁}
 
 theorem IsAdjointPair.sub (h : IsAdjointPair B₁ B₁' f₁ g₁) (h' : IsAdjointPair B₁ B₁' f₁' g₁') :
@@ -260,7 +254,6 @@ theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B₂' f₂ g₂) :
 #align bilin_form.is_adjoint_pair.smul BilinForm.IsAdjointPair.smul
 
 variable {M'' : Type*} [AddCommMonoid M''] [Module R M'']
-
 variable (B'' : BilinForm R M'')
 
 theorem IsAdjointPair.comp {f' : M' →ₗ[R] M''} {g' : M'' →ₗ[R] M'} (h : IsAdjointPair B B' f g)
@@ -385,7 +378,6 @@ theorem not_nondegenerate_zero [Nontrivial M] : ¬(0 : BilinForm R M).Nondegener
 end
 
 variable {M' : Type*}
-
 variable [AddCommMonoid M'] [Module R M']
 
 theorem Nondegenerate.ne_zero [Nontrivial M] {B : BilinForm R M} (h : B.Nondegenerate) : B ≠ 0 :=
