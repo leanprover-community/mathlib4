@@ -58,7 +58,6 @@ theorem convolution_eq_right {x₀ : G} (hg : ∀ x ∈ ball x₀ φ.rOut, g x =
 
 variable [BorelSpace G]
 variable [IsLocallyFiniteMeasure μ] [μ.IsOpenPosMeasure]
-
 variable [FiniteDimensional ℝ G]
 
 /-- If `φ` is a normed bump function, compute `φ ⋆ g`
