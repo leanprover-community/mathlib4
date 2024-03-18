@@ -171,7 +171,7 @@ theorem simpleOrthoReflection_simpleRoot (i i' : B) :
   congr
   ring
 
-theorem simpleOrthoReflection_simpleRoot_self (i : B) : (σ i) (α i) = -α i := by
+@[simp] theorem simpleOrthoReflection_simpleRoot_self (i : B) : (σ i) (α i) = -α i := by
   simp [simpleOrthoReflection_simpleRoot, hM.diagonal i, two_smul]
 
 section
@@ -421,50 +421,53 @@ theorem SGR_simple (i : B) : cs.SGR (s i) = σ i := by
 theorem SGR_bilin_eq_bilin (w : W) (v v' : V) : ⟪cs.SGR w v, cs.SGR w v'⟫ = ⟪v, v'⟫ := by
   sorry
 
-theorem SGR_alternatingWord_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) :
+theorem SGR_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' > 1) :
     cs.SGR (π (alternatingWord i i' m)) (α i) = if Even m
-      then (sin ((m + 1) * Real.pi / M i i') / sin (Real.pi / M i i')) • (α i)
-        + (sin (m * Real.pi / M i i') / sin (Real.pi / M i i')) • (α i')
-      else (sin (m * Real.pi / M i i') / sin (Real.pi / M i i')) • (α i)
-        + (sin ((m + 1) * Real.pi / M i i') / sin (Real.pi / M i i')) • (α i') := by
+      then (sin ((m + 1) * π / M i i') / sin (π / M i i')) • (α i)
+        + (sin (m * π / M i i') / sin (π / M i i')) • (α i')
+      else (sin (m * π / M i i') / sin (π / M i i')) • (α i)
+        + (sin ((m + 1) * π / M i i') / sin (π / M i i')) • (α i') := by
   sorry
 
-theorem SGR_alternatingWord_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' = 0) :
+theorem SGR_alternatingWord_apply_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' = 0) :
     cs.SGR (π (alternatingWord i i' m)) (α i) = if Even m
       then (m + 1) • (α i) + m • (α i')
       else m • (α i) + (m + 1) • (α i') := by
   sorry
 
-theorem SGR_alternatingWord_simpleRoot_pos (i i' : B) (m : ℕ) (hm : m < M i i' ∨ M i i' = 0) :
+theorem SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul
+    (i i' : B) (m : ℕ) (hm : m < M i i' ∨ M i i' = 0) :
     ∃ (μ μ' : ℝ), μ ≥ 0 ∧ μ' ≥ 0 ∧
       cs.SGR (π (alternatingWord i i' m)) (α i) = μ • (α i) + μ' • (α i') := by
   sorry
+
+-- TODO: The order of s_i s_i' is actually M_{i, i'}
 
 /-- The proposition that all the coordinates of `v` in the basis of simple roots are nonnegative. -/
 def IsPositive (v : V) := ∀ i : B, v i ≥ 0
 /-- The proposition that all the coordinates of `v` in the basis of simple roots are nonpositive. -/
 def IsNegative (v : V) := ∀ i : B, v i ≤ 0
 
-theorem SGR_simpleRoot_pos_of {w : W} {i : B} (h : ℓ (w * s i) = ℓ w + 1) :
+theorem SGR_apply_simpleRoot_pos_of {w : W} {i : B} (h : ℓ (w * s i) = ℓ w + 1) :
     IsPositive (cs.SGR w (α i)) := by
   sorry
 
-theorem SGR_simpleRoot_neg_of {w : W} {i : B} (h : ℓ (w * s i) + 1 = ℓ w) :
+theorem SGR_apply_simpleRoot_neg_of {w : W} {i : B} (h : ℓ (w * s i) + 1 = ℓ w) :
     IsNegative (cs.SGR w (α i)) := by
   sorry
 
-theorem SGR_simpleRoot_pos_iff (w : W) (i : B) :
+theorem SGR_apply_simpleRoot_pos_iff (w : W) (i : B) :
     ℓ (w * s i) = ℓ w + 1 ↔ IsPositive (cs.SGR w (α i)) := by
   sorry
 
-theorem SGR_simpleRoot_neg_iff (w : W) (i : B) :
+theorem SGR_apply_simpleRoot_neg_iff (w : W) (i : B) :
     ℓ (w * s i) + 1 = ℓ w ↔ IsNegative (cs.SGR w (α i)) := by
   sorry
 
-theorem SGR_injective : Function.Injective cs.SGR := by
+theorem injective_SGR : Function.Injective cs.SGR := by
   sorry
 
-alias SGR_faithful := SGR_injective
+alias faithful_SGR := injective_SGR
 
 end CoxeterSystem
 
