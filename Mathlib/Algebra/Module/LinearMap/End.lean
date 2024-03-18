@@ -156,8 +156,8 @@ theorem commute_pow_left_of_commute
     (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
   induction' k with k ih
   · simp only [Nat.zero_eq, pow_zero, one_eq_id, id_comp, comp_id]
-  · rw [pow_succ', pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih, ← LinearMap.comp_assoc,
-      h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
+  · rw [pow_succ', pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih,
+    ← LinearMap.comp_assoc, h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
 #align linear_map.commute_pow_left_of_commute LinearMap.commute_pow_left_of_commute
 
 @[simp]
