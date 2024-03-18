@@ -482,58 +482,62 @@ namespace ContinuousMap
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalNonAssocSemiring β] [TopologicalSemiring β] : NonUnitalNonAssocSemiring C(α, β) :=
-  coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul coe_nsmul
+  coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul (by intros; rfl)
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalSemiring β]
     [TopologicalSemiring β] : NonUnitalSemiring C(α, β) :=
-  coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul coe_nsmul
+  coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul (by intros; rfl)
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [AddMonoidWithOne β]
     [ContinuousAdd β] : AddMonoidWithOne C(α, β) :=
-  coe_injective.addMonoidWithOne _ coe_zero coe_one coe_add coe_nsmul coe_nat_cast
+  coe_injective.addMonoidWithOne _ coe_zero coe_one coe_add (by intros; rfl) coe_nat_cast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonAssocSemiring β]
     [TopologicalSemiring β] : NonAssocSemiring C(α, β) :=
-  coe_injective.nonAssocSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_nat_cast
+  coe_injective.nonAssocSemiring _ coe_zero coe_one coe_add coe_mul (by intros; rfl) coe_nat_cast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Semiring β]
     [TopologicalSemiring β] : Semiring C(α, β) :=
-  coe_injective.semiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_nat_cast
+  coe_injective.semiring _ coe_zero coe_one coe_add coe_mul (by intros; rfl) coe_pow coe_nat_cast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalNonAssocRing β] [TopologicalRing β] : NonUnitalNonAssocRing C(α, β) :=
-  coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
+  coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub (by intros; rfl)
+    (by intros; rfl)
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalRing β]
     [TopologicalRing β] : NonUnitalRing C(α, β) :=
-  coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
+  coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (by intros; rfl)
+    (by intros; rfl)
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonAssocRing β]
     [TopologicalRing β] : NonAssocRing C(α, β) :=
-  coe_injective.nonAssocRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
-    coe_nat_cast coe_int_cast
+  coe_injective.nonAssocRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub (by intros; rfl)
+    (by intros; rfl) coe_nat_cast coe_int_cast
 
 instance instRingContinuousMap {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [Ring β] [TopologicalRing β] : Ring C(α, β) :=
-  coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul coe_pow
-    coe_nat_cast coe_int_cast
+  coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub (by intros; rfl)
+    (by intros; rfl) coe_pow coe_nat_cast coe_int_cast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     [NonUnitalCommSemiring β] [TopologicalSemiring β] : NonUnitalCommSemiring C(α, β) :=
-  coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul coe_nsmul
+  coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul (by intros; rfl)
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommSemiring β]
     [TopologicalSemiring β] : CommSemiring C(α, β) :=
-  coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_nat_cast
+  coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul (by intros; rfl) coe_pow
+    coe_nat_cast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalCommRing β]
     [TopologicalRing β] : NonUnitalCommRing C(α, β) :=
-  coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
+  coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub (by intros; rfl)
+    (by intros; rfl)
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CommRing β]
     [TopologicalRing β] : CommRing C(α, β) :=
-  coe_injective.commRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
-    coe_pow coe_nat_cast coe_int_cast
+  coe_injective.commRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub (by intros; rfl)
+    (by intros; rfl) coe_pow coe_nat_cast coe_int_cast
 
 /-- Composition on the left by a (continuous) homomorphism of topological semirings, as a
 `RingHom`.  Similar to `RingHom.compLeft`. -/
