@@ -1387,13 +1387,11 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
   let Fmult : MultilinearMap 𝕜 E G :=
     { toFun := F
       map_add' := fun v i x y => by
-        skip
         have A := hF (Function.update v i (x + y))
         have B := (hF (Function.update v i x)).add (hF (Function.update v i y))
         simp? at A B says simp only [map_add] at A B
         exact tendsto_nhds_unique A B
       map_smul' := fun v i c x => by
-        skip
         have A := hF (Function.update v i (c • x))
         have B := Filter.Tendsto.smul (tendsto_const_nhds (x := c)) (hF (Function.update v i x))
         simp? at A B says simp only [map_smul] at A B

@@ -200,7 +200,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 /-! ### set coercion -/
 
--- Porting note: new definition
+-- Porting note (#11445): new definition
 /-- Convert a finset to a set in the natural way. -/
 @[coe] def toSet (s : Finset α) : Set α :=
   { a | a ∈ s }
@@ -2010,8 +2010,8 @@ lemma erase_eq_iff_eq_insert (hs : a ∈ s) (ht : a ∉ t) : erase s a = t ↔ s
   aesop
 
 lemma insert_erase_invOn :
-    Set.InvOn (insert a) (λ s ↦ erase s a) {s : Finset α | a ∈ s} {s : Finset α | a ∉ s} :=
-  ⟨λ _s ↦ insert_erase, λ _s ↦ erase_insert⟩
+    Set.InvOn (insert a) (fun s ↦ erase s a) {s : Finset α | a ∈ s} {s : Finset α | a ∉ s} :=
+  ⟨fun _s ↦ insert_erase, fun _s ↦ erase_insert⟩
 
 theorem erase_subset_erase (a : α) {s t : Finset α} (h : s ⊆ t) : erase s a ⊆ erase t a :=
   val_le_iff.1 <| erase_le_erase _ <| val_le_iff.2 h
@@ -2727,10 +2727,10 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
 -- Porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
 -- needed. In lean4 it seems this is not the case.
 instance instDecidableRelSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊆ ·) :=
-  λ _ _ ↦ decidableDforallFinset
+  fun _ _ ↦ decidableDforallFinset
 
 instance instDecidableRelSSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊂ ·) :=
-  λ _ _ ↦ instDecidableAnd
+  fun _ _ ↦ instDecidableAnd
 
 instance instDecidableLE [DecidableEq α] : @DecidableRel (Finset α) (· ≤ ·) :=
   instDecidableRelSubset
@@ -3754,9 +3754,9 @@ theorem biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a 
       exists_eq_left]
 #align finset.bUnion_insert Finset.biUnion_insert
 
--- ext <| λ x, by simp [or_and_distrib_right, exists_or_distrib]
 theorem biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) : s₁.biUnion t₁ = s₂.biUnion t₂ :=
-  ext fun x => by
+  ext fun x ↦ by
+    -- Porting note: this entire proof was `simp [or_and_distrib_right, exists_or_distrib]`
     simp_rw [mem_biUnion]
     apply exists_congr
     simp (config := { contextual := true }) only [hs, and_congr_right_iff, ht, implies_true]

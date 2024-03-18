@@ -14,9 +14,9 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 This file develops proves the spectral mapping theorem for polynomials over algebraically closed
 fields. In particular, if `a` is an element of a `𝕜`-algebra `A` where `𝕜` is a field, and
 `p : 𝕜[X]` is a polynomial, then the spectrum of `Polynomial.aeval a p` contains the image of the
-spectrum of `a` under `(λ k, Polynomial.eval k p)`. When `𝕜` is algebraically closed, these are in
-fact equal (assuming either that the spectrum of `a` is nonempty or the polynomial has positive
-degree), which is the **spectral mapping theorem**.
+spectrum of `a` under `(fun k ↦ Polynomial.eval k p)`. When `𝕜` is algebraically closed,
+these are in fact equal (assuming either that the spectrum of `a` is nonempty or the polynomial
+has positive degree), which is the **spectral mapping theorem**.
 
 In addition, this file contains the fact that every element of a finite dimensional nontrivial
 algebra over an algebraically closed field has nonempty spectrum. In particular, this is used in

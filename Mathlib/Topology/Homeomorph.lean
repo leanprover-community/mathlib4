@@ -810,20 +810,20 @@ variable {Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace
 @[simps toEquiv]
 def toHomeomorph (e : X ≃ Y) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : X ≃ₜ Y where
   toEquiv := e
-  continuous_toFun := continuous_def.2 λ s ↦ (he _).2
-  continuous_invFun := continuous_def.2 λ s ↦ by convert (he _).1; simp
+  continuous_toFun := continuous_def.2 fun s ↦ (he _).2
+  continuous_invFun := continuous_def.2 fun s ↦ by convert (he _).1; simp
 
 @[simp] lemma coe_toHomeomorph (e : X ≃ Y) (he) : ⇑(e.toHomeomorph he) = e := rfl
 lemma toHomeomorph_apply (e : X ≃ Y) (he) (x : X) : e.toHomeomorph he x = e x := rfl
 
 @[simp] lemma toHomeomorph_refl :
-  (Equiv.refl X).toHomeomorph (λ _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
+  (Equiv.refl X).toHomeomorph (fun _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
 
 @[simp] lemma toHomeomorph_symm (e : X ≃ Y) (he) :
-  (e.toHomeomorph he).symm = e.symm.toHomeomorph λ s ↦ by convert (he _).symm; simp := rfl
+  (e.toHomeomorph he).symm = e.symm.toHomeomorph fun s ↦ by convert (he _).symm; simp := rfl
 
 lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
-    (e.trans f).toHomeomorph (λ _s ↦ (he _).trans (hf _)) =
+    (e.trans f).toHomeomorph (fun _s ↦ (he _).trans (hf _)) =
     (e.toHomeomorph he).trans (f.toHomeomorph hf) := rfl
 
 /-- An inducing equiv between topological spaces is a homeomorphism. -/
