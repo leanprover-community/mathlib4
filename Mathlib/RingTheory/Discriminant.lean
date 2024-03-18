@@ -57,7 +57,6 @@ open Matrix FiniteDimensional Fintype Polynomial Finset IntermediateField
 namespace Algebra
 
 variable (A : Type u) {B : Type v} (C : Type z) {ι : Type w} [DecidableEq ι]
-
 variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
 
 section Discr
@@ -130,9 +129,7 @@ end Basic
 section Field
 
 variable (K : Type u) {L : Type v} (E : Type z) [Field K] [Field L] [Field E]
-
 variable [Algebra K L] [Algebra K E]
-
 variable [Module.Finite K L] [IsAlgClosed E]
 
 /-- If `b` is a basis of a finite separable field extension `L/K`, then `Algebra.discr K b ≠ 0`. -/

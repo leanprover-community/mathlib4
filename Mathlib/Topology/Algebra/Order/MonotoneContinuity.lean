@@ -30,7 +30,6 @@ open Topology
 section LinearOrder
 
 variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-
 variable [LinearOrder β] [TopologicalSpace β] [OrderTopology β]
 
 /-- If `f` is a function strictly monotone on a right neighborhood of `a` and the

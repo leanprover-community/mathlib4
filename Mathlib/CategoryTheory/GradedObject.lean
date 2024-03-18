@@ -227,9 +227,7 @@ namespace GradedObject
 -- Since we're typically interested in grading by ℤ or a finite group, this should be okay.
 -- If you're grading by things in higher universes, have fun!
 variable (β : Type)
-
 variable (C : Type u) [Category.{v} C]
-
 variable [HasCoproducts.{0} C]
 
 section
@@ -265,7 +263,6 @@ namespace GradedObject
 noncomputable section
 
 variable (β : Type)
-
 variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasCoproducts.{0} C]
   [HasZeroMorphisms C]
 

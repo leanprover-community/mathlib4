@@ -541,9 +541,7 @@ end Semiring
 section Map
 
 variable {S T : Type*} [Semiring R] [Semiring S] [Semiring T]
-
 variable (f : R →+* S) (g : S →+* T)
-
 variable (σ)
 
 /-- The map between multivariate formal power series induced by a map on the coefficients.-/

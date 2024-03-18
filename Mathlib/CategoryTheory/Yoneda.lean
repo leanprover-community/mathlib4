@@ -183,7 +183,6 @@ instance {X : Cᵒᵖ} : Corepresentable (coyoneda.obj X) where
 section Representable
 
 variable (F : Cᵒᵖ ⥤ Type v₁)
-
 variable [F.Representable]
 
 /-- The representing object for the representable functor `F`. -/
@@ -232,7 +231,6 @@ end Representable
 section Corepresentable
 
 variable (F : C ⥤ Type v₁)
-
 variable [F.Corepresentable]
 
 /-- The representing object for the corepresentable functor `F`. -/

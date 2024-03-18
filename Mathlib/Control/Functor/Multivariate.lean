@@ -85,9 +85,7 @@ export LawfulMvFunctor (comp_map)
 open LawfulMvFunctor
 
 variable {α β γ : TypeVec.{u} n}
-
 variable {F : TypeVec.{u} n → Type v} [MvFunctor F]
-
 variable (P : α ⟹ «repeat» n Prop) (R : α ⊗ α ⟹ «repeat» n Prop)
 
 /-- adapt `MvFunctor.LiftP` to accept predicates as arrows -/
@@ -167,7 +165,6 @@ variable {F : TypeVec.{u} (n + 1) → Type*} [MvFunctor F] [LawfulMvFunctor F] {
 open MvFunctor
 
 variable {β : Type u}
-
 variable (pp : β → Prop)
 
 private def f :

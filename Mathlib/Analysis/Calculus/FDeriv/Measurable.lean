@@ -103,11 +103,8 @@ end ContinuousLinearMap
 section fderiv
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {f : E → F} (K : Set (E →L[𝕜] F))
 
 namespace FDerivMeasurableAux
@@ -370,7 +367,6 @@ end FDerivMeasurableAux
 open FDerivMeasurableAux
 
 variable [MeasurableSpace E] [OpensMeasurableSpace E]
-
 variable (𝕜 f)
 
 /-- The set of differentiability points of a function, with derivative in a given complete set,
@@ -448,7 +444,6 @@ end fderiv
 section RightDeriv
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-
 variable {f : ℝ → F} (K : Set F)
 
 namespace RightDerivMeasurableAux

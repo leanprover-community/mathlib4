@@ -1090,7 +1090,6 @@ end LinearOrder
 section LinearOrderedAddCommGroup
 
 variable [TopologicalSpace α] [LinearOrderedAddCommGroup α] [OrderTopology α]
-
 variable {l : Filter β} {f g : β → α}
 
 theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r } := by

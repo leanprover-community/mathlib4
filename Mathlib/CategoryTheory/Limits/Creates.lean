@@ -29,7 +29,6 @@ variable {C : Type u₁} [Category.{v₁} C]
 section Creates
 
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {J : Type w} [Category.{w'} J] {K : J ⥤ C}
 
 /-- Define the lift of a cone: For a cone `c` for `K ⋙ F`, give a cone for `K`
@@ -636,7 +635,6 @@ instance inhabitedLiftsToColimit (K : J ⥤ C) (F : C ⥤ D) [CreatesColimit K F
 section Comp
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E]
-
 variable (F : C ⥤ D) (G : D ⥤ E)
 
 instance compCreatesLimit [CreatesLimit K F] [CreatesLimit (K ⋙ F) G] :

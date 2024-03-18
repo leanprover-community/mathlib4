@@ -37,7 +37,6 @@ namespace AffineSubspace
 section StrictOrderedCommRing
 
 variable [StrictOrderedCommRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- The points `x` and `y` are weakly on the same side of `s`. -/
@@ -416,7 +415,6 @@ end StrictOrderedCommRing
 section LinearOrderedField
 
 variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 @[simp]
@@ -855,7 +853,6 @@ end LinearOrderedField
 section Normed
 
 variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
-
 variable [NormedAddTorsor V P]
 
 theorem isConnected_setOf_wSameSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :

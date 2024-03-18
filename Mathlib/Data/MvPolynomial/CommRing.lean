@@ -50,7 +50,6 @@ variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ �
 section CommRing
 
 variable [CommRing R]
-
 variable {p q : MvPolynomial σ R}
 
 instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
@@ -127,7 +126,6 @@ end Vars
 section Eval
 
 variable [CommRing S]
-
 variable (f : R →+* S) (g : σ → S)
 
 @[simp]

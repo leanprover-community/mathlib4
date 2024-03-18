@@ -55,9 +55,7 @@ open Topology BigOperators ENNReal MeasureTheory NNReal
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 
 variable {α β γ δ : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
-
 variable [NormedAddCommGroup β]
-
 variable [NormedAddCommGroup γ]
 
 namespace MeasureTheory
@@ -1110,7 +1108,6 @@ end BoundedSMul
 section NormedSpaceOverCompleteField
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem integrable_smul_const {f : α → 𝕜} {c : E} (hc : c ≠ 0) :

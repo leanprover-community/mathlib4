@@ -26,7 +26,6 @@ variable {𝕜 E : Type*}
 section SMulZeroClass
 
 variable [SeminormedAddCommGroup 𝕜] [SeminormedAddCommGroup E]
-
 variable [SMulZeroClass 𝕜 E] [BoundedSMul 𝕜 E]
 
 theorem ediam_smul_le (c : 𝕜) (s : Set E) : EMetric.diam (c • s) ≤ ‖c‖₊ • EMetric.diam s :=
@@ -38,7 +37,6 @@ end SMulZeroClass
 section DivisionRing
 
 variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
-
 variable [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
 theorem ediam_smul₀ (c : 𝕜) (s : Set E) : EMetric.diam (c • s) = ‖c‖₊ • EMetric.diam s := by

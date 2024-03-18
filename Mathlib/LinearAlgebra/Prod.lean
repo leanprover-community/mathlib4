@@ -402,7 +402,6 @@ variable {R M M₂ M₃ M₄}
 section map_mul
 
 variable {A : Type*} [NonUnitalNonAssocSemiring A] [Module R A]
-
 variable {B : Type*} [NonUnitalNonAssocSemiring B] [Module R B]
 
 theorem inl_map_mul (a₁ a₂ : A) :
@@ -424,11 +423,8 @@ end Prod
 namespace LinearMap
 
 variable (R M M₂)
-
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂]
-
 variable [Module R M] [Module R M₂]
 
 /-- `LinearMap.prodMap` as an `AlgHom` -/
@@ -542,9 +538,7 @@ namespace Submodule
 open LinearMap
 
 variable [Semiring R]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂]
-
 variable [Module R M] [Module R M₂]
 
 theorem sup_eq_range (p q : Submodule R M) : p ⊔ q = range (p.subtype.coprod q.subtype) :=
@@ -801,13 +795,9 @@ end
 section
 
 variable [Semiring R]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-
 variable {module_M : Module R M} {module_M₂ : Module R M₂}
-
 variable {module_M₃ : Module R M₃} {module_M₄ : Module R M₄}
-
 variable (e₁ : M ≃ₗ[R] M₂) (e₂ : M₃ ≃ₗ[R] M₄)
 
 /-- Product of linear equivalences; the maps come from `Equiv.prodCongr`. -/
@@ -920,7 +910,6 @@ noncomputable section Tunnel
 -- (This doesn't work over a semiring: we need to use that `Submodule R M` is a modular lattice,
 -- which requires cancellation.)
 variable [Ring R]
-
 variable {N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 open Function

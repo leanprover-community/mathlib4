@@ -30,7 +30,6 @@ open scoped Polynomial Cyclotomic
 namespace IsPrimitiveRoot
 
 variable {n : ℕ+} {K : Type u} [Field K] [CharZero K] {ζ : K}
-
 variable [ce : IsCyclotomicExtension {n} ℚ K]
 
 /-- The discriminant of the power basis given by a primitive root of unity `ζ` is the same as the
@@ -54,7 +53,6 @@ end IsPrimitiveRoot
 namespace IsCyclotomicExtension
 
 variable {p : ℕ+} {k : ℕ} {K : Type u} {L : Type v} {ζ : L} [Field K] [Field L]
-
 variable [Algebra K L]
 
 set_option tactic.skipAssignedInstances false in

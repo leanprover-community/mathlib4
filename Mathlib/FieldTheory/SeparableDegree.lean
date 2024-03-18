@@ -126,7 +126,6 @@ noncomputable section
 universe u v w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
-
 variable (K : Type w) [Field K] [Algebra F K]
 
 namespace Field
@@ -181,7 +180,6 @@ theorem finSepDegree_bot : finSepDegree F (⊥ : IntermediateField F E) = 1 := b
 section Tower
 
 variable {F}
-
 variable [Algebra E K] [IsScalarTower F E K]
 
 @[simp]
@@ -257,7 +255,6 @@ end Field
 namespace Polynomial
 
 variable {F E}
-
 variable (f : F[X])
 
 /-- The separable degree `Polynomial.natSepDegree` of a polynomial is a natural number,
@@ -463,7 +460,6 @@ end Polynomial
 namespace Irreducible
 
 variable {F}
-
 variable {f : F[X]}
 
 /-- The separable degree of an irreducible polynomial divides its degree. -/
@@ -502,7 +498,6 @@ namespace Polynomial
 namespace Monic
 
 variable {F}
-
 variable {f : F[X]}
 
 alias natSepDegree_eq_one_iff_of_irreducible' := Irreducible.natSepDegree_eq_one_iff_of_monic'
@@ -578,7 +573,6 @@ end Polynomial
 namespace minpoly
 
 variable {F E}
-
 variable (q : ℕ) [hF : ExpChar F q] {x : E}
 
 /-- The minimal polynomial of an element of `E / F` of exponential characteristic `q` has

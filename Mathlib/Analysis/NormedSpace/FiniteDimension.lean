@@ -59,9 +59,7 @@ namespace LinearIsometry
 open LinearMap
 
 variable {R : Type*} [Semiring R]
-
 variable {F E₁ : Type*} [SeminormedAddCommGroup F] [NormedAddCommGroup E₁] [Module R E₁]
-
 variable {R₁ : Type*} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteDimensional R₁ E₁]
   [FiniteDimensional R₁ F]
 

@@ -674,9 +674,7 @@ end IsSeparableTower
 section CardAlgHom
 
 variable {R S T : Type*} [CommRing S]
-
 variable {K L F : Type*} [Field K] [Field L] [Field F]
-
 variable [Algebra K S] [Algebra K L]
 
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : (minpoly K pb.gen).Separable)

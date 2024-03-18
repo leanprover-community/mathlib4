@@ -576,7 +576,6 @@ end GradeZero
 section ToSemiring
 
 variable {R : Type*} [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A] [Semiring R]
-
 variable {A}
 
 /-- If two ring homomorphisms from `⨁ i, A i` are equal on each `of A i y`,

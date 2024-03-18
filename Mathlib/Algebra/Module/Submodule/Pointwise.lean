@@ -331,7 +331,6 @@ then this action actually gives a module structure on submodules of `M` over sub
 section set_acting_on_submodules
 
 variable {S : Type*} [Monoid S]
-
 variable [AddCommMonoid M] [Module R M] [DistribMulAction S M]
 
 /--

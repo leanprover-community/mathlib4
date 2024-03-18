@@ -17,7 +17,6 @@ open Set Filter Topology TopologicalSpace Classical
 universe u v
 
 variable {X : Type u} {Y : Type v} {ι : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 section Clopen

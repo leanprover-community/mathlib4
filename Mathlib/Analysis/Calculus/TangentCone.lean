@@ -73,11 +73,8 @@ def UniqueDiffOn (s : Set E) : Prop :=
 end TangentCone
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
-
 variable {𝕜} {x y : E} {s t : Set E}
 
 section TangentCone

@@ -50,7 +50,6 @@ section algebra
 lemmas for `Prod` will not trigger. -/
 
 variable {p 𝕜 α β}
-
 variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
 variable (x y : WithLp p (α × β)) (c : 𝕜)
 

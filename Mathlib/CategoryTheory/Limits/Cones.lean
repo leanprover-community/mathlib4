@@ -42,11 +42,8 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 open CategoryTheory
 
 variable {J : Type u₁} [Category.{v₁} J]
-
 variable {K : Type u₂} [Category.{v₂} K]
-
 variable {C : Type u₃} [Category.{v₃} C]
-
 variable {D : Type u₄} [Category.{v₄} D]
 
 open CategoryTheory

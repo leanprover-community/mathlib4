@@ -64,7 +64,6 @@ open scoped ENNReal NNReal Topology BoundedContinuousFunction
 open MeasureTheory TopologicalSpace ContinuousMap Set Bornology
 
 variable {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [T4Space α] [BorelSpace α]
-
 variable {E : Type*} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞}
 
 namespace MeasureTheory
@@ -358,9 +357,7 @@ end Lp
 end MeasureTheory
 
 variable [SecondCountableTopologyEither α E] [_i : Fact (1 ≤ p)] (hp : p ≠ ∞)
-
 variable (𝕜 : Type*) [NormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 E]
-
 variable (E) (μ)
 
 namespace BoundedContinuousFunction

@@ -1101,7 +1101,6 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
 section NormedFieldAffine
 
 variable [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace P]
-
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Scaling by `c` around `x` scales the measure by `‖c‖₊ ^ d`. -/
@@ -1133,7 +1132,6 @@ end NormedFieldAffine
 section RealAffine
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace P]
-
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Mapping a set of reals along a line segment scales the measure by the length of a segment.

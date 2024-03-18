@@ -41,11 +41,8 @@ open GradedRing DirectSum SetLike Finset
 open BigOperators
 
 variable {ι σ A : Type*}
-
 variable [CommRing A]
-
 variable [LinearOrderedCancelAddCommMonoid ι]
-
 variable [SetLike σ A] [AddSubmonoidClass σ A] {𝒜 : ι → σ} [GradedRing 𝒜]
 
 -- Porting note: This proof needs a long time to elaborate

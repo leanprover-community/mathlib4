@@ -69,7 +69,6 @@ open BigOperators
 --attribute [-simp] coe_eval₂_hom
 
 variable (p : ℕ)
-
 variable (R : Type*) [CommRing R] [DecidableEq R]
 
 /-- `wittPolynomial p R n` is the `n`-th Witt polynomial

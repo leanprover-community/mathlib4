@@ -158,7 +158,6 @@ end SMul
 section Monoid
 
 variable [TopologicalSpace α]
-
 variable [Monoid M] [MulAction M α] [ContinuousConstSMul M α]
 
 @[to_additive]

@@ -16,7 +16,6 @@ import Mathlib.Topology.Order.Lattice
 
 
 variable {α : Type*} {β : Type*} {γ : Type*}
-
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 namespace ContinuousMap

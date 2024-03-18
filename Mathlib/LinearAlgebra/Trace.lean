@@ -38,11 +38,8 @@ open TensorProduct
 section
 
 variable (R : Type u) [CommSemiring R] {M : Type v} [AddCommMonoid M] [Module R M]
-
 variable {ι : Type w} [DecidableEq ι] [Fintype ι]
-
 variable {κ : Type*} [DecidableEq κ] [Fintype κ]
-
 variable (b : Basis ι R M) (c : Basis κ R M)
 
 /-- The trace of an endomorphism given a basis. -/
@@ -134,9 +131,7 @@ end
 section
 
 variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
-
 variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
-
 variable {ι : Type*}
 
 /-- The trace of a linear map correspond to the contraction pairing under the isomorphism
@@ -164,7 +159,6 @@ theorem trace_eq_contract_of_basis' [Fintype ι] [DecidableEq ι] (b : Basis ι 
 #align linear_map.trace_eq_contract_of_basis' LinearMap.trace_eq_contract_of_basis'
 
 variable (R M)
-
 variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N]
   [Module.Free R P] [Module.Finite R P]
 

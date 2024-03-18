@@ -25,7 +25,6 @@ spectral theorem, diagonalization theorem
 namespace Matrix
 
 variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
-
 variable {A : Matrix n n 𝕜}
 
 open scoped BigOperators
@@ -35,7 +34,6 @@ namespace IsHermitian
 section DecidableEq
 
 variable [DecidableEq n]
-
 variable (hA : A.IsHermitian)
 
 /-- The eigenvalues of a hermitian matrix, indexed by `Fin (Fintype.card n)` where `n` is the index

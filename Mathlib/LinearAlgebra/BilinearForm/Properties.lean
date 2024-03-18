@@ -40,18 +40,12 @@ open BigOperators
 universe u v w
 
 variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [AddCommGroup M₁] [Module R₁ M₁]
-
 variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
-
 variable {R₃ : Type*} {M₃ : Type*} [CommRing R₃] [AddCommGroup M₃] [Module R₃ M₃]
-
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
-
 variable {M₂' M₂'' : Type*}
 variable [AddCommMonoid M₂'] [AddCommMonoid M₂''] [Module R₂ M₂'] [Module R₂ M₂'']
-
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂ M₂}
 
 namespace BilinForm
@@ -208,9 +202,7 @@ theorem isAlt_neg {B : BilinForm R₁ M₁} : (-B).IsAlt ↔ B.IsAlt :=
 section LinearAdjoints
 
 variable (B) (F : BilinForm R M)
-
 variable {M' : Type*} [AddCommMonoid M'] [Module R M']
-
 variable (B' : BilinForm R M') (f f' : M →ₗ[R] M') (g g' : M' →ₗ[R] M)
 
 /-- Given a pair of modules equipped with bilinear forms, this is the condition for a pair of
@@ -249,7 +241,6 @@ theorem IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' 
 #align bilin_form.is_adjoint_pair.add BilinForm.IsAdjointPair.add
 
 variable {M₁' : Type*} [AddCommGroup M₁'] [Module R₁ M₁']
-
 variable {B₁' : BilinForm R₁ M₁'} {f₁ f₁' : M₁ →ₗ[R₁] M₁'} {g₁ g₁' : M₁' →ₗ[R₁] M₁}
 
 theorem IsAdjointPair.sub (h : IsAdjointPair B₁ B₁' f₁ g₁) (h' : IsAdjointPair B₁ B₁' f₁' g₁') :
@@ -265,7 +256,6 @@ theorem IsAdjointPair.smul (c : R₂) (h : IsAdjointPair B₂ B₂' f₂ g₂) :
 #align bilin_form.is_adjoint_pair.smul BilinForm.IsAdjointPair.smul
 
 variable {M'' : Type*} [AddCommMonoid M''] [Module R M'']
-
 variable (B'' : BilinForm R M'')
 
 theorem IsAdjointPair.comp {f' : M' →ₗ[R] M''} {g' : M'' →ₗ[R] M'} (h : IsAdjointPair B B' f g)
@@ -392,7 +382,6 @@ theorem not_nondegenerate_zero [Nontrivial M] : ¬(0 : BilinForm R M).Nondegener
 end
 
 variable {M₂' : Type*}
-
 variable [AddCommMonoid M₂'] [Module R₂ M₂']
 
 theorem Nondegenerate.ne_zero [Nontrivial M] {B : BilinForm R M} (h : B.Nondegenerate) : B ≠ 0 :=

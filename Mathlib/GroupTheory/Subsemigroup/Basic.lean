@@ -55,7 +55,6 @@ variable {M : Type*} {N : Type*} {A : Type*}
 section NonAssoc
 
 variable [Mul M] {s : Set M}
-
 variable [Add A] {t : Set A}
 
 /-- `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(*)` -/

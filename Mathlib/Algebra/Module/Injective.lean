@@ -93,7 +93,6 @@ set_option linter.uppercaseLean3 false in
 namespace Module.Baer
 
 variable {R Q} {M N : Type*} [AddCommGroup M] [AddCommGroup N]
-
 variable [Module R M] [Module R N] (i : M →ₗ[R] N) (f : M →ₗ[R] Q)
 
 /-- If we view `M` as a submodule of `N` via the injective linear map `i : M ↪ N`, then a submodule

@@ -61,7 +61,6 @@ end
 section InnerProductSpace
 
 variable {α : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
-
 variable {E 𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 -- mathport name: «expr⟪ , ⟫»
@@ -281,7 +280,6 @@ end L2
 section InnerContinuous
 
 variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] {𝕜 : Type*} [IsROrC 𝕜]
-
 variable (μ : Measure α) [IsFiniteMeasure μ]
 
 open scoped BoundedContinuousFunction ComplexConjugate

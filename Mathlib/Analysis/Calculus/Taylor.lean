@@ -48,7 +48,6 @@ open scoped BigOperators Interval Topology Nat
 open Set
 
 variable {𝕜 E F : Type*}
-
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The `k`th coefficient of the Taylor polynomial. -/

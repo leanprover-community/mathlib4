@@ -47,9 +47,7 @@ open IsROrC
 open scoped ComplexConjugate
 
 variable {𝕜 E F G : Type*} [IsROrC 𝕜]
-
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
-
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F] [InnerProductSpace 𝕜 G]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -319,7 +317,6 @@ end IsSelfAdjoint
 namespace LinearMap
 
 variable [CompleteSpace E]
-
 variable {T : E →ₗ[𝕜] E}
 
 /-- The **Hellinger--Toeplitz theorem**: Construct a self-adjoint operator from an everywhere

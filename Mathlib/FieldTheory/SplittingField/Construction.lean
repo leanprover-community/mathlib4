@@ -351,7 +351,6 @@ namespace IsSplittingField
 
 variable (K L)
 variable [Algebra K L]
-
 variable {K}
 
 instance (f : K[X]) : FiniteDimensional K f.SplittingField :=

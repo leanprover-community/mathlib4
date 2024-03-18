@@ -214,7 +214,6 @@ variable [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [FiniteDimensional �
   [MeasurableSpace F'] [BorelSpace F']
 
 variable (f : E' ≃ₗᵢ[ℝ] F')
-
 variable [NormedAddCommGroup A] [NormedSpace ℝ A]
 
 theorem integrable_comp (g : F' → A) : Integrable (g ∘ f) ↔ Integrable g :=

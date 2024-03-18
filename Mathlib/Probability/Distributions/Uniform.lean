@@ -53,7 +53,6 @@ variable {E : Type*} [MeasurableSpace E] {m : Measure E} {μ : Measure E}
 namespace pdf
 
 variable {Ω : Type*}
-
 variable {_ : MeasurableSpace Ω} {ℙ : Measure Ω}
 
 /-- A random variable `X` has uniform distribution on `s` if its push-forward measure is

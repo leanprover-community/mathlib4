@@ -384,7 +384,6 @@ section Module
 
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂] [Module S M₂] [SMulCommClass R S M₂]
-
 variable (S)
 
 /-- Applying a linear map at `v : M`, seen as `S`-linear map from `M →ₗ[R] M₂` to `M₂`.

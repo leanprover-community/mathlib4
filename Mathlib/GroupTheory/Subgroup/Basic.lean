@@ -88,7 +88,6 @@ open Function
 open Int
 
 variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
-
 variable {A : Type*} [AddGroup A]
 
 section SubgroupClass
@@ -3335,7 +3334,6 @@ end Subgroup
 namespace MonoidHom
 
 variable {G₁ G₂ G₃ : Type*} [Group G₁] [Group G₂] [Group G₃]
-
 variable (f : G₁ →* G₂) (f_inv : G₂ → G₁)
 
 /-- Auxiliary definition used to define `liftOfRightInverse` -/

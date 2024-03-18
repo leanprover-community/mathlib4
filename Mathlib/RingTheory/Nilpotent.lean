@@ -452,7 +452,6 @@ end LinearMap
 namespace Module.End
 
 variable {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
-
 variable {f : Module.End R M} {p : Submodule R M} (hp : p ≤ p.comap f)
 
 theorem IsNilpotent.mapQ (hnp : IsNilpotent f) : IsNilpotent (p.mapQ p f hp) := by

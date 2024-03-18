@@ -25,15 +25,12 @@ open scoped ENNReal
 universe u v
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section fderiv
 
 variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞}
-
 variable {f : E → F} {x : E} {s : Set E}
 
 theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
@@ -146,7 +143,6 @@ end fderiv
 section deriv
 
 variable {p : FormalMultilinearSeries 𝕜 𝕜 F} {r : ℝ≥0∞}
-
 variable {f : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
 
 protected theorem HasFPowerSeriesAt.hasStrictDerivAt (h : HasFPowerSeriesAt f p x) :
@@ -181,7 +177,6 @@ end deriv
 section fderiv
 
 variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞} {n : ℕ}
-
 variable {f : E → F} {x : E} {s : Set E}
 
 /-! The case of continuously polynomial functions. We get the same differentiability
@@ -275,7 +270,6 @@ end fderiv
 section deriv
 
 variable {p : FormalMultilinearSeries 𝕜 𝕜 F} {r : ℝ≥0∞}
-
 variable {f : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
 
 /-- If a function is polynomial on a set `s`, so is its derivative. -/

@@ -43,7 +43,6 @@ open scoped Classical
 namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]
-
 variable (D : Type u') [Category.{v'} D]
 
 /-- A category "has zero morphisms" if there is a designated "zero morphism" in each morphism space,

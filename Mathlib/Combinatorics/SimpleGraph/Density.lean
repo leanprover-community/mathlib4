@@ -263,7 +263,6 @@ end Asymmetric
 section Symmetric
 
 variable (r : α → α → Prop) [DecidableRel r] {s s₁ s₂ t t₁ t₂ : Finset α} {a b : α}
-
 variable {r} (hr : Symmetric r)
 
 @[simp]

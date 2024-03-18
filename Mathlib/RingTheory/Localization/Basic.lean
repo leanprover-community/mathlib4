@@ -91,7 +91,6 @@ open BigOperators
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
-
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 /-- The typeclass `IsLocalization (M : Submonoid R) S` where `S` is an `R`-algebra
@@ -613,7 +612,6 @@ theorem lift_injective_iff :
 section Map
 
 variable {T : Submonoid P} {Q : Type*} [CommSemiring Q] (hy : M ≤ T.comap g)
-
 variable [Algebra P Q] [IsLocalization T Q]
 
 section
@@ -1156,7 +1154,6 @@ end CommSemiring
 section CommRing
 
 variable {R : Type*} [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
-
 variable [Algebra R S] {P : Type*} [CommRing P]
 
 namespace Localization
@@ -1264,7 +1261,6 @@ theorem sec_fst_ne_zero [Nontrivial R] [NoZeroDivisors S] (hM : M ≤ nonZeroDiv
 #align is_localization.sec_fst_ne_zero IsLocalization.sec_fst_ne_zero
 
 variable {Q : Type*} [CommRing Q] {g : R →+* P} [Algebra P Q]
-
 variable (A : Type*) [CommRing A] [IsDomain A]
 
 /-- A `CommRing` `S` which is the localization of a ring `R` without zero divisors at a subset of
@@ -1337,9 +1333,7 @@ theorem Field.localization_map_bijective {K Kₘ : Type*} [Field K] [CommRing K�
 section Algebra
 
 variable {S} {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
-
 variable [Algebra R Rₘ] [IsLocalization M Rₘ]
-
 variable [Algebra S Sₘ] [i : IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
 
 section
@@ -1367,7 +1361,6 @@ end
 section
 
 variable [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
-
 variable (S Rₘ Sₘ)
 
 theorem IsLocalization.map_units_map_submonoid (y : M) : IsUnit (algebraMap R Sₘ y) := by

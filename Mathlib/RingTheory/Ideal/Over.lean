@@ -296,7 +296,6 @@ theorem isMaximal_comap_of_isIntegral_of_isMaximal' {R S : Type*} [CommRing R] [
 section IsIntegralClosure
 
 variable (S) {A : Type*} [CommRing A]
-
 variable [Algebra R A] [Algebra A S] [IsScalarTower R A S] [IsIntegralClosure A R S]
 
 theorem IsIntegralClosure.comap_lt_comap {I J : Ideal A} [I.IsPrime] (I_lt_J : I < J) :

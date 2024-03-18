@@ -497,9 +497,7 @@ end Layercake
 section LayercakeLT
 
 variable {α : Type*} [MeasurableSpace α] (μ : Measure α)
-
 variable {β : Type*} [MeasurableSpace β] [MeasurableSingletonClass β]
-
 variable {f : α → ℝ} {g : ℝ → ℝ} {s : Set α}
 
 /-- The layer cake formula / Cavalieri's principle / tail probability formula:

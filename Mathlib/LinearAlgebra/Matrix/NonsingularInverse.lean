@@ -65,7 +65,6 @@ open Matrix BigOperators Equiv Equiv.Perm Finset
 section Invertible
 
 variable [Fintype n] [DecidableEq n] [CommRing α]
-
 variable (A : Matrix n n α) (B : Matrix n n α)
 
 /-- If `A.det` has a constructive inverse, produce one for `A`. -/
@@ -195,7 +194,6 @@ theorem det_ne_zero_of_right_inverse [Nontrivial α] (h : A * B = 1) : A.det ≠
 end Invertible
 
 variable [Fintype n] [DecidableEq n] [CommRing α]
-
 variable (A : Matrix n n α) (B : Matrix n n α)
 
 theorem isUnit_det_transpose (h : IsUnit A.det) : IsUnit Aᵀ.det := by
@@ -690,7 +688,6 @@ results about only the latter.
 section Submatrix
 
 variable [Fintype m]
-
 variable [DecidableEq m]
 
 /-- `A.submatrix e₁ e₂` is invertible if `A` is -/

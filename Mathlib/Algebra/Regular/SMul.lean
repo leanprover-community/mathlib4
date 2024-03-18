@@ -127,7 +127,6 @@ end SMul
 section Monoid
 
 variable [Monoid R] [MulAction R M]
-
 variable (M)
 
 /-- One is always `M`-regular. -/

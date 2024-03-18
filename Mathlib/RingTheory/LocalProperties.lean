@@ -44,9 +44,7 @@ open scoped Pointwise Classical BigOperators
 universe u
 
 variable {R S : Type u} [CommRing R] [CommRing S] (M : Submonoid R)
-
 variable (N : Submonoid S) (R' S' : Type u) [CommRing R'] [CommRing S'] (f : R →+* S)
-
 variable [Algebra R R'] [Algebra S S']
 
 section Properties

@@ -19,11 +19,8 @@ import Mathlib.LinearAlgebra.Quotient
 universe u v
 
 variable {R M M₂ M₃ : Type*}
-
 variable [Ring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-
 variable [Module R M] [Module R M₂] [Module R M₃]
-
 variable (f : M →ₗ[R] M₂)
 
 /-! The first and second isomorphism theorems for modules. -/

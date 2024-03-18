@@ -35,9 +35,7 @@ open scoped BigOperators Classical Topology
 section DerivInner
 
 variable {𝕜 E F : Type*} [IsROrC 𝕜]
-
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y

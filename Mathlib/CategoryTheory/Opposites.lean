@@ -479,7 +479,6 @@ end Iso
 namespace NatIso
 
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {F G : C ⥤ D}
 
 /-- The natural isomorphism between opposite functors `G.op ≅ F.op` induced by a natural
@@ -596,7 +595,6 @@ def isoOpEquiv (A B : Cᵒᵖ) : (A ≅ B) ≃ (B.unop ≅ A.unop) where
 namespace Functor
 
 variable (C)
-
 variable (D : Type u₂) [Category.{v₂} D]
 
 /-- The equivalence of functor categories induced by `op` and `unop`.

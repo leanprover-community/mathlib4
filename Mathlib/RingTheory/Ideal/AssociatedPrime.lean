@@ -49,7 +49,6 @@ def associatedPrimes : Set (Ideal R) :=
 #align associated_primes associatedPrimes
 
 variable {I J M R}
-
 variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M')
 
 theorem AssociatePrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl

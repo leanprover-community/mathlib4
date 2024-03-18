@@ -67,7 +67,6 @@ theorem isIntegrallyClosed_eq_field_fractions' [IsDomain S] [Algebra K S] [IsSca
 end
 
 variable [IsDomain S] [NoZeroSMulDivisors R S]
-
 variable [IsIntegrallyClosed R]
 
 /-- For integrally closed rings, the minimal polynomial divides any polynomial that has the

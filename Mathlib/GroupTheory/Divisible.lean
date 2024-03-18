@@ -133,7 +133,6 @@ noncomputable def rootableByOfPowLeftSurj
 section Pi
 
 variable {ι β : Type*} (B : ι → Type*) [∀ i : ι, Pow (B i) β]
-
 variable [Zero β] [∀ i : ι, Monoid (B i)] [∀ i, RootableBy (B i) β]
 
 @[to_additive]
@@ -149,7 +148,6 @@ end Pi
 section Prod
 
 variable {β B B' : Type*} [Pow B β] [Pow B' β]
-
 variable [Zero β] [Monoid B] [Monoid B'] [RootableBy B β] [RootableBy B' β]
 
 @[to_additive]
@@ -252,9 +250,7 @@ section Hom
 
 -- Porting note: reordered variables to fix `to_additive` on `QuotientGroup.rootableBy`
 variable {A B α : Type*}
-
 variable [Zero α] [Monoid A] [Monoid B] [Pow A α] [Pow B α] [RootableBy A α]
-
 variable (f : A → B)
 
 /--

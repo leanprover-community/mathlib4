@@ -48,13 +48,9 @@ open TopologicalSpace
 open Filter hiding prod_eq map
 
 variable {α α' β β' γ E : Type*}
-
 variable [MeasurableSpace α] [MeasurableSpace α'] [MeasurableSpace β] [MeasurableSpace β']
-
 variable [MeasurableSpace γ]
-
 variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
-
 variable [NormedAddCommGroup E]
 
 /-! ### Measurability

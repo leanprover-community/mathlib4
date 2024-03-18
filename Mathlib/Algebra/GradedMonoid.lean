@@ -593,7 +593,6 @@ class SetLike.GradedMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (
 namespace SetLike
 
 variable {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι]
-
 variable {A : ι → S} [SetLike.GradedMonoid A]
 
 theorem pow_mem_graded (n : ℕ) {r : R} {i : ι} (h : r ∈ A i) : r ^ n ∈ A (n • i) := by
