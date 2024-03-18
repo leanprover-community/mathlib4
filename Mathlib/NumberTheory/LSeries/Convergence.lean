@@ -30,6 +30,13 @@ lemma LSeries.abscissaOfAbsConv_congr {f g : ℕ → ℂ} (h : ∀ n ≠ 0, f n 
     abscissaOfAbsConv f = abscissaOfAbsConv g :=
   congr_arg sInf <| congr_arg _ <| Set.ext fun x ↦ LSeriesSummable_congr x h
 
+open Filter in
+/-- If `f` and `g` agree on large `n : ℕ`, then their `LSeries` have the same
+abscissa of absolute convergence. -/
+lemma LSeries.abscissaOfAbsConv_congr' {f g : ℕ → ℂ} (h : f =ᶠ[atTop] g) :
+    abscissaOfAbsConv f = abscissaOfAbsConv g :=
+  congr_arg sInf <| congr_arg _ <| Set.ext fun x ↦ LSeriesSummable_congr' x h
+
 open LSeries
 
 lemma LSeriesSummable_of_abscissaOfAbsConv_lt_re {f : ℕ → ℂ} {s : ℂ}
