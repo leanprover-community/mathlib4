@@ -48,23 +48,18 @@ universe u
 variable {α : Type u}
 variable (g : Ordinal → α)
 
-open Cardinal Ordinal SuccOrder Function
+open Cardinal Ordinal SuccOrder Function Set
 
-/-- Limitation of an ordinal defined function to the initial segment
-  containing the codomains cardinality -/
-def limitation : { i : Ordinal // i < (ord <| succ #α) } → α := fun i => g i
-
-theorem limitation_def (i : { i : Ordinal // i < (ord <| succ #α) }) : limitation g i = g i := rfl
-
-theorem not_injective_limitation : ¬ Injective (limitation g) := by
+theorem not_injective_limitation_set : ¬ Set.InjOn g (Set.Iio (ord <| succ #α)) := by
   intro h_inj
-  have h₁ := by apply lift_mk_le_lift_mk_of_injective h_inj
+  have h := lift_mk_le_lift_mk_of_injective <| Set.injOn_iff_injective.1 h_inj
   have mk_initialSeg_subtype :
-      #{ i : Ordinal // i < (ord <| succ #α) } = lift.{u+1, u} (succ #α) := by
-    simpa only [card_typein, Set.coe_setOf, card_ord] using mk_initialSeg (ord <| succ #α)
-  rw [mk_initialSeg_subtype, Cardinal.lift_lift, Cardinal.lift_le] at h₁
-  have h₂ := not_le_of_lt (Order.lt_succ #α)
-  exact h₂ h₁
+      #(Iio (ord <| succ #α)) = lift.{u+1, u} (succ #α) := by
+    simpa only [coe_setOf, card_typein, card_ord] using mk_initialSeg (ord <| succ #α)
+  rw [mk_initialSeg_subtype, Cardinal.lift_lift, Cardinal.lift_le] at h
+  exact not_le_of_lt (Order.lt_succ #α) h
+
+
 
 end Cardinal
 
@@ -144,34 +139,33 @@ theorem lfpApprox_ordinals_after_fixed_are_fixed (a : Ordinal.{u})
   with equal value -/
 theorem disctinct_ordinal_eq_lfpApprox : ∃ i < ord <| succ #α, ∃ j < ord <| succ #α,
     i ≠ j ∧ lfpApprox f i = lfpApprox f j := by
-  have h_ninj := Function.Injective.exists_ne_of_not_injective
-    (not_injective_limitation <| lfpApprox f)
-  let ⟨a, b, h_nab, h_fab⟩ := h_ninj
-  rw [limitation_def, limitation_def] at h_fab
+  -- have h_ninj := Function.not_injective_iff.1
+  --   ( Set.injOn_iff_injective.1 <| not_injective_limitation_set <| lfpApprox f)
+  have h_ninj := not_injective_limitation_set <| lfpApprox f
+  rw [Set.injOn_iff_injective, Function.not_injective_iff] at h_ninj
+  let ⟨a, b, h_fab, h_nab⟩ := h_ninj
   use a.val; apply And.intro a.prop
   use b.val; apply And.intro b.prop
   apply And.intro
   · intro h_eq; rw [Subtype.coe_inj] at h_eq; exact h_nab h_eq
   · exact h_fab
 
-/-- If there are distinct ordinals with equal value then the values are fixed points -/
-lemma lfpApprox_has_one_fixedPoint (a b : Ordinal.{u}) (h : a < b)
-    (h_fab : lfpApprox f a = lfpApprox f b) :
-    lfpApprox f a ∈ fixedPoints f := by
-  rw [mem_fixedPoints_iff,lfpApprox_addition]
-  apply Monotone.stabilizing (lfpApprox_monotone f)
-    h_fab (a+1) (SuccOrder.succ_le_of_lt h) (SuccOrder.le_succ a)
-
 /-- If there are disctinct ordinals with equal value then
   every value succeding the smaller ordinal are fixed points -/
-lemma lfpApprox_has_many_fixedPoints (a b : Ordinal.{u}) (h : a < b)
+lemma lfpApprox_mem_fixedPoints_of_eq (a b : Ordinal.{u}) (h : a < b)
     (h_fab : lfpApprox f a = lfpApprox f b) :
     ∀ i ≥ a, lfpApprox f i ∈ fixedPoints f := by
   intro i h_i
+  have lfpApprox_has_one_fixedPoint (c d : Ordinal.{u}) (h : c < d)
+      (h_fab : lfpApprox f c = lfpApprox f d) :
+      lfpApprox f c ∈ fixedPoints f := by
+    rw [mem_fixedPoints_iff, lfpApprox_addition]
+    exact Monotone.eq_of_le_of_le (lfpApprox_monotone f)
+      h_fab (SuccOrder.le_succ c) (SuccOrder.succ_le_of_lt h)
   obtain rfl | h_ia := eq_or_ne i a
-  · exact lfpApprox_has_one_fixedPoint f i b h h_fab
+  · exact lfpApprox_has_one_fixedPoint i b h h_fab
   · apply lfpApprox_ordinals_after_fixed_are_fixed f a
-    · exact lfpApprox_has_one_fixedPoint f a b h h_fab
+    · exact lfpApprox_has_one_fixedPoint a b h h_fab
     · exact Ne.lt_of_le' h_ia h_i
 
 /-- A fixed point of f is reached after the successor of the domains cardinality -/
@@ -179,10 +173,10 @@ theorem lfpApprox_has_fixedPoint_cardinal : lfpApprox f (ord <| succ #α) ∈ fi
   let ⟨a, h_a, b, h_b, h_nab, h_fab⟩ := disctinct_ordinal_eq_lfpApprox f
   cases le_total a b with
   | inl h_ab =>
-    exact lfpApprox_has_many_fixedPoints f a b (h_nab.lt_of_le h_ab) h_fab
+    exact lfpApprox_mem_fixedPoints_of_eq f a b (h_nab.lt_of_le h_ab) h_fab
       (ord <| succ #α) (le_of_lt h_a)
   | inr h_ba =>
-    exact lfpApprox_has_many_fixedPoints f b a (h_nab.symm.lt_of_le h_ba)
+    exact lfpApprox_mem_fixedPoints_of_eq f b a (h_nab.symm.lt_of_le h_ba)
       (h_fab.symm) (ord <| succ #α) (le_of_lt h_b)
 
 /-- Every value of the ordinal approximants are less or equal than every fixed point of f -/
