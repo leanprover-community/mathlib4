@@ -89,9 +89,10 @@ theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
 
 -- todo: the old proof used fintypes, I don't know `Finsupp` but this feels generalizable
 @[elab_as_elim]
-protected theorem induction_on' [Fintype m] [Fintype n] {P : Matrix m n α → Prop} (M : Matrix m n α)
+protected theorem induction_on' [Finite m] [Finite n] {P : Matrix m n α → Prop} (M : Matrix m n α)
     (h_zero : P 0) (h_add : ∀ p q, P p → P q → P (p + q))
     (h_std_basis : ∀ (i : m) (j : n) (x : α), P (stdBasisMatrix i j x)) : P M := by
+  cases nonempty_fintype m; cases nonempty_fintype n
   rw [matrix_eq_sum_std_basis M, ← Finset.sum_product']
   apply Finset.sum_induction _ _ h_add h_zero
   · intros
@@ -99,7 +100,7 @@ protected theorem induction_on' [Fintype m] [Fintype n] {P : Matrix m n α → P
 #align matrix.induction_on' Matrix.induction_on'
 
 @[elab_as_elim]
-protected theorem induction_on [Fintype m] [Fintype n] [Nonempty m] [Nonempty n]
+protected theorem induction_on [Finite m] [Finite n] [Nonempty m] [Nonempty n]
     {P : Matrix m n α → Prop} (M : Matrix m n α) (h_add : ∀ p q, P p → P q → P (p + q))
     (h_std_basis : ∀ i j x, P (stdBasisMatrix i j x)) : P M :=
   Matrix.induction_on' M

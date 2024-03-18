@@ -69,7 +69,7 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 #align alg_hom_class.linear_map_class AlgHomClass.linearMapClass
 
--- Porting note: A new definition underlying a coercion `↑`.
+-- Porting note (#11445): A new definition underlying a coercion `↑`.
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
@@ -131,7 +131,7 @@ theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
 
 #noalign alg_hom.coe_ring_hom
 
--- Porting note: A new definition underlying a coercion `↑`.
+-- Porting note (#11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
 
@@ -139,7 +139,7 @@ instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 #align alg_hom.coe_monoid_hom AlgHom.coeOutMonoidHom
 
--- Porting note: A new definition underlying a coercion `↑`.
+-- Porting note (#11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
 
