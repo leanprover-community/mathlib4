@@ -6,6 +6,7 @@ Authors: Newell Jensen, Mitchell Lee
 import Mathlib.Data.Matrix.Notation
 import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.Data.Int.Parity
 
 /-!
 # Coxeter Systems
@@ -76,6 +77,8 @@ satisfy the Coxeter relations, extend it to a monoid homomorphism `f' : W → G`
 `f' (s i) = f i` for all `i`.
 * `CoxeterSystem.wordProd`: Given a `List B`, returns the product of the corresponding simple
 reflections.
+* `CoxeterSystem.alternatingWord`: `CoxeterSystem.alternatingWord i i' m` is the word
+(i.e. `List B`) of length `m` that alternates between the letters `i` and `i'`, ending with `i'`.
 
 ## References
 
@@ -679,5 +682,96 @@ theorem wordProd_surjective : Surjective (cs.wordProd) := by
     _ = cs.mulEquiv.symm (QuotientGroup.mk w) := by
                                               rw[FreeGroup.mk_toWord]
     _ = u                               := by rw[hw]; dsimp [v]; simp
+
+/-- The word of length `m` that alternates between `i` and `i'`, ending with `i'`.-/
+def alternatingWord (i i' : B) (m : ℕ) : List B :=
+  match m with
+  | 0    => []
+  | m+1  => (alternatingWord i' i m).concat i'
+
+theorem alternatingWord_succ (i i' : B) (m : ℕ) :
+    alternatingWord i i' (m + 1) = (alternatingWord i' i m).concat i' := by
+  rfl
+
+theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
+    alternatingWord i i' (m + 1) = (if Even m then i' else i) :: alternatingWord i i' m := by
+  induction' m with m ih generalizing i i'
+  · simp [alternatingWord]
+  · rw [alternatingWord]
+    nth_rw 1 [ih i' i]
+    rw [alternatingWord]
+    simp [Nat.even_add_one]
+
+@[simp] theorem length_alternatingWord (i i' : B) (m : ℕ) :
+    List.length (alternatingWord i i' m) = m := by
+  induction' m with m ih generalizing i i'
+  · dsimp [alternatingWord]
+  · simp [alternatingWord]
+    exact ih i' i
+
+theorem prod_alternatingWord_eq_pow (i i' : B) (m : ℕ) :
+    π (alternatingWord i i' m) = (if Even m then 1 else s i') * (s i * s i') ^ (m / 2) := by
+  induction' m with m ih
+  · simp [alternatingWord]
+  · rw [alternatingWord_succ', wordProd_cons, ih, Nat.succ_eq_add_one]
+    rcases Nat.even_or_odd m with even | odd
+    · rcases even with ⟨k, rfl⟩
+      ring_nf
+      have : Odd (1 + k * 2) := by use k; ring
+      simp [← two_mul, Nat.odd_iff_not_even.mp this]
+      rw [Nat.add_mul_div_right _ _ (by norm_num : 0 < 2)]
+      norm_num
+    · rcases odd with ⟨k, rfl⟩
+      ring_nf
+      have h₁ : Odd (1 + k * 2) := by use k; ring
+      have h₂ : Even (2 + k * 2) := by use (k + 1); ring
+      simp [Nat.odd_iff_not_even.mp h₁, h₂]
+      rw [Nat.add_mul_div_right _ _ (by norm_num : 0 < 2)]
+      norm_num
+      rw [pow_succ, mul_assoc]
+
+theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : m ≤ M i i' * 2) :
+    π (alternatingWord i i' m) = π (alternatingWord i' i (M i i' * 2 - m)) := by
+  rw [prod_alternatingWord_eq_pow, prod_alternatingWord_eq_pow]
+  simp_rw [← Int.even_coe_nat]
+  -- Rewrite everything in terms of an integer m' which is equal to m.
+  rw [← zpow_coe_nat, ← zpow_coe_nat, Int.ofNat_ediv, Int.ofNat_ediv, Int.ofNat_sub hm]
+  let m' : ℤ := m
+  rw [← (by rfl : m' = m)]
+  -- The resulting equation holds for all integers m'.
+  generalize m' = m'
+
+  rw [Int.ofNat_mul, (by norm_num : (↑(2 : ℕ) : ℤ) = 2)]
+  clear hm
+
+  rcases Int.even_or_odd m' with even | odd
+  · rcases even with ⟨k, rfl⟩
+    ring_nf
+    have : Even (k * 2) := by use k; ring
+    rw [if_pos this]
+    have : Even (-(k * 2) + ↑(M i i') * 2) := by use -k + (M i i'); ring
+    rw [if_pos this]
+    rw [(by ring : -(k * 2) + ↑(M i i') * 2 = (-k + ↑(M i i')) * 2)]
+    rw [Int.mul_ediv_cancel _ (by norm_num), Int.mul_ediv_cancel _ (by norm_num)]
+    rw [zpow_add, zpow_coe_nat]
+    rw [simple_mul_pow']
+    rw [zpow_neg, ← inv_zpow]
+    simp
+  · rcases odd with ⟨k, rfl⟩
+    ring_nf
+    have : ¬Even (1 + k * 2) := by apply Int.odd_iff_not_even.mp; use k; ring
+    rw [if_neg this]
+    have : ¬Even (-1 - k * 2 + ↑(M i i') * 2) := by
+      apply Int.odd_iff_not_even.mp
+      use ↑(M i i') - k - 1
+      ring
+    rw [if_neg this]
+    rw [(by ring : -1 - k * 2 + ↑(M i i') * 2 = -1 + (-k + ↑(M i i')) * 2)]
+    rw [Int.add_mul_ediv_right _ _ (by norm_num), Int.add_mul_ediv_right _ _ (by norm_num)]
+    norm_num
+    rw [zpow_add, zpow_add, zpow_coe_nat]
+    rw [simple_mul_pow']
+    rw [zpow_neg, ← inv_zpow, zpow_neg, ← inv_zpow]
+    simp [← mul_assoc]
 
 end CoxeterSystem
