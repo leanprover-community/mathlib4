@@ -642,9 +642,8 @@ lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
   rcases n with rfl|m
   · exact ⟨k, C, fun x ↦ by simpa using h x⟩
   · rcases h'f.2 m with ⟨k', C', h'⟩
-    refine ⟨k', C', fun x ↦ ?_⟩
-    simpa only [ContinuousLinearMap.strongUniformity_topology_eq, Function.comp_apply,
-      LinearIsometryEquiv.norm_map, iteratedFDeriv_succ_eq_comp_right] using h' x
+    refine ⟨k', C', ?_⟩
+    simpa [iteratedFDeriv_succ_eq_comp_right] using h'
 
 lemma _root_.Function.HasTemperateGrowth.zero :
     Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by
