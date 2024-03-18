@@ -545,11 +545,15 @@ lemma _root_.LinearIsometryEquiv.star_eq_symm (e : H ≃ₗᵢ[𝕜] H) :
 
 theorem norm_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x : H) :
     ‖u x‖ = ‖x‖ :=
-  u.norm_map_iff_adjoint_comp_self.mpr (unitary.star_mul_self_of_mem hu) x
+  -- Elaborates faster with this broken out #11299
+  have := unitary.star_mul_self_of_mem hu
+  u.norm_map_iff_adjoint_comp_self.mpr this x
 
 theorem inner_map_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H →L[𝕜] H)) (x y : H) :
     ⟪u x, u y⟫_𝕜 = ⟪x, y⟫_𝕜 :=
-  u.inner_map_map_iff_adjoint_comp_self.mpr (unitary.star_mul_self_of_mem hu) x y
+  -- Elaborates faster with this broken out #11299
+  have := unitary.star_mul_self_of_mem hu
+  u.inner_map_map_iff_adjoint_comp_self.mpr this x y
 
 end ContinuousLinearMap
 

@@ -140,7 +140,8 @@ noncomputable def toField : Field K :=
     inv_zero := by
       change IsFractionRing.inv A (0 : K) = 0
       rw [IsFractionRing.inv]
-      exact dif_pos rfl }
+      exact dif_pos rfl
+    qsmul := qsmulRec _ }
 #align is_fraction_ring.to_field IsFractionRing.toField
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where

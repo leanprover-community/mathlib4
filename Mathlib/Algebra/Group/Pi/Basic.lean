@@ -246,7 +246,7 @@ instance mulOneClass [∀ i, MulOneClass (f i)] : MulOneClass (∀ i, f i) where
 
 @[to_additive]
 instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
-  inv_one := by intros; ext; exact inv_one
+  inv_one := by ext; exact inv_one
 
 @[to_additive]
 instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
@@ -548,20 +548,19 @@ theorem bijective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Bijective (F i)) 
   ⟨injective_pi_map fun i => (hF i).injective, surjective_pi_map fun i => (hF i).surjective⟩
 #align function.bijective_pi_map Function.bijective_pi_map
 
-lemma comp_eq_const_iff {α β γ: Type*} (b : β) (f : α → β) (g : β → γ)
-    (hg : Injective g) : g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=
+lemma comp_eq_const_iff (b : β) (f : α → β) {g : β → γ} (hg : Injective g) :
+    g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=
   hg.comp_left.eq_iff' rfl
 
-lemma comp_eq_zero_iff {α β γ: Type*} [OfNat β 0] [ OfNat γ 0] (f : α → β) (g : β → γ)
-    (hg : Injective g) (hg0 : g 0 = 0) : g ∘ f = 0 ↔ f = 0 := by
-  have := (comp_eq_const_iff 0 f g hg)
-  rw [hg0] at this
-  simp only [const_zero] at this
-  exact this
+@[to_additive]
+lemma comp_eq_one_iff [One β] [One γ] (f : α → β) {g : β → γ} (hg : Injective g) (hg0 : g 1 = 1) :
+    g ∘ f = 1 ↔ f = 1 := by
+  simpa [hg0, const_one] using comp_eq_const_iff 1 f hg
 
-lemma comp_inj_ne_zero {α β γ: Type*} [OfNat β 0] [ OfNat γ 0] (f : α → β) (g : β → γ)
-    (hg : Injective g) (hg0 : g 0 = 0) : (g ∘ f) ≠ 0 ↔ f ≠ 0 :=
-  (Iff.ne (comp_eq_zero_iff f g hg hg0))
+@[to_additive]
+lemma comp_ne_one_iff [One β] [One γ] (f : α → β) {g : β → γ} (hg : Injective g) (hg0 : g 1 = 1) :
+    g ∘ f ≠ 1 ↔ f ≠ 1 :=
+  (comp_eq_one_iff f hg hg0).ne
 
 end Function
 

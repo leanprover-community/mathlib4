@@ -465,6 +465,9 @@ theorem const_apply (μβ : Measure β) (a : α) : const α μβ a = μβ :=
 lemma const_zero : kernel.const α (0 : Measure β) = 0 := by
   ext x s _; simp [kernel.const_apply]
 
+lemma const_add (β : Type*) [MeasurableSpace β] (μ ν : Measure α) :
+    const β (μ + ν) = const β μ + const β ν := by ext; simp
+
 lemma sum_const [Countable ι] (μ : ι → Measure β) :
     kernel.sum (fun n ↦ const α (μ n)) = const α (Measure.sum μ) := by
   ext x s hs

@@ -143,24 +143,24 @@ lemma coe_set_smul : (I : Set R) • N = I • N :=
     (smul_le.mpr fun _ hr _ hx => mem_set_smul_of_mem_mem hr hx)
 
 @[elab_as_elim]
-theorem smul_induction_on {p : M → Prop} {x} (H : x ∈ I • N) (Hb : ∀ r ∈ I, ∀ n ∈ N, p (r • n))
-    (H1 : ∀ x y, p x → p y → p (x + y)) : p x := by
-  have H0 : p 0 := by simpa only [zero_smul] using Hb 0 I.zero_mem 0 N.zero_mem
-  refine Submodule.iSup_induction (x := x) _ H ?_ H0 H1
+theorem smul_induction_on {p : M → Prop} {x} (H : x ∈ I • N) (smul : ∀ r ∈ I, ∀ n ∈ N, p (r • n))
+    (add : ∀ x y, p x → p y → p (x + y)) : p x := by
+  have H0 : p 0 := by simpa only [zero_smul] using smul 0 I.zero_mem 0 N.zero_mem
+  refine Submodule.iSup_induction (x := x) _ H ?_ H0 add
   rintro ⟨i, hi⟩ m ⟨j, hj, hj'⟩
   rw [← hj']
-  exact Hb _ hi _ hj
+  exact smul _ hi _ hj
 #align submodule.smul_induction_on Submodule.smul_induction_on
 
 /-- Dependent version of `Submodule.smul_induction_on`. -/
 @[elab_as_elim]
 theorem smul_induction_on' {x : M} (hx : x ∈ I • N) {p : ∀ x, x ∈ I • N → Prop}
-    (Hb : ∀ (r : R) (hr : r ∈ I) (n : M) (hn : n ∈ N), p (r • n) (smul_mem_smul hr hn))
-    (H1 : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›)) : p x hx := by
+    (smul : ∀ (r : R) (hr : r ∈ I) (n : M) (hn : n ∈ N), p (r • n) (smul_mem_smul hr hn))
+    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›)) : p x hx := by
   refine' Exists.elim _ fun (h : x ∈ I • N) (H : p x h) => H
   exact
-    smul_induction_on hx (fun a ha x hx => ⟨_, Hb _ ha _ hx⟩) fun x y ⟨_, hx⟩ ⟨_, hy⟩ =>
-      ⟨_, H1 _ _ _ _ hx hy⟩
+    smul_induction_on hx (fun a ha x hx => ⟨_, smul _ ha _ hx⟩) fun x y ⟨_, hx⟩ ⟨_, hy⟩ =>
+      ⟨_, add _ _ _ _ hx hy⟩
 #align submodule.smul_induction_on' Submodule.smul_induction_on'
 
 theorem mem_smul_span_singleton {I : Ideal R} {m : M} {x : M} :
@@ -1172,10 +1172,19 @@ theorem IsPrime.multiset_prod_map_le {s : Multiset ι} (f : ι → Ideal R) {P :
   simp_rw [hp.multiset_prod_le, Multiset.mem_map, exists_exists_and_eq_and]
 #align ideal.is_prime.multiset_prod_map_le Ideal.IsPrime.multiset_prod_map_le
 
+theorem IsPrime.multiset_prod_mem_iff_exists_mem {I : Ideal R} (hI : I.IsPrime) (s : Multiset R) :
+    s.prod ∈ I ↔ ∃ p ∈ s, p ∈ I := by
+  simpa [span_singleton_le_iff_mem] using (hI.multiset_prod_map_le (span {·}))
+
 theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :
     s.prod f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   hp.multiset_prod_map_le f
 #align ideal.is_prime.prod_le Ideal.IsPrime.prod_le
+
+theorem IsPrime.prod_mem_iff_exists_mem {I : Ideal R} (hI : I.IsPrime) (s : Finset R) :
+    s.prod (fun x ↦ x) ∈ I ↔ ∃ p ∈ s, p ∈ I := by
+  rw [Finset.prod_eq_multiset_prod, Multiset.map_id']
+  exact hI.multiset_prod_mem_iff_exists_mem s.val
 
 theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :
     s.inf f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
@@ -1410,7 +1419,7 @@ def comap (I : Ideal S) : Ideal R where
     exact mul_mem_left I _ hx
 #align ideal.comap Ideal.comap
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 -- @[simp] -- Porting note (#11215): TODO enable simp after the port
 theorem coe_comap (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
 

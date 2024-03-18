@@ -272,7 +272,7 @@ def p1 : (gluing 𝒰 f g).glued ⟶ X := by
   exact fun i => pullback.fst ≫ 𝒰.map i
   rintro ⟨i, j⟩
   change pullback.fst ≫ _ ≫ 𝒰.map i = (_ ≫ _) ≫ _ ≫ 𝒰.map j
-  -- Porting note: change `rw` to `erw`
+  -- Porting note (#11224): change `rw` to `erw`
   erw [pullback.condition]
   rw [← Category.assoc]
   congr 1
