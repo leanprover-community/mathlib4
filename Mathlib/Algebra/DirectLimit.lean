@@ -39,11 +39,8 @@ universe u v v' v'' w u₁
 open Submodule
 
 variable {R : Type u} [Ring R]
-
 variable {ι : Type v}
-
 variable [Preorder ι]
-
 variable (G : ι → Type w)
 
 /-- A directed system is a functor from a category (directed poset) to another category. -/
@@ -66,7 +63,6 @@ end
 namespace Module
 
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
-
 variable {G} (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- A copy of `DirectedSystem.map_self` specialized to linear maps, as otherwise the
@@ -145,9 +141,7 @@ protected theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : Di
 #align module.direct_limit.induction_on Module.DirectLimit.induction_on
 
 variable {P : Type u₁} [AddCommGroup P] [Module R P] (g : ∀ i, G i →ₗ[R] P)
-
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
-
 variable (R ι G f)
 
 /-- The universal property of the direct limit: maps from the components to another module
@@ -190,7 +184,6 @@ section functorial
 
 variable {G' : ι → Type v'} [∀ i, AddCommGroup (G' i)] [∀ i, Module R (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →ₗ[R] G' j}
-
 variable {G'' : ι → Type v''} [∀ i, AddCommGroup (G'' i)] [∀ i, Module R (G'' i)]
 variable {f'' : ∀ i j, i ≤ j → G'' i →ₗ[R] G'' j}
 
@@ -417,11 +410,8 @@ theorem of.zero_exact [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h =>
 #align add_comm_group.direct_limit.of.zero_exact AddCommGroup.DirectLimit.of.zero_exact
 
 variable (P : Type u₁) [AddCommGroup P]
-
 variable (g : ∀ i, G i →+ P)
-
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
-
 variable (G f)
 
 /-- The universal property of the direct limit: maps from the components to another abelian group
@@ -466,7 +456,6 @@ section functorial
 
 variable {G' : ι → Type v'} [∀ i, AddCommGroup (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →+ G' j}
-
 variable {G'' : ι → Type v''} [∀ i, AddCommGroup (G'' i)]
 variable {f'' : ∀ i j, i ≤ j → G'' i →+ G'' j}
 
@@ -668,9 +657,7 @@ theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : DirectLimit 
 section OfZeroExact
 
 variable (f' : ∀ i j, i ≤ j → G i →+* G j)
-
 variable [DirectedSystem G fun i j h => f' i j h]
-
 variable (G f)
 
 theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} [DecidablePred (· ∈ s)]
@@ -832,9 +819,7 @@ theorem of_injective [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h => 
 #align ring.direct_limit.of_injective Ring.DirectLimit.of_injective
 
 variable (P : Type u₁) [CommRing P]
-
 variable (g : ∀ i, G i →+* P)
-
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 open FreeCommRing
@@ -892,10 +877,8 @@ section functorial
 variable {f : ∀ i j, i ≤ j → G i →+* G j}
 variable {G' : ι → Type v'} [∀ i, CommRing (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →+* G' j}
-
 variable {G'' : ι → Type v''} [∀ i, CommRing (G'' i)]
 variable {f'' : ∀ i j, i ≤ j → G'' i →+* G'' j}
-
 variable [Nonempty ι]
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
@@ -976,9 +959,7 @@ end Ring
 namespace Field
 
 variable [Nonempty ι] [IsDirected ι (· ≤ ·)] [∀ i, Field (G i)]
-
 variable (f : ∀ i j, i ≤ j → G i → G j)
-
 variable (f' : ∀ i j, i ≤ j → G i →+* G j)
 
 namespace DirectLimit

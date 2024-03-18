@@ -81,7 +81,6 @@ class IsConnected (J : Type u₁) [Category.{v₁} J] extends IsPreconnected J :
 attribute [instance 100] IsConnected.is_nonempty
 
 variable {J : Type u₁} [Category.{v₁} J]
-
 variable {K : Type u₂} [Category.{v₂} K]
 
 namespace IsPreconnected.IsoConstantAux

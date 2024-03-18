@@ -30,7 +30,6 @@ universe w' w v₁ v₂ u₁ u₂ v v' u u'
 namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
 
 @[reassoc (attr := simp)]

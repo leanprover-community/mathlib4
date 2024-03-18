@@ -90,7 +90,6 @@ variable {M : Type*} [Monoid M]
 -- We have a family of monoids
 -- The fintype assumption is not always used, but declared here, to keep things in order
 variable {ι : Type*} [DecidableEq ι] [Fintype ι]
-
 variable {N : ι → Type*} [∀ i, Monoid (N i)]
 
 -- And morphisms ϕ into G
@@ -181,13 +180,9 @@ end FamilyOfMonoids
 section FamilyOfGroups
 
 variable {G : Type*} [Group G]
-
 variable {ι : Type*} [hdec : DecidableEq ι] [hfin : Fintype ι]
-
 variable {H : ι → Type*} [∀ i, Group (H i)]
-
 variable (ϕ : ∀ i : ι, H i →* G)
-
 variable {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)}
 
 -- We use `f` and `g` to denote elements of `Π (i : ι), H i`
@@ -275,7 +270,6 @@ namespace Subgroup
 
 -- We have a family of subgroups
 variable {G : Type*} [Group G]
-
 variable {ι : Type*} [hdec : DecidableEq ι] [hfin : Fintype ι] {H : ι → Subgroup G}
 
 -- Elements of `Π (i : ι), H i` are called `f` and `g` here
