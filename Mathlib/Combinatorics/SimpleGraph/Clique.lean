@@ -206,30 +206,10 @@ theorem is3Clique_iff :
 theorem is3Clique_exists_walk_isCycle_length_three (h : G.IsNClique 3 s) :
     ∃ (u : α) (w : G.Walk u u), w.IsCycle ∧ w.length = 3 := by
   rw [is3Clique_iff] at h
-  have ⟨a, b, c, hab, hac, hbc, _⟩ := h
-  let w := cons hab (cons hbc (cons (Adj.symm hac) nil))
-  apply Exists.intro a
-  apply Exists.intro w
+  obtain ⟨a, b, c, hab, hac, hbc, -⟩ := h
+  use a, cons hab (cons hbc (cons hac.symm nil))
   rw [isCycle_def]
-  refine' ⟨⟨_, _, _⟩, _⟩
-  · simp [w]
-    push_neg
-    refine' ⟨_, _, _⟩ <;> (apply And.intro; intro)
-    · apply Adj.ne' hac
-    · apply Adj.ne' hab
-    · apply Adj.ne hbc
-    · apply Adj.ne hac
-    · apply Adj.ne' hab
-    · apply Adj.ne hbc
-  · intro; contradiction
-  · simp [w]
-    push_neg
-    apply And.intro
-    · apply And.intro
-      · apply Adj.ne hbc
-      · apply Adj.ne' hab
-    · apply Adj.ne' hac
-  · repeat rw [length]
+  aesop
 
 end NClique
 
