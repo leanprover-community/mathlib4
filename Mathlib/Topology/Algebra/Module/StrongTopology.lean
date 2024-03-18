@@ -198,6 +198,13 @@ instance instContinuousConstSMul (M : Type*)
   have _ := uniformContinuousConstSMul_of_continuousConstSMul M F
   inferInstance
 
+theorem tendsto_iff_tendstoUniformlyOn {ι : Type*} {p : Filter ι} [UniformSpace F]
+    [UniformAddGroup F] (𝔖 : Set (Set E)) {a : ι → UniformConvergenceCLM σ F 𝔖}
+    {a₀ : UniformConvergenceCLM σ F 𝔖} :
+    Filter.Tendsto a p (𝓝 a₀) ↔ ∀ s ∈ 𝔖, TendstoUniformlyOn (a · ·) a₀ p s := by
+  rw [(embedding_coeFn σ F 𝔖).tendsto_nhds_iff, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
+  rfl
+
 end UniformConvergenceCLM
 
 end General
