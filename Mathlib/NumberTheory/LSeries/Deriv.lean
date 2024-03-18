@@ -80,27 +80,25 @@ private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then the L-series
 of `f` is differentiable with derivative the negative of the L-series of the point-wise
 product of `log` with `f`. -/
-lemma LSeries.hasDerivAt {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
+lemma LSeries_hasDerivAt {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
     HasDerivAt (LSeries f) (- LSeries (logMul f) s) s :=
   (LSeriesSummable_logMul_and_hasDerivAt h).2
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
 the derivative of this L-series at `s` is the negative of the L-series of `log * f`. -/
-protected
-lemma LSeries.deriv {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
+lemma LSeries_deriv {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
     deriv (LSeries f) s = - LSeries (logMul f) s :=
-  (hasDerivAt h).deriv
+  (LSeries_hasDerivAt h).deriv
 
 /-- The derivative of the L-series of `f` agrees with the negative of the L-series of
 `log * f` on the right half-plane of absolute convergence. -/
-protected
-lemma LSeries.deriv_eqOn {f : ℕ → ℂ} :
+lemma LSeries_deriv_eqOn {f : ℕ → ℂ} :
     {s | abscissaOfAbsConv f < s.re}.EqOn (deriv (LSeries f)) (- LSeries (logMul f)) :=
-  deriv_eqOn (isOpen_rightHalfPlane _) fun _ hs ↦ (hasDerivAt hs).hasDerivWithinAt
+  deriv_eqOn (isOpen_rightHalfPlane _) fun _ hs ↦ (LSeries_hasDerivAt hs).hasDerivWithinAt
 
 /-- If the L-series of `f` is summable at `s` and `re s < re s'`, then the L-series of the
 point-wise product of `log` with `f` is summable at `s'`. -/
-lemma LSeriesSummable.logMul_of_lt_re {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
+lemma LSeriesSummable_logMul_of_lt_re {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
     LSeriesSummable (logMul f) s :=
   (LSeriesSummable_logMul_and_hasDerivAt h).1
 
@@ -110,7 +108,7 @@ is the same as that of `f`. -/
 lemma abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
     abscissaOfAbsConv (logMul f) = abscissaOfAbsConv f := by
   apply le_antisymm <;> refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun s hs ↦ ?_
-  · exact LSeriesSummable.logMul_of_lt_re <| by simp [hs]
+  · exact LSeriesSummable_logMul_of_lt_re <| by simp [hs]
   · refine (LSeriesSummable_of_abscissaOfAbsConv_lt_re <| by simp only [ofReal_re, hs])
       |>.norm.of_norm_bounded_eventually_nat (‖term (logMul f) s ·‖) ?_
     filter_upwards [Filter.eventually_ge_atTop <| max 1 (Nat.ceil (Real.exp 1))] with n hn
@@ -135,8 +133,7 @@ lemma absicssaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
 the `m`th derivative of this L-series is `(-1)^m` times the L-series of `log^m * f`. -/
-protected
-lemma LSeries.iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
+lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
     iteratedDeriv m (LSeries f) s = (-1) ^ m * LSeries (logMul^[m] f) s := by
   induction' m with m ih generalizing s
   · simp only [Nat.zero_eq, iteratedDeriv_zero, pow_zero, Function.iterate_zero, id_eq, one_mul]
@@ -147,7 +144,7 @@ lemma LSeries.iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaO
     rw [iteratedDeriv_succ, this]
     simp only [Pi.mul_def, Pi.pow_apply, Pi.neg_apply, Pi.one_apply, deriv_const_mul_field',
       pow_succ', mul_assoc, neg_one_mul, Function.iterate_succ', Function.comp_def,
-      LSeries.deriv <| absicssaOfAbsConv_logPowMul.symm ▸ h]
+      LSeries_deriv <| absicssaOfAbsConv_logPowMul.symm ▸ h]
 
 /-!
 ### The L-series is holomorphic
@@ -155,11 +152,11 @@ lemma LSeries.iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaO
 
 /-- The L-series of `f` is complex differentiable in its open half-plane of absolute
 convergence. -/
-lemma LSeries.differentiableOn (f : ℕ → ℂ) :
+lemma LSeries_differentiableOn (f : ℕ → ℂ) :
     DifferentiableOn ℂ (LSeries f) {s | abscissaOfAbsConv f < s.re} :=
-  fun _ hz ↦ (hasDerivAt hz).differentiableAt.differentiableWithinAt
+  fun _ hz ↦ (LSeries_hasDerivAt hz).differentiableAt.differentiableWithinAt
 
 /-- The L-series of `f` is holomorphic on its open half-plane of absolute convergence. -/
-lemma LSeries.analyticOn (f : ℕ → ℂ) :
+lemma LSeries_analyticOn (f : ℕ → ℂ) :
     AnalyticOn ℂ (LSeries f) {s | abscissaOfAbsConv f < s.re} :=
-  (LSeries.differentiableOn f).analyticOn <| isOpen_rightHalfPlane _
+  (LSeries_differentiableOn f).analyticOn <| isOpen_rightHalfPlane _
