@@ -212,30 +212,23 @@ theorem is3Clique_exists_walk_isCycle_length_three (h : G.IsNClique 3 s) :
   apply Exists.intro w
   rw [isCycle_def]
   refine' ⟨⟨_, _, _⟩, _⟩
-  · simp only [w, cons_isTrail_iff, IsTrail.nil, edges_nil, List.not_mem_nil, not_false_eq_true,
-      and_self, edges_cons, List.mem_singleton, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
-      Prod.swap_prod_mk, and_true, true_and, List.mem_cons]
+  · simp [w]
     push_neg
-    rw [not_false_eq_true, and_true, and_true]
-    refine' ⟨_, _, _⟩ <;> apply And.intro
-    · intro; apply Adj.ne' hac
+    refine' ⟨_, _, _⟩ <;> (apply And.intro; intro;)
+    · apply Adj.ne' hac
     · apply Adj.ne' hab
-    · intro; apply Adj.ne hbc
-    · apply Adj.ne hac
-    · intro; apply Adj.ne' hab
     · apply Adj.ne hbc
-  · simp only [ne_eq, not_false_eq_true]
-  · have hn : List.Nodup [b, c, a] := by
-      simp only [List.nodup_cons, List.mem_cons, List.mem_singleton, List.not_mem_nil,
-        not_false_eq_true, List.nodup_nil, and_self, and_true]
-      push_neg
-      rw [not_false_eq_true, and_true, and_true]
-      apply And.intro
-      · apply And.intro
-        · apply Adj.ne hbc
-        · apply Adj.ne' hab
-      · apply Adj.ne' hac
-    exact hn
+    · apply Adj.ne hac
+    · apply Adj.ne' hab
+    · apply Adj.ne hbc
+  · intro; contradiction
+  · simp [w]
+    push_neg
+    apply And.intro
+    · apply And.intro
+      · apply Adj.ne hbc
+      · apply Adj.ne' hab
+    · apply Adj.ne' hac
   · simp only [length_cons, length_nil, zero_add, Nat.reduceAdd, w]
 
 end NClique
