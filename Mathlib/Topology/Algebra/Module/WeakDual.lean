@@ -200,6 +200,7 @@ variable [ContinuousConstSMul 𝕜 𝕜]
 
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
+@[simp]
 theorem topDualPairing_apply (v : E →L[𝕜] 𝕜) (x : E) : topDualPairing 𝕜 E v x = v x :=
   rfl
 #align dual_pairing_apply topDualPairing_apply
