@@ -35,44 +35,49 @@ theorem unop_ratCast [RatCast α] (q : ℚ) : unop (q : αᵐᵒᵖ) = q :=
 #align mul_opposite.unop_rat_cast MulOpposite.unop_ratCast
 #align add_opposite.unop_rat_cast AddOpposite.unop_ratCast
 
-variable (α)
+instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ where
+  toSemiring := instSemiring
+  __ := instGroupWithZero
 
-instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ :=
-  { MulOpposite.instGroupWithZero α, MulOpposite.instSemiring α with }
+instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ where
+  toRing := instRing
+  __ := instDivisionSemiring
+  ratCast_def a b hb h := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv,
+    unop_natCast, unop_intCast, Int.commute_cast, div_eq_mul_inv]
+  qsmul := qsmulRec _
 
-instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ :=
-  { MulOpposite.instDivisionSemiring α, MulOpposite.instRing α, MulOpposite.ratCast α with
-    ratCast_mk := fun a b hb h => unop_injective <| by
-      rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv, unop_natCast, unop_intCast,
-        Int.commute_cast, div_eq_mul_inv]
-    qsmul := qsmulRec _ }
+instance instSemifield [Semifield α] : Semifield αᵐᵒᵖ where
+  toCommSemiring := instCommSemiring
+  __ := instDivisionSemiring
 
-instance instSemifield [Semifield α] : Semifield αᵐᵒᵖ :=
-  { MulOpposite.instDivisionSemiring α, MulOpposite.instCommSemiring α with }
-
-instance instField [Field α] : Field αᵐᵒᵖ :=
-  { MulOpposite.instDivisionRing α, MulOpposite.instCommRing α with }
+instance instField [Field α] : Field αᵐᵒᵖ where
+  toCommRing := instCommRing
+  __ := instDivisionRing
 
 end MulOpposite
 
 namespace AddOpposite
 
-variable {α : Type*}
+instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ where
+  toSemiring := instSemiring
+  __ := instGroupWithZero
+  nnratCast_def q := unop_injective $ by rw [unop_nnratCast, unop_div, unop_natCast, unop_natCast,
+    NNRat.cast_def, div_eq_mul_inv]
+  nnqsmul := _
 
-instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ :=
-  { AddOpposite.instGroupWithZero α, AddOpposite.instSemiring α with }
+instance instDivisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ where
+  toRing := instRing
+  __ := instDivisionSemiring
+  ratCast_def a b hb h := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv,
+    unop_natCast, unop_intCast, div_eq_mul_inv]
+  qsmul := qsmulRec _
 
-instance instDivisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ :=
-  { AddOpposite.instRing α, AddOpposite.instGroupWithZero α, AddOpposite.ratCast α with
-    ratCast_mk := fun a b hb h => unop_injective <| by
-      rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv, unop_natCast, unop_intCast,
-        div_eq_mul_inv]
-    qsmul := qsmulRec _ }
+instance instSemifield [Semifield α] : Semifield αᵃᵒᵖ where
+  toCommSemiring := instCommSemiring
+  __ := instDivisionSemiring
 
-instance instSemifield [Semifield α] : Semifield αᵃᵒᵖ :=
-  { AddOpposite.instDivisionSemiring, AddOpposite.instCommSemiring α with }
-
-instance instField [Field α] : Field αᵃᵒᵖ :=
-  { AddOpposite.instDivisionRing, AddOpposite.instCommRing α with }
+instance instField [Field α] : Field αᵃᵒᵖ where
+  toCommRing := instCommRing
+  __ := instDivisionRing
 
 end AddOpposite
