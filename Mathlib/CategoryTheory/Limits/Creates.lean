@@ -583,6 +583,17 @@ def liftsToColimitOfCreates (K : J ⥤ C) (F : C ⥤ D) [CreatesColimit K F] (c 
   makesColimit := liftedColimitIsColimit t
 #align category_theory.lifts_to_colimit_of_creates CategoryTheory.liftsToColimitOfCreates
 
+/-- Any cone lifts through an equivalence. -/
+def equivalenceLiftsCone (e : C ≌ D) (c : Cone (K ⋙ e.functor)) : LiftableCone K e.functor c where
+  liftedCone := (Cones.postcomposeEquivalence (Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft K e.unitIso.symm)).functor.obj (e.inverse.mapCone c)
+  validLift := Cones.ext (e.counitIso.app c.pt) (by aesop_cat)
+
+instance isEquivalenceCreatesLimits (F : C ⥤ D) [IsEquivalence F] :
+    CreatesLimitsOfSize.{w, w'} F where
+  CreatesLimitsOfShape :=
+    { CreatesLimit := { lifts := fun c _ => equivalenceLiftsCone F.asEquivalence c } }
+
 /-- Any cone lifts through the identity functor. -/
 def idLiftsCone (c : Cone (K ⋙ 𝟭 C)) : LiftableCone K (𝟭 C) c
     where
@@ -593,10 +604,20 @@ def idLiftsCone (c : Cone (K ⋙ 𝟭 C)) : LiftableCone K (𝟭 C) c
 #align category_theory.id_lifts_cone CategoryTheory.idLiftsCone
 
 /-- The identity functor creates all limits. -/
-instance idCreatesLimits : CreatesLimitsOfSize.{w, w'} (𝟭 C) where
-  CreatesLimitsOfShape :=
-    { CreatesLimit := { lifts := fun c _ => idLiftsCone c } }
+theorem idCreatesLimits : CreatesLimitsOfSize.{w, w'} (𝟭 C) := inferInstance
 #align category_theory.id_creates_limits CategoryTheory.idCreatesLimits
+
+/-- Any cocone lifts through an equivalence. -/
+def equivalenceLiftsCocone (e : C ≌ D) (c : Cocone (K ⋙ e.functor)) :
+    LiftableCocone K e.functor c where
+  liftedCocone := (Cocones.precomposeEquivalence ((isoWhiskerLeft K e.unitIso) ≪≫
+    (Functor.associator _ _ _).symm)).functor.obj (e.inverse.mapCocone c)
+  validLift := Cocones.ext (e.counitIso.app c.pt) (by aesop_cat)
+
+instance isEquivalenceCreatesColimits (F : C ⥤ D) [IsEquivalence F] :
+    CreatesColimitsOfSize.{w, w'} F where
+  CreatesColimitsOfShape :=
+    { CreatesColimit := { lifts := fun c _ => equivalenceLiftsCocone F.asEquivalence c } }
 
 /-- Any cocone lifts through the identity functor. -/
 def idLiftsCocone (c : Cocone (K ⋙ 𝟭 C)) : LiftableCocone K (𝟭 C) c
@@ -608,9 +629,7 @@ def idLiftsCocone (c : Cocone (K ⋙ 𝟭 C)) : LiftableCocone K (𝟭 C) c
 #align category_theory.id_lifts_cocone CategoryTheory.idLiftsCocone
 
 /-- The identity functor creates all colimits. -/
-instance idCreatesColimits : CreatesColimitsOfSize.{w, w'} (𝟭 C) where
-  CreatesColimitsOfShape :=
-    { CreatesColimit := { lifts := fun c _ => idLiftsCocone c } }
+theorem idCreatesColimits : CreatesColimitsOfSize.{w, w'} (𝟭 C) := inferInstance
 #align category_theory.id_creates_colimits CategoryTheory.idCreatesColimits
 
 /-- Satisfy the inhabited linter -/
