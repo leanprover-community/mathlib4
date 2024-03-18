@@ -47,7 +47,7 @@ theorem constantCoeff_invUnitsSub (u : Rˣ) : constantCoeff R (invUnitsSub u) = 
 theorem invUnitsSub_mul_X (u : Rˣ) : invUnitsSub u * X = invUnitsSub u * C R u - 1 := by
   ext (_ | n)
   · simp
-  · simp [n.succ_ne_zero, pow_succ]
+  · simp [n.succ_ne_zero, pow_succ']
 set_option linter.uppercaseLean3 false in
 #align power_series.inv_units_sub_mul_X PowerSeries.invUnitsSub_mul_X
 
@@ -191,7 +191,7 @@ theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (
   · simp only [rescale_zero, constantCoeff_exp, Function.comp_apply, map_one, cast_zero, zero_eq,
       pow_zero (exp A), coe_comp]
   · simpa only [succ_eq_add_one, cast_add, ← exp_mul_exp_eq_exp_add (k : A), ← h, cast_one,
-    id_apply, rescale_one] using pow_succ' (exp A) k
+    id_apply, rescale_one] using pow_succ (exp A) k
 #align power_series.exp_pow_eq_rescale_exp PowerSeries.exp_pow_eq_rescale_exp
 
 /-- Shows that
