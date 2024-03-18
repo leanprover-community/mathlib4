@@ -790,17 +790,14 @@ class HasFundamentalDomain (G : Type*) (α : Type*) [One G] [SMul G α] [Measura
 attribute [to_additive existing MeasureTheory.HasAddFundamentalDomain]
   MeasureTheory.HasFundamentalDomain
 
+open Classical in
 /-- The `covolume` of an action of `G` on `α` the volume of some fundamental domain, or `0` if
 none exists. -/
 @[to_additive addCovolume "The `addCovolume` of an action of `G` on `α` is the volume of some
 fundamental domain, or `0` if none exists."]
 noncomputable def covolume (G α : Type*) [One G] [SMul G α] [MeasurableSpace α]
-    (ν : Measure α := by volume_tac) : ℝ≥0∞ := by
-  by_cases funDom : HasFundamentalDomain G α ν
-  · exact ν funDom.ExistsIsFundamentalDomain.choose
-  · exact 0
--- Note: The below fails, because it requires `[Decidable (HasFundamentalDomain G α ν)]`
--- if funDom : HasFundamentalDomain G α ν then ν funDom.ExistsIsFundamentalDomain.choose else 0
+    (ν : Measure α := by volume_tac) : ℝ≥0∞ :=
+  if funDom : HasFundamentalDomain G α ν then ν funDom.ExistsIsFundamentalDomain.choose else 0
 
 variable [Group G] [MulAction G α] [MeasurableSpace G] [MeasurableSpace α]
 
