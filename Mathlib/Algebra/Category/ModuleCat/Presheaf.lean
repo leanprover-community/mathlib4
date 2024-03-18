@@ -13,10 +13,11 @@ We give a hands-on description of a presheaf of modules over a fixed presheaf of
 as a presheaf of abelian groups with additional data.
 
 We also provide two alternative constructors :
-* `mk' : MkStruct R → PresheafOfModules R` where `M : MkStruct R` consists of a family
-of unbundled modules over `R.obj X` for all `X`
-* `mk'' : BundledMkStruct R → PresheafOfModules R` where `M : BundledMkStruct R`
-consists of a family of objects in `ModuleCat (R.obj X)` for all `X`
+* `mk' : CorePresheafOfModules R → PresheafOfModules R` where `M : CorePresheafOfModules R`
+consists of a family of unbundled modules over `R.obj X` for all `X`
+* `mk'' : BundledCorePresheafOfModules R → PresheafOfModules R`
+where `M : BundledCorePresheafOfModules R` consists of a family of objects in
+`ModuleCat (R.obj X)` for all `X`
 
 ## Future work
 
@@ -43,9 +44,9 @@ structure PresheafOfModules (R : Cᵒᵖ ⥤ RingCat.{u}) where
   map_smul : ∀ {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (x : presheaf.obj X),
     presheaf.map f (r • x) = R.map f r • presheaf.map f x := by aesop_cat
 
-namespace PresheafOfModules
-
 variable {R : Cᵒᵖ ⥤ RingCat.{u}}
+
+namespace PresheafOfModules
 
 attribute [instance] PresheafOfModules.module
 
@@ -239,7 +240,7 @@ def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) w
 
 /-- The restriction natural transformation on presheaves of modules, considered as linear maps
 to restriction of scalars. -/
-def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+noncomputable def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     evaluation R X ⟶ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f) where
   app M := ModuleCat.semilinearMapAddEquiv (R.map f) _ _ (M.map f)
   naturality := fun M N φ => by
@@ -256,7 +257,8 @@ lemma restriction_app_id (M : PresheafOfModules R) (X : Cᵒᵖ) :
     (restriction R (𝟙 X)).app M =
       (ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).inv.app (M.obj X) := by
   ext x
-  rw [restriction_app_apply, ModuleCat.restrictScalarsId'_inv_apply, M.map_id, id'_apply]
+  rw [restriction_app_apply, map_id, id'_apply]
+  erw [ModuleCat.restrictScalarsId'_inv_apply]
 
 lemma restriction_app_comp (M : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (restriction R (f ≫ g)).app M =
@@ -264,19 +266,19 @@ lemma restriction_app_comp (M : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X �
         (ModuleCat.restrictScalars (R.map f)).map ((restriction R g).app M) ≫
         (ModuleCat.restrictScalarsComp' _ _ _ (R.map_comp f g)).inv.app (M.obj Z) := by
   ext x
-  rw [restriction_app_apply]
-  simp only [Functor.comp_obj, map_comp, Function.comp_apply,
-    ModuleCat.coe_comp, ModuleCat.restrictScalars.map_apply,
-    LinearMap.coe_comp, Function.comp_apply]
-  rw [ModuleCat.restrictScalarsComp'_inv_apply, restriction_app_apply, restriction_app_apply]
+  dsimp
+  erw [ModuleCat.restrictScalarsComp'_inv_apply, M.restriction_app_apply f,
+    M.restriction_app_apply g, M.restriction_app_apply (f ≫ g), map_comp]
+  rfl
 
-variable (R)
+end PresheafOfModules
 
+variable (R) in
 /-- This structure contains the data and axioms in order to
 produce a `PresheafOfModules R` from a collection of types
 equipped with module structures over the various rings `R.obj X`.
 (See the constructor `PresheafOfModules.mk'`.) -/
-structure MkStruct where
+structure CorePresheafOfModules where
   /-- the datum of a type for each object in `Cᵒᵖ` -/
   obj (X : Cᵒᵖ) : Type v
   /-- the abelian group structure on the types `obj X` -/
@@ -291,22 +293,20 @@ structure MkStruct where
   map_comp {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (x : obj X) :
     map (f ≫ g) x = map g (map f x) := by aesop_cat
 
--- this example is meant to test automation: the axioms for `MkStruct` are
+-- this example is meant to test automation: the axioms for `CorePresheafOfModules` are
 -- automatically found if we use the data from `M : PresheafOfModules R`
-example (M : PresheafOfModules R) : MkStruct R where
+example (M : PresheafOfModules R) : CorePresheafOfModules R where
   obj X := M.obj X
   map f := M.map f
 
-variable {R}
-
-namespace MkStruct
+namespace CorePresheafOfModules
 
 attribute [instance] addCommGroup module
 attribute [simp] map_id map_comp
 
-variable (M : MkStruct R)
+variable (M : CorePresheafOfModules R)
 
-/-- The presheaf of abelian groups attached to a `MkStruct R`. -/
+/-- The presheaf of abelian groups attached to a `CorePresheafOfModules R`. -/
 @[simps]
 def presheaf : Cᵒᵖ ⥤ AddCommGroupCat.{v} where
   obj X := AddCommGroupCat.of (M.obj X)
@@ -314,26 +314,29 @@ def presheaf : Cᵒᵖ ⥤ AddCommGroupCat.{v} where
 
 instance (X : Cᵒᵖ) : Module (R.obj X) (M.presheaf.obj X) := M.module X
 
-end MkStruct
+end CorePresheafOfModules
+
+namespace PresheafOfModules
 
 /-- Constructor for `PresheafOfModules R` based on a collection of types
 equipped with module structures over the various rings `R.obj X`, see
-the structure `MkStruct`. -/
-def mk' (M : MkStruct R) : PresheafOfModules R where
+the structure `CorePresheafOfModules`. -/
+def mk' (M : CorePresheafOfModules R) : PresheafOfModules R where
   presheaf := M.presheaf
 
 @[simp]
-lemma mk'_obj (M : MkStruct R) (X : Cᵒᵖ) :
+lemma mk'_obj (M : CorePresheafOfModules R) (X : Cᵒᵖ) :
     (mk' M).obj X = ModuleCat.of _ (M.obj X) := rfl
 
-variable (R)
+end PresheafOfModules
 
+variable (R) in
 /-- This structure contains the data and axioms in order to
 produce a `PresheafOfModules R` from a collection of objects
 of type `ModuleCat (R.obj X)` for all `X`, and restriction
 maps expressed as linear maps to restriction of scalars.
 (See the constructor `PresheafOfModules.mk''`.) -/
-structure BundledMkStruct where
+structure BundledCorePresheafOfModules where
   /-- the datum of a `ModuleCat (R.obj X)` for each object in `Cᵒᵖ` -/
   obj (X : Cᵒᵖ) : ModuleCat.{v} (R.obj X)
   /-- the restriction maps as linear maps to restriction of scalars -/
@@ -347,39 +350,39 @@ structure BundledMkStruct where
       (ModuleCat.restrictScalarsComp' (R.map f) (R.map g) (R.map (f ≫ g))
         (R.map_comp f g)).inv.app (obj Z)
 
-variable {R}
-namespace BundledMkStruct
+namespace BundledCorePresheafOfModules
 
-variable (M : BundledMkStruct R)
+variable (M : BundledCorePresheafOfModules R)
 
-/-- The obvious map `BundledMkStruct R → MkStruct R`. -/
-def toMkStruct : MkStruct R where
+/-- The obvious map `BundledCorePresheafOfModules R → CorePresheafOfModules R`. -/
+noncomputable def toCorePresheafOfModules : CorePresheafOfModules R where
   obj X := (M.obj X).carrier
   map {X Y} f := (ModuleCat.semilinearMapAddEquiv (R.map f) (M.obj X) (M.obj Y)).symm (M.map f)
   map_id X x := by
     dsimp
-    rw [M.map_id, ModuleCat.restrictScalarsId'_inv_apply]
+    erw [M.map_id, ModuleCat.restrictScalarsId'_inv_apply]
   map_comp {X Y Z} f g x := by
     dsimp
-    simp only [M.map_comp, ModuleCat.coe_comp, Function.comp_apply,
-      ModuleCat.restrictScalars.map_apply]
-    rw [ModuleCat.restrictScalarsComp'_inv_apply]
+    erw [M.map_comp, ModuleCat.restrictScalarsComp'_inv_apply]
+    rfl
 
-end BundledMkStruct
+end BundledCorePresheafOfModules
+
+namespace PresheafOfModules
 
 /-- Constructor for `PresheafOfModules R` based on a collection of objects
 of type `ModuleCat (R.obj X)` for all `X`, and restriction maps expressed
 as linear maps to restriction of scalars, see
-the structure `BundledMkStruct`. -/
-def mk'' (M : BundledMkStruct R) : PresheafOfModules R :=
-  mk' M.toMkStruct
+the structure `BundledCorePresheafOfModules`. -/
+noncomputable def mk'' (M : BundledCorePresheafOfModules R) : PresheafOfModules R :=
+  mk' M.toCorePresheafOfModules
 
 @[simp]
-lemma mk''_obj (M : BundledMkStruct R) (X : Cᵒᵖ) :
+lemma mk''_obj (M : BundledCorePresheafOfModules R) (X : Cᵒᵖ) :
     (mk'' M).obj X = (M.obj X).carrier := rfl
 
 @[simp]
-lemma restriction_app_mk'' (M : BundledMkStruct R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+lemma restriction_app_mk'' (M : BundledCorePresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     (restriction R f).app (mk'' M) = M.map f := rfl
 
 namespace Hom
