@@ -109,7 +109,6 @@ lemma card_mono [NumberField k] [NumberField K] :
 variable {k K}
 
 /-- The action of the Galois group on infinite places. -/
-@[simps! smul_coe_apply]
 instance : MulAction Gal(K/k) (InfinitePlace K) where
   smul := fun σ w ↦ w.comap σ.symm
   one_smul := fun _ ↦ rfl
