@@ -206,7 +206,7 @@ theorem gfpApprox_add_one (a : Ordinal.{u}) : gfpApprox f (a+1) = f (gfpApprox f
 
 /-- The ordinal approximants of the least fixed points are stabilizing
   when reaching a fixed point of f -/
-theorem gfpApprox_eq_of_mem_fixedPoint {a b : Ordinal.{u}} (h_ab : a < b)
+theorem gfpApprox_eq_of_mem_fixedPoint {a b : Ordinal.{u}} (h_ab : a ≤ b)
     (h: gfpApprox f a ∈ fixedPoints f) : gfpApprox f b = gfpApprox f a :=
   lfpApprox_eq_of_mem_fixedPoint (OrderHom.dual f) h_ab h
 
