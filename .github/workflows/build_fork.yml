@@ -266,7 +266,7 @@ jobs:
           ret=$?
           grep --after-context=1 "stderr" stdout.log
           new=$?
-          if [ $ret -eq 0 ] || [ $new  -eq 0 ]; then exit 1; fi
+          if [ $ret -gt 0 ] || [ $new  -gt 0 ]; then exit 1; fi
 
       - name: check declarations in db files
         run: |
