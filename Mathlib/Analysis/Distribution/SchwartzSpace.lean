@@ -11,6 +11,7 @@ import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+import Mathlib.Topology.UniformSpace.Ascoli
 
 #align_import analysis.schwartz_space from "leanprover-community/mathlib"@"e137999b2c6f2be388f4cd3bbf8523de1910cd2b"
 
@@ -487,6 +488,10 @@ theorem le_seminorm' (k n : ℕ) (f : 𝓢(ℝ, F)) (x : ℝ) :
   have := le_seminorm 𝕜 k n f x
   rwa [← Real.norm_eq_abs, ← norm_iteratedFDeriv_eq_norm_iteratedDeriv]
 #align schwartz_map.le_seminorm' SchwartzMap.le_seminorm'
+
+theorem norm_fderiv_le_seminorm (f : 𝓢(E, F)) (x₀ : E) :
+    ‖fderiv ℝ f x₀‖ ≤ (SchwartzMap.seminorm 𝕜 0 1) f := by
+  simpa [iteratedFDeriv_succ_eq_comp_right] using le_seminorm 𝕜 0 1 f x₀
 
 theorem norm_iteratedFDeriv_le_seminorm (f : 𝓢(E, F)) (n : ℕ) (x₀ : E) :
     ‖iteratedFDeriv ℝ n f x₀‖ ≤ (SchwartzMap.seminorm 𝕜 0 n) f := by
@@ -1114,6 +1119,10 @@ def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
   f.toBoundedContinuousFunction.toContinuousMap
 #align schwartz_map.to_continuous_map SchwartzMap.toContinuousMap
 
+@[simp]
+lemma toContinuousMap_apply (f : 𝓢(E, F)) (x : E) : f.toContinuousMap x = f x :=
+  rfl
+
 variable (𝕜 E F)
 
 variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -1204,11 +1213,153 @@ end ZeroAtInfty
 
 open Bornology
 
-theorem foo (S : Set (𝓢(E, F))) (hClosed : IsClosed S) (hBounded : IsVonNBounded ℝ S) :
-    IsCompact S := by
-  haveI := UniformAddGroup.uniformity_countably_generated (α := 𝓢(E, F))
-  rw [UniformSpace.isCompact_iff_isSeqCompact]
-  intro a ha
+variable {X α : Type*}
+
+section Urysohn
+
+variable [TopologicalSpace X] [FirstCountableTopology X]
+variable {s : Set X}
+
+theorem baz142 (hs : IsCompact (closure s)) {a : ℕ → X} (ha : ∀ n, a n ∈ s) :
+    ∃ x, ∃ (f : ℕ → ℕ), StrictMono f ∧ Filter.Tendsto (a ∘ f) Filter.atTop (nhds x) := by
+  rcases hs.tendsto_subseq (fun n ↦ subset_closure (ha n)) with ⟨x, _hx, f, _hf, _hf'⟩
+  use x, f
+
+end Urysohn
+
+section arzelaAscoli
+
+variable [UniformSpace α] [TopologicalSpace X] [WeaklyLocallyCompactSpace X]
+
+theorem arzela_ascoli' [T2Space α]
+    {s : Set C(X, α)}
+    (s_eqcont : ∀ (K : Set X) (_hK : IsCompact K), EquicontinuousOn (((↑) : s → X → α)) K)
+    (s_pointwiseCompact : ∀ (K : Set X) (hK : IsCompact K),
+      ∀ x ∈ K, ∃ Q, IsCompact Q ∧ ∀ f ∈ s, f x ∈ Q) :
+    IsCompact (closure s) := by
+  apply ArzelaAscoli.isCompact_closure_of_closedEmbedding (𝔖 := {K : Set X | IsCompact K}) (α := α)
+    (by simp) _ s_eqcont s_pointwiseCompact
+  rw [closedEmbedding_iff]
+  constructor
+  · exact ContinuousMap.uniformEmbedding_toUniformOnFunIsCompact.embedding
+  · rw [isClosed_iff_forall_filter]
+    intro f u v hu huf
+    rw [← Filter.tendsto_id'] at huf
+    rw [UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
+    refine ⟨⟨f, ?_⟩, rfl⟩
+    rw [continuous_iff_continuousAt]
+    intro x
+    rcases WeaklyLocallyCompactSpace.exists_compact_mem_nhds x with ⟨K, hK1, hK2⟩
+    refine ((huf K hK1).continuousOn (Filter.le_principal_iff.mp ?_)).continuousAt hK2
+    apply hu.trans
+    simp only [Function.comp_apply, id_eq, Filter.le_principal_iff, Filter.mem_principal]
+    intro y ⟨y0, hy⟩
+    apply Continuous.continuousOn
+    convert y0.continuous
+    rw [← hy]
+    simp only [Function.comp_apply, UniformOnFun.toFun_ofFun]
+
+end arzelaAscoli
+
+variable (s : Set (𝓢(E, F)))
+
+theorem blubb (hBounded : IsVonNBounded ℝ s) :
+    Equicontinuous ((↑) : (toContinuousMap '' s) → E → F) := by
+  rw [(schwartz_withSeminorms ℝ E F).isVonNBounded_iff_seminorm_bounded] at hBounded
+  simp only [gt_iff_lt, Prod.forall, schwartzSeminormFamily_apply] at hBounded
+  rcases hBounded 0 1 with ⟨r', hr, h⟩
+  intro x₀
+  rw [Metric.equicontinuousAt_iff]
+  intro ε hε
+  have hεr : 0 < ε / r' := by positivity
+  use ε / r', hεr
+  intro x hx ⟨f', hf'⟩
+  rcases hf' with ⟨f, hf1, hf2⟩
+  simp only [← hf2, toContinuousMap_apply, dist_eq_norm_sub]
+  have : ∀ x, ‖fderiv ℝ f x‖ ≤ r' := by
+    intro x
+    exact (norm_fderiv_le_seminorm ℝ f x).trans (h f hf1).le
+  apply lt_of_le_of_lt (Convex.norm_image_sub_le_of_norm_fderiv_le (fun _x _hx ↦ f.differentiable.differentiableAt)
+    (fun x _hx ↦ this x) (convex_ball x₀ (ε / r')) hx (by simp [hεr]))
+  rwa [dist_eq_norm_sub', lt_div_iff' hr] at hx
+
+variable [ProperSpace F]
+
+theorem blubb_cpt (hBounded : IsVonNBounded ℝ s) (x : E) :
+    ∃ Q, IsCompact Q ∧ ∀ f ∈ s, f x ∈ Q := by
+  rw [(schwartz_withSeminorms ℝ E F).isVonNBounded_iff_seminorm_bounded] at hBounded
+  simp only [gt_iff_lt, Prod.forall, schwartzSeminormFamily_apply] at hBounded
+  rcases hBounded 0 0 with ⟨r, _hr, h⟩
+  use Metric.closedBall 0 r, ProperSpace.isCompact_closedBall 0 r
+  intro f hf
+  simp only [Metric.mem_closedBall, dist_zero_right]
+  apply (f.norm_le_seminorm ℝ _).trans (h f hf).le
+
+variable [WeaklyLocallyCompactSpace E]
+
+theorem foo (hBounded : IsVonNBounded ℝ s) :
+    IsCompact (closure (toContinuousMap '' s)) := by
+  apply arzela_ascoli'
+  · intro K _hK
+    apply Equicontinuous.equicontinuousOn
+    exact blubb s hBounded
+  · intro K _hK x _hx
+    convert blubb_cpt s hBounded x
+    simp
+
+variable  [LocallyCompactSpace E] [SecondCountableTopology E]
+
+-- sequentially closed: every converging sequence has its limit in the set
+
+theorem bar (hBounded : IsVonNBounded ℝ s) (a : ℕ → C(E, F)) (ha : ∀ n, a n ∈ (toContinuousMap '' s)): True := by
+  rcases baz142 (foo s hBounded) ha with ⟨x, f, hf, hx⟩
+
   sorry
+
+theorem taz (a : ℕ → 𝓢(E, F)) (ha : ∀ n, a n ∈ s) {f : C(E, F)}
+    (htendsto : Filter.Tendsto (toContinuousMap ∘ a) Filter.atTop (nhds f)) : ContDiff ℝ ⊤ f := by
+  sorry
+
+
+
+-- Let s ⊆ 𝓢(E, F) bounded and closed, show it is compact
+-- Take sequence a : ℕ → 𝓢(E, F) with a n ∈ s, have to find converging subsequence with limit x ∈ s
+-- Have a : ℕ → C(E, F) has convergent subsequence
+-- the limit is smooth by `Mathlib.Analysis.Calculus.UniformLimitsDeriv`
+
+theorem heine_borel' (hBounded : IsVonNBounded ℝ s) : IsCompact (closure s) := sorry
+
+theorem heine_borel (hBounded : IsVonNBounded ℝ s) (hClosed : IsClosed s) : IsCompact s := sorry
+
+variable [NormedAddCommGroup G] [NormedSpace ℝ G]
+
+#check Filter.HasBasis.to_hasBasis
+#check Filter
+
+open Topology
+
+#check (ContinuousLinearMap.strongTopology.embedding_coeFn (RingHom.id ℝ) G {S : Set 𝓢(E, F) | IsCompact S})
+#check Embedding.tendsto_nhds_iff
+
+theorem foobar {ι : Type*} {p : Filter ι} {S : Set (Set (𝓢(E, F)))} {a : ι → (𝓢(E, F) →L[ℝ] G)} {a₀ : (𝓢(E, F) →L[ℝ] G)}:
+    Filter.Tendsto a p (@nhds _ (ContinuousLinearMap.strongTopology (RingHom.id ℝ) G S) a₀) ↔
+    ∀ s ∈ S, TendstoUniformlyOn (a · ·) a₀ p s := by
+  rw [@Embedding.tendsto_nhds_iff _ _ _ _ (ContinuousLinearMap.strongTopology (RingHom.id ℝ) G S) _ _ _ _ (ContinuousLinearMap.strongTopology.embedding_coeFn (RingHom.id ℝ) G S)]
+  rw [UniformOnFun.tendsto_iff_tendstoUniformlyOn]
+  apply ball_congr
+  intro x _hx
+  rfl
+
+-- Define Montel space
+-- For complete spaces suffice to prove that every closed set has a Cauchy sequence
+-- Generalize the lemma below to Montel
+
+/-- Every weakly converging sequence is strongly converging. -/
+theorem weakly_conv_to_strongly_conv {a : ℕ → 𝓢(E, F) →L[ℝ] G} {a₀ : 𝓢(E, F) →L[ℝ] G}
+    (hweak : Filter.Tendsto a Filter.atTop (@nhds _ (ContinuousLinearMap.strongTopology (RingHom.id ℝ) G {S : Set 𝓢(E, F) | IsCompact S}) a₀)):
+    Filter.Tendsto a Filter.atTop (𝓝 a₀) := by
+  rw [foobar] at hweak ⊢
+  intro s hs
+  apply (hweak (closure s) (heine_borel' _ hs)).mono subset_closure
 
 end SchwartzMap
