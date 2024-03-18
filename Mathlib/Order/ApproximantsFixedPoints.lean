@@ -50,13 +50,13 @@ variable (g : Ordinal → α)
 
 open Cardinal Ordinal SuccOrder Function Set
 
-theorem not_injective_limitation_set : ¬ Set.InjOn g (Set.Iio (ord <| succ #α)) := by
+theorem not_injective_limitation_set : ¬ InjOn g (Iio (ord <| succ #α)) := by
   intro h_inj
-  have h := lift_mk_le_lift_mk_of_injective <| Set.injOn_iff_injective.1 h_inj
+  have h := lift_mk_le_lift_mk_of_injective <| injOn_iff_injective.1 h_inj
   have mk_initialSeg_subtype :
       #(Iio (ord <| succ #α)) = lift.{u+1, u} (succ #α) := by
     simpa only [coe_setOf, card_typein, card_ord] using mk_initialSeg (ord <| succ #α)
-  rw [mk_initialSeg_subtype, Cardinal.lift_lift, Cardinal.lift_le] at h
+  rw [mk_initialSeg_subtype, lift_lift, lift_le] at h
   exact not_le_of_lt (Order.lt_succ #α) h
 
 
