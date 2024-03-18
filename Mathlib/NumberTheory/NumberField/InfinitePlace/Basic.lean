@@ -65,6 +65,9 @@ lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) : v x = v.1 
 lemma ext {K : Type*} [Field K] (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
   Subtype.ext <| AbsoluteValue.ext h
 
+@[simp]
+lemma infinitePlace_apply (f : InfinitePlace K) (x : K) : f.1 x = f x := rfl
+
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
   map_mul w _ _ := w.1.map_mul _ _
   map_one w := w.1.map_one

@@ -604,8 +604,8 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   rw [← le_div_iff₀' (Nat.cast_pos.mpr finrank_pos), ← sum_mult_eq, Nat.cast_sum]
   refine le_trans ?_ (geom_mean_le_arith_mean Finset.univ _ _ (fun _ _ => Nat.cast_nonneg _)
     ?_ (fun _ _ => AbsoluteValue.nonneg _ _))
-  · simp_rw [← prod_eq_abs_norm, rpow_natCast]
-    exact le_of_eq rfl
+  · simp_rw [← prod_eq_abs_norm, rpow_natCast, NumberField.InfinitePlace.infinitePlace_apply,
+      le_rfl]
   · rw [← Nat.cast_sum, sum_mult_eq, Nat.cast_pos]
     exact finrank_pos
 
