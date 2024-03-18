@@ -258,8 +258,11 @@ jobs:
       - name: check for noisy stdout lines
         id: noisy
         run: |
-          grep --after-context=1 "stdout:" stdout.log && exit 1
-          grep --after-context=1 "stderr:" stdout.log && exit 1
+          grep --after-context=1 "stdout" stdout.log
+          ret=$?
+          grep --after-context=1 "stderr" stdout.log
+          new=$?
+          if [ $ret -eq 0 ] || [ $new  -eq 0 ]; then exit 1; fi
 
       - name: check declarations in db files
         run: |
@@ -272,7 +275,6 @@ jobs:
           rm import_graph.dot
 
       - name: test mathlib
-        id: test
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
           linters: gcc
