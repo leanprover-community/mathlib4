@@ -96,14 +96,14 @@ theorem evalFrom_of_append (start : σ) (x y : List α) :
 -/
 def acceptsFrom (start : σ) : Language α := {x | M.evalFrom start x ∈ M.accept}
 
-theorem mem_acceptsFrom (start : σ) (x : List α) :
+theorem mem_acceptsFrom {start : σ} {x : List α} :
     x ∈ M.acceptsFrom start ↔ M.evalFrom start x ∈ M.accept := by rfl
 
 /-- `M.accepts` is the language of `x` such that `M.eval x` is an accept state. -/
 def accepts : Language α := M.acceptsFrom M.start
 #align DFA.accepts DFA.accepts
 
-theorem mem_accepts (x : List α) : x ∈ M.accepts ↔ M.eval x ∈ M.accept := by rfl
+theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ M.eval x ∈ M.accept := by rfl
 #align DFA.mem_accepts DFA.mem_accepts
 
 theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.card σ ≤ x.length)
