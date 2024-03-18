@@ -1121,7 +1121,7 @@ def addNatEmb (m) : Fin n ↪o Fin (n + m) :=
 
 #align fin.cast_add_nat_zero Fin.cast_addNat_zeroₓ
 
-#align fin.add_nat_cast Fin.addnatCastₓ
+#align fin.add_nat_cast Fin.addNat_castₓ
 
 #align fin.cast_add_nat_left Fin.cast_addNat_leftₓ
 
@@ -1197,7 +1197,7 @@ theorem monotone_pred_comp [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f
     (hf₂ : Monotone f) : Monotone (fun a => pred (f a) (hf a)) :=
     fun _ _ h => pred_le_pred_iff.2 (hf₂ h)
 
-#align fin.nat_add_sub_nat_cast Fin.natAdd_subnatCastₓ
+#align fin.nat_add_sub_nat_cast Fin.natAdd_subNat_castₓ
 
 theorem pred_one' [NeZero n] (h := (zero_ne_one' (n := n)).symm) :
     Fin.pred (1 : Fin (n + 1)) h = 0 := by
