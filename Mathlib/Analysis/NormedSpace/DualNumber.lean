@@ -25,19 +25,17 @@ namespace DualNumber
 
 open TrivSqZeroExt
 
-variable (𝕜 : Type*) {R : Type*}
-
-variable [Field 𝕜] [CharZero 𝕜] [CommRing R] [Algebra 𝕜 R]
+variable {R : Type*} [CommRing R] [Algebra ℚ R]
 
 variable [UniformSpace R] [TopologicalRing R] [CompleteSpace R] [T2Space R]
 
 @[simp]
-theorem exp_eps : exp 𝕜 (eps : DualNumber R) = 1 + eps :=
-  exp_inr _ _
+theorem exp_eps : exp (eps : DualNumber R) = 1 + eps :=
+  exp_inr _
 #align dual_number.exp_eps DualNumber.exp_eps
 
 @[simp]
-theorem exp_smul_eps (r : R) : exp 𝕜 (r • eps : DualNumber R) = 1 + r • eps := by
+theorem exp_smul_eps (r : R) : exp (r • eps : DualNumber R) = 1 + r • eps := by
   rw [eps, ← inr_smul, exp_inr]
 #align dual_number.exp_smul_eps DualNumber.exp_smul_eps
 
