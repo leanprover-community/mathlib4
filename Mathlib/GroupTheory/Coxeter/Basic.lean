@@ -112,7 +112,6 @@ universe u
 noncomputable section
 
 variable {B : Type*} [DecidableEq B]
-
 variable (M : Matrix B B ℕ)
 
 /-- A matrix `IsCoxeter` if it is a symmetric matrix with diagonal entries equal to one
@@ -185,7 +184,6 @@ namespace CoxeterSystem
 open Matrix
 
 variable {B B' W H : Type*} [DecidableEq B] [DecidableEq B'] [Group W] [Group H]
-
 variable {M : Matrix B B ℕ}
 
 /-- A Coxeter system for `W` with Coxeter matrix `M` indexed by `B`, is associated to

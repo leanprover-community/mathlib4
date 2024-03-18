@@ -49,7 +49,6 @@ namespace Matrix
 open Matrix
 
 variable {R α α' β β' γ γ' : Type*}
-
 variable {l m n p : Type*} {q r : Type*} {l' m' n' p' : Type*}
 
 section KroneckerMap
@@ -430,7 +429,6 @@ section Module
 suppress_compilation
 
 variable [CommSemiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
-
 variable [Module R α] [Module R β] [Module R γ]
 
 /-- The Kronecker tensor product. This is just a shorthand for `kroneckerMap (⊗ₜ)`.

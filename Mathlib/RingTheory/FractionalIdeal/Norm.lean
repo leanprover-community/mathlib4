@@ -31,7 +31,6 @@ namespace FractionalIdeal
 open scoped Pointwise nonZeroDivisors
 
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
-
 variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
 theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
