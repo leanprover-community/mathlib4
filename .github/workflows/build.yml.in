@@ -244,13 +244,9 @@ jobs:
       - name: check for noisy stdout lines
         id: noisy
         run: |
-          ( touch stdout.log
-            grep --after-context=1 "stdout" stdout.log
-            ret=$?
-            grep --after-context=1 "stderr" stdout.log
-            new=$?
-            if [ "${ret}" == "0" ] || [ "${new}"  == "0" ]; then exit 1; fi )
-
+          grep --after-context=1 "stdout" stdout.log && ret=0
+          grep --after-context=1 "stderr" stdout.log && new=0
+          if [ "${ret}" == "0" ] || [ "${new}"  == "0" ]; then return 1; fi
       - name: check declarations in db files
         run: |
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
