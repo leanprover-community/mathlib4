@@ -1208,7 +1208,7 @@ theorem valMinAbs_natCast_eq_self [NeZero n] : (a : ZMod n).valMinAbs = a ↔ a 
   refine' ⟨fun ha => _, valMinAbs_natCast_of_le_half⟩
   rw [← Int.natAbs_ofNat a, ← ha]
   exact natAbs_valMinAbs_le a
-#align zmod.val_min_nat_abs_natCast_eq_self ZMod.valMinAbs_natCast_eq_self
+#align zmod.val_min_nat_abs_nat_cast_eq_self ZMod.valMinAbs_natCast_eq_self
 
 theorem natAbs_min_of_le_div_two (n : ℕ) (x y : ℤ) (he : (x : ZMod n) = y) (hl : x.natAbs ≤ n / 2) :
     x.natAbs ≤ y.natAbs := by

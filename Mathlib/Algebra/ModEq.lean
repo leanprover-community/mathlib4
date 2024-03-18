@@ -330,7 +330,7 @@ lemma intCast_modEq_intCast' {a b : ℤ} {n : ℕ} : a ≡ b [PMOD (n : α)] ↔
 theorem natCast_modEq_natCast {a b n : ℕ} : a ≡ b [PMOD (n : α)] ↔ a ≡ b [MOD n] := by
   simp_rw [← Int.coe_nat_modEq_iff, ← modEq_iff_int_modEq, ← @intCast_modEq_intCast α,
     Int.cast_ofNat]
-#align add_comm_group.nat_cast_modeq_natCast AddCommGroup.natCast_modEq_natCast
+#align add_comm_group.nat_cast_modeq_nat_cast AddCommGroup.natCast_modEq_natCast
 
 alias ⟨ModEq.of_intCast, ModEq.intCast⟩ := intCast_modEq_intCast
 #align add_comm_group.modeq.of_int_cast AddCommGroup.ModEq.of_intCast
@@ -338,7 +338,7 @@ alias ⟨ModEq.of_intCast, ModEq.intCast⟩ := intCast_modEq_intCast
 
 alias ⟨_root_.Nat.ModEq.of_natCast, ModEq.natCast⟩ := natCast_modEq_natCast
 #align nat.modeq.of_nat_cast Nat.ModEq.of_natCast
-#align add_comm_group.modeq.natCast AddCommGroup.ModEq.natCast
+#align add_comm_group.modeq.nat_cast AddCommGroup.ModEq.natCast
 
 end AddCommGroupWithOne
 

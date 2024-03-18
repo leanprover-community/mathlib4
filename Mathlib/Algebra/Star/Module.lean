@@ -55,7 +55,7 @@ theorem star_inv_natCast_smul [DivisionSemiring R] [AddCommMonoid M] [Module R M
 @[simp]
 theorem star_inv_intCast_smul [DivisionRing R] [AddCommGroup M] [Module R M] [StarAddMonoid M]
     (n : ℤ) (x : M) : star ((n⁻¹ : R) • x) = (n⁻¹ : R) • star x :=
-  map_inv_int_cast_smul (starAddEquiv : M ≃+ M) R R n x
+  map_inv_intCast_smul (starAddEquiv : M ≃+ M) R R n x
 #align star_inv_int_cast_smul star_inv_intCast_smul
 
 @[simp]

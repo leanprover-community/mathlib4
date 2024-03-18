@@ -457,7 +457,7 @@ theorem natCast_opow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^
   | 0 => by simp
   | n + 1 => by
     rw [pow_succ', natCast_mul, natCast_opow m n, Nat.cast_succ, add_one_eq_succ, opow_succ]
-#align ordinal.natCast_opow Ordinal.natCast_opow
+#align ordinal.nat_cast_opow Ordinal.natCast_opow
 
 theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ (n : Ordinal)) = o ^ ω := by
   rcases lt_or_eq_of_le (one_le_iff_pos.2 ho) with (ho₁ | rfl)

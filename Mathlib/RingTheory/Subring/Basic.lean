@@ -135,7 +135,7 @@ theorem coe_natCast (n : ℕ) : ((n : s) : R) = n :=
 @[simp, norm_cast]
 theorem coe_intCast (n : ℤ) : ((n : s) : R) = n :=
   map_intCast (subtype s) n
-#align subring_class.coe_intCast SubringClass.coe_intCast
+#align subring_class.coe_int_cast SubringClass.coe_intCast
 
 end SubringClass
 

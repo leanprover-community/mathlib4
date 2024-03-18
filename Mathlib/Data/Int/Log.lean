@@ -236,7 +236,7 @@ theorem clog_natCast (b : ℕ) (n : ℕ) : clog b (n : R) = Nat.clog b n := by
   cases' n with n
   · simp [clog_of_right_le_one]
   · rw [clog_of_one_le_right, (Nat.ceil_eq_iff (Nat.succ_ne_zero n)).mpr] <;> simp
-#align int.clog_natCast Int.clog_natCast
+#align int.clog_nat_cast Int.clog_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]

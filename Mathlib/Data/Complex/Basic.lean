@@ -952,10 +952,9 @@ lemma div_ofNat_im (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
 /-! ### Characteristic zero -/
 
 
-instance charZero : CharZero ℂ :=
-  charZero_of_inj_zero fun n h => by
-    rwa [← ofReal_natCast ofReal_eq_zero, Nat.cast_eq_zero] at h
-#align complex.char_zero_complex Complex.charZero
+instance instCharZero : CharZero ℂ :=
+  charZero_of_inj_zero fun n h => by rwa [← ofReal_natCast, ofReal_eq_zero, Nat.cast_eq_zero] at h
+#align complex.char_zero_complex Complex.instCharZero
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by

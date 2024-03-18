@@ -69,7 +69,7 @@ theorem tendsto_intCast_atBot_iff [StrictOrderedRing R] [Archimedean R] {f : α 
 
 theorem tendsto_intCast_atTop_atTop [StrictOrderedRing R] [Archimedean R] :
     Tendsto ((↑) : ℤ → R) atTop atTop :=
-  tendsto_int_cast_atTop_iff.2 tendsto_id
+  tendsto_intCast_atTop_iff.2 tendsto_id
 #align tendsto_coe_int_at_top_at_top tendsto_intCast_atTop_atTop
 
 theorem Filter.Eventually.intCast_atTop [StrictOrderedRing R] [Archimedean R] {p : R → Prop}
