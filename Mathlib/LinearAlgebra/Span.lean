@@ -36,11 +36,8 @@ open Pointwise
 section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable {x : M} (p p' : Submodule R M)
-
 variable [Semiring R₂] {σ₁₂ : R →+* R₂}
-
 variable [AddCommMonoid M₂] [Module R₂ M₂]
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
@@ -896,11 +893,8 @@ end AddCommGroup
 section AddCommGroup
 
 variable [Semiring R] [Semiring R₂]
-
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
-
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
-
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
 theorem comap_map_eq (f : F) (p : Submodule R M) : comap f (map f p) = p ⊔ LinearMap.ker f := by
@@ -1001,13 +995,9 @@ open Submodule Function
 section AddCommGroup
 
 variable [Semiring R] [Semiring R₂]
-
 variable [AddCommGroup M] [AddCommGroup M₂]
-
 variable [Module R M] [Module R₂ M₂]
-
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
-
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
 protected theorem map_le_map_iff (f : F) {p p'} : map f p ≤ map f p' ↔ p ≤ p' ⊔ ker f := by
@@ -1076,9 +1066,7 @@ end
 section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
-
 variable {F : Type*} {σ₁₂ : R →+* R₂} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 /-- Two linear maps are equal on `Submodule.span s` iff they are equal on `s`. -/
