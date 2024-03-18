@@ -1661,7 +1661,7 @@ instance prod (β : α → Type*) (γ : α → Type*)
               (snd.comp <| Primrec.unpair.comp <| snd.comp fst))
             (Primrec₂.natPair.comp₂ (snd.comp₂ Primrec₂.left) Primrec₂.right)))
     this.of_eq fun a e ↦ by
-      simp
+      simp only [decode_prod_val]
       rcases hb : (decode e.unpair.1 : Option (β a)) with (_ | b) <;>
         simp [*, encodeDecode_of_none, encodeDecode_of_some]
       rcases hc : (decode e.unpair.2 : Option (γ a)) with (_ | c) <;>
