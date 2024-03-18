@@ -27,8 +27,8 @@ This file defines the conversion between bilinear forms and matrices.
 ## Notations
 
 In this file we use the following type variables:
- - `M`, `M'`, ... are modules over the semiring `R`,
- - `M₁`, `M₁'`, ... are modules over the ring `R₁`,
+ - `M`, `M'`, ... are modules over the commutative semiring `R`,
+ - `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
  - `M₂`, `M₂'`, ... are modules over the commutative semiring `R₂`,
  - `M₃`, `M₃'`, ... are modules over the commutative ring `R₃`,
  - `V`, ... is a vector space over the field `K`.
