@@ -366,7 +366,7 @@ lemma cfc_const_zero : cfc (fun _ : R ↦ 0) a = 0 :=
 
 variable {R}
 
-lemma cfc_mul (f g : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
+lemma cfc_mul (f g : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) :
     cfc (fun x ↦ f x * g x) a = cfc f a * cfc g a := by
   by_cases ha : p a
@@ -399,11 +399,12 @@ lemma cfc_smul {S : Type*} [SMul S R] [ContinuousConstSMul S R]
     congr
   · simp [cfc_apply_of_not_predicate a ha]
 
-lemma cfc_const_mul (r : R) (f : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
+lemma cfc_const_mul (r : R) (f : R → R) (a : A)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
     cfc (fun x ↦ r * f x) a = r • cfc f a :=
   cfc_smul r f a
 
-lemma cfc_star (f : R → R) : cfc (fun x ↦ star (f x)) a = star (cfc f a) := by
+lemma cfc_star (f : R → R) (a : A) : cfc (fun x ↦ star (f x)) a = star (cfc f a) := by
   by_cases h : p a ∧ ContinuousOn f (spectrum R a)
   · obtain ⟨ha, hf⟩ := h
     rw [cfc_apply f a, ← map_star, cfc_apply _ a]
