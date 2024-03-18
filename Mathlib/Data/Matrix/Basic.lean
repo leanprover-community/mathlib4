@@ -1955,6 +1955,11 @@ theorem vecMul_sub [Fintype m] (A B : Matrix m n α) (x : m → α) :
     x ᵥ* (A - B) = x ᵥ* A - x ᵥ* B := by simp [sub_eq_add_neg, vecMul_add, vecMul_neg]
 #align matrix.vec_mul_sub Matrix.vecMul_sub
 
+theorem sub_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
+    (x - y) ᵥ* A = x ᵥ* A - y ᵥ* A := by
+  ext
+  apply sub_dotProduct
+
 end NonUnitalNonAssocRing
 
 section NonUnitalCommSemiring
