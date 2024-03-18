@@ -34,7 +34,11 @@ open scoped BigOperators Pointwise
 
 noncomputable section
 
-variable {ι ι' E F : Type*} [Fintype ι] [Fintype ι']
+variable {ι ι' E F : Type*}
+
+section Fintype
+
+variable [Fintype ι] [Fintype ι']
 
 section AddCommGroup
 
@@ -288,6 +292,8 @@ theorem Basis.prod_addHaar (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
 
 end NormedSpace
 
+end Fintype
+
 /-- A finite dimensional inner product space has a canonical measure, the Lebesgue measure giving
 volume `1` to the parallelepiped spanned by any orthonormal basis. We define the measure using
 some arbitrary choice of orthonormal basis. The fact that it works with any orthonormal basis
@@ -319,7 +325,7 @@ variable (ι)
 -- TODO: do we want these instances for `PiLp` too?
 instance : MeasurableSpace (EuclideanSpace ℝ ι) := MeasurableSpace.pi
 
-instance : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
+instance [Finite ι] : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
 
 /-- `WithLp.equiv` as a `MeasurableEquiv`. -/
 @[simps toEquiv]
