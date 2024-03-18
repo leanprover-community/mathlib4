@@ -15,8 +15,10 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 
 This file sets up the ordinal approximation theory of fixed points
 of a monotone function in a complete lattice [Cousot1979].
+The proof follows loosely the one from [Echenique2005].
 
-We loosly follow the proof from [Echenique2005].
+However, the proof given here is not constructive as we use the non-constructive axiomatization of
+ordinals from mathlib. It still allows an approximation scheme indexed over the ordinals.
 
 ## Main definitions
 
@@ -44,7 +46,7 @@ namespace Cardinal
 
 universe u
 variable {α : Type u}
-variable (g: Ordinal → α)
+variable (g : Ordinal → α)
 
 open Cardinal Ordinal SuccOrder Function
 
@@ -60,7 +62,7 @@ theorem not_injective_limitation : ¬ Injective (limitation g) := by
   have mk_initialSeg_subtype :
       #{ i : Ordinal // i < (ord <| succ #α) } = lift.{u+1, u} (succ #α) := by
     simpa only [card_typein, Set.coe_setOf, card_ord] using mk_initialSeg (ord <| succ #α)
-  rw[mk_initialSeg_subtype, Cardinal.lift_lift, Cardinal.lift_le] at h₁
+  rw [mk_initialSeg_subtype, Cardinal.lift_lift, Cardinal.lift_le] at h₁
   have h₂ := not_le_of_lt (Order.lt_succ #α)
   exact h₂ h₁
 
@@ -107,7 +109,7 @@ theorem lfpApprox_addition (a : Ordinal.{u}) : f (lfpApprox f a) = lfpApprox f (
   when reaching a fixed point of f -/
 theorem lfpApprox_stabilizing_at_fixedPoint (a : Ordinal.{u}) (h: lfpApprox f a ∈ fixedPoints f) :
     ∀ b > a, lfpApprox f b = lfpApprox f a := by
-  intro b hab; rw[mem_fixedPoints_iff] at h
+  intro b hab; rw [mem_fixedPoints_iff] at h
   induction b using Ordinal.induction with | h b IH =>
   apply le_antisymm
   · conv => left; unfold lfpApprox
@@ -116,14 +118,14 @@ theorem lfpApprox_stabilizing_at_fixedPoint (a : Ordinal.{u}) (h: lfpApprox f a 
       forall_apply_eq_imp_iff₂]
     intro a' ha'b
     by_cases haa : a' < a
-    · rw[lfpApprox_addition]
+    · rw [lfpApprox_addition]
       apply lfpApprox_monotone
       simp only [Ordinal.add_one_eq_succ, succ_le_iff]
       exact haa
     · simp only [not_lt] at haa
       cases le_iff_lt_or_eq.mp haa with
-      | inl haa => specialize IH a' ha'b haa; rw[IH, h]
-      | inr haa => rw[← haa, h]
+      | inl haa => specialize IH a' ha'b haa; rw [IH, h]
+      | inr haa => rw [← haa, h]
   · conv => right; unfold lfpApprox
     apply le_sSup
     simp only [exists_prop, Set.mem_setOf_eq]
@@ -131,11 +133,11 @@ theorem lfpApprox_stabilizing_at_fixedPoint (a : Ordinal.{u}) (h: lfpApprox f a 
 
 /-- Every value after a fixed point of f is also a fixed point of f -/
 theorem lfpApprox_ordinals_after_fixed_are_fixed (a : Ordinal.{u})
-    (h: lfpApprox f a ∈ fixedPoints f) : ∀ b > a, lfpApprox f b ∈ fixedPoints f  := by
+    (h : lfpApprox f a ∈ fixedPoints f) : ∀ b > a, lfpApprox f b ∈ fixedPoints f  := by
   intro b h_ab
-  rw[mem_fixedPoints_iff]
+  rw [mem_fixedPoints_iff]
   have h_stab := lfpApprox_stabilizing_at_fixedPoint f a h b h_ab
-  rw[h_stab]
+  rw [h_stab]
   exact mem_fixedPoints_iff.mp h
 
 /-- There are distinct ordinals smaller than the successor of the domains cardinals
@@ -145,18 +147,18 @@ theorem disctinct_ordinal_eq_lfpApprox : ∃ i < ord <| succ #α, ∃ j < ord <|
   have h_ninj := Function.Injective.exists_ne_of_not_injective
     (not_injective_limitation <| lfpApprox f)
   let ⟨a, b, h_nab, h_fab⟩ := h_ninj
-  rw[limitation_def, limitation_def] at h_fab
+  rw [limitation_def, limitation_def] at h_fab
   use a.val; apply And.intro a.prop
   use b.val; apply And.intro b.prop
   apply And.intro
-  · intro h_eq; rw[Subtype.coe_inj] at h_eq; exact h_nab h_eq
+  · intro h_eq; rw [Subtype.coe_inj] at h_eq; exact h_nab h_eq
   · exact h_fab
 
 /-- If there are distinct ordinals with equal value then the values are fixed points -/
 lemma lfpApprox_has_one_fixedPoint (a b : Ordinal.{u}) (h : a < b)
     (h_fab : lfpApprox f a = lfpApprox f b) :
     lfpApprox f a ∈ fixedPoints f := by
-  rw[mem_fixedPoints_iff,lfpApprox_addition]
+  rw [mem_fixedPoints_iff,lfpApprox_addition]
   apply Monotone.stabilizing (lfpApprox_monotone f)
     h_fab (a+1) (SuccOrder.succ_le_of_lt h) (SuccOrder.le_succ a)
 
@@ -193,7 +195,7 @@ theorem lfpApprox_le_fixedPoint : ∀ a : fixedPoints f, ∀ i : Ordinal, lfpApp
     simp only [exists_prop, Set.mem_setOf_eq, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂]
     intro j h_j
-    rw[← h_a]
+    rw [← h_a]
     apply f.monotone'
     exact IH j h_j
 
@@ -201,16 +203,16 @@ theorem lfpApprox_le_fixedPoint : ∀ a : fixedPoints f, ∀ i : Ordinal, lfpApp
 theorem lfpApprox_cardinal_is_lfp : lfpApprox f (ord <| succ #α) = lfp f := by
   apply le_antisymm
   · have h_lfp : ∃ x : fixedPoints f, lfp f = x := by use ⊥; exact rfl
-    let ⟨x, h_x⟩ := h_lfp; rw[h_x]
+    let ⟨x, h_x⟩ := h_lfp; rw [h_x]
     exact lfpApprox_le_fixedPoint f x (ord <| succ #α)
-  · have h_fix : ∃ x: fixedPoints f, lfpApprox f (ord <| succ #α) = x := by
+  · have h_fix : ∃ x : fixedPoints f, lfpApprox f (ord <| succ #α) = x := by
       simpa only [Subtype.exists, mem_fixedPoints, exists_prop, exists_eq_right'] using
         lfpApprox_has_fixedPoint_cardinal f
-    let ⟨x, h_x⟩ := h_fix; rw[h_x]
+    let ⟨x, h_x⟩ := h_fix; rw [h_x]
     exact lfp_le_fixed f x.prop
 
-/-- **Constructive Knaster-Tarski Theorem**: Some ordinal approximation of the least fixed point
-  is the least fixed point. Also known as ordinal approximation of the least fixed point.-/
+/-- Some ordinal approximation of the least fixed point is the least fixed point.
+  Also known as ordinal approximation of the least fixed point.-/
 theorem lfpApprox_is_lfp : ∃ a : Ordinal, lfpApprox f a = lfp f := by
   use (ord <| succ #α)
   exact lfpApprox_cardinal_is_lfp f
@@ -230,7 +232,7 @@ theorem gfpApprox_addition (a : Ordinal.{u}) : f (gfpApprox f a) = gfpApprox f (
 
 /-- The ordinal approximants of the least fixed points are stabilizing
   when reaching a fixed point of f -/
-theorem gfpApprox_stabilizing_at_fixedPoint (a : Ordinal.{u}) (h: gfpApprox f a ∈ fixedPoints f) :
+theorem gfpApprox_stabilizing_at_fixedPoint (a : Ordinal.{u}) (h : gfpApprox f a ∈ fixedPoints f) :
     ∀ b > a, gfpApprox f b = gfpApprox f a :=
   lfpApprox_stabilizing_at_fixedPoint (OrderHom.dual f) a h
 
@@ -257,9 +259,8 @@ lemma gfpApprox_ge_fixedPoint : ∀ a : fixedPoints f, ∀ i : Ordinal, gfpAppro
 theorem gfpApprox_cardinal_is_gfp : gfpApprox f (ord <| succ #α) = gfp f :=
   lfpApprox_cardinal_is_lfp (OrderHom.dual f)
 
-/-- **Dual Constructive Knaster-Tarski Theorem**: Some ordinal approximation of
-  the greatest fixed point is the greatest fixed point. Also known as ordinal approximation of
-  the greatest fixed point.-/
+/-- Some ordinal approximation of the greatest fixed point is the greatest fixed point.
+  Also known as ordinal approximation of the greatest fixed point.-/
 theorem gfpApprox_is_gfp : ∃ a : Ordinal, gfpApprox f a = gfp f :=
   lfpApprox_is_lfp (OrderHom.dual f)
 
