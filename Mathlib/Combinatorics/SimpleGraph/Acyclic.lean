@@ -3,7 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Bridge
 import Mathlib.Tactic.Linarith
 
 #align_import combinatorics.simple_graph.acyclic from "leanprover-community/mathlib"@"b07688016d62f81d14508ff339ea3415558d6353"
