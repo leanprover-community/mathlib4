@@ -10,6 +10,22 @@ open Mathlib.Tactic.CC
 
 open Lean Meta Elab Tactic
 
+/--
+info: {{b, if b > 0 then a else b, c, a},
+ {ℕ, ℕ},
+ {True, f (b + b) b = f (a + c) c, False},
+ {f (b + b), f (a + c)},
+ {f (b + b) b, f (a + c) c},
+ {0, d + if b > 0 then a else b},
+ {b + b, a + c}}
+---
+info: >>> Equivalence roots
+[b, ℕ, True, f (b + b), f (b + b) b, 0, b + b]
+---
+info: >>> b's equivalence class
+[a, c, if b > 0 then a else b, b]
+-/
+#guard_msgs in
 example (a b c d : Nat) (f : Nat → Nat → Nat) :
     a = b → b = c → d + (if b > 0 then a else b) = 0 → f (b + b) b ≠ f (a + c) c → False := by
   intro _ _ _ h
