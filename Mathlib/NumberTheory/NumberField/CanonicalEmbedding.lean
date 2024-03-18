@@ -1078,10 +1078,6 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   have : Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
     change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)): Set (E K))
     infer_instance
-  have : DiscreteTopology
-      (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
-    change DiscreteTopology (span ℤ (Set.range (fractionalIdealLatticeBasis K I)): Set (E K))
-    infer_instance
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure
       h_fund (fun _ ↦ convexBodySum_neg_mem K B) (convexBodySum_convex K B)
       (convexBodySum_compact K B) h
