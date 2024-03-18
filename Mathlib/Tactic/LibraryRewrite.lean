@@ -5,6 +5,25 @@ Authors: Jovan Gerbscheid, Anand Rao
 -/
 import Mathlib.Lean.Meta.RefinedDiscrTree.RefinedDiscrTree
 import Mathlib.Tactic.Widget.SelectPanelUtils
+
+/-!
+# Point & click library rewriting
+
+This file defines `rw??`, an interactive tactic that suggests rewrites for any expression selected
+by the user.
+
+We use a cached `RefinedDiscrTree` to lookup a list of candidate rewrite lemmas. The cache
+excludes lemmas defined in the `Mathlib/Tactic` folder, since these lemmas aren't
+supposed to ever be used directly.
+
+After this, each lemma is checked one by one to see whether it is applicable.
+
+The `RefinedDiscrTree` lookup groups the results by match pattern and gives a score to each pattern.
+This is used to display the results in sections, ordered by the score of the pattern.
+
+When a rewrite lemma intoduces new goals, these are shown to the user after a `⊢`.
+-/
+
 namespace Mathlib.Tactic.LibraryRewrite
 
 open Lean Meta Server
