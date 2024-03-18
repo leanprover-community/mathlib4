@@ -45,7 +45,7 @@ class IsReflexivePair (f g : A ⟶ B) : Prop where
   common_section' : ∃ s : B ⟶ A, s ≫ f = 𝟙 B ∧ s ≫ g = 𝟙 B
 #align category_theory.is_reflexive_pair CategoryTheory.IsReflexivePair
 
--- Porting note: added theorem, because of unsupported infer kinds
+-- Porting note (#10756): added theorem, because of unsupported infer kinds
 theorem IsReflexivePair.common_section (f g : A ⟶ B) [IsReflexivePair f g] :
     ∃ s : B ⟶ A, s ≫ f = 𝟙 B ∧ s ≫ g = 𝟙 B := IsReflexivePair.common_section'
 
@@ -56,7 +56,7 @@ class IsCoreflexivePair (f g : A ⟶ B) : Prop where
   common_retraction' : ∃ s : B ⟶ A, f ≫ s = 𝟙 A ∧ g ≫ s = 𝟙 A
 #align category_theory.is_coreflexive_pair CategoryTheory.IsCoreflexivePair
 
--- Porting note: added theorem, because of unsupported infer kinds
+-- Porting note (#10756): added theorem, because of unsupported infer kinds
 theorem IsCoreflexivePair.common_retraction (f g : A ⟶ B) [IsCoreflexivePair f g] :
     ∃ s : B ⟶ A, f ≫ s = 𝟙 A ∧ g ≫ s = 𝟙 A := IsCoreflexivePair.common_retraction'
 

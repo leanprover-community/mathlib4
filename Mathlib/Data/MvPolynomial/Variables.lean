@@ -103,16 +103,8 @@ theorem mem_vars (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support, i ∈ d.suppor
 
 theorem mem_support_not_mem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ} (H : x ∈ f.support)
     {v : σ} (h : v ∉ vars f) : x v = 0 := by
-  classical
-  rw [vars_def, Multiset.mem_toFinset] at h
-  rw [← Finsupp.not_mem_support_iff]
   contrapose! h
-  rw [degrees_def]
-  rw [show f.support = insert x f.support from Eq.symm <| Finset.insert_eq_of_mem H]
-  rw [Finset.sup_insert]
-  simp only [Multiset.mem_union, Multiset.sup_eq_union]
-  left
-  rwa [← toFinset_toMultiset, Multiset.mem_toFinset] at h
+  exact (mem_vars v).mpr ⟨x, H, Finsupp.mem_support_iff.mpr h⟩
 #align mv_polynomial.mem_support_not_mem_vars_zero MvPolynomial.mem_support_not_mem_vars_zero
 
 theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
@@ -124,36 +116,16 @@ theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
 
 theorem vars_add_of_disjoint [DecidableEq σ] (h : Disjoint p.vars q.vars) :
     (p + q).vars = p.vars ∪ q.vars := by
-  apply Finset.Subset.antisymm (vars_add_subset p q)
-  intro x hx
+  refine (vars_add_subset p q).antisymm fun x hx => ?_
   simp only [vars_def, Multiset.disjoint_toFinset] at h hx ⊢
-  rw [degrees_add_of_disjoint h, Multiset.toFinset_union]
-  exact hx
+  rwa [degrees_add_of_disjoint h, Multiset.toFinset_union]
 #align mv_polynomial.vars_add_of_disjoint MvPolynomial.vars_add_of_disjoint
 
 section Mul
 
 theorem vars_mul [DecidableEq σ] (φ ψ : MvPolynomial σ R) : (φ * ψ).vars ⊆ φ.vars ∪ ψ.vars := by
-  intro i
-  simp only [mem_vars, Finset.mem_union]
-  rintro ⟨d, hd, hi⟩
-  rw [mem_support_iff, coeff_mul] at hd
-  contrapose! hd
-  cases hd
-  rw [Finset.sum_eq_zero]
-  rintro ⟨d₁, d₂⟩ H
-  rw [Finset.mem_antidiagonal] at H
-  subst H
-  obtain H | H : i ∈ d₁.support ∨ i ∈ d₂.support := by
-    simpa only [Finset.mem_union] using Finsupp.support_add hi
-  · suffices coeff d₁ φ = 0 by simp [this]
-    rw [coeff, ← Finsupp.not_mem_support_iff]
-    intro
-    solve_by_elim
-  · suffices coeff d₂ ψ = 0 by simp [this]
-    rw [coeff, ← Finsupp.not_mem_support_iff]
-    intro
-    solve_by_elim
+  simp_rw [vars_def, ← Multiset.toFinset_add, Multiset.toFinset_subset]
+  exact Multiset.subset_of_le (degrees_mul φ ψ)
 #align mv_polynomial.vars_mul MvPolynomial.vars_mul
 
 @[simp]
