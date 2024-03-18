@@ -982,13 +982,14 @@ theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
 covolume. -/
 @[to_additive]
 theorem QuotientMeasureEqMeasurePreimage.covolume_ne_top
-    (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] [IsFiniteMeasure μ]
-    [hasFun : HasFundamentalDomain G α ν] :
+    (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] [IsFiniteMeasure μ] :
     covolume G α ν < ∞ := by
-  obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
-  have H : μ univ < ∞ := IsFiniteMeasure.measure_univ_lt_top
-  rw [h𝓕.projection_respects_measure_apply (μ := μ) MeasurableSet.univ] at H
-  simpa [h𝓕.covolume_eq_volume ν] using H
+  by_cases hasFun : HasFundamentalDomain G α ν
+  · obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
+    have H : μ univ < ∞ := IsFiniteMeasure.measure_univ_lt_top
+    rw [h𝓕.projection_respects_measure_apply (μ := μ) MeasurableSet.univ] at H
+    simpa [h𝓕.covolume_eq_volume ν] using H
+  · simp [covolume, hasFun]
 
 end QuotientMeasureEqMeasurePreimage
 
