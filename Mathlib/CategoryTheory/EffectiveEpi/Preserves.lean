@@ -128,11 +128,11 @@ class ReflectsEffectiveEpis (F : C ⥤ D) : Prop where
   A functor reflects effective epimorphisms if it only maps effective
   epimorphisms to effective epimorphisms.
   -/
-  reflects : ∀ {X Y : C} (f : X ⟶ Y) [EffectiveEpi (F.map f)], EffectiveEpi f
+  reflects : ∀ {X Y : C} (f : X ⟶ Y), EffectiveEpi (F.map f) → EffectiveEpi f
 
 lemma effectiveEpi_of_map (F : C ⥤ D) [F.ReflectsEffectiveEpis] {X Y : C} (f : X ⟶ Y)
-    [EffectiveEpi (F.map f)] : EffectiveEpi f :=
-  ReflectsEffectiveEpis.reflects F f
+    (h : EffectiveEpi (F.map f)) : EffectiveEpi f :=
+  ReflectsEffectiveEpis.reflects f h
 
 /--
 A class describing the property of reflecting effective epimorphic families.
@@ -142,14 +142,15 @@ class ReflectsEffectiveEpiFamilies (F : C ⥤ D) : Prop where
   A functor reflects effective epimorphic families if it only maps effective epimorphic families to
   effective epimorphic families.
   -/
-  reflects : ∀ {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    [EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))],
+  reflects : ∀ {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B)),
+    EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) →
     EffectiveEpiFamily X π
 
 lemma effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsEffectiveEpiFamilies.{_, _, u} F]
     {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    [EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))] : EffectiveEpiFamily X π :=
-  ReflectsEffectiveEpiFamilies.reflects F X π
+    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))) :
+    EffectiveEpiFamily X π :=
+  ReflectsEffectiveEpiFamilies.reflects X π h
 
 instance (F : C ⥤ D) [PreservesEffectiveEpiFamilies F] : PreservesEffectiveEpis F where
   preserves _ := inferInstance
