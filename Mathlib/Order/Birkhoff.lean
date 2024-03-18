@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Filipo A. E. Nuccio, Sam van Gool
 import Mathlib.Data.Finset.LocallyFinite.Basic
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Irreducible
-import Mathlib.Order.LocallyFinite
 import Mathlib.Order.UpperLower.Basic
 
 /-!
@@ -205,7 +204,6 @@ noncomputable def OrderIso.lowerSetSupIrred : α ≃o LowerSet {a : α // SupIrr
     (fun b c hbc d ↦ le_trans' hbc) fun s t hst ↦ Finset.sup_mono <| Set.toFinset_mono hst
 
 namespace OrderEmbedding
-variable [Fintype α]
 
 /-- **Birkhoff's Representation Theorem**. Any finite distributive lattice can be embedded in a
 powerset lattice. -/
@@ -256,7 +254,6 @@ variable [DecidableEq α]
 end OrderEmbedding
 
 namespace LatticeHom
-variable [Fintype α]
 
 /-- **Birkhoff's Representation Theorem**. Any finite distributive lattice can be embedded in a
 powerset lattice. -/
