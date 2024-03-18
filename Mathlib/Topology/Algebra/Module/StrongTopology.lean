@@ -79,7 +79,7 @@ def UniformConvergenceCLM [TopologicalSpace F] [TopologicalAddGroup F] (_ : Set 
 namespace UniformConvergenceCLM
 
 instance funLike [TopologicalSpace F] [TopologicalAddGroup F]
-    (𝔖 : Set (Set E)) : FunLike (UniformConvergenceCLM σ F 𝔖) E F := 
+    (𝔖 : Set (Set E)) : FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
   ContinuousLinearMap.funLike
 
 instance continuousSemilinearMapClass [TopologicalSpace F] [TopologicalAddGroup F]
