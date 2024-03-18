@@ -32,7 +32,6 @@ equipped with the subspace topology.
 open Set Filter Function Topology Filter
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
-
 variable [TopologicalSpace α]
 
 @[simp]
