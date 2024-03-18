@@ -190,7 +190,7 @@ lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) 
     apply analyticAt_const
   | succ m hm =>
     simp only [pow_succ]
-    exact hf.mul hm
+    exact hm.mul hf
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticOn.pow {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : ℕ) :

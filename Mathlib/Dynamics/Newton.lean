@@ -95,7 +95,7 @@ theorem aeval_pow_two_pow_dvd_aeval_iterate_newtonMap
         isNilpotent_iterate_newtonMap_sub_of_isNilpotent h n
       rw [derivative_map, eval_map_algebraMap, ← mul_assoc, mul_neg, Ring.mul_inverse_cancel _ this,
         neg_mul, one_mul, add_right_neg]
-    · rw [neg_mul, even_two.neg_pow, mul_pow, pow_succ', pow_mul]
+    · rw [neg_mul, even_two.neg_pow, mul_pow, pow_succ, pow_mul]
       exact dvd_mul_of_dvd_right (pow_dvd_pow_of_dvd ih 2) _
 
 /-- If `x` is almost a root of `P` in the sense that that `P(x)` is nilpotent (and `P'(x)` is a
