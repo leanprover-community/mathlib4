@@ -1630,6 +1630,7 @@ import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Set
+import Mathlib.Data.Finite.Small
 import Mathlib.Data.Finmap
 import Mathlib.Data.Finset.Antidiagonal
 import Mathlib.Data.Finset.Attr
@@ -1705,7 +1706,6 @@ import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Quotient
 import Mathlib.Data.Fintype.Sigma
-import Mathlib.Data.Fintype.Small
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Units
@@ -2709,7 +2709,6 @@ import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Small.Basic
 import Mathlib.Logic.Small.Defs
-import Mathlib.Logic.Small.Finite
 import Mathlib.Logic.Small.Group
 import Mathlib.Logic.Small.List
 import Mathlib.Logic.Small.Module
