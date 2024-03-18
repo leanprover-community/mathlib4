@@ -229,7 +229,7 @@ theorem is3Clique_exists_walk_isCycle_length_three (h : G.IsNClique 3 s) :
       · apply Adj.ne hbc
       · apply Adj.ne' hab
     · apply Adj.ne' hac
-  · simp only [length_cons, length_nil, zero_add, Nat.reduceAdd, w]
+  · repeat rw [length]
 
 end NClique
 
