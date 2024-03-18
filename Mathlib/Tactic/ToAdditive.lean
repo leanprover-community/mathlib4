@@ -11,6 +11,7 @@ import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
+import Lean.Meta.Tactic.Rfl
 import Std.Lean.NameMapAttribute
 import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
@@ -1132,7 +1133,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         {src} and the target declaration {tgt}."
     warnAttr stx Lean.Elab.Tactic.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
-    warnAttr stx Std.Tactic.reflExt (·.values.contains ·) thisAttr `refl src tgt
+    warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
     warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
     warnAttr stx Mathlib.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
     warnAttr stx Lean.Meta.coeExt (·.contains ·) thisAttr `coe src tgt
