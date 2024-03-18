@@ -163,8 +163,8 @@ theorem lfpApprox_has_fixedPoint_cardinal : lfpApprox f (ord <| succ #α) ∈ fi
     exact lfpApprox_mem_fixedPoints_of_eq f (h_nab.symm.lt_of_le h_ba) (le_of_lt h_b) (h_fab.symm)
 
 /-- Every value of the ordinal approximants are less or equal than every fixed point of f -/
-theorem lfpApprox_le_fixedPoint : ∀ a ∈ fixedPoints f, ∀ i : Ordinal, lfpApprox f i ≤ a := by
-  intro a h_a i
+theorem lfpApprox_le_fixedPoint {a : α} (h_a : a ∈ fixedPoints f) (i : Ordinal) :
+    lfpApprox f i ≤ a := by
   induction i using Ordinal.induction with
   | h i IH =>
     unfold lfpApprox
@@ -181,7 +181,7 @@ theorem lfpApprox_cardinal_is_lfp : lfpApprox f (ord <| succ #α) = lfp f := by
   apply le_antisymm
   · have h_lfp : ∃ x : fixedPoints f, lfp f = x := by use ⊥; exact rfl
     let ⟨x, h_x⟩ := h_lfp; rw [h_x]
-    exact lfpApprox_le_fixedPoint f x x.2 (ord <| succ #α)
+    exact lfpApprox_le_fixedPoint f x.2 (ord <| succ #α)
   · have h_fix : ∃ x : fixedPoints f, lfpApprox f (ord <| succ #α) = x := by
       simpa only [Subtype.exists, mem_fixedPoints, exists_prop, exists_eq_right'] using
         lfpApprox_has_fixedPoint_cardinal f
@@ -223,8 +223,8 @@ lemma gfpApprox_has_fixedPoint_cardinal : gfpApprox f (ord <| succ #α) ∈ fixe
   lfpApprox_has_fixedPoint_cardinal (OrderHom.dual f)
 
 /-- Every value of the ordinal approximants are greater or equal than every fixed point of f -/
-lemma gfpApprox_ge_fixedPoint : ∀ a ∈ fixedPoints f, ∀ i : Ordinal, gfpApprox f i ≥ a :=
-  lfpApprox_le_fixedPoint (OrderHom.dual f)
+lemma gfpApprox_ge_fixedPoint {a : α} (h_a : a ∈ fixedPoints f) (i : Ordinal) : gfpApprox f i ≥ a :=
+  lfpApprox_le_fixedPoint (OrderHom.dual f) h_a i
 
 /-- The greatest fixed point of f is reached after the successor of the domains cardinality -/
 theorem gfpApprox_cardinal_is_gfp : gfpApprox f (ord <| succ #α) = gfp f :=
