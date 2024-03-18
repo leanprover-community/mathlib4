@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 /-!
 # Ample subsets of real vector spaces
 
-In this file we study ample set in real vector spaces. A set is ample if all its connected
+In this file we study ample sets in real vector spaces. A set is ample if all its connected
 component have full convex hull. Ample sets are an important ingredient for defining ample
 differential relations.
 
@@ -17,7 +17,7 @@ differential relations.
 - `ampleSet_empty` and `ampleSet_univ`: the empty set and `univ` are ample
 - `AmpleSet.union`: the union of two ample sets is ample
 - `AmpleSet.{pre}image`: being ample is invariant under continuous affine equivalences
-- `AmpleSet.vadd`: in particular, ampleness is invariant under affine translations
+- `AmpleSet.vadd`: in particular, ample-ness is invariant under affine translations
 
 ## TODO
 `AmpleSet.of_two_le_codim`: a linear subspace of codimension at least two has ample complement.
@@ -63,8 +63,8 @@ theorem ampleSet_empty : AmpleSet (∅ : Set F) := fun _ h ↦ False.elim h
 theorem AmpleSet.union {s t : Set F} (hs : AmpleSet s) (ht : AmpleSet t) : AmpleSet (s ∪ t) := by
   intro x hx
   rcases hx with (h | h)
-  -- The connected component of x ∈ s in s ∪ t contains the connected component of x in s,
-  -- similarly for `t`.
+  -- The connected component of `x ∈ s` in `s ∪ t` contains the connected component of `x` in `s`,
+  -- hence is also full; similarly for `t`.
   · rw [← Set.univ_subset_iff, ← hs x h]
     apply convexHull_mono
     apply connectedComponentIn_mono
