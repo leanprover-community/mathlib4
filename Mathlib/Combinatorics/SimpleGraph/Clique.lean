@@ -202,28 +202,28 @@ theorem is3Clique_iff :
     exact is3Clique_triple_iff.2 ⟨hab, hbc, hca⟩
 #align simple_graph.is_3_clique_iff SimpleGraph.is3Clique_iff
 
-/- A 3-clique in a graph implies that the graph has a cycle. -/
-theorem is3Clique_exists_walk_isCycle (h : G.IsNClique 3 s) :
-    (∃ (u : α) (w : G.Walk u u), w.IsCycle) := by
+/- A 3-clique in a graph implies that the graph has a cycle of length 3. -/
+theorem is3Clique_exists_walk_isCycle_length_three (h : G.IsNClique 3 s) :
+    ∃ (u : α) (w : G.Walk u u), w.IsCycle ∧ w.length = 3 := by
   rw [is3Clique_iff] at h
-  have ⟨a, b, c,  h, h', h'', _⟩ := h
-  let w := cons h (cons h'' (cons (Adj.symm h') nil))
+  have ⟨a, b, c, hab, hac, hbc, _⟩ := h
+  let w := cons hab (cons hbc (cons (Adj.symm hac) nil))
   apply Exists.intro a
   apply Exists.intro w
   rw [isCycle_def]
-  refine' ⟨_, _, _⟩
+  refine' ⟨⟨_, _, _⟩, _⟩
   · simp only [w, cons_isTrail_iff, IsTrail.nil, edges_nil, List.not_mem_nil, not_false_eq_true,
       and_self, edges_cons, List.mem_singleton, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
       Prod.swap_prod_mk, and_true, true_and, List.mem_cons]
     push_neg
     rw [not_false_eq_true, and_true, and_true]
     refine' ⟨_, _, _⟩ <;> apply And.intro
-    · intro; apply Adj.ne' h'
-    · apply Adj.ne' h
-    · intro; apply Adj.ne h''
-    · apply Adj.ne h'
-    · intro; apply Adj.ne' h
-    · apply Adj.ne h''
+    · intro; apply Adj.ne' hac
+    · apply Adj.ne' hab
+    · intro; apply Adj.ne hbc
+    · apply Adj.ne hac
+    · intro; apply Adj.ne' hab
+    · apply Adj.ne hbc
   · simp only [ne_eq, not_false_eq_true]
   · have hn : List.Nodup [b, c, a] := by
       simp only [List.nodup_cons, List.mem_cons, List.mem_singleton, List.not_mem_nil,
@@ -232,10 +232,11 @@ theorem is3Clique_exists_walk_isCycle (h : G.IsNClique 3 s) :
       rw [not_false_eq_true, and_true, and_true]
       apply And.intro
       · apply And.intro
-        · apply Adj.ne h''
-        · apply Adj.ne' h
-      · apply Adj.ne' h'
+        · apply Adj.ne hbc
+        · apply Adj.ne' hab
+      · apply Adj.ne' hac
     exact hn
+  · simp only [length_cons, length_nil, zero_add, Nat.reduceAdd, w]
 
 end NClique
 
