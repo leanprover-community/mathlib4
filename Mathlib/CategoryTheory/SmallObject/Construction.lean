@@ -154,7 +154,7 @@ lemma ι_functorMapSrc (i : I) (t : A i ⟶ X) (b : B i ⟶ S) (w : t ≫ πX = 
       Sigma.ι (functorObjSrcFamily f πY)
         (FunctorObjIndex.mk i t' b (by rw [← w, ← fac, assoc, hφ])) := by
   subst fac
-  erw [Sigma.ι_comp_map', id_comp]
+  simp [functorMapSrc]
 
 @[reassoc (attr := simp)]
 lemma functorMapSrc_functorObjTop :
