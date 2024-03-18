@@ -177,7 +177,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     · simp only [one_div, Nat.zero_eq, one_mul, iterate_zero_apply, pow_zero, le_rfl]
     · rw [iterate_succ']
       apply le_trans (hle _) _
-      rw [pow_succ, mul_assoc]
+      rw [pow_succ', mul_assoc]
       gcongr
   let u n := g (h^[n] y)
   have ule : ∀ n, ‖u n‖ ≤ (1 / 2) ^ n * (C * ‖y‖) := fun n ↦ by
