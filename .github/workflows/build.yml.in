@@ -240,8 +240,8 @@ jobs:
       - name: check for noisy stdout lines
         id: noisy
         run: |
-          ! grep --after-context=1 "stdout:" stdout.log
-          ! grep --after-context=1 "stderr:" stdout.log
+          grep --after-context=1 "stdout:" stdout.log && exit 1
+          grep --after-context=1 "stderr:" stdout.log && exit 1
 
       - name: check declarations in db files
         run: |
