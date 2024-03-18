@@ -5,6 +5,7 @@ Authors: Miyahara Kō
 -/
 
 import Mathlib.Tactic.Measurability.Init
+import Mathlib.Algebra.Group.Defs
 
 /-!
 # Measurability
