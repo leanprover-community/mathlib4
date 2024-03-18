@@ -159,6 +159,21 @@ protected theorem congr_fun {f g : P1 →ᵃ[k] P2} (h : f = g) (x : P1) : f x =
   h ▸ rfl
 #align affine_map.congr_fun AffineMap.congr_fun
 
+/-- Two affine maps are equal if they have equal linear maps and are equal at some point. -/
+theorem ext_linear {f g : P1 →ᵃ[k] P2} (h₁ : f.linear = g.linear) {p : P1} (h₂ : f p = g p) :
+    f = g := by
+  ext q
+  have hgl : g.linear (q -ᵥ p) = toFun g ((q -ᵥ p) +ᵥ q) -ᵥ toFun g q := by simp
+  have := f.map_vadd' q (q -ᵥ p)
+  rw [h₁, hgl, toFun_eq_coe, map_vadd, linearMap_vsub, h₂] at this
+  simp at this
+  exact this
+
+/-- Two affine maps are equal if they have equal linear maps and are equal at some point. -/
+theorem ext_linear_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ (f.linear = g.linear) ∧ (∃ p, f p = g p) :=
+  ⟨fun h ↦ ⟨congrArg _ h, by inhabit P1; exact default, by rw [h]⟩,
+  fun h ↦ Exists.casesOn h.2 fun _ hp ↦ ext_linear h.1 hp⟩
+
 variable (k P1)
 
 /-- The constant function as an `AffineMap`. -/
@@ -704,13 +719,13 @@ end AffineMap
 
 namespace AffineMap
 
-variable {R k V1 P1 V2 : Type*}
+variable {R k V1 P1 V2 P2 V3 P3 : Type*}
 
 section Ring
 
-variable [Ring k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
+variable [Ring k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2] [AffineSpace V2 P2]
 
-variable [Module k V1] [Module k V2]
+variable [AddCommGroup V3] [AffineSpace V3 P3] [Module k V1] [Module k V2] [Module k V3]
 
 section DistribMulAction
 
@@ -756,6 +771,114 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) w
 #align affine_map.to_const_prod_linear_map AffineMap.toConstProdLinearMap
 
 end Module
+
+section Pi
+
+-- The pi construction for AffineMaps. This accepts dependent types in both the module V
+-- and the AffineSpace P. This leads to pretty unreadable / un-loogle-able type signatures,
+-- so a non-dependent pi construction pi' is also given with corresponding theorems.
+
+variable {ι : Type*} {φv φp : ι → Type*} [(i : ι) → AddCommGroup (φv i)]
+  [(i : ι) → Module k (φv i)] [(i : ι) → AffineSpace (φv i) (φp i)]
+
+/-- The dependently-typed version of `AffineMap.pi`, where the module `V1 := φv i` and the
+ AffineSpace `P2 := φp i` can depend on the index `i : ι`.
+-/
+def pi (f : (i : ι) → (P1 →ᵃ[k] φp i)) : P1 →ᵃ[k] ((i : ι) → φp i) where
+  toFun m a := f a m
+  linear := LinearMap.pi (fun a ↦ (f a).linear)
+  map_vadd' _ _ := funext fun _ ↦ map_vadd _ _ _
+
+--fp for when the image is a dependent AffineSpace φp i, fv for when the
+--image is a Module φv i, f' for when the image isn't dependent.
+variable (fp : (i : ι) → (P1 →ᵃ[k] φp i)) (fv : (i : ι) → (P1 →ᵃ[k] φv i))
+  (f' : ι → P1 →ᵃ[k] P2)
+
+@[simp]
+theorem pi_apply (c : P1) (i : ι) : pi fp c i = fp i c :=
+  rfl
+
+theorem pi_comp (g : P3 →ᵃ[k] P1) : (pi fp).comp g = pi (fun i => (fp i).comp g) :=
+  rfl
+
+theorem pi_eq_zero : pi fv = 0 ↔ ∀ i, fv i = 0 := by
+  simp only [AffineMap.ext_iff, Function.funext_iff, pi_apply]
+  exact forall_comm
+
+theorem pi_zero : pi (fun _ ↦ 0 : (i : ι) → P1 →ᵃ[k] φv i) = 0 := by
+  ext; rfl
+
+theorem proj_pi (i : ι) : (proj i).comp (pi fp) = fp i :=
+  ext fun _ => rfl
+
+/-- An ι-indexed collection of AffineMaps `P1 →ᵃ P2` lifts to an AffineMap from P1 to the
+  Module of functions, `ι → P2`. This module is `Pi.module`. This is the AffineMap analog
+  of `LinearMap.pi`. Actually defeq to `AffineMap.pi'` but the type signature is
+  much easier to read.
+-/
+abbrev pi' : (ι → (P1 →ᵃ[k] P2)) → P1 →ᵃ[k] (ι → P2) := pi
+
+@[simp]
+theorem pi'_apply (c : P1) (i : ι) : pi' f' c i = f' i c :=
+  rfl
+
+theorem pi'_comp {V3 P3 : Type*} [AddCommGroup V3] [Module k V3] [AffineSpace V3 P3]
+    (g : P3 →ᵃ[k] P1) : (pi' f').comp g = pi' (fun i => (f' i).comp g) :=
+  rfl
+
+theorem pi'_eq_zero (f : (i : ι) → P1 →ᵃ[k] V2) : pi' f = 0 ↔ ∀ i, f i = 0 :=
+  pi_eq_zero f
+
+theorem pi'_zero : pi' (fun _ ↦ 0 : (i : ι) → P1 →ᵃ[k] V2) = 0 := by ext; rfl
+
+theorem proj_pi' (i : ι) : (proj i).comp (pi' f') = f' i :=
+  ext fun _ => rfl
+
+section Ext
+
+variable [Finite ι] [DecidableEq ι] {f g : ((i : ι) → φv i) →ᵃ[k] P2}
+
+/-- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
+  operation on `Pi.single` and at zero. Analogous to `LinearMap.pi_ext`. See also `pi_ext_nonempty`,
+  which instead of agrement at zero requires `Nonempty ι`. -/
+theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ : f 0 = g 0) :
+    f = g := by
+  apply ext_linear
+  next =>
+    apply LinearMap.pi_ext
+    intro i x
+    have s₁ := h i x
+    have s₂ := f.map_vadd 0 (Pi.single i x)
+    have s₃ := g.map_vadd 0 (Pi.single i x)
+    rw [vadd_eq_add, add_zero] at s₂ s₃
+    replace h₂ := h i 0
+    simp at h₂
+    rwa [s₂, s₃, h₂, vadd_right_cancel_iff] at s₁
+  next =>
+    exact h₂
+
+/-- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
+  operation on `Pi.single` and `ι` is nonempty.  Analogous to `LinearMap.pi_ext`. See also
+  `pi_ext_zero`, which instead `Nonempty ι` requires agreement at 0.-/
+theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) :
+    f = g := by
+  apply pi_ext_zero h
+  rw [← Pi.single_zero]
+  apply h
+  inhabit ι
+  exact default
+
+/-- This is used as the ext lemma instead of `AffineMap.pi_ext_nonempty` for reasons explained in
+note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'`-/
+@[ext]
+theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single i).toAffineMap =
+    g.comp (LinearMap.single i).toAffineMap) : f = g := by
+  refine' pi_ext_nonempty fun i x => _
+  convert AffineMap.congr_fun (h i) x
+
+end Ext
+
+end Pi
 
 end Ring
 
