@@ -312,7 +312,7 @@ private lemma can_decomp_into_parallel_and_orthogonal {v v' : V} (w : V) {m : �
 
   constructor
   all_goals {
-    simp [Real.sin_sq]
+    rw [Real.sin_sq]
     ring
   }
 
@@ -348,18 +348,18 @@ private lemma orthoReflection_mul_orthoReflection_pow_order {v v' : V} {m : ℕ}
 acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`.
 -/
 def standardGeometricRepresentation : Representation ℝ W V := cs.lift (
-    show IsLiftable M (fun i ↦ (r (cs.standardBilinForm_simpleRoot_self i))) by
-      unfold IsLiftable
-      intro i i'
-      dsimp
-      rcases em (i = i') with rfl | ne
-      · simp [orthoReflection_sqr_eq_id, ← LinearMap.one_eq_id]
-      · let m := M i i'
-        have hm : m ≠ 1 := cs.isCoxeter.off_diagonal i i' ne
-        apply cs.orthoReflection_mul_orthoReflection_pow_order
-        · exact cs.standardBilinForm_simpleRoot_simpleRoot i i'
-        · exact hm
-  )
+  show IsLiftable M (fun i ↦ (r (cs.standardBilinForm_simpleRoot_self i))) by
+    unfold IsLiftable
+    intro i i'
+    dsimp
+    rcases em (i = i') with rfl | ne
+    · simp [orthoReflection_sqr_eq_id, ← LinearMap.one_eq_id]
+    · let m := M i i'
+      have hm : m ≠ 1 := cs.isCoxeter.off_diagonal i i' ne
+      apply cs.orthoReflection_mul_orthoReflection_pow_order
+      · exact cs.standardBilinForm_simpleRoot_simpleRoot i i'
+      · exact hm
+)
 
 end
 
@@ -417,6 +417,12 @@ theorem SGR_simpleRoot_pos_iff (w : W) (i : B) :
 theorem SGR_simpleRoot_neg_iff (w : W) (i : B) :
     ℓ (w * s i) + 1 = ℓ w ↔ IsNegative (cs.SGR w (α i)) := by
   sorry
+
+theorem SGR_injective : Function.Injective cs.SGR := by
+  sorry
+
+alias SGR_faithful := SGR_injective
+
 end CoxeterSystem
 
 end
