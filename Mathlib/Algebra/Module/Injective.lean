@@ -445,7 +445,7 @@ protected theorem extension_property (h : Module.Baer R Q)
     { toFun := ((extensionOfMax f g).toLinearPMap
         ⟨·, (extensionOfMax_to_submodule_eq_top f g h).symm ▸ ⟨⟩⟩)
       map_add' := fun x y ↦ by rw [← LinearPMap.map_add]; congr
-      map_smul' := fun r x ↦  by rw [← LinearPMap.map_smul]; dsimp } <|
+      map_smul' := fun r x ↦ by rw [← LinearPMap.map_smul]; dsimp } <|
     LinearMap.ext fun x ↦ ((extensionOfMax f g).is_extension x).symm
 
 theorem extension_property_addMonoidHom (h : Module.Baer ℤ Q)

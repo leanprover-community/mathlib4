@@ -641,6 +641,9 @@ instance : HasPullbacks.{u} (Type u) :=
   -- inferInstance
   hasPullbacks_of_hasWidePullbacks.{u} (Type u)
 
+instance : HasPushouts.{u} (Type u) :=
+  hasPushouts_of_hasWidePushouts.{u} (Type u)
+
 variable {W X Y Z : Type u}
 
 variable (f : X ⟶ Z) (g : Y ⟶ Z)

@@ -1195,7 +1195,7 @@ theorem ofEq_symm (h : p = q) : (ofEq p q h).symm = ofEq q p h.symm :=
 #align linear_isometry_equiv.of_eq_symm LinearIsometryEquiv.ofEq_symm
 
 @[simp]
-theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := by funext; rfl
+theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := rfl
 #align linear_isometry_equiv.of_eq_rfl LinearIsometryEquiv.ofEq_rfl
 
 end LinearIsometryEquiv
