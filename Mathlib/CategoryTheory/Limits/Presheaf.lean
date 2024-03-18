@@ -9,6 +9,8 @@ import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Limits.Over
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Opposites
 
 #align_import category_theory.limits.presheaf from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -482,6 +484,8 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
     erw [Equiv.symm_apply_apply, ← yonedaEquiv_comp']
     exact congr_arg _ (h (CostructuredArrow.mk t))
 
+section
+
 variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
 
 /-- Given a functor `F : I ⥤ C`, a cocone `c` on `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v₁` induces a
@@ -508,6 +512,69 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
     (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt))
   exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)
+
+end
+
+section
+
+variable [IsFiltered (CostructuredArrow yoneda P)]
+
+section
+
+variable {I : Type} [SmallCategory I] [FinCategory I] (F : I ⥤ Cᵒᵖ) [HasLimit F]
+
+local instance : HasColimit (CostructuredArrow.proj yoneda P ⋙ yoneda) :=
+  ⟨_, isColimitTautologicalCocone _⟩
+
+noncomputable def x : P ≅ colimit (CostructuredArrow.proj yoneda P ⋙ yoneda) :=
+  IsColimit.coconePointUniqueUpToIso (isColimitTautologicalCocone _) (colimit.isColimit _)
+
+instance : HasColimit ((CostructuredArrow.proj yoneda P ⋙ yoneda) ⋙ (evaluation Cᵒᵖ (Type v₁)).obj (limit F)) := sorry
+instance : HasColimit (CostructuredArrow.proj yoneda P ⋙ yoneda ⋙ (evaluation Cᵒᵖ (Type v₁)).obj (limit F)) := sorry
+instance : HasColimit (CostructuredArrow.proj yoneda P ⋙ coyoneda.obj (limit F)) := sorry
+instance : HasColimit (CostructuredArrow.proj yoneda P ⋙ limit (F ⋙ coyoneda)) := sorry
+instance : HasColimit (CostructuredArrow.proj yoneda P ⋙ (F ⋙ coyoneda).flip ⋙ lim) := sorry
+instance : HasColimit ((CostructuredArrow.proj yoneda P ⋙ (F ⋙ coyoneda).flip) ⋙ lim) := sorry
+instance : HasColimit ((F ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj yoneda P)).flip ⋙ lim) := sorry
+instance : HasColimit (limit (F ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj yoneda P))) := sorry
+instance : HasColimit ((F ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj yoneda P)).flip) := sorry
+instance : HasLimit (colimit (F ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj yoneda P)).flip) := sorry
+-- def theFunctorToInterchange : CostructuredArrow yoneda P ⥤ I ⥤ Type v :=
+--   Co
+
+def blu : I ⥤ CostructuredArrow yoneda P ⥤ Type v₁ :=
+  F ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj yoneda P)
+
+noncomputable def theIso : P.obj (limit F) ≅ limit (F ⋙ P) := calc
+  P.obj (limit F) ≅ (colimit (CostructuredArrow.proj yoneda P ⋙ yoneda)).obj (limit F) := (x P).app _
+  _ ≅ colimit ((CostructuredArrow.proj yoneda P ⋙ yoneda) ⋙ (evaluation _ _).obj (limit F)) := sorry
+  _ ≅ colimit (CostructuredArrow.proj yoneda P ⋙ yoneda ⋙ (evaluation _ _ ).obj (limit F)) := sorry
+  _ ≅ colimit (CostructuredArrow.proj yoneda P ⋙ coyoneda.obj (limit F)) := sorry
+  _ ≅ colimit (CostructuredArrow.proj yoneda P ⋙ limit (F ⋙ coyoneda)) := sorry
+  _ ≅ colimit (CostructuredArrow.proj yoneda P ⋙ (F ⋙ coyoneda).flip ⋙ lim) := sorry
+  _ ≅ colimit ((CostructuredArrow.proj yoneda P ⋙ (F ⋙ coyoneda).flip) ⋙ lim) := Iso.refl _
+  _ ≅ colimit ((F ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj yoneda P)).flip ⋙ lim) := sorry
+  _ ≅ colimit (limit (F ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj yoneda P))) := sorry
+  _ ≅ limit (colimit (F ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj yoneda P)).flip) := sorry
+  _ ≅ limit (F ⋙ P) := sorry
+
+
+-- noncomputable def theIso' {X : Cᵒᵖ} : (P.obj (limit F)).obj X ≅ (limit (F ⋙ P)).obj X := sorry
+
+theorem theIso_hom : (theIso P F).hom = limit.post F P := sorry
+
+end
+
+noncomputable def preservesFiniteLimitsOfIsFilteredCostructuredArrowYoneda [HasFiniteColimits C] :
+    PreservesFiniteLimits P where
+  preservesFiniteLimits J _ _ :=
+    { preservesLimit := fun {F} => by
+        have : HasLimitsOfShape J Cᵒᵖ := hasLimitsOfShape_op_of_hasColimitsOfShape
+        suffices IsIso (limit.post F P) from preservesLimitOfIsIsoPost _ _
+        rw [← theIso_hom]
+        infer_instance }
+
+end
 
 end ArbitraryUniverses
 

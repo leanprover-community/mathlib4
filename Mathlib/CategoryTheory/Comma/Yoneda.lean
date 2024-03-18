@@ -142,8 +142,6 @@ theorem isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits [HasFiniteC
     { out := fun J _ _ => inferInstance }
   apply IsFiltered.of_hasFiniteColimits
 
-#print axioms isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits
-
 end Presheaf
 
 end CategoryTheory
