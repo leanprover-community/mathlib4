@@ -112,8 +112,7 @@ jobs:
     - name: Read lean-toolchain from current branch
       id: current_version
       run: |
-        echo "current_version=$(grep 'leanprover/lean4:nightly-' lean-toolchain | sed 's/leanprover\/lean4:nightly-//')" >> $GITHUB_ENV
-        echo "::set-output name=current_version::$(grep 'leanprover/lean4:nightly-' < lean-toolchain | sed 's/leanprover\/lean4:nightly-//')"
+        echo "current_version=$(grep 'leanprover/lean4:nightly-' lean-toolchain | sed 's/leanprover\/lean4:nightly-//')" >> $GITHUB_OUTPUT
 
     - name: Check for matching bump/nightly-YYYY-MM-DD branch
       id: check_branch
