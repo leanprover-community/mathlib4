@@ -144,32 +144,4 @@ theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
 
 end Field
 
-section NontriviallyNormedField
-
-variable {R V : Type*} [NontriviallyNormedField R] [CompleteSpace R] [AddCommGroup V]
-  [TopologicalSpace V] [TopologicalAddGroup V] [Module R V] [ContinuousSMul R V]
-  [SeparatingDual R V]
-
-/-- Any finite-dimensional separated subspace of a topological vector space with separating dual
-is closed complemented.-/
-theorem truc (W : Submodule R V) [FiniteDimensional R W] [T2Space W] : W.ClosedComplemented := by
-  have hsur := SeparatingDual.dualMap_surjective_iff.mpr W.injective_subtype
-  letI : Set.Finite (Basis.ofVectorSpaceIndex R W) :=
-    Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (Module.rank_lt_alpeh0_iff.mpr inferInstance)
-  existsi (Basis.ofVectorSpace R W).equivFunL.symm.toContinuousLinearMap.comp
-    (ContinuousLinearMap.pi (fun i ↦ Classical.choose (hsur ((Basis.ofVectorSpace R W).coord i))))
-  intro x
-  refine (Basis.ofVectorSpace R W).equivFunL.injective ?_
-  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe,
-    ContinuousLinearMap.coe_pi', ContinuousLinearEquiv.apply_symm_apply]
-  ext i
-  simp only [Basis.equivFunL_apply]
-  have := Classical.choose_spec (hsur ((Basis.ofVectorSpace R W).coord i))
-  apply_fun (fun f ↦ f x) at this
-  simp only [Function.comp_apply, LinearMap.dualMap_apply, Submodule.coeSubtype,
-    ContinuousLinearMap.coe_coe, Basis.coord_apply] at this
-  exact this
-
-end NontriviallyNormedField
-
 end SeparatingDual

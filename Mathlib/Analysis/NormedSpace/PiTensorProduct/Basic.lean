@@ -283,6 +283,17 @@ noncomputable def mapL : (⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i :=
     mapL f (tprod 𝕜 x) = tprod 𝕜 fun i ↦ f i (x i) :=
   liftIsometry.tprodL _
 
+@[simp]
+theorem mapL_coe : (mapL f).toLinearMap = map (fun i ↦ (f i).toLinearMap) := by
+  ext
+  simp only [LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe, mapL_tprod, map_tprod]
+
+@[simp]
+theorem mapL_apply (x : ⨂[𝕜] i, E i) : mapL f x = map (fun i ↦ (f i).toLinearMap) x := by
+  induction' x using PiTensorProduct.induction_on with _ _ _ _ hx hy
+  · simp only [map_smul, mapL_tprod, map_tprod, ContinuousLinearMap.coe_coe]
+  · simp only [map_add, hx, hy]
+
 /-- Given submodules `p i ⊆ E i`, this is the natural map: `⨂[𝕜] i, p i → ⨂[𝕜] i, E i`.
 This is the continuous version of `PiTensorProduct.mapIncl`.
 -/
@@ -293,9 +304,8 @@ noncomputable def mapLIncl (p : Π i, Submodule 𝕜 (E i)) : (⨂[𝕜] i, p i)
 theorem mapL_comp : mapL (fun (i : ι) ↦ g i ∘L f i) = mapL g ∘L mapL f := by
   apply ContinuousLinearMap.coe_injective
   ext
-  simp only [LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe, mapL_tprod,
-    ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.coe_comp,
-    LinearMap.coe_comp]
+  simp only [mapL_coe, ContinuousLinearMap.coe_comp, LinearMap.compMultilinearMap_apply, map_tprod,
+    LinearMap.coe_comp, ContinuousLinearMap.coe_coe, Function.comp_apply]
 
 theorem liftIsometry_comp_mapL (h : ContinuousMultilinearMap 𝕜 E' F) :
     liftIsometry.toFun h ∘L mapL f = liftIsometry.toFun (h.compContinuousLinearMap f) := by
@@ -335,6 +345,64 @@ noncomputable def mapLMonoidHom : (Π i, E i →L[𝕜] E i) →* ((⨂[𝕜] i,
 protected theorem mapL_pow (f : Π i, E i →L[𝕜] E i) (n : ℕ) :
     mapL (f ^ n) = mapL f ^ n := MonoidHom.map_pow mapLMonoidHom _ _
 
+open Function in
+private theorem mapL_add_smul_aux [DecidableEq ι] (i : ι) (u : E i →L[𝕜] E' i) :
+    (fun j ↦ (update f i u j).toLinearMap) =
+    update (fun j ↦ (f j).toLinearMap) i u.toLinearMap := by
+  symm
+  rw [update_eq_iff]
+  constructor
+  · simp only [update_same]
+  · exact fun _ h ↦ by simp only [ne_eq, h, not_false_eq_true, update_noteq]
+
+open Function in
+protected theorem mapL_add [DecidableEq ι] (i : ι) (u v : E i →L[𝕜] E' i) :
+    mapL (update f i (u + v)) = mapL (update f i u) + mapL (update f i v) := by
+  ext x
+  simp only [mapL_apply, mapL_add_smul_aux, ContinuousLinearMap.coe_add, PiTensorProduct.map_add,
+    LinearMap.add_apply, ContinuousLinearMap.add_apply]
+
+open Function in
+protected theorem mapL_smul [DecidableEq ι] (i : ι) (c : 𝕜) (u : E i →L[𝕜] E' i) :
+    mapL (update f i (c • u)) = c • mapL (update f i u) := by
+  ext x
+  simp only [mapL_apply, mapL_add_smul_aux, ContinuousLinearMap.coe_smul, PiTensorProduct.map_smul,
+    LinearMap.smul_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply]
+
+theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
+  rw [ContinuousLinearMap.opNorm_le_iff (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
+  intro x
+  rw [mapL, liftIsometry]
+  simp only
+  rw [liftEquiv]
+  simp only [LinearMap.mkContinuous_apply]
+  refine le_trans (injectiveSeminorm_bound _ _) (mul_le_mul_of_nonneg_right ?_ (norm_nonneg x))
+  rw [ContinuousMultilinearMap.opNorm_le_iff _ (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
+  intro m
+  simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply]
+  refine le_trans (injectiveSeminorm_tprod_le (fun i ↦ (f i) (m i))) ?_
+  rw [← Finset.prod_mul_distrib]
+  exact Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) (fun _ _ ↦ ContinuousLinearMap.le_opNorm _ _ )
+
+variable (𝕜 E E')
+
+/-- The tensor of a family of linear maps from `sᵢ` to `tᵢ`, as a multilinear map of
+the family.
+-/
+@[simps!]
+noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ E i →L[𝕜] E' i)
+    ((⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i) :=
+  MultilinearMap.mkContinuous
+  { toFun := mapL
+    map_smul':= fun _ _ _ _ ↦ PiTensorProduct.mapL_smul _ _ _ _
+    map_add' := fun _ _ _ _ ↦ PiTensorProduct.mapL_add _ _ _ _}
+  1 (fun f ↦ by rw [one_mul]; exact mapL_opNorm f)
+
+variable {𝕜 E E'}
+
+theorem mapLMultilinear_opNorm : ‖mapLMultilinear 𝕜 E E'‖ ≤ 1 := by
+  simp only [mapLMultilinear]
+  apply MultilinearMap.mkContinuous_norm_le _ zero_le_one
 
 end map
 

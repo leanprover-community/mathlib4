@@ -781,50 +781,6 @@ theorem map_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : �
     map f ((reindex R s e).symm x) = (reindex R t e).symm (map (fun i ↦ f (e.symm i)) x) :=
   DFunLike.congr_fun (map_comp_reindex_symm _ _) _
 
-variable {t' t'' : ι → Type*}
-variable [∀ i, AddCommMonoid (t' i)] [∀ i, Module R (t' i)]
-variable [∀ i, AddCommMonoid (t'' i)] [∀ i, Module R (t'' i)]
-
-theorem sum_range_map (f : Π (i : ι), t i →ₗ[R] s i) (f' : Π (i : ι), t' i →ₗ[R] s i)
-    (f'' : Π (i : ι), t'' i →ₗ[R] s i)
-    (hf : ∀ (i : ι), ∃ (g : t i →ₗ[R] t'' i), f'' i ∘ₗ g = f i)
-    (hf' : ∀ (i : ι), ∃ (g' : t' i →ₗ[R] t'' i), f'' i ∘ₗ g' = f' i) :
-    LinearMap.range (map f) ⊔ LinearMap.range (map f') ≤ LinearMap.range (map f'') := by
-  let g := fun i ↦ Classical.choose (hf i)
-  let hg : (fun i ↦ f'' i ∘ₗ g i) = f := funext (fun i ↦ Classical.choose_spec (hf i))
-  let g' := fun i ↦ Classical.choose (hf' i)
-  let hg' : (fun i ↦ f'' i ∘ₗ g' i) = f' := funext (fun i ↦ Classical.choose_spec (hf' i))
-  intro x
-  simp only [Submodule.mem_sup, LinearMap.mem_range]
-  intro ⟨x₁, ⟨⟨y, hy⟩, ⟨x₂, ⟨⟨y', hy'⟩, hx⟩⟩⟩⟩
-  existsi map g y + map g' y'
-  rw [← hx, ← hy, ← hy', ← hg, ← hg', map_comp, map_comp, map_add, LinearMap.comp_apply,
-    LinearMap.comp_apply]
-
-/-- Every element of `⨂[R] i, s i` is in the image of `⨂[R] i, s' i` for some finitely generated
-submodules `p i` of the `s i`. -/
-theorem mem_piTensorProduct_is_mem_finite (x : ⨂[R] i, s i) : ∃ (p : Π (i : ι), Submodule R (s i)),
-    (∀ (i: ι), Submodule.FG (p i)) ∧ x ∈ LinearMap.range (mapIncl p) := by
-  induction' x using PiTensorProduct.induction_on with a m x y hx hy
-  · existsi (fun i ↦ Submodule.span R {m i})
-    constructor
-    · exact fun i ↦ Submodule.fg_span_singleton _
-    · refine Submodule.smul_mem _ a ?_
-      simp only [mapIncl, LinearMap.mem_range]
-      existsi ⨂ₜ[R] i, ⟨m i, Submodule.subset_span (Set.mem_singleton (m i))⟩
-      simp only [map_tprod, Submodule.coeSubtype]
-  · obtain ⟨px, hx⟩ := hx
-    obtain ⟨py, hy⟩ := hy
-    existsi fun i ↦ px i ⊔ py i
-    constructor
-    · exact fun i ↦ Submodule.FG.sup (hx.1 i) (hy.1 i)
-    · rw [mapIncl] at hx hy ⊢
-      exact sum_range_map (fun i ↦ Submodule.subtype (px i)) (fun i ↦ Submodule.subtype (py i))
-        (fun i ↦ Submodule.subtype (px i ⊔ py i)) (fun i ↦ ⟨Submodule.inclusion le_sup_left,
-        Submodule.subtype_comp_inclusion (px i) (px i ⊔ py i) le_sup_left⟩)
-        (fun i ↦ ⟨Submodule.inclusion le_sup_right, Submodule.subtype_comp_inclusion (py i)
-        (px i ⊔ py i) le_sup_right⟩) (Submodule.add_mem_sup hx.2 hy.2)
-
 variable (ι)
 
 attribute [local simp] eq_iff_true_of_subsingleton in
