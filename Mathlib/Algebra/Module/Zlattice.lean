@@ -374,6 +374,7 @@ section Zlattice
 
 open Submodule FiniteDimensional
 
+-- TODO: generalize this class to other rings than `ℤ`
 /-- An `L : Addsubgroup E` where `E` is a vector space over a normed field `K` is a `ℤ`-lattice if
 it is discrete and spans `E` over `K`. -/
 class IsZlattice (K : Type*) [NormedField K] {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
