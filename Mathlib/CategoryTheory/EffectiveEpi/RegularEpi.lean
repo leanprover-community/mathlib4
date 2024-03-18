@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic.Basic
+import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # The relationship between effective and regular epimorphisms.

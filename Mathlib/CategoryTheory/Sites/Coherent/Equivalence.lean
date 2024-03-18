@@ -5,8 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic.Comp
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic.Preserves
+import Mathlib.CategoryTheory.EffectiveEpi.Comp
+import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 import Mathlib.CategoryTheory.Sites.Equivalence
 /-!
 
