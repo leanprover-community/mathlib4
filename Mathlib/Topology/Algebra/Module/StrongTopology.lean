@@ -374,6 +374,28 @@ protected theorem hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F
       fun SV => { f : E →SLₛ[σ] F | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   PointwiseConvergenceCLM.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 
+/-- In the topology of pointwise convergence, `a` converges to `a₀` iff for every `x : E`
+`a · x` converges to `a₀ x`. -/
+theorem tendsto_iff_forall_tendsto {ι : Type*} {p : Filter ι} [TopologicalSpace F]
+    [TopologicalAddGroup F] {a : ι → E →SLₛ[σ] F} {a₀ : E →SLₛ[σ] F} :
+    Filter.Tendsto a p (𝓝 a₀) ↔ ∀ x : E, Filter.Tendsto (a · x) p (𝓝 (a₀ x)) := by
+  let _ := TopologicalAddGroup.toUniformSpace F
+  have _ : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  suffices h : Filter.Tendsto a p (𝓝 a₀) ↔ ∀ x, TendstoUniformlyOn (a · ·) a₀ p {x} by
+    rw [h, forall_congr]
+    intro
+    rw [tendstoUniformlyOn_singleton_iff_tendsto]
+  rw [UniformConvergenceCLM.tendsto_iff_tendstoUniformlyOn]
+  unfold TendstoUniformlyOn
+  simp only [Set.mem_setOf_eq, Set.mem_singleton_iff, forall_eq]
+  constructor
+  · intro h x u hu
+    simpa using h {x} (Set.finite_singleton _) u hu
+  · intro h s hs u hu
+    rw [Filter.eventually_all_finite hs]
+    intro x _hx
+    exact h x u hu
+
 end PointwiseConvergenceCLM
 
 end
