@@ -131,8 +131,8 @@ instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, Sem
 #align pi.normed_space Pi.normedSpace
 
 instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
-  toModule := instModule
-  norm_smul_le _ _ := norm_smul_le s x.unop
+  toModule := instModule _
+  norm_smul_le _ x := norm_smul_le _ x.unop
 #align mul_opposite.normed_space MulOpposite.normedSpace
 
 /-- A subspace of a normed space is also a normed space, with the restriction of the norm. -/
