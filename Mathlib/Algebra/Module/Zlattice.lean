@@ -288,8 +288,9 @@ end NormedLatticeField
 
 section Real
 
-theorem discreteTopology_pi_basisFun [Fintype ι] :
+theorem discreteTopology_pi_basisFun [Finite ι] :
     DiscreteTopology (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
+  cases nonempty_fintype ι
   refine discreteTopology_iff_isOpen_singleton_zero.mpr ⟨Metric.ball 0 1, Metric.isOpen_ball, ?_⟩
   ext x
   rw [Set.mem_preimage, mem_ball_zero_iff, pi_norm_lt_iff zero_lt_one, Set.mem_singleton_iff]
@@ -301,7 +302,7 @@ theorem discreteTopology_pi_basisFun [Fintype ι] :
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] (b : Basis ι ℝ E)
 
-instance [Fintype ι] : DiscreteTopology (span ℤ (Set.range b)) := by
+instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   have h : Set.MapsTo b.equivFun (span ℤ (Set.range b)) (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
     intro _ hx
     rwa [SetLike.mem_coe, Basis.mem_span_iff_repr_mem] at hx ⊢
