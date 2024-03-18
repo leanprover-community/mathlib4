@@ -34,7 +34,6 @@ variable {𝕜 E F : Type*}
   [IsAddHaarMeasure μ] [IsAddHaarMeasure ν]
 
 variable [LocallyCompactSpace E]
-
 variable (L μ ν)
 
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given

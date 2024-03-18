@@ -38,9 +38,7 @@ open Algebra.TensorProduct (algHomOfLinearMapTensorProduct includeLeft)
 noncomputable section
 
 variable (R A : Type*)
-
 variable [CommSemiring R]
-
 variable [Semiring A] [Algebra R A]
 
 namespace PolyEquivTensor
@@ -210,7 +208,6 @@ theorem polyEquivTensor_symm_apply_tmul (a : A) (p : R[X]) :
 open DMatrix Matrix BigOperators
 
 variable {R}
-
 variable {n : Type w} [DecidableEq n] [Fintype n]
 
 /--
