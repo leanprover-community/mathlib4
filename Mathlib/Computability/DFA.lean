@@ -18,6 +18,16 @@ determines whether a string (implemented as a list over an arbitrary alphabet) i
 in linear time.
 Note that this definition allows for Automaton with infinite states, a `Fintype` instance must be
 supplied for true DFA's.
+
+## Implementation notes
+
+Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and another for
+`DFA.evalFrom`. You can switch from the former to the latter using `simp [eval]`.
+
+TODO:
+- Should we unify these simp sets, such that `eval` is rewritten to `evalFrom` automatically?
+- Should `mem_accepts` and `mem_acceptsFrom` be marked `@[simp]`? This depends on the question
+  above, as they map to `eval` and `evalFrom` respectively.
 -/
 
 
