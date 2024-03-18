@@ -133,7 +133,7 @@ instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, Sem
 instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
   toModule := instModule _
   norm_smul_le _ x := norm_smul_le _ x.unop
-#align mul_opposite.normed_space MulOpposite.normedSpace
+#align mul_opposite.normed_space MulOpposite.instNormedSpace
 
 /-- A subspace of a normed space is also a normed space, with the restriction of the norm. -/
 instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
@@ -375,11 +375,11 @@ instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, S
 
 variable [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
-instance MulOpposite.normedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
-    NormedAlgebra 𝕜 Eᵐᵒᵖ :=
-  { MulOpposite.normedSpace, MulOpposite.instAlgebra with }
-
-#align mul_opposite.normed_algebra MulOpposite.normedAlgebra
+instance MulOpposite.instNormedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
+    NormedAlgebra 𝕜 Eᵐᵒᵖ where
+  toAlgebra := instAlgebra
+  __ := instNormedSpace
+#align mul_opposite.normed_algebra MulOpposite.instNormedAlgebra
 
 end NormedAlgebra
 
