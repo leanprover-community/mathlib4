@@ -105,7 +105,7 @@ lemma LSeriesSummable_logMul_of_lt_re {f : ℕ → ℂ} {s : ℂ} (h : abscissaO
 /-- The abscissa of absolute convergence of the point-wise product of `log` and `f`
 is the same as that of `f`. -/
 @[simp]
-lemma abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
+lemma LSeries.abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
     abscissaOfAbsConv (logMul f) = abscissaOfAbsConv f := by
   apply le_antisymm <;> refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun s hs ↦ ?_
   · exact LSeriesSummable_logMul_of_lt_re <| by simp [hs]
@@ -125,7 +125,7 @@ lemma abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
 /-- The abscissa of absolute convergence of the point-wise product of a power of `log` and `f`
 is the same as that of `f`. -/
 @[simp]
-lemma absicssaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
+lemma LSeries.absicssaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
     abscissaOfAbsConv (logMul^[m] f) = abscissaOfAbsConv f := by
   induction' m with n ih
   · simp only [Nat.zero_eq, Function.iterate_zero, id_eq]
