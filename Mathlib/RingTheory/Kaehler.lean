@@ -638,7 +638,7 @@ variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
 
 variable [SMulCommClass S A B]
 
-/-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄R]` given a square
+/-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
 A --→ B
 ↑     ↑
 |     |
