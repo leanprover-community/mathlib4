@@ -516,7 +516,7 @@ nonrec theorem _root_.MeasureTheory.Integrable.continuous_primitive (h_int : Int
   continuous_primitive (fun _ _ => h_int.intervalIntegrable) a
 #align measure_theory.integrable.continuous_primitive MeasureTheory.Integrable.continuous_primitive
 
-variable [IsLocallyFiniteMeasure μ] [LocallyCompactSpace X] {f : X → ℝ → E}
+variable [IsLocallyFiniteMeasure μ] [WeaklyLocallyCompactSpace X] {f : X → ℝ → E}
 
 theorem continuous_parametric_primitive_of_continuous
     {a₀ : ℝ} (hf : Continuous f.uncurry) :
