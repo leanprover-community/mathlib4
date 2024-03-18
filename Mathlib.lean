@@ -3100,7 +3100,7 @@ import Mathlib.Order.Notation
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Order.OrdContinuous
 import Mathlib.Order.OrderIsoNat
-import Mathlib.Order.OrdinalApproximantsFixedPoints
+import Mathlib.Order.ApproximantsFixedPoints
 import Mathlib.Order.PFilter
 import Mathlib.Order.PartialSups
 import Mathlib.Order.Partition.Equipartition

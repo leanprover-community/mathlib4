@@ -188,8 +188,7 @@ theorem lfpApprox_cardinal_is_lfp : lfpApprox f (ord <| succ #α) = lfp f := by
     let ⟨x, h_x⟩ := h_fix; rw [h_x]
     exact lfp_le_fixed f x.prop
 
-/-- Some ordinal approximation of the least fixed point is the least fixed point.
-  Also known as ordinal approximation of the least fixed point.-/
+/-- Some ordinal approximation of the least fixed point is the least fixed point. -/
 theorem lfpApprox_is_lfp : ∃ a : Ordinal, lfpApprox f a = lfp f := by
   use (ord <| succ #α)
   exact lfpApprox_cardinal_is_lfp f
@@ -213,11 +212,6 @@ theorem gfpApprox_eq_of_mem_fixedPoint {a b : Ordinal.{u}} (h_ab : a < b)
     (h: gfpApprox f a ∈ fixedPoints f) : gfpApprox f b = gfpApprox f a :=
   lfpApprox_eq_of_mem_fixedPoint (OrderHom.dual f) h_ab h
 
--- Every value after a fixed point of f is also a fixed point of f -/
--- theorem gfpApprox_ordinals_after_fixed_are_fixed (a : Ordinal.{u})
---     (h: gfpApprox f a ∈ fixedPoints f) : ∀ b > a, gfpApprox f b ∈ fixedPoints f :=
---   lfpApprox_ordinals_after_fixed_are_fixed (OrderHom.dual f) a h
-
 /-- There are distinct ordinals smaller than the successor of the domains cardinals with
   equal value -/
 theorem distinct_ordinal_eq_gfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| succ #α,
@@ -236,8 +230,7 @@ lemma gfpApprox_ge_fixedPoint : ∀ a ∈ fixedPoints f, ∀ i : Ordinal, gfpApp
 theorem gfpApprox_cardinal_is_gfp : gfpApprox f (ord <| succ #α) = gfp f :=
   lfpApprox_cardinal_is_lfp (OrderHom.dual f)
 
-/-- Some ordinal approximation of the greatest fixed point is the greatest fixed point.
-  Also known as ordinal approximation of the greatest fixed point.-/
+/-- Some ordinal approximation of the greatest fixed point is the greatest fixed point. -/
 theorem gfpApprox_is_gfp : ∃ a : Ordinal, gfpApprox f a = gfp f :=
   lfpApprox_is_lfp (OrderHom.dual f)
 
