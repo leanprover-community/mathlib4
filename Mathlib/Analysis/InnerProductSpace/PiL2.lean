@@ -60,16 +60,10 @@ open Real Set Filter ROrCLike Submodule Function BigOperators Uniformity Topolog
 
 noncomputable section
 
-variable {ι : Type*} {ι' : Type*}
-
-variable {𝕜 : Type*} [ROrCLike 𝕜]
-
+variable {ι ι'𝕜 : Type*} [ROrCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-
 variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -774,7 +768,6 @@ end ToMatrix
 section FiniteDimensional
 
 variable {v : Set E}
-
 variable {A : ι → Submodule 𝕜 E}
 
 /-- Given an internal direct sum decomposition of a module `M`, and an orthonormal basis for each
@@ -924,7 +917,6 @@ def OrthonormalBasis.fromOrthogonalSpanSingleton (n : ℕ) [Fact (finrank 𝕜 E
 section LinearIsometry
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [FiniteDimensional 𝕜 V]
-
 variable {S : Submodule 𝕜 V} {L : S →ₗᵢ[𝕜] V}
 
 open FiniteDimensional

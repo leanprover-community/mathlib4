@@ -901,8 +901,7 @@ theorem edgeSet_subgraphOfAdj {v w : V} (hvw : G.Adj v w) :
     forall₂_true_iff]
 #align simple_graph.edge_set_subgraph_of_adj SimpleGraph.edgeSet_subgraphOfAdj
 
-set_option autoImplicit true in
-lemma subgraphOfAdj_le_of_adj (H : G.Subgraph) (h : H.Adj v w) :
+lemma subgraphOfAdj_le_of_adj {v w : V} (H : G.Subgraph) (h : H.Adj v w) :
     G.subgraphOfAdj (H.adj_sub h) ≤ H := by
   constructor
   · intro x

@@ -32,7 +32,6 @@ equipped with the subspace topology.
 open Set Filter Function Topology Filter
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
-
 variable [TopologicalSpace α]
 
 @[simp]
@@ -1151,6 +1150,19 @@ theorem ContinuousOn.prod {f : α → β} {g : α → γ} {s : Set α} (hf : Con
     (hg : ContinuousOn g s) : ContinuousOn (fun x => (f x, g x)) s := fun x hx =>
   ContinuousWithinAt.prod (hf x hx) (hg x hx)
 #align continuous_on.prod ContinuousOn.prod
+
+theorem ContinuousAt.comp₂_continuousWithinAt {f : β × γ → δ} {g : α → β} {h : α → γ} {x : α}
+    {s : Set α} (hf : ContinuousAt f (g x, h x)) (hg : ContinuousWithinAt g s x)
+    (hh : ContinuousWithinAt h s x) :
+    ContinuousWithinAt (fun x ↦ f (g x, h x)) s x :=
+  ContinuousAt.comp_continuousWithinAt hf (hg.prod hh)
+
+theorem ContinuousAt.comp₂_continuousWithinAt_of_eq {f : β × γ → δ} {g : α → β}
+    {h : α → γ} {x : α} {s : Set α} {y : β × γ} (hf : ContinuousAt f y)
+    (hg : ContinuousWithinAt g s x) (hh : ContinuousWithinAt h s x) (e : (g x, h x) = y) :
+    ContinuousWithinAt (fun x ↦ f (g x, h x)) s x := by
+  rw [← e] at hf
+  exact hf.comp₂_continuousWithinAt hg hh
 
 theorem Inducing.continuousWithinAt_iff {f : α → β} {g : β → γ} (hg : Inducing g) {s : Set α}
     {x : α} : ContinuousWithinAt f s x ↔ ContinuousWithinAt (g ∘ f) s x := by

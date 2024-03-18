@@ -88,12 +88,8 @@ open scoped BigOperators NNReal ENNReal Classical ComplexConjugate Topology
 
 noncomputable section
 
-variable {ι : Type*}
-
-variable {𝕜 : Type*} [ROrCLike 𝕜] {E : Type*}
-
+variable {ι 𝕜 : Type*} [ROrCLike 𝕜] {E : Type*}
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [cplt : CompleteSpace E]
-
 variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -271,7 +267,6 @@ end OrthogonalFamily
 section IsHilbertSum
 
 variable (𝕜 G)
-
 variable (V : ∀ i, G i →ₗᵢ[𝕜] E) (F : ι → Submodule 𝕜 E)
 
 /-- Given a family of Hilbert spaces `G : ι → Type*`, a Hilbert sum of `G` consists of a Hilbert

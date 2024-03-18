@@ -141,7 +141,6 @@ end ROrCLike
 section DualVector
 
 variable (𝕜 : Type v) [ROrCLike 𝕜]
-
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 open ContinuousLinearEquiv Submodule

@@ -38,7 +38,6 @@ A slightly more elaborate corollary is that if `E` is complete and `T` is a comp
 
 
 variable {𝕜 : Type*} [ROrCLike 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y

@@ -213,7 +213,6 @@ section Normed
 section AnyFieldAnyAlgebra
 
 variable {𝕂 𝔸 𝔹 : Type*} [NontriviallyNormedField 𝕂]
-
 variable [NormedRing 𝔸] [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔸] [NormedAlgebra 𝕂 𝔹]
 
 theorem norm_expSeries_summable_of_mem_ball (x : 𝔸)
@@ -354,7 +353,6 @@ end AnyFieldAnyAlgebra
 section AnyFieldDivisionAlgebra
 
 variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
-
 variable (𝕂)
 
 theorem norm_expSeries_div_summable_of_mem_ball (x : 𝔸)
@@ -407,7 +405,6 @@ section ROrCLike
 section AnyAlgebra
 
 variable (𝕂 𝔸 𝔹 : Type*) [ROrCLike 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
-
 variable [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔹]
 
 /-- In a normed algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, the series defining the exponential map
@@ -603,7 +600,6 @@ end AnyAlgebra
 section DivisionAlgebra
 
 variable {𝕂 𝔸 : Type*} [ROrCLike 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
-
 variable (𝕂)
 
 theorem norm_expSeries_div_summable (x : 𝔸) : Summable fun n => ‖(x ^ n / n ! : 𝔸)‖ :=

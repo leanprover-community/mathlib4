@@ -508,18 +508,22 @@ lemma isClosedMap_swap : IsClosedMap (Prod.swap : X × Y → Y × X) := fun s hs
   rw [image_swap_eq_preimage_swap]
   exact hs.preimage continuous_swap
 
-theorem continuous_uncurry_left {f : X → Y → Z} (x : X) (h : Continuous (uncurry f)) :
+theorem Continuous.uncurry_left {f : X → Y → Z} (x : X) (h : Continuous (uncurry f)) :
     Continuous (f x) :=
   h.comp (Continuous.Prod.mk _)
-#align continuous_uncurry_left continuous_uncurry_left
+#align continuous_uncurry_left Continuous.uncurry_left
 
-theorem continuous_uncurry_right {f : X → Y → Z} (y : Y) (h : Continuous (uncurry f)) :
+theorem Continuous.uncurry_right {f : X → Y → Z} (y : Y) (h : Continuous (uncurry f)) :
     Continuous fun a => f a y :=
   h.comp (Continuous.Prod.mk_left _)
-#align continuous_uncurry_right continuous_uncurry_right
+#align continuous_uncurry_right Continuous.uncurry_right
+
+-- 2024-03-09
+@[deprecated] alias continuous_uncurry_left := Continuous.uncurry_left
+@[deprecated] alias continuous_uncurry_right := Continuous.uncurry_right
 
 theorem continuous_curry {g : X × Y → Z} (x : X) (h : Continuous g) : Continuous (curry g x) :=
-  continuous_uncurry_left x h
+  Continuous.uncurry_left x h
 #align continuous_curry continuous_curry
 
 theorem IsOpen.prod {s : Set X} {t : Set Y} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ×ˢ t) :=
@@ -635,6 +639,29 @@ theorem ContinuousAt.prod_map' {f : X → Z} {g : Y → W} {x : X} {y : Y} (hf :
     (hg : ContinuousAt g y) : ContinuousAt (fun p : X × Y => (f p.1, g p.2)) (x, y) :=
   hf.fst'.prod hg.snd'
 #align continuous_at.prod_map' ContinuousAt.prod_map'
+
+theorem ContinuousAt.comp₂ {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X}
+    (hf : ContinuousAt f (g x, h x)) (hg : ContinuousAt g x) (hh : ContinuousAt h x) :
+    ContinuousAt (fun x ↦ f (g x, h x)) x :=
+  ContinuousAt.comp hf (hg.prod hh)
+
+theorem ContinuousAt.comp₂_of_eq {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X} {y : Y × Z}
+    (hf : ContinuousAt f y) (hg : ContinuousAt g x) (hh : ContinuousAt h x) (e : (g x, h x) = y) :
+    ContinuousAt (fun x ↦ f (g x, h x)) x := by
+  rw [← e] at hf
+  exact hf.comp₂ hg hh
+
+/-- Continuous functions on products are continuous in their first argument -/
+theorem Continuous.curry_left {f : X × Y → Z} (hf : Continuous f) {y : Y} :
+    Continuous fun x ↦ f (x, y) :=
+  hf.comp (continuous_id.prod_mk continuous_const)
+alias Continuous.along_fst := Continuous.curry_left
+
+/-- Continuous functions on products are continuous in their second argument -/
+theorem Continuous.curry_right {f : X × Y → Z} (hf : Continuous f) {x : X} :
+    Continuous fun y ↦ f (x, y) :=
+  hf.comp (continuous_const.prod_mk continuous_id)
+alias Continuous.along_snd := Continuous.curry_right
 
 -- todo: reformulate using `Set.image2`
 -- todo: prove a version of `generateFrom_union` with `image2 (∩) s t` in the LHS and use it here
@@ -922,7 +949,7 @@ theorem isOpen_sum_iff {s : Set (X ⊕ Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) 
   Iff.rfl
 #align is_open_sum_iff isOpen_sum_iff
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem isClosed_sum_iff {s : Set (X ⊕ Y)} :
     IsClosed s ↔ IsClosed (inl ⁻¹' s) ∧ IsClosed (inr ⁻¹' s) := by
   simp only [← isOpen_compl_iff, isOpen_sum_iff, preimage_compl]
@@ -1182,12 +1209,19 @@ theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X
   (embedding_inclusion ts).discreteTopology
 #align discrete_topology.of_subset DiscreteTopology.of_subset
 
+/-- Let `s` be a discrete subset of a topological space. Then the preimage of `s` by
+a continuous injective map is also discrete. -/
+theorem DiscreteTopology.preimage_of_continuous_injective {X Y : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] (s : Set Y) [DiscreteTopology s] {f : X → Y} (hc : Continuous f)
+    (hinj : Function.Injective f) : DiscreteTopology (f ⁻¹' s) :=
+  DiscreteTopology.of_continuous_injective (β := s) (Continuous.restrict
+    (by exact fun _ x ↦ x) hc) ((Set.MapsTo.restrict_inj _).mpr <| Set.injOn_of_injective hinj _)
+
 end Subtype
 
 section Quotient
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
 variable {r : X → X → Prop} {s : Setoid X}
 
 theorem quotientMap_quot_mk : QuotientMap (@Quot.mk X r) :=

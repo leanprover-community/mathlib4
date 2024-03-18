@@ -34,7 +34,6 @@ variable {α β 𝕜 E F : Type*} [ROrCLike 𝕜] [NormedAddCommGroup E] [Normed
 /-! ### Differentiability -/
 
 variable [NormedSpace 𝕜 F]
-
 variable {f : α → E → F} {f' : α → E → E →L[𝕜] F} {g : α → 𝕜 → F} {g' : α → 𝕜 → F} {v : ℕ → α → ℝ}
   {s : Set E} {t : Set 𝕜} {x₀ x : E} {y₀ y : 𝕜} {N : ℕ∞}
 

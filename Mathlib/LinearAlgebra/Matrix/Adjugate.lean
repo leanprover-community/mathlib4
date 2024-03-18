@@ -47,7 +47,6 @@ namespace Matrix
 universe u v w
 
 variable {m : Type u} {n : Type v} {α : Type w}
-
 variable [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m] [CommRing α]
 
 open Matrix BigOperators Polynomial Equiv Equiv.Perm Finset

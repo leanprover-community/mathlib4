@@ -118,7 +118,6 @@ theorem borel_eq_generateFrom_isClosed [TopologicalSpace α] :
 section OrderTopology
 
 variable (α)
-
 variable [TopologicalSpace α] [SecondCountableTopology α] [LinearOrder α] [OrderTopology α]
 
 theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
@@ -1722,7 +1721,6 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace �
 section PseudoMetricSpace
 
 variable [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-
 variable [MeasurableSpace β] {x : α} {ε : ℝ}
 
 open Metric
@@ -1792,7 +1790,6 @@ end PseudoMetricSpace
 section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-
 variable [MeasurableSpace β] {x : α} {ε : ℝ≥0∞}
 
 open EMetric
@@ -2162,6 +2159,61 @@ instance : MeasurableSMul ℝ≥0 ℝ≥0∞ where
     simp_rw [ENNReal.smul_def]
     exact measurable_coe_nnreal_ennreal.mul_const _
 
+/-- A limit (over a general filter) of measurable `ℝ≥0∞` valued functions is measurable. -/
+theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : α → ℝ≥0∞} (u : Filter ι)
+    [NeBot u] [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
+    Measurable g := by
+  rcases u.exists_seq_tendsto with ⟨x, hx⟩
+  rw [tendsto_pi_nhds] at lim
+  have : (fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop) = g := by
+    ext1 y
+    exact ((lim y).comp hx).liminf_eq
+  rw [← this]
+  show Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
+  exact measurable_liminf fun n => hf (x n)
+#align measurable_of_tendsto_ennreal' ENNReal.measurable_of_tendsto'
+
+-- 2024-03-09
+@[deprecated] alias _root_.measurable_of_tendsto_ennreal' := ENNReal.measurable_of_tendsto'
+
+/-- A sequential limit of measurable `ℝ≥0∞` valued functions is measurable. -/
+theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} (hf : ∀ i, Measurable (f i))
+    (lim : Tendsto f atTop (𝓝 g)) : Measurable g :=
+  measurable_of_tendsto' atTop hf lim
+#align measurable_of_tendsto_ennreal ENNReal.measurable_of_tendsto
+
+-- 2024-03-09
+@[deprecated] alias _root_.measurable_of_tendsto_ennreal := ENNReal.measurable_of_tendsto
+
+/-- A limit (over a general filter) of a.e.-measurable `ℝ≥0∞` valued functions is
+a.e.-measurable. -/
+lemma aemeasurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : α → ℝ≥0∞}
+    {μ : Measure α} (u : Filter ι) [NeBot u] [IsCountablyGenerated u]
+    (hf : ∀ i, AEMeasurable (f i) μ) (hlim : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) u (𝓝 (g a))) :
+    AEMeasurable g μ := by
+  rcases u.exists_seq_tendsto with ⟨v, hv⟩
+  have h'f : ∀ n, AEMeasurable (f (v n)) μ := fun n ↦ hf (v n)
+  set p : α → (ℕ → ℝ≥0∞) → Prop := fun x f' ↦ Tendsto f' atTop (𝓝 (g x))
+  have hp : ∀ᵐ x ∂μ, p x fun n ↦ f (v n) x := by
+    filter_upwards [hlim] with x hx using hx.comp hv
+  set aeSeqLim := fun x ↦ ite (x ∈ aeSeqSet h'f p) (g x) (⟨f (v 0) x⟩ : Nonempty ℝ≥0∞).some
+  refine ⟨aeSeqLim, measurable_of_tendsto' atTop (aeSeq.measurable h'f p)
+    (tendsto_pi_nhds.mpr fun x ↦ ?_), ?_⟩
+  · unfold_let aeSeqLim
+    simp_rw [aeSeq]
+    split_ifs with hx
+    · simp_rw [aeSeq.mk_eq_fun_of_mem_aeSeqSet h'f hx]
+      exact aeSeq.fun_prop_of_mem_aeSeqSet h'f hx
+    · exact tendsto_const_nhds
+  · exact (ite_ae_eq_of_measure_compl_zero g (fun x ↦ (⟨f (v 0) x⟩ : Nonempty ℝ≥0∞).some)
+      (aeSeqSet h'f p) (aeSeq.measure_compl_aeSeqSet_eq_zero h'f hp)).symm
+
+/-- A limit of a.e.-measurable `ℝ≥0∞` valued functions is a.e.-measurable. -/
+lemma aemeasurable_of_tendsto {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} {μ : Measure α}
+    (hf : ∀ i, AEMeasurable (f i) μ) (hlim : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (g a))) :
+    AEMeasurable g μ :=
+  aemeasurable_of_tendsto' atTop hf hlim
+
 end ENNReal
 
 @[measurability]
@@ -2300,6 +2352,32 @@ theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α}
     AEMeasurable (fun x => (f x : EReal)) μ :=
   measurable_coe_ennreal_ereal.comp_aemeasurable hf
 #align ae_measurable.coe_ereal_ennreal AEMeasurable.coe_ereal_ennreal
+
+namespace NNReal
+
+/-- A limit (over a general filter) of measurable `ℝ≥0` valued functions is measurable. -/
+theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ≥0} (u : Filter ι) [NeBot u]
+    [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
+    Measurable g := by
+  simp_rw [← measurable_coe_nnreal_ennreal_iff] at hf ⊢
+  refine' ENNReal.measurable_of_tendsto' u hf _
+  rw [tendsto_pi_nhds] at lim ⊢
+  exact fun x => (ENNReal.continuous_coe.tendsto (g x)).comp (lim x)
+#align measurable_of_tendsto_nnreal' NNReal.measurable_of_tendsto'
+
+-- 2024-03-09
+@[deprecated] alias _root_.measurable_of_tendsto_nnreal' := NNReal.measurable_of_tendsto'
+
+/-- A sequential limit of measurable `ℝ≥0` valued functions is measurable. -/
+theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0} {g : α → ℝ≥0} (hf : ∀ i, Measurable (f i))
+    (lim : Tendsto f atTop (𝓝 g)) : Measurable g :=
+  measurable_of_tendsto' atTop hf lim
+#align measurable_of_tendsto_nnreal NNReal.measurable_of_tendsto
+
+-- 2024-03-09
+@[deprecated] alias _root_.measurable_of_tendsto_nnreal := NNReal.measurable_of_tendsto
+
+end NNReal
 
 /-- If a function `f : α → ℝ≥0` is measurable and the measure is σ-finite, then there exists
 spanning measurable sets with finite measure on which `f` is bounded.

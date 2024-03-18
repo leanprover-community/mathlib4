@@ -41,7 +41,6 @@ noncomputable section
 universe v u
 
 variable {A : Type u} [Category.{v} A] [Abelian A]
-
 variable {X Y Z : A} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0)
 
 namespace CategoryTheory.Abelian

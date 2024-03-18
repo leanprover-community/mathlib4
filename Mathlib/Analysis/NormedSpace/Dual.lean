@@ -48,9 +48,7 @@ namespace NormedSpace
 section General
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-
 variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- The topological dual of a seminormed space `E`. -/
@@ -168,7 +166,6 @@ def polar (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedA
 #align normed_space.polar NormedSpace.polar
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem mem_polar_iff {x' : Dual 𝕜 E} (s : Set E) : x' ∈ polar 𝕜 s ↔ ∀ z ∈ s, ‖x' z‖ ≤ 1 :=

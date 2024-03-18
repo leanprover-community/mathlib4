@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basis
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import ring_theory.matrix_algebra from "leanprover-community/mathlib"@"6c351a8fb9b06e5a542fdf427bfb9f46724f9453"
 
@@ -27,11 +27,8 @@ open Algebra.TensorProduct
 open Matrix
 
 variable {R : Type u} [CommSemiring R]
-
 variable {A : Type v} [Semiring A] [Algebra R A]
-
 variable {n : Type w}
-
 variable (R A n)
 
 namespace MatrixEquivTensor
