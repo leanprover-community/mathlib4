@@ -60,7 +60,7 @@ private theorem der_cons_replicate (n : ℕ) : Derivable (M :: replicate (2 ^ n)
   · -- base case
     constructor
   · -- inductive step
-    rw [succ_eq_add_one, pow_add, pow_one 2, mul_two, replicate_add]
+    rw [pow_add, pow_one 2, mul_two, replicate_add]
     exact Derivable.r2 hk
 
 /-!
@@ -120,7 +120,7 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
     specialize ha (U :: xs)
     intro h₂
     -- We massage the goal into a form amenable to the application of `ha`.
-    rw [succ_eq_add_one, replicate_add, ← append_assoc, ← cons_append, replicate_one, append_assoc,
+    rw [replicate_add, ← append_assoc, ← cons_append, replicate_one, append_assoc,
       singleton_append]
     apply ha
     apply Derivable.r3
@@ -269,7 +269,6 @@ theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count 
       · rw [mem_cons, not_or] at hm; exact hm.2
     · -- case `x = U` gives a contradiction.
       exfalso; simp only [count, countP_cons_of_pos (· == U) _ (rfl : U == U)] at hu
-      exact succ_ne_zero _ hu
 set_option linter.uppercaseLean3 false in
 #align miu.count_I_eq_length_of_count_U_zero_and_neg_mem Miu.count_I_eq_length_of_count_U_zero_and_neg_mem
 

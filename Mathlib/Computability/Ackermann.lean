@@ -65,7 +65,6 @@ def ack : ℕ → ℕ → ℕ
   | 0, n => n + 1
   | m + 1, 0 => ack m 1
   | m + 1, n + 1 => ack m (ack (m + 1) n)
-  termination_by m n => (m, n)
 #align ack ack
 
 @[simp]
@@ -118,7 +117,7 @@ theorem ack_pos : ∀ m n, 0 < ack m n
 #align ack_pos ack_pos
 
 theorem one_lt_ack_succ_left : ∀ m n, 1 < ack (m + 1) n
-  | 0, n => by simp
+  | 0, n => by simp; omega
   | m + 1, 0 => by
     rw [ack_succ_zero]
     apply one_lt_ack_succ_left
@@ -145,7 +144,6 @@ theorem ack_strictMono_right : ∀ m, StrictMono (ack m)
     rw [ack_succ_succ, ack_succ_succ]
     apply ack_strictMono_right _ (ack_strictMono_right _ _)
     rwa [add_lt_add_iff_right] at h
-  termination_by m x y h => (m, x)
 #align ack_strict_mono_right ack_strictMono_right
 
 theorem ack_mono_right (m : ℕ) : Monotone (ack m) :=
@@ -186,7 +184,6 @@ theorem add_lt_ack : ∀ m n, m + n < ack m n
         ack_mono_right m <| le_of_eq_of_le (by rw [succ_eq_add_one]; ring_nf)
         <| succ_le_of_lt <| add_lt_ack (m + 1) n
       _ = ack (m + 1) (n + 1) := (ack_succ_succ m n).symm
-  termination_by m n => (m, n)
 #align add_lt_ack add_lt_ack
 
 theorem add_add_one_le_ack (m n : ℕ) : m + n + 1 ≤ ack m n :=
@@ -216,7 +213,6 @@ private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack
     exact
       (ack_strict_mono_left' _ <| (add_lt_add_iff_right 1).1 h).trans
         (ack_strictMono_right _ <| ack_strict_mono_left' n h)
-  termination_by _ m n => (m, n)
 
 theorem ack_strictMono_left (n : ℕ) : StrictMono fun m => ack m n := fun _m₁ _m₂ =>
   ack_strict_mono_left' n
@@ -256,7 +252,7 @@ theorem ack_le_ack {m₁ m₂ n₁ n₂ : ℕ} (hm : m₁ ≤ m₂) (hn : n₁ �
 theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m + 1) n := by
   cases' n with n n
   · simp
-  · rw [ack_succ_succ, succ_eq_add_one]
+  · rw [ack_succ_succ]
     apply ack_mono_right m (le_trans _ <| add_add_one_le_ack _ n)
     omega
 #align ack_succ_right_le_ack_succ_left ack_succ_right_le_ack_succ_left
@@ -267,7 +263,7 @@ private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n +
   · norm_num
   · cases' k with k k
     · norm_num
-    · rw [succ_eq_add_one, add_sq, Nat.pow_succ 2, mul_comm _ 2, two_mul (2 ^ _),
+    · rw [add_sq, Nat.pow_succ 2, mul_comm _ 2, two_mul (2 ^ _),
           add_tsub_assoc_of_le, add_comm (2 ^ _), add_assoc]
       · apply Nat.add_le_add hk
         norm_num

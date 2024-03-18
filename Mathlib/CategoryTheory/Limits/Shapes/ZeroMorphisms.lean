@@ -38,7 +38,7 @@ open CategoryTheory
 
 open CategoryTheory.Category
 
-open Classical
+open scoped Classical
 
 namespace CategoryTheory.Limits
 

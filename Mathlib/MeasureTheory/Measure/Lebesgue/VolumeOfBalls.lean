@@ -85,7 +85,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
     edist_dist := fun _ _ => rfl
     eq_of_dist_eq_zero := by convert fun _ _ h => eq_of_sub_eq_zero (h4 h) }
   letI : NormedSpace ℝ F :=
-  { norm_smul_le := fun _ _ =>  h5 _ _ }
+  { norm_smul_le := fun _ _ ↦ h5 _ _ }
   -- We put the new topology on F
   letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
   letI : MeasurableSpace F := borel F
@@ -128,7 +128,7 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
     edist_dist := fun _ _ => rfl
     eq_of_dist_eq_zero := by convert fun _ _ h => eq_of_sub_eq_zero (h4 h) }
   letI : NormedSpace ℝ F :=
-  { norm_smul_le := fun _ _ =>  h5 _ _ }
+  { norm_smul_le := fun _ _ ↦ h5 _ _ }
   -- We put the new topology on F
   letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
   letI : MeasurableSpace F := borel F
@@ -290,7 +290,7 @@ theorem Complex.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
       (abs_nonneg _), ← Finset.mul_sum, abs_eq_self.mpr (le_of_lt hr), inv_mul_lt_iff
       (rpow_pos_of_pos hr _), mul_one, ← rpow_lt_rpow_iff (rpow_nonneg (h₁ _) _)
       (le_of_lt hr) (by linarith : 0 < p), ← rpow_mul (h₁ _), div_mul_cancel _
-      (ne_of_gt (by linarith) : p ≠ 0), Real.rpow_one, finrank_pi, finrank_pi_fintype ℝ,
+      (ne_of_gt (by linarith) : p ≠ 0), Real.rpow_one, finrank_pi_fintype ℝ,
       Complex.finrank_real_complex, Finset.sum_const, smul_eq_mul, mul_comm, Fintype.card]
 
 theorem Complex.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : ℝ) :

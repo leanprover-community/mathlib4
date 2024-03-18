@@ -349,7 +349,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             refine' ⟨U, rfl, fun t h => helem t _⟩
             right
             assumption
-  termination_by t => (P,t.length)
+  termination_by t => (P, t.length)
 #align regular_expression.star_rmatch_iff RegularExpression.star_rmatch_iff
 
 @[simp]
@@ -403,7 +403,8 @@ theorem map_id : ∀ P : RegularExpression α, P.map id = P
   | 1 => rfl
   | char a => rfl
   | R + S => by simp_rw [map, map_id]
-  -- FIXME nightly-testing: we used to be able to match on `P * Q` here
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y`.
   | comp R S => by simp_rw [map, map_id]; rfl
   | star R => by simp_rw [map, map_id]
 #align regular_expression.map_id RegularExpression.map_id
@@ -414,7 +415,8 @@ theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, 
   | 1 => rfl
   | char a => rfl
   | R + S => by simp only [map, Function.comp_apply, map_map]
-  -- FIXME nightly-testing: we used to be able to match on `P * Q` here
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y`.
   | comp R S => by simp only [map, Function.comp_apply, map_map]
   | star R => by simp only [map, Function.comp_apply, map_map]
 #align regular_expression.map_map RegularExpression.map_map
@@ -430,7 +432,8 @@ theorem matches'_map (f : α → β) :
     exact image_singleton
   -- Porting note: the following close with last `rw` but not with `simp`?
   | R + S => by simp only [matches'_map, map, matches'_add]; rw [map_add]
-  -- FIXME nightly-testing: we used to be able to match on `P * Q` here,
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y`.
   -- and the `erw` was just `rw`
   | comp R S => by simp only [matches'_map, map, matches'_mul]; erw [map_mul]
   | star R => by

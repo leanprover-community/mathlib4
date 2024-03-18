@@ -78,7 +78,8 @@ theorem rotate'_rotate' : ∀ (l : List α) (n m : ℕ), (l.rotate' n).rotate' m
   | a :: l, 0, m => by simp
   | [], n, m => by simp
   | a :: l, n + 1, m => by
-    rw [rotate'_cons_succ, rotate'_rotate' _ n, add_right_comm, ← rotate'_cons_succ]
+    rw [rotate'_cons_succ, rotate'_rotate' _ n, add_right_comm, ← rotate'_cons_succ,
+      Nat.succ_eq_add_one]
 #align list.rotate'_rotate' List.rotate'_rotate'
 
 @[simp]
@@ -114,7 +115,7 @@ theorem rotate_eq_rotate' (l : List α) (n : ℕ) : l.rotate n = l.rotate' n :=
 #align list.rotate_eq_rotate' List.rotate_eq_rotate'
 
 theorem rotate_cons_succ (l : List α) (a : α) (n : ℕ) :
-    (a :: l : List α).rotate n.succ = (l ++ [a]).rotate n := by
+    (a :: l : List α).rotate (n + 1) = (l ++ [a]).rotate n := by
   rw [rotate_eq_rotate', rotate_eq_rotate', rotate'_cons_succ]
 #align list.rotate_cons_succ List.rotate_cons_succ
 
@@ -253,7 +254,7 @@ theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
     · rwa [tsub_lt_iff_left hm, length_drop, tsub_add_cancel_of_le hlt.le]
 #align list.nth_rotate List.get?_rotate
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
     (l.rotate n).get k =
       l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.1.zero_le.trans_lt k.2)⟩ := by
@@ -281,7 +282,7 @@ theorem nthLe_rotate_one (l : List α) (k : ℕ) (hk : k < (l.rotate 1).length) 
   nthLe_rotate l 1 k hk
 #align list.nth_le_rotate_one List.nthLe_rotate_one
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 /-- A version of `List.get_rotate` that represents `List.get l` in terms of
 `List.get (List.rotate l n)`, not vice versa. Can be used instead of rewriting `List.get_rotate`
 from right to left. -/
@@ -361,7 +362,7 @@ theorem reverse_rotate (l : List α) (n : ℕ) :
   · simp
   · cases' l with hd tl
     · simp
-    · rw [rotate_cons_succ, Nat.succ_eq_add_one, ← rotate_rotate, hn]
+    · rw [rotate_cons_succ, ← rotate_rotate, hn]
       simp
 #align list.reverse_rotate List.reverse_rotate
 

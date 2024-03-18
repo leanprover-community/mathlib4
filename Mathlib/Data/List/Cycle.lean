@@ -189,7 +189,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     exact hy (Eq.symm hk')
     rw [Nat.zero_eq, length_cons, Nat.pred_succ]
     exact length_pos_of_mem (by assumption)
-  suffices k.succ = l.length by simp [this] at hk
+  suffices k + 1 = l.length by simp [this] at hk
   cases' l with hd tl
   · simp at hk
   · rw [nodup_iff_injective_get] at hl
@@ -261,7 +261,7 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
       · exact mem_cons_of_mem _ (hl _ _)
 #align list.prev_mem List.prev_mem
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
     next l (l.get i) (get_mem _ _ _) = l.get ⟨(i + 1) % l.length,
       Nat.mod_lt _ (i.1.zero_le.trans_lt i.2)⟩
@@ -378,7 +378,7 @@ theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
   cases' l with hd tl
   · simp at hx
   · have : (n + 1 + length tl) % (length tl + 1) = n := by
-      rw [length_cons] at hn
+      rw [length_cons, Nat.succ_eq_add_one] at hn
       rw [add_assoc, add_comm 1, Nat.add_mod_right, Nat.mod_eq_of_lt hn]
     simp only [length_cons, Nat.succ_sub_succ_eq_sub, tsub_zero, Nat.succ_eq_add_one, this]
 #align list.prev_next List.prev_next
@@ -391,7 +391,7 @@ theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
   cases' l with hd tl
   · simp at hx
   · have : (n + length tl + 1) % (length tl + 1) = n := by
-      rw [length_cons] at hn
+      rw [length_cons, Nat.succ_eq_add_one] at hn
       rw [add_assoc, Nat.add_mod_right, Nat.mod_eq_of_lt hn]
     simp [this]
 #align list.next_prev List.next_prev
@@ -453,7 +453,7 @@ namespace Cycle
 
 variable {α : Type*}
 
--- Porting note: new definition
+-- Porting note (#11445): new definition
 /-- The coercion from `List α` to `Cycle α` -/
 @[coe] def ofList : List α → Cycle α :=
   Quot.mk _
@@ -846,7 +846,7 @@ nonrec theorem prev_reverse_eq_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α)
   Quotient.inductionOn' s prev_reverse_eq_next
 #align cycle.prev_reverse_eq_next Cycle.prev_reverse_eq_next
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 nonrec theorem prev_reverse_eq_next' (s : Cycle α) (hs : Nodup s.reverse) (x : α)
     (hx : x ∈ s.reverse) :
@@ -859,7 +859,7 @@ theorem next_reverse_eq_prev (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ 
   simp [← prev_reverse_eq_next]
 #align cycle.next_reverse_eq_prev Cycle.next_reverse_eq_prev
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem next_reverse_eq_prev' (s : Cycle α) (hs : Nodup s.reverse) (x : α) (hx : x ∈ s.reverse) :
     s.reverse.next hs x hx = s.prev (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx) := by
@@ -923,8 +923,7 @@ nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
         · cases' l with c s
           · simp only [rotate_cons_succ, nil_append, rotate_singleton, cons.injEq] at hn
             rw [hn.1, hn.2]
-          · rw [Nat.succ_eq_one_add, ← rotate_rotate, rotate_cons_succ, rotate_zero,
-              cons_append] at hn
+          · rw [Nat.add_comm, ← rotate_rotate, rotate_cons_succ, rotate_zero, cons_append] at hn
             rw [← hd c _ _ _ hn]
             simp [and_comm]
 #align cycle.chain Cycle.Chain

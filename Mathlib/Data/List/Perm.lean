@@ -458,8 +458,9 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
   rw [perm_iff_count, ← Decidable.and_forall_ne a, ← Decidable.and_forall_ne b]
   suffices l ⊆ [a, b] ↔ ∀ c, c ≠ b → c ≠ a → c ∉ l by
     simp (config := { contextual := true }) [count_replicate, h, h.symm, this, count_eq_zero]
-  simp_rw [Ne.def, ← and_imp, ← not_or, Decidable.not_imp_not, subset_def, mem_cons,
-    not_mem_nil, or_false, or_comm]
+  trans ∀ c, c ∈ l → c = b ∨ c = a
+  · simp [subset_def, or_comm]
+  · exact forall_congr' fun _ => by rw [← and_imp, ← not_or, not_imp_not]
 #align list.perm_replicate_append_replicate List.perm_replicate_append_replicate
 
 #align list.subperm.cons_right List.Subperm.cons_right
@@ -653,7 +654,7 @@ theorem perm_of_mem_permutationsAux :
   rcases m with (m | ⟨l₁, l₂, m, _, rfl⟩)
   · exact (IH1 _ m).trans perm_middle
   · have p : l₁ ++ l₂ ~ is := by
-      simp [permutations] at m
+      simp only [mem_cons] at m
       cases' m with e m
       · simp [e]
       exact is.append_nil ▸ IH2 _ m
@@ -670,8 +671,7 @@ theorem length_permutationsAux :
   refine' permutationsAux.rec (by simp) _
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
-  simp? [Nat.factorial, Nat.add_succ, mul_comm] at IH1 says
-    simp only [factorial, add_eq, add_zero, mul_comm] at IH1
+  simp only [factorial, mul_comm, add_eq] at IH1
   rw [permutationsAux_cons,
     length_foldr_permutationsAux2' _ _ _ _ _ fun l m => (perm_of_mem_permutations m).length_eq,
     permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, mul_comm (_ + 1),
@@ -884,7 +884,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       erw [length_insertNth _ _ hk.le, Nat.succ_lt_succ_iff, Nat.succ_add] at hn
       rw [nthLe_insertNth_add_succ]
       convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
-      · simp [Nat.add_succ, Nat.succ_add]
+      · simp [Nat.add_assoc, Nat.add_left_comm]
       · simp [add_left_comm, add_comm]
       · simpa [Nat.succ_add] using hn
 #align list.nodup_permutations'_aux_iff List.nodup_permutations'Aux_iff

@@ -131,7 +131,7 @@ def List.dropUntil {α} [DecidableEq α] : List α → List α → List α
   | l, a :: as => ((a::as).getRest l).getD (dropUntil l as)
 #align counterexample.list.drop_until Counterexample.List.dropUntil
 
-open Lean Elab in
+open Lean Elab Command in
 /-- `guard_decl na mod` makes sure that the declaration with name `na` is in the module `mod`.
 ```lean
 guard_decl Nat.nontrivial Mathlib.Data.Nat.Basic -- does nothing
@@ -143,7 +143,7 @@ guard_decl Nat.nontrivial Not.In.Here
 This test makes sure that the comment referring to this example is in the file claimed in the
 doc-module to this counterexample. -/
 elab "guard_decl" na:ident mod:ident : command => do
-  let dcl ← resolveGlobalConstNoOverloadWithInfo na
+  let dcl ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo na
   let mdn := mod.getId
   let env ← getEnv
   let .some dcli := env.getModuleIdxFor? dcl | unreachable!
@@ -180,14 +180,17 @@ instance : LinearOrder F :=
 theorem z01 : (0 : F) < 1 := by decide
 #align counterexample.F.z01 Counterexample.F.z01
 
+instance : Add F where
+  add := max
+
 /-- `F` would be a `CommSemiring`, using `min` as multiplication.  Again, we do not need this. -/
 instance : AddCommMonoid F where
-  add := max
   add_assoc := by boom
   zero := 0
   zero_add := by boom
   add_zero := by boom
   add_comm := by boom
+  nsmul := nsmulRec
 
 /-- The `CovariantClass`es asserting monotonicity of addition hold for `F`. -/
 instance covariantClass_add_le : CovariantClass F F (· + ·) (· ≤ ·) :=

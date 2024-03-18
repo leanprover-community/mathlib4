@@ -129,12 +129,12 @@ theorem pred : Nat.Primrec pred :=
 
 theorem add : Nat.Primrec (unpaired (· + ·)) :=
   (prec .id ((Primrec.succ.comp right).comp right)).of_eq fun p => by
-    simp; induction p.unpair.2 <;> simp [*, add_succ]
+    simp; induction p.unpair.2 <;> simp [*, Nat.add_assoc]
 #align nat.primrec.add Nat.Primrec.add
 
 theorem sub : Nat.Primrec (unpaired (· - ·)) :=
   (prec .id ((pred.comp right).comp right)).of_eq fun p => by
-    simp; induction p.unpair.2 <;> simp [*, sub_succ]
+    simp; induction p.unpair.2 <;> simp [*, Nat.sub_add_eq]
 #align nat.primrec.sub Nat.Primrec.sub
 
 theorem mul : Nat.Primrec (unpaired (· * ·)) :=
@@ -573,7 +573,8 @@ theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (
       simp only [Nat.unpaired, id_eq, Nat.unpair_pair, decode_prod_val, decode_nat,
         Option.some_bind, Option.map_map, Option.map_some']
       cases' @decode α _ n.unpair.1 with a; · rfl
-      simp only [encode_some, encodek, Option.map_some', Option.some_bind, Option.map_map]
+      simp only [Nat.pred_eq_sub_one, encode_some, Nat.succ_eq_add_one, encodek, Option.map_some',
+        Option.some_bind, Option.map_map]
       induction' n.unpair.2 with m <;> simp [encodek]
       simp [*, encodek]
 #align primrec.nat_elim Primrec.nat_rec
@@ -781,7 +782,7 @@ theorem list_indexOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.inde
   list_findIdx₁ (.swap .beq) l
 #align primrec.list_index_of₁ Primrec.list_indexOf₁
 
-theorem dom_fintype [Fintype α] (f : α → σ) : Primrec f :=
+theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   let ⟨l, _, m⟩ := Finite.exists_univ_list α
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
@@ -1458,7 +1459,7 @@ theorem add : @Primrec' 2 fun v => v.head + v.tail.head :=
 theorem sub : @Primrec' 2 fun v => v.head - v.tail.head := by
   have : @Primrec' 2 fun v ↦ (fun a b ↦ b - a) v.head v.tail.head := by
     refine' (prec head (pred.comp₁ _ (tail head))).of_eq fun v => _
-    simp; induction v.head <;> simp [*, Nat.sub_succ]
+    simp; induction v.head <;> simp [*, Nat.sub_add_eq]
   simpa using comp₂ (fun a b => b - a) this (tail head) head
 #align nat.primrec'.sub Nat.Primrec'.sub
 

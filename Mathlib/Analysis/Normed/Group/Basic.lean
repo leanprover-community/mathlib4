@@ -425,6 +425,10 @@ theorem dist_one_right (a : E) : dist a 1 = ‖a‖ := by rw [dist_eq_norm_div, 
 #align dist_one_right dist_one_right
 #align dist_zero_right dist_zero_right
 
+@[to_additive]
+theorem inseparable_one_iff_norm {a : E} : Inseparable a 1 ↔ ‖a‖ = 0 := by
+  rw [Metric.inseparable_iff, dist_one_right]
+
 @[to_additive (attr := simp)]
 theorem dist_one_left : dist (1 : E) = norm :=
   funext fun a => by rw [dist_comm, dist_one_right]
@@ -762,6 +766,11 @@ theorem Bornology.IsBounded.exists_pos_norm_le' (hs : IsBounded s) : ∃ R > 0, 
   ⟨max R₀ 1, by positivity, fun x hx => (hR₀ x hx).trans <| le_max_left _ _⟩
 #align metric.bounded.exists_pos_norm_le' Bornology.IsBounded.exists_pos_norm_le'
 #align metric.bounded.exists_pos_norm_le Bornology.IsBounded.exists_pos_norm_le
+
+@[to_additive Bornology.IsBounded.exists_pos_norm_lt]
+theorem Bornology.IsBounded.exists_pos_norm_lt' (hs : IsBounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ < R :=
+  let ⟨R, hR₀, hR⟩ := hs.exists_pos_norm_le'
+  ⟨R + 1, by positivity, fun x hx ↦ (hR x hx).trans_lt (lt_add_one _)⟩
 
 @[to_additive (attr := simp 1001) mem_sphere_iff_norm]
 -- Porting note: increase priority so the left-hand side doesn't reduce
@@ -1411,7 +1420,10 @@ theorem norm_pos_iff''' [T0Space E] {a : E} : 0 < ‖a‖ ↔ a ≠ 1 := by
 @[to_additive]
 theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ} {l : Filter ι} :
     TendstoUniformlyOn f 1 l s ↔ ∀ ε > 0, ∀ᶠ i in l, ∀ x ∈ s, ‖f i x‖ < ε := by
-  simp_rw [tendstoUniformlyOn_iff, Pi.one_apply, dist_one_left]
+  -- Adaptation note: nightly-2024-03-11.
+  -- Originally this was `simp_rw` instead of `simp only`,
+  -- but this creates a bad proof term with nested `OfNat.ofNat` that trips up `@[to_additive]`.
+  simp only [tendstoUniformlyOn_iff, Pi.one_apply, dist_one_left]
 #align seminormed_group.tendsto_uniformly_on_one SeminormedGroup.tendstoUniformlyOn_one
 #align seminormed_add_group.tendsto_uniformly_on_zero SeminormedAddGroup.tendstoUniformlyOn_zero
 

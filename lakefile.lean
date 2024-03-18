@@ -29,9 +29,9 @@ require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 require std from git "https://github.com/leanprover/std4" @ "nightly-testing-2024-03-04"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "nightly-testing"
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.28-pre"
+require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.30"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
-require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "main"
+require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "nightly-testing"
 
 /-!
 ## Mathlib libraries

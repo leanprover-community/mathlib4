@@ -246,7 +246,6 @@ lemma pullback.lift_fst {W : Stonean} (a : W ⟶ X) (b : W ⟶ Y) (w : a ≫ f =
 lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbedding i)
     (a : W ⟶ X) (b : W ⟶ Y) (w : a ≫ f = b ≫ i) :
     pullback.lift f hi a b w ≫ Stonean.pullback.snd f hi = b := by
-  congr
   ext z
   have := congr_fun (DFunLike.ext'_iff.mp w.symm) z
   have h : i (b z) = f (a z) := this

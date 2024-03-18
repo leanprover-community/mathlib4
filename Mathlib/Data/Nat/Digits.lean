@@ -270,8 +270,9 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
   · cases' b with b
     · induction' n with n ih
       · rfl
-      · rw[show succ zero = 1 by rfl] at ih ⊢
-        simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
+      · rw [show 0 + 1 = 1 by rfl] at ih ⊢
+        simp only [Nat.succ_eq_add_one, ih, add_comm 1, ofDigits_one_cons, Nat.cast_id,
+          digits_one_succ]
     · apply Nat.strongInductionOn n _
       clear n
       intro n h
@@ -387,7 +388,7 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   -- Porting note: Previous code (single line) contained linarith.
   -- . exact IH _ (Nat.div_lt_self (Nat.succ_pos _) (by linarith)) hd
   · apply IH ((n + 1) / (b + 2))
-    · apply Nat.div_lt_self <;> simp
+    · apply Nat.div_lt_self <;> omega
     · assumption
 #align nat.digits_lt_base' Nat.digits_lt_base'
 
@@ -407,7 +408,6 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
       mul_le_mul (IH fun x hx => hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp only [zero_le])
         (Nat.zero_le _)
     suffices ↑hd < b + 2 by linarith
-    norm_cast
     exact hl hd (List.mem_cons_self _ _)
 #align nat.of_digits_lt_base_pow_length' Nat.ofDigits_lt_base_pow_length'
 
@@ -476,7 +476,7 @@ theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
   · exact digits_zero _ ▸ Nat.le_refl (List.sum [])
   · induction' p with p
     · rw [digits_zero_succ, List.sum_cons, List.sum_nil, add_zero]
-    · nth_rw 2 [← ofDigits_digits p.succ n.succ]
+    · nth_rw 2 [← ofDigits_digits p.succ (n + 1)]
       rw [← ofDigits_one <| digits p.succ n.succ]
       exact ofDigits_monotone (digits p.succ n.succ) <| Nat.succ_pos p
 
@@ -529,7 +529,8 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
     ofDigits p digits / p ^ i = ofDigits p (digits.drop i) := by
   induction' i with i hi
   · simp
-  · rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi, ofDigits_div_eq_ofDigits_tail hpos
+  · rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi,
+      ofDigits_div_eq_ofDigits_tail hpos
       (List.drop i digits) fun x hx ↦ w₁ x <| List.mem_of_mem_drop hx, ← List.drop_one,
       List.drop_drop, add_comm]
 
@@ -565,8 +566,12 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
         have h₁ : 1 ≤ tl.length := List.length_pos.mpr h'
         rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x in Ico _ _, ofDigits p (tl.drop x)),
-            ← this, sum_Ico_consecutive _  h₁ <| le_succ tl.length, ← sum_Ico_add _ 0 tl.length 1,
-            Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
+            ← this, sum_Ico_consecutive _  h₁ <| (le_add_right (List.length tl) 1)]
+        -- Adaptation note: nightly-2024-03-07:
+        -- this needs an `erw` only because of a `0 + 1` vs `1`.
+        -- Can someone do it more cleanly?
+        erw [← sum_Ico_add _ 0 tl.length 1]
+        rw [Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
             mul_zero, add_zero, ← Nat.add_sub_assoc <| sum_le_ofDigits _ <| Nat.le_of_lt h]
         nth_rw 2 [← one_mul <| ofDigits p tl]
         rw [← add_mul, one_eq_succ_zero, Nat.sub_add_cancel <| zero_lt_of_lt h,

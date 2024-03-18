@@ -200,7 +200,7 @@ instance instNSMul : SMul ℕ Cₛ^n⟮I; F, V⟯ :=
 @[simp]
 theorem coe_nsmul (s : Cₛ^n⟮I; F, V⟯) (k : ℕ) : ⇑(k • s : Cₛ^n⟮I; F, V⟯) = k • ⇑s := by
   induction' k with k ih
-  · simp_rw [Nat.zero_eq, zero_smul]; rfl
+  · simp_rw [zero_smul]; rfl
   simp_rw [succ_nsmul, ← ih]; rfl
 #align cont_mdiff_section.coe_nsmul ContMDiffSection.coe_nsmul
 

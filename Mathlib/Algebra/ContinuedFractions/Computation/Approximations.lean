@@ -206,6 +206,7 @@ theorem fib_le_of_continuantsAux_b :
         set pconts := g.continuantsAux (n + 1) with pconts_eq
         set ppconts := g.continuantsAux n with ppconts_eq
         -- use the recurrence of `continuantsAux`
+        simp only [Nat.succ_eq_add_one, Nat.add_assoc, Nat.reduceAdd]
         suffices (fib n : K) + fib (n + 1) ≤ gp.a * ppconts.b + gp.b * pconts.b by
           simpa [fib_add_two, add_comm,
             continuantsAux_recurrence s_ppred_nth_eq ppconts_eq pconts_eq]
@@ -514,7 +515,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
         positivity
       rw [abs_of_pos this]
     rwa [this]
-  suffices 0 < denom ∧ denom ≤ denom' from div_le_div_of_le_left zero_le_one this.left this.right
+  suffices 0 < denom ∧ denom ≤ denom' from div_le_div_of_nonneg_left zero_le_one this.1 this.2
   constructor
   · have : 0 < pred_conts.b + gp.b * conts.b :=
       nextConts_b_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _

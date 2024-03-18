@@ -101,8 +101,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace Equivalence
 
-attribute [pp_dot] functor inverse unitIso counitIso
-
 /-- The unit of an equivalence of categories. -/
 @[pp_dot] abbrev unit (e : C ≌ D) : 𝟭 C ⟶ e.functor ⋙ e.inverse :=
   e.unitIso.hom

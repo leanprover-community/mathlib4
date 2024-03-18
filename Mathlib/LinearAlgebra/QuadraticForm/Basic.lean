@@ -352,9 +352,9 @@ def ofPolar (toFun : M → R) (toFun_smul : ∀ (a : R) (x : M), toFun (a • x)
   { toFun
     toFun_smul
     exists_companion' := ⟨LinearMap.mk₂ R (polar toFun) (polar_add_left) (polar_smul_left)
-      (fun x _ _ => by simp_rw [polar_comm _ x, polar_add_left])
-      (fun _ _ _ => by rw [polar_comm, polar_smul_left, polar_comm]),
-      fun _ _ =>  by
+      (fun x _ _ ↦ by simp_rw [polar_comm _ x, polar_add_left])
+      (fun _ _ _ ↦ by rw [polar_comm, polar_smul_left, polar_comm]),
+      fun _ _ ↦ by
         simp only [LinearMap.mk₂_apply]
         rw [polar, sub_sub, add_sub_cancel'_right]⟩ }
 #align quadratic_form.of_polar QuadraticForm.ofPolar
@@ -571,7 +571,7 @@ def _root_.LinearMap.compQuadraticForm [CommSemiring S] [Algebra S R] [Module S 
   toFun_smul b x := by simp only [Q.map_smul_of_tower b x, f.map_smul, smul_eq_mul]
   exists_companion' :=
     let ⟨B, h⟩ := Q.exists_companion
-    ⟨(B.restrictScalars₁₂ S).compr₂ f, fun x y => by
+    ⟨(B.restrictScalars₁₂ S S).compr₂ f, fun x y => by
       simp_rw [h, f.map_add, LinearMap.compr₂_apply, LinearMap.restrictScalars₁₂_apply_apply]⟩
 #align linear_map.comp_quadratic_form LinearMap.compQuadraticForm
 
@@ -798,7 +798,7 @@ theorem compQuadraticForm_polar (f : R →ₗ[S] S) (Q : QuadraticForm R M) (x y
 
 theorem compQuadraticForm_polarBilin (f : R →ₗ[S] S) (Q : QuadraticForm R M) :
     (f.compQuadraticForm Q).polarBilin =
-    (Q.polarBilin.restrictScalars₁₂ S).compr₂ f :=
+    (Q.polarBilin.restrictScalars₁₂ S S).compr₂ f :=
   ext₂ <| compQuadraticForm_polar _ _
 
 end Ring
@@ -862,7 +862,7 @@ theorem associated_comp [AddCommGroup N] [Module R N] (f : N →ₗ[R] M) :
 theorem associated_toQuadraticForm (B : BilinForm R M) (x y : M) :
     associatedHom S B.toQuadraticForm x y = ⅟ 2 * (B x y + B y x) := by
   simp only [associated_apply, toQuadraticForm_apply, map_add, add_apply, ← polar_toQuadraticForm,
-    polar._eq_1]
+    polar.eq_1]
 #align quadratic_form.associated_to_quadratic_form QuadraticForm.associated_toQuadraticForm
 
 theorem associated_left_inverse (h : B₁.IsSymm) : associatedHom S B₁.toQuadraticForm = B₁ :=
@@ -1228,8 +1228,7 @@ in which `2` is invertible, there exists an orthogonal basis with respect to `B`
 theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (hB₂ : B.IsSymm) :
     ∃ v : Basis (Fin (finrank K V)) K V, B.IsOrthoᵢ v := by
   induction' hd : finrank K V with d ih generalizing V
-  · simp_rw [Nat.zero_eq]
-    exact ⟨basisOfFinrankZero hd, fun _ _ _ => map_zero _⟩
+  · exact ⟨basisOfFinrankZero hd, fun _ _ _ => map_zero _⟩
   haveI := finrank_pos_iff.1 (hd.symm ▸ Nat.succ_pos d : 0 < finrank K V)
   -- either the bilinear form is trivial or we can pick a non-null `x`
   obtain rfl | hB₁ := eq_or_ne B 0
@@ -1262,7 +1261,15 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
   refine' ⟨b, _⟩
   · rw [Basis.coe_mkFinCons]
     intro j i
+    -- FIXME nightly-testing
+    -- Proof failing
+    -- sorry
     refine' Fin.cases _ (fun i => _) i <;> refine' Fin.cases _ (fun j => _) j <;> intro hij <;>
+      -- Adaptation note: nightly-2024-03-16
+      -- Previously `Function.onFun` unfolded in the following `simp only`,
+      -- but now needs a separate `rw`.
+      -- This may be a bug: a no import minimization may be required.
+      (try rw [Function.onFun]) <;>
       simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
     · exact (hij rfl).elim
     · rw [IsOrtho, ← hB₂]

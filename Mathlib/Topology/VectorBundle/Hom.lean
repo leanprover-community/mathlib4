@@ -153,7 +153,7 @@ def continuousLinearMap :
   proj_toFun _ _ := rfl
 #align pretrivialization.continuous_linear_map Pretrivialization.continuousLinearMap
 
--- Porting note: todo: see if Lean 4 can generate this instance without a hint
+-- Porting note (#11215): TODO: see if Lean 4 can generate this instance without a hint
 instance continuousLinearMap.isLinear [∀ x, ContinuousAdd (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)] :
     (Pretrivialization.continuousLinearMap σ e₁ e₂).IsLinear 𝕜₂ where
   linear x _ :=

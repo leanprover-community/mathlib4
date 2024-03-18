@@ -30,9 +30,7 @@ example {α : Type u} {β : Type v} [Add α] [h : Sub β] (f : α → β) ⦃_g 
   rfl
 
 -- an example with a hygienic variable
-/--
-info: theorem extracted_1 (n : ℕ) : Nat.succ n = Nat.succ n := sorry
--/
+/-- info: theorem extracted_1 (n : ℕ) : n + 1 = n + 1 := sorry -/
 #guard_msgs in
 example (n : ℕ) : n = n := by
   cases n

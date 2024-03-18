@@ -63,7 +63,7 @@ theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
 -- It would be nice to mark this as `aesop cases` if
 -- https://github.com/JLimperg/aesop/issues/59
 -- is resolved.
-@[eliminator]
+@[induction_eliminator]
 protected noncomputable def Shrink.rec [Small.{w} α] {F : Shrink α → Sort v}
     (h : ∀ X, F (equivShrink _ X)) : ∀ X, F X :=
   fun X => ((equivShrink _).apply_symm_apply X) ▸ (h _)
@@ -103,7 +103,7 @@ theorem small_type : Small.{max (u + 1) v} (Type u) :=
 
 section
 
-open Classical
+open scoped Classical
 
 theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
   ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩

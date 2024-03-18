@@ -37,6 +37,19 @@ up to `n = 7` in order to formalize spectral sequences following Verdier)
 
 -/
 
+/-!
+New `simprocs` that run even in `dsimp` have caused breakages in this file.
+
+(e.g. `dsimp` can now simplify `2 + 3` to `5`)
+
+For now, we just turn off simprocs in this file.
+We'll soon provide finer grained options here, e.g. to turn off simprocs only in `dsimp`, etc.
+
+*However*, hopefully it is possible to refactor the material here so that no backwards compatibility
+`set_option`s are required at all
+-/
+set_option simprocs false
+
 namespace CategoryTheory
 
 open Category
@@ -173,7 +186,7 @@ def homMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ⟶ G.obj i)
       obtain rfl := hj
       rw [F.map'_self i, G.map'_self i, id_comp, comp_id]
     · intro i j hj hj'
-      rw [Nat.succ_eq_add_one, ← add_assoc] at hj
+      rw [← add_assoc] at hj
       subst hj
       rw [F.map'_comp i (i + k) (i + k + 1), G.map'_comp i (i + k) (i + k + 1), assoc,
         w (i + k) (by valid), reassoc_of% (hk i (i + k) rfl (by valid))]
@@ -343,8 +356,7 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
       rw [id_comp]
     · obtain _ | _ | k := k
       · simp at hjk
-      · dsimp
-        rw [F.map_id, comp_id]
+      · simp
       · rfl
     · obtain _ | _ | k := k
       · simp [Fin.ext_iff] at hjk
@@ -529,8 +541,7 @@ lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
     intro ⟨i, hi⟩
     cases' i with i
     · exact h₀
-    · rw [Nat.succ_eq_add_one] at hi
-      exact Functor.congr_obj h ⟨i, by valid⟩
+    · exact Functor.congr_obj h ⟨i, by valid⟩
   exact Functor.ext_of_iso (isoMkSucc (eqToIso h₀) (eqToIso h) (by
       rw [w]
       dsimp [app']

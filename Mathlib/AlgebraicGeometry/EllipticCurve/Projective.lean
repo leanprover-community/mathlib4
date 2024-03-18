@@ -97,11 +97,11 @@ lemma smul_fin3 {R : Type u} [CommRing R] (P : Fin 3 → R) (u : Rˣ) :
     u • P = ![u * P x, u * P y, u * P z] := by
   rw [fin3_def P]
   matrix_simp
-  rfl
+  simp only [Units.smul_def, smul_eq_mul]
 
 lemma smul_fin3_ext {R : Type u} [CommRing R] (P : Fin 3 → R) (u : Rˣ) :
-    (u • P) x = u * P x ∧ (u • P) y = u * P y ∧ (u • P) z = u * P z :=
-  ⟨rfl, rfl, rfl⟩
+    (u • P) x = u * P x ∧ (u • P) y = u * P y ∧ (u • P) z = u * P z := by
+  refine ⟨?_, ?_, ?_⟩ <;> simp only [Units.smul_def, Pi.smul_apply, smul_eq_mul]
 
 /-- The equivalence setoid for a point representative. -/
 scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
@@ -286,8 +286,17 @@ lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nons
     (hPz : P z = 0) (hQz : Q z = 0) : P ≈ Q := by
   rw [fin3_def P, hPz] at hP ⊢
   rw [fin3_def Q, hQz] at hQ ⊢
-  simp [nonsingular_iff, equation_iff] at hP hQ
-  simp [pow_eq_zero hP.left.symm, pow_eq_zero hQ.left.symm] at *
+  simp? [nonsingular_iff, equation_iff] at hP hQ says
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, nonsingular_iff,
+      equation_iff, Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_two, Matrix.tail_cons,
+      mul_zero, Matrix.cons_val_zero, add_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+      zero_pow, zero_eq_mul, pow_eq_zero_iff, not_or, sub_self, not_true_eq_false, false_or]
+      at hP hQ
+  simp? [pow_eq_zero hP.left.symm, pow_eq_zero hQ.left.symm] at * says
+    simp only [Fin.isValue, pow_eq_zero hP.left.symm, ne_eq, OfNat.ofNat_ne_zero,
+      not_false_eq_true, zero_pow, not_true_eq_false, and_false, mul_zero, zero_mul, add_zero,
+      pow_eq_zero_iff, false_or, true_and, pow_eq_zero hQ.left.symm, Nat.succ_eq_add_one,
+      Nat.reduceAdd] at *
   exact ⟨Units.mk0 (P y / Q y) <| div_ne_zero hP hQ, by simp [div_mul_cancel _ hQ]⟩
 
 lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (h : W.Nonsingular P) (hPz : P z = 0) :

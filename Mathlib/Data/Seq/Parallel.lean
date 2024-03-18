@@ -102,7 +102,6 @@ theorem terminates_parallel.aux :
           (Sum.inr List.nil) l with a' ls <;> erw [e] at e'
         · contradiction
         have := IH' m _ e
-        simp [parallel.aux2] at e'
         -- Porting note: `revert e'` & `intro e'` are required.
         revert e'
         cases destruct c <;> intro e' <;> [injection e'; injection e' with h']
@@ -135,7 +134,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
     have H : Seq.destruct S = some (some c, _) := by
       dsimp [Seq.destruct, (· <$> ·)]
       rw [← a]
-      simp
+      simp only [Option.map_some', Option.some.injEq]
       rfl
     induction' h : parallel.aux2 l with a l'
     · have C : corec parallel.aux1 (l, S) = pure a := by
@@ -148,7 +147,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       infer_instance
     · have C : corec parallel.aux1 (l, S) = _ := by
         apply destruct_eq_think
-        simp only [corec_eq, rmap, parallel.aux1._eq_1]
+        simp only [corec_eq, rmap, parallel.aux1.eq_1]
         rw [h, H]
       rw [C]
       refine @Computation.think_terminates _ _ ?_
@@ -167,7 +166,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       infer_instance
     · have C : corec parallel.aux1 (l, S) = _ := by
         apply destruct_eq_think
-        simp only [corec_eq, rmap, parallel.aux1._eq_1]
+        simp only [corec_eq, rmap, parallel.aux1.eq_1]
         rw [h]
       rw [C]
       refine @Computation.think_terminates _ _ ?_
@@ -294,7 +293,7 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
         cases List.foldr _ _ _
         · simp
         · cases destruct c <;> simp
-      simp only [BisimO, destruct_map, lmap, rmap, corec_eq, parallel.aux1._eq_1]
+      simp only [BisimO, destruct_map, lmap, rmap, corec_eq, parallel.aux1.eq_1]
       rw [this]
       cases' parallel.aux2 l with a l' <;> simp
       induction' S using WSeq.recOn with c S S <;> simp <;>

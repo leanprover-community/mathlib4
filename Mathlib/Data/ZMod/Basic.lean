@@ -956,7 +956,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
       exact Or.inl (a.val_eq_zero.1 he)
     cases m
     · right
-      rwa [show Nat.succ Nat.zero = 1 from rfl, mul_one] at he
+      rwa [show 0 + 1 = 1 from rfl, mul_one] at he
     refine' (a.val_lt.not_le <| Nat.le_of_mul_le_mul_left _ zero_lt_two).elim
     rw [he, mul_comm]
     apply Nat.mul_le_mul_left
@@ -1248,7 +1248,8 @@ instance : Field (ZMod p) :=
   { inferInstanceAs (CommRing (ZMod p)), inferInstanceAs (Inv (ZMod p)),
     ZMod.nontrivial p with
     mul_inv_cancel := mul_inv_cancel_aux p
-    inv_zero := inv_zero p }
+    inv_zero := inv_zero p
+    qsmul := qsmulRec _ }
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
 instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
@@ -1357,3 +1358,17 @@ theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = 
 end lift
 
 end ZMod
+
+/-- The range of `(m * · + k)` on natural numbers is the set of elements `≥ k` in the
+residue class of `k` mod `m`. -/
+lemma Nat.range_mul_add (m k : ℕ) :
+    Set.range (fun n : ℕ ↦ m * n + k) = {n : ℕ | (n : ZMod m) = k ∧ k ≤ n} := by
+  ext n
+  simp only [Set.mem_range, Set.mem_setOf_eq]
+  conv => enter [1, 1, y]; rw [add_comm, eq_comm]
+  refine ⟨fun ⟨a, ha⟩ ↦ ⟨?_, le_iff_exists_add.mpr ⟨_, ha⟩⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
+  · simpa using congr_arg ((↑) : ℕ → ZMod m) ha
+  · obtain ⟨a, ha⟩ := le_iff_exists_add.mp H₂
+    simp only [ha, Nat.cast_add, add_right_eq_self, ZMod.nat_cast_zmod_eq_zero_iff_dvd] at H₁
+    obtain ⟨b, rfl⟩ := H₁
+    exact ⟨b, ha⟩

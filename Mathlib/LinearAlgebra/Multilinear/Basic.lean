@@ -1018,16 +1018,17 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
 `f₁, ..., fₙ`. -/
 @[simps] def compLinearMapMultilinear :
-  @MultilinearMap R ι (λ i ↦ M₁ i →ₗ[R] M₁' i)
-    ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _ (λ i ↦ LinearMap.module) _ where
+  @MultilinearMap R ι (fun i ↦ M₁ i →ₗ[R] M₁' i)
+    ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _
+      (fun i ↦ LinearMap.module) _ where
   toFun := MultilinearMap.compLinearMapₗ
   map_add' := by
     intro _ f i f₁ f₂
     ext g x
     change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
         (g fun j ↦ update f i f₁ j <|x j) + g fun j ↦ update f i f₂ j (x j)
-    let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := λ i f ↦ f (x i)
-    convert g.map_add (λ j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) with j j j
+    let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := fun i f ↦ f (x i)
+    convert g.map_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) with j j j
     · exact Function.apply_update c f i (f₁ + f₂) j
     · exact Function.apply_update c f i f₁ j
     · exact Function.apply_update c f i f₂ j
@@ -1035,8 +1036,8 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
     intro _ f i a f₀
     ext g x
     change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
-    let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := λ i f ↦ f (x i)
-    convert g.map_smul (λ j ↦ f j (x j)) i a (f₀ (x i)) with j j j
+    let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := fun i f ↦ f (x i)
+    convert g.map_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) with j j j
     · exact Function.apply_update c f i (a • f₀) j
     · exact Function.apply_update c f i f₀ j
 

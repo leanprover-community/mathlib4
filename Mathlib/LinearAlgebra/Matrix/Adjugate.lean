@@ -269,7 +269,7 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
     cramer A b = A.adjugate *ᵥ b := by
   nth_rw 2 [← A.transpose_transpose]
   rw [← adjugate_transpose, adjugate_def]
-  have : b = ∑ i, b i • Pi.single i 1 := by
+  have : b = ∑ i, b i • (Pi.single i 1 : n → α) := by
     refine' (pi_eq_sum_univ b).trans _
     congr with j
     -- Porting note: needed to help `Pi.smul_apply`

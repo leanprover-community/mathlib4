@@ -166,7 +166,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
       replace hk := Nat.pow_right_injective rfl.le hk
       rw [add_left_eq_self] at hk
       subst hk
-      rw [← Nat.one_eq_succ_zero, pow_one] at hζ hcycl
+      rw [pow_one] at hζ hcycl
       have : natDegree (minpoly K ζ) = 1 := by
         rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp,
           minpoly.eq_X_sub_C_of_algebraMap_inj _ (NoZeroSMulDivisors.algebraMap_injective K L)]

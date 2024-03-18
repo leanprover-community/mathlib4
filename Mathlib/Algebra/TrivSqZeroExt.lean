@@ -679,7 +679,7 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
           rw [List.range_succ, List.map_append, List.sum_append, List.map_singleton,
             List.sum_singleton, Nat.sub_self, pow_zero, one_smul, List.smul_sum, List.map_map,
             fst_pow, Function.comp]
-          simp_rw [← smul_comm (_ : R) (_ : Rᵐᵒᵖ), smul_smul, ← pow_succ, Nat.succ_eq_add_one]
+          simp_rw [← smul_comm (_ : R) (_ : Rᵐᵒᵖ), smul_smul, ← pow_succ]
           congr 2
           refine' List.map_congr fun i hi => _
           rw [List.mem_range, Nat.lt_succ_iff] at hi

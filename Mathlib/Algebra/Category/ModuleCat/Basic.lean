@@ -160,7 +160,7 @@ theorem forget₂_map (X Y : ModuleCat R) (f : X ⟶ Y) :
   rfl
 #align Module.forget₂_map ModuleCat.forget₂_map
 
--- Porting note: TODO: `ofHom` and `asHom` are duplicates!
+-- Porting note (#11215): TODO: `ofHom` and `asHom` are duplicates!
 
 /-- Typecheck a `LinearMap` as a morphism in `Module R`. -/
 def ofHom {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
@@ -363,8 +363,8 @@ def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGroupCat).obj M) where
     { toFun := fun (m : M) => r • m
       map_zero' := by dsimp; rw [smul_zero]
       map_add' := fun x y => by dsimp; rw [smul_add] }
-  map_one' := AddMonoidHom.ext (fun x => by dsimp; rw [one_smul])
-  map_zero' := AddMonoidHom.ext (fun x => by dsimp; rw [zero_smul])
+  map_one' := AddMonoidHom.ext (fun x => by dsimp; rw [one_smul]; rfl)
+  map_zero' := AddMonoidHom.ext (fun x => by dsimp; rw [zero_smul]; rfl)
   map_mul' r s := AddMonoidHom.ext (fun (x : M) => (smul_smul r s x).symm)
   map_add' r s := AddMonoidHom.ext (fun (x : M) => add_smul r s x)
 

@@ -273,8 +273,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   · intro _
     exact dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt hp hBint hQ hzint hei
   · intro hj
-    convert hp.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd _ hndiv
-    exact n
+    convert hp.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd (n := n) _ hndiv
     -- Two technical results we will need about `P.natDegree` and `Q.natDegree`.
     have H := degree_modByMonic_lt Q₁ (minpoly.monic hBint)
     rw [← hQ₁, ← hP] at H
@@ -282,7 +281,6 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
       (lt_of_lt_of_le
         (lt_of_le_of_lt (Nat.lt_iff_add_one_le.1 (Nat.lt_of_succ_lt_succ (mem_range.1 hj)))
           (lt_succ_self _)) (Nat.lt_iff_add_one_le.1 ((natDegree_lt_natDegree_iff hQzero).2 H)))
-    rw [add_assoc] at H
     have Hj : Q.natDegree + 1 = j + 1 + (Q.natDegree - j) := by
       rw [← add_comm 1, ← add_comm 1, add_assoc, add_right_inj,
         ← Nat.add_sub_assoc (Nat.lt_of_succ_lt_succ (mem_range.1 hj)).le, add_comm,
@@ -308,7 +306,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
         Q.coeff (j + 1 + k) • B.gen ^ (j + 1 + k) * B.gen ^ (P.natDegree - (j + 2)) =
         (algebraMap R L) p * Q.coeff (j + 1 + k) • f (k + P.natDegree - 1) := by
       intro k hk
-      rw [smul_mul_assoc, ← pow_add, ← Nat.add_sub_assoc H, ← add_assoc j 1 1, add_comm (j + 1) 1,
+      rw [smul_mul_assoc, ← pow_add, ← Nat.add_sub_assoc H, add_comm (j + 1) 1,
         add_assoc (j + 1), add_comm _ (k + P.natDegree), Nat.add_sub_add_right,
         ← (hf (k + P.natDegree - 1) _).2, mul_smul_comm]
       rw [(minpoly.monic hBint).natDegree_map, add_comm, Nat.add_sub_assoc, le_add_iff_nonneg_right]
@@ -323,7 +321,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
         p ^ n.succ ∣ Q.coeff (succ j) ^ n.succ *
           (minpoly R B.gen).coeff 0 ^ (succ j + (P.natDegree - (j + 2))) by
       convert this
-      rw [Nat.succ_eq_add_one, add_assoc, ← Nat.add_sub_assoc H, ← add_assoc, add_comm (j + 1),
+      rw [Nat.succ_eq_add_one, add_assoc, ← Nat.add_sub_assoc H, add_comm (j + 1),
         Nat.add_sub_add_left, ← Nat.add_sub_assoc, Nat.add_sub_add_left, hP, ←
         (minpoly.monic hBint).natDegree_map (algebraMap R K), ←
         minpoly.isIntegrallyClosed_eq_field_fractions' K hBint, natDegree_minpoly, hn, Nat.sub_one,

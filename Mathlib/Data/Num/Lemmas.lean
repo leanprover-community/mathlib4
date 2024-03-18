@@ -188,8 +188,8 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
 theorem lt_to_nat {m n : PosNum} : (m : ℕ) < n ↔ m < n :=
   show (m : ℕ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_nat m n with
-    | Ordering.lt, h => by simp at h; simp [h]
-    | Ordering.eq, h => by simp at h; simp [h, lt_irrefl]
+    | Ordering.lt, h => by simp only at h; simp [h]
+    | Ordering.eq, h => by simp only at h; simp [h, lt_irrefl]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 #align pos_num.lt_to_nat PosNum.lt_to_nat
 
@@ -257,16 +257,16 @@ theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
       simp only [← bit1_of_bit1, ← bit0_of_bit0, cond, _root_.bit1]
     -- Porting note: `cc` was not ported yet so `exact Nat.add_left_comm n 1 1` is used.
     · erw [show n.bit true + 1 = (n + 1).bit false by
-        simp [Nat.bit, _root_.bit1, _root_.bit0]; exact Nat.add_left_comm n 1 1,
+        simpa [Nat.bit, _root_.bit1, _root_.bit0] using Nat.add_left_comm n 1 1,
         ofNat'_bit, ofNat'_bit, ih]
       simp only [cond, add_one, bit1_succ])
 #align num.of_nat'_succ Num.ofNat'_succ
 
 @[simp]
 theorem add_ofNat' (m n) : Num.ofNat' (m + n) = Num.ofNat' m + Num.ofNat' n := by
-  -- Porting note: `simp` fails to unify `ofNat' (n + 1)` with `ofNat' n.succ`
-  have : ∀ {n}, ofNat' n.succ = ofNat' n + 1 := ofNat'_succ
-  induction n <;> simp [Nat.add_zero, this, add_zero, Nat.add_succ, add_one, add_succ, *]
+  induction n
+  · simp only [Nat.add_zero, ofNat'_zero, add_zero]
+  · simp only [Nat.add_succ, Nat.add_zero, ofNat'_succ, add_one, add_succ, *]
 #align num.add_of_nat' Num.add_ofNat'
 
 @[simp, norm_cast]
@@ -333,8 +333,8 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
 theorem lt_to_nat {m n : Num} : (m : ℕ) < n ↔ m < n :=
   show (m : ℕ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_nat m n with
-    | Ordering.lt, h => by simp at h; simp [h]
-    | Ordering.eq, h => by simp at h; simp [h, lt_irrefl]
+    | Ordering.lt, h => by simp only at h; simp [h]
+    | Ordering.eq, h => by simp only at h; simp [h, lt_irrefl]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 #align num.lt_to_nat Num.lt_to_nat
 
@@ -397,6 +397,7 @@ instance addMonoid : AddMonoid Num where
   zero_add := zero_add
   add_zero := add_zero
   add_assoc := by transfer
+  nsmul := nsmulRec
 #align num.add_monoid Num.addMonoid
 
 instance addMonoidWithOne : AddMonoidWithOne Num :=
@@ -834,7 +835,7 @@ theorem ppred_to_nat : ∀ n : Num, (↑) <$> ppred n = Nat.ppred n
 #align num.ppred_to_nat Num.ppred_to_nat
 
 theorem cmp_swap (m n) : (cmp m n).swap = cmp n m := by
-  cases m <;> cases n <;> try { unfold cmp } <;> try { rfl }; apply PosNum.cmp_swap
+  cases m <;> cases n <;> try { rfl }; apply PosNum.cmp_swap
 #align num.cmp_swap Num.cmp_swap
 
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
@@ -981,7 +982,7 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     · rfl
     · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_zero]
     · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_zero]
-    · rw [PosNum.cast_one', ← bit1_zero, ← Nat.bit_true, Nat.testBit_bit_succ, Nat.zero_testBit]
+    · simp
     · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_succ, IH]
     · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_succ, IH]
 #align num.test_bit_to_nat Num.castNum_testBit
@@ -1355,8 +1356,8 @@ theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n
 theorem lt_to_int {m n : ZNum} : (m : ℤ) < n ↔ m < n :=
   show (m : ℤ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_int m n with
-    | Ordering.lt, h => by simp at h; simp [h]
-    | Ordering.eq, h => by simp at h; simp [h, lt_irrefl]
+    | Ordering.lt, h => by simp only at h; simp [h]
+    | Ordering.eq, h => by simp only at h; simp [h, lt_irrefl]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 #align znum.lt_to_int ZNum.lt_to_int
 
@@ -1435,11 +1436,13 @@ instance addMonoid : AddMonoid ZNum where
   zero := 0
   zero_add := zero_add
   add_zero := add_zero
+  nsmul := nsmulRec
 
 instance addCommGroup : AddCommGroup ZNum :=
   { ZNum.addMonoid with
     add_comm := by transfer
     neg := Neg.neg
+    zsmul := zsmulRec
     add_left_neg := by transfer }
 #align znum.add_comm_group ZNum.addCommGroup
 
@@ -1737,7 +1740,7 @@ theorem mod_to_int : ∀ n d, ((n % d : ZNum) : ℤ) = n % d
 
 @[simp]
 theorem gcd_to_nat (a b) : (gcd a b : ℕ) = Int.gcd a b :=
-  (Num.gcd_to_nat _ _).trans <| by simp; rfl
+  (Num.gcd_to_nat _ _).trans <| by simp only [abs_to_nat]; rfl
 #align znum.gcd_to_nat ZNum.gcd_to_nat
 
 theorem dvd_iff_mod_eq_zero {m n : ZNum} : m ∣ n ↔ n % m = 0 := by

@@ -32,7 +32,8 @@ divisors, perfect numbers
 -/
 
 
-open BigOperators Classical Finset
+open scoped Classical
+open BigOperators Finset
 
 namespace Nat
 
@@ -198,7 +199,7 @@ theorem properDivisors_one : properDivisors 1 = ∅ := by rw [properDivisors, Ic
 
 theorem pos_of_mem_divisors {m : ℕ} (h : m ∈ n.divisors) : 0 < m := by
   cases m
-  · rw [mem_divisors, zero_eq, zero_dvd_iff (a := n)] at h
+  · rw [mem_divisors, zero_dvd_iff (a := n)] at h
     cases h.2 h.1
   apply Nat.succ_pos
 #align nat.pos_of_mem_divisors Nat.pos_of_mem_divisors

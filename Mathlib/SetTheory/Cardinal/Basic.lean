@@ -81,7 +81,8 @@ Cantor's theorem, König's theorem, Konig's theorem
 -/
 
 
-open Function Set Order BigOperators Classical
+open scoped Classical
+open Function Set Order BigOperators
 
 noncomputable section
 
@@ -529,6 +530,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   mul_comm := mul_comm'
   left_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodSumDistrib α β γ
   right_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumProdDistrib α β γ
+  nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
   npow_zero := @power_zero
   npow_succ n c := show c ^ (↑(n + 1) : Cardinal) = c * c ^ (↑n : Cardinal)
@@ -537,7 +539,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   natCast_zero := rfl
   natCast_succ := Cardinal.cast_succ
 
-/-! Porting note: Deprecated section. Remove. -/
+/-! Porting note (#11229): Deprecated section. Remove. -/
 section deprecated
 set_option linter.deprecated false
 
@@ -617,7 +619,7 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
     mk_congr <| Equiv.ulift.trans (Equiv.prodCongr Equiv.ulift Equiv.ulift).symm
 #align cardinal.lift_mul Cardinal.lift_mul
 
-/-! Porting note: Deprecated section. Remove. -/
+/-! Porting note (#11229): Deprecated section. Remove. -/
 section deprecated
 set_option linter.deprecated false
 
@@ -766,13 +768,13 @@ end OrderProperties
 
 protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
   ⟨fun a =>
-    byContradiction fun h => by
+    by_contradiction fun h => by
       let ι := { c : Cardinal // ¬Acc (· < ·) c }
       let f : ι → Cardinal := Subtype.val
       haveI hι : Nonempty ι := ⟨⟨_, h⟩⟩
       obtain ⟨⟨c : Cardinal, hc : ¬Acc (· < ·) c⟩, ⟨h_1 : ∀ j, (f ⟨c, hc⟩).out ↪ (f j).out⟩⟩ :=
         Embedding.min_injective fun i => (f i).out
-      refine hc (Acc.intro _ fun j h' => byContradiction fun hj => h'.2 ?_)
+      refine hc (Acc.intro _ fun j h' => by_contradiction fun hj => h'.2 ?_)
       have : #_ ≤ #_ := ⟨h_1 ⟨j, hj⟩⟩
       simpa only [mk_out] using this⟩
 #align cardinal.lt_wf Cardinal.lt_wf
@@ -1479,7 +1481,7 @@ theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) :=
   Nat.cast_injective
 #align cardinal.nat_cast_injective Cardinal.natCast_injective
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   rw [Nat.cast_succ]
   refine (add_one_le_succ _).antisymm (succ_le_of_lt ?_)

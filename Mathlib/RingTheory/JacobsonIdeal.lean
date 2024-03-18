@@ -210,19 +210,18 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
     comap f K.jacobson = (comap f K).jacobson := by
   unfold Ideal.jacobson
   refine' le_antisymm _ _
-  · refine le_trans (comap_mono (le_of_eq (Trans.trans top_inf_eq.symm sInf_insert.symm))) ?_
-    rw [comap_sInf', sInf_eq_iInf]
+  · rw [← top_inf_eq (sInf _), ← sInf_insert, comap_sInf', sInf_eq_iInf]
     refine' iInf_le_iInf_of_subset fun J hJ => _
     have : comap f (map f J) = J :=
       Trans.trans (comap_map_of_surjective f hf J)
         (le_antisymm (sup_le_iff.2 ⟨le_of_eq rfl, le_trans (comap_mono bot_le) hJ.left⟩)
           le_sup_left)
     cases' map_eq_top_or_isMaximal_of_surjective _ hf hJ.right with htop hmax
-    · exact ⟨⊤, ⟨Set.mem_insert ⊤ _, htop ▸ this⟩⟩
-    · exact ⟨map f J, ⟨Set.mem_insert_of_mem _ ⟨le_map_of_comap_le_of_surjective f hf hJ.1, hmax⟩,
-        this⟩⟩
-  · rw [comap_sInf]
-    refine' le_iInf_iff.2 fun J => le_iInf_iff.2 fun hJ => _
+    · exact ⟨⊤, Set.mem_insert ⊤ _, htop ▸ this⟩
+    · exact ⟨map f J, Set.mem_insert_of_mem _ ⟨le_map_of_comap_le_of_surjective f hf hJ.1, hmax⟩,
+        this⟩
+  · simp_rw [comap_sInf, le_iInf_iff]
+    intros J hJ
     haveI : J.IsMaximal := hJ.right
     exact sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
 #align ideal.comap_jacobson_of_surjective Ideal.comap_jacobson_of_surjective

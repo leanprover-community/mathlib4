@@ -89,8 +89,8 @@ private def gosperCatalan (n j : ℕ) : ℚ :=
 private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
     gosperCatalan (n + 1) (i + 1) - gosperCatalan (n + 1) i =
       Nat.centralBinom i / (i + 1) * Nat.centralBinom (n - i) / (n - i + 1) := by
-  have l₁ : (i : ℚ) + 1 ≠ 0 := by norm_cast; exact i.succ_ne_zero
-  have l₂ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast; exact (n - i).succ_ne_zero
+  have l₁ : (i : ℚ) + 1 ≠ 0 := by norm_cast
+  have l₂ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast
   have h₁ := (mul_div_cancel_left (↑(Nat.centralBinom (i + 1))) l₁).symm
   have h₂ := (mul_div_cancel_left (↑(Nat.centralBinom (n - i + 1))) l₂).symm
   have h₃ : ((i : ℚ) + 1) * (i + 1).centralBinom = 2 * (2 * i + 1) * i.centralBinom :=
@@ -108,9 +108,9 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
 
 private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatalan (n + 1) (n + 1) -
     gosperCatalan (n + 1) 0 = Nat.centralBinom (n + 1) / (n + 2) := by
-  have : (n : ℚ) + 1 ≠ 0 := by norm_cast; exact n.succ_ne_zero
-  have : (n : ℚ) + 1 + 1 ≠ 0 := by norm_cast; exact (n + 1).succ_ne_zero
-  have h : (n : ℚ) + 2 ≠ 0 := by norm_cast; exact (n + 1).succ_ne_zero
+  have : (n : ℚ) + 1 ≠ 0 := by norm_cast
+  have : (n : ℚ) + 1 + 1 ≠ 0 := by norm_cast
+  have h : (n : ℚ) + 2 ≠ 0 := by norm_cast
   simp only [gosperCatalan, Nat.sub_zero, Nat.centralBinom_zero, Nat.sub_self]
   field_simp
   ring
@@ -195,7 +195,6 @@ theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} :
     x ∈ treesOfNumNodesEq n ↔ x.numNodes = n := by
   induction x using Tree.unitRecOn generalizing n <;> cases n <;>
     simp [treesOfNumNodesEq_succ, Nat.succ_eq_add_one, *]
-  exact (Nat.succ_ne_zero _).symm
 #align tree.mem_trees_of_nodes_eq Tree.mem_treesOfNumNodesEq
 
 theorem mem_treesOfNumNodesEq_numNodes (x : Tree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=

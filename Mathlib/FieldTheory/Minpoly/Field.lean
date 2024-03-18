@@ -19,7 +19,8 @@ are irreducible, and uniquely determined by their defining property.
 -/
 
 
-open Classical Polynomial Set Function minpoly
+open scoped Classical
+open Polynomial Set Function minpoly
 
 namespace minpoly
 

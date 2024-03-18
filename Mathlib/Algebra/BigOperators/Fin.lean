@@ -267,11 +267,10 @@ theorem partialProd_right_inv {G : Type*} [Group G] (f : Fin n → G) (i : Fin n
     specialize hi (lt_trans (Nat.lt_succ_self i) hn)
     simp only [Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk] at hi ⊢
     rw [← Fin.succ_mk _ _ (lt_trans (Nat.lt_succ_self _) hn), ← Fin.succ_mk]
-    rw [Nat.succ_eq_add_one] at hn
     simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]
     -- Porting note: was
     -- assoc_rw [hi, inv_mul_cancel_left]
-    rw [← mul_assoc, mul_left_eq_self, mul_assoc, hi, mul_left_inv]
+    rw [← mul_assoc, mul_left_eq_self, mul_assoc, castSucc_mk, hi, mul_left_inv]
 #align fin.partial_prod_right_inv Fin.partialProd_right_inv
 #align fin.partial_sum_right_neg Fin.partialSum_right_neg
 
@@ -322,19 +321,15 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       induction' n with n ih
       · simp
       cases m
-      · dsimp only [Nat.zero_eq] at f -- Porting note: added, wrong zero
-        exact isEmptyElim (f <| Fin.last _)
+      · exact isEmptyElim (f <| Fin.last _)
       simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
       refine' (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
-      rw [← one_add_mul (_ : ℕ), add_comm, pow_succ]
-      -- Porting note: added, wrong `succ`
-      rfl⟩)
+      rw [← one_add_mul (_ : ℕ), add_comm, pow_succ]⟩)
     (fun a b => ⟨a / m ^ (b : ℕ) % m, by
       cases' n with n
       · exact b.elim0
       cases' m with m
-      · dsimp only [Nat.zero_eq] at a -- Porting note: added, wrong zero
-        rw [zero_pow n.succ_ne_zero] at a
+      · rw [zero_pow n.succ_ne_zero] at a
         exact a.elim0
       · exact Nat.mod_lt _ m.succ_pos⟩)
     fun a => by
@@ -382,12 +377,9 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         exact this
       intro n nn f fn
       cases nn
-      · dsimp only [Nat.zero_eq] at fn -- Porting note: added, wrong zero
-        exact isEmptyElim fn
+      · exact isEmptyElim fn
       refine' (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
-      rw [← one_add_mul (_ : ℕ), mul_comm, add_comm]
-      -- Porting note: added, wrong `succ`
-      rfl⟩)
+      rw [← one_add_mul (_ : ℕ), mul_comm, add_comm]⟩)
     (fun a b => ⟨(a / ∏ j : Fin b, n (Fin.castLE b.is_lt.le j)) % n b, by
       cases m
       · exact b.elim0

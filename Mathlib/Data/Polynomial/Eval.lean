@@ -418,7 +418,6 @@ theorem eval_smul [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S
 
 @[simp]
 theorem eval_C_mul : (C a * p).eval x = a * p.eval x := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q ph qh =>
     simp only [mul_add, eval_add, ph, qh]
@@ -466,7 +465,6 @@ theorem eval_nat_cast_mul {n : ℕ} : ((n : R[X]) * p).eval x = n * p.eval x := 
 
 @[simp]
 theorem eval_mul_X : (p * X).eval x = p.eval x * x := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q ph qh =>
     simp only [add_mul, eval_add, ph, qh]
@@ -501,10 +499,12 @@ instance IsRoot.decidable [DecidableEq R] : Decidable (IsRoot p a) := by
   unfold IsRoot; infer_instance
 #align polynomial.is_root.decidable Polynomial.IsRoot.decidable
 
+-- FIXME nightly-testing: this was called `def`.
+-- Should lean be changed to allow that as a name again?
 @[simp]
-theorem IsRoot.def : IsRoot p a ↔ p.eval a = 0 :=
+theorem IsRoot.definition : IsRoot p a ↔ p.eval a = 0 :=
   Iff.rfl
-#align polynomial.is_root.def Polynomial.IsRoot.def
+#align polynomial.is_root.def Polynomial.IsRoot.definition
 
 theorem IsRoot.eq_zero (h : IsRoot p x) : eval x p = 0 :=
   h
@@ -570,7 +570,7 @@ theorem C_comp : (C a).comp p = C a :=
 theorem nat_cast_comp {n : ℕ} : (n : R[X]).comp p = n := by rw [← C_eq_nat_cast, C_comp]
 #align polynomial.nat_cast_comp Polynomial.nat_cast_comp
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : R[X]).comp p = n :=
   nat_cast_comp
@@ -603,7 +603,6 @@ theorem monomial_comp (n : ℕ) : (monomial n a).comp p = C a * p ^ n :=
 
 @[simp]
 theorem mul_X_comp : (p * X).comp r = p.comp r * r := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [hp, hq, add_mul, add_comp]
@@ -627,7 +626,6 @@ theorem mul_X_pow_comp {k : ℕ} : (p * X ^ k).comp r = p.comp r * r ^ k := by
 
 @[simp]
 theorem C_mul_comp : (C a * p).comp r = C a * p.comp r := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp [hp, hq, mul_add]
@@ -785,7 +783,7 @@ protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
   map_natCast (mapRingHom f) n
 #align polynomial.map_nat_cast Polynomial.map_nat_cast
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -849,7 +847,6 @@ def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
           contrapose! hn; exact funext hn), by ext i n; exact coeff_map _ _⟩⟩
 
 theorem eval₂_eq_eval_map {x : S} : p.eval₂ f x = (p.map f).eval x := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp [hp, hq]
@@ -999,7 +996,6 @@ theorem eval_zero_map (f : R →+* S) (p : R[X]) : (p.map f).eval 0 = f (p.eval 
 
 @[simp]
 theorem eval_one_map (f : R →+* S) (p : R[X]) : (p.map f).eval 1 = f (p.eval 1) := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
@@ -1010,7 +1006,6 @@ theorem eval_one_map (f : R →+* S) (p : R[X]) : (p.map f).eval 1 = f (p.eval 1
 @[simp]
 theorem eval_nat_cast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
     (p.map f).eval (n : S) = f (p.eval n) := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
@@ -1021,7 +1016,6 @@ theorem eval_nat_cast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
 @[simp]
 theorem eval_int_cast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[X]) (i : ℤ) :
     (p.map f).eval (i : S) = f (p.eval i) := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
@@ -1137,7 +1131,6 @@ theorem eval_pow (n : ℕ) : (p ^ n).eval x = p.eval x ^ n :=
 
 @[simp]
 theorem eval_comp : (p.comp q).eval x = p.eval (q.eval x) := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add r s hr hs =>
     simp [add_comp, hr, hs]
@@ -1169,11 +1162,11 @@ theorem coe_compRingHom_apply (p q : R[X]) : (compRingHom q : R[X] → R[X]) p =
 #align polynomial.coe_comp_ring_hom_apply Polynomial.coe_compRingHom_apply
 
 theorem root_mul_left_of_isRoot (p : R[X]) {q : R[X]} : IsRoot q a → IsRoot (p * q) a := fun H => by
-  rw [IsRoot, eval_mul, IsRoot.def.1 H, mul_zero]
+  rw [IsRoot, eval_mul, IsRoot.definition.1 H, mul_zero]
 #align polynomial.root_mul_left_of_is_root Polynomial.root_mul_left_of_isRoot
 
 theorem root_mul_right_of_isRoot {p : R[X]} (q : R[X]) : IsRoot p a → IsRoot (p * q) a := fun H =>
-  by rw [IsRoot, eval_mul, IsRoot.def.1 H, zero_mul]
+  by rw [IsRoot, eval_mul, IsRoot.definition.1 H, zero_mul]
 #align polynomial.root_mul_right_of_is_root Polynomial.root_mul_right_of_isRoot
 
 theorem eval₂_multiset_prod (s : Multiset R[X]) (x : S) :
@@ -1332,7 +1325,7 @@ theorem eval_sub (p q : R[X]) (x : R) : (p - q).eval x = p.eval x - q.eval x :=
 #align polynomial.eval_sub Polynomial.eval_sub
 
 theorem root_X_sub_C : IsRoot (X - C a) b ↔ a = b := by
-  rw [IsRoot.def, eval_sub, eval_X, eval_C, sub_eq_zero, eq_comm]
+  rw [IsRoot.definition, eval_sub, eval_X, eval_C, sub_eq_zero, eq_comm]
 #align polynomial.root_X_sub_C Polynomial.root_X_sub_C
 
 @[simp]

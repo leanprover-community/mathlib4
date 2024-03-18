@@ -52,7 +52,8 @@ local notation "ℓ_infty_ℝ" => lp (fun n : ℕ => ℝ) ∞
 
 universe u v w
 
-open Classical Set Function TopologicalSpace Filter Metric Quotient Bornology
+open scoped Classical
+open Set Function TopologicalSpace Filter Metric Quotient Bornology
 
 open BoundedContinuousFunction Nat Int kuratowskiEmbedding
 
@@ -437,7 +438,6 @@ instance : MetricSpace GHSpace where
               hausdorffDist (p.1 : Set ℓ_infty_ℝ) p.2) ∘
             Prod.swap ''
           { a | ⟦a⟧ = x } ×ˢ { b | ⟦b⟧ = y } := by
-      congr
       funext
       simp only [comp_apply, Prod.fst_swap, Prod.snd_swap]
       congr
@@ -816,7 +816,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     · have : Nonempty (Equiv (∅ : Set p.Rep) (Fin 0)) := by
         rw [← Fintype.card_eq];
         simp only [empty_card', Fintype.card_fin]
-      use ∅, 0, bot_le, choice this
+      use ∅, 0, bot_le, this.some
       -- Porting note: unclear why this next line wasn't needed in Lean 3
       exact fun hp' => (hp hp').elim
     · rcases hcov _ (Set.not_not_mem.1 hp) n with ⟨s, ⟨scard, scover⟩⟩
@@ -1019,7 +1019,7 @@ instance : CompleteSpace GHSpace := by
   have E :
     ∀ n : ℕ,
       GlueSpace (Y n).isom (isometry_optimalGHInjl (X n) (X (n + 1))) = (Y (n + 1)).Space :=
-    fun n => by dsimp only [Y, auxGluing]; rfl
+    fun n => by dsimp only [Y, auxGluing]
   let c n := cast (E n)
   have ic : ∀ n, Isometry (c n) := fun n x y => by dsimp only [Y, auxGluing]; exact rfl
   -- there is a canonical embedding of `Y n` in `Y (n+1)`, by construction

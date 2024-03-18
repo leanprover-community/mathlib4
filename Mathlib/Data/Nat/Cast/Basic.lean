@@ -101,9 +101,9 @@ theorem ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = 
   DFunLike.ext f g <| by
     intro n
     induction n with
-    | zero => simp_rw [Nat.zero_eq, map_zero f, map_zero g]
+    | zero => simp_rw [map_zero f, map_zero g]
     | succ n ihn =>
-      simp [Nat.succ_eq_add_one, h, ihn]
+      simp [h, ihn]
 #align ext_nat' ext_nat'
 
 @[ext]
@@ -175,7 +175,7 @@ theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, 
   map_natCast' f <| map_one f
 #align map_nat_cast map_natCast
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :

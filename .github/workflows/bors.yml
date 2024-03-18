@@ -187,11 +187,6 @@ jobs:
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
 
-      - name: check for noisy stdout lines
-        id: noisy
-        run: |
-          ! grep --after-context=1 "stdout:" stdout.log
-
       - name: build library_search cache
         run: lake build -KCI MathlibExtras
 
@@ -240,7 +235,7 @@ jobs:
           # storing and transferring oleans over the network.
           # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
           lake exe cache get Archive.lean
-          lake build Archive
+          lake build Archive | tee --append stdout.log
           lake exe cache put Archive.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
@@ -250,11 +245,17 @@ jobs:
         id: counterexamples
         run: |
           lake exe cache get Counterexamples.lean
-          lake build Counterexamples
+          lake build Counterexamples | tee --append stdout.log
           lake exe cache put Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
+
+      - name: check for noisy stdout lines
+        id: noisy
+        run: |
+          ! grep --after-context=1 "stdout:" stdout.log
+          ! grep --after-context=1 "stderr:" stdout.log
 
       - name: check declarations in db files
         run: |
@@ -285,6 +286,7 @@ jobs:
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
       - name: lint mathlib
+        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
@@ -296,7 +298,7 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          git checkout toolchain/v4.7.0-rc1
+          git checkout bump/v4.8.0
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .

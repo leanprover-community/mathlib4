@@ -861,10 +861,7 @@ set_option linter.deprecated false -- TODO(Mario): make replacements for theorem
 @[simp] theorem nthLe_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simpa [← lt_tsub_iff_right] using h)) :
     l.tail.nthLe i h = l.nthLe (i + 1) h' := by
-  -- Porting note: cases l <;> [cases h; rfl] fails
-  cases l
-  · cases h
-  · rfl
+  cases l <;> [cases h; rfl]
 #align list.nth_le_tail List.nthLe_tail
 
 theorem nthLe_cons_aux {l : List α} {a : α} {n} (hn : n ≠ 0) (h : n < (a :: l).length) :
@@ -1152,6 +1149,9 @@ theorem get?_eq_some' {l : List α} {n a} : get? l n = some a ↔ ∃ h, nthLe l
 @[deprecated get_mem]
 theorem nthLe_mem (l : List α) (n h) : nthLe l n h ∈ l := get_mem ..
 #align list.nth_le_mem List.nthLe_mem
+
+theorem nthLe_congr {l : List α} {n p : ℕ} {h : n < length l} (hnp : n = p) :
+    nthLe l n h = nthLe l p (hnp ▸ h) := by simp [hnp]
 
 #align list.nth_mem List.get?_mem
 
@@ -1538,7 +1538,7 @@ theorem insertNth_comm (a b : α) :
   | i + 1, 0, l => fun h => (Nat.not_lt_zero _ h).elim
   | i + 1, j + 1, [] => by simp
   | i + 1, j + 1, c :: l => fun h₀ h₁ => by
-    simp only [insertNth_succ_cons, insertNth._eq_1, cons.injEq, true_and]
+    simp only [insertNth_succ_cons, cons.injEq, true_and]
     exact insertNth_comm a b i j l (Nat.le_of_succ_le_succ h₀) (Nat.le_of_succ_le_succ h₁)
 #align list.insert_nth_comm List.insertNth_comm
 
@@ -1625,23 +1625,19 @@ theorem nthLe_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.leng
 
 theorem get_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (insertNth n x l).length := (by
-      -- Porting note: the original proof fails
-      -- rwa [length_insertNth _ _ (le_self_add.trans hk'.le), Nat.succ_lt_succ_iff]
-      rw [length_insertNth _ _ (le_self_add.trans hk'.le)]; exact Nat.succ_lt_succ_iff.2 hk')) :
+      rwa [length_insertNth _ _ (le_self_add.trans hk'.le), Nat.succ_lt_succ_iff])):
     (insertNth n x l).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ := by
   induction' l with hd tl IH generalizing n k
   · simp at hk'
   · cases n
     · simp
-    · simpa [succ_add] using IH _ _ _
+    · simpa [Nat.add_right_comm] using IH _ _ _
 
 set_option linter.deprecated false in
 @[deprecated get_insertNth_add_succ]
 theorem nthLe_insertNth_add_succ : ∀ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (insertNth n x l).length := (by
-      -- Porting note: the original proof fails
-      -- rwa [length_insertNth _ _ (le_self_add.trans hk'.le), Nat.succ_lt_succ_iff]
-      rw [length_insertNth _ _ (le_self_add.trans hk'.le)]; exact Nat.succ_lt_succ_iff.2 hk')),
+      rwa [length_insertNth _ _ (le_self_add.trans hk'.le), Nat.succ_lt_succ_iff])),
     (insertNth n x l).nthLe (n + k + 1) hk = nthLe l (n + k) hk' :=
   @get_insertNth_add_succ _
 #align list.nth_le_insert_nth_add_succ List.nthLe_insertNth_add_succ
@@ -1938,7 +1934,7 @@ theorem nthLe_take (L : List α) {i j : ℕ} (hi : i < L.length) (hj : i < j) :
 length `> i`. Version designed to rewrite from the small list to the big list. -/
 theorem get_take' (L : List α) {j i} :
     get (L.take j) i = get L ⟨i.1, lt_of_lt_of_le i.2 (by simp [le_refl])⟩ := by
-  let ⟨i, hi⟩ := i; simp at hi; rw [get_take L _ hi.1]
+  let ⟨i, hi⟩ := i; simp only [length_take, lt_min_iff] at hi; rw [get_take L _ hi.1]
 
 set_option linter.deprecated false in
 /-- The `i`-th element of a list coincides with the `i`-th element of any of its prefixes of
@@ -1950,8 +1946,7 @@ theorem nthLe_take' (L : List α) {i j : ℕ} (hi : i < (L.take j).length) :
 
 theorem get?_take {l : List α} {n m : ℕ} (h : m < n) : (l.take n).get? m = l.get? m := by
   induction' n with n hn generalizing l m
-  · simp only [Nat.zero_eq] at h
-    exact absurd h (not_lt_of_le m.zero_le)
+  · exact absurd h (not_lt_of_le m.zero_le)
   · cases' l with hd tl
     · simp only [take_nil]
     · cases m
@@ -2770,19 +2765,19 @@ where
         cases xs with
         | nil => contradiction
         | cons hd tl =>
-          rw [length, succ_eq_add_one] at h
+          rw [length] at h
           rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ← Array.push_data,
             ← Array.toList_eq]
           exact ih _ _ <| lt_of_add_lt_add_right h
     · induction n generalizing xs acc with
       | zero =>
-        rw [zero_eq, not_lt, nonpos_iff_eq_zero] at h
+        rw [not_lt, nonpos_iff_eq_zero] at h
         rw [eq_nil_of_length_eq_zero h, splitAt.go]
       | succ _ ih =>
         cases xs with
         | nil => rw [splitAt.go]
         | cons hd tl =>
-          rw [length, succ_eq_add_one] at h
+          rw [length] at h
           rw [splitAt.go]
           exact ih _ _ <| not_imp_not.mpr (Nat.add_lt_add_right · 1) h
 #align list.split_at_eq_take_drop List.splitAt_eq_take_drop
@@ -3220,7 +3215,7 @@ theorem lookmap_map_eq (g : α → β) (h : ∀ (a), ∀ b ∈ f a, g a = g b) :
   | [] => rfl
   | a :: l => by
     cases' h' : f a with b
-    · simp [h']; exact lookmap_map_eq _ h l
+    · simpa [h'] using lookmap_map_eq _ h l
     · simp [lookmap_cons_some _ _ h', h _ _ h']
 #align list.lookmap_map_eq List.lookmap_map_eq
 
@@ -4207,7 +4202,10 @@ theorem forall_iff_forall_mem : ∀ {l : List α}, Forall p l ↔ ∀ x ∈ l, p
 
 theorem Forall.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, Forall p l → Forall q l
   | [] => id
-  | x :: l => by simp; rw [← and_imp]; exact And.imp (h x) (Forall.imp h)
+  | x :: l => by
+    simp only [forall_cons, and_imp]
+    rw [← and_imp]
+    exact And.imp (h x) (Forall.imp h)
 #align list.all₂.imp List.Forall.imp
 
 @[simp]
@@ -4283,11 +4281,11 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
         | cons _ xs_tl =>
           cases n
           · simp
-          · simp [drop]
+          · simp only [drop, cons.sizeOf_spec]
             rw [← Nat.zero_add (sizeOf (drop _ xs_tl))]
             exact Nat.add_le_add (Nat.zero_le _) (drop_sizeOf_le xs_tl _)
         · simp
-    · simp
+    · simp only [cons.sizeOf_spec, add_lt_add_iff_left]
       apply xs_ih _ j hj
       apply lt_of_succ_lt_succ hi
 #align list.sizeof_slice_lt List.sizeOf_dropSlice_lt

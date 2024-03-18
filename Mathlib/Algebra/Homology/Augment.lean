@@ -140,7 +140,7 @@ theorem chainComplex_d_succ_succ_zero (C : ChainComplex V ℕ) (i : ℕ) : C.d (
 def augmentTruncate (C : ChainComplex V ℕ) :
     augment (truncate.obj C) (C.d 1 0) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun i => by cases i <;> exact 𝟙 _
+    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
       comm' := fun i j => by
         -- Porting note: was an rcases n with (_|_|n) but that was causing issues
         match i with
@@ -148,7 +148,7 @@ def augmentTruncate (C : ChainComplex V ℕ) :
           cases' j with j <;> dsimp [augment, truncate] <;> simp
     }
   inv :=
-    { f := fun i => by cases i <;> exact 𝟙 _
+    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
       comm' := fun i j => by
         -- Porting note: was an rcases n with (_|_|n) but that was causing issues
         match i with
@@ -246,10 +246,10 @@ def augment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 
     rcases j with (_ | _ | j) <;> cases i <;> try simp
     · contradiction
     · rw [C.shape]
+      simp only [Nat.succ_eq_add_one] at s
       simp only [ComplexShape.up_Rel]
       contrapose! s
       rw [← s]
-      rfl
   d_comp_d' i j k hij hjk := by
     rcases k with (_ | _ | k) <;> rcases j with (_ | _ | j) <;> cases i <;> try simp
     cases k
@@ -335,14 +335,14 @@ theorem cochainComplex_d_succ_succ_zero (C : CochainComplex V ℕ) (i : ℕ) : C
 def augmentTruncate (C : CochainComplex V ℕ) :
     augment (truncate.obj C) (C.d 0 1) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun i => by cases i <;> exact 𝟙 _
+    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases i <;>
           · dsimp
             -- Porting note (#10959): simp can't handle this now but aesop does
             aesop }
   inv :=
-    { f := fun i => by cases i <;> exact 𝟙 _
+    { f := fun | 0 => 𝟙 _ | n+1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases' i with i <;>
           · dsimp

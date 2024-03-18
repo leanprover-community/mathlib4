@@ -279,7 +279,7 @@ section recognizers
   - `Nat.succ x` where `isNumeral x`
   - `OfNat.ofNat _ x _` where `isNumeral x` -/
 partial def numeral? (e : Expr) : Option Nat :=
-  if let some n := e.natLit? then n
+  if let some n := e.rawNatLit? then n
   else
     let f := e.getAppFn
     if !f.isConst then none
