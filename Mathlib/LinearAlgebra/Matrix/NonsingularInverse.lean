@@ -194,6 +194,8 @@ theorem det_ne_zero_of_right_inverse [Nontrivial α] (h : A * B = 1) : A.det ≠
 
 end Invertible
 
+section Fintype
+
 variable [Fintype n] [DecidableEq n] [CommRing α]
 
 variable (A : Matrix n n α) (B : Matrix n n α)
@@ -758,12 +760,13 @@ theorem inv_reindex (e₁ e₂ : n ≃ m) (A : Matrix n n α) : (reindex e₁ e�
 
 end Submatrix
 
-/-! ### More results about determinants -/
+end Fintype
 
+/-! ### More results about determinants -/
 
 section Det
 
-variable [Fintype m] [DecidableEq m]
+variable [Fintype m] [DecidableEq m] [CommRing α]
 
 /-- A variant of `Matrix.det_units_conj`. -/
 theorem det_conj {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) : det (M * N * M⁻¹) = det N :=
