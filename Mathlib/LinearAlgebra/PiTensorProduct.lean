@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis, Eric Wieser
 import Mathlib.GroupTheory.Congruence
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
-import Mathlib.RingTheory.Finiteness
 
 #align_import linear_algebra.pi_tensor_product from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
