@@ -940,7 +940,7 @@ theorem iInter_Ioi_coe_nat : ⋂ n : ℕ, Ioi (n : ℝ≥0∞) = {∞} := by
   lift b to ℝ≥0 using bd.ne_top
   cases c; · simp
   cases d; · simp
-  simp only [← coe_add, some_eq_coe] at *
+  simp only [← coe_add, some_eq_coe, coe_lt_coe] at *
   exact add_lt_add ac bd
 #align ennreal.add_lt_add ENNReal.add_lt_add
 
