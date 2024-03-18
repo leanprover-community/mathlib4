@@ -297,7 +297,6 @@ end Extension
 
 theorem convergent_eqv_pure {u : Ultrafilter α} {x : α} (ux : ↑u ≤ 𝓝 x) : u ≈ pure x :=
   fun γ tγ h₁ h₂ f hf => by
-  skip
   trans f x; swap; symm
   all_goals refine' ultrafilter_extend_eq_iff.mpr (le_trans (map_mono _) (hf.tendsto _))
   · apply pure_le_nhds
@@ -319,7 +318,6 @@ instance StoneCech.t2Space : T2Space (StoneCech α) := by
   rintro ⟨x⟩ ⟨y⟩ g gx gy
   apply Quotient.sound
   intro γ tγ h₁ h₂ f hf
-  skip
   let ff := stoneCechExtend hf
   change ff ⟦x⟧ = ff ⟦y⟧
   have lim := fun (z : Ultrafilter α) (gz : (g : Filter (StoneCech α)) ≤ 𝓝 ⟦z⟧) =>

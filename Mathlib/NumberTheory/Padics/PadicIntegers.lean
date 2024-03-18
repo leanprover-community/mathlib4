@@ -52,7 +52,7 @@ open Padic Metric LocalRing
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 /-- The `p`-adic integers `ℤ_[p]` are the `p`-adic numbers with norm `≤ 1`. -/
 def PadicInt (p : ℕ) [Fact p.Prime] :=

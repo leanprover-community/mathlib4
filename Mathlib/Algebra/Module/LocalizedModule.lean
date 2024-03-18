@@ -220,12 +220,14 @@ instance : AddCommMonoid (LocalizedModule S M) where
   nsmul_succ := nsmul_succ'
   add_comm := add_comm'
 
+instance {M : Type*} [AddCommGroup M] [Module R M] : Neg (LocalizedModule S M) where
+  neg p :=
+    liftOn p (fun x => LocalizedModule.mk (-x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => by
+      rw [mk_eq]
+      exact ⟨u, by simpa⟩
+
 instance {M : Type*} [AddCommGroup M] [Module R M] : AddCommGroup (LocalizedModule S M) :=
   { show AddCommMonoid (LocalizedModule S M) by infer_instance with
-    neg := fun p =>
-      liftOn p (fun x => LocalizedModule.mk (-x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => by
-        rw [mk_eq]
-        exact ⟨u, by simpa⟩
     add_left_neg := by
       rintro ⟨m, s⟩
       change
@@ -235,7 +237,9 @@ instance {M : Type*} [AddCommGroup M] [Module R M] : AddCommGroup (LocalizedModu
             mk m s =
           0
       rw [liftOn_mk, mk_add_mk]
-      simp }
+      simp
+    -- TODO: fix the diamond
+    zsmul := zsmulRec }
 
 theorem mk_neg {M : Type*} [AddCommGroup M] [Module R M] {m : M} {s : S} : mk (-m) s = -mk m s :=
   rfl
@@ -607,7 +611,7 @@ theorem isLocalizedModule_iff_isLocalization {A Aₛ} [CommSemiring A] [Algebra 
   refine and_congr ?_ (and_congr (forall_congr' fun _ ↦ ?_) (forall₂_congr fun _ _ ↦ ?_))
   · simp_rw [← (Algebra.lmul R Aₛ).commutes, Algebra.lmul_isUnit_iff, Subtype.forall,
       Algebra.algebraMapSubmonoid, ← SetLike.mem_coe, Submonoid.coe_map,
-      Set.ball_image_iff, ← IsScalarTower.algebraMap_apply]
+      Set.forall_mem_image, ← IsScalarTower.algebraMap_apply]
   · simp_rw [Prod.exists, Subtype.exists, Algebra.algebraMapSubmonoid]
     simp [← IsScalarTower.algebraMap_apply, Submonoid.mk_smul, Algebra.smul_def, mul_comm]
   · congr!; simp_rw [Subtype.exists, Algebra.algebraMapSubmonoid]; simp [Algebra.smul_def]

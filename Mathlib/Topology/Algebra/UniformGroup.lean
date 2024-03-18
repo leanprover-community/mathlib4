@@ -39,7 +39,8 @@ group naturally induces a uniform structure.
 
 noncomputable section
 
-open Classical Uniformity Topology Filter Pointwise
+open scoped Classical
+open Uniformity Topology Filter Pointwise
 
 section UniformGroup
 
@@ -221,7 +222,7 @@ theorem uniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @Unifo
 theorem uniformGroup_iInf {ι : Sort*} {us' : ι → UniformSpace β}
     (h' : ∀ i, @UniformGroup β (us' i) _) : @UniformGroup β (⨅ i, us' i) _ := by
   rw [← sInf_range]
-  exact uniformGroup_sInf (Set.forall_range_iff.mpr h')
+  exact uniformGroup_sInf (Set.forall_mem_range.mpr h')
 #align uniform_group_infi uniformGroup_iInf
 #align uniform_add_group_infi uniformAddGroup_iInf
 
@@ -373,15 +374,6 @@ theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul_swapped {ι} {p : ι → 
   exact h.comap _
 #align filter.has_basis.uniformity_of_nhds_one_inv_mul_swapped Filter.HasBasis.uniformity_of_nhds_one_inv_mul_swapped
 #align filter.has_basis.uniformity_of_nhds_zero_neg_add_swapped Filter.HasBasis.uniformity_of_nhds_zero_neg_add_swapped
-
-@[to_additive]
-theorem group_separationRel (x y : α) : (x, y) ∈ separationRel α ↔ x / y ∈ closure ({1} : Set α) :=
-  have : Embedding fun a => a * (y / x) := (uniformEmbedding_translate_mul (y / x)).embedding
-  show (x, y) ∈ ⋂₀ (𝓤 α).sets ↔ x / y ∈ closure ({1} : Set α) by
-    rw [this.closure_eq_preimage_closure_image, uniformity_eq_comap_nhds_one α, sInter_comap_sets]
-    simp [mem_closure_iff_nhds, inter_singleton_nonempty, sub_eq_add_neg, add_assoc]
-#align group_separation_rel group_separationRel
-#align add_group_separation_rel addGroup_separationRel
 
 @[to_additive]
 theorem uniformContinuous_of_tendsto_one {hom : Type*} [UniformSpace β] [Group β] [UniformGroup β]
@@ -604,7 +596,6 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
     IsClosed (H : Set G) := by
   obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1}
   exact nhds_inter_eq_singleton_of_mem_discrete H.one_mem
-  haveI : SeparatedSpace G := separated_iff_t2.mpr ‹_›
   have : (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
@@ -765,7 +756,7 @@ variable [TopologicalSpace γ] [AddCommGroup γ] [TopologicalAddGroup γ]
 
 variable [TopologicalSpace δ] [AddCommGroup δ] [TopologicalAddGroup δ]
 
-variable [UniformSpace G] [AddCommGroup G] [UniformAddGroup G] [SeparatedSpace G] [CompleteSpace G]
+variable [UniformSpace G] [AddCommGroup G] [UniformAddGroup G] [T0Space G] [CompleteSpace G]
 
 variable {e : β →+ α} (de : DenseInducing e)
 
@@ -891,8 +882,9 @@ section CompleteQuotient
 
 universe u
 
-open TopologicalSpace Classical
+open TopologicalSpace
 
+open Classical in
 /-- The quotient `G ⧸ N` of a complete first countable topological group `G` by a normal subgroup
 is itself complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
@@ -920,7 +912,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
   letI : UniformSpace G := TopologicalGroup.toUniformSpace G
   haveI : (𝓤 (G ⧸ N)).IsCountablyGenerated := comap.isCountablyGenerated _ _
   obtain ⟨u, hu, u_mul⟩ := TopologicalGroup.exists_antitone_basis_nhds_one G
-  obtain ⟨hv, v_anti⟩ := @HasAntitoneBasis.map _ _ _ _ _ _ ((↑) : G → G ⧸ N) hu
+  obtain ⟨hv, v_anti⟩ := hu.map ((↑) : G → G ⧸ N)
   rw [← QuotientGroup.nhds_eq N 1, QuotientGroup.mk_one] at hv
   refine' UniformSpace.complete_of_cauchySeq_tendsto fun x hx => _
   /- Given `n : ℕ`, for sufficiently large `a b : ℕ`, given any lift of `x b`, we can find a lift

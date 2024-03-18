@@ -22,9 +22,6 @@ particular `Decomposed J` is the category (definitionally) given by the sigma-ty
 components of `J`, and it is shown that this is equivalent to `J`.
 -/
 
-set_option autoImplicit true
-
-
 universe v₁ v₂ v₃ u₁ u₂
 
 noncomputable section
@@ -52,6 +49,7 @@ def Component (j : ConnectedComponents J) : Type u₁ :=
   FullSubcategory fun k => Quotient.mk'' k = j
 #align category_theory.component CategoryTheory.Component
 
+set_option autoImplicit true in
 instance : Category (Component (j : ConnectedComponents J)) :=
   FullSubcategory.category _
 
@@ -62,9 +60,11 @@ def Component.ι (j : ConnectedComponents J) : Component j ⥤ J :=
   fullSubcategoryInclusion _
 #align category_theory.component.ι CategoryTheory.Component.ι
 
+set_option autoImplicit true in
 instance : Full (Component.ι (j : ConnectedComponents J)) :=
   FullSubcategory.full _
 
+set_option autoImplicit true in
 instance : Faithful (Component.ι (j : ConnectedComponents J)) :=
   FullSubcategory.faithful _
 

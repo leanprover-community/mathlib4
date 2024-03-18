@@ -74,7 +74,8 @@ noncomputable section
 
 variable {𝕜 E F G : Type*}
 
-open Topology Classical BigOperators NNReal Filter ENNReal
+open scoped Classical
+open Topology BigOperators NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 
@@ -1447,7 +1448,6 @@ theorem hasFPowerSeriesAt_iff :
       simp only [dist_zero_right] at h
       apply FormalMultilinearSeries.le_radius_of_tendsto
       convert tendsto_norm.comp (h le_z).summable.tendsto_atTop_zero
-      funext
       simp [norm_smul, mul_comm]
     refine' lt_of_lt_of_le _ this
     simp only [ENNReal.coe_pos]

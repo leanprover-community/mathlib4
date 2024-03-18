@@ -517,7 +517,7 @@ namespace Field
 
 variable (K) [Field K]
 
-open Classical
+open scoped Classical
 
 -- see Note [lower instance priority]
 instance (priority := 100) : LocalRing K :=

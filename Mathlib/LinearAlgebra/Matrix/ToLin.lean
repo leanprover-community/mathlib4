@@ -159,21 +159,21 @@ theorem Matrix.toLinearMapRight'_apply (M : Matrix m n R) (v : m → R) :
 @[simp]
 theorem Matrix.toLinearMapRight'_mul [Fintype l] [DecidableEq l] (M : Matrix l m R)
     (N : Matrix m n R) :
-    (Matrix.toLinearMapRight') (M * N) =
-      ((Matrix.toLinearMapRight') N).comp ((Matrix.toLinearMapRight') M) :=
+    Matrix.toLinearMapRight' (M * N) =
+      (Matrix.toLinearMapRight' N).comp (Matrix.toLinearMapRight' M) :=
   LinearMap.ext fun _x ↦ (vecMul_vecMul _ M N).symm
 #align matrix.to_linear_map_right'_mul Matrix.toLinearMapRight'_mul
 
 theorem Matrix.toLinearMapRight'_mul_apply [Fintype l] [DecidableEq l] (M : Matrix l m R)
     (N : Matrix m n R) (x) :
-    (Matrix.toLinearMapRight') (M * N) x =
-      (Matrix.toLinearMapRight') N ((Matrix.toLinearMapRight') M x) :=
+    Matrix.toLinearMapRight' (M * N) x =
+      Matrix.toLinearMapRight' N (Matrix.toLinearMapRight' M x) :=
   (vecMul_vecMul _ M N).symm
 #align matrix.to_linear_map_right'_mul_apply Matrix.toLinearMapRight'_mul_apply
 
 @[simp]
 theorem Matrix.toLinearMapRight'_one :
-    (Matrix.toLinearMapRight') (1 : Matrix m m R) = LinearMap.id := by
+    Matrix.toLinearMapRight' (1 : Matrix m m R) = LinearMap.id := by
   ext
   simp [LinearMap.one_apply, stdBasis_apply]
 #align matrix.to_linear_map_right'_one Matrix.toLinearMapRight'_one
@@ -183,10 +183,9 @@ and `m → A` corresponding to `M.vecMul` and `M'.vecMul`. -/
 @[simps]
 def Matrix.toLinearEquivRight'OfInv [Fintype n] [DecidableEq n] {M : Matrix m n R}
     {M' : Matrix n m R} (hMM' : M * M' = 1) (hM'M : M' * M = 1) : (n → R) ≃ₗ[R] m → R :=
-  { (LinearMap.toMatrixRight').symm
-      M' with
-    toFun := (Matrix.toLinearMapRight') M'
-    invFun := (Matrix.toLinearMapRight') M
+  { LinearMap.toMatrixRight'.symm M' with
+    toFun := Matrix.toLinearMapRight' M'
+    invFun := Matrix.toLinearMapRight' M
     left_inv := fun x ↦ by
       rw [← Matrix.toLinearMapRight'_mul_apply, hM'M, Matrix.toLinearMapRight'_one, id_apply]
     right_inv := fun x ↦ by

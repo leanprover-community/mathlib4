@@ -304,11 +304,11 @@ theorem IsGreatest.upperBounds_eq (h : IsGreatest s a) : upperBounds s = Ici a :
   h.isLUB.upperBounds_eq
 #align is_greatest.upper_bounds_eq IsGreatest.upperBounds_eq
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem IsGreatest.lt_iff (h : IsGreatest s a) : a < b ↔ ∀ x ∈ s, x < b :=
   ⟨fun hlt _x hx => (h.2 hx).trans_lt hlt, fun h' => h' _ h.1⟩
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem IsLeast.lt_iff (h : IsLeast s a) : b < a ↔ ∀ x ∈ s, b < x :=
   h.dual.lt_iff
 
@@ -1169,7 +1169,7 @@ variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} (Hf : Monoto
 
 theorem mem_upperBounds_image (Has : a ∈ upperBounds s) (Hat : a ∈ t) :
     f a ∈ upperBounds (f '' s) :=
-  ball_image_of_ball fun _ H => Hf (Hst H) Hat (Has H)
+  forall_mem_image.2 fun _ H => Hf (Hst H) Hat (Has H)
 #align monotone_on.mem_upper_bounds_image MonotoneOn.mem_upperBounds_image
 
 theorem mem_upperBounds_image_self : a ∈ upperBounds t → a ∈ t → f a ∈ upperBounds (f '' t) :=
@@ -1178,7 +1178,7 @@ theorem mem_upperBounds_image_self : a ∈ upperBounds t → a ∈ t → f a ∈
 
 theorem mem_lowerBounds_image (Has : a ∈ lowerBounds s) (Hat : a ∈ t) :
     f a ∈ lowerBounds (f '' s) :=
-  ball_image_of_ball fun _ H => Hf Hat (Hst H) (Has H)
+  forall_mem_image.2 fun _ H => Hf Hat (Hst H) (Has H)
 #align monotone_on.mem_lower_bounds_image MonotoneOn.mem_lowerBounds_image
 
 theorem mem_lowerBounds_image_self : a ∈ lowerBounds t → a ∈ t → f a ∈ lowerBounds (f '' t) :=
@@ -1278,11 +1278,11 @@ namespace Monotone
 variable [Preorder α] [Preorder β] {f : α → β} (Hf : Monotone f) {a : α} {s : Set α}
 
 theorem mem_upperBounds_image (Ha : a ∈ upperBounds s) : f a ∈ upperBounds (f '' s) :=
-  ball_image_of_ball fun _ H => Hf (Ha H)
+  forall_mem_image.2 fun _ H => Hf (Ha H)
 #align monotone.mem_upper_bounds_image Monotone.mem_upperBounds_image
 
 theorem mem_lowerBounds_image (Ha : a ∈ lowerBounds s) : f a ∈ lowerBounds (f '' s) :=
-  ball_image_of_ball fun _ H => Hf (Ha H)
+  forall_mem_image.2 fun _ H => Hf (Ha H)
 #align monotone.mem_lower_bounds_image Monotone.mem_lowerBounds_image
 
 theorem image_upperBounds_subset_upperBounds_image : f '' upperBounds s ⊆ upperBounds (f '' s) := by
@@ -1573,8 +1573,8 @@ variable {α β : Type*} [Preorder α] [Preorder β]
 
 lemma bddAbove_prod {s : Set (α × β)} :
     BddAbove s ↔ BddAbove (Prod.fst '' s) ∧ BddAbove (Prod.snd '' s) :=
-  ⟨fun ⟨p, hp⟩ ↦ ⟨⟨p.1, ball_image_of_ball fun _q hq ↦ (hp hq).1⟩,
-    ⟨p.2, ball_image_of_ball fun _q hq ↦ (hp hq).2⟩⟩,
+  ⟨fun ⟨p, hp⟩ ↦ ⟨⟨p.1, forall_mem_image.2 fun _q hq ↦ (hp hq).1⟩,
+    ⟨p.2, forall_mem_image.2 fun _q hq ↦ (hp hq).2⟩⟩,
     fun ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ ↦ ⟨⟨x, y⟩, fun _p hp ↦
       ⟨hx <| mem_image_of_mem _ hp, hy <| mem_image_of_mem _ hp⟩⟩⟩
 
@@ -1621,7 +1621,7 @@ variable {π : α → Type*} [∀ a, Preorder (π a)]
 
 lemma bddAbove_pi {s : Set (∀ a, π a)} :
     BddAbove s ↔ ∀ a, BddAbove (Function.eval a '' s) :=
-  ⟨fun ⟨f, hf⟩ a ↦ ⟨f a, ball_image_of_ball fun _ hg ↦ hf hg a⟩,
+  ⟨fun ⟨f, hf⟩ a ↦ ⟨f a, forall_mem_image.2 fun _ hg ↦ hf hg a⟩,
     fun h ↦ ⟨fun a ↦ (h a).some, fun _ hg a ↦ (h a).some_mem <| mem_image_of_mem _ hg⟩⟩
 
 lemma bddBelow_pi {s : Set (∀ a, π a)} :

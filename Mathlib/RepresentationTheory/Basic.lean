@@ -9,7 +9,7 @@ import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import representation_theory.basic from "leanprover-community/mathlib"@"c04bc6e93e23aa0182aba53661a2211e80b6feac"
 
@@ -456,11 +456,11 @@ def linHom : Representation k G (V →ₗ[k] W) where
       map_smul' := fun r f => by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
   map_one' :=
     LinearMap.ext fun x => by
-      dsimp -- Porting note: now needed
+      dsimp -- Porting note (#11227):now needed
       simp_rw [inv_one, map_one, one_eq_id, comp_id, id_comp]
   map_mul' g h :=
     LinearMap.ext fun x => by
-      dsimp -- Porting note: now needed
+      dsimp -- Porting note (#11227):now needed
       simp_rw [mul_inv_rev, map_mul, mul_eq_comp, comp_assoc]
 #align representation.lin_hom Representation.linHom
 
@@ -481,11 +481,11 @@ def dual : Representation k G (Module.Dual k V) where
         simp only [coe_comp, Function.comp_apply, smul_apply, RingHom.id_apply] }
   map_one' := by
     ext
-    dsimp -- Porting note: now needed
+    dsimp -- Porting note (#11227):now needed
     simp only [coe_comp, Function.comp_apply, map_one, inv_one, coe_mk, one_apply]
   map_mul' g h := by
     ext
-    dsimp -- Porting note: now needed
+    dsimp -- Porting note (#11227):now needed
     simp only [coe_comp, Function.comp_apply, mul_inv_rev, map_mul, coe_mk, mul_apply]
 #align representation.dual Representation.dual
 

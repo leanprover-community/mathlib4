@@ -47,7 +47,8 @@ in the one for `LiftPropWithinAt`.
 
 noncomputable section
 
-open Classical Manifold Topology
+open scoped Classical
+open Manifold Topology
 
 open Set Filter TopologicalSpace
 

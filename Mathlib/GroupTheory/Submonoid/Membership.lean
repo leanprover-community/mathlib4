@@ -371,7 +371,7 @@ theorem card_le_one_iff_eq_bot : card S ≤ 1 ↔ S = ⊥ :=
 
 @[to_additive]
 lemma eq_bot_iff_card : S = ⊥ ↔ card S = 1 :=
-  ⟨by rintro rfl;  exact card_bot, eq_bot_of_card_eq⟩
+  ⟨by rintro rfl; exact card_bot, eq_bot_of_card_eq⟩
 
 end Submonoid
 
@@ -483,7 +483,7 @@ noncomputable instance decidableMemPowers : DecidablePred (· ∈ Submonoid.powe
   Classical.decPred _
 #align decidable_powers Submonoid.decidableMemPowers
 
--- Porting note: TODO the following instance should follow from a more general principle
+-- Porting note (#11215): TODO the following instance should follow from a more general principle
 -- See also mathlib4#2417
 noncomputable instance fintypePowers [Fintype M] : Fintype (powers a) :=
   inferInstanceAs <| Fintype {y // y ∈ powers a}

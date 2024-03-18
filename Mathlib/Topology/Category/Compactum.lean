@@ -77,7 +77,8 @@ universe u
 
 open CategoryTheory Filter Ultrafilter TopologicalSpace CategoryTheory.Limits FiniteInter
 
-open Classical Topology
+open scoped Classical
+open Topology
 
 local notation "β" => ofTypeMonad Ultrafilter
 

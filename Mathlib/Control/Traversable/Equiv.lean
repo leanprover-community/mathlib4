@@ -60,7 +60,7 @@ protected theorem id_map {α : Type u} (x : t' α) : Equiv.map eqv id x = x := b
 
 protected theorem comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (x : t' α) :
     Equiv.map eqv (h ∘ g) x = Equiv.map eqv h (Equiv.map eqv g x) := by
-  simp [Equiv.map]; apply comp_map
+  simpa [Equiv.map] using comp_map ..
 #align equiv.comp_map Equiv.comp_map
 
 protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
@@ -140,7 +140,7 @@ protected theorem id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id
 
 protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
     Equiv.traverse eqv ((pure : β → Id β) ∘ f) x = pure (Equiv.map eqv f x) := by
-  simp [Equiv.traverse, traverse_eq_map_id, functor_norm]; rfl
+  simp only [Equiv.traverse, traverse_eq_map_id, Id.map_eq, Id.pure_eq]; rfl
 #align equiv.traverse_eq_map_id Equiv.traverse_eq_map_id
 
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :

@@ -390,7 +390,7 @@ theorem tsum_singleton (b : β) (f : β → α) : ∑' x : ({b} : Set β), f x =
   rw [← coe_singleton, Finset.tsum_subtype', sum_singleton]
 #align tsum_singleton tsum_singleton
 
-open Classical in
+open scoped Classical in
 theorem Function.Injective.tsum_eq {g : γ → β} (hg : Injective g) {f : β → α}
     (hf : support f ⊆ Set.range g) : ∑' c, f (g c) = ∑' b, f b := by
   have : support f = g '' support (f ∘ g) := by

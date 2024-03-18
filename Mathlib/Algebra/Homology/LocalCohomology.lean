@@ -74,7 +74,7 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   map_comp f g := by apply Submodule.linearMap_qext; rfl
 #align local_cohomology.ring_mod_ideals localCohomology.ringModIdeals
 
--- Porting note: TODO:  Once this file is ported, move this instance to the right location.
+-- Porting note (#11215): TODO:  Once this file is ported, move this instance to the right location.
 instance moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) :=
   ModuleCat.moduleCat_enoughProjectives.{u}
 set_option linter.uppercaseLean3 false in

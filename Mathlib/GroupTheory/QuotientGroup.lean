@@ -726,7 +726,7 @@ end QuotientGroup
 
 namespace Group
 
-open Classical
+open scoped Classical
 
 open QuotientGroup Subgroup
 

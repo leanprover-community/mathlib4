@@ -71,7 +71,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     set Sp := f '' { x : f.domain | (x : E) + y ∈ s }
     set Sn := f '' { x : f.domain | -(x : E) - y ∈ s }
     suffices (upperBounds Sn ∩ lowerBounds Sp).Nonempty by
-      simpa only [Set.Nonempty, upperBounds, lowerBounds, ball_image_iff] using this
+      simpa only [Set.Nonempty, upperBounds, lowerBounds, forall_mem_image] using this
     refine' exists_between_of_forall_le (Nonempty.image f _) (Nonempty.image f (dense y)) _
     · rcases dense (-y) with ⟨x, hx⟩
       rw [← neg_neg x, NegMemClass.coe_neg, ← sub_eq_add_neg] at hx

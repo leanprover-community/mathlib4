@@ -38,7 +38,8 @@ dual
 
 noncomputable section
 
-open Classical Topology Bornology
+open scoped Classical
+open Topology Bornology
 
 universe u v
 

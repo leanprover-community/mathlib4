@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Multilinear.Basic
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 #align_import linear_algebra.multilinear.tensor_product from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 

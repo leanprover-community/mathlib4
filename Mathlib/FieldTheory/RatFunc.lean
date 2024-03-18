@@ -791,7 +791,8 @@ instance instField [IsDomain K] : Field (RatFunc K) :=
     div := (· / ·)
     div_eq_mul_inv := by frac_tac
     mul_inv_cancel := fun _ => mul_inv_cancel
-    zpow := zpowRec }
+    zpow := zpowRec
+    qsmul := qsmulRec _ }
 
 section IsFractionRing
 

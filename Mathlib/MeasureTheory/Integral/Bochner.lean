@@ -1328,6 +1328,89 @@ lemma integral_tendsto_of_tendsto_of_antitone {μ : Measure α} {f : ℕ → α 
   · filter_upwards [h_mono] with x hx n m hnm using neg_le_neg_iff.mpr <| hx hnm
   · filter_upwards [h_tendsto] with x hx using hx.neg
 
+/-- If a monotone sequence of functions has an upper bound and the sequence of integrals of these
+functions tends to the integral of the upper bound, then the sequence of functions converges
+almost everywhere to the upper bound. -/
+lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
+    (hf_int : ∀ n, Integrable (f n) μ) (hF_int : Integrable F μ)
+    (hf_tendsto : Tendsto (fun i ↦ ∫ a, f i a ∂μ) atTop (𝓝 (∫ a, F a ∂μ)))
+    (hf_mono : ∀ᵐ a ∂μ, Monotone (fun i ↦ f i a))
+    (hf_bound : ∀ᵐ a ∂μ, ∀ i, f i a ≤ F a) :
+    ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F a)) := by
+  -- reduce to the `ℝ≥0∞` case
+  let f' : ℕ → α → ℝ≥0∞ := fun n a ↦ ENNReal.ofReal (f n a - f 0 a)
+  let F' : α → ℝ≥0∞ := fun a ↦ ENNReal.ofReal (F a - f 0 a)
+  have hf'_int_eq : ∀ i, ∫⁻ a, f' i a ∂μ = ENNReal.ofReal (∫ a, f i a ∂μ - ∫ a, f 0 a ∂μ) := by
+    intro i
+    unfold_let f'
+    rw [← ofReal_integral_eq_lintegral_ofReal, integral_sub (hf_int i) (hf_int 0)]
+    · exact (hf_int i).sub (hf_int 0)
+    · filter_upwards [hf_mono] with a h_mono
+      simp [h_mono (zero_le i)]
+  have hF'_int_eq : ∫⁻ a, F' a ∂μ = ENNReal.ofReal (∫ a, F a ∂μ - ∫ a, f 0 a ∂μ) := by
+    unfold_let F'
+    rw [← ofReal_integral_eq_lintegral_ofReal, integral_sub hF_int (hf_int 0)]
+    · exact hF_int.sub (hf_int 0)
+    · filter_upwards [hf_bound] with a h_bound
+      simp [h_bound 0]
+  have h_tendsto : Tendsto (fun i ↦ ∫⁻ a, f' i a ∂μ) atTop (𝓝 (∫⁻ a, F' a ∂μ)) := by
+    simp_rw [hf'_int_eq, hF'_int_eq]
+    refine (ENNReal.continuous_ofReal.tendsto _).comp ?_
+    rwa [tendsto_sub_const_iff]
+  have h_mono : ∀ᵐ a ∂μ, Monotone (fun i ↦ f' i a) := by
+    filter_upwards [hf_mono] with a ha_mono i j hij
+    refine ENNReal.ofReal_le_ofReal ?_
+    simp [ha_mono hij]
+  have h_bound : ∀ᵐ a ∂μ, ∀ i, f' i a ≤ F' a := by
+    filter_upwards [hf_bound] with a ha_bound i
+    refine ENNReal.ofReal_le_ofReal ?_
+    simp only [tsub_le_iff_right, sub_add_cancel, ha_bound i]
+  -- use the corresponding lemma for `ℝ≥0∞`
+  have h := tendsto_of_lintegral_tendsto_of_monotone ?_ h_tendsto h_mono h_bound ?_
+  rotate_left
+  · exact (hF_int.1.aemeasurable.sub (hf_int 0).1.aemeasurable).ennreal_ofReal
+  · exact ((lintegral_ofReal_le_lintegral_nnnorm _).trans_lt (hF_int.sub (hf_int 0)).2).ne
+  filter_upwards [h, hf_mono, hf_bound] with a ha ha_mono ha_bound
+  have h1 : (fun i ↦ f i a) = fun i ↦ (f' i a).toReal + f 0 a := by
+    unfold_let f'
+    ext i
+    rw [ENNReal.toReal_ofReal]
+    · abel
+    · simp [ha_mono (zero_le i)]
+  have h2 : F a = (F' a).toReal + f 0 a := by
+    unfold_let F'
+    rw [ENNReal.toReal_ofReal]
+    · abel
+    · simp [ha_bound 0]
+  rw [h1, h2]
+  refine Filter.Tendsto.add ?_ tendsto_const_nhds
+  exact (ENNReal.continuousAt_toReal ENNReal.ofReal_ne_top).tendsto.comp ha
+
+/-- If an antitone sequence of functions has a lower bound and the sequence of integrals of these
+functions tends to the integral of the lower bound, then the sequence of functions converges
+almost everywhere to the lower bound. -/
+lemma tendsto_of_integral_tendsto_of_antitone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
+    (hf_int : ∀ n, Integrable (f n) μ) (hF_int : Integrable F μ)
+    (hf_tendsto : Tendsto (fun i ↦ ∫ a, f i a ∂μ) atTop (𝓝 (∫ a, F a ∂μ)))
+    (hf_mono : ∀ᵐ a ∂μ, Antitone (fun i ↦ f i a))
+    (hf_bound : ∀ᵐ a ∂μ, ∀ i, F a ≤ f i a) :
+    ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F a)) := by
+  let f' : ℕ → α → ℝ := fun i a ↦ - f i a
+  let F' : α → ℝ := fun a ↦ - F a
+  suffices ∀ᵐ a ∂μ, Tendsto (fun i ↦ f' i a) atTop (𝓝 (F' a)) by
+    filter_upwards [this] with a ha_tendsto
+    convert ha_tendsto.neg
+    · simp [f']
+    · simp [F']
+  refine tendsto_of_integral_tendsto_of_monotone (fun n ↦ (hf_int n).neg) hF_int.neg ?_ ?_ ?_
+  · convert hf_tendsto.neg
+    · rw [integral_neg]
+    · rw [integral_neg]
+  · filter_upwards [hf_mono] with a ha i j hij
+    simp [f', ha hij]
+  · filter_upwards [hf_bound] with a ha i
+    simp [f', F', ha i]
+
 section NormedAddCommGroup
 
 variable {H : Type*} [NormedAddCommGroup H]

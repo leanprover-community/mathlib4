@@ -284,7 +284,7 @@ abbrev ContinuousLinearMapClass (F : Type*) (R : outParam (Type*)) [Semiring R]
 /-- Continuous linear equivalences between modules. We only put the type classes that are necessary
 for the definition, although in applications `M` and `M₂` will be topological modules over the
 topological semiring `R`. -/
--- Porting note: todo: was @[nolint has_nonempty_instance]
+-- Porting note (#11215): TODO: was @[nolint has_nonempty_instance]
 structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
@@ -2592,7 +2592,7 @@ end ContinuousLinearEquiv
 
 namespace ContinuousLinearMap
 
-open Classical
+open scoped Classical
 
 variable {R : Type*} {M : Type*} {M₂ : Type*} [TopologicalSpace M] [TopologicalSpace M₂]
 
