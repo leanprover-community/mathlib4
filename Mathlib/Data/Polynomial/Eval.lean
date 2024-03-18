@@ -1291,8 +1291,7 @@ protected theorem map_neg {S} [Ring S] (f : R →+* S) : (-p).map f = -p.map f :
   (mapRingHom f).map_neg p
 #align polynomial.map_neg Polynomial.map_neg
 
-@[simp]
-nonrec theorem map_intCast {S} [Ring S] (f : R →+* S) (n : ℤ) : map f ↑n = ↑n :=
+@[simp] protected lemma map_intCast {S} [Ring S] (f : R →+* S) (n : ℤ) : map f ↑n = ↑n :=
   map_intCast (mapRingHom f) n
 #align polynomial.map_int_cast Polynomial.map_intCast
 

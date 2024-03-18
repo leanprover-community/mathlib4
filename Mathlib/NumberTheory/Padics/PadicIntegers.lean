@@ -154,7 +154,7 @@ instance instCommRing : CommRing ℤ_[p] := (by infer_instance : CommRing (subri
 
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : ℤ_[p]) : ℚ_[p]) = n := rfl
-#align padic_int.coe_natCast PadicInt.coe_natCast
+#align padic_int.coe_nat_cast PadicInt.coe_natCast
 
 @[simp, norm_cast]
 theorem coe_intCast (z : ℤ) : ((z : ℤ_[p]) : ℚ_[p]) = z := rfl

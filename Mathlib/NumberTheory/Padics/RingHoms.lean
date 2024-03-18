@@ -466,7 +466,7 @@ theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
   · intro a
     apply subset_closure
     exact Set.mem_range_self _
-#align padic_int.dense_range_intCast PadicInt.denseRange_intCast
+#align padic_int.dense_range_int_cast PadicInt.denseRange_intCast
 
 end RingHoms
 

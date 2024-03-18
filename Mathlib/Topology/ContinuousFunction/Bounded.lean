@@ -1290,7 +1290,7 @@ instance : NatCast (α →ᵇ R) :=
 
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
-#align bounded_continuous_function.coe_natCast BoundedContinuousFunction.coe_natCast
+#align bounded_continuous_function.coe_nat_cast BoundedContinuousFunction.coe_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
@@ -1303,7 +1303,7 @@ instance : IntCast (α →ᵇ R) :=
 
 @[simp, norm_cast]
 theorem coe_intCast (n : ℤ) : ((n : α →ᵇ R) : α → R) = n := rfl
-#align bounded_continuous_function.coe_intCast BoundedContinuousFunction.coe_intCast
+#align bounded_continuous_function.coe_int_cast BoundedContinuousFunction.coe_intCast
 
 instance ring : Ring (α →ᵇ R) :=
   DFunLike.coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub

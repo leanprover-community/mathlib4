@@ -129,7 +129,7 @@ theorem sqrt_eq_rpow (x : ℝ≥0) : sqrt x = x ^ (1 / (2 : ℝ)) := by
 
 @[simp, norm_cast]
 theorem rpow_natCast (x : ℝ≥0) (n : ℕ) : x ^ (n : ℝ) = x ^ n :=
-  NNReal.eq <| by simpa only [coe_rpow, coe_pow] using Real.rpow_nat_cast x n
+  NNReal.eq <| by simpa only [coe_rpow, coe_pow] using Real.rpow_natCast x n
 #align nnreal.rpow_nat_cast NNReal.rpow_natCast
 
 @[simp]
