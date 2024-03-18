@@ -31,27 +31,18 @@ definite if and only if $W$ is a finite group, although we do not prove that in 
 
 Then, we have a representation $\rho \colon W \to GL(V)$, called the
 *standard geometric representation*, given by
-$$\rho(s_i) v = v - \langle \alpha_i, v\rangle \alpha_i.$$
-Every reflection of $W$ acts by a reflection in the standard geometric representation.
-We also define the associated set of *roots* $\Phi = \{\rho(w) \alpha_i : w \in W, i \in B\}$.
-(If `W` is infinite, then this is not a root system in the sense of
-`Mathlib.LinearAlgebra.RootSystem` because it is infinite and because `B →₀ ℝ` is not an inner
-product space.)
+$$\rho(s_i) v = v - \langle \alpha_i, v\rangle \alpha_i.$$ We prove that this representation is well
+defined and faithful.
 
-We prove that every root is either *positive* or *negative*; that is, it either has all nonnegative
-coordinates or all nonpositive coordinates when written in the standard basis $\{\alpha_i\}$.
-Every reflection $t \in W$ (see `Mathlib.GroupTheory.Coxeter.Length`) has a corresponding positive
-root $\beta_t$. For all $w \in W$, we prove that $\rho(w) \beta_t$ is negative if and only if $t$ is
-a right inversion of $w$.
+We prove for all $w$ and $i$ that $\ell(w s_i) + 1 = \ell(w)$ if and only if $\rho(w) \alpha_i$ is a
+nonpositive linear combination of the simple roots, and that $\ell(w s_i) = \ell(w) + 1$ if and only
+if $\rho(w) \alpha_i$ is a nonnegative linear combination of the simple roots.
 
 ## Main definitions
 * `cs.standardBilinForm`: The invariant bilinear form associated to the standard geometric
 representation.
 * `cs.standardGeometricRepresentation`: The standard geometric representation of `W`. This has type
 `Representation ℝ W (B →₀ ℝ)`.
-* `cs.roots`
-* `cs.posRoots`
-* `cs.negRoots`
 
 ## References
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
@@ -406,70 +397,26 @@ theorem SGR_alternatingWord_simpleRoot_pos (i i' : B) (m : ℕ) (hm : m < M i i'
       cs.SGR (π (alternatingWord i i' m)) (α i) = μ • (α i) + μ' • (α i') := by
   sorry
 
-/-- The roots of the standard geometric representation; i.e. the vectors that can be written
-in the form w αᵢ, where `w : W` and {αᵢ} is the standard basis of `B →₀ ℝ`. If `W` is infinite,
-then this is not a root system in the sense of `Mathlib.LinearAlgebra.RootSystem` because it is
-infinite and because `B →₀ ℝ` is not an inner product space.
--/
-def roots : Set V := {v : V | ∃ w : W, ∃ i : B, v = cs.SGR w (α i)}
+/-- The proposition that all the coordinates of `v` in the basis of simple roots are nonnegative. -/
+def IsPositive (v : V) := ∀ i : B, v i ≥ 0
+/-- The proposition that all the coordinates of `v` in the basis of simple roots are nonpositive. -/
+def IsNegative (v : V) := ∀ i : B, v i ≤ 0
 
-/-- The roots that can be written as a nonnegative linear combination of the standard basis vectors
-`αᵢ`.-/
-def posRoots : Set V := cs.roots ∩ {v : V | ∀ i : B, v i ≥ 0}
-/-- The roots that can be written as a nonpositive linear combination of the standard basis vectors
-`αᵢ`.-/
-def negRoots : Set V := cs.roots ∩ {v : V | ∀ i : B, v i ≤ 0}
-
-@[simp] theorem roots_invariant (w : W) (v : V) : cs.SGR w v ∈ cs.roots ↔ v ∈ cs.roots := by
+theorem SGR_simpleRoot_pos_of {w : W} {i : B} (h : ℓ (w * s i) = ℓ w + 1) :
+    IsPositive (cs.SGR w (α i)) := by
   sorry
 
-@[simp] theorem roots_eq_neg_roots : -cs.roots = cs.roots := by
+theorem SGR_simpleRoot_neg_of {w : W} {i : B} (h : ℓ (w * s i) + 1 = ℓ w) :
+    IsNegative (cs.SGR w (α i)) := by
   sorry
 
-theorem negRoots_eq_neg_posRoots : cs.negRoots = -cs.posRoots := by
+theorem SGR_simpleRoot_pos_iff (w : W) (i : B) :
+    ℓ (w * s i) = ℓ w + 1 ↔ IsPositive (cs.SGR w (α i)) := by
   sorry
 
-theorem SGR_simpleRoot_mem_posRoot_of (w : W) (i : B) :
-    ℓ (w * s i) = ℓ w + 1 → cs.SGR w (α i) ∈ cs.posRoots := by
+theorem SGR_simpleRoot_neg_iff (w : W) (i : B) :
+    ℓ (w * s i) + 1 = ℓ w ↔ IsNegative (cs.SGR w (α i)) := by
   sorry
-
-theorem SGR_simpleRoot_mem_negRoot_of (w : W) (i : B) :
-    ℓ (w * s i) + 1 = ℓ w → cs.SGR w (α i) ∈ cs.negRoots := by
-  sorry
-
-theorem SGR_simpleRoot_mem_posRoot_iff (w : W) (i : B) :
-    ℓ (w * s i) = ℓ w + 1 ↔ cs.SGR w (α i) ∈ cs.posRoots := by
-  sorry
-
-theorem SGR_simpleRoot_mem_negRoot_iff (w : W) (i : B) :
-    ℓ (w * s i) + 1 = ℓ w ↔ cs.SGR w (α i) ∈ cs.negRoots := by
-  sorry
-
-theorem root_pos_or_neg : cs.roots = cs.posRoots ∪ cs.negRoots := by
-  sorry
-
-theorem root_not_pos_and_neg : cs.posRoots ∩ cs.negRoots = ∅ := by
-  sorry
-
-theorem SGR_injective : Function.Injective cs.SGR := by
-  sorry
-
-def reflectionsEquivPosRoots : cs.reflections ≃ cs.posRoots := sorry
--- TODO reflections equiv neg roots and associated theorems
-
-theorem reflection_by_smul (w : W) (v : V) :
-    cs.orthoReflection (cs.SGR w v) = (cs.SGR w) ∘ (cs.orthoReflection v) ∘ (cs.SGR w⁻¹) := by
-  sorry
-
-theorem reflection_by_root (γ : cs.posRoots) :
-    cs.orthoReflection γ = cs.SGR (cs.reflectionsEquivPosRoots.invFun γ) := by
-  sorry
--- TODO the theorem (trivial from the above) that says how a reflection acts under the SGR
-
-theorem isRightInversion_iff (w : W) (t : cs.reflections) : cs.IsRightInversion w t ↔
-    cs.SGR w (cs.reflectionsEquivPosRoots.toFun t) ∈ cs.negRoots := by
-  sorry
-
 end CoxeterSystem
 
 end
