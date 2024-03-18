@@ -40,7 +40,7 @@ jobs:
             --progress \
             --no-recurse-submodules \
             --depth=1 \
-            origin $MY_MERGE_BASE_SHA
+            origin "${MY_MERGE_BASE_SHA}"
 
       - name: install Python
         uses: actions/setup-python@v4
@@ -53,4 +53,4 @@ jobs:
 
       - name: run the script
         run: |
-          python scripts/detect_sha_changes.py "$MY_MERGE_BASE_SHA" "HEAD"
+          python scripts/detect_sha_changes.py "${MY_MERGE_BASE_SHA}" "HEAD"
