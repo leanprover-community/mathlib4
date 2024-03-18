@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.GroupTheory.Subgroup.Order
-import Mathlib.GroupTheory.Submonoid.Order
+import Mathlib.Algebra.Group.Subgroup.Order
 import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-!
 # Ordered instances on submodules

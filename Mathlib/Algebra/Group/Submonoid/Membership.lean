@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Group.Submonoid.MulOpposite
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Int.Order.Lemmas
-import Mathlib.GroupTheory.Submonoid.Operations
-import Mathlib.GroupTheory.Submonoid.MulOpposite
 
 #align_import group_theory.submonoid.membership from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
 

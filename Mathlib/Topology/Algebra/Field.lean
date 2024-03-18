@@ -3,6 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
 -/
+import Mathlib.Algebra.Field.Subfield
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Basic
@@ -40,6 +41,40 @@ variable (K)
     continuous, including inversion. -/
 class TopologicalDivisionRing extends TopologicalRing K, HasContinuousInv₀ K : Prop
 #align topological_division_ring TopologicalDivisionRing
+
+section Subfield
+
+variable {α : Type*} [Field α] [TopologicalSpace α] [TopologicalDivisionRing α]
+
+/-- The (topological-space) closure of a subfield of a topological field is
+itself a subfield. -/
+def Subfield.topologicalClosure (K : Subfield α) : Subfield α :=
+  { K.toSubring.topologicalClosure with
+    carrier := _root_.closure (K : Set α)
+    inv_mem' := fun x hx => by
+      dsimp only at hx ⊢
+      rcases eq_or_ne x 0 with (rfl | h)
+      · rwa [inv_zero]
+      · -- Porting note (#11215): TODO: Lean fails to find InvMemClass instance
+        rw [← @inv_coe_set α (Subfield α) _ _ SubfieldClass.toInvMemClass K, ← Set.image_inv]
+        exact mem_closure_image (continuousAt_inv₀ h) hx }
+#align subfield.topological_closure Subfield.topologicalClosure
+
+theorem Subfield.le_topologicalClosure (s : Subfield α) : s ≤ s.topologicalClosure :=
+  _root_.subset_closure
+#align subfield.le_topological_closure Subfield.le_topologicalClosure
+
+theorem Subfield.isClosed_topologicalClosure (s : Subfield α) :
+    IsClosed (s.topologicalClosure : Set α) :=
+  isClosed_closure
+#align subfield.is_closed_topological_closure Subfield.isClosed_topologicalClosure
+
+theorem Subfield.topologicalClosure_minimal (s : Subfield α) {t : Subfield α} (h : s ≤ t)
+    (ht : IsClosed (t : Set α)) : s.topologicalClosure ≤ t :=
+  closure_minimal h ht
+#align subfield.topological_closure_minimal Subfield.topologicalClosure_minimal
+
+end Subfield
 
 section affineHomeomorph
 

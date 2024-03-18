@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Topology.Algebra.Group.Basic
 
 #align_import topology.algebra.ring.basic from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"

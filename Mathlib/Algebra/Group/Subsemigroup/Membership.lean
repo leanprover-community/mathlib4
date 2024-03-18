@@ -3,7 +3,7 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.GroupTheory.Subsemigroup.Basic
+import Mathlib.Algebra.Group.Subsemigroup.Basic
 
 #align_import group_theory.subsemigroup.membership from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 

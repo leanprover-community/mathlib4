@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Subsemigroup.Basic
 import Mathlib.Algebra.Group.Units
-import Mathlib.GroupTheory.Subsemigroup.Basic
 
 #align_import group_theory.submonoid.basic from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
 

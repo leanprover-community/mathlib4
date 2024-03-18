@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Deprecated.Subgroup
 import Mathlib.Deprecated.Group
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 
 #align_import deprecated.subring from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 

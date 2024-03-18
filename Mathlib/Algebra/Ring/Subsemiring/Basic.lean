@@ -3,13 +3,13 @@ Copyright (c) 2020 Yury Kudryashov All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Centralizer
-import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 #align_import ring_theory.subsemiring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
