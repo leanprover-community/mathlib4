@@ -27,7 +27,7 @@ variable [Zero β] [One β] [Add β] [Mul β] [Neg β] [Sub β] [Pow β ℕ] [SM
 def linearOrderedSemifield [LinearOrderedSemifield α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
-    (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :

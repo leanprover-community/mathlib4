@@ -193,8 +193,7 @@ proof_wanted toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z
 
 -- TODO: generalize to `CommRing` after `ofFin_intCast` is proven
 instance : CommSemiring (BitVec w) :=
-  toFin_injective.commSemiring _
-    toFin_zero toFin_one toFin_add toFin_mul (Function.swap toFin_nsmul)
+  toFin_injective.commSemiring _ toFin_zero toFin_one toFin_add toFin_mul toFin_nsmul
     toFin_pow toFin_natCast
 
 end BitVec
