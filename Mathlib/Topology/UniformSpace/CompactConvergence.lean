@@ -91,7 +91,6 @@ open scoped Uniformity Topology UniformConvergence
 open UniformSpace Set Filter
 
 variable {α : Type u₁} {β : Type u₂} [TopologicalSpace α] [UniformSpace β]
-
 variable (K : Set α) (V : Set (β × β)) (f : C(α, β))
 
 namespace ContinuousMap
