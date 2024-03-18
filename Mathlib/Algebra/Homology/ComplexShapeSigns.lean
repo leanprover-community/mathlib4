@@ -99,9 +99,8 @@ lemma ε₁_ε₂ {i₁ i₁' : I₁} {i₂ i₂' : I₂} (h₁ : c₁.Rel i₁ 
   Eq.trans (mul_one _).symm (by
     rw [← Int.units_mul_self (ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂')), mul_assoc]
     conv_lhs =>
-      congr
-      · skip
-      · rw [← mul_assoc, ε₂_ε₁ c₁₂ h₁ h₂]
+      arg 2
+      rw [← mul_assoc, ε₂_ε₁ c₁₂ h₁ h₂]
     rw [neg_mul, neg_mul, neg_mul, mul_neg, neg_inj, ← mul_assoc, ← mul_assoc,
       Int.units_mul_self, one_mul])
 
