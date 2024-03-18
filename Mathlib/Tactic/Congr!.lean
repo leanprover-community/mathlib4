@@ -6,8 +6,9 @@ Authors: Kyle Miller
 import Lean.Elab.Tactic.Config
 import Lean.Elab.Tactic.RCases
 import Mathlib.Lean.Meta.CongrTheorems
-import Mathlib.Tactic.Relation.Rfl
 import Std.Logic
+import Lean.Meta.Tactic.Rfl
+import Std.Data.List.Basic
 
 /-!
 # The `congr!` tactic

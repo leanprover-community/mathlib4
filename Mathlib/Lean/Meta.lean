@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Term
 import Lean.Elab.Tactic.Basic
-import Lean.Meta.Tactic.Apply
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 import Std.Data.List.Basic
