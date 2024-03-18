@@ -286,13 +286,12 @@ variable [Zero α] [Add α] [Neg α] [Sub α] [One α] [Mul α] [Inv α] [Div α
   [SMul ℤ α] [SMul ℚ α] [Pow α ℕ] [Pow α ℤ] [NatCast α] [IntCast α] [RatCast α]
   (f : α → β) (hf : Injective f)
 
--- See note [reducible non-instances]
 /-- Pullback a `DivisionSemiring` along an injective function. -/
-@[reducible]
+@[reducible] -- See note [reducible non-instances]
 protected def divisionSemiring [DivisionSemiring β] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
-    (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) : DivisionSemiring α where
   toSemiring := hf.semiring f zero one add mul nsmul npow natCast
@@ -305,8 +304,8 @@ protected def divisionRing [DivisionRing β] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y)
-    (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (qsmul : ∀ (q : ℚ) (x), f (q • x) = q • f x)
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (qsmul : ∀ (q : ℚ) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n)
     (ratCast : ∀ q : ℚ, f q = q) : DivisionRing α where
@@ -324,7 +323,7 @@ protected def divisionRing [DivisionRing β] (zero : f 0 = 0) (one : f 1 = 1)
 protected def semifield [Semifield β] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
-    (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) : Semifield α where
   toCommSemiring := hf.commSemiring f zero one add mul nsmul npow natCast
@@ -334,13 +333,12 @@ protected def semifield [Semifield β] (zero : f 0 = 0) (one : f 1 = 1)
 
 /-- Pullback a `Field` along an injective function. -/
 @[reducible] -- See note [reducible non-instances]
-protected def field [Field β] (f : α → β) (hf : Injective f)
-    (zero : f 0 = 0) (one : f 1 = 1)
+protected def field [Field β] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y)
-    (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (qsmul : ∀ (q : ℚ) (x), f (q • x) = q • f x)
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (qsmul : ∀ (q : ℚ) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n)
     (ratCast : ∀ q : ℚ, f q = q) :
