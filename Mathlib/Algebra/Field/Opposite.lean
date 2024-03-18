@@ -61,9 +61,6 @@ namespace AddOpposite
 instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ where
   toSemiring := instSemiring
   __ := instGroupWithZero
-  nnratCast_def q := unop_injective $ by rw [unop_nnratCast, unop_div, unop_natCast, unop_natCast,
-    NNRat.cast_def, div_eq_mul_inv]
-  nnqsmul := _
 
 instance instDivisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ where
   toRing := instRing
