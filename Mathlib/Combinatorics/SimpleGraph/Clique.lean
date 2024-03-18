@@ -30,6 +30,7 @@ adjacent.
 * Dualise all the API to get independent sets
 -/
 
+
 open Finset Fintype Function SimpleGraph.Walk
 
 namespace SimpleGraph
