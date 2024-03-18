@@ -887,7 +887,7 @@ instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) where
   right_distrib _ _ _ := ext fun _ => LinearMap.add_apply _ _ _
   natCast n := n • (1 : M₁ →L[R₁] M₁)
   natCast_zero := zero_smul ℕ (1 : M₁ →L[R₁] M₁)
-  natCast_succ n := (AddMonoid.nsmul_succ n (1 : M₁ →L[R₁] M₁)).trans (add_comm _ _)
+  natCast_succ n := AddMonoid.nsmul_succ n (1 : M₁ →L[R₁] M₁)
 #align continuous_linear_map.semiring ContinuousLinearMap.semiring
 
 /-- `ContinuousLinearMap.toLinearMap` as a `RingHom`.-/
