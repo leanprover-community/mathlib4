@@ -335,7 +335,6 @@ theorem embedding_of_pullback_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y �
     (H₂ : Embedding g) : Embedding (limit.π (cospan f g) WalkingCospan.one) := by
   convert H₂.comp (snd_embedding_of_left_embedding H₁ g)
   erw [← coe_comp]
-  congr
   rw [← limit.w _ WalkingCospan.Hom.inr]
   rfl
 #align Top.embedding_of_pullback_embeddings TopCat.embedding_of_pullback_embeddings
@@ -364,7 +363,6 @@ theorem openEmbedding_of_pullback_open_embeddings {X Y S : TopCat} {f : X ⟶ S}
     OpenEmbedding (limit.π (cospan f g) WalkingCospan.one) := by
   convert H₂.comp (snd_openEmbedding_of_left_openEmbedding H₁ g)
   erw [← coe_comp]
-  congr
   rw [← limit.w _ WalkingCospan.Hom.inr]
   rfl
 #align Top.open_embedding_of_pullback_open_embeddings TopCat.openEmbedding_of_pullback_open_embeddings
