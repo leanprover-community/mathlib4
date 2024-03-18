@@ -353,6 +353,18 @@ lemma leftUnshift_units_smul {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : �
     (x • γ).leftUnshift n hn = x • γ.leftUnshift n hn := by
   apply leftUnshift_smul
 
+lemma rightShift_comp {m : ℤ} (γ' : Cochain L M m) {nm : ℤ} (hnm : n + m = nm) (a nm' : ℤ)
+    (hnm' : nm' + a = nm) (n' : ℤ) (hn' : n' + a = n) :
+    (γ.comp γ' hnm).rightShift a nm' hnm' =
+      (γ.rightShift a n' hn').comp (γ'.shift a) (by linarith) := by
+  ext p q hpq
+  rw [rightShift_v (γ.comp γ' hnm) a nm' hnm' p q (by linarith) (q + a) (by linarith),
+    comp_v γ γ' hnm p (p + n) (q + a) rfl (by linarith),
+    comp_v _ _ (show n' + m = nm' by linarith) p (p + n') q (by linarith) (by linarith),
+    γ.rightShift_v a n' hn' p (p + n') rfl (p + n) rfl,
+    γ'.shift_v a (p + n') q (by linarith) (p + n) _ (by linarith) rfl]
+  simp
+
 lemma rightUnshift_comp {m : ℤ} {a : ℤ} (γ' : Cochain L (M⟦a⟧) m) {nm : ℤ} (hnm : n + m = nm)
     (nm' : ℤ) (hnm' : nm + a = nm') (m' : ℤ) (hm' : m + a = m') :
     (γ.comp γ' hnm).rightUnshift nm' hnm' =

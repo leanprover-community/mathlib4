@@ -266,6 +266,10 @@ end Equivalence
 
 open Projective
 
+/-
+
+redundant: see Exact.liftFromProjective in CategoryTheory.Preadditive.ProjectiveResolution
+
 section
 
 variable [HasZeroMorphisms C] [HasEqualizers C] [HasImages C]
@@ -296,6 +300,6 @@ theorem Exact.lift_comp {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R)
     CategoryTheory.Projective.factorThru_comp, factorThruKernelSubobject_comp_arrow]
 #align category_theory.exact.lift_comp CategoryTheory.Exact.lift_comp
 
-end
+end-/
 
 end CategoryTheory

@@ -6,6 +6,7 @@ Authors: Scott Morrison, Joël Riou
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.CategoryTheory.Abelian.Homology
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 #align_import algebra.homology.quasi_iso from "leanprover-community/mathlib"@"956af7c76589f444f2e1313911bad16366ea476d"
 
@@ -24,7 +25,11 @@ open CategoryTheory Limits
 
 universe v u
 
-variable {ι : Type*}
+/- redundant with the new homology API
+
+section
+
+variable {ι : Type _}
 
 section
 
@@ -216,7 +221,7 @@ theorem CategoryTheory.Functor.quasiIso'_of_map_quasiIso' {C D : HomologicalComp
     isIso_of_reflects_iso _ F⟩
 #align category_theory.functor.quasi_iso_of_map_quasi_iso CategoryTheory.Functor.quasiIso'_of_map_quasiIso'
 
-end
+end-/
 
 open HomologicalComplex
 
@@ -481,6 +486,62 @@ end HomologicalComplex
 end
 
 section
+
+variable {C D : Type _} [Category C] [Preadditive C]
+  [Category D] [Preadditive D] (F : C ⥤ D) [F.Additive]
+  {ι : Type _} {c : ComplexShape ι} {K L : HomologicalComplex C c} (f : K ⟶ L)
+
+instance CategoryTheory.Functor.map_quasiIsoAt_of_preservesHomology
+    [F.PreservesHomology] (n : ι)
+    [K.HasHomology n] [L.HasHomology n]
+    [((F.mapHomologicalComplex c).obj K).HasHomology n]
+    [((F.mapHomologicalComplex c).obj L).HasHomology n]
+    [hf : QuasiIsoAt f n] : QuasiIsoAt ((F.mapHomologicalComplex c).map f) n := by
+  rw [quasiIsoAt_iff] at hf ⊢
+  exact ShortComplex.quasiIso_map_of_preservesRightHomology F ((HomologicalComplex.shortComplexFunctor C c n).map f)
+
+instance CategoryTheory.Functor.map_quasiIso_of_preservesHomology
+    [F.PreservesHomology] [∀ n, K.HasHomology n] [∀ n, L.HasHomology n]
+    [∀ n, ((F.mapHomologicalComplex c).obj K).HasHomology n]
+    [∀ n, ((F.mapHomologicalComplex c).obj L).HasHomology n]
+    [QuasiIso f] : QuasiIso ((F.mapHomologicalComplex c).map f) where
+
+lemma CategoryTheory.Functor.quasiIsoAt_of_map_quasiIsoAt_of_preservesHomology
+    [F.PreservesHomology] [ReflectsIsomorphisms F] (n : ι)
+    [K.HasHomology n] [L.HasHomology n]
+    [((F.mapHomologicalComplex c).obj K).HasHomology n]
+    [((F.mapHomologicalComplex c).obj L).HasHomology n]
+    (hf : QuasiIsoAt ((F.mapHomologicalComplex c).map f) n) :
+    QuasiIsoAt f n := by
+  rw [quasiIsoAt_iff] at hf ⊢
+  exact (ShortComplex.quasiIso_map_iff_of_preservesRightHomology
+    F ((HomologicalComplex.shortComplexFunctor C c n).map f)).1  hf
+
+lemma CategoryTheory.Functor.quasiIso_of_map_quasiIso_of_preservesHomology
+    [F.PreservesHomology] [ReflectsIsomorphisms F] [∀ n, K.HasHomology n] [∀ n, L.HasHomology n]
+    [∀ n, ((F.mapHomologicalComplex c).obj K).HasHomology n]
+    [∀ n, ((F.mapHomologicalComplex c).obj L).HasHomology n]
+    (_ : QuasiIso ((F.mapHomologicalComplex c).map f)) :
+    QuasiIso f where
+  quasiIsoAt n := F.quasiIsoAt_of_map_quasiIsoAt_of_preservesHomology f n inferInstance
+
+end
+
+section
+
+variable {A : Type _} [Category A] [Preadditive A] {ι : Type _} {c : ComplexShape ι}
+  {K L : HomologicalComplex A c} (e : HomotopyEquiv K L) [DecidableRel c.Rel]
+
+instance HomotopyEquiv.toQuasiIsoAt (n : ι) [K.HasHomology n] [L.HasHomology n] :
+    QuasiIsoAt e.hom n := by
+  rw [quasiIsoAt_iff, ShortComplex.quasiIso_iff]
+  exact IsIso.of_iso (e.toHomologyIso n)
+
+def HomotopyEquiv.toQuasiIso [∀ n, K.HasHomology n] [∀ n, L.HasHomology n] :
+    QuasiIso e.hom :=
+  ⟨fun _ => inferInstance⟩
+
+end
 
 variable {ι : Type*} {C : Type u} [Category.{v} C] [Preadditive C]
   {c : ComplexShape ι} {K L : HomologicalComplex C c}

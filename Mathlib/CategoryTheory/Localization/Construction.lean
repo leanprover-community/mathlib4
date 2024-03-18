@@ -39,6 +39,8 @@ uniqueness is expressed by `uniq`.
 
 noncomputable section
 
+universe v₁ v₂ u₁ u₂
+
 open CategoryTheory.Category
 
 namespace CategoryTheory

@@ -39,8 +39,9 @@ namespace CategoryTheory
 
 open Category
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C) (E : Type*)
-  [Category E]
+universe v₁ v₂ v₃ u₁ u₂ u₃
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] (L : C ⥤ D) (W : MorphismProperty C) (E : Type u₃)
+  [Category.{v₃} E]
 
 namespace Functor
 
@@ -152,6 +153,9 @@ theorem IsLocalization.for_id (hW : W ⊆ MorphismProperty.isomorphisms C) : (�
     (Localization.strictUniversalPropertyFixedTargetId W _ hW)
 #align category_theory.functor.is_localization.for_id CategoryTheory.Functor.IsLocalization.for_id
 
+instance : (𝟭 C).IsLocalization (MorphismProperty.isomorphisms C) :=
+  IsLocalization.for_id _ (by rfl)
+
 end Functor
 
 namespace Localization
@@ -164,11 +168,27 @@ theorem inverts : W.IsInvertedBy L :=
 
 /-- The isomorphism `L.obj X ≅ L.obj Y` that is deduced from a morphism `f : X ⟶ Y` which
 belongs to `W`, when `L.IsLocalization W`. -/
-@[simps!]
+@[simps! hom]
 def isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) : L.obj X ≅ L.obj Y :=
   haveI : IsIso (L.map f) := inverts L W f hf
   asIso (L.map f)
 #align category_theory.localization.iso_of_hom CategoryTheory.Localization.isoOfHom
+
+@[reassoc (attr := simp)]
+lemma isoOfHom_hom_inv_id {X Y : C} (f : X ⟶ Y) (hf : W f) :
+    L.map f ≫ (isoOfHom L W f hf).inv = 𝟙 _ :=
+  (isoOfHom L W f hf).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoOfHom_inv_hom_id {X Y : C} (f : X ⟶ Y) (hf : W f) :
+    (isoOfHom L W f hf).inv ≫ L.map f = 𝟙 _ :=
+  (isoOfHom L W f hf).inv_hom_id
+
+@[simp]
+lemma isoOfHom_id_inv (X : C) (hX : W (𝟙 X)) :
+    (isoOfHom L W (𝟙 X) hX).inv = 𝟙 _ := by
+  rw [← cancel_mono (isoOfHom L W (𝟙 X) hX).hom, Iso.inv_hom_id, id_comp,
+    isoOfHom_hom, Functor.map_id]
 
 instance : IsEquivalence (Localization.Construction.lift L (inverts L W)) :=
   (inferInstance : L.IsLocalization W).nonempty_isEquivalence.some
@@ -477,11 +497,34 @@ instance : Lifting L₂ W' L₁ (uniq L₁ L₂ W').inverse := ⟨compUniqInvers
 same `MorphismProperty C`, any functor `F : D₁ ⥤ D₂` equipped with an isomorphism
 `L₁ ⋙ F ≅ L₂` is isomorphic to the functor of the equivalence given by `uniq`. -/
 def isoUniqFunctor (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) :
-    F ≅ (uniq L₁ L₂ W').functor :=
+    F ≅ (uniq L₁ L₂ W').functor := by
   letI : Lifting L₁ W' L₂ F := ⟨e⟩
-  liftNatIso L₁ W' L₂ L₂ F (uniq L₁ L₂ W').functor (Iso.refl L₂)
+  exact liftNatIso L₁ W' L₂ L₂ F (uniq L₁ L₂ W').functor (Iso.refl L₂)
 
 end Localization
+
+namespace Functor
+
+namespace IsEquivalence
+
+open Localization
+
+variable {D₁ D₂ : Type _} [Category D₁] [Category D₂] (L₁ : C ⥤ D₁) (L₂ : C ⥤ D₂)
+  (W : MorphismProperty C) [L₁.IsLocalization W] [L₂.IsLocalization W]
+  (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂)
+
+/-- If `L₁ : C ⥤ D₁` and `L₂ : C ⥤ D₂` are two localization functors for the
+same `W : MorphismProperty C`, any functor `F : D₁ ⥤ D₂` equipped with an isomorphism
+`L₁ ⋙ F ≅ L₂` is an equivalence -/
+def of_localization_comparison
+    {D₁ D₂ : Type _} [Category D₁] [Category D₂] (L₁ : C ⥤ D₁) (L₂ : C ⥤ D₂)
+    (W : MorphismProperty C) [L₁.IsLocalization W] [L₂.IsLocalization W]
+    (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) : IsEquivalence F :=
+  IsEquivalence.ofIso (isoUniqFunctor L₁ L₂ W F e).symm inferInstance
+
+end IsEquivalence
+
+end Functor
 
 section
 

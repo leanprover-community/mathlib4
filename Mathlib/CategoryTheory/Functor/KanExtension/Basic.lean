@@ -302,4 +302,23 @@ end
 
 end Functor
 
+/- -/
+
+
+namespace Equivalence
+
+variable {C D : Type*} [Category C] [Category D] (e : C ≌ D)
+
+def whiskeringLeft (E : Type _) [Category E] : (D ⥤ E) ≌ (C ⥤ E) where
+  functor := (CategoryTheory.whiskeringLeft C D E).obj e.functor
+  inverse := (CategoryTheory.whiskeringLeft D C E).obj e.inverse
+  unitIso := (CategoryTheory.whiskeringLeft D D E).mapIso e.counitIso.symm
+  counitIso := (CategoryTheory.whiskeringLeft C C E).mapIso e.unitIso.symm
+  functor_unitIso_comp F := by
+    ext Y
+    dsimp
+    rw [← F.map_id, ← F.map_comp, counitInv_functor_comp]
+
+end Equivalence
+
 end CategoryTheory

@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.CategoryTheory.ComposableArrows
+import Mathlib.Tactic.Linarith
 
 /-!
 # Exact sequences
@@ -105,6 +106,17 @@ lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by omega)
     (S.sc' hS.toIsComplex i j k).Exact := by
   subst hij hjk
   exact hS.exact i hk
+
+abbrev Exact.sc' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by linarith)
+    (hjk : j + 1 = k := by linarith) (hk : k ≤ n := by linarith) :
+    ShortComplex C :=
+  S.sc' hS.toIsComplex i j k
+
+/-- The short complex consisting of maps `S.map' i (i + 1)` and `S.map' (i + 1) (i + 2)`
+when we know that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
+abbrev Exact.sc (hS : S.Exact) (i : ℕ) (hi : i + 2 ≤ n := by linarith) :
+    ShortComplex C :=
+  S.sc' hS.toIsComplex i (i + 1) (i + 2)
 
 /-- Functoriality maps for `ComposableArrows.sc'`. -/
 @[simps]
@@ -247,15 +259,21 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
     · rw [exact₂_iff]; swap
       · rw [isComplex₂_iff]
         exact h.toIsComplex.zero n
-      exact h.exact n (by omega)
+      exact h.exact n (by linarith)
   · rintro ⟨h, h'⟩
     refine' Exact.mk (IsComplex.mk (fun i hi => _)) (fun i hi => _)
-    · obtain hi | rfl := LE.le.lt_or_eq (show i ≤ n by omega)
+    · obtain hi | rfl := LE.le.lt_or_eq (show i ≤ n by linarith)
       · exact h.toIsComplex.zero i
       · exact h'.toIsComplex.zero 0
-    · obtain hi | rfl := LE.le.lt_or_eq (show i ≤ n by omega)
+    · obtain hi | rfl := LE.le.lt_or_eq (show i ≤ n by linarith)
       · exact h.exact i
       · exact h'.exact 0
+
+lemma exact_of_δlast {n : ℕ} (S : ComposableArrows C (n + 2))
+    (h₁ : S.δlast.Exact) (h₂ : (mk₂ (S.map' n (n + 1)) (S.map' (n + 1) (n + 2))).Exact) :
+    S.Exact := by
+  rw [exact_iff_δlast]
+  constructor <;> assumption
 
 end ComposableArrows
 

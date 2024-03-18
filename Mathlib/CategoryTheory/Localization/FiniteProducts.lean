@@ -124,7 +124,3 @@ instance [W.HasLocalization] :
 noncomputable instance [W.HasLocalization] :
     PreservesFiniteProducts W.Q' :=
   preservesFiniteProducts W.Q' W
-
-end Localization
-
-end CategoryTheory

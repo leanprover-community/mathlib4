@@ -38,7 +38,10 @@ def Arrow :=
 #align category_theory.arrow CategoryTheory.Arrow
 
 /- Porting note: could not derive `Category` above so this instance works in its place-/
-instance : Category (Arrow T) := commaCategory
+instance : Category (Arrow T) := by
+  dsimp only [Arrow]
+  infer_instance
+  --  commaCategory
 
 -- Satisfying the inhabited linter
 instance Arrow.inhabited [Inhabited T] : Inhabited (Arrow T) where
@@ -186,17 +189,13 @@ variable {f g : Arrow T} (sq : f ⟶ g)
 instance isIso_left [IsIso sq] : IsIso sq.left where
   out := by
     apply Exists.intro (inv sq).left
-    simp only [← Comma.comp_left, IsIso.hom_inv_id, IsIso.inv_hom_id, Arrow.id_left,
-      eq_self_iff_true, and_self_iff]
-    simp
+    simp only [← comp_left, IsIso.hom_inv_id, IsIso.inv_hom_id, id_left, and_self]
 #align category_theory.arrow.is_iso_left CategoryTheory.Arrow.isIso_left
 
 instance isIso_right [IsIso sq] : IsIso sq.right where
   out := by
     apply Exists.intro (inv sq).right
-    simp only [← Comma.comp_right, IsIso.hom_inv_id, IsIso.inv_hom_id, Arrow.id_right,
-      eq_self_iff_true, and_self_iff]
-    simp
+    simp only [← comp_right, IsIso.hom_inv_id, IsIso.inv_hom_id, id_right, and_self]
 #align category_theory.arrow.is_iso_right CategoryTheory.Arrow.isIso_right
 
 @[simp]
@@ -372,5 +371,35 @@ def Arrow.isoOfNatIso {C D : Type*} [Category C] [Category D] {F G : C ⥤ D} (e
     (f : Arrow C) : F.mapArrow.obj f ≅ G.mapArrow.obj f :=
   Arrow.isoMk (e.app f.left) (e.app f.right)
 #align category_theory.arrow.iso_of_nat_iso CategoryTheory.Arrow.isoOfNatIso
+
+lemma isIso_iff_of_arrow_iso {C : Type _} [Category C] {f g : Arrow C} (e : f ≅ g) :
+  IsIso f.hom ↔ IsIso g.hom := by
+  constructor
+  . intro
+    haveI : IsIso (e.hom.left ≫ g.hom) := by
+      erw [e.hom.w]
+      infer_instance
+    apply IsIso.of_isIso_comp_left e.hom.left
+  . intro
+    haveI : IsIso (e.inv.left ≫ f.hom) := by
+      erw [e.inv.w]
+      infer_instance
+    apply IsIso.of_isIso_comp_left e.inv.left
+
+lemma isIso_iff_of_arrow_mk_iso {C : Type _} [Category C] {X₁ X₂ Y₁ Y₂ : C}
+  {f : X₁ ⟶ X₂} {g : Y₁ ⟶ Y₂} (e : Arrow.mk f ≅ Arrow.mk g) :
+  IsIso f ↔ IsIso g := isIso_iff_of_arrow_iso e
+
+namespace NatTrans
+
+@[simps]
+def functorArrow {C D : Type _} [Category C] [Category D] {F G : C ⥤ D} (τ : F ⟶ G) :
+    C ⥤ Arrow D where
+  obj X := Arrow.mk (τ.app X)
+  map f :=
+    { left := F.map f
+      right := G.map f }
+
+end NatTrans
 
 end CategoryTheory
