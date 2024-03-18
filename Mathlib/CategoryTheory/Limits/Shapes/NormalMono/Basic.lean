@@ -55,8 +55,6 @@ attribute [inherit_doc NormalMono] NormalMono.Z NormalMono.g NormalMono.w Normal
 
 section
 
-attribute [local instance] fullyFaithfulReflectsLimits
-
 attribute [local instance] Equivalence.essSurj_of_equivalence
 
 /-- If `F` is an equivalence and `F.map f` is a normal mono, then `f` is a normal mono. -/
@@ -174,8 +172,6 @@ attribute [inherit_doc NormalEpi] NormalEpi.W NormalEpi.g NormalEpi.w NormalEpi.
 
 section
 
-attribute [local instance] fullyFaithfulReflectsColimits
-
 attribute [local instance] Equivalence.essSurj_of_equivalence
 
 /-- If `F` is an equivalence and `F.map f` is a normal epi, then `f` is a normal epi. -/
@@ -204,7 +200,7 @@ instance (priority := 100) NormalEpi.regularEpi (f : X ⟶ Y) [I : NormalEpi f] 
     w := by simpa using I.w }
 #align category_theory.normal_epi.regular_epi CategoryTheory.NormalEpi.regularEpi
 
-/-- If `f` is a normal epi, then every morphism `k : X ⟶ W` satisfying `normal_epi.g ≫ k = 0`
+/-- If `f` is a normal epi, then every morphism `k : X ⟶ W` satisfying `NormalEpi.g ≫ k = 0`
     induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
 def NormalEpi.desc' {W : C} (f : X ⟶ Y) [nef : NormalEpi f] (k : X ⟶ W) (h : nef.g ≫ k = 0) :
     { l : Y ⟶ W // f ≫ l = k } :=

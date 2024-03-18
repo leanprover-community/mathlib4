@@ -77,11 +77,12 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
   RingQuot.instAlgebra _
 
 -- verify there is no diamond
+-- but doesn't work at `reducible_and_instances` #10906
 example : (algebraNat : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
-    [IsScalarTower R A M] [IsScalarTower S A M] [SMulCommClass R S A] :
+    [IsScalarTower R A M] [IsScalarTower S A M] :
     SMulCommClass R S (TensorAlgebra A M) :=
   RingQuot.instSMulCommClass _
 
@@ -97,6 +98,7 @@ instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
   RingQuot.instRing (Rel S M)
 
 -- verify there is no diamond
+-- but doesn't work at `reducible_and_instances` #10906
 variable (S M : Type) [CommRing S] [AddCommGroup M] [Module S M] in
 example : (algebraInt _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra := rfl
 
@@ -107,10 +109,10 @@ variable {M}
 irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
   { toFun := fun m => RingQuot.mkAlgHom R _ (FreeAlgebra.ι R m)
     map_add' := fun x y => by
-      rw [← AlgHom.map_add]
+      rw [← (RingQuot.mkAlgHom R (Rel R M)).map_add]
       exact RingQuot.mkAlgHom_rel R Rel.add
     map_smul' := fun r x => by
-      rw [← AlgHom.map_smul]
+      rw [← (RingQuot.mkAlgHom R (Rel R M)).map_smul]
       exact RingQuot.mkAlgHom_rel R Rel.smul }
 #align tensor_algebra.ι TensorAlgebra.ι
 
@@ -191,22 +193,24 @@ and is preserved under addition and muliplication, then it holds for all of `Ten
 -/
 @[elab_as_elim]
 theorem induction {C : TensorAlgebra R M → Prop}
-    (h_grade0 : ∀ r, C (algebraMap R (TensorAlgebra R M) r)) (h_grade1 : ∀ x, C (ι R x))
-    (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))
+    (algebraMap : ∀ r, C (algebraMap R (TensorAlgebra R M) r)) (ι : ∀ x, C (ι R x))
+    (mul : ∀ a b, C a → C b → C (a * b)) (add : ∀ a b, C a → C b → C (a + b))
     (a : TensorAlgebra R M) : C a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from M
   let s : Subalgebra R (TensorAlgebra R M) :=
     { carrier := C
-      mul_mem' := @h_mul
-      add_mem' := @h_add
-      algebraMap_mem' := h_grade0 }
-  -- porting note: Added `h`. `h` is needed for `of`.
+      mul_mem' := @mul
+      add_mem' := @add
+      algebraMap_mem' := algebraMap }
+  -- Porting note: Added `h`. `h` is needed for `of`.
   let h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
-  let of : M →ₗ[R] s := (ι R).codRestrict (Subalgebra.toSubmodule s) h_grade1
+  let of : M →ₗ[R] s := (TensorAlgebra.ι R).codRestrict (Subalgebra.toSubmodule s) ι
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
     ext
-    simp
+    simp only [AlgHom.toLinearMap_id, LinearMap.id_comp, AlgHom.comp_toLinearMap,
+      LinearMap.coe_comp, Function.comp_apply, AlgHom.toLinearMap_apply, lift_ι_apply,
+      Subalgebra.coe_val]
     erw [LinearMap.codRestrict_apply]
   -- finding a proof is finding an element of the subalgebra
   rw [← AlgHom.id_apply (R := R) a, of_id]
@@ -241,6 +245,10 @@ theorem algebraMap_eq_one_iff (x : R) : algebraMap R (TensorAlgebra R M) x = 1 �
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 #align tensor_algebra.algebra_map_eq_one_iff TensorAlgebra.algebraMap_eq_one_iff
 
+/-- A `TensorAlgebra` over a nontrivial semiring is nontrivial. -/
+instance [Nontrivial R] : Nontrivial (TensorAlgebra R M) :=
+  (algebraMap_leftInverse M).injective.nontrivial
+
 variable {M}
 
 /-- The canonical map from `TensorAlgebra R M` into `TrivSqZeroExt R M` that sends
@@ -266,9 +274,8 @@ def ιInv : TensorAlgebra R M →ₗ[R] M := by
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 #align tensor_algebra.ι_inv TensorAlgebra.ιInv
 
-theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R M) := fun x => by
-  -- porting note: needs the last two `simp` lemmas explicitly in order to use them
-  simp [ιInv, (AlgHom.toLinearMap_apply), toTrivSqZeroExt_ι _]
+theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R M) := fun x ↦ by
+  simp [ιInv]
 #align tensor_algebra.ι_left_inverse TensorAlgebra.ι_leftInverse
 
 variable (R)

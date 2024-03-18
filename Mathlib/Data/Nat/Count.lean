@@ -78,7 +78,7 @@ theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p
     simp_rw [mem_map, mem_range, addLeftEmbedding_apply]
     rintro x hx ⟨c, _, rfl⟩
     exact (self_le_add_right _ _).not_lt hx
-  simp_rw [count_eq_card_filter_range, range_add, filter_union, card_disjoint_union this,
+  simp_rw [count_eq_card_filter_range, range_add, filter_union, card_union_of_disjoint this,
     filter_map, addLeftEmbedding, card_map]
   rfl
 #align nat.count_add Nat.count_add
@@ -131,7 +131,7 @@ theorem count_strict_mono {m n : ℕ} (hm : p m) (hmn : m < n) : count p m < cou
 #align nat.count_strict_mono Nat.count_strict_mono
 
 theorem count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = count p n) : m = n := by
-  by_contra' h : m ≠ n
+  by_contra! h : m ≠ n
   wlog hmn : m < n
   · exact this hn hm heq.symm h.symm (h.lt_or_lt.resolve_left hmn)
   · simpa [heq] using count_strict_mono hm hmn
@@ -152,7 +152,7 @@ variable [DecidablePred q]
 
 theorem count_mono_left {n : ℕ} (hpq : ∀ k, p k → q k) : count p n ≤ count q n := by
   simp only [count_eq_card_filter_range]
-  exact card_le_of_subset ((range n).monotone_filter_right hpq)
+  exact card_le_card ((range n).monotone_filter_right hpq)
 #align nat.count_mono_left Nat.count_mono_left
 
 end Count

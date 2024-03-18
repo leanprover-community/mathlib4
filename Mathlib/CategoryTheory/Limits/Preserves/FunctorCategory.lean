@@ -103,7 +103,7 @@ instance whiskeringRightPreservesLimits {C : Type u} [Category C] {D : Type*} [C
   ⟨inferInstance⟩
 #align category_theory.whiskering_right_preserves_limits CategoryTheory.whiskeringRightPreservesLimits
 
--- porting note: fixed spelling mistake in def
+-- Porting note: fixed spelling mistake in def
 /-- If `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
 noncomputable def preservesLimitOfLanPreservesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]

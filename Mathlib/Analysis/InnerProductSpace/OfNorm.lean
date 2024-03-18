@@ -271,7 +271,7 @@ private theorem rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
   intro x y
   have : (r.den : 𝕜) ≠ 0 := by
     haveI : CharZero 𝕜 := IsROrC.charZero_isROrC
-    exact_mod_cast r.pos.ne'
+    exact mod_cast r.pos.ne'
   rw [← r.num_div_den, ← mul_right_inj' this, ← nat r.den _ y, smul_smul, Rat.cast_div]
   simp only [map_natCast, Rat.cast_coe_nat, map_intCast, Rat.cast_coe_int, map_div₀]
   rw [← mul_assoc, mul_div_cancel' _ this, int_prop _ x, map_intCast]

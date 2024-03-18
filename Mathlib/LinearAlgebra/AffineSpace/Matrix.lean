@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Basis
-import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 #align_import linear_algebra.affine_space.matrix from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
@@ -63,7 +63,7 @@ theorem affineIndependent_of_toMatrix_right_inv [DecidableEq ι'] (p : ι' → P
     (hA : b.toMatrix p * A = 1) : AffineIndependent k p := by
   rw [affineIndependent_iff_eq_of_fintype_affineCombination_eq]
   intro w₁ w₂ hw₁ hw₂ hweq
-  have hweq' : (b.toMatrix p).vecMul w₁ = (b.toMatrix p).vecMul w₂ := by
+  have hweq' : w₁ ᵥ* b.toMatrix p = w₂ ᵥ* b.toMatrix p := by
     ext j
     change (∑ i, w₁ i • b.coord j (p i)) = ∑ i, w₂ i • b.coord j (p i)
     -- Porting note: Added `u` because `∘` was causing trouble
@@ -72,7 +72,7 @@ theorem affineIndependent_of_toMatrix_right_inv [DecidableEq ι'] (p : ι' → P
       ← Finset.univ.affineCombination_eq_linear_combination _ _ hw₂, u,
       ← Finset.univ.map_affineCombination p w₁ hw₁, ← Finset.univ.map_affineCombination p w₂ hw₂,
       hweq]
-  replace hweq' := congr_arg (fun w => A.vecMul w) hweq'
+  replace hweq' := congr_arg (fun w => w ᵥ* A) hweq'
   simpa only [Matrix.vecMul_vecMul, hA, Matrix.vecMul_one] using hweq'
 #align affine_basis.affine_independent_of_to_matrix_right_inv AffineBasis.affineIndependent_of_toMatrix_right_inv
 
@@ -107,7 +107,7 @@ theorem affineSpan_eq_top_of_toMatrix_left_inv [DecidableEq ι] [Nontrivial k] (
 
 See also `AffineBasis.toMatrix_inv_vecMul_toMatrix`. -/
 @[simp]
-theorem toMatrix_vecMul_coords (x : P) : (b.toMatrix b₂).vecMul (b₂.coords x) = b.coords x := by
+theorem toMatrix_vecMul_coords (x : P) : b₂.coords x ᵥ* b.toMatrix b₂ = b.coords x := by
   ext j
   change _ = b.coord j x
   conv_rhs => rw [← b₂.affineCombination_coord_eq_self x]
@@ -119,7 +119,7 @@ variable [DecidableEq ι]
 
 theorem toMatrix_mul_toMatrix : b.toMatrix b₂ * b₂.toMatrix b = 1 := by
   ext l m
-  change (b₂.toMatrix b).vecMul (b.coords (b₂ l)) m = _
+  change (b.coords (b₂ l) ᵥ* b₂.toMatrix b) m = _
   rw [toMatrix_vecMul_coords, coords_apply, ← toMatrix_apply, toMatrix_self]
 #align affine_basis.to_matrix_mul_to_matrix AffineBasis.toMatrix_mul_toMatrix
 
@@ -155,7 +155,7 @@ variable (b b₂ : AffineBasis ι k P)
 See also `AffineBasis.toMatrix_vecMul_coords`. -/
 @[simp]
 theorem toMatrix_inv_vecMul_toMatrix (x : P) :
-    (b.toMatrix b₂)⁻¹.vecMul (b.coords x) = b₂.coords x := by
+    b.coords x ᵥ* (b.toMatrix b₂)⁻¹ = b₂.coords x := by
   have hu := b.isUnit_toMatrix b₂
   rw [Matrix.isUnit_iff_isUnit_det] at hu
   rw [← b.toMatrix_vecMul_coords b₂, Matrix.vecMul_vecMul, Matrix.mul_nonsing_inv _ hu,

@@ -57,7 +57,7 @@ variable [W.IsCompatibleWithShift A]
 /-- When `L : C ⥤ D` is a localization functor with respect to a morphism property `W`
 that is compatible with the shift by a monoid `A` on `C`, this is the induced
 shift on the category `D`. -/
-noncomputable def HasShift.localized  : HasShift D A :=
+noncomputable def HasShift.localized : HasShift D A :=
   HasShift.induced L A
     (fun a => Localization.lift (shiftFunctor C a ⋙ L)
       (MorphismProperty.IsCompatibleWithShift.shiftFunctor_comp_inverts L W a) L)

@@ -100,7 +100,7 @@ theorem id_sequence (x : t α) : sequence (f := Id) (pure <$> x) = pure x := by
 
 theorem comp_sequence (x : t (F (G α))) :
     sequence (Comp.mk <$> x) = Comp.mk (sequence <$> sequence x) := by
-  simp [sequence, traverse_map]; rw [← comp_traverse]; simp [map_id]
+  simp only [sequence, traverse_map, id_comp]; rw [← comp_traverse]; simp [map_id]
 #align traversable.comp_sequence Traversable.comp_sequence
 
 theorem naturality' (η : ApplicativeTransformation F G) (x : t (F α)) :
@@ -122,7 +122,7 @@ theorem traverse_comp (g : α → F β) (h : β → G γ) :
 #align traversable.traverse_comp Traversable.traverse_comp
 
 theorem traverse_eq_map_id' (f : β → γ) :
-  traverse (m := Id) (pure ∘ f) = pure ∘ (map f : t β → t γ) := by
+    traverse (m := Id) (pure ∘ f) = pure ∘ (map f : t β → t γ) := by
   ext
   exact traverse_eq_map_id _ _
 #align traversable.traverse_eq_map_id' Traversable.traverse_eq_map_id'

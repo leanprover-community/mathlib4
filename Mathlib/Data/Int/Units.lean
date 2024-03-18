@@ -31,13 +31,6 @@ theorem units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
   simpa only [Units.ext_iff, units_natAbs] using natAbs_eq u
 #align int.units_eq_one_or Int.units_eq_one_or
 
-@[simp]
-theorem units_ne_neg_self (u : ℤˣ) : u ≠ -u := by
-  rcases units_eq_one_or u with rfl | rfl <;> decide
-
-@[simp]
-theorem neg_units_ne_self (u : ℤˣ) : -u ≠ u := (units_ne_neg_self u).symm
-
 theorem units_ne_iff_eq_neg {u u' : ℤˣ} : u ≠ u' ↔ u = -u' := by
   rcases units_eq_one_or u with rfl | rfl <;>
   rcases units_eq_one_or u' with rfl | rfl <;>
@@ -122,7 +115,7 @@ theorem isUnit_add_isUnit_eq_isUnit_add_isUnit {a b c d : ℤ} (ha : IsUnit a) (
   rw [isUnit_iff] at ha hb hc hd
   cases ha <;> cases hb <;> cases hc <;> cases hd <;>
       subst a <;> subst b <;> subst c <;> subst d <;>
-    simp
+    simp (config := {decide := true})
 #align int.is_unit_add_is_unit_eq_is_unit_add_is_unit Int.isUnit_add_isUnit_eq_isUnit_add_isUnit
 
 theorem eq_one_or_neg_one_of_mul_eq_neg_one {z w : ℤ} (h : z * w = -1) : z = 1 ∨ z = -1 :=

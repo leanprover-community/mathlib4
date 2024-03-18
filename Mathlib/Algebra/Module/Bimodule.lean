@@ -3,7 +3,7 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import algebra.module.bimodule from "leanprover-community/mathlib"@"58cef51f7a819e7227224461e392dee423302f2d"
 
@@ -18,8 +18,8 @@ and `S` acting contravariantly ("on the right"). The compatibility condition is 
 
 This situation can be set up in Mathlib as:
 ```lean
-variables (R S M : Type*) [Ring R] [Ring S]
-variables [AddCommGroup M] [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]
+variable (R S M : Type*) [Ring R] [Ring S]
+variable [AddCommGroup M] [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]
 ```
 The key fact is:
 ```lean

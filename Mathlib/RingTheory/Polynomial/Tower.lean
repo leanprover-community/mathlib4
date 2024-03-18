@@ -41,6 +41,11 @@ theorem aeval_map_algebraMap (x : B) (p : R[X]) : aeval x (map (algebraMap R A) 
   rw [aeval_def, aeval_def, eval₂_map, IsScalarTower.algebraMap_eq R A B]
 #align polynomial.aeval_map_algebra_map Polynomial.aeval_map_algebraMap
 
+@[simp]
+lemma eval_map_algebraMap (P : R[X]) (a : A) :
+    (map (algebraMap R A) P).eval a = aeval a P := by
+  rw [← aeval_map_algebraMap (A := A), coe_aeval_eq_eval]
+
 end Semiring
 
 section CommSemiring

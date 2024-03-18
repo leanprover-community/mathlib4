@@ -180,14 +180,17 @@ instance : LinearOrder F :=
 theorem z01 : (0 : F) < 1 := by decide
 #align counterexample.F.z01 Counterexample.F.z01
 
+instance : Add F where
+  add := max
+
 /-- `F` would be a `CommSemiring`, using `min` as multiplication.  Again, we do not need this. -/
 instance : AddCommMonoid F where
-  add := max
   add_assoc := by boom
   zero := 0
   zero_add := by boom
   add_zero := by boom
   add_comm := by boom
+  nsmul := nsmulRec
 
 /-- The `CovariantClass`es asserting monotonicity of addition hold for `F`. -/
 instance covariantClass_add_le : CovariantClass F F (· + ·) (· ≤ ·) :=
@@ -239,9 +242,8 @@ example : ¬CovariantClass (Lex (F →₀ F)) (Lex (F →₀ F)) (· + ·) (· �
   refine (not_lt (α := Lex (F →₀ F))).mpr (@h (Finsupp.single (0 : F) (1 : F))
     (Finsupp.single 1 1) (Finsupp.single 0 1) ?_) ⟨1, ?_⟩
   · exact Or.inr ⟨0, by simp [(by boom : ∀ j : F, j < 0 ↔ False)]⟩
-  · simp only [(by boom : ∀ j : F, j < 1 ↔ j = 0), Function.comp, ofLex_add, toDFinsupp_add,
-      toLex_add, ofLex_toLex, DFinsupp.coe_add, toDFinsupp_coe, Pi.toLex_apply, Pi.add_apply,
-      forall_eq, f010, f1, f110, add_zero, f011, f111, zero_add, and_self]
+  · simp only [(by boom : ∀ j : F, j < 1 ↔ j = 0), ofLex_add, coe_add, Pi.add_apply, forall_eq,
+      f010, f1, f110, add_zero, f011, f111, zero_add, and_self]
 
 example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=
   zero_divisors_of_periodic (1 : F) le_rfl (by simp [two_smul]) z01.ne'

@@ -65,7 +65,7 @@ structure Pretopology where
   coverings : ∀ X : C, Set (Presieve X)
   has_isos : ∀ ⦃X Y⦄ (f : Y ⟶ X) [IsIso f], Presieve.singleton f ∈ coverings X
   pullbacks : ∀ ⦃X Y⦄ (f : Y ⟶ X) (S), S ∈ coverings X → pullbackArrows f S ∈ coverings Y
-  Transitive :
+  transitive :
     ∀ ⦃X : C⦄ (S : Presieve X) (Ti : ∀ ⦃Y⦄ (f : Y ⟶ X), S f → Presieve Y),
       S ∈ coverings X → (∀ ⦃Y⦄ (f) (H : S f), Ti f H ∈ coverings Y) → S.bind Ti ∈ coverings X
 #align category_theory.pretopology CategoryTheory.Pretopology
@@ -97,7 +97,7 @@ instance : OrderTop (Pretopology C) where
     { coverings := fun _ => Set.univ
       has_isos := fun _ _ _ _ => Set.mem_univ _
       pullbacks := fun _ _ _ _ _ => Set.mem_univ _
-      Transitive := fun _ _ _ _ _ => Set.mem_univ _ }
+      transitive := fun _ _ _ _ _ => Set.mem_univ _ }
   le_top _ _ _ _ := Set.mem_univ _
 
 instance : Inhabited (Pretopology C) :=
@@ -120,7 +120,7 @@ def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
   transitive' := by
     rintro X S ⟨R', hR', RS⟩ R t
     choose t₁ t₂ t₃ using t
-    refine' ⟨_, K.Transitive _ _ hR' fun _ f hf => t₂ (RS _ hf), _⟩
+    refine' ⟨_, K.transitive _ _ hR' fun _ f hf => t₂ (RS _ hf), _⟩
     rintro Y _ ⟨Z, g, f, hg, hf, rfl⟩
     apply t₃ (RS _ hg) _ hf
 #align category_theory.pretopology.to_grothendieck CategoryTheory.Pretopology.toGrothendieck
@@ -140,7 +140,7 @@ def ofGrothendieck (J : GrothendieckTopology C) : Pretopology C where
   pullbacks X Y f R hR := by
     simp only [Set.mem_def, Sieve.pullbackArrows_comm]
     apply J.pullback_stable f hR
-  Transitive X S Ti hS hTi := by
+  transitive X S Ti hS hTi := by
     apply J.transitive hS
     intro Y f
     rintro ⟨Z, g, f, hf, rfl⟩
@@ -183,7 +183,7 @@ def trivial : Pretopology C where
         simp
       · simp
     · apply pullback_singleton
-  Transitive := by
+  transitive := by
     rintro X S Ti ⟨Z, g, i, rfl⟩ hS
     rcases hS g (singleton_self g) with ⟨Y, f, i, hTi⟩
     refine' ⟨_, f ≫ g, _, _⟩

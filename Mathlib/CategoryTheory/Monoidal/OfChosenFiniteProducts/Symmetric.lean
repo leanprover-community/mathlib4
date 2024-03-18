@@ -3,7 +3,7 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Simon Hudon
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
 
 #align_import category_theory.monoidal.of_chosen_finite_products.symmetric from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
@@ -93,7 +93,8 @@ open MonoidalOfChosenFiniteProducts
 def symmetricOfChosenFiniteProducts : SymmetricCategory (MonoidalOfChosenFiniteProductsSynonym 𝒯 ℬ)
     where
   braiding _ _ := Limits.BinaryFan.braiding (ℬ _ _).isLimit (ℬ _ _).isLimit
-  braiding_naturality f g := braiding_naturality ℬ f g
+  braiding_naturality_left f X := braiding_naturality ℬ f (𝟙 X)
+  braiding_naturality_right X _ _ f := braiding_naturality ℬ (𝟙 X) f
   hexagon_forward X Y Z := hexagon_forward ℬ X Y Z
   hexagon_reverse X Y Z := hexagon_reverse ℬ X Y Z
   symmetry X Y := symmetry ℬ X Y

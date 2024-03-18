@@ -38,7 +38,7 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
   ideal `(r)`.
 - `IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer` : There exists `π ∈ R`
   with `v`-adic valuation `Multiplicative.ofAdd (-1)`.
-- `is_dedekind_domain.height_one_spectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
+- IsDedekindDomain.HeightOneSpectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
   is the valuation of `r` divided by the valuation of `s`.
 - `IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap` : The `v`-adic valuation on `K`
   extends the `v`-adic valuation on `R`.
@@ -78,8 +78,8 @@ multiplicative valuation. -/
 def intValuationDef (r : R) : ℤₘ₀ :=
   if r = 0 then 0
   else
-    Multiplicative.ofAdd
-      (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ)
+    ↑(Multiplicative.ofAdd
+      (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ))
 #align is_dedekind_domain.height_one_spectrum.int_valuation_def IsDedekindDomain.HeightOneSpectrum.intValuationDef
 
 theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
@@ -397,7 +397,6 @@ instance AdicCompletion.algebra' : Algebra R (v.adicCompletion K) :=
     (adicValued.has_uniform_continuous_const_smul' R K v)
 #align is_dedekind_domain.height_one_spectrum.adic_completion.algebra' IsDedekindDomain.HeightOneSpectrum.AdicCompletion.algebra'
 
-@[simp]
 theorem coe_smul_adicCompletion (r : R) (x : K) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=
   @UniformSpace.Completion.coe_smul R K v.adicValued.toUniformSpace _ _ r x
@@ -427,29 +426,31 @@ instance : Algebra R (v.adicCompletionIntegers K) where
         (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
       refine' ValuationSubring.mul_mem _ _ _ _ x.2
-      --Porting note: added instance
+      --porting note (#10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
-      rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   toFun r :=
     ⟨(algebraMap R K r : adicCompletion K v), by
-      -- Porting note: added instance
+      -- porting note (#10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
-      --Porting note: rest of proof was `simpa only
+      -- Porting note: rest of proof was `simpa only
       --   [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
       --   v.valuation_le_one _
-      rw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   map_one' := by simp only [map_one]; rfl
   map_mul' x y := by
     ext
-    --Porting note: added instance
+    --porting note (#10754): added instance
     letI : Valued K ℤₘ₀ := adicValued v
     simp_rw [RingHom.map_mul, Subring.coe_mul, UniformSpace.Completion.coe_mul]
   map_zero' := by simp only [map_zero]; rfl
   map_add' x y := by
     ext
-    --Porting note: added instance
+    --porting note (#10754): added instance
     letI : Valued K ℤₘ₀ := adicValued v
     simp_rw [RingHom.map_add, Subring.coe_add, UniformSpace.Completion.coe_add]
   commutes' r x := by
@@ -458,9 +459,9 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     rw [mul_comm]
   smul_def' r x := by
     ext
-    --Porting note: added `dsimp`
+    -- Porting note: added `dsimp`
     dsimp
-    --Porting note: added instance
+    --porting note (#10754): added instance
     letI : Valued K ℤₘ₀ := adicValued v
     simp only [Subring.coe_mul, Algebra.smul_def]
     rfl

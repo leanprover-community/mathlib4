@@ -87,8 +87,8 @@ theorem isPrimePow_nat_iff_bounded (n : ℕ) :
   refine' Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, _⟩
   rintro ⟨p, k, hp, hk, rfl⟩
   refine' ⟨p, _, k, (Nat.lt_pow_self hp.one_lt _).le, hp, hk, rfl⟩
-  conv => { lhs; rw [←(pow_one p)] }
-  exact (Nat.pow_le_iff_le_right hp.two_le).mpr hk
+  conv => { lhs; rw [← (pow_one p)] }
+  exact pow_le_pow_right hp.one_lt.le hk
 #align is_prime_pow_nat_iff_bounded isPrimePow_nat_iff_bounded
 
 instance {n : ℕ} : Decidable (IsPrimePow n) :=
@@ -101,7 +101,7 @@ theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m
   refine' ⟨p, i, hp, _, rfl⟩
   apply Nat.pos_of_ne_zero
   rintro rfl
-  simp only [pow_zero, ne_eq] at hm₁
+  simp only [pow_zero, ne_eq, not_true_eq_false] at hm₁
 #align is_prime_pow.dvd IsPrimePow.dvd
 
 theorem Nat.disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :

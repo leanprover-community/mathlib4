@@ -23,7 +23,7 @@ See the docstring of `TopCat.Presheaf.IsSheaf` for an explanation on the design 
 of equivalent conditions.
 
 We provide the instance `CategoryTheory.Category (TopCat.Sheaf C X)` as the full subcategory of
-presheaves, and the fully faithful functor `sheaf.forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X`.
+presheaves, and the fully faithful functor `Sheaf.forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X`.
 
 -/
 
@@ -117,7 +117,7 @@ nonrec def Sheaf : Type max u v w :=
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf TopCat.Sheaf
 
--- Porting Note : `deriving Cat` failed
+-- Porting note: `deriving Cat` failed
 instance SheafCat : Category (Sheaf C X) :=
   show Category (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C) from inferInstance
 
@@ -146,11 +146,11 @@ def forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X :=
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.forget TopCat.Sheaf.forget
 
--- Porting note : `deriving Full` failed
+-- Porting note: `deriving Full` failed
 instance forgetFull : Full (forget C X) where
   preimage := Sheaf.Hom.mk
 
--- Porting note : `deriving Faithful` failed
+-- Porting note: `deriving Faithful` failed
 instance forgetFaithful : Faithful (forget C X) where
   map_injective := Sheaf.Hom.ext _ _
 

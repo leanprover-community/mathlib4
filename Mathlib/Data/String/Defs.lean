@@ -31,13 +31,13 @@ def leftpad (n : Nat) (c : Char) (s : String) : String :=
 def replicate (n : Nat) (c : Char) : String :=
   ⟨List.replicate n c⟩
 
-/-- `s.isPrefix t` checks if the string `s` is a prefix of the string `t`. -/
-def isPrefix : String → String → Prop
-  | ⟨d1⟩, ⟨d2⟩ => List.isPrefix d1 d2
+/-- `s.IsPrefix t` checks if the string `s` is a prefix of the string `t`. -/
+def IsPrefix : String → String → Prop
+  | ⟨d1⟩, ⟨d2⟩ => List.IsPrefix d1 d2
 
-/-- `s.isSuffix t` checks if the string `s` is a suffix of the string `t`. -/
-def isSuffix : String → String → Prop
-  | ⟨d1⟩, ⟨d2⟩ => List.isSuffix d1 d2
+/-- `s.IsSuffix t` checks if the string `s` is a suffix of the string `t`. -/
+def IsSuffix : String → String → Prop
+  | ⟨d1⟩, ⟨d2⟩ => List.IsSuffix d1 d2
 
 /-- `String.mapTokens c f s` tokenizes `s : string` on `c : char`, maps `f` over each token, and
 then reassembles the string by intercalating the separator token `c` over the mapped tokens. -/

@@ -43,9 +43,9 @@ theorem support_deriv_subset : support (deriv f) ⊆ tsupport f := by
   exact nmem_support.mpr (h2x.deriv_eq.trans (deriv_const x 0))
 #align support_deriv_subset support_deriv_subset
 
-theorem HasCompactSupport.deriv (hf : HasCompactSupport f) : HasCompactSupport (deriv f) :=
+protected theorem HasCompactSupport.deriv (hf : HasCompactSupport f) :
+    HasCompactSupport (deriv f) :=
   hf.mono' support_deriv_subset
 #align has_compact_support.deriv HasCompactSupport.deriv
 
 end Support
-

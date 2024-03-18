@@ -110,7 +110,7 @@ theorem ι_colimitLimitToLimitColimit_π_apply (F : J × K ⥤ Type v) (j : J) (
 noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G] :
     colim.mapCone (limit.cone G) ⟶ limit.cone (G ⋙ colim)
     where
-  Hom :=
+  hom :=
     colim.map (limitIsoSwapCompLim G).hom ≫
       colimitLimitToLimitColimit (uncurry.obj G : _) ≫
         lim.map (whiskerRight (currying.unitIso.app G).inv colim)

@@ -129,7 +129,7 @@ theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
   intro c
   have c' : A.val * B.val = B.val * A.val := by
     rw [← sub_eq_zero, ← sl_bracket, c.trivial, ZeroMemClass.coe_zero]
-  simpa [stdBasisMatrix, Matrix.mul_apply, hij] using congr_fun (congr_fun c' i) i
+  simpa [A, B, stdBasisMatrix, Matrix.mul_apply, hij] using congr_fun (congr_fun c' i) i
 #align lie_algebra.special_linear.sl_non_abelian LieAlgebra.SpecialLinear.sl_non_abelian
 
 end SpecialLinear
@@ -224,8 +224,9 @@ def soIndefiniteEquiv {i : R} (hi : i * i = -1) : so' p q R ≃ₗ⁅R⁆ so (Su
 theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
     (soIndefiniteEquiv p q R hi A : Matrix (Sum p q) (Sum p q) R) =
       (Pso p q R i)⁻¹ * (A : Matrix (Sum p q) (Sum p q) R) * Pso p q R i := by
-  rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply,
-    skewAdjointMatricesLieSubalgebraEquiv_apply]
+  rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [skewAdjointMatricesLieSubalgebraEquiv_apply]
 #align lie_algebra.orthogonal.so_indefinite_equiv_apply LieAlgebra.Orthogonal.soIndefiniteEquiv_apply
 
 /-- A matrix defining a canonical even-rank symmetric bilinear form.
@@ -271,7 +272,6 @@ theorem jd_transform [Fintype l] : (PD l R)ᵀ * JD l R * PD l R = (2 : R) • S
   have h : (PD l R)ᵀ * JD l R = Matrix.fromBlocks 1 1 1 (-1) := by
     simp [PD, JD, Matrix.fromBlocks_transpose, Matrix.fromBlocks_multiply]
   rw [h, PD, s_as_blocks, Matrix.fromBlocks_multiply, Matrix.fromBlocks_smul]
-  congr
   simp [two_smul]
 #align lie_algebra.orthogonal.JD_transform LieAlgebra.Orthogonal.jd_transform
 

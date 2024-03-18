@@ -27,10 +27,8 @@ primitive and `foldMap_hom` as a defining property.
 ```
 def foldMap {α ω} [One ω] [Mul ω] (f : α → ω) : t α → ω := ...
 
-lemma foldMap_hom (α β)
-  [Monoid α] [Monoid β] (f : α →* β)
-  (g : γ → α) (x : t γ) :
-  f (foldMap g x) = foldMap (f ∘ g) x :=
+lemma foldMap_hom (α β) [Monoid α] [Monoid β] (f : α →* β) (g : γ → α) (x : t γ) :
+    f (foldMap g x) = foldMap (f ∘ g) x :=
 ...
 ```
 
@@ -90,10 +88,11 @@ We can view the above as a composition of functions:
 
 We can use traverse and const to construct this composition:
 ```
-calc   const.run (traverse (λ y, const.mk' (flip f y)) [y₀,y₁]) x
-     = const.run ((::) <$> const.mk' (flip f y₀) <*> traverse (λ y, const.mk' (flip f y)) [y₁]) x
+calc   const.run (traverse (fun y ↦ const.mk' (flip f y)) [y₀,y₁]) x
+     = const.run ((::) <$> const.mk' (flip f y₀) <*>
+         traverse (fun y ↦ const.mk' (flip f y)) [y₁]) x
 ...  = const.run ((::) <$> const.mk' (flip f y₀) <*>
-         ( (::) <$> const.mk' (flip f y₁) <*> traverse (λ y, const.mk' (flip f y)) [] )) x
+         ( (::) <$> const.mk' (flip f y₁) <*> traverse (fun y ↦ const.mk' (flip f y)) [] )) x
 ...  = const.run ((::) <$> const.mk' (flip f y₀) <*>
          ( (::) <$> const.mk' (flip f y₁) <*> pure [] )) x
 ...  = const.run ( ((::) <$> const.mk' (flip f y₁) <*> pure []) ∘
@@ -320,7 +319,9 @@ theorem foldr.ofFreeMonoid_comp_of (f : β → α → α) :
 theorem foldlm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β → m α) :
     foldlM.ofFreeMonoid f ∘ FreeMonoid.of = foldlM.mk ∘ flip f := by
   ext1 x
-  simp [(· ∘ ·), foldlM.ofFreeMonoid, foldlM.mk, flip]
+  simp only [foldlM.ofFreeMonoid, flip, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply,
+    FreeMonoid.toList_of, List.foldlM_cons, List.foldlM_nil, bind_pure, foldlM.mk, op_inj]
+  rfl
 #align traversable.mfoldl.of_free_monoid_comp_of Traversable.foldlm.ofFreeMonoid_comp_of
 
 @[simp]
@@ -383,9 +384,9 @@ theorem foldr_map (g : β → γ) (f : γ → α → α) (a : α) (l : t β) :
 @[simp]
 theorem toList_eq_self {xs : List α} : toList xs = xs := by
   simp only [toList_spec, foldMap, traverse]
-  induction xs
-  case nil => rfl
-  case cons _ _ ih => conv_rhs => rw [← ih]; rfl
+  induction xs with
+  | nil => rfl
+  | cons _ _ ih => conv_rhs => rw [← ih]; rfl
 #align traversable.to_list_eq_self Traversable.toList_eq_self
 
 theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by

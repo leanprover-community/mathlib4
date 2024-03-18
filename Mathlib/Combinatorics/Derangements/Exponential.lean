@@ -17,7 +17,7 @@ The specific lemma is `numDerangements_tendsto_inv_e`.
 -/
 
 
-open Filter
+open Filter NormedSpace
 
 open scoped BigOperators
 

@@ -3,8 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
-import Mathlib.Util.AssertExists
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Data.Int.Order.Basic
 
 #align_import algebra.group_with_zero.power from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
@@ -30,7 +30,7 @@ theorem pow_sub₀ (a : G₀) {m n : ℕ} (ha : a ≠ 0) (h : n ≤ m) : a ^ (m 
 
 theorem pow_sub_of_lt (a : G₀) {m n : ℕ} (h : n < m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
-  · rw [zero_pow (tsub_pos_of_lt h), zero_pow (n.zero_le.trans_lt h), zero_mul]
+  · rw [zero_pow (tsub_pos_of_lt h).ne', zero_pow h.ne_bot, zero_mul]
   · exact pow_sub₀ _ ha h.le
 #align pow_sub_of_lt pow_sub_of_lt
 
@@ -56,11 +56,9 @@ open Int
 
 variable {G₀ : Type*} [GroupWithZero G₀]
 
--- Porting note: removed `attribute [local ematch] le_of_lt`
-
 theorem zero_zpow : ∀ z : ℤ, z ≠ 0 → (0 : G₀) ^ z = 0
   | (n : ℕ), h => by
-    rw [zpow_ofNat, zero_pow']
+    rw [zpow_coe_nat, zero_pow]
     simpa using h
   | -[n+1], _ => by simp
 #align zero_zpow zero_zpow
@@ -72,11 +70,11 @@ theorem zero_zpow_eq (n : ℤ) : (0 : G₀) ^ n = if n = 0 then 1 else 0 := by
 #align zero_zpow_eq zero_zpow_eq
 
 theorem zpow_add_one₀ {a : G₀} (ha : a ≠ 0) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
-  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_ofNat, pow_succ']
+  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_coe_nat, pow_succ']
   | -[0+1] => by erw [zpow_zero, zpow_negSucc, pow_one, inv_mul_cancel ha]
   | -[n + 1+1] => by
     rw [Int.negSucc_eq, zpow_neg, neg_add, neg_add_cancel_right, zpow_neg, ← Int.ofNat_succ,
-      zpow_ofNat, zpow_ofNat, pow_succ _ (n + 1), mul_inv_rev, mul_assoc, inv_mul_cancel ha,
+      zpow_coe_nat, zpow_coe_nat, pow_succ _ (n + 1), mul_inv_rev, mul_assoc, inv_mul_cancel ha,
       mul_one]
 #align zpow_add_one₀ zpow_add_one₀
 
@@ -143,7 +141,7 @@ theorem Commute.zpow_zpow_self₀ (a : G₀) (m n : ℤ) : Commute (a ^ m) (a ^ 
 
 theorem zpow_ne_zero_of_ne_zero {a : G₀} (ha : a ≠ 0) : ∀ z : ℤ, a ^ z ≠ 0
   | (_ : ℕ) => by
-    rw [zpow_ofNat]
+    rw [zpow_coe_nat]
     exact pow_ne_zero _ ha
   | -[_+1] => by
     rw [zpow_negSucc]
@@ -187,3 +185,5 @@ end
 
 -- Guard against import creep regression.
 assert_not_exists Int.bitwise_or
+assert_not_exists Set.range
+assert_not_exists Nat.gcdA

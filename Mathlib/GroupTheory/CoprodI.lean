@@ -5,9 +5,9 @@ Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.GroupTheory.Congruence
-import Mathlib.GroupTheory.IsFreeGroup
+import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.Data.List.Chain
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 
 #align_import group_theory.free_product from "leanprover-community/mathlib"@"9114ddffa023340c9ec86965e00cdd6fe26fcdf6"
@@ -97,7 +97,7 @@ inductive Monoid.CoprodI.Rel : FreeMonoid (Σi, M i) → FreeMonoid (Σi, M i) �
 def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
 #align free_product Monoid.CoprodI
 
---Porting note: could not de derived
+-- Porting note: could not de derived
 instance : Monoid (Monoid.CoprodI M) :=
   by delta Monoid.CoprodI; infer_instance
 
@@ -135,13 +135,14 @@ theorem of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m
 variable {N : Type*} [Monoid N]
 
 /-- See note [partially-applied ext lemmas]. -/
---Porting note: higher `ext` priority
+-- Porting note: higher `ext` priority
 @[ext 1100]
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     FreeMonoid.hom_eq fun ⟨i, x⟩ => by
-      rw [MonoidHom.comp_apply, MonoidHom.comp_apply, ← of_apply, ← MonoidHom.comp_apply, ←
-        MonoidHom.comp_apply, h]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [MonoidHom.comp_apply, MonoidHom.comp_apply, ← of_apply, ← MonoidHom.comp_apply, ←
+        MonoidHom.comp_apply, h]; rfl
 #align free_product.ext_hom Monoid.CoprodI.ext_hom
 
 /-- A map out of the free product corresponds to a family of maps out of the summands. This is the
@@ -151,7 +152,7 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   toFun fi :=
     Con.lift _ (FreeMonoid.lift fun p : Σi, M i => fi p.fst p.snd) <|
       Con.conGen_le <| by
-        simp_rw [Con.rel_eq_coe, Con.ker_rel]
+        simp_rw [Con.ker_rel]
         rintro _ _ (i | ⟨x, y⟩)
         · change FreeMonoid.lift _ (FreeMonoid.of _) = FreeMonoid.lift _ 1
           simp only [MonoidHom.map_one, FreeMonoid.lift_eval_of]
@@ -163,7 +164,8 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   left_inv := by
     intro fi
     ext i x
-    rw [MonoidHom.comp_apply, of_apply, Con.lift_mk', FreeMonoid.lift_eval_of]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [MonoidHom.comp_apply, of_apply, Con.lift_mk', FreeMonoid.lift_eval_of]
   right_inv := by
     intro f
     ext i x
@@ -375,7 +377,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
 theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
       m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
-  simp [rcons, cons]
+  simp only [rcons._eq_1, cons._eq_1, ne_eq]
   by_cases hij : i = j
   · subst i
     by_cases hm : m = p.head
@@ -722,8 +724,8 @@ def toWord {i j} (w : NeWord M i j) : Word M
 
 /-- Every nonempty `Word M` can be constructed as a `NeWord M i j` -/
 theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i j), w'.toWord = w := by
-  suffices : ∃ (i j : _) (w' : NeWord M i j), w'.toWord.toList = w.toList
-  · rcases this with ⟨i, j, w, h⟩
+  suffices ∃ (i j : _) (w' : NeWord M i j), w'.toWord.toList = w.toList by
+    rcases this with ⟨i, j, w, h⟩
     refine' ⟨i, j, w, _⟩
     ext
     rw [h]
@@ -816,7 +818,8 @@ theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
   · simp [mulHead, replaceHead]
   · specialize w_ih_w₁ _ hnotone
     clear w_ih_w₂
-    simp [replaceHead, ← mul_assoc] at *
+    simp? [replaceHead, ← mul_assoc] at * says
+      simp only [replaceHead, head, append_prod, ← mul_assoc] at *
     congr 1
 #align free_product.neword.mul_head_prod Monoid.CoprodI.NeWord.mulHead_prod
 
@@ -877,8 +880,6 @@ variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
 
 variable (hpp : Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
 
---include hpp Porting note: commented out
-
 theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
     lift f w.prod • X k ⊆ X i := by
   induction' w with i x hne_one i j k l w₁ hne w₂ hIw₁ hIw₂ generalizing k
@@ -890,8 +891,6 @@ theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
       _ ⊆ X i := hIw₁ hne
 #align free_product.lift_word_ping_pong Monoid.CoprodI.lift_word_ping_pong
 
---include X hXnonempty hXdisj Porting note: commented out
-
 theorem lift_word_prod_nontrivial_of_other_i {i j k} (w : NeWord H i j) (hhead : k ≠ i)
     (hlast : k ≠ j) : lift f w.prod ≠ 1 := by
   intro heq1
@@ -899,8 +898,6 @@ theorem lift_word_prod_nontrivial_of_other_i {i j k} (w : NeWord H i j) (hhead :
   obtain ⟨x, hx⟩ := hXnonempty k
   exact (hXdisj hhead).le_bot ⟨hx, this hx⟩
 #align free_product.lift_word_prod_nontrivial_of_other_i Monoid.CoprodI.lift_word_prod_nontrivial_of_other_i
-
---include hnontriv Porting note: commented out
 
 theorem lift_word_prod_nontrivial_of_head_eq_last {i} (w : NeWord H i i) : lift f w.prod ≠ 1 := by
   obtain ⟨k, hk⟩ := exists_ne i
@@ -920,10 +917,8 @@ theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard :
     lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w'
   intro heq1
   apply hw'
-  simp [heq1]
+  simp [w', heq1]
 #align free_product.lift_word_prod_nontrivial_of_head_card Monoid.CoprodI.lift_word_prod_nontrivial_of_head_card
-
---include hcard Porting note: commented out
 
 theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) : lift f w.prod ≠ 1 := by
   classical
@@ -955,7 +950,7 @@ theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) : lift f
           lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w'
         intro heq1
         apply hw'
-        simp [heq1]
+        simp [w', heq1]
 #align free_product.lift_word_prod_nontrivial_of_not_empty Monoid.CoprodI.lift_word_prod_nontrivial_of_not_empty
 
 theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) : w = Word.empty := by
@@ -964,7 +959,7 @@ theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) : w = Wor
   exact lift_word_prod_nontrivial_of_not_empty f hcard X hXnonempty hXdisj hpp w h
 #align free_product.empty_of_word_prod_eq_one Monoid.CoprodI.empty_of_word_prod_eq_one
 
-/-- The Ping-Pong-Lemma.
+/-- The **Ping-Pong-Lemma**.
 
 Given a group action of `G` on `X` so that the `H i` acts in a specific way on disjoint subsets
 `X i` we can prove that `lift f` is injective, and thus the image of `lift f` is isomorphic to the
@@ -989,21 +984,22 @@ theorem lift_injective_of_ping_pong : Function.Injective (lift f) := by
 
 end PingPongLemma
 
-/-- The free product of free groups is itself a free group -/
-@[simps!]  --Porting note: added `!`
-instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [hG : ∀ i, IsFreeGroup (G i)] :
-    IsFreeGroup (CoprodI G) where
-  Generators := Σi, IsFreeGroup.Generators (G i)
-  MulEquiv' :=
-    MonoidHom.toMulEquiv
-      (FreeGroup.lift fun x : Σi, IsFreeGroup.Generators (G i) =>
-        CoprodI.of (IsFreeGroup.of x.2 : G x.1))
-      (CoprodI.lift fun i : ι =>
-        (IsFreeGroup.lift fun x : IsFreeGroup.Generators (G i) =>
-            FreeGroup.of (⟨i, x⟩ : Σi, IsFreeGroup.Generators (G i)) :
-          G i →* FreeGroup (Σi, IsFreeGroup.Generators (G i))))
-      (by ext; simp)
-      (by ext; simp)
+/-- Given a family of free groups with distinguished bases, then their free product is free, with
+a basis given by the union of the bases of the components. -/
+def FreeGroupBasis.coprodI {ι : Type*} {X : ι → Type*} {G : ι → Type*} [∀ i, Group (G i)]
+    (B : ∀ i, FreeGroupBasis (X i) (G i)) :
+    FreeGroupBasis (Σ i, X i) (CoprodI G) :=
+  ⟨MulEquiv.symm <| MonoidHom.toMulEquiv
+    (FreeGroup.lift fun x : Σ i, X i => CoprodI.of (B x.1 x.2))
+    (CoprodI.lift fun i : ι => (B i).lift fun x : X i =>
+              FreeGroup.of (⟨i, x⟩ : Σ i, X i))
+    (by ext; simp)
+    (by ext1 i; apply (B i).ext_hom; simp)⟩
+
+/-- The free product of free groups is itself a free group. -/
+instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGroup (G i)] :
+    IsFreeGroup (CoprodI G) :=
+  (FreeGroupBasis.coprodI (fun i ↦ IsFreeGroup.basis (G i))).isFreeGroup
 
 -- NB: One might expect this theorem to be phrased with ℤ, but ℤ is an additive group,
 -- and using `Multiplicative ℤ` runs into diamond issues.
@@ -1043,8 +1039,6 @@ variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
 
 variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
 
---include hXnonempty hXdisj hYdisj hXYdisj hX hY Porting note: commented out
-
 /-- The Ping-Pong-Lemma.
 
 Given a group action of `G` on `X` so that the generators of the free groups act in specific
@@ -1076,7 +1070,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   · exact fun i => Set.Nonempty.inl (hXnonempty i)
   show Pairwise fun i j => Disjoint (X' i) (X' j)
   · intro i j hij
-    simp only
+    simp only [X']
     apply Disjoint.union_left <;> apply Disjoint.union_right
     · exact hXdisj hij
     · exact hXYdisj i j
@@ -1093,9 +1087,9 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     have hnne0 : n ≠ 0 := by
       rintro rfl
       apply hne1
-      simp; rfl
+      simp [H]; rfl
     clear hne1
-    simp only
+    simp only [X']
     -- Positive and negative powers separately
     cases' (lt_or_gt_of_ne hnne0).symm with hlt hgt
     · have h1n : 1 ≤ n := hlt
@@ -1141,7 +1135,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   · inhabit ι
     right
     use Inhabited.default
-    simp only
+    simp only [H]
     rw [FreeGroup.freeGroupUnitEquivInt.cardinal_eq, Cardinal.mk_denumerable]
     apply le_of_lt
     exact nat_lt_aleph0 3

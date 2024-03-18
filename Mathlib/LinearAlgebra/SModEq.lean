@@ -82,6 +82,9 @@ nonrec theorem trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z
   hxy.trans hyz
 #align smodeq.trans SModEq.trans
 
+instance instTrans : Trans (SModEq U) (SModEq U) (SModEq U) where
+  trans := trans
+
 theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
   rw [SModEq.def] at hxy₁ hxy₂ ⊢
   simp_rw [Quotient.mk_add, hxy₁, hxy₂]

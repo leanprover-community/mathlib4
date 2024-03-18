@@ -33,9 +33,8 @@ theorem log_mul_self_monotoneOn : MonotoneOn (fun x : ℝ => log x * x) { x | 1 
   -- TODO: can be strengthened to exp (-1) ≤ x
   simp only [MonotoneOn, mem_setOf_eq]
   intro x hex y hey hxy
-  have x_pos : 0 < x := lt_of_lt_of_le zero_lt_one hex
   have y_pos : 0 < y := lt_of_lt_of_le zero_lt_one hey
-  refine' mul_le_mul ((log_le_log x_pos y_pos).mpr hxy) hxy (le_of_lt x_pos) _
+  gcongr
   rwa [le_log_iff_exp_le y_pos, Real.exp_zero]
 #align real.log_mul_self_monotone_on Real.log_mul_self_monotoneOn
 
@@ -80,7 +79,7 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
       simp only [Real.exp_eq_exp]
       field_simp [(ne_of_lt ha).symm]
       exact le_of_lt (exp_pos (1 / a))
-    exact rpow_le_rpow x_nonneg hxy (le_of_lt ha)
+    gcongr
 #align real.log_div_self_rpow_antitone_on Real.log_div_self_rpow_antitoneOn
 
 theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ => log x / sqrt x) { x | exp 2 ≤ x } := by

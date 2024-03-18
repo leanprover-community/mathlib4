@@ -80,7 +80,6 @@ instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
   use Y, i, e
   constructor
   · ext j
-    apply equalizer.hom_ext
     dsimp
     rw [assoc, equalizer.lift_ι, ← equalizer.condition, id_comp, comp_id]
   · ext j

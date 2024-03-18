@@ -7,8 +7,8 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.TensorProduct
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import data.matrix.kronecker from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
@@ -289,12 +289,12 @@ def kroneckerBilinear [CommSemiring R] [Semiring α] [Algebra R α] :
 hypotheses which can be filled by properties of `*`. -/
 
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem zero_kronecker [MulZeroClass α] (B : Matrix n p α) : (0 : Matrix l m α) ⊗ₖ B = 0 :=
   kroneckerMap_zero_left _ zero_mul B
 #align matrix.zero_kronecker Matrix.zero_kronecker
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem kronecker_zero [MulZeroClass α] (A : Matrix l m α) : A ⊗ₖ (0 : Matrix n p α) = 0 :=
   kroneckerMap_zero_right _ mul_zero A
 #align matrix.kronecker_zero Matrix.kronecker_zero
@@ -335,7 +335,7 @@ theorem diagonal_kronecker [MulZeroClass α] [DecidableEq l] (a : l → α) (B :
   kroneckerMap_diagonal_left _ zero_mul _ _
 #align matrix.diagonal_kronecker Matrix.diagonal_kronecker
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem one_kronecker_one [MulZeroOneClass α] [DecidableEq m] [DecidableEq n] :
     (1 : Matrix m m α) ⊗ₖ (1 : Matrix n n α) = 1 :=
   kroneckerMap_one_one _ zero_mul mul_zero (one_mul _)
@@ -427,6 +427,8 @@ open Matrix TensorProduct
 
 section Module
 
+suppress_compilation
+
 variable [CommSemiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
 
 variable [Module R α] [Module R β] [Module R γ]
@@ -461,12 +463,12 @@ def kroneckerTMulBilinear :
 hypotheses which can be filled by properties of `⊗ₜ`. -/
 
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem zero_kroneckerTMul (B : Matrix n p β) : (0 : Matrix l m α) ⊗ₖₜ[R] B = 0 :=
   kroneckerMap_zero_left _ (zero_tmul α) B
 #align matrix.zero_kronecker_tmul Matrix.zero_kroneckerTMul
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem kroneckerTMul_zero (A : Matrix l m α) : A ⊗ₖₜ[R] (0 : Matrix n p β) = 0 :=
   kroneckerMap_zero_right _ (tmul_zero β) A
 #align matrix.kronecker_tmul_zero Matrix.kroneckerTMul_zero

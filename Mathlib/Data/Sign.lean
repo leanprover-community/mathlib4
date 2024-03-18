@@ -5,7 +5,6 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Int.Lemmas
 
 #align_import data.sign from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 /-!
@@ -15,7 +14,7 @@ This file defines the sign function for types with zero and a decidable less-tha
 proves some basic theorems about it.
 -/
 
--- Porting note: Cannot automatically derive Fintype, added manually
+-- Porting note (#11081): cannot automatically derive Fintype, added manually
 /-- The type of signs. -/
 inductive SignType
   | zero
@@ -34,7 +33,7 @@ namespace SignType
 
 -- Porting note: Added Fintype SignType manually
 instance : Fintype SignType :=
-   Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> simp only)
+   Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> simp)
 
 instance : Zero SignType :=
   ⟨zero⟩
@@ -112,7 +111,7 @@ private lemma le_antisymm (a b : SignType) (_ : a ≤ b) (_: b ≤ a) : a = b :=
   cases a <;> cases b <;> trivial
 
 private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_: b ≤ c) : a ≤ c := by
-  cases a <;> cases b <;> cases c <;> first | tauto | constructor
+  cases a <;> cases b <;> cases c <;> tauto
 
 instance : LinearOrder SignType where
   le := (· ≤ ·)
@@ -155,7 +154,7 @@ def fin3Equiv : SignType ≃* Fin 3 where
     | ⟨2, _⟩ => by simp
     | ⟨n + 3, h⟩ => by simp at h
   map_mul' a b := by
-    cases a <;> cases b <;> simp
+    cases a <;> cases b <;> rfl
 #align sign_type.fin3_equiv SignType.fin3Equiv
 
 section CaseBashing
@@ -251,6 +250,18 @@ instance : CoeTC SignType α :=
 
 -- Porting note: `cast_eq_coe` removed, syntactic equality
 
+/-- Casting out of `SignType` respects composition with functions preserving `0, 1, -1`. -/
+lemma map_cast' {β : Type*} [One β] [Neg β] [Zero β]
+    (f : α → β) (h₁ : f 1 = 1) (h₂ : f 0 = 0) (h₃ : f (-1) = -1) (s : SignType) :
+    f s = s := by
+  cases s <;> simp only [SignType.cast, h₁, h₂, h₃]
+
+/-- Casting out of `SignType` respects composition with suitable bundled homomorphism types. -/
+lemma map_cast {α β F : Type*} [AddGroupWithOne α] [One β] [SubtractionMonoid β]
+    [FunLike F α β] [AddMonoidHomClass F α β] [OneHomClass F α β] (f : F) (s : SignType) :
+    f s = s := by
+  apply map_cast' <;> simp
+
 @[simp]
 theorem coe_zero : ↑(0 : SignType) = (0 : α) :=
   rfl
@@ -266,6 +277,11 @@ theorem coe_neg_one : ↑(-1 : SignType) = (-1 : α) :=
   rfl
 #align sign_type.coe_neg_one SignType.coe_neg_one
 
+@[simp, norm_cast]
+lemma coe_neg {α : Type*} [One α] [SubtractionMonoid α] (s : SignType) :
+    (↑(-s) : α) = -↑s := by
+  cases s <;> simp
+
 end cast
 
 /-- `SignType.cast` as a `MulWithZeroHom`. -/
@@ -277,7 +293,7 @@ def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α w
   map_mul' x y := by cases x <;> cases y <;> simp [zero_eq_zero, pos_eq_one, neg_eq_neg_one]
 #align sign_type.cast_hom SignType.castHom
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} := by
   decide
 
@@ -285,6 +301,18 @@ theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f po
   classical rw [← Fintype.coe_image_univ, univ_eq]
   classical simp [Finset.coe_insert]
 #align sign_type.range_eq SignType.range_eq
+
+@[simp, norm_cast] lemma coe_mul {α} [MulZeroOneClass α] [HasDistribNeg α] (a b : SignType) :
+    ↑(a * b) = (a : α) * b :=
+  map_mul SignType.castHom _ _
+
+@[simp, norm_cast] lemma coe_pow {α} [MonoidWithZero α] [HasDistribNeg α] (a : SignType) (k : ℕ) :
+    ↑(a ^ k) = (a : α) ^ k :=
+  map_pow SignType.castHom _ _
+
+@[simp, norm_cast] lemma coe_zpow {α} [GroupWithZero α] [HasDistribNeg α] (a : SignType) (k : ℤ) :
+    ↑(a ^ k) = (a : α) ^ k :=
+  map_zpow₀ SignType.castHom _ _
 
 end SignType
 
@@ -343,6 +371,12 @@ section LinearOrder
 
 variable [Zero α] [LinearOrder α] {a : α}
 
+/-- `SignType.sign` respects strictly monotone zero-preserving maps. -/
+lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableRel ((· < ·) : β → β → _)]
+    [FunLike F α β] [ZeroHomClass F α β] {f : F} (hf : StrictMono f) (a : α) :
+    sign (f a) = sign a := by
+  simp only [sign_apply, ← map_zero f, hf.lt_iff_lt]
+
 @[simp]
 theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
   refine' ⟨fun h => _, fun h => h.symm ▸ sign_zero⟩
@@ -360,7 +394,7 @@ theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=
 theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
   rcases lt_trichotomy 0 a with (h | h | h)
   · simp [h, h.le]
-  · simp [←h]
+  · simp [← h]
   · simp [h, h.not_le]
 #align sign_nonneg_iff sign_nonneg_iff
 
@@ -368,7 +402,7 @@ theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
 theorem sign_nonpos_iff : sign a ≤ 0 ↔ a ≤ 0 := by
   rcases lt_trichotomy 0 a with (h | h | h)
   · simp [h, h.not_le]
-  · simp [←h]
+  · simp [← h]
   · simp [h, h.le]
 #align sign_nonpos_iff sign_nonpos_iff
 
@@ -378,7 +412,7 @@ section OrderedSemiring
 
 variable [OrderedSemiring α] [DecidableRel ((· < ·) : α → α → Prop)] [Nontrivial α]
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem sign_one : sign (1 : α) = 1 :=
   sign_pos zero_lt_one
 #align sign_one sign_one
@@ -388,10 +422,6 @@ end OrderedSemiring
 section LinearOrderedRing
 
 variable [LinearOrderedRing α] {a b : α}
-
-/- I'm not sure why this is necessary, see https://leanprover.zulipchat.com/#narrow/stream/
-113488-general/topic/type.20class.20inference.20issues/near/276937942 -/
-attribute [local instance] LinearOrderedRing.decidableLT
 
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>
@@ -510,12 +540,12 @@ theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : 
           ∀ a ∈ s, (∑ b, if g b = a then (sgn b : ℤ) else 0) = f a :=
   let ⟨β, t, sgn, g, hg, ht, hf⟩ := exists_signed_sum_aux s f
   ⟨t, inferInstance, fun b => sgn b, fun b => g b, fun b => hg b, by simp [ht], fun a ha =>
-    (@sum_attach _ _ t _ fun b => ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
+    (sum_attach t fun b ↦ ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
 #align exists_signed_sum exists_signed_sum
 
 /-- We can decompose a sum of absolute value less than `n` into a sum of at most `n` signs. -/
 theorem exists_signed_sum' {α : Type u_1} [Nonempty α] [DecidableEq α] (s : Finset α) (f : α → ℤ)
-  (n : ℕ) (h : (∑ i in s, (f i).natAbs) ≤ n) :
+    (n : ℕ) (h : (∑ i in s, (f i).natAbs) ≤ n) :
     ∃ (β : Type u_1) (_ : Fintype β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∉ s → sgn b = 0) ∧
         Fintype.card β = n ∧ ∀ a ∈ s, (∑ i, if g i = a then (sgn i : ℤ) else 0) = f a := by

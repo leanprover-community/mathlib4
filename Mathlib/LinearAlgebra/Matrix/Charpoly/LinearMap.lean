@@ -29,7 +29,7 @@ variable {M : Type*} [AddCommGroup M] (R : Type*) [CommRing R] [Module R M] (I :
 
 variable (b : ι → M) (hb : Submodule.span R (Set.range b) = ⊤)
 
-open BigOperators Polynomial
+open BigOperators Polynomial Matrix
 
 /-- The composition of a matrix (as an endomorphism of `ι → R`) with the projection
 `(ι → R) →ₗ[R] M`.  -/
@@ -38,7 +38,7 @@ def PiToModule.fromMatrix [DecidableEq ι] : Matrix ι ι R →ₗ[R] (ι → R)
 #align pi_to_module.from_matrix PiToModule.fromMatrix
 
 theorem PiToModule.fromMatrix_apply [DecidableEq ι] (A : Matrix ι ι R) (w : ι → R) :
-    PiToModule.fromMatrix R b A w = Fintype.total R R b (A.mulVec w) :=
+    PiToModule.fromMatrix R b A w = Fintype.total R R b (A *ᵥ w) :=
   rfl
 #align pi_to_module.from_matrix_apply PiToModule.fromMatrix_apply
 
@@ -90,12 +90,12 @@ def Matrix.Represents (A : Matrix ι ι R) (f : Module.End R M) : Prop :=
 variable {b}
 
 theorem Matrix.Represents.congr_fun {A : Matrix ι ι R} {f : Module.End R M} (h : A.Represents b f)
-    (x) : Fintype.total R R b (A.mulVec x) = f (Fintype.total R R b x) :=
+    (x) : Fintype.total R R b (A *ᵥ x) = f (Fintype.total R R b x) :=
   LinearMap.congr_fun h x
 #align matrix.represents.congr_fun Matrix.Represents.congr_fun
 
 theorem Matrix.represents_iff {A : Matrix ι ι R} {f : Module.End R M} :
-    A.Represents b f ↔ ∀ x, Fintype.total R R b (A.mulVec x) = f (Fintype.total R R b x) :=
+    A.Represents b f ↔ ∀ x, Fintype.total R R b (A *ᵥ x) = f (Fintype.total R R b x) :=
   ⟨fun e x => e.congr_fun x, fun H => LinearMap.ext fun x => H x⟩
 #align matrix.represents_iff Matrix.represents_iff
 
@@ -146,6 +146,10 @@ theorem Matrix.Represents.smul {A : Matrix ι ι R} {f : Module.End R M} (h : A.
   rw [SMulHomClass.map_smul, SMulHomClass.map_smul, h]
 #align matrix.represents.smul Matrix.Represents.smul
 
+theorem Matrix.Represents.algebraMap (r : R) :
+    (algebraMap _ (Matrix ι ι R) r).Represents b (algebraMap _ (Module.End R M) r) := by
+  simpa only [Algebra.algebraMap_eq_smul_one] using Matrix.Represents.one.smul r
+
 theorem Matrix.Represents.eq {A : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : A.Represents b f') : f = f' :=
   PiToModule.fromEnd_injective R b hb (h.symm.trans h')
@@ -161,7 +165,7 @@ def Matrix.isRepresentation : Subalgebra R (Matrix ι ι R) where
   one_mem' := ⟨1, Matrix.Represents.one⟩
   add_mem' := fun ⟨f₁, e₁⟩ ⟨f₂, e₂⟩ => ⟨f₁ + f₂, e₁.add e₂⟩
   zero_mem' := ⟨0, Matrix.Represents.zero⟩
-  algebraMap_mem' r := ⟨r • (1 : Module.End R M), Matrix.Represents.one.smul r⟩
+  algebraMap_mem' r := ⟨algebraMap _ _ r, .algebraMap _⟩
 #align matrix.is_representation Matrix.isRepresentation
 
 /-- The map sending a matrix to the endomorphism it represents. This is an `R`-algebra morphism. -/
@@ -173,7 +177,7 @@ noncomputable def Matrix.isRepresentation.toEnd : Matrix.isRepresentation R b �
   map_zero' := (0 : Matrix.isRepresentation R b).2.choose_spec.eq hb Matrix.Represents.zero
   map_add' A₁ A₂ := (A₁ + A₂).2.choose_spec.eq hb (A₁.2.choose_spec.add A₂.2.choose_spec)
   commutes' r :=
-    (r • (1 : Matrix.isRepresentation R b)).2.choose_spec.eq hb (Matrix.Represents.one.smul r)
+    (algebraMap _ (Matrix.isRepresentation R b) r).2.choose_spec.eq hb (.algebraMap r)
 #align matrix.is_representation.to_End Matrix.isRepresentation.toEnd
 
 theorem Matrix.isRepresentation.toEnd_represents (A : Matrix.isRepresentation R b) :
@@ -197,7 +201,7 @@ theorem Matrix.isRepresentation.toEnd_exists_mem_ideal (f : Module.End R M) (I :
   let A : Matrix ι ι R := fun i j => bM' (b j) i
   have : A.Represents b f := by
     rw [Matrix.represents_iff']
-    dsimp
+    dsimp [A]
     intro j
     specialize hbM' (b j)
     rwa [Ideal.finsuppTotal_apply_eq_of_fintype] at hbM'

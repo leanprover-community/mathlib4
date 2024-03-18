@@ -41,27 +41,6 @@ section OfAssociative
 
 variable {A : Type v} [Ring A]
 
-namespace Ring
-
-/-- The bracket operation for rings is the ring commutator, which captures the extent to which a
-ring is commutative. It is identically zero exactly when the ring is commutative. -/
-instance (priority := 100) : Bracket A A :=
-  ⟨fun x y => x * y - y * x⟩
-
-theorem lie_def (x y : A) : ⁅x, y⁆ = x * y - y * x :=
-  rfl
-#align ring.lie_def Ring.lie_def
-
-end Ring
-
-theorem commute_iff_lie_eq {x y : A} : Commute x y ↔ ⁅x, y⁆ = 0 :=
-  sub_eq_zero.symm
-#align commute_iff_lie_eq commute_iff_lie_eq
-
-theorem Commute.lie_eq {x y : A} (h : Commute x y) : ⁅x, y⁆ = 0 :=
-  sub_eq_zero_of_eq h
-#align commute.lie_eq Commute.lie_eq
-
 namespace LieRing
 
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
@@ -142,13 +121,15 @@ theorem LieModule.ofAssociativeModule : LieModule R A M where
   lie_smul := smul_algebra_smul_comm
 #align lie_module.of_associative_module LieModule.ofAssociativeModule
 
-instance Module.End.lieRingModule : LieRingModule (Module.End R M) M :=
+instance Module.End.instLieRingModule : LieRingModule (Module.End R M) M :=
   LieRingModule.ofAssociativeModule
-#align module.End.lie_ring_module Module.End.lieRingModule
+#align module.End.lie_ring_module Module.End.instLieRingModule
 
-instance Module.End.lieModule : LieModule R (Module.End R M) M :=
+instance Module.End.instLieModule : LieModule R (Module.End R M) M :=
   LieModule.ofAssociativeModule
-#align module.End.lie_module Module.End.lieModule
+#align module.End.lie_module Module.End.instLieModule
+
+@[simp] lemma Module.End.lie_apply (f : Module.End R M) (m : M) : ⁅f, m⁆ = f m := rfl
 
 end AssociativeRepresentation
 
@@ -252,11 +233,84 @@ theorem LieSubalgebra.toEndomorphism_mk (K : LieSubalgebra R L) {x : L} (hx : x 
   rfl
 #align lie_subalgebra.to_endomorphism_mk LieSubalgebra.toEndomorphism_mk
 
+section
+
+open BigOperators LieAlgebra LieModule
+
+lemma LieSubmodule.coe_toEndomorphism (N : LieSubmodule R L M) (x : L) (y : N) :
+    (toEndomorphism R L N x y : M) = toEndomorphism R L M x y := rfl
+
+lemma LieSubmodule.coe_toEndomorphism_pow (N : LieSubmodule R L M) (x : L) (y : N) (n : ℕ) :
+    ((toEndomorphism R L N x ^ n) y : M) = (toEndomorphism R L M x ^ n) y := by
+  induction n generalizing y with
+  | zero => rfl
+  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, LieSubmodule.coe_toEndomorphism]
+
+lemma LieSubalgebra.coe_ad (H : LieSubalgebra R L) (x y : H) :
+    (ad R H x y : L) = ad R L x y := rfl
+
+lemma LieSubalgebra.coe_ad_pow (H : LieSubalgebra R L) (x y : H) (n : ℕ) :
+    ((ad R H x ^ n) y : L) = (ad R L x ^ n) y :=
+  LieSubmodule.coe_toEndomorphism_pow R H L H.toLieSubmodule x y n
+
+variable {L M}
+
+local notation "φ" => LieModule.toEndomorphism R L M
+
+lemma LieModule.toEndomorphism_lie (x y : L) (z : M) :
+    (φ x) ⁅y, z⁆ = ⁅ad R L x y, z⁆ + ⁅y, φ x z⁆ := by
+  simp
+
+lemma LieAlgebra.ad_lie (x y z : L) :
+    (ad R L x) ⁅y, z⁆ = ⁅ad R L x y, z⁆ + ⁅y, ad R L x z⁆ :=
+  toEndomorphism_lie _ x y z
+
+open Finset in
+lemma LieModule.toEndomorphism_pow_lie (x y : L) (z : M) (n : ℕ) :
+    ((φ x) ^ n) ⁅y, z⁆ =
+      ∑ ij in antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((φ x) ^ ij.2) z⁆ := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [Finset.sum_antidiagonal_choose_succ_nsmul
+      (fun i j ↦ ⁅((ad R L x) ^ i) y, ((φ x) ^ j) z⁆) n]
+    simp only [pow_succ, LinearMap.mul_apply, ih, map_sum, map_nsmul, toEndomorphism_lie, nsmul_add,
+      sum_add_distrib]
+    rw [add_comm, add_left_cancel_iff, sum_congr rfl]
+    rintro ⟨i, j⟩ hij
+    rw [mem_antidiagonal] at hij
+    rw [Nat.choose_symm_of_eq_add hij.symm]
+
+open Finset in
+lemma LieAlgebra.ad_pow_lie (x y z : L) (n : ℕ) :
+    ((ad R L x) ^ n) ⁅y, z⁆ =
+      ∑ ij in antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((ad R L x) ^ ij.2) z⁆ :=
+  toEndomorphism_pow_lie _ x y z n
+
+end
+
 variable {R L M}
+
+namespace LieModule
+
+variable {M₂ : Type w₁} [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
+  (f : M →ₗ⁅R,L⁆ M₂) (k : ℕ) (x : L)
+
+lemma toEndomorphism_pow_comp_lieHom :
+    (toEndomorphism R L M₂ x ^ k) ∘ₗ f = f ∘ₗ toEndomorphism R L M x ^ k := by
+  apply LinearMap.commute_pow_left_of_commute
+  ext
+  simp
+
+lemma toEndomorphism_pow_apply_map (m : M) :
+    (toEndomorphism R L M₂ x ^ k) (f m) = f ((toEndomorphism R L M x ^ k) m) :=
+  LinearMap.congr_fun (toEndomorphism_pow_comp_lieHom f k x) m
+
+end LieModule
 
 namespace LieSubmodule
 
-open LieModule
+open LieModule Set
 
 variable {N : LieSubmodule R L M} {x : L}
 
@@ -278,6 +332,11 @@ theorem toEndomorphism_restrict_eq_toEndomorphism (h := N.toEndomorphism_comp_su
     (toEndomorphism R L M x).restrict h = toEndomorphism R L N x := by
   ext; simp [LinearMap.restrict_apply]
 #align lie_submodule.to_endomorphism_restrict_eq_to_endomorphism LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism
+
+lemma mapsTo_pow_toEndomorphism_sub_algebraMap {φ : R} {k : ℕ} {x : L} :
+    MapsTo ((toEndomorphism R L M x - algebraMap R (Module.End R M) φ) ^ k) N N := by
+  rw [LinearMap.coe_pow]
+  exact MapsTo.iterate (fun m hm ↦ N.sub_mem (N.lie_mem hm) (N.smul_mem _ hm)) k
 
 end LieSubmodule
 

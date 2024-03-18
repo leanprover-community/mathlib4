@@ -129,13 +129,17 @@ theorem map_map_permutationsAux2 {α α'} (g : α → α') (t : α) (ts ys : Lis
 
 theorem map_map_permutations'Aux (f : α → β) (t : α) (ts : List α) :
     map (map f) (permutations'Aux t ts) = permutations'Aux (f t) (map f ts) := by
-  induction' ts with a ts ih <;> [rfl; (simp [← ih]; rfl)]
+  induction' ts with a ts ih
+  · rfl
+  · simp only [permutations'Aux, map_cons, map_map, ← ih, cons.injEq, true_and]
+    rfl
 #align list.map_map_permutations'_aux List.map_map_permutations'Aux
 
 theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
     permutations'Aux t ts = (permutationsAux2 t [] [ts ++ [t]] ts id).2 := by
   induction' ts with a ts ih; · rfl
-  simp [permutations'Aux, permutationsAux2_snd_cons, ih]
+  simp only [permutations'Aux, ih, cons_append, permutationsAux2_snd_cons, append_nil, id_eq,
+    cons.injEq, true_and]
   simp (config := { singlePass := true }) only [← permutationsAux2_append]
   simp [map_permutationsAux2]
 #align list.permutations'_aux_eq_permutations_aux2 List.permutations'Aux_eq_permutationsAux2
@@ -174,7 +178,7 @@ theorem foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
       (L.bind fun y => (permutationsAux2 t ts [] y id).2) ++ r := by
   induction' L with l L ih
   · rfl
-  · simp [ih]
+  · simp only [foldr_cons, ih, cons_bind, append_assoc]
     rw [← permutationsAux2_append]
 #align list.foldr_permutations_aux2 List.foldr_permutationsAux2
 

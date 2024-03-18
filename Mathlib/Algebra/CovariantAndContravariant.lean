@@ -3,7 +3,7 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone.Basic
 
@@ -31,7 +31,7 @@ relation (typically `(≤)` or `(<)`), these are the only two typeclasses that I
 The general approach is to formulate the lemma that you are interested in and prove it, with the
 `Ordered[...]` typeclass of your liking.  After that, you convert the single typeclass,
 say `[OrderedCancelMonoid M]`, into three typeclasses, e.g.
-`[LeftCancelSemigroup M] [PartialOrder M] [CovariantClass M M (Function.swap (*)) (≤)]`
+`[CancelMonoid M] [PartialOrder M] [CovariantClass M M (Function.swap (*)) (≤)]`
 and have a go at seeing if the proof still works!
 
 Note that it is possible to combine several `Co(ntra)variantClass` assumptions together.
@@ -43,7 +43,7 @@ A formal remark is that normally `CovariantClass` uses the `(≤)`-relation, whi
 `ContravariantClass` uses the `(<)`-relation. This need not be the case in general, but seems to be
 the most common usage. In the opposite direction, the implication
 ```lean
-[Semigroup α] [PartialOrder α] [ContravariantClass α α (*) (≤)] ↦ LeftCancelSemigroup α
+[Semigroup α] [PartialOrder α] [ContravariantClass α α (*) (≤)] → LeftCancelSemigroup α
 ```
 holds -- note the `Co*ntra*` assumption on the `(≤)`-relation.
 
@@ -72,7 +72,7 @@ variable {M N : Type*} (μ : M → N → N) (r : N → N → Prop)
 
 variable (M N)
 
-/-- `Covariant` is useful to formulate succintly statements about the interactions between an
+/-- `Covariant` is useful to formulate succinctly statements about the interactions between an
 action of a Type on another one and a relation on the acted-upon Type.
 
 See the `CovariantClass` doc-string for its meaning. -/
@@ -80,7 +80,7 @@ def Covariant : Prop :=
   ∀ (m) {n₁ n₂}, r n₁ n₂ → r (μ m n₁) (μ m n₂)
 #align covariant Covariant
 
-/-- `Contravariant` is useful to formulate succintly statements about the interactions between an
+/-- `Contravariant` is useful to formulate succinctly statements about the interactions between an
 action of a Type on another one and a relation on the acted-upon Type.
 
 See the `ContravariantClass` doc-string for its meaning. -/
@@ -362,27 +362,27 @@ theorem contravariant_le_of_contravariant_eq_and_lt [PartialOrder N]
   then the following four instances (actually eight) can be removed in favor of the above two. -/
 
 @[to_additive]
-instance LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le [LeftCancelSemigroup N]
+instance IsLeftCancelMul.covariant_mul_lt_of_covariant_mul_le [Mul N] [IsLeftCancelMul N]
     [PartialOrder N] [CovariantClass N N (· * ·) (· ≤ ·)] :
     CovariantClass N N (· * ·) (· < ·) where
   elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne ((mul_ne_mul_right a).mpr bc.ne)
 
 @[to_additive]
-instance RightCancelSemigroup.covariant_swap_mul_lt_of_covariant_swap_mul_le
-    [RightCancelSemigroup N] [PartialOrder N] [CovariantClass N N (swap (· * ·)) (· ≤ ·)] :
+instance IsRightCancelMul.covariant_swap_mul_lt_of_covariant_swap_mul_le
+    [Mul N] [IsRightCancelMul N] [PartialOrder N] [CovariantClass N N (swap (· * ·)) (· ≤ ·)] :
     CovariantClass N N (swap (· * ·)) (· < ·) where
   elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne ((mul_ne_mul_left a).mpr bc.ne)
 
 @[to_additive]
-instance LeftCancelSemigroup.contravariant_mul_le_of_contravariant_mul_lt [LeftCancelSemigroup N]
+instance IsLeftCancelMul.contravariant_mul_le_of_contravariant_mul_lt [Mul N] [IsLeftCancelMul N]
     [PartialOrder N] [ContravariantClass N N (· * ·) (· < ·)] :
     ContravariantClass N N (· * ·) (· ≤ ·) where
   elim := (contravariant_le_iff_contravariant_lt_and_eq N N _).mpr
     ⟨ContravariantClass.elim, fun _ ↦ mul_left_cancel⟩
 
 @[to_additive]
-instance RightCancelSemigroup.contravariant_swap_mul_le_of_contravariant_swap_mul_lt
-    [RightCancelSemigroup N] [PartialOrder N] [ContravariantClass N N (swap (· * ·)) (· < ·)] :
+instance IsRightCancelMul.contravariant_swap_mul_le_of_contravariant_swap_mul_lt
+    [Mul N] [IsRightCancelMul N] [PartialOrder N] [ContravariantClass N N (swap (· * ·)) (· < ·)] :
     ContravariantClass N N (swap (· * ·)) (· ≤ ·) where
   elim := (contravariant_le_iff_contravariant_lt_and_eq N N _).mpr
     ⟨ContravariantClass.elim, fun _ ↦ mul_right_cancel⟩

@@ -7,6 +7,7 @@ import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Order.CompleteLatticeIntervals
 
 #align_import order.sup_indep from "leanprover-community/mathlib"@"c4c2ed622f43768eff32608d4a0f8a6cec1c047d"
 
@@ -72,6 +73,7 @@ theorem SupIndep.subset (ht : t.SupIndep f) (h : s ⊆ t) : s.SupIndep f := fun 
   ht (hu.trans h) (h hi)
 #align finset.sup_indep.subset Finset.SupIndep.subset
 
+@[simp]
 theorem supIndep_empty (f : ι → α) : (∅ : Finset ι).SupIndep f := fun _ _ a ha =>
   (not_mem_empty a ha).elim
 #align finset.sup_indep_empty Finset.supIndep_empty
@@ -366,12 +368,12 @@ theorem independent_def'' :
 
 @[simp]
 theorem independent_empty (t : Empty → α) : Independent t :=
-  fun.
+  nofun
 #align complete_lattice.independent_empty CompleteLattice.independent_empty
 
 @[simp]
 theorem independent_pempty (t : PEmpty → α) : Independent t :=
-  fun.
+  nofun
 #align complete_lattice.independent_pempty CompleteLattice.independent_pempty
 
 /-- If the elements of a set are independent, then any pair within that set is disjoint. -/
@@ -406,17 +408,35 @@ theorem Independent.setIndependent_range (ht : Independent t) : SetIndependent <
   exact ht.comp' surjective_onto_range
 #align complete_lattice.independent.set_independent_range CompleteLattice.Independent.setIndependent_range
 
-theorem Independent.injective (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Injective t := by
-  intro i j h
-  by_contra' contra
-  apply h_ne_bot j
+@[simp]
+theorem independent_ne_bot_iff_independent :
+    Independent (fun i : {i // t i ≠ ⊥} ↦ t i) ↔ Independent t := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.comp Subtype.val_injective⟩
+  simp only [independent_def] at h ⊢
+  intro i
+  cases eq_or_ne (t i) ⊥ with
+  | inl hi => simp [hi]
+  | inr hi => ?_
+  convert h ⟨i, hi⟩
+  have : ∀ j, ⨆ (_ : t j = ⊥), t j = ⊥ := fun j ↦ by simp only [iSup_eq_bot, imp_self]
+  rw [iSup_split _ (fun j ↦ t j = ⊥), iSup_subtype]
+  simp only [iSup_comm (ι' := _ ≠ i), this, ne_eq, sup_of_le_right, Subtype.mk.injEq, iSup_bot,
+    bot_le]
+
+theorem Independent.injOn (ht : Independent t) : InjOn t {i | t i ≠ ⊥} := by
+  rintro i _ j (hj : t j ≠ ⊥) h
+  by_contra! contra
+  apply hj
   suffices t j ≤ ⨆ (k) (_ : k ≠ i), t k by
     replace ht := (ht i).mono_right this
     rwa [h, disjoint_self] at ht
-  replace contra : j ≠ i
-  · exact Ne.symm contra
+  replace contra : j ≠ i := Ne.symm contra
   -- Porting note: needs explicit `f`
-  exact @le_iSup₂ _ _ _ _ (fun x _ => t x) j contra
+  exact le_iSup₂ (f := fun x _ ↦ t x) j contra
+
+theorem Independent.injective (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Injective t := by
+  suffices univ = {i | t i ≠ ⊥} by rw [injective_iff_injOn_univ, this]; exact ht.injOn
+  aesop
 #align complete_lattice.independent.injective CompleteLattice.Independent.injective
 
 theorem independent_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k = j) :
@@ -454,6 +474,13 @@ theorem Independent.disjoint_biSup {ι : Type*} {α : Type*} [CompleteLattice α
   Disjoint.mono_right (biSup_mono fun _ hi => (ne_of_mem_of_not_mem hi hx : _)) (ht x)
 #align complete_lattice.independent.disjoint_bsupr CompleteLattice.Independent.disjoint_biSup
 
+lemma independent_of_independent_coe_Iic_comp {ι : Sort*} {a : α} {t : ι → Set.Iic a}
+    (ht : Independent ((↑) ∘ t : ι → α)) : Independent t := by
+  intro i x
+  specialize ht i
+  simp_rw [Function.comp_apply, ← Set.Iic.coe_iSup] at ht
+  exact @ht x
+
 end CompleteLattice
 
 theorem CompleteLattice.independent_iff_supIndep [CompleteLattice α] {s : Finset ι} {f : ι → α} :
@@ -472,6 +499,10 @@ alias ⟨CompleteLattice.Independent.supIndep, Finset.SupIndep.independent⟩ :=
   CompleteLattice.independent_iff_supIndep
 #align complete_lattice.independent.sup_indep CompleteLattice.Independent.supIndep
 #align finset.sup_indep.independent Finset.SupIndep.independent
+
+theorem CompleteLattice.Independent.supIndep' [CompleteLattice α] {f : ι → α} (s : Finset ι)
+    (h : CompleteLattice.Independent f) : s.SupIndep f :=
+  CompleteLattice.Independent.supIndep (h.comp Subtype.coe_injective)
 
 /-- A variant of `CompleteLattice.independent_iff_supIndep` for `Fintype`s. -/
 theorem CompleteLattice.independent_iff_supIndep_univ [CompleteLattice α] [Fintype ι] {f : ι → α} :

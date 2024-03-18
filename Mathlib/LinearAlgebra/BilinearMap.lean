@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.LinearAlgebra.Basic
+import Mathlib.Algebra.Module.Submodule.Ker
 
 #align_import linear_algebra.bilinear_map from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
 
@@ -29,7 +29,6 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 
 bilinear
 -/
-
 
 namespace LinearMap
 
@@ -120,6 +119,9 @@ theorem congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : 
   LinearMap.congr_fun (LinearMap.congr_fun h x) y
 #align linear_map.congr_fun₂ LinearMap.congr_fun₂
 
+theorem ext_iff₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} : f = g ↔ ∀ m n, f m n = g m n :=
+  ⟨congr_fun₂, ext₂⟩
+
 section
 
 attribute [local instance] SMulCommClass.symm
@@ -130,7 +132,9 @@ def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁
   mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun n₁ n₂ m => (f m).map_add _ _)
     (fun c n  m  => (f m).map_smulₛₗ _ _)
     (fun n m₁ m₂ => by simp only [map_add, add_apply])
-    (fun c n  m  => by simp only [map_smulₛₗ, smul_apply])
+    -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`.
+    -- It looks like we now run out of assignable metavariables.
+    (fun c n  m  => by simp only [map_smulₛₗ _, smul_apply])
 #align linear_map.flip LinearMap.flip
 
 end
@@ -203,6 +207,42 @@ def domRestrict₁₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (p : S
 theorem domRestrict₁₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (p : Submodule R M) (q : Submodule S N)
     (x : p) (y : q) : f.domRestrict₁₂ p q x y = f x y := rfl
 #align linear_map.dom_restrict₁₂_apply LinearMap.domRestrict₁₂_apply
+
+section restrictScalars
+
+variable (R' S' : Type*)
+
+variable [Semiring R'] [Semiring S'] [Module R' M] [Module S' N] [Module R' Pₗ] [Module S' Pₗ]
+
+variable [SMulCommClass S' R' Pₗ]
+
+variable [SMul S' S] [IsScalarTower S' S N] [IsScalarTower S' S Pₗ]
+
+variable [SMul R' R] [IsScalarTower R' R M] [IsScalarTower R' R Pₗ]
+
+/-- If `B : M → N → Pₗ` is `R`-`S` bilinear and `R'` and `S'` are compatible scalar multiplications,
+then the restriction of scalars is a `R'`-`S'` bilinear map.-/
+@[simps!]
+def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →ₗ[S'] Pₗ :=
+  LinearMap.mk₂' R' S'
+    (B · ·)
+    B.map_add₂
+    (fun r' m _ ↦ by
+      dsimp only
+      rw [← smul_one_smul R r' m, map_smul₂, smul_one_smul])
+    (fun _ ↦ map_add _)
+    (fun _ x ↦ (B x).map_smul_of_tower _)
+
+theorem restrictScalars₁₂_injective : Function.Injective
+    (LinearMap.restrictScalars₁₂ R' S' : (M →ₗ[R] N →ₗ[S] Pₗ) → (M →ₗ[R'] N →ₗ[S'] Pₗ)) :=
+  fun _ _ h ↦ ext₂ (congr_fun₂ h : _)
+
+@[simp]
+theorem restrictScalars₁₂_inj {B B' : M →ₗ[R] N →ₗ[S] Pₗ} :
+    B.restrictScalars₁₂ R' S' = B'.restrictScalars₁₂ R' S' ↔ B = B' :=
+  (restrictScalars₁₂_injective R' S').eq_iff
+
+end restrictScalars
 
 end Semiring
 
@@ -395,6 +435,17 @@ variable {R M}
 theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
 
+variable (R M) in
+/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`.
+
+This should eventually replace `_root_.BilinForm`. -/
+protected abbrev BilinForm : Type _ := M →ₗ[R] M →ₗ[R] R
+
+/-- The restriction of a bilinear form to a submodule. -/
+abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : LinearMap.BilinForm R M) :
+    LinearMap.BilinForm R p :=
+  f.compl₁₂ p.subtype p.subtype
+
 end CommSemiring
 
 section CommRing
@@ -417,7 +468,7 @@ theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
 #align linear_map.lsmul_injective LinearMap.lsmul_injective
 
 theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) :
-  LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
+    LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective (LinearMap.lsmul_injective ha)
 #align linear_map.ker_lsmul LinearMap.ker_lsmul
 

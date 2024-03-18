@@ -3,10 +3,10 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.SetLike.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.GroupAction.Hom
 
 #align_import group_theory.group_action.sub_mul_action from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
 
@@ -63,6 +63,8 @@ class VAddMemClass (S : Type*) (R : outParam <| Type*) (M : Type*) [VAdd R M] [S
 
 attribute [to_additive] SMulMemClass
 
+attribute [aesop safe 10 apply (rule_sets := [SetLike])] SMulMemClass.smul_mem VAddMemClass.vadd_mem
+
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
 lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] : SMulMemClass S ℕ M where
@@ -90,9 +92,9 @@ instance (priority := 900) smul : SMul R s :=
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
 theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α] [SMul M N]
-  [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
-  SMulMemClass S M α :=
-{ smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
+    [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
+    SMulMemClass S M α :=
+  { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
 instance instIsScalarTower [Mul M] [MulMemClass S M] [IsScalarTower R M M]
     (s : S) : IsScalarTower R s s where
@@ -102,7 +104,7 @@ instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
     (s : S) : SMulCommClass R s s where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 
--- Porting note: TODO lower priority not actually there
+-- Porting note (#11215): TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) :=
@@ -110,7 +112,7 @@ protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) 
 #align set_like.coe_smul SetLike.val_smul
 #align set_like.coe_vadd SetLike.val_vadd
 
--- Porting note: TODO lower priority not actually there
+-- Porting note (#11215): TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp)]
 theorem mk_smul_mk (r : R) (x : M) (hx : x ∈ s) : r • (⟨x, hx⟩ : s) = ⟨r • x, smul_mem r hx⟩ :=
@@ -145,7 +147,7 @@ namespace SubMulAction
 variable [SMul R M]
 
 instance : SetLike (SubMulAction R M) M :=
-  ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr ⟩
+  ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
 
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
 
@@ -209,7 +211,7 @@ theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 #align sub_mul_action.coe_smul SubMulAction.val_smul
 
--- porting note: no longer needed because of defeq structure eta
+-- Porting note: no longer needed because of defeq structure eta
 #noalign sub_mul_action.coe_mk
 
 variable (p)
@@ -325,13 +327,13 @@ theorem val_image_orbit {p : SubMulAction R M} (m : p) :
 
 /- -- Previously, the relatively useless :
 lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
-  (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
+    (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
 -/
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
-    MulAction.Stabilizer.submonoid R m = MulAction.Stabilizer.submonoid R (m : M) := by
+    MulAction.stabilizerSubmonoid R m = MulAction.stabilizerSubmonoid R (m : M) := by
   ext
-  simp only [MulAction.mem_stabilizer_submonoid_iff, ← SubMulAction.val_smul, SetLike.coe_eq_coe]
+  simp only [MulAction.mem_stabilizerSubmonoid_iff, ← SubMulAction.val_smul, SetLike.coe_eq_coe]
 #align sub_mul_action.stabilizer_of_sub_mul.submonoid SubMulAction.stabilizer_of_subMul.submonoid
 
 end MulActionMonoid

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
+import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Logic.Equiv.Fin
 
@@ -23,15 +23,25 @@ universe v u
 
 namespace CategoryTheory
 
-noncomputable instance typesMonoidal : MonoidalCategory.{u} (Type u) :=
-  monoidalOfChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
-#align category_theory.types_monoidal CategoryTheory.typesMonoidal
+instance typesChosenFiniteProducts : ChosenFiniteProducts (Type u) where
+  product := Types.binaryProductLimitCone
+  terminal := Types.terminalLimitCone
 
 @[simp]
 theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y) :
     (f ⊗ g) p = (f p.1, g p.2) :=
   rfl
 #align category_theory.tensor_apply CategoryTheory.tensor_apply
+
+@[simp]
+theorem whiskerLeft_apply (X : Type u) {Y Z : Type u} (f : Y ⟶ Z) (p : X ⊗ Y) :
+    (X ◁ f) p = (p.1, f p.2) :=
+  rfl
+
+@[simp]
+theorem whiskerRight_apply {Y Z : Type u} (f : Y ⟶ Z) (X : Type u) (p : Y ⊗ X) :
+    (f ▷ X) p = (f p.1, p.2) :=
+  rfl
 
 @[simp]
 theorem leftUnitor_hom_apply {X : Type u} {x : X} {p : PUnit} :

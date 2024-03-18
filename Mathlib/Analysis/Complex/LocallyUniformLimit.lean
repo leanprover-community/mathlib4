@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
 import Mathlib.Analysis.Complex.RemovableSingularity
-import Mathlib.Analysis.Calculus.Series
+import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+import Mathlib.Analysis.NormedSpace.FunctionSeries
 
 #align_import analysis.complex.locally_uniform_limit from "leanprover-community/mathlib"@"fe44cd36149e675eb5dec87acc7e8f1d6568e081"
 
@@ -26,8 +27,6 @@ subset of the complex plane.
 open Set Metric MeasureTheory Filter Complex intervalIntegral
 
 open scoped Real Topology
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 variable {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E] {U K : Set ℂ}
   {z : ℂ} {M r δ : ℝ} {φ : Filter ι} {F : ι → ℂ → E} {f g : ℂ → E}
@@ -146,8 +145,8 @@ theorem _root_.TendstoLocallyUniformlyOn.differentiableOn [φ.NeBot]
   obtain ⟨K, ⟨hKx, hK⟩, hKU⟩ := (compact_basis_nhds x).mem_iff.mp (hU.mem_nhds hx)
   obtain ⟨δ, _, _, h1⟩ := exists_cthickening_tendstoUniformlyOn hf hF hK hU hKU
   have h2 : interior K ⊆ U := interior_subset.trans hKU
-  have h3 : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) (interior K)
-  filter_upwards [hF] with n h using h.mono h2
+  have h3 : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) (interior K) := by
+    filter_upwards [hF] with n h using h.mono h2
   have h4 : TendstoLocallyUniformlyOn F f φ (interior K) := hf.mono h2
   have h5 : TendstoLocallyUniformlyOn (deriv ∘ F) (cderiv δ f) φ (interior K) :=
     h1.tendstoLocallyUniformlyOn.mono interior_subset
