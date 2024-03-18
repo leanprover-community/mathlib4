@@ -79,10 +79,12 @@ def UniformConvergenceCLM [TopologicalSpace F] [TopologicalAddGroup F] (_ : Set 
 namespace UniformConvergenceCLM
 
 instance funLike [TopologicalSpace F] [TopologicalAddGroup F]
-    (𝔖 : Set (Set E)) : FunLike (UniformConvergenceCLM σ F 𝔖) E F where
-  coe f := f.toLinearMap
-  coe_injective' _ _ h := ContinuousLinearMap.coe_injective (DFunLike.coe_injective h)
+    (𝔖 : Set (Set E)) : FunLike (UniformConvergenceCLM σ F 𝔖) E F := 
+  ContinuousLinearMap.funLike
 
+instance continuousSemilinearMapClass [TopologicalSpace F] [TopologicalAddGroup F]
+    (𝔖 : Set (Set E)) : ContinuousSemilinearMapClass (UniformConvergenceCLM σ F 𝔖) σ E F :=
+  ContinuousLinearMap.continuousSemilinearMapClass
 instance instTopologicalSpace [TopologicalSpace F]
     [TopologicalAddGroup F] (𝔖 : Set (Set E)) : TopologicalSpace (UniformConvergenceCLM σ F 𝔖) :=
   (@UniformOnFun.topologicalSpace E F (TopologicalAddGroup.toUniformSpace F) 𝔖).induced
