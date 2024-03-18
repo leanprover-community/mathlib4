@@ -365,7 +365,7 @@ theorem inv_apply' {R : Type u} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ 
 #align mul_char.inv_apply' MulChar.inv_apply'
 
 /-- The product of a character with its inverse is the trivial character. -/
--- Porting note: @[simp] can prove this (later)
+-- Porting note (#10618): @[simp] can prove this (later)
 theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   ext x
   rw [coeToFun_mul, Pi.mul_apply, inv_apply_eq_inv]
