@@ -58,7 +58,7 @@ jobs:
     # Next, we'll update the `nightly-with-mathlib` branch at Lean.
     - name: Cleanup workspace
       run: |
-        sudo rm -rf *
+        sudo rm -rf -- *
     # Checkout the Lean repository on 'nightly-with-mathlib'
     - name: Checkout Lean repository
       uses: actions/checkout@v3
@@ -178,9 +178,12 @@ jobs:
         CURRENT_VERSION: ${{ steps.current_version.outputs.current_version }}
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
+        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
       shell: python
       run: |
         import os
+        import zulip
+        client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key=os.getenv('ZULIP_API_KEY'), site='https://leanprover.zulipchat.com')
         current_version = os.getenv('CURRENT_VERSION')
         bump_version = os.getenv('BUMP_VERSION')
         bump_branch = os.getenv('BUMP_BRANCH')
