@@ -123,7 +123,7 @@ theorem addHaarMeasure_eq_volume_pi (ι : Type*) [Fintype ι] :
     Compacts.coe_mk, Finset.prod_const_one, ENNReal.ofReal_one, Real.volume_Icc, one_smul, sub_zero]
 #align measure_theory.add_haar_measure_eq_volume_pi MeasureTheory.addHaarMeasure_eq_volume_pi
 
--- Porting note: TODO: remove this instance?
+-- Porting note (#11215): TODO: remove this instance?
 instance isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
     IsAddHaarMeasure (volume : Measure (ι → ℝ)) :=
   inferInstance

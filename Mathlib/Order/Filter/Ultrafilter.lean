@@ -204,7 +204,7 @@ theorem finite_sUnion_mem_iff {s : Set (Set α)} (hs : s.Finite) : ⋃₀ s ∈ 
 
 theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finite) :
     (⋃ i ∈ is, s i) ∈ f ↔ ∃ i ∈ is, s i ∈ f := by
-  simp only [← sUnion_image, finite_sUnion_mem_iff (his.image s), bex_image_iff]
+  simp only [← sUnion_image, finite_sUnion_mem_iff (his.image s), exists_mem_image]
 #align ultrafilter.finite_bUnion_mem_iff Ultrafilter.finite_biUnion_mem_iff
 
 /-- Pushforward for ultrafilters. -/

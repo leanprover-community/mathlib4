@@ -125,7 +125,7 @@ theorem sUnion_null_iff (m : OuterMeasure α) {S : Set (Set α)} (hS : S.Countab
 @[simp]
 theorem iUnion_null_iff {ι : Sort*} [Countable ι] (m : OuterMeasure α) {s : ι → Set α} :
     m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 := by
-  rw [← sUnion_range, m.sUnion_null_iff (countable_range s), forall_range_iff]
+  rw [← sUnion_range, m.sUnion_null_iff (countable_range s), forall_mem_range]
 #align measure_theory.outer_measure.Union_null_iff MeasureTheory.OuterMeasure.iUnion_null_iff
 
 alias ⟨_, iUnion_null⟩ := iUnion_null_iff
@@ -200,7 +200,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   clear hx i
   rcases le_or_lt j n with hjn | hnj
   · exact Or.inl (h' hjn hj)
-  have : j - (n + 1) + n + 1 = j := by rw [add_assoc, tsub_add_cancel_of_le hnj.nat_succ_le]
+  have : j - (n + 1) + n + 1 = j := by omega
   refine' Or.inr (mem_iUnion.2 ⟨j - (n + 1), _, hlt _ _⟩)
   · rwa [this]
   · rw [← Nat.succ_le_iff, Nat.succ_eq_add_one, this]
@@ -282,7 +282,6 @@ theorem add_apply (m₁ m₂ : OuterMeasure α) (s : Set α) : (m₁ + m₂) s =
 section SMul
 
 variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-
 variable [SMul R' ℝ≥0∞] [IsScalarTower R' ℝ≥0∞ ℝ≥0∞]
 
 instance instSMul : SMul R (OuterMeasure α) :=
@@ -1301,7 +1300,6 @@ open OuterMeasure
 section Extend
 
 variable {α : Type*} {P : α → Prop}
-
 variable (m : ∀ s : α, P s → ℝ≥0∞)
 
 /-- We can trivially extend a function defined on a subclass of objects (with codomain `ℝ≥0∞`)
@@ -1349,20 +1347,15 @@ end Extend
 section ExtendSet
 
 variable {α : Type*} {P : Set α → Prop}
-
 variable {m : ∀ s : Set α, P s → ℝ≥0∞}
-
 variable (P0 : P ∅) (m0 : m ∅ P0 = 0)
-
 variable (PU : ∀ ⦃f : ℕ → Set α⦄ (_hm : ∀ i, P (f i)), P (⋃ i, f i))
-
 variable
   (mU :
     ∀ ⦃f : ℕ → Set α⦄ (hm : ∀ i, P (f i)),
       Pairwise (Disjoint on f) → m (⋃ i, f i) (PU hm) = ∑' i, m (f i) (hm i))
 
 variable (msU : ∀ ⦃f : ℕ → Set α⦄ (hm : ∀ i, P (f i)), m (⋃ i, f i) (PU hm) ≤ ∑' i, m (f i) (hm i))
-
 variable (m_mono : ∀ ⦃s₁ s₂ : Set α⦄ (hs₁ : P s₁) (hs₂ : P s₂), s₁ ⊆ s₂ → m s₁ hs₁ ≤ m s₂ hs₂)
 
 theorem extend_empty : extend m ∅ = 0 :=
@@ -1540,11 +1533,8 @@ end ExtendSet
 section MeasurableSpace
 
 variable {α : Type*} [MeasurableSpace α]
-
 variable {m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞}
-
 variable (m0 : m ∅ MeasurableSet.empty = 0)
-
 variable
   (mU :
     ∀ ⦃f : ℕ → Set α⦄ (hm : ∀ i, MeasurableSet (f i)),

@@ -1463,7 +1463,7 @@ theorem mapsTo_sInter {s : Set α} {T : Set (Set β)} {f : α → β} :
 @[simp]
 theorem mapsTo_iInter {s : Set α} {t : ι → Set β} {f : α → β} :
     MapsTo f s (⋂ i, t i) ↔ ∀ i, MapsTo f s (t i) :=
-  mapsTo_sInter.trans forall_range_iff
+  mapsTo_sInter.trans forall_mem_range
 #align set.maps_to_Inter Set.mapsTo_iInter
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1596,7 +1596,7 @@ theorem surjOn_sUnion {s : Set α} {T : Set (Set β)} {f : α → β} (H : ∀ t
 
 theorem surjOn_iUnion {s : Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, SurjOn f s (t i)) :
     SurjOn f s (⋃ i, t i) :=
-  surjOn_sUnion <| forall_range_iff.2 H
+  surjOn_sUnion <| forall_mem_range.2 H
 #align set.surj_on_Union Set.surjOn_iUnion
 
 theorem surjOn_iUnion_iUnion {s : ι → Set α} {t : ι → Set β} {f : α → β}

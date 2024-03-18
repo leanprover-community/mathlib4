@@ -23,7 +23,7 @@ variable {α : Type*}
 
 /-! ### powerset -/
 
--- Porting note: TODO: Write a more efficient version
+-- Porting note (#11215): TODO: Write a more efficient version
 /-- A helper function for the powerset of a multiset. Given a list `l`, returns a list
 of sublists of `l` as multisets. -/
 def powersetAux (l : List α) : List (Multiset α) :=
@@ -57,7 +57,7 @@ theorem powersetAux'_nil : powersetAux' (@nil α) = [0] :=
 @[simp]
 theorem powersetAux'_cons (a : α) (l : List α) :
     powersetAux' (a :: l) = powersetAux' l ++ List.map (cons a) (powersetAux' l) := by
-  simp [powersetAux']; rfl
+  simp only [powersetAux', sublists'_cons, map_append, List.map_map, append_cancel_left_eq]; rfl
 #align multiset.powerset_aux'_cons Multiset.powersetAux'_cons
 
 theorem powerset_aux'_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) : powersetAux' l₁ ~ powersetAux' l₂ := by
@@ -102,7 +102,9 @@ theorem powerset_zero : @powerset α 0 = {0} :=
 
 @[simp]
 theorem powerset_cons (a : α) (s) : powerset (a ::ₘ s) = powerset s + map (cons a) (powerset s) :=
-  Quotient.inductionOn s fun l => by simp; rfl
+  Quotient.inductionOn s fun l => by
+    simp only [quot_mk_to_coe, cons_coe, powerset_coe', sublists'_cons, map_append, List.map_map,
+      map_coe, coe_add, coe_eq_coe]; rfl
 #align multiset.powerset_cons Multiset.powerset_cons
 
 @[simp]
@@ -206,7 +208,8 @@ theorem powersetCardAux_nil (n : ℕ) : powersetCardAux (n + 1) (@nil α) = [] :
 theorem powersetCardAux_cons (n : ℕ) (a : α) (l : List α) :
     powersetCardAux (n + 1) (a :: l) =
       powersetCardAux (n + 1) l ++ List.map (cons a) (powersetCardAux n l) := by
-  simp [powersetCardAux_eq_map_coe]; rfl
+  simp only [powersetCardAux_eq_map_coe, sublistsLen_succ_cons, map_append, List.map_map,
+    append_cancel_left_eq]; rfl
 #align multiset.powerset_len_aux_cons Multiset.powersetCardAux_cons
 
 theorem powersetCardAux_perm {n} {l₁ l₂ : List α} (p : l₁ ~ l₂) :

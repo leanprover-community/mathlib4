@@ -36,6 +36,13 @@ Given a sequence `f: ℕ → ℂ`, we define the corresponding L-series.
  * `LSeriesSummable.isBigO_rpow`: if the `LSeries` of `f` is summable at `s`,
     then `f = O(n^(re s))`.
 
+## Notation
+
+We introduce `L` as notation for `LSeries` and `↗f` as notation for `fun n : ℕ ↦ (f n : ℂ)`,
+both scoped to `LSeries.notation`. The latter makes it convenient to use arithmetic functions
+or Dirichlet characters (or anything that coerces to a function `N → R`, where `ℕ` coerces
+to `N` and `R` coerces to `ℂ`) as arguments to `LSeries` etc.
+
 ## Tags
 
 L-series
@@ -44,10 +51,7 @@ L-series
 
 * Move `LSeriesSummable.one_iff_one_lt_re` and `zeta_LSeriesSummable_iff_one_lt_r`
   to a new file on L-series of specific functions
-
-* Move `LSeries_add` and friends to a new file on algebraic operations on L-series
 -/
-
 
 open scoped BigOperators
 
@@ -187,6 +191,21 @@ theorem LSeriesSummable_iff_of_re_eq_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re
 
 
 /-!
+### Notation
+-/
+
+@[inherit_doc]
+scoped[LSeries.notation] notation "L" => LSeries
+
+/-- We introduce notation `↗f` for `f` interpreted as a function `ℕ → ℂ`.
+
+Let `R` be a ring with a coercion to `ℂ`. Then we can write `↗χ` when `χ : DirichletCharacter R`
+or `↗f` when `f : ArithmeticFunction R` or simply `f : N → R` with a coercion from `ℕ` to `N`
+as an argument to `LSeries`, `LSeriesHasSum`, `LSeriesSummable` etc. -/
+scoped[LSeries.notation] notation:max "↗" f:max => fun n : ℕ ↦ (f n : ℂ)
+
+
+/-!
 ### Criteria for and consequences of summability of L-series
 
 We relate summability of L-series with bounds on the coefficients in terms of powers of `n`.
@@ -304,35 +323,3 @@ theorem zeta_LSeriesSummable_iff_one_lt_re {s : ℂ} : LSeriesSummable (ζ ·) s
     simp only [ArithmeticFunction.zeta_apply, hn, ↓reduceIte, Nat.cast_one, Pi.one_apply]
   exact (LSeriesSummable_congr s this).trans <| LSeriesSummable.one_iff_one_lt_re
 #align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re zeta_LSeriesSummable_iff_one_lt_re
-
--- TODO: Move this to a separate file on operations on L-series
-
-lemma LSeries.term_add (f g : ℕ → ℂ) (s : ℂ) :
-    term (f + g) s = term f s + term g s := by
-  ext ⟨- | n⟩
-  · simp only [term_zero, Pi.add_apply, add_zero]
-  · simp only [term_of_ne_zero (Nat.succ_ne_zero _), Pi.add_apply, _root_.add_div]
-
-lemma LSeries.term_add_apply (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
-    term (f + g) s n = term f s n + term g s n := by
-  rw [term_add, Pi.add_apply]
-
-lemma LSeriesHasSum_add {f g : ℕ → ℂ} {s a b : ℂ} (hf : LSeriesHasSum f s a)
-    (hg : LSeriesHasSum g s b) :
-    LSeriesHasSum (f + g) s (a + b) := by
-  simpa only [LSeriesHasSum, term_add] using HasSum.add hf hg
-
-@[simp]
-theorem LSeries_add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s)
-    (hg : LSeriesSummable g s) : LSeries (f + g) s = LSeries f s + LSeries g s := by
-  simp only [LSeries, Pi.add_apply]
-  rw [← tsum_add hf hg]
-  congr
-  exact term_add ..
-#align nat.arithmetic_function.l_series_add LSeries_add
-
-lemma LSeriesSummable_add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s)
-    (hg : LSeriesSummable g s) : LSeriesSummable (f + g) s := by
-  convert Summable.add hf hg
-  simp_rw [← term_add_apply]
-  rfl

@@ -87,7 +87,7 @@ structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOr
   map_bot' : toFun ⊥ = ⊥
 #align bounded_lattice_hom BoundedLatticeHom
 
--- Porting note: todo: remove this configuration and use the default configuration.
+-- Porting note (#11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections SupBotHom (+toSupHom, -toFun)
 initialize_simps_projections InfTopHom (+toInfHom, -toFun)

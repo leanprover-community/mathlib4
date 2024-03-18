@@ -1123,11 +1123,8 @@ end
 section
 
 variable {Γ : Type*} [Inhabited Γ]
-
 variable {Γ' : Type*} [Inhabited Γ']
-
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {Λ' : Type*} [Inhabited Λ']
 
 /-- Map a TM statement across a function. This does nothing to move statements and maps the write
@@ -1438,9 +1435,7 @@ set_option linter.uppercaseLean3 false
 section
 
 variable {Γ : Type*} [Inhabited Γ]
-
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => TM1.Stmt Γ Λ σ
@@ -1616,22 +1611,19 @@ section
 
 variable {Γ : Type*} [Inhabited Γ]
 
-theorem exists_enc_dec [Fintype Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ),
+theorem exists_enc_dec [Finite Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ),
     enc default = Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
-  letI := Classical.decEq Γ
-  let n := Fintype.card Γ
-  obtain ⟨F⟩ := Fintype.truncEquivFin Γ
+  rcases Finite.exists_equiv_fin Γ with ⟨n, ⟨e⟩⟩
+  letI : DecidableEq Γ := e.decidableEq
   let G : Fin n ↪ Fin n → Bool :=
     ⟨fun a b ↦ a = b, fun a b h ↦
       Bool.of_decide_true <| (congr_fun h b).trans <| Bool.decide_true rfl⟩
-  let H := (F.toEmbedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
-  classical
-    let enc := H.setValue default (Vector.replicate n false)
-    exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
+  let H := (e.toEmbedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
+  let enc := H.setValue default (Vector.replicate n false)
+  exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
 #align turing.TM1to1.exists_enc_dec Turing.TM1to1.exists_enc_dec
 
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => Stmt Γ Λ σ
@@ -1979,7 +1971,6 @@ set_option linter.uppercaseLean3 false
 section
 
 variable {Γ : Type*} [Inhabited Γ]
-
 variable {Λ : Type*} [Inhabited Λ]
 
 /-- The machine states for a TM1 emulating a TM0 machine. States of the TM0 machine are embedded
@@ -2334,11 +2325,8 @@ theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option
 section
 
 variable {K : Type*} [DecidableEq K]
-
 variable {Γ : K → Type*}
-
 variable {Λ : Type*} [Inhabited Λ]
-
 variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₂" => TM2.Stmt Γ Λ σ

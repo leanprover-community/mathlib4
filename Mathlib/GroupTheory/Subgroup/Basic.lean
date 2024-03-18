@@ -88,7 +88,6 @@ open Function
 open Int
 
 variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
-
 variable {A : Type*} [AddGroup A]
 
 section SubgroupClass
@@ -979,7 +978,7 @@ theorem mem_sInf {S : Set (Subgroup G)} {x : G} : x ∈ sInf S ↔ ∀ p ∈ S, 
 
 @[to_additive]
 theorem mem_iInf {ι : Sort*} {S : ι → Subgroup G} {x : G} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_range_iff]
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align subgroup.mem_infi Subgroup.mem_iInf
 #align add_subgroup.mem_infi AddSubgroup.mem_iInf
 
@@ -3335,7 +3334,6 @@ end Subgroup
 namespace MonoidHom
 
 variable {G₁ G₂ G₃ : Type*} [Group G₁] [Group G₂] [Group G₃]
-
 variable (f : G₁ →* G₂) (f_inv : G₂ → G₁)
 
 /-- Auxiliary definition used to define `liftOfRightInverse` -/
