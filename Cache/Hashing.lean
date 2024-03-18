@@ -73,7 +73,7 @@ def getRootHash : CacheM UInt64 := do
     if isMathlibRoot then
       pure id
     else
-      pure ((← read).mathlibDepPath / ·)
+      pure ((← mathlibDepPath) / ·)
   let hashs ← rootFiles.mapM fun path =>
     hashFileContents <$> IO.FS.readFile (qualifyPath path)
   return hash (hash Lean.githash :: hashs)
@@ -95,7 +95,7 @@ partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
       modify fun stt => { stt with cache := stt.cache.insert filePath none }
       return none
     let content ← IO.FS.readFile fixedPath
-    let fileImports := getFileImports content (← read).packageDirs
+    let fileImports := getFileImports content (← getPackageDirs)
     let mut importHashes := #[]
     for importHash? in ← fileImports.mapM getFileHash do
       match importHash? with
