@@ -141,18 +141,17 @@ theorem distinct_ordinal_eq_lfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| 
 lemma lfpApprox_mem_fixedPoints_of_eq {a b c : Ordinal.{u}} (h_ab : a < b) (h_ac : a ≤ c)
     (h_fab : lfpApprox f a = lfpApprox f b) :
     lfpApprox f c ∈ fixedPoints f := by
-  have lfpApprox_has_one_fixedPoint {d e : Ordinal.{u}} (h : d < e)
-      (h_fab : lfpApprox f d = lfpApprox f e) :
-      lfpApprox f d ∈ fixedPoints f := by
+  have lfpApprox_has_one_fixedPoint :
+      lfpApprox f a ∈ fixedPoints f := by
     rw [mem_fixedPoints_iff, ← lfpApprox_add_one]
     exact Monotone.eq_of_le_of_le (lfpApprox_monotone f)
-      h_fab (SuccOrder.le_succ d) (SuccOrder.succ_le_of_lt h)
+      h_fab (SuccOrder.le_succ a) (SuccOrder.succ_le_of_lt h_ab)
   obtain rfl | h_eq_ne := eq_or_ne c a
-  · exact lfpApprox_has_one_fixedPoint h_ab h_fab
+  · exact lfpApprox_has_one_fixedPoint
   · rw [lfpApprox_eq_of_mem_fixedPoint f]
-    · exact lfpApprox_has_one_fixedPoint h_ab h_fab
+    · exact lfpApprox_has_one_fixedPoint
     · exact Ne.lt_of_le' h_eq_ne h_ac
-    · exact lfpApprox_has_one_fixedPoint h_ab h_fab
+    · exact lfpApprox_has_one_fixedPoint
 
 /-- A fixed point of f is reached after the successor of the domains cardinality -/
 theorem lfpApprox_has_fixedPoint_cardinal : lfpApprox f (ord <| succ #α) ∈ fixedPoints f := by
