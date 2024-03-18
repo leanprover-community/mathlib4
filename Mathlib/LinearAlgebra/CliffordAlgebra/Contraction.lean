@@ -47,9 +47,7 @@ open LinearMap (BilinForm)
 universe u1 u2 u3
 
 variable {R : Type u1} [CommRing R]
-
 variable {M : Type u2} [AddCommGroup M] [Module R M]
-
 variable (Q : QuadraticForm R M)
 
 namespace CliffordAlgebra
@@ -256,9 +254,7 @@ theorem changeFormAux_changeFormAux (B : BilinForm R M) (v : M) (x : CliffordAlg
 #align clifford_algebra.change_form_aux_change_form_aux CliffordAlgebra.changeFormAux_changeFormAux
 
 variable {Q}
-
 variable {Q' Q'' : QuadraticForm R M} {B B' : BilinForm R M}
-
 variable (h : B.toQuadraticForm = Q' - Q) (h' : B'.toQuadraticForm = Q'' - Q')
 
 /-- Convert between two algebras of different quadratic form, sending vector to vectors, scalars to
