@@ -147,8 +147,9 @@ instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMu
     [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     DistribMulAction M (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.distribMulAction
 
-instance instModule [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₂ F]
-    (𝔖 : Set (Set E)) : Module 𝕜₂ (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.module
+instance instModule (R : Type*) [Semiring R] [Module R F] [SMulCommClass 𝕜₂ R F]
+    [TopologicalSpace F] [ContinuousConstSMul R F] [TopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    Module R (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.module
 
 theorem continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
     [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] (𝔖 : Set (Set E))
