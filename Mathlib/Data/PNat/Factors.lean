@@ -388,7 +388,6 @@ theorem factorMultiset_lcm (m n : ℕ+) :
  is the same as the p-adic valuation of m. -/
 theorem count_factorMultiset (m : ℕ+) (p : Nat.Primes) (k : ℕ) :
     (p : ℕ+) ^ k ∣ m ↔ k ≤ m.factorMultiset.count p := by
-  intros
   rw [Multiset.le_count_iff_replicate_le, ← factorMultiset_le_iff, factorMultiset_pow,
     factorMultiset_ofPrime]
   congr! 2

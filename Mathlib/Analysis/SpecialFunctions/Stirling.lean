@@ -78,7 +78,7 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
       (log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))) := by
   change HasSum
     ((fun b : ℕ => (1:ℝ) / ((2:ℝ) * b + (1:ℝ)) * (((1:ℝ) / (2 * (m + 1 :) + 1)) ^ 2) ^ b) ∘ succ) _
-  refine' (hasSum_nat_add_iff (a := _ - _) -- Porting note: must give implicit arguments
+  refine' (hasSum_nat_add_iff (g := _ - _) -- Porting note: must give implicit arguments
     (f := (fun b : ℕ => ↑1 / (↑2 * b + ↑1) * (((1:ℝ) / (2 * ↑(m + 1) + 1)) ^ 2) ^ b)) 1).mpr _
   convert (hasSum_log_one_add_inv <|
     cast_pos.mpr (succ_pos m)).mul_left ((↑(m + 1) : ℝ) + 1 / 2) using 1
