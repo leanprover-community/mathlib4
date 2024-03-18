@@ -1706,3 +1706,29 @@ instance finArrow (β : Type*) [Primcodable β] : UniformlyPrimcodable (Fin · �
     exact uniformly_prim.of_eq this
 
 end UniformlyPrimcodable
+
+namespace Primcodable
+
+open Encodable UniformlyPrimcodable Primrec
+variable {α : Type*} {β : α → Type*}
+  [Primcodable α] [(a : α) → Primcodable (β a)] [UniformlyPrimcodable β]
+
+instance sigma : Primcodable (Sigma β) where
+  prim := by
+    have p₁ : Primrec (fun e ↦ decode e.unpair.1 : ℕ → Option α) :=
+      Primrec.decode.comp <| fst.comp Primrec.unpair
+    have p₂ : Primrec₂ (fun e a ↦
+        (encodeDecode (β a) e.unpair.2).map (Nat.pair (encode a)) : ℕ → α → Option ℕ) :=
+      (Primrec.option_map
+        (Primrec₂.encodeDecode.comp snd (snd.comp $ Primrec.unpair.comp $ fst))
+        (Primrec₂.natPair.comp₂ (Primrec.encode.comp $ snd.comp $ fst) Primrec₂.right))
+    exact Primrec.nat_iff.mp <| (Primrec.encode.comp $ p₁.option_bind p₂).of_eq (by
+      intro e; simp
+      rcases (decode e.unpair.1 : Option α) with (_ | a) <;> simp
+      rcases hb : (decode e.unpair.2 : Option (β a)) with (_ | b) <;> simp [*, encodeDecode_of_none]
+      simp [encodeDecode_of_some hb])
+
+@[simp] lemma sigma_toEncodable_eq :
+    (sigma : Primcodable (Sigma β)).toEncodable = Sigma.encodable := rfl
+
+end Primcodable
