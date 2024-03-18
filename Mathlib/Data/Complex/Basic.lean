@@ -201,8 +201,10 @@ theorem add_im (z w : ℂ) : (z + w).im = z.im + w.im :=
   rfl
 #align complex.add_im Complex.add_im
 
+-- replaced by `re_ofNat`
 #noalign complex.bit0_re
 #noalign complex.bit1_re
+-- replaced by `im_ofNat`
 #noalign complex.bit0_im
 #noalign complex.bit1_im
 
@@ -211,6 +213,7 @@ theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_add Complex.ofReal_add
 
+-- replaced by `Complex.ofReal_ofNat`
 #noalign complex.of_real_bit0
 #noalign complex.of_real_bit1
 
