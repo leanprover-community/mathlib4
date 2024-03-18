@@ -433,7 +433,6 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
             apply isoWhiskerRight e.counitIso (prod.functor.obj X ⋙ e.inverse ⋙ e.functor) ≪≫ _
             change prod.functor.obj X ⋙ e.inverse ⋙ e.functor ≅ prod.functor.obj X
             apply isoWhiskerLeft (prod.functor.obj X) e.counitIso
-          skip
           apply Adjunction.leftAdjointOfNatIso this }
 #align category_theory.cartesian_closed_of_equiv CategoryTheory.cartesianClosedOfEquiv
 

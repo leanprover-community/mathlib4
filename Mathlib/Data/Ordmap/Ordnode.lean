@@ -1349,7 +1349,7 @@ def ofList' : List α → Ordnode α
 Equivalent elements are selected with a preference for smaller source elements.
 
     image (fun x ↦ x + 2) {1, 2, 4} = {3, 4, 6}
-    image (λ x : ℕ, x - 2) {1, 2, 4} = {0, 2} -/
+    image (fun x : ℕ ↦ x - 2) {1, 2, 4} = {0, 2} -/
 def image {α β} [LE β] [@DecidableRel β (· ≤ ·)] (f : α → β) (t : Ordnode α) : Ordnode β :=
   ofList (t.toList.map f)
 #align ordnode.image Ordnode.image

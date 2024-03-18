@@ -1174,6 +1174,12 @@ theorem isOpen_iff_nhds : IsOpen s ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s :=
     _ ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s := by simp_rw [interior_eq_nhds, subset_def, mem_setOf]
 #align is_open_iff_nhds isOpen_iff_nhds
 
+theorem TopologicalSpace.ext_iff_nhds {t t' : TopologicalSpace X} :
+    t = t' ↔ ∀ x, @nhds _ t x = @nhds _ t' x :=
+  ⟨fun H x ↦ congrFun (congrArg _ H) _, fun H ↦ by ext; simp_rw [@isOpen_iff_nhds _ _ _, H]⟩
+
+alias ⟨_, TopologicalSpace.ext_nhds⟩ := TopologicalSpace.ext_iff_nhds
+
 theorem isOpen_iff_mem_nhds : IsOpen s ↔ ∀ x ∈ s, s ∈ 𝓝 x :=
   isOpen_iff_nhds.trans <| forall_congr' fun _ => imp_congr_right fun _ => le_principal_iff
 #align is_open_iff_mem_nhds isOpen_iff_mem_nhds
@@ -1857,11 +1863,11 @@ However, lemmas with this conclusion are not nice to use in practice because
   elaboration process.
   ```
   variable {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
-  example : Continuous (λ x : M, x + x) :=
-  continuous_add.comp _
+  example : Continuous (fun x : M ↦ x + x) :=
+    continuous_add.comp _
 
-  example : Continuous (λ x : M, x + x) :=
-  continuous_add.comp (continuous_id.prod_mk continuous_id)
+  example : Continuous (fun x : M ↦ x + x) :=
+    continuous_add.comp (continuous_id.prod_mk continuous_id)
   ```
   The second is a valid proof, which is accepted if you write it as
   `continuous_add.comp (continuous_id.prod_mk continuous_id : _)`
@@ -1873,7 +1879,8 @@ However, lemmas with this conclusion are not nice to use in practice because
 
 A much more convenient way to write continuity lemmas is like `Continuous.add`:
 ```
-Continuous.add {f g : X → M} (hf : Continuous f) (hg : Continuous g) : Continuous (λ x, f x + g x)
+Continuous.add {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
+  Continuous (fun x ↦ f x + g x)
 ```
 The conclusion can be `Continuous (f + g)`, which is definitionally equal.
 This has the following advantages

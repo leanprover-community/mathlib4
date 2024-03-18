@@ -1173,7 +1173,7 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) f g
   rw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
-  -- Porting note: change `rw` to `erw` on this lemma
+  -- Porting note (#11224): change `rw` to `erw` on this lemma
   erw [TopCat.pullback_fst_range]
   ext
   constructor

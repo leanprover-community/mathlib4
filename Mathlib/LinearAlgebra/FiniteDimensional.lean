@@ -856,7 +856,8 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [h : R
       show x * dite _ (h := _) _ = _ by
         rw [dif_neg hx]
         exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
-    inv_zero := dif_pos rfl }
+    inv_zero := dif_pos rfl
+    qsmul := qsmulRec _ }
 #align division_ring_of_finite_dimensional divisionRingOfFiniteDimensional
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/

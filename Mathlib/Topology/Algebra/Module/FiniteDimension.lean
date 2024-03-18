@@ -195,11 +195,10 @@ variable [CompleteSpace 𝕜]
 
 /-- This version imposes `ι` and `E` to live in the same universe, so you should instead use
 `continuous_equivFun_basis` which gives the same result without universe restrictions. -/
-private theorem continuous_equivFun_basis_aux [ht2 : T2Space E] {ι : Type v} [Fintype ι]
+private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype ι]
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
   letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
   letI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
-  letI : SeparatedSpace E := separated_iff_t2.mpr ht2
   induction' hn : Fintype.card ι with n IH generalizing ι E
   · rw [Fintype.card_eq_zero_iff] at hn
     exact continuous_of_const fun x y => funext hn.elim
@@ -546,7 +545,6 @@ theorem Submodule.closed_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDime
     IsClosed (s : Set E) :=
   letI := TopologicalAddGroup.toUniformSpace E
   haveI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
-  haveI := separated_iff_t2.2 ‹T2Space E›
   s.complete_of_finiteDimensional.isClosed
 #align submodule.closed_of_finite_dimensional Submodule.closed_of_finiteDimensional
 

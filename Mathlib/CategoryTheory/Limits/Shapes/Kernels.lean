@@ -423,10 +423,8 @@ theorem kernel_not_epi_of_nonzero (w : f ≠ 0) : ¬Epi (kernel.ι f) := fun _ =
   w (eq_zero_of_epi_kernel f)
 #align category_theory.limits.kernel_not_epi_of_nonzero CategoryTheory.Limits.kernel_not_epi_of_nonzero
 
-theorem kernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (kernel.ι f) → False := fun I =>
-  kernel_not_epi_of_nonzero w <| by
-    skip
-    infer_instance
+theorem kernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (kernel.ι f) → False := fun _ =>
+  kernel_not_epi_of_nonzero w inferInstance
 #align category_theory.limits.kernel_not_iso_of_nonzero CategoryTheory.Limits.kernel_not_iso_of_nonzero
 
 instance hasKernel_comp_mono {X Y Z : C} (f : X ⟶ Y) [HasKernel f] (g : Y ⟶ Z) [Mono g] :
@@ -926,10 +924,8 @@ theorem cokernel_not_mono_of_nonzero (w : f ≠ 0) : ¬Mono (cokernel.π f) := f
   w (eq_zero_of_mono_cokernel f)
 #align category_theory.limits.cokernel_not_mono_of_nonzero CategoryTheory.Limits.cokernel_not_mono_of_nonzero
 
-theorem cokernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (cokernel.π f) → False := fun I =>
-  cokernel_not_mono_of_nonzero w <| by
-    skip
-    infer_instance
+theorem cokernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (cokernel.π f) → False := fun _ =>
+  cokernel_not_mono_of_nonzero w inferInstance
 #align category_theory.limits.cokernel_not_iso_of_nonzero CategoryTheory.Limits.cokernel_not_iso_of_nonzero
 
 -- TODO the remainder of this section has obvious generalizations to `HasCoequalizer f g`.

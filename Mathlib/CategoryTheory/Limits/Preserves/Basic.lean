@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 # Preservation and reflection of (co)limits.
 
 There are various distinct notions of "preserving limits". The one we
-aim to capture here is: A functor F : C → D "preserves limits" if it
+aim to capture here is: A functor F : C ⥤ D "preserves limits" if it
 sends every limit cone in C to a limit cone in D. Informally, F
 preserves all the limits which exist in C.
 
@@ -185,6 +185,13 @@ instance idPreservesColimits : PreservesColimitsOfSize.{w', w} (𝟭 C) where
             cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_preserves_colimits CategoryTheory.Limits.idPreservesColimits
+
+instance [HasLimit K] {F : C ⥤ D} [PreservesLimit K F] : HasLimit (K ⋙ F) where
+  exists_limit := ⟨⟨F.mapCone (limit.cone K), PreservesLimit.preserves (limit.isLimit K)⟩⟩
+
+instance [HasColimit K] {F : C ⥤ D} [PreservesColimit K F] : HasColimit (K ⋙ F) where
+  exists_colimit :=
+    ⟨⟨F.mapCocone (colimit.cocone K), PreservesColimit.preserves (colimit.isColimit K)⟩⟩
 
 section
 
