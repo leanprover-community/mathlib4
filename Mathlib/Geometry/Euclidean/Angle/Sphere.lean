@@ -25,7 +25,6 @@ open scoped EuclideanGeometry Real RealInnerProductSpace ComplexConjugate
 namespace Orientation
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
-
 variable [Fact (finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2))
 
 /-- Angle at center of a circle equals twice angle at circumference, oriented vector angle
