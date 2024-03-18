@@ -178,7 +178,10 @@ section Maps
 
 variable {α' σ' : Type*} (f : α' → α) (g : σ ≃ σ')
 
-/-- Transforms the alphabet of a DFA. -/
+/--
+`M.comap f` pulls back the alphabet of `M` along `f`. In other words, it applies `f` to the input
+before passing it to `M`.
+-/
 @[simps]
 def comap : DFA α' σ where
   step s a := M.step s (f a)
