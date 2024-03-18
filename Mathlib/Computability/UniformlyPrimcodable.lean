@@ -54,8 +54,7 @@ lemma _root_.Primrec₂.encodeDecode [UniformlyPrimcodable β] :
     unfold encodeDecode
     rcases decode n <;> simp
 
-/-- `β` is `UniformlyPrimcodable` if the `encodeDecode` of `β` is primitive recursive.-/
-def ofEncodeDecode (h : Primrec₂ fun a ↦ encodeDecode (β a)) :
+lemma of_EncodeDecode (h : Primrec₂ fun a ↦ encodeDecode (β a)) :
     UniformlyPrimcodable β where
   uniformly_prim := (Primrec.encode.comp₂ h).of_eq fun a n ↦ by
     unfold encodeDecode
@@ -65,8 +64,7 @@ protected instance const (α β : Type*) [Primcodable α] [Primcodable β] :
     UniformlyPrimcodable fun (_ : α) ↦ β where
   uniformly_prim := (nat_iff.mpr Primcodable.prim).comp snd
 
-/-- A subtype is `UniformlyPrimcodable` if its characteristic function is primitive recursive.-/
-def subtype {β : Type*} [Primcodable β] {R : α → β → Prop}
+lemma subtype {β : Type*} [Primcodable β] {R : α → β → Prop}
     [(a : α) → (b : β) → Decidable (R a b)] (hR : PrimrecRel R) :
     haveI : (a : α) → Primcodable { x // R a x } := fun a ↦
       Primcodable.subtype (hR.comp (Primrec.const a) Primrec.id)
