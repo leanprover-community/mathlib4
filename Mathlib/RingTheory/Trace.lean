@@ -3,7 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Matrix.BilinearForm
+import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.FiniteDimensional
@@ -14,6 +14,7 @@ import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.Galois
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.LinearAlgebra.SesquilinearForm.Properties
 
 #align_import ring_theory.trace from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
@@ -80,6 +81,8 @@ open Matrix
 open scoped BigOperators
 
 open scoped Matrix
+
+open LinearMap (BilinForm)
 
 namespace Algebra
 
@@ -194,7 +197,7 @@ variable (R S)
 It is a symmetric bilinear form and is nondegenerate if the extension is separable. -/
 noncomputable def traceForm : BilinForm R S :=
 -- Porting note: dot notation `().toBilin` does not work anymore.
-  LinearMap.toBilin (LinearMap.compr₂ (lmul R S).toLinearMap (trace R S))
+  LinearMap.compr₂ (lmul R S).toLinearMap (trace R S)
 #align algebra.trace_form Algebra.traceForm
 
 variable {S}
@@ -209,12 +212,13 @@ theorem traceForm_isSymm : (traceForm R S).IsSymm := fun _ _ => congr_arg (trace
 #align algebra.trace_form_is_symm Algebra.traceForm_isSymm
 
 theorem traceForm_toMatrix [DecidableEq ι] (i j) :
-    BilinForm.toMatrix b (traceForm R S) i j = trace R S (b i * b j) := by
-  rw [BilinForm.toMatrix_apply, traceForm_apply]
+    LinearMap.toMatrix₂ b b (traceForm R S) i j = trace R S (b i * b j) := by
+  rw [LinearMap.toMatrix₂_apply, traceForm_apply]
 #align algebra.trace_form_to_matrix Algebra.traceForm_toMatrix
 
 theorem traceForm_toMatrix_powerBasis (h : PowerBasis R S) :
-    BilinForm.toMatrix h.basis (traceForm R S) = of fun i j => trace R S (h.gen ^ (i.1 + j.1)) :=
+    LinearMap.toMatrix₂ h.basis h.basis (traceForm R S) = of fun i j =>
+    trace R S (h.gen ^ (i.1 + j.1)) :=
   by ext; rw [traceForm_toMatrix, of_apply, pow_add, h.basis_eq_pow, h.basis_eq_pow]
 #align algebra.trace_form_to_matrix_power_basis Algebra.traceForm_toMatrix_powerBasis
 
@@ -473,12 +477,8 @@ variable {A}
 theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ κ A) :
     traceMatrix A (b ᵥ* P.map (algebraMap A B)) = Pᵀ * traceMatrix A b * P := by
   ext (α β)
-  rw [traceMatrix_apply, vecMul, dotProduct, vecMul, dotProduct, Matrix.mul_apply,
-    BilinForm.sum_left,
-    Fintype.sum_congr _ _ fun i : κ =>
-      BilinForm.sum_right _ _ (b i * P.map (algebraMap A B) i α) fun y : κ =>
-        b y * P.map (algebraMap A B) y β,
-    sum_comm]
+  rw [traceMatrix_apply, vecMul, dotProduct, vecMul, dotProduct, Matrix.mul_apply, map_sum₂,
+    Fintype.sum_congr _ _ fun i : κ => map_sum _ _ _, sum_comm]
   congr; ext x
   rw [Matrix.mul_apply, sum_mul]
   congr; ext y
@@ -499,7 +499,7 @@ theorem traceMatrix_of_matrix_mulVec [Fintype κ] (b : κ → B) (P : Matrix κ 
 #align algebra.trace_matrix_of_matrix_mul_vec Algebra.traceMatrix_of_matrix_mulVec
 
 theorem traceMatrix_of_basis [Fintype κ] [DecidableEq κ] (b : Basis κ A B) :
-    traceMatrix A b = BilinForm.toMatrix b (traceForm A B) := by
+    traceMatrix A b = LinearMap.toMatrix₂ b b (traceForm A B) := by
   ext (i j)
   rw [traceMatrix_apply, traceForm_apply, traceForm_toMatrix]
 #align algebra.trace_matrix_of_basis Algebra.traceMatrix_of_basis
@@ -606,12 +606,13 @@ theorem det_traceMatrix_ne_zero' [IsSeparable K L] : det (traceMatrix K pb.basis
   · rw [AlgHom.card, pb.finrank]
 #align det_trace_matrix_ne_zero' det_traceMatrix_ne_zero'
 
+
 theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K L) :
-    det (BilinForm.toMatrix b (traceForm K L)) ≠ 0 := by
+    det (LinearMap.toMatrix₂ b b (traceForm K L)) ≠ 0 := by
   haveI : FiniteDimensional K L := FiniteDimensional.of_fintype_basis b
   let pb : PowerBasis K L := Field.powerBasisOfFiniteOfSeparable _ _
-  rw [← BilinForm.toMatrix_mul_basis_toMatrix pb.basis b, ←
-    det_comm' (pb.basis.toMatrix_mul_toMatrix_flip b) _, ← Matrix.mul_assoc, det_mul]
+  rw [← LinearMap.toMatrix₂_mul_basis_toMatrix pb.basis pb.basis, ← det_comm', ← Matrix.mul_assoc,
+    det_mul]
   swap; · apply Basis.toMatrix_mul_toMatrix_flip
   refine'
     mul_ne_zero
@@ -626,15 +627,16 @@ theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K
         simp only [Basis.toMatrix_mul_toMatrix_flip, Matrix.transpose_one, Matrix.mul_one,
           Matrix.det_one]
   simpa only [traceMatrix_of_basis] using det_traceMatrix_ne_zero' pb
+  rw [Basis.toMatrix_mul_toMatrix_flip]
 #align det_trace_form_ne_zero det_traceForm_ne_zero
 
 variable (K L)
 
-theorem traceForm_nondegenerate [FiniteDimensional K L] [IsSeparable K L] :
-    (traceForm K L).Nondegenerate :=
-  BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
-    (det_traceForm_ne_zero (FiniteDimensional.finBasis K L))
-#align trace_form_nondegenerate traceForm_nondegenerate
+-- separatingLeft_of_det_ne_zero
+theorem traceForm_separatingLeft [FiniteDimensional K L] [IsSeparable K L] :
+    (traceForm K L).SeparatingLeft :=
+  separatingLeft_of_det_ne_zero _ (det_traceForm_ne_zero (FiniteDimensional.finBasis K L))
+#align trace_form_nondegenerate traceForm_separatingLeft
 
 theorem Algebra.trace_ne_zero [FiniteDimensional K L] [IsSeparable K L] :
     Algebra.trace K L ≠ 0 := by
@@ -660,10 +662,10 @@ with `f` being the minimal polynomial of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 -/
 lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [IsSeparable K L]
     (pb : PowerBasis K L) (i) :
-    (Algebra.traceForm K L).dualBasis (traceForm_nondegenerate K L) pb.basis i =
+    (Algebra.traceForm K L).dualBasis (traceForm_separatingLeft K L) pb.basis i =
       (minpolyDiv K pb.gen).coeff i / aeval pb.gen (derivative <| minpoly K pb.gen) := by
   classical
-  apply ((Algebra.traceForm K L).toDual (traceForm_nondegenerate K L)).injective
+  apply ((Algebra.traceForm K L).toDual (traceForm_separatingLeft K L)).injective
   apply pb.basis.ext
   intro j
   simp only [BilinForm.toDual_def, BilinForm.apply_dualBasis_left]
