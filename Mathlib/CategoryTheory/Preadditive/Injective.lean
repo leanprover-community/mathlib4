@@ -196,7 +196,6 @@ section Adjunction
 open CategoryTheory.Functor
 
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {L : C ⥤ D} {R : D ⥤ C} [PreservesMonomorphisms L]
 
 theorem injective_of_adjoint (adj : L ⊣ R) (J : D) [Injective J] : Injective <| R.obj J :=

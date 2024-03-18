@@ -47,19 +47,14 @@ open BigOperators Matrix LinearMap Submodule Set Function
 universe u v w
 
 variable {R : Type*} [CommRing R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
-
 variable {M' : Type*} [AddCommGroup M'] [Module R M']
-
 variable {ι : Type*} [DecidableEq ι] [Fintype ι]
-
 variable (e : Basis ι R M)
 
 section Conjugate
 
 variable {A : Type*} [CommRing A]
-
 variable {m n : Type*} [Fintype m] [Fintype n]
 
 /-- If `R^m` and `R^n` are linearly equivalent, then `m` and `n` are also equivalent. -/
@@ -111,7 +106,6 @@ namespace LinearMap
 
 
 variable {A : Type*} [CommRing A] [Module A M]
-
 variable {κ : Type*} [Fintype κ]
 
 /-- The determinant of `LinearMap.toMatrix` does not depend on the choice of basis. -/
