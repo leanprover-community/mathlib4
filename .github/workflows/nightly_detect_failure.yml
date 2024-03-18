@@ -101,7 +101,7 @@ jobs:
                 'type': 'stream',
                 'to': 'nightly-testing',
                 'topic': 'Mathlib status updates',
-                'content': '✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!'
+                'content': "✅ The latest CI for Mathlib's branch#nightly-testing has succeeded!"
             }
             result = client.send_message(request)
             print(result)
@@ -191,7 +191,7 @@ jobs:
                 'type': 'stream',
                 'to': 'nightly-testing',
                 'topic': 'Mathlib status update',
-                'content': f'🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}.'
+                'content': f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}."
             }
             result = client.send_message(request)
         else:
