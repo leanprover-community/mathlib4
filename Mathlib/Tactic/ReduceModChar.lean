@@ -131,31 +131,48 @@ instance : Inhabited (TypeToCharPResult α) := ⟨.failure⟩
 
 /-- Determine the characteristic of a ring from the type.
 This should be fast, so this pattern-matches on the type, rather than searching for a
-`CharP` instance. -/
-partial def typeToCharP (t : Q(Type u)) : TypeToCharPResult t :=
+`CharP` instance.
+Use `typeToCharP (expensive := true)` to do more work in finding the characteristic,
+in particular it will search for a `CharP` instance in the context. -/
+partial def typeToCharP (expensive := false) (t : Q(Type u)) : MetaM (TypeToCharPResult t) :=
 match Expr.getAppFnArgs t with
-| (``ZMod, #[(n : Q(ℕ))]) => .intLike n
-  (q((ZMod.commRing _).toRing) : Q(Ring (ZMod $n)))
-  (q(ZMod.charP _) : Q(CharP (ZMod $n) $n))
-| (``Polynomial, #[(R : Q(Type u)), _]) => match typeToCharP R with
-  | (.intLike n _ _) => .intLike n
-    (q(Polynomial.ring) : Q(Ring (Polynomial $R)))
-    (q(Polynomial.instCharP _) : Q(CharP (Polynomial $R) $n))
-  | .failure => .failure
-| _ => .failure
+| (``ZMod, #[(n : Q(ℕ))]) =>
+  return .intLike n
+    (q((ZMod.commRing _).toRing) : Q(Ring (ZMod $n)))
+    (q(ZMod.charP _) : Q(CharP (ZMod $n) $n))
+| (``Polynomial, #[(R : Q(Type u)), _]) => do match ← typeToCharP (expensive := expensive) R with
+  | (.intLike n _ _) =>
+    return .intLike n
+      (q(Polynomial.ring) : Q(Ring (Polynomial $R)))
+      (q(Polynomial.instCharP _) : Q(CharP (Polynomial $R) $n))
+  | .failure => return .failure
+| _ => if ! expensive then return .failure else do
+  -- Fallback: run an expensive procedures to determine a characteristic,
+  -- by looking for a `CharP` instance.
+  withNewMCtxDepth do
+    /- If we want to support semirings, here we could implement the `natLike` fallback. -/
+    let .some instRing ← trySynthInstanceQ q(Ring $t) | return .failure
+
+    let n ← mkFreshExprMVarQ q(ℕ)
+    let .some instCharP ← findLocalDeclWithType? q(CharP $t $n) | return .failure
+
+    return .intLike (← instantiateMVarsQ n) instRing (.fvar instCharP)
 
 /-- Given an expression `e`, determine whether it is a numeric expression in characteristic `n`,
 and if so, reduce `e` modulo `n`.
 
 This is not a `norm_num` plugin because it does not match on the syntax of `e`,
 rather it matches on the type of `e`.
+
+Use `matchAndNorm (expensive := true)` to do more work in finding the characteristic of
+the type of `e`.
 -/
-partial def matchAndNorm (e : Expr) : MetaM Simp.Result := do
+partial def matchAndNorm (expensive := false) (e : Expr) : MetaM Simp.Result := do
   let α ← inferType e
   let u_succ : Level ← getLevel α
   let (.succ u) := u_succ | throwError "expected {α} to be a `Type _`, not `Sort {u_succ}`"
   have α : Q(Type u) := α
-  match typeToCharP α with
+  match ← typeToCharP (expensive := expensive) α with
     | (.intLike n instRing instCharP) =>
       -- Handle the numeric expressions first, e.g. `-5` (which shouldn't become `-1 * 5`)
       normIntNumeral n e instRing instCharP >>= Result.toSimpResult <|>
@@ -175,8 +192,12 @@ attribute [reduce_mod_char] sub_eq_add_neg
 attribute [reduce_mod_char] zero_add add_zero zero_mul mul_zero one_mul mul_one
 attribute [reduce_mod_char] eq_self_iff_true -- For closing non-numeric goals, e.g. `X = X`
 
-/-- Reduce all numeric subexpressions of `e` modulo their characteristic. -/
-partial def derive (e : Expr) : MetaM Simp.Result := do
+/-- Reduce all numeric subexpressions of `e` modulo their characteristic.
+
+Use `derive (expensive := true)` to do more work in finding the characteristic of
+the type of `e`.
+-/
+partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
   withTraceNode `Tactic.reduce_mod_char (fun _ => return m!"{e}") do
   let e ← instantiateMVars e
 
@@ -200,7 +221,7 @@ partial def derive (e : Expr) : MetaM Simp.Result := do
   let discharge := Mathlib.Meta.NormNum.discharge ctx
   let r : Simp.Result := {expr := e}
   let pre := Simp.preDefault #[] >> fun e =>
-      try return (Simp.Step.done (← matchAndNorm e))
+      try return (Simp.Step.done (← matchAndNorm (expensive := expensive) e))
       catch _ => pure .continue
   let post := Simp.postDefault #[]
   let r ← r.mkEqTrans (← Simp.main r.expr ctx (methods := { pre, post, discharge? := discharge })).1
@@ -208,10 +229,10 @@ partial def derive (e : Expr) : MetaM Simp.Result := do
   return r
 
 /-- Reduce all numeric subexpressions of the goal modulo their characteristic. -/
-partial def reduceModCharTarget : TacticM Unit := do
+partial def reduceModCharTarget (expensive := false) : TacticM Unit := do
   liftMetaTactic1 fun goal ↦ do
     let tgt ← instantiateMVars (← goal.getType)
-    let prf ← derive tgt
+    let prf ← derive (expensive := expensive) tgt
     if prf.expr.consumeMData.isConstOf ``True then
       match prf.proof? with
       | some proof => goal.assign (← mkOfEqTrue proof)
@@ -221,10 +242,10 @@ partial def reduceModCharTarget : TacticM Unit := do
       applySimpResultToTarget goal tgt prf
 
 /-- Reduce all numeric subexpressions of the given hypothesis modulo their characteristic. -/
-partial def reduceModCharHyp (fvarId : FVarId) : TacticM Unit :=
+partial def reduceModCharHyp (expensive := false) (fvarId : FVarId) : TacticM Unit :=
   liftMetaTactic1 fun goal ↦ do
     let hyp ← instantiateMVars (← fvarId.getDecl).type
-    let prf ← derive hyp
+    let prf ← derive (expensive := expensive) hyp
     return (← applySimpResultToLocalDecl goal fvarId prf false).map (·.snd)
 
 open Parser.Tactic Elab.Tactic
@@ -244,8 +265,13 @@ and similarly subtraction.
 
 This tactic uses the type of the subexpression to figure out if it is indeed of positive
 characteristic, for improved performance compared to trying to synthesise a `CharP` instance.
+The variant `reduce_mod_char!` also tries to use `CharP R n` hypotheses in the context.
+(Limitations of the typeclass system mean the tactic can't search for a `CharP R n` instance if
+`n` is not yet known; use `have : CharP R n := inferInstance; reduce_mod_char!` as a workaround.)
 -/
 syntax (name := reduce_mod_char) "reduce_mod_char" (location)? : tactic
+@[inherit_doc reduce_mod_char]
+syntax (name := reduce_mod_char!) "reduce_mod_char!" (location)? : tactic
 
 elab_rules : tactic
 | `(tactic| reduce_mod_char $[$loc]?) => unsafe do
@@ -256,6 +282,14 @@ elab_rules : tactic
   | Location.wildcard => do
     (← (← getMainGoal).getNondepPropHyps).forM reduceModCharHyp
     reduceModCharTarget
+| `(tactic| reduce_mod_char! $[$loc]?) => unsafe do
+  match expandOptLocation (Lean.mkOptionalNode loc) with
+  | Location.targets hyps target => do
+    (← getFVarIds hyps).forM (reduceModCharHyp (expensive := true))
+    if target then reduceModCharTarget (expensive := true)
+  | Location.wildcard => do
+    (← (← getMainGoal).getNondepPropHyps).forM (reduceModCharHyp (expensive := true))
+    reduceModCharTarget (expensive := true)
 
 end ReduceModChar
 
