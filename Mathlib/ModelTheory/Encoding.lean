@@ -14,13 +14,13 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 
 ## Main Definitions
 * `FirstOrder.Language.Term.encoding` encodes terms as lists.
-* `FirstOrder.Language.BoundedFormula.encoding` encodes bounded formulas as lists.
+* `FirstOrder.Language.Semiformula.encoding` encodes bounded formulas as lists.
 
 ## Main Results
 * `FirstOrder.Language.Term.card_le` shows that the number of terms in `L.Term α` is at most
 `max ℵ₀ # (α ⊕ Σ i, L.Functions i)`.
-* `FirstOrder.Language.BoundedFormula.card_le` shows that the number of bounded formulas in
-`Σ n, L.BoundedFormula α n` is at most
+* `FirstOrder.Language.Semiformula.card_le` shows that the number of bounded formulas in
+`Σ n, L.Semiformula α n` is at most
 `max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card)`.
 
 ## TODO
@@ -170,36 +170,36 @@ instance small [Small.{u} α] : Small.{u} (L.Term α) :=
 
 end Term
 
-namespace BoundedFormula
+namespace Semiformula
 
 /-- Encodes a bounded formula as a list of symbols. -/
 def listEncode : ∀ {n : ℕ},
-    L.BoundedFormula α n → List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.Relations n) ℕ))
+    L.Semiformula α n → List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.Relations n) ℕ))
   | n, falsum => [Sum.inr (Sum.inr (n + 2))]
   | _, equal t₁ t₂ => [Sum.inl ⟨_, t₁⟩, Sum.inl ⟨_, t₂⟩]
   | n, rel R ts => [Sum.inr (Sum.inl ⟨_, R⟩), Sum.inr (Sum.inr n)] ++
       (List.finRange _).map fun i => Sum.inl ⟨n, ts i⟩
   | _, imp φ₁ φ₂ => (Sum.inr (Sum.inr 0)::φ₁.listEncode) ++ φ₂.listEncode
   | _, all φ => Sum.inr (Sum.inr 1)::φ.listEncode
-#align first_order.language.bounded_formula.list_encode FirstOrder.Language.BoundedFormula.listEncode
+#align first_order.language.bounded_formula.list_encode FirstOrder.Language.Semiformula.listEncode
 
-/-- Applies the `forall` quantifier to an element of `(Σ n, L.BoundedFormula α n)`,
+/-- Applies the `forall` quantifier to an element of `(Σ n, L.Semiformula α n)`,
 or returns `default` if not possible. -/
-def sigmaAll : (Σn, L.BoundedFormula α n) → Σn, L.BoundedFormula α n
+def sigmaAll : (Σn, L.Semiformula α n) → Σn, L.Semiformula α n
   | ⟨n + 1, φ⟩ => ⟨n, φ.all⟩
   | _ => default
-#align first_order.language.bounded_formula.sigma_all FirstOrder.Language.BoundedFormula.sigmaAll
+#align first_order.language.bounded_formula.sigma_all FirstOrder.Language.Semiformula.sigmaAll
 
-/-- Applies `imp` to two elements of `(Σ n, L.BoundedFormula α n)`,
+/-- Applies `imp` to two elements of `(Σ n, L.Semiformula α n)`,
 or returns `default` if not possible. -/
-def sigmaImp : (Σn, L.BoundedFormula α n) → (Σn, L.BoundedFormula α n) → Σn, L.BoundedFormula α n
+def sigmaImp : (Σn, L.Semiformula α n) → (Σn, L.Semiformula α n) → Σn, L.Semiformula α n
   | ⟨m, φ⟩, ⟨n, ψ⟩ => if h : m = n then ⟨m, φ.imp (Eq.mp (by rw [h]) ψ)⟩ else default
-#align first_order.language.bounded_formula.sigma_imp FirstOrder.Language.BoundedFormula.sigmaImp
+#align first_order.language.bounded_formula.sigma_imp FirstOrder.Language.Semiformula.sigmaImp
 
 /-- Decodes a list of symbols as a list of formulas. -/
 @[simp]
 def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.Relations n) ℕ)),
-    (Σn, L.BoundedFormula α n) ×
+    (Σn, L.Semiformula α n) ×
     { l' : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.Relations n) ℕ)) //
       SizeOf.sizeOf l' ≤ max 1 (SizeOf.sizeOf l) }
   | Sum.inr (Sum.inr (n + 2))::l => ⟨⟨n, falsum⟩, l, le_max_of_le_right le_add_self⟩
@@ -210,7 +210,7 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
   | Sum.inr (Sum.inl ⟨n, R⟩)::Sum.inr (Sum.inr k)::l =>
     ⟨if h : ∀ i : Fin n, ((l.map Sum.getLeft?).get? i).join.isSome then
         if h' : ∀ i, (Option.get _ (h i)).1 = k then
-          ⟨k, BoundedFormula.rel R fun i => Eq.mp (by rw [h' i]) (Option.get _ (h i)).2⟩
+          ⟨k, Semiformula.rel R fun i => Eq.mp (by rw [h' i]) (Option.get _ (h i)).2⟩
         else default
       else default,
       l.drop n, le_max_of_le_right (le_add_left (le_add_left (List.drop_sizeOf_le _ _)))⟩
@@ -231,12 +231,12 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
     ⟨sigmaAll (listDecode l).1, (listDecode l).2,
       (listDecode l).2.2.trans (max_le_max le_rfl le_add_self)⟩
   | _ => ⟨default, [], le_max_left _ _⟩
-#align first_order.language.bounded_formula.list_decode FirstOrder.Language.BoundedFormula.listDecode
+#align first_order.language.bounded_formula.list_decode FirstOrder.Language.Semiformula.listDecode
 
 @[simp]
-theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
+theorem listDecode_encode_list (l : List (Σn, L.Semiformula α n)) :
     (listDecode (l.bind fun φ => φ.2.listEncode)).1 = l.headI := by
-  suffices h : ∀ (φ : Σn, L.BoundedFormula α n) (l),
+  suffices h : ∀ (φ : Σn, L.Semiformula α n) (l),
       (listDecode (listEncode φ.2 ++ l)).1 = φ ∧ (listDecode (listEncode φ.2 ++ l)).2.1 = l by
     induction' l with φ l _
     · rw [List.nil_bind]
@@ -251,7 +251,7 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
     · simp only [eq_self_iff_true, heq_iff_eq, and_self_iff]
   · rw [listEncode, cons_append, cons_append, singleton_append, cons_append, listDecode]
     · have h : ∀ i : Fin φ_l, ((List.map Sum.getLeft? (List.map (fun i : Fin φ_l =>
-        Sum.inl (⟨(⟨φ_n, rel φ_R ts⟩ : Σn, L.BoundedFormula α n).fst, ts i⟩ :
+        Sum.inl (⟨(⟨φ_n, rel φ_R ts⟩ : Σn, L.Semiformula α n).fst, ts i⟩ :
           Σn, L.Term (Sum α (Fin n)))) (finRange φ_l) ++ l)).get? ↑i).join = some ⟨_, ts i⟩ := by
         intro i
         simp only [Option.join, map_append, map_map, Option.bind_eq_some, id.def, exists_eq_right,
@@ -287,11 +287,11 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
     simp only [] at *
     rw [(ih _).1, (ih _).2, sigmaAll]
     exact ⟨rfl, rfl⟩
-#align first_order.language.bounded_formula.list_decode_encode_list FirstOrder.Language.BoundedFormula.listDecode_encode_list
+#align first_order.language.bounded_formula.list_decode_encode_list FirstOrder.Language.Semiformula.listDecode_encode_list
 
 /-- An encoding of bounded formulas as lists. -/
 @[simps]
-protected def encoding : Encoding (Σn, L.BoundedFormula α n) where
+protected def encoding : Encoding (Σn, L.Semiformula α n) where
   Γ := Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.Relations n) ℕ)
   encode φ := φ.2.listEncode
   decode l := (listDecode l).1
@@ -301,16 +301,16 @@ protected def encoding : Encoding (Σn, L.BoundedFormula α n) where
     simp only
     rw [h]
     rfl
-#align first_order.language.bounded_formula.encoding FirstOrder.Language.BoundedFormula.encoding
+#align first_order.language.bounded_formula.encoding FirstOrder.Language.Semiformula.encoding
 
 theorem listEncode_sigma_injective :
-    Function.Injective fun φ : Σn, L.BoundedFormula α n => φ.2.listEncode :=
-  BoundedFormula.encoding.encode_injective
-#align first_order.language.bounded_formula.list_encode_sigma_injective FirstOrder.Language.BoundedFormula.listEncode_sigma_injective
+    Function.Injective fun φ : Σn, L.Semiformula α n => φ.2.listEncode :=
+  Semiformula.encoding.encode_injective
+#align first_order.language.bounded_formula.list_encode_sigma_injective FirstOrder.Language.Semiformula.listEncode_sigma_injective
 
-theorem card_le : #(Σn, L.BoundedFormula α n) ≤
+theorem card_le : #(Σn, L.Semiformula α n) ≤
     max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card) := by
-  refine' lift_le.1 (BoundedFormula.encoding.card_le_card_list.trans _)
+  refine' lift_le.1 (Semiformula.encoding.card_le_card_list.trans _)
   rw [encoding_Γ, mk_list_eq_max_mk_aleph0, lift_max, lift_aleph0, lift_max, lift_aleph0,
     max_le_iff]
   refine' ⟨_, le_max_left _ _⟩
@@ -318,9 +318,9 @@ theorem card_le : #(Σn, L.BoundedFormula α n) ≤
   simp only [lift_add, lift_lift, lift_aleph0]
   rw [← add_assoc, add_comm, ← add_assoc, ← add_assoc, aleph0_add_aleph0, add_assoc,
     add_eq_max le_rfl, add_assoc, card, Symbols, mk_sum, lift_add, lift_lift, lift_lift]
-#align first_order.language.bounded_formula.card_le FirstOrder.Language.BoundedFormula.card_le
+#align first_order.language.bounded_formula.card_le FirstOrder.Language.Semiformula.card_le
 
-end BoundedFormula
+end Semiformula
 
 end Language
 

@@ -77,14 +77,14 @@ instance : CoeFun (M ↪ₑ[L] N) fun _ => M → N :=
   DFunLike.hasCoeToFun
 
 @[simp]
-theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)
+theorem map_semiformula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.Semiformula α n)
     (v : α → M) (xs : Fin n → M) : φ.Realize (f ∘ v) (f ∘ xs) ↔ φ.Realize v xs := by
   classical
-    rw [← BoundedFormula.realize_restrictFreeVar Set.Subset.rfl, Set.inclusion_eq_id, iff_eq_eq]
+    rw [← Semiformula.realize_restrictFreeVar Set.Subset.rfl, Set.inclusion_eq_id, iff_eq_eq]
     have h :=
       f.map_formula' ((φ.restrictFreeVar id).toFormula.relabel (Fintype.equivFin _))
         (Sum.elim (v ∘ (↑)) xs ∘ (Fintype.equivFin _).symm)
-    simp only [Formula.realize_relabel, BoundedFormula.realize_toFormula, iff_eq_eq] at h
+    simp only [Formula.realize_relabel, Semiformula.realize_toFormula, iff_eq_eq] at h
     rw [← Function.comp.assoc _ _ (Fintype.equivFin _).symm,
       Function.comp.assoc _ (Fintype.equivFin _).symm (Fintype.equivFin _),
       _root_.Equiv.symm_comp_self, Function.comp_id, Function.comp.assoc, Sum.elim_comp_inl,
@@ -92,14 +92,14 @@ theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.Bo
     refine' h.trans _
     erw [Function.comp.assoc _ _ (Fintype.equivFin _), _root_.Equiv.symm_comp_self,
       Function.comp_id, Sum.elim_comp_inl, Sum.elim_comp_inr (v ∘ Subtype.val) xs,
-      ← Set.inclusion_eq_id (s := (BoundedFormula.freeVarFinset φ : Set α)) Set.Subset.rfl,
-      BoundedFormula.realize_restrictFreeVar Set.Subset.rfl]
-#align first_order.language.elementary_embedding.map_bounded_formula FirstOrder.Language.ElementaryEmbedding.map_boundedFormula
+      ← Set.inclusion_eq_id (s := (Semiformula.freeVarFinset φ : Set α)) Set.Subset.rfl,
+      Semiformula.realize_restrictFreeVar Set.Subset.rfl]
+#align first_order.language.elementary_embedding.map_bounded_formula FirstOrder.Language.ElementaryEmbedding.map_semiformula
 
 @[simp]
 theorem map_formula (f : M ↪ₑ[L] N) {α : Type*} (φ : L.Formula α) (x : α → M) :
     φ.Realize (f ∘ x) ↔ φ.Realize x := by
-  rw [Formula.Realize, Formula.Realize, ← f.map_boundedFormula, Unique.eq_default (f ∘ default)]
+  rw [Formula.Realize, Formula.Realize, ← f.map_semiformula, Unique.eq_default (f ∘ default)]
 #align first_order.language.elementary_embedding.map_formula FirstOrder.Language.ElementaryEmbedding.map_formula
 
 theorem map_sentence (f : M ↪ₑ[L] N) (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ := by
@@ -255,14 +255,14 @@ def ElementaryEmbedding.ofModelsElementaryDiagram (N : Type*) [L.Structure N] [L
     refine'
       _root_.trans _
         ((realize_iff_of_model_completeTheory M N
-              (((L.lhomWithConstants M).onBoundedFormula φ).subst
+              (((L.lhomWithConstants M).onSemiformula φ).subst
                   (Constants.term ∘ Sum.inr ∘ x)).alls).trans
           _)
-    · simp_rw [Sentence.Realize, BoundedFormula.realize_alls, BoundedFormula.realize_subst,
-        LHom.realize_onBoundedFormula, Formula.Realize, Unique.forall_iff, Function.comp,
+    · simp_rw [Sentence.Realize, Semiformula.realize_alls, Semiformula.realize_subst,
+        LHom.realize_onSemiformula, Formula.Realize, Unique.forall_iff, Function.comp,
         Term.realize_constants]
-    · simp_rw [Sentence.Realize, BoundedFormula.realize_alls, BoundedFormula.realize_subst,
-        LHom.realize_onBoundedFormula, Formula.Realize, Unique.forall_iff]
+    · simp_rw [Sentence.Realize, Semiformula.realize_alls, Semiformula.realize_subst,
+        LHom.realize_onSemiformula, Formula.Realize, Unique.forall_iff]
       rfl⟩
 #align first_order.language.elementary_embedding.of_models_elementary_diagram FirstOrder.Language.ElementaryEmbedding.ofModelsElementaryDiagram
 
@@ -273,32 +273,32 @@ namespace Embedding
 /-- The **Tarski-Vaught test** for elementarity of an embedding. -/
 theorem isElementary_of_exists (f : M ↪[L] N)
     (htv :
-      ∀ (n : ℕ) (φ : L.BoundedFormula Empty (n + 1)) (x : Fin n → M) (a : N),
+      ∀ (n : ℕ) (φ : L.Semiformula Empty (n + 1)) (x : Fin n → M) (a : N),
         φ.Realize default (Fin.snoc (f ∘ x) a : _ → N) →
           ∃ b : M, φ.Realize default (Fin.snoc (f ∘ x) (f b) : _ → N)) :
     ∀ {n} (φ : L.Formula (Fin n)) (x : Fin n → M), φ.Realize (f ∘ x) ↔ φ.Realize x := by
-  suffices h : ∀ (n : ℕ) (φ : L.BoundedFormula Empty n) (xs : Fin n → M),
+  suffices h : ∀ (n : ℕ) (φ : L.Semiformula Empty n) (xs : Fin n → M),
       φ.Realize (f ∘ default) (f ∘ xs) ↔ φ.Realize default xs by
     intro n φ x
     exact φ.realize_relabel_sum_inr.symm.trans (_root_.trans (h n _ _) φ.realize_relabel_sum_inr)
   refine' fun n φ => φ.recOn _ _ _ _ _
   · exact fun {_} _ => Iff.rfl
   · intros
-    simp [BoundedFormula.Realize, ← Sum.comp_elim, Embedding.realize_term]
+    simp [Semiformula.Realize, ← Sum.comp_elim, Embedding.realize_term]
   · intros
-    simp only [BoundedFormula.Realize, ← Sum.comp_elim, realize_term]
+    simp only [Semiformula.Realize, ← Sum.comp_elim, realize_term]
     erw [map_rel f]
   · intro _ _ _ ih1 ih2 _
     simp [ih1, ih2]
   · intro n φ ih xs
-    simp only [BoundedFormula.realize_all]
+    simp only [Semiformula.realize_all]
     refine' ⟨fun h a => _, _⟩
     · rw [← ih, Fin.comp_snoc]
       exact h (f a)
     · contrapose!
       rintro ⟨a, ha⟩
       obtain ⟨b, hb⟩ := htv n φ.not xs a (by
-          rw [BoundedFormula.realize_not, ← Unique.eq_default (f ∘ default)]
+          rw [Semiformula.realize_not, ← Unique.eq_default (f ∘ default)]
           exact ha)
       · refine' ⟨b, fun h => hb (Eq.mp _ ((ih _).2 h))⟩
         rw [Unique.eq_default (f ∘ default), Fin.comp_snoc]
@@ -308,7 +308,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
 @[simps]
 def toElementaryEmbedding (f : M ↪[L] N)
     (htv :
-      ∀ (n : ℕ) (φ : L.BoundedFormula Empty (n + 1)) (x : Fin n → M) (a : N),
+      ∀ (n : ℕ) (φ : L.Semiformula Empty (n + 1)) (x : Fin n → M) (a : N),
         φ.Realize default (Fin.snoc (f ∘ x) a : _ → N) →
           ∃ b : M, φ.Realize default (Fin.snoc (f ∘ x) (f b) : _ → N)) :
     M ↪ₑ[L] N :=

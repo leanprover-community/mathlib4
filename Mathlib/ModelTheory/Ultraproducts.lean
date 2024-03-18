@@ -93,29 +93,29 @@ theorem term_realize_cast {β : Type*} (x : β → ∀ a, M a) (t : L.Term β) :
 
 variable [∀ a : α, Nonempty (M a)]
 
-theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormula β n)
+theorem semiformula_realize_cast {β : Type*} {n : ℕ} (φ : L.Semiformula β n)
     (x : β → ∀ a, M a) (v : Fin n → ∀ a, M a) :
     (φ.Realize (fun i : β => (x i : (u : Filter α).Product M))
         (fun i => (v i : (u : Filter α).Product M))) ↔
       ∀ᶠ a : α in u, φ.Realize (fun i : β => x i a) fun i => v i a := by
   letI := (u : Filter α).productSetoid M
   induction' φ with _ _ _ _ _ _ _ _ m _ _ ih ih' k φ ih
-  · simp only [BoundedFormula.Realize, eventually_const]
+  · simp only [Semiformula.Realize, eventually_const]
   · have h2 : ∀ a : α, (Sum.elim (fun i : β => x i a) fun i => v i a) = fun i => Sum.elim x v i a :=
       fun a => funext fun i => Sum.casesOn i (fun i => rfl) fun i => rfl
-    simp only [BoundedFormula.Realize, h2, term_realize_cast]
+    simp only [Semiformula.Realize, h2, term_realize_cast]
     erw [(Sum.comp_elim ((↑) : (∀ a, M a) → (u : Filter α).Product M) x v).symm,
       term_realize_cast, term_realize_cast]
     exact Quotient.eq''
   · have h2 : ∀ a : α, (Sum.elim (fun i : β => x i a) fun i => v i a) = fun i => Sum.elim x v i a :=
       fun a => funext fun i => Sum.casesOn i (fun i => rfl) fun i => rfl
-    simp only [BoundedFormula.Realize, h2]
+    simp only [Semiformula.Realize, h2]
     erw [(Sum.comp_elim ((↑) : (∀ a, M a) → (u : Filter α).Product M) x v).symm]
     conv_lhs => enter [2, i]; erw [term_realize_cast]
     apply relMap_quotient_mk'
-  · simp only [BoundedFormula.Realize, ih v, ih' v]
+  · simp only [Semiformula.Realize, ih v, ih' v]
     rw [Ultrafilter.eventually_imp]
-  · simp only [BoundedFormula.Realize]
+  · simp only [Semiformula.Realize]
     apply Iff.trans (b := ∀ m : ∀ a : α, M a,
       φ.Realize (fun i : β => (x i : (u : Filter α).Product M))
         (Fin.snoc (((↑) : (∀ a, M a) → (u : Filter α).Product M) ∘ v)
@@ -142,12 +142,12 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
       exact Filter.mem_of_superset h fun a ha => Classical.epsilon_spec ha
     · rw [Filter.eventually_iff] at *
       exact Filter.mem_of_superset h fun a ha => ha (m a)
-#align first_order.language.ultraproduct.bounded_formula_realize_cast FirstOrder.Language.Ultraproduct.boundedFormula_realize_cast
+#align first_order.language.ultraproduct.bounded_formula_realize_cast FirstOrder.Language.Ultraproduct.semiformula_realize_cast
 
 theorem realize_formula_cast {β : Type*} (φ : L.Formula β) (x : β → ∀ a, M a) :
     (φ.Realize fun i => (x i : (u : Filter α).Product M)) ↔
       ∀ᶠ a : α in u, φ.Realize fun i => x i a := by
-  simp_rw [Formula.Realize, ← boundedFormula_realize_cast φ x, iff_eq_eq]
+  simp_rw [Formula.Realize, ← semiformula_realize_cast φ x, iff_eq_eq]
   exact congr rfl (Subsingleton.elim _ _)
 #align first_order.language.ultraproduct.realize_formula_cast FirstOrder.Language.Ultraproduct.realize_formula_cast
 

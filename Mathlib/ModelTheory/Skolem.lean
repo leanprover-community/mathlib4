@@ -41,14 +41,14 @@ variable (L : Language.{u, v}) {M : Type w} [Nonempty M] [L.Structure M]
 Called `skolem₁` because it is the first step in building a Skolemization of a language. -/
 @[simps]
 def skolem₁ : Language :=
-  ⟨fun n => L.BoundedFormula Empty (n + 1), fun _ => Empty⟩
+  ⟨fun n => L.Semiformula Empty (n + 1), fun _ => Empty⟩
 #align first_order.language.skolem₁ FirstOrder.Language.skolem₁
 #align first_order.language.skolem₁_functions FirstOrder.Language.skolem₁_Functions
 
 variable {L}
 
 theorem card_functions_sum_skolem₁ :
-    #(Σ n, (L.sum L.skolem₁).Functions n) = #(Σ n, L.BoundedFormula Empty (n + 1)) := by
+    #(Σ n, (L.sum L.skolem₁).Functions n) = #(Σ n, L.Semiformula Empty (n + 1)) := by
   simp only [card_functions_sum, skolem₁_Functions, mk_sigma, sum_add_distrib']
   conv_lhs => enter [2, 1, i]; rw [lift_id'.{u, v}]
   rw [add_comm, add_eq_max, max_eq_left]
@@ -64,11 +64,11 @@ theorem card_functions_sum_skolem₁ :
 
 theorem card_functions_sum_skolem₁_le : #(Σ n, (L.sum L.skolem₁).Functions n) ≤ max ℵ₀ L.card := by
   rw [card_functions_sum_skolem₁]
-  trans #(Σ n, L.BoundedFormula Empty n)
+  trans #(Σ n, L.Semiformula Empty n)
   · exact
       ⟨⟨Sigma.map Nat.succ fun _ => id,
           Nat.succ_injective.sigma_map fun _ => Function.injective_id⟩⟩
-  · refine' _root_.trans BoundedFormula.card_le (lift_le.{max u v}.1 _)
+  · refine' _root_.trans Semiformula.card_le (lift_le.{max u v}.1 _)
     simp only [mk_empty, lift_zero, lift_uzero, zero_add]
     rfl
 #align first_order.language.card_functions_sum_skolem₁_le FirstOrder.Language.card_functions_sum_skolem₁_le
@@ -91,7 +91,7 @@ theorem skolem₁_reduct_isElementary (S : (L.sum L.skolem₁).Substructure M) :
   exact
     ⟨⟨funMap φ' ((↑) ∘ x), S.fun_mem (LHom.sumInr.onFunction φ) ((↑) ∘ x) (by
       exact fun i => (x i).2)⟩,
-      by exact Classical.epsilon_spec (p := fun a => BoundedFormula.Realize φ default
+      by exact Classical.epsilon_spec (p := fun a => Semiformula.Realize φ default
           (Fin.snoc (Subtype.val ∘ x) a)) ⟨a, h⟩⟩
 #align first_order.language.substructure.skolem₁_reduct_is_elementary FirstOrder.Language.Substructure.skolem₁_reduct_isElementary
 
