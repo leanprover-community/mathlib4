@@ -17,6 +17,8 @@ open BigOperators
 
 namespace PiTensorProduct
 
+section seminorm
+
 lemma toDualMultilinearMap_bound (x : ⨂[𝕜] i, E i) :
     ∃ (C : ℝ), 0 ≤ C ∧ ∀ (G : Type*) [SeminormedAddCommGroup G]
     [NormedSpace 𝕜 G] (f : ContinuousMultilinearMap 𝕜 E G),
@@ -228,6 +230,13 @@ theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
   simp only [ContinuousMultilinearMap.coe_coe, tprodL_toFun]
 
 @[simp]
+theorem liftIsometry.tprod {f : ContinuousMultilinearMap 𝕜 E F} (m : Π (i : ι), E i) :
+    liftIsometry.toFun f (tprod 𝕜 m) = f m := by
+  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
+    LinearIsometryEquiv.coe_toLinearEquiv, liftIsometry_toFun_toFun]
+  exact lift.tprod m
+
+@[simp]
 theorem liftIsometry.tprodL {f : ContinuousMultilinearMap 𝕜 E F} (m : Π (i : ι), E i) :
     liftIsometry.toFun f (tprodL 𝕜 m) = f m := by
   simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
@@ -252,6 +261,85 @@ theorem liftIsometry_tprodL :
   change lift (tprod 𝕜) x = _
   rw [lift_tprod, LinearMap.id_apply]
 
+end seminorm
+
+section map
+
+variable {E' E'' : ι → Type*}
+variable [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
+variable [∀ i, SeminormedAddCommGroup (E'' i)] [∀ i, NormedSpace 𝕜 (E'' i)]
+variable (g : Π i, E' i →L[𝕜] E'' i) (f : Π i, E i →L[𝕜] E' i)
+
+/--
+Let `Eᵢ` and `Fᵢ` be two families of normed `𝕜`-vector spaces.
+Let `f` be a family of continuous `𝕜`-linear maps between `Eᵢ` and `Fᵢ`, i.e.
+`f : Πᵢ Eᵢ →L[𝕜] Fᵢ`, then there is an induced continuous linear map
+`⨂ᵢ Eᵢ → ⨂ᵢ Fᵢ` by `⨂ aᵢ ↦ ⨂ fᵢ aᵢ`.
+-/
+noncomputable def mapL : (⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i :=
+  liftIsometry.toFun <| (tprodL 𝕜).compContinuousLinearMap f
+
+@[simp] lemma mapL_tprod (x : Π i, E i) :
+    mapL f (tprod 𝕜 x) = tprod 𝕜 fun i ↦ f i (x i) :=
+  liftIsometry.tprodL _
+
+/-- Given submodules `p i ⊆ E i`, this is the natural map: `⨂[𝕜] i, p i → ⨂[𝕜] i, E i`.
+This is the continuous version of `PiTensorProduct.mapIncl`.
+-/
+@[simp]
+noncomputable def mapLIncl (p : Π i, Submodule 𝕜 (E i)) : (⨂[𝕜] i, p i) →L[𝕜] ⨂[𝕜] i, E i :=
+  mapL fun (i : ι) ↦ (p i).subtypeL
+
+theorem mapL_comp : mapL (fun (i : ι) ↦ g i ∘L f i) = mapL g ∘L mapL f := by
+  apply ContinuousLinearMap.coe_injective
+  ext
+  simp only [LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe, mapL_tprod,
+    ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.coe_comp,
+    LinearMap.coe_comp]
+
+theorem liftIsometry_comp_mapL (h : ContinuousMultilinearMap 𝕜 E' F) :
+    liftIsometry.toFun h ∘L mapL f = liftIsometry.toFun (h.compContinuousLinearMap f) := by
+  apply ContinuousLinearMap.coe_injective
+  ext
+  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
+    LinearIsometryEquiv.coe_toLinearEquiv, ContinuousLinearMap.coe_comp,
+    LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, ContinuousLinearMap.coe_coe,
+    Function.comp_apply, mapL_tprod, liftIsometry_toFun_toFun]
+  erw [lift.tprod]
+
+attribute [local ext high] ext
+
+@[simp]
+theorem mapL_id : mapL (fun i ↦ ContinuousLinearMap.id 𝕜 (E i)) = ContinuousLinearMap.id _ _ := by
+  apply ContinuousLinearMap.coe_injective
+  ext
+  simp only [LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe, mapL_tprod,
+    ContinuousLinearMap.coe_id', id_eq, ContinuousLinearMap.coe_id, LinearMap.id_coe]
+
+@[simp]
+theorem mapL_one : mapL (fun (i : ι) ↦ (1 : E i →L[𝕜] E i)) = 1 :=
+  mapL_id
+
+theorem mapL_mul (f₁ f₂ : Π i, E i →L[𝕜] E i) :
+    mapL (fun i ↦ f₁ i * f₂ i) = mapL f₁ * mapL f₂ :=
+  mapL_comp f₁ f₂
+
+/-- Upgrading `PiTensorProduct.mapL` to a `MonoidHom` when `E = F`.-/
+@[simps]
+noncomputable def mapLMonoidHom : (Π i, E i →L[𝕜] E i) →* ((⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E i) where
+  toFun := mapL
+  map_one' := mapL_one
+  map_mul' := mapL_mul
+
+@[simp]
+protected theorem mapL_pow (f : Π i, E i →L[𝕜] E i) (n : ℕ) :
+    mapL (f ^ n) = mapL f ^ n := MonoidHom.map_pow mapLMonoidHom _ _
+
+
+end map
+
+#exit
+
 section Norm
 
 variable [Π (i : ι), SeparatingDual 𝕜 (E i)]
@@ -263,6 +351,7 @@ lemma toDualContinuousMultilinearMap_injective : Function.Injective
   rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff]
   intro x hx
   obtain ⟨p, hp, hpx⟩ := mem_piTensorProduct_is_mem_finite x
+
 
   sorry
 
