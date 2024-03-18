@@ -43,7 +43,6 @@ end
 -- In particular this allows `C` to be a preorder, with the category instance inherited from the
 -- preorder structure.
 variable [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
 variable [Quiver.IsThin C]
 
 /-- If `C` is a thin category, then `D ⥤ C` is a thin category. -/

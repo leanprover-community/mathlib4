@@ -29,13 +29,9 @@ open Topology BigOperators Filter
 open Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {E : Type v} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {x : 𝕜}
-
 variable {s : Set 𝕜}
-
 variable {m : ℤ}
 
 /-! ### Derivative of `x ↦ x^m` for `m : ℤ` -/
