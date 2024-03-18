@@ -79,7 +79,7 @@ this lower priority to avoid linter complaints about simp-normal form -/
 `(Multiset.induction_on s)`, when it should be `Multiset.induction_on s <|`. -/
 @[simp 1100]
 theorem normalize_lcm (s : Multiset α) : normalize s.lcm = s.lcm :=
-  Multiset.induction_on s (by simp) <| fun a s _ ↦ by simp
+  Multiset.induction_on s (by simp) fun a s _ ↦ by simp
 #align multiset.normalize_lcm Multiset.normalize_lcm
 
 @[simp]
@@ -93,7 +93,7 @@ variable [DecidableEq α]
 
 @[simp]
 theorem lcm_dedup (s : Multiset α) : (dedup s).lcm = s.lcm :=
-  Multiset.induction_on s (by simp) <| fun a s IH ↦ by
+  Multiset.induction_on s (by simp) fun a s IH ↦ by
     by_cases h : a ∈ s <;> simp [IH, h]
     unfold lcm
     rw [← cons_erase h, fold_cons_left, ← lcm_assoc, lcm_same]
@@ -167,7 +167,7 @@ theorem gcd_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₂.gcd ∣ s�
 this lower priority to avoid linter complaints about simp-normal form -/
 @[simp 1100]
 theorem normalize_gcd (s : Multiset α) : normalize s.gcd = s.gcd :=
-  Multiset.induction_on s (by simp) <| fun a s _ ↦ by simp
+  Multiset.induction_on s (by simp) fun a s _ ↦ by simp
 #align multiset.normalize_gcd Multiset.normalize_gcd
 
 theorem gcd_eq_zero_iff (s : Multiset α) : s.gcd = 0 ↔ ∀ x : α, x ∈ s → x = 0 := by
@@ -196,7 +196,7 @@ variable [DecidableEq α]
 
 @[simp]
 theorem gcd_dedup (s : Multiset α) : (dedup s).gcd = s.gcd :=
-  Multiset.induction_on s (by simp) <| fun a s IH ↦ by
+  Multiset.induction_on s (by simp) fun a s IH ↦ by
     by_cases h : a ∈ s <;> simp [IH, h]
     unfold gcd
     rw [← cons_erase h, fold_cons_left, ← gcd_assoc, gcd_same]
@@ -235,7 +235,7 @@ theorem extract_gcd' (s t : Multiset α) (hs : ∃ x, x ∈ s ∧ x ≠ (0 : α)
 converted to `Multiset.replicate` format yet, so I made some ad hoc ones in `Data.Multiset.Basic`
 using the originals. -/
 /- Porting note: The old proof used a strange form
-`have := _, refine ⟨s.pmap @f (λ _, id), this, extract_gcd' s _ h this⟩,`
+`have := _, refine ⟨s.pmap @f (fun _ ↦ id), this, extract_gcd' s _ h this⟩,`
 so I rearranged the proof slightly. -/
 theorem extract_gcd (s : Multiset α) (hs : s ≠ 0) :
     ∃ t : Multiset α, s = t.map (s.gcd * ·) ∧ t.gcd = 1 := by

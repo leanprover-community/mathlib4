@@ -5,7 +5,6 @@ Authors: David Wärn, Antoine Labelle, Rémi Bottinelli
 -/
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
-import Mathlib.Data.Sum.Basic
 
 #align_import combinatorics.quiver.symmetric from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
 

@@ -46,12 +46,12 @@ theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
   let v := max a r
   -- show integrable on `(a, v]` from continuity
   have int_left : IntegrableOn f (Ioc a v) := by
-    rw [← intervalIntegrable_iff_integrable_Ioc_of_le (le_max_left a r)]
+    rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le (le_max_left a r)]
     have u : Icc a v ⊆ Ici a := Icc_subset_Ici_self
     exact (h1.mono u).intervalIntegrable_of_Icc (le_max_left a r)
   suffices IntegrableOn f (Ioi v) by
     have t := integrableOn_union.mpr ⟨int_left, this⟩
-    simpa only [Ioc_union_Ioi_eq_Ioi, le_max_iff, le_refl, true_or_iff] using t
+    simpa only [v, Ioc_union_Ioi_eq_Ioi, le_max_iff, le_refl, true_or_iff] using t
   -- now show integrable on `(v, ∞)` from asymptotic
   constructor
   · exact (h1.mono <| Ioi_subset_Ici <| le_max_left a r).aestronglyMeasurable measurableSet_Ioi

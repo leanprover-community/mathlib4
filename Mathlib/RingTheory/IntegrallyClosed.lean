@@ -79,7 +79,7 @@ end Iff
 
 namespace IsIntegrallyClosed
 
-variable {R : Type*} [CommRing R] [id : IsDomain R] [iic : IsIntegrallyClosed R]
+variable {R S : Type*} [CommRing R] [CommRing S] [id : IsDomain R] [iic : IsIntegrallyClosed R]
 
 variable {K : Type*} [CommRing K] [Algebra R K] [ifr : IsFractionRing R K]
 
@@ -101,7 +101,17 @@ theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Alg
   exists_algebraMap_eq_of_isIntegral_pow hn <| isIntegral_iff.mpr ⟨⟨x ^ n, hx⟩, rfl⟩
 #align is_integrally_closed.exists_algebra_map_eq_of_pow_mem_subalgebra IsIntegrallyClosed.exists_algebraMap_eq_of_pow_mem_subalgebra
 
-variable (K)
+variable (R S K)
+
+lemma _root_.IsIntegralClosure.of_isIntegrallyClosed
+    [Algebra S R] [Algebra S K] [IsScalarTower S R K] (hRS : Algebra.IsIntegral S R) :
+    IsIntegralClosure R S K := by
+  refine ⟨IsLocalization.injective _ le_rfl, fun {x} ↦
+    ⟨fun hx ↦ IsIntegralClosure.isIntegral_iff.mp (IsIntegral.tower_top (A := R) hx), ?_⟩⟩
+  rintro ⟨y, rfl⟩
+  exact IsIntegral.map (IsScalarTower.toAlgHom S R K) (hRS y)
+
+variable {R}
 
 theorem integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyClosed R := by
   refine' eq_bot_iff.trans _

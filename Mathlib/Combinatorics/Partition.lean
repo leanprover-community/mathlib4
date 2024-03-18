@@ -59,7 +59,7 @@ structure Partition (n : ℕ) where
   parts_pos : ∀ {i}, i ∈ parts → 0 < i
   /-- proof that the `parts` sum to `n`-/
   parts_sum : parts.sum = n
-  -- porting notes: chokes on `parts_pos`
+  -- Porting note: chokes on `parts_pos`
   --deriving DecidableEq
 #align nat.partition Nat.Partition
 
@@ -74,7 +74,7 @@ instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
 def ofComposition (n : ℕ) (c : Composition n) : Partition n where
   parts := c.blocks
   parts_pos hi := c.blocks_pos hi
-  parts_sum := by rw [Multiset.coe_sum, c.blocks_sum]
+  parts_sum := by rw [Multiset.sum_coe, c.blocks_sum]
 #align nat.partition.of_composition Nat.Partition.ofComposition
 
 theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := by
@@ -112,7 +112,7 @@ instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
   simp [indiscrete, filter_eq_self, hn]
 
 @[simp] lemma partition_zero_parts (p : Partition 0) : p.parts = 0 :=
-  eq_zero_of_forall_not_mem <| fun _ h => (p.parts_pos h).ne' <| sum_eq_zero_iff.1 p.parts_sum _ h
+  eq_zero_of_forall_not_mem fun _ h => (p.parts_pos h).ne' <| sum_eq_zero_iff.1 p.parts_sum _ h
 
 instance UniquePartitionZero : Unique (Partition 0) where
   uniq _ := Partition.ext _ _ <| by simp

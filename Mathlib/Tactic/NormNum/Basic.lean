@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.HaveI
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Invertible.Basic
-import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.Clear!
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 ## `norm_num` basic plugins
@@ -61,7 +62,7 @@ theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] {a : α} {n : ℕ}
   match e with
   | ~q(@OfNat.ofNat _ $n $oα) =>
     let n : Q(ℕ) ← whnf n
-    guard n.isNatLit
+    guard n.isRawNatLit
     let ⟨a, (pa : Q($n = $e))⟩ ← mkOfNat α sα n
     guard <|← isDefEq a e
     return .isNat sα n q(isNat_ofNat $α $pa)
@@ -79,6 +80,24 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
   let ⟨n', p⟩ ← deriveNat n sℕ
   haveI' x : $e =Q Int.ofNat $n := ⟨⟩
   return .isNat sℤ n' q(isNat_intOfNat $p)
+
+theorem isNat_natAbs_pos : {n : ℤ} → {a : ℕ} → IsNat n a → IsNat n.natAbs a
+  | _, _, ⟨rfl⟩ => ⟨rfl⟩
+
+theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) → IsNat n.natAbs a
+  | _, _, ⟨rfl⟩ => ⟨by simp⟩
+
+/-- The `norm_num` extension which identifies the expression `Int.natAbs n` such that
+`norm_num` successfully recognizes `n`. -/
+@[norm_num Int.natAbs (_ : ℤ)] def evalIntNatAbs : NormNumExt where eval {u α} e := do
+  let .app (.const ``Int.natAbs _) (x : Q(ℤ)) ← whnfR e | failure
+  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
+  haveI' : $e =Q Int.natAbs $x := ⟨⟩
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  match ← derive (u := .zero) x with
+  | .isNat    _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_pos $p)
+  | .isNegNat _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_neg $p)
+  | _ => failure
 
 /-! # Casts -/
 
@@ -183,7 +202,7 @@ instance : MonadLift Option MetaM where
 
 /-- The `norm_num` extension which identifies expressions of the form `a + b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ + _, Add.add _ _] def evalAdd : NormNumExt where eval {u α} e := do
+@[norm_num _ + _] def evalAdd : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let ra ← derive a; let rb ← derive b
   match ra, rb with
@@ -291,7 +310,7 @@ theorem isRat_sub {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
 
 /-- The `norm_num` extension which identifies expressions of the form `a - b` in a ring,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ - _, Sub.sub _ _] def evalSub : NormNumExt where eval {u α} e := do
+@[norm_num _ - _] def evalSub : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let rα ← inferRing α
   let ⟨(_f_eq : $f =Q HSub.hSub)⟩ ← withNewMCtxDepth <| assertDefEqQ _ _
@@ -361,7 +380,7 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
 
 /-- The `norm_num` extension which identifies expressions of the form `a * b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ * _, Mul.mul _ _] def evalMul : NormNumExt where eval {u α} e := do
+@[norm_num _ * _] def evalMul : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let sα ← inferSemiring α
   let ra ← derive a; let rb ← derive b
@@ -406,7 +425,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 
 theorem isRat_div [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →
     IsRat (a / b) cn cd
-  | _, _, _, _, h => by simp [div_eq_mul_inv]; exact h
+  | _, _, _, _, h => by simpa [div_eq_mul_inv] using h
 
 /-- Helper function to synthesize a typed `DivisionRing α` expression. -/
 def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
@@ -414,7 +433,7 @@ def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
 
 /-- The `norm_num` extension which identifies expressions of the form `a / b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ / _, Div.div _ _] def evalDiv : NormNumExt where eval {u α} e := do
+@[norm_num _ / _] def evalDiv : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let dα ← inferDivisionRing α
   haveI' : $e =Q $a / $b := ⟨⟩
@@ -439,15 +458,10 @@ such that `norm_num` successfully recognises `a`. -/
 @[norm_num ¬_] def evalNot : NormNumExt where eval {u α} e := do
   let .app (.const ``Not _) (a : Q(Prop)) ← whnfR e | failure
   guard <|← withNewMCtxDepth <| isDefEq α q(Prop)
-  let .isBool b p ← derive q($a) | failure
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q Prop := ⟨⟩
-  haveI' : $e =Q ¬ $a := ⟨⟩
-  if b then
-    have p : Q($a) := p
-    return .isFalse q(not_not_intro $p)
-  else
-    have p : Q(¬ $a) := p
-    return .isTrue q($p)
+  let ⟨b, p⟩ ← deriveBool q($a)
+  match b with
+  | true => return .isFalse q(not_not_intro $p)
+  | false => return .isTrue q($p)
 
 /-! # (In)equalities -/
 
@@ -495,7 +509,7 @@ theorem isNat_natSub : {a b : ℕ} → {a' b' c : ℕ} →
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.sub a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num (_ : ℕ) - _, Sub.sub (_ : ℕ) _, Nat.sub _ _] def evalNatSub :
+@[norm_num (_ : ℕ) - _] def evalNatSub :
     NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   -- We assert that the default instance for `HSub` is `Nat.sub` when the first parameter is `ℕ`.
@@ -514,7 +528,7 @@ theorem isNat_natMod : {a b : ℕ} → {a' b' c : ℕ} →
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.mod a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num (_ : ℕ) % _, Mod.mod (_ : ℕ) _, Nat.mod _ _] def evalNatMod :
+@[norm_num (_ : ℕ) % _] def evalNatMod :
     NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
@@ -533,7 +547,7 @@ theorem isNat_natDiv : {a b : ℕ} → {a' b' c : ℕ} →
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.div a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num (_ : ℕ) / _, Div.div (_ : ℕ) _, Nat.div _ _]
+@[norm_num (_ : ℕ) / _]
 def evalNatDiv : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩

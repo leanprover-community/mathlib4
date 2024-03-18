@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.Category.Profinite.Basic
+import Mathlib.CategoryTheory.Limits.ConcreteCategory
 /-!
 
 # Light profinite sets
@@ -43,7 +44,7 @@ def FintypeCat.toLightProfinite (X : FintypeCat) : LightProfinite where
   isLimit := {
     lift := fun s ↦ s.π.app ⟨0⟩
     fac := fun s j ↦ (s.π.naturality (homOfLE (zero_le (unop j))).op)
-    uniq := fun _ _ h ↦  h ⟨0⟩ }
+    uniq := fun _ _ h ↦ h ⟨0⟩ }
 
 namespace LightProfinite
 

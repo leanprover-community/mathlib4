@@ -260,11 +260,11 @@ direction between then `M` and a structure of cardinality `κ`. -/
 theorem exists_elementaryEmbedding_card_eq (M : Type w') [L.Structure M] [iM : Infinite M]
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ) :
     ∃ N : Bundled L.Structure, (Nonempty (N ↪ₑ[L] M) ∨ Nonempty (M ↪ₑ[L] N)) ∧ #N = κ := by
-  cases le_or_gt (lift.{w'} κ) (Cardinal.lift.{w} #M)
-  case inl h =>
+  cases le_or_gt (lift.{w'} κ) (Cardinal.lift.{w} #M) with
+  | inl h =>
     obtain ⟨N, hN1, hN2⟩ := exists_elementaryEmbedding_card_eq_of_le L M κ h1 h2 h
     exact ⟨N, Or.inl hN1, hN2⟩
-  case inr h =>
+  | inr h =>
     obtain ⟨N, hN1, hN2⟩ := exists_elementaryEmbedding_card_eq_of_ge L M κ h2 (le_of_lt h)
     exact ⟨N, Or.inr hN1, hN2⟩
 #align first_order.language.exists_elementary_embedding_card_eq FirstOrder.Language.exists_elementaryEmbedding_card_eq
@@ -570,7 +570,6 @@ theorem ex_semanticallyEquivalent_not_all_not (φ : L.BoundedFormula α (n + 1))
 
 theorem semanticallyEquivalent_all_liftAt : T.SemanticallyEquivalent φ (φ.liftAt 1 n).all :=
   fun M v xs => by
-  skip
   rw [realize_iff, realize_all_liftAt_one_self]
 #align first_order.language.bounded_formula.semantically_equivalent_all_lift_at FirstOrder.Language.BoundedFormula.semanticallyEquivalent_all_liftAt
 
@@ -638,8 +637,8 @@ theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : 
     (hse : ∀ {m} {φ₁ φ₂ : L.BoundedFormula α m},
       Theory.SemanticallyEquivalent ∅ φ₁ φ₂ → (P φ₁ ↔ P φ₂)) :
     P φ := by
-  suffices h' : ∀ {m} {φ : L.BoundedFormula α m}, φ.IsPrenex → P φ
-  · exact (hse φ.semanticallyEquivalent_toPrenex).2 (h' φ.toPrenex_isPrenex)
+  suffices h' : ∀ {m} {φ : L.BoundedFormula α m}, φ.IsPrenex → P φ from
+    (hse φ.semanticallyEquivalent_toPrenex).2 (h' φ.toPrenex_isPrenex)
   intro m φ hφ
   induction' hφ with _ _ hφ _ _ _ hφ _ _ _ hφ
   · exact hqf hφ

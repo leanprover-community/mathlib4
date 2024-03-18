@@ -241,7 +241,7 @@ def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
       | .inl i => rfl
       | .inr (.inl j) => rfl
       | .inr (.inr (.inl k)) =>
-        congrArg (Sum.inr ∘ Sum.inr ∘ Sum.inl) $ two_mul (u⁻¹ * k) ▸ u.mul_inv_cancel_left k
+        congrArg (Sum.inr ∘ Sum.inr ∘ Sum.inl) <| two_mul (u⁻¹ * k) ▸ u.mul_inv_cancel_left k
       | .inr (.inr (.inr ⟨i, j⟩)) => rfl }
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs of commuting elements. -/

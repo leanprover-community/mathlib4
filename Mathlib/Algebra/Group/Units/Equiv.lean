@@ -15,7 +15,8 @@ import Mathlib.Algebra.Group.Units.Hom
 variable {F α β A B M N P Q G H : Type*}
 
 /-- A group is isomorphic to its group of units. -/
-@[to_additive "An additive group is isomorphic to its group of additive units"]
+@[to_additive (attr := simps apply_val symm_apply)
+"An additive group is isomorphic to its group of additive units"]
 def toUnits [Group G] : G ≃* Gˣ where
   toFun x := ⟨x, x⁻¹, mul_inv_self _, inv_mul_self _⟩
   invFun x := x
@@ -25,11 +26,12 @@ def toUnits [Group G] : G ≃* Gˣ where
 #align to_units toUnits
 #align to_add_units toAddUnits
 
+#align coe_to_units val_toUnits_apply
+#align coe_to_add_units val_toAddUnits_apply
+
 @[to_additive (attr := simp)]
-theorem coe_toUnits [Group G] (g : G) : (toUnits g : G) = g :=
-  rfl
-#align coe_to_units coe_toUnits
-#align coe_to_add_units coe_toAddUnits
+lemma toUnits_val_apply {G : Type*} [Group G] (x : Gˣ) : toUnits (x : G) = x := by
+  simp_rw [MulEquiv.apply_eq_iff_symm_apply, toUnits_symm_apply]
 
 namespace Units
 
@@ -227,7 +229,7 @@ end Equiv
 
 -- Porting note: we don't put `@[simp]` on the additive version;
 -- mysteriously simp can already prove that one (although not the multiplicative one)!
--- porting note: `@[simps apply]` removed because right now it's generating lemmas which
+-- Porting note: `@[simps apply]` removed because right now it's generating lemmas which
 -- aren't in simp normal form (they contain a `toFun`)
 /-- In a `DivisionCommMonoid`, `Equiv.inv` is a `MulEquiv`. There is a variant of this
 `MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
@@ -245,4 +247,11 @@ theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 #align mul_equiv.inv_symm MulEquiv.inv_symm
--- porting note: no `add_equiv.neg_symm` in `mathlib3`
+-- Porting note: no `add_equiv.neg_symm` in `mathlib3`
+
+@[to_additive]
+protected
+theorem MulEquiv.map_isUnit_iff {M N} [Monoid M] [Monoid N] [EquivLike F M N] [MonoidHomClass F M N]
+    (f : F) {m : M} : IsUnit (f m) ↔ IsUnit m :=
+  isUnit_map_of_leftInverse (MonoidHom.inverse (f : M →* N) (EquivLike.inv f)
+    (EquivLike.left_inv f) <| EquivLike.right_inv f) (EquivLike.left_inv f)

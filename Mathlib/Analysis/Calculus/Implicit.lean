@@ -68,7 +68,7 @@ Consider two functions `f : E → F` and `g : E → G` and a point `a` such that
 * the derivatives are surjective;
 * the kernels of the derivatives are complementary subspaces of `E`.
 
-Note that the map `x ↦ (f x, g x)` has a bijective derivative, hence it is a local homeomorphism
+Note that the map `x ↦ (f x, g x)` has a bijective derivative, hence it is a partial homeomorphism
 between `E` and `F × G`. We use this fact to define a function `φ : F → G → E`
 (see `ImplicitFunctionData.implicitFunction`) such that for `(y, z)` close enough to `(f a, g a)`
 we have `f (φ y z) = y` and `g (φ y z) = z`.
@@ -141,7 +141,7 @@ protected theorem hasStrictFDerivAt :
 
 /-- Implicit function theorem. If `f : E → F` and `g : E → G` are two maps strictly differentiable
 at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these derivatives are
-complementary subspaces of `E`, then `x ↦ (f x, g x)` defines a local homeomorphism between
+complementary subspaces of `E`, then `x ↦ (f x, g x)` defines a partial homeomorphism between
 `E` and `F × G`. In particular, `{x | f x = f a}` is locally homeomorphic to `G`. -/
 def toPartialHomeomorph : PartialHomeomorph E (F × G) :=
   φ.hasStrictFDerivAt.toPartialHomeomorph _
@@ -205,9 +205,9 @@ theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
   have := φ.hasStrictFDerivAt.to_localInverse
   simp only [prodFun] at this
   convert this.comp (φ.rightFun φ.pt) ((hasStrictFDerivAt_const _ _).prod (hasStrictFDerivAt_id _))
-  -- porting note: added parentheses to help `simp`
+  -- Porting note: added parentheses to help `simp`
   simp only [ContinuousLinearMap.ext_iff, (ContinuousLinearMap.comp_apply)] at hg'inv hg'invf ⊢
-  -- porting note: was `simp [ContinuousLinearEquiv.eq_symm_apply]`;
+  -- porting note (#10745): was `simp [ContinuousLinearEquiv.eq_symm_apply]`;
   -- both `simp` and `rw` fail here, `erw` works
   intro x
   erw [ContinuousLinearEquiv.eq_symm_apply]
@@ -260,7 +260,7 @@ def implicitFunctionDataOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : ra
   isCompl_ker := LinearMap.isCompl_of_proj (Classical.choose_spec hker)
 #align has_strict_fderiv_at.implicit_function_data_of_complemented HasStrictFDerivAt.implicitFunctionDataOfComplemented
 
-/-- A local homeomorphism between `E` and `F × f'.ker` sending level surfaces of `f`
+/-- A partial homeomorphism between `E` and `F × f'.ker` sending level surfaces of `f`
 to vertical subspaces. -/
 def implicitToPartialHomeomorphOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (hker : (ker f').ClosedComplemented) : PartialHomeomorph E (F × ker f') :=
@@ -392,7 +392,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] {E :
   [NormedSpace 𝕜 F] [FiniteDimensional 𝕜 F] (f : E → F) (f' : E →L[𝕜] F) {a : E}
 
 /-- Given a map `f : E → F` to a finite dimensional space with a surjective derivative `f'`,
-returns a local homeomorphism between `E` and `F × ker f'`. -/
+returns a partial homeomorphism between `E` and `F × ker f'`. -/
 def implicitToPartialHomeomorph (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤) :
     PartialHomeomorph E (F × ker f') :=
   haveI := FiniteDimensional.complete 𝕜 F
@@ -416,7 +416,7 @@ theorem implicitToPartialHomeomorph_fst (hf : HasStrictFDerivAt f f' a) (hf' : r
 @[simp]
 theorem implicitToPartialHomeomorph_apply_ker (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (y : ker f') : hf.implicitToPartialHomeomorph f f' hf' (y + a) = (f (y + a), y) :=
-  -- porting note: had to add `haveI` (here and below)
+  -- Porting note: had to add `haveI` (here and below)
   haveI := FiniteDimensional.complete 𝕜 F
   implicitToPartialHomeomorphOfComplemented_apply_ker ..
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_apply_ker HasStrictFDerivAt.implicitToPartialHomeomorph_apply_ker

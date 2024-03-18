@@ -3,8 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jannis Limperg
 -/
-
-import Mathlib.Lean.Expr.Basic
+import Lean.MetavarContext
 
 /-!
 # Miscellaneous helper functions for tactics.
@@ -16,7 +15,7 @@ set_option autoImplicit true
 
 namespace Mathlib.Tactic
 
-open Lean Meta Elab Tactic
+open Lean Meta Tactic
 
 variable [Monad m]
 
@@ -34,7 +33,7 @@ If `mvarId` does not refer to a declared metavariable, nothing happens.
 -/
 def modifyMetavarDecl [MonadMCtx m] (mvarId : MVarId)
     (f : MetavarDecl → MetavarDecl) : m Unit := do
-  modifyMCtx λ mctx =>
+  modifyMCtx fun mctx ↦
     match mctx.decls.find? mvarId with
     | none => mctx
     | some mdecl => { mctx with decls := mctx.decls.insert mvarId (f mdecl) }

@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Data.List.Pairwise
 import Mathlib.Logic.Relation
+import Mathlib.Data.List.Forall2
+import Mathlib.Data.List.Lex
 
 #align_import data.list.chain from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
@@ -255,7 +256,7 @@ theorem Chain'.cons {x y l} (h₁ : R x y) (h₂ : Chain' R (y :: l)) : Chain' R
   chain'_cons.2 ⟨h₁, h₂⟩
 #align list.chain'.cons List.Chain'.cons
 
-theorem Chain'.tail : ∀ {l} (_ : Chain' R l), Chain' R l.tail
+theorem Chain'.tail : ∀ {l}, Chain' R l → Chain' R l.tail
   | [], _ => trivial
   | [_], _ => trivial
   | _ :: _ :: _, h => (chain'_cons.mp h).right
@@ -375,7 +376,7 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
     simpa only [getLast?_append_of_ne_nil _ hn] using (chain'_append.1 h₂).2.2
 #align list.chain'.append_overlap List.Chain'.append_overlap
 
--- porting note: new
+-- Porting note (#10756): new lemma
 lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
     (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
     L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
@@ -386,7 +387,7 @@ lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
     rw [join, chain'_append, chain'_join hL.2, forall_mem_cons, chain'_cons]
     rw [mem_cons, not_or, ← Ne.def] at hL
     simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
-    exact Iff.rfl.and (Iff.rfl.and $ Iff.rfl.and and_comm)
+    exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
 /-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is an
 `r`-chain starting from `a` and ending on `b`.
@@ -436,7 +437,7 @@ reflexive transitive closure of `r`. The converse of `exists_chain_of_relationRe
 -/
 theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
     (hl₂ : getLast (a :: l) (cons_ne_nil _ _) = b) : Relation.ReflTransGen r a b :=
---Porting note: `p` behaves like an implicit argument to `Chain.induction_head` but it is explicit.
+-- Porting note: `p` behaves like an implicit argument to `Chain.induction_head` but it is explicit.
   Chain.induction_head l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
     Relation.ReflTransGen.refl
 #align list.relation_refl_trans_gen_of_exists_chain List.relationReflTransGen_of_exists_chain

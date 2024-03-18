@@ -8,25 +8,25 @@ import Mathlib.Tactic.SplitIfs
 
 set_option autoImplicit true
 section tauto₀
+
 variable (p q r : Prop)
 variable (h : p ∧ q ∨ p ∧ r)
 
-example : p ∧ p :=
-by tauto
+example : p ∧ p := by tauto
 
 end tauto₀
 
 section tauto₁
-variable (α : Type)
-variable (p q r : α → Prop)
+
+variable (α : Type) (p q r : α → Prop)
 variable (h : (∃ x, p x ∧ q x) ∨ (∃ x, p x ∧ r x))
 
-example : ∃ x, p x :=
-by tauto
+example : ∃ x, p x := by tauto
 
 end tauto₁
 
 section tauto₂
+
 variable (α : Type)
 variable (x : α)
 variable (p q r : α → Prop)
@@ -34,8 +34,7 @@ variable (h₀ : (∀ x, p x → q x → r x) ∨ r x)
 variable (h₁ : p x)
 variable (h₂ : q x)
 
-example : ∃ x, r x :=
-by tauto
+example : ∃ x, r x := by tauto
 
 end tauto₂
 
@@ -47,24 +46,21 @@ example (p : Prop) : p ∨ False ↔ p := by tauto
 example (p q : Prop) (h : p ≠ q) : ¬ p ↔ q := by tauto
 example (p q : Prop) (h : ¬ p = q) : ¬ p ↔ q := by tauto
 
-example (p q r : Prop) : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (r ∨ p ∨ r) :=
-  by tauto
-example (p q r : Prop) : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (r ∨ p ∨ r) :=
-  by tauto
+example (p q r : Prop) : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (r ∨ p ∨ r) := by tauto
+example (p q r : Prop) : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (r ∨ p ∨ r) := by tauto
 
 example (p q : Prop) (h : ¬ (p ↔ q)) (h' : ¬ p) : q := by tauto
 example (p q : Prop) (h : ¬ (p ↔ q)) (h' : p) : ¬ q := by tauto
 example (p q : Prop) (h : ¬ (p ↔ q)) (h' : q) : ¬ p := by tauto
 example (p q : Prop) (h : ¬ (p ↔ q)) (h' : ¬ q) : p := by tauto
 
-example (p q : Prop) (h : ¬ (p ↔ q)) (h' : ¬ q) (h'' : ¬ p) : False :=
-by tauto
+example (p q : Prop) (h : ¬ (p ↔ q)) (h' : ¬ q) (h'' : ¬ p) : False := by
+  tauto
 
-example (p q r : Prop) (h : p ↔ q) (h' : r ↔ q) (h'' : ¬ r) : ¬ p :=
-by tauto
+example (p q r : Prop) (h : p ↔ q) (h' : r ↔ q) (h'' : ¬ r) : ¬ p := by
+  tauto
 
-example (p q r : Prop) (h : p ↔ q) (h' : r ↔ q) : p ↔ r :=
-by tauto
+example (p q r : Prop) (h : p ↔ q) (h' : r ↔ q) : p ↔ r := by tauto
 
 example (p q r : Prop) (h : ¬ p = q) (h' : r = q) : p ↔ ¬ r := by tauto
 
@@ -72,7 +68,7 @@ example (p : Prop) : p → ¬ (p → ¬ p) := by tauto
 example (p : Prop) (em : p ∨ ¬ p) : ¬ (p ↔ ¬ p) := by tauto
 
 -- reported at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/weird.20tactic.20bug/near/370505747
-open Classical in
+open scoped Classical in
 example (hp : p) (hq : q) : (if p ∧ q then 1 else 0) = 1 := by
   -- split_ifs creates a hypothesis with a type that's a metavariable
   split_ifs
@@ -111,12 +107,13 @@ Mathlib.Tactic.Tauto.distribNot must ignore any LocalDecl where isImplementation
 is true. Otherwise, this example yields an error saying "well-founded recursion cannot
 be used".
 -/
-example : ¬(¬a ≤ b ∧ a ≤ c ∨ ¬a ≤ c ∧ a ≤ b) ↔ a ≤ b ∧ a ≤ c ∨ ¬a ≤ c ∧ ¬a ≤ b :=
-by tauto
+example : ¬(¬a ≤ b ∧ a ≤ c ∨ ¬a ≤ c ∧ a ≤ b) ↔ a ≤ b ∧ a ≤ c ∨ ¬a ≤ c ∧ ¬a ≤ b := by
+  tauto
 
 end implementation_detail_ldecl
 
 section modulo_symmetry
+
 variable {p q r : Prop} {α : Type} {x y : α}
 variable (h : x = y)
 variable (h'' : (p ∧ q ↔ q ∨ r) ↔ (r ∧ p ↔ r ∨ q))
@@ -143,8 +140,8 @@ variable (x y z w : α)
 -- This example is taken from pair_eq_pair_iff in Data.Set.Basic.
 -- It currently doesn't work because `tauto` does not apply `symm`.
 --example : ((x = z ∨ x = w) ∧ (y = z ∨ y = w)) ∧
---           (z = x ∨ z = y) ∧ (w = x ∨ w = y) → x = z ∧ y = w ∨ x = w ∧ y = z :=
---by tauto
+--           (z = x ∨ z = y) ∧ (w = x ∨ w = y) → x = z ∧ y = w ∨ x = w ∧ y = z := by
+--  tauto
 
 end pair_eq_pair_iff
 
@@ -153,22 +150,17 @@ end tauto₃
 /-
 section closer
 
-example {α : Type _} {β : Type _} (a : α)
-  {s_1 : set α} :
-  (∃ (a_1 : α), a_1 = a ∨ a_1 ∈ s_1) :=
-begin
+example {α : Type*} {β : Type*} (a : α) {s_1 : Set α} :
+    (∃ (a_1 : α), a_1 = a ∨ a_1 ∈ s_1) := by
   tauto {closer := `[simp]}
-end
 
-variables {p q r : Prop} {α : Type} {x y z w : α}
-variables (h : x = y) (h₁ : y = z) (h₂ : z = w)
-variables (h'' : (p ∧ q ↔ q ∨ r) ↔ (r ∧ p ↔ r ∨ q))
-include h h₁ h₂ h''
+variable {p q r : Prop} {α : Type} {x y z w : α}
+variable (h : x = y) (h₁ : y = z) (h₂ : z = w)
+variable (h'' : (p ∧ q ↔ q ∨ r) ↔ (r ∧ p ↔ r ∨ q))
+-- include h h₁ h₂ h''
 
-example : (((r ∧ p ↔ r ∨ q) ∧ (q ∨ r)) → (p ∧ (x = w) ∧ (¬ x = w → p ∧ q ∧ r))) :=
-begin
+example : (((r ∧ p ↔ r ∨ q) ∧ (q ∨ r)) → (p ∧ (x = w) ∧ (¬ x = w → p ∧ q ∧ r))) := by
   tauto {closer := `[cc]}
-end
 
 end closer
 -/

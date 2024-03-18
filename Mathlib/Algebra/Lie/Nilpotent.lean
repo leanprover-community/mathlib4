@@ -151,7 +151,7 @@ theorem eventually_iInf_lowerCentralSeries_eq [IsArtinian R M] :
   obtain ⟨n, hn : ∀ m, n ≤ m → lowerCentralSeries R L M n = lowerCentralSeries R L M m⟩ :=
     WellFounded.monotone_chain_condition.mp h_wf ⟨_, antitone_lowerCentralSeries R L M⟩
   refine Filter.eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
-  cases' le_or_lt l m with h h
+  rcases le_or_lt l m with h | h
   · rw [← hn _ hl, ← hn _ (hl.trans h)]
   · exact antitone_lowerCentralSeries R L M (le_of_lt h)
 
@@ -273,7 +273,7 @@ theorem isNilpotent_toEndomorphism_of_isNilpotent₂ [IsNilpotent R L M] (x y : 
     _root_.IsNilpotent (toEndomorphism R L M x ∘ₗ toEndomorphism R L M y) := by
   obtain ⟨k, hM⟩ := exists_lowerCentralSeries_eq_bot_of_isNilpotent R L M
   replace hM : lowerCentralSeries R L M (2 * k) = ⊥ := by
-    rw [eq_bot_iff, ← hM]; exact antitone_lowerCentralSeries R L M (by linarith)
+    rw [eq_bot_iff, ← hM]; exact antitone_lowerCentralSeries R L M (by omega)
   use k
   ext m
   rw [LinearMap.pow_apply, LinearMap.zero_apply, ← LieSubmodule.mem_bot (R := R) (L := L), ← hM]

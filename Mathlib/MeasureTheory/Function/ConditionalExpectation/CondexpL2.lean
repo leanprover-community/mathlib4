@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
+import Mathlib.MeasureTheory.Function.L2Space
 
 #align_import measure_theory.function.conditional_expectation.condexp_L2 from "leanprover-community/mathlib"@"d8bbb04e2d2a44596798a9207ceefc0fb236e41e"
 
@@ -98,7 +99,7 @@ theorem norm_condexpL2_le_one (hm : m ≤ m0) : ‖@condexpL2 α E 𝕜 _ _ _ _ 
 #align measure_theory.norm_condexp_L2_le_one MeasureTheory.norm_condexpL2_le_one
 
 theorem norm_condexpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) : ‖condexpL2 E 𝕜 hm f‖ ≤ ‖f‖ :=
-  ((@condexpL2 _ E 𝕜 _ _ _ _ _ _ μ hm).le_op_norm f).trans
+  ((@condexpL2 _ E 𝕜 _ _ _ _ _ _ μ hm).le_opNorm f).trans
     (mul_le_of_le_one_left (norm_nonneg _) (norm_condexpL2_le_one hm))
 #align measure_theory.norm_condexp_L2_le MeasureTheory.norm_condexpL2_le
 
@@ -183,8 +184,8 @@ theorem lintegral_nnnorm_condexpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠
 
 theorem condexpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) {f : Lp ℝ 2 μ}
     (hf : f =ᵐ[μ.restrict s] 0) : condexpL2 ℝ ℝ hm f =ᵐ[μ.restrict s] (0 : α → ℝ) := by
-  suffices h_nnnorm_eq_zero : ∫⁻ x in s, ‖(condexpL2 ℝ ℝ hm f : α → ℝ) x‖₊ ∂μ = 0
-  · rw [lintegral_eq_zero_iff] at h_nnnorm_eq_zero
+  suffices h_nnnorm_eq_zero : ∫⁻ x in s, ‖(condexpL2 ℝ ℝ hm f : α → ℝ) x‖₊ ∂μ = 0 by
+    rw [lintegral_eq_zero_iff] at h_nnnorm_eq_zero
     refine' h_nnnorm_eq_zero.mono fun x hx => _
     dsimp only at hx
     rw [Pi.zero_apply] at hx ⊢

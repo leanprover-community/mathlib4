@@ -82,7 +82,7 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
     isExtreme_sInter hFnemp fun t ht => (hFS ht).2.2⟩, fun t ht => sInter_subset_of_mem ht⟩
   haveI : Nonempty (↥F) := hFnemp.to_subtype
   rw [sInter_eq_iInter]
-  refine' IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _ (fun t u => _)
+  refine' IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ (fun t u => _)
     (fun t => (hFS t.mem).1)
     (fun t => hscomp.of_isClosed_subset (hFS t.mem).2.1 (hFS t.mem).2.2.1) fun t =>
       (hFS t.mem).2.1
@@ -112,13 +112,14 @@ lemma surjOn_extremePoints_image (f : E →A[ℝ] F) (hs : IsCompact s) :
     SurjOn f (extremePoints ℝ s) (extremePoints ℝ (f '' s)) := by
   rintro w hw
   -- The fiber of `w` is nonempty and compact
-  have ht : IsCompact {x ∈ s | f x = w} := hs.inter_right $ isClosed_singleton.preimage f.continuous
+  have ht : IsCompact {x ∈ s | f x = w} :=
+    hs.inter_right <| isClosed_singleton.preimage f.continuous
   have ht₀ : {x ∈ s | f x = w}.Nonempty := by simpa using extremePoints_subset hw
   -- Hence by the Krein-Milman lemma it has an extreme point `x`
   obtain ⟨x, ⟨hx, rfl⟩, hyt⟩ := ht.extremePoints_nonempty ht₀
   -- `f x = w` and `x` is an extreme point of `s`, so we're done
   refine mem_image_of_mem _ ⟨hx, fun y hy z hz hxyz ↦ ?_⟩
   have := by simpa using image_openSegment _ f.toAffineMap y z
-  have := hw.2 (mem_image_of_mem _ hy) (mem_image_of_mem _ hz) $ by
+  have := hw.2 (mem_image_of_mem _ hy) (mem_image_of_mem _ hz) <| by
     rw [← this]; exact mem_image_of_mem _ hxyz
   exact hyt ⟨hy, this.1⟩ ⟨hz, this.2⟩ hxyz

@@ -109,7 +109,7 @@ theorem not_isUniform_iff :
   simp only [not_forall, not_lt, exists_prop, exists_and_left, Rat.cast_abs, Rat.cast_sub]
 #align simple_graph.not_is_uniform_iff SimpleGraph.not_isUniform_iff
 
-open Classical
+open scoped Classical
 
 variable (G)
 
@@ -197,7 +197,7 @@ variable [DecidableEq α] {A : Finset α} (P : Finpartition A) (G : SimpleGraph 
 
 namespace Finpartition
 
-open Classical
+open scoped Classical
 
 /-- The pairs of parts of a partition `P` which are not `ε`-uniform in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/
@@ -246,7 +246,7 @@ theorem isUniformOne : P.IsUniform G (1 : 𝕜) := by
 variable {P G}
 
 theorem IsUniform.mono {ε ε' : 𝕜} (hP : P.IsUniform G ε) (h : ε ≤ ε') : P.IsUniform G ε' :=
-  ((Nat.cast_le.2 <| card_le_of_subset <| P.nonUniforms_mono G h).trans hP).trans <| by gcongr
+  ((Nat.cast_le.2 <| card_le_card <| P.nonUniforms_mono G h).trans hP).trans <| by gcongr
 #align finpartition.is_uniform.mono Finpartition.IsUniform.mono
 
 theorem isUniformOfEmpty (hP : P.parts = ∅) : P.IsUniform G ε := by

@@ -71,9 +71,8 @@ variable {R A}
 
 theorem FormallyEtale.iff_unramified_and_smooth :
     FormallyEtale R A ↔ FormallyUnramified R A ∧ FormallySmooth R A := by
-  rw [FormallyUnramified_iff, FormallySmooth_iff, FormallyEtale_iff]
-  simp_rw [← forall_and]
-  rfl
+  rw [formallyUnramified_iff, formallySmooth_iff, formallyEtale_iff]
+  simp_rw [← forall_and, Function.Bijective]
 #align algebra.formally_etale.iff_unramified_and_smooth Algebra.FormallyEtale.iff_unramified_and_smooth
 
 instance (priority := 100) FormallyEtale.to_unramified [h : FormallyEtale R A] :
@@ -197,9 +196,8 @@ theorem FormallySmooth.liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ
   erw [← FormallySmooth.mk_lift _ hg'
     ((Ideal.quotientKerAlgEquivOfSurjective hg).symm.toAlgHom.comp f)]
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective
-  rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective,
-    Ideal.quotientKerAlgEquivOfRightInverse.apply]
-  exact (Ideal.kerLiftAlg_mk _ _).symm
+  simp only [liftOfSurjective, AlgEquiv.apply_symm_apply, AlgEquiv.toAlgHom_eq_coe,
+    Ideal.quotientKerAlgEquivOfSurjective_apply, RingHom.kerLift_mk, RingHom.coe_coe]
 #align algebra.formally_smooth.lift_of_surjective_apply Algebra.FormallySmooth.liftOfSurjective_apply
 
 @[simp]
@@ -338,7 +336,7 @@ theorem FormallySmooth.of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (Rin
       have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x : _)
       rwa [hx, map_zero, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero] at this
     intro x hx
-    have := (Ideal.pow_mono this 2).trans (Ideal.le_comap_pow _ 2) hx
+    have := (Ideal.pow_right_mono this 2).trans (Ideal.le_comap_pow _ 2) hx
     rwa [hI] at this
   have : i.comp f.kerSquareLift = (Ideal.Quotient.mkₐ R _).comp l := by
     apply AlgHom.coe_ringHom_injective
@@ -530,7 +528,7 @@ theorem FormallySmooth.localization_base [FormallySmooth R Sₘ] : FormallySmoot
       AlgHom.comp_algebraMap]
   use f
   ext
-  simp
+  simp [f]
 #align algebra.formally_smooth.localization_base Algebra.FormallySmooth.localization_base
 
 /-- This actually does not need the localization instance, and is stated here again for

@@ -317,6 +317,12 @@ theorem lookup_insert_ne {a a'} {b' : β a'} {s : AList β} (h : a ≠ a') :
   dlookup_kinsert_ne h
 #align alist.lookup_insert_ne AList.lookup_insert_ne
 
+@[simp] theorem lookup_insert_eq_none {l : AList β} {k k' : α} {v : β k} :
+    (l.insert k v).lookup k' = none ↔ (k' ≠ k) ∧ l.lookup k' = none := by
+  by_cases h : k' = k
+  · subst h; simp
+  · simp_all [lookup_insert_ne h]
+
 @[simp]
 theorem lookup_to_alist {a} (s : List (Sigma β)) : lookup a s.toAList = s.dlookup a := by
   rw [List.toAList, lookup, dlookup_dedupKeys]
@@ -468,13 +474,13 @@ theorem lookup_union_right {a} {s₁ s₂ : AList β} : a ∉ s₁ → lookup a 
   dlookup_kunion_right
 #align alist.lookup_union_right AList.lookup_union_right
 
---Porting note: removing simp, LHS not in SNF, new theorem added instead.
+-- Porting note: removing simp, LHS not in SNF, new theorem added instead.
 theorem mem_lookup_union {a} {b : β a} {s₁ s₂ : AList β} :
     b ∈ lookup a (s₁ ∪ s₂) ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
   mem_dlookup_kunion
 #align alist.mem_lookup_union AList.mem_lookup_union
 
---Porting note: new theorem, version of `mem_lookup_union` with LHS in simp-normal form
+-- Porting note (#10756): new theorem, version of `mem_lookup_union` with LHS in simp-normal form
 @[simp]
 theorem lookup_union_eq_some {a} {b : β a} {s₁ s₂ : AList β} :
     lookup a (s₁ ∪ s₂) = some b ↔ lookup a s₁ = some b ∨ a ∉ s₁ ∧ lookup a s₂ = some b :=

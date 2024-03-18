@@ -3,8 +3,6 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 -/
-import Mathlib.Algebra.Ring.Fin
-import Mathlib.Algebra.Ring.Prod
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Ideal.Basic
@@ -133,7 +131,7 @@ theorem eq_zero_iff_mem {I : Ideal R} : mk I a = 0 ↔ a ∈ I :=
 theorem eq_zero_iff_dvd (x y : R) : Ideal.Quotient.mk (Ideal.span ({x} : Set R)) y = 0 ↔ x ∣ y := by
   rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
   rw [← eq_zero_iff_mem, map_sub, sub_eq_zero]
 
@@ -206,7 +204,7 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
   rwa [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
 #align ideal.quotient.exists_inv Ideal.Quotient.exists_inv
 
-open Classical
+open scoped Classical
 
 /-- The quotient by a maximal ideal is a group with zero. This is a `def` rather than `instance`,
 since users will have computable inverses in some applications.
@@ -227,7 +225,7 @@ will have computable inverses (and `qsmul`, `rat_cast`) in some applications.
 See note [reducible non-instances]. -/
 @[reducible]
 protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) :=
-  { Quotient.commRing I, Quotient.groupWithZero I with }
+  { Quotient.commRing I, Quotient.groupWithZero I with qsmul := qsmulRec _ }
 #align ideal.quotient.field Ideal.Quotient.field
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/
@@ -240,7 +238,7 @@ theorem maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal
   · intro J x hIJ hxnI hxJ
     rcases hqf.mul_inv_cancel (mt Ideal.Quotient.eq_zero_iff_mem.1 hxnI) with ⟨⟨y⟩, hy⟩
     rw [← zero_add (1 : R), ← sub_self (x * y), sub_add]
-    refine' J.sub_mem (J.mul_mem_right _ hxJ) (hIJ (Ideal.Quotient.eq.1 hy))
+    exact J.sub_mem (J.mul_mem_right _ hxJ) (hIJ (Ideal.Quotient.eq.1 hy))
 #align ideal.quotient.maximal_of_is_field Ideal.Quotient.maximal_of_isField
 
 /-- The quotient of a ring by an ideal is a field iff the ideal is maximal. -/
@@ -251,7 +249,7 @@ theorem maximal_ideal_iff_isField_quotient (I : Ideal R) : I.IsMaximal ↔ IsFie
     maximal_of_isField _⟩
 #align ideal.quotient.maximal_ideal_iff_is_field_quotient Ideal.Quotient.maximal_ideal_iff_isField_quotient
 
-variable [CommRing S]
+variable [Semiring S]
 
 /-- Given a ring homomorphism `f : R →+* S` sending all elements of an ideal to zero,
 lift it to the quotient by this ideal. -/
@@ -324,7 +322,7 @@ variable (ι : Type v)
 /-- `R^n/I^n` is a `R/I`-module. -/
 instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
   smul c m :=
-    Quotient.liftOn₂' c m (fun r m => Submodule.Quotient.mk <| r • m) $ by
+    Quotient.liftOn₂' c m (fun r m => Submodule.Quotient.mk <| r • m) <| by
       intro c₁ m₁ c₂ m₂ hc hm
       apply Ideal.Quotient.eq.2
       rw [Submodule.quotientRel_r_def] at hc hm

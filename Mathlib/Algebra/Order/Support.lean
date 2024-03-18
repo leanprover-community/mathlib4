@@ -24,14 +24,14 @@ variable [One M]
 @[to_additive]
 lemma mulSupport_sup [SemilatticeSup M] (f g : α → M) :
     mulSupport (fun x ↦ f x ⊔ g x) ⊆ mulSupport f ∪ mulSupport g :=
-  mulSupport_binop_subset (· ⊔ ·) sup_idem f g
+  mulSupport_binop_subset (· ⊔ ·) (sup_idem _) f g
 #align function.mul_support_sup Function.mulSupport_sup
 #align function.support_sup Function.support_sup
 
 @[to_additive]
 lemma mulSupport_inf [SemilatticeInf M] (f g : α → M) :
     mulSupport (fun x ↦ f x ⊓ g x) ⊆ mulSupport f ∪ mulSupport g :=
-  mulSupport_binop_subset (· ⊓ ·) inf_idem f g
+  mulSupport_binop_subset (· ⊓ ·) (inf_idem _) f g
 #align function.mul_support_inf Function.mulSupport_inf
 #align function.support_inf Function.support_inf
 
@@ -91,7 +91,7 @@ lemma le_mulIndicator_apply (hfg : a ∈ s → y ≤ g a) (hf : a ∉ s → y �
 #align set.le_indicator_apply Set.le_indicator_apply
 
 @[to_additive]
-lemma le_mulIndicator (hfg : ∀ a ∈ s, f a ≤ g a) (hf : ∀ (a) (_ : a ∉ s), f a ≤ 1) :
+lemma le_mulIndicator (hfg : ∀ a ∈ s, f a ≤ g a) (hf : ∀ a ∉ s, f a ≤ 1) :
     f ≤ mulIndicator s g := fun _ ↦ le_mulIndicator_apply (hfg _) (hf _)
 #align set.le_mul_indicator Set.le_mulIndicator
 #align set.le_indicator Set.le_indicator
@@ -143,7 +143,7 @@ lemma mulIndicator_le_mulIndicator_of_subset (h : s ⊆ t) (hf : ∀ a, 1 ≤ f 
 #align set.indicator_le_indicator_of_subset Set.indicator_le_indicator_of_subset
 
 @[to_additive]
-lemma mulIndicator_le_self' (hf : ∀ (x) (_ : x ∉ s), 1 ≤ f x) : mulIndicator s f ≤ f :=
+lemma mulIndicator_le_self' (hf : ∀ x ∉ s, 1 ≤ f x) : mulIndicator s f ≤ f :=
   mulIndicator_le' (fun _ _ ↦ le_rfl) hf
 #align set.mul_indicator_le_self' Set.mulIndicator_le_self'
 #align set.indicator_le_self' Set.indicator_le_self'
@@ -233,6 +233,8 @@ end CanonicallyOrderedCommMonoid
 
 section LinearOrderedAddCommGroup
 variable [LinearOrderedAddCommGroup M]
+
+open scoped symmDiff
 
 lemma abs_indicator_symmDiff (s t : Set α) (f : α → M) (x : α) :
     |indicator (s ∆ t) f x| = |indicator s f x - indicator t f x| :=

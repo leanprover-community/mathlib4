@@ -83,8 +83,8 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   let Φₙ := cyclotomic n ℤ
   apply_fun (Nat.cast : ℕ → ℤ) at key
   rw [Nat.cast_add, Nat.cast_sub h1qn, Nat.cast_sub hq.le, Nat.cast_one, Nat.cast_pow] at key
-  suffices : Φₙ.eval ↑q ∣ ↑(∑ x in (ConjClasses.noncenter Dˣ).toFinset, x.carrier.toFinset.card)
-  · have contra : Φₙ.eval _ ∣ _ := eval_dvd (cyclotomic.dvd_X_pow_sub_one n ℤ) (x := (q : ℤ))
+  suffices Φₙ.eval ↑q ∣ ↑(∑ x in (ConjClasses.noncenter Dˣ).toFinset, x.carrier.toFinset.card) by
+    have contra : Φₙ.eval _ ∣ _ := eval_dvd (cyclotomic.dvd_X_pow_sub_one n ℤ) (x := (q : ℤ))
     rw [eval_sub, eval_pow, eval_X, eval_one, ← key, Int.dvd_add_left this] at contra
     refine (Nat.le_of_dvd ?_ ?_).not_lt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')
     · exact tsub_pos_of_lt hq
@@ -113,7 +113,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   have hZx : Zx ≠ ⊤ := by
     by_contra! hZx
     refine (ConjClasses.mk_bijOn (Dˣ)).mapsTo (Set.subset_center_units ?_) hx
-    refine Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _
+    exact Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _
   letI : Field Zx := hD.field hZx.lt_top
   letI : Algebra Z Zx := (Subring.inclusion <| Subring.center_le_centralizer {(x : D)}).toAlgebra
   let d := finrank Z Zx
@@ -128,7 +128,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   rw [← aux, ← aux, ← eval_mul]
   refine (evalRingHom ↑q).map_dvd (X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ ?_)
   refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩
-  rw [← (Nat.pow_right_strictMono hq).lt_iff_lt, ← card_D, ← card_Zx]
+  rw [← pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
   obtain ⟨b, -, hb⟩ := SetLike.exists_of_lt hZx.lt_top
   refine card_lt_of_injective_of_not_mem _ Subtype.val_injective (?_ : b ∉ _)
   rintro ⟨b, rfl⟩
@@ -142,8 +142,8 @@ private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   induction' hn : Fintype.card D using Nat.strong_induction_on with n IH generalizing D
   apply InductionHyp.center_eq_top
   intro R hR x y hx hy
-  suffices : (⟨y, hy⟩ : R) ∈ Subring.center R
-  · rw [Subring.mem_center_iff] at this
+  suffices (⟨y, hy⟩ : R) ∈ Subring.center R by
+    rw [Subring.mem_center_iff] at this
     simpa using this ⟨x, hx⟩
   let R_dr : DivisionRing R := Fintype.divisionRingOfIsDomain R
   rw [IH (Fintype.card R) _ R inferInstance rfl]

@@ -384,16 +384,16 @@ open Opposite
 @[simps]
 def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
   functor :=
-    { obj := λ X => ⟨op X.unop.1, op X.unop.2⟩,
-      map := λ f => ⟨f.unop.1.op, f.unop.2.op⟩ }
+    { obj := fun X ↦ ⟨op X.unop.1, op X.unop.2⟩,
+      map := fun f ↦ ⟨f.unop.1.op, f.unop.2.op⟩ }
   inverse :=
-    { obj := λ ⟨X,Y⟩ => op ⟨X.unop, Y.unop⟩,
-      map := λ ⟨f,g⟩ => op ⟨f.unop, g.unop⟩ }
+    { obj := fun ⟨X,Y⟩ ↦ op ⟨X.unop, Y.unop⟩,
+      map := fun ⟨f,g⟩ ↦ op ⟨f.unop, g.unop⟩ }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
   functor_unitIso_comp := fun ⟨X, Y⟩ => by
     dsimp
-    ext <;> simpa using Category.id_comp _
+    ext <;> apply Category.id_comp
 
 end Opposite
 

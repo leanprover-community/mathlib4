@@ -3,7 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Std.Classes.SetNotation
+import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-! # Pi type notation
 
@@ -105,7 +105,7 @@ def exists_delab : Delab := whenPPOption Lean.getPPNotation do
   let ppTypes ← getPPOption getPPFunBinderTypes
   let stx ← SubExpr.withAppArg do
     let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName $ fun x => do
+    withBindingBodyUnusedName fun x => do
       let x : TSyntax `ident := .mk x
       let body ← delab
       if prop && !dep then
