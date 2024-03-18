@@ -111,7 +111,7 @@ theorem existsUnique {t : Cone F} (h : IsLimit t) (s : Cone F) :
   ⟨h.lift s, h.fac s, h.uniq s⟩
 #align category_theory.limits.is_limit.exists_unique CategoryTheory.Limits.IsLimit.existsUnique
 
-/-- Noncomputably make a colimit cocone from the existence of unique factorizations. -/
+/-- Noncomputably make a limit cone from the existence of unique factorizations. -/
 def ofExistsUnique {t : Cone F}
     (ht : ∀ s : Cone F, ∃! l : s.pt ⟶ t.pt, ∀ j, l ≫ t.π.app j = s.π.app j) : IsLimit t := by
   choose s hs hs' using ht

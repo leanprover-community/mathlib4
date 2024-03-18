@@ -61,7 +61,7 @@ theorem sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2)
         simp [mul_add, pow_succ, mul_comm, mul_assoc, mul_left_comm]
 #align int.sq_add_sq_of_two_mul_sq_add_sq Int.sq_add_sq_of_two_mul_sq_add_sq
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
     (h : a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = k * m)
     (ha : 2 * a < m) (hb : 2 * b < m) (hc : 2 * c < m) (hd : 2 * d < m) :
@@ -76,7 +76,7 @@ theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
       fin_cases i <;> assumption
     _ = 2 ^ 2 * (m * m) := by simp; ring
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
     ∃ (a b k : ℕ), 0 < k ∧ k < p ∧ a ^ 2 + b ^ 2 + 1 = k * p := by
   rcases hp.1.eq_two_or_odd' with (rfl | hodd)
@@ -234,7 +234,6 @@ theorem sum_four_squares (n : ℕ) : ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + 
     rcases hm with ⟨a, b, c, d, rfl⟩
     rcases hn with ⟨w, x, y, z, rfl⟩
     exact ⟨_, _, _, _, euler_four_squares _ _ _ _ _ _ _ _⟩
-
 #align nat.sum_four_squares Nat.sum_four_squares
 
 end Nat

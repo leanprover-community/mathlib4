@@ -246,7 +246,7 @@ instance mulOneClass [∀ i, MulOneClass (f i)] : MulOneClass (∀ i, f i) where
 
 @[to_additive]
 instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
-  inv_one := by intros; ext; exact inv_one
+  inv_one := by ext; exact inv_one
 
 @[to_additive]
 instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where

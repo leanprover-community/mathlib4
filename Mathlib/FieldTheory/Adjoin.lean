@@ -536,12 +536,13 @@ theorem adjoin_eq_top_of_algebra (hS : Algebra.adjoin F S = ⊤) : adjoin F S = 
   top_le_iff.mp (hS.symm.trans_le <| algebra_adjoin_le_adjoin F S)
 
 @[elab_as_elim]
-theorem adjoin_induction {s : Set E} {p : E → Prop} {x} (h : x ∈ adjoin F s) (Hs : ∀ x ∈ s, p x)
-    (Hmap : ∀ x, p (algebraMap F E x)) (Hadd : ∀ x y, p x → p y → p (x + y))
-    (Hneg : ∀ x, p x → p (-x)) (Hinv : ∀ x, p x → p x⁻¹) (Hmul : ∀ x y, p x → p y → p (x * y)) :
+theorem adjoin_induction {s : Set E} {p : E → Prop} {x} (h : x ∈ adjoin F s) (mem : ∀ x ∈ s, p x)
+    (algebraMap : ∀ x, p (algebraMap F E x)) (add : ∀ x y, p x → p y → p (x + y))
+    (neg : ∀ x, p x → p (-x)) (inv : ∀ x, p x → p x⁻¹) (mul : ∀ x y, p x → p y → p (x * y)) :
     p x :=
-  Subfield.closure_induction h (fun x hx => Or.casesOn hx (fun ⟨x, hx⟩ => hx ▸ Hmap x) (Hs x))
-    ((algebraMap F E).map_one ▸ Hmap 1) Hadd Hneg Hinv Hmul
+  Subfield.closure_induction h
+    (fun x hx => Or.casesOn hx (fun ⟨x, hx⟩ => hx ▸ algebraMap x) (mem x))
+    ((_root_.algebraMap F E).map_one ▸ algebraMap 1) add neg inv mul
 #align intermediate_field.adjoin_induction IntermediateField.adjoin_induction
 
 /- Porting note (kmill): this notation is replacing the typeclass-based one I had previously

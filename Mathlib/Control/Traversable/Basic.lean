@@ -87,7 +87,7 @@ variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
 variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
 
 instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G α :=
-  ⟨λ η => η.app _⟩
+  ⟨fun η ↦ η.app _⟩
 
 variable {F G}
 
