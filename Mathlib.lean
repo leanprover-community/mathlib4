@@ -3240,11 +3240,14 @@ import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Bezout
-import Mathlib.RingTheory.Bialgebra
+import Mathlib.RingTheory.Bialgebra.Basic
+import Mathlib.RingTheory.Bialgebra.Hom
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.ClassGroup
-import Mathlib.RingTheory.Coalgebra
+import Mathlib.RingTheory.Coalgebra.Basic
+import Mathlib.RingTheory.Coalgebra.Equiv
+import Mathlib.RingTheory.Coalgebra.Hom
 import Mathlib.RingTheory.Complex
 import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Coprime.Basic
