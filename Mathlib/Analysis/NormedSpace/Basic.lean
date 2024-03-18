@@ -130,9 +130,9 @@ instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, Sem
     exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
 #align pi.normed_space Pi.normedSpace
 
-instance MulOpposite.normedSpace : NormedSpace 𝕜 Eᵐᵒᵖ :=
-  { MulOpposite.seminormedAddCommGroup (E := Eᵐᵒᵖ), MulOpposite.module _ with
-    norm_smul_le := fun s x => norm_smul_le s x.unop }
+instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
+  toModule := instModule
+  norm_smul_le _ _ := norm_smul_le s x.unop
 #align mul_opposite.normed_space MulOpposite.normedSpace
 
 /-- A subspace of a normed space is also a normed space, with the restriction of the norm. -/
