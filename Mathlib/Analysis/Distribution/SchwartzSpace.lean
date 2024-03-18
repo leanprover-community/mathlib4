@@ -1031,12 +1031,10 @@ variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
 variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D]
 
-section
+variable {μ : Measure D} {n : ℕ}
 
-variable {μ : Measure D} {n : ℕ} (h : Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ)
-
-lemma integrable_pow_mul (f : 𝓢(D, V)) (k : ℕ) :
-    Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
+lemma integrable_pow_mul (h : Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ) (f : 𝓢(D, V))
+    (k : ℕ) : Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
   let l := n + k
   obtain ⟨C, C_nonneg, hC⟩ : ∃ C, 0 ≤ C ∧ ∀ x, (1 + ‖x‖) ^ l * ‖f x‖ ≤ C := by
     use 2 ^ l * (Finset.Iic (l, 0)).sup (fun m ↦ SchwartzMap.seminorm ℝ m.1 m.2) f, by positivity
@@ -1054,7 +1052,8 @@ lemma integrable_pow_mul (f : 𝓢(D, V)) (k : ℕ) :
     _ = (1 + ‖x‖) ^ (n + k) * ‖f x‖ := by simp only [pow_add, mul_assoc]
     _ ≤ C := hC x
 
-lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
+lemma integrable (h : Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ) (f : 𝓢(D, V)) :
+    Integrable f μ :=
   (f.integrable_pow_mul h 0).mono f.continuous.aestronglyMeasurable
     (eventually_of_forall (fun _ ↦ by simp))
 
@@ -1089,12 +1088,11 @@ def integralCLM (μ : Measure D) : 𝓢(D, V) →L[𝕜] V :=
       apply h.mul_const)
   else 0
 
-lemma integralCLM_apply (f : 𝓢(D, V)) : integralCLM 𝕜 μ f = ∫ x, f x ∂μ := by
+lemma integralCLM_apply (h : Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ) (f : 𝓢(D, V)) :
+    integralCLM 𝕜 μ f = ∫ x, f x ∂μ := by
   have : ∃ m : ℕ, Integrable (fun x ↦ (1 + ‖x‖) ^ (- (m : ℝ))) μ := ⟨n, h⟩
   simp only [integralCLM, this, reduceDite]
   rfl
-
-end
 
 end Integration
 
