@@ -19,7 +19,7 @@ which are continuous with continuous inverse.
   follows `mathlib`'s `CategoryTheory` convention (apply `e`, then `e'`),
   not the convention used in function composition and compositions of bundled morphisms.
 
-* `e.toHomeomorph`: the continuous affine equivalence `e` has a homeomorphism
+* `e.toHomeomorph`: the continuous affine equivalence `e` as a homeomorphism
 * `ContinuousLinearEquiv.toContinuousAffineEquiv`: a continuous linear equivalence as a continuous
   affine equivalence
 * `ContinuousAffineEquiv.constVAdd`: `AffineEquiv.constVAdd` as a continuous affine equivalence
@@ -57,8 +57,12 @@ namespace ContinuousAffineEquiv
 -- Basic set-up: standard fields, coercions and ext lemmas
 section Basic
 
--- not needed below, but perhaps still useful?
--- simpVarHead linter complains, so removed @[simp]
+/-- A continuous affine equivalence is a homeomorphism. -/
+def toHomeomorph (e : P₁ ≃ᵃL[k] P₂) : P₁ ≃ₜ P₂ where
+  __ := e
+
+-- unused; is still useful still?
+-- simpVarHead linter complained, so removed @[simp]
 theorem toAffineEquiv_mk (f : P₁ ≃ᵃ[k] P₂) (h₁ : Continuous f.toFun) (h₂ : Continuous f.invFun) :
     toAffineEquiv (mk f h₁ h₂) = f :=
   rfl
@@ -78,6 +82,7 @@ instance : CoeFun (P₁ ≃ᵃL[k] P₂) fun _ ↦ P₁ → P₂ :=
   DFunLike.hasCoeToFun
 
 attribute [coe] ContinuousAffineEquiv.toAffineEquiv
+
 /-- Coerce continuous affine equivalences to affine equivalences. -/
 instance ContinuousAffineEquiv.coe : Coe (P₁ ≃ᵃL[k] P₂) (P₁ ≃ᵃ[k] P₂) := ⟨toAffineEquiv⟩
 
@@ -101,7 +106,7 @@ theorem coe_toEquiv (e : P₁ ≃ᵃL[k] P₂) : ⇑e.toEquiv = e :=
 -- NOTE(MR): I have omitted `coe_mk`, `coe_mk'`, `coe_inj`, `coeFn_injective` lemmas for now;
 -- happy to add them!
 
--- NOTE(MR): the next two lines are cargo-culted; please review carefully if they make sense!
+-- NOTE(MR): the next three items are cargo-culted; please review carefully if they make sense!
 /-- See Note [custom simps projection].
   We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
@@ -258,11 +263,6 @@ theorem symm_trans_self (e : P₁ ≃ᵃL[k] P₂) : e.symm.trans e = refl k P�
 end ReflSymmTrans
 
 section
-
--- TODO(MR): should toContinuousLinearEquiv.toHomeomorph re-use this?
-/-- A continuous affine equivalence is a homeomorphism. -/
-def toHomeomorph (e : P₁ ≃ᵃL[k] P₂) : P₁ ≃ₜ P₂ where
-  __ := e
 
 variable {E F : Type*} [AddCommGroup E] [Module k E] [TopologicalSpace E]
   [AddCommGroup F] [Module k F] [TopologicalSpace F]
