@@ -5,6 +5,7 @@ Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.GroupWithZero.Bitwise
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
 
@@ -463,8 +464,17 @@ theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
   rfl
 #align complex.coe_im_add_group_hom Complex.coe_imAddGroupHom
 
-#noalign complex.I_pow_bit0
-#noalign complex.I_pow_bit1
+section
+set_option linter.deprecated false
+@[simp]
+theorem I_pow_bit0 (n : ℕ) : I ^ bit0 n = (-1 : ℂ) ^ n := by rw [pow_bit0', Complex.I_mul_I]
+set_option linter.uppercaseLean3 false in
+#align complex.I_pow_bit0 Complex.I_pow_bit0
+
+@[simp]
+theorem I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [pow_bit1', Complex.I_mul_I]
+set_option linter.uppercaseLean3 false in
+#align complex.I_pow_bit1 Complex.I_pow_bit1
 
 -- Porting note: new theorem
 -- See note [no_index around OfNat.ofNat]
@@ -485,6 +495,8 @@ theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).im 
 
 noncomputable instance : RatCast ℂ where
   ratCast q := ofReal' q
+
+end
 
 /-! ### Complex conjugation -/
 
@@ -814,8 +826,19 @@ noncomputable instance instField : Field ℂ :=
   inv_zero := Complex.inv_zero }
 #align complex.field Complex.instField
 
-#noalign complex.I_zpow_bit0
-#noalign complex.I_zpow_bit1
+section
+set_option linter.deprecated false
+@[simp]
+theorem I_zpow_bit0 (n : ℤ) : I ^ bit0 n = (-1 : ℂ) ^ n := by rw [zpow_bit0', I_mul_I]
+set_option linter.uppercaseLean3 false in
+#align complex.I_zpow_bit0 Complex.I_zpow_bit0
+
+@[simp]
+theorem I_zpow_bit1 (n : ℤ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [zpow_bit1', I_mul_I]
+set_option linter.uppercaseLean3 false in
+#align complex.I_zpow_bit1 Complex.I_zpow_bit1
+
+end
 
 theorem div_re (z w : ℂ) : (z / w).re = z.re * w.re / normSq w + z.im * w.im / normSq w := by
   simp [div_eq_mul_inv, mul_assoc, sub_eq_add_neg]
