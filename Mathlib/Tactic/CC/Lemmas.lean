@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 
-import Mathlib.Logic.Basic
+import Mathlib.Init.Logic
 
 /-! Lemmas use by the congruence closure module -/
+
+namespace Mathlib.Tactic.CC
 
 theorem iff_eq_of_eq_true_left {a b : Prop} (h : a = True) : (a ↔ b) = b :=
   h.symm ▸ propext true_iff_iff
@@ -113,3 +115,5 @@ theorem eq_false_of_not_eq_true {a : Prop} (h : Not a = True) : a = False :=
    cc_config.em is tt. -/
 theorem eq_true_of_not_eq_false {a : Prop} (h : Not a = False) : a = True :=
   eq_true (Classical.byContradiction fun hna ↦ Eq.mp h hna)
+
+end Mathlib.Tactic.CC

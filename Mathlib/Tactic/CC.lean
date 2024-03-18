@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Tactic.CC.Lemmas
+import Mathlib.Logic.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Lean.Meta.Basic
 import Mathlib.Lean.Expr.Basic
@@ -60,6 +61,50 @@ universe u
 
 open Lean Meta Elab Tactic Parser.Tactic Std
 
+local elab "#?" : command =>
+  logInfo "The English of this document is possibly poor, please correct."
+
+/--
+The congruence closure tactic `cc` tries to solve the goal by chaining
+equalities from context and applying congruence (i.e. if `a = b`, then `f a = f b`).
+It is a finishing tactic, i.e. it is meant to close
+the current goal, not to make some inconclusive progress.
+A mostly trivial example would be:
+
+```lean
+example (a b c : ℕ) (f : ℕ → ℕ) (h: a = b) (h' : b = c) : f a = f c := by
+  cc
+```
+
+As an example requiring some thinking to do by hand, consider:
+
+```lean
+example (f : ℕ → ℕ) (x : ℕ)
+    (H1 : f (f (f x)) = x) (H2 : f (f (f (f (f x)))) = x) :
+    f x = x := by
+  cc
+```
+
+The tactic works by building an equality matching graph. It's a graph where
+the vertices are terms and they are linked by edges if they are known to
+be equal. Once you've added all the equalities in your context, you take
+the transitive closure of the graph and, for each connected component
+(i.e. equivalence class) you can elect a term that will represent the
+whole class and store proofs that the other elements are equal to it.
+You then take the transitive closure of these equalities under the
+congruence lemmas.
+
+The `cc` implementation in Lean does a few more tricks: for example it
+derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for any `a`.
+
+* The starting reference point is Nelson, Oppen, [Fast decision procedures based on congruence
+closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
+Journal of the ACM (1980)
+
+* The congruence lemmas for dependent type theory as used in Lean are described in
+[Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
+(de Moura, Selsam IJCAR 2016).
+-/
 syntax (name := Lean.Parser.Tactic.cc) "cc" : tactic
 
 namespace Mathlib.Tactic.CC
@@ -109,13 +154,17 @@ def liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
 local instance : Ord Expr where
   compare a b := bif Expr.lt a b then .lt else bif Expr.eqv b a then .eq else .gt
 
+#?
+/-- Red-black maps whose keys are `Expr`s. -/
 abbrev RBExprMap (α : Type u) := Std.RBMap Expr α compare
 
+#?
+/-- Red-black sets of `Expr`s. -/
 abbrev RBExprSet := Std.RBSet Expr compare
 
-structure ExtCongrTheorem where
-  /-- The basic `CongrTheorem` object defined at `Lean.Meta.CongrTheorems` -/
-  congrTheorem : CongrTheorem
+#?
+/-- `CongrTheorem`s equiped with additional infos used by congruence closure modules. -/
+structure ExtCongrTheorem extends CongrTheorem where
   /-- If `heqResult` is true, then lemma is based on heterogeneous equality
       and the conclusion is a heterogeneous equality. -/
   heqResult : Bool := false
@@ -130,30 +179,26 @@ def mkExtHCongrWithArity (fn : Expr) (nargs : Nat) :
   forallTelescope type fun _ type => do
     guard (type.isEq || type.isHEq)
     let res₁ : ExtCongrTheorem :=
-      { congrTheorem := eqCongr
+      { eqCongr with
         heqResult := type.isHEq
         hcongrTheorem := true }
     return some res₁
 
+#?
+/-- Keys used to find corresponding `ExtCongrTheorem`s. -/
 structure ExtCongrTheoremKey where
+  /-- The function of the given `ExtCongrTheorem`. -/
   fn : Expr
+  /-- The number of arguments of `fn`. -/
   nargs : Nat
   deriving BEq, Hashable
 
+#?
+/-- Caches used to find corresponding `ExtCongrTheorem`s. -/
 abbrev ExtCongrTheoremCache := Std.HashMap ExtCongrTheoremKey (Option ExtCongrTheorem)
 
-def isNot : Expr → Bool × Expr
-  | .app (.const ``Not []) a => (true, a)
-  | .forallE _ a (.const ``False []) _ => (true, a)
-  | e => (false, e)
-
-def isNotOrNe : Expr → Bool × Expr
-  | .app (.const ``Not []) a => (true, a)
-  | .forallE _ a (.const ``False []) _ => (true, a)
-  | .app (.app (.app (.const ``Ne [u]) α) lhs) rhs =>
-    (true, .app (.app (.app (.const ``Eq [u]) α) lhs) rhs)
-  | e => (false, e)
-
+#?
+/-- Configs used in congruence closure modules. -/
 structure CCConfig where
   /-- If `true`, congruence closure will treat implicit instance arguments as constants. -/
   ignoreInstances : Bool := true
@@ -171,21 +216,25 @@ structure CCConfig where
   deriving Inhabited
 #align cc_config Mathlib.Tactic.CC.CCConfig
 
-inductive ACApp where
-  | ofExpr : Expr → ACApp
-  | app (op : Expr) (args : Array Expr) : ACApp
+#?
+/-- An `ACApps` represents either just an `Expr` or applications of an associative and commutative
+  binary operator. -/
+inductive ACApps where
+  /-- An `ACApps` of just an `Expr`. -/
+  | ofExpr (e : Expr) : ACApps
+  /-- An `ACApps` of applications of a binary operator. `args` are assumed to be sorted. -/
+  | apps (op : Expr) (args : Array Expr) : ACApps
   deriving Inhabited, BEq
 
-instance : Coe Expr ACApp := ⟨ACApp.ofExpr⟩
+instance : Coe Expr ACApps := ⟨ACApps.ofExpr⟩
 
-/-- Ordering on `ACApp`. -/
-local instance : Ord ACApp where
-  compare a b :=
-  match a, b with
+/-- Ordering on `ACApps`. -/
+local instance : Ord ACApps where
+  compare
     | .ofExpr a, .ofExpr b => compare a b
-    | .ofExpr _, .app _ _ => .lt
-    | .app _ _, .ofExpr _ => .gt
-    | .app op₁ args₁, .app op₂ args₂ =>
+    | .ofExpr _, .apps _ _ => .lt
+    | .apps _ _, .ofExpr _ => .gt
+    | .apps op₁ args₁, .apps op₂ args₂ =>
       compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.then <| Id.run do
         for i in [:args₁.size] do
           let o := compare args₁[i]! args₂[i]!
@@ -194,11 +243,11 @@ local instance : Ord ACApp where
 
 /-- Return true iff `e₁` is a "subset" of `e₂`.
     Example: The result is `true` for `e₁ := a*a*a*b*d` and `e₂ := a*a*a*a*b*b*c*d*d` -/
-def ACApp.isSubset : (e₁ e₂ : ACApp) → Bool
+def ACApps.isSubset : (e₁ e₂ : ACApps) → Bool
   | .ofExpr a, .ofExpr b => a == b
-  | .ofExpr a, .app _ args => args.contains a
-  | .app _ _, .ofExpr _ => false
-  | .app op₁ args₁, .app op₂ args₂ =>
+  | .ofExpr a, .apps _ args => args.contains a
+  | .apps _ _, .ofExpr _ => false
+  | .apps op₁ args₁, .apps op₂ args₂ =>
     if op₁ == op₂ then
       if args₁.size ≤ args₂.size then Id.run do
         let mut i₁ := 0
@@ -219,12 +268,12 @@ def ACApp.isSubset : (e₁ e₂ : ACApp) → Bool
     the result is `#[a, c, d, d]`
 
     Precondition: `e₂.isSubset e₁` -/
-def ACApp.diff (e₁ e₂ : ACApp) (r : Array Expr) : Array Expr :=
+def ACApps.diff (e₁ e₂ : ACApps) (r : Array Expr) : Array Expr :=
   match e₁ with
-  | .app op₁ args₁ => Id.run do
+  | .apps op₁ args₁ => Id.run do
     let mut r := r
     match e₂ with
-    | .app op₂ args₂ =>
+    | .apps op₂ args₂ =>
       if op₁ == op₂ then
         let mut i₂ := 0
         for i₁ in [:args₁.size] do
@@ -244,16 +293,20 @@ def ACApp.diff (e₁ e₂ : ACApp) (r : Array Expr) : Array Expr :=
     return r
   | .ofExpr _ => r
 
-def ACApp.append (op : Expr) (e : ACApp) (r : Array Expr) : Array Expr :=
+#?
+/-- Appends arguments of `e` to `r`. -/
+def ACApps.append (op : Expr) (e : ACApps) (r : Array Expr) : Array Expr :=
   match e with
-  | .app op' args =>
+  | .apps op' args =>
     if op' == op then r ++ args else r
   | .ofExpr e =>
     r.push e
 
-def ACApp.intersection (e₁ e₂ : ACApp) (r : Array Expr) : Array Expr :=
+#?
+/-- Appends elements in the intersection of `e₁` and `e₂` to `r`. -/
+def ACApps.intersection (e₁ e₂ : ACApps) (r : Array Expr) : Array Expr :=
   match e₁, e₂ with
-  | .app _ args₁, .app _ args₂ => Id.run do
+  | .apps _ args₁, .apps _ args₂ => Id.run do
     let mut r := r
     let mut i₁ := 0
     let mut i₂ := 0
@@ -269,47 +322,76 @@ def ACApp.intersection (e₁ e₂ : ACApp) (r : Array Expr) : Array Expr :=
     return r
   | _, _ => r
 
-def ACApp.mkApp (op : Expr) (args : Array Expr) : ACApp :=
-  .app op (args.qsort Expr.lt)
+#?
+/-- Sorts `args` and applies them to `ACApps.apps`. -/
+def ACApps.mkApps (op : Expr) (args : Array Expr) : ACApps :=
+  .apps op (args.qsort Expr.lt)
 
-def ACApp.mkFlatApp (op : Expr) (e₁ e₂ : ACApp) : ACApp :=
-  let newArgs := ACApp.append op e₁ #[]
-  let newArgs := ACApp.append op e₂ newArgs
-  ACApp.mkApp op newArgs
+#?
+/-- Flattens given two `ACApps`. -/
+def ACApps.mkFlatApps (op : Expr) (e₁ e₂ : ACApps) : ACApps :=
+  let newArgs := ACApps.append op e₁ #[]
+  let newArgs := ACApps.append op e₂ newArgs
+  ACApps.mkApps op newArgs
 
-def ACApp.toExpr : ACApp → Option Expr
-  | .app _ ⟨[]⟩ => none
-  | .app op ⟨arg₀ :: args⟩ => some <| args.foldl (fun e arg => mkApp2 op e arg) arg₀
+#?
+/-- Converts an `ACApps` to an `Expr`. This returns `none` when the empty applications are given. -/
+def ACApps.toExpr : ACApps → Option Expr
+  | .apps _ ⟨[]⟩ => none
+  | .apps op ⟨arg₀ :: args⟩ => some <| args.foldl (fun e arg => mkApp2 op e arg) arg₀
   | .ofExpr e => some e
 
-abbrev RBACAppSet := Std.RBSet ACApp compare
+#?
+/-- Red-black maps whose keys are `ACApps`es. -/
+abbrev RBACAppsMap (α : Type u) := Std.RBMap ACApps α compare
 
-abbrev RBACAppMap (α : Type u) := Std.RBMap ACApp α compare
+#?
+/-- Red-black sets of `ACApps`es. -/
+abbrev RBACAppsSet := Std.RBSet ACApps compare
 
+#?
+/-- For proof terms generated by AC congruence closure modules, we want a placeholder as an equality
+  proof between given two terms which will be generated by non-AC congruence closure modules later.
+  `DelayedExpr` represents it using `eqProof`. -/
 inductive DelayedExpr where
-  | ofExpr : Expr → DelayedExpr
+  /-- A `DelayedExpr` of just an `Expr`. -/
+  | ofExpr (e : Expr) : DelayedExpr
+  /-- A placeholder as an equality proof between given two terms which will be generated by non-AC
+  congruence closure modules later. -/
   | eqProof (lhs rhs : Expr) : DelayedExpr
+  /-- Will be applied to `congr_arg`. -/
   | congrArg (f : Expr) (h : DelayedExpr) : DelayedExpr
-  | congrFun (h : DelayedExpr) (a : ACApp) : DelayedExpr
+  /-- Will be applied to `congr_fun`. -/
+  | congrFun (h : DelayedExpr) (a : ACApps) : DelayedExpr
+  /-- Will be applied to `Eq.symm`. -/
   | eqSymm (h : DelayedExpr) : DelayedExpr
-  | eqSymmOpt (a₁ a₂ : ACApp) (h : DelayedExpr) : DelayedExpr
+  /-- Will be applied to `Eq.symm`. -/
+  | eqSymmOpt (a₁ a₂ : ACApps) (h : DelayedExpr) : DelayedExpr
+  /-- Will be applied to `Eq.trans`. -/
   | eqTrans (h₁ h₂ : DelayedExpr) : DelayedExpr
-  | eqTransOpt (a₁ a₂ a₃ : ACApp) (h₁ h₂ : DelayedExpr) : DelayedExpr
+  /-- Will be applied to `Eq.trans`. -/
+  | eqTransOpt (a₁ a₂ a₃ : ACApps) (h₁ h₂ : DelayedExpr) : DelayedExpr
+  /-- Will be applied to `heq_of_eq`. -/
   | heqOfEq (h : DelayedExpr) : DelayedExpr
+  /-- Will be applied to `HEq.symm`. -/
   | heqSymm (h : DelayedExpr) : DelayedExpr
   deriving Inhabited
 
 instance : Coe Expr DelayedExpr := ⟨DelayedExpr.ofExpr⟩
 
+#?
+/-- This is used as a proof term in `Entry`s instead of `Expr`. -/
 inductive EntryExpr
-  | ofExpr : Expr → EntryExpr
+  /-- An `EntryExpr` of just an `Expr`. -/
+  | ofExpr (e : Expr) : EntryExpr
   /-- dummy congruence proof, it is just a placeholder. -/
   | congr : EntryExpr
   /-- dummy eq_true proof, it is just a placeholder -/
   | eqTrue : EntryExpr
   /-- dummy refl proof, it is just a placeholder. -/
   | refl : EntryExpr
-  | ofDExpr : DelayedExpr → EntryExpr
+  /-- An `EntryExpr` of a `DelayedExpr`. -/
+  | ofDExpr (e : DelayedExpr) : EntryExpr
   deriving Inhabited
 
 instance : ToMessageData EntryExpr where
@@ -322,7 +404,8 @@ instance : ToMessageData EntryExpr where
 
 instance : Coe Expr EntryExpr := ⟨EntryExpr.ofExpr⟩
 
-/-- Equivalence class data associated with an expression `e` -/
+#?
+/-- Equivalence class data associated with an expression `e`. -/
 structure Entry where
   /-- next element in the equivalence class. -/
   next : Expr
@@ -360,27 +443,30 @@ structure Entry where
       round of heuristic instantiation. The field `mt` records the last time any proper descendant
       of of thie entry was involved in a merge. -/
   mt : Nat
+  /-- Porting note: Currently meaningless. Consider removing this field. -/
   generation : Nat
   deriving Inhabited
 
+#?
+/-- Stores equivalence class data associated with an expression `e`. -/
 abbrev Entries := RBExprMap Entry
 
 structure ACOccurrences where
-  occs : RBACAppSet := ∅
+  occs : RBACAppsSet := ∅
   size : Nat := 0
   deriving Inhabited
 
-def ACOccurrences.insert (aco : ACOccurrences) (e : ACApp) : ACOccurrences :=
+def ACOccurrences.insert (aco : ACOccurrences) (e : ACApps) : ACOccurrences :=
   { occs := aco.occs.insert e
     size := aco.size + 1 }
 
-def ACOccurrences.erase (aco : ACOccurrences) (e : ACApp) : ACOccurrences :=
+def ACOccurrences.erase (aco : ACOccurrences) (e : ACApps) : ACOccurrences :=
   if aco.occs.contains e then
     { occs := aco.occs.erase (compare e)
       size := aco.size - 1 }
   else aco
 
-instance {m} : ForIn m ACOccurrences ACApp where
+instance {m} : ForIn m ACOccurrences ACApps where
   forIn o := forIn o.occs
 
 structure ACEntry where
@@ -424,7 +510,7 @@ abbrev InstImplicitReprs := RBExprMap (List Expr)
 
 abbrev TodoEntry := Expr × Expr × EntryExpr × Bool
 
-abbrev ACTodoEntry := ACApp × ACApp × DelayedExpr
+abbrev ACTodoEntry := ACApps × ACApps × DelayedExpr
 
 /-- Congruence closure state.
 This may be considered to be a set of expressions and an equivalence class over this set.
@@ -449,7 +535,7 @@ structure CCState where
   opInfo : RBExprMap Bool := ∅
   nextACIdx : Nat := 0
   acEntries : RBExprMap ACEntry := ∅
-  acR : RBACAppMap (ACApp × DelayedExpr) := ∅
+  acR : RBACAppsMap (ACApps × DelayedExpr) := ∅
   /-- Returns true if the `CCState` is inconsistent. For example if it had both `a = b` and `a ≠ b`
       in it.-/
   inconsistent : Bool := false
@@ -559,9 +645,9 @@ def getNumROccs (ccs : CCState) (e : Expr) (inLHS : Bool) : Nat :=
   | some ent => (ent.ROccs inLHS).size
   | none => 0
 
-def getVarWithLeastOccs (ccs : CCState) (e : ACApp) (inLHS : Bool) : Option Expr :=
+def getVarWithLeastOccs (ccs : CCState) (e : ACApps) (inLHS : Bool) : Option Expr :=
   match e with
-  | .app _ args => Id.run do
+  | .apps _ args => Id.run do
     let mut r := args[0]?
     let mut numOccs := r.casesOn 0 fun r' => ccs.getNumROccs r' inLHS
     for hi : i in [1:args.size] do
@@ -573,10 +659,10 @@ def getVarWithLeastOccs (ccs : CCState) (e : ACApp) (inLHS : Bool) : Option Expr
     return r
   | .ofExpr e => e
 
-def getVarWithLeastLHSOccs (ccs : CCState) (e : ACApp) : Option Expr :=
+def getVarWithLeastLHSOccs (ccs : CCState) (e : ACApps) : Option Expr :=
   ccs.getVarWithLeastOccs e true
 
-def getVarWithLeastRHSOccs (ccs : CCState) (e : ACApp) : Option Expr :=
+def getVarWithLeastRHSOccs (ccs : CCState) (e : ACApps) : Option Expr :=
   ccs.getVarWithLeastOccs e false
 
 open MessageData
@@ -633,15 +719,15 @@ def ppACExpr (ccs : CCState) (e : Expr) : MessageData :=
   else
     ofExpr e
 
-partial def ppACApp (ccs : CCState) : ACApp → MessageData
-  | .app op args =>
+partial def ppACApps (ccs : CCState) : ACApps → MessageData
+  | .apps op args =>
     let r := ofExpr op :: args.toList.map fun arg => ccs.ppACExpr arg
     sbracket (joinSep r (ofFormat .line))
   | .ofExpr e => ccs.ppACExpr e
 
 def ppACR (ccs : CCState) : MessageData :=
   let r := ccs.acR.toList.map fun (k, p, _) => group <|
-    ccs.ppACApp k ++ ofFormat (Format.line ++ "--> ") ++ nest 4 (Format.line ++ ccs.ppACApp p)
+    ccs.ppACApps k ++ ofFormat (Format.line ++ "--> ") ++ nest 4 (Format.line ++ ccs.ppACApps p)
   bracket "{" (joinSep r (ofFormat ("," ++ .line))) "}"
 
 def ppAC (ccs : CCState) : MessageData :=
@@ -978,7 +1064,7 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
      where
         `n := lhsArgs.size` -/
   let some specLemma ← mkExtHCongrTheorem lhsFn lhsArgs.size | failure
-  let mut kindsIt := specLemma.congrTheorem.argKinds
+  let mut kindsIt := specLemma.argKinds
   let mut lemmaArgs : Array Expr := #[]
   for hi : i in [:lhsArgs.size] do
     guard !kindsIt.isEmpty
@@ -991,7 +1077,7 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
       let some p ← getEqProof (lhsArgs[i]'hi.2) (rhsArgs[i]'(ha.symm ▸ hi.2)) | failure
       lemmaArgs := lemmaArgs.push p
     kindsIt := kindsIt.eraseIdx 0
-  let mut r := mkAppN specLemma.congrTheorem.proof lemmaArgs
+  let mut r := mkAppN specLemma.proof lemmaArgs
   if specLemma.heqResult && !heqProofs then
     r ← mkAppM ``eq_of_heq #[r]
   else if !specLemma.heqResult && heqProofs then
@@ -1374,11 +1460,11 @@ def isAC (e : Expr) : CCM (Option Expr) := do
   return bif b then some op else none
 
 open MessageData in
-def dbgTraceACEq (header : String) (lhs rhs : ACApp) : CCM Unit := do
+def dbgTraceACEq (header : String) (lhs rhs : ACApps) : CCM Unit := do
   let ccs ← getState
   trace[Debug.Meta.Tactic.cc.ac]
-    group (ofFormat (header ++ .line) ++ ccs.ppACApp lhs ++
-      ofFormat (.line ++ "=" ++ .line) ++ ccs.ppACApp rhs)
+    group (ofFormat (header ++ .line) ++ ccs.ppACApps lhs ++
+      ofFormat (.line ++ "=" ++ .line) ++ ccs.ppACApps rhs)
 
 open MessageData in
 def dbgTraceACState : CCM Unit := do
@@ -1395,14 +1481,14 @@ def mkACProof (e₁ e₂ : Expr) : MetaM Expr := do
 /-- Given `tr := t*r` `sr := s*r` `tEqs : t = s`, return a proof for `tr = sr`
 
     We use `a*b` to denote an AC application. That is, `(a*b)*(c*a)` is the term `a*a*b*c`. -/
-def mkACSimpProof (tr t s r sr : ACApp) (tEqs : DelayedExpr) : MetaM DelayedExpr := do
+def mkACSimpProof (tr t s r sr : ACApps) (tEqs : DelayedExpr) : MetaM DelayedExpr := do
   if tr == t then
     return tEqs
   else if tr == sr then
     let some tre := tr.toExpr | failure
     DelayedExpr.ofExpr <$> mkEqRefl tre
   else
-    let .app op _ := tr | failure
+    let .apps op _ := tr | failure
     let some re := r.toExpr | failure
     let opr := op.app re
     let some te := t.toExpr | failure
@@ -1420,10 +1506,10 @@ def mkACSimpProof (tr t s r sr : ACApp) (tEqs : DelayedExpr) : MetaM DelayedExpr
     return a proof for `ra = sb`.
 
     We use `a*b` to denote an AC application. That is, `(a*b)*(c*a)` is the term `a*a*b*c`. -/
-def mkACSuperposeProof (ra sb a b r s ts tr : ACApp) (tsEqa trEqb : DelayedExpr) :
+def mkACSuperposeProof (ra sb a b r s ts tr : ACApps) (tsEqa trEqb : DelayedExpr) :
     MetaM DelayedExpr := do
-  let .app _ _ := tr | failure
-  let .app op _ := ts | failure
+  let .apps _ _ := tr | failure
+  let .apps op _ := ts | failure
   let tsrEqar := DelayedExpr.congrFun (.congrArg op tsEqa) r
   let trsEqbs := DelayedExpr.congrFun (.congrArg op trEqb) s
   let some tse := ts.toExpr | failure
@@ -1443,29 +1529,29 @@ def mkACSuperposeProof (ra sb a b r s ts tr : ACApp) (tsEqa trEqb : DelayedExpr)
   let bsEqsb ← mkACProof bs sbe
   return .eqTrans raEqar (.eqTrans (.eqSymm tsrEqar) (.eqTrans tsrEqtrs (.eqTrans trsEqbs bsEqsb)))
 
-def simplifyACCore (e lhs rhs : ACApp) (H : DelayedExpr) :
-    CCM (Option (ACApp × DelayedExpr)) := do
+def simplifyACCore (e lhs rhs : ACApps) (H : DelayedExpr) :
+    CCM (Option (ACApps × DelayedExpr)) := do
   guard (lhs.isSubset e)
   if e == lhs then
     return (rhs, H)
   else
-    let .app op _ := e | failure
+    let .apps op _ := e | failure
     let dummy := Expr.sort .zero
     let newArgs := e.diff lhs #[]
-    let r : ACApp := if newArgs.isEmpty then dummy else .mkApp op newArgs
-    let newArgs := ACApp.append op rhs newArgs
-    let newE := ACApp.mkApp op newArgs
+    let r : ACApps := if newArgs.isEmpty then dummy else .mkApps op newArgs
+    let newArgs := ACApps.append op rhs newArgs
+    let newE := ACApps.mkApps op newArgs
     let some true := (← getState).opInfo.find? op | failure
     let newPr ← mkACSimpProof e lhs rhs r newE H
     return (newE, newPr)
 
-def simplifyACStep (e : ACApp) : CCM (Option (ACApp × DelayedExpr)) := do
-  if let .app _ args := e then
+def simplifyACStep (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
+  if let .apps _ args := e then
     for h : i in [:args.size] do
       if i == 0 || (args[i]'h.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) h.2)) then
         let some ae := (← getState).acEntries.find? (args[i]'h.2) | failure
         let occs := ae.RLHSOccs
-        let mut Rlhs? : Option ACApp := none
+        let mut Rlhs? : Option ACApps := none
         for Rlhs in occs do
           if Rlhs?.isNone then
             if Rlhs.isSubset e then
@@ -1477,7 +1563,7 @@ def simplifyACStep (e : ACApp) : CCM (Option (ACApp × DelayedExpr)) := do
     return some p
   return none
 
-def simplifyAC (e : ACApp) : CCM (Option (ACApp × DelayedExpr)) := do
+def simplifyAC (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
   let mut some (curr, pr) ← simplifyACStep e | return none
   repeat
     let some (newCurr, newPr) ← simplifyACStep curr | break
@@ -1485,7 +1571,7 @@ def simplifyAC (e : ACApp) : CCM (Option (ACApp × DelayedExpr)) := do
     curr := newCurr
   return some (curr, pr)
 
-def insertEraseROcc (arg : Expr) (lhs : ACApp) (inLHS isInsert : Bool) : CCM Unit := do
+def insertEraseROcc (arg : Expr) (lhs : ACApps) (inLHS isInsert : Bool) : CCM Unit := do
   let some entry := (← getState).acEntries.find? arg | failure
   let occs := entry.ROccs inLHS
   let newOccs := if isInsert then occs.insert lhs else occs.erase lhs
@@ -1493,9 +1579,9 @@ def insertEraseROcc (arg : Expr) (lhs : ACApp) (inLHS isInsert : Bool) : CCM Uni
     if inLHS then { entry with RLHSOccs := newOccs } else { entry with RRHSOccs := newOccs }
   modifyState fun ccs => { ccs with acEntries := ccs.acEntries.insert arg newEntry }
 
-def insertEraseROccs (e lhs : ACApp) (inLHS isInsert : Bool) : CCM Unit := do
+def insertEraseROccs (e lhs : ACApps) (inLHS isInsert : Bool) : CCM Unit := do
   match e with
-  | .app _ args =>
+  | .apps _ args =>
     insertEraseROcc args[0]! lhs inLHS isInsert
     for i in [1:args.size] do
       if args[i]! != args[i - 1]! then
@@ -1503,33 +1589,33 @@ def insertEraseROccs (e lhs : ACApp) (inLHS isInsert : Bool) : CCM Unit := do
   | .ofExpr e => insertEraseROcc e lhs inLHS isInsert
 
 @[inline]
-def insertROccs (e lhs : ACApp) (inLHS : Bool) : CCM Unit :=
+def insertROccs (e lhs : ACApps) (inLHS : Bool) : CCM Unit :=
   insertEraseROccs e lhs inLHS true
 
 @[inline]
-def eraseROccs (e lhs : ACApp) (inLHS : Bool) : CCM Unit :=
+def eraseROccs (e lhs : ACApps) (inLHS : Bool) : CCM Unit :=
   insertEraseROccs e lhs inLHS false
 
 @[inline]
-def insertRBHSOccs (lhs rhs : ACApp) : CCM Unit := do
+def insertRBHSOccs (lhs rhs : ACApps) : CCM Unit := do
   insertROccs lhs lhs true
   insertROccs rhs lhs false
 
 @[inline]
-def eraseRBHSOccs (lhs rhs : ACApp) : CCM Unit := do
+def eraseRBHSOccs (lhs rhs : ACApps) : CCM Unit := do
   eraseROccs lhs lhs true
   eraseROccs rhs lhs false
 
 @[inline]
-def insertRRHSOccs (e lhs : ACApp) : CCM Unit :=
+def insertRRHSOccs (e lhs : ACApps) : CCM Unit :=
   insertROccs e lhs false
 
 @[inline]
-def eraseRRHSOccs (e lhs : ACApp) : CCM Unit :=
+def eraseRRHSOccs (e lhs : ACApps) : CCM Unit :=
   eraseROccs e lhs false
 
 open MessageData in
-def composeAC (lhs rhs : ACApp) (H : DelayedExpr) : CCM Unit := do
+def composeAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
   let some x := (← getState).getVarWithLeastRHSOccs lhs | failure
   let some ent := (← getState).acEntries.find? x | failure
   let occs := ent.RRHSOccs
@@ -1543,17 +1629,17 @@ def composeAC (lhs rhs : ACApp) (H : DelayedExpr) : CCM Unit := do
       insertRRHSOccs newRrhs Rlhs
       let ccs ← getState
       let oldRw :=
-        paren (ccs.ppACApp Rlhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApp Rrhs)
+        paren (ccs.ppACApps Rlhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps Rrhs)
       let newRw :=
-        paren (ccs.ppACApp lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApp rhs)
+        paren (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
       let r :=
         "compose: " ++ nest 9 (group
           (oldRw ++ ofFormat (Format.line ++ "with" ++ .line) ++ newRw) ++
-            ofFormat (Format.line ++ ":=" ++ .line) ++ ccs.ppACApp newRrhs)
+            ofFormat (Format.line ++ ":=" ++ .line) ++ ccs.ppACApps newRrhs)
       trace[Debug.Meta.Tactic.cc.ac] group r
 
 open MessageData in
-def collapseAC (lhs rhs : ACApp) (H : DelayedExpr) : CCM Unit := do
+def collapseAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
   let some x := (← getState).getVarWithLeastLHSOccs lhs | failure
   let some ent := (← getState).acEntries.find? x | failure
   let occs := ent.RLHSOccs
@@ -1568,47 +1654,47 @@ def collapseAC (lhs rhs : ACApp) (H : DelayedExpr) : CCM Unit := do
       modifyACTodo fun todo => todo.push (newRlhs, Rrhs, newRH)
       let ccs ← getState
       let newRw :=
-        paren (ccs.ppACApp lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApp rhs)
+        paren (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
       let oldRw :=
-        paren (ccs.ppACApp Rrhs ++ ofFormat (Format.line ++ "<--" ++ .line) ++ ccs.ppACApp Rlhs)
+        paren (ccs.ppACApps Rrhs ++ ofFormat (Format.line ++ "<--" ++ .line) ++ ccs.ppACApps Rlhs)
       let r :=
         "collapse: " ++ nest 10 (group
           (newRw ++ ofFormat (Format.line ++ "at" ++ .line) ++ oldRw) ++
-            ofFormat (Format.line ++ ":=" ++ .line) ++ ccs.ppACApp newRlhs)
+            ofFormat (Format.line ++ ":=" ++ .line) ++ ccs.ppACApps newRlhs)
       trace[Debug.Meta.Tactic.cc.ac] group r
 
 open MessageData in
-def superposeAC (ts a : ACApp) (tsEqa : DelayedExpr) : CCM Unit := do
-  let .app op args := ts | return
+def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
+  let .apps op args := ts | return
   for hi : i in [:args.size] do
     if i == 0 || (args[i]'hi.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2)) then
       let some ent := (← getState).acEntries.find? (args[i]'hi.2) | failure
       let occs := ent.RLHSOccs
       for tr in occs do
-        let .app optr _ := tr | continue
+        let .apps optr _ := tr | continue
         unless optr == op do continue
         let some (b, trEqb) := (← getState).acR.find? tr | failure
         let tArgs := ts.intersection tr #[]
         guard !tArgs.isEmpty
-        let t := ACApp.mkApp op tArgs
+        let t := ACApps.mkApps op tArgs
         let sArgs := ts.diff t #[]
         guard !sArgs.isEmpty
         let rArgs := tr.diff t #[]
         guard !rArgs.isEmpty
-        let s := ACApp.mkApp op sArgs
-        let r := ACApp.mkApp op rArgs
-        let ra := ACApp.mkFlatApp op r a
-        let sb := ACApp.mkFlatApp op s b
+        let s := ACApps.mkApps op sArgs
+        let r := ACApps.mkApps op rArgs
+        let ra := ACApps.mkFlatApps op r a
+        let sb := ACApps.mkFlatApps op s b
         let some true := (← getState).opInfo.find? op | failure
         let raEqsb ← mkACSuperposeProof ra sb a b r s ts tr tsEqa trEqb
         modifyACTodo fun todo => todo.push (ra, sb, raEqsb)
         let ccs ← getState
         let rw₁ :=
-          paren (ccs.ppACApp ts ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApp a)
+          paren (ccs.ppACApps ts ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps a)
         let rw₂ :=
-          paren (ccs.ppACApp tr ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApp b)
+          paren (ccs.ppACApps tr ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps b)
         let eq :=
-          paren (ccs.ppACApp ra ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApp sb)
+          paren (ccs.ppACApps ra ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps sb)
         let r :=
         "superpose: " ++ nest 11 (group
           (rw₁ ++ ofFormat (Format.line ++ "with" ++ .line) ++ rw₂) ++
@@ -1665,7 +1751,7 @@ def processAC : CCM Unit := do
 
     let ccs ← getState
     let newRw :=
-      group (ccs.ppACApp lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApp rhs)
+      group (ccs.ppACApps lhs ++ ofFormat (Format.line ++ "-->" ++ .line) ++ ccs.ppACApps rhs)
     trace[Debug.Meta.Tactic.cc.ac] group ("new rw: " ++ newRw)
 
 def addACEq (e₁ e₂ : Expr) : CCM Unit := do
@@ -1712,14 +1798,14 @@ def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
   unless (← internalizeACVar e) do return
 
   let (args, norme) ← convertAC op e #[]
-  let rep := ACApp.mkApp op args
+  let rep := ACApps.mkApps op args
   let some true := (← getState).opInfo.find? op | failure
   let some repe := rep.toExpr | failure
   let pr ← mkACProof norme repe
 
   let ccs ← getState
-  let d := paren (ccs.ppACApp e ++ ofFormat (" :=" ++ Format.line) ++ ofExpr e)
-  let r := "new term: " ++ d ++ ofFormat (Format.line ++ "===>" ++ .line) ++ ccs.ppACApp rep
+  let d := paren (ccs.ppACApps e ++ ofFormat (" :=" ++ Format.line) ++ ofExpr e)
+  let r := "new term: " ++ d ++ ofFormat (Format.line ++ "===>" ++ .line) ++ ccs.ppACApps rep
   trace[Debug.Meta.Tactic.cc.ac] group r
 
   modifyACTodo fun todo => todo.push (e, rep, pr)
@@ -1916,6 +2002,10 @@ partial def propagateImpUp (e : Expr) : CCM Unit := do
     pushEq e (.const ``True [])
       (mkApp3 (.const ``imp_eq_of_eq_true_right []) a b (← getEqTrueProof b))
   else if ← isEqFalse b then
+    let isNot : Expr → Bool × Expr
+      | .app (.const ``Not []) a => (true, a)
+      | .forallE _ a (.const ``False []) _ => (true, a)
+      | e => (false, e)
     if let (true, arg) := isNot a then
       if (← getState).config.em then
         -- `b = False → (Not a → b) = a`
@@ -2498,7 +2588,13 @@ def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := do
 def add (type : Expr) (proof : Expr) (gen : Nat) : CCM Unit := do
   if (← getState).inconsistent then return
   modifyTodo fun _ => #[]
-  let (isNeg, p) := isNotOrNe type
+  let (isNeg, p) :=
+    match type with
+    | .app (.const ``Not []) a => (true, a)
+    | .forallE _ a (.const ``False []) _ => (true, a)
+    | .app (.app (.app (.const ``Ne [u]) α) lhs) rhs =>
+      (true, .app (.app (.app (.const ``Eq [u]) α) lhs) rhs)
+    | e => (false, e)
   match p with
   | .app (.app (.app (.const ``Eq _) _) lhs) rhs =>
     if isNeg then
