@@ -3,16 +3,17 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+import Mathlib.CategoryTheory.EffectiveEpi.Comp
 /-!
 
 # Functors preserving effective epimorphisms
 
-This file concerns functors which preserve effective epimorphisms and effective epimporphic
-families.
+This file concerns functors which preserve and/or reflect effective epimorphisms and effective
+epimporphic families.
 
 ## TODO
-- Find sufficient conditions on functors to preserve/reflect effective epis.
+- Are there nice sufficient conditions on functors to preserve/reflect effective epis, similar to
+  `CategoryTheory.preserves_epi_of_preservesColimit`?
 -/
 
 universe u
@@ -80,8 +81,7 @@ variable {D : Type*} [Category D]
 section Preserves
 
 /--
-A functor preserves effective epimorphisms if it maps effective epimorphisms to effective
-epimorphisms.
+A class describing the property of preserving effective epimorphisms.
 -/
 class PreservesEffectiveEpis (F : C ⥤ D) : Prop where
   /--
@@ -95,8 +95,7 @@ instance map_effectiveEpi (F : C ⥤ D) [F.PreservesEffectiveEpis] {X Y : C} (f 
   PreservesEffectiveEpis.preserves f
 
 /--
-A functor preserves effective epimorphic families if it maps effective epimorphic families to
-effective epimorphic families.
+A class describing the property of preserving effective epimorphic families.
 -/
 class PreservesEffectiveEpiFamilies (F : C ⥤ D) : Prop where
   /--
@@ -122,8 +121,7 @@ end Preserves
 section Reflects
 
 /--
-A functor reflects effective epimorphisms if it only maps effective epimorphisms to effective
-epimorphisms.
+A class describing the property of reflecting effective epimorphisms.
 -/
 class ReflectsEffectiveEpis (F : C ⥤ D) : Prop where
   /--
@@ -137,8 +135,7 @@ lemma effectiveEpi_of_map (F : C ⥤ D) [F.ReflectsEffectiveEpis] {X Y : C} (f :
   ReflectsEffectiveEpis.reflects F f
 
 /--
-A functor reflects effective epimorphic families if it only maps effective epimorphic families to
-effective epimorphic families.
+A class describing the property of reflecting effective epimorphic families.
 -/
 class ReflectsEffectiveEpiFamilies (F : C ⥤ D) : Prop where
   /--
@@ -151,8 +148,7 @@ class ReflectsEffectiveEpiFamilies (F : C ⥤ D) : Prop where
 
 lemma effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsEffectiveEpiFamilies.{_, _, u} F]
     {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    [EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))] :
-    EffectiveEpiFamily X π :=
+    [EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))] : EffectiveEpiFamily X π :=
   ReflectsEffectiveEpiFamilies.reflects F X π
 
 instance (F : C ⥤ D) [PreservesEffectiveEpiFamilies F] : PreservesEffectiveEpis F where
@@ -160,6 +156,20 @@ instance (F : C ⥤ D) [PreservesEffectiveEpiFamilies F] : PreservesEffectiveEpi
 
 instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpiFamilies where
   preserves _ _ := inferInstance
+
+instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
+  reflects {α B} X π _ := by
+    have : EffectiveEpiFamily (fun a ↦ (inv F).obj (F.obj (X a)))
+        (fun a  ↦ (inv F).map (F.map (π a))) := inferInstance
+    simp only [IsEquivalence.inv_fun_map, asEquivalence_functor, asEquivalence_inverse, comp_obj,
+      id_obj] at this
+    let i : (a : α) → X a ⟶ (inv F).obj (F.obj (X a)) := fun a ↦ (asEquivalence F).unit.app _
+    have : EffectiveEpiFamily X (fun a ↦ (i a) ≫ (inv F).map (F.map (π a))) := inferInstance
+    simp only [asEquivalence_functor, asEquivalence_inverse, IsEquivalence.inv_fun_map, comp_obj,
+      id_obj, Iso.hom_inv_id_app_assoc, i] at this
+    have : EffectiveEpiFamily X (fun a ↦ (π a ≫ (asEquivalence F).unit.app B) ≫
+        (asEquivalence F).unitInv.app _) := inferInstance
+    simpa using this
 
 end Reflects
 
