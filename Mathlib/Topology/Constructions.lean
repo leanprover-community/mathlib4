@@ -1209,6 +1209,14 @@ theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X
   (embedding_inclusion ts).discreteTopology
 #align discrete_topology.of_subset DiscreteTopology.of_subset
 
+/-- Let `s` be a discrete subset of a topological space. Then the preimage of `s` by
+a continuous injective map is also discrete. -/
+theorem DiscreteTopology.preimage_of_continuous_injective {X Y : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] (s : Set Y) [DiscreteTopology s] {f : X → Y} (hc : Continuous f)
+    (hinj : Function.Injective f) : DiscreteTopology (f ⁻¹' s) :=
+  DiscreteTopology.of_continuous_injective (β := s) (Continuous.restrict
+    (by exact fun _ x ↦ x) hc) ((Set.MapsTo.restrict_inj _).mpr <| Set.injOn_of_injective hinj _)
+
 end Subtype
 
 section Quotient
