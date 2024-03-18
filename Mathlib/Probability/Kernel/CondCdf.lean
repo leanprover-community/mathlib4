@@ -295,7 +295,7 @@ theorem tendsto_preCDF_atTop_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
     simp_rw [F, dif_pos ha]
     exact ha.choose_spec
   have h_tendsto_ℕ : ∀ᵐ a ∂ρ.fst, Tendsto (fun n : ℕ => preCDF ρ n a) atTop (𝓝 (F a)) := by
-    filter_upwards [h_tendsto_ℚ] with a ha using ha.comp tendsto_nat_cast_atTop_atTop
+    filter_upwards [h_tendsto_ℚ] with a ha using ha.comp tendsto_natCast_atTop_atTop
   have hF_ae_meas : AEMeasurable F ρ.fst := by
     refine' aemeasurable_of_tendsto_metrizable_ae _ (fun n => _) h_tendsto_ℚ
     exact measurable_preCDF.aemeasurable
@@ -321,7 +321,7 @@ theorem tendsto_preCDF_atTop_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
     have h_lintegral' :
       Tendsto (fun r : ℕ => ∫⁻ a, preCDF ρ r a ∂ρ.fst) atTop (𝓝 (∫⁻ _, 1 ∂ρ.fst)) := by
       rw [lintegral_one, Measure.fst_univ]
-      exact (tendsto_lintegral_preCDF_atTop ρ).comp tendsto_nat_cast_atTop_atTop
+      exact (tendsto_lintegral_preCDF_atTop ρ).comp tendsto_natCast_atTop_atTop
     exact tendsto_nhds_unique h_lintegral h_lintegral'
   have : ∫⁻ a, 1 - F a ∂ρ.fst = 0 := by
     rw [lintegral_sub' hF_ae_meas _ hF_le_one, h_lintegral_eq, tsub_self]

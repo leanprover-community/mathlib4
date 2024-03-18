@@ -244,9 +244,9 @@ theorem natTrailingDegree_one : natTrailingDegree (1 : R[X]) = 0 :=
 #align polynomial.nat_trailing_degree_one Polynomial.natTrailingDegree_one
 
 @[simp]
-theorem natTrailingDegree_nat_cast (n : ℕ) : natTrailingDegree (n : R[X]) = 0 := by
-  simp only [← C_eq_nat_cast, natTrailingDegree_C]
-#align polynomial.nat_trailing_degree_nat_cast Polynomial.natTrailingDegree_nat_cast
+theorem natTrailingDegree_natCast (n : ℕ) : natTrailingDegree (n : R[X]) = 0 := by
+  simp only [← C_eq_natCast, natTrailingDegree_C]
+#align polynomial.nat_trailing_degree_nat_cast Polynomial.natTrailingDegree_natCast
 
 @[simp]
 theorem trailingDegree_C_mul_X_pow (n : ℕ) (ha : a ≠ 0) : trailingDegree (C a * X ^ n) = n := by
@@ -478,9 +478,9 @@ theorem natTrailingDegree_neg (p : R[X]) : natTrailingDegree (-p) = natTrailingD
 #align polynomial.nat_trailing_degree_neg Polynomial.natTrailingDegree_neg
 
 @[simp]
-theorem natTrailingDegree_int_cast (n : ℤ) : natTrailingDegree (n : R[X]) = 0 := by
-  simp only [← C_eq_int_cast, natTrailingDegree_C]
-#align polynomial.nat_trailing_degree_int_cast Polynomial.natTrailingDegree_int_cast
+theorem natTrailingDegree_intCast (n : ℤ) : natTrailingDegree (n : R[X]) = 0 := by
+  simp only [← C_eq_intCast, natTrailingDegree_C]
+#align polynomial.nat_trailing_degree_int_cast Polynomial.natTrailingDegree_intCast
 
 end Ring
 

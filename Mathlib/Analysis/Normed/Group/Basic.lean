@@ -1687,7 +1687,7 @@ theorem norm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖ ≤ n * ‖a‖ := 
 
 @[to_additive nnnorm_nsmul_le]
 theorem nnnorm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
-  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_nat_cast] using
+  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_natCast] using
     norm_pow_le_mul_norm n a
 #align nnnorm_pow_le_mul_norm nnnorm_pow_le_mul_norm
 #align nnnorm_nsmul_le nnnorm_nsmul_le
@@ -1930,7 +1930,7 @@ theorem norm_coe_nat (n : ℕ) : ‖(n : ℤ)‖ = n := by simp [Int.norm_eq_abs
 theorem _root_.NNReal.coe_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :=
   NNReal.eq <|
     calc
-      ((n.natAbs : ℝ≥0) : ℝ) = (n.natAbs : ℤ) := by simp only [Int.cast_ofNat, NNReal.coe_nat_cast]
+      ((n.natAbs : ℝ≥0) : ℝ) = (n.natAbs : ℤ) := by simp only [Int.cast_ofNat, NNReal.coe_natCast]
       _ = |n| := by simp only [Int.coe_natAbs, Int.cast_abs]
       _ = ‖n‖ := (norm_eq_abs n).symm
 #align nnreal.coe_nat_abs NNReal.coe_natAbs

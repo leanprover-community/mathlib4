@@ -659,7 +659,7 @@ theorem tendsto_one_plus_div_rpow_exp (t : ℝ) :
 /-- The function `(1 + t/x) ^ x` tends to `exp t` at `+∞` for naturals `x`. -/
 theorem tendsto_one_plus_div_pow_exp (t : ℝ) :
     Tendsto (fun x : ℕ => (1 + t / (x : ℝ)) ^ x) atTop (𝓝 (Real.exp t)) :=
-  ((tendsto_one_plus_div_rpow_exp t).comp tendsto_nat_cast_atTop_atTop).congr (by simp)
+  ((tendsto_one_plus_div_rpow_exp t).comp tendsto_natCast_atTop_atTop).congr (by simp)
 #align tendsto_one_plus_div_pow_exp tendsto_one_plus_div_pow_exp
 
 end Limits

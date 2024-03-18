@@ -139,7 +139,7 @@ theorem ofRat_natCast (n : ℕ) : (ofRat n : Cauchy abv) = n :=
 @[simp]
 theorem ofRat_intCast (z : ℤ) : (ofRat z : Cauchy abv) = z :=
   rfl
-#align cau_seq.completion.of_rat_int_cast CauSeq.Completion.ofRat_intCast
+#align cau_seq.completion.of_rat_intCast CauSeq.Completion.ofRat_intCast
 
 theorem ofRat_add (x y : β) :
     ofRat (x + y) = (ofRat x + ofRat y : Cauchy abv) :=
@@ -212,7 +212,7 @@ instance : RatCast (Cauchy abv) :=
 @[simp, coe]
 theorem ofRat_ratCast (q : ℚ) : ofRat (↑q : β) = (q : (Cauchy abv)) :=
   rfl
-#align cau_seq.completion.of_rat_rat_cast CauSeq.Completion.ofRat_ratCast
+#align cau_seq.completion.of_rat_ratCast CauSeq.Completion.ofRat_ratCast
 
 noncomputable instance : Inv (Cauchy abv) :=
   ⟨fun x =>

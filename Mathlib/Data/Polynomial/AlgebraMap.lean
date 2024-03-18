@@ -142,11 +142,11 @@ theorem ringHom_eval₂_cast_int_ringHom {R S : Type*} [Ring R] [Ring S] (p : �
 #align polynomial.ring_hom_eval₂_cast_int_ring_hom Polynomial.ringHom_eval₂_cast_int_ringHom
 
 @[simp]
-theorem eval₂_int_castRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] →+* R) :
+theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] →+* R) :
     eval₂ (Int.castRingHom R) (f X) p = f p :=
   eval₂_algebraMap_X p f.toIntAlgHom
 set_option linter.uppercaseLean3 false in
-#align polynomial.eval₂_int_cast_ring_hom_X Polynomial.eval₂_int_castRingHom_X
+#align polynomial.eval₂_int_cast_ring_hom_X Polynomial.eval₂_intCastRingHom_X
 
 end CommSemiring
 
@@ -249,9 +249,9 @@ theorem aeval_bit1 : aeval x (bit1 p) = bit1 (aeval x p) :=
 end deprecated
 
 -- Porting note: removed `@[simp]` because `simp` can prove this
-theorem aeval_nat_cast (n : ℕ) : aeval x (n : R[X]) = n :=
+theorem aeval_natCast (n : ℕ) : aeval x (n : R[X]) = n :=
   map_natCast _ _
-#align polynomial.aeval_nat_cast Polynomial.aeval_nat_cast
+#align polynomial.aeval_nat_cast Polynomial.aeval_natCast
 
 theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
   AlgHom.map_mul _ _ _

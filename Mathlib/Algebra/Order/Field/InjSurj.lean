@@ -30,10 +30,10 @@ def Injective.linearOrderedSemifield [LinearOrderedSemifield α] [Zero β] [One 
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (nat_cast : ∀ n : ℕ, f n = n) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
+    (natCast : ∀ n : ℕ, f n = n) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
     (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) : LinearOrderedSemifield β :=
-  { hf.linearOrderedSemiring f zero one add mul nsmul npow nat_cast hsup hinf,
-    hf.semifield f zero one add mul inv div nsmul npow zpow nat_cast with }
+  { hf.linearOrderedSemiring f zero one add mul nsmul npow natCast hsup hinf,
+    hf.semifield f zero one add mul inv div nsmul npow zpow natCast with }
 #align function.injective.linear_ordered_semifield Function.Injective.linearOrderedSemifield
 
 
@@ -49,12 +49,12 @@ def Injective.linearOrderedField [LinearOrderedField α] [Zero β] [One β] [Add
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (qsmul : ∀ (x) (n : ℚ), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (nat_cast : ∀ n : ℕ, f n = n) (int_cast : ∀ n : ℤ, f n = n) (rat_cast : ∀ n : ℚ, f n = n)
+    (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (ratCast : ∀ n : ℚ, f n = n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrderedField β :=
-  { hf.linearOrderedRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast hsup hinf,
-    hf.field f zero one add mul neg sub inv div nsmul zsmul qsmul npow zpow nat_cast int_cast
-      rat_cast with }
+  { hf.linearOrderedRing f zero one add mul neg sub nsmul zsmul npow natCast intCast hsup hinf,
+    hf.field f zero one add mul neg sub inv div nsmul zsmul qsmul npow zpow natCast intCast
+      ratCast with }
 #align function.injective.linear_ordered_field Function.Injective.linearOrderedField
 
 end Function

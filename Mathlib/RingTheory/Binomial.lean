@@ -116,7 +116,7 @@ theorem descPochhammer_eq_factorial_smul_choose (r : R) (n : ℕ) :
     Polynomial.eval r (descPochhammer R n) = n.factorial • choose r n := by
   rw [choose, factorial_nsmul_multichoose_eq_ascPochhammer, descPochhammer_eval_eq_ascPochhammer]
 
-theorem choose_nat_cast (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
+theorem choose_natCast (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
   refine nsmul_right_injective (Nat.factorial k) (Nat.factorial_ne_zero k) ?_
   simp only
   rw [← descPochhammer_eq_factorial_smul_choose, nsmul_eq_mul, ← Nat.cast_mul,

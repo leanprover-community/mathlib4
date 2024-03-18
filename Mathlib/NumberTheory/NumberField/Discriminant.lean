@@ -110,14 +110,14 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
   let B := (minkowskiBound K I * (convexBodySumFactor K)⁻¹).toReal ^ (1 / (finrank ℚ K : ℝ))
   have h_le : (minkowskiBound K I) ≤ volume (convexBodySum K B) := by
     refine le_of_eq ?_
-    rw [convexBodySum_volume, ← ENNReal.ofReal_pow (by positivity), ← Real.rpow_nat_cast,
+    rw [convexBodySum_volume, ← ENNReal.ofReal_pow (by positivity), ← Real.rpow_natCast,
       ← Real.rpow_mul toReal_nonneg, div_mul_cancel, Real.rpow_one, ofReal_toReal, mul_comm,
       mul_assoc, ← coe_mul, inv_mul_cancel (convexBodySumFactor_ne_zero K), ENNReal.coe_one,
       mul_one]
     · exact mul_ne_top (ne_of_lt (minkowskiBound_lt_top K I)) coe_ne_top
     · exact (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos))
   convert exists_ne_zero_mem_ideal_of_norm_le K I h_le
-  rw [div_pow B, ← Real.rpow_nat_cast B, ← Real.rpow_mul (by positivity), div_mul_cancel _
+  rw [div_pow B, ← Real.rpow_natCast B, ← Real.rpow_mul (by positivity), div_mul_cancel _
     (Nat.cast_ne_zero.mpr <| ne_of_gt finrank_pos), Real.rpow_one, mul_comm_div, mul_div_assoc']
   congr 1
   rw [eq_comm]
@@ -208,7 +208,7 @@ theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
     (Real.sqrt_eq_iff_sq_eq (by positivity) (by positivity)).mpr (by norm_num)]
     exact Real.pi_gt_three
   refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
-  rw [← _root_.div_lt_iff' (by positivity), Int.int_cast_ofNat]
+  rw [← _root_.div_lt_iff' (by positivity), Int.intCast_ofNat]
   refine lt_of_lt_of_le ?_ (pow_le_pow_right (n := 2) h₁ h)
   rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow, show (2:ℝ) / (4 / 9) * 4 ^ 2 = 72 by
     norm_num, show (3:ℝ) ^ 2 = 9 by norm_num, ← _root_.div_lt_iff' (by positivity),
@@ -286,7 +286,7 @@ theorem rank_le_rankOfDiscrBdd :
     rw [Nat.le_floor_iff]
     · have h := le_trans (abs_discr_ge h) (Int.cast_le.mpr hK)
       contrapose! h
-      rw [← Real.rpow_nat_cast]
+      rw [← Real.rpow_natCast]
       rw [Real.log_div_log] at h
       refine lt_of_le_of_lt ?_ (mul_lt_mul_of_pos_left
         (Real.rpow_lt_rpow_of_exponent_lt h₂ h) (by positivity : (0:ℝ) < 4 / 9))
@@ -349,7 +349,7 @@ theorem finite_of_discr_bdd_of_isReal :
           Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
       · refine le_trans ?_ (Nat.le_ceil _)
         rw [show max ↑(max (B:ℝ≥0) 1) (1:ℝ) = max (B:ℝ) 1 by simp, val_eq_coe, NNReal.coe_mul,
-          NNReal.coe_pow, NNReal.coe_max, NNReal.coe_one, NNReal.coe_nat_cast]
+          NNReal.coe_pow, NNReal.coe_max, NNReal.coe_one, NNReal.coe_natCast]
         gcongr
         · exact le_max_right _ 1
         · exact rank_le_rankOfDiscrBdd hK₂
@@ -395,7 +395,7 @@ theorem finite_of_discr_bdd_of_isComplex :
         gcongr
         · exact le_max_right _ 1
         · exact rank_le_rankOfDiscrBdd hK₂
-        · rw [NNReal.coe_nat_cast, Nat.cast_le]
+        · rw [NNReal.coe_natCast, Nat.cast_le]
           exact (Nat.choose_le_choose _ (rank_le_rankOfDiscrBdd hK₂)).trans
             (Nat.choose_le_middle _ _)
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩

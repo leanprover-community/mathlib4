@@ -460,7 +460,7 @@ theorem natCast_val (n : ℕ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
 @[simp]
 theorem intCast_val (n : ℤ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
   show val (Int.castDef n) = _ by cases n <;> simp [Int.castDef, zero_val, one_val, *]
-#align homogeneous_localization.int_cast_val HomogeneousLocalization.intCast_val
+#align homogeneous_localization.intCast_val HomogeneousLocalization.intCast_val
 
 instance homogenousLocalizationCommRing : CommRing (HomogeneousLocalization 𝒜 x) :=
   (HomogeneousLocalization.val_injective x).commRing _ zero_val one_val add_val mul_val neg_val

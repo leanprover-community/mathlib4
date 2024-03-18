@@ -26,7 +26,7 @@ theorem tendsto_sum_pi_div_four :
     apply Antitone.tendsto_alternating_series_of_tendsto_zero
     · exact antitone_iff_forall_lt.mpr fun _ _ _ ↦ by gcongr
     · apply Tendsto.inv_tendsto_atTop; apply tendsto_atTop_add_const_right
-      exact tendsto_nat_cast_atTop_atTop.const_mul_atTop zero_lt_two
+      exact tendsto_natCast_atTop_atTop.const_mul_atTop zero_lt_two
   -- Abel's limit theorem states that the corresponding power series has the same limit as `x → 1⁻`
   have abel := tendsto_tsum_powerSeries_nhdsWithin_lt h
   -- Massage the expression to get `x ^ (2 * n + 1)` in the tsum rather than `x ^ n`...

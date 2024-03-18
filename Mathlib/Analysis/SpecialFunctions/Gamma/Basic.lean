@@ -489,7 +489,7 @@ theorem tendsto_self_mul_Gamma_nhds_zero : Tendsto (fun z : ℂ => z * Gamma z) 
     (eventuallyEq_of_mem self_mem_nhdsWithin Complex.Gamma_add_one)
   refine' ContinuousAt.comp (g := Gamma) _ (continuous_id.add continuous_const).continuousAt
   refine' (Complex.differentiableAt_Gamma _ fun m => _).continuousAt
-  rw [zero_add, ← ofReal_nat_cast, ← ofReal_neg, ← ofReal_one, Ne.def, ofReal_inj]
+  rw [zero_add, ← ofReal_natCast, ← ofReal_neg, ← ofReal_one, Ne.def, ofReal_inj]
   refine' (lt_of_le_of_lt _ zero_lt_one).ne'
   exact neg_nonpos.mpr (Nat.cast_nonneg _)
 #align complex.tendsto_self_mul_Gamma_nhds_zero Complex.tendsto_self_mul_Gamma_nhds_zero
@@ -536,8 +536,8 @@ theorem _root_.Complex.Gamma_ofReal (s : ℝ) : Complex.Gamma (s : ℂ) = Gamma 
 #align complex.Gamma_of_real Complex.Gamma_ofReal
 
 theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
-  rw [Gamma, Complex.ofReal_add, Complex.ofReal_nat_cast, Complex.ofReal_one,
-    Complex.Gamma_nat_eq_factorial, ← Complex.ofReal_nat_cast, Complex.ofReal_re]
+  rw [Gamma, Complex.ofReal_add, Complex.ofReal_natCast, Complex.ofReal_one,
+    Complex.Gamma_nat_eq_factorial, ← Complex.ofReal_natCast, Complex.ofReal_re]
 #align real.Gamma_nat_eq_factorial Real.Gamma_nat_eq_factorial
 
 @[simp]
@@ -555,7 +555,7 @@ theorem Gamma_zero : Gamma 0 = 0 := by
 /-- At `-n` for `n ∈ ℕ`, the Gamma function is undefined; by convention we assign it the value `0`.
 -/
 theorem Gamma_neg_nat_eq_zero (n : ℕ) : Gamma (-n) = 0 := by
-  simpa only [← Complex.ofReal_nat_cast, ← Complex.ofReal_neg, Complex.Gamma_ofReal,
+  simpa only [← Complex.ofReal_natCast, ← Complex.ofReal_neg, Complex.Gamma_ofReal,
     Complex.ofReal_eq_zero] using Complex.Gamma_neg_nat_eq_zero n
 #align real.Gamma_neg_nat_eq_zero Real.Gamma_neg_nat_eq_zero
 
@@ -643,7 +643,7 @@ theorem Gamma_eq_zero_iff (s : ℝ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m :=
 
 theorem differentiableAt_Gamma {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℝ Gamma s := by
   refine' (Complex.differentiableAt_Gamma _ _).hasDerivAt.real_of_complex.differentiableAt
-  simp_rw [← Complex.ofReal_nat_cast, ← Complex.ofReal_neg, Ne.def, Complex.ofReal_inj]
+  simp_rw [← Complex.ofReal_natCast, ← Complex.ofReal_neg, Ne.def, Complex.ofReal_inj]
   exact hs
 #align real.differentiable_at_Gamma Real.differentiableAt_Gamma
 

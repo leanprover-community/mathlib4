@@ -97,9 +97,9 @@ instance (s : S) : RatCast s :=
   ⟨fun x => ⟨↑x, coe_rat_mem s x⟩⟩
 
 @[simp]
-theorem coe_rat_cast (s : S) (x : ℚ) : ((x : s) : K) = x :=
+theorem coe_ratCast (s : S) (x : ℚ) : ((x : s) : K) = x :=
   rfl
-#align subfield_class.coe_rat_cast SubfieldClass.coe_rat_cast
+#align subfield_class.coe_rat_cast SubfieldClass.coe_ratCast
 
 -- Porting note: Mistranslated: used to be (a • x : K) ∈ s
 @[aesop safe apply (rule_sets := [SetLike])]

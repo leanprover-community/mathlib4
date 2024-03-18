@@ -400,7 +400,7 @@ variable {𝒜} {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m)
 open Lean Meta Elab Tactic
 
 macro "mem_tac_aux" : tactic =>
-  `(tactic| first | exact pow_mem_graded _ (Submodule.coe_mem _) | exact nat_cast_mem_graded _ _ |
+  `(tactic| first | exact pow_mem_graded _ (Submodule.coe_mem _) | exact natCast_mem_graded _ _ |
     exact pow_mem_graded _ f_deg)
 
 macro "mem_tac" : tactic =>

@@ -73,7 +73,7 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] 
         ⟨x - n, ⟨sub_nonneg.mpr x.2.1, sub_le_iff_le_add'.mpr x.2.2⟩⟩
     simpa only [ContinuousMap.restrict_apply, comp_apply, coe_addRight, Subtype.coe_mk,
       sub_add_cancel] using this
-  · exact iUnion_Icc_int_cast ℝ
+  · exact iUnion_Icc_intCast ℝ
 #align real.integrable_of_summable_norm_Icc Real.integrable_of_summable_norm_Icc
 
 end SummableNormIcc

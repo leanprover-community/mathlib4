@@ -111,7 +111,7 @@ theorem tendsto_W_nhds_pi_div_two : Tendsto W atTop (𝓝 <| π / 2) := by
   simp_rw [h]
   refine' (tendsto_const_nhds.div_atTop _).const_sub _
   refine' Tendsto.atTop_add _ tendsto_const_nhds
-  exact tendsto_nat_cast_atTop_atTop.const_mul_atTop two_pos
+  exact tendsto_natCast_atTop_atTop.const_mul_atTop two_pos
 #align real.wallis.tendsto_W_nhds_pi_div_two Real.Wallis.tendsto_W_nhds_pi_div_two
 
 end Wallis

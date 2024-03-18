@@ -77,7 +77,7 @@ theorem T_complex_cos : ∀ n, (T ℂ n).eval (cos θ) = cos (n * θ)
   | n + 2 => by
     -- Porting note: partially rewrote proof for lean4 numerals.
     have : (2 : ℂ[X]) = (2 : ℕ) := by norm_num
-    simp only [this, eval_X, eval_one, T_add_two, eval_sub, eval_mul, eval_nat_cast]
+    simp only [this, eval_X, eval_one, T_add_two, eval_sub, eval_mul, eval_natCast]
     simp only [Nat.cast_ofNat, Nat.cast_add]
     rw [T_complex_cos (n + 1), T_complex_cos n]
     simp only [Nat.cast_add, Nat.cast_one, add_mul, cos_add, one_mul, mul_assoc, sin_two_mul,

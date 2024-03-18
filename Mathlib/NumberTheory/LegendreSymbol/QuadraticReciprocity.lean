@@ -139,7 +139,7 @@ theorem quadratic_reciprocity' (hp : p ≠ 2) (hq : q ≠ 2) :
     legendreSym q p = (-1) ^ (p / 2 * (q / 2)) * legendreSym p q := by
   rcases eq_or_ne p q with h | h
   · subst p
-    rw [(eq_zero_iff q q).mpr (mod_cast nat_cast_self q), mul_zero]
+    rw [(eq_zero_iff q q).mpr (mod_cast natCast_self q), mul_zero]
   · have qr := congr_arg (· * legendreSym p q) (quadratic_reciprocity hp hq h)
     have : ((q : ℤ) : ZMod p) ≠ 0 := mod_cast prime_ne_zero p q h
     simpa only [mul_assoc, ← pow_two, sq_one p this, mul_one] using qr

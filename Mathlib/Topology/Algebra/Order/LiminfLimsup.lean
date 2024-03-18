@@ -574,7 +574,7 @@ theorem limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring
   simp only [Set.mem_setOf_eq]
   rw [(_ : (fun n ↦ ∑ k in Finset.range n, (s (k + 1)).indicator (1 : α → R) ω) = fun n ↦
     ↑(∑ k in Finset.range n, (s (k + 1)).indicator (1 : α → ℕ) ω))]
-  · exact tendsto_nat_cast_atTop_iff.symm
+  · exact tendsto_natCast_atTop_iff.symm
   · ext n
     simp only [Set.indicator, Pi.one_apply, Finset.sum_boole, Nat.cast_id]
 #align limsup_eq_tendsto_sum_indicator_at_top limsup_eq_tendsto_sum_indicator_atTop

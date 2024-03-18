@@ -76,11 +76,11 @@ example {R : Type u} {a : R} [Semiring R] (n : ℕ) (ha : a ≠ 0) :
 --   done
 
 -- Fails:
--- -- Polynomial.natDegree_int_cast.{u}
+-- -- Polynomial.natDegree_intCast.{u}
 -- example {R : Type u} [Ring R] (n : ℤ) : Polynomial.natDegree (n : R[X]) = 0 := by
---   rw_search [-Polynomial.natDegree_int_cast]
+--   rw_search [-Polynomial.natDegree_intCast]
 --   -- Mathlib proof:
---   -- rw [← C_eq_int_cast, natDegree_C]
+--   -- rw [← C_eq_intCast, natDegree_C]
 --   done
 
 -- Fails:

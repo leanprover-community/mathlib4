@@ -2210,15 +2210,15 @@ theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, Norme
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
 #align asymptotics.is_o_pi Asymptotics.isLittleO_pi
 
-theorem IsBigO.nat_cast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
+theorem IsBigO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
     {f : R → E} {g : R → F} (h : f =O[atTop] g) :
     (fun (n : ℕ) => f n) =O[atTop] (fun n => g n) :=
-  IsBigO.comp_tendsto h tendsto_nat_cast_atTop_atTop
+  IsBigO.comp_tendsto h tendsto_natCast_atTop_atTop
 
-theorem IsLittleO.nat_cast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
+theorem IsLittleO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
     {f : R → E} {g : R → F} (h : f =o[atTop] g) :
     (fun (n : ℕ) => f n) =o[atTop] (fun n => g n) :=
-  IsLittleO.comp_tendsto h tendsto_nat_cast_atTop_atTop
+  IsLittleO.comp_tendsto h tendsto_natCast_atTop_atTop
 
 theorem isBigO_atTop_iff_eventually_exists {α : Type*} [SemilatticeSup α] [Nonempty α]
     {f : α → E} {g : α → F} : f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c, ∀ n ≥ n₀, ‖f n‖ ≤ c * ‖g n‖ := by

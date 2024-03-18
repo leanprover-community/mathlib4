@@ -224,14 +224,14 @@ instance addMonoidWithOne [OrderedSemiring α] : AddMonoidWithOne { x : α // 0 
 #align nonneg.add_monoid_with_one Nonneg.addMonoidWithOne
 
 @[simp, norm_cast]
-protected theorem coe_nat_cast [OrderedSemiring α] (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
+protected theorem coe_natCast [OrderedSemiring α] (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
   rfl
-#align nonneg.coe_nat_cast Nonneg.coe_nat_cast
+#align nonneg.coe_nat_cast Nonneg.coe_natCast
 
 @[simp]
-theorem mk_nat_cast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : { x : α // 0 ≤ x }) = n :=
+theorem mk_natCast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : { x : α // 0 ≤ x }) = n :=
   rfl
-#align nonneg.mk_nat_cast Nonneg.mk_nat_cast
+#align nonneg.mk_nat_cast Nonneg.mk_natCast
 
 instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ where
   pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩

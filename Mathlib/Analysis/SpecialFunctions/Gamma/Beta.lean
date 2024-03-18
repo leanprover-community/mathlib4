@@ -215,7 +215,7 @@ theorem betaIntegral_eval_nat_add_one_right {u : ℂ} (hu : 0 < re u) (n : ℕ) 
   · rw [Nat.cast_zero, zero_add, betaIntegral_eval_one_right hu, Nat.factorial_zero, Nat.cast_one]
     simp
   · have := betaIntegral_recurrence hu (?_ : 0 < re n.succ)
-    swap; · rw [← ofReal_nat_cast, ofReal_re]; positivity
+    swap; · rw [← ofReal_natCast, ofReal_re]; positivity
     rw [mul_comm u _, ← eq_div_iff] at this
     swap; · contrapose! hu; rw [hu, zero_re]
     rw [this, Finset.prod_range_succ', Nat.cast_succ, IH]
@@ -280,9 +280,9 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
     conv_lhs => rw [(by ring : s = s - 1 + 1), cpow_add _ _ hn']
     simp
   have B : ((x : ℂ) * ↑n) ^ (s - 1) = (x : ℂ) ^ (s - 1) * (n : ℂ) ^ (s - 1) := by
-    rw [← ofReal_nat_cast,
+    rw [← ofReal_natCast,
       mul_cpow_ofReal_nonneg hx.1.le (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn)).le]
-  rw [A, B, cpow_nat_cast]; ring
+  rw [A, B, cpow_natCast]; ring
 #align complex.Gamma_seq_eq_approx_Gamma_integral Complex.GammaSeq_eq_approx_Gamma_integral
 
 /-- The main techical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
@@ -454,12 +454,12 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
     refine' Real.Gamma_ne_zero fun n => _
     specialize hs n
     contrapose! hs
-    rwa [this, ← ofReal_nat_cast, ← ofReal_neg, ofReal_inj]
+    rwa [this, ← ofReal_natCast, ← ofReal_neg, ofReal_inj]
   · have : sin (↑π * s) ≠ 0 := by
       rw [Complex.sin_ne_zero_iff]
       intro k
       apply_fun im
-      rw [im_ofReal_mul, ← ofReal_int_cast, ← ofReal_mul, ofReal_im]
+      rw [im_ofReal_mul, ← ofReal_intCast, ← ofReal_mul, ofReal_im]
       exact mul_ne_zero Real.pi_pos.ne' h_im
     have A := div_ne_zero (ofReal_ne_zero.mpr Real.pi_pos.ne') this
     rw [← Complex.Gamma_mul_Gamma_one_sub s, mul_ne_zero_iff] at A
@@ -476,7 +476,7 @@ theorem Gamma_eq_zero_iff (s : ℂ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m := by
 theorem Gamma_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gamma s ≠ 0 := by
   refine' Gamma_ne_zero fun m => _
   contrapose! hs
-  simpa only [hs, neg_re, ← ofReal_nat_cast, ofReal_re, neg_nonpos] using Nat.cast_nonneg _
+  simpa only [hs, neg_re, ← ofReal_natCast, ofReal_re, neg_nonpos] using Nat.cast_nonneg _
 #align complex.Gamma_ne_zero_of_re_pos Complex.Gamma_ne_zero_of_re_pos
 
 end Complex
@@ -497,7 +497,7 @@ theorem GammaSeq_tendsto_Gamma (s : ℝ) : Tendsto (GammaSeq s) atTop (𝓝 <| G
   ext1 n
   dsimp only [GammaSeq, Function.comp_apply, Complex.GammaSeq]
   push_cast
-  rw [Complex.ofReal_cpow n.cast_nonneg, Complex.ofReal_nat_cast]
+  rw [Complex.ofReal_cpow n.cast_nonneg, Complex.ofReal_natCast]
 #align real.Gamma_seq_tendsto_Gamma Real.GammaSeq_tendsto_Gamma
 
 /-- Euler's reflection formula for the real Gamma function. -/

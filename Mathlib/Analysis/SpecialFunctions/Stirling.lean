@@ -156,7 +156,7 @@ theorem log_stirlingSeq_bounded_aux :
     intro k; convert log_stirlingSeq_sub_log_stirlingSeq_succ k using 1; field_simp
   have h₂ : (∑ k : ℕ in range n, ↑1 / (↑(k + 1):ℝ) ^ 2) ≤ d := by
     have := (summable_nat_add_iff 1).mpr <| Real.summable_one_div_nat_pow.mpr one_lt_two
-    simp only [rpow_nat_cast] at this
+    simp only [rpow_natCast] at this
     exact sum_le_tsum (range n) (fun k _ => by positivity) this
   calc
     log (stirlingSeq 1) - log (stirlingSeq (n + 1)) = log_stirlingSeq' 0 - log_stirlingSeq' n :=

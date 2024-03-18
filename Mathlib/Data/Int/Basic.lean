@@ -68,7 +68,7 @@ theorem cast_mul {α : Type*} [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) 
     | succ m ih => simp_all [add_mul]
 #align int.cast_mul Int.cast_mulₓ -- dubious translation, type involves HasLiftT
 
-lemma cast_Nat_cast {n : ℕ} {R : Type*} [AddGroupWithOne R] :
+lemma cast_natCast {n : ℕ} {R : Type*} [AddGroupWithOne R] :
     (Int.cast (Nat.cast n) : R) = Nat.cast n :=
   Int.cast_ofNat _
 

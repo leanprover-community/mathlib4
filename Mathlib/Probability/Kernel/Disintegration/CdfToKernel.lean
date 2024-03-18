@@ -288,11 +288,11 @@ lemma isRatCondKernelCDFAux.tendsto_atTop_one (hf : isRatCondKernelCDFAux f κ �
     ∀ᵐ t ∂(ν a), Tendsto (f (a, t)) atTop (𝓝 1) := by
   suffices ∀ᵐ t ∂(ν a), Tendsto (fun (n : ℕ) ↦ f (a, t) n) atTop (𝓝 1) by
     filter_upwards [this, hf.mono a] with t ht h_mono
-    rw [tendsto_iff_tendsto_subseq_of_monotone h_mono tendsto_nat_cast_atTop_atTop]
+    rw [tendsto_iff_tendsto_subseq_of_monotone h_mono tendsto_natCast_atTop_atTop]
     exact ht
   let seq : ℕ → ℚ := fun n ↦ n
   have hseq : Monotone seq := fun i j hij ↦ by simp [seq, hij]
-  have hseq_tendsto : Tendsto seq atTop atTop := tendsto_nat_cast_atTop_atTop
+  have hseq_tendsto : Tendsto seq atTop atTop := tendsto_natCast_atTop_atTop
   filter_upwards [hf.tendsto_one_of_monotone a seq hseq hseq_tendsto] with x hx using hx
 
 lemma isRatCondKernelCDFAux.tendsto_atBot_zero (hf : isRatCondKernelCDFAux f κ ν) [IsFiniteKernel ν]
@@ -308,12 +308,12 @@ lemma isRatCondKernelCDFAux.tendsto_atBot_zero (hf : isRatCondKernelCDFAux f κ 
   suffices ∀ᵐ t ∂(ν a), Tendsto (fun (n : ℕ) ↦ f (a, t) (-n)) atTop (𝓝 0) by
     filter_upwards [this, hf.mono a] with t ht h_mono
     have h_anti : Antitone (fun q ↦ f (a, t) (-q)) := h_mono.comp_antitone monotone_id.neg
-    exact (tendsto_iff_tendsto_subseq_of_antitone h_anti tendsto_nat_cast_atTop_atTop).mpr ht
+    exact (tendsto_iff_tendsto_subseq_of_antitone h_anti tendsto_natCast_atTop_atTop).mpr ht
   let seq : ℕ → ℚ := fun n ↦ -n
   have hseq : Antitone seq := fun i j hij ↦ neg_le_neg (by exact mod_cast hij)
   have hseq_tendsto : Tendsto seq atTop atBot := by
     simp only [seq, tendsto_neg_atBot_iff]
-    exact tendsto_nat_cast_atTop_atTop
+    exact tendsto_natCast_atTop_atTop
   convert hf.tendsto_zero_of_antitone a seq hseq hseq_tendsto with x n
 
 lemma isRatCondKernelCDFAux.bddBelow_range (hf : isRatCondKernelCDFAux f κ ν) (a : α) :
