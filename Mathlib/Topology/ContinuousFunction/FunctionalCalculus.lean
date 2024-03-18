@@ -41,7 +41,7 @@ freedom. In particular, `cfc f a` makes sense for *any* `a : A` and `f : R → R
 useful in a variety of settings, but perhaps the most important is the following.
 Besides being a star algebra homomorphism sending the identity to `a`, the key property enjoyed
 by the continuous functional calculus is the *composition property*, which guarantees that
-`cfc (g ∘ f) a = cfc (cfc g a) f` under suitable hypotheses on `a`, `f` and `g`. Note that this
+`cfc (g ∘ f) a = cfc g (cfc f a)` under suitable hypotheses on `a`, `f` and `g`. Note that this
 theorem is nearly impossible to state nicely in terms of `cfcHom` (see `cfcHom_comp`). An
 additional advantage of the unbundled approach is that expressions like `fun x : R ↦ x⁻¹` are valid
 arguments to `cfc`, and a bundled continuous counterpart can only make sense when the spectrum of
