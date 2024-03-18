@@ -1377,11 +1377,7 @@ import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.Coverage
 import Mathlib.CategoryTheory.Sites.CoversTop
 import Mathlib.CategoryTheory.Sites.DenseSubsite
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic.Basic
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic.Comp
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic.Coproduct
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic.Preserves
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic.RegularEpi
+import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.CategoryTheory.Sites.Grothendieck
