@@ -109,18 +109,20 @@ private lemma pairwiseDisjoint_distinctPairs :
   -- FIXME nightly-testing
   -- Another apparent problem with `config := { unfoldPartialApp := true }`
   -- Minimization?
-  sorry
-  -- simp (config := { unfoldPartialApp := true }) only [distinctPairs, Set.PairwiseDisjoint,
-  --   Function.onFun, disjoint_left, inf_eq_inter, mem_inter, mem_product]
-  -- rintro ⟨⟨s₁, s₂⟩, hs⟩ _ ⟨⟨t₁, t₂⟩, ht⟩ _ hst ⟨u, v⟩ huv₁ huv₂
-  -- rw [mem_offDiag] at hs ht
-  -- obtain ⟨a, ha⟩ := Finpartition.nonempty_of_mem_parts _ huv₁.1
-  -- obtain ⟨b, hb⟩ := Finpartition.nonempty_of_mem_parts _ huv₁.2
-  -- exact hst <| Subtype.ext_val <| Prod.ext
-  --   (P.disjoint.elim_finset hs.1 ht.1 a (Finpartition.le _ huv₁.1 ha) <|
-  --     Finpartition.le _ huv₂.1 ha) <|
-  --       P.disjoint.elim_finset hs.2.1 ht.2.1 b (Finpartition.le _ huv₁.2 hb) <|
-  --         Finpartition.le _ huv₂.2 hb
+  simp (config := { unfoldPartialApp := true }) only [distinctPairs, Set.PairwiseDisjoint,
+    Function.onFun, disjoint_left, inf_eq_inter, mem_inter, mem_product]
+  unfold Function.onFun
+  simp (config := { unfoldPartialApp := true }) only [distinctPairs, Set.PairwiseDisjoint,
+    Function.onFun, disjoint_left, inf_eq_inter, mem_inter, mem_product]
+  rintro ⟨⟨s₁, s₂⟩, hs⟩ _ ⟨⟨t₁, t₂⟩, ht⟩ _ hst ⟨u, v⟩ huv₁ huv₂
+  rw [mem_offDiag] at hs ht
+  obtain ⟨a, ha⟩ := Finpartition.nonempty_of_mem_parts _ huv₁.1
+  obtain ⟨b, hb⟩ := Finpartition.nonempty_of_mem_parts _ huv₁.2
+  exact hst <| Subtype.ext_val <| Prod.ext
+    (P.disjoint.elim_finset hs.1 ht.1 a (Finpartition.le _ huv₁.1 ha) <|
+      Finpartition.le _ huv₂.1 ha) <|
+        P.disjoint.elim_finset hs.2.1 ht.2.1 b (Finpartition.le _ huv₁.2 hb) <|
+          Finpartition.le _ huv₂.2 hb
 
 variable [Nonempty α]
 
