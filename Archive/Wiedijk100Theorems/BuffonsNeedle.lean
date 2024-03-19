@@ -155,7 +155,7 @@ lemma needleCrossesIndicator_measurable : Measurable (needleCrossesIndicator l) 
 lemma needleCrossesIndicator_stronglyMeasurable :
     MeasureTheory.StronglyMeasurable (needleCrossesIndicator l) := by
   refine' stronglyMeasurable_iff_measurable_separable.mpr
-    ⟨needleCrossesIndicator_measurable l, {0, 1}, ?seperable⟩
+    ⟨needleCrossesIndicator_measurable l, {0, 1}, ?separable⟩
 
   have range_finite : Set.Finite ({0, 1} : Set ℝ) := by
     simp only [Set.mem_singleton_iff, Set.finite_singleton, Set.Finite.insert]
@@ -197,10 +197,10 @@ lemma needleCrossesIndicator_integrable :
     exact needleCrossesIndicator_le_one p
 
   case lt_top =>
-    simp only [Pi.one_apply, MeasureTheory.lintegral_const, one_mul, Measure.prod_restrict,
-      Measure.restrict_apply MeasurableSet.univ, Set.univ_inter, Measure.prod_prod, Real.volume_Icc]
-    ring_nf
-    simp_rw [← ENNReal.ofReal_mul hd.le, ENNReal.ofReal_lt_top]
+    simp_rw [Pi.one_apply, MeasureTheory.lintegral_const, one_mul, Measure.prod_restrict,
+      Measure.restrict_apply MeasurableSet.univ, Set.univ_inter, Measure.prod_prod, Real.volume_Icc,
+      neg_div, sub_neg_eq_add, add_halves, sub_zero, ← ENNReal.ofReal_mul hd.le,
+      ENNReal.ofReal_lt_top]
 
 /--
   This is a common step in both the short and the long case to simplify the expectation of the
@@ -294,19 +294,15 @@ theorem buffon_short (h : l ≤ d) : ℙ[N l B] = (2 * l) * (d * π)⁻¹ := by
     exact mul_nonneg (Real.sin_nonneg_of_mem_Icc hθ) hl.le
 
   simp_rw [set_integral_toReal_ofReal_nonneg_ae measurableSet_Icc (MeasureTheory.ae_of_all _ this),
-    ← smul_eq_mul, integral_smul_const, smul_eq_mul, mul_comm, mul_eq_mul_left_iff]
-
-  apply Or.inl
-  rw [MeasureTheory.integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le Real.pi_pos.le,
-    integral_sin, Real.cos_zero, Real.cos_pi]
-
-  ring_nf
+    ← smul_eq_mul, integral_smul_const, smul_eq_mul, mul_comm, mul_eq_mul_left_iff,
+    MeasureTheory.integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le Real.pi_pos.le,
+    integral_sin, Real.cos_zero, Real.cos_pi, sub_neg_eq_add, one_add_one_eq_two, true_or]
 
 /--
   The integrand in the long case is `min d (θ.sin * l)` and its integrability is necessary for
   the integral lemmas below.
 -/
-lemma min_const_sin_mul_intervalIntegrable (a b : ℝ) :
+lemma intervalIntegrable_min_const_sin_mul (a b : ℝ) :
     IntervalIntegrable (fun (θ : ℝ) => min d (θ.sin * l)) ℙ a b := by
   apply Continuous.intervalIntegrable
   exact Continuous.min continuous_const (Continuous.mul Real.continuous_sin continuous_const)
@@ -325,7 +321,7 @@ lemma integral_min_eq_two_mul :
     intervalIntegral.integral_comp_add_right (fun θ => min d (θ.sin * l)), add_left_neg,
     (by ring : -(π / 2) + π = π / 2), two_mul]
 
-  all_goals exact min_const_sin_mul_intervalIntegrable d l _ _
+  all_goals exact intervalIntegrable_min_const_sin_mul d l _ _
 
 /--
   The first of two adjacent integrals in the long case. In the range `(0)..(d / l).arcsin`, we
@@ -391,30 +387,8 @@ theorem buffon_long (h : d ≤ l) :
     MeasureTheory.integral_Icc_eq_integral_Ioc,
     ← intervalIntegral.integral_of_le Real.pi_pos.le, integral_min_eq_two_mul,
     ← intervalIntegral.integral_add_adjacent_intervals
-      (min_const_sin_mul_intervalIntegrable d l _ _) (min_const_sin_mul_intervalIntegrable d l _ _),
+      (intervalIntegrable_min_const_sin_mul d l _ _) (intervalIntegrable_min_const_sin_mul d l _ _),
     integral_zero_to_arcsin_min d l hd hl, integral_arcsin_to_pi_div_two_min d l hl h]
 
-  /-
-    the rest of the proof is annoying algebra, the goal is
-      (d * π)⁻¹ * (2 * ((1 - sqrt (1 - (d / l) ^ 2)) * l + (π / 2 - arcsin (d / l)) * d)) =
-      2 * l / (d * π) - 2 / (d * π) * (sqrt (l ^ 2 - d ^ 2) + d * arcsin (d / l)) + 1
-  -/
-
-  have this₁ : (1 - Real.sqrt (1 - (d / l) ^ 2)) * l = l - (l ^ 2 - d ^ 2).sqrt := by
-    rw [mul_comm, mul_sub, mul_one, div_pow, one_sub_div, Real.sqrt_div, Real.sqrt_sq hl.le,
-      ← mul_div_assoc, mul_comm, mul_div_cancel _ (ne_of_gt hl)]
-    · simp_rw [sub_nonneg, sq_le_sq, abs_of_pos hd, abs_of_pos hl, h]
-    · simp_rw [(pow_eq_zero_iff two_ne_zero).not, ne_of_gt hl, not_false_eq_true]
-  have this₂ : 2 * d * (π / 2 - (d / l).arcsin) / (d * π) = 1 - (2 / π) * (d / l).arcsin := by
-    rw [mul_sub, sub_div, mul_assoc, ← mul_comm_div, ← mul_assoc, ← mul_comm_div,
-      div_self two_ne_zero, one_mul, div_self (ne_of_gt (mul_pos hd Real.pi_pos)), mul_div_assoc,
-      ← mul_comm_div, mul_comm 2, mul_div_mul_left _ _ (ne_of_gt hd)]
-  have this₃ : 2 * Real.sqrt (l^2 - d^2) / (d * π) = 2 / (d * π) * (l^2 - d^2).sqrt := by ring_nf
-  have this₄ : 2 / π * d / d = 2 / (d * π) * d := by ring_nf
-
-  conv =>
-    lhs
-    rw [this₁, inv_mul_eq_div, mul_add, mul_sub, add_div, sub_div,
-      mul_comm (π / 2 - (d / l).arcsin), ← mul_assoc, this₂, this₃, add_sub, add_sub_right_comm,
-      sub_eq_add_neg, sub_eq_add_neg, ← neg_mul, ← mul_div_cancel (2 / π) (ne_of_gt hd), this₄,
-      mul_assoc, ← neg_mul, add_assoc (2 * l / (d * π)) _ _, ← mul_add, neg_mul, ← sub_eq_add_neg]
+  field_simp
+  ring_nf
