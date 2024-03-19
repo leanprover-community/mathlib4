@@ -416,4 +416,3 @@ lemma infSum_eq_one (h𝒜₁ : 𝒜.Nonempty) (h𝒜₀ : ∅ ∉ 𝒜) : infSu
   simpa
 
 end AhlswedeZhang
-#minimize_imports
