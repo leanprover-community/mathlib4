@@ -55,7 +55,7 @@ def countableGeneratingSet (α : Type*) [MeasurableSpace α] [h : CountablyGener
   insert ∅ h.isCountablyGenerated.choose
 
 lemma countable_countableGeneratingSet [MeasurableSpace α] [h : CountablyGenerated α] :
-    Countable (countableGeneratingSet α) :=
+    Set.Countable (countableGeneratingSet α) :=
   Countable.insert _ h.isCountablyGenerated.choose_spec.1
 
 lemma generateFrom_countableGeneratingSet [m : MeasurableSpace α] [h : CountablyGenerated α] :
@@ -101,12 +101,12 @@ instance [MeasurableSpace α] [CountablyGenerated α] [MeasurableSpace β] [Coun
 
 variable (α)
 
-theorem exists_seq_generated [m : MeasurableSpace α] [h : CountablyGenerated α] :
+theorem exists_seq_generateFrom [m : MeasurableSpace α] [h : CountablyGenerated α] :
     ∃ e : ℕ → Set α, m = generateFrom (range e) := by
-  rcases h.isCountablyGenerated with ⟨b, bct, rfl⟩
-  rcases (bct.insert univ).exists_eq_range (insert_nonempty _ _) with ⟨e, he⟩
+  rcases countable_countableGeneratingSet.exists_eq_range $
+    nonempty_countableGeneratingSet (α := α) with ⟨e, he⟩
   use e
-  rw [← he, generateFrom_insert_univ]
+  rw [← he, generateFrom_countableGeneratingSet]
 
 variable {α}
 
@@ -174,7 +174,7 @@ to some some subset of the Cantor space `ℕ → Bool` (equipped with the produc
 theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
     [CountablyGenerated α] [SeparatesPoints α] :
     ∃ s : Set (ℕ → Bool), Nonempty (α ≃ᵐ s) := by
-  rcases exists_seq_generated α with ⟨e, rfl⟩
+  rcases exists_seq_generateFrom α with ⟨e, rfl⟩
   letI := generateFrom (range e)
   let f : α → ℕ → Bool := (· ∈  e ·)
   have : Injective f := by
