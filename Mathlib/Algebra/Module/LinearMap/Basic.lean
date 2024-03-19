@@ -684,11 +684,12 @@ variable {σ : R →+* S}
 def toSemilinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M₂ :=
   { fₗ with }
 
-/- instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where -/
+instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
 
 instance : CoeTC (M →ₑ+[σ.toMonoidHom] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toSemilinearMap⟩
 
+/-- A `DistribMulActionHom` between two modules is a linear map. -/
 def toLinearMap (fₗ : M →+[R] M₃) : M →ₗ[R] M₃ :=
   { fₗ with }
 #align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
