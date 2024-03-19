@@ -73,18 +73,41 @@ def activeGoalsAfter : List MVarId :=
 end goals_heuristic
 
 variable (kind : SyntaxNodeKind) in
+/-- `extractRealGoals kind tree` takes as input a `SyntaxNodeKind` and an `InfoTree` and returns
+the array of pairs `(stx, mvars)`, where `stx` is a syntax node of kind `kind` and `mvars` are
+the goals that have been "created" by the tactic in `stx`.
+
+A typical usage is to find the goals following a `simp` application. -/
+partial
+def extractRealGoals' : InfoTree → Array (Syntax × List MVarId)
+  | .node k args =>
+    let kargs := (args.map extractRealGoals').foldl (· ++ ·) #[]
+    if let Lean.Elab.Info.ofTacticInfo i := k then
+      if i.stx.getKind == kind && (i.stx.getRange? true).isSome then
+        kargs.push (i.stx, activeGoalsAfter i) else kargs
+    else kargs
+  | .context _ t => extractRealGoals' t
+  | _ => default
+
+variable (take? : Syntax → Bool) in
+/-- `extractRealGoals kind tree` takes as input a `SyntaxNodeKind` and an `InfoTree` and returns
+the array of pairs `(stx, mvars)`, where `stx` is a syntax node of kind `kind` and `mvars` are
+the goals that have been "created" by the tactic in `stx`.
+
+A typical usage is to find the goals following a `simp` application. -/
 partial
 def extractRealGoals : InfoTree → Array (Syntax × List MVarId)
   | .node k args =>
     let kargs := (args.map extractRealGoals).foldl (· ++ ·) #[]
     if let Lean.Elab.Info.ofTacticInfo i := k then
-      if i.stx.getKind == kind && (i.stx.getRange? true).isSome then
+      if take? i.stx && (i.stx.getRange? true).isSome then
         kargs.push (i.stx, activeGoalsAfter i) else kargs
     else kargs
   | .context _ t => extractRealGoals t
   | _ => default
 
 variable (kind : SyntaxNodeKind) in
+@[deprecated extractRealGoals]
 partial
 def extractGoals : InfoTree → Array (Syntax × List MVarId × List MVarId)
   | .node i args =>
@@ -97,6 +120,9 @@ def extractGoals : InfoTree → Array (Syntax × List MVarId × List MVarId)
   | _ => default
 
 variable (mvs : List MVarId) in
+/-- `getRealFollowers mvs tree` extracts from the `InfoTree` `tree` the array of syntax nodes
+that have any one of the `MVarId`s in `mvs` as a goal on which they are "actively"
+performing an action. -/
 partial
 def getRealFollowers : InfoTree → Array Syntax
   | .node k args =>
@@ -108,6 +134,7 @@ def getRealFollowers : InfoTree → Array Syntax
   | _ => default
 
 variable (mvs : List MVarId) in
+@[deprecated getRealFollowers]
 partial
 def getFollowers : InfoTree → Array Syntax
   | .node k args =>
@@ -191,7 +218,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 
   trees.forM fun tree => do
 --    dbg_trace "processing2"
-    let d := extractRealGoals ``Lean.Parser.Tactic.simp tree --``Lean.Parser.Tactic.refine tree
+    let d := extractRealGoals (fun stx => stx.getKind == ``Lean.Parser.Tactic.simp && (stx.getRange? true).isSome) tree --``Lean.Parser.Tactic.refine tree
 --    dbg_trace "processing3 {d.map Prod.fst} {d.size}"
     for (st, aft) in d do
 --      dbg_trace "* Following {st}\n"
@@ -220,6 +247,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --          dbg_trace "** {y} {r}\n"; --return
 --      rest := rest.push aft
 
+/-
   let simps := map.toArray
   let key (r : String.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
   let mut last : String.Range := ⟨0, 0⟩
@@ -230,5 +258,6 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
         * `suffices \"expr after simp\" by simpa`\n\
         * the output of `simp?`\n"
     last := r
+-/
 
 initialize addLinter nonTerminalSimpLinter
