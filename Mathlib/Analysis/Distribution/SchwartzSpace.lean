@@ -6,7 +6,6 @@ Authors: Moritz Doll
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.Calculus.LineDeriv.Basic
-import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
@@ -1086,8 +1085,7 @@ def integralCLM : 𝓢(D, V) →L[𝕜] V :=
 
 variable (𝕜) in
 @[simp]
-lemma integralCLM_apply [HasTemperateGrowth μ] (f : 𝓢(D, V)) : integralCLM 𝕜 μ f = ∫ x, f x ∂μ := by
-  rfl
+lemma integralCLM_apply (f : 𝓢(D, V)) : integralCLM 𝕜 μ f = ∫ x, f x ∂μ := by rfl
 
 end Integration
 
