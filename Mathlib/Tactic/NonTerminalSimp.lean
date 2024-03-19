@@ -119,6 +119,22 @@ def extractGoals : InfoTree → Array (Syntax × List MVarId × List MVarId)
   | .context _ t => extractGoals t
   | _ => default
 
+abbrev allowedSimpFollowers : HashSet SyntaxNodeKind := HashSet.empty
+  |>.insert ``cdotTk
+  |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented
+--  |>.insert ``nullKind
+  |>.insert `null
+  |>.insert ``Lean.Parser.Tactic.tacticSeq
+  |>.insert ``Lean.Parser.Tactic.paren
+  |>.insert ``cdot
+  |>.insert ``Lean.Parser.Tactic.simpa
+  |>.insert ``Lean.Parser.Tactic.simp
+  |>.insert ``Lean.Parser.Tactic.allGoals
+  |>.insert ``Lean.Parser.Tactic.eqRefl
+  |>.insert ``Lean.Parser.Tactic.tacticRfl
+  |>.insert ``Lean.Parser.Tactic.rewriteSeq
+    -- `Lean.Parser.Tactic.rwSeq` would catch `rw`: unnecessary, `rewrite` already catches it
+
 variable (mvs : List MVarId) in
 /-- `getRealFollowers mvs tree` extracts from the `InfoTree` `tree` the array of syntax nodes
 that have any one of the `MVarId`s in `mvs` as a goal on which they are "actively"
@@ -127,6 +143,7 @@ partial
 def getRealFollowers : InfoTree → Array Syntax
   | .node k args =>
     let kargs := (args.map getRealFollowers).foldl (· ++ ·) #[]
+    if (k.stx.getRange? true).isNone || allowedSimpFollowers.contains k.stx.getKind then kargs else
     if let Lean.Elab.Info.ofTacticInfo i := k then
       if (mvs.map fun x => (x.name ∈ (activeGoalsBefore i).map (·.name) : Bool)).any (·) then kargs.push k.stx else kargs
     else kargs
@@ -200,8 +217,6 @@ partial def addNonSimpOnlys : InfoTree → M Unit
 
 end
 
-abbrev allowedSimpFollowers : Array SyntaxNodeKind := #[]
-
 /-- Gets the value of the `linter.nonTerminalSimp` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.nonTerminalSimp o
 
@@ -213,12 +228,13 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
     return
 --  dbg_trace "processing"
   let trees ← getInfoTrees
-  let (_, map) ← (addNonSimpOnlysList trees).run {}
+--  let (_, map) ← (addNonSimpOnlysList trees).run {}
 --  dbg_trace "processing1"
 
   trees.forM fun tree => do
+    let mut con := 0
 --    dbg_trace "processing2"
-    let d := extractRealGoals (fun stx => stx.getKind == ``Lean.Parser.Tactic.simp && (stx.getRange? true).isSome) tree --``Lean.Parser.Tactic.refine tree
+    let d := extractRealGoals (fun stx => ! onlyOrNotSimp stx && (stx.getRange? true).isSome) tree --``Lean.Parser.Tactic.refine tree
 --    dbg_trace "processing3 {d.map Prod.fst} {d.size}"
     for (st, aft) in d do
 --      dbg_trace "* Following {st}\n"
@@ -226,10 +242,13 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
       --for s in trees do
 --      let mut tot := #[]
       for y in (getRealFollowers aft tree) do
+          con := con + 1
 
 --        tots := tots.push (y, st)
 --          dbg_trace "{y.getAtomVal} follows {st.getAtomVal}"
-          Linter.logLint linter.nonTerminalSimp y m!"follows {st}\n{y.getKind}"
+--          logInfoAt st m!"({con})"
+          Linter.logLint linter.nonTerminalSimp y m!"{y}: {y.getKind}"
+--          Linter.logLint linter.nonTerminalSimp y m!"follows {st} ({con})\n{y.getKind}"
 --          tot := tot.push m!"follows {st}"
 --      logInfo m!"{tot}"
 /-
