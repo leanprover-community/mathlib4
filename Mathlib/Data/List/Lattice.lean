@@ -238,16 +238,16 @@ theorem count_bagInter {a : α} :
   | l₁, [] => by simp
   | b :: l₁, l₂ => by
     by_cases hb : b ∈ l₂
-    · rw [cons_bagInter_of_pos _ hb, count_cons, count_cons, count_bagInter, count_erase, ←
-        min_add_add_right]
+    · rw [cons_bagInter_of_pos _ hb, count_cons, count_cons, count_bagInter, count_erase,
+        ← Nat.add_min_add_right]
       by_cases ab : a = b
-      · rw [if_pos ab, @tsub_add_cancel_of_le]
+      · rw [if_pos ab, Nat.sub_add_cancel]
         rwa [succ_le_iff, count_pos_iff_mem, ab]
-      · rw [if_neg ab, tsub_zero, add_zero, add_zero]
+      · rw [if_neg ab, Nat.sub_zero, add_zero, add_zero]
     · rw [cons_bagInter_of_neg _ hb, count_bagInter]
       by_cases ab : a = b
       · rw [← ab] at hb
-        rw [count_eq_zero.2 hb, min_zero, min_zero]
+        rw [count_eq_zero.2 hb, Nat.min_zero, Nat.min_zero]
       · rw [count_cons_of_ne ab]
 #align list.count_bag_inter List.count_bagInter
 

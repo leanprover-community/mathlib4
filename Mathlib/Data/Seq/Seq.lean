@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Std.Data.LazyList
 import Mathlib.Data.Seq.Computation
+import Mathlib.Data.Option.NAry
 
 #align_import data.seq.seq from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
