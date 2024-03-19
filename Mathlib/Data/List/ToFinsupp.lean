@@ -151,8 +151,8 @@ theorem toFinsupp_eq_sum_map_enum_single {R : Type*} [AddMonoid R] (l : List R)
   `[DecidablePred (getD l · 0 ≠ 0)]`, so we manually do some `revert`/`intro` as a workaround -/
   revert l; intro l
   induction l using List.reverseRecOn with
-  | H0 => exact toFinsupp_nil
-  | H1 x xs ih =>
+  | nil => exact toFinsupp_nil
+  | append_singleton x xs ih =>
     classical simp [toFinsupp_concat_eq_toFinsupp_add_single, enum_append, ih]
 #align list.to_finsupp_eq_sum_map_enum_single List.toFinsupp_eq_sum_map_enum_single
 
