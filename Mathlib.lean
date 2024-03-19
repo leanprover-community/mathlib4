@@ -240,6 +240,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.HilbertSerre.AdditiveFunction
 import Mathlib.Algebra.HilbertSerre.FiniteInstances
+import Mathlib.Algebra.HilbertSerre.HilbertPolynomial
 import Mathlib.Algebra.HilbertSerre.Theorem
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
