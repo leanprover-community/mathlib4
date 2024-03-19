@@ -65,7 +65,6 @@ open scoped Topology
 
 /-! ## Fourier theory for functions on general vector spaces -/
 
-
 namespace VectorFourier
 
 variable {𝕜 : Type*} [CommRing 𝕜] {V : Type*} [AddCommGroup V] [Module 𝕜 V] [MeasurableSpace V]
@@ -98,7 +97,7 @@ theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Meas
     (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (w : W) :
     ‖fourierIntegral e μ L f w‖ ≤ ∫ v : V, ‖f v‖ ∂μ := by
   refine (norm_integral_le_integral_norm _).trans (le_of_eq ?_)
-  simp_rw [Submonoid.smul_def, norm_smul, Complex.norm_eq_abs, abs_coe_circle, one_mul]
+  simp_rw [norm_circle_smul]
 #align vector_fourier.norm_fourier_integral_le_integral_norm VectorFourier.norm_fourierIntegral_le_integral_norm
 
 /-- The Fourier integral converts right-translation into scalar multiplication by a phase factor.-/
@@ -137,8 +136,7 @@ theorem fourier_integral_convergent_iff (he : Continuous e)
       Integrable (fun v : V ↦ e (-L v x) • g v) μ := by
     have c : Continuous fun v ↦ e (-L v x) :=
       he.comp (hL.comp (continuous_prod_mk.mpr ⟨continuous_id, continuous_const⟩)).neg
-    simp_rw [← integrable_norm_iff (c.aestronglyMeasurable.smul hg.1),
-      Submonoid.smul_def, norm_smul, Complex.norm_eq_abs, abs_coe_circle, one_mul]
+    simp_rw [← integrable_norm_iff (c.aestronglyMeasurable.smul hg.1), norm_circle_smul]
     exact hg.norm
   -- then use it for both directions
   refine ⟨fun hf ↦ aux hf w, fun hf ↦ ?_⟩
@@ -167,11 +165,9 @@ theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e
     Continuous (fourierIntegral e μ L f) := by
   apply continuous_of_dominated
   · exact fun w ↦ ((fourier_integral_convergent_iff he hL w).mp hf).1
-  · refine fun w ↦ ae_of_all _ fun v ↦ ?_
-    · rw [Submonoid.smul_def, norm_smul, Complex.norm_eq_abs, abs_coe_circle, one_mul]
+  · exact fun w ↦ ae_of_all _ fun v ↦ le_of_eq (norm_circle_smul _ _)
   · exact hf.norm
-  · rw [continuous_induced_rng] at he
-    refine ae_of_all _ fun v ↦ (he.comp ?_).smul continuous_const
+  · refine ae_of_all _ fun v ↦ (he.comp ?_).smul continuous_const
     exact (hL.comp (continuous_prod_mk.mpr ⟨continuous_const, continuous_id⟩)).neg
 #align vector_fourier.fourier_integral_continuous VectorFourier.fourierIntegral_continuous
 
@@ -217,7 +213,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
       apply B.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
     · filter_upwards with ⟨ξ, x⟩
       rw [Function.uncurry_apply_pair, Submonoid.smul_def, (M.flip (g ξ)).map_smul,
-        ContinuousLinearMap.flip_apply, norm_smul, Complex.norm_eq_abs, abs_coe_circle, one_mul,
+        ← Submonoid.smul_def, norm_circle_smul, ContinuousLinearMap.flip_apply,
         norm_mul, norm_norm M, norm_mul, norm_norm, norm_norm, mul_comm (‖g _‖), ← mul_assoc]
       exact M.le_opNorm₂ (f x) (g ξ)
   _ = ∫ x, (∫ ξ, M (f x) (e (-L.flip ξ x) • g ξ) ∂ν) ∂μ := by

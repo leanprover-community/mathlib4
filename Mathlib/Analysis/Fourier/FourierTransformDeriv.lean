@@ -24,16 +24,12 @@ open Real Complex MeasureTheory Filter TopologicalSpace
 
 open scoped FourierTransform Topology
 
-lemma Real.hasDerivAt_fourierChar (x : ℝ) :
-    HasDerivAt (fun y : ℝ ↦ (fourierChar (Multiplicative.ofAdd y) : ℂ))
-      (2 * π * I * (fourierChar (Multiplicative.ofAdd x) : ℂ)) x := by
-  have h1 (y : ℝ) : (fourierChar (Multiplicative.ofAdd y) : ℂ) =
-      fourier 1 (y : UnitAddCircle) := by
+lemma Real.hasDerivAt_fourierChar (x : ℝ) : HasDerivAt (𝐞 · : ℝ → ℂ) (2 * π * I * 𝐞 x) x := by
+  have h1 (y : ℝ) : 𝐞 y = fourier 1 (y : UnitAddCircle) := by
     rw [fourierChar_apply, fourier_coe_apply]
     push_cast
     ring_nf
-  simpa only [h1, Int.cast_one, ofReal_one, div_one, mul_one]
-    using hasDerivAt_fourier 1 1 x
+  simpa only [h1, Int.cast_one, ofReal_one, div_one, mul_one] using hasDerivAt_fourier 1 1 x
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
@@ -48,28 +44,27 @@ def mul_L (v : V) : (W →L[ℝ] E) := -(2 * π * I) • (L v).smulRight (f v)
 
 /-- The `w`-derivative of the Fourier transform integrand. -/
 lemma hasFDerivAt_fourier_transform_integrand_right (v : V) (w : W) :
-    HasFDerivAt (fun w' ↦ fourierChar [-L v w'] • f v) (fourierChar [-L v w] • mul_L L f v) w := by
+    HasFDerivAt (fun w' ↦ 𝐞 (-L v w') • f v) (𝐞 (-L v w) • mul_L L f v) w := by
   have ha : HasFDerivAt (fun w' : W ↦ L v w') (L v) w := ContinuousLinearMap.hasFDerivAt (L v)
   convert ((hasDerivAt_fourierChar (-L v w)).hasFDerivAt.comp w ha.neg).smul_const (f v)
   ext1 w'
   simp_rw [mul_L, ContinuousLinearMap.smul_apply, ContinuousLinearMap.smulRight_apply]
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.neg_apply,
     ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, ← smul_assoc, smul_comm,
-    ← smul_assoc, real_smul, real_smul, smul_eq_mul]
+    ← smul_assoc, real_smul, real_smul, Submonoid.smul_def, smul_eq_mul]
   push_cast
   ring_nf
 
 /-- Norm of the `w`-derivative of the Fourier transform integrand. -/
 lemma norm_fderiv_fourier_transform_integrand_right
     (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E) (v : V) (w : W) :
-    ‖fourierChar [-L v w] • mul_L L f v‖ = (2 * π) * ‖L v‖ * ‖f v‖ := by
-  rw [norm_smul, norm_eq_abs (fourierChar _ : ℂ), abs_coe_circle, one_mul, mul_L, norm_smul,
-    norm_neg, norm_mul, norm_mul, norm_eq_abs I, abs_I, mul_one, norm_eq_abs ((_ : ℝ) : ℂ),
-    Complex.abs_of_nonneg pi_pos.le, norm_eq_abs (2 : ℂ), Complex.abs_two,
-    ContinuousLinearMap.norm_smulRight_apply, ← mul_assoc]
+    ‖𝐞 (-L v w) • mul_L L f v‖ = (2 * π) * ‖L v‖ * ‖f v‖ := by
+  rw [norm_circle_smul, mul_L, norm_smul, norm_neg, norm_mul, norm_mul, norm_eq_abs I, abs_I,
+    mul_one, norm_eq_abs ((_ : ℝ) : ℂ), Complex.abs_of_nonneg pi_pos.le, norm_eq_abs (2 : ℂ),
+    Complex.abs_two, ContinuousLinearMap.norm_smulRight_apply, ← mul_assoc]
 
 lemma norm_fderiv_fourier_transform_integrand_right_le (v : V) (w : W) :
-    ‖fourierChar [-L v w] • (mul_L L f v)‖ ≤ (2 * π) * ‖L‖ * ‖v‖ * ‖f v‖ := by
+    ‖𝐞 (-L v w) • (mul_L L f v)‖ ≤ (2 * π) * ‖L‖ * ‖v‖ * ‖f v‖ := by
   rw [norm_fderiv_fourier_transform_integrand_right]
   refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
   conv_rhs => rw [mul_assoc]
@@ -83,22 +78,20 @@ the Fourier transform of `mul_L L f`. -/
 theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
     [SecondCountableTopologyEither V (W →L[ℝ] ℝ)]
     (hf : Integrable f μ) (hf' : Integrable (fun v : V ↦ ‖v‖ * ‖f v‖) μ) (w : W) :
-    HasFDerivAt (VectorFourier.fourierIntegral fourierChar μ L.toLinearMap₂ f)
-      (VectorFourier.fourierIntegral fourierChar μ L.toLinearMap₂ (mul_L L f) w) w := by
-  let F : W → V → E := fun w' v ↦ fourierChar [-L v w'] • f v
-  let F' : W → V → W →L[ℝ] E := fun w' v ↦ fourierChar [-L v w'] • mul_L L f v
+    HasFDerivAt (VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f)
+      (VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ (mul_L L f) w) w := by
+  let F : W → V → E := fun w' v ↦ 𝐞 (-L v w') • f v
+  let F' : W → V → W →L[ℝ] E := fun w' v ↦ 𝐞 (-L v w') • mul_L L f v
   let B : V → ℝ := fun v ↦ 2 * π * ‖L‖ * ‖v‖ * ‖f v‖
   have h0 (w' : W) : Integrable (F w') μ :=
     (VectorFourier.fourier_integral_convergent_iff continuous_fourierChar
       (by apply L.continuous₂ : Continuous (fun p : V × W ↦ L.toLinearMap₂ p.1 p.2)) w').mp hf
   have h1 : ∀ᶠ w' in 𝓝 w, AEStronglyMeasurable (F w') μ :=
     eventually_of_forall (fun w' ↦ (h0 w').aestronglyMeasurable)
-  have h2 : Integrable (F w) μ := h0 w
   have h3 : AEStronglyMeasurable (F' w) μ := by
-    simp only [F']
-    refine AEStronglyMeasurable.smul ?_ ?_
-    · refine (continuous_subtype_val.comp (continuous_fourierChar.comp ?_)).aestronglyMeasurable
-      exact continuous_ofAdd.comp (L.continuous₂.comp (Continuous.Prod.mk_left w)).neg
+    refine .smul ?_ ?_
+    · refine (continuous_fourierChar.comp ?_).aestronglyMeasurable
+      exact (L.continuous₂.comp (Continuous.Prod.mk_left w)).neg
     · apply AEStronglyMeasurable.const_smul'
       have aux0 : Continuous fun p : (W →L[ℝ] ℝ) × E ↦ p.1.smulRight p.2 :=
         (ContinuousLinearMap.smulRightL ℝ W E).continuous₂
@@ -111,7 +104,7 @@ theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V]
   have h5 : Integrable B μ := by simpa only [← mul_assoc] using hf'.const_mul (2 * π * ‖L‖)
   have h6 : ∀ᵐ v ∂μ, ∀ w', w' ∈ Metric.ball w 1 → HasFDerivAt (fun x ↦ F x v) (F' w' v) w' :=
     ae_of_all _ (fun v w' _ ↦ hasFDerivAt_fourier_transform_integrand_right L f v w')
-  exact hasFDerivAt_integral_of_dominated_of_fderiv_le one_pos h1 h2 h3 h4 h5 h6
+  exact hasFDerivAt_integral_of_dominated_of_fderiv_le one_pos h1 (h0 w) h3 h4 h5 h6
 
 section inner
 
@@ -120,7 +113,7 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [SecondCou
 
 /-- Notation for the Fourier transform on a real inner product space -/
 abbrev integralFourier (f : V → E) (μ : Measure V := by volume_tac) :=
-  fourierIntegral fourierChar μ (innerₛₗ ℝ) f
+  fourierIntegral 𝐞 μ (innerₛₗ ℝ) f
 
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
     `fun v ↦ ((-2 * π * I) • f v) ⊗ (innerSL ℝ v)`. -/
