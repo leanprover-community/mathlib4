@@ -30,7 +30,7 @@ attribute [local simp] associator_hom associator_inv
 The functor from a cartesian monoidal category to comonoids in that category,
 equipping every object with the diagonal map as a comultiplication.
 -/
-@[simps] def cartesianComon_ : C ⥤ Comon_ C where
+def cartesianComon_ : C ⥤ Comon_ C where
   obj := fun X =>
   { X := X
     comul := diag X

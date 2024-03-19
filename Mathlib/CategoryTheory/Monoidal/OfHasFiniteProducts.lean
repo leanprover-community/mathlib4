@@ -133,22 +133,22 @@ theorem associator_inv (X Y Z : C) :
       prod.lift (prod.lift prod.fst (prod.snd ≫ prod.fst)) (prod.snd ≫ prod.snd) :=
   rfl
 
-@[reassoc (attr := simp)] theorem associator_hom_fst (X Y Z : C) :
+@[reassoc] theorem associator_hom_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ prod.fst = prod.fst ≫ prod.fst := by simp [associator_hom]
 
-@[reassoc (attr := simp)] theorem associator_hom_snd_fst (X Y Z : C) :
+@[reassoc] theorem associator_hom_snd_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ prod.snd ≫ prod.fst = prod.fst ≫ prod.snd := by simp [associator_hom]
 
-@[reassoc (attr := simp)] theorem associator_hom_snd_snd (X Y Z : C) :
+@[reassoc] theorem associator_hom_snd_snd (X Y Z : C) :
     (α_ X Y Z).hom ≫ prod.snd ≫ prod.snd = prod.snd := by simp [associator_hom]
 
-@[reassoc (attr := simp)] theorem associator_inv_fst_fst (X Y Z : C) :
+@[reassoc] theorem associator_inv_fst_fst (X Y Z : C) :
     (α_ X Y Z).inv ≫ prod.fst ≫ prod.fst = prod.fst := by simp [associator_inv]
 
-@[reassoc (attr := simp)] theorem associator_inv_fst_snd (X Y Z : C) :
+@[reassoc] theorem associator_inv_fst_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ prod.fst ≫ prod.snd = prod.snd ≫ prod.fst := by simp [associator_inv]
 
-@[reassoc (attr := simp)] theorem associator_inv_snd (X Y Z : C) :
+@[reassoc] theorem associator_inv_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ prod.snd = prod.snd ≫ prod.snd := by simp [associator_inv]
 
 end monoidalOfHasFiniteProducts
