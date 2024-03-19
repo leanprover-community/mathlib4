@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
-import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
+import Mathlib.CategoryTheory.Sites.Coherent.ReflectRegular
 import Mathlib.CategoryTheory.EffectiveEpi.Comp
-import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 import Mathlib.CategoryTheory.Sites.Equivalence
 /-!
 
@@ -117,12 +116,9 @@ section Regular
 variable [Preregular C]
 
 /-- `Preregular` is preserved by equivalence of categories. -/
-theorem preregular : Preregular D where
-  exists_fac f π _ := by
-    obtain ⟨W, h', _, i', w⟩ := Preregular.exists_fac (e.inverse.map f) (e.inverse.map π)
-    refine ⟨e.functor.obj W, e.functor.map h' ≫ e.counit.app _, inferInstance,
-      e.functor.map i' ≫ e.counit.app _, ?_⟩
-    simpa using congrArg ((fun f ↦ f ≫ e.counit.app _) ∘ e.functor.map) w
+theorem preregular : Preregular D := by
+  have : e.inverse.ReflectsEffectiveEpis := sorry
+  exact reflects_preregular e.inverse fun X ↦ ⟨e.functor.obj X, e.unitInv.app _, inferInstance⟩
 
 instance [EssentiallySmall C] [Preregular C] :
     Preregular (SmallModel C) := (equivSmallModel C).preregular
