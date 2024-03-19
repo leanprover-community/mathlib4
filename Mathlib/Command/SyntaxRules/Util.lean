@@ -51,12 +51,15 @@ def mkSimpleNamePair (n₁ n₂ : Name) (delim := `_namePair) : Name :=
   n₁.eraseMacroScopes ++ delim.eraseMacroScopes ++ n₂
 
 --FIXME?: propagate macro scopes to each pair?
-/-- Unpacks an encoded name pair if `pair` is of the form `a ++ delim ++ b`. Assumes `delim` is a simple string (no dots or numbers). Returns `none` if `pair` is not actually a pair or if `delim` is of the wrong form. -/
+/-- Unpacks an encoded name pair if `pair` is of the form `a ++ delim ++ b`. Assumes `delim` is a
+simple string (no dots or numbers). Returns `none` if `pair` is not actually a pair or if `delim`
+is of the wrong form. -/
 def ofSimpleNamePair? (pair : Name) (delim := `_namePair) : Option (Name × Name) :=
   match delim with
   | .str .anonymous d => go d pair.eraseMacroScopes #[]
   | _ => none
 where
+  /-- Auxiliary function for `ofSimpleNamePair?` -/
   go (d : String) : Name → Array Name → Option (Name × Name)
   | .str a b, ns =>
     if b == d then some (a, ns.foldl (fun a b => b.append a) .anonymous) else go d a (ns.push b)

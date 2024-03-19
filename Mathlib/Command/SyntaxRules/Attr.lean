@@ -45,7 +45,9 @@ end data
 section attr
 
 --TODO: should `Syntax` be `TSyntax`?
-/-- An abbreviation for `Syntax → CommandElabM SyntaxRuleData`. The input is the syntax of the header of a `syntax_rules`-based command (e.g. the syntax `linting_rules : deprecation`), and the output is the data necessary for implementing it in terms of `syntax_rules`. -/
+/-- An abbreviation for `Syntax → CommandElabM SyntaxRuleData`. The input is the syntax of the
+header of a `syntax_rules`-based command (e.g. the syntax `linting_rules : deprecation`), and the
+output is the data necessary for implementing it in terms of `syntax_rules`. -/
 abbrev ToSyntaxRuleData := Syntax → CommandElabM SyntaxRuleData
 
 -- TODO: this is not an elaborator, so the message constructed by `mkElabAttribute` using
