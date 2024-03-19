@@ -10,7 +10,7 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Topology.Algebra.UniformFilterBasis
 
 #align_import analysis.schwartz_space from "leanprover-community/mathlib"@"e137999b2c6f2be388f4cd3bbf8523de1910cd2b"
@@ -659,6 +659,21 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     simpa [this] using .const _
   · exact (f.le_op_norm x).trans (by simp [mul_add])
 
+variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D] [FiniteDimensional ℝ D]
+
+open MeasureTheory FiniteDimensional
+
+class _root_.MeasureTheory.Measure.HasTemperateGrowth (μ : Measure D) : Prop :=
+  exists_integrable : ∃ (n : ℕ), Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ
+
+instance _root_.MeasureTheory.Measure.IsFiniteMeasure.instHasTemperateGrowth {μ : Measure D}
+    [h : IsFiniteMeasure μ] : μ.HasTemperateGrowth := ⟨⟨0, by simp⟩⟩
+
+instance _root_.MeasureTheory.Measure.IsAddHaarMeasure.instHasTemperateGrowth {μ : Measure D}
+    [h : μ.IsAddHaarMeasure] : μ.HasTemperateGrowth :=
+  ⟨⟨finrank ℝ D + 1, by apply integrable_one_add_norm; norm_num⟩⟩
+
 end TemperateGrowth
 
 section CLM
@@ -1015,10 +1030,12 @@ variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
 variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D]
 
-variable {μ : Measure D} {n : ℕ}
+variable {μ : Measure D} [hμ : HasTemperateGrowth μ]
 
-lemma integrable_pow_mul (h : Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ) (f : 𝓢(D, V))
+variable (μ) in
+lemma integrable_pow_mul (f : 𝓢(D, V))
     (k : ℕ) : Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
+  rcases hμ.exists_integrable with ⟨n, h⟩
   let l := n + k
   obtain ⟨C, C_nonneg, hC⟩ : ∃ C, 0 ≤ C ∧ ∀ x, (1 + ‖x‖) ^ l * ‖f x‖ ≤ C := by
     use 2 ^ l * (Finset.Iic (l, 0)).sup (fun m ↦ SchwartzMap.seminorm ℝ m.1 m.2) f, by positivity
@@ -1036,24 +1053,20 @@ lemma integrable_pow_mul (h : Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ)
     _ = (1 + ‖x‖) ^ (n + k) * ‖f x‖ := by simp only [pow_add, mul_assoc]
     _ ≤ C := hC x
 
-lemma integrable (h : Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ) (f : 𝓢(D, V)) :
-    Integrable f μ :=
-  (f.integrable_pow_mul h 0).mono f.continuous.aestronglyMeasurable
+lemma integrable (f : 𝓢(D, V)) :
+    Integrable f μ := by
+  exact (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable
     (eventually_of_forall (fun _ ↦ by simp))
 
-variable (𝕜)
-
-open scoped Classical in
+variable (𝕜 μ) in
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/
-def integralCLM (μ : Measure D) : 𝓢(D, V) →L[𝕜] V :=
-  if h : ∃ m : ℕ, Integrable (fun x ↦ (1 + ‖x‖) ^ (- (m : ℝ))) μ then
+def integralCLM : 𝓢(D, V) →L[𝕜] V :=
   mkCLMtoNormedSpace (∫ x, · x ∂μ)
     (fun f g ↦ by
-      rcases h with ⟨n, h⟩
-      exact integral_add (f.integrable h) (g.integrable h))
+      exact integral_add f.integrable g.integrable)
     (integral_smul · ·)
     (by
-      rcases h with ⟨n, h⟩
+      rcases hμ.exists_integrable with ⟨n, h⟩
       let m := (n, 0)
       use Finset.Iic m, 2 ^ n * ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ
       have hpos : 0 ≤ ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ := by
@@ -1066,16 +1079,14 @@ def integralCLM (μ : Measure D) : 𝓢(D, V) →L[𝕜] V :=
         intro x
         rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff' (by positivity), rpow_nat_cast]
         simpa using one_add_le_sup_seminorm_apply (m := m) (k := n) (n := 0) le_rfl le_rfl f x
-      apply (integral_mono (by simpa using f.integrable_pow_mul h 0) _ h').trans
+      apply (integral_mono (by simpa using f.integrable_pow_mul μ 0) _ h').trans
       · rw [integral_mul_right, ← mul_assoc, mul_comm (2 ^ n)]
         rfl
       apply h.mul_const)
-  else 0
 
-lemma integralCLM_apply (h : Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ) (f : 𝓢(D, V)) :
-    integralCLM 𝕜 μ f = ∫ x, f x ∂μ := by
-  have : ∃ m : ℕ, Integrable (fun x ↦ (1 + ‖x‖) ^ (- (m : ℝ))) μ := ⟨n, h⟩
-  simp only [integralCLM, this, reduceDite]
+variable (𝕜) in
+@[simp]
+lemma integralCLM_apply [HasTemperateGrowth μ] (f : 𝓢(D, V)) : integralCLM 𝕜 μ f = ∫ x, f x ∂μ := by
   rfl
 
 end Integration
@@ -1149,11 +1160,7 @@ variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [Complet
 
 /-- Integrating against the Dirac measure is equal to the delta distribution. -/
 @[simp]
-theorem integralCLM_dirac_eq_delta (x : E) :
-    integralCLM 𝕜 (dirac x) = delta 𝕜 F x := by
-  ext f
-  have : Integrable (fun x ↦ (1 + ‖x‖) ^ (- ((0 : ℕ) : ℝ))) (dirac x) := by simp
-  simp [integralCLM_apply 𝕜 this]
+theorem integralCLM_dirac_eq_delta (x : E) : integralCLM 𝕜 (dirac x) = delta 𝕜 F x := by aesop
 
 end DiracDelta
 

@@ -149,11 +149,6 @@ theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
   exact finite_integral_one_add_norm hnr
 #align integrable_one_add_norm integrable_one_add_norm
 
-theorem integrable_one_add_norm' :
-    Integrable (fun x ↦ (1 + ‖x‖) ^ (- (finrank ℝ E + 1 : ℕ) : ℝ)) μ := by
-  apply integrable_one_add_norm
-  norm_num
-
 theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
     Integrable (fun x ↦ ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)) μ := by
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr

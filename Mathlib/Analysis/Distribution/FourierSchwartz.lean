@@ -48,5 +48,5 @@ theorem SchwartzMap.hasFDerivAt_fourier [CompleteSpace V] [MeasurableSpace D] [B
     {μ : Measure D} [FiniteDimensional ℝ D] [IsAddHaarMeasure μ] (f : 𝓢(D, V)) (w : E) :
     HasFDerivAt (fourierIntegral fourierChar μ L.toLinearMap₂ f)
       (fourierIntegral fourierChar μ L.toLinearMap₂ (mul_L_schwartz L f) w) w :=
-  VectorFourier.hasFDerivAt_fourier L (f.integrable integrable_one_add_norm')
-    (by simpa using f.integrable_pow_mul integrable_one_add_norm' 1) w
+  VectorFourier.hasFDerivAt_fourier L f.integrable
+    (by simpa using f.integrable_pow_mul μ 1) w
