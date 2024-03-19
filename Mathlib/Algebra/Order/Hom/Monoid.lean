@@ -47,7 +47,7 @@ This file used to define typeclasses for order-preserving (additive) monoid homo
 `OrderAddMonoidHomClass`, `OrderMonoidHomClass`, and `OrderMonoidWithZeroHomClass`.
 
 In #10544 we migrated from these typeclasses
-to assumptions like `[FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N ]`,
+to assumptions like `[FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N]`,
 making some definitions and lemmas irrelevant.
 
 ## Tags

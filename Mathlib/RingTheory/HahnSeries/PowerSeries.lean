@@ -147,8 +147,8 @@ theorem ofPowerSeries_X_pow {R} [CommSemiring R] (n : ℕ) :
     ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by
   rw [RingHom.map_pow]
   induction' n with n ih
-  · simp
-    rfl
+  · ext
+    simp [single_coeff]
   · rw [pow_succ, ih, ofPowerSeries_X, mul_comm, single_mul_single, one_mul,
       Nat.cast_succ, add_comm]
 #align hahn_series.of_power_series_X_pow HahnSeries.ofPowerSeries_X_pow
