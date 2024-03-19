@@ -16,10 +16,6 @@ a functor `F : C₁ ⥤ C₂ ⥤ D`, we define an isomorphism of cochain complex
 - `CochainComplex.mapBifunctorShift₂Iso K₁ K₂ F y` of type
 `mapBifunctor K₁ (K₂⟦y⟧) F ≅ (mapBifunctor K₁ K₂ F)⟦y⟧` for `y : ℤ`.
 
-## TODO
-
-- obtain various compatibilities
-
 -/
 
 open CategoryTheory Limits
