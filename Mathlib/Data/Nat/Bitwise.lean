@@ -3,10 +3,9 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
-import Mathlib.Algebra.GroupPower.Order
-import Mathlib.Tactic.Set
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
@@ -241,9 +240,9 @@ theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
 theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : testBit m i = true)
     (hnm : ∀ j, i < j → testBit n j = testBit m j) : n < m := by
   induction' n using Nat.binaryRec with b n hn' generalizing i m
-  · contrapose! hm
-    rw [le_zero_iff] at hm
-    simp [hm]
+  · rw [pos_iff_ne_zero]
+    rintro rfl
+    simp at hm
   induction' m using Nat.binaryRec with b' m hm' generalizing i
   · exact False.elim (Bool.false_ne_true ((zero_testBit i).symm.trans hm))
   by_cases hi : i = 0
@@ -325,7 +324,7 @@ theorem land_comm (n m : ℕ) : n &&& m = m &&& n :=
   bitwise_comm Bool.and_comm n m
 #align nat.land_comm Nat.land_comm
 
-theorem xor_comm (n m : ℕ) : n ^^^ m = m ^^^ n :=
+protected lemma xor_comm (n m : ℕ) : n ^^^ m = m ^^^ n :=
   bitwise_comm (Bool.bne_eq_xor ▸ Bool.xor_comm) n m
 #align nat.lxor_comm Nat.xor_comm
 
@@ -424,14 +423,14 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ≠ b ^^^ c) :
   have hab : a ^^^ b = c ^^^ v := by
     rw [hv]
     conv_rhs =>
-      rw [xor_comm]
+      rw [Nat.xor_comm]
       simp [xor_assoc]
   have hac : a ^^^ c = b ^^^ v := by
     rw [hv]
     conv_rhs =>
       right
-      rw [← xor_comm]
-    rw [← xor_assoc, ← xor_assoc, xor_self, zero_xor, xor_comm]
+      rw [← Nat.xor_comm]
+    rw [← xor_assoc, ← xor_assoc, xor_self, zero_xor, Nat.xor_comm]
   have hbc : b ^^^ c = a ^^^ v := by simp [hv, ← xor_assoc]
   -- If `i` is the position of the most significant bit of `v`, then at least one of `a`, `b`, `c`
   -- has a one bit at position `i`.
