@@ -478,8 +478,8 @@ theorem pow_sub_one_norm_prime_pow_of_ne_zero {k s : ℕ} (hζ : IsPrimitiveRoot
       at hζ hirr hcycl ⊢
     obtain ⟨k₁, hk₁⟩ := Nat.exists_eq_succ_of_ne_zero hk
 -- Porting note: the proof is slightly different because of coercions.
-    rw [hζ.pow_sub_one_norm_two hirr, hk₁, _root_.pow_succ, pow_mul, neg_eq_neg_one_mul, mul_pow,
-      neg_one_sq, one_mul, ← pow_mul, ← _root_.pow_succ]
+    rw [hζ.pow_sub_one_norm_two hirr, hk₁, _root_.pow_succ', pow_mul, neg_eq_neg_one_mul, mul_pow,
+      neg_one_sq, one_mul, ← pow_mul, ← _root_.pow_succ']
     simp
   · exact hζ.pow_sub_one_norm_prime_pow_ne_two hirr hs htwo
 #align is_primitive_root.pow_sub_one_norm_prime_pow_of_ne_zero IsPrimitiveRoot.pow_sub_one_norm_prime_pow_of_ne_zero
