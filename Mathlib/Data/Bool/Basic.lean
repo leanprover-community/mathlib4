@@ -29,11 +29,6 @@ theorem decide_False {h} : @decide False h = false :=
   _root_.decide_eq_false id
 #align bool.to_bool_false Bool.decide_False
 
-@[simp]
-theorem decide_coe (b : Bool) {h} : @decide b h = b := by
-  cases b
-  · exact _root_.decide_eq_false <| fun j ↦ by cases j
-  · exact _root_.decide_eq_true <| rfl
 #align bool.to_bool_coe Bool.decide_coe
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
