@@ -210,7 +210,7 @@ theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit
     cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_bit_succ]
 #align int.test_bit_succ Int.testBit_bit_succ
 
--- Porting note: TODO
+-- Porting note (#11215): TODO
 -- /- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/
 -- private unsafe def bitwise_tac : tactic Unit :=
 --   sorry
@@ -414,7 +414,8 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
         by dsimp; simp [← Nat.shiftLeft_sub _ , add_tsub_cancel_left])
       fun i n => by
         dsimp
-        simp [Nat.shiftLeft_zero, Nat.shiftRight_add, ← Nat.shiftLeft_sub]
+        simp only [Nat.shiftLeft'_false, Nat.shiftRight_add, le_refl, ← Nat.shiftLeft_sub,
+          tsub_eq_zero_of_le, Nat.shiftLeft_zero]
         rfl
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ

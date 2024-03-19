@@ -109,7 +109,7 @@ def Memℒp {α} {_ : MeasurableSpace α} (f : α → E) (p : ℝ≥0∞)
   AEStronglyMeasurable f μ ∧ snorm f p μ < ∞
 #align measure_theory.mem_ℒp MeasureTheory.Memℒp
 
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
+-- Porting note (#11215): TODO Delete this when leanprover/lean4#2243 is fixed.
 theorem memℒp_def {α} {_ : MeasurableSpace α} (f : α → E) (p : ℝ≥0∞) (μ : Measure α) :
     Memℒp f p μ ↔ (AEStronglyMeasurable f μ ∧ snorm f p μ < ∞) :=
   Iff.rfl
@@ -954,7 +954,6 @@ In this section we show inequalities on the norm.
 section BoundedSMul
 
 variable {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZero 𝕜 E] [MulActionWithZero 𝕜 F]
-
 variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜 F]
 
 theorem snorm'_const_smul_le (c : 𝕜) (f : α → F) (hq_pos : 0 < q) :
@@ -994,7 +993,6 @@ The inequalities in the previous section are now tight.
 section NormedSpace
 
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 E] [Module 𝕜 F]
-
 variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜 F]
 
 theorem snorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :

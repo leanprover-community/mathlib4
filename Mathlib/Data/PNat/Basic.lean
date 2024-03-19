@@ -181,7 +181,7 @@ theorem bot_eq_one : (⊥ : ℕ+) = 1 :=
   rfl
 #align pnat.bot_eq_one PNat.bot_eq_one
 
--- Porting note: deprecated
+-- Porting note (#11229): deprecated
 section deprecated
 
 set_option linter.deprecated false
@@ -256,7 +256,7 @@ theorem lt_add_right (n m : ℕ+) : n < n + m :=
   (lt_add_left n m).trans_eq (add_comm _ _)
 #align pnat.lt_add_right PNat.lt_add_right
 
--- Porting note: deprecated
+-- Porting note (#11229): deprecated
 section deprecated
 
 set_option linter.deprecated false

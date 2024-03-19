@@ -526,7 +526,6 @@ def equivQuotientSubgroupOfOfEq {A' A B' B : Subgroup G} [hAN : (A'.subgroupOf A
 section ZPow
 
 variable {A B C : Type u} [CommGroup A] [CommGroup B] [CommGroup C]
-
 variable (f : A →* B) (g : B →* A) (e : A ≃* B) (d : B ≃* C) (n : ℤ)
 
 /-- The map of quotients by powers of an integer induced by a group homomorphism. -/
@@ -726,12 +725,11 @@ end QuotientGroup
 
 namespace Group
 
-open Classical
+open scoped Classical
 
 open QuotientGroup Subgroup
 
 variable {F G H : Type u} [Group F] [Group G] [Group H] [Fintype F] [Fintype H]
-
 variable (f : F →* G) (g : G →* H)
 
 /-- If `F` and `H` are finite such that `ker(G →* H) ≤ im(F →* G)`, then `G` is finite. -/

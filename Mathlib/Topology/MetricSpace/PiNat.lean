@@ -52,7 +52,8 @@ in general), and `ι` is countable.
 
 noncomputable section
 
-open Classical Topology Filter
+open scoped Classical
+open Topology Filter
 
 open TopologicalSpace Set Metric Filter Function
 

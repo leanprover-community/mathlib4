@@ -84,7 +84,7 @@ section BoundedOrder
 
 variable (α)
 
-open Classical
+open scoped Classical
 
 -- See note [reducible non-instances]
 /-- A finite bounded lattice is complete. -/

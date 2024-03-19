@@ -346,7 +346,7 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
   intro L h'
   cases h'
   simp [List.cons_eq_append_iff, List.nil_eq_append] at eq
-  rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩; subst_vars
+  rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩
   simp at h
 #align free_group.red.red_iff_irreducible FreeGroup.Red.red_iff_irreducible
 #align free_add_group.red.red_iff_irreducible FreeAddGroup.Red.red_iff_irreducible
@@ -1135,14 +1135,13 @@ theorem reduce.red : Red L (reduce L) := by
     | cons hd2 tl2 =>
       dsimp only
       split_ifs with h
-      · trans
-        · cases hd1
-          cases hd2
-          cases h
-          dsimp at *
-          subst_vars
-          apply Red.trans (Red.cons_cons ih)
-          exact Red.Step.cons_not_rev.to_red
+      · cases hd1
+        cases hd2
+        cases h
+        dsimp at *
+        subst_vars
+        apply Red.trans (Red.cons_cons ih)
+        exact Red.Step.cons_not_rev.to_red
       · exact Red.cons_cons ih
 #align free_group.reduce.red FreeGroup.reduce.red
 #align free_add_group.reduce.red FreeAddGroup.reduce.red

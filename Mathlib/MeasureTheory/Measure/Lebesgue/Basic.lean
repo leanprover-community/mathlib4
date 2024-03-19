@@ -34,7 +34,8 @@ assert_not_exists MeasureTheory.integral
 
 noncomputable section
 
-open Classical Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
+open scoped Classical
+open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 open ENNReal (ofReal)
 

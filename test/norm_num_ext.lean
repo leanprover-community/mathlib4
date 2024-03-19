@@ -348,10 +348,10 @@ example : (({1, 2, 1, 3} : Multiset ℚ).map (fun i => i^2)).sum = 15 := by
   norm_num
 
 -- Finsets:
-example : Finset.prod (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (λ x => x) = 2 := by norm_num1
+example : Finset.prod (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (fun x ↦ x) = 2 := by norm_num1
 example : Finset.prod
     (Finset.cons 6 (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (by norm_num))
-    (λ x => x) =
+    (fun x ↦ x) =
   12 := by norm_num1
 
 example (f : ℕ → α) : ∏ i in Finset.range 0, f i = 1 := by norm_num1

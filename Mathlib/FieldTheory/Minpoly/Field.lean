@@ -19,12 +19,12 @@ are irreducible, and uniquely determined by their defining property.
 -/
 
 
-open Classical Polynomial Set Function minpoly
+open scoped Classical
+open Polynomial Set Function minpoly
 
 namespace minpoly
 
 variable {A B : Type*}
-
 variable (A) [Field A]
 
 section Ring
@@ -233,7 +233,6 @@ end Ring
 section IsDomain
 
 variable [Ring B] [IsDomain B] [Algebra A B]
-
 variable {A} {x : B}
 
 /-- A minimal polynomial is prime. -/

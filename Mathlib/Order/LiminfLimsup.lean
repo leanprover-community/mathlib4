@@ -165,7 +165,7 @@ theorem IsBoundedUnder.bddAbove_range_of_cofinite [Preorder β] [IsDirected β (
   rcases hf with ⟨b, hb⟩
   haveI : Nonempty β := ⟨b⟩
   rw [← image_univ, ← union_compl_self { x | f x ≤ b }, image_union, bddAbove_union]
-  exact ⟨⟨b, ball_image_iff.2 fun x => id⟩, (hb.image f).bddAbove⟩
+  exact ⟨⟨b, forall_mem_image.2 fun x => id⟩, (hb.image f).bddAbove⟩
 #align filter.is_bounded_under.bdd_above_range_of_cofinite Filter.IsBoundedUnder.bddAbove_range_of_cofinite
 
 theorem IsBoundedUnder.bddBelow_range_of_cofinite [Preorder β] [IsDirected β (· ≥ ·)] {f : α → β}
@@ -1170,7 +1170,7 @@ theorem limsup_sdiff (a : α) : limsup u f \ a = limsup (fun b => u b \ a) f := 
 #align filter.limsup_sdiff Filter.limsup_sdiff
 
 theorem liminf_sdiff [NeBot f] (a : α) : liminf u f \ a = liminf (fun b => u b \ a) f := by
-  simp only [sdiff_eq, inf_comm (b := aᶜ), inf_liminf]
+  simp only [sdiff_eq, inf_comm _ aᶜ, inf_liminf]
 #align filter.liminf_sdiff Filter.liminf_sdiff
 
 theorem sdiff_limsup [NeBot f] (a : α) : a \ limsup u f = liminf (fun b => a \ u b) f := by
@@ -1332,7 +1332,7 @@ set_option linter.uppercaseLean3 false in
 
 section Classical
 
-open Classical
+open scoped Classical
 
 /-- Given an indexed family of sets `s j` over `j : Subtype p` and a function `f`, then
 `liminf_reparam j` is equal to `j` if `f` is bounded below on `s j`, and otherwise to some
@@ -1344,11 +1344,11 @@ noncomputable def liminf_reparam
     (f : ι → α) (s : ι' → Set ι) (p : ι' → Prop) [Countable (Subtype p)] [Nonempty (Subtype p)]
     (j : Subtype p) : Subtype p :=
   let m : Set (Subtype p) := {j | BddBelow (range (fun (i : s j) ↦ f i))}
-  let g : ℕ → Subtype p := choose (exists_surjective_nat _)
+  let g : ℕ → Subtype p := (exists_surjective_nat _).choose
   have Z : ∃ n, g n ∈ m ∨ ∀ j, j ∉ m := by
     by_cases H : ∃ j, j ∈ m
     · rcases H with ⟨j, hj⟩
-      rcases choose_spec (exists_surjective_nat (Subtype p)) j with ⟨n, rfl⟩
+      rcases (exists_surjective_nat (Subtype p)).choose_spec j with ⟨n, rfl⟩
       exact ⟨n, Or.inl hj⟩
     · push_neg at H
       exact ⟨0, Or.inr H⟩
@@ -1385,8 +1385,8 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
     by_cases Hj : j ∈ m
     · simpa only [liminf_reparam, if_pos Hj] using Hj
     · simp only [liminf_reparam, if_neg Hj]
-      have Z : ∃ n, choose (exists_surjective_nat (Subtype p)) n ∈ m ∨ ∀ j, j ∉ m := by
-        rcases choose_spec (exists_surjective_nat (Subtype p)) j0 with ⟨n, rfl⟩
+      have Z : ∃ n, (exists_surjective_nat (Subtype p)).choose n ∈ m ∨ ∀ j, j ∉ m := by
+        rcases (exists_surjective_nat (Subtype p)).choose_spec j0 with ⟨n, rfl⟩
         exact ⟨n, Or.inl hj0⟩
       rcases Nat.find_spec Z with hZ|hZ
       · exact hZ

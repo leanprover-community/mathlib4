@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupWithZero.Commute
+import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.GroupTheory.GroupAction.Units
 
@@ -19,7 +19,6 @@ import Mathlib.GroupTheory.GroupAction.Units
 
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
-
 variable [MonoidWithZero M₀]
 
 section GroupWithZero
@@ -311,7 +310,6 @@ def invMonoidWithZeroHom {G₀ : Type*} [CommGroupWithZero G₀] : G₀ →*₀ 
 namespace Units
 
 variable [GroupWithZero G₀]
-
 variable {a b : G₀}
 
 @[simp]

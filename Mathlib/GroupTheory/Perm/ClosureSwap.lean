@@ -132,4 +132,4 @@ theorem surjective_of_isSwap_of_isPretransitive [Group G] [MulAction G α] [Fini
   rw [← MonoidHom.range_top_iff_surjective]
   have := MulAction.IsPretransitive.of_compHom (α := α) (MulAction.toPermHom G α).rangeRestrict
   rw [MonoidHom.range_eq_map, ← hS2, MonoidHom.map_closure] at this ⊢
-  exact closure_of_isSwap_of_isPretransitive (Set.ball_image_iff.mpr hS1)
+  exact closure_of_isSwap_of_isPretransitive (Set.forall_mem_image.2 hS1)

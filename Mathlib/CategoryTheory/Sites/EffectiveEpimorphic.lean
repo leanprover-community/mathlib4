@@ -710,7 +710,6 @@ end Epi
 noncomputable section Equivalence
 
 variable {D : Type*} [Category D] (e : C ≌ D) {B : C}
-
 variable {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
 
 theorem effectiveEpiFamilyStructOfEquivalence_aux {W : D} (ε : (a : α) → e.functor.obj (X a) ⟶ W)

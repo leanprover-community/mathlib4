@@ -129,7 +129,7 @@ protected theorem contMDiffWithinAt (h : M ≃ₘ^n⟮I, I'⟯ M') {s x} : ContM
   h.contMDiffAt.contMDiffWithinAt
 #align diffeomorph.cont_mdiff_within_at Diffeomorph.contMDiffWithinAt
 
--- Porting note: TODO: should use `E ≃ₘ^n[𝕜] F` notation
+-- Porting note (#11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
 protected theorem contDiff (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E') : ContDiff 𝕜 n h :=
   h.contMDiff.contDiff
 #align diffeomorph.cont_diff Diffeomorph.contDiff
@@ -463,7 +463,7 @@ theorem uniqueMDiffOn_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : 
   h.symm_image_eq_preimage s ▸ h.symm.uniqueMDiffOn_image hn
 #align diffeomorph.unique_mdiff_on_preimage Diffeomorph.uniqueMDiffOn_preimage
 
--- Porting note: TODO: should use `E ≃ₘ^n[𝕜] F` notation
+-- Porting note (#11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
 @[simp]
 theorem uniqueDiffOn_image (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set E} :
     UniqueDiffOn 𝕜 (h '' s) ↔ UniqueDiffOn 𝕜 s := by
@@ -471,7 +471,7 @@ theorem uniqueDiffOn_image (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) 
 #align diffeomorph.unique_diff_on_image Diffeomorph.uniqueDiffOn_image
 
 @[simp]
--- Porting note: TODO: should use `E ≃ₘ^n[𝕜] F` notation
+-- Porting note (#11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
 theorem uniqueDiffOn_preimage (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set F} :
     UniqueDiffOn 𝕜 (h ⁻¹' s) ↔ UniqueDiffOn 𝕜 s :=
   h.symm_image_eq_preimage s ▸ h.symm.uniqueDiffOn_image hn
