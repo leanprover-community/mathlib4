@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-!
 # Ordered instances on subgroups
