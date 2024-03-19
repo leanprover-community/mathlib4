@@ -884,10 +884,6 @@ theorem snorm_le_snorm_fderiv_of_le {p q : ℝ≥0} (hp : 1 ≤ p) (hq : 1 ≤ q
     (hs : MeasurableSet s) (hs' : Bornology.IsBounded s) :
     ∃ C : ℝ≥0, ∀ (u : E → F') (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s),
     snorm u q μ ≤ C * snorm (fderiv ℝ u) p μ := by
-  have h3p : 0 < p :=
-    calc 0 < 1 := by norm_num
-      _ ≤ p := hp
-  have hdim : (0:ℝ≥0) < finrank ℝ E := h3p.trans h2p
   let p' : ℝ≥0 := (p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹)⁻¹
   have hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹ := by
     rw [inv_inv, NNReal.coe_sub]

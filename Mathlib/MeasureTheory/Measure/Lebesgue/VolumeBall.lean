@@ -57,6 +57,7 @@ theorem Real.Gamma_three_div_two : Real.Gamma (3 / 2) = sqrt π / 2 := by
         Gamma (2⁻¹ + 1) := by norm_num
     _ = sqrt π / 2 := by simp [Gamma_add_one, div_eq_inv_mul]
 
+/-- The beta function on `ℝ`, defined as `Β(a,b) := Γ(a)Γ(b)/Γ(a + b)`. -/
 def Real.Beta (a b : ℝ) : ℝ := Gamma a * Gamma b / Gamma (a + b)
 
 @[simp]
@@ -72,6 +73,7 @@ lemma Real.Beta_nonneg {a b : ℝ} (hb : 0 ≤ a) (hab : 0 ≤ b) : 0 ≤ Beta a
   all_goals
     apply Gamma_nonneg_of_nonneg; assumption
 
+/-- The gamma function on the nonnegative reals `ℝ≥0`. -/
 def NNReal.Gamma (x : ℝ≥0) : ℝ≥0 := ⟨Real.Gamma x, Real.Gamma_nonneg_of_nonneg x.property⟩
 
 @[simp]
@@ -82,7 +84,6 @@ theorem NNReal.Gamma_pos_of_pos {x : ℝ≥0} (hx : 0 < x) : 0 < NNReal.Gamma x 
   simp
   exact Real.Gamma_pos_of_pos hx
 
-@[simp]
 theorem NNReal.Gamma_half : NNReal.Gamma (1 / 2) = sqrt NNReal.pi := by
   ext
   simp
@@ -94,6 +95,8 @@ theorem NNReal.Gamma_three_div_two : NNReal.Gamma (3 / 2) = sqrt NNReal.pi / 2 :
 
 @[simp]
 theorem NNReal.Gamma_one : NNReal.Gamma 1 = 1 := Subtype.ext Real.Gamma_one
+
+/-- The beta function on the nonnegative reals `ℝ≥0`. -/
 def NNReal.Beta (a b : ℝ≥0) : ℝ≥0 := Gamma a * Gamma b / Gamma (a + b)
 
 @[simp]
@@ -165,6 +168,7 @@ theorem lintegral_cos_pow_eq_beta' (n : ℕ) :
   rw [add_assoc, add_div]
   norm_num
 
+/-- Auxiliary function, defined as `t ^ (n / 2)` for `t ≥ 0`. -/
 def I (n : ℕ) (t : ℝ) : ℝ≥0 := if ht : 0 ≤ t then (⟨t, ht⟩ ^ ((n:ℝ) / 2)) else 0
 
 @[simp] theorem I_zero (t : ℝ) : I 0 t = if 0 ≤ t then 1 else 0 := by
@@ -208,7 +212,7 @@ theorem B_succ (n : ℕ) : B (n + 1) = B n * NNReal.Beta (1 / 2) (n / 2 + 1) := 
   set X := NNReal.Gamma (1 + n / 2)
   set Y := NNReal.Gamma (1 + n / 2 + 1 / 2)
   clear_value X Y
-  field_simp [h₁.ne', h₂.ne']
+  field_simp [h₁.ne', h₂.ne', NNReal.Gamma_half]
   rw [add_div, NNReal.rpow_add, NNReal.sqrt_eq_rpow]
   · ring
   · apply Subtype.ne_of_val_ne
@@ -303,14 +307,13 @@ theorem lintegral_I_sub_sq (n : ℕ) (c : ℝ) :
       · simp
       · have : (0:ℝ) ≤ t ^ 2 := by positivity
         linarith
-    have h₂ : I n c = 0 := by
+    have h₂ : I (n + 1) c = 0 := by
       rw [I, dif_neg h]
-    have h₃ : I (n + 1) c = 0 := by
-      rw [I, dif_neg h]
-    simp [h₁, h₂, h₃, -compl_insert, -mul_eq_zero, -zero_eq_mul]
+    simp [h₁, h₂, -compl_insert, -mul_eq_zero, -zero_eq_mul]
 
 variable [Fintype ι]
 
+/-- The function that we will integrate in below. -/
 def A (R : ℝ) (s : Finset ι) (x : ι → ℝ) : ℝ≥0∞ :=
   B s.card * I s.card (R ^ 2 - ∑ j in sᶜ, x j ^ 2)
 
@@ -319,7 +322,7 @@ theorem measurable_A (R : ℝ) (s : Finset ι) : Measurable (A R s) := by
   refine measurable_I.comp <| measurable_const.sub ?_
   exact measurable_sum _ (fun i _ ↦ Measurable.pow_const (measurable_pi_apply _) _)
 
-theorem sphere_aux_le_sphere_aux_insert {R : ℝ} {s : Finset ι} {i : ι} (hi : i ∉ s) :
+theorem marginal_A_eq_marginal_A_insert {R : ℝ} {s : Finset ι} {i : ι} (hi : i ∉ s) :
     (∫⋯∫⁻_(insert i s)ᶜ, A R (insert i s)) = (∫⋯∫⁻_sᶜ, A R s) := by
   symm
   have hi' : i ∉ (insert i s)ᶜ := not_mem_compl.mpr <| mem_insert_self i s
@@ -341,10 +344,10 @@ theorem sphere_aux_le_sphere_aux_insert {R : ℝ} {s : Finset ι} {i : ι} (hi :
           · refine measurable_coe_nnreal_ennreal.comp <| measurable_I.comp ?_
             exact measurable_const.sub <| measurable_id.pow_const _
 
-theorem sphere_aux_emptyset_eq_sphere_aux_univ (R : ℝ) :
+theorem marginal_A_emptyset_eq_marginal_A_univ (R : ℝ) :
     (∫⋯∫⁻_∅ᶜ, A R ∅) = ∫⋯∫⁻_(univ : Finset ι)ᶜ, A R univ := by
   refine constant_of_eq_insert (fun s : Finset ι ↦ ∫⋯∫⁻_sᶜ, A R s) ?_ ∅ univ
-  apply sphere_aux_le_sphere_aux_insert
+  apply marginal_A_eq_marginal_A_insert
 
 /-- The volume of a Euclidean ball of radius `R` in the space `ι → ℝ`, equipped with the product
 measure, is `B (Fintype.card ι) * R ^ Fintype.card ι`. -/
@@ -359,4 +362,4 @@ theorem volume_ball (R : ℝ≥0) :
     _ = ∫⁻ x : ι → ℝ, I 0 (R ^ 2 - ∑ i : ι, x i ^ 2) := by simp [apply_ite, Set.indicator_apply]
     _ = B (Fintype.card ι) * R ^ Fintype.card ι := by
           simpa [A, lmarginal_univ, lmarginal_empty, card_univ, -I_zero] using
-            congr_fun (sphere_aux_emptyset_eq_sphere_aux_univ R) (0 : ι → ℝ)
+            congr_fun (marginal_A_emptyset_eq_marginal_A_univ R) (0 : ι → ℝ)
