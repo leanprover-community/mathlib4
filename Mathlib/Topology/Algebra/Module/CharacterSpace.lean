@@ -46,7 +46,7 @@ def characterSpace (𝕜 : Type*) (A : Type*) [CommSemiring 𝕜] [TopologicalSp
 
 variable {𝕜 : Type*} {A : Type*}
 
--- porting note: even though the capitalization of the namespace differs, it doesn't matter
+-- Porting note: even though the capitalization of the namespace differs, it doesn't matter
 -- because there is no dot notation since `characterSpace` is only a type via `CoeSort`.
 namespace CharacterSpace
 
@@ -65,7 +65,7 @@ instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace
   map_add φ := (φ : WeakDual 𝕜 A).map_add
   map_continuous φ := (φ : WeakDual 𝕜 A).cont
 
--- porting note: moved because Lean 4 doesn't see the `DFunLike` instance on `characterSpace 𝕜 A`
+-- Porting note: moved because Lean 4 doesn't see the `DFunLike` instance on `characterSpace 𝕜 A`
 -- until the `ContinuousLinearMapClass` instance is declared
 @[simp, norm_cast]
 protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
@@ -210,7 +210,6 @@ end CharacterSpace
 section Kernel
 
 variable [Field 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
-
 variable [Ring A] [TopologicalSpace A] [Algebra 𝕜 A]
 
 /-- The `RingHom.ker` of `φ : characterSpace 𝕜 A` is maximal. -/

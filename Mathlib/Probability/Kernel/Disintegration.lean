@@ -277,7 +277,7 @@ theorem exists_cond_kernel (γ : Type*) [MeasurableSpace γ] :
     rfl
   have h_ae : ∀ᵐ a ∂ρ.fst, a ∈ ρ_set := by
     rw [ae_iff]
-    simp only [not_mem_compl_iff, setOf_mem_eq, measure_toMeasurable]
+    simp only [ρ_set, not_mem_compl_iff, setOf_mem_eq, measure_toMeasurable]
     change ρ.fst {a : α | a ∉ {a' : α | condKernelReal ρ' a' (range f) = 1}} = 0
     rw [← ae_iff, ← h_fst]
     refine' ae_condKernelReal_eq_one ρ' hf.measurableSet_range _
@@ -555,7 +555,7 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
   have hρ'' : ∀ᵐ x ∂ρ'.fst, kernel.map κ f hf.measurable x = ρ'.condKernel x := by
     refine' eq_condKernel_of_measure_eq_compProd_real ρ' (kernel.map κ f hf.measurable) _
     ext s hs
-    simp only [Measure.map_apply (measurable_id.prod_map hf.measurable) hs]
+    simp only [ρ', Measure.map_apply (measurable_id.prod_map hf.measurable) hs]
     conv_lhs => congr; rw [hκ]
     rw [Measure.compProd_apply hs, Measure.compProd_apply
       (measurable_id.prod_map hf.measurable hs), (_ : (ρ.map (Prod.map id f)).fst = ρ.fst)]

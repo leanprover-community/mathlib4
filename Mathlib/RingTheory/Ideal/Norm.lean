@@ -82,7 +82,7 @@ theorem cardQuot_bot [Infinite M] : cardQuot (⊥ : Submodule R M) = 0 :=
   AddSubgroup.index_bot.trans Nat.card_eq_zero_of_infinite
 #align submodule.card_quot_bot Submodule.cardQuot_bot
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem cardQuot_top : cardQuot (⊤ : Submodule R M) = 1 :=
   AddSubgroup.index_top
 #align submodule.card_quot_top Submodule.cardQuot_top
@@ -614,7 +614,6 @@ theorem spanNorm_mul_of_field {K : Type*} [Field K] [Algebra K S] [IsDomain S] [
 #align ideal.span_norm_mul_of_field Ideal.spanNorm_mul_of_field
 
 variable [IsDomain R] [IsDomain S] [IsDedekindDomain R] [IsDedekindDomain S]
-
 variable [Module.Finite R S] [Module.Free R S]
 
 /-- Multiplicativity of `Ideal.spanNorm`. simp-normal form is `map_mul (Ideal.relNorm R)`. -/

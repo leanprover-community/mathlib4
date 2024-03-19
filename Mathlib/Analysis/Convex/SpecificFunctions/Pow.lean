@@ -40,7 +40,7 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
     refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab => ?_⟩
     exact (strictConvexOn_rpow hp₁').2 (by positivity : 0 ≤ x) (by positivity : 0 ≤ y)
       (by simp [hxy]) ha hb (by simp; norm_cast)
-  have h₂ : ∀ x, f.symm x = x ^ p := by simp [NNReal.orderIsoRpow_symm_eq]
+  have h₂ : ∀ x, f.symm x = x ^ p := by simp [f, NNReal.orderIsoRpow_symm_eq]
   refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab => ?_⟩
   simp only [← h₂]
   exact (f.strictConcaveOn_symm h₁).2 (Set.mem_univ x) (Set.mem_univ y) hxy ha hb hab
@@ -79,7 +79,7 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
   have hx' : (fun z => z ^ p) x = (fun z => z ^ p) x' := rfl
   have hy' : (fun z => z ^ p) y = (fun z => z ^ p) y' := rfl
   have hxy' : x' ≠ y' := Subtype.ne_of_val_ne hxy
-  have hab' : a' + b' = 1 := by ext; simp [hab]
+  have hab' : a' + b' = 1 := by ext; simp [a', b', hab]
   rw [hx', hy']
   exact (NNReal.strictConcaveOn_rpow hp₀ hp₁).2 (Set.mem_univ x') (Set.mem_univ y')
     hxy' (mod_cast ha) (mod_cast hb) hab'

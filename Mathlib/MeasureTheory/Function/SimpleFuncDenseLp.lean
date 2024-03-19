@@ -227,7 +227,6 @@ end Lp
 section Integrable
 
 variable [MeasurableSpace β]
-
 variable [MeasurableSpace E] [NormedAddCommGroup E]
 
 theorem tendsto_approxOn_L1_nnnorm [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f)
@@ -269,9 +268,7 @@ end Integrable
 section SimpleFuncProperties
 
 variable [MeasurableSpace α]
-
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-
 variable {μ : Measure α} {p : ℝ≥0∞}
 
 /-!
@@ -789,7 +786,6 @@ protected theorem denseRange (hp_ne_top : p ≠ ∞) :
 #align measure_theory.Lp.simple_func.dense_range MeasureTheory.Lp.simpleFunc.denseRange
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
-
 variable (α E 𝕜)
 
 /-- The embedding of Lp simple functions into Lp functions, as a continuous linear map. -/
@@ -964,7 +960,7 @@ theorem Memℒp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : (α
     · intro f g hfg hf hg int_fg
       rw [SimpleFunc.coe_add,
         memℒp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable] at int_fg
-      refine' h_add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
+      exact h_add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
   have : ∀ f : Lp.simpleFunc E p μ, P f := by
     intro f
     exact

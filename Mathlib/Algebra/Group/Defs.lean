@@ -593,8 +593,9 @@ need right away.
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
-  /-- Multiplication by a natural number. -/
-  protected nsmul : ℕ → M → M := nsmulRec
+  /-- Multiplication by a natural number.
+  Set this to `nsmulRec` unless `Module` diamonds are possible. -/
+  protected nsmul : ℕ → M → M
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
   protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
@@ -919,12 +920,15 @@ explanations on this.
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   protected sub := SubNegMonoid.sub'
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
-  protected zsmul : ℤ → G → G := zsmulRec
+  /-- Multiplication by an integer.
+  Set this to `zsmulRec` unless `Module` diamonds are possible. -/
+  protected zsmul : ℤ → G → G
   protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
   protected zsmul_succ' (n : ℕ) (a : G) :
       zsmul (Int.ofNat n.succ) a = a + zsmul (Int.ofNat n) a := by
     intros; rfl
-  protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by intros; rfl
+  protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by
+    intros; rfl
 #align sub_neg_monoid SubNegMonoid
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
@@ -954,29 +958,31 @@ variable [DivInvMonoid G] {a b : G}
 #align zpow_zero zpow_zero
 #align zero_zsmul zero_zsmul
 
-@[to_additive (attr := norm_cast) ofNat_zsmul]
-theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
+@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
+theorem zpow_coe_nat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
     a ^ (↑(n + 1) : ℤ) = a * a ^ (n : ℤ) := DivInvMonoid.zpow_succ' _ _
-    _ = a * a ^ n := congrArg (a * ·) (zpow_ofNat a n)
+    _ = a * a ^ n := congrArg (a * ·) (zpow_coe_nat a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
-#align zpow_coe_nat zpow_ofNat
-#align zpow_of_nat zpow_ofNat
-#align of_nat_zsmul ofNat_zsmul
-
-@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
-lemma zpow_coe_nat (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n := zpow_ofNat ..
+#align zpow_coe_nat zpow_coe_nat
+#align zpow_of_nat zpow_coe_nat
 #align coe_nat_zsmul coe_nat_zsmul
+#align of_nat_zsmul coe_nat_zsmul
+
+-- See note [no_index around OfNat.ofNat]
+@[to_additive ofNat_zsmul]
+lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (no_index (OfNat.ofNat n) : ℤ) = a ^ OfNat.ofNat n :=
+  zpow_coe_nat ..
 
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
-  rw [← zpow_ofNat]
+  rw [← zpow_coe_nat]
   exact DivInvMonoid.zpow_neg' n a
 #align zpow_neg_succ_of_nat zpow_negSucc
 
 theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
     Int.negSucc n • a = -((n + 1) • a) := by
-  rw [← ofNat_zsmul]
+  rw [← coe_nat_zsmul]
   exact SubNegMonoid.zsmul_neg' n a
 #align zsmul_neg_succ_of_nat negSucc_zsmul
 

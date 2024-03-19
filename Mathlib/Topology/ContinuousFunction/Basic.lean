@@ -487,7 +487,7 @@ noncomputable def liftCover' : C(α, β) := by
 
 variable {A F hF hA}
 
--- porting note: did not need `by delta liftCover'; exact` in mathlib3; goal was
+-- Porting note: did not need `by delta liftCover'; exact` in mathlib3; goal was
 -- closed by `liftCover_coe x'`
 -- Might be something to do with the `let`s in the definition of `liftCover'`?
 @[simp]
@@ -496,7 +496,7 @@ theorem liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF h
   by delta liftCover'; exact liftCover_coe x'
 #align continuous_map.lift_cover_coe' ContinuousMap.liftCover_coe'
 
--- porting note: porting program suggested `ext <| liftCover_coe'`
+-- Porting note: porting program suggested `ext <| liftCover_coe'`
 @[simp]
 theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
     (liftCover' A F hF hA).restrict s = F s hs := ext <| liftCover_coe' (hF := hF) (hA := hA)
@@ -580,7 +580,6 @@ end Lift
 namespace Homeomorph
 
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
-
 variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 
 /-- The forward direction of a homeomorphism, as a bundled continuous map. -/

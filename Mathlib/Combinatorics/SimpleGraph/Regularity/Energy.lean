@@ -42,7 +42,7 @@ def energy : ℚ :=
 #align finpartition.energy Finpartition.energy
 
 theorem energy_nonneg : 0 ≤ P.energy G := by
-  refine' div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| sq_nonneg _
+  exact div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| sq_nonneg _
 #align finpartition.energy_nonneg Finpartition.energy_nonneg
 
 theorem energy_le_one : P.energy G ≤ 1 :=

@@ -3,10 +3,10 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.GroupTheory.Subgroup.Pointwise
-import Mathlib.GroupTheory.QuotientGroup
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.ULift
+import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.GroupTheory.Subgroup.Pointwise
 
 #align_import group_theory.divisible from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
@@ -133,7 +133,6 @@ noncomputable def rootableByOfPowLeftSurj
 section Pi
 
 variable {ι β : Type*} (B : ι → Type*) [∀ i : ι, Pow (B i) β]
-
 variable [Zero β] [∀ i : ι, Monoid (B i)] [∀ i, RootableBy (B i) β]
 
 @[to_additive]
@@ -149,7 +148,6 @@ end Pi
 section Prod
 
 variable {β B B' : Type*} [Pow B β] [Pow B' β]
-
 variable [Zero β] [Monoid B] [Monoid B'] [RootableBy B β] [RootableBy B' β]
 
 @[to_additive]
@@ -252,9 +250,7 @@ section Hom
 
 -- Porting note: reordered variables to fix `to_additive` on `QuotientGroup.rootableBy`
 variable {A B α : Type*}
-
 variable [Zero α] [Monoid A] [Monoid B] [Pow A α] [Pow B α] [RootableBy A α]
-
 variable (f : A → B)
 
 /--

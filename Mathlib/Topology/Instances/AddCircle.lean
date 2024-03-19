@@ -170,7 +170,7 @@ theorem coe_period : (p : AddCircle p) = 0 :=
   (QuotientAddGroup.eq_zero_iff p).2 <| mem_zmultiples p
 #align add_circle.coe_period AddCircle.coe_period
 
-/- Porting note: `simp` attribute removed because linter reports:
+/- Porting note (#10618): `simp` attribute removed because linter reports:
 simp can prove this:
   by simp only [@mem_zmultiples, @QuotientAddGroup.mk_add_of_mem]
 -/

@@ -155,6 +155,6 @@ lemma hasDerivAt_fourierIntegral [CompleteSpace E]
   convert (hasFDerivAt_fourier L hf hf'' w).hasDerivAt using 1
   erw [ContinuousLinearMap.integral_apply h_int]
   simp_rw [ContinuousLinearMap.smul_apply, mul_L, ContinuousLinearMap.smul_apply,
-    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.mul_apply', mul_one,
+    ContinuousLinearMap.smulRight_apply, L, ContinuousLinearMap.mul_apply', mul_one,
     ← neg_mul, mul_smul]
   rfl

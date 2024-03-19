@@ -67,7 +67,6 @@ theorem isIntegrallyClosed_eq_field_fractions' [IsDomain S] [Algebra K S] [IsSca
 end
 
 variable [IsDomain S] [NoZeroSMulDivisors R S]
-
 variable [IsIntegrallyClosed R]
 
 /-- For integrally closed rings, the minimal polynomial divides any polynomial that has the
@@ -90,7 +89,7 @@ theorem isIntegrallyClosed_dvd {s : S} (hs : IsIntegral R s) {p : R[X]}
   rw [isIntegrallyClosed_eq_field_fractions _ _ hs,
     map_dvd_map (algebraMap R K) (IsFractionRing.injective R K) (minpoly.monic hs)] at this
   rw [← dvd_iff_modByMonic_eq_zero (minpoly.monic hs)]
-  refine' Polynomial.eq_zero_of_dvd_of_degree_lt this (degree_modByMonic_lt p <| minpoly.monic hs)
+  exact Polynomial.eq_zero_of_dvd_of_degree_lt this (degree_modByMonic_lt p <| minpoly.monic hs)
 #align minpoly.is_integrally_closed_dvd minpoly.isIntegrallyClosed_dvd
 
 theorem isIntegrallyClosed_dvd_iff {s : S} (hs : IsIntegral R s) (p : R[X]) :

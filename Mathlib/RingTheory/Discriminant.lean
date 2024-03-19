@@ -57,7 +57,6 @@ open Matrix FiniteDimensional Fintype Polynomial Finset IntermediateField
 namespace Algebra
 
 variable (A : Type u) {B : Type v} (C : Type z) {ι : Type w} [DecidableEq ι]
-
 variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
 
 section Discr
@@ -130,9 +129,7 @@ end Basic
 section Field
 
 variable (K : Type u) {L : Type v} (E : Type z) [Field K] [Field L] [Field E]
-
 variable [Algebra K L] [Algebra K E]
-
 variable [Module.Finite K L] [IsAlgClosed E]
 
 /-- If `b` is a basis of a finite separable field extension `L/K`, then `Algebra.discr K b ≠ 0`. -/
@@ -295,7 +292,7 @@ theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
     rw [← smul_assoc, ← hr, algebraMap_smul]
     refine' Subalgebra.smul_mem _ _ _
     rw [B.basis_eq_pow i]
-    refine' Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
+    exact Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
   intro i
   rw [← H, ← mulVec_smul] at cramer
   replace cramer := congr_arg (mulVec (traceMatrix K B.basis)⁻¹) cramer

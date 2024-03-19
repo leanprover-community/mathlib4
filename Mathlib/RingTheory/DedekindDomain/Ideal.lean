@@ -61,7 +61,6 @@ section Inverse
 namespace FractionalIdeal
 
 variable {R₁ : Type*} [CommRing R₁] [IsDomain R₁] [Algebra R₁ K] [IsFractionRing R₁ K]
-
 variable {I J : FractionalIdeal R₁⁰ K}
 
 noncomputable instance : Inv (FractionalIdeal R₁⁰ K) := ⟨fun I => 1 / I⟩
@@ -255,13 +254,13 @@ theorem isDedekindDomainInv_iff [Algebra A K] [IsFractionRing A K] :
     FractionalIdeal.mapEquiv (FractionRing.algEquiv A K)
   refine h.toEquiv.forall_congr (fun {x} => ?_)
   rw [← h.toEquiv.apply_eq_iff_eq]
-  simp [IsDedekindDomainInv]
+  simp [h, IsDedekindDomainInv]
 #align is_dedekind_domain_inv_iff isDedekindDomainInv_iff
 
 theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit [Algebra A K] [IsFractionRing A K] (x : K)
     (hx : IsIntegral A x) (hI : IsUnit (adjoinIntegral A⁰ x hx)) : adjoinIntegral A⁰ x hx = 1 := by
   set I := adjoinIntegral A⁰ x hx
-  have mul_self : I * I = I := by apply coeToSubmodule_injective; simp
+  have mul_self : I * I = I := by apply coeToSubmodule_injective; simp [I]
   convert congr_arg (· * I⁻¹) mul_self <;>
     simp only [(mul_inv_cancel_iff_isUnit K).mpr hI, mul_assoc, mul_one]
 #align fractional_ideal.adjoin_integral_eq_one_of_is_unit FractionalIdeal.adjoinIntegral_eq_one_of_isUnit
@@ -572,7 +571,6 @@ end Inverse
 section IsDedekindDomain
 
 variable {R A}
-
 variable [IsDedekindDomain A] [Algebra A K] [IsFractionRing A K]
 
 open FractionalIdeal
@@ -746,7 +744,6 @@ open UniqueFactorizationMonoid
 
 theorem Ideal.eq_prime_pow_of_succ_lt_of_le {P I : Ideal A} [P_prime : P.IsPrime] (hP : P ≠ ⊥)
     {i : ℕ} (hlt : P ^ (i + 1) < I) (hle : I ≤ P ^ i) : I = P ^ i := by
-  have := Classical.decEq (Ideal A)
   refine le_antisymm hle ?_
   have P_prime' := Ideal.prime_of_isPrime hP P_prime
   have h1 : I ≠ ⊥ := (lt_of_le_of_lt bot_le hlt).ne'
@@ -889,8 +886,7 @@ theorem inf_eq_mul_of_coprime {I J : Ideal A} (coprime : IsCoprime I J) : I ⊓ 
 theorem isCoprime_iff_gcd {I J : Ideal A} : IsCoprime I J ↔ gcd I J = 1 := by
   rw [Ideal.isCoprime_iff_codisjoint, codisjoint_iff, one_eq_top, gcd_eq_sup]
 
-theorem factors_span_eq [DecidableEq K[X]] [DecidableEq (Ideal K[X])] {p : K[X]} :
-    factors (span {p}) = (factors p).map (fun q ↦ span {q}) := by
+theorem factors_span_eq {p : K[X]} : factors (span {p}) = (factors p).map (fun q ↦ span {q}) := by
   rcases eq_or_ne p 0 with rfl | hp; · simpa [Set.singleton_zero] using normalizedFactors_zero
   have : ∀ q ∈ (factors p).map (fun q ↦ span {q}), Prime q := fun q hq ↦ by
     obtain ⟨r, hr, rfl⟩ := Multiset.mem_map.mp hq
@@ -1059,7 +1055,6 @@ section
 open Ideal
 
 variable {R A}
-
 variable [IsDedekindDomain A] {I : Ideal R} {J : Ideal A}
 
 /-- The map from ideals of `R` dividing `I` to the ideals of `A` dividing `J` induced by
@@ -1189,7 +1184,6 @@ theorem normalizedFactorsEquivOfQuotEquiv_symm (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
 #align normalized_factors_equiv_of_quot_equiv_symm normalizedFactorsEquivOfQuotEquiv_symm
 
 variable [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)]
-
 variable [DecidableRel ((· ∣ ·) : Ideal A → Ideal A → Prop)]
 
 /-- The map `normalizedFactorsEquivOfQuotEquiv` preserves multiplicities. -/
@@ -1422,7 +1416,6 @@ section PID
 open multiplicity UniqueFactorizationMonoid Ideal
 
 variable {R}
-
 variable [IsDomain R] [IsPrincipalIdealRing R]
 
 theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
@@ -1442,7 +1435,7 @@ theorem Ideal.squarefree_span_singleton {a : R} :
     exact isUnit_iff.mpr <| eq_top_of_isUnit_mem _ (Submodule.IsPrincipal.generator_mem I) (h _ hI)
 
 theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [NormalizationMonoid R]
-    [DecidableEq R] [DecidableEq (Ideal R)] {a b : R} (ha : a ∈ normalizedFactors b) :
+    {a b : R} (ha : a ∈ normalizedFactors b) :
     Ideal.span ({a} : Set R) ∈ normalizedFactors (Ideal.span ({b} : Set R)) := by
   by_cases hb : b = 0
   · rw [Ideal.span_singleton_eq_bot.mpr hb, bot_eq_zero, normalizedFactors_zero]
@@ -1532,7 +1525,7 @@ theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multipl
   obtain ⟨x, hx⟩ := (normalizedFactorsEquivSpanNormalizedFactors hr).surjective I
   obtain ⟨a, ha⟩ := x
   rw [hx.symm, Equiv.symm_apply_apply, Subtype.coe_mk,
-    multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity hr ha, hx]
+    multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity hr ha]
 #align multiplicity_normalized_factors_equiv_span_normalized_factors_symm_eq_multiplicity multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multiplicity
 
 end PID
