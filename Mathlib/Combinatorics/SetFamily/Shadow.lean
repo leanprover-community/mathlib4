@@ -125,6 +125,7 @@ lemma mem_shadow_iterate_iff_exists_card :
     t ∈ ∂^[k] 𝒜 ↔ ∃ u : Finset α, u.card = k ∧ Disjoint t u ∧ t ∪ u ∈ 𝒜 := by
   induction' k with k ih generalizing t
   · simp
+  set_option tactic.skipAssignedInstances false in
   simp only [mem_shadow_iff_insert_mem, ih, Function.iterate_succ_apply', card_eq_succ]
   aesop
 

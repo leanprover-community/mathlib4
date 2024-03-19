@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
+import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.EisensteinCriterion
@@ -102,21 +103,23 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
   all_goals exact Monic.isPrimitive (monic_Phi a b)
 #align abel_ruffini.irreducible_Phi AbelRuffini.irreducible_Phi
 
+set_option tactic.skipAssignedInstances false in
 theorem real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 := by
   rw [← map_Phi a b (algebraMap ℤ ℚ), Φ, ← one_mul (X ^ 5), ← C_1]
   refine' (card_rootSet_le_derivative _).trans
     (Nat.succ_le_succ ((card_rootSet_le_derivative _).trans (Nat.succ_le_succ _)))
-  suffices : (Polynomial.rootSet (C (20 : ℚ) * X ^ 3) ℝ).Subsingleton
-  · norm_num [Fintype.card_le_one_iff_subsingleton, ← mul_assoc] at *
+  suffices (Polynomial.rootSet (C (20 : ℚ) * X ^ 3) ℝ).Subsingleton by
+    norm_num [Fintype.card_le_one_iff_subsingleton, ← mul_assoc] at *
     exact this
   rw [rootSet_C_mul_X_pow] <;>
   norm_num
 #align abel_ruffini.real_roots_Phi_le AbelRuffini.real_roots_Phi_le
 
+set_option tactic.skipAssignedInstances false in
 theorem real_roots_Phi_ge_aux (hab : b < a) :
     ∃ x y : ℝ, x ≠ y ∧ aeval x (Φ ℚ a b) = 0 ∧ aeval y (Φ ℚ a b) = 0 := by
   let f : ℝ → ℝ := fun x : ℝ => aeval x (Φ ℚ a b)
-  have hf : f = fun x : ℝ => x ^ 5 - a * x + b := by simp [Φ]
+  have hf : f = fun x : ℝ => x ^ 5 - a * x + b := by simp [f, Φ]
   have hc : ∀ s : Set ℝ, ContinuousOn f s := fun s => (Φ ℚ a b).continuousOn_aeval
   have ha : (1 : ℝ) ≤ a := Nat.one_le_cast.mpr (Nat.one_le_of_lt hab)
   have hle : (0 : ℝ) ≤ 1 := zero_le_one

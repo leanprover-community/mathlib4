@@ -120,8 +120,8 @@ end Measurability
 theorem condDistrib_ae_eq_of_measure_eq_compProd (hX : Measurable X) (hY : Measurable Y)
     (κ : kernel β Ω) [IsFiniteKernel κ] (hκ : μ.map (fun x => (X x, Y x)) = μ.map X ⊗ₘ κ) :
     ∀ᵐ x ∂μ.map X, κ x = condDistrib Y X μ x := by
-  have heq : μ.map X = (μ.map (fun x => (X x, Y x))).fst
-  · ext s hs
+  have heq : μ.map X = (μ.map (fun x ↦ (X x, Y x))).fst := by
+    ext s hs
     rw [Measure.map_apply hX hs, Measure.fst_apply hs, Measure.map_apply]
     exacts [rfl, Measurable.prod hX hY, measurable_fst hs]
   rw [heq, condDistrib]
@@ -300,8 +300,8 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_mk
     (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   refine' ⟨fun x => hf.mk f x.2, hf.stronglyMeasurable_mk.comp_measurable measurable_snd, _⟩
-  suffices h : Measure.QuasiMeasurePreserving Prod.snd (μ.map fun ω => (X ω, ω)) μ
-  · exact Measure.QuasiMeasurePreserving.ae_eq h hf.ae_eq_mk
+  suffices h : Measure.QuasiMeasurePreserving Prod.snd (μ.map fun ω ↦ (X ω, ω)) μ from
+    Measure.QuasiMeasurePreserving.ae_eq h hf.ae_eq_mk
   refine' ⟨measurable_snd, Measure.AbsolutelyContinuous.mk fun s hs hμs => _⟩
   rw [Measure.map_apply _ hs]
   swap; · exact measurable_snd

@@ -23,7 +23,7 @@ namespace ModuleCat
 
 variable {R : Type u} [CommRing R]
 
--- porting note: removed @[simps] as the simpNF linter complains
+-- Porting note: removed @[simps] as the simpNF linter complains
 /-- Auxiliary definition for the `MonoidalClosed` instance on `Module R`.
 (This is only a separate definition in order to speed up typechecking. )
 -/
@@ -50,7 +50,7 @@ instance : MonoidalClosed (ModuleCat.{u} R) where
         { right := (linearCoyoneda R (ModuleCat.{u} R)).obj (op M)
           adj := Adjunction.mkOfHomEquiv
             { homEquiv := fun N P => monoidalClosedHomEquiv M N P
-              -- porting note: this proof was automatic in mathlib3
+              -- Porting note: this proof was automatic in mathlib3
               homEquiv_naturality_left_symm := by
                 intros
                 apply TensorProduct.ext'
@@ -65,7 +65,7 @@ set_option linter.uppercaseLean3 false in
 
 open MonoidalCategory
 
--- porting note: `CoeFun` was replaced by `DFunLike`
+-- Porting note: `CoeFun` was replaced by `DFunLike`
 -- I can't seem to express the function coercion here without writing `@DFunLike.coe`.
 theorem monoidalClosed_curry {M N P : ModuleCat.{u} R} (f : M ⊗ N ⟶ P) (x : M) (y : N) :
     @DFunLike.coe _ _ _ LinearMap.instFunLike

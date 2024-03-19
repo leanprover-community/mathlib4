@@ -134,7 +134,7 @@ theorem card_le_mul_sum {x k : ℕ} : (card (U x k) : ℝ) ≤ x * ∑ p in P x 
     (card (Finset.biUnion P N) : ℝ) ≤ ∑ p in P, (card (N p) : ℝ) := by assumption_mod_cast
     _ ≤ ∑ p in P, x * (1 / (p : ℝ)) := (sum_le_sum fun p _ => ?_)
     _ = x * ∑ p in P, 1 / (p : ℝ) := by rw [mul_sum]
-  simp only [mul_one_div, Nat.card_multiples, Nat.cast_div_le]
+  simp only [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
 #align theorems_100.card_le_mul_sum Theorems100.card_le_mul_sum
 
 /--
@@ -150,7 +150,7 @@ theorem card_le_two_pow {x k : ℕ} :
   -- It follows that `e` is one less than such a product.
   have h : M₁ ⊆ image f K := by
     intro m hm
-    simp only [M, mem_filter, mem_range, mem_powerset, mem_image, exists_prop] at hm ⊢
+    simp only [f, K, M₁, M, mem_filter, mem_range, mem_powerset, mem_image, exists_prop] at hm ⊢
     obtain ⟨⟨-, hmp⟩, hms⟩ := hm
     use! (m + 1).factors
     · rwa [Multiset.coe_nodup, ← Nat.squarefree_iff_nodup_factors m.succ_ne_zero]
@@ -167,7 +167,7 @@ theorem card_le_two_pow {x k : ℕ} :
   calc
     card M₁ ≤ card (image f K) := card_le_card h
     _ ≤ card K := card_image_le
-    _ ≤ 2 ^ card (image Nat.succ (range k)) := by simp only [card_powerset]; rfl
+    _ ≤ 2 ^ card (image Nat.succ (range k)) := by simp only [K, card_powerset]; rfl
     _ ≤ 2 ^ card (range k) := (pow_le_pow_right one_le_two card_image_le)
     _ = 2 ^ k := by rw [card_range k]
 #align theorems_100.card_le_two_pow Theorems100.card_le_two_pow
@@ -186,7 +186,8 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
   -- smaller than or equal to `k`.
   have h1 : M x k ⊆ image f K := by
     intro m hm
-    simp only [M, mem_image, exists_prop, Prod.exists, mem_product, mem_filter, mem_range] at hm ⊢
+    simp only [f, K, M, M₁, M₂, mem_image, exists_prop, Prod.exists, mem_product,
+               mem_filter, mem_range] at hm ⊢
     have hm' := m.zero_lt_succ
     obtain ⟨a, b, hab₁, hab₂⟩ := Nat.sq_mul_squarefree_of_pos' hm'
     obtain ⟨ham, hbm⟩ := Dvd.intro_left _ hab₁, Dvd.intro _ hab₁
@@ -200,7 +201,7 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
         _ ≤ x.sqrt := Nat.sqrt_le_sqrt (Nat.succ_le_iff.mpr hm.1)
     · exact hm.2 p ⟨hp.1, hp.2.trans (Nat.dvd_of_pow_dvd one_le_two hbm)⟩
   have h2 : card M₂ ≤ Nat.sqrt x := by
-    rw [← card_range (Nat.sqrt x)]; apply card_le_card; simp [M]
+    rw [← card_range (Nat.sqrt x)]; apply card_le_card; simp [M, M₂]
   calc
     card (M x k) ≤ card (image f K) := card_le_card h1
     _ ≤ card K := card_image_le
@@ -235,13 +236,13 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
   have h3 :=
     calc
       (card U' : ℝ) ≤ x * ∑ p in P, 1 / (p : ℝ) := card_le_mul_sum
-      _ < x * (1 / 2) := (mul_lt_mul_of_pos_left (h1 x) (by norm_num))
+      _ < x * (1 / 2) := (mul_lt_mul_of_pos_left (h1 x) (by norm_num [x]))
       _ = x / 2 := mul_one_div (x : ℝ) 2
   have h4 :=
     calc
       (card M' : ℝ) ≤ 2 ^ k * x.sqrt := by exact mod_cast card_le_two_pow_mul_sqrt
       _ = 2 ^ k * (2 ^ (k + 1) : ℕ) := by rw [Nat.sqrt_eq]
-      _ = x / 2 := by field_simp [mul_right_comm, ← pow_succ']
+      _ = x / 2 := by field_simp [x, mul_right_comm, ← pow_succ']
   refine' lt_irrefl (x : ℝ) _
   calc
     (x : ℝ) = (card U' : ℝ) + (card M' : ℝ) := by assumption_mod_cast

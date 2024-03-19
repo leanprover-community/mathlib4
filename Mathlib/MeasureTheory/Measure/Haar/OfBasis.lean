@@ -66,7 +66,7 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
   have : Icc (0 : ι → ℝ) 1 = K '' Icc (0 : ι' → ℝ) 1 := by
     rw [← Equiv.preimage_eq_iff_eq_image]
     ext x
-    simp only [mem_preimage, mem_Icc, Pi.le_def, Pi.zero_apply, Equiv.piCongrLeft'_apply,
+    simp only [K, mem_preimage, mem_Icc, Pi.le_def, Pi.zero_apply, Equiv.piCongrLeft'_apply,
       Pi.one_apply]
     refine'
       ⟨fun h => ⟨fun i => _, fun i => _⟩, fun h =>
@@ -77,7 +77,7 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
   congr 1 with x
   have := fun z : ι' → ℝ => e.symm.sum_comp fun i => z i • v (e i)
   simp_rw [Equiv.apply_symm_apply] at this
-  simp_rw [Function.comp_apply, mem_image, mem_Icc, Equiv.piCongrLeft'_apply, this]
+  simp_rw [Function.comp_apply, mem_image, mem_Icc, K, Equiv.piCongrLeft'_apply, this]
 #align parallelepiped_comp_equiv parallelepiped_comp_equiv
 
 -- The parallelepiped associated to an orthonormal basis of `ℝ` is either `[0, 1]` or `[-1, 0]`.
@@ -107,7 +107,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
       ← image_comp, Function.comp_apply, image_id', ge_iff_le, zero_le_one, not_true, gt_iff_lt]
   · right
     simp_rw [H, parallelepiped, Algebra.id.smul_eq_mul, A]
-    simp only [Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
+    simp only [F, Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
       Finset.sum_singleton, ← image_comp, Function.comp, image_neg, preimage_neg_Icc, neg_zero]
 #align parallelepiped_orthonormal_basis_one_dim parallelepiped_orthonormalBasis_one_dim
 
@@ -180,8 +180,8 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
       (continuous_finset_sum Finset.univ fun (i : ι) (_H : i ∈ Finset.univ) =>
         (continuous_apply i).smul continuous_const)
   interior_nonempty' := by
-    suffices H : Set.Nonempty (interior (b.equivFunL.symm.toHomeomorph '' Icc 0 1))
-    · dsimp only [_root_.parallelepiped]
+    suffices H : Set.Nonempty (interior (b.equivFunL.symm.toHomeomorph '' Icc 0 1)) by
+      dsimp only [_root_.parallelepiped]
       convert H
       exact (b.equivFun_symm_apply _).symm
     have A : Set.Nonempty (interior (Icc (0 : ι → ℝ) 1)) := by
@@ -214,6 +214,7 @@ theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 #align basis.parallelepiped_map Basis.parallelepiped_map
 
+set_option tactic.skipAssignedInstances false in
 theorem Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by
   ext x

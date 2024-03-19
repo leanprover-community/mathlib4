@@ -191,11 +191,11 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   rw [add_sub_cancel, add_sub_cancel] at h_int
   have int_ev := intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le zero_le_one hc hder h_int
   have hF0 : F 0 = 0 := by
-    simp only [mul_eq_zero, ofReal_zero, cpow_eq_zero_iff, eq_self_iff_true, Ne.def, true_and_iff,
-      sub_zero, one_cpow, one_ne_zero, or_false_iff]
+    simp only [F, mul_eq_zero, ofReal_zero, cpow_eq_zero_iff, eq_self_iff_true, Ne.def,
+      true_and_iff, sub_zero, one_cpow, one_ne_zero, or_false_iff]
     contrapose! hu; rw [hu, zero_re]
   have hF1 : F 1 = 0 := by
-    simp only [mul_eq_zero, ofReal_one, one_cpow, one_ne_zero, sub_self, cpow_eq_zero_iff,
+    simp only [F, mul_eq_zero, ofReal_one, one_cpow, one_ne_zero, sub_self, cpow_eq_zero_iff,
       eq_self_iff_true, Ne.def, true_and_iff, false_or_iff]
     contrapose! hv; rw [hv, zero_re]
   rw [hF0, hF1, sub_zero, intervalIntegral.integral_sub, intervalIntegral.integral_const_mul,
@@ -315,7 +315,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     show ∀ᶠ n : ℕ in atTop, ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1) = f n x
     · refine' Eventually.mp (eventually_ge_atTop ⌈x⌉₊) (eventually_of_forall fun n hn => _)
       rw [Nat.ceil_le] at hn
-      dsimp only
+      dsimp only [f]
       rw [indicator_of_mem]
       exact ⟨hx, hn⟩
     · simp_rw [mul_comm]
@@ -335,7 +335,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
   -- f is uniformly bounded by the Gamma integrand
   · intro n
     refine' (ae_restrict_iff' measurableSet_Ioi).mpr (ae_of_all _ fun x hx => _)
-    dsimp only
+    dsimp only [f]
     rcases lt_or_le (n : ℝ) x with (hxn | hxn)
     · rw [indicator_of_not_mem (not_mem_Ioc_of_gt hxn), norm_zero,
         mul_nonneg_iff_right_nonneg_of_pos (exp_pos _)]
@@ -491,8 +491,8 @@ noncomputable def GammaSeq (s : ℝ) (n : ℕ) :=
 
 /-- Euler's limit formula for the real Gamma function. -/
 theorem GammaSeq_tendsto_Gamma (s : ℝ) : Tendsto (GammaSeq s) atTop (𝓝 <| Gamma s) := by
-  suffices : Tendsto ((↑) ∘ GammaSeq s : ℕ → ℂ) atTop (𝓝 <| Complex.Gamma s)
-  exact (Complex.continuous_re.tendsto (Complex.Gamma ↑s)).comp this
+  suffices Tendsto ((↑) ∘ GammaSeq s : ℕ → ℂ) atTop (𝓝 <| Complex.Gamma s) by
+    exact (Complex.continuous_re.tendsto (Complex.Gamma ↑s)).comp this
   convert Complex.GammaSeq_tendsto_Gamma s
   ext1 n
   dsimp only [GammaSeq, Function.comp_apply, Complex.GammaSeq]
@@ -539,7 +539,7 @@ theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma 
   induction n generalizing s with
   | zero =>
     rw [Nat.cast_zero, neg_lt_zero] at hs
-    suffices : ∀ m : ℕ, s ≠ -↑m; exact (differentiableAt_Gamma _ this).inv (Gamma_ne_zero this)
+    suffices ∀ m : ℕ, s ≠ -↑m from (differentiableAt_Gamma _ this).inv (Gamma_ne_zero this)
     rintro m rfl
     apply hs.not_le
     simp
@@ -584,7 +584,7 @@ theorem Gamma_mul_Gamma_add_half (s : ℂ) :
     apply Differentiable.mul
     · exact differentiable_one_div_Gamma.comp (differentiable_id'.const_mul _)
     · refine' fun t => DifferentiableAt.const_cpow _ (Or.inl two_ne_zero)
-      refine' DifferentiableAt.sub_const (differentiableAt_id.const_mul _) _
+      exact DifferentiableAt.sub_const (differentiableAt_id.const_mul _) _
   have h3 : Tendsto ((↑) : ℝ → ℂ) (𝓝[≠] 1) (𝓝[≠] 1) := by
     rw [tendsto_nhdsWithin_iff]; constructor
     · exact tendsto_nhdsWithin_of_tendsto_nhds continuous_ofReal.continuousAt

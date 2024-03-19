@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Lean.Meta.Tactic.Simp.SimpTheorems
 import Lean.Meta.Tactic.Simp.RegisterCommand
-import Std.Tactic.LabelAttr
+import Lean.LabelAttribute
 
 /-!
 # Attributes used in `Mathlib`

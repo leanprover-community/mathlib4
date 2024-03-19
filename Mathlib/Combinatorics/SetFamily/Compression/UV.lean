@@ -321,8 +321,8 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
     ∂ (𝓒 u v 𝒜) ⊆ 𝓒 u v (∂ 𝒜) := by
   set 𝒜' := 𝓒 u v 𝒜
   suffices H : ∀ s ∈ ∂ 𝒜',
-      s ∉ ∂ 𝒜 → u ⊆ s ∧ Disjoint v s ∧ (s ∪ v) \ u ∈ ∂ 𝒜 ∧ (s ∪ v) \ u ∉ ∂ 𝒜'
-  · rintro s hs'
+      s ∉ ∂ 𝒜 → u ⊆ s ∧ Disjoint v s ∧ (s ∪ v) \ u ∈ ∂ 𝒜 ∧ (s ∪ v) \ u ∉ ∂ 𝒜' by
+    rintro s hs'
     rw [mem_compression]
     by_cases hs : s ∈ 𝒜.shadow
     swap

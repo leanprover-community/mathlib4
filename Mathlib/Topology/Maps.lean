@@ -84,6 +84,10 @@ theorem nhds_eq_comap (hf : Inducing f) : ∀ x : X, 𝓝 x = comap f (𝓝 <| f
   inducing_iff_nhds.1 hf
 #align inducing.nhds_eq_comap Inducing.nhds_eq_comap
 
+theorem basis_nhds {p : ι → Prop} {s : ι → Set Y} (hf : Inducing f) {x : X}
+    (h_basis : (𝓝 (f x)).HasBasis p s) : (𝓝 x).HasBasis p (preimage f ∘ s) :=
+  hf.nhds_eq_comap x ▸ h_basis.comap f
+
 theorem nhdsSet_eq_comap (hf : Inducing f) (s : Set X) :
     𝓝ˢ s = comap f (𝓝ˢ (f '' s)) := by
   simp only [nhdsSet, sSup_image, comap_iSup, hf.nhds_eq_comap, iSup_image]
@@ -98,7 +102,7 @@ theorem map_nhds_of_mem (hf : Inducing f) (x : X) (h : range f ∈ 𝓝 (f x)) :
   hf.induced.symm ▸ map_nhds_induced_of_mem h
 #align inducing.map_nhds_of_mem Inducing.map_nhds_of_mem
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem mapClusterPt_iff (hf : Inducing f) {x : X} {l : Filter X} :
     MapClusterPt (f x) l f ↔ ClusterPt x l := by
   delta MapClusterPt ClusterPt

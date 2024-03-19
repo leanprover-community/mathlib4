@@ -20,11 +20,13 @@ We also prove basic properties of these functions.
 
 noncomputable section
 
-open Classical Real NNReal ENNReal BigOperators ComplexConjugate
+open scoped Classical
+open Real NNReal ENNReal BigOperators ComplexConjugate
 
 open Finset Function Set
 
 namespace NNReal
+variable {w x y z : ℝ}
 
 /-- The nonnegative real power function `x^y`, defined for `x : ℝ≥0` and `y : ℝ` as the
 restriction of the real power function. For `x > 0`, it is equal to `exp (y log x)`. For `x = 0`,
@@ -79,6 +81,10 @@ theorem rpow_add {x : ℝ≥0} (hx : x ≠ 0) (y z : ℝ) : x ^ (y + z) = x ^ y 
 theorem rpow_add' (x : ℝ≥0) {y z : ℝ} (h : y + z ≠ 0) : x ^ (y + z) = x ^ y * x ^ z :=
   NNReal.eq <| Real.rpow_add' x.2 h
 #align nnreal.rpow_add' NNReal.rpow_add'
+
+/-- Variant of `NNReal.rpow_add'` that avoids having to prove `y + z = w` twice. -/
+lemma rpow_of_add_eq (x : ℝ≥0) (hw : w ≠ 0) (h : y + z = w) : x ^ w = x ^ y * x ^ z := by
+  rw [← h, rpow_add']; rwa [h]
 
 theorem rpow_mul (x : ℝ≥0) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ z :=
   NNReal.eq <| Real.rpow_mul x.2 y z
@@ -320,6 +326,12 @@ theorem rpow_one_div_eq_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x ^ (1 / 
   rw [← rpow_eq_rpow_iff hz, rpow_self_rpow_inv hz]
 #align nnreal.rpow_one_div_eq_iff NNReal.rpow_one_div_eq_iff
 
+@[simp] lemma rpow_rpow_inv {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0) : (x ^ y) ^ y⁻¹ = x := by
+  rw [← rpow_mul, mul_inv_cancel hy, rpow_one]
+
+@[simp] lemma rpow_inv_rpow {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0) : (x ^ y⁻¹) ^ y = x := by
+  rw [← rpow_mul, inv_mul_cancel hy, rpow_one]
+
 theorem pow_rpow_inv_natCast (x : ℝ≥0) {n : ℕ} (hn : n ≠ 0) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
   rw [← NNReal.coe_inj, coe_rpow, NNReal.coe_pow]
   exact Real.pow_rpow_inv_natCast x.2 hn
@@ -471,6 +483,9 @@ theorem rpow_eq_zero_iff {x : ℝ≥0∞} {y : ℝ} : x ^ y = 0 ↔ x = 0 ∧ 0 
         simp [h, H, zero_rpow_of_neg, zero_rpow_of_pos, le_of_lt]
     · simp [coe_rpow_of_ne_zero h, h]
 #align ennreal.rpow_eq_zero_iff ENNReal.rpow_eq_zero_iff
+
+lemma rpow_eq_zero_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y = 0 ↔ x = 0 := by
+  simp [hy, hy.not_lt]
 
 @[simp]
 theorem rpow_eq_top_iff {x : ℝ≥0∞} {y : ℝ} : x ^ y = ⊤ ↔ x = 0 ∧ y < 0 ∨ x = ⊤ ∧ 0 < y := by
