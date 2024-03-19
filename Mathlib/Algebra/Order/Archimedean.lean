@@ -30,8 +30,6 @@ number `n` such that `x ≤ n • y`.
 * `ℕ`, `ℤ`, and `ℚ` are archimedean.
 -/
 
-set_option autoImplicit true
-
 open Int Set
 
 variable {α : Type*}
@@ -49,6 +47,8 @@ instance OrderDual.archimedean [OrderedAddCommGroup α] [Archimedean α] : Archi
     let ⟨n, hn⟩ := Archimedean.arch (-ofDual x) (neg_pos.2 hy)
     ⟨n, by rwa [neg_nsmul, neg_le_neg_iff] at hn⟩⟩
 #align order_dual.archimedean OrderDual.archimedean
+
+variable {M : Type*}
 
 theorem exists_lt_nsmul [OrderedAddCommMonoid M] [Archimedean M]
     [CovariantClass M M (· + ·) (· < ·)] {a : M} (ha : 0 < a) (b : M) :

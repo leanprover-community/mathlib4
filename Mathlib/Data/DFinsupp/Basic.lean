@@ -51,7 +51,6 @@ universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 open BigOperators
 
 variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
-
 variable (β)
 
 /-- A dependent function `Π i, β i` with finite support, with notation `Π₀ i, β i`.
@@ -1136,10 +1135,7 @@ theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 
   exact and_iff_right_of_imp (s.prop i).resolve_right
 #align dfinsupp.mem_support_to_fun DFinsupp.mem_support_toFun
 
-theorem eq_mk_support (f : Π₀ i, β i) : f = mk f.support fun i => f i := by
-  change f = mk f.support fun i => f i.1
-  ext i
-  by_cases h : f i ≠ 0 <;> [skip; rw [not_not] at h] <;> simp [h]
+theorem eq_mk_support (f : Π₀ i, β i) : f = mk f.support fun i => f i := by aesop
 #align dfinsupp.eq_mk_support DFinsupp.eq_mk_support
 
 /-- Equivalence between dependent functions with finite support `s : Finset ι` and functions
@@ -2275,7 +2271,6 @@ variable [DecidableEq ι]
 namespace MonoidHom
 
 variable {R S : Type*}
-
 variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
 #align monoid_hom.map_dfinsupp_prod map_dfinsupp_prodₓ

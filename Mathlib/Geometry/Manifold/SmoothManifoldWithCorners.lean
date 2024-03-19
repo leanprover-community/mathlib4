@@ -82,8 +82,8 @@ Here, `I.Boundaryless` is a typeclass property ensuring that there is no boundar
 instance the case for `modelWithCornersSelf`, or products of these). Note that one could consider
 as a natural assumption to only use the trivial model with corners `modelWithCornersSelf ℝ E`,
 but again in product manifolds the natural model with corners will not be this one but the product
-one (and they are not defeq as `(λp : E × F, (p.1, p.2))` is not defeq to the identity). So, it is
-important to use the above incantation to maximize the applicability of theorems.
+one (and they are not defeq as `(fun p : E × F ↦ (p.1, p.2))` is not defeq to the identity).
+So, it is important to use the above incantation to maximize the applicability of theorems.
 
 ## Implementation notes
 
