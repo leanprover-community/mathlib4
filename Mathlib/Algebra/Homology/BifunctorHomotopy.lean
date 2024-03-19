@@ -80,10 +80,10 @@ lemma comm₁_aux {i₁ i₁' : I₁} (hi₁ : c₁.Rel i₁ i₁') {i₂ i₂' 
     ιMapBifunctor_hom₁ _ _ _ _ _ _ _ _ _ _ (c₁.prev_eq' hi₁),
     ιMapBifunctorOrZero_eq _ _ _ _ _ _ _ hj',
     Linear.comp_units_smul, smul_smul, smul_smul]
-  dsimp
+  dsimp [ιMapBifunctor, Functor.mapBifunctorHomologicalComplex, HomologicalComplex₂.ιTotal,
+    GradedObject.mapBifunctor, Functor.mapBifunctorHomologicalComplexObj]
   rw [NatTrans.naturality_assoc, ComplexShape.ε₁_ε₂ c hi₁ hi₂, neg_mul, Units.neg_smul, neg_inj,
     smul_left_cancel_iff, ← Functor.map_comp_assoc, ← Functor.map_comp_assoc, f₂.comm]
-  rfl
 
 lemma comm₁ (j : J) :
     (mapBifunctorMap f₁ f₂ F c).f j =
@@ -121,9 +121,8 @@ lemma comm₁ (j : J) :
         Linear.units_smul_comp, assoc, assoc, HomologicalComplex₂.ι_D₁,
         HomologicalComplex₂.d₁_eq _ _ h₃ _ _ h, Linear.comp_units_smul,
         Linear.comp_units_smul, smul_smul, Int.units_mul_self, one_smul]
-      dsimp
+      dsimp [HomologicalComplex₂.ιTotal]
       rw [NatTrans.naturality_assoc]
-      rfl
     · rw [h₁.zero _ _ h₃, Functor.map_zero, zero_app, zero_comp, zero_comp, smul_zero, zero_comp]
   · rw [ιMapBifunctor_hom₁_assoc _ _ _ _ _ _ _ _ _ _ rfl]
     by_cases h₃ : c₁.Rel (c₁.prev i₁) i₁
@@ -151,12 +150,13 @@ lemma comm₁ (j : J) :
 
 end mapBifunctorMapHomotopy
 
+open mapBifunctorMapHomotopy in
 /-- The homotopy between `mapBifunctorMap f₁ f₂ F c` and `mapBifunctorMap f₁' f₂ F c` that
 is induced by an homotopy between `f₁` and `f₁'`. -/
 noncomputable def mapBifunctorMapHomotopy₁ :
     Homotopy (mapBifunctorMap f₁ f₂ F c) (mapBifunctorMap f₁' f₂ F c) where
-  hom := mapBifunctorMapHomotopy.hom₁ h₁ f₂ F c
-  zero := mapBifunctorMapHomotopy.zero₁ h₁ f₂ F c
-  comm := mapBifunctorMapHomotopy.comm₁ h₁ f₂ F c
+  hom := hom₁ h₁ f₂ F c
+  zero := zero₁ h₁ f₂ F c
+  comm := comm₁ h₁ f₂ F c
 
 end HomologicalComplex
