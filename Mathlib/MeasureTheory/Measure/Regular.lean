@@ -418,7 +418,7 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
     rw [← inter_iUnion, iUnion_disjointed, univ_subset_iff.mp h'', inter_univ]
   rcases ENNReal.exists_pos_sum_of_countable' (tsub_pos_iff_lt.2 hr).ne' ℕ with ⟨δ, δ0, hδε⟩
   rw [lt_tsub_iff_right, add_comm] at hδε
-  have : ∀ n, ∃ (U : _) (_ : U ⊇ A n), IsOpen U ∧ μ U < μ (A n) + δ n := by
+  have : ∀ n, ∃ U ⊇ A n, IsOpen U ∧ μ U < μ (A n) + δ n := by
     intro n
     have H₁ : ∀ t, μ.restrict (s n) t = μ (t ∩ s n) := fun t => restrict_apply' (hm n)
     have Ht : μ.restrict (s n) (A n) ≠ ∞ := by
@@ -470,7 +470,7 @@ theorem measurableSet_of_isOpen [OuterRegular μ] (H : InnerRegularWRT μ p IsOp
     have : 0 < μ univ := (bot_le.trans_lt hr).trans_le (measure_mono (subset_univ _))
     obtain ⟨K, -, hK, -⟩ : ∃ K, K ⊆ univ ∧ p K ∧ 0 < μ K := H isOpen_univ _ this
     simpa using hd hK isOpen_univ
-  obtain ⟨ε, hε, hεs, rfl⟩ : ∃ (ε : _) (_ : ε ≠ 0), ε + ε ≤ μ s ∧ r = μ s - (ε + ε) := by
+  obtain ⟨ε, hε, hεs, rfl⟩ : ∃ ε ≠ 0, ε + ε ≤ μ s ∧ r = μ s - (ε + ε) := by
     use (μ s - r) / 2
     simp [*, hr.le, ENNReal.add_halves, ENNReal.sub_sub_cancel, le_add_right, tsub_eq_zero_iff_le]
   rcases hs.exists_isOpen_diff_lt hμs hε with ⟨U, hsU, hUo, hUt, hμU⟩
