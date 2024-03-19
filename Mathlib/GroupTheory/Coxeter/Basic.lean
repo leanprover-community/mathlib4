@@ -578,7 +578,7 @@ theorem submonoid_closure_range_simple : Submonoid.closure (Set.range cs.simpleR
 
   rw [h₁, ← Subgroup.closure_toSubmonoid, subgroup_closure_range_simple, Subgroup.top_toSubmonoid]
 
-/-! ### Lifting homomorphisms -/
+/-! ### Homomorphisms from a Coxeter group -/
 
 /-- The proposition that the values of the function `f : B → G` satisfy the Coxeter relations
 corresponding to the matrix `M`. -/
@@ -606,6 +606,7 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
       have := hf i i
       rwa [cs.isCoxeter.diagonal, pow_one] at this
   }
+
 /-- Extend the function `f : B → G` to a monoid homomorphism
 `f' : W → G` satisfying `f' (s i) = f i` for all `i`.
 -/
@@ -631,6 +632,13 @@ theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G}
   simp
   rfl
 
+/-- If two homomorphisms with domain `W` agree on all simple reflections, then they are equal. -/
+theorem ext_simple {G : Type*} [Monoid G] {φ₁ φ₂ : W →* G} (h : ∀ i : B, φ₁ (s i) = φ₂ (s i)) :
+    φ₁ = φ₂ := by
+  apply MonoidHom.eq_of_eqOn_denseM (cs.submonoid_closure_range_simple)
+  rintro x ⟨i, rfl⟩
+  exact h i
+
 /-! ### Words -/
 /-- The product of the simple reflections of `W` corresponding to the indices in `ω`.-/
 def wordProd (ω : List B) : W := prod (map cs.simpleReflection ω)
@@ -653,7 +661,7 @@ theorem wordProd_concat (i : B) (ω : List B) :
     π (reverse ω) = (π ω)⁻¹ := by
   induction' ω with x ω' ih
   · simp
-  · simp; exact ih
+  · simpa using ih
 
 theorem wordProd_surjective : Surjective (cs.wordProd) := by
   intro x
