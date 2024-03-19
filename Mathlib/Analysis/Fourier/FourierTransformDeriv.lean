@@ -109,7 +109,7 @@ theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V]
     filter_upwards with v w' _
     exact norm_fderiv_fourier_transform_integrand_right_le L f v w'
   have h5 : Integrable B μ := by simpa only [← mul_assoc] using hf'.const_mul (2 * π * ‖L‖)
-  have h6 : ∀ᵐ v ∂μ, ∀ w', w' ∈ Metric.ball w 1 → HasFDerivAt (fun x ↦ F x v) (F' w' v) w' := by
+  have h6 : ∀ᵐ v ∂μ, ∀ w', w' ∈ Metric.ball w 1 → HasFDerivAt (fun x ↦ F x v) (F' w' v) w' :=
     ae_of_all _ (fun v w' _ ↦ hasFDerivAt_fourier_transform_integrand_right L f v w')
   exact hasFDerivAt_integral_of_dominated_of_fderiv_le one_pos h1 h2 h3 h4 h5 h6
 
