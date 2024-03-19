@@ -732,8 +732,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : 
   simp_rw [← Int.even_coe_nat]
   -- Rewrite everything in terms of an integer m' which is equal to m.
   rw [← zpow_coe_nat, ← zpow_coe_nat, Int.ofNat_ediv, Int.ofNat_ediv, Int.ofNat_sub hm]
-  let m' : ℤ := m
-  rw [← (by rfl : m' = m)]
+  set m' := (m : ℤ)
   -- The resulting equation holds for all integers m'.
   generalize m' = m'
 
