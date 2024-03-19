@@ -47,6 +47,7 @@ variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
 variable [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
+@[simp]
 theorem dualPairing_apply (v : E →L[𝕜] 𝕜) (x : E) : dualPairing 𝕜 E v x = v x :=
   rfl
 #align dual_pairing_apply dualPairing_apply
