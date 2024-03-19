@@ -52,16 +52,13 @@ variable [(i : ιA) → (x : 𝒜 i) → Decidable (x ≠ 0)] [∀ a : A, Decida
 Then `A' ≃ ⨁ᵢ Aᵢ ∩ A` by `a ↦ i ↦ aᵢ`. This is well-defined because `A'` is a homogeneoeus subring.
 -/
 protected def grading.decompose (a : A') : ⨁ i, A'.grading i :=
-∑ i in ((decompose 𝒜 a).support.filter fun i ↦ (decompose 𝒜 a i : A) ∈ A').attach,
-  .of _ (i : ιA) ⟨⟨decompose 𝒜 a i, Finset.mem_filter.mp i.2 |>.2⟩, SetLike.coe_mem _⟩
+∑ i in (decompose 𝒜 a).support,
+  .of _ (i : ιA) ⟨⟨decompose 𝒜 a i, A'.2 i a.2⟩, SetLike.coe_mem _⟩
 
 lemma grading.decompose_zero : grading.decompose A' 0 = 0 := by
   delta grading.decompose
   convert Finset.sum_empty
-  ext ⟨i, hi⟩
-  rw [Finset.mem_filter, DFinsupp.mem_support_iff, Subring.coe_zero, DirectSum.decompose_zero,
-    DirectSum.zero_apply] at hi
-  exact hi.1 rfl |>.elim
+  rw [ZeroMemClass.coe_zero, DirectSum.decompose_zero, DFinsupp.support_zero]
 
 lemma grading.decompose_apply (a : A') (j : ιA) :
     (grading.decompose A' a j : A) = decompose 𝒜 a j := by
@@ -71,24 +68,11 @@ lemma grading.decompose_apply (a : A') (j : ιA) :
         AddSubmonoidClass.coe_finset_sum]
   simp_rw [DirectSum.coe_of_apply]
   calc _
-    _ = (∑ i in ((decompose 𝒜 (a : A)).support.filter
-          fun i ↦ (decompose 𝒜 (a : A) i : A) ∈ A').attach,
-          if (i : ιA) = j then decompose 𝒜 (a : A) i else 0 : A) :=
+    _ = ∑ i in (decompose 𝒜 (a : A)).support,
+          (if (i : ιA) = j then decompose 𝒜 (a : A) i else 0 : A) :=
         Finset.sum_congr rfl fun _ _ ↦ by split_ifs <;> rfl
-  rw [← Finset.sum_filter]
-  set S := _; change ∑ i in S, _ = _
-  by_cases hj : (decompose 𝒜 (a : A) j : A) = 0
-  · rw [hj]
-    convert Finset.sum_empty
-    ext ⟨i, hi⟩
-    simp only [Finset.filter_congr_decidable, Finset.mem_filter, DFinsupp.mem_support_toFun, ne_eq,
-      Finset.mem_attach, true_and, Finset.not_mem_empty, iff_false] at hi ⊢
-    intro h
-    exact hi.1 (Subtype.ext <| h.symm ▸ hj)
-  have eq : S = {⟨j, by
-    simp only [Finset.filter_congr_decidable, Finset.mem_filter, DFinsupp.mem_support_toFun, ne_eq]
-    exact ⟨by contrapose! hj; exact Subtype.ext_iff.mp hj, A'.is_homogeneous' _ a.2⟩⟩} := by aesop
-  rw [eq, Finset.sum_singleton]
+  simp only [Finset.sum_ite_eq', DFinsupp.mem_support_toFun, ne_eq, ite_eq_left_iff, not_not]
+  aesop
 
 lemma grading.decompose_add (a b : A') :
     grading.decompose A' (a + b) = grading.decompose A' a + grading.decompose A' b := by
@@ -104,19 +88,6 @@ lemma grading.decompose_leftInverse :
   change A'.subtype _ = _
   simp only [grading.decompose, map_sum, coeAddMonoidHom_of, Subsemiring.coe_subtype]
   conv_rhs => rw [← sum_support_decompose 𝒜 a]
-  apply Finset.sum_bij (i := fun i _ ↦ i.1)
-  · rintro ⟨i, hi⟩ -
-    simp only [Finset.mem_filter, DFinsupp.mem_support_toFun, ne_eq] at hi ⊢
-    exact hi.1
-  · rintro ⟨i₁, hi₁⟩ - ⟨i₂, hi₂⟩ - (h : i₁ = i₂)
-    subst h
-    simp only [Finset.mem_filter, DFinsupp.mem_support_toFun, ne_eq] at hi₁ ⊢
-  · intro i hi
-    refine ⟨⟨i, ?_⟩, by simp, rfl⟩
-    simp only [Finset.mem_filter, DFinsupp.mem_support_toFun, ne_eq] at hi ⊢
-    exact ⟨hi, A'.is_homogeneous' _ ha⟩
-  · rintro ⟨i, hi⟩ -
-    simp only [Finset.mem_filter, DFinsupp.mem_support_toFun, ne_eq, Subring.coeSubtype] at hi ⊢
 
 lemma grading.decompose_rightInverse :
     Function.RightInverse (DirectSum.coeAddMonoidHom A'.grading) (grading.decompose A') := by
