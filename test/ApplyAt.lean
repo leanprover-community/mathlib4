@@ -62,6 +62,8 @@ example {α β γ δ : Type*} (f : {_ : α} → {_ : β} → (g : γ) → δ) (g
   guard_hyp g :ₛ δ
   assumption'
 
+-- mutes `'apply f at _g' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 /--
 error: Failed to find γ as the type of a parameter of α → β.
 -/
@@ -69,6 +71,8 @@ error: Failed to find γ as the type of a parameter of α → β.
 example {α β γ : Type*} (f : α → β) (_g : γ) : β × γ  := by
   apply f at _g
 
+-- mutes `'apply a at _b' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 /--
 error: Failed: α is not the type of a function.
 -/

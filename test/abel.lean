@@ -73,12 +73,16 @@ example [AddCommGroup α] (x y z : α) : y = x + z - (x - y + z) := by
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/abel.20bug.3F/near/368707560
 example [AddCommGroup α] (a b s : α) : -b + (s - a) = s - b - a := by abel_nf
 
+-- mutes `'abel_nf' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 /--
 error: abel_nf made no progress
 -/
 #guard_msgs in
 example : False := by abel_nf
 
+-- mutes `'abel_nf at w' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 /--
 error: abel_nf made no progress
 -/
@@ -91,6 +95,8 @@ example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False :
   guard_hyp w : 0 = y + z
   assumption
 
+-- mutes `'abel_nf at *' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 /--
 error: abel_nf made no progress
 -/
@@ -104,6 +110,8 @@ example [AddCommGroup α] (x y z : α) (_w : x = y + z) : False := by
 example [AddCommGroup α] (x y z : α) (_w : x = y + z) : x - x = 0 := by
   abel_nf at *
 
+-- mutes `'abel_nf at w ⊢' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 /--
 error: abel_nf made no progress
 -/
