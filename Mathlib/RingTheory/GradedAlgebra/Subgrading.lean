@@ -276,16 +276,9 @@ The addive group homomorphism from `Mᵢ ⧸ p ∩ Mᵢ` to `M ⧸ p`
 -/
 @[simps!]
 def quotientGradingEmb (i : ιM) :
-    ℳ i ⧸ ({
-      carrier := {x | (x : M) ∈ p}
-      add_mem' := p.toSubmodule.add_mem
-      zero_mem' := p.toSubmodule.zero_mem
-      neg_mem' := p.toSubmodule.neg_mem
-    } : AddSubgroup (ℳ i)) →+ M ⧸ p.toSubmodule :=
-  QuotientAddGroup.map _ _
-    { toFun := fun m ↦ m.1
-      map_zero' := by simp
-      map_add' := by intros; simp } fun x hx ↦ hx
+    ℳ i ⧸ (AddSubgroup.addSubgroupOf p.toAddSubgroup _) →+
+    M ⧸ p.toSubmodule :=
+  QuotientAddGroup.map _ _ (ℳ i).subtype <| le_refl _
 
 /--
 `M ⧸ p` is a graded module over `A` whose `i`-th degree part is `Mᵢ ⧸ p ∩ Mᵢ`
