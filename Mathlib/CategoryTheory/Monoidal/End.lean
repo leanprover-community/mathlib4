@@ -105,7 +105,6 @@ def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C
 #align category_theory.tensoring_right_monoidal CategoryTheory.tensoringRightMonoidal
 
 variable {C}
-
 variable {M : Type*} [Category M] [MonoidalCategory M] (F : MonoidalFunctor M (C ⥤ C))
 
 @[reassoc (attr := simp)]

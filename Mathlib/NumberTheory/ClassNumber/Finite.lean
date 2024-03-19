@@ -36,21 +36,13 @@ open scoped BigOperators
 section EuclideanDomain
 
 variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
-
 variable [Field K] [Field L]
-
 variable [Algebra R K] [IsFractionRing R K]
-
 variable [Algebra K L] [FiniteDimensional K L] [IsSeparable K L]
-
 variable [algRL : Algebra R L] [IsScalarTower R K L]
-
 variable [Algebra R S] [Algebra S L]
-
 variable [ist : IsScalarTower R S L] [iic : IsIntegralClosure S R L]
-
 variable (abv : AbsoluteValue R ℤ)
-
 variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 
 /-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer

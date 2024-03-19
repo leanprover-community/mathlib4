@@ -391,7 +391,7 @@ theorem grundyValue_nim_add_nim (n m : ℕ) :
     cases' Nat.lt_xor_cases hu with h h
     -- In the first case, reducing the `m` pile to `u ^^^ n` gives the desired Grundy value.
     · refine' ⟨toLeftMovesAdd (Sum.inl <| toLeftMovesNim ⟨_, Ordinal.natCast_lt.2 h⟩), _⟩
-      simp [Nat.lxor_cancel_right, hn _ h]
+      simp [Nat.xor_cancel_right, hn _ h]
     -- In the second case, reducing the `n` pile to `u ^^^ m` gives the desired Grundy value.
     · refine' ⟨toLeftMovesAdd (Sum.inr <| toLeftMovesNim ⟨_, Ordinal.natCast_lt.2 h⟩), _⟩
       have : n ^^^ (u ^^^ n) = u := by rw [Nat.xor_comm u, Nat.xor_cancel_left]

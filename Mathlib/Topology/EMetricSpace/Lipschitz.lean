@@ -105,7 +105,6 @@ namespace LipschitzWith
 open EMetric
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-
 variable {K : ℝ≥0} {f : α → β} {x y : α} {r : ℝ≥0∞}
 
 protected theorem lipschitzOnWith (h : LipschitzWith K f) (s : Set α) : LipschitzOnWith K f s :=
@@ -300,7 +299,6 @@ end LipschitzWith
 namespace LipschitzOnWith
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-
 variable {K : ℝ≥0} {s : Set α} {f : α → β}
 
 protected theorem uniformContinuousOn (hf : LipschitzOnWith K f s) : UniformContinuousOn f s :=
