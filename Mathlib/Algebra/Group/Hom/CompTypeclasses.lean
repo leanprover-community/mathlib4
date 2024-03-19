@@ -78,13 +78,15 @@ lemma comp_inv {φ : M →* N} {ψ : N →* M} (h : Function.RightInverse φ ψ)
     simp only [IsId.eq_id, ← DFunLike.coe_fn_eq, coe_comp, h.id]
     rfl
 
-instance {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ : CompTriple φ ψ χ] :
+def instRootCompTriple {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ : CompTriple φ ψ χ] :
     _root_.CompTriple φ ψ χ where
   comp_eq := by rw [← MonoidHom.coe_comp, κ.comp_eq]
 
-instance instComp {φ : M →* N} {ψ : N →* P} :
+def instComp {φ : M →* N} {ψ : N →* P} :
     CompTriple φ ψ (ψ.comp φ) where
   comp_eq := rfl
+
+attribute [instance 110] instComp
 
 lemma comp_apply
     {φ : M →* N} {ψ : N →* P} {χ : M →* P} (h : CompTriple φ ψ χ) (x : M) :
