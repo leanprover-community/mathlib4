@@ -144,7 +144,7 @@ theorem orthoReflection_eq_iff {v v' : V} (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'
     simp
 
 /-- Any orthogonal reflection is orthogonal with respect to the standard bilinear form. -/
-theorem orthoReflection_compl_standardBilinForm {v : V} (hv : ⟪v, v⟫ = 1) :
+theorem standardBilinForm_compl₁₂_orthoReflection {v : V} (hv : ⟪v, v⟫ = 1) :
     LinearMap.compl₁₂ M.standardBilinForm (r hv) (r hv)  = M.standardBilinForm := by
   apply LinearMap.ext
   intro w
@@ -392,8 +392,6 @@ local notation:max "⟪"  a  ","  b  "⟫" => Matrix.standardBilinForm M a b
 local notation:100 "σ" i => Matrix.simpleOrthoReflection (cs.isCoxeter) i
 local notation "V" => B →₀ ℝ
 
-instance : AddCommMonoid V := Finsupp.instAddCommMonoid
-
 /-- The standard geometric representation on `B →₀ ℝ`. For `i : B`, the simple reflection `sᵢ`
 acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`.
 -/
@@ -413,10 +411,20 @@ def standardGeometricRepresentation : Representation ℝ W V := cs.lift (
 
 noncomputable alias SGR := standardGeometricRepresentation
 
-theorem SGR_simple (i : B) : cs.SGR (s i) = σ i := cs.lift_apply_simple _ i
+local prefix:100 "ρ" => cs.SGR
 
-theorem SGR_bilin_eq_bilin (w : W) (v v' : V) : ⟪cs.SGR w v, cs.SGR w v'⟫ = ⟪v, v'⟫ := by
-  sorry
+theorem SGR_simple (i : B) : ρ (s i) = σ i := cs.lift_apply_simple _ i
+
+/-- The standard geometric representation preserves the standard bilinear form. -/
+theorem standardBilinForm_compl₁₂_SGR_apply (w : W) :
+    M.standardBilinForm.compl₁₂ (ρ w) (ρ w) = M.standardBilinForm := by
+  apply cs.simple_induction w
+  · intro i
+    rw [SGR_simple, simpleOrthoReflection,
+      standardBilinForm_compl₁₂_orthoReflection _ cs.isCoxeter]
+  · rw [_root_.map_one, LinearMap.one_eq_id, LinearMap.compl₁₂_id_id]
+  · intro w w' hw hw'
+    rw [_root_.map_mul, mul_eq_comp, LinearMap.compl₁₂_comp_comp, hw, hw']
 
 theorem SGR_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' > 1) :
     cs.SGR (π (alternatingWord i i' m)) (α i) = if Even m

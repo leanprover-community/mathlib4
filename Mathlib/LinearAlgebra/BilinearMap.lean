@@ -230,12 +230,13 @@ section CommSemiring
 variable {R : Type*} [CommSemiring R] {R₂ : Type*} [CommSemiring R₂]
 variable {R₃ : Type*} [CommSemiring R₃] {R₄ : Type*} [CommSemiring R₄]
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
-variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
+variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*} {Tₗ Tₗ' : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
-variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
+variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ'] [AddCommMonoid Tₗ] [AddCommMonoid Tₗ']
 variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
-variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ] [Module R Qₗ] [Module R Qₗ']
+variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ]
+variable [Module R Qₗ] [Module R Qₗ'] [Module R Tₗ] [Module R Tₗ']
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
 variable {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
@@ -361,6 +362,10 @@ theorem compl₁₂_id_id (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) : f.compl₁�
   ext
   simp_rw [compl₁₂_apply, id_coe, id.def]
 #align linear_map.compl₁₂_id_id LinearMap.compl₁₂_id_id
+
+theorem compl₁₂_comp_comp (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Qₗ →ₗ[R] Mₗ) (g' : Qₗ' →ₗ[R] Nₗ)
+    (h : Tₗ →ₗ[R] Qₗ) (h' : Tₗ' →ₗ[R] Qₗ') :
+    f.compl₁₂ (g.comp h) (g'.comp h') = (f.compl₁₂ g g').compl₁₂ h h' := rfl
 
 theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Qₗ →ₗ[R] Mₗ} {g' : Qₗ' →ₗ[R] Nₗ}
     (hₗ : Function.Surjective g) (hᵣ : Function.Surjective g') :
