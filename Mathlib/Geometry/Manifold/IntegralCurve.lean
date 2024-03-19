@@ -385,7 +385,7 @@ theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoi
   -- extract a set `s` on which `v'` is Lipschitz
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
-  obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
+  obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ 𝓝 _, LipschitzOnWith K v' s :=
     (hv.contDiffAt (range_mem_nhds_isInteriorPoint hγt₀)).snd.exists_lipschitzOnWith
   have hlip (t : ℝ) : LipschitzOnWith K ((fun _ ↦ v') t) ((fun _ ↦ s) t) := hlip
   -- internal lemmas to reduce code duplication
@@ -444,7 +444,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     ⟨t₀, ⟨ht₀, ⟨h, ht₀⟩⟩⟩
   · -- is this really the most convenient way to pass to subtype topology?
     -- TODO: shorten this when better API around subtype topology exists
-    rw [hs, ← Subtype.image_preimage_val, ← Subtype.image_preimage_val,
+    rw [hs, inter_comm, ← Subtype.image_preimage_val, inter_comm, ← Subtype.image_preimage_val,
       image_subset_image_iff Subtype.val_injective, preimage_setOf_eq]
     intros t ht
     rw [mem_preimage, ← closure_subtype] at ht

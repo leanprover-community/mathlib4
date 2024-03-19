@@ -232,10 +232,10 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   suffices ⋂ n, V n * k ⊆ k by
     replace : k = ⋂ n, V n * k := by
       apply Subset.antisymm (subset_iInter_iff.2 (fun n ↦ ?_)) this
-      exact subset_mul_right k (by simp [mem_W])
+      exact subset_mul_right k (by simp [V, mem_W])
     rw [this]
-    refine isGδ_iInter_of_isOpen (fun n ↦ ?_)
-    exact IsOpen.mul_right (isOpen_biInter_finset (fun i _hi ↦ W_open i))
+    refine .iInter_of_isOpen fun n ↦ ?_
+    exact .mul_right (isOpen_biInter_finset (fun i _hi ↦ W_open i))
   intro x hx
   choose v hv y hy hvy using mem_iInter.1 hx
   obtain ⟨z, zk, hz⟩ : ∃ z ∈ k, MapClusterPt z atTop y := hk.exists_mapClusterPt (by simp [hy])

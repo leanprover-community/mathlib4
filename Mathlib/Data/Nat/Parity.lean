@@ -156,6 +156,8 @@ theorem Odd.sub_odd (hm : Odd m) (hn : Odd n) : Even (m - n) :=
     simp only [tsub_eq_zero_iff_le.mpr h, even_zero]
 #align nat.odd.sub_odd Nat.Odd.sub_odd
 
+alias _root_.Odd.tsub_odd := Nat.Odd.sub_odd
+
 @[parity_simps]
 theorem even_mul : Even (m * n) ↔ Even m ∨ Even n := by
   cases' mod_two_eq_zero_or_one m with h₁ h₁ <;> cases' mod_two_eq_zero_or_one n with h₂ h₂ <;>

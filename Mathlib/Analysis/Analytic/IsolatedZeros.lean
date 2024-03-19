@@ -161,8 +161,8 @@ lemma unique_eventuallyEq_zpow_smul_nonzero {m n : ℤ}
   let ⟨g, hg_an, _, hg_eq⟩ := hm
   let ⟨j, hj_an, hj_ne, hj_eq⟩ := hn
   contrapose! hj_ne
-  have : ∃ᶠ z in 𝓝[≠] z₀, j z = (z - z₀) ^ (m - n) • g z
-  · apply Filter.Eventually.frequently
+  have : ∃ᶠ z in 𝓝[≠] z₀, j z = (z - z₀) ^ (m - n) • g z := by
+    apply Filter.Eventually.frequently
     rw [eventually_nhdsWithin_iff] at hg_eq hj_eq ⊢
     filter_upwards [hg_eq, hj_eq] with z hfz hfz' hz
     rw [← add_sub_cancel' n m, add_sub_assoc, zpow_add₀ <| sub_ne_zero.mpr hz, mul_smul,
@@ -170,7 +170,7 @@ lemma unique_eventuallyEq_zpow_smul_nonzero {m n : ℤ}
     exact hfz hz
   rw [frequently_eq_iff_eventually_eq hj_an] at this
   rw [EventuallyEq.eq_of_nhds this, sub_self, zero_zpow _ (sub_ne_zero.mpr hj_ne), zero_smul]
-  conv => enter [2, z, 1]; rw [← Int.toNat_sub_of_le h_le, zpow_ofNat]
+  conv => enter [2, z, 1]; rw [← Int.toNat_sub_of_le h_le, zpow_coe_nat]
   exact (((analyticAt_id _ _).sub analyticAt_const).pow _).smul hg_an
 
 /-- For a function `f` on `𝕜`, and `z₀ ∈ 𝕜`, there exists at most one `n` such that on a
@@ -180,7 +180,7 @@ lemma unique_eventuallyEq_pow_smul_nonzero {m n : ℕ}
     (hm : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ m • g z)
     (hn : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z) :
     m = n := by
-  simp_rw [← zpow_ofNat] at hm hn
+  simp_rw [← zpow_coe_nat] at hm hn
   exact Int.ofNat_inj.mp <| unique_eventuallyEq_zpow_smul_nonzero
     (let ⟨g, h₁, h₂, h₃⟩ := hm; ⟨g, h₁, h₂, h₃.filter_mono nhdsWithin_le_nhds⟩)
     (let ⟨g, h₁, h₂, h₃⟩ := hn; ⟨g, h₁, h₂, h₃.filter_mono nhdsWithin_le_nhds⟩)

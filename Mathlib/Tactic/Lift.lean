@@ -145,7 +145,7 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
                else pure newEqName
   let newEqIdent := mkIdent newEqName
   -- Run rcases on the proof of the lift condition
-  replaceMainGoal (← Std.Tactic.RCases.rcases #[(none, prfSyn)]
+  replaceMainGoal (← Lean.Elab.Tactic.RCases.rcases #[(none, prfSyn)]
     (.tuple Syntax.missing <| [newVarName, newEqName].map (.one Syntax.missing)) goal)
   -- if we use a new variable, then substitute it everywhere
   if isNewVar then

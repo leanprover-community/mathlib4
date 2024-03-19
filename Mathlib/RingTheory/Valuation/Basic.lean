@@ -61,7 +61,8 @@ boilerplate lemmas to `ValuationClass`.
 -/
 
 
-open Classical BigOperators Function Ideal
+open scoped Classical
+open BigOperators Function Ideal
 
 noncomputable section
 
@@ -71,7 +72,7 @@ section
 
 variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
---porting note: removed @[nolint has_nonempty_instance]
+--porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- The type of `Γ₀`-valued valuations on `R`.
 
 When you extend this structure, make sure to extend `ValuationClass`. -/
@@ -105,9 +106,7 @@ end
 namespace Valuation
 
 variable {Γ₀ : Type*}
-
 variable {Γ'₀ : Type*}
-
 variable {Γ''₀ : Type*} [LinearOrderedCommMonoidWithZero Γ''₀]
 
 section Basic
@@ -133,7 +132,7 @@ instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
 theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 #align valuation.to_fun_eq_coe Valuation.toFun_eq_coe
 
-@[simp] --Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
+@[simp] -- Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
 theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) :
     (v.toMonoidWithZeroHom : R → Γ₀) = v := rfl
 
@@ -148,17 +147,17 @@ variable (v : Valuation R Γ₀) {x y z : R}
 theorem coe_coe : ⇑(v : R →*₀ Γ₀) = v := rfl
 #align valuation.coe_coe Valuation.coe_coe
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem map_zero : v 0 = 0 :=
   v.map_zero'
 #align valuation.map_zero Valuation.map_zero
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem map_one : v 1 = 1 :=
   v.map_one'
 #align valuation.map_one Valuation.map_one
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem map_mul : ∀ x y, v (x * y) = v x * v y :=
   v.map_mul'
 #align valuation.map_mul Valuation.map_mul
@@ -205,7 +204,7 @@ theorem map_sum_lt' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg 
   v.map_sum_lt (ne_of_gt hg) hf
 #align valuation.map_sum_lt' Valuation.map_sum_lt'
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
 #align valuation.map_pow Valuation.map_pow
@@ -224,7 +223,7 @@ def toPreorder : Preorder R :=
 #align valuation.to_preorder Valuation.toPreorder
 
 /-- If `v` is a valuation on a division ring then `v(x) = 0` iff `x = 0`. -/
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x = 0 ↔ x = 0 :=
   map_eq_zero v
 #align valuation.zero_iff Valuation.zero_iff
@@ -304,8 +303,8 @@ theorem map_sub_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x - y) ≤ g :
 #align valuation.map_sub_le Valuation.map_sub_le
 
 theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) := by
-  suffices : ¬v (x + y) < max (v x) (v y)
-  exact or_iff_not_imp_right.1 (le_iff_eq_or_lt.1 (v.map_add x y)) this
+  suffices ¬v (x + y) < max (v x) (v y) from
+    or_iff_not_imp_right.1 (le_iff_eq_or_lt.1 (v.map_add x y)) this
   intro h'
   wlog vyx : v y < v x generalizing x y
   · refine' this h.symm _ (h.lt_or_lt.resolve_right vyx)
@@ -488,7 +487,7 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
   · rw [isEquiv_iff_val_eq_one]
     intro h x
     by_cases hx : x = 0
-    · -- porting note: this proof was `simp only [(zero_iff _).2 hx, zero_ne_one]`
+    · -- Porting note: this proof was `simp only [(zero_iff _).2 hx, zero_ne_one]`
       rw [(zero_iff _).2 hx, (zero_iff _).2 hx]
       simp only [zero_ne_one]
     constructor
@@ -531,9 +530,7 @@ end
 section Supp
 
 variable [CommRing R]
-
 variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
-
 variable (v : Valuation R Γ₀)
 
 /-- The support of a valuation `v : R → Γ₀` is the ideal of `R` where `v` vanishes. -/
@@ -594,7 +591,7 @@ section AddMonoid
 variable (R) [Ring R] (Γ₀ : Type*) [LinearOrderedAddCommMonoidWithTop Γ₀]
 
 /-- The type of `Γ₀`-valued additive valuations on `R`. -/
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 def AddValuation :=
   Valuation R (Multiplicative Γ₀ᵒᵈ)
 #align add_valuation AddValuation
@@ -621,7 +618,6 @@ variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCom
 section
 
 variable (f : R → Γ₀) (h0 : f 0 = ⊤) (h1 : f 1 = 0)
-
 variable (hadd : ∀ x y, min (f x) (f y) ≤ f (x + y)) (hmul : ∀ x y, f (x * y) = f x + f y)
 
 /-- An alternate constructor of `AddValuation`, that doesn't reference `Multiplicative Γ₀ᵒᵈ` -/
@@ -865,9 +861,7 @@ end IsEquiv
 section Supp
 
 variable [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
-
 variable [CommRing R]
-
 variable (v : AddValuation R Γ₀)
 
 /-- The support of an additive valuation `v : R → Γ₀` is the ideal of `R` where `v x = ⊤` -/

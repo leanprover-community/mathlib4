@@ -171,7 +171,7 @@ theorem measure_le_lintegral [MeasurableSpace X] [OpensMeasurableSpace X] (μ : 
   · apply lintegral_mono
     intro x
     by_cases hxF : x ∈ F
-    · simp only [hxF, indicator_of_mem, apprSeq_apply_eq_one hF n hxF, coe_one, le_refl]
+    · simp only [hxF, indicator_of_mem, apprSeq_apply_eq_one hF n hxF, ENNReal.coe_one, le_refl]
     · simp only [hxF, not_false_eq_true, indicator_of_not_mem, zero_le]
 
 /-- The integrals along a decreasing approximating sequence to the indicator of a closed set
@@ -212,8 +212,8 @@ theorem measure_isClosed_eq_of_forall_lintegral_eq_of_isFiniteMeasure {Ω : Type
   have ν_finite : IsFiniteMeasure ν := by
     constructor
     have whole := h 1
-    simp only [BoundedContinuousFunction.coe_one, Pi.one_apply, coe_one, lintegral_const, one_mul]
-      at whole
+    simp only [BoundedContinuousFunction.coe_one, Pi.one_apply, ENNReal.coe_one, lintegral_const,
+      one_mul] at whole
     simpa [← whole] using IsFiniteMeasure.measure_univ_lt_top
   have obs_μ := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed μ
   have obs_ν := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed ν

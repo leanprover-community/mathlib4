@@ -49,8 +49,8 @@ open scoped BigOperators
 private lemma binomial_sum_eq (h : n < m) :
     ∑ i in range (n + 1), (n.choose i * (m - n) / ((m - i) * m.choose i) : ℚ) = 1 := by
   set f : ℕ → ℚ := fun i ↦ n.choose i * (m.choose i : ℚ)⁻¹ with hf
-  suffices : ∀ i ∈ range (n + 1), f i - f (i + 1) = n.choose i * (m - n) / ((m - i) * m.choose i)
-  · rw [← sum_congr rfl this, sum_range_sub', hf]
+  suffices ∀ i ∈ range (n + 1), f i - f (i + 1) = n.choose i * (m - n) / ((m - i) * m.choose i) by
+    rw [← sum_congr rfl this, sum_range_sub', hf]
     simp [choose_self, choose_zero_right, choose_eq_zero_of_lt h]
   intro i h₁
   rw [mem_range] at h₁
@@ -60,7 +60,7 @@ private lemma binomial_sum_eq (h : n < m) :
   have hi₄ : (i + 1 : ℚ) ≠ 0 := i.cast_add_one_ne_zero
   have := congr_arg ((↑) : ℕ → ℚ) (choose_succ_right_eq m i)
   push_cast at this
-  dsimp [hf]
+  dsimp [f, hf]
   rw [(eq_mul_inv_iff_mul_eq₀ hi₄).mpr this]
   have := congr_arg ((↑) : ℕ → ℚ) (choose_succ_right_eq n i)
   push_cast at this
@@ -76,8 +76,8 @@ private lemma Fintype.sum_div_mul_card_choose_card :
   rw [← powerset_univ, powerset_card_disjiUnion, sum_disjiUnion]
   have : ∀ {x : ℕ}, ∀ s ∈ powersetCard x (univ : Finset α),
     (card α / ((card α - Finset.card s) * (card α).choose (Finset.card s)) : ℚ) =
-      card α / ((card α - x) * (card α).choose x)
-  · intros n s hs
+      card α / ((card α - x) * (card α).choose x) := by
+    intros n s hs
     rw [mem_powersetCard_univ.1 hs]
   simp_rw [sum_congr rfl this, sum_const, card_powersetCard, card_univ, nsmul_eq_mul, mul_div,
     mul_comm, ← mul_div]
@@ -85,8 +85,8 @@ private lemma Fintype.sum_div_mul_card_choose_card :
     add_comm _ ((card α)⁻¹ : ℚ), ← sum_insert (f := fun x : ℕ ↦ (x⁻¹ : ℚ)) not_mem_range_self,
     ← range_succ]
   have (n) (hn : n ∈ range (card α + 1)) :
-      ((card α).choose n / ((card α - n) * (card α).choose n) : ℚ) = (card α - n : ℚ)⁻¹
-  · rw [div_mul_left]
+      ((card α).choose n / ((card α - n) * (card α).choose n) : ℚ) = (card α - n : ℚ)⁻¹ := by
+    rw [div_mul_left]
     · simp
     · exact cast_ne_zero.2 (choose_pos $ mem_range_succ_iff.1 hn).ne'
   simp only [sum_congr rfl this, mul_eq_mul_left_iff, cast_eq_zero]
@@ -132,8 +132,7 @@ lemma le_truncatedSup : a ≤ truncatedSup s a := by
 
 lemma map_truncatedSup (e : α ≃o β) (s : Finset α) (a : α) :
     e (truncatedSup s a) = truncatedSup (s.map e.toEquiv.toEmbedding) (e a) := by
-  have : e a ∈ lowerClosure (s.map e.toEquiv.toEmbedding : Set β) ↔ a ∈ lowerClosure s
-  · simp
+  have : e a ∈ lowerClosure (s.map e.toEquiv.toEmbedding : Set β) ↔ a ∈ lowerClosure s := by simp
   simp_rw [truncatedSup, apply_dite e, map_finset_sup', map_top, this]
   congr with h
   simp only [filter_map, Function.comp, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
@@ -368,8 +367,8 @@ variable [Nonempty α]
     supSum ({s} : Finset (Finset α)) = card α * ∑ k in range (card α), (k : ℚ)⁻¹ := by
   have : ∀ t : Finset α,
     (card α - (truncatedSup {s} t).card : ℚ) / ((card α - t.card) * (card α).choose t.card) =
-      if t ⊆ s then (card α - s.card : ℚ) / ((card α - t.card) * (card α).choose t.card) else 0
-  · rintro t
+    if t ⊆ s then (card α - s.card : ℚ) / ((card α - t.card) * (card α).choose t.card) else 0 := by
+    rintro t
     simp_rw [truncatedSup_singleton, le_iff_subset]
     split_ifs <;> simp [card_univ]
   simp_rw [← sub_eq_of_eq_add (Fintype.sum_div_mul_card_choose_card α), eq_sub_iff_add_eq,

@@ -43,12 +43,10 @@ noncomputable section
 open DirectSum BigOperators Pointwise SetLike TopCat TopologicalSpace CategoryTheory Opposite
 
 variable {R A : Type*}
-
 variable [CommSemiring R] [CommRing A] [Algebra R A]
-
 variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- The projective spectrum of a graded commutative ring is the subtype of all homogenous ideals
 that are prime and do not contain the irrelevant ideal. -/
 @[ext]

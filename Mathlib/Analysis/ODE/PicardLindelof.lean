@@ -302,7 +302,7 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
     ‖∫ τ in Ι (v.t₀ : ℝ) t, f₁.vComp τ - f₂.vComp τ‖ ≤
         ∫ τ in Ι (v.t₀ : ℝ) t, v.L * ((v.L * |τ - v.t₀|) ^ n / n ! * d) := by
       refine' norm_integral_le_of_norm_le (Continuous.integrableOn_uIoc _) _
-      · -- porting note: was `continuity`
+      · -- Porting note: was `continuity`
         refine .mul continuous_const <| .mul (.div_const ?_ _) continuous_const
         refine .pow (.mul continuous_const <| .abs <| ?_) _
         exact .sub continuous_id continuous_const

@@ -28,8 +28,7 @@ has to be `DenseInducing` (not necessarily injective).
 noncomputable section
 
 open Set Filter
-
-open Classical Topology Filter
+open scoped Topology
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
@@ -44,7 +43,6 @@ structure DenseInducing [TopologicalSpace α] [TopologicalSpace β] (i : α → 
 namespace DenseInducing
 
 variable [TopologicalSpace α] [TopologicalSpace β]
-
 variable {i : α → β} (di : DenseInducing i)
 
 theorem nhds_eq_comap (di : DenseInducing i) : ∀ a : α, 𝓝 a = comap i (𝓝 <| i a) :=
@@ -109,7 +107,8 @@ protected theorem separableSpace [SeparableSpace α] : SeparableSpace β :=
 
 variable [TopologicalSpace δ] {f : γ → α} {g : γ → δ} {h : δ → β}
 
-/-- ```
+/--
+```
  γ -f→ α
 g↓     ↓e
  δ -h→ β
@@ -177,8 +176,8 @@ theorem extend_eq' [T2Space γ] {f : α → γ} (di : DenseInducing i)
 theorem extend_unique_at [T2Space γ] {b : β} {f : α → γ} {g : β → γ} (di : DenseInducing i)
     (hf : ∀ᶠ x in comap i (𝓝 b), g (i x) = f x) (hg : ContinuousAt g b) : di.extend f b = g b := by
   refine' di.extend_eq_of_tendsto fun s hs => mem_map.2 _
-  suffices : ∀ᶠ x : α in comap i (𝓝 b), g (i x) ∈ s
-  exact hf.mp (this.mono fun x hgx hfx => hfx ▸ hgx)
+  suffices ∀ᶠ x : α in comap i (𝓝 b), g (i x) ∈ s from
+    hf.mp (this.mono fun x hgx hfx => hfx ▸ hgx)
   clear hf f
   refine' eventually_comap.2 ((hg.eventually hs).mono _)
   rintro _ hxs x rfl
@@ -245,7 +244,6 @@ namespace DenseEmbedding
 open TopologicalSpace
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
-
 variable {e : α → β} (de : DenseEmbedding e)
 
 theorem inj_iff {x y} : e x = e y ↔ x = y :=
@@ -352,7 +350,6 @@ theorem DenseRange.induction_on₃ [TopologicalSpace β] {e : α → β} {p : β
 section
 
 variable [TopologicalSpace β] [TopologicalSpace γ] [T2Space γ]
-
 variable {f : α → β}
 
 /-- Two continuous functions to a t2-space that agree on the dense range of a function are equal. -/

@@ -27,12 +27,10 @@ def renameBVarTarget (mvarId : MVarId) (old new : Name) : MetaM Unit :=
 * `rename_bvar old new at h` does the same in hypothesis `h`.
 
 ```lean
-example (P : ℕ → ℕ → Prop) (h : ∀ n, ∃ m, P n m) : ∀ l, ∃ m, P l m :=
-begin
-  rename_bvar n q at h, -- h is now ∀ (q : ℕ), ∃ (m : ℕ), P q m,
-  rename_bvar m n, -- target is now ∀ (l : ℕ), ∃ (n : ℕ), P k n,
+example (P : ℕ → ℕ → Prop) (h : ∀ n, ∃ m, P n m) : ∀ l, ∃ m, P l m := by
+  rename_bvar n q at h -- h is now ∀ (q : ℕ), ∃ (m : ℕ), P q m,
+  rename_bvar m n -- target is now ∀ (l : ℕ), ∃ (n : ℕ), P k n,
   exact h -- Lean does not care about those bound variable names
-end
 ```
 Note: name clashes are resolved automatically.
 -/
