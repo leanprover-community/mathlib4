@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Comonoid objects in a cartesian monoidal category.
