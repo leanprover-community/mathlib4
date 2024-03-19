@@ -156,9 +156,12 @@ end NonUnitalAlgHomClass
 
 namespace NonUnitalAlgHom
 
+variable {R A B C} [Monoid R]
 variable [Monoid R] [Monoid S] (φ : R →* S)
 variable {A B C}
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
+variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C]
 
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
 

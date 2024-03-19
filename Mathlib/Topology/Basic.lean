@@ -1174,6 +1174,12 @@ theorem isOpen_iff_nhds : IsOpen s ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s :=
     _ ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s := by simp_rw [interior_eq_nhds, subset_def, mem_setOf]
 #align is_open_iff_nhds isOpen_iff_nhds
 
+theorem TopologicalSpace.ext_iff_nhds {t t' : TopologicalSpace X} :
+    t = t' ↔ ∀ x, @nhds _ t x = @nhds _ t' x :=
+  ⟨fun H x ↦ congrFun (congrArg _ H) _, fun H ↦ by ext; simp_rw [@isOpen_iff_nhds _ _ _, H]⟩
+
+alias ⟨_, TopologicalSpace.ext_nhds⟩ := TopologicalSpace.ext_iff_nhds
+
 theorem isOpen_iff_mem_nhds : IsOpen s ↔ ∀ x ∈ s, s ∈ 𝓝 x :=
   isOpen_iff_nhds.trans <| forall_congr' fun _ => imp_congr_right fun _ => le_principal_iff
 #align is_open_iff_mem_nhds isOpen_iff_mem_nhds
@@ -1752,7 +1758,6 @@ theorem tendsto_lift'_closure_nhds (hf : Continuous f) (x : X) :
 section DenseRange
 
 variable {α ι : Type*} (f : α → X) (g : X → Y)
-
 variable {f : α → X} {s : Set X}
 
 /-- A surjective map has dense range. -/

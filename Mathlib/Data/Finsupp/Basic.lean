@@ -1652,7 +1652,6 @@ instance noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Ty
 section DistribMulActionSemiHom
 
 variable [Semiring R]
-
 variable [AddCommMonoid M] [AddCommMonoid N] [DistribMulAction R M] [DistribMulAction R N]
 
 /-- `Finsupp.single` as a `DistribMulActionSemiHom`.

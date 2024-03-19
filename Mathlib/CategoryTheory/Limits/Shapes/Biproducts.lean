@@ -464,7 +464,6 @@ end Limits
 namespace Limits
 
 variable {J : Type w} {K : Type*}
-
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 
 /-- `biproduct f` computes the biproduct of a family of elements `f`. (It is defined as an
@@ -753,7 +752,6 @@ section πKernel
 section
 
 variable (f : J → C) [HasBiproduct f]
-
 variable (p : J → Prop) [HasBiproduct (Subtype.restrict p f)]
 
 /-- The canonical morphism from the biproduct over a restricted index type to the biproduct of

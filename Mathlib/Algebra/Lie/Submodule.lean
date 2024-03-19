@@ -38,9 +38,7 @@ universe u v w w₁ w₂
 section LieSubmodule
 
 variable (R : Type u) (L : Type v) (M : Type w)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-
 variable [LieRingModule L M] [LieModule R L M]
 
 /-- A Lie submodule of a Lie module is a submodule that is closed under the Lie bracket.
@@ -340,11 +338,8 @@ end LieSubmodule
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-
 variable [LieRingModule L M] [LieModule R L M]
-
 variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 section LatticeStructure
@@ -810,11 +805,8 @@ end LieSubmodule
 section LieSubmoduleMapAndComap
 
 variable {R : Type u} {L : Type v} {L' : Type w₂} {M : Type w} {M' : Type w₁}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable [AddCommGroup M'] [Module R M'] [LieRingModule L M'] [LieModule R L M']
 
 namespace LieSubmodule
@@ -1356,13 +1348,9 @@ end LieSubmoduleMapAndComap
 namespace LieModuleHom
 
 variable {R : Type u} {L : Type v} {M : Type w} {N : Type w₁}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable [AddCommGroup N] [Module R N] [LieRingModule L N] [LieModule R L N]
-
 variable (f : M →ₗ⁅R,L⁆ N)
 
 /-- The kernel of a morphism of Lie algebras, as an ideal in the domain. -/
@@ -1448,11 +1436,8 @@ end LieModuleHom
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable (N : LieSubmodule R L M)
 
 @[simp]
@@ -1495,7 +1480,6 @@ end LieSubmodule
 section TopEquiv
 
 variable {R : Type u} {L : Type v}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- The natural equivalence between the 'top' Lie subalgebra and the enclosing Lie algebra.

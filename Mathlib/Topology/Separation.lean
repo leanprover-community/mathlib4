@@ -2343,8 +2343,8 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
       rw [connectedComponent_eq_iInter_isClopen] at hx
       intro hU
       let N := { s // IsClopen s ∧ x ∈ s }
-      suffices ∃ s : N, s.val ⊆ U by
-        rcases this with ⟨⟨s, hs, hs'⟩, hs''⟩; exact ⟨s, ⟨hs', hs⟩, hs''⟩
+      rsuffices ⟨⟨s, hs, hs'⟩, hs''⟩ : ∃ s : N, s.val ⊆ U
+      · exact ⟨s, ⟨hs', hs⟩, hs''⟩
       haveI : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
       have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.1
       have hdir : Directed Superset fun s : N => s.val := by
