@@ -32,8 +32,7 @@ def linearOrderedSemifield [LinearOrderedSemifield α] (zero : f 0 = 0) (one : f
     (natCast : ∀ n : ℕ, f n = n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrderedSemifield β where
-  toLinearOrderedCommSemiring :=
-    hf.linearOrderedCommSemiring f zero one add mul nsmul npow natCast hsup hinf
+  __ := hf.linearOrderedCommSemiring f zero one add mul nsmul npow natCast hsup hinf
   __ := hf.semifield f zero one add mul inv div nsmul npow zpow natCast
 #align function.injective.linear_ordered_semifield Function.Injective.linearOrderedSemifield
 
@@ -49,8 +48,8 @@ def linearOrderedField [LinearOrderedField α] (zero : f 0 = 0) (one : f 1 = 1)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n)
     (ratCast : ∀ q : ℚ, f q = q) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
     (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) : LinearOrderedField β where
-  toLinearOrderedCommRing := hf.linearOrderedCommRing f zero one add mul neg sub nsmul zsmul npow
-    natCast intCast hsup hinf
+  __ := hf.linearOrderedCommRing f zero one add mul neg sub nsmul zsmul npow natCast intCast
+    hsup hinf
   __ := hf.field f zero one add mul neg sub inv div nsmul zsmul qsmul npow zpow natCast
     intCast ratCast
 #align function.injective.linear_ordered_field Function.Injective.linearOrderedField
