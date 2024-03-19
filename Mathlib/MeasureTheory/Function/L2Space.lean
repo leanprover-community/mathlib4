@@ -279,7 +279,7 @@ end L2
 
 section InnerContinuous
 
-variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] {𝕜 : Type*} [ROrCLike 𝕜]
+variable {α 𝕜 : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [ROrCLike 𝕜]
 variable (μ : Measure α) [IsFiniteMeasure μ]
 
 open scoped BoundedContinuousFunction ComplexConjugate

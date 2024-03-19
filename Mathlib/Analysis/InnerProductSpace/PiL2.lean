@@ -60,7 +60,7 @@ open Real Set Filter ROrCLike Submodule Function BigOperators Uniformity Topolog
 
 noncomputable section
 
-variable {ι ι'𝕜 : Type*} [ROrCLike 𝕜]
+variable {ι ι' 𝕜 : Type*} [ROrCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
