@@ -190,7 +190,7 @@ section eisenstein
 attribute [instance] IsCyclotomicExtension.Rat.three_pid
 
 variable {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {3} ℚ K]
-variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+)) (u : (𝓞 K)ˣ)
+variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+))
 
 noncomputable
 instance : NormalizedGCDMonoid (𝓞 K) :=
@@ -227,9 +227,10 @@ lemma FermatLastTheoremForThree_of_FermatLastTheoremThreeGen :
 section FermatLastTheoremForThreeGen
 
 variable {a b c : 𝓞 K} {u : (𝓞 K)ˣ} (hc : c ≠ 0) (H : a ^ 3 + b ^ 3 = u * c ^ 3)
-  (hcoprime : IsCoprime a b)
+  (hcoprime : IsCoprime a b) (ha : ¬ (hζ.toInteger - 1) ∣ a) (hb : ¬ (hζ.toInteger - 1) ∣ b)
+  (hcdvd : (hζ.toInteger - 1) ∣ c)
 
-lemma a_cube_b_cube_same_congr (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) :
+lemma a_cube_b_cube_same_congr :
     λ ^ 4 ∣ a ^ 3 - 1 ∧ λ ^ 4 ∣ b ^ 3 + 1 ∨  λ ^ 4 ∣ a ^ 3 + 1 ∧ λ ^ 4 ∣ b ^ 3 - 1 := by
   obtain ⟨z, hz⟩ := hcdvd
   rcases lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd hζ ha with
@@ -253,8 +254,7 @@ lemma a_cube_b_cube_same_congr (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ
     _ = (a ^ 3 + 1) + (b ^ 3 + 1) - (a ^ 3 + b ^ 3) := by rw [← hx, ← hy, ← hz, ← H]
     _ = 2 := by ring
 
-lemma lambda_pow_four_dvd_c_cube (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) :
-    λ ^ 4 ∣ c ^ 3 := by
+lemma lambda_pow_four_dvd_c_cube : λ ^ 4 ∣ c ^ 3 := by
   rcases a_cube_b_cube_same_congr hζ H ha hb hcdvd with
     (⟨⟨x, hx⟩, ⟨y, hy⟩⟩ | ⟨⟨x, hx⟩, ⟨y, hy⟩⟩) <;> {
   refine ⟨u⁻¹ * (x + y), ?_⟩
@@ -268,8 +268,7 @@ lemma multiplicity_lambda_c_finite : multiplicity.Finite (hζ.toInteger - 1) c :
   have := IsCyclotomicExtension.Rat.three_pid K
   exact multiplicity.finite_of_not_isUnit (lambda_not_unit hζ) hc
 
-lemma lambda_pow_two_dvd_c (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) :
-    λ ^ 2 ∣ c := by
+lemma lambda_pow_two_dvd_c : λ ^ 2 ∣ c := by
   classical
   have  hm := multiplicity_lambda_c_finite hζ hc
   suffices 2 ≤ (multiplicity ((hζ.toInteger - 1)) c).get hm by
@@ -294,8 +293,7 @@ lemma cube_add_cube_eq_mul : a ^ 3 + b ^ 3 = (a + b) * (a + η * b) * (a + η ^ 
   _ = a ^ 3 + b ^ 3 := by rw [hζ.toInteger_eval_cyclo]; ring
 
 open PartENat in
-lemma lambda_sq_dvd_or_dvd_or_dvd (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) :
-    λ ^ 2 ∣ a + b ∨ λ ^ 2 ∣ a + η * b ∨ λ ^ 2 ∣ a + η ^ 2 * b := by
+lemma lambda_sq_dvd_or_dvd_or_dvd : λ ^ 2 ∣ a + b ∨ λ ^ 2 ∣ a + η * b ∨ λ ^ 2 ∣ a + η ^ 2 * b := by
   classical
   by_contra! h
   rcases h with ⟨h1, h2, h3⟩
@@ -319,9 +317,8 @@ lemma lambda_sq_dvd_or_dvd_or_dvd (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd :
     ← h3', ← Nat.cast_add, ← Nat.cast_add, coe_le_coe] at this
   linarith
 
-lemma ex_dvd_a_add_b (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) :
-    ∃ (a' b' c' : 𝓞 K) (u' : (𝓞 K)ˣ), c' ≠ 0 ∧  a' ^ 3 + b' ^ 3 = u' * c' ^ 3 ∧ IsCoprime a' b' ∧
-    ¬ λ ∣ a' ∧ ¬ λ ∣ b' ∧ λ ^ 2 ∣ a' + b' := by
+lemma ex_dvd_a_add_b : ∃ (a' b' c' : 𝓞 K) (u' : (𝓞 K)ˣ), c' ≠ 0 ∧  a' ^ 3 + b' ^ 3 = u' * c' ^ 3 ∧
+    IsCoprime a' b' ∧ ¬ λ ∣ a' ∧ ¬ λ ∣ b' ∧ λ ^ 2 ∣ a' + b' := by
   rcases lambda_sq_dvd_or_dvd_or_dvd hζ hc H ha hb  hcdvd with (h | h | h)
   · exact ⟨a, b, c, u, hc, H, hcoprime, ha, hb, h⟩
   · refine ⟨a, η * b, c, u, hc, ?_, ?_, ha, fun ⟨x, hx⟩ ↦ hb ⟨η ^ 2 * x, ?_⟩, h⟩
@@ -335,8 +332,25 @@ lemma ex_dvd_a_add_b (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) :
     · rw [mul_comm _ x, ← mul_assoc, ← hx, mul_comm _ b, mul_assoc, ← pow_succ',
         hζ.toInteger_cube_eq_one, mul_one]
 
-theorem final (hc : c ≠ 0) (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c) (hcoprime : IsCoprime a b)
-    (H : a ^ 3 + b ^ 3 = u * c ^ 3) : False := by
+variable (hab : (hζ.toInteger - 1) ^ 2 ∣ a + b)
+
+lemma lambda_dvd_add_eta_mul : λ ∣ a + η * b := by
+  rw [show a + η * b = (a + b) + λ * b by ring]
+  exact dvd_add (dvd_trans (dvd_pow_self _ (by decide)) hab) ⟨b, by rw [mul_comm]⟩
+
+lemma lambda_dvd_add_eta_sq_mul : λ ∣ a + η ^ 2 * b := by
+  rw [show a + η ^ 2 * b = (a + b) + λ ^ 2 * b + 2 * λ * b by ring]
+  exact dvd_add (dvd_add (dvd_trans (dvd_pow_self _ (by decide)) hab) ⟨λ * b, by ring⟩)
+    ⟨2 * b, by ring⟩
+
+lemma lambda_sq_not_dvd_add_eta_mul : ¬ λ ^ 2 ∣ a + η * b := by
+  sorry
+
+lemma lambda_sq_not_dvd_add_eta_sq_mul : ¬ λ ^ 2 ∣ a + η ^ 2 * b := by
+  sorry
+
+theorem final (hc : c ≠ 0) (ha : ¬ λ ∣ a) (hb : ¬ λ ∣ b) (hcdvd : λ ∣ c)
+    (hcoprime : IsCoprime a b) : a ^ 3 + b ^ 3 ≠ u * c ^ 3 := by
   sorry
 
 end FermatLastTheoremForThreeGen
