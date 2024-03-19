@@ -34,22 +34,22 @@ theorem unop_ratCast [RatCast α] (q : ℚ) : unop (q : αᵐᵒᵖ) = q :=
 #align add_opposite.unop_rat_cast AddOpposite.unop_ratCast
 
 instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ where
-  toSemiring := instSemiring
+  __ := instSemiring
   __ := instGroupWithZero
 
 instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ where
-  toRing := instRing
+  __ := instRing
   __ := instDivisionSemiring
   ratCast_mk a b hb h := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv,
     unop_natCast, unop_intCast, Int.commute_cast, div_eq_mul_inv]
   qsmul := qsmulRec _
 
 instance instSemifield [Semifield α] : Semifield αᵐᵒᵖ where
-  toCommSemiring := instCommSemiring
+  __ := instCommSemiring
   __ := instDivisionSemiring
 
 instance instField [Field α] : Field αᵐᵒᵖ where
-  toCommRing := instCommRing
+  __ := instCommRing
   __ := instDivisionRing
 
 end MulOpposite
