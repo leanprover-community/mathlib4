@@ -67,6 +67,8 @@ open Topology
 
 variable {α 𝕜 𝕝 R E F M : Type*}
 
+/-! ### Weak topology for general pairings -/
+
 /-- The space `E` equipped with the weak topology induced by the bilinear form `B`. -/
 @[nolint unusedArguments]
 def WeakBilin [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
@@ -183,6 +185,8 @@ end WeakBilin
 
 section WeakStarTopology
 
+/-! ### Weak-* topology on the topological dual -/
+
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [AddCommMonoid E] [Module 𝕜 E]
   [TopologicalSpace E] [ContinuousConstSMul 𝕜 𝕜]
 
@@ -263,8 +267,7 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual
 
 variable (𝕜 E) in
 /-- The coercion `WeakDual 𝕜 E → (E → 𝕜)` is an embedding. -/
-theorem embedding :
-    Embedding fun (x : WeakDual 𝕜 E) y ↦ x y :=
+theorem embedding : Embedding fun (x : WeakDual 𝕜 E) y ↦ x y :=
   Function.Injective.embedding_induced <| LinearMap.coe_injective.comp
     ContinuousLinearMap.coe_injective
 
@@ -274,11 +277,11 @@ theorem tendsto_iff_forall_eval_tendsto_dualPairing {l : Filter α} {f : α → 
 #align tendsto_iff_forall_eval_tendsto_top_dual_pairing WeakDual.tendsto_iff_forall_eval_tendsto_dualPairing
 
 instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
-  Embedding.t2Space <|
-    WeakBilin.embedding <|
-      show Function.Injective (dualPairing 𝕜 E) from ContinuousLinearMap.coe_injective
+  Embedding.t2Space (WeakDual.embedding _ _)
 
 end WeakDual
+
+/-! ### Weak topology -/
 
 /-- The weak topology is the topology coarsest topology on `E` such that all functionals
 `fun x ↦ v x` are continuous. -/
