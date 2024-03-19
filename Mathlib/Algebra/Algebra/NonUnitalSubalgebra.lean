@@ -461,7 +461,7 @@ def codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x, f x ∈ S) : 
 
 @[simp]
 theorem subtype_comp_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
-    (((NonUnitalSubalgebraClass.subtype S).comp (NonUnitalAlgHom.codRestrict f S hf)) : A →ₛₙₐ[MonoidHom.id R] B) = f :=
+    (NonUnitalSubalgebraClass.subtype S).comp (NonUnitalAlgHom.codRestrict f S hf) = f :=
   NonUnitalAlgHom.ext fun _ => rfl
 
 @[simp]

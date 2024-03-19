@@ -47,12 +47,11 @@ instance instId_comp {M N : Type*} {φ : M → N} {ψ : N → N} [IsId ψ] :
     CompTriple φ ψ φ where
   comp_eq := by simp only [IsId.eq_id, Function.id_comp]
 
-def instComp {M N P : Type*}
+instance (priority := 10) instComp {M N P : Type*}
     {φ : M → N} {ψ : N → P} :
     CompTriple φ ψ  (ψ.comp φ) where
   comp_eq := rfl
 
-attribute [instance 110] instComp
 lemma comp_inv {M N : Type*} {φ : M → N} {ψ : N → M}
     (h : Function.RightInverse φ ψ) {χ : M → M} [IsId χ] :
     CompTriple φ ψ χ where

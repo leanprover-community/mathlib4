@@ -348,7 +348,7 @@ def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [κ : MonoidHom.C
 
 @[simp, norm_cast]
 theorem coe_comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [MonoidHom.CompTriple φ ψ χ] :
-    ⇑(f.comp g : A →ₛₙₐ[χ] C) = (⇑f) ∘ (⇑g) := rfl
+    ⇑(f.comp g) = (⇑f) ∘ (⇑g) := rfl
 #align non_unital_alg_hom.coe_comp NonUnitalAlgHom.coe_comp
 
 theorem comp_apply (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [MonoidHom.CompTriple φ ψ χ] (x : A) :

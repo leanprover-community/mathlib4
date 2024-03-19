@@ -294,16 +294,21 @@ def inverse (f : X →[M] Y₁) (g : Y₁ → X)
       _ = g (f (m • g x)) := by simp only [map_smul, id_eq]
       _ = m • g x := by rw [h₁]
 
-/-
-section exemple
+
+/- section exemple
 -- CHECK INSTANCE LEVELS
 variable (M : Type*) [Monoid M]
 variable (X Y Z : Type*) [MulAction M X] [MulAction M Y] [MulAction M Z]
 variable (f : X →[M] Y) (g : Y →[M] Z)
 
+
+-- set_option trace.Meta.synthInstance true in
 #check g.comp f
--- set_option trace.Meta.synthInstance true
 -- set_option trace.Meta.isDefEq true
+
+attribute [instance 10] CompTriple.instComp
+-- set_option trace.Meta.synthInstance true in
+#check g.comp f
 
 variable (φ ψ : M →* M)
 variable (f : X →[M] Y) (g : Y →ₑ[ψ] Z)
