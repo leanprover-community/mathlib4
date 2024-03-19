@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Monoidal.Mon_
+import Mathlib.Tactic.RewriteSearch
 
 /-!
 # The category of comonoids in a monoidal category.
@@ -273,11 +274,10 @@ theorem tensorObj_comul (A B : Comon_ C) :
     (A ⊗ B).comul = (A.comul ⊗ B.comul) ≫ tensor_μ C (A.X, A.X) (B.X, B.X) := by
   rw [tensorObj_comul']
   congr
-  simp only [tensor_obj, prodMonoidal_tensorObj, tensor_μ, braiding_op, unop_op, Iso.op_hom]
+  simp only [tensor_μ, unop_tensorObj, unop_op]
   apply Quiver.Hom.unop_inj
   dsimp [op_tensorObj, op_associator]
-  rw [← op_id, ← op_id, op_tensor_op, op_tensor_op, op_tensor_op, op_tensor_op]
-  simp [Category.assoc]
+  rw [Category.assoc, Category.assoc, Category.assoc]
   rfl
 
 end Comon_
