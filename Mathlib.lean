@@ -1913,7 +1913,6 @@ import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Hyperoperation
-import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Nat.Log
@@ -2449,6 +2448,7 @@ import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.Nat.Div
 import Mathlib.Init.Data.Nat.GCD
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.Data.Option.Basic
 import Mathlib.Init.Data.Option.Init.Lemmas
 import Mathlib.Init.Data.Option.Lemmas
