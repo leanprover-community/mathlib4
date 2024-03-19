@@ -132,9 +132,7 @@ lemma edge_adj (v w : V) : (edge s t).Adj v w ↔ (v = s ∧ w = t ∨ v = t ∧
   rw [edge, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq_iff]
 
 lemma edge_self_eq_bot : edge s s = ⊥ := by
-  ext a b
-  rw [edge_adj, or_self, bot_adj, iff_false, not_and, and_imp, not_ne_iff]
-  exact fun j k ↦ j.trans k.symm
+  ext; rw [edge_adj]; aesop
 
 @[simp]
 lemma sup_edge_self : G ⊔ edge s s = G := by
@@ -142,7 +140,7 @@ lemma sup_edge_self : G ⊔ edge s s = G := by
 
 variable {s t}
 
-lemma edge_edgeSet_of_ne (h : s ≠ t): (edge s t).edgeSet = {s(s, t)} := by
+lemma edge_edgeSet_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by
   rwa [edge, edgeSet_fromEdgeSet, sdiff_eq_left, Set.disjoint_singleton_left, Set.mem_setOf_eq,
     Sym2.isDiag_iff_proj_eq]
 
