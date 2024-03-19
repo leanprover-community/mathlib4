@@ -40,7 +40,7 @@ noncomputable instance {A B : Type u} [Ring A] [Ring B]
     TensorProduct.comul_eq_toLinearMap]
   <;> simp only [map_one, map_mul]
 
-@[simps! toLinearMap] noncomputable def TensorProduct.map (f : A →b[R] B) (g : C →b[R] D) :
+@[simps! toCoalgHom] noncomputable def TensorProduct.map (f : A →b[R] B) (g : C →b[R] D) :
     A ⊗[R] C →b[R] B ⊗[R] D :=
   { Coalgebra.TensorProduct.map f.toCoalgHom g.toCoalgHom,
       Algebra.TensorProduct.map f.toAlgHom g.toAlgHom with }
@@ -55,9 +55,17 @@ noncomputable abbrev rTensor (f : B →b[R] C) : B ⊗[R] A →b[R] C ⊗[R] A :
 
 variable (R B C)
 
-@[simps! toCoalgEquiv] noncomputable def TensorProduct.assoc :
+lemma ffs3 (x) :
+  Coalgebra.TensorProduct.assoc R A B C x = Algebra.TensorProduct.assoc R A B C x := rfl
+--set_option trace.profiler true
+noncomputable def TensorProduct.assoc :
     (A ⊗[R] B) ⊗[R] C ≃b[R] A ⊗[R] (B ⊗[R] C) :=
-  { Coalgebra.TensorProduct.assoc R A B C, Algebra.TensorProduct.assoc R A B C with }
+  { Coalgebra.TensorProduct.assoc R A B C with
+    --map_mul' := fun x y => by
+
+    --by simp only [ffs3, map_mul]-- map_mul (Algebra.TensorProduct.assoc R A B C)
+    --commutes' := sorry --by simp only [ffs3, AlgHomClass.commutes]
+     }-- (Algebra.TensorProduct.assoc R A B C) }
 
 @[simps! toCoalgEquiv] noncomputable def TensorProduct.lid : R ⊗[R] A ≃b[R] A :=
   { Coalgebra.TensorProduct.lid R A, Algebra.TensorProduct.lid R A with }
