@@ -97,7 +97,6 @@ theorem isSymm_standardBilinForm : LinearMap.IsSymm (standardBilinForm M) := by
   intro i'
   simp [standardBilinForm, hM.symmetric.apply i i']
 
-
 variable (M)
 
 /-- The orthogonal reflection in the vector `v` under the standard bilinear form.
