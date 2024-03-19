@@ -999,7 +999,6 @@ section
 universe v₁ v₂ u₁ u₂
 
 variable (C₁ : Type u₁) [Category.{v₁} C₁] [MonoidalCategory.{v₁} C₁]
-
 variable (C₂ : Type u₂) [Category.{v₂} C₂] [MonoidalCategory.{v₂} C₂]
 
 attribute [local simp] associator_naturality leftUnitor_naturality rightUnitor_naturality pentagon

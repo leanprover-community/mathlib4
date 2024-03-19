@@ -61,7 +61,6 @@ open ULift CategoryTheory MulOpposite
 namespace Monoid
 
 variable {m : Type u → Type u} [Monad m]
-
 variable {α β : Type u}
 
 /-- For a list, foldl f x [y₀,y₁] reduces as follows:
@@ -275,7 +274,6 @@ theorem foldl.unop_ofFreeMonoid (f : β → α → β) (xs : FreeMonoid α) (a :
 #align traversable.foldl.unop_of_free_monoid Traversable.foldl.unop_ofFreeMonoid
 
 variable (m : Type u → Type u) [Monad m] [LawfulMonad m]
-
 variable {t : Type u → Type u} [Traversable t] [LawfulTraversable t]
 
 open LawfulTraversable
@@ -303,7 +301,6 @@ open LawfulTraversable
 open List (cons)
 
 variable {α β γ : Type u}
-
 variable {t : Type u → Type u} [Traversable t] [LawfulTraversable t]
 
 @[simp]

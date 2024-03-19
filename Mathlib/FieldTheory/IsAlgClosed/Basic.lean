@@ -246,7 +246,6 @@ private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
     (IntermediateField.adjoin_univ K L)
 
 variable {R : Type u} [CommRing R]
-
 variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M] [NoZeroSMulDivisors R S]
   [NoZeroSMulDivisors R M] (hS : Algebra.IsAlgebraic R S)
 

@@ -844,7 +844,6 @@ section Induced
 open TopologicalSpace
 
 variable {α : Type*} {β : Type*}
-
 variable [t : TopologicalSpace β] {f : α → β}
 
 theorem isOpen_induced_eq {s : Set α} :

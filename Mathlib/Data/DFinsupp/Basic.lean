@@ -51,7 +51,6 @@ universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 open BigOperators
 
 variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
-
 variable (β)
 
 /-- A dependent function `Π i, β i` with finite support, with notation `Π₀ i, β i`.
@@ -2272,7 +2271,6 @@ variable [DecidableEq ι]
 namespace MonoidHom
 
 variable {R S : Type*}
-
 variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
 #align monoid_hom.map_dfinsupp_prod map_dfinsupp_prodₓ
