@@ -37,11 +37,12 @@ The above types have corresponding classes:
 
 ## Notations
 
+We introduce the following notation to code equivariant maps (the subscript index `ₑ` is for *equivariant*) :
 * `X →ₑ[φ] Y` is `MulActionHom φ X Y`.
 * `A →ₑ+[φ] B` is `DistribMulActionHom φ A B`.
 * `R →ₑ+*[φ] S` is `MulSemiringActionHom φ R S`.
 
-* When `M = N` and `φ = MonoidHom.id M`, we provide the notation `X →[M] Y`
+* When `M = N` and `φ = MonoidHom.id M`, we provide the backward compatible notation `X →[M] Y`
 -/
 
 assert_not_exists Submonoid

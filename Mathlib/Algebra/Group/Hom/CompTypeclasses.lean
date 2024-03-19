@@ -61,14 +61,6 @@ instance instIsId {M : Type*} [Monoid M] : IsId (MonoidHom.id M) where
 instance {σ : M →* M} [h : _root_.CompTriple.IsId σ] : IsId σ  where
   eq_id := by ext; exact _root_.congr_fun h.eq_id _
 
-instance {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ : CompTriple φ ψ χ] :
-    _root_.CompTriple φ ψ χ where
-  comp_eq := by rw [← MonoidHom.coe_comp, κ.comp_eq]
-
-instance instComp {φ : M →* N} {ψ : N →* P} :
-    CompTriple φ ψ (ψ.comp φ) where
-  comp_eq := rfl
-
 instance instComp_id {N P : Type*} [Monoid N] [Monoid P]
     {φ : N →* N} [IsId φ] {ψ : N →* P} :
     CompTriple φ ψ ψ where
@@ -85,6 +77,14 @@ lemma comp_inv {φ : M →* N} {ψ : N →* M} (h : Function.RightInverse φ ψ)
   comp_eq := by
     simp only [IsId.eq_id, ← DFunLike.coe_fn_eq, coe_comp, h.id]
     rfl
+
+instance {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ : CompTriple φ ψ χ] :
+    _root_.CompTriple φ ψ χ where
+  comp_eq := by rw [← MonoidHom.coe_comp, κ.comp_eq]
+
+instance instComp {φ : M →* N} {ψ : N →* P} :
+    CompTriple φ ψ (ψ.comp φ) where
+  comp_eq := rfl
 
 lemma comp_apply
     {φ : M →* N} {ψ : N →* P} {χ : M →* P} (h : CompTriple φ ψ χ) (x : M) :
