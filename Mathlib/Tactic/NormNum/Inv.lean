@@ -67,7 +67,7 @@ def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := 
   let some ⟨_, na, pa⟩ := ra.toInt (q(Int.instRingInt) : Q(Ring Int)) | failure
   let ⟨nb, pb⟩ ← deriveNat q($b) q(AddCommMonoidWithOne.toAddMonoidWithOne)
   let rab ← derive q($na / $nb : Rat)
-  let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.divisionRing)
+  let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.instDivisionRing)
   return .isRat' _ q n d q(isRat_mkRat $pa $pb $p)
 
 theorem isNat_ratCast [DivisionRing R] : {q : ℚ} → {n : ℕ} →
