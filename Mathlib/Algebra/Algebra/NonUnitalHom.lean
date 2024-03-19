@@ -543,7 +543,7 @@ theorem toNonUnitalAlgHom_eq_coe (f : A →ₐ[R] B) : f.toNonUnitalAlgHom = f :
   rfl
 #align alg_hom.to_non_unital_alg_hom_eq_coe AlgHom.toNonUnitalAlgHom_eq_coe
 
-@[simp, norm_cast]
+@[simp high, norm_cast]
 theorem coe_to_nonUnitalAlgHom (f : A →ₐ[R] B) : ⇑(f.toNonUnitalAlgHom) = ⇑f :=
   rfl
 #align alg_hom.coe_to_non_unital_alg_hom AlgHom.coe_to_nonUnitalAlgHom
