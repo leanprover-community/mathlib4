@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
 # The category of comonoids in a monoidal category.
@@ -184,20 +185,15 @@ Turn a comonoid object into a monoid object in the opposite category.
   one := A.counit.op
   mul := A.comul.op
   one_mul := by
-    rw [op_leftUnitor]
-    dsimp
-    rw [← A.counit_comul, op_comp, op_tensorHom]
+    rw [← op_whiskerRight, ← op_comp, counit_comul]
     rfl
   mul_one := by
-    rw [op_rightUnitor]
-    dsimp
-    rw [← A.comul_counit, op_comp, op_tensorHom]
+    rw [← op_whiskerLeft, ← op_comp, comul_counit]
     rfl
   mul_assoc := by
-    rw [op_associator]
-    dsimp
-    rw [← op_id, op_tensor_op, op_tensor_op, ← op_comp, ← op_comp, ← op_comp]
-    rw [Category.assoc, ← A.comul_assoc]
+    rw [← op_inv_associator, ← op_whiskerRight, ← op_comp, ← op_whiskerLeft, ← op_comp,
+      comul_assoc, op_comp, op_comp_assoc]
+    rfl
 
 /--
 The contravariant functor turning comonoid objects into monoid objects in the opposite category.
@@ -216,16 +212,11 @@ Turn a monoid object in the opposite category into a comonoid object.
   X := unop A.X
   counit := A.one.unop
   comul := A.mul.unop
-  counit_comul := by
-    rw [← unop_id, unop_tensor_unop, ← unop_comp, A.one_mul]
-    rfl
-  comul_counit := by
-    rw [← unop_id, unop_tensor_unop, ← unop_comp, A.mul_one]
-    rfl
+  counit_comul := by rw [← unop_whiskerRight, ← unop_comp, Mon_.one_mul]; rfl
+  comul_counit := by rw [← unop_whiskerLeft, ← unop_comp, Mon_.mul_one]; rfl
   comul_assoc := by
-    rw [← unop_id, unop_tensor_unop, unop_tensor_unop, ← unop_comp, A.mul_assoc,
-      op_associator]
-    simp
+    rw [← unop_whiskerRight, ← unop_comp, ← unop_whiskerLeft, ← unop_comp_assoc, Mon_.mul_assoc]
+    rfl
 
 /--
 The contravariant functor turning monoid objects in the opposite category into comonoid objects.
