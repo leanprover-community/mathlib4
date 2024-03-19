@@ -42,7 +42,7 @@ def Cone.toStructuredArrow {F : J ⥤ C} (c : Cone F) : J ⥤ StructuredArrow c.
   obj j := StructuredArrow.mk (c.π.app j)
   map f := StructuredArrow.homMk f
 
-/-- If `F` has a limit, then then the limit projections can be interpreted as structured arrows
+/-- If `F` has a limit, then the limit projections can be interpreted as structured arrows
     `limit F ⟶ F.obj -`. -/
 @[simps]
 noncomputable def limit.toStructuredArrow (F : J ⥤ C) [HasLimit F] :
