@@ -9,6 +9,7 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+import Mathlib.Algebra.Group.AddChar
 
 #align_import analysis.fourier.fourier_transform from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -65,7 +66,7 @@ open scoped Topology
 
 -- To avoid messing around with multiplicative vs. additive characters, we make a notation.
 /-- Notation for multiplicative character applied in an additive setting. -/
-scoped[FourierTransform] notation e "[" x "]" => (e (Multiplicative.ofAdd x) : ℂ)
+scoped[FourierTransform] notation e "[" x "]" => (e x : ℂ)
 
 open FourierTransform
 
@@ -83,12 +84,12 @@ section Defs
 
 /-- The Fourier transform integral for `f : V → E`, with respect to a bilinear form `L : V × W → 𝕜`
 and an additive character `e`. -/
-def fourierIntegral (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V) (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E)
+def fourierIntegral (e : AddChar 𝕜 𝕊) (μ : Measure V) (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E)
     (w : W) : E :=
   ∫ v, e[-L v w] • f v ∂μ
 #align vector_fourier.fourier_integral VectorFourier.fourierIntegral
 
-theorem fourierIntegral_smul_const (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V)
+theorem fourierIntegral_smul_const (e : AddChar 𝕜 𝕊) (μ : Measure V)
     (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (r : ℂ) :
     fourierIntegral e μ L (r • f) = r • fourierIntegral e μ L f := by
   ext1 w
@@ -100,7 +101,7 @@ theorem fourierIntegral_smul_const (e : Multiplicative 𝕜 →* 𝕊) (μ : Mea
 #align vector_fourier.fourier_integral_smul_const VectorFourier.fourierIntegral_smul_const
 
 /-- The uniform norm of the Fourier integral of `f` is bounded by the `L¹` norm of `f`. -/
-theorem norm_fourierIntegral_le_integral_norm (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V)
+theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Measure V)
     (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (w : W) :
     ‖fourierIntegral e μ L f w‖ ≤ ∫ v : V, ‖f v‖ ∂μ := by
   refine' (norm_integral_le_integral_norm _).trans (le_of_eq _)
@@ -108,7 +109,7 @@ theorem norm_fourierIntegral_le_integral_norm (e : Multiplicative 𝕜 →* 𝕊
 #align vector_fourier.norm_fourier_integral_le_integral_norm VectorFourier.norm_fourierIntegral_le_integral_norm
 
 /-- The Fourier integral converts right-translation into scalar multiplication by a phase factor.-/
-theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V)
+theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : AddChar 𝕜 𝕊) (μ : Measure V)
     [μ.IsAddRightInvariant] (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (v₀ : V) :
     fourierIntegral e μ L (f ∘ fun v => v + v₀) =
       fun w => e[L v₀ w] • fourierIntegral e μ L f w := by
@@ -117,7 +118,7 @@ theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : Multiplicative �
   conv in L _ => rw [← add_sub_cancel v v₀]
   rw [integral_add_right_eq_self fun v : V => e[-L (v - v₀) w] • f v, ← integral_smul]
   congr 1 with v
-  rw [← smul_assoc, smul_eq_mul, ← Submonoid.coe_mul, ← e.map_mul, ← ofAdd_add, ←
+  rw [← smul_assoc, smul_eq_mul, ← Submonoid.coe_mul, ← e.map_add_mul, ←
     LinearMap.neg_apply, ← sub_eq_add_neg, ← LinearMap.sub_apply, LinearMap.map_sub, neg_sub]
 #align vector_fourier.fourier_integral_comp_add_right VectorFourier.fourierIntegral_comp_add_right
 
@@ -132,7 +133,7 @@ section Continuous
    allowing it would complicate matters in the most important use cases.
 -/
 variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
-  [TopologicalSpace W] {e : Multiplicative 𝕜 →* 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
+  [TopologicalSpace W] {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
 
 /-- For any `w`, the Fourier integral is convergent iff `f` is integrable. -/
 theorem fourier_integral_convergent_iff (he : Continuous e)
@@ -151,9 +152,8 @@ theorem fourier_integral_convergent_iff (he : Continuous e)
   -- then use it for both directions
   refine' ⟨fun hf => aux hf w, fun hf => _⟩
   convert aux hf (-w)
-  rw [← smul_assoc, smul_eq_mul, ← Submonoid.coe_mul, ← MonoidHom.map_mul, ← ofAdd_add,
-    LinearMap.map_neg, neg_neg, ← sub_eq_add_neg, sub_self, ofAdd_zero, MonoidHom.map_one,
-    Submonoid.coe_one, one_smul]
+  rw [← smul_assoc, smul_eq_mul, ← Submonoid.coe_mul, ← e.map_add_mul, LinearMap.map_neg, neg_neg,
+    ← sub_eq_add_neg, sub_self, e.map_zero_one, Submonoid.coe_one, one_smul]
 #align vector_fourier.fourier_integral_convergent_iff VectorFourier.fourier_integral_convergent_iff
 
 variable [CompleteSpace E]
@@ -189,7 +189,7 @@ section Fubini
 
 variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] [MeasurableSpace W] [BorelSpace W]
-  {e : Multiplicative 𝕜 →* 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
+  {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
   {ν : Measure W} [SigmaFinite μ] [SigmaFinite ν] [SecondCountableTopology V]
 
 variable [CompleteSpace E] [CompleteSpace F]
@@ -258,28 +258,28 @@ variable [CompleteSpace E]
 
 /-- The Fourier transform integral for `f : 𝕜 → E`, with respect to the measure `μ` and additive
 character `e`. -/
-def fourierIntegral (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (w : 𝕜) : E :=
+def fourierIntegral (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (w : 𝕜) : E :=
   VectorFourier.fourierIntegral e μ (LinearMap.mul 𝕜 𝕜) f w
 #align fourier.fourier_integral Fourier.fourierIntegral
 
-theorem fourierIntegral_def (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (w : 𝕜) :
+theorem fourierIntegral_def (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (w : 𝕜) :
     fourierIntegral e μ f w = ∫ v : 𝕜, e[-(v * w)] • f v ∂μ :=
   rfl
 #align fourier.fourier_integral_def Fourier.fourierIntegral_def
 
-theorem fourierIntegral_smul_const (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (r : ℂ) :
+theorem fourierIntegral_smul_const (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (r : ℂ) :
     fourierIntegral e μ (r • f) = r • fourierIntegral e μ f :=
   VectorFourier.fourierIntegral_smul_const _ _ _ _ _
 #align fourier.fourier_integral_smul_const Fourier.fourierIntegral_smul_const
 
 /-- The uniform norm of the Fourier transform of `f` is bounded by the `L¹` norm of `f`. -/
-theorem norm_fourierIntegral_le_integral_norm (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure 𝕜)
+theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜)
     (f : 𝕜 → E) (w : 𝕜) : ‖fourierIntegral e μ f w‖ ≤ ∫ x : 𝕜, ‖f x‖ ∂μ :=
   VectorFourier.norm_fourierIntegral_le_integral_norm _ _ _ _ _
 #align fourier.norm_fourier_integral_le_integral_norm Fourier.norm_fourierIntegral_le_integral_norm
 
 /-- The Fourier transform converts right-translation into scalar multiplication by a phase factor.-/
-theorem fourierIntegral_comp_add_right [MeasurableAdd 𝕜] (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure 𝕜)
+theorem fourierIntegral_comp_add_right [MeasurableAdd 𝕜] (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜)
     [μ.IsAddRightInvariant] (f : 𝕜 → E) (v₀ : 𝕜) :
     fourierIntegral e μ (f ∘ fun v => v + v₀) = fun w => e[v₀ * w] • fourierIntegral e μ f w :=
   VectorFourier.fourierIntegral_comp_add_right _ _ _ _ _
@@ -294,10 +294,10 @@ open scoped Real
 namespace Real
 
 /-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`. -/
-def fourierChar : Multiplicative ℝ →* 𝕊 where
-  toFun z := expMapCircle (2 * π * Multiplicative.toAdd z)
-  map_one' := by simp only; rw [toAdd_one, mul_zero, expMapCircle_zero]
-  map_mul' x y := by simp only; rw [toAdd_mul, mul_add, expMapCircle_add]
+def fourierChar : AddChar ℝ 𝕊 where
+  toFun z := expMapCircle (2 * π * z)
+  map_zero_one' := by simp only; rw [mul_zero, expMapCircle_zero]
+  map_add_mul' x y := by simp only; rw [mul_add, expMapCircle_add]
 #align real.fourier_char Real.fourierChar
 
 @[inherit_doc] scoped[FourierTransform] notation "𝐞" => Real.fourierChar
