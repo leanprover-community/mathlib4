@@ -115,6 +115,7 @@ variable (hM : IsCoxeter M)
 local notation "V" => B →₀ ℝ
 instance : AddCommMonoid V := Finsupp.instAddCommMonoid
 
+/-- The simple root at index `i`. That is, the standard basis vector of `B →₀ ℝ` at index `i`. -/
 def simpleRoot (i : B) : V := Finsupp.single i 1
 local prefix:100 "α" => simpleRoot
 
