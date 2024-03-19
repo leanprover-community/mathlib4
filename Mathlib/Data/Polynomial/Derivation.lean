@@ -51,7 +51,6 @@ theorem derivation_ext {D₁ D₂ : Derivation R R[X] A} (h : D₁ X = D₂ X) :
     simp only [adjoin_X, Algebra.coe_top, Set.mem_univ]
 
 variable [IsScalarTower R (Polynomial R) A]
-
 variable (R)
 
 /-- The derivation on `R[X]` that takes the value `a` on `X`. -/

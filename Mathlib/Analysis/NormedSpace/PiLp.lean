@@ -92,7 +92,6 @@ for Pi types will not trigger. -/
 variable {𝕜 p α}
 variable [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 variable [∀ i, Module 𝕜 (β i)] [∀ i, BoundedSMul 𝕜 (β i)] (c : 𝕜)
-
 variable (x y : PiLp p β) (i : ι)
 
 @[simp]
@@ -302,7 +301,6 @@ explaining why having definitionally the right uniformity is often important.
 
 
 variable [Fact (1 ≤ p)] [∀ i, PseudoMetricSpace (α i)] [∀ i, PseudoEMetricSpace (β i)]
-
 variable [Fintype ι]
 
 /-- Endowing the space `PiLp p β` with the `L^p` pseudoemetric structure. This definition is not
@@ -688,9 +686,7 @@ def equivₗᵢ : PiLp ∞ β ≃ₗᵢ[𝕜] ∀ i, β i :=
 #align pi_Lp.equivₗᵢ PiLp.equivₗᵢ
 
 variable {ι' : Type*}
-
 variable [Fintype ι']
-
 variable (p 𝕜)
 variable (E : Type*) [NormedAddCommGroup E] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
@@ -742,7 +738,6 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_single [DecidableEq ι] [Decida
 section Single
 
 variable (p)
-
 variable [DecidableEq ι]
 
 -- Porting note: added `hp`
