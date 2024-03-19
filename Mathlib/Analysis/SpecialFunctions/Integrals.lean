@@ -744,7 +744,8 @@ theorem integral_cos_pow_aux :
     _ = C + (n + 1) * ∫ x in a..b, cos x ^ n - cos x ^ (n + 2) := by
       simp [sin_sq, sub_mul, ← pow_add, add_comm]
     _ = (C + (n + 1) * ∫ x in a..b, cos x ^ n) - (n + 1) * ∫ x in a..b, cos x ^ (n + 2) := by
-      rw [integral_sub, mul_sub, add_sub_assoc] <;> apply Continuous.intervalIntegrable <;> continuity
+      rw [integral_sub, mul_sub, add_sub_assoc] <;>
+        apply Continuous.intervalIntegrable <;> continuity
   all_goals apply Continuous.intervalIntegrable; continuity
 #align integral_cos_pow_aux integral_cos_pow_aux
 
