@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2023 Lean FRO LLC. All rights reserved.
+Copyright (c) 2024 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Mon_
-import Mathlib.CategoryTheory.Monoidal.Opposite
+import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # The category of comonoids in a monoidal category.
@@ -41,9 +41,9 @@ structure Comon_ where
   counit : X ⟶ 𝟙_ C
   /-- The comultiplication morphism of a comonoid object. -/
   comul : X ⟶ X ⊗ X
-  counit_comul : comul ≫ (counit ⊗ 𝟙 X) = (λ_ X).inv := by aesop_cat
-  comul_counit : comul ≫ (𝟙 X ⊗ counit) = (ρ_ X).inv := by aesop_cat
-  comul_assoc : comul ≫ (comul ⊗ 𝟙 X) = comul ≫ (𝟙 X ⊗ comul) ≫ (α_ X X X).inv := by aesop_cat
+  counit_comul : comul ≫ (counit ▷ X) = (λ_ X).inv := by aesop_cat
+  comul_counit : comul ≫ (X ◁ counit) = (ρ_ X).inv := by aesop_cat
+  comul_assoc : comul ≫ (comul ▷ X) = comul ≫ (X ◁ comul) ≫ (α_ X X X).inv := by aesop_cat
 
 attribute [reassoc] Comon_.counit_comul Comon_.comul_counit
 
@@ -71,11 +71,11 @@ variable {M : Comon_ C}
 
 @[simp]
 theorem counit_comul_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (M.counit ⊗ f) = f ≫ (λ_ Z).inv := by
-  rw [← tensor_id_comp_id_tensor, ← Category.assoc, M.counit_comul, leftUnitor_inv_naturality]
+  rw [leftUnitor_inv_naturality, tensorHom_def, counit_comul_assoc]
 
 @[simp]
 theorem mul_one_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (f ⊗ M.counit) = f ≫ (ρ_ Z).inv := by
-  rw [← id_tensor_comp_tensor_id, ← Category.assoc, M.comul_counit, rightUnitor_inv_naturality]
+  rw [rightUnitor_inv_naturality, tensorHom_def', comul_counit_assoc]
 
 theorem assoc_flip :
     M.comul ≫ (𝟙 M.X ⊗ M.comul) = M.comul ≫ (M.comul ⊗ 𝟙 M.X) ≫ (α_ M.X M.X M.X).hom := by simp

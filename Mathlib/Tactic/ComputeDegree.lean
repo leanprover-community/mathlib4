@@ -8,9 +8,9 @@ import Mathlib.Data.Polynomial.Degree.Lemmas
 
 /-!
 
-# `compute_degree` a tactic for computing degrees of polynomials
+# `compute_degree` and `monicity`: tactics for explicit polynomials
 
-This file defines the tactic `compute_degree`.
+This file defines two related tactics: `compute_degree` and `monicity`.
 
 Using `compute_degree` when the goal is of one of the five forms
 *  `natDegree f ≤ d`,
@@ -21,11 +21,17 @@ Using `compute_degree` when the goal is of one of the five forms
 tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.
 
-See the doc-string for more details.
+Using `monicity` when the goal is of the form `Monic f` tries to solve the goal.
+It may leave side-goals, in case it is not entirely successful.
+
+Both tactics admit a `!` modifier (`compute_degree!` and `monicity!`) instructing
+Lean to try harder to close the goal.
+
+See the doc-strings for more details.
 
 ##  Future work
 
-* Currently, the tactic does not deal correctly with some edge cases.  For instance,
+* Currently, `compute_degree` does not deal correctly with some edge cases.  For instance,
   ```lean
   example [Semiring R] : natDegree (C 0 : R[X]) = 0 := by
     compute_degree
@@ -105,7 +111,7 @@ theorem coeff_mul_add_of_le_natDegree_of_eq_ite {d df dg : ℕ} {a b : R} {f g :
     · exact natDegree_mul_le_of_le ‹_› ‹_›
     · exact ne_comm.mp h
 
-theorem coeff_pow_of_natDegree_le_of_eq_ite' [Semiring R] {m n o : ℕ} {a : R} {p : R[X]}
+theorem coeff_pow_of_natDegree_le_of_eq_ite' {m n o : ℕ} {a : R} {p : R[X]}
     (h_pow : natDegree p ≤ n) (h_exp : m * n ≤ o) (h_pow_bas : coeff p n = a) :
     coeff (p ^ m) o = if o = m * n then a ^ m else 0 := by
   split_ifs with h

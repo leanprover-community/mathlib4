@@ -6,9 +6,9 @@ Authors: Mario Carneiro, Kyle Miller
 import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Tactic.ScopedNS
-import Mathlib.Util.Syntax
 import Std.Linter.UnreachableTactic
 import Std.Util.ExtendedBinder
+import Std.Lean.Syntax
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.

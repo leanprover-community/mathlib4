@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Johannes Hölzl, Reid Barton, Scott Morrison, Patrick Massot, Kyle Miller,
 Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
-import Std.Classes.SetNotation
 import Mathlib.Data.SProd
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
@@ -67,6 +66,9 @@ compile_def% HasCompl.compl
 compile_def% EmptyCollection.emptyCollection
 compile_def% Insert.insert
 compile_def% Singleton.singleton
+
+attribute [ext] Set.ext
+#align set.ext Set.ext
 
 universe u v w
 

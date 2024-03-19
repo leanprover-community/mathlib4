@@ -41,7 +41,7 @@ def zariskiPretopology : Pretopology (Scheme.{u}) where
   pullbacks := by
     rintro Y X f _ ⟨U, rfl⟩
     exact ⟨U.pullbackCover' f, (Presieve.ofArrows_pullback _ _ _).symm⟩
-  Transitive := by
+  transitive := by
     rintro X _ T ⟨U, rfl⟩ H
     choose V hV using H
     use U.bind (fun j => V (U.map j) ⟨j⟩)

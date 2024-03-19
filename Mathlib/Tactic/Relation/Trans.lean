@@ -5,7 +5,6 @@ Authors: Siddhartha Gadgil, Mario Carneiro
 -/
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Elab.Tactic.Basic
-import Lean.Elab.Tactic.Location
 
 /-!
 # `trans` tactic
@@ -28,7 +27,7 @@ def transExt.config : WhnfCoreConfig := {}
 initialize transExt :
     SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun dt (n, ks) ↦ dt.insertCore ks n transExt.config
+    addEntry := fun dt (n, ks) ↦ dt.insertCore ks n
     initial := {}
   }
 
@@ -179,3 +178,9 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
 
   throwError m!"no applicable transitivity lemma found for {indentExpr tgt}
 "
+
+syntax "transitivity" (ppSpace colGt term)? : tactic
+set_option hygiene false in
+macro_rules
+  | `(tactic| transitivity) => `(tactic| trans)
+  | `(tactic| transitivity $e) => `(tactic| trans $e)
