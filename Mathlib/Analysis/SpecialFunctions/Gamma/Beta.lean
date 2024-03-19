@@ -334,7 +334,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
       Measure.restrict_restrict_of_subset Ioc_subset_Ioi_self]
   -- f is uniformly bounded by the Gamma integrand
   · intro n
-    refine' (ae_restrict_iff' measurableSet_Ioi).mpr ?_
+    rw [ae_restrict_iff' measurableSet_Ioi]
     filter_upwards with x hx
     dsimp only [f]
     rcases lt_or_le (n : ℝ) x with (hxn | hxn)

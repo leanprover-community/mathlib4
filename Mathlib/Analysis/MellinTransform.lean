@@ -354,8 +354,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
       ⟨min w w', lt_min hw1 hw1', (min_le_right _ _).trans_lt hw2', (min_le_left _ _).trans_lt hw2⟩
   let bound : ℝ → ℝ := fun t : ℝ => (t ^ (s.re + v - 1) + t ^ (s.re - v - 1)) * |log t| * ‖f t‖
   have h1 : ∀ᶠ z : ℂ in 𝓝 s, AEStronglyMeasurable (F z) (volume.restrict <| Ioi 0) := by
-    filter_upwards with z
-    refine AEStronglyMeasurable.smul ?_ hfc.aestronglyMeasurable
+    refine' eventually_of_forall fun z => AEStronglyMeasurable.smul _ hfc.aestronglyMeasurable
     refine' ContinuousOn.aestronglyMeasurable _ measurableSet_Ioi
     refine' ContinuousAt.continuousOn fun t ht => _
     exact continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)

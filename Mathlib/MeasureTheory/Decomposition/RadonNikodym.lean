@@ -80,7 +80,7 @@ lemma rnDeriv_pos [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ∀ᵐ x ∂μ, 0 < μ.rnDeriv ν x := by
   rw [← Measure.withDensity_rnDeriv_eq _ _  hμν,
     ae_withDensity_iff (Measure.measurable_rnDeriv _ _), Measure.withDensity_rnDeriv_eq _ _  hμν]
-  filter_upwards with x hx using lt_of_le_of_ne (zero_le _) hx.symm
+  exact ae_of_all _ (fun x hx ↦ lt_of_le_of_ne (zero_le _) hx.symm)
 
 lemma rnDeriv_pos' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     ∀ᵐ x ∂μ, 0 < ν.rnDeriv μ x := by
@@ -193,13 +193,13 @@ theorem rnDeriv_restrict (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     {s : Set α} (hs : MeasurableSet s) :
     (μ.restrict s).rnDeriv ν =ᵐ[ν] s.indicator (μ.rnDeriv ν) := by
   rw [← withDensity_indicator_one hs]
-  refine (rnDeriv_withDensity_left ?_ ?_ ?_).trans ?_
+  refine (rnDeriv_withDensity_left ?_ ?_ ?_).trans (ae_of_all _ (fun x ↦ ?_))
   · exact measurable_one.aemeasurable.indicator hs
   · exact measurable_one.aemeasurable.indicator hs
   · filter_upwards with x
     simp only [Set.indicator_apply, Pi.one_apply, ne_eq]
     split_ifs <;> simp [ENNReal.zero_ne_top]
-  · filter_upwards with x; simp [Set.indicator_apply]
+  · simp [Set.indicator_apply]
 
 lemma rnDeriv_eq_zero_of_mutuallySingular [SigmaFinite μ] {ν' : Measure α}
     [SigmaFinite ν'] (h : μ ⟂ₘ ν) (hνν' : ν ≪ ν') :

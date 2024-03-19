@@ -538,8 +538,7 @@ theorem mellin_zetaKernel₁_eq_tsum {s : ℂ} (hs : 1 / 2 < s.re) :
       ((t : ℂ) ^ (s - 1) * zetaKernel₁ t) :=
     (ae_restrict_iff' hm).mpr (ae_of_all _ fun t ht => h_sum0 ht)
   have h_sum : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0), Summable fun n : ℕ => bd n t := by
-    apply (ae_restrict_iff' hm).mpr
-    filter_upwards with t ht
+    refine (ae_restrict_iff' hm).mpr (ae_of_all _ fun t ht => ?_)
     simpa only [fun n => h_norm n ht] using (h_sum0 ht).summable.norm
   have h_int : Integrable (fun t : ℝ => ∑' n : ℕ, bd n t) (volume.restrict (Ioi 0)) := by
     refine IntegrableOn.congr_fun

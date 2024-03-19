@@ -238,7 +238,7 @@ theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(�
   · intro i; filter_upwards with x hx
     apply ContinuousMap.norm_coe_le_norm ((f i).restrict _) ⟨x, _⟩
     exact ⟨hx.1.le, hx.2⟩
-  · filter_upwards with x _ using hf_sum
+  · exact ae_of_all _ fun x _ => hf_sum
   · exact intervalIntegrable_const
   · refine ae_of_all _ fun x hx => Summable.hasSum ?_
     let x : (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ) := ⟨x, ?_⟩; swap; exact ⟨hx.1.le, hx.2⟩

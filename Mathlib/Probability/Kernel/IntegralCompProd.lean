@@ -113,11 +113,11 @@ theorem hasFiniteIntegral_compProd_iff' ⦃f : β × γ → E⦄
     hasFiniteIntegral_compProd_iff h1f.stronglyMeasurable_mk]
   apply and_congr
   · apply eventually_congr
-    filter_upwards [ae_ae_of_ae_compProd h1f.ae_eq_mk.symm] with x hx
-    exact hasFiniteIntegral_congr hx
+    filter_upwards [ae_ae_of_ae_compProd h1f.ae_eq_mk.symm] with x hx using
+      hasFiniteIntegral_congr hx
   · apply hasFiniteIntegral_congr
-    filter_upwards [ae_ae_of_ae_compProd h1f.ae_eq_mk.symm] with _ hx
-    exact integral_congr_ae (EventuallyEq.fun_comp hx _)
+    filter_upwards [ae_ae_of_ae_compProd h1f.ae_eq_mk.symm] with _ hx using
+      integral_congr_ae (EventuallyEq.fun_comp hx _)
 #align probability_theory.has_finite_integral_comp_prod_iff' ProbabilityTheory.hasFiniteIntegral_compProd_iff'
 
 theorem integrable_compProd_iff ⦃f : β × γ → E⦄ (hf : AEStronglyMeasurable f ((κ ⊗ₖ η) a)) :

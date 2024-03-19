@@ -175,12 +175,11 @@ theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e
     Continuous (fourierIntegral e μ L f) := by
   apply continuous_of_dominated
   · exact fun w => ((fourier_integral_convergent_iff he hL w).mp hf).1
-  · intro w; filter_upwards with v
+  · refine' fun w => ae_of_all _ fun v => _
     · rw [norm_smul, Complex.norm_eq_abs, abs_coe_circle, one_mul]
   · exact hf.norm
   · rw [continuous_induced_rng] at he
-    filter_upwards with v
-    apply (he.comp (continuous_ofAdd.comp _)).smul continuous_const
+    refine' ae_of_all _ fun v => (he.comp (continuous_ofAdd.comp _)).smul continuous_const
     exact (hL.comp (continuous_prod_mk.mpr ⟨continuous_const, continuous_id⟩)).neg
 #align vector_fourier.fourier_integral_continuous VectorFourier.fourierIntegral_continuous
 

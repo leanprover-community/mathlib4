@@ -92,7 +92,7 @@ theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter_aux
     _ ≤ ∫ x in Ι c d, C * ‖g x‖ :=
       set_integral_mono_on hfi.norm.def (hgi.mono_set hsub') measurableSet_uIoc hg
     _ ≤ ∫ x in k, C * ‖g x‖ := by
-      exact set_integral_mono_set hgi
+      apply set_integral_mono_set hgi
         (ae_of_all _ fun x => mul_nonneg hC₀ (norm_nonneg _)) hsub'.eventuallyLE
 
 theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter
