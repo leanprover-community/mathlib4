@@ -31,7 +31,6 @@ universe z w v u
 -- Porting note: removed restrictions on universes
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type w} [Category.{z} D] [Abelian D]
 
 namespace FunctorCategory

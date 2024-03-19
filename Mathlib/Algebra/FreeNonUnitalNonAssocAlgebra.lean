@@ -59,7 +59,6 @@ def of : X → FreeNonUnitalNonAssocAlgebra R X :=
 #align free_non_unital_non_assoc_algebra.of FreeNonUnitalNonAssocAlgebra.of
 
 variable {A : Type w} [NonUnitalNonAssocSemiring A]
-
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 
 /-- The functor `X ↦ FreeNonUnitalNonAssocAlgebra R X` from the category of types to the

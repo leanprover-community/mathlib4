@@ -193,12 +193,11 @@ end Additive
 ### Existence of a primitive additive character on a finite field
 -/
 
-
 /-- There is a primitive additive character on the finite field `F` if the characteristic
 of the target is different from that of `F`.
 We obtain it as the composition of the trace from `F` to `ZMod p` with a primitive
 additive character on `ZMod p`, where `p` is the characteristic of `F`. -/
-noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Fintype F] [Field F']
+noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Finite F] [Field F']
     (h : ringChar F' ≠ ringChar F) : PrimitiveAddChar F F' := by
   let p := ringChar F
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime F _⟩
