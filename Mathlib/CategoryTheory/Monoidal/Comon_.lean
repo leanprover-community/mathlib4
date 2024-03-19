@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Mon_
 import Mathlib.CategoryTheory.Monoidal.Opposite
-import Mathlib.Tactic.RewriteSearch
 
 /-!
 # The category of comonoids in a monoidal category.
