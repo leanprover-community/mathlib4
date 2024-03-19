@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury G. Kudryashov, Fangming Li
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 
 #align_import ring_theory.power_series.well_known from "leanprover-community/mathlib"@"8199f6717c150a7fe91c4534175f4cf99725978f"
@@ -63,6 +64,52 @@ theorem map_invUnitsSub (f : R →+* S) (u : Rˣ) :
   rfl
 
 #align power_series.map_inv_units_sub PowerSeries.map_invUnitsSub
+
+/-- Given `d : ℕ`. The power series for `1 / ((1 - x) ^ (d + 1))`. -/
+def invOneSubPow (d : ℕ) : PowerSeries R :=
+  mk fun n => Nat.choose (d + n) d
+
+theorem invOneSubPow_zero_eq_invUnitsSub_one : invOneSubPow 0 = invUnitsSub (1 : Rˣ) := by
+  rw [invOneSubPow, invUnitsSub]
+  simp only [zero_add, Nat.choose_zero_right, Nat.cast_one, one_pow, divp_one]
+
+theorem one_sub_inv_eq_invOneSubPow_zero {k : Type _} [Field k] :
+    (1 - X : PowerSeries k)⁻¹ = invOneSubPow 0 := Eq.symm <| by
+  rw [@eq_inv_iff_mul_eq_one k _ (invOneSubPow 0) (1 - X) <| show (constantCoeff k)
+  (1 - X) ≠ 0 by simp only [map_sub, map_one, constantCoeff_X, sub_zero, ne_eq, one_ne_zero,
+  not_false_eq_true], invOneSubPow_zero_eq_invUnitsSub_one]; exact invUnitsSub_mul_sub 1
+
+theorem one_sub_inv {k : Type _} [Field k] :
+    (1 - X : PowerSeries k)⁻¹ = mk fun (_ : ℕ) => 1 := by
+  rw [one_sub_inv_eq_invOneSubPow_zero, invOneSubPow]
+  simp only [zero_add, Nat.choose_zero_right, Nat.cast_one]
+
+theorem one_sub_inv_pow_eq {k : Type _} [Field k] (d : ℕ) :
+    (1 - X)⁻¹ ^ (d + 1) = (mk fun (n : ℕ) => Nat.choose (d + n) d : PowerSeries k) := by
+  induction' d with d hd
+  · simp only [Nat.zero_eq, zero_add, pow_one, Nat.choose_zero_right, Nat.cast_one]
+    exact one_sub_inv
+  · ring_nf; rw [hd, one_sub_inv, ext_iff]; exact λ n ↦ by
+      rw [coeff_mul]; simp only [coeff_mk, one_mul]; rw [Nat.succ_add, Nat.choose_succ_succ,
+      ← Finset.sum_antidiagonal_choose_add]; exact (Nat.cast_sum (Finset.antidiagonal n) fun x
+      ↦ Nat.choose (d + x.2) d).symm
+
+theorem one_sub_inv_pow_eq_invOneSubPow {k : Type _} [Field k] (d : ℕ) :
+    (1 - X)⁻¹ ^ (d + 1) = (invOneSubPow d : PowerSeries k) := by
+  rw [one_sub_inv_pow_eq]; rfl
+
+theorem one_sub_pow_inv_eq {k : Type _} [Field k] (d : ℕ) :
+    ((1 - X) ^ (d + 1))⁻¹ = (mk fun (n : ℕ) => Nat.choose (d + n) d : PowerSeries k) := by
+  rw [← one_sub_inv_pow_eq, pow_inv_eq_inv_pow]
+
+theorem one_sub_pow_inv_eq_invOneSubPow {k : Type _} [Field k] (d : ℕ) :
+    ((1 - X) ^ (d + 1))⁻¹ = (invOneSubPow d : PowerSeries k) := by
+  rw [one_sub_pow_inv_eq]; rfl
+
+theorem invOneSubPow_mul_one_sub_pow {k : Type _} [Field k] (d : ℕ) :
+    (invOneSubPow d : PowerSeries k) * ((1 - X) ^ (d + 1)) = 1 := by
+  rw [← one_sub_pow_inv_eq_invOneSubPow]; simp only [map_pow, map_sub, map_one, constantCoeff_X,
+  sub_zero, one_pow, ne_eq, one_ne_zero, not_false_eq_true, PowerSeries.inv_mul_cancel]
 
 end Ring
 
