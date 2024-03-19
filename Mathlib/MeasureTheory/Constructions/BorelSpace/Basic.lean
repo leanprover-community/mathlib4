@@ -1161,12 +1161,12 @@ protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embeddin
 
 protected theorem ClosedEmbedding.measurableEmbedding {f : α → β} (h : ClosedEmbedding f) :
     MeasurableEmbedding f :=
-  h.toEmbedding.measurableEmbedding h.closed_range.measurableSet
+  h.toEmbedding.measurableEmbedding h.isClosed_range.measurableSet
 #align closed_embedding.measurable_embedding ClosedEmbedding.measurableEmbedding
 
 protected theorem OpenEmbedding.measurableEmbedding {f : α → β} (h : OpenEmbedding f) :
     MeasurableEmbedding f :=
-  h.toEmbedding.measurableEmbedding h.open_range.measurableSet
+  h.toEmbedding.measurableEmbedding h.isOpen_range.measurableSet
 #align open_embedding.measurable_embedding OpenEmbedding.measurableEmbedding
 
 section LinearOrder
