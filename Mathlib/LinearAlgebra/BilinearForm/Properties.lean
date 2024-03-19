@@ -50,17 +50,17 @@ namespace BilinForm
 
 
 /-- The proposition that a bilinear form is reflexive -/
-def IsRefl (B : BilinForm R₂ M₂) : Prop := LinearMap.IsRefl (toLin B)
+def IsRefl (B : BilinForm R M) : Prop := LinearMap.IsRefl (toLin B)
 #align bilin_form.is_refl BilinForm.IsRefl
 
 namespace IsRefl
 
-variable (H : B₂.IsRefl)
+variable (H : B.IsRefl)
 
-theorem eq_zero : ∀ {x y : M₂}, B₂ x y = 0 → B₂ y x = 0 := fun {x y} => H x y
+theorem eq_zero : ∀ {x y : M}, B x y = 0 → B y x = 0 := fun {x y} => H x y
 #align bilin_form.is_refl.eq_zero BilinForm.IsRefl.eq_zero
 
-protected theorem neg {B : BilinForm R₃ M₃} (hB : B.IsRefl) : (-B).IsRefl := fun x y =>
+protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl := fun x y =>
   neg_eq_zero.mpr ∘ hB x y ∘ neg_eq_zero.mp
 #align bilin_form.is_refl.neg BilinForm.IsRefl.neg
 
@@ -71,67 +71,67 @@ protected theorem smul {α} [CommSemiring α] [Module α R] [SMulCommClass α R 
     smul_eq_zero_of_right _ (hB _ _ hBz)
 #align bilin_form.is_refl.smul BilinForm.IsRefl.smul
 
-protected theorem groupSMul {α} [Group α] [DistribMulAction α R₂] [SMulCommClass α R₂ R₂] (a : α)
-    {B : BilinForm R₂ M₂} (hB : B.IsRefl) : (a • B).IsRefl := fun x y =>
+protected theorem groupSMul {α} [Group α] [DistribMulAction α R] [SMulCommClass α R R] (a : α)
+    {B : BilinForm R M} (hB : B.IsRefl) : (a • B).IsRefl := fun x y =>
   (smul_eq_zero_iff_eq _).mpr ∘ hB x y ∘ (smul_eq_zero_iff_eq _).mp
 #align bilin_form.is_refl.group_smul BilinForm.IsRefl.groupSMul
 
 end IsRefl
 
 @[simp]
-theorem isRefl_zero : (0 : BilinForm R₂ M₂).IsRefl := fun _ _ _ => rfl
+theorem isRefl_zero : (0 : BilinForm R M).IsRefl := fun _ _ _ => rfl
 #align bilin_form.is_refl_zero BilinForm.isRefl_zero
 
 @[simp]
-theorem isRefl_neg {B : BilinForm R₃ M₃} : (-B).IsRefl ↔ B.IsRefl :=
+theorem isRefl_neg {B : BilinForm R₁ M₁} : (-B).IsRefl ↔ B.IsRefl :=
   ⟨fun h => neg_neg B ▸ h.neg, IsRefl.neg⟩
 #align bilin_form.is_refl_neg BilinForm.isRefl_neg
 
 /-- The proposition that a bilinear form is symmetric -/
-def IsSymm (B : BilinForm R₂ M₂) : Prop := LinearMap.IsSymm (toLin B)
+def IsSymm (B : BilinForm R M) : Prop := LinearMap.IsSymm (toLin B)
 #align bilin_form.is_symm BilinForm.IsSymm
 
 namespace IsSymm
 
-variable (H : B₂.IsSymm)
+variable (H : B.IsSymm)
 
-protected theorem eq (x y : M₂) : B₂ x y = B₂ y x :=
+protected theorem eq (x y : M) : B x y = B y x :=
   H x y
 #align bilin_form.is_symm.eq BilinForm.IsSymm.eq
 
-theorem isRefl : B₂.IsRefl := fun x y H1 => H x y ▸ H1
+theorem isRefl : B.IsRefl := fun x y H1 => H x y ▸ H1
 #align bilin_form.is_symm.is_refl BilinForm.IsSymm.isRefl
 
-protected theorem add {B₁ B₂ : BilinForm R₂ M₂} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
+protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
     (B₁ + B₂).IsSymm := fun x y => (congr_arg₂ (· + ·) (hB₁ x y) (hB₂ x y) : _)
 #align bilin_form.is_symm.add BilinForm.IsSymm.add
 
-protected theorem sub {B₁ B₂ : BilinForm R₃ M₃} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
+protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
     (B₁ - B₂).IsSymm := fun x y => (congr_arg₂ Sub.sub (hB₁ x y) (hB₂ x y) : _)
 #align bilin_form.is_symm.sub BilinForm.IsSymm.sub
 
-protected theorem neg {B : BilinForm R₃ M₃} (hB : B.IsSymm) : (-B).IsSymm := fun x y =>
+protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm := fun x y =>
   congr_arg Neg.neg (hB x y)
 #align bilin_form.is_symm.neg BilinForm.IsSymm.neg
 
-protected theorem smul {α} [Monoid α] [DistribMulAction α R₂] [SMulCommClass α R₂ R₂] (a : α)
-    {B : BilinForm R₂ M₂} (hB : B.IsSymm) : (a • B).IsSymm := fun x y =>
+protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] (a : α)
+    {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := fun x y =>
   congr_arg (a • ·) (hB x y)
 #align bilin_form.is_symm.smul BilinForm.IsSymm.smul
 
 /-- The restriction of a symmetric bilinear form on a submodule is also symmetric. -/
-theorem restrict {B : BilinForm R₂ M₂} (b : B.IsSymm) (W : Submodule R₂ M₂) :
+theorem restrict {B : BilinForm R M} (b : B.IsSymm) (W : Submodule R M) :
     (B.restrict W).IsSymm := fun x y => b x y
 #align bilin_form.restrict_symm BilinForm.IsSymm.restrict
 
 end IsSymm
 
 @[simp]
-theorem isSymm_zero : (0 : BilinForm R₂ M₂).IsSymm := fun _ _ => rfl
+theorem isSymm_zero : (0 : BilinForm R M).IsSymm := fun _ _ => rfl
 #align bilin_form.is_symm_zero BilinForm.isSymm_zero
 
 @[simp]
-theorem isSymm_neg {B : BilinForm R₃ M₃} : (-B).IsSymm ↔ B.IsSymm :=
+theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
   ⟨fun h => neg_neg B ▸ h.neg, IsSymm.neg⟩
 #align bilin_form.is_symm_neg BilinForm.isSymm_neg
 
@@ -158,7 +158,7 @@ theorem neg_eq (H : B₁.IsAlt) (x y : M₁) : -B₁ x y = B₁ y x := by
   exact H1
 #align bilin_form.is_alt.neg_eq BilinForm.IsAlt.neg_eq
 
-theorem isRefl (H : B₃.IsAlt) : B₃.IsRefl := by
+theorem isRefl (H : B₁.IsAlt) : B₁.IsRefl := by
   apply LinearMap.IsAlt.isRefl
   exact H
 #align bilin_form.is_alt.is_refl BilinForm.IsAlt.isRefl
