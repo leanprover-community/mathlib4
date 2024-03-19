@@ -5,6 +5,7 @@ Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Order.WithBot
+import Mathlib.Order.MinMax
 
 #align_import data.list.min_max from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
 

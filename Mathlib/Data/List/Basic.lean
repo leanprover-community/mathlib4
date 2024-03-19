@@ -4,15 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Init.Data.List.Instances
-import Mathlib.Data.Nat.Defs
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.List.Defs
-import Std.Data.List.Lemmas
-import Mathlib.Tactic.Common
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.List.Lemmas
-import Mathlib.Data.Option.Defs
+import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Option.Basic
+import Mathlib.Data.List.Defs
+import Mathlib.Order.Basic
+import Std.Data.List.Lemmas
+import Mathlib.Tactic.Common
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -1313,7 +1314,7 @@ theorem get_reverse_aux₁ :
     ∀ (l r : List α) (i h1 h2), get (reverseAux l r) ⟨i + length l, h1⟩ = get r ⟨i, h2⟩
   | [], r, i => fun h1 _ => rfl
   | a :: l, r, i => by
-    rw [show i + length (a :: l) = i + 1 + length l from add_right_comm i (length l) 1]
+    rw [show i + length (a :: l) = i + 1 + length l from Nat.add_right_comm i (length l) 1]
     exact fun h1 h2 => get_reverse_aux₁ l (a :: r) (i + 1) h1 (succ_lt_succ h2)
 #align list.nth_le_reverse_aux1 List.get_reverse_aux₁
 
@@ -1608,7 +1609,7 @@ theorem get_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length
     (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
     (insertNth n x l).get ⟨n, hn'⟩ = x := by
   induction' l with hd tl IH generalizing n
-  · simp only [length, nonpos_iff_eq_zero] at hn
+  · simp only [length] at hn
     cases hn
     simp only [insertNth_zero, get_singleton]
   · cases n
@@ -1935,15 +1936,19 @@ theorem nthLe_take (L : List α) {i j : ℕ} (hi : i < L.length) (hj : i < j) :
 /-- The `i`-th element of a list coincides with the `i`-th element of any of its prefixes of
 length `> i`. Version designed to rewrite from the small list to the big list. -/
 theorem get_take' (L : List α) {j i} :
-    get (L.take j) i = get L ⟨i.1, lt_of_lt_of_le i.2 (by simp [le_refl])⟩ := by
-  let ⟨i, hi⟩ := i; simp only [length_take, lt_min_iff] at hi; rw [get_take L _ hi.1]
-
+    get (L.take j) i = get L ⟨i.1, lt_of_lt_of_le i.2 (by simp only [length_take]; omega)⟩ := by
+  let ⟨i, hi⟩ := i
+  simp only [length_take] at hi
+  rw [get_take L]
+  dsimp
+  omega
 set_option linter.deprecated false in
 /-- The `i`-th element of a list coincides with the `i`-th element of any of its prefixes of
 length `> i`. Version designed to rewrite from the small list to the big list. -/
 @[deprecated get_take']
 theorem nthLe_take' (L : List α) {i j : ℕ} (hi : i < (L.take j).length) :
-    nthLe (L.take j) i hi = nthLe L i (lt_of_lt_of_le hi (by simp [le_refl])) := get_take' _
+    nthLe (L.take j) i hi = nthLe L i (lt_of_lt_of_le hi (by simp only [length_take]; omega)) :=
+  get_take' _
 #align list.nth_le_take' List.nthLe_take'
 
 theorem get?_take {l : List α} {n m : ℕ} (h : m < n) : (l.take n).get? m = l.get? m := by
@@ -2008,7 +2013,9 @@ theorem dropLast_eq_take (l : List α) : l.dropLast = l.take l.length.pred := by
 
 theorem dropLast_take {n : ℕ} {l : List α} (h : n < l.length) :
     (l.take n).dropLast = l.take n.pred := by
-  simp [dropLast_eq_take, min_eq_left_of_lt h, take_take, pred_le]
+  simp only [dropLast_eq_take, length_take, pred_eq_sub_one, take_take]
+  congr
+  omega
 #align list.init_take List.dropLast_take
 
 theorem dropLast_cons_of_ne_nil {α : Type*} {x : α}
@@ -2173,7 +2180,7 @@ theorem drop_take : ∀ (m : ℕ) (n : ℕ) (l : List α), drop m (take (m + n) 
   | 0, n, _ => by simp
   | m + 1, n, nil => by simp
   | m + 1, n, _ :: l => by
-    have h : m + 1 + n = m + n + 1 := by ac_rfl
+    have h : m + 1 + n = m + n + 1 := by omega
     simpa [take_cons, h] using drop_take m n l
 #align list.drop_take List.drop_take
 
@@ -2564,7 +2571,7 @@ theorem nthLe_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
     · simp [scanl_cons, singleton_append, nthLe_zero_scanl, nthLe_cons]
   | succ i hi =>
     cases l
-    · simp only [length, add_lt_iff_neg_right, scanl_nil] at h
+    · simp only [length, zero_add] at h
       exact absurd h (by omega)
     · simp_rw [scanl_cons]
       rw [nthLe_append_right]
@@ -3765,7 +3772,7 @@ theorem enumFrom_get? :
     ∀ (n) (l : List α) (m), get? (enumFrom n l) m = (fun a => (n + m, a)) <$> get? l m
   | n, [], m => rfl
   | n, a :: l, 0 => rfl
-  | n, a :: l, m + 1 => (enumFrom_get? (n + 1) l m).trans <| by rw [add_right_comm]; rfl
+  | n, a :: l, m + 1 => (enumFrom_get? (n + 1) l m).trans <| by rw [Nat.add_right_comm]; rfl
 #align list.enum_from_nth List.enumFrom_get?
 
 @[simp]
@@ -3799,7 +3806,7 @@ theorem mem_enumFrom {x : α} {i : ℕ} :
       refine' ⟨_, _, _⟩
       · exact le_trans (Nat.le_succ _) hji
       · convert hijlen using 1
-        ac_rfl
+        omega
       · simp [hmem]
 #align list.mem_enum_from List.mem_enumFrom
 
@@ -3831,7 +3838,7 @@ theorem enumFrom_append (xs ys : List α) (n : ℕ) :
     enumFrom n (xs ++ ys) = enumFrom n xs ++ enumFrom (n + xs.length) ys := by
   induction' xs with x xs IH generalizing ys n
   · simp
-  · rw [cons_append, enumFrom_cons, IH, ← cons_append, ← enumFrom_cons, length, add_right_comm,
+  · rw [cons_append, enumFrom_cons, IH, ← cons_append, ← enumFrom_cons, length, Nat.add_right_comm,
       add_assoc]
 #align list.enum_from_append List.enumFrom_append
 
@@ -3844,7 +3851,7 @@ theorem map_fst_add_enumFrom_eq_enumFrom (l : List α) (n k : ℕ) :
   induction' l with hd tl IH generalizing n k
   · simp [enumFrom]
   · simp only [enumFrom, map, zero_add, Prod.map_mk, id.def, eq_self_iff_true, true_and_iff]
-    simp [IH, add_comm n k, add_assoc, add_left_comm]
+    simp [IH, add_comm n k, add_assoc, Nat.add_left_comm]
 #align list.map_fst_add_enum_from_eq_enum_from List.map_fst_add_enumFrom_eq_enumFrom
 
 theorem map_fst_add_enum_eq_enumFrom (l : List α) (n : ℕ) :
@@ -4336,3 +4343,5 @@ theorem disjoint_pmap {p : α → Prop} {f : ∀ a : α, p a → β} {s t : List
 end Disjoint
 
 end List
+
+assert_not_exists Lattice

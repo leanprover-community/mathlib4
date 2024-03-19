@@ -6,6 +6,7 @@ Authors: Kim Liesinger
 import Mathlib.Data.List.Infix
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.List.EditDistance.Defs
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Lower bounds for Levenshtein distances
