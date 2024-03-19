@@ -16,7 +16,7 @@ universe u v
 
 section
 
-instance (priority := 100) Finite.small {α : Type v} [Finite α] : Small.{u} α := by
+instance (priority := 100) Finite.toSmall {α : Type v} [Finite α] : Small.{u} α := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin α
   exact small_map e
 #align small_of_fintype Finite.small
