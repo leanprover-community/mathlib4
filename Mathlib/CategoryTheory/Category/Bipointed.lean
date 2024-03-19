@@ -28,17 +28,15 @@ set_option linter.uppercaseLean3 false
 
 /-- The category of bipointed types. -/
 structure Bipointed : Type (u + 1) where
-  X : Type u
+  /-- The underlying type of a bipointed type. -/
+  protected X : Type u
+  /-- The two points of a bipointed type, bundled together as a pair. -/
   toProd : X × X
 #align Bipointed Bipointed
 
 namespace Bipointed
 
-instance : CoeSort Bipointed (Type*) :=
-  ⟨X⟩
-
--- porting note: protected attribute does not work
--- attribute [protected] Bipointed.X
+instance : CoeSort Bipointed Type* := ⟨Bipointed.X⟩
 
 /-- Turns a bipointing into a bipointed type. -/
 def of {X : Type*} (to_prod : X × X) : Bipointed :=
@@ -59,6 +57,7 @@ instance : Inhabited Bipointed :=
 /-- Morphisms in `Bipointed`. -/
 @[ext]
 protected structure Hom (X Y : Bipointed.{u}) : Type u where
+  /-- The underlying function of a morphism of bipointed types. -/
   toFun : X → Y
   map_fst : toFun X.toProd.1 = Y.toProd.1
   map_snd : toFun X.toProd.2 = Y.toProd.2

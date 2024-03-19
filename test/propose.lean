@@ -2,6 +2,7 @@ import Std.Data.List.Basic
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Algebra.Associated
+import Mathlib.Data.Set.Basic
 
 -- For debugging, you may find these options useful:
 -- set_option trace.Tactic.propose true
@@ -72,9 +73,13 @@ info: Try this: have : ¬IsUnit p := not_unit hp
 ---
 info: Try this: have : ¬p ∣ 1 := not_dvd_one hp
 ---
+info: Try this: have : p ∣ p ∨ p ∣ p := dvd_or_dvd hp (Exists.intro p (Eq.refl (p * p)))
+---
 info: Try this: have : p ≠ 0 := ne_zero hp
 ---
-info: Try this: have : p ∣ p * p ↔ p ∣ p ∨ p ∣ p := dvd_mul hp
+info: Try this: have : p ∣ p * p ↔ p ∣ p ∨ p ∣ p := Prime.dvd_mul hp
+---
+info: Try this: have : IsPrimal p := isPrimal hp
 ---
 info: Try this: have : p ≠ 1 := ne_one hp
 -/

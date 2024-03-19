@@ -93,7 +93,7 @@ noncomputable def isLimit_of_isPushout_of_injective {X Y S : Type w} {f : X ⟶ 
     constructor
     · intro x₁ x₂ h
       apply h₁
-      have : c.fst = φ ≫ pullback.fst := by simp
+      have : c.fst = φ ≫ pullback.fst := by simp [φ]
       rw [this, types_comp_apply, types_comp_apply, h]
     · intro t
       obtain ⟨x, hx₁, hx₂⟩ := (Types.pushoutCocone_inl_eq_inr_iff_of_isColimit hc.isColimit h₁
@@ -112,7 +112,7 @@ noncomputable def isLimit_of_isPushout_of_injective {X Y S : Type w} {f : X ⟶ 
           ← types_comp_apply φ pullback.snd, pullback.lift_snd, hx₂,
           Types.pullbackIsoPullback_hom_snd]
   exact IsLimit.ofIsoLimit (pullbackIsPullback _ _)
-    (Iso.symm (PullbackCone.ext (asIso φ) (by simp) (by simp)))
+    (Iso.symm (PullbackCone.ext (asIso φ) (by simp [φ]) (by simp [φ])))
 
 end BalancedAux
 

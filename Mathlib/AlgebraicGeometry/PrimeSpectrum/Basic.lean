@@ -47,7 +47,7 @@ and Chris Hughes (on an earlier repository).
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 universe u v
 
@@ -71,7 +71,6 @@ namespace PrimeSpectrum
 section CommSemiRing
 
 variable [CommSemiring R] [CommSemiring S]
-
 variable {R S}
 
 instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
@@ -374,9 +373,9 @@ theorem zeroLocus_singleton_mul (f g : R) :
 #align prime_spectrum.zero_locus_singleton_mul PrimeSpectrum.zeroLocus_singleton_mul
 
 @[simp]
-theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : 0 < n) :
+theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : n ≠ 0) :
     zeroLocus ((I ^ n : Ideal R) : Set R) = zeroLocus I :=
-  zeroLocus_radical (I ^ n) ▸ (I.radical_pow n hn).symm ▸ zeroLocus_radical I
+  zeroLocus_radical (I ^ n) ▸ (I.radical_pow hn).symm ▸ zeroLocus_radical I
 #align prime_spectrum.zero_locus_pow PrimeSpectrum.zeroLocus_pow
 
 @[simp]
@@ -639,21 +638,14 @@ variable (S)
 
 theorem localization_comap_inducing [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Inducing (comap (algebraMap R S)) := by
-  constructor
-  rw [TopologicalSpace.ext_iff]
-  intro U
-  rw [← isClosed_compl_iff, ← @isClosed_compl_iff (X := PrimeSpectrum S) (s := U)]
-  generalize Uᶜ = Z
-  simp_rw [isClosed_induced_iff, isClosed_iff_zeroLocus]
+  refine ⟨TopologicalSpace.ext_isClosed fun Z ↦ ?_⟩
+  simp_rw [isClosed_induced_iff, isClosed_iff_zeroLocus, @eq_comm _ _ (zeroLocus _),
+    exists_exists_eq_and, preimage_comap_zeroLocus]
   constructor
   · rintro ⟨s, rfl⟩
-    refine ⟨_, ⟨algebraMap R S ⁻¹' Ideal.span s, rfl⟩, ?_⟩
-    rw [preimage_comap_zeroLocus, ← zeroLocus_span, ← zeroLocus_span s]
-    congr 2
-    exact congr_arg (zeroLocus ·) <| Submodule.carrier_inj.mpr
-      (IsLocalization.map_comap M S (Ideal.span s))
-  · rintro ⟨_, ⟨t, rfl⟩, rfl⟩
-    rw [preimage_comap_zeroLocus]
+    refine ⟨(Ideal.span s).comap (algebraMap R S), ?_⟩
+    rw [← zeroLocus_span, ← zeroLocus_span s, ← Ideal.map, IsLocalization.map_comap M S]
+  · rintro ⟨s, rfl⟩
     exact ⟨_, rfl⟩
 #align prime_spectrum.localization_comap_inducing PrimeSpectrum.localization_comap_inducing
 
@@ -689,6 +681,7 @@ open Function RingHom
 
 theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) where
   induced := by
+    set_option tactic.skipAssignedInstances false in
     simp_rw [TopologicalSpace.ext_iff, ← isClosed_compl_iff,
       ← @isClosed_compl_iff (PrimeSpectrum S)
         ((TopologicalSpace.induced (comap f) zariskiTopology)), isClosed_induced_iff,
@@ -969,6 +962,22 @@ protected def pointsEquivIrreducibleCloseds :
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
 
+section LocalizationAtMinimal
+
+variable {I : Ideal R} [hI : I.IsPrime]
+
+/--
+Localizations at minimal primes have single-point prime spectra.
+-/
+def primeSpectrum_unique_of_localization_at_minimal (h : I ∈ minimalPrimes R) :
+    Unique (PrimeSpectrum (Localization.AtPrime I)) where
+  default :=
+    ⟨LocalRing.maximalIdeal (Localization I.primeCompl),
+    (LocalRing.maximalIdeal.isMaximal _).isPrime⟩
+  uniq x := PrimeSpectrum.ext _ _ (Localization.AtPrime.prime_unique_of_minimal h x.asIdeal)
+
+end LocalizationAtMinimal
+
 end CommSemiRing
 
 end PrimeSpectrum
@@ -1039,7 +1048,7 @@ variable {R}
 
 theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S]
     (f : R →+* S) : IsLocalRingHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
-  -- Porting note : inline `this` does **not** work
+  -- Porting note: inline `this` does **not** work
   have := (local_hom_TFAE f).out 0 4
   rw [this, PrimeSpectrum.ext_iff]
   rfl

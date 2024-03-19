@@ -318,6 +318,13 @@ theorem isConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
     IsConnected (h ⁻¹' s) ↔ IsConnected s := by
   rw [← image_symm, isConnected_image]
 
+theorem image_connectedComponentIn {s : Set X} (h : X ≃ₜ Y) {x : X} (hx : x ∈ s) :
+    h '' connectedComponentIn s x = connectedComponentIn (h '' s) (h x) := by
+  refine (h.continuous.image_connectedComponentIn_subset hx).antisymm ?_
+  have := h.symm.continuous.image_connectedComponentIn_subset (mem_image_of_mem h hx)
+  rwa [image_subset_iff, h.preimage_symm, h.image_symm, h.preimage_image, h.symm_apply_apply]
+    at this
+
 @[simp]
 theorem comap_cocompact (h : X ≃ₜ Y) : comap h (cocompact Y) = cocompact X :=
   (comap_cocompact_le h.continuous).antisymm <|
@@ -660,7 +667,7 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
     (e : ι₁ ≃ ι₂) (F : ∀ i₁, Y₁ i₁ ≃ₜ Y₂ (e i₁)) : (∀ i₁, Y₁ i₁) ≃ₜ ∀ i₂, Y₂ i₂ :=
   (Homeomorph.piCongrRight F).trans (Homeomorph.piCongrLeft e)
 
--- porting note: TODO: align the order of universes with `Equiv.ulift`
+-- Porting note (#11215): TODO: align the order of universes with `Equiv.ulift`
 /-- `ULift X` is homeomorphic to `X`. -/
 def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X where
   continuous_toFun := continuous_uLift_down
@@ -722,7 +729,7 @@ def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
 -/
 @[simps!]
 def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
-  -- porting note: todo: by continuity!
+  -- Porting note (#11215): TODO: by continuity!
   continuous_toFun := e.continuous.continuousOn.restrict_mapsTo (mapsTo_image _ _)
   continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
   toEquiv := e.toEquiv.image s
@@ -803,24 +810,24 @@ variable {Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace
 @[simps toEquiv]
 def toHomeomorph (e : X ≃ Y) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : X ≃ₜ Y where
   toEquiv := e
-  continuous_toFun := continuous_def.2 λ s ↦ (he _).2
-  continuous_invFun := continuous_def.2 λ s ↦ by convert (he _).1; simp
+  continuous_toFun := continuous_def.2 fun s ↦ (he _).2
+  continuous_invFun := continuous_def.2 fun s ↦ by convert (he _).1; simp
 
 @[simp] lemma coe_toHomeomorph (e : X ≃ Y) (he) : ⇑(e.toHomeomorph he) = e := rfl
 lemma toHomeomorph_apply (e : X ≃ Y) (he) (x : X) : e.toHomeomorph he x = e x := rfl
 
 @[simp] lemma toHomeomorph_refl :
-  (Equiv.refl X).toHomeomorph (λ _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
+  (Equiv.refl X).toHomeomorph (fun _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
 
 @[simp] lemma toHomeomorph_symm (e : X ≃ Y) (he) :
-  (e.toHomeomorph he).symm = e.symm.toHomeomorph λ s ↦ by convert (he _).symm; simp := rfl
+  (e.toHomeomorph he).symm = e.symm.toHomeomorph fun s ↦ by convert (he _).symm; simp := rfl
 
 lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
-    (e.trans f).toHomeomorph (λ _s ↦ (he _).trans (hf _)) =
+    (e.trans f).toHomeomorph (fun _s ↦ (he _).trans (hf _)) =
     (e.toHomeomorph he).trans (f.toHomeomorph hf) := rfl
 
 /-- An inducing equiv between topological spaces is a homeomorphism. -/
-@[simps toEquiv] -- porting note: TODO: was `@[simps]`
+@[simps toEquiv] -- Porting note (#11215): TODO: was `@[simps]`
 def toHomeomorphOfInducing (f : X ≃ Y) (hf : Inducing f) : X ≃ₜ Y :=
   { f with
     continuous_toFun := hf.continuous
@@ -845,7 +852,7 @@ theorem continuous_symm_of_equiv_compact_to_t2 [CompactSpace X] [T2Space Y] {f :
 
 This is not true when T2 is weakened to T1
 (see `Continuous.homeoOfEquivCompactToT2.t1_counterexample`). -/
-@[simps toEquiv] -- porting note: was `@[simps]`
+@[simps toEquiv] -- Porting note: was `@[simps]`
 def homeoOfEquivCompactToT2 [CompactSpace X] [T2Space Y] {f : X ≃ Y} (hf : Continuous f) : X ≃ₜ Y :=
   { f with
     continuous_toFun := hf

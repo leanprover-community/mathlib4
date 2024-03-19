@@ -36,14 +36,6 @@ universe u v
 
 variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ ProfiniteMax.{u, v}} (C : Cone F)
 
-noncomputable
-instance preserves_smaller_limits_toTopCat :
-    PreservesLimitsOfSize.{v, v} (toTopCat : ProfiniteMax.{v, u} ⥤ TopCatMax.{v, u}) :=
-  Limits.preservesLimitsOfSizeShrink.{v, max u v, v, max u v} _
-
--- include hC
--- Porting note: I just add `(hC : IsLimit C)` explicitly as a hypothesis to all the theorems
-
 /-- If `X` is a cofiltered limit of profinite sets, then any clopen subset of `X` arises from
 a clopen set in one of the terms in the limit.
 -/
@@ -64,7 +56,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     -- Porting note: `<;> continuity` fails
   -- Using this, since `U` is open, we can write `U` as a union of clopen sets all of which
   -- are preimages of clopens from the factors in the limit.
-  obtain ⟨S, hS, h⟩ := hB.open_eq_sUnion hU.1
+  obtain ⟨S, hS, h⟩ := hB.open_eq_sUnion hU.2
   clear hB
   let j : S → J := fun s => (hS s.2).choose
   let V : ∀ s : S, Set (F.obj (j s)) := fun s => (hS s.2).choose_spec.choose
@@ -73,17 +65,17 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
 
   -- Since `U` is also closed, hence compact, it is covered by finitely many of the
   -- clopens constructed in the previous step.
-  have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i)
-  · intro s
-    exact (hV s).1.1.preimage (C.π.app (j s)).continuous
-  have hsU : U ⊆ ⋃ (i : ↑S), (fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i
-  · dsimp only
+  have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i) := by
+    intro s
+    exact (hV s).1.2.preimage (C.π.app (j s)).continuous
+  have hsU : U ⊆ ⋃ (i : ↑S), (fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i := by
+    dsimp only
     rw [h]
     rintro x ⟨T, hT, hx⟩
     refine' ⟨_, ⟨⟨T, hT⟩, rfl⟩, _⟩
     dsimp only [forget_map_eq_coe]
     rwa [← (hV ⟨T, hT⟩).2]
-  have := hU.2.isCompact.elim_finite_subcover (fun s : S => C.π.app (j s) ⁻¹' V s) hUo hsU
+  have := hU.1.isCompact.elim_finite_subcover (fun s : S => C.π.app (j s) ⁻¹' V s) hUo hsU
   -- Porting note: same remark as after `hB`
   -- We thus obtain a finite set `G : Finset J` and a clopen set of `F.obj j` for each
   -- `j ∈ G` such that `U` is the union of the preimages of these clopen sets.
@@ -98,18 +90,18 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   refine' ⟨j0, ⋃ (s : S) (_ : s ∈ G), W s, _, _⟩
   · apply isClopen_biUnion_finset
     intro s hs
-    dsimp
+    dsimp [W]
     rw [dif_pos hs]
     exact ⟨(hV s).1.1.preimage (F.map _).continuous, (hV s).1.2.preimage (F.map _).continuous⟩
   · ext x
     constructor
     · intro hx
-      simp_rw [Set.preimage_iUnion, Set.mem_iUnion]
+      simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion]
       obtain ⟨_, ⟨s, rfl⟩, _, ⟨hs, rfl⟩, hh⟩ := hG hx
       refine' ⟨s, hs, _⟩
       rwa [dif_pos hs, ← Set.preimage_comp, ← Profinite.coe_comp, ← Functor.map_comp, C.w]
     · intro hx
-      simp_rw [Set.preimage_iUnion, Set.mem_iUnion] at hx
+      simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion] at hx
       obtain ⟨s, hs, hx⟩ := hx
       rw [h]
       refine' ⟨s.1, s.2, _⟩
@@ -165,7 +157,7 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   ext1 x
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [LocallyConstant.coe_comap _ _ (C.π.app (j a)).continuous]
-  dsimp [LocallyConstant.flip, LocallyConstant.unflip]
+  dsimp [ggg, LocallyConstant.flip, LocallyConstant.unflip]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [LocallyConstant.coe_comap _ _ (C.π.app j0).continuous]
   dsimp
@@ -191,7 +183,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
   ext x
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
-  dsimp
+  dsimp [σ]
   have h1 : ι (f x) = gg (C.π.app j x) := by
     change f.map (fun a b => if a = b then (0 : Fin 2) else 1) x = _
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -205,7 +197,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
     exact h1
   · intro a b hh
     have hhh := congr_fun hh a
-    dsimp at hhh
+    dsimp [ι] at hhh
     rw [if_pos rfl] at hhh
     split_ifs at hhh with hh1
     · exact hh1.symm
@@ -223,8 +215,8 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
   · suffices ∃ j, IsEmpty (F.obj j) by
       refine' this.imp fun j hj => _
       refine' ⟨⟨hj.elim, fun A => _⟩, _⟩
-      · suffices : (fun a ↦ IsEmpty.elim hj a) ⁻¹' A = ∅
-        · rw [this]
+      · suffices (fun a ↦ IsEmpty.elim hj a) ⁻¹' A = ∅ by
+          rw [this]
           exact isOpen_empty
         exact @Set.eq_empty_of_isEmpty _ hj _
       · ext x
@@ -238,7 +230,7 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
       (inferInstance : CompactSpace (F.obj j))
     have cond := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u}
       (F ⋙ Profinite.toTopCat)
-    suffices : Nonempty C.pt; exact IsEmpty.false (S.proj this.some)
+    suffices Nonempty C.pt from IsEmpty.false (S.proj this.some)
     let D := Profinite.toTopCat.mapCone C
     have hD : IsLimit D := isLimitOfPreserves Profinite.toTopCat hC
     have CD := (hD.conePointUniqueUpToIso (TopCat.limitConeIsLimit.{v, max u v} _)).inv

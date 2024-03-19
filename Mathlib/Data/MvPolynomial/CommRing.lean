@@ -50,7 +50,6 @@ variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ �
 section CommRing
 
 variable [CommRing R]
-
 variable {p q : MvPolynomial σ R}
 
 instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
@@ -58,13 +57,13 @@ instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
 
 variable (σ a a')
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem C_sub : (C (a - a') : MvPolynomial σ R) = C a - C a' :=
   RingHom.map_sub _ _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_sub MvPolynomial.C_sub
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
   RingHom.map_neg _ _
 set_option linter.uppercaseLean3 false in
@@ -127,7 +126,6 @@ end Vars
 section Eval
 
 variable [CommRing S]
-
 variable (f : R →+* S) (g : σ → S)
 
 @[simp]

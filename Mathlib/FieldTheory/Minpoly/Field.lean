@@ -19,12 +19,12 @@ are irreducible, and uniquely determined by their defining property.
 -/
 
 
-open Classical Polynomial Set Function minpoly
+open scoped Classical
+open Polynomial Set Function minpoly
 
 namespace minpoly
 
 variable {A B : Type*}
-
 variable (A) [Field A]
 
 section Ring
@@ -78,6 +78,13 @@ theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   exact degree_modByMonic_lt _ (monic hx)
 #align minpoly.dvd minpoly.dvd
 
+variable {A x} in
+lemma dvd_iff {p : A[X]} : minpoly A x ∣ p ↔ Polynomial.aeval x p = 0 :=
+  ⟨fun ⟨q, hq⟩ ↦ by rw [hq, map_mul, aeval, zero_mul], minpoly.dvd A x⟩
+
+theorem isRadical [IsReduced B] : IsRadical (minpoly A x) := fun n p dvd ↦ by
+  rw [dvd_iff] at dvd ⊢; rw [map_pow] at dvd; exact IsReduced.eq_zero _ ⟨n, dvd⟩
+
 theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
     minpoly K x ∣ (minpoly A x).map (algebraMap A K) := by
@@ -103,6 +110,15 @@ theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K
     eval₂_eq_zero_of_dvd_of_eval₂_eq_zero (algebraMap K U) y
       (minpoly.dvd_map_of_isScalarTower R K x) hy
 #align minpoly.aeval_of_is_scalar_tower minpoly.aeval_of_isScalarTower
+
+/-- See also `minpoly.ker_eval` which relaxes the assumptions on `A` in exchange for
+stronger assumptions on `B`. -/
+@[simp]
+lemma ker_aeval_eq_span_minpoly :
+    RingHom.ker (Polynomial.aeval x) = A[X] ∙ minpoly A x := by
+  ext p
+  simp_rw [RingHom.mem_ker, ← minpoly.dvd_iff, Submodule.mem_span_singleton,
+    dvd_iff_exists_eq_mul_left, smul_eq_mul, eq_comm (a := p)]
 
 variable {A x}
 
@@ -154,7 +170,7 @@ noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L
 variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]
 
--- Porting note: removed `noncomputable!` since it seems not to be slow in lean 4,
+-- Porting note (#11083): removed `noncomputable!` since it seems not to be slow in lean 4,
 -- though it isn't very computable in practice (since neither `finrank` nor `finBasis` are).
 /-- Function from Hom_K(E,L) to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
@@ -217,7 +233,6 @@ end Ring
 section IsDomain
 
 variable [Ring B] [IsDomain B] [Algebra A B]
-
 variable {A} {x : B}
 
 /-- A minimal polynomial is prime. -/
@@ -286,8 +301,8 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
 /-- The minimal polynomial (over `K`) of `σ : Gal(L/K)` is `X ^ (orderOf σ) - 1`. -/
 lemma minpoly_algHom_toLinearMap (σ : L →ₐ[K] L) (hσ : IsOfFinOrder σ) :
     minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
-  have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit)
-  · erw [orderOf_injective (AlgEquiv.algHomUnitsEquiv K L)
+  have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit) := by
+    erw [orderOf_injective (AlgEquiv.algHomUnitsEquiv K L)
       (AlgEquiv.algHomUnitsEquiv K L).injective]
     rw [← orderOf_units]
     rfl
