@@ -1039,8 +1039,7 @@ lemma integrable_pow_mul (f : 𝓢(D, V))
   obtain ⟨C, C_nonneg, hC⟩ : ∃ C, 0 ≤ C ∧ ∀ x, (1 + ‖x‖) ^ l * ‖f x‖ ≤ C := by
     use 2 ^ l * (Finset.Iic (l, 0)).sup (fun m ↦ SchwartzMap.seminorm ℝ m.1 m.2) f, by positivity
     simpa using f.one_add_le_sup_seminorm_apply (m := (l, 0)) (k := l) (n := 0) le_rfl le_rfl
-  have : Integrable (fun x : D ↦ C * (1 + ‖x‖) ^ (-(n : ℝ))) μ := by
-    apply h.const_mul
+  have : Integrable (fun x : D ↦ C * (1 + ‖x‖) ^ (-(n : ℝ))) μ := h.const_mul _
   apply this.mono ((aestronglyMeasurable_id.norm.pow _).mul f.continuous.aestronglyMeasurable.norm)
     (eventually_of_forall (fun x ↦ ?_))
   conv_rhs => rw [norm_of_nonneg (by positivity), rpow_neg (by positivity), ← div_eq_mul_inv]
@@ -1052,9 +1051,8 @@ lemma integrable_pow_mul (f : 𝓢(D, V))
     _ = (1 + ‖x‖) ^ (n + k) * ‖f x‖ := by simp only [pow_add, mul_assoc]
     _ ≤ C := hC x
 
-lemma integrable (f : 𝓢(D, V)) :
-    Integrable f μ := by
-  exact (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable
+lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
+  (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable
     (eventually_of_forall (fun _ ↦ by simp))
 
 variable (𝕜 μ) in
