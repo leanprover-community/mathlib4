@@ -414,7 +414,8 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
         by dsimp; simp [← Nat.shiftLeft_sub _ , add_tsub_cancel_left])
       fun i n => by
         dsimp
-        simp [Nat.shiftLeft_zero, Nat.shiftRight_add, ← Nat.shiftLeft_sub]
+        simp only [Nat.shiftLeft'_false, Nat.shiftRight_add, le_refl, ← Nat.shiftLeft_sub,
+          tsub_eq_zero_of_le, Nat.shiftLeft_zero]
         rfl
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ

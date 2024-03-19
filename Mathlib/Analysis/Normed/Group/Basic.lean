@@ -767,6 +767,11 @@ theorem Bornology.IsBounded.exists_pos_norm_le' (hs : IsBounded s) : ∃ R > 0, 
 #align metric.bounded.exists_pos_norm_le' Bornology.IsBounded.exists_pos_norm_le'
 #align metric.bounded.exists_pos_norm_le Bornology.IsBounded.exists_pos_norm_le
 
+@[to_additive Bornology.IsBounded.exists_pos_norm_lt]
+theorem Bornology.IsBounded.exists_pos_norm_lt' (hs : IsBounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ < R :=
+  let ⟨R, hR₀, hR⟩ := hs.exists_pos_norm_le'
+  ⟨R + 1, by positivity, fun x hx ↦ (hR x hx).trans_lt (lt_add_one _)⟩
+
 @[to_additive (attr := simp 1001) mem_sphere_iff_norm]
 -- Porting note: increase priority so the left-hand side doesn't reduce
 theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]
@@ -1454,7 +1459,6 @@ end SeminormedGroup
 section Induced
 
 variable (E F)
-
 variable [FunLike 𝓕 E F]
 
 -- See note [reducible non-instances]

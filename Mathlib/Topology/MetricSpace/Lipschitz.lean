@@ -249,7 +249,6 @@ namespace LipschitzOnWith
 section Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ]
-
 variable {K : ℝ≥0} {s : Set α} {f : α → β}
 
 protected theorem of_dist_le' {K : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist (f x) (f y) ≤ K * dist x y) :

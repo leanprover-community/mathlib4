@@ -376,15 +376,6 @@ theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul_swapped {ι} {p : ι → 
 #align filter.has_basis.uniformity_of_nhds_zero_neg_add_swapped Filter.HasBasis.uniformity_of_nhds_zero_neg_add_swapped
 
 @[to_additive]
-theorem group_separationRel (x y : α) : (x, y) ∈ separationRel α ↔ x / y ∈ closure ({1} : Set α) :=
-  have : Embedding fun a => a * (y / x) := (uniformEmbedding_translate_mul (y / x)).embedding
-  show (x, y) ∈ ⋂₀ (𝓤 α).sets ↔ x / y ∈ closure ({1} : Set α) by
-    rw [this.closure_eq_preimage_closure_image, uniformity_eq_comap_nhds_one α, sInter_comap_sets]
-    simp [mem_closure_iff_nhds, inter_singleton_nonempty, sub_eq_add_neg, add_assoc]
-#align group_separation_rel group_separationRel
-#align add_group_separation_rel addGroup_separationRel
-
-@[to_additive]
 theorem uniformContinuous_of_tendsto_one {hom : Type*} [UniformSpace β] [Group β] [UniformGroup β]
     [FunLike hom α β] [MonoidHomClass hom α β] {f : hom} (h : Tendsto f (𝓝 1) (𝓝 1)) :
     UniformContinuous f := by
@@ -605,7 +596,6 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
     IsClosed (H : Set G) := by
   obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1}
   exact nhds_inter_eq_singleton_of_mem_discrete H.one_mem
-  haveI : SeparatedSpace G := separated_iff_t2.mpr ‹_›
   have : (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
@@ -725,12 +715,10 @@ open Filter Set Function
 section
 
 variable {α : Type*} {β : Type*} {hom : Type*}
-
 variable [TopologicalSpace α] [Group α] [TopologicalGroup α]
 
 -- β is a dense subgroup of α, inclusion is denoted by e
 variable [TopologicalSpace β] [Group β]
-
 variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom} (de : DenseInducing e)
 
 @[to_additive]
@@ -753,29 +741,19 @@ end
 namespace DenseInducing
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
-
 variable {G : Type*}
 
 -- β is a dense subgroup of α, inclusion is denoted by e
 -- δ is a dense subgroup of γ, inclusion is denoted by f
 variable [TopologicalSpace α] [AddCommGroup α] [TopologicalAddGroup α]
-
 variable [TopologicalSpace β] [AddCommGroup β] [TopologicalAddGroup β]
-
 variable [TopologicalSpace γ] [AddCommGroup γ] [TopologicalAddGroup γ]
-
 variable [TopologicalSpace δ] [AddCommGroup δ] [TopologicalAddGroup δ]
-
-variable [UniformSpace G] [AddCommGroup G] [UniformAddGroup G] [SeparatedSpace G] [CompleteSpace G]
-
+variable [UniformSpace G] [AddCommGroup G] [UniformAddGroup G] [T0Space G] [CompleteSpace G]
 variable {e : β →+ α} (de : DenseInducing e)
-
 variable {f : δ →+ γ} (df : DenseInducing f)
-
 variable {φ : β →+ δ →+ G}
-
 variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
-
 variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
 
 private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ x ∈ U₂, ∀ x' ∈ U₂,

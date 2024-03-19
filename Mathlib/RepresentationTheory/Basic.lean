@@ -9,7 +9,7 @@ import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import representation_theory.basic from "leanprover-community/mathlib"@"c04bc6e93e23aa0182aba53661a2211e80b6feac"
 
@@ -84,7 +84,6 @@ end trivial
 section MonoidAlgebra
 
 variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
-
 variable (ρ : Representation k G V)
 
 /-- A `k`-linear representation of `G` on `V` can be thought of as
@@ -255,7 +254,6 @@ end MonoidAlgebra
 section AddCommGroup
 
 variable {k G V : Type*} [CommRing k] [Monoid G] [I : AddCommGroup V] [Module k V]
-
 variable (ρ : Representation k G V)
 
 instance : AddCommGroup ρ.asModule :=
@@ -327,7 +325,6 @@ end MulDistribMulAction
 section Group
 
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
-
 variable (ρ : Representation k G V)
 
 @[simp]
@@ -390,9 +387,7 @@ end Group
 section TensorProduct
 
 variable {k G V W : Type*} [CommSemiring k] [Monoid G]
-
 variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
-
 variable (ρV : Representation k G V) (ρW : Representation k G W)
 
 open TensorProduct
@@ -441,9 +436,7 @@ end TensorProduct
 section LinearHom
 
 variable {k G V W : Type*} [CommSemiring k] [Group G]
-
 variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
-
 variable (ρV : Representation k G V) (ρW : Representation k G W)
 
 /-- Given representations of `G` on `V` and `W`, there is a natural representation of `G` on the

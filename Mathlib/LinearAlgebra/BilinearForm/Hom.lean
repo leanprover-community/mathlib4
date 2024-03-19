@@ -19,10 +19,8 @@ Given any term `B` of type `BilinForm`, due to a coercion, can use
 the notation `B x y` to refer to the function field, ie. `B x y = B.bilin x y`.
 
 In this file we use the following type variables:
- - `M`, `M'`, ... are modules over the semiring `R`,
- - `M₁`, `M₁'`, ... are modules over the ring `R₁`,
- - `M₂`, `M₂'`, ... are modules over the commutative semiring `R₂`,
- - `M₃`, `M₃'`, ... are modules over the commutative ring `R₃`,
+ - `M`, `M'`, ... are modules over the commutative semiring `R`,
+ - `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
  - `V`, ... is a vector space over the field `K`.
 
 ## References
@@ -42,24 +40,15 @@ open LinearMap (BilinForm)
 universe u v w
 
 variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
-
-variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
-
-variable {R₃ : Type*} {M₃ : Type*} [CommRing R₃] [AddCommGroup M₃] [Module R₃ M₃]
-
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
-
-variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂ M₂}
+variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace LinearMap
 
 namespace BilinForm
 
 section ToLin'
-
-variable [Algebra R₂ R] [Module R₂ M] [IsScalarTower R₂ R M]
 
 /-- Auxiliary definition to define `toLinHom`; see below. -/
 def toLinHomAux₁ (A : BilinForm R M) (x : M) : M →ₗ[R] R where
@@ -69,7 +58,7 @@ def toLinHomAux₁ (A : BilinForm R M) (x : M) : M →ₗ[R] R where
 #align bilin_form.to_lin_hom_aux₁ LinearMap.BilinForm.toLinHomAux₁
 
 /-- Auxiliary definition to define `toLinHom`; see below. -/
-def toLinHomAux₂ (A : BilinForm R M) : M →ₗ[R₂] M →ₗ[R] R where
+def toLinHomAux₂ (A : BilinForm R M) : M →ₗ[R] M →ₗ[R] R where
   toFun := toLinHomAux₁ A
   map_add' x₁ x₂ :=
     LinearMap.ext fun x => by
@@ -80,18 +69,12 @@ def toLinHomAux₂ (A : BilinForm R M) : M →ₗ[R₂] M →ₗ[R] R where
       intros
       -- Porting note: moved out of `simp only`
       rw [← algebraMap_smul R c x]
-      simp only [Algebra.smul_def, LinearMap.coe_mk, LinearMap.smul_apply, smul_left]
-#align bilin_form.to_lin_hom_aux₂ LinearMap.BilinForm.toLinHomAux₂
-
-variable (R₂)
+      simp only [Algebra.id.map_eq_id, RingHom.id_apply, smul_left]
+#align bilin_form.to_lin_hom_aux₂ BilinForm.toLinHomAux₂
 
 /-- The linear map obtained from a `BilinForm` by fixing the left co-ordinate and evaluating in
-the right.
-This is the most general version of the construction; it is `R₂`-linear for some distinguished
-commutative subsemiring `R₂` of the scalar CommRing.  Over a semiring with no particular
-distinguished such subsemiring, use `toLin'`, which is `ℕ`-linear.  Over a commutative semiring,
-use `toLin`, which is linear. -/
-def toLinHom : BilinForm R M →ₗ[R₂] M →ₗ[R₂] M →ₗ[R] R where
+the right. -/
+def toLinHom : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R where
   toFun := toLinHomAux₂
   map_add' A₁ A₂ :=
     LinearMap.ext fun x => by
@@ -110,33 +93,24 @@ def toLinHom : BilinForm R M →ₗ[R₂] M →ₗ[R₂] M →ₗ[R] R where
       AddHom.coe_mk]
 #align bilin_form.to_lin_hom LinearMap.BilinForm.toLinHom
 
-variable {R₂}
-
 @[simp]
-theorem toLin'_apply (A : BilinForm R M) (x : M) : ⇑((toLinHom R₂).toFun A x) = A x :=
+theorem toLin'_apply (A : BilinForm R M) (x : M) : ⇑(toLinHom A x) = A x :=
   rfl
 #align bilin_form.to_lin'_apply LinearMap.BilinForm.toLin'_apply
-
-/-- The linear map obtained from a `BilinForm` by fixing the left co-ordinate and evaluating in
-the right.
-Over a commutative semiring, use `toLin`, which is linear rather than `ℕ`-linear. -/
-abbrev toLin' : BilinForm R M →ₗ[ℕ] M →ₗ[ℕ] M →ₗ[R] R :=
-  toLinHom ℕ
-#align bilin_form.to_lin' LinearMap.BilinForm.toLin'
 
 variable (B)
 
 --@[simp]
 theorem sum_left {α} (t : Finset α) (g : α → M) (w : M) :
     B (∑ i in t, g i) w = ∑ i in t, B (g i) w :=
-  (BilinForm.toLin'.toFun B).map_sum₂ t g w
-#align bilin_form.sum_left LinearMap.BilinForm.sum_left
+  (BilinForm.toLinHom B).map_sum₂ t g w
+#align bilin_form.sum_left BilinForm.sum_left
 
 --@[simp]
 theorem sum_right {α} (t : Finset α) (w : M) (g : α → M) :
     B w (∑ i in t, g i) = ∑ i in t, B w (g i) :=
-  map_sum (BilinForm.toLin'.toFun B w) _ _
-#align bilin_form.sum_right LinearMap.BilinForm.sum_right
+  map_sum (BilinForm.toLinHom B w) _ _
+#align bilin_form.sum_right BilinForm.sum_right
 
 --@[simp]
 theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
@@ -145,32 +119,18 @@ theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
   rw [map_sum, Finset.sum_apply, Finset.sum_apply]
   rfl
 
-variable {B} (R₂)
+variable {B}
 
 /-- The linear map obtained from a `BilinForm` by fixing the right co-ordinate and evaluating in
-the left.
-This is the most general version of the construction; it is `R₂`-linear for some distinguished
-commutative subsemiring `R₂` of the scalar CommRing.  Over semiring with no particular distinguished
-such subsemiring, use `toLin'Flip`, which is `ℕ`-linear.  Over a commutative semiring, use
-`toLinFlip`, which is linear. -/
-def toLinHomFlip : BilinForm R M →ₗ[R₂] M →ₗ[R₂] M →ₗ[R] R :=
-  (toLinHom R₂).comp (flipHom R₂).toLinearMap
-#align bilin_form.to_lin_hom_flip LinearMap.BilinForm.toLinHomFlip
-
-variable {R₂}
+the left. -/
+def toLinHomFlip : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R :=
+  toLinHom.comp flipHom.toLinearMap
+#align bilin_form.to_lin_hom_flip BilinForm.toLinHomFlip
 
 @[simp]
-theorem toLin'Flip_apply (A : BilinForm R M) (x : M) :
-    ⇑((toLinHomFlip R₂).toFun A x) = fun y => A y x :=
+theorem toLin'Flip_apply (A : BilinForm R M) (x : M) : ⇑(toLinHomFlip A x) = fun y => A y x :=
   rfl
 #align bilin_form.to_lin'_flip_apply LinearMap.BilinForm.toLin'Flip_apply
-
-/-- The linear map obtained from a `BilinForm` by fixing the right co-ordinate and evaluating in
-the left.
-Over a commutative semiring, use `toLinFlip`, which is linear rather than `ℕ`-linear. -/
-abbrev toLin'Flip : BilinForm R M →ₗ[ℕ] M →ₗ[ℕ] M →ₗ[R] R :=
-  toLinHomFlip ℕ
-#align bilin_form.to_lin'_flip LinearMap.BilinForm.toLin'Flip
 
 end ToLin'
 
@@ -197,36 +157,35 @@ def LinearMap.BilinForm.toLin : BilinForm R₂ M₂ ≃ₗ[R₂] M₂ →ₗ[R�
 #align bilin_form.to_lin LinearMap.BilinForm.toLin
 
 /-- A map with two arguments that is linear in both is linearly equivalent to bilinear form. -/
-def LinearMap.toBilin : (M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) ≃ₗ[R₂] BilinForm R₂ M₂ :=
+def LinearMap.toBilin : (M →ₗ[R] M →ₗ[R] R) ≃ₗ[R] BilinForm R M :=
   BilinForm.toLin.symm
 #align linear_map.to_bilin LinearMap.toBilin
 
 @[simp]
-theorem LinearMap.toBilinAux_eq (f : M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) :
+theorem LinearMap.toBilinAux_eq (f : M →ₗ[R] M →ₗ[R] R) :
     LinearMap.toBilinAux f = LinearMap.toBilin f :=
   rfl
 #align linear_map.to_bilin_aux_eq LinearMap.toBilinAux_eq
 
 @[simp]
 theorem LinearMap.toBilin_symm :
-    (LinearMap.toBilin.symm : BilinForm R₂ M₂ ≃ₗ[R₂] _) = BilinForm.toLin :=
+    (LinearMap.toBilin.symm : BilinForm R M ≃ₗ[R] _) = BilinForm.toLin :=
   rfl
 #align linear_map.to_bilin_symm LinearMap.toBilin_symm
 
 @[simp]
-theorem LinearMap.BilinForm.toLin_symm :
-    (BilinForm.toLin.symm : _ ≃ₗ[R₂] BilinForm R₂ M₂) = LinearMap.toBilin :=
+theorem BilinForm.toLin_symm :
+    (BilinForm.toLin.symm : _ ≃ₗ[R] BilinForm R M) = LinearMap.toBilin :=
   LinearMap.toBilin.symm_symm
 #align bilin_form.to_lin_symm LinearMap.BilinForm.toLin_symm
 
-@[simp]
-theorem LinearMap.toBilin_apply (f : M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) (x y : M₂) :
+@[simp, norm_cast]
+theorem LinearMap.toBilin_apply (f : M →ₗ[R] M →ₗ[R] R) (x y : M) :
     toBilin f x y = f x y :=
   rfl
 
-
-@[simp]
-theorem LinearMap.BilinForm.toLin_apply (x : M₂) : (BilinForm.toLin B₂ x) = B₂ x :=
+@[simp, norm_cast]
+theorem BilinForm.toLin_apply (x : M) : ⇑(BilinForm.toLin B x) = B x :=
   rfl
 #align bilin_form.to_lin_apply LinearMap.BilinForm.toLin_apply
 
@@ -354,14 +313,13 @@ theorem comp_inj (B₁ B₂ : BilinForm R M') {l r : M →ₗ[R] M'} (hₗ : Fun
 
 end Comp
 
-variable {M₂' M₂'' : Type*}
-
-variable [AddCommMonoid M₂'] [AddCommMonoid M₂''] [Module R₂ M₂'] [Module R₂ M₂'']
+variable {M' M'' : Type*}
+variable [AddCommMonoid M'] [AddCommMonoid M''] [Module R M'] [Module R M'']
 
 section congr
 
 /-- Apply a linear equivalence on the arguments of a bilinear form. -/
-def congr (e : M₂ ≃ₗ[R₂] M₂') : BilinForm R₂ M₂ ≃ₗ[R₂] BilinForm R₂ M₂' where
+def congr (e : M ≃ₗ[R] M') : BilinForm R M ≃ₗ[R] BilinForm R M' where
   toFun B := B.comp e.symm e.symm
   invFun B := B.comp e e
   left_inv B := ext fun x => by
@@ -373,43 +331,43 @@ def congr (e : M₂ ≃ₗ[R₂] M₂') : BilinForm R₂ M₂ ≃ₗ[R₂] Bilin
 #align bilin_form.congr LinearMap.BilinForm.congr
 
 @[simp]
-theorem congr_apply (e : M₂ ≃ₗ[R₂] M₂') (B : BilinForm R₂ M₂) (x y : M₂') :
+theorem congr_apply (e : M ≃ₗ[R] M') (B : BilinForm R M) (x y : M') :
     congr e B x y = B (e.symm x) (e.symm y) :=
   rfl
 #align bilin_form.congr_apply LinearMap.BilinForm.congr_apply
 
 @[simp]
-theorem congr_symm (e : M₂ ≃ₗ[R₂] M₂') : (congr e).symm = congr e.symm := by
+theorem congr_symm (e : M ≃ₗ[R] M') : (congr e).symm = congr e.symm := by
   ext
   simp only [congr_apply, LinearEquiv.symm_symm]
   rfl
 #align bilin_form.congr_symm LinearMap.BilinForm.congr_symm
 
 @[simp]
-theorem congr_refl : congr (LinearEquiv.refl R₂ M₂) = LinearEquiv.refl R₂ _ :=
+theorem congr_refl : congr (LinearEquiv.refl R M) = LinearEquiv.refl R _ :=
   LinearEquiv.ext fun _ => ext fun _ _ => rfl
 #align bilin_form.congr_refl LinearMap.BilinForm.congr_refl
 
-theorem congr_trans (e : M₂ ≃ₗ[R₂] M₂') (f : M₂' ≃ₗ[R₂] M₂'') :
+theorem congr_trans (e : M ≃ₗ[R] M') (f : M' ≃ₗ[R] M'') :
     (congr e).trans (congr f) = congr (e.trans f) :=
   rfl
 #align bilin_form.congr_trans LinearMap.BilinForm.congr_trans
 
-theorem congr_congr (e : M₂' ≃ₗ[R₂] M₂'') (f : M₂ ≃ₗ[R₂] M₂') (B : BilinForm R₂ M₂) :
+theorem congr_congr (e : M' ≃ₗ[R] M'') (f : M ≃ₗ[R] M') (B : BilinForm R M) :
     congr e (congr f B) = congr (f.trans e) B :=
   rfl
 #align bilin_form.congr_congr LinearMap.BilinForm.congr_congr
 
-theorem congr_comp (e : M₂ ≃ₗ[R₂] M₂') (B : BilinForm R₂ M₂) (l r : M₂'' →ₗ[R₂] M₂') :
+theorem congr_comp (e : M ≃ₗ[R] M') (B : BilinForm R M) (l r : M'' →ₗ[R] M') :
     (congr e B).comp l r =
-      B.comp (LinearMap.comp (e.symm : M₂' →ₗ[R₂] M₂) l)
-        (LinearMap.comp (e.symm : M₂' →ₗ[R₂] M₂) r) :=
+      B.comp (LinearMap.comp (e.symm : M' →ₗ[R] M) l)
+        (LinearMap.comp (e.symm : M' →ₗ[R] M) r) :=
   rfl
 #align bilin_form.congr_comp LinearMap.BilinForm.congr_comp
 
-theorem comp_congr (e : M₂' ≃ₗ[R₂] M₂'') (B : BilinForm R₂ M₂) (l r : M₂' →ₗ[R₂] M₂) :
+theorem comp_congr (e : M' ≃ₗ[R] M'') (B : BilinForm R M) (l r : M' →ₗ[R] M) :
     congr e (B.comp l r) =
-      B.comp (l.comp (e.symm : M₂'' →ₗ[R₂] M₂')) (r.comp (e.symm : M₂'' →ₗ[R₂] M₂')) :=
+      B.comp (l.comp (e.symm : M'' →ₗ[R] M')) (r.comp (e.symm : M'' →ₗ[R] M')) :=
   rfl
 #align bilin_form.comp_congr LinearMap.BilinForm.comp_congr
 
@@ -421,7 +379,7 @@ section LinMulLin
 def linMulLin (f g : M₂ →ₗ[R₂] R₂) : BilinForm R₂ M₂ := (LinearMap.mul R₂ R₂).compl₁₂ f g
 #align bilin_form.lin_mul_lin LinearMap.BilinForm.linMulLin
 
-variable {f g : M₂ →ₗ[R₂] R₂}
+variable {f g : M →ₗ[R] R}
 
 @[simp]
 theorem linMulLin_apply (x y) : linMulLin f g x y = f x * g y :=
@@ -429,19 +387,19 @@ theorem linMulLin_apply (x y) : linMulLin f g x y = f x * g y :=
 #align bilin_form.lin_mul_lin_apply LinearMap.BilinForm.linMulLin_apply
 
 @[simp]
-theorem linMulLin_comp (l r : M₂' →ₗ[R₂] M₂) :
+theorem linMulLin_comp (l r : M' →ₗ[R] M) :
     (linMulLin f g).comp l r = linMulLin (f.comp l) (g.comp r) :=
   rfl
 #align bilin_form.lin_mul_lin_comp LinearMap.BilinForm.linMulLin_comp
 
 @[simp]
-theorem linMulLin_compLeft (l : M₂ →ₗ[R₂] M₂) :
+theorem linMulLin_compLeft (l : M →ₗ[R] M) :
     (linMulLin f g).compLeft l = linMulLin (f.comp l) g :=
   rfl
 #align bilin_form.lin_mul_lin_comp_left LinearMap.BilinForm.linMulLin_compLeft
 
 @[simp]
-theorem linMulLin_compRight (r : M₂ →ₗ[R₂] M₂) :
+theorem linMulLin_compRight (r : M →ₗ[R] M) :
     (linMulLin f g).compRight r = linMulLin f (g.comp r) :=
   rfl
 #align bilin_form.lin_mul_lin_comp_right LinearMap.BilinForm.linMulLin_compRight
@@ -450,9 +408,8 @@ end LinMulLin
 
 section Basis
 
-variable {F₂ : BilinForm R₂ M₂}
-
-variable {ι : Type*} (b : Basis ι R₂ M₂)
+variable {F₂ : BilinForm R M}
+variable {ι : Type*} (b : Basis ι R M)
 
 /-- Two bilinear forms are equal when they are equal on all basis vectors. -/
 theorem ext_basis (h : ∀ i j, B₂ (b i) (b j) = F₂ (b i) (b j)) : B₂ = F₂ :=
@@ -460,8 +417,8 @@ theorem ext_basis (h : ∀ i j, B₂ (b i) (b j) = F₂ (b i) (b j)) : B₂ = F�
 #align bilin_form.ext_basis LinearMap.BilinForm.ext_basis
 
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis. -/
-theorem sum_repr_mul_repr_mul (x y : M₂) :
-    ((b.repr x).sum fun i xi => (b.repr y).sum fun j yj => xi • yj • B₂ (b i) (b j)) = B₂ x y := by
+theorem sum_repr_mul_repr_mul (x y : M) :
+    ((b.repr x).sum fun i xi => (b.repr y).sum fun j yj => xi • yj • B (b i) (b j)) = B x y := by
   conv_rhs => rw [← b.total_repr x, ← b.total_repr y]
   simp_rw [Finsupp.total_apply, Finsupp.sum, sum_left, sum_right, smul_left, smul_right,
     smul_eq_mul]

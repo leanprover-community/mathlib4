@@ -67,7 +67,6 @@ namespace BoundedContinuousFunction
 section Basics
 
 variable [TopologicalSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ]
-
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
 instance : FunLike (α →ᵇ β) α β where
@@ -510,7 +509,6 @@ end Basics
 section ArzelaAscoli
 
 variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β]
-
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
 /- Arzela-Ascoli theorem asserts that, on a compact space, a set of functions sharing
@@ -659,9 +657,7 @@ names (for example, `coe_mul`) to conflict with later lemma names for normed rin
 trivial inconvenience, but in any case there are no obvious applications of the multiplicative
 version. -/
 variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β]
-
 variable [LipschitzAdd β]
-
 variable (f g : α →ᵇ β) {x : α} {C : ℝ}
 
 /-- The pointwise sum of two bounded continuous functions is again bounded continuous. -/
@@ -781,7 +777,6 @@ section NormedAddCommGroup
 continuous functions from `α` to `β` inherits a normed group structure, by using
 pointwise operations and checking that they are compatible with the uniform distance. -/
 variable [TopologicalSpace α] [SeminormedAddCommGroup β]
-
 variable (f g : α →ᵇ β) {x : α} {C : ℝ}
 
 instance : Norm (α →ᵇ β) :=
@@ -1114,7 +1109,6 @@ end MulAction
 section DistribMulAction
 
 variable [MonoidWithZero 𝕜] [AddMonoid β] [DistribMulAction 𝕜 β] [BoundedSMul 𝕜 β]
-
 variable [LipschitzAdd β]
 
 instance : DistribMulAction 𝕜 (α →ᵇ β) :=
@@ -1125,9 +1119,7 @@ end DistribMulAction
 section Module
 
 variable [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β] [BoundedSMul 𝕜 β]
-
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
-
 variable [LipschitzAdd β]
 
 instance module : Module 𝕜 (α →ᵇ β) :=
@@ -1171,9 +1163,7 @@ pointwise operations and checking that they are compatible with the uniform dist
 
 
 variable {𝕜 : Type*}
-
 variable [TopologicalSpace α] [SeminormedAddCommGroup β]
-
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
 instance normedSpace [NormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 𝕜 (α →ᵇ β) :=
@@ -1183,9 +1173,7 @@ instance normedSpace [NormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 𝕜
       norm_smul c (f x) ▸ mul_le_mul_of_nonneg_left (f.norm_coe_le_norm _) (norm_nonneg _)⟩
 
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 β]
-
 variable [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
-
 variable (α)
 
 -- TODO does this work in the `BoundedSMul` setting, too?
@@ -1361,11 +1349,8 @@ pointwise operations and checking that they are compatible with the uniform dist
 
 
 variable {𝕜 : Type*} [NormedField 𝕜]
-
 variable [TopologicalSpace α] [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
-
 variable [NormedRing γ] [NormedAlgebra 𝕜 γ]
-
 variable {f g : α →ᵇ γ} {x : α} {c : 𝕜}
 
 /-- `BoundedContinuousFunction.const` as a `RingHom`. -/
@@ -1491,7 +1476,6 @@ end NormedAddCommGroup
 section CstarRing
 
 variable [TopologicalSpace α]
-
 variable [NonUnitalNormedRing β] [StarRing β]
 
 instance [NormedStarGroup β] : StarRing (α →ᵇ β) :=

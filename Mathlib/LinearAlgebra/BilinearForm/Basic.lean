@@ -31,10 +31,8 @@ Given any term `B` of type `BilinForm`, due to a coercion, can use
 the notation `B x y` to refer to the function field, ie. `B x y = B.bilin x y`.
 
 In this file we use the following type variables:
- - `M`, `M'`, ... are modules over the semiring `R`,
- - `M₁`, `M₁'`, ... are modules over the ring `R₁`,
- - `M₂`, `M₂'`, ... are modules over the commutative semiring `R₂`,
- - `M₃`, `M₃'`, ... are modules over the commutative ring `R₃`,
+ - `M`, `M'`, ... are modules over the commutative semiring `R`,
+ - `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
  - `V`, ... is a vector space over the field `K`.
 
 ## References
@@ -65,18 +63,10 @@ structure BilinForm (R : Type*) (M : Type*) [CommSemiring R] [AddCommMonoid M] [
 -/
 
 variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
-
 variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
-
-variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
-
-variable {R₃ : Type*} {M₃ : Type*} [CommRing R₃] [AddCommGroup M₃] [Module R₃ M₃]
-
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
-
-variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂ M₂}
+variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace LinearMap
 
@@ -285,18 +275,15 @@ instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] [SMulCo
     DistribMulAction α (BilinForm R M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
-instance {α} [Semiring α] [Module α R] [SMulCommClass α R R] [SMulCommClass R α R] :
-    Module α (BilinForm R M) :=
+instance {α} [CommSemiring α] [Module α R] [SMulCommClass α R R] : Module α (BilinForm R M) :=
   Function.Injective.module _ coeFnAddMonoidHom coe_injective coe_smul
 
 section flip
 
-variable (R₂)
-
 /-- Auxiliary construction for the flip of a bilinear form, obtained by exchanging the left and
 right arguments. This version is a `LinearMap`; it is later upgraded to a `LinearEquiv`
 in `flipHom`. -/
-def flipHomAux [Algebra R₂ R] : (BilinForm R M) →ₗ[R₂] (BilinForm R M) where
+def flipHomAux : (BilinForm R M) →ₗ[R] (BilinForm R M) where
   toFun A := A.flip
   map_add' A₁ A₂ := by
     ext
@@ -308,48 +295,38 @@ def flipHomAux [Algebra R₂ R] : (BilinForm R M) →ₗ[R₂] (BilinForm R M) w
 
 variable {R₂}
 
-theorem flip_flip_aux [Algebra R₂ R] (A : BilinForm R M) :
-    (flipHomAux R₂).toFun ((flipHomAux R₂).toFun A) = A := by
+theorem flip_flip_aux (A : BilinForm R M) :
+    (flipHomAux) (flipHomAux A) = A := by
   ext A
   simp [flipHomAux]
 #align bilin_form.flip_flip_aux LinearMap.BilinForm.flip_flip_aux
 
 variable (R₂)
 
-/-- The flip of a bilinear form, obtained by exchanging the left and right arguments. This is a
-less structured version of the equiv which applies to general (noncommutative) rings `R` with a
-distinguished commutative subring `R₂`; over a commutative ring use `flip`. -/
-def flipHom [Algebra R₂ R] : BilinForm R M ≃ₗ[R₂] BilinForm R M :=
-  { flipHomAux R₂ with
-    invFun := (flipHomAux R₂).toFun
+/-- The flip of a bilinear form, obtained by exchanging the left and right arguments. -/
+def flipHom : BilinForm R M ≃ₗ[R] BilinForm R M :=
+  { flipHomAux with
+    invFun := flipHomAux
     left_inv := flip_flip_aux
     right_inv := flip_flip_aux }
 #align bilin_form.flip_hom LinearMap.BilinForm.flipHom
 
-variable {R₂}
-
 @[simp]
-theorem flip_apply [Algebra R₂ R] (A : BilinForm R M) (x y : M) : flipHom R₂ A x y = A y x :=
+theorem flip_apply (A : BilinForm R M) (x y : M) : flipHom A x y = A y x :=
   rfl
 #align bilin_form.flip_apply LinearMap.BilinForm.flip_apply
 
-theorem flip_flip [Algebra R₂ R] :
-    (flipHom R₂).trans (flipHom R₂) = LinearEquiv.refl R₂ (BilinForm R M) := by
+theorem flip_flip :
+    flipHom.trans flipHom = LinearEquiv.refl R (BilinForm R M) := by
   ext A
   simp
 #align bilin_form.flip_flip LinearMap.BilinForm.flip_flip
 
-/-- The flip of a bilinear form over a ring, obtained by exchanging the left and right arguments,
-here considered as an `ℕ`-linear equivalence, i.e. an additive equivalence. -/
-abbrev flip' : BilinForm R M ≃ₗ[ℕ] BilinForm R M :=
-  flipHom ℕ
-#align bilin_form.flip' LinearMap.BilinForm.flip'
-
 /-- The `flip` of a bilinear form over a commutative ring, obtained by exchanging the left and
 right arguments. -/
-abbrev flip : BilinForm R₂ M₂ ≃ₗ[R₂] BilinForm R₂ M₂ :=
-  flipHom R₂
-#align bilin_form.flip LinearMap.BilinForm.flip
+abbrev flip : BilinForm R M ≃ₗ[R] BilinForm R M :=
+  flipHom
+#align bilin_form.flip BilinForm.flip
 
 end flip
 

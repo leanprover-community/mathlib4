@@ -262,7 +262,7 @@ def specializationOrder (X) [TopologicalSpace X] [T0Space X] : PartialOrder X :=
   { specializationPreorder X, PartialOrder.lift (OrderDual.toDual ∘ 𝓝) nhds_injective with }
 #align specialization_order specializationOrder
 
-instance : T0Space (SeparationQuotient X) :=
+instance SeparationQuotient.instT0Space : T0Space (SeparationQuotient X) :=
   ⟨fun x y => Quotient.inductionOn₂' x y fun _ _ h =>
     SeparationQuotient.mk_eq_mk.2 <| SeparationQuotient.inducing_mk.inseparable_iff.1 h⟩
 
@@ -1265,6 +1265,9 @@ instance (priority := 80) [R1Space X] [T0Space X] : T2Space X :=
   t2Space_iff_disjoint_nhds.2 fun _x _y hne ↦ disjoint_nhds_nhds_iff_not_inseparable.2 fun hxy ↦
     hne hxy.eq
 
+theorem R1Space.t2Space_iff_t0Space [R1Space X] : T2Space X ↔ T0Space X := by
+  constructor <;> intro <;> infer_instance
+
 /-- A space is T₂ iff the neighbourhoods of distinct points generate the bottom filter. -/
 theorem t2_iff_nhds : T2Space X ↔ ∀ {x y : X}, NeBot (𝓝 x ⊓ 𝓝 y) → x = y := by
   simp only [t2Space_iff_disjoint_nhds, disjoint_iff, neBot_iff, Ne.def, not_imp_comm, Pairwise]
@@ -1996,6 +1999,9 @@ class T3Space (X : Type u) [TopologicalSpace X] extends T0Space X, RegularSpace 
 
 instance (priority := 90) [T0Space X] [RegularSpace X] : T3Space X := ⟨⟩
 
+theorem RegularSpace.t3Space_iff_t0Space [RegularSpace X] : T3Space X ↔ T0Space X := by
+  constructor <;> intro <;> infer_instance
+
 -- see Note [lower instance priority]
 instance (priority := 100) T3Space.t25Space [T3Space X] : T25Space X := by
   refine' ⟨fun x y hne => _⟩
@@ -2337,8 +2343,8 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
       rw [connectedComponent_eq_iInter_isClopen] at hx
       intro hU
       let N := { s // IsClopen s ∧ x ∈ s }
-      suffices ∃ s : N, s.val ⊆ U by
-        rcases this with ⟨⟨s, hs, hs'⟩, hs''⟩; exact ⟨s, ⟨hs', hs⟩, hs''⟩
+      rsuffices ⟨⟨s, hs, hs'⟩, hs''⟩ : ∃ s : N, s.val ⊆ U
+      · exact ⟨s, ⟨hs', hs⟩, hs''⟩
       haveI : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
       have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.1
       have hdir : Directed Superset fun s : N => s.val := by
