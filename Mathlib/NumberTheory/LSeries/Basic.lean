@@ -144,16 +144,11 @@ lemma LSeriesSummable_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ n ≠ 0, f n 
   summable_congr <| term_congr h s
 
 open Filter in
-/-- If `f` and `g` agree on large `n : ℕ`, then the `LSeries` of `f` converges at `s`
-if and only if that of `g` does. -/
-lemma LSeriesSummable_congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g) :
-    LSeriesSummable f s ↔ LSeriesSummable g s := by
+/-- If `f` and `g` agree on large `n : ℕ` and the `LSeries` of `f` converges at `s`,
+then so does that of `g`. -/
+lemma LSeriesSummable.congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g) (hf : LSeriesSummable f s) :
+    LSeriesSummable g s := by
   rw [← Nat.cofinite_eq_atTop] at h
-  suffices H : ∀ {f g} (_ : LSeriesSummable f s) (_ : f =ᶠ[cofinite] g), LSeriesSummable g s from
-    ⟨fun hf ↦ H hf h, fun hg ↦ H hg h.symm⟩
-  clear f g h
-  -- prove one implication; the other follows by symmetry (see above)
-  intro f g hf h
   refine (summable_norm_iff.mpr hf).of_norm_bounded_eventually _ ?_
   have : term f s =ᶠ[cofinite] term g s := by
     rw [eventuallyEq_iff_exists_mem] at h ⊢
@@ -162,6 +157,13 @@ lemma LSeriesSummable_congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g)
     simp only [Set.mem_diff, Set.mem_singleton_iff] at hn
     simp only [term_of_ne_zero hn.2, hS' hn.1]
   exact Eventually.mono this.symm fun n hn ↦ by simp only [hn, le_rfl]
+
+open Filter in
+/-- If `f` and `g` agree on large `n : ℕ`, then the `LSeries` of `f` converges at `s`
+if and only if that of `g` does. -/
+lemma LSeriesSummable_congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g) :
+    LSeriesSummable f s ↔ LSeriesSummable g s :=
+  ⟨fun H ↦ H.congr' s h, fun H ↦ H.congr' s h.symm⟩
 
 theorem LSeries.eq_zero_of_not_LSeriesSummable (f : ℕ → ℂ) (s : ℂ) :
     ¬ LSeriesSummable f s → LSeries f s = 0 :=
