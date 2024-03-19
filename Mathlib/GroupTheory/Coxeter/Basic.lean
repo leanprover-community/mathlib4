@@ -503,7 +503,7 @@ variable {M : Matrix B B ℕ}
 variable {W : Type*} [Group W]
 variable (cs : CoxeterSystem M W)
 
-/-! ### Simple reflections and lifting homomorphisms -/
+/-! ### Simple reflections -/
 
 /-- The simple reflection of `W` corresponding to the index `i`. -/
 def simpleReflection (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
@@ -556,6 +556,33 @@ private lemma coxeterGroup_simple_mul_self (i : B) :
   rw [cs.isCoxeter.symmetric.apply i' i]
   exact cs.simple_mul_pow i' i
 
+/-- The simple reflections of `W` generate `W` as a group. -/
+theorem subgroup_closure_range_simple : Subgroup.closure (Set.range cs.simpleReflection) = ⊤ := by
+  have : cs.simpleReflection = cs.mulEquiv.symm ∘ PresentedGroup.of := rfl
+  rw [this, Set.range_comp, ← MulEquiv.coe_toMonoidHom, ← MonoidHom.map_closure,
+    PresentedGroup.closure_range_of, ← MonoidHom.range_eq_map]
+  exact MonoidHom.range_top_of_surjective _ (MulEquiv.surjective _)
+
+/-- The simple reflections of `W` generate `W` as a monoid. -/
+theorem submonoid_closure_range_simple : Submonoid.closure (Set.range cs.simpleReflection) = ⊤ := by
+  set S := Set.range cs.simpleReflection
+  have h₀ : S = S⁻¹ := by
+    ext x
+    constructor
+    · rintro ⟨i, rfl⟩
+      use i
+      simp only [simple_inv]
+    · rintro ⟨i, hi⟩
+      use i
+      simpa only [simple_inv, inv_inv] using congrArg (·⁻¹) hi
+
+  have h₁ : S = S ∪ S⁻¹ := by
+    rw [← h₀, Set.union_self]
+
+  rw [h₁, ← Subgroup.closure_toSubmonoid, subgroup_closure_range_simple, Subgroup.top_toSubmonoid]
+
+/-! ### Homomorphisms from a Coxeter group -/
+
 /-- The proposition that the values of the function `f : B → G` satisfy the Coxeter relations
 corresponding to the matrix `M`. -/
 def IsLiftable {G : Type*} [Monoid G] (M : Matrix B B ℕ) (f : B → G) : Prop :=
@@ -582,6 +609,7 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
       have := hf i i
       rwa [cs.isCoxeter.diagonal, pow_one] at this
   }
+
 /-- Extend the function `f : B → G` to a monoid homomorphism
 `f' : W → G` satisfying `f' (s i) = f i` for all `i`.
 -/
@@ -607,6 +635,13 @@ theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G}
   simp
   rfl
 
+/-- If two homomorphisms with domain `W` agree on all simple reflections, then they are equal. -/
+theorem ext_simple {G : Type*} [Monoid G] {φ₁ φ₂ : W →* G} (h : ∀ i : B, φ₁ (s i) = φ₂ (s i)) :
+    φ₁ = φ₂ := by
+  apply MonoidHom.eq_of_eqOn_denseM (cs.submonoid_closure_range_simple)
+  rintro x ⟨i, rfl⟩
+  exact h i
+
 /-! ### Words -/
 /-- The product of the simple reflections of `W` corresponding to the indices in `ω`.-/
 def wordProd (ω : List B) : W := prod (map cs.simpleReflection ω)
@@ -629,57 +664,20 @@ theorem wordProd_concat (i : B) (ω : List B) :
     π (reverse ω) = (π ω)⁻¹ := by
   induction' ω with x ω' ih
   · simp
-  · simp; exact ih
-
-private lemma freeGroup_wordProd (ω : List (B × Bool)) :
-    prod (map ((@PresentedGroup.of B (CoxeterGroup.Relations.toSet M)) ∘ Prod.fst) ω)
-    = QuotientGroup.mk (FreeGroup.mk ω) := by
-  induction' ω with x ω' ih
-  · simp [← FreeGroup.one_eq_mk]
-  · rw [← List.singleton_append, ← FreeGroup.mul_mk, QuotientGroup.mk_mul, ← ih]
-    simp only [singleton_append, map_cons, comp_apply, prod_cons, mul_left_inj]
-    rcases x with ⟨i, b⟩
-    rcases b
-    · have : [(i, false)] = FreeGroup.invRev [(i, true)] := by simp [FreeGroup.invRev]
-      rw [this, ← FreeGroup.inv_mk, ← FreeGroup.of, QuotientGroup.mk_inv]
-      dsimp
-      rw [PresentedGroup.of]
-      apply eq_inv_of_mul_eq_one_right
-      rw [← QuotientGroup.mk_mul]
-      exact cs.coxeterGroup_simple_mul_self i
-    · rfl
+  · simpa using ih
 
 theorem wordProd_surjective : Surjective (cs.wordProd) := by
-  intro u
-  let v : CoxeterGroup M := cs.mulEquiv.toFun u
-  rcases (QuotientGroup.mk'_surjective _) v with ⟨w, hw⟩
-  simp at hw -- hw: ↑w = v
-  let ω := List.map Prod.fst w.toWord
-  use ω
-  simp [ω, wordProd]
-  calc
-    prod (List.map (simpleReflection cs ∘ Prod.fst) (FreeGroup.toWord w))
-    _ = prod (List.map (
-          cs.mulEquiv.symm
-          ∘ (@PresentedGroup.of B (CoxeterGroup.Relations.toSet M))
-          ∘ Prod.fst)
-        (FreeGroup.toWord w))           := by congr
-    _ = prod (List.map (
-          cs.mulEquiv.symm
-          ∘ ((@PresentedGroup.of B (CoxeterGroup.Relations.toSet M))
-          ∘ Prod.fst))
-        (FreeGroup.toWord w))           := by congr
-    _ = prod (List.map cs.mulEquiv.symm
-        (List.map ((@PresentedGroup.of B (CoxeterGroup.Relations.toSet M)) ∘ Prod.fst)
-          (FreeGroup.toWord w)))        := by rw[List.map_map]
-    _ = cs.mulEquiv.symm (prod (List.map
-            ((@PresentedGroup.of B (CoxeterGroup.Relations.toSet M)) ∘ Prod.fst)
-        (FreeGroup.toWord w)))          := by rw[map_list_prod]
-    _ = cs.mulEquiv.symm (QuotientGroup.mk (FreeGroup.mk (FreeGroup.toWord w))) := by
-                                              rw[cs.freeGroup_wordProd]
-    _ = cs.mulEquiv.symm (QuotientGroup.mk w) := by
-                                              rw[FreeGroup.mk_toWord]
-    _ = u                               := by rw[hw]; dsimp [v]; simp
+  intro x
+  have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top x
+  apply Submonoid.closure_induction (p := _) this
+  · rintro x ⟨i, rfl⟩
+    use [i]
+    simp
+  · use nil
+    simp
+  · rintro x y ⟨a, rfl⟩ ⟨b, rfl⟩
+    use a ++ b
+    simp
 
 /-- The word of length `m` that alternates between `i` and `i'`, ending with `i'`.-/
 def alternatingWord (i i' : B) (m : ℕ) : List B :=
