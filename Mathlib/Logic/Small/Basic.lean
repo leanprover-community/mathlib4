@@ -57,7 +57,7 @@ theorem small_of_injective_of_exists {α : Type v} {β : Type w} {γ : Type v'} 
     infer_instance
 
 /-!
-We don't define `Finite.toSmall` or `small_of_countable` in this file,
+We don't define `Countable.toSmall` or `Finite.small` in this file,
 to keep imports to `Logic` to a minimum.
 -/
 
