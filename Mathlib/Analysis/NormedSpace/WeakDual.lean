@@ -137,10 +137,10 @@ def continuousLinearMapToWeakDual : Dual 𝕜 E →L[𝕜] WeakDual 𝕜 E :=
   { toWeakDual with cont := toWeakDual_continuous }
 #align normed_space.dual.continuous_linear_map_to_weak_dual NormedSpace.Dual.continuousLinearMapToWeakDual
 
-/-- The weak-star topology is coarser than the dual-norm topology. -/
+/-- The weak-* topology is coarser than the dual-norm topology. -/
 theorem dual_norm_topology_le_weak_dual_topology :
     (UniformSpace.toTopologicalSpace : TopologicalSpace (Dual 𝕜 E)) ≤
-      (WeakDual.instTopologicalSpace : TopologicalSpace (WeakDual 𝕜 E)) := by
+      (WeakBilin.instTopologicalSpace _ : TopologicalSpace (WeakDual 𝕜 E)) := by
   convert (@toWeakDual_continuous _ _ _ _ (by assumption)).le_induced
   exact induced_id.symm
 #align normed_space.dual.dual_norm_topology_le_weak_dual_topology NormedSpace.Dual.dual_norm_topology_le_weak_dual_topology
@@ -186,7 +186,7 @@ theorem isClosed_closedBall (x' : Dual 𝕜 E) (r : ℝ) : IsClosed (toNormedDua
 variable (𝕜)
 
 /-- The polar set `polar 𝕜 s` of `s : Set E` seen as a subset of the dual of `E` with the
-weak-star topology is `WeakDual.polar 𝕜 s`. -/
+weak-* topology is `WeakDual.polar 𝕜 s`. -/
 def polar (s : Set E) : Set (WeakDual 𝕜 E) :=
   toNormedDual ⁻¹' (NormedSpace.polar 𝕜) s
 #align weak_dual.polar WeakDual.polar
@@ -195,11 +195,11 @@ theorem polar_def (s : Set E) : polar 𝕜 s = { f : WeakDual 𝕜 E | ∀ x ∈
   rfl
 #align weak_dual.polar_def WeakDual.polar_def
 
-/-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak star topology
+/-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak-* topology
 is used. -/
 theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   simp only [polar_def, setOf_forall]
-  exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
+  exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakDual.evalCLM _ _).continuous.norm
 #align weak_dual.is_closed_polar WeakDual.isClosed_polar
 
 variable {𝕜}
