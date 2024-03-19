@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Data.Bracket
 
 #align_import algebra.ring.commute from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -175,3 +176,24 @@ theorem inv_eq_self_iff [Ring R] [NoZeroDivisors R] (u : Rˣ) : u⁻¹ = u ↔ u
 #align units.inv_eq_self_iff Units.inv_eq_self_iff
 
 end Units
+
+section Bracket
+
+variable [NonUnitalNonAssocRing R]
+
+namespace Ring
+
+instance (priority := 100) instBracket : Bracket R R := ⟨fun x y => x * y - y * x⟩
+
+theorem lie_def (x y : R) : ⁅x, y⁆ = x * y - y * x := rfl
+#align ring.lie_def Ring.lie_def
+
+end Ring
+
+theorem commute_iff_lie_eq {x y : R} : Commute x y ↔ ⁅x, y⁆ = 0 := sub_eq_zero.symm
+#align commute_iff_lie_eq commute_iff_lie_eq
+
+theorem Commute.lie_eq {x y : R} (h : Commute x y) : ⁅x, y⁆ = 0 := sub_eq_zero_of_eq h
+#align commute.lie_eq Commute.lie_eq
+
+end Bracket

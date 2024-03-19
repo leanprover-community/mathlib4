@@ -141,7 +141,7 @@ protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
         (extChartAt IB x.proj).prod (PartialEquiv.refl F) := by
   simp_rw [extChartAt, FiberBundle.chartedSpace_chartAt, extend]
   simp only [PartialEquiv.trans_assoc, mfld_simps]
-  -- porting note: should not be needed
+  -- Porting note: should not be needed
   rw [PartialEquiv.prod_trans, PartialEquiv.refl_trans]
 #align fiber_bundle.ext_chart_at FiberBundle.extChartAt
 
@@ -279,7 +279,6 @@ variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormedAddCommGroup EB] [No
 section WithTopology
 
 variable [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] (F E)
-
 variable [FiberBundle F E] [VectorBundle 𝕜 F E]
 
 /-- When `B` is a smooth manifold with corners with respect to a model `IB` and `E` is a
@@ -438,9 +437,9 @@ theorem Trivialization.contMDiffOn_symm_trans :
     (contMDiffOn_fst.coordChange contMDiffOn_snd Hmaps.1 Hmaps.2)).congr ?_
   rintro ⟨b, x⟩ hb
   refine Prod.ext ?_ rfl
-  · have : (e.toPartialHomeomorph.symm (b, x)).1 ∈ e'.baseSet
-    · simp_all only [Trivialization.mem_target, mfld_simps]
-    exact (e'.coe_fst' this).trans (e.proj_symm_apply hb.1)
+  have : (e.toPartialHomeomorph.symm (b, x)).1 ∈ e'.baseSet := by
+    simp_all only [Trivialization.mem_target, mfld_simps]
+  exact (e'.coe_fst' this).trans (e.proj_symm_apply hb.1)
 
 variable {IB e e'}
 

@@ -139,7 +139,7 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
   rw [mem_rootSet_of_ne hn'', map_sub, aeval_X_pow, aeval_C, sub_eq_zero] at hb
   have hb' : b ≠ 0 := by
     intro hb'
-    rw [hb', zero_pow hn'] at hb
+    rw [hb', zero_pow hn] at hb
     exact ha' hb.symm
   have key : ∀ σ : (X ^ n - C a).Gal, ∃ c, σ b = b * algebraMap F _ c := by
     intro σ
@@ -168,7 +168,7 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
   rw [eval₂_sub, eval₂_X_pow, eval₂_C, sub_eq_zero] at hb
   have hb' : b ≠ 0 := by
     intro hb'
-    rw [hb', zero_pow hn'] at hb
+    rw [hb', zero_pow hn] at hb
     exact ha' hb.symm
   let s := ((X ^ n - C a).map i).roots
   have hs : _ = _ * (s.map _).prod := eq_prod_roots_of_splits h
@@ -341,19 +341,15 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
   let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField :=
     Classical.choice <| nonempty_algHom_adjoin_of_splits <| by
       intro x hx
-      cases' hx with hx hx
-      rw [hx]
-      exact ⟨isIntegral α, hpq.1⟩
-      cases hx
-      exact ⟨isIntegral β, hpq.2⟩
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hx
+      cases hx with rw [hx]
+      | inl hx => exact ⟨isIntegral α, hpq.1⟩
+      | inr hx => exact ⟨isIntegral β, hpq.2⟩
   have key : minpoly F γ = minpoly F (f ⟨γ, hγ⟩) := by
     refine' minpoly.eq_of_irreducible_of_monic
       (minpoly.irreducible (isIntegral γ)) _ (minpoly.monic (isIntegral γ))
     suffices aeval (⟨γ, hγ⟩ : F⟮α, β⟯) (minpoly F γ) = 0 by
       rw [aeval_algHom_apply, this, AlgHom.map_zero]
-    -- Porting note: this instance is needed for the following `apply`
-    haveI := @IntermediateField.toAlgebra F (solvableByRad F E) _ _ _ F⟮α, β⟯
-      (solvableByRad F E) _ (Algebra.id (solvableByRad F E))
     apply (algebraMap (↥F⟮α, β⟯) (solvableByRad F E)).injective
     simp only [map_zero, _root_.map_eq_zero]
     -- Porting note: end of the proof was `exact minpoly.aeval F γ`.

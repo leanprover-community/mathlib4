@@ -155,11 +155,8 @@ end NonUnital
 section ProdPi
 
 variable {ι R₁ R₂ : Type*} {R : ι → Type*}
-
 variable [NonUnitalNormedRing R₁] [StarRing R₁] [CstarRing R₁]
-
 variable [NonUnitalNormedRing R₂] [StarRing R₂] [CstarRing R₂]
-
 variable [∀ i, NonUnitalNormedRing (R i)] [∀ i, StarRing (R i)]
 
 /-- This instance exists to short circuit type class resolution because of problems with
@@ -202,7 +199,7 @@ section Unital
 
 variable [NormedRing E] [StarRing E] [CstarRing E]
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 := by
   have : 0 < ‖(1 : E)‖ := norm_pos_iff.mpr one_ne_zero
   rw [← mul_left_inj' this.ne', ← norm_star_mul_self, mul_one, star_one, one_mul]
@@ -280,11 +277,8 @@ theorem selfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CstarRing E]
 section starₗᵢ
 
 variable [CommSemiring 𝕜] [StarRing 𝕜]
-
 variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
-
 variable [Module 𝕜 E] [StarModule 𝕜 E]
-
 variable (𝕜)
 
 /-- `star` bundled as a linear isometric equivalence -/
@@ -317,7 +311,7 @@ namespace StarSubalgebra
 
 instance toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
     [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
-  @NormedAlgebra.induced _ 𝕜 S A _ (SubringClass.toRing S) S.algebra _ _ _ S.subtype
+  NormedAlgebra.induced 𝕜 S A S.subtype
 #align star_subalgebra.to_normed_algebra StarSubalgebra.toNormedAlgebra
 
 instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A] [CstarRing A]

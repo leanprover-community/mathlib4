@@ -169,8 +169,8 @@ theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
       exact (zero_le_one.not_lt hP).elim
     -- We claim that every root of P(P(t)) - t is a root of P(t) + t - a - b. This allows us to
     -- conclude the problem.
-    suffices H' : (P.comp P - X).roots.toFinset ⊆ (P + (X : ℤ[X]) - a - b).roots.toFinset
-    · exact (Finset.card_le_card H').trans
+    suffices H' : (P.comp P - X).roots.toFinset ⊆ (P + (X : ℤ[X]) - a - b).roots.toFinset from
+      (Finset.card_le_card H').trans
         ((Multiset.toFinset_card_le _).trans <| (card_roots' _).trans_eq hPab)
     · -- Let t be a root of P(P(t)) - t, define u = P(t).
       intro t ht

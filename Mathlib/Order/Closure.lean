@@ -71,9 +71,11 @@ structure ClosureOperator [Preorder α] extends α →o α where
 
 namespace ClosureOperator
 
-instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
+instance [Preorder α] : FunLike (ClosureOperator α) α α where
   coe c := c.1
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp [*]
+  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all
+
+instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
   map_rel f _ _ h := f.mono h
 
 initialize_simps_projections ClosureOperator (toFun → apply, IsClosed → isClosed)
@@ -134,7 +136,7 @@ def ofPred (f : α → α) (p : α → Prop) (hf : ∀ x, x ≤ f x) (hfp : ∀ 
     (hmin : ∀ ⦃x y⦄, x ≤ y → p y → f x ≤ y) : ClosureOperator α where
   __ := mk₂ f hf fun _ y hxy => hmin hxy (hfp y)
   IsClosed := p
-  isClosed_iff := ⟨λ hx ↦ (hmin le_rfl hx).antisymm <| hf _, λ hx ↦ hx ▸ hfp _⟩
+  isClosed_iff := ⟨fun hx ↦ (hmin le_rfl hx).antisymm <| hf _, fun hx ↦ hx ▸ hfp _⟩
 #align closure_operator.mk₃ ClosureOperator.ofPred
 #align closure_operator.mk₃_apply ClosureOperator.ofPred_apply
 #align closure_operator.mem_mk₃_closed ClosureOperator.ofPred_isClosed
@@ -256,8 +258,8 @@ variable [CompleteLattice α] (c : ClosureOperator α) {p : α → Prop}
 @[simps!]
 def ofCompletePred (p : α → Prop) (hsinf : ∀ s, (∀ a ∈ s, p a) → p (sInf s)) : ClosureOperator α :=
   ofPred (fun a ↦ ⨅ b : {b // a ≤ b ∧ p b}, b) p
-    (fun a ↦ by simp [forall_swap])
-    (fun a ↦ hsinf _ <| forall_range_iff.2 fun b ↦ b.2.2)
+    (fun a ↦ by set_option tactic.skipAssignedInstances false in simp [forall_swap])
+    (fun a ↦ hsinf _ <| forall_mem_range.2 fun b ↦ b.2.2)
     (fun a b hab hb ↦ iInf_le_of_le ⟨b, hab, hb⟩ le_rfl)
 
 @[simp]

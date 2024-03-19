@@ -33,9 +33,8 @@ theorem zsmul_mem_zmultiples_iff_exists_sub_div {r : R} {z : ℤ} (hz : z ≠ 0)
     · rw [← Int.ofNat_lt, Int.toNat_of_nonneg (Int.emod_nonneg _ hz)]
       exact (Int.emod_lt _ hz).trans_eq (Int.abs_eq_natAbs _)
     rw [Fin.val_mk, Int.toNat_of_nonneg (Int.emod_nonneg _ hz)]
-    nth_rewrite 3 [← Int.div_add_mod k z]
-    rw [Int.mod_def, ← Int.div_def', Int.emod_def]
-    simp only [add_sub_cancel'_right, zsmul_eq_mul, Int.div_def']
+    nth_rewrite 3 [← Int.ediv_add_emod k z]
+    rfl
   · rintro ⟨k, n, h⟩
     exact ⟨_, h⟩
 #align add_subgroup.zsmul_mem_zmultiples_iff_exists_sub_div AddSubgroup.zsmul_mem_zmultiples_iff_exists_sub_div

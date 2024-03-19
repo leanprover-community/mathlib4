@@ -46,8 +46,7 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
   have h0 : (τ : ℂ) ≠ 0 := ne_of_apply_ne im (zero_im.symm ▸ ne_of_gt τ.2)
   simp_rw [UpperHalfPlane.modular_S_smul, jacobiTheta_eq_jacobiTheta₂]
   conv_rhs => erw [← ofReal_zero, jacobiTheta₂_functional_equation 0 τ.2]
-  rw [zero_pow two_pos, mul_zero, zero_div, Complex.exp_zero, mul_one, ← mul_assoc,
-    mul_one_div]
+  rw [zero_pow two_ne_zero, mul_zero, zero_div, Complex.exp_zero, mul_one, ← mul_assoc, mul_one_div]
   erw [div_self]
   rw [one_mul, UpperHalfPlane.coe_mk, inv_neg, neg_div, one_div]
   · rfl
@@ -67,9 +66,9 @@ theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
         re_ofReal_mul, mul_I_re]
       ring
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (sq_nonneg n)
-    rw [this, exp_mul, ← Int.cast_pow, rpow_int_cast, hm, zpow_ofNat]
+    rw [this, exp_mul, ← Int.cast_pow, rpow_int_cast, hm, zpow_coe_nat]
   · have : n ^ 2 = (n.natAbs ^ 2 :) := by rw [Nat.cast_pow, Int.natAbs_sq]
-    rw [this, zpow_ofNat]
+    rw [this, zpow_coe_nat]
     exact pow_le_pow_of_le_one (exp_pos _).le h.le ((sq n.natAbs).symm ▸ n.natAbs.le_mul_self)
 #align norm_exp_mul_sq_le norm_exp_mul_sq_le
 
@@ -78,14 +77,14 @@ theorem exists_summable_bound_exp_mul_sq {R : ℝ} (hR : 0 < R) :
       ‖cexp (π * I * (n : ℂ) ^ 2 * τ)‖ ≤ bd n := by
   let y := rexp (-π * R)
   have h : y < 1 := exp_lt_one_iff.mpr (mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hR)
-  refine' ⟨fun n => y ^ n.natAbs, summable_int_of_summable_nat _ _, fun hτ n => _⟩; pick_goal 3
+  refine ⟨fun n ↦ y ^ n.natAbs, .of_nat_of_neg ?_ ?_, fun hτ n ↦ ?_⟩; pick_goal 3
   · refine' (norm_exp_mul_sq_le (hR.trans_le hτ) n).trans _
-    dsimp
+    dsimp [y]
     gcongr rexp ?_ ^ _
     rwa [mul_le_mul_left_of_neg (neg_lt_zero.mpr pi_pos)]
   all_goals
     simpa only [Int.natAbs_neg, Int.natAbs_ofNat] using
-      summable_geometric_of_lt_1 (Real.exp_pos _).le h
+      summable_geometric_of_lt_one (Real.exp_pos _).le h
 #align exists_summable_bound_exp_mul_sq exists_summable_bound_exp_mul_sq
 
 theorem summable_exp_mul_sq {τ : ℂ} (hτ : 0 < τ.im) :
@@ -97,7 +96,7 @@ theorem summable_exp_mul_sq {τ : ℂ} (hτ : 0 < τ.im) :
 theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     HasSum (fun n : ℕ => cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)) ((jacobiTheta τ - 1) / 2) := by
   have := (summable_exp_mul_sq hτ).hasSum.sum_nat_of_sum_int
-  rw [← @hasSum_nat_add_iff' ℂ _ _ _ _ 1] at this
+  rw [← hasSum_nat_add_iff' 1] at this
   simp_rw [Finset.sum_range_one, Int.cast_neg, Int.cast_ofNat, Nat.cast_zero, neg_zero,
     Int.cast_zero, sq (0 : ℂ), mul_zero, zero_mul, neg_sq, ← mul_two,
     Complex.exp_zero, add_sub_assoc, (by norm_num : (1 : ℂ) - 1 * 2 = -1), ← sub_eq_add_neg,
@@ -129,7 +128,7 @@ theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
   have s : HasSum (fun n : ℕ =>
       rexp (-π * τ.im) ^ (n + 1)) (rexp (-π * τ.im) / (1 - rexp (-π * τ.im))) := by
     simp_rw [pow_succ, div_eq_mul_inv, hasSum_mul_left_iff (Real.exp_ne_zero _)]
-    exact hasSum_geometric_of_lt_1 (exp_pos (-π * τ.im)).le
+    exact hasSum_geometric_of_lt_one (exp_pos (-π * τ.im)).le
       (exp_lt_one_iff.mpr <| mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hτ)
   have aux : Summable fun n : ℕ => ‖cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)‖ :=
     .of_nonneg_of_le (fun n => norm_nonneg _) this s.summable

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.NormedSpace.Real
 
 #align_import analysis.normed_space.pointwise from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
@@ -26,7 +26,6 @@ variable {𝕜 E : Type*}
 section SMulZeroClass
 
 variable [SeminormedAddCommGroup 𝕜] [SeminormedAddCommGroup E]
-
 variable [SMulZeroClass 𝕜 E] [BoundedSMul 𝕜 E]
 
 theorem ediam_smul_le (c : 𝕜) (s : Set E) : EMetric.diam (c • s) ≤ ‖c‖₊ • EMetric.diam s :=
@@ -38,7 +37,6 @@ end SMulZeroClass
 section DivisionRing
 
 variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
-
 variable [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
 theorem ediam_smul₀ (c : 𝕜) (s : Set E) : EMetric.diam (c • s) = ‖c‖₊ • EMetric.diam s := by

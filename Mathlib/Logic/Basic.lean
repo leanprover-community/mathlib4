@@ -10,6 +10,7 @@ import Std.Util.LibraryNote
 import Std.Tactic.Lint.Basic
 
 #align_import logic.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
+#align_import init.ite_simp from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
 
 /-!
 # Basic logic properties
@@ -302,7 +303,7 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 theorem xor_comm (a b) : Xor' a b = Xor' b a := by simp [Xor', and_comm, or_comm]
 #align xor_comm xor_comm
 
-instance : IsCommutative Prop Xor' := ⟨xor_comm⟩
+instance : Std.Commutative Xor' := ⟨xor_comm⟩
 
 @[simp] theorem xor_self (a : Prop) : Xor' a a = False := by simp [Xor']
 #align xor_self xor_self
@@ -439,7 +440,7 @@ theorem imp_or {a b c : Prop} : a → b ∨ c ↔ (a → b) ∨ (a → c) := Dec
 theorem imp_or' : a → b ∨ c ↔ (a → b) ∨ (a → c) := Decidable.imp_or'
 #align imp_or_distrib' imp_or'ₓ -- universes
 
-theorem not_imp : ¬(a → b) ↔ a ∧ ¬b := Decidable.not_imp
+theorem not_imp : ¬(a → b) ↔ a ∧ ¬b := Decidable.not_imp_iff_and_not
 #align not_imp not_imp
 
 theorem peirce (a b : Prop) : ((a → b) → a) → a := Decidable.peirce _ _
@@ -474,12 +475,12 @@ theorem not_and_not_right : ¬(a ∧ ¬b) ↔ a → b := Decidable.not_and_not_r
 
 /-! ### De Morgan's laws -/
 
-#align decidable.not_and_distrib Decidable.not_and
-#align decidable.not_and_distrib' Decidable.not_and'
+#align decidable.not_and_distrib Decidable.not_and_iff_or_not_not
+#align decidable.not_and_distrib' Decidable.not_and_iff_or_not_not'
 
 /-- One of **de Morgan's laws**: the negation of a conjunction is logically equivalent to the
 disjunction of the negations. -/
-theorem not_and_or : ¬(a ∧ b) ↔ ¬a ∨ ¬b := Decidable.not_and
+theorem not_and_or : ¬(a ∧ b) ↔ ¬a ∨ ¬b := Decidable.not_and_iff_or_not_not
 #align not_and_distrib not_and_or
 
 #align not_or_distrib not_or
@@ -528,6 +529,14 @@ theorem ball_mem_comm {α β} [Membership α β] {s : β} {p : α → α → Pro
 
 #align ne_of_apply_ne ne_of_apply_ne
 
+lemma ne_of_eq_of_ne (h₁ : a = b) (h₂ : b ≠ c) : a ≠ c := h₁.symm ▸ h₂
+lemma ne_of_ne_of_eq (h₁ : a ≠ b) (h₂ : b = c) : a ≠ c := h₂ ▸ h₁
+
+alias Eq.trans_ne := ne_of_eq_of_ne
+alias Ne.trans_eq := ne_of_ne_of_eq
+#align eq.trans_ne Eq.trans_ne
+#align ne.trans_eq Ne.trans_eq
+
 theorem eq_equivalence : Equivalence (@Eq α) :=
   ⟨Eq.refl, @Eq.symm _, @Eq.trans _⟩
 #align eq_equivalence eq_equivalence
@@ -568,7 +577,7 @@ theorem congr_fun_congr_arg (f : α → β → γ) {a a' : α} (p : a = a') (b :
 theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
     h ▸ z = cast (congr_arg P h) z := by induction h; rfl
 
---Porting note: new theorem. More general version of `eqRec_heq`
+-- Porting note (#10756): new theorem. More general version of `eqRec_heq`
 theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → Sort u}
     (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
     HEq (@Eq.rec α a' motive p a t) p :=
@@ -757,7 +766,7 @@ theorem Ne.ne_or_ne {x y : α} (z : α) (h : x ≠ y) : x ≠ z ∨ y ≠ z :=
 theorem exists_apply_eq_apply' (f : α → β) (a' : α) : ∃ a, f a' = f a := ⟨a', rfl⟩
 #align exists_apply_eq_apply' exists_apply_eq_apply'
 
--- porting note: an alternative workaround theorem:
+-- Porting note: an alternative workaround theorem:
 theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun _ ↦ b, rfl⟩
 
 @[simp] theorem exists_exists_and_eq_and {f : α → β} {p : α → Prop} {q : β → Prop} :
@@ -775,6 +784,12 @@ theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun
     (∃ c, (∃ a, p a ∧ ∃ b, q b ∧ f a b = c) ∧ r c) ↔ ∃ a, p a ∧ ∃ b, q b ∧ r (f a b) :=
   ⟨fun ⟨_, ⟨a, ha, b, hb, hab⟩, hc⟩ ↦ ⟨a, ha, b, hb, hab.symm ▸ hc⟩,
     fun ⟨a, ha, b, hb, hab⟩ ↦ ⟨f a b, ⟨a, ha, b, hb, rfl⟩, hab⟩⟩
+
+@[simp] theorem exists_exists_exists_and_eq {α β γ : Type*}
+    {f : α → β → γ} {p : γ → Prop} :
+    (∃ c, (∃ a, ∃ b, f a b = c) ∧ p c) ↔ ∃ a, ∃ b, p (f a b) :=
+  ⟨fun ⟨_, ⟨a, b, hab⟩, hc⟩ ↦ ⟨a, b, hab.symm ▸ hc⟩,
+    fun ⟨a, b, hab⟩ ↦ ⟨f a b, ⟨a, b, rfl⟩, hab⟩⟩
 
 @[simp] theorem exists_or_eq_left (y : α) (p : α → Prop) : ∃ x : α, x = y ∨ p x := ⟨y, .inl rfl⟩
 #align exists_or_eq_left exists_or_eq_left
@@ -1107,7 +1122,7 @@ end BoundedQuantifiers
 
 section ite
 
-variable {σ : α → Sort*} (f : α → β) {P Q : Prop} [Decidable P] [Decidable Q]
+variable {σ : α → Sort*} (f : α → β) {P Q R : Prop} [Decidable P] [Decidable Q]
   {a b c : α} {A : P → α} {B : ¬P → α}
 
 theorem dite_eq_iff : dite P A B = c ↔ (∃ h, A h = c) ∨ ∃ h, B h = c := by
@@ -1240,7 +1255,7 @@ theorem ite_ite_comm (h : P → ¬Q) :
   dite_dite_comm P Q h
 #align ite_ite_comm ite_ite_comm
 
-variable {R : Prop}
+variable {P Q}
 
 theorem ite_prop_iff_or : (if P then Q else R) ↔ (P ∧ Q ∨ ¬ P ∧ R) := by
   by_cases p : P <;> simp [p]
@@ -1257,4 +1272,23 @@ theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
     dite P Q R ↔ (∀ h, Q h) ∧ (∀ h, R h) := by
   by_cases h : P <;> simp [h, forall_prop_of_false, forall_prop_of_true]
 
+@[simp] lemma if_true_right : (if P then Q else True) ↔ ¬P ∨ Q := by by_cases P <;> simp [*]
+#align if_true_right_eq_or if_true_right
+
+@[simp] lemma if_true_left : (if P then True else Q) ↔ P ∨ Q := by by_cases P <;> simp [*]
+#align if_true_left_eq_or if_true_left
+
+@[simp] lemma if_false_right : (if P then Q else False) ↔ P ∧ Q := by by_cases P <;> simp [*]
+#align if_false_right_eq_and if_false_right
+
+@[simp] lemma if_false_left : (if P then False else Q) ↔ ¬P ∧ Q := by by_cases P <;> simp [*]
+#align if_false_left_eq_and if_false_left
+
 end ite
+
+theorem not_beq_of_ne [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a == b) :=
+  fun h => ne (eq_of_beq h)
+
+theorem beq_eq_decide [BEq α] [LawfulBEq α] {a b : α} : (a == b) = decide (a = b) := by
+  rw [← beq_iff_eq a b]
+  cases a == b <;> simp

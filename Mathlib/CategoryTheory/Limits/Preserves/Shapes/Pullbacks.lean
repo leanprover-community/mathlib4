@@ -38,11 +38,8 @@ namespace CategoryTheory.Limits
 section Pullback
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (G : C ⥤ D)
-
 variable {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} {h : W ⟶ X} {k : W ⟶ Y} (comm : h ≫ f = k ≫ g)
 
 /-- The map of a pullback cone is a limit iff the fork consisting of the mapped morphisms is a
@@ -89,12 +86,12 @@ def preservesPullbackSymmetry : PreservesLimit (cospan g f) G where
   preserves {c} hc := by
     apply (IsLimit.postcomposeHomEquiv (diagramIsoCospan.{v₂} _) _).toFun
     apply IsLimit.ofIsoLimit _ (PullbackCone.isoMk _).symm
-    apply PullbackCone.flipIsLimit
+    apply PullbackCone.isLimitOfFlip
     apply (isLimitMapConePullbackConeEquiv _ _).toFun
     · refine @PreservesLimit.preserves _ _ _ _ _ _ _ _ ?_ _ ?_
       · dsimp
         infer_instance
-      apply PullbackCone.flipIsLimit
+      apply PullbackCone.isLimitOfFlip
       apply IsLimit.ofIsoLimit _ (PullbackCone.isoMk _)
       exact (IsLimit.postcomposeHomEquiv (diagramIsoCospan.{v₁} _) _).invFun hc
     · exact
@@ -143,11 +140,8 @@ end Pullback
 section Pushout
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (G : C ⥤ D)
-
 variable {W X Y Z : C} {h : X ⟶ Z} {k : Y ⟶ Z} {f : W ⟶ X} {g : W ⟶ Y} (comm : f ≫ h = g ≫ k)
 
 /-- The map of a pushout cocone is a colimit iff the cofork consisting of the mapped morphisms is a
@@ -196,15 +190,12 @@ def preservesPushoutSymmetry : PreservesColimit (span g f) G where
   preserves {c} hc := by
     apply (IsColimit.precomposeHomEquiv (diagramIsoSpan.{v₂} _).symm _).toFun
     apply IsColimit.ofIsoColimit _ (PushoutCocone.isoMk _).symm
-    apply PushoutCocone.flipIsColimit
+    apply PushoutCocone.isColimitOfFlip
     apply (isColimitMapCoconePushoutCoconeEquiv _ _).toFun
     · refine @PreservesColimit.preserves _ _ _ _ _ _ _ _ ?_ _ ?_ -- Porting note: more TC coddling
       · dsimp
         infer_instance
-      apply PushoutCocone.flipIsColimit
-      apply IsColimit.ofIsoColimit _ (PushoutCocone.isoMk _)
-      exact (IsColimit.precomposeHomEquiv (diagramIsoSpan.{v₁} _) _).invFun hc
-    · exact (c.ι.naturality WalkingSpan.Hom.snd).trans (c.ι.naturality WalkingSpan.Hom.fst).symm
+      · exact PushoutCocone.flipIsColimit hc
 #align category_theory.limits.preserves_pushout_symmetry CategoryTheory.Limits.preservesPushoutSymmetry
 
 theorem hasPushout_of_preservesPushout [HasPushout f g] : HasPushout (G.map f) (G.map g) :=
@@ -251,15 +242,12 @@ end Pushout
 section
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₁} D]
-
 variable (G : C ⥤ D)
 
 section Pullback
 
 variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z}
-
 variable [HasPullback f g] [HasPullback (G.map f) (G.map g)]
 
 /-- If the pullback comparison map for `G` at `(f,g)` is an isomorphism, then `G` preserves the
@@ -288,7 +276,6 @@ end Pullback
 section Pushout
 
 variable {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
-
 variable [HasPushout f g] [HasPushout (G.map f) (G.map g)]
 
 /-- If the pushout comparison map for `G` at `(f,g)` is an isomorphism, then `G` preserves the

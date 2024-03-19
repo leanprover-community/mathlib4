@@ -52,8 +52,7 @@ theorem mem_remove_iff {a b : α} {as : List α} : b ∈ remove a as ↔ b ∈ a
     | inr h =>
       simp only [if_neg h, Bool.not_eq_true, mem_cons, ih, ne_eq]
       constructor
-      { focus
-        intro h'
+      { intro h'
         cases h' with
         | inl h₁ => exact ⟨Or.inl h₁, h₁.symm ▸ (Ne.symm h)⟩
         | inr h₁ => exact ⟨Or.inr h₁.1, h₁.2⟩ }

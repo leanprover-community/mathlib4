@@ -33,9 +33,7 @@ commutative ring, field of fractions
 
 
 variable (R : Type*) [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
-
 variable [Algebra R S] {P : Type*} [CommRing P]
-
 variable {A : Type*} [CommRing A] [IsDomain A] (K : Type*)
 
 -- TODO: should this extend `Algebra` instead of assuming it?
@@ -109,7 +107,7 @@ protected theorem isDomain : IsDomain K :=
 #align is_fraction_ring.is_domain IsFractionRing.isDomain
 
 /-- The inverse of an element in the field of fractions of an integral domain. -/
-protected noncomputable irreducible_def inv (z : K) : K := open Classical in
+protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical in
   if h : z = 0 then 0
   else
     mk' K ↑(sec (nonZeroDivisors A) z).2
@@ -140,7 +138,8 @@ noncomputable def toField : Field K :=
     inv_zero := by
       change IsFractionRing.inv A (0 : K) = 0
       rw [IsFractionRing.inv]
-      exact dif_pos rfl }
+      exact dif_pos rfl
+    qsmul := qsmulRec _ }
 #align is_fraction_ring.to_field IsFractionRing.toField
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
