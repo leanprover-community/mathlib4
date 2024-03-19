@@ -107,7 +107,7 @@ class DivisionRing (α : Type*)
   /-- The inverse of `0` is `0` by convention. -/
   protected inv_zero : (0 : α)⁻¹ = 0
   protected ratCast := Rat.castRec
-  /-- However `Rat.cast` is defined, it must be equal to `a * b⁻¹`.
+  /-- However `Rat.cast` is defined, it must be propositionally equal to `a * b⁻¹`.
 
   Do not use this lemma directly. Use `Rat.cast_def` instead. -/
   protected ratCast_mk : ∀ (a : ℤ) (b : ℕ) (h1 h2), Rat.cast ⟨a, b, h1, h2⟩ = a * (b : α)⁻¹ := by
@@ -118,7 +118,7 @@ class DivisionRing (α : Type*)
   Set this to `qsmulRec _` unless there is a risk of a `Module ℚ _` instance diamond.
   Do not use directly. Instead use the `•` notation. -/
   protected qsmul : ℚ → α → α
-  /-- However `qsmul` is defined, it must be equal to multiplication by `Rat.cast`.
+  /-- However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
 
   Do not use this lemma directly. Use `Rat.cast_def` instead. -/
   protected qsmul_eq_mul' (a : ℚ) (x : α) : qsmul a x = Rat.cast a * x := by intros; rfl
