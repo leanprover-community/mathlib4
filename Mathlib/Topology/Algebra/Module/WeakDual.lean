@@ -28,13 +28,13 @@ The main definitions are the types `WeakBilin B` for the general case and the tw
 * Given `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, the type `WeakBilin B` is a type synonym for `E`.
 * The instance `WeakBilin.instTopologicalSpace` is the weak topology induced by the bilinear form
   `B`.
-* `WeakDual 𝕜 E` is a type synonym for `Dual 𝕜 E` (when the latter is defined): both are equal to
-  the type `E →L[𝕜] 𝕜` of continuous linear maps from a module `E` over `𝕜` to the ring `𝕜`.
+* `WeakDual 𝕜 E` is a type synonym for `Dual 𝕜 E`: both are equal to the type `E →L[𝕜] 𝕜` of
+  continuous linear maps from a module `E` over `𝕜` to the ring `𝕜`.
 * The instance `WeakDual.instTopologicalSpace` is the weak-* topology on `WeakDual 𝕜 E`, i.e., the
   coarsest topology making the evaluation maps at all `z : E` continuous.
-* `WeakSpace 𝕜 E` is a type synonym for `E` (when the latter is defined).
+* `WeakSpace 𝕜 E` is a type synonym for `E`.
 * The instance `WeakSpace.instTopologicalSpace` is the weak topology on `E`, i.e., the
-  coarsest topology such that all `v : dual 𝕜 E` remain continuous.
+  coarsest topology such that all `v : Dual 𝕜 E` remain continuous.
 
 ## Main results
 
@@ -43,15 +43,11 @@ We establish that `WeakBilin B` has the following structure:
 * `WeakBilin.instContinuousSMul`: The scalar multiplication in `WeakBilin B` is continuous.
 
 We prove the following results characterizing the weak topology:
-* `eval_continuous`: For any `y : F`, the evaluation mapping `fun x => B x y` is continuous.
+* `evalCLM`: For any `y : F`, the evaluation mapping `x ↦ B x y` is continuous.
 * `continuous_of_continuous_eval`: For a mapping to `WeakBilin B` to be continuous,
   it suffices that its compositions with pairing with `B` at all points `y : F` is continuous.
 * `tendsto_iff_forall_eval_tendsto`: Convergence in `WeakBilin B` can be characterized
   in terms of convergence of the evaluations at all points `y : F`.
-
-## Notations
-
-No new notation is introduced.
 
 ## References
 
@@ -192,7 +188,7 @@ variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [AddCo
   [TopologicalSpace E] [ContinuousConstSMul 𝕜 𝕜]
 
 variable (𝕜 E) in
-/-- The weak-* topology is the topology coarsest topology on `E →L[𝕜] 𝕜` such that all
+/-- The weak-* topology is the topology coarsest topology on `Dual 𝕜 E` such that all
 functionals `v ↦ v x` are continuous. -/
 @[reducible]
 def WeakDual : Type _ := WeakBilin (dualPairing 𝕜 E)
@@ -216,7 +212,7 @@ instance instCoeFun : CoeFun (WeakDual 𝕜 E) fun _ => E → 𝕜 :=
   DFunLike.hasCoeToFun
 
 variable (𝕜 E) in
-/-- The coercion `(E →L[𝕜] 𝕜) → (E → 𝕜)` as a continuous linear map. -/
+/-- The coercion `WeakDual 𝕜 E → (E → 𝕜)` as a continuous linear map. -/
 def coeFnCLM : WeakDual 𝕜 E →L[𝕜] (E → 𝕜) := WeakBilin.coeFnCLM (dualPairing 𝕜 E)
 #align weak_dual.coe_fn_continuous WeakDual.coeFnCLM
 
@@ -266,6 +262,7 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual
   continuous_induced_rng.2 (continuous_pi_iff.mpr h)
 #align weak_dual.continuous_of_continuous_eval WeakDual.continuous_of_continuous_eval
 
+variable (𝕜 E) in
 /-- The coercion `WeakDual 𝕜 E → (E → 𝕜)` is an embedding. -/
 theorem embedding :
     Embedding fun (x : WeakDual 𝕜 E) y ↦ x y :=
@@ -295,18 +292,17 @@ def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAd
 namespace WeakSpace
 
 variable (𝕜 E) in
-/-- The coercion `E → Dual 𝕜 E` as a continuous linear map. -/
+/-- The coercion `E → Dual 𝕜 E` as a continuous linear map in the weak topology. -/
 def coeFnCLM : WeakSpace 𝕜 E →L[𝕜] (Dual 𝕜 E → 𝕜) := WeakBilin.coeFnCLM (dualPairing 𝕜 E).flip
 
 @[simp]
 theorem coeFnCLM_apply (x : WeakSpace 𝕜 E) : coeFnCLM 𝕜 E x = (dualPairing 𝕜 E).flip x := rfl
 
-variable (𝕜) in
 /-- The map `x ↦ y x` for fixed `y : Dual 𝕜 E` as a continuous linear map. -/
 def evalCLM (y : Dual 𝕜 E) : WeakSpace 𝕜 E →L[𝕜] 𝕜 := WeakBilin.evalCLM (dualPairing 𝕜 E).flip y
 
 @[simp]
-theorem evalCLM_apply (y : Dual 𝕜 E) (x : WeakSpace 𝕜 E) : evalCLM 𝕜 y x = y x := rfl
+theorem evalCLM_apply (y : Dual 𝕜 E) (x : WeakSpace 𝕜 E) : evalCLM y x = y x := rfl
 
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
 
