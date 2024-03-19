@@ -152,7 +152,6 @@ noncomputable def lowerCrossingTime [Preorder ι] [OrderBot ι] [InfSet ι] (a b
 section
 
 variable [Preorder ι] [OrderBot ι] [InfSet ι]
-
 variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n m : ℕ} {ω : Ω}
 
 @[simp]
@@ -181,7 +180,6 @@ end
 section ConditionallyCompleteLinearOrderBot
 
 variable [ConditionallyCompleteLinearOrderBot ι]
-
 variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n m : ℕ} {ω : Ω}
 
 theorem upperCrossingTime_le : upperCrossingTime a b f N n ω ≤ N := by

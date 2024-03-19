@@ -43,50 +43,50 @@ theorem isCauSeq_exp (z : ℂ) : IsCauSeq abs fun n => ∑ m in range n, z ^ m /
 
 /-- The Cauchy sequence consisting of partial sums of the Taylor series of
 the complex exponential function -/
-----@[pp_nodot] Porting note: removed Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def exp' (z : ℂ) : CauSeq ℂ Complex.abs :=
   ⟨fun n => ∑ m in range n, z ^ m / m.factorial, isCauSeq_exp z⟩
 #align complex.exp' Complex.exp'
 
 /-- The complex exponential function, defined via its Taylor series -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 -- Porting note: removed `irreducible` attribute, so I can prove things
 def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
 #align complex.exp Complex.exp
 
 /-- The complex sine function, defined via `exp` -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def sin (z : ℂ) : ℂ :=
   (exp (-z * I) - exp (z * I)) * I / 2
 #align complex.sin Complex.sin
 
 /-- The complex cosine function, defined via `exp` -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def cos (z : ℂ) : ℂ :=
   (exp (z * I) + exp (-z * I)) / 2
 #align complex.cos Complex.cos
 
 /-- The complex tangent function, defined as `sin z / cos z` -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def tan (z : ℂ) : ℂ :=
   sin z / cos z
 #align complex.tan Complex.tan
 
 /-- The complex hyperbolic sine function, defined via `exp` -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def sinh (z : ℂ) : ℂ :=
   (exp z - exp (-z)) / 2
 #align complex.sinh Complex.sinh
 
 /-- The complex hyperbolic cosine function, defined via `exp` -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def cosh (z : ℂ) : ℂ :=
   (exp z + exp (-z)) / 2
 #align complex.cosh Complex.cosh
 
 /-- The complex hyperbolic tangent function, defined as `sinh z / cosh z` -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 #align complex.tanh Complex.tanh
@@ -105,44 +105,44 @@ open Complex
 noncomputable section
 
 /-- The real exponential function, defined as the real part of the complex exponential -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def exp (x : ℝ) : ℝ :=
   (exp x).re
 #align real.exp Real.exp
 
 /-- The real sine function, defined as the real part of the complex sine -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def sin (x : ℝ) : ℝ :=
   (sin x).re
 #align real.sin Real.sin
 
 /-- The real cosine function, defined as the real part of the complex cosine -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def cos (x : ℝ) : ℝ :=
   (cos x).re
 #align real.cos Real.cos
 
 /-- The real tangent function, defined as the real part of the complex tangent -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def tan (x : ℝ) : ℝ :=
   (tan x).re
 #align real.tan Real.tan
 
 /-- The real hypebolic sine function, defined as the real part of the complex hyperbolic sine -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def sinh (x : ℝ) : ℝ :=
   (sinh x).re
 #align real.sinh Real.sinh
 
 /-- The real hypebolic cosine function, defined as the real part of the complex hyperbolic cosine -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def cosh (x : ℝ) : ℝ :=
   (cosh x).re
 #align real.cosh Real.cosh
 
 /-- The real hypebolic tangent function, defined as the real part of
 the complex hyperbolic tangent -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def tanh (x : ℝ) : ℝ :=
   (tanh x).re
 #align real.tanh Real.tanh
@@ -195,7 +195,7 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
   exact cauchy_product (isCauSeq_abs_exp x) (isCauSeq_exp y)
 #align complex.exp_add Complex.exp_add
 
--- Porting note: New definition
+-- Porting note (#11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℂ` to `ℂ` -/
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
   { toFun := fun z => exp (Multiplicative.toAdd z),
@@ -816,7 +816,7 @@ theorem exp_zero : exp 0 = 1 := by simp [Real.exp]
 nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
 #align real.exp_add Real.exp_add
 
--- Porting note: New definition
+-- Porting note (#11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℝ` to `ℝ` -/
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℝ) ℝ :=
   { toFun := fun x => exp (Multiplicative.toAdd x),

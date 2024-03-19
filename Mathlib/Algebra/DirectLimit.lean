@@ -39,11 +39,8 @@ universe u v v' v'' w u₁
 open Submodule
 
 variable {R : Type u} [Ring R]
-
 variable {ι : Type v}
-
 variable [Preorder ι]
-
 variable (G : ι → Type w)
 
 /-- A directed system is a functor from a category (directed poset) to another category. -/
@@ -66,7 +63,6 @@ end
 namespace Module
 
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
-
 variable {G} (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- A copy of `DirectedSystem.map_self` specialized to linear maps, as otherwise the
@@ -145,9 +141,7 @@ protected theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : Di
 #align module.direct_limit.induction_on Module.DirectLimit.induction_on
 
 variable {P : Type u₁} [AddCommGroup P] [Module R P] (g : ∀ i, G i →ₗ[R] P)
-
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
-
 variable (R ι G f)
 
 /-- The universal property of the direct limit: maps from the components to another module
@@ -190,7 +184,6 @@ section functorial
 
 variable {G' : ι → Type v'} [∀ i, AddCommGroup (G' i)] [∀ i, Module R (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →ₗ[R] G' j}
-
 variable {G'' : ι → Type v''} [∀ i, AddCommGroup (G'' i)] [∀ i, Module R (G'' i)]
 variable {f'' : ∀ i j, i ≤ j → G'' i →ₗ[R] G'' j}
 
@@ -290,10 +283,8 @@ end Totalize
 
 variable [DirectedSystem G fun i j h => f i j h]
 
-open scoped Classical
-
-theorem toModule_totalize_of_le {x : DirectSum ι G} {i j : ι} (hij : i ≤ j)
-    (hx : ∀ k ∈ x.support, k ≤ i) :
+theorem toModule_totalize_of_le [∀ i (k : G i), Decidable (k ≠ 0)] {x : DirectSum ι G} {i j : ι}
+    (hij : i ≤ j) (hx : ∀ k ∈ x.support, k ≤ i) :
     DirectSum.toModule R ι (G j) (fun k => totalize G f k j) x =
       f i j hij (DirectSum.toModule R ι (G i) (fun k => totalize G f k i) x) := by
   rw [← @DFinsupp.sum_single ι G _ _ _ x]
@@ -304,8 +295,8 @@ theorem toModule_totalize_of_le {x : DirectSum ι G} {i j : ι} (hij : i ≤ j)
     totalize_of_le (hx k hk), totalize_of_le (le_trans (hx k hk) hij), DirectedSystem.map_map]
 #align module.direct_limit.to_module_totalize_of_le Module.DirectLimit.toModule_totalize_of_le
 
-theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : DirectSum ι G}
-    (H : (Submodule.Quotient.mk x : DirectLimit G f) = (0 : DirectLimit G f)) :
+theorem of.zero_exact_aux [∀ i (k : G i), Decidable (k ≠ 0)] [Nonempty ι] [IsDirected ι (· ≤ ·)]
+    {x : DirectSum ι G} (H : (Submodule.Quotient.mk x : DirectLimit G f) = (0 : DirectLimit G f)) :
     ∃ j,
       (∀ k ∈ x.support, k ≤ j) ∧
         DirectSum.toModule R ι (G j) (fun i => totalize G f i j) x = (0 : G j) :=
@@ -344,6 +335,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : DirectS
       ⟨i, fun k hk => hi k (DirectSum.support_smul _ _ hk), by simp [LinearMap.map_smul, hxi]⟩
 #align module.direct_limit.of.zero_exact_aux Module.DirectLimit.of.zero_exact_aux
 
+open Classical in
 /-- A component that corresponds to zero in the direct limit is already zero in some
 bigger module in the directed system. -/
 theorem of.zero_exact [IsDirected ι (· ≤ ·)] {i x} (H : of R ι G f i x = 0) :
@@ -418,11 +410,8 @@ theorem of.zero_exact [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h =>
 #align add_comm_group.direct_limit.of.zero_exact AddCommGroup.DirectLimit.of.zero_exact
 
 variable (P : Type u₁) [AddCommGroup P]
-
 variable (g : ∀ i, G i →+ P)
-
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
-
 variable (G f)
 
 /-- The universal property of the direct limit: maps from the components to another abelian group
@@ -467,7 +456,6 @@ section functorial
 
 variable {G' : ι → Type v'} [∀ i, AddCommGroup (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →+ G' j}
-
 variable {G'' : ι → Type v''} [∀ i, AddCommGroup (G'' i)]
 variable {f'' : ∀ i j, i ≤ j → G'' i →+ G'' j}
 
@@ -668,17 +656,13 @@ theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : DirectLimit 
 
 section OfZeroExact
 
-open scoped Classical
-
 variable (f' : ∀ i j, i ≤ j → G i →+* G j)
-
 variable [DirectedSystem G fun i j h => f' i j h]
-
 variable (G f)
 
-theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} (hxs : IsSupported x s) {j k}
-    (hj : ∀ z : Σi, G i, z ∈ s → z.1 ≤ j) (hk : ∀ z : Σi, G i, z ∈ t → z.1 ≤ k) (hjk : j ≤ k)
-    (hst : s ⊆ t) :
+theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} [DecidablePred (· ∈ s)]
+    [DecidablePred (· ∈ t)] (hxs : IsSupported x s) {j k} (hj : ∀ z : Σi, G i, z ∈ s → z.1 ≤ j)
+    (hk : ∀ z : Σi, G i, z ∈ t → z.1 ≤ k) (hjk : j ≤ k) (hst : s ⊆ t) :
     f' j k hjk (lift (fun ix : s => f' ix.1.1 j (hj ix ix.2) ix.1.2) (restriction s x)) =
       lift (fun ix : t => f' ix.1.1 k (hk ix ix.2) ix.1.2) (restriction t x) := by
   refine' Subring.InClosure.recOn hxs _ _ _ _
@@ -711,12 +695,15 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         = (0 : DirectLimit G fun i j h => f' i j h)) :
     ∃ j s, ∃ H : ∀ k : Σ i, G i, k ∈ s → k.1 ≤ j,
         IsSupported x s ∧
-          lift (fun ix : s => f' ix.1.1 j (H ix ix.2) ix.1.2) (restriction s x) = (0 : G j) := by
+          ∀ [DecidablePred (· ∈ s)],
+            lift (fun ix : s => f' ix.1.1 j (H ix ix.2) ix.1.2) (restriction s x) = (0 : G j) := by
+  have := Classical.decEq
   refine' span_induction (Ideal.Quotient.eq_zero_iff_mem.1 H) _ _ _ _
   · rintro x (⟨i, j, hij, x, rfl⟩ | ⟨i, rfl⟩ | ⟨i, x, y, rfl⟩ | ⟨i, x, y, rfl⟩)
     · refine'
         ⟨j, {⟨i, x⟩, ⟨j, f' i j hij x⟩}, _,
-          isSupported_sub (isSupported_of.2 <| Or.inr rfl) (isSupported_of.2 <| Or.inl rfl), _⟩
+          isSupported_sub (isSupported_of.2 <| Or.inr rfl) (isSupported_of.2 <| Or.inl rfl),
+            fun [_] => _⟩
       · rintro k (rfl | ⟨rfl | _⟩)
         exact hij
         rfl
@@ -727,7 +714,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         rw [this]
         exact sub_self _
         exacts [Or.inl rfl, Or.inr rfl]
-    · refine' ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, _⟩
+    · refine' ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, fun [_] => _⟩
       · rintro k (rfl | h)
         rfl
         -- Porting note: the Lean3 proof contained `rw [restriction_of]`, but this
@@ -739,7 +726,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
             (isSupported_add (isSupported_of.2 <| Or.inr <| Or.inl rfl)
               (isSupported_of.2 <| Or.inr <| Or.inr rfl)),
-          _⟩
+          fun [_] => _⟩
       · rintro k (rfl | ⟨rfl | ⟨rfl | hk⟩⟩) <;> rfl
       · rw [(restriction _).map_sub, (restriction _).map_add, restriction_of, restriction_of,
           restriction_of, dif_pos, dif_pos, dif_pos, RingHom.map_sub,
@@ -752,7 +739,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         ⟨i, {⟨i, x * y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
             (isSupported_mul (isSupported_of.2 <| Or.inr <| Or.inl rfl)
-              (isSupported_of.2 <| Or.inr <| Or.inr rfl)), _⟩
+              (isSupported_of.2 <| Or.inr <| Or.inr rfl)), fun [_] => _⟩
       · rintro k (rfl | ⟨rfl | ⟨rfl | hk⟩⟩) <;> rfl
       · rw [(restriction _).map_sub, (restriction _).map_mul, restriction_of, restriction_of,
           restriction_of, dif_pos, dif_pos, dif_pos, RingHom.map_sub,
@@ -764,10 +751,10 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         -- Porting note: was
         --exacts [sub_self _, Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
   · refine' Nonempty.elim (by infer_instance) fun ind : ι => _
-    refine' ⟨ind, ∅, fun _ => False.elim, isSupported_zero, _⟩
+    refine' ⟨ind, ∅, fun _ => False.elim, isSupported_zero, fun [_] => _⟩
     -- Porting note: `RingHom.map_zero` was `(restriction _).map_zero`
     rw [RingHom.map_zero, (FreeCommRing.lift _).map_zero]
-  · rintro x y ⟨i, s, hi, hxs, ihs⟩ ⟨j, t, hj, hyt, iht⟩
+  · intro x y ⟨i, s, hi, hxs, ihs⟩ ⟨j, t, hj, hyt, iht⟩
     obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
     have : ∀ z : Σi, G i, z ∈ s ∪ t → z.1 ≤ k := by
       rintro z (hz | hz)
@@ -776,9 +763,9 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     refine'
       ⟨k, s ∪ t, this,
         isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
-          (isSupported_upwards hyt <| Set.subset_union_right s t), _⟩
+          (isSupported_upwards hyt <| Set.subset_union_right s t), fun [_] => _⟩
     · -- Porting note: was `(restriction _).map_add`
-      rw [RingHom.map_add, (FreeCommRing.lift _).map_add, ←
+      classical rw [RingHom.map_add, (FreeCommRing.lift _).map_add, ←
         of.zero_exact_aux2 G f' hxs hi this hik (Set.subset_union_left s t), ←
         of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right s t), ihs,
         (f' i k hik).map_zero, iht, (f' j k hjk).map_zero, zero_add]
@@ -793,9 +780,9 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     refine'
       ⟨k, ↑s ∪ t, this,
         isSupported_mul (isSupported_upwards hxs <| Set.subset_union_left (↑s) t)
-          (isSupported_upwards hyt <| Set.subset_union_right (↑s) t), _⟩
+          (isSupported_upwards hyt <| Set.subset_union_right (↑s) t), fun [_] => _⟩
     -- Porting note: RingHom.map_mul was `(restriction _).map_mul`
-    rw [RingHom.map_mul, (FreeCommRing.lift _).map_mul, ←
+    classical rw [RingHom.map_mul, (FreeCommRing.lift _).map_mul, ←
       of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right (↑s) t), iht,
       (f' j k hjk).map_zero, mul_zero]
 #align ring.direct_limit.of.zero_exact_aux Ring.DirectLimit.of.zero_exact_aux
@@ -803,11 +790,12 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
 /-- A component that corresponds to zero in the direct limit is already zero in some
 bigger module in the directed system. -/
 theorem of.zero_exact [IsDirected ι (· ≤ ·)] {i x} (hix : of G (fun i j h => f' i j h) i x = 0) :
-    ∃ (j : _) (hij : i ≤ j), f' i j hij x = 0 :=
+    ∃ (j : _) (hij : i ≤ j), f' i j hij x = 0 := by
   haveI : Nonempty ι := ⟨i⟩
   let ⟨j, s, H, hxs, hx⟩ := of.zero_exact_aux hix
   have hixs : (⟨i, x⟩ : Σi, G i) ∈ s := isSupported_of.1 hxs
-  ⟨j, H ⟨i, x⟩ hixs, by rw [restriction_of, dif_pos hixs, lift_of] at hx; exact hx⟩
+  classical specialize @hx _
+  exact ⟨j, H ⟨i, x⟩ hixs, by classical rw [restriction_of, dif_pos hixs, lift_of] at hx; exact hx⟩
 #align ring.direct_limit.of.zero_exact Ring.DirectLimit.of.zero_exact
 
 end OfZeroExact
@@ -831,9 +819,7 @@ theorem of_injective [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h => 
 #align ring.direct_limit.of_injective Ring.DirectLimit.of_injective
 
 variable (P : Type u₁) [CommRing P]
-
 variable (g : ∀ i, G i →+* P)
-
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 open FreeCommRing
@@ -891,10 +877,8 @@ section functorial
 variable {f : ∀ i j, i ≤ j → G i →+* G j}
 variable {G' : ι → Type v'} [∀ i, CommRing (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →+* G' j}
-
 variable {G'' : ι → Type v''} [∀ i, CommRing (G'' i)]
 variable {f'' : ∀ i j, i ≤ j → G'' i →+* G'' j}
-
 variable [Nonempty ι]
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
@@ -975,9 +959,7 @@ end Ring
 namespace Field
 
 variable [Nonempty ι] [IsDirected ι (· ≤ ·)] [∀ i, Field (G i)]
-
 variable (f : ∀ i j, i ≤ j → G i → G j)
-
 variable (f' : ∀ i j, i ≤ j → G i →+* G j)
 
 namespace DirectLimit
