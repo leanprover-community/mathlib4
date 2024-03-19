@@ -64,21 +64,20 @@ namespace unusedTactic
 abbrev M := StateRefT (HashMap String.Range Syntax) IO
 
 /-- `Parser`s allowed to not change the tactic state. -/
-abbrev allowed := [
-  `Mathlib.Tactic.Says.says,
-  `Std.Tactic.«tacticOn_goal-_=>_»,
+def allowed : HashSet SyntaxNodeKind:= HashSet.empty
+  |>.insert `Mathlib.Tactic.Says.says
+  |>.insert `Std.Tactic.«tacticOn_goal-_=>_»
   -- the following `SyntaxNodeKind`s play a role in silencing `test`s
-  ``Lean.Parser.Tactic.guardHyp,
-  ``Lean.Parser.Tactic.guardTarget,
-  ``Lean.Parser.Tactic.failIfSuccess,
-  `Mathlib.Tactic.successIfFailWithMsg,
-  `Mathlib.Tactic.failIfNoProgress,
-  `Mathlib.Tactic.ExtractGoal.extractGoal,
-  `Mathlib.Tactic.Propose.propose',
-  `Lean.Parser.Tactic.traceState,
-  `Mathlib.Tactic.tacticMatch_target_,
-  `change?
-]
+  |>.insert ``Lean.Parser.Tactic.guardHyp
+  |>.insert ``Lean.Parser.Tactic.guardTarget
+  |>.insert ``Lean.Parser.Tactic.failIfSuccess
+  |>.insert `Mathlib.Tactic.successIfFailWithMsg
+  |>.insert `Mathlib.Tactic.failIfNoProgress
+  |>.insert `Mathlib.Tactic.ExtractGoal.extractGoal
+  |>.insert `Mathlib.Tactic.Propose.propose'
+  |>.insert `Lean.Parser.Tactic.traceState
+  |>.insert `Mathlib.Tactic.tacticMatch_target_
+  |>.insert `change?
 
 /--
 A list of blacklisted syntax kinds, which are expected to have subterms that contain
@@ -150,7 +149,7 @@ partial def eraseUsedTactics : InfoTree → M Unit
         -- if the goals have changed
         if i.goalsAfter != i.goalsBefore
         then modify (·.erase r)
-        else if i.stx.getKind ∈ allowed
+        else if allowed.contains i.stx.getKind
         -- if the tactic is allowed to not change the goals
         then modify (·.erase r)
         -- bespoke check for `swap_var`: the only change that it does is
