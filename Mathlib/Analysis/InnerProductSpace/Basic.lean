@@ -8,7 +8,6 @@ import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
-import Mathlib.LinearAlgebra.BilinearForm.Basic
 
 #align_import analysis.inner_product_space.basic from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
@@ -70,6 +69,8 @@ noncomputable section
 open IsROrC Real Filter
 
 open BigOperators Topology ComplexConjugate
+
+open LinearMap (BilinForm)
 
 variable {𝕜 E F : Type*} [IsROrC 𝕜]
 
@@ -416,7 +417,6 @@ end
 
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -498,14 +498,11 @@ def sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜 :=
     (fun _x _y _z => inner_add_left _ _ _) fun _r _x _y => inner_smul_left _ _ _
 #align sesq_form_of_inner sesqFormOfInner
 
-/-- The real inner product as a bilinear form. -/
-@[simps]
-def bilinFormOfRealInner : BilinForm ℝ F where
-  bilin := inner
-  bilin_add_left := inner_add_left
-  bilin_smul_left _a _x _y := inner_smul_left _ _ _
-  bilin_add_right := inner_add_right
-  bilin_smul_right _a _x _y := inner_smul_right _ _ _
+/-- The real inner product as a bilinear form.
+
+Note that unlike `sesqFormOfInner`, this does not reverse the order of the arguments. -/
+@[simps!]
+def bilinFormOfRealInner : BilinForm ℝ F := sesqFormOfInner.flip
 #align bilin_form_of_real_inner bilinFormOfRealInner
 
 /-- An inner product with a sum on the left. -/
@@ -634,7 +631,7 @@ theorem inner_neg_right (x y : E) : ⟪x, -y⟫ = -⟪x, y⟫ := by
 theorem inner_neg_neg (x y : E) : ⟪-x, -y⟫ = ⟪x, y⟫ := by simp
 #align inner_neg_neg inner_neg_neg
 
--- porting note: removed `simp` because it can prove it using `inner_conj_symm`
+-- Porting note: removed `simp` because it can prove it using `inner_conj_symm`
 theorem inner_self_conj (x : E) : ⟪x, x⟫† = ⟪x, x⟫ := inner_conj_symm _ _
 #align inner_self_conj inner_self_conj
 
@@ -1253,9 +1250,7 @@ end Complex
 section
 
 variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
-
 variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-
 variable {E'' : Type*} [NormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
 
 /-- A linear isometry preserves the inner product. -/
@@ -1269,6 +1264,11 @@ theorem LinearIsometry.inner_map_map (f : E →ₗᵢ[𝕜] E') (x y : E) : ⟪f
 theorem LinearIsometryEquiv.inner_map_map (f : E ≃ₗᵢ[𝕜] E') (x y : E) : ⟪f x, f y⟫ = ⟪x, y⟫ :=
   f.toLinearIsometry.inner_map_map x y
 #align linear_isometry_equiv.inner_map_map LinearIsometryEquiv.inner_map_map
+
+/-- The adjoint of a linear isometric equivalence is its inverse. -/
+theorem LinearIsometryEquiv.inner_map_eq_flip (f : E ≃ₗᵢ[𝕜] E') (x : E) (y : E') :
+    ⟪f x, y⟫_𝕜 = ⟪x, f.symm y⟫_𝕜 := by
+  conv_lhs => rw [← f.apply_symm_apply y, f.inner_map_map]
 
 /-- A linear map that preserves the inner product is a linear isometry. -/
 def LinearMap.isometryOfInner (f : E →ₗ[𝕜] E') (h : ∀ x y, ⟪f x, f y⟫ = ⟪x, y⟫) : E →ₗᵢ[𝕜] E' :=
@@ -1301,6 +1301,12 @@ theorem LinearEquiv.isometryOfInner_toLinearEquiv (f : E ≃ₗ[𝕜] E') (h) :
     (f.isometryOfInner h).toLinearEquiv = f :=
   rfl
 #align linear_equiv.isometry_of_inner_to_linear_equiv LinearEquiv.isometryOfInner_toLinearEquiv
+
+/-- A linear map is an isometry if and it preserves the inner product. -/
+theorem LinearMap.norm_map_iff_inner_map_map {F : Type*} [FunLike F E E'] [LinearMapClass F 𝕜 E E']
+    (f : F) : (∀ x, ‖f x‖ = ‖x‖) ↔ (∀ x y, ⟪f x, f y⟫_𝕜 = ⟪x, y⟫_𝕜) :=
+  ⟨({ toLinearMap := LinearMapClass.linearMap f, norm_map' := · : E →ₗᵢ[𝕜] E' }.inner_map_map),
+    (LinearMapClass.linearMap f |>.isometryOfInner · |>.norm_map)⟩
 
 /-- A linear isometry preserves the property of being orthonormal. -/
 theorem LinearIsometry.orthonormal_comp_iff {v : ι → E} (f : E →ₗᵢ[𝕜] E') :
@@ -1753,6 +1759,18 @@ theorem innerₛₗ_apply (v w : E) : innerₛₗ 𝕜 v w = ⟪v, w⟫ :=
   rfl
 #align innerₛₗ_apply innerₛₗ_apply
 
+variable (F)
+/-- The inner product as a bilinear map in the real case. -/
+def innerₗ : F →ₗ[ℝ] F →ₗ[ℝ] ℝ := innerₛₗ ℝ
+
+@[simp] lemma flip_innerₗ : (innerₗ F).flip = innerₗ F := by
+  ext v w
+  exact real_inner_comm v w
+
+variable {F}
+
+@[simp] lemma innerₗ_apply (v w : F) : innerₗ F v w = ⟪v, w⟫_ℝ := rfl
+
 /-- The inner product as a continuous sesquilinear map. Note that `toDualMap` (resp. `toDual`)
 in `InnerProductSpace.Dual` is a version of this given as a linear isometry (resp. linear
 isometric equivalence). -/
@@ -2074,7 +2092,7 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
   have hF₂ : ∀ i ∈ s₂ \ s₁, F i = -f i := fun i hi => if_neg (Finset.mem_sdiff.mp hi).2
   have hF : ∀ i, ‖F i‖ = ‖f i‖ := by
     intro i
-    dsimp only
+    dsimp only [F]
     split_ifs <;> simp only [eq_self_iff_true, norm_neg]
   have :
     ‖(∑ i in s₁ \ s₂, V i (F i)) + ∑ i in s₂ \ s₁, V i (F i)‖ ^ 2 =
@@ -2168,7 +2186,6 @@ end OrthogonalFamily
 section IsROrCToReal
 
 variable {G : Type*}
-
 variable (𝕜 E)
 
 /-- A general inner product implies a real inner product. This is not registered as an instance

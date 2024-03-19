@@ -327,12 +327,12 @@ def interpolate (s : Finset ι) (v : ι → F) : (ι → F) →ₗ[F] F[X] where
     simp_rw [Finset.smul_sum, C_mul', smul_smul, Pi.smul_apply, RingHom.id_apply, smul_eq_mul]
 #align lagrange.interpolate Lagrange.interpolate
 
--- Porting note: There was originally '@[simp]' on this line but it was removed because
+-- Porting note (#10618): There was originally '@[simp]' on this line but it was removed because
 -- 'simp' could prove 'interpolate_empty'
 theorem interpolate_empty : interpolate ∅ v r = 0 := by rw [interpolate_apply, sum_empty]
 #align lagrange.interpolate_empty Lagrange.interpolate_empty
 
--- Porting note: There was originally '@[simp]' on this line but it was removed because
+-- Porting note (#10618): There was originally '@[simp]' on this line but it was removed because
 -- 'simp' could prove 'interpolate_singleton'
 theorem interpolate_singleton : interpolate {i} v r = C (r i) := by
   rw [interpolate_apply, sum_singleton, basis_singleton, mul_one]

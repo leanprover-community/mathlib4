@@ -528,7 +528,7 @@ theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u�
   simp only [divp, mul_inv_rev, Units.val_mul, mul_assoc]
 #align divp_divp_eq_divp_mul divp_divp_eq_divp_mul
 
-/- Port note: to match the mathlib3 behavior, this needs to have higher simp
+/- Porting note: to match the mathlib3 behavior, this needs to have higher simp
 priority than eq_divp_iff_mul_eq. -/
 @[field_simps 1010]
 theorem divp_eq_iff_mul_eq {x : α} {u : αˣ} {y : α} : x /ₚ u = y ↔ y * u = x :=
@@ -923,7 +923,7 @@ def unit' (h : IsUnit a) : αˣ := ⟨a, a⁻¹, h.mul_inv_cancel, h.inv_mul_can
 #align is_unit.coe_unit' IsUnit.val_unit'
 #align is_add_unit.coe_add_unit' IsAddUnit.val_addUnit'
 
--- Porting note: TODO: `simps val_inv` fails
+-- Porting note (#11215): TODO: `simps val_inv` fails
 @[to_additive] lemma val_inv_unit' (h : IsUnit a) : ↑(h.unit'⁻¹) = a⁻¹ := rfl
 #align is_unit.coe_inv_unit' IsUnit.val_inv_unit'
 #align is_add_unit.coe_neg_add_unit' IsAddUnit.val_neg_addUnit'

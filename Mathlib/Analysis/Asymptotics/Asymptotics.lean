@@ -49,7 +49,8 @@ the Fréchet derivative.)
 
 open Filter Set
 
-open Topology BigOperators Classical Filter NNReal
+open scoped Classical
+open Topology BigOperators Filter NNReal
 
 namespace Asymptotics
 
@@ -60,20 +61,15 @@ variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Typ
   {R : Type*} {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
-
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
   [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
   [SeminormedAddGroup E''']
   [SeminormedRing R']
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
-
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
-
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
-
 variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
-
 variable {l l' : Filter α}
 
 section Defs
@@ -1496,7 +1492,7 @@ theorem isBigOWith_self_const_mul' (u : Rˣ) (f : α → R) (l : Filter α) :
     IsBigOWith ‖(↑u⁻¹ : R)‖ l f fun x => ↑u * f x := by
   refine' (isBigOWith_const_mul_self ↑u⁻¹ _ l).congr_left _
   exact fun x => u.inv_mul_cancel_left (f x)
-  -- porting note: Lean just had trouble elaborating correctly, but this fixes it.
+  -- Porting note: Lean just had trouble elaborating correctly, but this fixes it.
 #align asymptotics.is_O_with_self_const_mul' Asymptotics.isBigOWith_self_const_mul'
 
 theorem isBigOWith_self_const_mul (c : 𝕜) (hc : c ≠ 0) (f : α → 𝕜) (l : Filter α) :
@@ -1909,7 +1905,7 @@ theorem isLittleO_const_left {c : E''} :
   · simp only [hc, false_or_iff, isLittleO_const_left_of_ne hc]; rfl
 #align asymptotics.is_o_const_left Asymptotics.isLittleO_const_left
 
-@[simp 1001] -- porting note: increase priority so that this triggers before `isLittleO_const_left`
+@[simp 1001] -- Porting note: increase priority so that this triggers before `isLittleO_const_left`
 theorem isLittleO_const_const_iff [NeBot l] {d : E''} {c : F''} :
     ((fun _x => d) =o[l] fun _x => c) ↔ d = 0 := by
   have : ¬Tendsto (Function.const α ‖c‖) l atTop :=
@@ -2254,7 +2250,6 @@ lemma Asymptotics.IsBigO.comp_summable_norm {ι E F : Type*}
 namespace PartialHomeomorph
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-
 variable {E : Type*} [Norm E] {F : Type*} [Norm F]
 
 /-- Transfer `IsBigOWith` over a `PartialHomeomorph`. -/
@@ -2292,7 +2287,6 @@ end PartialHomeomorph
 namespace Homeomorph
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-
 variable {E : Type*} [Norm E] {F : Type*} [Norm F]
 
 open Asymptotics

@@ -117,9 +117,7 @@ theorem mulTSupport_mul [TopologicalSpace X] [Monoid α] {f g : X → α} :
 section
 
 variable [TopologicalSpace α] [TopologicalSpace α']
-
 variable [One β] [One γ] [One δ]
-
 variable {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ} {x : α}
 
 @[to_additive]
@@ -142,9 +140,7 @@ end
 /-! ## Functions with compact support -/
 section CompactSupport
 variable [TopologicalSpace α] [TopologicalSpace α']
-
 variable [One β] [One γ] [One δ]
-
 variable {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ} {x : α}
 
 /-- A function `f` *has compact multiplicative support* or is *compactly supported* if the closure
@@ -319,7 +315,6 @@ section CompactSupport2
 section Monoid
 
 variable [TopologicalSpace α] [Monoid β]
-
 variable {f f' : α → β} {x : α}
 
 @[to_additive]
@@ -333,7 +328,6 @@ end Monoid
 section DistribMulAction
 
 variable [TopologicalSpace α] [MonoidWithZero R] [AddMonoid M] [DistribMulAction R M]
-
 variable {f : α → R} {f' : α → M} {x : α}
 
 theorem HasCompactSupport.smul_left (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
@@ -346,7 +340,6 @@ end DistribMulAction
 section SMulWithZero
 
 variable [TopologicalSpace α] [Zero R] [Zero M] [SMulWithZero R M]
-
 variable {f : α → R} {f' : α → M} {x : α}
 
 theorem HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupport (f • f') := by
@@ -364,7 +357,6 @@ end SMulWithZero
 section MulZeroClass
 
 variable [TopologicalSpace α] [MulZeroClass β]
-
 variable {f f' : α → β} {x : α}
 
 theorem HasCompactSupport.mul_right (hf : HasCompactSupport f) : HasCompactSupport (f * f') := by
@@ -385,7 +377,7 @@ section LocallyFinite
 
 variable {ι : Type*} [TopologicalSpace X]
 
--- porting note: todo: reformulate for any locally finite family of sets
+-- Porting note (#11215): TODO: reformulate for any locally finite family of sets
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family
 of open sets, then for any point we can find a neighbourhood on which only finitely-many members of
 `f` are not equal to 1. -/
@@ -411,7 +403,8 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
         rw [inter_assoc] at hz
         exact mem_of_mem_inter_left hz
       replace hz := mem_of_mem_inter_right (mem_of_mem_inter_left hz)
-      simp only [Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter, and_imp] at hz
+      simp only [js, Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter,
+        and_imp] at hz
       suffices (mulSupport fun i => f i z) ⊆ hnf.toFinset by
         refine' hnf.toFinset.subset_coe_filter_of_subset_forall _ this fun i hi => _
         specialize hz i ⟨z, ⟨hi, hzn⟩⟩

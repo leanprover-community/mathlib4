@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
+import Mathlib.CategoryTheory.EffectiveEpi.Coproduct
+import Mathlib.CategoryTheory.EffectiveEpi.Comp
 /-!
 
 # Connections between the regular, extensive and coherent topologies
@@ -54,7 +56,7 @@ instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
       rw [← effectiveEpi_desc_iff_effectiveEpiFamily, ← this]
       infer_instance
     · refine ⟨id, fun b ↦ pullback.snd, fun b ↦ ?_⟩
-      simp only [id_eq, Category.assoc, ← hg]
+      simp only [π₂, id_eq, Category.assoc, ← hg]
       rw [← Category.assoc, pullback.condition]
       simp
 

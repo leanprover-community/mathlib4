@@ -235,7 +235,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     · -- Porting note: mathlib3 `continuity` found `continuous_set_coe`
       apply isOpen_lt (continuous_set_coe _ _)
       continuity
-    · dsimp only [Set.mem_setOf_eq]
+    · dsimp only [W, Set.mem_setOf_eq]
       rw [h_eq]
       exact lt_add_of_pos_right _ pos
   -- Since `X` is compact, there is some finset `ys t`
@@ -284,7 +284,7 @@ theorem subalgebra_topologicalClosure_eq_top_of_separatesPoints (A : Subalgebra 
       (fun f fm g gm => sup_mem_closed_subalgebra L A.isClosed_topologicalClosure ⟨f, fm⟩ ⟨g, gm⟩)
       (Subalgebra.SeparatesPoints.strongly
         (Subalgebra.separatesPoints_monotone A.le_topologicalClosure w))
-  · simp
+  · simp [L]
 #align continuous_map.subalgebra_topological_closure_eq_top_of_separates_points ContinuousMap.subalgebra_topologicalClosure_eq_top_of_separatesPoints
 
 /-- An alternative statement of the Stone-Weierstrass theorem.
@@ -372,7 +372,7 @@ theorem Subalgebra.SeparatesPoints.isROrC_to_real {A : StarSubalgebra 𝕜 C(X, 
     ext1
     simp [← IsROrC.mul_conj]
   · -- And it also separates the points `x₁`, `x₂`
-    simpa using sub_ne_zero.mpr hf
+    simpa [F] using sub_ne_zero.mpr hf
 #align subalgebra.separates_points.is_R_or_C_to_real Subalgebra.SeparatesPoints.isROrC_to_real
 
 variable [CompactSpace X]
@@ -416,7 +416,7 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
   -- And this, of course, is just `f`
   ext
   apply Eq.symm
-  simp [mul_comm IsROrC.I _]
+  simp [I, f_re, f_im, mul_comm IsROrC.I _]
 #align continuous_map.subalgebra_is_R_or_C_topological_closure_eq_top_of_separates_points ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPointsₓ
 
 end IsROrC

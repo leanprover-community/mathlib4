@@ -17,7 +17,6 @@ open Set Filter Topology TopologicalSpace Classical
 universe u v
 
 variable {X : Type u} {Y : Type v} {ι : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 section Clopen
@@ -126,11 +125,11 @@ theorem isClopen_discrete [DiscreteTopology X] (s : Set X) : IsClopen s :=
   ⟨isClosed_discrete _, isOpen_discrete _⟩
 #align is_clopen_discrete isClopen_discrete
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem isClopen_range_inl : IsClopen (range (Sum.inl : X → X ⊕ Y)) :=
   ⟨isClosed_range_inl, isOpen_range_inl⟩
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem isClopen_range_inr : IsClopen (range (Sum.inr : Y → X ⊕ Y)) :=
   ⟨isClosed_range_inr, isOpen_range_inr⟩
 

@@ -269,7 +269,7 @@ class ContinuousSemilinearMapClass (F : Type*) {R S : outParam (Type*)} [Semirin
 #align continuous_semilinear_map_class ContinuousSemilinearMapClass
 
 -- `σ`, `R` and `S` become metavariables, but they are all outparams so it's OK
--- porting note: was attribute [nolint dangerous_instance]
+-- Porting note: was attribute [nolint dangerous_instance]
 -- attribute [nolint dangerous_instance] ContinuousSemilinearMapClass.toContinuousMapClass
 
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
@@ -284,7 +284,7 @@ abbrev ContinuousLinearMapClass (F : Type*) (R : outParam (Type*)) [Semiring R]
 /-- Continuous linear equivalences between modules. We only put the type classes that are necessary
 for the definition, although in applications `M` and `M₂` will be topological modules over the
 topological semiring `R`. -/
--- porting note: todo: was @[nolint has_nonempty_instance]
+-- Porting note (#11215): TODO: was @[nolint has_nonempty_instance]
 structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
@@ -581,9 +581,7 @@ theorem _root_.DenseRange.topologicalClosure_map_submodule [RingHomSurjective σ
 section SMulMonoid
 
 variable {S₂ T₂ : Type*} [Monoid S₂] [Monoid T₂]
-
 variable [DistribMulAction S₂ M₂] [SMulCommClass R₂ S₂ M₂] [ContinuousConstSMul S₂ M₂]
-
 variable [DistribMulAction T₂ M₂] [SMulCommClass R₂ T₂ M₂] [ContinuousConstSMul T₂ M₂]
 
 instance mulAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) where
@@ -1257,7 +1255,6 @@ theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
 section ToSpanSingleton
 
 variable (R₁)
-
 variable [ContinuousSMul R₁ M₁]
 
 /-- Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous
@@ -1521,7 +1518,7 @@ instance ring [TopologicalAddGroup M] : Ring (M →L[R] M) where
   __ := ContinuousLinearMap.semiring
   __ := ContinuousLinearMap.addCommGroup
   intCast z := z • (1 : M →L[R] M)
-  intCast_ofNat := ofNat_zsmul _
+  intCast_ofNat := coe_nat_zsmul _
   intCast_negSucc := negSucc_zsmul _
 #align continuous_linear_map.ring ContinuousLinearMap.ring
 
@@ -1611,7 +1608,6 @@ theorem smul_comp (c : S₃) (h : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁�
 #align continuous_linear_map.smul_comp ContinuousLinearMap.smul_comp
 
 variable [DistribMulAction S₃ M₂] [ContinuousConstSMul S₃ M₂] [SMulCommClass R₂ S₃ M₂]
-
 variable [DistribMulAction S N₂] [ContinuousConstSMul S N₂] [SMulCommClass R S N₂]
 
 @[simp]
@@ -2592,16 +2588,14 @@ end ContinuousLinearEquiv
 
 namespace ContinuousLinearMap
 
-open Classical
+open scoped Classical
 
 variable {R : Type*} {M : Type*} {M₂ : Type*} [TopologicalSpace M] [TopologicalSpace M₂]
 
 section
 
 variable [Semiring R]
-
 variable [AddCommMonoid M₂] [Module R M₂]
-
 variable [AddCommMonoid M] [Module R M]
 
 /-- Introduce a function `inverse` from `M →L[R] M₂` to `M₂ →L[R] M`, which sends `f` to `f.symm` if
@@ -2632,9 +2626,7 @@ end
 section
 
 variable [Ring R]
-
 variable [AddCommGroup M] [TopologicalAddGroup M] [Module R M]
-
 variable [AddCommGroup M₂] [Module R M₂]
 
 @[simp]

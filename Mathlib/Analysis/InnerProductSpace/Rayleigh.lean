@@ -38,7 +38,6 @@ A slightly more elaborate corollary is that if `E` is complete and `T` is a comp
 
 
 variable {𝕜 : Type*} [IsROrC 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -72,9 +71,9 @@ theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
   · rintro ⟨x, hx : x ≠ 0, hxT⟩
     have : ‖x‖ ≠ 0 := by simp [hx]
     let c : 𝕜 := ↑‖x‖⁻¹ * r
-    have : c ≠ 0 := by simp [hx, hr.ne']
+    have : c ≠ 0 := by simp [c, hx, hr.ne']
     refine' ⟨c • x, _, _⟩
-    · field_simp [norm_smul, abs_of_pos hr]
+    · field_simp [c, norm_smul, abs_of_pos hr]
     · rw [T.rayleigh_smul x this]
       exact hxT
   · rintro ⟨x, hx, hxT⟩
@@ -154,7 +153,7 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
   have hc : T x₀ = c • x₀ := by
     have : b * (b⁻¹ * a) = a := by field_simp [mul_comm]
     apply smul_right_injective F hb
-    simp [eq_neg_of_add_eq_zero_left h₂, ← mul_smul, this]
+    simp [c, eq_neg_of_add_eq_zero_left h₂, ← mul_smul, this]
   convert hc
   have : ‖x₀‖ ≠ 0 := by simp [hx₀]
   have := congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc

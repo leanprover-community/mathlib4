@@ -22,7 +22,6 @@ open Filter Finset
 open Topology BigOperators
 
 variable {G : Type*} [NormedAddCommGroup G] [CompleteSpace G]
-
 variable {H : Type*} [NormedAddCommGroup H]
 
 /-- Given `f : NormedAddGroupHom G H` for some complete `G` and a subgroup `K` of `H`, if every
@@ -44,11 +43,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     of a sequence `v` of elements of `K` which starts close to `h` and then quickly goes to zero.
     The sequence `b` below quantifies this. -/
   set b : ℕ → ℝ := fun i => (1 / 2) ^ i * (ε * ‖h‖ / 2) / C
-  have b_pos : ∀ i, 0 < b i := by
-    intro i
-    field_simp [hC]
-    exact
-      div_pos (mul_pos hε (norm_pos_iff.mpr hyp_h)) (mul_pos (by norm_num : (0 : ℝ) < 2 ^ i * 2) hC)
+  have b_pos (i) : 0 < b i := by field_simp [b, hC, hyp_h]
   obtain
     ⟨v : ℕ → H, lim_v : Tendsto (fun n : ℕ => ∑ k in range (n + 1), v k) atTop (𝓝 h), v_in :
       ∀ n, v n ∈ K, hv₀ : ‖v 0 - h‖ < b 0, hv : ∀ n > 0, ‖v n‖ < b n⟩ :=
@@ -74,7 +69,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
   · -- We indeed get a preimage. First note:
     have : f ∘ s = fun n => ∑ k in range (n + 1), v k := by
       ext n
-      simp [map_sum, hu]
+      simp [s, map_sum, hu]
     /- In the above equality, the left-hand-side converges to `f g` by continuity of `f` and
       definition of `g` while the right-hand-side converges to `h` by construction of `v` so
       `g` is indeed a preimage of `h`. -/

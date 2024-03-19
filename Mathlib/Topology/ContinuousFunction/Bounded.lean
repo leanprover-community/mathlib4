@@ -3,13 +3,12 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.NormedSpace.OperatorNorm
-import Mathlib.Analysis.NormedSpace.Star.Basic
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Algebra.Module.MinimalAxioms
+import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 
 #align_import topology.continuous_function.bounded from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
@@ -24,7 +23,8 @@ the uniform distance.
 
 noncomputable section
 
-open Topology Bornology Classical NNReal uniformity UniformConvergence
+open scoped Classical
+open Topology Bornology NNReal uniformity UniformConvergence
 
 open Set Filter Metric Function
 
@@ -67,7 +67,6 @@ namespace BoundedContinuousFunction
 section Basics
 
 variable [TopologicalSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ]
-
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
 instance : FunLike (α →ᵇ β) α β where
@@ -248,7 +247,7 @@ theorem dist_zero_of_empty [IsEmpty α] : dist f g = 0 := by
 theorem dist_eq_iSup : dist f g = ⨆ x : α, dist (f x) (g x) := by
   cases isEmpty_or_nonempty α; · rw [iSup_of_empty', Real.sSup_empty, dist_zero_of_empty]
   refine' (dist_le_iff_of_nonempty.mpr <| le_ciSup _).antisymm (ciSup_le dist_coe_le_dist)
-  exact dist_set_exists.imp fun C hC => forall_range_iff.2 hC.2
+  exact dist_set_exists.imp fun C hC => forall_mem_range.2 hC.2
 #align bounded_continuous_function.dist_eq_supr BoundedContinuousFunction.dist_eq_iSup
 
 theorem nndist_eq_iSup : nndist f g = ⨆ x : α, nndist (f x) (g x) :=
@@ -358,7 +357,7 @@ instance [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
         dist (F x) (F y) ≤ dist (f 0 x) (f 0 y) + (dist (f 0 x) (F x) + dist (f 0 y) (F y)) :=
           dist_triangle4_left _ _ _ _
         _ ≤ C + (b 0 + b 0) := add_le_add (hC _ _) (add_le_add (fF_bdd _ _) (fF_bdd _ _))
-                               -- porting note: was --by mono*
+                               -- Porting note: was --by mono*
     · -- Check that `F` is close to `f N` in distance terms
       refine' tendsto_iff_dist_tendsto_zero.2 (squeeze_zero (fun _ => dist_nonneg) _ b_lim)
       exact fun N => (dist_le (b0 _)).2 fun x => fF_bdd x N
@@ -510,7 +509,6 @@ end Basics
 section ArzelaAscoli
 
 variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β]
-
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
 /- Arzela-Ascoli theorem asserts that, on a compact space, a set of functions sharing
@@ -659,9 +657,7 @@ names (for example, `coe_mul`) to conflict with later lemma names for normed rin
 trivial inconvenience, but in any case there are no obvious applications of the multiplicative
 version. -/
 variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β]
-
 variable [LipschitzAdd β]
-
 variable (f g : α →ᵇ β) {x : α} {C : ℝ}
 
 /-- The pointwise sum of two bounded continuous functions is again bounded continuous. -/
@@ -781,7 +777,6 @@ section NormedAddCommGroup
 continuous functions from `α` to `β` inherits a normed group structure, by using
 pointwise operations and checking that they are compatible with the uniform distance. -/
 variable [TopologicalSpace α] [SeminormedAddCommGroup β]
-
 variable (f g : α →ᵇ β) {x : α} {C : ℝ}
 
 instance : Norm (α →ᵇ β) :=
@@ -1114,7 +1109,6 @@ end MulAction
 section DistribMulAction
 
 variable [MonoidWithZero 𝕜] [AddMonoid β] [DistribMulAction 𝕜 β] [BoundedSMul 𝕜 β]
-
 variable [LipschitzAdd β]
 
 instance : DistribMulAction 𝕜 (α →ᵇ β) :=
@@ -1125,9 +1119,7 @@ end DistribMulAction
 section Module
 
 variable [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β] [BoundedSMul 𝕜 β]
-
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
-
 variable [LipschitzAdd β]
 
 instance module : Module 𝕜 (α →ᵇ β) :=
@@ -1171,9 +1163,7 @@ pointwise operations and checking that they are compatible with the uniform dist
 
 
 variable {𝕜 : Type*}
-
 variable [TopologicalSpace α] [SeminormedAddCommGroup β]
-
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
 instance normedSpace [NormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 𝕜 (α →ᵇ β) :=
@@ -1183,9 +1173,7 @@ instance normedSpace [NormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 𝕜
       norm_smul c (f x) ▸ mul_le_mul_of_nonneg_left (f.norm_coe_le_norm _) (norm_nonneg _)⟩
 
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 β]
-
 variable [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
-
 variable (α)
 
 -- TODO does this work in the `BoundedSMul` setting, too?
@@ -1292,6 +1280,12 @@ instance : NatCast (α →ᵇ R) :=
 theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
 #align bounded_continuous_function.coe_nat_cast BoundedContinuousFunction.coe_natCast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp, norm_cast]
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index OfNat.ofNat n : α →ᵇ R) : α → R) = OfNat.ofNat n :=
+  rfl
+
 instance : IntCast (α →ᵇ R) :=
   ⟨fun n => BoundedContinuousFunction.const _ n⟩
 
@@ -1305,13 +1299,13 @@ instance ring : Ring (α →ᵇ R) :=
     coe_intCast
 
 instance : SeminormedRing (α →ᵇ R) :=
-  { show Ring (α →ᵇ R) from inferInstance,  -- porting note: this was not present in the original
+  { show Ring (α →ᵇ R) from inferInstance,  -- Porting note: this was not present in the original
     BoundedContinuousFunction.nonUnitalSeminormedRing with }
 
 end Seminormed
 
 instance [NormedRing R] : NormedRing (α →ᵇ R) :=
-  { show Ring (α →ᵇ R) from inferInstance,  -- porting note: this was not present in the original
+  { show Ring (α →ᵇ R) from inferInstance,  -- Porting note: this was not present in the original
     BoundedContinuousFunction.nonUnitalNormedRing with }
 
 end NormedRing
@@ -1355,11 +1349,8 @@ pointwise operations and checking that they are compatible with the uniform dist
 
 
 variable {𝕜 : Type*} [NormedField 𝕜]
-
 variable [TopologicalSpace α] [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
-
 variable [NormedRing γ] [NormedAlgebra 𝕜 γ]
-
 variable {f g : α →ᵇ γ} {x : α} {c : 𝕜}
 
 /-- `BoundedContinuousFunction.const` as a `RingHom`. -/
@@ -1372,7 +1363,7 @@ def C : 𝕜 →+* α →ᵇ γ where
 set_option linter.uppercaseLean3 false in
 #align bounded_continuous_function.C BoundedContinuousFunction.C
 
--- porting note: named this instance, to use it in `instance : NormedAlgebra 𝕜 (α →ᵇ γ)`
+-- Porting note: named this instance, to use it in `instance : NormedAlgebra 𝕜 (α →ᵇ γ)`
 instance algebra : Algebra 𝕜 (α →ᵇ γ) :=
   { BoundedContinuousFunction.module,
     BoundedContinuousFunction.ring (α := α) (R := γ) with
@@ -1387,7 +1378,7 @@ theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k 
   rfl
 #align bounded_continuous_function.algebra_map_apply BoundedContinuousFunction.algebraMap_apply
 
--- porting note: `show Algebra` was not present in the original
+-- Porting note: `show Algebra` was not present in the original
 instance : NormedAlgebra 𝕜 (α →ᵇ γ) :=
   { show Algebra 𝕜 (α →ᵇ γ) from inferInstance,
     BoundedContinuousFunction.normedSpace with }
@@ -1485,7 +1476,6 @@ end NormedAddCommGroup
 section CstarRing
 
 variable [TopologicalSpace α]
-
 variable [NonUnitalNormedRing β] [StarRing β]
 
 instance [NormedStarGroup β] : StarRing (α →ᵇ β) :=

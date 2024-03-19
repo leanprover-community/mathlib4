@@ -46,11 +46,8 @@ Unbounded operators, closed operators
 open Topology
 
 variable {R E F : Type*}
-
 variable [CommRing R] [AddCommGroup E] [AddCommGroup F]
-
 variable [Module R E] [Module R F]
-
 variable [TopologicalSpace E] [TopologicalSpace F]
 
 namespace LinearPMap
@@ -64,7 +61,6 @@ def IsClosed (f : E →ₗ.[R] F) : Prop :=
 #align linear_pmap.is_closed LinearPMap.IsClosed
 
 variable [ContinuousAdd E] [ContinuousAdd F]
-
 variable [TopologicalSpace R] [ContinuousSMul R E] [ContinuousSMul R F]
 
 /-- An unbounded operator is closable iff the closure of its graph is a graph. -/
@@ -96,7 +92,7 @@ theorem IsClosable.existsUnique {f : E →ₗ.[R] F} (hf : f.IsClosable) :
   rw [← hy₁, ← hy₂]
 #align linear_pmap.is_closable.exists_unique LinearPMap.IsClosable.existsUnique
 
-open Classical
+open scoped Classical
 
 /-- If `f` is closable, then `f.closure` is the closure. Otherwise it is defined
 as `f.closure = f`. -/

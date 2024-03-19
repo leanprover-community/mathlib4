@@ -56,7 +56,7 @@ theorem coe_sigma (s : Finset ι) (t : ∀ i, Finset (α i)) :
   Set.ext fun _ => mem_sigma
 #align finset.coe_sigma Finset.coe_sigma
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem sigma_nonempty : (s.sigma t).Nonempty ↔ ∃ i ∈ s, (t i).Nonempty := by simp [Finset.Nonempty]
 #align finset.sigma_nonempty Finset.sigma_nonempty
 

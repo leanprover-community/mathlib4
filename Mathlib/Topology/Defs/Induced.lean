@@ -59,7 +59,7 @@ def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
     exact ⟨s'₁ ∩ s'₂, hs₁.inter hs₂, preimage_inter⟩
   isOpen_sUnion S h := by
     choose! g hgo hfg using h
-    refine ⟨⋃₀ (g '' S), isOpen_sUnion <| ball_image_iff.2 hgo, ?_⟩
+    refine ⟨⋃₀ (g '' S), isOpen_sUnion <| forall_mem_image.2 hgo, ?_⟩
     rw [preimage_sUnion, biUnion_image, sUnion_eq_biUnion]
     exact iUnion₂_congr hfg
 #align topological_space.induced TopologicalSpace.induced

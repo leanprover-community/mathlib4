@@ -41,7 +41,7 @@ with `+` and `≤`.
 clear what `0 * ⊤` should be. `mul` is hence left undefined. Similarly `⊤ - ⊤` is ambiguous
 so there is no `-` defined on `PartENat`.
 
-Before the `open Classical` line, various proofs are made with decidability assumptions.
+Before the `open scoped Classical` line, various proofs are made with decidability assumptions.
 This can cause issues -- see for example the non-simp lemma `toWithTopZero` proved by `rfl`,
 followed by `@[simp] lemma toWithTopZero'` whose proof uses `convert`.
 
@@ -96,6 +96,7 @@ instance addCommMonoid : AddCommMonoid PartENat where
   zero_add x := Part.ext' (true_and_iff _) fun _ _ => zero_add _
   add_zero x := Part.ext' (and_true_iff _) fun _ _ => add_zero _
   add_assoc x y z := Part.ext' and_assoc fun _ _ => add_assoc _ _ _
+  nsmul := nsmulRec
 
 instance : AddCommMonoidWithOne PartENat :=
   { PartENat.addCommMonoid with
@@ -679,21 +680,21 @@ def ofENat : ℕ∞ → PartENat :=
   | Option.none => none
   | Option.some n => some n
 
--- Porting note: new
+-- Porting note (#10754): new instance
 instance : Coe ℕ∞ PartENat := ⟨ofENat⟩
 
 -- Porting note: new. This could probably be moved to tests or removed.
 example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
 
--- Porting note: new
+-- Porting note (#10756): new lemma
 @[simp]
 lemma ofENat_none : ofENat Option.none = ⊤ := rfl
 
--- Porting note: new
+-- Porting note (#10756): new lemma
 @[simp]
 lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := rfl
 
--- Porting note: new
+-- Porting note (#10756): new theorem
 @[simp, norm_cast]
 theorem toWithTop_ofENat (n : ℕ∞) {_ : Decidable (n : PartENat).Dom} : toWithTop (↑n) = n := by
   induction n with
@@ -704,12 +705,12 @@ theorem toWithTop_ofENat (n : ℕ∞) {_ : Decidable (n : PartENat).Dom} : toWit
 
 section WithTopEquiv
 
-open Classical
+open scoped Classical
 
 @[simp]
 theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWithTop y := by
   refine PartENat.casesOn y ?_ ?_ <;> refine PartENat.casesOn x ?_ ?_
-  --Porting note: was `simp [← Nat.cast_add, ← ENat.coe_add]`
+  -- Porting note: was `simp [← Nat.cast_add, ← ENat.coe_add]`
   · simp only [add_top, toWithTop_top', _root_.add_top]
   · simp only [add_top, toWithTop_top', toWithTop_natCast', _root_.add_top, forall_const]
   · simp only [top_add, toWithTop_top', toWithTop_natCast', _root_.top_add, forall_const]
@@ -727,7 +728,6 @@ noncomputable def withTopEquiv : PartENat ≃ ℕ∞ where
   invFun x := ↑x
   left_inv x := by
     induction x using PartENat.casesOn <;>
-    intros <;>
     simp <;>
     rfl
   right_inv x := by

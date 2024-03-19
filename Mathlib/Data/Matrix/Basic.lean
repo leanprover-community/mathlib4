@@ -62,7 +62,6 @@ def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
 #align matrix Matrix
 
 variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-
 variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 namespace Matrix
@@ -198,7 +197,7 @@ instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
   -- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
   instInhabitedForAll_1 _
 
--- porting note: new, Lean3 found this automatically
+-- Porting note: new, Lean3 found this automatically
 instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
   Fintype.decidablePiFintype
 
@@ -240,7 +239,7 @@ instance unique [Unique α] : Unique (Matrix m n α) :=
 
 instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
   instSubsingletonForAll
---Porting note: this instance was `Pi.subsingleton` in lean3-core
+-- Porting note: this instance was `Pi.subsingleton` in lean3-core
 
 instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
   Function.nontrivial
@@ -270,7 +269,7 @@ instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
   Pi.module _ _ _
 
--- Porting note: added the following section with simp lemmas because `simp` fails
+-- Porting note (#10756): added the following section with simp lemmas because `simp` fails
 -- to apply the corresponding lemmas in the namespace `Pi`.
 -- (e.g. `Pi.zero_apply` used on `OfNat.ofNat 0 i j`)
 section
@@ -458,15 +457,14 @@ theorem diagonal_add [AddZeroClass α] (d₁ d₂ : n → α) :
 #align matrix.diagonal_add Matrix.diagonal_add
 
 @[simp]
-theorem diagonal_smul [Monoid R] [AddMonoid α] [DistribMulAction R α] (r : R) (d : n → α) :
+theorem diagonal_smul [Zero α] [SMulZeroClass R α] (r : R) (d : n → α) :
     diagonal (r • d) = r • diagonal d := by
   ext i j
-  by_cases h : i = j <;>
-  simp [h]
+  by_cases h : i = j <;> simp [h]
 #align matrix.diagonal_smul Matrix.diagonal_smul
 
 @[simp]
-theorem diagonal_neg [DecidableEq n] [NegZeroClass α] (d : n → α) :
+theorem diagonal_neg [NegZeroClass α] (d : n → α) :
     -diagonal d = diagonal fun i => -d i := by
   ext i j
   by_cases h : i = j <;>
@@ -1159,13 +1157,13 @@ theorem map_mul [Fintype n] {L : Matrix m n α} {M : Matrix n o α} [NonAssocSem
   simp [mul_apply, map_sum]
 #align matrix.map_mul Matrix.map_mul
 
-theorem smul_one_eq_diagonal [Fintype m] [DecidableEq m] (a : α) :
+theorem smul_one_eq_diagonal [DecidableEq m] (a : α) :
     a • (1 : Matrix m m α) = diagonal fun _ => a := by
-  rw [smul_eq_diagonal_mul, mul_one]
+  simp_rw [← diagonal_one, ← diagonal_smul, Pi.smul_def, smul_eq_mul, mul_one]
 
-theorem op_smul_one_eq_diagonal [Fintype m] [DecidableEq m] (a : α) :
+theorem op_smul_one_eq_diagonal [DecidableEq m] (a : α) :
     MulOpposite.op a • (1 : Matrix m m α) = diagonal fun _ => a := by
-  rw [op_smul_eq_mul_diagonal, one_mul]
+  simp_rw [← diagonal_one, ← diagonal_smul, Pi.smul_def, op_smul_eq_mul, one_mul]
 
 variable (α n)
 
@@ -1320,7 +1318,6 @@ end CommSemiring
 section Algebra
 
 variable [Fintype n] [DecidableEq n]
-
 variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
 
 instance instAlgebra : Algebra R (Matrix n n α) where
@@ -1471,7 +1468,6 @@ end AddEquiv
 namespace LinearMap
 
 variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
-
 variable [Module R α] [Module R β] [Module R γ]
 
 /-- The `LinearMap` between spaces of matrices induced by a `LinearMap` between their
@@ -1499,7 +1495,6 @@ end LinearMap
 namespace LinearEquiv
 
 variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
-
 variable [Module R α] [Module R β] [Module R γ]
 
 /-- The `LinearEquiv` between spaces of matrices induced by a `LinearEquiv` between their
@@ -1534,7 +1529,6 @@ end LinearEquiv
 namespace RingHom
 
 variable [Fintype m] [DecidableEq m]
-
 variable [NonAssocSemiring α] [NonAssocSemiring β] [NonAssocSemiring γ]
 
 /-- The `RingHom` between spaces of square matrices induced by a `RingHom` between their
@@ -1563,7 +1557,6 @@ end RingHom
 namespace RingEquiv
 
 variable [Fintype m] [DecidableEq m]
-
 variable [NonAssocSemiring α] [NonAssocSemiring β] [NonAssocSemiring γ]
 
 /-- The `RingEquiv` between spaces of square matrices induced by a `RingEquiv` between their
@@ -1597,9 +1590,7 @@ end RingEquiv
 namespace AlgHom
 
 variable [Fintype m] [DecidableEq m]
-
 variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
-
 variable [Algebra R α] [Algebra R β] [Algebra R γ]
 
 /-- The `AlgHom` between spaces of square matrices induced by an `AlgHom` between their
@@ -1627,9 +1618,7 @@ end AlgHom
 namespace AlgEquiv
 
 variable [Fintype m] [DecidableEq m]
-
 variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
-
 variable [Algebra R α] [Algebra R β] [Algebra R γ]
 
 /-- The `AlgEquiv` between spaces of square matrices induced by an `AlgEquiv` between their
@@ -2111,7 +2100,6 @@ theorem transposeLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] 
 #align matrix.transpose_linear_equiv_symm Matrix.transposeLinearEquiv_symm
 
 variable {m n R α}
-
 variable (m α)
 
 /-- `Matrix.transpose` as a `RingEquiv` to the opposite ring -/
@@ -2265,6 +2253,13 @@ theorem conjTranspose_natCast_smul [Semiring R] [AddCommMonoid α] [StarAddMonoi
   Matrix.ext <| by simp
 #align matrix.conj_transpose_nat_cast_smul Matrix.conjTranspose_natCast_smul
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem conjTranspose_ofNat_smul [Semiring R] [AddCommMonoid α] [StarAddMonoid α] [Module R α]
+    (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
+    ((no_index (OfNat.ofNat c : R)) • M)ᴴ = (OfNat.ofNat c : R) • Mᴴ :=
+  conjTranspose_natCast_smul c M
+
 @[simp]
 theorem conjTranspose_intCast_smul [Ring R] [AddCommGroup α] [StarAddMonoid α] [Module R α] (c : ℤ)
     (M : Matrix m n α) : ((c : R) • M)ᴴ = (c : R) • Mᴴ :=
@@ -2276,6 +2271,13 @@ theorem conjTranspose_inv_natCast_smul [DivisionSemiring R] [AddCommMonoid α] [
     [Module R α] (c : ℕ) (M : Matrix m n α) : ((c : R)⁻¹ • M)ᴴ = (c : R)⁻¹ • Mᴴ :=
   Matrix.ext <| by simp
 #align matrix.conj_transpose_inv_nat_cast_smul Matrix.conjTranspose_inv_natCast_smul
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem conjTranspose_inv_ofNat_smul [DivisionSemiring R] [AddCommMonoid α] [StarAddMonoid α]
+    [Module R α] (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
+    ((no_index (OfNat.ofNat c : R))⁻¹ • M)ᴴ = (OfNat.ofNat c : R)⁻¹ • Mᴴ :=
+  conjTranspose_inv_natCast_smul c M
 
 @[simp]
 theorem conjTranspose_inv_intCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMonoid α]
@@ -2369,7 +2371,6 @@ theorem conjTransposeLinearEquiv_symm [CommSemiring R] [StarRing R] [AddCommMono
 #align matrix.conj_transpose_linear_equiv_symm Matrix.conjTransposeLinearEquiv_symm
 
 variable {m n R α}
-
 variable (m α)
 
 /-- `Matrix.conjTranspose` as a `RingEquiv` to the opposite ring -/
@@ -2586,9 +2587,9 @@ theorem mul_submatrix_one [Fintype n] [Finite o] [NonAssocSemiring α] [Decidabl
   cases nonempty_fintype o
   let A := M.submatrix id e₁.symm
   have : M = A.submatrix id e₁ := by
-    simp only [submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
+    simp only [A, submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
   rw [this, submatrix_mul_equiv]
-  simp only [Matrix.mul_one, submatrix_submatrix, Function.comp_id, submatrix_id_id,
+  simp only [A, Matrix.mul_one, submatrix_submatrix, Function.comp_id, submatrix_id_id,
     Equiv.symm_comp_self]
 #align matrix.mul_submatrix_one Matrix.mul_submatrix_one
 
@@ -2598,9 +2599,9 @@ theorem one_submatrix_mul [Fintype m] [Finite o] [NonAssocSemiring α] [Decidabl
   cases nonempty_fintype o
   let A := M.submatrix e₂.symm id
   have : M = A.submatrix e₂ id := by
-    simp only [submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
+    simp only [A, submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
   rw [this, submatrix_mul_equiv]
-  simp only [Matrix.one_mul, submatrix_submatrix, Function.comp_id, submatrix_id_id,
+  simp only [A, Matrix.one_mul, submatrix_submatrix, Function.comp_id, submatrix_id_id,
     Equiv.symm_comp_self]
 #align matrix.one_submatrix_mul Matrix.one_submatrix_mul
 

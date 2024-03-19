@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Limits.Final
 
 /-!
-# Final functors with filtered domain
+# Final functors with filtered (co)domain
 
 If `C` is a filtered category, then the usual equivalent conditions for a functor `F : C ⥤ D` to be
 final can be restated. We show:
@@ -18,9 +18,13 @@ final can be restated. We show:
   filtered for all `d : D`, which strengthens the usual statement that `F` is final if and only
   if `StructuredArrow d F` is connected for all `d : D`.
 
+Additionally, we show that if `D` is a filtered category and `F : C ⥤ D` is fully faithful and
+satisfies the additional condition that for every `d : D` there is an object `c : D` and a morphism
+`d ⟶ F.obj c`, then `C` is filtered and `F` is final.
+
 ## References
 
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.2.2
+* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 3.2
 
 -/
 
@@ -97,6 +101,67 @@ theorem Functor.initial_of_exists_of_isCofiltered [IsCofilteredOrEmpty C]
   suffices ∀ d, IsCofiltered (CostructuredArrow F d) from
     initial_of_isCofiltered_costructuredArrow F
   exact isCofiltered_costructuredArrow_of_isCofiltered_of_exists F h₁ h₂
+
+/-- In this situation, `F` is also final, see
+    `Functor.final_of_exists_of_isFiltered_of_fullyFaithful`. -/
+theorem IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOrEmpty D] [Full F]
+    [Faithful F] (h : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) : IsFilteredOrEmpty C where
+  cocone_objs c c' := by
+    obtain ⟨c₀, ⟨f⟩⟩ := h (IsFiltered.max (F.obj c) (F.obj c'))
+    exact ⟨c₀, F.preimage (IsFiltered.leftToMax _ _ ≫ f),
+      F.preimage (IsFiltered.rightToMax _ _ ≫ f), trivial⟩
+  cocone_maps {c c'} f g := by
+    obtain ⟨c₀, ⟨f₀⟩⟩ := h (IsFiltered.coeq (F.map f) (F.map g))
+    refine ⟨_, F.preimage (IsFiltered.coeqHom (F.map f) (F.map g) ≫ f₀), F.map_injective ?_⟩
+    simp [reassoc_of% (IsFiltered.coeq_condition (F.map f) (F.map g))]
+
+/-- In this situation, `F` is also initial, see
+    `Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful`. -/
+theorem IsCofilteredOrEmpty.of_exists_of_isCofiltered_of_fullyFaithful [IsCofilteredOrEmpty D]
+    [Full F] [Faithful F] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : IsCofilteredOrEmpty C := by
+  suffices IsFilteredOrEmpty Cᵒᵖ from isCofilteredOrEmpty_of_isFilteredOrEmpty_op _
+  refine IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful F.op (fun d => ?_)
+  obtain ⟨c, ⟨f⟩⟩ := h d.unop
+  exact ⟨op c, ⟨f.op⟩⟩
+
+/-- In this situation, `F` is also final, see
+    `Functor.final_of_exists_of_isFiltered_of_fullyFaithful`. -/
+theorem IsFiltered.of_exists_of_isFiltered_of_fullyFaithful [IsFiltered D] [Full F] [Faithful F]
+    (h : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) : IsFiltered C :=
+  { IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful F h with
+    nonempty := by
+      have : Nonempty D := IsFiltered.nonempty
+      obtain ⟨c, -⟩ := h (Classical.arbitrary D)
+      exact ⟨c⟩ }
+
+/-- In this situation, `F` is also initial, see
+    `Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful`. -/
+theorem IsCofiltered.of_exists_of_isCofiltered_of_fullyFaithful [IsCofiltered D] [Full F]
+    [Faithful F] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : IsCofiltered C :=
+  { IsCofilteredOrEmpty.of_exists_of_isCofiltered_of_fullyFaithful F h with
+    nonempty := by
+      have : Nonempty D := IsCofiltered.nonempty
+      obtain ⟨c, -⟩ := h (Classical.arbitrary D)
+      exact ⟨c⟩ }
+
+/-- In this situation, `C` is also filtered, see
+    `IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful`. -/
+theorem Functor.final_of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOrEmpty D] [Full F]
+    [Faithful F] (h : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) : Final F := by
+  have := IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful F h
+  refine Functor.final_of_exists_of_isFiltered F h (fun {d c} s s' => ?_)
+  obtain ⟨c₀, ⟨f⟩⟩ := h (IsFiltered.coeq s s')
+  refine ⟨c₀, F.preimage (IsFiltered.coeqHom s s' ≫ f), ?_⟩
+  simp [reassoc_of% (IsFiltered.coeq_condition s s')]
+
+/-- In this situation, `C` is also cofiltered, see
+    `IsCofilteredOrEmpty.of_exists_of_isCofiltered_of_fullyFaithful`. -/
+theorem Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful [IsCofilteredOrEmpty D] [Full F]
+    [Faithful F] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : Initial F := by
+  suffices Final F.op from initial_of_final_op _
+  refine Functor.final_of_exists_of_isFiltered_of_fullyFaithful F.op (fun d => ?_)
+  obtain ⟨c, ⟨f⟩⟩ := h d.unop
+  exact ⟨op c, ⟨f.op⟩⟩
 
 end ArbitraryUniverses
 

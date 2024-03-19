@@ -17,7 +17,8 @@ set_option autoImplicit true
 
 open Filter Set TopologicalSpace
 
-open Topology Classical
+open scoped Classical
+open Topology
 
 theorem continuousOn_Icc_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
     [OrderTopology α] [TopologicalSpace β] [RegularSpace β] {f : α → β} {a b : α} {la lb : β}

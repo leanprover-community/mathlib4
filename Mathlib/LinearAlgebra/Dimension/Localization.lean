@@ -62,7 +62,7 @@ lemma IsLocalizedModule.lift_rank_eq :
       · simp only [map_sum, map_smul, Submonoid.smul_def, Finset.smul_sum]
         apply Finset.sum_congr rfl
         intro j hj
-        simp only [← @IsScalarTower.algebraMap_smul R S N, Submonoid.coe_finset_prod, map_prod]
+        simp only [u, ← @IsScalarTower.algebraMap_smul R S N, Submonoid.coe_finset_prod, map_prod]
         rw [← hsec, mul_comm (g j), mul_smul, ← mul_smul, Finset.prod_erase_mul (h := hj)]
       rw [map_zero, smul_zero]
     obtain ⟨c, hc⟩ := IsLocalizedModule.exists_of_eq (S := p) this

@@ -85,9 +85,7 @@ export LawfulMvFunctor (comp_map)
 open LawfulMvFunctor
 
 variable {α β γ : TypeVec.{u} n}
-
 variable {F : TypeVec.{u} n → Type v} [MvFunctor F]
-
 variable (P : α ⟹ «repeat» n Prop) (R : α ⊗ α ⟹ «repeat» n Prop)
 
 /-- adapt `MvFunctor.LiftP` to accept predicates as arrows -/
@@ -167,7 +165,6 @@ variable {F : TypeVec.{u} (n + 1) → Type*} [MvFunctor F] [LawfulMvFunctor F] {
 open MvFunctor
 
 variable {β : Type u}
-
 variable (pp : β → Prop)
 
 private def f :
@@ -231,7 +228,7 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
     cases i <;> rfl
   · intros
     simp (config := { unfoldPartialApp := true }) [MvFunctor.map_map, (· ⊚ ·)]
-    -- porting note: proof was
+    -- Porting note: proof was
     -- rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
     -- congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
     suffices  (fun i t => t.val.fst) = ((fun i x => (MvFunctor.f' rr n α i x).val.fst))

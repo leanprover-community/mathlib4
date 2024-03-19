@@ -69,7 +69,6 @@ open scoped IntermediateField
 universe u v w z
 
 variable {p n : ℕ+} (A : Type w) (B : Type z) (K : Type u) {L : Type v} (C : Type w)
-
 variable [CommRing A] [CommRing B] [Algebra A B] [IsCyclotomicExtension {n} A B]
 
 section Zeta
@@ -200,7 +199,6 @@ namespace IsPrimitiveRoot
 section CommRing
 
 variable [CommRing L] {ζ : L} (hζ : IsPrimitiveRoot ζ n)
-
 variable {K} [Field K] [Algebra K L]
 
 /-- This mathematically trivial result is complementary to `norm_eq_one` below. -/
@@ -250,7 +248,6 @@ end CommRing
 section Field
 
 variable [Field L] {ζ : L} (hζ : IsPrimitiveRoot ζ n)
-
 variable {K} [Field K] [Algebra K L]
 
 /-- If `Irreducible (cyclotomic n K)` (in particular for `K = ℚ`), then the norm of
@@ -326,7 +323,7 @@ theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ 
   have hirr₁ : Irreducible (cyclotomic ((p : ℕ) ^ (k - s + 1)) K) :=
     cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by simp) hirr
   rw [← PNat.pow_coe] at hirr₁
-  set η := ζ ^ (p : ℕ) ^ s - 1 with ηdef
+  set η := ζ ^ (p : ℕ) ^ s - 1
   let η₁ : K⟮η⟯ := IntermediateField.AdjoinSimple.gen K η
   have hη : IsPrimitiveRoot (η + 1) ((p : ℕ) ^ (k + 1 - s)) := by
     rw [sub_add_cancel]
@@ -340,8 +337,7 @@ theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ 
         refine' Subalgebra.ext fun x => ⟨fun hx => adjoin_le _ hx, fun hx => adjoin_le _ hx⟩
         · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
           exact Subalgebra.add_mem _ (subset_adjoin (mem_singleton η)) (Subalgebra.one_mem _)
--- Porting note `ηdef` was not needed.
-        · simp only [Set.singleton_subset_iff, SetLike.mem_coe, ← ηdef]
+        · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
           nth_rw 1 [← add_sub_cancel η 1]
           exact Subalgebra.sub_mem _ (subset_adjoin (mem_singleton _)) (Subalgebra.one_mem _)
 -- Porting note: the previous proof was `rw [H] at this; exact this` but it now fails.

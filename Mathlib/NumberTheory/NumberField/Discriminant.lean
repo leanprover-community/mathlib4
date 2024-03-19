@@ -96,7 +96,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
         rw [← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, Algebra.discr_reindex,
           ← coe_discr, map_intCast, ← Complex.nnnorm_int]
   ext : 2
-  dsimp only
+  dsimp only [M]
   rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp_apply,
     Equiv.symm_symm, latticeBasis_apply, ← commMap_canonical_eq_mixed, Complex.ofReal_eq_coe,
     stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
@@ -179,18 +179,18 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   let a : ℕ → ℝ := fun n => (n:ℝ) ^ (n * 2) / ((4 / π) ^ n * (n.factorial:ℝ) ^ 2)
   suffices ∀ n, 2 ≤ n → (4 / 9 : ℝ) * (3 * π / 4) ^ n ≤ a n by
     refine le_trans (this (finrank ℚ K) h) ?_
-    simp only -- unfold `a` and beta-reduce
+    simp only [a]
     gcongr
     · exact (one_le_div Real.pi_pos).2 Real.pi_le_four
     · rw [← card_add_two_mul_card_eq_rank, mul_comm]
       exact Nat.le_add_left _ _
   intro n hn
   induction n, hn using Nat.le_induction with
-  | base => exact le_of_eq <| by norm_num [Nat.factorial_two]; field_simp; ring
+  | base => exact le_of_eq <| by norm_num [a, Nat.factorial_two]; field_simp; ring
   | succ m _ h_m =>
       suffices (3:ℝ) ≤ (1 + 1 / m : ℝ) ^ (2 * m) by
         convert_to _ ≤ (a m) * (1 + 1 / m : ℝ) ^ (2 * m) / (4 / π)
-        · simp_rw [add_mul, one_mul, pow_succ, Nat.factorial_succ]
+        · simp_rw [a, add_mul, one_mul, pow_succ, Nat.factorial_succ]
           field_simp; ring
         · rw [_root_.le_div_iff (by positivity), pow_succ]
           convert (mul_le_mul h_m this (by positivity) (by positivity)) using 1
@@ -298,6 +298,7 @@ theorem rank_le_rankOfDiscrBdd :
       exact le_trans (by norm_num) (Nat.one_le_cast.mpr (Nat.one_le_iff_ne_zero.mpr h_nz))
   · exact le_max_of_le_left h
 
+set_option tactic.skipAssignedInstances false in
 /-- If `|discr K| ≤ N` then the Minkowski bound of `K` is less than `boundOfDiscrBdd`. -/
 theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBdd N := by
   have : boundOfDiscBdd N - 1 < boundOfDiscBdd N := by norm_num

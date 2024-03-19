@@ -63,7 +63,7 @@ variable {α : Type*}
 `a`. We forbid `⊥` as a part. -/
 @[ext]
 structure Finpartition [Lattice α] [OrderBot α] (a : α) where
-  -- porting note: Docstrings added
+  -- Porting note: Docstrings added
   /-- The elements of the finite partition of `a` -/
   parts : Finset α
   /-- The partition is supremum-independent -/
@@ -557,7 +557,7 @@ def atomise (s : Finset α) (F : Finset (Finset α)) : Finpartition s :=
 
 variable {F : Finset (Finset α)}
 
--- porting note:
+-- Porting note:
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection
    (Q «expr ⊆ » F) -/
 theorem mem_atomise :

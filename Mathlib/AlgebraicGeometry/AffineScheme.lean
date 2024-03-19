@@ -106,13 +106,13 @@ def Spec : CommRingCatᵒᵖ ⥤ AffineScheme :=
   Scheme.Spec.toEssImage
 #align algebraic_geometry.AffineScheme.Spec AlgebraicGeometry.AffineScheme.Spec
 
--- Porting note: cannot automatically derive
+-- Porting note (#11081): cannot automatically derive
 instance Spec_full : Full Spec := Full.toEssImage _
 
--- Porting note: cannot automatically derive
+-- Porting note (#11081): cannot automatically derive
 instance Spec_faithful : Faithful Spec := Faithful.toEssImage _
 
--- Porting note: cannot automatically derive
+-- Porting note (#11081): cannot automatically derive
 instance Spec_essSurj : EssSurj Spec := EssSurj.toEssImage (F := _)
 
 /-- The forgetful functor `AffineScheme ⥤ Scheme`. -/
@@ -121,11 +121,11 @@ def forgetToScheme : AffineScheme ⥤ Scheme :=
   Scheme.Spec.essImageInclusion
 #align algebraic_geometry.AffineScheme.forget_to_Scheme AlgebraicGeometry.AffineScheme.forgetToScheme
 
--- Porting note: cannot automatically derive
+-- Porting note (#11081): cannot automatically derive
 instance forgetToScheme_full : Full forgetToScheme :=
 show Full (Scheme.Spec.essImageInclusion) from inferInstance
 
--- Porting note: cannot automatically derive
+-- Porting note (#11081): cannot automatically derive
 instance forgetToScheme_faithful : Faithful forgetToScheme :=
 show Faithful (Scheme.Spec.essImageInclusion) from inferInstance
 
@@ -220,7 +220,7 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
     change SpecΓIdentity.hom.app (X.presheaf.obj <| op ⊤) = _
     rw [← ΓSpec.adjunction_unit_app_app_top X]
     rfl
-  · dsimp; congr
+  · dsimp
     refine' (Scheme.preimage_basicOpen _ _).trans _
     congr 1
     exact IsIso.inv_hom_id_apply _ _

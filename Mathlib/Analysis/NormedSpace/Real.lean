@@ -89,14 +89,14 @@ theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
   set f : ℝ → E := fun c : ℝ => c • (y - x) + x
   suffices f ⁻¹' closedBall x (dist y x) ⊆ Icc (-1) 1 by
     have hfc : Continuous f := (continuous_id.smul continuous_const).add continuous_const
-    have hf1 : (1 : ℝ) ∈ f ⁻¹' interior (closedBall x <| dist y x) := by simpa
+    have hf1 : (1 : ℝ) ∈ f ⁻¹' interior (closedBall x <| dist y x) := by simpa [f]
     have h1 : (1 : ℝ) ∈ interior (Icc (-1 : ℝ) 1) :=
       interior_mono this (preimage_interior_subset_interior_preimage hfc hf1)
     contrapose h1
     simp
   intro c hc
   rw [mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← mul_le_mul_right hr]
-  simpa [dist_eq_norm, norm_smul] using hc
+  simpa [f, dist_eq_norm, norm_smul] using hc
 #align interior_closed_ball interior_closedBall
 
 theorem frontier_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
