@@ -324,6 +324,15 @@ theorem val_image_orbit {p : SubMulAction R M} (m : p) :
 lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
     (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
 -/
+
+theorem val_preimage_orbit {p : SubMulAction R M} (m : p) :
+    Subtype.val ⁻¹' MulAction.orbit R (m : M) = MulAction.orbit R m := by
+  rw [← val_image_orbit, Subtype.val_injective.preimage_image]
+
+lemma mem_orbit_subMul_iff {p : SubMulAction R M} {x m : p} :
+    x ∈ MulAction.orbit R m ↔ (x : M) ∈ MulAction.orbit R (m : M) := by
+  rw [← val_preimage_orbit, Set.mem_preimage]
+
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
     MulAction.stabilizerSubmonoid R m = MulAction.stabilizerSubmonoid R (m : M) := by
@@ -336,6 +345,12 @@ end MulActionMonoid
 section MulActionGroup
 
 variable [Group R] [MulAction R M]
+
+lemma orbitRel_of_subMul (p : SubMulAction R M) :
+    MulAction.orbitRel R p = (MulAction.orbitRel R M).comap Subtype.val := by
+  refine Setoid.ext_iff.2 (fun x y ↦ ?_)
+  rw [Setoid.comap_rel]
+  exact mem_orbit_subMul_iff
 
 /-- Stabilizers in group SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
