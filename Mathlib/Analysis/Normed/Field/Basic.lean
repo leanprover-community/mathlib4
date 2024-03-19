@@ -322,7 +322,7 @@ instance Pi.nonUnitalSeminormedRing {π : ι → Type*} [Fintype ι]
 #align pi.non_unital_semi_normed_ring Pi.nonUnitalSeminormedRing
 
 instance MulOpposite.instNonUnitalSeminormedRing : NonUnitalSeminormedRing αᵐᵒᵖ where
-  toNonUnitalRing := instNonUnitalRing
+  __ := instNonUnitalRing
   __ := instSeminormedAddCommGroup
   norm_mul := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y ↦
     (norm_mul_le y x).trans_eq (mul_comm _ _)
@@ -449,7 +449,7 @@ instance Pi.seminormedRing {π : ι → Type*} [Fintype ι] [∀ i, SeminormedRi
 #align pi.semi_normed_ring Pi.seminormedRing
 
 instance MulOpposite.instSeminormedRing : SeminormedRing αᵐᵒᵖ where
-  toRing := instRing
+  __ := instRing
   __ := instNonUnitalSeminormedRing
 #align mul_opposite.semi_normed_ring MulOpposite.instSeminormedRing
 
@@ -476,7 +476,7 @@ instance Pi.nonUnitalNormedRing {π : ι → Type*} [Fintype ι] [∀ i, NonUnit
 #align pi.non_unital_normed_ring Pi.nonUnitalNormedRing
 
 instance MulOpposite.instNonUnitalNormedRing : NonUnitalNormedRing αᵐᵒᵖ where
-  toNonUnitalRing := instNonUnitalRing
+  __ := instNonUnitalRing
   __ := instNonUnitalSeminormedRing
   __ := instNormedAddCommGroup
 #align mul_opposite.non_unital_normed_ring MulOpposite.instNonUnitalNormedRing
@@ -510,7 +510,7 @@ instance Pi.normedRing {π : ι → Type*} [Fintype ι] [∀ i, NormedRing (π i
 #align pi.normed_ring Pi.normedRing
 
 instance MulOpposite.instNormedRing : NormedRing αᵐᵒᵖ where
-  toRing := instRing
+  __ := instRing
   __ := instSeminormedRing
   __ := instNormedAddCommGroup
 #align mul_opposite.normed_ring MulOpposite.instNormedRing
@@ -537,7 +537,7 @@ instance Pi.nonUnitalSeminormedCommRing {π : ι → Type*} [Fintype ι]
   { Pi.nonUnitalSeminormedRing, Pi.nonUnitalCommRing with }
 
 instance MulOpposite.instNonUnitalSeminormedCommRing : NonUnitalSeminormedCommRing αᵐᵒᵖ where
-  toNonUnitalSeminormedRing := instNonUnitalSeminormedRing
+  __ := instNonUnitalSeminormedRing
   __ := instNonUnitalCommRing
 
 end NonUnitalSeminormedCommRing
@@ -576,7 +576,7 @@ instance Pi.nonUnitalNormedCommRing {π : ι → Type*} [Fintype ι]
   { Pi.nonUnitalSeminormedCommRing, Pi.normedAddCommGroup with }
 
 instance MulOpposite.instNonUnitalNormedCommRing : NonUnitalNormedCommRing αᵐᵒᵖ where
-  toNonUnitalNormedRing := instNonUnitalNormedRing
+  __ := instNonUnitalNormedRing
   __ := instNonUnitalSeminormedCommRing
 
 end NonUnitalNormedCommRing
@@ -600,7 +600,7 @@ instance Pi.seminormedCommRing {π : ι → Type*} [Fintype ι] [∀ i, Seminorm
   { Pi.nonUnitalSeminormedCommRing, Pi.ring with }
 
 instance MulOpposite.instSeminormedCommRing : SeminormedCommRing αᵐᵒᵖ where
-  toSeminormedRing := instSeminormedRing
+  __ := instSeminormedRing
   __ := instNonUnitalSeminormedCommRing
 
 end SeminormedCommRing
@@ -636,7 +636,7 @@ instance Pi.normedCommutativeRing {π : ι → Type*} [Fintype ι] [∀ i, Norme
   { Pi.seminormedCommRing, Pi.normedAddCommGroup with }
 
 instance MulOpposite.instNormedCommRing : NormedCommRing αᵐᵒᵖ where
-  toNormedRing := instNormedRing
+  __ := instNormedRing
   __ := instSeminormedCommRing
 
 end NormedCommRing

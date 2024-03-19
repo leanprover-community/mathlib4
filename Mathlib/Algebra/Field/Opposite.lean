@@ -57,22 +57,22 @@ end MulOpposite
 namespace AddOpposite
 
 instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ where
-  toSemiring := instSemiring
+  __ := instSemiring
   __ := instGroupWithZero
 
 instance instDivisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ where
-  toRing := instRing
+  __ := instRing
   __ := instDivisionSemiring
   ratCast_mk a b hb h := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv,
     unop_natCast, unop_intCast, div_eq_mul_inv]
-  qsmul := qsmulRec _
+  qsmul := _
 
 instance instSemifield [Semifield α] : Semifield αᵃᵒᵖ where
-  toCommSemiring := instCommSemiring
+  __ := instCommSemiring
   __ := instDivisionSemiring
 
 instance instField [Field α] : Field αᵃᵒᵖ where
-  toCommRing := instCommRing
+  __ := instCommRing
   __ := instDivisionRing
 
 end AddOpposite

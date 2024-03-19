@@ -2736,7 +2736,7 @@ We could repeat this instance to provide a `[SeminormedGroup E] : SeminormedGrou
 but that case would likely never be used.
 -/
 instance instSeminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ where
-  toPseudoMetricSpace := instPseudoMetricSpace
+  __ := instPseudoMetricSpace
   norm x := ‖x.unop‖
   dist_eq _ _ := dist_eq_norm _ _
 
@@ -2757,7 +2757,7 @@ theorem nnnorm_unop [SeminormedAddGroup E] (a : Eᵐᵒᵖ) : ‖MulOpposite.uno
 #align mul_opposite.nnnorm_unop MulOpposite.nnnorm_unop
 
 instance instNormedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ where
-  toMetricSpace := instMetricSpace
+  __ := instMetricSpace
   __ := instSeminormedAddGroup
 
 instance instSeminormedAddCommGroup [SeminormedAddCommGroup E] : SeminormedAddCommGroup Eᵐᵒᵖ where

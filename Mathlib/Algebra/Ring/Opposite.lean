@@ -17,80 +17,76 @@ variable {α : Type*}
 namespace MulOpposite
 
 instance instDistrib [Distrib α] : Distrib αᵐᵒᵖ where
-  toAdd := instAdd
-  toMul := instMul
   left_distrib _ _ _ := unop_injective <| add_mul _ _ _
   right_distrib _ _ _ := unop_injective <| mul_add _ _ _
 
 instance instMulZeroClass [MulZeroClass α] : MulZeroClass αᵐᵒᵖ where
-  toZero := instZero
-  toMul := instMul
   zero_mul _ := unop_injective <| mul_zero _
   mul_zero _ := unop_injective <| zero_mul _
 
 instance instMulZeroOneClass [MulZeroOneClass α] : MulZeroOneClass αᵐᵒᵖ where
-  toMulOneClass := instMulOneClass
+  __ := instMulOneClass
   __ := instMulZeroClass
 
 instance instSemigroupWithZero [SemigroupWithZero α] : SemigroupWithZero αᵐᵒᵖ where
-  toSemigroup := instSemigroup
+  __ := instSemigroup
   __ := instMulZeroClass
 
 instance instMonoidWithZero [MonoidWithZero α] : MonoidWithZero αᵐᵒᵖ where
-  toMonoid := instMonoid
+  __ := instMonoid
   __ := instMulZeroOneClass
 
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] :
     NonUnitalNonAssocSemiring αᵐᵒᵖ where
-  toAddCommMonoid := instAddCommMonoid
+  __ := instAddCommMonoid
   __ := instDistrib
   __ := instMulZeroClass
 
 instance instNonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring αᵐᵒᵖ where
-  toNonUnitalNonAssocSemiring := instNonUnitalNonAssocSemiring
+  __ := instNonUnitalNonAssocSemiring
   __ := instSemigroupWithZero
 
 instance instNonAssocSemiring [NonAssocSemiring α] : NonAssocSemiring αᵐᵒᵖ where
-  toNonUnitalNonAssocSemiring := instNonUnitalNonAssocSemiring
+  __ := instNonUnitalNonAssocSemiring
   __ := instMulZeroOneClass
   __ := instAddCommMonoidWithOne
 
 instance instSemiring [Semiring α] : Semiring αᵐᵒᵖ where
-  toNonUnitalSemiring := instNonUnitalSemiring
+  __ := instNonUnitalSemiring
   __ := instNonAssocSemiring
   __ := instMonoidWithZero
 
 instance instNonUnitalCommSemiring [NonUnitalCommSemiring α] : NonUnitalCommSemiring αᵐᵒᵖ where
-  toNonUnitalSemiring := instNonUnitalSemiring
+  __ := instNonUnitalSemiring
   __ := instCommSemigroup
 
 instance instCommSemiring [CommSemiring α] : CommSemiring αᵐᵒᵖ where
-  toSemiring := instSemiring
+  __ := instSemiring
   __ := instCommMonoid
 
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing α] : NonUnitalNonAssocRing αᵐᵒᵖ where
-  toAddCommGroup := instAddCommGroup
+  __ := instAddCommGroup
   __ := instNonUnitalNonAssocSemiring
 
 instance instNonUnitalRing [NonUnitalRing α] : NonUnitalRing αᵐᵒᵖ where
-  toNonUnitalNonAssocRing := instNonUnitalNonAssocRing
+  __ := instNonUnitalNonAssocRing
   __ := instNonUnitalSemiring
 
 instance instNonAssocRing [NonAssocRing α] : NonAssocRing αᵐᵒᵖ where
-  toNonUnitalNonAssocRing := instNonUnitalNonAssocRing
+  __ := instNonUnitalNonAssocRing
   __ := instNonAssocSemiring
   __ := instAddCommGroupWithOne
 
 instance instRing [Ring α] : Ring αᵐᵒᵖ where
-  toSemiring := instSemiring
+  __ := instSemiring
   __ := instAddCommGroupWithOne
 
 instance instNonUnitalCommRing [NonUnitalCommRing α] : NonUnitalCommRing αᵐᵒᵖ where
-  toNonUnitalRing := instNonUnitalRing
+  __ := instNonUnitalRing
   __ := instNonUnitalCommSemiring
 
 instance instCommRing [CommRing α] : CommRing αᵐᵒᵖ where
-  toRing := instRing
+  __ := instRing
   __ := instCommMonoid
 
 instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵐᵒᵖ where
@@ -102,9 +98,9 @@ instance instIsDomain [Ring α] [IsDomain α] : IsDomain αᵐᵒᵖ :=
   NoZeroDivisors.to_isDomain _
 
 instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵐᵒᵖ where
-  toMonoidWithZero := instMonoidWithZero
+  __ := instMonoidWithZero
+  __ := instNontrivial
   __ := instDivInvMonoid
-  toNontrivial := instNontrivial
   mul_inv_cancel _ hx := unop_injective <| inv_mul_cancel <| unop_injective.ne hx
   inv_zero := unop_injective inv_zero
 
@@ -113,80 +109,76 @@ end MulOpposite
 namespace AddOpposite
 
 instance instDistrib [Distrib α] : Distrib αᵃᵒᵖ where
-  toAdd := instAdd
-  toMul := instMul
   left_distrib _ _ _ := unop_injective <| mul_add _ _ _
   right_distrib _ _ _ := unop_injective <| add_mul _ _ _
 
 instance instMulZeroClass [MulZeroClass α] : MulZeroClass αᵃᵒᵖ where
-  toZero := instZero
-  toMul := instMul
   zero_mul _ := unop_injective <| zero_mul _
   mul_zero _ := unop_injective <| mul_zero _
 
 instance instMulZeroOneClass [MulZeroOneClass α] : MulZeroOneClass αᵃᵒᵖ where
-  toMulOneClass := instMulOneClass
+  __ := instMulOneClass
   __ := instMulZeroClass
 
 instance instSemigroupWithZero [SemigroupWithZero α] : SemigroupWithZero αᵃᵒᵖ where
-  toSemigroup := instSemigroup
+  __ := instSemigroup
   __ := instMulZeroClass
 
 instance instMonoidWithZero [MonoidWithZero α] : MonoidWithZero αᵃᵒᵖ where
-  toMonoid := instMonoid
+  __ := instMonoid
   __ := instMulZeroOneClass
 
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] :
     NonUnitalNonAssocSemiring αᵃᵒᵖ where
-  toAddCommMonoid := instAddCommMonoid
+  __ := instAddCommMonoid
   __ := instDistrib
   __ := instMulZeroClass
 
 instance instNonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring αᵃᵒᵖ where
-  toNonUnitalNonAssocSemiring := instNonUnitalNonAssocSemiring
+  __ := instNonUnitalNonAssocSemiring
   __ := instSemigroupWithZero
 
 instance instNonAssocSemiring [NonAssocSemiring α] : NonAssocSemiring αᵃᵒᵖ where
-  toNonUnitalNonAssocSemiring := instNonUnitalNonAssocSemiring
+  __ := instNonUnitalNonAssocSemiring
   __ := instMulZeroOneClass
   __ := instAddCommMonoidWithOne
 
 instance instSemiring [Semiring α] : Semiring αᵃᵒᵖ where
-  toNonUnitalSemiring := instNonUnitalSemiring
+  __ := instNonUnitalSemiring
   __ := instNonAssocSemiring
   __ := instMonoidWithZero
 
 instance instNonUnitalCommSemiring [NonUnitalCommSemiring α] : NonUnitalCommSemiring αᵃᵒᵖ where
-  toNonUnitalSemiring := instNonUnitalSemiring
+  __ := instNonUnitalSemiring
   __ := instCommSemigroup
 
 instance instCommSemiring [CommSemiring α] : CommSemiring αᵃᵒᵖ where
-  toSemiring := instSemiring
+  __ := instSemiring
   __ := instCommMonoid
 
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing α] : NonUnitalNonAssocRing αᵃᵒᵖ where
-  toAddCommGroup := instAddCommGroup
+  __ := instAddCommGroup
   __ := instNonUnitalNonAssocSemiring
 
 instance instNonUnitalRing [NonUnitalRing α] : NonUnitalRing αᵃᵒᵖ where
-  toNonUnitalNonAssocRing := instNonUnitalNonAssocRing
+  __ := instNonUnitalNonAssocRing
   __ := instNonUnitalSemiring
 
 instance instNonAssocRing [NonAssocRing α] : NonAssocRing αᵃᵒᵖ where
-  toNonUnitalNonAssocRing := instNonUnitalNonAssocRing
+  __ := instNonUnitalNonAssocRing
   __ := instNonAssocSemiring
   __ := instAddCommGroupWithOne
 
 instance instRing [Ring α] : Ring αᵃᵒᵖ where
-  toSemiring := instSemiring
+  __ := instSemiring
   __ := instAddCommGroupWithOne
 
 instance instNonUnitalCommRing [NonUnitalCommRing α] : NonUnitalCommRing αᵃᵒᵖ where
-  toNonUnitalRing := instNonUnitalRing
+  __ := instNonUnitalRing
   __ := instNonUnitalCommSemiring
 
 instance instCommRing [CommRing α] : CommRing αᵃᵒᵖ where
-  toRing := instRing
+  __ := instRing
   __ := instCommMonoid
 
 instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵃᵒᵖ where
@@ -198,9 +190,9 @@ instance instIsDomain [Ring α] [IsDomain α] : IsDomain αᵃᵒᵖ :=
   NoZeroDivisors.to_isDomain _
 
 instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵃᵒᵖ where
-  toMonoidWithZero := instMonoidWithZero
+  __ := instMonoidWithZero
+  __ := instNontrivial
   __ := instDivInvMonoid
-  toNontrivial := instNontrivial
   mul_inv_cancel _ hx := unop_injective <| mul_inv_cancel <| unop_injective.ne hx
   inv_zero := unop_injective inv_zero
 

@@ -202,7 +202,6 @@ instance instSub [Sub α] : Sub αᵐᵒᵖ where sub x y := op (unop x - unop y
 instance instNeg [Neg α] : Neg αᵐᵒᵖ where neg x := op <| -unop x
 
 instance instInvolutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ where
-  toNeg := instNeg
   neg_neg _ := unop_injective <| neg_neg _
 
 @[to_additive] instance instMul [Mul α] : Mul αᵐᵒᵖ where mul x y := op (unop y * unop x)
@@ -210,7 +209,6 @@ instance instInvolutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ where
 
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ where
-  toInv := instInv
   inv_inv _ := unop_injective <| inv_inv _
 
 @[to_additive] instance instSMul [SMul α β] : SMul α βᵐᵒᵖ where smul c x := op (c • unop x)
@@ -336,7 +334,6 @@ instance instMul [Mul α] : Mul αᵃᵒᵖ where mul a b := op (unop a * unop b
 instance instInv [Inv α] : Inv αᵃᵒᵖ where inv a := op (unop a)⁻¹
 
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv αᵃᵒᵖ where
-  toInv := instInv
   inv_inv _ := unop_injective <| inv_inv _
 
 @[simp] lemma op_inv [Inv α] (a : α) : op a⁻¹ = (op a)⁻¹ := rfl

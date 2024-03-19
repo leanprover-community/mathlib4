@@ -131,7 +131,6 @@ instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, Sem
 #align pi.normed_space Pi.normedSpace
 
 instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
-  toModule := instModule _
   norm_smul_le _ x := norm_smul_le _ x.unop
 #align mul_opposite.normed_space MulOpposite.instNormedSpace
 
@@ -377,7 +376,7 @@ variable [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
 instance MulOpposite.instNormedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
     NormedAlgebra 𝕜 Eᵐᵒᵖ where
-  toAlgebra := instAlgebra
+  __ := instAlgebra
   __ := instNormedSpace
 #align mul_opposite.normed_algebra MulOpposite.instNormedAlgebra
 
