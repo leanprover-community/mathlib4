@@ -100,7 +100,7 @@ lemma invOneSub_pow_eq_invOneSubPow' (d : ℕ) :
       rw [show Nat.succ d = d + 1 by rfl, PowerSeries.ext_iff]
       exact λ n ↦ by
         rw [hd, coeff_mul]; simp only [coeff_mk, one_mul]; rw [Nat.succ_add,
-        Nat.choose_succ_succ, ←Finset.sum_antidiagonal_choose_add]; exact (Nat.cast_sum
+        Nat.choose_succ_succ, ← Finset.sum_antidiagonal_choose_add]; exact (Nat.cast_sum
         (Finset.antidiagonal n) fun x ↦ Nat.choose (d + x.2) d).symm
   exact Units.eq_iff.mp this
 
