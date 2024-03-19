@@ -28,7 +28,7 @@ for the Bochner integral.
 
 -/
 
-open MeasureTheory
+open MeasureTheory Metric
 
 /-!
 ## The Lebesgue dominated convergence theorem for the Bochner integral
@@ -518,10 +518,6 @@ nonrec theorem _root_.MeasureTheory.Integrable.continuous_primitive (h_int : Int
 #align measure_theory.integrable.continuous_primitive MeasureTheory.Integrable.continuous_primitive
 
 variable [IsLocallyFiniteMeasure μ] {f : X → ℝ → E}
-
-open Metric
-
-lemma uIoc_subset_uIcc_self (a b : ℝ) : uIoc a b ⊆ uIcc a b := Ioc_subset_Icc_self
 
 theorem continuous_parametric_primitive_of_continuous
     {a₀ : ℝ} (hf : Continuous f.uncurry) :
