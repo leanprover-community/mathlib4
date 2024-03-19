@@ -471,20 +471,103 @@ theorem SGR_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' >
       rw [cs.isCoxeter.symmetric.apply i i']
       ring_nf
 
-
 theorem SGR_alternatingWord_apply_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' = 0) :
     cs.SGR (π (alternatingWord i i' m)) (α i) = if Even m
-      then (m + 1) • (α i) + m • (α i')
-      else m • (α i) + (m + 1) • (α i') := by
-  sorry
+      then (m + 1 : ℝ) • (α i) + (m : ℝ) • (α i')
+      else (m : ℝ) • (α i) + (m + 1 : ℝ) • (α i') := by
+  have h₁ : (σ i') (α i) = α i + (2 : ℝ) • α i' := by
+    rw [Matrix.simpleOrthoReflection_simpleRoot, cs.isCoxeter.symmetric.apply i i', hM]
+    simp
+  have h₂ : (σ i) (α i') = (2 : ℝ) • α i + α i' := by
+    rw [Matrix.simpleOrthoReflection_simpleRoot, hM]
+    simp only [Nat.cast_zero, div_zero, cos_zero, mul_one]
+    abel
+
+  induction' m with m ih
+  · simp [alternatingWord]
+  · rw [alternatingWord_succ', wordProd_cons, map_mul, mul_apply, ih]
+    have := @Nat.even_add_one m
+    rcases em (Even m) with even | not_even
+    · have succ_not_even : ¬ Even (Nat.succ m) := by tauto
+      simp only [if_pos even, if_neg succ_not_even]
+      simp only [SGR_simple, map_add, map_smul, h₁, Matrix.simpleOrthoReflection_simpleRoot_self]
+      rw [Nat.cast_succ, smul_add, smul_smul, smul_neg, ← neg_smul, add_assoc, ← add_smul]
+      congr 2
+      ring
+    · have succ_even : Even (Nat.succ m) := by tauto
+      simp only [if_neg not_even, if_pos succ_even]
+      simp only [SGR_simple, map_add, map_smul, h₂, Matrix.simpleOrthoReflection_simpleRoot_self]
+      rw [Nat.cast_succ, smul_add, smul_smul, smul_neg, ← neg_smul, ← add_assoc, ← add_smul]
+      congr 2
+      ring
 
 theorem SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul
     (i i' : B) (m : ℕ) (hm : m < M i i' ∨ M i i' = 0) :
     ∃ (μ μ' : ℝ), μ ≥ 0 ∧ μ' ≥ 0 ∧
       cs.SGR (π (alternatingWord i i' m)) (α i) = μ • (α i) + μ' • (α i') := by
-  sorry
+  rcases hm with m_lt | M_eq_zero
+  · rcases le_or_gt (M i i') 1 with M_le_one | M_gt_one
+    · rw [(by linarith : m = 0), alternatingWord]
+      use 1, 0
+      simp
+    · let μ₁ := sin (m * π / M i i') / sin (π / M i i')
+      let μ₂ := sin ((m + 1) * π / M i i') / sin (π / M i i')
 
--- TODO: The order of s_i s_i' is actually M_{i, i'}
+      have h₁ : π / M i i' ≤ π := by
+        apply div_le_of_nonneg_of_le_mul
+        · linarith
+        · exact pi_nonneg
+        · apply (le_mul_iff_one_le_right pi_pos).mpr
+          rw [Nat.one_le_cast]
+          linarith
+
+      have h₂ : m * π / M i i' ≤ π := by
+        apply div_le_of_nonneg_of_le_mul
+        · linarith
+        · exact pi_nonneg
+        · rw [mul_comm]
+          exact mul_le_mul_of_nonneg_left (Nat.cast_le.mpr (Nat.le_of_lt m_lt)) pi_nonneg
+
+      have h₃ : (m + 1) * π / M i i' ≤ π := by
+        apply div_le_of_nonneg_of_le_mul
+        · linarith
+        · exact pi_nonneg
+        · rw [mul_comm]
+          apply mul_le_mul_of_nonneg_left _ pi_nonneg
+          rw [← Nat.cast_succ]
+          exact Nat.cast_le.mpr (Nat.succ_le_of_lt m_lt)
+
+      have μ₁_nonneg : 0 ≤ μ₁ := by
+        apply div_nonneg
+        · apply sin_nonneg_of_nonneg_of_le_pi
+          · positivity
+          · exact h₂
+        · apply sin_nonneg_of_nonneg_of_le_pi
+          · positivity
+          · exact h₁
+
+      have μ₂_nonneg : 0 ≤ μ₂ := by
+        apply div_nonneg
+        · apply sin_nonneg_of_nonneg_of_le_pi
+          · positivity
+          · exact h₃
+        · apply sin_nonneg_of_nonneg_of_le_pi
+          · positivity
+          · exact h₁
+
+      rw [cs.SGR_alternatingWord_apply_simpleRoot i i' m M_gt_one]
+      rcases em (Even m) with even | not_even
+      · rw [if_pos even]
+        use μ₂, μ₁, μ₂_nonneg, μ₁_nonneg
+      · rw [if_neg not_even]
+        use μ₁, μ₂, μ₁_nonneg, μ₂_nonneg
+  · rw [cs.SGR_alternatingWord_apply_simpleRoot' i i' m M_eq_zero]
+    rcases em (Even m) with even | not_even
+    · rw [if_pos even]
+      use m + 1, m, (by linarith), (by linarith)
+    · rw [if_neg not_even]
+      use m, m + 1, (by linarith), (by linarith)
+
 
 /-- The proposition that all the coordinates of `v` in the basis of simple roots are nonnegative. -/
 def IsPositive (v : V) := ∀ i : B, v i ≥ 0
