@@ -1608,7 +1608,7 @@ theorem isClosedMap_sigmaMk {i : ι} : IsClosedMap (@Sigma.mk ι σ i) := by
 #align is_closed_map_sigma_mk isClosedMap_sigmaMk
 
 theorem isClosed_range_sigmaMk {i : ι} : IsClosed (Set.range (@Sigma.mk ι σ i)) :=
-  isClosedMap_sigmaMk.closed_range
+  isClosedMap_sigmaMk.isClosed_range
 #align is_closed_range_sigma_mk isClosed_range_sigmaMk
 
 theorem openEmbedding_sigmaMk {i : ι} : OpenEmbedding (@Sigma.mk ι σ i) :=
