@@ -949,7 +949,7 @@ theorem isOpen_sum_iff {s : Set (X ⊕ Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) 
   Iff.rfl
 #align is_open_sum_iff isOpen_sum_iff
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem isClosed_sum_iff {s : Set (X ⊕ Y)} :
     IsClosed s ↔ IsClosed (inl ⁻¹' s) ∧ IsClosed (inr ⁻¹' s) := by
   simp only [← isOpen_compl_iff, isOpen_sum_iff, preimage_compl]
@@ -1209,12 +1209,19 @@ theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X
   (embedding_inclusion ts).discreteTopology
 #align discrete_topology.of_subset DiscreteTopology.of_subset
 
+/-- Let `s` be a discrete subset of a topological space. Then the preimage of `s` by
+a continuous injective map is also discrete. -/
+theorem DiscreteTopology.preimage_of_continuous_injective {X Y : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] (s : Set Y) [DiscreteTopology s] {f : X → Y} (hc : Continuous f)
+    (hinj : Function.Injective f) : DiscreteTopology (f ⁻¹' s) :=
+  DiscreteTopology.of_continuous_injective (β := s) (Continuous.restrict
+    (by exact fun _ x ↦ x) hc) ((Set.MapsTo.restrict_inj _).mpr <| Set.injOn_of_injective hinj _)
+
 end Subtype
 
 section Quotient
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
 variable {r : X → X → Prop} {s : Setoid X}
 
 theorem quotientMap_quot_mk : QuotientMap (@Quot.mk X r) :=

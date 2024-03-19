@@ -15,7 +15,6 @@ We define the following classes of topological spaces:
 open Set Filter Topology TopologicalSpace Classical
 
 variable {X : Type*} {Y : Type*} {ι : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 

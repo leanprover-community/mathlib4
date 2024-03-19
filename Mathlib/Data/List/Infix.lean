@@ -201,7 +201,7 @@ theorem prefix_iff_eq_append : l₁ <+: l₂ ↔ l₁ ++ drop (length l₁) l₂
 #align list.prefix_iff_eq_append List.prefix_iff_eq_append
 
 theorem suffix_iff_eq_append : l₁ <:+ l₂ ↔ take (length l₂ - length l₁) l₂ ++ l₁ = l₂ :=
-  ⟨by rintro ⟨r, rfl⟩; simp only [length_append, add_tsub_cancel_right, take_left], fun e =>
+  ⟨by rintro ⟨r, rfl⟩; simp only [length_append, Nat.add_sub_cancel_right, take_left], fun e =>
     ⟨_, e⟩⟩
 #align list.suffix_iff_eq_append List.suffix_iff_eq_append
 
@@ -251,7 +251,7 @@ theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
   | zero => simp [min_eq_left, eq_self_iff_true, Nat.zero_le, take]
   | succ m IH =>
     cases L with
-    | nil => exact (not_lt_bot hm).elim
+    | nil => simp_all
     | cons l ls =>
       cases n with
       | zero =>

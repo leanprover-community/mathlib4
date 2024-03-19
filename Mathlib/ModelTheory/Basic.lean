@@ -365,7 +365,7 @@ scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L
 -- The former reported an error.
 variable {L M N} {P : Type*} [Structure L P] {Q : Type*} [Structure L Q]
 
--- Porting note: new definition
+-- Porting note (#11445): new definition
 /-- Interpretation of a constant symbol -/
 @[coe]
 def constantMap (c : L.Constants) : M := funMap c default
@@ -412,9 +412,7 @@ set_option linter.uppercaseLean3 false in
 namespace Structure
 
 variable {c f₁ f₂ : Type u} {r₁ r₂ : Type v}
-
 variable {c' : c → M} {f₁' : f₁ → M → M} {f₂' : f₂ → M → M → M}
-
 variable {r₁' : r₁ → Set M} {r₂' : r₂ → M → M → Prop}
 
 @[simp]

@@ -1758,7 +1758,6 @@ theorem tendsto_lift'_closure_nhds (hf : Continuous f) (x : X) :
 section DenseRange
 
 variable {α ι : Type*} (f : α → X) (g : X → Y)
-
 variable {f : α → X} {s : Set X}
 
 /-- A surjective map has dense range. -/

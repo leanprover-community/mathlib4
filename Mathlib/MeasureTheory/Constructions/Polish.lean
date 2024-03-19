@@ -989,7 +989,6 @@ end StandardBorelSpace
 namespace PolishSpace
 
 variable {β : Type*}
-
 variable [MeasurableSpace α] [MeasurableSpace β] [StandardBorelSpace α] [StandardBorelSpace β]
 
 /-- If two standard Borel spaces admit Borel measurable injections to one another,

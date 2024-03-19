@@ -41,7 +41,6 @@ universe u
 namespace CategoryTheory
 
 variable {C D : Type*} [Category C] [Category D]
-
 variable (F : C ⥤ Cat)
 
 /--
