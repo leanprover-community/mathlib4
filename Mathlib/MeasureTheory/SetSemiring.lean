@@ -58,7 +58,7 @@ lemma isPiSystem (hC : IsSetSemiring C) : IsPiSystem C := fun s hs t ht _ ↦ hC
 
 section diffFinset
 
-open Classical in
+open scoped Classical in
 /-- In a semi-ring of sets `C`, for all sets `s, t ∈ C`, `s \ t` is equal to a disjoint union of
 finitely many sets in `C`. The finite set of sets in the union is not unique, but this definition
 gives an arbitrary `Finset (Set α)` that satisfies the equality.
@@ -198,7 +198,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
       simp only [mem_coe]
     · simp only [hi, iUnion_of_empty, iUnion_empty]
 
-open Classical in
+open scoped Classical in
 /-- In a semiring of sets `C`, for all set `s ∈ C` and finite set of sets `I ⊆ C`,
 `diffFinset₀` is a finite set of sets in `C` such that `s \ ⋃₀ I = ⋃₀ (hC.diffFinset₀ hs I hI)`.
 `diffFinset` is a special case of `diffFinset₀` where `I` is a singleton. -/

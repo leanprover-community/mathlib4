@@ -274,7 +274,7 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport (μ' μ : 
   simp only [B, integral_smul_nnreal_measure]
   rfl
 
-open Classical in
+open scoped Classical in
 /-- Given two left-invariant measures which are finite on compacts, `haarScalarFactor μ' μ` is a
 scalar such that `∫ f dμ' = (haarScalarFactor μ' μ) ∫ f dμ` for any compactly supported continuous
 function `f`.

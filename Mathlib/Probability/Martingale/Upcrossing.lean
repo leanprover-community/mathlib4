@@ -152,7 +152,6 @@ noncomputable def lowerCrossingTime [Preorder ι] [OrderBot ι] [InfSet ι] (a b
 section
 
 variable [Preorder ι] [OrderBot ι] [InfSet ι]
-
 variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n m : ℕ} {ω : Ω}
 
 @[simp]
@@ -181,7 +180,6 @@ end
 section ConditionallyCompleteLinearOrderBot
 
 variable [ConditionallyCompleteLinearOrderBot ι]
-
 variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n m : ℕ} {ω : Ω}
 
 theorem upperCrossingTime_le : upperCrossingTime a b f N n ω ≤ N := by
@@ -468,7 +466,7 @@ theorem upcrossingsBefore_zero' : upcrossingsBefore a b f 0 = 0 := by
 theorem upperCrossingTime_lt_of_le_upcrossingsBefore (hN : 0 < N) (hab : a < b)
     (hn : n ≤ upcrossingsBefore a b f N ω) : upperCrossingTime a b f N n ω < N :=
   haveI : upperCrossingTime a b f N (upcrossingsBefore a b f N ω) ω < N :=
-    (upperCrossingTime_lt_nonempty hN).cSup_mem
+    (upperCrossingTime_lt_nonempty hN).csSup_mem
       ((OrderBot.bddBelow _).finite_of_bddAbove (upperCrossingTime_lt_bddAbove hab))
   lt_of_le_of_lt (upperCrossingTime_mono hn) this
 #align measure_theory.upper_crossing_time_lt_of_le_upcrossings_before MeasureTheory.upperCrossingTime_lt_of_le_upcrossingsBefore

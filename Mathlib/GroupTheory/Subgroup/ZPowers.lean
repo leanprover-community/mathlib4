@@ -20,9 +20,7 @@ subgroup, subgroups
 
 
 variable {G : Type*} [Group G]
-
 variable {A : Type*} [AddGroup A]
-
 variable {N : Type*} [Group N]
 
 namespace Subgroup
@@ -74,7 +72,7 @@ theorem exists_zpowers {x : G} {p : zpowers x → Prop} : (∃ g, p g) ↔ ∃ m
 #align subgroup.exists_zpowers Subgroup.exists_zpowers
 
 theorem forall_mem_zpowers {x : G} {p : G → Prop} : (∀ g ∈ zpowers x, p g) ↔ ∀ m : ℤ, p (x ^ m) :=
-  Set.forall_range_iff
+  Set.forall_mem_range
 #align subgroup.forall_mem_zpowers Subgroup.forall_mem_zpowers
 
 theorem exists_mem_zpowers {x : G} {p : G → Prop} : (∃ g ∈ zpowers x, p g) ↔ ∃ m : ℤ, p (x ^ m) :=

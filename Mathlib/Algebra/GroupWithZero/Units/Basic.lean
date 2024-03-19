@@ -20,7 +20,6 @@ We also define `Ring.inverse`, a globally defined function on any ring
 
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
-
 variable [MonoidWithZero M₀]
 
 namespace Units
@@ -78,7 +77,7 @@ theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
 
 namespace Ring
 
-open Classical
+open scoped Classical
 
 /-- Introduce a function `inverse` on a monoid with zero `M₀`, which sends `x` to `x⁻¹` if `x` is
 invertible and to `0` otherwise.  This definition is somewhat ad hoc, but one needs a fully (rather
@@ -173,7 +172,6 @@ theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
 namespace Units
 
 variable [GroupWithZero G₀]
-
 variable {a b : G₀}
 
 /-- Embed a non-zero element of a `GroupWithZero` into the unit group.
@@ -328,7 +326,7 @@ end CommGroupWithZero
 
 section NoncomputableDefs
 
-open Classical
+open scoped Classical
 
 variable {M : Type*} [Nontrivial M]
 

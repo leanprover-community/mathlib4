@@ -417,7 +417,6 @@ end
 
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -1251,9 +1250,7 @@ end Complex
 section
 
 variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
-
 variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-
 variable {E'' : Type*} [NormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
 
 /-- A linear isometry preserves the inner product. -/
@@ -1304,6 +1301,12 @@ theorem LinearEquiv.isometryOfInner_toLinearEquiv (f : E ≃ₗ[𝕜] E') (h) :
     (f.isometryOfInner h).toLinearEquiv = f :=
   rfl
 #align linear_equiv.isometry_of_inner_to_linear_equiv LinearEquiv.isometryOfInner_toLinearEquiv
+
+/-- A linear map is an isometry if and it preserves the inner product. -/
+theorem LinearMap.norm_map_iff_inner_map_map {F : Type*} [FunLike F E E'] [LinearMapClass F 𝕜 E E']
+    (f : F) : (∀ x, ‖f x‖ = ‖x‖) ↔ (∀ x y, ⟪f x, f y⟫_𝕜 = ⟪x, y⟫_𝕜) :=
+  ⟨({ toLinearMap := LinearMapClass.linearMap f, norm_map' := · : E →ₗᵢ[𝕜] E' }.inner_map_map),
+    (LinearMapClass.linearMap f |>.isometryOfInner · |>.norm_map)⟩
 
 /-- A linear isometry preserves the property of being orthonormal. -/
 theorem LinearIsometry.orthonormal_comp_iff {v : ι → E} (f : E →ₗᵢ[𝕜] E') :
@@ -2183,7 +2186,6 @@ end OrthogonalFamily
 section IsROrCToReal
 
 variable {G : Type*}
-
 variable (𝕜 E)
 
 /-- A general inner product implies a real inner product. This is not registered as an instance

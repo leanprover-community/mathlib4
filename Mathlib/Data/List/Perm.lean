@@ -653,7 +653,7 @@ theorem perm_of_mem_permutationsAux :
   rcases m with (m | ⟨l₁, l₂, m, _, rfl⟩)
   · exact (IH1 _ m).trans perm_middle
   · have p : l₁ ++ l₂ ~ is := by
-      simp [permutations] at m
+      simp only [mem_cons] at m
       cases' m with e m
       · simp [e]
       exact is.append_nil ▸ IH2 _ m

@@ -77,7 +77,6 @@ quadratic form, homogeneous polynomial, quadratic polynomial
 universe u v w
 
 variable {S T : Type*}
-
 variable {R : Type*} {M N : Type*}
 
 open BigOperators
@@ -152,7 +151,6 @@ namespace QuadraticForm
 section DFunLike
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable {Q Q' : QuadraticForm R M}
 
 instance instFunLike : FunLike (QuadraticForm R M) M R where
@@ -213,7 +211,6 @@ end DFunLike
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable (Q : QuadraticForm R M)
 
 theorem map_smul (a : R) (x : M) : Q (a • x) = a * a * Q x :=
@@ -256,7 +253,6 @@ end CommSemiring
 section CommRing
 
 variable [CommRing R] [AddCommGroup M]
-
 variable [Module R M] (Q : QuadraticForm R M)
 
 @[simp]
@@ -352,9 +348,9 @@ def ofPolar (toFun : M → R) (toFun_smul : ∀ (a : R) (x : M), toFun (a • x)
   { toFun
     toFun_smul
     exists_companion' := ⟨LinearMap.mk₂ R (polar toFun) (polar_add_left) (polar_smul_left)
-      (fun x _ _ => by simp_rw [polar_comm _ x, polar_add_left])
-      (fun _ _ _ => by rw [polar_comm, polar_smul_left, polar_comm]),
-      fun _ _ =>  by
+      (fun x _ _ ↦ by simp_rw [polar_comm _ x, polar_add_left])
+      (fun _ _ _ ↦ by rw [polar_comm, polar_smul_left, polar_comm]),
+      fun _ _ ↦ by
         simp only [LinearMap.mk₂_apply]
         rw [polar, sub_sub, add_sub_cancel'_right]⟩ }
 #align quadratic_form.of_polar QuadraticForm.ofPolar
@@ -546,7 +542,6 @@ end RingOperators
 section Comp
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable [AddCommMonoid N] [Module R N]
 
 /-- Compose the quadratic form with a linear function. -/
@@ -571,7 +566,7 @@ def _root_.LinearMap.compQuadraticForm [CommSemiring S] [Algebra S R] [Module S 
   toFun_smul b x := by simp only [Q.map_smul_of_tower b x, f.map_smul, smul_eq_mul]
   exists_companion' :=
     let ⟨B, h⟩ := Q.exists_companion
-    ⟨(B.restrictScalars₁₂ S).compr₂ f, fun x y => by
+    ⟨(B.restrictScalars₁₂ S S).compr₂ f, fun x y => by
       simp_rw [h, f.map_add, LinearMap.compr₂_apply, LinearMap.restrictScalars₁₂_apply_apply]⟩
 #align linear_map.comp_quadratic_form LinearMap.compQuadraticForm
 
@@ -754,7 +749,6 @@ section Ring
 open QuadraticForm
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
-
 variable {B : BilinForm R M}
 
 @[simp]
@@ -798,7 +792,7 @@ theorem compQuadraticForm_polar (f : R →ₗ[S] S) (Q : QuadraticForm R M) (x y
 
 theorem compQuadraticForm_polarBilin (f : R →ₗ[S] S) (Q : QuadraticForm R M) :
     (f.compQuadraticForm Q).polarBilin =
-    (Q.polarBilin.restrictScalars₁₂ S).compr₂ f :=
+    (Q.polarBilin.restrictScalars₁₂ S S).compr₂ f :=
   ext₂ <| compQuadraticForm_polar _ _
 
 end Ring
@@ -814,9 +808,7 @@ open LinearMap.BilinForm
 section AssociatedHom
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
-
 variable (S) [CommSemiring S] [Algebra S R]
-
 variable [Invertible (2 : R)] {B₁ : BilinForm R M}
 
 /-- `associatedHom` is the map that sends a quadratic form on a module `M` over `R` to its
@@ -917,7 +909,6 @@ end AssociatedHom
 section Associated
 
 variable [CommSemiring S] [CommRing R] [AddCommGroup M] [Algebra S R] [Module R M]
-
 variable [Invertible (2 : R)]
 
 -- Note:  When possible, rather than writing lemmas about `associated`, write a lemma applying to
@@ -1054,7 +1045,6 @@ end Anisotropic
 section PosDef
 
 variable {R₂ : Type u} [OrderedCommRing R₂] [AddCommMonoid M] [Module R₂ M]
-
 variable {Q₂ : QuadraticForm R₂ M}
 
 /-- A positive definite quadratic form is positive on nonzero vectors. -/
@@ -1113,7 +1103,6 @@ The determinant of the matrix is the discriminant of the quadratic form.
 -/
 
 variable {n : Type w} [Fintype n] [DecidableEq n]
-
 variable [CommRing R] [AddCommMonoid M] [Module R M]
 
 /-- `M.toQuadraticForm'` is the map `fun x ↦ col x * M * row x` as a quadratic form. -/
@@ -1146,9 +1135,7 @@ end
 namespace QuadraticForm
 
 variable {n : Type w} [Fintype n]
-
 variable [CommRing R] [DecidableEq n] [Invertible (2 : R)]
-
 variable {m : Type w} [DecidableEq m] [Fintype m]
 
 open Matrix
@@ -1220,7 +1207,6 @@ theorem exists_bilinForm_self_ne_zero [htwo : Invertible (2 : R)] {B : BilinForm
 open FiniteDimensional
 
 variable {V : Type u} {K : Type v} [Field K] [AddCommGroup V] [Module K V]
-
 variable [FiniteDimensional K V]
 
 /-- Given a symmetric bilinear form `B` on some vector space `V` over a field `K`
@@ -1280,7 +1266,6 @@ namespace QuadraticForm
 open Finset
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable {ι : Type*}
 
 /-- Given a quadratic form `Q` and a basis, `basisRepr` is the basis representation of `Q`. -/

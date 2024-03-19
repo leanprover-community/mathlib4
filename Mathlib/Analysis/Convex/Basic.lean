@@ -101,7 +101,7 @@ theorem convex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s) : Conve
 
 theorem convex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, Convex 𝕜 (s i)) :
     Convex 𝕜 (⋂ i, s i) :=
-  sInter_range s ▸ convex_sInter <| forall_range_iff.2 h
+  sInter_range s ▸ convex_sInter <| forall_mem_range.2 h
 #align convex_Inter convex_iInter
 
 theorem convex_iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set E}
