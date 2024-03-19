@@ -5,7 +5,6 @@ Authors: Moritz Doll, Kalle Kytölä
 -/
 import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Topology.Algebra.Module.WeakDual
 
 #align_import analysis.locally_convex.polar from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
@@ -125,7 +124,7 @@ theorem polar_weak_closed (s : Set E) : IsClosed[WeakBilin.instTopologicalSpace 
     (B.polar s) := by
   rw [polar_eq_iInter]
   refine' isClosed_iInter fun x => isClosed_iInter fun _ => _
-  exact isClosed_le (WeakBilin.eval_continuous B.flip x).norm continuous_const
+  exact isClosed_le (WeakBilin.evalCLM B.flip x).continuous.norm continuous_const
 #align linear_map.polar_weak_closed LinearMap.polar_weak_closed
 
 end NormedRing
