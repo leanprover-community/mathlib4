@@ -27,13 +27,6 @@ We introduce `LSeries.logMul` as an abbreviation for the point-wise product `log
 the problem that this expression does not type-check.
 -/
 
--- Should this go into its own file (because it needs `EReal`s, it doesn't fit well
--- in some existing file), together with versions for the left, upper and lower half-planes?
--- We can also make it private here.
-/-- An open right half-plane is open in the complex plane. -/
-lemma Complex.isOpen_rightHalfPlane (x : EReal) : IsOpen {z : ℂ | x < z.re} :=
-  isOpen_lt continuous_const <| EReal.continuous_coe_iff.mpr continuous_re
-
 open Complex LSeries
 
 /-!
