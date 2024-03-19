@@ -37,7 +37,6 @@ variable [Semiring R] {p q r : R[X]}
 section
 
 variable [Semiring S]
-
 variable (f : R →+* S) (x : S)
 
 /-- Evaluate a polynomial `p` given a ring hom `f` from the scalar ring
@@ -705,7 +704,6 @@ end Comp
 section Map
 
 variable [Semiring S]
-
 variable (f : R →+* S)
 
 /-- `map f p` maps a polynomial `p` across a ring hom `f` -/

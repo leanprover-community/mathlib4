@@ -241,9 +241,7 @@ structure PerfectionMap (p : ℕ) [Fact p.Prime] {R : Type u₁} [CommSemiring R
 namespace PerfectionMap
 
 variable {p : ℕ} [Fact p.Prime]
-
 variable {R : Type u₁} [CommSemiring R] [CharP R p]
-
 variable {P : Type u₃} [CommSemiring P] [CharP P p] [PerfectRing P p]
 
 /-- Create a `PerfectionMap` from an isomorphism to the perfection. -/
@@ -340,9 +338,7 @@ theorem hom_ext [PerfectRing R p] {S : Type u₂} [CommSemiring S] [CharP S p] {
 #align perfection_map.hom_ext PerfectionMap.hom_ext
 
 variable {P} (p)
-
 variable {S : Type u₂} [CommSemiring S] [CharP S p]
-
 variable {Q : Type u₄} [CommSemiring Q] [CharP Q p] [PerfectRing Q p]
 
 /-- A ring homomorphism `R →+* S` induces `P →+* Q`, a map of the respective perfections. -/
@@ -371,9 +367,7 @@ end PerfectionMap
 section Perfectoid
 
 variable (K : Type u₁) [Field K] (v : Valuation K ℝ≥0)
-
 variable (O : Type u₂) [CommRing O] [Algebra O K] (hv : v.Integers O)
-
 variable (p : ℕ)
 
 -- Porting note: Specified all arguments explicitly

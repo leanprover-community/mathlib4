@@ -645,7 +645,6 @@ instance : HasPushouts.{u} (Type u) :=
   hasPushouts_of_hasWidePushouts.{u} (Type u)
 
 variable {W X Y Z : Type u}
-
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
 -- porting note (#10927): removed @[nolint has_nonempty_instance]
