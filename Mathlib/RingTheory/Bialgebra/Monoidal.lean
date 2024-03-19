@@ -57,10 +57,15 @@ variable (R B C)
 
 lemma ffs3 (x) :
   Coalgebra.TensorProduct.assoc R A B C x = Algebra.TensorProduct.assoc R A B C x := rfl
---set_option trace.profiler true
+
+set_option trace.profiler true
 noncomputable def TensorProduct.assoc :
     (A ⊗[R] B) ⊗[R] C ≃b[R] A ⊗[R] (B ⊗[R] C) :=
-  { Coalgebra.TensorProduct.assoc R A B C with
+  { toCoalgEquiv := Coalgebra.TensorProduct.assoc R A B C
+    map_mul' := map_mul (Algebra.TensorProduct.assoc R A B C)
+    commutes' := (Algebra.TensorProduct.assoc R A B C).toAlgHom.commutes
+
+    --Coalgebra.TensorProduct.assoc R A B C, (Algebra.TensorProduct.assoc R A B C) with
     --map_mul' := fun x y => by
 
     --by simp only [ffs3, map_mul]-- map_mul (Algebra.TensorProduct.assoc R A B C)

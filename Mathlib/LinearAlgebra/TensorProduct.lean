@@ -333,15 +333,18 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
     rw [ihx, ihy, add_add_add_comm]
 #align tensor_product.add_smul TensorProduct.add_smul
 
+instance addMonoid : AddMonoid (M ⊗[R] N) :=
+{ TensorProduct.addZeroClass _ _ with
+  toAddSemigroup := TensorProduct.addSemigroup _ _
+  toZero := (TensorProduct.addZeroClass _ _).toZero
+  nsmul := fun n v => n • v
+  nsmul_zero := by simp [TensorProduct.zero_smul]
+  nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
+    forall_const] }
+
 instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
-  { TensorProduct.addCommSemigroup _ _,
-    TensorProduct.addZeroClass _ _ with
-    toAddSemigroup := TensorProduct.addSemigroup _ _
-    toZero := (TensorProduct.addZeroClass _ _).toZero
-    nsmul := fun n v => n • v
-    nsmul_zero := by simp [TensorProduct.zero_smul]
-    nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
-      forall_const] }
+  { TensorProduct.addCommSemigroup _ _ with
+    toAddMonoid := TensorProduct.addMonoid }
 
 instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
   have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
