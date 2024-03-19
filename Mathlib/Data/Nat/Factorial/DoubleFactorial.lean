@@ -35,7 +35,7 @@ def doubleFactorial : ℕ → ℕ
 #align nat.double_factorial Nat.doubleFactorial
 
 -- This notation is `\!!` not two !'s
-scoped notation:10000 n "‼" => Nat.doubleFactorial n
+@[inherit_doc] scoped notation:10000 n "‼" => Nat.doubleFactorial n
 
 lemma doubleFactorial_pos : ∀ n, 0 < n‼
   | 0 | 1 => zero_lt_one
@@ -95,13 +95,11 @@ open Lean Meta Qq
 /-- Extension for `Nat.doubleFactorial`. -/
 @[positivity Nat.doubleFactorial _]
 def evalDoubleFactorial : PositivityExt where eval {u α} _ _ e := do
-  if let 0 := u then -- lean4#3060 means we can't combine this with the match below
-    match α, e with
-    | ~q(ℕ), ~q(Nat.doubleFactorial $n) =>
-      assumeInstancesCommute
-      return .positive q(Nat.doubleFactorial_pos $n)
-    | _, _ => throwError "not Nat.doubleFactorial"
-  else throwError "not Nat.doubleFactorial"
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.doubleFactorial $n) =>
+    assumeInstancesCommute
+    return .positive q(Nat.doubleFactorial_pos $n)
+  | _, _ => throwError "not Nat.doubleFactorial"
 
 example (n : ℕ) : 0 < n‼ := by positivity
 

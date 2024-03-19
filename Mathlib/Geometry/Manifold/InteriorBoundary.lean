@@ -39,6 +39,7 @@ this requires a definition of submanifolds
 -/
 
 open Set
+open scoped Topology
 
 -- Let `M` be a manifold with corners over the pair `(E, H)`.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -97,7 +98,7 @@ lemma boundary_eq_complement_interior : I.boundary M = (I.interior M)ᶜ := by
 
 variable {I} in
 lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
-    range I ∈ nhds (extChartAt I x x) := by
+    range I ∈ 𝓝 (extChartAt I x x) := by
   rw [mem_nhds_iff]
   exact ⟨interior (range I), interior_subset, isOpen_interior, h⟩
 

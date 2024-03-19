@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Loreaux
 -/
 
-import Lean
+import Lean.Elab.Tactic.Location
 import Mathlib.Logic.Basic
 import Mathlib.Init.Order.Defs
 import Mathlib.Tactic.Conv
 import Mathlib.Init.Set
+import Lean.Elab.Tactic.Location
 
 set_option autoImplicit true
 
@@ -69,7 +70,7 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
       return some <| mkSimpStep rhs thm
     catch _ => return none
   let e_whnf ← whnfR e
-  let some ex := e_whnf.not? | return Simp.Step.visit { expr := e }
+  let some ex := e_whnf.not? | return Simp.Step.continue
   let ex := (← instantiateMVars ex).cleanupAnnotations
   match ex.getAppFnArgs with
   | (``Not, #[e]) =>
@@ -126,12 +127,12 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
 /-- Recursively push negations at the top level of the current expression. This is needed
 to handle e.g. triple negation. -/
 partial def transformNegation (e : Expr) : SimpM Simp.Step := do
-  let Simp.Step.visit r₁ ← transformNegationStep e | return Simp.Step.visit { expr := e }
+  let Simp.Step.visit r₁ ← transformNegationStep e | return Simp.Step.continue
   match r₁.proof? with
-  | none => return Simp.Step.visit r₁
+  | none => return Simp.Step.continue r₁
   | some _ => do
       let Simp.Step.visit r₂ ← transformNegation r₁.expr | return Simp.Step.visit r₁
-      return Simp.Step.visit (← Simp.mkEqTrans r₁ r₂)
+      return Simp.Step.visit (← r₁.mkEqTrans r₂)
 
 /-- Common entry point to `push_neg` as a conv. -/
 def pushNegCore (tgt : Expr) : MetaM Simp.Result := do

@@ -40,8 +40,7 @@ theorem cast_div_div_div_cancel_right [DivisionSemiring α] [CharZero α] {m n d
     (hn : d ∣ n) (hm : d ∣ m) :
     (↑(m / d) : α) / (↑(n / d) : α) = (m : α) / n := by
   rcases eq_or_ne d 0 with (rfl | hd); · simp [zero_dvd_iff.mp hm]
-  replace hd : (d : α) ≠ 0;
-  · norm_cast
+  replace hd : (d : α) ≠ 0 := by norm_cast
   rw [cast_div hm, cast_div hn, div_div_div_cancel_right _ hd] <;> exact hd
 #align nat.cast_div_div_div_cancel_right Nat.cast_div_div_div_cancel_right
 

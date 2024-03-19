@@ -20,11 +20,13 @@ We also prove basic properties of these functions.
 
 noncomputable section
 
-open Classical Real NNReal ENNReal BigOperators ComplexConjugate
+open scoped Classical
+open Real NNReal ENNReal BigOperators ComplexConjugate
 
-open Finset Set
+open Finset Function Set
 
 namespace NNReal
+variable {w x y z : ℝ}
 
 /-- The nonnegative real power function `x^y`, defined for `x : ℝ≥0` and `y : ℝ` as the
 restriction of the real power function. For `x > 0`, it is equal to `exp (y log x)`. For `x = 0`,
@@ -53,7 +55,7 @@ theorem rpow_zero (x : ℝ≥0) : x ^ (0 : ℝ) = 1 :=
 
 @[simp]
 theorem rpow_eq_zero_iff {x : ℝ≥0} {y : ℝ} : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
-  rw [← NNReal.coe_eq, coe_rpow, ← NNReal.coe_eq_zero]
+  rw [← NNReal.coe_inj, coe_rpow, ← NNReal.coe_eq_zero]
   exact Real.rpow_eq_zero_iff_of_nonneg x.2
 #align nnreal.rpow_eq_zero_iff NNReal.rpow_eq_zero_iff
 
@@ -79,6 +81,10 @@ theorem rpow_add {x : ℝ≥0} (hx : x ≠ 0) (y z : ℝ) : x ^ (y + z) = x ^ y 
 theorem rpow_add' (x : ℝ≥0) {y z : ℝ} (h : y + z ≠ 0) : x ^ (y + z) = x ^ y * x ^ z :=
   NNReal.eq <| Real.rpow_add' x.2 h
 #align nnreal.rpow_add' NNReal.rpow_add'
+
+/-- Variant of `NNReal.rpow_add'` that avoids having to prove `y + z = w` twice. -/
+lemma rpow_of_add_eq (x : ℝ≥0) (hw : w ≠ 0) (h : y + z = w) : x ^ w = x ^ y * x ^ z := by
+  rw [← h, rpow_add']; rwa [h]
 
 theorem rpow_mul (x : ℝ≥0) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ z :=
   NNReal.eq <| Real.rpow_mul x.2 y z
@@ -320,13 +326,19 @@ theorem rpow_one_div_eq_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x ^ (1 / 
   rw [← rpow_eq_rpow_iff hz, rpow_self_rpow_inv hz]
 #align nnreal.rpow_one_div_eq_iff NNReal.rpow_one_div_eq_iff
 
+@[simp] lemma rpow_rpow_inv {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0) : (x ^ y) ^ y⁻¹ = x := by
+  rw [← rpow_mul, mul_inv_cancel hy, rpow_one]
+
+@[simp] lemma rpow_inv_rpow {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0) : (x ^ y⁻¹) ^ y = x := by
+  rw [← rpow_mul, inv_mul_cancel hy, rpow_one]
+
 theorem pow_rpow_inv_natCast (x : ℝ≥0) {n : ℕ} (hn : n ≠ 0) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
-  rw [← NNReal.coe_eq, coe_rpow, NNReal.coe_pow]
+  rw [← NNReal.coe_inj, coe_rpow, NNReal.coe_pow]
   exact Real.pow_rpow_inv_natCast x.2 hn
 #align nnreal.pow_nat_rpow_nat_inv NNReal.pow_rpow_inv_natCast
 
 theorem rpow_inv_natCast_pow (x : ℝ≥0) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℝ)) ^ n = x := by
-  rw [← NNReal.coe_eq, NNReal.coe_pow, coe_rpow]
+  rw [← NNReal.coe_inj, NNReal.coe_pow, coe_rpow]
   exact Real.rpow_inv_natCast_pow x.2 hn
 #align nnreal.rpow_nat_inv_pow_nat NNReal.rpow_inv_natCast_pow
 
@@ -472,6 +484,9 @@ theorem rpow_eq_zero_iff {x : ℝ≥0∞} {y : ℝ} : x ^ y = 0 ↔ x = 0 ∧ 0 
     · simp [coe_rpow_of_ne_zero h, h]
 #align ennreal.rpow_eq_zero_iff ENNReal.rpow_eq_zero_iff
 
+lemma rpow_eq_zero_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y = 0 ↔ x = 0 := by
+  simp [hy, hy.not_lt]
+
 @[simp]
 theorem rpow_eq_top_iff {x : ℝ≥0∞} {y : ℝ} : x ^ y = ⊤ ↔ x = 0 ∧ y < 0 ∨ x = ⊤ ∧ 0 < y := by
   cases' x with x
@@ -558,6 +573,11 @@ theorem rpow_nat_cast (x : ℝ≥0∞) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by
 lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
     x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n) :=
   rpow_nat_cast x n
+
+@[simp, norm_cast]
+lemma rpow_int_cast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
+  cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_ofNat, rpow_nat_cast, zpow_coe_nat,
+    Int.cast_negSucc, rpow_neg, zpow_negSucc]
 
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 #align ennreal.rpow_two ENNReal.rpow_two
@@ -842,7 +862,7 @@ theorem toReal_rpow (x : ℝ≥0∞) (z : ℝ) : x.toReal ^ z = (x ^ z).toReal :
 theorem ofReal_rpow_of_pos {x p : ℝ} (hx_pos : 0 < x) :
     ENNReal.ofReal x ^ p = ENNReal.ofReal (x ^ p) := by
   simp_rw [ENNReal.ofReal]
-  rw [coe_rpow_of_ne_zero, coe_eq_coe, Real.toNNReal_rpow_of_nonneg hx_pos.le]
+  rw [coe_rpow_of_ne_zero, coe_inj, Real.toNNReal_rpow_of_nonneg hx_pos.le]
   simp [hx_pos]
 #align ennreal.of_real_rpow_of_pos ENNReal.ofReal_rpow_of_pos
 
@@ -858,14 +878,36 @@ theorem ofReal_rpow_of_nonneg {x p : ℝ} (hx_nonneg : 0 ≤ x) (hp_nonneg : 0 �
   exact ofReal_rpow_of_pos (hx_nonneg.lt_of_ne hx0.symm)
 #align ennreal.of_real_rpow_of_nonneg ENNReal.ofReal_rpow_of_nonneg
 
-theorem rpow_left_injective {x : ℝ} (hx : x ≠ 0) : Function.Injective fun y : ℝ≥0∞ => y ^ x := by
-  intro y z hyz
-  dsimp only at hyz
-  rw [← rpow_one y, ← rpow_one z, ← _root_.mul_inv_cancel hx, rpow_mul, rpow_mul, hyz]
+@[simp] lemma rpow_rpow_inv {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0∞) : (x ^ y) ^ y⁻¹ = x := by
+  rw [← rpow_mul, mul_inv_cancel hy, rpow_one]
+
+@[simp] lemma rpow_inv_rpow {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0∞) : (x ^ y⁻¹) ^ y = x := by
+  rw [← rpow_mul, inv_mul_cancel hy, rpow_one]
+
+lemma pow_rpow_inv_natCast {n : ℕ} (hn : n ≠ 0) (x : ℝ≥0∞) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
+  rw [← rpow_nat_cast, ← rpow_mul, mul_inv_cancel (by positivity), rpow_one]
+
+lemma rpow_inv_natCast_pow {n : ℕ} (hn : n ≠ 0) (x : ℝ≥0∞) : (x ^ (n⁻¹ : ℝ)) ^ n = x := by
+  rw [← rpow_nat_cast, ← rpow_mul, inv_mul_cancel (by positivity), rpow_one]
+
+lemma rpow_natCast_mul (x : ℝ≥0∞) (n : ℕ) (z : ℝ) : x ^ (n * z) = (x ^ n) ^ z := by
+  rw [rpow_mul, rpow_nat_cast]
+
+lemma rpow_mul_natCast (x : ℝ≥0∞) (y : ℝ) (n : ℕ) : x ^ (y * n) = (x ^ y) ^ n := by
+  rw [rpow_mul, rpow_nat_cast]
+
+lemma rpow_intCast_mul (x : ℝ≥0∞) (n : ℤ) (z : ℝ) : x ^ (n * z) = (x ^ n) ^ z := by
+  rw [rpow_mul, rpow_int_cast]
+
+lemma rpow_mul_intCast (x : ℝ≥0∞) (y : ℝ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by
+  rw [rpow_mul, rpow_int_cast]
+
+lemma rpow_left_injective {x : ℝ} (hx : x ≠ 0) : Injective fun y : ℝ≥0∞ ↦ y ^ x :=
+  HasLeftInverse.injective ⟨fun y ↦ y ^ x⁻¹, rpow_rpow_inv hx⟩
 #align ennreal.rpow_left_injective ENNReal.rpow_left_injective
 
 theorem rpow_left_surjective {x : ℝ} (hx : x ≠ 0) : Function.Surjective fun y : ℝ≥0∞ => y ^ x :=
-  fun y => ⟨y ^ x⁻¹, by simp_rw [← rpow_mul, _root_.inv_mul_cancel hx, rpow_one]⟩
+  HasRightInverse.surjective ⟨fun y ↦ y ^ x⁻¹, rpow_inv_rpow hx⟩
 #align ennreal.rpow_left_surjective ENNReal.rpow_left_surjective
 
 theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y : ℝ≥0∞ => y ^ x :=

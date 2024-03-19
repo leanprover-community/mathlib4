@@ -87,13 +87,24 @@ theorem ascPochhammer_map (f : S →+* T) (n : ℕ) :
   · simp [ih, ascPochhammer_succ_left, map_comp]
 #align pochhammer_map ascPochhammer_map
 
+theorem ascPochhammer_eval₂ (f : S →+* T) (n : ℕ) (t : T) :
+    (ascPochhammer T n).eval t = (ascPochhammer S n).eval₂ f t := by
+  rw [← ascPochhammer_map f]
+  exact eval_map f t
+
+theorem ascPochhammer_eval_comp {R : Type*} [CommSemiring R] (n : ℕ) (p : R[X]) [Algebra R S]
+    (x : S) : ((ascPochhammer S n).comp (p.map (algebraMap R S))).eval x =
+    (ascPochhammer S n).eval (p.eval₂ (algebraMap R S) x) := by
+  rw [ascPochhammer_eval₂ (algebraMap R S), ← eval₂_comp', ← ascPochhammer_map (algebraMap R S),
+    ← map_comp, eval_map]
+
 end
 
 @[simp, norm_cast]
 theorem ascPochhammer_eval_cast (n k : ℕ) :
     (((ascPochhammer ℕ n).eval k : ℕ) : S) = ((ascPochhammer S n).eval k : S) := by
   rw [← ascPochhammer_map (algebraMap ℕ S), eval_map, ← eq_natCast (algebraMap ℕ S),
-      eval₂_at_nat_cast,Nat.cast_id, eq_natCast]
+      eval₂_at_nat_cast,Nat.cast_id]
 #align pochhammer_eval_cast ascPochhammer_eval_cast
 
 theorem ascPochhammer_eval_zero {n : ℕ} : (ascPochhammer S n).eval 0 = if n = 0 then 1 else 0 := by
@@ -112,8 +123,8 @@ theorem ascPochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (ascPochhammer
 
 theorem ascPochhammer_succ_right (n : ℕ) :
     ascPochhammer S (n + 1) = ascPochhammer S n * (X + (n : S[X])) := by
-  suffices h : ascPochhammer ℕ (n + 1) = ascPochhammer ℕ n * (X + (n : ℕ[X]))
-  · apply_fun Polynomial.map (algebraMap ℕ S) at h
+  suffices h : ascPochhammer ℕ (n + 1) = ascPochhammer ℕ n * (X + (n : ℕ[X])) by
+    apply_fun Polynomial.map (algebraMap ℕ S) at h
     simpa only [ascPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
       Polynomial.map_nat_cast] using h
   induction' n with n ih
@@ -289,8 +300,8 @@ theorem descPochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (descPochhamm
 
 theorem descPochhammer_succ_right (n : ℕ) :
     descPochhammer R (n + 1) = descPochhammer R n * (X - (n : R[X])) := by
-  suffices h : descPochhammer ℤ (n + 1) = descPochhammer ℤ n * (X - (n : ℤ[X]))
-  · apply_fun Polynomial.map (algebraMap ℤ R) at h
+  suffices h : descPochhammer ℤ (n + 1) = descPochhammer ℤ n * (X - (n : ℤ[X])) by
+    apply_fun Polynomial.map (algebraMap ℤ R) at h
     simpa [descPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
       Polynomial.map_int_cast] using h
   induction' n with n ih
@@ -328,6 +339,16 @@ theorem descPochhammer_succ_comp_X_sub_one (n : ℕ) :
   rw [← sub_mul, descPochhammer_succ_right ℤ n, mul_comp, mul_comm, sub_comp, X_comp, nat_cast_comp]
   ring
 
+theorem descPochhammer_eval_eq_ascPochhammer (r : R) (n : ℕ) :
+    (descPochhammer R n).eval r = (ascPochhammer R n).eval (r - n + 1) := by
+  induction n with
+  | zero => rw [descPochhammer_zero, eval_one, ascPochhammer_zero, eval_one]
+  | succ n ih =>
+    rw [Nat.cast_succ, sub_add, add_sub_cancel, descPochhammer_succ_eval, ih,
+      ascPochhammer_succ_left, X_mul, eval_mul_X, show (X + 1 : R[X]) =
+      (X + 1 : ℕ[X]).map (algebraMap ℕ R) by simp only [Polynomial.map_add, map_X,
+      Polynomial.map_one], ascPochhammer_eval_comp, eval₂_add, eval₂_X, eval₂_one]
+
 theorem descPochhammer_mul (n m : ℕ) :
     descPochhammer R n * (descPochhammer R m).comp (X - (n : R[X])) = descPochhammer R (n + m) := by
   induction' m with m ih
@@ -347,25 +368,20 @@ theorem ascPochhammer_eval_neg_eq_descPochhammer (r : R) : ∀ (k : ℕ),
       pow_add, pow_one, mul_assoc ((-1)^k) (-1), mul_sub, neg_one_mul, neg_mul_eq_mul_neg,
       Nat.cast_comm, sub_eq_add_neg, neg_one_mul, neg_neg, ← mul_add]
 
-theorem descPochhammer_int_eq_descFactorial (n : ℕ) :
-    ∀ k, (descPochhammer ℤ k).eval (n : ℤ) = n.descFactorial k
-  | 0 => by
-    rw [descPochhammer_zero, eval_one, Nat.descFactorial_zero]
-    rfl
-  | t + 1 => by
-    rw [descPochhammer_succ_right, eval_mul, descPochhammer_int_eq_descFactorial n t]
-    simp only [eval_sub, eval_X, eval_nat_cast, Nat.descFactorial_succ, Nat.cast_mul,
-        Nat.descFactorial_eq_zero_iff_lt]
-    rw [mul_comm]
-    simp only [mul_eq_mul_right_iff, Nat.cast_eq_zero, Nat.descFactorial_eq_zero_iff_lt]
-    by_cases h : n < t
-    · tauto
-    · left
-      exact (Int.ofNat_sub <| not_lt.mp h).symm
+theorem descPochhammer_eval_eq_descFactorial (n k : ℕ) :
+    (descPochhammer R k).eval (n : R) = n.descFactorial k := by
+  induction k with
+  | zero => rw [descPochhammer_zero, eval_one, Nat.descFactorial_zero, Nat.cast_one]
+  | succ k ih =>
+    rw [descPochhammer_succ_right, Nat.descFactorial_succ, mul_sub, eval_sub, eval_mul_X,
+      ← Nat.cast_comm k, eval_nat_cast_mul, ← Nat.cast_comm n, ← sub_mul, ih]
+    by_cases h : n < k
+    rw [Nat.descFactorial_eq_zero_iff_lt.mpr h, Nat.cast_zero, mul_zero, mul_zero, Nat.cast_zero]
+    rw [Nat.cast_mul, Nat.cast_sub <| not_lt.mp h]
 
 theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
     (descPochhammer ℤ b).eval (a + b : ℤ) = (a + 1).ascFactorial b := by
-  rw [← Nat.cast_add, descPochhammer_int_eq_descFactorial (a + b) b,
+  rw [← Nat.cast_add, descPochhammer_eval_eq_descFactorial ℤ (a + b) b,
     Nat.add_descFactorial_eq_ascFactorial]
 
 end Ring
