@@ -49,7 +49,7 @@ abbrev Game :=
 
 namespace Game
 
--- Porting note: added this definition
+-- Porting note (#11445): added this definition
 /-- Negation of games. -/
 instance : Neg Game where
   neg := Quot.map Neg.neg <| fun _ _ => (neg_equiv_neg_iff).2
