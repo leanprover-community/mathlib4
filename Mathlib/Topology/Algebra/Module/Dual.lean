@@ -59,6 +59,7 @@ section Ring
 variable [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalAddGroup 𝕜] [AddCommGroup E]
     [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 𝕜]
 
+variable (𝕜 E) in
 theorem dualPairing_separatingLeft : (dualPairing 𝕜 E).SeparatingLeft := by
   rw [LinearMap.separatingLeft_iff_ker_eq_bot, LinearMap.ker_eq_bot]
   exact ContinuousLinearMap.coe_injective
