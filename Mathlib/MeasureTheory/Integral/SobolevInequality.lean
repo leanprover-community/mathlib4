@@ -180,7 +180,8 @@ theorem Differentiable.fderiv_norm_rpow {f : F → E} (hf : Differentiable ℝ f
     (p * ‖f x‖ ^ (p - 2)) • (innerSL ℝ (f x)).comp (fderiv ℝ f x) :=
   hasFDerivAt_norm_rpow (f x) hp |>.comp x (hf x).hasFDerivAt |>.fderiv
 
-theorem norm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f) {x : F} {p : ℝ} (hp : 1 < p) :
+theorem norm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f) {x : F}
+    {p : ℝ} (hp : 1 < p) :
     ‖fderiv ℝ (fun x ↦ ‖f x‖ ^ p) x‖ ≤ p * ‖f x‖ ^ (p - 1) * ‖fderiv ℝ f x‖ := by
   rw [hf.fderiv_norm_rpow hp, norm_smul, norm_mul]
   simp [- Real.norm_eq_abs, Real.norm_rpow_of_nonneg]
@@ -358,11 +359,11 @@ namespace Equiv
 -- todo: rename `Finset.union_symm_inl`, `Finset.union_symm_inr`
 
 theorem Finset.union_symm_left {s t : Finset ι} (h : Disjoint s t) {i : ι} (hi : i ∈ s)
-  (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inl ⟨i, hi⟩ := by
+    (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inl ⟨i, hi⟩ := by
   simp [Equiv.symm_apply_eq]
 
 theorem Finset.union_symm_right {s t : Finset ι} (h : Disjoint s t) {i : ι} (hi : i ∈ t)
-  (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inr ⟨i, hi⟩ := by
+    (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inr ⟨i, hi⟩ := by
   simp [Equiv.symm_apply_eq]
 
 lemma piFinsetUnion_left {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
@@ -438,7 +439,6 @@ variable {p : ℝ}
     T μ p f ∅ x = f x ^ (1 + p) := by
   simp [T]
 
-set_option maxHeartbeats 500000 in
 /-- The main inductive step in the grid-lines lemma for the Gagliardo-Nirenberg-Sobolev inequality.
 
 The grid-lines operation `GridLines.T` on a nonnegative function on a finitary product type is
