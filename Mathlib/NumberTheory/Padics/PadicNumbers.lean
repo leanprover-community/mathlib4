@@ -966,7 +966,7 @@ variable {p : ℕ} [hp : Fact p.Prime]
 -- Porting note: remove `set_option eqn_compiler.zeta true`
 
 instance complete : CauSeq.IsComplete ℚ_[p] norm where
-  isComplete := fun f => by
+  isComplete f := by
     have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
       have h := isCauSeq f ε (mod_cast hε)
       dsimp [norm] at h

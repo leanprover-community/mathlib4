@@ -113,7 +113,7 @@ theorem preimage_subset {f : α ↪ β} {s : Finset β} {t : Finset α} (hs : s 
 #align finset.preimage_subset Finset.preimage_subset
 
 theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
-    s ⊆ t.map f ↔ ∃ u, u ⊆ t ∧ s = u.map f := by
+    s ⊆ t.map f ↔ ∃ u ⊆ t, s = u.map f := by
   classical
   simp_rw [← coe_subset, coe_map, subset_image_iff, map_eq_image, eq_comm]
 #align finset.subset_map_iff Finset.subset_map_iff

@@ -190,8 +190,7 @@ variable [TopologicalSpace G] [TopologicalAddGroup G]
 theorem hasSum_nat_add_iff {f : ℕ → G} (k : ℕ) :
     HasSum (fun n ↦ f (n + k)) g ↔ HasSum f (g + ∑ i in range k, f i) := by
   refine Iff.trans ?_ (range k).hasSum_compl_iff
-  rw [← (notMemRangeEquiv k).symm.hasSum_iff]
-  rfl
+  rw [← (notMemRangeEquiv k).symm.hasSum_iff, Function.comp_def, coe_notMemRangeEquiv_symm]
 #align has_sum_nat_add_iff hasSum_nat_add_iff
 
 theorem summable_nat_add_iff {f : ℕ → G} (k : ℕ) : (Summable fun n ↦ f (n + k)) ↔ Summable f :=

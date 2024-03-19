@@ -73,10 +73,10 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
-  { (f : A →+* B) with
-      toFun := f
-      commutes' := AlgHomClass.commutes f }
+def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
+  __ := (f : A →+* B)
+  toFun := f
+  commutes' := AlgHomClass.commutes f
 
 instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩

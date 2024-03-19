@@ -197,7 +197,7 @@ theorem exists_degree_le_of_mem_span {s : Set R[X]} {p : R[X]}
   by_contra! h
   by_cases hp_zero : p = 0
   · rw [hp_zero, degree_zero] at h
-    rcases hs with ⟨x,hx⟩
+    rcases hs with ⟨x, hx⟩
     exact not_lt_bot (h x hx)
   · have : p ∈ degreeLT R (natDegree p) := by
       refine (Submodule.span_le.mpr fun p' p'_mem => ?_) hp
@@ -214,9 +214,8 @@ theorem exists_degree_le_of_mem_span_of_finite {s : Set R[X]} (s_fin : s.Finite)
   rcases Set.Finite.exists_maximal_wrt degree s s_fin hs with ⟨a, has, hmax⟩
   refine ⟨a, has, fun p hp => ?_⟩
   rcases exists_degree_le_of_mem_span hs hp with ⟨p', hp'⟩
-  have p'max := hmax p' hp'.left
   by_cases h : degree a ≤ degree p'
-  · rw [← p'max h] at hp'; exact hp'.right
+  · rw [← hmax p' hp'.left h] at hp'; exact hp'.right
   · exact le_trans hp'.right (not_le.mp h).le
 
 /-- The span of every finite set of polynomials is contained in a `degreeLE n` for some `n`. -/
