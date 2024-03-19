@@ -275,7 +275,8 @@ instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] [SMulCo
     DistribMulAction α (BilinForm R M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
-instance {α} [CommSemiring α] [Module α R] [SMulCommClass α R R] : Module α (BilinForm R M) :=
+instance {α} [CommSemiring α] [Module α R] [SMulCommClass α R R] [SMulCommClass R α R] :
+    Module α (BilinForm R M) :=
   Function.Injective.module _ coeFnAddMonoidHom coe_injective coe_smul
 
 section flip
@@ -293,20 +294,16 @@ def flipHomAux : (BilinForm R M) →ₗ[R] (BilinForm R M) where
     simp only [LinearMap.flip_apply, LinearMap.smul_apply, RingHom.id_apply]
 #align bilin_form.flip_hom_aux LinearMap.BilinForm.flipHomAux
 
-variable {R₂}
-
 theorem flip_flip_aux (A : BilinForm R M) :
-    (flipHomAux) (flipHomAux A) = A := by
+    flipHomAux.toFun (flipHomAux.toFun A) = A := by
   ext A
   simp [flipHomAux]
 #align bilin_form.flip_flip_aux LinearMap.BilinForm.flip_flip_aux
 
-variable (R₂)
-
 /-- The flip of a bilinear form, obtained by exchanging the left and right arguments. -/
 def flipHom : BilinForm R M ≃ₗ[R] BilinForm R M :=
   { flipHomAux with
-    invFun := flipHomAux
+    invFun := flipHomAux.toFun
     left_inv := flip_flip_aux
     right_inv := flip_flip_aux }
 #align bilin_form.flip_hom LinearMap.BilinForm.flipHom
@@ -326,7 +323,7 @@ theorem flip_flip :
 right arguments. -/
 abbrev flip : BilinForm R M ≃ₗ[R] BilinForm R M :=
   flipHom
-#align bilin_form.flip BilinForm.flip
+#align bilin_form.flip LinearMap.BilinForm.flip
 
 end flip
 

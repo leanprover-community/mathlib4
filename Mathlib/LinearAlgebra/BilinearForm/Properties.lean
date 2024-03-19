@@ -70,7 +70,7 @@ protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl :=
   neg_eq_zero.mpr ∘ hB x y ∘ neg_eq_zero.mp
 #align bilin_form.is_refl.neg LinearMap.BilinForm.IsRefl.neg
 
-protected theorem smul {α} [CommSemiring α] [Module α R] [SMulCommClass α R R]
+protected theorem smul {α} [CommSemiring α] [Module α R] [SMulCommClass α R R] [SMulCommClass R α R]
     [NoZeroSMulDivisors α R] (a : α) {B : BilinForm R M} (hB : B.IsRefl) :
     (a • B).IsRefl := fun _ _ h =>
   (smul_eq_zero.mp h).elim (fun ha => smul_eq_zero_of_left ha _) fun hBz =>
@@ -330,7 +330,7 @@ theorem isSkewAdjoint_iff_neg_self_adjoint (f : Module.End R₁ M₁) :
 it is a Jordan subalgebra.) -/
 def selfAdjointSubmodule :=
   isPairSelfAdjointSubmodule B B
-#align bilin_form.self_adjoint_submodule BilinForm.selfAdjointSubmodule
+#align bilin_form.self_adjoint_submodule LinearMap.BilinForm.selfAdjointSubmodule
 
 @[simp]
 theorem mem_selfAdjointSubmodule (f : Module.End R M) :
@@ -342,7 +342,7 @@ theorem mem_selfAdjointSubmodule (f : Module.End R M) :
 it is a Lie subalgebra.) -/
 def skewAdjointSubmodule :=
   isPairSelfAdjointSubmodule (-B₁) B₁
-#align bilin_form.skew_adjoint_submodule BilinForm.skewAdjointSubmodule
+#align bilin_form.skew_adjoint_submodule LinearMap.BilinForm.skewAdjointSubmodule
 
 @[simp]
 theorem mem_skewAdjointSubmodule (f : Module.End R₁ M₁) :
@@ -403,7 +403,7 @@ theorem nondegenerate_congr_iff {B : BilinForm R M} (e : M ≃ₗ[R] M') :
 #align bilin_form.nondegenerate_congr_iff LinearMap.BilinForm.nondegenerate_congr_iff
 
 /-- A bilinear form is nondegenerate if and only if it has a trivial kernel. -/
-theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R₂ M₂} :
+theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R M} :
     B.Nondegenerate ↔ LinearMap.ker B = ⊥ := by
   rw [LinearMap.ker_eq_bot']
   constructor <;> intro h
@@ -501,7 +501,7 @@ lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
   ext i
   refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
-  simp_rw [BilinForm.toLin_apply, apply_dualBasis_left, ← B.flip_apply (R₂ := K),
+  simp_rw [BilinForm.toLin_apply, apply_dualBasis_left, ← B.flip_apply,
     apply_dualBasis_left, @eq_comm _ i j]
 
 @[simp]
