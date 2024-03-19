@@ -33,7 +33,7 @@ theorem Finset.constant_of_eq_insert {α β : Type _} (f : Finset α → β)
 
 noncomputable section
 
-@[simp, norm_cast]
+@[norm_cast] -- todo: make simp (causes linter issue elsewhere)
 theorem Nat.cast_le_zero [OrderedSemiring R] [CharZero R] {n : ℕ} :
     (n : R) ≤ 0 ↔ n = 0 := by rw [← cast_zero, cast_le, le_zero_iff]
 
@@ -44,8 +44,6 @@ theorem Nat.cast_le_zero [OrderedSemiring R] [CharZero R] {n : ℕ} :
 theorem Nat.floor_half [LinearOrderedField α] [FloorRing α] :
     ⌊(2⁻¹ : α)⌋₊ = 0 := by
   simp [floor_eq_zero, _root_.inv_lt_one_iff, _root_.one_lt_two]
-
-attribute [simp] Real.Gamma_one_half_eq
 
 @[simp]
 theorem Real.Gamma_two_inv : Real.Gamma 2⁻¹ = sqrt π := by
