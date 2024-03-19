@@ -575,7 +575,18 @@ def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [κ : MonoidHom.CompTriple 
     AddMonoidHom.comp (g : B →+ C) (f : A →+ B) with }
 #align distrib_mul_action_hom.comp DistribMulActionHom.comp
 
-/-- Composition of two equivariant additive monoid homomorphisms. -/
+@[simp]
+theorem comp_apply
+    (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [MonoidHom.CompTriple φ ψ χ] (x : A) : g.comp f x = g (f x) :=
+  rfl
+#align distrib_mul_action_hom.comp_apply DistribMulActionHom.comp_apply
+
+@[simp]
+theorem id_comp (f : A →ₑ+[φ] B) : comp (DistribMulActionHom.id N) f = f :=
+  ext fun x => by rw [comp_apply, id_apply]
+#align distrib_mul_action_hom.id_comp DistribMulActionHom.id_comp
+
+/- /-- Composition of two equivariant additive monoid homomorphisms. -/
 def comp' (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) :
     A →ₑ+[ψ.comp φ] C :=
     g.comp f -- (κ := MonoidHom.CompTriple.comp)
@@ -584,32 +595,38 @@ lemma comp'_eq_comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) :
     g.comp' f = g.comp f := rfl -- (κ := MonoidHom.CompTriple.comp) := rfl
 
 @[simp]
-theorem comp_apply
-    (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) [MonoidHom.CompTriple φ ψ χ] (x : A) : g.comp f x = g (f x) :=
-  rfl
-#align distrib_mul_action_hom.comp_apply DistribMulActionHom.comp_apply
-
-@[simp]
 theorem comp'_apply (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) (x : A) :
     g.comp' f x = g (f x) := rfl
-
-@[simp]
-theorem id_comp (f : A →ₑ+[φ] B) : comp (DistribMulActionHom.id N) f = f :=
-  ext fun x => by rw [comp_apply, id_apply]
-#align distrib_mul_action_hom.id_comp DistribMulActionHom.id_comp
 
 @[simp]
 theorem id_comp' (f : A →ₑ+[φ] B) : comp' (DistribMulActionHom.id N) f = f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
 @[simp]
+theorem comp'_id (f : A →ₑ+[φ] B) : f.comp' (DistribMulActionHom.id M) =f :=
+  ext fun x => by rw [comp'_apply, id_apply]
+
+
+/-- The inverse of a bijective `DistribMulActionHom` is a `DistribMulActionHom`. -/
+@[simps]
+def inverse' (f : A →ₑ+[φ] B) (g : B → A) (k : Function.RightInverse φ' φ)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →ₑ+[φ'] A :=
+  { (f : A →+ B).inverse g h₁ h₂, (f : A →ₑ[φ] B).inverse' g k h₁ h₂ with toFun := g }
+
+theorem comp'_assoc {Q D : Type*} [Monoid Q] [AddMonoid D] [DistribMulAction Q D]
+    {η : P →* Q}
+    (h : C →ₑ+[η] D) (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) :
+    h.comp' (g.comp' f) = (h.comp' g).comp' f :=
+  ext fun _ => rfl
+
+
+-/
+
+
+@[simp]
 theorem comp_id (f : A →ₑ+[φ] B) : f.comp (DistribMulActionHom.id M) = f :=
   ext fun x => by rw [comp_apply, id_apply]
 #align distrib_mul_action_hom.comp_id DistribMulActionHom.comp_id
-
-@[simp]
-theorem comp'_id (f : A →ₑ+[φ] B) : f.comp' (DistribMulActionHom.id M) =f :=
-  ext fun x => by rw [comp'_apply, id_apply]
 
 @[simp]
 theorem comp_assoc {Q D : Type*} [Monoid Q] [AddMonoid D] [DistribMulAction Q D]
@@ -620,24 +637,12 @@ theorem comp_assoc {Q D : Type*} [Monoid Q] [AddMonoid D] [DistribMulAction Q D]
     h.comp (g.comp f) = (h.comp g).comp f :=
   ext fun _ => rfl
 
-theorem comp'_assoc {Q D : Type*} [Monoid Q] [AddMonoid D] [DistribMulAction Q D]
-    {η : P →* Q}
-    (h : C →ₑ+[η] D) (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) :
-    h.comp' (g.comp' f) = (h.comp' g).comp' f :=
-  ext fun _ => rfl
-
 /-- The inverse of a bijective `DistribMulActionHom` is a `DistribMulActionHom`. -/
 @[simps]
 def inverse (f : A →+[M] B₁) (g : B₁ → A) (h₁ : Function.LeftInverse g f)
     (h₂ : Function.RightInverse g f) : B₁ →+[M] A :=
   { (f : A →+ B₁).inverse g h₁ h₂, f.toMulActionHom.inverse g h₁ h₂ with toFun := g }
 #align distrib_mul_action_hom.inverse DistribMulActionHom.inverse
-
-/-- The inverse of a bijective `DistribMulActionHom` is a `DistribMulActionHom`. -/
-@[simps]
-def inverse' (f : A →ₑ+[φ] B) (g : B → A) (k : Function.RightInverse φ' φ)
-    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →ₑ+[φ'] A :=
-  { (f : A →+ B).inverse g h₁ h₂, (f : A →ₑ[φ] B).inverse' g k h₁ h₂ with toFun := g }
 
 section Semiring
 
