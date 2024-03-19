@@ -5,6 +5,11 @@ Authors: Thomas R. Murrills
 -/
 import Mathlib.Command.Linter.LintingRules
 
+/-! # Deprecated syntax
+
+Registers the `deprecated` `linting_rules` category.
+-/
+
 open Lean Linter
 
 /--
