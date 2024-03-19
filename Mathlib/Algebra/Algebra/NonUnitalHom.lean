@@ -391,7 +391,13 @@ def inverse' (f : A →ₛₙₐ[φ] B) (g : B → A)
     (k : Function.RightInverse φ' φ)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) :
     B →ₛₙₐ[φ'] A :=
-  { (f : A →ₙ* B).inverse g h₁ h₂, (f : A →ₑ+[φ] B).inverse' g k h₁ h₂ with }
+  { (f : A →ₙ* B).inverse g h₁ h₂, (f : A →ₑ+[φ] B).inverse' g k h₁ h₂ with
+    map_zero' := by
+      simp only [MulHom.toFun_eq_coe, MulHom.inverse_apply]
+      rw [← f.map_zero, h₁]
+    map_add' := fun x y ↦ by
+      simp only [MulHom.toFun_eq_coe, MulHom.inverse_apply]
+      rw [← h₂ x, ← h₂ y, ← map_add, h₁, h₂, h₂] }
 
 @[simp]
 theorem coe_inverse' (f : A →ₛₙₐ[φ] B) (g : B → A)

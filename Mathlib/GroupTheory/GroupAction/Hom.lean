@@ -35,14 +35,18 @@ The above types have corresponding classes:
 * `SMulSemiringHomClass F φ R S` states that `F` is a type of bundled `R → S` homs
   preserving the ring structure and `φ`-equivariant
 
-## Notations
+## Notation
 
-We introduce the following notation to code equivariant maps (the subscript index `ₑ` is for *equivariant*) :
+We introduce the following notation to code equivariant maps
+(the subscript index `ₑ` is for *equivariant*) :
 * `X →ₑ[φ] Y` is `MulActionHom φ X Y`.
 * `A →ₑ+[φ] B` is `DistribMulActionHom φ A B`.
 * `R →ₑ+*[φ] S` is `MulSemiringActionHom φ R S`.
 
-* When `M = N` and `φ = MonoidHom.id M`, we provide the backward compatible notation `X →[M] Y`
+When `M = N` and `φ = MonoidHom.id M`, we provide the backward compatible notation :
+* `X →[M] Y` is `MulActionHom (@id M) X Y`
+* `A →+[M] B` is `DistribMulActionHom (MonoidHom.id M) A B`
+* `R →+*[M] S` is `MulSemiringActionHom (MonoidHom.id M) R S`
 -/
 
 assert_not_exists Submonoid
@@ -293,8 +297,8 @@ def inverse (f : X →[M] Y₁) (g : Y₁ → X)
 /-- The inverse of a bijective equivariant map is equivariant. -/
 @[simps]
 def inverse' (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' φ)
-    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y →ₑ[φ'] X
-    where
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) :
+    Y →ₑ[φ'] X where
   toFun := g
   map_smul' m x :=
     calc
