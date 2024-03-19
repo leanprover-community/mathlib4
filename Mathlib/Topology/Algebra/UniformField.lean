@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Mathlib.Algebra.Field.Subfield
-import Mathlib.Topology.Algebra.Field.Basic
+import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
 
 #align_import topology.algebra.uniform_field from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"

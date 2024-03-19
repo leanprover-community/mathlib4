@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
 import Mathlib.Data.Set.Pointwise.Interval
-import Mathlib.Topology.Algebra.Field.Basic
+import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.Order.Group
 
 #align_import topology.algebra.order.field from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
