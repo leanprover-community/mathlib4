@@ -48,7 +48,7 @@ noncomputable instance [IrreducibleSpace X.carrier] (U : Opens X.carrier) [Nonem
   (X.germToFunctionField U).toAlgebra
 
 noncomputable instance [IsIntegral X] : Field X.functionField := by
-  refine .OfIsUnitOrEqZero fun a ↦ ?_
+  refine .ofIsUnitOrEqZero fun a ↦ ?_
   obtain ⟨U, m, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ a
   rw [or_iff_not_imp_right, ← (X.presheaf.germ ⟨_, m⟩).map_zero]
   intro ha
