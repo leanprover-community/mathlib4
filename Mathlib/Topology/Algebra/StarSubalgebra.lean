@@ -50,7 +50,7 @@ theorem embedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂)
 theorem closedEmbedding_inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂)
     (hS₁ : IsClosed (S₁ : Set A)) : ClosedEmbedding (inclusion h) :=
   { embedding_inclusion h with
-    closed_range := isClosed_induced_iff.2
+    isClosed_range := isClosed_induced_iff.2
       ⟨S₁, hS₁, by
           convert (Set.range_subtype_map id _).symm
           · rw [Set.image_id]; rfl
@@ -236,7 +236,7 @@ theorem le_of_isClosed_of_mem {S : StarSubalgebra R A} (hS : IsClosed (S : Set A
 theorem closedEmbedding_coe (x : A) : ClosedEmbedding ((↑) : elementalStarAlgebra R x → A) :=
   { induced := rfl
     inj := Subtype.coe_injective
-    closed_range := by
+    isClosed_range := by
       convert elementalStarAlgebra.isClosed R x
       exact
         Set.ext fun y =>
