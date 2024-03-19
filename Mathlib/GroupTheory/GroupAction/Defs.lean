@@ -969,7 +969,7 @@ variable (A)
 See note [reducible non-instances]. -/
 @[reducible]
 def DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
-  { DistribSMul.compFun A f, MulAction.compHom A f with }
+  { MulAction.compHom A f, DistribSMul.compFun A f with }
 #align distrib_mul_action.comp_hom DistribMulAction.compHom
 
 /-- Each element of the monoid defines an additive monoid homomorphism. -/
