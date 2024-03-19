@@ -578,6 +578,45 @@ theorem submonoid_closure_range_simple : Submonoid.closure (Set.range cs.simpleR
 
   rw [h₁, ← Subgroup.closure_toSubmonoid, subgroup_closure_range_simple, Subgroup.top_toSubmonoid]
 
+/-! ### Induction principles for Coxeter systems -/
+
+/-- If `p : W → Prop` holds for all simple reflections, it holds for the identity, and it is
+preserved under multiplication, then it holds for all elements of `W`. -/
+theorem simple_induction {p : W → Prop} (w : W) (Hs : ∀ i : B, p (s i)) (H1 : p 1)
+    (Hmul : ∀ w w' : W, p w → p w' → p (w * w')) : p w := by
+  have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
+  apply Submonoid.closure_induction (p := p) this
+  · rintro x ⟨i, rfl⟩
+    exact Hs i
+  · exact H1
+  · exact Hmul
+
+/-- If `p : W → Prop` holds for the identity and it is preserved under multiplying on the left
+by a simple reflection, then it holds for all elements of `W`. -/
+theorem simple_induction_left {p : W → Prop} (w : W) (H1 : p 1)
+    (Hmul : ∀ (w : W) (i : B), p w → p (s i * w)) : p w := by
+  let p' : ((w : W) → w ∈ Submonoid.closure (Set.range cs.simpleReflection) → Prop) :=
+    fun w _ ↦ p w
+  have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
+  apply Submonoid.closure_induction_left (p := p')
+  · exact H1
+  · rintro _ ⟨i, rfl⟩ y hy h
+    exact Hmul y i h
+  · exact this
+
+/-- If `p : W → Prop` holds for the identity and it is preserved under multiplying on the right
+by a simple reflection, then it holds for all elements of `W`. -/
+theorem simple_induction_right {p : W → Prop} (w : W) (H1 : p 1)
+    (Hmul : ∀ (w : W) (i : B), p w → p (w * s i)) : p w := by
+  let p' : ((w : W) → w ∈ Submonoid.closure (Set.range cs.simpleReflection) → Prop) :=
+    fun w _ ↦ p w
+  have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
+  apply Submonoid.closure_induction_right (p := p')
+  · exact H1
+  · rintro x hx _ ⟨i, rfl⟩ h
+    exact Hmul x i h
+  · exact this
+
 /-! ### Homomorphisms from a Coxeter group -/
 
 /-- The proposition that the values of the function `f : B → G` satisfy the Coxeter relations
@@ -664,16 +703,12 @@ theorem wordProd_concat (i : B) (ω : List B) :
   · simpa using ih
 
 theorem wordProd_surjective : Surjective (cs.wordProd) := by
-  intro x
-  have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top x
-  apply Submonoid.closure_induction (p := _) this
-  · rintro x ⟨i, rfl⟩
-    use [i]
-    simp
+  intro w
+  apply cs.simple_induction_left w
   · use nil
     simp
-  · rintro x y ⟨a, rfl⟩ ⟨b, rfl⟩
-    use a ++ b
+  · rintro _ i ⟨ω, rfl⟩
+    use i :: ω
     simp
 
 end CoxeterSystem
