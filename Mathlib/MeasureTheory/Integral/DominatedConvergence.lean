@@ -562,8 +562,7 @@ theorem continuous_parametric_primitive_of_continuous
   filter_upwards [this]
   rintro ⟨p, s⟩ ⟨hp : p ∈ v, hs : s ∈ Ioo (b₀ - δ) (b₀ + δ)⟩
   simp only [dist_eq_norm] at hv ⊢
-  have J r u v : IntervalIntegrable (f r) μ u v :=
-    (continuous_uncurry_left _ hf).intervalIntegrable _ _
+  have J r u v : IntervalIntegrable (f r) μ u v := (hf.uncurry_left _).intervalIntegrable _ _
   calc
   ‖∫ t in a₀..s, f p t ∂μ - ∫ t in a₀..b₀, f q t ∂μ‖
     = ‖(∫ t in a₀..s, f p t ∂μ - ∫ t in a₀..b₀, f p t ∂μ)
@@ -581,15 +580,14 @@ theorem continuous_parametric_primitive_of_continuous
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), ‖f p t‖ ∂μ + ∫ t in Icc a b, ‖f p t - f q t‖ ∂μ := by
       gcongr
       · apply set_integral_mono_set
-        · exact (continuous_uncurry_left _ hf).norm.integrableOn_Icc
+        · exact (hf.uncurry_left _).norm.integrableOn_Icc
         · exact eventually_of_forall (fun x ↦ norm_nonneg _)
         · have : Ι b₀ s ⊆ Icc (b₀ - δ) (b₀ + δ) := by
             apply (uIoc_subset_uIcc _ _).trans (uIcc_subset_Icc ?_ ⟨hs.1.le, hs.2.le⟩ )
             simp [δpos.le]
           exact eventually_of_forall this
       · apply set_integral_mono_set
-        · exact (continuous_uncurry_left _ hf).sub (continuous_uncurry_left _ hf)
-            |>.norm.integrableOn_Icc
+        · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
         · exact eventually_of_forall (fun x ↦ norm_nonneg _)
         · have : Ι a₀ b₀ ⊆ Icc a b := (uIoc_subset_uIcc _ _).trans
             (uIcc_subset_Icc ⟨a_lt.1.le, lt_b.1.le⟩ ⟨a_lt.2.le, lt_b.2.le⟩)
@@ -597,7 +595,7 @@ theorem continuous_parametric_primitive_of_continuous
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), M + 1 ∂μ + ∫ _t in Icc a b, δ ∂μ := by
       gcongr
       · apply set_integral_mono_on
-        · exact (continuous_uncurry_left _ hf).norm.integrableOn_Icc
+        · exact (hf.uncurry_left _).norm.integrableOn_Icc
         · exact continuous_const.integrableOn_Icc
         · exact measurableSet_Icc
         · intro x hx
@@ -613,8 +611,7 @@ theorem continuous_parametric_primitive_of_continuous
               · exact le_of_lt (hv _ hp _ (h'δ hx))
           _ ≤ M + 1 := by linarith
       · apply set_integral_mono_on
-        · exact (continuous_uncurry_left _ hf).sub (continuous_uncurry_left _ hf)
-            |>.norm.integrableOn_Icc
+        · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
         · exact continuous_const.integrableOn_Icc
         · exact measurableSet_Icc
         · intro x hx
