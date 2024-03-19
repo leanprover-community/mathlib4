@@ -293,7 +293,7 @@ theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x := by
   · simp
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
-  rw [pow_succ', log_mul (pow_ne_zero _ hx) hx, ih, Nat.cast_succ, add_mul, one_mul]
+  rw [pow_succ, log_mul (pow_ne_zero _ hx) hx, ih, Nat.cast_succ, add_mul, one_mul]
 #align real.log_pow Real.log_pow
 
 @[simp]
