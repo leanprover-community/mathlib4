@@ -135,17 +135,17 @@ theorem fourier_integral_convergent_iff (he : Continuous e)
   -- first prove one-way implication
   have aux {g : V → E} (hg : Integrable g μ) (x : W) :
       Integrable (fun v : V ↦ e (-L v x) • g v) μ := by
-    have c : Continuous fun v ↦ e (-L v x) := by
-      refine he.comp (Continuous.neg ?_)
-      exact hL.comp (continuous_prod_mk.mpr ⟨continuous_id, continuous_const⟩)
-    rw [← integrable_norm_iff (c.aestronglyMeasurable.smul hg.1)]
-    convert hg.norm using 2
-    rw [Submonoid.smul_def, norm_smul, Complex.norm_eq_abs, abs_coe_circle, one_mul]
+    have c : Continuous fun v ↦ e (-L v x) :=
+      he.comp (hL.comp (continuous_prod_mk.mpr ⟨continuous_id, continuous_const⟩)).neg
+    simp_rw [← integrable_norm_iff (c.aestronglyMeasurable.smul hg.1),
+      Submonoid.smul_def, norm_smul, Complex.norm_eq_abs, abs_coe_circle, one_mul]
+    exact hg.norm
   -- then use it for both directions
   refine ⟨fun hf ↦ aux hf w, fun hf ↦ ?_⟩
-  convert aux hf (-w)
-  rw [← smul_assoc, smul_eq_mul, ← e.map_add_mul, LinearMap.map_neg, neg_neg,
-    ← sub_eq_add_neg, sub_self, e.map_zero_one, one_smul]
+  have := aux hf (-w)
+  simp_rw [← mul_smul (e _) (e _) (f _), ← e.map_add_mul, LinearMap.map_neg, neg_add_self,
+    e.map_zero_one, one_smul] at this -- the `(e _)` speeds up elaboration considerably
+  exact this
 #align vector_fourier.fourier_integral_convergent_iff VectorFourier.fourier_integral_convergent_iff
 
 variable [CompleteSpace E]
@@ -195,8 +195,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
       ∫ x, M (f x) (fourierIntegral e ν L.flip g x) ∂μ := by
   by_cases hG : CompleteSpace G; swap; · simp [integral, hG]
   calc
-  ∫ ξ, M (fourierIntegral e μ L f ξ) (g ξ) ∂ν
-    = ∫ ξ, M.flip (g ξ) (∫ x, e (-L x ξ) • f x ∂μ) ∂ν := rfl
+  _ = ∫ ξ, M.flip (g ξ) (∫ x, e (-L x ξ) • f x ∂μ) ∂ν := rfl
   _ = ∫ ξ, (∫ x, M.flip (g ξ) (e (-L x ξ) • f x) ∂μ) ∂ν := by
     congr with ξ
     apply (ContinuousLinearMap.integral_comp_comm _ _).symm
@@ -206,17 +205,24 @@ theorem integral_bilin_fourierIntegral_eq_flip
     have : Integrable (fun (p : W × V) ↦ ‖M‖ * (‖g p.1‖ * ‖f p.2‖)) (ν.prod μ) :=
       (hg.norm.prod_mul hf.norm).const_mul _
     apply this.mono
-    · have A : AEStronglyMeasurable (fun (p : W × V) ↦ e (-L p.2 p.1) • f p.2) (ν.prod μ) := by
-        apply (Continuous.aestronglyMeasurable ?_).smul hf.1.snd
-        refine he.comp ?_
-        exact (hL.comp continuous_swap).neg
-      exact M.flip.continuous₂.comp_aestronglyMeasurable (hg.1.fst.prod_mk A)
-    · apply eventually_of_forall
-      rintro ⟨ξ, x⟩
-      simp only [Submonoid.smul_def, SMulHomClass.map_smul, ContinuousLinearMap.flip_apply,
-        Function.uncurry_apply_pair, norm_smul, norm_eq_of_mem_sphere, one_mul, norm_mul, norm_norm]
-      exact (M.le_opNorm₂ (f x) (g ξ)).trans (le_of_eq (by ring))
-  _ = ∫ x, (∫ ξ, M (f x) (e (-L.flip ξ x) • g ξ) ∂ν) ∂μ := by simp
+    · -- This proof can be golfed but becomes very slow; breaking it up into steps
+      -- speeds up compilation.
+      change AEStronglyMeasurable (fun p : W × V ↦ (M (e (-(L p.2) p.1) • f p.2) (g p.1))) _
+      have A : AEStronglyMeasurable (fun (p : W × V) ↦ e (-L p.2 p.1) • f p.2) (ν.prod μ) := by
+        refine (Continuous.aestronglyMeasurable ?_).smul hf.1.snd
+        exact he.comp (hL.comp continuous_swap).neg
+      have A' : AEStronglyMeasurable (fun p ↦ (g p.1, e (-(L p.2) p.1) • f p.2) : W × V → F × E)
+        (Measure.prod ν μ) := hg.1.fst.prod_mk A
+      have B : Continuous (fun q ↦ M q.2 q.1 : F × E → G) := M.flip.continuous₂
+      apply B.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
+    · filter_upwards with ⟨ξ, x⟩
+      rw [Function.uncurry_apply_pair, Submonoid.smul_def, (M.flip (g ξ)).map_smul,
+        ContinuousLinearMap.flip_apply, norm_smul, Complex.norm_eq_abs, abs_coe_circle, one_mul,
+        norm_mul, norm_norm M, norm_mul, norm_norm, norm_norm, mul_comm (‖g _‖), ← mul_assoc]
+      exact M.le_opNorm₂ (f x) (g ξ)
+  _ = ∫ x, (∫ ξ, M (f x) (e (-L.flip ξ x) • g ξ) ∂ν) ∂μ := by
+      simp only [ContinuousLinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower,
+      ContinuousLinearMap.coe_smul', Pi.smul_apply, LinearMap.flip_apply]
   _ = ∫ x, M (f x) (∫ ξ, e (-L.flip ξ x) • g ξ ∂ν) ∂μ := by
     congr with x
     apply ContinuousLinearMap.integral_comp_comm
