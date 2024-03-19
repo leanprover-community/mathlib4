@@ -66,11 +66,8 @@ noncomputable section
 open scoped BigOperators Nat
 
 variable {𝕜 𝕜' D E F G V : Type*}
-
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
-
 variable (E F)
 
 /-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
@@ -449,7 +446,6 @@ section Seminorms
 
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-
 variable (𝕜)
 
 /-- The seminorms of the Schwartz space given by the best constants in the definition of
@@ -564,7 +560,6 @@ section Topology
 
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-
 variable (𝕜 E F)
 
 instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
@@ -672,13 +667,9 @@ section CLM
 
 
 variable [NormedField 𝕜] [NormedField 𝕜']
-
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-
 variable [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-
 variable [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
-
 variable {σ : 𝕜 →+* 𝕜'}
 
 /-- Create a semilinear map between Schwartz spaces.
@@ -768,7 +759,6 @@ end EvalCLM
 section Multiplication
 
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-
 variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
@@ -832,15 +822,10 @@ end Multiplication
 section Comp
 
 variable (𝕜)
-
 variable [IsROrC 𝕜]
-
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-
 variable [NormedAddCommGroup G] [NormedSpace ℝ G]
-
 variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-
 variable [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
 
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
@@ -917,7 +902,6 @@ section Derivatives
 
 
 variable (𝕜)
-
 variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
@@ -1126,7 +1110,6 @@ def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
 #align schwartz_map.to_continuous_map SchwartzMap.toContinuousMap
 
 variable (𝕜 E F)
-
 variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to bounded continuous functions as a continuous linear

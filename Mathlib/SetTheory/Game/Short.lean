@@ -239,7 +239,6 @@ def shortOfRelabelling : ∀ {x y : PGame.{u}}, Relabelling x y → Short x → 
 instance shortNeg : ∀ (x : PGame.{u}) [Short x], Short (-x)
   | mk xl xr xL xR, _ => by
     exact Short.mk (fun i => shortNeg _) fun i => shortNeg _
--- Porting note: `decreasing_by pgame_wf_tac` is no longer needed.
 #align pgame.short_neg SetTheory.PGame.shortNeg
 
 instance shortAdd : ∀ (x y : PGame.{u}) [Short x] [Short y], Short (x + y)
@@ -249,9 +248,7 @@ instance shortAdd : ∀ (x y : PGame.{u}) [Short x] [Short y], Short (x + y)
       rintro ⟨i⟩
       · apply shortAdd
       · change Short (mk xl xr xL xR + _); apply shortAdd
--- Porting note: In Lean 3 `using_well_founded` didn't need this to be explicit.
 termination_by x y => (x, y)
--- Porting note: `decreasing_by pgame_wf_tac` is no longer needed.
 #align pgame.short_add SetTheory.PGame.shortAdd
 
 instance shortNat : ∀ n : ℕ, Short n
@@ -293,9 +290,7 @@ def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ 
       · apply @Fintype.decidableExistsFintype xr _ ?_ _
         intro i
         apply (leLFDecidable _ _).1
--- Porting note: In Lean 3 `using_well_founded` didn't need this to be explicit.
 termination_by x y => (x, y)
--- Porting note: `decreasing_by pgame_wf_tac` is no longer needed.
 #align pgame.le_lf_decidable SetTheory.PGame.leLFDecidable
 
 instance leDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ≤ y) :=

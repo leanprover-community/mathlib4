@@ -55,7 +55,6 @@ namespace CategoryTheory
 section RepresentablyFlat
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
 variable {E : Type u₃} [Category.{v₃} E]
 
 /-- A functor `F : C ⥤ D` is representably-flat functor if the comma category `(X/F)`
@@ -67,66 +66,25 @@ class RepresentablyFlat (F : C ⥤ D) : Prop where
 
 attribute [instance] RepresentablyFlat.cofiltered
 
-attribute [local instance] IsCofiltered.nonempty
+instance RepresentablyFlat.of_isRightAdjoint (F : C ⥤ D) [IsRightAdjoint F] :
+    RepresentablyFlat F where
+  cofiltered _ := IsCofiltered.of_isInitial _ (mkInitialOfLeftAdjoint _ (.ofRightAdjoint F) _)
 
-instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
-  constructor
-  intro X
-  haveI : Nonempty (StructuredArrow X (𝟭 C)) := ⟨StructuredArrow.mk (𝟙 _)⟩
-  suffices IsCofilteredOrEmpty (StructuredArrow X (𝟭 C)) by constructor
-  constructor
-  · intro Y Z
-    use StructuredArrow.mk (𝟙 _)
-    use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
-    use StructuredArrow.homMk Z.hom (by erw [Functor.id_map, Category.id_comp])
-  · intro Y Z f g
-    use StructuredArrow.mk (𝟙 _)
-    use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
-    ext
-    trans Z.hom <;> simp
+theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 #align category_theory.representably_flat.id CategoryTheory.RepresentablyFlat.id
 
 instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
-  constructor
-  intro X
-  have : Nonempty (StructuredArrow X (F ⋙ G)) := by
-    have f₁ : StructuredArrow X G := Nonempty.some inferInstance
-    have f₂ : StructuredArrow f₁.right F := Nonempty.some inferInstance
-    exact ⟨StructuredArrow.mk (f₁.hom ≫ G.map f₂.hom)⟩
-  suffices IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G)) by constructor
-  constructor
-  · intro Y Z
-    let W :=
-      @IsCofiltered.min (StructuredArrow X G) _ _ (StructuredArrow.mk Y.hom)
-        (StructuredArrow.mk Z.hom)
-    let Y' : W ⟶ _ := IsCofiltered.minToLeft _ _
-    let Z' : W ⟶ _ := IsCofiltered.minToRight _ _
-    let W' :=
-      @IsCofiltered.min (StructuredArrow W.right F) _ _ (StructuredArrow.mk Y'.right)
-        (StructuredArrow.mk Z'.right)
-    let Y'' : W' ⟶ _ := IsCofiltered.minToLeft _ _
-    let Z'' : W' ⟶ _ := IsCofiltered.minToRight _ _
-    use StructuredArrow.mk (W.hom ≫ G.map W'.hom)
-    use StructuredArrow.homMk Y''.right (by simp [← G.map_comp])
-    use StructuredArrow.homMk Z''.right (by simp [← G.map_comp])
-  · intro Y Z f g
-    let W :=
-      @IsCofiltered.eq (StructuredArrow X G) _ _ (StructuredArrow.mk Y.hom)
-        (StructuredArrow.mk Z.hom) (StructuredArrow.homMk (F.map f.right) (StructuredArrow.w f))
-        (StructuredArrow.homMk (F.map g.right) (StructuredArrow.w g))
-    let h : W ⟶ _ := IsCofiltered.eqHom _ _
-    let h_cond : h ≫ _ = h ≫ _ := IsCofiltered.eq_condition _ _
-    let W' :=
-      @IsCofiltered.eq (StructuredArrow W.right F) _ _ (StructuredArrow.mk h.right)
-        (StructuredArrow.mk (h.right ≫ F.map f.right)) (StructuredArrow.homMk f.right rfl)
-        (StructuredArrow.homMk g.right (congr_arg CommaMorphism.right h_cond).symm)
-    let h' : W' ⟶ _ := IsCofiltered.eqHom _ _
-    let h'_cond : h' ≫ _ = h' ≫ _ := IsCofiltered.eq_condition _ _
-    use StructuredArrow.mk (W.hom ≫ G.map W'.hom)
-    use StructuredArrow.homMk h'.right (by simp [← G.map_comp])
-    ext
-    exact (congr_arg CommaMorphism.right h'_cond : _)
+  refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
+  obtain ⟨c₁⟩ := IsCofiltered.cone_nonempty (H ⋙ StructuredArrow.pre X F G)
+  let H₂ : J ⥤ StructuredArrow c₁.pt.right F :=
+    { obj := fun j => StructuredArrow.mk (c₁.π.app j).right
+      map := fun {j j'} f =>
+        StructuredArrow.homMk (H.map f).right (congrArg CommaMorphism.right (c₁.w f)) }
+  obtain ⟨c₂⟩ := IsCofiltered.cone_nonempty H₂
+  exact ⟨⟨StructuredArrow.mk (c₁.pt.hom ≫ G.map c₂.pt.hom),
+    ⟨fun j => StructuredArrow.homMk (c₂.π.app j).right (by simp [← G.map_comp, (c₂.π.app j).w]),
+     fun j j' f => by simpa using (c₂.w f).symm⟩⟩⟩
 #align category_theory.representably_flat.comp CategoryTheory.RepresentablyFlat.comp
 
 end RepresentablyFlat
@@ -152,7 +110,6 @@ namespace PreservesFiniteLimitsOfFlat
 open StructuredArrow
 
 variable {J : Type v₁} [SmallCategory J] [FinCategory J] {K : J ⥤ C}
-
 variable (F : C ⥤ D) [RepresentablyFlat F] {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
 
 /-- (Implementation).
@@ -303,9 +260,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_evaluation_iso_colim CategoryTheory.lanEvaluationIsoColim
 
 variable [ConcreteCategory.{u₁} E] [HasLimits E] [HasColimits E]
-
 variable [ReflectsLimits (forget E)] [PreservesFilteredColimits (forget E)]
-
 variable [PreservesLimits (forget E)]
 
 /-- If `F : C ⥤ D` is a representably flat functor between small categories, then the functor
