@@ -6,7 +6,6 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Monoidal.Mon_
-import Mathlib.Tactic.RewriteSearch
 
 /-!
 # The category of comonoids in a monoidal category.
