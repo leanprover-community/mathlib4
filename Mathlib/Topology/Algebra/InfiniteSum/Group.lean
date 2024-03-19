@@ -23,7 +23,6 @@ variable {α β γ δ : Type*}
 section TopologicalGroup
 
 variable [AddCommGroup α] [TopologicalSpace α] [TopologicalAddGroup α]
-
 variable {f g : β → α} {a a₁ a₂ : α}
 
 -- `by simpa using` speeds up elaboration. Why?

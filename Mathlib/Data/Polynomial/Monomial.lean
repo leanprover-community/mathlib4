@@ -23,7 +23,6 @@ open Polynomial
 universe u
 
 variable {R : Type u} {a b : R} {m n : ℕ}
-
 variable [Semiring R] {p q r : R[X]}
 
 theorem monomial_one_eq_iff [Nontrivial R] {i j : ℕ} :

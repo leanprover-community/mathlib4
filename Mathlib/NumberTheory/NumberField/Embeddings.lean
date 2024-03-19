@@ -42,7 +42,6 @@ section Fintype
 open FiniteDimensional
 
 variable (K : Type*) [Field K] [NumberField K]
-
 variable (A : Type*) [Field A] [CharZero A]
 
 /-- There are finitely many embeddings of a number field. -/
@@ -85,7 +84,6 @@ section Bounded
 open FiniteDimensional Polynomial Set
 
 variable {K : Type*} [Field K] [NumberField K]
-
 variable {A : Type*} [NormedField A] [IsAlgClosed A] [NormedAlgebra ℚ A]
 
 theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x‖ ≤ B) (i : ℕ) :
@@ -653,7 +651,6 @@ lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤
 
 variable [Algebra k K] [Algebra k F] [Algebra K F] [IsScalarTower k K F]
 variable (σ : K ≃ₐ[k] K) (w : InfinitePlace K)
-
 variable (k K)
 
 lemma card_mono [NumberField k] [NumberField K] :

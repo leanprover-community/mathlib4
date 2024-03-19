@@ -54,11 +54,8 @@ theorem univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := by
 #align finset.univ_fin2 Finset.univ_fin2
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-
 variable [S : AffineSpace V P]
-
 variable {ι : Type*} (s : Finset ι)
-
 variable {ι₂ : Type*} (s₂ : Finset ι₂)
 
 /-- A weighted sum of the results of subtracting a base point from the
@@ -775,7 +772,6 @@ end Finset
 namespace Finset
 
 variable (k : Type*) {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P] {ι : Type*} (s : Finset ι) {ι₂ : Type*} (s₂ : Finset ι₂)
 
 /-- The weights for the centroid of some points. -/
@@ -1194,7 +1190,6 @@ end AffineSpace'
 section DivisionRing
 
 variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P] {ι : Type*}
 
 open Set Finset
@@ -1234,7 +1229,6 @@ end DivisionRing
 namespace AffineMap
 
 variable {k : Type*} {V : Type*} (P : Type*) [CommRing k] [AddCommGroup V] [Module k V]
-
 variable [AffineSpace V P] {ι : Type*} (s : Finset ι)
 
 -- TODO: define `affineMap.proj`, `affineMap.fst`, `affineMap.snd`

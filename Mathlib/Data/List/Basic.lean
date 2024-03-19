@@ -2617,7 +2617,6 @@ end FoldlEqFoldr
 section FoldlEqFoldlr'
 
 variable {f : α → β → α}
-
 variable (hf : ∀ a b c, f (f a b) c = f (f a c) b)
 
 theorem foldl_eq_of_comm' : ∀ a b l, foldl f a (b :: l) = f (foldl f a l) b
@@ -2635,7 +2634,6 @@ end FoldlEqFoldlr'
 section FoldlEqFoldlr'
 
 variable {f : α → β → β}
-
 variable (hf : ∀ a b c, f a (f b c) = f b (f a c))
 
 theorem foldr_eq_of_comm' : ∀ a b l, foldr f a (b :: l) = foldr f (f b a) l
