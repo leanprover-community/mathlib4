@@ -61,6 +61,31 @@ theorem Real.continuous_rpow_const {q : ℝ} (h : 0 < q) :
 
 end RPow
 
+namespace MeasureTheory
+
+/-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
+`μ.restrict s` are the same. -/
+theorem snorm_restrict_eq {α : Type*} {F : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup F]
+    (f : α → F) (p : ENNReal) (μ : MeasureTheory.Measure α) {s : Set α} (hs : MeasurableSet s)
+    (hsf : f.support ⊆ s) :
+    snorm f p (μ.restrict s) = snorm f p μ := by
+  dsimp only [snorm]
+  split_ifs with hp hp'
+  · rfl
+  · dsimp only [snormEssSup]
+    rw [← Function.support_comp_eq (fun x : F ↦ (‖x‖₊:ℝ≥0∞)) (by simp)] at hsf
+    rw [← Set.indicator_eq_self] at hsf
+    rw [← ENNReal.essSup_indicator_eq_essSup_restrict hs]
+    congr
+  · dsimp only [snorm']
+    rw [← Function.support_comp_eq (fun x : F ↦ (‖x‖₊:ℝ≥0∞) ^ p.toReal)] at hsf
+    · rw [← Set.indicator_eq_self] at hsf
+      rw [← lintegral_indicator _ hs]
+      congr
+    simp [ENNReal.toReal_pos hp hp']
+
+end MeasureTheory
+
 namespace Filter
 
 theorem eventually_of_isEmpty {α : Type*} {p : α → Prop} [IsEmpty α] {l : Filter α} :
@@ -844,3 +869,74 @@ theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
     _ ≤ C * γ * (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
       by rwa [← h2q, ENNReal.rpow_sub _ _ h3u h4u, ENNReal.div_le_iff h5u h6u]
     _ = C * γ *  snorm (fderiv ℝ u) (↑p) μ := by rw [snorm_nnreal_eq_lintegral h0p]
+
+set_option linter.unusedVariables false in
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
+with Haar measure, and let `1 < p < n` and `1 ≤ q ≤ (p⁻¹ - (finrank ℝ E : ℝ)⁻¹)⁻¹`.
+There exists a constant `C` depending only on `E`, `s`, `p` and `q`, such that the `L^q` norm of `u`
+is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
+
+Note: The codomain of `u` needs to be an inner product space.
+-/
+theorem snorm_le_snorm_fderiv_of_le {p q : ℝ≥0} (hp : 1 ≤ p) (hq : 1 ≤ q)
+    (h2p : p < finrank ℝ E) (hpq : p⁻¹ - (finrank ℝ E : ℝ)⁻¹ ≤ (q : ℝ)⁻¹) {s : Set E}
+    (hs : IsCompact s) :
+    ∃ C : ℝ≥0, ∀ (u : E → F') (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s),
+    snorm u q μ ≤ C * snorm (fderiv ℝ u) p μ := by
+  have h3p : 0 < p :=
+    calc 0 < 1 := by norm_num
+      _ ≤ p := hp
+  have hdim : (0:ℝ≥0) < finrank ℝ E := h3p.trans h2p
+  let p' : ℝ≥0 := (p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹)⁻¹
+  have hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹ := by
+    rw [inv_inv, NNReal.coe_sub]
+    · simp
+    · gcongr
+  have : (q : ℝ≥0∞) ≤ p' := by
+    have H : (p':ℝ)⁻¹ ≤ (↑q)⁻¹ := trans hp' hpq
+    norm_cast at H ⊢
+    rwa [inv_le_inv] at H
+    · dsimp
+      have : 0 < p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹ := by
+        simp only [tsub_pos_iff_lt]
+        gcongr
+      positivity
+    · positivity
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq μ F' hp h2p hp'
+  set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)
+  use t * C
+  intro u hu h2u
+  calc snorm u q μ = snorm u q (μ.restrict s) := by
+        rw [snorm_restrict_eq u q μ hs.measurableSet h2u]
+    _ ≤ snorm u p' (μ.restrict s) * t := by
+        convert snorm_le_snorm_mul_rpow_measure_univ this hu.continuous.aestronglyMeasurable
+        rw [← ENNReal.coe_rpow_of_nonneg]
+        · simp [ENNReal.coe_toNNReal hs.measure_lt_top.ne]
+        · rw [one_div, one_div]
+          norm_cast
+          rw [hp']
+          simpa using hpq
+    _ = snorm u p' μ * t := by rw [snorm_restrict_eq u p' μ hs.measurableSet h2u]
+    _ ≤ (C * snorm (fderiv ℝ u) p μ) * t := by
+        have h2u' : HasCompactSupport u := HasCompactSupport.of_support_subset_isCompact hs h2u
+        rel [hC hu h2u']
+    _ = (t * C) * snorm (fderiv ℝ u) p μ := by ring
+
+set_option linter.unusedVariables false in
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
+with Haar measure, and let `1 < p < n`.
+There exists a constant `C` depending only on `E` and `p`, such that the `Lᵖ` norm of `u`
+is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
+
+Note: The codomain of `u` needs to be an inner product space.
+-/
+theorem snorm_le_snorm_fderiv' {p : ℝ≥0} (hp : 1 ≤ p) (h2p : p < finrank ℝ E) {s : Set E}
+    (hs : IsCompact s) :
+    ∃ C : ℝ≥0, ∀ (u : E → F') (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s),
+    snorm u p μ ≤ C * snorm (fderiv ℝ u) p μ := by
+  refine snorm_le_snorm_fderiv_of_le μ F' hp hp h2p ?_ hs
+  norm_cast
+  simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
+  positivity
