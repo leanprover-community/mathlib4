@@ -149,7 +149,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     refine' IsLocalization.coeSubmodule_mono _ hJM ⟨c, _, hc⟩
     have := Submodule.mul_mem_mul (ha M hM) (Submodule.mem_span_singleton_self v)
     rwa [← hc] at this
-  simp_rw [Finset.mul_sum, mul_smul_comm] at hmem
+  simp_rw [v, Finset.mul_sum, mul_smul_comm] at hmem
   rw [← s.add_sum_erase _ hM, Submodule.add_mem_iff_left] at hmem
   · refine' hm M hM _
     obtain ⟨c, hc : algebraMap R A c = a M * b M⟩ := this _ (ha M hM) _ (hb M hM)
@@ -157,8 +157,8 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     rw [Algebra.smul_def, ← _root_.map_mul] at hmem
     obtain ⟨d, hdM, he⟩ := hmem
     rw [IsLocalization.injective _ hS he] at hdM
-    exact
-      Submodule.mem_map_of_mem
+    -- Note: #8386 had to specify the value of `f`
+    exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
         (((hf.mem_toFinset.1 hM).isPrime.mem_or_mem hdM).resolve_left <| hum M hM)
   · refine' Submodule.sum_mem _ fun M' hM' => _
     rw [Finset.mem_erase] at hM'
@@ -166,7 +166,9 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     rw [← hc, Algebra.smul_def, ← _root_.map_mul]
     specialize hu M' hM'.2
     simp_rw [Ideal.mem_iInf, Finset.mem_erase] at hu
-    exact Submodule.mem_map_of_mem (M.mul_mem_right _ <| hu M ⟨hM'.1.symm, hM⟩)
+    -- Note: #8386 had to specify the value of `f`
+    exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
+      (M.mul_mem_right _ <| hu M ⟨hM'.1.symm, hM⟩)
 #align fractional_ideal.is_principal.of_finite_maximals_of_inv FractionalIdeal.isPrincipal.of_finite_maximals_of_inv
 
 /-- An invertible ideal in a commutative ring with finitely many maximal ideals is principal.

@@ -157,7 +157,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
   have hb : LinearIndependent ℝ b := by
     refine' linearIndependent_of_ne_zero_of_inner_eq_zero _ _
     · intro i
-      fin_cases i <;> simp [hc.symm, hp.symm]
+      fin_cases i <;> simp [b, hc.symm, hp.symm]
     · intro i j hij
       fin_cases i <;> fin_cases j <;> try exact False.elim (hij rfl)
       · exact ho
@@ -176,7 +176,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
     have hr : Set.range b = {c₂ -ᵥ c₁, p₂ -ᵥ p₁} := by
       have hu : (Finset.univ : Finset (Fin 2)) = {0, 1} := by decide
       rw [← Fintype.coe_image_univ, hu]
-      simp
+      simp [b]
     rw [← hbs, hr, Submodule.mem_span_insert] at hv
     rcases hv with ⟨t₁, v', hv', hv⟩
     rw [Submodule.mem_span_singleton] at hv'
@@ -382,7 +382,7 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [No
 #align euclidean_geometry.orthogonal_projection_mem_subspace_eq_self EuclideanGeometry.orthogonalProjection_mem_subspace_eq_self
 
 /-- Orthogonal projection is idempotent. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
     orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p := by

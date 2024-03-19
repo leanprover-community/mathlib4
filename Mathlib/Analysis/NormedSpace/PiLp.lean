@@ -79,7 +79,7 @@ abbrev PiLp (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : Type _ :=
 instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
   ⟨fun _ => default⟩
 
-@[ext] -- porting note: new lemma
+@[ext] -- Porting note: new lemma
 protected theorem PiLp.ext {p : ℝ≥0∞} {ι : Type*} {α : ι → Type*} {x y : PiLp p α}
     (h : ∀ i, x i = y i) : x = y := funext h
 
@@ -373,7 +373,7 @@ def pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
     rcases p.dichotomy with (rfl | h)
     · rw [edist_eq_iSup, dist_eq_iSup]
       · cases isEmpty_or_nonempty ι
-        · simp only [Real.ciSup_empty, ciSup_of_empty, ENNReal.bot_eq_zero, ENNReal.zero_toReal]
+        · simp only [Real.iSup_of_isEmpty, ciSup_of_empty, ENNReal.bot_eq_zero, ENNReal.zero_toReal]
         · refine' le_antisymm (ciSup_le fun i => _) _
           · rw [← ENNReal.ofReal_le_iff_le_toReal (iSup_edist_ne_top_aux f g), ←
               PseudoMetricSpace.edist_dist]
@@ -720,7 +720,7 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_apply (e : ι ≃ ι') (v : PiL
 theorem _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
     (LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e).symm =
       LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e.symm :=
-  LinearIsometryEquiv.ext fun z => by -- porting note: was `rfl`
+  LinearIsometryEquiv.ext fun z => by -- Porting note: was `rfl`
     simp only [LinearIsometryEquiv.piLpCongrLeft, LinearIsometryEquiv.symm,
       LinearIsometryEquiv.coe_mk]
     unfold PiLp WithLp

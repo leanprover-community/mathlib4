@@ -48,7 +48,7 @@ variable {n : ℕ} {i j : ι} {s : Set α} {ε : ℝ} {f : ι → α → β} {g 
 
 theorem mem_notConvergentSeq_iff [Preorder ι] {x : α} :
     x ∈ notConvergentSeq f g n j ↔ ∃ k ≥ j, 1 / (n + 1 : ℝ) < dist (f k x) (g x) := by
-  simp_rw [notConvergentSeq, Set.mem_iUnion, exists_prop]; rfl
+  simp_rw [notConvergentSeq, Set.mem_iUnion, exists_prop, mem_setOf]
 #align measure_theory.egorov.mem_not_convergent_seq_iff MeasureTheory.Egorov.mem_notConvergentSeq_iff
 
 theorem notConvergentSeq_antitone [Preorder ι] : Antitone (notConvergentSeq f g n) :=

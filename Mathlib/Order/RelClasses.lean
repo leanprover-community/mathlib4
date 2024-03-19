@@ -215,7 +215,7 @@ def linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] 
       decidable_of_iff (¬r y x)
         ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
           h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
-  { partialOrderOfSO r with
+  { __ := partialOrderOfSO r
     le_total := fun x y =>
       match y, trichotomous_of r x y with
       | y, Or.inl h => Or.inl (Or.inr h)
@@ -289,7 +289,7 @@ instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
 theorem WellFoundedRelation.asymmetric {α : Sort*} [WellFoundedRelation α] {a b : α} :
     WellFoundedRelation.rel a b → ¬ WellFoundedRelation.rel b a :=
   fun hab hba => WellFoundedRelation.asymmetric hba hab
-termination_by _ => a
+termination_by a
 
 lemma WellFounded.prod_lex {ra : α → α → Prop} {rb : β → β → Prop} (ha : WellFounded ra)
     (hb : WellFounded rb) : WellFounded (Prod.Lex ra rb) :=

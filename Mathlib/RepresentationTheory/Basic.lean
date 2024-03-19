@@ -5,7 +5,7 @@ Authors: Antoine Labelle
 -/
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
@@ -293,7 +293,7 @@ theorem ofMulAction_single (g : G) (x : H) (r : k) :
 end MulAction
 section DistribMulAction
 
-variable (k G A : Type*) [CommSemiring k] [Monoid G] [AddCommGroup A] [Module k A]
+variable (k G A : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid A] [Module k A]
   [DistribMulAction G A] [SMulCommClass G k A]
 
 /-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
@@ -320,8 +320,8 @@ def ofMulDistribMulAction : Representation ℤ M (Additive G) :=
   (addMonoidEndRingEquivInt (Additive G) : AddMonoid.End (Additive G) →* _).comp
     ((monoidEndToAdditive G : _ →* _).comp (MulDistribMulAction.toMonoidEnd M G))
 
-@[simp] theorem ofMulDistribMulAction_apply_apply (g : M) (a : G) :
-    ofMulDistribMulAction M G g a = g • a := rfl
+@[simp] theorem ofMulDistribMulAction_apply_apply (g : M) (a : Additive G) :
+    ofMulDistribMulAction M G g a = Additive.ofMul (g • Additive.toMul a) := rfl
 
 end MulDistribMulAction
 section Group
@@ -355,7 +355,7 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
       show asAlgebraHom (ofMulAction k G G) _ _ = _; ext;
       simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul,
         ofMulAction_apply, smul_eq_mul]
-      -- Porting note : single_mul_apply not firing in simp
+      -- Porting note: single_mul_apply not firing in simp
       rw [MonoidAlgebra.single_mul_apply, one_mul]
     )
     (fun x y hx hy => by simp only [hx, hy, add_mul, add_smul]) fun r x hx => by

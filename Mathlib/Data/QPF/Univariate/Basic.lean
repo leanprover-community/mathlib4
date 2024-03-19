@@ -451,7 +451,7 @@ private theorem Cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, 
     have h₁ : ∀ u v : q.P.M, Mcongr u v → Quot.mk r' u = Quot.mk r' v := by
       intro u v cuv
       apply Quot.sound
-      simp only
+      simp only [r']
       rw [Quot.sound cuv]
       apply h'
     let f : Quot r → Quot r' :=
@@ -464,7 +464,7 @@ private theorem Cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, 
     rw [← this, ← PFunctor.map_map _ _ f, ← PFunctor.map_map _ _ (Quot.mk r), abs_map, abs_map,
       abs_map, h₀]
     rw [← PFunctor.map_map _ _ f, ← PFunctor.map_map _ _ (Quot.mk r), abs_map, abs_map, abs_map]
-  refine' ⟨r', this, rxy⟩
+  exact ⟨r', this, rxy⟩
 
 theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
     (h : ∀ x y, r x y → Quot.mk r <$> Cofix.dest x = Quot.mk r <$> Cofix.dest y) :
@@ -480,7 +480,7 @@ theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
     · rw [r'xy]
     have : ∀ x y, r x y → r' x y := fun x y h => Or.inr h
     rw [← Quot.factor_mk_eq _ _ this]
-    dsimp
+    dsimp [r']
     rw [@comp_map _ _ q _ _ _ (Quot.mk r), @comp_map _ _ q _ _ _ (Quot.mk r)]
     rw [h _ _ r'xy]
   right; exact rxy
@@ -506,7 +506,7 @@ theorem Cofix.bisim' {α : Type*} (Q : α → Prop) (u v : α → Cofix F)
     (fun x y ⟨x', Qx', xeq, yeq⟩ => by
       rcases h x' Qx' with ⟨a, f, f', ux'eq, vx'eq, h'⟩
       rw [liftr_iff]
-      refine' ⟨a, f, f', xeq.symm ▸ ux'eq, yeq.symm ▸ vx'eq, h'⟩)
+      exact ⟨a, f, f', xeq.symm ▸ ux'eq, yeq.symm ▸ vx'eq, h'⟩)
     _ _ ⟨x, Qx, rfl, rfl⟩
 #align qpf.cofix.bisim' QPF.Cofix.bisim'
 
@@ -613,7 +613,7 @@ theorem mem_supp {α : Type u} (x : F α) (u : α) :
   · intro h a f haf
     have : Liftp (fun u => u ∈ f '' univ) x := by
       rw [liftp_iff]
-      refine' ⟨a, f, haf.symm, fun i => mem_image_of_mem _ (mem_univ _)⟩
+      exact ⟨a, f, haf.symm, fun i => mem_image_of_mem _ (mem_univ _)⟩
     exact h this
   intro h p; rw [liftp_iff]
   rintro ⟨a, f, xeq, h'⟩

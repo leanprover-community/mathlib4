@@ -95,7 +95,7 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
   set g : α → β := (⋂ i, s i).piecewise (const α default) f
   refine' ⟨g, measurable_of_restrict_of_restrict_compl hsm _ _, ae_sum_iff.mpr fun i => _⟩
   · rw [restrict_piecewise]
-    simp only [Set.restrict, const]
+    simp only [s, Set.restrict, const]
     exact measurable_const
   · rw [restrict_piecewise_compl, compl_iInter]
     intro t ht
@@ -198,8 +198,8 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
   · exact Measurable.piecewise (measurableSet_toMeasurable _ _) measurable_const H.measurable_mk
   · rintro _ ⟨x, rfl⟩
     by_cases hx : x ∈ s
-    · simpa [hx] using h₀.some_mem
-    · simp only [hx, piecewise_eq_of_not_mem, not_false_iff]
+    · simpa [g, hx] using h₀.some_mem
+    · simp only [g, hx, piecewise_eq_of_not_mem, not_false_iff]
       contrapose! hx
       apply subset_toMeasurable
       simp (config := { contextual := true }) only [hx, mem_compl_iff, mem_setOf_eq, not_and,
@@ -209,7 +209,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
       exact H.ae_eq_mk.and ht
     filter_upwards [compl_mem_ae_iff.2 A] with x hx
     rw [mem_compl_iff] at hx
-    simp only [hx, piecewise_eq_of_not_mem, not_false_iff]
+    simp only [g, hx, piecewise_eq_of_not_mem, not_false_iff]
     contrapose! hx
     apply subset_toMeasurable
     simp only [hx, mem_compl_iff, mem_setOf_eq, false_and_iff, not_false_iff]
@@ -272,7 +272,7 @@ theorem aemeasurable_restrict_iff_comap_subtype {s : Set α} (hs : MeasurableSet
   rw [← map_comap_subtype_coe hs, (MeasurableEmbedding.subtype_coe hs).aemeasurable_map_iff]
 #align ae_measurable_restrict_iff_comap_subtype aemeasurable_restrict_iff_comap_subtype
 
-@[to_additive] -- @[to_additive (attr := simp)] -- Porting note: simp can prove this
+@[to_additive] -- @[to_additive (attr := simp)] -- Porting note (#10618): simp can prove this
 theorem aemeasurable_one [One β] : AEMeasurable (fun _ : α => (1 : β)) μ :=
   measurable_one.aemeasurable
 #align ae_measurable_one aemeasurable_one
@@ -387,8 +387,8 @@ theorem MeasureTheory.Measure.restrict_map_of_aemeasurable {f : α → δ} (hf :
 #align measure_theory.measure.restrict_map_of_ae_measurable MeasureTheory.Measure.restrict_map_of_aemeasurable
 
 theorem MeasureTheory.Measure.map_mono_of_aemeasurable {f : α → δ} (h : μ ≤ ν)
-    (hf : AEMeasurable f ν) : μ.map f ≤ ν.map f := fun s hs => by
-  simpa [hf, hs, hf.mono_measure h] using Measure.le_iff'.1 h (f ⁻¹' s)
+    (hf : AEMeasurable f ν) : μ.map f ≤ ν.map f :=
+  le_iff.2 fun s hs ↦ by simpa [hf, hs, hf.mono_measure h] using h (f ⁻¹' s)
 #align measure_theory.measure.map_mono_of_ae_measurable MeasureTheory.Measure.map_mono_of_aemeasurable
 
 /-- If the `σ`-algebra of the codomain of a null measurable function is countably generated,
@@ -412,6 +412,7 @@ lemma MeasureTheory.NullMeasurable.aemeasurable {f : α → β}
     refine measurable_generateFrom fun s hs ↦ .of_subtype_image ?_
     rw [preimage_comp, Subtype.image_preimage_coe]
     convert (hTm s hs).diff hvm using 1
+    rw [inter_comm]
     refine Set.ext fun x ↦ and_congr_left fun hxv ↦ ⟨fun hx ↦ ?_, fun hx ↦ hTf s hs hx⟩
     exact by_contra fun hx' ↦ hxv <| mem_biUnion hs ⟨hUf s hs hx, hx'⟩
 

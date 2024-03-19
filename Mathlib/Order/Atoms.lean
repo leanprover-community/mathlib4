@@ -3,7 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.ModularLattice
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.Nontriviality
@@ -717,12 +717,11 @@ protected noncomputable def completeLattice : CompleteLattice α :=
 
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
-  { IsSimpleOrder.completeLattice,
-    IsSimpleOrder.booleanAlgebra with
+  { __ := IsSimpleOrder.completeLattice
+    __ := IsSimpleOrder.booleanAlgebra
     iInf_sup_le_sup_sInf := fun x s => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · simp only [bot_sup_eq, ← sInf_eq_iInf]
-        exact le_rfl
+      · simp [bot_sup_eq, ← sInf_eq_iInf]
       · simp only [top_le_iff, top_sup_eq, iInf_top, le_sInf_iff, le_refl]
     inf_sSup_le_iSup_inf := fun x s => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
@@ -731,13 +730,17 @@ protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :
         exact le_rfl }
 #align is_simple_order.complete_boolean_algebra IsSimpleOrder.completeBooleanAlgebra
 
+instance : ComplementedLattice α :=
+  letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
+
 end IsSimpleOrder
 
 namespace IsSimpleOrder
 
 variable [CompleteLattice α] [IsSimpleOrder α]
 
---set_option default_priority 100 --Porting note: not supported, done for each instance individually
+--set_option default_priority 100
+-- Porting note: not supported, done for each instance individually
 
 instance (priority := 100) : IsAtomistic α :=
   ⟨fun b =>
@@ -1004,7 +1007,7 @@ theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderB
     have ⟨hgf, k, hgfk⟩ := Pi.lt_def.1 hgf
     obtain rfl : i = k := of_not_not fun hki => by rw [hbot _ (Ne.symm hki)] at hgfk; simp at hgfk
     if hij : j = i then subst hij; refine hlt _ hgfk else
-    refine eq_bot_iff.2 <| le_trans (hgf _) (eq_bot_iff.1 (hbot _ hij))
+    exact eq_bot_iff.2 <| le_trans (hgf _) (eq_bot_iff.1 (hbot _ hij))
   case mp =>
     rintro ⟨hbot, h⟩
     have ⟨i, hbot⟩ : ∃ i, f i ≠ ⊥ := by rw [ne_eq, Pi.eq_bot_iff, not_forall] at hbot; exact hbot

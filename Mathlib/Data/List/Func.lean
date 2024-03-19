@@ -111,7 +111,7 @@ theorem length_set : ∀ {m : ℕ} {as : List α}, as {m ↦ a}.length = max as.
     simp [set, length, @length_set m, Nat.succ_max_succ]
 #align list.func.length_set List.Func.length_set
 
--- porting note : @[simp] has been removed since `#lint` says this is
+-- Porting note (#11119): @[simp] has been removed since `#lint` says this is
 theorem get_nil {k : ℕ} : (get k [] : α) = default := by cases k <;> rfl
 #align list.func.get_nil List.Func.get_nil
 
@@ -133,19 +133,19 @@ theorem get_set {a : α} : ∀ {k : ℕ} {as : List α}, get k (as {k ↦ a}) = 
 theorem eq_get_of_mem {a : α} : ∀ {as : List α}, a ∈ as → ∃ n : Nat, a = get n as
   | [], h => by cases h
   | b :: as, h => by
-    rw [mem_cons] at h -- porting note : `mem_cons_iff` is now named `mem_cons`
+    rw [mem_cons] at h -- Porting note: `mem_cons_iff` is now named `mem_cons`
     cases h with
     | inl h => exact ⟨0, h⟩
     | inr h =>
       rcases eq_get_of_mem h with ⟨n, h⟩
       exact ⟨n + 1, h⟩
 #noalign list.func.eq_get_of_mem
--- porting note : the signature has been changed to correct what was presumably a bug,
+-- Porting note: the signature has been changed to correct what was presumably a bug,
 -- hence the #noalign
 
 theorem mem_get_of_le : ∀ {n : ℕ} {as : List α}, n < as.length → get n as ∈ as
   | _, [], h1 => by cases h1
-  -- porting note : needed to add to `rw [mem_cons] here` in the two cases below
+  -- Porting note: needed to add to `rw [mem_cons] here` in the two cases below
   -- and in other lemmas (presumably because previously lean could see through the def of `mem` ?)
   | 0, a :: as, _ => by rw [mem_cons]; exact Or.inl rfl
   | n + 1, a :: as, h1 => by
@@ -170,7 +170,7 @@ theorem get_set_eq_of_ne {a : α} :
     contradiction
     cases as <;> simp only [set, get, get_nil]
   | as, k + 1, m, h1 => by
-    -- porting note: I somewhat rearranged the case split
+    -- Porting note: I somewhat rearranged the case split
     match as, m with
     | as, 0 => cases as <;> simp only [set, get]
     | [], m+1 =>
@@ -254,7 +254,7 @@ namespace Func
 @[simp]
 theorem get_neg [AddGroup α] {k : ℕ} {as : List α} : @get α ⟨0⟩ k (neg as) = -@get α ⟨0⟩ k as := by
   unfold neg
-  rw [@get_map' α α ⟨0⟩ ⟨0⟩] -- porting note: had to add a `⟨0⟩` b/c of instance troubles
+  rw [@get_map' α α ⟨0⟩ ⟨0⟩] -- Porting note: had to add a `⟨0⟩` b/c of instance troubles
   apply neg_zero
 #align list.func.get_neg List.Func.get_neg
 
@@ -311,7 +311,7 @@ namespace Func
 -- add
 @[simp]
 theorem get_add {α : Type u} [AddMonoid α] {k : ℕ} {xs ys : List α} :
-    -- porting note : `@` and `⟨0⟩`s added b/c of instance troubles
+    -- Porting note: `@` and `⟨0⟩`s added b/c of instance troubles
     -- (similarly at other places below)
     @get α ⟨0⟩ k (add xs ys) = @get α ⟨0⟩ k xs + @get α ⟨0⟩ k ys := by
   apply @get_pointwise _ _ _ ⟨0⟩ ⟨0⟩ ⟨0⟩
@@ -330,7 +330,7 @@ theorem nil_add {α : Type u} [AddMonoid α] (as : List α) : add [] as = as := 
   apply Eq.trans _ (map_id as)
   congr with x
   exact zero_add x
-  -- porting note: instead of `zero_add`, it was the commented `rw` below
+  -- Porting note: instead of `zero_add`, it was the commented `rw` below
   -- (similarly at other places below)
   --rw [zero_add, id]
 #align list.func.nil_add List.Func.nil_add

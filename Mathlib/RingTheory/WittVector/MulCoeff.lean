@@ -241,16 +241,11 @@ theorem peval_polyOfInterest' (n : ℕ) (x y : 𝕎 k) :
         x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
   rw [peval_polyOfInterest]
   have : (p : k) = 0 := CharP.cast_eq_zero k p
-  simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow', zero_mul, add_zero,
+  simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow, zero_mul, add_zero,
     not_false_eq_true]
-  have sum_zero_pow_mul_pow_p : ∀ y : 𝕎 k, ∑ x : ℕ in range (n + 1 + 1),
+  have sum_zero_pow_mul_pow_p (y : 𝕎 k) : ∑ x : ℕ in range (n + 1 + 1),
       (0 : k) ^ x * y.coeff x ^ p ^ (n + 1 - x) = y.coeff 0 ^ p ^ (n + 1) := by
-    intro y
-    rw [Finset.sum_eq_single_of_mem 0]
-    · simp
-    · simp
-    · intro j _ hj
-      simp [zero_pow (zero_lt_iff.mpr hj)]
+    rw [Finset.sum_eq_single_of_mem 0] <;> simp (config := { contextual := true })
   congr <;> apply sum_zero_pow_mul_pow_p
 #align witt_vector.peval_poly_of_interest' WittVector.peval_polyOfInterest'
 
@@ -272,10 +267,10 @@ theorem nth_mul_coeff' (n : ℕ) :
     simp_rw [product_val, this, Multiset.mem_product, mem_univ_val, true_and_iff, range_val,
       Multiset.range_succ, Multiset.mem_cons, Multiset.mem_range] at ha
     refine' ⟨a.fst, ⟨a.snd, _⟩⟩
-    cases' ha with ha ha <;> linarith only [ha]
+    cases' ha with ha ha <;> omega
   use f
   intro x y
-  dsimp [peval]
+  dsimp [f, peval]
   rw [← hf₀]
   congr
   ext a

@@ -3,10 +3,11 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Lean.Elab.Tactic.Config
+import Lean.Elab.Tactic.RCases
 import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Tactic.Relation.Rfl
 import Std.Logic
-import Std.Tactic.RCases
 
 /-!
 # The `congr!` tactic
@@ -522,7 +523,7 @@ where
             mvarId.assign <| .lam .anonymous ty.bindingDomain! mvar .default
             return ← loop mvar.mvarId!
         if let some patt ← CongrMetaM.nextPattern then
-          let gs ← Term.TermElabM.run' <| Std.Tactic.RCases.rintro #[patt] none mvarId
+          let gs ← Term.TermElabM.run' <| Lean.Elab.Tactic.RCases.rintro #[patt] none mvarId
           List.join <$> gs.mapM loop
         else
           let (_, mvarId) ← mvarId.intro1
@@ -713,7 +714,7 @@ syntax (name := congr!) "congr!" (Parser.Tactic.config)? (ppSpace num)?
 elab_rules : tactic
 | `(tactic| congr! $[$cfg:config]? $[$n]? $[with $ps?*]?) => do
   let config ← elabConfig (mkOptionalNode cfg)
-  let patterns := (Std.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+  let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
   liftMetaTactic fun g ↦
     let depth := n.map (·.getNat)
     g.congrN! depth config patterns

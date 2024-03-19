@@ -3,7 +3,8 @@ Copyright (c) 2023 Richard M. Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard M. Hill
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.PowerSeries.Trunc
+import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.Derivation.Basic
 
 /-!
@@ -53,7 +54,8 @@ theorem derivativeFun_add (f g : R⟦X⟧) :
 
 theorem derivativeFun_C (r : R) : derivativeFun (C R r) = 0 := by
   ext n
-  rw [coeff_derivativeFun, coeff_succ_C, zero_mul, map_zero]
+  -- Note that `map_zero` didn't get picked up, apparently due to a missing `FunLike.coe`
+  rw [coeff_derivativeFun, coeff_succ_C, zero_mul, (coeff R n).map_zero]
 
 theorem trunc_derivativeFun (f : R⟦X⟧) (n : ℕ) :
     trunc n f.derivativeFun = derivative (trunc (n + 1) f) := by

@@ -7,6 +7,7 @@ import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Sets.Compacts
+import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 #align_import topology.continuous_function.compact from "leanprover-community/mathlib"@"d3af0609f6db8691dffdc3e1fb7feb7da72698f2"
 
@@ -75,19 +76,19 @@ theorem uniformEmbedding_equivBoundedOfCompact : UniformEmbedding (equivBoundedO
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.
 -/
--- porting note: the following `simps` received a "maximum recursion depth" error
+-- Porting note: the following `simps` received a "maximum recursion depth" error
 -- @[simps! (config := .asFn) apply symm_apply]
 def addEquivBoundedOfCompact [AddMonoid β] [LipschitzAdd β] : C(α, β) ≃+ (α →ᵇ β) :=
   ({ toContinuousMapAddHom α β, (equivBoundedOfCompact α β).symm with } : (α →ᵇ β) ≃+ C(α, β)).symm
 #align continuous_map.add_equiv_bounded_of_compact ContinuousMap.addEquivBoundedOfCompact
 
--- porting note: added this `simp` lemma manually because of the `simps` error above
+-- Porting note: added this `simp` lemma manually because of the `simps` error above
 @[simp]
 theorem addEquivBoundedOfCompact_symm_apply [AddMonoid β] [LipschitzAdd β] :
     ⇑((addEquivBoundedOfCompact α β).symm) = toContinuousMapAddHom α β :=
   rfl
 
--- porting note: added this `simp` lemma manually because of the `simps` error above
+-- Porting note: added this `simp` lemma manually because of the `simps` error above
 @[simp]
 theorem addEquivBoundedOfCompact_apply [AddMonoid β] [LipschitzAdd β] :
     ⇑(addEquivBoundedOfCompact α β) = mkOfCompact :=
@@ -311,7 +312,7 @@ theorem linearIsometryBoundedOfCompact_toIsometryEquiv :
   rfl
 #align continuous_map.linear_isometry_bounded_of_compact_to_isometry_equiv ContinuousMap.linearIsometryBoundedOfCompact_toIsometryEquiv
 
-@[simp] -- porting note: adjusted LHS because `simpNF` complained it simplified.
+@[simp] -- Porting note: adjusted LHS because `simpNF` complained it simplified.
 theorem linearIsometryBoundedOfCompact_toAddEquiv :
     ((linearIsometryBoundedOfCompact α E 𝕜).toLinearEquiv : C(α, E) ≃+ (α →ᵇ E)) =
       addEquivBoundedOfCompact α E :=

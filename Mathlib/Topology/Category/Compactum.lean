@@ -71,7 +71,7 @@ We also add wrappers around structures which already exist. Here are the main on
 
 -/
 
--- porting note: "Compactum" is already upper case
+-- Porting note: "Compactum" is already upper case
 set_option linter.uppercaseLean3 false
 universe u
 
@@ -270,7 +270,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   -- Finish
   apply claim4.finiteInter_mem T
   intro t ht
-  refine' finiteInterClosure.basic (@hT t ht)
+  exact finiteInterClosure.basic (@hT t ht)
 
 theorem isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
   rw [isClosed_iff]

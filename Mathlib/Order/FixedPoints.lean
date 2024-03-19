@@ -66,7 +66,7 @@ theorem le_lfp {a : α} (h : ∀ b, f b ≤ b → a ≤ b) : a ≤ lfp f :=
   le_sInf h
 #align order_hom.le_lfp OrderHom.le_lfp
 
--- porting note: for the rest of the file, replace the dot notation `_.lfp` with `lfp _`
+-- Porting note: for the rest of the file, replace the dot notation `_.lfp` with `lfp _`
 -- same for `_.gfp`, `_.dual`
 -- Probably related to https://github.com/leanprover/lean4/issues/1910
 theorem map_le_lfp {a : α} (ha : a ≤ lfp f) : f a ≤ lfp f :=
@@ -243,7 +243,7 @@ theorem le_map_sup_fixedPoints (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x �
     _ ≤ f (x ⊔ y) := f.mono.le_map_sup x y
 #align order_hom.le_map_sup_fixed_points OrderHom.le_map_sup_fixedPoints
 
--- porting note: `x ⊓ y` without the `.val`sw fails to synthesize `Inf` instance
+-- Porting note: `x ⊓ y` without the `.val`sw fails to synthesize `Inf` instance
 theorem map_inf_fixedPoints_le (x y : fixedPoints f) : f (x ⊓ y) ≤ x.val ⊓ y.val :=
   f.dual.le_map_sup_fixedPoints x y
 #align order_hom.map_inf_fixed_points_le OrderHom.map_inf_fixedPoints_le
@@ -282,7 +282,7 @@ instance : SemilatticeInf (fixedPoints f) :=
   { OrderDual.semilatticeInf (fixedPoints (OrderHom.dual f)) with
     inf := fun x y => f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y) }
 
--- porting note: `coe` replaced with `Subtype.val`
+-- Porting note: `coe` replaced with `Subtype.val`
 instance : CompleteSemilatticeSup (fixedPoints f) :=
   { Subtype.partialOrder _ with
     sSup := fun s =>

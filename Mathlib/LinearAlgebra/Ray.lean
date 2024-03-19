@@ -6,6 +6,7 @@ Authors: Joseph Myers
 import Mathlib.Algebra.Order.Module.Algebra
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.RingTheory.Subring.Units
 
 #align_import linear_algebra.ray from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
 
@@ -171,8 +172,10 @@ theorem map (f : M →ₗ[R] N) (h : SameRay R x y) : SameRay R (f x) (f y) :=
 
 /-- The images of two vectors under an injective linear map are on the same ray if and only if the
 original vectors are on the same ray. -/
-theorem _root_.Function.Injective.sameRay_map_iff {F : Type*} [LinearMapClass F R M N] {f : F}
-    (hf : Function.Injective f) : SameRay R (f x) (f y) ↔ SameRay R x y := by
+theorem _root_.Function.Injective.sameRay_map_iff
+    {F : Type*} [FunLike F M N] [LinearMapClass F R M N]
+    {f : F} (hf : Function.Injective f) :
+    SameRay R (f x) (f y) ↔ SameRay R x y := by
   simp only [SameRay, map_zero, ← hf.eq_iff, map_smul]
 #align function.injective.same_ray_map_iff Function.Injective.sameRay_map_iff
 

@@ -278,7 +278,7 @@ theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : Left
 
 section
 
-variable {op : α → α → α} [IA : IsAssociative α op] [IC : IsCommutative α op]
+variable {op : α → α → α} [IA : Std.Associative op] [IC : Std.Commutative op]
 
 -- mathport name: op
 local notation a " * " b => op a b
@@ -352,7 +352,7 @@ alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 #align list.subperm.of_cons List.subperm.of_cons
 #align list.subperm.cons List.subperm.cons
 
---Porting note: commented out
+-- Porting note: commented out
 --attribute [protected] subperm.cons
 
 theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (h₁ : a ∉ l₁) (h₂ : a ∈ l₂)
@@ -712,7 +712,7 @@ theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
   ⟨perm_of_mem_permutations, mem_permutations_of_perm_lemma mem_permutationsAux_of_perm⟩
 #align list.mem_permutations List.mem_permutations
 
---Porting note: temporary theorem to solve diamond issue
+-- Porting note: temporary theorem to solve diamond issue
 private theorem DecEq_eq {α : Type*} [DecidableEq α] :
      instBEqList = @instBEq (List α) instDecidableEqList :=
   congr_arg BEq.mk <| by

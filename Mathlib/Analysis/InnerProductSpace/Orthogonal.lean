@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+import Mathlib.LinearAlgebra.SesquilinearForm
 
 #align_import analysis.inner_product_space.orthogonal from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -223,7 +223,7 @@ end Submodule
 
 @[simp]
 theorem bilinFormOfRealInner_orthogonal {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (K : Submodule ℝ E) : bilinFormOfRealInner.orthogonal K = Kᗮ :=
+    (K : Submodule ℝ E) : K.orthogonalBilin bilinFormOfRealInner = Kᗮ :=
   rfl
 #align bilin_form_of_real_inner_orthogonal bilinFormOfRealInner_orthogonal
 

@@ -93,7 +93,7 @@ theorem finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜
     subsingleton_of_forall_eq (0 : X ⟶ Y) fun f => by
       have p := not_congr (isIso_iff_nonzero f)
       simp only [Classical.not_not, Ne.def] at p
-      refine' p.mp fun _ => h (asIso f)
+      exact p.mp fun _ => h (asIso f)
   finrank_zero_of_subsingleton
 #align category_theory.finrank_hom_simple_simple_eq_zero_of_not_iso CategoryTheory.finrank_hom_simple_simple_eq_zero_of_not_iso
 
@@ -103,7 +103,7 @@ variable (𝕜 : Type*) [Field 𝕜]
 
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
--- porting note: the defeq issue in lean3 described below is no longer a problem in Lean4.
+-- Porting note: the defeq issue in lean3 described below is no longer a problem in Lean4.
 -- In the proof below we have some difficulty using `I : FiniteDimensional 𝕜 (X ⟶ X)`
 -- where we need a `FiniteDimensional 𝕜 (End X)`.
 -- These are definitionally equal, but without eta reduction Lean can't see this.
@@ -193,7 +193,7 @@ theorem finrank_hom_simple_simple_eq_one_iff (X Y : C) [FiniteDimensional 𝕜 (
     have le_one := finrank_hom_simple_simple_le_one 𝕜 X Y
     have zero_lt : 0 < finrank 𝕜 (X ⟶ Y) :=
       finrank_pos_iff_exists_ne_zero.mpr ⟨f.hom, (isIso_iff_nonzero f.hom).mp inferInstance⟩
-    linarith
+    omega
 #align category_theory.finrank_hom_simple_simple_eq_one_iff CategoryTheory.finrank_hom_simple_simple_eq_one_iff
 
 theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)]

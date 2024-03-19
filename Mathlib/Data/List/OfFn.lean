@@ -44,7 +44,7 @@ theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
 
 #noalign list.nth_of_fn_aux
 
---Porting note: new theorem
+-- Porting note: new theorem
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   have := Array.getElem_ofFn f i (by simpa using i.2)
@@ -52,7 +52,7 @@ theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by s
   simp only [getElem, Array.get] at this
   simp only [Fin.cast_mk]
   rw [← this]
-  congr <;> simp [ofFn]
+  congr
 
 /-- The `n`th element of a list -/
 @[simp]
@@ -86,7 +86,7 @@ theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
   ext_get (by simp) fun i h h' => by simp
 #align list.map_of_fn List.map_ofFn
 
---Porting note: we don't have Array' in mathlib4
+-- Porting note: we don't have Array' in mathlib4
 -- /-- Arrays converted to lists are the same as `of_fn` on the indexing function of the array. -/
 -- theorem array_eq_of_fn {n} (a : Array' n α) : a.toList = ofFn a.read :=
 --   by
@@ -251,7 +251,7 @@ def ofFnRec {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofF
 @[simp]
 theorem ofFnRec_ofFn {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) {n : ℕ}
     (f : Fin n → α) : @ofFnRec _ C h (List.ofFn f) = h _ f := by
-  --Porting note: Old proof was
+  -- Porting note: Old proof was
   -- equivSigmaTuple.rightInverse_symm.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
   have := (@equivSigmaTuple α).rightInverse_symm
   dsimp [equivSigmaTuple] at this

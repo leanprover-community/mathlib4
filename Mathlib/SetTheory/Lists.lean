@@ -83,7 +83,7 @@ def toList : ∀ {b}, Lists' α b → List (Lists α)
   | _, cons' a l => ⟨_, a⟩ :: l.toList
 #align lists'.to_list Lists'.toList
 
--- porting notes: removed @[simp]
+-- Porting note (#10618): removed @[simp]
 -- simp can prove this: by simp only [@Lists'.toList, @Sigma.eta]
 theorem toList_cons (a : Lists α) (l) : toList (cons a l) = a :: l.toList := by simp
 #align lists'.to_list_cons Lists'.toList_cons
@@ -117,7 +117,7 @@ theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
       -- change l' with cons' a l
       --
       -- This can be removed.
-      simpa [cons] using IH rfl
+      simpa [cons, l'] using IH rfl
 #align lists'.of_to_list Lists'.of_toList
 
 end Lists'
@@ -358,7 +358,7 @@ instance instSetoidLists : Setoid (Lists α) :=
 section Decidable
 
 /-- Auxiliary function to prove termination of decidability checking -/
-@[simp, deprecated] -- porting note: replaced by termination_by
+@[simp, deprecated] -- Porting note: replaced by termination_by
 def Equiv.decidableMeas :
     (PSum (Σ' _l₁ : Lists α, Lists α) <|
         PSum (Σ' _l₁ : Lists' α true, Lists' α true) (Σ' _a : Lists α, Lists' α true)) →
@@ -403,6 +403,7 @@ mutual
           by decreasing_tactic
         Subset.decidable l₂ l₁
       exact decidable_of_iff' _ Equiv.antisymm_iff
+  termination_by x y => sizeOf x + sizeOf y
   instance Subset.decidable : ∀ l₁ l₂ : Lists' α true, Decidable (l₁ ⊆ l₂)
     | Lists'.nil, l₂ => isTrue Lists'.Subset.nil
     | @Lists'.cons' _ b a l₁, l₂ => by
@@ -415,6 +416,7 @@ mutual
           by decreasing_tactic
         Subset.decidable l₁ l₂
       exact decidable_of_iff' _ (@Lists'.cons_subset _ ⟨_, _⟩ _ _)
+  termination_by x y => sizeOf x + sizeOf y
   instance mem.decidable : ∀ (a : Lists α) (l : Lists' α true), Decidable (a ∈ l)
     | a, Lists'.nil => isFalse <| by rintro ⟨_, ⟨⟩, _⟩
     | a, Lists'.cons' b l₂ => by
@@ -429,11 +431,8 @@ mutual
         mem.decidable a l₂
       refine' decidable_of_iff' (a ~ ⟨_, b⟩ ∨ a ∈ l₂) _
       rw [← Lists'.mem_cons]; rfl
+  termination_by x y => sizeOf x + sizeOf y
 end
-termination_by
-  Subset.decidable x y => sizeOf x + sizeOf y
-  Equiv.decidable x y => sizeOf x + sizeOf y
-  mem.decidable x y => sizeOf x + sizeOf y
 #align lists.equiv.decidable Lists.Equiv.decidable
 #align lists.subset.decidable Lists.Subset.decidable
 #align lists.mem.decidable Lists.mem.decidable
@@ -477,7 +476,7 @@ instance : Inhabited (Finsets α) :=
 
 instance [DecidableEq α] : DecidableEq (Finsets α) := by
   unfold Finsets
-  -- porting notes: infer_instance does not work for some reason
+  -- Porting note: infer_instance does not work for some reason
   exact (Quotient.decidableEq (d := fun _ _ => Lists.Equiv.decidable _ _))
 
 end Finsets

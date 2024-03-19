@@ -201,7 +201,7 @@ lemma set_integral_tilted' (f : α → ℝ) (g : α → E) {s : Set α} (hs : Me
   · rw [tilted_eq_withDensity_nnreal, set_integral_withDensity_eq_set_integral_smul₀ _ _ hs]
     · congr
     · suffices AEMeasurable (fun x ↦ exp (f x) / ∫ x, exp (f x) ∂μ) μ by
-        rw [← aEMeasurable_coe_nnreal_real_iff]
+        rw [← aemeasurable_coe_nnreal_real_iff]
         refine AEMeasurable.restrict ?_
         simpa only [NNReal.coe_mk]
       exact (measurable_exp.comp_aemeasurable hf).div_const _
@@ -218,7 +218,7 @@ lemma set_integral_tilted [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set 
   · rw [tilted_eq_withDensity_nnreal, set_integral_withDensity_eq_set_integral_smul₀']
     · congr
     · suffices AEMeasurable (fun x ↦ exp (f x) / ∫ x, exp (f x) ∂μ) μ by
-        rw [← aEMeasurable_coe_nnreal_real_iff]
+        rw [← aemeasurable_coe_nnreal_real_iff]
         refine AEMeasurable.restrict ?_
         simpa only [NNReal.coe_mk]
       exact (measurable_exp.comp_aemeasurable hf).div_const _
@@ -313,7 +313,7 @@ lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν
     · refine ae_of_all _ (fun x ↦ ?_)
       simp only
       congr
-      rw [ENNReal.ofReal_inv_of_pos, inv_div', ← exp_neg, div_eq_mul_inv, inv_inv]
+      rw [← ENNReal.ofReal_inv_of_pos, inv_div', ← exp_neg, div_eq_mul_inv, inv_inv]
       exact div_pos (exp_pos _) (integral_exp_pos hf)
 
 lemma toReal_rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
@@ -333,7 +333,7 @@ lemma rnDeriv_tilted_left {ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
   refine Measure.rnDeriv_withDensity_left (μ := μ) (ν := ν) (f := g) ?_ ?_ ?_
   · exact ((measurable_exp.comp_aemeasurable hfμ).div_const _).ennreal_ofReal
   · exact ((measurable_exp.comp_aemeasurable hfν).div_const _).ennreal_ofReal
-  · exact ae_of_all _ (fun x ↦ by simp)
+  · exact ae_of_all _ (fun x ↦ by simp [g])
 
 lemma toReal_rnDeriv_tilted_left {ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
     (hfμ : AEMeasurable f μ) (hfν : AEMeasurable f ν) :

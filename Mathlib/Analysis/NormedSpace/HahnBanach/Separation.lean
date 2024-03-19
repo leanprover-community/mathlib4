@@ -90,14 +90,14 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
   let x₀ := b₀ - a₀
   let C := x₀ +ᵥ (s - t)
   have : (0 : E) ∈ C :=
-    ⟨a₀ - b₀, sub_mem_sub ha₀ hb₀, by simp_rw [vadd_eq_add, sub_add_sub_cancel', sub_self]⟩
+    ⟨a₀ - b₀, sub_mem_sub ha₀ hb₀, by simp_rw [x₀, vadd_eq_add, sub_add_sub_cancel', sub_self]⟩
   have : Convex ℝ C := (hs₁.sub ht).vadd _
   have : x₀ ∉ C := by
     intro hx₀
     rw [← add_zero x₀] at hx₀
     exact disj.zero_not_mem_sub_set (vadd_mem_vadd_set_iff.1 hx₀)
   obtain ⟨f, hf₁, hf₂⟩ := separate_convex_open_set ‹0 ∈ C› ‹_› (hs₂.sub_right.vadd _) ‹x₀ ∉ C›
-  have : f b₀ = f a₀ + 1 := by simp [← hf₁]
+  have : f b₀ = f a₀ + 1 := by simp [x₀, ← hf₁]
   have forall_le : ∀ a ∈ s, ∀ b ∈ t, f a ≤ f b := by
     intro a ha b hb
     have := hf₂ (x₀ + (a - b)) (vadd_mem_vadd_set <| sub_mem_sub ha hb)

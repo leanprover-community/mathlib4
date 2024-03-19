@@ -241,7 +241,7 @@ namespace Units
 
 variable (M : Type u) [Monoid M]
 
--- porting note: it was necessary to add `by exact` in this definition, presumably
+-- Porting note: it was necessary to add `by exact` in this definition, presumably
 -- so that Lean4 is not confused by the fact that `M` has two opposite multiplications
 /-- The units in a monoid are (multiplicatively) equivalent to
 the automorphisms of `star` when we think of the monoid as a single-object category. -/

@@ -57,6 +57,7 @@ variable {p : ℕ+} {k : ℕ} {K : Type u} {L : Type v} {ζ : L} [Field K] [Fiel
 
 variable [Algebra K L]
 
+set_option tactic.skipAssignedInstances false in
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ (k + 1)} K L`, then the discriminant of
 `hζ.powerBasis K` is `(-1) ^ ((p ^ (k + 1).totient) / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1))`
 if `Irreducible (cyclotomic (p ^ (k + 1)) K))`, and `p ^ (k + 1) ≠ 2`. -/
@@ -84,8 +85,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       · simp
       · norm_num; simp_rw [_root_.pow_succ, (even_two.mul_right _).neg_one_pow,
           ((even_two.mul_right _).mul_right _).neg_one_pow]
-    · replace hp2 : (p : ℕ) ≠ 2
-      · rwa [Ne.def, ← coe_two, PNat.coe_inj]
+    · replace hp2 : (p : ℕ) ≠ 2 := by rwa [Ne.def, ← coe_two, PNat.coe_inj]
       have hpo : Odd (p : ℕ) := hp.out.odd_of_ne_two hp2
       obtain ⟨a, ha⟩ := (hp.out.even_sub_one hp2).two_dvd
       rw [ha, mul_left_comm, mul_assoc, Nat.mul_div_cancel_left _ two_pos,
@@ -120,7 +120,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     · simp only [H, mul_comm _ (k + 1)]; norm_cast
     · -- Porting note: was `replace h := pow_eq_zero h; rw [coe_coe] at h; simpa using hne.1`
       have := hne.1
-      rw [PNat.pow_coe, Nat.cast_pow, Ne.def, pow_eq_zero_iff (by linarith)] at this
+      rw [PNat.pow_coe, Nat.cast_pow, Ne.def, pow_eq_zero_iff (by omega)] at this
       exact absurd (pow_eq_zero h) this
 #align is_cyclotomic_extension.discr_prime_pow_ne_two IsCyclotomicExtension.discr_prime_pow_ne_two
 
@@ -134,6 +134,7 @@ theorem discr_prime_pow_ne_two' [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : 
   by simpa [totient_prime_pow hp.out (succ_pos k)] using discr_prime_pow_ne_two hζ hirr hk
 #align is_cyclotomic_extension.discr_prime_pow_ne_two' IsCyclotomicExtension.discr_prime_pow_ne_two'
 
+set_option tactic.skipAssignedInstances false in
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ k} K L`, then the discriminant of
 `hζ.powerBasis K` is `(-1) ^ ((p ^ k).totient / 2) * p ^ (p ^ (k - 1) * ((p - 1) * k - 1))`
 if `Irreducible (cyclotomic (p ^ k) K))`. Beware that in the cases `p ^ k = 1` and `p ^ k = 2`
@@ -184,10 +185,10 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
       · simp only [discr, traceMatrix_apply, Matrix.det_unique, Fin.default_eq_zero, Fin.val_zero,
           _root_.pow_zero, traceForm_apply, mul_one]
         rw [← (algebraMap K L).map_one, trace_algebraMap, finrank _ hirr]; norm_num
-        simp [← coe_two, Even.neg_pow (by decide : Even (1 / 2))]
     · exact discr_prime_pow_ne_two hζ hirr hk
 #align is_cyclotomic_extension.discr_prime_pow IsCyclotomicExtension.discr_prime_pow
 
+set_option tactic.skipAssignedInstances false in
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ k} K L`, then there are `u : ℤˣ` and
 `n : ℕ` such that the discriminant of `hζ.powerBasis K` is `u * p ^ n`. Often this is enough and
 less cumbersome to use than `IsCyclotomicExtension.discr_prime_pow`. -/

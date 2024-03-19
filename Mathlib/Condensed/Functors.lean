@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
 import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.Condensed.Basic
 import Mathlib.Topology.Category.Stonean.Basic
@@ -11,7 +12,7 @@ import Mathlib.Topology.Category.Stonean.Basic
 /-!
 # Functors from categories of topological spaces to condensed sets
 
-This file defines the various functors from catgegories of topological spaces to condensed sets.
+This file defines the various functors from categories of topological spaces to condensed sets.
 
 ## Main definitions
 

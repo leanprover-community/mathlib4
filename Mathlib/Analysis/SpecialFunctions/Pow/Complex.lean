@@ -161,9 +161,9 @@ theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℂ
 
 /-- See Note [no_index around OfNat.ofNat] -/
 @[simp]
-lemma cpow_ofNat_inv_pow (x : ℂ) (n : ℕ) [h : n.AtLeastTwo] :
+lemma cpow_ofNat_inv_pow (x : ℂ) (n : ℕ) [n.AtLeastTwo] :
     (x ^ ((no_index (OfNat.ofNat n) : ℂ)⁻¹)) ^ (no_index (OfNat.ofNat n) : ℕ) = x :=
-  cpow_nat_inv_pow _ (two_pos.trans_le h.1).ne'
+  cpow_nat_inv_pow _ (NeZero.ne n)
 
 /-- A version of `Complex.cpow_int_mul` with RHS that matches `Complex.cpow_mul`.
 
@@ -193,10 +193,10 @@ lemma pow_cpow_nat_inv {x : ℂ} {n : ℕ} (h₀ : n ≠ 0) (hlt : -(π / n) < x
   · rwa [← div_lt_iff' (Nat.cast_pos.2 h₀.bot_lt), neg_div]
   · rwa [← le_div_iff' (Nat.cast_pos.2 h₀.bot_lt)]
 
-lemma pow_cpow_ofNat_inv {x : ℂ} {n : ℕ} [h : n.AtLeastTwo] (hlt : -(π / OfNat.ofNat n) < x.arg)
+lemma pow_cpow_ofNat_inv {x : ℂ} {n : ℕ} [n.AtLeastTwo] (hlt : -(π / OfNat.ofNat n) < x.arg)
     (hle : x.arg ≤ π / OfNat.ofNat n) :
     (x ^ (OfNat.ofNat n : ℕ)) ^ ((OfNat.ofNat n : ℂ)⁻¹) = x :=
-  pow_cpow_nat_inv (two_pos.trans_le h.1).ne' hlt hle
+  pow_cpow_nat_inv (NeZero.ne n) hlt hle
 
 /-- See also `Complex.pow_cpow_ofNat_inv` for a version that also works for `x * I`, `0 ≤ x`. -/
 lemma sq_cpow_two_inv {x : ℂ} (hx : 0 < x.re) : (x ^ (2 : ℕ)) ^ (2⁻¹ : ℂ) = x :=
@@ -216,6 +216,14 @@ theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : �
   rw [cpow_def_of_ne_zero (mul_ne_zero ha'' hb''), log_ofReal_mul ha' hb'', ofReal_log ha,
     add_mul, exp_add, ← cpow_def_of_ne_zero ha'', ← cpow_def_of_ne_zero hb'']
 #align complex.mul_cpow_of_real_nonneg Complex.mul_cpow_ofReal_nonneg
+
+lemma natCast_mul_natCast_cpow (m n : ℕ) (s : ℂ) : (m * n : ℂ) ^ s = m ^ s * n ^ s :=
+  ofReal_nat_cast m ▸ ofReal_nat_cast n ▸ mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg s
+
+lemma natCast_cpow_natCast_mul (n m : ℕ) (z : ℂ) : (n : ℂ) ^ (m * z) = ((n : ℂ) ^ m) ^ z := by
+  refine cpow_nat_mul' (x := n) (n := m) ?_ ?_ z
+  · simp only [natCast_arg, mul_zero, Left.neg_neg_iff, pi_pos]
+  · simp only [natCast_arg, mul_zero, pi_pos.le]
 
 theorem inv_cpow_eq_ite (x : ℂ) (n : ℂ) :
     x⁻¹ ^ n = if x.arg = π then conj (x ^ conj n)⁻¹ else (x ^ n)⁻¹ := by

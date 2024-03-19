@@ -254,7 +254,7 @@ variable [Group α] [LinearOrder α] {a b : α}
 @[to_additive] lemma mabs_eq_mabs : |a|ₘ = |b|ₘ ↔ a = b ∨ a = b⁻¹ := by
   refine' ⟨fun h ↦ ?_, by rintro (h | h) <;> simp [h, abs_neg]⟩
   obtain rfl | rfl := eq_or_eq_inv_of_mabs_eq h <;>
-    simpa only [inv_eq_iff_eq_inv (a := |b|ₘ), inv_inj, or_comm] using mabs_choice b
+    simpa only [inv_eq_iff_eq_inv (a := |b|ₘ), inv_inv, inv_inj, or_comm] using mabs_choice b
 #align abs_eq_abs abs_eq_abs
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
@@ -456,6 +456,18 @@ theorem abs_abs_sub_abs_le_abs_sub (a b : α) : |(|a| - |b|)| ≤ |a - b| :=
     ⟨abs_sub_abs_le_abs_sub _ _, by rw [abs_sub_comm]; apply abs_sub_abs_le_abs_sub⟩
 #align abs_abs_sub_abs_le_abs_sub abs_abs_sub_abs_le_abs_sub
 
+/-- `|a - b| ≤ n` if `0 ≤ a ≤ n` and `0 ≤ b ≤ n`. -/
+theorem abs_sub_le_of_nonneg_of_le {a b n : α} (a_nonneg : 0 ≤ a) (a_le_n : a ≤ n)
+    (b_nonneg : 0 ≤ b) (b_le_n : b ≤ n) : |a - b| ≤ n := by
+  rw [abs_sub_le_iff, sub_le_iff_le_add, sub_le_iff_le_add]
+  exact ⟨le_add_of_le_of_nonneg a_le_n b_nonneg, le_add_of_le_of_nonneg b_le_n a_nonneg⟩
+
+/-- `|a - b| < n` if `0 ≤ a < n` and `0 ≤ b < n`. -/
+theorem abs_sub_lt_of_nonneg_of_lt {a b n : α} (a_nonneg : 0 ≤ a) (a_lt_n : a < n)
+    (b_nonneg : 0 ≤ b) (b_lt_n : b < n) : |a - b| < n := by
+  rw [abs_sub_lt_iff, sub_lt_iff_lt_add, sub_lt_iff_lt_add]
+  exact ⟨lt_add_of_lt_of_nonneg a_lt_n b_nonneg, lt_add_of_lt_of_nonneg b_lt_n a_nonneg⟩
+
 theorem abs_eq (hb : 0 ≤ b) : |a| = b ↔ a = b ∨ a = -b := by
   refine' ⟨eq_or_eq_neg_of_abs_eq, _⟩
   rintro (rfl | rfl) <;> simp only [abs_neg, abs_of_nonneg hb]
@@ -509,6 +521,12 @@ theorem dist_bdd_within_interval {a b lb ub : α} (hal : lb ≤ a) (hau : a ≤ 
 theorem eq_of_abs_sub_nonpos (h : |a - b| ≤ 0) : a = b :=
   eq_of_abs_sub_eq_zero (le_antisymm h (abs_nonneg (a - b)))
 #align eq_of_abs_sub_nonpos eq_of_abs_sub_nonpos
+
+theorem abs_sub_nonpos : |a - b| ≤ 0 ↔ a = b :=
+  ⟨eq_of_abs_sub_nonpos, by rintro rfl; rw [sub_self, abs_zero]⟩
+
+theorem abs_sub_pos : 0 < |a - b| ↔ a ≠ b :=
+  not_le.symm.trans abs_sub_nonpos.not
 
 @[simp]
 theorem abs_eq_self : |a| = a ↔ 0 ≤ a := by

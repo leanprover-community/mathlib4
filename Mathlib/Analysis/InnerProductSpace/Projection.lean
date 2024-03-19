@@ -89,10 +89,10 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     let w : ℕ → K := fun n => Classical.choose (h n)
     exact ⟨w, fun n => Classical.choose_spec (h n)⟩
   rcases exists_seq with ⟨w, hw⟩
-  have norm_tendsto : Tendsto (fun n => ‖u - w n‖) atTop (nhds δ) := by
-    have h : Tendsto (fun _ : ℕ => δ) atTop (nhds δ) := tendsto_const_nhds
-    have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (nhds δ) := by
-      convert h.add tendsto_one_div_add_atTop_nhds_0_nat
+  have norm_tendsto : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 δ) := by
+    have h : Tendsto (fun _ : ℕ => δ) atTop (𝓝 δ) := tendsto_const_nhds
+    have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (𝓝 δ) := by
+      convert h.add tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [add_zero]
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x => δ_le _) fun x => le_of_lt (hw _)
   -- Step 2: Prove that the sequence `w : ℕ → K` is a Cauchy sequence
@@ -135,9 +135,9 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
             one_add_one_eq_two, add_smul]
           simp only [one_smul]
           have eq₁ : wp - wq = a - b := (sub_sub_sub_cancel_left _ _ _).symm
-          have eq₂ : u + u - (wq + wp) = a + b
-          show u + u - (wq + wp) = u - wq + (u - wp)
-          abel
+          have eq₂ : u + u - (wq + wp) = a + b := by
+            show u + u - (wq + wp) = u - wq + (u - wp)
+            abel
           rw [eq₁, eq₂]
         _ = 2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) := parallelogram_law_with_norm ℝ _ _
     have eq : δ ≤ ‖u - half • (wq + wp)‖ := by
@@ -166,23 +166,10 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
       _ ≤ 2 * ((δ + div) * (δ + div) + (δ + div) * (δ + div)) - 4 * δ * δ := by gcongr
       _ = 8 * δ * div + 4 * div * div := by ring
     positivity
-    -- third goal : `Tendsto (fun (n : ℕ) => sqrt (b n)) atTop (𝓝 0)`
-    apply Tendsto.comp (f := b) (g := sqrt)
-    · have : Tendsto sqrt (nhds 0) (nhds (sqrt 0)) := continuous_sqrt.continuousAt
-      convert this
-      exact sqrt_zero.symm
-    have eq₁ : Tendsto (fun n : ℕ => 8 * δ * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert (tendsto_const_nhds (x := 8 * δ)).mul tendsto_one_div_add_atTop_nhds_0_nat
-      simp only [mul_zero]
-    have : Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert (tendsto_const_nhds (x := 4)).mul tendsto_one_div_add_atTop_nhds_0_nat
-      simp only [mul_zero]
-    have eq₂ :
-        Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1)) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert this.mul tendsto_one_div_add_atTop_nhds_0_nat
-      simp only [mul_zero]
-    convert eq₁.add eq₂
-    simp only [add_zero]
+    -- third goal : `Tendsto (fun (n : ℕ) => √(b n)) atTop (𝓝 0)`
+    suffices Tendsto (fun x ↦ sqrt (8 * δ * x + 4 * x * x) : ℝ → ℝ) (𝓝 0) (𝓝 0)
+      from this.comp tendsto_one_div_add_atTop_nhds_zero_nat
+    exact Continuous.tendsto' (by continuity) _ _ (by simp)
   -- Step 3: By completeness of `K`, let `w : ℕ → K` converge to some `v : K`.
   -- Prove that it satisfies all requirements.
   rcases cauchySeq_tendsto_of_isComplete h₁ (fun n => Subtype.mem _) seq_is_cauchy with
@@ -191,8 +178,8 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   use hv
   have h_cont : Continuous fun v => ‖u - v‖ :=
     Continuous.comp continuous_norm (Continuous.sub continuous_const continuous_id)
-  have : Tendsto (fun n => ‖u - w n‖) atTop (nhds ‖u - v‖)
-  convert Tendsto.comp h_cont.continuousAt w_tendsto
+  have : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 ‖u - v‖) := by
+    convert Tendsto.comp h_cont.continuousAt w_tendsto
   exact tendsto_nhds_unique this norm_tendsto
 #align exists_norm_eq_infi_of_complete_convex exists_norm_eq_iInf_of_complete_convex
 
@@ -236,8 +223,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       rw [eq₁, le_add_iff_nonneg_right] at this
       have eq₂ :
         θ * θ * ‖w - v‖ ^ 2 - 2 * θ * inner (u - v) (w - v) =
-          θ * (θ * ‖w - v‖ ^ 2 - 2 * inner (u - v) (w - v))
-      ring
+          θ * (θ * ‖w - v‖ ^ 2 - 2 * inner (u - v) (w - v)) := by ring
       rw [eq₂] at this
       have := le_of_sub_nonneg (nonneg_of_mul_nonneg_right this hθ₁)
       exact this
@@ -258,7 +244,8 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       have : 2 * p ≤ p :=
         calc
           2 * p ≤ θ * q := by
-            refine' this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num)
+            set_option tactic.skipAssignedInstances false in
+            exact this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num [θ])
           _ ≤ p := eq₁
       linarith
   · intro h
@@ -315,31 +302,31 @@ theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F
         rwa [norm_eq_iInf_iff_real_inner_le_zero] at h
         exacts [K.convex, hv]
       intro w hw
-      have le : ⟪u - v, w⟫_ℝ ≤ 0
-      let w' := w + v
-      have : w' ∈ K := Submodule.add_mem _ hw hv
-      have h₁ := h w' this
-      have h₂ : w' - v = w
-      simp only [add_neg_cancel_right, sub_eq_add_neg]
-      rw [h₂] at h₁
-      exact h₁
-      have ge : ⟪u - v, w⟫_ℝ ≥ 0
-      let w'' := -w + v
-      have : w'' ∈ K := Submodule.add_mem _ (Submodule.neg_mem _ hw) hv
-      have h₁ := h w'' this
-      have h₂ : w'' - v = -w
-      simp only [neg_inj, add_neg_cancel_right, sub_eq_add_neg]
-      rw [h₂, inner_neg_right] at h₁
-      linarith
+      have le : ⟪u - v, w⟫_ℝ ≤ 0 := by
+        let w' := w + v
+        have : w' ∈ K := Submodule.add_mem _ hw hv
+        have h₁ := h w' this
+        have h₂ : w' - v = w := by
+          simp only [w', add_neg_cancel_right, sub_eq_add_neg]
+        rw [h₂] at h₁
+        exact h₁
+      have ge : ⟪u - v, w⟫_ℝ ≥ 0 := by
+        let w'' := -w + v
+        have : w'' ∈ K := Submodule.add_mem _ (Submodule.neg_mem _ hw) hv
+        have h₁ := h w'' this
+        have h₂ : w'' - v = -w := by
+          simp only [w'', neg_inj, add_neg_cancel_right, sub_eq_add_neg]
+        rw [h₂, inner_neg_right] at h₁
+        linarith
       exact le_antisymm le ge)
     (by
       intro h
-      have : ∀ w ∈ K, ⟪u - v, w - v⟫_ℝ ≤ 0
-      intro w hw
-      let w' := w - v
-      have : w' ∈ K := Submodule.sub_mem _ hw hv
-      have h₁ := h w' this
-      exact le_of_eq h₁
+      have : ∀ w ∈ K, ⟪u - v, w - v⟫_ℝ ≤ 0 := by
+        intro w hw
+        let w' := w - v
+        have : w' ∈ K := Submodule.sub_mem _ hw hv
+        have h₁ := h w' this
+        exact le_of_eq h₁
       rwa [norm_eq_iInf_iff_real_inner_le_zero]
       exacts [Submodule.convex _, hv])
 #align norm_eq_infi_iff_real_inner_eq_zero norm_eq_iInf_iff_real_inner_eq_zero
@@ -697,9 +684,9 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
           LinearEquiv.coe_ofInvolutive, LinearMap.sub_apply, LinearMap.id_apply, two_smul,
           LinearMap.add_apply, LinearMap.comp_apply, Submodule.subtype_apply,
           ContinuousLinearMap.coe_coe]
-        dsimp
+        dsimp [v]
         abel
-      · simp only [add_sub_cancel'_right, eq_self_iff_true] }
+      · simp only [v, add_sub_cancel'_right, eq_self_iff_true] }
 #align reflection reflection
 
 variable {K}
@@ -1173,7 +1160,7 @@ theorem Submodule.finrank_add_finrank_orthogonal' [FiniteDimensional 𝕜 E] {K 
 span of a nonzero vector is one less than the dimension of the space. -/
 theorem finrank_orthogonal_span_singleton {n : ℕ} [_i : Fact (finrank 𝕜 E = n + 1)] {v : E}
     (hv : v ≠ 0) : finrank 𝕜 (𝕜 ∙ v)ᗮ = n := by
-  haveI : FiniteDimensional 𝕜 E := fact_finiteDimensional_of_finrank_eq_succ n
+  haveI : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ n
   exact Submodule.finrank_add_finrank_orthogonal' <| by
     simp [finrank_span_singleton hv, _i.elim, add_comm]
 #align finrank_orthogonal_span_singleton finrank_orthogonal_span_singleton
@@ -1205,7 +1192,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     · obtain ⟨V, hV₁, hV₂⟩ := IH φ hn'
       exact ⟨V, hV₁.trans n.le_succ, hV₂⟩
     -- Take a nonzero element `v` of the orthogonal complement of `W`.
-    haveI : Nontrivial Wᗮ := nontrivial_of_finrank_pos (by linarith [zero_le n] : 0 < finrank ℝ Wᗮ)
+    haveI : Nontrivial Wᗮ := nontrivial_of_finrank_pos (by omega : 0 < finrank ℝ Wᗮ)
     obtain ⟨v, hv⟩ := exists_ne (0 : Wᗮ)
     have hφv : φ v ∈ Wᗮ := by
       intro w hw
@@ -1245,7 +1232,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
         Submodule.finrank_lt_finrank_of_lt (SetLike.lt_iff_le_and_exists.2 ⟨H₂V, v, H₁V, hv'⟩)
       have : finrank ℝ V + finrank ℝ Vᗮ = finrank ℝ F := V.finrank_add_finrank_orthogonal
       have : finrank ℝ W + finrank ℝ Wᗮ = finrank ℝ F := W.finrank_add_finrank_orthogonal
-      linarith
+      omega
     -- So apply the inductive hypothesis to `φ.trans ρ`
     obtain ⟨l, hl, hφl⟩ := IH (ρ * φ) this
     -- Prepend `ρ` to the factorization into reflections obtained for `φ.trans ρ`; this gives a
@@ -1312,18 +1299,18 @@ open DirectSum
 theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Submodule 𝕜 E}
     [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (x : E) (hx : x ∈ iSup V) : (∑ i, (orthogonalProjection (V i) x : E)) = x := by
-  -- porting note: switch to the better `induction _ using`. Need the primed induction principle,
+  -- Porting note: switch to the better `induction _ using`. Need the primed induction principle,
   -- the unprimed one doesn't work with `induction` (as it isn't as syntactically general)
   induction hx using Submodule.iSup_induction' with
-  | hp i x hx =>
+  | mem i x hx =>
     refine'
       (Finset.sum_eq_single_of_mem i (Finset.mem_univ _) fun j _ hij => _).trans
         (orthogonalProjection_eq_self_iff.mpr hx)
     rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero, Submodule.coe_zero]
     exact hV.isOrtho hij.symm hx
-  | h0 =>
+  | zero =>
     simp_rw [map_zero, Submodule.coe_zero, Finset.sum_const_zero]
-  | hadd x y _ _ hx hy =>
+  | add x y _ _ hx hy =>
     simp_rw [map_add, Submodule.coe_add, Finset.sum_add_distrib]
     exact congr_arg₂ (· + ·) hx hy
 #align orthogonal_family.sum_projection_of_mem_supr OrthogonalFamily.sum_projection_of_mem_iSup
@@ -1337,7 +1324,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
   induction' x using DirectSum.induction_on with j x x y hx hy
   · simp
   · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
-    -- porting note: was in the previous `simp_rw`, no longer works
+    -- Porting note: was in the previous `simp_rw`, no longer works
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [DFinsupp.singleAddHom_apply]
     obtain rfl | hij := Decidable.eq_or_ne i j
@@ -1444,7 +1431,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
     obtain ⟨l, hl, rfl⟩ :
       ∃ l ∈ Finsupp.supported 𝕜 𝕜 ((↑) ⁻¹' v : Set u), (Finsupp.total (↥u) E 𝕜 (↑)) l = y := by
       rw [← Finsupp.mem_span_image_iff_total]
-      simp [huv, inter_eq_self_of_subset_left, hy]
+      simp [huv, inter_eq_self_of_subset_right, hy]
     exact hu.inner_finsupp_eq_zero hxv' hl
 #align maximal_orthonormal_iff_orthogonal_complement_eq_bot maximal_orthonormal_iff_orthogonalComplement_eq_bot
 

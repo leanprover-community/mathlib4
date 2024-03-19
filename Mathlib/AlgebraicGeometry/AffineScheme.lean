@@ -45,7 +45,7 @@ namespace AlgebraicGeometry
 open Spec (structureSheaf)
 
 /-- The category of affine schemes -/
--- Porting note : removed
+-- Porting note: removed
 -- @[nolint has_nonempty_instance]
 def AffineScheme :=
   Scheme.Spec.EssImageSubcategory
@@ -106,13 +106,13 @@ def Spec : CommRingCatᵒᵖ ⥤ AffineScheme :=
   Scheme.Spec.toEssImage
 #align algebraic_geometry.AffineScheme.Spec AlgebraicGeometry.AffineScheme.Spec
 
--- Porting note : cannot automatically derive
+-- Porting note (#11081): cannot automatically derive
 instance Spec_full : Full Spec := Full.toEssImage _
 
--- Porting note : cannot automatically derive
+-- Porting note (#11081): cannot automatically derive
 instance Spec_faithful : Faithful Spec := Faithful.toEssImage _
 
--- Porting note : cannot automatically derive
+-- Porting note (#11081): cannot automatically derive
 instance Spec_essSurj : EssSurj Spec := EssSurj.toEssImage (F := _)
 
 /-- The forgetful functor `AffineScheme ⥤ Scheme`. -/
@@ -121,11 +121,11 @@ def forgetToScheme : AffineScheme ⥤ Scheme :=
   Scheme.Spec.essImageInclusion
 #align algebraic_geometry.AffineScheme.forget_to_Scheme AlgebraicGeometry.AffineScheme.forgetToScheme
 
--- Porting note : cannot automatically derive
+-- Porting note (#11081): cannot automatically derive
 instance forgetToScheme_full : Full forgetToScheme :=
 show Full (Scheme.Spec.essImageInclusion) from inferInstance
 
--- Porting note : cannot automatically derive
+-- Porting note (#11081): cannot automatically derive
 instance forgetToScheme_faithful : Faithful forgetToScheme :=
 show Faithful (Scheme.Spec.essImageInclusion) from inferInstance
 
@@ -216,7 +216,7 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
         ((inv (X.isoSpec.hom.1.c.app (op ((Opens.map (inv X.isoSpec.hom).val.base).obj ⊤)))) f)
   · congr
     rw [← IsIso.inv_eq_inv, IsIso.inv_inv, IsIso.Iso.inv_inv, NatIso.app_hom]
-    -- Porting note : added this `change` to prevent timeout
+    -- Porting note: added this `change` to prevent timeout
     change SpecΓIdentity.hom.app (X.presheaf.obj <| op ⊤) = _
     rw [← ΓSpec.adjunction_unit_app_app_top X]
     rfl
@@ -279,7 +279,7 @@ theorem fromSpec_image_top :
 protected theorem isCompact :
     IsCompact (U : Set X) := by
   convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec.1.base PrimeSpectrum.compactSpace.1
-    ((fromSpec hU).val.base.2) -- Porting note : `continuity` can't do this
+    ((fromSpec hU).val.base.2) -- Porting note: `continuity` can't do this
   convert hU.fromSpec_range.symm
   exact Set.image_univ
 #align algebraic_geometry.is_affine_open.is_compact AlgebraicGeometry.IsAffineOpen.isCompact
@@ -361,7 +361,7 @@ theorem opensFunctor_map_basicOpen :
   rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, hU.fromSpec_range]
   exact Scheme.basicOpen_le _ _
 
--- Porting note : linter complains that LHS is not in simp-normal-form. However, the error provided
+-- Porting note: linter complains that LHS is not in simp-normal-form. However, the error provided
 -- by linter seems to tell me that left hand side should be changed in to something exactly the same
 -- as before. I am not sure if this is caused by LHS being written with all explicit argument,
 -- I am not sure if this is intentional or not.
@@ -433,7 +433,7 @@ theorem isLocalization_basicOpen :
     (IsLocalization.isLocalization_iff_of_ringEquiv (Submonoid.powers f)
       (asIso <| basicOpenSectionsToAffine hU f).commRingCatIsoToRingEquiv).mpr
   convert StructureSheaf.IsLocalization.to_basicOpen _ f using 1
-  -- Porting note : more hand holding is required here, the next 4 lines were not necessary
+  -- Porting note: more hand holding is required here, the next 4 lines were not necessary
   delta StructureSheaf.openAlgebra
   congr 1
   rw [CommRingCat.ringHom_comp_eq_comp, Iso.commRingIsoToRingEquiv_toRingHom, asIso_hom]
@@ -470,7 +470,7 @@ theorem basicOpen_basicOpen_is_basicOpen (g : X.presheaf.obj (op <| X.basicOpen 
   rw [Algebra.smul_def, Scheme.basicOpen_mul, Scheme.basicOpen_mul, RingHom.algebraMap_toAlgebra]
   rw [Scheme.basicOpen_res]
   refine' (inf_eq_left.mpr _).symm
-  -- Porting note : a little help is needed here
+  -- Porting note: a little help is needed here
   convert inf_le_left (α := Opens X) using 1
   apply Scheme.basicOpen_of_isUnit
   apply
@@ -501,7 +501,7 @@ noncomputable def primeIdealOf (x : U) :
 theorem fromSpec_primeIdealOf (x : U) :
     hU.fromSpec.val.base (hU.primeIdealOf x) = x.1 := by
   dsimp only [IsAffineOpen.fromSpec, Subtype.coe_mk, IsAffineOpen.primeIdealOf]
-  -- Porting note : in the porting note of `Scheme.comp_val_base`, it says that `elementwise` is
+  -- Porting note: in the porting note of `Scheme.comp_val_base`, it says that `elementwise` is
   -- unnecessary, indeed, the linter did not like it, so I just use `elementwise_of%` instead of
   -- adding the corresponding lemma in `Scheme.lean` file
   rw [← elementwise_of% Scheme.comp_val_base]
@@ -522,7 +522,7 @@ theorem isLocalization_stalk'
       (S := X.presheaf.stalk (hU.fromSpec.1.base y)) _ y.asIdeal.primeCompl _
       (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec.1.base y, hy⟩) _ _
       (asIso <| PresheafedSpace.stalkMap hU.fromSpec.1 y).commRingCatIsoToRingEquiv).mpr
-  -- Porting note : need to know what the ring is and after convert, instead of equality
+  -- Porting note: need to know what the ring is and after convert, instead of equality
   -- we get an `iff`.
   convert StructureSheaf.IsLocalization.to_stalk (X.presheaf.obj <| op U) y using 1
   delta IsLocalization.AtPrime StructureSheaf.stalkAlgebra
@@ -533,7 +533,7 @@ theorem isLocalization_stalk'
   rw [IsAffineOpen.fromSpec_app_self, Category.assoc, TopCat.Presheaf.germ_res]
   rfl
 
--- Porting note : I have splitted this into two lemmas
+-- Porting note: I have splitted this into two lemmas
 theorem isLocalization_stalk (x : U) :
     IsLocalization.AtPrime (X.presheaf.stalk x) (hU.primeIdealOf x).asIdeal := by
   rcases x with ⟨x, hx⟩
@@ -569,7 +569,7 @@ theorem basicOpen_union_eq_self_iff (s : Set (X.presheaf.obj <| op U)) :
     intro x _
     exact X.basicOpen_le x
   · simp only [Opens.iSup_def, Subtype.coe_mk, Set.preimage_iUnion]
-    -- Porting note : need an extra rewrite here, after simp, it is in `↔` form
+    -- Porting note: need an extra rewrite here, after simp, it is in `↔` form
     rw [iff_iff_eq]
     congr 3
     · refine congr_arg (Set.iUnion ·) ?_

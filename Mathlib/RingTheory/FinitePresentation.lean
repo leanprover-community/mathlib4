@@ -35,7 +35,7 @@ section ModuleAndAlgebra
 
 universe w₁ w₂ w₃
 
--- Porting Note : `M, N` is never used
+-- Porting note: `M, N` is never used
 variable (R : Type w₁) (A : Type w₂) (B : Type w₃)
 
 /-- An algebra over a commutative semiring is `Algebra.FinitePresentation` if it is the quotient of
@@ -86,17 +86,17 @@ theorem equiv (hfp : FinitePresentation R A) (e : A ≃ₐ[R] B) : FinitePresent
   constructor
   · rw [AlgHom.coe_comp]
     exact Function.Surjective.comp e.surjective hf.1
-  suffices hker : (RingHom.ker (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom) = RingHom.ker f.toRingHom
-  · rw [hker]
+  suffices (RingHom.ker (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom) = RingHom.ker f.toRingHom by
+    rw [this]
     exact hf.2
-  · have hco : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom = RingHom.comp (e.toRingEquiv : A ≃+* B)
-      f.toRingHom := by
-      have h : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom =
-        e.toAlgHom.toRingHom.comp f.toRingHom := rfl
-      have h1 : ↑e.toRingEquiv = e.toAlgHom.toRingHom := rfl
-      rw [h, h1]
-    rw [RingHom.ker_eq_comap_bot, hco, ← Ideal.comap_comap, ← RingHom.ker_eq_comap_bot,
-      RingHom.ker_coe_equiv (AlgEquiv.toRingEquiv e), RingHom.ker_eq_comap_bot]
+  have hco : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom = RingHom.comp (e.toRingEquiv : A ≃+* B)
+    f.toRingHom := by
+    have h : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom =
+      e.toAlgHom.toRingHom.comp f.toRingHom := rfl
+    have h1 : ↑e.toRingEquiv = e.toAlgHom.toRingHom := rfl
+    rw [h, h1]
+  rw [RingHom.ker_eq_comap_bot, hco, ← Ideal.comap_comap, ← RingHom.ker_eq_comap_bot,
+    RingHom.ker_coe_equiv (AlgEquiv.toRingEquiv e), RingHom.ker_eq_comap_bot]
 #align algebra.finite_presentation.equiv Algebra.FinitePresentation.equiv
 
 variable (R)
@@ -182,7 +182,7 @@ theorem iff_quotient_mvPolynomial' :
     -- exact RingHom.ker_coe_equiv equiv.symm.toRingEquiv
 #align algebra.finite_presentation.iff_quotient_mv_polynomial' Algebra.FinitePresentation.iff_quotient_mvPolynomial'
 
--- Porting note : make universe level explicit to ensure `ι, ι'` has the same universe level
+-- Porting note: make universe level explicit to ensure `ι, ι'` has the same universe level
 /-- If `A` is a finitely presented `R`-algebra, then `MvPolynomial (Fin n) A` is finitely presented
 as `R`-algebra. -/
 theorem mvPolynomial_of_finitePresentation (hfp : FinitePresentation.{w₁, w₂} R A)
@@ -190,7 +190,7 @@ theorem mvPolynomial_of_finitePresentation (hfp : FinitePresentation.{w₁, w₂
     FinitePresentation.{w₁, max v w₂} R (MvPolynomial ι A) := by
   rw [iff_quotient_mvPolynomial'] at hfp ⊢
   classical
-  -- Porting note : use the same universe level
+  -- Porting note: use the same universe level
   obtain ⟨(ι' : Type v), _, f, hf_surj, hf_ker⟩ := hfp
   let g := (MvPolynomial.mapAlgHom f).comp (MvPolynomial.sumAlgEquiv R ι ι').toAlgHom
   cases nonempty_fintype (Sum ι ι')
@@ -449,7 +449,7 @@ theorem of_finiteType [IsNoetherianRing A] {f : A →+* B} : f.FiniteType ↔ f.
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FinitePresentation) (hf : f.FinitePresentation) :
     (g.comp f).FinitePresentation :=
-  -- Porting note : specify `Algebra` instances to get `SMul`
+  -- Porting note: specify `Algebra` instances to get `SMul`
   letI ins1 := RingHom.toAlgebra f
   letI ins2 := RingHom.toAlgebra g
   letI ins3 := RingHom.toAlgebra (g.comp f)
@@ -460,7 +460,7 @@ theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FinitePresentation) (hf : f
 
 theorem of_comp_finiteType (f : A →+* B) {g : B →+* C} (hg : (g.comp f).FinitePresentation)
     (hf : f.FiniteType) : g.FinitePresentation :=
-  -- Porting note : need to specify some instances
+  -- Porting note: need to specify some instances
   letI ins1 := RingHom.toAlgebra f
   letI ins2 := RingHom.toAlgebra g
   letI ins3 := RingHom.toAlgebra (g.comp f)

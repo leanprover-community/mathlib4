@@ -104,7 +104,7 @@ def _root_.MulEquiv.ulift [Mul α] : ULift α ≃* α :=
   { Equiv.ulift with map_mul' := fun _ _ => rfl }
 #align mul_equiv.ulift MulEquiv.ulift
 
--- porting notes: below failed due to error above, manually added
+-- Porting note: below failed due to error above, manually added
 --@[to_additive]
 instance semigroup [Semigroup α] : Semigroup (ULift α) :=
   (MulEquiv.ulift.injective.semigroup _) fun _ _ => rfl
@@ -153,6 +153,12 @@ theorem up_natCast [NatCast α] (n : ℕ) : up (n : α) = n :=
   rfl
 #align ulift.up_nat_cast ULift.up_natCast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem up_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    up (no_index (OfNat.ofNat n : α)) = OfNat.ofNat n :=
+  rfl
+
 @[simp, norm_cast]
 theorem up_intCast [IntCast α] (n : ℤ) : up (n : α) = n :=
   rfl
@@ -162,6 +168,12 @@ theorem up_intCast [IntCast α] (n : ℤ) : up (n : α) = n :=
 theorem down_natCast [NatCast α] (n : ℕ) : down (n : ULift α) = n :=
   rfl
 #align ulift.down_nat_cast ULift.down_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem down_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    down (no_index (OfNat.ofNat n : ULift α)) = OfNat.ofNat n :=
+  rfl
 
 @[simp, norm_cast]
 theorem down_intCast [IntCast α] (n : ℤ) : down (n : ULift α) = n :=

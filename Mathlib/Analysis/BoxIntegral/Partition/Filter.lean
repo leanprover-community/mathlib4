@@ -399,9 +399,10 @@ protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι �
   rcases hπ.4 hD with ⟨π₁, hπ₁U, hc⟩
   set π₂ := π.filter fun J => ¬p J
   have : Disjoint π₁.iUnion π₂.iUnion := by
-    simpa [hπ₁U] using disjoint_sdiff_self_left.mono_right sdiff_le
+    simpa [π₂, hπ₁U] using disjoint_sdiff_self_left.mono_right sdiff_le
   refine' ⟨π₁.disjUnion π₂.toPrepartition this, _, _⟩
-  · suffices ↑I \ π.iUnion ∪ π.iUnion \ (π.filter p).iUnion = ↑I \ (π.filter p).iUnion by simp [*]
+  · suffices ↑I \ π.iUnion ∪ π.iUnion \ (π.filter p).iUnion = ↑I \ (π.filter p).iUnion by
+      simp [π₂, *]
     have h : (π.filter p).iUnion ⊆ π.iUnion :=
       biUnion_subset_biUnion_left (Finset.filter_subset _ _)
     ext x

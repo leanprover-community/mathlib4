@@ -608,6 +608,8 @@ theorem injOn_singleton (f : α → β) (a : α) : InjOn f {a} :=
   subsingleton_singleton.injOn f
 #align set.inj_on_singleton Set.injOn_singleton
 
+@[simp] lemma injOn_pair {b : α} : InjOn f {a, b} ↔ f a = f b → a = b := by unfold InjOn; aesop
+
 theorem InjOn.eq_iff {x y} (h : InjOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x = f y ↔ x = y :=
   ⟨h hx hy, fun h => h ▸ rfl⟩
 #align set.inj_on.eq_iff Set.InjOn.eq_iff
@@ -709,7 +711,7 @@ theorem exists_injOn_iff_injective [Nonempty β] :
 
 theorem injOn_preimage {B : Set (Set β)} (hB : B ⊆ 𝒫 range f) : InjOn (preimage f) B :=
   fun s hs t ht hst => (preimage_eq_preimage' (@hB s hs) (@hB t ht)).1 hst
--- porting note: is there a semi-implicit variable problem with `⊆`?
+-- Porting note: is there a semi-implicit variable problem with `⊆`?
 #align set.inj_on_preimage Set.injOn_preimage
 
 theorem InjOn.mem_of_mem_image {x} (hf : InjOn f s) (hs : s₁ ⊆ s) (h : x ∈ s) (h₁ : f x ∈ f '' s₁) :
@@ -856,7 +858,7 @@ theorem SurjOn.inter (h₁ : SurjOn f s₁ t) (h₂ : SurjOn f s₂ t) (h : InjO
   inter_self t ▸ h₁.inter_inter h₂ h
 #align set.surj_on.inter Set.SurjOn.inter
 
---porting note: Why does `simp` not call `refl` by itself?
+-- Porting note: Why does `simp` not call `refl` by itself?
 lemma surjOn_id (s : Set α) : SurjOn id s s := by simp [SurjOn, subset_rfl]
 #align set.surj_on_id Set.surjOn_id
 
@@ -920,6 +922,9 @@ theorem image_eq_iff_surjOn_mapsTo : f '' s = t ↔ s.SurjOn f t ∧ s.MapsTo f 
   rintro rfl
   exact ⟨s.surjOn_image f, s.mapsTo_image f⟩
 #align set.image_eq_iff_surj_on_maps_to Set.image_eq_iff_surjOn_mapsTo
+
+lemma SurjOn.image_preimage (h : Set.SurjOn f s t) (ht : t₁ ⊆ t) : f '' (f ⁻¹' t₁) = t₁ :=
+  image_preimage_eq_iff.2 fun _ hx ↦ mem_range_of_mem_image f s <| h <| ht hx
 
 theorem SurjOn.mapsTo_compl (h : SurjOn f s t) (h' : Injective f) : MapsTo f sᶜ tᶜ :=
   fun _ hs ht =>
@@ -1594,7 +1599,7 @@ theorem pi_piecewise {ι : Type*} {α : ι → Type*} (s s' : Set ι) (t t' : �
   pi_if _ _ _
 #align set.pi_piecewise Set.pi_piecewise
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem univ_pi_piecewise {ι : Type*} {α : ι → Type*} (s : Set ι) (t t' : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t t') = pi s t ∩ pi sᶜ t' := by
   simp [compl_eq_univ_diff]

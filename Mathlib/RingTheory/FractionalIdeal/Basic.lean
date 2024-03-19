@@ -116,12 +116,12 @@ protected theorem isFractional (I : FractionalIdeal S P) : IsFractional S (I : S
 #align fractional_ideal.is_fractional FractionalIdeal.isFractional
 
 /-- An element of `S` such that `I.den • I = I.num`, see `FractionalIdeal.num` and
-`FractionalIdeal.den_mul_eq_num`. -/
+`FractionalIdeal.den_mul_self_eq_num`. -/
 noncomputable def den (I : FractionalIdeal S P) : S :=
   ⟨I.2.choose, I.2.choose_spec.1⟩
 
 /-- An ideal of `R` such that `I.den • I = I.num`, see `FractionalIdeal.den` and
-`FractionalIdeal.den_mul_eq_num`. -/
+`FractionalIdeal.den_mul_self_eq_num`. -/
 noncomputable def num (I : FractionalIdeal S P) : Ideal R :=
   (I.den • (I : Submodule R P)).comap (Algebra.linearMap R P)
 
@@ -208,7 +208,7 @@ theorem coe_mk (I : Submodule R P) (hI : IsFractional S I) :
   rfl
 #align fractional_ideal.coe_mk FractionalIdeal.coe_mk
 
--- Porting note: added this lemma because Lean can't see through the composition of coercions.
+-- Porting note (#10756): added lemma because Lean can't see through the composition of coercions.
 theorem coeToSet_coeToSubmodule (I : FractionalIdeal S P) :
     ((I : Submodule R P) : Set P) = I :=
   rfl

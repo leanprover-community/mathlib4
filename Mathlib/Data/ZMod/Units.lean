@@ -62,4 +62,11 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     rw [Nat.add_sub_cancel] at h
     contradiction
 
+-- This needs `Nat.primeFactors`, so cannot go into `Mathlib.Data.ZMod.Basic`.
+open Nat in
+lemma not_isUnit_of_mem_primeFactors {n p : ℕ} (h : p ∈ n.primeFactors) :
+    ¬ IsUnit (p : ZMod n) := by
+  rw [isUnit_iff_coprime]
+  exact (Prime.dvd_iff_not_coprime <| prime_of_mem_primeFactors h).mp <| dvd_of_mem_primeFactors h
+
 end ZMod

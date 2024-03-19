@@ -32,9 +32,7 @@ convex, convex body
 -/
 
 
-open Pointwise
-
-open NNReal
+open scoped Pointwise Topology NNReal
 
 variable {V : Type*}
 
@@ -69,7 +67,7 @@ protected theorem isCompact (K : ConvexBody V) : IsCompact (K : Set V) :=
   K.isCompact'
 #align convex_body.is_compact ConvexBody.isCompact
 
--- porting note: new theorem
+-- Porting note: new theorem
 protected theorem isClosed [T2Space V] (K : ConvexBody V) : IsClosed (K : Set V) :=
   K.isCompact.isClosed
 
@@ -98,11 +96,9 @@ section ContinuousAdd
 
 variable [ContinuousAdd V]
 
--- we cannot write K + L to avoid reducibility issues with the set.has_add instance
--- porting note: todo: is this^ still true?
 instance : Add (ConvexBody V) where
   add K L :=
-    ⟨Set.image2 (· + ·) K L, K.convex.add L.convex, K.isCompact.add L.isCompact,
+    ⟨K + L, K.convex.add L.convex, K.isCompact.add L.isCompact,
       K.nonempty.add L.nonempty⟩
 
 instance : Zero (ConvexBody V) where
@@ -111,7 +107,7 @@ instance : Zero (ConvexBody V) where
 instance : SMul ℕ (ConvexBody V) where
   smul := nsmulRec
 
--- porting note: add @[simp, norm_cast]; we leave it out for now to reproduce mathlib3 behavior.
+-- Porting note: add @[simp, norm_cast]; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : Set V)
   | 0, _ => rfl
   | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) rfl (coe_nsmul n K)
@@ -119,12 +115,12 @@ theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : 
 instance : AddMonoid (ConvexBody V) :=
   SetLike.coe_injective.addMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
-@[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
   rfl
 #align convex_body.coe_add ConvexBody.coe_add
 
-@[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
   rfl
 #align convex_body.coe_zero ConvexBody.coe_zero
@@ -142,7 +138,7 @@ variable [ContinuousSMul ℝ V]
 instance : SMul ℝ (ConvexBody V) where
   smul c K := ⟨c • (K : Set V), K.convex.smul _, K.isCompact.smul _, K.nonempty.smul_set⟩
 
-@[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
 #align convex_body.coe_smul ConvexBody.coe_smul
@@ -152,7 +148,7 @@ variable [ContinuousAdd V]
 instance : DistribMulAction ℝ (ConvexBody V) :=
   SetLike.coe_injective.distribMulAction ⟨⟨(↑), coe_zero⟩, coe_add⟩ coe_smul
 
-@[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_smul' (c : ℝ≥0) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
 #align convex_body.coe_smul' ConvexBody.coe_smul'
@@ -216,7 +212,7 @@ open Filter
 numbers that tends to `0`. Then the intersection of the dilated bodies `(1 + u n) • K` is equal
 to `K`. -/
 theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V) (h_zero : 0 ∈ K)
-    (hu : Tendsto u atTop (nhds 0)) :
+    (hu : Tendsto u atTop (𝓝 0)) :
     ⋂ n : ℕ, (1 + (u n : ℝ)) • (K : Set V) = K := by
   ext x
   refine ⟨fun h => ?_, fun h => ?_⟩

@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Order.Bounded
+import Mathlib.SetTheory.Cardinal.PartENat
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.Tactic.Linarith
 
@@ -523,19 +524,17 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
       _
   · have : { q | s q p } ⊆ insert (g p) { x | x < g p } ×ˢ insert (g p) { x | x < g p } := by
       intro q h
-      simp only [Preimage, ge_iff_le, Embedding.coeFn_mk, Prod.lex_def, typein_lt_typein,
+      simp only [s, f, Preimage, ge_iff_le, Embedding.coeFn_mk, Prod.lex_def, typein_lt_typein,
         typein_inj, mem_setOf_eq] at h
       exact max_le_iff.1 (le_iff_lt_or_eq.2 <| h.imp_right And.left)
-    suffices H : (insert (g p) { x | r x (g p) } : Set α) ≃ Sum { x | r x (g p) } PUnit
-    · exact
-        ⟨(Set.embeddingOfSubset _ _ this).trans
-            ((Equiv.Set.prod _ _).trans (H.prodCongr H)).toEmbedding⟩
+    suffices H : (insert (g p) { x | r x (g p) } : Set α) ≃ Sum { x | r x (g p) } PUnit from
+      ⟨(Set.embeddingOfSubset _ _ this).trans
+        ((Equiv.Set.prod _ _).trans (H.prodCongr H)).toEmbedding⟩
     refine' (Equiv.Set.insert _).trans ((Equiv.refl _).sumCongr punitEquivPUnit)
     apply @irrefl _ r
   cases' lt_or_le (card (succ (typein (· < ·) (g p)))) ℵ₀ with qo qo
   · exact (mul_lt_aleph0 qo qo).trans_le ol
-  · suffices : (succ (typein LT.lt (g p))).card < ⟦α⟧
-    · exact (IH _ this qo).trans_lt this
+  · suffices (succ (typein LT.lt (g p))).card < ⟦α⟧ from (IH _ this qo).trans_lt this
     rw [← lt_ord]
     apply (ord_isLimit ol).2
     rw [mk'_def, e]
@@ -574,12 +573,12 @@ theorem mul_aleph0_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a * ℵ₀ = a :=
   (mul_eq_max ha le_rfl).trans (max_eq_left ha)
 #align cardinal.mul_aleph_0_eq Cardinal.mul_aleph0_eq
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note: removed `simp`, `simp` can prove it
 theorem aleph0_mul_mk_eq {α : Type*} [Infinite α] : ℵ₀ * #α = #α :=
   aleph0_mul_eq (aleph0_le_mk α)
 #align cardinal.aleph_0_mul_mk_eq Cardinal.aleph0_mul_mk_eq
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note: removed `simp`, `simp` can prove it
 theorem mk_mul_aleph0_eq {α : Type*} [Infinite α] : #α * ℵ₀ = #α :=
   mul_aleph0_eq (aleph0_le_mk α)
 #align cardinal.mk_mul_aleph_0_eq Cardinal.mk_mul_aleph0_eq
@@ -604,7 +603,7 @@ theorem mul_lt_of_lt {a b c : Cardinal} (hc : ℵ₀ ≤ c) (h1 : a < c) (h2 : b
 theorem mul_le_max_of_aleph0_le_left {a b : Cardinal} (h : ℵ₀ ≤ a) : a * b ≤ max a b := by
   convert mul_le_mul' (le_max_left a b) (le_max_right a b) using 1
   rw [mul_eq_self]
-  refine' h.trans (le_max_left a b)
+  exact h.trans (le_max_left a b)
 #align cardinal.mul_le_max_of_aleph_0_le_left Cardinal.mul_le_max_of_aleph0_le_left
 
 theorem mul_eq_max_of_aleph0_le_left {a b : Cardinal} (h : ℵ₀ ≤ a) (h' : b ≠ 0) :
@@ -817,7 +816,7 @@ theorem add_one_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a + 1 = a :=
   add_one_of_aleph0_le ha
 #align cardinal.add_one_eq Cardinal.add_one_eq
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note: removed `simp`, `simp` can prove it
 theorem mk_add_one_eq {α : Type*} [Infinite α] : #α + 1 = #α :=
   add_one_eq (aleph0_le_mk α)
 #align cardinal.mk_add_one_eq Cardinal.mk_add_one_eq
@@ -944,14 +943,20 @@ theorem add_le_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < Cardinal
 #align cardinal.add_le_add_iff_of_lt_aleph_0 Cardinal.add_le_add_iff_of_lt_aleph0
 
 @[simp]
-theorem add_nat_le_add_nat_iff_of_lt_aleph_0 {α β : Cardinal} (n : ℕ) : α + n ≤ β + n ↔ α ≤ β :=
+theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 (nat_lt_aleph0 n)
-#align cardinal.add_nat_le_add_nat_iff_of_lt_aleph_0 Cardinal.add_nat_le_add_nat_iff_of_lt_aleph_0
+#align cardinal.add_nat_le_add_nat_iff_of_lt_aleph_0 Cardinal.add_nat_le_add_nat_iff
+
+@[deprecated]
+alias add_nat_le_add_nat_iff_of_lt_aleph_0 := add_nat_le_add_nat_iff  -- deprecated on 2024-02-12
 
 @[simp]
-theorem add_one_le_add_one_iff_of_lt_aleph_0 {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤ β :=
+theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 one_lt_aleph0
-#align cardinal.add_one_le_add_one_iff_of_lt_aleph_0 Cardinal.add_one_le_add_one_iff_of_lt_aleph_0
+#align cardinal.add_one_le_add_one_iff_of_lt_aleph_0 Cardinal.add_one_le_add_one_iff
+
+@[deprecated]
+alias add_one_le_add_one_iff_of_lt_aleph_0 := add_one_le_add_one_iff  -- deprecated on 2024-02-12
 
 /-! ### Properties about power -/
 
@@ -1086,8 +1091,8 @@ variable [Infinite α] {α β'}
 
 theorem mk_perm_eq_self_power : #(Equiv.Perm α) = #α ^ #α :=
   ((mk_equiv_le_embedding α α).trans (mk_embedding_le_arrow α α)).antisymm <| by
-    suffices : Nonempty ((α → Bool) ↪ Equiv.Perm (α × Bool))
-    · obtain ⟨e⟩ : Nonempty (α ≃ α × Bool)
+    suffices Nonempty ((α → Bool) ↪ Equiv.Perm (α × Bool)) by
+      obtain ⟨e⟩ : Nonempty (α ≃ α × Bool)
       · erw [← Cardinal.eq, mk_prod, lift_uzero, mk_bool,
           lift_natCast, mul_two, add_eq_self (aleph0_le_mk α)]
       erw [← le_def, mk_arrow, lift_uzero, mk_bool, lift_natCast 2] at this
@@ -1266,8 +1271,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     dsimp only
     rw [dif_pos this]
     congr
-    suffices : Classical.choose this = ⟨x, h⟩
-    exact congr_arg Subtype.val this
+    suffices Classical.choose this = ⟨x, h⟩ from congr_arg Subtype.val this
     apply g.2
     exact Classical.choose_spec this
 #align cardinal.mk_bounded_set_le_of_infinite Cardinal.mk_bounded_set_le_of_infinite
@@ -1353,7 +1357,7 @@ theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
   let h : α ≃ β :=
     (Set.sumCompl (s : Set α)).symm.trans
       ((sumCongr (Equiv.ofInjective f f.2) g).trans (Set.sumCompl (range f)))
-  refine' ⟨h, _⟩; rintro ⟨x, hx⟩; simp [Set.sumCompl_symm_apply_of_mem, hx]
+  refine' ⟨h, _⟩; rintro ⟨x, hx⟩; simp [h, Set.sumCompl_symm_apply_of_mem, hx]
 #align cardinal.extend_function Cardinal.extend_function
 
 theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set α} (f : s ↪ β)
@@ -1378,7 +1382,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 #align cardinal.extend_function_of_lt Cardinal.extend_function_of_lt
 
 
---Porting note: we no longer express literals as `bit0` and `bit1` in Lean 4, so we can't use this
+-- Porting note: we no longer express literals as `bit0` and `bit1` in Lean 4, so we can't use this
 -- section Bit
 
 -- /-!

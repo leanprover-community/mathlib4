@@ -95,7 +95,7 @@ theorem ext {S T : ConvexCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :
   SetLike.ext h
 #align convex_cone.ext ConvexCone.ext
 
-@[aesop safe apply (rule_sets [SetLike])]
+@[aesop safe apply (rule_sets := [SetLike])]
 theorem smul_mem {c : 𝕜} {x : E} (hc : 0 < c) (hx : x ∈ S) : c • x ∈ S :=
   S.smul_mem' hc hx
 #align convex_cone.smul_mem ConvexCone.smul_mem
@@ -258,7 +258,7 @@ theorem coe_comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : (S.comap f : 
   rfl
 #align convex_cone.coe_comap ConvexCone.coe_comap
 
-@[simp] -- porting note: was not a `dsimp` lemma
+@[simp] -- Porting note: was not a `dsimp` lemma
 theorem comap_id (S : ConvexCone 𝕜 E) : S.comap LinearMap.id = S :=
   rfl
 #align convex_cone.comap_id ConvexCone.comap_id

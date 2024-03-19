@@ -120,6 +120,6 @@ protected theorem Function.Surjective.nontrivial [Nontrivial β] {f : α → β}
 namespace Bool
 
 instance : Nontrivial Bool :=
-  ⟨⟨true, false, fun .⟩⟩
+  ⟨⟨true, false, nofun⟩⟩
 
 end Bool

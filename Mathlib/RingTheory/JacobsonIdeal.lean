@@ -103,7 +103,7 @@ theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x 
         let ⟨p, hpi, q, hq, hpq⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 hxy)
         let ⟨r, hr⟩ := mem_span_singleton'.1 hq
         ⟨r, by
-          -- Porting note : supply `mul_add_one` with explicit variables
+          -- Porting note: supply `mul_add_one` with explicit variables
           rw [mul_assoc, ← mul_add_one r (y * x), hr, ← hpq, ← neg_sub, add_sub_cancel]
           exact I.neg_mem hpi⟩)
       fun hxy : I ⊔ span {y * x + 1} ≠ ⊤ => let ⟨M, hm1, hm2⟩ := exists_le_maximal _ hxy
@@ -115,7 +115,7 @@ theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x 
       let ⟨z, hz⟩ := hx (-y)
       hm.1.1 <| (eq_top_iff_one _).2 <| sub_sub_cancel (z * -y * x + z) 1 ▸
         M.sub_mem (by
-          -- Porting note : supply `mul_add_one` with explicit variables
+          -- Porting note: supply `mul_add_one` with explicit variables
           rw [mul_assoc, ← mul_add_one z, neg_mul, ← sub_eq_iff_eq_add.mpr df.symm, neg_sub,
             sub_add_cancel]
           exact M.mul_mem_left _ hi) <| him hz⟩
@@ -179,7 +179,7 @@ theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) 
     RingHom.ker f ≤ I → map f I.jacobson = (map f I).jacobson := by
   intro h
   unfold Ideal.jacobson
-  -- porting note : dot notation for `RingHom.ker` does not work
+  -- Porting note: dot notation for `RingHom.ker` does not work
   have : ∀ J ∈ { J : Ideal R | I ≤ J ∧ J.IsMaximal }, RingHom.ker f ≤ J :=
     fun J hJ => le_trans h hJ.left
   refine Trans.trans (map_sInf hf this) (le_antisymm ?_ ?_)
@@ -224,7 +224,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
   · rw [comap_sInf]
     refine' le_iInf_iff.2 fun J => le_iInf_iff.2 fun hJ => _
     haveI : J.IsMaximal := hJ.right
-    refine' sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
+    exact sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
 #align ideal.comap_jacobson_of_surjective Ideal.comap_jacobson_of_surjective
 
 @[mono]
@@ -268,7 +268,7 @@ theorem mem_jacobson_bot {x : R} : x ∈ jacobson (⊥ : Ideal R) ↔ ∀ y, IsU
 
 /-- An ideal `I` of `R` is equal to its Jacobson radical if and only if
 the Jacobson radical of the quotient ring `R/I` is the zero ideal -/
--- Porting note : changed `Quotient.mk'` to ``
+-- Porting note: changed `Quotient.mk'` to ``
 theorem jacobson_eq_iff_jacobson_quotient_eq_bot :
     I.jacobson = I ↔ jacobson (⊥ : Ideal (R ⧸ I)) = ⊥ := by
   have hf : Function.Surjective (Ideal.Quotient.mk I) := Submodule.Quotient.mk_surjective I
@@ -285,7 +285,7 @@ theorem jacobson_eq_iff_jacobson_quotient_eq_bot :
 
 /-- The standard radical and Jacobson radical of an ideal `I` of `R` are equal if and only if
 the nilradical and Jacobson radical of the quotient ring `R/I` coincide -/
--- Porting note : changed `Quotient.mk'` to ``
+-- Porting note: changed `Quotient.mk'` to ``
 theorem radical_eq_jacobson_iff_radical_quotient_eq_jacobson_bot :
     I.radical = I.jacobson ↔ radical (⊥ : Ideal (R ⧸ I)) = jacobson ⊥ := by
   have hf : Function.Surjective (Ideal.Quotient.mk I) := Submodule.Quotient.mk_surjective I

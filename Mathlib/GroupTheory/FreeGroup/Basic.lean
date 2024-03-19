@@ -58,7 +58,7 @@ variable {α : Type u}
 
 attribute [local simp] List.append_eq_has_append
 
--- porting notes: to_additive.map_namespace is not supported yet
+-- Porting note: to_additive.map_namespace is not supported yet
 -- worked around it by putting a few extra manual mappings (but not too many all in all)
 -- run_cmd to_additive.map_namespace `FreeGroup `FreeAddGroup
 
@@ -1026,7 +1026,7 @@ protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C
 #align free_group.induction_on FreeGroup.induction_on
 #align free_add_group.induction_on FreeAddGroup.induction_on
 
--- porting note: simp can prove this: by simp only [@map_pure]
+-- porting note (#10618): simp can prove this: by simp only [@map_pure]
 @[to_additive]
 theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeGroup α) = pure (f x) :=
   map.of
@@ -1051,7 +1051,7 @@ theorem map_inv (f : α → β) (x : FreeGroup α) : f <$> x⁻¹ = (f <$> x)⁻
 #align free_group.map_inv FreeGroup.map_inv
 #align free_add_group.map_neg FreeAddGroup.map_neg
 
--- porting note: simp can prove this: by simp only [@pure_bind]
+-- porting note (#10618): simp can prove this: by simp only [@pure_bind]
 @[to_additive]
 theorem pure_bind (f : α → FreeGroup β) (x) : pure x >>= f = f x :=
   lift.of

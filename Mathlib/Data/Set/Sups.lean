@@ -56,7 +56,8 @@ infixl:75 " ⊼ " => HasInfs.infs
 namespace Set
 
 section Sups
-variable [SemilatticeSup α] [SemilatticeSup β] [SupHomClass F α β] (s s₁ s₂ t t₁ t₂ u v : Set α)
+variable [SemilatticeSup α] [SemilatticeSup β] [FunLike F α β] [SupHomClass F α β]
+variable (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊻ t` is the set of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`. -/
 protected def hasSups : HasSups (Set α) :=
@@ -64,7 +65,7 @@ protected def hasSups : HasSups (Set α) :=
 #align set.has_sups Set.hasSups
 
 scoped[SetFamily] attribute [instance] Set.hasSups
--- porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
+-- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
 -- instance
 open SetFamily
 
@@ -223,7 +224,8 @@ end Sups
 
 section Infs
 
-variable [SemilatticeInf α] [SemilatticeInf β] [InfHomClass F α β] (s s₁ s₂ t t₁ t₂ u v : Set α)
+variable [SemilatticeInf α] [SemilatticeInf β] [FunLike F α β] [InfHomClass F α β]
+variable (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊼ t` is the set of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`. -/
 protected def hasInfs : HasInfs (Set α) :=
@@ -231,7 +233,7 @@ protected def hasInfs : HasInfs (Set α) :=
 #align set.has_infs Set.hasInfs
 
 scoped[SetFamily] attribute [instance] Set.hasInfs
--- porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
+-- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
 -- instance
 open SetFamily
 

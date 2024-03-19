@@ -310,11 +310,11 @@ theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : Opens X.carrier) (hU
 
 theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux {X : TopCat}
     (F : X.Presheaf CommRingCat) {U₁ U₂ U₃ U₄ U₅ U₆ U₇ : Opens X} {n₁ n₂ : ℕ}
-  {y₁ : F.obj (op U₁)} {y₂ : F.obj (op U₂)} {f : F.obj (op <| U₁ ⊔ U₂)}
-  {x : F.obj (op U₃)} (h₄₁ : U₄ ≤ U₁) (h₄₂ : U₄ ≤ U₂) (h₅₁ : U₅ ≤ U₁) (h₅₃ : U₅ ≤ U₃)
-  (h₆₂ : U₆ ≤ U₂) (h₆₃ : U₆ ≤ U₃) (h₇₄ : U₇ ≤ U₄) (h₇₅ : U₇ ≤ U₅) (h₇₆ : U₇ ≤ U₆)
-  (e₁ : y₁ |_ U₅ = (f |_ U₁ |_ U₅) ^ n₁ * x |_ U₅)
-  (e₂ : y₂ |_ U₆ = (f |_ U₂ |_ U₆) ^ n₂ * x |_ U₆) :
+    {y₁ : F.obj (op U₁)} {y₂ : F.obj (op U₂)} {f : F.obj (op <| U₁ ⊔ U₂)}
+    {x : F.obj (op U₃)} (h₄₁ : U₄ ≤ U₁) (h₄₂ : U₄ ≤ U₂) (h₅₁ : U₅ ≤ U₁) (h₅₃ : U₅ ≤ U₃)
+    (h₆₂ : U₆ ≤ U₂) (h₆₃ : U₆ ≤ U₃) (h₇₄ : U₇ ≤ U₄) (h₇₅ : U₇ ≤ U₅) (h₇₆ : U₇ ≤ U₆)
+    (e₁ : y₁ |_ U₅ = (f |_ U₁ |_ U₅) ^ n₁ * x |_ U₅)
+    (e₂ : y₂ |_ U₆ = (f |_ U₂ |_ U₆) ^ n₂ * x |_ U₆) :
     (((f |_ U₁) ^ n₂ * y₁) |_ U₄) |_ U₇ = (((f |_ U₂) ^ n₁ * y₂) |_ U₄) |_ U₇ := by
   apply_fun (fun x : F.obj (op U₅) ↦ x |_ U₇) at e₁
   apply_fun (fun x : F.obj (op U₆) ↦ x |_ U₇) at e₂
@@ -337,10 +337,12 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
         (((f |_ U₂) ^ n₁ * y₂) |_ S.1)).mp <| by
     apply exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux (e₁ := e₁) (e₂ := e₂)
     · show X.basicOpen _ ≤ _
-      simp only [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict, Scheme.basicOpen_res]
+      simp only [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
+      repeat rw [Scheme.basicOpen_res] -- Note: used to be part of the `simp only`
       exact inf_le_inf h₁ le_rfl
     · show X.basicOpen _ ≤ _
-      simp only [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict, Scheme.basicOpen_res]
+      simp only [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
+      repeat rw [Scheme.basicOpen_res] -- Note: used to be part of the `simp only`
       exact inf_le_inf h₂ le_rfl
   use n
   intros m hm
@@ -418,7 +420,8 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
       · exact le_of_eq hs
       · intro i
         delta Scheme.sheaf SheafedSpace.sheaf
-        simp only [← comp_apply, ← Functor.map_comp, ← op_comp]
+        repeat rw [← comp_apply,]
+        simp only [← Functor.map_comp, ← op_comp]
         apply hn
         exact Finset.le_sup (Finset.mem_univ _)
     use Finset.univ.sup n + n₁ + n₂
@@ -429,11 +432,15 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
       (homOfLE le_sup_left).op) (X.basicOpen_res _ (homOfLE le_sup_right).op)).mpr ⟨_, _⟩
     · delta Scheme.sheaf SheafedSpace.sheaf
       rw [add_assoc, add_comm n₁]
-      simp only [map_pow, map_mul, hy₁, pow_add, ← mul_assoc, ← comp_apply, ← Functor.map_comp,
-        ← op_comp, Category.assoc, homOfLE_comp]
+      simp only [pow_add, map_pow, map_mul]
+      rw [hy₁] -- Note: `simp` can't use this
+      repeat rw [← comp_apply] -- Note: `simp` can't use this
+      simp only [← mul_assoc, ← Functor.map_comp, ← op_comp, homOfLE_comp]
     · delta Scheme.sheaf SheafedSpace.sheaf
-      simp only [map_pow, map_mul, hy₂, pow_add, ← mul_assoc, ← comp_apply, ← Functor.map_comp,
-        ← op_comp, Category.assoc, homOfLE_comp]
+      simp only [pow_add, map_pow, map_mul]
+      rw [hy₂] -- Note: `simp` can't use this
+      repeat rw [← comp_apply] -- Note: `simp` can't use this
+      simp only [← mul_assoc, ← Functor.map_comp, ← op_comp, homOfLE_comp]
 #align algebraic_geometry.exists_eq_pow_mul_of_is_compact_of_is_quasi_separated AlgebraicGeometry.exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated
 
 /-- If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.

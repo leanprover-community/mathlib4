@@ -3,9 +3,9 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Adam Topaz
 -/
+import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.StructuredArrow
 
 #align_import category_theory.limits.kan_extension from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
 
@@ -161,7 +161,7 @@ end Ran
 @[simps!]
 def ran [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] : (S ⥤ D) ⥤ L ⥤ D :=
   Adjunction.rightAdjointOfEquiv (fun F G => (Ran.equiv ι G F).symm) (by {
-    -- Porting note: was `tidy`
+    -- Porting note (#10936): was `tidy`
     intros X' X Y f g
     ext t
     apply limit.hom_ext
@@ -285,14 +285,14 @@ def equiv (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] (G : L ⥤ D) :
         erw [colimit.ι_pre (diagram ι F (ι.obj y)) fff (CostructuredArrow.mk (𝟙 _))]
         let xx : CostructuredArrow ι (ι.obj y) := CostructuredArrow.mk (ι.map ff)
         let yy : CostructuredArrow ι (ι.obj y) := CostructuredArrow.mk (𝟙 _)
-        let fff : xx ⟶ yy :=
+        let fff' : xx ⟶ yy :=
           CostructuredArrow.homMk ff
             (by
-              simp only [CostructuredArrow.mk_hom_eq_self]
+              simp only [xx, CostructuredArrow.mk_hom_eq_self]
               erw [Category.comp_id])
-        erw [colimit.w (diagram ι F (ι.obj y)) fff]
+        erw [colimit.w (diagram ι F (ι.obj y)) fff']
         congr
-        simp }
+        simp [fff] }
   invFun f :=
     { app := fun x => colimit.desc (diagram ι F x) (cocone _ f)
       naturality := by
@@ -334,7 +334,7 @@ end Lan
 
 /-- The left Kan extension of a functor. -/
 @[simps!]
-def lan [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] : (S ⥤ D) ⥤ L ⥤ D :=
+def lan [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] : (S ⥤ D) ⥤ L ⥤ D :=
   Adjunction.leftAdjointOfEquiv (fun F G => Lan.equiv ι F G) (by {
     intros X' X Y f g
     ext
@@ -350,13 +350,13 @@ namespace Lan
 variable (D)
 
 /-- The adjunction associated to `Lan`. -/
-def adjunction [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] :
+def adjunction [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
     lan ι ⊣ (whiskeringLeft _ _ D).obj ι :=
   Adjunction.adjunctionOfEquivLeft _ _
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.adjunction CategoryTheory.Lan.adjunction
 
-theorem coreflective [Full ι] [Faithful ι] [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] :
+theorem coreflective [Full ι] [Faithful ι] [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
     IsIso (adjunction D ι).unit := by
   suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).unit X) by
     apply NatIso.isIso_of_isIso_app

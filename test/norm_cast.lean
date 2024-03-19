@@ -2,10 +2,10 @@
 Tests for norm_cast
 -/
 
-import Std.Tactic.NormCast
 import Mathlib.Tactic.Ring
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Rat.Cast.Order
 
 -- set_option trace.Tactic.norm_cast true
 -- set_option trace.Meta.Tactic.simp true

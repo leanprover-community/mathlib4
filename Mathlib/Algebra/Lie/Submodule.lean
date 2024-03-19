@@ -66,6 +66,9 @@ instance : AddSubgroupClass (LieSubmodule R L M) M where
   zero_mem N := N.zero_mem'
   neg_mem {N} x hx := show -x ∈ N.toSubmodule from neg_mem hx
 
+instance instSmulMemClass : SMulMemClass (LieSubmodule R L M) R M where
+  smul_mem {s} c _ h := s.smul_mem'  c h
+
 /-- The zero module is a Lie submodule of any Lie module. -/
 instance : Zero (LieSubmodule R L M) :=
   ⟨{ (0 : Submodule R M) with
@@ -86,7 +89,7 @@ theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl
 #align lie_submodule.coe_to_submodule LieSubmodule.coe_toSubmodule
 
--- Porting note: `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
+-- Porting note (#10618): `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
 -- but `dsimp` can't.
 @[simp, nolint simpNF]
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
@@ -117,7 +120,7 @@ protected theorem zero_mem : (0 : M) ∈ N :=
   zero_mem N
 #align lie_submodule.zero_mem LieSubmodule.zero_mem
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem mk_eq_zero {x} (h : x ∈ N) : (⟨x, h⟩ : N) = 0 ↔ x = 0 :=
   Subtype.ext_iff_val
 #align lie_submodule.mk_eq_zero LieSubmodule.mk_eq_zero
@@ -128,7 +131,6 @@ theorem coe_toSet_mk (S : Set M) (h₁ h₂ h₃ h₄) :
   rfl
 #align lie_submodule.coe_to_set_mk LieSubmodule.coe_toSet_mk
 
-@[simp]
 theorem coe_toSubmodule_mk (p : Submodule R M) (h) :
     (({ p with lie_mem := h } : LieSubmodule R L M) : Submodule R M) = p := by cases p; rfl
 #align lie_submodule.coe_to_submodule_mk LieSubmodule.coe_toSubmodule_mk
@@ -534,7 +536,7 @@ theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {C : (x : M) → (x
   · exact ⟨_, hN _ _ hx⟩
   · exact ⟨_, h0⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
-    refine' ⟨_, hadd _ _ _ _ Cx Cy⟩
+    exact ⟨_, hadd _ _ _ _ Cx Cy⟩
 
 theorem disjoint_iff_coe_toSubmodule :
     Disjoint N N' ↔ Disjoint (N : Submodule R M) (N' : Submodule R M) := by
@@ -945,6 +947,8 @@ variable (N) in
 noncomputable def equivMapOfInjective (hf : Function.Injective f) :
     N ≃ₗ⁅R,L⁆ N.map f :=
   { Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N with
+    -- Note: #8386 had to specify `invFun` explicitly this way, otherwise we'd get a type mismatch
+    invFun := by exact DFunLike.coe (Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N).symm
     map_lie' := by rintro x ⟨m, hm : m ∈ N⟩; ext; exact f.map_lie x m }
 
 /-- An equivalence of Lie modules yields an order-preserving equivalence of their lattices of Lie
@@ -1422,6 +1426,19 @@ theorem map_top : LieSubmodule.map f ⊤ = f.range := by ext; simp [LieSubmodule
 
 theorem range_eq_top : f.range = ⊤ ↔ Function.Surjective f := by
   rw [SetLike.ext'_iff, coe_range, LieSubmodule.top_coe, Set.range_iff_surjective]
+
+/-- A morphism of Lie modules `f : M → N` whose values lie in a Lie submodule `P ⊆ N` can be
+restricted to a morphism of Lie modules `M → P`. -/
+def codRestrict (P : LieSubmodule R L N) (f : M →ₗ⁅R,L⁆ N) (h : ∀ m, f m ∈ P) :
+    M →ₗ⁅R,L⁆ P where
+  toFun := f.toLinearMap.codRestrict P h
+  __ := f.toLinearMap.codRestrict P h
+  map_lie' {x m} := by ext; simp
+
+@[simp]
+lemma codRestrict_apply (P : LieSubmodule R L N) (f : M →ₗ⁅R,L⁆ N) (h : ∀ m, f m ∈ P) (m : M) :
+    (f.codRestrict P h m : N) = f m :=
+  rfl
 
 end LieModuleHom
 

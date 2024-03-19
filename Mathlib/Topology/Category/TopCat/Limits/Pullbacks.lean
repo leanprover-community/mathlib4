@@ -34,14 +34,16 @@ variable {X Y Z : TopCat.{u}}
 
 /-- The first projection from the pullback. -/
 abbrev pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ X :=
-  ⟨Prod.fst ∘ Subtype.val, by apply Continuous.comp <;> continuity⟩
+  ⟨Prod.fst ∘ Subtype.val, by
+    apply Continuous.comp <;> set_option tactic.skipAssignedInstances false in continuity⟩
 #align Top.pullback_fst TopCat.pullbackFst
 
 @[simp] lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.1.1 := rfl
 
 /-- The second projection from the pullback. -/
 abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ Y :=
-  ⟨Prod.snd ∘ Subtype.val, by apply Continuous.comp <;> continuity⟩
+  ⟨Prod.snd ∘ Subtype.val, by
+    apply Continuous.comp <;> set_option tactic.skipAssignedInstances false in continuity⟩
 #align Top.pullback_snd TopCat.pullbackSnd
 
 @[simp] lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.1.2 := rfl
@@ -285,7 +287,7 @@ theorem pullback_map_embedding_of_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : 
     Embedding (prod.lift pullback.fst pullback.snd ≫ Limits.prod.map i₁ i₂ : pullback f₁ f₂ ⟶ _) by
     simpa [← coe_comp] using this
   rw [coe_comp]
-  refine Embedding.comp (embedding_prod_map H₁ H₂) (embedding_pullback_to_prod _ _)
+  exact Embedding.comp (embedding_prod_map H₁ H₂) (embedding_pullback_to_prod _ _)
 #align Top.pullback_map_embedding_of_embeddings TopCat.pullback_map_embedding_of_embeddings
 
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are open embeddings, and `S ⟶ T`

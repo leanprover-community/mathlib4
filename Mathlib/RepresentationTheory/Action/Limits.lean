@@ -205,7 +205,7 @@ section HasZeroMorphisms
 
 variable [HasZeroMorphisms V]
 
--- porting note: in order to ease automation, the `Zero` instance is introduced separately,
+-- porting note (#10688): in order to ease automation, the `Zero` instance is introduced separately,
 -- and the lemma `zero_hom` was moved just below
 instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by aesop_cat⟩
 
@@ -334,7 +334,7 @@ end Linear
 
 section Abelian
 
-/-- Auxilliary construction for the `Abelian (Action V G)` instance. -/
+/-- Auxiliary construction for the `Abelian (Action V G)` instance. -/
 def abelianAux : Action V G ≌ ULift.{u} (SingleObj G) ⥤ V :=
   (functorCategoryEquivalence V G).trans (Equivalence.congrLeft ULift.equivalence)
 set_option linter.uppercaseLean3 false in

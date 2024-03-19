@@ -73,7 +73,7 @@ theorem convexJoin_singleton_right (s : Set E) (y : E) :
     convexJoin 𝕜 s {y} = ⋃ x ∈ s, segment 𝕜 x y := by simp [convexJoin]
 #align convex_join_singleton_right convexJoin_singleton_right
 
--- porting note: simp can prove it
+-- Porting note (#10618): simp can prove it
 theorem convexJoin_singletons (x : E) : convexJoin 𝕜 {x} {y} = segment 𝕜 x y := by simp
 #align convex_join_singletons convexJoin_singletons
 
@@ -174,7 +174,7 @@ theorem convexJoin_convexJoin_convexJoin_comm (s t u v : Set E) :
   by simp_rw [← convexJoin_assoc, convexJoin_right_comm]
 #align convex_join_convex_join_convex_join_comm convexJoin_convexJoin_convexJoin_comm
 
--- porting note: moved 3 lemmas from below to golf
+-- Porting note: moved 3 lemmas from below to golf
 protected theorem Convex.convexJoin (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) :
     Convex 𝕜 (convexJoin 𝕜 s t) := by
   simp only [Convex, StarConvex, convexJoin, mem_iUnion]
@@ -223,6 +223,6 @@ theorem convexJoin_singleton_segment (a b c : E) :
   rw [← segment_same 𝕜, convexJoin_segments, insert_idem]
 #align convex_join_singleton_segment convexJoin_singleton_segment
 
--- porting note: moved 3 lemmas up to golf
+-- Porting note: moved 3 lemmas up to golf
 
 end LinearOrderedField

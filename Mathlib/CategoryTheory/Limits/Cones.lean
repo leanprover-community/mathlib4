@@ -180,7 +180,7 @@ instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
   }⟩
 #align category_theory.limits.inhabited_cocone CategoryTheory.Limits.inhabitedCocone
 
-@[reassoc] -- @[simp] -- Porting note: simp can prove this
+@[reassoc] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
     F.map f ≫ c.ι.app j' = c.ι.app j := by
   rw [c.ι.naturality f]
@@ -315,7 +315,7 @@ namespace Cones
   isomorphism between their vertices which commutes with the cone
   maps. -/
 -- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
-@[aesop apply safe (rule_sets [CategoryTheory]), simps]
+@[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j := by aesop_cat) : c ≅ c' where
   hom := { hom := φ.hom }
@@ -438,12 +438,10 @@ instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) wher
       w := fun j => G.map_injective (by simpa using t.w j) }
 #align category_theory.limits.cones.functoriality_full CategoryTheory.Limits.Cones.functorialityFull
 
-instance functorialityFaithful [Faithful G] : Faithful (Cones.functoriality F G) where
-  map_injective {c} {c'} f g e := by
-    apply ConeMorphism.ext f g
-    let f := ConeMorphism.mk.inj e
-    apply G.map_injective f
-#align category_theory.limits.cones.functoriality_faithful CategoryTheory.Limits.Cones.functorialityFaithful
+instance functoriality_faithful [Faithful G] : Faithful (Cones.functoriality F G) where
+  map_injective {_X} {_Y} f g h :=
+    ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
+#align category_theory.limits.cones.functoriality_faithful CategoryTheory.Limits.Cones.functoriality_faithful
 
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
 equivalence between cones over `F` and cones over `F ⋙ e.functor`.
@@ -455,8 +453,7 @@ def functorialityEquivalence (e : C ≌ D) : Cone F ≌ Cone (F ⋙ e.functor) :
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (postcomposeEquivalence f).functor
     unitIso := NatIso.ofComponents fun c => Cones.ext (e.unitIso.app _)
-    counitIso := NatIso.ofComponents fun c => Cones.ext (e.counitIso.app _)
-  }
+    counitIso := NatIso.ofComponents fun c => Cones.ext (e.counitIso.app _) }
 #align category_theory.limits.cones.functoriality_equivalence CategoryTheory.Limits.Cones.functorialityEquivalence
 
 /-- If `F` reflects isomorphisms, then `Cones.functoriality F` reflects isomorphisms
@@ -514,7 +511,7 @@ namespace Cocones
   isomorphism between their vertices which commutes with the cocone
   maps. -/
 -- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
-@[aesop apply safe (rule_sets [CategoryTheory]), simps]
+@[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Cocone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.ι.app j ≫ φ.hom = c'.ι.app j := by aesop_cat) : c ≅ c' where
   hom := { hom := φ.hom }
@@ -636,10 +633,8 @@ instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) wher
 #align category_theory.limits.cocones.functoriality_full CategoryTheory.Limits.Cocones.functorialityFull
 
 instance functoriality_faithful [Faithful G] : Faithful (functoriality F G) where
-  map_injective {X} {Y} f g e := by
-    apply CoconeMorphism.ext
-    let h := CoconeMorphism.mk.inj e
-    apply G.map_injective h
+  map_injective {_X} {_Y} f g h :=
+    CoconeMorphism.ext f g <| G.map_injective <| congr_arg CoconeMorphism.hom h
 #align category_theory.limits.cocones.functoriality_faithful CategoryTheory.Limits.Cocones.functoriality_faithful
 
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
@@ -652,12 +647,7 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functo
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (precomposeEquivalence f.symm).functor
     unitIso := NatIso.ofComponents fun c => Cocones.ext (e.unitIso.app _)
-    counitIso :=
-      NatIso.ofComponents fun c => Cocones.ext (e.counitIso.app _)
-        (fun j =>
-          -- Unfortunately this doesn't work by `aesop_cat`.
-          -- In this configuration `simp` reaches a dead-end and needs help.
-          by simp [← Equivalence.counitInv_app_functor]) }
+    counitIso := NatIso.ofComponents fun c => Cocones.ext (e.counitIso.app _) }
 #align category_theory.limits.cocones.functoriality_equivalence CategoryTheory.Limits.Cocones.functorialityEquivalence
 
 /-- If `F` reflects isomorphisms, then `Cocones.functoriality F` reflects isomorphisms

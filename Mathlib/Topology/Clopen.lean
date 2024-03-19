@@ -22,11 +22,6 @@ variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 section Clopen
 
-/-- A set is clopen if it is both closed and open. -/
-def IsClopen (s : Set X) : Prop :=
-  IsClosed s ∧ IsOpen s
-#align is_clopen IsClopen
-
 protected theorem IsClopen.isOpen (hs : IsClopen s) : IsOpen s := hs.2
 #align is_clopen.is_open IsClopen.isOpen
 
@@ -131,11 +126,11 @@ theorem isClopen_discrete [DiscreteTopology X] (s : Set X) : IsClopen s :=
   ⟨isClosed_discrete _, isOpen_discrete _⟩
 #align is_clopen_discrete isClopen_discrete
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem isClopen_range_inl : IsClopen (range (Sum.inl : X → X ⊕ Y)) :=
   ⟨isClosed_range_inl, isOpen_range_inl⟩
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem isClopen_range_inr : IsClopen (range (Sum.inr : Y → X ⊕ Y)) :=
   ⟨isClosed_range_inr, isOpen_range_inr⟩
 
@@ -151,13 +146,7 @@ protected theorem QuotientMap.isClopen_preimage {f : X → Y} (hf : QuotientMap 
 
 theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
     Continuous U.boolIndicator ↔ IsClopen U := by
-  constructor
-  · intro hc
-    rw [← U.preimage_boolIndicator_true]
-    exact ⟨(isClosed_discrete _).preimage hc, (isOpen_discrete _).preimage hc, ⟩
-  · refine' fun hU => ⟨fun s _ => _⟩
-    rcases U.preimage_boolIndicator s with (h | h | h | h) <;> rw [h]
-    exacts [isOpen_univ, hU.2, hU.1.isOpen_compl, isOpen_empty]
+  rw [continuous_bool_rng true, preimage_boolIndicator_true]
 #align continuous_bool_indicator_iff_clopen continuous_boolIndicator_iff_isClopen
 
 theorem continuousOn_boolIndicator_iff_isClopen (s U : Set X) :

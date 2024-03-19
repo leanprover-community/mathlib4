@@ -204,9 +204,9 @@ theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i,
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 
-variable [Fintype η]
+section Fintype
 
-section
+variable [Fintype η]
 
 open LinearEquiv
 
@@ -264,10 +264,11 @@ theorem basis_repr (s : ∀ j, Basis (ιs j) R (Ms j)) (x) (ji) :
   rfl
 #align pi.basis_repr Pi.basis_repr
 
-end
+end Fintype
 
 section
 
+variable [Finite η]
 variable (R η)
 
 /-- The basis on `η → R` where the `i`th basis vector is `Function.update 0 i 1`. -/
@@ -298,13 +299,14 @@ end Pi
 
 namespace Module
 
-variable (ι R M N : Type*) [Fintype ι] [CommSemiring R]
+variable (ι R M N : Type*) [Finite ι] [CommSemiring R]
   [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 
 /-- The natural linear equivalence: `Mⁱ ≃ Hom(Rⁱ, M)` for an `R`-module `M`. -/
 noncomputable def piEquiv : (ι → M) ≃ₗ[R] ((ι → R) →ₗ[R] M) := Basis.constr (Pi.basisFun R ι) R
 
-lemma piEquiv_apply_apply (v : ι → M) (w : ι → R) :
+lemma piEquiv_apply_apply (ι R M : Type*) [Fintype ι] [CommSemiring R]
+    [AddCommMonoid M] [Module R M] (v : ι → M) (w : ι → R) :
     piEquiv ι R M v w = ∑ i, w i • v i := by
   simp only [piEquiv, Basis.constr_apply_fintype, Basis.equivFun_apply]
   congr
@@ -321,7 +323,7 @@ end Module
 
 namespace Matrix
 
-variable (R : Type*) (m n : Type*) [Fintype m] [Fintype n] [Semiring R]
+variable (R : Type*) (m n : Type*) [Fintype m] [Finite n] [Semiring R]
 
 /-- The standard basis of `Matrix m n R`. -/
 noncomputable def stdBasis : Basis (m × n) R (Matrix m n R) :=
@@ -330,8 +332,8 @@ noncomputable def stdBasis : Basis (m × n) R (Matrix m n R) :=
 
 variable {n m}
 
-theorem stdBasis_eq_stdBasisMatrix (i : n) (j : m) [DecidableEq n] [DecidableEq m] :
-    stdBasis R n m (i, j) = stdBasisMatrix i j (1 : R) := by
+theorem stdBasis_eq_stdBasisMatrix (i : m) (j : n) [DecidableEq m] [DecidableEq n] :
+    stdBasis R m n (i, j) = stdBasisMatrix i j (1 : R) := by
   -- Porting note: `simp` fails to apply `Pi.basis_apply`
   ext a b
   by_cases hi : i = a <;> by_cases hj : j = b

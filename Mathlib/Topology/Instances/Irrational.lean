@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Rat.Encodable
-import Mathlib.Topology.MetricSpace.Baire
+import Mathlib.Topology.GDelta
 
 #align_import topology.instances.irrational from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -14,7 +14,7 @@ import Mathlib.Topology.MetricSpace.Baire
 
 In this file we prove the following theorems:
 
-* `isGδ_irrational`, `dense_irrational`, `eventually_residual_irrational`: irrational numbers
+* `IsGδ.setOf_irrational`, `dense_irrational`, `eventually_residual_irrational`: irrational numbers
   form a dense Gδ set;
 
 * `Irrational.eventually_forall_le_dist_cast_div`,
@@ -35,10 +35,12 @@ open Set Filter Metric
 
 open Filter Topology
 
-theorem isGδ_irrational : IsGδ { x | Irrational x } :=
+protected theorem IsGδ.setOf_irrational : IsGδ { x | Irrational x } :=
   (countable_range _).isGδ_compl
 set_option linter.uppercaseLean3 false in
-#align is_Gδ_irrational isGδ_irrational
+#align is_Gδ_irrational IsGδ.setOf_irrational
+
+@[deprecated] alias isGδ_irrational := IsGδ.setOf_irrational
 
 theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
   refine' Real.isTopologicalBasis_Ioo_rat.dense_iff.2 _
@@ -50,7 +52,7 @@ theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
 #align dense_irrational dense_irrational
 
 theorem eventually_residual_irrational : ∀ᶠ x in residual ℝ, Irrational x :=
-  eventually_residual.2 ⟨_, isGδ_irrational, dense_irrational, fun _ => id⟩
+  residual_of_dense_Gδ .setOf_irrational dense_irrational
 #align eventually_residual_irrational eventually_residual_irrational
 
 namespace Irrational

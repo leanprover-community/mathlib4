@@ -20,10 +20,24 @@ imports. Further results about divisibility in rings may be found in
 
 variable {α β : Type*}
 
-theorem map_dvd_iff [Semigroup α] [Semigroup β] {F : Type*} [MulEquivClass F α β] (f : F) {a b} :
-    f a ∣ f b ↔ a ∣ b :=
+section Semigroup
+
+variable [Semigroup α] [Semigroup β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β] (f : F)
+
+theorem map_dvd_iff {a b} : f a ∣ f b ↔ a ∣ b :=
   let f := MulEquivClass.toMulEquiv f
   ⟨fun h ↦ by rw [← f.left_inv a, ← f.left_inv b]; exact map_dvd f.symm h, map_dvd f⟩
+
+theorem MulEquiv.decompositionMonoid [DecompositionMonoid β] : DecompositionMonoid α where
+  primal a b c h := by
+    rw [← map_dvd_iff f, map_mul] at h
+    obtain ⟨a₁, a₂, h⟩ := DecompositionMonoid.primal _ h
+    refine ⟨symm f a₁, symm f a₂, ?_⟩
+    simp_rw [← map_dvd_iff f, ← map_mul, eq_symm_apply]
+    iterate 2 erw [(f : α ≃* β).apply_symm_apply]
+    exact h
+
+end Semigroup
 
 section DistribSemigroup
 
@@ -62,7 +76,7 @@ variable [Semigroup α] [HasDistribNeg α] {a b c : α}
 `b` iff `a` divides `b`. -/
 @[simp]
 theorem dvd_neg : a ∣ -b ↔ a ∣ b :=
-  -- porting note: `simpa` doesn't close the goal with `rfl` anymore
+  -- Porting note: `simpa` doesn't close the goal with `rfl` anymore
   (Equiv.neg _).exists_congr_left.trans <| by simp; rfl
 #align dvd_neg dvd_neg
 
@@ -70,7 +84,7 @@ theorem dvd_neg : a ∣ -b ↔ a ∣ b :=
 element `b` iff `a` divides `b`. -/
 @[simp]
 theorem neg_dvd : -a ∣ b ↔ a ∣ b :=
-  -- porting note: `simpa` doesn't close the goal with `rfl` anymore
+  -- Porting note: `simpa` doesn't close the goal with `rfl` anymore
   (Equiv.neg _).exists_congr_left.trans <| by simp; rfl
 #align neg_dvd neg_dvd
 
@@ -109,14 +123,14 @@ theorem dvd_add_right (h : a ∣ b) : a ∣ b + c ↔ a ∣ c := by rw [add_comm
 /-- If an element `a` divides another element `c` in a ring, `a` divides the difference of another
 element `b` with `c` iff `a` divides `b`. -/
 theorem dvd_sub_left (h : a ∣ c) : a ∣ b - c ↔ a ∣ b := by
-  --porting note: Needed to give `α` explicitly
+  -- Porting note: Needed to give `α` explicitly
   simpa only [← sub_eq_add_neg] using dvd_add_left ((dvd_neg (α := α)).2 h)
 #align dvd_sub_left dvd_sub_left
 
 /-- If an element `a` divides another element `b` in a ring, `a` divides the difference of `b` and
 another element `c` iff `a` divides `c`. -/
 theorem dvd_sub_right (h : a ∣ b) : a ∣ b - c ↔ a ∣ c := by
-  --porting note: Needed to give `α` explicitly
+  -- Porting note: Needed to give `α` explicitly
   rw [sub_eq_add_neg, dvd_add_right h, dvd_neg (α := α)]
 #align dvd_sub_right dvd_sub_right
 
@@ -124,7 +138,7 @@ theorem dvd_iff_dvd_of_dvd_sub (h : a ∣ b - c) : a ∣ b ↔ a ∣ c := by
   rw [← sub_add_cancel b c, dvd_add_right h]
 #align dvd_iff_dvd_of_dvd_sub dvd_iff_dvd_of_dvd_sub
 
---porting note: Needed to give `α` explicitly
+-- Porting note: Needed to give `α` explicitly
 theorem dvd_sub_comm : a ∣ b - c ↔ a ∣ c - b := by rw [← dvd_neg (α := α), neg_sub]
 #align dvd_sub_comm dvd_sub_comm
 

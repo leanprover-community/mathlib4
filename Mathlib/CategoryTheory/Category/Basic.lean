@@ -111,14 +111,15 @@ scoped infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 /--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
 allows `aesop` to look through semireducible definitions when calling `intros`.
+It also turns on `zetaDelta` in the `simp` config, allowing `aesop_cat` to unfold any `let`s.
 This tactic fails when it is unable to solve the goal, making it suitable for
 use in auto-params.
 -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop $c* (config := { introsTransparency? := some .default, terminal := true })
-            (simp_config := { decide := true })
-  (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
+            (simp_config := { decide := true, zetaDelta := true })
+            (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
 /--
 We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop_cat`
@@ -126,7 +127,8 @@ We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop
 macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop? $c* (config := { introsTransparency? := some .default, terminal := true })
-  (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
+             (simp_config := { decide := true, zetaDelta := true })
+             (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 /--
 A variant of `aesop_cat` which does not fail when it is unable to solve the
 goal. Use this only for exploration! Nonterminal `aesop` is even worse than
@@ -135,19 +137,20 @@ nonterminal `simp`.
 macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c* (config := { introsTransparency? := some .default, warnOnNonterminal := false })
-    (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
+              (simp_config := { decide := true, zetaDelta := true })
+              (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
 
 -- We turn on `ext` inside `aesop_cat`.
-attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'
+attribute [aesop safe tactic (rule_sets := [CategoryTheory])] Std.Tactic.Ext.extCore'
 
 -- We turn on the mathlib version of `rfl` inside `aesop_cat`.
-attribute [aesop safe tactic (rule_sets [CategoryTheory])] Mathlib.Tactic.rflTac
+attribute [aesop safe tactic (rule_sets := [CategoryTheory])] Mathlib.Tactic.rflTac
 
 -- Porting note:
 -- Workaround for issue discussed at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Failure.20of.20TC.20search.20in.20.60simp.60.20with.20.60etaExperiment.60.2E
 -- now that etaExperiment is always on.
-attribute [aesop safe (rule_sets [CategoryTheory])] Subsingleton.elim
+attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim
 
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be

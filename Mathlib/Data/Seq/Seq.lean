@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.LazyList
+import Std.Data.LazyList
 import Mathlib.Data.Seq.Computation
 
 #align_import data.seq.seq from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
@@ -241,7 +241,7 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
     apply Subtype.eq; dsimp [tail]
 #align stream.seq.destruct_cons Stream'.Seq.destruct_cons
 
--- porting note: needed universe annotation to avoid universe issues
+-- Porting note: needed universe annotation to avoid universe issues
 theorem head_eq_destruct (s : Seq α) : head.{u} s = Prod.fst.{u} <$> destruct.{u} s := by
   unfold destruct head; cases get? s 0 <;> rfl
 #align stream.seq.head_eq_destruct Stream'.Seq.head_eq_destruct
@@ -295,7 +295,7 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
       rfl
     rw [TH]
     apply h1 _ _ (Or.inl rfl)
-  -- porting note: had to reshuffle `intro`
+  -- Porting note: had to reshuffle `intro`
   revert e; apply s.recOn _ fun b s' => _
   · intro e; injection e
   · intro b s' e
@@ -339,7 +339,7 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
 theorem corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
   dsimp [corec, destruct, get]
-  -- porting note: next two lines were `change`...`with`...
+  -- Porting note: next two lines were `change`...`with`...
   have h: Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 := rfl
   rw [h]
   dsimp [Corec.f]
@@ -726,7 +726,7 @@ theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s)
         · intro _ t
           refine' ⟨nil, t, _, _⟩ <;> simp
       · intro _ s
-        refine' ⟨s, t, rfl, rfl⟩
+        exact ⟨s, t, rfl, rfl⟩
 #align stream.seq.map_append Stream'.Seq.map_append
 
 @[simp]
@@ -746,12 +746,12 @@ theorem join_nil : join nil = (nil : Seq α) :=
   destruct_eq_nil rfl
 #align stream.seq.join_nil Stream'.Seq.join_nil
 
---@[simp] -- porting note: simp can prove: `join_cons` is more general
+--@[simp] -- Porting note: simp can prove: `join_cons` is more general
 theorem join_cons_nil (a : α) (S) : join (cons (a, nil) S) = cons a (join S) :=
   destruct_eq_cons <| by simp [join]
 #align stream.seq.join_cons_nil Stream'.Seq.join_cons_nil
 
---@[simp] -- porting note: simp can prove: `join_cons` is more general
+--@[simp] -- Porting note: simp can prove: `join_cons` is more general
 theorem join_cons_cons (a b : α) (s S) :
     join (cons (a, cons b s) S) = cons a (join (cons (b, s) S)) :=
   destruct_eq_cons <| by simp [join]
@@ -776,7 +776,7 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
       · simp [join_cons_cons, join_cons_nil]
       · intro x s
         simp [join_cons_cons, join_cons_nil]
-        refine' Or.inr ⟨x, s, S, rfl, rfl⟩
+        exact Or.inr ⟨x, s, S, rfl, rfl⟩
 #align stream.seq.join_cons Stream'.Seq.join_cons
 
 @[simp]
@@ -994,7 +994,7 @@ theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.m
             cases' x with a s; simp [map]
             exact ⟨_, _, rfl, rfl⟩
         · intro _ s
-          refine' ⟨s, S, rfl, rfl⟩
+          exact ⟨s, S, rfl, rfl⟩
   · refine' ⟨nil, S, _, _⟩ <;> simp
 #align stream.seq1.map_join' Stream'.Seq1.map_join'
 
@@ -1031,7 +1031,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
   cases' s with a s
-  -- Porting note: Was `simp [bind, map]`.
+  -- porting note (#10745): was `simp [bind, map]`.
   simp only [bind, map_pair, map_join]
   rw [← map_comp]
   simp only [show (fun x => join (map g (f x))) = join ∘ (map g ∘ f) from rfl]

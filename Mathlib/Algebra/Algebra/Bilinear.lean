@@ -22,6 +22,26 @@ open TensorProduct Module
 
 namespace LinearMap
 
+section RestrictScalars
+
+variable
+  (R : Type*) {A M N P : Type*}
+  [CommSemiring R] [CommSemiring A]
+  [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+  [Algebra R A]
+  [Module R M] [Module R N] [Module R P]
+  [Module A M] [Module A N] [Module A P]
+  [IsScalarTower R A M] [IsScalarTower R A N] [IsScalarTower R A P]
+
+/-- A version of `LinearMap.restrictScalars` for bilinear maps.
+
+The double subscript in the name is to match `LinearMap.compl₁₂`. -/
+@[simps!]
+def restrictScalars₁₂ (f : M →ₗ[A] N →ₗ[A] P) : M →ₗ[R] N →ₗ[R] P :=
+  (f.flip.restrictScalars _).flip.restrictScalars _
+
+end RestrictScalars
+
 section NonUnitalNonAssoc
 
 variable (R A : Type*) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
@@ -205,7 +225,7 @@ theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
 @[simp]
 theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
   constructor <;> intro h
-  -- porting note: had to supply `R` explicitly in `@mulLeft_apply` below
+  -- Porting note: had to supply `R` explicitly in `@mulLeft_apply` below
   · rw [← mul_one a, ← @mulLeft_apply R _ _ _ _ _ _ a 1, h, LinearMap.zero_apply]
   · rw [h]
     exact mulLeft_zero_eq_zero
@@ -214,7 +234,7 @@ theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
 @[simp]
 theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
   constructor <;> intro h
-  -- porting note: had to supply `R` explicitly in `@mulRight_apply` below
+  -- Porting note: had to supply `R` explicitly in `@mulRight_apply` below
   · rw [← one_mul a, ← @mulRight_apply R _ _ _ _ _ _ a 1, h, LinearMap.zero_apply]
   · rw [h]
     exact mulRight_zero_eq_zero

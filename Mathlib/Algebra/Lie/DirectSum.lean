@@ -170,7 +170,7 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
         -- with `simp [of, singleAddHom]`
         simp only [of, singleAddHom, bracket_apply]
         erw [AddHom.coe_mk, single_apply, single_apply]
-        simp? [h] says simp only [h, dite_eq_ite, ite_true, single_apply]
+        simp? [h] says simp only [h, ↓reduceDite, single_apply]
         intros
         erw [single_add]
       · -- This used to be the end of the proof before leanprover/lean4#2644
@@ -228,7 +228,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
         rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
         congr; clear x; ext j x; exact this j i x y
       intro i j y x
-      simp only [coe_toModule_eq_coe_toAddMonoid, toAddMonoid_of]
+      simp only [f', coe_toModule_eq_coe_toAddMonoid, toAddMonoid_of]
       -- And finish with trivial case analysis.
       obtain rfl | hij := Decidable.eq_or_ne i j
       · simp_rw [lie_of_same, toAddMonoid_of, LinearMap.toAddMonoidHom_coe, LieHom.coe_toLinearMap,

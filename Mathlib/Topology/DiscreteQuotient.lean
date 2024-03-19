@@ -67,7 +67,7 @@ open Set Function
 variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- The type of discrete quotients of a topological space. -/
-@[ext] -- porting note: in Lean 4, uses projection to `r` instead of `Setoid`.
+@[ext] -- Porting note: in Lean 4, uses projection to `r` instead of `Setoid`.
 structure DiscreteQuotient (X : Type*) [TopologicalSpace X] extends Setoid X where
   /-- For every point `x`, the set `{ y | Rel x y }` is a clopen set. -/
   protected isOpen_setOf_rel : ∀ x, IsOpen (setOf (toSetoid.Rel x))
@@ -77,7 +77,7 @@ namespace DiscreteQuotient
 
 variable (S : DiscreteQuotient X)
 
--- porting note: new lemma
+-- Porting note: new lemma
 lemma toSetoid_injective : Function.Injective (@toSetoid X _)
   | ⟨_, _⟩, ⟨_, _⟩, _ => by congr
 
@@ -166,10 +166,10 @@ instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
 instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
 #align discrete_quotient.inhabited_quotient DiscreteQuotient.inhabitedQuotient
 
--- porting note: TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
+-- Porting note: TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
 instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 
--- porting note: new lemma
+-- Porting note: new lemma
 /-- The quotient by `⊤ : DiscreteQuotient X` is a `Subsingleton`. -/
 instance : Subsingleton (⊤ : DiscreteQuotient X) where
   allEq := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound trivial
@@ -325,7 +325,7 @@ theorem map_proj (cond : LEComap f A B) (x : X) : map f cond (A.proj x) = B.proj
 theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
 #align discrete_quotient.map_id DiscreteQuotient.map_id
 
--- porting note: todo: figure out why `simpNF` says this is a bad `@[simp]` lemma
+-- Porting note: todo: figure out why `simpNF` says this is a bad `@[simp]` lemma
 theorem map_comp (h1 : LEComap g B C) (h2 : LEComap f A B) :
     map (g.comp f) (h1.comp h2) = map g h1 ∘ map f h2 := by
   ext ⟨⟩
@@ -382,7 +382,7 @@ theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
     rw [← compat _ _ h]
     exact fiber_subset_ofLE _ _
   obtain ⟨x, hx⟩ : Set.Nonempty (⋂ Q, proj Q ⁻¹' {Qs Q}) :=
-    IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+    IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
       (fun Q : DiscreteQuotient X => Q.proj ⁻¹' {Qs _}) (directed_of_isDirected_ge H₁)
       (fun Q => (singleton_nonempty _).preimage Q.proj_surjective)
       (fun Q => (Q.isClosed_preimage {Qs _}).isCompact) fun Q => Q.isClosed_preimage _

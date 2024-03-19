@@ -15,7 +15,6 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 When `V` is preadditive, `HomologicalComplex V c` is also preadditive,
 and `homologyFunctor` is additive.
 
-TODO: similarly for `R`-linear.
 -/
 
 
@@ -91,7 +90,7 @@ instance : AddCommGroup (C ⟶ D) :=
   Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
     (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
--- porting note: proofs had to be provided here, otherwise Lean tries to apply
+-- Porting note: proofs had to be provided here, otherwise Lean tries to apply
 -- `Preadditive.add_comp/comp_add` to `HomologicalComplex V c`
 instance : Preadditive (HomologicalComplex V c) where
   add_comp _ _ _ f f' g := by

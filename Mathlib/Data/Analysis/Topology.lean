@@ -60,7 +60,7 @@ variable (F : Ctop α σ)
 instance : CoeFun (Ctop α σ) fun _ ↦ σ → Set α :=
   ⟨Ctop.f⟩
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem coe_mk (f T h₁ I h₂ h₃ a) : (@Ctop.mk α σ f T h₁ I h₂ h₃) a = f a := rfl
 #align ctop.coe_mk Ctop.coe_mk
 
@@ -247,7 +247,7 @@ structure LocallyFinite.Realizer [TopologicalSpace α] (F : Ctop.Realizer α) (f
 
 theorem LocallyFinite.Realizer.to_locallyFinite [TopologicalSpace α] {F : Ctop.Realizer α}
     {f : β → Set α} (R : LocallyFinite.Realizer F f) : LocallyFinite f := fun a ↦
-  ⟨_, F.mem_nhds.2 ⟨(R.bas a).1, (R.bas a).2, Subset.refl _⟩, ⟨R.sets a⟩⟩
+  ⟨_, F.mem_nhds.2 ⟨(R.bas a).1, (R.bas a).2, Subset.rfl⟩, have := R.sets a; Set.toFinite _⟩
 #align locally_finite.realizer.to_locally_finite LocallyFinite.Realizer.to_locallyFinite
 
 theorem locallyFinite_iff_exists_realizer [TopologicalSpace α] (F : Ctop.Realizer α)
@@ -278,6 +278,6 @@ def Compact.Realizer [TopologicalSpace α] (s : Set α) :=
 
 instance [TopologicalSpace α] : Inhabited (Compact.Realizer (∅ : Set α)) :=
   ⟨fun {f} F x h hF ↦ by
-    suffices : f = ⊥; exact absurd this h
+    suffices f = ⊥ from absurd this h
     rw [← F.eq, eq_bot_iff]
     exact λ s _ ↦ ⟨x, hF.trans s.empty_subset⟩⟩

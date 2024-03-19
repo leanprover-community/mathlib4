@@ -48,22 +48,22 @@ notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`.  -/
-class AlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
-  (B : outParam (Type*)) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-  [Algebra R B] extends RingHomClass F A B where
+class AlgHomClass (F : Type*) (R A B : outParam Type*)
+  [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+  [FunLike F A B] extends RingHomClass F A B : Prop where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_hom_class AlgHomClass
 
 -- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
 -- attribute [nolint dangerousInstance] AlgHomClass.toRingHomClass
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- attribute [simp] AlgHomClass.commutes
 
 namespace AlgHomClass
 
 variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B]
+  [Algebra R A] [Algebra R B] [FunLike F A B]
 
 -- see Note [lower instance priority]
 instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
@@ -76,12 +76,12 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def toAlgHom {F : Type*} [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
+def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
   { (f : A →+* B) with
       toFun := f
       commutes' := AlgHomClass.commutes f }
 
-instance coeTC {F : Type*} [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
+instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
 #align alg_hom_class.alg_hom.has_coe_t AlgHomClass.coeTC
 
@@ -100,13 +100,15 @@ variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 -- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
 #noalign alg_hom.has_coe_to_fun
 
--- Porting note: This instance is moved.
-instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
+instance funLike : FunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     congr
+
+-- Porting note: This instance is moved.
+instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
@@ -121,7 +123,8 @@ def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
 initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [AlgHomClass F R A B] (f : F) : ⇑(f : A →ₐ[R] B) = f :=
+protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    ⇑(f : A →ₐ[R] B) = f :=
   rfl
 #align alg_hom.coe_coe AlgHom.coe_coe
 
@@ -130,11 +133,7 @@ theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
   rfl
 #align alg_hom.to_fun_eq_coe AlgHom.toFun_eq_coe
 
-attribute [coe] AlgHom.toRingHom
-
-instance coeOutRingHom : CoeOut (A →ₐ[R] B) (A →+* B) :=
-  ⟨AlgHom.toRingHom⟩
-#align alg_hom.coe_ring_hom AlgHom.coeOutRingHom
+#noalign alg_hom.coe_ring_hom
 
 -- Porting note: A new definition underlying a coercion `↑`.
 @[coe]
@@ -262,7 +261,7 @@ protected theorem map_pow (x : A) (n : ℕ) : φ (x ^ n) = φ x ^ n :=
   map_pow _ _ _
 #align alg_hom.map_pow AlgHom.map_pow
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
   map_smul _ _ _
 #align alg_hom.map_smul AlgHom.map_smul
@@ -582,6 +581,10 @@ instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
   mul_smul := fun x y z => by ext; rfl
   smul_mul := fun x y z => by ext; exact x.map_mul _ _
   smul_one := fun x => by ext; exact x.map_one
+
+@[simp]
+theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
+    f • x = Units.map (f : A →* A) x := rfl
 
 end MulDistribMulAction
 end Algebra

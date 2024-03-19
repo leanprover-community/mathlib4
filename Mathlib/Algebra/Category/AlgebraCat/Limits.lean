@@ -149,7 +149,7 @@ end HasLimits
 
 open HasLimits
 
--- porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
+-- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
 -- is a `Prop`, declaring this as `irreducible` should presumably have no effect
 /-- The category of R-algebras has all limits. -/
 lemma hasLimitsOfSize : HasLimitsOfSize.{v, v} (AlgebraCatMax.{v, w} R) :=

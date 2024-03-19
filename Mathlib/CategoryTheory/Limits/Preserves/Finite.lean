@@ -165,7 +165,7 @@ def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
         exact preservesColimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
 #align category_theory.limits.preserves_finite_colimits_of_preserves_finite_colimits_of_size CategoryTheory.Limits.preservesFiniteColimitsOfPreservesFiniteColimitsOfSize
 
--- porting note: the proof `⟨fun _ _ _ => by infer_instance⟩` used for `idPreservesFiniteLimits`
+-- Porting note: the proof `⟨fun _ _ _ => by infer_instance⟩` used for `idPreservesFiniteLimits`
 -- did not work here because of universe problems, could this be solved by tweaking the priorities
 -- of some instances?
 noncomputable instance idPreservesFiniteColimits : PreservesFiniteColimits (𝟭 C) :=
