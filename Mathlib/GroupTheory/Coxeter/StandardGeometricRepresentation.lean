@@ -100,6 +100,16 @@ private lemma Polynomial.Chebyshev.U_real_neg_cos_eq {m : ℕ} (n : ℕ) (hm : m
   rw [← USubOne_add_one, USubOne_real_neg_cos_eq _ hm, pow_succ]
   simp [neg_mul, neg_div]
 
+namespace Finsupp
+
+variable {B : Type*} [DecidableEq B]
+
+/-- The proposition that all the coordinates of `v` in the basis of simple roots are nonnegative. -/
+def IsPositive (v : B →₀ ℝ) := ∀ i : B, v i ≥ 0
+/-- The proposition that all the coordinates of `v` in the basis of simple roots are nonpositive. -/
+def IsNegative (v : B →₀ ℝ) := ∀ i : B, v i ≤ 0
+
+end Finsupp
 
 /-! ### The standard geometric representation
 Given a Coxeter group `W` whose simple reflections are indexed by a set `B`, we define
@@ -564,30 +574,24 @@ theorem SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul
   · rw [cs.SGR_alternatingWord_apply_simpleRoot' i i' m M_eq_zero]
     rcases em (Even m) with even | not_even
     · rw [if_pos even]
-      use m + 1, m, (by linarith), (by linarith)
+      use m + 1, m, by linarith, by linarith
     · rw [if_neg not_even]
-      use m, m + 1, (by linarith), (by linarith)
-
-
-/-- The proposition that all the coordinates of `v` in the basis of simple roots are nonnegative. -/
-def IsPositive (v : V) := ∀ i : B, v i ≥ 0
-/-- The proposition that all the coordinates of `v` in the basis of simple roots are nonpositive. -/
-def IsNegative (v : V) := ∀ i : B, v i ≤ 0
+      use m, m + 1, by linarith, by linarith
 
 theorem SGR_apply_simpleRoot_pos_of {w : W} {i : B} (h : ℓ (w * s i) = ℓ w + 1) :
-    IsPositive (cs.SGR w (α i)) := by
+    Finsupp.IsPositive (cs.SGR w (α i)) := by
   sorry
 
 theorem SGR_apply_simpleRoot_neg_of {w : W} {i : B} (h : ℓ (w * s i) + 1 = ℓ w) :
-    IsNegative (cs.SGR w (α i)) := by
+    Finsupp.IsNegative (cs.SGR w (α i)) := by
   sorry
 
 theorem SGR_apply_simpleRoot_pos_iff (w : W) (i : B) :
-    ℓ (w * s i) = ℓ w + 1 ↔ IsPositive (cs.SGR w (α i)) := by
+    ℓ (w * s i) = ℓ w + 1 ↔ Finsupp.IsPositive (cs.SGR w (α i)) := by
   sorry
 
 theorem SGR_apply_simpleRoot_neg_iff (w : W) (i : B) :
-    ℓ (w * s i) + 1 = ℓ w ↔ IsNegative (cs.SGR w (α i)) := by
+    ℓ (w * s i) + 1 = ℓ w ↔ Finsupp.IsNegative (cs.SGR w (α i)) := by
   sorry
 
 theorem injective_SGR : Function.Injective cs.SGR := by
