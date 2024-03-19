@@ -46,7 +46,6 @@ non-unital, algebra, morphism
 universe u u₁ v w w₁ w₂ w₃
 
 variable {R : Type u} {S : Type u₁}
--- (A : Type v) (B : Type w) (C : Type w₁)
 
 /-- A morphism respecting addition, multiplication, and scalar multiplication. When these arise from
 algebra structures, this is the same as a not-necessarily-unital morphism of algebras. -/
@@ -156,23 +155,16 @@ end NonUnitalAlgHomClass
 
 namespace NonUnitalAlgHom
 
-variable {R A B C} [Monoid R]
-variable [Monoid R] [Monoid S] (φ : R →* S)
-variable {A B C}
+variable {T : Type*} [Monoid R] [Monoid S] [Monoid T] (φ : R →* S)
+variable (A : Type v) (B : Type w) (C : Type w₁)
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
-variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
-
-variable {T : Type*} [Monoid T] [NonUnitalNonAssocSemiring C] [DistribMulAction T C]
+variable [NonUnitalNonAssocSemiring C] [DistribMulAction T C]
 
 -- Porting note: Replaced with DFunLike instance
 -- /-- see Note [function coercion] -/
 -- instance : CoeFun (A →ₙₐ[R] B) fun _ => A → B :=
 --   ⟨toFun⟩
-
-variable {φ}
 
 instance  : DFunLike (A →ₛₙₐ[φ] B) A fun _ => B where
   coe f := f.toFun
@@ -189,6 +181,7 @@ def Simps.apply (f : A →ₛₙₐ[φ] B) : A → B := f
 initialize_simps_projections NonUnitalAlgHom
   (toDistribMulActionHom_toMulActionHom_toFun → apply, -toDistribMulActionHom)
 
+variable {φ A B C}
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B]
     [NonUnitalAlgSemiHomClass F φ A B] (f : F) :
@@ -198,6 +191,7 @@ protected theorem coe_coe {F : Type*} [FunLike F A B]
 
 theorem coe_injective : @Function.Injective (A →ₛₙₐ[φ] B) (A → B) (↑) := by
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+
 #align non_unital_alg_hom.coe_injective NonUnitalAlgHom.coe_injective
 instance : FunLike (A →ₛₙₐ[φ] B) A B
     where
@@ -351,26 +345,30 @@ def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [MonoidHom.CompTr
   { (f : B →ₙ* C).comp (g : A →ₙ* B), (f : B →ₑ+[ψ] C).comp (g : A →ₑ+[φ] B) with }
 #align non_unital_alg_hom.comp NonUnitalAlgHom.comp
 
-/-- The composition of morphisms is a morphism. -/
-def comp' (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) : A →ₛₙₐ[ψ.comp φ] C :=
-  { (f : B →ₙ* C).comp (g : A →ₙ* B),
-    (f : B →ₑ+[ψ] C).comp (g : A →ₑ+[φ] B) (κ := MonoidHom.CompTriple.comp) with }
-
 @[simp, norm_cast]
 theorem coe_comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [MonoidHom.CompTriple φ ψ χ] :
-    ⇑(f.comp g) = (⇑f) ∘ (⇑g) := rfl
+    ⇑(f.comp g : A →ₛₙₐ[χ] C) = (⇑f) ∘ (⇑g) := rfl
 #align non_unital_alg_hom.coe_comp NonUnitalAlgHom.coe_comp
-
-@[simp, norm_cast]
-theorem coe_comp' (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) :
-    ⇑(f.comp' g) = (⇑f) ∘ (⇑g) := rfl
 
 theorem comp_apply (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [MonoidHom.CompTriple φ ψ χ] (x : A) :
     f.comp g x = f (g x) := rfl
 #align non_unital_alg_hom.comp_apply NonUnitalAlgHom.comp_apply
 
+/-
+/-- The composition of morphisms is a morphism. -/
+def comp' (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) : A →ₛₙₐ[ψ.comp φ] C :=
+  { (f : B →ₙ* C).comp (g : A →ₙ* B),
+    (f : B →ₑ+[ψ] C).comp (g : A →ₑ+[φ] B) with }
+
+@[simp, norm_cast]
+theorem coe_comp' (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) :
+    ⇑(f.comp' g) = (⇑f) ∘ (⇑g) := rfl
+
 theorem comp'_apply (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) (x : A) :
     f.comp' g x = f (g x) := rfl
+
+-/
+
 
 variable {B₁: Type*} [NonUnitalNonAssocSemiring B₁] [DistribMulAction R B₁]
 
