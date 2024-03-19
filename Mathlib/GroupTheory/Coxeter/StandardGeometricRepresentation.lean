@@ -246,8 +246,7 @@ theorem orthoReflection_mul_orthoReflection_pow_apply {v v' : V} (k : ℕ)
 
     /- Rewrite using μ = ⟪v, v'⟫. -/
     rw [(by rw[← (isSymm_standardBilinForm hM).eq v' v]; simp : ⟪v', v⟫ = ⟪v, v'⟫)]
-    let μ := ⟪v, v'⟫
-    rw [← (by rfl : μ = ⟪v, v'⟫)]
+    set μ := ⟪v, v'⟫
 
     /- Sort the terms and write the entire expression as a • v + b • v'. -/
     simp only [sub_eq_add_neg, neg_add, ← neg_smul, smul_eq_mul]
@@ -366,11 +365,11 @@ private lemma orthoReflection_mul_orthoReflection_pow_order {v v' : V} {m : ℕ}
   · apply LinearMap.ext
     intro w
     rcases can_decomp_into_parallel_and_orthogonal hM w hv hv' hvv' mgt with ⟨μ₁, μ₂, hμ⟩
-    let w' := w - μ₁ • v - μ₂ • v'
-    rw [← (by rfl : w' = w - μ₁ • v - μ₂ • v')] at hμ
+    set! w' := w - μ₁ • v - μ₂ • v' with hw'
+    rw [← hw'] at hμ
     rcases hμ with ⟨h₁, h₂⟩
 
-    have h₃ : w = w' + μ₁ • v + μ₂ • v' := by rw [(by rfl : w' = w - μ₁ • v - μ₂ • v')]; abel
+    have h₃ : w = w' + μ₁ • v + μ₂ • v' := by rw [hw']; abel
     simp only [h₃, LinearMap.map_add, LinearMap.map_smul, LinearMap.one_apply]
     congr
     · exact fixed_of_orthogonal w' hv hv' h₁ h₂
