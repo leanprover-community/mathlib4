@@ -6,13 +6,13 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Data.Nat.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Data.Option.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.List.Defs
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.Common
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.List.Lemmas
+import Mathlib.Data.Option.Defs
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
