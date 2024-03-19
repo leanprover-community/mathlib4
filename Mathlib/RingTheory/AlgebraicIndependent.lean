@@ -50,15 +50,10 @@ open BigOperators
 universe x u v w
 
 variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
-
 variable {A : Type*} {A' A'' : Type*} {V : Type u} {V' : Type*}
-
 variable (x : ι → A)
-
 variable [CommRing R] [CommRing A] [CommRing A'] [CommRing A'']
-
 variable [Algebra R A] [Algebra R A'] [Algebra R A'']
-
 variable {a b : R}
 
 /-- `AlgebraicIndependent R x` states the family of elements `x`

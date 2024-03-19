@@ -41,7 +41,6 @@ universe v u
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
-
 variable {P Q : C}
 
 /-- A strong epimorphism `f` is an epimorphism which has the left lifting property
