@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Archimedean
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.GroupTheory.Submonoid.Membership
+import Mathlib.Algebra.GroupPower.NegOnePow
 
 #align_import algebra.periodic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
@@ -374,6 +375,11 @@ protected theorem Antiperiodic.funext' [Add α] [InvolutiveNeg β] (h : Antiperi
 #align function.antiperiodic.funext' Function.Antiperiodic.funext'
 
 /-- If a function is `antiperiodic` with antiperiod `c`, then it is also `periodic` with period
+  `2 • c`. -/
+protected theorem Antiperiodic.periodic_two_nsmul [AddMonoid α] [InvolutiveNeg β]
+    (h : Antiperiodic f c) : Periodic f (2 • c) := by simp [two_nsmul, ← add_assoc, h _]
+
+/-- If a function is `antiperiodic` with antiperiod `c`, then it is also `periodic` with period
   `2 * c`. -/
 protected theorem Antiperiodic.periodic [Semiring α] [InvolutiveNeg β] (h : Antiperiodic f c) :
     Periodic f (2 * c) := by simp [two_mul, ← add_assoc, h _]
@@ -383,20 +389,37 @@ protected theorem Antiperiodic.eq [AddZeroClass α] [Neg β] (h : Antiperiodic f
   simpa only [zero_add] using h 0
 #align function.antiperiodic.eq Function.Antiperiodic.eq
 
+theorem Antiperiodic.even_nsmul_periodic [AddMonoid α] [InvolutiveNeg β] (h : Antiperiodic f c)
+    (n : ℕ) : Periodic f ((2 * n) • c) := mul_nsmul c 2 n ▸ h.periodic_two_nsmul.nsmul n
+
 theorem Antiperiodic.nat_even_mul_periodic [Semiring α] [InvolutiveNeg β] (h : Antiperiodic f c)
     (n : ℕ) : Periodic f (n * (2 * c)) :=
   h.periodic.nat_mul n
 #align function.antiperiodic.nat_even_mul_periodic Function.Antiperiodic.nat_even_mul_periodic
+
+theorem Antiperiodic.odd_nsmul_antiperiodic [AddMonoid α] [InvolutiveNeg β] (h : Antiperiodic f c)
+    (n : ℕ) : Antiperiodic f ((2 * n + 1) • c) := fun x => by
+  rw [add_nsmul, one_nsmul, ← add_assoc, h, h.even_nsmul_periodic]
 
 theorem Antiperiodic.nat_odd_mul_antiperiodic [Semiring α] [InvolutiveNeg β] (h : Antiperiodic f c)
     (n : ℕ) : Antiperiodic f (n * (2 * c) + c) := fun x => by
   rw [← add_assoc, h, h.periodic.nat_mul]
 #align function.antiperiodic.nat_odd_mul_antiperiodic Function.Antiperiodic.nat_odd_mul_antiperiodic
 
+theorem Antiperiodic.even_zsmul_periodic [AddGroup α] [InvolutiveNeg β] (h : Antiperiodic f c)
+    (n : ℤ) : Periodic f ((2 * n) • c) := by
+  rw [mul_comm, mul_zsmul, two_zsmul, ← two_nsmul]
+  exact h.periodic_two_nsmul.zsmul n
+
 theorem Antiperiodic.int_even_mul_periodic [Ring α] [InvolutiveNeg β] (h : Antiperiodic f c)
     (n : ℤ) : Periodic f (n * (2 * c)) :=
   h.periodic.int_mul n
 #align function.antiperiodic.int_even_mul_periodic Function.Antiperiodic.int_even_mul_periodic
+
+theorem Antiperiodic.odd_zsmul_periodic [AddGroup α] [InvolutiveNeg β] (h : Antiperiodic f c)
+    (n : ℤ) : Antiperiodic f ((2 * n + 1) • c) := by
+  intro x
+  rw [add_zsmul, one_zsmul, ← add_assoc, h, h.even_zsmul_periodic]
 
 theorem Antiperiodic.int_odd_mul_antiperiodic [Ring α] [InvolutiveNeg β] (h : Antiperiodic f c)
     (n : ℤ) : Antiperiodic f (n * (2 * c) + c) := fun x => by
@@ -431,6 +454,62 @@ theorem Antiperiodic.int_mul_eq_of_eq_zero [Ring α] [SubtractionMonoid β] (h :
   | (n : ℕ) => by rw [Int.cast_ofNat, h.nat_mul_eq_of_eq_zero hi n]
   | .negSucc n => by rw [Int.cast_negSucc, neg_mul, ← mul_neg, h.neg.nat_mul_eq_of_eq_zero hi]
 #align function.antiperiodic.int_mul_eq_of_eq_zero Function.Antiperiodic.int_mul_eq_of_eq_zero
+
+theorem Antiperiodic.add_zsmul_eq [AddGroup α] [AddGroup β] (h : Antiperiodic f c) (n : ℤ) :
+    f (x + n • c) = (n.negOnePow : ℤ) • f x := by
+  rcases Int.even_or_odd' n with ⟨k, rfl | rfl⟩
+  · rw [h.even_zsmul_periodic, Int.negOnePow_two_mul, Units.val_one, one_zsmul]
+  · rw [h.odd_zsmul_periodic, Int.negOnePow_two_mul_add_one, Units.val_neg,
+      Units.val_one, neg_zsmul, one_zsmul]
+
+theorem Antiperiodic.sub_zsmul_eq [AddGroup α] [AddGroup β] (h : Antiperiodic f c) (n : ℤ) :
+    f (x - n • c) = (n.negOnePow : ℤ) • f x := by
+  simpa only [sub_eq_add_neg, neg_zsmul, Int.negOnePow_neg] using h.add_zsmul_eq (-n)
+
+theorem Antiperiodic.zsmul_sub_eq [AddCommGroup α] [AddGroup β] (h : Antiperiodic f c) (n : ℤ) :
+    f (n • c - x) = (n.negOnePow : ℤ) • f (-x) := by
+  rw [sub_eq_add_neg, add_comm]
+  exact h.add_zsmul_eq n
+
+theorem Antiperiodic.add_int_mul_eq [Ring α] [Ring β] (h : Antiperiodic f c) (n : ℤ) :
+    f (x + n * c) = (n.negOnePow : ℤ) * f x := by simpa only [zsmul_eq_mul] using h.add_zsmul_eq n
+
+theorem Antiperiodic.sub_int_mul_eq [Ring α] [Ring β] (h : Antiperiodic f c) (n : ℤ) :
+    f (x - n * c) = (n.negOnePow : ℤ) * f x := by simpa only [zsmul_eq_mul] using h.sub_zsmul_eq n
+
+theorem Antiperiodic.int_mul_sub_eq [Ring α] [Ring β] (h : Antiperiodic f c) (n : ℤ) :
+    f (n * c - x) = (n.negOnePow : ℤ) * f (-x) := by
+  simpa only [zsmul_eq_mul] using h.zsmul_sub_eq n
+
+theorem Antiperiodic.add_nsmul_eq [AddMonoid α] [AddGroup β] (h : Antiperiodic f c) (n : ℕ) :
+    f (x + n • c) = (-1) ^ n • f x := by
+  rcases Nat.even_or_odd' n with ⟨k, rfl | rfl⟩
+  · rw [h.even_nsmul_periodic, pow_mul, (by norm_num : (-1) ^ 2 = 1), one_pow, one_zsmul]
+  · rw [h.odd_nsmul_antiperiodic, pow_add, pow_mul, (by norm_num : (-1) ^ 2 = 1), one_pow,
+      pow_one, one_mul, neg_zsmul, one_zsmul]
+
+theorem Antiperiodic.sub_nsmul_eq [AddGroup α] [AddGroup β] (h : Antiperiodic f c) (n : ℕ) :
+    f (x - n • c) = (-1) ^ n • f x := by
+  simpa only [Int.reduceNeg, coe_nat_zsmul] using h.sub_zsmul_eq n
+
+theorem Antiperiodic.nsmul_sub_eq [AddCommGroup α] [AddGroup β] (h : Antiperiodic f c) (n : ℕ) :
+    f (n • c - x) = (-1) ^ n • f (-x) := by
+  simpa only [Int.reduceNeg, coe_nat_zsmul] using h.zsmul_sub_eq n
+
+theorem Antiperiodic.add_nat_mul_eq [Semiring α] [Ring β] (h : Antiperiodic f c) (n : ℕ) :
+    f (x + n * c) = (-1) ^ n * f x := by
+  simpa only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, Int.cast_neg,
+    Int.cast_one] using h.add_nsmul_eq n
+
+theorem Antiperiodic.sub_nat_mul_eq [Ring α] [Ring β] (h : Antiperiodic f c) (n : ℕ) :
+    f (x - n * c) = (-1) ^ n * f x := by
+  simpa only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, Int.cast_neg,
+    Int.cast_one] using h.sub_nsmul_eq n
+
+theorem Antiperiodic.nat_mul_sub_eq [Ring α] [Ring β] (h : Antiperiodic f c) (n : ℕ) :
+    f (n * c - x) = (-1) ^ n * f (-x) := by
+  simpa only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, Int.cast_neg,
+    Int.cast_one] using h.nsmul_sub_eq n
 
 theorem Antiperiodic.const_add [AddSemigroup α] [Neg β] (h : Antiperiodic f c) (a : α) :
     Antiperiodic (fun x => f (a + x)) c := fun x => by simpa [add_assoc] using h (a + x)
