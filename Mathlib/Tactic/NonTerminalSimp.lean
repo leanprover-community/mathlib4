@@ -45,14 +45,32 @@ def onlyOrNotSimp : Syntax → Bool
 /-- The monad for collecting `simp`s that are not `simp only`. -/
 abbrev M := StateRefT (HashMap String.Range Syntax) IO
 
-def inertGoals (t : TacticInfo) : List MVarId :=
+section goals_heuristic
+variable (t : TacticInfo)
+/-!
+###  Heuristics for determining active and inactive goals
+
+The three definitions `inertGoals`, `activeGoalsBefore`, `activeGoalsAfter` extract a list of
+`MVarId`s attempting to determine which on which goals the tactic `t` is acting.
+This is mostly based on the heuristic that the tactic with "change" an `MVarId`.
+-/
+
+/-- `inertGoals t` are the goals that appear before and after the `TacticInfo` `t`.
+They should correspond to the goals that are unmodified by `t`. -/
+def inertGoals : List MVarId :=
   t.goalsBefore.filter (·.name ∈ t.goalsAfter.map (·.name))
 
-def willChange (t : TacticInfo) : List MVarId :=
+/-- `activeGoalsBefore t` are the `MVarId`s before the `TacticInfo` `t` that "disappear" after it.
+They should correspond to the goals in which the tactic `t` performs some action. -/
+def activeGoalsBefore : List MVarId :=
   t.goalsBefore.filter (·.name ∉ t.goalsAfter.map (·.name))
 
-def haveChanged (t : TacticInfo) : List MVarId :=
+/-- `activeGoalsAfter t` are the `MVarId`s after the `TacticInfo` `t` that wern't present before it.
+They should correspond to the goals changed by the tactic `t`. -/
+def activeGoalsAfter : List MVarId :=
   t.goalsAfter.filter (·.name ∉ t.goalsBefore.map (·.name))
+
+end goals_heuristic
 
 variable (kind : SyntaxNodeKind) in
 partial
@@ -60,8 +78,8 @@ def extractRealGoals : InfoTree → Array (Syntax × List MVarId)
   | .node k args =>
     let kargs := (args.map extractRealGoals).foldl (· ++ ·) #[]
     if let Lean.Elab.Info.ofTacticInfo i := k then
-      if k.stx.getKind == kind then
-        kargs.push (k.stx, haveChanged i) else kargs
+      if i.stx.getKind == kind && (i.stx.getRange? true).isSome then
+        kargs.push (i.stx, activeGoalsAfter i) else kargs
     else kargs
   | .context _ t => extractRealGoals t
   | _ => default
@@ -84,7 +102,7 @@ def getRealFollowers : InfoTree → Array Syntax
   | .node k args =>
     let kargs := (args.map getRealFollowers).foldl (· ++ ·) #[]
     if let Lean.Elab.Info.ofTacticInfo i := k then
-      if (mvs.map fun x => (x.name ∈ i.goalsBefore.map (·.name) : Bool)).any (·) then kargs.push k.stx else kargs
+      if (mvs.map fun x => (x.name ∈ (activeGoalsBefore i).map (·.name) : Bool)).any (·) then kargs.push k.stx else kargs
     else kargs
   | .context _ t => getRealFollowers t
   | _ => default
@@ -107,7 +125,7 @@ mutual
 
 Add such `simp`s to the state. -/
 partial def addNonSimpOnlysList (trees : PersistentArray InfoTree) : M Unit := do
-  let gls := trees.map (extractGoals ``Lean.Parser.Tactic.refine ·)
+--  let gls := trees.map (extractGoals ``Lean.Parser.Tactic.refine ·)
 /-
   Command.liftCoreM do
     Meta.MetaM.run do
@@ -155,6 +173,8 @@ partial def addNonSimpOnlys : InfoTree → M Unit
 
 end
 
+abbrev allowedSimpFollowers : Array SyntaxNodeKind := #[]
+
 /-- Gets the value of the `linter.nonTerminalSimp` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.nonTerminalSimp o
 
@@ -171,7 +191,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 
   trees.forM fun tree => do
 --    dbg_trace "processing2"
-    let d := extractRealGoals ``Lean.Parser.Tactic.refine tree
+    let d := extractRealGoals ``Lean.Parser.Tactic.simp tree --``Lean.Parser.Tactic.refine tree
 --    dbg_trace "processing3 {d.map Prod.fst} {d.size}"
     for (st, aft) in d do
 --      dbg_trace "* Following {st}\n"
@@ -181,8 +201,8 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
       for y in (getRealFollowers aft tree) do
 
 --        tots := tots.push (y, st)
-          dbg_trace "{y.getAtomVal} follows {st.getAtomVal}"
-          Linter.logLint linter.nonTerminalSimp y m!"follows {st}"
+--          dbg_trace "{y.getAtomVal} follows {st.getAtomVal}"
+          Linter.logLint linter.nonTerminalSimp y m!"follows {st}\n{y.getKind}"
 --          tot := tot.push m!"follows {st}"
 --      logInfo m!"{tot}"
 /-
@@ -199,7 +219,6 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 -/
 --          dbg_trace "** {y} {r}\n"; --return
 --      rest := rest.push aft
-
 
   let simps := map.toArray
   let key (r : String.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
