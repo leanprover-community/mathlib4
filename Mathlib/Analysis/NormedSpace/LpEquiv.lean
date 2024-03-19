@@ -15,9 +15,9 @@ import Mathlib.Topology.ContinuousFunction.Bounded
 In this file we collect a variety of equivalences among various $L^p$ spaces.  In particular,
 when `α` is a `Fintype`, given `E : α → Type u` and `p : ℝ≥0∞`, there is a natural linear isometric
 equivalence `lpPiLpₗᵢₓ : lp E p ≃ₗᵢ PiLp p E`. In addition, when `α` is a discrete topological
-space, the bounded continuous functions `α →ᵇ β` correspond exactly to `lp (λ _, β) ∞`. Here there
-can be more structure, including ring and algebra structures, and we implement these equivalences
-accordingly as well.
+space, the bounded continuous functions `α →ᵇ β` correspond exactly to `lp (fun _ ↦ β) ∞`.
+Here there can be more structure, including ring and algebra structures,
+and we implement these equivalences accordingly as well.
 
 We keep this as a separate file so that the various $L^p$ space files don't import the others.
 
@@ -109,7 +109,7 @@ noncomputable def lpPiLpₗᵢ [Fact (1 ≤ p)] : lp E p ≃ₗᵢ[𝕜] PiLp p 
     map_smul' := fun _k _f => rfl
     norm_map' := equiv_lpPiLp_norm }
 #align lp_pi_Lpₗᵢ lpPiLpₗᵢₓ
--- porting note: `#align`ed with an `ₓ` because `E` is now explicit, see above
+-- Porting note: `#align`ed with an `ₓ` because `E` is now explicit, see above
 
 variable {𝕜 E}
 
@@ -134,14 +134,12 @@ open BoundedContinuousFunction
 
 -- note: `R` and `A` are explicit because otherwise Lean has elaboration problems
 variable {α E : Type*} (R A 𝕜 : Type*) [TopologicalSpace α] [DiscreteTopology α]
-
 variable [NormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
-
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
 
 section NormedAddCommGroup
 
-/-- The canonical map between `lp (λ (_ : α), E) ∞` and `α →ᵇ E` as an `AddEquiv`. -/
+/-- The canonical map between `lp (fun _ : α ↦ E) ∞` and `α →ᵇ E` as an `AddEquiv`. -/
 noncomputable def AddEquiv.lpBcf : lp (fun _ : α => E) ∞ ≃+ (α →ᵇ E) where
   toFun f := ofNormedAddCommGroupDiscrete f ‖f‖ <| le_ciSup (memℓp_infty_iff.mp f.prop)
   invFun f := ⟨⇑f, f.bddAbove_range_norm_comp⟩
@@ -164,13 +162,13 @@ variable (E)
 annotating with `(E := E)` everywhere, so we just make it explicit. This file has no
 dependencies. -/
 
-/-- The canonical map between `lp (λ (_ : α), E) ∞` and `α →ᵇ E` as a `LinearIsometryEquiv`. -/
+/-- The canonical map between `lp (fun _ : α ↦ E) ∞` and `α →ᵇ E` as a `LinearIsometryEquiv`. -/
 noncomputable def lpBcfₗᵢ : lp (fun _ : α => E) ∞ ≃ₗᵢ[𝕜] α →ᵇ E :=
   { AddEquiv.lpBcf with
     map_smul' := fun k f => rfl
     norm_map' := fun f => by simp only [norm_eq_iSup_norm, lp.norm_eq_ciSup]; rfl }
 #align lp_bcfₗᵢ lpBcfₗᵢₓ
--- porting note: `#align`ed with an `ₓ` because `E` is now explicit, see above
+-- Porting note: `#align`ed with an `ₓ` because `E` is now explicit, see above
 
 variable {𝕜 E}
 
@@ -186,7 +184,7 @@ end NormedAddCommGroup
 
 section RingAlgebra
 
-/-- The canonical map between `lp (λ (_ : α), R) ∞` and `α →ᵇ R` as a `RingEquiv`. -/
+/-- The canonical map between `lp (fun _ : α ↦ R) ∞` and `α →ᵇ R` as a `RingEquiv`. -/
 noncomputable def RingEquiv.lpBcf : lp (fun _ : α => R) ∞ ≃+* (α →ᵇ R) :=
   { @AddEquiv.lpBcf _ R _ _ _ with
     map_mul' := fun _f _g => BoundedContinuousFunction.ext fun _x => rfl }
@@ -207,7 +205,7 @@ variable (α)
 -- even `α` needs to be explicit here for elaboration
 -- the `NormOneClass A` shouldn't really be necessary, but currently it is for
 -- `one_memℓp_infty` to get the `Ring` instance on `lp`.
-/-- The canonical map between `lp (λ (_ : α), A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
+/-- The canonical map between `lp (fun _ : α ↦ A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
 noncomputable def AlgEquiv.lpBcf : lp (fun _ : α => A) ∞ ≃ₐ[𝕜] α →ᵇ A :=
   { RingEquiv.lpBcf A with commutes' := fun _k => rfl }
 #align alg_equiv.lp_bcf AlgEquiv.lpBcf

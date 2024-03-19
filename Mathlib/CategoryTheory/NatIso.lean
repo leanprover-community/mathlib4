@@ -264,4 +264,23 @@ theorem isIso_map_iff {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) {X Y : C} (f : X
 
 end NatIso
 
+namespace Functor
+
+variable (F : C ⥤ D) (obj : C → D) (e : ∀ X, F.obj X ≅ obj X)
+
+/-- Constructor for a functor that is isomorphic to a given functor `F : C ⥤ D`,
+while being definitionally equal on objects to a given map `obj : C → D`
+such that for all `X : C`, we have an isomorphism `F.obj X ≅ obj X`. -/
+@[simps obj]
+def copyObj : C ⥤ D where
+  obj := obj
+  map f := (e _).inv ≫ F.map f ≫ (e _).hom
+
+/-- The functor constructed with `copyObj` is isomorphic to the given functor. -/
+@[simps!]
+def isoCopyObj : F ≅ F.copyObj obj e :=
+  NatIso.ofComponents e (by simp [Functor.copyObj])
+
+end Functor
+
 end CategoryTheory

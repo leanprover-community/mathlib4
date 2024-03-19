@@ -249,7 +249,7 @@ theorem ae_exists_fderiv_of_countable
   let L : E →L[ℝ] ℝ :=
     LinearMap.toContinuousLinearMap (B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i)))
   refine ⟨L, fun v hv ↦ ?_⟩
-  have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [B.sum_repr v]
+  have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [L, B.sum_repr v]
   simpa [J] using (h'x v hv).hasLineDerivAt
 
 /-- If a Lipschitz functions has line derivatives in a dense set of directions, all of them given by
@@ -357,7 +357,7 @@ theorem ae_differentiableWithinAt_of_mem {f : E → F} (hf : LipschitzOnWith C f
   suffices H : ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ (A ∘ f) s x by
     filter_upwards [H] with x hx xs
     have : f = (A.symm ∘ A) ∘ f := by
-      simp only [ContinuousLinearEquiv.symm_comp_self, Function.comp.left_id]
+      simp only [ContinuousLinearEquiv.symm_comp_self, Function.id_comp]
     rw [this]
     exact A.symm.differentiableAt.comp_differentiableWithinAt x (hx xs)
   apply ae_differentiableWithinAt_of_mem_pi

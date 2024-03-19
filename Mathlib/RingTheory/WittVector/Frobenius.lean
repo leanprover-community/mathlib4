@@ -138,7 +138,7 @@ theorem map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n -
       add_assoc, tsub_right_comm, add_comm i,
       tsub_add_cancel_of_le (le_tsub_of_add_le_right ((le_tsub_iff_left hi).mp h₁))]
   have hle : p ^ m ≤ j + 1 := h ▸ Nat.le_of_dvd j.succ_pos (multiplicity.pow_multiplicity_dvd _)
-  exact ⟨(pow_le_pow_iff hp.1.one_lt).1 (hle.trans hj),
+  exact ⟨(pow_le_pow_iff_right hp.1.one_lt).1 (hle.trans hj),
      Nat.le_of_lt_succ ((Nat.lt_pow_self hp.1.one_lt m).trans_le hle)⟩
 #align witt_vector.map_frobenius_poly.key₂ WittVector.map_frobeniusPoly.key₂
 

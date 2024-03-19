@@ -36,7 +36,7 @@ structure MySubobject (X : Type*) [ObjectTypeclass X] :=
 
 namespace MySubobject
 
-variables {X : Type*} [ObjectTypeclass X] {x : X}
+variable {X : Type*} [ObjectTypeclass X] {x : X}
 
 instance : SetLike (MySubobject X) X :=
   ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
@@ -62,7 +62,7 @@ end MySubobject
 
 An alternative to `SetLike` could have been an extensional `Membership` typeclass:
 ```
-class ExtMembership (α : out_param $ Type u) (β : Type v) extends Membership α β :=
+class ExtMembership (α : out_param <| Type u) (β : Type v) extends Membership α β :=
   (ext_iff : ∀ {s t : β}, s = t ↔ ∀ (x : α), x ∈ s ↔ x ∈ t)
 ```
 While this is equivalent, `SetLike` conveniently uses a carrier set projection directly.
@@ -186,18 +186,18 @@ theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
   Subtype.ext_iff_val.symm
 #align set_like.coe_eq_coe SetLike.coe_eq_coe
 
--- porting note: this is not necessary anymore due to the way coercions work
-#noalign set_like.coe_mk
+-- Porting note: this is not necessary anymore due to the way coercions work
+ #noalign set_like.coe_mk
 
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=
   x.2
 #align set_like.coe_mem SetLike.coe_mem
 
-@[aesop 5% apply (rule_sets [SetLike])]
+@[aesop 5% apply (rule_sets := [SetLike])]
 lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx
 
--- porting note: removed `@[simp]` because `simpNF` linter complained
+-- Porting note: removed `@[simp]` because `simpNF` linter complained
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 #align set_like.eta SetLike.eta
 

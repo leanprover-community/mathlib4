@@ -3,10 +3,9 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
-import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Calculus.Dslope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Analytic.Uniqueness
 
 #align_import analysis.analytic.isolated_zeros from "leanprover-community/mathlib"@"a3209ddf94136d36e5e5c624b10b2a347cc9d090"
@@ -37,18 +36,13 @@ open scoped Topology BigOperators
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {s : E} {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
---  {y : Fin n → 𝕜} -- Porting note: This is used nowhere and creates problem since it is sometimes
--- automatically included as a hypothesis
 
 namespace HasSum
 
 variable {a : ℕ → E}
 
 theorem hasSum_at_zero (a : ℕ → E) : HasSum (fun n => (0 : 𝕜) ^ n • a n) (a 0) := by
-  convert hasSum_single (α := E) 0 fun b h => _ <;>
-    first
-    | simp [Nat.pos_of_ne_zero h]
-    | simp
+  convert hasSum_single (α := E) 0 fun b h ↦ _ <;> simp [*]
 #align has_sum.has_sum_at_zero HasSum.hasSum_at_zero
 
 theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m) s)
@@ -57,7 +51,7 @@ theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m
   · simpa
   by_cases h : z = 0
   · have : s = 0 := hs.unique (by simpa [ha 0 hn, h] using hasSum_at_zero a)
-    exact ⟨a n, by simp [h, hn, this], by simpa [h] using hasSum_at_zero fun m => a (m + n)⟩
+    exact ⟨a n, by simp [h, hn.ne', this], by simpa [h] using hasSum_at_zero fun m => a (m + n)⟩
   · refine ⟨(z ^ n)⁻¹ • s, by field_simp [smul_smul], ?_⟩
     have h1 : ∑ i in Finset.range n, z ^ i • a i = 0 :=
       Finset.sum_eq_zero fun k hk => by simp [ha k (Finset.mem_range.mp hk)]
@@ -153,6 +147,91 @@ theorem frequently_eq_iff_eventually_eq (hf : AnalyticAt 𝕜 f z₀) (hg : Anal
     (∃ᶠ z in 𝓝[≠] z₀, f z = g z) ↔ ∀ᶠ z in 𝓝 z₀, f z = g z := by
   simpa [sub_eq_zero] using frequently_zero_iff_eventually_zero (hf.sub hg)
 #align analytic_at.frequently_eq_iff_eventually_eq AnalyticAt.frequently_eq_iff_eventually_eq
+
+/-- For a function `f` on `𝕜`, and `z₀ ∈ 𝕜`, there exists at most one `n` such that on a punctured
+neighbourhood of `z₀` we have `f z = (z - z₀) ^ n • g z`, with `g` analytic and nonvanishing at
+`z₀`. We formulate this with `n : ℤ`, and deduce the case `n : ℕ` later, for applications to
+meromorphic functions. -/
+lemma unique_eventuallyEq_zpow_smul_nonzero {m n : ℤ}
+    (hm : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] z₀, f z = (z - z₀) ^ m • g z)
+    (hn : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] z₀, f z = (z - z₀) ^ n • g z) :
+    m = n := by
+  wlog h_le : n ≤ m generalizing m n
+  · exact ((this hn hm) (not_le.mp h_le).le).symm
+  let ⟨g, hg_an, _, hg_eq⟩ := hm
+  let ⟨j, hj_an, hj_ne, hj_eq⟩ := hn
+  contrapose! hj_ne
+  have : ∃ᶠ z in 𝓝[≠] z₀, j z = (z - z₀) ^ (m - n) • g z := by
+    apply Filter.Eventually.frequently
+    rw [eventually_nhdsWithin_iff] at hg_eq hj_eq ⊢
+    filter_upwards [hg_eq, hj_eq] with z hfz hfz' hz
+    rw [← add_sub_cancel' n m, add_sub_assoc, zpow_add₀ <| sub_ne_zero.mpr hz, mul_smul,
+      hfz' hz, smul_right_inj <| zpow_ne_zero _ <| sub_ne_zero.mpr hz] at hfz
+    exact hfz hz
+  rw [frequently_eq_iff_eventually_eq hj_an] at this
+  rw [EventuallyEq.eq_of_nhds this, sub_self, zero_zpow _ (sub_ne_zero.mpr hj_ne), zero_smul]
+  conv => enter [2, z, 1]; rw [← Int.toNat_sub_of_le h_le, zpow_coe_nat]
+  exact (((analyticAt_id _ _).sub analyticAt_const).pow _).smul hg_an
+
+/-- For a function `f` on `𝕜`, and `z₀ ∈ 𝕜`, there exists at most one `n` such that on a
+neighbourhood of `z₀` we have `f z = (z - z₀) ^ n • g z`, with `g` analytic and nonvanishing at
+`z₀`. -/
+lemma unique_eventuallyEq_pow_smul_nonzero {m n : ℕ}
+    (hm : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ m • g z)
+    (hn : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z) :
+    m = n := by
+  simp_rw [← zpow_coe_nat] at hm hn
+  exact Int.ofNat_inj.mp <| unique_eventuallyEq_zpow_smul_nonzero
+    (let ⟨g, h₁, h₂, h₃⟩ := hm; ⟨g, h₁, h₂, h₃.filter_mono nhdsWithin_le_nhds⟩)
+    (let ⟨g, h₁, h₂, h₃⟩ := hn; ⟨g, h₁, h₂, h₃.filter_mono nhdsWithin_le_nhds⟩)
+
+/-- If `f` is analytic at `z₀`, then exactly one of the following two possibilities occurs: either
+`f` vanishes identically near `z₀`, or locally around `z₀` it has the form `z ↦ (z - z₀) ^ n • g z`
+for some `n` and some `g` which is analytic and non-vanishing at `z₀`. -/
+theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
+    (∃ (n : ℕ), ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧
+    ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z) ↔ (¬∀ᶠ z in 𝓝 z₀, f z = 0) := by
+  constructor
+  · rintro ⟨n, g, hg_an, hg_ne, hg_eq⟩
+    contrapose! hg_ne
+    apply EventuallyEq.eq_of_nhds
+    rw [EventuallyEq, ← AnalyticAt.frequently_eq_iff_eventually_eq hg_an analyticAt_const]
+    refine (eventually_nhdsWithin_iff.mpr ?_).frequently
+    filter_upwards [hg_eq, hg_ne] with z hf_eq hf0 hz
+    rwa [hf0, eq_comm, smul_eq_zero_iff_right] at hf_eq
+    exact pow_ne_zero _ (sub_ne_zero.mpr hz)
+  · intro hf_ne
+    rcases hf with ⟨p, hp⟩
+    exact ⟨p.order, _, ⟨_, hp.has_fpower_series_iterate_dslope_fslope p.order⟩,
+      hp.iterate_dslope_fslope_ne_zero (hf_ne.imp hp.locally_zero_iff.mpr),
+      hp.eq_pow_order_mul_iterate_dslope⟩
+
+/-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
+
+This is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
+unique `n` such that `f z = (z - z₀) ^ n • g z` with `g` analytic and non-vanishing at `z₀`. See
+`AnalyticAt.order_eq_top_iff` and `AnalyticAt.order_eq_nat_iff` for these equivalences. -/
+noncomputable def order (hf : AnalyticAt 𝕜 f z₀) : ENat :=
+  if h : ∀ᶠ z in 𝓝 z₀, f z = 0 then ⊤
+  else ↑(hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
+
+lemma order_eq_top_iff (hf : AnalyticAt 𝕜 f z₀) : hf.order = ⊤ ↔ ∀ᶠ z in 𝓝 z₀, f z = 0 := by
+  unfold order
+  split_ifs with h
+  · rwa [eq_self, true_iff]
+  · simpa only [ne_eq, ENat.coe_ne_top, false_iff] using h
+
+lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n ↔
+    ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
+  unfold order
+  split_ifs with h
+  · simp only [ENat.top_ne_coe, false_iff]
+    contrapose! h
+    rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff]
+    exact ⟨n, h⟩
+  · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
+    refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
+    rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
 
 end AnalyticAt
 

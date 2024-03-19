@@ -16,7 +16,7 @@ We split them into their own file.
 This file also contains a few convenient auxiliary functions.
 -/
 
-open Lean Elab Tactic Meta
+open Lean Elab Tactic Meta Qq
 
 initialize registerTraceClass `linarith
 initialize registerTraceClass `linarith.detail
@@ -63,7 +63,7 @@ partial def add : Linexp → Linexp → Linexp
 def scale (c : Int) (l : Linexp) : Linexp :=
   if c = 0 then []
   else if c = 1 then l
-  else l.map $ fun ⟨n, z⟩ => (n, z*c)
+  else l.map fun ⟨n, z⟩ => (n, z*c)
 
 /--
 `l.get n` returns the value in `l` associated with key `n`, if it exists, and `none` otherwise.
@@ -164,7 +164,7 @@ end Ineq
 The main datatype for FM elimination.
 Variables are represented by natural numbers, each of which has an integer coefficient.
 Index 0 is reserved for constants, i.e. `coeffs.find 0` is the coefficient of 1.
-The represented term is `coeffs.sum (λ ⟨k, v⟩, v * Var[k])`.
+The represented term is `coeffs.sum (fun ⟨k, v⟩ ↦ v * Var[k])`.
 str determines the strength of the comparison -- is it < 0, ≤ 0, or = 0?
 -/
 structure Comp : Type where
@@ -400,7 +400,7 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
   else if c = 1 then return (iq, h)
   else do
     let tp ← inferType (← getRelSides (← inferType h)).2
-    let cpos ← mkAppM ``GT.gt #[(← tp.ofNat c), (← tp.ofNat 0)]
+    let cpos : Q(Prop) ← mkAppM ``GT.gt #[(← tp.ofNat c), (← tp.ofNat 0)]
     let ex ← synthesizeUsingTactic' cpos (← `(tactic| norm_num))
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')

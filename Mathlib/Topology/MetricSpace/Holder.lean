@@ -52,7 +52,7 @@ def HolderWith (C r : ℝ≥0) (f : X → Y) : Prop :=
 #align holder_with HolderWith
 
 /-- A function `f : X → Y` between two `PseudoEMetricSpace`s is Hölder continuous with constant
-`C : ℝ≥0` and exponent `r : ℝ≥0` on a set `s : set X`, if `edist (f x) (f y) ≤ C * edist x y ^ r`
+`C : ℝ≥0` and exponent `r : ℝ≥0` on a set `s : Set X`, if `edist (f x) (f y) ≤ C * edist x y ^ r`
 for all `x y ∈ s`. -/
 def HolderOnWith (C r : ℝ≥0) (f : X → Y) (s : Set X) : Prop :=
   ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) ≤ (C : ℝ≥0∞) * edist x y ^ (r : ℝ)
@@ -236,7 +236,6 @@ namespace HolderWith
 
 theorem nndist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ≥0} (hd : nndist x y ≤ d) :
     nndist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
-  norm_cast
   rw [← ENNReal.coe_le_coe, ← edist_nndist, ENNReal.coe_mul, ←
     ENNReal.coe_rpow_of_nonneg _ r.coe_nonneg]
   apply hf.edist_le_of_le

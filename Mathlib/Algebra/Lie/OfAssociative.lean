@@ -41,27 +41,6 @@ section OfAssociative
 
 variable {A : Type v} [Ring A]
 
-namespace Ring
-
-/-- The bracket operation for rings is the ring commutator, which captures the extent to which a
-ring is commutative. It is identically zero exactly when the ring is commutative. -/
-instance (priority := 100) instBracket : Bracket A A :=
-  ⟨fun x y => x * y - y * x⟩
-
-theorem lie_def (x y : A) : ⁅x, y⁆ = x * y - y * x :=
-  rfl
-#align ring.lie_def Ring.lie_def
-
-end Ring
-
-theorem commute_iff_lie_eq {x y : A} : Commute x y ↔ ⁅x, y⁆ = 0 :=
-  sub_eq_zero.symm
-#align commute_iff_lie_eq commute_iff_lie_eq
-
-theorem Commute.lie_eq {x y : A} (h : Commute x y) : ⁅x, y⁆ = 0 :=
-  sub_eq_zero_of_eq h
-#align commute.lie_eq Commute.lie_eq
-
 namespace LieRing
 
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
@@ -142,20 +121,21 @@ theorem LieModule.ofAssociativeModule : LieModule R A M where
   lie_smul := smul_algebra_smul_comm
 #align lie_module.of_associative_module LieModule.ofAssociativeModule
 
-instance Module.End.lieRingModule : LieRingModule (Module.End R M) M :=
+instance Module.End.instLieRingModule : LieRingModule (Module.End R M) M :=
   LieRingModule.ofAssociativeModule
-#align module.End.lie_ring_module Module.End.lieRingModule
+#align module.End.lie_ring_module Module.End.instLieRingModule
 
-instance Module.End.lieModule : LieModule R (Module.End R M) M :=
+instance Module.End.instLieModule : LieModule R (Module.End R M) M :=
   LieModule.ofAssociativeModule
-#align module.End.lie_module Module.End.lieModule
+#align module.End.lie_module Module.End.instLieModule
+
+@[simp] lemma Module.End.lie_apply (f : Module.End R M) (m : M) : ⁅f, m⁆ = f m := rfl
 
 end AssociativeRepresentation
 
 namespace AlgHom
 
 variable {B : Type w} {C : Type w₁} [Ring B] [Ring C] [Algebra R B] [Algebra R C]
-
 variable (f : A →ₐ[R] B) (g : B →ₐ[R] C)
 
 /-- The map `ofAssociativeAlgebra` associating a Lie algebra to an associative algebra is
@@ -207,9 +187,7 @@ end OfAssociative
 section AdjointAction
 
 variable (R : Type u) (L : Type v) (M : Type w)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-
 variable [LieRingModule L M] [LieModule R L M]
 
 /-- A Lie module yields a Lie algebra morphism into the linear endomorphisms of the module.
@@ -251,6 +229,62 @@ theorem LieSubalgebra.toEndomorphism_mk (K : LieSubalgebra R L) {x : L} (hx : x 
     LieModule.toEndomorphism R K M ⟨x, hx⟩ = LieModule.toEndomorphism R L M x :=
   rfl
 #align lie_subalgebra.to_endomorphism_mk LieSubalgebra.toEndomorphism_mk
+
+section
+
+open BigOperators LieAlgebra LieModule
+
+lemma LieSubmodule.coe_toEndomorphism (N : LieSubmodule R L M) (x : L) (y : N) :
+    (toEndomorphism R L N x y : M) = toEndomorphism R L M x y := rfl
+
+lemma LieSubmodule.coe_toEndomorphism_pow (N : LieSubmodule R L M) (x : L) (y : N) (n : ℕ) :
+    ((toEndomorphism R L N x ^ n) y : M) = (toEndomorphism R L M x ^ n) y := by
+  induction n generalizing y with
+  | zero => rfl
+  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, LieSubmodule.coe_toEndomorphism]
+
+lemma LieSubalgebra.coe_ad (H : LieSubalgebra R L) (x y : H) :
+    (ad R H x y : L) = ad R L x y := rfl
+
+lemma LieSubalgebra.coe_ad_pow (H : LieSubalgebra R L) (x y : H) (n : ℕ) :
+    ((ad R H x ^ n) y : L) = (ad R L x ^ n) y :=
+  LieSubmodule.coe_toEndomorphism_pow R H L H.toLieSubmodule x y n
+
+variable {L M}
+
+local notation "φ" => LieModule.toEndomorphism R L M
+
+lemma LieModule.toEndomorphism_lie (x y : L) (z : M) :
+    (φ x) ⁅y, z⁆ = ⁅ad R L x y, z⁆ + ⁅y, φ x z⁆ := by
+  simp
+
+lemma LieAlgebra.ad_lie (x y z : L) :
+    (ad R L x) ⁅y, z⁆ = ⁅ad R L x y, z⁆ + ⁅y, ad R L x z⁆ :=
+  toEndomorphism_lie _ x y z
+
+open Finset in
+lemma LieModule.toEndomorphism_pow_lie (x y : L) (z : M) (n : ℕ) :
+    ((φ x) ^ n) ⁅y, z⁆ =
+      ∑ ij in antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((φ x) ^ ij.2) z⁆ := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [Finset.sum_antidiagonal_choose_succ_nsmul
+      (fun i j ↦ ⁅((ad R L x) ^ i) y, ((φ x) ^ j) z⁆) n]
+    simp only [pow_succ, LinearMap.mul_apply, ih, map_sum, map_nsmul, toEndomorphism_lie, nsmul_add,
+      sum_add_distrib]
+    rw [add_comm, add_left_cancel_iff, sum_congr rfl]
+    rintro ⟨i, j⟩ hij
+    rw [mem_antidiagonal] at hij
+    rw [Nat.choose_symm_of_eq_add hij.symm]
+
+open Finset in
+lemma LieAlgebra.ad_pow_lie (x y z : L) (n : ℕ) :
+    ((ad R L x) ^ n) ⁅y, z⁆ =
+      ∑ ij in antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((ad R L x) ^ ij.2) z⁆ :=
+  toEndomorphism_pow_lie _ x y z n
+
+end
 
 variable {R L M}
 
@@ -334,9 +368,7 @@ def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [A
 namespace LinearEquiv
 
 variable {R : Type u} {M₁ : Type v} {M₂ : Type w}
-
 variable [CommRing R] [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
-
 variable (e : M₁ ≃ₗ[R] M₂)
 
 /-- A linear equivalence of two modules induces a Lie algebra equivalence of their endomorphisms. -/
@@ -363,9 +395,7 @@ end LinearEquiv
 namespace AlgEquiv
 
 variable {R : Type u} {A₁ : Type v} {A₂ : Type w}
-
 variable [CommRing R] [Ring A₁] [Ring A₂] [Algebra R A₁] [Algebra R A₂]
-
 variable (e : A₁ ≃ₐ[R] A₂)
 
 /-- An equivalence of associative algebras is an equivalence of associated Lie algebras. -/

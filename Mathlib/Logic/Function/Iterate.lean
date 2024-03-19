@@ -69,7 +69,7 @@ theorem iterate_succ_apply (n : ℕ) (x : α) : f^[n.succ] x = f^[n] (f x) :=
 
 @[simp]
 theorem iterate_id (n : ℕ) : (id : α → α)^[n] = id :=
-  Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ, ihn, comp.left_id]
+  Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ, ihn, id_comp]
 #align function.iterate_id Function.iterate_id
 
 theorem iterate_add (m : ℕ) : ∀ n : ℕ, f^[m + n] = f^[m] ∘ f^[n]
@@ -125,7 +125,7 @@ theorem iterate_left {g : ℕ → α → α} (H : ∀ n, Semiconj f (g n) (g <| 
     exact id_left
   | succ n ihn =>
     rw [Nat.succ_eq_add_one, Nat.add_right_comm, Nat.add_assoc]
-    exact (H k).comp_left (ihn (k + 1))
+    exact (H k).trans (ihn (k + 1))
 #align function.semiconj.iterate_left Function.Semiconj.iterate_left
 
 end Semiconj

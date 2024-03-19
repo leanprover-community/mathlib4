@@ -3,10 +3,10 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.GroupTheory.Subgroup.Pointwise
-import Mathlib.GroupTheory.QuotientGroup
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.ULift
+import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.GroupTheory.Subgroup.Pointwise
 
 #align_import group_theory.divisible from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
@@ -40,7 +40,7 @@ For additive monoids and groups:
   by nat divisiblity.
 * `AddGroup.divisibleByNatOfDivisibleByInt` : for additive groups, nat divisiblity is implied
   by int divisiblity.
-* `AddCommGroup.divisibleByIntOfSmulTopEqTop`: the constructive definition of divisiblity
+* `AddCommGroup.divisibleByIntOfSMulTopEqTop`: the constructive definition of divisiblity
   is implied by the condition that `n • A = A` for all `n ≠ 0`.
 * `AddCommGroup.smul_top_eq_top_of_divisibleBy_int`: the constructive definition of divisiblity
   implies the condition that `n • A = A` for all `n ≠ 0`.
@@ -133,7 +133,6 @@ noncomputable def rootableByOfPowLeftSurj
 section Pi
 
 variable {ι β : Type*} (B : ι → Type*) [∀ i : ι, Pow (B i) β]
-
 variable [Zero β] [∀ i : ι, Monoid (B i)] [∀ i, RootableBy (B i) β]
 
 @[to_additive]
@@ -149,7 +148,6 @@ end Pi
 section Prod
 
 variable {β B B' : Type*} [Pow B β] [Pow B' β]
-
 variable [Zero β] [Monoid B] [Monoid B'] [RootableBy B β] [RootableBy B' β]
 
 @[to_additive]
@@ -185,7 +183,7 @@ theorem smul_top_eq_top_of_divisibleBy_int [DivisibleBy A ℤ] {n : ℤ} (hn : n
 
 /-- If for all `n ≠ 0 ∈ ℤ`, `n • A = A`, then `A` is divisible.
 -/
-noncomputable def divisibleByIntOfSmulTopEqTop
+noncomputable def divisibleByIntOfSMulTopEqTop
     (H : ∀ {n : ℤ} (_hn : n ≠ 0), n • (⊤ : AddSubgroup A) = ⊤) : DivisibleBy A ℤ where
   div a n :=
     if hn : n = 0 then 0 else (show a ∈ n • (⊤ : AddSubgroup A) by rw [H hn]; trivial).choose
@@ -194,7 +192,7 @@ noncomputable def divisibleByIntOfSmulTopEqTop
     simp_rw [dif_neg hn]
     generalize_proofs h1
     exact h1.choose_spec.2
-#align add_comm_group.divisible_by_int_of_smul_top_eq_top AddCommGroup.divisibleByIntOfSmulTopEqTop
+#align add_comm_group.divisible_by_int_of_smul_top_eq_top AddCommGroup.divisibleByIntOfSMulTopEqTop
 
 end AddCommGroup
 
@@ -252,9 +250,7 @@ section Hom
 
 -- Porting note: reordered variables to fix `to_additive` on `QuotientGroup.rootableBy`
 variable {A B α : Type*}
-
 variable [Zero α] [Monoid A] [Monoid B] [Pow A α] [Pow B α] [RootableBy A α]
-
 variable (f : A → B)
 
 /--

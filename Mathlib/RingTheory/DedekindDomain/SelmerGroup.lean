@@ -6,7 +6,6 @@ Authors: David Kurniadi Angdinata
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.Norm
 
 #align_import ring_theory.dedekind_domain.selmer_group from "leanprover-community/mathlib"@"2032a878972d5672e7c27c957e7a6e297b044973"
 
@@ -136,7 +135,7 @@ theorem valuation_of_unit_eq (x : Rˣ) :
 
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
 def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
-  (Int.quotientZmultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
+  (Int.quotientZMultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
     QuotientGroup.map (powMonoidHom n : Kˣ →* Kˣ).range
       (AddSubgroup.toSubgroup (AddSubgroup.zmultiples (n : ℤ)))
       v.valuationOfNeZero
@@ -201,7 +200,7 @@ def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ wh
   toFun x :=
     ⟨QuotientGroup.mk <| Units.map (algebraMap R K).toMonoidHom x, fun v _ =>
       v.valuation_of_unit_mod_eq n x⟩
-  map_one' := by simp only [map_one, QuotientGroup.mk_one, Subgroup.mk_eq_one_iff]
+  map_one' := by simp only [map_one, QuotientGroup.mk_one, Subgroup.mk_eq_one]
   map_mul' _ _ := by simp only [RingHom.toMonoidHom_eq_coe, map_mul, MonoidHom.mem_range,
     powMonoidHom_apply, QuotientGroup.mk_mul, Submonoid.mk_mul_mk]
 #align is_dedekind_domain.selmer_group.from_unit IsDedekindDomain.selmerGroup.fromUnit

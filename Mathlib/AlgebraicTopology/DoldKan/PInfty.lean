@@ -220,7 +220,7 @@ theorem karoubi_PInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
   have h₃₂ : (P₃.f n).f = P₂.f n := Karoubi.hom_ext_iff.mp (map_PInfty_f (toKaroubi C) Y₂ n)
   have h₄₃ : P₄.f n = P₃.f n := by
     have h := Functor.congr_obj (toKaroubi_comp_karoubiFunctorCategoryEmbedding _ _) Y₂
-    simp only [← natTransPInfty_f_app]
+    simp only [P₃, P₄, ← natTransPInfty_f_app]
     congr 1
   have h₁₄ := Idempotents.natTrans_eq
     ((𝟙 (karoubiFunctorCategoryEmbedding SimplexCategoryᵒᵖ C)) ◫
@@ -234,7 +234,7 @@ theorem karoubi_PInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
   let π : Y₄ ⟶ Y₄ := (toKaroubi _ ⋙ karoubiFunctorCategoryEmbedding _ _).map Y.p
   have eq := Karoubi.hom_ext_iff.mp (PInfty_f_naturality n π)
   simp only [Karoubi.comp_f] at eq
-  dsimp at eq
+  dsimp [π] at eq
   rw [← eq, app_idem_assoc Y (op [n])]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.karoubi_P_infty_f AlgebraicTopology.DoldKan.karoubi_PInfty_f

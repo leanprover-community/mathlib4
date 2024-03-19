@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+import Mathlib.Data.ZMod.Algebra
 
 #align_import ring_theory.polynomial.cyclotomic.expand from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
@@ -41,7 +42,7 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
   suffices expand ℤ p (cyclotomic n ℤ) = cyclotomic (n * p) ℤ * cyclotomic n ℤ by
     rw [← map_cyclotomic_int, ← map_expand, this, Polynomial.map_mul, map_cyclotomic_int,
       map_cyclotomic]
-  refine' eq_of_monic_of_dvd_of_natDegree_le ((cyclotomic.monic _ ℤ).mul (cyclotomic.monic _ _))
+  refine' eq_of_monic_of_dvd_of_natDegree_le ((cyclotomic.monic _ ℤ).mul (cyclotomic.monic _ ℤ))
     ((cyclotomic.monic n ℤ).expand hp.pos) _ _
   · refine' (IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast _ _
       (IsPrimitive.mul (cyclotomic.isPrimitive (n * p) ℤ) (cyclotomic.isPrimitive n ℤ))
@@ -53,14 +54,14 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
     · have hpos : 0 < n * p := mul_pos hnpos hp.pos
       have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne'
       rw [cyclotomic_eq_minpoly_rat hprim hpos]
-      refine' @minpoly.dvd ℚ ℂ _ _ algebraRat _ _ _
+      refine' minpoly.dvd ℚ _ _
       rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
         @isRoot_cyclotomic_iff]
       convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
       rw [Nat.mul_div_cancel _ (Nat.Prime.pos hp)]
     · have hprim := Complex.isPrimitiveRoot_exp _ hnpos.ne.symm
       rw [cyclotomic_eq_minpoly_rat hprim hnpos]
-      refine' @minpoly.dvd ℚ ℂ _ _ algebraRat _ _ _
+      refine' minpoly.dvd ℚ _ _
       rw [aeval_def, ← eval_map, map_expand, expand_eval, ← IsRoot.def, ←
         cyclotomic_eq_minpoly_rat hprim hnpos, map_cyclotomic, @isRoot_cyclotomic_iff]
       exact IsPrimitiveRoot.pow_of_prime hprim hp hdiv
@@ -81,7 +82,7 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
   haveI := NeZero.of_pos hzero
   suffices expand ℤ p (cyclotomic n ℤ) = cyclotomic (n * p) ℤ by
     rw [← map_cyclotomic_int, ← map_expand, this, map_cyclotomic_int]
-  refine' eq_of_monic_of_dvd_of_natDegree_le (cyclotomic.monic _ _)
+  refine' eq_of_monic_of_dvd_of_natDegree_le (cyclotomic.monic _ ℤ)
     ((cyclotomic.monic n ℤ).expand hp.pos) _ _
   · have hpos := Nat.mul_pos hzero hp.pos
     have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne.symm
@@ -106,7 +107,7 @@ theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime 
   · simpa using h
   have : m + k ≠ 0 := (add_pos_of_pos_of_nonneg hm k.zero_le).ne'
   rw [Nat.add_succ, pow_succ', ← cyclotomic_expand_eq_cyclotomic hp <| dvd_pow_self p this] at h
-  exact hk (by linarith) (of_irreducible_expand hp.ne_zero h)
+  exact hk (by omega) (of_irreducible_expand hp.ne_zero h)
 #align polynomial.cyclotomic_irreducible_pow_of_irreducible_pow Polynomial.cyclotomic_irreducible_pow_of_irreducible_pow
 
 /-- If `Irreducible (cyclotomic (p ^ n) R)` then `Irreducible (cyclotomic p R).` -/
@@ -142,7 +143,7 @@ theorem cyclotomic_mul_prime_dvd_eq_pow (R : Type*) {p n : ℕ} [hp : Fact (Nat.
     rw [← map_cyclotomic _ (algebraMap (ZMod p) R), ← map_cyclotomic _ (algebraMap (ZMod p) R),
       this, Polynomial.map_pow]
   rw [← ZMod.expand_card, ← map_cyclotomic_int n, ← map_expand,
-    cyclotomic_expand_eq_cyclotomic hp.out hn, map_cyclotomic, mul_comm]
+    cyclotomic_expand_eq_cyclotomic hp.out hn, map_cyclotomic]
 #align polynomial.cyclotomic_mul_prime_dvd_eq_pow Polynomial.cyclotomic_mul_prime_dvd_eq_pow
 
 /-- If `R` is of characteristic `p` and `¬p ∣ m`, then
@@ -174,8 +175,7 @@ theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [
   · rw [← isRoot_cyclotomic_iff, IsRoot.def] at h
     rw [cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, IsRoot.def, eval_pow, h,
       zero_pow]
-    simp only [tsub_pos_iff_lt]
-    apply pow_strictMono_right hp.out.one_lt (Nat.pred_lt hk.ne')
+    exact Nat.sub_ne_zero_of_lt $ pow_right_strictMono hp.out.one_lt $ Nat.pred_lt hk.ne'
 #align polynomial.is_root_cyclotomic_prime_pow_mul_iff_of_char_p Polynomial.isRoot_cyclotomic_prime_pow_mul_iff_of_charP
 
 end CharP

@@ -31,7 +31,6 @@ noncomputable section
 namespace AlgebraCat
 
 variable {R : Type u} [CommRing R]
-
 variable {J : Type v} [SmallCategory J]
 
 instance semiringObj (F : J ⥤ AlgebraCatMax.{v, w} R) (j) :
@@ -100,7 +99,7 @@ def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone.{v,
          _⟩, _⟩, _, _⟩, _⟩)
       (fun s => _)
   · intro j j' f
-    exact FunLike.congr_fun (Cone.w s f) v
+    exact DFunLike.congr_fun (Cone.w s f) v
   · -- Porting note: we could add a custom `ext` lemma here.
     apply Subtype.ext
     ext j
@@ -149,7 +148,7 @@ end HasLimits
 
 open HasLimits
 
--- porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
+-- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
 -- is a `Prop`, declaring this as `irreducible` should presumably have no effect
 /-- The category of R-algebras has all limits. -/
 lemma hasLimitsOfSize : HasLimitsOfSize.{v, v} (AlgebraCatMax.{v, w} R) :=

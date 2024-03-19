@@ -5,6 +5,8 @@ Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot
 -/
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Data.String.Defs
+import Std.Lean.Position
+import Std.Tactic.Lint
 
 /-! # Conv widget
 
@@ -133,4 +135,5 @@ open scoped Json in
 in the goal.-/
 elab stx:"conv?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
-  savePanelWidgetInfo stx ``ConvSelectionPanel $ pure $ json% { replaceRange: $(replaceRange) }
+  Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash
+   (pure <| json% { replaceRange: $(replaceRange) }) stx

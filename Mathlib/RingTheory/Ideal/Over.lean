@@ -55,7 +55,7 @@ theorem coeff_zero_mem_comap_of_root_mem {r : S} (hr : r ∈ I) {p : R[X]} (hp :
 
 theorem exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem {r : S}
     (r_non_zero_divisor : ∀ {x}, x * r = 0 → x = 0) (hr : r ∈ I) {p : R[X]} :
-    ∀ (_ : p ≠ 0) (_ : p.eval₂ f r = 0), ∃ i, p.coeff i ≠ 0 ∧ p.coeff i ∈ I.comap f := by
+    p ≠ 0 → p.eval₂ f r = 0 → ∃ i, p.coeff i ≠ 0 ∧ p.coeff i ∈ I.comap f := by
   refine' p.recOnHorner _ _ _
   · intro h
     contradiction
@@ -194,7 +194,7 @@ variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
 
 theorem exists_coeff_ne_zero_mem_comap_of_root_mem [IsDomain S] {r : S} (r_ne_zero : r ≠ 0)
     (hr : r ∈ I) {p : R[X]} :
-    ∀ (_ : p ≠ 0) (_ : p.eval₂ f r = 0), ∃ i, p.coeff i ≠ 0 ∧ p.coeff i ∈ I.comap f :=
+    p ≠ 0 → p.eval₂ f r = 0 → ∃ i, p.coeff i ≠ 0 ∧ p.coeff i ∈ I.comap f :=
   exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem
     (fun {_} h => Or.resolve_right (mul_eq_zero.mp h) r_ne_zero) hr
 #align ideal.exists_coeff_ne_zero_mem_comap_of_root_mem Ideal.exists_coeff_ne_zero_mem_comap_of_root_mem
@@ -296,7 +296,6 @@ theorem isMaximal_comap_of_isIntegral_of_isMaximal' {R S : Type*} [CommRing R] [
 section IsIntegralClosure
 
 variable (S) {A : Type*} [CommRing A]
-
 variable [Algebra R A] [Algebra A S] [IsScalarTower R A S] [IsIntegralClosure A R S]
 
 theorem IsIntegralClosure.comap_lt_comap {I J : Ideal A} [I.IsPrime] (I_lt_J : I < J) :
@@ -320,7 +319,7 @@ theorem IsIntegralClosure.comap_ne_bot [Nontrivial R] {I : Ideal A} (I_ne_bot : 
 
 theorem IsIntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal A} :
     I.comap (algebraMap R A) = ⊥ → I = ⊥ := by
-  -- Porting note : `imp_of_not_imp_not` seems not existing
+  -- Porting note: `imp_of_not_imp_not` seems not existing
   contrapose; exact (IsIntegralClosure.comap_ne_bot S)
 #align ideal.is_integral_closure.eq_bot_of_comap_eq_bot Ideal.IsIntegralClosure.eq_bot_of_comap_eq_bot
 
@@ -406,12 +405,12 @@ lemma exists_ideal_comap_le_prime (P : Ideal R) [P.IsPrime]
     ∃ Q ≥ I, Q.IsPrime ∧ Q.comap (algebraMap R S) ≤ P := by
   let Sₚ := Localization (Algebra.algebraMapSubmonoid S P.primeCompl)
   let Iₚ := I.map (algebraMap S Sₚ)
-  have hI' : Disjoint (Algebra.algebraMapSubmonoid S P.primeCompl : Set S) I
-  · rw [Set.disjoint_iff]
+  have hI' : Disjoint (Algebra.algebraMapSubmonoid S P.primeCompl : Set S) I := by
+    rw [Set.disjoint_iff]
     rintro _ ⟨⟨x, hx : x ∉ P, rfl⟩, hx'⟩
     exact (hx (hI hx')).elim
-  have : Iₚ ≠ ⊤
-  · rw [Ne.def, Ideal.eq_top_iff_one, IsLocalization.mem_map_algebraMap_iff
+  have : Iₚ ≠ ⊤ := by
+    rw [Ne.def, Ideal.eq_top_iff_one, IsLocalization.mem_map_algebraMap_iff
       (Algebra.algebraMapSubmonoid S P.primeCompl) Sₚ, not_exists]
     simp only [one_mul, IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S P.primeCompl),
       not_exists]

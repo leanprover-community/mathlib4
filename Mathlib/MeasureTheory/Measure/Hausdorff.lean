@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Topology.MetricSpace.Holder
 import Mathlib.Topology.MetricSpace.MetricSeparated
@@ -185,8 +184,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   by_cases htop : μ (s \ t) = ∞
   · rw [htop, add_top, ← htop]
     exact μ.mono (diff_subset _ _)
-  suffices : μ (⋃ n, S n) ≤ ⨆ n, μ (S n)
-  calc
+  suffices μ (⋃ n, S n) ≤ ⨆ n, μ (S n) by calc
     μ (s ∩ t) + μ (s \ t) = μ (s ∩ t) + μ (⋃ n, S n) := by rw [iUnion_S]
     _ ≤ μ (s ∩ t) + ⨆ n, μ (S n) := (add_le_add le_rfl this)
     _ = ⨆ n, μ (s ∩ t) + μ (S n) := ENNReal.add_iSup
@@ -203,22 +201,22 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
     subsequence `S (2 * k + 1) \ S (2 * k)` and `S (2 * k + 2) \ S (2 * k)` are metric separated,
     so `m` is additive on each of those sequences. -/
   rw [← tsum_even_add_odd ENNReal.summable ENNReal.summable, ENNReal.add_ne_top]
-  suffices : ∀ a, (∑' k : ℕ, μ (S (2 * k + 1 + a) \ S (2 * k + a))) ≠ ∞
-  exact ⟨by simpa using this 0, by simpa using this 1⟩
+  suffices ∀ a, (∑' k : ℕ, μ (S (2 * k + 1 + a) \ S (2 * k + a))) ≠ ∞ from
+    ⟨by simpa using this 0, by simpa using this 1⟩
   refine' fun r => ne_top_of_le_ne_top htop _
   rw [← iUnion_S, ENNReal.tsum_eq_iSup_nat, iSup_le_iff]
   intro n
   rw [← hm.finset_iUnion_of_pairwise_separated]
   · exact μ.mono (iUnion_subset fun i => iUnion_subset fun _ x hx => mem_iUnion.2 ⟨_, hx.1⟩)
-  suffices : ∀ i j, i < j → IsMetricSeparated (S (2 * i + 1 + r)) (s \ S (2 * j + r))
-  exact fun i _ j _ hij =>
-    hij.lt_or_lt.elim
+  suffices ∀ i j, i < j → IsMetricSeparated (S (2 * i + 1 + r)) (s \ S (2 * j + r)) from
+    fun i _ j _ hij => hij.lt_or_lt.elim
       (fun h => (this i j h).mono (inter_subset_left _ _) fun x hx => by exact ⟨hx.1.1, hx.2⟩)
       fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) (inter_subset_left _ _)
   intro i j hj
   have A : ((↑(2 * j + r))⁻¹ : ℝ≥0∞) < (↑(2 * i + 1 + r))⁻¹ := by
-    rw [ENNReal.inv_lt_inv, Nat.cast_lt]; linarith
-  refine' ⟨(↑(2 * i + 1 + r))⁻¹ - (↑(2 * j + r))⁻¹, by simpa using A, fun x hx y hy => _⟩
+    rw [ENNReal.inv_lt_inv, Nat.cast_lt]; omega
+  refine' ⟨(↑(2 * i + 1 + r))⁻¹ - (↑(2 * j + r))⁻¹, by simpa [tsub_eq_zero_iff_le] using A,
+    fun x hx y hy => _⟩
   have : infEdist y t < (↑(2 * j + r))⁻¹ := not_le.1 fun hle => hy.2 ⟨hy.1, hle⟩
   rcases infEdist_lt_iff.mp this with ⟨z, hzt, hyz⟩
   have hxz : (↑(2 * i + 1 + r))⁻¹ ≤ edist x z := le_infEdist.1 hx.2 _ hzt
@@ -480,8 +478,7 @@ variable [MeasurableSpace X] [BorelSpace X]
 /-- If `c ∉ {0, ∞}` and `m₁ d ≤ c * m₂ d` for `d < ε` for some `ε > 0`
 (we use `≤ᶠ[𝓝[≥] 0]` to state this), then `mkMetric m₁ hm₁ ≤ c • mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono_smul {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} {c : ℝ≥0∞} (hc : c ≠ ∞) (h0 : c ≠ 0)
-    (hle : m₁ ≤ᶠ[𝓝[≥] 0] c • m₂) : (mkMetric m₁ : Measure X) ≤ c • mkMetric m₂ := by
-  intro s _
+    (hle : m₁ ≤ᶠ[𝓝[≥] 0] c • m₂) : (mkMetric m₁ : Measure X) ≤ c • mkMetric m₂ := fun s ↦ by
   rw [← OuterMeasure.coe_mkMetric, coe_smul, ← OuterMeasure.coe_mkMetric]
   exact OuterMeasure.mkMetric_mono_smul hc h0 hle s
 #align measure_theory.measure.mk_metric_mono_smul MeasureTheory.Measure.mkMetric_mono_smul
@@ -670,9 +667,9 @@ theorem hausdorffMeasure_zero_singleton (x : X) : μH[0] ({x} : Set X) = 1 := by
   · let r : ℕ → ℝ≥0∞ := fun _ => 0
     let t : ℕ → Unit → Set X := fun _ _ => {x}
     have ht : ∀ᶠ n in atTop, ∀ i, diam (t n i) ≤ r n := by
-      simp only [imp_true_iff, eq_self_iff_true, diam_singleton, eventually_atTop,
+      simp only [t, r, imp_true_iff, eq_self_iff_true, diam_singleton, eventually_atTop,
         nonpos_iff_eq_zero, exists_const]
-    simpa [liminf_const] using hausdorffMeasure_le_liminf_sum 0 {x} r tendsto_const_nhds t ht
+    simpa [t, liminf_const] using hausdorffMeasure_le_liminf_sum 0 {x} r tendsto_const_nhds t ht
   · rw [hausdorffMeasure_apply]
     suffices
       (1 : ℝ≥0∞) ≤
@@ -736,7 +733,7 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
   · rcases eq_empty_or_nonempty s with (rfl | ⟨x, hx⟩)
     · simp only [measure_empty, nonpos_iff_eq_zero, mul_zero, image_empty]
     have : f '' s = {f x} :=
-      haveI : (f '' s).Subsingleton := by simpa [diam_eq_zero_iff] using h.ediam_image_le
+      have : (f '' s).Subsingleton := by simpa [diam_eq_zero_iff] using h.ediam_image_le
       (subsingleton_iff_singleton (mem_image_of_mem f hx)).1 this
     rw [this]
     rcases eq_or_lt_of_le hd with (rfl | h'd)
@@ -755,16 +752,13 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
       ENNReal.tendsto_const_mul_rpow_nhds_zero_of_pos ENNReal.coe_ne_top hr
     rcases ENNReal.nhds_zero_basis_Iic.eventually_iff.1 (this.eventually (gt_mem_nhds hR)) with
       ⟨δ, δ0, H⟩
-    refine'
-      le_iSup₂_of_le δ δ0
-        (iInf₂_mono' fun t hst =>
-          ⟨fun n => f '' (t n ∩ s), _,
-            iInf_mono' fun htδ =>
-              ⟨fun n => (h.ediam_image_inter_le (t n)).trans (H (htδ n)).le, _⟩⟩)
+    refine le_iSup₂_of_le δ δ0 <| iInf₂_mono' fun t hst ↦
+      ⟨fun n => f '' (t n ∩ s), ?_, iInf_mono' fun htδ ↦
+        ⟨fun n => (h.ediam_image_inter_le (t n)).trans (H (htδ n)).le, ?_⟩⟩
     · rw [← image_iUnion, ← iUnion_inter]
       exact image_subset _ (subset_inter hst Subset.rfl)
     · refine' ENNReal.tsum_le_tsum fun n => _
-      simp only [iSup_le_iff, nonempty_image_iff]
+      simp only [iSup_le_iff, image_nonempty]
       intro hft
       simp only [Nonempty.mono ((t n).inter_subset_left s) hft, ciSup_pos]
       rw [ENNReal.rpow_mul, ← ENNReal.mul_rpow_of_nonneg _ _ hd]
@@ -802,15 +796,15 @@ open scoped Pointwise
 
 theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedAddCommGroup E]
     [NormedField 𝕜] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E] {d : ℝ} (hd : 0 ≤ d)
-    {r : 𝕜} (hr : r ≠ 0) (s : Set E) : μH[d] (r • s) = NNReal.rpow ‖r‖₊ d • μH[d] s := by
-  suffices ∀ {r : 𝕜}, r ≠ 0 → ∀ s : Set E, μH[d] (r • s) ≤ NNReal.rpow ‖r‖₊ d • μH[d] s by
+    {r : 𝕜} (hr : r ≠ 0) (s : Set E) : μH[d] (r • s) = ‖r‖₊ ^ d • μH[d] s := by
+  suffices ∀ {r : 𝕜}, r ≠ 0 → ∀ s : Set E, μH[d] (r • s) ≤ ‖r‖₊ ^ d • μH[d] s by
     refine' le_antisymm (this hr s) _
-    rw [← ENNReal.le_inv_smul_iff]
+    rw [← le_inv_smul_iff_of_pos]
     dsimp
     rw [← NNReal.inv_rpow, ← nnnorm_inv]
     · refine' Eq.trans_le _ (this (inv_ne_zero hr) (r • s))
       rw [inv_smul_smul₀ hr]
-    · simp [hr]
+    · simp [pos_iff_ne_zero, hr]
   intro r _ s
   simp only [NNReal.rpow_eq_pow, ENNReal.smul_def, ← ENNReal.coe_rpow_of_nonneg _ hd, smul_eq_mul]
   exact (lipschitzWith_smul (β := E) r).hausdorffMeasure_image_le hd s
@@ -819,7 +813,6 @@ theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedA
 /-!
 ### Antilipschitz maps do not decrease Hausdorff measures and dimension
 -/
-
 
 namespace AntilipschitzWith
 
@@ -878,7 +871,7 @@ variable {f : X → Y} {d : ℝ}
 theorem hausdorffMeasure_image (hf : Isometry f) (hd : 0 ≤ d ∨ Surjective f) (s : Set X) :
     μH[d] (f '' s) = μH[d] s := by
   simp only [hausdorffMeasure, ← OuterMeasure.coe_mkMetric, ← OuterMeasure.comap_apply]
-  -- porting note: this proof was slightly nicer before the port
+  -- Porting note: this proof was slightly nicer before the port
   simp only [mkMetric_toOuterMeasure]
   have : 0 ≤ d → Monotone fun r : ℝ≥0∞ ↦ r ^ d := by
     exact fun hd x y hxy => ENNReal.rpow_le_rpow hxy hd
@@ -951,15 +944,13 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     (μH[Fintype.card ι] : Measure (ι → ℝ)) = volume := by
   classical
   -- it suffices to check that the two measures coincide on products of rational intervals
-  refine'
-    (pi_eq_generateFrom (fun _ => Real.borel_eq_generateFrom_Ioo_rat.symm)
-        (fun _ => Real.isPiSystem_Ioo_rat) (fun _ => Real.finiteSpanningSetsInIooRat _) _).symm
+  refine (pi_eq_generateFrom (fun _ => Real.borel_eq_generateFrom_Ioo_rat.symm)
+    (fun _ => Real.isPiSystem_Ioo_rat) (fun _ => Real.finiteSpanningSetsInIooRat _) ?_).symm
   simp only [mem_iUnion, mem_singleton_iff]
   -- fix such a product `s` of rational intervals, of the form `Π (a i, b i)`.
   intro s hs
   choose a b H using hs
-  obtain rfl : s = fun i => Ioo (α := ℝ) (a i) (b i)
-  exact funext fun i => (H i).2
+  obtain rfl : s = fun i => Ioo (α := ℝ) (a i) (b i) := funext fun i => (H i).2
   replace H := fun i => (H i).1
   apply le_antisymm _
   -- first check that `volume s ≤ μH s`
@@ -990,7 +981,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     have npos : (0 : ℝ) < n := Nat.cast_pos.2 hn
     intro x hx
     simp only [mem_Ioo, mem_univ_pi] at hx
-    simp only [mem_iUnion, mem_Ioo, mem_univ_pi]
+    simp only [t, mem_iUnion, mem_Ioo, mem_univ_pi]
     let f : γ n := fun i =>
       ⟨⌊(x i - a i) * n⌋₊, by
         apply Nat.floor_lt_ceil_of_lt_of_pos
@@ -1019,10 +1010,10 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         apply Finset.sum_le_sum fun i _ => _
         simp only [ENNReal.rpow_nat_cast]
         intros i _
-        exact pow_le_pow_of_le_left' (hn i) _
+        exact pow_le_pow_left' (hn i) _
       · isBoundedDefault
     _ = liminf (fun n : ℕ => ∏ i : ι, (⌈((b i : ℝ) - a i) * n⌉₊ : ℝ≥0∞) / n) atTop := by
-      simp only [Finset.card_univ, Nat.cast_prod, one_mul, Fintype.card_fin, Finset.sum_const,
+      simp only [γ, Finset.card_univ, Nat.cast_prod, one_mul, Fintype.card_fin, Finset.sum_const,
         nsmul_eq_mul, Fintype.card_pi, div_eq_mul_inv, Finset.prod_mul_distrib, Finset.prod_const]
     _ = ∏ i : ι, volume (Ioo (a i : ℝ) (b i)) := by
       simp only [Real.volume_Ioo]
@@ -1072,10 +1063,10 @@ theorem hausdorffMeasure_prod_real : (μH[2] : Measure (ℝ × ℝ)) = volume :=
 
 /-! ### Geometric results in affine spaces -/
 
-
 section Geometric
 
 variable {𝕜 E P : Type*}
+
 theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] (v : E) (s : Set ℝ) :
     μH[1] ((fun r => r • v) '' s) = ‖v‖₊ • μH[1] s := by
@@ -1088,7 +1079,7 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
   -- break lineMap into pieces
   suffices
       μH[1] ((‖v‖ • ·) '' (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v) '' s)) = ‖v‖₊ • μH[1] s by
-    -- porting note: proof was shorter, could need some golf
+    -- Porting note: proof was shorter, could need some golf
     simp only [hausdorffMeasure_real, nnreal_smul_coe_apply]
     convert this
     · simp only [image_smul, LinearMap.toSpanSingleton_apply, Set.image_image]
@@ -1104,22 +1095,20 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
     refine' AddMonoidHomClass.isometry_of_norm _ fun x => (norm_smul _ _).trans _
     rw [norm_smul, norm_inv, norm_norm, inv_mul_cancel hn, mul_one, LinearMap.id_apply]
   rw [Set.image_smul, Measure.hausdorffMeasure_smul₀ zero_le_one hn, nnnorm_norm,
-      NNReal.rpow_eq_pow, NNReal.rpow_one,
-      iso_smul.hausdorffMeasure_image (Or.inl <| zero_le_one' ℝ)]
+      NNReal.rpow_one, iso_smul.hausdorffMeasure_image (Or.inl <| zero_le_one' ℝ)]
 #align measure_theory.hausdorff_measure_smul_right_image MeasureTheory.hausdorffMeasure_smul_right_image
 
 section NormedFieldAffine
 
 variable [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace P]
-
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Scaling by `c` around `x` scales the measure by `‖c‖₊ ^ d`. -/
 theorem hausdorffMeasure_homothety_image {d : ℝ} (hd : 0 ≤ d) (x : P) {c : 𝕜} (hc : c ≠ 0)
-    (s : Set P) : μH[d] (AffineMap.homothety x c '' s) = NNReal.rpow ‖c‖₊ d • μH[d] s := by
+    (s : Set P) : μH[d] (AffineMap.homothety x c '' s) = ‖c‖₊ ^ d • μH[d] s := by
   suffices
     μH[d] (IsometryEquiv.vaddConst x '' ((c • ·) '' ((IsometryEquiv.vaddConst x).symm '' s))) =
-      NNReal.rpow ‖c‖₊ d • μH[d] s by
+      ‖c‖₊ ^ d • μH[d] s by
     simpa only [Set.image_image]
   borelize E
   rw [IsometryEquiv.hausdorffMeasure_image, Set.image_smul, Measure.hausdorffMeasure_smul₀ hd hc,
@@ -1127,7 +1116,7 @@ theorem hausdorffMeasure_homothety_image {d : ℝ} (hd : 0 ≤ d) (x : P) {c : �
 #align measure_theory.hausdorff_measure_homothety_image MeasureTheory.hausdorffMeasure_homothety_image
 
 theorem hausdorffMeasure_homothety_preimage {d : ℝ} (hd : 0 ≤ d) (x : P) {c : 𝕜} (hc : c ≠ 0)
-    (s : Set P) : μH[d] (AffineMap.homothety x c ⁻¹' s) = NNReal.rpow ‖c‖₊⁻¹ d • μH[d] s := by
+    (s : Set P) : μH[d] (AffineMap.homothety x c ⁻¹' s) = ‖c‖₊⁻¹ ^ d • μH[d] s := by
   change μH[d] (AffineEquiv.homothetyUnitsMulHom x (Units.mk0 c hc) ⁻¹' s) = _
   rw [← AffineEquiv.image_symm, AffineEquiv.coe_homothetyUnitsMulHom_apply_symm,
     hausdorffMeasure_homothety_image hd x (_ : 𝕜ˣ).isUnit.ne_zero, Units.val_inv_eq_inv_val,
@@ -1143,7 +1132,6 @@ end NormedFieldAffine
 section RealAffine
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace P]
-
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Mapping a set of reals along a line segment scales the measure by the length of a segment.

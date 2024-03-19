@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.LatticeIntervals
 
@@ -70,10 +70,10 @@ instance distribLattice [DistribLattice α] {a : α} : DistribLattice { x : α /
   Set.Ici.distribLattice
 #align nonneg.distrib_lattice Nonneg.distribLattice
 
-instance densely_ordered [Preorder α] [DenselyOrdered α] {a : α} :
+instance instDenselyOrdered [Preorder α] [DenselyOrdered α] {a : α} :
     DenselyOrdered { x : α // a ≤ x } :=
   show DenselyOrdered (Ici a) from Set.instDenselyOrdered
-#align nonneg.densely_ordered Nonneg.densely_ordered
+#align nonneg.densely_ordered Nonneg.instDenselyOrdered
 
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
 @[reducible]
@@ -220,7 +220,7 @@ instance addMonoidWithOne [OrderedSemiring α] : AddMonoidWithOne { x : α // 0 
     Nonneg.orderedAddCommMonoid with
     natCast := fun n => ⟨n, Nat.cast_nonneg n⟩
     natCast_zero := by simp
-    natCast_succ := fun _ => by simp; rfl }
+    natCast_succ := fun _ => by simp only [Nat.cast_add, Nat.cast_one]; rfl }
 #align nonneg.add_monoid_with_one Nonneg.addMonoidWithOne
 
 @[simp, norm_cast]
@@ -336,7 +336,7 @@ instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α]
 
 instance canonicallyLinearOrderedAddCommMonoid [LinearOrderedRing α] :
     CanonicallyLinearOrderedAddCommMonoid { x : α // 0 ≤ x } :=
-  { Subtype.linearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
+  { Subtype.instLinearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
 #align nonneg.canonically_linear_ordered_add_monoid Nonneg.canonicallyLinearOrderedAddCommMonoid
 
 section LinearOrder

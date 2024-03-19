@@ -16,14 +16,11 @@ such that for `x ≠ 0`, `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / 
 while `arg 0` defaults to `0`
 -/
 
-
-noncomputable section
+open Filter Metric Set
+open scoped ComplexConjugate Real Topology
 
 namespace Complex
-
-open ComplexConjugate Real Topology
-
-open Filter Set
+variable {a x z : ℂ}
 
 /-- `arg` returns values in the range (-π, π], such that for `x ≠ 0`,
   `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
@@ -58,7 +55,7 @@ theorem abs_mul_exp_arg_mul_I (x : ℂ) : ↑(abs x) * exp (arg x * I) = x := by
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
   · have : abs x ≠ 0 := abs.ne_zero hx
-    ext <;> field_simp [sin_arg, cos_arg hx, this, mul_comm (abs x)]
+    apply Complex.ext <;> field_simp [sin_arg, cos_arg hx, this, mul_comm (abs x)]
 set_option linter.uppercaseLean3 false in
 #align complex.abs_mul_exp_arg_mul_I Complex.abs_mul_exp_arg_mul_I
 
@@ -96,7 +93,7 @@ set_option linter.uppercaseLean3 false in
 theorem arg_mul_cos_add_sin_mul_I {r : ℝ} (hr : 0 < r) {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) :
     arg (r * (cos θ + sin θ * I)) = θ := by
   simp only [arg, map_mul, abs_cos_add_sin_mul_I, abs_of_nonneg hr.le, mul_one]
-  simp only [ofReal_mul_re, ofReal_mul_im, neg_im, ← ofReal_cos, ← ofReal_sin, ←
+  simp only [re_ofReal_mul, im_ofReal_mul, neg_im, ← ofReal_cos, ← ofReal_sin, ←
     mk_eq_add_mul_I, neg_div, mul_div_cancel_left _ hr.ne', mul_nonneg_iff_right_nonneg_of_pos hr]
   by_cases h₁ : θ ∈ Set.Icc (-(π / 2)) (π / 2)
   · rw [if_pos]
@@ -122,6 +119,14 @@ theorem arg_cos_add_sin_mul_I {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) : arg (
   rw [← one_mul (_ + _), ← ofReal_one, arg_mul_cos_add_sin_mul_I zero_lt_one hθ]
 set_option linter.uppercaseLean3 false in
 #align complex.arg_cos_add_sin_mul_I Complex.arg_cos_add_sin_mul_I
+
+lemma arg_exp_mul_I (θ : ℝ) :
+    arg (exp (θ * I)) = toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ := by
+  convert arg_cos_add_sin_mul_I (θ := toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ) _ using 2
+  · rw [← exp_mul_I, eq_sub_of_add_eq $ toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
+      ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
+  · convert toIocMod_mem_Ioc _ _ _
+    ring
 
 @[simp]
 theorem arg_zero : arg 0 = 0 := by simp [arg, le_refl]
@@ -227,6 +232,14 @@ theorem tan_arg (x : ℂ) : Real.tan (arg x) = x.im / x.re := by
 theorem arg_ofReal_of_nonneg {x : ℝ} (hx : 0 ≤ x) : arg x = 0 := by simp [arg, hx]
 #align complex.arg_of_real_of_nonneg Complex.arg_ofReal_of_nonneg
 
+@[simp, norm_cast]
+lemma natCast_arg {n : ℕ} : arg n = 0 :=
+  ofReal_nat_cast n ▸ arg_ofReal_of_nonneg n.cast_nonneg
+
+@[simp]
+lemma ofNat_arg {n : ℕ} [n.AtLeastTwo] : arg (no_index (OfNat.ofNat n)) = 0 :=
+  natCast_arg
+
 theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by
   refine' ⟨fun h => _, _⟩
   · rw [← abs_mul_cos_add_sin_mul_I z, h]
@@ -236,8 +249,13 @@ theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by
     exact arg_ofReal_of_nonneg h
 #align complex.arg_eq_zero_iff Complex.arg_eq_zero_iff
 
+open ComplexOrder in
+lemma arg_eq_zero_iff_zero_le {z : ℂ} : arg z = 0 ↔ 0 ≤ z := by
+  rw [arg_eq_zero_iff, eq_comm, nonneg_iff]
+
 theorem arg_eq_pi_iff {z : ℂ} : arg z = π ↔ z.re < 0 ∧ z.im = 0 := by
-  by_cases h₀ : z = 0; simp [h₀, lt_irrefl, Real.pi_ne_zero.symm]
+  by_cases h₀ : z = 0
+  · simp [h₀, lt_irrefl, Real.pi_ne_zero.symm]
   constructor
   · intro h
     rw [← abs_mul_cos_add_sin_mul_I z, h]
@@ -247,6 +265,9 @@ theorem arg_eq_pi_iff {z : ℂ} : arg z = π ↔ z.re < 0 ∧ z.im = 0 := by
     rw [← arg_neg_one, ← arg_real_mul (-1) (neg_pos.2 h)]
     simp [← ofReal_def]
 #align complex.arg_eq_pi_iff Complex.arg_eq_pi_iff
+
+open ComplexOrder in
+lemma arg_eq_pi_iff_lt_zero {z : ℂ} : arg z = π ↔ z < 0 := arg_eq_pi_iff
 
 theorem arg_lt_pi_iff {z : ℂ} : arg z < π ↔ 0 ≤ z.re ∨ z.im ≠ 0 := by
   rw [(arg_le_pi z).lt_iff_ne, not_iff_comm, not_or, not_le, Classical.not_not, arg_eq_pi_iff]
@@ -331,11 +352,29 @@ theorem arg_inv (x : ℂ) : arg x⁻¹ = if arg x = π then π else -arg x := by
   · exact arg_real_mul (conj x) (by simp [hx])
 #align complex.arg_inv Complex.arg_inv
 
+@[simp] lemma abs_arg_inv (x : ℂ) : |x⁻¹.arg| = |x.arg| := by rw [arg_inv]; split_ifs <;> simp [*]
+
+-- TODO: Replace the next two lemmas by general facts about periodic functions
+lemma abs_eq_one_iff' : abs x = 1 ↔ ∃ θ ∈ Set.Ioc (-π) π, exp (θ * I) = x := by
+  rw [abs_eq_one_iff]
+  constructor
+  · rintro ⟨θ, rfl⟩
+    refine ⟨toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ, ?_, ?_⟩
+    · convert toIocMod_mem_Ioc _ _ _
+      ring
+    · rw [eq_sub_of_add_eq $ toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
+      ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
+  · rintro ⟨θ, _, rfl⟩
+    exact ⟨θ, rfl⟩
+
+lemma image_exp_Ioc_eq_sphere : (fun θ : ℝ ↦ exp (θ * I)) '' Set.Ioc (-π) π = sphere 0 1 := by
+  ext; simpa using abs_eq_one_iff'.symm
+
 theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im z < 0 := by
-  cases' le_or_lt 0 (re z) with hre hre
+  rcases le_or_lt 0 (re z) with hre | hre
   · simp only [hre, arg_of_re_nonneg hre, Real.arcsin_le_pi_div_two, true_or_iff]
   simp only [hre.not_le, false_or_iff]
-  cases' le_or_lt 0 (im z) with him him
+  rcases le_or_lt 0 (im z) with him | him
   · simp only [him.not_lt]
     rw [iff_false_iff, not_le, arg_of_re_neg_of_im_nonneg hre him, ← sub_lt_iff_lt_add, half_sub,
       Real.neg_pi_div_two_lt_arcsin, neg_im, neg_div, neg_lt_neg_iff, div_lt_one, ←
@@ -347,10 +386,10 @@ theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im
 #align complex.arg_le_pi_div_two_iff Complex.arg_le_pi_div_two_iff
 
 theorem neg_pi_div_two_le_arg_iff {z : ℂ} : -(π / 2) ≤ arg z ↔ 0 ≤ re z ∨ 0 ≤ im z := by
-  cases' le_or_lt 0 (re z) with hre hre
+  rcases le_or_lt 0 (re z) with hre | hre
   · simp only [hre, arg_of_re_nonneg hre, Real.neg_pi_div_two_le_arcsin, true_or_iff]
   simp only [hre.not_le, false_or_iff]
-  cases' le_or_lt 0 (im z) with him him
+  rcases le_or_lt 0 (im z) with him | him
   · simp only [him]
     rw [iff_true_iff, arg_of_re_neg_of_im_nonneg hre him]
     exact (Real.neg_pi_div_two_le_arcsin _).trans (le_add_of_nonneg_right Real.pi_pos.le)
@@ -368,11 +407,27 @@ lemma neg_pi_div_two_lt_arg_iff {z : ℂ} : -(π / 2) < arg z ↔ 0 < re z ∨ 0
   · simp [hre]
   · simp [hre, hre.le, hre.ne']
 
+lemma arg_lt_pi_div_two_iff {z : ℂ} : arg z < π / 2 ↔ 0 < re z ∨ im z < 0 ∨ z = 0 := by
+  rw [lt_iff_le_and_ne, arg_le_pi_div_two_iff, Ne, arg_eq_pi_div_two_iff]
+  rcases lt_trichotomy z.re 0 with hre | hre | hre
+  · have : z ≠ 0 := by simp [ext_iff, hre.ne]
+    simp [hre.ne, hre.not_le, hre.not_lt, this]
+  · have : z = 0 ↔ z.im = 0 := by simp [ext_iff, hre]
+    simp [hre, this, or_comm, le_iff_eq_or_lt]
+  · simp [hre, hre.le, hre.ne']
+
 @[simp]
 theorem abs_arg_le_pi_div_two_iff {z : ℂ} : |arg z| ≤ π / 2 ↔ 0 ≤ re z := by
   rw [abs_le, arg_le_pi_div_two_iff, neg_pi_div_two_le_arg_iff, ← or_and_left, ← not_le,
     and_not_self_iff, or_false_iff]
 #align complex.abs_arg_le_pi_div_two_iff Complex.abs_arg_le_pi_div_two_iff
+
+@[simp]
+theorem abs_arg_lt_pi_div_two_iff {z : ℂ} : |arg z| < π / 2 ↔ 0 < re z ∨ z = 0 := by
+  rw [abs_lt, arg_lt_pi_div_two_iff, neg_pi_div_two_lt_arg_iff, ← or_and_left]
+  rcases eq_or_ne z 0 with hz | hz
+  · simp [hz]
+  · simp_rw [hz, or_false, ← not_lt, not_and_self_iff, or_false]
 
 @[simp]
 theorem arg_conj_coe_angle (x : ℂ) : (arg (conj x) : Real.Angle) = -arg x := by
@@ -521,9 +576,20 @@ lemma arg_mul_eq_add_arg_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
 
 alias ⟨_, arg_mul⟩ := arg_mul_eq_add_arg_iff
 
-section Continuity
+section slitPlane
 
-variable {x z : ℂ}
+open ComplexOrder in
+/-- An alternative description of the slit plane as consisting of nonzero complex numbers
+whose argument is not π. -/
+lemma mem_slitPlane_iff_arg {z : ℂ} : z ∈ slitPlane ↔ z.arg ≠ π ∧ z ≠ 0 := by
+  simp only [mem_slitPlane_iff_not_le_zero, le_iff_lt_or_eq, ne_eq, arg_eq_pi_iff_lt_zero, not_or]
+
+lemma slitPlane_arg_ne_pi {z : ℂ} (hz : z ∈ slitPlane) : z.arg ≠ Real.pi :=
+  (mem_slitPlane_iff_arg.mp hz).1
+
+end slitPlane
+
+section Continuity
 
 theorem arg_eq_nhds_of_re_pos (hx : 0 < x.re) : arg =ᶠ[𝓝 x] fun x => Real.arcsin (x.im / abs x) :=
   ((continuous_re.tendsto _).eventually (lt_mem_nhds hx)).mono fun _ hy => arg_of_re_nonneg hy.le
@@ -531,8 +597,8 @@ theorem arg_eq_nhds_of_re_pos (hx : 0 < x.re) : arg =ᶠ[𝓝 x] fun x => Real.a
 
 theorem arg_eq_nhds_of_re_neg_of_im_pos (hx_re : x.re < 0) (hx_im : 0 < x.im) :
     arg =ᶠ[𝓝 x] fun x => Real.arcsin ((-x).im / abs x) + π := by
-  suffices h_forall_nhds : ∀ᶠ y : ℂ in 𝓝 x, y.re < 0 ∧ 0 < y.im
-  exact h_forall_nhds.mono fun y hy => arg_of_re_neg_of_im_nonneg hy.1 hy.2.le
+  suffices h_forall_nhds : ∀ᶠ y : ℂ in 𝓝 x, y.re < 0 ∧ 0 < y.im from
+    h_forall_nhds.mono fun y hy => arg_of_re_neg_of_im_nonneg hy.1 hy.2.le
   refine' IsOpen.eventually_mem _ (⟨hx_re, hx_im⟩ : x.re < 0 ∧ 0 < x.im)
   exact
     IsOpen.and (isOpen_lt continuous_re continuous_zero) (isOpen_lt continuous_zero continuous_im)
@@ -540,8 +606,8 @@ theorem arg_eq_nhds_of_re_neg_of_im_pos (hx_re : x.re < 0) (hx_im : 0 < x.im) :
 
 theorem arg_eq_nhds_of_re_neg_of_im_neg (hx_re : x.re < 0) (hx_im : x.im < 0) :
     arg =ᶠ[𝓝 x] fun x => Real.arcsin ((-x).im / abs x) - π := by
-  suffices h_forall_nhds : ∀ᶠ y : ℂ in 𝓝 x, y.re < 0 ∧ y.im < 0
-  exact h_forall_nhds.mono fun y hy => arg_of_re_neg_of_im_neg hy.1 hy.2
+  suffices h_forall_nhds : ∀ᶠ y : ℂ in 𝓝 x, y.re < 0 ∧ y.im < 0 from
+    h_forall_nhds.mono fun y hy => arg_of_re_neg_of_im_neg hy.1 hy.2
   refine' IsOpen.eventually_mem _ (⟨hx_re, hx_im⟩ : x.re < 0 ∧ x.im < 0)
   exact
     IsOpen.and (isOpen_lt continuous_re continuous_zero) (isOpen_lt continuous_im continuous_zero)
@@ -555,12 +621,11 @@ theorem arg_eq_nhds_of_im_neg (hz : im z < 0) : arg =ᶠ[𝓝 z] fun x => -Real.
   ((continuous_im.tendsto _).eventually (gt_mem_nhds hz)).mono fun _ => arg_of_im_neg
 #align complex.arg_eq_nhds_of_im_neg Complex.arg_eq_nhds_of_im_neg
 
-theorem continuousAt_arg (h : 0 < x.re ∨ x.im ≠ 0) : ContinuousAt arg x := by
+theorem continuousAt_arg (h : x ∈ slitPlane) : ContinuousAt arg x := by
   have h₀ : abs x ≠ 0 := by
     rw [abs.ne_zero_iff]
-    rintro rfl
-    simp at h
-  rw [← lt_or_lt_iff_ne] at h
+    exact slitPlane_ne_zero h
+  rw [mem_slitPlane_iff, ← lt_or_lt_iff_ne] at h
   rcases h with (hx_re | hx_im | hx_im)
   exacts [(Real.continuousAt_arcsin.comp
           (continuous_im.continuousAt.div continuous_abs.continuousAt h₀)).congr
@@ -575,9 +640,9 @@ theorem continuousAt_arg (h : 0 < x.re ∨ x.im ≠ 0) : ContinuousAt arg x := b
 
 theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
     (him : z.im = 0) : Tendsto arg (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) := by
-  suffices H :
-    Tendsto (fun x : ℂ => Real.arcsin ((-x).im / abs x) - π) (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π))
-  · refine' H.congr' _
+  suffices H : Tendsto (fun x : ℂ => Real.arcsin ((-x).im / abs x) - π)
+      (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) by
+    refine' H.congr' _
     have : ∀ᶠ x : ℂ in 𝓝 z, x.re < 0 := continuous_re.tendsto z (gt_mem_nhds hre)
     -- Porting note: need to specify the `nhdsWithin` set
     filter_upwards [self_mem_nhdsWithin (s := { z : ℂ | z.im < 0 }),
@@ -619,9 +684,9 @@ theorem tendsto_arg_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z
 #align complex.tendsto_arg_nhds_within_im_nonneg_of_re_neg_of_im_zero Complex.tendsto_arg_nhdsWithin_im_nonneg_of_re_neg_of_im_zero
 
 theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg : ℂ → Real.Angle) x := by
-  by_cases hs : 0 < x.re ∨ x.im ≠ 0
+  by_cases hs : x ∈ slitPlane
   · exact Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg hs)
-  · rw [← Function.comp.right_id (((↑) : ℝ → Real.Angle) ∘ arg),
+  · rw [← Function.comp_id (((↑) : ℝ → Real.Angle) ∘ arg),
       (Function.funext_iff.2 fun _ => (neg_neg _).symm : (id : ℂ → ℂ) = Neg.neg ∘ Neg.neg), ←
       Function.comp.assoc]
     refine' ContinuousAt.comp _ continuous_neg.continuousAt
@@ -633,6 +698,7 @@ theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg :
       rw [Function.update_eq_iff]
       exact ⟨by simp, fun z hz => arg_neg_coe_angle hz⟩
     rw [ha]
+    replace hs := mem_slitPlane_iff.mpr.mt hs
     push_neg at hs
     refine'
       (Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg (Or.inl _))).add

@@ -32,7 +32,6 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace Opposite TopologicalS
 namespace TopCat
 
 variable {C : Type u} [Category.{v} C] [HasProducts.{v'} C]
-
 variable {X : TopCat.{v'}} (F : Presheaf C X) {ι : Type v'} (U : ι → Opens X)
 
 namespace Presheaf
@@ -86,7 +85,7 @@ set_option linter.uppercaseLean3 false in
 @[elementwise]
 theorem w : res F U ≫ leftRes F U = res F U ≫ rightRes F U := by
   dsimp [res, leftRes, rightRes]
-  -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+  -- Porting note: `ext` can't see `limit.hom_ext` applies here:
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
   refine limit.hom_ext (fun _ => ?_)
   simp only [limit.lift_π, limit.lift_π_assoc, Fan.mk_π_app, Category.assoc]
@@ -130,7 +129,7 @@ theorem fork_π_app_walkingParallelPair_zero : (fork F U).π.app WalkingParallel
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_equalizer_products.fork_π_app_walking_parallel_pair_zero TopCat.Presheaf.SheafConditionEqualizerProducts.fork_π_app_walkingParallelPair_zero
 
--- Porting note : Shortcut simplifier
+-- Porting note: Shortcut simplifier
 @[simp (high)]
 theorem fork_π_app_walkingParallelPair_one :
     (fork F U).π.app WalkingParallelPair.one = res F U ≫ leftRes F U :=
@@ -160,14 +159,14 @@ def diagram.isoOfIso (α : F ≅ G) : diagram F U ≅ diagram.{v'} G U :=
     (by
       rintro ⟨⟩ ⟨⟩ ⟨⟩
       · simp
-      · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+      · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
         -- See https://github.com/leanprover-community/mathlib4/issues/5229
         refine limit.hom_ext (fun _ => ?_)
         simp only [leftRes, piOpens.isoOfIso, piInters.isoOfIso, parallelPair_map_left,
           Functor.mapIso_hom, lim_map, limit.lift_map, limit.lift_π, Cones.postcompose_obj_π,
           NatTrans.comp_app, Fan.mk_π_app, Discrete.natIso_hom_app, Iso.app_hom, Category.assoc,
           NatTrans.naturality, limMap_π_assoc]
-      · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+      · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
         -- See https://github.com/leanprover-community/mathlib4/issues/5229
         refine limit.hom_ext (fun _ => ?_)
         simp only [rightRes, piOpens.isoOfIso, piInters.isoOfIso, parallelPair_map_right,
@@ -187,7 +186,7 @@ def fork.isoOfIso (α : F ≅ G) :
     fork F U ≅ (Cones.postcompose (diagram.isoOfIso U α).inv).obj (fork G U) := by
   fapply Fork.ext
   · apply α.app
-  · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+  · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
     -- See https://github.com/leanprover-community/mathlib4/issues/5229
     refine limit.hom_ext (fun _ => ?_)
     dsimp only [Fork.ι]
@@ -232,7 +231,7 @@ def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
           (Pi.lift fun b : ι × ι => c.π.app (op (pair b.1 b.2)))
       naturality := fun Y Z f => by
         cases Y <;> cases Z <;> cases f
-        · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+        · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
           -- See https://github.com/leanprover-community/mathlib4/issues/5229
           refine limit.hom_ext fun i => ?_
           dsimp
@@ -240,7 +239,7 @@ def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
             Category.assoc]
           dsimp
           simp only [limit.lift_π, Category.id_comp, Fan.mk_π_app]
-        · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+        · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
           -- See https://github.com/leanprover-community/mathlib4/issues/5229
           refine limit.hom_ext fun ⟨i, j⟩ => ?_
           dsimp [SheafConditionEqualizerProducts.leftRes]
@@ -249,7 +248,7 @@ def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
           have h := c.π.naturality (Quiver.Hom.op (Hom.left i j))
           dsimp at h
           simpa using h
-        · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+        · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
           -- See https://github.com/leanprover-community/mathlib4/issues/5229
           refine limit.hom_ext fun ⟨i, j⟩ => ?_
           dsimp [SheafConditionEqualizerProducts.rightRes]
@@ -258,7 +257,7 @@ def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
           have h := c.π.naturality (Quiver.Hom.op (Hom.right i j))
           dsimp at h
           simpa using h
-        · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+        · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
           -- See https://github.com/leanprover-community/mathlib4/issues/5229
           refine limit.hom_ext fun i => ?_
           dsimp
@@ -281,7 +280,7 @@ def coneEquivFunctor :
     { hom := f.hom
       w := fun j => by
         cases j <;>
-          · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+          · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
             -- See https://github.com/leanprover-community/mathlib4/issues/5229
             refine limit.hom_ext fun i => ?_
             simp only [Limits.Fan.mk_π_app, Limits.ConeMorphism.w, Limits.limit.lift_π,
@@ -400,12 +399,12 @@ def coneEquivCounitIso :
           { hom := 𝟙 _
             w := by
               rintro ⟨_ | _⟩
-              · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+              · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
                 -- See https://github.com/leanprover-community/mathlib4/issues/5229
                 refine limit.hom_ext fun ⟨j⟩ => ?_
                 dsimp [coneEquivInverse]
                 simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π]
-              · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+              · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
                 -- See https://github.com/leanprover-community/mathlib4/issues/5229
                 refine limit.hom_ext fun ⟨i, j⟩ => ?_
                 dsimp [coneEquivInverse]
@@ -414,12 +413,12 @@ def coneEquivCounitIso :
           { hom := 𝟙 _
             w := by
               rintro ⟨_ | _⟩
-              · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+              · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
                 -- See https://github.com/leanprover-community/mathlib4/issues/5229
                 refine limit.hom_ext fun ⟨j⟩ => ?_
                 dsimp [coneEquivInverse]
                 simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π]
-              · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+              · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
                 -- See https://github.com/leanprover-community/mathlib4/issues/5229
                 refine limit.hom_ext fun ⟨i, j⟩ => ?_
                 dsimp [coneEquivInverse]
@@ -498,7 +497,7 @@ def isLimitSheafConditionForkOfIsLimitMapCone (Q : IsLimit (F.mapCone (cocone U)
             rintro ⟨⟩
             · simp
               rfl
-            · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+            · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
               -- See https://github.com/leanprover-community/mathlib4/issues/5229
               refine limit.hom_ext fun ⟨i, j⟩ => ?_
               dsimp [coneEquivInverse, SheafConditionEqualizerProducts.res,
@@ -513,7 +512,7 @@ def isLimitSheafConditionForkOfIsLimitMapCone (Q : IsLimit (F.mapCone (cocone U)
             rintro ⟨⟩
             · simp
               rfl
-            · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+            · -- Porting note: `ext` can't see `limit.hom_ext` applies here:
               -- See https://github.com/leanprover-community/mathlib4/issues/5229
               refine limit.hom_ext fun ⟨i, j⟩ => ?_
               dsimp [coneEquivInverse, SheafConditionEqualizerProducts.res,
