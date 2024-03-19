@@ -554,8 +554,9 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
 
 open Module
 
+variable {ι : Type*} [hs : IsZlattice K L] (b : Basis ι ℤ L)
 /-- Any `ℤ`-basis of `L` is also a `K`-basis of `E`. -/
-def Basis.ofZlatticeBasis {ι : Type*} [hs : IsZlattice K L] (b : Basis ι ℤ L) :
+def Basis.ofZlatticeBasis :
     Basis ι K E := by
   have : Finite ℤ L := Zlattice.module_finite K L
   have : Free ℤ L := Zlattice.module_free K L
@@ -568,14 +569,14 @@ def Basis.ofZlatticeBasis {ι : Type*} [hs : IsZlattice K L] (b : Basis ι ℤ L
   · rw [← Fintype.card_congr e, ← finrank_eq_card_chooseBasisIndex, Zlattice.rank K L]
 
 @[simp]
-theorem Basis.ofZlatticeBasis_apply {ι : Type*} [IsZlattice K L] (b : Basis ι ℤ L) (i : ι) :
+theorem Basis.ofZlatticeBasis_apply (i : ι) :
     b.ofZlatticeBasis K L i =  b i := by simp [Basis.ofZlatticeBasis]
 
 @[simp]
-theorem Basis.ofZlatticeBasis_repr_apply {ι : Type*} [IsZlattice K L] (b : Basis ι ℤ L)
-    (x : L) (i : ι) : (b.ofZlatticeBasis K L).repr x i = b.repr x i := by
-  suffices ((b.ofZlatticeBasis K L).repr.toLinearMap.restrictScalars ℤ) ∘ₗ L.subtype.toIntLinearMap =
-      Finsupp.mapRange.linearMap (Algebra.linearMap ℤ K) ∘ₗ b.repr.toLinearMap by
+theorem Basis.ofZlatticeBasis_repr_apply (x : L) (i : ι) :
+    (b.ofZlatticeBasis K L).repr x i = b.repr x i := by
+  suffices ((b.ofZlatticeBasis K L).repr.toLinearMap.restrictScalars ℤ) ∘ₗ L.subtype.toIntLinearMap
+      = Finsupp.mapRange.linearMap (Algebra.linearMap ℤ K) ∘ₗ b.repr.toLinearMap by
     exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
   refine Basis.ext b fun i ↦ ?_
   simp_rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
@@ -583,7 +584,7 @@ theorem Basis.ofZlatticeBasis_repr_apply {ι : Type*} [IsZlattice K L] (b : Basi
     ← b.ofZlatticeBasis_apply K, repr_self, Finsupp.mapRange.linearMap_apply,
     Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
-theorem Basis.ofZlatticeBasis_span {ι : Type*} [hs : IsZlattice K L] (b : Basis ι ℤ L) :
+theorem Basis.ofZlatticeBasis_span :
     (span ℤ (Set.range (b.ofZlatticeBasis K))).toAddSubgroup = L := by
   calc (span ℤ (Set.range (b.ofZlatticeBasis K))).toAddSubgroup
     _ = (span ℤ (L.subtype.toIntLinearMap '' (Set.range b))).toAddSubgroup := by congr; ext; simp
