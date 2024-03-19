@@ -1623,16 +1623,19 @@ theorem Set.EqOn.of_subset_closure [T2Space Y] {s t : Set X} {f g : X → Y} (h 
       ((hg x hx).mono_left <| nhdsWithin_mono _ hst) (h.eventuallyEq_of_mem self_mem_nhdsWithin)
 #align set.eq_on.of_subset_closure Set.EqOn.of_subset_closure
 
-theorem Function.LeftInverse.closed_range [T2Space X] {f : X → Y} {g : Y → X}
+theorem Function.LeftInverse.isClosed_range [T2Space X] {f : X → Y} {g : Y → X}
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : IsClosed (range g) :=
   have : EqOn (g ∘ f) id (closure <| range g) :=
     h.rightInvOn_range.eqOn.closure (hg.comp hf) continuous_id
   isClosed_of_closure_subset fun x hx => ⟨f x, this hx⟩
-#align function.left_inverse.closed_range Function.LeftInverse.closed_range
+#align function.left_inverse.closed_range Function.LeftInverse.isClosed_range
+
+@[deprecated] alias Function.LeftInverse.closed_range :=
+  Function.LeftInverse.isClosed_range -- 2024-03-17
 
 theorem Function.LeftInverse.closedEmbedding [T2Space X] {f : X → Y} {g : Y → X}
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : ClosedEmbedding g :=
-  ⟨h.embedding hf hg, h.closed_range hf hg⟩
+  ⟨h.embedding hf hg, h.isClosed_range hf hg⟩
 #align function.left_inverse.closed_embedding Function.LeftInverse.closedEmbedding
 
 theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsCompact s)

@@ -68,7 +68,7 @@ theorem openEmbedding_coe : OpenEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
 #align ennreal.open_embedding_coe ENNReal.openEmbedding_coe
 
 theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r : ℝ≥0∞) :=
-  IsOpen.mem_nhds openEmbedding_coe.open_range <| mem_range_self _
+  IsOpen.mem_nhds openEmbedding_coe.isOpen_range <| mem_range_self _
 #align ennreal.coe_range_mem_nhds ENNReal.coe_range_mem_nhds
 
 @[norm_cast]

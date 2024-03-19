@@ -233,7 +233,7 @@ embedding in `R × R`) to `R` is an open embedding. -/
 theorem openEmbedding_val : OpenEmbedding (val : Rˣ → R) where
   toEmbedding := embedding_val_mk'
     (fun _ ⟨u, hu⟩ ↦ hu ▸ (inverse_continuousAt u).continuousWithinAt) Ring.inverse_unit
-  open_range := Units.isOpen
+  isOpen_range := Units.isOpen
 #align units.open_embedding_coe Units.openEmbedding_val
 
 /-- In a normed ring, the coercion from `Rˣ` (equipped with the induced topology from the

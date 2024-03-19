@@ -48,7 +48,7 @@ alias Embedding.restrictPreimage := Set.restrictPreimage_embedding
 theorem Set.restrictPreimage_openEmbedding (s : Set β) (h : OpenEmbedding f) :
     OpenEmbedding (s.restrictPreimage f) :=
   ⟨h.1.restrictPreimage s,
-    (s.range_restrictPreimage f).symm ▸ continuous_subtype_val.isOpen_preimage _ h.2⟩
+    (s.range_restrictPreimage f).symm ▸ continuous_subtype_val.isOpen_preimage _ h.isOpen_range⟩
 #align set.restrict_preimage_open_embedding Set.restrictPreimage_openEmbedding
 
 alias OpenEmbedding.restrictPreimage := Set.restrictPreimage_openEmbedding
@@ -57,7 +57,7 @@ alias OpenEmbedding.restrictPreimage := Set.restrictPreimage_openEmbedding
 theorem Set.restrictPreimage_closedEmbedding (s : Set β) (h : ClosedEmbedding f) :
     ClosedEmbedding (s.restrictPreimage f) :=
   ⟨h.1.restrictPreimage s,
-    (s.range_restrictPreimage f).symm ▸ inducing_subtype_val.isClosed_preimage _ h.2⟩
+    (s.range_restrictPreimage f).symm ▸ inducing_subtype_val.isClosed_preimage _ h.isClosed_range⟩
 #align set.restrict_preimage_closed_embedding Set.restrictPreimage_closedEmbedding
 
 alias ClosedEmbedding.restrictPreimage := Set.restrictPreimage_closedEmbedding
