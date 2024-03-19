@@ -1931,6 +1931,11 @@ theorem mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : A *ᵥ (-v) 
   apply dotProduct_neg
 #align matrix.mul_vec_neg Matrix.mulVec_neg
 
+theorem mulVec_sub [Fintype n] (A : Matrix m n α) (x y : n → α) :
+    A *ᵥ (x - y) = A *ᵥ x - A *ᵥ y := by
+  ext
+  apply dotProduct_sub
+
 theorem sub_mulVec [Fintype n] (A B : Matrix m n α) (x : n → α) :
     (A - B) *ᵥ x = A *ᵥ x - B *ᵥ x := by simp [sub_eq_add_neg, add_mulVec, neg_mulVec]
 #align matrix.sub_mul_vec Matrix.sub_mulVec
@@ -1938,6 +1943,11 @@ theorem sub_mulVec [Fintype n] (A B : Matrix m n α) (x : n → α) :
 theorem vecMul_sub [Fintype m] (A B : Matrix m n α) (x : m → α) :
     x ᵥ* (A - B) = x ᵥ* A - x ᵥ* B := by simp [sub_eq_add_neg, vecMul_add, vecMul_neg]
 #align matrix.vec_mul_sub Matrix.vecMul_sub
+
+theorem sub_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
+    (x - y) ᵥ* A = x ᵥ* A - y ᵥ* A := by
+  ext
+  apply sub_dotProduct
 
 end NonUnitalNonAssocRing
 
