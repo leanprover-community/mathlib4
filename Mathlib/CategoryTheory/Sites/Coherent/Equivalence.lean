@@ -116,9 +116,8 @@ section Regular
 variable [Preregular C]
 
 /-- `Preregular` is preserved by equivalence of categories. -/
-theorem preregular : Preregular D := by
-  have : e.inverse.ReflectsEffectiveEpis := sorry
-  exact reflects_preregular e.inverse fun X ↦ ⟨e.functor.obj X, e.unitInv.app _, inferInstance⟩
+theorem preregular : Preregular D :=
+  reflects_preregular e.inverse fun X ↦ ⟨e.functor.obj X, e.unitInv.app _, inferInstance⟩
 
 instance [EssentiallySmall C] [Preregular C] :
     Preregular (SmallModel C) := (equivSmallModel C).preregular

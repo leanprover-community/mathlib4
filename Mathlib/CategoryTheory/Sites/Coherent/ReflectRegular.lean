@@ -1,5 +1,18 @@
+/-
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
+/-!
+
+# Reflecting the property of being preregular
+
+We prove that given a fully faitful functor `F : C ⥤ D`, with `Preregular D`, such that for every
+object `X` of `D` there exists an object `W` of `C` with an effective epi `π : F.obj W ⟶ X`, the
+category `C` is `Preregular`.
+-/
 
 namespace CategoryTheory
 
