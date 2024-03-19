@@ -114,7 +114,7 @@ theorem Coloring.colorClasses_finite [Finite α] : C.colorClasses.Finite :=
 theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
     Fintype.card C.colorClasses ≤ Fintype.card α := by
   simp [colorClasses]
-  -- porting note: brute force instance declaration `[Fintype (Setoid.classes (Setoid.ker C))]`
+  -- Porting note: brute force instance declaration `[Fintype (Setoid.classes (Setoid.ker C))]`
   haveI : Fintype (Setoid.classes (Setoid.ker C)) := by assumption
   convert Setoid.card_classes_ker_le C
 #align simple_graph.coloring.card_color_classes_le SimpleGraph.Coloring.card_colorClasses_le

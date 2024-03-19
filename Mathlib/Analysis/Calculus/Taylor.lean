@@ -48,7 +48,6 @@ open scoped BigOperators Interval Topology Nat
 open Set
 
 variable {𝕜 E F : Type*}
-
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The `k`th coefficient of the Taylor polynomial. -/
@@ -184,7 +183,6 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
       mul_one, zero_add, one_smul]
     simp only [iteratedDerivWithin_zero] at hf'
     rw [iteratedDerivWithin_one (hs_unique _ (h hy))]
-    norm_num
     exact hf'.hasDerivWithinAt.mono h
   simp_rw [Nat.add_succ, taylorWithinEval_succ]
   simp only [add_zero, Nat.factorial_succ, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
@@ -284,7 +282,7 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
   use y, hy
   simp only [sub_self, zero_pow, Ne.def, Nat.succ_ne_zero, not_false_iff, zero_sub, mul_neg] at h
   rw [h, neg_div, ← div_neg, neg_mul, neg_neg]
-  field_simp [xy_ne y hy, Nat.factorial];  ring
+  field_simp [xy_ne y hy, Nat.factorial]; ring
 #align taylor_mean_remainder_lagrange taylor_mean_remainder_lagrange
 
 /-- **Taylor's theorem** with the Cauchy form of the remainder.

@@ -191,11 +191,6 @@ jobs:
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
 
-      - name: check for noisy stdout lines
-        id: noisy
-        run: |
-          ! grep --after-context=1 "stdout:" stdout.log
-
       - name: build library_search cache
         run: lake build -KCI MathlibExtras
 
@@ -219,16 +214,24 @@ jobs:
           # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
           # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
           if [[ ! `cat lean-toolchain` =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+            lake exe cache clean!
+            rm -rf .lake/build/lib/Mathlib
             lake exe cache get || (sleep 1; lake exe cache get)
             # We pipe the output of `lake build` to a file,
             # and if we find " Building Mathlib" in that file we kill `lake build`, and error.
             lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building Mathlib" && kill $! ))
           fi
 
+      - name: find `#`-commands
+        id: hash_commands
+        run: |
+          chmod u+x scripts/lint_hash_commands.sh
+          ./scripts/lint_hash_commands.sh
+
       - name: build archive
         id: archive
         run: |
-          # Note: we should not be including `Archive` and `Countexamples` in the cache.
+          # Note: we should not be including `Archive` and `Counterexamples` in the cache.
           # We do this for now for the sake of not rebuilding them in every CI run
           # even when they are not touched.
           # Since `Archive` and `Counterexamples` files have very simple dependencies,
@@ -236,7 +239,7 @@ jobs:
           # storing and transferring oleans over the network.
           # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
           lake exe cache get Archive.lean
-          lake build Archive
+          lake build Archive | tee --append stdout.log
           lake exe cache put Archive.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
@@ -246,11 +249,17 @@ jobs:
         id: counterexamples
         run: |
           lake exe cache get Counterexamples.lean
-          lake build Counterexamples
+          lake build Counterexamples | tee --append stdout.log
           lake exe cache put Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
+
+      - name: check for noisy stdout lines
+        id: noisy
+        run: |
+          ! grep --after-context=1 "stdout:" stdout.log
+          ! grep --after-context=1 "stderr:" stdout.log
 
       - name: check declarations in db files
         run: |
@@ -271,7 +280,7 @@ jobs:
             # Tests use parts of ProofWidgets not imported by Mathlib.
             # Ensure everything has been built.
             lake build ProofWidgets
-            make -j 8 test"
+            make -k -j 8 test"
 
       - name: check for unused imports
         id: shake
@@ -281,6 +290,7 @@ jobs:
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
       - name: lint mathlib
+        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
         uses: liskin/gh-problem-matcher-wrap@v2
         with:
@@ -292,7 +302,7 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          git checkout toolchain/v4.6.0-rc1
+          git checkout toolchain/v4.7.0-rc1
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .

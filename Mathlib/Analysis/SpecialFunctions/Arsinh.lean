@@ -148,6 +148,8 @@ theorem arsinh_le_arsinh : arsinh x ≤ arsinh y ↔ x ≤ y :=
   sinhOrderIso.symm.le_iff_le
 #align real.arsinh_le_arsinh Real.arsinh_le_arsinh
 
+@[gcongr] protected alias ⟨_, GCongr.arsinh_le_arsinh⟩ := arsinh_le_arsinh
+
 @[simp]
 theorem arsinh_lt_arsinh : arsinh x < arsinh y ↔ x < y :=
   sinhOrderIso.symm.lt_iff_lt

@@ -30,7 +30,7 @@ open Projective
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /--
 A `ProjectiveResolution Z` consists of a bundled `ℕ`-indexed chain complex of projective objects,
 along with a quasi-isomorphism to the complex consisting of just `Z` supported in degree `0`.
@@ -98,7 +98,7 @@ theorem complex_d_comp_π_f_zero :
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.complex_d_comp_π_f_zero CategoryTheory.ProjectiveResolution.complex_d_comp_π_f_zero
 
--- Porting note: removed @[simp] simp can prove this
+-- Porting note (#10618): removed @[simp] simp can prove this
 theorem complex_d_succ_comp (n : ℕ) :
     P.complex.d n (n + 1) ≫ P.complex.d (n + 1) (n + 2) = 0 := by
   simp

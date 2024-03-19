@@ -165,7 +165,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
     specialize H (X.presheaf.map i.op s)
     erw [Scheme.basicOpen_res] at H
     rw [hs] at H
-    specialize H inf_bot_eq ⟨x, hx⟩
+    specialize H (inf_bot_eq _) ⟨x, hx⟩
     erw [TopCat.Presheaf.germ_res_apply] at H
     exact H
   · rintro X Y f hf
@@ -250,7 +250,7 @@ instance is_irreducible_of_isIntegral [IsIntegral X] : IrreducibleSpace X.carrie
       cases' h₁ (show x ∈ ⊤ by trivial) with h h
       exacts [hS h, hT h]
     · intro x
-      refine' x.rec (by contradiction)
+      exact x.rec (by contradiction)
 #align algebraic_geometry.is_irreducible_of_is_integral AlgebraicGeometry.is_irreducible_of_isIntegral
 
 theorem isIntegralOfIsIrreducibleIsReduced [IsReduced X] [H : IrreducibleSpace X.carrier] :
@@ -290,7 +290,7 @@ theorem isIntegralOfOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmers
   rw [this]
   have : IsDomain (Y.presheaf.obj (op (H.base_open.isOpenMap.functor.obj U))) := by
     apply (config := { allowSynthFailures := true }) IsIntegral.component_integral
-    refine' ⟨⟨_, _, hU.some.prop, rfl⟩⟩
+    exact ⟨⟨_, _, hU.some.prop, rfl⟩⟩
   exact (asIso <| f.1.c.app (op <| H.base_open.isOpenMap.functor.obj U) :
     Y.presheaf.obj _ ≅ _).symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
 #align algebraic_geometry.is_integral_of_open_immersion AlgebraicGeometry.isIntegralOfOpenImmersion

@@ -50,7 +50,6 @@ section algebra
 lemmas for `Prod` will not trigger. -/
 
 variable {p 𝕜 α β}
-
 variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
 variable (x y : WithLp p (α × β)) (c : 𝕜)
 
@@ -138,7 +137,7 @@ section EDist
 
 variable [EDist α] [EDist β]
 
-open Classical in
+open scoped Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` edistance. We register this instance
 separate from `WithLp.instProdPseudoEMetric` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -210,7 +209,7 @@ section Dist
 
 variable [Dist α] [Dist β]
 
-open Classical in
+open scoped Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` distance. We register this instance
 separate from `WithLp.instProdPseudoMetricSpace` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
@@ -249,7 +248,7 @@ section Norm
 
 variable [Norm α] [Norm β]
 
-open Classical in
+open scoped Classical in
 /-- Endowing the space `WithLp p (α × β)` with the `L^p` norm. We register this instance
 separate from `WithLp.instProdSeminormedAddCommGroup` since the latter requires the type class
 hypothesis `[Fact (1 ≤ p)]` in order to prove the triangle inequality.

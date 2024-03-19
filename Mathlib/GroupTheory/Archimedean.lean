@@ -5,6 +5,7 @@ Authors: Heather Macbeth, Patrick Massot
 -/
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Data.Set.Lattice
 
 #align_import group_theory.archimedean from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 

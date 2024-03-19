@@ -9,6 +9,7 @@ import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Positivity
 
 #align_import combinatorics.simple_graph.density from "leanprover-community/mathlib"@"a4ec43f53b0bd44c697bcc3f5a62edd56f269ef1"
 
@@ -78,7 +79,7 @@ variable (r)
 theorem card_interedges_add_card_interedges_compl (s : Finset α) (t : Finset β) :
     (interedges r s t).card + (interedges (fun x y ↦ ¬r x y) s t).card = s.card * t.card := by
   classical
-  rw [← card_product, interedges, interedges, ← card_union_eq, filter_union_filter_neg_eq]
+  rw [← card_product, interedges, interedges, ← card_union_of_disjoint, filter_union_filter_neg_eq]
   exact disjoint_filter.2 fun _ _ ↦ Classical.not_not.2
 #align rel.card_interedges_add_card_interedges_compl Rel.card_interedges_add_card_interedges_compl
 
@@ -185,8 +186,8 @@ theorem mul_edgeDensity_le_edgeDensity (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁)
     (s₂.card : ℚ) / s₁.card * (t₂.card / t₁.card) * edgeDensity r s₂ t₂ ≤ edgeDensity r s₁ t₁ := by
   have hst : (s₂.card : ℚ) * t₂.card ≠ 0 := by simp [hs₂.ne_empty, ht₂.ne_empty]
   rw [edgeDensity, edgeDensity, div_mul_div_comm, mul_comm, div_mul_div_cancel _ hst]
-  refine' div_le_div_of_le (mod_cast (s₁.card * t₁.card).zero_le) _
-  exact mod_cast card_le_card (interedges_mono hs ht)
+  gcongr
+  exact interedges_mono hs ht
 #align rel.mul_edge_density_le_edge_density Rel.mul_edgeDensity_le_edgeDensity
 
 theorem edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁) (hs₂ : s₂.Nonempty)
@@ -262,7 +263,6 @@ end Asymmetric
 section Symmetric
 
 variable (r : α → α → Prop) [DecidableRel r] {s s₁ s₂ t t₁ t₂ : Finset α} {a b : α}
-
 variable {r} (hr : Symmetric r)
 
 @[simp]
@@ -378,7 +378,7 @@ theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
     refine' filter_congr fun x hx ↦ _
     rw [mem_product] at hx
     rw [compl_adj, and_iff_right (h.forall_ne_finset hx.1 hx.2)]
-  rw [this, ← card_union_eq, filter_union_filter_neg_eq]
+  rw [this, ← card_union_of_disjoint, filter_union_filter_neg_eq]
   exact disjoint_filter.2 fun _ _ ↦ Classical.not_not.2
 #align simple_graph.card_interedges_add_card_interedges_compl SimpleGraph.card_interedges_add_card_interedges_compl
 

@@ -128,7 +128,7 @@ lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submod
   choose gi hgf _ using fun i ↦ exists_extension_norm_eq p (fi i)
   use (LinearMap.range f).subtypeL.comp <| e.symm.toContinuousLinearMap.comp (.pi gi)
   ext x
-  simp [hgf]
+  simp [fi, e, hgf]
 
 /-- A finite dimensional submodule over `ℝ` or `ℂ` is `Submodule.ClosedComplemented`. -/
 lemma Submodule.ClosedComplemented.of_finiteDimensional (p : Submodule 𝕜 F)
@@ -141,12 +141,11 @@ end IsROrC
 section DualVector
 
 variable (𝕜 : Type v) [IsROrC 𝕜]
-
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 open ContinuousLinearEquiv Submodule
 
-open Classical
+open scoped Classical
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
   rw [norm_smul (x := coord 𝕜 x h), IsROrC.norm_coe_norm, coord_norm,

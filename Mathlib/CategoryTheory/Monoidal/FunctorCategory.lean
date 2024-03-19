@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Const
 
@@ -28,7 +28,6 @@ open CategoryTheory.MonoidalCategory
 namespace CategoryTheory.Monoidal
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 namespace FunctorCategory
@@ -45,7 +44,6 @@ def tensorObj : C ⥤ D where
 #align category_theory.monoidal.functor_category.tensor_obj CategoryTheory.Monoidal.FunctorCategory.tensorObj
 
 variable {F G F' G'}
-
 variable (α : F ⟶ G) (β : F' ⟶ G')
 
 /-- (An auxiliary definition for `functorCategoryMonoidal`.)
@@ -76,8 +74,6 @@ def whiskerRight (F') : tensorObj F F' ⟶ tensorObj G F' where
 end FunctorCategory
 
 open CategoryTheory.Monoidal.FunctorCategory
-
-attribute [local simp] id_tensorHom tensorHom_id in
 
 /-- When `C` is any category, and `D` is a monoidal category,
 the functor category `C ⥤ D` has a natural pointwise monoidal structure,
@@ -164,8 +160,6 @@ theorem associator_inv_app {F G H : C ⥤ D} {X} :
     ((α_ F G H).inv : F ⊗ G ⊗ H ⟶ (F ⊗ G) ⊗ H).app X = (α_ (F.obj X) (G.obj X) (H.obj X)).inv :=
   rfl
 #align category_theory.monoidal.associator_inv_app CategoryTheory.Monoidal.associator_inv_app
-
-attribute [local simp] id_tensorHom tensorHom_id in
 
 /-- When `C` is any category, and `D` is a monoidal category,
 the functor category `C ⥤ D` has a natural pointwise monoidal structure,
