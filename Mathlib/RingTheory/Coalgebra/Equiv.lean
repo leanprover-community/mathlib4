@@ -23,9 +23,9 @@ a plain linear map `M →ₗ M₂`. -/
 notation:50 M " ≃c[" R "] " M₂ => CoalgEquiv R M M₂
 
 class CoalgEquivClass (F : Type*) (R M M₂ : outParam (Type*)) [CommSemiring R] [AddCommMonoid M]
-    [AddCommMonoid M₂] [Module R M] [Module R M₂]
-    [Coalgebra R M] [Coalgebra R M₂]
-    [EquivLike F M M₂] extends CoalgHomClass F R M M₂, SemilinearEquivClass F (RingHom.id R) M M₂
+    [AddCommMonoid M₂] [Module R M] [Module R M₂] [Coalgebra R M] [Coalgebra R M₂]
+    [EquivLike F M M₂]
+    extends CoalgHomClass F R M M₂, SemilinearEquivClass F (RingHom.id R) M M₂ : Prop
 
 namespace CoalgEquivClass
 

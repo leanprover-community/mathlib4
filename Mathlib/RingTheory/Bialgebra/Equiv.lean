@@ -14,8 +14,10 @@ variable {N₁ : Type*} {N₂ : Type*} {N₃ : Type*} {N₄ : Type*} {ι : Type*
 open Coalgebra
 /-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
 structure BialgEquiv (R : Type u) [CommSemiring R] (A : Type v) (B : Type w)
-  [Semiring A] [Semiring B]
-  [Bialgebra R A] [Bialgebra R B] extends A ≃c[R] B, A ≃ₐ[R] B where
+    [Semiring A] [Semiring B]
+    [Bialgebra R A] [Bialgebra R B] extends A ≃c[R] B where
+  map_mul' : ∀ x y, toFun (x * y) = toFun x * toFun y
+  commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 
 attribute [coe] BialgEquiv.toCoalgEquiv -- idk
 
@@ -26,7 +28,7 @@ notation:50 M " ≃b[" R "] " M₂ => BialgEquiv R M M₂
 class BialgEquivClass (F : Type*) (R M M₂ : outParam (Type*)) [CommSemiring R] [Semiring M]
     [Semiring M₂]
     [Bialgebra R M] [Bialgebra R M₂]
-    [EquivLike F M M₂] extends BialgHomClass F R M M₂, CoalgEquivClass F R M M₂
+    [EquivLike F M M₂] extends BialgHomClass F R M M₂, CoalgEquivClass F R M M₂ : Prop
 
 namespace BialgEquivClass
 
@@ -56,8 +58,11 @@ variable [Semiring M] [Semiring M₁] [Semiring M₂]
 
 variable [Bialgebra R M] [Bialgebra R M₂]
 
-@[simps! toLinearMap] def toBialgHom (e : M ≃b[R] M₂) : M →b[R] M₂ :=
-{ e.toCoalgEquiv.toCoalgHom, e.toAlgEquiv.toAlgHom with }
+@[simps! toCoalgHom] def toBialgHom (e : M ≃b[R] M₂) : M →b[R] M₂ :=
+{ e.toCoalgEquiv.toCoalgHom with
+  map_mul' := e.map_mul'
+  map_one' := sorry
+  commutes' := e.commutes' }
 
 instance : Coe (M ≃b[R] M₂) (M →b[R] M₂) :=
   ⟨toBialgHom⟩
@@ -89,6 +94,13 @@ instance : EquivLike (M ≃b[R] M₂) M M₂ where
 instance : FunLike (M ≃b[R] M₂) M M₂ where
   coe := DFunLike.coe
   coe_injective' := DFunLike.coe_injective
+
+-- idk...
+@[simps toEquiv] def toAlgEquiv (e : M ≃b[R] M₂) : M ≃ₐ[R] M₂ :=
+{ e.toEquiv with
+  map_mul' := e.map_mul'
+  map_add' := e.map_add
+  commutes' := e.commutes' }
 
 instance : BialgEquivClass (M ≃b[R] M₂) R M M₂ where
   map_mul := (·.map_mul')

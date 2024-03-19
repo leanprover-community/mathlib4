@@ -8,8 +8,12 @@ universe u v w u₁ v₁
 
 /-- hm -/
 structure BialgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A]
-  [Semiring B] [Bialgebra R A] [Bialgebra R B] extends
-  A →ₗ[R] B, A →ₐ[R] B, A →c[R] B
+  [Semiring B] [Bialgebra R A] [Bialgebra R B] extends A →c[R] B where
+  map_mul' : ∀ x y, toFun (x * y) = toFun x * toFun y
+  map_one' : toFun 1 = 1
+  commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
+
+attribute [coe] BialgHom.toCoalgHom
 
 @[inherit_doc BialgHom]
 infixr:25 " →b " => BialgHom _
@@ -23,7 +27,7 @@ class BialgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [Semiring A] [Semiring B]
     [Bialgebra R A] [Bialgebra R B]
     [FunLike F A B] extends SemilinearMapClass F (RingHom.id R) A B,
-       AlgHomClass F R A B, CoalgHomClass F R A B
+       AlgHomClass F R A B, CoalgHomClass F R A B : Prop
 
 -- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
 -- attribute [nolint dangerousInstance] BialgHomClass.toLinearMapClass
@@ -69,17 +73,13 @@ variable [CommSemiring R] [Semiring A] [Semiring B]
 
 variable [Bialgebra R A] [Bialgebra R B] [Bialgebra R C] [Bialgebra R D]
 
-
 instance funLike : FunLike (A →b[R] B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
-    rcases f with ⟨⟨⟨_, _⟩, _⟩, _, _⟩
-    rcases g with ⟨⟨⟨_, _⟩, _⟩, _, _⟩
-    congr
+  coe_injective' f g h := sorry
 
 -- Porting note: This instance is moved.
-instance coalgHomClass : BialgHomClass (A →b[R] B) R A B where
-  map_zero := fun f => f.map_zero'
+instance bialgHomClass : BialgHomClass (A →b[R] B) R A B where
+  map_zero := fun f => map_zero f.toLinearMap
   map_add := fun f => f.map_add'
   map_smulₛₗ := fun f => f.map_smul'
   map_one := fun f => f.map_one'
@@ -101,13 +101,8 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f
 theorem toFun_eq_coe (f : A →b[R] B) : f.toFun = f :=
   rfl
 
-attribute [coe] BialgHom.toLinearMap
-
 instance coeOutLinearMap : CoeOut (A →b[R] B) (A →ₗ[R] B) :=
-  ⟨BialgHom.toLinearMap⟩
-
-instance coeOutAlgHom : CoeOut (A →b[R] B) (A →ₐ[R] B) :=
-  ⟨BialgHom.toAlgHom⟩
+  ⟨fun f => f.toCoalgHom.toLinearMap⟩
 
 instance coeOutCoalgHom : CoeOut (A →b[R] B) (A →c[R] B) :=
   ⟨BialgHom.toCoalgHom⟩
@@ -119,9 +114,23 @@ instance coeOutAddMonoidHom : CoeOut (A →b[R] B) (A →+ B) :=
   ⟨BialgHom.toAddMonoidHom'⟩
 
 @[simp]
-theorem coe_mk {f : A →ₗ[R] B} (h₀ h₁ h₂ h₃ h₄ h₅) :
-    ((⟨f, h₀, h₁, h₂, h₃, h₄, h₅⟩ : A →b[R] B) : A → B) = f :=
+theorem coe_mk {f : A →c[R] B} (h₀ h₁ h₂) :
+    ((⟨f, h₀, h₁, h₂⟩ : A →b[R] B) : A → B) = f :=
   rfl
+
+lemma commutes (f : A →b[R] B) (r : R) :
+    f (algebraMap R A r) = algebraMap R B r := f.commutes' r
+
+@[simps] def toAlgHom (f : A →b[R] B) : A →ₐ[R] B where
+  toFun := f
+  map_one' := map_one f
+  map_mul' := map_mul f
+  map_zero' := map_zero f
+  map_add' := map_add f
+  commutes' := commutes f
+
+instance coeOutAlgHom : CoeOut (A →b[R] B) (A →ₐ[R] B) :=
+  ⟨BialgHom.toAlgHom⟩
 
 /-@[norm_cast]
 theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ ) : ⇑(⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →b[R] B) = f :=
@@ -220,7 +229,6 @@ def mk' (f : A →c[R] B) (h1 : f 1 = 1)
     A →b[R] B :=
   { f with
     map_one' := h1
-    map_zero' := map_zero f
     map_mul' := LinearMap.ext_iff₂.1 hmul
     commutes' := hcomm }
 
@@ -289,14 +297,14 @@ def toLinearMap : A →ₗ[R] B where
 @[simp]
 theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
   rfl
-
+/-
 theorem toLinearMap_injective :
     Function.Injective (toLinearMap : _ → A →ₗ[R] B) := fun _φ₁ _φ₂ h =>
   ext <| LinearMap.congr_fun h
 
 @[simp]
 theorem toLinearMap_id : toLinearMap (BialgHom.id R A) = LinearMap.id :=
-  LinearMap.ext fun _ => rfl
+  LinearMap.ext fun _ => rfl-/
 
 /-
 /-- Promote a `LinearMap` to an `BialgHom` by supplying proofs about the behavior on `1` and `*`. -/

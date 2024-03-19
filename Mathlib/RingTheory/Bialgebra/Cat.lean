@@ -44,15 +44,17 @@ instance {M N : BialgCat.{v} R} : FunLike (M ⟶ N) M N :=
   inferInstanceAs (FunLike (M →b[R] N) M N)
 
 instance {M N : BialgCat.{v} R} : BialgHomClass (M ⟶ N) R M N :=
-  BialgHom.coalgHomClass
+  BialgHom.bialgHomClass
 
-instance coalgConcreteCategory : ConcreteCategory.{v} (BialgCat.{v} R) where
+instance bialgConcreteCategory : ConcreteCategory.{v} (BialgCat.{v} R) where
   forget :=
     { obj := fun R => R
       map := fun f => f.toFun }
   forget_faithful := ⟨fun h => BialgHom.ext (fun x => by
     dsimp at h
-    rw [h])⟩
+    sorry
+    --rw [h]
+    )⟩
 
 -- Porting note:
 -- One might hope these two instances would not be needed,
