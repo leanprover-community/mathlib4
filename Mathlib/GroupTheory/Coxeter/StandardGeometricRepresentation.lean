@@ -415,8 +415,7 @@ def standardGeometricRepresentation : Representation ℝ W V := cs.lift (
 
 noncomputable alias SGR := standardGeometricRepresentation
 
-theorem SGR_simple (i : B) : cs.SGR (s i) = σ i := by
-  sorry
+theorem SGR_simple (i : B) : cs.SGR (s i) = σ i := cs.lift_apply_simple _ i
 
 theorem SGR_bilin_eq_bilin (w : W) (v v' : V) : ⟪cs.SGR w v, cs.SGR w v'⟫ = ⟪v, v'⟫ := by
   sorry
