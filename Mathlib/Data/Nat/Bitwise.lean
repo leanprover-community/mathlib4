@@ -241,9 +241,9 @@ theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
 theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : testBit m i = true)
     (hnm : ∀ j, i < j → testBit n j = testBit m j) : n < m := by
   induction' n using Nat.binaryRec with b n hn' generalizing i m
-  · contrapose! hm
-    rw [le_zero_iff] at hm
-    simp [hm]
+  · rw [pos_iff_ne_zero]
+    rintro rfl
+    simp at hm
   induction' m using Nat.binaryRec with b' m hm' generalizing i
   · exact False.elim (Bool.false_ne_true ((zero_testBit i).symm.trans hm))
   by_cases hi : i = 0
