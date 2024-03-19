@@ -42,7 +42,7 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Run the case checker action
       - name: Check Case Sensitivity
@@ -53,7 +53,7 @@ jobs:
 
       - name: install Python
         if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.8
 
@@ -80,7 +80,7 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: update Mathlib.lean
         run: |
@@ -114,7 +114,7 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: update workflows
         run: |
@@ -152,7 +152,7 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # We update `Mathlib.lean` as a convenience here,
       # but verify that this didn't change anything in the `check_imported` job.
@@ -341,7 +341,7 @@ jobs:
     needs: [style_lint, build, check_imported]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - id: PR
         uses: 8BitJonny/gh-get-current-pr@2.2.0
