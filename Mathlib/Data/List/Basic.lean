@@ -2856,7 +2856,7 @@ where
           exact ih _ _ <| (by omega)
     · induction n generalizing xs acc with
       | zero =>
-        replace h : xs.length = 0 := by rw [zero_eq] at h; omega
+        replace h : xs.length = 0 := by omega
         rw [eq_nil_of_length_eq_zero h, splitAt.go]
       | succ _ ih =>
         cases xs with
