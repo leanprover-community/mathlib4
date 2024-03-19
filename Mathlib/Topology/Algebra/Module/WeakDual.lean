@@ -314,6 +314,45 @@ instance instTopologicalSpace : TopologicalSpace (WeakSpace 𝕜 E) :=
 instance instContinuousAdd : ContinuousAdd (WeakSpace 𝕜 E) :=
   WeakBilin.instContinuousAdd (topDualPairing 𝕜 E).flip
 
+
+/-- There is a canonical map `E → WeakSpace 𝕜 E` (the "identity"
+mapping). It is a linear equivalence. -/
+def toWeakSpace : E ≃ₗ[𝕜] WeakSpace 𝕜 E := LinearEquiv.refl 𝕜 E
+-- align?
+
+@[simp]
+-- theorem coe_toWeakSpace (x : E) : (toWeakSpace x : WeakSpace 𝕜 E) = x :=
+theorem coe_toWeakSpace (x : E) : toWeakSpace x = x :=
+  rfl
+-- #align ?
+
+@[simp]
+theorem toWeakSpace_eq_iff (x y : E) : (toWeakSpace x : WeakSpace 𝕜 E) = toWeakSpace y ↔ x = y :=
+  Function.Injective.eq_iff <| LinearEquiv.injective toWeakSpace
+-- #align ?
+
+-- theorem toWeakSpace_continuous : Continuous fun x : E => (toWeakSpace x : WeakSpace 𝕜 E) := by
+theorem toWeakSpace_continuous : Continuous fun x : E => toWeakSpace x := by
+  refine { isOpen_preimage := ?isOpen_preimage }
+  intro U hU
+  apply Continuous.le_induced _ U hU
+  apply continuous_pi_iff.mpr
+  intro y
+  exact ContinuousLinearMap.continuous y
+
+
+/-- For a topological vector space `E`, according to `toWeakSpace_continuous` the "identity mapping"
+`E → WeakSpace 𝕜 E` is continuous. This definition implements it as a continuous linear map. -/
+def continuousLinearMapToWeakSpace : E →L[𝕜] WeakDual 𝕜 E :=
+  { toWeakSpace with cont := toWeakSpace_continuous }
+-- #align ?
+
+/-- There is a canonical map `E → WeakSpace 𝕜 E` (the "identity"
+mapping). It is a linear equivalence. -/
+def toOriginalSpace : WeakSpace 𝕜 E ≃ₗ[𝕜] E := LinearEquiv.refl 𝕜 E
+-- align?
+
+
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
 
 /-- A continuous linear map from `E` to `F` is still continuous when `E` and `F` are equipped with
@@ -336,7 +375,7 @@ theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
 /-- A weakly open set is open in the original topology. -/
 theorem isOpen_of_isOpen_WeakSpace (U : Set E)
     (hU : IsOpen[(WeakSpace.instTopologicalSpace : TopologicalSpace (WeakSpace 𝕜 E))]
-    (id U : Set (WeakSpace 𝕜 E))) : IsOpen U := by
+    (U : Set (WeakSpace 𝕜 E))) : IsOpen U := by
   apply Continuous.le_induced _ U hU
   refine continuous_pi ?h.h
   intro y
