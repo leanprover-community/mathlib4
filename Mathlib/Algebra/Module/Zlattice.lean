@@ -554,24 +554,41 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
 
 open Module
 
-/-- A basis of `E` that spans `L` over `ℤ`, see `Zlattice.basis_span`. -/
-def Zlattice.basis [hs : IsZlattice K L] : Basis (Free.ChooseBasisIndex K E) K E := by
-  have : Finite ℤ L := module_finite K L
-  have : Free ℤ L := module_free K L
-  let e : (Free.ChooseBasisIndex ℤ L) ≃ (Free.ChooseBasisIndex K E) := by
-    refine Fintype.equivOfCardEq ?_
-    rw [← finrank_eq_card_chooseBasisIndex, ← finrank_eq_card_chooseBasisIndex, Zlattice.rank K L]
-  refine basisOfTopLeSpanOfCardEqFinrank
-    (L.subtype.toIntLinearMap ∘ ((Free.chooseBasis ℤ L).reindex e)) ?_
-    (finrank_eq_card_chooseBasisIndex K E).symm
-  rw [← span_span_of_tower ℤ, Set.range_comp, ← map_span, Basis.span_eq, Submodule.map_top,
-    top_le_iff, AddMonoidHom.coe_toIntLinearMap_range, AddSubgroup.subtype_range,
-    AddSubgroup.coe_toIntSubmodule, hs.span_top]
+/-- Any `ℤ`-basis of `L` is also a `K`-basis of `E`. -/
+def Basis.ofZlatticeBasis {ι : Type*} [hs : IsZlattice K L] (b : Basis ι ℤ L) :
+    Basis ι K E := by
+  have : Finite ℤ L := Zlattice.module_finite K L
+  have : Free ℤ L := Zlattice.module_free K L
+  let e :=  Basis.indexEquiv (Free.chooseBasis ℤ L) b
+  have : Fintype ι := Fintype.ofEquiv _ e
+  refine basisOfTopLeSpanOfCardEqFinrank (L.subtype.toIntLinearMap ∘ b) ?_ ?_
+  · rw [← span_span_of_tower ℤ, Set.range_comp, ← map_span, Basis.span_eq, Submodule.map_top,
+      top_le_iff, AddMonoidHom.coe_toIntLinearMap_range, AddSubgroup.subtype_range,
+      AddSubgroup.coe_toIntSubmodule, hs.span_top]
+  · rw [← Fintype.card_congr e, ← finrank_eq_card_chooseBasisIndex, Zlattice.rank K L]
 
-theorem Zlattice.basis_span [IsZlattice K L] :
-    (span ℤ (Set.range (Zlattice.basis K L))).toAddSubgroup = L := by
-  erw [coe_basisOfTopLeSpanOfCardEqFinrank _ _ (finrank_eq_card_chooseBasisIndex K E).symm,
-    Set.range_comp, ← map_span L.subtype.toIntLinearMap]
-  simp
+@[simp]
+theorem Basis.ofZlatticeBasis_apply {ι : Type*} [IsZlattice K L] (b : Basis ι ℤ L) (i : ι) :
+    b.ofZlatticeBasis K L i =  b i := by simp [Basis.ofZlatticeBasis]
+
+@[simp]
+theorem Basis.ofZlatticeBasis_repr_apply {ι : Type*} [IsZlattice K L] (b : Basis ι ℤ L)
+    (x : L) (i : ι) : (b.ofZlatticeBasis K L).repr x i = b.repr x i := by
+  suffices ((b.ofZlatticeBasis K L).repr.toLinearMap.restrictScalars ℤ) ∘ₗ L.subtype.toIntLinearMap =
+      Finsupp.mapRange.linearMap (Algebra.linearMap ℤ K) ∘ₗ b.repr.toLinearMap by
+    exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
+  refine Basis.ext b fun i ↦ ?_
+  simp_rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
+    LinearEquiv.coe_coe, AddMonoidHom.coe_toIntLinearMap, AddSubgroup.coeSubtype,
+    ← b.ofZlatticeBasis_apply K, repr_self, Finsupp.mapRange.linearMap_apply,
+    Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
+
+theorem Basis.ofZlatticeBasis_span {ι : Type*} [hs : IsZlattice K L] (b : Basis ι ℤ L) :
+    (span ℤ (Set.range (b.ofZlatticeBasis K))).toAddSubgroup = L := by
+  calc (span ℤ (Set.range (b.ofZlatticeBasis K))).toAddSubgroup
+    _ = (span ℤ (L.subtype.toIntLinearMap '' (Set.range b))).toAddSubgroup := by congr; ext; simp
+    _ = (map L.subtype.toIntLinearMap (span ℤ (Set.range b))).toAddSubgroup := by
+        rw [Submodule.map_span]
+    _ = L := by simp [b.span_eq]
 
 end Zlattice
