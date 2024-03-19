@@ -121,7 +121,7 @@ class DivisionRing (α : Type*)
   /-- However `qsmul` is defined, it must be equal to multiplication by `Rat.cast`.
 
   Do not use this lemma directly. Use `Rat.cast_def` instead. -/
-  protected qsmul_def (a : ℚ) (x : α) : qsmul a x = Rat.cast a * x := by intros; rfl
+  protected qsmul_eq_mul' (a : ℚ) (x : α) : qsmul a x = Rat.cast a * x := by intros; rfl
 #align division_ring DivisionRing
 #align division_ring.rat_cast_mk DivisionRing.ratCast_mk
 
@@ -173,7 +173,7 @@ instance (priority := 100) smulDivisionRing : SMul ℚ K :=
   ⟨DivisionRing.qsmul⟩
 #align rat.smul_division_ring Rat.smulDivisionRing
 
-theorem smul_def (a : ℚ) (x : K) : a • x = ↑a * x := DivisionRing.qsmul_def a x
+theorem smul_def (a : ℚ) (x : K) : a • x = ↑a * x := DivisionRing.qsmul_eq_mul' a x
 #align rat.smul_def Rat.smul_def
 
 @[simp]
