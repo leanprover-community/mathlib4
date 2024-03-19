@@ -1906,7 +1906,8 @@ theorem take_append_eq_append_take {l₁ l₂ : List α} {n : ℕ} :
 #align list.take_append_eq_append_take List.take_append_eq_append_take
 
 theorem take_append_of_le_length {l₁ l₂ : List α} {n : ℕ} (h : n ≤ l₁.length) :
-    (l₁ ++ l₂).take n = l₁.take n := by simp [take_append_eq_append_take, Nat.sub_eq_zero_iff_le.mpr h]
+    (l₁ ++ l₂).take n = l₁.take n := by
+  simp [take_append_eq_append_take, Nat.sub_eq_zero_iff_le.mpr h]
 #align list.take_append_of_le_length List.take_append_of_le_length
 
 /-- Taking the first `l₁.length + i` elements in `l₁ ++ l₂` is the same as appending the first
