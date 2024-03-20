@@ -123,7 +123,7 @@ lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ Fermat
 open Finset in
 /-- To prove Fermat Last Theorem in any semiring that is a `NormalizedGCDMonoid` one can assume
 that the `gcd` of `{a, b, c}` is a unit. -/
-lemma FermatLastTheoremWith_of_FermatLastTheoremWith_coprime {n : ℕ} {R : Type*} [CommSemiring R]
+lemma fermatLastTheoremWith_of_FermatLastTheoremWith_coprime {n : ℕ} {R : Type*} [CommSemiring R]
     [IsDomain R] [DecidableEq R] [NormalizedGCDMonoid R]
     (hn : ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → IsUnit (({a, b, c} : Finset R).gcd id) →
       a ^ n + b ^ n ≠ c ^ n) :
@@ -163,7 +163,7 @@ lemma FermatLastTheoremWith_int_of_FermatLastTheoremWith_int_coprime {n : ℕ}
     (hn : ∀ a b c : ℤ, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset ℤ).gcd id = 1 →
       a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremWith ℤ n := by
-  refine FermatLastTheoremWith_of_FermatLastTheoremWith_coprime (R := ℤ)
+  refine fermatLastTheoremWith_of_FermatLastTheoremWith_coprime (R := ℤ)
     (fun a b c ha hb hc H h ↦ hn a b c ha hb hc ?_ h)
   rcases Int.isUnit_iff.1 H with (H | H)
   · exact H
@@ -175,5 +175,5 @@ lemma FermatLastTheoremFor_of_FermatLastTheoremFor_coprime {n : ℕ}
     (hn : ∀ a b c, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset ℕ).gcd id = 1 →
       a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremFor n :=
-  FermatLastTheoremWith_of_FermatLastTheoremWith_coprime (R := ℕ)
+  fermatLastTheoremWith_of_FermatLastTheoremWith_coprime (R := ℕ)
     (fun a b c ha hb hc H h ↦ hn a b c ha hb hc (by simpa using H) h)
