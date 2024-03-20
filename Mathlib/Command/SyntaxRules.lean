@@ -5,8 +5,8 @@ Authors: Thomas R. Murrills
 -/
 import Mathlib.Command.SyntaxRules.Attr
 import Mathlib.Command.SyntaxRules.Elab
+import Mathlib.Command.SyntaxRules.Header
 import Mathlib.Command.SyntaxRules.Util
---TODO: import Mathlib.Command.SyntaxRules.Header
 
 --TODO: does this module doc belong here?
 

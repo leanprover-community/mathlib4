@@ -1522,6 +1522,7 @@ import Mathlib.Command.Linter.LintingRules
 import Mathlib.Command.SyntaxRules
 import Mathlib.Command.SyntaxRules.Attr
 import Mathlib.Command.SyntaxRules.Elab
+import Mathlib.Command.SyntaxRules.Header
 import Mathlib.Command.SyntaxRules.Util
 import Mathlib.Computability.Ackermann
 import Mathlib.Computability.AkraBazzi.AkraBazzi

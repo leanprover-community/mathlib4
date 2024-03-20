@@ -5,7 +5,7 @@ Authors: Thomas R. Murrills
 -/
 import Lean
 
-/-! # Attribute `syntax_rules_header` for implementations using `syntax_rules`
+/-! # Attribute `syntax_rules_header_impl` for implementations using `syntax_rules`
 
 TODO: more docs
 -/
@@ -15,7 +15,7 @@ open Lean Meta Elab Parser Command Term Syntax
 section data
 
 /-- This data is inferred from the specific `syntaxRuleHeader` command using the
-`syntax_rules_header` attribute and used to guide elaboration.
+`syntax_rules_header_impl` attribute and used to guide elaboration.
 
 TODO: docstring -/
 structure SyntaxRuleData where
@@ -39,6 +39,8 @@ structure SyntaxRuleData where
   cmdName : String
   /-- e.g. `elabRules`; just helps keep things legible if you look at internals, no real effect. -/
   auxDefName : Name
+  /-- Whether to unfold `type` if it's an `abbrev`. Usually this will be `true`. -/
+  unfoldTypeAbbrev := true
 
 end data
 
@@ -54,8 +56,8 @@ abbrev ToSyntaxRuleData := Syntax → CommandElabM SyntaxRuleData
 -- `"syntax rules header data"` is not quite right
 /-- An attribute for implementing `syntax_rules` headers. TODO: better docs -/
 initialize syntaxRulesHeaderAttr : KeyedDeclsAttribute ToSyntaxRuleData ← unsafe
-  (mkElabAttribute ToSyntaxRuleData .anonymous `syntax_rules_header .anonymous ``ToSyntaxRuleData
-    "syntax rules header data")
+  (mkElabAttribute ToSyntaxRuleData .anonymous `syntax_rules_header_impl .anonymous
+    ``ToSyntaxRuleData "syntax rules header data")
 
 --TODO:? Should we cargo cult this from `expandNoKindMacroRulesAux`? Or not? No...
 /-
@@ -66,7 +68,7 @@ if k.isStr && k.getString! == "antiquot" then
 /-- Aux definition for `getSyntaxRuleData` -/
 private def getSyntaxRuleDataAux (s : Command.State) (ref : Syntax) :
     List (KeyedDeclsAttribute.AttributeEntry ToSyntaxRuleData) → CommandElabM SyntaxRuleData
-  | [] => throwError "No @[syntax_rules_header] attribute found for{indentD ref}"
+  | [] => throwError "No @[syntax_rules_header_impl] attribute found for{indentD ref}"
   | (toSyntaxRuleData::toSyntaxRuleDatas) =>
     catchInternalId unsupportedSyntaxExceptionId
       (toSyntaxRuleData.value ref)

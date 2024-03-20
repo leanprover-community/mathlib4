@@ -40,12 +40,25 @@ end stx
 
 section elaborate
 
+--TODO: scoped?
+/-- Unfolds exactly one abbrevation. Does nothing if the elaborated term is not an `abbrev`. -/
+syntax (name := unfoldAbbrev1) "unfold_abbrev1%" term : term
+
+/-- Elaborator for `unfold_abbrev1% term`. -/
+@[term_elab unfoldAbbrev1]
+def elabUnfoldAbbrev : TermElab
+  | stx, type? => do
+    let t ← elabTerm stx[1] type?
+    let some (name, _) := t.const? | return t
+    let .defnInfo { hints := .abbrev , value .. } ← getConstInfo name | return t
+    return value
+
 /-- The main part of elaborating `syntax_rules`. -/
 def elabSyntaxRulesAux (doc? : Option (TSyntax ``docComment))
     (attrs? : Option (TSepArray ``attrInstance ",")) (attrKind : TSyntax ``attrKind)
     (k : SyntaxNodeKind) (alts : Array (TSyntax ``matchAlt)) :
     SyntaxRuleData → CommandElabM Syntax
-  | { type, termOfAlts, attrName, mkKey, cmdName, auxDefName } => do
+  | { type, termOfAlts, attrName, mkKey, cmdName, auxDefName, unfoldTypeAbbrev } => do
     let alts ← alts.mapM fun (alt : TSyntax ``matchAlt) => match alt with
       | `(matchAltExpr| | $pats,* => $rhs) => do
         let pat := pats.elemsAndSeps[0]!
@@ -76,8 +89,14 @@ def elabSyntaxRulesAux (doc? : Option (TSyntax ``docComment))
       pure <| match attrs? with
         | some attrs => attrs.getElems.push attr
         | none => #[attr]
-    `($[$doc?:docComment]? @[$attrs,*]
-      aux_def $(mkIdent auxDefName) $k : $(mkIdent type) := $(← termOfAlts alts))
+    -- We still want the actual type to be `type`, so that the attribute doesn't get confused.
+    if unfoldTypeAbbrev then
+      `($[$doc?:docComment]? @[$attrs,*]
+        aux_def $(mkIdent auxDefName) $k : $(mkIdent type) :=
+          show unfold_abbrev1% $(mkIdent type) from $(← termOfAlts alts))
+    else
+      `($[$doc?:docComment]? @[$attrs,*]
+        aux_def $(mkIdent auxDefName) $k : $(mkIdent type) := $(← termOfAlts alts))
 
 --TODO: pass `tk` to elabSyntaxRules for error reporting?
 /-- Elaborates `syntax_rules`. -/
