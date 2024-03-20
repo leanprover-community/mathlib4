@@ -8,6 +8,7 @@ import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.NormedSpace.AddTorsor
+import Mathlib.Analysis.NormedSpace.Connected
 
 #align_import analysis.convex.normed from "leanprover-community/mathlib"@"a63928c34ec358b5edcda2bf7513c50052a5230f"
 
@@ -189,32 +190,10 @@ theorem joinedIn_compl_zero_of_not_mem_span {x y : E} (hx : x ≠ 0)
   rw [← segment_eq_image_lineMap]
   exact fun t ht h' ↦ (mt (mem_span_of_zero_mem_segment hx) hy) (h' ▸ ht)
 
-/-- In a real vector space whose dimension is at least two,
-the complement of `{0}` is path-connected. -/
-theorem isPathConnected_compl_zero_of_two_le_dim (hdim : 2 ≤ Module.rank ℝ E) :
-    IsPathConnected ({0}ᶜ : Set E) := by
-  rw [isPathConnected_iff]
-  constructor
-  · suffices 0 < Module.rank ℝ E by rwa [rank_pos_iff_exists_ne_zero] at this
-    exact lt_of_lt_of_le (by norm_num) hdim
-  · intro x hx y hy
-    by_cases h : y ∈ Submodule.span ℝ {x}
-    · rsuffices ⟨z, hzx⟩ : ∃ z, z ∉ Submodule.span ℝ {x}
-      · have hzy : z ∉ Submodule.span ℝ {y} := fun h' ↦
-          hzx (Submodule.mem_span_singleton_trans h' h)
-        exact (joinedIn_compl_zero_of_not_mem_span hx hzx).trans
-          (joinedIn_compl_zero_of_not_mem_span hy hzy).symm
-      by_contra h'
-      push_neg at h'
-      rw [← Submodule.eq_top_iff'] at h'
-      rw [← rank_top, ← h'] at hdim
-      suffices (2 : Cardinal) ≤ 1 from not_le_of_lt (by norm_num) this
-      have := hdim.trans (rank_span_le _)
-      rwa [Cardinal.mk_singleton] at this
-    · exact joinedIn_compl_zero_of_not_mem_span hx h
-
 variable {E F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
   [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGroup F] [ContinuousSMul ℝ F]
+
+-- FIXME: should these rather be stated as `1 < rank`?
 
 /-- Let `E` be a linear subspace in a real vector space.
 If `E` has codimension at least two, its complement is path-connected. -/
@@ -222,7 +201,7 @@ theorem isPathConnected_compl_of_two_le_codim {E : Submodule ℝ F}
     (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) : IsPathConnected (Eᶜ : Set F) := by
   rcases E.exists_isCompl with ⟨E', hE'⟩
   refine isPathConnected_compl_of_isPathConnected_compl_zero hE'.symm
-    (isPathConnected_compl_zero_of_two_le_dim ?_)
+    (isPathConnected_compl_singleton_of_one_lt_rank (two_le_iff_one_lt.mp ?_) 0)
   rwa [← (E.quotientEquivOfIsCompl E' hE').rank_eq]
 
 /-- Let `E` be a linear subspace in a real vector space.

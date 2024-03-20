@@ -106,14 +106,12 @@ theorem Set.Countable.isConnected_compl_of_one_lt_rank (h : 1 < Module.rank ℝ 
     (hs : s.Countable) : IsConnected sᶜ :=
   (hs.isPathConnected_compl_of_one_lt_rank h).isConnected
 
-/-- In a real vector space of dimension `> 1`, the complement of a singleton is path
-connected. -/
+/-- In a real vector space of dimension `> 1`, the complement of any singleton is path-connected. -/
 theorem isPathConnected_compl_singleton_of_one_lt_rank (h : 1 < Module.rank ℝ E) (x : E) :
     IsPathConnected {x}ᶜ :=
   Set.Countable.isPathConnected_compl_of_one_lt_rank h (countable_singleton x)
 
-/-- In a real vector space of dimension `> 1`, the complement of a singleton is
-connected. -/
+/-- In a real vector space of dimension `> 1`, the complement of a singleton is connected. -/
 theorem isConnected_compl_singleton_of_one_lt_rank (h : 1 < Module.rank ℝ E) (x : E) :
     IsConnected {x}ᶜ :=
   (isPathConnected_compl_singleton_of_one_lt_rank h x).isConnected
