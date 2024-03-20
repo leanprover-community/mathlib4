@@ -53,13 +53,13 @@ end Projective'
 end EffectivePresentation
 
 variable [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
-  [Preregular D] [Full F] [Faithful F]
+  [Full F] [Faithful F]
   [FinitaryExtensive D] [Preregular D]
   [HasFiniteCoproducts C]
   [HasPullbacksOfInclusions C]
   [PreservesFiniteCoproducts F]
   [PreservesPullbacksOfInclusions F]
-  [F.EffectivelyEnough] [∀ (X : D), Projective X]
+  [F.EffectivelyEnough] [∀ (X : C), Projective (F.obj X)]
 
 open Projective'
 
