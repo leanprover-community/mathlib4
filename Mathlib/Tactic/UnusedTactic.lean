@@ -207,4 +207,5 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     Linter.logLint linter.unusedTactic stx m!"'{stx}' tactic does nothing"
     last := r
 
+
 initialize addLinter unusedTacticLinter
