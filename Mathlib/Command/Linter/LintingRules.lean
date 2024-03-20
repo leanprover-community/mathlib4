@@ -422,9 +422,10 @@ def runLintingRules (stx : Syntax) : CommandElabM Unit := do
   -- let mut isDone := mkArray cats.size (some 0) -- if no `startFn`
   --TODO: see if it's better to extract the name and opt at this stage, or to use `.name` etc.
   --TODO: good placement of `unsafe` or not?
-  let cats ← unsafe cats.mapM <| evalConstCheck LintingRulesCatImpl ``LintingRulesCatImpl
-  let mut isDone := cats.map fun { startFn, .. } =>
-    if startFn.isNone then LOption.some 0 else .undef
+  let cats ← unsafe cats.mapM <| evalConst LintingRulesCatImpl
+  let mut isDone : HashMap Name (LOption Nat) := {}
+  -- let mut isDone := cats.map fun { startFn, .. } =>
+  --   if startFn.isNone then LOption.some 0 else .undef
   for stx in stx.topDown do
     /- TODO: check efficiency? just do `i in [:cats.size]` and use array access instead? Also,
     destruct or use `.name`? -/
@@ -432,14 +433,15 @@ def runLintingRules (stx : Syntax) : CommandElabM Unit := do
     if stx.getKind == `null then
       -- lintTrace opts m!"null nodekind; moving on."
       continue
-    for i in [:cats.size] do
-      match isDone[i]! with
+    for h : i in [:cats.size] do
+      match
+        isDone.find? cats[i].name |>.getD (if cats[i].startFn.isNone then .some 0 else .undef) with
       | .some 0 =>
         -- lintTrace opts m!"Linting using {name}."
-        if getLinterValue cats[i]!.opt opts then --TODO: use `withSetOptionIn` or something
-          let key := mkLintingRuleKey stx.getKind cats[i]!.name -- TODO: is this efficient enough?
+        if getLinterValue cats[i].opt opts then --TODO: use `withSetOptionIn` or something
+          let key := mkLintingRuleKey stx.getKind cats[i].name -- TODO: is this efficient enough?
           -- lintTrace opts m!"Key: {key}"
-          let step ← if cats[i]!.stopFn stx then
+          let step ← if cats[i].stopFn stx then
               pure .done
             else
               runLintingSteps (← get) stx (lintingRulesAttr.getValues env key)
@@ -447,16 +449,16 @@ def runLintingRules (stx : Syntax) : CommandElabM Unit := do
           match step with
           | .continue => continue
           | .done =>
-            isDone := isDone.set! i (.some stx.getNumArgs)
+            isDone := isDone.insert cats[i].name (.some stx.getNumArgs)
           | .done! =>
-            isDone := isDone.set! i .none
+            isDone := isDone.insert cats[i].name .none
       | .some (n+1) =>
         -- lintTrace opts m!"Done: {name}\n{n+1} ==> {n + stx.getNumArgs}"
-        isDone := isDone.set! i (.some (n + stx.getNumArgs))
+        isDone := isDone.insert cats[i].name (.some (n + stx.getNumArgs))
       | .none => continue
       | .undef =>
         if let some .true := cats[i]!.startFn <*> stx then
-          isDone := isDone.set! i (.some 0)
+          isDone := isDone.insert cats[i].name (.some 0)
         continue
 
 initialize addLinter {
