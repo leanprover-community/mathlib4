@@ -298,6 +298,7 @@
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
+  "Mathlib.NumberTheory.Harmonic.Defs": ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Equiv.Defs": ["Mathlib.Init.Data.Bool.Lemmas"],
@@ -321,6 +322,8 @@
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
   "Mathlib.Control.Monad.Basic": ["Mathlib.Init.Control.Lawful"],
   "Mathlib.Control.Basic": ["Mathlib.Init.Function"],
+  "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
+  ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
