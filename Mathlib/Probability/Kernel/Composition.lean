@@ -193,7 +193,7 @@ open scoped Classical
 If either of the kernels is not s-finite, `compProd` is given the junk value 0. -/
 noncomputable def compProd (κ : kernel α β) (η : kernel (α × β) γ) : kernel α (β × γ) :=
 if h : IsSFiniteKernel κ ∧ IsSFiniteKernel η then
-{ val := λ a ↦
+{ val := fun a ↦
     Measure.ofMeasurable (fun s _ => compProdFun κ η a s) (compProdFun_empty κ η a)
       (@compProdFun_iUnion _ _ _ _ _ _ κ η h.2 a)
   property := by

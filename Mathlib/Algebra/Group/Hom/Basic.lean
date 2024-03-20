@@ -60,7 +60,6 @@ instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_mul' := fun x y => by
-        intros
         show f (x * y) * g (x * y) = f x * g x * (f y * g y)
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
@@ -173,7 +172,6 @@ instance mul : Mul (M →* N) :=
     { toFun := fun m => f m * g m,
       map_one' := show f 1 * g 1 = 1 by simp,
       map_mul' := fun x y => by
-        intros
         show f (x * y) * g (x * y) = f x * g x * (f y * g y)
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 

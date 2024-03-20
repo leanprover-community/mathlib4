@@ -242,7 +242,6 @@ lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
     (p.append q connect).last = q.last := by
   delta last
   convert append_apply_right p q connect (Fin.last _)
-  congr
   ext
   change _ = _ % _
   simp only [append_length, Fin.val_last, Fin.natAdd_last, Nat.one_mod, Nat.mod_add_mod,
@@ -453,11 +452,9 @@ lemma smash_succ_castAdd {p q : RelSeries r} (h : p.last = q.head)
 
 lemma smash_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
     smash p q h (Fin.castSucc <| i.natAdd p.length) = q (Fin.castSucc i) := by
-  rw [smash_toFun]
-  split_ifs with H
-  · simp only [Fin.coe_castSucc, Fin.coe_natAdd, add_lt_iff_neg_left, not_lt_zero'] at H
-  · congr
-    exact Nat.add_sub_self_left _ _
+  rw [smash_toFun, dif_neg (by simp)]
+  congr
+  exact Nat.add_sub_self_left _ _
 
 lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
     smash p q h (i.natAdd p.length).succ = q i.succ := by

@@ -62,7 +62,6 @@ noncomputable def leftInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
     -∑ c : { c : Composition (n + 2) // c.length < n + 2 },
         (leftInv p i (c : Composition (n + 2)).length).compAlongComposition
           (p.compContinuousLinearMap i.symm) c
-  decreasing_by exact c.2
 #align formal_multilinear_series.left_inv FormalMultilinearSeries.leftInv
 
 @[simp]
