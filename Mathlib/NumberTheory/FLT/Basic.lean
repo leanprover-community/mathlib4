@@ -141,19 +141,3 @@ lemma fermatLastTheoremWith_of_FermatLastTheoremWith_coprime {n : ℕ} {R : Type
   refine ⟨u, mul_left_cancel₀ (mt normalize_eq_zero.mp ha.1) (hu.symm ▸ ?_)⟩
   rw [← Finset.gcd_mul_left, gcd_eq_gcd_image, image_insert, image_insert, image_singleton,
       id_eq, id_eq, id_eq, ← hA, ← hB, ← hC]
-
-/-- To prove Fermat Last Theorem for `ℤ` one can assume that `a`, `b` and `c` are coprime, in the
-sense that the gcd of `{a, b, c}` is `1`. -/
-lemma FermatLastTheoremWith_int_of_FermatLastTheoremWith_int_coprime {n : ℕ}
-    (hn : ∀ a b c : ℤ, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset ℤ).gcd id = 1 →
-      a ^ n + b ^ n ≠ c ^ n) :
-    FermatLastTheoremWith ℤ n :=
-  fermatLastTheoremWith_of_FermatLastTheoremWith_coprime hn
-
-/-- To prove Fermat Last Theorem one can assume that `a`, `b` and `c` are coprime, in the sense
-that the gcd of `{a, b, c}` is `1`. -/
-lemma FermatLastTheoremFor_of_FermatLastTheoremFor_coprime {n : ℕ}
-    (hn : ∀ a b c, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset ℕ).gcd id = 1 →
-      a ^ n + b ^ n ≠ c ^ n) :
-    FermatLastTheoremFor n :=
-  fermatLastTheoremWith_of_FermatLastTheoremWith_coprime hn
