@@ -230,13 +230,16 @@ end RpowDecay
 
 section Schwartz
 
+variable {F G : Type*} [FunLike F ℝ ℂ] [SchwartzMapClass F ℝ ℂ]
+  [FunLike G ℝ ℂ] [SchwartzMapClass G ℝ ℂ]
+
 /-- **Poisson's summation formula** for Schwartz functions. -/
-theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f g : SchwartzMap ℝ ℂ) (hfg : 𝓕 ⇑f = ⇑g) (x : ℝ) :
+theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f : F) (g : G) (hfg : 𝓕 f = g) (x : ℝ) :
     ∑' n : ℤ, f (x + n) = (∑' n : ℤ, g n * fourier n (x : UnitAddCircle)) := by
   -- We know that Schwartz functions are `O(‖x ^ (-b)‖)` for *every* `b`; for this argument we take
   -- `b = 2` and work with that.
-  simp only [← hfg, Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay f.continuous one_lt_two
-    (f.isBigO_cocompact_rpow (-2)) (hfg ▸ g.isBigO_cocompact_rpow (-2))]
+  simp only [← hfg, Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay (map_continuous f) one_lt_two
+    (isBigO_cocompact_rpow f (-2)) (hfg ▸ isBigO_cocompact_rpow g (-2))]
 
 #align schwartz_map.tsum_eq_tsum_fourier_integral SchwartzMap.tsum_eq_tsum_fourierIntegral
 
