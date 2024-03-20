@@ -86,11 +86,8 @@ theorem IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsC
 #align is_countably_spanning.prod IsCountablySpanning.prod
 
 variable [MeasurableSpace α] [MeasurableSpace α'] [MeasurableSpace β] [MeasurableSpace β']
-
 variable [MeasurableSpace γ]
-
 variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
-
 variable [NormedAddCommGroup E]
 
 /-! ### Measurability
