@@ -106,7 +106,8 @@ end nonunits
 
 namespace NormedRing
 
-open Classical BigOperators
+open scoped Classical
+open BigOperators
 
 open Asymptotics Filter Metric Finset Ring
 
@@ -232,7 +233,7 @@ embedding in `R × R`) to `R` is an open embedding. -/
 theorem openEmbedding_val : OpenEmbedding (val : Rˣ → R) where
   toEmbedding := embedding_val_mk'
     (fun _ ⟨u, hu⟩ ↦ hu ▸ (inverse_continuousAt u).continuousWithinAt) Ring.inverse_unit
-  open_range := Units.isOpen
+  isOpen_range := Units.isOpen
 #align units.open_embedding_coe Units.openEmbedding_val
 
 /-- In a normed ring, the coercion from `Rˣ` (equipped with the induced topology from the
@@ -248,7 +249,8 @@ namespace Ideal
 /-- An ideal which contains an element within `1` of `1 : R` is the unit ideal. -/
 theorem eq_top_of_norm_lt_one (I : Ideal R) {x : R} (hxI : x ∈ I) (hx : ‖1 - x‖ < 1) : I = ⊤ :=
   let u := Units.oneSub (1 - x) hx
-  I.eq_top_iff_one.mpr <| by simpa only [show u.inv * x = 1 by simp] using I.mul_mem_left u.inv hxI
+  I.eq_top_iff_one.mpr <| by
+    simpa only [show u.inv * x = 1 by simp [u]] using I.mul_mem_left u.inv hxI
 #align ideal.eq_top_of_norm_lt_one Ideal.eq_top_of_norm_lt_one
 
 /-- The `Ideal.closure` of a proper ideal in a complete normed ring is proper. -/

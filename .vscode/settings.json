@@ -10,5 +10,14 @@
   "githubPullRequests.ignoredPullRequestBranches": [
     "master"
   ],
-  "git.ignoreLimitWarning": true
+  "git.ignoreLimitWarning": true,
+  "git.branchProtection": [
+    "master",
+    "stable",
+    "staging"
+  ],
+  "files.readonlyInclude": {
+    "**/.elan/**": true,
+    "**/.lake/**": true
+  }
 }

@@ -124,7 +124,7 @@ instance : LargeCategory.{u} SemilatInfCat where
   comp_id := InfTopHom.id_comp
   assoc _ _ _ := InfTopHom.comp_assoc _ _ _
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance instFunLike (X Y : SemilatInfCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (InfTopHom X Y) X Y from inferInstance
 

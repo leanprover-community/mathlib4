@@ -20,7 +20,8 @@ set_option linter.uppercaseLean3 false
 
 noncomputable section
 
-open Classical Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate Finset Set
+open scoped Classical
+open Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate Finset Set
 
 /-!
 ## Limits at `+∞`
@@ -56,7 +57,7 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
     Tendsto (rpow b) atTop (𝓝 (0:ℝ)) := by
   show Tendsto (fun z => b^z) atTop (𝓝 0)
   rcases lt_trichotomy b 0 with hb|rfl|hb
-  case inl =>   -- b < 0
+  case inl => -- b < 0
     simp_rw [Real.rpow_def_of_nonpos hb.le, hb.ne, ite_false]
     rw [← isLittleO_const_iff (c := (1:ℝ)) one_ne_zero, (one_mul (1 : ℝ)).symm]
     refine IsLittleO.mul_isBigO ?exp ?cos
@@ -68,12 +69,12 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
     case cos =>
       rw [isBigO_iff]
       exact ⟨1, eventually_of_forall fun x => by simp [Real.abs_cos_le_one]⟩
-  case inr.inl =>  -- b = 0
+  case inr.inl => -- b = 0
     refine Tendsto.mono_right ?_ (Iff.mpr pure_le_nhds_iff rfl)
     rw [tendsto_pure]
     filter_upwards [eventually_ne_atTop 0] with _ hx
     simp [hx]
-  case inr.inr =>   -- b > 0
+  case inr.inr => -- b > 0
     simp_rw [Real.rpow_def_of_pos hb]
     refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_neg ?_).mpr tendsto_id
     exact (log_neg_iff hb).mpr hb₁
@@ -121,16 +122,12 @@ theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
 /-- The function `x ^ (1 / x)` tends to `1` at `+∞`. -/
 theorem tendsto_rpow_div : Tendsto (fun x => x ^ ((1 : ℝ) / x)) atTop (𝓝 1) := by
   convert tendsto_rpow_div_mul_add (1 : ℝ) _ (0 : ℝ) zero_ne_one
-  funext
-  congr 2
   ring
 #align tendsto_rpow_div tendsto_rpow_div
 
 /-- The function `x ^ (-1 / x)` tends to `1` at `+∞`. -/
 theorem tendsto_rpow_neg_div : Tendsto (fun x => x ^ (-(1 : ℝ) / x)) atTop (𝓝 1) := by
   convert tendsto_rpow_div_mul_add (-(1 : ℝ)) _ (0 : ℝ) zero_ne_one
-  funext
-  congr 2
   ring
 #align tendsto_rpow_neg_div tendsto_rpow_neg_div
 
@@ -347,7 +344,7 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
       IsBigO.of_bound 1 <|
         (tendsto_log_atTop.eventually_ge_atTop 1).mono fun x hx => by
           have hx₀ : 0 ≤ log x := zero_le_one.trans hx
-          simp [norm_eq_abs, abs_rpow_of_nonneg, abs_rpow_of_nonneg hx₀,
+          simp [r', norm_eq_abs, abs_rpow_of_nonneg, abs_rpow_of_nonneg hx₀,
             rpow_le_rpow_of_exponent_le (hx.trans (le_abs_self _))]
     _ =o[atTop] fun x => (x ^ (s / r')) ^ r' :=
       ((isLittleO_log_rpow_atTop H).rpow hr <|

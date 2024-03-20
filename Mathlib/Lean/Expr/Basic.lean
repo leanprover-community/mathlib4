@@ -9,6 +9,8 @@ import Std.Lean.Expr
 import Std.Lean.Name
 import Std.Data.Rat.Basic
 import Std.Data.List.Basic
+import Std.Lean.Name
+import Std.Logic
 
 /-!
 # Additional operations on Expr and related types

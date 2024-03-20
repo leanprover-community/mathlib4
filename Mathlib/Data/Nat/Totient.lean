@@ -88,7 +88,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   · rw [← filter_coprime_Ico_eq_totient a k]
     simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos),
       Nat.zero_eq, zero_add]
-    --Porting note: below line was `mono`
+    -- Porting note: below line was `mono`
     refine Finset.card_mono ?_
     refine' monotone_filter_left a.Coprime _
     simp only [Finset.le_eq_subset]
@@ -211,7 +211,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
       have h2 : (range (p ^ n)).image (· * p) ⊆ range (p ^ (n + 1)) := fun a => by
         simp only [mem_image, mem_range, exists_imp]
         rintro b ⟨h, rfl⟩
-        rw [pow_succ]
+        rw [Nat.pow_succ]
         exact (mul_lt_mul_right hp.pos).2 h
       rw [card_sdiff h2, Finset.card_image_of_injective _ h1, card_range, card_range, ←
         one_mul (p ^ n), pow_succ', ← tsub_mul, one_mul, mul_comm]
@@ -230,8 +230,8 @@ theorem totient_prime {p : ℕ} (hp : p.Prime) : φ p = p - 1 := by
 
 theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Prime := by
   refine' ⟨fun h => _, totient_prime⟩
-  replace hp : 1 < p
-  · apply lt_of_le_of_ne
+  replace hp : 1 < p := by
+    apply lt_of_le_of_ne
     · rwa [succ_le_iff]
     · rintro rfl
       rw [totient_one, tsub_self] at h

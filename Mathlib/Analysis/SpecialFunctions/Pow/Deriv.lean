@@ -131,6 +131,22 @@ theorem DifferentiableWithinAt.const_cpow (hf : DifferentiableWithinAt ℂ f s x
   (hf.hasFDerivWithinAt.const_cpow h0).differentiableWithinAt
 #align differentiable_within_at.const_cpow DifferentiableWithinAt.const_cpow
 
+theorem DifferentiableOn.cpow (hf : DifferentiableOn ℂ f s) (hg : DifferentiableOn ℂ g s)
+    (h0 : Set.MapsTo f s slitPlane) : DifferentiableOn ℂ (fun x ↦ f x ^ g x) s :=
+  fun x hx ↦ (hf x hx).cpow (hg x hx) (h0 hx)
+
+theorem DifferentiableOn.const_cpow (hf : DifferentiableOn ℂ f s)
+    (h0 : c ≠ 0 ∨ ∀ x ∈ s, f x ≠ 0) : DifferentiableOn ℂ (fun x ↦ c ^ f x) s :=
+  fun x hx ↦ (hf x hx).const_cpow (h0.imp_right fun h ↦ h x hx)
+
+theorem Differentiable.cpow (hf : Differentiable ℂ f) (hg : Differentiable ℂ g)
+    (h0 : ∀ x, f x ∈ slitPlane) : Differentiable ℂ (fun x ↦ f x ^ g x) :=
+  fun x ↦ (hf x).cpow (hg x) (h0 x)
+
+theorem Differentiable.const_cpow (hf : Differentiable ℂ f)
+    (h0 : c ≠ 0 ∨ ∀ x, f x ≠ 0) : Differentiable ℂ (fun x ↦ c ^ f x) :=
+  fun x ↦ (hf x).const_cpow (h0.imp_right fun h ↦ h x)
+
 end fderiv
 
 section deriv
@@ -384,7 +400,7 @@ theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
   · have h1 : 1 ≤ p := le_trans (by simp) h
     rw [Nat.cast_succ, ← le_sub_iff_add_le] at h
     rw [contDiff_succ_iff_deriv, deriv_rpow_const' h1]
-    refine' ⟨differentiable_rpow_const h1, contDiff_const.mul (ihn h)⟩
+    exact ⟨differentiable_rpow_const h1, contDiff_const.mul (ihn h)⟩
 #align real.cont_diff_rpow_const_of_le Real.contDiff_rpow_const_of_le
 
 theorem contDiffAt_rpow_const_of_le {x p : ℝ} {n : ℕ} (h : ↑n ≤ p) :

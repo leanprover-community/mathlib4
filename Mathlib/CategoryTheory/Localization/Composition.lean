@@ -113,7 +113,7 @@ lemma of_comp (W₃ : MorphismProperty C₁)
     have : (L₁ ⋙ W₂.Q).IsLocalization W₃ :=
       comp L₁ W₂.Q W₁ W₂ W₃ (fun X Y f hf => Localization.inverts W₂.Q W₂ _
         (by simpa only [hW₂₃] using W₃.map_mem_map _ _ hf)) hW₁₃
-        (by rw [hW₂₃, MorphismProperty.subset_iff_le])
+        (by rw [hW₂₃])
     exact IsLocalization.of_equivalence_target W₂.Q W₂ L₂
       (Localization.uniq (L₁ ⋙ W₂.Q) (L₁ ⋙ L₂) W₃)
       (liftNatIso L₁ W₁ _ _ _ _

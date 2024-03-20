@@ -31,7 +31,6 @@ noncomputable section
 namespace AlgebraCat
 
 variable {R : Type u} [CommRing R]
-
 variable {J : Type v} [SmallCategory J]
 
 instance semiringObj (F : J ⥤ AlgebraCatMax.{v, w} R) (j) :
@@ -149,7 +148,7 @@ end HasLimits
 
 open HasLimits
 
--- porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
+-- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
 -- is a `Prop`, declaring this as `irreducible` should presumably have no effect
 /-- The category of R-algebras has all limits. -/
 lemma hasLimitsOfSize : HasLimitsOfSize.{v, v} (AlgebraCatMax.{v, w} R) :=

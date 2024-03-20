@@ -220,7 +220,7 @@ theorem nilpotent_iff_finite_ascending_central_series :
     IsNilpotent G ↔ ∃ n : ℕ, ∃ H : ℕ → Subgroup G, IsAscendingCentralSeries H ∧ H n = ⊤ := by
   constructor
   · rintro ⟨n, nH⟩
-    refine' ⟨_, _, upperCentralSeries_isAscendingCentralSeries G, nH⟩
+    exact ⟨_, _, upperCentralSeries_isAscendingCentralSeries G, nH⟩
   · rintro ⟨n, H, hH, hn⟩
     use n
     rw [eq_top_iff, ← hn]
@@ -354,7 +354,6 @@ section Classical
 open scoped Classical
 
 variable [hG : IsNilpotent G]
-
 variable (G)
 
 /-- The nilpotency class of a nilpotent group is the smallest natural `n` such that
@@ -469,7 +468,7 @@ instance Subgroup.isNilpotent (H : Subgroup G) [hG : IsNilpotent G] : IsNilpoten
 theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
     Group.nilpotencyClass H ≤ Group.nilpotencyClass G := by
   repeat rw [← lowerCentralSeries_length_eq_nilpotencyClass]
-  --- Porting note : Lean needs to be told that predicates are decidable
+  --- Porting note: Lean needs to be told that predicates are decidable
   refine @Nat.find_mono _ _ (Classical.decPred _) (Classical.decPred _) ?_ _ _
   intro n hG
   have := lowerCentralSeries_map_subtype_le H n
@@ -643,7 +642,7 @@ theorem nilpotencyClass_eq_quotient_center_plus_one [hH : IsNilpotent G] [Nontri
   rw [nilpotencyClass_quotient_center]
   rcases h : Group.nilpotencyClass G with ⟨⟩
   · exfalso
-    rw [nilpotencyClass_zero_iff_subsingleton] at h; skip
+    rw [nilpotencyClass_zero_iff_subsingleton] at h
     apply false_of_nontrivial_of_subsingleton G
   · simp
 #align nilpotency_class_eq_quotient_center_plus_one nilpotencyClass_eq_quotient_center_plus_one
@@ -754,7 +753,7 @@ theorem lowerCentralSeries_pi_le (n : ℕ) :
   · calc
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
       _ ≤ ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_mono ih (le_refl _))
-      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi_top]
+      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi, pi_top]
       _ ≤ pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_pi_pi_le _ _)
       _ = pi fun i => lowerCentralSeries (Gs i) n.succ := rfl
 
@@ -788,7 +787,7 @@ theorem lowerCentralSeries_pi_of_finite [Finite η] (n : ℕ) :
   · calc
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := by rw [ih]
-      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi_top]
+      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi, pi_top]
       _ = pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_pi_pi_of_finite _ _)
       _ = pi fun i => lowerCentralSeries (Gs i) n.succ := rfl
 
