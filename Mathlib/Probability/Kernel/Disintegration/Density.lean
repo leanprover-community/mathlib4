@@ -683,7 +683,7 @@ section UnivFst
 
 /-! We specialize to `ν = fst κ`, for which `density κ (fst κ) a t univ = 1` almost everywhere. -/
 
-lemma densityProcess_univ [IsFiniteKernel κ] (n : ℕ) (a : α) (x : γ) :
+lemma densityProcess_fst_univ [IsFiniteKernel κ] (n : ℕ) (a : α) (x : γ) :
     densityProcess κ (fst κ) n a x univ
       = if fst κ a (countablePartitionSet n x) = 0 then 0 else 1 := by
   rw [densityProcess]
@@ -703,14 +703,14 @@ lemma densityProcess_univ [IsFiniteKernel κ] (n : ℕ) (a : α) (x : γ) :
     · rwa [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)] at h
     · exact measure_ne_top _ _
 
-lemma densityProcess_univ_ae (κ : kernel α (γ × β)) [IsFiniteKernel κ] (n : ℕ) (a : α) :
+lemma densityProcess_fst_univ_ae (κ : kernel α (γ × β)) [IsFiniteKernel κ] (n : ℕ) (a : α) :
     ∀ᵐ x ∂(fst κ a), densityProcess κ (fst κ) n a x univ = 1 := by
   rw [ae_iff]
   have : {x | ¬ densityProcess κ (fst κ) n a x univ = 1}
       ⊆ {x | fst κ a (countablePartitionSet n x) = 0} := by
     intro x hx
     simp only [mem_setOf_eq] at hx ⊢
-    rw [densityProcess_univ] at hx
+    rw [densityProcess_fst_univ] at hx
     simpa using hx
   refine measure_mono_null this ?_
   have : {x | fst κ a (countablePartitionSet n x) = 0}
@@ -731,7 +731,7 @@ lemma densityProcess_univ_ae (κ : kernel α (γ × β)) [IsFiniteKernel κ] (n 
     · simp [h, measurableSet_countablePartition n hs]
     · simp [h]
 
-lemma tendsto_densityProcess_atTop_univ_of_monotone (κ : kernel α (γ × β))
+lemma tendsto_densityProcess_fst_atTop_univ_of_monotone (κ : kernel α (γ × β))
     (n : ℕ) (a : α) (x : γ) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ) :
     Tendsto (fun m ↦ densityProcess κ (fst κ) n a x (s m)) atTop
       (𝓝 (densityProcess κ (fst κ) n a x univ)) := by
@@ -770,21 +770,21 @@ lemma tendsto_densityProcess_atTop_univ_of_monotone (κ : kernel α (γ × β))
     rw [← prod_iUnion, hs_iUnion]
   · exact Or.inr h0
 
-lemma tendsto_densityProcess_atTop_ae_of_monotone (κ : kernel α (γ × β)) [IsFiniteKernel κ]
+lemma tendsto_densityProcess_fst_atTop_ae_of_monotone (κ : kernel α (γ × β)) [IsFiniteKernel κ]
     (n : ℕ) (a : α) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ) :
     ∀ᵐ x ∂(fst κ a), Tendsto (fun m ↦ densityProcess κ (fst κ) n a x (s m)) atTop (𝓝 1) := by
-  filter_upwards [densityProcess_univ_ae κ n a] with x hx
+  filter_upwards [densityProcess_fst_univ_ae κ n a] with x hx
   rw [← hx]
-  exact tendsto_densityProcess_atTop_univ_of_monotone κ n a x s hs hs_iUnion
+  exact tendsto_densityProcess_fst_atTop_univ_of_monotone κ n a x s hs hs_iUnion
 
-lemma density_univ (κ : kernel α (γ × β)) [IsFiniteKernel κ] (a : α) :
+lemma density_fst_univ (κ : kernel α (γ × β)) [IsFiniteKernel κ] (a : α) :
     ∀ᵐ x ∂(fst κ a), density κ (fst κ) a x univ = 1 := by
-  have h := fun n ↦ densityProcess_univ_ae κ n a
+  have h := fun n ↦ densityProcess_fst_univ_ae κ n a
   rw [← ae_all_iff] at h
   filter_upwards [h] with x hx
   simp [density, hx]
 
-lemma tendsto_density_atTop_ae_of_monotone [IsFiniteKernel κ]
+lemma tendsto_density_fst_atTop_ae_of_monotone [IsFiniteKernel κ]
     (a : α) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ)
     (hs_meas : ∀ n, MeasurableSet (s n)) :
     ∀ᵐ x ∂(fst κ a), Tendsto (fun m ↦ density κ (fst κ) a x (s m)) atTop (𝓝 1) := by
