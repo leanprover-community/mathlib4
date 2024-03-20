@@ -21,7 +21,8 @@ variable {M S : Type*} [SetLike S M]
 @[to_additive "An `AddSubmonoid` of an `OrderedAddCommMonoid` is an `OrderedAddCommMonoid`."]
 instance (priority := 75) toOrderedCommMonoid [OrderedCommMonoid M]
     [SubmonoidClass S M] (s : S) : OrderedCommMonoid s :=
-  Subtype.coe_injective.orderedCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance%
+    Subtype.coe_injective.orderedCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid_class.to_ordered_comm_monoid SubmonoidClass.toOrderedCommMonoid
 #align add_submonoid_class.to_ordered_add_comm_monoid AddSubmonoidClass.toOrderedAddCommMonoid
 

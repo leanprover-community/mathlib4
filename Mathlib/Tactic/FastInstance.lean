@@ -12,22 +12,33 @@ elab "fast_instance%" arg:term : term <= expectedType => do
   let .some className ← Lean.Meta.isClass? expectedType |
     throwError "Can only be used for classes"
   let ctor := Lean.getStructureCtor (← getEnv) className
-  let provided ← Lean.Elab.Term.elabTerm arg (some expectedType)
+  let provided ← instantiateMVars <|
+    ← Lean.Elab.Term.elabTermEnsuringType (catchExPostpone := false) arg (some expectedType)
+  guard !provided.hasMVar
+  -- TODO: withNewMCtxDepth do
   -- create universe variables
   let levels ← Meta.mkFreshLevelMVarsFor (.ctorInfo ctor)
   let mut e := Expr.const ctor.name levels
   -- get argument types
-  let (mvars, binders, _body_) ← forallMetaTelescope (←inferType e)
+  let (mvars, binders, _body) ← forallMetaTelescope (← inferType e)
+  guard (← isDefEq _body expectedType)
   e := mkAppN e mvars
-  guard (← isDefEq (←inferType e) expectedType)
-  e ← instantiateMVars e
+  -- the parameters should haev been assigned by unification
+  for arg in mvars.extract 0 ctor.numParams do
+    guard (← arg.mvarId!.isAssigned)
   -- substitute parent classes with direct instances, if possible
   for arg in mvars.extract ctor.numParams (ctor.numParams + ctor.numFields),
       bi in binders.extract ctor.numParams (ctor.numParams + ctor.numFields) do
     if let .instImplicit := bi then
-      if let .some new_arg ← trySynthInstance (←inferType arg) then
-        arg.mvarId!.assign new_arg
+      if let .some new_arg ← trySynthInstance (← inferType arg) then
+        if ← isDefEq arg new_arg then
+          continue
+        else
+          Lean.logError m!"Field is not defeq, given{indentExpr arg}\ncalculate{indentExpr new_arg}"
+  e ← instantiateMVars e
   -- must be defeq to what the user passed
   if !(← isDefEq provided e) then
-    Lean.logError "Not defeq"
+    let (provided', e') ← Lean.Meta.addPPExplicitToExposeDiff (← whnf provided) e
+    Lean.logError m!"Not defeq, given{indentExpr provided'}\ncalculated{indentExpr e'}"
+    return provided
   pure e
