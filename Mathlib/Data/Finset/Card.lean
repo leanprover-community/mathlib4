@@ -571,6 +571,10 @@ theorem exists_smaller_set (A : Finset α) (i : ℕ) (h₁ : i ≤ card A) :
   ⟨B, x₁, x₂⟩
 #align finset.exists_smaller_set Finset.exists_smaller_set
 
+theorem le_card_iff_exists_subset_card : n ≤ s.card ↔ ∃ t ⊆ s, t.card = n := by
+  refine' ⟨fun h => _, fun ⟨t, hst, ht⟩ => ht ▸ card_le_card hst⟩
+  exact exists_smaller_set s n h
+
 theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finset α} {n : ℕ}
     (hXY : 2 * n < (X ∪ Y).card) : ∃ C : Finset α, n < C.card ∧ (C ⊆ X ∨ C ⊆ Y) := by
   have h₁ : (X ∩ (Y \ X)).card = 0 := Finset.card_eq_zero.mpr (Finset.inter_sdiff_self X Y)
@@ -718,10 +722,6 @@ theorem card_eq_three : s.card = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ 
 #align finset.card_eq_three Finset.card_eq_three
 
 end DecidableEq
-
-theorem le_card_iff_exists_subset_card : n ≤ s.card ↔ ∃ t ⊆ s, t.card = n := by
-  refine' ⟨fun h => _, fun ⟨t, hst, ht⟩ => ht ▸ card_le_card hst⟩
-  exact exists_smaller_set s n h
 
 theorem two_lt_card_iff : 2 < s.card ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
   classical
