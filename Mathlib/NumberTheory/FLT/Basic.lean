@@ -125,7 +125,7 @@ open Finset in
 that the `gcd` of `{a, b, c}` is a unit. -/
 lemma fermatLastTheoremWith_of_FermatLastTheoremWith_coprime {n : ℕ} {R : Type*} [CommSemiring R]
     [IsDomain R] [DecidableEq R] [NormalizedGCDMonoid R]
-    (hn : ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → IsUnit (({a, b, c} : Finset R).gcd id) →
+    (hn : ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset R).gcd id = 1 →
       a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremWith R n := by
   intro a b c ha hb hc habc
