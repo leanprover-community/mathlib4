@@ -160,9 +160,9 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   rw [borel_eq_generateFrom_isClosed]
   refine' MeasurableSpace.generateFrom_le fun t ht => μ.isCaratheodory_iff_le.2 fun s => _
   set S : ℕ → Set X := fun n => {x ∈ s | (↑n)⁻¹ ≤ infEdist x t}
-  have n0 : ∀ {n : ℕ}, (n⁻¹ : ℝ≥0∞) ≠ 0 := fun {n} => ENNReal.inv_ne_zero.2 (ENNReal.nat_ne_top _)
-  have Ssep : ∀ n, IsMetricSeparated (S n) t := fun n =>
-    ⟨n⁻¹, n0, fun x hx y hy => hx.2.trans <| infEdist_le_edist_of_mem hy⟩
+  have Ssep (n) : IsMetricSeparated (S n) t :=
+    ⟨n⁻¹, ENNReal.inv_ne_zero.2 (ENNReal.natCast_ne_top _),
+      fun x hx y hy ↦ hx.2.trans <| infEdist_le_edist_of_mem hy⟩
   have Ssep' : ∀ n, IsMetricSeparated (S n) (s ∩ t) := fun n =>
     (Ssep n).mono Subset.rfl (inter_subset_right _ _)
   have S_sub : ∀ n, S n ⊆ s \ t := fun n =>

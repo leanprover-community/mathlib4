@@ -94,7 +94,7 @@ lemma ratCast_mem (s : S) (q : ℚ) : (q : K) ∈ s := by
 #align subfield_class.coe_rat_mem SubfieldClass.ratCast_mem
 
 instance (s : S) : RatCast s :=
-  ⟨fun x => ⟨↑x, coe_rat_mem s x⟩⟩
+  ⟨fun x => ⟨↑x, ratCast_mem s x⟩⟩
 
 @[simp, norm_cast] lemma coe_ratCast (s : S) (x : ℚ) : ((x : s) : K) = x := rfl
 #align subfield_class.coe_rat_cast SubfieldClass.coe_ratCast
@@ -102,7 +102,7 @@ instance (s : S) : RatCast s :=
 -- Porting note: Mistranslated: used to be (a • x : K) ∈ s
 @[aesop safe apply (rule_sets := [SetLike])]
 theorem rat_smul_mem (s : S) (a : ℚ) (x : s) : a • (x : K) ∈ s := by
-  simpa only [Rat.smul_def] using mul_mem (coe_rat_mem s a) x.prop
+  simpa only [Rat.smul_def] using mul_mem (ratCast_mem s a) x.prop
 #align subfield_class.rat_smul_mem SubfieldClass.rat_smul_mem
 
 @[aesop safe apply (rule_sets := [SetLike])]

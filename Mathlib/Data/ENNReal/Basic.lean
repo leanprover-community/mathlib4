@@ -569,11 +569,11 @@ theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
     ENNReal.ofReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   ofReal_coe_nat n
 
-@[simp] theorem nat_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := natCast_ne_top n
-#align ennreal.nat_ne_top ENNReal.nat_ne_top
+@[simp] theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_ne_top n
+#align ennreal.nat_ne_top ENNReal.natCast_ne_top
 
-@[simp] theorem top_ne_nat (n : ℕ) : ∞ ≠ n := top_ne_natCast n
-#align ennreal.top_ne_nat ENNReal.top_ne_nat
+@[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
+#align ennreal.top_ne_nat ENNReal.top_ne_natCast
 
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
 #align ennreal.one_lt_top ENNReal.one_lt_top
@@ -690,7 +690,7 @@ theorem iUnion_Iio_coe_nat : ⋃ n : ℕ, Iio (n : ℝ≥0∞) = {∞}ᶜ := by
 
 @[simp]
 theorem iUnion_Iic_coe_nat : ⋃ n : ℕ, Iic (n : ℝ≥0∞) = {∞}ᶜ :=
-  Subset.antisymm (iUnion_subset fun n _x hx => ne_top_of_le_ne_top (nat_ne_top n) hx) <|
+  Subset.antisymm (iUnion_subset fun n _x hx => ne_top_of_le_ne_top (natCast_ne_top n) hx) <|
     iUnion_Iio_coe_nat ▸ iUnion_mono fun _ => Iio_subset_Iic_self
 #align ennreal.Union_Iic_coe_nat ENNReal.iUnion_Iic_coe_nat
 
