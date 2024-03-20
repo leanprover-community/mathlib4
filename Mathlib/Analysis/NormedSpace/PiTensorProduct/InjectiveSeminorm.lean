@@ -159,7 +159,7 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max (max u_1 u_2) u_3
   obtain ⟨⟨G, G₁, ⟨G₂, h⟩⟩⟩ := hq
   rw [h]
   simp only [Seminorm.comp_apply, ge_iff_le]
-  let hbound := Classical.choose_spec (toDualMultilinearMap_bound x)
+  have hbound := Classical.choose_spec (toDualMultilinearMap_bound x)
   exact ContinuousLinearMap.opNorm_le_bound _ hbound.1 (fun f ↦ by
     simp only [toDualContinuousMultilinearMap_apply_toFun]
     exact hbound.2 G f)
