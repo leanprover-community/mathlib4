@@ -837,7 +837,7 @@ end IsMultiplicative
 section SpecialFunctions
 
 /-- The identity on `ℕ` as an `ArithmeticFunction`.  -/
-nonrec  -- Porting note: added
+nonrec  -- Porting note (#11445): added
 def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩
 #align nat.arithmetic_function.id ArithmeticFunction.id
