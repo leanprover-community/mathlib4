@@ -308,6 +308,8 @@
   "Mathlib.Init.Data.Nat.GCD": ["Std.Data.Nat.Gcd"],
   "Mathlib.Init.Data.Int.Basic": ["Std.Data.Int.Order"],
   "Mathlib.Init.Core": ["Std.Classes.Dvd"],
+  "Mathlib.GroupTheory.Subsemigroup.Operations":
+  ["Mathlib.Tactic.FastInstance"],
   "Mathlib.GroupTheory.Subgroup.Order": ["Mathlib.GroupTheory.Submonoid.Order"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
