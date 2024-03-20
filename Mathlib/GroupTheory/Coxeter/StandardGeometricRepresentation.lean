@@ -104,10 +104,51 @@ namespace Finsupp
 
 variable {B : Type*} [DecidableEq B]
 
-/-- The proposition that all the coordinates of `v` in the basis of simple roots are nonnegative. -/
+/-- The proposition that all the coordinates of `v` in the standard basis are nonnegative. -/
 def IsNonnegative (v : B →₀ ℝ) := ∀ i : B, v i ≥ 0
-/-- The proposition that all the coordinates of `v` in the basis of simple roots are nonpositive. -/
+/-- The proposition that all the coordinates of `v` in the standard basis are nonpositive. -/
 def IsNonpositive (v : B →₀ ℝ) := ∀ i : B, v i ≤ 0
+
+@[simp] theorem neg_isNonnegative_iff_isNonpositive (v : B →₀ ℝ) :
+    (-v).IsNonnegative ↔ v.IsNonpositive := by simp [IsNonnegative, IsNonpositive]
+
+@[simp] theorem neg_isNonpositive_iff_isNonnegative (v : B →₀ ℝ) :
+    (-v).IsNonpositive ↔ v.IsNonnegative := by simp [IsNonnegative, IsNonpositive]
+
+theorem isNonnegative_single (i : B) : (Finsupp.single i 1).IsNonnegative := by
+  intro i'
+  rw [single_apply, apply_ite (· ≥ 0)]
+  simp
+
+theorem isNonnegative_add {v v' : B →₀ ℝ} (hv : v.IsNonnegative) (hv' : v'.IsNonnegative) :
+    (v + v').IsNonnegative := fun i ↦ add_nonneg (hv i) (hv' i)
+
+theorem isNonnegative_smul {μ : ℝ} (hμ : μ ≥ 0) {v : B →₀ ℝ} (hv : v.IsNonnegative) :
+    (μ • v).IsNonnegative := fun i ↦ mul_nonneg hμ (hv i)
+
+/-- The proposition that all the coordinates of `v` in the standard basis are nonnegative and
+`v` is nonzero.-/
+def IsPositive (v : B →₀ ℝ) := v.IsNonnegative ∧ v ≠ 0
+/-- The proposition that all the coordinates of `v` in the standard basis are nonpositive and
+`v` is nonzero.-/
+def IsNegative (v : B →₀ ℝ) := v.IsNonpositive ∧ v ≠ 0
+
+@[simp] theorem neg_isNegative_iff_isPositive (v : B →₀ ℝ) :
+    (-v).IsNegative ↔ v.IsPositive := by simp [IsPositive, IsNegative]
+
+@[simp] theorem neg_isPositive_iff_isNegative (v : B →₀ ℝ) :
+    (-v).IsPositive ↔ v.IsNegative := by simp [IsPositive, IsNegative]
+
+theorem isPositive_single (i : B) : (Finsupp.single i 1).IsPositive :=
+  ⟨isNonnegative_single i, by simp⟩
+
+theorem isPositive_imp_not_isNegative {v : B →₀ ℝ} (hv : IsPositive v) : ¬ IsNegative v := by
+  intro hv'
+  exact hv.2 (ext (fun i ↦ _root_.le_antisymm (hv'.1 i) (hv.1 i)))
+
+theorem isNegative_imp_not_isPositive {v : B →₀ ℝ} (hv : IsNegative v) : ¬ IsPositive v := by
+  intro hv'
+  exact hv.2 (ext (fun i ↦ _root_.le_antisymm (hv.1 i) (hv'.1 i)))
 
 end Finsupp
 
@@ -436,7 +477,7 @@ theorem standardBilinForm_compl₁₂_SGR_apply (w : W) :
     rw [map_mul, mul_eq_comp, LinearMap.compl₁₂_comp_comp, hw, hw']
 
 theorem SGR_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' > 1) :
-    cs.SGR (π (alternatingWord i i' m)) (α i) = if Even m
+    (ρ (π (alternatingWord i i' m))) (α i) = if Even m
       then (sin ((m + 1) * π / M i i') / sin (π / M i i')) • (α i)
         + (sin (m * π / M i i') / sin (π / M i i')) • (α i')
       else (sin (m * π / M i i') / sin (π / M i i')) • (α i)
@@ -482,7 +523,7 @@ theorem SGR_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' >
       ring_nf
 
 theorem SGR_alternatingWord_apply_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' = 0) :
-    cs.SGR (π (alternatingWord i i' m)) (α i) = if Even m
+    (ρ (π (alternatingWord i i' m))) (α i) = if Even m
       then (m + 1 : ℝ) • (α i) + (m : ℝ) • (α i')
       else (m : ℝ) • (α i) + (m + 1 : ℝ) • (α i') := by
   have h₁ : (σ i') (α i) = α i + (2 : ℝ) • α i' := by
@@ -514,7 +555,7 @@ theorem SGR_alternatingWord_apply_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' 
 theorem SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul
     (i i' : B) (m : ℕ) (hm : m < M i i' ∨ M i i' = 0) :
     ∃ (μ μ' : ℝ), μ ≥ 0 ∧ μ' ≥ 0 ∧
-      cs.SGR (π (alternatingWord i i' m)) (α i) = μ • (α i) + μ' • (α i') := by
+      (ρ (π (alternatingWord i i' m))) (α i) = μ • (α i) + μ' • (α i') := by
   rcases hm with m_lt | M_eq_zero
   · rcases le_or_gt (M i i') 1 with M_le_one | M_gt_one
     · rw [(by linarith : m = 0), alternatingWord]
@@ -578,24 +619,257 @@ theorem SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul
     · rw [if_neg not_even]
       use m, m + 1, by linarith, by linarith
 
-theorem SGR_apply_simpleRoot_pos_of {w : W} {i : B} (h : ℓ (w * s i) = ℓ w + 1) :
-    IsNonnegative (cs.SGR w (α i)) := by
-  sorry
+private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRightDescent w i) :
+    ((ρ w) (α i)).IsNonnegative := by
+  -- We use induction on the length of `w`.
+  suffices ∀ n : ℕ, ∀ w : W, ℓ w = n →
+      (∀ i : B, ¬ cs.IsRightDescent w i → (cs.SGR w (α i)).IsNonnegative) by
+    tauto
+  intro n
+  induction' n using Nat.strong_induction_on with n ih
+  rintro w rfl i h
 
-theorem SGR_apply_simpleRoot_neg_of {w : W} {i : B} (h : ℓ (w * s i) + 1 = ℓ w) :
-    Finsupp.IsNegative (cs.SGR w (α i)) := by
-  sorry
+  rcases em (w = 1) with rfl | w_ne_one
+  · -- If `w = 1`, then the statement is trivial.
+    simpa only [map_one, one_apply] using Finsupp.isNonnegative_single i
+  · -- Otherwise, `w ≠ 1`. Let `i'` be a right descent of `w`.
+    have h₁ : 1 ≤ ℓ w := Nat.one_le_iff_ne_zero.mpr ((not_congr cs.length_eq_zero_iff).mpr w_ne_one)
+    rcases cs.exists_rightDescent_of_ne_one w_ne_one with ⟨i', hwi'⟩
+
+    -- Use the notation `aw` for alternating product of simple reflections `s i` and `s i'`.
+    set aw := fun m ↦ π (alternatingWord i i' m) with haw
+
+    /- Let `m` be the greatest positive integer such that
+    `ℓ (w * (π (aw m))⁻¹) + m = ℓ w`.
+    (That is, `w` can be written as a product `v * u⁻¹`,
+    where `ℓ v + ℓ u = ℓ w` and `u` is a reduced alternating word of length `m` that alternates
+    between `i` and `i'`, ending with `i'`.) -/
+    set m := Nat.findGreatest (fun m ↦ ℓ (w * (aw m)⁻¹) + m = ℓ w) (ℓ w)
+        with h₂
+
+    /- Because `w` has `i'` as a right descent, we have
+    `ℓ (w * (aw 1)⁻¹) + 1 = ℓ w`. So `1 ≤ m`. -/
+    have h₃ : 1 ≤ m := by
+      apply Nat.le_findGreatest
+      · exact h₁
+      · simp [haw, alternatingWord]
+        exact (cs.isRightDescent_iff _ _).mp hwi'
+
+    -- Also, `ℓ (w * (aw m)⁻¹) + m = ℓ w`, by definition of `m`.
+    have h₄ : ℓ (w * (aw m)⁻¹) + m = ℓ w := by
+      apply Nat.findGreatest_of_ne_zero h₂.symm
+      exact Nat.one_le_iff_ne_zero.mp h₃
+
+    clear w_ne_one h₁ h₂
+
+    -- By the maximality of `m`, `ℓ (w * (aw (m + 1))⁻¹) + (m + 1) ≠ ℓ w`.
+    have h₅ : ℓ (w * (aw (m + 1))⁻¹) + (m + 1) ≠ ℓ w := by
+      rcases Nat.lt_or_ge (ℓ w) (m + 1) with lt | ge
+      · linarith only [lt]
+      · apply Nat.findGreatest_is_greatest (by linarith : m < m + 1)
+        exact ge
+
+    -- Now we simplify this using `alternatingWord_succ'`.
+    rw [haw] at h₅
+    dsimp at h₅
+    rw [alternatingWord_succ', wordProd_cons, mul_inv_rev, simple_inv, ← mul_assoc] at h₅
+    set j := if Even m then i' else i with h₆
+    -- `h₅ : ℓ (w * (aw m)⁻¹ * s j) + (m + 1) ≠ length cs w`
+
+    -- By `h₅`, we see that `i''` is not a right descent of `w * (aw m)⁻¹`.
+    have h₇ : ¬ cs.IsRightDescent (w * (aw m)⁻¹) j := by
+      intro h'
+      apply (cs.isRightDescent_iff _ _).mp at h'
+      rw [add_comm m 1, ← add_assoc, h'] at h₅
+      exact h₅ h₄
+
+    /- Let `j' = if Even (m - 1) then i else i'`. So `j` and `j'` are `i` and `i'`, but potentially
+    swapped. -/
+    set j' := if Even (m - 1) then i' else i with h₈
+
+    /- Let us also prove that `j'` is not a right descent of `w * (aw m)⁻¹`. We will start by
+    showing that `(aw m)⁻¹ * (s j') = (aw (m - 1))⁻¹`.-/
+    have h₉ : (aw m)⁻¹ * (s j') = (aw (m - 1))⁻¹ := by
+      nth_rw 1 [← Nat.sub_add_cancel h₃]
+      rw [haw]
+      dsimp
+      rw [alternatingWord_succ', wordProd_cons, mul_inv_rev, mul_assoc, simple_inv,
+        simple_mul_self, mul_one]
+
+    have h₁₀ : ¬ cs.IsRightDescent (w * (aw m)⁻¹) j' := by
+      intro h'
+      apply (cs.isRightDescent_iff _ _).mp at h'
+      have := calc
+        ℓ (w * (aw (m - 1))⁻¹) + 1 + m
+        _ = ℓ (w * (aw m)⁻¹ * (s j')) + 1 + m           := by rw [mul_assoc, h₉]
+        _ = ℓ (w * (aw m)⁻¹) + m                        := by rw [h']
+        _ = ℓ w                                         := h₄
+        _ = ℓ (w * (aw (m - 1))⁻¹ * aw (m - 1))         := by group
+        _ ≤ ℓ (w * (aw (m - 1))⁻¹) + ℓ (aw (m - 1))     := cs.length_mul_le _ _
+        _ ≤ ℓ (w * (aw (m - 1))⁻¹) + (m - 1)            := by
+            apply add_le_add_left
+            exact (cs.length_wordProd_le _).trans (le_of_eq (length_alternatingWord i i' (m - 1)))
+        _ ≤ ℓ (w * (aw (m - 1))⁻¹) + m                  := by
+            apply add_le_add_left
+            exact Nat.sub_le _ _
+      linarith only [this]
+
+    /- Since `j` and `j'` are not right descents of `w * (aw m)⁻¹`, and `i` and `i'` are just
+    `j` and `j'` in some order, we conclude that `i` and `i'` are not right descents of
+    `w * (aw m)⁻¹`. -/
+    rw [h₆] at h₇
+    rw [h₈] at h₁₀
+
+    clear h₅ h₆ h₈ h₉ j j'
+
+    -- m is even if and only if m - 1 is not even
+    have h₁₁ := Nat.sub_add_cancel h₃ ▸ @Nat.even_add_one (m - 1)
+
+    have h₁₂ : ¬ cs.IsRightDescent (w * (aw m)⁻¹) i := by
+      rcases em (Even (m - 1)) with even | not_even
+      · rwa [if_neg (h₁₁.mp.mt (not_not.mpr even))] at h₇
+      · rwa [if_neg not_even] at h₁₀
+
+    have h₁₃ : ¬ cs.IsRightDescent (w * (aw m)⁻¹) i' := by
+      rcases em (Even (m - 1)) with even | not_even
+      · rwa [if_pos even] at h₁₀
+      · rwa [if_pos (h₁₁.mpr not_even)] at h₇
+
+    have h₁₄ : ℓ (w * (aw m)⁻¹) < ℓ w := by linarith only [h₃, h₄]
+
+    /- By the inductive hypothesis, `ρ (w * (aw m)⁻¹) (α i)` and `ρ (w * (aw m)⁻¹) (α i')` are
+    positive. -/
+    have h₁₅ := ih (ℓ (w * (aw m)⁻¹)) h₁₄ (w * (aw m)⁻¹) rfl
+
+    have h₁₆ := h₁₅ i h₁₂
+
+    have h₁₇ := h₁₅ i' h₁₃
+
+    clear h₇ h₁₀ h₁₁ h₁₂ h₁₃ h₁₄ h₁₅
+
+    /- Now we must prove the condition `hm : m < M i i' ∨ M i i' = 0` of
+    `SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul`. First, we show
+    that `alternatingWord i i' m` is reduced. -/
+    have h₁₈ := calc
+      ℓ (w * (aw m)⁻¹) + ℓ (aw m)
+      _ ≥ ℓ (w * (aw m)⁻¹ * aw m)                            := cs.length_mul_le _ _
+      _ = ℓ w                                                := by group
+      _ = ℓ (w * (aw m)⁻¹) + m                               := h₄.symm
+      _ = ℓ (w * (aw m)⁻¹) + (alternatingWord i i' m).length := by rw [length_alternatingWord]
+
+    have h₁₉ : cs.IsReduced (alternatingWord i i' m) := by
+      unfold IsReduced
+      apply _root_.le_antisymm
+      · exact cs.length_wordProd_le _
+      · linarith only [h₁₈]
+
+    have h₂₀ : m ≤ M i i' ∨ M i i' = 0 := by
+      by_contra! h'
+      exact cs.not_isReduced_alternatingWord i i' m h'.2 h'.1 h₁₉
+
+    clear h₁₈ h₁₉
+
+    /- If `m = M i i'` and `M i i' ≠ 0`, then `aw m` has a reduced word that ends with `i` instead
+    of `i'`. We obtain a contradiction from the fact that `i` is not a
+    right descent of `w`. -/
+    have h₂₁ : ¬ (m = M i i' ∧ M i i' ≠ 0) := by
+      rintro ⟨m_eq, _⟩
+      have : aw m = π (alternatingWord i' i m) := by
+        rw [haw]
+        dsimp
+        rw [cs.prod_alternatingWord_eq_prod_alternatingWord i i' m (by linarith only [m_eq])]
+        rw [← m_eq, mul_two, Nat.add_sub_cancel]
+      rw [this] at h₄
+      have := calc
+        ℓ (w * s i)
+        _ < ℓ (w * s i) + 1                                        := Nat.lt_succ_self _
+        _ = ℓ (w * s i * (π (alternatingWord i i' (m - 1)))⁻¹
+              * π (alternatingWord i i' (m - 1))) + 1              := by group
+        _ ≤ ℓ (w * s i * (π (alternatingWord i i' (m - 1)))⁻¹)
+              + ℓ (π (alternatingWord i i' (m - 1))) + 1           := by
+                  apply add_le_add_right
+                  exact cs.length_mul_le _ _
+        _ ≤ ℓ (w * s i * (π (alternatingWord i i' (m - 1)))⁻¹)
+              + (alternatingWord i i' (m - 1)).length + 1          := by
+                  apply add_le_add_right
+                  apply add_le_add_left
+                  exact cs.length_wordProd_le _
+        _ = ℓ (w * s i * (π (alternatingWord i i' (m - 1)))⁻¹)
+              + (m - 1) + 1                                        := by rw [length_alternatingWord]
+        _ = ℓ (w * s i * (π (alternatingWord i i' (m - 1)))⁻¹) + m := by
+                  rw [add_assoc, Nat.sub_add_cancel h₃]
+        _ = ℓ (w * (π (alternatingWord i i' (m - 1)) * s i)⁻¹) + m := by simp [mul_assoc]
+        _ = ℓ (w * (π ((alternatingWord i i' (m - 1)).concat i))⁻¹)
+              + m                                                  := by rw [cs.wordProd_concat]
+        _ = ℓ (w * (π (alternatingWord i' i (m - 1 + 1)))⁻¹) + m   := by rw [alternatingWord_succ]
+        _ = ℓ (w * (π (alternatingWord i' i m))⁻¹) + m             := by rw [Nat.sub_add_cancel h₃]
+        _ = ℓ w                                                    := h₄
+      exact h this
+
+    have h₂₂ : m < M i i' ∨ M i i' = 0 := by
+      rw [Nat.lt_iff_le_and_ne]
+      tauto
+
+    clear h hwi' h₃ h₄ h₂₀ h₂₁
+
+    -- We have `ρ w (α i) = ρ (w * (aw m)⁻¹) ((ρ (aw m)) (α i))`.
+    rw [(by group : w = w * (aw m)⁻¹ * (aw m)), map_mul, mul_apply]
+
+    /- Now, we write `((ρ (aw m)) (α i))` as a nonnegative linear combination of `α i` and `α i'`.
+    Then expand everything out and use `h₁₆`, `h₁₇`. -/
+    rcases cs.SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul i i' m h₂₂ with
+      ⟨μ, μ', μpos, μ'pos, h₂₃⟩
+    nth_rw 2 [haw]
+    dsimp only
+    rw [h₂₃, map_add, map_smul, map_smul]
+    exact Finsupp.isNonnegative_add (Finsupp.isNonnegative_smul μpos h₁₆)
+      (Finsupp.isNonnegative_smul μ'pos h₁₇)
+
+/-- If $i$ is not a right descent of $w$, then $\rho(w) \alpha_i$ is positive; that is, it has all
+nonnegative coordinates and it is nonzero. -/
+theorem SGR_apply_simpleRoot_pos_of {w : W} {i : B} (h : ¬ cs.IsRightDescent w i) :
+    ((ρ w) (α i)).IsPositive := by
+  constructor
+  · exact cs.SGR_apply_simpleRoot_nonneg_of h
+  · intro h'
+    have := congrArg (ρ (w⁻¹)) h'
+    rw [← mul_apply, ← map_mul, inv_mul_self, map_one, one_apply, map_zero] at this
+    simp [Matrix.simpleRoot] at this
+
+/-- If $i$ is not a right descent of $w$, then $\rho(w) \alpha_i$ is negative; that is, it has all
+nonpositive coordinates and it is nonzero. -/
+theorem SGR_apply_simpleRoot_neg_of {w : W} {i : B} (h : cs.IsRightDescent w i) :
+    ((ρ w) (α i)).IsNegative := by
+  apply (cs.isRightDescent_iff_not_isRightDescent_mul _ _).mp at h
+  apply SGR_apply_simpleRoot_pos_of at h
+  rwa [map_mul, mul_apply, SGR_simple, Matrix.simpleOrthoReflection_simpleRoot_self,
+    map_neg, Finsupp.neg_isPositive_iff_isNegative] at h
 
 theorem SGR_apply_simpleRoot_pos_iff (w : W) (i : B) :
-    ℓ (w * s i) = ℓ w + 1 ↔ IsNonnegative (cs.SGR w (α i)) := by
-  sorry
+    ((ρ w) (α i)).IsPositive ↔ ¬ cs.IsRightDescent w i := by
+  constructor
+  · intro h h'
+    exact Finsupp.isNegative_imp_not_isPositive (cs.SGR_apply_simpleRoot_neg_of h') h
+  · intro h
+    exact cs.SGR_apply_simpleRoot_pos_of h
 
 theorem SGR_apply_simpleRoot_neg_iff (w : W) (i : B) :
-    ℓ (w * s i) + 1 = ℓ w ↔ Finsupp.IsNegative (cs.SGR w (α i)) := by
-  sorry
+    ((ρ w) (α i)).IsNegative ↔ cs.IsRightDescent w i := by
+  constructor
+  · intro h
+    by_contra h'
+    exact Finsupp.isPositive_imp_not_isNegative (cs.SGR_apply_simpleRoot_pos_of h') h
+  · intro h
+    exact cs.SGR_apply_simpleRoot_neg_of h
 
 theorem injective_SGR : Function.Injective cs.SGR := by
-  sorry
+  apply (injective_iff_map_eq_one _).mpr
+  intro w hw
+  by_contra! w_ne_one
+  rcases cs.exists_rightDescent_of_ne_one w_ne_one with ⟨i, hi⟩
+  have := cs.SGR_apply_simpleRoot_neg_of hi
+  rw [hw, one_apply] at this
+  exact Finsupp.isPositive_imp_not_isNegative (Finsupp.isPositive_single i) this
 
 alias faithful_SGR := injective_SGR
 
