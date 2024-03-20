@@ -29,7 +29,7 @@ has good properties.
 In fact, we cannot take the `sup` over all normed spaces `F` because of set-theoretical issues,
 so we only take spaces `F` in the same universe as `⨂[𝕜] i, Eᵢ`. We then prove in
 `injectiveSeminorm_bound` that this gives the same result, because every multilinear map
-from `E` to `F` factors though a normed vector space in the same universe as
+from `E = Πᵢ Eᵢ` to `F` factors though a normed vector space in the same universe as
 `⨂[𝕜] i, Eᵢ`.
 
 We then prove the universal property and the functoriality of `⨂[𝕜] i, Eᵢ` as a normed vector
@@ -49,19 +49,19 @@ depends on PR #11156. It should probably go in a separate file.
 and `(⨂[𝕜] i, Eᵢ) →L[𝕜] F`, as a continuous linear equivalence.
 * `PiTensorProduct.liftIsometry`: The bijection between `ContinuousMultilinearMap 𝕜 E F`
 and `(⨂[𝕜] i, Eᵢ) →L[𝕜] F`, as an isometric linear equivalence.
-* `PiTensorProduct.tprodL`: The canonical continuous multilinear map from `E`
+* `PiTensorProduct.tprodL`: The canonical continuous multilinear map from `E = Πᵢ Eᵢ`
 to `⨂[𝕜] i, Eᵢ`.
 * `PiTensorProduct.mapL`: The continuous linear map from `⨂[𝕜] i, Eᵢ` to `⨂[𝕜] i, E'ᵢ`
 induced by a family of continuous linear maps `Eᵢ →L[𝕜] E'ᵢ`.
 * `PiTensorProduct.mapLMultilinear`: The continuous multilinear map from
-`fun i ↦ (Eᵢ →L[𝕜] E'ᵢ)` to `(⨂[𝕜] i, Eᵢ) →L[𝕜] (⨂[𝕜] i, E'ᵢ)` sending a family
+`Πᵢ (Eᵢ →L[𝕜] E'ᵢ)` to `(⨂[𝕜] i, Eᵢ) →L[𝕜] (⨂[𝕜] i, E'ᵢ)` sending a family
 `f` to `PiTensorProduct.mapL f`.
 
 ## Main results
 
 * `PiTensorProduct.injectiveSeminorm_bound`: The main property of the injective seminorm on
-`⨂[𝕜] i, Eᵢ`: for every `x` in `⨂[𝕜] i, Eᵢ` and every continuous multilinear map `f` from `E`
-to a normed space `F`, we have `‖f.lift x‖ ≤ ‖f‖ * injectiveSeminorm x `.
+`⨂[𝕜] i, Eᵢ`: for every `x` in `⨂[𝕜] i, Eᵢ` and every continuous multilinear map `f` from
+`E = Πᵢ Eᵢ` to a normed space `F`, we have `‖f.lift x‖ ≤ ‖f‖ * injectiveSeminorm x `.
 * `PiTensorProduct.mapL_opNorm`: If `f` is a family of continuous linear maps
 `fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
 * `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vecteor space, then
@@ -289,7 +289,7 @@ noncomputable def liftIsometry  : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[�
 
 variable {E F}
 
-/-- The canonical continuous multilinear map from `E` to `⨂[𝕜] i, Eᵢ`.
+/-- The canonical continuous multilinear map from `E = Πᵢ Eᵢ` to `⨂[𝕜] i, Eᵢ`.
 -/
 @[simps!]
 noncomputable def tprodL : ContinuousMultilinearMap 𝕜 E (⨂[𝕜] i, E i) :=
