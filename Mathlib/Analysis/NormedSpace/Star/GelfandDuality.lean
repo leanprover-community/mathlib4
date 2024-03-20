@@ -132,7 +132,6 @@ end ComplexBanachAlgebra
 section ComplexCstarAlgebra
 
 variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
-
 variable [StarRing A] [CstarRing A] [StarModule ℂ A]
 
 theorem gelfandTransform_map_star (a : A) :
@@ -180,7 +179,7 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
     points in `C(characterSpace ℂ A, ℂ)` and is closed under `star`. -/
   have h : rng.topologicalClosure = rng := le_antisymm
     (StarSubalgebra.topologicalClosure_minimal le_rfl
-      (gelfandTransform_isometry A).closedEmbedding.closed_range)
+      (gelfandTransform_isometry A).closedEmbedding.isClosed_range)
     (StarSubalgebra.le_topologicalClosure _)
   refine' h ▸ ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
     _ (fun _ _ => _)

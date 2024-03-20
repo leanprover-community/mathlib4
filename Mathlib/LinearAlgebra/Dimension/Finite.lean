@@ -24,9 +24,7 @@ noncomputable section
 universe u v v' w
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'} {ι : Type w}
-
 variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
-
 variable [Module R M] [Module R M'] [Module R M₁]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
@@ -67,7 +65,6 @@ lemma rank_eq_zero_iff :
     simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
 variable [Nontrivial R]
-
 variable [NoZeroSMulDivisors R M]
 
 theorem rank_zero_iff_forall_zero [NoZeroSMulDivisors R M] :

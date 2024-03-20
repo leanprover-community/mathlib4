@@ -47,9 +47,9 @@ of `Shrinkable MyType` and `SampleableExt MyType`. We can define one as follows:
 
 ```lean
 instance : Shrinkable MyType where
-  shrink := λ ⟨x,y,h⟩ =>
+  shrink := fun ⟨x,y,h⟩ ↦
     let proxy := Shrinkable.shrink (x, y - x)
-    proxy.map (λ ⟨⟨fst, snd⟩, ha⟩ => ⟨⟨fst, fst + snd, sorry⟩, sorry⟩)
+    proxy.map (fun ⟨⟨fst, snd⟩, ha⟩ ↦ ⟨⟨fst, fst + snd, sorry⟩, sorry⟩)
 
 instance : SampleableExt MyType :=
   SampleableExt.mkSelfContained do

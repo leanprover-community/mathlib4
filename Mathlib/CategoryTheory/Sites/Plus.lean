@@ -30,13 +30,11 @@ open Opposite
 universe w v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-
 variable {D : Type w} [Category.{max v u} D]
 
 noncomputable section
 
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-
 variable (P : Cᵒᵖ ⥤ D)
 
 /-- The diagram whose colimit defines the values of `plus`. -/
@@ -107,7 +105,6 @@ def diagramFunctor (X : C) : (Cᵒᵖ ⥤ D) ⥤ (J.Cover X)ᵒᵖ ⥤ D where
 #align category_theory.grothendieck_topology.diagram_functor CategoryTheory.GrothendieckTopology.diagramFunctor
 
 variable {D}
-
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
 /-- The plus construction, associating a presheaf to any presheaf.

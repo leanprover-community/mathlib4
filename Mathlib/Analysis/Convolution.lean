@@ -107,9 +107,7 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup E'] [NormedAddCommGroup E'']
 section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜]
-
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace 𝕜 F]
-
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 
 section NoMeasurability
@@ -583,7 +581,6 @@ theorem MeasureTheory.Integrable.integrable_convolution (hf : Integrable f μ)
 end
 
 variable [TopologicalSpace G]
-
 variable [TopologicalAddGroup G]
 
 protected theorem HasCompactSupport.convolution [T2Space G] (hcf : HasCompactSupport f)
@@ -708,7 +705,6 @@ variable [IsAddLeftInvariant μ] [IsNegInvariant μ]
 section Measurable
 
 variable [MeasurableNeg G]
-
 variable [MeasurableAdd G]
 
 /-- Commutativity of convolution -/
@@ -752,9 +748,7 @@ theorem convolution_neg_of_neg_eq (h1 : ∀ᵐ x ∂μ, f (-x) = f x) (h2 : ∀�
 end Measurable
 
 variable [TopologicalSpace G]
-
 variable [TopologicalAddGroup G]
-
 variable [BorelSpace G]
 
 theorem HasCompactSupport.continuous_convolution_left
@@ -798,7 +792,6 @@ theorem convolution_eq_right' {x₀ : G} {R : ℝ} (hf : support f ⊆ ball (0 :
 #align convolution_eq_right' convolution_eq_right'
 
 variable [BorelSpace G] [SecondCountableTopology G]
-
 variable [IsAddLeftInvariant μ] [SigmaFinite μ]
 
 /-- Approximate `(f ⋆ g) x₀` if the support of the `f` is bounded within a ball, and `g` is near
@@ -910,39 +903,24 @@ open scoped Convolution
 section IsROrC
 
 variable [IsROrC 𝕜]
-
 variable [NormedSpace 𝕜 E]
-
 variable [NormedSpace 𝕜 E']
-
 variable [NormedSpace 𝕜 E'']
-
 variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
-
 variable {n : ℕ∞}
-
 variable [CompleteSpace F]
-
 variable [MeasurableSpace G] {μ ν : MeasureTheory.Measure G}
-
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 
 section Assoc
 
 variable [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [CompleteSpace F']
-
 variable [NormedAddCommGroup F''] [NormedSpace ℝ F''] [NormedSpace 𝕜 F''] [CompleteSpace F'']
-
 variable {k : G → E''}
-
 variable (L₂ : F →L[𝕜] E'' →L[𝕜] F')
-
 variable (L₃ : E →L[𝕜] F'' →L[𝕜] F')
-
 variable (L₄ : E' →L[𝕜] E'' →L[𝕜] F'')
-
 variable [AddGroup G]
-
 variable [SigmaFinite μ] [SigmaFinite ν] [IsAddRightInvariant μ]
 
 theorem integral_convolution [MeasurableAdd₂ G] [MeasurableNeg G] [NormedSpace ℝ E]
@@ -1094,25 +1072,15 @@ end IsROrC
 section Real
 
 /-! The one-variable case -/
-
 variable [IsROrC 𝕜]
-
 variable [NormedSpace 𝕜 E]
-
 variable [NormedSpace 𝕜 E']
-
 variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
-
 variable {f₀ : 𝕜 → E} {g₀ : 𝕜 → E'}
-
 variable {n : ℕ∞}
-
 variable (L : E →L[𝕜] E' →L[𝕜] F)
-
 variable [CompleteSpace F]
-
 variable {μ : MeasureTheory.Measure 𝕜}
-
 variable [IsAddLeftInvariant μ] [SigmaFinite μ]
 
 theorem HasCompactSupport.hasDerivAt_convolution_right (hf : LocallyIntegrable f₀ μ)

@@ -42,7 +42,6 @@ section Fintype
 open FiniteDimensional
 
 variable (K : Type*) [Field K] [NumberField K]
-
 variable (A : Type*) [Field A] [CharZero A]
 
 /-- There are finitely many embeddings of a number field. -/
@@ -85,7 +84,6 @@ section Bounded
 open FiniteDimensional Polynomial Set
 
 variable {K : Type*} [Field K] [NumberField K]
-
 variable {A : Type*} [NormedField A] [IsAlgClosed A] [NormedAlgebra ℚ A]
 
 theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x‖ ≤ B) (i : ℕ) :
@@ -279,9 +277,9 @@ namespace NumberField.InfinitePlace
 
 open NumberField
 
-instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ :=
-{ coe := fun w x => w.1 x
-  coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)}
+instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
+  coe w x := w.1 x
+  coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
   map_mul w _ _ := w.1.map_mul _ _
@@ -653,7 +651,6 @@ lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤
 
 variable [Algebra k K] [Algebra k F] [Algebra K F] [IsScalarTower k K F]
 variable (σ : K ≃ₐ[k] K) (w : InfinitePlace K)
-
 variable (k K)
 
 lemma card_mono [NumberField k] [NumberField K] :
@@ -1060,12 +1057,12 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
   let f := w.embedding
   have hζ' : IsPrimitiveRoot (f ζ) k := hζ.map_of_injective f.injective
   have him : (f ζ).im = 0 := by
-    · rw [← Complex.conj_eq_iff_im, ← NumberField.ComplexEmbedding.conjugate_coe_eq]
-      congr
+    rw [← Complex.conj_eq_iff_im, ← NumberField.ComplexEmbedding.conjugate_coe_eq]
+    congr
   have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
-    · rw [← Complex.abs_re_eq_abs] at him
-      have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by linarith)
-      rwa [Complex.norm_eq_abs, ← him, ← abs_one, abs_eq_abs] at this
+    rw [← Complex.abs_re_eq_abs] at him
+    have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by linarith)
+    rwa [Complex.norm_eq_abs, ← him, ← abs_one, abs_eq_abs] at this
   cases hre with
   | inl hone =>
     exact hζ'.ne_one (by linarith) <| Complex.ext (by simp [hone]) (by simp [him])
