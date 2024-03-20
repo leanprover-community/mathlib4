@@ -147,12 +147,9 @@ sense that the gcd of `{a, b, c}` is `1`. -/
 lemma FermatLastTheoremWith_int_of_FermatLastTheoremWith_int_coprime {n : ℕ}
     (hn : ∀ a b c : ℤ, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset ℤ).gcd id = 1 →
       a ^ n + b ^ n ≠ c ^ n) :
-    FermatLastTheoremWith ℤ n := by
-  refine fermatLastTheoremWith_of_FermatLastTheoremWith_coprime (R := ℤ)
-    (fun a b c ha hb hc H h ↦ hn a b c ha hb hc ?_ h)
-  rcases Int.isUnit_iff.1 H with (H | H)
-  · exact H
-  · simp at H
+    FermatLastTheoremWith ℤ n :=
+  fermatLastTheoremWith_of_FermatLastTheoremWith_coprime
+    (fun a b c ha hb hc H h ↦ hn a b c ha hb hc H h)
 
 /-- To prove Fermat Last Theorem one can assume that `a`, `b` and `c` are coprime, in the sense
 that the gcd of `{a, b, c}` is `1`. -/
