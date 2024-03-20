@@ -160,7 +160,7 @@ theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   refine' ⟨j / k, _, Nat.cast_le.mp (hden.trans hk₁)⟩
   rw [← div_div, le_div_iff (Nat.cast_pos.mpr <| Rat.pos _ : (0 : ℝ) < _)]
   refine' (mul_le_mul_of_nonneg_left (Int.cast_le.mpr hden : _ ≤ (k : ℝ)) (abs_nonneg _)).trans _
-  rwa [← abs_of_pos hk₀', Rat.cast_div, Rat.cast_coe_int, Rat.cast_coe_int, ← abs_mul, sub_mul,
+  rwa [← abs_of_pos hk₀', Rat.cast_div, Rat.cast_intCast, Rat.cast_intCast, ← abs_mul, sub_mul,
     div_mul_cancel _ hk₀'.ne', mul_comm]
 #align real.exists_rat_abs_sub_le_and_denom_le Real.exists_rat_abs_sub_le_and_den_le
 
@@ -382,7 +382,7 @@ theorem continued_fraction_convergent_eq_convergent (ξ : ℝ) (n : ℕ) :
     (GeneralizedContinuedFraction.of ξ).convergents n = ξ.convergent n := by
   induction' n with n ih generalizing ξ
   · simp only [Nat.zero_eq, zeroth_convergent_eq_h, of_h_eq_floor, convergent_zero,
-      Rat.cast_coe_int]
+      Rat.cast_intCast]
   · rw [convergents_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
     norm_cast
 #align real.continued_fraction_convergent_eq_convergent Real.continued_fraction_convergent_eq_convergent

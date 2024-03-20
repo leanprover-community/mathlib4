@@ -23,14 +23,14 @@ theorem log_add_one_le_harmonic (n : ℕ) :
        _ = harmonic n := ?_
   · rw [Nat.cast_one, integral_inv (by simp [(show ¬ (1 : ℝ) ≤ 0 by norm_num)]), div_one]
   · exact (inv_antitoneOn_Icc_right <| by norm_num).integral_le_sum_Ico (Nat.le_add_left 1 n)
-  · simp only [harmonic_eq_sum_Icc, Rat.cast_sum, Rat.cast_inv, Rat.cast_coe_nat]
+  · simp only [harmonic_eq_sum_Icc, Rat.cast_sum, Rat.cast_inv, Rat.cast_natCast]
 
 theorem harmonic_le_one_add_log (n : ℕ) :
     harmonic n ≤ 1 + Real.log n := by
   by_cases hn0 : n = 0
   · simp [hn0]
   have hn : 1 ≤ n := Nat.one_le_iff_ne_zero.mpr hn0
-  simp_rw [harmonic_eq_sum_Icc, Rat.cast_sum, Rat.cast_inv, Rat.cast_coe_nat]
+  simp_rw [harmonic_eq_sum_Icc, Rat.cast_sum, Rat.cast_inv, Rat.cast_natCast]
   rw [← Finset.sum_erase_add (Finset.Icc 1 n) _ (Finset.left_mem_Icc.mpr hn), add_comm,
     Nat.cast_one, inv_one]
   refine add_le_add_left ?_ 1

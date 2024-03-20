@@ -277,12 +277,12 @@ variable [LinearOrderedField α] [Archimedean α] {x y ε : α}
 
 theorem exists_rat_gt (x : α) : ∃ q : ℚ, x < q :=
   let ⟨n, h⟩ := exists_nat_gt x
-  ⟨n, by rwa [Rat.cast_coe_nat]⟩
+  ⟨n, by rwa [Rat.cast_natCast]⟩
 #align exists_rat_gt exists_rat_gt
 
 theorem exists_rat_lt (x : α) : ∃ q : ℚ, (q : α) < x :=
   let ⟨n, h⟩ := exists_int_lt x
-  ⟨n, by rwa [Rat.cast_coe_int]⟩
+  ⟨n, by rwa [Rat.cast_intCast]⟩
 #align exists_rat_lt exists_rat_lt
 
 theorem exists_rat_btwn {x y : α} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : α) < y := by
@@ -291,7 +291,7 @@ theorem exists_rat_btwn {x y : α} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : α)
   refine' ⟨(z + 1 : ℤ) / n, _⟩
   have n0' := (inv_pos.2 (sub_pos.2 h)).trans nh
   have n0 := Nat.cast_pos.1 n0'
-  rw [Rat.cast_div_of_ne_zero, Rat.cast_coe_nat, Rat.cast_coe_int, div_lt_iff n0']
+  rw [Rat.cast_div_of_ne_zero, Rat.cast_natCast, Rat.cast_intCast, div_lt_iff n0']
   refine' ⟨(lt_div_iff n0').2 <| (lt_iff_lt_of_le_iff_le (zh _)).1 (lt_add_one _), _⟩
   rw [Int.cast_add, Int.cast_one]
   refine' lt_of_le_of_lt (add_le_add_right ((zh _).1 le_rfl) _) _
@@ -385,7 +385,7 @@ theorem archimedean_iff_rat_lt : Archimedean α ↔ ∀ x : α, ∃ q : ℚ, x <
       let ⟨q, h⟩ := H x
       ⟨⌈q⌉₊,
         lt_of_lt_of_le h <| by
-          simpa only [Rat.cast_coe_nat] using (@Rat.cast_le α _ _ _).2 (Nat.le_ceil _)⟩⟩
+          simpa only [Rat.cast_natCast] using (@Rat.cast_le α _ _ _).2 (Nat.le_ceil _)⟩⟩
 #align archimedean_iff_rat_lt archimedean_iff_rat_lt
 
 theorem archimedean_iff_rat_le : Archimedean α ↔ ∀ x : α, ∃ q : ℚ, x ≤ q :=
