@@ -17,15 +17,19 @@ of a group isomorphism `W ≃* Matrix.CoxeterGroup M`, where `Matrix.CoxeterGrou
 the quotient of the free group on `B` by the Coxeter relations given by the matrix `M`. See
 `Mathlib.GroupTheory.Coxeter.Basic` for more details.
 
-We define the length function $\ell : W → \mathbb{N}$, and we prove that
-$\ell (w_1 w_2) \leq \ell (w_1) + \ell (w_2)$
-and that $\ell (w_1 w_2)$ and $\ell (w_1) + \ell (w_2)$ have the same parity.
+Given any element $w \in W$, its *length*, denoted $\ell(w)$, is the minimum number $\ell$ such that
+$w$ can be written as a product of a sequence of $\ell$ simple reflections:
+$$w = s_{i_1}\cdots s_{i_\ell}.$$
+
+We prove for all $w_1, w_2 \in W$ that $\ell (w_1 w_2) \leq \ell (w_1) + \ell (w_2)$
+and that $\ell (w_1 w_2)$ has the same parity as $\ell (w_1) + \ell (w_2)$.
 
 We define a *reduced word* for an element $w \in W$ to be a way of writing $w$ as a product
 of exactly $\ell(w)$ simple reflections. Every element of $W$ has a reduced word.
 
 ## Main definitions
 * `cs.length`
+* `cs.IsReduced`
 
 ## References
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
