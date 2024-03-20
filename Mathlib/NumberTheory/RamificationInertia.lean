@@ -45,9 +45,7 @@ namespace Ideal
 universe u v
 
 variable {R : Type u} [CommRing R]
-
 variable {S : Type v} [CommRing S] (f : R →+* S)
-
 variable (p : Ideal R) (P : Ideal S)
 
 open FiniteDimensional
@@ -227,19 +225,12 @@ open scoped BigOperators
 open scoped nonZeroDivisors
 
 variable [Algebra R S]
-
 variable {K : Type*} [Field K] [Algebra R K] [hRK : IsFractionRing R K]
-
 variable {L : Type*} [Field L] [Algebra S L] [IsFractionRing S L]
-
 variable {V V' V'' : Type*}
-
 variable [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
-
 variable [AddCommGroup V'] [Module R V'] [Module S V'] [IsScalarTower R S V']
-
 variable [AddCommGroup V''] [Module R V'']
-
 variable (K)
 
 /-- Let `V` be a vector space over `K = Frac(R)`, `S / R` a ring extension
