@@ -246,21 +246,17 @@ def labelled (env : Environment) : IO (Array Name) :=
 --     -- TODO: this is cargo-culted, check it makes sense to change from the default.
 --     (applicationTime := AttributeApplicationTime.afterCompilation)
 
-/- Run by `syntax_rules` to guide elaboration based on the category appearing in syntax. -/
-/-- Turn a `linting_rules` command into `SyntaxRuleData`. -/
-@[syntax_rules_header lintingRulesHeader]
-def toSyntaxRuleData : ToSyntaxRuleData := fun
-  | `(lintingRulesHeader|linting_rules : $id:ident) => do
-    /-TODO: we rather fragilely assume that the decl specifying the `SyntaxRuleData` is constructed
-    as `` `LintingRules.Category ++ id ``. This is enforced by `registerLintingRuleCategory`.
-    Ideally this would be a parameter to the attribute which would key the decl (or something like
-    that). -/
-    let decl := `LintingRules.Category ++ id.getId
-    let .true := (← labelled (← getEnv)).contains decl -- lintingRulesCatAttr.hasTag (← getEnv) decl
-      | throwErrorAt id "{id} is not a recognized linting_rules category."
-    addConstInfo id decl -- show docstring provided for `register_linting_rules_cat ..` on `id`
-    return (← unsafe evalConstCheck LintingRulesCatImpl ``LintingRulesCatImpl decl).toSyntaxRuleData
-  | _ => throwUnsupportedSyntax
+syntax_rules_header
+| `(lintingRulesHeader|linting_rules : $id:ident) => do
+  /-TODO: we rather fragilely assume that the decl specifying the `SyntaxRuleData` is constructed
+  as `` `LintingRules.Category ++ id ``. This is enforced by `registerLintingRuleCategory`.
+  Ideally this would be a parameter to the attribute which would key the decl (or something like
+  that). -/
+  let decl := `LintingRules.Category ++ id.getId
+  let .true := (← labelled (← getEnv)).contains decl -- lintingRulesCatAttr.hasTag (← getEnv) decl
+    | throwErrorAt id "{id} is not a recognized linting_rules category."
+  addConstInfo id decl -- show docstring provided for `register_linting_rules_cat ..` on `id`
+  return (← unsafe evalConstCheck LintingRulesCatImpl ``LintingRulesCatImpl decl).toSyntaxRuleData
 
 end attr
 
