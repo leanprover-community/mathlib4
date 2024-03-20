@@ -136,7 +136,7 @@ noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[�
 normed vector spaces `F`. In fact, we only take in the same universe as `⨂[𝕜] i, Eᵢ`, and then
 prove in `PiTensorProduct.injectiveSeminorm_bound` that this gives the same result.
 -/
-noncomputable def injectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) :=
+noncomputable irreducible_def injectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) :=
   sSup {p | ∃ (G : Type (max (max u_1 u_2) u_3)) (_ : SeminormedAddCommGroup G)
   (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
   (toDualContinuousMultilinearMap (F := G) (𝕜 := 𝕜) (E := E))}
@@ -169,8 +169,9 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max (max u_1 u_2) u_3))
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
     (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
-    (toDualContinuousMultilinearMap (F := G) (𝕜 := 𝕜) (E := E))}, p.1 x :=
-  Seminorm.sSup_apply dualSeminorms_bounded
+    (toDualContinuousMultilinearMap (F := G) (𝕜 := 𝕜) (E := E))}, p.1 x := by
+  simp [injectiveSeminorm]
+  exact Seminorm.sSup_apply dualSeminorms_bounded
 
 theorem injectiveSeminorm_bound (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
     ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
