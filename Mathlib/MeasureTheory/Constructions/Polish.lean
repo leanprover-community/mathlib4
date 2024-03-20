@@ -1054,7 +1054,7 @@ theorem exists_nat_measurableEquiv_range_coe_fin_of_finite [Finite α] :
 theorem measurableEquiv_range_coe_nat_of_infinite_of_countable [Infinite α] [Countable α] :
     Nonempty (α ≃ᵐ range ((↑) : ℕ → ℝ)) := by
   have : PolishSpace (range ((↑) : ℕ → ℝ)) :=
-    Nat.closedEmbedding_coe_real.isClosedMap.closed_range.polishSpace
+    Nat.closedEmbedding_coe_real.isClosedMap.isClosed_range.polishSpace
   refine' ⟨PolishSpace.Equiv.measurableEquiv _⟩
   refine' (nonempty_equiv_of_countable.some : α ≃ ℕ).trans _
   exact Equiv.ofInjective ((↑) : ℕ → ℝ) Nat.cast_injective

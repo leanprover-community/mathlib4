@@ -3,6 +3,7 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.Dvd.Basic
@@ -478,7 +479,7 @@ theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 
   rcases m with (rfl | m); · simp [hn]
   obtain ⟨y, rfl⟩ := isUnit_ofPowEqOne hm m.succ_ne_zero
   simp only [← Units.val_pow_eq_pow_val] at *
-  rw [← Units.val_one, ← zpow_coe_nat, ← Units.ext_iff] at *
+  rw [← Units.val_one, ← zpow_natCast, ← Units.ext_iff] at *
   simp only [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, hm, hn, one_zpow, one_mul]
 #align pow_gcd_eq_one pow_gcd_eq_one
 #align gcd_nsmul_eq_zero gcd_nsmul_eq_zero
@@ -497,10 +498,10 @@ protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.C
   by_cases ha : a = 0; · exact ⟨0, by have := h.symm; aesop⟩
   refine ⟨a ^ Nat.gcdB m n * b ^ Nat.gcdA m n, ?_, ?_⟩ <;>
   · refine (pow_one _).symm.trans ?_
-    conv_lhs => rw [← zpow_coe_nat, ← hmn, Nat.gcd_eq_gcd_ab]
-    simp only [zpow_add₀ ha, zpow_add₀ hb, ← zpow_coe_nat, (hab.zpow_zpow₀ _ _).mul_zpow,
+    conv_lhs => rw [← zpow_natCast, ← hmn, Nat.gcd_eq_gcd_ab]
+    simp only [zpow_add₀ ha, zpow_add₀ hb, ← zpow_natCast, (hab.zpow_zpow₀ _ _).mul_zpow,
       ← zpow_mul, mul_comm (Nat.gcdB m n), mul_comm (Nat.gcdA m n)]
-    simp only [zpow_mul, zpow_coe_nat, h]
+    simp only [zpow_mul, zpow_natCast, h]
     exact ((Commute.pow_pow (by aesop) _ _).zpow_zpow₀ _ _).symm
 
 end GroupWithZero
