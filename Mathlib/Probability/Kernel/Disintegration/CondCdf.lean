@@ -173,7 +173,7 @@ theorem measurable_preCDF {ρ : Measure (α × ℝ)} {r : ℚ} : Measurable (pre
 #align probability_theory.measurable_pre_cdf ProbabilityTheory.measurable_preCDF
 
 lemma measurable_preCDF' {ρ : Measure (α × ℝ)} :
-    Measurable fun a r ↦ ENNReal.toReal (preCDF ρ r a) := by
+    Measurable fun a r ↦ (preCDF ρ r a).toReal := by
     rw [measurable_pi_iff]
     exact fun _ ↦ measurable_preCDF.ennreal_toReal
 
@@ -216,7 +216,7 @@ theorem preCDF_le_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
   exact Measure.IicSnd_le_fst ρ r s
 #align probability_theory.pre_cdf_le_one ProbabilityTheory.preCDF_le_one
 
-theorem set_integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α} (hs : MeasurableSet s)
+lemma set_integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α} (hs : MeasurableSet s)
     [IsFiniteMeasure ρ] :
     ∫ x in s, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r s).toReal := by
   rw [integral_toReal]
@@ -230,7 +230,7 @@ lemma integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure 
     ∫ x, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r univ).toReal := by
   rw [← integral_univ, set_integral_preCDF_fst ρ _ MeasurableSet.univ]
 
-theorem integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ) :
+lemma integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ) :
     Integrable (fun a ↦ (preCDF ρ x a).toReal) ρ.fst := by
   refine integrable_of_forall_fin_meas_le _ (measure_lt_top ρ.fst univ) ?_ fun t _ _ ↦ ?_
   · exact measurable_preCDF.ennreal_toReal.aestronglyMeasurable
@@ -268,8 +268,8 @@ lemma isRatCondKernelCDFAux_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure �
       ENNReal.continuousAt_toReal (measure_ne_top _ _)
     exact h0.comp (h.comp hs_tendsto)
   integrable _ q := integrable_preCDF ρ q
-  set_integral a s hs q := by rw [kernel.const_apply, kernel.const_apply, set_integral_preCDF_fst _ _ hs,
-    Measure.IicSnd_apply _ _ hs]
+  set_integral a s hs q := by rw [kernel.const_apply, kernel.const_apply,
+    set_integral_preCDF_fst _ _ hs, Measure.IicSnd_apply _ _ hs]
 
 lemma isRatCondKernelCDF_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
     IsRatCondKernelCDF (fun p r ↦ (preCDF ρ r p.2).toReal)
