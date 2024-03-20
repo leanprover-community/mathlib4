@@ -335,6 +335,33 @@ theorem cone_iso_of_hom_iso {K : J ⥤ C} {c d : Cone K} (f : c ⟶ d) [i : IsIs
         w := fun j => (asIso f.hom).inv_comp_eq.2 (f.w j).symm }, by aesop_cat⟩⟩
 #align category_theory.limits.cones.cone_iso_of_hom_iso CategoryTheory.Limits.Cones.cone_iso_of_hom_iso
 
+/-- There is a morphism from an extended cone to the original cone. -/
+@[simps]
+def extend (s : Cone F) {X : C} (f : X ⟶ s.pt) : s.extend f ⟶ s where
+  hom := f
+
+/-- Extending a cone by the identity does nothing. -/
+@[simps!]
+def extendId (s : Cone F) : s.extend (𝟙 s.pt) ≅ s :=
+  Cones.ext (Iso.refl _)
+
+/-- Extending a cone by a composition is the same as extending the cone twice. -/
+@[simps!]
+def extendComp (s : Cone F) {X Y : C} (f : X ⟶ Y) (g : Y ⟶ s.pt) :
+    s.extend (f ≫ g) ≅ (s.extend g).extend f :=
+  Cones.ext (Iso.refl _)
+
+/-- A cone extended by an isomorphism is isomorphic to the original cone. -/
+@[simps]
+def extendIso (s : Cone F) {X : C} (f : X ≅ s.pt) : s.extend f.hom ≅ s where
+  hom := { hom := f.hom }
+  inv := { hom := f.inv }
+
+/-- A cone extended by an isomorphism is isomorphic to the original cone. -/
+@[simps!]
+noncomputable def extendIsIso {s : Cone F} {X : C} (f : X ⟶ s.pt) [IsIso f] : s.extend f ≅ s :=
+  extendIso s (asIso f)
+
 /--
 Functorially postcompose a cone for `F` by a natural transformation `F ⟶ G` to give a cone for `G`.
 -/

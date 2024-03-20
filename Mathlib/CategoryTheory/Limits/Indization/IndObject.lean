@@ -66,6 +66,13 @@ variable {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A)
 instance : SmallCategory P.I := P.ℐ
 instance : IsFiltered P.I := P.hI
 
+def congr {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ≅ B) :
+    IndObjectPresentation B where
+  I := P.I
+  F := P.F
+  ι := P.ι ≫ (Functor.const P.I).map η.hom
+  isColimit := sorry
+
 /-- The (colimit) cocone with cocone point `A`. -/
 @[simps pt]
 def cocone : Cocone (P.F ⋙ yoneda) where
