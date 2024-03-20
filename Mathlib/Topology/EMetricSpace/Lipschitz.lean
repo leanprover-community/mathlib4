@@ -364,7 +364,7 @@ protected lemma const (b : β) : LocallyLipschitz (fun _ : α ↦ b) :=
 /-- A locally Lipschitz function is continuous. (The converse is false: for example,
 $x ↦ \sqrt{x}$ is continuous, but not locally Lipschitz at 0.) -/
 protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continuous f := by
-  apply continuous_iff_continuousAt.mpr
+  rw [continuous_iff_continuousAt]
   intro x
   rcases (hf x) with ⟨K, t, ht, hK⟩
   exact (hK.continuousOn).continuousAt ht

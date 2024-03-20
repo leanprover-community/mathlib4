@@ -76,7 +76,7 @@ def ofNearby (x : Rˣ) (y : R) (h : ‖y - x‖ < ‖(↑x⁻¹ : R)‖⁻¹) : 
 /-- The group of units of a complete normed ring is an open subset of the ring. -/
 protected theorem isOpen : IsOpen { x : R | IsUnit x } := by
   nontriviality R
-  apply Metric.isOpen_iff.mpr
+  rw [Metric.isOpen_iff]
   rintro _ ⟨x, rfl⟩
   refine' ⟨‖(↑x⁻¹ : R)‖⁻¹, _root_.inv_pos.mpr (Units.norm_pos x⁻¹), fun y hy ↦ _⟩
   rw [mem_ball_iff_norm] at hy

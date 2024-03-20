@@ -171,7 +171,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     (sup_mem : ∀ᵉ (f ∈ L) (g ∈ L), f ⊔ g ∈ L) (sep : L.SeparatesPointsStrongly) :
     closure L = ⊤ := by
   -- We start by boiling down to a statement about close approximation.
-  apply eq_top_iff.mpr
+  rw [eq_top_iff]
   rintro f -
   refine'
     Filter.Frequently.mem_closure

@@ -1765,7 +1765,7 @@ theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) :
       · rintro _ ⟨x', rfl⟩
         exact (inverse_continuousAt x').continuousWithinAt
       · simp [ftaylorSeriesWithin]
-  · apply contDiffAt_succ_iff_hasFDerivAt.mpr
+  · rw [contDiffAt_succ_iff_hasFDerivAt]
     refine' ⟨fun x : R => -mulLeftRight 𝕜 R (inverse x) (inverse x), _, _⟩
     · refine' ⟨{ y : R | IsUnit y }, x.nhds, _⟩
       rintro _ ⟨y, rfl⟩
@@ -1883,7 +1883,7 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
   · rw [contDiffAt_zero]
     exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuousOn_invFun⟩
   · obtain ⟨f', ⟨u, hu, hff'⟩, hf'⟩ := contDiffAt_succ_iff_hasFDerivAt.mp hf
-    apply contDiffAt_succ_iff_hasFDerivAt.mpr
+    rw [contDiffAt_succ_iff_hasFDerivAt]
     -- For showing `n.succ` times continuous differentiability (the main inductive step), it
     -- suffices to produce the derivative and show that it is `n` times continuously differentiable
     have eq_f₀' : f' (f.symm a) = f₀' := (hff' (f.symm a) (mem_of_mem_nhds hu)).unique hf₀'
