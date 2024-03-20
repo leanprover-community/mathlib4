@@ -675,6 +675,9 @@ local prefix:100 "π" => cs.wordProd
 @[simp] theorem wordProd_cons (i : B) (ω : List B) :
     π (i :: ω) = s i * π ω := by simp [wordProd]
 
+theorem wordProd_singleton (i : B) :
+    π ([i]) = s i := by simp [wordProd]
+
 theorem wordProd_concat (i : B) (ω : List B) :
     π (ω.concat i) = π ω * s i := by simp [wordProd]
 
