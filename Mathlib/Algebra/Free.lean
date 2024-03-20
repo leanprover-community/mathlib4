@@ -6,7 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
-import Mathlib.Data.List.InsertNth
+import Mathlib.Data.List.Basic
 import Mathlib.Logic.Equiv.Defs
 
 #align_import algebra.free from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
