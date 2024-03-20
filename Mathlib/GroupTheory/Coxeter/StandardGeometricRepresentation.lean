@@ -180,7 +180,7 @@ def standardBilinForm (M : Matrix B B ℕ) : LinearMap.BilinForm ℝ V :=
 
 local notation:max "⟪"  a  ","  b  "⟫" => Matrix.standardBilinForm M a b
 
-@[simp] theorem standardBilinForm_simpleRoot_self (i : B) :
+theorem standardBilinForm_simpleRoot_self (i : B) :
     ⟪α i, α i⟫ = 1 := by simp [standardBilinForm, simpleRoot, hM.diagonal i]
 
 variable (M)
@@ -320,10 +320,9 @@ theorem orthoReflection_mul_orthoReflection_pow_apply {v v' : V} (k : ℕ)
     /- Write the coefficients of v and v' as polynomials in μ. -/
     have h₁ : ∀ P : ℝ[X], eval μ P * μ ^ 2 = eval μ (X ^ 2 * P) := by simp [mul_comm]
     have h₂ : ∀ P : ℝ[X], μ * eval μ P = eval μ (X * P) := by simp
-    have h₃ : ∀ P : ℝ[X], μ * eval μ P = eval μ (X * P) := by simp
-    have h₄ : ∀ P : ℝ[X], eval μ P * 2 = eval μ (2 * P) := by simp [mul_comm]
-    have h₅ : ∀ P : ℝ[X], eval μ P * 4 = eval μ (4 * P) := by simp [mul_comm]
-    simp only [← eval_add, ← eval_mul_X, ← eval_sub, ← eval_neg, h₁, h₂, h₃, h₄, h₅]
+    have h₃ : ∀ P : ℝ[X], eval μ P * 2 = eval μ (2 * P) := by simp [mul_comm]
+    have h₄ : ∀ P : ℝ[X], eval μ P * 4 = eval μ (4 * P) := by simp [mul_comm]
+    simp only [← eval_add, ← eval_mul_X, ← eval_sub, ← eval_neg, h₁, h₂, h₃, h₄]
 
     /- Use the recurrence relations for the Chebyshev polynomials to rewrite
     all the occurrences of U ℝ (3 + k * 2), U ℝ (2 + k * 2), U ℝ (1 + k * 2).
