@@ -306,20 +306,6 @@ theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
   simp only [ContinuousMultilinearMap.coe_coe, tprodL_toFun]
 
 @[simp]
-theorem liftIsometry.tprod {f : ContinuousMultilinearMap 𝕜 E F} (m : Π (i : ι), E i) :
-    liftIsometry 𝕜 E F f (tprod 𝕜 m) = f m := by
-  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_toLinearEquiv, liftIsometry_toFun_toFun]
-  exact lift.tprod m
-
-@[simp]
-theorem liftIsometry.tprodL {f : ContinuousMultilinearMap 𝕜 E F} (m : Π (i : ι), E i) :
-    liftIsometry 𝕜 E F f (tprodL 𝕜 m) = f m := by
-  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_toLinearEquiv, tprodL_toFun, liftIsometry_toFun_toFun]
-  exact lift.tprod m
-
-@[simp]
 theorem liftIsometry_symm (l : (⨂[𝕜] i, E i) →L[𝕜] F) :
     (liftIsometry 𝕜 E F).symm l = l.compContinuousMultilinearMap (tprodL 𝕜) := by
   ext m
@@ -354,10 +340,6 @@ Let `f` be a family of continuous `𝕜`-linear maps between `Eᵢ` and `E'ᵢ`,
 -/
 noncomputable def mapL : (⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i :=
   liftIsometry 𝕜 E _ <| (tprodL 𝕜).compContinuousLinearMap f
-
-@[simp] lemma mapL_tprod (x : Π i, E i) :
-    mapL f (tprod 𝕜 x) = tprod 𝕜 fun i ↦ f i (x i) :=
-  liftIsometry.tprodL _
 
 @[simp]
 theorem mapL_coe : (mapL f).toLinearMap = map (fun i ↦ (f i).toLinearMap) := by
