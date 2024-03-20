@@ -310,9 +310,8 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   · exact discreteTopology_pi_basisFun
   · refine Subtype.map_injective _ (Basis.equivFun b).injective
 
-instance [Fintype ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup := by
-  change DiscreteTopology (span ℤ (Set.range b))
-  infer_instance
+instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :=
+  inferInstanceAs <| DiscreteTopology (span ℤ (Set.range b))
 
 @[measurability]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
