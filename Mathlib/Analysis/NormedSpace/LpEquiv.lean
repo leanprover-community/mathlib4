@@ -152,7 +152,7 @@ noncomputable def AddEquiv.lpBCF : lp (fun _ : α ↦ E) ∞ ≃+ (α →ᵇ E) 
   map_add' _f _g := rfl
 #align add_equiv.lp_bcf AddEquiv.lpBCF
 
-@[deprecated] alias AddEquiv.lpBcf := AddEquiv.lpBCF -- 2024/03/16
+@[deprecated] alias AddEquiv.lpBcf := AddEquiv.lpBCF -- 2024-03-16
 
 theorem coe_addEquiv_lpBCF (f : lp (fun _ : α ↦ E) ∞) : (AddEquiv.lpBCF f : α → E) = f :=
   rfl
@@ -175,7 +175,7 @@ noncomputable def lpBCFₗᵢ : lp (fun _ : α ↦ E) ∞ ≃ₗᵢ[𝕜] α →
 #align lp_bcfₗᵢ lpBCFₗᵢₓ
 -- Porting note: `#align`ed with an `ₓ` because `E` is now explicit, see above
 
-@[deprecated] alias lpBcfₗᵢ := lpBCFₗᵢ -- 2024/03/16
+@[deprecated] alias lpBcfₗᵢ := lpBCFₗᵢ -- 2024-03-16
 
 variable {𝕜 E}
 
@@ -197,7 +197,7 @@ noncomputable def RingEquiv.lpBCF : lp (fun _ : α ↦ R) ∞ ≃+* (α →ᵇ R
     map_mul' := fun _f _g => rfl }
 #align ring_equiv.lp_bcf RingEquiv.lpBCF
 
-@[deprecated] alias RingEquiv.lpBcf := RingEquiv.lpBCF -- 2024/03/16
+@[deprecated] alias RingEquiv.lpBcf := RingEquiv.lpBCF -- 2024-03-16
 
 variable {R}
 
@@ -219,7 +219,7 @@ noncomputable def AlgEquiv.lpBCF : lp (fun _ : α ↦ A) ∞ ≃ₐ[𝕜] α →
   { RingEquiv.lpBCF A with commutes' := fun _k ↦ rfl }
 #align alg_equiv.lp_bcf AlgEquiv.lpBCF
 
-@[deprecated] alias AlgEquiv.lpBcf := AlgEquiv.lpBCF -- 2024/03/16
+@[deprecated] alias AlgEquiv.lpBcf := AlgEquiv.lpBCF -- 2024-03-16
 
 variable {α A 𝕜}
 
