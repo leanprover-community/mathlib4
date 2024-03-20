@@ -1174,7 +1174,6 @@ def ofTop {R : Type*} [Ring R] [Module R E] (p : Submodule R E) (hp : p = ⊤) :
 #align linear_isometry_equiv.of_top LinearIsometryEquiv.ofTop
 
 variable {R E E₂ E₃} {R' : Type*} [Ring R']
-
 variable [Module R' E] (p q : Submodule R' E)
 
 /-- `LinearEquiv.ofEq` as a `LinearIsometryEquiv`. -/

@@ -220,7 +220,7 @@ instance addMonoidWithOne [OrderedSemiring α] : AddMonoidWithOne { x : α // 0 
     Nonneg.orderedAddCommMonoid with
     natCast := fun n => ⟨n, Nat.cast_nonneg n⟩
     natCast_zero := by simp
-    natCast_succ := fun _ => by simp only [Nat.cast_add, Nat.cast_one]; rfl }
+    natCast_succ := fun _ => by ext; simp }
 #align nonneg.add_monoid_with_one Nonneg.addMonoidWithOne
 
 @[simp, norm_cast]
