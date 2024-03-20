@@ -2269,7 +2269,7 @@ lemma prod_of_injective (e : ι → κ) (hf : Injective e) (f : ι → α) (g : 
   prod_of_injOn e (hf.injOn _) (by simp) (by simpa using h') (fun i _ ↦ h i)
 
 @[to_additive]
-lemma prod_fiberwise [DecidableEq κ] [Fintype ι] (g : ι → κ) (f : ι → α) :
+lemma prod_fiberwise [DecidableEq κ] (g : ι → κ) (f : ι → α) :
     ∏ j, ∏ i : {i // g i = j}, f i = ∏ i, f i := by
   rw [← Finset.prod_fiberwise _ g f]
   congr with j
@@ -2278,7 +2278,7 @@ lemma prod_fiberwise [DecidableEq κ] [Fintype ι] (g : ι → κ) (f : ι → �
 #align fintype.sum_fiberwise Fintype.sum_fiberwise
 
 @[to_additive]
-lemma prod_fiberwise' [DecidableEq κ] [Fintype ι] (g : ι → κ) (f : κ → α) :
+lemma prod_fiberwise' [DecidableEq κ] (g : ι → κ) (f : κ → α) :
     ∏ j, ∏ _i : {i // g i = j}, f j = ∏ i, f (g i) := by
   rw [← Finset.prod_fiberwise' _ g f]
   congr with j

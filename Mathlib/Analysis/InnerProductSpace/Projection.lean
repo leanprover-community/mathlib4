@@ -514,25 +514,25 @@ theorem eq_orthogonalProjection_of_mem_of_inner_eq_zero {u v : E} (hvm : v ∈ K
 
 /-- A point in `K` with the orthogonality property (here characterized in terms of `Kᗮ`) must be the
 orthogonal projection. -/
-theorem eq_orthogonalProjection_of_mem_orthogonal [HasOrthogonalProjection K] {u v : E} (hv : v ∈ K)
+theorem eq_orthogonalProjection_of_mem_orthogonal {u v : E} (hv : v ∈ K)
     (hvo : u - v ∈ Kᗮ) : (orthogonalProjection K u : E) = v :=
   eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hv <| (Submodule.mem_orthogonal' _ _).1 hvo
 #align eq_orthogonal_projection_of_mem_orthogonal eq_orthogonalProjection_of_mem_orthogonal
 
 /-- A point in `K` with the orthogonality property (here characterized in terms of `Kᗮ`) must be the
 orthogonal projection. -/
-theorem eq_orthogonalProjection_of_mem_orthogonal' [HasOrthogonalProjection K] {u v z : E}
+theorem eq_orthogonalProjection_of_mem_orthogonal' {u v z : E}
     (hv : v ∈ K) (hz : z ∈ Kᗮ) (hu : u = v + z) : (orthogonalProjection K u : E) = v :=
   eq_orthogonalProjection_of_mem_orthogonal hv (by simpa [hu] )
 #align eq_orthogonal_projection_of_mem_orthogonal' eq_orthogonalProjection_of_mem_orthogonal'
 
 @[simp]
-theorem orthogonalProjection_orthogonal_val [HasOrthogonalProjection K] (u : E) :
+theorem orthogonalProjection_orthogonal_val (u : E) :
     (orthogonalProjection Kᗮ u : E) = u - orthogonalProjection K u :=
   eq_orthogonalProjection_of_mem_orthogonal' (sub_orthogonalProjection_mem_orthogonal _)
     (K.le_orthogonal_orthogonal (orthogonalProjection K u).2) <| by simp
 
-theorem orthogonalProjection_orthogonal [HasOrthogonalProjection K] (u : E) :
+theorem orthogonalProjection_orthogonal (u : E) :
     orthogonalProjection Kᗮ u =
       ⟨u - orthogonalProjection K u, sub_orthogonalProjection_mem_orthogonal _⟩ :=
   Subtype.eq <| orthogonalProjection_orthogonal_val _

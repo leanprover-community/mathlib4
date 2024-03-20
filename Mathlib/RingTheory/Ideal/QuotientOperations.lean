@@ -58,7 +58,7 @@ theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a 
 #align ring_hom.lift_injective_of_ker_le_ideal RingHom.lift_injective_of_ker_le_ideal
 
 /-- The induced map from the quotient by the kernel is injective. -/
-theorem kerLift_injective [Semiring S] (f : R →+* S) : Function.Injective (kerLift f) :=
+theorem kerLift_injective (f : R →+* S) : Function.Injective (kerLift f) :=
   lift_injective_of_ker_le_ideal (ker f) (fun a => by simp only [mem_ker, imp_self]) le_rfl
 #align ring_hom.ker_lift_injective RingHom.kerLift_injective
 

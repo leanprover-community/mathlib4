@@ -68,8 +68,7 @@ theorem norm_zsmul [NormedSpace 𝕜 E] (n : ℤ) (x : E) : ‖n • x‖ = ‖(
   rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
 #align norm_zsmul norm_zsmul
 
-variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=

@@ -447,7 +447,7 @@ theorem exponent_ne_zero_of_finite [Finite G] : exponent G ≠ 0 :=
 #align add_monoid.exponent_ne_zero_of_finite AddMonoid.exponent_ne_zero_of_finite
 
 @[to_additive AddMonoid.one_lt_exponent]
-lemma one_lt_exponent [LeftCancelMonoid G] [Finite G] [Nontrivial G] :
+lemma one_lt_exponent [Finite G] [Nontrivial G] :
     1 < Monoid.exponent G := by
   rw [Nat.one_lt_iff_ne_zero_and_ne_one]
   exact ⟨exponent_ne_zero_of_finite, mt exp_eq_one_iff.mp (not_subsingleton G)⟩

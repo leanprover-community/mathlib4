@@ -50,7 +50,7 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 /-- The Gram-Schmidt process takes a set of vectors as input
 and outputs a set of orthogonal vectors which have the same span. -/
-noncomputable def gramSchmidt [IsWellOrder ι (· < ·)] (f : ι → E) (n : ι) : E :=
+noncomputable def gramSchmidt (f : ι → E) (n : ι) : E :=
   f n - ∑ i : Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt f i) (f n)
 termination_by n
 decreasing_by exact mem_Iio.1 i.2

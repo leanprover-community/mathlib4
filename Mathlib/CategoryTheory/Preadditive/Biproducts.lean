@@ -271,7 +271,7 @@ theorem biproduct.matrix_desc [Fintype K] {f : J → C} {g : K → C}
   simp [lift_desc]
 #align category_theory.limits.biproduct.matrix_desc CategoryTheory.Limits.biproduct.matrix_desc
 
-variable [Finite K] [HasFiniteBiproducts C]
+variable [Finite K]
 
 @[reassoc]
 theorem biproduct.matrix_map {f : J → C} {g : K → C} {h : K → C} (m : ∀ j k, f j ⟶ g k)
