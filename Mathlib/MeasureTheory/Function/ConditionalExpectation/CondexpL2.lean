@@ -329,8 +329,7 @@ theorem condexpL2_indicator_eq_toSpanSingleton_comp (hm : m ≤ m0) (hs : Measur
     (condexpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α →₂[μ] ℝ)
   rw [← EventuallyEq] at h_comp
   refine' EventuallyEq.trans _ h_comp.symm
-  refine' eventually_of_forall fun y => _
-  rfl
+  filter_upwards with y using rfl
 #align measure_theory.condexp_L2_indicator_eq_to_span_singleton_comp MeasureTheory.condexpL2_indicator_eq_toSpanSingleton_comp
 
 variable {𝕜}

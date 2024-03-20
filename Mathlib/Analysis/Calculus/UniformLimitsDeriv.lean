@@ -189,10 +189,8 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
         (l ×ˢ l) (Metric.ball x r) by
     have := this.1.add this.2
     rw [add_zero] at this
-    refine' this.congr _
-    apply eventually_of_forall
-    intro n z _
-    simp
+    refine this.congr ?_
+    filter_upwards with n z _ using (by simp)
   constructor
   · -- This inequality follows from the mean value theorem
     rw [Metric.tendstoUniformlyOn_iff] at hf' ⊢

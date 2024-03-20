@@ -196,7 +196,7 @@ theorem rnDeriv_restrict (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
   refine (rnDeriv_withDensity_left ?_ ?_ ?_).trans (ae_of_all _ (fun x ↦ ?_))
   · exact measurable_one.aemeasurable.indicator hs
   · exact measurable_one.aemeasurable.indicator hs
-  · refine ae_of_all _ (fun x ↦ ?_)
+  · filter_upwards with x
     simp only [Set.indicator_apply, Pi.one_apply, ne_eq]
     split_ifs <;> simp [ENNReal.zero_ne_top]
   · simp [Set.indicator_apply]

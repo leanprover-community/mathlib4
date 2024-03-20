@@ -199,7 +199,7 @@ theorem mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω
     rw [h_eq_univ, Set.inter_univ _]
     refine' Ne.bot_lt _
     simp only [hμ, ENNReal.bot_eq_zero, Ne.def, Measure.measure_univ_eq_zero, not_false_iff]
-  · refine' eventually_of_forall fun x => _
+  · filter_upwards with x
     rw [Pi.zero_apply]
     exact (exp_pos _).le
   · rwa [integrableOn_univ]
