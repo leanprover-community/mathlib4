@@ -10,22 +10,33 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Group
 
 /-!
-# The length function and reduced words
+# The length function, reduced words, and descents
 Throughout this file, `B` is a type and `M : Matrix B B ℕ` is a Coxeter matrix.
 `cs : CoxeterSystem M W` is a Coxeter system; that is, `W` is a group, and `cs` holds the data
 of a group isomorphism `W ≃* Matrix.CoxeterGroup M`, where `Matrix.CoxeterGroup M` refers to
 the quotient of the free group on `B` by the Coxeter relations given by the matrix `M`. See
 `Mathlib.GroupTheory.Coxeter.Basic` for more details.
 
-We define the length function $\ell : W → \mathbb{N}$, and we prove that
-$\ell (w_1 w_2) \leq \ell (w_1) + \ell (w_2)$
-and that $\ell (w_1 w_2)$ and $\ell (w_1) + \ell (w_2)$ have the same parity.
+Given any element $w \in W$, its *length*, denoted $\ell(w)$, is the minimum number $\ell$ such that
+$w$ can be written as a product of a sequence of $\ell$ simple reflections:
+$$w = s_{i_1}\cdots s_{i_\ell}.$$
+
+We prove for all $w_1, w_2 \in W$ that $\ell (w_1 w_2) \leq \ell (w_1) + \ell (w_2)$
+and that $\ell (w_1 w_2)$ has the same parity as $\ell (w_1) + \ell (w_2)$.
 
 We define a *reduced word* for an element $w \in W$ to be a way of writing $w$ as a product
 of exactly $\ell(w)$ simple reflections. Every element of $W$ has a reduced word.
 
+We say that $i \in B$ is a *left descent* of $w \in W$ if $\ell(s_i w) < \ell(w)$. We show that if
+$i$ is a left descent of $w$, then $\ell(s_i w) + 1 = \ell(w)$. On the other hand, if $i$ is not
+a left descent of $w$, then $\ell(s_i w) = \ell(w) + 1$. We similarly define right descents and
+prove analogous results.
+
 ## Main definitions
 * `cs.length`
+* `cs.IsReduced`
+* `cs.IsLeftDescent`
+* `cs.IsRightDescent`
 
 ## References
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
@@ -63,9 +74,8 @@ theorem exists_reduced_word (w : W) : ∃ ω : List B, ω.length = ℓ w ∧ w =
   have := Nat.find_spec (cs.exists_word_with_prod w)
   tauto
 
-theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length := by
-  apply Nat.find_min' (cs.exists_word_with_prod (π ω))
-  use ω
+theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length :=
+  Nat.find_min' (cs.exists_word_with_prod (π ω)) ⟨ω, by tauto⟩
 
 @[simp] theorem length_one : ℓ (1 : W) = 0 := Nat.eq_zero_of_le_zero (cs.length_wordProd_le [])
 
@@ -95,8 +105,7 @@ theorem length_mul_le (w₁ w₂ : W) :
   rcases cs.exists_reduced_word w₁ with ⟨ω₁, hω₁, rfl⟩
   rcases cs.exists_reduced_word w₂ with ⟨ω₂, hω₂, rfl⟩
   have := cs.length_wordProd_le (ω₁ ++ ω₂)
-  simp at this
-  rwa [hω₁, hω₂] at this
+  simpa [hω₁, hω₂] using this
 
 theorem length_mul_ge (w₁ w₂ : W) :
     ℓ (w₁ * w₂) ≥ max (ℓ w₁ - ℓ w₂) (ℓ w₂ - ℓ w₁) := by
@@ -115,16 +124,14 @@ theorem length_mul_ge (w₁ w₂ : W) :
 private def lengthParity (cs : CoxeterSystem M W) : W →* Multiplicative (ZMod 2) := cs.lift (
     show IsLiftable M (fun _ ↦ Multiplicative.ofAdd 1) by
       intro i i'
-      dsimp
-      rw [← ofAdd_add, one_add_one_eq_two, (by decide : (2 : ZMod 2) = 0)]
+      rw [← ofAdd_add, (by decide : (1 + 1 : ZMod 2) = 0)]
       simp
   )
 
 private theorem lengthParity_simple :
     ⇑(CoxeterSystem.lengthParity cs) ∘ simpleReflection cs = fun _ ↦ Multiplicative.ofAdd 1 := by
   ext x
-  dsimp
-  rw [lengthParity, lift_apply_simple]
+  rw [comp_apply, lengthParity, lift_apply_simple]
 
 private theorem parity_length_eq' (w : W) :
     Multiplicative.toAdd (cs.lengthParity w) = ((↑) : ℕ → ZMod 2) (ℓ w) := by
@@ -135,8 +142,7 @@ private theorem parity_length_eq' (w : W) :
   tauto
 
 theorem length_mul_mod_two (w₁ w₂ : W) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ + ℓ w₂) % 2 := by
-  rw [← ZMod.nat_cast_eq_nat_cast_iff']
-  rw [(by simp : (↑(length cs w₁ + length cs w₂) : ZMod 2) = ↑(length cs w₁) + ↑(length cs w₂))]
+  rw [← ZMod.nat_cast_eq_nat_cast_iff', Nat.cast_add]
   repeat rw [← parity_length_eq']
   simp
 
@@ -149,7 +155,7 @@ theorem length_mul_mod_two (w₁ w₂ : W) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ +
   · show 1 ≤ length cs (s i)
     by_contra! length_lt_1
     have := congrArg Multiplicative.toAdd (congrFun cs.lengthParity_simple i)
-    simp [parity_length_eq'] at this
+    simp only [comp_apply, parity_length_eq', toAdd_ofAdd] at this
     rw [Nat.lt_one_iff.mp length_lt_1] at this
     contradiction
 
@@ -269,6 +275,89 @@ theorem not_isReduced_alternatingWord (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) (
     apply isReduced_drop (j := 1) at ih
     simp at ih
     assumption
+
+/-! ### Descents -/
+
+/-- The proposition that `i` is a left descent of `w`; that is, $\ell(s_i w) < \ell(w)$. -/
+def IsLeftDescent (w : W) (i : B) : Prop := ℓ (s i * w) < ℓ w
+
+/-- The proposition that `i` is a right descent of `w`; that is, $\ell(w s_i) < \ell(w)$. -/
+def IsRightDescent (w : W) (i : B) : Prop := ℓ (w * s i) < ℓ w
+
+theorem not_isLeftDescent_one (i : B) : ¬ cs.IsLeftDescent 1 i := by simp [IsLeftDescent]
+
+theorem not_isRightDescent_one (i : B) : ¬ cs.IsRightDescent 1 i := by simp [IsRightDescent]
+
+theorem isLeftDescent_inv_iff (w : W) (i : B) :
+    cs.IsLeftDescent w⁻¹ i ↔ cs.IsRightDescent w i := by
+  unfold IsLeftDescent IsRightDescent
+  nth_rw 1 [← length_inv]
+  simp
+
+theorem isRightDescent_inv_iff (w : W) (i : B) :
+    cs.IsRightDescent w⁻¹ i ↔ cs.IsLeftDescent w i := by
+  simpa using (cs.isLeftDescent_inv_iff w⁻¹ i).symm
+
+theorem exists_leftDescent_of_ne_one (w : W) (hw : w ≠ 1) : ∃ i : B, cs.IsLeftDescent w i := by
+  rcases cs.exists_reduced_word w with ⟨ω, h, rfl⟩
+  have h₁ : ω ≠ [] := by rintro rfl; simp at hw
+  rcases List.exists_cons_of_ne_nil h₁ with ⟨i, ω', rfl⟩
+  use i
+  rw [IsLeftDescent, ← h, wordProd_cons, simple_mul_self_mul]
+  calc
+    ℓ (π ω') ≤ ω'.length                := cs.length_wordProd_le ω'
+    _        < (i :: ω').length         := by simp
+
+theorem exists_rightDescent_of_ne_one (w : W) (hw : w ≠ 1) : ∃ i : B, cs.IsRightDescent w i := by
+  simp only [← isLeftDescent_inv_iff]
+  apply exists_leftDescent_of_ne_one
+  simpa
+
+theorem isLeftDescent_iff (w : W) (i : B) :
+    cs.IsLeftDescent w i ↔ ℓ (s i * w) + 1 = ℓ w := by
+  unfold IsLeftDescent
+  constructor
+  · intro _
+    linarith [(cs.length_simple_mul w i).resolve_left (by linarith)]
+  · intro _
+    linarith
+
+theorem not_isLeftDescent_iff (w : W) (i : B) :
+    ¬ cs.IsLeftDescent w i ↔ ℓ (s i * w) = ℓ w + 1 := by
+  unfold IsLeftDescent
+  constructor
+  · intro _
+    linarith [(cs.length_simple_mul w i).resolve_right (by linarith)]
+  · intro _
+    linarith
+
+theorem isRightDescent_iff (w : W) (i : B) :
+    cs.IsRightDescent w i ↔ ℓ (w * s i) + 1 = ℓ w := by
+  unfold IsRightDescent
+  constructor
+  · intro _
+    linarith [(cs.length_mul_simple w i).resolve_left (by linarith)]
+  · intro _
+    linarith
+
+theorem not_isRightDescent_iff (w : W) (i : B) :
+    ¬ cs.IsRightDescent w i ↔ ℓ (w * s i) = ℓ w + 1 := by
+  unfold IsRightDescent
+  constructor
+  · intro _
+    linarith [(cs.length_mul_simple w i).resolve_right (by linarith)]
+  · intro _
+    linarith
+
+theorem isLeftDescent_iff_not_isLeftDescent_mul (w : W) (i : B) :
+    cs.IsLeftDescent w i ↔ ¬ cs.IsLeftDescent ((s i) * w) i := by
+  rw [isLeftDescent_iff, not_isLeftDescent_iff, simple_mul_self_mul]
+  tauto
+
+theorem isRightDescent_iff_not_isRightDescent_mul (w : W) (i : B) :
+    cs.IsRightDescent w i ↔ ¬ cs.IsRightDescent (w * (s i)) i := by
+  rw [isRightDescent_iff, not_isRightDescent_iff, mul_simple_mul_self]
+  tauto
 
 end CoxeterSystem
 
