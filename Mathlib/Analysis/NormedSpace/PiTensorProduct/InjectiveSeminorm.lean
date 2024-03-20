@@ -6,7 +6,6 @@ Authors: Sophie Morel
 import Mathlib.Topology.Algebra.Module.Alternating.Basic
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.LinearAlgebra.PiTensorProduct
-import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 
 /-!
 # Injective seminorm on the tensor of a finite family of normed spaces.
@@ -141,6 +140,7 @@ lemma toDualContinuousMultilinearMap_tprod_apply (m : (i : ι) → E i)
   simp only [toDualContinuousMultilinearMap_apply_toFun, lift.tprod,
     ContinuousMultilinearMap.coe_coe]
 
+/-- The injective seminorm on `⨂[𝕜] i, E i`.-/
 noncomputable def injectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) :=
   sSup {p | ∃ (G : Type (max (max u_1 u_2) u_3)) (_ : SeminormedAddCommGroup G)
   (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
