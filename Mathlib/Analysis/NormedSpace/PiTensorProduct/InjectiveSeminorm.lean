@@ -84,6 +84,17 @@ namespace PiTensorProduct
 
 section seminorm
 
+def projectiveSeminormAux : FreeAddMonoid (𝕜 × Π i, E i) → ℝ :=
+  List.sum ∘ (List.map (fun p ↦ ‖p.1‖ * ∏ i, ‖p.2 i‖))
+
+noncomputable def projectiveSeminorm : (⨂[𝕜] i, E i) → ℝ := by
+  intro x
+  exact iInf (fun (p : {p : FreeAddMonoid (𝕜 × Π i, E i) |
+    Quotient.mk (addConGen (PiTensorProduct.Eqv 𝕜 E)).toSetoid p = x}) ↦ projectiveSeminormAux p.1)
+
+lemma pSA_map_zero : projectiveSeminorm (𝕜 := 𝕜) (E := E) 0 = 0 := by
+  sorry
+
 lemma toDualMultilinearMap_bound (x : ⨂[𝕜] i, E i) :
     ∃ (C : ℝ), 0 ≤ C ∧ ∀ (G : Type*) [SeminormedAddCommGroup G]
     [NormedSpace 𝕜 G] (f : ContinuousMultilinearMap 𝕜 E G),
