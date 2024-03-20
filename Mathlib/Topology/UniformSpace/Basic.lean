@@ -365,7 +365,14 @@ theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
   eq_of_nhds_eq_nhds fun a ↦ by rw [u.nhds_eq_comap_uniformity, u.toCore.nhds_toTopologicalSpace]
 #align uniform_space.to_core_to_topological_space UniformSpace.toCore_toTopologicalSpace
 
-/-- The main constructor used to have a different assumption. -/
+/-- Build a `UniformSpace` from a `UniformSpace.Core` and a compatible topology.
+Use `UnifiormSpace.mk` instead to avoid proving
+the unnecessary assumption `UniformSpace.Core.refl`.
+
+The main constructor used to use a different compatibility assumption.
+This definition was created as a step towards porting to a new definition.
+Now the main definition is ported,
+so this constructor will be removed in a few months. -/
 @[deprecated UniformSpace.mk]
 def UniformSpace.ofNhdsEqComap (u : UniformSpace.Core α) (_t : TopologicalSpace α)
     (h : ∀ x, 𝓝 x = u.uniformity.comap (Prod.mk x)) : UniformSpace α where
