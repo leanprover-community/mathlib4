@@ -223,68 +223,35 @@ lemma set_integral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFinite
   rw [div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel h0, mul_one]
   exact measure_ne_top _ _
 
-lemma integral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
-    (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) :
-    ∫ x, densityProcess κ ν n a x s ∂(ν a) = (κ a (univ ×ˢ s)).toReal := by
-  have : IsFiniteKernel κ := isFiniteKernel_of_isFiniteKernel_fst (h := isFiniteKernel_of_le hκν)
-  rw [← integral_univ, ← sUnion_countablePartition γ n, sUnion_eq_iUnion,
-    iUnion_prod_const, measure_iUnion]
-  rotate_left
-  · intro i j hij
-    simp only [Set.disjoint_prod, disjoint_self, bot_eq_empty]
-    refine Or.inl (disjoint_countablePartition i.prop j.prop ?_)
-    rw [ne_eq, Subtype.coe_inj]
-    exact hij
-  · exact fun k ↦ (measurableSet_countablePartition n k.prop).prod hs
-  rw [integral_iUnion]
-  rotate_left
-  · exact fun k ↦ measurableSet_countablePartition n k.prop
-  · refine fun i j hij ↦ disjoint_countablePartition i.prop j.prop ?_
-    rw [ne_eq, Subtype.coe_inj]
-    exact hij
-  · exact (integrable_densityProcess hκν n a hs).integrableOn
-  rw [ENNReal.tsum_toReal_eq (fun _ ↦ measure_ne_top _ _)]
-  congr with k
-  rw [set_integral_densityProcess_of_mem hκν _ _ hs k.prop]
-
 lemma set_integral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ}
     (hA : MeasurableSet[countableFiltration γ n] A) :
     ∫ x in A, densityProcess κ ν n a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal := by
   have : IsFiniteKernel κ := isFiniteKernel_of_isFiniteKernel_fst (h := isFiniteKernel_of_le hκν)
-  refine induction_on_inter (m := countableFiltration γ n) (s := countablePartition γ n)
-    (C := fun A ↦ ∫ t in A, densityProcess κ ν n a t s ∂(ν a) = (κ a (A ×ˢ s)).toReal) rfl
-    ?_ ?_ ?_ ?_ ?_ hA
-  · rintro s hs t ht hst
-    suffices s = t by rwa [this, inter_self]
-    by_contra h_ne
-    rw [← not_disjoint_iff_nonempty_inter] at hst
-    exact hst <| disjoint_countablePartition hs ht h_ne
-  · simp
-  · rintro u hu
-    rw [set_integral_densityProcess_of_mem hκν _ _ hs hu]
-  · intro A hA hA_eq
-    have hA' : MeasurableSet A := (countableFiltration γ).le _ _ hA
-    have h := integral_add_compl hA' (integrable_densityProcess hκν n a hs)
-    rw [hA_eq, integral_densityProcess hκν n a hs] at h
-    have : Aᶜ ×ˢ s = univ ×ˢ s \ A ×ˢ s := by rw [prod_diff_prod, compl_eq_univ_diff]; simp
-    rw [this, measure_diff (by intro x; simp) (hA'.prod hs) (measure_ne_top (κ a) _),
-      ENNReal.toReal_sub_of_le (measure_mono (by intro x; simp)) (measure_ne_top _ _),
-      eq_tsub_iff_add_eq_of_le, add_comm]
-    · exact h
-    · rw [ENNReal.toReal_le_toReal (measure_ne_top _ _) (measure_ne_top _ _)]
-      exact measure_mono (by intro x; simp)
-  · intro f hf_disj hf h_eq
-    rw [integral_iUnion (fun i ↦ (countableFiltration γ).le n _ (hf i)) hf_disj
-      (integrable_densityProcess hκν _ _ hs).integrableOn]
-    simp_rw [h_eq]
-    rw [iUnion_prod_const,
-      measure_iUnion _ (fun i ↦ ((countableFiltration γ).le n _ (hf i)).prod hs)]
-    · rw [ENNReal.tsum_toReal_eq]
-      exact fun _ ↦ measure_ne_top _ _
-    · intro i j hij
-      rw [Function.onFun, Set.disjoint_prod]
-      exact Or.inl (hf_disj hij)
+  obtain ⟨S, hS_subset, rfl⟩ := (measurableSet_generateFrom_countablePartition_iff _ _).mp hA
+  simp_rw [sUnion_eq_iUnion]
+  have h_disj : Pairwise (Disjoint on fun i : S ↦ (i : Set γ)) := by
+    intro u v huv
+    simp only [Finset.coe_sort_coe, Function.onFun]
+    refine disjoint_countablePartition (hS_subset (by simp)) (hS_subset (by simp)) ?_
+    rwa [ne_eq, ← Subtype.ext_iff]
+  rw [integral_iUnion]
+  · rw [iUnion_prod_const, measure_iUnion]
+    · rw [ENNReal.tsum_toReal_eq (fun _ ↦ measure_ne_top _ _)]
+      congr with u
+      rw [set_integral_densityProcess_of_mem hκν _ _ hs (hS_subset (by simp))]
+    · intro u v huv
+      simp only [Finset.coe_sort_coe, Set.disjoint_prod, disjoint_self, bot_eq_empty]
+      exact Or.inl (h_disj huv)
+    · exact fun _ ↦ (measurableSet_countablePartition n (hS_subset (by simp))).prod hs
+  · exact fun _ ↦ measurableSet_countablePartition n (hS_subset (by simp))
+  · exact h_disj
+  · exact (integrable_densityProcess hκν _ _ hs).integrableOn
+
+lemma integral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
+    (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) :
+    ∫ x, densityProcess κ ν n a x s ∂(ν a) = (κ a (univ ×ˢ s)).toReal := by
+  rw [← integral_univ, set_integral_densityProcess hκν _ _ hs MeasurableSet.univ]
 
 lemma set_integral_densityProcess_of_le (hκν : fst κ ≤ ν)
     [IsFiniteKernel ν] {n m : ℕ} (hnm : n ≤ m) (a : α) {s : Set β} (hs : MeasurableSet s)
