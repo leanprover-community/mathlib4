@@ -2211,6 +2211,12 @@ theorem two_le_iff' (x : α) : (2 : Cardinal) ≤ #α ↔ ∃ y : α, y ≠ x :=
   rw [two_le_iff, ← nontrivial_iff, nontrivial_iff_exists_ne x]
 #align cardinal.two_le_iff' Cardinal.two_le_iff'
 
+lemma two_le_mk_iff_one_lt {α : Type*} : 2 ≤ Cardinal.mk α ↔ 1 < Cardinal.mk α := by
+  rw [Cardinal.one_lt_iff_nontrivial, nontrivial_iff, Cardinal.two_le_iff]
+
+lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c :=
+  Quotient.inductionOn c (fun _ ↦ two_le_mk_iff_one_lt)
+
 theorem mk_eq_two_iff : #α = 2 ↔ ∃ x y : α, x ≠ y ∧ ({x, y} : Set α) = univ := by
   simp only [← @Nat.cast_two Cardinal, mk_eq_nat_iff_finset, Finset.card_eq_two]
   constructor
@@ -2246,6 +2252,17 @@ theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z 
   have := exists_not_mem_of_length_lt [x, y] this
   simpa [not_or] using this
 #align cardinal.three_le Cardinal.three_le
+
+lemma leq_iff_le_succ {n : ℕ} {c : Cardinal} : n < c ↔ n + 1 ≤ c := by
+  rw [← Nat.cast_one, ← Nat.cast_add]
+  cases lt_or_le c Cardinal.aleph0 with
+  | inl h =>
+      obtain ⟨k, rfl⟩ := Cardinal.lt_aleph0.mp h
+      rw [Nat.cast_le, Nat.cast_lt, Nat.succ_le]
+  | inr h =>
+      apply iff_of_true
+      · exact lt_of_lt_of_le (Cardinal.nat_lt_aleph0 n) h
+      · exact le_trans (Cardinal.nat_lt_aleph0 (n + 1)).le h
 
 /-- The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. -/
 def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=
