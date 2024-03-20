@@ -16,6 +16,30 @@ We build a function `f : α → γ → Set β → ℝ` jointly measurable in the
 for all `a : α` and all measurable sets `s : Set β` and `A : Set γ`,
 `∫ x in A, f a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal`.
 
+There are two main applications of this construction (still TODO, in other files).
+* Disintegration of kernels: for `κ : kernel α (γ × β)`, we want to build a kernel
+  `η : kernel (α × γ) β` such that `κ = fst κ ⊗ₖ η`. For `β = ℝ`, we can use the density of `κ`
+  with respect to `fst κ` for intervals to build a kernel cumulative distribution function for `η`.
+  The construction can then be extended to `β` standard Borel.
+* Radon-Nikodym theorem for kernels: for `κ ν : kernel α γ`, we can use the density to build a
+  Radon-Nikodym derivative of `κ` with respect to `ν`. We don't need `β` here but we can apply the
+  density construction to `β = Unit`. The derivative construction will use `density` but will not
+  be exactly equal to it because we will want to remove the `fst κ ≤ ν` assumption.
+
+## Main definitions
+
+* `ProbabilityTheory.kernel.density`: for `κ : kernel α (γ × β)` and `ν : kernel α γ` two finite
+  kernels, `kernel.density κ ν` is a function `α → γ → Set β → ℝ`.
+
+## Main statements
+
+* `ProbabilityTheory.kernel.set_integral_density`: for all measurable sets `A : Set γ` and
+  `s : Set β`, `∫ x in A, kernel.density κ ν a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal`.
+* `ProbabilityTheory.kernel.measurable_density`: the function
+  `p : α × γ ↦ kernel.density κ ν p.1 p.2 s` is measurable.
+
+## Construction of the density
+
 If we were interested only in a fixed `a : α`, then we could use the Radon-Nikodym derivative to
 build the function `f`, as follows.
 ```
@@ -43,18 +67,6 @@ a limit, which has a product-measurable version and satisfies the integral equal
 `⨆ n, countableFiltration γ n`. Finally, the partitions were chosen such that that supremum is equal
 to the σ-algebra on `γ`, hence the equality holds for all measurable sets.
 We have obtained the desired density function.
-
-## Main definitions
-
-* `ProbabilityTheory.kernel.density`: for `κ : kernel α (γ × β)` and `ν : kernel α γ` two finite
-  kernels, `kernel.density κ ν` is a function `α → γ → Set β → ℝ`.
-
-## Main statements
-
-* `ProbabilityTheory.kernel.set_integral_density`: for all measurable sets `A : Set γ` and
-  `s : Set β`, `∫ x in A, kernel.density κ ν a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal`.
-* `ProbabilityTheory.kernel.measurable_density`: the function
-  `p : α × γ ↦ kernel.density κ ν p.1 p.2 s` is measurable.
 
 ## References
 
