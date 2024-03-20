@@ -362,7 +362,8 @@ def UniformSpace.toCore (u : UniformSpace α) : UniformSpace.Core α where
 
 theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
     u.toCore.toTopologicalSpace = u.toTopologicalSpace :=
-  eq_of_nhds_eq_nhds fun a ↦ by rw [u.nhds_eq_comap_uniformity, u.toCore.nhds_toTopologicalSpace]
+  TopologicalSpace.ext_nhds fun a ↦ by
+    rw [u.nhds_eq_comap_uniformity, u.toCore.nhds_toTopologicalSpace]
 #align uniform_space.to_core_to_topological_space UniformSpace.toCore_toTopologicalSpace
 
 /-- Build a `UniformSpace` from a `UniformSpace.Core` and a compatible topology.
@@ -381,7 +382,7 @@ def UniformSpace.ofNhdsEqComap (u : UniformSpace.Core α) (_t : TopologicalSpace
 
 @[ext]
 protected theorem UniformSpace.ext {u₁ u₂ : UniformSpace α} (h : 𝓤[u₁] = 𝓤[u₂]) : u₁ = u₂ := by
-  have : u₁.toTopologicalSpace = u₂.toTopologicalSpace := eq_of_nhds_eq_nhds fun x ↦ by
+  have : u₁.toTopologicalSpace = u₂.toTopologicalSpace := TopologicalSpace.ext_nhds fun x ↦ by
     rw [u₁.nhds_eq_comap_uniformity, u₂.nhds_eq_comap_uniformity]
     exact congr_arg (comap _) h
   cases u₁; cases u₂; congr
