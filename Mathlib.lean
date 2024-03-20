@@ -1516,6 +1516,14 @@ import Mathlib.Combinatorics.SimpleGraph.Trails
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
+import Mathlib.Command.Linter
+import Mathlib.Command.Linter.Deprecated
+import Mathlib.Command.Linter.LintingRules
+import Mathlib.Command.SyntaxRules
+import Mathlib.Command.SyntaxRules.Attr
+import Mathlib.Command.SyntaxRules.Elab
+import Mathlib.Command.SyntaxRules.Header
+import Mathlib.Command.SyntaxRules.Util
 import Mathlib.Computability.Ackermann
 import Mathlib.Computability.AkraBazzi.AkraBazzi
 import Mathlib.Computability.AkraBazzi.GrowsPolynomially
