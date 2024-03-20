@@ -417,7 +417,7 @@ lemma tendsto_densityProcess_limitProcess (hκν : fst κ ≤ ν)
   rw [ENNReal.coe_toNNReal]
   exact measure_ne_top _ _
 
-lemma limitProcess_densityProcess_mem_L1 (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
+lemma memL1_limitProcess_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Memℒp ((countableFiltration γ).limitProcess
       (fun n x ↦ densityProcess κ ν n a x s) (ν a)) 1 (ν a) := by
