@@ -100,6 +100,18 @@ def IsRightInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (w * t) < ℓ
 $\ell (t w) < \ell(w)$. -/
 def IsLeftInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (t * w) < ℓ w
 
+theorem isRightInversion_simple_iff_isRightDescent (w : W) (i : B) :
+    cs.IsRightInversion w (s i) ↔ cs.IsRightDescent w i := by
+  unfold IsRightInversion IsRightDescent
+  have := cs.isReflection_simple i
+  tauto
+
+theorem isLeftInversion_simple_iff_isLeftDescent (w : W) (i : B) :
+    cs.IsLeftInversion w (s i) ↔ cs.IsLeftDescent w i := by
+  unfold IsLeftInversion IsLeftDescent
+  have := cs.isReflection_simple i
+  tauto
+
 /-- The right inversion sequence of `ω`. The right inversion sequence of a word
 $s_{i_1} \cdots s_{i_\ell}$ is the sequence
 $$s_{i_\ell}\cdots s_{i_1}\cdots s_{i_\ell}, \ldots,
