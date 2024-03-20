@@ -157,4 +157,14 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
       Even.neg_pow, one_pow, Finset.sum_const, Finset.card_singleton, one_smul]
   ring
 
+/- Check that matrix notation works with `row` and `col` -/
+
+example : Matrix.row ![1, 1] = !![1, 1] := by
+  ext i j
+  simp
+
+example : Matrix.row ![1, 1] = !![1, 1] := by
+  ext i j
+  simp
+
 end Matrix

@@ -27,7 +27,7 @@ variable {R : Type*} {α : Type v} {β : Type w}
 namespace Matrix
 
 /-- `Matrix.col u` is the column matrix whose entries are given by `u`. -/
-def col (w : m → α) : Matrix m Unit α :=
+def col (w : m → α) : Matrix m (Fin 1) α :=
   of fun x _ => w x
 #align matrix.col Matrix.col
 
@@ -38,7 +38,7 @@ theorem col_apply (w : m → α) (i j) : col w i j = w i :=
 #align matrix.col_apply Matrix.col_apply
 
 /-- `Matrix.row u` is the row matrix whose entries are given by `u`. -/
-def row (v : n → α) : Matrix Unit n α :=
+def row (v : n → α) : Matrix (Fin 1) n α :=
   of fun _ y => v y
 #align matrix.row Matrix.row
 
@@ -49,7 +49,7 @@ theorem row_apply (v : n → α) (i j) : row v i j = v j :=
 #align matrix.row_apply Matrix.row_apply
 
 theorem col_injective : Function.Injective (col : (m → α) → _) :=
-  fun _x _y h => funext fun i => congr_fun₂ h i ()
+  fun _x _y h => funext fun i => congr_fun₂ h i 0
 
 @[simp] theorem col_inj {v w : m → α} : col v = col w ↔ v = w := col_injective.eq_iff
 
@@ -70,7 +70,7 @@ theorem col_smul [SMul R α] (x : R) (v : m → α) : col (x • v) = x • col 
 #align matrix.col_smul Matrix.col_smul
 
 theorem row_injective : Function.Injective (row : (n → α) → _) :=
-  fun _x _y h => funext fun j => congr_fun₂ h () j
+  fun _x _y h => funext fun j => congr_fun₂ h 0 j
 
 @[simp] theorem row_inj {v w : n → α} : row v = row w ↔ v = w := row_injective.eq_iff
 
@@ -154,8 +154,9 @@ theorem diag_col_mul_row [Mul α] [AddCommMonoid α] (a b : n → α) :
 theorem vecMulVec_eq [Mul α] [AddCommMonoid α] (w : m → α) (v : n → α) :
     vecMulVec w v = col w * row v := by
   ext
-  simp only [vecMulVec, mul_apply, Fintype.univ_punit, Finset.sum_singleton]
-  rfl
+  simp only [vecMulVec, of_apply, mul_apply,
+    Finset.univ_unique, Fin.default_eq_zero, Fin.isValue,
+    col_apply, row_apply, Finset.sum_const, Finset.card_singleton, one_smul]
 #align matrix.vec_mul_vec_eq Matrix.vecMulVec_eq
 
 /-! ### Updating rows and columns -/
@@ -213,14 +214,14 @@ theorem updateColumn_apply [DecidableEq n] {j' : n} :
 
 @[simp]
 theorem updateColumn_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : m → R) :
-    A.updateColumn i b = (col b).submatrix id (Function.const n ()) := by
+    A.updateColumn i b = (col b).submatrix id (Function.const n 0) := by
   ext x y
   simp [updateColumn_apply, Subsingleton.elim i y]
 #align matrix.update_column_subsingleton Matrix.updateColumn_subsingleton
 
 @[simp]
 theorem updateRow_subsingleton [Subsingleton m] (A : Matrix m n R) (i : m) (b : n → R) :
-    A.updateRow i b = (row b).submatrix (Function.const m ()) id := by
+    A.updateRow i b = (row b).submatrix (Function.const m 0) id := by
   ext x y
   simp [updateColumn_apply, Subsingleton.elim i x]
 #align matrix.update_row_subsingleton Matrix.updateRow_subsingleton
