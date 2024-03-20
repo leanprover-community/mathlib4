@@ -116,6 +116,7 @@ class DivisionRing (α : Type*)
   /-- Scalar multiplication by a rational number.
 
   Set this to `qsmulRec _` unless there is a risk of a `Module ℚ _` instance diamond.
+
   Do not use directly. Instead use the `•` notation. -/
   protected qsmul : ℚ → α → α
   /-- However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
