@@ -454,7 +454,8 @@ lemma z_spec : S.a + η ^ 2 * S.b = λ * S.z := by
   sorry
 
 noncomputable
-def Solution.w := (multiplicity.pow_multiplicity_dvd S.toSolution'.multiplicity_lambda_c_finite).choose
+def Solution.w :=
+  (multiplicity.pow_multiplicity_dvd S.toSolution'.multiplicity_lambda_c_finite).choose
 
 lemma w_spec : S.c = λ ^ S.multiplicity * S.w := by
   sorry
