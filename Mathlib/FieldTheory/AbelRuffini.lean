@@ -341,19 +341,15 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
   let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField :=
     Classical.choice <| nonempty_algHom_adjoin_of_splits <| by
       intro x hx
-      cases' hx with hx hx
-      rw [hx]
-      exact ⟨isIntegral α, hpq.1⟩
-      cases hx
-      exact ⟨isIntegral β, hpq.2⟩
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hx
+      cases hx with rw [hx]
+      | inl hx => exact ⟨isIntegral α, hpq.1⟩
+      | inr hx => exact ⟨isIntegral β, hpq.2⟩
   have key : minpoly F γ = minpoly F (f ⟨γ, hγ⟩) := by
     refine' minpoly.eq_of_irreducible_of_monic
       (minpoly.irreducible (isIntegral γ)) _ (minpoly.monic (isIntegral γ))
     suffices aeval (⟨γ, hγ⟩ : F⟮α, β⟯) (minpoly F γ) = 0 by
       rw [aeval_algHom_apply, this, AlgHom.map_zero]
-    -- Porting note: this instance is needed for the following `apply`
-    haveI := @IntermediateField.toAlgebra F (solvableByRad F E) _ _ _ F⟮α, β⟯
-      (solvableByRad F E) _ (Algebra.id (solvableByRad F E))
     apply (algebraMap (↥F⟮α, β⟯) (solvableByRad F E)).injective
     simp only [map_zero, _root_.map_eq_zero]
     -- Porting note: end of the proof was `exact minpoly.aeval F γ`.

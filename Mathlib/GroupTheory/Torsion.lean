@@ -138,7 +138,7 @@ theorem ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g =
       "The group exponent exists for any bounded additive torsion group."]
 theorem IsTorsion.exponentExists (tG : IsTorsion G)
     (bounded : (Set.range fun g : G => orderOf g).Finite) : ExponentExists G :=
-  exponentExists_iff_ne_zero.mpr <|
+  exponent_ne_zero.mp <|
     (exponent_ne_zero_iff_range_orderOf_finite fun g => (tG g).orderOf_pos).mpr bounded
 #align is_torsion.exponent_exists IsTorsion.exponentExists
 #align is_add_torsion.exponent_exists IsAddTorsion.exponentExists
@@ -146,7 +146,7 @@ theorem IsTorsion.exponentExists (tG : IsTorsion G)
 /-- Finite groups are torsion groups. -/
 @[to_additive is_add_torsion_of_finite "Finite additive groups are additive torsion groups."]
 theorem isTorsion_of_finite [Finite G] : IsTorsion G :=
-  ExponentExists.isTorsion <| exponentExists_iff_ne_zero.mpr exponent_ne_zero_of_finite
+  ExponentExists.isTorsion .of_finite
 #align is_torsion_of_finite isTorsion_of_finite
 #align is_add_torsion_of_finite is_add_torsion_of_finite
 
@@ -449,3 +449,21 @@ theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun
 #align add_is_torsion_free.quotient_torsion AddIsTorsionFree.quotient_torsion
 
 end CommGroup
+
+lemma isTorsionFree_iff_noZeroSMulDivisors_nat {M : Type*} [AddMonoid M] :
+    AddMonoid.IsTorsionFree M ↔ NoZeroSMulDivisors ℕ M := by
+  simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_nsmul_eq_zero, not_exists, not_and,
+    pos_iff_ne_zero, noZeroSMulDivisors_iff, forall_swap (β := ℕ)]
+  exact forall₂_congr fun _ _ ↦ by tauto
+
+lemma isTorsionFree_iff_noZeroSMulDivisors_int [AddGroup G] :
+    AddMonoid.IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
+  simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_zsmul_eq_zero, not_exists, not_and,
+    noZeroSMulDivisors_iff, forall_swap (β := ℤ)]
+  exact forall₂_congr fun _ _ ↦ by tauto
+
+@[deprecated] -- 2024-02-29
+alias AddMonoid.IsTorsionFree_iff_noZeroSMulDivisors := isTorsionFree_iff_noZeroSMulDivisors_int
+
+lemma IsTorsionFree.of_noZeroSMulDivisors {M : Type*} [AddMonoid M] [NoZeroSMulDivisors ℕ M] :
+    AddMonoid.IsTorsionFree M := isTorsionFree_iff_noZeroSMulDivisors_nat.2 ‹_›

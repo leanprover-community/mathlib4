@@ -63,13 +63,15 @@ def castRingHom : ℕ →+* α :=
 #align nat.coe_cast_ring_hom Nat.coe_castRingHom
 
 lemma _root_.nsmul_eq_mul' (a : α) (n : ℕ) : n • a = a * n := by
-  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, mul_zero];
-    rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]]
+  induction n with
+  | zero => rw [zero_nsmul, Nat.cast_zero, mul_zero]
+  | succ n ih => rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]
 #align nsmul_eq_mul' nsmul_eq_mul'
 
 @[simp] lemma _root_.nsmul_eq_mul (n : ℕ) (a : α) : n • a = n * a := by
-  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, zero_mul];
-    rw [succ_nsmul', ih, Nat.cast_succ, add_mul, one_mul]]
+  induction n with
+  | zero => rw [zero_nsmul, Nat.cast_zero, zero_mul]
+  | succ n ih => rw [succ_nsmul', ih, Nat.cast_succ, add_mul, one_mul]
 #align nsmul_eq_mul nsmul_eq_mul
 
 end NonAssocSemiring
@@ -125,12 +127,16 @@ theorem map_natCast' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass
     rw [Nat.cast_add, map_add, Nat.cast_add, map_natCast' f h n, Nat.cast_one, h, Nat.cast_one]
 #align map_nat_cast' map_natCast'
 
+theorem map_ofNat' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
+    (f : F) (h : f 1 = 1) (n : ℕ) [n.AtLeastTwo] : f (OfNat.ofNat n) = OfNat.ofNat n :=
+  map_natCast' f h n
+
 @[simp] lemma nsmul_one {A} [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n := by
   let f : ℕ →+ A :=
   { toFun := fun n ↦ n • (1 : A)
     map_zero' := zero_nsmul _
     map_add' := add_nsmul _ }
-  exact eq_natCast' f $ by simp
+  exact eq_natCast' f $ by simp [f]
 #align nsmul_one nsmul_one
 
 end AddMonoidHomClass
@@ -169,7 +175,7 @@ theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, 
   map_natCast' f <| map_one f
 #align map_nat_cast map_natCast
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
@@ -229,7 +235,7 @@ def multiplesHom : α ≃ (ℕ →+ α) where
 
 /-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
-@[to_additive existing multiplesHom]
+@[to_additive existing]
 def powersHom : α ≃ (Multiplicative ℕ →* α) :=
   Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicative''
 
@@ -240,7 +246,7 @@ variable {α}
 lemma multiplesHom_apply (x : α) (n : ℕ) : multiplesHom α x n = n • x := rfl
 #align multiples_hom_apply multiplesHom_apply
 
-@[to_additive existing (attr := simp) multiplesHom_apply]
+@[to_additive existing (attr := simp)]
 lemma powersHom_apply (x : α) (n : Multiplicative ℕ) :
     powersHom α x n = x ^ Multiplicative.toAdd n := rfl
 #align powers_hom_apply powersHom_apply
@@ -248,7 +254,7 @@ lemma powersHom_apply (x : α) (n : Multiplicative ℕ) :
 lemma multiplesHom_symm_apply (f : ℕ →+ α) : (multiplesHom α).symm f = f 1 := rfl
 #align multiples_hom_symm_apply multiplesHom_symm_apply
 
-@[to_additive existing (attr := simp) multiplesHom_symm_apply]
+@[to_additive existing (attr := simp)]
 lemma powersHom_symm_apply (f : Multiplicative ℕ →* α) :
     (powersHom α).symm f = f (Multiplicative.ofAdd 1) := rfl
 #align powers_hom_symm_apply powersHom_symm_apply

@@ -43,9 +43,7 @@ open Matrix
 section BasisToMatrix
 
 variable {ι ι' κ κ' : Type*}
-
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable {R₂ M₂ : Type*} [CommRing R₂] [AddCommGroup M₂] [Module R₂ M₂]
 
 open Function Matrix
@@ -165,14 +163,22 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
       LinearEquiv.apply_symm_apply]
 #align basis.to_matrix_equiv Basis.toMatrixEquiv
 
+variable (R₂) in
+theorem restrictScalars_toMatrix [Fintype ι] [DecidableEq ι] {S : Type*} [CommRing S] [Nontrivial S]
+    [Algebra R₂ S] [Module S M₂] [IsScalarTower R₂ S M₂] [NoZeroSMulDivisors R₂ S]
+    (b : Basis ι S M₂) (v : ι → span R₂ (Set.range b)) :
+    (algebraMap R₂ S).mapMatrix ((b.restrictScalars R₂).toMatrix v) =
+      b.toMatrix (fun i ↦ (v i : M₂)) := by
+  ext
+  rw [RingHom.mapMatrix_apply, Matrix.map_apply, Basis.toMatrix_apply,
+    Basis.restrictScalars_repr_apply, Basis.toMatrix_apply]
+
 end Basis
 
 section MulLinearMapToMatrix
 
 variable {N : Type*} [AddCommMonoid N] [Module R N]
-
 variable (b : Basis ι R M) (b' : Basis ι' R M) (c : Basis κ R N) (c' : Basis κ' R N)
-
 variable (f : M →ₗ[R] N)
 
 open LinearMap

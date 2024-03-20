@@ -3,7 +3,8 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Data.Rat.Field
 import Mathlib.Data.Rat.Lemmas
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"

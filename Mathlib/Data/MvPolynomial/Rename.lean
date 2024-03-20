@@ -82,7 +82,7 @@ theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPolynomial σ R) :
     rename g (rename f p) = rename (g ∘ f) p :=
   show rename g (eval₂ C (X ∘ f) p) = _ by
     simp only [rename, aeval_eq_eval₂Hom]
-    -- porting note: the Lean 3 proof of this was very fragile and included a nonterminal `simp`.
+    -- Porting note: the Lean 3 proof of this was very fragile and included a nonterminal `simp`.
     -- Hopefully this is less prone to breaking
     rw [eval₂_comp_left (eval₂Hom (algebraMap R (MvPolynomial α R)) (X ∘ g)) C (X ∘ f) p]
     simp only [(· ∘ ·), eval₂Hom_X']
@@ -124,7 +124,7 @@ section
 
 variable {f : σ → τ} (hf : Function.Injective f)
 
-open Classical
+open scoped Classical
 
 /-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
   `MvPolynomial.killCompl hf` is the `AlgHom` from `R[τ]` to `R[σ]` that is left inverse to
@@ -262,7 +262,7 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
     use s₁ ∪ s₂
     use rename (Set.inclusion <| s₁.subset_union_left s₂) q₁
     use rename (Set.inclusion <| s₁.subset_union_right s₂) q₂
-    constructor -- porting note: was `<;> simp <;> rfl` but Lean couldn't infer the arguments
+    constructor -- Porting note: was `<;> simp <;> rfl` but Lean couldn't infer the arguments
     · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [rename_rename (Set.inclusion <| s₁.subset_union_left s₂)]
       rfl

@@ -25,15 +25,12 @@ open scoped ENNReal
 universe u v
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section fderiv
 
 variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞}
-
 variable {f : E → F} {x : E} {s : Set E}
 
 theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
@@ -146,7 +143,6 @@ end fderiv
 section deriv
 
 variable {p : FormalMultilinearSeries 𝕜 𝕜 F} {r : ℝ≥0∞}
-
 variable {f : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
 
 protected theorem HasFPowerSeriesAt.hasStrictDerivAt (h : HasFPowerSeriesAt f p x) :
@@ -181,7 +177,6 @@ end deriv
 section fderiv
 
 variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞} {n : ℕ}
-
 variable {f : E → F} {x : E} {s : Set E}
 
 /-! The case of continuously polynomial functions. We get the same differentiability
@@ -275,7 +270,6 @@ end fderiv
 section deriv
 
 variable {p : FormalMultilinearSeries 𝕜 𝕜 F} {r : ℝ≥0∞}
-
 variable {f : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
 
 /-- If a function is polynomial on a set `s`, so is its derivative. -/
@@ -338,7 +332,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
     intro ⟨s, hs⟩
     have h : sᶜ.card = 1 := by rw [card_compl, hs, Fintype.card_fin, Nat.add_sub_cancel]
     obtain ⟨a, ha⟩ := card_eq_one.mp h
-    refine ⟨a, Subtype.ext (compl_eq_comm.mp ha)⟩
+    exact ⟨a, Subtype.ext (compl_eq_comm.mp ha)⟩
   rw [Function.comp_apply, Subtype.coe_mk, compl_singleton, piecewise_erase_univ,
     toFormalMultilinearSeries, dif_pos (Nat.add_sub_of_le Fintype.card_pos).symm]
   simp_rw [domDomCongr_apply, compContinuousLinearMap_apply, ContinuousLinearMap.proj_apply,
@@ -378,8 +372,8 @@ theorem derivSeries_apply_diag (n : ℕ) (x : E) :
     coe_sum', Finset.sum_apply, continuousMultilinearCurryFin1_apply, Matrix.zero_empty]
   convert Finset.sum_const _
   · rw [Fin.snoc_zero, changeOriginSeriesTerm_apply, Finset.piecewise_same, add_comm]
-  · erw [← card, card_subtype, ← Finset.powersetCard_eq_filter, Finset.card_powersetCard, ← card,
-      card_fin, eq_comm, add_comm, Nat.choose_succ_self_right]
+  · rw [← card, card_subtype, ← Finset.powerset_univ, ← Finset.powersetCard_eq_filter,
+      Finset.card_powersetCard, ← card, card_fin, eq_comm, add_comm, Nat.choose_succ_self_right]
 
 end FormalMultilinearSeries
 
@@ -415,7 +409,7 @@ theorem factorial_smul (n : ℕ) :
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
   cases n
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
-  · erw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag, ← smul_apply,
+  · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag, ← smul_apply,
       factorial_smul'.{_,u,v} _ h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 

@@ -6,8 +6,11 @@ Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean.Meta.Tactic.Rewrite
 import Std.Lean.Expr
+import Std.Lean.Name
 import Std.Data.Rat.Basic
 import Std.Data.List.Basic
+import Std.Lean.Name
+import Std.Logic
 
 /-!
 # Additional operations on Expr and related types
@@ -185,6 +188,23 @@ def getAppApps (e : Expr) : Array Expr :=
   let dummy := mkSort levelZero
   let nargs := e.getAppNumArgs
   getAppAppsAux e (mkArray nargs dummy) (nargs-1)
+
+/-- Erase proofs in an expression by replacing them with `sorry`s.
+
+This function replaces all proofs in the expression
+and in the types that appear in the expression
+by `sorryAx`s.
+The resulting expression has the same type as the old one.
+
+It is useful, e.g., to verify if the proof-irrelevant part of a definition depends on a variable.
+-/
+def eraseProofs (e : Expr) : MetaM Expr :=
+  Meta.transform (skipConstInApp := true) e
+    (pre := fun e => do
+      if (← Meta.isProof e) then
+        return .continue (← mkSyntheticSorry (← inferType e))
+      else
+        return .continue)
 
 /--
 Check if an expression is a "rational in normal form",

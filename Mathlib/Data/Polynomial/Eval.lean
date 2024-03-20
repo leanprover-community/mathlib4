@@ -37,7 +37,6 @@ variable [Semiring R] {p q r : R[X]}
 section
 
 variable [Semiring S]
-
 variable (f : R →+* S) (x : S)
 
 /-- Evaluate a polynomial `p` given a ring hom `f` from the scalar ring
@@ -418,7 +417,6 @@ theorem eval_smul [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S
 
 @[simp]
 theorem eval_C_mul : (C a * p).eval x = a * p.eval x := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q ph qh =>
     simp only [mul_add, eval_add, ph, qh]
@@ -466,7 +464,6 @@ theorem eval_nat_cast_mul {n : ℕ} : ((n : R[X]) * p).eval x = n * p.eval x := 
 
 @[simp]
 theorem eval_mul_X : (p * X).eval x = p.eval x * x := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q ph qh =>
     simp only [add_mul, eval_add, ph, qh]
@@ -570,7 +567,7 @@ theorem C_comp : (C a).comp p = C a :=
 theorem nat_cast_comp {n : ℕ} : (n : R[X]).comp p = n := by rw [← C_eq_nat_cast, C_comp]
 #align polynomial.nat_cast_comp Polynomial.nat_cast_comp
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : R[X]).comp p = n :=
   nat_cast_comp
@@ -603,7 +600,6 @@ theorem monomial_comp (n : ℕ) : (monomial n a).comp p = C a * p ^ n :=
 
 @[simp]
 theorem mul_X_comp : (p * X).comp r = p.comp r * r := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [hp, hq, add_mul, add_comp]
@@ -627,7 +623,6 @@ theorem mul_X_pow_comp {k : ℕ} : (p * X ^ k).comp r = p.comp r * r ^ k := by
 
 @[simp]
 theorem C_mul_comp : (C a * p).comp r = C a * p.comp r := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp [hp, hq, mul_add]
@@ -637,7 +632,7 @@ theorem C_mul_comp : (C a * p).comp r = C a * p.comp r := by
 
 @[simp]
 theorem nat_cast_mul_comp {n : ℕ} : ((n : R[X]) * p).comp r = n * p.comp r := by
-  rw [← C_eq_nat_cast, C_mul_comp, C_eq_nat_cast]
+  rw [← C_eq_nat_cast, C_mul_comp]
 #align polynomial.nat_cast_mul_comp Polynomial.nat_cast_mul_comp
 
 theorem mul_X_add_nat_cast_comp {n : ℕ} :
@@ -709,7 +704,6 @@ end Comp
 section Map
 
 variable [Semiring S]
-
 variable (f : R →+* S)
 
 /-- `map f p` maps a polynomial `p` across a ring hom `f` -/
@@ -785,7 +779,7 @@ protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
   map_natCast (mapRingHom f) n
 #align polynomial.map_nat_cast Polynomial.map_nat_cast
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -814,7 +808,7 @@ theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
   rw [map, eval₂_def, coeff_sum, sum]
   conv_rhs => rw [← sum_C_mul_X_pow_eq p, coeff_sum, sum, map_sum]
   refine' Finset.sum_congr rfl fun x _hx => _
-  -- Porting note: Was `simp [Function.comp, coeff_C_mul_X_pow, f.map_mul]`.
+  -- porting note (#10745): was `simp [Function.comp, coeff_C_mul_X_pow, f.map_mul]`.
   simp? [Function.comp, coeff_C_mul_X_pow, - map_mul, - coeff_C_mul] says
     simp only [RingHom.coe_comp, Function.comp_apply, coeff_C_mul_X_pow]
   split_ifs <;> simp [f.map_zero]
@@ -837,8 +831,18 @@ theorem map_map [Semiring T] (g : S →+* T) (p : R[X]) : (p.map f).map g = p.ma
 theorem map_id : p.map (RingHom.id _) = p := by simp [Polynomial.ext_iff, coeff_map]
 #align polynomial.map_id Polynomial.map_id
 
+/-- The polynomial ring over a finite product of rings is isomorphic to
+the product of polynomial rings over individual rings. -/
+def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
+    (∀ i, R i)[X] ≃+* ∀ i, (R i)[X] :=
+  .ofBijective (Pi.ringHom fun i ↦ mapRingHom (Pi.evalRingHom R i))
+    ⟨fun p q h ↦ by ext n i; simpa using congr_arg (fun p ↦ coeff (p i) n) h,
+      fun p ↦ ⟨.ofFinsupp (.ofSupportFinite (fun n i ↦ coeff (p i) n) <|
+        (Set.finite_iUnion fun i ↦ (p i).support.finite_toSet).subset fun n hn ↦ by
+          simp only [Set.mem_iUnion, Finset.mem_coe, mem_support_iff, Function.mem_support] at hn ⊢
+          contrapose! hn; exact funext hn), by ext i n; exact coeff_map _ _⟩⟩
+
 theorem eval₂_eq_eval_map {x : S} : p.eval₂ f x = (p.map f).eval x := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp [hp, hq]
@@ -988,7 +992,6 @@ theorem eval_zero_map (f : R →+* S) (p : R[X]) : (p.map f).eval 0 = f (p.eval 
 
 @[simp]
 theorem eval_one_map (f : R →+* S) (p : R[X]) : (p.map f).eval 1 = f (p.eval 1) := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
@@ -999,7 +1002,6 @@ theorem eval_one_map (f : R →+* S) (p : R[X]) : (p.map f).eval 1 = f (p.eval 1
 @[simp]
 theorem eval_nat_cast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
     (p.map f).eval (n : S) = f (p.eval n) := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
@@ -1010,7 +1012,6 @@ theorem eval_nat_cast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
 @[simp]
 theorem eval_int_cast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[X]) (i : ℤ) :
     (p.map f).eval (i : S) = f (p.eval i) := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
@@ -1071,6 +1072,31 @@ theorem iterate_comp_eval₂ (k : ℕ) (t : S) :
 
 end
 
+section Algebra
+
+variable [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (p q : R[X])
+
+@[simp]
+theorem eval₂_mul' :
+    (p * q).eval₂ (algebraMap R S) x = p.eval₂ (algebraMap R S) x * q.eval₂ (algebraMap R S) x := by
+  exact eval₂_mul_noncomm _ _ fun k => Algebra.commute_algebraMap_left (coeff q k) x
+
+@[simp]
+theorem eval₂_pow' (n : ℕ) :
+    (p ^ n).eval₂ (algebraMap R S) x = (p.eval₂ (algebraMap R S) x) ^ n := by
+  induction n with
+  | zero => simp only [Nat.zero_eq, pow_zero, eval₂_one]
+  | succ n ih => rw [pow_succ, pow_succ, eval₂_mul', ih]
+
+@[simp]
+theorem eval₂_comp' : eval₂ (algebraMap R S) x (p.comp q) =
+    eval₂ (algebraMap R S) (eval₂ (algebraMap R S) x q) p := by
+  induction p using Polynomial.induction_on' with
+    | h_add r s hr hs => simp only [add_comp, eval₂_add, hr, hs]
+    | h_monomial n a => simp only [monomial_comp, eval₂_mul', eval₂_C, eval₂_monomial, eval₂_pow']
+
+end Algebra
+
 section
 
 variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
@@ -1101,7 +1127,6 @@ theorem eval_pow (n : ℕ) : (p ^ n).eval x = p.eval x ^ n :=
 
 @[simp]
 theorem eval_comp : (p.comp q).eval x = p.eval (q.eval x) := by
-  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add r s hr hs =>
     simp [add_comp, hr, hs]
@@ -1114,6 +1139,9 @@ theorem iterate_comp_eval :
     ∀ (k : ℕ) (t : R), (p.comp^[k] q).eval t = (fun x => p.eval x)^[k] (q.eval t) :=
   iterate_comp_eval₂ _
 #align polynomial.iterate_comp_eval Polynomial.iterate_comp_eval
+
+lemma isRoot_comp {R} [CommSemiring R] {p q : R[X]} {r : R} :
+    (p.comp q).IsRoot r ↔ p.IsRoot (q.eval r) := by simp_rw [IsRoot, eval_comp]
 
 /-- `comp p`, regarded as a ring homomorphism from `R[X]` to itself. -/
 def compRingHom : R[X] → R[X] →+* R[X] :=

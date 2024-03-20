@@ -21,9 +21,6 @@ This file defines bundled isomorphisms of `R`-algebras.
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
 
-set_option autoImplicit true
-
-
 open BigOperators
 
 universe u v w u₁ v₁
@@ -92,10 +89,8 @@ section Semiring
 
 variable [CommSemiring R] [Semiring A₁] [Semiring A₂] [Semiring A₃]
 variable [Semiring A₁'] [Semiring A₂'] [Semiring A₃']
-
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 variable [Algebra R A₁'] [Algebra R A₂'] [Algebra R A₃']
-
 variable (e : A₁ ≃ₐ[R] A₂)
 
 instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
@@ -224,7 +219,7 @@ theorem commutes : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
   e.commutes'
 #align alg_equiv.commutes AlgEquiv.commutes
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x := by
   simp only [Algebra.smul_def, map_mul, commutes]
 #align alg_equiv.map_smul AlgEquiv.map_smul
@@ -328,14 +323,14 @@ def Simps.symm_apply (e : A₁ ≃ₐ[R] A₂) : A₂ → A₁ :=
 
 initialize_simps_projections AlgEquiv (toFun → apply, invFun → symm_apply)
 
---@[simp] -- Porting note: simp can prove this once symm_mk is introduced
+--@[simp] -- Porting note (#10618): simp can prove this once symm_mk is introduced
 theorem coe_apply_coe_coe_symm_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
     (f : F) (x : A₂) :
     f ((f : A₁ ≃ₐ[R] A₂).symm x) = x :=
   EquivLike.right_inv f x
 #align alg_equiv.coe_apply_coe_coe_symm_apply AlgEquiv.coe_apply_coe_coe_symm_apply
 
---@[simp] -- Porting note: simp can prove this once symm_mk is introduced
+--@[simp] -- Porting note (#10618): simp can prove this once symm_mk is introduced
 theorem coe_coe_symm_apply_coe_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
     (f : F) (x : A₁) :
     (f : A₁ ≃ₐ[R] A₂).symm (f x) = x :=
@@ -750,13 +745,6 @@ instance applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁ w
   mul_smul _ _ _ := rfl
 #align alg_equiv.apply_mul_semiring_action AlgEquiv.applyMulSemiringAction
 
-instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
-  smul := fun f => Units.map f
-  one_smul := fun x => by ext; rfl
-  mul_smul := fun x y z => by ext; rfl
-  smul_mul := fun x y z => by ext; exact x.map_mul _ _
-  smul_one := fun x => by ext; exact x.map_one
-
 @[simp]
 protected theorem smul_def (f : A₁ ≃ₐ[R] A₁) (a : A₁) : f • a = f a :=
   rfl
@@ -773,6 +761,17 @@ instance apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁ where
 instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁ where
   smul_comm e r a := e.map_smul r a
 #align alg_equiv.apply_smul_comm_class' AlgEquiv.apply_smulCommClass'
+
+instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
+  smul := fun f => Units.map f
+  one_smul := fun x => by ext; rfl
+  mul_smul := fun x y z => by ext; rfl
+  smul_mul := fun x y z => by ext; exact x.map_mul _ _
+  smul_one := fun x => by ext; exact x.map_one
+
+@[simp]
+theorem smul_units_def (f : A₁ ≃ₐ[R] A₁) (x : A₁ˣ) :
+    f • x = Units.map f x := rfl
 
 @[simp]
 theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
@@ -817,7 +816,6 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A₁] [CommSemiring A₂]
-
 variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
 -- Porting note: Added nonrec
@@ -837,7 +835,6 @@ end CommSemiring
 section Ring
 
 variable [CommSemiring R] [Ring A₁] [Ring A₂]
-
 variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
 protected theorem map_neg (x) : e (-x) = -e x :=

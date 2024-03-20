@@ -55,6 +55,12 @@ variable {C}
 
 namespace MorphismProperty
 
+@[ext]
+lemma ext (W W' : MorphismProperty C) (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f ↔ W' f) :
+    W = W' := by
+  funext X Y f
+  rw [h]
+
 lemma top_apply {X Y : C} (f : X ⟶ Y) : (⊤ : MorphismProperty C) f := by
   simp only [top_eq]
 
@@ -276,7 +282,7 @@ theorem StableUnderBaseChange.baseChange_map [HasPullbacks C] {P : MorphismPrope
     pullbackRightPullbackFstIso Y.hom f g.left ≪≫
       pullback.congrHom (g.w.trans (Category.comp_id _)) rfl
   have : e.inv ≫ pullback.snd = ((baseChange f).map g).left := by
-    ext <;> dsimp <;> simp
+    ext <;> dsimp [e] <;> simp
   rw [← this, hP.respectsIso.cancel_left_isIso]
   exact hP.snd _ _ H
 #align category_theory.morphism_property.stable_under_base_change.base_change_map CategoryTheory.MorphismProperty.StableUnderBaseChange.baseChange_map
@@ -533,7 +539,7 @@ theorem StableUnderComposition.epimorphisms : StableUnderComposition (epimorphis
 variable {C}
 
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- The full subcategory of `C ⥤ D` consisting of functors inverting morphisms in `W` -/
 def FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category D] :=
   FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
@@ -963,6 +969,70 @@ lemma IsInvertedBy.pi (F : ∀ j, C j ⥤ D j) (hF : ∀ j, (W j).IsInvertedBy (
 
 end
 
+section
+
+variable (W : MorphismProperty C)
+
+/-- The morphism property on `J ⥤ C` which is defined objectwise
+from `W : MorphismProperty C`. -/
+def functorCategory (J : Type*) [Category J] : MorphismProperty (J ⥤ C) :=
+  fun _ _ f => ∀ (j : J), W (f.app j)
+
+/-- The property that a morphism property `W` is stable under limits
+indexed by a category `J`. -/
+def IsStableUnderLimitsOfShape (J : Type*) [Category J] : Prop :=
+  ∀ (X₁ X₂ : J ⥤ C) (c₁ : Cone X₁) (c₂ : Cone X₂)
+    (_ : IsLimit c₁) (h₂ : IsLimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f),
+      W (h₂.lift (Cone.mk _ (c₁.π ≫ f)))
+
+variable {W}
+
+lemma IsStableUnderLimitsOfShape.lim_map {J : Type*} [Category J]
+    (hW : W.IsStableUnderLimitsOfShape J) {X Y : J ⥤ C}
+    (f : X ⟶ Y) [HasLimitsOfShape J C] (hf : W.functorCategory _ f) :
+    W (lim.map f) :=
+  hW X Y _ _ (limit.isLimit X) (limit.isLimit Y) f hf
+
+variable (W)
+
+/-- The property that a morphism property `W` is stable under products indexed by a type `J`. -/
+abbrev IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape (Discrete J)
+
+lemma IsStableUnderProductsOfShape.mk (J : Type*)
+    (hW₀ : W.RespectsIso) [HasProductsOfShape J C]
+    (hW : ∀ (X₁ X₂ : J → C) (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
+      W (Pi.map f)) : W.IsStableUnderProductsOfShape J := by
+  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
+  let φ := fun j => f.app (Discrete.mk j)
+  have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
+  refine' (hW₀.arrow_mk_iso_iff _).2 hf'
+  refine' Arrow.isoMk
+    (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit _).symm)
+    (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) _
+  apply limit.hom_ext
+  rintro ⟨j⟩
+  simp
+
+/-- The condition that a property of morphisms is stable by finite products. -/
+class IsStableUnderFiniteProducts : Prop :=
+  isStableUnderProductsOfShape (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J
+
+lemma isStableUnderProductsOfShape_of_isStableUnderFiniteProducts
+    (J : Type) [Finite J] [W.IsStableUnderFiniteProducts] :
+    W.IsStableUnderProductsOfShape J :=
+  IsStableUnderFiniteProducts.isStableUnderProductsOfShape J
+
+end
+
 end MorphismProperty
+
+namespace NatTrans
+
+lemma isIso_app_iff_of_iso {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
+    IsIso (α.app X) ↔ IsIso (α.app Y) :=
+  MorphismProperty.RespectsIso.arrow_mk_iso_iff (MorphismProperty.RespectsIso.isomorphisms D)
+    (Arrow.isoMk (F.mapIso e) (G.mapIso e) (by simp))
+
+end NatTrans
 
 end CategoryTheory

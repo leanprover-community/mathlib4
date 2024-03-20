@@ -70,7 +70,7 @@ instance categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObjec
   CategoryTheory.pi fun _ => C
 #align category_theory.graded_object.category_of_graded_objects CategoryTheory.GradedObject.categoryOfGradedObjects
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext
@@ -121,12 +121,12 @@ section
 
 variable (C)
 
--- porting note: added to ease the port
+-- Porting note: added to ease the port
 /-- Pull back an `I`-graded object in `C` to a `J`-graded object along a function `J → I`. -/
 abbrev comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C :=
   Pi.comap (fun _ => C) h
 
--- porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
+-- Porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
 @[simp]
 theorem eqToHom_proj {x x' : GradedObject I C} (h : x = x') (i : I) :
     (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
@@ -227,9 +227,7 @@ namespace GradedObject
 -- Since we're typically interested in grading by ℤ or a finite group, this should be okay.
 -- If you're grading by things in higher universes, have fun!
 variable (β : Type)
-
 variable (C : Type u) [Category.{v} C]
-
 variable [HasCoproducts.{0} C]
 
 section
@@ -265,7 +263,6 @@ namespace GradedObject
 noncomputable section
 
 variable (β : Type)
-
 variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasCoproducts.{0} C]
   [HasZeroMorphisms C]
 
@@ -464,6 +461,30 @@ lemma hasMap_comp [X.HasMap p] [(X.mapObj p).HasMap q] : X.HasMap r :=
     (fun j _ => X.isColimitCofanMapObj p j) _ ((X.mapObj p).isColimitCofanMapObj q k)⟩
 
 end
+
+section HasZeroMorphisms
+
+end HasZeroMorphisms
+
+variable [HasZeroMorphisms C] [DecidableEq J] (i : I) (j : J)
+
+/-- The canonical inclusion `X i ⟶ X.mapObj p j` when `p i = j`, the zero morphism otherwise. -/
+noncomputable def ιMapObjOrZero : X i ⟶ X.mapObj p j :=
+  if h : p i = j
+    then X.ιMapObj p i j h
+    else 0
+
+lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dif_pos h
+
+lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dif_neg h
+
+variable {X Y} in
+@[reassoc (attr := simp)]
+lemma ιMapObjOrZero_mapMap :
+    X.ιMapObjOrZero p i j ≫ mapMap φ p j = φ i ≫ Y.ιMapObjOrZero p i j := by
+  by_cases h : p i = j
+  · simp only [ιMapObjOrZero_eq _ _ _ _ h, ι_mapMap]
+  · simp only [ιMapObjOrZero_eq_zero _ _ _ _ h, zero_comp, comp_zero]
 
 end GradedObject
 

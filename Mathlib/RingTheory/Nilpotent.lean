@@ -163,7 +163,7 @@ noncomputable def nilpotencyClass : ℕ := sInf {k | x ^ k = 0}
 @[simp] lemma nilpotencyClass_eq_zero_of_subsingleton [Subsingleton R] :
     nilpotencyClass x = 0 := by
   let s : Set ℕ := {k | x ^ k = 0}
-  suffices s = univ by change sInf _ = 0; simp [this]
+  suffices s = univ by change sInf _ = 0; simp [s] at this; simp [this]
   exact eq_univ_iff_forall.mpr fun k ↦ Subsingleton.elim _ _
 
 lemma isNilpotent_of_pos_nilpotencyClass (hx : 0 < nilpotencyClass x) :
@@ -187,7 +187,7 @@ lemma nilpotencyClass_eq_succ_iff {k : ℕ} :
     nilpotencyClass x = k + 1 ↔ x ^ (k + 1) = 0 ∧ x ^ k ≠ 0 := by
   let s : Set ℕ := {k | x ^ k = 0}
   have : ∀ k₁ k₂ : ℕ, k₁ ≤ k₂ → k₁ ∈ s → k₂ ∈ s := fun k₁ k₂ h_le hk₁ ↦ pow_eq_zero_of_le h_le hk₁
-  simp [nilpotencyClass, Nat.sInf_upward_closed_eq_succ_iff this]
+  simp [s, nilpotencyClass, Nat.sInf_upward_closed_eq_succ_iff this]
 
 @[simp] lemma nilpotencyClass_zero [Nontrivial R] :
     nilpotencyClass (0 : R) = 1 :=
@@ -261,11 +261,22 @@ theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [
   rfl
 #align ring_hom.ker_is_radical_iff_reduced_of_surjective RingHom.ker_isRadical_iff_reduced_of_surjective
 
+instance [Zero R] [Pow R ℕ] [Zero S] [Pow S ℕ] [IsReduced R] [IsReduced S] : IsReduced (R × S) where
+  eq_zero _ := fun ⟨n, hn⟩ ↦ have hn := Prod.ext_iff.1 hn
+    Prod.ext (IsReduced.eq_zero _ ⟨n, hn.1⟩) (IsReduced.eq_zero _ ⟨n, hn.2⟩)
+
+instance (ι) (R : ι → Type*) [∀ i, Zero (R i)] [∀ i, Pow (R i) ℕ]
+    [∀ i, IsReduced (R i)] : IsReduced (∀ i, R i) where
+  eq_zero _ := fun ⟨n, hn⟩ ↦ funext fun i ↦ IsReduced.eq_zero _ ⟨n, congr_fun hn i⟩
+
 /-- An element `y` in a monoid is radical if for any element `x`, `y` divides `x` whenever it
   divides a power of `x`. -/
 def IsRadical [Dvd R] [Pow R ℕ] (y : R) : Prop :=
   ∀ (n : ℕ) (x), y ∣ x ^ n → y ∣ x
 #align is_radical IsRadical
+
+theorem Prime.isRadical [CommMonoidWithZero R] {y : R} (hy : Prime y) : IsRadical y :=
+  fun _ _ ↦ hy.dvd_of_dvd_pow
 
 theorem zero_isRadical_iff [MonoidWithZero R] : IsRadical (0 : R) ↔ IsReduced R := by
   simp_rw [isReduced_iff, IsNilpotent, exists_imp, ← zero_dvd_iff]
@@ -280,15 +291,19 @@ theorem isRadical_iff_span_singleton [CommSemiring R] :
 
 theorem isRadical_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
     IsRadical y ↔ ∀ x, y ∣ x ^ k → y ∣ x :=
-  ⟨fun h x => h k x, fun h =>
-    k.cauchy_induction_mul (fun n h x hd => h x <| (pow_succ' x n).symm ▸ hd.mul_right x) 0 hk
-      (fun x hd => pow_one x ▸ hd) fun n _ hn x hd => h x <| hn _ <| (pow_mul x k n).subst hd⟩
+  ⟨(· k), k.pow_imp_self_of_one_lt hk _ fun _ _ h ↦ .inl (dvd_mul_of_dvd_left h _)⟩
 #align is_radical_iff_pow_one_lt isRadical_iff_pow_one_lt
 
 theorem isReduced_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
     IsReduced R ↔ ∀ x : R, x ^ k = 0 → x = 0 := by
   simp_rw [← zero_isRadical_iff, isRadical_iff_pow_one_lt k hk, zero_dvd_iff]
 #align is_reduced_iff_pow_one_lt isReduced_iff_pow_one_lt
+
+theorem IsRadical.of_dvd [CancelCommMonoidWithZero R] {x y : R} (hy : IsRadical y) (h0 : y ≠ 0)
+    (hxy : x ∣ y) : IsRadical x := (isRadical_iff_pow_one_lt 2 one_lt_two).2 <| by
+  obtain ⟨z, rfl⟩ := hxy
+  refine fun w dvd ↦ ((mul_dvd_mul_iff_right <| right_ne_zero_of_mul h0).mp <| hy 2 _ ?_)
+  rw [mul_pow, sq z]; exact mul_dvd_mul dvd (dvd_mul_left z z)
 
 namespace Commute
 
@@ -437,7 +452,6 @@ end LinearMap
 namespace Module.End
 
 variable {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
-
 variable {f : Module.End R M} {p : Submodule R M} (hp : p ≤ p.comap f)
 
 theorem IsNilpotent.mapQ (hnp : IsNilpotent f) : IsNilpotent (p.mapQ p f hp) := by
@@ -458,5 +472,6 @@ lemma NoZeroSMulDivisors.isReduced (R M : Type*)
   · obtain ⟨m : M, hm : m ≠ 0⟩ := exists_ne (0 : M)
     have : x ^ (k + 1) • m = 0 := by simp only [hk, zero_smul]
     rw [pow_succ, mul_smul] at this
-    rcases eq_zero_or_eq_zero_of_smul_eq_zero this with rfl | hx; rfl
-    exact ih <| (eq_zero_or_eq_zero_of_smul_eq_zero hx).resolve_right hm
+    rcases eq_zero_or_eq_zero_of_smul_eq_zero this with rfl | hx
+    · rfl
+    · exact ih <| (eq_zero_or_eq_zero_of_smul_eq_zero hx).resolve_right hm
