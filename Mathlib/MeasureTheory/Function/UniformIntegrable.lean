@@ -691,7 +691,7 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
     _ ≤ ENNReal.ofReal (ε / 2) + ENNReal.ofReal (ε / 2) := by
       refine' add_le_add_left _ _
       rw [← ENNReal.ofReal_coe_nnreal, ← ENNReal.ofReal_mul (NNReal.coe_nonneg _), ← div_div,
-        mul_div_cancel' _ (NNReal.coe_pos.2 hCpos).ne.symm]
+        mul_div_cancel₀ _ (NNReal.coe_pos.2 hCpos).ne.symm]
     _ ≤ ENNReal.ofReal ε := by
       rw [← ENNReal.ofReal_add (half_pos hε).le (half_pos hε).le, add_halves]
 #align measure_theory.unif_integrable_of' MeasureTheory.unifIntegrable_of'

@@ -514,7 +514,7 @@ theorem IsLittleO.trans_isBigOWith (hfg : f =o[l] g) (hgk : IsBigOWith c l g k) 
   simp only [IsLittleO_def] at *
   intro c' c'pos
   have : 0 < c' / c := div_pos c'pos hc
-  exact ((hfg this).trans hgk this.le).congr_const (div_mul_cancel _ hc.ne')
+  exact ((hfg this).trans hgk this.le).congr_const (div_mul_cancel₀ _ hc.ne')
 #align asymptotics.is_o.trans_is_O_with Asymptotics.IsLittleO.trans_isBigOWith
 
 @[trans]
@@ -533,7 +533,7 @@ theorem IsBigOWith.trans_isLittleO (hfg : IsBigOWith c l f g) (hgk : g =o[l] k) 
   simp only [IsLittleO_def] at *
   intro c' c'pos
   have : 0 < c' / c := div_pos c'pos hc
-  exact (hfg.trans (hgk this) hc.le).congr_const (mul_div_cancel' _ hc.ne')
+  exact (hfg.trans (hgk this) hc.le).congr_const (mul_div_cancel₀ _ hc.ne')
 #align asymptotics.is_O_with.trans_is_o Asymptotics.IsBigOWith.trans_isLittleO
 
 @[trans]
@@ -1127,7 +1127,7 @@ theorem IsLittleO.add_isBigO (h₁ : f₁ =o[l] g) (h₂ : f₂ =O[l] g) : (fun 
 
 theorem IsBigOWith.add_isLittleO (h₁ : IsBigOWith c₁ l f₁ g) (h₂ : f₂ =o[l] g) (hc : c₁ < c₂) :
     IsBigOWith c₂ l (fun x => f₁ x + f₂ x) g :=
-  (h₁.add (h₂.forall_isBigOWith (sub_pos.2 hc))).congr_const (add_sub_cancel'_right _ _)
+  (h₁.add (h₂.forall_isBigOWith (sub_pos.2 hc))).congr_const (add_sub_cancel _ _)
 #align asymptotics.is_O_with.add_is_o Asymptotics.IsBigOWith.add_isLittleO
 
 theorem IsLittleO.add_isBigOWith (h₁ : f₁ =o[l] g) (h₂ : IsBigOWith c₁ l f₂ g) (hc : c₁ < c₂) :
@@ -1277,7 +1277,7 @@ theorem isBigOWith_const_const (c : E) {c' : F''} (hc' : c' ≠ 0) (l : Filter �
   simp only [IsBigOWith_def]
   apply univ_mem'
   intro x
-  rw [mem_setOf, div_mul_cancel _ (norm_ne_zero_iff.mpr hc')]
+  rw [mem_setOf, div_mul_cancel₀ _ (norm_ne_zero_iff.mpr hc')]
 #align asymptotics.is_O_with_const_const Asymptotics.isBigOWith_const_const
 
 theorem isBigO_const_const (c : E) {c' : F''} (hc' : c' ≠ 0) (l : Filter α) :
@@ -1625,7 +1625,7 @@ theorem IsBigO.mul_isLittleO {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} (h
   simp only [IsLittleO_def] at *
   intro c cpos
   rcases h₁.exists_pos with ⟨c', c'pos, hc'⟩
-  exact (hc'.mul (h₂ (div_pos cpos c'pos))).congr_const (mul_div_cancel' _ (ne_of_gt c'pos))
+  exact (hc'.mul (h₂ (div_pos cpos c'pos))).congr_const (mul_div_cancel₀ _ (ne_of_gt c'pos))
 #align asymptotics.is_O.mul_is_o Asymptotics.IsBigO.mul_isLittleO
 
 theorem IsLittleO.mul_isBigO {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} (h₁ : f₁ =o[l] g₁) (h₂ : f₂ =O[l] g₂) :
@@ -1633,7 +1633,7 @@ theorem IsLittleO.mul_isBigO {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} (h
   simp only [IsLittleO_def] at *
   intro c cpos
   rcases h₂.exists_pos with ⟨c', c'pos, hc'⟩
-  exact ((h₁ (div_pos cpos c'pos)).mul hc').congr_const (div_mul_cancel _ (ne_of_gt c'pos))
+  exact ((h₁ (div_pos cpos c'pos)).mul hc').congr_const (div_mul_cancel₀ _ (ne_of_gt c'pos))
 #align asymptotics.is_o.mul_is_O Asymptotics.IsLittleO.mul_isBigO
 
 theorem IsLittleO.mul {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} (h₁ : f₁ =o[l] g₁) (h₂ : f₂ =o[l] g₂) :
@@ -1805,7 +1805,7 @@ theorem IsBigO.smul_isLittleO (h₁ : k₁ =O[l] k₂) (h₂ : f' =o[l] g') :
   simp only [IsLittleO_def] at *
   intro c cpos
   rcases h₁.exists_pos with ⟨c', c'pos, hc'⟩
-  exact (hc'.smul (h₂ (div_pos cpos c'pos))).congr_const (mul_div_cancel' _ (ne_of_gt c'pos))
+  exact (hc'.smul (h₂ (div_pos cpos c'pos))).congr_const (mul_div_cancel₀ _ (ne_of_gt c'pos))
 #align asymptotics.is_O.smul_is_o Asymptotics.IsBigO.smul_isLittleO
 
 theorem IsLittleO.smul_isBigO (h₁ : k₁ =o[l] k₂) (h₂ : f' =O[l] g') :
@@ -1813,7 +1813,7 @@ theorem IsLittleO.smul_isBigO (h₁ : k₁ =o[l] k₂) (h₂ : f' =O[l] g') :
   simp only [IsLittleO_def] at *
   intro c cpos
   rcases h₂.exists_pos with ⟨c', c'pos, hc'⟩
-  exact ((h₁ (div_pos cpos c'pos)).smul hc').congr_const (div_mul_cancel _ (ne_of_gt c'pos))
+  exact ((h₁ (div_pos cpos c'pos)).smul hc').congr_const (div_mul_cancel₀ _ (ne_of_gt c'pos))
 #align asymptotics.is_o.smul_is_O Asymptotics.IsLittleO.smul_isBigO
 
 theorem IsLittleO.smul (h₁ : k₁ =o[l] k₂) (h₂ : f' =o[l] g') :

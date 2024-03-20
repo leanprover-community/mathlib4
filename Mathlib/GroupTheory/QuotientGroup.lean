@@ -304,7 +304,7 @@ lemma preimage_image_coe (s : Set G) : ((↑) : G → Q) ⁻¹' ((↑) '' s) = N
   ext a
   constructor
   · rintro ⟨b, hb, h⟩
-    refine ⟨a / b, (QuotientGroup.eq_one_iff _).1 ?_, b, hb, div_mul_cancel' _ _⟩
+    refine ⟨a / b, (QuotientGroup.eq_one_iff _).1 ?_, b, hb, div_mul_cancel _ _⟩
     simp only [h, QuotientGroup.mk_div, div_self']
   · rintro ⟨a, ha, b, hb, rfl⟩
     refine ⟨b, hb, ?_⟩

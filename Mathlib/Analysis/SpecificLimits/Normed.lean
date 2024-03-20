@@ -223,7 +223,7 @@ theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [Norm
   have A : (fun n ↦ (n : R) ^ k : ℕ → R) =o[atTop] fun n ↦ (r₂ / ‖r₁‖) ^ n :=
     isLittleO_pow_const_const_pow_of_one_lt k ((one_lt_div h0).2 h)
   suffices (fun n ↦ r₁ ^ n) =O[atTop] fun n ↦ ‖r₁‖ ^ n by
-    simpa [div_mul_cancel _ (pow_pos h0 _).ne'] using A.mul_isBigO this
+    simpa [div_mul_cancel₀ _ (pow_pos h0 _).ne'] using A.mul_isBigO this
   exact IsBigO.of_bound 1 (by simpa using eventually_norm_pow_le r₁)
 #align is_o_pow_const_mul_const_pow_const_pow_of_norm_lt isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt
 
@@ -371,7 +371,7 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one {𝕜 : Type*} [NormedField 𝕜
     simp [lt_irrefl] at hr
   set s : 𝕜 := ∑' n : ℕ, n * r ^ n
   calc
-    s = (1 - r) * s / (1 - r) := (mul_div_cancel_left _ (sub_ne_zero.2 hr'.symm)).symm
+    s = (1 - r) * s / (1 - r) := (mul_div_eq_right₀ _ (sub_ne_zero.2 hr'.symm)).symm
     _ = (s - r * s) / (1 - r) := by rw [_root_.sub_mul, one_mul]
     _ = (((0 : ℕ) * r ^ 0 + ∑' n : ℕ, (n + 1 : ℕ) * r ^ (n + 1)) - r * s) / (1 - r) := by
       rw [← tsum_eq_zero_add A]
@@ -403,7 +403,7 @@ nonrec theorem SeminormedAddCommGroup.cauchySeq_of_le_geometric {C : ℝ} {r : �
 
 theorem dist_partial_sum_le_of_le_geometric (hf : ∀ n, ‖f n‖ ≤ C * r ^ n) (n : ℕ) :
     dist (∑ i in range n, f i) (∑ i in range (n + 1), f i) ≤ C * r ^ n := by
-  rw [sum_range_succ, dist_eq_norm, ← norm_neg, neg_sub, add_sub_cancel']
+  rw [sum_range_succ, dist_eq_norm, ← norm_neg, neg_sub, add_sub_eq_right]
   exact hf n
 #align dist_partial_sum_le_of_le_geometric dist_partial_sum_le_of_le_geometric
 

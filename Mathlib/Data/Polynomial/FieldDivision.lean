@@ -498,7 +498,7 @@ theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
       change natDegree p = 1 at h'; rw [← h']
       exact mt leadingCoeff_eq_zero.1 fun h0 => by simp [h0] at h
     conv in p => rw [eq_X_add_C_of_degree_le_one (show degree p ≤ 1 by rw [h])]
-    simp [IsRoot, mul_div_cancel' _ this]⟩
+    simp [IsRoot, mul_div_cancel₀ _ this]⟩
 #align polynomial.exists_root_of_degree_eq_one Polynomial.exists_root_of_degree_eq_one
 
 theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = (↑u⁻¹ : R[X]).coeff n := by

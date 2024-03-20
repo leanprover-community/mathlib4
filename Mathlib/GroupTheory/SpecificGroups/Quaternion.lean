@@ -199,8 +199,8 @@ theorem xa_sq (i : ZMod (2 * n)) : xa i ^ 2 = a n := by simp [sq]
 
 @[simp]
 theorem xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 := by
-  rw [pow_succ, pow_succ, sq, xa_mul_xa, xa_mul_a, xa_mul_xa, add_sub_cancel, add_sub_assoc,
-    add_sub_cancel']
+  rw [pow_succ, pow_succ, sq, xa_mul_xa, xa_mul_a, xa_mul_xa, add_sub_eq_left, add_sub_assoc,
+    add_sub_eq_right]
   norm_cast
   rw [← two_mul]
   simp [one_def]
