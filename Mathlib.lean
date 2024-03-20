@@ -2954,6 +2954,7 @@ import Mathlib.NumberTheory.Harmonic.Bounds
 import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.NumberTheory.Harmonic.Int
 import Mathlib.NumberTheory.KummerDedekind
+import Mathlib.NumberTheory.LSeries.AbstractFuncEq
 import Mathlib.NumberTheory.LSeries.Basic
 import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.NumberTheory.LSeries.Linearity
@@ -3199,6 +3200,7 @@ import Mathlib.Probability.Kernel.CondDistrib
 import Mathlib.Probability.Kernel.Condexp
 import Mathlib.Probability.Kernel.Disintegration
 import Mathlib.Probability.Kernel.Disintegration.CdfToKernel
+import Mathlib.Probability.Kernel.Disintegration.Density
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 import Mathlib.Probability.Kernel.IntegralCompProd
 import Mathlib.Probability.Kernel.Invariance
