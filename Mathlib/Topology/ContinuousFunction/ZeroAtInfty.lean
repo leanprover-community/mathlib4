@@ -413,21 +413,14 @@ theorem isBounded_image (f : C₀(α, β)) (s : Set α) : IsBounded (f '' s) :=
   f.isBounded_range.subset <| image_subset_range _ _
 #align zero_at_infty_continuous_map.bounded_image ZeroAtInftyContinuousMap.isBounded_image
 
-instance (priority := 100) instBoundedContinuousMapClass : BoundedContinuousMapClass F α β :=
-  { ‹ZeroAtInftyContinuousMapClass F α β› with
-    map_bounded := fun f => ZeroAtInftyContinuousMap.bounded f }
-
-/-- Construct a bounded continuous function from a continuous function vanishing at infinity. -/
-@[simps!]
-def toBCF (f : C₀(α, β)) : α →ᵇ β :=
-  ⟨f, map_bounded f⟩
-#align zero_at_infty_continuous_map.to_bcf ZeroAtInftyContinuousMap.toBCF
+instance (priority := 100) instBoundedContinuousMapClass : BoundedContinuousMapClass F α β where
+  map_bounded := ZeroAtInftyContinuousMap.bounded
 
 section
 
 variable (α) (β)
 
-theorem toBCF_injective : Function.Injective (toBCF : C₀(α, β) → α →ᵇ β) := fun f g h => by
+theorem toBCF_injective : Function.Injective ((↑) : C₀(α, β) → α →ᵇ β) := fun f g h => by
   ext x
   simpa only using DFunLike.congr_fun h x
 #align zero_at_infty_continuous_map.to_bcf_injective ZeroAtInftyContinuousMap.toBCF_injective
@@ -439,7 +432,7 @@ variable {C : ℝ} {f g : C₀(α, β)}
 /-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
 inclusion `ZeroAtInftyContinuousMap.toBCF`, is a pseudo-metric space. -/
 noncomputable instance instPseudoMetricSpace : PseudoMetricSpace C₀(α, β) :=
-  PseudoMetricSpace.induced toBCF inferInstance
+  PseudoMetricSpace.induced ((↑) : C₀(α, β) → α →ᵇ β) inferInstance
 
 /-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
 inclusion `ZeroAtInftyContinuousMap.toBCF`, is a metric space. -/
@@ -448,7 +441,7 @@ noncomputable instance instMetricSpace {β : Type*} [MetricSpace β] [Zero β] :
   MetricSpace.induced _ (toBCF_injective α β) inferInstance
 
 @[simp]
-theorem dist_toBCF_eq_dist {f g : C₀(α, β)} : dist f.toBCF g.toBCF = dist f g :=
+theorem dist_toBCF_eq_dist {f g : C₀(α, β)} : dist (f : α →ᵇ β) g = dist f g :=
   rfl
 #align zero_at_infty_continuous_map.dist_to_bcf_eq_dist ZeroAtInftyContinuousMap.dist_toBCF_eq_dist
 
@@ -457,15 +450,13 @@ open BoundedContinuousFunction
 /-- Convergence in the metric on `C₀(α, β)` is uniform convergence. -/
 theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → C₀(α, β)} {f : C₀(α, β)} {l : Filter ι} :
     Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l := by
-  simpa only [Metric.tendsto_nhds] using
-    @BoundedContinuousFunction.tendsto_iff_tendstoUniformly _ _ _ _ _ (fun i => (F i).toBCF)
-      f.toBCF l
+  simpa only [Metric.tendsto_nhds] using BoundedContinuousFunction.tendsto_iff_tendstoUniformly
 #align zero_at_infty_continuous_map.tendsto_iff_tendsto_uniformly ZeroAtInftyContinuousMap.tendsto_iff_tendstoUniformly
 
-theorem isometry_toBCF : Isometry (toBCF : C₀(α, β) → α →ᵇ β) := by tauto
+theorem isometry_toBCF : Isometry ((↑) : C₀(α, β) → α →ᵇ β) := by tauto
 #align zero_at_infty_continuous_map.isometry_to_bcf ZeroAtInftyContinuousMap.isometry_toBCF
 
-theorem closed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →ᵇ β)) := by
+theorem closed_range_toBCF : IsClosed (range ((↑) : C₀(α, β) → α →ᵇ β)) := by
   refine' isClosed_iff_clusterPt.mpr fun f hf => _
   rw [clusterPt_principal_iff] at hf
   have : Tendsto f (cocompact α) (𝓝 0) := by
@@ -474,8 +465,9 @@ theorem closed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →ᵇ
     refine' (Metric.tendsto_nhds.mp (zero_at_infty g) (ε / 2) (half_pos hε)).mp
       (eventually_of_forall fun x hx => _)
     calc
-      dist (f x) 0 ≤ dist (g.toBCF x) (f x) + dist (g x) 0 := dist_triangle_left _ _ _
-      _ < dist g.toBCF f + ε / 2 := (add_lt_add_of_le_of_lt (dist_coe_le_dist x) hx)
+      dist (f x) 0 ≤ dist (g x) (f x) + dist (g x) 0 := dist_triangle_left _ _ _
+      _ < dist (g : α →ᵇ β) f + ε / 2 :=
+        (add_lt_add_of_le_of_lt (dist_coe_le_dist (f := g) (g := f) x) hx)
       _ < ε := by simpa [add_halves ε] using add_lt_add_right (mem_ball.1 hg) (ε / 2)
   exact ⟨⟨f.toContinuousMap, this⟩, rfl⟩
 #align zero_at_infty_continuous_map.closed_range_to_bcf ZeroAtInftyContinuousMap.closed_range_toBCF
@@ -502,21 +494,25 @@ section NormedSpace
 
 noncomputable instance instSeminormedAddCommGroup [SeminormedAddCommGroup β] :
     SeminormedAddCommGroup C₀(α, β) :=
-  SeminormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
+  SeminormedAddCommGroup.induced _ _ (⟨⟨(↑), rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
 
 noncomputable instance instNormedAddCommGroup [NormedAddCommGroup β] :
     NormedAddCommGroup C₀(α, β) :=
-  NormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
+  NormedAddCommGroup.induced _ _ (⟨⟨(↑), rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
     (toBCF_injective α β)
 
 variable [SeminormedAddCommGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
 
-@[simp]
-theorem norm_toBCF_eq_norm {f : C₀(α, β)} : ‖f.toBCF‖ = ‖f‖ :=
+theorem norm_toBCF_eq_norm {f : C₀(α, β)} : ‖(f : α →ᵇ β)‖ = ‖f‖ :=
   rfl
 #align zero_at_infty_continuous_map.norm_to_bcf_eq_norm ZeroAtInftyContinuousMap.norm_toBCF_eq_norm
 
-instance : NormedSpace 𝕜 C₀(α, β) where norm_smul_le k f := (norm_smul_le k f.toBCF : _)
+/-- The norm of a function is controlled by the supremum of the pointwise norms. -/
+theorem norm_le {f : C₀(α, β)} {C : ℝ} (C0 : (0 : ℝ) ≤ C) : ‖f‖ ≤ C ↔ ∀ x : α, ‖f x‖ ≤ C := by
+  rw [← norm_toBCF_eq_norm]
+  exact BoundedContinuousFunction.norm_le C0
+
+instance : NormedSpace 𝕜 C₀(α, β) where norm_smul_le k f := (norm_smul_le k (f : α →ᵇ β) : _)
 
 end NormedSpace
 
@@ -525,12 +521,12 @@ section NormedRing
 noncomputable instance instNonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
     NonUnitalSeminormedRing C₀(α, β) :=
   { instNonUnitalRing, instSeminormedAddCommGroup with
-    norm_mul := fun f g => norm_mul_le f.toBCF g.toBCF }
+    norm_mul := fun f g => norm_mul_le (f : α →ᵇ β) (g : α →ᵇ β) }
 
 noncomputable instance instNonUnitalNormedRing [NonUnitalNormedRing β] :
     NonUnitalNormedRing C₀(α, β) :=
   { instNonUnitalRing, instNormedAddCommGroup with
-    norm_mul := fun f g => norm_mul_le f.toBCF g.toBCF }
+    norm_mul := fun f g => norm_mul_le (f : α →ᵇ β) (g : α →ᵇ β) }
 
 noncomputable instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing β] :
     NonUnitalSeminormedCommRing C₀(α, β) :=
@@ -586,7 +582,7 @@ section NormedStar
 variable [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 instance instNormedStarGroup : NormedStarGroup C₀(α, β) where
-  norm_star f := (norm_star f.toBCF : _)
+  norm_star f := (norm_star (f : α →ᵇ β) : _)
 
 end NormedStar
 
@@ -614,7 +610,7 @@ end StarRing
 section CstarRing
 
 instance instCstarRing [NonUnitalNormedRing β] [StarRing β] [CstarRing β] : CstarRing C₀(α, β) where
-  norm_star_mul_self {f} := CstarRing.norm_star_mul_self (x := f.toBCF)
+  norm_star_mul_self {f} := CstarRing.norm_star_mul_self (x := (f : α →ᵇ β))
 
 end CstarRing
 

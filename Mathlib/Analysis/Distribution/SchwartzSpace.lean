@@ -238,7 +238,7 @@ theorem seminormAux_nonneg (k n : ℕ) (f : 𝓕) : 0 ≤ SchwartzMap.seminormAu
 #align schwartz_map.seminorm_aux_nonneg SchwartzMap.seminormAux_nonneg
 
 theorem le_seminormAux (k n : ℕ) (f : 𝓕) (x : E) :
-    ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (⇑f) x‖ ≤ SchwartzMap.seminormAux k n f :=
+    ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ SchwartzMap.seminormAux k n f :=
   le_csInf (bounds_nonempty k n f) fun _ ⟨_, h⟩ => h x
 #align schwartz_map.le_seminorm_aux SchwartzMap.le_seminormAux
 
@@ -1048,15 +1048,17 @@ lemma integrable_pow_mul (f : 𝓢(D, V)) {μ : Measure D} (k : ℕ) [IsAddHaarM
     _ = (1 + ‖x‖) ^ (finrank ℝ D + 1 + k) * ‖f x‖ := by simp only [pow_add, mul_assoc]
     _ ≤ C := hC x
 
-lemma integrable (f : 𝓢(D, V)) {μ : Measure D} [IsAddHaarMeasure μ] :
+variable [FunLike 𝓕 D V] [SchwartzMapClass 𝓕 D V]
+
+lemma integrable (f : 𝓕) {μ : Measure D} [IsAddHaarMeasure μ] :
     Integrable f μ :=
-  (f.integrable_pow_mul (μ := μ) 0).mono (map_continuous f).aestronglyMeasurable
+  ((f : 𝓢(D, V)).integrable_pow_mul (μ := μ) 0).mono (map_continuous f).aestronglyMeasurable
     (eventually_of_forall (fun _ ↦ by simp))
 
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/
 def integralCLM (μ : Measure D) [IsAddHaarMeasure μ] : 𝓢(D, V) →L[ℝ] V :=
   mkCLMtoNormedSpace (∫ x, · x ∂μ)
-    (fun f g ↦ integral_add f.integrable g.integrable)
+    (fun f g ↦ integral_add (integrable f) (integrable g))
     (integral_smul · ·)
     (by
       let l := finrank ℝ D + 1
@@ -1092,10 +1094,10 @@ section BoundedContinuousFunction
 
 open scoped BoundedContinuousFunction
 
-instance instBoundedContinuousMapClass : BoundedContinuousMapClass 𝓢(E, F) E F where
-  __ := instContinuousMapClass
-  map_bounded := fun f ↦ ⟨2 * (SchwartzMap.seminorm ℝ 0 0) f,
-    (BoundedContinuousFunction.dist_le_two_norm' (norm_le_seminorm ℝ f))⟩
+instance _root_.SchwartzMapClass.instBoundedContinuousMapClass :
+    BoundedContinuousMapClass 𝓕 E F where
+  map_bounded f := ⟨2 * (SchwartzMap.seminorm ℝ 0 0) (f : 𝓢(E, F)),
+    (BoundedContinuousFunction.dist_le_two_norm' (norm_le_seminorm ℝ (f : 𝓢(E, F))))⟩
 
 #align schwartz_map.to_bounded_continuous_function CoeTC.coe
 
@@ -1147,21 +1149,20 @@ open scoped ZeroAtInfty
 
 variable [ProperSpace E]
 
-instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(E, F) E F where
-  __ := instContinuousMapClass
-  zero_at_infty := by
-    intro f
+instance _root_.SchwartzMapClass.instZeroAtInftyContinuousMapClass :
+    ZeroAtInftyContinuousMapClass 𝓕 E F where
+  zero_at_infty f := by
     apply zero_at_infty_of_norm_le
     intro ε hε
-    use (SchwartzMap.seminorm ℝ 1 0) f / ε
+    use (SchwartzMap.seminorm ℝ 1 0) (f : 𝓢(E, F)) / ε
     intro x hx
     rw [div_lt_iff hε] at hx
     have hxpos : 0 < ‖x‖ := by
       rw [norm_pos_iff']
       intro hxzero
       simp only [hxzero, norm_zero, zero_mul, ← not_le] at hx
-      exact hx (apply_nonneg (SchwartzMap.seminorm ℝ 1 0) f)
-    have := norm_pow_mul_le_seminorm ℝ f 1 x
+      exact hx (apply_nonneg (SchwartzMap.seminorm ℝ 1 0) (f : 𝓢(E, F)))
+    have := norm_pow_mul_le_seminorm ℝ (f : 𝓢(E, F)) 1 x
     rw [pow_one, ← le_div_iff' hxpos] at this
     apply lt_of_le_of_lt this
     rwa [div_lt_iff' hxpos]
@@ -1169,20 +1170,18 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(
 @[simp] theorem toZeroAtInfty_apply (f : 𝓢(E, F)) (x : E) : (f : C₀(E, F)) x = f x :=
   rfl
 
-@[simp] theorem toZeroAtInfty_toBCF (f : 𝓢(E, F)) :
-    (f : C₀(E, F)).toBCF = f :=
-  rfl
-
 variable (𝕜 E F)
 variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+
+open scoped BoundedContinuousFunction
 
 /-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
 continuous linear map. -/
 def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
   mkCLMtoNormedSpace (↑) (by intro f g; ext; exact add_apply)
     (by intro a f; ext; exact smul_apply)
-    (⟨{0}, 1, zero_le_one, by simpa [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm,
-      BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)
+    (⟨{0}, 1, zero_le_one, by
+      simpa [ZeroAtInftyContinuousMap.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜⟩)
 
 @[simp] theorem toZeroAtInftyCLM_apply (f : 𝓢(E, F)) (x : E) : toZeroAtInftyCLM 𝕜 E F f x = f x :=
   rfl
