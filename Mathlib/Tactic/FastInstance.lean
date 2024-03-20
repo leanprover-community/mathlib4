@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieserf
 -/
 
-import Lean.Elab
+import Lean.Elab.ComputedFields
+import Lean.Meta.Tactic.ElimInfo
 
 /-!
 # The `fast_instance%` term elaborator
