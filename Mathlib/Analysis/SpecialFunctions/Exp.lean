@@ -392,7 +392,7 @@ theorem isLittleO_exp_comp_exp_comp {f g : α → ℝ} :
     imp_true_iff, tendsto_exp_comp_nhds_zero, neg_sub]
 #align real.is_o_exp_comp_exp_comp Real.isLittleO_exp_comp_exp_comp
 
--- Porting note: @[simp] can prove:  by simp only [@Asymptotics.isLittleO_one_left_iff,
+-- Porting note (#10618): @[simp] can prove:  by simp only [@Asymptotics.isLittleO_one_left_iff,
 --   Real.norm_eq_abs, Real.abs_exp, @Real.tendsto_exp_comp_atTop]
 theorem isLittleO_one_exp_comp {f : α → ℝ} :
     ((fun _ => 1 : α → ℝ) =o[l] fun x => exp (f x)) ↔ Tendsto f l atTop := by

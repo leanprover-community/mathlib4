@@ -30,7 +30,6 @@ universe v u
 namespace CategoryTheory
 
 variable (S : Type*) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
-
 variable [HasZeroMorphisms C] [HasShift C S]
 
 /-- A differential object in a category with zero morphisms and a shift is
@@ -176,7 +175,6 @@ namespace Functor
 universe v' u'
 
 variable (D : Type u') [Category.{v'} D]
-
 variable [HasZeroMorphisms D] [HasShift D S]
 
 /-- A functor `F : C ⥤ D` which commutes with shift functors on `C` and `D` and preserves zero
@@ -214,7 +212,6 @@ namespace CategoryTheory
 namespace DifferentialObject
 
 variable (S : Type*) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
-
 variable [HasZeroObject C] [HasZeroMorphisms C] [HasShift C S]
 variable [(shiftFunctor C (1 : S)).PreservesZeroMorphisms]
 
@@ -249,7 +246,6 @@ end DifferentialObject
 namespace DifferentialObject
 
 variable {S : Type*} [AddCommGroupWithOne S] (C : Type u) [Category.{v} C]
-
 variable [HasZeroMorphisms C] [HasShift C S]
 
 noncomputable section
