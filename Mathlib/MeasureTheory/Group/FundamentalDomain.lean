@@ -882,8 +882,7 @@ lemma IsFundamentalDomain.projection_respects_measure_apply {ν : Measure α}
     (meas_U : MeasurableSet U) : μ U = ν (π ⁻¹' U ∩ t) := by
   rw [fund_dom_t.projection_respects_measure (μ := μ), measureRestrictMap_apply ν t meas_U]
 
--- NOTE : Should ν here be implicit???
-variable (ν : Measure α) [Countable G] [MeasurableSpace G]
+variable {ν : Measure α} [Countable G] [MeasurableSpace G]
   [SMulInvariantMeasure G α ν] [MeasurableSMul G α]
 
 /-- Given a measure upstairs (i.e., on `α`), and a choice `s` of fundamental domain, there's always
