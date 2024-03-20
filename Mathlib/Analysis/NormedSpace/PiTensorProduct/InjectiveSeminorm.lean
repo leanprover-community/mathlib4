@@ -164,7 +164,6 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max (max u_1 u_2) u_3
     simp only [toDualContinuousMultilinearMap_apply_toFun]
     exact hbound.2 G f)
 
-@[simp]
 theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max (max u_1 u_2) u_3))
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
