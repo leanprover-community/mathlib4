@@ -70,11 +70,8 @@ to a normed space `F`, we have `‖f.lift x‖ ≤ ‖f‖ * injectiveSeminorm x
 -/
 
 variable {ι : Type*} [Fintype ι]
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : ι → Type*} [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-
 variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open scoped TensorProduct
