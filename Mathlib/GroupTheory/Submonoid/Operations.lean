@@ -579,7 +579,7 @@ theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S 
 instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : MulOneClass S :=
   fast_instance%
-    Subtype.coe_injective.mulOneClass (↑) rfl (fun _ _ => rfl)
+  Subtype.coe_injective.mulOneClass (↑) rfl (fun _ _ => rfl)
 #align submonoid_class.to_mul_one_class SubmonoidClass.toMulOneClass
 #align add_submonoid_class.to_add_zero_class AddSubmonoidClass.toAddZeroClass
 
@@ -589,7 +589,7 @@ instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} 
 instance (priority := 75) toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : Monoid S :=
   fast_instance%
-    Subtype.coe_injective.monoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.monoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
 #align submonoid_class.to_monoid SubmonoidClass.toMonoid
 #align add_submonoid_class.to_add_monoid AddSubmonoidClass.toAddMonoid
 
@@ -672,7 +672,7 @@ theorem one_def : (1 : S) = ⟨1, S.one_mem⟩ :=
       "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
 instance toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) : MulOneClass S :=
   fast_instance%
-    Subtype.coe_injective.mulOneClass (↑) rfl fun _ _ => rfl
+  Subtype.coe_injective.mulOneClass (↑) rfl fun _ _ => rfl
 #align submonoid.to_mul_one_class Submonoid.toMulOneClass
 #align add_submonoid.to_add_zero_class AddSubmonoid.toAddZeroClass
 
@@ -691,7 +691,7 @@ protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx :
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure."]
 instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S :=
   fast_instance%
-    Subtype.coe_injective.monoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.monoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid.to_monoid Submonoid.toMonoid
 #align add_submonoid.to_add_monoid AddSubmonoid.toAddMonoid
 
@@ -699,7 +699,7 @@ instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S :=
 @[to_additive "An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`."]
 instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S :=
   fast_instance%
-    Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid.to_comm_monoid Submonoid.toCommMonoid
 #align add_submonoid.to_add_comm_monoid AddSubmonoid.toAddCommMonoid
 
