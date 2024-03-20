@@ -117,9 +117,7 @@ theorem mulTSupport_mul [TopologicalSpace X] [Monoid α] {f g : X → α} :
 section
 
 variable [TopologicalSpace α] [TopologicalSpace α']
-
 variable [One β] [One γ] [One δ]
-
 variable {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ} {x : α}
 
 @[to_additive]
@@ -142,9 +140,7 @@ end
 /-! ## Functions with compact support -/
 section CompactSupport
 variable [TopologicalSpace α] [TopologicalSpace α']
-
 variable [One β] [One γ] [One δ]
-
 variable {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → δ} {x : α}
 
 /-- A function `f` *has compact multiplicative support* or is *compactly supported* if the closure
@@ -326,7 +322,6 @@ section CompactSupport2
 section Monoid
 
 variable [TopologicalSpace α] [Monoid β]
-
 variable {f f' : α → β} {x : α}
 
 @[to_additive]
@@ -340,7 +335,6 @@ end Monoid
 section DistribMulAction
 
 variable [TopologicalSpace α] [MonoidWithZero R] [AddMonoid M] [DistribMulAction R M]
-
 variable {f : α → R} {f' : α → M} {x : α}
 
 theorem HasCompactSupport.smul_left (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
@@ -353,7 +347,6 @@ end DistribMulAction
 section SMulWithZero
 
 variable [TopologicalSpace α] [Zero R] [Zero M] [SMulWithZero R M]
-
 variable {f : α → R} {f' : α → M} {x : α}
 
 theorem HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupport (f • f') := by
@@ -371,7 +364,6 @@ end SMulWithZero
 section MulZeroClass
 
 variable [TopologicalSpace α] [MulZeroClass β]
-
 variable {f f' : α → β} {x : α}
 
 theorem HasCompactSupport.mul_right (hf : HasCompactSupport f) : HasCompactSupport (f * f') := by

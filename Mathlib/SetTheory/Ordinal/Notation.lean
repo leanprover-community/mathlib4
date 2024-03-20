@@ -553,7 +553,7 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
                 le_of_lt <|
                   oadd_lt_oadd_2 h₁ <|
                     lt_of_le_of_ne (tsub_eq_zero_iff_le.1 mn) (mt PNat.eq en)).symm
-      · simp [Nat.succPNat, -Nat.cast_succ]
+      · simp [Nat.succPNat]
         rw [(tsub_eq_iff_eq_add_of_le <| le_of_lt <| Nat.lt_of_sub_eq_succ mn).1 mn, add_comm,
           Nat.cast_add, mul_add, add_assoc, add_sub_add_cancel]
         refine'
@@ -784,7 +784,7 @@ theorem repr_scale (x) [NF x] (o) [NF o] : repr (scale x o) = ω ^ repr x * repr
 
 theorem nf_repr_split {o o' m} [NF o] (h : split o = (o', m)) : NF o' ∧ repr o = repr o' + m := by
   cases' e : split' o with a n
-  cases' nf_repr_split' e with s₁ s₂; skip
+  cases' nf_repr_split' e with s₁ s₂
   rw [split_eq_scale_split' e] at h
   injection h; substs o' n
   simp only [repr_scale, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero,
@@ -796,7 +796,7 @@ theorem split_dvd {o o' m} [NF o] (h : split o = (o', m)) : ω ∣ repr o' := by
   cases' e : split' o with a n
   rw [split_eq_scale_split' e] at h
   injection h; subst o'
-  cases nf_repr_split' e; skip; simp
+  cases nf_repr_split' e; simp
 #align onote.split_dvd ONote.split_dvd
 
 theorem split_add_lt {o e n a m} [NF o] (h : split o = (oadd e n a, m)) :
@@ -977,7 +977,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     · cases' e₂ : split' o₂ with b' k
       cases' nf_repr_split' e₂ with _ r₂
       by_cases h : m = 0
-      · simp [opow_def, opow, e₁, h, r₁, e₂, r₂, -Nat.cast_succ, ← Nat.one_eq_succ_zero]
+      · simp [opow_def, opow, e₁, h, r₁, e₂, r₂, ← Nat.one_eq_succ_zero]
       simp only [opow_def, opowAux2, opow, e₁, h, r₁, e₂, r₂, repr,
           opow_zero, Nat.succPNat_coe, Nat.cast_succ, Nat.cast_zero, _root_.zero_add, mul_one,
           add_zero, one_opow, npow_eq_pow]
@@ -1206,7 +1206,7 @@ theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
 theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]
   suffices ∀ a b, Nat.succ^[a] b = b + a from this _ _
-  intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_succ, -Function.iterate_succ]
+  intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_assoc, -Function.iterate_succ]
 #align onote.fast_growing_one ONote.fastGrowing_one
 
 section

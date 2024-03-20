@@ -61,7 +61,7 @@ lemma succ_ne_succ : succ m ≠ succ n ↔ m ≠ n := succ_injective.ne_iff
 lemma succ_succ_ne_one (n : ℕ) : n.succ.succ ≠ 1 := by simp
 #align nat.succ_succ_ne_one Nat.succ_succ_ne_one
 
-@[simp] lemma one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ := succ_lt_succ <| succ_pos n
+lemma one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ := succ_lt_succ <| succ_pos n
 #align nat.one_lt_succ_succ Nat.one_lt_succ_succ
 
 -- Moved to Std
@@ -127,7 +127,7 @@ lemma one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 := Nat.pos_iff_ne_zero
 lemma one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n ≠ 1
   | 0 => by decide
   | 1 => by decide
-  | n + 2 => by simp
+  | n + 2 => by omega
 #align nat.one_lt_iff_ne_zero_and_ne_one Nat.one_lt_iff_ne_zero_and_ne_one
 
 lemma le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1 := by simp [le_succ_iff]
@@ -136,11 +136,8 @@ lemma le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1 
 #align nat.succ_eq_one_add Nat.succ_eq_one_add
 #align nat.one_add Nat.one_add
 
-lemma pred_eq_sub_one (n : ℕ) : pred n = n - 1 := rfl
 #align nat.pred_eq_sub_one Nat.pred_eq_sub_one
 
-/-- This ensures that `simp` succeeds on `pred (n + 1) = n`. -/
-@[simp]
 lemma pred_one_add (n : ℕ) : pred (1 + n) = n := by rw [Nat.add_comm, add_one, Nat.pred_succ]
 #align nat.pred_one_add Nat.pred_one_add
 
@@ -150,7 +147,7 @@ lemma pred_eq_self_iff : n.pred = n ↔ n = 0 := by cases n <;> simp [(Nat.succ_
 lemma pred_eq_of_eq_succ (H : m = n.succ) : m.pred = n := by simp [H]
 #align nat.pred_eq_of_eq_succ Nat.pred_eq_of_eq_succ
 
-@[simp] lemma pred_eq_succ_iff : pred n = succ m ↔ n = m + 2 := by
+@[simp] lemma pred_eq_succ_iff : n - 1 = m + 1 ↔ n = m + 2 := by
   cases n <;> constructor <;> rintro ⟨⟩ <;> rfl
 #align nat.pred_eq_succ_iff Nat.pred_eq_succ_iff
 
@@ -553,7 +550,6 @@ def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ m : ℕ, P m 0) (H0b 
   | m, 0 => Ha0 m
   | 0, n => H0b n
   | Nat.succ m, Nat.succ n => H _ _ (pincerRecursion Ha0 H0b H _ _) (pincerRecursion Ha0 H0b H _ _)
-termination_by n m => n + m
 #align nat.pincer_recursion Nat.pincerRecursion
 
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `m ≤ k < n`, then `P n` implies `P m`.

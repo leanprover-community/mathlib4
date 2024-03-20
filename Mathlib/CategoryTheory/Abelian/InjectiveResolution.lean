@@ -312,8 +312,7 @@ variable [Abelian C] [EnoughInjectives C] (Z : C)
 /-- Auxiliary definition for `InjectiveResolution.of`. -/
 def ofCocomplex : CochainComplex C ℕ :=
   CochainComplex.mk' (Injective.under Z) (Injective.syzygies (Injective.ι Z))
-    (Injective.d (Injective.ι Z)) fun ⟨_, _, f⟩ =>
-    ⟨Injective.syzygies f, Injective.d f, by simp⟩
+    (Injective.d (Injective.ι Z)) fun f => ⟨_, Injective.d f, by simp⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.of_cocomplex CategoryTheory.InjectiveResolution.ofCocomplex
 
@@ -325,12 +324,14 @@ lemma ofCocomplex_d_0_1 :
 lemma ofCocomplex_exactAt_succ (n : ℕ) :
     (ofCocomplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ n (n + 1) (n + 1 + 1) (by simp) (by simp)]
-  cases n
-  all_goals
-    dsimp only [ofCocomplex, CochainComplex.mk', CochainComplex.mk, CochainComplex.of,
-      HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor', eqToHom_refl, dite_eq_ite]
-    simp only [Nat.reduceAdd, zero_add, ↓reduceIte, comp_id]
-    apply exact_f_d
+  dsimp [ofCocomplex, CochainComplex.mk', CochainComplex.mk, HomologicalComplex.sc',
+      HomologicalComplex.shortComplexFunctor']
+  simp only [CochainComplex.of_d]
+  match n with
+  | 0 => apply exact_f_d ((CochainComplex.mkAux _ _ _
+      (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ 0).f)
+  | n+1 => apply exact_f_d ((CochainComplex.mkAux _ _ _
+      (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ (n+1)).f)
 
 instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Injective.injective_under

@@ -396,6 +396,12 @@ theorem length_split_le :
     exact ⟨Nat.succ_le_succ h₂, Nat.le_succ_of_le h₁⟩
 #align list.length_split_le List.length_split_le
 
+theorem length_split_fst_le (l : List α) : length (split l).1 ≤ length l :=
+  (length_split_le rfl).1
+
+theorem length_split_snd_le (l : List α) : length (split l).2 ≤ length l :=
+  (length_split_le rfl).2
+
 theorem length_split_lt {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
     length l₁ < length (a :: b :: l) ∧ length l₂ < length (a :: b :: l) := by
   cases' e : split l with l₁' l₂'
@@ -421,10 +427,8 @@ def mergeSort : List α → List α
   | a :: b :: l => by
     -- Porting note: rewrote to make `mergeSort_cons_cons` proof easier
     let ls := (split (a :: b :: l))
-    have e : split (a :: b :: l) = ⟨ls.1, ls.2⟩ := rfl
-    have h := length_split_lt e
-    have := h.1
-    have := h.2
+    have := length_split_fst_le l
+    have := length_split_snd_le l
     exact merge (r · ·) (mergeSort ls.1) (mergeSort ls.2)
   termination_by l => length l
 #align list.merge_sort List.mergeSort
@@ -487,7 +491,6 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
         assumption
       · exact _root_.trans ba (rel_of_sorted_cons h₁ _ bl)
       · exact rel_of_sorted_cons h₂ _ bl'
-  termination_by l₁ l₂ => length l₁ + length l₂
 #align list.sorted.merge List.Sorted.merge
 
 variable (r)

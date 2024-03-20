@@ -264,9 +264,9 @@ theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
 
 @[simp]
 theorem add_ofNat' (m n) : Num.ofNat' (m + n) = Num.ofNat' m + Num.ofNat' n := by
-  -- Porting note: `simp` fails to unify `ofNat' (n + 1)` with `ofNat' n.succ`
-  have : ∀ {n}, ofNat' n.succ = ofNat' n + 1 := ofNat'_succ
-  induction n <;> simp [Nat.add_zero, this, add_zero, Nat.add_succ, add_one, add_succ, *]
+  induction n
+  · simp only [Nat.add_zero, ofNat'_zero, add_zero]
+  · simp only [Nat.add_succ, Nat.add_zero, ofNat'_succ, add_one, add_succ, *]
 #align num.add_of_nat' Num.add_ofNat'
 
 @[simp, norm_cast]
@@ -835,7 +835,7 @@ theorem ppred_to_nat : ∀ n : Num, (↑) <$> ppred n = Nat.ppred n
 #align num.ppred_to_nat Num.ppred_to_nat
 
 theorem cmp_swap (m n) : (cmp m n).swap = cmp n m := by
-  cases m <;> cases n <;> try { unfold cmp } <;> try { rfl }; apply PosNum.cmp_swap
+  cases m <;> cases n <;> try { rfl }; apply PosNum.cmp_swap
 #align num.cmp_swap Num.cmp_swap
 
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by

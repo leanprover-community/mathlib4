@@ -133,7 +133,7 @@ protected theorem natAbs_add_nonneg :
 protected theorem natAbs_add_neg :
     ∀ {a b : Int}, a < 0 → b < 0 → natAbs (a + b) = natAbs a + natAbs b
   | negSucc n, negSucc m, _, _ => by
-    simp [negSucc_add_negSucc, natAbs_of_negSucc, Nat.succ_add, Nat.add_succ]
+    simp only [negSucc_add_negSucc, natAbs_of_negSucc, Nat.succ_add, Nat.add_succ]
 #align int.nat_abs_add_neg Int.natAbs_add_neg
 
 set_option linter.deprecated false in

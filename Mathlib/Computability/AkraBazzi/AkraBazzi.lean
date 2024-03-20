@@ -263,8 +263,8 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n:ℕ) in atTop, ∀ i, 0 < log (b i * 
   induction n using Nat.strongInductionOn with
   | ind n h_ind =>
     cases lt_or_le n R.n₀ with
-    | inl hn => exact R.T_gt_zero' n hn   -- n < R.n₀
-    | inr hn =>   -- R.n₀ ≤ n
+    | inl hn => exact R.T_gt_zero' n hn -- n < R.n₀
+    | inr hn => -- R.n₀ ≤ n
       rw [R.h_rec n hn]
       have := R.g_nonneg
       refine add_pos_of_pos_of_nonneg (Finset.sum_pos ?sum_elems univ_nonempty) (by aesop)
@@ -609,7 +609,7 @@ lemma eventually_atTop_sumTransform_le :
   have hrpos_i := hrpos i
   have g_nonneg : 0 ≤ g n := R.g_nonneg n (by positivity)
   cases le_or_lt 0 (p a b + 1) with
-  | inl hp =>   -- 0 ≤ p a b + 1
+  | inl hp => -- 0 ≤ p a b + 1
     calc sumTransform (p a b) g (r i n) n
            = n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := by rfl
          _ ≤ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
@@ -641,7 +641,7 @@ lemma eventually_atTop_sumTransform_le :
          _ = c₂ * g n / c₁ ^ ((p a b) + 1) := by rw [div_self (by positivity), mul_one]
          _ = (c₂ / c₁ ^ ((p a b) + 1)) * g n := by ring
          _ ≤ max c₂ (c₂ / c₁ ^ ((p a b) + 1)) * g n := by gcongr; exact le_max_right _ _
-  | inr hp =>   -- p a b + 1 < 0
+  | inr hp => -- p a b + 1 < 0
     calc sumTransform (p a b) g (r i n) n
            = n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := by rfl
          _ ≤ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
@@ -688,7 +688,7 @@ lemma eventually_atTop_sumTransform_ge :
   have hrpos_i := hrpos i
   have g_nonneg : 0 ≤ g n := R.g_nonneg n (by positivity)
   cases le_or_gt 0 (p a b + 1) with
-  | inl hp =>   -- 0 ≤ (p a b) + 1
+  | inl hp => -- 0 ≤ (p a b) + 1
     calc sumTransform (p a b) g (r i n) n
            = n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1))     := by rfl
          _ ≥ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u^((p a b) + 1)) := by
@@ -722,7 +722,7 @@ lemma eventually_atTop_sumTransform_ge :
          _ = c₂ * (1 - c₃) * g n := by rw [div_self (by positivity), mul_one]
          _ ≥ min (c₂ * (1 - c₃)) ((1 - c₃) * c₂ / c₁ ^ ((p a b) + 1)) * g n := by
                 gcongr; exact min_le_left _ _
-  | inr hp =>  -- (p a b) + 1 < 0
+  | inr hp => -- (p a b) + 1 < 0
     calc sumTransform (p a b) g (r i n) n
         = n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, g u / u^((p a b) + 1))     := by rfl
       _ ≥ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
@@ -918,7 +918,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
       (GrowsPolynomially.pow 2 growsPolynomially_log ?_)
     filter_upwards [eventually_ge_atTop 1] with _ hx
     exact log_nonneg hx
-  | inr hp =>  -- p ≠ 0
+  | inr hp => -- p ≠ 0
     refine GrowsPolynomially.of_isTheta (growsPolynomially_rpow (p-1))
       (isTheta_deriv_rpow_p_mul_one_sub_smoothingFn hp) ?_
     filter_upwards [eventually_gt_atTop 0] with _ _
@@ -927,7 +927,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
 lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
     GrowsPolynomially fun x => ‖deriv (fun z => z ^ p * (1 + ε z)) x‖ := by
   cases eq_or_ne p 0 with
-  | inl hp =>   -- p = 0
+  | inl hp => -- p = 0
     have h₁ : (fun x => ‖deriv (fun z => z ^ p * (1 + ε z)) x‖)
         =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_add_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
@@ -941,7 +941,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
       (GrowsPolynomially.pow 2 growsPolynomially_log ?_)
     filter_upwards [eventually_ge_atTop 1] with x hx
     exact log_nonneg hx
-  | inr hp =>    -- p ≠ 0
+  | inr hp => -- p ≠ 0
     refine GrowsPolynomially.of_isTheta (growsPolynomially_rpow (p-1))
       (isTheta_deriv_rpow_p_mul_one_add_smoothingFn hp) ?_
     filter_upwards [eventually_gt_atTop 0] with _ _

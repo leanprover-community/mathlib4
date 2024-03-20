@@ -129,12 +129,12 @@ theorem pred : Nat.Primrec pred :=
 
 theorem add : Nat.Primrec (unpaired (· + ·)) :=
   (prec .id ((Primrec.succ.comp right).comp right)).of_eq fun p => by
-    simp; induction p.unpair.2 <;> simp [*, add_succ]
+    simp; induction p.unpair.2 <;> simp [*, Nat.add_assoc]
 #align nat.primrec.add Nat.Primrec.add
 
 theorem sub : Nat.Primrec (unpaired (· - ·)) :=
   (prec .id ((pred.comp right).comp right)).of_eq fun p => by
-    simp; induction p.unpair.2 <;> simp [*, sub_succ]
+    simp; induction p.unpair.2 <;> simp [*, Nat.sub_add_eq]
 #align nat.primrec.sub Nat.Primrec.sub
 
 theorem mul : Nat.Primrec (unpaired (· * ·)) :=
@@ -211,7 +211,6 @@ def Primrec {α β} [Primcodable α] [Primcodable β] (f : α → β) : Prop :=
 namespace Primrec
 
 variable {α : Type*} {β : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Nat.Primrec
@@ -408,7 +407,6 @@ def PrimrecRel {α β} [Primcodable α] [Primcodable β] (s : α → β → Prop
 namespace Primrec₂
 
 variable {α : Type*} {β : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 theorem mk {f : α → β → σ} (hf : Primrec fun p : α × β => f p.1 p.2) : Primrec₂ f := hf
@@ -470,7 +468,6 @@ end Primrec₂
 section Comp
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
 theorem Primrec.comp₂ {f : γ → σ} {g : α → β → γ} (hf : Primrec f) (hg : Primrec₂ g) :
@@ -520,7 +517,6 @@ theorem PrimrecRel.of_eq {α β} [Primcodable α] [Primcodable β] {r s : α →
 namespace Primrec₂
 
 variable {α : Type*} {β : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Nat.Primrec
@@ -551,7 +547,6 @@ end Primrec₂
 namespace Primrec
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
 theorem to₂ {f : α × β → σ} (hf : Primrec f) : Primrec₂ fun a b => f (a, b) :=
@@ -573,7 +568,8 @@ theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (
       simp only [Nat.unpaired, id_eq, Nat.unpair_pair, decode_prod_val, decode_nat,
         Option.some_bind, Option.map_map, Option.map_some']
       cases' @decode α _ n.unpair.1 with a; · rfl
-      simp only [encode_some, encodek, Option.map_some', Option.some_bind, Option.map_map]
+      simp only [Nat.pred_eq_sub_one, encode_some, Nat.succ_eq_add_one, encodek, Option.map_some',
+        Option.some_bind, Option.map_map]
       induction' n.unpair.2 with m <;> simp [encodek]
       simp [*, encodek]
 #align primrec.nat_elim Primrec.nat_rec
@@ -869,9 +865,7 @@ end Primrec
 section
 
 variable {α : Type*} {β : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
-
 variable (H : Nat.Primrec fun n => Encodable.encode (@decode (List β) _ n))
 
 open Primrec
@@ -935,7 +929,6 @@ end
 namespace Primcodable
 
 variable {α : Type*} {β : Type*}
-
 variable [Primcodable α] [Primcodable β]
 
 open Primrec
@@ -989,7 +982,6 @@ end Primcodable
 namespace Primrec
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 theorem sum_inl : Primrec (@Sum.inl α β) :=
@@ -1161,7 +1153,6 @@ end Primrec
 namespace Primcodable
 
 variable {α : Type*} {β : Type*}
-
 variable [Primcodable α] [Primcodable β]
 
 open Primrec
@@ -1219,7 +1210,6 @@ end Primcodable
 namespace Primrec
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
@@ -1458,7 +1448,7 @@ theorem add : @Primrec' 2 fun v => v.head + v.tail.head :=
 theorem sub : @Primrec' 2 fun v => v.head - v.tail.head := by
   have : @Primrec' 2 fun v ↦ (fun a b ↦ b - a) v.head v.tail.head := by
     refine' (prec head (pred.comp₁ _ (tail head))).of_eq fun v => _
-    simp; induction v.head <;> simp [*, Nat.sub_succ]
+    simp; induction v.head <;> simp [*, Nat.sub_add_eq]
   simpa using comp₂ (fun a b => b - a) this (tail head) head
 #align nat.primrec'.sub Nat.Primrec'.sub
 

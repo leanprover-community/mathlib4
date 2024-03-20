@@ -1787,7 +1787,7 @@ private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
   (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out).toSet = s := by
     ext x
     rw [mem_toSet, ← mk_out x, mk_mem_iff, mk_out]
-    refine' ⟨_, λ xs ↦ ⟨equivShrink s (Subtype.mk x xs), _⟩⟩
+    refine' ⟨_, fun xs ↦ ⟨equivShrink s (Subtype.mk x xs), _⟩⟩
     · rintro ⟨b, h2⟩
       rw [← ZFSet.eq, ZFSet.mk_out] at h2
       simp [h2]
@@ -1797,9 +1797,9 @@ private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
 @[simps apply_coe]
 noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
   toFun x := ⟨x.toSet, x.small_toSet⟩
-  invFun := λ ⟨s, h⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
+  invFun := fun ⟨s, h⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
   left_inv := Function.rightInverse_of_injective_of_leftInverse (by intros x y; simp)
-    λ s ↦ Subtype.coe_injective <| toSet_equiv_aux s.2
+    fun s ↦ Subtype.coe_injective <| toSet_equiv_aux s.2
   right_inv s := Subtype.coe_injective <| toSet_equiv_aux s.2
 
 end ZFSet

@@ -234,7 +234,7 @@ theorem derivative_nat_cast {n : ℕ} : derivative (n : R[X]) = 0 := by
   exact derivative_C
 #align polynomial.derivative_nat_cast Polynomial.derivative_nat_cast
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] :
     derivative (no_index (OfNat.ofNat n) : R[X]) = 0 :=

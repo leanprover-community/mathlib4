@@ -38,7 +38,6 @@ namespace List
 namespace Func
 
 variable {a : α}
-
 variable {as as1 as2 as3 : List α}
 
 /-- Elementwise negation of a list -/
@@ -103,7 +102,7 @@ theorem length_set : ∀ {m : ℕ} {as : List α}, as {m ↦ a}.length = max as.
   | 0, a :: as => by
     rw [max_eq_left]
     · rfl
-    · simpa [Nat.le_add_right] using Nat.succ_le_succ (Nat.zero_le _)
+    · simp [Nat.le_add_right]
   | m + 1, [] => by
     simp [set, length, @length_set m, Nat.zero_max]
   | m + 1, _ :: as => by

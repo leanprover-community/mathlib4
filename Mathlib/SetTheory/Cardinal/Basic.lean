@@ -1481,7 +1481,7 @@ theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) :=
   Nat.cast_injective
 #align cardinal.nat_cast_injective Cardinal.natCast_injective
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   rw [Nat.cast_succ]
   refine (add_one_le_succ _).antisymm (succ_le_of_lt ?_)

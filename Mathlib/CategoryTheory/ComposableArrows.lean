@@ -356,8 +356,7 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
       rw [id_comp]
     · obtain _ | _ | k := k
       · simp at hjk
-      · dsimp
-        rw [F.map_id, comp_id]
+      · simp
       · rfl
     · obtain _ | _ | k := k
       · simp [Fin.ext_iff] at hjk

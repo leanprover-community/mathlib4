@@ -667,7 +667,7 @@ def coeff : R[X] → ℕ → R
   | ⟨p⟩ => p
 #align polynomial.coeff Polynomial.coeff
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem coeff_ofFinsupp (p) : coeff (⟨p⟩ : R[X]) = p := by rw [coeff]
 
@@ -1039,6 +1039,7 @@ theorem sum_smul_index {S : Type*} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ
   Finsupp.sum_smul_index hf
 #align polynomial.sum_smul_index Polynomial.sum_smul_index
 
+@[simp]
 theorem sum_monomial_eq : ∀ p : R[X], (p.sum fun n a => monomial n a) = p
   | ⟨_p⟩ => (ofFinsupp_sum _ _).symm.trans (congr_arg _ <| Finsupp.sum_single _)
 #align polynomial.sum_monomial_eq Polynomial.sum_monomial_eq

@@ -39,7 +39,7 @@ assert_not_exists Module
 assert_not_exists Submonoid
 assert_not_exists FloorRing
 
-set_option autoImplicit true
+variable {α β : Type*}
 
 open IsAbsoluteValue
 
@@ -349,7 +349,7 @@ theorem const_sub (x y : β) : const (x - y) = const x - const y :=
 
 section SMul
 
-variable [SMul G β] [IsScalarTower G β β]
+variable {G : Type*} [SMul G β] [IsScalarTower G β β]
 
 instance : SMul G (CauSeq β abv) :=
   ⟨fun a f => (ofEq (const (a • (1 : β)) * f) (a • (f : ℕ → β))) fun _ => smul_one_mul _ _⟩
@@ -581,7 +581,7 @@ theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 �
   -/
 #align cau_seq.mul_equiv_mul CauSeq.mul_equiv_mul
 
-theorem smul_equiv_smul [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
+theorem smul_equiv_smul {G : Type*} [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
     (hf : f1 ≈ f2) : c • f1 ≈ c • f2 := by
   simpa [const_smul, smul_one_mul _ _] using
     mul_equiv_mul (const_equiv.mpr <| Eq.refl <| c • (1 : β)) hf

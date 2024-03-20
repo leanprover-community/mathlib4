@@ -105,7 +105,7 @@ instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _R
 -- Porting note: we add this example as a verification that Lean 4's instance resolution
 -- can handle what in Lean 3 we needed the `@[is_poly]` attribute to help with.
 example (p : ℕ) (f : ⦃R : Type _⦄ → [CommRing R] → WittVector p R → WittVector p R) [IsPoly p f] :
-    IsPoly p (λ (R : Type*) (I : CommRing R) => verschiebungFun ∘ (@f R I)) :=
+    IsPoly p (fun (R : Type*) (I : CommRing R) ↦ verschiebungFun ∘ (@f R I)) :=
   inferInstance
 
 variable {p}

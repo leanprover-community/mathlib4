@@ -15,9 +15,9 @@ import Mathlib.Topology.ContinuousFunction.Bounded
 In this file we collect a variety of equivalences among various $L^p$ spaces.  In particular,
 when `α` is a `Fintype`, given `E : α → Type u` and `p : ℝ≥0∞`, there is a natural linear isometric
 equivalence `lpPiLpₗᵢₓ : lp E p ≃ₗᵢ PiLp p E`. In addition, when `α` is a discrete topological
-space, the bounded continuous functions `α →ᵇ β` correspond exactly to `lp (λ _, β) ∞`. Here there
-can be more structure, including ring and algebra structures, and we implement these equivalences
-accordingly as well.
+space, the bounded continuous functions `α →ᵇ β` correspond exactly to `lp (fun _ ↦ β) ∞`.
+Here there can be more structure, including ring and algebra structures,
+and we implement these equivalences accordingly as well.
 
 We keep this as a separate file so that the various $L^p$ space files don't import the others.
 
@@ -134,9 +134,7 @@ open BoundedContinuousFunction
 
 -- note: `R` and `A` are explicit because otherwise Lean has elaboration problems
 variable {α E : Type*} (R A 𝕜 : Type*) [TopologicalSpace α] [DiscreteTopology α]
-
 variable [NormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
-
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
 
 section NormedAddCommGroup

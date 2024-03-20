@@ -29,9 +29,7 @@ open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Bornology
 open scoped Topology Interval ENNReal BigOperators
 
 variable {X Y E F R : Type*} [MeasurableSpace X] [TopologicalSpace X]
-
 variable [MeasurableSpace Y] [TopologicalSpace Y]
-
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] {f g : X → E} {μ : Measure X} {s : Set X}
 
 namespace MeasureTheory
@@ -398,7 +396,6 @@ open MeasureTheory
 section borel
 
 variable [OpensMeasurableSpace X]
-
 variable {K : Set X} {a b : X}
 
 /-- A continuous function `f` is locally integrable with respect to any locally finite measure. -/

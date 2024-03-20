@@ -125,7 +125,7 @@ theorem succ_div : ∀ a b : ℕ, (a + 1) / b = a / b + if b ∣ a + 1 then 1 el
   | a, 0 => by simp
   | 0, 1 => by simp
   | 0, b + 2 => by
-    have hb2 : b + 2 > 1 := by simp
+    have hb2 : b + 2 > 1 := by omega
     simp [ne_of_gt hb2, div_eq_of_lt hb2]
   | a + 1, b + 1 => by
     rw [Nat.div_eq]

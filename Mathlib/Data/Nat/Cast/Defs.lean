@@ -127,7 +127,7 @@ theorem cast_zero : ((0 : ℕ) : R) = 0 :=
 -- Lemmas about `Nat.succ` need to get a low priority, so that they are tried last.
 -- This is because `Nat.succ _` matches `1`, `3`, `x+1`, etc.
 -- Rewriting would then produce really wrong terms.
-@[simp 500, norm_cast 500]
+@[norm_cast 500]
 theorem cast_succ (n : ℕ) : ((succ n : ℕ) : R) = n + 1 :=
   AddMonoidWithOne.natCast_succ _
 #align nat.cast_succ Nat.cast_succ
@@ -153,7 +153,9 @@ theorem cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
 
 @[simp, norm_cast]
 theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
-  induction n <;> simp [add_succ, add_assoc, Nat.add_zero, Nat.cast_one, Nat.cast_zero, *]
+  induction n with
+  | zero => simp
+  | succ n ih => rw [add_succ, cast_succ, ih, cast_succ, add_assoc]
 #align nat.cast_add Nat.cast_addₓ
 
 /-- Computationally friendlier cast than `Nat.unaryCast`, using binary representation. -/
@@ -162,7 +164,6 @@ protected def binCast [Zero R] [One R] [Add R] : ℕ → R
   | n + 1 => if (n + 1) % 2 = 0
     then (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2))
     else (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2)) + 1
-decreasing_by all_goals { simp_wf; omega }
 #align nat.bin_cast Nat.binCast
 
 @[simp]

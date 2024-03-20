@@ -752,7 +752,7 @@ theorem _root_.Embedding.comp_stronglyMeasurable_iff {m : MeasurableSpace α} [T
   · let G : β → range g := rangeFactorization g
     have hG : ClosedEmbedding G :=
       { hg.codRestrict _ _ with
-        closed_range := by
+        isClosed_range := by
           rw [surjective_onto_range.range_eq]
           exact isClosed_univ }
     have : Measurable (G ∘ f) := Measurable.subtype_mk H.measurable
@@ -1667,7 +1667,7 @@ theorem _root_.Embedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β
   · let G : β → range g := rangeFactorization g
     have hG : ClosedEmbedding G :=
       { hg.codRestrict _ _ with
-        closed_range := by rw [surjective_onto_range.range_eq]; exact isClosed_univ }
+        isClosed_range := by rw [surjective_onto_range.range_eq]; exact isClosed_univ }
     have : AEMeasurable (G ∘ f) μ := AEMeasurable.subtype_mk H.aemeasurable
     exact hG.measurableEmbedding.aemeasurable_comp_iff.1 this
   · rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 H).2 with ⟨t, ht, h't⟩
@@ -1816,7 +1816,6 @@ theorem smul_measure {R : Type*} [Monoid R] [DistribMulAction R ℝ≥0∞] [IsS
 section NormedSpace
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem _root_.aestronglyMeasurable_smul_const_iff {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
@@ -1854,11 +1853,8 @@ end MulAction
 section ContinuousLinearMapNontriviallyNormedField
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 theorem _root_.StronglyMeasurable.apply_continuousLinearMap {_m : MeasurableSpace α}

@@ -786,7 +786,7 @@ theorem mem_dlookup_kunion {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
       simp [h₁, h₂]
 #align list.mem_lookup_kunion List.mem_dlookup_kunion
 
--- Porting note: New theorem, alternative version of `mem_dlookup_kunion` for simp
+-- Porting note (#10756): new theorem, alternative version of `mem_dlookup_kunion` for simp
 @[simp]
 theorem dlookup_kunion_eq_some {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
     dlookup a (kunion l₁ l₂) = some b ↔
