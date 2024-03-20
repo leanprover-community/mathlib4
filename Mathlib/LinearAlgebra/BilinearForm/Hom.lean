@@ -93,7 +93,7 @@ def toLinHom : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R where
       AddHom.coe_mk]
 #align bilin_form.to_lin_hom LinearMap.BilinForm.toLinHom
 
-@[simp]
+--@[simp]
 theorem toLin'_apply (A : BilinForm R M) (x : M) : toLinHom.toFun A x = A x :=
   rfl
 #align bilin_form.to_lin'_apply LinearMap.BilinForm.toLin'_apply
@@ -128,7 +128,7 @@ def toLinHomFlip : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R :=
   toLinHom.comp flipHom.toLinearMap
 #align bilin_form.to_lin_hom_flip LinearMap.BilinForm.toLinHomFlip
 
-@[simp]
+--@[simp]
 theorem toLin'Flip_apply (A : BilinForm R M) (x : M) : toLinHomFlip.toFun A x = fun y => A y x :=
   rfl
 #align bilin_form.to_lin'_flip_apply LinearMap.BilinForm.toLin'Flip_apply
