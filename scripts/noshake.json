@@ -297,6 +297,7 @@
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
+  "Mathlib.NumberTheory.Harmonic.Defs": ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Equiv.Defs": ["Mathlib.Init.Data.Bool.Lemmas"],
