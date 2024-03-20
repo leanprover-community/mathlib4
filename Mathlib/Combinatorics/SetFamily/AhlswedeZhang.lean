@@ -85,9 +85,8 @@ private lemma Fintype.sum_div_mul_card_choose_card :
     ← range_succ]
   have (n) (hn : n ∈ range (card α + 1)) :
       ((card α).choose n / ((card α - n) * (card α).choose n) : ℚ) = (card α - n : ℚ)⁻¹ := by
-    rw [div_mul_left]
-    · simp
-    · exact cast_ne_zero.2 (choose_pos $ mem_range_succ_iff.1 hn).ne'
+    rw [div_mul_eq_inv_left₀]
+    exact cast_ne_zero.2 (choose_pos $ mem_range_succ_iff.1 hn).ne'
   simp only [sum_congr rfl this, mul_eq_mul_left_iff, cast_eq_zero]
   convert Or.inl $ sum_range_reflect _ _ with a ha
   rw [add_tsub_cancel_right, cast_sub (mem_range_succ_iff.mp ha)]

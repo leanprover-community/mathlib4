@@ -574,7 +574,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
     use n + 1
     rw [convergent_succ, ← hn,
       (mod_cast toNat_of_nonneg huv₀.le : ((u - ⌊ξ⌋ * v).toNat : ℚ) = u - ⌊ξ⌋ * v),
-      cast_ofNat, inv_div, sub_div, mul_div_eq_left₀ _ Hvadd_sub_cancelht]
+      cast_ofNat, inv_div, sub_div, mul_div_eq_left₀ _ Hv, add_sub_cancel]
 #align real.exists_rat_eq_convergent' Real.exists_rat_eq_convergent'
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
