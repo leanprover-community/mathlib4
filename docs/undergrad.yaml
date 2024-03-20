@@ -197,8 +197,8 @@ Bilinear and Quadratic Forms Over a Vector Space:
     alternating bilinear forms: 'LinearMap.BilinForm.IsAlt'
     symmetric bilinear forms: 'LinearMap.BilinForm.IsSymm'
     nondegenerate forms: 'LinearMap.BilinForm.Nondegenerate'
-    matrix representation: 'LinearMap.BilinForm.toMatrix'
-    change of coordinates: 'LinearMap.BilinForm.toMatrix_comp'
+    matrix representation: 'BilinForm.toMatrix'
+    change of coordinates: 'BilinForm.toMatrix_comp'
     rank of a bilinear form: ''
   Quadratic forms:
     quadratic form: 'QuadraticForm'

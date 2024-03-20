@@ -188,7 +188,7 @@ Linear algebra:
     bilinear form: 'LinearMap.BilinForm'
     alternating bilinear form: 'LinearMap.BilinForm.IsAlt'
     symmetric bilinear form: 'LinearMap.BilinForm.IsSymm'
-    matrix representation: 'LinearMap.BilinForm.toMatrix'
+    matrix representation: 'BilinForm.toMatrix'
     quadratic form: 'QuadraticForm'
     polar form of a quadratic: 'QuadraticForm.polar'
   Finite-dimensional inner product spaces (see also Hilbert spaces, below):
