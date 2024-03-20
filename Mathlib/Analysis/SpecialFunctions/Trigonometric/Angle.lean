@@ -189,7 +189,7 @@ theorem two_zsmul_eq_iff {ψ θ : Angle} : (2 : ℤ) • ψ = (2 : ℤ) • θ �
 #align real.angle.two_zsmul_eq_iff Real.Angle.two_zsmul_eq_iff
 
 theorem two_nsmul_eq_iff {ψ θ : Angle} : (2 : ℕ) • ψ = (2 : ℕ) • θ ↔ ψ = θ ∨ ψ = θ + ↑π := by
-  simp_rw [← coe_nat_zsmul, Nat.cast_ofNat, two_zsmul_eq_iff]
+  simp_rw [← natCast_zsmul, Nat.cast_ofNat, two_zsmul_eq_iff]
 #align real.angle.two_nsmul_eq_iff Real.Angle.two_nsmul_eq_iff
 
 theorem two_nsmul_eq_zero_iff {θ : Angle} : (2 : ℕ) • θ = 0 ↔ θ = 0 ∨ θ = π := by
