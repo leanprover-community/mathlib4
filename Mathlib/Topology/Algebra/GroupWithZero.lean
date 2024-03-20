@@ -342,7 +342,7 @@ variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀]
 theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => x ^ m) x := by
   cases' m with m m
-  · simpa only [Int.ofNat_eq_coe, zpow_coe_nat] using continuousAt_pow x m
+  · simpa only [Int.ofNat_eq_coe, zpow_natCast] using continuousAt_pow x m
   · simp only [zpow_negSucc]
     have hx : x ≠ 0 := h.resolve_right (Int.negSucc_lt_zero m).not_le
     exact (continuousAt_pow x (m + 1)).inv₀ (pow_ne_zero _ hx)

@@ -92,7 +92,7 @@ noncomputable def zmultiplesQuotientStabilizerEquiv :
   (ofBijective
           (map _ (stabilizer (zmultiples a) b) (zmultiplesHom (zmultiples a) ⟨a, mem_zmultiples a⟩)
             (by
-              rw [zmultiples_le, mem_comap, mem_stabilizer_iff, zmultiplesHom_apply, coe_nat_zsmul]
+              rw [zmultiples_le, mem_comap, mem_stabilizer_iff, zmultiplesHom_apply, natCast_zsmul]
               simp_rw [← vadd_iterate]
               exact isPeriodicPt_minimalPeriod (a +ᵥ ·) b))
           ⟨by

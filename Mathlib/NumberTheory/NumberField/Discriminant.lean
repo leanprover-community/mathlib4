@@ -134,7 +134,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
     _ = FractionalIdeal.absNorm I.1 * (2:ℝ) ^ (finrank ℚ K - NrComplexPlaces K - NrRealPlaces K +
           NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
             π⁻¹ ^ (NrComplexPlaces K) := by
-      simp_rw [inv_div, div_eq_mul_inv, mul_inv, ← zpow_neg_one, ← zpow_coe_nat, mul_zpow,
+      simp_rw [inv_div, div_eq_mul_inv, mul_inv, ← zpow_neg_one, ← zpow_natCast, mul_zpow,
         ← zpow_mul, neg_one_mul, mul_neg_one, neg_neg, Real.coe_sqrt, coe_nnnorm, sub_eq_add_neg,
         zpow_add₀ (two_ne_zero : (2:ℝ) ≠ 0)]
       ring
@@ -146,7 +146,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
     _ = FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K * (finrank ℚ K).factorial *
           Real.sqrt |discr K| := by
       rw [show ‖discr K‖ = |(discr K : ℝ)| by rfl, zpow_mul, show (2:ℝ) ^ (2:ℤ) = 4 by norm_cast,
-        div_pow, inv_eq_one_div, div_pow, one_pow, zpow_coe_nat]
+        div_pow, inv_eq_one_div, div_pow, one_pow, zpow_natCast]
       ring
 
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
