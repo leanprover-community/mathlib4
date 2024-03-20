@@ -42,8 +42,7 @@ namespace NNRat
 
 variable {α : Type*} {p q : ℚ≥0}
 
-@[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
-#align nnrat.val_eq_coe NNRat.val_eq_cast
+#noalign nnrat.val_eq_coe
 
 instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
   prf q hq := ⟨⟨q, hq⟩, rfl⟩
@@ -71,7 +70,7 @@ theorem ne_iff {x y : ℚ≥0} : (x : ℚ) ≠ (y : ℚ) ↔ x ≠ y :=
   NNRat.coe_inj.not
 #align nnrat.ne_iff NNRat.ne_iff
 
-@[simp, norm_cast] lemma coe_mk (q : ℚ) (hq) : (⟨q, hq⟩ : ℚ≥0) = q := rfl
+@[norm_cast] lemma coe_mk (q : ℚ) (hq) : (⟨q, hq⟩ : ℚ≥0) = q := rfl
 #align nnrat.coe_mk NNRat.coe_mk
 
 lemma «forall» {p : ℚ≥0 → Prop} : (∀ q, p q) ↔ ∀ q hq, p ⟨q, hq⟩ := Subtype.forall
@@ -371,7 +370,9 @@ theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
   ⟨by rintro rfl; exact ⟨rfl, rfl⟩, fun h ↦ ext_num_den h.1 h.2⟩
 #align nnrat.ext_num_denom_iff NNRat.ext_num_den_iff
 
-/-- Form the quotient `n / d` where `n d : ℕ`. -/
+/-- Form the quotient `n / d` where `n d : ℕ`.
+
+See also `Rat.divInt` and `mkRat`. -/
 def divNat (n d : ℕ) : ℚ≥0 := ⟨.divInt n d, Rat.divInt_nonneg n.cast_nonneg d.cast_nonneg⟩
 
 variable {n₁ n₂ d₁ d₂ d : ℕ}

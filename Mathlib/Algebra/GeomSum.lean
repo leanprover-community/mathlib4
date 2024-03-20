@@ -3,9 +3,9 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.Abel
