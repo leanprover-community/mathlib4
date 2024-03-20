@@ -259,6 +259,7 @@ Analysis:
     local convexity: 'LocallyConvexSpace'
     Bornology: 'Bornology'
     weak-* topology for dualities: 'WeakBilin.instTopologicalSpace'
+    Topological dual: 'Dual'
 
   Normed vector spaces/Banach spaces:
     normed vector space over a normed field: 'NormedSpace'
@@ -271,7 +272,6 @@ Analysis:
     Banach open mapping theorem: 'ContinuousLinearMap.isOpenMap'
     absolutely convergent series in Banach spaces: 'Summable.of_norm'
     Hahn-Banach theorem: 'exists_extension_norm_eq'
-    dual of a normed space: 'NormedSpace.Dual'
     isometric inclusion in double dual: 'NormedSpace.inclusionInDoubleDualLi'
     completeness of spaces of bounded continuous functions: 'BoundedContinuousFunction.instCompleteSpaceBoundedContinuousFunctionToUniformSpaceInstPseudoMetricSpaceBoundedContinuousFunction'
 
