@@ -57,11 +57,20 @@ private partial def makeFastInstance (provided : Expr) : MetaM Expr := do
     return provided
   pure e
 
+/-- `fast_instance% inst` takes an expression for a typeclass instance `inst`, and unfolds it into
+constructor applications that leverage existing instances.
+
+For instance, when used as
+```lean
+instance instSemiring : Semiring X := sorry
+instance instRing : Ring X := fast_instance% Function.Injective.ring ..
+```
+this will define `instRing` as a nested constructor application that refers to `instSemiring`.
+The advantage is then that `instRing.toSemiring` unifies almost immediately with `instSemiring`,
+rather than having to break it down into smaller pieces. -/
 syntax (name := fastInstance) "fast_instance%" term : term
 
-/-- This elaborator can improve performance when inserted before uses of `Function.Injective.ring`
-etc. -/
-@[term_elab fastInstance]
+@[term_elab fastInstance, inherit_doc fastInstance]
 def elabFastInstance : Elab.Term.TermElab
   | `(term| fast_instance% $arg), expectedType => do
     -- passthrough the term
