@@ -186,7 +186,7 @@ def pullback : Stonean where
         apply IsCompact.isClosed
         simp only [← Set.image_univ]
         exact IsCompact.image isCompact_univ i.continuous
-      · exact IsOpen.preimage f.continuous hi.open_range
+      · exact IsOpen.preimage f.continuous hi.isOpen_range
     have hU' : IsOpen (Subtype.val '' U) := h.2.openEmbedding_subtype_val.isOpenMap U hU
     have := ExtremallyDisconnected.open_closure _ hU'
     rw [h.1.closedEmbedding_subtype_val.closure_image_eq U] at this
@@ -246,7 +246,6 @@ lemma pullback.lift_fst {W : Stonean} (a : W ⟶ X) (b : W ⟶ Y) (w : a ≫ f =
 lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbedding i)
     (a : W ⟶ X) (b : W ⟶ Y) (w : a ≫ f = b ≫ i) :
     pullback.lift f hi a b w ≫ Stonean.pullback.snd f hi = b := by
-  congr
   ext z
   have := congr_fun (DFunLike.ext'_iff.mp w.symm) z
   have h : i (b z) = f (a z) := this

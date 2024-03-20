@@ -3,7 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Positive.Ring
 
 #align_import algebra.order.positive.field from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"

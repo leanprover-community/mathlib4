@@ -40,7 +40,6 @@ variable {α β γ : Type*}
 
 -- The families of types already equipped with instances
 variable {f : I → Type v₁} {g : I → Type v₂} {h : I → Type v₃}
-
 variable (x y : ∀ i, f i) (i : I)
 
 namespace Pi
@@ -246,7 +245,7 @@ instance mulOneClass [∀ i, MulOneClass (f i)] : MulOneClass (∀ i, f i) where
 
 @[to_additive]
 instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
-  inv_one := by intros; ext; exact inv_one
+  inv_one := by ext; exact inv_one
 
 @[to_additive]
 instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
@@ -352,7 +351,6 @@ instance cancelCommMonoid [∀ i, CancelCommMonoid (f i)] : CancelCommMonoid (�
 section
 
 variable [DecidableEq I]
-
 variable [∀ i, One (f i)] [∀ i, One (g i)] [∀ i, One (h i)]
 
 /-- The function supported at `i`, with value `x` there, and `1` elsewhere. -/

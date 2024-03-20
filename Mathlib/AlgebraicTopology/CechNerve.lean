@@ -45,7 +45,6 @@ variable {C : Type u} [Category.{v} C]
 namespace CategoryTheory.Arrow
 
 variable (f : Arrow C)
-
 variable [∀ n : ℕ, HasWidePullback.{0} f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
 
 /-- The Čech nerve associated to an arrow. -/
@@ -127,7 +126,7 @@ def equivalenceLeftToRight (X : SimplicialObject.Augmented C) (F : Arrow C)
   left :=
     { app := fun x =>
         Limits.WidePullback.lift (X.hom.app _ ≫ G.right)
-          (fun i => X.left.map (SimplexCategory.const x.unop i).op ≫ G.left) fun i => by
+          (fun i => X.left.map (SimplexCategory.const _ x.unop i).op ≫ G.left) fun i => by
           dsimp
           erw [Category.assoc, Arrow.w, Augmented.toArrow_obj_hom, NatTrans.naturality_assoc,
             Functor.const_obj_map, Category.id_comp]
@@ -197,7 +196,6 @@ end CategoryTheory
 namespace CategoryTheory.Arrow
 
 variable (f : Arrow C)
-
 variable [∀ n : ℕ, HasWidePushout f.left (fun _ : Fin (n + 1) => f.right) fun _ => f.hom]
 
 /-- The Čech conerve associated to an arrow. -/
@@ -284,11 +282,11 @@ def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
   right :=
     { app := fun x =>
         Limits.WidePushout.desc (G.left ≫ X.hom.app _)
-          (fun i => G.right ≫ X.right.map (SimplexCategory.const x i))
+          (fun i => G.right ≫ X.right.map (SimplexCategory.const _ x i))
           (by
             rintro j
             rw [← Arrow.w_assoc G]
-            have t := X.hom.naturality (x.const j)
+            have t := X.hom.naturality (SimplexCategory.const (SimplexCategory.mk 0) x j)
             dsimp at t ⊢
             simp only [Category.id_comp] at t
             rw [← t])

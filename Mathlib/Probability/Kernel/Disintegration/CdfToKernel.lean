@@ -13,7 +13,7 @@ import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 Let `κ : kernel α (β × ℝ)` and `ν : kernel α β` be two finite kernels.
 A function `f : α × β → StieltjesFunction` is called a conditional kernel CDF of `κ` with respect
 to `ν` if it is measurable, tends to to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
-if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all measurable
+`fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all measurable
 sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`.
 
 From such a function with property `hf : IsCondKernelCDF f κ ν`, we can build a `kernel (α × β) ℝ`
@@ -115,7 +115,7 @@ lemma set_lintegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCond
     ∫⁻ b in s, ENNReal.ofReal (stieltjesOfMeasurableRat f hf.measurable (a, b) x) ∂(ν a)
       = κ a (s ×ˢ Iic x) := by
   -- We have the result for `x : ℚ` thanks to `set_lintegral_stieltjesOfMeasurableRat_rat`.
-  -- We use  a monotone convergence argument to extend it to the reals.
+  -- We use a monotone convergence argument to extend it to the reals.
   by_cases hρ_zero : (ν a).restrict s = 0
   · rw [hρ_zero, lintegral_zero_measure]
     have ⟨q, hq⟩ := exists_rat_gt x
@@ -227,12 +227,18 @@ structure isRatCondKernelCDFAux (f : α × β → ℚ → ℝ) (κ : kernel α (
   (mono' (a : α) {q r : ℚ} (_hqr : q ≤ r) : ∀ᵐ c ∂(ν a), f (a, c) q ≤ f (a, c) r)
   (nonneg' (a : α) (q : ℚ) : ∀ᵐ c ∂(ν a), 0 ≤ f (a, c) q)
   (le_one' (a : α) (q : ℚ) : ∀ᵐ c ∂(ν a), f (a, c) q ≤ 1)
-  (tendsto_integral_of_antitone (a : α) (s : ℕ → ℚ) (_hs : Antitone s)
-    (_hs_tendsto : Tendsto s atTop atBot) :
-    Tendsto (fun m ↦ ∫ c, f (a, c) (s m) ∂(ν a)) atTop (𝓝 0))
-  (tendsto_integral_of_monotone (a : α) (s : ℕ → ℚ) (_hs : Monotone s)
-    (_hs_tendsto : Tendsto s atTop atTop) :
-    Tendsto (fun m ↦ ∫ c, f (a, c) (s m) ∂(ν a)) atTop (𝓝 (ν a univ).toReal))
+  /- Same as `Tendsto (fun q : ℚ ↦ ∫ c, f (a, c) q ∂(ν a)) atBot (𝓝 0)` but slightly easier
+  to prove in the current applications of this definition (some integral convergence lemmas
+  currently apply only to `ℕ`, not `ℚ`) -/
+  (tendsto_integral_of_antitone (a : α) (seq : ℕ → ℚ) (_hs : Antitone seq)
+    (_hs_tendsto : Tendsto seq atTop atBot) :
+    Tendsto (fun m ↦ ∫ c, f (a, c) (seq m) ∂(ν a)) atTop (𝓝 0))
+  /- Same as `Tendsto (fun q : ℚ ↦ ∫ c, f (a, c) q ∂(ν a)) atTop (𝓝 (ν a univ).toReal)` but
+  slightly easier to prove in the current applications of this definition (some integral convergence
+  lemmas currently apply only to `ℕ`, not `ℚ`) -/
+  (tendsto_integral_of_monotone (a : α) (seq : ℕ → ℚ) (_hs : Monotone seq)
+    (_hs_tendsto : Tendsto seq atTop atTop) :
+    Tendsto (fun m ↦ ∫ c, f (a, c) (seq m) ∂(ν a)) atTop (𝓝 (ν a univ).toReal))
   (integrable (a : α) (q : ℚ) : Integrable (fun c ↦ f (a, c) q) (ν a))
   (set_integral (a : α) {A : Set β} (_hA : MeasurableSet A) (q : ℚ) :
     ∫ c in A, f (a, c) q ∂(ν a) = (κ a (A ×ˢ Iic ↑q)).toReal)
@@ -256,24 +262,26 @@ lemma isRatCondKernelCDFAux.le_one (hf : isRatCondKernelCDFAux f κ ν) (a : α)
     ∀ᵐ c ∂(ν a), ∀ q, f (a, c) q ≤ 1 := ae_all_iff.mpr <| hf.le_one' a
 
 lemma isRatCondKernelCDFAux.tendsto_zero_of_antitone (hf : isRatCondKernelCDFAux f κ ν)
-    [IsFiniteKernel ν] (a : α) (s : ℕ → ℚ) (hs : Antitone s) (hs_tendsto : Tendsto s atTop atBot) :
-    ∀ᵐ c ∂(ν a), Tendsto (fun m ↦ f (a, c) (s m)) atTop (𝓝 0) := by
+    [IsFiniteKernel ν] (a : α) (seq : ℕ → ℚ) (hseq : Antitone seq)
+    (hseq_tendsto : Tendsto seq atTop atBot) :
+    ∀ᵐ c ∂(ν a), Tendsto (fun m ↦ f (a, c) (seq m)) atTop (𝓝 0) := by
   refine tendsto_of_integral_tendsto_of_antitone ?_ (integrable_const _) ?_ ?_ ?_
-  · exact fun n ↦ hf.integrable a (s n)
+  · exact fun n ↦ hf.integrable a (seq n)
   · rw [integral_zero]
-    exact hf.tendsto_integral_of_antitone a s hs hs_tendsto
-  · filter_upwards [hf.mono a] with t ht using fun n m hnm ↦ ht (hs hnm)
-  · filter_upwards [hf.nonneg a] with c hc using fun i ↦ hc (s i)
+    exact hf.tendsto_integral_of_antitone a seq hseq hseq_tendsto
+  · filter_upwards [hf.mono a] with t ht using fun n m hnm ↦ ht (hseq hnm)
+  · filter_upwards [hf.nonneg a] with c hc using fun i ↦ hc (seq i)
 
 lemma isRatCondKernelCDFAux.tendsto_one_of_monotone (hf : isRatCondKernelCDFAux f κ ν)
-    [IsFiniteKernel ν] (a : α) (s : ℕ → ℚ) (hs : Monotone s) (hs_tendsto : Tendsto s atTop atTop) :
-    ∀ᵐ c ∂(ν a), Tendsto (fun m ↦ f (a, c) (s m)) atTop (𝓝 1) := by
+    [IsFiniteKernel ν] (a : α) (seq : ℕ → ℚ) (hseq : Monotone seq)
+    (hseq_tendsto : Tendsto seq atTop atTop) :
+    ∀ᵐ c ∂(ν a), Tendsto (fun m ↦ f (a, c) (seq m)) atTop (𝓝 1) := by
   refine tendsto_of_integral_tendsto_of_monotone ?_ (integrable_const _) ?_ ?_ ?_
-  · exact fun n ↦ hf.integrable a (s n)
+  · exact fun n ↦ hf.integrable a (seq n)
   · rw [MeasureTheory.integral_const, smul_eq_mul, mul_one]
-    exact hf.tendsto_integral_of_monotone a s hs hs_tendsto
-  · filter_upwards [hf.mono a] with t ht using fun n m hnm ↦ ht (hs hnm)
-  · filter_upwards [hf.le_one a] with c hc using fun i ↦ hc (s i)
+    exact hf.tendsto_integral_of_monotone a seq hseq hseq_tendsto
+  · filter_upwards [hf.mono a] with t ht using fun n m hnm ↦ ht (hseq hnm)
+  · filter_upwards [hf.le_one a] with c hc using fun i ↦ hc (seq i)
 
 lemma isRatCondKernelCDFAux.tendsto_atTop_one (hf : isRatCondKernelCDFAux f κ ν) [IsFiniteKernel ν]
     (a : α) :
@@ -282,10 +290,10 @@ lemma isRatCondKernelCDFAux.tendsto_atTop_one (hf : isRatCondKernelCDFAux f κ �
     filter_upwards [this, hf.mono a] with t ht h_mono
     rw [tendsto_iff_tendsto_subseq_of_monotone h_mono tendsto_nat_cast_atTop_atTop]
     exact ht
-  let s : ℕ → ℚ := fun n ↦ n
-  have hs : Monotone s := fun i j hij ↦ by simp [s, hij]
-  have hs_tendsto : Tendsto s atTop atTop := tendsto_nat_cast_atTop_atTop
-  filter_upwards [hf.tendsto_one_of_monotone a s hs hs_tendsto] with x hx using hx
+  let seq : ℕ → ℚ := fun n ↦ n
+  have hseq : Monotone seq := fun i j hij ↦ by simp [seq, hij]
+  have hseq_tendsto : Tendsto seq atTop atTop := tendsto_nat_cast_atTop_atTop
+  filter_upwards [hf.tendsto_one_of_monotone a seq hseq hseq_tendsto] with x hx using hx
 
 lemma isRatCondKernelCDFAux.tendsto_atBot_zero (hf : isRatCondKernelCDFAux f κ ν) [IsFiniteKernel ν]
     (a : α) :
@@ -301,12 +309,12 @@ lemma isRatCondKernelCDFAux.tendsto_atBot_zero (hf : isRatCondKernelCDFAux f κ 
     filter_upwards [this, hf.mono a] with t ht h_mono
     have h_anti : Antitone (fun q ↦ f (a, t) (-q)) := h_mono.comp_antitone monotone_id.neg
     exact (tendsto_iff_tendsto_subseq_of_antitone h_anti tendsto_nat_cast_atTop_atTop).mpr ht
-  let s : ℕ → ℚ := fun n ↦ -n
-  have hs : Antitone s := fun i j hij ↦ neg_le_neg (by exact mod_cast hij)
-  have hs_tendsto : Tendsto s atTop atBot := by
-    simp only [s, tendsto_neg_atBot_iff]
+  let seq : ℕ → ℚ := fun n ↦ -n
+  have hseq : Antitone seq := fun i j hij ↦ neg_le_neg (by exact mod_cast hij)
+  have hseq_tendsto : Tendsto seq atTop atBot := by
+    simp only [seq, tendsto_neg_atBot_iff]
     exact tendsto_nat_cast_atTop_atTop
-  convert hf.tendsto_zero_of_antitone a s hs hs_tendsto with x n
+  convert hf.tendsto_zero_of_antitone a seq hseq hseq_tendsto with x n
 
 lemma isRatCondKernelCDFAux.bddBelow_range (hf : isRatCondKernelCDFAux f κ ν) (a : α) :
     ∀ᵐ t ∂(ν a), ∀ q : ℚ, BddBelow (range fun (r : Ioi q) ↦ f (a, t) r) := by
@@ -405,7 +413,7 @@ variable {f : α × β → StieltjesFunction}
 
 /-- A function `f : α × β → StieltjesFunction` is called a conditional kernel CDF of `κ` with
 respect to `ν` if it is measurable, tends to to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
-if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all
+`fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all
 measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`. -/
 structure IsCondKernelCDF (f : α × β → StieltjesFunction) (κ : kernel α (β × ℝ)) (ν : kernel α β) :
     Prop :=
@@ -454,7 +462,7 @@ end IsCondKernelCDF
 section ToKernel
 
 variable {_ : MeasurableSpace β} {f : α × β → StieltjesFunction}
-  {κ : kernel α (β × ℝ)} {ν : kernel α β} {hf : IsCondKernelCDF f κ ν}
+  {κ : kernel α (β × ℝ)} {ν : kernel α β}
 
 /-- A measurable function `α → StieltjesFunction` with limits 0 at -∞ and 1 at +∞ gives a measurable
 function `α → Measure ℝ` by taking `StieltjesFunction.measure` at each point. -/
@@ -496,12 +504,14 @@ def IsCondKernelCDF.toKernel (f : α × β → StieltjesFunction) (hf : IsCondKe
   property := StieltjesFunction.measurable_measure hf.measurable
     hf.tendsto_atBot_zero hf.tendsto_atTop_one
 
-lemma IsCondKernelCDF.toKernel_apply (p : α × β) : hf.toKernel f p = (f p).measure := rfl
+lemma IsCondKernelCDF.toKernel_apply {hf : IsCondKernelCDF f κ ν} (p : α × β) :
+    hf.toKernel f p = (f p).measure := rfl
 
-instance instIsMarkovKernel_toKernel : IsMarkovKernel (hf.toKernel f) :=
+instance instIsMarkovKernel_toKernel {hf : IsCondKernelCDF f κ ν} :
+    IsMarkovKernel (hf.toKernel f) :=
   ⟨fun _ ↦ (f _).isProbabilityMeasure (hf.tendsto_atBot_zero _) (hf.tendsto_atTop_one _)⟩
 
-lemma IsCondKernelCDF.toKernel_Iic (p : α × β) (x : ℝ) :
+lemma IsCondKernelCDF.toKernel_Iic {hf : IsCondKernelCDF f κ ν} (p : α × β) (x : ℝ) :
     hf.toKernel f p (Iic x) = ENNReal.ofReal (f p x) := by
   rw [IsCondKernelCDF.toKernel_apply p, (f p).measure_Iic (hf.tendsto_atBot_zero p)]
   simp
@@ -510,7 +520,7 @@ end ToKernel
 
 section
 
-variable {f : α × β → StieltjesFunction} {hf : IsCondKernelCDF f κ ν}
+variable {f : α × β → StieltjesFunction}
 
 lemma set_lintegral_toKernel_Iic [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     (a : α) (x : ℝ) {s : Set β} (hs : MeasurableSet s) :
@@ -522,6 +532,7 @@ lemma set_lintegral_toKernel_univ [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫⁻ b in s, hf.toKernel f (a, b) univ ∂(ν a) = κ a (s ×ˢ univ) := by
   have : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
+    -- todo: move `Real.iUnion_Iic_rat` to an earlier file and use it here
     ext1 x
     simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
     obtain ⟨r, hr⟩ := exists_rat_gt x
