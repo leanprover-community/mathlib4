@@ -203,8 +203,9 @@ private def LintingRulesCatImpl.toSyntaxRuleData :
     `RunLintingStep := Syntax → CommandElabM LintingStep` -/
     -- TODO: is `withRef` redundant here? Is it better somewhere else? E.g. in the `run` loop?
     termOfAlts := fun alts => `(term|fun stx => do
-      let out ← show CommandElabM $(mkIdent OutConst) from match stx with $alts:matchAlt*
-      $(mkIdent resolveConst):term out)
+      let out ← show CommandElabM (unfold_abbrev1% $(mkIdent OutConst)) from
+        match stx with $alts:matchAlt*
+      (unfold_abbrev1% $(mkIdent resolveConst):term) out)
     attrName := `linting_rule -- We can't use an `s`, lest it conflict with the command.
     -- TODO: pass stx and use as ref? Or just return a `name`?
     mkKey := some fun kind => mkIdentFromRef <| mkLintingRuleKey kind name
