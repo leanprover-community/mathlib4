@@ -72,18 +72,6 @@ namespace ProbabilityTheory.kernel
 variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
     [CountablyGenerated γ] {κ : kernel α (γ × β)} {ν : kernel α γ}
 
--- todo move
-instance (priority := 100) isFiniteKernel_of_isFiniteKernel_fst [h : IsFiniteKernel (fst κ)] :
-    IsFiniteKernel κ := by
-  refine ⟨h.bound, h.bound_lt_top, fun a ↦ le_trans ?_ (measure_le_bound (fst κ) a univ)⟩
-  rw [fst_apply' _ _ MeasurableSet.univ]
-  simp
-
--- todo move
-lemma isFiniteKernel_of_le {κ ν : kernel α β} [hν : IsFiniteKernel ν] (hκν : κ ≤ ν) :
-    IsFiniteKernel κ := by
-  refine ⟨hν.bound, hν.bound_lt_top, fun a ↦ (hκν _ _).trans (measure_le_bound ν a univ)⟩
-
 section DensityProcess
 
 /-- An `ℕ`-indexed martingale that is a density for `κ` with respect to `ν` on the sets in
