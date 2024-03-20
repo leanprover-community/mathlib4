@@ -1,21 +1,19 @@
 /-
 Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser
+Authors: Eric Wieserf
 -/
 
 import Lean.Elab
 
 open Lean Meta
 
-#check show_term_elab 1
-
-elab "fast_instance%" arg:term : term <= expectedType => do
-  let .some className ← Lean.Meta.isClass? expectedType |
-    throwError "Can only be used for classes"
+partial def makeFastInstance (provided : Expr) : MetaM Expr := do
+  let ty ← inferType provided
+  let .some className ← Lean.Meta.isClass? ty | do
+    Lean.logError "Can only be used for classes"
+    return provided
   let ctor := Lean.getStructureCtor (← getEnv) className
-  let provided ← Lean.Elab.Term.elabTermEnsuringType arg (some expectedType)
-  Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing
 
   -- TODO: withNewMCtxDepth do
   -- create universe variables
@@ -23,7 +21,7 @@ elab "fast_instance%" arg:term : term <= expectedType => do
   let mut e := Expr.const ctor.name levels
   -- get argument types
   let (mvars, binders, _body) ← forallMetaTelescope (← inferType e)
-  unless (← isDefEq _body expectedType) do
+  unless (← isDefEq _body ty) do
     Lean.logError "Could not work out type of instance"
     return provided
   e := mkAppN e mvars
@@ -34,7 +32,14 @@ elab "fast_instance%" arg:term : term <= expectedType => do
   for arg in mvars.extract ctor.numParams (ctor.numParams + ctor.numFields),
       bi in binders.extract ctor.numParams (ctor.numParams + ctor.numFields) do
     if let .instImplicit := bi then
-      if let .some new_arg ← trySynthInstance (← inferType arg) then
+      let arg_ty ← inferType arg
+      if let .some new_arg ← trySynthInstance arg_ty then
+        if ← isDefEq arg new_arg then
+          continue
+        else
+          Lean.logError m!"Field is not defeq, given{indentExpr arg}\ncalculate{indentExpr new_arg}"
+      else
+        let new_arg ← makeFastInstance arg
         if ← isDefEq arg new_arg then
           continue
         else
@@ -46,3 +51,14 @@ elab "fast_instance%" arg:term : term <= expectedType => do
     Lean.logError m!"Not defeq, given{indentExpr provided'}\ncalculated{indentExpr e'}"
     return provided
   pure e
+
+syntax (name := fastInstance) "fast_instance%" term : term
+
+@[term_elab fastInstance]
+def elabFastInstance : Elab.Term.TermElab
+| `(term| fast_instance% $arg), expectedType => do
+  -- passthrough the term
+  let provided ← Lean.Elab.Term.elabTermEnsuringType arg expectedType
+  Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing
+  makeFastInstance provided
+| _, _ => Elab.throwUnsupportedSyntax
