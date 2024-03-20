@@ -6,6 +6,7 @@ Authors: Michael Stoll
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Analysis.Complex.HalfPlane
 
 /-!
 # Differentiability and derivatives of L-series
@@ -87,7 +88,7 @@ lemma LSeries_deriv {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < s.re)
 `log * f` on the right half-plane of absolute convergence. -/
 lemma LSeries_deriv_eqOn {f : ℕ → ℂ} :
     {s | abscissaOfAbsConv f < s.re}.EqOn (deriv (LSeries f)) (- LSeries (logMul f)) :=
-  deriv_eqOn (isOpen_rightHalfPlane _) fun _ hs ↦ (LSeries_hasDerivAt hs).hasDerivWithinAt
+  deriv_eqOn (isOpen_re_gt_EReal _) fun _ hs ↦ (LSeries_hasDerivAt hs).hasDerivWithinAt
 
 /-- If the L-series of `f` is summable at `s` and `re s < re s'`, then the L-series of the
 point-wise product of `log` with `f` is summable at `s'`. -/
@@ -133,7 +134,7 @@ lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaO
   · have ih' : {s | abscissaOfAbsConv f < re s}.EqOn (iteratedDeriv m (LSeries f))
         ((-1) ^ m * LSeries (logMul^[m] f)) := fun _ hs ↦ ih hs
     have := derivWithin_congr ih' (ih h)
-    simp_rw [derivWithin_of_isOpen (isOpen_rightHalfPlane _) h] at this
+    simp_rw [derivWithin_of_isOpen (isOpen_re_gt_EReal _) h] at this
     rw [iteratedDeriv_succ, this]
     simp only [Pi.mul_def, Pi.pow_apply, Pi.neg_apply, Pi.one_apply, deriv_const_mul_field',
       pow_succ', mul_assoc, neg_one_mul, Function.iterate_succ', Function.comp_def,
@@ -152,4 +153,4 @@ lemma LSeries_differentiableOn (f : ℕ → ℂ) :
 /-- The L-series of `f` is holomorphic on its open half-plane of absolute convergence. -/
 lemma LSeries_analyticOn (f : ℕ → ℂ) :
     AnalyticOn ℂ (LSeries f) {s | abscissaOfAbsConv f < s.re} :=
-  (LSeries_differentiableOn f).analyticOn <| isOpen_rightHalfPlane _
+  (LSeries_differentiableOn f).analyticOn <| isOpen_re_gt_EReal _

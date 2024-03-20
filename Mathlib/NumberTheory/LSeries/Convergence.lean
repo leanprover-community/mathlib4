@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.NumberTheory.LSeries.Basic
-import Mathlib.Topology.Instances.EReal
+import Mathlib.Data.Real.EReal
 
 /-!
 # Convergence of L-series
@@ -17,12 +17,6 @@ real part `x` and provide some results about it.
 
 L-series, abscissa of convergence
 -/
-
--- We put this here rather than somewhere related to complex numbers because it needs `EReal`s,
--- so it doesn't fit well in some existing file.
-/-- An open right half-plane (with abscissa given by an `EReal`) is open in the complex plane. -/
-lemma Complex.isOpen_rightHalfPlane (x : EReal) : IsOpen {z : ℂ | x < z.re} :=
-  isOpen_lt continuous_const <| EReal.continuous_coe_iff.mpr continuous_re
 
 open Complex
 
