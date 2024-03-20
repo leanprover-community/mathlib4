@@ -10,6 +10,7 @@
   "Mathlib.AlgebraicTopology.DoldKan.Notations",
   "Mathlib.CategoryTheory.Category.Init",
   "Mathlib.Combinatorics.SimpleGraph.Init",
+  "Mathlib.Command.SyntaxRules",
   "Mathlib.Control.Traversable.Lemmas",
   "Mathlib.Data.Matrix.Notation",
   "Mathlib.Data.Matroid.Init",
@@ -320,6 +321,7 @@
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
   "Mathlib.Control.Monad.Basic": ["Mathlib.Init.Control.Lawful"],
   "Mathlib.Control.Basic": ["Mathlib.Init.Function"],
+  "Mathlib.Command.SyntaxRules.Header": ["Mathlib.Command.SyntaxRules.Elab"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
