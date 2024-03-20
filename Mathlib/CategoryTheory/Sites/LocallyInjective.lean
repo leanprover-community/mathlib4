@@ -4,21 +4,20 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Sites.LeftExact
-import Mathlib.CategoryTheory.Sites.Whiskering
-import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Sites.Subsheaf
+import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Locally injective morphisms of (pre)sheaves
 
 Let `C` be a category equipped with a Grothendieck topology `J`,
-and let `D` be a concrete category.
-
-In this file, we introduce the typeclasses `Presheaf.LocallyInjective J φ`
-for a morphism `φ : F₁ ⟶ F₂` in the category `Cᵒᵖ ⥤ D`. This means that `φ` is locally
-injective. More precisely, if `x` and `y` are two elements of some `F₁.obj U` such
-the images of `x` and `y` in `F₂.obj U` coincide, then the sieve
-`Presheaf.equalizerSieve x y` must be a covering sieve.
+and let `D` be a concrete category. In this file, we introduce the typeclass
+`Presheaf.IsLocallyInjective J φ` for a morphism `φ : F₁ ⟶ F₂` in the category
+`Cᵒᵖ ⥤ D`. This means that `φ` is locally injective. More precisely,
+if `x` and `y` are two elements of some `F₁.obj U` such
+the images of `x` and `y` in `F₂.obj U` coincide, then
+the equality `x = y` must hold locally, i.e. after restriction
+by the maps of a covering sieve.
 
 -/
 
@@ -70,12 +69,11 @@ lemma isLocallyInjective_of_injective (hφ : ∀ (X : Cᵒᵖ), Function.Injecti
     apply hφ
     simp [h]
 
-instance [IsIso φ] :
-    IsLocallyInjective J φ := isLocallyInjective_of_injective J φ (fun X => by
-  apply Function.Bijective.injective
-  rw [← isIso_iff_bijective]
-  change IsIso ((forget D).map (φ.app X))
-  infer_instance)
+instance [IsIso φ] : IsLocallyInjective J φ :=
+  isLocallyInjective_of_injective J φ (fun X => Function.Bijective.injective (by
+    rw [← isIso_iff_bijective]
+    change IsIso ((forget D).map (φ.app X))
+    infer_instance))
 
 instance isLocallyInjective_forget [IsLocallyInjective J φ] :
     IsLocallyInjective J (whiskerRight φ (forget D)) where
@@ -121,13 +119,6 @@ variable (φ ψ)
 lemma isLocallyInjective_comp_iff [IsLocallyInjective J ψ] :
     IsLocallyInjective J (φ ≫ ψ) ↔ IsLocallyInjective J φ :=
   isLocallyInjective_iff_of_fac J rfl
-
-variable (F₁) in
-/-- Condition that a presheaf with values in a concrete category is separated for
-a Grothendieck topology. -/
-def IsSeparated : Prop :=
-  ∀ (X : C) (S : Sieve X) (_ : S ∈ J X) (x y : F₁.obj (op X)),
-    (∀ (Y : C) (f : Y ⟶ X) (_ : S f), F₁.map f.op x = F₁.map f.op y) → x = y
 
 lemma isLocallyInjective_iff_injective_of_separated (hsep : IsSeparated J F₁) :
     IsLocallyInjective J φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.app X) := by
@@ -190,12 +181,6 @@ variable [J.HasSheafCompose (forget D)]
 instance isLocallyInjective_forget [IsLocallyInjective φ] :
     IsLocallyInjective ((sheafCompose J (forget D)).map φ) :=
   Presheaf.isLocallyInjective_forget J φ.1
-
-variable (F₁) in
-lemma isSeparated : Presheaf.IsSeparated J F₁.val := by
-  rintro X S hS x y h
-  exact (Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1
-    ((sheafCompose J (forget D)).obj F₁).2) S hS).ext (fun _ _ hf => h _ _ hf)
 
 lemma isLocallyInjective_iff_injective :
     IsLocallyInjective φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X) :=

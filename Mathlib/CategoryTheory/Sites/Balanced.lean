@@ -18,7 +18,7 @@ We also obtain the lemmas `Sheaf.mono_iff_injective`,
 are concrete characterizations of monomorphisms, isomorphisms and epimorphisms
 in the category of sheaves of types for a Grothendieck topology `J` on a category `C`.
 (The characterization of monomorphisms and isomorphisms apply more generally to
-sheaves with values in concrete category satisfying suitable assumptions.)
+sheaves with values in concrete categories satisfying suitable assumptions.)
 
 -/
 
