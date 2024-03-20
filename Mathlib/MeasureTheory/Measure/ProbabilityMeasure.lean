@@ -312,7 +312,6 @@ end convergence_in_distribution -- section
 section Hausdorff
 
 variable [TopologicalSpace Ω] [HasOuterApproxClosed Ω] [BorelSpace Ω]
-
 variable (Ω)
 
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
@@ -436,7 +435,6 @@ theorem normalize_testAgainstNN (nonzero : μ ≠ 0) (f : Ω →ᵇ ℝ≥0) :
 #align measure_theory.finite_measure.normalize_test_against_nn MeasureTheory.FiniteMeasure.normalize_testAgainstNN
 
 variable [OpensMeasurableSpace Ω]
-
 variable {μ}
 
 theorem tendsto_testAgainstNN_of_tendsto_normalize_testAgainstNN_of_tendsto_mass {γ : Type*}

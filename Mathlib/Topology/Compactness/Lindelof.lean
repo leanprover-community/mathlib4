@@ -38,7 +38,6 @@ open Set Filter Topology TopologicalSpace
 universe u v
 
 variable {X : Type u} {Y : Type v} {ι : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 section Lindelof
@@ -610,7 +609,7 @@ theorem Inducing.isLindelof_preimage {f : X → Y} (hf : Inducing f) (hf' : IsCl
 /-- The preimage of a Lindelöf set under a closed embedding is a Lindelöf set. -/
 theorem ClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : ClosedEmbedding f)
     {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) :=
-  hf.toInducing.isLindelof_preimage (hf.closed_range) hK
+  hf.toInducing.isLindelof_preimage (hf.isClosed_range) hK
 
 /-- A closed embedding is proper, ie, inverse images of Lindelöf sets are contained in Lindelöf.
 Moreover, the preimage of a Lindelöf set is Lindelöf, see `ClosedEmbedding.isLindelof_preimage`. -/
@@ -642,7 +641,7 @@ protected theorem ClosedEmbedding.nonLindelofSpace [NonLindelofSpace X] {f : X �
 
 protected theorem ClosedEmbedding.LindelofSpace [h : LindelofSpace Y] {f : X → Y}
     (hf : ClosedEmbedding f) : LindelofSpace X :=
-  ⟨by rw [hf.toInducing.isLindelof_iff, image_univ]; exact hf.closed_range.isLindelof⟩
+  ⟨by rw [hf.toInducing.isLindelof_iff, image_univ]; exact hf.isClosed_range.isLindelof⟩
 
 /-- Countable topological spaces are Lindelof. -/
 instance (priority := 100) Countable.LindelofSpace [Countable X] : LindelofSpace X where
