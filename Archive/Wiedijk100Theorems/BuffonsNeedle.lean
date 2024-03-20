@@ -357,7 +357,7 @@ lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_const, smul_eq_mul]
 
 /--
-  Buffon's Needle, the short case (`d ≤ l`).
+  Buffon's Needle, the long case (`d ≤ l`).
 -/
 theorem buffon_long (h : d ≤ l) :
     ℙ[N l B] = (2 * l) / (d * π) - 2 / (d * π) * ((l^2 - d^2).sqrt + d * (d / l).arcsin) + 1 := by
