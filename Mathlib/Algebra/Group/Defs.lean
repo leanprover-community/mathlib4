@@ -971,6 +971,10 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 #align of_nat_zsmul natCast_zsmul
 #align matrix.zpow_nat_cast zpow_natCast
 
+-- 2024-03-20
+@[deprecated] alias zpow_coe_nat := zpow_natCast
+@[deprecated] alias coe_nat_zsmul := natCast_zsmul
+
 -- See note [no_index around OfNat.ofNat]
 @[to_additive ofNat_zsmul]
 lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (no_index (OfNat.ofNat n) : ℤ) = a ^ OfNat.ofNat n :=
