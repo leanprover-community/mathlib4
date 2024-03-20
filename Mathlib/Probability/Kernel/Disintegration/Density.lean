@@ -247,15 +247,14 @@ lemma set_integral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     simp only [Finset.coe_sort_coe, Function.onFun]
     refine disjoint_countablePartition (hS_subset (by simp)) (hS_subset (by simp)) ?_
     rwa [ne_eq, ← Subtype.ext_iff]
-  rw [integral_iUnion]
-  · rw [iUnion_prod_const, measure_iUnion]
-    · rw [ENNReal.tsum_toReal_eq (fun _ ↦ measure_ne_top _ _)]
-      congr with u
-      rw [set_integral_densityProcess_of_mem hκν _ _ hs (hS_subset (by simp))]
-    · intro u v huv
-      simp only [Finset.coe_sort_coe, Set.disjoint_prod, disjoint_self, bot_eq_empty]
-      exact Or.inl (h_disj huv)
-    · exact fun _ ↦ (measurableSet_countablePartition n (hS_subset (by simp))).prod hs
+  rw [integral_iUnion, iUnion_prod_const, measure_iUnion,
+      ENNReal.tsum_toReal_eq (fun _ ↦ measure_ne_top _ _)]
+  · congr with u
+    rw [set_integral_densityProcess_of_mem hκν _ _ hs (hS_subset (by simp))]
+  · intro u v huv
+    simp only [Finset.coe_sort_coe, Set.disjoint_prod, disjoint_self, bot_eq_empty]
+    exact Or.inl (h_disj huv)
+  · exact fun _ ↦ (measurableSet_countablePartition n (hS_subset (by simp))).prod hs
   · exact fun _ ↦ measurableSet_countablePartition n (hS_subset (by simp))
   · exact h_disj
   · exact (integrable_densityProcess hκν _ _ hs).integrableOn
