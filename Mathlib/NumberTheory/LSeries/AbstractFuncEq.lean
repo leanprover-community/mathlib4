@@ -192,7 +192,7 @@ lemma hf_zero' (r : ℝ) : P.f =O[𝓝[>] 0] (· ^ r) := by
 def Λ : ℂ → E := mellin P.f
 
 /-- The Mellin transform of `f` is well-defined and equal to `P.Λ s`, for all `s`. -/
-lemma hasMellin (s : ℂ) : HasMellin P.f s (P.Λ s) :=
+theorem hasMellin (s : ℂ) : HasMellin P.f s (P.Λ s) :=
   let ⟨_, ht⟩ := exists_gt s.re
   let ⟨_, hu⟩ := exists_lt s.re
   ⟨mellinConvergent_of_isBigO_rpow P.hf_int (P.hf_top' _) ht (P.hf_zero' _) hu, rfl⟩
@@ -202,7 +202,7 @@ lemma Λ_eq : P.Λ = mellin P.f := rfl
 lemma symm_Λ_eq : P.symm.Λ = mellin P.g := rfl
 
 /-- If `(f, g)` are a strong FE pair, then the Mellin transform of `f` is entire. -/
-lemma differentiable_Λ : Differentiable ℂ P.Λ := fun s ↦
+theorem differentiable_Λ : Differentiable ℂ P.Λ := fun s ↦
   let ⟨_, ht⟩ := exists_gt s.re
   let ⟨_, hu⟩ := exists_lt s.re
   mellin_differentiableAt_of_isBigO_rpow P.hf_int (P.hf_top' _) ht (P.hf_zero' _) hu
@@ -211,7 +211,7 @@ lemma differentiable_Λ : Differentiable ℂ P.Λ := fun s ↦
 transforms of `f` and `g` are related by `s ↦ k - s`.
 
 This is proved by making a substitution `t ↦ t⁻¹` in the Mellin transform integral. -/
-lemma functional_equation (s : ℂ) :
+theorem functional_equation (s : ℂ) :
     P.Λ (P.k - s) = P.ε • P.symm.Λ s := by
   -- unfold definition:
   rw [P.Λ_eq, P.symm_Λ_eq]
@@ -296,7 +296,7 @@ lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
 
 /-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
 correction terms from `f` and `g`. -/
-def modifStrongFEPair : StrongFEPair E where
+def toStrongFEPair : StrongFEPair E where
   hf_int   := P.hf_modif_int
   hg_int   := P.symm.hf_modif_int
   h_feq    := P.hf_modif_FE
@@ -391,9 +391,9 @@ lemma symm_Λ₀_eq (s : ℂ) :
   rw [P.symm.Λ₀_eq]
   rfl
 
-lemma differentiable_Λ₀ : Differentiable ℂ P.Λ₀ := P.modifStrongFEPair.differentiable_Λ
+theorem differentiable_Λ₀ : Differentiable ℂ P.Λ₀ := P.toStrongFEPair.differentiable_Λ
 
-lemma differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠ P.k ∨ P.g₀ = 0) :
+theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠ P.k ∨ P.g₀ = 0) :
     DifferentiableAt ℂ P.Λ s := by
   refine ((P.differentiable_Λ₀ s).sub ?_).sub ?_
   · rcases hs with hs | hs
@@ -406,13 +406,13 @@ lemma differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠ P
     · simpa only [hs', smul_zero] using differentiableAt_const (0 : E)
 
 /-- Relation between `Λ s` and the Mellin transform of `f - f₀`, where the latter is defined. -/
-lemma hasMellin {s : ℂ} (hs : P.k < s.re) : HasMellin (P.f · - P.f₀) s (P.Λ s) := by
+theorem hasMellin {s : ℂ} (hs : P.k < s.re) : HasMellin (P.f · - P.f₀) s (P.Λ s) := by
   have hc1 : MellinConvergent (P.f · - P.f₀) s :=
     let ⟨_, ht⟩ := exists_gt s.re
     mellinConvergent_of_isBigO_rpow (P.hf_int.sub (locallyIntegrableOn_const _)) (P.hf_top _) ht
       P.hf_zero' hs
   refine ⟨hc1, ?_⟩
-  have hc2 : HasMellin P.f_modif s (P.Λ₀ s) := P.modifStrongFEPair.hasMellin s
+  have hc2 : HasMellin P.f_modif s (P.Λ₀ s) := P.toStrongFEPair.hasMellin s
   have hc3 : mellin (fun x ↦ f_modif P x - f P x + P.f₀) s =
     (1 / s) • P.f₀ + (P.ε / (↑P.k - s)) • P.g₀ := P.f_modif_aux2 hs
   have := (hasMellin_sub hc2.1 hc1).2
@@ -420,11 +420,11 @@ lemma hasMellin {s : ℂ} (hs : P.k < s.re) : HasMellin (P.f · - P.f₀) s (P.�
   exact this
 
 /-- Functional equation formulated for `Λ₀`. -/
-lemma functional_equation₀ (s : ℂ) : P.Λ₀ (P.k - s) = P.ε • P.symm.Λ₀ s :=
-  P.modifStrongFEPair.functional_equation s
+theorem functional_equation₀ (s : ℂ) : P.Λ₀ (P.k - s) = P.ε • P.symm.Λ₀ s :=
+  P.toStrongFEPair.functional_equation s
 
 /-- Functional equation formulated for `Λ`. -/
-lemma functional_equation (s : ℂ) :
+theorem functional_equation (s : ℂ) :
     P.Λ (P.k - s) = P.ε • P.symm.Λ s := by
   have := P.functional_equation₀ s
   rw [P.Λ₀_eq, P.symm_Λ₀_eq, sub_sub_cancel] at this
@@ -432,7 +432,7 @@ lemma functional_equation (s : ℂ) :
     mul_inv_cancel P.hε, add_assoc, add_comm (_ • _), add_assoc, add_left_inj] at this
 
 /-- The residue of `Λ` at `s = k` is equal to `ε • g₀`. -/
-lemma Λ_residue_k :
+theorem Λ_residue_k :
     Tendsto (fun s : ℂ ↦ (s - P.k) • P.Λ s) (𝓝[≠] P.k) (𝓝 (P.ε • P.g₀)) := by
   simp_rw [Λ, smul_sub, (by simp : 𝓝 (P.ε • P.g₀) = 𝓝 (0 - 0 - -P.ε • P.g₀))]
   refine ((Tendsto.sub ?_ ?_).mono_left nhdsWithin_le_nhds).sub ?_
@@ -449,7 +449,7 @@ lemma Λ_residue_k :
     ring
 
 /-- The residue of `Λ` at `s = 0` is equal to `-f₀`. -/
-lemma Λ_residue_zero :
+theorem Λ_residue_zero :
     Tendsto (fun s : ℂ ↦ s • P.Λ s) (𝓝[≠] 0) (𝓝 (-P.f₀)) := by
   simp_rw [Λ, smul_sub, (by simp : 𝓝 (-P.f₀) = 𝓝 (((0 : ℂ) • P.Λ₀ 0) - P.f₀ - 0))]
   refine ((Tendsto.mono_left ?_ nhdsWithin_le_nhds).sub ?_).sub ?_
