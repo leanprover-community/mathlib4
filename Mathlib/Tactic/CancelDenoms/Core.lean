@@ -3,7 +3,8 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Data.Tree
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.NormNum.Core
