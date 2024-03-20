@@ -148,8 +148,7 @@ lemma FermatLastTheoremWith_int_of_FermatLastTheoremWith_int_coprime {n : ℕ}
     (hn : ∀ a b c : ℤ, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset ℤ).gcd id = 1 →
       a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremWith ℤ n :=
-  fermatLastTheoremWith_of_FermatLastTheoremWith_coprime
-    (fun a b c ha hb hc H h ↦ hn a b c ha hb hc H h)
+  fermatLastTheoremWith_of_FermatLastTheoremWith_coprime hn
 
 /-- To prove Fermat Last Theorem one can assume that `a`, `b` and `c` are coprime, in the sense
 that the gcd of `{a, b, c}` is `1`. -/
@@ -157,5 +156,4 @@ lemma FermatLastTheoremFor_of_FermatLastTheoremFor_coprime {n : ℕ}
     (hn : ∀ a b c, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset ℕ).gcd id = 1 →
       a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremFor n :=
-  fermatLastTheoremWith_of_FermatLastTheoremWith_coprime (R := ℕ)
-    (fun a b c ha hb hc H h ↦ hn a b c ha hb hc (by simpa using H) h)
+  fermatLastTheoremWith_of_FermatLastTheoremWith_coprime hn
