@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
-import Mathlib.Data.List.InsertNth
+import Mathlib.Data.List.Basic
 
 #align_import data.list.pairwise from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
