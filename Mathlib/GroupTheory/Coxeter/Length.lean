@@ -63,9 +63,8 @@ theorem exists_reduced_word (w : W) : ∃ ω : List B, ω.length = ℓ w ∧ w =
   have := Nat.find_spec (cs.exists_word_with_prod w)
   tauto
 
-theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length := by
-  apply Nat.find_min' (cs.exists_word_with_prod (π ω))
-  use ω
+theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length :=
+  Nat.find_min' (cs.exists_word_with_prod (π ω)) ⟨ω, by tauto⟩
 
 @[simp] theorem length_one : ℓ (1 : W) = 0 := Nat.eq_zero_of_le_zero (cs.length_wordProd_le [])
 
@@ -95,8 +94,7 @@ theorem length_mul_le (w₁ w₂ : W) :
   rcases cs.exists_reduced_word w₁ with ⟨ω₁, hω₁, rfl⟩
   rcases cs.exists_reduced_word w₂ with ⟨ω₂, hω₂, rfl⟩
   have := cs.length_wordProd_le (ω₁ ++ ω₂)
-  simp at this
-  rwa [hω₁, hω₂] at this
+  simpa [hω₁, hω₂] using this
 
 theorem length_mul_ge (w₁ w₂ : W) :
     ℓ (w₁ * w₂) ≥ max (ℓ w₁ - ℓ w₂) (ℓ w₂ - ℓ w₁) := by
@@ -115,16 +113,14 @@ theorem length_mul_ge (w₁ w₂ : W) :
 private def lengthParity (cs : CoxeterSystem M W) : W →* Multiplicative (ZMod 2) := cs.lift (
     show IsLiftable M (fun _ ↦ Multiplicative.ofAdd 1) by
       intro i i'
-      dsimp
-      rw [← ofAdd_add, one_add_one_eq_two, (by decide : (2 : ZMod 2) = 0)]
+      rw [← ofAdd_add, (by decide : (1 + 1 : ZMod 2) = 0)]
       simp
   )
 
 private theorem lengthParity_simple :
     ⇑(CoxeterSystem.lengthParity cs) ∘ simpleReflection cs = fun _ ↦ Multiplicative.ofAdd 1 := by
   ext x
-  dsimp
-  rw [lengthParity, lift_apply_simple]
+  rw [comp_apply, lengthParity, lift_apply_simple]
 
 private theorem parity_length_eq' (w : W) :
     Multiplicative.toAdd (cs.lengthParity w) = ((↑) : ℕ → ZMod 2) (ℓ w) := by
@@ -135,8 +131,7 @@ private theorem parity_length_eq' (w : W) :
   tauto
 
 theorem length_mul_mod_two (w₁ w₂ : W) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ + ℓ w₂) % 2 := by
-  rw [← ZMod.nat_cast_eq_nat_cast_iff']
-  rw [(by simp : (↑(length cs w₁ + length cs w₂) : ZMod 2) = ↑(length cs w₁) + ↑(length cs w₂))]
+  rw [← ZMod.nat_cast_eq_nat_cast_iff', Nat.cast_add]
   repeat rw [← parity_length_eq']
   simp
 
@@ -149,7 +144,7 @@ theorem length_mul_mod_two (w₁ w₂ : W) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ +
   · show 1 ≤ length cs (s i)
     by_contra! length_lt_1
     have := congrArg Multiplicative.toAdd (congrFun cs.lengthParity_simple i)
-    simp [parity_length_eq'] at this
+    simp only [comp_apply, parity_length_eq', toAdd_ofAdd] at this
     rw [Nat.lt_one_iff.mp length_lt_1] at this
     contradiction
 
