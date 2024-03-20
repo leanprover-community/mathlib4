@@ -69,17 +69,11 @@ open Function
 section Semiring
 
 variable {ι ι₂ ι₃ : Type*}
-
 variable {R : Type*} [CommSemiring R]
-
 variable {R₁ R₂ : Type*}
-
 variable {s : ι → Type*} [∀ i, AddCommMonoid (s i)] [∀ i, Module R (s i)]
-
 variable {M : Type*} [AddCommMonoid M] [Module R M]
-
 variable {E : Type*} [AddCommMonoid E] [Module R E]
-
 variable {F : Type*} [AddCommMonoid F]
 
 namespace PiTensorProduct
@@ -222,7 +216,6 @@ protected theorem induction_on' {motive : (⨂[R] i, s i) → Prop} (z : ⨂[R] 
 section DistribMulAction
 
 variable [Monoid R₁] [DistribMulAction R₁ R] [SMulCommClass R₁ R R]
-
 variable [Monoid R₂] [DistribMulAction R₂ R] [SMulCommClass R₂ R R]
 
 -- Most of the time we want the instance below this one, which is easier for typeclass resolution
@@ -316,7 +309,7 @@ unsuppress_compilation in
 @[inherit_doc tprod]
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem tprod_eq_tprodCoeff_one :
     ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
 
@@ -625,6 +618,25 @@ lemma map₂_tprod_tprod (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) (x : Π i,
 
 /--
 Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules.
+Then there is a function from `⨂ᵢ Hom(sᵢ, Hom(tᵢ, t'ᵢ))` to `Hom(⨂ᵢ sᵢ, Hom(⨂ tᵢ, ⨂ᵢ t'ᵢ))`
+defined by `⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`. -/
+def piTensorHomMapFun₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →
+    (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) :=
+  fun φ => lift <| LinearMap.compMultilinearMap piTensorHomMap <|
+    (lift <| MultilinearMap.piLinearMap <| tprod R) φ
+
+theorem piTensorHomMapFun₂_add (φ ψ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
+    piTensorHomMapFun₂ (φ + ψ) = piTensorHomMapFun₂ φ + piTensorHomMapFun₂ ψ := by
+  dsimp [piTensorHomMapFun₂]; ext; simp only [map_add, LinearMap.compMultilinearMap_apply,
+    lift.tprod, add_apply, LinearMap.add_apply]
+
+theorem piTensorHomMapFun₂_smul (r : R) (φ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
+    piTensorHomMapFun₂ (r • φ) = r • piTensorHomMapFun₂ φ := by
+  dsimp [piTensorHomMapFun₂]; ext; simp only [map_smul, LinearMap.compMultilinearMap_apply,
+    lift.tprod, smul_apply, LinearMap.smul_apply]
+
+/--
+Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules.
 Then there is an linear map from `⨂ᵢ Hom(sᵢ, Hom(tᵢ, t'ᵢ))` to `Hom(⨂ᵢ sᵢ, Hom(⨂ tᵢ, ⨂ᵢ t'ᵢ))`
 defined by `⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
 
@@ -632,15 +644,14 @@ This is `TensorProduct.homTensorHomMap` for two arbitrary families of modules.
 -/
 def piTensorHomMap₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) where
-  toFun φ := lift <| LinearMap.compMultilinearMap piTensorHomMap <|
-    (lift <| MultilinearMap.piLinearMap <| tprod R) φ
-  map_add' x y := by dsimp; ext; simp
-  map_smul' r x := by dsimp; ext; simp
+  toFun := piTensorHomMapFun₂
+  map_add' x y := piTensorHomMapFun₂_add x y
+  map_smul' x y :=  piTensorHomMapFun₂_smul x y
 
 @[simp] lemma piTensorHomMap₂_tprod_tprod_tprod
     (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
     piTensorHomMap₂ (tprod R f) (tprod R a) (tprod R b) = tprod R (fun i ↦ f i (a i) (b i)) := by
-  simp [piTensorHomMap₂]
+  simp [piTensorHomMapFun₂, piTensorHomMap₂]
 
 end map
 
@@ -909,7 +920,6 @@ open PiTensorProduct
 open TensorProduct
 
 variable {ι : Type*} {R : Type*} [CommRing R]
-
 variable {s : ι → Type*} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
 
 /- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise

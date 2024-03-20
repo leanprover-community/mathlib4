@@ -361,7 +361,7 @@ theorem independent_def' : Independent t ↔ ∀ i, Disjoint (t i) (sSup (t '' {
 #align complete_lattice.independent_def' CompleteLattice.independent_def'
 
 theorem independent_def'' :
-    Independent t ↔ ∀ i, Disjoint (t i) (sSup { a | ∃ (j : _) (_ : j ≠ i), t j = a }) := by
+    Independent t ↔ ∀ i, Disjoint (t i) (sSup { a | ∃ j ≠ i, t j = a }) := by
   rw [independent_def']
   aesop
 #align complete_lattice.independent_def'' CompleteLattice.independent_def''
@@ -432,7 +432,7 @@ theorem Independent.injOn (ht : Independent t) : InjOn t {i | t i ≠ ⊥} := by
     rwa [h, disjoint_self] at ht
   replace contra : j ≠ i := Ne.symm contra
   -- Porting note: needs explicit `f`
-  exact @le_iSup₂ _ _ _ _ (fun x _ => t x) j contra
+  exact le_iSup₂ (f := fun x _ ↦ t x) j contra
 
 theorem Independent.injective (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Injective t := by
   suffices univ = {i | t i ≠ ⊥} by rw [injective_iff_injOn_univ, this]; exact ht.injOn
