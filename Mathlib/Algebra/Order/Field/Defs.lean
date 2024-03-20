@@ -93,11 +93,11 @@ lemma div_nonpos_of_nonneg_of_nonpos (ha : 0 ≤ a) (hb : b ≤ 0) : a / b ≤ 0
 #align div_nonpos_of_nonneg_of_nonpos div_nonpos_of_nonneg_of_nonpos
 
 lemma zpow_nonneg (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
-  | (n : ℕ) => by rw [zpow_coe_nat]; exact pow_nonneg ha _
-  | -(n + 1 : ℕ) => by rw [zpow_neg, inv_nonneg, zpow_coe_nat]; exact pow_nonneg ha _
+  | (n : ℕ) => by rw [zpow_natCast]; exact pow_nonneg ha _
+  | -(n + 1 : ℕ) => by rw [zpow_neg, inv_nonneg, zpow_natCast]; exact pow_nonneg ha _
 #align zpow_nonneg zpow_nonneg
 
 lemma zpow_pos_of_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
-  | (n : ℕ) => by rw [zpow_coe_nat]; exact pow_pos ha _
-  | -(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_coe_nat]; exact pow_pos ha _
+  | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
+  | -(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
 #align zpow_pos_of_pos zpow_pos_of_pos

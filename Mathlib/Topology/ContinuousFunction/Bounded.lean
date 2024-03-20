@@ -962,7 +962,7 @@ theorem mkOfCompact_sub [CompactSpace α] (f g : C(α, β)) :
 
 @[simp]
 theorem coe_zsmulRec : ∀ z, ⇑(zsmulRec z f) = z • ⇑f
-  | Int.ofNat n => by rw [zsmulRec, Int.ofNat_eq_coe, coe_nsmulRec, coe_nat_zsmul]
+  | Int.ofNat n => by rw [zsmulRec, Int.ofNat_eq_coe, coe_nsmulRec, natCast_zsmul]
   | Int.negSucc n => by rw [zsmulRec, negSucc_zsmul, coe_neg, coe_nsmulRec]
 #align bounded_continuous_function.coe_zsmul_rec BoundedContinuousFunction.coe_zsmulRec
 
