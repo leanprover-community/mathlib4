@@ -72,6 +72,7 @@ namespace LintingRules
 
 section lintingflow
 
+/-- Guides linting by `linting_rules`. -/
 inductive LintingStep where
   -- TODO: do we need this?
   | /-- Do not continue linting with this linter at all. -/ done!
@@ -138,6 +139,8 @@ section data
 /-FIXME: we need to currently use an aux def with `run` in the macro, because there's no way we can
 create a term of arbitrary type `Out` in `runLintingRules`, and *then* apply `run`. -/
 
+/-- Configuration for either registering a new option to control a linter or using an existing one.
+-/
 protected inductive LintingRulesCat.OptionConfig
   /-- Register a new option for controlling a linting_rules linter. By default, the name, group,
   and description are auto-generated. -/
@@ -173,6 +176,7 @@ structure LintingRulesCat where
 --TODO: is there a way to make this private without erroring later?
 /-- The necessary data to form SyntaxRuleData with. -/
 structure LintingRulesCatImpl where
+  /-- The name of the `linting_rules` category. -/
   name : Name
   /-- A constant representing `Out`. -/
   OutConst : Name
@@ -221,6 +225,7 @@ Also, maybe a NameSet is not efficient to `fold` over. -/
 more easily spin up syntax_rules commands that have a category. -/
 /- TODO(perf): check if a label attribute is better. Better to flatten arrays on import instead of
 each time the linter runs... -/
+/-- An attribute we use to collect implementations of `linting_rules` categories. -/
 initialize lintingRulesCatAttr : TagAttribute ←
   registerTagAttribute
     `linting_rules_cat
@@ -236,6 +241,7 @@ initialize lintingRulesCatAttr : TagAttribute ←
     (applicationTime := AttributeApplicationTime.afterCompilation)
 
 /- Run by `syntax_rules` to guide elaboration based on the category appearing in syntax. -/
+/-- Turn a `linting_rules` command into `SyntaxRuleData`. -/
 @[syntax_rules_header lintingRulesHeader]
 def toSyntaxRuleData : ToSyntaxRuleData := fun
   | `(lintingRulesHeader|linting_rules : $id:ident) => do
@@ -398,6 +404,8 @@ private def runLintingSteps (s : Command.State) (stx : Syntax) :
 --TODO: use trace nodes.
 --TODO(perf): try without: `startFn`; `stopFn`; parallel loops; `flatten` (use fold instead)
 open Linter in
+/-- Descend the top-level command syntax and run `linting_rules` rules on each syntax encountered .
+-/
 def runLintingRules (stx : Syntax) : CommandElabM Unit := do
   let opts ← getOptions
   let env ← getEnv
