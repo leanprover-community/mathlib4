@@ -107,7 +107,7 @@ noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
           (by linarith) (by linarith)] says
         simp only [mappingConeCompTriangle_obj₁, mappingConeCompTriangle_obj₂,
           mappingConeCompTriangle_mor₁, map, inv, hom, Cochain.ofHom_comp, ofHom_desc, ofHom_lift,
-          descCocycle_coe, AddSubmonoid.coe_zero, Cochain.comp_zero_cochain_v,
+          descCocycle_coe, ZeroMemClass.coe_zero, Cochain.comp_zero_cochain_v,
           inl_v_descCochain_v_assoc, Cochain.zero_cochain_comp_v, assoc, inl_v_snd_v_assoc,
           zero_comp, Cochain.id_comp, Cochain.comp_assoc_of_first_is_zero_cochain,
           Cochain.comp_add, Cochain.comp_neg, Cochain.comp_assoc_of_second_is_zero_cochain,
