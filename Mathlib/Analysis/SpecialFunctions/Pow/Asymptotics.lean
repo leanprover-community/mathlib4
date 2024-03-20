@@ -175,8 +175,7 @@ theorem ENNReal.tendsto_rpow_at_top {y : ℝ} (hy : 0 < y) :
   obtain ⟨c, _, hc⟩ :=
     (atTop_basis_Ioi.tendsto_iff atTop_basis_Ioi).mp (NNReal.tendsto_rpow_atTop hy) x trivial
   have hc' : Set.Ioi ↑c ∈ 𝓝 (⊤ : ℝ≥0∞) := Ioi_mem_nhds ENNReal.coe_lt_top
-  refine' eventually_of_mem hc' _
-  intro a ha
+  filter_upwards [hc'] with a ha
   by_cases ha' : a = ⊤
   · simp [ha', hy]
   lift a to ℝ≥0 using ha'
