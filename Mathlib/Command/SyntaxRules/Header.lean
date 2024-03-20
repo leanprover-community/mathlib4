@@ -7,7 +7,8 @@ import Mathlib.Command.SyntaxRules.Elab
 
 /-! # `syntax_rules_header`
 
-Instead of manually attaching `@[syntax_rules_header_impl]` to each implementation, we can actually use a `syntax_rules`-based command to do so. E.g., to implement `foo_rules : id`, we might write
+Instead of manually attaching `@[syntax_rules_header_impl]` to each implementation, we can actually
+use a `syntax_rules`-based command to do so. E.g., to implement `foo_rules : id`, we might write
 
 ```lean
 syntax (name := fooRulesStx) "foo_rules" ":" ident : syntaxRulesHeader
@@ -21,8 +22,11 @@ syntax_rules_header
 
 open Lean Elab
 
+/-- Define an implementation for a `syntax_rules`-based command. TODO: docs -/
 syntax (name := syntaxRulesHeaderCmd) "syntax_rules_header" : syntaxRulesHeader
 
+/-- Bootstrap `@[syntax_rules_header_impl]` to `syntax_rules_header` syntax so that we never have
+to use `@[syntax_rules_header_impl]` when defining `syntax_rules`-based commands directly. -/
 @[syntax_rules_header_impl syntaxRulesHeaderCmd]
 def syntaxRulesHeaderImpl : ToSyntaxRuleData
   | `(syntaxRulesHeaderCmd|syntax_rules_header) => return {
