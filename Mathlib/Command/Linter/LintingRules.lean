@@ -173,21 +173,25 @@ structure LintingRulesCat where
 /- Genuinely not sure what to do about macro scopes...I guess it should be `kind ++ cat`? should
 `kind` have macro scopes? `eraseMacroScopes` on category? -/
 
---TODO: is there a way to make this private without erroring later?
-/-- The necessary data to form SyntaxRuleData with. -/
-structure LintingRulesCatImpl where
+/-- The data stored in an IO.Ref accessed while we run. -/
+structure LintingRulesCatRunImpl where
   /-- The name of the `linting_rules` category. -/
   name : Name
-  /-- A constant representing `Out`. -/
-  OutConst : Name
-  /-- A constant representing `resolve : Out → CommandElabM LintingStep`. -/
-  resolveConst : Name
   /-- The option associated with this category. -/
   opt : Lean.Option Bool
   /-- `stopFn`, if there is one. -/
   stopFn : Syntax → Bool
   /-- `startFn`, if there is one. -/
   startFn : Option (Syntax → Bool)
+deriving Inhabited
+
+--TODO: is there a way to make this private without erroring later?
+/-- The necessary data to form SyntaxRuleData with. -/
+structure LintingRulesCatImpl extends LintingRulesCatRunImpl where
+  /-- A constant representing `Out`. -/
+  OutConst : Name
+  /-- A constant representing `resolve : Out → CommandElabM LintingStep`. -/
+  resolveConst : Name
 deriving Inhabited
 
 /- TODO: provide a function which validates that `type` referes to a type and `attrName` to an
@@ -217,6 +221,16 @@ end data
 
 section attr
 
+/- trying a simple IO.Ref so we don't have to repeatedly `evalConst`...
+
+The attribute `@[linting_rules_cat]` records things for `linting_rules`
+-/
+
+/-- The implementations of `linting_rules` categories. -/
+abbrev Impls := Array LintingRulesCatRunImpl
+
+/-- The implementations of `linting_rules` categories. -/
+initialize lintingRulesCatRunImpls : IO.Ref Impls ← IO.mkRef #[]
 
 /- TODO: Currently this is a tag attribute, and rather fragile.
 Ideally, we would write `@[linting_rules_cat <catname>]` and check that we only ever added one
@@ -226,12 +240,12 @@ Also, maybe a NameSet is not efficient to `fold` over. -/
 more easily spin up syntax_rules commands that have a category. -/
 /- TODO(perf): check if a label attribute is better. Better to flatten arrays on import instead of
 each time the linter runs... -/
-/-- An attribute we use to collect implementations of `linting_rules` categories. -/
-register_label_attr linting_rules_cat
+-- /-- An attribute we use to collect implementations of `linting_rules` categories. -/
+-- register_label_attr linting_rules_cat
 
-/-- Get labelled entries. (Does not require `CoreM`.) -/
-def labelled (env : Environment) : IO (Array Name) :=
-  return ((← labelExtensionMapRef.get).find? `linting_rules_cat).get!.getState env
+-- /-- Get labelled entries. (Does not require `CoreM`.) -/
+-- def labelled (env : Environment) : IO (Array Name) :=
+--   return ((← labelExtensionMapRef.get).find? `linting_rules_cat).get!.getState env
 
 -- initialize lintingRulesCatAttr : TagAttribute ←
 --   registerTagAttribute
@@ -253,10 +267,13 @@ syntax_rules_header
   as `` `LintingRules.Category ++ id ``. This is enforced by `registerLintingRuleCategory`.
   Ideally this would be a parameter to the attribute which would key the decl (or something like
   that). -/
+  let impls ← lintingRulesCatRunImpls.get
+  trace[lintingRules] "categories: {impls.map (·.name)}"
+  unless impls.any (·.name == id.getId) do
+    throwErrorAt id "{id} is not a recognized linting_rules category."
   let decl := `LintingRules.Category ++ id.getId
-  let .true := (← labelled (← getEnv)).contains decl -- lintingRulesCatAttr.hasTag (← getEnv) decl
-    | throwErrorAt id "{id} is not a recognized linting_rules category."
-  addConstInfo id decl -- show docstring provided for `register_linting_rules_cat ..` on `id`
+  addConstInfo id decl
+  -- show docstring provided for `register_linting_rules_cat ..` on `id`
   return (← unsafe evalConstCheck LintingRulesCatImpl ``LintingRulesCatImpl decl).toSyntaxRuleData
 
 end attr
@@ -310,6 +327,7 @@ def registerLintingRulesCat (id : Ident) (data : Term)
   let outName := mkCatConstName cat `_OutConst
   let resolveName := mkCatConstName cat `_resolveConst
   --TODO: do variables mess up the type? No, right?
+  --TODO: check ambient namespaces are not used.
   elabCommand <|← `(command|abbrev $(mkIdent outName) : Type := ($data:term).Out)
   elabCommand <|← `(command|abbrev $(mkIdent resolveName) := ($data:term).resolve)
   /- TODO: There's got to be a nicer way to do this next bit. I'm not fond of the unsafe bit. Can't
@@ -331,7 +349,6 @@ def registerLintingRulesCat (id : Ident) (data : Term)
   -- TODO: can't we add this attribute in meta code?
   elabCommand <|← `(command|
     $[$doc:docComment]?
-    @[linting_rules_cat]
     def $catDeclId:ident : LintingRules.Category.LintingRulesCatImpl where
       name := $(quote cat)
       OutConst := $(quote outName)
@@ -339,8 +356,18 @@ def registerLintingRulesCat (id : Ident) (data : Term)
       opt := { name := $(quote optName), defValue := $(quote defValue) }
       stopFn := ($data).stopFn
       startFn := ($data).startFn)
+  --TODO: clean up. just for testing performance.
+  let catRunDeclId := mkIdentFrom id ((mkCatDeclName cat) ++ `_runImpl)
+  elabCommand <|← `(command|
+    $[$doc:docComment]?
+    def $catRunDeclId:ident : LintingRules.Category.LintingRulesCatRunImpl :=
+      (($catDeclId:term).toLintingRulesCatRunImpl))
+  let impl ←
+    unsafe evalConstCheck LintingRulesCatRunImpl ``LintingRulesCatRunImpl catRunDeclId.getId
+  lintingRulesCatRunImpls.modify fun arr => arr.push impl
+
   --TODO: improve trace by resolving constant so that hover works
-  trace[lintingRules.register] "registered @[linting_rules_cat] {catDeclId} : LintingRulesCaptImpl"
+  trace[lintingRules.register] "registered {catDeclId} : LintingRulesCaptImpl"
 
 
 /--
@@ -412,14 +439,13 @@ open Linter in
 def runLintingRules (stx : Syntax) : CommandElabM Unit := do
   let opts ← getOptions
   let env ← getEnv
-  let cats ← labelled env
+  let cats ← lintingRulesCatRunImpls.get
     -- (lintingRulesCatAttr.ext.toEnvExtension.getState env).importedEntries.flatten ++
     -- (lintingRulesCatAttr.ext.getState env).toArray
   -- lintTrace opts m!"Using categories {cats}."
   -- let mut isDone := mkArray cats.size (some 0) -- if no `startFn`
   --TODO: see if it's better to extract the name and opt at this stage, or to use `.name` etc.
   --TODO: good placement of `unsafe` or not?
-  let cats ← unsafe cats.mapM <| evalConst LintingRulesCatImpl
   let mut isDone : HashMap Name (LOption Nat) := {}
   -- let mut isDone := cats.map fun { startFn, .. } =>
   --   if startFn.isNone then LOption.some 0 else .undef
