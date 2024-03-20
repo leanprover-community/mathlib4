@@ -200,7 +200,7 @@ theorem add_apply (x y : M) : (B + D) x y = B x y + D x y :=
 multiplication.
 
 When `R` itself is commutative, this provides an `R`-action via `Algebra.id`. -/
-instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] [SMulCommClass R α R]  :
+instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R]  :
     SMul α (BilinForm R M) := LinearMap.instSMulLinearMap
 
 --@[simp]
@@ -210,23 +210,23 @@ theorem coe_smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R]
 #align bilin_form.coe_smul LinearMap.BilinForm.coe_smul
 
 @[simp]
-theorem smul_apply {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] [SMulCommClass R α R]
+theorem smul_apply {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R]
     (a : α) (B : BilinForm R M) (x y : M) : (a • B) x y = a • B x y :=
   rfl
 #align bilin_form.smul_apply LinearMap.BilinForm.smul_apply
 
 instance {α β} [Monoid α] [Monoid β] [DistribMulAction α R] [DistribMulAction β R]
-    [SMulCommClass α R R] [SMulCommClass R α R] [SMulCommClass β R R] [SMulCommClass R β R]
+    [SMulCommClass R α R] [SMulCommClass R β R]
     [SMulCommClass α β R] : SMulCommClass α β (BilinForm R M) :=
   ⟨fun a b B => ext fun x y => smul_comm a b (B x y)⟩
 
 instance {α β} [Monoid α] [Monoid β] [SMul α β] [DistribMulAction α R] [DistribMulAction β R]
-    [SMulCommClass α R R] [SMulCommClass R α R] [SMulCommClass β R R] [SMulCommClass R β R]
+    [SMulCommClass R α R] [SMulCommClass R β R]
     [IsScalarTower α β R] : IsScalarTower α β (BilinForm R M) :=
   ⟨fun a b B => ext fun x y => smul_assoc a b (B x y)⟩
 
 instance {α} [Monoid α] [DistribMulAction α R] [DistribMulAction αᵐᵒᵖ R]
-    [SMulCommClass α R R] [SMulCommClass R α R] [IsCentralScalar α R] :
+    [SMulCommClass R α R] [IsCentralScalar α R] :
     IsCentralScalar α (BilinForm R M) :=
   ⟨fun a B => ext fun x y => op_smul_eq_smul a (B x y)⟩
 
@@ -271,11 +271,11 @@ def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
   map_add' := coe_add
 #align bilin_form.coe_fn_add_monoid_hom LinearMap.BilinForm.coeFnAddMonoidHom
 
-instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] [SMulCommClass R α R] :
+instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] :
     DistribMulAction α (BilinForm R M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
-instance {α} [CommSemiring α] [Module α R] [SMulCommClass α R R] [SMulCommClass R α R] :
+instance {α} [CommSemiring α] [Module α R] [SMulCommClass R α R] :
     Module α (BilinForm R M) :=
   Function.Injective.module _ coeFnAddMonoidHom coe_injective coe_smul
 
