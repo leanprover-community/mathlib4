@@ -53,6 +53,12 @@ def sheafCompose : Sheaf J A ⥤ Sheaf J B where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_compose CategoryTheory.sheafCompose
 
+instance [Faithful F] : Faithful (sheafCompose J F) where
+  map_injective h := by
+    ext X
+    apply F.map_injective
+    exact (sheafToPresheaf _ _ ⋙ (evaluation _ _).obj X).congr_map h
+
 variable {F G}
 
 /--

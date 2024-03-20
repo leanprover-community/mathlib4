@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Sites.LeftExact
+import Mathlib.CategoryTheory.Sites.LocallyInjective
+
 /-!
-# Locally injective and locally surjective morphisms of (pre)sheaves
+# Locally surjective morphisms of (pre)sheaves
 
 Let `C` be a category equipped with a Grothendieck topology `J`,
 and let `D` be a concrete category.
@@ -44,72 +46,24 @@ variable {C : Type u} [Category.{v} C]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
-@[simp]
-lemma NatTrans.naturality_apply {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C}
-    (f : X ⟶ Y) (x : F.obj X) :
-    φ.app Y (F.map f x) = G.map f (φ.app X x) := by
-  simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x
-
 namespace Presheaf
 
 variable {F₁ F₂ F₃ : Cᵒᵖ ⥤ D} (φ : F₁ ⟶ F₂) (ψ : F₂ ⟶ F₃)
 
 /-- A morphism `φ : F₁ ⟶ F₂` of presheaves `Cᵒᵖ ⥤ D` (with `D` a concrete category)
-is locally injective for a Grothendieck topology `J` on `C` if
-whenever two sections of `F₁` are sent to the same section of `F₂`, then these two
-sections coincide locally. -/
-class LocallyInjective : Prop where
-  locally_injective {X : Cᵒᵖ} (x y : F₁.obj X) (h : φ.app X x = φ.app X y) :
-    ∃ (S : Sieve X.unop) (_ : S ∈ J X.unop),
-      ∀ {Y : C} (f : Y ⟶ X.unop) (_ : S f), F₁.map f.op x = F₁.map f.op y
-
-lemma locallyInjective_of_injective (hφ : ∀ (X : Cᵒᵖ), Function.Injective (φ.app X)) :
-    LocallyInjective J φ where
-  locally_injective {X} x y h := ⟨⊤, J.top_mem _, fun f _ => hφ _ (by simp [h])⟩
-
-instance [IsIso φ] :
-    LocallyInjective J φ := locallyInjective_of_injective J φ (fun X => by
-  apply Function.Bijective.injective
-  rw [← isIso_iff_bijective]
-  change IsIso ((forget D).map (φ.app X))
-  infer_instance)
-
-section
-
-variable [hφ : LocallyInjective J φ]
-  {X : Cᵒᵖ} (x y : F₁.obj X) (h : φ.app X x = φ.app X y)
-
-/-- When `φ : F₁ ⟶ F₂` is locally injective and `x` and `y` are two elements in `F₁.obj X` such
-that `φ.app X x = φ.app X y`, this is a covering sieve of `X.unop`
-over which `x` and `y` coincide, see `map_apply_eq_of_locallyInjective`. -/
-noncomputable def sieveOfLocallyInjective : Sieve X.unop :=
-  (hφ.locally_injective x y h).choose
-
-lemma sieveOfLocallyInjective_mem :
-    sieveOfLocallyInjective J φ x y h ∈ J X.unop :=
-  (hφ.locally_injective x y h).choose_spec.choose
-
-lemma map_apply_eq_of_locallyInjective
-    {Y : C} (f : Y ⟶ X.unop) (hf : sieveOfLocallyInjective J φ x y h f) :
-    F₁.map f.op x = F₁.map f.op y :=
-  (hφ.locally_injective x y h).choose_spec.choose_spec f hf
-
-end
-
-/-- A morphism `φ : F₁ ⟶ F₂` of presheaves `Cᵒᵖ ⥤ D` (with `D` a concrete category)
 is locally surjective for a Grothendieck topology `J` on `C` if any section of `F₂`
 can be lifted locally to a section of `F₁`. -/
-class LocallySurjective : Prop where
+class IsLocallySurjective : Prop where
   locally_surjective {X : Cᵒᵖ} (x : F₂.obj X) :
     ∃ (S : Sieve X.unop) (_ : S ∈ J X.unop),
       ∀ {Y : C} (f : Y ⟶ X.unop) (_ : S f), ∃ (y : F₁.obj (op Y)),
         φ.app (op Y) y = F₂.map f.op x
 
-lemma locallySurjective_of_surjective (hφ : ∀ (X : Cᵒᵖ), Function.Surjective (φ.app X)) :
-    LocallySurjective J φ where
+lemma isLocallySurjective_of_surjective (hφ : ∀ (X : Cᵒᵖ), Function.Surjective (φ.app X)) :
+    IsLocallySurjective J φ where
   locally_surjective _ := ⟨⊤, J.top_mem _, fun _ _ => hφ _ _⟩
 
-instance [IsIso φ] : LocallySurjective J φ := locallySurjective_of_surjective J φ (fun X => by
+instance [IsIso φ] : IsLocallySurjective J φ := isLocallySurjective_of_surjective J φ (fun X => by
   apply Function.Bijective.surjective
   rw [← isIso_iff_bijective]
   change IsIso ((forget D).map (φ.app X))
@@ -117,7 +71,7 @@ instance [IsIso φ] : LocallySurjective J φ := locallySurjective_of_surjective 
 
 section
 
-variable [hφ : LocallySurjective J φ]
+variable [hφ : IsLocallySurjective J φ]
   {X : Cᵒᵖ} (x : F₂.obj X)
 
 /-- When `φ : F₁ ⟶ F₂` is locally surjective and `x : F₂.obj X`, this is a covering
@@ -142,67 +96,14 @@ lemma app_apply_localPreimage :
 
 end
 
-instance locallyInjective_forget [LocallyInjective J φ] :
-    LocallyInjective J (whiskerRight φ (forget D)) where
-  locally_injective x y h :=
-    ⟨_, sieveOfLocallyInjective_mem J φ x y h, map_apply_eq_of_locallyInjective J φ x y h⟩
-
-instance locallySurjective_forget [LocallySurjective J φ] :
-    LocallySurjective J (whiskerRight φ (forget D)) where
+instance isLocallySurjective_forget [IsLocallySurjective J φ] :
+    IsLocallySurjective J (whiskerRight φ (forget D)) where
   locally_surjective x :=
     ⟨_, sieveOfLocallySurjective_mem J φ x,
       fun f hf => ⟨localPreimage J φ x f hf, app_apply_localPreimage J φ x f hf⟩⟩
 
-instance locallyInjective_comp [LocallyInjective J φ] [LocallyInjective J ψ] :
-    LocallyInjective J (φ ≫ ψ) where
-  locally_injective {X} x y h := by
-    let S := sieveOfLocallyInjective J ψ (φ.app _ x) (φ.app _ y) (by simpa using h)
-    have hS : S ∈ J X.unop :=
-      sieveOfLocallyInjective_mem J ψ (φ.app _ x) (φ.app _ y) (by simpa using h)
-    have hS' : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X.unop⦄ (_ : S f),
-      φ.app _ (F₁.map f.op x) = φ.app _ (F₁.map f.op y) := fun Y f hf => by
-        simpa using map_apply_eq_of_locallyInjective J ψ (φ.app _ x) (φ.app _ y) _ f hf
-    let T : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X.unop⦄ (_ : S f), Sieve Y := fun Y f hf =>
-      sieveOfLocallyInjective J φ (F₁.map f.op x) (F₁.map f.op y) (hS' hf)
-    refine ⟨_, J.transitive hS (Sieve.bind S.1 T) ?_, ?_⟩
-    · intro Y f hf
-      exact J.superset_covering (Sieve.le_pullback_bind S.1 T _ hf)
-        (sieveOfLocallyInjective_mem J φ (F₁.map f.op x) (F₁.map f.op y) (hS' hf))
-    · intro Y f hf
-      obtain ⟨Z, a, g, hg, ha, rfl⟩ := hf
-      simpa using map_apply_eq_of_locallyInjective J φ _ _ (hS' hg) _ ha
-
-lemma locallyInjective_of_locallyInjective [LocallyInjective J (φ ≫ ψ)] :
-    LocallyInjective J φ where
-  locally_injective {X} x y h :=
-      ⟨_, sieveOfLocallyInjective_mem J (φ ≫ ψ) x y
-        (by simpa using congr_arg (ψ.app X) h),
-        map_apply_eq_of_locallyInjective J (φ ≫ ψ) x y _⟩
-
-variable {φ ψ}
-
-lemma locallyInjective_of_locallyInjective_fac {φψ : F₁ ⟶ F₃} (fac : φ ≫ ψ = φψ)
-    [LocallyInjective J φψ] : LocallyInjective J φ := by
-  subst fac
-  exact locallyInjective_of_locallyInjective J φ ψ
-
-lemma locallyInjective_iff_fac {φψ : F₁ ⟶ F₃} (fac : φ ≫ ψ = φψ) [LocallyInjective J ψ] :
-    LocallyInjective J φψ ↔ LocallyInjective J φ := by
-  constructor
-  · intro
-    exact locallyInjective_of_locallyInjective_fac J fac
-  · intro
-    rw [← fac]
-    infer_instance
-
-variable (φ ψ)
-
-lemma locallyInjective_comp_iff [LocallyInjective J ψ] :
-    LocallyInjective J (φ ≫ ψ) ↔ LocallyInjective J φ :=
-  locallyInjective_iff_fac J rfl
-
-instance locallySurjective_comp [LocallySurjective J φ] [LocallySurjective J ψ] :
-    LocallySurjective J (φ ≫ ψ) where
+instance isLocallySurjective_comp [IsLocallySurjective J φ] [IsLocallySurjective J ψ] :
+    IsLocallySurjective J (φ ≫ ψ) where
   locally_surjective {X} x := by
     let S := sieveOfLocallySurjective J ψ x
     let hS : S ∈ J X.unop := sieveOfLocallySurjective_mem J ψ x
@@ -216,18 +117,19 @@ instance locallySurjective_comp [LocallySurjective J φ] [LocallySurjective J ψ
       obtain ⟨Z, a, g, hg, ha, rfl⟩ := hf
       exact ⟨localPreimage J φ (localPreimage J ψ x g hg) a ha, by simp⟩
 
-lemma locallySurjective_of_locallySurjective [LocallySurjective J (φ ≫ ψ)] :
-    LocallySurjective J ψ where
+lemma isLocallySurjective_of_isLocallySurjective [IsLocallySurjective J (φ ≫ ψ)] :
+    IsLocallySurjective J ψ where
   locally_surjective {X} x :=
     ⟨_, sieveOfLocallySurjective_mem J (φ ≫ ψ) x, fun f hf =>
       ⟨φ.app _ (localPreimage J (φ ≫ ψ) x f hf),
         by simpa using app_apply_localPreimage J (φ ≫ ψ) x f hf⟩⟩
 
-lemma locallyInjective_of_locallyInjective_of_locallySurjective
-    [LocallyInjective J (φ ≫ ψ)] [LocallySurjective J φ] :
-    LocallyInjective J ψ where
-  locally_injective {X} x₁ x₂ h := by
-    let S := sieveOfLocallySurjective J φ x₁ ⊓ sieveOfLocallySurjective J φ x₂
+lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective
+    [IsLocallyInjective J (φ ≫ ψ)] [IsLocallySurjective J φ] :
+    IsLocallyInjective J ψ where
+  equalizerSieve_mem {X} x₁ x₂ h := by
+    sorry
+    /-let S := sieveOfLocallySurjective J φ x₁ ⊓ sieveOfLocallySurjective J φ x₂
     have hS : S ∈ J X.unop := by
       apply J.intersection_covering
       all_goals apply sieveOfLocallySurjective_mem
@@ -246,11 +148,11 @@ lemma locallyInjective_of_locallyInjective_of_locallySurjective
       erw [← app_apply_localPreimage J φ x₁ g hg.1, ← app_apply_localPreimage J φ x₂ g hg.2,
         ← NatTrans.naturality_apply, ← NatTrans.naturality_apply,
         map_apply_eq_of_locallyInjective J (φ ≫ ψ) _ _ (hS' _ hg) a ha]
-      rfl
+      rfl-/
 
-lemma locallySurjective_of_locallySurjective_of_locallyInjective
-    [LocallySurjective J (φ ≫ ψ)] [LocallyInjective J ψ] :
-    LocallySurjective J φ where
+lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective
+    [IsLocallySurjective J (φ ≫ ψ)] [IsLocallyInjective J ψ] :
+    IsLocallySurjective J φ where
   locally_surjective {X} x := by
     let S := sieveOfLocallySurjective J (φ ≫ ψ) (ψ.app _ x)
     have hS : S ∈ J X.unop := by apply sieveOfLocallySurjective_mem

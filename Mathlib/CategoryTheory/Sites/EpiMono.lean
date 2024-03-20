@@ -3,9 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.EpiMono
-import Mathlib.CategoryTheory.MorphismProperty
-import Mathlib.CategoryTheory.Sites.EpiMonoFactorization
+--import Mathlib.CategoryTheory.Limits.EpiMono
+--import Mathlib.CategoryTheory.MorphismProperty
+--import Mathlib.CategoryTheory.Sites.EpiMonoFactorization
+import Mathlib.CategoryTheory.Sites.LocallyInjective
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Adjunction.Evaluation
+
 /-!
 # Characterization of mono and epi in the category of sheaves of types
 
@@ -30,11 +34,46 @@ fact is obtained following the argument in SGA 4 II 4.2.
 
 -/
 
-universe w v u
+universe w v' v u' u
 
 namespace CategoryTheory
 
 open Opposite Limits
+
+variable {C : Type u} [Category.{v} C]
+  {D : Type u'} [Category.{v'} D] [ConcreteCategory.{w} D]
+  [(forget D).PreservesMonomorphisms] [HasLimitsOfShape WalkingCospan D]
+  {J : GrothendieckTopology C}
+
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+
+namespace Sheaf
+
+variable {F G : Sheaf J D} (φ : F ⟶ G)
+
+lemma mono_of_injective
+    (hφ : ∀ (X : Cᵒᵖ), Function.Injective (fun (x : F.1.obj X) => φ.1.app _ x)) : Mono φ where
+  right_cancellation := by
+    intro H f₁ f₂ h
+    ext Z x
+    have eq := congr_fun ((forget D).congr_map (congr_app (congr_arg Sheaf.Hom.val h) Z)) x
+    dsimp at eq
+    simp only [FunctorToTypes.map_comp_apply] at eq
+    exact hφ Z eq
+
+lemma mono_iff_injective :
+    Mono φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (fun (x : F.1.obj X) => φ.1.app _ x) := by
+  constructor
+  · intro _ X
+    apply (CategoryTheory.mono_iff_injective ((sheafToPresheaf J D ⋙
+      (evaluation _ _ ).obj X ⋙ forget D).map φ)).1
+    change Mono ((sheafToPresheaf J D ⋙ (evaluation _ _).obj X ⋙ forget D).map φ)
+    infer_instance
+  · apply mono_of_injective
+
+end Sheaf
+
+#exit
 
 namespace Sheaf
 
