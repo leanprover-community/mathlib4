@@ -69,10 +69,12 @@ to a normed space `F`, we have `‖f.lift x‖ ≤ ‖f‖ * injectiveSeminorm x
 
 -/
 
-variable {ι : Type*} [Fintype ι]
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : ι → Type*} [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+universe uι u𝕜 uE uF
+
+variable {ι : Type uι} [Fintype ι]
+variable {𝕜 : Type u𝕜} [NontriviallyNormedField 𝕜]
+variable {E : ι → Type uE} [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+variable {F : Type uF} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open scoped TensorProduct
 
@@ -137,11 +139,11 @@ normed vector spaces `F`. In fact, we only take in the same universe as `⨂[�
 prove in `PiTensorProduct.injectiveSeminorm_bound` that this gives the same result.
 -/
 noncomputable irreducible_def injectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) :=
-  sSup {p | ∃ (G : Type (max (max u_1 u_2) u_3)) (_ : SeminormedAddCommGroup G)
+  sSup {p | ∃ (G : Type (max (max uι u𝕜) uE)) (_ : SeminormedAddCommGroup G)
   (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
   (toDualContinuousMultilinearMap (F := G) (𝕜 := 𝕜) (E := E))}
 
-lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max (max u_1 u_2) u_3))
+lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max (max uι u𝕜) uE))
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
     p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap (F := G) (𝕜 := 𝕜) (E := E))} := by
@@ -165,7 +167,7 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max (max u_1 u_2) u_3
     exact hbound.2 G f)
 
 theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
-    injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max (max u_1 u_2) u_3))
+    injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max (max uι u𝕜) uE))
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
     (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap (F := G) (𝕜 := 𝕜) (E := E))}, p.1 x := by
