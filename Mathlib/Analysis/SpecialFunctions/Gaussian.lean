@@ -280,7 +280,7 @@ theorem continuousAt_gaussian_integral (b : ℂ) (hb : 0 < re b) :
     (Complex.continuous_exp.comp (continuous_id'.neg.mul continuous_const)).continuousAt
   have f_le_bd : ∀ᶠ c : ℂ in 𝓝 b, ∀ᵐ x : ℝ, ‖f c x‖ ≤ exp (-d * x ^ 2) := by
     refine' eventually_of_mem ((continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds hd') _
-    refine' fun c hc => ae_of_all _ fun x => _
+    intro c hc; filter_upwards with x
     rw [norm_cexp_neg_mul_sq]
     gcongr
     exact le_of_lt hc

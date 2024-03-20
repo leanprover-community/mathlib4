@@ -534,7 +534,7 @@ lemma eq_condKernel_of_measure_eq_compProd_real (ρ : Measure (α × ℝ)) [IsFi
     exact ae_all_iff.2 fun q => eq_condKernel_of_measure_eq_compProd' ρ κ hκ measurableSet_Iic
   · filter_upwards [huniv] with x hxuniv t ht heq
     rw [measure_compl ht <| measure_ne_top _ _, heq, hxuniv, measure_compl ht <| measure_ne_top _ _]
-  · refine' ae_of_all _ (fun x f hdisj hf heq => _)
+  · filter_upwards with x f hdisj hf heq
     rw [measure_iUnion hdisj hf, measure_iUnion hdisj hf]
     exact tsum_congr heq
 
@@ -643,7 +643,7 @@ theorem Integrable.integral_norm_condKernel {f : α × Ω → F} (hf_int : Integ
 theorem Integrable.norm_integral_condKernel {f : α × Ω → E} (hf_int : Integrable f ρ) :
     Integrable (fun x => ‖∫ y, f (x, y) ∂ρ.condKernel x‖) ρ.fst := by
   refine' hf_int.integral_norm_condKernel.mono hf_int.1.integral_condKernel.norm _
-  refine' eventually_of_forall fun x => _
+  filter_upwards with x
   rw [norm_norm]
   refine' (norm_integral_le_integral_norm _).trans_eq (Real.norm_of_nonneg _).symm
   exact integral_nonneg_of_ae (eventually_of_forall fun y => norm_nonneg _)
