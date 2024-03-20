@@ -537,7 +537,7 @@ lemma lambda_not_dvd_X : ¬ λ ∣ S.X := by
 lemma coprime_Y_Z : IsCoprime S.Y S.Z := by
   sorry
 
-lemma formula1 : S.u₁ * S.X ^ 3 * λ ^ (3*S.multiplicity-2) + S.u₂ * η * S.Y ^ 3 + S.u₃ * η ^ 2 * S.Z ^ 3 * λ = 0 := by
+lemma formula1 : S.u₁*S.X^3*λ^(3*S.multiplicity-2)+S.u₂*η*S.Y^3+S.u₃*η^2*S.Z^3*λ = 0 := by
   sorry
 
 noncomputable
