@@ -8,20 +8,24 @@ import Lean.Elab
 
 open Lean Meta
 
+#check show_term_elab 1
+
 elab "fast_instance%" arg:term : term <= expectedType => do
   let .some className ← Lean.Meta.isClass? expectedType |
     throwError "Can only be used for classes"
   let ctor := Lean.getStructureCtor (← getEnv) className
-  let provided ← instantiateMVars <|
-    ← Lean.Elab.Term.elabTermEnsuringType (catchExPostpone := false) arg (some expectedType)
-  guard !provided.hasMVar
+  let provided ← Lean.Elab.Term.elabTermEnsuringType arg (some expectedType)
+  Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing
+
   -- TODO: withNewMCtxDepth do
   -- create universe variables
   let levels ← Meta.mkFreshLevelMVarsFor (.ctorInfo ctor)
   let mut e := Expr.const ctor.name levels
   -- get argument types
   let (mvars, binders, _body) ← forallMetaTelescope (← inferType e)
-  guard (← isDefEq _body expectedType)
+  unless (← isDefEq _body expectedType) do
+    Lean.logError "Could not work out type of instance"
+    return provided
   e := mkAppN e mvars
   -- the parameters should haev been assigned by unification
   for arg in mvars.extract 0 ctor.numParams do

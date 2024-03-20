@@ -22,7 +22,7 @@ variable {M S : Type*} [SetLike S M]
 instance (priority := 75) toOrderedCommMonoid [OrderedCommMonoid M]
     [SubmonoidClass S M] (s : S) : OrderedCommMonoid s :=
   fast_instance%
-    Subtype.coe_injective.orderedCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.orderedCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid_class.to_ordered_comm_monoid SubmonoidClass.toOrderedCommMonoid
 #align add_submonoid_class.to_ordered_add_comm_monoid AddSubmonoidClass.toOrderedAddCommMonoid
 
@@ -32,6 +32,7 @@ instance (priority := 75) toOrderedCommMonoid [OrderedCommMonoid M]
       "An `AddSubmonoid` of a `LinearOrderedAddCommMonoid` is a `LinearOrderedAddCommMonoid`."]
 instance (priority := 75) toLinearOrderedCommMonoid [LinearOrderedCommMonoid M]
     [SubmonoidClass S M] (s : S) : LinearOrderedCommMonoid s :=
+  fast_instance%
   Subtype.coe_injective.linearOrderedCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid_class.to_linear_ordered_comm_monoid SubmonoidClass.toLinearOrderedCommMonoid
@@ -43,6 +44,7 @@ instance (priority := 75) toLinearOrderedCommMonoid [LinearOrderedCommMonoid M]
       "An `AddSubmonoid` of an `OrderedCancelAddCommMonoid` is an `OrderedCancelAddCommMonoid`."]
 instance (priority := 75) toOrderedCancelCommMonoid [OrderedCancelCommMonoid M]
     [SubmonoidClass S M] (s : S) : OrderedCancelCommMonoid s :=
+  fast_instance%
   Subtype.coe_injective.orderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid_class.to_ordered_cancel_comm_monoid SubmonoidClass.toOrderedCancelCommMonoid
 #align add_submonoid_class.to_ordered_cancel_add_comm_monoid AddSubmonoidClass.toOrderedCancelAddCommMonoid
@@ -55,6 +57,7 @@ instance (priority := 75) toOrderedCancelCommMonoid [OrderedCancelCommMonoid M]
       a `LinearOrderedCancelAddCommMonoid`."]
 instance (priority := 75) toLinearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid M]
     [SubmonoidClass S M] (s : S) : LinearOrderedCancelCommMonoid s :=
+  fast_instance%
   Subtype.coe_injective.linearOrderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid_class.to_linear_ordered_cancel_comm_monoid SubmonoidClass.toLinearOrderedCancelCommMonoid
@@ -69,6 +72,7 @@ variable {M : Type*}
 /-- A submonoid of an `OrderedCommMonoid` is an `OrderedCommMonoid`. -/
 @[to_additive "An `AddSubmonoid` of an `OrderedAddCommMonoid` is an `OrderedAddCommMonoid`."]
 instance toOrderedCommMonoid [OrderedCommMonoid M] (S : Submonoid M) : OrderedCommMonoid S :=
+  fast_instance%
   Subtype.coe_injective.orderedCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid.to_ordered_comm_monoid Submonoid.toOrderedCommMonoid
 #align add_submonoid.to_ordered_add_comm_monoid AddSubmonoid.toOrderedAddCommMonoid
@@ -78,6 +82,7 @@ instance toOrderedCommMonoid [OrderedCommMonoid M] (S : Submonoid M) : OrderedCo
       "An `AddSubmonoid` of a `LinearOrderedAddCommMonoid` is a `LinearOrderedAddCommMonoid`."]
 instance toLinearOrderedCommMonoid [LinearOrderedCommMonoid M] (S : Submonoid M) :
     LinearOrderedCommMonoid S :=
+  fast_instance%
   Subtype.coe_injective.linearOrderedCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid.to_linear_ordered_comm_monoid Submonoid.toLinearOrderedCommMonoid
@@ -88,7 +93,8 @@ instance toLinearOrderedCommMonoid [LinearOrderedCommMonoid M] (S : Submonoid M)
       "An `AddSubmonoid` of an `OrderedCancelAddCommMonoid` is an `OrderedCancelAddCommMonoid`."]
 instance toOrderedCancelCommMonoid [OrderedCancelCommMonoid M] (S : Submonoid M) :
     OrderedCancelCommMonoid S :=
-  Subtype.coe_injective.orderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance%
+    Subtype.coe_injective.orderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid.to_ordered_cancel_comm_monoid Submonoid.toOrderedCancelCommMonoid
 #align add_submonoid.to_ordered_cancel_add_comm_monoid AddSubmonoid.toOrderedCancelAddCommMonoid
 
@@ -99,8 +105,9 @@ instance toOrderedCancelCommMonoid [OrderedCancelCommMonoid M] (S : Submonoid M)
       a `LinearOrderedCancelAddCommMonoid`."]
 instance toLinearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid M] (S : Submonoid M) :
     LinearOrderedCancelCommMonoid S :=
-  Subtype.coe_injective.linearOrderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance%
+    Subtype.coe_injective.linearOrderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
+      (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid.to_linear_ordered_cancel_comm_monoid Submonoid.toLinearOrderedCancelCommMonoid
 #align add_submonoid.to_linear_ordered_cancel_add_comm_monoid AddSubmonoid.toLinearOrderedCancelAddCommMonoid
 
