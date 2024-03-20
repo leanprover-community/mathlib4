@@ -6,6 +6,7 @@ Authors: Sophie Morel
 import Mathlib.Topology.Algebra.Module.Alternating.Basic
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.LinearAlgebra.PiTensorProduct
+import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # Injective seminorm on the tensor of a finite family of normed spaces.
