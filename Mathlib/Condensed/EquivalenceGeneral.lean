@@ -17,7 +17,7 @@ noncomputable section EffectivePresentation
 structure Functor.EffectivePresentation (X : D) where
   p : C
   f : F.obj p ⟶ X
-  effectiveEpi : IsSplitEpi f
+  effectiveEpi : EffectiveEpi f
 
 class Functor.EffectivelyEnough : Prop where
   presentation : ∀ (X : D), Nonempty (F.EffectivePresentation X)
@@ -40,13 +40,13 @@ from the arbitrarily chosen projective object over `X`.
 def π (X : D) : over F X ⟶ X :=
   (EffectivelyEnough.presentation (F := F) X).some.f
 
-instance π_isSplitEpi (X : D) : IsSplitEpi (π F X) :=
+instance π_effectiveEpi (X : D) : EffectiveEpi (π F X) :=
   (EffectivelyEnough.presentation X).some.effectiveEpi
 
-instance π_effectiveEpi (X : D) : EffectiveEpi (π F X) := by
-  rw [← Category.comp_id (π F X)]
-  infer_instance
-  -- todo: add general split epi -> effective epi instance
+-- instance π_effectiveEpi (X : D) : EffectiveEpi (π F X) := by
+--   rw [← Category.comp_id (π F X)]
+--   infer_instance
+--   -- todo: add general split epi -> effective epi instance
 
 end Projective'
 
@@ -105,7 +105,11 @@ theorem coverDense.inducedTopology_Sieve_iff_EffectiveEpiFamily (X : C) (S : Sie
     refine ⟨α, inferInstance, ?_⟩
     let Z : α → C := fun a ↦ (Functor.EffectivelyEnough.presentation (F := F) (Y a)).some.p
     let g₀ : (a : α) → F.obj (Z a) ⟶ Y a := fun a ↦ Projective'.π F (Y a)
-    have : EffectiveEpiFamily _ (fun a ↦ g₀ a ≫ π a) := inferInstance
+    have : ∀ a, EffectiveEpi (g₀ a) := inferInstance
+    simp_rw [effectiveEpi_iff_effectiveEpiFamily] at this
+    have : EffectiveEpiFamily _ (fun a ↦ g₀ a ≫ π a) := by
+      have := EffectiveEpiFamily.transitive_of_finite (β := fun a ↦ Unit) _ H₁ _ this
+      sorry
     refine ⟨Z , fun a ↦ Full.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (Full.preimage _))⟩
     · refine F.finite_effectiveEpiFamily_of_map _ _ ?_
       simpa using this
