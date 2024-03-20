@@ -135,7 +135,7 @@ theorem uniformContinuous_pow_const (n : ℕ) : UniformContinuous fun x : α => 
 theorem UniformContinuous.zpow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℤ, UniformContinuous fun x => f x ^ n
   | (n : ℕ) => by
-    simp_rw [zpow_coe_nat]
+    simp_rw [zpow_natCast]
     exact hf.pow_const _
   | Int.negSucc n => by
     simp_rw [zpow_negSucc]
@@ -715,12 +715,10 @@ open Filter Set Function
 section
 
 variable {α : Type*} {β : Type*} {hom : Type*}
-
 variable [TopologicalSpace α] [Group α] [TopologicalGroup α]
 
 -- β is a dense subgroup of α, inclusion is denoted by e
 variable [TopologicalSpace β] [Group β]
-
 variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom} (de : DenseInducing e)
 
 @[to_additive]
@@ -743,29 +741,19 @@ end
 namespace DenseInducing
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
-
 variable {G : Type*}
 
 -- β is a dense subgroup of α, inclusion is denoted by e
 -- δ is a dense subgroup of γ, inclusion is denoted by f
 variable [TopologicalSpace α] [AddCommGroup α] [TopologicalAddGroup α]
-
 variable [TopologicalSpace β] [AddCommGroup β] [TopologicalAddGroup β]
-
 variable [TopologicalSpace γ] [AddCommGroup γ] [TopologicalAddGroup γ]
-
 variable [TopologicalSpace δ] [AddCommGroup δ] [TopologicalAddGroup δ]
-
 variable [UniformSpace G] [AddCommGroup G] [UniformAddGroup G] [T0Space G] [CompleteSpace G]
-
 variable {e : β →+ α} (de : DenseInducing e)
-
 variable {f : δ →+ γ} (df : DenseInducing f)
-
 variable {φ : β →+ δ →+ G}
-
 variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
-
 variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
 
 private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ x ∈ U₂, ∀ x' ∈ U₂,

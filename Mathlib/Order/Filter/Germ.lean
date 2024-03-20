@@ -688,7 +688,7 @@ theorem coe_smul' [SMul M β] (c : α → M) (f : α → β) : ↑(c • f) = (c
 
 @[to_additive]
 instance mulAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) where
-  -- Porting note: `rfl` required.
+  -- Porting note (#11441): `rfl` required.
   one_smul f :=
     inductionOn f fun f => by
       norm_cast
@@ -702,7 +702,7 @@ instance mulAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) where
 
 @[to_additive]
 instance mulAction' [Monoid M] [MulAction M β] : MulAction (Germ l M) (Germ l β) where
-  -- Porting note: `rfl` required.
+  -- Porting note (#11441): `rfl` required.
   one_smul f := inductionOn f fun f => by simp only [← coe_one, ← coe_smul', one_smul]
   mul_smul c₁ c₂ f :=
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
@@ -714,7 +714,7 @@ instance mulAction' [Monoid M] [MulAction M β] : MulAction (Germ l M) (Germ l �
 
 instance distribMulAction [Monoid M] [AddMonoid N] [DistribMulAction M N] :
     DistribMulAction M (Germ l N) where
-  -- Porting note: `rfl` required.
+  -- Porting note (#11441): `rfl` required.
   smul_add c f g :=
     inductionOn₂ f g fun f g => by
       norm_cast
@@ -724,7 +724,7 @@ instance distribMulAction [Monoid M] [AddMonoid N] [DistribMulAction M N] :
 
 instance distribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
     DistribMulAction (Germ l M) (Germ l N) where
-  -- Porting note: `rfl` required.
+  -- Porting note (#11441): `rfl` required.
   smul_add c f g :=
     inductionOn₃ c f g fun c f g => by
       norm_cast
@@ -734,7 +734,7 @@ instance distribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
 #align filter.germ.distrib_mul_action' Filter.Germ.distribMulAction'
 
 instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ l M) where
-  -- Porting note: `rfl` required.
+  -- Porting note (#11441): `rfl` required.
   add_smul c₁ c₂ f :=
     inductionOn f fun f => by
       norm_cast
@@ -747,7 +747,7 @@ instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ l M
       rfl
 
 instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module (Germ l R) (Germ l M) where
-  -- Porting note: `rfl` required.
+  -- Porting note (#11441): `rfl` required.
   add_smul c₁ c₂ f :=
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
       norm_cast

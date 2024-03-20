@@ -353,12 +353,12 @@ theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
 theorem openEmbedding_exp : OpenEmbedding exp :=
   isOpen_Ioi.openEmbedding_subtype_val.comp expOrderIso.toHomeomorph.openEmbedding
 
--- Porting note: new lemma;
+-- Porting note (#10756): new lemma;
 -- Porting note (#11215): TODO: backport & make `@[simp]`
 theorem map_exp_nhds (x : ℝ) : map exp (𝓝 x) = 𝓝 (exp x) :=
   openEmbedding_exp.map_nhds_eq x
 
--- Porting note: new lemma;
+-- Porting note (#10756): new lemma;
 -- Porting note (#11215): TODO: backport & make `@[simp]`
 theorem comap_exp_nhds_exp (x : ℝ) : comap exp (𝓝 (exp x)) = 𝓝 x :=
   (openEmbedding_exp.nhds_eq_comap x).symm
@@ -392,7 +392,7 @@ theorem isLittleO_exp_comp_exp_comp {f g : α → ℝ} :
     imp_true_iff, tendsto_exp_comp_nhds_zero, neg_sub]
 #align real.is_o_exp_comp_exp_comp Real.isLittleO_exp_comp_exp_comp
 
--- Porting note: @[simp] can prove:  by simp only [@Asymptotics.isLittleO_one_left_iff,
+-- Porting note (#10618): @[simp] can prove:  by simp only [@Asymptotics.isLittleO_one_left_iff,
 --   Real.norm_eq_abs, Real.abs_exp, @Real.tendsto_exp_comp_atTop]
 theorem isLittleO_one_exp_comp {f : α → ℝ} :
     ((fun _ => 1 : α → ℝ) =o[l] fun x => exp (f x)) ↔ Tendsto f l atTop := by

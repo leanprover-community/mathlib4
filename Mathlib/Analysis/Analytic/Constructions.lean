@@ -25,15 +25,12 @@ open Topology BigOperators NNReal Filter ENNReal
 open Set Filter Asymptotics
 
 variable {α : Type*}
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H]
   [NormedSpace 𝕜 H]
 
 variable {𝕝 : Type*} [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
-
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 
 /-!
