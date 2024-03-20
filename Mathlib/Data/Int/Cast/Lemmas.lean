@@ -108,7 +108,7 @@ section Ring
 variable [Ring α]
 
 @[simp] lemma _root_.zsmul_eq_mul (a : α) : ∀ n : ℤ, n • a = n * a
-  | (n : ℕ) => by rw [coe_nat_zsmul, nsmul_eq_mul, Int.cast_ofNat]
+  | (n : ℕ) => by rw [natCast_zsmul, nsmul_eq_mul, Int.cast_ofNat]
   | -[n+1] => by simp [Nat.cast_succ, neg_add_rev, Int.cast_negSucc, add_mul]
 #align zsmul_eq_mul zsmul_eq_mul
 
@@ -521,9 +521,9 @@ theorem int_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
 #align pi.int_apply Pi.int_apply
 
 @[simp]
-theorem coe_int (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
+theorem intCast (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
   rfl
-#align pi.coe_int Pi.coe_int
+#align pi.coe_int Pi.intCast
 
 end Pi
 

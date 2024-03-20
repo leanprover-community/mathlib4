@@ -558,8 +558,8 @@ theorem one_lt_coe_iff : 1 < (↑p : ℝ≥0∞) ↔ 1 < p := coe_lt_coe
 #align ennreal.one_lt_coe_iff ENNReal.one_lt_coe_iff
 
 @[simp, norm_cast]
-theorem coe_nat (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
-#align ennreal.coe_nat ENNReal.coe_nat
+theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
+#align ennreal.coe_nat ENNReal.coe_natCast
 
 @[simp, norm_cast] lemma ofReal_coe_nat (n : ℕ) : ENNReal.ofReal n = n := by simp [ENNReal.ofReal]
 #align ennreal.of_real_coe_nat ENNReal.ofReal_coe_nat
@@ -569,10 +569,10 @@ theorem coe_nat (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
     ENNReal.ofReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   ofReal_coe_nat n
 
-@[simp] theorem nat_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.nat_ne_top n
+@[simp] theorem nat_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := natCast_ne_top n
 #align ennreal.nat_ne_top ENNReal.nat_ne_top
 
-@[simp] theorem top_ne_nat (n : ℕ) : ∞ ≠ n := WithTop.top_ne_nat n
+@[simp] theorem top_ne_nat (n : ℕ) : ∞ ≠ n := top_ne_natCast n
 #align ennreal.top_ne_nat ENNReal.top_ne_nat
 
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
@@ -580,7 +580,7 @@ theorem coe_nat (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
 
 @[simp, norm_cast]
 theorem toNNReal_nat (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
-  rw [← ENNReal.coe_nat n, ENNReal.toNNReal_coe]
+  rw [← ENNReal.coe_natCast n, ENNReal.toNNReal_coe]
 #align ennreal.to_nnreal_nat ENNReal.toNNReal_nat
 
 @[simp, norm_cast]
@@ -667,12 +667,12 @@ theorem le_of_forall_pos_le_add (h : ∀ ε : ℝ≥0, 0 < ε → b < ∞ → a 
   exact ⟨r, hr0, h.trans_le le_top, hr⟩
 #align ennreal.le_of_forall_pos_le_add ENNReal.le_of_forall_pos_le_add
 
-theorem coe_nat_lt_coe {n : ℕ} : (n : ℝ≥0∞) < r ↔ ↑n < r :=
-  ENNReal.coe_nat n ▸ coe_lt_coe
-#align ennreal.coe_nat_lt_coe ENNReal.coe_nat_lt_coe
+theorem natCast_lt_coe {n : ℕ} : (n : ℝ≥0∞) < r ↔ ↑n < r :=
+  ENNReal.coe_natCast n ▸ coe_lt_coe
+#align ennreal.coe_nat_lt_coe ENNReal.natCast_lt_coe
 
 theorem coe_lt_coe_nat {n : ℕ} : (r : ℝ≥0∞) < n ↔ r < n :=
-  ENNReal.coe_nat n ▸ coe_lt_coe
+  ENNReal.coe_natCast n ▸ coe_lt_coe
 #align ennreal.coe_lt_coe_nat ENNReal.coe_lt_coe_nat
 
 protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, r < n := by

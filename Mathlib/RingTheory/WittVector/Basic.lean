@@ -195,7 +195,7 @@ private theorem ghostFun_add : ghostFun (x + y) = ghostFun x + ghostFun y := by
 private theorem ghostFun_nat_cast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.unaryCast = _ by
     induction i <;>
-      simp [*, Nat.unaryCast, ghostFun_zero, ghostFun_one, ghostFun_add, -Pi.coe_nat]
+      simp [*, Nat.unaryCast, ghostFun_zero, ghostFun_one, ghostFun_add, -Pi.natCast_def]
 
 private theorem ghostFun_sub : ghostFun (x - y) = ghostFun x - ghostFun y := by
   ghost_fun_tac X 0 - X 1, ![x.coeff, y.coeff]
@@ -207,7 +207,7 @@ private theorem ghostFun_neg : ghostFun (-x) = -ghostFun x := by ghost_fun_tac -
 
 private theorem ghostFun_int_cast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.castDef = _ by
-    cases i <;> simp [*, Int.castDef, ghostFun_nat_cast, ghostFun_neg, -Pi.coe_nat, -Pi.coe_int]
+    cases i <;> simp [*, Int.castDef, ghostFun_nat_cast, ghostFun_neg, -Pi.natCast, -Pi.intCast]
 
 private theorem ghostFun_nsmul (m : ℕ) : ghostFun (m • x) = m • ghostFun x := by
   --  porting note: I had to add the explicit type ascription.

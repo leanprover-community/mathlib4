@@ -373,14 +373,14 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
       simp only -- Porting note: Had to add this...?
       rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one] }
 
-@[simp, norm_cast] lemma coe_nat (n : ℕ) : ((n : α) : WithTop α) = n := rfl
-#align with_top.coe_nat WithTop.coe_nat
+@[simp, norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithTop α) = n := rfl
+#align with_top.coe_nat WithTop.coe_natCast
 
-@[simp] lemma nat_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
-#align with_top.nat_ne_top WithTop.nat_ne_top
+@[simp] lemma natCast_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
+#align with_top.nat_ne_top WithTop.natCast_ne_top
 
-@[simp] lemma top_ne_nat (n : ℕ) : (⊤ : WithTop α) ≠ n := top_ne_coe
-#align with_top.top_ne_nat WithTop.top_ne_nat
+@[simp] lemma top_ne_natCast (n : ℕ) : (⊤ : WithTop α) ≠ n := top_ne_coe
+#align with_top.top_ne_nat WithTop.top_ne_natCast
 
 end AddMonoidWithOne
 
@@ -569,14 +569,14 @@ variable [AddMonoidWithOne α]
 
 instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWithOne
 
-@[norm_cast] lemma coe_nat (n : ℕ) : ((n : α) : WithBot α) = n := rfl
-#align with_bot.coe_nat WithBot.coe_nat
+@[norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithBot α) = n := rfl
+#align with_bot.coe_nat WithBot.coe_natCast
 
-@[simp] lemma nat_ne_bot (n : ℕ) : (n : WithBot α) ≠ ⊥ := coe_ne_bot
-#align with_bot.nat_ne_bot WithBot.nat_ne_bot
+@[simp] lemma natCast_ne_bot (n : ℕ) : (n : WithBot α) ≠ ⊥ := coe_ne_bot
+#align with_bot.nat_ne_bot WithBot.natCast_ne_bot
 
-@[simp] lemma bot_ne_nat (n : ℕ) : (⊥ : WithBot α) ≠ n := bot_ne_coe
-#align with_bot.bot_ne_nat WithBot.bot_ne_nat
+@[simp] lemma bot_ne_natCast (n : ℕ) : (⊥ : WithBot α) ≠ n := bot_ne_coe
+#align with_bot.bot_ne_nat WithBot.bot_ne_natCast
 
 end AddMonoidWithOne
 

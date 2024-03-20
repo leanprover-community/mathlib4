@@ -269,7 +269,7 @@ theorem sub_apply : (f - g) x = f x - g x :=
 
 @[simp]
 theorem coe_zsmulRec : ∀ z, ⇑(zsmulRec z f) = z • ⇑f
-  | Int.ofNat n => by rw [zsmulRec, Int.ofNat_eq_coe, coe_nsmulRec, coe_nat_zsmul]
+  | Int.ofNat n => by rw [zsmulRec, Int.ofNat_eq_coe, coe_nsmulRec, natCast_zsmul]
   | Int.negSucc n => by rw [zsmulRec, negSucc_zsmul, coe_neg, coe_nsmulRec]
 #align zero_at_infty_continuous_map.coe_zsmul_rec ZeroAtInftyContinuousMap.coe_zsmulRec
 

@@ -213,7 +213,7 @@ theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ
     obtain ⟨n, hn⟩ : ∃ n : ℕ, b < n * μ (φ ⁻¹' {∞}) := exists_nat_mul_gt h_meas (ne_of_lt hb)
     use (const α (n : ℝ≥0)).restrict (φ ⁻¹' {∞})
     simp only [lt_iSup_iff, exists_prop, coe_restrict, φ.measurableSet_preimage, coe_const,
-      ENNReal.coe_indicator, map_coe_ennreal_restrict, SimpleFunc.map_const, ENNReal.coe_nat,
+      ENNReal.coe_indicator, map_coe_ennreal_restrict, SimpleFunc.map_const, ENNReal.coe_natCast,
       restrict_const_lintegral]
     refine' ⟨indicator_le fun x hx => le_trans _ (hφ _), hn⟩
     simp only [mem_preimage, mem_singleton_iff] at hx

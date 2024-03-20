@@ -273,18 +273,18 @@ instance nontrivial : Nontrivial (ℤ√d) :=
   ⟨⟨0, 1, (Zsqrtd.ext_iff 0 1).not.mpr (by simp)⟩⟩
 
 @[simp]
-theorem coe_nat_re (n : ℕ) : (n : ℤ√d).re = n :=
+theorem re_natCast (n : ℕ) : (n : ℤ√d).re = n :=
   rfl
-#align zsqrtd.coe_nat_re Zsqrtd.coe_nat_re
+#align zsqrtd.coe_nat_re Zsqrtd.re_natCast
 
 @[simp]
 theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).re = n :=
   rfl
 
 @[simp]
-theorem coe_nat_im (n : ℕ) : (n : ℤ√d).im = 0 :=
+theorem im_natCast (n : ℕ) : (n : ℤ√d).im = 0 :=
   rfl
-#align zsqrtd.coe_nat_im Zsqrtd.coe_nat_im
+#align zsqrtd.coe_nat_im Zsqrtd.im_natCast
 
 @[simp]
 theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).im = 0 :=
@@ -295,12 +295,12 @@ theorem coe_nat_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=
 #align zsqrtd.coe_nat_val Zsqrtd.coe_nat_val
 
 @[simp]
-theorem coe_int_re (n : ℤ) : (n : ℤ√d).re = n := by cases n <;> rfl
-#align zsqrtd.coe_int_re Zsqrtd.coe_int_re
+theorem re_intCast (n : ℤ) : (n : ℤ√d).re = n := by cases n <;> rfl
+#align zsqrtd.coe_int_re Zsqrtd.re_intCast
 
 @[simp]
-theorem coe_int_im (n : ℤ) : (n : ℤ√d).im = 0 := by cases n <;> rfl
-#align zsqrtd.coe_int_im Zsqrtd.coe_int_im
+theorem im_intCast (n : ℤ) : (n : ℤ√d).im = 0 := by cases n <;> rfl
+#align zsqrtd.coe_int_im Zsqrtd.im_intCast
 
 theorem coe_int_val (n : ℤ) : (n : ℤ√d) = ⟨n, 0⟩ := by ext <;> simp
 #align zsqrtd.coe_int_val Zsqrtd.coe_int_val
@@ -359,8 +359,8 @@ protected theorem coe_int_inj {m n : ℤ} (h : (↑m : ℤ√d) = ↑n) : m = n 
 theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
   constructor
   · rintro ⟨x, rfl⟩
-    simp only [add_zero, coe_int_re, zero_mul, mul_im, dvd_mul_right, and_self_iff,
-      mul_re, mul_zero, coe_int_im]
+    simp only [add_zero, re_intCast, zero_mul, mul_im, dvd_mul_right, and_self_iff,
+      mul_re, mul_zero, im_intCast]
   · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
     use ⟨r, i⟩
     rw [smul_val, Zsqrtd.ext_iff]
@@ -372,8 +372,8 @@ theorem coe_int_dvd_coe_int (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
   rw [coe_int_dvd_iff]
   constructor
   · rintro ⟨hre, -⟩
-    rwa [coe_int_re] at hre
-  · rw [coe_int_re, coe_int_im]
+    rwa [re_intCast] at hre
+  · rw [re_intCast, im_intCast]
     exact fun hc => ⟨hc, dvd_zero a⟩
 #align zsqrtd.coe_int_dvd_coe_int Zsqrtd.coe_int_dvd_coe_int
 
@@ -1068,7 +1068,7 @@ theorem lift_injective [CharZero R] {d : ℤ} (r : { r : R // r * r = ↑d })
   (injective_iff_map_eq_zero (lift r)).mpr fun a ha => by
     have h_inj : Function.Injective ((↑) : ℤ → R) := Int.cast_injective
     suffices lift r a.norm = 0 by
-      simp only [coe_int_re, add_zero, lift_apply_apply, coe_int_im, Int.cast_zero,
+      simp only [re_intCast, add_zero, lift_apply_apply, im_intCast, Int.cast_zero,
         zero_mul] at this
       rwa [← Int.cast_zero, h_inj.eq_iff, norm_eq_zero hd] at this
     rw [norm_eq_mul_conj, RingHom.map_mul, ha, zero_mul]

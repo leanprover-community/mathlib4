@@ -435,7 +435,7 @@ theorem antilipschitzWith_equiv_aux :
         simp only [nsmul_eq_mul, Finset.card_univ, ENNReal.rpow_one, Finset.sum_const,
           ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel]
         have : (Fintype.card ι : ℝ≥0∞) = (Fintype.card ι : ℝ≥0) :=
-          (ENNReal.coe_nat (Fintype.card ι)).symm
+          (ENNReal.coe_natCast (Fintype.card ι)).symm
         rw [this, ENNReal.coe_rpow_of_nonneg _ nonneg]
 #align pi_Lp.antilipschitz_with_equiv_aux PiLp.antilipschitzWith_equiv_aux
 

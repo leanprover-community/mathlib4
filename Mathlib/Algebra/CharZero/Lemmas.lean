@@ -189,7 +189,7 @@ namespace WithTop
 instance {R : Type*} [AddMonoidWithOne R] [CharZero R] :
     CharZero (WithTop R) where
   cast_injective m n h := by
-    rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
+    rwa [← coe_natCast, ← coe_natCast n, coe_eq_coe, Nat.cast_inj] at h
 
 end WithTop
 
@@ -198,7 +198,7 @@ namespace WithBot
 instance {R : Type*} [AddMonoidWithOne R] [CharZero R] :
     CharZero (WithBot R) where
   cast_injective m n h := by
-    rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
+    rwa [← coe_natCast, ← coe_natCast n, coe_eq_coe, Nat.cast_inj] at h
 
 end WithBot
 

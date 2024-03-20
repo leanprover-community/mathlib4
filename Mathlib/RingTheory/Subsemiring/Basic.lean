@@ -41,6 +41,7 @@ variable {S R : Type*} [AddMonoidWithOne R] [SetLike S R] (s : S)
 theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
   induction n <;> simp [zero_mem, add_mem, one_mem, *]
 #align nat_cast_mem natCast_mem
+#align coe_nat_mem natCast_mem
 
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
@@ -76,11 +77,6 @@ instance (priority := 100) SubsemiringClass.addSubmonoidWithOneClass (S : Type*)
 #align subsemiring_class.add_submonoid_with_one_class SubsemiringClass.addSubmonoidWithOneClass
 
 variable [SetLike S R] [hSR : SubsemiringClass S R] (s : S)
-
-theorem coe_nat_mem (n : ℕ) : (n : R) ∈ s := by
-  rw [← nsmul_one]
-  exact nsmul_mem (one_mem _) _
-#align coe_nat_mem coe_nat_mem
 
 namespace SubsemiringClass
 
@@ -617,7 +613,7 @@ instance : CompleteLattice (Subsemiring R) :=
     bot := ⊥
     bot_le := fun s _ hx =>
       let ⟨n, hn⟩ := mem_bot.1 hx
-      hn ▸ coe_nat_mem s n
+      hn ▸ natCast_mem s n
     top := ⊤
     le_top := fun _ _ _ => trivial
     inf := (· ⊓ ·)

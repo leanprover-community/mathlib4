@@ -902,7 +902,7 @@ theorem convexBodySum_volume :
         ofReal_pow (by positivity), ofReal_div_of_pos zero_lt_two, ofReal_ofNat,
         ← NNReal.coe_real_pi, ofReal_coe_nnreal, coe_div (Nat.cast_ne_zero.mpr
         (Nat.factorial_ne_zero _)), coe_mul, coe_pow, coe_pow, coe_ofNat, coe_div two_ne_zero,
-        coe_ofNat, coe_nat]
+        coe_ofNat, coe_natCast]
     calc
       _ = (∫ x : {w : InfinitePlace K // IsReal w} → ℝ, ∏ w, exp (- ‖x w‖)) *
               (∫ x : {w : InfinitePlace K // IsComplex w} → ℂ, ∏ w, exp (- 2 * ‖x w‖)) := by
