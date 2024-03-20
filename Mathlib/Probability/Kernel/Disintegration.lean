@@ -66,7 +66,7 @@ noncomputable def condKernelReal (ρ : Measure (α × ℝ)) : kernel α ℝ wher
 #align probability_theory.cond_kernel_real ProbabilityTheory.condKernelReal
 
 instance (ρ : Measure (α × ℝ)) : IsMarkovKernel (condKernelReal ρ) :=
-  ⟨fun a => by rw [condKernelReal]; exact instIsProbabilityMeasure ρ a⟩
+  ⟨fun a => by rw [condKernelReal]; exact instIsProbabilityMeasure_condCDF ρ a⟩
 
 theorem condKernelReal_Iic (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) :
     condKernelReal ρ a (Iic x) = ENNReal.ofReal (condCDF ρ a x) :=
