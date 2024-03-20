@@ -298,7 +298,7 @@ theorem isRightDescent_inv_iff (w : W) (i : B) :
     cs.IsRightDescent w⁻¹ i ↔ cs.IsLeftDescent w i := by
   simpa using (cs.isLeftDescent_inv_iff w⁻¹ i).symm
 
-theorem exists_leftDescent_of_ne_one (w : W) (hw : w ≠ 1) : ∃ i : B, cs.IsLeftDescent w i := by
+theorem exists_leftDescent_of_ne_one {w : W} (hw : w ≠ 1) : ∃ i : B, cs.IsLeftDescent w i := by
   rcases cs.exists_reduced_word w with ⟨ω, h, rfl⟩
   have h₁ : ω ≠ [] := by rintro rfl; simp at hw
   rcases List.exists_cons_of_ne_nil h₁ with ⟨i, ω', rfl⟩
@@ -308,7 +308,7 @@ theorem exists_leftDescent_of_ne_one (w : W) (hw : w ≠ 1) : ∃ i : B, cs.IsLe
     ℓ (π ω') ≤ ω'.length                := cs.length_wordProd_le ω'
     _        < (i :: ω').length         := by simp
 
-theorem exists_rightDescent_of_ne_one (w : W) (hw : w ≠ 1) : ∃ i : B, cs.IsRightDescent w i := by
+theorem exists_rightDescent_of_ne_one {w : W} (hw : w ≠ 1) : ∃ i : B, cs.IsRightDescent w i := by
   simp only [← isLeftDescent_inv_iff]
   apply exists_leftDescent_of_ne_one
   simpa
