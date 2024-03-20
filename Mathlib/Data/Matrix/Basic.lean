@@ -201,6 +201,12 @@ instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
 instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
   Fintype.decidablePiFintype
 
+instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fintype α] :
+    Fintype (Matrix m n α) := inferInstanceAs (Fintype (m → n → α))
+
+instance {n m} [Finite m] [Finite n] (α) [Finite α] :
+    Finite (Matrix m n α) := inferInstanceAs (Finite (m → n → α))
+
 instance add [Add α] : Add (Matrix m n α) :=
   Pi.instAdd
 
