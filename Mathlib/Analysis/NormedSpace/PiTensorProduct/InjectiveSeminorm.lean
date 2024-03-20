@@ -157,8 +157,6 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max (max u_1 u_2) u_3
   intro x
   rw [← hq.2]
   obtain ⟨⟨G, G₁, ⟨G₂, h⟩⟩⟩ := hq
-  letI := G₁
-  letI := G₂
   rw [h]
   simp only [Seminorm.comp_apply, ge_iff_le]
   let hbound := Classical.choose_spec (toDualMultilinearMap_bound x)
