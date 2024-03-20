@@ -182,6 +182,11 @@ theorem constFormalMultilinearSeries_radius {v : F} :
     (by simp [constFormalMultilinearSeries])
 #align formal_multilinear_series.const_formal_multilinear_series_radius FormalMultilinearSeries.constFormalMultilinearSeries_radius
 
+/-- `0` has infinite radius of convergence -/
+@[simp] lemma zero_radius : (0 : FormalMultilinearSeries 𝕜 E F).radius = ∞ := by
+  rw [← constFormalMultilinearSeries_zero]
+  exact constFormalMultilinearSeries_radius
+
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` tends to zero exponentially:
 for some `0 < a < 1`, `‖p n‖ rⁿ = o(aⁿ)`. -/
 theorem isLittleO_of_lt_radius (h : ↑r < p.radius) :
