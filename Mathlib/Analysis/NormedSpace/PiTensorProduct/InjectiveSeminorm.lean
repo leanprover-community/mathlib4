@@ -11,7 +11,7 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 /-!
 # Injective seminorm on the tensor of a finite family of normed spaces.
 
-Let `𝕜` be a nontrivially normed field and `E i` be a family of normed `𝕜`-vector spaces,
+Let `𝕜` be a nontrivially normed field and `E` be a family of normed `𝕜`-vector spaces `E i`,
 indexed by a finite type `ι`. We define a seminorm on `⨂[𝕜] i, E i`, which we call the
 "injective seminorm". It is chosen to satisfy the following property: for every
 normed `𝕜`-vector space `F`, the linear equivalence
@@ -21,7 +21,7 @@ expressing the universal property of the tensor product induces an isometric lin
 
 The idea is the following: Every normed `𝕜`-vector space `F` defines a linear map
 from `⨂[𝕜] i, E i` to `ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] F`, which sends `x` to the map
-`f.lift ↦ f x`. We prove in `toDualMultilinearMap_bound` that this map lands in
+`f ↦ f.lift x`. We prove in `toDualMultilinearMap_bound` that this map lands in
 `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F`. As this last space has a natural operator (semi)norm,
 we get an induced seminorm on `⨂[𝕜] i, E i`. We then take the `sup` of these seminorms as
 `F` varies; by `dualSeminorms_bounded`, this family of seminorms is bounded, so the `sup`
@@ -29,7 +29,45 @@ has good properties.
 
 In fact, we cannot take the `sup` over all normed spaces `F` because of set-theoretical issues,
 so we only take spaces `F` in the same universe as `⨂[𝕜] i, E i`. We then prove in
-`injectiveSeminorm_bound` that this gives the same result.
+`injectiveSeminorm_bound` that this gives the same result, because every multilinear map
+from `E` to `F` factors though a normed vector space in the same universe as
+`⨂[𝕜] i, E i`.
+
+We then prove the universal property and the functoriality of `⨂[𝕜] i, E i` as a normed vector
+space.
+
+-- TODO: If all `E i` are separated and satisfy `SeparatingDual`, then the seminorm on
+`⨂[𝕜] i, E i` is a norm. This uses the construction of a basis of the `PiTensorProduct`, hence
+depends on PR #11156. It should probably go in a separate file.
+
+## Main definitions
+
+* `PiTensorProduct.toDualContinuousMultilinearMap`: The `𝕜`-linear map from
+`⨂[𝕜] i, E i` to `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F` sending `x` to the map
+`f ↦ f x`.
+* `PiTensorProduct.injectiveSeminorm`: The injective seminorm on `⨂[𝕜] i, E i`.
+* `PiTensorProduct.liftEquiv`: The bijection between `ContinuousMultilinearMap 𝕜 E F`
+and `(⨂[𝕜] i, E i) →L[𝕜] F`, as a continuous linear equivalence.
+* `PiTensorProduct.liftIsometry`: The bijection between `ContinuousMultilinearMap 𝕜 E F`
+and `(⨂[𝕜] i, E i) →L[𝕜] F`, as an isometric linear equivalence.
+* `PiTensorProduct.tprodL`: The cacnonical continuous multilinear map from `E`
+to `⨂[𝕜] i, E i`.
+* `PiTensorProduct.mapL`: The continuous linear map from `⨂[𝕜] i, E i` to `⨂[i] i, F i`
+induced by a family of continuous linear maps `E i →L[𝕜] F i`.
+* `PiTensorProduct.mapLMultilinear`: The continuous multilinear map from
+`fun i ↦ (E i →L[𝕜] F i)` to `(⨂[𝕜] i, E i) →L[𝕜] (⨂[𝕜] i, F i)` sending a family
+`f` to `PiTensorProduct.mapL f`.
+
+## Main results
+
+* `PiTensorProduct.injectiveSeminorm_bound`: The main property of the injective seminorm on
+`⨂[𝕜] i, E i`: for every `x` in `⨂[𝕜] i, E i` and every continuous multilinear map `f` from `E`
+to a normed space `F`, we have `‖f.lift  x‖ ≤ ‖f‖ * injectiveSeminorm x `.
+* `PiTensorProduct.mapL_opNorm`: If `f` is a family of continuous linear maps
+`f i : E i →L[𝕜] F i`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖f i‖`.
+* `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vecteor space, then
+`‖mapLMultilinear 𝕜 E F‖ ≤ 1`.
+
 -/
 
 variable {ι : Type*} [Fintype ι]
@@ -69,6 +107,8 @@ lemma toDualMultilinearMap_bound (x : ⨂[𝕜] i, E i) :
       rw [map_add, add_mul]
       refine le_trans (norm_add_le _ _) (add_le_add (hCx.2 _ f) (hCy.2 _ f))
 
+/-- The linear map from `⨂[𝕜] i, E i` to `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F` sending
+`x` in `⨂[𝕜] i, E i` to the map `f ↦ f.lift x`.-/
 @[simps!]
 noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[𝕜]
     ContinuousMultilinearMap 𝕜 E F →L[𝕜] F where
