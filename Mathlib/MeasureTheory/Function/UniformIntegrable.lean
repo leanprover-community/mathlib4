@@ -952,7 +952,7 @@ theorem uniformIntegrable_average
       exact Finset.sum_le_card_nsmul _ _ _ fun i _ => hC i
     · simp only [ENNReal.coe_eq_zero, inv_eq_zero, Nat.cast_eq_zero] at hn
       rw [nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_natCast,
-        ENNReal.inv_mul_cancel _ (natCast_ne_top _), one_mul]
+        ENNReal.inv_mul_cancel _ (ENNReal.natCast_ne_top _), one_mul]
       all_goals simpa only [Ne.def, Nat.cast_eq_zero]
 
 /-- The averaging of a uniformly integrable real-valued sequence is also uniformly integrable. -/

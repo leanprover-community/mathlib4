@@ -357,7 +357,7 @@ def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
         _ = 1 := by
           rw [← Nat.cast_sum, Multiset.toFinset_sum_count_eq s,
             ENNReal.inv_mul_cancel (Nat.cast_ne_zero.2 (hs ∘ Multiset.card_eq_zero.1))
-              (natCast_ne_top _)]
+              (ENNReal.natCast_ne_top _)]
         )⟩
 #align pmf.of_multiset PMF.ofMultiset
 
@@ -379,7 +379,7 @@ theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support �
 
 theorem ofMultiset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofMultiset s hs a = 0 := by
   simpa only [ofMultiset_apply, ENNReal.div_eq_zero_iff, Nat.cast_eq_zero, Multiset.count_eq_zero,
-    natCast_ne_top, or_false_iff] using ha
+    ENNReal.natCast_ne_top, or_false_iff] using ha
 #align pmf.of_multiset_apply_of_not_mem PMF.ofMultiset_apply_of_not_mem
 
 section Measure
