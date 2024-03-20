@@ -379,10 +379,11 @@ lemma ex_dvd_a_add_b : ∃ (a' b' : 𝓞 K), a' ^ 3 + b' ^ 3 = S.u * S.c ^ 3 ∧
     · rw [mul_comm _ x, ← mul_assoc, ← hx, mul_comm _ S.b, mul_assoc, ← pow_succ',
         hζ.toInteger_cube_eq_one, mul_one]
 
-/-- Given `S' : Solution'`, then `Nonempty Solution`. -/
-lemma exists_Solution_of_Solution' : Nonempty Solution := by
+/-- Given `S' : Solution'`, then there is `S' : Solution` such that
+`S'.multiplicity = S.multiplicity`. -/
+lemma exists_Solution_of_Solution' : ∃ (S' : Solution), S'.multiplicity = S.multiplicity := by
   obtain ⟨a, b, H, coprime, ha, hb, hab⟩ := ex_dvd_a_add_b S
-  exact ⟨
+  refine ⟨
   { a := a
     b := b
     c := S.c
@@ -393,7 +394,7 @@ lemma exists_Solution_of_Solution' : Nonempty Solution := by
     coprime := coprime
     hcdvd := S.hcdvd
     H := H
-    hab := hab }⟩
+    hab := hab }, rfl⟩
 
 end Solution'
 
@@ -531,9 +532,6 @@ lemma lambda_not_dvd_Y : ¬ λ ∣ S.Y := by
 lemma lambda_not_dvd_Z : ¬ λ ∣ S.Z := by
   sorry
 
-lemma lambda_not_dvd_X : ¬ λ ∣ S.X := by
-  sorry
-
 lemma coprime_Y_Z : IsCoprime S.Y S.Z := by
   sorry
 
@@ -565,9 +563,10 @@ def Solution'_final : Solution' where
   b := (η * S.u₃ * S.u₂⁻¹) * S.Z
   c := λ ^ (S.multiplicity - 1) * S.X
   u := (u₅_isUnit S).unit
-  ha := sorry
+  ha := lambda_not_dvd_Y S
   hb := sorry
-  hc := sorry
+  hc := fun h ↦ X_ne_zero S <| by
+    sorry
   coprime := sorry
   hcdvd := sorry
   H := final S
@@ -575,9 +574,12 @@ def Solution'_final : Solution' where
 lemma Solution'_final_multiplicity : (Solution'_final S).multiplicity < S.multiplicity := by
   sorry
 
-theorem exists_Solution_multiplicity_lt (S : Solution) :
+theorem exists_Solution_multiplicity_lt :
     ∃ (S' : Solution), S'.multiplicity < S.multiplicity := by
-  sorry
+  obtain ⟨S', hS'⟩ := exists_Solution_of_Solution' (Solution'_final S)
+  refine ⟨S', ?_⟩
+  rw [hS']
+  exact Solution'_final_multiplicity S
 
 end Solution
 
@@ -601,7 +603,7 @@ theorem fermatLastTheoremThree : FermatLastTheoremFor 3 := by
     coprime := coprime
     hcdvd := hcdvd
     H := H }
-  obtain ⟨S⟩ := exists_Solution_of_Solution' S'
+  obtain ⟨S, -⟩ := exists_Solution_of_Solution' S'
   obtain ⟨Smin, hSmin⟩ := S.exists_minimal
   obtain ⟨Sfin, hSfin⟩ := exists_Solution_multiplicity_lt Smin
   linarith [hSmin Sfin]
