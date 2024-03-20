@@ -154,7 +154,7 @@ theorem diag_col_mul_row [Mul α] [AddCommMonoid α] (a b : n → α) :
 theorem vecMulVec_eq [Mul α] [AddCommMonoid α] (w : m → α) (v : n → α) :
     vecMulVec w v = col w * row v := by
   ext
-  simp [vecMulVec, of_apply, mul_apply]
+  simp [vecMulVec, mul_apply]
 #align matrix.vec_mul_vec_eq Matrix.vecMulVec_eq
 
 /-! ### Updating rows and columns -/

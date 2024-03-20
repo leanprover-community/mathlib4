@@ -163,8 +163,8 @@ example : Matrix.row ![1, 1] = !![1, 1] := by
   ext i j
   simp
 
-example : Matrix.row ![1, 1] = !![1, 1] := by
+example : Matrix.col ![1, 1] = !![1; 1] := by
   ext i j
-  simp
+  fin_cases i <;> simp
 
 end Matrix
