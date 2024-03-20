@@ -62,7 +62,6 @@ def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
 #align matrix Matrix
 
 variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-
 variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 namespace Matrix
@@ -201,6 +200,12 @@ instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
 -- Porting note: new, Lean3 found this automatically
 instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
   Fintype.decidablePiFintype
+
+instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fintype α] :
+    Fintype (Matrix m n α) := inferInstanceAs (Fintype (m → n → α))
+
+instance {n m} [Finite m] [Finite n] (α) [Finite α] :
+    Finite (Matrix m n α) := inferInstanceAs (Finite (m → n → α))
 
 instance add [Add α] : Add (Matrix m n α) :=
   Pi.instAdd
@@ -1319,7 +1324,6 @@ end CommSemiring
 section Algebra
 
 variable [Fintype n] [DecidableEq n]
-
 variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
 
 instance instAlgebra : Algebra R (Matrix n n α) where
@@ -1470,7 +1474,6 @@ end AddEquiv
 namespace LinearMap
 
 variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
-
 variable [Module R α] [Module R β] [Module R γ]
 
 /-- The `LinearMap` between spaces of matrices induced by a `LinearMap` between their
@@ -1498,7 +1501,6 @@ end LinearMap
 namespace LinearEquiv
 
 variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
-
 variable [Module R α] [Module R β] [Module R γ]
 
 /-- The `LinearEquiv` between spaces of matrices induced by a `LinearEquiv` between their
@@ -1533,7 +1535,6 @@ end LinearEquiv
 namespace RingHom
 
 variable [Fintype m] [DecidableEq m]
-
 variable [NonAssocSemiring α] [NonAssocSemiring β] [NonAssocSemiring γ]
 
 /-- The `RingHom` between spaces of square matrices induced by a `RingHom` between their
@@ -1562,7 +1563,6 @@ end RingHom
 namespace RingEquiv
 
 variable [Fintype m] [DecidableEq m]
-
 variable [NonAssocSemiring α] [NonAssocSemiring β] [NonAssocSemiring γ]
 
 /-- The `RingEquiv` between spaces of square matrices induced by a `RingEquiv` between their
@@ -1596,9 +1596,7 @@ end RingEquiv
 namespace AlgHom
 
 variable [Fintype m] [DecidableEq m]
-
 variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
-
 variable [Algebra R α] [Algebra R β] [Algebra R γ]
 
 /-- The `AlgHom` between spaces of square matrices induced by an `AlgHom` between their
@@ -1626,9 +1624,7 @@ end AlgHom
 namespace AlgEquiv
 
 variable [Fintype m] [DecidableEq m]
-
 variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
-
 variable [Algebra R α] [Algebra R β] [Algebra R γ]
 
 /-- The `AlgEquiv` between spaces of square matrices induced by an `AlgEquiv` between their
@@ -1941,6 +1937,11 @@ theorem mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : A *ᵥ (-v) 
   apply dotProduct_neg
 #align matrix.mul_vec_neg Matrix.mulVec_neg
 
+theorem mulVec_sub [Fintype n] (A : Matrix m n α) (x y : n → α) :
+    A *ᵥ (x - y) = A *ᵥ x - A *ᵥ y := by
+  ext
+  apply dotProduct_sub
+
 theorem sub_mulVec [Fintype n] (A B : Matrix m n α) (x : n → α) :
     (A - B) *ᵥ x = A *ᵥ x - B *ᵥ x := by simp [sub_eq_add_neg, add_mulVec, neg_mulVec]
 #align matrix.sub_mul_vec Matrix.sub_mulVec
@@ -1948,6 +1949,11 @@ theorem sub_mulVec [Fintype n] (A B : Matrix m n α) (x : n → α) :
 theorem vecMul_sub [Fintype m] (A B : Matrix m n α) (x : m → α) :
     x ᵥ* (A - B) = x ᵥ* A - x ᵥ* B := by simp [sub_eq_add_neg, vecMul_add, vecMul_neg]
 #align matrix.vec_mul_sub Matrix.vecMul_sub
+
+theorem sub_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
+    (x - y) ᵥ* A = x ᵥ* A - y ᵥ* A := by
+  ext
+  apply sub_dotProduct
 
 end NonUnitalNonAssocRing
 
@@ -2110,7 +2116,6 @@ theorem transposeLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] 
 #align matrix.transpose_linear_equiv_symm Matrix.transposeLinearEquiv_symm
 
 variable {m n R α}
-
 variable (m α)
 
 /-- `Matrix.transpose` as a `RingEquiv` to the opposite ring -/
@@ -2382,7 +2387,6 @@ theorem conjTransposeLinearEquiv_symm [CommSemiring R] [StarRing R] [AddCommMono
 #align matrix.conj_transpose_linear_equiv_symm Matrix.conjTransposeLinearEquiv_symm
 
 variable {m n R α}
-
 variable (m α)
 
 /-- `Matrix.conjTranspose` as a `RingEquiv` to the opposite ring -/
