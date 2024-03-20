@@ -326,9 +326,7 @@ theorem toWeakSpace_eq_iff (x y : E) : (toWeakSpace x : WeakSpace 𝕜 E) = toWe
 /-- For a topological vector space `E`, "identity mapping" `E → WeakSpace 𝕜 E` is continuous.
 This definition implements it as a continuous linear map. -/
 def continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E where
-  toFun := toWeakSpace
-  map_add' := toWeakSpace.map_add'
-  map_smul' := toWeakSpace.map_smul'
+  __ := toWeakSpace
   cont := by
     apply WeakBilin.continuous_of_continuous_eval
     exact ContinuousLinearMap.continuous
