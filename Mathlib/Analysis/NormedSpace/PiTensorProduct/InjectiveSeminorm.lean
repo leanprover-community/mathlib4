@@ -17,8 +17,19 @@ indexed by a finite type `ι`. We define a seminorm on `⨂[𝕜] i, E i`, which
 normed `𝕜`-vector space `F`, the linear equivalence
 `MultilinearMap 𝕜 E F ≃ₗ[𝕜] (⨂[𝕜] i, E i) →ₗ[𝕜] F`
 expressing the universal property of the tensor product induces an isometric linear equivalence
-`ContinuusMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F`.
+`ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F`.
 
+The idea is the following: Every normed `𝕜`-vector space `F` defines a linear map
+from `⨂[𝕜] i, E i` to `ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] F`, which sends `x` to the map
+`f.lift ↦ f x`. We prove in `toDualMultilinearMap_bound` that this map lands in
+`ContinuousMultilinearMap 𝕜 E F →L[𝕜] F`. As this last space has a natural operator (semi)norm,
+we get an induced seminorm on `⨂[𝕜] i, E i`. We then take the `sup` of these seminorms as
+`F` varies; by `dualSeminorms_bounded`, this family of seminorms is bounded, so the `sup`
+has good properties.
+
+In fact, we cannot take the `sup` over all normed spaces `F` because of set-theoretical issues,
+so we only take spaces `F` in the same universe as `⨂[𝕜] i, E i`. We then prove in
+`injectiveSeminorm_bound` that this gives the same result.
 -/
 
 variable {ι : Type*} [Fintype ι]
