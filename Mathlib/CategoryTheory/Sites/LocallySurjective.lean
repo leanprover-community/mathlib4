@@ -42,7 +42,8 @@ variable {A : Type u'} [Category.{v'} A] [ConcreteCategory.{w'} A]
 namespace Presheaf
 
 /-- Given `f : F ⟶ G`, a morphism between presieves, and `s : G.obj U`, this is the sieve
-of `U.unop` consisting of the `i : V ⟶ U` such that `s` restricted along `i` is in the image of `f`. -/
+of `U.unop` consisting of the `i : V ⟶ U` such that `s` restricted along `i` is
+in the image of `f`. -/
 @[simps (config := .lemmasOnly)]
 def imageSieve {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : G.obj U) : Sieve U.unop where
   arrows V i := ∃ t : F.obj (op V), f.app _ t = G.map i.op s
