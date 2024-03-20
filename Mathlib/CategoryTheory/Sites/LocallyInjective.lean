@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Sites.Subsheaf
 
 /-!
 # Locally injective morphisms of (pre)sheaves
@@ -35,14 +36,17 @@ attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFu
 
 namespace Presheaf
 
-variable {F₁ F₂ F₃ : Cᵒᵖ ⥤ D} (φ : F₁ ⟶ F₂) (ψ : F₂ ⟶ F₃)
-
+/-- If `F : Cᵒᵖ ⥤ D` is a presheaf with values in a concrete category, if `x` and `y` are
+elements in `F.obj X`, this is the sieve of `X.unop` consisting of morphisms `f`
+such that `F.map f.op x = F.map f.op y`. -/
 @[simps]
-def equalizerSieve {X : Cᵒᵖ} (x y : F₁.obj X) : Sieve X.unop where
-  arrows _ f := F₁.map f.op x = F₁.map f.op y
+def equalizerSieve {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : F.obj X) : Sieve X.unop where
+  arrows _ f := F.map f.op x = F.map f.op y
   downward_closed {X Y} f hf g := by
     dsimp at hf ⊢
     simp [hf]
+
+variable {F₁ F₂ F₃ : Cᵒᵖ ⥤ D} (φ : F₁ ⟶ F₂) (ψ : F₂ ⟶ F₃)
 
 /-- A morphism `φ : F₁ ⟶ F₂` of presheaves `Cᵒᵖ ⥤ D` (with `D` a concrete category)
 is locally injective for a Grothendieck topology `J` on `C` if
@@ -119,6 +123,8 @@ lemma isLocallyInjective_comp_iff [IsLocallyInjective J ψ] :
   isLocallyInjective_iff_of_fac J rfl
 
 variable (F₁) in
+/-- Condition that a presheaf with values in a concrete category is separated for
+a Grothendieck topology. -/
 def IsSeparated : Prop :=
   ∀ (X : C) (S : Sieve X) (_ : S ∈ J X) (x y : F₁.obj (op X)),
     (∀ (Y : C) (f : Y ⟶ X) (_ : S f), F₁.map f.op x = F₁.map f.op y) → x = y
@@ -129,6 +135,12 @@ lemma isLocallyInjective_iff_injective_of_separated (hsep : IsSeparated J F₁) 
   · intro _ X x y h
     exact hsep X.unop _ (equalizerSieve_mem J φ x y h) _ _ (fun _ _ hf => hf)
   · apply isLocallyInjective_of_injective
+
+instance (F : Cᵒᵖ ⥤ Type w) (G : GrothendieckTopology.Subpresheaf F) :
+    IsLocallyInjective J G.ι :=
+  isLocallyInjective_of_injective _ _ (fun X => by
+    intro ⟨x, _⟩ ⟨y, _⟩ h
+    exact Subtype.ext h)
 
 section
 
@@ -167,6 +179,10 @@ namespace Sheaf
 variable {J}
 variable {F₁ F₂ : Sheaf J D} (φ : F₁ ⟶ F₂)
 
+/-- If `φ : F₁ ⟶ F₂` is a morphism of sheaves, this is an abbreviation for
+`Presheaf.IsLocallyInjective J φ.val`. Under suitable assumptions, it
+is equivalent to the injectivity of all maps `φ.val.app X`,
+see `isLocallyInjective_iff_injective`. -/
 abbrev IsLocallyInjective := Presheaf.IsLocallyInjective J φ.val
 
 variable [J.HasSheafCompose (forget D)]
@@ -185,7 +201,11 @@ lemma isLocallyInjective_iff_injective :
     IsLocallyInjective φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X) :=
   Presheaf.isLocallyInjective_iff_injective_of_separated _ _ F₁.isSeparated
 
-end Sheaf
+instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
+    IsLocallyInjective (GrothendieckTopology.imageSheafι f) := by
+  dsimp [GrothendieckTopology.imageSheafι]
+  infer_instance
 
+end Sheaf
 
 end CategoryTheory

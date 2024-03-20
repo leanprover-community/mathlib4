@@ -1,36 +1,24 @@
-/-
+  /-
 Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
---import Mathlib.CategoryTheory.Limits.EpiMono
---import Mathlib.CategoryTheory.MorphismProperty
---import Mathlib.CategoryTheory.Sites.EpiMonoFactorization
-import Mathlib.CategoryTheory.Sites.LocallyInjective
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Adjunction.Evaluation
+import Mathlib.CategoryTheory.Limits.EpiMono
+import Mathlib.CategoryTheory.MorphismProperty
+import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
-# Characterization of mono and epi in the category of sheaves of types
+# The category of sheaves of types is balanced
 
-In this file, we obtain the lemmas `Sheaf.mono_iff_injective`, `Sheaf.isIso_iff_bijective`
-and `Sheaf.epi_iff_locallySurjective` which are concrete characterizations of monomorphisms,
-isomorphisms and epimorphisms in a category of sheaves of types for a Grothendieck
-topology `J` on a category `C`.
+In this file, we obtain that the category of sheaves of types is balanced,
+i.e. a morphism that is both a mono and an epi is an isomorphism.
 
-Given a morphism `φ : F ⟶ G` in `Sheaf J (Type _)`, it is easy to show that it is
-a mono (resp. an iso) iff for all `X : Cᵒᵖ`, the map `φ.val.app X : F.val.obj X ⟶ G.val.obj X`
-is injective (resp. bijective), similarly as for morphisms of presheaves. We also
-obtain a characterization of epimorphisms: `φ` is an epimorphism iff if is
-locally surjective (see `CategoryTheory.Sites.LocallySurjective`), i.e. any section of
-`G` can be *locally* lifted to a section of `F`.
-
-The proof of the characterization of epimorphisms uses an epi/mono factorization of
-`φ : F ⟶ G` (see the file `CategoryTheory.Sites.EpiMonoFactorization`) in
-order to reduce to the particular case when `φ` is also a monomorphism,
-and for this, we show that the category of sheaves of types is balanced:
-`φ` is an isomorphism iff it is a mono and an epi. The proof of this last
-fact is obtained following the argument in SGA 4 II 4.2.
+We also obtain the lemmas `Sheaf.mono_iff_injective`,
+`Sheaf.isIso_iff_bijective` and `Sheaf.epi_iff_locallySurjective` which
+are concrete characterizations of monomorphisms, isomorphisms and epimorphisms
+in the category of sheaves of types for a Grothendieck topology `J` on a category `C`.
+(The characterization of monomorphisms and isomorphisms apply more generally to
+sheaves with values in concrete category satisfying suitable assumptions.)
 
 -/
 
@@ -38,16 +26,18 @@ universe w v' v u' u
 
 namespace CategoryTheory
 
-open Opposite Limits
+open Limits
 
 variable {C : Type u} [Category.{v} C]
   {D : Type u'} [Category.{v'} D] [ConcreteCategory.{w} D]
   [(forget D).PreservesMonomorphisms] [HasLimitsOfShape WalkingCospan D]
-  {J : GrothendieckTopology C}
+  [ReflectsIsomorphisms (forget D)] {J : GrothendieckTopology C}
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 namespace Sheaf
+
+section
 
 variable {F G : Sheaf J D} (φ : F ⟶ G)
 
@@ -71,33 +61,6 @@ lemma mono_iff_injective :
     infer_instance
   · apply mono_of_injective
 
-end Sheaf
-
-#exit
-
-namespace Sheaf
-
-variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-
-variable {F G : Sheaf J (Type w)} (φ : F ⟶ G)
-
-lemma mono_of_injective
-    (hφ : ∀ (X : Cᵒᵖ), Function.Injective (fun (x : F.1.obj X) => φ.1.app _ x)) : Mono φ where
-  right_cancellation := by
-    intro H f₁ f₂ h
-    ext Z x
-    exact hφ Z (congr_fun (congr_app (congr_arg Sheaf.Hom.val h) Z) x)
-
-lemma mono_iff_injective [HasWeakSheafify J (Type w)] :
-    Mono φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (fun (x : F.1.obj X) => φ.1.app _ x) := by
-  constructor
-  · intro hφ X
-    simp only [← CategoryTheory.mono_iff_injective]
-    change Mono (((evaluation _ _).obj X).map ((sheafToPresheaf _ _).map φ))
-    infer_instance
-  · intro hφ
-    exact mono_of_injective φ hφ
-
 lemma isIso_iff_bijective :
     IsIso φ ↔ ∀ (X : Cᵒᵖ), Function.Bijective (fun (x : F.1.obj X) => φ.1.app _ x) := by
   have : IsIso φ ↔ IsIso φ.1 := by
@@ -111,12 +74,16 @@ lemma isIso_iff_bijective :
   constructor
   · intro _ X
     rw [← CategoryTheory.isIso_iff_bijective]
-    change IsIso (((evaluation _ _).obj X).map φ.1)
+    change IsIso ((forget D).map (φ.val.app X))
     infer_instance
   · intro hφ
-    have : ∀ (X : Cᵒᵖ), IsIso (φ.1.app X) := by
-      simpa only [CategoryTheory.isIso_iff_bijective] using hφ
+    have : ∀ (X : Cᵒᵖ), IsIso (φ.1.app X) := fun X => by
+      have : IsIso ((forget D).map (φ.val.app X)) := by
+        simpa only [CategoryTheory.isIso_iff_bijective] using hφ X
+      apply isIso_of_reflects_iso _ (forget D)
     apply NatIso.isIso_of_isIso_app
+
+end
 
 namespace BalancedAux
 
@@ -180,18 +147,18 @@ instance [HasSheafify J (Type w)] : Balanced (Sheaf J (Type w)) where
         (IsPullback.of_isLimit h₂') ((epi_iff_isIso_inl h₁').1 inferInstance)
     exact ((MorphismProperty.RespectsIso.isomorphisms _).arrow_mk_iso_iff e).2 this
 
-lemma epi_iff_locallySurjective [HasSheafify J (Type w)] :
-    Epi φ ↔ LocallySurjective φ := by
+lemma epi_iff_isLocallySurjective
+    {F G : Sheaf J (Type w)} (φ : F ⟶ G) [HasSheafify J (Type w)] :
+    Epi φ ↔ IsLocallySurjective φ := by
   constructor
   · intro hφ
-    constructor
-    have : IsIso (EpiMonoFactorization.ι φ) := isIso_of_mono_of_epi _
-    intro X x
-    obtain ⟨⟨y, hy⟩, rfl⟩ :=
-      ((isIso_iff_bijective (EpiMonoFactorization.ι φ)).1 inferInstance X).2 x
-    exact hy
+    have : Epi (GrothendieckTopology.imageSheafι φ) :=
+      epi_of_epi_fac (GrothendieckTopology.toImageSheaf_ι φ)
+    have : IsIso (GrothendieckTopology.imageSheafι φ) := isIso_of_mono_of_epi _
+    rw [← GrothendieckTopology.toImageSheaf_ι φ]
+    apply Presheaf.isLocallySurjective_comp
   · intro
-    exact epi_of_locallySurjective φ
+    apply epi_of_isLocallySurjective
 
 end Sheaf
 

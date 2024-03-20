@@ -1,211 +1,286 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
+Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.Whiskering
-import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.LocallyInjective
+import Mathlib.CategoryTheory.Sites.Subsheaf
 
+#align_import category_theory.sites.surjective from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 /-!
-# Locally surjective morphisms of (pre)sheaves
 
-Let `C` be a category equipped with a Grothendieck topology `J`,
-and let `D` be a concrete category.
+# Locally surjective morphisms
 
-In this file, we introduce typeclasses `Presheaf.LocallyInjective J φ` and
-`Presheaf.LocallySurjective J φ` for a morphism `φ : F₁ ⟶ F₂` in the category `Cᵒᵖ ⥤ D`:
-they are given by local injectivity/surjectivity conditions.
+## Main definitions
 
-When the suitable assumptions for the construction of the associated sheaves by the plus-plus
-contruction are available, we show that the canonical morphism `P ⟶ toSheafify J P`
-is both locally injective and locally surjective.
+- `Presheaf.IsLocallySurjective` : A morphism of presheaves valued in a concrete category
+  is locally surjective with respect to a grothendieck topology if every section in the
+  target is locally in the set-theoretic image, i.e. the image sheaf coincides with the target.
 
-Then, one of the main results in this file is the lemma
-`presheafToSheaf_map_locallySurjective_iff` which asserts that if `φ` is a
-morphism of presheaves, that `φ` is locally surjective iff
-`(presheafToSheaf J D).map φ` is locally surjective. (A similar result holds for
-locally injective morphisms.)
+## Main results
 
-For morphisms of sheaves, a locally injective morphism is a monomorphism
-(`Sheaf.mono_of_locallyInjective`) and a locally surjective morphism is an epimorphism
-(`Sheaf.epi_of_locallySurjective`). The converse statements also hold,
-at least for sheaves of types: this is studied in the file `CategoryTheory.Sites.EpiMono`.
+- `Presheaf.isLocallySurjective_toSheafify` : `toSheafify` is locally surjective.
+
+See also the file `Mathlib.CategoryTheorySites.Balanced` where the lemma
+`Sheaf.epi_iff_isLocallySurjective` is obtained: a morphism of sheaves of types
+is epi iff it is locally surjective.
 
 -/
 
-universe w v' v u' u
+
+universe v u w v' u' w'
 
 namespace CategoryTheory
 
-open Opposite Limits
+open Opposite Category GrothendieckTopology Limits
 
-variable {C : Type u} [Category.{v} C]
-  {D : Type u'} [Category.{v'} D] [ConcreteCategory.{w} D]
-  (J : GrothendieckTopology C)
+variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
+variable {A : Type u'} [Category.{v'} A] [ConcreteCategory.{w'} A]
+
 namespace Presheaf
 
-variable {F₁ F₂ F₃ : Cᵒᵖ ⥤ D} (φ : F₁ ⟶ F₂) (ψ : F₂ ⟶ F₃)
+/-- Given `f : F ⟶ G`, a morphism between presieves, and `s : G.obj U`, this is the sieve
+of `U.unop` consisting of the `i : V ⟶ U` such that `s` restricted along `i` is in the image of `f`. -/
+@[simps (config := .lemmasOnly)]
+def imageSieve {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : G.obj U) : Sieve U.unop where
+  arrows V i := ∃ t : F.obj (op V), f.app _ t = G.map i.op s
+  downward_closed := by
+    rintro V W i ⟨t, ht⟩ j
+    refine' ⟨F.map j.op t, _⟩
+    rw [op_comp, G.map_comp, comp_apply, ← ht, elementwise_of% f.naturality]
+#align category_theory.image_sieve CategoryTheory.Presheaf.imageSieve
 
-/-- A morphism `φ : F₁ ⟶ F₂` of presheaves `Cᵒᵖ ⥤ D` (with `D` a concrete category)
-is locally surjective for a Grothendieck topology `J` on `C` if any section of `F₂`
-can be lifted locally to a section of `F₁`. -/
-class IsLocallySurjective : Prop where
-  locally_surjective {X : Cᵒᵖ} (x : F₂.obj X) :
-    ∃ (S : Sieve X.unop) (_ : S ∈ J X.unop),
-      ∀ {Y : C} (f : Y ⟶ X.unop) (_ : S f), ∃ (y : F₁.obj (op Y)),
-        φ.app (op Y) y = F₂.map f.op x
+theorem imageSieve_eq_sieveOfSection {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : G.obj U) :
+    imageSieve f s = (imagePresheaf (whiskerRight f (forget A))).sieveOfSection s :=
+  rfl
+#align category_theory.image_sieve_eq_sieve_of_section CategoryTheory.Presheaf.imageSieve_eq_sieveOfSection
 
-lemma isLocallySurjective_of_surjective (hφ : ∀ (X : Cᵒᵖ), Function.Surjective (φ.app X)) :
-    IsLocallySurjective J φ where
-  locally_surjective _ := ⟨⊤, J.top_mem _, fun _ _ => hφ _ _⟩
+theorem imageSieve_whisker_forget {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : G.obj U) :
+    imageSieve (whiskerRight f (forget A)) s = imageSieve f s :=
+  rfl
+#align category_theory.image_sieve_whisker_forget CategoryTheory.Presheaf.imageSieve_whisker_forget
 
-instance [IsIso φ] : IsLocallySurjective J φ := isLocallySurjective_of_surjective J φ (fun X => by
-  apply Function.Bijective.surjective
-  rw [← isIso_iff_bijective]
-  change IsIso ((forget D).map (φ.app X))
-  infer_instance)
+theorem imageSieve_app {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : F.obj U) :
+    imageSieve f (f.app _ s) = ⊤ := by
+  ext V i
+  simp only [Sieve.top_apply, iff_true_iff, imageSieve_apply]
+  have := elementwise_of% (f.naturality i.op)
+  exact ⟨F.map i.op s, this s⟩
+#align category_theory.image_sieve_app CategoryTheory.Presheaf.imageSieve_app
 
-section
-
-variable [hφ : IsLocallySurjective J φ]
-  {X : Cᵒᵖ} (x : F₂.obj X)
-
-/-- When `φ : F₁ ⟶ F₂` is locally surjective and `x : F₂.obj X`, this is a covering
-sieve of `X.unop` over which `x` has a preimage, which is given by `localPreimage`. -/
-noncomputable def sieveOfLocallySurjective : Sieve X.unop :=
-  (hφ.locally_surjective x).choose
-
-lemma sieveOfLocallySurjective_mem : sieveOfLocallySurjective J φ x ∈ J X.unop :=
-  (hφ.locally_surjective x).choose_spec.choose
-
-variable {Y : C} (f : Y ⟶ X.unop) (hf : sieveOfLocallySurjective J φ x f)
-
-/-- When `φ : F₁ ⟶ F₂` is locally surjective, `x : F₂.obj X`, and `f : Y ⟶ X.unop`
-belongs to the sieve `sieveOfLocallySurjective J φ x`, this is a preimage of `F₂.map f.op x`. -/
-noncomputable def localPreimage : F₁.obj (op Y) :=
-  ((hφ.locally_surjective x).choose_spec.choose_spec f hf).choose
+/-- If a morphism `g : V ⟶ U.unop` belong to the sieve `imageSieve f s g`, then
+this is choice of a preimage of `G.map g.op s` in `F.obj (op V)`, see
+`app_localPreimage`.-/
+noncomputable def localPreimage {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : G.obj U)
+    {V : C} (g : V ⟶ U.unop) (hg : imageSieve f s g) :
+    F.obj (op V) :=
+  hg.choose
 
 @[simp]
-lemma app_apply_localPreimage :
-    φ.app _ (localPreimage J φ x f hf) = F₂.map f.op x :=
-  ((hφ.locally_surjective x).choose_spec.choose_spec f hf).choose_spec
+lemma app_localPreimage {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : G.obj U)
+    {V : C} (g : V ⟶ U.unop) (hg : imageSieve f s g) :
+    f.app _ (localPreimage f s g hg) = G.map g.op s :=
+  hg.choose_spec
 
-end
+/-- A morphism of presheaves `f : F ⟶ G` is locally surjective with respect to a grothendieck
+topology if every section of `G` is locally in the image of `f`. -/
+class IsLocallySurjective {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) : Prop :=
+  imageSieve_mem {U : Cᵒᵖ} (s : G.obj U) : imageSieve f s ∈ J U.unop
+#align category_theory.is_locally_surjective CategoryTheory.Presheaf.IsLocallySurjective
 
-instance isLocallySurjective_forget [IsLocallySurjective J φ] :
-    IsLocallySurjective J (whiskerRight φ (forget D)) where
-  locally_surjective x :=
-    ⟨_, sieveOfLocallySurjective_mem J φ x,
-      fun f hf => ⟨localPreimage J φ x f hf, app_apply_localPreimage J φ x f hf⟩⟩
+lemma imageSieve_mem {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsLocallySurjective J f]
+    {U : Cᵒᵖ} (s : G.obj U) :
+    imageSieve f s ∈ J U.unop :=
+  IsLocallySurjective.imageSieve_mem s
 
-instance isLocallySurjective_comp [IsLocallySurjective J φ] [IsLocallySurjective J ψ] :
-    IsLocallySurjective J (φ ≫ ψ) where
-  locally_surjective {X} x := by
-    let S := sieveOfLocallySurjective J ψ x
-    let hS : S ∈ J X.unop := sieveOfLocallySurjective_mem J ψ x
-    let T : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X.unop⦄ (_ : S f), Sieve Y :=
-      fun Y f hf => sieveOfLocallySurjective J φ (localPreimage J ψ x f hf)
-    refine ⟨_, J.transitive hS (Sieve.bind S.1 T) ?_, ?_⟩
-    · intro Y f hf
-      exact J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
-        (by apply sieveOfLocallySurjective_mem)
-    · intro Y f hf
-      obtain ⟨Z, a, g, hg, ha, rfl⟩ := hf
-      exact ⟨localPreimage J φ (localPreimage J ψ x g hg) a ha, by simp⟩
+instance {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsLocallySurjective J f] :
+    IsLocallySurjective J (whiskerRight f (forget A)) where
+  imageSieve_mem s := imageSieve_mem J f s
 
-lemma isLocallySurjective_of_isLocallySurjective [IsLocallySurjective J (φ ≫ ψ)] :
-    IsLocallySurjective J ψ where
-  locally_surjective {X} x :=
-    ⟨_, sieveOfLocallySurjective_mem J (φ ≫ ψ) x, fun f hf =>
-      ⟨φ.app _ (localPreimage J (φ ≫ ψ) x f hf),
-        by simpa using app_apply_localPreimage J (φ ≫ ψ) x f hf⟩⟩
-
-lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective
-    [IsLocallyInjective J (φ ≫ ψ)] [IsLocallySurjective J φ] :
-    IsLocallyInjective J ψ where
-  equalizerSieve_mem {X} x₁ x₂ h := by
-    sorry
-    /-let S := sieveOfLocallySurjective J φ x₁ ⊓ sieveOfLocallySurjective J φ x₂
-    have hS : S ∈ J X.unop := by
-      apply J.intersection_covering
-      all_goals apply sieveOfLocallySurjective_mem
-    have hS' : ∀ ⦃Y : C⦄ (f : Y ⟶ X.unop) (hf : S f),
-      (φ ≫ ψ).app (op Y) (localPreimage J φ x₁ f hf.1) =
-        (φ ≫ ψ).app (op Y) (localPreimage J φ x₂ f hf.2) := fun Y f hf => by simp [h]
-    let T : ∀ ⦃Y : C⦄ (f : Y ⟶ X.unop) (_ : S f), Sieve Y := fun Y f hf =>
-      sieveOfLocallyInjective J (φ ≫ ψ) _ _ (hS' f hf)
-    refine ⟨_, J.transitive hS (Sieve.bind S.1 T) ?_, ?_⟩
-    · intro Y f hf
-      exact J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
-        (by apply sieveOfLocallyInjective_mem)
-    · intro Y f hf
-      obtain ⟨Z, a, g, hg, ha, rfl⟩ := hf
-      simp only [op_unop, op_comp, Functor.map_comp, comp_apply]
-      erw [← app_apply_localPreimage J φ x₁ g hg.1, ← app_apply_localPreimage J φ x₂ g hg.2,
-        ← NatTrans.naturality_apply, ← NatTrans.naturality_apply,
-        map_apply_eq_of_locallyInjective J (φ ≫ ψ) _ _ (hS' _ hg) a ha]
-      rfl-/
-
-lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective
-    [IsLocallySurjective J (φ ≫ ψ)] [IsLocallyInjective J ψ] :
-    IsLocallySurjective J φ where
-  locally_surjective {X} x := by
-    let S := sieveOfLocallySurjective J (φ ≫ ψ) (ψ.app _ x)
-    have hS : S ∈ J X.unop := by apply sieveOfLocallySurjective_mem
-    have hS' : ∀ ⦃Y : C⦄ (f : Y ⟶ X.unop) (hf : S f),
-      (ψ.app (op Y)) ((φ.app (op Y)) (localPreimage J (φ ≫ ψ) ((ψ.app X) x) f hf)) =
-        (ψ.app (op Y)) ((F₂.map f.op) x) := fun Y f hf => by
-          simpa using app_apply_localPreimage J (φ ≫ ψ) (ψ.app _ x) f hf
-    let T : ∀ ⦃Y : C⦄ (f : Y ⟶ X.unop) (_ : S f), Sieve Y := fun Y f hf =>
-      sieveOfLocallyInjective J ψ _ _ (hS' f hf)
-    refine ⟨_, J.transitive hS (Sieve.bind S.1 T) ?_, ?_⟩
-    · intro Y f hf
-      exact J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
-        (by apply sieveOfLocallyInjective_mem)
-    · intro Y f hf
-      obtain ⟨Z, a, g, hg, ha, rfl⟩ := hf
-      exact ⟨F₁.map a.op (localPreimage J (φ ≫ ψ) _ g hg),
-        by simpa using map_apply_eq_of_locallyInjective J ψ _ _ (hS' g hg) a ha⟩
-
-variable {φ ψ}
-
-lemma locallySurjective_of_locallySurjective_fac {φψ : F₁ ⟶ F₃} (fac : φ ≫ ψ = φψ)
-    [LocallySurjective J φψ] : LocallySurjective J ψ := by
-  subst fac
-  exact locallySurjective_of_locallySurjective J φ ψ
-
-lemma locallySurjective_iff_fac {φψ : F₁ ⟶ F₃} (fac : φ ≫ ψ = φψ) [LocallySurjective J φ] :
-    LocallySurjective J φψ ↔ LocallySurjective J ψ := by
+lemma isLocallySurjective_iff_forget {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
+    IsLocallySurjective J f ↔ IsLocallySurjective J (whiskerRight f (forget A)) := by
   constructor
   · intro
-    exact locallySurjective_of_locallySurjective_fac J fac
+    infer_instance
+  · intro
+    exact { imageSieve_mem := imageSieve_mem J (whiskerRight f (forget A)) }
+
+theorem isLocallySurjective_iff_imagePresheaf_sheafify_eq_top {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
+    IsLocallySurjective J f ↔ (imagePresheaf (whiskerRight f (forget A))).sheafify J = ⊤ := by
+  simp only [Subpresheaf.ext_iff, Function.funext_iff, Set.ext_iff, top_subpresheaf_obj,
+    Set.top_eq_univ, Set.mem_univ, iff_true_iff]
+  exact ⟨fun H U s => imageSieve_mem J f s, fun H => ⟨fun x =>  H _ x⟩⟩
+#align category_theory.is_locally_surjective_iff_image_presheaf_sheafify_eq_top CategoryTheory.Presheaf.isLocallySurjective_iff_imagePresheaf_sheafify_eq_top
+
+theorem isLocallySurjective_iff_imagePresheaf_sheafify_eq_top' {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) :
+    IsLocallySurjective J f ↔ (imagePresheaf f).sheafify J = ⊤ :=
+  isLocallySurjective_iff_imagePresheaf_sheafify_eq_top J f
+#align category_theory.is_locally_surjective_iff_image_presheaf_sheafify_eq_top' CategoryTheory.Presheaf.isLocallySurjective_iff_imagePresheaf_sheafify_eq_top'
+
+theorem isLocallySurjective_iff_isIso {F G : Sheaf J (Type w)} (f : F ⟶ G) :
+    IsLocallySurjective J f.1 ↔ IsIso (imageSheafι f) := by
+  rw [imageSheafι, isLocallySurjective_iff_imagePresheaf_sheafify_eq_top',
+    Subpresheaf.eq_top_iff_isIso]
+  exact
+    ⟨fun h => @isIso_of_reflects_iso _ _ _ _ _ _ (imageSheafι f) (sheafToPresheaf J _) h _, fun h =>
+      @Functor.map_isIso _ _ _ _ _ _ (sheafToPresheaf J _) _ h⟩
+#align category_theory.is_locally_surjective_iff_is_iso CategoryTheory.Presheaf.isLocallySurjective_iff_isIso
+
+theorem isLocallySurjective_iff_whisker_forget {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
+    IsLocallySurjective J f ↔ IsLocallySurjective J (whiskerRight f (forget A)) := by
+  simp only [isLocallySurjective_iff_imagePresheaf_sheafify_eq_top]
+  rfl
+#align category_theory.is_locally_surjective_iff_whisker_forget CategoryTheory.Presheaf.isLocallySurjective_iff_whisker_forget
+
+theorem isLocallySurjective_of_surjective {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
+    (H : ∀ U, Function.Surjective (f.app U)) : IsLocallySurjective J f where
+  imageSieve_mem s := by
+    obtain ⟨t, rfl⟩ := H _ s
+    rw [imageSieve_app]
+    exact J.top_mem _
+#align category_theory.is_locally_surjective_of_surjective CategoryTheory.Presheaf.isLocallySurjective_of_surjective
+
+instance isLocallySurjective_of_iso {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsIso f] :
+    IsLocallySurjective J f := by
+  apply isLocallySurjective_of_surjective
+  intro U
+  apply Function.Bijective.surjective
+  rw [← isIso_iff_bijective, ← forget_map_eq_coe]
+  infer_instance
+#align category_theory.is_locally_surjective_of_iso CategoryTheory.Presheaf.isLocallySurjective_of_iso
+
+instance isLocallySurjective_comp {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
+    [IsLocallySurjective J f₁] [IsLocallySurjective J f₂] :
+    IsLocallySurjective J (f₁ ≫ f₂) where
+  imageSieve_mem s := by
+    have : (Sieve.bind (imageSieve f₂ s) fun _ _ h => imageSieve f₁ h.choose) ≤
+        imageSieve (f₁ ≫ f₂) s := by
+      rintro V i ⟨W, i, j, H, ⟨t', ht'⟩, rfl⟩
+      refine' ⟨t', _⟩
+      rw [op_comp, F₃.map_comp, NatTrans.comp_app, comp_apply, comp_apply, ht',
+        elementwise_of% f₂.naturality, H.choose_spec]
+    apply J.superset_covering this
+    apply J.bind_covering
+    · apply imageSieve_mem
+    · intros; apply imageSieve_mem
+#align category_theory.is_locally_surjective.comp CategoryTheory.Presheaf.isLocallySurjective_comp
+
+lemma isLocallySurjective_of_isLocallySurjective
+    {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
+    [IsLocallySurjective J (f₁ ≫ f₂)] :
+    IsLocallySurjective J f₂ where
+  imageSieve_mem {X} x := by
+    refine J.superset_covering ?_ (imageSieve_mem J (f₁ ≫ f₂) x)
+    intro Y g hg
+    exact ⟨f₁.app _ (localPreimage (f₁ ≫ f₂) x g hg),
+      by simpa using app_localPreimage (f₁ ≫ f₂) x g hg⟩
+
+lemma isLocallySurjective_of_isLocallySurjective_fac
+    {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} {f₁ : F₁ ⟶ F₂} {f₂ : F₂ ⟶ F₃} {f₃ : F₁ ⟶ F₃} (fac : f₁ ≫ f₂ = f₃)
+    [IsLocallySurjective J f₃] : IsLocallySurjective J f₂ := by
+  subst fac
+  exact isLocallySurjective_of_isLocallySurjective J f₁ f₂
+
+lemma isLocallySurjective_iff_of_fac
+    {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} {f₁ : F₁ ⟶ F₂} {f₂ : F₂ ⟶ F₃} {f₃ : F₁ ⟶ F₃} (fac : f₁ ≫ f₂ = f₃)
+    [IsLocallySurjective J f₁] :
+    IsLocallySurjective J f₃ ↔ IsLocallySurjective J f₂ := by
+  constructor
+  · intro
+    exact isLocallySurjective_of_isLocallySurjective_fac J fac
   · intro
     rw [← fac]
     infer_instance
 
-lemma locallyInjective_of_locallyInjective_of_locallySurjective_fac
-    {φψ : F₁ ⟶ F₃} (fac : φ ≫ ψ = φψ)
-    [LocallyInjective J (φψ)] [LocallySurjective J φ] :
-    LocallyInjective J ψ := by
+lemma isLocallySurjective_comp_iff
+    {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
+    [IsLocallySurjective J f₁] :
+    IsLocallySurjective J (f₁ ≫ f₂) ↔ IsLocallySurjective J f₂ :=
+  isLocallySurjective_iff_of_fac J rfl
+
+lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective
+    {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
+    [IsLocallyInjective J (f₁ ≫ f₂)] [IsLocallySurjective J f₁] :
+    IsLocallyInjective J f₂ where
+  equalizerSieve_mem {X} x₁ x₂ h := by
+    let S := imageSieve f₁ x₁ ⊓ imageSieve f₁ x₂
+    have hS : S ∈ J X.unop := by
+      apply J.intersection_covering
+      all_goals apply imageSieve_mem
+    let T : ∀ ⦃Y : C⦄ (f : Y ⟶ X.unop) (_ : S f), Sieve Y := fun Y f hf =>
+      equalizerSieve (localPreimage f₁ x₁ f hf.1) (localPreimage f₁ x₂ f hf.2)
+    refine J.superset_covering ?_ (J.transitive hS (Sieve.bind S.1 T) ?_)
+    · rintro Y f ⟨Z, a, g, hg, ha, rfl⟩
+      simpa using congr_arg (f₁.app _) ha
+    · intro Y f hf
+      apply J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
+      apply equalizerSieve_mem J (f₁ ≫ f₂)
+      dsimp
+      erw [comp_apply, comp_apply, app_localPreimage, app_localPreimage,
+        NatTrans.naturality_apply, NatTrans.naturality_apply, h]
+      rfl
+
+lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective_fac
+    {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} {f₁ : F₁ ⟶ F₂} {f₂ : F₂ ⟶ F₃} (f₃ : F₁ ⟶ F₃) (fac : f₁ ≫ f₂ = f₃)
+    [IsLocallyInjective J f₃] [IsLocallySurjective J f₁] :
+    IsLocallyInjective J f₂ := by
   subst fac
-  exact locallyInjective_of_locallyInjective_of_locallySurjective J φ ψ
+  exact isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective J f₁ f₂
 
-lemma locallySurjective_of_locallySurjective_of_locallyInjective_fac
-    {φψ : F₁ ⟶ F₃} (fac : φ ≫ ψ = φψ)
-    [LocallySurjective J φψ] [LocallyInjective J ψ] :
-    LocallySurjective J φ := by
+lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective
+    {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
+    [IsLocallySurjective J (f₁ ≫ f₂)] [IsLocallyInjective J f₂] :
+    IsLocallySurjective J f₁ where
+  imageSieve_mem {X} x := by
+    let S := imageSieve (f₁ ≫ f₂) (f₂.app _ x)
+    let T : ∀ ⦃Y : C⦄ (f : Y ⟶ X.unop) (_ : S f), Sieve Y := fun Y f hf =>
+      equalizerSieve (f₁.app _ (localPreimage (f₁ ≫ f₂) (f₂.app _ x) f hf)) (F₂.map f.op x)
+    refine' J.superset_covering ?_ (J.transitive (imageSieve_mem J (f₁ ≫ f₂) (f₂.app _ x))
+      (Sieve.bind S.1 T) ?_)
+    · rintro Y _ ⟨Z, a, g, hg, ha, rfl⟩
+      exact ⟨F₁.map a.op (localPreimage (f₁ ≫ f₂) _ _ hg), by simpa using ha⟩
+    · intro Y f hf
+      apply J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
+      apply equalizerSieve_mem J f₂
+      erw [NatTrans.naturality_apply, ← app_localPreimage (f₁ ≫ f₂) _ _ hf,
+        NatTrans.comp_app, comp_apply]
+      rfl
+
+lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective_fac
+    {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} {f₁ : F₁ ⟶ F₂} {f₂ : F₂ ⟶ F₃} (f₃ : F₁ ⟶ F₃) (fac : f₁ ≫ f₂ = f₃)
+    [IsLocallySurjective J f₃] [IsLocallyInjective J f₂] :
+    IsLocallySurjective J f₁ := by
   subst fac
-  exact locallySurjective_of_locallySurjective_of_locallyInjective J φ ψ
+  exact isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective J f₁ f₂
 
-variable (φ ψ)
+instance {F₁ F₂ : Cᵒᵖ ⥤ Type w} (f : F₁ ⟶ F₂) :
+    IsLocallySurjective J (toImagePresheafSheafify J f) where
+  imageSieve_mem {X} := by
+    rintro ⟨s, hs⟩
+    refine J.superset_covering ?_ hs
+    rintro Y g ⟨t, ht⟩
+    exact ⟨t, Subtype.ext ht⟩
 
-lemma locallySurjective_comp_iff [LocallySurjective J φ] :
-    LocallySurjective J (φ ≫ ψ) ↔ LocallySurjective J ψ :=
-  locallySurjective_iff_fac J rfl
+/-- The image of `F` in `J.sheafify F` is isomorphic to the sheafification. -/
+noncomputable def sheafificationIsoImagePresheaf (F : Cᵒᵖ ⥤ Type max u v) :
+    J.sheafify F ≅ ((imagePresheaf (J.toSheafify F)).sheafify J).toPresheaf where
+  hom :=
+    J.sheafifyLift (toImagePresheafSheafify J _)
+      ((isSheaf_iff_isSheaf_of_type J _).mpr <|
+        Subpresheaf.sheafify_isSheaf _ <|
+          (isSheaf_iff_isSheaf_of_type J _).mp <| GrothendieckTopology.sheafify_isSheaf J _)
+  inv := Subpresheaf.ι _
+  hom_inv_id :=
+    J.sheafify_hom_ext _ _ (J.sheafify_isSheaf _) (by simp [toImagePresheafSheafify])
+  inv_hom_id := by
+    rw [← cancel_mono (Subpresheaf.ι _), Category.id_comp, Category.assoc]
+    refine' Eq.trans _ (Category.comp_id _)
+    congr 1
+    exact J.sheafify_hom_ext _ _ (J.sheafify_isSheaf _) (by simp [toImagePresheafSheafify])
+#align category_theory.sheafification_iso_image_presheaf CategoryTheory.Presheaf.sheafificationIsoImagePresheaf
 
 section
 
@@ -218,20 +293,12 @@ variable {E : Type u'} [Category.{max u v} E] [ConcreteCategory E]
 
 variable (P : Cᵒᵖ ⥤ E)
 
-section
+open Plus
 
-open GrothendieckTopology Plus
-
-instance locallyInjective_toPlus : LocallyInjective J (J.toPlus P) where
-  locally_injective {X} x y h := by
-    erw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
-    obtain ⟨W, h₁, h₂, eq⟩ := h
-    exact ⟨W.1, W.2, fun {Y} f hf => congr_fun (congr_arg Subtype.val eq) ⟨Y, f, hf⟩⟩
-
-instance locallySurjective_toPlus : LocallySurjective J (J.toPlus P) where
-  locally_surjective {X} x := by
+instance isLocallySurjective_toPlus : IsLocallySurjective J (J.toPlus P) where
+  imageSieve_mem x := by
     obtain ⟨S, x, rfl⟩ := exists_rep x
-    refine' ⟨S.1, S.2, fun {Y} f hf => ⟨x.1 ⟨Y, f, hf⟩, _⟩⟩
+    refine' J.superset_covering (fun Y f hf => ⟨x.1 ⟨Y, f, hf⟩, _⟩) S.2
     dsimp
     erw [toPlus_eq_mk, res_mk_eq_mk_pullback, eq_mk_iff_exists]
     refine' ⟨S.pullback f, homOfLE le_top, 𝟙 _, _⟩
@@ -239,184 +306,60 @@ instance locallySurjective_toPlus : LocallySurjective J (J.toPlus P) where
     simpa using x.2 (Cover.Relation.mk _ _ _ g (𝟙 Z) f (g ≫ f) hf
       (S.1.downward_closed hf g) (by simp))
 
-end
-
-instance locallyInjective_toSheafify : LocallyInjective J (J.toSheafify P) := by
+instance isLocallySurjective_toSheafify : IsLocallySurjective J (J.toSheafify P) := by
   dsimp [GrothendieckTopology.toSheafify]
   rw [GrothendieckTopology.plusMap_toPlus]
   infer_instance
 
-instance locallySurjective_toSheafify : LocallySurjective J (J.toSheafify P) := by
-  dsimp [GrothendieckTopology.toSheafify]
-  rw [GrothendieckTopology.plusMap_toPlus]
-  infer_instance
-
-@[reassoc (attr := simp)]
-lemma toSheafify_plusPlusIsoSheafify_hom :
-    J.toSheafify P ≫ (plusPlusIsoSheafify J E P).hom = toSheafify J P := by
-  convert Adjunction.unit_leftAdjointUniq_hom_app
-    (plusPlusAdjunction J E) (sheafificationAdjunction J E) P
-  ext1 P
-  dsimp [GrothendieckTopology.toSheafify, plusPlusAdjunction]
-  rw [Category.comp_id]
-
-instance locallyInjective_toSheafify' : LocallyInjective J (toSheafify J P) := by
-  rw [← toSheafify_plusPlusIsoSheafify_hom]
-  infer_instance
-
-instance locallySurjective_toSheafify' : LocallySurjective J (toSheafify J P) := by
+instance isLocallySurjective_toSheafify' : IsLocallySurjective J (toSheafify J P) := by
   rw [← toSheafify_plusPlusIsoSheafify_hom]
   infer_instance
 
 end
-
--- we should have a better API for "separated" to that it follows trivially from IsSheaf...
-lemma locallyInjective_iff_injective_of_separated
-    (hsep : ∀ (X : C) (S : J.Cover X) (x y : F₁.obj (op X)),
-        (∀ I : S.Arrow, F₁.map I.f.op x = F₁.map I.f.op y) → x = y) :
-    LocallyInjective J φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.app X) := by
-  constructor
-  · intro _ X x y h
-    apply hsep X.unop ⟨_, sieveOfLocallyInjective_mem J φ x y h⟩
-    rintro ⟨Y, f, hf⟩
-    exact map_apply_eq_of_locallyInjective J φ x y h f hf
-  · apply locallyInjective_of_injective
 
 end Presheaf
 
 namespace Sheaf
 
 variable {J}
-variable {F₁ F₂ F₃ : Sheaf J D} (φ : F₁ ⟶ F₂) (ψ : F₂ ⟶ F₃)
+variable {F₁ F₂ F₃ : Sheaf J A} (φ : F₁ ⟶ F₂) (ψ : F₂ ⟶ F₃)
+  [HasSheafCompose J (forget A)]
 
-/-- A morphism of sheaves `φ : F₁ ⟶ F₂` with values in a concrete category `D` is
-locally injective if the corresponding morphism of presheaves if locally injective. -/
-abbrev LocallyInjective := Presheaf.LocallyInjective J φ.1
+/-- If `φ : F₁ ⟶ F₂` is a morphism of sheaves, this is an abbreviation for
+`Presheaf.IsLocallySurjective J φ.val`. -/
+abbrev IsLocallySurjective := Presheaf.IsLocallySurjective J φ.val
 
-/-- A morphism of sheaves `φ : F₁ ⟶ F₂` with values in a concrete category `D` is
-locally surjective if the corresponding morphism of presheaves if locally surjective. -/
-abbrev LocallySurjective := Presheaf.LocallySurjective J φ.1
+instance isLocallySurjective_comp [IsLocallySurjective φ] [IsLocallySurjective ψ] :
+    IsLocallySurjective (φ ≫ ψ) :=
+  Presheaf.isLocallySurjective_comp J φ.val ψ.val
 
-instance locallyInjective_comp [LocallyInjective φ] [LocallyInjective ψ] :
-    LocallyInjective (φ ≫ ψ) :=
-  Presheaf.locallyInjective_comp J φ.1 ψ.1
+instance isLocallySurjective_of_iso [IsIso φ] :
+    IsLocallySurjective φ := by
+  have : IsIso φ.val := (inferInstance : IsIso ((sheafToPresheaf J A).map φ))
+  apply Presheaf.isLocallySurjective_of_iso
 
-instance locallySurjective_comp [LocallySurjective φ] [LocallySurjective ψ] :
-    LocallySurjective (φ ≫ ψ) :=
-  Presheaf.locallySurjective_comp J φ.1 ψ.1
+instance {F₁ F₂ : Sheaf J (Type w)} (f : F₁ ⟶ F₂) :
+    IsLocallySurjective (toImageSheaf f) := by
+  dsimp [toImageSheaf]
+  infer_instance
 
-lemma locallyInjective_of_locallyInjective [LocallyInjective (φ ≫ ψ)] :
-    LocallyInjective φ :=
-  Presheaf.locallyInjective_of_locallyInjective J φ.1 ψ.1
+instance [IsLocallySurjective φ] :
+    IsLocallySurjective ((sheafCompose J (forget A)).map φ) :=
+  (Presheaf.isLocallySurjective_iff_forget J φ.val).1 inferInstance
 
-lemma locallySurjective_of_locallySurjective [LocallySurjective (φ ≫ ψ)] :
-    LocallySurjective ψ :=
-  Presheaf.locallySurjective_of_locallySurjective J φ.1 ψ.1
-
-variable {φ ψ}
-
-lemma locallyInjective_of_locallyInjective_fac {φψ : F₁ ⟶ F₃} (fac : φ ≫ ψ = φψ)
-    [LocallyInjective φψ] : LocallyInjective φ := by
-  subst fac
-  exact locallyInjective_of_locallyInjective φ ψ
-
-lemma locallySurjective_of_locallySurjective_fac {φψ : F₁ ⟶ F₃} (fac : φ ≫ ψ = φψ)
-    [LocallySurjective φψ] : LocallySurjective ψ := by
-  subst fac
-  exact locallySurjective_of_locallySurjective φ ψ
-
-section
-
-variable (φ)
-variable [J.HasSheafCompose (forget D)]
-
-instance locallyInjective_forget [LocallyInjective φ] :
-    LocallyInjective ((sheafCompose J (forget D)).map φ) :=
-  Presheaf.locallyInjective_forget J φ.1
-
-instance locallySurjective_forget [LocallySurjective φ] :
-    LocallySurjective ((sheafCompose J (forget D)).map φ) :=
-  Presheaf.locallySurjective_forget J φ.1
-
-lemma mono_of_locallyInjective' {F G : Sheaf J (Type w)} (φ : F ⟶ G) [LocallyInjective φ] :
-    Mono φ where
-  right_cancellation {Z} f₁ f₂ h := by
+instance epi_of_isLocallySurjective' {F₁ F₂ : Sheaf J (Type w)} (φ : F₁ ⟶ F₂)
+    [IsLocallySurjective φ] : Epi φ where
+  left_cancellation {Z} f₁ f₂ h := by
     ext X x
-    apply ((Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1 F.2)) _
-      (Presheaf.sieveOfLocallyInjective_mem J φ.1 (f₁.1.app _ x) (f₂.1.app _ x)
-      (congr_fun (congr_app (congr_arg Sheaf.Hom.val h) X) x))).ext
-    intro Y f hf
-    exact Presheaf.map_apply_eq_of_locallyInjective J φ.1 _ _ _ f hf
+    apply Z.isSeparated _ _ (Presheaf.imageSieve_mem J φ.val x)
+    rintro Y f ⟨s, hs⟩
+    erw [← NatTrans.naturality_apply, ← NatTrans.naturality_apply, ← hs,
+      ← comp_apply, ← comp_apply, ← NatTrans.comp_app, ← NatTrans.comp_app,
+      ← instCategorySheaf_comp_val, ← instCategorySheaf_comp_val, h]
 
-lemma epi_of_locallySurjective' {F G : Sheaf J (Type w)} (φ : F ⟶ G) [LocallySurjective φ] :
-    Epi φ where
-  left_cancellation := by
-    intro H f₁ f₂ h₁₂
-    ext X x
-    apply ((Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1 H.2)) _
-      (Presheaf.sieveOfLocallySurjective_mem J φ.1 x)).ext
-    intro Y f hf
-    have h₁ := congr_fun (f₁.1.naturality f.op) x
-    have h₂ := congr_fun (f₂.1.naturality f.op) x
-    dsimp at h₁ h₂
-    simp only [← h₁, ← h₂]
-    erw [congr_arg (f₁.val.app (op Y)) (Presheaf.app_apply_localPreimage J φ.1 x f hf).symm,
-      congr_arg (f₂.val.app (op Y)) (Presheaf.app_apply_localPreimage J φ.1 x f hf).symm]
-    exact congr_fun (congr_app (congr_arg Sheaf.Hom.val h₁₂) (op Y)) _
-
-instance : Faithful (sheafCompose J (forget D)) where
-  map_injective {F G f₁ f₂} h := by
-    ext X x
-    exact congr_fun (congr_app ((sheafToPresheaf _ _).congr_map h) X) x
-
-lemma mono_of_locallyInjective [LocallyInjective φ] : Mono φ :=
-  (sheafCompose J (forget D)).mono_of_mono_map (mono_of_locallyInjective' _)
-
-lemma epi_of_locallySurjective [LocallySurjective φ] : Epi φ :=
-  (sheafCompose J (forget D)).epi_of_epi_map (epi_of_locallySurjective' _)
-
-end
+instance epi_of_isLocallySurjective [IsLocallySurjective φ] : Epi φ :=
+  (sheafCompose J (forget A)).epi_of_epi_map inferInstance
 
 end Sheaf
-
-namespace Presheaf
-
-variable [HasWeakSheafify J D]
-  [∀ (P : Cᵒᵖ ⥤ D), Presheaf.LocallyInjective J (toSheafify J P)]
-  [∀ (P : Cᵒᵖ ⥤ D), Presheaf.LocallySurjective J (toSheafify J P)]
-  {F G : Cᵒᵖ ⥤ D} (φ : F ⟶ G)
-
-lemma sheafifyMap_locallyInjective_iff :
-    LocallyInjective J (sheafifyMap J φ) ↔
-      LocallyInjective J φ := by
-  rw [← locallyInjective_comp_iff J _ (toSheafify J G), toSheafify_naturality J φ]
-  constructor
-  · intro
-    infer_instance
-  · intro
-    exact locallyInjective_of_locallyInjective_of_locallySurjective J
-      (toSheafify J F) (sheafifyMap J φ)
-
-lemma presheafToSheaf_map_locallyInjective_iff :
-    Sheaf.LocallyInjective ((presheafToSheaf J D).map φ) ↔
-      LocallyInjective J φ :=
-  sheafifyMap_locallyInjective_iff J φ
-
-lemma sheafifyMap_locallySurjective_iff :
-    LocallySurjective J (sheafifyMap J φ) ↔
-      LocallySurjective J φ := by
-  rw [← locallySurjective_comp_iff J (toSheafify J F) _, ← toSheafify_naturality J φ]
-  constructor
-  · intro
-    exact locallySurjective_of_locallySurjective_of_locallyInjective J φ (toSheafify J G)
-  · intro
-    infer_instance
-
-lemma presheafToSheaf_map_locallySurjective_iff :
-    Sheaf.LocallySurjective ((presheafToSheaf J D).map φ) ↔
-      LocallySurjective J φ :=
-  sheafifyMap_locallySurjective_iff J φ
-
-end Presheaf
 
 end CategoryTheory
