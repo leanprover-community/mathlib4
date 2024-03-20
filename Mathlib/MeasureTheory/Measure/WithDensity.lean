@@ -489,7 +489,7 @@ lemma withDensity_inv_same_le {μ : Measure α} {f : α → ℝ≥0∞} (hf : AE
   suffices (f * fun x ↦ (f x)⁻¹) ≤ᵐ[μ] 1 by
     refine (withDensity_mono this).trans ?_
     rw [withDensity_one]
-  refine ae_of_all _ (fun x ↦ ?_)
+  filter_upwards with x
   simp only [Pi.mul_apply, Pi.one_apply]
   by_cases hx_top : f x = ∞
   · simp only [hx_top, ENNReal.inv_top, mul_zero, zero_le]
