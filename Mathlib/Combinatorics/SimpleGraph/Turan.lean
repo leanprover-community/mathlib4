@@ -84,8 +84,9 @@ theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ Fintype.card V) (hx : IsTur
   obtain ⟨a, _, b, _, ne, na⟩ := this
   have nhx : ¬G.IsTuranMaximal r := by
     simp_rw [IsTuranMaximal, hx.1, true_and]; push_neg
-    use G.addEdge a b, inferInstance, cf.addEdge a b
-    simp_rw [G.card_edgeFinset_addEdge na ne, Nat.lt.base]
+    use G ⊔ edge a b, inferInstance, cf.sup_edge a b
+    convert Nat.lt.base _
+    convert G.card_edgeFinset_sup_edge na ne
   contradiction
 
 end SimpleGraph
