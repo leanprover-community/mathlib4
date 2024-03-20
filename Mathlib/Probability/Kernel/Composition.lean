@@ -906,6 +906,13 @@ instance IsSFiniteKernel.fst (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : 
   by rw [kernel.fst]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.fst ProbabilityTheory.kernel.IsSFiniteKernel.fst
 
+instance (priority := 100) isFiniteKernel_of_isFiniteKernel_fst {κ : kernel α (β × γ)}
+    [h : IsFiniteKernel (fst κ)] :
+    IsFiniteKernel κ := by
+  refine ⟨h.bound, h.bound_lt_top, fun a ↦ le_trans ?_ (measure_le_bound (fst κ) a Set.univ)⟩
+  rw [fst_apply' _ _ MeasurableSet.univ]
+  simp
+
 lemma fst_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
     (hf : Measurable f) (hg : Measurable g) :
     fst (map κ (fun x ↦ (f x, g x)) (hf.prod_mk hg)) = map κ f hf := by
@@ -966,6 +973,13 @@ instance IsFiniteKernel.snd (κ : kernel α (β × γ)) [IsFiniteKernel κ] : Is
 instance IsSFiniteKernel.snd (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : IsSFiniteKernel (snd κ) :=
   by rw [kernel.snd]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.snd ProbabilityTheory.kernel.IsSFiniteKernel.snd
+
+instance (priority := 100) isFiniteKernel_of_isFiniteKernel_snd {κ : kernel α (β × γ)}
+    [h : IsFiniteKernel (snd κ)] :
+    IsFiniteKernel κ := by
+  refine ⟨h.bound, h.bound_lt_top, fun a ↦ le_trans ?_ (measure_le_bound (snd κ) a Set.univ)⟩
+  rw [snd_apply' _ _ MeasurableSet.univ]
+  simp
 
 lemma snd_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
     (hf : Measurable f) (hg : Measurable g) :
