@@ -28,7 +28,6 @@ variable {α β γ δ : Type*}
 section HasSum
 
 variable [AddCommMonoid α] [TopologicalSpace α]
-
 variable {f g : β → α} {a b : α} {s : Finset β}
 
 /-- Constant zero function has sum `0` -/

@@ -310,9 +310,7 @@ theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
 section Scan
 
 variable {β : Type*}
-
 variable (f : β → α → β) (b : β)
-
 variable (v : Vector α n)
 
 /-- Construct a `Vector β (n + 1)` from a `Vector α n` by scanning `f : β → α → β`
@@ -661,7 +659,6 @@ namespace Vector
 section Traverse
 
 variable {F G : Type u → Type u}
-
 variable [Applicative F] [Applicative G]
 
 open Applicative Functor
@@ -700,7 +697,6 @@ end
 open Function
 
 variable [LawfulApplicative F] [LawfulApplicative G]
-
 variable {α β γ : Type u}
 
 -- We need to turn off the linter here as
