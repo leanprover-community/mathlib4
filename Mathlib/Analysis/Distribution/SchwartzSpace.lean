@@ -64,11 +64,11 @@ noncomputable section
 
 open scoped BigOperators Nat
 
-variable {𝕜 𝕜' D E F G V : Type*}
+variable {𝕜 𝕜' D E F G V 𝓕 : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
-variable (E F)
 
+variable (E F) in
 /-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
   any power of `‖x‖`. -/
 structure SchwartzMap where
@@ -81,52 +81,63 @@ structure SchwartzMap where
   any power of `‖x‖`. -/
 scoped[SchwartzMap] notation "𝓢(" E ", " F ")" => SchwartzMap E F
 
-variable {E F}
+class SchwartzMapClass (𝓕 : Type*) (E F : outParam Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [FunLike 𝓕 E F] : Prop where
+  map_smooth : ∀ f : 𝓕, ContDiff ℝ ⊤ f
+  map_decay : ∀ (f : 𝓕) (k n : ℕ), ∃ C : ℝ, ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ C
 
 namespace SchwartzMap
-
--- Porting note: removed
--- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
 
 instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
 #align schwartz_map.fun_like SchwartzMap.instFunLike
 
+instance instSchwartzMapClass : SchwartzMapClass 𝓢(E, F) E F where
+  map_smooth := SchwartzMap.smooth'
+  map_decay := SchwartzMap.decay'
+
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
 instance instCoeFun : CoeFun 𝓢(E, F) fun _ => E → F :=
   DFunLike.hasCoeToFun
 #align schwartz_map.has_coe_to_fun SchwartzMap.instCoeFun
 
+variable [FunLike 𝓕 E F] [SchwartzMapClass 𝓕 E F]
+
+instance instCoeTC : CoeTC 𝓕 𝓢(E, F) where
+  coe f :=
+    { toFun := f
+      smooth' := SchwartzMapClass.map_smooth f
+      decay' := SchwartzMapClass.map_decay f }
+
+@[simp]
+theorem coe_apply (f : 𝓕) (x : E) : (f : 𝓢(E, F)) x = f x := rfl
+
 /-- All derivatives of a Schwartz function are rapidly decaying. -/
-theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
+theorem decay (f : 𝓕) (k n : ℕ) :
     ∃ C : ℝ, 0 < C ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ C := by
-  rcases f.decay' k n with ⟨C, hC⟩
+  rcases SchwartzMapClass.map_decay f k n with ⟨C, hC⟩
   exact ⟨max C 1, by positivity, fun x => (hC x).trans (le_max_left _ _)⟩
 #align schwartz_map.decay SchwartzMap.decay
 
 /-- Every Schwartz function is smooth. -/
-theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
-  f.smooth'.of_le le_top
+theorem smooth (f : 𝓕) (n : ℕ∞) : ContDiff ℝ n f :=
+  (SchwartzMapClass.map_smooth f).of_le le_top
 #align schwartz_map.smooth SchwartzMap.smooth
 
-/-- Every Schwartz function is continuous. -/
-@[continuity]
-protected theorem continuous (f : 𝓢(E, F)) : Continuous f :=
-  (f.smooth 0).continuous
-#align schwartz_map.continuous SchwartzMap.continuous
+#align schwartz_map.continuous ContinuousMapClass.map_continuous
 
-instance instContinuousMapClass : ContinuousMapClass 𝓢(E, F) E F where
-  map_continuous := SchwartzMap.continuous
+instance instContinuousMapClass : ContinuousMapClass 𝓕 E F where
+  map_continuous f := (smooth f 0).continuous
 
 /-- Every Schwartz function is differentiable. -/
-protected theorem differentiable (f : 𝓢(E, F)) : Differentiable ℝ f :=
-  (f.smooth 1).differentiable rfl.le
+protected theorem differentiable (f : 𝓕) : Differentiable ℝ f :=
+  (smooth f 1).differentiable rfl.le
 #align schwartz_map.differentiable SchwartzMap.differentiable
 
 /-- Every Schwartz function is differentiable at any point. -/
-protected theorem differentiableAt (f : 𝓢(E, F)) {x : E} : DifferentiableAt ℝ f x :=
-  f.differentiable.differentiableAt
+protected theorem differentiableAt (f : 𝓕) {x : E} : DifferentiableAt ℝ f x :=
+  (SchwartzMap.differentiable f).differentiableAt
 #align schwartz_map.differentiable_at SchwartzMap.differentiableAt
 
 @[ext]
@@ -138,12 +149,12 @@ section IsBigO
 
 open Asymptotics Filter
 
-variable (f : 𝓢(E, F))
+variable (f : 𝓕)
 
 /-- Auxiliary lemma, used in proving the more general result `isBigO_cocompact_rpow`. -/
 theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
     f =O[cocompact E] fun x => ‖x‖ ^ (-k : ℤ) := by
-  obtain ⟨d, _, hd'⟩ := f.decay k 0
+  obtain ⟨d, _, hd'⟩ := (decay f) k 0
   simp only [norm_iteratedFDeriv_zero] at hd'
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
   refine' ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite _⟩
@@ -179,37 +190,37 @@ end IsBigO
 
 section Aux
 
-theorem bounds_nonempty (k n : ℕ) (f : 𝓢(E, F)) :
+theorem bounds_nonempty (k n : ℕ) (f : 𝓕) :
     ∃ c : ℝ, c ∈ { c : ℝ | 0 ≤ c ∧ ∀ x : E, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ c } :=
-  let ⟨M, hMp, hMb⟩ := f.decay k n
+  let ⟨M, hMp, hMb⟩ := (decay f) k n
   ⟨M, le_of_lt hMp, hMb⟩
 #align schwartz_map.bounds_nonempty SchwartzMap.bounds_nonempty
 
-theorem bounds_bddBelow (k n : ℕ) (f : 𝓢(E, F)) :
+theorem bounds_bddBelow (k n : ℕ) (f : 𝓕) :
     BddBelow { c | 0 ≤ c ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ c } :=
   ⟨0, fun _ ⟨hn, _⟩ => hn⟩
 #align schwartz_map.bounds_bdd_below SchwartzMap.bounds_bddBelow
 
-theorem decay_add_le_aux (k n : ℕ) (f g : 𝓢(E, F)) (x : E) :
+theorem decay_add_le_aux (k n : ℕ) (f g : 𝓕) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n ((f : E → F) + (g : E → F)) x‖ ≤
       ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ + ‖x‖ ^ k * ‖iteratedFDeriv ℝ n g x‖ := by
   rw [← mul_add]
-  refine' mul_le_mul_of_nonneg_left _ (by positivity)
-  rw [iteratedFDeriv_add_apply (f.smooth _) (g.smooth _)]
+  gcongr
+  rw [iteratedFDeriv_add_apply (smooth f _) (smooth g _)]
   exact norm_add_le _ _
 #align schwartz_map.decay_add_le_aux SchwartzMap.decay_add_le_aux
 
-theorem decay_neg_aux (k n : ℕ) (f : 𝓢(E, F)) (x : E) :
+theorem decay_neg_aux (k n : ℕ) (f : 𝓕) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (-f : E → F) x‖ = ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
   rw [iteratedFDeriv_neg_apply, norm_neg]
 #align schwartz_map.decay_neg_aux SchwartzMap.decay_neg_aux
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
-theorem decay_smul_aux (k n : ℕ) (f : 𝓢(E, F)) (c : 𝕜) (x : E) :
+theorem decay_smul_aux (k n : ℕ) (f : 𝓕) (c : 𝕜) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (c • (f : E → F)) x‖ =
       ‖c‖ * ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
-  rw [mul_comm ‖c‖, mul_assoc, iteratedFDeriv_const_smul_apply (f.smooth _),
+  rw [mul_comm ‖c‖, mul_assoc, iteratedFDeriv_const_smul_apply (smooth f _),
     norm_smul c (iteratedFDeriv ℝ n (⇑f) x)]
 #align schwartz_map.decay_smul_aux SchwartzMap.decay_smul_aux
 
@@ -218,22 +229,22 @@ end Aux
 section SeminormAux
 
 /-- Helper definition for the seminorms of the Schwartz space. -/
-protected def seminormAux (k n : ℕ) (f : 𝓢(E, F)) : ℝ :=
+protected def seminormAux (k n : ℕ) (f : 𝓕) : ℝ :=
   sInf { c | 0 ≤ c ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ c }
 #align schwartz_map.seminorm_aux SchwartzMap.seminormAux
 
-theorem seminormAux_nonneg (k n : ℕ) (f : 𝓢(E, F)) : 0 ≤ f.seminormAux k n :=
+theorem seminormAux_nonneg (k n : ℕ) (f : 𝓕) : 0 ≤ SchwartzMap.seminormAux k n f :=
   le_csInf (bounds_nonempty k n f) fun _ ⟨hx, _⟩ => hx
 #align schwartz_map.seminorm_aux_nonneg SchwartzMap.seminormAux_nonneg
 
-theorem le_seminormAux (k n : ℕ) (f : 𝓢(E, F)) (x : E) :
-    ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (⇑f) x‖ ≤ f.seminormAux k n :=
+theorem le_seminormAux (k n : ℕ) (f : 𝓕) (x : E) :
+    ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (⇑f) x‖ ≤ SchwartzMap.seminormAux k n f :=
   le_csInf (bounds_nonempty k n f) fun _ ⟨_, h⟩ => h x
 #align schwartz_map.le_seminorm_aux SchwartzMap.le_seminormAux
 
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
-theorem seminormAux_le_bound (k n : ℕ) (f : 𝓢(E, F)) {M : ℝ} (hMp : 0 ≤ M)
-    (hM : ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ M) : f.seminormAux k n ≤ M :=
+theorem seminormAux_le_bound (k n : ℕ) (f : 𝓕) {M : ℝ} (hMp : 0 ≤ M)
+    (hM : ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ M) : SchwartzMap.seminormAux k n f ≤ M :=
   csInf_le (bounds_bddBelow k n f) ⟨hMp, hM⟩
 #align schwartz_map.seminorm_aux_le_bound SchwartzMap.seminormAux_le_bound
 
@@ -249,15 +260,15 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [Nor
 instance instSMul : SMul 𝕜 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
-      smooth' := (f.smooth _).const_smul c
+      smooth' := (smooth f _).const_smul c
       decay' := fun k n => by
-        refine' ⟨f.seminormAux k n * (‖c‖ + 1), fun x => _⟩
+        refine' ⟨SchwartzMap.seminormAux k n f * (‖c‖ + 1), fun x => _⟩
         have hc : 0 ≤ ‖c‖ := by positivity
-        refine' le_trans _ ((mul_le_mul_of_nonneg_right (f.le_seminormAux k n x) hc).trans _)
+        refine' le_trans _ ((mul_le_mul_of_nonneg_right (le_seminormAux k n f x) hc).trans _)
         · apply Eq.le
           rw [mul_comm _ ‖c‖, ← mul_assoc]
           exact decay_smul_aux k n f c x
-        · apply mul_le_mul_of_nonneg_left _ (f.seminormAux_nonneg k n)
+        · apply mul_le_mul_of_nonneg_left _ (seminormAux_nonneg k n f)
           linarith }⟩
 #align schwartz_map.has_smul SchwartzMap.instSMul
 
@@ -275,18 +286,18 @@ instance instSMulCommClass [SMulCommClass 𝕜 𝕜' F] : SMulCommClass 𝕜 �
 #align schwartz_map.smul_comm_class SchwartzMap.instSMulCommClass
 
 theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
-    (c • f).seminormAux k n ≤ ‖c‖ * f.seminormAux k n := by
+    SchwartzMap.seminormAux k n (c • f) ≤ ‖c‖ * SchwartzMap.seminormAux k n f := by
   refine'
-    (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
+    seminormAux_le_bound k n (c • f) (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
       fun x => (decay_smul_aux k n f c x).le.trans _
   rw [mul_assoc]
-  exact mul_le_mul_of_nonneg_left (f.le_seminormAux k n x) (norm_nonneg _)
+  exact mul_le_mul_of_nonneg_left (le_seminormAux k n f x) (norm_nonneg _)
 #align schwartz_map.seminorm_aux_smul_le SchwartzMap.seminormAux_smul_le
 
 instance instNSMul : SMul ℕ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
-      smooth' := (f.smooth _).const_smul c
+      smooth' := (SchwartzMapClass.map_smooth f).const_smul c
       decay' := by
         have : c • (f : E → F) = (c : ℝ) • f := by
           ext x
@@ -299,7 +310,7 @@ instance instNSMul : SMul ℕ 𝓢(E, F) :=
 instance instZSMul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
-      smooth' := (f.smooth _).const_smul c
+      smooth' := (SchwartzMapClass.map_smooth f).const_smul c
       decay' := by
         have : c • (f : E → F) = (c : ℝ) • f := by
           ext x
@@ -337,7 +348,7 @@ theorem zero_apply {x : E} : (0 : 𝓢(E, F)) x = 0 :=
   rfl
 #align schwartz_map.zero_apply SchwartzMap.zero_apply
 
-theorem seminormAux_zero (k n : ℕ) : (0 : 𝓢(E, F)).seminormAux k n = 0 :=
+theorem seminormAux_zero (k n : ℕ) : SchwartzMap.seminormAux k n (0 : 𝓢(E, F)) = 0 :=
   le_antisymm (seminormAux_le_bound k n _ rfl.le fun _ => by simp [Pi.zero_def])
     (seminormAux_nonneg _ _ _)
 #align schwartz_map.seminorm_aux_zero SchwartzMap.seminormAux_zero
@@ -347,9 +358,10 @@ end Zero
 section Neg
 
 instance instNeg : Neg 𝓢(E, F) :=
-  ⟨fun f =>
-    ⟨-f, (f.smooth _).neg, fun k n =>
-      ⟨f.seminormAux k n, fun x => (decay_neg_aux k n f x).le.trans (f.le_seminormAux k n x)⟩⟩⟩
+  ⟨fun f ↦
+    ⟨-f, (smooth f _).neg, fun k n ↦
+      ⟨SchwartzMap.seminormAux k n f, fun x ↦ (decay_neg_aux k n f x).le.trans
+        (le_seminormAux k n f x)⟩⟩⟩
 #align schwartz_map.has_neg SchwartzMap.instNeg
 
 end Neg
@@ -357,11 +369,11 @@ end Neg
 section Add
 
 instance instAdd : Add 𝓢(E, F) :=
-  ⟨fun f g =>
-    ⟨f + g, (f.smooth _).add (g.smooth _), fun k n =>
-      ⟨f.seminormAux k n + g.seminormAux k n, fun x =>
+  ⟨fun f g ↦
+    ⟨f + g, (smooth f _).add (smooth g _), fun k n ↦
+      ⟨SchwartzMap.seminormAux k n f + SchwartzMap.seminormAux k n g, fun x ↦
         (decay_add_le_aux k n f g x).trans
-          (add_le_add (f.le_seminormAux k n x) (g.le_seminormAux k n x))⟩⟩⟩
+          (add_le_add (le_seminormAux k n f x) (le_seminormAux k n g x))⟩⟩⟩
 #align schwartz_map.has_add SchwartzMap.instAdd
 
 @[simp]
@@ -370,11 +382,12 @@ theorem add_apply {f g : 𝓢(E, F)} {x : E} : (f + g) x = f x + g x :=
 #align schwartz_map.add_apply SchwartzMap.add_apply
 
 theorem seminormAux_add_le (k n : ℕ) (f g : 𝓢(E, F)) :
-    (f + g).seminormAux k n ≤ f.seminormAux k n + g.seminormAux k n :=
-  (f + g).seminormAux_le_bound k n
+    SchwartzMap.seminormAux k n (f + g) ≤
+      SchwartzMap.seminormAux k n f + SchwartzMap.seminormAux k n g :=
+  seminormAux_le_bound k n (f + g)
     (add_nonneg (seminormAux_nonneg _ _ _) (seminormAux_nonneg _ _ _)) fun x =>
     (decay_add_le_aux k n f g x).trans <|
-      add_le_add (f.le_seminormAux k n x) (g.le_seminormAux k n x)
+      add_le_add (le_seminormAux k n f x) (le_seminormAux k n g x)
 #align schwartz_map.seminorm_aux_add_le SchwartzMap.seminormAux_add_le
 
 end Add
@@ -383,10 +396,10 @@ section Sub
 
 instance instSub : Sub 𝓢(E, F) :=
   ⟨fun f g =>
-    ⟨f - g, (f.smooth _).sub (g.smooth _), by
+    ⟨f - g, (smooth f _).sub (smooth g _), by
       intro k n
-      refine' ⟨f.seminormAux k n + g.seminormAux k n, fun x => _⟩
-      refine' le_trans _ (add_le_add (f.le_seminormAux k n x) (g.le_seminormAux k n x))
+      refine' ⟨SchwartzMap.seminormAux k n f + SchwartzMap.seminormAux k n g, fun x => _⟩
+      refine' le_trans _ (add_le_add (le_seminormAux k n f x) (le_seminormAux k n g x))
       rw [sub_eq_add_neg]
       rw [← decay_neg_aux k n g x]
       convert decay_add_le_aux k n f (-g) x⟩⟩
@@ -457,7 +470,7 @@ protected def seminorm (k n : ℕ) : Seminorm 𝕜 𝓢(E, F) :=
 /-- If one controls the seminorm for every `x`, then one controls the seminorm. -/
 theorem seminorm_le_bound (k n : ℕ) (f : 𝓢(E, F)) {M : ℝ} (hMp : 0 ≤ M)
     (hM : ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ M) : SchwartzMap.seminorm 𝕜 k n f ≤ M :=
-  f.seminormAux_le_bound k n hMp hM
+  seminormAux_le_bound k n f hMp hM
 #align schwartz_map.seminorm_le_bound SchwartzMap.seminorm_le_bound
 
 /-- If one controls the seminorm for every `x`, then one controls the seminorm.
@@ -472,7 +485,7 @@ theorem seminorm_le_bound' (k n : ℕ) (f : 𝓢(ℝ, F)) {M : ℝ} (hMp : 0 ≤
 /-- The seminorm controls the Schwartz estimate for any fixed `x`. -/
 theorem le_seminorm (k n : ℕ) (f : 𝓢(E, F)) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ SchwartzMap.seminorm 𝕜 k n f :=
-  f.le_seminormAux k n x
+  le_seminormAux k n f x
 #align schwartz_map.le_seminorm SchwartzMap.le_seminorm
 
 /-- The seminorm controls the Schwartz estimate for any fixed `x`.
@@ -905,8 +918,9 @@ variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
-  mkCLM (fderiv ℝ) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
-    (fun a f _ => fderiv_const_smul f.differentiableAt a)
+  mkCLM (fderiv ℝ)
+    (fun f g _ => fderiv_add (SchwartzMap.differentiableAt f) (SchwartzMap.differentiableAt g))
+    (fun a f _ => fderiv_const_smul (SchwartzMap.differentiableAt f) a)
     (fun f => (contDiff_top_iff_fderiv.mp f.smooth').2) fun ⟨k, n⟩ =>
     ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
       simpa only [schwartzSeminormFamily_apply, Seminorm.comp_apply, Finset.sup_singleton,
@@ -920,8 +934,9 @@ theorem fderivCLM_apply (f : 𝓢(E, F)) (x : E) : fderivCLM 𝕜 f x = fderiv �
 
 /-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
-  mkCLM (fun f => deriv f) (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
-    (fun a f _ => deriv_const_smul a f.differentiableAt)
+  mkCLM (fun f => deriv f)
+    (fun f g _ => deriv_add (SchwartzMap.differentiableAt f) (SchwartzMap.differentiableAt g))
+    (fun a f _ => deriv_const_smul a (SchwartzMap.differentiableAt f))
     (fun f => (contDiff_top_iff_deriv.mp f.smooth').2) fun ⟨k, n⟩ =>
     ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
       simpa only [Real.norm_eq_abs, Finset.sup_singleton, schwartzSeminormFamily_apply, one_mul,
@@ -1021,7 +1036,8 @@ lemma integrable_pow_mul (f : 𝓢(D, V)) {μ : Measure D} (k : ℕ) [IsAddHaarM
   have : Integrable (fun x : D ↦ C * (1 + ‖x‖) ^ (-((finrank ℝ D + 1 : ℕ) : ℝ))) μ := by
     apply (integrable_one_add_norm ?_).const_mul
     exact Nat.cast_lt.mpr Nat.le.refl
-  apply this.mono ((aestronglyMeasurable_id.norm.pow _).mul f.continuous.aestronglyMeasurable.norm)
+  apply this.mono ((aestronglyMeasurable_id.norm.pow _).mul
+    (map_continuous f).aestronglyMeasurable.norm)
     (eventually_of_forall (fun x ↦ ?_))
   conv_rhs => rw [norm_of_nonneg (by positivity), rpow_neg (by positivity), ← div_eq_mul_inv]
   rw [le_div_iff' (by positivity)]
@@ -1034,7 +1050,7 @@ lemma integrable_pow_mul (f : 𝓢(D, V)) {μ : Measure D} (k : ℕ) [IsAddHaarM
 
 lemma integrable (f : 𝓢(D, V)) {μ : Measure D} [IsAddHaarMeasure μ] :
     Integrable f μ :=
-  (f.integrable_pow_mul (μ := μ) 0).mono f.continuous.aestronglyMeasurable
+  (f.integrable_pow_mul (μ := μ) 0).mono (map_continuous f).aestronglyMeasurable
     (eventually_of_forall (fun _ ↦ by simp))
 
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/
@@ -1081,22 +1097,15 @@ instance instBoundedContinuousMapClass : BoundedContinuousMapClass 𝓢(E, F) E 
   map_bounded := fun f ↦ ⟨2 * (SchwartzMap.seminorm ℝ 0 0) f,
     (BoundedContinuousFunction.dist_le_two_norm' (norm_le_seminorm ℝ f))⟩
 
-/-- Schwartz functions as bounded continuous functions -/
-def toBoundedContinuousFunction (f : 𝓢(E, F)) : E →ᵇ F :=
-  BoundedContinuousFunction.ofNormedAddCommGroup f (SchwartzMap.continuous f)
-    (SchwartzMap.seminorm ℝ 0 0 f) (norm_le_seminorm ℝ f)
-#align schwartz_map.to_bounded_continuous_function SchwartzMap.toBoundedContinuousFunction
+#align schwartz_map.to_bounded_continuous_function CoeTC.coe
 
 @[simp]
 theorem toBoundedContinuousFunction_apply (f : 𝓢(E, F)) (x : E) :
-    f.toBoundedContinuousFunction x = f x :=
+    (f : E →ᵇ F) x = f x :=
   rfl
 #align schwartz_map.to_bounded_continuous_function_apply SchwartzMap.toBoundedContinuousFunction_apply
 
-/-- Schwartz functions as continuous functions -/
-def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
-  f.toBoundedContinuousFunction.toContinuousMap
-#align schwartz_map.to_continuous_map SchwartzMap.toContinuousMap
+#align schwartz_map.to_continuous_map toContinuousMap
 
 variable (𝕜 E F)
 variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -1104,7 +1113,7 @@ variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 /-- The inclusion map from Schwartz functions to bounded continuous functions as a continuous linear
 map. -/
 def toBoundedContinuousFunctionCLM : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
-  mkCLMtoNormedSpace toBoundedContinuousFunction (by intro f g; ext; exact add_apply)
+  mkCLMtoNormedSpace (↑) (by intro f g; ext; exact add_apply)
     (by intro a f; ext; exact smul_apply)
     (⟨{0}, 1, zero_le_one, by
       simpa [BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)
@@ -1157,16 +1166,11 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(
     apply lt_of_le_of_lt this
     rwa [div_lt_iff' hxpos]
 
-/-- Schwartz functions as continuous functions vanishing at infinity. -/
-def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
-  toFun := f
-  zero_at_infty' := zero_at_infty f
-
-@[simp] theorem toZeroAtInfty_apply (f : 𝓢(E, F)) (x : E) : f.toZeroAtInfty x = f x :=
+@[simp] theorem toZeroAtInfty_apply (f : 𝓢(E, F)) (x : E) : (f : C₀(E, F)) x = f x :=
   rfl
 
 @[simp] theorem toZeroAtInfty_toBCF (f : 𝓢(E, F)) :
-    f.toZeroAtInfty.toBCF = f.toBoundedContinuousFunction :=
+    (f : C₀(E, F)).toBCF = f :=
   rfl
 
 variable (𝕜 E F)
@@ -1175,7 +1179,7 @@ variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 /-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
 continuous linear map. -/
 def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
-  mkCLMtoNormedSpace toZeroAtInfty (by intro f g; ext; exact add_apply)
+  mkCLMtoNormedSpace (↑) (by intro f g; ext; exact add_apply)
     (by intro a f; ext; exact smul_apply)
     (⟨{0}, 1, zero_le_one, by simpa [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm,
       BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)
