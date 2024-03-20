@@ -49,7 +49,7 @@ depends on PR #11156. It should probably go in a separate file.
 and `(⨂[𝕜] i, Eᵢ) →L[𝕜] F`, as a continuous linear equivalence.
 * `PiTensorProduct.liftIsometry`: The bijection between `ContinuousMultilinearMap 𝕜 E F`
 and `(⨂[𝕜] i, Eᵢ) →L[𝕜] F`, as an isometric linear equivalence.
-* `PiTensorProduct.tprodL`: The cacnonical continuous multilinear map from `E`
+* `PiTensorProduct.tprodL`: The canonical continuous multilinear map from `E`
 to `⨂[𝕜] i, Eᵢ`.
 * `PiTensorProduct.mapL`: The continuous linear map from `⨂[𝕜] i, Eᵢ` to `⨂[𝕜] i, E'ᵢ`
 induced by a family of continuous linear maps `Eᵢ →L[𝕜] E'ᵢ`.
