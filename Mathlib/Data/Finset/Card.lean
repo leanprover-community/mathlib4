@@ -726,7 +726,7 @@ end DecidableEq
 theorem two_lt_card_iff : 2 < s.card ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
   classical
     simp_rw [lt_iff_add_one_le, le_card_iff_exists_subset_card, reduceAdd, card_eq_three,
-      <- exists_and_left, exists_comm (α := Finset α)]
+      ← exists_and_left, exists_comm (α := Finset α)]
     constructor
     · rintro ⟨a, b, c, t, hsub, hab, hac, hbc, rfl⟩
       exact ⟨a, b, c, by simp_all [insert_subset_iff]⟩
