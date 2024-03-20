@@ -507,19 +507,17 @@ def simpleReflection (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
 
 local prefix:100 "s" => cs.simpleReflection
 
-private lemma coxeterGroup_simple_mul_self (i : B) :
-    (QuotientGroup.mk ((FreeGroup.of i) * (FreeGroup.of i)) : CoxeterGroup M) = 1 := by
+@[simp] theorem simple_mul_self (i : B) : s i * s i = 1 := by
+  dsimp [simpleReflection]
+  rw [← _root_.map_mul, PresentedGroup.of, ← QuotientGroup.mk_mul]
   have : (FreeGroup.of i) * (FreeGroup.of i) ∈ CoxeterGroup.Relations.toSet M := by
     use (i, i)
     dsimp [CoxeterGroup.Relations.ofMatrix]
     rw [cs.isCoxeter.diagonal i, pow_one]
-  apply (QuotientGroup.eq_one_iff _).mpr
-  exact Subgroup.subset_normalClosure this
-
-@[simp] theorem simple_mul_self (i : B) : s i * s i = 1 := by
-  dsimp [simpleReflection]
-  rw [← _root_.map_mul, PresentedGroup.of, ← QuotientGroup.mk_mul]
-  rw [cs.coxeterGroup_simple_mul_self i]
+  have : (QuotientGroup.mk (FreeGroup.of i * FreeGroup.of i) : CoxeterGroup M) = 1 := by
+    apply (QuotientGroup.eq_one_iff _).mpr
+    exact Subgroup.subset_normalClosure this
+  rw [this]
   simp
 
 @[simp] theorem mul_simple_mul_self {w : W} (i : B) : w * s i * s i = w := by
@@ -528,10 +526,7 @@ private lemma coxeterGroup_simple_mul_self (i : B) :
 @[simp] theorem simple_mul_self_mul {w : W} (i : B) : s i * (s i * w) = w := by
   simp [← mul_assoc]
 
-
-@[simp] theorem simple_sqr (i : B) : s i ^ 2 = 1 := by
-  rw [pow_two]
-  exact cs.simple_mul_self i
+@[simp] theorem simple_sqr (i : B) : s i ^ 2 = 1 := pow_two (s i) ▸ cs.simple_mul_self i
 
 @[simp] theorem simple_inv (i : B) : (s i)⁻¹ = s i :=
   (eq_inv_of_mul_eq_one_right (cs.simple_mul_self i)).symm
@@ -549,9 +544,8 @@ private lemma coxeterGroup_simple_mul_self (i : B) :
   rw [this]
   simp
 
-@[simp] theorem simple_mul_pow' (i i' : B) : ((s i') * (s i)) ^ M i i' = 1 := by
-  rw [cs.isCoxeter.symmetric.apply i' i]
-  exact cs.simple_mul_pow i' i
+@[simp] theorem simple_mul_pow' (i i' : B) : ((s i') * (s i)) ^ M i i' = 1 :=
+  cs.isCoxeter.symmetric.apply i' i ▸ cs.simple_mul_pow i' i
 
 /-- The simple reflections of `W` generate `W` as a group. -/
 theorem subgroup_closure_range_simple : Subgroup.closure (Set.range cs.simpleReflection) = ⊤ := by
@@ -573,8 +567,7 @@ theorem submonoid_closure_range_simple : Submonoid.closure (Set.range cs.simpleR
       use i
       simpa only [simple_inv, inv_inv] using congrArg (·⁻¹) hi
 
-  have h₁ : S = S ∪ S⁻¹ := by
-    rw [← h₀, Set.union_self]
+  have h₁ : S = S ∪ S⁻¹ := by rw [← h₀, Set.union_self]
 
   rw [h₁, ← Subgroup.closure_toSubmonoid, subgroup_closure_range_simple, Subgroup.top_toSubmonoid]
 
@@ -632,18 +625,14 @@ private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsL
   exact hf i i'
 
 private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
-  MonoidHom.comp (PresentedGroup.toGroup (relations_liftable hf)) cs.mulEquiv.toMonoidHom
+  (PresentedGroup.toGroup (relations_liftable hf)).comp cs.mulEquiv.toMonoidHom
 
 private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) : B → Gˣ :=
   fun i ↦ {
     val := f i,
     inv := f i,
-    val_inv := by
-      have := hf i i
-      rwa [cs.isCoxeter.diagonal, pow_one] at this,
-    inv_val := by
-      have := hf i i
-      rwa [cs.isCoxeter.diagonal, pow_one] at this
+    val_inv := pow_one (f i * f i) ▸ (cs.isCoxeter.diagonal i ▸ hf i i),
+    inv_val := pow_one (f i * f i) ▸ (cs.isCoxeter.diagonal i ▸ hf i i),
   }
 
 /-- Extend the function `f : B → G` to a monoid homomorphism
@@ -651,23 +640,19 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
 -/
 def lift {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
   MonoidHom.comp (Units.coeHom G) (cs.groupLift
-      (show ∀ i i' : B, ((cs.restrictUnit hf) i * (cs.restrictUnit hf) i') ^ M i i' = 1 by
-    intro i i'
-    apply Units.ext
-    simp only [Units.val_pow_eq_pow_val, Units.val_mul, Units.val_one]
-    exact hf i i'))
+    (show ∀ i i' : B, ((cs.restrictUnit hf) i * (cs.restrictUnit hf) i') ^ M i i' = 1 from
+      fun i i' ↦ Units.ext (hf i i')))
 
 private theorem toMonoidHom_symm (a : PresentedGroup (CoxeterGroup.Relations.toSet M)):
     (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (CoxeterGroup.Relations.toSet M))
     ((MulEquiv.symm cs.mulEquiv) a) = a := calc
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
-  _ = _                                           := by simp
+  _ = _                                           := by rw [MulEquiv.apply_symm_apply]
 
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G}
     (hf : IsLiftable M f) (i : B) : cs.lift hf (s i) = f i := by
   dsimp only [simpleReflection, lift, groupLift, MonoidHom.comp_apply]
-  rw [← MonoidHom.toFun_eq_coe]
-  rw [toMonoidHom_symm cs (PresentedGroup.of i)]
+  rw [← MonoidHom.toFun_eq_coe, toMonoidHom_symm cs (PresentedGroup.of i)]
   simp
   rfl
 
