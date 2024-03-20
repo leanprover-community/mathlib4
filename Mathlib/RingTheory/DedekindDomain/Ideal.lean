@@ -985,7 +985,7 @@ one are prime and irreducible.
 
 namespace IsDedekindDomain
 
-variable [IsDomain R] [IsDedekindDomain R]
+variable [IsDedekindDomain R]
 
 /-- The height one prime spectrum of a Dedekind domain `R` is the type of nonzero prime ideals of
 `R`. Note that this equals the maximal spectrum if `R` has Krull dimension 1. -/
