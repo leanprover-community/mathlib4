@@ -39,6 +39,8 @@ structure SyntaxRuleData where
   cmdName : String
   /-- e.g. `elabRules`; just helps keep things legible if you look at internals, no real effect. -/
   auxDefName : Name
+  /-- Whether to unfold `type` if it's an `abbrev`. Usually this will be `true`. -/
+  unfoldTypeAbbrev := true
 
 end data
 
