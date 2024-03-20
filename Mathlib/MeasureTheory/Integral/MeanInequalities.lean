@@ -54,7 +54,8 @@ only to prove the more general results:
 
 noncomputable section
 
-open Classical BigOperators NNReal ENNReal MeasureTheory Finset
+open scoped Classical
+open BigOperators NNReal ENNReal MeasureTheory Finset
 
 set_option linter.uppercaseLean3 false
 

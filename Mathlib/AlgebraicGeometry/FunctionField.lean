@@ -87,7 +87,7 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
     (show Continuous f.1.base from ContinuousMap.continuous_toFun _)
   symm
   rw [eq_top_iff, Set.top_eq_univ, Set.top_eq_univ]
-  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.open_range _
+  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _
   rw [Set.univ_inter, Set.image_univ]
   apply PreirreducibleSpace.isPreirreducible_univ (X := Y.carrier)
   exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
@@ -176,7 +176,7 @@ instance [IsIntegral X] (x : X.carrier) :
     IsFractionRing (X.presheaf.stalk x) X.functionField :=
   let U : Opens X.carrier :=
     ⟨Set.range (X.affineCover.map x).1.base,
-      PresheafedSpace.IsOpenImmersion.base_open.open_range⟩
+      PresheafedSpace.IsOpenImmersion.base_open.isOpen_range⟩
   have hU : IsAffineOpen U := rangeIsAffineOpenOfOpenImmersion (X.affineCover.map x)
   let x : U := ⟨x, X.affineCover.Covers x⟩
   have : Nonempty U := ⟨x⟩

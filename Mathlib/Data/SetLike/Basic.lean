@@ -36,7 +36,7 @@ structure MySubobject (X : Type*) [ObjectTypeclass X] :=
 
 namespace MySubobject
 
-variables {X : Type*} [ObjectTypeclass X] {x : X}
+variable {X : Type*} [ObjectTypeclass X] {x : X}
 
 instance : SetLike (MySubobject X) X :=
   ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
@@ -187,7 +187,7 @@ theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
 #align set_like.coe_eq_coe SetLike.coe_eq_coe
 
 -- Porting note: this is not necessary anymore due to the way coercions work
- #noalign set_like.coe_mk
+#noalign set_like.coe_mk
 
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=

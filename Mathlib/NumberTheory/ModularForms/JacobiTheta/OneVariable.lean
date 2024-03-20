@@ -77,7 +77,7 @@ theorem exists_summable_bound_exp_mul_sq {R : ℝ} (hR : 0 < R) :
       ‖cexp (π * I * (n : ℂ) ^ 2 * τ)‖ ≤ bd n := by
   let y := rexp (-π * R)
   have h : y < 1 := exp_lt_one_iff.mpr (mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hR)
-  refine' ⟨fun n => y ^ n.natAbs, summable_int_of_summable_nat _ _, fun hτ n => _⟩; pick_goal 3
+  refine ⟨fun n ↦ y ^ n.natAbs, .of_nat_of_neg ?_ ?_, fun hτ n ↦ ?_⟩; pick_goal 3
   · refine' (norm_exp_mul_sq_le (hR.trans_le hτ) n).trans _
     dsimp [y]
     gcongr rexp ?_ ^ _
@@ -96,7 +96,7 @@ theorem summable_exp_mul_sq {τ : ℂ} (hτ : 0 < τ.im) :
 theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     HasSum (fun n : ℕ => cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)) ((jacobiTheta τ - 1) / 2) := by
   have := (summable_exp_mul_sq hτ).hasSum.sum_nat_of_sum_int
-  rw [← @hasSum_nat_add_iff' ℂ _ _ _ _ 1] at this
+  rw [← hasSum_nat_add_iff' 1] at this
   simp_rw [Finset.sum_range_one, Int.cast_neg, Int.cast_ofNat, Nat.cast_zero, neg_zero,
     Int.cast_zero, sq (0 : ℂ), mul_zero, zero_mul, neg_sq, ← mul_two,
     Complex.exp_zero, add_sub_assoc, (by norm_num : (1 : ℂ) - 1 * 2 = -1), ← sub_eq_add_neg,

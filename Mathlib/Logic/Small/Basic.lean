@@ -21,7 +21,7 @@ universe u w v v'
 
 section
 
-open Classical
+open scoped Classical
 
 instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w} { x // P x } :=
   small_map (equivShrink α).subtypeEquivOfSubtype'
@@ -38,7 +38,7 @@ theorem small_of_surjective {α : Type v} {β : Type w} [Small.{u} α] {f : α �
 #align small_of_surjective small_of_surjective
 
 instance (priority := 100) small_subsingleton (α : Type v) [Subsingleton α] : Small.{w} α := by
-  rcases isEmpty_or_nonempty α with ⟨⟩ <;> skip
+  rcases isEmpty_or_nonempty α with ⟨⟩
   · apply small_map (Equiv.equivPEmpty α)
   · apply small_map Equiv.punitOfNonemptyOfSubsingleton
 #align small_subsingleton small_subsingleton
