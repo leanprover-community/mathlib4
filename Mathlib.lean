@@ -711,6 +711,7 @@ import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.Complex.Conformal
 import Mathlib.Analysis.Complex.Convex
+import Mathlib.Analysis.Complex.HalfPlane
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.LocallyUniformLimit
@@ -2957,6 +2958,7 @@ import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.LSeries.AbstractFuncEq
 import Mathlib.NumberTheory.LSeries.Basic
 import Mathlib.NumberTheory.LSeries.Convergence
+import Mathlib.NumberTheory.LSeries.Deriv
 import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 import Mathlib.NumberTheory.LegendreSymbol.Basic
