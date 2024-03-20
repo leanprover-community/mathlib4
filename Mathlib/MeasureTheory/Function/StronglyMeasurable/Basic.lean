@@ -641,7 +641,7 @@ protected theorem isSeparable_range {m : MeasurableSpace α} [TopologicalSpace �
   apply this.mono
   rintro _ ⟨x, rfl⟩
   apply mem_closure_of_tendsto (hf.tendsto_approx x)
-  refine eventually_of_forall fun n => ?_
+  filter_upwards with n
   apply mem_iUnion_of_mem n
   exact mem_range_self _
 #align measure_theory.strongly_measurable.is_separable_range MeasureTheory.StronglyMeasurable.isSeparable_range
@@ -752,7 +752,7 @@ theorem _root_.Embedding.comp_stronglyMeasurable_iff {m : MeasurableSpace α} [T
   · let G : β → range g := rangeFactorization g
     have hG : ClosedEmbedding G :=
       { hg.codRestrict _ _ with
-        closed_range := by
+        isClosed_range := by
           rw [surjective_onto_range.range_eq]
           exact isClosed_univ }
     have : Measurable (G ∘ f) := Measurable.subtype_mk H.measurable
@@ -776,7 +776,7 @@ theorem _root_.stronglyMeasurable_of_tendsto {ι : Type*} {m : MeasurableSpace �
     rintro _ ⟨x, rfl⟩
     rw [tendsto_pi_nhds] at lim
     apply mem_closure_of_tendsto ((lim x).comp hv)
-    refine eventually_of_forall fun n => ?_
+    filter_upwards with n
     apply mem_iUnion_of_mem n
     exact mem_range_self _
 #align strongly_measurable_of_tendsto stronglyMeasurable_of_tendsto
@@ -1667,7 +1667,7 @@ theorem _root_.Embedding.aestronglyMeasurable_comp_iff [PseudoMetrizableSpace β
   · let G : β → range g := rangeFactorization g
     have hG : ClosedEmbedding G :=
       { hg.codRestrict _ _ with
-        closed_range := by rw [surjective_onto_range.range_eq]; exact isClosed_univ }
+        isClosed_range := by rw [surjective_onto_range.range_eq]; exact isClosed_univ }
     have : AEMeasurable (G ∘ f) μ := AEMeasurable.subtype_mk H.aemeasurable
     exact hG.measurableEmbedding.aemeasurable_comp_iff.1 this
   · rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 H).2 with ⟨t, ht, h't⟩
@@ -1697,9 +1697,7 @@ theorem _root_.aestronglyMeasurable_of_tendsto_ae {ι : Type*} [PseudoMetrizable
     refine ⟨closure (⋃ i, t i), .closure <| .iUnion t_sep, ?_⟩
     filter_upwards [ae_all_iff.2 ht, lim] with x hx h'x
     apply mem_closure_of_tendsto (h'x.comp hv)
-    refine eventually_of_forall fun n => ?_
-    apply mem_iUnion_of_mem n
-    exact hx n
+    filter_upwards with n using mem_iUnion_of_mem n (hx n)
 #align ae_strongly_measurable_of_tendsto_ae aestronglyMeasurable_of_tendsto_ae
 
 /-- If a sequence of almost everywhere strongly measurable functions converges almost everywhere,
