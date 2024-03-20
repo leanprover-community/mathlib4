@@ -133,29 +133,14 @@ lemma fermatLastTheoremWith_of_FermatLastTheoremWith_coprime {n : ℕ} {R : Type
   obtain ⟨A, hA⟩ : d ∣ a := gcd_dvd (by simp [s])
   obtain ⟨B, hB⟩ : d ∣ b := gcd_dvd (by simp [s])
   obtain ⟨C, hC⟩ : d ∣ c := gcd_dvd (by simp [s])
-  have hdzero : d ≠ 0 := fun hdzero => by
-      simpa [ha] using Finset.gcd_eq_zero_iff.1 hdzero a (by simp [s])
-  have hdn : d ^ n ≠ 0 := fun hdn => hdzero (pow_eq_zero hdn)
-  refine hn A B C (fun h ↦ ha <| by simpa [h] using hA) (fun h ↦ hb <| by simpa [h] using hB)
-    (fun h ↦ hc <| by simpa [h] using hC) ?_ ?_
-  · have : d = (GCDMonoid.gcd a (GCDMonoid.gcd b (c * ↑(normUnit c)))) := by
-      simp only [d]
-      rw [gcd_insert, id_eq]
-      simp only [gcd_insert, id_eq, gcd_singleton, normalize_apply]
-    simp only [gcd_insert, id_eq, gcd_singleton, normalize_apply]
-    apply isUnit_gcd_of_eq_mul_gcd (x := a) (y := GCDMonoid.gcd b (c * (normUnit c)))
-    · rw [← this, hA]
-    · have H := Finset.normalize_gcd (s := s) (f := id)
-      rw [← this, hB, hC, mul_assoc, _root_.gcd_mul_left, H,
-        normUnit_mul hdzero fun h ↦ hc <| by simp [h, hC]]
-      congr 3
-      simp only [Units.val_mul, ne_eq, Units.ne_zero, not_false_eq_true, mul_eq_right₀,
-        Units.val_eq_one]
-      nth_rewrite 2 [← mul_one (s.gcd id)] at H
-      exact Units.ext <| by simpa using mul_left_cancel₀ hdzero H
-    · simp [hc]
-  · rw [hA, hB, hC, mul_pow, mul_pow, mul_pow, ← mul_add] at habc
-    simpa [hdn] using habc
+  simp only [hA, hB, hC, mul_ne_zero_iff, mul_pow] at ha hb hc habc
+  rw [← mul_add, mul_right_inj' (pow_ne_zero n ha.1)] at habc
+  refine hn A B C ha.2 hb.2 hc.2 ?_ habc
+  rw [← Finset.normalize_gcd, normalize_eq_one]
+  obtain ⟨u, hu⟩ := normalize_associated d
+  refine ⟨u, mul_left_cancel₀ (mt normalize_eq_zero.mp ha.1) (hu.symm ▸ ?_)⟩
+  rw [← Finset.gcd_mul_left, gcd_eq_gcd_image, image_insert, image_insert, image_singleton,
+      id_eq, id_eq, id_eq, ← hA, ← hB, ← hC]
 
 /-- To prove Fermat Last Theorem for `ℤ` one can assume that `a`, `b` and `c` are coprime, in the
 sense that the gcd of `{a, b, c}` is `1`. -/
