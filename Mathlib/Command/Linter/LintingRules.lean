@@ -226,19 +226,25 @@ more easily spin up syntax_rules commands that have a category. -/
 /- TODO(perf): check if a label attribute is better. Better to flatten arrays on import instead of
 each time the linter runs... -/
 /-- An attribute we use to collect implementations of `linting_rules` categories. -/
-initialize lintingRulesCatAttr : TagAttribute ←
-  registerTagAttribute
-    `linting_rules_cat
-    "An attribute for implmentations of linting rule categories."
-    -- This attribute should only be used internally, so we don't check much.
-    fun decl => do
-      unless (`LintingRules.Category).isPrefixOf decl do
-        throwError "{decl} must be in the LintingRules.Category namespace"
-      let info ← getConstInfo decl
-      unless info.type == mkConst ``LintingRulesCatImpl do
-        throwError "The type of {decl}:{indentD info.type}\nis expected to be 'SyntaxRuleData'."
-    -- TODO: this is cargo-culted, check it makes sense to change from the default.
-    (applicationTime := AttributeApplicationTime.afterCompilation)
+register_label_attr linting_rules_cat
+
+/-- Get labelled entries. (Does not require `CoreM`.) -/
+def labelled (env : Environment) : IO (Array Name) :=
+  return ((← labelExtensionMapRef.get).find? `linting_rules_cat).get!.getState env
+
+-- initialize lintingRulesCatAttr : TagAttribute ←
+--   registerTagAttribute
+--     `linting_rules_cat
+--     "An attribute for implmentations of linting rule categories."
+--     -- This attribute should only be used internally, so we don't check much.
+--     fun decl => do
+--       unless (`LintingRules.Category).isPrefixOf decl do
+--         throwError "{decl} must be in the LintingRules.Category namespace"
+--       let info ← getConstInfo decl
+--       unless info.type == mkConst ``LintingRulesCatImpl do
+--         throwError "The type of {decl}:{indentD info.type}\nis expected to be 'SyntaxRuleData'."
+--     -- TODO: this is cargo-culted, check it makes sense to change from the default.
+--     (applicationTime := AttributeApplicationTime.afterCompilation)
 
 /- Run by `syntax_rules` to guide elaboration based on the category appearing in syntax. -/
 /-- Turn a `linting_rules` command into `SyntaxRuleData`. -/
@@ -250,7 +256,7 @@ def toSyntaxRuleData : ToSyntaxRuleData := fun
     Ideally this would be a parameter to the attribute which would key the decl (or something like
     that). -/
     let decl := `LintingRules.Category ++ id.getId
-    let .true := lintingRulesCatAttr.hasTag (← getEnv) decl
+    let .true := (← labelled (← getEnv)).contains decl -- lintingRulesCatAttr.hasTag (← getEnv) decl
       | throwErrorAt id "{id} is not a recognized linting_rules category."
     addConstInfo id decl -- show docstring provided for `register_linting_rules_cat ..` on `id`
     return (← unsafe evalConstCheck LintingRulesCatImpl ``LintingRulesCatImpl decl).toSyntaxRuleData
@@ -409,10 +415,10 @@ open Linter in
 def runLintingRules (stx : Syntax) : CommandElabM Unit := do
   let opts ← getOptions
   let env ← getEnv
-  let cats :=
-    (lintingRulesCatAttr.ext.toEnvExtension.getState env).importedEntries.flatten ++
-    (lintingRulesCatAttr.ext.getState env).toArray
-  lintTrace opts m!"Using categories {cats}."
+  let cats ← labelled env
+    -- (lintingRulesCatAttr.ext.toEnvExtension.getState env).importedEntries.flatten ++
+    -- (lintingRulesCatAttr.ext.getState env).toArray
+  -- lintTrace opts m!"Using categories {cats}."
   -- let mut isDone := mkArray cats.size (some 0) -- if no `startFn`
   --TODO: see if it's better to extract the name and opt at this stage, or to use `.name` etc.
   --TODO: good placement of `unsafe` or not?
@@ -422,22 +428,22 @@ def runLintingRules (stx : Syntax) : CommandElabM Unit := do
   for stx in stx.topDown do
     /- TODO: check efficiency? just do `i in [:cats.size]` and use array access instead? Also,
     destruct or use `.name`? -/
-    lintTrace opts m!"Linting {shortRepr stx}." --TODO: does this increase reference count?
+    -- lintTrace opts m!"Linting {shortRepr stx}." --TODO: does this increase reference count?
     if stx.getKind == `null then
-      lintTrace opts m!"null nodekind; moving on."
+      -- lintTrace opts m!"null nodekind; moving on."
       continue
-    for { name, opt, stopFn, startFn .. } in cats, i in [:cats.size] do
+    for i in [:cats.size] do
       match isDone[i]! with
       | .some 0 =>
-        lintTrace opts m!"Linting using {name}."
-        if getLinterValue opt opts then --TODO: use `withSetOptionIn` or something
-          let key := mkLintingRuleKey stx.getKind name -- TODO: is this efficient enough?
-          lintTrace opts m!"Key: {key}"
-          let step ← if stopFn stx then
+        -- lintTrace opts m!"Linting using {name}."
+        if getLinterValue cats[i]!.opt opts then --TODO: use `withSetOptionIn` or something
+          let key := mkLintingRuleKey stx.getKind cats[i]!.name -- TODO: is this efficient enough?
+          -- lintTrace opts m!"Key: {key}"
+          let step ← if cats[i]!.stopFn stx then
               pure .done
             else
               runLintingSteps (← get) stx (lintingRulesAttr.getValues env key)
-          lintTrace opts m!"{step}"
+          -- lintTrace opts m!"{step}"
           match step with
           | .continue => continue
           | .done =>
@@ -445,11 +451,11 @@ def runLintingRules (stx : Syntax) : CommandElabM Unit := do
           | .done! =>
             isDone := isDone.set! i .none
       | .some (n+1) =>
-        lintTrace opts m!"Done: {name}\n{n+1} ==> {n + stx.getNumArgs}"
+        -- lintTrace opts m!"Done: {name}\n{n+1} ==> {n + stx.getNumArgs}"
         isDone := isDone.set! i (.some (n + stx.getNumArgs))
       | .none => continue
       | .undef =>
-        if let some .true := startFn <*> stx then
+        if let some .true := cats[i]!.startFn <*> stx then
           isDone := isDone.set! i (.some 0)
         continue
 
