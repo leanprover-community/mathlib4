@@ -122,7 +122,7 @@ lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ Fermat
 
 open Finset in
 /-- To prove Fermat Last Theorem in any semiring that is a `NormalizedGCDMonoid` one can assume
-that the `gcd` of `{a, b, c}` is a unit. -/
+that the `gcd` of `{a, b, c}` is `1`. -/
 lemma fermatLastTheoremWith_of_FermatLastTheoremWith_coprime {n : ℕ} {R : Type*} [CommSemiring R]
     [IsDomain R] [DecidableEq R] [NormalizedGCDMonoid R]
     (hn : ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset R).gcd id = 1 →
