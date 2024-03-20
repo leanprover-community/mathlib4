@@ -97,6 +97,7 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     |>.insert `Std.Tactic.seq_focus
     |>.insert `Mathlib.Tactic.Hint.registerHintStx
     |>.insert `Mathlib.Tactic.LinearCombination.linearCombination
+    |>.insert `Mathlib.Tactic.«tacticSwap_var__,,»
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     |>.insert ``Lean.Parser.Tactic.failIfSuccess
     |>.insert `Mathlib.Tactic.successIfFailWithMsg
@@ -127,12 +128,14 @@ variable (ignoreTacticKinds : NameHashSet) (isTacKind : SyntaxNodeKind → Bool)
       if let some r := stx.getRange? true then
         modify fun m => m.insert r stx
 
+/-
 /-- `getNames mctx` extracts the names of all the local declarations implied by the
 `MetavarContext` `mctx`. -/
 def getNames (mctx : MetavarContext) : List Name :=
   let lcts := mctx.decls.toList.map (MetavarDecl.lctx ∘ Prod.snd)
   let locDecls := (lcts.map (PersistentArray.toList ∘ LocalContext.decls)).join.reduceOption
   locDecls.map LocalDecl.userName
+-/
 
 mutual
 /-- Search for tactic executions in the info tree and remove the syntax of the tactics that
@@ -152,11 +155,14 @@ partial def eraseUsedTactics : InfoTree → M Unit
         else if allowed.contains i.stx.getKind
         -- if the tactic is allowed to not change the goals
         then modify (·.erase r)
+/-
         -- bespoke check for `swap_var`: the only change that it does is
         -- in the usernames of local declarations, so we check the names before and after
         else if (i.stx.getKind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
                 (getNames i.mctxBefore != getNames i.mctxAfter)
         then modify (·.erase r)
+-/
+
     eraseUsedTacticsList c
   | .context _ t => eraseUsedTactics t
   | .hole _ => pure ()
