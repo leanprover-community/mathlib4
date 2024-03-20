@@ -18,6 +18,8 @@ example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
 -- TODO: These are verbatim copies of the tests from mathlib3. It would be nice to add more.
 
 -- set_option pp.coercions false
+-- mutes `'push_cast at h' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) (h2 : (c : ℤ) < a + 3 * b) : a + 3*b > c := by
   zify at h ⊢
   push_cast at h
