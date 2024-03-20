@@ -431,66 +431,95 @@ lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq__mul_b {p : 𝓞 K} 
 lemma lambda_pow_dvd_a_add_b : λ ^ (3*S.multiplicity-2) ∣ S.a + S.b := by
   sorry
 
--- We now introduce `x`, `y` and `z` such that `S.a + S.b = λ ^ (3*t-2) * x`,
--- `S.a + η * S.b = λ * x` and
--- `S.a + η ^ 2 * S.b = λ * z`, where `t = S.multiplicity`. We also set `S.c = λ ^ t * w`.
+-- We now introduce `S.x`, `S.y` and `S.z` such that `S.a + S.b = λ ^ (3*t-2) * S.x`,
+-- `S.a + η * S.b = λ * S.x` and
+-- `S.a + η ^ 2 * S.b = λ * S.z`, where `t = S.multiplicity`. We also set `S.c = λ ^ t * S.w`.
 
-variable {x y z w : 𝓞 K} (hx : S.a + S.b = λ ^ (3*S.multiplicity-2) * x)
-  (hy : S.a + η * S.b = λ * y) (hz : S.a + η ^ 2 * S.b = λ * z) (hw : S.c = λ ^ S.multiplicity * w)
+noncomputable
+def Solution.x := (lambda_pow_dvd_a_add_b S).choose
 
-lemma coprime_x_y : IsCoprime x y := by
+lemma x_spec : S.a + S.b = λ ^ (3*S.multiplicity-2) * S.x := by
   sorry
 
-lemma coprime_x_z : IsCoprime x z := by
+noncomputable
+def Solution.y := (lambda_dvd_a_add_eta_mul_b S).choose
+
+lemma y_spec : S.a + η * S.b = λ ^ (3*S.multiplicity-2) * S.y := by
   sorry
 
-lemma coprime_y_z : IsCoprime y z := by
+noncomputable
+def Solution.z := (lambda_dvd_a_add_eta_sq_mul_b S).choose
+
+lemma z_spec : S.a + η ^ 2 * S.b = λ * S.z := by
   sorry
 
-lemma x_mul_y_mul_z : x * y * z = S.u * w ^ 3 := by
+noncomputable
+def Solution.w := (multiplicity.pow_multiplicity_dvd S.toSolution'.multiplicity_lambda_c_finite).choose
+
+lemma w_spec : S.c = λ ^ S.multiplicity * S.w := by
+  sorry
+
+lemma coprime_x_y : IsCoprime S.x S.y := by
+  sorry
+
+lemma coprime_x_z : IsCoprime S.x S.z := by
+  sorry
+
+lemma coprime_y_z : IsCoprime S.y S.z := by
+  sorry
+
+lemma x_mul_y_mul_z : S.x * S.y * S.z = S.u * S.w ^ 3 := by
   sorry
 
 open Ideal
 
-lemma ideals_coprime : ∀ i ∈ ({x, y, z} : Finset (𝓞 K)), ∀ j ∈ ({x, y, z} : Finset (𝓞 K)),
-    i ≠ j → IsCoprime (span {i}) (span {j}) := by
+lemma ideals_coprime : ∀ i ∈ ({S.x, S.y, S.z} : Finset (𝓞 K)),
+    ∀ j ∈ ({S.x, S.y, S.z} : Finset (𝓞 K)), i ≠ j → IsCoprime (span {i}) (span {j}) := by
   sorry
 
-lemma span_x_mul_span_y_mul_span_z : span {x} * span {y} * span {z} = span {w} ^ 3 := by
+lemma span_x_mul_span_y_mul_span_z : span {S.x} * span {S.y} * span {S.z} = span {S.w} ^ 3 := by
   sorry
 
-lemma x_eq_unit_mul_cube : ∃ (u₁ : (𝓞 K)ˣ) (X : 𝓞 K), x = u₁ * X ^ 3 := by
-  have := hx --this line is just to make `S` appear in the assumptions of the lemma, it will be erased
+lemma x_eq_unit_mul_cube : ∃ (u₁ : (𝓞 K)ˣ) (X : 𝓞 K), S.x = u₁ * X ^ 3 := by
   sorry
 
-lemma y_eq_unit_mul_cube : ∃ (u₂ : (𝓞 K)ˣ) (Y : 𝓞 K), y = u₂ * Y ^ 3 := by
-  have := hy --this line is just to make `S` appear in the assumptions of the lemma, it will be erased
+lemma y_eq_unit_mul_cube : ∃ (u₂ : (𝓞 K)ˣ) (Y : 𝓞 K), S.y = u₂ * Y ^ 3 := by
   sorry
 
-lemma z_eq_unit_mul_cube : ∃ (u₃ : (𝓞 K)ˣ) (Z : 𝓞 K), z = u₃ * Z ^ 3 := by
-  have := hz --this line is just to make `S` appear in the assumptions of the lemma, it will be erased
+lemma z_eq_unit_mul_cube : ∃ (u₃ : (𝓞 K)ˣ) (Z : 𝓞 K), S.z = u₃ * Z ^ 3 := by
   sorry
 
---variable {X Y Z : 𝓞 K} (hX : x = u₁ * X ^ 3) (hY : y = u₂ * Y ^ 3)
---  (hZ : z = u₃ * Z ^ 3)
+-- We now introduce units `S.u₁`, `S.u₂` and `S.u₃` and elements of `(S.X S.Y S.Z : 𝓞 K)` such that
+-- `S.x = u₁ * S.X ^ 3`,
+-- `S.y = u₂ * S.Y ^ 3` and
+-- `S.z = u₃ * Z ^ 3`.
 
 noncomputable
-def Solution.u₁ := (x_eq_unit_mul_cube S (lambda_pow_dvd_a_add_b S).choose_spec).choose
+def Solution.u₁ := (x_eq_unit_mul_cube S).choose
 
 noncomputable
-def Solution.u₂ := (y_eq_unit_mul_cube S (lambda_dvd_a_add_eta_mul_b S).choose_spec).choose
+def Solution.u₂ := (y_eq_unit_mul_cube S).choose
 
 noncomputable
-def Solution.u₃ := (z_eq_unit_mul_cube S (lambda_dvd_a_add_eta_sq_mul_b S).choose_spec).choose
+def Solution.u₃ := (z_eq_unit_mul_cube S).choose
 
 noncomputable
-def Solution.X := (x_eq_unit_mul_cube S (lambda_pow_dvd_a_add_b S).choose_spec).choose.2
+def Solution.X := (x_eq_unit_mul_cube S).choose.2
 
 noncomputable
-def Solution.Y := (y_eq_unit_mul_cube S (lambda_dvd_a_add_eta_mul_b S).choose_spec).choose.2
+def Solution.Y := (y_eq_unit_mul_cube S).choose.2
 
 noncomputable
-def Solution.Z := (z_eq_unit_mul_cube S (lambda_dvd_a_add_eta_sq_mul_b S).choose_spec).choose.2
+def Solution.Z := (z_eq_unit_mul_cube S).choose.2
+
+lemma X_spec : S.x = S.u₁ * S.X ^ 3 := by
+  sorry
+
+lemma Y_spec : S.y = S.u₂ * S.Y ^ 3 := by
+  sorry
+
+lemma Z_spec : S.z = S.u₃ * S.Z ^ 3 := by
+  sorry
 
 lemma X_ne_zero : S.X ≠ 0 := by
   sorry
@@ -510,19 +539,23 @@ lemma coprime_Y_Z : IsCoprime S.Y S.Z := by
 lemma formula1 : S.u₁ * S.X ^ 3 * λ ^ (3*S.multiplicity-2) + S.u₂ * η * S.Y ^ 3 + S.u₃ * η ^ 2 * S.Z ^ 3 * λ = 0 := by
   sorry
 
-lemma formula2 : S.Y ^ 3 + (η * S.u₃ * S.u₂⁻¹) * S.Z ^ 3 =
-    (-η ^ 2 * S.u₁ * S.u₂) * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
+noncomputable
+def Solution.u₄ := η * S.u₃ * S.u₂⁻¹
+
+noncomputable
+def Solution.u₅ := -η ^ 2 * S.u₁ * S.u₂
+
+lemma formula2 : S.Y ^ 3 + S.u₄ * S.Z ^ 3 = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
   sorry
 
-lemma by_kummer : (η * S.u₃ * S.u₂⁻¹) ∈ ({1, -1} : Finset (𝓞 K)) := by
+lemma by_kummer : S.u₄ ∈ ({1, -1} : Finset (𝓞 K)) := by
   sorry
 
-variable (u₁ u₂) in
-lemma neg_eta_sq_mul_isUnit : IsUnit (-η ^ 2 * u₁ * u₂) := by
+lemma u₅_isUnit : IsUnit S.u₅ := by
   sorry
 
 lemma final : S.Y ^ 3 + ((η * S.u₃ * S.u₂⁻¹) * S.Z) ^ 3 =
-  (neg_eta_sq_mul_isUnit S.u₁ S.u₂).unit * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
+  (u₅_isUnit S).unit * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
   sorry
 
 noncomputable
@@ -530,7 +563,7 @@ def Solution'_final : Solution' where
   a := S.Y
   b := (η * S.u₃ * S.u₂⁻¹) * S.Z
   c := λ ^ (S.multiplicity - 1) * S.X
-  u := (neg_eta_sq_mul_isUnit S.u₁ S.u₂).unit
+  u := (u₅_isUnit S).unit
   ha := sorry
   hb := sorry
   hc := sorry
