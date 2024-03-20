@@ -329,7 +329,6 @@ def Subfield.toIntermediateField (S : Subfield L) (algebra_map_mem : ∀ x, alge
 
 namespace IntermediateField
 
--- TODO: This is just a special case of `SubfieldClass.toField`
 /-- An intermediate field inherits a field structure -/
 instance toField : Field S :=
   S.toSubfield.toField

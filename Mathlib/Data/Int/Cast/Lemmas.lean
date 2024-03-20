@@ -521,9 +521,9 @@ theorem int_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
 #align pi.int_apply Pi.int_apply
 
 @[simp]
-theorem intCast (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
+theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
   rfl
-#align pi.coe_int Pi.intCast
+#align pi.coe_int Pi.intCast_def
 
 end Pi
 

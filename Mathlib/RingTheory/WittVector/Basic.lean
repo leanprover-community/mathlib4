@@ -207,7 +207,8 @@ private theorem ghostFun_neg : ghostFun (-x) = -ghostFun x := by ghost_fun_tac -
 
 private theorem ghostFun_int_cast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.castDef = _ by
-    cases i <;> simp [*, Int.castDef, ghostFun_nat_cast, ghostFun_neg, -Pi.natCast, -Pi.intCast]
+    cases i <;> simp [*, Int.castDef, ghostFun_nat_cast, ghostFun_neg, -Pi.natCast_def,
+      -Pi.intCast_def]
 
 private theorem ghostFun_nsmul (m : ℕ) : ghostFun (m • x) = m • ghostFun x := by
   --  porting note: I had to add the explicit type ascription.
