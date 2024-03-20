@@ -174,8 +174,8 @@ theorem measurable_preCDF {ρ : Measure (α × ℝ)} {r : ℚ} : Measurable (pre
 
 lemma measurable_preCDF' {ρ : Measure (α × ℝ)} :
     Measurable fun a r ↦ (preCDF ρ r a).toReal := by
-    rw [measurable_pi_iff]
-    exact fun _ ↦ measurable_preCDF.ennreal_toReal
+  rw [measurable_pi_iff]
+  exact fun _ ↦ measurable_preCDF.ennreal_toReal
 
 theorem withDensity_preCDF (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure ρ] :
     ρ.fst.withDensity (preCDF ρ r) = ρ.IicSnd r :=
