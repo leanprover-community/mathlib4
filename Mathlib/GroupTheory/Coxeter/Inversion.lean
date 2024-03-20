@@ -62,15 +62,12 @@ theorem isReflection_simple (i : B) : cs.IsReflection (s i) := by use 1, i; simp
 
 theorem pow_two_eq_one_of_isReflection {t : W} (rt : cs.IsReflection t) : t ^ 2 = 1 := by
   rcases rt with ⟨w, i, rfl⟩
-  rw [pow_two]
-  group
-  rw [mul_assoc w]
   simp
 
 theorem inv_reflection_eq {t : W} (rt : cs.IsReflection t) : t⁻¹ = t := by
-  apply inv_eq_of_mul_eq_one_right
-  rw [← pow_two]
-  exact cs.pow_two_eq_one_of_isReflection rt
+  rcases rt with ⟨w, i, rfl⟩
+  group
+  simp
 
 alias inv_eq_self_of_isReflection := inv_reflection_eq
 
@@ -88,9 +85,9 @@ theorem isReflection_conjugate_iff (w t : W) :
   constructor
   · rintro ⟨u, i, hi⟩
     use w⁻¹ * u, i
-    rw [mul_inv_rev (w⁻¹) u, inv_inv, ← mul_assoc]
-    repeat rw [mul_assoc w⁻¹]
-    rw [← hi]
+    apply mul_left_cancel (a := w)
+    apply mul_right_cancel (b := w⁻¹)
+    rw [hi]
     group
   · rintro ⟨u, i, rfl⟩
     use w * u, i
