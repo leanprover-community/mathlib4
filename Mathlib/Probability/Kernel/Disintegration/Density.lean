@@ -12,9 +12,9 @@ import Mathlib.Probability.Process.PartitionFiltration
 
 Let `κ : kernel α (γ × β)` and `ν : kernel α γ` be two finite kernels with `kernel.fst κ ≤ ν`,
 where `γ` has a countably generated σ-algebra (true in particular for standard Borel spaces).
-We build a function `f : α → γ → Set β → ℝ` jointly measurable in the first two arguments such that
-for all `a : α` and all measurable sets `s : Set β` and `A : Set γ`,
-`∫ x in A, f a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal`.
+We build a function `density κ ν : α → γ → Set β → ℝ` jointly measurable in the first two arguments
+such that for all `a : α` and all measurable sets `s : Set β` and `A : Set γ`,
+`∫ x in A, density κ ν a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal`.
 
 There are two main applications of this construction (still TODO, in other files).
 * Disintegration of kernels: for `κ : kernel α (γ × β)`, we want to build a kernel
@@ -41,9 +41,9 @@ There are two main applications of this construction (still TODO, in other files
 ## Construction of the density
 
 If we were interested only in a fixed `a : α`, then we could use the Radon-Nikodym derivative to
-build the function `f`, as follows.
+build the density function `density κ ν`, as follows.
 ```
-def f (κ : kernel α (γ × β)) (ν : kernel a γ) (a : α) (x : γ) (s : Set β) : ℝ :=
+def density' (κ : kernel α (γ × β)) (ν : kernel a γ) (a : α) (x : γ) (s : Set β) : ℝ :=
   (((κ a).restrict (univ ×ˢ s)).fst.rnDeriv (ν a) x).toReal
 ```
 However, we can't turn those functions for each `a` into a measurable function of the pair `(a, x)`.
