@@ -411,9 +411,8 @@
   author : Bolton Bailey, Patrick Stevens
 99:
   title  : Buffon Needle Problem
-  decls  :
-    - BuffonNeedle.buffon_short
-    - BuffonNeedle.buffon_long
+  links  :
+    mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/BuffonsNeedle.lean
   author : Enrico Z. Borba
 100:
   title  : Descartes Rule of Signs

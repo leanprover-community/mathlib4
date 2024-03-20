@@ -72,7 +72,7 @@ We then show the two integrals equal their respective values `l - (l^2 - d^2).sq
 open MeasureTheory (MeasureSpace IsProbabilityMeasure Measure pdf.IsUniform)
 open ProbabilityTheory Real
 
-namespace BuffonNeedle
+namespace BuffonsNeedle
 
 variable
   /- Probability theory variables. -/
@@ -388,4 +388,4 @@ theorem buffon_long (h : d ≤ l) :
   field_simp
   ring_nf
 
-end BuffonNeedle
+end BuffonsNeedle
