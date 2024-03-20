@@ -6,6 +6,7 @@ Authors: Moritz Doll, Kalle Kytölä
 import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Topology.Algebra.Module.WeakDual
+import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.locally_convex.polar from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
