@@ -555,7 +555,7 @@ lemma u₅_isUnit : IsUnit S.u₅ := by
   sorry
 
 lemma final : S.Y ^ 3 + ((η * S.u₃ * S.u₂⁻¹) * S.Z) ^ 3 =
-  (u₅_isUnit S).unit * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
+    (u₅_isUnit S).unit * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
   sorry
 
 noncomputable
