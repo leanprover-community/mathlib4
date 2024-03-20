@@ -6,9 +6,13 @@ Authors: Eric Wieserf
 
 import Lean.Elab
 
+/-!
+# The `fast_instance%` term elaborator
+-/
+
 open Lean Meta
 
-partial def makeFastInstance (provided : Expr) : MetaM Expr := do
+private partial def makeFastInstance (provided : Expr) : MetaM Expr := do
   let ty ← inferType provided
   let .some className ← Lean.Meta.isClass? ty | do
     Lean.logError "Can only be used for classes"
@@ -54,11 +58,13 @@ partial def makeFastInstance (provided : Expr) : MetaM Expr := do
 
 syntax (name := fastInstance) "fast_instance%" term : term
 
+/-- This elaborator can improve performance when inserted before uses of `Function.Injective.ring`
+etc. -/
 @[term_elab fastInstance]
 def elabFastInstance : Elab.Term.TermElab
-| `(term| fast_instance% $arg), expectedType => do
-  -- passthrough the term
-  let provided ← Lean.Elab.Term.elabTermEnsuringType arg expectedType
-  Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing
-  makeFastInstance provided
-| _, _ => Elab.throwUnsupportedSyntax
+  | `(term| fast_instance% $arg), expectedType => do
+    -- passthrough the term
+    let provided ← Lean.Elab.Term.elabTermEnsuringType arg expectedType
+    Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing
+    makeFastInstance provided
+  | _, _ => Elab.throwUnsupportedSyntax
