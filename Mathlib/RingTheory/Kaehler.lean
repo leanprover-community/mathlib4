@@ -255,6 +255,24 @@ theorem KaehlerDifferential.span_range_derivation :
       Submodule.smul_mem _ r hx₂⟩
 #align kaehler_differential.span_range_derivation KaehlerDifferential.span_range_derivation
 
+lemma KaehlerDifferential.linearMap_ext_aux (f : Ω[S⁄R] →ₗ[S] M)
+    (h : ∀ (x : S), f (KaehlerDifferential.D R S x) = 0) :
+    f = 0 := by
+  have : ⊤ ≤ LinearMap.ker f := by
+    rw [← span_range_derivation, Submodule.span_le]
+    rintro _ ⟨y, rfl⟩
+    exact h y
+  simpa only [top_le_iff, LinearMap.ker_eq_top] using this
+
+lemma KaehlerDifferential.linearMap_ext (f g : Ω[S⁄R] →ₗ[S] M)
+    (h : ∀ (x : S), f (KaehlerDifferential.D R S x) = g (KaehlerDifferential.D R S x)) :
+    f = g := by
+  rw [← sub_eq_zero]
+  apply linearMap_ext_aux
+  intro x
+  dsimp
+  rw [h, sub_self]
+
 variable {R S}
 
 /-- The linear map from `Ω[S⁄R]`, associated with a derivation. -/
