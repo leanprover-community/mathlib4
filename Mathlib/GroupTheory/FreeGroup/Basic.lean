@@ -753,8 +753,12 @@ theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f 
 #align free_add_group.ext_hom FreeAddGroup.ext_hom
 
 @[to_additive]
+theorem lift_of_eq_id (α) : lift of = MonoidHom.id (FreeGroup α) :=
+  lift.apply_symm_apply (MonoidHom.id _)
+
+@[to_additive]
 theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
-  DFunLike.congr_fun (lift.apply_symm_apply (MonoidHom.id _)) x
+  DFunLike.congr_fun (lift_of_eq_id α) x
 #align free_group.lift.of_eq FreeGroup.lift.of_eq
 #align free_add_group.lift.of_eq FreeAddGroup.lift.of_eq
 
@@ -776,6 +780,14 @@ theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
   exact ⟨FreeGroup.of a, by simp only [lift.of]⟩
 #align free_group.lift.range_eq_closure FreeGroup.lift.range_eq_closure
 #align free_add_group.lift.range_eq_closure FreeAddGroup.lift.range_eq_closure
+
+/-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
+set of generators equals `⊤`. -/
+@[to_additive (attr := simp)]
+theorem closure_range_of (α) :
+    Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
+  rw [← lift.range_eq_closure, lift_of_eq_id]
+  exact MonoidHom.range_top_of_surjective _ Function.surjective_id
 
 end lift
 
