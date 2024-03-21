@@ -378,6 +378,12 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
       rfl
 #align category_theory.is_sheaf_iff_is_sheaf_of_type CategoryTheory.isSheaf_iff_isSheaf_of_type
 
+variable {J} in
+lemma Presheaf.IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hP : Presheaf.IsSheaf J P)
+    {X : C} (S : Sieve X) (hS : S ∈ J X) : Presieve.IsSheafFor P S.arrows := by
+  rw [isSheaf_iff_isSheaf_of_type] at hP
+  exact hP S hS
+
 /-- The category of sheaves taking values in Type is the same as the category of set-valued sheaves.
 -/
 @[simps]
