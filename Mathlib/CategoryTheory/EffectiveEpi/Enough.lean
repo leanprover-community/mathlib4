@@ -47,4 +47,13 @@ noncomputable def π (X : D) : over F X ⟶ X :=
 instance (X : D) : EffectiveEpi (F.π X) :=
   (EffectivelyEnough.presentation X).some.effectiveEpi
 
+def isEquivalenceEffectivePresentation (e : C ≌ D) (X : D) :
+    EffectivePresentation e.functor X where
+      p := e.inverse.obj X
+      f := e.counit.app _
+      effectiveEpi := inferInstance
+
+instance [IsEquivalence F] : EffectivelyEnough F where
+  presentation X := ⟨isEquivalenceEffectivePresentation F.asEquivalence X⟩
+
 end Functor
