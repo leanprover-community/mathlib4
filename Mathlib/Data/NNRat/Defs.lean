@@ -70,7 +70,9 @@ theorem ne_iff {x y : ℚ≥0} : (x : ℚ) ≠ (y : ℚ) ↔ x ≠ y :=
   NNRat.coe_inj.not
 #align nnrat.ne_iff NNRat.ne_iff
 
-@[norm_cast] lemma coe_mk (q : ℚ) (hq) : (⟨q, hq⟩ : ℚ≥0) = q := rfl
+@[norm_cast]
+theorem coe_mk (q : ℚ) (hq) : ((⟨q, hq⟩ : ℚ≥0) : ℚ) = q :=
+  rfl
 #align nnrat.coe_mk NNRat.coe_mk
 
 lemma «forall» {p : ℚ≥0 → Prop} : (∀ q, p q) ↔ ∀ q hq, p ⟨q, hq⟩ := Subtype.forall
@@ -96,12 +98,14 @@ theorem coe_nonneg (q : ℚ≥0) : (0 : ℚ) ≤ q :=
   q.2
 #align nnrat.coe_nonneg NNRat.coe_nonneg
 
--- eligible for dsimp
-@[simp, nolint simpNF, norm_cast] lemma coe_zero : ((0 : ℚ≥0) : ℚ) = 0 := rfl
+@[simp, norm_cast]
+theorem coe_zero : ((0 : ℚ≥0) : ℚ) = 0 :=
+  rfl
 #align nnrat.coe_zero NNRat.coe_zero
 
--- eligible for dsimp
-@[simp, nolint simpNF, norm_cast] lemma coe_one : ((1 : ℚ≥0) : ℚ) = 1 := rfl
+@[simp, norm_cast]
+theorem coe_one : ((1 : ℚ≥0) : ℚ) = 1 :=
+  rfl
 #align nnrat.coe_one NNRat.coe_one
 
 @[simp, norm_cast]
@@ -178,8 +182,9 @@ def coeHom : ℚ≥0 →+* ℚ where
   map_add' := coe_add
 #align nnrat.coe_hom NNRat.coeHom
 
--- eligible for dsimp
-@[simp, nolint simpNF, norm_cast] lemma coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n := rfl
+@[simp, norm_cast]
+theorem coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n :=
+  rfl
 #align nnrat.coe_nat_cast NNRat.coe_natCast
 
 -- See note [no_index around OfNat.ofNat]
