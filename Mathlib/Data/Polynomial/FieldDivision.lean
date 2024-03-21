@@ -312,12 +312,13 @@ theorem mod_def : p % q = p %ₘ (q * C (leadingCoeff q)⁻¹) := rfl
 #align polynomial.mod_def Polynomial.mod_def
 
 theorem modByMonic_eq_mod (p : R[X]) (hq : Monic q) : p %ₘ q = p % q :=
-  show p %ₘ q = p %ₘ (q * C (leadingCoeff q)⁻¹) by simp only [Monic.def.1 hq, inv_one, mul_one, C_1]
+  show p %ₘ q = p %ₘ (q * C (leadingCoeff q)⁻¹) by
+    simp only [Monic.def'.1 hq, inv_one, mul_one, C_1]
 #align polynomial.mod_by_monic_eq_mod Polynomial.modByMonic_eq_mod
 
 theorem divByMonic_eq_div (p : R[X]) (hq : Monic q) : p /ₘ q = p / q :=
   show p /ₘ q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹)) by
-    simp only [Monic.def.1 hq, inv_one, C_1, one_mul, mul_one]
+    simp only [Monic.def'.1 hq, inv_one, C_1, one_mul, mul_one]
 #align polynomial.div_by_monic_eq_div Polynomial.divByMonic_eq_div
 
 theorem mod_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) :=
