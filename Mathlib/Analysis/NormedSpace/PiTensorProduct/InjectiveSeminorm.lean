@@ -89,27 +89,30 @@ section seminorm
 @[simps!]
 noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[𝕜]
     ContinuousMultilinearMap 𝕜 E F →L[𝕜] F where
-  toFun x := LinearMap.mkContinuousOfExistsBound
+  toFun x := LinearMap.mkContinuous
     ((LinearMap.flip (lift (R := 𝕜) (s := E) (E := F)).toLinearMap x) ∘ₗ
-    ContinuousMultilinearMap.toMultilinearMapLinear) (by
---      obtain ⟨C, hC⟩ := toDualMultilinearMap_bound x
-      existsi projectiveSeminorm x
-      intro f
-      simp only [LinearMap.coe_comp, Function.comp_apply,
-        ContinuousMultilinearMap.toMultilinearMapLinear_apply, LinearMap.flip_apply,
-        LinearEquiv.coe_coe]
-      exact projectiveSeminorm_bound _ _ _)
+    ContinuousMultilinearMap.toMultilinearMapLinear)
+    (projectiveSeminorm x)
+    (fun _ ↦ by simp only [LinearMap.coe_comp, Function.comp_apply,
+                  ContinuousMultilinearMap.toMultilinearMapLinear_apply, LinearMap.flip_apply,
+                  LinearEquiv.coe_coe]
+                exact projectiveSeminorm_bound _ _ _)
   map_add' x y := by
     ext _
-    simp only [map_add, LinearMap.mkContinuousOfExistsBound_apply, LinearMap.coe_comp,
-      Function.comp_apply, ContinuousMultilinearMap.toMultilinearMapLinear_apply,
-      LinearMap.add_apply, LinearMap.flip_apply, LinearEquiv.coe_coe, ContinuousLinearMap.add_apply]
+    simp only [map_add, LinearMap.mkContinuous_apply, LinearMap.coe_comp, Function.comp_apply,
+      ContinuousMultilinearMap.toMultilinearMapLinear_apply, LinearMap.add_apply,
+      LinearMap.flip_apply, LinearEquiv.coe_coe, ContinuousLinearMap.add_apply]
   map_smul' a x := by
     ext _
-    simp only [map_smul, LinearMap.mkContinuousOfExistsBound_apply, LinearMap.coe_comp,
-      Function.comp_apply, ContinuousMultilinearMap.toMultilinearMapLinear_apply,
-      LinearMap.smul_apply, LinearMap.flip_apply, LinearEquiv.coe_coe, RingHom.id_apply,
-      ContinuousLinearMap.coe_smul', Pi.smul_apply]
+    simp only [map_smul, LinearMap.mkContinuous_apply, LinearMap.coe_comp, Function.comp_apply,
+      ContinuousMultilinearMap.toMultilinearMapLinear_apply, LinearMap.smul_apply,
+      LinearMap.flip_apply, LinearEquiv.coe_coe, RingHom.id_apply, ContinuousLinearMap.coe_smul',
+      Pi.smul_apply]
+
+theorem toDualContinuousMultilinearMap_bound (x : ⨂[𝕜] i, E i) :
+    ‖toDualContinuousMultilinearMap x (F := F)‖ ≤ projectiveSeminorm x := by
+  simp only [toDualContinuousMultilinearMap, LinearMap.coe_mk, AddHom.coe_mk]
+  apply LinearMap.mkContinuous_norm_le _ (apply_nonneg _ _)
 
 /-- The injective seminorm on `⨂[𝕜] i, Eᵢ`. Morally, it sends `x` in `⨂[𝕜] i, Eᵢ` to the
 `sup` of the operator norms of the `PiTensorProduct.toDualContinuousMultilinearMap x`, for all
@@ -131,14 +134,8 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max (max uι u𝕜) u
   intro p G _ _ hp
   rw [hp]
   intro x
-  simp only [toDualContinuousMultilinearMap, Seminorm.comp_apply, LinearMap.coe_mk, AddHom.coe_mk,
-    coe_normSeminorm]
-  rw [ContinuousLinearMap.opNorm_le_iff (apply_nonneg _ _)]
-  intro f
-  simp only [LinearMap.mkContinuousOfExistsBound_apply, LinearMap.coe_comp, Function.comp_apply,
-    ContinuousMultilinearMap.toMultilinearMapLinear_apply, LinearMap.flip_apply,
-    LinearEquiv.coe_coe]
-  exact projectiveSeminorm_bound _ _ _
+  simp only [Seminorm.comp_apply, coe_normSeminorm]
+  exact toDualContinuousMultilinearMap_bound _
 
 theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max (max uι u𝕜) uE))
@@ -150,6 +147,19 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
 
 theorem injectiveSeminorm_bound (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
     ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
+-- If `F` were in `Type (max (max uι u𝕜) uE)` (which is the type of `⨂[𝕜] i, E i`), then the
+-- property that we want to prove would hold by definition of `injectiveSeminorm`. This is
+-- not necessarily true, but we will show that there exists a normed vector space `G` in
+-- `Type (max (max uι u𝕜) uE)` and an injective isometry from `G` to `F` such that `f` factors
+-- through a continuous multilinear map `f'` from `E = Π i, E i` to `G`, to which we can apply
+-- the definition of `injectiveSeminorm`. The desired inequality for `f` then follows
+-- immediately.
+-- The idea is very simple: the multilinear map `f` corresponds by `PiTensorProduct.lift`
+-- to a linear map from `⨂[𝕜] i, E i` to `F`, say `l`. We want to take `G` to be the image of
+-- `l`, with the norm induced from that of `F`; to make sure that we are in the correct universe,
+-- it is actually more convenient to take `G` equal to the coimage of `l` (i.e. the quotient
+-- of `⨂[𝕜] i, E i` by the kernel of `l`), which is canonically isomorphic to its image by
+-- `LinearMap.quotKerEquivRange`.
   set G := (⨂[𝕜] i, E i) ⧸ LinearMap.ker (lift f.toMultilinearMap)
   set G' := LinearMap.range (lift f.toMultilinearMap)
   set e := LinearMap.quotKerEquivRange (lift f.toMultilinearMap)
@@ -201,30 +211,12 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
   · intro p hp
     simp only [Set.mem_setOf_eq] at hp
     obtain ⟨G, _, _, h⟩ := hp
-    sorry
+    rw [h]; intro x; simp only [Seminorm.comp_apply, coe_normSeminorm]
+    exact toDualContinuousMultilinearMap_bound _
 
 theorem injectiveSeminorm_tprod_le (m : Π (i : ι), E i) :
-    injectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ := by
-  rw [injectiveSeminorm_apply]
-  apply csSup_le
-  · rw [Set.range_nonempty_iff_nonempty]
-    simp only [Set.coe_setOf, nonempty_subtype]
-    existsi 0, PUnit, inferInstance, inferInstance
-    ext x
-    simp only [Seminorm.zero_apply, Seminorm.comp_apply, coe_normSeminorm]
-    have heq : toDualContinuousMultilinearMap (F := PUnit) x = 0 := by ext _
-    rw [heq, norm_zero]
-  · intro a ha
-    simp only [Set.coe_setOf, Set.mem_setOf_eq, Set.mem_range, Subtype.exists, exists_prop] at ha
-    let ⟨p, ⟨⟨G, _, _, hp⟩, hpa⟩⟩ := ha
-    rw [← hpa, hp]
-    simp only [Seminorm.comp_apply, coe_normSeminorm, ge_iff_le]
-    rw [ContinuousLinearMap.opNorm_le_iff (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
-    intro f
-    simp only [toDualContinuousMultilinearMap_apply_toFun, lift.tprod,
-        ContinuousMultilinearMap.coe_coe]
-    rw [mul_comm]
-    exact ContinuousMultilinearMap.le_opNorm f m
+    injectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ :=
+  le_trans (injectiveSeminorm_le_projectiveSeminorm _) (projectiveSeminorm_tprod_le m)
 
 noncomputable instance : SeminormedAddCommGroup (⨂[𝕜] i, E i) :=
   AddGroupSeminorm.toSeminormedAddCommGroup injectiveSeminorm.toAddGroupSeminorm
