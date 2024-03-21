@@ -23,7 +23,7 @@ In this file we define `lipschitzGroup`, `pinGroup` and `spinGroup` and show the
 ## Implementation Notes
 
 The definition of the Lipschitz group
-$\\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \\}$ is given by:
+$\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \}$ is given by:
 
 * [fulton2004][], Chapter 20
 * https://en.wikipedia.org/wiki/Clifford_algebra#Lipschitz_group
