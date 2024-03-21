@@ -84,8 +84,6 @@ irreducible_def rnDeriv (μ ν : Measure α) : α → ℝ≥0∞ :=
 
 section ByDefinition
 
-variable {μ ν : Measure α}
-
 theorem haveLebesgueDecomposition_spec (μ ν : Measure α) [h : HaveLebesgueDecomposition μ ν] :
     Measurable (μ.rnDeriv ν) ∧
       μ.singularPart ν ⟂ₘ ν ∧ μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) := by
