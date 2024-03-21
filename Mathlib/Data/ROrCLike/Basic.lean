@@ -181,7 +181,7 @@ theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
 #align is_R_or_C.of_real_inj ROrCLike.ofReal_inj
 
 set_option linter.deprecated false in
-@[deprecated, rorCLike_simps] -- porting note (#10618): was `simp` but `simp` can prove it
+@[deprecated, rorCLike_simps] -- Porting note (#10618): was `simp` but `simp` can prove it
 theorem bit0_re (z : K) : re (bit0 z) = bit0 (re z) :=
   map_bit0 _ _
 #align is_R_or_C.bit0_re ROrCLike.bit0_re
@@ -192,7 +192,7 @@ theorem bit1_re (z : K) : re (bit1 z) = bit1 (re z) := by simp only [bit1, map_a
 #align is_R_or_C.bit1_re ROrCLike.bit1_re
 
 set_option linter.deprecated false in
-@[deprecated, rorCLike_simps] -- porting note (#10618): was `simp` but `simp` can prove it
+@[deprecated, rorCLike_simps] -- Porting note (#10618): was `simp` but `simp` can prove it
 theorem bit0_im (z : K) : im (bit0 z) = bit0 (im z) :=
   map_bit0 _ _
 #align is_R_or_C.bit0_im ROrCLike.bit0_im
@@ -369,18 +369,18 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
 #align is_R_or_C.conj_of_real ROrCLike.conj_ofReal
 
 set_option linter.deprecated false in
-@[deprecated, rorCLike_simps] -- porting note (#10618): was `simp` but `simp` can prove it
+@[deprecated, rorCLike_simps] -- Porting note (#10618): was `simp` but `simp` can prove it
 theorem conj_bit0 (z : K) : conj (bit0 z) = bit0 (conj z) :=
   map_bit0 _ _
 #align is_R_or_C.conj_bit0 ROrCLike.conj_bit0
 
 set_option linter.deprecated false in
-@[deprecated, rorCLike_simps] -- porting note (#10618): was `simp` but `simp` can prove it
+@[deprecated, rorCLike_simps] -- Porting note (#10618): was `simp` but `simp` can prove it
 theorem conj_bit1 (z : K) : conj (bit1 z) = bit1 (conj z) :=
   map_bit1 _ _
 #align is_R_or_C.conj_bit1 ROrCLike.conj_bit1
 
-@[rorCLike_simps] -- Porting note: was a `simp` but `simp` can prove it
+@[rorCLike_simps] -- Porting note (#10618): was a `simp` but `simp` can prove it
 theorem conj_neg_I : conj (-I) = (I : K) := by rw [map_neg, conj_I, neg_neg]
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.conj_neg_I ROrCLike.conj_neg_I

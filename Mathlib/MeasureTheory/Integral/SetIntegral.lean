@@ -1455,7 +1455,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
   _ ≤ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ := by
       apply integral_mono_of_nonneg (eventually_of_forall (fun y ↦ by positivity))
       · exact (hg.norm.const_mul _).mul_const _
-      · apply eventually_of_forall (fun y ↦ ?_)
+      · filter_upwards with y
         by_cases hy : y ∈ k
         · dsimp only
           specialize hv p hp y hy
