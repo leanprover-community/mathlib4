@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson
 import Mathlib.CategoryTheory.EffectiveEpi.Enough
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
-import Mathlib.CategoryTheory.Sites.InducedTopology
+import Mathlib.CategoryTheory.Sites.DenseSubsite
 /-!
 
 # Projective objects in precoherent categories
