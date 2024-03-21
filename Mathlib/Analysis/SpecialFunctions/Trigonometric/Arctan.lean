@@ -234,7 +234,10 @@ lemma arctan_ne_mul_pi_div_two {x : ℝ} : ∀ (k : ℤ), arctan x ≠ (2 * k + 
   obtain ⟨lb, ub⟩ := arctan_mem_Ioo x
   rw [h, neg_eq_neg_one_mul, mul_div_assoc, mul_lt_mul_right (by positivity)] at lb
   rw [h, ← one_mul (π / 2), mul_div_assoc, mul_lt_mul_right (by positivity)] at ub
-  norm_cast at lb ub; change -1 < _ at lb; omega
+  norm_cast at lb ub
+  -- https://github.com/leanprover-community/mathlib4/issues/11573
+  rw [Int.negSucc_coe, zero_add, Nat.cast_one] at lb
+  omega
 
 lemma arctan_add_arctan_lt_pi_div_two {x y : ℝ} (h : x * y < 1) : arctan x + arctan y < π / 2 := by
   cases' le_or_lt y 0 with hy hy
