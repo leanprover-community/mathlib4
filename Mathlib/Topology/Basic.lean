@@ -1262,7 +1262,7 @@ theorem dense_compl_singleton (x : X) [NeBot (𝓝[≠] x)] : Dense ({x}ᶜ : Se
 
 /-- If `x` is not an isolated point of a topological space, then the closure of `{x}ᶜ` is the whole
 space. -/
--- Porting note: was a `@[simp]` lemma but `simp` can prove it
+-- Porting note (#10618): was a `@[simp]` lemma but `simp` can prove it
 theorem closure_compl_singleton (x : X) [NeBot (𝓝[≠] x)] : closure {x}ᶜ = (univ : Set X) :=
   (dense_compl_singleton x).closure_eq
 #align closure_compl_singleton closure_compl_singleton
