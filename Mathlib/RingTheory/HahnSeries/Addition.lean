@@ -290,3 +290,42 @@ def embDomainLinearMap (f : Γ ↪o Γ') : HahnSeries Γ R →ₗ[R] HahnSeries 
 end Domain
 
 end Module
+
+section LeadingTerm
+
+theorem nonzero_of_nonzero_add_single [Zero Γ] [PartialOrder Γ] [AddMonoid R]
+    {x y : HahnSeries Γ R} (hxy : x = y + single x.order (x.coeff x.order)) (hy : y ≠ 0) :
+    x ≠ 0 :=
+  fun hx => by simp_all only [order_zero, zero_coeff, map_zero, add_zero, ne_eq, not_true_eq_false]
+
+variable [LinearOrder Γ] [Zero Γ] [AddCancelCommMonoid R] {x y : HahnSeries Γ R}
+  (hxy : x = y + single x.order (x.coeff x.order))
+
+theorem coeff_of_add_single_order_eq_zero : y.coeff x.order = 0 := by
+  have hx : x.coeff x.order = y.coeff x.order +
+      ((single (order x)) (x.coeff (order x))).coeff x.order := by
+    nth_rw 1 [hxy, add_coeff]
+  rw [single_coeff_same, self_eq_add_left] at hx
+  exact hx
+
+theorem add_single_order_of_ne_order (hy : y ≠ 0) : x.order ≠ y.order :=
+  fun h => (Eq.mpr (congrArg (fun g ↦ y.coeff g ≠ 0) h) (coeff_order_ne_zero hy))
+    (coeff_of_add_single_order_eq_zero hxy)
+
+theorem coeff_eq_of_not_order (g : Γ) (hg : g ≠ x.order) : y.coeff g = x.coeff g := by
+  rw [hxy, add_coeff, single_coeff_of_ne hg, add_zero]
+
+theorem support_subset_add_single_support : y.support ⊆ x.support :=
+  fun g hg => if hgx : g = order x then ((fun _ ↦ hg (Eq.mpr (congrArg (fun g ↦ y.coeff g = 0) hgx)
+    (coeff_of_add_single_order_eq_zero hxy))) hg).elim
+    else fun hxg => hg (Eq.mp (congrArg (fun r ↦ r = 0)
+    (coeff_eq_of_not_order hxy g hgx).symm) hxg)
+
+theorem order_lt_add_single_support_order (hy : y ≠ 0) : x.order < y.order := by
+  refine lt_of_le_of_ne ?_ (add_single_order_of_ne_order hxy hy)
+  simp only [order]
+  split <;> rename_i hz
+  · exact ((nonzero_of_nonzero_add_single hxy hy) hz).elim
+  · exact Set.IsWF.min_le_min_of_subset (support_subset_add_single_support hxy)
+
+end LeadingTerm
