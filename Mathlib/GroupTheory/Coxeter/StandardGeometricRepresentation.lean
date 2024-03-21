@@ -621,18 +621,14 @@ theorem SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul
 private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRightDescent w i) :
     ((ρ w) (α i)).IsNonnegative := by
   -- We use induction on the length of `w`.
-  suffices ∀ n : ℕ, ∀ w : W, ℓ w = n →
-      (∀ i : B, ¬ cs.IsRightDescent w i → (cs.SGR w (α i)).IsNonnegative) by
-    tauto
-  intro n
-  induction' n using Nat.strong_induction_on with n ih
-  rintro w rfl i h
+  generalize hn : ℓ w = n
+  induction' n using Nat.strong_induction_on with n ih generalizing w i
 
   rcases em (w = 1) with rfl | w_ne_one
   · -- If `w = 1`, then the statement is trivial.
     simpa only [map_one, one_apply] using Finsupp.isNonnegative_single i
   · -- Otherwise, `w ≠ 1`. Let `i'` be a right descent of `w`.
-    have h₁ : 1 ≤ ℓ w := Nat.one_le_iff_ne_zero.mpr ((not_congr cs.length_eq_zero_iff).mpr w_ne_one)
+    have h₁ : 1 ≤ ℓ w := Nat.one_le_iff_ne_zero.mpr (cs.length_eq_zero_iff.mp.mt w_ne_one)
     rcases cs.exists_rightDescent_of_ne_one w_ne_one with ⟨i', hwi'⟩
 
     -- Use the notation `aw` for alternating product of simple reflections `s i` and `s i'`.
@@ -643,8 +639,7 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRigh
     (That is, `w` can be written as a product `v * u⁻¹`,
     where `ℓ v + ℓ u = ℓ w` and `u` is a reduced alternating word of length `m` that alternates
     between `i` and `i'`, ending with `i'`.) -/
-    set m := Nat.findGreatest (fun m ↦ ℓ (w * (aw m)⁻¹) + m = ℓ w) (ℓ w)
-        with h₂
+    set m := Nat.findGreatest (fun m ↦ ℓ (w * (aw m)⁻¹) + m = ℓ w) (ℓ w) with h₂
 
     /- Because `w` has `i'` as a right descent, we have
     `ℓ (w * (aw 1)⁻¹) + 1 = ℓ w`. So `1 ≤ m`. -/
@@ -665,7 +660,7 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRigh
     have h₅ : ℓ (w * (aw (m + 1))⁻¹) + (m + 1) ≠ ℓ w := by
       rcases Nat.lt_or_ge (ℓ w) (m + 1) with lt | ge
       · linarith only [lt]
-      · apply Nat.findGreatest_is_greatest (by linarith : m < m + 1)
+      · apply Nat.findGreatest_is_greatest (Nat.lt_succ_self m)
         exact ge
 
     -- Now we simplify this using `alternatingWord_succ'`.
@@ -734,17 +729,15 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRigh
       · rwa [if_pos even] at h₁₀
       · rwa [if_pos (h₁₁.mpr not_even)] at h₇
 
-    have h₁₄ : ℓ (w * (aw m)⁻¹) < ℓ w := by linarith only [h₃, h₄]
+    have h₁₄ : ℓ (w * (aw m)⁻¹) < n := by linarith only [h₃, h₄, hn]
 
     /- By the inductive hypothesis, `ρ (w * (aw m)⁻¹) (α i)` and `ρ (w * (aw m)⁻¹) (α i')` are
     positive. -/
-    have h₁₅ := ih (ℓ (w * (aw m)⁻¹)) h₁₄ (w * (aw m)⁻¹) rfl
+    have h₁₆ := ih (ℓ (w * (aw m)⁻¹)) h₁₄ h₁₂ rfl
 
-    have h₁₆ := h₁₅ i h₁₂
+    have h₁₇ := ih (ℓ (w * (aw m)⁻¹)) h₁₄ h₁₃ rfl
 
-    have h₁₇ := h₁₅ i' h₁₃
-
-    clear h₇ h₁₀ h₁₁ h₁₂ h₁₃ h₁₄ h₁₅
+    clear h₇ h₁₀ h₁₁ h₁₂ h₁₃ h₁₄
 
     /- Now we must prove the condition `hm : m < M i i' ∨ M i i' = 0` of
     `SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul`. First, we show
@@ -811,7 +804,7 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬ cs.IsRigh
 
     clear h hwi' h₃ h₄ h₂₀ h₂₁
 
-    -- We have `ρ w (α i) = ρ (w * (aw m)⁻¹) ((ρ (aw m)) (α i))`.
+    -- We have `(ρ w) (α i) = ρ (w * (aw m)⁻¹) ((ρ (aw m)) (α i))`.
     rw [(by group : w = w * (aw m)⁻¹ * (aw m)), map_mul, mul_apply]
 
     /- Now, we write `((ρ (aw m)) (α i))` as a nonnegative linear combination of `α i` and `α i'`.
