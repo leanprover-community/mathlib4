@@ -110,7 +110,7 @@ theorem measurePreserving_quotientGroup_mk_of_QuotientMeasureEqMeasurePreimage
     {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 ν) (μ : Measure (G ⧸ Γ))
     [QuotientMeasureEqMeasurePreimage ν μ] :
     MeasurePreserving (@QuotientGroup.mk G _ Γ) (ν.restrict 𝓕) μ :=
-  h𝓕.measurePreserving_quotient_mk ν μ
+  h𝓕.measurePreserving_quotient_mk μ
 
 end smulInvariantMeasure
 
@@ -196,7 +196,7 @@ theorem MeasureTheory.leftInvariantIsQuotientMeasureEqMeasurePreimage [IsFiniteM
   have finiteCovol : μ univ < ⊤ := measure_lt_top μ univ
   rw [fund_dom_s.covolume_eq_volume] at h
   by_cases meas_s_ne_zero : ν s = 0
-  · convert fund_dom_s.quotientMeasureEqMeasurePreimage_of_zero ν meas_s_ne_zero
+  · convert fund_dom_s.quotientMeasureEqMeasurePreimage_of_zero meas_s_ne_zero
     rw [← @measure_univ_eq_zero, ← h, meas_s_ne_zero]
   apply IsMulLeftInvariant.quotientMeasureEqMeasurePreimage_of_set (fund_dom_s := fund_dom_s)
     (meas_V := MeasurableSet.univ)

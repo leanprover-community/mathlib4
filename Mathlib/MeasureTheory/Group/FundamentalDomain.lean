@@ -738,7 +738,7 @@ local notation "π" => @Quotient.mk _ α_mod_G
 
 variable {G}
 
-@[to_additive addQuotientMeasure_apply]
+@[to_additive addMeasureRestrictMap_apply]
 lemma measureRestrictMap_apply (s : Set α) {U : Set (Quotient α_mod_G)} (meas_U : MeasurableSet U) :
     (μ.restrict s).map π U = μ ((π ⁻¹' U) ∩ s) := by
   rw [map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
@@ -902,7 +902,7 @@ fundamental domain. -/
 lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage {μ : Measure (Quotient α_mod_G)}
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν) (h : μ = (ν.restrict s).map π) :
     QuotientMeasureEqMeasurePreimage ν μ := by
-  simpa [h] using fund_dom_s.quotientMeasureEqMeasurePreimage_quotientMeasure ν
+  simpa [h] using fund_dom_s.quotientMeasureEqMeasurePreimage_quotientMeasure
 
 /-- Any two measures satisfying `QuotientMeasureEqMeasurePreimage` are equal. -/
 @[to_additive]
@@ -931,7 +931,7 @@ theorem IsFundamentalDomain.quotientMeasureEqMeasurePreimage_of_zero
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν)
     (vol_s : ν s = 0) :
     QuotientMeasureEqMeasurePreimage ν (0 : Measure (Quotient α_mod_G)) := by
-  apply fund_dom_s.quotientMeasureEqMeasurePreimage ν
+  apply fund_dom_s.quotientMeasureEqMeasurePreimage
   ext U meas_U
   simp only [zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply]
   convert (measure_inter_null_of_null_right (h := vol_s) (Quotient.mk α_mod_G ⁻¹' U)).symm
@@ -1006,8 +1006,9 @@ local notation "π" => @Quotient.mk _ α_mod_G
 sigma-finite measure, then it is itself `SigmaFinite`. -/
 @[to_additive MeasureTheory.instSigmaFiniteAddQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace]
 instance [SigmaFinite (volume : Measure α)] [HasFundamentalDomain G α]
-    (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage volume μ] : SigmaFinite μ :=
-  QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient (volume : Measure α) μ
+    (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage volume μ] :
+    SigmaFinite μ := by
+  exact QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient (ν := (volume : Measure α)) (μ := μ)
 
 end QuotientMeasureEqMeasurePreimage
 

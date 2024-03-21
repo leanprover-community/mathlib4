@@ -1004,6 +1004,12 @@ def fixAbbreviation : List String → List String
   | "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: fixAbbreviation s
   | "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
   | "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
+  | "Has" :: "Fundamental" :: "Domain" :: s => "HasAddFundamentalDomain" :: fixAbbreviation s
+  | "has" :: "Fundamental" :: "Domain" :: s => "hasAddFundamentalDomain" :: fixAbbreviation s
+  | "Quotient" :: "Measure" :: "EqMeasurePreimage" :: s
+          => "AddQuotientMeasureEqMeasurePreimage" :: fixAbbreviation s
+  | "quotient" :: "Measure" :: "EqMeasurePreimage" :: s
+          => "addQuotientMeasureEqMeasurePreimage" :: fixAbbreviation s
   -- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
   | "HSmul" :: s                      => "HSMul" :: fixAbbreviation s -- from `HPow`
   | "NSmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `NPow`
