@@ -2719,7 +2719,6 @@ import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Small.Basic
 import Mathlib.Logic.Small.Defs
-import Mathlib.Logic.Small.Finite
 import Mathlib.Logic.Small.Group
 import Mathlib.Logic.Small.List
 import Mathlib.Logic.Small.Module
