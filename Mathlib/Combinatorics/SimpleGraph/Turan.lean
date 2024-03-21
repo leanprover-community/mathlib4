@@ -12,9 +12,9 @@ This file defines the Turán graph and proves some of its basic properties.
 
 ## Main declarations
 
-* `G.IsTuranMaximal r`: predicate saying that `G` has the most number of edges for its number `n`
-  of vertices while still being `r + 1`-cliquefree.
-* `turanGraph n r`: the canonical `r + 1`-cliquefree Turán graph on `n` vertices.
+* `SimpleGraph.IsTuranMaximal`: `G.IsTuranMaximal r` means that `G` has the most number of edges for
+  its number of vertices while still being `r + 1`-cliquefree.
+* `SimpleGraph.turanGraph n r`: The canonical `r + 1`-cliquefree Turán graph on `n` vertices.
 
 ## TODO
 
@@ -68,7 +68,7 @@ theorem turanGraph_cliqueFree : (turanGraph n r).CliqueFree (r + 1) := by
   exact absurd c ((@ha x y).mpr d)
 
 /-- For `n ≤ r` and `0 < r`, `turanGraph n r` is Turán-maximal. -/
-theorem isTuranMaximal_turanGraph_of_le (h : n ≤ r) : (turanGraph n r).IsTuranMaximal r := by
+theorem isTuranMaximal_turanGraph (h : n ≤ r) : (turanGraph n r).IsTuranMaximal r := by
   refine' ⟨turanGraph_cliqueFree hr, _⟩
   intro H _ _
   exact card_le_card (edgeFinset_mono ((turanGraph_eq_top_of_le h).symm ▸ le_top (a := H)))
