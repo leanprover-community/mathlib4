@@ -42,7 +42,7 @@ def inversion (c : P) (R : ℝ) (x : P) : P :=
   (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c
 #align euclidean_geometry.inversion EuclideanGeometry.inversion
 
--- Adaptation note: nightly-2024-03-16: simp [inversion]
+-- Adaptation note: nightly-2024-03-16: added to replace simp [inversion]
 theorem inversion_def :
     inversion = fun (c : P) (R : ℝ) (x : P) => (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c :=
   rfl
