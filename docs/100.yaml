@@ -412,7 +412,9 @@
 99:
   title  : Buffon Needle Problem
   links  :
-    mathlib archive : https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/BuffonsNeedle.lean
+  decls  :
+    - BuffonsNeedle.buffon_short
+    - BuffonsNeedle.buffon_long
   author : Enrico Z. Borba
 100:
   title  : Descartes Rule of Signs
