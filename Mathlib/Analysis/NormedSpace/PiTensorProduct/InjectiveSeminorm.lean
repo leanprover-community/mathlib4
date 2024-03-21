@@ -19,24 +19,21 @@ expressing the universal property of the tensor product induces an isometric lin
 
 The idea is the following: Every normed `𝕜`-vector space `F` defines a linear map
 from `⨂[𝕜] i, Eᵢ` to `ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] F`, which sends `x` to the map
-`f ↦ f.lift x`. We prove in `toDualMultilinearMap_bound` that this map lands in
+`f ↦ f.lift x`. Thanks to `PiTensorProduct.projectiveSeminorm_bound`, this map lands in
 `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F`. As this last space has a natural operator (semi)norm,
-we get an induced seminorm on `⨂[𝕜] i, Eᵢ`. We then take the `sup` of these seminorms as
-`F` varies; by `dualSeminorms_bounded`, this family of seminorms is bounded, so the `sup`
-has good properties.
+we get an induced seminorm on `⨂[𝕜] i, Eᵢ`, which, by `PiTensorProduct.projectiveSeminorm_bound`,
+is bounded above by the projective seminorm `PiTensorProduct.projectiveSeminorm`.
+We then take the `sup` of these seminorms as `F` varies; as this family of seminorms is bounded,
+its `sup` has good properties.
 
 In fact, we cannot take the `sup` over all normed spaces `F` because of set-theoretical issues,
-so we only take spaces `F` in the same universe as `⨂[𝕜] i, Eᵢ`. We then prove in
+so we only take spaces `F` in the same universe as `⨂[𝕜] i, Eᵢ`. We prove in
 `injectiveSeminorm_bound` that this gives the same result, because every multilinear map
 from `E = Πᵢ Eᵢ` to `F` factors though a normed vector space in the same universe as
 `⨂[𝕜] i, Eᵢ`.
 
 We then prove the universal property and the functoriality of `⨂[𝕜] i, Eᵢ` as a normed vector
 space.
-
--- TODO: If all `Eᵢ` are separated and satisfy `SeparatingDual`, then the seminorm on
-`⨂[𝕜] i, Eᵢ` is a norm. This uses the construction of a basis of the `PiTensorProduct`, hence
-depends on PR #11156. It should probably go in a separate file.
 
 ## Main definitions
 
@@ -65,6 +62,14 @@ induced by a family of continuous linear maps `Eᵢ →L[𝕜] E'ᵢ`.
 `fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
 * `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vecteor space, then
 `‖mapLMultilinear 𝕜 E F‖ ≤ 1`.
+
+## TODO
+
+* If all `Eᵢ` are separated and satisfy `SeparatingDual`, then the seminorm on
+`⨂[𝕜] i, Eᵢ` is a norm. This uses the construction of a basis of the `PiTensorProduct`, hence
+depends on PR #11156. It should probably go in a separate file.
+
+* Adapt the remaining functoriality constructions/properties from `PiTensorProduct`.
 
 -/
 
