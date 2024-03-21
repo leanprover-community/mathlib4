@@ -50,11 +50,7 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     refine ⟨α, inferInstance, ?_⟩
     let Z : α → C := fun a ↦ (Functor.EffectivelyEnough.presentation (F := F) (Y a)).some.p
     let g₀ : (a : α) → F.obj (Z a) ⟶ Y a := fun a ↦ F.π (Y a)
-    have : ∀ a, EffectiveEpi (g₀ a) := inferInstance
-    simp_rw [effectiveEpi_iff_effectiveEpiFamily] at this
-    have : EffectiveEpiFamily _ (fun a ↦ g₀ a ≫ π a) := by
-      have := EffectiveEpiFamily.transitive_of_finite (β := fun _ ↦ Unit) _ H₁ _ this
-      exact EffectiveEpiFamily.reindex (e := Equiv.sigmaPUnit α) _ _ this
+    have : EffectiveEpiFamily _ (fun a ↦ g₀ a ≫ π a) := inferInstance
     refine ⟨Z , fun a ↦ Full.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (Full.preimage _))⟩
     · refine F.finite_effectiveEpiFamily_of_map _ _ ?_
       simpa using this

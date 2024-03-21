@@ -28,15 +28,11 @@ lemma reflects_precoherent : Precoherent C where
     let τ₁ := fun a ↦ F.map (π₁ a)
     have : EffectiveEpiFamily Y₁ τ₁ := inferInstance
     obtain ⟨β, _, Y₂, τ₂, H, i, ι, hh⟩ := Precoherent.pullback (F.map f) _ Y₁ τ₁ this
-    -- let X₂ : β → C := fun b ↦ (h (Y₂ b)).choose
     let π₂ := fun b ↦ Full.preimage (F.π (Y₂ b) ≫ τ₂ b)
     refine ⟨β, inferInstance, _, π₂, F.finite_effectiveEpiFamily_of_map _ π₂ ?_, ⟨i,
       fun b ↦ Full.preimage (F.π (Y₂ b) ≫ ι b), ?_⟩⟩
-    · have : ∀ b, EffectiveEpi (F.π (Y₂ b)) := inferInstance
-      simp_rw [effectiveEpi_iff_effectiveEpiFamily] at this
-      apply EffectiveEpiFamily.reindex (e := Equiv.sigmaPUnit β) _ (fun a ↦ F.map (π₂ a))
-      simp only [Equiv.sigmaPUnit_apply, Full.witness, π₂]
-      exact EffectiveEpiFamily.transitive_of_finite _ H _ this
+    · simp only [Full.witness, π₂]
+      infer_instance
     · intro b
       apply Faithful.map_injective (F := F)
       simp [π₂, hh b]
