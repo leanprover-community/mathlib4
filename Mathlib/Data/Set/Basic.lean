@@ -1021,45 +1021,45 @@ theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a
 
 /-! ### Distributivity laws -/
 
-/-- Deprecated, use `Set.inter_union_distrib_left` instead. -/
-@[deprecated inter_distrib_left]
-theorem inter_distrib_left (s t u : Set α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
-  inf_sup_left _ _ _
-#align set.inter_distrib_left Set.inter_distrib_left
-
 theorem inter_union_distrib_left (s t u : Set α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
   inf_sup_left _ _ _
 #align set.inter_union_distrib_left Set.inter_union_distrib_left
 
-/-- Deprecated, use `Set.inter_union_distrib_right` instead. -/
-@[deprecated union_distrib_right]
-theorem union_distrib_right (s t u : Set α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
-  sup_inf_right _ _ _
-#align set.union_distrib_right Set.union_distrib_right
+/-- Deprecated, use `Set.inter_union_distrib_left` instead. -/
+@[deprecated inter_union_distrib_left]
+theorem inter_distrib_left (s t u : Set α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
+  inf_sup_left _ _ _
+#align set.inter_distrib_left Set.inter_distrib_left
 
 theorem inter_union_distrib_right (s t u : Set α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
   sup_inf_right _ _ _
 #align set.inter_union_distrib_right Set.inter_union_distrib_right
 
-/-- Deprecated, use `Set.union_inter_distrib_left` instead. -/
-@[deprecated union_distrib_left]
-theorem union_distrib_left (s t u : Set α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
-  sup_inf_left _ _ _
-#align set.union_distrib_left Set.union_distrib_left
+/-- Deprecated, use `Set.inter_union_distrib_right` instead. -/
+@[deprecated inter_union_distrib_right]
+theorem union_distrib_right (s t u : Set α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
+  sup_inf_right _ _ _
+#align set.union_distrib_right Set.union_distrib_right
 
 theorem union_inter_distrib_left (s t u : Set α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
   sup_inf_left _ _ _
 #align set.union_inter_distrib_left Set.union_inter_distrib_left
 
-/-- Deprecated, use `Set.union_inter_distrib_right` instead. -/
-@[deprecated inter_distrib_right]
-theorem inter_distrib_right (s t u : Set α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
-  inf_sup_right _ _ _
-#align set.inter_distrib_right Set.inter_distrib_right
+/-- Deprecated, use `Set.union_inter_distrib_left` instead. -/
+@[deprecated union_inter_distrib_left]
+theorem union_distrib_left (s t u : Set α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
+  sup_inf_left _ _ _
+#align set.union_distrib_left Set.union_distrib_left
 
 theorem union_inter_distrib_right (s t u : Set α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
   inf_sup_right _ _ _
 #align set.union_inter_distrib_right Set.union_inter_distrib_right
+
+/-- Deprecated, use `Set.union_inter_distrib_right` instead. -/
+@[deprecated union_inter_distrib_right]
+theorem inter_distrib_right (s t u : Set α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
+  inf_sup_right _ _ _
+#align set.inter_distrib_right Set.inter_distrib_right
 
 theorem union_union_distrib_left (s t u : Set α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
   sup_sup_distrib_left _ _ _
