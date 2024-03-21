@@ -393,7 +393,6 @@ theorem chromaticNumber_eq_card_of_forall_surj [Fintype α] (C : G.Coloring α)
 #align simple_graph.chromatic_number_eq_card_of_forall_surj SimpleGraph.chromaticNumber_eq_card_of_forall_surj
 
 open Fintype
-
 lemma surjective_of_le_chromaticNumber [Fintype α] (C : G.Coloring α)
     (h : card α ≤ G.chromaticNumber) : Function.Surjective C := by
   rw [C.colorable.chromaticNumber_eq_sInf, Nat.cast_le] at h
@@ -407,11 +406,12 @@ lemma surjective_of_le_chromaticNumber [Fintype α] (C : G.Coloring α)
       ⟨G.recolorOfEquiv (equivOfCardEq <| card_fin _ ▸ (card_subtype_compl _)) D⟩
 
 variable {n : ℕ}
-
-theorem le_chromaticNumber_iff_forall_surj (C : G.Coloring (Fin n)) :
-    n ≤ G.chromaticNumber ↔ ∀ C : G.Coloring (Fin n), Function.Surjective C :=
-  ⟨fun h C ↦ surjective_of_le_chromaticNumber C ((card_fin _).symm ▸ h),
-    fun h ↦ (card_fin n) ▸ (chromaticNumber_eq_card_of_forall_surj C h).symm.le⟩
+theorem le_chromaticNumber_iff_forall_surj :
+    n ≤ G.chromaticNumber ↔ ∀ C : G.Coloring (Fin n), Function.Surjective C := by
+  refine ⟨fun h C ↦ surjective_of_le_chromaticNumber C ((card_fin _).symm ▸ h), fun h ↦ ?_⟩
+  by_contra! hlt
+  exact lt_irrefl _ (card_fin n ▸ chromaticNumber_eq_card_of_forall_surj
+      (chromaticNumber_le_iff_colorable.1 hlt.le).some h ▸ hlt)
 
 theorem chromaticNumber_bot [Nonempty V] : (⊥ : SimpleGraph V).chromaticNumber = 1 := by
   let C : (⊥ : SimpleGraph V).Coloring (Fin 1) :=
