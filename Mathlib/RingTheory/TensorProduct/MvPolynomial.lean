@@ -64,6 +64,10 @@ lemma rTensor_apply_tmul_apply (p : MvPolynomial σ S) (n : N) (d : σ →₀ �
     rTensor (p ⊗ₜ[R] n) d = (coeff d p) ⊗ₜ[R] n :=
   TensorProduct.finsuppLeft_apply_tmul_apply p n d
 
+lemma rTensor_apply (t : MvPolynomial σ S ⊗[R] N) (d : σ →₀ ℕ) :
+    rTensor t d = (lcoeff d).rTensor N t := by
+  convert TensorProduct.finsuppLeft_apply t d
+  sorry
 lemma rTensor_symm_apply_single (d : σ →₀ ℕ) (s : S) (n : N) :
     rTensor.symm (Finsupp.single d (s ⊗ₜ n)) =
       (monomial d s) ⊗ₜ[R] n :=

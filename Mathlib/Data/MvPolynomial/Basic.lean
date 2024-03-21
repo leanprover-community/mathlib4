@@ -645,6 +645,20 @@ def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R
   map_add' := coeff_add m
 #align mv_polynomial.coeff_add_monoid_hom MvPolynomial.coeffAddMonoidHom
 
+variable (R)
+/-- `MvPolynomial.coeff m` but promoted to a `LinearMap`. -/
+def lcoeff (m : σ →₀ ℕ) : MvPolynomial σ R →ₗ[R] R where
+  toFun := coeff m
+  map_add' := coeff_add m
+  map_smul' := coeff_smul m
+
+variable {R}
+
+@[simp]
+theorem lcoeff_apply (m : σ →₀ ℕ) (f : MvPolynomial σ R) :
+    lcoeff R m f = coeff m f :=
+  rfl
+
 theorem coeff_sum {X : Type*} (s : Finset X) (f : X → MvPolynomial σ R) (m : σ →₀ ℕ) :
     coeff m (∑ x in s, f x) = ∑ x in s, coeff m (f x) :=
   map_sum (@coeffAddMonoidHom R σ _ _) _ s

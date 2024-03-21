@@ -51,21 +51,62 @@ variable {S : Type*} [CommSemiring S] [Algebra R S]
 
 section Module
 
-open Polynomial
+open Polynomial TensorProduct LinearMap
 
 variable [AddCommMonoid N] [Module R N]
 
 /-- Tensor a linear equivalence to the right gives a linear equivalence -/
 noncomputable def LinearEquiv.rTensor
     (P : Type*) [AddCommMonoid P] [Module R P] (e : M ≃ₗ[R] N) :
-    M ⊗[R] P ≃ₗ[R] N ⊗[R] P := TensorProduct.congr e (refl R P)
+    M ⊗[R] P ≃ₗ[R] N ⊗[R] P := congr e (refl R P)
 
 /-- Tensor a linear equivalence to the left gives a linear equivalence -/
 noncomputable def LinearEquiv.lTensor
     (P : Type*) (e : M ≃ₗ[R] N)  [AddCommMonoid P] [Module R P] :
-    P ⊗[R] M ≃ₗ[R] P ⊗[R] N := TensorProduct.congr (refl R P) e
+    P ⊗[R] M ≃ₗ[R] P ⊗[R] N := congr (refl R P) e
 
+variable [Module S M] [IsScalarTower R S M] [Module S N] [IsScalarTower R S N]
+    {P : Type*} [AddCommMonoid P] [Module R P]
+    {Q : Type*} [AddCommMonoid Q] [Module R Q]
 
+/--  If `e` is `S`-linear, then `TensorProduct.map e f` is `S`-linear -/
+noncomputable def TensorProduct.map' (e : M →ₗ[S] N) (f : P →ₗ[R] Q) :
+    M ⊗[R] P →ₗ[S] N ⊗[R] Q where
+  toFun := map (e.restrictScalars R) f
+  map_add' := map_add _
+  map_smul' := fun s t ↦ by
+    induction t using TensorProduct.induction_on with
+    | zero => simp
+    | add x y hx hy =>
+      simp only [smul_add, map_add] at hx hy ⊢
+      simp only [hx, hy]
+    | tmul m p =>
+      rw [smul_tmul']
+      simp only [map_tmul, coe_restrictScalars, map_smul]
+      rfl
+
+theorem TensorProduct.map'_restrictScalars (e : M →ₗ[S] N) (f : P →ₗ[R] Q) :
+    (map' e f).restrictScalars R = map (e.restrictScalars R) f := rfl
+
+theorem TensorProduct.map'_coe (e : M →ₗ[S] N) (f : P →ₗ[R] Q) :
+    ⇑(map' e f) = ⇑(map (e.restrictScalars R) f) := rfl
+
+/--  If `e` is a `S`-linear equivalence and `f` is an `R`-linear equivalence,
+  then `TensorProduct.congr' e f` is a `S`-linear equivalence -/
+noncomputable def TensorProduct.congr'
+    (e : M ≃ₗ[S] N) (f : P ≃ₗ[R] Q) : M ⊗[R] P ≃ₗ[S] N ⊗[R] Q :=
+  LinearEquiv.ofLinear (map' e f) (map' e.symm.toLinearMap f.symm)
+    (by ext n q; simp [Function.comp_apply, map'_coe])
+    (by ext m p; simp [Function.comp_apply, map'_coe])
+
+theorem TensorProduct.congr'_restrictScalars (e : M ≃ₗ[S] N) (f : P ≃ₗ[R] Q) :
+    (congr' e f).restrictScalars R = (congr (e.restrictScalars R) f) := rfl
+
+theorem TensorProduct.congr'_coe (e : M ≃ₗ[S] N) (f : P ≃ₗ[R] Q) :
+    ⇑(congr' e f) = ⇑(congr (e.restrictScalars R) f) := by
+  rfl
+
+/-
 lemma TensorProduct.map_isLinearMap'
     [Module S M] [IsScalarTower R S M] [Module S N] [IsScalarTower R S N]
     {P : Type*} [AddCommMonoid P] [Module R P]
@@ -83,57 +124,66 @@ lemma TensorProduct.map_isLinearMap'
       rw [smul_tmul']
       simp only [map_tmul, coe_restrictScalars, map_smul]
       rfl
+-/
 
-lemma TensorProduct.congr_isLinearMap'
+/- lemma TensorProduct.congr_isLinearMap'
     [Module S M] [IsScalarTower R S M] [Module S N] [IsScalarTower R S N]
     {P : Type*} [AddCommMonoid P] [Module R P]
     {Q : Type*} [AddCommMonoid Q] [Module R Q]
     (e : M ≃ₗ[S] N) (f : P ≃ₗ[R] Q) :
     IsLinearMap S (TensorProduct.congr (e.restrictScalars R) f) :=
-  TensorProduct.map_isLinearMap' e.toLinearMap f.toLinearMap
+  TensorProduct.map_isLinearMap' e.toLinearMap f.toLinearMap -/
 
+/-
 lemma LinearEquiv.rTensor_isLinearMap'
     [Module S M] [IsScalarTower R S M] [Module S N] [IsScalarTower R S N]
     (P : Type*) [AddCommMonoid P] [Module R P] (e : M ≃ₗ[S] N) :
     IsLinearMap S (LinearEquiv.rTensor P (e.restrictScalars R)) :=
   TensorProduct.map_isLinearMap' e.toLinearMap _
+-/
 
-/-- tensor a linear equivalence to the right or to the left gives a linear equivalence-/
-noncomputable def LinearEquiv.rTensor'
-    [Module S M] [IsScalarTower R S M] [Module S N] [IsScalarTower R S N]
-    (P : Type*) [AddCommMonoid P] [Module R P] (e : M ≃ₗ[S] N) :
-    M ⊗[R] P ≃ₗ[S] N ⊗[R] P := {
-  (LinearEquiv.rTensor P (e.restrictScalars R)) with
-  map_smul' := (LinearEquiv.rTensor_isLinearMap' P e).map_smul }
+variable (P)
+/-- Tensor a linear equivalence to the right or to the left gives a linear equivalence-/
+noncomputable def LinearEquiv.rTensor' (e : M ≃ₗ[S] N) :
+    M ⊗[R] P ≃ₗ[S] N ⊗[R] P := congr' e (LinearEquiv.refl R P)
 
-lemma LinearEquiv.rTensor'_apply
-    [Module S M] [IsScalarTower R S M] [Module S N] [IsScalarTower R S N]
-    (P : Type*) [AddCommMonoid P] [Module R P] (e : M ≃ₗ[S] N)
-    (mp : M ⊗[R] P) :
-    LinearEquiv.rTensor' P e mp = LinearEquiv.rTensor P (e.restrictScalars R) mp := rfl
+lemma LinearEquiv.rTensor'_restrictScalars (e : M ≃ₗ[S] N) :
+    (rTensor' P e).restrictScalars R = rTensor P (e.restrictScalars R) := rfl
+
+lemma LinearEquiv.rTensor'_apply (e : M ≃ₗ[S] N) (mp : M ⊗[R] P) :
+    rTensor' P e mp = rTensor P (e.restrictScalars R) mp := rfl
+
+lemma LinearEquiv.rTensor'_coe (e : M ≃ₗ[S] N) :
+    ⇑(rTensor' P e) = rTensor P (e.restrictScalars R) := rfl
 
 namespace Polynomial
 
+open LinearEquiv
+variable (S)
 /-- The equivalen of the polynomial ring with a Finsupp type, as a linear equivalence -/
 def toFinsuppLinearEquiv : S[X] ≃ₗ[S] (ℕ →₀ S) := {
   toFinsuppIso S  with
   map_smul' := fun r p => by simp }
 
-/-- The linear map from the tensor product of a polynomial ring to a Finsupp type -/
-noncomputable def rTensor : Polynomial R ⊗[R] N ≃ₗ[R] ℕ →₀ N :=
-  (LinearEquiv.rTensor N toFinsuppLinearEquiv).trans TensorProduct.finsuppScalarLeft
+variable {S}
+theorem toFinsuppLinearEquiv_apply (p : S[X]) :
+  toFinsuppLinearEquiv S p = toFinsuppIso S p := rfl
 
-lemma rTensor_apply_tmul_apply (p : Polynomial R) (n : N) (i : ℕ) :
-    rTensor (p ⊗ₜ[R] n) i = (coeff p i) • n := by
-  simp only [rTensor, LinearEquiv.trans_apply]
-  simp only [LinearEquiv.rTensor, congr_tmul, LinearEquiv.refl_apply]
+/-- The linear map from the tensor product of a polynomial ring to a Finsupp type -/
+noncomputable def scalarRTensor : R[X] ⊗[R] N ≃ₗ[R] ℕ →₀ N :=
+  (LinearEquiv.rTensor N (toFinsuppLinearEquiv R)).trans finsuppScalarLeft
+
+lemma scalarRTensor_apply_tmul_apply (p : R[X]) (n : N) (i : ℕ) :
+    scalarRTensor (p ⊗ₜ[R] n) i = (coeff p i) • n := by
+  simp only [scalarRTensor, LinearEquiv.trans_apply]
+  simp only [LinearEquiv.rTensor, congr_tmul, refl_apply]
   rw [finsuppScalarLeft_apply_tmul_apply _ n i]
   rfl
 
-lemma rTensor_apply_tmul (p : Polynomial R) (n : N) :
-    Polynomial.rTensor (p ⊗ₜ[R] n) = p.sum (fun i r => Finsupp.single i (r • n)) := by
+lemma scalarRTensor_apply_tmul (p : R[X]) (n : N) :
+    scalarRTensor (p ⊗ₜ[R] n) = p.sum (fun i r => Finsupp.single i (r • n)) := by
   ext i
-  rw [rTensor_apply_tmul_apply]
+  rw [scalarRTensor_apply_tmul_apply]
   rw [sum_def]
   rw [Finset.sum_apply']
   rw [Finset.sum_eq_single i]
@@ -143,14 +193,21 @@ lemma rTensor_apply_tmul (p : Polynomial R) (n : N) :
     simp only [mem_support_iff, ne_eq, not_not] at h
     rw [h, zero_smul, Finsupp.single_zero, Finsupp.coe_zero, Pi.zero_apply]
 
-/-- The linear map from the tensor product of a polynomial ring to a Finsupp type -/
-noncomputable def rTensor' :
-    Polynomial S ⊗[R] N ≃ₗ[S] ℕ →₀ (S ⊗[R] N) :=
-  (LinearEquiv.rTensor' N toFinsuppLinearEquiv).trans TensorProduct.finsuppLeft'
+lemma scalarRTensor_apply (pn : R[X] ⊗[R] N) (d : ℕ) :
+    scalarRTensor pn d = TensorProduct.lid R N ((Polynomial.lcoeff R d).rTensor N pn) := by
+  rw [← LinearEquiv.symm_apply_eq, lid_symm_apply]
+  induction pn using TensorProduct.induction_on with
+  | zero => simp
+  | tmul p n => simp [scalarRTensor_apply_tmul_apply, TensorProduct.smul_tmul']
+  | add x y hx hy => simp [tmul_add, hx, hy]
 
-lemma rTensor'_apply_tmul_apply (p : Polynomial S) (n : N) (i : ℕ) :
-    rTensor' (p ⊗ₜ[R] n) i = (coeff p i) ⊗ₜ[R] n := by
-  simp only [rTensor', LinearEquiv.trans_apply, finsuppLeft'_apply]
+/-- The linear map from the tensor product of a polynomial ring to a Finsupp type -/
+noncomputable def rTensor : S[X] ⊗[R] N ≃ₗ[S] ℕ →₀ (S ⊗[R] N) :=
+  (LinearEquiv.rTensor' N (toFinsuppLinearEquiv S)).trans TensorProduct.finsuppLeft'
+
+lemma rTensor_apply_tmul_apply (p : Polynomial S) (n : N) (i : ℕ) :
+    rTensor (p ⊗ₜ[R] n) i = (coeff p i) ⊗ₜ[R] n := by
+  simp only [rTensor, LinearEquiv.trans_apply, finsuppLeft'_apply]
   simp only [LinearEquiv.rTensor'_apply, LinearEquiv.rTensor, congr_tmul,
     LinearEquiv.restrictScalars_apply, LinearEquiv.refl_apply]
   simp only [toFinsuppLinearEquiv, RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
@@ -214,10 +271,9 @@ lemma rTensorAlgHom_coeff_apply_tmul
 
 /-- The linear equiv from the tensor product of a polynomial ring by an algebra
   to a polynomial ring -/
-noncomputable def rTensorLinearEquiv :
-    (Polynomial S) ⊗[R] N ≃ₗ[S] Polynomial (S ⊗[R] N) :=
-  ((LinearEquiv.rTensor' N toFinsuppLinearEquiv).trans finsuppLeft').trans
-    (toFinsuppLinearEquiv.symm.restrictScalars S)
+noncomputable def rTensorLinearEquiv : S[X] ⊗[R] N ≃ₗ[S] (S ⊗[R] N)[X] :=
+  ((LinearEquiv.rTensor' N (toFinsuppLinearEquiv S)).trans finsuppLeft').trans
+    ((toFinsuppLinearEquiv _).symm.restrictScalars _)
 
 lemma rTensorLinearEquiv_coeff_tmul (p : Polynomial S) (n : N) (e : ℕ) :
     coeff (rTensorLinearEquiv (S := S) (p ⊗ₜ[R] n)) e = (coeff p e) ⊗ₜ[R] n := by
@@ -259,7 +315,7 @@ noncomputable def rTensorAlgEquiv :
 
 /-- The tensor product of a polynomial ring  with an algebra is a polynomial ring -/
 noncomputable def scalarRTensorAlgEquiv :
-    Polynomial R ⊗[R] N ≃ₐ[R] Polynomial N :=
+    R[X] ⊗[R] N ≃ₐ[R] Polynomial N :=
   rTensorAlgEquiv.trans (mapAlgEquiv (Algebra.TensorProduct.lid R N))
 
 end Polynomial
