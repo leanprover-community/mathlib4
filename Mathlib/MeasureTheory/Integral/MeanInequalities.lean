@@ -54,7 +54,8 @@ only to prove the more general results:
 
 noncomputable section
 
-open Classical BigOperators NNReal ENNReal MeasureTheory Finset
+open scoped Classical
+open BigOperators NNReal ENNReal MeasureTheory Finset
 
 set_option linter.uppercaseLean3 false
 
@@ -132,8 +133,7 @@ theorem lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_ne_top {p q : ℝ} (hpq : p.IsC
 theorem ae_eq_zero_of_lintegral_rpow_eq_zero {p : ℝ} (hp0 : 0 ≤ p) {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_zero : ∫⁻ a, f a ^ p ∂μ = 0) : f =ᵐ[μ] 0 := by
   rw [lintegral_eq_zero_iff' (hf.pow_const p)] at hf_zero
-  refine' Filter.Eventually.mp hf_zero (Filter.eventually_of_forall fun x => _)
-  dsimp only
+  filter_upwards [hf_zero] with x
   rw [Pi.zero_apply, ← not_imp_not]
   exact fun hx => (rpow_pos_of_nonneg (pos_iff_ne_zero.2 hx) hp0).ne'
 #align ennreal.ae_eq_zero_of_lintegral_rpow_eq_zero ENNReal.ae_eq_zero_of_lintegral_rpow_eq_zero

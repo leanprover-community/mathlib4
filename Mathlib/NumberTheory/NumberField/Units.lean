@@ -178,10 +178,10 @@ spans the full space over `ℝ` (see `unitLattice_span_eq_top`); this is the mai
 see the section `span_top` below for more details.
 -/
 
-open Classical Finset
+open scoped Classical
+open Finset
 
 variable [NumberField K]
-
 variable {K}
 
 /-- The distinguished infinite place. -/
@@ -460,7 +460,8 @@ section statements
 
 variable [NumberField K]
 
-open dirichletUnitTheorem FiniteDimensional Classical
+open scoped Classical
+open dirichletUnitTheorem FiniteDimensional
 
 /-- The unit rank of the number field `K`, it is equal to `card (InfinitePlace K) - 1`. -/
 def rank : ℕ := Fintype.card (InfinitePlace K) - 1
@@ -476,22 +477,18 @@ instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
     rintro ⟨x, hx, rfl⟩
     exact ⟨Subtype.mem x, hx⟩
 
+instance instZlattice_unitLattice : IsZlattice ℝ (unitLattice K) where
+  span_top := unitLattice_span_eq_top K
+
 protected theorem finrank_eq_rank :
     finrank ℝ ({w : InfinitePlace K // w ≠ w₀} → ℝ) = Units.rank K := by
   simp only [finrank_fintype_fun_eq_card, Fintype.card_subtype_compl,
     Fintype.card_ofSubsingleton, rank]
 
-instance instModuleFree_unitLattice : Module.Free ℤ (unitLattice K) :=
-  Zlattice.module_free ℝ (unitLattice_span_eq_top K)
-
-instance instModuleFinite_unitLattice : Module.Finite ℤ (unitLattice K) :=
-  Zlattice.module_finite ℝ (unitLattice_span_eq_top K)
-
 @[simp]
 theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
-  rw [← Units.finrank_eq_rank]
-  exact Zlattice.rank ℝ (unitLattice_span_eq_top K)
+  rw [← Units.finrank_eq_rank, Zlattice.rank ℝ]
 
 /-- The linear equivalence between `unitLattice` and `(𝓞 K)ˣ ⧸ (torsion K)` as an additive
 `ℤ`-module. -/
@@ -512,7 +509,7 @@ def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (tor
     rfl
 
 instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
-  (instModuleFree_unitLattice K).of_equiv' (unitLatticeEquiv K)
+  Module.Free.of_equiv (unitLatticeEquiv K)
 
 instance : Module.Finite ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Module.Finite.equiv (unitLatticeEquiv K)

@@ -64,7 +64,7 @@ p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 open Nat multiplicity padicNorm CauSeq CauSeq.Completion Metric
 
@@ -675,7 +675,7 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
 #align padic.rat_dense' Padic.rat_dense'
 
-open Classical
+open scoped Classical
 
 private theorem div_nat_pos (n : ℕ) : 0 < 1 / (n + 1 : ℚ) :=
   div_pos zero_lt_one (mod_cast succ_pos _)
@@ -857,7 +857,7 @@ theorem norm_p_zpow (n : ℤ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n) := by
 -- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
 @[simp (high)]
 theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by
-  rw [← norm_p_zpow, zpow_coe_nat]
+  rw [← norm_p_zpow, zpow_natCast]
 #align padic_norm_e.norm_p_pow padicNormE.norm_p_pow
 
 instance : NontriviallyNormedField ℚ_[p] :=
@@ -903,7 +903,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
       norm_cast
       -- Porting note: `Nat.cast_zero` instead of another `norm_cast` call
       rw [padicNorm.eq_zpow_of_nonzero hnz', padicValRat, neg_sub,
-        padicValNat.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_coe_nat]
+        padicValNat.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_natCast]
       apply inv_le_one
       · norm_cast
         apply one_le_pow
@@ -966,7 +966,7 @@ variable {p : ℕ} [hp : Fact p.Prime]
 -- Porting note: remove `set_option eqn_compiler.zeta true`
 
 instance complete : CauSeq.IsComplete ℚ_[p] norm where
-  isComplete := fun f => by
+  isComplete f := by
     have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
       have h := isCauSeq f ε (mod_cast hε)
       dsimp [norm] at h

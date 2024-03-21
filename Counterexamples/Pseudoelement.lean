@@ -122,8 +122,8 @@ theorem snd_mk'_x_eq_snd_mk'_y :
 #align counterexample.snd_mk_x_eq_snd_mk_y Counterexample.snd_mk'_x_eq_snd_mk'_y
 
 -- Porting note: needs explicit type ascription `: Quotient <| Pseudoelement.setoid _`
---               for some reason the setoid instance isn't picked up automatically
---               despite the local instance ~20 lines up
+-- for some reason the setoid instance isn't picked up automatically,
+-- despite the local instance ~20 lines up
 /-- `⟦x⟧ ≠ ⟦y⟧`. -/
 theorem mk'_x_ne_mk'_y : (⟦x⟧ : Quotient <| Pseudoelement.setoid _) ≠ ⟦y⟧ :=
   fun h => x_not_pseudo_eq <| Quotient.eq'.1 h

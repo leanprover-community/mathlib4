@@ -32,7 +32,8 @@ compact Hausdorff spaces.
 
 noncomputable section
 
-open Classical Function Set
+open scoped Classical
+open Function Set
 
 universe u
 

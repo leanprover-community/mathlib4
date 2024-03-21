@@ -763,7 +763,7 @@ theorem OrthocentricSystem.exists_circumradius_eq {s : Set P} (ho : Orthocentric
   rcases exists_dist_eq_circumradius_of_subset_insert_orthocenter hto ht₂
       t₂.independent.injective with
     ⟨c, hc, h⟩
-  rw [Set.forall_range_iff] at h
+  rw [Set.forall_mem_range] at h
   have hs : Set.range t.points ⊆ s := by
     rw [hts]
     exact Set.subset_insert _ _
