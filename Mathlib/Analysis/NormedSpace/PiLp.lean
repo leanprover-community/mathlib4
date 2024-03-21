@@ -486,14 +486,16 @@ theorem continuous_equiv_symm [∀ i, UniformSpace (β i)] :
   continuous_id
 #align pi_Lp.continuous_equiv_symm PiLp.continuous_equiv_symm
 
-variable [Fintype ι]
-
 instance bornology [∀ i, Bornology (β i)] : Bornology (PiLp p β) :=
   Pi.instBornology
 #align pi_Lp.bornology PiLp.bornology
 
 -- throughout the rest of the file, we assume `1 ≤ p`
 variable [Fact (1 ≤ p)]
+
+section Fintype
+
+variable [Fintype ι]
 
 /-- pseudoemetric space instance on the product of finitely many pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
@@ -870,8 +872,11 @@ protected def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   continuous_invFun := continuous_equiv_symm _ _
 #align pi_Lp.continuous_linear_equiv PiLp.continuousLinearEquiv
 
+end Fintype
+
 section Basis
 
+variable [Finite ι] [Ring 𝕜]
 variable (ι)
 
 /-- A version of `Pi.basisFun` for `PiLp`. -/
@@ -906,9 +911,11 @@ theorem basisFun_map :
   rfl
 #align pi_Lp.basis_fun_map PiLp.basisFun_map
 
+end Basis
+
 open Matrix
 
-nonrec theorem basis_toMatrix_basisFun_mul
+nonrec theorem basis_toMatrix_basisFun_mul [Fintype ι]
     {𝕜} [SeminormedCommRing 𝕜] (b : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜))
     (A : Matrix ι ι 𝕜) :
     b.toMatrix (PiLp.basisFun _ _ _) * A =
@@ -919,7 +926,5 @@ nonrec theorem basis_toMatrix_basisFun_mul
     LinearEquiv.symm_apply_apply] at this
   exact this
 #align pi_Lp.basis_to_matrix_basis_fun_mul PiLp.basis_toMatrix_basisFun_mul
-
-end Basis
 
 end PiLp
