@@ -436,7 +436,7 @@ def avoid (b : α) : Finpartition (a \ b) :=
   ofErase
     (P.parts.image (· \ b))
     (P.disjoint.image_finset_of_le fun a ↦ sdiff_le).supIndep
-    (by rw [sup_image, id_comp, Finset.sup_sdiff_right, ← id_def, P.sup_parts])
+    (by rw [sup_image, id_comp, Finset.sup_sdiff_right, ← Function.id_def, P.sup_parts])
 #align finpartition.avoid Finpartition.avoid
 
 @[simp]
