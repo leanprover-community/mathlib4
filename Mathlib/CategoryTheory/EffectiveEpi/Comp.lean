@@ -19,8 +19,9 @@ open Limits
 variable {C : Type*} [Category C]
 
 /--
-A split epi followed by an effective epi is an effective epi. This version takes an explicit section
-to the split epi, and is mainly used to define `effectiveEpiStructCompOfEffectiveEpiSplitEpi`,
+An effective epi family precomposed by a family of split epis is effective epimorphic.
+This version takes an explicit section to the split epis, and is mainly used to define
+`effectiveEpiStructCompOfEffectiveEpiSplitEpi`,
 which takes a `IsSplitEpi` instance instead.
 -/
 noncomputable
@@ -43,7 +44,9 @@ def effectiveEpiFamilyStructCompOfEffectiveEpiSplitEpi' {α : Type*} {B : C} {X 
     intro a
     rw [← hm a, ← Category.assoc, ← Category.assoc, hi, Category.id_comp]
 
-/-- A split epi followed by an effective epi is an effective epi. -/
+/--
+An effective epi family precomposed with a family of split epis is effective epimorphic.
+-/
 noncomputable
 def effectiveEpiFamilyStructCompOfEffectiveEpiSplitEpi {α : Type*} {B : C} {X Y : α → C}
     (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) [∀ a, IsSplitEpi (g a)]
@@ -64,6 +67,13 @@ instance IsSplitEpi.EffectiveEpi {B X : C} (f : X ⟶ B) [IsSplitEpi f] : Effect
   rw [← Category.comp_id f]
   infer_instance
 
+/--
+If a family of morphisms with fixed target, precomposed by a family of split epis is
+effective epimorphic, then the original family is as well.
+This version takes an explicit section to the split epis, and is mainly used to define
+`effectiveEpiStructCompOfEffectiveEpiSplitEpi`,
+which takes a `IsSplitEpi` instance instead.
+-/
 noncomputable
 def effectiveEpiFamilyStructOfEffectiveEpiSplitEpiComp' {α : Type*} {B : C} {X Y : α → C}
     (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) (i : (a : α) → X a ⟶ Y a)
@@ -86,6 +96,10 @@ def effectiveEpiFamilyStructOfEffectiveEpiSplitEpiComp' {α : Type*} {B : C} {X 
     intro a
     rw [← hm, ← Category.assoc]
 
+/--
+If a family of morphisms with fixed target, precomposed by a family of split epis is
+effective epimorphic, then the original family is as well.
+-/
 noncomputable
 def effectiveEpiFamilyStructOfEffectiveEpiSplitEpiComp {α : Type*} {B : C} {X Y : α → C}
     (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) [∀ a, IsSplitEpi (g a)]
