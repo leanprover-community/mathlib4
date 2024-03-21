@@ -21,6 +21,9 @@ def dist (n m : ℕ) :=
   n - m + (m - n)
 #align nat.dist Nat.dist
 
+-- Should be aligned to `Nat.dist.def`, but that is generated on demand and isn't present yet.
+#noalign nat.dist.def
+
 theorem dist_comm (n m : ℕ) : dist n m = dist m n := by simp [Nat.dist.def, add_comm]
 #align nat.dist_comm Nat.dist_comm
 
