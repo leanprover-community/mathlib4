@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Data.FunLike.Order
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.BoundedOrder
 
@@ -309,12 +310,6 @@ theorem cancel_left {g : TopHom β γ} {f₁ f₂ : TopHom α β} (hg : Injectiv
 
 end Top
 
-instance [Preorder β] [Top β] : Preorder (TopHom α β) :=
-  Preorder.lift (DFunLike.coe : TopHom α β → α → β)
-
-instance [PartialOrder β] [Top β] : PartialOrder (TopHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
-
 section OrderTop
 
 variable [Preorder β] [OrderTop β]
@@ -501,12 +496,6 @@ theorem cancel_left {g : BotHom β γ} {f₁ f₂ : BotHom α β} (hg : Injectiv
 #align bot_hom.cancel_left BotHom.cancel_left
 
 end Bot
-
-instance [Preorder β] [Bot β] : Preorder (BotHom α β) :=
-  Preorder.lift (DFunLike.coe : BotHom α β → α → β)
-
-instance [PartialOrder β] [Bot β] : PartialOrder (BotHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
 
 section OrderBot
 

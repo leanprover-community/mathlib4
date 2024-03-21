@@ -333,9 +333,6 @@ theorem id_apply (a : α) : HeytingHom.id α a = a :=
 instance : Inhabited (HeytingHom α α) :=
   ⟨HeytingHom.id _⟩
 
-instance : PartialOrder (HeytingHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
-
 /-- Composition of `HeytingHom`s as a `HeytingHom`. -/
 def comp (f : HeytingHom β γ) (g : HeytingHom α β) : HeytingHom α γ :=
   { f.toLatticeHom.comp g.toLatticeHom with
@@ -455,9 +452,6 @@ theorem id_apply (a : α) : CoheytingHom.id α a = a :=
 instance : Inhabited (CoheytingHom α α) :=
   ⟨CoheytingHom.id _⟩
 
-instance : PartialOrder (CoheytingHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
-
 /-- Composition of `CoheytingHom`s as a `CoheytingHom`. -/
 def comp (f : CoheytingHom β γ) (g : CoheytingHom α β) : CoheytingHom α γ :=
   { f.toLatticeHom.comp g.toLatticeHom with
@@ -574,9 +568,6 @@ theorem id_apply (a : α) : BiheytingHom.id α a = a :=
 
 instance : Inhabited (BiheytingHom α α) :=
   ⟨BiheytingHom.id _⟩
-
-instance : PartialOrder (BiheytingHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
 
 /-- Composition of `BiheytingHom`s as a `BiheytingHom`. -/
 def comp (f : BiheytingHom β γ) (g : BiheytingHom α β) : BiheytingHom α γ :=

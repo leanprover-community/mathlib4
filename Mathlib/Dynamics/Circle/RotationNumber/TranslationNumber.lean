@@ -441,6 +441,7 @@ theorem iterate_mono {f g : CircleDeg1Lift} (h : f ≤ g) (n : ℕ) : f^[n] ≤ 
   iterate_monotone n h
 #align circle_deg1_lift.iterate_mono CircleDeg1Lift.iterate_mono
 
+@[gcongr]
 theorem pow_mono {f g : CircleDeg1Lift} (h : f ≤ g) (n : ℕ) : f ^ n ≤ g ^ n := fun x => by
   simp only [coe_pow, iterate_mono h n x]
 #align circle_deg1_lift.pow_mono CircleDeg1Lift.pow_mono
@@ -804,8 +805,8 @@ theorem tendsto_translation_number' (x : ℝ) :
 #align circle_deg1_lift.tendsto_translation_number' CircleDeg1Lift.tendsto_translation_number'
 
 theorem translationNumber_mono : Monotone τ := fun f g h =>
-  le_of_tendsto_of_tendsto' f.tendsto_translation_number₀ g.tendsto_translation_number₀ fun n => by
-    gcongr; exact pow_mono h _ _
+  le_of_tendsto_of_tendsto' f.tendsto_translation_number₀ g.tendsto_translation_number₀ fun _ ↦ by
+    gcongr
 #align circle_deg1_lift.translation_number_mono CircleDeg1Lift.translationNumber_mono
 
 theorem translationNumber_translate (x : ℝ) : τ (translate <| Multiplicative.ofAdd x) = x :=

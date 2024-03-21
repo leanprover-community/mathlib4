@@ -366,9 +366,6 @@ end SupSet
 
 variable { _ : CompleteLattice β}
 
-instance : PartialOrder (sSupHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
-
 instance : Bot (sSupHom α β) :=
   ⟨⟨fun _ => ⊥, fun s => by
       obtain rfl | hs := s.eq_empty_or_nonempty
@@ -506,9 +503,6 @@ theorem cancel_left {g : sInfHom β γ} {f₁ f₂ : sInfHom α β} (hg : Inject
 end InfSet
 
 variable [CompleteLattice β]
-
-instance : PartialOrder (sInfHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
 
 instance : Top (sInfHom α β) :=
   ⟨⟨fun _ => ⊤, fun s => by
@@ -650,9 +644,6 @@ theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Inje
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align frame_hom.cancel_left FrameHom.cancel_left
-
-instance : PartialOrder (FrameHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
 
 end FrameHom
 

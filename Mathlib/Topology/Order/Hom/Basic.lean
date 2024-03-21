@@ -200,12 +200,6 @@ theorem cancel_left {g : β →Co γ} {f₁ f₂ : α →Co β} (hg : Injective 
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align continuous_order_hom.cancel_left ContinuousOrderHom.cancel_left
 
-instance : Preorder (α →Co β) :=
-  Preorder.lift ((↑) : (α →Co β) → α → β)
-
 end Preorder
-
-instance [PartialOrder β] : PartialOrder (α →Co β) :=
-  PartialOrder.lift ((↑) : (α →Co β) → α → β) DFunLike.coe_injective
 
 end ContinuousOrderHom
