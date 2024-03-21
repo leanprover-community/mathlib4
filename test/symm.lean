@@ -15,6 +15,8 @@ def sameParity : Nat → Nat → Prop
 
 example (a b : Nat) : sameParity a b → sameParity b a := by intros; symm; assumption
 
+-- mutes `'symm_saturate' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 example (a b c : Nat) (ab : a = b) (bc : b = c) : c = a := by
   symm_saturate
   -- Run twice to check that we don't add repeated copies.

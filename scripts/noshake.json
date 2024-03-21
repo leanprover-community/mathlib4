@@ -210,6 +210,7 @@
   ["ProofWidgets.Component.OfRpcMethod"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.Use": ["Std.Logic"],
+  "Mathlib.Tactic.UnusedTactic": ["Std.Tactic.Unreachable"],
   "Mathlib.Tactic.TypeStar": ["Std"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic"],
@@ -283,7 +284,7 @@
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.CategoryTheory.Coherence":
   ["Mathlib.Tactic.CategoryTheory.MonoidalComp"],
-  "Mathlib.Tactic.Basic": ["Std"],
+  "Mathlib.Tactic.Basic": ["Mathlib.Tactic.UnusedTactic", "Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.RingTheory.Subsemiring.Order":
