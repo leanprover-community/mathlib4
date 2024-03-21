@@ -530,7 +530,7 @@ theorem coe_inj {q r : ℚ} : (↑q : ℚ_[p]) = ↑r ↔ q = r :=
 
 instance : CharZero ℚ_[p] :=
   ⟨fun m n ↦ by
-    rw [← Rat.cast_coe_nat]
+    rw [← Rat.cast_natCast]
     norm_cast
     exact id⟩
 
@@ -836,10 +836,10 @@ theorem eq_padicNorm (q : ℚ) : ‖(q : ℚ_[p])‖ = padicNorm p q := by
 
 @[simp]
 theorem norm_p : ‖(p : ℚ_[p])‖ = (p : ℝ)⁻¹ := by
-  rw [← @Rat.cast_coe_nat ℝ _ p]
-  rw [← @Rat.cast_coe_nat ℚ_[p] _ p]
+  rw [← @Rat.cast_natCast ℝ _ p]
+  rw [← @Rat.cast_natCast ℚ_[p] _ p]
   simp [hp.1.ne_zero, hp.1.ne_one, norm, padicNorm, padicValRat, padicValInt, zpow_neg,
-    -Rat.cast_coe_nat]
+    -Rat.cast_natCast]
 #align padic_norm_e.norm_p padicNormE.norm_p
 
 theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
@@ -1052,7 +1052,7 @@ theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.va
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
   rw [PadicSeq.norm_eq_pow_val]
   change ↑((p : ℚ) ^ (-PadicSeq.valuation f)) = (p : ℝ) ^ (-PadicSeq.valuation f)
-  · rw [Rat.cast_zpow, Rat.cast_coe_nat]
+  · rw [Rat.cast_zpow, Rat.cast_natCast]
   · apply CauSeq.not_limZero_of_not_congr_zero
     -- Porting note: was `contrapose! hf`
     intro hf'
