@@ -163,8 +163,7 @@ theorem condexpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSe
   push_cast
   rw [((toSpanSingleton ℝ x).compLpL 2 μ).map_add]
   refine' (Lp.coeFn_add _ _).trans _
-  refine' eventually_of_forall fun y => _
-  rfl
+  filter_upwards with y using rfl
 #align measure_theory.condexp_ind_L1_fin_disjoint_union MeasureTheory.condexpIndL1Fin_disjoint_union
 
 end CondexpIndL1Fin
