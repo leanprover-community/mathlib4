@@ -27,6 +27,12 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
 
+-- Various pieces of algebra that have previously been spuriously imported here:
+assert_not_exists zero_zpow
+assert_not_exists map_ne_zero
+assert_not_exists Field
+ -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
+ -- finiteness currently relies on more algebra than it needs.
 
 universe v u
 
@@ -130,7 +136,7 @@ theorem colimitLimitToLimitColimit_injective :
     simp only [Functor.comp_map, Limit.map_π_apply, curry_obj_map_app, swap_map]
     rw [← W _ _ (fH j)]
     rw [← W _ _ (gH j)]
-    -- porting note: this was `simp [w]` in lean 3; this is presumably a confluence issue
+    -- Porting note: this was `simp [w]` in lean 3; this is presumably a confluence issue
     rw [lim_map, lim_map, Limit.map_π_apply', Limit.map_π_apply', Functor.map_comp,
       Functor.map_comp, FunctorToTypes.comp, FunctorToTypes.comp, curry_obj_map_app,
       curry_obj_map_app, curry_obj_map_app, Functor.comp_map, Functor.comp_map,
@@ -206,7 +212,7 @@ theorem colimitLimitToLimitColimit_surjective :
           ((curry.obj F).obj j').map (hf f) (F.map ((f, g j) : (j, k j) ⟶ (j', k')) (y j)) :=
         (w f).choose_spec.choose_spec.choose_spec
       rw [curry_obj_obj_map, curry_obj_obj_map] at q
-      -- porting note: Lean 4 `dsimp` unfolds `gf` and `hf` in `q` :-(
+      -- Porting note: Lean 4 `dsimp` unfolds `gf` and `hf` in `q` :-(
       -- See discussion at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/.60dsimp.60.20unfolding.20local.20lets
       simp_rw [← FunctorToTypes.map_comp_apply, CategoryStruct.comp] at q
       convert q <;> simp only [comp_id]
@@ -239,7 +245,7 @@ theorem colimitLimitToLimitColimit_surjective :
     have s : ∀ {j₁ j₂ j₃ j₄} (f : j₁ ⟶ j₂) (f' : j₃ ⟶ j₄), gf f ≫ i f = hf f' ≫ i f' := by
       intros j₁ j₂ j₃ j₄ f f'
       rw [s', s']
-      -- porting note: the three goals here in Lean 3 were in a different order
+      -- Porting note: the three goals here in Lean 3 were in a different order
       · exact k'O
       · exact Finset.mem_biUnion.mpr ⟨j₃, Finset.mem_univ _,
           Finset.mem_biUnion.mpr ⟨j₄, Finset.mem_univ _,
@@ -305,7 +311,7 @@ theorem colimitLimitToLimitColimit_surjective :
           colimit_eq_iff.{v, v}, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map,
           Functor.comp_obj, colim_obj, Limit.π_mk]
       refine ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), ?_⟩
-      -- porting note: the lean 3 proof finished with
+      -- Porting note: the lean 3 proof finished with
       -- `simp only [Bifunctor.map_id_comp, types_comp_apply, Bifunctor.map_id, types_id_apply]`
       -- which doesn't work; the corresponding `rw` works fine:
       rw [Bifunctor.map_id_comp, Bifunctor.map_id_comp, types_comp_apply, types_comp_apply,
@@ -343,9 +349,7 @@ variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
 section
 
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
-
 variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
-
 variable [PreservesLimitsOfShape J (forget C)]
 
 noncomputable instance filteredColimPreservesFiniteLimits :
@@ -369,9 +373,7 @@ noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesFilteredColi
 section
 
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
-
 variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
-
 variable [PreservesLimitsOfShape J (forget C)]
 
 /-- A curried version of the fact that filtered colimits commute with finite limits. -/
@@ -400,8 +402,3 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
 end
 
 end CategoryTheory.Limits
-
--- Various pieces of algebra that have previously been spuriously imported here:
-assert_not_exists zero_zpow
-assert_not_exists div_self
-assert_not_exists Field

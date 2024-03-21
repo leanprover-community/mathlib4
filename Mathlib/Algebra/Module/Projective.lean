@@ -171,7 +171,7 @@ end Ring
 --This is in a different section because special universe restrictions are required.
 section OfLiftingProperty
 
--- porting note: todo: generalize to `P : Type v`?
+-- Porting note (#11215): TODO: generalize to `P : Type v`?
 /-- A module which satisfies the universal property is projective. Note that the universe variables
 in `huniv` are somewhat restricted. -/
 theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max u v}
@@ -185,7 +185,7 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max 
   .of_lifting_property'' (huniv · _)
 #align module.projective_of_lifting_property' Module.Projective.of_lifting_property'
 
--- porting note: todo: generalize to `P : Type v`?
+-- Porting note (#11215): TODO: generalize to `P : Type v`?
 /-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
 which only requires quantifying over modules with an `AddCommGroup` instance. -/
 theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]

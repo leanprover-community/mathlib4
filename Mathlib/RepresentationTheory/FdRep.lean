@@ -159,7 +159,7 @@ namespace FdRep
 
 -- The variables in this section are slightly weird, living half in `Representation` and half in
 -- `FdRep`. When we have a better API for general monoidal closed and rigid categories and these
--- structures on `FdRep`, we should remove the dependancy of statements about `FdRep` on
+-- structures on `FdRep`, we should remove the dependency of statements about `FdRep` on
 -- `Representation.linHom` and `Representation.dual`. The isomorphism `dualTensorIsoLinHom`
 -- below should then just be obtained from general results about rigid categories.
 open Representation

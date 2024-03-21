@@ -231,8 +231,7 @@ lemma iCondIndepSets_singleton_iff (s : ι → Set Ω) (hπ : ∀ i, MeasurableS
       apply congr_arg₂
       · exact Set.iInter₂_congr hf
       · rfl
-    · congr
-      simp_rw [Finset.prod_apply]
+    · simp_rw [Finset.prod_apply]
       refine Finset.prod_congr rfl (fun i hi ↦ ?_)
       rw [hf i hi]
   · simpa only [Set.mem_singleton_iff, forall_eq]

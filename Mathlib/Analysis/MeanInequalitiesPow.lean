@@ -47,7 +47,8 @@ universe u v
 
 open Finset
 
-open Classical BigOperators NNReal ENNReal
+open scoped Classical
+open BigOperators NNReal ENNReal
 
 noncomputable section
 

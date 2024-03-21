@@ -48,7 +48,7 @@ theorem List.support_sum_subset [AddMonoid M] (l : List (ι →₀ M)) :
 theorem Multiset.support_sum_subset [AddCommMonoid M] (s : Multiset (ι →₀ M)) :
     s.sum.support ⊆ (s.map Finsupp.support).sup := by
   induction s using Quot.inductionOn
-  simpa only [Multiset.quot_mk_to_coe'', Multiset.coe_sum, Multiset.coe_map, Multiset.sup_coe,
+  simpa only [Multiset.quot_mk_to_coe'', Multiset.sum_coe, Multiset.map_coe, Multiset.sup_coe,
     List.foldr_map] using List.support_sum_subset _
 #align multiset.support_sum_subset Multiset.support_sum_subset
 
@@ -69,7 +69,7 @@ theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι
 theorem Multiset.mem_sup_map_support_iff [Zero M] {s : Multiset (ι →₀ M)} {x : ι} :
     x ∈ (s.map Finsupp.support).sup ↔ ∃ f ∈ s, x ∈ f.support :=
   Quot.inductionOn s fun _ ↦ by
-    simpa only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.sup_coe, List.foldr_map]
+    simpa only [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.sup_coe, List.foldr_map]
     using List.mem_foldr_sup_support_iff
 #align multiset.mem_sup_map_support_iff Multiset.mem_sup_map_support_iff
 
@@ -103,11 +103,11 @@ theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
   obtain ⟨l, hl, hd⟩ := hs
   suffices a.Pairwise (_root_.Disjoint on Finsupp.support) by
     convert List.support_sum_eq a this
-    · simp only [Multiset.quot_mk_to_coe'', Multiset.coe_sum]
+    · simp only [Multiset.quot_mk_to_coe'', Multiset.sum_coe]
     · dsimp only [Function.comp_def]
-      simp only [quot_mk_to_coe'', coe_map, sup_coe, ge_iff_le, Finset.le_eq_subset,
+      simp only [quot_mk_to_coe'', map_coe, sup_coe, ge_iff_le, Finset.le_eq_subset,
         Finset.sup_eq_union, Finset.bot_eq_empty, List.foldr_map]
-  simp only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_eq_coe] at hl
+  simp only [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.coe_eq_coe] at hl
   exact hl.symm.pairwise hd fun h ↦ _root_.Disjoint.symm h
 #align multiset.support_sum_eq Multiset.support_sum_eq
 

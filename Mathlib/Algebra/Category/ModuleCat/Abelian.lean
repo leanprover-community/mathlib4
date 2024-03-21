@@ -84,7 +84,7 @@ set_option linter.uppercaseLean3 false in
 
 section ReflectsLimits
 
--- porting note: added to make the following definitions work
+-- Porting note: added to make the following definitions work
 instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) := ModuleCat.hasLimitsOfSize
 
 /- We need to put this in this weird spot because we need to know that the category of modules

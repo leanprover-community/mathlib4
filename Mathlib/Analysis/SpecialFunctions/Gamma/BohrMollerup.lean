@@ -285,8 +285,7 @@ theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
   · rw [f_nat_eq @hf_feq, Nat.add_sub_cancel, Nat.cast_add_one, add_sub_cancel]
     · ring
     · exact Nat.succ_ne_zero _
-  · apply Nat.succ_le_succ
-    linarith [Nat.pos_of_ne_zero hn]
+  · omega
 #align real.bohr_mollerup.ge_log_gamma_seq Real.BohrMollerup.ge_logGammaSeq
 
 theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
@@ -296,12 +295,12 @@ theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
   -- Porting note: `show` no longer reorders goals
   pick_goal 4
   show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
-  · refine' Eventually.mp (eventually_ne_atTop 0) (eventually_of_forall fun n hn => _)
-    exact le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv (@hf_feq) hx hn)
+  · filter_upwards [eventually_ne_atTop 0] with n hn using
+      le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv hf_feq hx hn)
   -- Porting note: `show` no longer reorders goals
   pick_goal 3
   show ∀ᶠ n : ℕ in atTop, f x - f 1 - x * (log (n + 1) - log n) ≤ logGammaSeq x n
-  · refine' eventually_of_forall fun n => _
+  · filter_upwards with n
     rw [sub_le_iff_le_add', sub_le_iff_le_add']
     convert le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
     ring

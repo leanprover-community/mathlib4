@@ -20,9 +20,7 @@ subgroup, subgroups
 
 
 variable {G : Type*} [Group G]
-
 variable {A : Type*} [AddGroup A]
-
 variable {N : Type*} [Group N]
 
 namespace Subgroup
@@ -62,7 +60,7 @@ theorem zpow_mem_zpowers (g : G) (k : ℤ) : g ^ k ∈ zpowers g :=
 #align subgroup.zpow_mem_zpowers Subgroup.zpow_mem_zpowers
 
 theorem npow_mem_zpowers (g : G) (k : ℕ) : g ^ k ∈ zpowers g :=
-  zpow_coe_nat g k ▸ zpow_mem_zpowers g k
+  zpow_natCast g k ▸ zpow_mem_zpowers g k
 #align subgroup.npow_mem_zpowers Subgroup.npow_mem_zpowers
 
 theorem forall_zpowers {x : G} {p : zpowers x → Prop} : (∀ g, p g) ↔ ∀ m : ℤ, p ⟨x ^ m, m, rfl⟩ :=
@@ -74,7 +72,7 @@ theorem exists_zpowers {x : G} {p : zpowers x → Prop} : (∃ g, p g) ↔ ∃ m
 #align subgroup.exists_zpowers Subgroup.exists_zpowers
 
 theorem forall_mem_zpowers {x : G} {p : G → Prop} : (∀ g ∈ zpowers x, p g) ↔ ∀ m : ℤ, p (x ^ m) :=
-  Set.forall_range_iff
+  Set.forall_mem_range
 #align subgroup.forall_mem_zpowers Subgroup.forall_mem_zpowers
 
 theorem exists_mem_zpowers {x : G} {p : G → Prop} : (∃ g ∈ zpowers x, p g) ↔ ∃ m : ℤ, p (x ^ m) :=
@@ -98,43 +96,43 @@ theorem range_zmultiplesHom (a : A) : (zmultiplesHom A a).range = zmultiples a :
   rfl
 #align add_subgroup.range_zmultiples_hom AddSubgroup.range_zmultiplesHom
 
-attribute [to_additive existing AddSubgroup.zmultiples] Subgroup.zpowers
+attribute [to_additive existing] Subgroup.zpowers
 
-attribute [to_additive (attr := simp) AddSubgroup.mem_zmultiples] Subgroup.mem_zpowers
+attribute [to_additive (attr := simp)] Subgroup.mem_zpowers
 #align add_subgroup.mem_zmultiples AddSubgroup.mem_zmultiples
 
-attribute [to_additive (attr := norm_cast) AddSubgroup.coe_zmultiples] Subgroup.coe_zpowers
+attribute [to_additive (attr := norm_cast)] Subgroup.coe_zpowers
 
-attribute [to_additive AddSubgroup.decidableMemZMultiples] Subgroup.decidableMemZPowers
+attribute [to_additive] Subgroup.decidableMemZPowers
 #align decidable_zmultiples AddSubgroup.decidableMemZMultiples
 
-attribute [to_additive AddSubgroup.zmultiples_eq_closure] Subgroup.zpowers_eq_closure
+attribute [to_additive] Subgroup.zpowers_eq_closure
 #align add_subgroup.zmultiples_eq_closure AddSubgroup.zmultiples_eq_closure
 
-attribute [to_additive existing (attr := simp) AddSubgroup.range_zmultiplesHom]
+attribute [to_additive existing (attr := simp)]
   Subgroup.range_zpowersHom
 
-attribute [to_additive AddSubgroup.mem_zmultiples_iff] Subgroup.mem_zpowers_iff
+attribute [to_additive] Subgroup.mem_zpowers_iff
 #align add_subgroup.mem_zmultiples_iff AddSubgroup.mem_zmultiples_iff
 
-attribute [to_additive (attr := simp) AddSubgroup.zsmul_mem_zmultiples] Subgroup.zpow_mem_zpowers
+attribute [to_additive (attr := simp)] Subgroup.zpow_mem_zpowers
 #align add_subgroup.zsmul_mem_zmultiples AddSubgroup.zsmul_mem_zmultiples
 
-attribute [to_additive (attr := simp) AddSubgroup.nsmul_mem_zmultiples] Subgroup.npow_mem_zpowers
+attribute [to_additive (attr := simp)] Subgroup.npow_mem_zpowers
 #align add_subgroup.nsmul_mem_zmultiples AddSubgroup.nsmul_mem_zmultiples
 
---Porting note: increasing simp priority. Better lemma than `Subtype.forall`
-attribute [to_additive (attr := simp 1100) AddSubgroup.forall_zmultiples] Subgroup.forall_zpowers
+-- Porting note: increasing simp priority. Better lemma than `Subtype.forall`
+attribute [to_additive (attr := simp 1100)] Subgroup.forall_zpowers
 #align add_subgroup.forall_zmultiples AddSubgroup.forall_zmultiples
 
-attribute [to_additive AddSubgroup.forall_mem_zmultiples] Subgroup.forall_mem_zpowers
+attribute [to_additive] Subgroup.forall_mem_zpowers
 #align add_subgroup.forall_mem_zmultiples AddSubgroup.forall_mem_zmultiples
 
---Porting note: increasing simp priority. Better lemma than `Subtype.exists`
-attribute [to_additive (attr := simp 1100) AddSubgroup.exists_zmultiples] Subgroup.exists_zpowers
+-- Porting note: increasing simp priority. Better lemma than `Subtype.exists`
+attribute [to_additive (attr := simp 1100)] Subgroup.exists_zpowers
 #align add_subgroup.exists_zmultiples AddSubgroup.exists_zmultiples
 
-attribute [to_additive AddSubgroup.exists_mem_zmultiples] Subgroup.exists_mem_zpowers
+attribute [to_additive] Subgroup.exists_mem_zpowers
 #align add_subgroup.exists_mem_zmultiples AddSubgroup.exists_mem_zmultiples
 
 instance (a : A) : Countable (zmultiples a) :=
@@ -163,7 +161,7 @@ end AddSubgroup
   ext a
   simp_rw [AddMonoidHom.mem_range, Int.coe_castAddHom, AddSubgroup.mem_zmultiples_iff, zsmul_one]
 
-@[to_additive (attr := simp) map_zmultiples]
+@[to_additive (attr := simp)]
 theorem MonoidHom.map_zpowers (f : G →* N) (x : G) :
     (Subgroup.zpowers x).map f = Subgroup.zpowers (f x) := by
   rw [Subgroup.zpowers_eq_closure, Subgroup.zpowers_eq_closure, f.map_closure, Set.image_singleton]
@@ -204,7 +202,7 @@ namespace Subgroup
 
 variable {s : Set G} {g : G}
 
-@[to_additive zmultiples_isCommutative]
+@[to_additive]
 instance zpowers_isCommutative (g : G) : (zpowers g).IsCommutative :=
   ⟨⟨fun ⟨_, _, h₁⟩ ⟨_, _, h₂⟩ => by
       rw [Subtype.ext_iff, coe_mul, coe_mul, Subtype.coe_mk, Subtype.coe_mk, ← h₁, ← h₂,
@@ -212,7 +210,7 @@ instance zpowers_isCommutative (g : G) : (zpowers g).IsCommutative :=
 #align subgroup.zpowers_is_commutative Subgroup.zpowers_isCommutative
 #align add_subgroup.zmultiples_is_commutative AddSubgroup.zmultiples_isCommutative
 
-@[to_additive (attr := simp) zmultiples_le]
+@[to_additive (attr := simp)]
 theorem zpowers_le {g : G} {H : Subgroup G} : zpowers g ≤ H ↔ g ∈ H := by
   rw [zpowers_eq_closure, closure_le, Set.singleton_subset_iff, SetLike.mem_coe]
 #align subgroup.zpowers_le Subgroup.zpowers_le
@@ -224,20 +222,20 @@ alias ⟨_, zpowers_le_of_mem⟩ := zpowers_le
 alias ⟨_, _root_.AddSubgroup.zmultiples_le_of_mem⟩ := AddSubgroup.zmultiples_le
 #align add_subgroup.zmultiples_le_of_mem AddSubgroup.zmultiples_le_of_mem
 
-attribute [to_additive existing zmultiples_le_of_mem] zpowers_le_of_mem
+attribute [to_additive existing] zpowers_le_of_mem
 
-@[to_additive (attr := simp) zmultiples_eq_bot]
+@[to_additive (attr := simp)]
 theorem zpowers_eq_bot {g : G} : zpowers g = ⊥ ↔ g = 1 := by rw [eq_bot_iff, zpowers_le, mem_bot]
 #align subgroup.zpowers_eq_bot Subgroup.zpowers_eq_bot
 #align add_subgroup.zmultiples_eq_bot AddSubgroup.zmultiples_eq_bot
 
-@[to_additive zmultiples_ne_bot]
+@[to_additive]
 theorem zpowers_ne_bot : zpowers g ≠ ⊥ ↔ g ≠ 1 :=
   zpowers_eq_bot.not
 #align subgroup.zpowers_ne_bot Subgroup.zpowers_ne_bot
 #align add_subgroup.zmultiples_ne_bot AddSubgroup.zmultiples_ne_bot
 
-@[to_additive (attr := simp) zmultiples_zero_eq_bot]
+@[to_additive (attr := simp)]
 theorem zpowers_one_eq_bot : Subgroup.zpowers (1 : G) = ⊥ :=
   Subgroup.zpowers_eq_bot.mpr rfl
 #align subgroup.zpowers_one_eq_bot Subgroup.zpowers_one_eq_bot
