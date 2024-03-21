@@ -1803,21 +1803,45 @@ theorem inter_left_idem (s t : Finset α) : s ∩ (s ∩ t) = s ∩ t := inf_lef
 theorem inter_right_idem (s t : Finset α) : s ∩ t ∩ t = s ∩ t := inf_right_idem _ _
 #align finset.inter_right_idem Finset.inter_right_idem
 
+/-- Deprecated, use `Finset.inter_union_distrib_left` instead. -/
+@[deprecated inter_distrib_left]
 theorem inter_distrib_left (s t u : Finset α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
   inf_sup_left _ _ _
 #align finset.inter_distrib_left Finset.inter_distrib_left
 
-theorem inter_distrib_right (s t u : Finset α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
-  inf_sup_right _ _ _
-#align finset.inter_distrib_right Finset.inter_distrib_right
+theorem inter_union_distrib_left (s t u : Finset α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
+  inf_sup_left _ _ _
+#align finset.inter_union_distrib_left Finset.inter_union_distrib_left
 
+/-- Deprecated, use `Finset.inter_union_distrib_right` instead. -/
+@[deprecated union_distrib_right]
+theorem union_distrib_right (s t u : Finset α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
+  sup_inf_right _ _ _
+#align finset.union_distrib_right Finset.union_distrib_right
+
+theorem inter_union_distrib_right (s t u : Finset α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
+  sup_inf_right _ _ _
+#align finset.inter_union_distrib_right Finset.inter_union_distrib_right
+
+/-- Deprecated, use `Finset.union_inter_distrib_left` instead. -/
+@[deprecated union_distrib_left]
 theorem union_distrib_left (s t u : Finset α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
   sup_inf_left _ _ _
 #align finset.union_distrib_left Finset.union_distrib_left
 
-theorem union_distrib_right (s t u : Finset α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
-  sup_inf_right _ _ _
-#align finset.union_distrib_right Finset.union_distrib_right
+theorem union_inter_distrib_left (s t u : Finset α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
+  sup_inf_left _ _ _
+#align finset.union_inter_distrib_left Finset.union_inter_distrib_left
+
+/-- Deprecated, use `Finset.union_inter_distrib_right` instead. -/
+@[deprecated inter_distrib_right]
+theorem inter_distrib_right (s t u : Finset α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
+  inf_sup_right _ _ _
+#align finset.inter_distrib_right Finset.inter_distrib_right
+
+theorem union_inter_distrib_right (s t u : Finset α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
+  inf_sup_right _ _ _
+#align finset.union_inter_distrib_right Finset.union_inter_distrib_right
 
 theorem union_union_distrib_left (s t u : Finset α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
   sup_sup_distrib_left _ _ _
