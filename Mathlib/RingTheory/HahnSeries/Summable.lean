@@ -1,11 +1,10 @@
 /-
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, Scott Carnahan
 -/
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.Algebra.EuclideanDomain.Instances
-import Mathlib.Algebra.Order.Group.WithTop
 import Mathlib.RingTheory.Valuation.Basic
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
