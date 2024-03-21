@@ -10,7 +10,7 @@ import Mathlib.Data.Finite.Defs
 # Functors preserving effective epimorphisms
 
 This file concerns functors which preserve and/or reflect effective epimorphisms and effective
-epimporphic families.
+epimorphic families.
 
 ## TODO
 - Are there nice sufficient conditions on functors to preserve/reflect effective epis, similar to
