@@ -60,7 +60,7 @@ instance {α : Type*} {B : C} {X Y : α → C}
 example {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) [IsSplitEpi g] [EffectiveEpi f] :
     EffectiveEpi (g ≫ f) := inferInstance
 
-instance {B X : C} (f : X ⟶ B) [IsSplitEpi f] : EffectiveEpi f := by
+instance IsSplitEpi.EffectiveEpi {B X : C} (f : X ⟶ B) [IsSplitEpi f] : EffectiveEpi f := by
   rw [← Category.comp_id f]
   infer_instance
 
