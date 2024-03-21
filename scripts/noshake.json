@@ -297,6 +297,7 @@
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
+  "Mathlib.NumberTheory.Harmonic.Defs": ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Equiv.Defs": ["Mathlib.Init.Data.Bool.Lemmas"],
@@ -314,12 +315,15 @@
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Rat.Init": ["Std.Data.Rat.Basic"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.GroupTheory.GroupAction.Defs"],
+  "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
   "Mathlib.Data.List.EditDistance.Defs": ["Mathlib.Data.Nat.Basic"],
   "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic", "Mathlib.Init.Core"],
   "Mathlib.Data.Finset.Basic": ["Mathlib.Data.Finset.Attr"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
   "Mathlib.Control.Monad.Basic": ["Mathlib.Init.Control.Lawful"],
   "Mathlib.Control.Basic": ["Mathlib.Init.Function"],
+  "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
+  ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":

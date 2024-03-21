@@ -128,7 +128,7 @@ theorem exists_iff_exists_of_mono {P : F α → Prop} {q : F β → Prop}
   · refine ⟨f <$$> u, ?_⟩
     apply (h₁ u).mp h₂
   · refine ⟨g <$$> u, ?_⟩
-    apply (h₁ _).mpr _
+    rw [h₁]
     simp only [MvFunctor.map_map, h₀, LawfulMvFunctor.id_map, h₂]
 #align mvfunctor.exists_iff_exists_of_mono MvFunctor.exists_iff_exists_of_mono
 
