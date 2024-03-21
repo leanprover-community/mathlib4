@@ -16,7 +16,7 @@ This file is deprecated, and is no longer imported by anything in mathlib other 
 deprecated files, and test files. You should not need to import it.
 
 This file defines unbundled multiplicative and additive subgroups. Instead of using this file,
-please use `Subgroup G` and `AddSubgroup A`, defined in `GroupTheory.Subgroup.Basic`.
+please use `Subgroup G` and `AddSubgroup A`, defined in `Algebra.Group.Subgroup.Basic`.
 
 ## Main definitions
 
