@@ -57,18 +57,18 @@ protected abbrev semigroup [Semigroup M₂] (f : M₁ → M₂) (hf : Injective 
   { ‹Mul M₁› with mul_assoc := fun x y z => hf <| by rw [mul, mul, mul, mul, mul_assoc] }
 
 /-- A type endowed with `*` is a commutative magma, if it admits a surjective map that preserves
-`*` from a commutative magma. -/
-@[to_additive -- See note [reducible non-instances]
-"A type endowed with `+` is an additive commutative semigroup, if it admits
-a surjective map that preserves `+` from an additive commutative semigroup."]
+`*` from a commutative magma. See note [reducible non-instances]. -/
+@[to_additive
+"A type endowed with `+` is an additive commutative magma, if it admits
+a surjective map that preserves `+` from an additive commutative magma."]
 protected abbrev commMagma [CommMagma M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : CommMagma M₁ where
   mul_comm x y := hf <| by rw [mul, mul, mul_comm]
 
 /-- A type endowed with `*` is a commutative semigroup, if it admits an injective map that
-preserves `*` to a commutative semigroup.  See note [reducible non-instances]. -/
+preserves `*` to a commutative semigroup. See note [reducible non-instances]. -/
 @[to_additive
-"A type endowed with `+` is an additive commutative semigroup,if it admits
+"A type endowed with `+` is an additive commutative semigroup, if it admits
 an injective map that preserves `+` to an additive commutative semigroup."]
 protected abbrev commSemigroup [CommSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₁ where
@@ -76,7 +76,7 @@ protected abbrev commSemigroup [CommSemigroup M₂] (f : M₁ → M₂) (hf : In
   __ := hf.commMagma f mul
 
 /-- A type endowed with `*` is a left cancel semigroup, if it admits an injective map that
-preserves `*` to a left cancel semigroup.  See note [reducible non-instances]. -/
+preserves `*` to a left cancel semigroup. See note [reducible non-instances]. -/
 @[to_additive "A type endowed with `+` is an additive left cancel
 semigroup, if it admits an injective map that preserves `+` to an additive left cancel semigroup."]
 protected abbrev leftCancelSemigroup [LeftCancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
@@ -85,7 +85,7 @@ protected abbrev leftCancelSemigroup [LeftCancelSemigroup M₂] (f : M₁ → M�
     mul_left_cancel := fun x y z H => hf <| (mul_right_inj (f x)).1 <| by rw [← mul, ← mul, H] }
 
 /-- A type endowed with `*` is a right cancel semigroup, if it admits an injective map that
-preserves `*` to a right cancel semigroup.  See note [reducible non-instances]. -/
+preserves `*` to a right cancel semigroup. See note [reducible non-instances]. -/
 @[to_additive "A type endowed with `+` is an additive right
 cancel semigroup, if it admits an injective map that preserves `+` to an additive right cancel
 semigroup."]
@@ -97,7 +97,7 @@ protected abbrev rightCancelSemigroup [RightCancelSemigroup M₂] (f : M₁ → 
 variable [One M₁]
 
 /-- A type endowed with `1` and `*` is a `MulOneClass`, if it admits an injective map that
-preserves `1` and `*` to a `MulOneClass`.  See note [reducible non-instances]. -/
+preserves `1` and `*` to a `MulOneClass`. See note [reducible non-instances]. -/
 @[to_additive
 "A type endowed with `0` and `+` is an `AddZeroClass`, if it admits an
 injective map that preserves `0` and `+` to an `AddZeroClass`."]
@@ -110,7 +110,7 @@ protected abbrev mulOneClass [MulOneClass M₂] (f : M₁ → M₂) (hf : Inject
 variable [Pow M₁ ℕ]
 
 /-- A type endowed with `1` and `*` is a monoid, if it admits an injective map that preserves `1`
-and `*` to a monoid.  See note [reducible non-instances]. -/
+and `*` to a monoid. See note [reducible non-instances]. -/
 @[to_additive
 "A type endowed with `0` and `+` is an additive monoid, if it admits an
 injective map that preserves `0` and `+` to an additive monoid. See note
@@ -147,8 +147,8 @@ protected abbrev leftCancelMonoid [LeftCancelMonoid M₂] (f : M₁ → M₂) (h
 /-- A type endowed with `1` and `*` is a right cancel monoid, if it admits an injective map that
 preserves `1` and `*` to a right cancel monoid. See note [reducible non-instances]. -/
 @[to_additive
-"A type endowed with `0` and `+` is an additive left cancel monoid,if it
-admits an injective map that preserves `0` and `+` to an additive left cancel monoid."]
+"A type endowed with `0` and `+` is an additive right cancel monoid, if it
+admits an injective map that preserves `0` and `+` to an additive right cancel monoid."]
 protected abbrev rightCancelMonoid [RightCancelMonoid M₂] (f : M₁ → M₂) (hf : Injective f)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : RightCancelMonoid M₁ :=
@@ -157,15 +157,15 @@ protected abbrev rightCancelMonoid [RightCancelMonoid M₂] (f : M₁ → M₂) 
 /-- A type endowed with `1` and `*` is a cancel monoid, if it admits an injective map that preserves
 `1` and `*` to a cancel monoid. See note [reducible non-instances]. -/
 @[to_additive
-"A type endowed with `0` and `+` is an additive left cancel monoid,if it
-admits an injective map that preserves `0` and `+` to an additive left cancel monoid."]
+"A type endowed with `0` and `+` is an additive cancel monoid, if it
+admits an injective map that preserves `0` and `+` to an additive cancel monoid."]
 protected abbrev cancelMonoid [CancelMonoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CancelMonoid M₁ :=
   { hf.leftCancelMonoid f one mul npow, hf.rightCancelMonoid f one mul npow with }
 
 /-- A type endowed with `1` and `*` is a commutative monoid, if it admits an injective map that
-preserves `1` and `*` to a commutative monoid.  See note [reducible non-instances]. -/
+preserves `1` and `*` to a commutative monoid. See note [reducible non-instances]. -/
 @[to_additive
 "A type endowed with `0` and `+` is an additive commutative monoid, if it
 admits an injective map that preserves `0` and `+` to an additive commutative monoid."]
@@ -185,7 +185,7 @@ protected abbrev addCommMonoidWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [
   __ := hf.addCommMonoid _ zero add (swap nsmul)
 
 /-- A type endowed with `1` and `*` is a cancel commutative monoid, if it admits an injective map
-that preserves `1` and `*` to a cancel commutative monoid.  See note [reducible non-instances]. -/
+that preserves `1` and `*` to a cancel commutative monoid. See note [reducible non-instances]. -/
 @[to_additive
 "A type endowed with `0` and `+` is an additive cancel commutative monoid,
 if it admits an injective map that preserves `0` and `+` to an additive cancel commutative monoid."]
@@ -207,7 +207,7 @@ protected abbrev involutiveInv {M₁ : Type*} [Inv M₁] [InvolutiveInv M₂] (f
 variable [Inv M₁]
 
 /-- A type endowed with `1` and `⁻¹` is a `InvOneClass`, if it admits an injective map that
-preserves `1` and `⁻¹` to a `InvOneClass`.  See note [reducible non-instances]. -/
+preserves `1` and `⁻¹` to a `InvOneClass`. See note [reducible non-instances]. -/
 @[to_additive
 "A type endowed with `0` and unary `-` is an `NegZeroClass`, if it admits an
 injective map that preserves `0` and unary `-` to an `NegZeroClass`."]
@@ -293,7 +293,7 @@ protected abbrev group [Group M₂] (f : M₁ → M₂) (hf : Injective f) (one 
     inv_mul_cancel := fun x => hf <| by rw [mul, inv, inv_mul_cancel, one] }
 
 /-- A type endowed with `0`, `1` and `+` is an additive group with one, if it admits an injective
-map that preserves `0`, `1` and `+` to an additive group with one.  See note
+map that preserves `0`, `1` and `+` to an additive group with one. See note
 [reducible non-instances]. -/
 protected abbrev addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ M₁] [Neg M₁] [Sub M₁]
     [SMul ℤ M₁] [NatCast M₁] [IntCast M₁] [AddGroupWithOne M₂] (f : M₁ → M₂) (hf : Injective f)
@@ -305,7 +305,7 @@ protected abbrev addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul 
     hf.addMonoidWithOne f zero one add nsmul natCast with
     intCast := Int.cast,
     intCast_ofNat := fun n => hf (by rw [natCast, intCast, Int.cast_natCast]),
-    intCast_negSucc := fun n => hf (by rw [intCast, neg, natCast, Int.cast_negSucc] ) }
+    intCast_negSucc := fun n => hf (by rw [intCast, neg, natCast, Int.cast_negSucc]) }
 
 /-- A type endowed with `1`, `*` and `⁻¹` is a commutative group, if it admits an injective map that
 preserves `1`, `*` and `⁻¹` to a commutative group. See note [reducible non-instances]. -/
@@ -350,11 +350,11 @@ protected abbrev semigroup [Semigroup M₁] (f : M₁ → M₂) (hf : Surjective
     (mul : ∀ x y, f (x * y) = f x * f y) : Semigroup M₂ :=
   { ‹Mul M₂› with mul_assoc := hf.forall₃.2 fun x y z => by simp only [← mul, mul_assoc] }
 
-/-- A type endowed with `*` is a commutative semigroup, if it admits a surjective map that preserves
-`*` from a commutative semigroup. See note [reducible non-instances]. -/
+/-- A type endowed with `*` is a commutative magma, if it admits a surjective map that preserves
+`*` from a commutative magma. See note [reducible non-instances]. -/
 @[to_additive
-"A type endowed with `+` is an additive commutative semigroup, if it admits
-a surjective map that preserves `+` from an additive commutative semigroup."]
+"A type endowed with `+` is an additive commutative magma, if it admits
+a surjective map that preserves `+` from an additive commutative magma."]
 protected abbrev commMagma [CommMagma M₁] (f : M₁ → M₂) (hf : Surjective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : CommMagma M₂ where
   mul_comm := hf.forall₂.2 fun x y => by rw [← mul, ← mul, mul_comm]
@@ -486,9 +486,8 @@ protected abbrev addGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M
   { hf.addMonoidWithOne f zero one add nsmul natCast,
     hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul) with
     intCast := Int.cast,
-    intCast_ofNat := fun n => by rw [← intCast, Int.cast_natCast, natCast],
-    intCast_negSucc := fun n => by
-      rw [← intCast, Int.cast_negSucc, neg, natCast] }
+    intCast_ofNat n := by rw [← intCast, Int.cast_natCast, natCast],
+    intCast_negSucc n := by rw [← intCast, Int.cast_negSucc, neg, natCast] }
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a commutative group, if it admits a surjective
 map that preserves `1`, `*`, `⁻¹`, and `/` from a commutative group. See note
