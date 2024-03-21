@@ -307,6 +307,39 @@ instance instTopologicalSpace : TopologicalSpace (WeakSpace 𝕜 E) :=
 instance instContinuousAdd : ContinuousAdd (WeakSpace 𝕜 E) :=
   WeakBilin.instContinuousAdd (topDualPairing 𝕜 E).flip
 
+
+/-- There is a canonical map `E → WeakSpace 𝕜 E` (the "identity"
+mapping). It is a linear equivalence. -/
+def toWeakSpace : E ≃ₗ[𝕜] WeakSpace 𝕜 E := LinearEquiv.refl 𝕜 E
+
+@[simp]
+theorem toWeakSpace_eq_iff (x y : E) : (toWeakSpace x : WeakSpace 𝕜 E) = toWeakSpace y ↔ x = y :=
+  Function.Injective.eq_iff <| LinearEquiv.injective toWeakSpace
+
+/-- For a topological vector space `E`, "identity mapping" `E → WeakSpace 𝕜 E` is continuous.
+This definition implements it as a continuous linear map. -/
+def continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E where
+  __ := toWeakSpace
+  cont := by
+    apply WeakBilin.continuous_of_continuous_eval
+    exact ContinuousLinearMap.continuous
+-- def continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E :=
+--   { (toWeakSpace : E ≃ₗ[𝕜] WeakSpace 𝕜 E) with
+--     cont := by
+--       apply WeakBilin.continuous_of_continuous_eval
+--       exact ContinuousLinearMap.continuous }
+
+@[simp]
+theorem toWeakSpace_eq_continuousLinearMapToWeakSpace (x : E) :
+    (toWeakSpace x : WeakSpace 𝕜 E) = continuousLinearMapToWeakSpace x := by rfl
+
+theorem injective_continuousLinearMapToWeakSpace :
+    Function.Injective (continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E ) := by
+  intro x y hxy
+  rw [← toWeakSpace_eq_continuousLinearMapToWeakSpace,
+    ← toWeakSpace_eq_continuousLinearMapToWeakSpace] at hxy
+  exact LinearEquiv.injective toWeakSpace hxy
+
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
 
 /-- A continuous linear map from `E` to `F` is still continuous when `E` and `F` are equipped with
@@ -325,6 +358,66 @@ theorem map_apply (f : E →L[𝕜] F) (x : E) : WeakSpace.map f x = f x :=
 theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
   rfl
 #align weak_space.coe_map WeakSpace.coe_map
+
+/-- The canonical preimage in `E` of an open set in `WeakSpace 𝕜 E` is open in `E`. -/
+theorem isOpen_of_isOpen_WeakSpace (U : Set (WeakSpace 𝕜 E))
+    (hU : IsOpen[(WeakSpace.instTopologicalSpace : TopologicalSpace (WeakSpace 𝕜 E))] U) :
+    IsOpen (continuousLinearMapToWeakSpace ⁻¹' U) := by
+  exact ((continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E).cont).isOpen_preimage U hU
+
+/-- A set in `E` which is open in the weak topology is open. -/
+theorem isOpen_of_isOpen_WeakSpace' (V : Set E)
+    (hV : IsOpen[(WeakSpace.instTopologicalSpace : TopologicalSpace (WeakSpace 𝕜 E))]
+    (continuousLinearMapToWeakSpace '' V : Set (WeakSpace 𝕜 E))) : IsOpen V := by
+  have : (continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E) ⁻¹' ((continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E) '' V)
+  = V := by
+   ext x
+   constructor
+   · intro hx
+     have : continuousLinearMapToWeakSpace x ∈ continuousLinearMapToWeakSpace '' V := by
+       exact hx
+     obtain ⟨y, hy⟩ := hx
+     rw [← toWeakSpace_eq_continuousLinearMapToWeakSpace] at this
+     rw [← toWeakSpace_eq_continuousLinearMapToWeakSpace,
+       ← toWeakSpace_eq_continuousLinearMapToWeakSpace] at hy
+     have : y = x := LinearEquiv.injective toWeakSpace hy.2
+     rw [this] at hy
+     exact hy.1
+   · intro hx
+     simp only [Set.mem_preimage, Set.mem_image]
+     use x
+  rw [← this]
+  exact isOpen_of_isOpen_WeakSpace (continuousLinearMapToWeakSpace '' V) hV
+
+/-- If `f : α → E` is convergent in the original topology,
+then it is convergent in the weak topology. -/
+theorem tendsto_WeakSpace_of_tendsto
+    {α : Type*} {l : Filter α} {f : α → E} {p : E} (hf : Tendsto f l (nhds p)) :
+    Tendsto (fun x ↦ (continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E) (f x)) l (nhds (continuousLinearMapToWeakSpace p)) := by
+  refine tendsto_nhds.mpr ?_
+  intro U hpU hU
+  rw [tendsto_nhds] at hf
+  have : (fun x ↦ (continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E) (f x))
+    = (fun x ↦ ((continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E) ∘ f) x) := by
+    rfl
+  rw [this, Set.preimage_comp]
+  apply hf (continuousLinearMapToWeakSpace ⁻¹' U)
+    (continuousLinearMapToWeakSpace.cont.isOpen_preimage U hpU)
+  exact hU
+
+/-- If `f : α → E` is convergent in the original topology,
+then `y ∘ f` is convergent for any `y : E →L[𝕜] 𝕜`. -/
+theorem eval_tendsto_of_tendsto
+    {α : Type*} {l : Filter α} {f : α → E} {p : E}
+    (hf : Tendsto f l (nhds p)) (y : E →L[𝕜] 𝕜) : Tendsto (fun x => y (f x)) l (nhds (y p)) := by
+  exact Tendsto.comp (Continuous.tendsto (ContinuousLinearMap.continuous y) p) hf
+
+/-- If `f : E → α` is continuous from `E` in the weak topology,
+then it is continuous in the original topology. -/
+theorem continuous_of_continuous_WeakSpace
+    {α : Type*} [TopologicalSpace α] {f : (WeakSpace 𝕜 E) → α} (hf : Continuous f) :
+    Continuous (f ∘ continuousLinearMapToWeakSpace) := by
+  exact Continuous.comp hf continuousLinearMapToWeakSpace.cont
 
 end WeakSpace
 
