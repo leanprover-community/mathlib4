@@ -870,10 +870,9 @@ protected theorem precomp_uniformContinuous {𝔗 : Set (Set γ)} {f : γ → α
     (hf : MapsTo (f '' ·) 𝔗 𝔖) :
     UniformContinuous fun g : α →ᵤ[𝔖] β => ofFun 𝔗 (toFun 𝔖 g ∘ f) := by
   simp_rw [UniformContinuous, UniformOnFun.uniformity_eq, tendsto_iInf, tendsto_principal]
-  intro t ht V hV
-  refine Eventually.filter_mono (biInf_le _ (hf ht)) ?_
+  refine fun t ht V hV ↦ Eventually.filter_mono (biInf_le _ (hf ht)) ?_
   refine Eventually.filter_mono (biInf_le _ hV) (eventually_principal.2 ?_)
-  exact fun _ ↦ ball_image_iff.1
+  exact fun _ ↦ forall_mem_image.1
 #align uniform_on_fun.precomp_uniform_continuous UniformOnFun.precomp_uniformContinuous
 
 /-- Turn a bijection `e : γ ≃ α` such that we have both `∀ T ∈ 𝔗, e '' T ∈ 𝔖` and
