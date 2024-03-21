@@ -157,7 +157,7 @@ lemma set_lintegral_tilted' (f : α → ℝ) (g : α → ℝ≥0∞) {s : Set α
     · refine AEMeasurable.restrict ?_
       exact ((measurable_exp.comp_aemeasurable hf).div_const _).ennreal_ofReal
     · exact hs
-    · refine ae_of_all _ ?_
+    · filter_upwards
       simp only [ENNReal.ofReal_lt_top, implies_true]
   · have hf' : ¬ Integrable (fun x ↦ exp (f x)) μ := by
       exact fun h ↦ hf (aemeasurable_of_aemeasurable_exp h.1.aemeasurable)
@@ -174,7 +174,7 @@ lemma set_lintegral_tilted [SFinite μ] (f : α → ℝ) (g : α → ℝ≥0∞)
     · simp only [Pi.mul_apply]
     · refine AEMeasurable.restrict ?_
       exact ((measurable_exp.comp_aemeasurable hf).div_const _).ennreal_ofReal
-    · refine ae_of_all _ ?_
+    · filter_upwards
       simp only [ENNReal.ofReal_lt_top, implies_true]
   · have hf' : ¬ Integrable (fun x ↦ exp (f x)) μ := by
       exact fun h ↦ hf (aemeasurable_of_aemeasurable_exp h.1.aemeasurable)
@@ -291,7 +291,7 @@ lemma absolutelyContinuous_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) : �
   | inr h0 =>
     refine withDensity_absolutelyContinuous' ?_ ?_ ?_
     · exact (hf.1.aemeasurable.div_const _).ennreal_ofReal
-    · refine ae_of_all _ ?_
+    · filter_upwards
       simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
       exact fun _ ↦ div_pos (exp_pos _) (integral_exp_pos hf)
     · refine ae_of_all _ (by simp)
@@ -305,12 +305,11 @@ lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν
   | inr h0 =>
     refine (Measure.rnDeriv_withDensity_right μ ν ?_ ?_ ?_).trans ?_
     · exact (hf.1.aemeasurable.div_const _).ennreal_ofReal
-    · refine ae_of_all _ ?_
+    · filter_upwards
       simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
       exact fun _ ↦ div_pos (exp_pos _) (integral_exp_pos hf)
     · refine ae_of_all _ (by simp)
-    · refine ae_of_all _ (fun x ↦ ?_)
-      simp only
+    · filter_upwards with x
       congr
       rw [← ENNReal.ofReal_inv_of_pos, inv_div', ← exp_neg, div_eq_mul_inv, inv_inv]
       exact div_pos (exp_pos _) (integral_exp_pos hf)

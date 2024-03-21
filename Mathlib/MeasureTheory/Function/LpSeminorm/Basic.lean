@@ -1071,7 +1071,7 @@ theorem ae_bdd_liminf_atTop_rpow_of_snorm_bdd {p : ℝ≥0∞} {f : ℕ → α �
     ∀ᵐ x ∂μ, liminf (fun n => ((‖f n x‖₊ : ℝ≥0∞) ^ p.toReal : ℝ≥0∞)) atTop < ∞ := by
   by_cases hp0 : p.toReal = 0
   · simp only [hp0, ENNReal.rpow_zero]
-    refine' eventually_of_forall fun x => _
+    filter_upwards with _
     rw [liminf_const (1 : ℝ≥0∞)]
     exact ENNReal.one_lt_top
   have hp : p ≠ 0 := fun h => by simp [h] at hp0
