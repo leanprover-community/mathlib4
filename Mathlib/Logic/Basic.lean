@@ -1292,3 +1292,20 @@ theorem not_beq_of_ne [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a =
 theorem beq_eq_decide [BEq α] [LawfulBEq α] {a b : α} : (a == b) = decide (a = b) := by
   rw [← beq_iff_eq a b]
   cases a == b <;> simp
+
+@[ext]
+theorem beq_ext (inst1 : BEq α) (inst2 : BEq α)
+    (h : ∀ x y, @BEq.beq _ inst1 x y = @BEq.beq _ inst2 x y) :
+    inst1 = inst2 := by
+  have ⟨beq1⟩ := inst1
+  have ⟨beq2⟩ := inst2
+  congr
+  funext x y
+  exact h x y
+
+theorem lawful_beq_subsingleton (inst1 : BEq α) (inst2 : BEq α)
+    [@LawfulBEq α inst1] [@LawfulBEq α inst2] :
+    inst1 = inst2 := by
+  apply beq_ext
+  intro x y
+  simp only [beq_eq_decide]
