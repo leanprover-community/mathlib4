@@ -615,7 +615,6 @@ theorem spanNorm_mul_of_field {K : Type*} [Field K] [Algebra K S] [IsDomain S] [
 #align ideal.span_norm_mul_of_field Ideal.spanNorm_mul_of_field
 
 variable [IsDomain R] [IsDomain S] [IsDedekindDomain R] [IsDedekindDomain S]
-
 variable [Module.Finite R S] [Module.Free R S]
 
 /-- Multiplicativity of `Ideal.spanNorm`. simp-normal form is `map_mul (Ideal.relNorm R)`. -/

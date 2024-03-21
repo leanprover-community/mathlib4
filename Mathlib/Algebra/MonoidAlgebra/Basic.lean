@@ -856,7 +856,6 @@ end Algebra
 section lift
 
 variable [CommSemiring k] [Monoid G] [Monoid H]
-
 variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Algebra k B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
@@ -1027,7 +1026,6 @@ theorem GroupSMul.linearMap_apply [Monoid G] [CommSemiring k] (V : Type u₃) [A
 section
 
 variable {k}
-
 variable [Monoid G] [CommSemiring k] {V : Type u₃} {W : Type u₄} [AddCommMonoid V] [Module k V]
   [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] [AddCommMonoid W]
   [Module k W] [Module (MonoidAlgebra k G) W] [IsScalarTower k (MonoidAlgebra k G) W]
@@ -1166,9 +1164,7 @@ end Opposite
 section Submodule
 
 variable [CommSemiring k] [Monoid G]
-
 variable {V : Type*} [AddCommMonoid V]
-
 variable [Module k V] [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V]
 
 /-- A submodule over `k` which is stable under scalar multiplication by elements of `G` is a
@@ -1967,7 +1963,6 @@ end Algebra
 section lift
 
 variable [CommSemiring k] [AddMonoid G]
-
 variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Algebra k B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
@@ -2108,7 +2103,6 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] [A
 #align add_monoid_algebra.map_domain_alg_hom_apply AddMonoidAlgebra.mapDomainAlgHom_apply
 
 variable (k A)
-
 variable [CommSemiring k] [AddMonoid G] [AddMonoid H] [Semiring A] [Algebra k A]
 
 

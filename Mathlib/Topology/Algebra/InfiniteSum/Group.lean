@@ -23,7 +23,6 @@ variable {α β γ δ : Type*}
 section TopologicalGroup
 
 variable [AddCommGroup α] [TopologicalSpace α] [TopologicalAddGroup α]
-
 variable {f g : β → α} {a a₁ a₂ : α}
 
 -- `by simpa using` speeds up elaboration. Why?
@@ -64,8 +63,7 @@ theorem summable_iff_of_summable_sub (hfg : Summable fun b ↦ f b - g b) :
 
 theorem HasSum.update (hf : HasSum f a₁) (b : β) [DecidableEq β] (a : α) :
     HasSum (update f b a) (a - f b + a₁) := by
-  convert (hasSum_ite_eq b (a - f b)).add hf
-  rename_i b'
+  convert (hasSum_ite_eq b (a - f b)).add hf with b'
   by_cases h : b' = b
   · rw [h, update_same]
     simp [eq_self_iff_true, if_true, sub_add_cancel]

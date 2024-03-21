@@ -87,9 +87,7 @@ open Polynomial
 open Polynomial
 
 variable {R : Type*} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
-
 variable {A : Type*} [CommRing A] [Algebra R A] [Algebra S A]
-
 variable [IsScalarTower R S A] {B : PowerBasis S A} (hB : IsIntegral R B.gen)
 
 /-- If `B : PowerBasis S A` is such that `IsIntegral R B.gen`, then

@@ -307,7 +307,6 @@ theorem prime_factors_irreducible [CancelCommMonoidWithZero α] {a : α} {f : Mu
 section ExistsPrimeFactors
 
 variable [CancelCommMonoidWithZero α]
-
 variable (pf : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a)
 
 theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
@@ -462,7 +461,6 @@ theorem UniqueFactorizationMonoid.of_exists_unique_irreducible_factors [CancelCo
 namespace UniqueFactorizationMonoid
 
 variable [CancelCommMonoidWithZero α]
-
 variable [UniqueFactorizationMonoid α]
 
 open Classical in
@@ -476,10 +474,13 @@ theorem factors_prod {a : α} (ane0 : a ≠ 0) : Associated (factors a).prod a :
   exact (Classical.choose_spec (exists_prime_factors a ane0)).2
 #align unique_factorization_monoid.factors_prod UniqueFactorizationMonoid.factors_prod
 
+@[simp]
+theorem factors_zero : factors (0 : α) = 0 := by simp [factors]
+#align unique_factorization_monoid.factors_zero UniqueFactorizationMonoid.factors_zero
+
 theorem ne_zero_of_mem_factors {p a : α} (h : p ∈ factors a) : a ≠ 0 := by
-  intro ha
-  rw [factors, dif_pos ha] at h
-  exact Multiset.not_mem_zero _ h
+  rintro rfl
+  simp at h
 #align unique_factorization_monoid.ne_zero_of_mem_factors UniqueFactorizationMonoid.ne_zero_of_mem_factors
 
 theorem dvd_of_mem_factors {p a : α} (h : p ∈ factors a) : p ∣ a :=
@@ -495,10 +496,6 @@ theorem prime_of_factor {a : α} (x : α) (hx : x ∈ factors a) : Prime x := by
 theorem irreducible_of_factor {a : α} : ∀ x : α, x ∈ factors a → Irreducible x := fun x h =>
   (prime_of_factor x h).irreducible
 #align unique_factorization_monoid.irreducible_of_factor UniqueFactorizationMonoid.irreducible_of_factor
-
-@[simp]
-theorem factors_zero : factors (0 : α) = 0 := by simp [factors]
-#align unique_factorization_monoid.factors_zero UniqueFactorizationMonoid.factors_zero
 
 @[simp]
 theorem factors_one : factors (1 : α) = 0 := by
@@ -584,7 +581,6 @@ end UniqueFactorizationMonoid
 namespace UniqueFactorizationMonoid
 
 variable [CancelCommMonoidWithZero α] [NormalizationMonoid α]
-
 variable [UniqueFactorizationMonoid α]
 
 /-- Noncomputably determines the multiset of prime factors. -/
@@ -990,7 +986,6 @@ theorem pow_eq_pow_iff {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) {i j : ℕ} : 
 section multiplicity
 
 variable [Nontrivial R] [NormalizationMonoid R]
-
 variable [dec_dvd : DecidableRel (Dvd.dvd : R → R → Prop)]
 
 open multiplicity Multiset
@@ -1076,7 +1071,6 @@ end multiplicity
 section Multiplicative
 
 variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
-
 variable {β : Type*} [CancelCommMonoidWithZero β]
 
 open BigOperators
@@ -2037,7 +2031,6 @@ end UniqueFactorizationMonoid
 section Finsupp
 
 variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
-
 variable [NormalizationMonoid α] [DecidableEq α]
 
 open UniqueFactorizationMonoid

@@ -958,31 +958,35 @@ variable [DivInvMonoid G] {a b : G}
 #align zpow_zero zpow_zero
 #align zero_zsmul zero_zsmul
 
-@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
-theorem zpow_coe_nat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
+@[to_additive (attr := simp, norm_cast) natCast_zsmul]
+theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
     a ^ (↑(n + 1) : ℤ) = a ^ (n : ℤ) * a := DivInvMonoid.zpow_succ' _ _
-    _ = a ^ n * a := congrArg (· * a) (zpow_coe_nat a n)
+    _ = a ^ n * a := congrArg (· * a) (zpow_natCast a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
-#align zpow_coe_nat zpow_coe_nat
-#align zpow_of_nat zpow_coe_nat
-#align coe_nat_zsmul coe_nat_zsmul
-#align of_nat_zsmul coe_nat_zsmul
+#align zpow_coe_nat zpow_natCast
+#align zpow_of_nat zpow_natCast
+#align coe_nat_zsmul natCast_zsmul
+#align of_nat_zsmul natCast_zsmul
+
+-- 2024-03-20
+@[deprecated] alias zpow_coe_nat := zpow_natCast
+@[deprecated] alias coe_nat_zsmul := natCast_zsmul
 
 -- See note [no_index around OfNat.ofNat]
 @[to_additive ofNat_zsmul]
 lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (no_index (OfNat.ofNat n) : ℤ) = a ^ OfNat.ofNat n :=
-  zpow_coe_nat ..
+  zpow_natCast ..
 
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
-  rw [← zpow_coe_nat]
+  rw [← zpow_natCast]
   exact DivInvMonoid.zpow_neg' n a
 #align zpow_neg_succ_of_nat zpow_negSucc
 
 theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
     Int.negSucc n • a = -((n + 1) • a) := by
-  rw [← coe_nat_zsmul]
+  rw [← natCast_zsmul]
   exact SubNegMonoid.zsmul_neg' n a
 #align zsmul_neg_succ_of_nat negSucc_zsmul
 

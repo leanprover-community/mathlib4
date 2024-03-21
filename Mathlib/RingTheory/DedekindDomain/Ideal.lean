@@ -61,7 +61,6 @@ section Inverse
 namespace FractionalIdeal
 
 variable {R₁ : Type*} [CommRing R₁] [IsDomain R₁] [Algebra R₁ K] [IsFractionRing R₁ K]
-
 variable {I J : FractionalIdeal R₁⁰ K}
 
 noncomputable instance : Inv (FractionalIdeal R₁⁰ K) := ⟨fun I => 1 / I⟩
@@ -572,7 +571,6 @@ end Inverse
 section IsDedekindDomain
 
 variable {R A}
-
 variable [IsDedekindDomain A] [Algebra A K] [IsFractionRing A K]
 
 open FractionalIdeal
@@ -714,8 +712,7 @@ theorem Ideal.prime_generator_of_prime {P : Ideal A} (h : Prime P) [P.IsPrincipa
   prime_generator_of_isPrime _ h.ne_zero
 
 open UniqueFactorizationMonoid in
-nonrec theorem Ideal.mem_normalizedFactors_iff [DecidableEq (Ideal A)]
-    {p I : Ideal A} (hI : I ≠ ⊥) :
+nonrec theorem Ideal.mem_normalizedFactors_iff {p I : Ideal A} (hI : I ≠ ⊥) :
     p ∈ normalizedFactors I ↔ p.IsPrime ∧ I ≤ p := by
   rw [← Ideal.dvd_iff_le]
   by_cases hp : p = 0
@@ -1057,7 +1054,6 @@ section
 open Ideal
 
 variable {R A}
-
 variable [IsDedekindDomain A] {I : Ideal R} {J : Ideal A}
 
 /-- The map from ideals of `R` dividing `I` to the ideals of `A` dividing `J` induced by
@@ -1187,7 +1183,6 @@ theorem normalizedFactorsEquivOfQuotEquiv_symm (hI : I ≠ ⊥) (hJ : J ≠ ⊥)
 #align normalized_factors_equiv_of_quot_equiv_symm normalizedFactorsEquivOfQuotEquiv_symm
 
 variable [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)]
-
 variable [DecidableRel ((· ∣ ·) : Ideal A → Ideal A → Prop)]
 
 /-- The map `normalizedFactorsEquivOfQuotEquiv` preserves multiplicities. -/
@@ -1426,7 +1421,6 @@ section PID
 open multiplicity UniqueFactorizationMonoid Ideal
 
 variable {R}
-
 variable [IsDomain R] [IsPrincipalIdealRing R]
 
 theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :

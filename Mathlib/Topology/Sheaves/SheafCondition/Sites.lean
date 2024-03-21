@@ -155,7 +155,6 @@ section OpenEmbedding
 open TopCat.Presheaf Opposite
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
 theorem OpenEmbedding.compatiblePreserving (hf : OpenEmbedding f) :
@@ -228,9 +227,7 @@ namespace TopCat.Sheaf
 open TopCat Opposite
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X : TopCat.{w}} {ι : Type*} {B : ι → Opens X}
-
 variable (F : X.Presheaf C) (F' : Sheaf C X) (h : Opens.IsBasis (Set.range B))
 
 /-- The empty component of a sheaf is terminal. -/

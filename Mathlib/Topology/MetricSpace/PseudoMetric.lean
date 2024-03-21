@@ -46,12 +46,14 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {X ι : Type*}
 
+theorem UniformSpace.ofDist_aux (ε : ℝ) (hε : 0 < ε) : ∃ δ > (0 : ℝ), ∀ x < δ, ∀ y < δ, x + y < ε :=
+  ⟨ε / 2, half_pos hε, fun _x hx _y hy => add_halves ε ▸ add_lt_add hx hy⟩
+
 /-- Construct a uniform structure from a distance function and metric space axioms -/
 def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist x x = 0)
     (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z) : UniformSpace α :=
-  .ofFun dist dist_self dist_comm dist_triangle fun ε ε0 =>
-    ⟨ε / 2, half_pos ε0, fun _x hx _y hy => add_halves ε ▸ add_lt_add hx hy⟩
+  .ofFun dist dist_self dist_comm dist_triangle ofDist_aux
 #align uniform_space_of_dist UniformSpace.ofDist
 
 -- Porting note: dropped the `dist_self` argument
@@ -162,10 +164,10 @@ def PseudoMetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist :
     dist_triangle := dist_triangle
     edist_dist := fun x y => by exact ENNReal.coe_nnreal_eq _
     toUniformSpace :=
-      { toCore := (UniformSpace.ofDist dist dist_self dist_comm dist_triangle).toCore
-        isOpen_uniformity := fun s => (H s).trans <| forall₂_congr fun x _ =>
-          ((UniformSpace.hasBasis_ofFun (exists_gt (0 : ℝ)) dist _ _ _ _).comap
-            (Prod.mk x)).mem_iff.symm.trans mem_comap_prod_mk }
+      (UniformSpace.ofDist dist dist_self dist_comm dist_triangle).replaceTopology <|
+        TopologicalSpace.ext_iff.2 fun s ↦ (H s).trans <| forall₂_congr fun x _ ↦
+          ((UniformSpace.hasBasis_ofFun (exists_gt (0 : ℝ)) dist dist_self dist_comm dist_triangle
+            UniformSpace.ofDist_aux).comap (Prod.mk x)).mem_iff.symm
     uniformity_dist := rfl
     toBornology := Bornology.ofDist dist dist_comm dist_triangle
     cobounded_sets := rfl }
@@ -1152,7 +1154,7 @@ open Metric
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 
--- Porting note: new
+-- Porting note (#10756): new theorem
 theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
     ⨅ ε > (0 : ℝ), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } =
       ⨅ ε > (0 : ℝ≥0∞), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } := by

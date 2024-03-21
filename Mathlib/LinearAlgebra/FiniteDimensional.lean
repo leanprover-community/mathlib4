@@ -287,7 +287,6 @@ open Finset
 section
 
 variable {L : Type*} [LinearOrderedField L]
-
 variable {W : Type v} [AddCommGroup W] [Module L W]
 
 /-- A slight strengthening of `exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card`
@@ -517,7 +516,6 @@ protected theorem finiteDimensional (f : V ≃ₗ[K] V₂) [FiniteDimensional K 
 #align linear_equiv.finite_dimensional LinearEquiv.finiteDimensional
 
 variable {R M M₂ : Type*} [Ring R] [AddCommGroup M] [AddCommGroup M₂]
-
 variable [Module R M] [Module R M₂]
 
 end LinearEquiv
@@ -726,7 +724,6 @@ namespace LinearEquiv
 open FiniteDimensional
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
-
 variable [FiniteDimensional K V]
 
 /-- The linear equivalence corresponding to an injective endomorphism. -/

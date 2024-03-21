@@ -117,7 +117,6 @@ theorem WalkingParallelFamily.hom_id (X : WalkingParallelFamily J) :
   CategoryTheory.Limits.WalkingParallelFamily.hom_id
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : C} (f : J → (X ⟶ Y))
 
 /-- `parallelFamily f` is the diagram in `C` consisting of the given family of morphisms, each with

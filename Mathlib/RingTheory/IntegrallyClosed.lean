@@ -43,7 +43,6 @@ class IsIntegrallyClosed (R : Type*) [CommRing R] : Prop where
 section Iff
 
 variable {R : Type*} [CommRing R]
-
 variable (K : Type*) [CommRing K] [Algebra R K] [IsFractionRing R K]
 
 /-- `R` is integrally closed iff all integral elements of its fraction field `K`
@@ -80,7 +79,6 @@ end Iff
 namespace IsIntegrallyClosed
 
 variable {R S : Type*} [CommRing R] [CommRing S] [id : IsDomain R] [iic : IsIntegrallyClosed R]
-
 variable {K : Type*} [CommRing K] [Algebra R K] [ifr : IsFractionRing R K]
 
 instance : IsIntegralClosure R R K :=
@@ -138,11 +136,8 @@ namespace integralClosure
 open IsIntegrallyClosed
 
 variable {R : Type*} [CommRing R]
-
 variable (K : Type*) [Field K] [Algebra R K]
-
 variable [IsFractionRing R K]
-
 variable {L : Type*} [Field L] [Algebra K L] [Algebra R L] [IsScalarTower R K L]
 
 -- Can't be an instance because you need to supply `K`.

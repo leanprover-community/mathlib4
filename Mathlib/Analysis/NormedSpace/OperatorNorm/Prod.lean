@@ -18,7 +18,6 @@ open Set Real Metric ContinuousLinearMap
 section SemiNormed
 
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
-
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
 namespace ContinuousLinearMap
@@ -81,7 +80,6 @@ set_option linter.uppercaseLean3 false
 section Prod
 
 variable (M₁ M₂ M₃ M₄ : Type*) (𝕜)
-
 variable
   [SeminormedAddCommGroup M₁] [NormedSpace 𝕜 M₁]
   [SeminormedAddCommGroup M₂] [NormedSpace 𝕜 M₂]
