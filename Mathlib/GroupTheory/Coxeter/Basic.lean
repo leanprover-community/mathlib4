@@ -765,7 +765,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : 
   rw [prod_alternatingWord_eq_pow, prod_alternatingWord_eq_pow]
   simp_rw [← Int.even_coe_nat]
   -- Rewrite everything in terms of an integer m' which is equal to m.
-  rw [← zpow_coe_nat, ← zpow_coe_nat, Int.ofNat_ediv, Int.ofNat_ediv, Int.ofNat_sub hm]
+  rw [← zpow_natCast, ← zpow_natCast, Int.ofNat_ediv, Int.ofNat_ediv, Int.ofNat_sub hm]
   set m' := (m : ℤ)
   -- The resulting equation holds for all integers m'.
   generalize m' = m'
@@ -782,7 +782,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : 
     rw [if_pos this]
     rw [(by ring : -(k * 2) + ↑(M i i') * 2 = (-k + ↑(M i i')) * 2)]
     rw [Int.mul_ediv_cancel _ (by norm_num), Int.mul_ediv_cancel _ (by norm_num)]
-    rw [zpow_add, zpow_coe_nat]
+    rw [zpow_add, zpow_natCast]
     rw [simple_mul_pow']
     rw [zpow_neg, ← inv_zpow]
     simp
@@ -798,7 +798,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord (i i' : B) (m : ℕ) (hm : 
     rw [(by ring : -1 - k * 2 + ↑(M i i') * 2 = -1 + (-k + ↑(M i i')) * 2)]
     rw [Int.add_mul_ediv_right _ _ (by norm_num), Int.add_mul_ediv_right _ _ (by norm_num)]
     norm_num
-    rw [zpow_add, zpow_add, zpow_coe_nat]
+    rw [zpow_add, zpow_add, zpow_natCast]
     rw [simple_mul_pow']
     rw [zpow_neg, ← inv_zpow, zpow_neg, ← inv_zpow]
     simp [← mul_assoc]
