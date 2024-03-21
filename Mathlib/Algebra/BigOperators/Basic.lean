@@ -2355,6 +2355,10 @@ theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid �
 #align fintype.prod_subtype_mul_prod_subtype Fintype.prod_subtype_mul_prod_subtype
 #align fintype.sum_subtype_add_sum_subtype Fintype.sum_subtype_add_sum_subtype
 
+@[to_additive] lemma prod_subset {s : Finset ι} {f : ι → α} (h : ∀ i, f i ≠ 1 → i ∈ s) :
+    ∏ i in s, f i = ∏ i, f i :=
+  Finset.prod_subset s.subset_univ $ by simpa [not_imp_comm (a := _ ∈ s)]
+
 @[to_additive]
 lemma prod_ite_eq_ite_exists (p : ι → Prop) [DecidablePred p] (h : ∀ i j, p i → p j → i = j)
     (a : α) : ∏ i, ite (p i) a 1 = ite (∃ i, p i) a 1 := by
