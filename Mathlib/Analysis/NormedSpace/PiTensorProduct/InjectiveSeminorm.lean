@@ -3,8 +3,7 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear.Basic
-import Mathlib.LinearAlgebra.PiTensorProduct
+import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
 import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
@@ -84,38 +83,6 @@ namespace PiTensorProduct
 
 section seminorm
 
-def projectiveSeminormAux : FreeAddMonoid (𝕜 × Π i, E i) → ℝ :=
-  List.sum ∘ (List.map (fun p ↦ ‖p.1‖ * ∏ i, ‖p.2 i‖))
-
-noncomputable def projectiveSeminorm : (⨂[𝕜] i, E i) → ℝ := by
-  intro x
-  exact iInf (fun (p : {p : FreeAddMonoid (𝕜 × Π i, E i) |
-    Quotient.mk (addConGen (PiTensorProduct.Eqv 𝕜 E)).toSetoid p = x}) ↦ projectiveSeminormAux p.1)
-
-lemma pSA_map_zero : projectiveSeminorm (𝕜 := 𝕜) (E := E) 0 = 0 := by
-  sorry
-
-lemma toDualMultilinearMap_bound (x : ⨂[𝕜] i, E i) :
-    ∃ (C : ℝ), 0 ≤ C ∧ ∀ (G : Type*) [SeminormedAddCommGroup G]
-    [NormedSpace 𝕜 G] (f : ContinuousMultilinearMap 𝕜 E G),
-    ‖lift f.toMultilinearMap x‖ ≤ C * ‖f‖ := by
-  induction' x using PiTensorProduct.induction_on with r m x y hx hy
-  · existsi ‖r‖ * ∏ i : ι, ‖m i‖
-    constructor
-    · exact mul_nonneg (norm_nonneg r) (Finset.prod_nonneg (fun i _ ↦ norm_nonneg (m i)))
-    · intro G _ _ f
-      simp only [map_smul, lift.tprod, ContinuousMultilinearMap.coe_coe]
-      rw [mul_assoc, mul_comm _ ‖f‖, norm_smul]
-      exact le_trans (mul_le_mul_of_nonneg_left (ContinuousMultilinearMap.le_opNorm f m)
-        (norm_nonneg r)) (le_refl _)
-  · obtain ⟨Cx, hCx⟩ := hx; obtain ⟨Cy, hCy⟩ := hy
-    existsi Cx + Cy
-    constructor
-    · exact add_nonneg hCx.1 hCy.1
-    · intro G _ _ f
-      rw [map_add, add_mul]
-      refine le_trans (norm_add_le _ _) (add_le_add (hCx.2 _ f) (hCy.2 _ f))
-
 /-- The linear map from `⨂[𝕜] i, Eᵢ` to `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F` sending
 `x` in `⨂[𝕜] i, Eᵢ` to the map `f ↦ f.lift x`.
 -/
@@ -125,13 +92,13 @@ noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[�
   toFun x := LinearMap.mkContinuousOfExistsBound
     ((LinearMap.flip (lift (R := 𝕜) (s := E) (E := F)).toLinearMap x) ∘ₗ
     ContinuousMultilinearMap.toMultilinearMapLinear) (by
-      obtain ⟨C, hC⟩ := toDualMultilinearMap_bound x
-      existsi C
+--      obtain ⟨C, hC⟩ := toDualMultilinearMap_bound x
+      existsi projectiveSeminorm x
       intro f
       simp only [LinearMap.coe_comp, Function.comp_apply,
         ContinuousMultilinearMap.toMultilinearMapLinear_apply, LinearMap.flip_apply,
         LinearEquiv.coe_coe]
-      exact hC.2 F f)
+      exact projectiveSeminorm_bound _ _ _)
   map_add' x y := by
     ext _
     simp only [map_add, LinearMap.mkContinuousOfExistsBound_apply, LinearMap.coe_comp,
@@ -158,24 +125,20 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max (max uι u𝕜) u
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
     p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap (F := G) (𝕜 := 𝕜) (E := E))} := by
-  rw [Seminorm.bddAbove_iff]
-  set bound : (⨂[𝕜] i, E i) → ℝ :=
-    fun x ↦ Classical.choose (toDualMultilinearMap_bound x)
-  existsi bound
+  existsi projectiveSeminorm
   rw [mem_upperBounds]
-  intro p hp
-  simp only [Set.mem_image] at hp
-  let ⟨q, hq⟩ := hp
-  simp only [Set.mem_setOf_eq] at hq
+  simp only [Set.mem_setOf_eq, forall_exists_index]
+  intro p G _ _ hp
+  rw [hp]
   intro x
-  rw [← hq.2]
-  obtain ⟨⟨G, G₁, ⟨G₂, h⟩⟩⟩ := hq
-  rw [h]
-  simp only [Seminorm.comp_apply, ge_iff_le]
-  have hbound := Classical.choose_spec (toDualMultilinearMap_bound x)
-  exact ContinuousLinearMap.opNorm_le_bound _ hbound.1 (fun f ↦ by
-    simp only [toDualContinuousMultilinearMap_apply_toFun]
-    exact hbound.2 G f)
+  simp only [toDualContinuousMultilinearMap, Seminorm.comp_apply, LinearMap.coe_mk, AddHom.coe_mk,
+    coe_normSeminorm]
+  rw [ContinuousLinearMap.opNorm_le_iff (apply_nonneg _ _)]
+  intro f
+  simp only [LinearMap.mkContinuousOfExistsBound_apply, LinearMap.coe_comp, Function.comp_apply,
+    ContinuousMultilinearMap.toMultilinearMapLinear_apply, LinearMap.flip_apply,
+    LinearEquiv.coe_coe]
+  exact projectiveSeminorm_bound _ _ _
 
 theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max (max uι u𝕜) uE))
@@ -223,6 +186,22 @@ theorem injectiveSeminorm_bound (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂
   simp only [Seminorm.comp_apply, coe_normSeminorm, ← toDualContinuousMultilinearMap_apply_apply]
   rw [mul_comm]
   exact ContinuousLinearMap.le_opNorm _ _
+
+theorem injectiveSeminorm_le_projectiveSeminorm :
+    injectiveSeminorm (𝕜 := 𝕜) (E := E) ≤ projectiveSeminorm := by
+  rw [injectiveSeminorm]
+  refine csSup_le ?_ ?_
+  · existsi 0
+    simp only [Set.mem_setOf_eq]
+    existsi PUnit, inferInstance, inferInstance
+    ext x
+    simp only [Seminorm.zero_apply, Seminorm.comp_apply, coe_normSeminorm]
+    have heq : toDualContinuousMultilinearMap (F := PUnit) x = 0 := by ext _
+    rw [heq, norm_zero]
+  · intro p hp
+    simp only [Set.mem_setOf_eq] at hp
+    obtain ⟨G, _, _, h⟩ := hp
+    sorry
 
 theorem injectiveSeminorm_tprod_le (m : Π (i : ι), E i) :
     injectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ := by
