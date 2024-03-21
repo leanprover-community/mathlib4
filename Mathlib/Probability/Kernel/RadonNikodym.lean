@@ -9,15 +9,15 @@ import Mathlib.Probability.Kernel.WithDensity
 /-!
 # Radon-Nikodym derivative and Lebesgue decomposition for kernels
 
-Let `γ` be a countably generated measurable space and `κ ν : kernel α γ` be finite kernels.
-Then there exists a function `kernel.rnDeriv κ ν : α → γ → ℝ≥0∞` jointly measurable on `α × γ`
-and a kernel `kernel.singularPart κ ν : kernel α γ` such that
-* `κ = kernel.withDensity ν (kernel.rnDeriv κ ν) + kernel.singularPart κ ν`,
-* for all `a : α`, `kernel.singularPart κ ν a ⟂ₘ ν a`,
-* for all `a : α`, `kernel.singularPart κ ν a = 0 ↔ κ a ≪ ν a`,
-* for all `a : α`, `kernel.withDensity ν (kernel.rnDeriv κ ν) a = 0 ↔ κ a ⟂ₘ ν a`.
+Let `γ` be a countably generated measurable space and `κ η : kernel α γ` be finite kernels.
+Then there exists a function `kernel.rnDeriv κ η : α → γ → ℝ≥0∞` jointly measurable on `α × γ`
+and a kernel `kernel.singularPart κ η : kernel α γ` such that
+* `κ = kernel.withDensity η (kernel.rnDeriv κ η) + kernel.singularPart κ η`,
+* for all `a : α`, `kernel.singularPart κ η a ⟂ₘ η a`,
+* for all `a : α`, `kernel.singularPart κ η a = 0 ↔ κ a ≪ η a`,
+* for all `a : α`, `kernel.withDensity η (kernel.rnDeriv κ η) a = 0 ↔ κ a ⟂ₘ η a`.
 
-Furthermore, the sets `{a | κ a ≪ ν a}` and `{a | κ a ⟂ₘ ν a}` are measurable.
+Furthermore, the sets `{a | κ a ≪ η a}` and `{a | κ a ⟂ₘ η a}` are measurable.
 
 ## Main definitions
 
@@ -27,12 +27,12 @@ Furthermore, the sets `{a | κ a ≪ ν a}` and `{a | κ a ⟂ₘ ν a}` are mea
 ## Main statements
 
 * `ProbabilityTheory.kernel.mutuallySingular_singularPart`: for all `a : α`,
-  `kernel.singularPart κ ν a ⟂ₘ ν a`
+  `kernel.singularPart κ η a ⟂ₘ η a`
 * `ProbabilityTheory.kernel.rnDeriv_add_singularPart`:
-  `kernel.withDensity ν (kernel.rnDeriv κ ν) + kernel.singularPart κ ν = κ`
-* `ProbabilityTheory.kernel.measurableSet_absolutelyContinuous` : the set `{a | κ a ≪ ν a}`
+  `kernel.withDensity η (kernel.rnDeriv κ η) + kernel.singularPart κ η = κ`
+* `ProbabilityTheory.kernel.measurableSet_absolutelyContinuous` : the set `{a | κ a ≪ η a}`
   is Measurable
-* `ProbabilityTheory.kernel.measurableSet_mutuallySingular` : the set `{a | κ a ⟂ₘ ν a}`
+* `ProbabilityTheory.kernel.measurableSet_mutuallySingular` : the set `{a | κ a ⟂ₘ η a}`
   is Measurable
 
 ## References
@@ -48,64 +48,64 @@ open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 namespace ProbabilityTheory.kernel
 
 variable {α γ : Type*} {mα : MeasurableSpace α} {mγ : MeasurableSpace γ}
-  [MeasurableSpace.CountablyGenerated γ] {κ ν : kernel α γ}
+  [MeasurableSpace.CountablyGenerated γ] {κ η : kernel α γ}
 
-lemma fst_map_prod_le_of_le (hκν : κ ≤ ν) :
+lemma fst_map_prod_le_of_le (hκη : κ ≤ η) :
     kernel.fst (kernel.map κ (fun a ↦ (a, ()))
-      (@measurable_prod_mk_right γ Unit _ inferInstance _)) ≤ ν := by
+      (@measurable_prod_mk_right γ Unit _ inferInstance _)) ≤ η := by
   rwa [kernel.fst_map_prod _ measurable_id' measurable_const, kernel.map_id']
 
 /-- Auxiliary function used to define `ProbabilityTheory.kernel.rnDeriv` and
 `ProbabilityTheory.kernel.singularPart`. -/
 noncomputable
-def rnDerivAux (κ ν : kernel α γ) (a : α) (x : γ) : ℝ :=
+def rnDerivAux (κ η : kernel α γ) (a : α) (x : γ) : ℝ :=
   density (map κ (fun a ↦ (a, ()))
-    (@measurable_prod_mk_right γ Unit _ inferInstance _)) ν a x univ
+    (@measurable_prod_mk_right γ Unit _ inferInstance _)) η a x univ
 
-lemma rnDerivAux_nonneg (hκν : κ ≤ ν) {a : α} {x : γ} : 0 ≤ rnDerivAux κ ν a x :=
-  density_nonneg (fst_map_prod_le_of_le hκν) _ _ _
+lemma rnDerivAux_nonneg (hκη : κ ≤ η) {a : α} {x : γ} : 0 ≤ rnDerivAux κ η a x :=
+  density_nonneg (fst_map_prod_le_of_le hκη) _ _ _
 
-lemma rnDerivAux_le_one (hκν : κ ≤ ν) {a : α} {x : γ} : rnDerivAux κ ν a x ≤ 1 :=
-  density_le_one (fst_map_prod_le_of_le hκν) _ _ _
+lemma rnDerivAux_le_one (hκη : κ ≤ η) {a : α} {x : γ} : rnDerivAux κ η a x ≤ 1 :=
+  density_le_one (fst_map_prod_le_of_le hκη) _ _ _
 
-lemma measurable_rnDerivAux (κ ν : kernel α γ) :
-    Measurable (fun p : α × γ ↦ kernel.rnDerivAux κ ν p.1 p.2) :=
-  measurable_density _ ν MeasurableSet.univ
+lemma measurable_rnDerivAux (κ η : kernel α γ) :
+    Measurable (fun p : α × γ ↦ kernel.rnDerivAux κ η p.1 p.2) :=
+  measurable_density _ η MeasurableSet.univ
 
-lemma measurable_rnDerivAux_right (κ ν : kernel α γ) (a : α) :
-    Measurable (fun x : γ ↦ rnDerivAux κ ν a x) := by
-  change Measurable ((fun p : α × γ ↦ rnDerivAux κ ν p.1 p.2) ∘ (fun x ↦ (a, x)))
+lemma measurable_rnDerivAux_right (κ η : kernel α γ) (a : α) :
+    Measurable (fun x : γ ↦ rnDerivAux κ η a x) := by
+  change Measurable ((fun p : α × γ ↦ rnDerivAux κ η p.1 p.2) ∘ (fun x ↦ (a, x)))
   exact (measurable_rnDerivAux _ _).comp measurable_prod_mk_left
 
-lemma set_lintegral_rnDerivAux (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν]
+lemma set_lintegral_rnDerivAux (κ η : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η]
     (a : α) {s : Set γ} (hs : MeasurableSet s) :
-    ∫⁻ x in s, ENNReal.ofReal (rnDerivAux κ (κ + ν) a x) ∂(κ + ν) a = κ a s := by
-  have h_le : κ ≤ κ + ν := le_add_of_nonneg_right bot_le
+    ∫⁻ x in s, ENNReal.ofReal (rnDerivAux κ (κ + η) a x) ∂(κ + η) a = κ a s := by
+  have h_le : κ ≤ κ + η := le_add_of_nonneg_right bot_le
   simp_rw [rnDerivAux]
   rw [set_lintegral_density (fst_map_prod_le_of_le h_le) _ MeasurableSet.univ hs,
     map_apply' _ _ _ (hs.prod MeasurableSet.univ)]
   congr with x
   simp
 
-lemma withDensity_rnDerivAux (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν] :
-    withDensity (κ + ν) (fun a x ↦ Real.toNNReal (rnDerivAux κ (κ + ν) a x)) = κ := by
+lemma withDensity_rnDerivAux (κ η : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
+    withDensity (κ + η) (fun a x ↦ Real.toNNReal (rnDerivAux κ (κ + η) a x)) = κ := by
   ext a s hs
   rw [kernel.withDensity_apply']
   swap; exact (measurable_rnDerivAux _ _).ennreal_ofReal
   have : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
   simp_rw [this]
-  exact set_lintegral_rnDerivAux κ ν a hs
+  exact set_lintegral_rnDerivAux κ η a hs
 
-lemma withDensity_one_sub_rnDerivAux (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν] :
-    withDensity (κ + ν) (fun a x ↦ Real.toNNReal (1 - rnDerivAux κ (κ + ν) a x)) = ν := by
-  have h_le : κ ≤ κ + ν := le_add_of_nonneg_right bot_le
-  suffices withDensity (κ + ν) (fun a x ↦ Real.toNNReal (1 - rnDerivAux κ (κ + ν) a x))
-      + withDensity (κ + ν) (fun a x ↦ Real.toNNReal (rnDerivAux κ (κ + ν) a x))
-      = κ + ν by
+lemma withDensity_one_sub_rnDerivAux (κ η : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
+    withDensity (κ + η) (fun a x ↦ Real.toNNReal (1 - rnDerivAux κ (κ + η) a x)) = η := by
+  have h_le : κ ≤ κ + η := le_add_of_nonneg_right bot_le
+  suffices withDensity (κ + η) (fun a x ↦ Real.toNNReal (1 - rnDerivAux κ (κ + η) a x))
+      + withDensity (κ + η) (fun a x ↦ Real.toNNReal (rnDerivAux κ (κ + η) a x))
+      = κ + η by
     ext a s
-    have h : (withDensity (κ + ν) (fun a x ↦ Real.toNNReal (1 - rnDerivAux κ (κ + ν) a x))
-          + withDensity (κ + ν) (fun a x ↦ Real.toNNReal (rnDerivAux κ (κ + ν) a x))) a s
-        = κ a s + ν a s := by
+    have h : (withDensity (κ + η) (fun a x ↦ Real.toNNReal (1 - rnDerivAux κ (κ + η) a x))
+          + withDensity (κ + η) (fun a x ↦ Real.toNNReal (rnDerivAux κ (κ + η) a x))) a s
+        = κ a s + η a s := by
       rw [this]
       simp
     simp only [coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure, OuterMeasure.coe_add]
@@ -122,32 +122,32 @@ lemma withDensity_one_sub_rnDerivAux (κ ν : kernel α γ) [IsFiniteKernel κ] 
     exact density_le_one (fst_map_prod_le_of_le h_le) _ _ _
 
 /-- A set of points in `α × γ` related to the absolute continuity / mutual singularity of
-`κ` and `ν`. -/
-def mutuallySingularSet (κ ν : kernel α γ) : Set (α × γ) := {p | rnDerivAux κ (κ + ν) p.1 p.2 = 1}
+`κ` and `η`. -/
+def mutuallySingularSet (κ η : kernel α γ) : Set (α × γ) := {p | rnDerivAux κ (κ + η) p.1 p.2 = 1}
 
 /-- A set of points in `α × γ` related to the absolute continuity / mutual singularity of
-`κ` and `ν`. That is,
-* `kernel.withDensity ν (kernel.rnDeriv κ ν) a (kernel.mutuallySingularSetSlice κ ν a) = 0`,
-* `kernel.singularPart κ ν a (kernel.mutuallySingularSetSlice κ ν a)ᶜ = 0`.
+`κ` and `η`. That is,
+* `kernel.withDensity η (kernel.rnDeriv κ η) a (kernel.mutuallySingularSetSlice κ η a) = 0`,
+* `kernel.singularPart κ η a (kernel.mutuallySingularSetSlice κ η a)ᶜ = 0`.
  -/
-def mutuallySingularSetSlice (κ ν : kernel α γ) (a : α) : Set γ :=
-  {x | rnDerivAux κ (κ + ν) a x = 1}
+def mutuallySingularSetSlice (κ η : kernel α γ) (a : α) : Set γ :=
+  {x | rnDerivAux κ (κ + η) a x = 1}
 
-lemma measurableSet_mutuallySingularSet (κ ν : kernel α γ) :
-    MeasurableSet (mutuallySingularSet κ ν) :=
-  measurable_rnDerivAux κ (κ + ν) (measurableSet_singleton 1)
+lemma measurableSet_mutuallySingularSet (κ η : kernel α γ) :
+    MeasurableSet (mutuallySingularSet κ η) :=
+  measurable_rnDerivAux κ (κ + η) (measurableSet_singleton 1)
 
-lemma measurableSet_mutuallySingularSetSlice (κ ν : kernel α γ) (a : α) :
-    MeasurableSet (mutuallySingularSetSlice κ ν a) :=
-  measurable_prod_mk_left (measurableSet_mutuallySingularSet κ ν)
+lemma measurableSet_mutuallySingularSetSlice (κ η : kernel α γ) (a : α) :
+    MeasurableSet (mutuallySingularSetSlice κ η a) :=
+  measurable_prod_mk_left (measurableSet_mutuallySingularSet κ η)
 
-lemma measure_mutuallySingularSetSlice (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν]
+lemma measure_mutuallySingularSetSlice (κ η : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η]
     (a : α) :
-    ν a (mutuallySingularSetSlice κ ν a) = 0 := by
+    η a (mutuallySingularSetSlice κ η a) = 0 := by
   have h_coe : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
-  suffices withDensity (κ + ν) (fun a x ↦ Real.toNNReal
-      (1 - rnDerivAux κ (κ + ν) a x)) a {x | rnDerivAux κ (κ + ν) a x = 1} = 0 by
-    rwa [withDensity_one_sub_rnDerivAux κ ν] at this
+  suffices withDensity (κ + η) (fun a x ↦ Real.toNNReal
+      (1 - rnDerivAux κ (κ + η) a x)) a {x | rnDerivAux κ (κ + η) a x = 1} = 0 by
+    rwa [withDensity_one_sub_rnDerivAux κ η] at this
   simp_rw [h_coe]
   rw [kernel.withDensity_apply', lintegral_eq_zero_iff, EventuallyEq, ae_restrict_iff]
   rotate_left
@@ -161,72 +161,72 @@ lemma measure_mutuallySingularSetSlice (κ ν : kernel α γ) [IsFiniteKernel κ
   simp only [mem_setOf_eq] at hx
   simp [hx]
 
-/-- Radon-Nikodym derivative of the kernel `κ` with respect to the kernel `ν`. -/
+/-- Radon-Nikodym derivative of the kernel `κ` with respect to the kernel `η`. -/
 noncomputable
-def rnDeriv (κ ν : kernel α γ) (a : α) (x : γ) : ℝ≥0∞ :=
-  ENNReal.ofReal (rnDerivAux κ (κ + ν) a x)
-    / ENNReal.ofReal (1 - rnDerivAux κ (κ + ν) a x)
+def rnDeriv (κ η : kernel α γ) (a : α) (x : γ) : ℝ≥0∞ :=
+  ENNReal.ofReal (rnDerivAux κ (κ + η) a x)
+    / ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x)
 
-lemma rnDeriv_def (κ ν : kernel α γ) :
-    rnDeriv κ ν = fun a x ↦ ENNReal.ofReal (rnDerivAux κ (κ + ν) a x)
-      / ENNReal.ofReal (1 - rnDerivAux κ (κ + ν) a x) := rfl
+lemma rnDeriv_def (κ η : kernel α γ) :
+    rnDeriv κ η = fun a x ↦ ENNReal.ofReal (rnDerivAux κ (κ + η) a x)
+      / ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x) := rfl
 
-lemma measurable_rnDeriv (κ ν : kernel α γ) :
-    Measurable (fun p : α × γ ↦ rnDeriv κ ν p.1 p.2) :=
+lemma measurable_rnDeriv (κ η : kernel α γ) :
+    Measurable (fun p : α × γ ↦ rnDeriv κ η p.1 p.2) :=
   (measurable_rnDerivAux κ _).ennreal_ofReal.div
     (measurable_const.sub (measurable_rnDerivAux κ _)).ennreal_ofReal
 
-lemma measurable_rnDeriv_right (κ ν : kernel α γ) (a : α) :
-    Measurable (fun x : γ ↦ rnDeriv κ ν a x) := by
-  change Measurable ((fun p : α × γ ↦ rnDeriv κ ν p.1 p.2) ∘ (fun x ↦ (a, x)))
+lemma measurable_rnDeriv_right (κ η : kernel α γ) (a : α) :
+    Measurable (fun x : γ ↦ rnDeriv κ η a x) := by
+  change Measurable ((fun p : α × γ ↦ rnDeriv κ η p.1 p.2) ∘ (fun x ↦ (a, x)))
   exact (measurable_rnDeriv _ _).comp measurable_prod_mk_left
 
-lemma rnDeriv_eq_top_iff (κ ν : kernel α γ) (a : α) (x : γ) :
-    rnDeriv κ ν a x = ∞ ↔ (a, x) ∈ mutuallySingularSet κ ν := by
+lemma rnDeriv_eq_top_iff (κ η : kernel α γ) (a : α) (x : γ) :
+    rnDeriv κ η a x = ∞ ↔ (a, x) ∈ mutuallySingularSet κ η := by
   simp only [rnDeriv, ENNReal.div_eq_top, ne_eq, ENNReal.ofReal_eq_zero, not_le,
     tsub_le_iff_right, zero_add, ENNReal.ofReal_ne_top, not_false_eq_true, and_true, or_false,
     mutuallySingularSet, mem_setOf_eq]
   exact ⟨fun h ↦ le_antisymm (rnDerivAux_le_one (le_add_of_nonneg_right bot_le)) h.2,
     fun h ↦ by simp [h]⟩
 
-lemma rnDeriv_eq_top_iff' (κ ν : kernel α γ) (a : α) (x : γ) :
-    rnDeriv κ ν a x = ∞ ↔ x ∈ mutuallySingularSetSlice κ ν a := by
+lemma rnDeriv_eq_top_iff' (κ η : kernel α γ) (a : α) (x : γ) :
+    rnDeriv κ η a x = ∞ ↔ x ∈ mutuallySingularSetSlice κ η a := by
   rw [rnDeriv_eq_top_iff]
   rfl
 
-/-- Singular part of the kernel `κ` with respect to the kernel `ν`. -/
+/-- Singular part of the kernel `κ` with respect to the kernel `η`. -/
 noncomputable
-def singularPart (κ ν : kernel α γ) [IsSFiniteKernel κ] [IsSFiniteKernel ν] :
+def singularPart (κ η : kernel α γ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     kernel α γ :=
-  withDensity (κ + ν) (fun a x ↦ Real.toNNReal (rnDerivAux κ (κ + ν) a x)
-    - Real.toNNReal (1 - rnDerivAux κ (κ + ν) a x) * rnDeriv κ ν a x)
+  withDensity (κ + η) (fun a x ↦ Real.toNNReal (rnDerivAux κ (κ + η) a x)
+    - Real.toNNReal (1 - rnDerivAux κ (κ + η) a x) * rnDeriv κ η a x)
 
-lemma measurable_singularPart_fun (κ ν : kernel α γ) :
-    Measurable (fun p : α × γ ↦ Real.toNNReal (rnDerivAux κ (κ + ν) p.1 p.2)
-      - Real.toNNReal (1 - rnDerivAux κ (κ + ν) p.1 p.2) * rnDeriv κ ν p.1 p.2) :=
+lemma measurable_singularPart_fun (κ η : kernel α γ) :
+    Measurable (fun p : α × γ ↦ Real.toNNReal (rnDerivAux κ (κ + η) p.1 p.2)
+      - Real.toNNReal (1 - rnDerivAux κ (κ + η) p.1 p.2) * rnDeriv κ η p.1 p.2) :=
   (measurable_rnDerivAux _ _).ennreal_ofReal.sub
     ((measurable_const.sub (measurable_rnDerivAux _ _)).ennreal_ofReal.mul (measurable_rnDeriv _ _))
 
-lemma measurable_singularPart_fun_right (κ ν : kernel α γ) (a : α) :
-    Measurable (fun x : γ ↦ Real.toNNReal (rnDerivAux κ (κ + ν) a x)
-      - Real.toNNReal (1 - rnDerivAux κ (κ + ν) a x) * rnDeriv κ ν a x) := by
+lemma measurable_singularPart_fun_right (κ η : kernel α γ) (a : α) :
+    Measurable (fun x : γ ↦ Real.toNNReal (rnDerivAux κ (κ + η) a x)
+      - Real.toNNReal (1 - rnDerivAux κ (κ + η) a x) * rnDeriv κ η a x) := by
   change Measurable ((Function.uncurry fun a b ↦
-    ENNReal.ofReal (rnDerivAux κ (κ + ν) a b)
-    - ENNReal.ofReal (1 - rnDerivAux κ (κ + ν) a b) * rnDeriv κ ν a b) ∘ (fun b ↦ (a, b)))
-  exact (measurable_singularPart_fun κ ν).comp measurable_prod_mk_left
+    ENNReal.ofReal (rnDerivAux κ (κ + η) a b)
+    - ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a b) * rnDeriv κ η a b) ∘ (fun b ↦ (a, b)))
+  exact (measurable_singularPart_fun κ η).comp measurable_prod_mk_left
 
-lemma singularPart_compl_mutuallySingularSetSlice (κ ν : kernel α γ) [IsSFiniteKernel κ]
-    [IsSFiniteKernel ν] (a : α) :
-    singularPart κ ν a (mutuallySingularSetSlice κ ν a)ᶜ = 0 := by
+lemma singularPart_compl_mutuallySingularSetSlice (κ η : kernel α γ) [IsSFiniteKernel κ]
+    [IsSFiniteKernel η] (a : α) :
+    singularPart κ η a (mutuallySingularSetSlice κ η a)ᶜ = 0 := by
   have h_coe : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
   rw [singularPart, kernel.withDensity_apply', lintegral_eq_zero_iff, EventuallyEq,
     ae_restrict_iff]
   all_goals simp_rw [h_coe]
   rotate_left
-  · exact measurableSet_preimage (measurable_singularPart_fun_right κ ν a)
+  · exact measurableSet_preimage (measurable_singularPart_fun_right κ η a)
       (measurableSet_singleton _)
-  · exact measurable_singularPart_fun_right κ ν a
-  · exact measurable_singularPart_fun κ ν
+  · exact measurable_singularPart_fun_right κ η a
+  · exact measurable_singularPart_fun κ η
   refine ae_of_all _ (fun x hx ↦ ?_)
   simp only [mem_compl_iff, mem_setOf_eq] at hx
   simp_rw [rnDeriv]
@@ -239,54 +239,54 @@ lemma singularPart_compl_mutuallySingularSetSlice (κ ν : kernel α γ) [IsSFin
   · simp [lt_of_le_of_ne (rnDerivAux_le_one (le_add_of_nonneg_right bot_le)) hx]
 
 lemma singularPart_subset_compl_mutuallySingularSetSlice [IsFiniteKernel κ]
-    [IsFiniteKernel ν] {a : α} {s : Set γ}
-    (hs : s ⊆ (mutuallySingularSetSlice κ ν a)ᶜ) :
-    singularPart κ ν a s = 0 := by
-  exact measure_mono_null hs (singularPart_compl_mutuallySingularSetSlice κ ν a)
+    [IsFiniteKernel η] {a : α} {s : Set γ}
+    (hs : s ⊆ (mutuallySingularSetSlice κ η a)ᶜ) :
+    singularPart κ η a s = 0 := by
+  exact measure_mono_null hs (singularPart_compl_mutuallySingularSetSlice κ η a)
 
 lemma singularPart_subset_mutuallySingularSetSlice [IsFiniteKernel κ]
-    [IsFiniteKernel ν] {a : α} {s : Set γ} (hsm : MeasurableSet s)
-    (hs : s ⊆ mutuallySingularSetSlice κ ν a) :
-    singularPart κ ν a s = κ a s := by
-  have hs' : ∀ x ∈ s, rnDerivAux κ (κ + ν) a x = 1 := fun _ hx ↦ hs hx
+    [IsFiniteKernel η] {a : α} {s : Set γ} (hsm : MeasurableSet s)
+    (hs : s ⊆ mutuallySingularSetSlice κ η a) :
+    singularPart κ η a s = κ a s := by
+  have hs' : ∀ x ∈ s, rnDerivAux κ (κ + η) a x = 1 := fun _ hx ↦ hs hx
   rw [singularPart, kernel.withDensity_apply']
-  swap; · exact measurable_singularPart_fun κ ν
+  swap; · exact measurable_singularPart_fun κ η
   calc
-    ∫⁻ x in s, ↑(Real.toNNReal (rnDerivAux κ (κ + ν) a x)) -
-      ↑(Real.toNNReal (1 - rnDerivAux κ (κ + ν) a x)) * rnDeriv κ ν a x
-      ∂(κ + ν) a
-    = ∫⁻ _ in s, 1 ∂(κ + ν) a := by
+    ∫⁻ x in s, ↑(Real.toNNReal (rnDerivAux κ (κ + η) a x)) -
+      ↑(Real.toNNReal (1 - rnDerivAux κ (κ + η) a x)) * rnDeriv κ η a x
+      ∂(κ + η) a
+    = ∫⁻ _ in s, 1 ∂(κ + η) a := by
         refine set_lintegral_congr_fun hsm (ae_of_all _ fun x hx ↦ ?_)
         simp [hs' x hx]
-  _ = (κ + ν) a s := by simp
+  _ = (κ + η) a s := by simp
   _ = κ a s := by
-        suffices ν a s = 0 by simp [this]
-        exact measure_mono_null hs (measure_mutuallySingularSetSlice κ ν a)
+        suffices η a s = 0 by simp [this]
+        exact measure_mono_null hs (measure_mutuallySingularSetSlice κ η a)
 
-lemma withDensity_rnDeriv_mutuallySingularSetSlice (κ ν : kernel α γ) [IsFiniteKernel κ]
-    [IsFiniteKernel ν] (a : α) :
-    withDensity ν (rnDeriv κ ν) a (mutuallySingularSetSlice κ ν a) = 0 := by
+lemma withDensity_rnDeriv_mutuallySingularSetSlice (κ η : kernel α γ) [IsFiniteKernel κ]
+    [IsFiniteKernel η] (a : α) :
+    withDensity η (rnDeriv κ η) a (mutuallySingularSetSlice κ η a) = 0 := by
   rw [kernel.withDensity_apply']
-  · exact set_lintegral_measure_zero _ _ (measure_mutuallySingularSetSlice κ ν a)
-  · exact measurable_rnDeriv κ ν
+  · exact set_lintegral_measure_zero _ _ (measure_mutuallySingularSetSlice κ η a)
+  · exact measurable_rnDeriv κ η
 
 lemma withDensity_rnDeriv_subset_mutuallySingularSetSlice [IsFiniteKernel κ]
-    [IsFiniteKernel ν] {a : α} {s : Set γ}
-    (hs : s ⊆ mutuallySingularSetSlice κ ν a) :
-    withDensity ν (rnDeriv κ ν) a s = 0 :=
-  measure_mono_null hs (withDensity_rnDeriv_mutuallySingularSetSlice κ ν a)
+    [IsFiniteKernel η] {a : α} {s : Set γ}
+    (hs : s ⊆ mutuallySingularSetSlice κ η a) :
+    withDensity η (rnDeriv κ η) a s = 0 :=
+  measure_mono_null hs (withDensity_rnDeriv_mutuallySingularSetSlice κ η a)
 
 lemma withDensity_rnDeriv_subset_compl_mutuallySingularSetSlice
-    [IsFiniteKernel κ] [IsFiniteKernel ν] {a : α} {s : Set γ} (hsm : MeasurableSet s)
-    (hs : s ⊆ (mutuallySingularSetSlice κ ν a)ᶜ) :
-    withDensity ν (rnDeriv κ ν) a s = κ a s := by
+    [IsFiniteKernel κ] [IsFiniteKernel η] {a : α} {s : Set γ} (hsm : MeasurableSet s)
+    (hs : s ⊆ (mutuallySingularSetSlice κ η a)ᶜ) :
+    withDensity η (rnDeriv κ η) a s = κ a s := by
   have h_coe : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
-  have : withDensity ν (rnDeriv κ ν)
-      = withDensity (withDensity (κ + ν)
-        (fun a x ↦ Real.toNNReal (1 - rnDerivAux κ (κ + ν) a x))) (rnDeriv κ ν) := by
+  have : withDensity η (rnDeriv κ η)
+      = withDensity (withDensity (κ + η)
+        (fun a x ↦ Real.toNNReal (1 - rnDerivAux κ (κ + η) a x))) (rnDeriv κ η) := by
     rw [rnDeriv_def]
     congr
-    exact (withDensity_one_sub_rnDerivAux κ ν).symm
+    exact (withDensity_one_sub_rnDerivAux κ η).symm
   rw [this, ← withDensity_mul, kernel.withDensity_apply']
   rotate_left
   · exact ((measurable_const.sub (measurable_rnDerivAux _ _)).ennreal_ofReal.mul
@@ -294,13 +294,13 @@ lemma withDensity_rnDeriv_subset_compl_mutuallySingularSetSlice
   · exact (measurable_const.sub (measurable_rnDerivAux _ _)).real_toNNReal
   · exact measurable_rnDeriv _ _
   simp_rw [rnDeriv]
-  have hs' : ∀ x ∈ s, rnDerivAux κ (κ + ν) a x < 1 :=
+  have hs' : ∀ x ∈ s, rnDerivAux κ (κ + η) a x < 1 :=
     fun x hx ↦ lt_of_le_of_ne (rnDerivAux_le_one (le_add_of_nonneg_right bot_le)) (hs hx)
   calc
-    ∫⁻ x in s, ↑(Real.toNNReal (1 - rnDerivAux κ (κ + ν) a x)) *
-      (ENNReal.ofReal (rnDerivAux κ (κ + ν) a x) /
-        ENNReal.ofReal (1 - rnDerivAux κ (κ + ν) a x)) ∂(κ + ν) a
-  _ = ∫⁻ x in s, ENNReal.ofReal (rnDerivAux κ (κ + ν) a x) ∂(κ + ν) a := by
+    ∫⁻ x in s, ↑(Real.toNNReal (1 - rnDerivAux κ (κ + η) a x)) *
+      (ENNReal.ofReal (rnDerivAux κ (κ + η) a x) /
+        ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x)) ∂(κ + η) a
+  _ = ∫⁻ x in s, ENNReal.ofReal (rnDerivAux κ (κ + η) a x) ∂(κ + η) a := by
       refine set_lintegral_congr_fun hsm (ae_of_all _ fun x hx ↦ ?_)
       rw [h_coe, ← ENNReal.ofReal_div_of_pos, div_eq_inv_mul, ← ENNReal.ofReal_mul, ← mul_assoc,
         mul_inv_cancel, one_mul]
@@ -308,22 +308,23 @@ lemma withDensity_rnDeriv_subset_compl_mutuallySingularSetSlice
         exact (hs' x hx).ne'
       · simp [(hs' x hx).le]
       · simp [hs' x hx]
-  _ = κ a s := set_lintegral_rnDerivAux κ ν a hsm
+  _ = κ a s := set_lintegral_rnDerivAux κ η a hsm
 
-lemma mutuallySingular_singularPart (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν]
+lemma mutuallySingular_singularPart (κ η : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η]
     (a : α) :
-    singularPart κ ν a ⟂ₘ ν a := by
+    singularPart κ η a ⟂ₘ η a := by
   symm
-  exact ⟨mutuallySingularSetSlice κ ν a, measurableSet_mutuallySingularSetSlice κ ν a,
-    measure_mutuallySingularSetSlice κ ν a, singularPart_compl_mutuallySingularSetSlice κ ν a⟩
+  exact ⟨mutuallySingularSetSlice κ η a, measurableSet_mutuallySingularSetSlice κ η a,
+    measure_mutuallySingularSetSlice κ η a, singularPart_compl_mutuallySingularSetSlice κ η a⟩
 
-lemma rnDeriv_add_singularPart (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν] :
-    withDensity ν (rnDeriv κ ν) + singularPart κ ν = κ := by
+/-- Lebesgue decomposition of a finite kernel `κ` with respect to another one `η`. -/
+lemma rnDeriv_add_singularPart (κ η : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
+    withDensity η (rnDeriv κ η) + singularPart κ η = κ := by
   ext a s hs
-  rw [← inter_union_diff s (mutuallySingularSetSlice κ ν a)]
+  rw [← inter_union_diff s (mutuallySingularSetSlice κ η a)]
   simp only [coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure,
     OuterMeasure.coe_add]
-  have hm := measurableSet_mutuallySingularSetSlice κ ν a
+  have hm := measurableSet_mutuallySingularSetSlice κ η a
   simp only [measure_union (Disjoint.mono (inter_subset_right _ _) subset_rfl disjoint_sdiff_right)
     (hs.diff hm)]
   rw [singularPart_subset_mutuallySingularSetSlice (hs.inter hm) (inter_subset_right _ _),
@@ -332,86 +333,86 @@ lemma rnDeriv_add_singularPart (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFin
     zero_add, withDensity_rnDeriv_subset_compl_mutuallySingularSetSlice (hs.diff hm)
       (diff_subset_iff.mpr (by simp)), add_comm]
 
-lemma singularPart_eq_zero_iff_apply_eq_zero (κ ν : kernel α γ) [IsFiniteKernel κ]
-    [IsFiniteKernel ν] (a : α) :
-    singularPart κ ν a = 0 ↔ singularPart κ ν a (mutuallySingularSetSlice κ ν a) = 0 := by
+lemma singularPart_eq_zero_iff_apply_eq_zero (κ η : kernel α γ) [IsFiniteKernel κ]
+    [IsFiniteKernel η] (a : α) :
+    singularPart κ η a = 0 ↔ singularPart κ η a (mutuallySingularSetSlice κ η a) = 0 := by
   rw [← Measure.measure_univ_eq_zero]
-  have : univ = (mutuallySingularSetSlice κ ν a) ∪ (mutuallySingularSetSlice κ ν a)ᶜ := by simp
-  rw [this, measure_union disjoint_compl_right (measurableSet_mutuallySingularSetSlice κ ν a).compl,
+  have : univ = (mutuallySingularSetSlice κ η a) ∪ (mutuallySingularSetSlice κ η a)ᶜ := by simp
+  rw [this, measure_union disjoint_compl_right (measurableSet_mutuallySingularSetSlice κ η a).compl,
     singularPart_compl_mutuallySingularSetSlice, add_zero]
 
-lemma withDensity_rnDeriv_eq_zero_iff_apply_eq_zero (κ ν : kernel α γ) [IsFiniteKernel κ]
-    [IsFiniteKernel ν] (a : α) :
-    withDensity ν (rnDeriv κ ν) a = 0
-      ↔ withDensity ν (rnDeriv κ ν) a (mutuallySingularSetSlice κ ν a)ᶜ = 0 := by
+lemma withDensity_rnDeriv_eq_zero_iff_apply_eq_zero (κ η : kernel α γ) [IsFiniteKernel κ]
+    [IsFiniteKernel η] (a : α) :
+    withDensity η (rnDeriv κ η) a = 0
+      ↔ withDensity η (rnDeriv κ η) a (mutuallySingularSetSlice κ η a)ᶜ = 0 := by
   rw [← Measure.measure_univ_eq_zero]
-  have : univ = (mutuallySingularSetSlice κ ν a) ∪ (mutuallySingularSetSlice κ ν a)ᶜ := by simp
-  rw [this, measure_union disjoint_compl_right (measurableSet_mutuallySingularSetSlice κ ν a).compl,
+  have : univ = (mutuallySingularSetSlice κ η a) ∪ (mutuallySingularSetSlice κ η a)ᶜ := by simp
+  rw [this, measure_union disjoint_compl_right (measurableSet_mutuallySingularSetSlice κ η a).compl,
     withDensity_rnDeriv_mutuallySingularSetSlice, zero_add]
 
-lemma singularPart_eq_zero_iff_absolutelyContinuous (κ ν : kernel α γ)
-    [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) :
-    singularPart κ ν a = 0 ↔ κ a ≪ ν a := by
-  conv_rhs => rw [← rnDeriv_add_singularPart κ ν]
+lemma singularPart_eq_zero_iff_absolutelyContinuous (κ η : kernel α γ)
+    [IsFiniteKernel κ] [IsFiniteKernel η] (a : α) :
+    singularPart κ η a = 0 ↔ κ a ≪ η a := by
+  conv_rhs => rw [← rnDeriv_add_singularPart κ η]
   simp only [coeFn_add, Pi.add_apply]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [h, add_zero]
     exact withDensity_absolutelyContinuous _ _
   rw [singularPart_eq_zero_iff_apply_eq_zero]
-  specialize h (measure_mutuallySingularSetSlice κ ν a)
+  specialize h (measure_mutuallySingularSetSlice κ η a)
   simpa only [Measure.add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply,
-    withDensity_rnDeriv_mutuallySingularSetSlice κ ν, zero_add] using h
+    withDensity_rnDeriv_mutuallySingularSetSlice κ η, zero_add] using h
 
-lemma withDensity_rnDeriv_eq_zero_iff_mutuallySingular (κ ν : kernel α γ)
-    [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) :
-    withDensity ν (rnDeriv κ ν) a = 0 ↔ κ a ⟂ₘ ν a := by
-  conv_rhs => rw [← rnDeriv_add_singularPart κ ν]
+lemma withDensity_rnDeriv_eq_zero_iff_mutuallySingular (κ η : kernel α γ)
+    [IsFiniteKernel κ] [IsFiniteKernel η] (a : α) :
+    withDensity η (rnDeriv κ η) a = 0 ↔ κ a ⟂ₘ η a := by
+  conv_rhs => rw [← rnDeriv_add_singularPart κ η]
   simp only [coeFn_add, Pi.add_apply]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [h, zero_add]
     exact mutuallySingular_singularPart _ _ _
   simp only [Measure.MutuallySingular.add_left_iff] at h
-  have h_ac := withDensity_absolutelyContinuous (κ := ν) (rnDeriv κ ν) a
+  have h_ac := withDensity_absolutelyContinuous (κ := η) (rnDeriv κ η) a
   have h_ms := h.1
   rw [← Measure.MutuallySingular.self_iff]
   exact h_ms.mono_ac Measure.AbsolutelyContinuous.rfl h_ac
 
-lemma singularPart_eq_zero_iff_measure_eq_zero (κ ν : kernel α γ)
-    [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) :
-    singularPart κ ν a = 0 ↔ κ a (mutuallySingularSetSlice κ ν a) = 0 := by
-  have h_eq_add := rnDeriv_add_singularPart κ ν
+lemma singularPart_eq_zero_iff_measure_eq_zero (κ η : kernel α γ)
+    [IsFiniteKernel κ] [IsFiniteKernel η] (a : α) :
+    singularPart κ η a = 0 ↔ κ a (mutuallySingularSetSlice κ η a) = 0 := by
+  have h_eq_add := rnDeriv_add_singularPart κ η
   simp_rw [ext_iff, Measure.ext_iff] at h_eq_add
-  specialize h_eq_add a (mutuallySingularSetSlice κ ν a)
-    (measurableSet_mutuallySingularSetSlice κ ν a)
+  specialize h_eq_add a (mutuallySingularSetSlice κ η a)
+    (measurableSet_mutuallySingularSetSlice κ η a)
   simp only [coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure, OuterMeasure.coe_add,
-    withDensity_rnDeriv_mutuallySingularSetSlice κ ν, zero_add] at h_eq_add
+    withDensity_rnDeriv_mutuallySingularSetSlice κ η, zero_add] at h_eq_add
   rw [← h_eq_add]
-  exact singularPart_eq_zero_iff_apply_eq_zero κ ν a
+  exact singularPart_eq_zero_iff_apply_eq_zero κ η a
 
-lemma withDensity_rnDeriv_eq_zero_iff_measure_eq_zero (κ ν : kernel α γ)
-    [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) :
-    withDensity ν (rnDeriv κ ν) a = 0 ↔ κ a (mutuallySingularSetSlice κ ν a)ᶜ = 0 := by
-  have h_eq_add := rnDeriv_add_singularPart κ ν
+lemma withDensity_rnDeriv_eq_zero_iff_measure_eq_zero (κ η : kernel α γ)
+    [IsFiniteKernel κ] [IsFiniteKernel η] (a : α) :
+    withDensity η (rnDeriv κ η) a = 0 ↔ κ a (mutuallySingularSetSlice κ η a)ᶜ = 0 := by
+  have h_eq_add := rnDeriv_add_singularPart κ η
   simp_rw [ext_iff, Measure.ext_iff] at h_eq_add
-  specialize h_eq_add a (mutuallySingularSetSlice κ ν a)ᶜ
-    (measurableSet_mutuallySingularSetSlice κ ν a).compl
+  specialize h_eq_add a (mutuallySingularSetSlice κ η a)ᶜ
+    (measurableSet_mutuallySingularSetSlice κ η a).compl
   simp only [coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure, OuterMeasure.coe_add,
-    singularPart_compl_mutuallySingularSetSlice κ ν, add_zero] at h_eq_add
+    singularPart_compl_mutuallySingularSetSlice κ η, add_zero] at h_eq_add
   rw [← h_eq_add]
-  exact withDensity_rnDeriv_eq_zero_iff_apply_eq_zero κ ν a
+  exact withDensity_rnDeriv_eq_zero_iff_apply_eq_zero κ η a
 
-lemma measurableSet_absolutelyContinuous (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν] :
-    MeasurableSet {a | κ a ≪ ν a} := by
+lemma measurableSet_absolutelyContinuous (κ η : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
+    MeasurableSet {a | κ a ≪ η a} := by
   simp_rw [← singularPart_eq_zero_iff_absolutelyContinuous,
     singularPart_eq_zero_iff_measure_eq_zero]
-  exact measurable_kernel_prod_mk_left (measurableSet_mutuallySingularSet κ ν)
+  exact measurable_kernel_prod_mk_left (measurableSet_mutuallySingularSet κ η)
     (measurableSet_singleton 0)
 
-lemma measurableSet_mutuallySingular (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν] :
-    MeasurableSet {a | κ a ⟂ₘ ν a} := by
+lemma measurableSet_mutuallySingular (κ η : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
+    MeasurableSet {a | κ a ⟂ₘ η a} := by
   simp_rw [← withDensity_rnDeriv_eq_zero_iff_mutuallySingular,
     withDensity_rnDeriv_eq_zero_iff_measure_eq_zero]
-  exact measurable_kernel_prod_mk_left (measurableSet_mutuallySingularSet κ ν).compl
+  exact measurable_kernel_prod_mk_left (measurableSet_mutuallySingularSet κ η).compl
     (measurableSet_singleton 0)
 
 end ProbabilityTheory.kernel
