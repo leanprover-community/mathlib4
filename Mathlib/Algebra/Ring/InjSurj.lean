@@ -47,16 +47,16 @@ theorem rightDistribClass [Mul R] [Add R] [RightDistribClass R] (add : ∀ x y, 
 variable [Zero S] [One S] [Neg S] [Sub S] [SMul ℕ S] [SMul ℤ S]
   [Pow S ℕ] [NatCast S] [IntCast S]
 
-/-- Pullback a `Distrib` instance along an injective function. -/
--- See note [reducible non-instances]
+/-- Pullback a `Distrib` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev distrib [Distrib R] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : Distrib S where
   __ := hf.leftDistribClass f add mul
   __ := hf.rightDistribClass f add mul
 
 /-- A type endowed with `-` and `*` has distributive negation, if it admits an injective map that
-preserves `-` and `*` to a type which has distributive negation. -/
--- -- See note [reducible non-instances]
+preserves `-` and `*` to a type which has distributive negation. See note
+[reducible non-instances]. -/
 protected abbrev hasDistribNeg (f : S → R) (hf : Injective f) [Mul R] [HasDistribNeg R]
     (neg : ∀ a, f (-a) = -f a)
     (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg S :=
@@ -87,7 +87,7 @@ protected abbrev addCommMonoidWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] 
   __ := hf.addCommMonoid _ zero add (swap nsmul)
 
 /-- A type endowed with `0`, `1` and `+` is an additive group with one, if it admits an injective
-map that preserves `0`, `1` and `+` to an additive group with one.  See note
+map that preserves `0`, `1` and `+` to an additive group with one. See note
 [reducible non-instances]. -/
 protected abbrev addGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [Neg S] [Sub S]
     [SMul ℤ S] [NatCast S] [IntCast S] [AddGroupWithOne R] (f : S → R) (hf : Injective f)
@@ -99,7 +99,7 @@ protected abbrev addGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [Neg 
     hf.addMonoidWithOne f zero one add nsmul natCast with
     intCast := Int.cast,
     intCast_ofNat := fun n => hf (by rw [natCast, intCast, Int.cast_natCast]),
-    intCast_negSucc := fun n => hf (by rw [intCast, neg, natCast, Int.cast_negSucc] ) }
+    intCast_negSucc := fun n => hf (by rw [intCast, neg, natCast, Int.cast_negSucc]) }
 
 /-- A type endowed with `0`, `1` and `+` is an additive commutative group with one, if it admits an
 injective map that preserves `0`, `1` and `+` to an additive commutative group with one.
@@ -113,8 +113,8 @@ protected abbrev addCommGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [
   { hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast,
     hf.addCommMonoid _ zero add (swap nsmul) with }
 
-/-- Pullback a `NonUnitalNonAssocSemiring` instance along an injective function. -/
--- See note [reducible non-instances]
+/-- Pullback a `NonUnitalNonAssocSemiring` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) : NonUnitalNonAssocSemiring S where
@@ -122,8 +122,8 @@ protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] (zero :
   __ := hf.distrib f add mul
   __ := hf.mulZeroClass f zero mul
 
-/-- Pullback a `NonUnitalSemiring` instance along an injective function. -/
--- See note [reducible non-instances]
+/-- Pullback a `NonUnitalSemiring` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalSemiring [NonUnitalSemiring R]
     (zero : f 0 = 0) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) :
@@ -131,8 +131,8 @@ protected abbrev nonUnitalSemiring [NonUnitalSemiring R]
   toNonUnitalNonAssocSemiring := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
   __ := hf.semigroupWithZero f zero mul
 
-/-- Pullback a `NonAssocSemiring` instance along an injective function. -/
--- See note [reducible non-instances]
+/-- Pullback a `NonAssocSemiring` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev nonAssocSemiring [NonAssocSemiring R]
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
@@ -141,8 +141,8 @@ protected abbrev nonAssocSemiring [NonAssocSemiring R]
   __ := hf.mulZeroOneClass f zero one mul
   __ := hf.addMonoidWithOne f zero one add nsmul natCast
 
-/-- Pullback a `Semiring` instance along an injective function. -/
--- See note [reducible non-instances]
+/-- Pullback a `Semiring` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev semiring [Semiring R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
@@ -151,8 +151,8 @@ protected abbrev semiring [Semiring R] (zero : f 0 = 0) (one : f 1 = 1)
   __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
   __ := hf.monoidWithZero f zero one mul npow
 
-/-- Pullback a `NonUnitalNonAssocRing` instance along an injective function. -/
--- See note [reducible non-instances]
+/-- Pullback a `NonUnitalNonAssocRing` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing R] (f : S → R)
     (hf : Injective f) (zero : f 0 = 0) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
@@ -161,8 +161,8 @@ protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing R] (f : S → R)
   toAddCommGroup := hf.addCommGroup f zero add neg sub (swap nsmul) (swap zsmul)
   __ := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
 
-/-- Pullback a `NonUnitalRing` instance along an injective function. -/
--- See note [reducible non-instances]
+/-- Pullback a `NonUnitalRing` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalRing [NonUnitalRing R]
     (zero : f 0 = 0) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
@@ -171,8 +171,8 @@ protected abbrev nonUnitalRing [NonUnitalRing R]
   toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
   __ := hf.nonUnitalSemiring f zero add mul nsmul
 
-/-- Pullback a `NonAssocRing` instance along an injective function. -/
--- See note [reducible non-instances]
+/-- Pullback a `NonAssocRing` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev nonAssocRing [NonAssocRing R]
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
@@ -183,8 +183,7 @@ protected abbrev nonAssocRing [NonAssocRing R]
   __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
   __ := hf.addCommGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast
 
-/-- Pullback a `Ring` instance along an injective function. -/
--- See note [reducible non-instances]
+/-- Pullback a `Ring` instance along an injective function. See note [reducible non-instances]. -/
 protected abbrev ring [Ring R] (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
@@ -197,8 +196,8 @@ protected abbrev ring [Ring R] (zero : f 0 = 0)
   __ := hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast
   __ := hf.addCommGroup f zero add neg sub (swap nsmul) (swap zsmul)
 
-/-- Pullback a `NonUnitalNonAssocCommSemiring` instance along an injective function. -/
--- See note [reducible non-instances]
+/-- Pullback a `NonUnitalNonAssocCommSemiring` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalNonAssocCommSemiring [NonUnitalNonAssocCommSemiring R]
     (zero : f 0 = 0) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) :
@@ -206,8 +205,8 @@ protected abbrev nonUnitalNonAssocCommSemiring [NonUnitalNonAssocCommSemiring R]
   toNonUnitalNonAssocSemiring := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
   __ := hf.commMagma f mul
 
-/-- Pullback a `NonUnitalCommSemiring` instance along an injective function. -/
--- See note [reducible non-instances]
+/-- Pullback a `NonUnitalCommSemiring` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalCommSemiring [NonUnitalCommSemiring R] (f : S → R)
     (hf : Injective f) (zero : f 0 = 0) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) :
@@ -217,8 +216,8 @@ protected abbrev nonUnitalCommSemiring [NonUnitalCommSemiring R] (f : S → R)
 
 -- `NonAssocCommSemiring` currently doesn't exist
 
-/-- Pullback a `CommSemiring` instance along an injective function. -/
--- See note [reducible non-instances]
+/-- Pullback a `CommSemiring` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev commSemiring [CommSemiring R]
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
@@ -227,8 +226,8 @@ protected abbrev commSemiring [CommSemiring R]
   toSemiring := hf.semiring f zero one add mul nsmul npow natCast
   __ := hf.commSemigroup f mul
 
-/-- Pullback a `NonUnitalNonAssocCommRing` instance along an injective function. -/
--- See note [reducible non-instances]
+/-- Pullback a `NonUnitalNonAssocCommRing` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalNonAssocCommRing [NonUnitalNonAssocCommRing R] (f : S → R)
     (hf : Injective f) (zero : f 0 = 0) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
@@ -237,8 +236,8 @@ protected abbrev nonUnitalNonAssocCommRing [NonUnitalNonAssocCommRing R] (f : S 
   toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
   __ := hf.nonUnitalNonAssocCommSemiring f zero add mul nsmul
 
-/-- Pullback a `NonUnitalCommRing` instance along an injective function. -/
--- -- See note [reducible non-instances]
+/-- Pullback a `NonUnitalCommRing` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalCommRing [NonUnitalCommRing R] (f : S → R)
     (hf : Injective f) (zero : f 0 = 0) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
@@ -247,8 +246,8 @@ protected abbrev nonUnitalCommRing [NonUnitalCommRing R] (f : S → R)
   toNonUnitalRing := hf.nonUnitalRing f zero add mul neg sub nsmul zsmul
   __ := hf.nonUnitalNonAssocCommRing f zero add mul neg sub nsmul zsmul
 
-/-- Pullback a `CommRing` instance along an injective function. -/
--- -- See note [reducible non-instances]
+/-- Pullback a `CommRing` instance along an injective function. See note
+[reducible non-instances]. -/
 protected abbrev commRing [CommRing R]
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
@@ -276,8 +275,8 @@ theorem rightDistribClass [Mul R] [Add R] [RightDistribClass R] (add : ∀ x y, 
     (mul : ∀ x y, f (x * y) = f x * f y) : RightDistribClass S where
   right_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, right_distrib]
 
-/-- Pushforward a `Distrib` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `Distrib` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev distrib [Distrib R] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : Distrib S where
   __ := hf.leftDistribClass f add mul
@@ -287,8 +286,8 @@ variable [Zero S] [One S] [Neg S] [Sub S] [SMul ℕ S] [SMul ℤ S]
   [Pow S ℕ] [NatCast S] [IntCast S]
 
 /-- A type endowed with `-` and `*` has distributive negation, if it admits a surjective map that
-preserves `-` and `*` from a type which has distributive negation. -/
--- See note [reducible non-instances]
+preserves `-` and `*` from a type which has distributive negation. See note
+[reducible non-instances]. -/
 protected abbrev hasDistribNeg [Mul R] [HasDistribNeg R]
     (neg : ∀ a, f (-a) = -f a) (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg S :=
   { hf.involutiveNeg _ neg, ‹Mul S› with
@@ -327,9 +326,8 @@ protected abbrev addGroupWithOne [AddGroupWithOne R]
   { hf.addMonoidWithOne f zero one add nsmul natCast,
     hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul) with
     intCast := Int.cast,
-    intCast_ofNat := fun n => by rw [← intCast, Int.cast_natCast, natCast],
-    intCast_negSucc := fun n => by
-      rw [← intCast, Int.cast_negSucc, neg, natCast] }
+    intCast_ofNat n := by rw [← intCast, Int.cast_natCast, natCast],
+    intCast_negSucc n := by rw [← intCast, Int.cast_negSucc, neg, natCast] }
 
 /-- A type endowed with `0`, `1`, `+` is an additive commutative group with one, if it admits a
 surjective map that preserves `0`, `1`, and `+` to an additive commutative group with one.
@@ -351,16 +349,16 @@ protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] (zero :
   __ := hf.distrib f add mul
   __ := hf.mulZeroClass f zero mul
 
-/-- Pushforward a `NonUnitalSemiring` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `NonUnitalSemiring` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalSemiring [NonUnitalSemiring R] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) : NonUnitalSemiring S where
   toNonUnitalNonAssocSemiring := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
   __ := hf.semigroupWithZero f zero mul
 
-/-- Pushforward a `NonAssocSemiring` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `NonAssocSemiring` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev nonAssocSemiring [NonAssocSemiring R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
@@ -369,8 +367,8 @@ protected abbrev nonAssocSemiring [NonAssocSemiring R] (zero : f 0 = 0) (one : f
   __ := hf.mulZeroOneClass f zero one mul
   __ := hf.addMonoidWithOne f zero one add nsmul natCast
 
-/-- Pushforward a `Semiring` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `Semiring` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev semiring [Semiring R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
@@ -379,8 +377,8 @@ protected abbrev semiring [Semiring R] (zero : f 0 = 0) (one : f 1 = 1)
   __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
   __ := hf.monoidWithZero f zero one mul npow
 
-/-- Pushforward a `NonUnitalNonAssocRing` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `NonUnitalNonAssocRing` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing R] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
@@ -389,8 +387,8 @@ protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing R] (zero : f 0 = 0
   toAddCommGroup := hf.addCommGroup f zero add neg sub (swap nsmul) (swap zsmul)
   __ := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
 
-/-- Pushforward a `NonUnitalRing` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `NonUnitalRing` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalRing [NonUnitalRing R] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
@@ -399,8 +397,8 @@ protected abbrev nonUnitalRing [NonUnitalRing R] (zero : f 0 = 0)
   toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
   __ := hf.nonUnitalSemiring f zero add mul nsmul
 
-/-- Pushforward a `NonAssocRing` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `NonAssocRing` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev nonAssocRing [NonAssocRing R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
@@ -410,8 +408,8 @@ protected abbrev nonAssocRing [NonAssocRing R] (zero : f 0 = 0) (one : f 1 = 1)
   __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
   __ := hf.addCommGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast
 
-/-- Pushforward a `Ring` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `Ring` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev ring [Ring R] (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
@@ -422,24 +420,24 @@ protected abbrev ring [Ring R] (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, 
   __ := hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast
   __ := hf.addCommGroup f zero add neg sub (swap nsmul) (swap zsmul)
 
-/-- Pushforward a `NonUnitalNonAssocCommSemiring` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `NonUnitalNonAssocCommSemiring` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalNonAssocCommSemiring [NonUnitalNonAssocCommSemiring R] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) : NonUnitalNonAssocCommSemiring S where
   toNonUnitalNonAssocSemiring := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
   __ := hf.commMagma f mul
 
-/-- Pushforward a `NonUnitalCommSemiring` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `NonUnitalCommSemiring` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalCommSemiring [NonUnitalCommSemiring R] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) : NonUnitalCommSemiring S where
   toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
   __ := hf.commSemigroup f mul
 
-/-- Pushforward a `CommSemiring` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `CommSemiring` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev commSemiring [CommSemiring R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
@@ -447,8 +445,8 @@ protected abbrev commSemiring [CommSemiring R] (zero : f 0 = 0) (one : f 1 = 1)
   toSemiring := hf.semiring f zero one add mul nsmul npow natCast
   __ := hf.commSemigroup f mul
 
-/-- Pushforward a `NonUnitalNonAssocCommRing` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `NonUnitalNonAssocCommRing` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalNonAssocCommRing [NonUnitalNonAssocCommRing R]
     (zero : f 0 = 0) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
@@ -457,8 +455,8 @@ protected abbrev nonUnitalNonAssocCommRing [NonUnitalNonAssocCommRing R]
   toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
   __ := hf.nonUnitalNonAssocCommSemiring f zero add mul nsmul
 
-/-- Pushforward a `NonUnitalCommRing` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `NonUnitalCommRing` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev nonUnitalCommRing [NonUnitalCommRing R] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
@@ -467,8 +465,8 @@ protected abbrev nonUnitalCommRing [NonUnitalCommRing R] (zero : f 0 = 0)
   toNonUnitalRing := hf.nonUnitalRing f zero add mul neg sub nsmul zsmul
   __ := hf.nonUnitalNonAssocCommRing f zero add mul neg sub nsmul zsmul
 
-/-- Pushforward a `CommRing` instance along a surjective function. -/
--- See note [reducible non-instances]
+/-- Pushforward a `CommRing` instance along a surjective function. See note
+[reducible non-instances]. -/
 protected abbrev commRing [CommRing R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
