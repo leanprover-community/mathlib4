@@ -273,6 +273,7 @@ lemma MutuallySingular.rnDeriv_ae_eq_zero (hμν : μ ⟂ₘ ν) :
     exact hμν
   · rw [rnDeriv_of_not_haveLebesgueDecomposition h]
 
+@[simp]
 theorem singularPart_withDensity (ν : Measure α) (f : α → ℝ≥0∞) :
     (ν.withDensity f).singularPart ν = 0 :=
   singularPart_eq_zero_of_ac (withDensity_absolutelyContinuous _ _)
@@ -283,6 +284,7 @@ lemma rnDeriv_singularPart (μ ν : Measure α) :
   rw [rnDeriv_eq_zero]
   exact mutuallySingular_singularPart μ ν
 
+@[simp]
 lemma singularPart_self (μ : Measure α) : μ.singularPart μ = 0 :=
   singularPart_eq_zero_of_ac Measure.AbsolutelyContinuous.rfl
 
