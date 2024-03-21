@@ -490,11 +490,11 @@ theorem Antiperiodic.add_nsmul_eq [AddMonoid α] [AddGroup β] (h : Antiperiodic
 
 theorem Antiperiodic.sub_nsmul_eq [AddGroup α] [AddGroup β] (h : Antiperiodic f c) (n : ℕ) :
     f (x - n • c) = (-1) ^ n • f x := by
-  simpa only [Int.reduceNeg, coe_nat_zsmul] using h.sub_zsmul_eq n
+  simpa only [Int.reduceNeg, natCast_zsmul] using h.sub_zsmul_eq n
 
 theorem Antiperiodic.nsmul_sub_eq [AddCommGroup α] [AddGroup β] (h : Antiperiodic f c) (n : ℕ) :
     f (n • c - x) = (-1) ^ n • f (-x) := by
-  simpa only [Int.reduceNeg, coe_nat_zsmul] using h.zsmul_sub_eq n
+  simpa only [Int.reduceNeg, natCast_zsmul] using h.zsmul_sub_eq n
 
 theorem Antiperiodic.add_nat_mul_eq [Semiring α] [Ring β] (h : Antiperiodic f c) (n : ℕ) :
     f (x + n * c) = (-1) ^ n * f x := by
