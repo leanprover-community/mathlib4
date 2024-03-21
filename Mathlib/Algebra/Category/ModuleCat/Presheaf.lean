@@ -385,6 +385,11 @@ lemma mk''_obj (M : BundledCorePresheafOfModules R) (X : Cᵒᵖ) :
 lemma restriction_app_mk'' (M : BundledCorePresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     (restriction R f).app (mk'' M) = M.map f := rfl
 
+@[simp]
+lemma mk''_presheaf_map_apply (M : BundledCorePresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y)
+    (x : M.obj X) :
+    (mk'' M).presheaf.map f x = M.map f x := rfl
+
 namespace Hom
 
 variable {P Q : PresheafOfModules R}
@@ -408,5 +413,63 @@ def mk'' : P ⟶ Q where
 lemma mk''_app : (mk'' app naturality).app = app := rfl
 
 end Hom
+
+variable {R' : Cᵒᵖ ⥤ RingCat.{u}} (M' M'' : PresheafOfModules.{v} R') (ψ : M' ⟶ M'') (φ : R ⟶ R')
+
+@[simps]
+noncomputable def restrictScalarsBundledCore : BundledCorePresheafOfModules.{v} R where
+  obj X := (ModuleCat.restrictScalars (φ.app X)).obj (M'.obj X)
+  map {X Y} f := (ModuleCat.restrictScalars (φ.app X)).map ((restriction R' f).app M') ≫
+    (ModuleCat.restrictScalarsComp' _ _ _ (φ.naturality f)).inv.app _
+  map_id X := by
+    ext x
+    dsimp
+    erw [ModuleCat.restrictScalarsId'_inv_apply, ModuleCat.restrictScalarsComp'_inv_apply,
+      restriction_app_apply, map_id]
+    rfl
+  map_comp f g := by
+    ext x
+    dsimp
+    erw [ModuleCat.restrictScalarsComp'_inv_apply, ModuleCat.restrictScalarsComp'_inv_apply,
+      ModuleCat.restrictScalarsComp'_inv_apply, ModuleCat.restrictScalarsComp'_inv_apply,
+      restriction_app_apply f, restriction_app_apply g, restriction_app_apply, map_comp]
+    rfl
+
+noncomputable abbrev restrictScalars : PresheafOfModules.{v} R :=
+  mk'' (restrictScalarsBundledCore M' φ)
+
+noncomputable def restrictScalarsPresheafIso :
+    (M'.restrictScalars φ).presheaf ≅ M'.presheaf :=
+  NatIso.ofComponents (fun X => Iso.refl _) (fun {X Y} f => by
+    ext x
+    dsimp
+    erw [ModuleCat.restrictScalarsComp'_inv_apply]
+    rfl)
+
+variable {M' M''}
+
+noncomputable def restrictScalarsMap : M'.restrictScalars φ ⟶ M''.restrictScalars φ :=
+  Hom.mk'' (fun X => (ModuleCat.restrictScalars (φ.app X)).map (ψ.app X)) (fun X Y f => by
+    ext x
+    dsimp
+    erw [ModuleCat.coe_comp, ModuleCat.coe_comp]
+    dsimp
+    erw [ModuleCat.restrictScalarsComp'_inv_apply,
+      ModuleCat.restrictScalars.map_apply,
+      ModuleCat.restrictScalarsComp'_inv_apply,
+      ModuleCat.restrictScalars.map_apply]
+    rw [ModuleCat.ofHom_apply, ModuleCat.restrictScalars.map_apply]
+    erw [restriction_app_apply f, NatTrans.naturality_apply ψ.hom f,
+      restriction_app_apply])
+
+@[simp]
+lemma restrictScalarsMap_app_apply {X : Cᵒᵖ} (x : M'.obj X) :
+    (restrictScalarsMap ψ φ).app X x = ψ.app X x := rfl
+
+@[simps]
+noncomputable def restrictScalarsFunctor :
+    PresheafOfModules.{v} R' ⥤ PresheafOfModules.{v} R where
+  obj M' := M'.restrictScalars φ
+  map ψ := restrictScalarsMap ψ φ
 
 end PresheafOfModules

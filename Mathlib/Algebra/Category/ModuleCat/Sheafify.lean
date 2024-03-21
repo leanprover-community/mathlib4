@@ -3,9 +3,11 @@ import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 universe w v v₁ u₁ u
 
-namespace CategoryTheory
+open CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C}
+
+namespace CategoryTheory
 
 namespace Presieve
 
@@ -62,7 +64,7 @@ variable {R₀ R : Cᵒᵖ ⥤ RingCat.{u}} (α : R₀ ⟶ R) [Presheaf.IsLocall
   (hr₀ : (r₀.map (whiskerRight α (forget _))).IsAmalgamation r)
   (hm₀ : (m₀.map (whiskerRight φ (forget _))).IsAmalgamation m)
 
-lemma _root_.CategoryTheory.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
+lemma _root_.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
     {Y : C} (r₀ r₀' : R₀.obj (Opposite.op Y))
     (m₀ m₀' : M₀.presheaf.obj (Opposite.op Y))
     (hr₀ : α.app _ r₀ = α.app _ r₀')
@@ -123,6 +125,8 @@ end
 end FamilyOfElements
 
 end Presieve
+
+end CategoryTheory
 
 variable {R₀ : Cᵒᵖ ⥤ RingCat.{u}} {R : Sheaf J RingCat.{u}} (α : R₀ ⟶ R.val)
   [Presheaf.IsLocallyInjective J α] [Presheaf.IsLocallySurjective J α]
@@ -293,6 +297,16 @@ noncomputable def sheafify : SheafOfModules.{v} R where
       map_smul := fun _ _ _ => by apply Sheafify.map_smul }
   isSheaf := A.cond
 
-end PresheafOfModules
+noncomputable def toSheafify : M₀ ⟶ (sheafify α φ).val.restrictScalars α where
+  hom := φ ≫ ((sheafify α φ).val.restrictScalarsPresheafIso α).inv
+  map_smul X r x := by
+    dsimp [restrictScalarsPresheafIso]
+    erw [id_apply, id_apply]
+    rw [← Sheafify.map_smul_eq α φ (α.app _ r) (φ.app _ x) (𝟙 _)
+      r (by rw [R.val.map_id]; rfl) x (by rw [A.val.map_id]; rfl), A.val.map_id]
+    rfl
 
-end CategoryTheory
+lemma toSheafify_app_apply {X : Cᵒᵖ} (x : M₀.obj X) :
+    (toSheafify α φ).app X x = φ.app X x := rfl
+
+end PresheafOfModules
