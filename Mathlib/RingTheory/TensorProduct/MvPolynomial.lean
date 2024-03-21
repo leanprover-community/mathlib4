@@ -42,7 +42,7 @@ open Set LinearMap Submodule
 variable {R : Type u} {M : Type v} {N : Type w}
   [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-variable {σ : Type u} [DecidableEq σ]
+variable {σ : Type*} [DecidableEq σ]
 
 variable {S : Type*} [CommSemiring S] [Algebra R S]
 
