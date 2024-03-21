@@ -381,7 +381,7 @@ class IsZlattice (K : Type*) [NormedField K] {E : Type*} [NormedAddCommGroup E] 
   span_top : span K (L : Set E) = ⊤
 
 theorem _root_.Zspan.isZlattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [Fintype ι] (b : Basis ι ℝ E) :
+    [Finite ι] (b : Basis ι ℝ E) :
     IsZlattice ℝ (span ℤ (Set.range b)).toAddSubgroup where
   span_top := Zspan.span_top b
 
