@@ -105,10 +105,10 @@ theorem integral_abs_condexp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ �
       exact snorm_one_condexp_le_snorm _
     · exact integrable_condexp.2.ne
     · exact hfint.2.ne
-  · exact eventually_of_forall fun x => abs_nonneg _
+  · filter_upwards with x using abs_nonneg _
   · simp_rw [← Real.norm_eq_abs]
     exact hfint.1.norm
-  · exact eventually_of_forall fun x => abs_nonneg _
+  · filter_upwards with x using abs_nonneg _
   · simp_rw [← Real.norm_eq_abs]
     exact (stronglyMeasurable_condexp.mono hm).aestronglyMeasurable.norm
 #align measure_theory.integral_abs_condexp_le MeasureTheory.integral_abs_condexp_le
@@ -145,7 +145,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   by_cases hnm : m ≤ m0
   swap
   · simp_rw [condexp_of_not_le hnm, Pi.zero_apply, abs_zero]
-    refine' eventually_of_forall fun _ => R.coe_nonneg
+    exact eventually_of_forall fun _ => R.coe_nonneg
   by_cases hfint : Integrable f μ
   swap
   · simp_rw [condexp_undef hfint]
@@ -340,7 +340,7 @@ theorem condexp_stronglyMeasurable_mul {f g : α → ℝ} (hf : StronglyMeasurab
     rw [Measure.restrict_apply_univ]
     exact h_finite n
   refine' condexp_stronglyMeasurable_mul_of_bound hm (hf.indicator (h_meas n)) hg.integrableOn n _
-  refine' eventually_of_forall fun x => _
+  filter_upwards with x
   by_cases hxs : x ∈ sets n
   · simpa only [hxs, Set.indicator_of_mem] using h_norm n x hxs
   · simp only [hxs, Set.indicator_of_not_mem, not_false_iff, _root_.norm_zero, Nat.cast_nonneg]

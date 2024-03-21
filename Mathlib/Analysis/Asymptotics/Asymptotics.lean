@@ -49,7 +49,8 @@ the Fréchet derivative.)
 
 open Filter Set
 
-open Topology BigOperators Classical Filter NNReal
+open scoped Classical
+open Topology BigOperators Filter NNReal
 
 namespace Asymptotics
 
@@ -60,20 +61,15 @@ variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Typ
   {R : Type*} {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
-
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
   [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
   [SeminormedAddGroup E''']
   [SeminormedRing R']
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
-
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
-
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
-
 variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
-
 variable {l l' : Filter α}
 
 section Defs
@@ -1496,7 +1492,7 @@ theorem isBigOWith_self_const_mul' (u : Rˣ) (f : α → R) (l : Filter α) :
     IsBigOWith ‖(↑u⁻¹ : R)‖ l f fun x => ↑u * f x := by
   refine' (isBigOWith_const_mul_self ↑u⁻¹ _ l).congr_left _
   exact fun x => u.inv_mul_cancel_left (f x)
-  -- porting note: Lean just had trouble elaborating correctly, but this fixes it.
+  -- Porting note: Lean just had trouble elaborating correctly, but this fixes it.
 #align asymptotics.is_O_with_self_const_mul' Asymptotics.isBigOWith_self_const_mul'
 
 theorem isBigOWith_self_const_mul (c : 𝕜) (hc : c ≠ 0) (f : α → 𝕜) (l : Filter α) :
@@ -1909,7 +1905,7 @@ theorem isLittleO_const_left {c : E''} :
   · simp only [hc, false_or_iff, isLittleO_const_left_of_ne hc]; rfl
 #align asymptotics.is_o_const_left Asymptotics.isLittleO_const_left
 
-@[simp 1001] -- porting note: increase priority so that this triggers before `isLittleO_const_left`
+@[simp 1001] -- Porting note: increase priority so that this triggers before `isLittleO_const_left`
 theorem isLittleO_const_const_iff [NeBot l] {d : E''} {c : F''} :
     ((fun _x => d) =o[l] fun _x => c) ↔ d = 0 := by
   have : ¬Tendsto (Function.const α ‖c‖) l atTop :=
@@ -1988,7 +1984,7 @@ theorem isBigOWith_of_eq_mul {u v : α → R} (φ : α → R) (hφ : ∀ᶠ x in
 #align asymptotics.is_O_with_of_eq_mul Asymptotics.isBigOWith_of_eq_mul
 
 theorem isBigOWith_iff_exists_eq_mul (hc : 0 ≤ c) :
-    IsBigOWith c l u v ↔ ∃ (φ : α → 𝕜) (_hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c), u =ᶠ[l] φ * v := by
+    IsBigOWith c l u v ↔ ∃ φ : α → 𝕜, (∀ᶠ x in l, ‖φ x‖ ≤ c) ∧ u =ᶠ[l] φ * v := by
   constructor
   · intro h
     use fun x => u x / v x
@@ -1999,12 +1995,12 @@ theorem isBigOWith_iff_exists_eq_mul (hc : 0 ≤ c) :
 #align asymptotics.is_O_with_iff_exists_eq_mul Asymptotics.isBigOWith_iff_exists_eq_mul
 
 theorem IsBigOWith.exists_eq_mul (h : IsBigOWith c l u v) (hc : 0 ≤ c) :
-    ∃ (φ : α → 𝕜) (_hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c), u =ᶠ[l] φ * v :=
+    ∃ φ : α → 𝕜, (∀ᶠ x in l, ‖φ x‖ ≤ c) ∧ u =ᶠ[l] φ * v :=
   (isBigOWith_iff_exists_eq_mul hc).mp h
 #align asymptotics.is_O_with.exists_eq_mul Asymptotics.IsBigOWith.exists_eq_mul
 
 theorem isBigO_iff_exists_eq_mul :
-    u =O[l] v ↔ ∃ (φ : α → 𝕜) (_hφ : l.IsBoundedUnder (· ≤ ·) (norm ∘ φ)), u =ᶠ[l] φ * v := by
+    u =O[l] v ↔ ∃ φ : α → 𝕜, l.IsBoundedUnder (· ≤ ·) (norm ∘ φ) ∧ u =ᶠ[l] φ * v := by
   constructor
   · rintro h
     rcases h.exists_nonneg with ⟨c, hnnc, hc⟩
@@ -2018,7 +2014,7 @@ alias ⟨IsBigO.exists_eq_mul, _⟩ := isBigO_iff_exists_eq_mul
 #align asymptotics.is_O.exists_eq_mul Asymptotics.IsBigO.exists_eq_mul
 
 theorem isLittleO_iff_exists_eq_mul :
-    u =o[l] v ↔ ∃ (φ : α → 𝕜) (_hφ : Tendsto φ l (𝓝 0)), u =ᶠ[l] φ * v := by
+    u =o[l] v ↔ ∃ φ : α → 𝕜, Tendsto φ l (𝓝 0) ∧ u =ᶠ[l] φ * v := by
   constructor
   · exact fun h => ⟨fun x => u x / v x, h.tendsto_div_nhds_zero, h.eventually_mul_div_cancel.symm⟩
   · simp only [IsLittleO_def]
@@ -2254,7 +2250,6 @@ lemma Asymptotics.IsBigO.comp_summable_norm {ι E F : Type*}
 namespace PartialHomeomorph
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-
 variable {E : Type*} [Norm E] {F : Type*} [Norm F]
 
 /-- Transfer `IsBigOWith` over a `PartialHomeomorph`. -/
@@ -2292,7 +2287,6 @@ end PartialHomeomorph
 namespace Homeomorph
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-
 variable {E : Type*} [Norm E] {F : Type*} [Norm F]
 
 open Asymptotics

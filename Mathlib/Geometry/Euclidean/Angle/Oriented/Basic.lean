@@ -42,11 +42,8 @@ namespace Orientation
 attribute [local instance] Complex.finrank_real_complex_fact
 
 variable {V V' : Type*}
-
 variable [NormedAddCommGroup V] [NormedAddCommGroup V']
-
 variable [InnerProductSpace ℝ V] [InnerProductSpace ℝ V']
-
 variable [Fact (finrank ℝ V = 2)] [Fact (finrank ℝ V' = 2)] (o : Orientation ℝ V (Fin 2))
 
 local notation "ω" => o.areaForm
@@ -79,7 +76,7 @@ theorem oangle_zero_right (x : V) : o.oangle x 0 = 0 := by simp [oangle]
 /-- If the two vectors passed to `oangle` are the same, the result is 0. -/
 @[simp]
 theorem oangle_self (x : V) : o.oangle x x = 0 := by
-  rw [oangle, kahler_apply_self, ← ofReal_pow]; norm_cast
+  rw [oangle, kahler_apply_self, ← ofReal_pow]
   convert QuotientAddGroup.mk_zero (AddSubgroup.zmultiples (2 * π))
   apply arg_ofReal_of_nonneg
   positivity
@@ -913,7 +910,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
   have hf : ContinuousOn (fun z : V × V => o.oangle z.1 z.2) s := by
     refine' ContinuousAt.continuousOn fun z hz => o.continuousAt_oangle _ _
     all_goals
-      simp_rw [Set.mem_image] at hz
+      simp_rw [s, Set.mem_image] at hz
       obtain ⟨r', -, rfl⟩ := hz
       simp only [Prod.fst, Prod.snd]
       intro hz
@@ -921,7 +918,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
     · simpa [hz] using (h' r').1
   have hs : ∀ z : V × V, z ∈ s → o.oangle z.1 z.2 ≠ 0 ∧ o.oangle z.1 z.2 ≠ π := by
     intro z hz
-    simp_rw [Set.mem_image] at hz
+    simp_rw [s, Set.mem_image] at hz
     obtain ⟨r', -, rfl⟩ := hz
     exact h' r'
   have hx : (x, y) ∈ s := by

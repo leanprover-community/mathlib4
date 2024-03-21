@@ -91,7 +91,7 @@ theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
 theorem f_pos_of_pos {f : ℚ → ℝ} {q : ℚ} (hq : 0 < q)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n) :
     0 < f q := by
-  have num_pos : 0 < q.num := Rat.num_pos_iff_pos.mpr hq
+  have num_pos : 0 < q.num := Rat.num_pos.mpr hq
   have hmul_pos :=
     calc
       (0 : ℝ) < q.num := Int.cast_pos.mpr num_pos
@@ -233,7 +233,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
         have :=
           fixed_point_of_gt_1 (Nat.one_lt_cast.mpr (Nat.succ_lt_succ n.succ_pos)) H1 H2 H4 H5 ha1
             hae
-        rwa [Rat.cast_coe_nat n.succ.succ] at this
+        rwa [Rat.cast_natCast n.succ.succ] at this
       rw [← hfneq]
       exact H1 (n.succ.succ : ℚ) x (Nat.cast_pos.mpr hn) hx
     exact h2.antisymm (H3 x hx n hn)
@@ -248,7 +248,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
   have := x.pos
   have hx2pos : 0 < 2 * x.den := by positivity
   have hx2cnezr : (x2denom : ℝ) ≠ (0 : ℝ) := by positivity
-  have : 0 < x.num := by rwa [Rat.num_pos_iff_pos]
+  have : 0 < x.num := by rwa [Rat.num_pos]
   have hx2num_gt_one : (1 : ℚ) < (2 * x.num : ℤ) := by norm_cast; linarith
   apply mul_left_cancel₀ hx2cnezr
   calc

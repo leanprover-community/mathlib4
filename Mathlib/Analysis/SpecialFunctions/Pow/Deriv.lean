@@ -400,7 +400,7 @@ theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
   · have h1 : 1 ≤ p := le_trans (by simp) h
     rw [Nat.cast_succ, ← le_sub_iff_add_le] at h
     rw [contDiff_succ_iff_deriv, deriv_rpow_const' h1]
-    refine' ⟨differentiable_rpow_const h1, contDiff_const.mul (ihn h)⟩
+    exact ⟨differentiable_rpow_const h1, contDiff_const.mul (ihn h)⟩
 #align real.cont_diff_rpow_const_of_le Real.contDiff_rpow_const_of_le
 
 theorem contDiffAt_rpow_const_of_le {x p : ℝ} {n : ℕ} (h : ↑n ≤ p) :

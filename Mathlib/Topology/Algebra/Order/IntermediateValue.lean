@@ -509,7 +509,7 @@ theorem setOf_isPreconnected_eq_of_ordered :
       -- unbounded intervals and `univ`
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
   refine' Subset.antisymm setOf_isPreconnected_subset_of_ordered _
-  simp only [subset_def, forall_range_iff, uncurry, or_imp, forall_and, mem_union,
+  simp only [subset_def, forall_mem_range, uncurry, or_imp, forall_and, mem_union,
     mem_setOf_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true_iff,
     isPreconnected_Icc, isPreconnected_Ico, isPreconnected_Ioc, isPreconnected_Ioo,
     isPreconnected_Ioi, isPreconnected_Iio, isPreconnected_Ici, isPreconnected_Iic,

@@ -5,6 +5,7 @@ Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
+import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 /-!
 
 # Sheaves for the coherent topology
@@ -31,7 +32,7 @@ lemma isSheaf_coherent [Precoherent C] (P : Cᵒᵖ ⥤ Type w) :
   · intro hP B α _ X π h
     simp only [coherentTopology, Presieve.isSheaf_coverage] at hP
     apply hP
-    refine ⟨α, inferInstance, X, π, rfl, h⟩
+    exact ⟨α, inferInstance, X, π, rfl, h⟩
   · intro h
     simp only [coherentTopology, Presieve.isSheaf_coverage]
     rintro B S ⟨α, _, X, π, rfl, hS⟩

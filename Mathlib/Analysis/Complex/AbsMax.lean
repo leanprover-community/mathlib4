@@ -186,7 +186,7 @@ theorem norm_eqOn_closedBall_of_isMaxOn {f : E → F} {z : E} {r : ℝ}
   rcases eq_or_ne z w with (rfl | hne); · rfl
   set e := (lineMap z w : ℂ → E)
   have hde : Differentiable ℂ e := (differentiable_id.smul_const (w - z)).add_const z
-  suffices ‖(f ∘ e) (1 : ℂ)‖ = ‖(f ∘ e) (0 : ℂ)‖ by simpa
+  suffices ‖(f ∘ e) (1 : ℂ)‖ = ‖(f ∘ e) (0 : ℂ)‖ by simpa [e]
   have hr : dist (1 : ℂ) 0 = 1 := by simp
   have hball : MapsTo e (ball 0 1) (ball z r) := by
     refine ((lipschitzWith_lineMap z w).mapsTo_ball (mt nndist_eq_zero.1 hne) 0 1).mono
@@ -370,8 +370,8 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
     (hb : IsBounded U) (hne : U.Nonempty) (hd : DiffContOnCl ℂ f U) :
     ∃ z ∈ frontier U, IsMaxOn (norm ∘ f) (closure U) z := by
   have hc : IsCompact (closure U) := hb.isCompact_closure
-  obtain ⟨w, hwU, hle⟩ : ∃ w ∈ closure U, IsMaxOn (norm ∘ f) (closure U) w
-  exact hc.exists_forall_ge hne.closure hd.continuousOn.norm
+  obtain ⟨w, hwU, hle⟩ : ∃ w ∈ closure U, IsMaxOn (norm ∘ f) (closure U) w :=
+    hc.exists_forall_ge hne.closure hd.continuousOn.norm
   rw [closure_eq_interior_union_frontier, mem_union] at hwU
   cases' hwU with hwU hwU; rotate_left; · exact ⟨w, hwU, hle⟩
   have : interior U ≠ univ := ne_top_of_le_ne_top hc.ne_univ interior_subset_closure
@@ -398,10 +398,10 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
   have hL : AntilipschitzWith (nndist z w)⁻¹ e := antilipschitzWith_lineMap hne.symm
   replace hd : DiffContOnCl ℂ (f ∘ e) (e ⁻¹' U) :=
     hd.comp hde.diffContOnCl (mapsTo_preimage _ _)
-  have h₀ : (0 : ℂ) ∈ e ⁻¹' U := by simpa only [mem_preimage, lineMap_apply_zero]
+  have h₀ : (0 : ℂ) ∈ e ⁻¹' U := by simpa only [e, mem_preimage, lineMap_apply_zero]
   rcases exists_mem_frontier_isMaxOn_norm (hL.isBounded_preimage hU) ⟨0, h₀⟩ hd with ⟨ζ, hζU, hζ⟩
   calc
-    ‖f z‖ = ‖f (e 0)‖ := by simp only [lineMap_apply_zero]
+    ‖f z‖ = ‖f (e 0)‖ := by simp only [e, lineMap_apply_zero]
     _ ≤ ‖f (e ζ)‖ := (hζ (subset_closure h₀))
     _ ≤ C := hC _ (hde.continuous.frontier_preimage_subset _ hζU)
 #align complex.norm_le_of_forall_mem_frontier_norm_le Complex.norm_le_of_forall_mem_frontier_norm_le

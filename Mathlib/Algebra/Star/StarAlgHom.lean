@@ -75,11 +75,8 @@ class NonUnitalStarAlgHomClass (F : Type*) (R A B : outParam Type*)
 namespace NonUnitalStarAlgHomClass
 
 variable {F R A B : Type*} [Monoid R]
-
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
-
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]
 
 /-- Turn an element of a type `F` satisfying `NonUnitalStarAlgHomClass F R A B` into an actual
@@ -99,13 +96,9 @@ namespace NonUnitalStarAlgHom
 section Basic
 
 variable {R A B C D : Type*} [Monoid R]
-
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
-
 variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C] [Star C]
-
 variable [NonUnitalNonAssocSemiring D] [DistribMulAction R D] [Star D]
 
 instance : FunLike (A →⋆ₙₐ[R] B) A B
@@ -168,7 +161,7 @@ theorem copy_eq (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : f.copy f
   DFunLike.ext' h
 #align non_unital_star_alg_hom.copy_eq NonUnitalStarAlgHom.copy_eq
 
--- porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
 @[simp]
 theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅) :
     ((⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
@@ -181,7 +174,7 @@ theorem coe_mk' (f : A →ₙₐ[R] B) (h) :
     ((⟨f, h⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
   rfl
 
--- porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
 @[simp]
 theorem mk_coe (f : A →⋆ₙₐ[R] B) (h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) = f := by
@@ -262,9 +255,7 @@ section Zero
 
 -- the `zero` requires extra type class assumptions because we need `star_zero`
 variable {R A B C D : Type*} [Monoid R]
-
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [StarAddMonoid A]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [StarAddMonoid B]
 
 instance : Zero (A →⋆ₙₐ[R] B) :=
@@ -338,7 +329,6 @@ instance (priority := 100) toNonUnitalStarAlgHomClass {_ : CommSemiring R} {_ : 
 #align star_alg_hom_class.to_non_unital_star_alg_hom_class StarAlgHomClass.toNonUnitalStarAlgHomClass
 
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
-
 variable [Semiring B] [Algebra R B] [Star B] [FunLike F A B] [AlgHomClass F R A B]
 variable [StarAlgHomClass F R A B]
 
@@ -422,7 +412,7 @@ theorem copy_eq (f : A →⋆ₐ[R] B) (f' : A → B) (h : f' = f) : f.copy f' h
   DFunLike.ext' h
 #align star_alg_hom.copy_eq StarAlgHom.copy_eq
 
--- porting note: doesn't align with Mathlib 3 because `StarAlgHom.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `StarAlgHom.mk` has a new signature
 @[simp]
 theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅ h₆) :
     ((⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) : A → B) = f :=
@@ -435,7 +425,7 @@ theorem coe_mk' (f : A →ₐ[R] B) (h) :
     ((⟨f, h⟩ : A →⋆ₐ[R] B) : A → B) = f :=
   rfl
 
--- porting note: doesn't align with Mathlib 3 because `StarAlgHom.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `StarAlgHom.mk` has a new signature
 @[simp]
 theorem mk_coe (f : A →⋆ₐ[R] B) (h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) = f := by
@@ -897,14 +887,14 @@ theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align star_alg_equiv.symm_bijective StarAlgEquiv.symm_bijective
 
--- porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature
 @[simp]
 theorem mk_coe' (e : A ≃⋆ₐ[R] B) (f h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨f, e, h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : B ≃⋆ₐ[R] A) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 #align star_alg_equiv.mk_coe' StarAlgEquiv.mk_coe'ₓ
 
--- porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature
 @[simp]
 theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B).symm =
@@ -981,11 +971,8 @@ end Basic
 section Bijective
 
 variable {F G R A B : Type*} [Monoid R]
-
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
-
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
 variable [FunLike G B A] [NonUnitalAlgHomClass G R B A] [NonUnitalStarAlgHomClass G R B A]
 

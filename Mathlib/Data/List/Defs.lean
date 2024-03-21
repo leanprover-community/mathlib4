@@ -21,7 +21,7 @@ proofs about these definitions, those are contained in other files in `Data.List
 
 set_option autoImplicit true
 
--- Porting notes
+-- Porting note
 -- Many of the definitions in `Data.List.Defs` were already defined upstream in `Std4`
 -- These have been annotated with `#align`s
 -- To make this easier for review, the `#align`s have been placed in order of occurrence
@@ -217,7 +217,7 @@ def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List �
     (y :: us, f (t :: y :: us) :: zs)
 #align list.permutations_aux2 List.permutationsAux2
 
--- porting note: removed `[elab_as_elim]` per Mario C
+-- Porting note: removed `[elab_as_elim]` per Mario C
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Status.20of.20data.2Elist.2Edefs.3F/near/313571979
 /-- A recursor for pairs of lists. To have `C l₁ l₂` for all `l₁`, `l₂`, it suffices to have it for
 `l₂ = []` and to be able to pour the elements of `l₁` into `l₂`. -/
@@ -500,7 +500,7 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
 #align list.to_chunks_aux List.toChunksAux
 #align list.to_chunks List.toChunks
 
--- porting notes -- was `unsafe` but removed for Lean 4 port
+-- porting note -- was `unsafe` but removed for Lean 4 port
 -- TODO: naming is awkward...
 /-- Asynchronous version of `List.map`.
 -/
@@ -515,7 +515,7 @@ These can also be written in terms of `List.zip` or `List.zipWith`.
 For example, `zipWith3 f xs ys zs` could also be written as
 `zipWith id (zipWith f xs ys) zs`
 or as
-`(zip xs <| zip ys zs).map <| λ ⟨x, y, z⟩, f x y z`.
+`(zip xs <| zip ys zs).map <| fun ⟨x, y, z⟩ ↦ f x y z`.
 -/
 
 /-- Ternary version of `List.zipWith`. -/

@@ -37,9 +37,6 @@ namespace GeneralLinearGroup
 
 variable {R M}
 
--- Porting note: This is not necessary anymore
--- instance : CoeFun (GeneralLinearGroup R M) fun _ ↦ M → M := by infer_instance
-
 /-- An invertible linear map `f` determines an equivalence from `M` to itself. -/
 def toLinearEquiv (f : GeneralLinearGroup R M) : M ≃ₗ[R] M :=
   { f.val with

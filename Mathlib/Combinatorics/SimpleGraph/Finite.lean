@@ -143,7 +143,7 @@ theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (
 
 section DeleteFar
 
--- porting note: added `Fintype (Sym2 V)` argument.
+-- Porting note: added `Fintype (Sym2 V)` argument.
 variable {𝕜 : Type*} [OrderedRing 𝕜] [Fintype V] [Fintype (Sym2 V)]
   [Fintype G.edgeSet] {p : SimpleGraph V → Prop} {r r₁ r₂ : 𝕜}
 
@@ -368,7 +368,7 @@ theorem exists_minimal_degree_vertex [DecidableRel G.Adj] [Nonempty V] :
     ∃ v, G.minDegree = G.degree v := by
   obtain ⟨t, ht : _ = _⟩ := min_of_nonempty (univ_nonempty.image fun v => G.degree v)
   obtain ⟨v, _, rfl⟩ := mem_image.mp (mem_of_min ht)
-  refine' ⟨v, by simp [minDegree, ht]⟩
+  exact ⟨v, by simp [minDegree, ht]⟩
 #align simple_graph.exists_minimal_degree_vertex SimpleGraph.exists_minimal_degree_vertex
 
 /-- The minimum degree in the graph is at most the degree of any particular vertex. -/
