@@ -145,7 +145,7 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
   · exact Ultrafilter.continuous_mul_left
   · apply IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
     · intro n U hU
-      apply Eventually.mono hU
+      filter_upwards [hU]
       rw [add_comm, ← Stream'.drop_drop, ← Stream'.tail_eq_drop]
       exact FP.tail _
     · intro n
@@ -158,11 +158,9 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
     rw [Set.mem_iInter] at *
     intro n
     rw [Set.mem_setOf_eq, Ultrafilter.eventually_mul]
-    apply Eventually.mono (hU n)
-    intro m hm
+    filter_upwards [hU n] with m hm
     obtain ⟨n', hn⟩ := FP.mul hm
-    apply Eventually.mono (hV (n' + n))
-    intro m' hm'
+    filter_upwards [hV (n' + n)] with m' hm'
     apply hn
     simpa only [Stream'.drop_drop] using hm'
 set_option linter.uppercaseLean3 false in
