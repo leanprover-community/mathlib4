@@ -396,7 +396,7 @@ variable [IsDomain Aₘ] [IsIntegrallyClosed Aₘ] [IsDomain Bₘ] [IsIntegrally
 variable [NoZeroSMulDivisors Aₘ Bₘ] [Module.Finite Aₘ Bₘ]
 variable [IsSeparable (FractionRing Aₘ) (FractionRing Bₘ)]
 
-lemma Algebra.intNorm_eq_of_isLocalization  (x : B) :
+lemma Algebra.intNorm_eq_of_isLocalization (x : B) :
     algebraMap A Aₘ (Algebra.intNorm A B x) = Algebra.intNorm Aₘ Bₘ (algebraMap B Bₘ x) := by
   by_cases hM : 0 ∈ M
   · have := IsLocalization.uniqueOfZeroMem (S := Aₘ) hM
