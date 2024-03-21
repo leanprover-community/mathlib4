@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.InsertNth
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.Nat.Factorial.Basic
 

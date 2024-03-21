@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
 -/
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.InsertNth
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
