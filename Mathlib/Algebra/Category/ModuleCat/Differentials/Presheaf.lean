@@ -32,6 +32,48 @@ structure AbsoluteDerivation where
   d_one (X : Cᵒᵖ) : d.app X (1 : R.obj X) = 0
   d_mul {X : Cᵒᵖ} (a b : R.obj X) : d.app X (a * b) = M.smul a (d.app X b) + M.smul b (d.app X a)
 
+namespace AbsoluteDerivation
+
+variable {M}
+variable (d : M.AbsoluteDerivation)
+    {M' : PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat)} (f : M ⟶ M')
+
+def postComp : AbsoluteDerivation M' where
+  d := d.d ≫ f.hom
+  d_one X := by
+    dsimp
+    erw [d.d_one, map_zero]
+  d_mul {X} a b := by
+    dsimp
+    erw [d.d_mul, map_add, (f.app X).map_smul, (f.app X).map_smul]
+    rfl
+
+structure Universal where
+  desc {M' : PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat)}
+    (d' : M'.AbsoluteDerivation) : M ⟶ M'
+  fac {M' : PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat)}
+    (d' : M'.AbsoluteDerivation) : d.postComp (desc d') = d'
+  uniq {M' : PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat)}
+    (d' : M'.AbsoluteDerivation) (φ : M ⟶ M') (hφ : d.postComp φ = d') :
+      φ = desc d'
+
+namespace Universal
+
+variable {d}
+variable (hR : d.Universal)
+
+@[simps]
+def homEquiv (M' : PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat)) :
+    (M ⟶ M') ≃ M'.AbsoluteDerivation where
+  toFun φ := d.postComp φ
+  invFun d' := hR.desc d'
+  left_inv φ := (hR.uniq _ φ rfl).symm
+  right_inv d' := hR.fac d'
+
+end Universal
+
+end AbsoluteDerivation
+
 variable (R)
 
 noncomputable def absoluteDifferentialsBundledCore :
@@ -77,5 +119,7 @@ noncomputable def absoluteDerivation : (absoluteDifferentials R).AbsoluteDerivat
         rfl }
   d_one _ := by dsimp; simp
   d_mul _ _ := by dsimp; simp
+
+proof_wanted absoluteDerivationUniversal : Nonempty (absoluteDerivation R).Universal
 
 end PresheafOfModules
