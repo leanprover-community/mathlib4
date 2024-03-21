@@ -49,6 +49,7 @@ def of {rels : Set (FreeGroup α)} (x : α) : PresentedGroup rels :=
 
 /-- The generators of a presented group generate the presented group. That is, the subgroup closure
 of the set of generators equals `⊤`. -/
+@[simp]
 theorem closure_range_of (rels : Set (FreeGroup α)) :
     Subgroup.closure (Set.range (PresentedGroup.of : α → PresentedGroup rels)) = ⊤ := by
   have : (PresentedGroup.of : α → PresentedGroup rels) = QuotientGroup.mk' _ ∘ FreeGroup.of := rfl
