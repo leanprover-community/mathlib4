@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.CategoryTheory.EffectiveEpi.Extensive
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
@@ -5,6 +10,15 @@ import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.CategoryTheory.Sites.InducedTopology
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectCoherent
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectRegular
+/-!
+
+# Categories of coherent sheaves
+
+Given a fully faithful functor `F : C ⥤ D` into a precoherent category, which preserves and reflects
+finite effective epi families, satisfies the property `F.EffectivelyEnough` (meaning that to every
+object in `C` there is an effective epi from an object in the image of `F`), and that every object
+in its image is projective, the categories of coherent sheaves on `C` and `D` are equivalent.
+-/
 
 
 namespace CategoryTheory
