@@ -211,6 +211,11 @@ instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies F] : ReflectsEffectiveEpis 
     have := F.effectiveEpiFamily_of_map _ _ h
     infer_instance
 
+instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies F] : ReflectsFiniteEffectiveEpiFamilies F where
+  reflects _ _ h := by
+    have := F.effectiveEpiFamily_of_map _ _ h
+    infer_instance
+
 instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpiFamilies where
   preserves _ _ := inferInstance
 
