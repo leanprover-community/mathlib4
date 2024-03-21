@@ -516,9 +516,9 @@ variable {π : ι → Type*} [∀ i, IntCast (π i)]
 instance intCast : IntCast (∀ i, π i) :=
   { intCast := fun n _ ↦ n }
 
-theorem int_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
+theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
   rfl
-#align pi.int_apply Pi.int_apply
+#align pi.int_apply Pi.intCast_apply
 
 @[simp]
 theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=

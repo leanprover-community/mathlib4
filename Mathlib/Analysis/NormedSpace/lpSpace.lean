@@ -885,13 +885,13 @@ theorem _root_.Memℓp.infty_pow {f : ∀ i, B i} (hf : Memℓp f ∞) (n : ℕ)
   (lpInftySubring B).pow_mem hf n
 #align mem_ℓp.infty_pow Memℓp.infty_pow
 
-theorem _root_.natCast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :=
+theorem _root_.nat_cast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :=
   natCast_mem (lpInftySubring B) n
-#align nat_cast_mem_ℓp_infty natCast_memℓp_infty
+#align nat_cast_mem_ℓp_infty nat_cast_memℓp_infty
 
-theorem _root_.intCast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
+theorem _root_.int_cast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
   intCast_mem (lpInftySubring B) z
-#align int_cast_mem_ℓp_infty intCast_memℓp_infty
+#align int_cast_mem_ℓp_infty int_cast_memℓp_infty
 
 @[simp]
 theorem infty_coeFn_one : ⇑(1 : lp B ∞) = 1 :=

@@ -561,13 +561,13 @@ theorem one_lt_coe_iff : 1 < (↑p : ℝ≥0∞) ↔ 1 < p := coe_lt_coe
 theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
 #align ennreal.coe_nat ENNReal.coe_natCast
 
-@[simp, norm_cast] lemma ofReal_coe_nat (n : ℕ) : ENNReal.ofReal n = n := by simp [ENNReal.ofReal]
-#align ennreal.of_real_coe_nat ENNReal.ofReal_coe_nat
+@[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ENNReal.ofReal n = n := by simp [ENNReal.ofReal]
+#align ennreal.of_real_coe_nat ENNReal.ofReal_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     ENNReal.ofReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
-  ofReal_coe_nat n
+  ofReal_natCast n
 
 @[simp] theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_ne_top n
 #align ennreal.nat_ne_top ENNReal.natCast_ne_top
@@ -585,7 +585,7 @@ theorem toNNReal_nat (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
 
 @[simp, norm_cast]
 theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
-  rw [← ENNReal.ofReal_coe_nat n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
+  rw [← ENNReal.ofReal_natCast n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
 #align ennreal.to_real_nat ENNReal.toReal_nat
 
 -- See note [no_index around OfNat.ofNat]
@@ -667,18 +667,16 @@ theorem le_of_forall_pos_le_add (h : ∀ ε : ℝ≥0, 0 < ε → b < ∞ → a 
   exact ⟨r, hr0, h.trans_le le_top, hr⟩
 #align ennreal.le_of_forall_pos_le_add ENNReal.le_of_forall_pos_le_add
 
-theorem natCast_lt_coe {n : ℕ} : (n : ℝ≥0∞) < r ↔ ↑n < r :=
-  ENNReal.coe_natCast n ▸ coe_lt_coe
+theorem natCast_lt_coe {n : ℕ} : n < (r : ℝ≥0∞) ↔ n < r := ENNReal.coe_natCast n ▸ coe_lt_coe
 #align ennreal.coe_nat_lt_coe ENNReal.natCast_lt_coe
 
-theorem coe_lt_coe_nat {n : ℕ} : (r : ℝ≥0∞) < n ↔ r < n :=
-  ENNReal.coe_natCast n ▸ coe_lt_coe
-#align ennreal.coe_lt_coe_nat ENNReal.coe_lt_coe_nat
+theorem coe_lt_natCast {n : ℕ} : (r : ℝ≥0∞) < n ↔ r < n := ENNReal.coe_natCast n ▸ coe_lt_coe
+#align ennreal.coe_lt_coe_nat ENNReal.coe_lt_natCast
 
 protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, r < n := by
   lift r to ℝ≥0 using h
   rcases exists_nat_gt r with ⟨n, hn⟩
-  exact ⟨n, coe_lt_coe_nat.2 hn⟩
+  exact ⟨n, coe_lt_natCast.2 hn⟩
 #align ennreal.exists_nat_gt ENNReal.exists_nat_gt
 
 @[simp]
