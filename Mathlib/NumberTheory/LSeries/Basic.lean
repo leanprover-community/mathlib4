@@ -143,6 +143,28 @@ lemma LSeriesSummable_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ n ≠ 0, f n 
     LSeriesSummable f s ↔ LSeriesSummable g s :=
   summable_congr <| term_congr h s
 
+open Filter in
+/-- If `f` and `g` agree on large `n : ℕ` and the `LSeries` of `f` converges at `s`,
+then so does that of `g`. -/
+lemma LSeriesSummable.congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g) (hf : LSeriesSummable f s) :
+    LSeriesSummable g s := by
+  rw [← Nat.cofinite_eq_atTop] at h
+  refine (summable_norm_iff.mpr hf).of_norm_bounded_eventually _ ?_
+  have : term f s =ᶠ[cofinite] term g s := by
+    rw [eventuallyEq_iff_exists_mem] at h ⊢
+    obtain ⟨S, hS, hS'⟩ := h
+    refine ⟨S \ {0}, diff_mem hS <| (Set.finite_singleton 0).compl_mem_cofinite, fun n hn ↦ ?_⟩
+    simp only [Set.mem_diff, Set.mem_singleton_iff] at hn
+    simp only [term_of_ne_zero hn.2, hS' hn.1]
+  exact Eventually.mono this.symm fun n hn ↦ by simp only [hn, le_rfl]
+
+open Filter in
+/-- If `f` and `g` agree on large `n : ℕ`, then the `LSeries` of `f` converges at `s`
+if and only if that of `g` does. -/
+lemma LSeriesSummable_congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g) :
+    LSeriesSummable f s ↔ LSeriesSummable g s :=
+  ⟨fun H ↦ H.congr' s h, fun H ↦ H.congr' s h.symm⟩
+
 theorem LSeries.eq_zero_of_not_LSeriesSummable (f : ℕ → ℂ) (s : ℂ) :
     ¬ LSeriesSummable f s → LSeries f s = 0 :=
   tsum_eq_zero_of_not_summable
