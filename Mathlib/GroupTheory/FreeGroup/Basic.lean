@@ -783,12 +783,11 @@ theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
 
 /-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
 set of generators equals `⊤`. -/
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem closure_range_of (α) :
     Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
   rw [← lift.range_eq_closure, lift_of_eq_id]
-  apply MonoidHom.range_top_of_surjective
-  exact fun x ↦ ⟨x, rfl⟩
+  exact MonoidHom.range_top_of_surjective _ Function.surjective_id
 
 end lift
 
