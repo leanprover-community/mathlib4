@@ -787,8 +787,7 @@ class HasFundamentalDomain (G : Type*) (α : Type*) [One G] [SMul G α] [Measura
     (ν : Measure α := by volume_tac) : Prop where
   ExistsIsFundamentalDomain : ∃ (s : Set α), IsFundamentalDomain G s ν
 
-attribute [to_additive existing MeasureTheory.HasAddFundamentalDomain]
-  MeasureTheory.HasFundamentalDomain
+attribute [to_additive existing] MeasureTheory.HasFundamentalDomain
 
 open Classical in
 /-- The `covolume` of an action of `G` on `α` the volume of some fundamental domain, or `0` if
