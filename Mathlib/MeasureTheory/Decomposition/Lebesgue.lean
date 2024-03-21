@@ -294,6 +294,14 @@ lemma rnDeriv_self (μ : Measure α) [SigmaFinite μ] : μ.rnDeriv μ =ᵐ[μ] f
   rwa [withDensity_eq_iff_of_sigmaFinite (measurable_rnDeriv _ _).aemeasurable] at h
   exact aemeasurable_const
 
+lemma singularPart_eq_self [μ.HaveLebesgueDecomposition ν] : μ.singularPart ν = μ ↔ μ ⟂ₘ ν := by
+  have h_dec := haveLebesgueDecomposition_add μ ν
+  refine ⟨fun h ↦ ?_, fun  h ↦ ?_⟩
+  · rw [← h]
+    exact mutuallySingular_singularPart _ _
+  · conv_rhs => rw [h_dec]
+    rw [(withDensity_rnDeriv_eq_zero _ _).mpr h, add_zero]
+
 instance singularPart.instIsFiniteMeasure [IsFiniteMeasure μ] :
     IsFiniteMeasure (μ.singularPart ν) :=
   isFiniteMeasure_of_le μ <| singularPart_le μ ν
