@@ -167,7 +167,7 @@ def toFinsuppLinearEquiv : S[X] ≃ₗ[S] (ℕ →₀ S) := {
 
 variable {S}
 theorem toFinsuppLinearEquiv_apply (p : S[X]) :
-  toFinsuppLinearEquiv S p = toFinsuppIso S p := rfl
+    toFinsuppLinearEquiv S p = toFinsuppIso S p := rfl
 
 /-- The linear map from the tensor product of a polynomial ring to a Finsupp type -/
 noncomputable def scalarRTensor : R[X] ⊗[R] N ≃ₗ[R] ℕ →₀ N :=
