@@ -244,6 +244,8 @@ def inftyValuedFqt : Valued (RatFunc Fq) ℤₘ₀ :=
 set_option linter.uppercaseLean3 false in
 #align function_field.infty_valued_Fqt FunctionField.inftyValuedFqt
 
+-- Adaptation note: 2024-03-15
+-- Renamed to avoid the reserved name `inftyValuedFqt.def`.
 theorem inftyValuedFqt.def' {x : RatFunc Fq} :
     @Valued.v (RatFunc Fq) _ _ _ (inftyValuedFqt Fq) x = inftyValuationDef Fq x :=
   rfl
@@ -269,6 +271,8 @@ instance valuedFqtInfty : Valued (FqtInfty Fq) ℤₘ₀ :=
 set_option linter.uppercaseLean3 false in
 #align function_field.valued_Fqt_infty FunctionField.valuedFqtInfty
 
+-- Adaptation note: 2024-03-15
+-- Renamed to avoid the reserved name `valuedFqtInfty.def`.
 theorem valuedFqtInfty.def' {x : FqtInfty Fq} :
     Valued.v x = @Valued.extension (RatFunc Fq) _ _ _ (inftyValuedFqt Fq) x :=
   rfl

@@ -32,6 +32,8 @@ notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
 
 variable {U U₁ U₂}
 
+-- Adaptation note: 2024-03-15
+-- Renamed to avoid the reserved name `SModEq.def`.
 protected theorem SModEq.def' :
     x ≡ y [SMOD U] ↔ (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y :=
   Iff.rfl
