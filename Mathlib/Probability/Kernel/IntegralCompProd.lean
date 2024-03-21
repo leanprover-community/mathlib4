@@ -99,9 +99,9 @@ theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyM
     rw [← and_congr_right_iff, and_iff_right_of_imp h1]
   rw [this]
   · intro h2f; rw [lintegral_congr_ae]
-    refine' h2f.mp _; apply eventually_of_forall; intro x hx; dsimp only
+    filter_upwards [h2f] with x hx
     rw [ofReal_toReal]; rw [← lt_top_iff_ne_top]; exact hx
-  · intro h2f; refine' ae_lt_top _ h2f.ne; exact h1f.ennnorm.lintegral_kernel_prod_right''
+  · intro h2f; refine ae_lt_top ?_ h2f.ne; exact h1f.ennnorm.lintegral_kernel_prod_right''
 #align probability_theory.has_finite_integral_comp_prod_iff ProbabilityTheory.hasFiniteIntegral_compProd_iff
 
 theorem hasFiniteIntegral_compProd_iff' ⦃f : β × γ → E⦄
@@ -113,9 +113,8 @@ theorem hasFiniteIntegral_compProd_iff' ⦃f : β × γ → E⦄
     hasFiniteIntegral_compProd_iff h1f.stronglyMeasurable_mk]
   apply and_congr
   · apply eventually_congr
-    filter_upwards [ae_ae_of_ae_compProd h1f.ae_eq_mk.symm]
-    intro x hx
-    exact hasFiniteIntegral_congr hx
+    filter_upwards [ae_ae_of_ae_compProd h1f.ae_eq_mk.symm] with x hx using
+      hasFiniteIntegral_congr hx
   · apply hasFiniteIntegral_congr
     filter_upwards [ae_ae_of_ae_compProd h1f.ae_eq_mk.symm] with _ hx using
       integral_congr_ae (EventuallyEq.fun_comp hx _)
@@ -263,9 +262,9 @@ theorem integral_compProd :
   · intro f g hfg _ hf
     convert hf using 1
     · exact integral_congr_ae hfg.symm
-    · refine' integral_congr_ae _
-      refine' (ae_ae_of_ae_compProd hfg).mp (eventually_of_forall _)
-      exact fun x hfgx => integral_congr_ae (ae_eq_symm hfgx)
+    · apply integral_congr_ae
+      filter_upwards [ae_ae_of_ae_compProd hfg] with x hfgx using
+        integral_congr_ae (ae_eq_symm hfgx)
 #align probability_theory.integral_comp_prod ProbabilityTheory.integral_compProd
 
 theorem set_integral_compProd {f : β × γ → E} {s : Set β} {t : Set γ} (hs : MeasurableSet s)
