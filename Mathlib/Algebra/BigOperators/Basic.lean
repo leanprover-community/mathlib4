@@ -977,8 +977,7 @@ theorem prod_eq_mul_of_mem {s : Finset α} {f : α → β} (a b : α) (ha : a �
     apply not_or.mp
     intro hab
     apply hcs
-    apply mem_insert.mpr
-    rw [mem_singleton]
+    rw [mem_insert, mem_singleton]
     exact hab
   rw [← prod_subset hu hf]
   exact Finset.prod_pair hn
@@ -2443,6 +2442,13 @@ theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a
     _ = (s.map fun _ => 1).sum := (Finset.sum_multiset_map_count _ _).symm
     _ = card s := by simp
 #align multiset.to_finset_sum_count_eq Multiset.toFinset_sum_count_eq
+
+@[simp]
+theorem sum_count_eq [Fintype α] (s : Multiset α) : ∑ a, s.count a = Multiset.card s := by
+  rw [← toFinset_sum_count_eq, ← Finset.sum_filter_ne_zero]
+  congr
+  ext
+  simp
 
 theorem count_sum' {s : Finset β} {a : α} {f : β → Multiset α} :
     count a (∑ x in s, f x) = ∑ x in s, count a (f x) := by

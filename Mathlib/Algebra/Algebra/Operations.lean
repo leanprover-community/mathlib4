@@ -70,13 +70,11 @@ end SubMulAction
 namespace Submodule
 
 variable {ι : Sort uι}
-
 variable {R : Type u} [CommSemiring R]
 
 section Ring
 
 variable {A : Type v} [Semiring A] [Algebra R A]
-
 variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
 /-- `1 : Submodule R A` is the submodule R of A. -/
@@ -204,7 +202,6 @@ theorem span_mul_span : span R S * span R T = span R (S * T) :=
 #align submodule.span_mul_span Submodule.span_mul_span
 
 variable {R}
-
 variable (M N P Q)
 
 @[simp]
@@ -625,7 +622,6 @@ end Ring
 section CommRing
 
 variable {A : Type v} [CommSemiring A] [Algebra R A]
-
 variable {M N : Submodule R A} {m n : A}
 
 theorem mul_mem_mul_rev (hm : m ∈ M) (hn : n ∈ N) : n * m ∈ M * N :=

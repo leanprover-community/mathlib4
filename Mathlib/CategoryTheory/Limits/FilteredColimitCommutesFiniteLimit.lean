@@ -27,6 +27,12 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
 
+-- Various pieces of algebra that have previously been spuriously imported here:
+assert_not_exists zero_zpow
+assert_not_exists map_ne_zero
+assert_not_exists Field
+ -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
+ -- finiteness currently relies on more algebra than it needs.
 
 universe w v₁ v₂ v u₁ u₂ u
 
@@ -357,9 +363,7 @@ variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
 section
 
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
-
 variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
-
 variable [PreservesLimitsOfShape J (forget C)]
 
 noncomputable instance filteredColimPreservesFiniteLimits :
@@ -383,9 +387,7 @@ noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesColimitsOfSh
 section
 
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
-
 variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
-
 variable [PreservesLimitsOfShape J (forget C)]
 
 /-- A curried version of the fact that filtered colimits commute with finite limits. -/
@@ -416,8 +418,3 @@ end
 end
 
 end CategoryTheory.Limits
-
--- Various pieces of algebra that have previously been spuriously imported here:
-assert_not_exists zero_zpow
-assert_not_exists div_self
-assert_not_exists Field

@@ -47,7 +47,6 @@ other arguments belong to specific domains.
 section OrderedRing
 
 variable [OrderedRing k] [OrderedAddCommGroup E] [Module k E] [OrderedSMul k E]
-
 variable {a a' b b' : E} {r r' : k}
 
 theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lineMap a' b r := by
@@ -119,7 +118,6 @@ end LinearOrderedRing
 section LinearOrderedField
 
 variable [LinearOrderedField k] [OrderedAddCommGroup E]
-
 variable [Module k E] [OrderedSMul k E]
 
 section
