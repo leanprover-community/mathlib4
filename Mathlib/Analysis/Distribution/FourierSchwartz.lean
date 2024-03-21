@@ -35,8 +35,9 @@ Fourier transform of `VectorFourier.mul_L_schwartz L f`. -/
 def VectorFourier.mul_L_schwartz : 𝓢(D, V) →L[ℝ] 𝓢(D, E →L[ℝ] V) :=
   -(2 * π * I) • (bilinLeftCLM (ContinuousLinearMap.smulRightL ℝ E V).flip L.hasTemperateGrowth)
 
+@[simp]
 lemma VectorFourier.mul_L_schwartz_apply (f : 𝓢(D, V)) (d : D) :
-    VectorFourier.mul_L_schwartz L f d = VectorFourier.mul_L L f d := rfl
+    VectorFourier.mul_L_schwartz L f d = -(2 * π * I) • (L d).smulRight (f d) := rfl
 
 attribute [local instance 200] secondCountableTopologyEither_of_left
 
@@ -47,4 +48,4 @@ theorem SchwartzMap.hasFDerivAt_fourier [CompleteSpace V] [MeasurableSpace D] [B
     HasFDerivAt (fourierIntegral fourierChar μ L.toLinearMap₂ f)
       (fourierIntegral fourierChar μ L.toLinearMap₂ (mul_L_schwartz L f) w) w :=
   VectorFourier.hasFDerivAt_fourier L f.integrable
-    (by simpa using f.integrable_pow_mul (μ := μ) 1) w
+    (by simpa using f.integrable_pow_mul μ 1) w
