@@ -712,8 +712,7 @@ theorem Ideal.prime_generator_of_prime {P : Ideal A} (h : Prime P) [P.IsPrincipa
   prime_generator_of_isPrime _ h.ne_zero
 
 open UniqueFactorizationMonoid in
-nonrec theorem Ideal.mem_normalizedFactors_iff [DecidableEq (Ideal A)]
-    {p I : Ideal A} (hI : I ≠ ⊥) :
+nonrec theorem Ideal.mem_normalizedFactors_iff {p I : Ideal A} (hI : I ≠ ⊥) :
     p ∈ normalizedFactors I ↔ p.IsPrime ∧ I ≤ p := by
   rw [← Ideal.dvd_iff_le]
   by_cases hp : p = 0
