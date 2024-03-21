@@ -83,7 +83,7 @@ protected abbrev addCommMonoidWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] 
   __ := hf.addCommMonoid _ zero add (swap nsmul)
 
 /-- A type endowed with `0`, `1` and `+` is an additive group with one, if it admits an injective
-map that preserves `0`, `1` and `+` to an additive group with one.  See note
+map that preserves `0`, `1` and `+` to an additive group with one. See note
 [reducible non-instances]. -/
 protected abbrev addGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [Neg S] [Sub S]
     [SMul ℤ S] [NatCast S] [IntCast S] [AddGroupWithOne R] (f : S → R) (hf : Injective f)
@@ -95,7 +95,7 @@ protected abbrev addGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [Neg 
     hf.addMonoidWithOne f zero one add nsmul natCast with
     intCast := Int.cast,
     intCast_ofNat := fun n => hf (by rw [natCast, intCast, Int.cast_natCast]),
-    intCast_negSucc := fun n => hf (by rw [intCast, neg, natCast, Int.cast_negSucc] ) }
+    intCast_negSucc := fun n => hf (by rw [intCast, neg, natCast, Int.cast_negSucc]) }
 
 /-- A type endowed with `0`, `1` and `+` is an additive commutative group with one, if it admits an
 injective map that preserves `0`, `1` and `+` to an additive commutative group with one.
@@ -322,9 +322,8 @@ protected abbrev addGroupWithOne [AddGroupWithOne R]
   { hf.addMonoidWithOne f zero one add nsmul natCast,
     hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul) with
     intCast := Int.cast,
-    intCast_ofNat := fun n => by rw [← intCast, Int.cast_natCast, natCast],
-    intCast_negSucc := fun n => by
-      rw [← intCast, Int.cast_negSucc, neg, natCast] }
+    intCast_ofNat n := by rw [← intCast, Int.cast_natCast, natCast],
+    intCast_negSucc n := by rw [← intCast, Int.cast_negSucc, neg, natCast] }
 
 /-- A type endowed with `0`, `1`, `+` is an additive commutative group with one, if it admits a
 surjective map that preserves `0`, `1`, and `+` to an additive commutative group with one.
