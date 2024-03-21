@@ -6,6 +6,7 @@ Authors: Damiano Testa
 import Lean.Elab.Command
 import Lean.Linter.Util
 import Std.Data.Array.Basic
+import Std.Data.List.Basic
 
 /-!
 #  The non-terminal `simp` linter
@@ -34,18 +35,19 @@ register_option linter.nonTerminalSimp : Bool := {
   descr := "enable the 'non-terminal `simp`' linter"
 }
 
-namespace nonTerminalSimp
-
 /-- `onlyOrNotSimp stx` if `stx` is syntax for `simp` *without* `only`, then returns `false` else
 returs `true`. -/
-def onlyOrNotSimp : Syntax → Bool
+def nonTerminalSimp.onlyOrNotSimp : Syntax → Bool
   | .node _info `Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal == "only"
   | _ => true
 
 /-- The monad for collecting `simp`s that are not `simp only`. -/
-abbrev M := StateRefT (HashMap String.Range Syntax) IO
+abbrev nonTerminalSimp.M := StateRefT (HashMap String.Range Syntax) IO
+
+end Mathlib.Linter
 
 section goals_heuristic
+namespace Lean namespace Elab namespace TacticInfo
 variable (t : TacticInfo)
 /-!
 ###  Heuristics for determining active and inactive goals
@@ -70,10 +72,14 @@ They should correspond to the goals changed by the tactic `t`. -/
 def activeGoalsAfter : List MVarId :=
   t.goalsAfter.filter (·.name ∉ t.goalsBefore.map (·.name))
 
+end TacticInfo end Elab end Lean
 end goals_heuristic
 
+namespace Mathlib.Linter.nonTerminalSimp
+open Lean Elab TacticInfo
+
 variable (kind : SyntaxNodeKind) in
-/-- `extractRealGoals kind tree` takes as input a `SyntaxNodeKind` and an `InfoTree` and returns
+/-- `extractRealGoals' kind tree` takes as input a `SyntaxNodeKind` and an `InfoTree` and returns
 the array of pairs `(stx, mvars)`, where `stx` is a syntax node of kind `kind` and `mvars` are
 the goals that have been "created" by the tactic in `stx`.
 
@@ -84,15 +90,16 @@ def extractRealGoals' : InfoTree → Array (Syntax × List MVarId)
     let kargs := (args.map extractRealGoals').foldl (· ++ ·) #[]
     if let Lean.Elab.Info.ofTacticInfo i := k then
       if i.stx.getKind == kind && (i.stx.getRange? true).isSome then
-        kargs.push (i.stx, activeGoalsAfter i) else kargs
+        kargs.push (i.stx, i.activeGoalsAfter) else kargs
     else kargs
   | .context _ t => extractRealGoals' t
   | _ => default
 
 variable (take? : Syntax → Bool) in
-/-- `extractRealGoals kind tree` takes as input a `SyntaxNodeKind` and an `InfoTree` and returns
-the array of pairs `(stx, mvars)`, where `stx` is a syntax node of kind `kind` and `mvars` are
-the goals that have been "created" by the tactic in `stx`.
+/-- `extractRealGoals take? tree` takes as input a function `take? : Syntax → Bool` and
+an `InfoTree` and returns the array of pairs `(stx, mvars)`,
+where `stx` is a syntax node such that `take? stx` is `true` and
+`mvars` are the goals that have been "created" by the tactic in `stx`.
 
 A typical usage is to find the goals following a `simp` application. -/
 partial
@@ -101,9 +108,46 @@ def extractRealGoals : InfoTree → Array (Syntax × List MVarId)
     let kargs := (args.map extractRealGoals).foldl (· ++ ·) #[]
     if let Lean.Elab.Info.ofTacticInfo i := k then
       if take? i.stx && (i.stx.getRange? true).isSome then
-        kargs.push (i.stx, activeGoalsAfter i) else kargs
+        kargs.push (i.stx, i.activeGoalsAfter) else kargs
     else kargs
   | .context _ t => extractRealGoals t
+  | _ => default
+
+variable (take? : Syntax → Bool) in
+/-- `extractRealGoalsCtx take? tree` takes as input a function `take? : Syntax → Bool` and
+an `InfoTree` and returns the array of pairs `(stx, mvars)`,
+where `stx` is a syntax node such that `take? stx` is `true` and
+`mvars` are the goals that have been "created" by the tactic in `stx`.
+
+A typical usage is to find the goals following a `simp` application. -/
+partial
+def extractRealGoalsCtx : InfoTree → Array (Syntax × MetavarContext × List MVarId)
+  | .node k args =>
+    let kargs := (args.map extractRealGoalsCtx).foldl (· ++ ·) #[]
+    if let Lean.Elab.Info.ofTacticInfo i := k then
+      if take? i.stx && (i.stx.getRange? true).isSome then
+        kargs.push (i.stx, i.mctxAfter, i.activeGoalsAfter) else kargs
+    else kargs
+  | .context _ t => extractRealGoalsCtx t
+  | _ => default
+
+variable (take? : Syntax → Bool) in
+-- also returns the preceding goals that change.  is there only one always?
+/-- `extractRealGoalsCtx' take? tree` takes as input a function `take? : Syntax → Bool` and
+an `InfoTree` and returns the array of pairs `(stx, mvars)`,
+where `stx` is a syntax node such that `take? stx` is `true` and
+`mvars` are the goals that have been "created" by the tactic in `stx`.
+
+A typical usage is to find the goals following a `simp` application. -/
+partial
+def extractRealGoalsCtx' : InfoTree → Array (Syntax × MetavarContext × MetavarContext × List MVarId × List MVarId)
+  | .node k args =>
+    let kargs := (args.map extractRealGoalsCtx').foldl (· ++ ·) #[]
+    if let Lean.Elab.Info.ofTacticInfo i := k then
+      if take? i.stx && (i.stx.getRange? true).isSome then
+        kargs.push (i.stx, i.mctxBefore, i.mctxAfter, i.activeGoalsBefore, i.activeGoalsAfter) else kargs
+    else kargs
+  | .context _ t => extractRealGoalsCtx' t
   | _ => default
 
 variable (kind : SyntaxNodeKind) in
@@ -200,8 +244,6 @@ partial def addNonSimpOnlysList (trees : PersistentArray InfoTree) : M Unit := d
 --      IO.println <| goals_after.map (·.name)
   trees.forM addNonSimpOnlys
 
-
-
 @[inherit_doc addNonSimpOnlysList]
 partial def addNonSimpOnlys : InfoTree → M Unit
   | .node i c => do
@@ -217,8 +259,34 @@ partial def addNonSimpOnlys : InfoTree → M Unit
 
 end
 
+partial
+def showTargets : InfoTree → List (List (Option Name × Name))
+  | .node i c =>
+    let rest := (c.toList.map showTargets).join
+    if let .ofTacticInfo i := i then
+      let mvs := i.goalsBefore
+      let mc := i.mctxBefore
+      let decls := mc.decls
+      let lctxs := mvs.map decls.find?
+      let lsome := lctxs.reduceOption
+      let lcts := lsome.map (·.lctx)
+      let fvars := lcts.map (·.getFVarIds)
+      let prenms := (lcts.zip fvars).map fun (lc, a) => (a.toList.map fun b => (lc.getRoundtrippingUserName? b, b.name))
+--      let nms := prenms.join
+      --dbg_trace nms
+      rest ++ prenms
+--      match i.stx.getRange? true, non_terminal_simp? with
+--        | some r, true => rest
+--        | _, _ => rest
+    else rest
+  | .context _ t => showTargets t
+  | .hole _ => []
+
 /-- Gets the value of the `linter.nonTerminalSimp` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.nonTerminalSimp o
+
+#check Parser.Term.have
+
 
 /-- The main entry point to the unreachable tactic linter. -/
 def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
@@ -230,7 +298,46 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
   let trees ← getInfoTrees
 --  let (_, map) ← (addNonSimpOnlysList trees).run {}
 --  dbg_trace "processing1"
-
+--  Meta.inspect _stx
+  let xx := trees.toList.map (extractGoals ( ``Lean.Parser.Tactic.tacticHave_))
+  for d in xx do
+    for (s, b, a) in d do
+--      logInfo m!"{s}\nbefore: {b.map (·.name)}\nafter:  {a.map (·.name)}\n"
+--  let x := trees.toList.map (extractRealGoalsCtx (·.getKind == ``Lean.Parser.Tactic.tacticHave_))
+  let x := trees.toList.map (extractRealGoalsCtx' (fun _ => true)) -- (·.getKind == ``Lean.Parser.Tactic.tacticHave_))
+  for d in x do for (s, ctxb, ctx, mvsb, mvs) in d do
+--    logInfo m!"generating syntax: '{s}'"
+    let mdecls := (mvs.map ctx.findDecl?).reduceOption
+    let cts := mdecls.map (·.lctx)
+    let sepLdecls := cts.map (·.decls.toList |>.reduceOption)
+    let ldecls := sepLdecls.join
+    logInfo m!"{s}\nbefore: {mvsb.map (·.name)}\nafter:  {mvs.map (·.name)}\n"
+    Command.liftCoreM do
+      let _ ← Meta.MetaM.run do
+--      dbg_trace "types:"
+      for g in ldecls do
+        let gt ← Meta.ppExpr g.type
+        dbg_trace "· {gt}\n· {g.userName}\n· {g.fvarId.name}\n"
+--      dbg_trace (← ldecls.mapM (Meta.ppExpr ·.toExpr))
+    let fvs := cts.map (·.getFVarIds)
+    let values := (ldecls.map (·.value?)).reduceOption
+--    dbg_trace "values: {values.length}\nfvs: {fvs.length}"
+    Command.liftCoreM do
+      let _ ← Meta.MetaM.run do
+      let pps ← values.mapM fun x => Meta.ppExpr x
+--      logInfo m!"generated decls: '{pps}'"
+/-
+  let x := trees.toList.map showTargets
+  let y := trees.toList.map fun o => (extractGoals ``Parser.Term.haveDecl o) --``Lean.Parser.Tactic.simp o)
+  for d in y do
+    for (stx, bef, aft) in d do
+      dbg_trace stx
+      dbg_trace "{bef.map (·.name)} -- {aft.map (·.name)}"
+  for d in x do
+    logInfo "d"
+    for e in d do logInfo m!"{e}\n"
+--  dbg_trace x
+-/
   trees.forM fun tree => do
     let mut con := 0
 --    dbg_trace "processing2"
