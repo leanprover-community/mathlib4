@@ -58,13 +58,11 @@ submonoid, submonoids
 -- Only needed for notation
 -- Only needed for notation
 variable {M : Type*} {N : Type*}
-
 variable {A : Type*}
 
 section NonAssoc
 
 variable [MulOneClass M] {s : Set M}
-
 variable [AddZeroClass A] {t : Set A}
 
 /-- `OneMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. -/
@@ -324,7 +322,7 @@ theorem mem_sInf {S : Set (Submonoid M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S,
 
 @[to_additive]
 theorem mem_iInf {ι : Sort*} {S : ι → Submonoid M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_range_iff]
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align submonoid.mem_infi Submonoid.mem_iInf
 #align add_submonoid.mem_infi AddSubmonoid.mem_iInf
 

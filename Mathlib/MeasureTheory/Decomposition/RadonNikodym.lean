@@ -196,7 +196,7 @@ theorem rnDeriv_restrict (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
   refine (rnDeriv_withDensity_left ?_ ?_ ?_).trans (ae_of_all _ (fun x ↦ ?_))
   · exact measurable_one.aemeasurable.indicator hs
   · exact measurable_one.aemeasurable.indicator hs
-  · refine ae_of_all _ (fun x ↦ ?_)
+  · filter_upwards with x
     simp only [Set.indicator_apply, Pi.one_apply, ne_eq]
     split_ifs <;> simp [ENNReal.zero_ne_top]
   · simp [Set.indicator_apply]
@@ -443,6 +443,14 @@ theorem lintegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ 
     (hf : AEMeasurable f ν) : ∫⁻ x, μ.rnDeriv ν x * f x ∂ν = ∫⁻ x, f x ∂μ := by
   nth_rw 2 [← withDensity_rnDeriv_eq μ ν hμν]
   rw [lintegral_withDensity_eq_lintegral_mul₀ (measurable_rnDeriv μ ν).aemeasurable hf]
+  rfl
+
+lemma set_lintegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f ν) {s : Set α} (hs : MeasurableSet s) :
+    ∫⁻ x in s, μ.rnDeriv ν x * f x ∂ν = ∫⁻ x in s, f x ∂μ := by
+  nth_rw 2 [← Measure.withDensity_rnDeriv_eq μ ν hμν]
+  rw [set_lintegral_withDensity_eq_lintegral_mul₀ (Measure.measurable_rnDeriv μ ν).aemeasurable hf
+    hs]
   rfl
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]

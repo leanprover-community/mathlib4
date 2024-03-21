@@ -417,7 +417,8 @@ theorem riemannZeta_neg_two_mul_nat_add_one (n : ℕ) : riemannZeta (-2 * (n + 1
 /-- A formal statement of the **Riemann hypothesis** – constructing a term of this type is worth a
 million dollars. -/
 def RiemannHypothesis : Prop :=
-  ∀ (s : ℂ) (_ : riemannCompletedZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)), s.re = 1 / 2
+  ∀ (s : ℂ) (_ : s ≠ 1) (_ : riemannCompletedZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)),
+  s.re = 1 / 2
 #align riemann_hypothesis RiemannHypothesis
 
 /-!
