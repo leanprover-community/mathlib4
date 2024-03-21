@@ -18,6 +18,13 @@ and limit 1 at +∞, and such that for all `x : ℝ`, `a ↦ condCDF ρ a x` is 
 `x : ℝ` and measurable set `s`, that function satisfies
 `∫⁻ a in s, ennreal.of_real (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
 
+`condCDF` is build from the more general tools about kernel CDFs developed in the file
+`Probability.Kernel.Disintegration.CdfToKernel`. In that file, we build a function
+`α × β → StieltjesFunction` (which is `α × β → ℝ → ℝ` with additional properties) from a function
+`α × β → ℚ → ℝ`. The restriction to `ℚ` allows to prove some properties like measurability more
+easily. Here we apply that construction to the case `β = Unit` and then drop `β` to build
+`condCDF : α → StieltjesFunction`.
+
 ## Main definitions
 
 * `ProbabilityTheory.condCDF ρ : α → StieltjesFunction`: the conditional cdf of
@@ -28,11 +35,6 @@ and limit 1 at +∞, and such that for all `x : ℝ`, `a ↦ condCDF ρ a x` is 
 
 * `ProbabilityTheory.set_lintegral_condCDF`: for all `a : α` and `x : ℝ`, all measurable set `s`,
   `∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
-
-## References
-
-The construction of the conditional cdf in this file follows the proof of Theorem 3.4 in
-[O. Kallenberg, Foundations of modern probability][kallenberg2021].
 
 -/
 
