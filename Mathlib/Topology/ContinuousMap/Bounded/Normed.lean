@@ -61,11 +61,9 @@ theorem norm_coe_le_norm (x : α) : ‖f x‖ ≤ ‖f‖ :=
     ‖f x‖ = dist (f x) ((0 : α →ᵇ β) x) := by simp [dist_zero_right]
     _ ≤ ‖f‖ := dist_coe_le_dist _
 
-lemma neg_norm_le_apply (f : α →ᵇ ℝ) (x : α) :
-    -‖f‖ ≤ f x := (abs_le.mp (norm_coe_le_norm f x)).1
+lemma neg_norm_le_apply (f : α →ᵇ ℝ) (x : α) : -‖f‖ ≤ f x := (abs_le.mp (norm_coe_le_norm f x)).1
 
-lemma apply_le_norm (f : α →ᵇ ℝ) (x : α) :
-    f x ≤ ‖f‖ := (abs_le.mp (norm_coe_le_norm f x)).2
+lemma apply_le_norm (f : α →ᵇ ℝ) (x : α) : f x ≤ ‖f‖ := (abs_le.mp (norm_coe_le_norm f x)).2
 
 theorem dist_le_two_norm' {f : γ → β} {C : ℝ} (hC : ∀ x, ‖f x‖ ≤ C) (x y : γ) :
     dist (f x) (f y) ≤ 2 * C :=
