@@ -719,13 +719,13 @@ instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMet
       intro z
       have : IsOpen (U z) := Metric.isOpen_ball
       refine IsOpen.mem_nhds this ?hx
-      simp_all only [U, gt_iff_lt, Metric.mem_ball, dist_self, zero_lt_two, mul_pos_iff_of_pos_left]
+      simp only [U, Metric.mem_ball, dist_self, hpos]
     have ⟨t, hct, huniv⟩ := LindelofSpace.elim_nhds_subcover U hU
     refine ⟨t, hct, ?_⟩
     intro z
     have ⟨y, ht, hzy⟩ : ∃ y ∈ t, z ∈ U y := exists_set_mem_of_union_eq_top t (fun i ↦ U i) huniv z
-    use y, ht
-    exact LT.lt.le hzy
+    simp only [Metric.mem_ball, U] at hzy
+    exact ⟨y, ht, hzy.le⟩
   exact Metric.secondCountable_of_almost_dense_set h_dense
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)

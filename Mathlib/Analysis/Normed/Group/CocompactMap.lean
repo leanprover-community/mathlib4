@@ -27,7 +27,7 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F] [ProperSpace E] [ProperSp
 variable {f : 𝓕}
 
 theorem CocompactMapClass.norm_le [FunLike 𝓕 E F] [CocompactMapClass 𝓕 E F] (ε : ℝ) :
-    ∃ (r : ℝ), ∀ (x : E) (_hx : r < ‖x‖), ε < ‖f x‖ := by
+    ∃ r : ℝ, ∀ x : E, r < ‖x‖ → ε < ‖f x‖ := by
   have h := cocompact_tendsto f
   rw [tendsto_def] at h
   specialize h (Metric.closedBall 0 ε)ᶜ (mem_cocompact_of_closedBall_compl_subset 0 ⟨ε, rfl.subset⟩)
@@ -39,7 +39,7 @@ theorem CocompactMapClass.norm_le [FunLike 𝓕 E F] [CocompactMapClass 𝓕 E F
   simp [hx]
 
 theorem Filter.tendsto_cocompact_cocompact_of_norm {f : E → F}
-    (h : ∀ ε : ℝ, ∃ r : ℝ, ∀ (x : E) (_hx : r < ‖x‖), ε < ‖f x‖) :
+    (h : ∀ ε : ℝ, ∃ r : ℝ, ∀ x : E, r < ‖x‖ → ε < ‖f x‖) :
     Tendsto f (cocompact E) (cocompact F) := by
   rw [tendsto_def]
   intro s hs
@@ -53,6 +53,6 @@ theorem Filter.tendsto_cocompact_cocompact_of_norm {f : E → F}
   simp [hr x hx]
 
 theorem ContinuousMapClass.toCocompactMapClass_of_norm [FunLike 𝓕 E F] [ContinuousMapClass 𝓕 E F]
-    (h : ∀ (f : 𝓕) (ε : ℝ), ∃ r : ℝ, ∀ (x : E) (_hx : r < ‖x‖), ε < ‖f x‖) :
+    (h : ∀ (f : 𝓕) (ε : ℝ), ∃ r : ℝ, ∀ x : E, r < ‖x‖ → ε < ‖f x‖) :
     CocompactMapClass 𝓕 E F where
   cocompact_tendsto := (tendsto_cocompact_cocompact_of_norm <| h ·)

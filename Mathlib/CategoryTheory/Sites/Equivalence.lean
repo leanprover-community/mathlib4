@@ -77,7 +77,7 @@ theorem coverPreserving : CoverPreserving J (e.locallyCoverDense J).inducedTopol
       simpa using S.downward_closed hg _
     · intro hf
       exact ⟨_, e.unitInv.app Z ≫ f ≫ e.unitInv.app U, S.downward_closed hf _,
-        e.unit.app Z ≫ e.unit.app _, (by simp)⟩
+        e.unit.app Z ≫ e.unit.app _, by simp⟩
 
 instance : IsCoverDense e.functor (e.locallyCoverDense J).inducedTopology where
   is_cover U := by
@@ -87,7 +87,7 @@ instance : IsCoverDense e.functor (e.locallyCoverDense J).inducedTopology where
     simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, exists_and_left,
       Sieve.top_apply, iff_true]
     exact ⟨e.functor.obj Y, (Adjunction.homEquiv e.toAdjunction _ _).symm f,
-      Presieve.in_coverByImage _ _, e.unit.app _, (by simp)⟩
+      Presieve.in_coverByImage _ _, e.unit.app _, by simp⟩
 
 instance : IsCoverDense e.inverse J where
   is_cover U := by
