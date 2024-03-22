@@ -819,6 +819,9 @@ theorem quot_out [Monoid α] (a : Associates α) : Associates.mk (Quot.out a) = 
   rw [← quot_mk_eq_mk, Quot.out_eq]
 #align associates.quot_out Associates.quot_outₓ
 
+theorem mk_quot_out [Monoid α] (a : α) : Quot.out (Associates.mk a) ~ᵤ a := by
+  rw [← Associates.mk_eq_mk_iff_associated, Associates.quot_out]
+
 theorem forall_associated [Monoid α] {p : Associates α → Prop} :
     (∀ a, p a) ↔ ∀ a, p (Associates.mk a) :=
   Iff.intro (fun h _ => h _) fun h a => Quotient.inductionOn a h

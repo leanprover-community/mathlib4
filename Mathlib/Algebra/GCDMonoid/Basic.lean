@@ -1420,3 +1420,42 @@ theorem normalize_eq_one {a : G₀} (h0 : a ≠ 0) : normalize a = 1 := by simp 
 #align comm_group_with_zero.normalize_eq_one CommGroupWithZero.normalize_eq_one
 
 end CommGroupWithZero
+
+namespace Associates
+
+noncomputable instance [CancelCommMonoidWithZero α] [GCDMonoid α] : GCDMonoid (Associates α) where
+  gcd a b := Associates.mk (gcd (Quot.out a) (Quot.out b))
+  lcm a b := Associates.mk (lcm (Quot.out a) (Quot.out b))
+  gcd_dvd_left := by
+    rintro ⟨a⟩ ⟨b⟩
+    simp only [quot_mk_eq_mk, mk_dvd_mk]
+    exact dvd_trans (gcd_dvd_left _ _) (mk_quot_out _).dvd
+  gcd_dvd_right := by
+    rintro ⟨a⟩ ⟨b⟩
+    simp only [quot_mk_eq_mk, mk_dvd_mk]
+    exact dvd_trans (gcd_dvd_right _ _) (mk_quot_out _).dvd
+  dvd_gcd := by
+    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ hac hbc
+    simp only [quot_mk_eq_mk, mk_dvd_mk] at *
+    apply dvd_gcd <;> exact dvd_trans ‹_› (mk_quot_out _).symm.dvd
+  gcd_mul_lcm := by
+    rintro ⟨a⟩ ⟨b⟩
+    simp only [quot_mk_eq_mk, mk_mul_mk, associated_eq_eq, mk_eq_mk_iff_associated] at *
+    refine Associated.trans ?_ (gcd_mul_lcm a b)
+    apply Associated.mul_mul <;> apply associated_of_dvd_dvd
+    · apply gcd_dvd_gcd <;> exact (mk_quot_out _).dvd
+    · apply gcd_dvd_gcd <;> exact (mk_quot_out _).symm.dvd
+    · apply lcm_dvd_lcm <;> exact (mk_quot_out _).dvd
+    · apply lcm_dvd_lcm <;> exact (mk_quot_out _).symm.dvd
+  lcm_zero_left := by
+    rintro ⟨a⟩
+    simp only [quot_mk_eq_mk, mk_eq_zero] at *
+    convert lcm_zero_left _
+    rw [← mk_eq_zero, quot_out]
+  lcm_zero_right := by
+    rintro ⟨a⟩
+    simp only [quot_mk_eq_mk, mk_eq_zero] at *
+    convert lcm_zero_right _
+    rw [← mk_eq_zero, quot_out]
+
+end Associates
