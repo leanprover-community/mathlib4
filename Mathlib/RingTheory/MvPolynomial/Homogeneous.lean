@@ -108,7 +108,7 @@ theorem homogeneousSubmodule_mul [CommSemiring R] (m n : ℕ) :
   rw [← hde, ← hφ, ← hψ, Finset.sum_subset Finsupp.support_add, Finset.sum_subset hd',
     Finset.sum_subset he', ← Finset.sum_add_distrib]
   · congr
-  all_goals intro i hi; apply Finsupp.not_mem_support_iff.mp
+  all_goals intro _ _; apply Finsupp.not_mem_support_iff.mp
 #align mv_polynomial.homogeneous_submodule_mul MvPolynomial.homogeneousSubmodule_mul
 
 section
