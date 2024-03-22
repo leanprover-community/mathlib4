@@ -51,17 +51,6 @@ open LinearMap (BilinForm)
 
 universe u v w
 
-/-
-/-- `BilinForm R M` is the type of `R`-bilinear functions `M → M → R`. -/
-structure BilinForm (R : Type*) (M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] where
-  bilin : M → M → R
-  bilin_add_left : ∀ x y z : M, bilin (x + y) z = bilin x z + bilin y z
-  bilin_smul_left : ∀ (a : R) (x y : M), bilin (a • x) y = a * bilin x y
-  bilin_add_right : ∀ x y z : M, bilin x (y + z) = bilin x y + bilin x z
-  bilin_smul_right : ∀ (a : R) (x y : M), bilin x (a • y) = a * bilin x y
-#align bilin_form BilinForm
--/
-
 variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
@@ -73,76 +62,61 @@ namespace LinearMap
 namespace BilinForm
 
 instance : CoeFun (BilinForm R M) fun _ => M → M → R := ⟨fun B₃ x y => B₃ x y⟩
+
 /-
 initialize_simps_projections BilinForm (bilin → apply)
-
 
 -- Porting note: removed for simpVarHead @[simp]
 theorem coeFn_mk (f : M → M → R) (h₁ h₂ h₃ h₄) : (BilinForm.mk f h₁ h₂ h₃ h₄ : M → M → R) = f :=
   rfl
 #align bilin_form.coe_fn_mk BilinForm.coeFn_mk
 -/
+
 theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
   | _, _, _, _, rfl, rfl => rfl
 #align bilin_form.coe_fn_congr LinearMap.BilinForm.coeFn_congr
 
---@[simp]
 theorem add_left (x y z : M) : B (x + y) z = B x z + B y z := by
   simp only [map_add, LinearMap.add_apply]
-  --bilin_add_left B x y z
 #align bilin_form.add_left LinearMap.BilinForm.add_left
 
---@[simp]
 theorem smul_left (a : R) (x y : M) : B (a • x) y = a * B x y := by
   simp only [map_smul, LinearMap.smul_apply, smul_eq_mul]
-  --bilin_smul_left B a x y
 #align bilin_form.smul_left LinearMap.BilinForm.smul_left
 
---@[simp]
 theorem add_right (x y z : M) : B x (y + z) = B x y + B x z := map_add _ _ _
 #align bilin_form.add_right LinearMap.BilinForm.add_right
 
---@[simp]
-theorem smul_right (a : R) (x y : M) : B x (a • y) = a * B x y := by
-  simp only [map_smul, smul_eq_mul]
-  --bilin_smul_right B a x y
+theorem smul_right (a : R) (x y : M) : B x (a • y) = a * B x y := map_smul _ _ _
 #align bilin_form.smul_right LinearMap.BilinForm.smul_right
 
---@[simp]
 theorem zero_left (x : M) : B 0 x = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), smul_left, zero_mul]
 #align bilin_form.zero_left LinearMap.BilinForm.zero_left
 
---@[simp]
 theorem zero_right (x : M) : B x 0 = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), smul_right, zero_mul]
 #align bilin_form.zero_right LinearMap.BilinForm.zero_right
 
---@[simp]
 theorem neg_left (x y : M₁) : B₁ (-x) y = -B₁ x y := by
   rw [← @neg_one_smul R₁ _ _, smul_left, neg_one_mul]
 #align bilin_form.neg_left LinearMap.BilinForm.neg_left
 
---@[simp]
 theorem neg_right (x y : M₁) : B₁ x (-y) = -B₁ x y := by
   rw [← @neg_one_smul R₁ _ _, smul_right, neg_one_mul]
 #align bilin_form.neg_right LinearMap.BilinForm.neg_right
 
---@[simp]
 theorem sub_left (x y z : M₁) : B₁ (x - y) z = B₁ x z - B₁ y z := by
   rw [sub_eq_add_neg, sub_eq_add_neg, add_left, neg_left]
 #align bilin_form.sub_left LinearMap.BilinForm.sub_left
 
---@[simp]
 theorem sub_right (x y z : M₁) : B₁ x (y - z) = B₁ x y - B₁ x z := by
   rw [sub_eq_add_neg, sub_eq_add_neg, add_right, neg_right]
 #align bilin_form.sub_right LinearMap.BilinForm.sub_right
 
---@[simp]
 lemma smul_left_of_tower (r : S) (x y : M) : B (r • x) y = r • B x y := by
   rw [← IsScalarTower.algebraMap_smul R r, smul_left, Algebra.smul_def]
 
---@[simp]
 lemma smul_right_of_tower (r : S) (x y : M) : B x (r • y) = r • B x y := by
   rw [← IsScalarTower.algebraMap_smul R r, smul_right, Algebra.smul_def]
 
@@ -172,7 +146,6 @@ theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y :=
 
 instance : Zero (BilinForm R M) := LinearMap.instZeroLinearMap
 
---@[simp]
 theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=
   rfl
 #align bilin_form.coe_zero LinearMap.BilinForm.coe_zero
@@ -186,7 +159,6 @@ variable (B D B₁ D₁)
 
 instance : Add (BilinForm R M) := LinearMap.instAddLinearMap
 
---@[simp]
 theorem coe_add : ⇑(B + D) = B + D :=
   rfl
 #align bilin_form.coe_add LinearMap.BilinForm.coe_add
@@ -203,7 +175,6 @@ When `R` itself is commutative, this provides an `R`-action via `Algebra.id`. -/
 instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R]  :
     SMul α (BilinForm R M) := LinearMap.instSMulLinearMap
 
---@[simp]
 theorem coe_smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R]
     (a : α) (B : BilinForm R M) : ⇑(a • B) = a • ⇑B :=
   rfl
@@ -235,7 +206,6 @@ instance : AddCommMonoid (BilinForm R M) :=
 
 instance : Neg (BilinForm R₁ M₁) := LinearMap.instNegLinearMapToAddCommMonoid
 
---@[simp]
 theorem coe_neg : ⇑(-B₁) = -B₁ :=
   rfl
 #align bilin_form.coe_neg LinearMap.BilinForm.coe_neg
@@ -247,7 +217,6 @@ theorem neg_apply (x y : M₁) : (-B₁) x y = -B₁ x y :=
 
 instance : Sub (BilinForm R₁ M₁) := LinearMap.instSubLinearMapToAddCommMonoid
 
---@[simp]
 theorem coe_sub : ⇑(B₁ - D₁) = B₁ - D₁ :=
   rfl
 #align bilin_form.coe_sub LinearMap.BilinForm.coe_sub
