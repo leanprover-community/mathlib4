@@ -105,7 +105,7 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
 /-- Given a subgroup `Γ` of a topological group `G` with measure `ν`, and a measure 'μ' on the
   quotient `G ⧸ Γ` satisfying `QuotientMeasureEqMeasurePreimage`, the restriction
   of `ν` to a fundamental domain is measure-preserving with respect to `μ`. -/
-@[to_additive measurePreserving_addQuotientGroup_mk_of_addQuotientMeasureEqMeasurePreimage]
+@[to_additive]
 theorem measurePreserving_quotientGroup_mk_of_QuotientMeasureEqMeasurePreimage
     {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 ν) (μ : Measure (G ⧸ Γ))
     [QuotientMeasureEqMeasurePreimage ν μ] :
@@ -152,7 +152,7 @@ measurable fundamental domain `s` with positive finite volume, and that there is
 set `V ⊆ G ⧸ Γ` along which the pullback of `μ` and `ν` agree (so the scaling is right). Then
 `μ` satisfies `QuotientMeasureEqMeasurePreimage`. The main tool of the proof is the uniqueness of
 left invariant measures, if normalized by a single positive finite-measured set. -/
-@[to_additive MeasureTheory.Measure.IsAddLeftInvariant.addQuotientMeasureEqMeasurePreimage_of_set
+@[to_additive
 "Assume that a measure `μ` is `IsAddLeftInvariant`, that the action of `Γ` on `G` has a
 measurable fundamental domain `s` with positive finite volume, and that there is a single measurable
 set `V ⊆ G ⧸ Γ` along which the pullback of `μ` and `ν` agree (so the scaling is right). Then
@@ -186,7 +186,7 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
 
 /-- If a measure `μ` is left-invariant and satisfies the right scaling condition, then it
   satisfies `QuotientMeasureEqMeasurePreimage`. -/
-@[to_additive MeasureTheory.leftInvariantIsAddQuotientMeasureEqMeasurePreimage "If a measure `μ` is
+@[to_additive "If a measure `μ` is
 left-invariant and satisfies the right scaling condition, then it satisfies
 `AddQuotientMeasureEqMeasurePreimage`."]
 theorem MeasureTheory.leftInvariantIsQuotientMeasureEqMeasurePreimage [IsFiniteMeasure μ]
@@ -258,7 +258,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
 /- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
   properly normalized, satisfies `QuotientMeasureEqMeasurePreimage`. -/
-@[to_additive IsAddFundamentalDomain.AddQuotientMeasureEqMeasurePreimage_HaarMeasure "Given a normal
+@[to_additive "Given a normal
 subgroup `Γ` of an additive topological group `G` with Haar measure `μ`, which is also
 right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
 properly normalized, satisfies `AddQuotientMeasureEqMeasurePreimage`."]
@@ -287,7 +287,7 @@ variable (K : PositiveCompacts (G ⧸ Γ))
 /- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
   properly normalized, satisfies `QuotientMeasureEqMeasurePreimage`. -/
-@[to_additive IsAddFundamentalDomain.AddQuotientMeasureEqMeasurePreimage_vaddHaarMeasure "Given a
+@[to_additive "Given a
 normal subgroup `Γ` of an additive topological group `G` with Haar measure `μ`, which is also
 right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
 properly normalized, satisfies `AddQuotientMeasureEqMeasurePreimage`."]
