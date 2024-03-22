@@ -36,7 +36,7 @@ This files is a straight-forward adaption of `Mathlib.Analysis.NormedSpace.PiLp`
 
 -/
 
-open Real Set Filter ROrCLike Bornology BigOperators Uniformity Topology NNReal ENNReal
+open Real Set Filter RCLike Bornology BigOperators Uniformity Topology NNReal ENNReal
 
 noncomputable section
 

@@ -640,7 +640,7 @@ import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
-import Mathlib.Analysis.Calculus.ContDiff.ROrCLike
+import Mathlib.Analysis.Calculus.ContDiff.RCLike
 import Mathlib.Analysis.Calculus.Darboux
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
@@ -905,7 +905,7 @@ import Mathlib.Analysis.NormedSpace.PiLp
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.NormedSpace.ProdLp
 import Mathlib.Analysis.NormedSpace.QuaternionExponential
-import Mathlib.Analysis.NormedSpace.ROrCLike
+import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.NormedSpace.Ray
 import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Analysis.NormedSpace.RieszLemma
@@ -988,7 +988,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.FloorPow
 import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Analysis.SpecificLimits.ROrCLike
+import Mathlib.Analysis.SpecificLimits.RCLike
 import Mathlib.Analysis.Subadditive
 import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.Analysis.SumOverResidueClass
@@ -2024,8 +2024,8 @@ import Mathlib.Data.QPF.Multivariate.Constructions.Quot
 import Mathlib.Data.QPF.Multivariate.Constructions.Sigma
 import Mathlib.Data.QPF.Univariate.Basic
 import Mathlib.Data.Quot
-import Mathlib.Data.ROrCLike.Basic
-import Mathlib.Data.ROrCLike.Lemmas
+import Mathlib.Data.RCLike.Basic
+import Mathlib.Data.RCLike.Lemmas
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Data.Rat.Cast.Defs
@@ -2793,7 +2793,7 @@ import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Arctan
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
-import Mathlib.MeasureTheory.Function.SpecialFunctions.ROrCLike
+import Mathlib.MeasureTheory.Function.SpecialFunctions.RCLike
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp

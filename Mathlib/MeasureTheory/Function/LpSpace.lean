@@ -1120,26 +1120,26 @@ theorem comp_memℒp' (L : E →L[𝕜] F) {f : α → E} (hf : Memℒp f p μ) 
   (L.comp_memℒp (hf.toLp f)).ae_eq (EventuallyEq.fun_comp hf.coeFn_toLp _)
 #align continuous_linear_map.comp_mem_ℒp' ContinuousLinearMap.comp_memℒp'
 
-section ROrCLike
+section RCLike
 
-variable {K : Type*} [ROrCLike K]
+variable {K : Type*} [RCLike K]
 
 theorem _root_.MeasureTheory.Memℒp.ofReal {f : α → ℝ} (hf : Memℒp f p μ) :
     Memℒp (fun x => (f x : K)) p μ :=
-  (@ROrCLike.ofRealCLM K _).comp_memℒp' hf
+  (@RCLike.ofRealCLM K _).comp_memℒp' hf
 #align measure_theory.mem_ℒp.of_real MeasureTheory.Memℒp.ofReal
 
 theorem _root_.MeasureTheory.memℒp_re_im_iff {f : α → K} :
-    Memℒp (fun x ↦ ROrCLike.re (f x)) p μ ∧ Memℒp (fun x ↦ ROrCLike.im (f x)) p μ ↔
+    Memℒp (fun x ↦ RCLike.re (f x)) p μ ∧ Memℒp (fun x ↦ RCLike.im (f x)) p μ ↔
       Memℒp f p μ := by
   refine' ⟨_, fun hf => ⟨hf.re, hf.im⟩⟩
   rintro ⟨hre, him⟩
-  convert MeasureTheory.Memℒp.add (E := K) hre.ofReal (him.ofReal.const_mul ROrCLike.I)
+  convert MeasureTheory.Memℒp.add (E := K) hre.ofReal (him.ofReal.const_mul RCLike.I)
   ext1 x
-  rw [Pi.add_apply, mul_comm, ROrCLike.re_add_im]
+  rw [Pi.add_apply, mul_comm, RCLike.re_add_im]
 #align measure_theory.mem_ℒp_re_im_iff MeasureTheory.memℒp_re_im_iff
 
-end ROrCLike
+end RCLike
 
 theorem add_compLp (L L' : E →L[𝕜] F) (f : Lp E p μ) :
     (L + L').compLp f = L.compLp f + L'.compLp f := by

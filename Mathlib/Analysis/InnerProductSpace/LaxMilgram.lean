@@ -33,7 +33,7 @@ dual, Lax-Milgram
 
 noncomputable section
 
-open ROrCLike LinearMap ContinuousLinearMap InnerProductSpace
+open RCLike LinearMap ContinuousLinearMap InnerProductSpace
 
 open LinearMap (ker range)
 

@@ -75,8 +75,8 @@ local notation3 "i" => fun (w : V) => (1 / (2 * ‖w‖ ^ 2) : ℝ) • w
 theorem fourier_integral_half_period_translate {w : V} (hw : w ≠ 0) :
     (∫ v : V, 𝐞[-⟪v, w⟫] • f (v + i w)) = -∫ v : V, 𝐞[-⟪v, w⟫] • f v := by
   have hiw : ⟪i w, w⟫ = 1 / 2 := by
-    rw [inner_smul_left, inner_self_eq_norm_sq_to_K, ROrCLike.ofReal_real_eq_id, id.def,
-      ROrCLike.conj_to_real, ← div_div, div_mul_cancel]
+    rw [inner_smul_left, inner_self_eq_norm_sq_to_K, RCLike.ofReal_real_eq_id, id.def,
+      RCLike.conj_to_real, ← div_div, div_mul_cancel]
     rwa [Ne.def, sq_eq_zero_iff, norm_eq_zero]
   have :
     (fun v : V => 𝐞[-⟪v, w⟫] • f (v + i w)) =
@@ -259,7 +259,7 @@ theorem tendsto_integral_exp_smul_cocompact_of_inner_product (μ : Measure V) [�
   have : (fun w : V →L[ℝ] ℝ => ∫ v, 𝐞[-w v] • f v) = (fun w : V => ∫ v, 𝐞[-⟪v, w⟫] • f v) ∘ A := by
     ext1 w
     congr 1 with v : 1
-    rw [← inner_conj_symm, ROrCLike.conj_to_real, InnerProductSpace.toDual_symm_apply]
+    rw [← inner_conj_symm, RCLike.conj_to_real, InnerProductSpace.toDual_symm_apply]
   rw [this]
   exact
     (tendsto_integral_exp_inner_smul_cocompact f).comp

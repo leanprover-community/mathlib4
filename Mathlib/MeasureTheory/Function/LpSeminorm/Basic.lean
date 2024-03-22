@@ -1038,29 +1038,29 @@ theorem snorm_indicator_ge_of_bdd_below (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α
   · simp [Set.indicator_of_not_mem hxs]
 #align measure_theory.snorm_indicator_ge_of_bdd_below MeasureTheory.snorm_indicator_ge_of_bdd_below
 
-section ROrCLike
+section RCLike
 
-variable {𝕜 : Type*} [ROrCLike 𝕜] {f : α → 𝕜}
+variable {𝕜 : Type*} [RCLike 𝕜] {f : α → 𝕜}
 
-theorem Memℒp.re (hf : Memℒp f p μ) : Memℒp (fun x => ROrCLike.re (f x)) p μ := by
-  have : ∀ x, ‖ROrCLike.re (f x)‖ ≤ 1 * ‖f x‖ := by
+theorem Memℒp.re (hf : Memℒp f p μ) : Memℒp (fun x => RCLike.re (f x)) p μ := by
+  have : ∀ x, ‖RCLike.re (f x)‖ ≤ 1 * ‖f x‖ := by
     intro x
     rw [one_mul]
-    exact ROrCLike.norm_re_le_norm (f x)
+    exact RCLike.norm_re_le_norm (f x)
   refine' hf.of_le_mul _ (eventually_of_forall this)
-  exact ROrCLike.continuous_re.comp_aestronglyMeasurable hf.1
+  exact RCLike.continuous_re.comp_aestronglyMeasurable hf.1
 #align measure_theory.mem_ℒp.re MeasureTheory.Memℒp.re
 
-theorem Memℒp.im (hf : Memℒp f p μ) : Memℒp (fun x => ROrCLike.im (f x)) p μ := by
-  have : ∀ x, ‖ROrCLike.im (f x)‖ ≤ 1 * ‖f x‖ := by
+theorem Memℒp.im (hf : Memℒp f p μ) : Memℒp (fun x => RCLike.im (f x)) p μ := by
+  have : ∀ x, ‖RCLike.im (f x)‖ ≤ 1 * ‖f x‖ := by
     intro x
     rw [one_mul]
-    exact ROrCLike.norm_im_le_norm (f x)
+    exact RCLike.norm_im_le_norm (f x)
   refine' hf.of_le_mul _ (eventually_of_forall this)
-  exact ROrCLike.continuous_im.comp_aestronglyMeasurable hf.1
+  exact RCLike.continuous_im.comp_aestronglyMeasurable hf.1
 #align measure_theory.mem_ℒp.im MeasureTheory.Memℒp.im
 
-end ROrCLike
+end RCLike
 
 section Liminf
 
