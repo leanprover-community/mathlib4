@@ -18,7 +18,7 @@ These lemmas are in a separate file to the definition of `IsCoprime` or `IsRelPr
 as they require more imports.
 
 Notably, this includes lemmas about `Finset.prod` as this requires importing BigOperators, and
-lemmas about `HasPow` since these are easiest to prove via `Finset.prod`.
+lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 -/
 

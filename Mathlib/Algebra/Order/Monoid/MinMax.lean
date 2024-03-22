@@ -21,7 +21,7 @@ variable {α β : Type*}
   rules relating them. -/
 
 section CommSemigroup
-variable[LinearOrder α] [CommSemigroup α] [CommSemigroup β]
+variable [LinearOrder α] [CommSemigroup α] [CommSemigroup β]
 
 @[to_additive]
 lemma fn_min_mul_fn_max  (f : α → β) (a b : α) : f (min a b) * f (max a b) = f a * f b := by

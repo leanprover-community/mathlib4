@@ -51,7 +51,6 @@ theorem count_apply_finset' {s : Finset α} (s_mble : MeasurableSet (s : Set α)
     count (↑s : Set α) = ∑' i : (↑s : Set α), 1 := count_apply s_mble
     _ = ∑ i in s, 1 := (s.tsum_subtype 1)
     _ = s.card := by simp
-
 #align measure_theory.measure.count_apply_finset' MeasureTheory.Measure.count_apply_finset'
 
 @[simp]
@@ -79,7 +78,6 @@ theorem count_apply_infinite (hs : s.Infinite) : count s = ∞ := by
     _ = ∑' i : (t : Set α), 1 := (t.tsum_subtype 1).symm
     _ ≤ count (t : Set α) := le_count_apply
     _ ≤ count s := measure_mono ht
-
 #align measure_theory.measure.count_apply_infinite MeasureTheory.Measure.count_apply_infinite
 
 @[simp]
@@ -104,7 +102,6 @@ theorem count_apply_lt_top' (s_mble : MeasurableSet s) : count s < ∞ ↔ s.Fin
     count s < ∞ ↔ count s ≠ ∞ := lt_top_iff_ne_top
     _ ↔ ¬s.Infinite := (not_congr (count_apply_eq_top' s_mble))
     _ ↔ s.Finite := Classical.not_not
-
 #align measure_theory.measure.count_apply_lt_top' MeasureTheory.Measure.count_apply_lt_top'
 
 @[simp]
@@ -113,7 +110,6 @@ theorem count_apply_lt_top [MeasurableSingletonClass α] : count s < ∞ ↔ s.F
     count s < ∞ ↔ count s ≠ ∞ := lt_top_iff_ne_top
     _ ↔ ¬s.Infinite := (not_congr count_apply_eq_top)
     _ ↔ s.Finite := Classical.not_not
-
 #align measure_theory.measure.count_apply_lt_top MeasureTheory.Measure.count_apply_lt_top
 
 theorem empty_of_count_eq_zero' (s_mble : MeasurableSet s) (hsc : count s = 0) : s = ∅ := by

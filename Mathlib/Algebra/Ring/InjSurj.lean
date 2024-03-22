@@ -304,7 +304,7 @@ protected def Function.Injective.commSemiring [CommSemiring α] (f : β → α) 
   __ := hf.commSemigroup f mul
 #align function.injective.comm_semiring Function.Injective.commSemiring
 
-/-- Pushforward a `NonAssocSemiring` instance along a surjective function. -/
+/-- Pushforward a `CommSemiring` instance along a surjective function. -/
 @[reducible] -- See note [reducible non-instances]
 protected def Function.Surjective.commSemiring [CommSemiring α] (f : α → β) (hf : Surjective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
