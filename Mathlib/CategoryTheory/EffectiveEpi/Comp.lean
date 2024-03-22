@@ -52,8 +52,8 @@ def effectiveEpiFamilyStructCompOfEffectiveEpiSplitEpi {α : Type*} {B : C} {X Y
     (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) [∀ a, IsSplitEpi (g a)]
     [EffectiveEpiFamily _ f] : EffectiveEpiFamilyStruct _ (fun a ↦ g a ≫ f a) :=
   effectiveEpiFamilyStructCompOfEffectiveEpiSplitEpi' f g
-    (fun a ↦ (IsSplitEpi.exists_splitEpi (f := g a)).some.section_)
-    (fun a ↦ (IsSplitEpi.exists_splitEpi (f := g a)).some.id)
+    (fun a ↦ section_ (g a))
+    (fun a ↦ IsSplitEpi.id (g a))
 
 instance {α : Type*} {B : C} {X Y : α → C}
     (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) [∀ a, IsSplitEpi (g a)]
@@ -105,8 +105,8 @@ def effectiveEpiFamilyStructOfEffectiveEpiSplitEpiComp {α : Type*} {B : C} {X Y
     (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) [∀ a, IsSplitEpi (g a)]
     [EffectiveEpiFamily _ (fun a ↦ g a ≫ f a)] : EffectiveEpiFamilyStruct _ f :=
   effectiveEpiFamilyStructOfEffectiveEpiSplitEpiComp' f g
-    (fun a ↦ (IsSplitEpi.exists_splitEpi (f := g a)).some.section_)
-    (fun a ↦ (IsSplitEpi.exists_splitEpi (f := g a)).some.id)
+    (fun a ↦ section_ (g a))
+    (fun a ↦ IsSplitEpi.id (g a))
 
 lemma effectiveEpiFamily_of_effectiveEpi_splitEpi_comp {α : Type*} {B : C} {X Y : α → C}
     (f : (a : α) → X a ⟶ B) (g : (a : α) → Y a ⟶ X a) [∀ a, IsSplitEpi (g a)]
