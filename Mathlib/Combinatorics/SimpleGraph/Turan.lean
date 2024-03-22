@@ -42,16 +42,18 @@ variable {n r : ℕ}
 
 instance : DecidableRel (turanGraph n r).Adj := by dsimp only [turanGraph]; infer_instance
 
+@[simp] lemma turanGraph_zero (n : ℕ) : turanGraph n 0 = ⊤ := by
+  ext a b; simp_rw [turanGraph, top_adj, Nat.mod_zero, not_iff_not, Fin.val_inj]
+
 @[simp]
 theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
   simp_rw [SimpleGraph.ext_iff, Function.funext_iff, turanGraph, top_adj, eq_iff_iff, not_iff_not]
-  constructor <;> intro h
+  refine ⟨fun h ↦ ?_, ?_⟩
   · contrapose! h
     use ⟨0, (Nat.pos_of_ne_zero h.1).trans h.2⟩, ⟨r, h.2⟩
     simp [h.1.symm]
-  · intro a b
-    cases' h with h h
-    · simp_rw [h, Nat.mod_zero, Fin.val_inj]
+  · rintro (rfl | h) a b
+    · simp
     · rw [Nat.mod_eq_of_lt (a.2.trans_le h), Nat.mod_eq_of_lt (b.2.trans_le h), Fin.val_inj]
 
 variable (hr : 0 < r)
