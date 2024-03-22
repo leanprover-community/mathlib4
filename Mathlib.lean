@@ -1542,6 +1542,7 @@ import Mathlib.Condensed.Discrete
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
+import Mathlib.Condensed.Light.Basic
 import Mathlib.Condensed.Limits
 import Mathlib.Condensed.Solid
 import Mathlib.Condensed.TopComparison
@@ -3803,6 +3804,7 @@ import Mathlib.Topology.Category.CompHaus.Limits
 import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.Compactum
 import Mathlib.Topology.Category.LightProfinite.Basic
+import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 import Mathlib.Topology.Category.LightProfinite.IsLight
 import Mathlib.Topology.Category.LightProfinite.Limits
 import Mathlib.Topology.Category.Locale
