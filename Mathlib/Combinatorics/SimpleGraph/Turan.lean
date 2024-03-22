@@ -21,13 +21,11 @@ This file defines the Turán graph and proves some of its basic properties.
 * Port the rest of Turán's theorem from https://github.com/leanprover-community/mathlib4/pull/9317
 -/
 
-
 open Finset
 
 namespace SimpleGraph
-
-variable {V : Type*} [Fintype V] [DecidableEq V]
-variable (G : SimpleGraph V) [DecidableRel G.Adj]
+variable {V : Type*} [Fintype V] [DecidableEq V] (G H : SimpleGraph V) [DecidableRel G.Adj]
+  {n r : ℕ} {s : Finset V}
 
 /-- An `r + 1`-cliquefree graph is `r`-Turán-maximal if any other `r + 1`-cliquefree graph on
 the same vertex set has the same or fewer number of edges. -/
@@ -35,12 +33,18 @@ def IsTuranMaximal (r : ℕ) : Prop :=
   G.CliqueFree (r + 1) ∧ ∀ (H : SimpleGraph V) [DecidableRel H.Adj],
     H.CliqueFree (r + 1) → H.edgeFinset.card ≤ G.edgeFinset.card
 
+variable {G H}
+
+lemma IsTuranMaximal.le_iff_eq (hG : IsTuranMaximal G r) (hH : H.CliqueFree (r + 1)) :
+    G ≤ H ↔ G = H := by
+  classical exact ⟨fun hGH ↦ edgeFinset_inj.1 $ eq_of_subset_of_card_le
+    (edgeFinset_subset_edgeFinset.2 hGH) (hG.2 _ hH), le_of_eq⟩
+
 /-- The canonical `r + 1`-cliquefree Turán graph on `n` vertices. -/
 def turanGraph (n r : ℕ) : SimpleGraph (Fin n) where Adj v w := v % r ≠ w % r
 
-variable {n r : ℕ}
-
-instance : DecidableRel (turanGraph n r).Adj := by dsimp only [turanGraph]; infer_instance
+instance turanGraph.instDecidableRelAdj : DecidableRel (turanGraph n r).Adj := by
+  dsimp only [turanGraph]; infer_instance
 
 @[simp]
 lemma turanGraph_zero : turanGraph n 0 = ⊤ := by
@@ -77,18 +81,14 @@ theorem isTuranMaximal_turanGraph (h : n ≤ r) : (turanGraph n r).IsTuranMaxima
 
 /-- An `r + 1`-cliquefree Turán-maximal graph is _not_ `r`-cliquefree
 if it can accommodate such a clique. -/
-theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ Fintype.card V) (hx : IsTuranMaximal G r) :
+theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ Fintype.card V) (hG : IsTuranMaximal G r) :
     ¬G.CliqueFree r := by
-  by_contra cf
-  obtain ⟨K, ⟨_, cK⟩⟩ := exists_smaller_set (univ : Finset V) r hn
-  have := (G.isNClique_iff).not.mp (cf K)
-  simp_rw [cK, and_true, IsClique, Set.Pairwise, not_forall] at this
-  obtain ⟨a, _, b, _, ne, na⟩ := this
-  have nhx : ¬G.IsTuranMaximal r := by
-    simp_rw [IsTuranMaximal, hx.1, true_and]; push_neg
-    use G ⊔ edge a b, inferInstance, cf.sup_edge a b
-    convert Nat.lt.base _
-    convert G.card_edgeFinset_sup_edge na ne
-  contradiction
+  rintro h
+  obtain ⟨K, _, rfl⟩ := exists_smaller_set (univ : Finset V) r hn
+  obtain ⟨a, -, b, -, hab, hGab⟩ : ∃ a ∈ K, ∃ b ∈ K, a ≠ b ∧ ¬ G.Adj a b := by
+    simpa only [isNClique_iff, IsClique, Set.Pairwise, mem_coe, ne_eq, and_true, not_forall,
+      exists_prop, exists_and_right] using h K
+  exact hGab $ le_sup_right.trans_eq ((hG.le_iff_eq $ h.sup_edge _ _).1 le_sup_left).symm $
+    (edge_adj ..).2 ⟨Or.inl ⟨rfl, rfl⟩, hab⟩
 
 end SimpleGraph

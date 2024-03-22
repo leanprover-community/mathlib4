@@ -155,12 +155,12 @@ variable [Fintype V] [DecidableRel G.Adj]
 
 instance : Fintype (edge s t).edgeSet := by rw [edge]; infer_instance
 
-theorem edgeFinset_sup_edge (hn : ¬G.Adj s t) (h : s ≠ t) :
+theorem edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
     (G ⊔ edge s t).edgeFinset = G.edgeFinset.cons s(s, t) (by simp_all) := by
   rw [edgeFinset_sup, cons_eq_insert, insert_eq, union_comm]
   simp_rw [edgeFinset, edge_edgeSet_of_ne h]; rfl
 
-theorem card_edgeFinset_sup_edge (hn : ¬G.Adj s t) (h : s ≠ t) :
+theorem card_edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
     (G ⊔ edge s t).edgeFinset.card = G.edgeFinset.card + 1 := by
   rw [G.edgeFinset_sup_edge hn h, card_cons]
 
