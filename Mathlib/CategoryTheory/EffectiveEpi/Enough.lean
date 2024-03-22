@@ -48,20 +48,20 @@ class EffectivelyEnough : Prop where
 variable [F.EffectivelyEnough]
 
 /--
-`F.over X` provides an arbitrarily chosen object in the image of `F` equipped with an effective
-epimorphism `F.π : F.over X ⟶ X`.
+`F.objOver X` provides an arbitrarily chosen object in the image of `F` equipped with an effective
+epimorphism `F.morphismOver : F.objOver X ⟶ X`.
 -/
-noncomputable def over (X : D) : D :=
+noncomputable def objOver (X : D) : D :=
   F.obj (EffectivelyEnough.presentation (F := F) X).some.p
 
 /--
-The epimorphism `F.π : F.over X ⟶ X` from the arbitrarily chosen object in the image of `F`
-over `X`.
+The epimorphism `F.morphismOver : F.objOver X ⟶ X` from the arbitrarily chosen object in the image
+of `F` over `X`.
 -/
-noncomputable def π (X : D) : over F X ⟶ X :=
+noncomputable def morphismOver (X : D) : F.objOver X ⟶ X :=
   (EffectivelyEnough.presentation (F := F) X).some.f
 
-instance (X : D) : EffectiveEpi (F.π X) :=
+instance (X : D) : EffectiveEpi (F.morphismOver X) :=
   (EffectivelyEnough.presentation X).some.effectiveEpi
 
 /-- An effective presentation of an object with respect to an equivalence of categories. -/
