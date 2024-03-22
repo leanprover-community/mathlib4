@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Scott Morrison
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.Tactic.FastInstance
 
 #align_import data.finsupp.defs from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
 
@@ -1286,9 +1287,8 @@ instance instAddMonoid : AddMonoid (α →₀ M) :=
 end AddMonoid
 
 instance instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
-  --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl) with
-    toAddMonoid := Finsupp.instAddMonoid }
+  fast_instance%
+  DFunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl)
 #align finsupp.add_comm_monoid Finsupp.instAddCommMonoid
 
 instance instNeg [NegZeroClass G] : Neg (α →₀ G) :=
@@ -1343,17 +1343,15 @@ instance instIntSMul [AddGroup G] : SMul ℤ (α →₀ G) :=
 #align finsupp.has_int_scalar Finsupp.instIntSMul
 
 instance instAddGroup [AddGroup G] : AddGroup (α →₀ G) :=
-  --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
-      fun _ _ => rfl with
-    toAddMonoid := Finsupp.instAddMonoid }
+  fast_instance%
+  DFunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+      fun _ _ => rfl
 #align finsupp.add_group Finsupp.instAddGroup
 
 instance instAddCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
-  --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
-      fun _ _ => rfl with
-    toAddGroup := Finsupp.instAddGroup }
+  fast_instance%
+  DFunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+      fun _ _ => rfl
 #align finsupp.add_comm_group Finsupp.instAddCommGroup
 
 theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}

@@ -305,17 +305,15 @@ instance semiring : Semiring R[X] :=
 #align polynomial.semiring Polynomial.semiring
 
 instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
-  --TODO: add reference to library note in PR #7432
-  { Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
-      toFinsupp_smul with
-    toSMulZeroClass := Polynomial.smulZeroClass }
+  fast_instance%
+  Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
+      toFinsupp_smul
 #align polynomial.distrib_smul Polynomial.distribSMul
 
 instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulAction S R[X] :=
-  --TODO: add reference to library note in PR #7432
-  { Function.Injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero (R := R)⟩, toFinsupp_add⟩
-      toFinsupp_injective toFinsupp_smul with
-    toSMul := Polynomial.smulZeroClass.toSMul }
+  fast_instance%
+  Function.Injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero (R := R)⟩, toFinsupp_add⟩
+      toFinsupp_injective toFinsupp_smul
 #align polynomial.distrib_mul_action Polynomial.distribMulAction
 
 instance faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul S R[X] where
@@ -324,10 +322,9 @@ instance faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul 
 #align polynomial.has_faithful_smul Polynomial.faithfulSMul
 
 instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
-  --TODO: add reference to library note in PR #7432
-  { Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
-      toFinsupp_smul with
-    toDistribMulAction := Polynomial.distribMulAction }
+  fast_instance%
+  Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
+      toFinsupp_smul
 #align polynomial.module Polynomial.module
 
 instance smulCommClass {S₁ S₂} [SMulZeroClass S₁ R] [SMulZeroClass S₂ R] [SMulCommClass S₁ S₂ R] :
