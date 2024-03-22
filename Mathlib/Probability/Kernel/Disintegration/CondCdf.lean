@@ -242,7 +242,7 @@ lemma integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ
     filter_upwards [preCDF_le_one ρ] with a ha using ENNReal.ofReal_toReal_le.trans (ha _)
 
 lemma isRatCondKernelCDFAux_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
-    isRatCondKernelCDFAux (fun p r ↦ (preCDF ρ r p.2).toReal)
+    IsRatCondKernelCDFAux (fun p r ↦ (preCDF ρ r p.2).toReal)
       (kernel.const Unit ρ) (kernel.const Unit ρ.fst) where
   measurable := measurable_preCDF'.comp measurable_snd
   mono' a r r' hrr' := by
@@ -415,7 +415,7 @@ theorem measure_condCDF_univ (ρ : Measure (α × ℝ)) (a : α) : (condCDF ρ a
   exact StieltjesFunction.measure_univ _ (tendsto_condCDF_atBot ρ a) (tendsto_condCDF_atTop ρ a)
 #align probability_theory.measure_cond_cdf_univ ProbabilityTheory.measure_condCDF_univ
 
-instance instIsProbabilityMeasure_condCDF (ρ : Measure (α × ℝ)) (a : α) :
+instance instIsProbabilityMeasureCondCDF (ρ : Measure (α × ℝ)) (a : α) :
     IsProbabilityMeasure (condCDF ρ a).measure :=
   ⟨measure_condCDF_univ ρ a⟩
 
