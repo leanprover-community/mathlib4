@@ -237,7 +237,7 @@ variable (𝕜 E F)
 /-- The linear equivalence between `ContinuousMultilinearMap 𝕜 E F` and `(⨂[𝕜] i, Eᵢ) →L[𝕜] F`
 induced by `PiTensorProduct.lift`, for every normed space `F`.
 -/
---@[simps]
+@[simps]
 noncomputable def liftEquiv : ContinuousMultilinearMap 𝕜 E F ≃ₗ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F where
   toFun f := LinearMap.mkContinuous (lift f.toMultilinearMap) ‖f‖
     (fun x ↦ injectiveSeminorm_bound f x)
@@ -262,7 +262,6 @@ noncomputable def liftEquiv : ContinuousMultilinearMap 𝕜 E F ≃ₗ[𝕜] (�
 
 /-- The equivalence `PiTensorProduct.liftEquiv` as an isometric linear equivalence.
 -/
-@[simps!]
 noncomputable def liftIsometry  : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F :=
   {liftEquiv 𝕜 E F with
    norm_map' := by
@@ -276,7 +275,22 @@ noncomputable def liftIsometry  : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[�
          LinearEquiv.coe_mk]
        exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg _) _}
 
-variable {E F}
+variable {𝕜 E F}
+
+@[simp]
+theorem liftIsometry_apply_apply (f : ContinuousMultilinearMap 𝕜 E F)
+    (x : ⨂[𝕜] i, E i) : liftIsometry 𝕜 E F f x = lift f.toMultilinearMap x := by
+  simp only [liftIsometry, LinearIsometryEquiv.coe_mk, liftEquiv_apply,
+    LinearMap.mkContinuous_apply]
+
+@[simp]
+theorem liftIsometry_symm_apply_apply (l : (⨂[𝕜] i, E i) →L[𝕜] F) (m : (i : ι) → E i) :
+    (liftIsometry 𝕜 E F).symm l m = l (tprod 𝕜 m) := by
+  change (liftEquiv 𝕜 E F).symm l m = _
+  simp only [liftEquiv_symm_apply, lift_symm, MultilinearMap.coe_mkContinuous,
+    LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe]
+
+variable (𝕜)
 
 /-- The canonical continuous multilinear map from `E = Πᵢ Eᵢ` to `⨂[𝕜] i, Eᵢ`.
 -/
@@ -292,21 +306,18 @@ theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
   simp only [ContinuousMultilinearMap.coe_coe, tprodL_toFun]
 
 @[simp]
-theorem liftIsometry_symm (l : (⨂[𝕜] i, E i) →L[𝕜] F) :
+theorem liftIsometry_symm_apply (l : (⨂[𝕜] i, E i) →L[𝕜] F) :
     (liftIsometry 𝕜 E F).symm l = l.compContinuousMultilinearMap (tprodL 𝕜) := by
   ext m
-  simp only [liftIsometry_symm_apply_toFun, ContinuousLinearMap.compContinuousMultilinearMap_coe,
+  simp only [liftIsometry_symm_apply_apply, ContinuousLinearMap.compContinuousMultilinearMap_coe,
     Function.comp_apply, tprodL_toFun]
 
 @[simp]
 theorem liftIsometry_tprodL :
     liftIsometry 𝕜 E _ (tprodL 𝕜) = ContinuousLinearMap.id 𝕜 (⨂[𝕜] i, E i) := by
-  ext x
-  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_toLinearEquiv, liftIsometry_toFun_toFun, tprodL_coe,
-    ContinuousLinearMap.coe_id', id_eq]
-  change lift (tprod 𝕜) x = _
-  rw [lift_tprod, LinearMap.id_apply]
+  ext _
+  simp only [liftIsometry_apply_apply, tprodL_coe, lift_tprod, LinearMap.id_coe, id_eq,
+    ContinuousLinearMap.coe_id']
 
 end seminorm
 
@@ -330,13 +341,13 @@ noncomputable def mapL : (⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i :=
 theorem mapL_coe : (mapL f).toLinearMap = map (fun i ↦ (f i).toLinearMap) := by
   ext
   simp only [mapL, LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe,
-    liftIsometry_toFun_toFun, liftAux_tprod, ContinuousMultilinearMap.coe_coe,
+    liftIsometry_apply_apply, lift.tprod, ContinuousMultilinearMap.coe_coe,
     ContinuousMultilinearMap.compContinuousLinearMap_apply, tprodL_toFun, map_tprod]
 
 @[simp]
 theorem mapL_apply (x : ⨂[𝕜] i, E i) : mapL f x = map (fun i ↦ (f i).toLinearMap) x := by
   induction' x using PiTensorProduct.induction_on with _ _ _ _ hx hy
-  · simp only [mapL, map_smul, liftIsometry_toFun_toFun, liftAux_tprod,
+  · simp only [mapL, map_smul, liftIsometry_apply_apply, lift.tprod,
     ContinuousMultilinearMap.coe_coe, ContinuousMultilinearMap.compContinuousLinearMap_apply,
     tprodL_toFun, map_tprod, ContinuousLinearMap.coe_coe]
   · simp only [map_add, hx, hy]
@@ -360,7 +371,7 @@ theorem liftIsometry_comp_mapL (h : ContinuousMultilinearMap 𝕜 E' F) :
   ext
   simp only [ContinuousLinearMap.coe_comp, mapL_coe, LinearMap.compMultilinearMap_apply,
     LinearMap.coe_comp, ContinuousLinearMap.coe_coe, Function.comp_apply, map_tprod,
-    liftIsometry_toFun_toFun, liftAux_tprod, ContinuousMultilinearMap.coe_coe,
+    liftIsometry_apply_apply, lift.tprod, ContinuousMultilinearMap.coe_coe,
     ContinuousMultilinearMap.compContinuousLinearMap_apply]
 
 attribute [local ext high] ext
@@ -419,8 +430,7 @@ theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
   rw [ContinuousLinearMap.opNorm_le_iff (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
   intro x
   rw [mapL, liftIsometry]
-  simp only [liftEquiv, lift_symm, LinearIsometryEquiv.coe_mk, LinearEquiv.coe_mk,
-    LinearMap.mkContinuous_apply]
+  simp only [LinearIsometryEquiv.coe_mk, liftEquiv_apply, LinearMap.mkContinuous_apply]
   refine le_trans (injectiveSeminorm_bound _ _) (mul_le_mul_of_nonneg_right ?_ (norm_nonneg x))
   rw [ContinuousMultilinearMap.opNorm_le_iff _ (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
   intro m
