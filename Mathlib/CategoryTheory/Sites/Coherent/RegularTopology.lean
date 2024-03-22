@@ -25,7 +25,7 @@ variable {C : Type*} [Category C] [Preregular C] {X : C}
 /--
 For a preregular category, any sieve that contains an `EffectiveEpi` is a covering sieve of the
 regular topology.
-Note: This is one direction of `mem_sieves_iff_hasEffectiveEpiFamily`, but is needed for the proof.
+Note: This is one direction of `mem_sieves_iff_hasEffectiveEpi`, but is needed for the proof.
 -/
 theorem mem_sieves_of_hasEffectiveEpi (S : Sieve X) :
     (∃ (Y : C) (π : Y ⟶ X), EffectiveEpi π ∧ S.arrows π) → (S ∈ (regularTopology C).sieves X) := by
@@ -48,7 +48,7 @@ instance {Y Y' : C} (π : Y ⟶ X) [EffectiveEpi π]
       GrothendieckTopology.sieves (regularTopology C) X by
     change Nonempty _
     rw [← Sieve.forallYonedaIsSheaf_iff_colimit]
-    exact fun W => regularCoverage.isSheaf_yoneda_obj W _ h₂
+    exact fun W => regularTopology.isSheaf_yoneda_obj W _ h₂
   apply Coverage.saturate.transitive X (Sieve.generate (Presieve.ofArrows (fun () ↦ Y)
       (fun () ↦ π)))
   · apply Coverage.saturate.of

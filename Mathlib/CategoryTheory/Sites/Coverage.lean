@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 
-import Mathlib.CategoryTheory.Sites.SheafOfTypes
+import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
 
@@ -49,7 +49,9 @@ set_option autoImplicit true
 
 namespace CategoryTheory
 
-variable {C : Type _} [Category C]
+variable {C D : Type _} [Category C] [Category D]
+
+open Limits
 
 namespace Presieve
 
@@ -402,5 +404,24 @@ theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
   · exact h.2 R hR
 
 end Presieve
+
+namespace Presheaf
+
+theorem isSheaf_iff_isLimit_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ D) :
+    Presheaf.IsSheaf (toGrothendieck _ K) P ↔ ∀ ⦃X : C⦄ (R : Presieve X),
+      R ∈ K.covering X →
+        Nonempty (IsLimit (P.mapCone (Sieve.generate R).arrows.cocone.op)) := by
+  simp only [Presheaf.IsSheaf, Presieve.isSheaf_coverage, isLimit_iff_isSheafFor,
+    ← Presieve.isSheafFor_iff_generate]
+  aesop
+
+theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ D) :
+    (IsSheaf ((K ⊔ L).toGrothendieck C)) P ↔
+    (IsSheaf (K.toGrothendieck C)) P ∧ (IsSheaf (L.toGrothendieck C)) P :=
+  ⟨fun h ↦ ⟨fun E ↦ ((Presieve.isSheaf_sup K L _).mp (h E)).1, fun E ↦
+    ((Presieve.isSheaf_sup K L _).mp (h E)).2⟩,
+      fun ⟨h₁, h₂⟩ E ↦ (Presieve.isSheaf_sup K L _).mpr ⟨h₁ E, h₂ E⟩⟩
+
+end Presheaf
 
 end CategoryTheory
