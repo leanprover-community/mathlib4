@@ -259,7 +259,7 @@ Analysis:
     local convexity: 'LocallyConvexSpace'
     Bornology: 'Bornology'
     weak-* topology for dualities: 'WeakBilin.instTopologicalSpace'
-    Topological dual: 'Dual'
+    Topological dual: 'TopologicalSpace.Dual'
 
   Normed vector spaces/Banach spaces:
     normed vector space over a normed field: 'NormedSpace'
