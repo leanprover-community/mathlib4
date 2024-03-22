@@ -186,6 +186,8 @@ end WeakBilin
 
 section WeakStarTopology
 
+open TopologicalSpace
+
 /-! ### Weak-* topology on the topological dual -/
 
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [AddCommMonoid E] [Module 𝕜 E]

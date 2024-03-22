@@ -40,7 +40,7 @@ dual, Fréchet-Riesz
 noncomputable section
 
 open scoped Classical
-open ComplexConjugate
+open ComplexConjugate TopologicalSpace
 
 universe u v
 
@@ -55,9 +55,9 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
 local postfix:90 "†" => starRingEnd _
 
-/-- An element `x` of an inner product space `E` induces an element of the dual space `Dual 𝕜 E`,
-the map `fun y => ⟪x, y⟫`; moreover this operation is a conjugate-linear isometric embedding of `E`
-into `Dual 𝕜 E`.
+/-- An element `x` of an inner product space `E` induces an element of the dual space
+`TopologicalSpace.Dual 𝕜 E`, the map `fun y => ⟪x, y⟫`; moreover this operation is a
+conjugate-linear isometric embedding of `E` into `TopologicalSpace.Dual 𝕜 E`.
 If `E` is complete, this operation is surjective, hence a conjugate-linear isometric equivalence;
 see `toDual`.
 -/

@@ -49,7 +49,7 @@ class WStarAlgebra (M : Type u) [NormedRing M] [StarRing M] [CstarRing M] [Modul
   to the `WStarAlgebra`. -/
   exists_predual :
     ∃ (X : Type u) (_ : NormedAddCommGroup X) (_ : NormedSpace ℂ X) (_ : CompleteSpace X),
-      Nonempty (Dual ℂ X ≃ₗᵢ⋆[ℂ] M)
+      Nonempty (TopologicalSpace.Dual ℂ X ≃ₗᵢ⋆[ℂ] M)
 #align wstar_algebra WStarAlgebra
 
 -- TODO: Without this, `VonNeumannAlgebra` times out. Why?
