@@ -1026,7 +1026,7 @@ section Integration
 
 open Real Complex Filter MeasureTheory MeasureTheory.Measure FiniteDimensional
 
-variable [IsROrC 𝕜]
+variable [ROrCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
 variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D]
