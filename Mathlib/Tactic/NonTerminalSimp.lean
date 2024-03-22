@@ -7,6 +7,7 @@ import Lean.Elab.Command
 import Lean.Linter.Util
 import Std.Data.Array.Basic
 import Std.Data.List.Basic
+import Mathlib.adomaniLeanUtils.inspect_syntax
 
 /-!
 #  The non-terminal `simp` linter
@@ -35,14 +36,18 @@ register_option linter.nonTerminalSimp : Bool := {
   descr := "enable the 'non-terminal `simp`' linter"
 }
 
+namespace nonTerminalSimp
+
 /-- `onlyOrNotSimp stx` if `stx` is syntax for `simp` *without* `only`, then returns `false` else
 returs `true`. -/
-def nonTerminalSimp.onlyOrNotSimp : Syntax → Bool
+def onlyOrNotSimp : Syntax → Bool
   | .node _info `Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal == "only"
   | _ => true
 
 /-- The monad for collecting `simp`s that are not `simp only`. -/
-abbrev nonTerminalSimp.M := StateRefT (HashMap String.Range Syntax) IO
+abbrev M := StateRefT (HashMap String.Range Syntax) IO
+
+end nonTerminalSimp
 
 end Mathlib.Linter
 
@@ -179,6 +184,147 @@ abbrev allowedSimpFollowers : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.rewriteSeq
     -- `Lean.Parser.Tactic.rwSeq` would catch `rw`: unnecessary, `rewrite` already catches it
 
+--def simpLocs : Syntax → Syntax
+--  | `(simp config discharger?) => default
+--  | _ => default
+
+partial
+def getLocs (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Array Syntax :=
+  match stx with
+    | stx@(.node _ ``Lean.Parser.Tactic.location loc) =>
+      if all? stx then #[] else loc.eraseIdx 0
+    | .node _ _ args => (args.map (getLocs · all?)).flatten
+    | _ => default
+
+abbrev star : Syntax :=
+  Syntax.node1 .none ``Lean.Parser.Tactic.locationWildcard (Lean.mkAtom "*")
+
+def simpLocs : Syntax → Bool
+  | .node _info `Lean.Parser.Tactic.simp
+    #[_, _, _, .node .none _ #[/-no only-/], _, .node .none _ loc] =>
+    match loc with
+      | #[.node _ ``Lean.Parser.Tactic.location #[_at, loc]] =>
+        --dbg_trace "{loc}"
+        true
+      | #[] =>
+        --dbg_trace "no loc"
+        true
+      | _ => false
+  | _ => false
+
+def modifiedLocs (stx : Syntax) : Array Name :=
+  let locs := getLocs stx
+  dbg_trace "{stx} modifies {locs}"
+  #[]
+
+partial
+def sloc : Syntax → Command.CommandElabM Unit
+  | stx@(.node _ _ args) => do
+    if simpLocs stx then logInfoAt stx "here"
+    let _ ← args.mapM sloc
+  | _ => return
+#check List.getLastD
+partial
+def getTactics : Syntax → Array Syntax
+  | stx@(.node _ kind args) =>
+    let next := (args.map getTactics).flatten
+    let parts := kind.components
+    if parts.contains `Tactic
+       && (! "location".isPrefixOf (parts.getLastD default).toString)
+       && (! "rwRule".isPrefixOf (parts.getLastD default).toString)
+    then next.push stx else next
+  | _ => default
+
+partial
+def getIds : Syntax → Array Name
+  | .node _ _ args => (args.map getIds).flatten
+  | .atom _ v => match v with
+                  | "*" => #[`wildcard]
+                  | "⊢" => #[`goal]
+                  | "|" => #[`goal]
+                  | _ => default
+  | stx => #[stx.getId]
+
+/-- `stained` is the type of the stained locations: it can be
+* the `Name` (typically of a local declaration);
+* the goal (`⊢`);
+* the "wildcard" -- all the declaration in context (`*`).
+-/
+inductive stained
+  | name     : Name → stained
+  | goal     : stained
+  | wildcard : stained
+  deriving Repr, Inhabited, DecidableEq
+
+/-- Converting a `stained` to a `String`:
+* a `Name` is represented by the corresponding string;
+* `goal` is represented by `⊢`;
+* `wildcard` is represented by `*`.
+-/
+instance : ToString stained where
+  toString | .name n => n.toString | .goal => "⊢" | .wildcard => "*"
+
+/-- `getStained stx` expects `stx` to be an argument of a node of `SyntaxNodeKind`
+`Lean.Parser.Tactic.location`.
+Typically, we apply `getStained` to the output of `getLocs`. -/
+partial
+def getStained : Syntax → Array stained
+  | .node _ _ args => (args.map getStained).flatten
+  | .atom _ v => match v with
+                  | "*" => #[.wildcard]
+                  | "⊢" => #[.goal]
+                  | "|" => #[.goal]
+                  | _ => default
+  | stx => #[.name stx.getId]
+
+open Lean Elab Command
+elab "get " cmd:command : command => do
+  let tcts := getTactics cmd
+--  logInfo m!"{tcts.map fun t => (t, getLocs t)}"
+  for cmd in tcts do
+    let locs := getLocs cmd
+    logInfoAt cmd m!"may act on {locs.map getStained}"
+    --logInfo m!"tactic: '{cmd}'\nacts:   {locs}\natoms: {locs.map getStained}"
+    let _ ← locs.mapM Meta.inspect
+--    dbg_trace "{locs}"
+--    let _ ← locs.flatten.mapM Meta.inspect
+--    let _ ← inspect locs[0]!
+--    logInfo m!"{locs}"
+    sloc cmd
+  Meta.inspect cmd
+  elabCommand cmd
+
+#eval show MetaM _ from do
+  IO.println star
+  Meta.inspect star
+  dbg_trace star
+
+get
+example {n m h : Nat} : True := by
+  refine ?_
+  rw [] at *
+  rw [] at n n n |-
+  try simp at n m h ⊢
+--  simp
+
+inspect
+--get
+example {n : Nat} : True := by
+  simp [] at n n n |-
+
+variable {n : Nat} (h : n + 0 = n) in
+inspect
+get
+example : True := by
+  simp (config := {singlePass := true}) [] at h |-
+
+  --exact .intro
+
+#eval 0
+
+--"simp" (config)? (discharger)? (&" only")?
+--  (" [" withoutPosition((simpStar <|> simpErase <|> simpLemma),*,?) "]")? (location)?
+
 variable (mvs : List MVarId) in
 /-- `getRealFollowers mvs tree` extracts from the `InfoTree` `tree` the array of syntax nodes
 that have any one of the `MVarId`s in `mvs` as a goal on which they are "actively"
@@ -285,14 +431,22 @@ def showTargets : InfoTree → List (List (Option Name × Name))
 /-- Gets the value of the `linter.nonTerminalSimp` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.nonTerminalSimp o
 
-#check Parser.Term.have
+--#check Parser.Term.have
+--#check MessageLog.hasErrors
+--#check State.messages
+open Lean Term Elab Command Meta
+--def stained : HashSet Name := .empty
 
+def stained.toFVarId (lctx: LocalContext) : stained → Array FVarId
+  | name n   => #[((lctx.findFromUserName? n).getD default).fvarId]
+  | goal     => #[default]
+  | wildcard => lctx.getFVarIds.push default
 
 /-- The main entry point to the unreachable tactic linter. -/
 def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) && (← getInfoState).enabled do
     return
-  if (← get).messages.hasErrors then
+  if (← MonadState.get).messages.hasErrors then
     return
 --  dbg_trace "processing"
   let trees ← getInfoTrees
@@ -306,7 +460,18 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --  let x := trees.toList.map (extractRealGoalsCtx (·.getKind == ``Lean.Parser.Tactic.tacticHave_))
   let x := trees.toList.map (extractRealGoalsCtx' (fun _ => true)) -- (·.getKind == ``Lean.Parser.Tactic.tacticHave_))
   for d in x do for (s, ctxb, ctx, mvsb, mvs) in d do
---    logInfo m!"generating syntax: '{s}'"
+    if ¬ s.getKind ∈ [``Lean.Parser.Tactic.tacticSeq1Indented, ``Lean.Parser.Tactic.tacticSeq,
+    ``Lean.Parser.Term.byTactic] then
+--    logInfo m!"generating syntax: '{s}'"  Lean.Parser.Term.byTactic
+    --logInfoAt s m!"{s} has locs: {getLocs s}"
+    for locs in getLocs s do
+--      Meta.inspect s
+      logInfoAt s m!"{s}\nstains '{locs}'"
+      let decls := (ctxb.decls.find? (mvsb.getD 0 default)).getD default
+      let lctx := decls.lctx
+      logInfoAt s m!"in mvar {((getStained locs).map (stained.toFVarId lctx)).flatten.map fun d =>
+        (d.name)}"
+    let stains := (getLocs s).map getStained
     let mdecls := (mvs.map ctx.findDecl?).reduceOption
     let cts := mdecls.map (·.lctx)
     let sepLdecls := cts.map (·.decls.toList |>.reduceOption)
