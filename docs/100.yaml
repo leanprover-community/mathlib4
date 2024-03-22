@@ -98,7 +98,7 @@
 26:
   title  : Leibniz’s Series for Pi
   decl   : Real.tendsto_sum_pi_div_four
-  author : Benjamin Davidson
+  author : Jeremy Tan
 27:
   title  : Sum of the Angles of a Triangle
   decl   : EuclideanGeometry.angle_add_angle_add_angle_eq_pi
