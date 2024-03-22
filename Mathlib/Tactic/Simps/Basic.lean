@@ -627,7 +627,10 @@ def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedP
   let nrCustomProjections := projs.toList.countP (·.isCustom)
   let env ← getEnv
   let customDeclarations := env.constants.map₂.foldl (init := #[]) fun xs nm _ =>
-    if (str ++ `Simps).isPrefixOf nm && !nm.isInternalDetail then xs.push nm else xs
+    if (str ++ `Simps).isPrefixOf nm && !nm.isInternalDetail && !isReservedName env nm then
+      xs.push nm
+    else
+      xs
   if nrCustomProjections < customDeclarations.size then
     Linter.logLintIf linter.simpsUnusedCustomDeclarations stx m!"\
       Not all of the custom declarations {customDeclarations} are used. Double check the \

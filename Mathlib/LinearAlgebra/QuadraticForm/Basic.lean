@@ -854,7 +854,7 @@ theorem associated_comp [AddCommGroup N] [Module R N] (f : N →ₗ[R] M) :
 theorem associated_toQuadraticForm (B : BilinForm R M) (x y : M) :
     associatedHom S B.toQuadraticForm x y = ⅟ 2 * (B x y + B y x) := by
   simp only [associated_apply, toQuadraticForm_apply, map_add, add_apply, ← polar_toQuadraticForm,
-    polar._eq_1]
+    polar.eq_1]
 #align quadratic_form.associated_to_quadratic_form QuadraticForm.associated_toQuadraticForm
 
 theorem associated_left_inverse (h : B₁.IsSymm) : associatedHom S B₁.toQuadraticForm = B₁ :=
@@ -1247,7 +1247,15 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
   refine' ⟨b, _⟩
   · rw [Basis.coe_mkFinCons]
     intro j i
+    -- FIXME nightly-testing
+    -- Proof failing
+    -- sorry
     refine' Fin.cases _ (fun i => _) i <;> refine' Fin.cases _ (fun j => _) j <;> intro hij <;>
+      -- Adaptation note: nightly-2024-03-16
+      -- Previously `Function.onFun` unfolded in the following `simp only`,
+      -- but now needs a separate `rw`.
+      -- This may be a bug: a no import minimization may be required.
+      (try rw [Function.onFun]) <;>
       simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
     · exact (hij rfl).elim
     · rw [IsOrtho, ← hB₂]

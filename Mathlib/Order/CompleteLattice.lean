@@ -584,7 +584,7 @@ theorem biSup_congr' {p : ι → Prop} {f g : (i : ι) → p i → α}
 
 theorem Function.Surjective.iSup_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨆ x, g (f x) = ⨆ y, g y := by
-  simp only [iSup._eq_1]
+  simp only [iSup.eq_1]
   congr
   exact hf.range_comp g
 #align function.surjective.supr_comp Function.Surjective.iSup_comp

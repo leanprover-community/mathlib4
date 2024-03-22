@@ -679,6 +679,10 @@ theorem crossing_pos_eq (hab : a < b) :
   have hf' (ω i) : (f i ω - a)⁺ ≤ 0 ↔ f i ω ≤ a := by rw [posPart_nonpos, sub_nonpos]
   induction' n with k ih
   · refine' ⟨rfl, _⟩
+    -- FIXME nightly-testing
+    simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
+      Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
+    unfold hitting
     simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
       Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
     ext ω

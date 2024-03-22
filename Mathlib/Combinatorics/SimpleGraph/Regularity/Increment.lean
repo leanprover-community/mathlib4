@@ -106,6 +106,12 @@ private theorem distinctPairs_increment :
 private lemma pairwiseDisjoint_distinctPairs :
     (P.parts.offDiag.attach : Set {x // x ∈ P.parts.offDiag}).PairwiseDisjoint
       (distinctPairs G ε hP) := by
+  -- FIXME nightly-testing
+  -- Another apparent problem with `config := { unfoldPartialApp := true }`
+  -- Minimization?
+  simp (config := { unfoldPartialApp := true }) only [distinctPairs, Set.PairwiseDisjoint,
+    Function.onFun, disjoint_left, inf_eq_inter, mem_inter, mem_product]
+  unfold Function.onFun
   simp (config := { unfoldPartialApp := true }) only [distinctPairs, Set.PairwiseDisjoint,
     Function.onFun, disjoint_left, inf_eq_inter, mem_inter, mem_product]
   rintro ⟨⟨s₁, s₂⟩, hs⟩ _ ⟨⟨t₁, t₂⟩, ht⟩ _ hst ⟨u, v⟩ huv₁ huv₂
