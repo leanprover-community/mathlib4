@@ -79,6 +79,9 @@ def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ
 def swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 #align function.swap Function.swap
 
+-- Adaptation note: nightly-2024-03-16: added to replace simp [Function.swap]
+theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
+
 @[reducible, deprecated] -- Deprecated since 13 January 2024
 def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
   f x

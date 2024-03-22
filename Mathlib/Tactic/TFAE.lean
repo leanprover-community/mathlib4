@@ -165,7 +165,7 @@ def mkTFAEHypName (i j : TSyntax `num) (arr : TSyntax ``impArrow) : MetaM Name :
   | `(impArrow| → ) => pure "to"
   | `(impArrow| ↔ ) => pure "iff"
   | _ => throwErrorAt arr "expected '←', '→', or '↔'"
-  return String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
+  return .mkSimple <| String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
 
 open Elab in
 /-- The core of `tfae_have`, which behaves like `haveLetCore` in `Mathlib.Tactic.Have`. -/

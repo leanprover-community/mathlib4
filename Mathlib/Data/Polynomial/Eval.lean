@@ -498,7 +498,7 @@ instance IsRoot.decidable [DecidableEq R] : Decidable (IsRoot p a) := by
   unfold IsRoot; infer_instance
 #align polynomial.is_root.decidable Polynomial.IsRoot.decidable
 
--- FIXME nightly-testing: this was called `def`.
+-- Adaptation note: 2024-03-15: this was called `def`.
 -- Should lean be changed to allow that as a name again?
 @[simp]
 theorem IsRoot.definition : IsRoot p a ↔ p.eval a = 0 :=
