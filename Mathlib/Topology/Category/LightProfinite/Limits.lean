@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.Category.LightProfinite.IsLight
+import Mathlib.Topology.Category.Profinite.Limits
 /-!
 
 # Explicit limits and colimits
@@ -22,7 +23,7 @@ which may be useful due to their definitional properties.
 
 universe u
 
-open CategoryTheory Limits Profinite TopologicalSpace
+open CategoryTheory Profinite TopologicalSpace Limits
 
 namespace LightProfinite
 
@@ -207,16 +208,16 @@ instance : HasPullbacks LightProfinite where
 noncomputable
 instance : PreservesFiniteCoproducts lightToProfinite := by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
-  suffices : PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) lightToProfinite
-  · exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) lightToProfinite by
+    exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (finiteCoproduct.isColimit _)
   exact Profinite.finiteCoproduct.isColimit _
 
 noncomputable
 instance : PreservesLimitsOfShape WalkingCospan lightToProfinite := by
   refine ⟨fun {F} ↦ ?_⟩
-  suffices : ∀ {X Y B} (f : X ⟶ B) (g : Y ⟶ B), PreservesLimit (cospan f g) lightToProfinite
-  · exact preservesLimitOfIsoDiagram _ (diagramIsoCospan F).symm
+  suffices ∀ {X Y B} (f : X ⟶ B) (g : Y ⟶ B), PreservesLimit (cospan f g) lightToProfinite by
+    exact preservesLimitOfIsoDiagram _ (diagramIsoCospan F).symm
   intro _ _ _ f g
   apply preservesLimitOfPreservesLimitCone (pullback.isLimit f g)
   exact (isLimitMapConePullbackConeEquiv lightToProfinite (pullback.condition f g)).symm

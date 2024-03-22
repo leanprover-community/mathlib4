@@ -120,7 +120,7 @@ theorem coe_top : (↑(⊤ : Closeds α) : Set α) = univ :=
   rfl
 #align topological_space.closeds.coe_top TopologicalSpace.Closeds.coe_top
 
-@[simp, norm_cast] -- porting note: new
+@[simp, norm_cast] -- Porting note (#10756): new theorem
 theorem coe_eq_univ {s : Closeds α} : (s : Set α) = univ ↔ s = ⊤ :=
   SetLike.coe_injective.eq_iff' rfl
 
@@ -129,7 +129,7 @@ theorem coe_bot : (↑(⊥ : Closeds α) : Set α) = ∅ :=
   rfl
 #align topological_space.closeds.coe_bot TopologicalSpace.Closeds.coe_bot
 
-@[simp, norm_cast] -- porting note: new
+@[simp, norm_cast] -- Porting note (#10756): new theorem
 theorem coe_eq_empty {s : Closeds α} : (s : Set α) = ∅ ↔ s = ⊥ :=
   SetLike.coe_injective.eq_iff' rfl
 
@@ -157,7 +157,7 @@ theorem coe_finset_inf (f : ι → Closeds α) (s : Finset ι) :
   map_finset_inf (⟨⟨(↑), coe_inf⟩, coe_top⟩ : InfTopHom (Closeds α) (Set α)) _ _
 #align topological_space.closeds.coe_finset_inf TopologicalSpace.Closeds.coe_finset_inf
 
--- porting note: Lean 3 proofs didn't work as expected, so I reordered lemmas to fix&golf the proofs
+-- Porting note: Lean 3 proofs didn't work as expected, so I reordered lemmas to fix&golf the proofs
 
 @[simp]
 theorem mem_sInf {S : Set (Closeds α)} {x : α} : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := mem_iInter₂
@@ -361,13 +361,6 @@ instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
 @[simp]
 protected lemma mem_prod {s : Clopens α} {t : Clopens β} {x : α × β} :
     x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t := .rfl
-
-/-- `Clopens` as a subtype -/
-def equivSubtype : Clopens α ≃ {s : Set α // IsClopen s} where
-  toFun s := ⟨s.1, s.2⟩
-  invFun s := ⟨s.1, s.2⟩
-  left_inv _ := by simp
-  right_inv _ := by simp
 
 end Clopens
 

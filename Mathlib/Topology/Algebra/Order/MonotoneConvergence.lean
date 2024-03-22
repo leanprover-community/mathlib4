@@ -30,7 +30,8 @@ monotone convergence
 
 open Filter Set Function
 
-open Filter Topology Classical
+open scoped Classical
+open Filter Topology
 
 variable {α β : Type*}
 
@@ -74,7 +75,7 @@ instance (priority := 100) LinearOrder.supConvergenceClass [TopologicalSpace α]
   refine' ⟨fun a s ha => tendsto_order.2 ⟨fun b hb => _, fun b hb => _⟩⟩
   · rcases ha.exists_between hb with ⟨c, hcs, bc, bca⟩
     lift c to s using hcs
-    refine' (eventually_ge_atTop c).mono fun x hx => bc.trans_le hx
+    exact (eventually_ge_atTop c).mono fun x hx => bc.trans_le hx
   · exact eventually_of_forall fun x => (ha.1 x.2).trans_lt hb
 #align linear_order.Sup_convergence_class LinearOrder.supConvergenceClass
 
@@ -94,8 +95,8 @@ variable [Preorder α] [SupConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atTop_isLUB (h_mono : Monotone f) (ha : IsLUB (Set.range f) a) :
     Tendsto f atTop (𝓝 a) := by
-  suffices : Tendsto (rangeFactorization f) atTop atTop
-  exact (SupConvergenceClass.tendsto_coe_atTop_isLUB _ _ ha).comp this
+  suffices Tendsto (rangeFactorization f) atTop atTop from
+    (SupConvergenceClass.tendsto_coe_atTop_isLUB _ _ ha).comp this
   exact h_mono.rangeFactorization.tendsto_atTop_atTop fun b => b.2.imp fun a ha => ha.ge
 #align tendsto_at_top_is_lub tendsto_atTop_isLUB
 
@@ -190,7 +191,7 @@ instance Prod.supConvergenceClass
   have B : Tendsto (fun x : s => (x : α × β).2) atTop (𝓝 b) :=
     tendsto_atTop_isLUB (monotone_snd.restrict s) h.2
   convert A.prod_mk_nhds B
-  -- porting note: previously required below to close
+  -- Porting note: previously required below to close
   -- ext1 ⟨⟨x, y⟩, h⟩
   -- rfl
 
@@ -243,6 +244,12 @@ theorem tendsto_iff_tendsto_subseq_of_monotone {ι₁ ι₂ α : Type*} [Semilat
     · exact (not_tendsto_atTop_of_tendsto_nhds h (h'.comp hg)).elim
     · rwa [tendsto_nhds_unique h (hl'.comp hg)]
 #align tendsto_iff_tendsto_subseq_of_monotone tendsto_iff_tendsto_subseq_of_monotone
+
+theorem tendsto_iff_tendsto_subseq_of_antitone {ι₁ ι₂ α : Type*} [SemilatticeSup ι₁] [Preorder ι₂]
+    [Nonempty ι₁] [TopologicalSpace α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+    [NoMinOrder α] {f : ι₂ → α} {φ : ι₁ → ι₂} {l : α} (hf : Antitone f)
+    (hg : Tendsto φ atTop atTop) : Tendsto f atTop (𝓝 l) ↔ Tendsto (f ∘ φ) atTop (𝓝 l) :=
+  tendsto_iff_tendsto_subseq_of_monotone (α := αᵒᵈ) hf hg
 
 /-! The next family of results, such as `isLUB_of_tendsto_atTop` and `iSup_eq_of_tendsto`, are
 converses to the standard fact that bounded monotone functions converge. They state, that if a

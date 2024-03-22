@@ -1222,7 +1222,7 @@ namespace Function
 
 variable [Preorder α] [DecidableEq ι] [∀ i, Preorder (π i)] {f : ∀ i, π i} {i : ι}
 
--- porting note: Dot notation breaks in `f.update i`
+-- Porting note: Dot notation breaks in `f.update i`
 theorem update_mono : Monotone (update f i) := fun _ _ => update_le_update_iff'.2
 #align function.update_mono Function.update_mono
 

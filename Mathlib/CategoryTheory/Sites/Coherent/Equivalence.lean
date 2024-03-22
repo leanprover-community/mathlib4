@@ -5,6 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
+import Mathlib.CategoryTheory.EffectiveEpi.Comp
+import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 import Mathlib.CategoryTheory.Sites.Equivalence
 /-!
 
@@ -75,6 +77,10 @@ theorem precoherent_eq : haveI := precoherent e
       infer_instance
     · exact fun a ↦ ⟨Y a, π a, e.unitInv.app _, h a, rfl⟩
 
+instance : haveI := precoherent e
+    e.TransportsGrothendieckTopology (coherentTopology C) (coherentTopology D) where
+  eq_inducedTopology := e.precoherent_eq.symm
+
 variable (A : Type*) [Category A]
 
 /--
@@ -82,8 +88,7 @@ Equivalent precoherent categories give equivalent coherent toposes.
 -/
 @[simps!]
 def sheafCongrPrecoherent : haveI := e.precoherent
-    Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
-  (sheafCongrRight (coherentTopology C) e A).trans (sheafCongrLeft A e.precoherent_eq)
+    Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A := e.sheafCongr _ _ _
 
 open Presheaf
 
@@ -144,6 +149,10 @@ theorem preregular_eq : haveI := preregular e
   · intro ⟨Y, π, _, h⟩
     exact ⟨_, e.unitInv.app _ ≫ e.inverse.map π, inferInstance, Y, π, e.unitInv.app _, h, rfl⟩
 
+instance : haveI := preregular e
+    e.TransportsGrothendieckTopology (regularTopology C) (regularTopology D) where
+  eq_inducedTopology := e.preregular_eq.symm
+
 variable (A : Type*) [Category A]
 
 /--
@@ -151,8 +160,7 @@ Equivalent preregular categories give equivalent regular toposes.
 -/
 @[simps!]
 def sheafCongrPreregular : haveI := e.preregular
-    Sheaf (regularTopology C) A ≌ Sheaf (regularTopology D) A :=
-  (sheafCongrRight (regularTopology C) e A).trans (sheafCongrLeft A e.preregular_eq)
+    Sheaf (regularTopology C) A ≌ Sheaf (regularTopology D) A := e.sheafCongr _ _ _
 
 open Presheaf
 

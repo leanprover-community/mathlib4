@@ -34,7 +34,6 @@ variable {𝕜 E F : Type*}
   [IsAddHaarMeasure μ] [IsAddHaarMeasure ν]
 
 variable [LocallyCompactSpace E]
-
 variable (L μ ν)
 
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given
@@ -72,7 +71,7 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
     obtain ⟨y, z, hyz⟩ : ∃ (y : S) (z : T), M.symm x = (y, z) := ⟨_, _, rfl⟩
     have : x = M (y, z) := by
       rw [← hyz]; simp only [LinearEquiv.apply_symm_apply]
-    simp [this]
+    simp [L', P, M, this]
   have I : μ.map L = ((μ.map M.symm).map P).map L' := by
     rw [Measure.map_map, Measure.map_map, A]
     · rfl
@@ -87,17 +86,17 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
     have : IsAddHaarMeasure (μ.map M.symm) :=
       M.toContinuousLinearEquiv.symm.isAddHaarMeasure_map μ
     refine ⟨addHaarScalarFactor (μ.map M.symm) (μS.prod μT), ?_, ENNReal.coe_ne_top,
-      isAddHaarMeasure_eq_smul _ _⟩
+      isAddLeftInvariant_eq_smul _ _⟩
     simpa only [ne_eq, ENNReal.coe_eq_zero] using
-      (addHaarScalarFactor_pos_of_isOpenPosMeasure (μ.map M.symm) (μS.prod μT)).ne'
+      (addHaarScalarFactor_pos_of_isAddHaarMeasure (μ.map M.symm) (μS.prod μT)).ne'
   have J : (μS.prod μT).map P = (μS univ) • μT := map_snd_prod
   obtain ⟨c₁, c₁_pos, c₁_fin, h₁⟩ : ∃ c₁ : ℝ≥0∞, c₁ ≠ 0 ∧ c₁ ≠ ∞ ∧ μT.map L' = c₁ • ν := by
     have : IsAddHaarMeasure (μT.map L') :=
       L'.toContinuousLinearEquiv.isAddHaarMeasure_map μT
     refine ⟨addHaarScalarFactor (μT.map L') ν, ?_, ENNReal.coe_ne_top,
-      isAddHaarMeasure_eq_smul _ _⟩
+      isAddLeftInvariant_eq_smul _ _⟩
     simpa only [ne_eq, ENNReal.coe_eq_zero] using
-      (addHaarScalarFactor_pos_of_isOpenPosMeasure (μT.map L') ν).ne'
+      (addHaarScalarFactor_pos_of_isAddHaarMeasure (μT.map L') ν).ne'
   refine ⟨c₀ * c₁, by simp [pos_iff_ne_zero, c₀_pos, c₁_pos], ENNReal.mul_lt_top c₀_fin c₁_fin, ?_⟩
   simp only [I, h₀, Measure.map_smul, J, smul_smul, h₁]
   rw [mul_assoc, mul_comm _ c₁, ← mul_assoc]
@@ -135,11 +134,11 @@ lemma ae_ae_add_linearMap_mem_iff [LocallyCompactSpace F] {s : Set F} (hs : Meas
   have M_cont : Continuous M := M.continuous_of_finiteDimensional
   -- Note: #8386 had to change `range_eq_top` into `range_eq_top (f := _)`
   have hM : Function.Surjective M := by
-    simp [← LinearMap.range_eq_top (f := _), LinearMap.range_coprod]
+    simp [M, ← LinearMap.range_eq_top (f := _), LinearMap.range_coprod]
   have A : ∀ x, M x ∈ s ↔ x ∈ M ⁻¹' s := fun x ↦ Iff.rfl
   simp_rw [← ae_comp_linearMap_mem_iff M (ν.prod μ) ν hM hs, A]
   rw [Measure.ae_prod_mem_iff_ae_ae_mem]
-  simp only [mem_preimage, LinearMap.coprod_apply, LinearMap.id_coe, id_eq]
+  simp only [M, mem_preimage, LinearMap.coprod_apply, LinearMap.id_coe, id_eq]
   exact M_cont.measurable hs
 
 /-- To check that a property holds almost everywhere with respect to an additive Haar measure, it

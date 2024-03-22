@@ -74,7 +74,7 @@ theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
 #align finset.mem_univ Finset.mem_univ
 
---Porting note: removing @[simp], simp can prove it
+-- Porting note: removing @[simp], simp can prove it
 theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).1 :=
   mem_univ
 #align finset.mem_univ_val Finset.mem_univ_val
@@ -96,13 +96,14 @@ theorem coe_eq_univ : (s : Set α) = Set.univ ↔ s = univ := by rw [← coe_uni
 
 theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
   rintro ⟨x, hx⟩
-  refine' eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
+  exact eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
 #align finset.nonempty.eq_univ Finset.Nonempty.eq_univ
 
 theorem univ_nonempty_iff : (univ : Finset α).Nonempty ↔ Nonempty α := by
   rw [← coe_nonempty, coe_univ, Set.nonempty_iff_univ_nonempty]
 #align finset.univ_nonempty_iff Finset.univ_nonempty_iff
 
+@[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem univ_nonempty [Nonempty α] : (univ : Finset α).Nonempty :=
   univ_nonempty_iff.2 ‹_›
 #align finset.univ_nonempty Finset.univ_nonempty
@@ -139,6 +140,10 @@ theorem top_eq_univ : (⊤ : Finset α) = univ :=
 theorem ssubset_univ_iff {s : Finset α} : s ⊂ univ ↔ s ≠ univ :=
   @lt_top_iff_ne_top _ _ _ s
 #align finset.ssubset_univ_iff Finset.ssubset_univ_iff
+
+@[simp]
+theorem univ_subset_iff {s : Finset α} : univ ⊆ s ↔ s = univ :=
+  @top_le_iff _ _ _ s
 
 theorem codisjoint_left : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ s → a ∈ t := by
   classical simp [codisjoint_iff, eq_univ_iff_forall, or_iff_not_imp_left]
@@ -619,12 +624,11 @@ def ofIsEmpty [IsEmpty α] : Fintype α :=
   ⟨∅, isEmptyElim⟩
 #align fintype.of_is_empty Fintype.ofIsEmpty
 
-/-- Note: this lemma is specifically about `Fintype.of_isEmpty`. For a statement about
+/-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Finset.univ_eq_empty`. -/
-@[simp]
-theorem univ_of_isEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
+theorem univ_ofIsEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
   rfl
-#align fintype.univ_of_is_empty Fintype.univ_of_isEmpty
+#align fintype.univ_of_is_empty Fintype.univ_ofIsEmpty
 
 instance : Fintype Empty := Fintype.ofIsEmpty
 instance : Fintype PEmpty := Fintype.ofIsEmpty
@@ -670,7 +674,7 @@ theorem coe_toFinset (s : Set α) [Fintype s] : (↑s.toFinset : Set α) = s :=
   Set.ext fun _ => mem_toFinset
 #align set.coe_to_finset Set.coe_toFinset
 
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem toFinset_nonempty {s : Set α} [Fintype s] : s.toFinset.Nonempty ↔ s.Nonempty := by
   rw [← Finset.coe_nonempty, coe_toFinset]
 #align set.to_finset_nonempty Set.toFinset_nonempty
@@ -812,7 +816,7 @@ theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) [Fintype (S
   simp
 #align set.to_finset_range Set.toFinset_range
 
-@[simp] -- porting note: new attribute
+@[simp] -- Porting note: new attribute
 theorem toFinset_singleton (a : α) [Fintype ({a} : Set α)] : ({a} : Set α).toFinset = {a} := by
   ext
   simp
@@ -907,7 +911,7 @@ instance Fintype.subtypeEq' (y : α) : Fintype { x // y = x } :=
   Fintype.subtype {y} (by simp [eq_comm])
 #align fintype.subtype_eq' Fintype.subtypeEq'
 
---Porting note: removing @[simp], simp can prove it
+-- Porting note: removing @[simp], simp can prove it
 theorem Fintype.univ_empty : @univ Empty _ = ∅ :=
   rfl
 #align fintype.univ_empty Fintype.univ_empty
@@ -1090,8 +1094,7 @@ noncomputable def finsetEquivSet : Finset α ≃ Set α where
 #align fintype.finset_equiv_set_apply Fintype.finsetEquivSet_apply
 
 @[simp] lemma finsetEquivSet_symm_apply (s : Set α) [Fintype s] :
-    finsetEquivSet.symm s = s.toFinset := by
-  simp [finsetEquivSet]; congr; exact Subsingleton.elim _ _
+    finsetEquivSet.symm s = s.toFinset := by simp [finsetEquivSet]
 #align fintype.finset_equiv_set_symm_apply Fintype.finsetEquivSet_symm_apply
 
 /-- Given a fintype `α`, `finsetOrderIsoSet` is the order isomorphism between `Finset α` and `Set α`
@@ -1111,7 +1114,7 @@ end Fintype
 
 instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     Fintype (Quotient s) :=
-  Fintype.ofSurjective Quotient.mk'' fun x => Quotient.inductionOn x fun x => ⟨x, rfl⟩
+  Fintype.ofSurjective Quotient.mk'' Quotient.surjective_Quotient_mk''
 #align quotient.fintype Quotient.fintype
 
 instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
@@ -1270,7 +1273,6 @@ noncomputable def seqOfForallFinsetExistsAux {α : Type*} [DecidableEq α] (P : 
       (h
         (Finset.image (fun i : Fin n => seqOfForallFinsetExistsAux P r h i)
           (Finset.univ : Finset (Fin n))))
-  decreasing_by all_goals exact i.2
 #align seq_of_forall_finset_exists_aux seqOfForallFinsetExistsAux
 
 /-- Induction principle to build a sequence, by adding one point at a time satisfying a given

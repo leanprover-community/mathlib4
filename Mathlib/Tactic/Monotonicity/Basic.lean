@@ -3,9 +3,8 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
+import Lean.Elab.Tactic.SolveByElim
 import Mathlib.Tactic.Monotonicity.Attr
-import Std.Tactic.SolveByElim
-import Std.Lean.Parser
 
 /-! # Monotonicity tactic
 
@@ -53,4 +52,4 @@ elab_rules : tactic
     backtracking := false
     transparency := .reducible
     exfalso := false }
-  liftMetaTactic fun g => do solveByElim.processSyntax cfg false false [] [] #[mkIdent `mono] [g]
+  liftMetaTactic fun g => do processSyntax cfg false false [] [] #[mkIdent `mono] [g]

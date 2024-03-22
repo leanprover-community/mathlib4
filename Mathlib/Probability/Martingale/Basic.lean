@@ -129,7 +129,7 @@ theorem sub (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (
 theorem smul (c : ℝ) (hf : Martingale f ℱ μ) : Martingale (c • f) ℱ μ := by
   refine' ⟨hf.adapted.smul c, fun i j hij => _⟩
   refine' (condexp_smul c (f j)).trans ((hf.2 i j hij).mono fun x hx => _)
-  rw [Pi.smul_apply, hx, Pi.smul_apply, Pi.smul_apply]
+  simp only [Pi.smul_apply, hx]
 #align measure_theory.martingale.smul MeasureTheory.Martingale.smul
 
 theorem supermartingale [Preorder E] (hf : Martingale f ℱ μ) : Supermartingale f ℱ μ :=

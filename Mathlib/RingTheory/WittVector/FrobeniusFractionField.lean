@@ -33,7 +33,7 @@ This construction is described in Dupuis, Lewis, and Macbeth,
 We approximately follow an approach sketched on MathOverflow:
 <https://mathoverflow.net/questions/62468/about-frobenius-of-witt-vectors>
 
-The result is a dependency for the proof of `witt_vector.isocrystal_classification`,
+The result is a dependency for the proof of `WittVector.isocrystal_classification`,
 the classification of one-dimensional isocrystals over an algebraically closed field.
 -/
 
@@ -54,7 +54,7 @@ namespace RecursionMain
 
 The first coefficient of our solution vector is easy to define below.
 In this section we focus on the recursive case.
-The goal is to turn `witt_poly_prod n` into a univariate polynomial
+The goal is to turn `WittVector.wittPolyProd n` into a univariate polynomial
 whose variable represents the `n`th coefficient of `x` in `x * a`.
 
 -/
@@ -132,7 +132,8 @@ theorem succNthVal_spec' (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k)
   have := succNthVal_spec p n a₁ a₂ bs ha₁ ha₂
   simp only [Polynomial.map_add, Polynomial.eval_X, Polynomial.map_pow, Polynomial.eval_C,
     Polynomial.eval_pow, succNthDefiningPoly, Polynomial.eval_mul, Polynomial.eval_add,
-    Polynomial.eval_sub, Polynomial.map_mul, Polynomial.map_sub, Polynomial.IsRoot.def] at this
+    Polynomial.eval_sub, Polynomial.map_mul, Polynomial.map_sub, Polynomial.IsRoot.definition]
+    at this
   convert this using 1
   ring
 #align witt_vector.recursion_main.succ_nth_val_spec' WittVector.RecursionMain.succNthVal_spec'
@@ -202,11 +203,10 @@ noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coef
     (ha₂ : a₂.coeff 0 ≠ 0) : ℕ → k
   | 0 => solution p a₁ a₂
   | n + 1 => succNthVal p n a₁ a₂ (fun i => frobeniusRotationCoeff ha₁ ha₂ i.val) ha₁ ha₂
-decreasing_by apply Fin.is_lt
 #align witt_vector.frobenius_rotation_coeff WittVector.frobeniusRotationCoeff
 
-/-- For nonzero `a₁` and `a₂`, `frobenius_rotation a₁ a₂` is a Witt vector that satisfies the
-equation `frobenius (frobenius_rotation a₁ a₂) * a₁ = (frobenius_rotation a₁ a₂) * a₂`.
+/-- For nonzero `a₁` and `a₂`, `frobeniusRotation a₁ a₂` is a Witt vector that satisfies the
+equation `frobenius (frobeniusRotation a₁ a₂) * a₁ = (frobeniusRotation a₁ a₂) * a₂`.
 -/
 def frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) : 𝕎 k :=
   WittVector.mk p (frobeniusRotationCoeff p ha₁ ha₂)
