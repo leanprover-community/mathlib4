@@ -80,8 +80,9 @@ theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n →
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
-  -- FIXME nightly-testing: used `ite_apply` instead of `(config := { unfoldPartialApp := true })`
   conv_lhs => unfold bitwise
+  -- Adaptation note: nightly-2024-03-16: simp was
+  -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, Bool.cond_eq_ite]
   simp only [bit, ite_apply, bit1, bit0, Bool.cond_eq_ite]
   have h1 x :     (x + x) % 2 = 0 := by rw [← two_mul, mul_comm]; apply mul_mod_left
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
@@ -94,7 +95,9 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
 
 lemma bit_mod_two (a : Bool) (x : ℕ) :
     bit a x % 2 = if a then 1 else 0 := by
-  -- FIXME nightly-testing: used `ite_apply` instead of `(config := { unfoldPartialApp := true })`
+  -- Adaptation note: nightly-2024-03-16: simp was
+  -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, ← mul_two,
+  --   Bool.cond_eq_ite]
   simp only [bit, ite_apply, bit1, bit0, ← mul_two, Bool.cond_eq_ite]
   split_ifs <;> simp [Nat.add_mod]
 

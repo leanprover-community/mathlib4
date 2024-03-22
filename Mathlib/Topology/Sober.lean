@@ -39,6 +39,8 @@ theorem isGenericPoint_def {x : α} {S : Set α} : IsGenericPoint x S ↔ closur
   Iff.rfl
 #align is_generic_point_def isGenericPoint_def
 
+-- Adaptation note: 2024-03-15
+-- Renamed to avoid the reserved name `IsGenericPoint.def`.
 theorem IsGenericPoint.def' {x : α} {S : Set α} (h : IsGenericPoint x S) :
     closure ({x} : Set α) = S :=
   h
