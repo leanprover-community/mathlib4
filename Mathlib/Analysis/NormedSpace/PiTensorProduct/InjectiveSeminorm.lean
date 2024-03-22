@@ -279,7 +279,7 @@ variable {𝕜 E F}
 
 @[simp]
 theorem liftIsometry_apply_apply (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
-  liftIsometry 𝕜 E F f x = lift f.toMultilinearMap x := by
+    liftIsometry 𝕜 E F f x = lift f.toMultilinearMap x := by
   simp only [liftIsometry, LinearIsometryEquiv.coe_mk, liftEquiv_apply,
     LinearMap.mkContinuous_apply]
 
