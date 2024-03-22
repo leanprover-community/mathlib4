@@ -313,10 +313,6 @@ variable (𝕜 E) in
 mapping). It is a linear equivalence. -/
 def toWeakSpace : E ≃ₗ[𝕜] WeakSpace 𝕜 E := LinearEquiv.refl 𝕜 E
 
-@[simp]
-theorem toWeakSpace_eq_iff (x y : E) : toWeakSpace 𝕜 E x = toWeakSpace 𝕜 E y ↔ x = y :=
-  Function.Injective.eq_iff <| LinearEquiv.injective (toWeakSpace 𝕜 E)
-
 variable (𝕜 E) in
 /-- For a topological vector space `E`, "identity mapping" `E → WeakSpace 𝕜 E` is continuous.
 This definition implements it as a continuous linear map. -/
@@ -329,7 +325,7 @@ def continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E where
 variable (𝕜 E) in
 @[simp]
 theorem toWeakSpace_eq_continuousLinearMapToWeakSpace (x : E) :
-    continuousLinearMapToWeakSpace 𝕜 E x= toWeakSpace 𝕜 E x := by rfl
+    continuousLinearMapToWeakSpace 𝕜 E x = toWeakSpace 𝕜 E x := by rfl
 
 theorem injective_continuousLinearMapToWeakSpace :
     Function.Injective (continuousLinearMapToWeakSpace 𝕜 E) := by
