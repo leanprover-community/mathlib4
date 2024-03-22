@@ -412,6 +412,11 @@ theorem isReal_or_isComplex (w : InfinitePlace K) : IsReal w ∨ IsComplex w := 
   rw [← not_isReal_iff_isComplex]; exact em _
 #align number_field.infinite_place.is_real_or_is_complex NumberField.InfinitePlace.isReal_or_isComplex
 
+variable (K) in
+theorem disjoint_isReal_isComplex : Disjoint {(w : InfinitePlace K) | IsReal w}
+    {(w : InfinitePlace K) | IsComplex w} :=
+  Set.disjoint_iff.2 <| fun _ hw ↦ not_isReal_iff_isComplex.2 hw.2 hw.1
+
 theorem ne_of_isReal_isComplex {w w' : InfinitePlace K} (h : IsReal w) (h' : IsComplex w') :
     w ≠ w' := fun h_eq ↦ not_isReal_iff_isComplex.mpr h' (h_eq ▸ h)
 
@@ -576,6 +581,12 @@ noncomputable abbrev NrRealPlaces := card { w : InfinitePlace K // IsReal w }
 
 /-- The number of infinite complex places of the number field `K`. -/
 noncomputable abbrev NrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
+
+theorem card_eq_nrRealPlaces_add_nrComplexPlaces : Fintype.card (InfinitePlace K) =
+    NrRealPlaces K + NrComplexPlaces K := by
+  convert Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
+    (disjoint_isReal_isComplex K) using 1
+  exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
 
 theorem card_real_embeddings :
     card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } = NrRealPlaces K := Fintype.card_congr mkReal
