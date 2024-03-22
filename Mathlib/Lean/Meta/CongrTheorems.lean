@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean.Meta.Tactic.Cleanup
-import Mathlib.Lean.Meta
+import Lean.Meta.Tactic.Cases
+import Lean.Meta.Tactic.Refl
 
 /-!
 # Additions to `Lean.Meta.CongrTheorems`

@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Lean.Elab.Tactic.Location
 import Std.Data.MLList.Heartbeats
-import Std.Tactic.Relation.Rfl
 import Lean.Meta.Tactic.SolveByElim
 import Std.Util.Pickle
 import Std.Util.Cache
