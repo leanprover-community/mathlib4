@@ -8,7 +8,6 @@ import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Order.Antichain
-import Mathlib.Tactic.FinCases
 
 #align_import combinatorics.simple_graph.coloring from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
