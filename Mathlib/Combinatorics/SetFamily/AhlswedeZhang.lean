@@ -85,7 +85,7 @@ private lemma Fintype.sum_div_mul_card_choose_card :
     ← range_succ]
   have (n) (hn : n ∈ range (card α + 1)) :
       ((card α).choose n / ((card α - n) * (card α).choose n) : ℚ) = (card α - n : ℚ)⁻¹ := by
-    rw [div_mul_eq_inv_left₀]
+    rw [div_mul_cancel_right₀]
     exact cast_ne_zero.2 (choose_pos $ mem_range_succ_iff.1 hn).ne'
   simp only [sum_congr rfl this, mul_eq_mul_left_iff, cast_eq_zero]
   convert Or.inl $ sum_range_reflect _ _ with a ha
@@ -355,7 +355,7 @@ lemma IsAntichain.le_infSum (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset
     _ = ∑ s in 𝒜, (truncatedInf 𝒜 s).card / (s.card * (card α).choose s.card : ℚ) := ?_
     _ ≤ _ := sum_le_univ_sum_of_nonneg fun s ↦ by positivity
   refine' sum_congr rfl fun s hs ↦ _
-  rw [truncatedInf_of_isAntichain h𝒜 hs, div_mul_right, one_div]
+  rw [truncatedInf_of_isAntichain h𝒜 hs, div_mul_cancel_left₀]
   have := (nonempty_iff_ne_empty.2 $ ne_of_mem_of_not_mem hs h𝒜₀).card_pos
   positivity
 
