@@ -140,8 +140,8 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
       Nat.cast_two, ofReal_mul, neg_add, mul_neg, neg_neg]
     norm_num; rw [two_mul] -- Porting note: added to simplify `↑2`
     split_ifs
-    · rw [add_sub_right_comm, sub_add_eq_neg_right]
-    · rw [add_sub_right_comm, sub_add_eq_neg_right]
+    · rw [add_sub_right_comm, sub_add_cancel_left]
+    · rw [add_sub_right_comm, sub_add_cancel_left]
   · rwa [inv_pos, Complex.normSq_pos]
   · rwa [map_ne_zero]
 #align complex.log_inv_eq_ite Complex.log_inv_eq_ite

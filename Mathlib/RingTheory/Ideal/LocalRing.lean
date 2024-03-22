@@ -161,7 +161,7 @@ namespace LocalRing
 
 theorem of_isUnit_or_isUnit_one_sub_self [Nontrivial R] (h : ∀ a : R, IsUnit a ∨ IsUnit (1 - a)) :
     LocalRing R :=
-  ⟨fun {a b} hab => add_sub_eq_right a b ▸ hab.symm ▸ h a⟩
+  ⟨fun {a b} hab => add_sub_cancel_left a b ▸ hab.symm ▸ h a⟩
 #align local_ring.of_is_unit_or_is_unit_one_sub_self LocalRing.of_isUnit_or_isUnit_one_sub_self
 
 variable [LocalRing R]

@@ -816,19 +816,19 @@ theorem div_self' (a : G) : a / a = 1 := by rw [div_eq_mul_inv, mul_right_inv a]
 #align sub_self sub_self
 
 @[to_additive (attr := simp)]
-theorem mul_div_eq_left (a b : G) : a * b / b = a :=
+theorem mul_div_cancel_right (a b : G) : a * b / b = a :=
   by rw [div_eq_mul_inv, mul_inv_cancel_right a b]
-#align mul_div_cancel'' mul_div_eq_left
-#align add_sub_cancel add_sub_eq_left
+#align mul_div_cancel'' mul_div_cancel_right
+#align add_sub_cancel add_sub_cancel_right
 
 @[to_additive (attr := simp)]
-theorem div_mul_eq_inv_left (a b : G) : a / (b * a) = b⁻¹ := by rw [← inv_div, mul_div_eq_left]
-#align div_mul_cancel''' div_mul_eq_inv_left
-#align sub_add_cancel'' sub_add_eq_neg_left
+theorem div_mul_cancel_right (a b : G) : a / (b * a) = b⁻¹ := by rw [← inv_div, mul_div_cancel_right]
+#align div_mul_cancel''' div_mul_cancel_right
+#align sub_add_cancel'' sub_add_cancel_right
 
 @[to_additive (attr := simp)]
 theorem mul_div_mul_right_eq_div (a b c : G) : a * c / (b * c) = a / b := by
-  rw [div_mul_eq_div_div_swap]; simp only [mul_left_inj, eq_self_iff_true, mul_div_eq_left]
+  rw [div_mul_eq_div_div_swap]; simp only [mul_left_inj, eq_self_iff_true, mul_div_cancel_right]
 #align mul_div_mul_right_eq_div mul_div_mul_right_eq_div
 #align add_sub_add_right_eq_sub add_sub_add_right_eq_sub
 
@@ -918,7 +918,7 @@ theorem eq_iff_eq_of_div_eq_div (H : a / b = c / d) : a = b ↔ c = d :=
 
 @[to_additive]
 theorem leftInverse_div_mul_left (c : G) : Function.LeftInverse (fun x ↦ x / c) fun x ↦ x * c :=
-  fun x ↦ mul_div_eq_left x c
+  fun x ↦ mul_div_cancel_right x c
 #align left_inverse_div_mul_left leftInverse_div_mul_left
 #align left_inverse_sub_add_left leftInverse_sub_add_left
 
@@ -1024,20 +1024,20 @@ theorem div_eq_iff_eq_mul' : a / b = c ↔ a = b * c := by rw [div_eq_iff_eq_mul
 #align sub_eq_iff_eq_add' sub_eq_iff_eq_add'
 
 @[to_additive (attr := simp)]
-theorem mul_div_eq_right (a b : G) : a * b / a = b := by rw [div_eq_inv_mul, inv_mul_cancel_left]
-#align mul_div_cancel''' mul_div_eq_right
-#align add_sub_cancel' add_sub_eq_right
+theorem mul_div_cancel_left (a b : G) : a * b / a = b := by rw [div_eq_inv_mul, inv_mul_cancel_left]
+#align mul_div_cancel''' mul_div_cancel_left
+#align add_sub_cancel' add_sub_cancel_left
 
 @[to_additive (attr := simp)]
 theorem mul_div_cancel (a b : G) : a * (b / a) = b := by
-  rw [← mul_div_assoc, mul_div_eq_right]
+  rw [← mul_div_assoc, mul_div_cancel_left]
 #align mul_div_cancel'_right mul_div_cancel
 #align add_sub_cancel'_right add_sub_cancel
 
 @[to_additive (attr := simp)]
-theorem div_mul_eq_inv_right (a b : G) : a / (a * b) = b⁻¹ := by rw [← inv_div, mul_div_eq_right]
-#align div_mul_cancel'' div_mul_eq_inv_right
-#align sub_add_cancel' sub_add_eq_neg_right
+theorem div_mul_cancel_left (a b : G) : a / (a * b) = b⁻¹ := by rw [← inv_div, mul_div_cancel_left]
+#align div_mul_cancel'' div_mul_cancel_left
+#align sub_add_cancel' sub_add_cancel_left
 
 -- This lemma is in the `simp` set under the name `mul_inv_cancel_comm_assoc`,
 -- along with the additive version `add_neg_cancel_comm_assoc`,
@@ -1068,7 +1068,7 @@ theorem div_mul_div_cancel'' (a b c : G) : a / b * (c / a) = c / b := by
 
 @[to_additive (attr := simp)]
 theorem mul_div_div_cancel (a b c : G) : a * b / (a / c) = b * c := by
-  rw [← div_mul, mul_div_eq_right]
+  rw [← div_mul, mul_div_cancel_left]
 #align mul_div_div_cancel mul_div_div_cancel
 #align add_sub_sub_cancel add_sub_sub_cancel
 
@@ -1160,14 +1160,14 @@ end ite
 
 -- 2024-03-20
 @[deprecated] alias div_mul_cancel' := div_mul_cancel
-@[deprecated] alias mul_div_cancel'' := mul_div_eq_left
+@[deprecated] alias mul_div_cancel'' := mul_div_cancel_right
 -- The name `add_sub_cancel` was reused
--- @[deprecated] alias add_sub_cancel := add_sub_eq_left
-@[deprecated] alias div_mul_cancel''' := div_mul_eq_inv_left
-@[deprecated] alias sub_add_cancel'' := sub_add_eq_neg_left
-@[deprecated] alias mul_div_cancel''' := mul_div_eq_right
-@[deprecated] alias add_sub_cancel' := add_sub_eq_right
+-- @[deprecated] alias add_sub_cancel := add_sub_cancel_right
+@[deprecated] alias div_mul_cancel''' := div_mul_cancel_right
+@[deprecated] alias sub_add_cancel'' := sub_add_cancel_right
+@[deprecated] alias mul_div_cancel''' := mul_div_cancel_left
+@[deprecated] alias add_sub_cancel' := add_sub_cancel_left
 @[deprecated] alias mul_div_cancel'_right := mul_div_cancel
 @[deprecated] alias add_sub_cancel'_right := add_sub_cancel
-@[deprecated] alias div_mul_cancel'' := div_mul_eq_inv_right
-@[deprecated] alias sub_add_cancel' := sub_add_eq_neg_right
+@[deprecated] alias div_mul_cancel'' := div_mul_cancel_left
+@[deprecated] alias sub_add_cancel' := sub_add_cancel_left

@@ -178,7 +178,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     simp_rw [norm_norm]
     simp_rw [dist_eq_norm] at hδ2
     refine' fun x _ => (hδ2 _).le
-    rw [sub_add_eq_neg_right, norm_neg, hw'_nm, ← div_div, div_lt_iff (norm_pos_iff.mpr hw_ne), ←
+    rw [sub_add_cancel_left, norm_neg, hw'_nm, ← div_div, div_lt_iff (norm_pos_iff.mpr hw_ne), ←
       div_lt_iff' hδ1, div_div]
     exact (lt_add_of_pos_left _ one_half_pos).trans_le hw_bd
   have bdA2 := norm_set_integral_le_of_norm_le_const (hB_vol.trans_lt ENNReal.coe_lt_top) bdA ?_

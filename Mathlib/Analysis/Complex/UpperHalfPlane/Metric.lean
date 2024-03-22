@@ -44,7 +44,7 @@ theorem dist_eq (z w : ℍ) : dist z w = 2 * arsinh (dist (z : ℂ) w / (2 * sqr
 
 theorem sinh_half_dist (z w : ℍ) :
     sinh (dist z w / 2) = dist (z : ℂ) w / (2 * sqrt (z.im * w.im)) := by
-  rw [dist_eq, mul_div_eq_right₀ (arsinh _) two_ne_zero, sinh_arsinh]
+  rw [dist_eq, mul_div_cancel_left₀ (arsinh _) two_ne_zero, sinh_arsinh]
 #align upper_half_plane.sinh_half_dist UpperHalfPlane.sinh_half_dist
 
 theorem cosh_half_dist (z w : ℍ) :

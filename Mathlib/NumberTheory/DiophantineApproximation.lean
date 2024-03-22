@@ -237,7 +237,7 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
   replace h : |ξ * q.den - q.num| < 1 / q.den := by
     rw [← mul_lt_mul_right hq₀] at h
     conv_lhs at h => rw [← abs_of_pos hq₀, ← abs_mul, sub_mul, mul_den_eq_num]
-    rwa [sq, div_mul, mul_div_eq_right₀ _ hq₀.ne'] at h
+    rwa [sq, div_mul, mul_div_cancel_left₀ _ hq₀.ne'] at h
   constructor
   · rcases eq_or_ne ξ q with (rfl | H)
     · exact le_rfl
@@ -485,12 +485,12 @@ private theorem aux₃ :
   have H₁ := div_pos (div_pos Hv Hu) hξ₀
   replace h := h.2.2
   have h' : |fract ξ - u' / v| < ((v : ℝ) * (2 * v - 1))⁻¹ := by
-    rwa [hu'ℝ, add_div, mul_div_eq_left₀ _ Hv.ne', ← sub_sub, sub_right_comm] at h
+    rwa [hu'ℝ, add_div, mul_div_cancel_right₀ _ Hv.ne', ← sub_sub, sub_right_comm] at h
   have H : (2 * u' - 1 : ℝ) ≤ (2 * v - 1) * fract ξ := by
     replace h := (abs_lt.mp h).1
     have : (2 * (v : ℝ) - 1) * (-((v : ℝ) * (2 * v - 1))⁻¹ + u' / v) = 2 * u' - (1 + u') / v := by
       field_simp; ring
-    rw [hu'ℝ, add_div, mul_div_eq_left₀ _ Hv.ne', ← sub_sub, sub_right_comm, self_sub_floor,
+    rw [hu'ℝ, add_div, mul_div_cancel_right₀ _ Hv.ne', ← sub_sub, sub_right_comm, self_sub_floor,
       lt_sub_iff_add_lt, ← mul_lt_mul_left Hv', this] at h
     refine' LE.le.trans _ h.le
     rw [sub_le_sub_iff_left, div_le_one Hv, add_comm]
@@ -574,7 +574,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
     use n + 1
     rw [convergent_succ, ← hn,
       (mod_cast toNat_of_nonneg huv₀.le : ((u - ⌊ξ⌋ * v).toNat : ℚ) = u - ⌊ξ⌋ * v),
-      cast_ofNat, inv_div, sub_div, mul_div_eq_left₀ _ Hv, add_sub_cancel]
+      cast_ofNat, inv_div, sub_div, mul_div_cancel_right₀ _ Hv, add_sub_cancel]
 #align real.exists_rat_eq_convergent' Real.exists_rat_eq_convergent'
 
 /-- The main result, *Legendre's Theorem* on rational approximation:

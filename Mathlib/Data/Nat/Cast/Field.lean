@@ -33,7 +33,7 @@ theorem cast_div [DivisionSemiring α] {m n : ℕ} (n_dvd : n ∣ m) (n_nonzero 
   have : n ≠ 0 := by
     rintro rfl
     simp at n_nonzero
-  rw [Nat.mul_div_cancel_left _ this.bot_lt, mul_comm n k,cast_mul, mul_div_eq_left₀ _ n_nonzero]
+  rw [Nat.mul_div_cancel_left _ this.bot_lt, mul_comm n k,cast_mul, mul_div_cancel_right₀ _ n_nonzero]
 #align nat.cast_div Nat.cast_div
 
 theorem cast_div_div_div_cancel_right [DivisionSemiring α] [CharZero α] {m n d : ℕ}

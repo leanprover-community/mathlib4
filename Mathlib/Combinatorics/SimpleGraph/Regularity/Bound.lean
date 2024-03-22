@@ -247,7 +247,7 @@ theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) 
     sq_le_sq.2 (by rwa [abs_of_nonneg hx])
   have h₂ : x ^ 2 ≤ ((∑ i in s, (f i - (∑ j in t, f j) / t.card)) / s.card) ^ 2 := by
     apply h₁.trans
-    rw [sum_sub_distrib, sum_const, nsmul_eq_mul, sub_div, mul_div_eq_right₀ _ hscard.ne']
+    rw [sum_sub_distrib, sum_const, nsmul_eq_mul, sub_div, mul_div_cancel_left₀ _ hscard.ne']
   apply (add_le_add_right ht _).trans
   rw [← mul_div_right_comm, le_div_iff htcard, add_mul, div_mul_cancel₀ _ htcard.ne']
   have h₃ := mul_sq_le_sum_sq hst (fun i => (f i - (∑ j in t, f j) / t.card)) h₂ hscard.ne'

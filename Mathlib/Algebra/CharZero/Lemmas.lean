@@ -169,7 +169,7 @@ section
 variable {R : Type*} [DivisionRing R] [CharZero R]
 
 @[simp]
-theorem half_add_self (a : R) : (a + a) / 2 = a := by rw [← mul_two, mul_div_eq_left₀ a two_ne_zero]
+theorem half_add_self (a : R) : (a + a) / 2 = a := by rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
 #align half_add_self half_add_self
 
 @[simp]

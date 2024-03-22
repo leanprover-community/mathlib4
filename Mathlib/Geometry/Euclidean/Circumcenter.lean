@@ -456,7 +456,7 @@ theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Sim
     dist p₁ s.circumcenter * dist p₁ s.circumcenter = r * r - s.circumradius * s.circumradius := by
   rw [dist_comm, ← h₁ 0,
     s.dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p₁ h]
-  simp only [h₁', dist_comm p₁, add_sub_eq_right, Simplex.dist_circumcenter_eq_circumradius]
+  simp only [h₁', dist_comm p₁, add_sub_cancel_left, Simplex.dist_circumcenter_eq_circumradius]
 #align affine.simplex.dist_circumcenter_sq_eq_sq_sub_circumradius Affine.Simplex.dist_circumcenter_sq_eq_sq_sub_circumradius
 
 /-- If there exists a distance that a point has from all vertices of a

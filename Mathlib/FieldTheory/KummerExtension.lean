@@ -331,7 +331,7 @@ def autAdjoinRootXPowSubCEquiv :
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
       have : (η : Kˣ) = 1 := (pow_one _).symm.trans η.prop
       simp only [PNat.mk_one, this, Units.val_one, map_one]
-    · exact mul_div_eq_left₀ _ (root_X_pow_sub_C_ne_zero' hn h)
+    · exact mul_div_cancel_right₀ _ (root_X_pow_sub_C_ne_zero' hn h)
   right_inv := by
     intro e
     have := Fact.mk H

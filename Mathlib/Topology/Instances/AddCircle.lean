@@ -403,7 +403,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
   have h0 : (_ : 𝕜) ≠ 0 := Nat.cast_ne_zero.2 h.ne'
   rw [nsmul_eq_mul, mul_comm, ← div_eq_iff h0, ← a.ediv_add_emod' n, add_smul, add_div,
     zsmul_eq_mul, Int.cast_mul, Int.cast_ofNat, mul_assoc, ← mul_div, mul_comm _ p,
-    mul_div_eq_left₀ p h0] at ha
+    mul_div_cancel_right₀ p h0] at ha
   have han : _ = a % n := Int.toNat_of_nonneg (Int.emod_nonneg _ <| mod_cast h.ne')
   have he : (↑(↑((a % n).toNat) / ↑n * p) : AddCircle p) = k := by
     convert congr_arg (QuotientAddGroup.mk : 𝕜 → (AddCircle p)) ha using 1

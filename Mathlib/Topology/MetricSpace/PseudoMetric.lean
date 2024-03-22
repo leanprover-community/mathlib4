@@ -1397,12 +1397,12 @@ theorem Real.closedBall_eq_Icc {x r : ℝ} : closedBall x r = Icc (x - r) (x + r
 #align real.closed_ball_eq_Icc Real.closedBall_eq_Icc
 
 theorem Real.Ioo_eq_ball (x y : ℝ) : Ioo x y = ball ((x + y) / 2) ((y - x) / 2) := by
-  rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_eq_right, add_self_div_two,
+  rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
     ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
 #align real.Ioo_eq_ball Real.Ioo_eq_ball
 
 theorem Real.Icc_eq_closedBall (x y : ℝ) : Icc x y = closedBall ((x + y) / 2) ((y - x) / 2) := by
-  rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_eq_right, add_self_div_two, ←
+  rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two, ←
     add_div, add_assoc, add_sub_cancel, add_self_div_two]
 #align real.Icc_eq_closed_ball Real.Icc_eq_closedBall
 

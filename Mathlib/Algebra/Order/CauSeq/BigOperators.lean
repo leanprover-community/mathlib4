@@ -173,7 +173,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
       conv =>
         rhs
         rw [← Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hl0), succ_nsmul', sub_add,
-          add_sub_eq_left]
+          add_sub_cancel_right]
     _ < f j + ε := add_lt_add_right (hl j (le_trans hi.1 hj)) _
 #align is_cau_of_decreasing_bounded IsCauSeq.of_decreasing_bounded
 
@@ -218,7 +218,7 @@ lemma series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1
   generalize hk : m - n.succ = k
   replace hk : m = k + n.succ := (tsub_eq_iff_eq_add_of_le hmn).1 hk
   induction' k with k ih generalizing m n
-  · rw [hk, Nat.zero_add, mul_right_comm, inv_pow _ _, ← div_eq_mul_inv, mul_div_eq_left₀]
+  · rw [hk, Nat.zero_add, mul_right_comm, inv_pow _ _, ← div_eq_mul_inv, mul_div_cancel_right₀]
     positivity
   · have kn : k + n.succ ≥ n.succ := by
       rw [← zero_add n.succ]; exact add_le_add (Nat.zero_le _) (by simp)

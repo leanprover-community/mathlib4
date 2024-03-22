@@ -290,7 +290,7 @@ theorem HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ EMetri
     rw [hf (x + y)]
     · convert hasSum_zero
       rw [hp, ContinuousMultilinearMap.zero_apply]
-    · rwa [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, add_comm, add_sub_eq_left,
+    · rwa [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, add_comm, add_sub_cancel_right,
         ← edist_eq_coe_nnnorm, ← EMetric.mem_ball]
 
 /-- If `f` has a formal power series at `x` bounded by `0`, then `f` is equal to `0` in a

@@ -672,7 +672,7 @@ alias norm_le_insert := norm_le_norm_add_norm_sub
 @[to_additive]
 theorem norm_le_mul_norm_add (u v : E) : ‖u‖ ≤ ‖u * v‖ + ‖v‖ :=
   calc
-    ‖u‖ = ‖u * v / v‖ := by rw [mul_div_eq_left]
+    ‖u‖ = ‖u * v / v‖ := by rw [mul_div_cancel_right]
     _ ≤ ‖u * v‖ + ‖v‖ := norm_div_le _ _
 #align norm_le_mul_norm_add norm_le_mul_norm_add
 #align norm_le_add_norm_add norm_le_add_norm_add
@@ -1643,13 +1643,13 @@ theorem dist_prod_prod_le (s : Finset ι) (f a : ι → E) :
 
 @[to_additive]
 theorem mul_mem_ball_iff_norm : a * b ∈ ball a r ↔ ‖b‖ < r := by
-  rw [mem_ball_iff_norm'', mul_div_eq_right]
+  rw [mem_ball_iff_norm'', mul_div_cancel_left]
 #align mul_mem_ball_iff_norm mul_mem_ball_iff_norm
 #align add_mem_ball_iff_norm add_mem_ball_iff_norm
 
 @[to_additive]
 theorem mul_mem_closedBall_iff_norm : a * b ∈ closedBall a r ↔ ‖b‖ ≤ r := by
-  rw [mem_closedBall_iff_norm'', mul_div_eq_right]
+  rw [mem_closedBall_iff_norm'', mul_div_cancel_left]
 #align mul_mem_closed_ball_iff_norm mul_mem_closedBall_iff_norm
 #align add_mem_closed_ball_iff_norm add_mem_closedBall_iff_norm
 

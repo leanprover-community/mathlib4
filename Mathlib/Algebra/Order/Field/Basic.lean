@@ -429,12 +429,12 @@ The equalities also hold in semifields of characteristic `0`.
 /- TODO: Unify `add_halves` and `add_halves'` into a single lemma about
 `DivisionSemiring` + `CharZero` -/
 theorem add_halves (a : α) : a / 2 + a / 2 = a := by
-  rw [div_add_div_same, ← two_mul, mul_div_eq_right₀ a two_ne_zero]
+  rw [div_add_div_same, ← two_mul, mul_div_cancel_left₀ a two_ne_zero]
 #align add_halves add_halves
 
 -- TODO: Generalize to `DivisionSemiring`
 theorem add_self_div_two (a : α) : (a + a) / 2 = a := by
-  rw [← mul_two, mul_div_eq_left₀ a two_ne_zero]
+  rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
 #align add_self_div_two add_self_div_two
 
 theorem half_pos (h : 0 < a) : 0 < a / 2 :=
@@ -480,7 +480,7 @@ theorem add_div_two_lt_right : (a + b) / 2 < b ↔ a < b := by simp [div_lt_iff,
 
 theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
   rw [div_add_div_same, div_add_div_same, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
-    mul_div_eq_right₀ a three_ne_zero]
+    mul_div_cancel_left₀ a three_ne_zero]
 
 /-!
 ### Miscellaneous lemmas
@@ -897,7 +897,7 @@ theorem one_div_le_neg_one (h1 : a < 0) (h2 : -1 ≤ a) : 1 / a ≤ -1 :=
 
 theorem sub_self_div_two (a : α) : a - a / 2 = a / 2 := by
   suffices a / 2 + a / 2 - a / 2 = a / 2 by rwa [add_halves] at this
-  rw [add_sub_eq_left]
+  rw [add_sub_cancel_right]
 #align sub_self_div_two sub_self_div_two
 
 theorem div_two_sub_self (a : α) : a / 2 - a = -(a / 2) := by

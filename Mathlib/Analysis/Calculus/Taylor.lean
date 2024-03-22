@@ -247,7 +247,7 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
   use y, hy
   -- The rest is simplifications and trivial calculations
   simp only [taylorWithinEval_self] at h
-  rw [mul_comm, ← div_left_inj' (g'_ne y hy), mul_div_eq_left₀ _ (g'_ne y hy)] at h
+  rw [mul_comm, ← div_left_inj' (g'_ne y hy), mul_div_cancel_right₀ _ (g'_ne y hy)] at h
   rw [← h]
   field_simp [g'_ne y hy]
   ring

@@ -724,9 +724,9 @@ theorem integral_comp_mul_right (hc : c ≠ 0) :
   simp_rw [integral_smul_measure, intervalIntegral, A.set_integral_map,
     ENNReal.toReal_ofReal (abs_nonneg c)]
   cases' hc.lt_or_lt with h h
-  · simp [h, mul_div_eq_left₀, hc, abs_of_neg,
+  · simp [h, mul_div_cancel_right₀, hc, abs_of_neg,
       Measure.restrict_congr_set (α := ℝ) (μ := volume) Ico_ae_eq_Ioc]
-  · simp [h, mul_div_eq_left₀, hc, abs_of_pos]
+  · simp [h, mul_div_cancel_right₀, hc, abs_of_pos]
 #align interval_integral.integral_comp_mul_right intervalIntegral.integral_comp_mul_right
 
 -- Porting note (#10618): was @[simp]

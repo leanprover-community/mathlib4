@@ -60,7 +60,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
       exact ⟨Int.le.intro a rfl, h⟩
     · rintro ⟨ha, hb⟩
       use (x - (a + 1)).toNat
-      rw [toNat_sub_of_le ha, ← add_one_le_iff, sub_add, add_sub_eq_left]
+      rw [toNat_sub_of_le ha, ← add_one_le_iff, sub_add, add_sub_cancel_right]
       exact ⟨sub_le_sub_right hb _, add_sub_cancel _ _⟩
   finset_mem_Ioo a b x := by
     simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,

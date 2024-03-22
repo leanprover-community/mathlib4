@@ -1290,13 +1290,13 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     rw [Finset.coe_insert, Set.biUnion_insert] at h
     have hsi : s ∈ f i := ((h hsI).resolve_left (mt Or.inl hs)).resolve_right (mt Or.inr hs)
     rcases h (I.add_mem hrI hsI) with (⟨ha | hb⟩ | hi | ht)
-    · exact hs (Or.inl <| Or.inl <| add_sub_eq_right r s ▸ (f a).sub_mem ha hra)
-    · exact hs (Or.inl <| Or.inr <| add_sub_eq_right r s ▸ (f b).sub_mem hb hrb)
-    · exact hri (add_sub_eq_left r s ▸ (f i).sub_mem hi hsi)
+    · exact hs (Or.inl <| Or.inl <| add_sub_cancel_left r s ▸ (f a).sub_mem ha hra)
+    · exact hs (Or.inl <| Or.inr <| add_sub_cancel_left r s ▸ (f b).sub_mem hb hrb)
+    · exact hri (add_sub_cancel_right r s ▸ (f i).sub_mem hi hsi)
     · rw [Set.mem_iUnion₂] at ht
       rcases ht with ⟨j, hjt, hj⟩
       simp only [Finset.inf_eq_iInf, SetLike.mem_coe, Submodule.mem_iInf] at hr
-      exact hs $ Or.inr $ Set.mem_biUnion hjt <| add_sub_eq_right r s ▸ (f j).sub_mem hj <| hr j hjt
+      exact hs $ Or.inr $ Set.mem_biUnion hjt <| add_sub_cancel_left r s ▸ (f j).sub_mem hj <| hr j hjt
 #align ideal.subset_union_prime' Ideal.subset_union_prime'
 
 /-- Prime avoidance. Atiyah-Macdonald 1.11, Eisenbud 3.3, Stacks 00DS, Matsumura Ex.1.6. -/

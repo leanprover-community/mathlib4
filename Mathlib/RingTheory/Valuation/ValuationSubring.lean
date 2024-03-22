@@ -662,7 +662,7 @@ theorem principalUnitGroup_le_principalUnitGroup {A B : ValuationSubring K} :
     by_cases h_2 : x⁻¹ + 1 = 0
     · rw [add_eq_zero_iff_eq_neg, inv_eq_iff_eq_inv, inv_neg, inv_one] at h_2
       simpa only [h_2] using B.neg_mem _ B.one_mem
-    · rw [← valuation_le_one_iff, ← not_lt, Valuation.one_lt_val_iff _ h_1, ← add_sub_eq_left x⁻¹, ←
+    · rw [← valuation_le_one_iff, ← not_lt, Valuation.one_lt_val_iff _ h_1, ← add_sub_cancel_right x⁻¹, ←
         Units.val_mk0 h_2, ← mem_principalUnitGroup_iff] at hx ⊢
       simpa only [hx] using @h (Units.mk0 (x⁻¹ + 1) h_2)
   · intro h x hx

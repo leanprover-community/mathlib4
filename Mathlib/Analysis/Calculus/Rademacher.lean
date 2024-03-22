@@ -148,7 +148,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
         rw [← Function.nmem_support]
         contrapose! hx
         apply mem_cthickening_of_dist_le _ _ (‖v‖) (tsupport f) (subset_tsupport _ hx)
-        simp only [dist_eq_norm, sub_add_eq_neg_right, norm_neg, norm_smul, Real.norm_eq_abs,
+        simp only [dist_eq_norm, sub_add_cancel_left, norm_neg, norm_smul, Real.norm_eq_abs,
           abs_of_nonneg t_pos.le, norm_pos_iff]
         exact mul_le_of_le_one_left (norm_nonneg v) ht.2
       simp only [B, A, _root_.sub_self, smul_eq_mul, mul_zero, zero_mul, norm_zero]

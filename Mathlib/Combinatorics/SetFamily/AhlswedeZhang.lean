@@ -400,7 +400,7 @@ lemma supSum_of_not_univ_mem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ �
   obtain ⟨s, 𝒜, hs, rfl, rfl⟩ := card_eq_succ.1 hm.symm
   have h𝒜 : 𝒜.Nonempty := nonempty_iff_ne_empty.2 (by rintro rfl; simp at h𝒜₃)
   rw [insert_eq, eq_sub_of_add_eq (supSum_union_add_supSum_infs _ _), singleton_infs,
-    supSum_singleton (ne_of_mem_of_not_mem (mem_insert_self _ _) h𝒜₂), ih, ih, add_sub_eq_left]
+    supSum_singleton (ne_of_mem_of_not_mem (mem_insert_self _ _) h𝒜₂), ih, ih, add_sub_cancel_right]
   · exact card_image_le.trans_lt (lt_add_one _)
   · exact h𝒜.image _
   · simpa using fun _ ↦ ne_of_mem_of_not_mem (mem_insert_self _ _) h𝒜₂
@@ -411,7 +411,7 @@ lemma supSum_of_not_univ_mem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ �
 /-- The **Ahlswede-Zhang Identity**. -/
 lemma infSum_eq_one (h𝒜₁ : 𝒜.Nonempty) (h𝒜₀ : ∅ ∉ 𝒜) : infSum 𝒜 = 1 := by
   rw [← compls_compls 𝒜, eq_sub_of_add_eq (infSum_compls_add_supSum _),
-    supSum_of_not_univ_mem h𝒜₁.compls, add_sub_eq_right]
+    supSum_of_not_univ_mem h𝒜₁.compls, add_sub_cancel_left]
   simpa
 
 end AhlswedeZhang

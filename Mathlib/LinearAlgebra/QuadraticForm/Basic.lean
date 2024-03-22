@@ -276,7 +276,7 @@ theorem polar_add_left (x x' y : M) : polar Q (x + x') y = polar Q x y + polar Q
 @[simp]
 theorem polar_smul_left (a : R) (x y : M) : polar Q (a • x) y = a * polar Q x y := by
   obtain ⟨B, h⟩ := Q.exists_companion
-  simp_rw [polar, h, Q.map_smul, LinearMap.map_smul₂, sub_sub, add_sub_eq_right, smul_eq_mul]
+  simp_rw [polar, h, Q.map_smul, LinearMap.map_smul₂, sub_sub, add_sub_cancel_left, smul_eq_mul]
 #align quadratic_form.polar_smul_left QuadraticForm.polar_smul_left
 
 @[simp]
@@ -359,7 +359,7 @@ def ofPolar (toFun : M → R) (toFun_smul : ∀ (a : R) (x : M), toFun (a • x)
 theorem choose_exists_companion : Q.exists_companion.choose = polarBilin Q :=
   LinearMap.ext₂ fun x y => by
     rw [polarBilin_apply_apply, polar, Q.exists_companion.choose_spec, sub_sub,
-      add_sub_eq_right]
+      add_sub_cancel_left]
 #align quadratic_form.some_exists_companion QuadraticForm.choose_exists_companion
 
 end CommRing
@@ -763,7 +763,7 @@ theorem toQuadraticForm_sub (B₁ B₂ : BilinForm R M) :
 #align bilin_form.to_quadratic_form_sub LinearMap.BilinForm.toQuadraticForm_sub
 
 theorem polar_toQuadraticForm (x y : M) : polar (toQuadraticForm B) x y = B x y + B y x := by
-  simp only [toQuadraticForm_apply, add_assoc, add_sub_eq_right, add_apply, polar, add_left_inj,
+  simp only [toQuadraticForm_apply, add_assoc, add_sub_cancel_left, add_apply, polar, add_left_inj,
     add_neg_cancel_left, map_add, sub_eq_add_neg _ (B y y), add_comm (B y x) _]
 #align bilin_form.polar_to_quadratic_form LinearMap.BilinForm.polar_toQuadraticForm
 
@@ -866,7 +866,7 @@ theorem associated_left_inverse (h : B₁.IsSymm) : associatedHom S B₁.toQuadr
 -- Porting note: moved from below to golf the next theorem
 theorem associated_eq_self_apply (x : M) : associatedHom S Q x x = Q x := by
   rw [associated_apply, map_add_self, ← three_add_one_eq_four, ← two_add_one_eq_three,
-    add_mul, add_mul, one_mul, add_sub_eq_left, add_sub_eq_left, invOf_mul_self_assoc]
+    add_mul, add_mul, one_mul, add_sub_cancel_right, add_sub_cancel_right, invOf_mul_self_assoc]
 #align quadratic_form.associated_eq_self_apply QuadraticForm.associated_eq_self_apply
 
 theorem toQuadraticForm_associated : (associatedHom S Q).toQuadraticForm = Q :=

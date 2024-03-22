@@ -1458,7 +1458,7 @@ theorem hasFPowerSeriesAt_iff :
 theorem hasFPowerSeriesAt_iff' :
     HasFPowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 z₀, HasSum (fun n => (z - z₀) ^ n • p.coeff n) (f z) := by
   rw [← map_add_left_nhds_zero, eventually_map, hasFPowerSeriesAt_iff]
-  simp_rw [add_sub_eq_right]
+  simp_rw [add_sub_cancel_left]
 #align has_fpower_series_at_iff' hasFPowerSeriesAt_iff'
 
 end

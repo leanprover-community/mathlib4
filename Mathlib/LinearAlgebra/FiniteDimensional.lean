@@ -327,7 +327,7 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
         ext
         simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
-        exact mul_div_eq_left₀ _ h }
+        exact mul_div_cancel_right₀ _ h }
 #align finite_dimensional.basis_singleton FiniteDimensional.basisSingleton
 
 @[simp]

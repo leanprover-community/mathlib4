@@ -60,7 +60,7 @@ theorem add_div_eq_mul_add_div (a b : α) (hc : c ≠ 0) : a + b / c = (a * c + 
 
 @[field_simps]
 theorem add_div' (a b c : α) (hc : c ≠ 0) : b + a / c = (b * c + a) / c := by
-  rw [add_div, mul_div_eq_left₀ _ hc]
+  rw [add_div, mul_div_cancel_right₀ _ hc]
 #align add_div' add_div'
 
 @[field_simps]

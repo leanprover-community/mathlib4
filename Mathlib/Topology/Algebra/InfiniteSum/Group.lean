@@ -80,7 +80,7 @@ theorem HasSum.hasSum_compl_iff {s : Set β} (hf : HasSum (f ∘ (↑) : s → �
   refine' ⟨fun h ↦ hf.add_compl h, fun h ↦ _⟩
   rw [hasSum_subtype_iff_indicator] at hf ⊢
   rw [Set.indicator_compl]
-  simpa only [add_sub_eq_right] using h.sub hf
+  simpa only [add_sub_cancel_left] using h.sub hf
 #align has_sum.has_sum_compl_iff HasSum.hasSum_compl_iff
 
 theorem HasSum.hasSum_iff_compl {s : Set β} (hf : HasSum (f ∘ (↑) : s → α) a₁) :
@@ -180,7 +180,7 @@ theorem cauchySeq_finset_iff_vanishing :
     use s₁ ∪ s₂
     intro t ht
     specialize h (s₁ ∪ s₂, s₁ ∪ s₂ ∪ t) ⟨le_sup_left, le_sup_of_le_left le_sup_right⟩
-    simpa only [Finset.sum_union ht.symm, add_sub_eq_right] using h
+    simpa only [Finset.sum_union ht.symm, add_sub_cancel_left] using h
   · rintro h e he
     rcases exists_nhds_half_neg he with ⟨d, hd, hde⟩
     rcases h d hd with ⟨s, h⟩

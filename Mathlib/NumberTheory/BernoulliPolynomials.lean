@@ -159,7 +159,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
 theorem bernoulli_eq_sub_sum (n : ℕ) :
     (n.succ : ℚ) • bernoulli n =
       monomial n (n.succ : ℚ) - ∑ k in Finset.range n, ((n + 1).choose k : ℚ) • bernoulli k := by
-  rw [Nat.cast_succ, ← sum_bernoulli n, sum_range_succ, add_sub_eq_right, choose_succ_self_right,
+  rw [Nat.cast_succ, ← sum_bernoulli n, sum_range_succ, add_sub_cancel_left, choose_succ_self_right,
     Nat.cast_succ]
 #align polynomial.bernoulli_eq_sub_sum Polynomial.bernoulli_eq_sub_sum
 

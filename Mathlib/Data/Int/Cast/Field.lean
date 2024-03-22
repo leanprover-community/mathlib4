@@ -42,7 +42,7 @@ theorem cast_div [DivisionRing α] {m n : ℤ} (n_dvd : n ∣ m) (n_nonzero : (n
   have : n ≠ 0 := by
     rintro rfl
     simp at n_nonzero
-  rw [Int.mul_ediv_cancel_left _ this, mul_comm n k, Int.cast_mul, mul_div_eq_left₀ _ n_nonzero]
+  rw [Int.mul_ediv_cancel_left _ this, mul_comm n k, Int.cast_mul, mul_div_cancel_right₀ _ n_nonzero]
 #align int.cast_div Int.cast_div
 
 end Int

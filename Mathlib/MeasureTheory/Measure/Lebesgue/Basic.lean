@@ -105,12 +105,12 @@ theorem volume_univ : volume (univ : Set ℝ) = ∞ :=
 
 @[simp]
 theorem volume_ball (a r : ℝ) : volume (Metric.ball a r) = ofReal (2 * r) := by
-  rw [ball_eq_Ioo, volume_Ioo, ← sub_add, add_sub_eq_right, two_mul]
+  rw [ball_eq_Ioo, volume_Ioo, ← sub_add, add_sub_cancel_left, two_mul]
 #align real.volume_ball Real.volume_ball
 
 @[simp]
 theorem volume_closedBall (a r : ℝ) : volume (Metric.closedBall a r) = ofReal (2 * r) := by
-  rw [closedBall_eq_Icc, volume_Icc, ← sub_add, add_sub_eq_right, two_mul]
+  rw [closedBall_eq_Icc, volume_Icc, ← sub_add, add_sub_cancel_left, two_mul]
 #align real.volume_closed_ball Real.volume_closedBall
 
 @[simp]

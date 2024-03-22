@@ -167,7 +167,7 @@ theorem tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center {s : Sphere
   rw [← hr, ← oangle_midpoint_rev_left, oangle, vadd_vsub_assoc]
   nth_rw 1 [show p₂ -ᵥ p₁ = (2 : ℝ) • (midpoint ℝ p₁ p₂ -ᵥ p₁) by simp]
   rw [map_smul, smul_smul, add_comm, o.tan_oangle_add_right_smul_rotation_pi_div_two,
-    mul_div_eq_left₀ _ (two_ne_zero' ℝ)]
+    mul_div_cancel_right₀ _ (two_ne_zero' ℝ)]
   simpa using h.symm
 #align euclidean_geometry.sphere.tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center EuclideanGeometry.Sphere.tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center
 

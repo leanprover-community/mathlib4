@@ -457,7 +457,7 @@ theorem integral_const_mul (a : ℂ) (f : ℂ → ℂ) (c : ℂ) (R : ℝ) :
 @[simp]
 theorem integral_sub_center_inv (c : ℂ) {R : ℝ} (hR : R ≠ 0) :
     (∮ z in C(c, R), (z - c)⁻¹) = 2 * π * I := by
-  simp [circleIntegral, ← div_eq_mul_inv, mul_div_eq_right₀ _ (circleMap_ne_center hR),
+  simp [circleIntegral, ← div_eq_mul_inv, mul_div_cancel_left₀ _ (circleMap_ne_center hR),
     -- Porting note: `simp` didn't need a hint to apply `integral_const` here
     intervalIntegral.integral_const I]
 #align circle_integral.integral_sub_center_inv circleIntegral.integral_sub_center_inv
@@ -506,7 +506,7 @@ theorem integral_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (c w : ℂ) (R : ℝ) 
       ((hasDerivAt_id z).sub_const w)).div_const _ using 1
     · have hn' : (n + 1 : ℂ) ≠ 0 := by
         rwa [Ne, ← eq_neg_iff_add_eq_zero, ← Int.cast_one, ← Int.cast_neg, Int.cast_inj]
-      simp [mul_assoc, mul_div_eq_right₀ _ hn']
+      simp [mul_assoc, mul_div_cancel_left₀ _ hn']
     exacts [sub_ne_zero.2, neg_le_iff_add_nonneg.1]
   refine' integral_eq_zero_of_hasDerivWithinAt' fun z hz => (hd z _).hasDerivWithinAt
   exact (ne_or_eq z w).imp_right fun (h : z = w) => H <| h ▸ hz

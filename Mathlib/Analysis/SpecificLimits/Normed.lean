@@ -371,7 +371,7 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one {𝕜 : Type*} [NormedField 𝕜
     simp [lt_irrefl] at hr
   set s : 𝕜 := ∑' n : ℕ, n * r ^ n
   calc
-    s = (1 - r) * s / (1 - r) := (mul_div_eq_right₀ _ (sub_ne_zero.2 hr'.symm)).symm
+    s = (1 - r) * s / (1 - r) := (mul_div_cancel_left₀ _ (sub_ne_zero.2 hr'.symm)).symm
     _ = (s - r * s) / (1 - r) := by rw [_root_.sub_mul, one_mul]
     _ = (((0 : ℕ) * r ^ 0 + ∑' n : ℕ, (n + 1 : ℕ) * r ^ (n + 1)) - r * s) / (1 - r) := by
       rw [← tsum_eq_zero_add A]
@@ -403,7 +403,7 @@ nonrec theorem SeminormedAddCommGroup.cauchySeq_of_le_geometric {C : ℝ} {r : �
 
 theorem dist_partial_sum_le_of_le_geometric (hf : ∀ n, ‖f n‖ ≤ C * r ^ n) (n : ℕ) :
     dist (∑ i in range n, f i) (∑ i in range (n + 1), f i) ≤ C * r ^ n := by
-  rw [sum_range_succ, dist_eq_norm, ← norm_neg, neg_sub, add_sub_eq_right]
+  rw [sum_range_succ, dist_eq_norm, ← norm_neg, neg_sub, add_sub_cancel_left]
   exact hf n
 #align dist_partial_sum_le_of_le_geometric dist_partial_sum_le_of_le_geometric
 

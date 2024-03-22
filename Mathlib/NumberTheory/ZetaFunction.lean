@@ -127,8 +127,8 @@ of `zetaKernel₁`, since the sum over `ℕ` rather than `ℤ` is more convenien
 the Dirichlet series for `re s > 1`.) -/
 theorem zetaKernel₁_eq_jacobiTheta {t : ℝ} (ht : 0 < t) :
     zetaKernel₁ t = (jacobiTheta (t * I) - 1) / 2 := by
-  rw [jacobiTheta_eq_tsum_nat ((mul_I_im t).symm ▸ ht : 0 < (↑t * I).im), add_comm, add_sub_eq_left,
-    mul_div_eq_right₀ _ (two_ne_zero' ℂ), zetaKernel₁]
+  rw [jacobiTheta_eq_tsum_nat ((mul_I_im t).symm ▸ ht : 0 < (↑t * I).im), add_comm, add_sub_cancel_right,
+    mul_div_cancel_left₀ _ (two_ne_zero' ℂ), zetaKernel₁]
   congr 1 with n : 1
   push_cast
   rw [(by ring : ↑π * I * ((n : ℂ) + 1) ^ 2 * (t * I) = I ^ 2 * π * t * ((n : ℂ) + 1) ^ 2),
@@ -360,7 +360,7 @@ theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableA
         Tendsto (fun z => riemannCompletedZeta z * (z / 2) / (z / 2 * Gamma (z / 2))) (𝓝[≠] 0)
           (𝓝 <| -1 / 2) by
       refine Tendsto.congr' (eventuallyEq_of_mem self_mem_nhdsWithin fun z hz ↦ ?_) h3
-      rw [← div_div, mul_div_eq_left₀ _ (div_ne_zero hz two_ne_zero)]
+      rw [← div_div, mul_div_cancel_right₀ _ (div_ne_zero hz two_ne_zero)]
     have h4 : Tendsto (fun z : ℂ => z / 2 * Gamma (z / 2)) (𝓝[≠] 0) (𝓝 1) := by
       refine tendsto_self_mul_Gamma_nhds_zero.comp ?_
       rw [tendsto_nhdsWithin_iff, (by simp : 𝓝 (0 : ℂ) = 𝓝 (0 / 2))]
@@ -570,7 +570,7 @@ theorem zeta_eq_tsum_one_div_nat_add_one_cpow {s : ℂ} (hs : 1 < re s) :
     riemannZeta s = ∑' n : ℕ, 1 / ((n : ℂ) + 1) ^ s := by
   have : s ≠ 0 := by contrapose! hs; rw [hs, zero_re]; exact zero_le_one
   rw [riemannZeta, Function.update_noteq this, completed_zeta_eq_tsum_of_one_lt_re hs, ← mul_assoc,
-    neg_div, cpow_neg, mul_inv_cancel_left₀, mul_div_eq_right₀]
+    neg_div, cpow_neg, mul_inv_cancel_left₀, mul_div_cancel_left₀]
   · apply Gamma_ne_zero_of_re_pos
     rw [div_eq_mul_inv, mul_comm, show (2⁻¹ : ℂ) = (2⁻¹ : ℝ) by norm_num, re_ofReal_mul]
     exact mul_pos (inv_pos_of_pos two_pos) (zero_lt_one.trans hs)
@@ -700,7 +700,7 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
     -- `Function.update_noteq` to change the goal; the original goal is genuinely false for s = 1.
     obtain ⟨n, rfl⟩ := hs_pos_odd
     have : (1 - (1 + 2 * (n : ℂ))) / 2 = -↑n := by
-      rw [← sub_sub, sub_self, zero_sub, neg_div, mul_div_eq_right₀ _ (two_ne_zero' ℂ)]
+      rw [← sub_sub, sub_self, zero_sub, neg_div, mul_div_cancel_left₀ _ (two_ne_zero' ℂ)]
     rw [this, Complex.Gamma_neg_nat_eq_zero, div_zero]
     have : (π : ℂ) * (1 - (1 + 2 * ↑n)) / 2 = ↑(-n : ℤ) * π := by push_cast; field_simp; ring
     rw [this, Complex.sin_int_mul_pi, mul_zero, zero_mul]

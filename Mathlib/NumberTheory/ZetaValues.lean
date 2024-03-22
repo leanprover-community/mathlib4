@@ -114,7 +114,7 @@ theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
         _ _)]
   simp_rw [ofReal_one, ofReal_zero, sub_zero, one_mul]
   rw [QuotientAddGroup.mk_zero, fourier_eval_zero, one_mul, ← ofReal_sub, bernoulliFun_eval_one,
-    add_sub_eq_right]
+    add_sub_cancel_left]
   congr 2
   · split_ifs <;> simp only [ofReal_one, ofReal_zero, one_mul]
   · simp_rw [ofReal_mul, ofReal_nat_cast, fourierCoeffOn.const_mul]

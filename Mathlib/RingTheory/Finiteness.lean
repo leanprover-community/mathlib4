@@ -117,7 +117,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
     constructor
     · rw [sub_right_comm]
       exact I.sub_mem hr1 hci
-    · rw [sub_smul, ← hyz, add_sub_eq_right]
+    · rw [sub_smul, ← hyz, add_sub_cancel_left]
       exact hz
   rcases this with ⟨c, hc1, hci⟩
   refine' ⟨c * r, _, _, hs.2⟩

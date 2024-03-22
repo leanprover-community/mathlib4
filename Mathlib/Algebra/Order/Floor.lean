@@ -1168,7 +1168,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     _ = Int.cast (m₁ % (n : ℤ)) / Nat.cast n := this hm₁
     _ = Int.cast (-(↑m₀ : ℤ) % ↑n) / Nat.cast n := ?_
 
-  · rw [← fract_int_add q, ← mul_div_eq_left₀ (q : k) (ne_of_gt hn), ← add_div, ← sub_eq_add_neg]
+  · rw [← fract_int_add q, ← mul_div_cancel_right₀ (q : k) (ne_of_gt hn), ← add_div, ← sub_eq_add_neg]
     -- Porting note: the `simp` was `push_cast`
     simp [m₁]
   · congr 2

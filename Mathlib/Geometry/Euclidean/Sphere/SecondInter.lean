@@ -104,8 +104,8 @@ theorem Sphere.secondInter_smul (s : Sphere P) (p : P) (v : V) {r : ℝ} (hr : r
     s.secondInter p (r • v) = s.secondInter p v := by
   simp_rw [Sphere.secondInter, real_inner_smul_left, inner_smul_right, smul_smul,
     div_mul_eq_div_div]
-  rw [mul_comm, ← mul_div_assoc, ← mul_div_assoc, mul_div_eq_right₀ _ hr, mul_comm, mul_assoc,
-    mul_div_eq_right₀ _ hr, mul_comm]
+  rw [mul_comm, ← mul_div_assoc, ← mul_div_assoc, mul_div_cancel_left₀ _ hr, mul_comm, mul_assoc,
+    mul_div_cancel_left₀ _ hr, mul_comm]
 #align euclidean_geometry.sphere.second_inter_smul EuclideanGeometry.Sphere.secondInter_smul
 
 /-- `secondInter` is unchanged by negating the vector. -/

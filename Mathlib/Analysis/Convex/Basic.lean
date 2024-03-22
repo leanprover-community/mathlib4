@@ -742,7 +742,7 @@ def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
   left_inv f := Subtype.eq <| funext <| Fin.forall_fin_two.2 <| .intro rfl <|
       calc
         (1 : 𝕜) - f.1 0 = f.1 0 + f.1 1 - f.1 0 := by rw [← Fin.sum_univ_two f.1, f.2.2]
-        _ = f.1 1 := add_sub_eq_right _ _
+        _ = f.1 1 := add_sub_cancel_left _ _
   right_inv x := Subtype.eq rfl
 
 end OrderedRing

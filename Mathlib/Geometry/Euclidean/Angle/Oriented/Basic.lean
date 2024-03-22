@@ -702,7 +702,7 @@ theorem oangle_eq_of_angle_eq_of_sign_eq {w x y z : V}
     rcases h' with ⟨hwx, hyz⟩
     have hpi : π / 2 ≠ π := by
       intro hpi
-      rw [div_eq_iff, eq_comm, ← sub_eq_zero, mul_two, add_sub_eq_left] at hpi
+      rw [div_eq_iff, eq_comm, ← sub_eq_zero, mul_two, add_sub_cancel_right] at hpi
       · exact Real.pi_pos.ne.symm hpi
       · exact two_ne_zero
     have h0wx : w = 0 ∨ x = 0 := by

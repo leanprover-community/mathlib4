@@ -469,7 +469,7 @@ def binaryBiproductData (T : Triangle C) (hT : T ∈ distTriang C) (hT₀ : T.mo
     (total : fst ≫ T.mor₁ + T.mor₂ ≫ inr = 𝟙 T.obj₂) :
     BinaryBiproductData T.obj₁ T.obj₃ := by
   have : Mono T.mor₁ := T.mono₁ hT hT₀
-  have eq : fst ≫ T.mor₁ = 𝟙 T.obj₂ - T.mor₂ ≫ inr := by rw [← total, add_sub_eq_left]
+  have eq : fst ≫ T.mor₁ = 𝟙 T.obj₂ - T.mor₂ ≫ inr := by rw [← total, add_sub_cancel_right]
   exact
     { bicone :=
       { pt := T.obj₂

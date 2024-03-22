@@ -575,8 +575,8 @@ theorem cos_eq (z : ℂ) : cos z = cos z.re * cosh z.im - sin z.re * sinh z.im *
 theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) := by
   have s1 := sin_add ((x + y) / 2) ((x - y) / 2)
   have s2 := sin_sub ((x + y) / 2) ((x - y) / 2)
-  rw [div_add_div_same, add_sub, add_right_comm, add_sub_eq_left, half_add_self] at s1
-  rw [div_sub_div_same, ← sub_add, add_sub_eq_right, half_add_self] at s2
+  rw [div_add_div_same, add_sub, add_right_comm, add_sub_cancel_right, half_add_self] at s1
+  rw [div_sub_div_same, ← sub_add, add_sub_cancel_left, half_add_self] at s2
   rw [s1, s2]
   ring
 #align complex.sin_sub_sin Complex.sin_sub_sin
@@ -584,8 +584,8 @@ theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) 
 theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2) := by
   have s1 := cos_add ((x + y) / 2) ((x - y) / 2)
   have s2 := cos_sub ((x + y) / 2) ((x - y) / 2)
-  rw [div_add_div_same, add_sub, add_right_comm, add_sub_eq_left, half_add_self] at s1
-  rw [div_sub_div_same, ← sub_add, add_sub_eq_right, half_add_self] at s2
+  rw [div_add_div_same, add_sub, add_right_comm, add_sub_cancel_right, half_add_self] at s1
+  rw [div_sub_div_same, ← sub_add, add_sub_cancel_left, half_add_self] at s2
   rw [s1, s2]
   ring
 #align complex.cos_sub_cos Complex.cos_sub_cos
@@ -719,13 +719,13 @@ theorem sin_two_mul : sin (2 * x) = 2 * sin x * cos x := by
 #align complex.sin_two_mul Complex.sin_two_mul
 
 theorem cos_sq : cos x ^ 2 = 1 / 2 + cos (2 * x) / 2 := by
-  simp [cos_two_mul, div_add_div_same, mul_div_eq_right₀, two_ne_zero, -one_div]
+  simp [cos_two_mul, div_add_div_same, mul_div_cancel_left₀, two_ne_zero, -one_div]
 #align complex.cos_sq Complex.cos_sq
 
-theorem cos_sq' : cos x ^ 2 = 1 - sin x ^ 2 := by rw [← sin_sq_add_cos_sq x, add_sub_eq_right]
+theorem cos_sq' : cos x ^ 2 = 1 - sin x ^ 2 := by rw [← sin_sq_add_cos_sq x, add_sub_cancel_left]
 #align complex.cos_sq' Complex.cos_sq'
 
-theorem sin_sq : sin x ^ 2 = 1 - cos x ^ 2 := by rw [← sin_sq_add_cos_sq x, add_sub_eq_left]
+theorem sin_sq : sin x ^ 2 = 1 - cos x ^ 2 := by rw [← sin_sq_add_cos_sq x, add_sub_cancel_right]
 #align complex.sin_sq Complex.sin_sq
 
 theorem inv_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) : (1 + tan x ^ 2)⁻¹ = cos x ^ 2 := by
@@ -977,7 +977,7 @@ nonrec theorem cos_sq : cos x ^ 2 = 1 / 2 + cos (2 * x) / 2 :=
   ofReal_injective <| by simp [cos_sq]
 #align real.cos_sq Real.cos_sq
 
-theorem cos_sq' : cos x ^ 2 = 1 - sin x ^ 2 := by rw [← sin_sq_add_cos_sq x, add_sub_eq_right]
+theorem cos_sq' : cos x ^ 2 = 1 - sin x ^ 2 := by rw [← sin_sq_add_cos_sq x, add_sub_cancel_left]
 #align real.cos_sq' Real.cos_sq'
 
 theorem sin_sq : sin x ^ 2 = 1 - cos x ^ 2 :=
@@ -1533,7 +1533,7 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
       rw [← abs_ofReal]; simp
     _ = Complex.abs (((Complex.exp (-x * I) - Complex.exp (x * I)) * I -
           (2 * x - x ^ 3 / 3 : ℝ)) / 2) := by
-      simp [Complex.sin, sub_div, add_div, neg_div, mul_div_eq_right₀ _ (two_ne_zero' ℂ), div_div,
+      simp [Complex.sin, sub_div, add_div, neg_div, mul_div_cancel_left₀ _ (two_ne_zero' ℂ), div_div,
         show (3 : ℂ) * 2 = 6 by norm_num]
     _ = Complex.abs (((Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) -
                 (Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial)) * I / 2) :=

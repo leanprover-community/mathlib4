@@ -95,7 +95,7 @@ theorem betaIntegral_symm (u v : ℂ) : betaIntegral v u = betaIntegral u v := b
     (fun x : ℝ => (x : ℂ) ^ (u - 1) * (1 - (x : ℂ)) ^ (v - 1)) neg_one_lt_zero.ne 1
   rw [inv_neg, inv_one, neg_one_smul, ← intervalIntegral.integral_symm] at this
   simp? at this says
-    simp only [neg_mul, one_mul, ofReal_add, ofReal_neg, ofReal_one, sub_add_eq_neg_left, neg_neg,
+    simp only [neg_mul, one_mul, ofReal_add, ofReal_neg, ofReal_one, sub_add_cancel_right, neg_neg,
       mul_one, add_left_neg, mul_zero, zero_add] at this
   conv_lhs at this => arg 1; intro x; rw [add_comm, ← sub_eq_add_neg, mul_comm]
   exact this
@@ -188,7 +188,7 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
     ring
   have h_int := ((betaIntegral_convergent hu hv').const_mul u).sub
     ((betaIntegral_convergent hu' hv).const_mul v)
-  rw [add_sub_eq_left, add_sub_eq_left] at h_int
+  rw [add_sub_cancel_right, add_sub_cancel_right] at h_int
   have int_ev := intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le zero_le_one hc hder h_int
   have hF0 : F 0 = 0 := by
     simp only [F, mul_eq_zero, ofReal_zero, cpow_eq_zero_iff, eq_self_iff_true, Ne.def,
@@ -269,7 +269,7 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
   have := intervalIntegral.integral_comp_div (a := 0) (b := n)
     (fun x => ↑((1 - x) ^ n) * ↑(x * ↑n) ^ (s - 1) : ℝ → ℂ) (Nat.cast_ne_zero.mpr hn)
   dsimp only at this
-  rw [betaIntegral, this, real_smul, zero_div, div_self, add_sub_eq_left,
+  rw [betaIntegral, this, real_smul, zero_div, div_self, add_sub_cancel_right,
     ← intervalIntegral.integral_const_mul, ← intervalIntegral.integral_const_mul]
   swap; · exact Nat.cast_ne_zero.mpr hn
   simp_rw [intervalIntegral.integral_of_le zero_le_one]
@@ -413,7 +413,7 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
   rw [Finset.prod_mul_distrib, ← Nat.cast_prod, Finset.prod_pow,
     Finset.prod_range_add_one_eq_factorial, Nat.cast_pow,
     (by intros; ring : ∀ a b c d : ℂ, a * b * (c * d) = a * (d * (b * c))), ← div_div,
-    mul_div_eq_left₀, ← div_div, mul_comm z _, mul_one_div]
+    mul_div_cancel_right₀, ← div_div, mul_comm z _, mul_one_div]
   exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr <| Nat.factorial_ne_zero n)
 #align complex.Gamma_seq_mul Complex.GammaSeq_mul
 
@@ -430,7 +430,7 @@ theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (
     rw [hk]
     cases k
     · rw [Int.ofNat_eq_coe, Int.cast_ofNat, Complex.Gamma_neg_nat_eq_zero, zero_mul]
-    · rw [Int.cast_negSucc, neg_neg, Nat.cast_add, Nat.cast_one, add_comm, sub_add_eq_neg_right,
+    · rw [Int.cast_negSucc, neg_neg, Nat.cast_add, Nat.cast_one, add_comm, sub_add_cancel_left,
         Complex.Gamma_neg_nat_eq_zero, mul_zero]
   refine' tendsto_nhds_unique ((GammaSeq_tendsto_Gamma z).mul (GammaSeq_tendsto_Gamma <| 1 - z)) _
   have : ↑π / sin (↑π * z) = 1 * (π / sin (π * z)) := by rw [one_mul]

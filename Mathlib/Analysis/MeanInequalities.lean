@@ -487,7 +487,7 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExponent q
         simp [h, hpq.ne_zero]
       simp only [Set.mem_setOf_eq, div_rpow, ← sum_div, ← rpow_mul,
         div_mul_cancel₀ _ hpq.symm.ne_zero, rpow_one, div_le_iff hf, one_mul, hpq.mul_eq_add, ←
-        rpow_sub' _ A, add_sub_eq_left, le_refl, true_and_iff, ← mul_div_assoc, B]
+        rpow_sub' _ A, add_sub_cancel_right, le_refl, true_and_iff, ← mul_div_assoc, B]
       rw [div_eq_iff, ← rpow_add hf, one_div, one_div, hpq.inv_add_inv_conj, rpow_one]
       simpa [hpq.symm.ne_zero] using hf
   · rintro _ ⟨g, hg, rfl⟩

@@ -321,7 +321,7 @@ theorem isBigO_rpow_top_log_smul [NormedSpace ℝ E] {a b : ℝ} {f : ℝ → E}
       (eventually_of_forall fun t => by rfl)
       ((eventually_gt_atTop 0).mp (eventually_of_forall fun t ht => _))
   simp only
-  rw [smul_eq_mul, ← rpow_add ht, ← sub_eq_add_neg, sub_eq_add_neg a, add_sub_eq_right]
+  rw [smul_eq_mul, ← rpow_add ht, ← sub_eq_add_neg, sub_eq_add_neg a, add_sub_cancel_left]
 set_option linter.uppercaseLean3 false in
 #align is_O_rpow_top_log_smul isBigO_rpow_top_log_smul
 

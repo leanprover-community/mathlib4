@@ -89,7 +89,7 @@ theorem angle_add_eq_arcsin_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 
   rw [angle_add_eq_arccos_of_inner_eq_zero h,
     Real.arccos_eq_arcsin (div_nonneg (norm_nonneg _) (norm_nonneg _)), div_pow, one_sub_div hxy]
   nth_rw 1 [pow_two]
-  rw [norm_add_sq_eq_norm_sq_add_norm_sq_real h, pow_two, add_sub_eq_right, ← pow_two, ← div_pow,
+  rw [norm_add_sq_eq_norm_sq_add_norm_sq_real h, pow_two, add_sub_cancel_left, ← pow_two, ← div_pow,
     Real.sqrt_sq (div_nonneg (norm_nonneg _) (norm_nonneg _))]
 #align inner_product_geometry.angle_add_eq_arcsin_of_inner_eq_zero InnerProductGeometry.angle_add_eq_arcsin_of_inner_eq_zero
 

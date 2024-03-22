@@ -153,7 +153,7 @@ lemma Gammaℝ_div_Gammaℝ_one_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -(2 * n
   calc Gammaℝ s / Gammaℝ (1 - s)
   _ = (Gammaℝ s * Gammaℝ (s + 1)) / (Gammaℝ (1 - s) * Gammaℝ (1 + s)) := by
     rw [add_comm 1 s, mul_comm (Gammaℝ (1 - s)) (Gammaℝ (s + 1)), ← div_div,
-      mul_div_eq_left₀ _ this]
+      mul_div_cancel_right₀ _ this]
   _ = (2 * (2 * π) ^ (-s) * Gamma s) / ((cos (π * s / 2))⁻¹) := by
     rw [Gammaℝ_one_sub_mul_Gammaℝ_one_add, Gammaℝ_mul_Gammaℝ_add_one, Gammaℂ_def]
   _ = _ := by rw [Gammaℂ_def, div_eq_mul_inv, inv_inv]
