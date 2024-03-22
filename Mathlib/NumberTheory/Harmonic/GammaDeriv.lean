@@ -34,6 +34,8 @@ lemma ConvexOn.deriv_le_slope {S : Set ℝ} {x y : ℝ} (hx : x ∈ S) {f : ℝ 
   rwa [add_sub_cancel'] at this
   exact hfc.1.ordConnected.out hx hy ⟨by linarith, by linarith⟩
 
+#minimize_imports
+
 /-- If `f : ℝ → ℝ` is convex on `S` and differentiable at `y ∈ S`, then the slope of any secant
 line with right endpoint at `y` is bounded below by `deriv f y`. -/
 lemma ConvexOn.slope_le_deriv {S : Set ℝ} {x y : ℝ} (hx : x ∈ S)
