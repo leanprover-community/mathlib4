@@ -1757,7 +1757,7 @@ protected def transfer {u v : V} (p : G.Walk u v)
     (H : SimpleGraph V) (h : ∀ e, e ∈ p.edges → e ∈ H.edgeSet) : H.Walk u v :=
   match p with
   | nil => nil
-  | cons' u v w a p =>
+  | cons' u v w _ p =>
     cons (h s(u, v) (by simp)) (p.transfer H fun e he => h e (by simp [he]))
 #align simple_graph.walk.transfer SimpleGraph.Walk.transfer
 
