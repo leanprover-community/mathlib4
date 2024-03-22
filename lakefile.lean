@@ -27,9 +27,9 @@ meta if get_config? doc = some "on" then -- do not download and build doc-gen4 b
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 
 require std from git "https://github.com/leanprover/std4" @ "nightly-testing"
-require Qq from git "https://github.com/leanprover-community/quote4" @ "main"
+require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "nightly-testing"
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "nightly-testing"
+require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.31"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "nightly-testing"
 
