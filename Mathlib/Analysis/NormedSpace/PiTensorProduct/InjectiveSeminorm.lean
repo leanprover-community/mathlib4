@@ -278,17 +278,10 @@ noncomputable def liftIsometry  : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[�
 variable {𝕜 E F}
 
 @[simp]
-theorem liftIsometry_apply_apply (f : ContinuousMultilinearMap 𝕜 E F)
-    (x : ⨂[𝕜] i, E i) : liftIsometry 𝕜 E F f x = lift f.toMultilinearMap x := by
+theorem liftIsometry_apply_apply (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
+  liftIsometry 𝕜 E F f x = lift f.toMultilinearMap x := by
   simp only [liftIsometry, LinearIsometryEquiv.coe_mk, liftEquiv_apply,
     LinearMap.mkContinuous_apply]
-
-@[simp]
-theorem liftIsometry_symm_apply_apply (l : (⨂[𝕜] i, E i) →L[𝕜] F) (m : (i : ι) → E i) :
-    (liftIsometry 𝕜 E F).symm l m = l (tprod 𝕜 m) := by
-  change (liftEquiv 𝕜 E F).symm l m = _
-  simp only [liftEquiv_symm_apply, lift_symm, MultilinearMap.coe_mkContinuous,
-    LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe]
 
 variable (𝕜)
 
@@ -309,8 +302,10 @@ theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
 theorem liftIsometry_symm_apply (l : (⨂[𝕜] i, E i) →L[𝕜] F) :
     (liftIsometry 𝕜 E F).symm l = l.compContinuousMultilinearMap (tprodL 𝕜) := by
   ext m
-  simp only [liftIsometry_symm_apply_apply, ContinuousLinearMap.compContinuousMultilinearMap_coe,
-    Function.comp_apply, tprodL_toFun]
+  change (liftEquiv 𝕜 E F).symm l m = _
+  simp only [liftEquiv_symm_apply, lift_symm, MultilinearMap.coe_mkContinuous,
+    LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe,
+    ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply, tprodL_toFun]
 
 @[simp]
 theorem liftIsometry_tprodL :
