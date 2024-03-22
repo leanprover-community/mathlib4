@@ -43,7 +43,7 @@ variable {n r : ℕ}
 instance : DecidableRel (turanGraph n r).Adj := by dsimp only [turanGraph]; infer_instance
 
 @[simp]
-lemma turanGraph_zero (n : ℕ) : turanGraph n 0 = ⊤ := by
+lemma turanGraph_zero : turanGraph n 0 = ⊤ := by
   ext a b; simp_rw [turanGraph, top_adj, Nat.mod_zero, not_iff_not, Fin.val_inj]
 
 @[simp]
@@ -65,7 +65,7 @@ theorem turanGraph_cliqueFree : (turanGraph n r).CliqueFree (r + 1) := by
   rw [not_isEmpty_iff] at h
   obtain ⟨f, ha⟩ := h
   simp only [turanGraph, top_adj] at ha
-  obtain ⟨x, y, d, c⟩ := Fintype.exists_ne_map_eq_of_card_lt (fun x : Fin (r + 1) ↦
+  obtain ⟨x, y, d, c⟩ := Fintype.exists_ne_map_eq_of_card_lt (fun x ↦
     (⟨(f x).1 % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
   simp only [Fin.mk.injEq] at c
   exact absurd c ((@ha x y).mpr d)
