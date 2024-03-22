@@ -822,7 +822,7 @@ theorem mul_div_cancel_right (a b : G) : a * b / b = a :=
 #align add_sub_cancel add_sub_cancel_right
 
 @[to_additive (attr := simp)]
-theorem div_mul_cancel_right (a b : G) : a / (b * a) = b⁻¹ := by rw [← inv_div, mul_div_cancel_right]
+lemma div_mul_cancel_right (a b : G) : a / (b * a) = b⁻¹ := by rw [← inv_div, mul_div_cancel_right]
 #align div_mul_cancel''' div_mul_cancel_right
 #align sub_add_cancel'' sub_add_cancel_right
 

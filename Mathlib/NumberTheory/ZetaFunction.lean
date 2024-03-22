@@ -127,8 +127,8 @@ of `zetaKernel₁`, since the sum over `ℕ` rather than `ℤ` is more convenien
 the Dirichlet series for `re s > 1`.) -/
 theorem zetaKernel₁_eq_jacobiTheta {t : ℝ} (ht : 0 < t) :
     zetaKernel₁ t = (jacobiTheta (t * I) - 1) / 2 := by
-  rw [jacobiTheta_eq_tsum_nat ((mul_I_im t).symm ▸ ht : 0 < (↑t * I).im), add_comm, add_sub_cancel_right,
-    mul_div_cancel_left₀ _ (two_ne_zero' ℂ), zetaKernel₁]
+  rw [jacobiTheta_eq_tsum_nat ((mul_I_im t).symm ▸ ht : 0 < (↑t * I).im), add_comm,
+    add_sub_cancel_right, mul_div_cancel_left₀ _ (two_ne_zero' ℂ), zetaKernel₁]
   congr 1 with n : 1
   push_cast
   rw [(by ring : ↑π * I * ((n : ℂ) + 1) ^ 2 * (t * I) = I ^ 2 * π * t * ((n : ℂ) + 1) ^ 2),

@@ -441,8 +441,8 @@ theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
         · skip
         · ext
           rw [one_pow, mul_one, mul_comm]
-  rw [sum_range_succ, mul_add, Nat.choose_self, Nat.cast_one, one_mul, add_sub_cancel_right, mul_sum,
-    sum_range_succ', Nat.cast_zero, zero_mul, mul_zero, add_zero]
+  rw [sum_range_succ, mul_add, Nat.choose_self, Nat.cast_one, one_mul, add_sub_cancel_right,
+    mul_sum, sum_range_succ', Nat.cast_zero, zero_mul, mul_zero, add_zero]
   refine sum_congr rfl fun y _hy => ?_
   rw [← mul_assoc, ← mul_assoc, ← Nat.cast_mul, Nat.succ_mul_choose_eq, Nat.cast_mul,
     Nat.add_sub_cancel]

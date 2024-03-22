@@ -201,7 +201,8 @@ theorem arctan_neg (x : ℝ) : arctan (-x) = -arctan x := by simp [arctan_eq_arc
 theorem arctan_eq_arccos {x : ℝ} (h : 0 ≤ x) : arctan x = arccos (sqrt (1 + x ^ 2))⁻¹ := by
   rw [arctan_eq_arcsin, arccos_eq_arcsin]; swap; · exact inv_nonneg.2 (sqrt_nonneg _)
   congr 1
-  rw_mod_cast [← sqrt_inv, sq_sqrt, ← one_div, one_sub_div, add_sub_cancel_left, sqrt_div, sqrt_sq h]
+  rw_mod_cast [← sqrt_inv, sq_sqrt, ← one_div, one_sub_div, add_sub_cancel_left, sqrt_div,
+    sqrt_sq h]
   all_goals positivity
 #align real.arctan_eq_arccos Real.arctan_eq_arccos
 

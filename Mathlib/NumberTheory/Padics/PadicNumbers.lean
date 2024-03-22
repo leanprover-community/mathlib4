@@ -443,7 +443,7 @@ theorem add_eq_max_of_ne {f g : PadicSeq p} (hfgne : f.norm ≠ g.norm) :
   else
     if hg : g ≈ 0 then by
       have : LimZero (g - 0) := hg
-      have : f + g ≈ f := show LimZero (f + g - f) by rw [add_sub_cancel_left]; simpa only [sub_zero]
+      have : f + g ≈ f := show LimZero (f + g - f) by simpa only [add_sub_cancel_left, sub_zero]
       have h1 : (f + g).norm = f.norm := norm_equiv this
       have h2 : g.norm = 0 := (norm_zero_iff _).2 hg
       rw [h1, h2, max_eq_left (norm_nonneg _)]

@@ -1296,7 +1296,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     · rw [Set.mem_iUnion₂] at ht
       rcases ht with ⟨j, hjt, hj⟩
       simp only [Finset.inf_eq_iInf, SetLike.mem_coe, Submodule.mem_iInf] at hr
-      exact hs $ Or.inr $ Set.mem_biUnion hjt <| add_sub_cancel_left r s ▸ (f j).sub_mem hj <| hr j hjt
+      exact hs $ Or.inr $ Set.mem_biUnion hjt <|
+        add_sub_cancel_left r s ▸ (f j).sub_mem hj <| hr j hjt
 #align ideal.subset_union_prime' Ideal.subset_union_prime'
 
 /-- Prime avoidance. Atiyah-Macdonald 1.11, Eisenbud 3.3, Stacks 00DS, Matsumura Ex.1.6. -/

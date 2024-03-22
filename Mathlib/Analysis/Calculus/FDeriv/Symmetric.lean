@@ -214,7 +214,8 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
     abel
   have hvww : x + (v + w) + w ∈ interior s := by
     convert s_conv.interior.add_smul_sub_mem h2w h2v2w B using 1
-    rw [one_div, add_sub_add_right_eq_sub, add_sub_cancel_left, inv_smul_smul₀ two_ne_zero, two_smul]
+    rw [one_div, add_sub_add_right_eq_sub, add_sub_cancel_left, inv_smul_smul₀ two_ne_zero,
+      two_smul]
     abel
   have TA1 := s_conv.taylor_approx_two_segment hf xs hx h2vw h2vww
   have TA2 := s_conv.taylor_approx_two_segment hf xs hx hvw hvww

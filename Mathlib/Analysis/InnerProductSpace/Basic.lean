@@ -1547,8 +1547,8 @@ theorem norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : E} {r
   have hx' : ‖x‖ ≠ 0 := by simp [hx]
   have hr' : ‖r‖ ≠ 0 := by simp [hr]
   rw [inner_smul_right, norm_mul, ← inner_self_re_eq_norm, inner_self_eq_norm_mul_norm, norm_smul]
-  rw [← mul_assoc, ← div_div, mul_div_cancel_right₀ _ hx', ← div_div, mul_comm, mul_div_cancel_right₀ _ hr',
-    div_self hx']
+  rw [← mul_assoc, ← div_div, mul_div_cancel_right₀ _ hx', ← div_div, mul_comm,
+    mul_div_cancel_right₀ _ hr', div_self hx']
 #align norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul
 
 /-- The inner product of a nonzero vector with a nonzero multiple of

@@ -1533,8 +1533,8 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
       rw [← abs_ofReal]; simp
     _ = Complex.abs (((Complex.exp (-x * I) - Complex.exp (x * I)) * I -
           (2 * x - x ^ 3 / 3 : ℝ)) / 2) := by
-      simp [Complex.sin, sub_div, add_div, neg_div, mul_div_cancel_left₀ _ (two_ne_zero' ℂ), div_div,
-        show (3 : ℂ) * 2 = 6 by norm_num]
+      simp [Complex.sin, sub_div, add_div, neg_div, mul_div_cancel_left₀ _ (two_ne_zero' ℂ),
+        div_div, show (3 : ℂ) * 2 = 6 by norm_num]
     _ = Complex.abs (((Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) -
                 (Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial)) * I / 2) :=
       (congr_arg Complex.abs
