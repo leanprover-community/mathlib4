@@ -50,18 +50,18 @@ variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 -- modules over some diagram in the category of rings,
 -- e.g. when defining presheaves over a presheaf of rings.
 -- See `Mathlib.Algebra.Category.ModuleCat.Presheaf`.
-class RingHomId {R : Type*} [Semiring R] (σ : R →+* R) : Prop where
-  eq_id : σ = RingHom.id R
+class RingHomId {R : Type*} (σ : R → R) : Prop where
+  eq_id : σ = id
 
 instance {R : Type*} [Semiring R] : RingHomId (RingHom.id R) where
   eq_id := rfl
 
 /-- Class that expresses the fact that three ring homomorphisms form a composition triple. This is
 used to handle composition of semilinear maps. -/
-class RingHomCompTriple (σ₁₂ : R₁ →+* R₂) (σ₂₃ : R₂ →+* R₃) (σ₁₃ : outParam (R₁ →+* R₃)) :
+class RingHomCompTriple (σ₁₂ : R₁ → R₂) (σ₂₃ : R₂ → R₃) (σ₁₃ : outParam (R₁ → R₃)) :
   Prop where
   /-- The morphisms form a commutative triangle -/
-  comp_eq : σ₂₃.comp σ₁₂ = σ₁₃
+  comp_eq : σ₂₃ ∘ σ₁₂ = σ₁₃
 #align ring_hom_comp_triple RingHomCompTriple
 
 attribute [simp] RingHomCompTriple.comp_eq
@@ -72,7 +72,7 @@ namespace RingHomCompTriple
 
 @[simp]
 theorem comp_apply [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] {x : R₁} : σ₂₃ (σ₁₂ x) = σ₁₃ x :=
-  RingHom.congr_fun comp_eq x
+  congr_fun comp_eq x
 #align ring_hom_comp_triple.comp_apply RingHomCompTriple.comp_apply
 
 end RingHomCompTriple
@@ -114,12 +114,12 @@ instance ids : RingHomInvPair (RingHom.id R₁) (RingHom.id R₁) :=
 
 instance triples {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] :
     RingHomCompTriple σ₁₂ σ₂₁ (RingHom.id R₁) :=
-  ⟨by simp only [comp_eq]⟩
+  ⟨by ext; simp only [Function.comp_apply, RingHom.id_apply, comp_apply_eq]⟩
 #align ring_hom_inv_pair.triples RingHomInvPair.triples
 
 instance triples₂ {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] :
     RingHomCompTriple σ₂₁ σ₁₂ (RingHom.id R₂) :=
-  ⟨by simp only [comp_eq₂]⟩
+  ⟨by ext; simp only [Function.comp_apply, RingHom.id_apply, comp_apply_eq₂]⟩
 #align ring_hom_inv_pair.triples₂ RingHomInvPair.triples₂
 
 /-- Construct a `RingHomInvPair` from both directions of a ring equiv.
@@ -194,7 +194,7 @@ theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective �
     RingHomSurjective σ₁₃ :=
   { is_surjective := by
       have := σ₂₃.surjective.comp σ₁₂.surjective
-      rwa [← RingHom.coe_comp, RingHomCompTriple.comp_eq] at this }
+      rwa [RingHomCompTriple.comp_eq] at this }
 #align ring_hom_surjective.comp RingHomSurjective.comp
 
 instance (σ : R₁ ≃+* R₂) : RingHomSurjective (σ : R₁ →+* R₂) := ⟨σ.surjective⟩

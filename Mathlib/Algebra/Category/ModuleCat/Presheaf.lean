@@ -63,15 +63,30 @@ theorem map_apply (P : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) (x) :
   rfl
 
 instance (X : Cᵒᵖ) : RingHomId (R.map (𝟙 X)) where
-  eq_id := R.map_id X
+  eq_id := by rw [R.map_id X]; rfl
 
-instance {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    RingHomCompTriple (R.map f) (R.map g) (R.map (f ≫ g)) where
-  comp_eq := (R.map_comp f g).symm
+instance (X : Cᵒᵖ) : RingHomId (R.map (𝟙 X)) := inferInstance -- works
+
 
 @[simp]
 theorem map_id (P : PresheafOfModules R) (X : Cᵒᵖ) :
+    set_option trace.Meta.synthInstance true in
+    set_option trace.Meta.isDefEq true in
     P.map (𝟙 X) = LinearMap.id' := by
+                  -- failed to synthesize instance RingHomId ⇑(R.map (𝟙 X))
+  ext
+  simp
+-- [Meta.synthInstance] ❌ RingHomId ⇑(R.map (𝟙 X)) ▼
+--   [] no instances for RingHomId ⇑(R.map (𝟙 X)) ▼
+--     [instances] #[]
+
+instance {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    RingHomCompTriple (R.map f) (R.map g) (R.map (f ≫ g)) where
+  comp_eq := by rw [R.map_comp f g]; rfl
+
+@[simp]
+theorem map_id (P : PresheafOfModules R) (X : Cᵒᵖ) :
+    P.map (𝟙 X) = @LinearMap.id' _ _ _ _ _ (R.map (𝟙 X)) (foo _) := by
   ext
   simp
 
