@@ -7,7 +7,7 @@ import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
 import Mathlib.Condensed.Basic
 import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-import Mathlib.CategoryTheory.Sites.Coherent.Projective
+import Mathlib.CategoryTheory.Sites.Coherent.CoverDense
 /-!
 
 # Sheaves on CompHaus are equivalent to sheaves on Stonean
@@ -60,9 +60,6 @@ noncomputable def stoneanToCompHausEffectivePresentation (X : CompHaus) :
 
 instance : Stonean.toCompHaus.EffectivelyEnough where
   presentation X := ⟨stoneanToCompHausEffectivePresentation X⟩
-
-instance : ∀ X : Stonean, Projective (Stonean.toCompHaus.obj X) :=
-  fun X ↦ (inferInstance : Projective X.compHaus)
 
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
     (i.e. condensed sets). -/
