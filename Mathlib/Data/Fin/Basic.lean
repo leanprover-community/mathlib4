@@ -808,6 +808,11 @@ theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
 theorem strictMono_castLE (h : n ≤ m) : StrictMono (castLE h : Fin n → Fin m) :=
   fun _ _ h => h
 
+lemma castLE_injective (hmn : m ≤ n) : Injective (castLE hmn) := (strictMono_castLE _).injective
+
+@[simp] lemma castLE_inj {hmn : m ≤ n} {a b : Fin m} : castLE hmn a = castLE hmn b ↔ a = b :=
+  (castLE_injective _).eq_iff
+
 /-- `Fin.castLE` as an `OrderEmbedding`, `castLEEmb h i` embeds `i` into a larger `Fin` type.  -/
 @[simps! apply toEmbedding]
 def castLEEmb (h : n ≤ m) : Fin n ↪o Fin m :=
