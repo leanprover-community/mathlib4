@@ -41,17 +41,16 @@ lemma generate_singleton_functor_π_mem (B : D) :
   · rw [← effectiveEpi_iff_effectiveEpiFamily]
     infer_instance
 
-instance : F.IsCoverDense (coherentTopology _) := by
-  constructor
-  intro B
-  convert generate_singleton_functor_π_mem F B
-  ext Y f
-  refine ⟨fun ⟨⟨obj, lift, map, fact⟩⟩ ↦ ?_, fun ⟨Z, h, g, hypo1, hf⟩ ↦ ?_⟩
-  · obtain ⟨p, p_factors⟩ := Projective.factors map (F.π B)
-    refine ⟨_, ⟨lift ≫ p, ⟨(F.π B),
-      ⟨Presieve.singleton.mk, by rw [← fact, ← p_factors, Category.assoc]⟩⟩⟩⟩
-  · cases hypo1
-    exact ⟨⟨_, h, F.π B, hf⟩⟩
+instance : F.IsCoverDense (coherentTopology _) where
+  is_cover B := by
+    convert generate_singleton_functor_π_mem F B
+    ext Y f
+    refine ⟨fun ⟨⟨obj, lift, map, fact⟩⟩ ↦ ?_, fun ⟨Z, h, g, hypo1, hf⟩ ↦ ?_⟩
+    · obtain ⟨p, p_factors⟩ := Projective.factors map (F.π B)
+      refine ⟨_, ⟨lift ≫ p, ⟨(F.π B),
+        ⟨Presieve.singleton.mk, by rw [← fact, ← p_factors, Category.assoc]⟩⟩⟩⟩
+    · cases hypo1
+      exact ⟨⟨_, h, F.π B, hf⟩⟩
 
 end coherentTopology
 
@@ -69,16 +68,15 @@ lemma generate_singleton_functor_π_mem (B : D) :
   rintro ⟨⟩
   simp only [Presieve.singleton_eq_iff_domain]
 
-instance : F.IsCoverDense (regularTopology _) := by
-  constructor
-  intro B
-  convert generate_singleton_functor_π_mem F B
-  ext Y f
-  refine ⟨fun ⟨⟨obj, lift, map, fact⟩⟩ ↦ ?_, fun ⟨Z, h, g, hypo1, hf⟩ ↦ ?_⟩
-  · obtain ⟨p, p_factors⟩ := Projective.factors map (F.π B)
-    refine ⟨_, ⟨lift ≫ p, ⟨(F.π B),
-      ⟨Presieve.singleton.mk, by rw [← fact, ← p_factors, Category.assoc]⟩⟩⟩⟩
-  · cases hypo1
-    exact ⟨⟨_, h, F.π B, hf⟩⟩
+instance : F.IsCoverDense (regularTopology _) where
+  is_cover B := by
+    convert generate_singleton_functor_π_mem F B
+    ext Y f
+    refine ⟨fun ⟨⟨obj, lift, map, fact⟩⟩ ↦ ?_, fun ⟨Z, h, g, hypo1, hf⟩ ↦ ?_⟩
+    · obtain ⟨p, p_factors⟩ := Projective.factors map (F.π B)
+      refine ⟨_, ⟨lift ≫ p, ⟨(F.π B),
+        ⟨Presieve.singleton.mk, by rw [← fact, ← p_factors, Category.assoc]⟩⟩⟩⟩
+    · cases hypo1
+      exact ⟨⟨_, h, F.π B, hf⟩⟩
 
 end regularTopology
