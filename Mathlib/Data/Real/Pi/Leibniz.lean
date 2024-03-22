@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Jeremy Tan. All rights reserved.
+Copyright (c) 2020 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Tan
+Authors: Benjamin Davidson, Jeremy Tan
 -/
 import Mathlib.Analysis.Complex.AbelLimit
 import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
