@@ -202,8 +202,7 @@ theorem prod_take_succ :
 @[to_additive "A list with sum not zero must have positive length."]
 theorem length_pos_of_prod_ne_one (L : List M) (h : L.prod ≠ 1) : 0 < L.length := by
   cases L
-  · contrapose h
-    simp
+  · simp at h
   · simp
 #align list.length_pos_of_prod_ne_one List.length_pos_of_prod_ne_one
 #align list.length_pos_of_sum_ne_zero List.length_pos_of_sum_ne_zero

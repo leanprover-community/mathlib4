@@ -423,9 +423,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
     · dsimp only at h
       rw [dif_pos hb] at h
       exact Set.mem_iUnion.2 ⟨Classical.choose hb, h⟩
-    · contrapose! h
-      rw [dif_neg hb]
-      simp
+    · simp [-Set.mem_range, dif_neg hb] at h
   finite_co_support' g :=
     ((s.finite_co_support g).image f).subset
       (by
