@@ -113,11 +113,8 @@ variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
   [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
   [Full F] [Faithful F]
   [FinitaryExtensive D] [Preregular D]
+  [FinitaryPreExtensive C]
   [PreservesFiniteCoproducts F]
-  [HasFiniteCoproducts C] [HasPullbacksOfInclusions C]
-  [PreservesPullbacksOfInclusions F]
-  [ReflectsLimitsOfShape WalkingCospan F]
-  [ReflectsColimitsOfShape (Discrete WalkingPair) F]
   [F.EffectivelyEnough] [F.IsCoverDense (coherentTopology _)]
 
 /--
@@ -126,10 +123,8 @@ The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompH
 -/
 noncomputable
 def equivalence' (A : Type _) [Category.{u+1} A] [HasLimits A] :
-    haveI := finitaryExtensive_of_preserves_and_reflects F
     haveI := reflects_precoherent F
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
-  have := finitaryExtensive_of_preserves_and_reflects F
   Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting F _ _ _
 
 end RegularExtensive
