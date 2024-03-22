@@ -24,7 +24,7 @@ continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of th
 
 universe v u
 
-open CategoryTheory Limits Opposite Functor Presieve regularCoverage
+open CategoryTheory Limits Opposite Functor Presieve regularTopology
 
 namespace LightProfinite
 
@@ -40,9 +40,10 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
     Adjunction.hasLimitsOfShape_of_equivalence e.inverse
   haveI : FinitaryExtensive (SmallModel.{u, u, u+1} LightProfinite) :=
     finitaryExtensive_of_preserves_and_reflects e.inverse
-  rw [isSheaf_iff_isSheaf_of_type, isSheaf_coherent_iff_regular_and_extensive]
+  rw [isSheaf_coherent_iff_regular_and_extensive]
   apply and_congr
-  · rw [isSheaf_iff_preservesFiniteProducts]
+  · rw [isSheaf_iff_isSheaf_of_type, extensiveTopology,
+      isSheaf_iff_preservesFiniteProducts]
     have : IsEquivalence e.inverse.op := (inferInstance : IsEquivalence e.op.inverse)
     have : IsEquivalence e.functor.op := (inferInstance : IsEquivalence e.op.functor)
     refine ⟨fun ⟨h⟩ ↦ ⟨⟨fun J _ ↦ ?_⟩⟩, fun ⟨h⟩ ↦ ⟨⟨fun J _ ↦ ?_⟩⟩⟩
@@ -50,7 +51,7 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
         (inferInstance : PreservesLimitsOfShape _ (e.functor.op ⋙ e.inverse.op ⋙ F))
       exact preservesLimitsOfShapeOfNatIso (isoWhiskerRight e.op.unitIso F).symm
     · infer_instance
-  · rw [EqualizerCondition.isSheaf_iff]
+  · rw [← equalizerCondition_iff_isSheaf]
     exact (equalizerCondition_iff_of_equivalence F e).symm
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
