@@ -303,6 +303,7 @@ protected theorem sum_mem {R : Type*} [NonUnitalNonAssocRing R] (s : NonUnitalSu
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
 instance toNonUnitalRing {R : Type*} [NonUnitalRing R] (s : NonUnitalSubring R) :
     NonUnitalRing s :=
+  fast_instance%
   Subtype.coe_injective.nonUnitalRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
@@ -331,6 +332,7 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 := by
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
 instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) :
     NonUnitalCommRing s :=
+  fast_instance%
   Subtype.coe_injective.nonUnitalCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 

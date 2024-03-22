@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.LatticeIntervals
+import Mathlib.Tactic.FastInstance
 
 #align_import algebra.order.nonneg.ring from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
@@ -150,11 +151,13 @@ protected theorem coe_nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (
 #align nonneg.coe_nsmul Nonneg.coe_nsmul
 
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid { x : α // 0 ≤ x } :=
+  fast_instance%
   Subtype.coe_injective.orderedAddCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 #align nonneg.ordered_add_comm_monoid Nonneg.orderedAddCommMonoid
 
 instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
     LinearOrderedAddCommMonoid { x : α // 0 ≤ x } :=
+  fast_instance%
   Subtype.coe_injective.linearOrderedAddCommMonoid _ Nonneg.coe_zero
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
@@ -162,11 +165,13 @@ instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
 
 instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
     OrderedCancelAddCommMonoid { x : α // 0 ≤ x } :=
+  fast_instance%
   Subtype.coe_injective.orderedCancelAddCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 #align nonneg.ordered_cancel_add_comm_monoid Nonneg.orderedCancelAddCommMonoid
 
 instance linearOrderedCancelAddCommMonoid [LinearOrderedCancelAddCommMonoid α] :
     LinearOrderedCancelAddCommMonoid { x : α // 0 ≤ x } :=
+  fast_instance%
   Subtype.coe_injective.linearOrderedCancelAddCommMonoid _ Nonneg.coe_zero
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
@@ -250,6 +255,7 @@ theorem mk_pow [OrderedSemiring α] {x : α} (hx : 0 ≤ x) (n : ℕ) :
 #align nonneg.mk_pow Nonneg.mk_pow
 
 instance orderedSemiring [OrderedSemiring α] : OrderedSemiring { x : α // 0 ≤ x } :=
+  fast_instance%
   Subtype.coe_injective.orderedSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _=> rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
@@ -257,12 +263,14 @@ instance orderedSemiring [OrderedSemiring α] : OrderedSemiring { x : α // 0 �
 
 instance strictOrderedSemiring [StrictOrderedSemiring α] :
     StrictOrderedSemiring { x : α // 0 ≤ x } :=
+  -- fast_instance% -- TODO: fix
   Subtype.coe_injective.strictOrderedSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 #align nonneg.strict_ordered_semiring Nonneg.strictOrderedSemiring
 
 instance orderedCommSemiring [OrderedCommSemiring α] : OrderedCommSemiring { x : α // 0 ≤ x } :=
+  fast_instance%
   Subtype.coe_injective.orderedCommSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
@@ -270,6 +278,7 @@ instance orderedCommSemiring [OrderedCommSemiring α] : OrderedCommSemiring { x 
 
 instance strictOrderedCommSemiring [StrictOrderedCommSemiring α] :
     StrictOrderedCommSemiring { x : α // 0 ≤ x } :=
+  fast_instance%
   Subtype.coe_injective.strictOrderedCommSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
@@ -298,6 +307,7 @@ instance nontrivial [LinearOrderedSemiring α] : Nontrivial { x : α // 0 ≤ x 
 
 instance linearOrderedSemiring [LinearOrderedSemiring α] :
     LinearOrderedSemiring { x : α // 0 ≤ x } :=
+  fast_instance%
   Subtype.coe_injective.linearOrderedSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
