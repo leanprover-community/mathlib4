@@ -49,6 +49,25 @@ open MeasureTheory Set Filter TopologicalSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 
+section AuxLemmasToBeMoved
+
+variable {α β ι : Type*}
+
+theorem Real.iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
+  ext1 x
+  simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
+  obtain ⟨r, hr⟩ := exists_rat_gt x
+  exact ⟨r, hr.le⟩
+#align real.Union_Iic_rat Real.iUnion_Iic_rat
+
+theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
+  ext1 x
+  simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false_iff, not_forall, not_le]
+  exact exists_rat_lt x
+#align real.Inter_Iic_rat Real.iInter_Iic_rat
+
+end AuxLemmasToBeMoved
+
 namespace ProbabilityTheory
 
 variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
@@ -531,13 +550,7 @@ lemma set_lintegral_toKernel_Iic [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
 lemma set_lintegral_toKernel_univ [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫⁻ b in s, hf.toKernel f (a, b) univ ∂(ν a) = κ a (s ×ˢ univ) := by
-  have : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
-    -- todo: move `Real.iUnion_Iic_rat` to an earlier file and use it here
-    ext1 x
-    simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
-    obtain ⟨r, hr⟩ := exists_rat_gt x
-    exact ⟨r, hr.le⟩
-  rw [← this, prod_iUnion]
+  rw [← Real.iUnion_Iic_rat, prod_iUnion]
   have h_dir : Directed (fun x y ↦ x ⊆ y) fun q : ℚ ↦ Iic (q : ℝ) := by
     refine Monotone.directed_le fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
     exact mod_cast hrr'
