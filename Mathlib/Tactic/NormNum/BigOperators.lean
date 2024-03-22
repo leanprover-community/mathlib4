@@ -171,9 +171,9 @@ def Multiset.ProveZeroOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Multiset $
   | .zero pf => .zero q(Eq.trans $eq $pf)
   | .cons a s' pf => .cons a s' q(Eq.trans $eq $pf)
 
-lemma Multiset.insert_eq_cons {α : Type*} [DecidableEq α] (a : α) (s : Multiset α) :
-    insert a s = Multiset.cons a s := by
-  ext; simp
+lemma Multiset.insert_eq_cons {α : Type*} (a : α) (s : Multiset α) :
+    insert a s = Multiset.cons a s :=
+  rfl
 
 lemma Multiset.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
     Multiset.range n = 0 := by rw [pn.out, Nat.cast_zero, Multiset.range_zero]
@@ -341,7 +341,7 @@ partial def evalFinsetBigop {α : Q(Type u)} {β : Q(Type v)}
     match ← Finset.proveEmptyOrCons s with
     | .empty pf => pure <| res_empty.eq_trans q(congr_fun (congr_arg _ $pf) _)
     | .cons a s' h pf => do
-      let fa : Q($β) := Expr.app f a
+      let fa : Q($β) := Expr.betaRev f #[a]
       let res_fa ← derive fa
       let res_op_s' : Result q($op $s' $f) ← evalFinsetBigop op f res_empty @res_cons s'
       let res ← res_cons res_fa res_op_s'
@@ -356,7 +356,7 @@ If your finset is not supported, you can add it to the match in `Finset.proveEmp
 partial def evalFinsetProd : NormNumExt where eval {u β} e := do
   let .app (.app (.app (.app (.app (.const `Finset.prod [_, v]) β') α) _) s) f ←
     whnfR e | failure
-  guard <| ←withNewMCtxDepth <| isDefEq β β'
+  guard <| ← withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
   have s : Q(Finset $α) := s
   have f : Q($α → $β) := f
@@ -385,7 +385,7 @@ If your finset is not supported, you can add it to the match in `Finset.proveEmp
 partial def evalFinsetSum : NormNumExt where eval {u β} e := do
   let .app (.app (.app (.app (.app (.const `Finset.sum [_, v]) β') α) _) s) f ←
     whnfR e | failure
-  guard <| ←withNewMCtxDepth <| isDefEq β β'
+  guard <| ← withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
   have s : Q(Finset $α) := s
   have f : Q($α → $β) := f

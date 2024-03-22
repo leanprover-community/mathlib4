@@ -6,7 +6,7 @@ Authors: Jujian Zhang
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
 import Mathlib.Topology.Sheaves.LocalPredicate
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
-import Mathlib.AlgebraicGeometry.LocallyRingedSpace
+import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 #align_import algebraic_geometry.projective_spectrum.structure_sheaf from "leanprover-community/mathlib"@"486cb2f3bda4a67557c6285f5bd0c3348c1eea81"
 
@@ -57,9 +57,7 @@ open scoped DirectSum BigOperators Pointwise
 open DirectSum SetLike Localization TopCat TopologicalSpace CategoryTheory Opposite
 
 variable {R A : Type*}
-
 variable [CommRing R] [CommRing A] [Algebra R A]
-
 variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
 
 local notation3 "at " x =>
@@ -211,6 +209,10 @@ def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top �
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.projective_spectrum.structure_sheaf.structure_presheaf_in_CommRing AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF]
+  AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing_map_apply
+
 /-- Some glue, verifying that that structure presheaf valued in `CommRing` agrees with the `Type`
 valued structure presheaf.-/
 def structurePresheafCompForget :
@@ -277,7 +279,7 @@ def stalkToFiberRingHom (x : ProjectiveSpectrum.top 𝒜) :
       ι :=
         { app := fun U =>
             openToLocalization 𝒜 ((OpenNhds.inclusion _).obj U.unop) x U.unop.2
-          -- porting note: this proof was automatic in mathlib3
+          -- Porting note: this proof was automatic in mathlib3
           naturality := fun _ _ _ => rfl } }
 #align algebraic_geometry.stalk_to_fiber_ring_hom AlgebraicGeometry.stalkToFiberRingHom
 

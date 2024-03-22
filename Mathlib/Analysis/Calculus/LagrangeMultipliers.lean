@@ -3,7 +3,8 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Inverse
+import Mathlib.Analysis.Calculus.FDeriv.Prod
+import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 import Mathlib.LinearAlgebra.Dual
 
 #align_import analysis.calculus.lagrange_multipliers from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -70,8 +71,8 @@ theorem IsLocalExtrOn.exists_linear_map_of_hasStrictFDerivAt
   refine' ⟨Λ, Λ₀, e.map_ne_zero_iff.1 h0, fun x => _⟩
   convert LinearMap.congr_fun (LinearMap.range_le_ker_iff.1 hΛ') x using 1
   -- squeezed `simp [mul_comm]` to speed up elaboration
-  simp only [smul_eq_mul, LinearEquiv.trans_apply, LinearEquiv.prod_apply, LinearEquiv.refl_apply,
-    LinearMap.ringLmapEquivSelf_symm_apply, LinearMap.coprodEquiv_apply,
+  simp only [e, smul_eq_mul, LinearEquiv.trans_apply, LinearEquiv.prod_apply,
+    LinearEquiv.refl_apply, LinearMap.ringLmapEquivSelf_symm_apply, LinearMap.coprodEquiv_apply,
     ContinuousLinearMap.coe_prod, LinearMap.coprod_comp_prod, LinearMap.add_apply,
     LinearMap.coe_comp, ContinuousLinearMap.coe_coe, Function.comp_apply, LinearMap.coe_smulRight,
     LinearMap.one_apply, mul_comm]
@@ -109,8 +110,8 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type*} [Fint
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
     ∃ (Λ : ι → ℝ) (Λ₀ : ℝ), (Λ, Λ₀) ≠ 0 ∧ (∑ i, Λ i • f' i) + Λ₀ • φ' = 0 := by
   letI := Classical.decEq ι
-  replace hextr : IsLocalExtrOn φ {x | (fun i => f i x) = fun i => f i x₀} x₀
-  · simpa only [Function.funext_iff] using hextr
+  replace hextr : IsLocalExtrOn φ {x | (fun i => f i x) = fun i => f i x₀} x₀ := by
+    simpa only [Function.funext_iff] using hextr
   rcases hextr.exists_linear_map_of_hasStrictFDerivAt (hasStrictFDerivAt_pi.2 fun i => hf' i)
       hφ' with
     ⟨Λ, Λ₀, h0, hsum⟩
@@ -140,4 +141,3 @@ theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite
   · simpa only [Function.funext_iff, not_and_or, or_comm, Option.exists, Prod.mk_eq_zero, Ne.def,
       not_forall] using hΛ
 #align is_local_extr_on.linear_dependent_of_has_strict_fderiv_at IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt
-

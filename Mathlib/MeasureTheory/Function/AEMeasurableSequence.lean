@@ -3,7 +3,7 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.MeasurableSpace
+import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
 #align_import measure_theory.function.ae_measurable_sequence from "leanprover-community/mathlib"@"d003c55042c3cd08aefd1ae9a42ef89441cdaaf3"
@@ -25,7 +25,7 @@ and a measurable set `aeSeqSet hf p`, such that
 
 open MeasureTheory
 
-open Classical
+open scoped Classical
 
 variable {ι : Sort*} {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β] {f : ι → α → β}
   {μ : Measure α} {p : α → (ι → β) → Prop}
@@ -136,5 +136,9 @@ theorem iSup [CompleteLattice β] [Countable ι] (hf : ∀ i, AEMeasurable (f i)
     exact funext fun i => aeSeq_eq_fun_of_mem_aeSeqSet hf hx i
   exact measure_mono_null (Set.compl_subset_compl.mpr h_ss) (measure_compl_aeSeqSet_eq_zero hf hp)
 #align ae_seq.supr aeSeq.iSup
+
+theorem iInf [CompleteLattice β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
+    (hp : ∀ᵐ x ∂μ, p x fun n ↦ f n x) : ⨅ n, aeSeq hf p n =ᵐ[μ] ⨅ n, f n :=
+  iSup (β := βᵒᵈ) hf hp
 
 end aeSeq

@@ -148,6 +148,8 @@ theorem arsinh_le_arsinh : arsinh x ≤ arsinh y ↔ x ≤ y :=
   sinhOrderIso.symm.le_iff_le
 #align real.arsinh_le_arsinh Real.arsinh_le_arsinh
 
+@[gcongr] protected alias ⟨_, GCongr.arsinh_le_arsinh⟩ := arsinh_le_arsinh
+
 @[simp]
 theorem arsinh_lt_arsinh : arsinh x < arsinh y ↔ x < y :=
   sinhOrderIso.symm.lt_iff_lt
@@ -177,7 +179,7 @@ theorem arsinh_neg_iff : arsinh x < 0 ↔ x < 0 :=
 #align real.arsinh_neg_iff Real.arsinh_neg_iff
 
 theorem hasStrictDerivAt_arsinh (x : ℝ) : HasStrictDerivAt arsinh (sqrt (1 + x ^ 2))⁻¹ x := by
-  convert sinhHomeomorph.toLocalHomeomorph.hasStrictDerivAt_symm (mem_univ x) (cosh_pos _).ne'
+  convert sinhHomeomorph.toPartialHomeomorph.hasStrictDerivAt_symm (mem_univ x) (cosh_pos _).ne'
     (hasStrictDerivAt_sinh _) using 2
   exact (cosh_arsinh _).symm
 #align real.has_strict_deriv_at_arsinh Real.hasStrictDerivAt_arsinh

@@ -74,7 +74,8 @@ set_option autoImplicit true
 
 noncomputable section
 
-open Classical ENNReal Topology
+open scoped Classical
+open ENNReal Topology
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
 
@@ -85,7 +86,6 @@ namespace MeasureTheory
 section MeasurableSpace
 
 variable [TopologicalSpace β]
-
 variable (β)
 
 /-- The equivalence relation of being almost everywhere equal for almost everywhere strongly
@@ -220,7 +220,7 @@ open MeasureTheory.Measure (QuasiMeasurePreserving)
 See also `AEEqFun.compMeasurePreserving`. -/
 def compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : QuasiMeasurePreserving f μ ν) :
     α →ₘ[μ] γ :=
-  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) <| fun _ _ h ↦
+  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) fun _ _ h ↦
     mk_eq_mk.2 <| h.comp_tendsto hf.tendsto_ae
 
 @[simp]
@@ -651,13 +651,11 @@ theorem one_toGerm [One β] : (1 : α →ₘ[μ] β).toGerm = 1 :=
 section SMul
 
 variable {𝕜 𝕜' : Type*}
-
 variable [SMul 𝕜 γ] [ContinuousConstSMul 𝕜 γ]
-
 variable [SMul 𝕜' γ] [ContinuousConstSMul 𝕜' γ]
 
 instance instSMul : SMul 𝕜 (α →ₘ[μ] γ) :=
-  ⟨fun c f => comp ((· • ·) c) (continuous_id.const_smul c) f⟩
+  ⟨fun c f => comp (c • ·) (continuous_id.const_smul c) f⟩
 #align measure_theory.ae_eq_fun.has_smul MeasureTheory.AEEqFun.instSMul
 
 @[simp]
@@ -835,7 +833,7 @@ theorem div_toGerm (f g : α →ₘ[μ] γ) : (f / g).toGerm = f.toGerm / g.toGe
 
 end Div
 
-section Zpow
+section ZPow
 
 instance instPowInt : Pow (α →ₘ[μ] γ) ℤ :=
   ⟨fun f n => comp _ (continuous_zpow n) f⟩
@@ -856,7 +854,7 @@ theorem zpow_toGerm (f : α →ₘ[μ] γ) (n : ℤ) : (f ^ n).toGerm = f.toGerm
   comp_toGerm _ _ _
 #align measure_theory.ae_eq_fun.zpow_to_germ MeasureTheory.AEEqFun.zpow_toGerm
 
-end Zpow
+end ZPow
 
 end Group
 
@@ -866,8 +864,7 @@ instance instAddGroup [AddGroup γ] [TopologicalAddGroup γ] : AddGroup (α →�
 #align measure_theory.ae_eq_fun.add_group MeasureTheory.AEEqFun.instAddGroup
 
 instance instAddCommGroup [AddCommGroup γ] [TopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
-  toGerm_injective.addCommGroup toGerm zero_toGerm add_toGerm neg_toGerm sub_toGerm
-    (fun _ _ => smul_toGerm _ _) fun _ _ => smul_toGerm _ _
+  { add_comm := add_comm }
 #align measure_theory.ae_eq_fun.add_comm_group MeasureTheory.AEEqFun.instAddCommGroup
 
 @[to_additive existing]
@@ -877,7 +874,7 @@ instance instGroup [Group γ] [TopologicalGroup γ] : Group (α →ₘ[μ] γ) :
 
 @[to_additive existing]
 instance instCommGroup [CommGroup γ] [TopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
-  toGerm_injective.commGroup _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
+  { mul_comm := mul_comm }
 #align measure_theory.ae_eq_fun.comm_group MeasureTheory.AEEqFun.instCommGroup
 
 section Module
@@ -940,7 +937,7 @@ section Abs
 
 theorem coeFn_abs {β} [TopologicalSpace β] [Lattice β] [TopologicalLattice β] [AddGroup β]
     [TopologicalAddGroup β] (f : α →ₘ[μ] β) : ⇑|f| =ᵐ[μ] fun x => |f x| := by
-  simp_rw [abs_eq_sup_neg]
+  simp_rw [abs]
   filter_upwards [AEEqFun.coeFn_sup f (-f), AEEqFun.coeFn_neg f] with x hx_sup hx_neg
   rw [hx_sup, hx_neg, Pi.neg_apply]
 #align measure_theory.ae_eq_fun.coe_fn_abs MeasureTheory.AEEqFun.coeFn_abs
@@ -979,7 +976,6 @@ namespace ContinuousMap
 open MeasureTheory
 
 variable [TopologicalSpace α] [BorelSpace α] (μ)
-
 variable [TopologicalSpace β] [SecondCountableTopologyEither α β] [PseudoMetrizableSpace β]
 
 /-- The equivalence class of `μ`-almost-everywhere measurable functions associated to a continuous
@@ -1007,7 +1003,6 @@ def toAEEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
 #align continuous_map.to_ae_eq_fun_add_hom ContinuousMap.toAEEqFunAddHom
 
 variable {𝕜 : Type*} [Semiring 𝕜]
-
 variable [TopologicalSpace γ] [PseudoMetrizableSpace γ] [AddCommGroup γ] [Module 𝕜 γ]
   [TopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]
 

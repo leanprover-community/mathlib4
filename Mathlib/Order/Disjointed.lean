@@ -87,8 +87,7 @@ def disjointedRec {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p 
     ∀ ⦃n⦄, p (f n) → p (disjointed f n)
   | 0 => id
   | n + 1 => fun h => by
-    suffices H : ∀ k, p (f (n + 1) \ partialSups f k)
-    · exact H n
+    suffices H : ∀ k, p (f (n + 1) \ partialSups f k) from H n
     rintro k
     induction' k with k ih
     · exact hdiff h
@@ -103,9 +102,13 @@ theorem disjointedRec_zero {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t
 #align disjointed_rec_zero disjointedRec_zero
 
 -- TODO: Find a useful statement of `disjointedRec_succ`.
-theorem Monotone.disjointed_eq {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
+protected lemma Monotone.disjointed_succ {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
     disjointed f (n + 1) = f (n + 1) \ f n := by rw [disjointed_succ, hf.partialSups_eq]
-#align monotone.disjointed_eq Monotone.disjointed_eq
+#align monotone.disjointed_eq Monotone.disjointed_succ
+
+protected lemma Monotone.disjointed_succ_sup {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
+    disjointed f (n + 1) ⊔ f n = f (n + 1) := by
+  rw [hf.disjointed_succ, sdiff_sup_cancel]; exact hf n.le_succ
 
 @[simp]
 theorem partialSups_disjointed (f : ℕ → α) : partialSups (disjointed f) = partialSups f := by
@@ -122,11 +125,10 @@ theorem disjointed_unique {f d : ℕ → α} (hdisj : Pairwise (Disjoint on d))
   ext n
   cases' n with n
   · rw [← partialSups_zero d, hsups, partialSups_zero, disjointed_zero]
-  suffices h : d n.succ = partialSups d n.succ \ partialSups d n
-  · rw [h, hsups, partialSups_succ, disjointed_succ, sup_sdiff, sdiff_self, bot_sup_eq]
+  suffices h : d n.succ = partialSups d n.succ \ partialSups d n by
+    rw [h, hsups, partialSups_succ, disjointed_succ, sup_sdiff, sdiff_self, bot_sup_eq]
   rw [partialSups_succ, sup_sdiff, sdiff_self, bot_sup_eq, eq_comm, sdiff_eq_self_iff_disjoint]
-  suffices h : ∀ m ≤ n, Disjoint (partialSups d m) (d n.succ)
-  · exact h n le_rfl
+  suffices h : ∀ m ≤ n, Disjoint (partialSups d m) (d n.succ) from h n le_rfl
   rintro m hm
   induction' m with m ih
   · exact hdisj (Nat.succ_ne_zero _).symm

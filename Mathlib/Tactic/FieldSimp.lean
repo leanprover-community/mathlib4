@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel, David Renshaw
 
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Main
-import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
+import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Util.DischargerAsTactic
 import Qq
 
 /-!
@@ -34,9 +35,11 @@ private def dischargerTraceMessage (prop: Expr) : Except ε (Option Expr) → Si
 /-- Discharge strategy for the `field_simp` tactic. -/
 partial def discharge (prop : Expr) : SimpM (Option Expr) :=
   withTraceNode `Tactic.field_simp (dischargerTraceMessage prop) do
+    -- Discharge strategy 1: Use assumptions
     if let some r ← Simp.dischargeUsingAssumption? prop then
       return some r
 
+    -- Discharge strategy 2: Normalize inequalities using NormNum
     let prop : Q(Prop) ← (do pure prop)
     let pf? ← match prop with
     | ~q(($e : $α) ≠ $b) =>
@@ -50,17 +53,25 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     | _ => pure none
     if let some pf := pf? then return some pf
 
-    let ctx ← read
+    -- Discharge strategy 3: Use positivity
+    let pf? ←
+      try some <$> Mathlib.Meta.Positivity.solve prop
+      catch _ => pure none
+    if let some pf := pf? then return some pf
+
+    -- Discharge strategy 4: Use the simplifier
+    let ctx ← readThe Simp.Context
     let usedTheorems := (← get).usedTheorems
 
-    -- Port note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
+    -- Porting note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
     -- does not explicitly call `simp` recursively like this. It's unclear to me
     -- whether this is because
     --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
     --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
     --   3) some other reason?
     let ⟨simpResult, usedTheorems'⟩ ←
-      simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1} discharge usedTheorems
+      simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1 } #[(← Simp.getSimprocs)]
+        discharge usedTheorems
     set {(← get) with usedTheorems := usedTheorems'}
     if simpResult.expr.isConstOf ``True then
       try
@@ -69,6 +80,9 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
         return none
     else
       return none
+
+@[inherit_doc discharge]
+elab "field_simp_discharge" : tactic => wrapSimpDischarger Mathlib.Tactic.FieldSimp.discharge
 
 /--
 The goal of `field_simp` is to reduce an expression in a field to an expression of the form `n / d`
@@ -83,10 +97,10 @@ iterating the following steps:
 - reduce a sum to a common denominator
 
 If the goal is an equality, this simpset will also clear the denominators, so that the proof
-can normally be concluded by an application of `ring` or `ring_exp`.
+can normally be concluded by an application of `ring`.
 
 `field_simp [hx, hy]` is a short form for
-`simp (discharger := Tactic.FieldSimp.discharge) [-one_div, -mul_eq_zero, hx, hy, field_simps]`
+`simp (disch := field_simp_discharge) [-one_div, -one_divp, -mul_eq_zero, hx, hy, field_simps]`
 
 Note that this naive algorithm will not try to detect common factors in denominators to reduce the
 complexity of the resulting expression. Instead, it relies on the ability of `ring` to handle
@@ -122,7 +136,7 @@ a general (commutative) monoid/ring and partial division `/ₚ`, see `Algebra.Gr
 for the definition. Analogue to the case above, the lemma `one_divp` is removed from the simpset
 as this works against the algorithm. If you have objects with an `IsUnit x` instance like
 `(x : R) (hx : IsUnit x)`, you should lift them with
-`lift x to Rˣ using id hx, rw [IsUnit.unit_of_val_units] clear hx`
+`lift x to Rˣ using id hx; rw [IsUnit.unit_of_val_units] clear hx`
 before using `field_simp`.
 
 See also the `cancel_denoms` tactic, which tries to do a similar simplification for expressions
@@ -134,16 +148,20 @@ syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
   (simpArgs)? (location)? : tactic
 
 elab_rules : tactic
-| `(tactic| field_simp $[$cfg:config]? $[$dis:discharger]? $[only%$only?]?
+| `(tactic| field_simp $[$cfg:config]? $[(discharger := $dis)]? $[only%$only?]?
     $[$sa:simpArgs]? $[$loc:location]?) => withMainContext do
-  let cfg ← elabSimpConfig (cfg.getD ⟨.missing⟩) .simp
+  let cfg ← elabSimpConfig (mkOptionalNode cfg) .simp
+  -- The `field_simp` discharger relies on recursively calling the discharger.
+  -- Prior to https://github.com/leanprover/lean4/pull/3523,
+  -- the maxDischargeDepth wasn't actually being checked: now we have to set it higher.
+  let cfg := { cfg with maxDischargeDepth := 7 }
   let loc := expandOptLocation (mkOptionalNode loc)
 
   let dis ← match dis with
   | none => pure discharge
   | some d => do
-     let ⟨_,d⟩ ← tacticToDischarge d
-     pure d
+    let ⟨_, d⟩ ← tacticToDischarge d
+    pure d
 
   let thms0 ← if only?.isSome then
     simpOnlyBuiltins.foldlM (·.addConst ·) ({} : SimpTheorems)
@@ -161,7 +179,7 @@ elab_rules : tactic
      congrTheorems := (← getSimpCongrTheorems)
      config := cfg
   }
-  let mut r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (eraseLocal := false) .simp
+  let mut r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (simprocs := {}) (eraseLocal := false) .simp
   if r.starArg then
     r ← do
       let ctx := r.ctx
@@ -171,6 +189,6 @@ elab_rules : tactic
         unless simpTheorems.isErased (.fvar h) do
           simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
       let ctx := { ctx with simpTheorems }
-      pure { ctx }
+      pure { ctx, simprocs := {} }
 
-  _ ← simpLocation r.ctx dis loc
+  _ ← simpLocation r.ctx {} dis loc

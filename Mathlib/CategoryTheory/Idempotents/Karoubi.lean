@@ -34,7 +34,7 @@ variable (C : Type*) [Category C]
 
 namespace Idempotents
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- In a preadditive category `C`, when an object `X` decomposes as `X ≅ P ⨿ Q`, one may
 consider `P` as a direct factor of `X` and up to unique isomorphism, it is determined by the
 obvious idempotent `X ⟶ P ⟶ X` which is the projection onto `P` with kernel `Q`. More generally,
@@ -112,17 +112,17 @@ theorem hom_ext_iff {P Q : Karoubi C} {f g : P ⟶ Q} : f = g ↔ f.f = g.f := b
   · apply Hom.ext
 #align category_theory.idempotents.karoubi.hom_ext CategoryTheory.Idempotents.Karoubi.hom_ext_iff
 
--- porting note: added because `Hom.ext` is not triggered automatically
+-- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 theorem hom_ext {P Q : Karoubi C} (f g : P ⟶ Q) (h : f.f = g.f) : f = g := by
   simpa [hom_ext_iff] using h
 
 @[simp]
-theorem comp_f {P Q R : Karoubi C} (f : P ⟶ Q) (g : Q ⟶ R) : (f ≫ g).f = f.f ≫ g.f := by rfl
+theorem comp_f {P Q R : Karoubi C} (f : P ⟶ Q) (g : Q ⟶ R) : (f ≫ g).f = f.f ≫ g.f := rfl
 #align category_theory.idempotents.karoubi.comp_f CategoryTheory.Idempotents.Karoubi.comp_f
 
 @[simp]
-theorem id_eq {P : Karoubi C} : 𝟙 P = ⟨P.p, by repeat' rw [P.idem]⟩ := by rfl
+theorem id_eq {P : Karoubi C} : 𝟙 P = ⟨P.p, by repeat' rw [P.idem]⟩ := rfl
 #align category_theory.idempotents.karoubi.id_eq CategoryTheory.Idempotents.Karoubi.id_eq
 
 /-- It is possible to coerce an object of `C` into an object of `Karoubi C`.
@@ -131,13 +131,13 @@ instance coe : CoeTC C (Karoubi C) :=
   ⟨fun X => ⟨X, 𝟙 X, by rw [comp_id]⟩⟩
 #align category_theory.idempotents.karoubi.coe CategoryTheory.Idempotents.Karoubi.coe
 
--- porting note: removed @[simp] as the linter complains
-theorem coe_X (X : C) : (X : Karoubi C).X = X := by rfl
+-- Porting note: removed @[simp] as the linter complains
+theorem coe_X (X : C) : (X : Karoubi C).X = X := rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.idempotents.karoubi.coe_X CategoryTheory.Idempotents.Karoubi.coe_X
 
 @[simp]
-theorem coe_p (X : C) : (X : Karoubi C).p = 𝟙 X := by rfl
+theorem coe_p (X : C) : (X : Karoubi C).p = 𝟙 X := rfl
 #align category_theory.idempotents.karoubi.coe_p CategoryTheory.Idempotents.Karoubi.coe_p
 
 @[simp]
@@ -164,11 +164,19 @@ instance : Faithful (toKaroubi C) where
 
 variable {C}
 
-@[simps add zero neg]
-instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
-  add f g :=
-    ⟨f.f + g.f, by rw [add_comp, comp_add, ← f.comm, ← g.comm]⟩
+@[simps add]
+instance instAdd [Preadditive C] {P Q : Karoubi C} : Add (P ⟶ Q) where
+  add f g := ⟨f.f + g.f, by rw [add_comp, comp_add, ← f.comm, ← g.comm]⟩
+
+@[simps neg]
+instance instNeg [Preadditive C] {P Q : Karoubi C} : Neg (P ⟶ Q) where
+  neg f := ⟨-f.f, by simpa only [neg_comp, comp_neg, neg_inj] using f.comm⟩
+
+@[simps zero]
+instance instZero [Preadditive C] {P Q : Karoubi C} : Zero (P ⟶ Q) where
   zero := ⟨0, by simp only [comp_zero, zero_comp]⟩
+
+instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
   zero_add f := by
     ext
     apply zero_add
@@ -181,10 +189,11 @@ instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P
   add_comm f g := by
     ext
     apply add_comm
-  neg f := ⟨-f.f, by simpa only [neg_comp, comp_neg, neg_inj] using f.comm⟩
   add_left_neg f := by
     ext
     apply add_left_neg
+  zsmul := zsmulRec
+  nsmul := nsmulRec
 
 namespace Karoubi
 

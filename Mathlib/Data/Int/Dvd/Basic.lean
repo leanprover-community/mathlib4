@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Algebra.Ring.Divisibility.Basic
 
 #align_import data.int.dvd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -20,7 +21,9 @@ namespace Int
 @[norm_cast]
 theorem coe_nat_dvd {m n : ℕ} : (↑m : ℤ) ∣ ↑n ↔ m ∣ n :=
   ⟨fun ⟨a, ae⟩ =>
-    m.eq_zero_or_pos.elim (fun m0 => by simp [m0] at ae; simp [ae, m0]) fun m0l => by
+    m.eq_zero_or_pos.elim (fun m0 => by
+      simp only [m0, Nat.cast_zero, zero_mul, cast_eq_zero] at ae
+      simp [ae, m0]) fun m0l => by
       cases'
         eq_ofNat_of_zero_le
           (@nonneg_of_mul_nonneg_right ℤ _ m a (by simp [ae.symm]) (by simpa using m0l)) with
@@ -31,11 +34,11 @@ theorem coe_nat_dvd {m n : ℕ} : (↑m : ℤ) ∣ ↑n ↔ m ∣ n :=
 #align int.coe_nat_dvd Int.coe_nat_dvd
 
 theorem coe_nat_dvd_left {n : ℕ} {z : ℤ} : (↑n : ℤ) ∣ z ↔ n ∣ z.natAbs := by
-  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [←coe_nat_dvd]
+  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [← coe_nat_dvd, Int.dvd_neg]
 #align int.coe_nat_dvd_left Int.coe_nat_dvd_left
 
 theorem coe_nat_dvd_right {n : ℕ} {z : ℤ} : z ∣ (↑n : ℤ) ↔ z.natAbs ∣ n := by
-  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [←coe_nat_dvd]
+  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [← coe_nat_dvd, Int.neg_dvd]
 #align int.coe_nat_dvd_right Int.coe_nat_dvd_right
 
 #align int.le_of_dvd Int.le_of_dvd

@@ -128,12 +128,12 @@ theorem DFinsupp.toFinsupp_single (i : ι) (m : M) :
 
 @[simp]
 theorem Finsupp.toDFinsupp_toFinsupp (f : ι →₀ M) : f.toDFinsupp.toFinsupp = f :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align finsupp.to_dfinsupp_to_finsupp Finsupp.toDFinsupp_toFinsupp
 
 @[simp]
 theorem DFinsupp.toFinsupp_toDFinsupp (f : Π₀ _ : ι, M) : f.toFinsupp.toDFinsupp = f :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align dfinsupp.to_finsupp_to_dfinsupp DFinsupp.toFinsupp_toDFinsupp
 
 end
@@ -149,30 +149,30 @@ namespace Finsupp
 
 @[simp]
 theorem toDFinsupp_zero [Zero M] : (0 : ι →₀ M).toDFinsupp = 0 :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align finsupp.to_dfinsupp_zero Finsupp.toDFinsupp_zero
 
 @[simp]
 theorem toDFinsupp_add [AddZeroClass M] (f g : ι →₀ M) :
     (f + g).toDFinsupp = f.toDFinsupp + g.toDFinsupp :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align finsupp.to_dfinsupp_add Finsupp.toDFinsupp_add
 
 @[simp]
 theorem toDFinsupp_neg [AddGroup M] (f : ι →₀ M) : (-f).toDFinsupp = -f.toDFinsupp :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align finsupp.to_dfinsupp_neg Finsupp.toDFinsupp_neg
 
 @[simp]
 theorem toDFinsupp_sub [AddGroup M] (f g : ι →₀ M) :
     (f - g).toDFinsupp = f.toDFinsupp - g.toDFinsupp :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align finsupp.to_dfinsupp_sub Finsupp.toDFinsupp_sub
 
 @[simp]
 theorem toDFinsupp_smul [Monoid R] [AddMonoid M] [DistribMulAction R M] (r : R) (f : ι →₀ M) :
     (r • f).toDFinsupp = r • f.toDFinsupp :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align finsupp.to_dfinsupp_smul Finsupp.toDFinsupp_smul
 
 end Finsupp
@@ -183,31 +183,31 @@ variable [DecidableEq ι]
 
 @[simp]
 theorem toFinsupp_zero [Zero M] [∀ m : M, Decidable (m ≠ 0)] : toFinsupp 0 = (0 : ι →₀ M) :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align dfinsupp.to_finsupp_zero DFinsupp.toFinsupp_zero
 
 @[simp]
 theorem toFinsupp_add [AddZeroClass M] [∀ m : M, Decidable (m ≠ 0)] (f g : Π₀ _ : ι, M) :
     (toFinsupp (f + g) : ι →₀ M) = toFinsupp f + toFinsupp g :=
-  FunLike.coe_injective <| DFinsupp.coe_add _ _
+  DFunLike.coe_injective <| DFinsupp.coe_add _ _
 #align dfinsupp.to_finsupp_add DFinsupp.toFinsupp_add
 
 @[simp]
 theorem toFinsupp_neg [AddGroup M] [∀ m : M, Decidable (m ≠ 0)] (f : Π₀ _ : ι, M) :
     (toFinsupp (-f) : ι →₀ M) = -toFinsupp f :=
-  FunLike.coe_injective <| DFinsupp.coe_neg _
+  DFunLike.coe_injective <| DFinsupp.coe_neg _
 #align dfinsupp.to_finsupp_neg DFinsupp.toFinsupp_neg
 
 @[simp]
 theorem toFinsupp_sub [AddGroup M] [∀ m : M, Decidable (m ≠ 0)] (f g : Π₀ _ : ι, M) :
     (toFinsupp (f - g) : ι →₀ M) = toFinsupp f - toFinsupp g :=
-  FunLike.coe_injective <| DFinsupp.coe_sub _ _
+  DFunLike.coe_injective <| DFinsupp.coe_sub _ _
 #align dfinsupp.to_finsupp_sub DFinsupp.toFinsupp_sub
 
 @[simp]
 theorem toFinsupp_smul [Monoid R] [AddMonoid M] [DistribMulAction R M] [∀ m : M, Decidable (m ≠ 0)]
     (r : R) (f : Π₀ _ : ι, M) : (toFinsupp (r • f) : ι →₀ M) = r • toFinsupp f :=
-  FunLike.coe_injective <| DFinsupp.coe_smul _ _
+  DFunLike.coe_injective <| DFinsupp.coe_smul _ _
 #align dfinsupp.to_finsupp_smul DFinsupp.toFinsupp_smul
 
 end DFinsupp
@@ -220,7 +220,7 @@ end Lemmas
 section Equivs
 
 /-- `Finsupp.toDFinsupp` and `DFinsupp.toFinsupp` together form an equiv. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def finsuppEquivDFinsupp [DecidableEq ι] [Zero M] [∀ m : M, Decidable (m ≠ 0)] :
     (ι →₀ M) ≃ Π₀ _ : ι, M where
   toFun := Finsupp.toDFinsupp
@@ -231,7 +231,7 @@ def finsuppEquivDFinsupp [DecidableEq ι] [Zero M] [∀ m : M, Decidable (m ≠ 
 
 /-- The additive version of `finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def finsuppAddEquivDFinsupp [DecidableEq ι] [AddZeroClass M] [∀ m : M, Decidable (m ≠ 0)] :
     (ι →₀ M) ≃+ Π₀ _ : ι, M :=
   { finsuppEquivDFinsupp with
@@ -244,8 +244,8 @@ variable (R)
 
 /-- The additive version of `Finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
--- porting note: `simps` generated lemmas that did not pass `simpNF` lints, manually added below
---@[simps? (config := { fullyApplied := false })]
+-- Porting note: `simps` generated lemmas that did not pass `simpNF` lints, manually added below
+--@[simps? (config := .asFn)]
 def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] : (ι →₀ M) ≃ₗ[R] Π₀ _ : ι, M :=
   { finsuppEquivDFinsupp with
@@ -255,7 +255,7 @@ def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     map_add' := Finsupp.toDFinsupp_add }
 #align finsupp_lequiv_dfinsupp finsuppLequivDFinsupp
 
--- porting note: `simps` generated as ` ↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
+-- Porting note: `simps` generated as `↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
 @[simp]
 theorem finsuppLequivDFinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :
@@ -268,7 +268,7 @@ theorem finsuppLequivDFinsupp_symm_apply [DecidableEq ι] [Semiring R] [AddCommM
     ↑(LinearEquiv.symm (finsuppLequivDFinsupp (ι := ι) (M := M) R)) = DFinsupp.toFinsupp :=
   rfl
 
--- porting note: moved noncomputable declaration into section begin
+-- Porting note: moved noncomputable declaration into section begin
 noncomputable section Sigma
 
 /-! ### Stronger versions of `Finsupp.split` -/
@@ -334,7 +334,7 @@ theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [Zero N] (a : Σi, η 
 #align sigma_finsupp_equiv_dfinsupp_single sigmaFinsuppEquivDFinsupp_single
 
 -- Without this Lean fails to find the `AddZeroClass` instance on `Π₀ i, (η i →₀ N)`.
-attribute [-instance] Finsupp.zero
+attribute [-instance] Finsupp.instZero
 
 @[simp]
 theorem sigmaFinsuppEquivDFinsupp_add [AddZeroClass N] (f g : (Σi, η i) →₀ N) :
@@ -353,25 +353,23 @@ def sigmaFinsuppAddEquivDFinsupp [AddZeroClass N] : ((Σi, η i) →₀ N) ≃+ 
     map_add' := sigmaFinsuppEquivDFinsupp_add }
 #align sigma_finsupp_add_equiv_dfinsupp sigmaFinsuppAddEquivDFinsupp
 
-attribute [-instance] Finsupp.addZeroClass
+attribute [-instance] Finsupp.instAddZeroClass
 
---tofix: r • (sigma_finsupp_equiv_dfinsupp f) doesn't work.
 @[simp]
 theorem sigmaFinsuppEquivDFinsupp_smul {R} [Monoid R] [AddMonoid N] [DistribMulAction R N] (r : R)
-    (f : (Σi, η i) →₀ N) :
-    sigmaFinsuppEquivDFinsupp (r • f) =
-      @SMul.smul R (Π₀ i, η i →₀ N) MulAction.toSMul r (sigmaFinsuppEquivDFinsupp f) := by
+    (f : (Σ i, η i) →₀ N) :
+    sigmaFinsuppEquivDFinsupp (r • f) = r • sigmaFinsuppEquivDFinsupp f := by
   ext
   rfl
 #align sigma_finsupp_equiv_dfinsupp_smul sigmaFinsuppEquivDFinsupp_smul
 
-attribute [-instance] Finsupp.addMonoid
+attribute [-instance] Finsupp.instAddMonoid
 
 /-- `Finsupp.split` is a linear equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 @[simps]
 def sigmaFinsuppLequivDFinsupp [AddCommMonoid N] [Module R N] :
     ((Σi, η i) →₀ N) ≃ₗ[R] Π₀ i, η i →₀ N :=
-    -- porting notes: was
+    -- Porting note: was
     -- sigmaFinsuppAddEquivDFinsupp with map_smul' := sigmaFinsuppEquivDFinsupp_smul
     -- but times out
   { sigmaFinsuppEquivDFinsupp with

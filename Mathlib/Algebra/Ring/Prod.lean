@@ -5,8 +5,10 @@ Authors: Johannes Hölzl, Chris Hughes, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Order.Group.Prod
+import Mathlib.Algebra.Order.Ring.Defs
 
 #align_import algebra.ring.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
@@ -153,7 +155,7 @@ theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
 #align non_unital_ring_hom.snd_comp_prod NonUnitalRingHom.snd_comp_prod
 
 theorem prod_unique (f : R →ₙ+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
+  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align non_unital_ring_hom.prod_unique NonUnitalRingHom.prod_unique
 
 end Prod
@@ -161,7 +163,6 @@ end Prod
 section Prod_map
 
 variable [NonUnitalNonAssocSemiring R'] [NonUnitalNonAssocSemiring S'] [NonUnitalNonAssocSemiring T]
-
 variable (f : R →ₙ+* R') (g : S →ₙ+* S')
 
 /-- `Prod.map` as a `NonUnitalRingHom`. -/
@@ -200,6 +201,9 @@ def fst : R × S →+* R :=
 def snd : R × S →+* S :=
   { MonoidHom.snd R S, AddMonoidHom.snd R S with toFun := Prod.snd }
 #align ring_hom.snd RingHom.snd
+
+instance (R S) [Semiring R] [Semiring S] : RingHomSurjective (fst R S) := ⟨(⟨⟨·, 0⟩, rfl⟩)⟩
+instance (R S) [Semiring R] [Semiring S] : RingHomSurjective (snd R S) := ⟨(⟨⟨0, ·⟩, rfl⟩)⟩
 
 variable {R S}
 
@@ -240,7 +244,7 @@ theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
 #align ring_hom.snd_comp_prod RingHom.snd_comp_prod
 
 theorem prod_unique (f : R →+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
+  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align ring_hom.prod_unique RingHom.prod_unique
 
 end Prod
@@ -248,7 +252,6 @@ end Prod
 section Prod_map
 
 variable [NonAssocSemiring R'] [NonAssocSemiring S'] [NonAssocSemiring T]
-
 variable (f : R →+* R') (g : S →+* S')
 
 /-- `Prod.map` as a `RingHom`. -/
@@ -352,7 +355,7 @@ def prodZeroRing : R ≃+* R × S where
   map_add' := by simp
   map_mul' := by simp
   left_inv x := rfl
-  right_inv x := by cases x; simp
+  right_inv x := by cases x; simp [eq_iff_true_of_subsingleton]
 #align ring_equiv.prod_zero_ring RingEquiv.prodZeroRing
 #align ring_equiv.prod_zero_ring_symm_apply RingEquiv.prodZeroRing_symm_apply
 #align ring_equiv.prod_zero_ring_apply RingEquiv.prodZeroRing_apply
@@ -365,7 +368,7 @@ def zeroRingProd : R ≃+* S × R where
   map_add' := by simp
   map_mul' := by simp
   left_inv x := rfl
-  right_inv x := by cases x; simp
+  right_inv x := by cases x; simp [eq_iff_true_of_subsingleton]
 #align ring_equiv.zero_ring_prod RingEquiv.zeroRingProd
 #align ring_equiv.zero_ring_prod_symm_apply RingEquiv.zeroRingProd_symm_apply
 #align ring_equiv.zero_ring_prod_apply RingEquiv.zeroRingProd_apply
@@ -397,7 +400,7 @@ instance [OrderedSemiring α] [OrderedSemiring β] : OrderedSemiring (α × β) 
 instance [OrderedCommSemiring α] [OrderedCommSemiring β] : OrderedCommSemiring (α × β) :=
   { inferInstanceAs (OrderedSemiring (α × β)), inferInstanceAs (CommSemiring (α × β)) with }
 
--- porting note: compile fails with `inferInstanceAs (OrderedSemiring (α × β))`
+-- Porting note: compile fails with `inferInstanceAs (OrderedSemiring (α × β))`
 instance [OrderedRing α] [OrderedRing β] : OrderedRing (α × β) :=
   { inferInstanceAs (Ring (α × β)), inferInstanceAs (OrderedAddCommGroup (α × β)) with
     zero_le_one := ⟨zero_le_one, zero_le_one⟩

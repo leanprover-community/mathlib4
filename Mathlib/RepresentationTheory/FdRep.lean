@@ -34,6 +34,7 @@ We verify that `FdRep k G` is a `k`-linear monoidal category, and rigid when `G`
 
 -/
 
+suppress_compilation
 
 universe u
 
@@ -102,8 +103,8 @@ def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
   ⟨FGModuleCat.of k V, ρ⟩
 #align fdRep.of FdRep.of
 
-instance : HasForget₂ (FdRep k G) (Rep k G)
-    where forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
+instance : HasForget₂ (FdRep k G) (Rep k G) where
+  forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
 
 theorem forget₂_ρ (V : FdRep k G) : ((forget₂ (FdRep k G) (Rep k G)).obj V).ρ = V.ρ := by
   ext g v; rfl
@@ -158,7 +159,7 @@ namespace FdRep
 
 -- The variables in this section are slightly weird, living half in `Representation` and half in
 -- `FdRep`. When we have a better API for general monoidal closed and rigid categories and these
--- structures on `FdRep`, we should remove the dependancy of statements about `FdRep` on
+-- structures on `FdRep`, we should remove the dependency of statements about `FdRep` on
 -- `Representation.linHom` and `Representation.dual`. The isomorphism `dualTensorIsoLinHom`
 -- below should then just be obtained from general results about rigid categories.
 open Representation

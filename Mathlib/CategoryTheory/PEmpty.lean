@@ -13,29 +13,42 @@ import Mathlib.CategoryTheory.DiscreteCategory
 Defines a category structure on `PEmpty`, and the unique functor `PEmpty ⥤ C` for any category `C`.
 -/
 
-universe w v u
+universe w v v' u u'
 -- morphism levels before object levels. See note [CategoryTheory universes].
 namespace CategoryTheory
 
-namespace Functor
+variable (C : Type u) [Category.{v} C] (D : Type u') [Category.{v'} D]
 
-variable (C : Type u) [Category.{v} C]
+instance (α : Type*) [IsEmpty α] : IsEmpty (Discrete α) := Function.isEmpty Discrete.as
+
+/-- The (unique) functor from an empty category. -/
+def functorOfIsEmpty [IsEmpty C] : C ⥤ D where
+  obj := isEmptyElim
+  map := fun {X} ↦ isEmptyElim X
+  map_id := fun {X} ↦ isEmptyElim X
+  map_comp := fun {X} ↦ isEmptyElim X
+
+variable {C D}
+
+/-- Any two functors out of an empty category are isomorphic. -/
+def Functor.isEmptyExt [IsEmpty C] (F G : C ⥤ D) : F ≅ G :=
+  NatIso.ofComponents isEmptyElim (fun {X} ↦ isEmptyElim X)
+
+variable (C D)
+
+/-- The equivalence between two empty categories. -/
+def equivalenceOfIsEmpty [IsEmpty C] [IsEmpty D] : C ≌ D where
+  functor := functorOfIsEmpty C D
+  inverse := functorOfIsEmpty D C
+  unitIso := Functor.isEmptyExt _ _
+  counitIso := Functor.isEmptyExt _ _
+  functor_unitIso_comp := isEmptyElim
 
 /-- Equivalence between two empty categories. -/
-def emptyEquivalence : Discrete.{w} PEmpty ≌ Discrete.{v} PEmpty where
-  functor :=
-    { obj := PEmpty.elim ∘ Discrete.as
-      map := fun {X} _ _ => X.as.elim }
-  inverse :=
-    { obj := PEmpty.elim ∘ Discrete.as
-      map := fun {X} _ _ => X.as.elim }
-  unitIso :=
-    { hom := { app := fun X => X.as.elim }
-      inv := { app := fun X => X.as.elim } }
-  counitIso :=
-    { hom := { app := fun X => X.as.elim }
-      inv := { app := fun X => X.as.elim } }
-#align category_theory.functor.empty_equivalence CategoryTheory.Functor.emptyEquivalence
+def emptyEquivalence : Discrete.{w} PEmpty ≌ Discrete.{v} PEmpty := equivalenceOfIsEmpty _ _
+#align category_theory.functor.empty_equivalence CategoryTheory.emptyEquivalence
+
+namespace Functor
 
 /-- The canonical functor out of the empty category. -/
 def empty : Discrete.{w} PEmpty ⥤ C :=

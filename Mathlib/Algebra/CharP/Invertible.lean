@@ -3,7 +3,6 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.CharP.Basic
 
 #align_import algebra.char_p.invertible from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -64,11 +63,11 @@ number when you need its inverse.
 
 
 instance invertibleTwo : Invertible (2 : K) :=
-  invertibleOfNonzero (by exact_mod_cast (by decide : 2 ≠ 0))
+  invertibleOfNonzero (mod_cast (by decide : 2 ≠ 0))
 #align invertible_two invertibleTwo
 
 instance invertibleThree : Invertible (3 : K) :=
-  invertibleOfNonzero (by exact_mod_cast (by decide : 3 ≠ 0))
+  invertibleOfNonzero (mod_cast (by decide : 3 ≠ 0))
 #align invertible_three invertibleThree
 
 end DivisionRing

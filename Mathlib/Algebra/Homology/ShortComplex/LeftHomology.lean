@@ -7,14 +7,15 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
-/-! LeftHomology of short complexes
+/-!
+# Left Homology of short complexes
 
 Given a short complex `S : ShortComplex C`, which consists of two composable
 maps `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that `f ≫ g = 0`, we shall define
-here the "left homology" `S.leftHomology` of `S` (TODO). For this, we introduce the
+here the "left homology" `S.leftHomology` of `S`. For this, we introduce the
 notion of "left homology data". Such an `h : S.LeftHomologyData` consists of the
-datum of morphisms `i : K ⟶ X₂` and `π : K ⟶ H` such that `i` identifies
-`K` to the kernel of `g : X₂ ⟶ X₃`, and that `π` identifies `H` to the cokernel
+data of morphisms `i : K ⟶ X₂` and `π : K ⟶ H` such that `i` identifies
+`K` with the kernel of `g : X₂ ⟶ X₃`, and that `π` identifies `H` with the cokernel
 of the induced map `f' : X₁ ⟶ K`.
 
 When such a `S.LeftHomologyData` exists, we shall say that `[S.HasLeftHomology]`
@@ -24,11 +25,9 @@ Similarly, we define `S.cycles` to be the `K` field.
 The dual notion is defined in `RightHomologyData.lean`. In `Homology.lean`,
 when `S` has two compatible left and right homology data (i.e. they give
 the same `H` up to a canonical isomorphism), we shall define `[S.HasHomology]`
-and `S.homology` (TODO).
+and `S.homology`.
 
 -/
-
-set_option autoImplicit true
 
 namespace CategoryTheory
 
@@ -41,7 +40,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
 
 /-- A left homology data for a short complex `S` consists of morphisms `i : K ⟶ S.X₂` and
 `π : K ⟶ H` such that `i` identifies `K` to the kernel of `g : S.X₂ ⟶ S.X₃`,
-and that `π` identifies `H` to the cokernel of the induced map `f' : S.X₁ ⟶ K` --/
+and that `π` identifies `H` to the cokernel of the induced map `f' : S.X₁ ⟶ K` -/
 structure LeftHomologyData where
   /-- a choice of kernel of `S.g : S.X₂ ⟶ S.X₃`-/
   K : C
@@ -53,11 +52,11 @@ structure LeftHomologyData where
   π : K ⟶ H
   /-- the kernel condition for `i` -/
   wi : i ≫ S.g = 0
-  /-- `i : K ⟶ S.X₂ ` is a kernel of `g : S.X₂ ⟶ S.X₃` -/
+  /-- `i : K ⟶ S.X₂` is a kernel of `g : S.X₂ ⟶ S.X₃` -/
   hi : IsLimit (KernelFork.ofι i wi)
   /-- the cokernel condition for `π` -/
   wπ : hi.lift (KernelFork.ofι _ S.zero) ≫ π = 0
-  /-- `π : K ⟶ H ` is a cokernel of the induced morphism `S.f' : S.X₁ ⟶ K` -/
+  /-- `π : K ⟶ H` is a cokernel of the induced morphism `S.f' : S.X₁ ⟶ K` -/
   hπ : IsColimit (CokernelCofork.ofπ π wπ)
 
 initialize_simps_projections LeftHomologyData (-hi, -hπ)
@@ -307,7 +306,7 @@ instance : Inhabited (LeftHomologyMapData φ h₁ h₂) := ⟨by
       LeftHomologyData.f'_i_assoc, LeftHomologyData.f'_i, φ.comm₁₂]
   let φH : h₁.H ⟶ h₂.H := h₁.descH (φK ≫ h₂.π)
     (by rw [reassoc_of% commf', h₂.f'_π, comp_zero])
-  exact ⟨φK, φH, by simp, commf', by simp⟩⟩
+  exact ⟨φK, φH, by simp [φK], commf', by simp [φH]⟩⟩
 
 instance : Unique (LeftHomologyMapData φ h₁ h₂) := Unique.mk' _
 
@@ -358,7 +357,7 @@ def ofIsLimitKernelFork (φ : S₁ ⟶ S₂)
 
 variable (S)
 
-/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the left homology map
 data (for the identity of `S`) which relates the left homology data `ofZeros` and
 `ofIsColimitCokernelCofork`. -/
 @[simps]
@@ -369,7 +368,7 @@ def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
   φK := 𝟙 _
   φH := c.π
 
-/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the left homology map
 data (for the identity of `S`) which relates the left homology data
 `LeftHomologyData.ofIsLimitKernelFork` and `ofZeros` . -/
 @[simps]
@@ -420,21 +419,22 @@ instance : Epi S.leftHomologyπ := by
   dsimp only [leftHomologyπ]
   infer_instance
 
-lemma leftHomology_ext_iff (f₁ f₂ : S.leftHomology ⟶ A) :
+lemma leftHomology_ext_iff {A : C} (f₁ f₂ : S.leftHomology ⟶ A) :
     f₁ = f₂ ↔ S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂ := by
   rw [cancel_epi]
 
 @[ext]
-lemma leftHomology_ext (f₁ f₂ : S.leftHomology ⟶ A)
+lemma leftHomology_ext {A : C} (f₁ f₂ : S.leftHomology ⟶ A)
     (h : S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂) : f₁ = f₂ := by
   simpa only [leftHomology_ext_iff] using h
 
-lemma cycles_ext_iff (f₁ f₂ : A ⟶ S.cycles) :
+lemma cycles_ext_iff {A : C} (f₁ f₂ : A ⟶ S.cycles) :
     f₁ = f₂ ↔ f₁ ≫ S.iCycles = f₂ ≫ S.iCycles := by
   rw [cancel_mono]
 
 @[ext]
-lemma cycles_ext (f₁ f₂ : A ⟶ S.cycles) (h : f₁ ≫ S.iCycles = f₂ ≫ S.iCycles) : f₁ = f₂ := by
+lemma cycles_ext {A : C} (f₁ f₂ : A ⟶ S.cycles) (h : f₁ ≫ S.iCycles = f₂ ≫ S.iCycles) :
+    f₁ = f₂ := by
   simpa only [cycles_ext_iff] using h
 
 lemma isIso_iCycles (hg : S.g = 0) : IsIso S.iCycles :=
@@ -804,11 +804,11 @@ the same `K` and `H` fields. The inverse construction is `ofEpiOfIsIsoOfMono'`. 
 noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : LeftHomologyData S₂ := by
   let i : h.K ⟶ S₂.X₂ := h.i ≫ φ.τ₂
-  have wi : i ≫ S₂.g = 0 := by simp only [assoc, φ.comm₂₃, h.wi_assoc, zero_comp]
+  have wi : i ≫ S₂.g = 0 := by simp only [i, assoc, φ.comm₂₃, h.wi_assoc, zero_comp]
   have hi : IsLimit (KernelFork.ofι i wi) := KernelFork.IsLimit.ofι _ _
     (fun x hx => h.liftK (x ≫ inv φ.τ₂) (by rw [assoc, ← cancel_mono φ.τ₃, assoc,
       assoc, ← φ.comm₂₃, IsIso.inv_hom_id_assoc, hx, zero_comp]))
-    (fun x hx => by simp) (fun x hx b hb => by
+    (fun x hx => by simp [i]) (fun x hx b hb => by
       dsimp
       rw [← cancel_mono h.i, ← cancel_mono φ.τ₂, assoc, assoc, liftK_i_assoc,
         assoc, IsIso.inv_hom_id, comp_id, hb])
@@ -843,7 +843,7 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData
   have hi : IsLimit (KernelFork.ofι i wi) := KernelFork.IsLimit.ofι _ _
     (fun x hx => h.liftK (x ≫ φ.τ₂)
       (by rw [assoc, φ.comm₂₃, reassoc_of% hx, zero_comp]))
-    (fun x hx => by simp )
+    (fun x hx => by simp [i])
     (fun x hx b hb => by rw [← cancel_mono h.i, ← cancel_mono (inv φ.τ₂), assoc, assoc,
       hb, liftK_i_assoc, assoc, IsIso.hom_inv_id, comp_id])
   let f' := hi.lift (KernelFork.ofι S₁.f S₁.zero)

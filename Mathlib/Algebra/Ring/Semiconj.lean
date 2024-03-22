@@ -3,7 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Group.Semiconj
+import Mathlib.Algebra.Group.Semiconj.Defs
 import Mathlib.Algebra.Ring.Defs
 
 #align_import algebra.ring.semiconj from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
@@ -69,12 +69,12 @@ section
 
 variable [MulOneClass R] [HasDistribNeg R] {a x y : R}
 
--- porting note: `simpNF` told me to remove `simp` attribute
+-- Porting note: `simpNF` told me to remove `simp` attribute
 theorem neg_one_right (a : R) : SemiconjBy a (-1) (-1) :=
   (one_right a).neg_right
 #align semiconj_by.neg_one_right SemiconjBy.neg_one_right
 
--- porting note: `simpNF` told me to remove `simp` attribute
+-- Porting note: `simpNF` told me to remove `simp` attribute
 theorem neg_one_left (x : R) : SemiconjBy (-1) x x :=
   (SemiconjBy.one_left x).neg_left
 #align semiconj_by.neg_one_left SemiconjBy.neg_one_left

@@ -36,9 +36,7 @@ universe v u v₁ v₂ u₁ u₂
 namespace Monad
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {T : Monad C}
-
 variable {J : Type u} [Category.{v} J]
 
 namespace ForgetCreatesLimits
@@ -279,7 +277,6 @@ theorem forget_creates_colimits_of_monad_preserves [PreservesColimitsOfShape J (
 end Monad
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
 variable {J : Type u} [Category.{v} J]
 
 instance comp_comparison_forget_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
@@ -318,13 +315,13 @@ noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J �
     (Adjunction.toMonad (Adjunction.ofRightAdjoint R)))
       (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor := by
     dsimp
-    refine' preservesColimitOfIsoDiagram _ i.symm
+    exact preservesColimitOfIsoDiagram _ i.symm
   letI : PreservesColimit
     (((K ⋙ A) ⋙ Monad.forget (Adjunction.toMonad (Adjunction.ofRightAdjoint R))) ⋙
       (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor)
       (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor := by
     dsimp
-    refine' preservesColimitOfIsoDiagram _ (isoWhiskerRight i (leftAdjoint R ⋙ R)).symm
+    exact preservesColimitOfIsoDiagram _ (isoWhiskerRight i (leftAdjoint R ⋙ R)).symm
   letI : CreatesColimit (K ⋙ A) B := CategoryTheory.Monad.forgetCreatesColimit _
   letI : CreatesColimit K (A ⋙ B) := CategoryTheory.compCreatesColimit _ _
   let e := (Monad.comparisonForget (Adjunction.ofRightAdjoint R))
@@ -343,8 +340,8 @@ noncomputable def monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape (R : D
 
 /-- A monadic functor creates colimits if it preserves colimits. -/
 noncomputable def monadicCreatesColimitsOfPreservesColimits (R : D ⥤ C) [MonadicRightAdjoint R]
-    [PreservesColimitsOfSize.{v, u} R] : CreatesColimitsOfSize.{v, u} R
-    where CreatesColimitsOfShape :=
+    [PreservesColimitsOfSize.{v, u} R] : CreatesColimitsOfSize.{v, u} R where
+  CreatesColimitsOfShape :=
     monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape _
 #align category_theory.monadic_creates_colimits_of_preserves_colimits CategoryTheory.monadicCreatesColimitsOfPreservesColimits
 

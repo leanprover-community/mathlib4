@@ -20,6 +20,8 @@ some basic properties of these maps.
 contraction, dual module, tensor product
 -/
 
+suppress_compilation
+
 -- Porting note: universe metavariables behave oddly
 universe w u v₁ v₂ v₃ v₄
 
@@ -38,11 +40,8 @@ open TensorProduct BigOperators
 section CommSemiring
 
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
-
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
-
 variable [DecidableEq ι] [Fintype ι] (b : Basis ι R M)
 
 -- Porting note: doesn't like implicit ring in the tensor product
@@ -146,13 +145,9 @@ end CommSemiring
 section CommRing
 
 variable [CommRing R]
-
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q]
-
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
-
 variable [DecidableEq ι] [Fintype ι] (b : Basis ι R M)
-
 variable {R M N P Q}
 
 /-- If `M` is free, the natural linear map $M^* ⊗ N → Hom(M, N)$ is an equivalence. This function
@@ -165,7 +160,7 @@ noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R]
       ext f m
       simp only [applyₗ_apply_apply, coeFn_sum, dualTensorHom_apply, mk_apply, id_coe, id.def,
         Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp, Basis.coord_apply, ←
-        f.map_smul, (dualTensorHom R M N).map_sum, ← f.map_sum, b.sum_repr])
+        f.map_smul, _root_.map_sum (dualTensorHom R M N), ← _root_.map_sum f, b.sum_repr])
     (by
       ext f m
       simp only [applyₗ_apply_apply, coeFn_sum, dualTensorHom_apply, mk_apply, id_coe, id.def,
@@ -201,7 +196,6 @@ theorem dualTensorHomEquivOfBasis_symm_cancel_right (x : M →ₗ[R] N) :
 #align dual_tensor_hom_equiv_of_basis_symm_cancel_right dualTensorHomEquivOfBasis_symm_cancel_right
 
 variable (R M N P Q)
-
 variable [Module.Free R M] [Module.Finite R M]
 
 /-- If `M` is finite free, the natural map $M^* ⊗ N → Hom(M, N)$ is an
@@ -224,11 +218,8 @@ open Module TensorProduct LinearMap
 section CommRing
 
 variable [CommRing R]
-
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q]
-
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
-
 variable [Free R M] [Finite R M] [Free R N] [Finite R N] [Nontrivial R]
 
 /-- When `M` is a finite free module, the map `lTensorHomToHomLTensor` is an equivalence. Note
@@ -258,7 +249,7 @@ theorem lTensorHomEquivHomLTensor_toLinearMap :
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
   ext f q m
-  dsimp [lTensorHomEquivHomLTensor]
+  dsimp [e, lTensorHomEquivHomLTensor]
   simp only [lTensorHomEquivHomLTensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
     LinearEquiv.coe_toLinearMap, Function.comp_apply, map_tmul, LinearEquiv.coe_coe,
     dualTensorHomEquivOfBasis_apply, LinearEquiv.trans_apply, congr_tmul, LinearEquiv.refl_apply,
@@ -273,7 +264,7 @@ theorem rTensorHomEquivHomRTensor_toLinearMap :
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
   ext f p q m
-  simp only [rTensorHomEquivHomRTensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
+  simp only [e, rTensorHomEquivHomRTensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
     LinearEquiv.coe_toLinearMap, Function.comp_apply, map_tmul, LinearEquiv.coe_coe,
     dualTensorHomEquivOfBasis_apply, LinearEquiv.trans_apply, congr_tmul,
     dualTensorHomEquivOfBasis_symm_cancel_left, LinearEquiv.refl_apply, assoc_tmul,

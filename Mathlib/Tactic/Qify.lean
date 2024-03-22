@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.Zify
-import Mathlib.Data.Rat.Cast
+import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Rat.Order
 
 /-!
 # `qify` tactic

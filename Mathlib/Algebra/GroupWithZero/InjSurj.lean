@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.GroupWithZero.NeZero
 
 #align_import algebra.group_with_zero.inj_surj from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -234,7 +234,7 @@ protected def Function.Surjective.groupWithZero [Zero G₀'] [Mul G₀'] [One G�
   { hf.monoidWithZero f zero one mul npow, hf.divInvMonoid f one mul inv div npow zpow with
     inv_zero := by erw [← zero, ← inv, inv_zero],
     mul_inv_cancel := hf.forall.2 fun x hx => by
-        erw [← inv, ← mul, mul_inv_cancel (mt (congr_arg f) <| fun h ↦ hx (h.trans zero)), one]
+        erw [← inv, ← mul, mul_inv_cancel (mt (congr_arg f) fun h ↦ hx (h.trans zero)), one]
     exists_pair_ne := ⟨0, 1, h01⟩ }
 #align function.surjective.group_with_zero Function.Surjective.groupWithZero
 

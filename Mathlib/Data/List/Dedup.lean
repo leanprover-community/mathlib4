@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Count
 
 #align_import data.list.dedup from "leanprover-community/mathlib"@"d9e96a3e3e0894e93e10aff5244f4c96655bac1c"
 
@@ -118,9 +119,9 @@ protected theorem Nodup.dedup {l : List α} (h : l.Nodup) : l.dedup = l :=
 #align list.nodup.dedup List.Nodup.dedup
 
 @[simp]
-theorem dedup_idempotent {l : List α} : dedup (dedup l) = dedup l :=
-  pwFilter_idempotent
-#align list.dedup_idempotent List.dedup_idempotent
+theorem dedup_idem {l : List α} : dedup (dedup l) = dedup l :=
+  pwFilter_idem
+#align list.dedup_idempotent List.dedup_idem
 
 theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
   induction' l₁ with a l₁ IH; · rfl

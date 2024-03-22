@@ -32,9 +32,7 @@ namespace Algebra
 section
 
 variable (R : Type u) [CommSemiring R]
-
 variable (A : Type u) [Semiring A] [Algebra R A]
-
 variable {B : Type u} [CommRing B] [Algebra R B] (I : Ideal B)
 
 /-- An `R`-algebra `A` is formally unramified if for every `R`-algebra, every square-zero ideal
@@ -71,9 +69,8 @@ variable {R A}
 
 theorem FormallyEtale.iff_unramified_and_smooth :
     FormallyEtale R A ↔ FormallyUnramified R A ∧ FormallySmooth R A := by
-  rw [FormallyUnramified_iff, FormallySmooth_iff, FormallyEtale_iff]
-  simp_rw [← forall_and]
-  rfl
+  rw [formallyUnramified_iff, formallySmooth_iff, formallyEtale_iff]
+  simp_rw [← forall_and, Function.Bijective]
 #align algebra.formally_etale.iff_unramified_and_smooth Algebra.FormallyEtale.iff_unramified_and_smooth
 
 instance (priority := 100) FormallyEtale.to_unramified [h : FormallyEtale R A] :
@@ -193,12 +190,12 @@ theorem FormallySmooth.liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ
     g (FormallySmooth.liftOfSurjective f g hg hg' x) = f x := by
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).symm.injective
   change _ = ((Ideal.quotientKerAlgEquivOfSurjective hg).symm.toAlgHom.comp f) x
-  rw [← FormallySmooth.mk_lift _ hg'
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [← FormallySmooth.mk_lift _ hg'
     ((Ideal.quotientKerAlgEquivOfSurjective hg).symm.toAlgHom.comp f)]
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective
-  rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective,
-    Ideal.quotientKerAlgEquivOfRightInverse.apply]
-  exact (Ideal.kerLiftAlg_mk _ _).symm
+  simp only [liftOfSurjective, AlgEquiv.apply_symm_apply, AlgEquiv.toAlgHom_eq_coe,
+    Ideal.quotientKerAlgEquivOfSurjective_apply, RingHom.kerLift_mk, RingHom.coe_coe]
 #align algebra.formally_smooth.lift_of_surjective_apply Algebra.FormallySmooth.liftOfSurjective_apply
 
 @[simp]
@@ -213,7 +210,6 @@ end
 section OfEquiv
 
 variable {R : Type u} [CommSemiring R]
-
 variable {A B : Type u} [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 theorem FormallySmooth.of_equiv [FormallySmooth R A] (e : A ≃ₐ[R] B) : FormallySmooth R B := by
@@ -260,9 +256,7 @@ instance FormallySmooth.mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynom
 #align algebra.formally_smooth.mv_polynomial Algebra.FormallySmooth.mvPolynomial
 
 instance FormallySmooth.polynomial : FormallySmooth R R[X] :=
-  -- Porting note: this needed more underscores than in lean3.
-  @FormallySmooth.of_equiv _ _ _ _ _ _ _ _ (FormallySmooth.mvPolynomial R PUnit)
-    (MvPolynomial.pUnitAlgEquiv R)
+  FormallySmooth.of_equiv (MvPolynomial.pUnitAlgEquiv R)
 #align algebra.formally_smooth.polynomial Algebra.FormallySmooth.polynomial
 
 end Polynomial
@@ -270,9 +264,7 @@ end Polynomial
 section Comp
 
 variable (R : Type u) [CommSemiring R]
-
 variable (A : Type u) [CommSemiring A] [Algebra R A]
-
 variable (B : Type u) [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
 theorem FormallySmooth.comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := by
@@ -323,9 +315,7 @@ end Comp
 section OfSurjective
 
 variable {R S : Type u} [CommRing R] [CommSemiring S]
-
 variable {P A : Type u} [CommRing A] [Algebra R A] [CommRing P] [Algebra R P]
-
 variable (I : Ideal P) (f : P →ₐ[R] A) (hf : Function.Surjective f)
 
 theorem FormallySmooth.of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRingHom) ^ 2)
@@ -339,7 +329,7 @@ theorem FormallySmooth.of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (Rin
       have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x : _)
       rwa [hx, map_zero, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero] at this
     intro x hx
-    have := (Ideal.pow_mono this 2).trans (Ideal.le_comap_pow _ 2) hx
+    have := (Ideal.pow_right_mono this 2).trans (Ideal.le_comap_pow _ 2) hx
     rwa [hI] at this
   have : i.comp f.kerSquareLift = (Ideal.Quotient.mkₐ R _).comp l := by
     apply AlgHom.coe_ringHom_injective
@@ -429,9 +419,7 @@ section BaseChange
 open scoped TensorProduct
 
 variable {R : Type u} [CommSemiring R]
-
 variable {A : Type u} [Semiring A] [Algebra R A]
-
 variable (B : Type u) [CommSemiring B] [Algebra R B]
 
 instance FormallyUnramified.base_change [FormallyUnramified R A] :
@@ -468,13 +456,9 @@ end BaseChange
 section Localization
 
 variable {R S Rₘ Sₘ : Type u} [CommRing R] [CommRing S] [CommRing Rₘ] [CommRing Sₘ]
-
 variable (M : Submonoid R)
-
 variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algebra Rₘ Sₘ]
-
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
-
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 
 -- Porting note: no longer supported
@@ -531,7 +515,7 @@ theorem FormallySmooth.localization_base [FormallySmooth R Sₘ] : FormallySmoot
       AlgHom.comp_algebraMap]
   use f
   ext
-  simp
+  simp [f]
 #align algebra.formally_smooth.localization_base Algebra.FormallySmooth.localization_base
 
 /-- This actually does not need the localization instance, and is stated here again for

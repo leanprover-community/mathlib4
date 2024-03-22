@@ -56,7 +56,6 @@ namespace MvPolynomial
 open Finsupp
 
 variable {σ : Type*} {τ : Type*}
-
 variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
 
 /--
@@ -202,7 +201,7 @@ theorem join₂_comp_map (f : R →+* MvPolynomial σ S) : join₂.comp (map f) 
 #align mv_polynomial.join₂_comp_map MvPolynomial.join₂_comp_map
 
 theorem aeval_id_rename (f : σ → MvPolynomial τ R) (p : MvPolynomial σ R) :
-    aeval id (rename f p) = aeval f p := by rw [aeval_rename, Function.comp.left_id]
+    aeval id (rename f p) = aeval f p := by rw [aeval_rename, Function.id_comp]
 #align mv_polynomial.aeval_id_rename MvPolynomial.aeval_id_rename
 
 @[simp]
@@ -404,7 +403,7 @@ instance monad : Monad fun σ => MvPolynomial σ R
 instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R
     where
   map_const := by intros; rfl
-  -- porting note: I guess `map_const` no longer has a default implementation?
+  -- Porting note: I guess `map_const` no longer has a default implementation?
   id_map := by intros; simp [(· <$> ·)]
   comp_map := by intros; simp [(· <$> ·)]
 #align mv_polynomial.is_lawful_functor MvPolynomial.lawfulFunctor

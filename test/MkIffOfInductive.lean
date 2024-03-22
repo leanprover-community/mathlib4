@@ -8,6 +8,12 @@ example {α : Type _} (R : α → α → Prop) (a : α) (al : List α) :
       al = List.nil ∨ ∃ (b : α) (l : List α), R a b ∧ List.Chain R b l ∧ al = b :: l :=
   test.chain_iff R a al
 
+-- check that the statement prints nicely
+/-- info: test.chain_iff.{u_1} {α : Type u_1} (R : α → α → Prop) (a✝ : α) (a✝¹ : List α) :
+  List.Chain R a✝ a✝¹ ↔ a✝¹ = [] ∨ ∃ b l, R a✝ b ∧ List.Chain R b l ∧ a✝¹ = b :: l -/
+#guard_msgs in
+#check test.chain_iff
+
 mk_iff_of_inductive_prop False    test.false_iff
 example : False ↔ False := test.false_iff
 
@@ -31,6 +37,7 @@ mk_iff_of_inductive_prop HEq      test.heq_iff
 example {α : Sort u} (a : α) {β : Sort u} (b : β) : HEq a b ↔ β = α ∧ HEq b a := test.heq_iff a b
 
 mk_iff_of_inductive_prop List.Perm test.perm_iff
+open scoped List in
 example {α : Type _} (a b : List α) :
     a ~ b ↔
       a = List.nil ∧ b = List.nil ∨
@@ -72,4 +79,4 @@ inductive ReflTransGen {α : Type _} (r : α → α → Prop) (a : α) : α → 
 
 example {α : Type} (r: α → α → Prop) (a c : α) :
     ReflTransGen r a c ↔ c = a ∨ ∃ b : α, ReflTransGen r a b ∧ r b c :=
- ReflTransGen_iff r a c
+ reflTransGen_iff r a c

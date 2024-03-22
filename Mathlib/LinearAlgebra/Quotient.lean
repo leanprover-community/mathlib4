@@ -22,7 +22,6 @@ section Ring
 namespace Submodule
 
 variable {R M : Type*} {r : R} {x y : M} [Ring R] [AddCommGroup M] [Module R M]
-
 variable (p p' : Submodule R M)
 
 open LinearMap QuotientAddGroup
@@ -126,11 +125,11 @@ variable {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] (P : Submodule 
 
 instance instSMul' : SMul S (M ⧸ P) :=
   ⟨fun a =>
-    Quotient.map' ((· • ·) a) fun x y h =>
+    Quotient.map' (a • ·) fun x y h =>
       leftRel_apply.mpr <| by simpa using Submodule.smul_mem P (a • (1 : R)) (leftRel_apply.mp h)⟩
 #align submodule.quotient.has_smul' Submodule.Quotient.instSMul'
 
--- porting note: should this be marked as a `@[default_instance]`?
+-- Porting note: should this be marked as a `@[default_instance]`?
 /-- Shortcut to help the elaborator in the common case. -/
 instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
@@ -142,18 +141,18 @@ theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
 #align submodule.quotient.mk_smul Submodule.Quotient.mk_smul
 
 instance smulCommClass (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M]
-    [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P)
-    where smul_comm _x _y := Quotient.ind' fun _z => congr_arg mk (smul_comm _ _ _)
+    [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P) where
+  smul_comm _x _y := Quotient.ind' fun _z => congr_arg mk (smul_comm _ _ _)
 #align submodule.quotient.smul_comm_class Submodule.Quotient.smulCommClass
 
 instance isScalarTower (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M] [SMul S T]
-    [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P)
-    where smul_assoc _x _y := Quotient.ind' fun _z => congr_arg mk (smul_assoc _ _ _)
+    [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P) where
+  smul_assoc _x _y := Quotient.ind' fun _z => congr_arg mk (smul_assoc _ _ _)
 #align submodule.quotient.is_scalar_tower Submodule.Quotient.isScalarTower
 
 instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
-    [IsCentralScalar S M] : IsCentralScalar S (M ⧸ P)
-    where op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _
+    [IsCentralScalar S M] : IsCentralScalar S (M ⧸ P) where
+  op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _
 #align submodule.quotient.is_central_scalar Submodule.Quotient.isCentralScalar
 
 end SMul
@@ -162,12 +161,15 @@ section Module
 
 variable {S : Type*}
 
+-- Performance of `Function.Surjective.mulAction` is worse since it has to unify data to apply
+-- TODO: leanprover-community/mathlib4#7432
 instance mulAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : MulAction S (M ⧸ P) :=
-  Function.Surjective.mulAction mk (surjective_quot_mk _) <| Submodule.Quotient.mk_smul P
+  { Function.Surjective.mulAction mk (surjective_quot_mk _) <| Submodule.Quotient.mk_smul P with
+    toSMul := instSMul' _ }
 #align submodule.quotient.mul_action' Submodule.Quotient.mulAction'
 
--- porting note: should this be marked as a `@[default_instance]`?
+-- Porting note: should this be marked as a `@[default_instance]`?
 instance mulAction (P : Submodule R M) : MulAction R (M ⧸ P) :=
   Quotient.mulAction' P
 #align submodule.quotient.mul_action Submodule.Quotient.mulAction
@@ -177,40 +179,49 @@ instance smulZeroClass' [SMul S R] [SMulZeroClass S M] [IsScalarTower S R M] (P 
   ZeroHom.smulZeroClass ⟨mk, mk_zero _⟩ <| Submodule.Quotient.mk_smul P
 #align submodule.quotient.smul_zero_class' Submodule.Quotient.smulZeroClass'
 
--- porting note: should this be marked as a `@[default_instance]`?
+-- Porting note: should this be marked as a `@[default_instance]`?
 instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
   Quotient.smulZeroClass' P
 #align submodule.quotient.smul_zero_class Submodule.Quotient.smulZeroClass
 
+-- Performance of `Function.Surjective.distribSMul` is worse since it has to unify data to apply
+-- TODO: leanprover-community/mathlib4#7432
 instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Submodule R M) :
     DistribSMul S (M ⧸ P) :=
-  Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P)
+  { Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
+    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
+    toSMulZeroClass := smulZeroClass' _ }
 #align submodule.quotient.distrib_smul' Submodule.Quotient.distribSMul'
 
--- porting note: should this be marked as a `@[default_instance]`?
+-- Porting note: should this be marked as a `@[default_instance]`?
 instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
   Quotient.distribSMul' P
 #align submodule.quotient.distrib_smul Submodule.Quotient.distribSMul
 
+-- Performance of `Function.Surjective.distribMulAction` is worse since it has to unify data
+-- TODO: leanprover-community/mathlib4#7432
 instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : DistribMulAction S (M ⧸ P) :=
-  Function.Surjective.distribMulAction {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P)
+  { Function.Surjective.distribMulAction {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
+    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
+    toMulAction := mulAction' _ }
 #align submodule.quotient.distrib_mul_action' Submodule.Quotient.distribMulAction'
 
--- porting note: should this be marked as a `@[default_instance]`?
+-- Porting note: should this be marked as a `@[default_instance]`?
 instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
   Quotient.distribMulAction' P
 #align submodule.quotient.distrib_mul_action Submodule.Quotient.distribMulAction
 
+-- Performance of `Function.Surjective.module` is worse since it has to unify data to apply
+-- TODO: leanprover-community/mathlib4#7432
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P : Submodule R M) :
     Module S (M ⧸ P) :=
-  Function.Surjective.module _ {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P)
+  { Function.Surjective.module _ {toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl}
+    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
+    toDistribMulAction := distribMulAction' _ }
 #align submodule.quotient.module' Submodule.Quotient.module'
 
--- porting note: should this be marked as a `@[default_instance]`?
+-- Porting note: should this be marked as a `@[default_instance]`?
 instance module (P : Submodule R M) : Module R (M ⧸ P) :=
   Quotient.module' P
 #align submodule.quotient.module Submodule.Quotient.module
@@ -332,7 +343,7 @@ variable {R₂ M₂ : Type*} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂] 
 `submodule.mkQ` are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[ext 1100] -- porting note: increase priority so this applies before `LinearMap.ext`
+@[ext 1100] -- Porting note: increase priority so this applies before `LinearMap.ext`
 theorem linearMap_qext ⦃f g : M ⧸ p →ₛₗ[τ₁₂] M₂⦄ (h : f.comp p.mkQ = g.comp p.mkQ) : f = g :=
   LinearMap.ext fun x => Quotient.inductionOn' x <| (LinearMap.congr_fun h : _)
 #align submodule.linear_map_qext Submodule.linearMap_qext
@@ -389,7 +400,7 @@ theorem comap_map_mkQ : comap p.mkQ (map p.mkQ p') = p ⊔ p' := by simp [comap_
 
 @[simp]
 theorem map_mkQ_eq_top : map p.mkQ p' = ⊤ ↔ p ⊔ p' = ⊤ := by
-  -- porting note: ambiguity of `map_eq_top_iff` is no longer automatically resolved by preferring
+  -- Porting note: ambiguity of `map_eq_top_iff` is no longer automatically resolved by preferring
   -- the current namespace
   simp only [LinearMap.map_eq_top_iff p.range_mkQ, sup_comm, ker_mkQ]
 #align submodule.map_mkq_eq_top Submodule.map_mkQ_eq_top
@@ -444,7 +455,7 @@ theorem mapQ_pow {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ)
   induction' k with k ih
   · simp [LinearMap.one_eq_id]
   · simp only [LinearMap.iterate_succ]
-    -- porting note: why does any of these `optParams` need to be applied? Why didn't `simp` handle
+    -- Porting note: why does any of these `optParams` need to be applied? Why didn't `simp` handle
     -- all of this for us?
     convert mapQ_comp p p p f (f ^ k) h (p.le_comap_pow_of_le_comap h k)
       (h.trans (comap_mono <| p.le_comap_pow_of_le_comap h k))
@@ -560,15 +571,10 @@ namespace LinearMap
 section Ring
 
 variable {R M R₂ M₂ R₃ M₃ : Type*}
-
 variable [Ring R] [Ring R₂] [Ring R₃]
-
 variable [AddCommMonoid M] [AddCommGroup M₂] [AddCommMonoid M₃]
-
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
-
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
-
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃] [RingHomSurjective τ₁₂]
 
 theorem range_mkQ_comp (f : M →ₛₗ[τ₁₂] M₂) : f.range.mkQ.comp f = 0 :=
@@ -597,7 +603,6 @@ open LinearMap
 namespace Submodule
 
 variable {R M : Type*} {r : R} {x y : M} [Ring R] [AddCommGroup M] [Module R M]
-
 variable (p p' : Submodule R M)
 
 /-- If `p = ⊥`, then `M / p ≃ₗ[R] M`. -/

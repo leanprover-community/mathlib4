@@ -29,9 +29,7 @@ noncomputable section
 namespace ModuleCat
 
 variable (R : Type u) [Ring R]
-
 variable {J : Type v} [SmallCategory J]
-
 variable {R}
 
 instance addCommGroupObj (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
@@ -121,7 +119,7 @@ end HasLimits
 open HasLimits
 
 
--- porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
+-- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
 -- is a `Prop`, declaring this as `irreducible` should presumably have no effect
 /-- The category of R-modules has all limits. -/
 lemma hasLimitsOfSize : HasLimitsOfSize.{v, v} (ModuleCatMax.{v, w, u} R) where
@@ -179,13 +177,9 @@ section DirectLimit
 open Module
 
 variable {ι : Type v}
-
 variable [dec_ι : DecidableEq ι] [Preorder ι]
-
 variable (G : ι → Type v)
-
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
-
 variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j h => f i j h]
 
 /-- The diagram (in the sense of `CategoryTheory`)
@@ -225,7 +219,7 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]
-def directLimitIsColimit [Nonempty ι] [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f)
+def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f)
     where
   desc s :=
     DirectLimit.lift R ι G f s.ι.app fun i j h x => by

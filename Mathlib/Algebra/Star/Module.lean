@@ -30,7 +30,7 @@ This file also provides some lemmas that need `Algebra.Module.Basic` imported to
 -/
 
 
-section SmulLemmas
+section SMulLemmas
 
 variable {R M : Type*}
 
@@ -70,7 +70,7 @@ theorem star_rat_smul {R : Type*} [AddCommGroup R] [StarAddMonoid R] [Module ℚ
   map_rat_smul (starAddEquiv : R ≃+ R) _ _
 #align star_rat_smul star_rat_smul
 
-end SmulLemmas
+end SMulLemmas
 
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/
@@ -82,7 +82,9 @@ def starLinearEquiv (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [AddCo
     map_smul' := star_smul }
 #align star_linear_equiv starLinearEquiv
 
-variable (R : Type*) (A : Type*) [Semiring R] [StarSemigroup R] [TrivialStar R] [AddCommGroup A]
+section SelfSkewAdjoint
+
+variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
   [Module R A] [StarAddMonoid A] [StarModule R A]
 
 /-- The self-adjoint elements of a star module, as a submodule. -/
@@ -143,7 +145,7 @@ theorem IsSelfAdjoint.selfAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     selfAdjointPart R x = ⟨x, hx⟩ :=
   Subtype.eq (hx.coe_selfAdjointPart_apply R)
 
--- porting note: todo: make it a `simp`
+-- Porting note (#11215): TODO: make it a `simp`
 theorem selfAdjointPart_comp_subtype_selfAdjoint :
     (selfAdjointPart R).comp (selfAdjoint.submodule R A).subtype = .id :=
   LinearMap.ext fun x ↦ x.2.selfAdjointPart_apply R
@@ -152,17 +154,17 @@ theorem IsSelfAdjoint.skewAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     skewAdjointPart R x = 0 := Subtype.eq <| by
   rw [skewAdjointPart_apply_coe, hx.star_eq, sub_self, smul_zero, ZeroMemClass.coe_zero]
 
--- porting note: todo: make it a `simp`
+-- Porting note (#11215): TODO: make it a `simp`
 theorem skewAdjointPart_comp_subtype_selfAdjoint :
     (skewAdjointPart R).comp (selfAdjoint.submodule R A).subtype = 0 :=
   LinearMap.ext fun x ↦ x.2.skewAdjointPart_apply R
 
--- porting note: todo: make it a `simp`
+-- Porting note (#11215): TODO: make it a `simp`
 theorem selfAdjointPart_comp_subtype_skewAdjoint :
     (selfAdjointPart R).comp (skewAdjoint.submodule R A).subtype = 0 :=
   LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by simp [hx]
 
--- porting note: todo: make it a `simp`
+-- Porting note (#11215): TODO: make it a `simp`
 theorem skewAdjointPart_comp_subtype_skewAdjoint :
     (skewAdjointPart R).comp (skewAdjoint.submodule R A).subtype = .id :=
   LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by
@@ -174,17 +176,34 @@ variable (A)
 /-- The decomposition of elements of a star module into their self- and skew-adjoint parts,
 as a linear equivalence. -/
 -- Porting note: This attribute causes a `timeout at 'whnf'`.
--- @[simps!]
+@[simps!]
 def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A := by
   refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
     (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype)
     ?_ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
-  ext <;> simp
+  -- Note: with #6965 `Submodule.coeSubtype` doesn't fire in `dsimp` or `simp`
+  ext x <;> dsimp <;> erw [Submodule.coeSubtype, Submodule.coeSubtype] <;> simp
 #align star_module.decompose_prod_adjoint StarModule.decomposeProdAdjoint
 
+end SelfSkewAdjoint
+
+section algebraMap
+
+variable {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A]
+variable [StarMul A] [Algebra R A] [StarModule R A]
+
 @[simp]
-theorem algebraMap_star_comm {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A]
-    [StarSemigroup A] [Algebra R A] [StarModule R A] (r : R) :
-    algebraMap R A (star r) = star (algebraMap R A r) := by
+theorem algebraMap_star_comm (r : R) : algebraMap R A (star r) = star (algebraMap R A r) := by
   simp only [Algebra.algebraMap_eq_smul_one, star_smul, star_one]
 #align algebra_map_star_comm algebraMap_star_comm
+
+variable (A) in
+protected lemma IsSelfAdjoint.algebraMap {r : R} (hr : IsSelfAdjoint r) :
+    IsSelfAdjoint (algebraMap R A r) := by
+  simpa using congr(algebraMap R A $(hr.star_eq))
+
+lemma isSelfAdjoint_algebraMap_iff {r : R} (h : Function.Injective (algebraMap R A)) :
+    IsSelfAdjoint (algebraMap R A r) ↔ IsSelfAdjoint r :=
+  ⟨fun hr ↦ h <| algebraMap_star_comm r (A := A) ▸ hr.star_eq, IsSelfAdjoint.algebraMap A⟩
+
+end algebraMap

@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Products.Bifunctor
 
 #align_import category_theory.limits.filtered_colimit_commutes_finite_limit from "leanprover-community/mathlib"@"3f409bd9df181d26dd223170da7b6830ece18442"
 
@@ -26,6 +27,12 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
 
+-- Various pieces of algebra that have previously been spuriously imported here:
+assert_not_exists zero_zpow
+assert_not_exists map_ne_zero
+assert_not_exists Field
+ -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
+ -- finiteness currently relies on more algebra than it needs.
 
 universe v u
 
@@ -76,7 +83,9 @@ theorem colimitLimitToLimitColimit_injective :
     replace h := fun j => congr_arg (limit.π (curry.obj F ⋙ colim) j) h
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
-    simp [colimit_eq_iff.{v, v}] at h
+    simp? [colimit_eq_iff.{v, v}] at h says
+      simp only [Functor.comp_obj, colim_obj, ι_colimitLimitToLimitColimit_π_apply,
+        colimit_eq_iff.{v, v}, curry_obj_obj_obj, curry_obj_obj_map] at h
     let k j := (h j).choose
     let f : ∀ j, kx ⟶ k j := fun j => (h j).choose_spec.choose
     let g : ∀ j, ky ⟶ k j := fun j => (h j).choose_spec.choose_spec.choose
@@ -127,7 +136,7 @@ theorem colimitLimitToLimitColimit_injective :
     simp only [Functor.comp_map, Limit.map_π_apply, curry_obj_map_app, swap_map]
     rw [← W _ _ (fH j)]
     rw [← W _ _ (gH j)]
-    -- porting note: this was `simp [w]` in lean 3; this is presumably a confluence issue
+    -- Porting note: this was `simp [w]` in lean 3; this is presumably a confluence issue
     rw [lim_map, lim_map, Limit.map_π_apply', Limit.map_π_apply', Functor.map_comp,
       Functor.map_comp, FunctorToTypes.comp, FunctorToTypes.comp, curry_obj_map_app,
       curry_obj_map_app, curry_obj_map_app, Functor.comp_map, Functor.comp_map,
@@ -203,7 +212,7 @@ theorem colimitLimitToLimitColimit_surjective :
           ((curry.obj F).obj j').map (hf f) (F.map ((f, g j) : (j, k j) ⟶ (j', k')) (y j)) :=
         (w f).choose_spec.choose_spec.choose_spec
       rw [curry_obj_obj_map, curry_obj_obj_map] at q
-      -- porting note: Lean 4 `dsimp` unfolds `gf` and `hf` in `q` :-(
+      -- Porting note: Lean 4 `dsimp` unfolds `gf` and `hf` in `q` :-(
       -- See discussion at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/.60dsimp.60.20unfolding.20local.20lets
       simp_rw [← FunctorToTypes.map_comp_apply, CategoryStruct.comp] at q
       convert q <;> simp only [comp_id]
@@ -220,14 +229,9 @@ theorem colimitLimitToLimitColimit_surjective :
     have kfO : ∀ {j j'} (f : j ⟶ j'), kf f ∈ O := fun {j} {j'} f =>
       Finset.mem_union.mpr
         (Or.inl
-          (by
-            rw [Finset.mem_biUnion]
-            refine' ⟨j, Finset.mem_univ j, _⟩
-            rw [Finset.mem_biUnion]
-            refine' ⟨j', Finset.mem_univ j', _⟩
-            rw [Finset.mem_image]
-            refine' ⟨f, Finset.mem_univ _, _⟩
-            rfl))
+          (Finset.mem_biUnion.mpr ⟨j, Finset.mem_univ j,
+            Finset.mem_biUnion.mpr ⟨j', Finset.mem_univ j',
+              Finset.mem_image.mpr ⟨f, Finset.mem_univ _, rfl⟩⟩⟩))
     have k'O : k' ∈ O := Finset.mem_union.mpr (Or.inr (Finset.mem_singleton.mpr rfl))
     let H : Finset (Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
       Finset.univ.biUnion fun j : J =>
@@ -241,24 +245,26 @@ theorem colimitLimitToLimitColimit_surjective :
     have s : ∀ {j₁ j₂ j₃ j₄} (f : j₁ ⟶ j₂) (f' : j₃ ⟶ j₄), gf f ≫ i f = hf f' ≫ i f' := by
       intros j₁ j₂ j₃ j₄ f f'
       rw [s', s']
-      -- porting note: the three goals here in Lean 3 were in a different order
-      exact k'O
-      swap
-      · rw [Finset.mem_biUnion]
-        refine' ⟨j₁, Finset.mem_univ _, _⟩
-        rw [Finset.mem_biUnion]
-        refine' ⟨j₂, Finset.mem_univ _, _⟩
-        rw [Finset.mem_biUnion]
-        refine' ⟨f, Finset.mem_univ _, _⟩
-        simp only [true_or_iff, eq_self_iff_true, and_self_iff, Finset.mem_insert, heq_iff_eq]
-      · rw [Finset.mem_biUnion]
-        refine' ⟨j₃, Finset.mem_univ _, _⟩
-        rw [Finset.mem_biUnion]
-        refine' ⟨j₄, Finset.mem_univ _, _⟩
-        rw [Finset.mem_biUnion]
-        refine' ⟨f', Finset.mem_univ _, _⟩
-        simp only [eq_self_iff_true, or_true_iff, and_self_iff, Finset.mem_insert,
-          Finset.mem_singleton, heq_iff_eq]
+      -- Porting note: the three goals here in Lean 3 were in a different order
+      · exact k'O
+      · exact Finset.mem_biUnion.mpr ⟨j₃, Finset.mem_univ _,
+          Finset.mem_biUnion.mpr ⟨j₄, Finset.mem_univ _,
+            Finset.mem_biUnion.mpr ⟨f', Finset.mem_univ _, by
+              -- This works by `simp`, but has very high variation in heartbeats.
+              rw [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, PSigma.mk.injEq, heq_eq_eq,
+                PSigma.mk.injEq, heq_eq_eq, PSigma.mk.injEq, heq_eq_eq, eq_self, true_and, eq_self,
+                true_and, eq_self, true_and, eq_self, true_and, Finset.mem_singleton, eq_self,
+                or_true]
+              trivial⟩⟩⟩
+      · exact Finset.mem_biUnion.mpr ⟨j₁, Finset.mem_univ _,
+          Finset.mem_biUnion.mpr ⟨j₂, Finset.mem_univ _,
+            Finset.mem_biUnion.mpr ⟨f, Finset.mem_univ _, by
+              -- This works by `simp`, but has very high variation in heartbeats.
+              rw [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, PSigma.mk.injEq, heq_eq_eq,
+                PSigma.mk.injEq, heq_eq_eq, PSigma.mk.injEq, heq_eq_eq, eq_self, true_and, eq_self,
+                true_and, eq_self, true_and, eq_self, true_and, Finset.mem_singleton, eq_self,
+                true_or]
+              trivial⟩⟩⟩
     clear_value i
     clear s' i' H kfO k'O O
     -- We're finally ready to construct the pre-image, and verify it really maps to `x`.
@@ -304,8 +310,8 @@ theorem colimitLimitToLimitColimit_surjective :
       simp only [id.def, ← e, Limits.ι_colimitLimitToLimitColimit_π_apply,
           colimit_eq_iff.{v, v}, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map,
           Functor.comp_obj, colim_obj, Limit.π_mk]
-      refine' ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), _⟩
-      -- porting note: the lean 3 proof finished with
+      refine ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), ?_⟩
+      -- Porting note: the lean 3 proof finished with
       -- `simp only [Bifunctor.map_id_comp, types_comp_apply, Bifunctor.map_id, types_id_apply]`
       -- which doesn't work; the corresponding `rw` works fine:
       rw [Bifunctor.map_id_comp, Bifunctor.map_id_comp, types_comp_apply, types_comp_apply,
@@ -319,10 +325,10 @@ instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F)
 
 instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
     IsIso (colimitLimitToLimitColimitCone F) := by
-  have : IsIso (colimitLimitToLimitColimitCone F).Hom := by
-    suffices : IsIso (colimitLimitToLimitColimit (uncurry.obj F) ≫
-      lim.map (whiskerRight (currying.unitIso.app F).inv colim))
-    apply IsIso.comp_isIso
+  have : IsIso (colimitLimitToLimitColimitCone F).hom := by
+    suffices IsIso (colimitLimitToLimitColimit (uncurry.obj F) ≫
+        lim.map (whiskerRight (currying.unitIso.app F).inv colim)) by
+      apply IsIso.comp_isIso
     infer_instance
   apply Cones.cone_iso_of_hom_iso
 #align category_theory.limits.colimit_limit_to_limit_colimit_cone_iso CategoryTheory.Limits.colimitLimitToLimitColimitCone_iso
@@ -343,9 +349,7 @@ variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
 section
 
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
-
 variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
-
 variable [PreservesLimitsOfShape J (forget C)]
 
 noncomputable instance filteredColimPreservesFiniteLimits :
@@ -369,9 +373,7 @@ noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesFilteredColi
 section
 
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
-
 variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
-
 variable [PreservesLimitsOfShape J (forget C)]
 
 /-- A curried version of the fact that filtered colimits commute with finite limits. -/

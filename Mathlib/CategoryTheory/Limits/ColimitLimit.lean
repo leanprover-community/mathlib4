@@ -32,9 +32,7 @@ open CategoryTheory
 namespace CategoryTheory.Limits
 
 variable {J K : Type v} [SmallCategory J] [SmallCategory K]
-
 variable {C : Type u} [Category.{v} C]
-
 variable (F : J × K ⥤ C)
 
 open CategoryTheory.prod
@@ -50,7 +48,6 @@ theorem map_id_right_eq_curry_swap_map {j j' : J} {f : j ⟶ j'} {k : K} :
 #align category_theory.limits.map_id_right_eq_curry_swap_map CategoryTheory.Limits.map_id_right_eq_curry_swap_map
 
 variable [HasLimitsOfShape J C]
-
 variable [HasColimitsOfShape K C]
 
 /-- The universal morphism
@@ -110,7 +107,7 @@ theorem ι_colimitLimitToLimitColimit_π_apply (F : J × K ⥤ Type v) (j : J) (
 noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G] :
     colim.mapCone (limit.cone G) ⟶ limit.cone (G ⋙ colim)
     where
-  Hom :=
+  hom :=
     colim.map (limitIsoSwapCompLim G).hom ≫
       colimitLimitToLimitColimit (uncurry.obj G : _) ≫
         lim.map (whiskerRight (currying.unitIso.app G).inv colim)

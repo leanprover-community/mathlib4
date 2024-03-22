@@ -31,14 +31,14 @@ decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a d
 
 
 variable {𝕜 : Type*} [IsROrC 𝕜]
-
 variable {n : Type*} [LinearOrder n] [IsWellOrder n (· < ·)] [LocallyFiniteOrderBot n]
 
 section set_options
 
 set_option linter.uppercaseLean3 false
 set_option quotPrecheck false
-local notation "⟪" x ", " y "⟫ₑ" => @inner 𝕜 _ _ ((PiLp.equiv 2 _).symm x) ((PiLp.equiv _ _).symm y)
+local notation "⟪" x ", " y "⟫ₑ" =>
+  @inner 𝕜 _ _ ((WithLp.equiv 2 _).symm x) ((WithLp.equiv _ _).symm y)
 
 open Matrix
 
@@ -76,13 +76,13 @@ noncomputable instance LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := 
 #align LDL.invertible_lower_inv LDL.invertibleLowerInv
 
 theorem LDL.lowerInv_orthogonal {i j : n} (h₀ : i ≠ j) :
-    ⟪LDL.lowerInv hS i, Sᵀ.mulVec (LDL.lowerInv hS j)⟫ₑ = 0 :=
+    ⟪LDL.lowerInv hS i, Sᵀ *ᵥ LDL.lowerInv hS j⟫ₑ = 0 :=
   @gramSchmidt_orthogonal 𝕜 _ _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) _ _ _ _ _ _ _ h₀
 #align LDL.lower_inv_orthogonal LDL.lowerInv_orthogonal
 
 /-- The entries of the diagonal matrix `D` of the LDL decomposition. -/
 noncomputable def LDL.diagEntries : n → 𝕜 := fun i =>
-  ⟪star (LDL.lowerInv hS i), S.mulVec (star (LDL.lowerInv hS i))⟫ₑ
+  ⟪star (LDL.lowerInv hS i), S *ᵥ star (LDL.lowerInv hS i)⟫ₑ
 #align LDL.diag_entries LDL.diagEntries
 
 /-- The diagonal matrix `D` of the LDL decomposition. -/

@@ -26,7 +26,6 @@ universe v₁ v₂ u₁ u₂
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] [HasZeroMorphisms C]
-
 variable {D : Type u₂} [Category.{v₂} D] [HasZeroMorphisms D]
 
 namespace CategoryTheory.Limits
@@ -111,8 +110,8 @@ def isLimitOfHasKernelOfPreservesLimit [PreservesLimit (parallelPair f 0) G] :
   isLimitForkMapOfIsLimit' G (kernel.condition f) (kernelIsKernel f)
 #align category_theory.limits.is_limit_of_has_kernel_of_preserves_limit CategoryTheory.Limits.isLimitOfHasKernelOfPreservesLimit
 
-instance [PreservesLimit (parallelPair f 0) G] : HasKernel (G.map f)
-    where exists_limit := ⟨⟨_, isLimitOfHasKernelOfPreservesLimit G f⟩⟩
+instance [PreservesLimit (parallelPair f 0) G] : HasKernel (G.map f) where
+  exists_limit := ⟨⟨_, isLimitOfHasKernelOfPreservesLimit G f⟩⟩
 
 variable [HasKernel (G.map f)]
 
@@ -239,8 +238,8 @@ def isColimitOfHasCokernelOfPreservesColimit [PreservesColimit (parallelPair f 0
   isColimitCoforkMapOfIsColimit' G (cokernel.condition f) (cokernelIsCokernel f)
 #align category_theory.limits.is_colimit_of_has_cokernel_of_preserves_colimit CategoryTheory.Limits.isColimitOfHasCokernelOfPreservesColimit
 
-instance [PreservesColimit (parallelPair f 0) G] : HasCokernel (G.map f)
-    where exists_colimit := ⟨⟨_, isColimitOfHasCokernelOfPreservesColimit G f⟩⟩
+instance [PreservesColimit (parallelPair f 0) G] : HasCokernel (G.map f) where
+  exists_colimit := ⟨⟨_, isColimitOfHasCokernelOfPreservesColimit G f⟩⟩
 
 variable [HasCokernel (G.map f)]
 

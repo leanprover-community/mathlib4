@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.StructuredArrow
 
 #align_import category_theory.adjunction.comma from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
@@ -37,6 +37,7 @@ section OfInitials
 
 variable [∀ A, HasInitial (StructuredArrow A G)]
 
+attribute [local simp] eq_iff_true_of_subsingleton in
 /-- Implementation: If each structured arrow category on `G` has an initial object, an equivalence
 which is helpful for constructing a left adjoint to `G`.
 -/
@@ -87,6 +88,7 @@ section OfTerminals
 
 variable [∀ A, HasTerminal (CostructuredArrow G A)]
 
+attribute [local simp] eq_iff_true_of_subsingleton in
 /-- Implementation: If each costructured arrow category on `G` has a terminal object, an equivalence
 which is helpful for constructing a right adjoint to `G`.
 -/
@@ -147,7 +149,8 @@ def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
   uniq s m _ := by
     apply StructuredArrow.ext
     dsimp
-    rw [Equiv.eq_symm_apply, Adjunction.homEquiv_unit]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [Equiv.eq_symm_apply, Adjunction.homEquiv_unit]
     apply StructuredArrow.w m
 #align category_theory.mk_initial_of_left_adjoint CategoryTheory.mkInitialOfLeftAdjoint
 

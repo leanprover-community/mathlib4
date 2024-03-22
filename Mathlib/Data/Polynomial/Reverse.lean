@@ -24,7 +24,7 @@ namespace Polynomial
 
 open Polynomial Finsupp Finset
 
-open Classical Polynomial
+open Polynomial
 
 section Semiring
 
@@ -89,7 +89,7 @@ theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
   repeat' rw [add_tsub_cancel_left]
 #align polynomial.rev_at_add Polynomial.revAt_add
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem revAt_zero (N : ℕ) : revAt N 0 = N := by simp
 #align polynomial.rev_at_zero Polynomial.revAt_zero
 
@@ -143,7 +143,7 @@ theorem reflect_C_mul (f : R[X]) (r : R) (N : ℕ) : reflect N (C r * f) = C r *
 set_option linter.uppercaseLean3 false in
 #align polynomial.reflect_C_mul Polynomial.reflect_C_mul
 
--- @[simp] -- Porting note: simp can prove this (once `reflect_monomial` is in simp scope)
+-- @[simp] -- Porting note (#10618): simp can prove this (once `reflect_monomial` is in simp scope)
 theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c * X ^ revAt N n := by
   ext
   rw [reflect_C_mul, coeff_C_mul, coeff_C_mul, coeff_X_pow, coeff_reflect]
@@ -273,7 +273,7 @@ theorem reverse_eq_zero : f.reverse = 0 ↔ f = 0 := by simp [reverse]
 theorem reverse_natDegree_le (f : R[X]) : f.reverse.natDegree ≤ f.natDegree := by
   rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero]
   intro n hn
-  rw [Nat.cast_withBot, Nat.cast_withBot, WithBot.coe_lt_coe] at hn
+  rw [Nat.cast_lt] at hn
   rw [coeff_reverse, revAt, Function.Embedding.coeFn_mk, if_neg (not_le_of_gt hn),
     coeff_eq_zero_of_natDegree_lt hn]
 #align polynomial.reverse_nat_degree_le Polynomial.reverse_natDegree_le

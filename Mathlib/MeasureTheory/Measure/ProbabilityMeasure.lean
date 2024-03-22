@@ -28,6 +28,8 @@ The main definitions are
    a finite measure;
  * `MeasureTheory.FiniteMeasure.normalize`: Normalize a finite measure to a probability measure
    (returns junk for the zero measure).
+ * `MeasureTheory.ProbabilityMeasure.map`: The push-forward `f* μ` of a probability measure
+   `μ` on `Ω` along a measurable function `f : Ω → Ω'`.
 
 ## Main results
 
@@ -41,6 +43,12 @@ The main definitions are
  * `MeasureTheory.FiniteMeasure.tendsto_normalize_iff_tendsto`: The convergence of finite
    measures to a nonzero limit is characterized by the convergence of the probability-normalized
    versions and of the total masses.
+ * `MeasureTheory.ProbabilityMeasure.continuous_map`: For a continuous function `f : Ω → Ω'`, the
+   push-forward of probability measures `f* : ProbabilityMeasure Ω → ProbabilityMeasure Ω'` is
+   continuous.
+ * `MeasureTheory.ProbabilityMeasure.t2Space`: The topology of convergence in distribution is
+   Hausdorff on Borel spaces where indicators of closed sets have continuous decreasing
+   approximating sequences (in particular on any pseudo-metrizable spaces).
 
 TODO:
  * Probability measures form a convex space.
@@ -108,7 +116,7 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 instance [Inhabited Ω] : Inhabited (ProbabilityMeasure Ω) :=
   ⟨⟨Measure.dirac default, Measure.dirac.isProbabilityMeasure⟩⟩
 
--- porting note: as with other subtype synonyms (e.g., `ℝ≥0`), we need a new function for the
+-- Porting note: as with other subtype synonyms (e.g., `ℝ≥0`), we need a new function for the
 -- coercion instead of relying on `Subtype.val`.
 /-- Coercion from `MeasureTheory.ProbabilityMeasure Ω` to `MeasureTheory.Measure Ω`. -/
 @[coe]
@@ -124,8 +132,10 @@ instance : CoeFun (ProbabilityMeasure Ω) fun _ => Set Ω → ℝ≥0 :=
 instance (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) :=
   μ.prop
 
--- porting note: syntactic tautology because of the way coercions work in Lean 4
+-- Porting note: syntactic tautology because of the way coercions work in Lean 4
 #noalign measure_theory.probability_measure.coe_fn_eq_to_nnreal_coe_fn_to_measure
+
+@[simp, norm_cast] lemma coe_mk (μ : Measure Ω) (hμ) : toMeasure ⟨μ, hμ⟩ = μ := rfl
 
 @[simp]
 theorem val_eq_to_measure (ν : ProbabilityMeasure Ω) : ν.val = (ν : Measure Ω) :=
@@ -136,7 +146,7 @@ theorem toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω 
   Subtype.coe_injective
 #align measure_theory.probability_measure.coe_injective MeasureTheory.ProbabilityMeasure.toMeasure_injective
 
--- porting note: removed `@[simp]` because `simp` can prove it
+-- Porting note (#10618): removed `@[simp]` because `simp` can prove it
 theorem coeFn_univ (ν : ProbabilityMeasure Ω) : ν univ = 1 :=
   congr_arg ENNReal.toNNReal ν.prop.measure_univ
 #align measure_theory.probability_measure.coe_fn_univ MeasureTheory.ProbabilityMeasure.coeFn_univ
@@ -174,6 +184,9 @@ theorem apply_mono (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ �
   exact MeasureTheory.FiniteMeasure.apply_mono _ h
 #align measure_theory.probability_measure.apply_mono MeasureTheory.ProbabilityMeasure.apply_mono
 
+@[simp] theorem apply_le_one (μ : ProbabilityMeasure Ω) (s : Set Ω) : μ s ≤ 1 := by
+  simpa using apply_mono μ (subset_univ s)
+
 theorem nonempty (μ : ProbabilityMeasure Ω) : Nonempty Ω := by
   by_contra maybe_empty
   have zero : (μ : Measure Ω) univ = 0 := by
@@ -205,6 +218,8 @@ theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasur
   rw [← FiniteMeasure.mass_nonzero_iff, μ.mass_toFiniteMeasure]
   exact one_ne_zero
 #align measure_theory.probability_measure.to_finite_measure_nonzero MeasureTheory.ProbabilityMeasure.toFiniteMeasure_nonzero
+
+section convergence_in_distribution
 
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
@@ -292,6 +307,21 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ}
   rfl
 #align measure_theory.probability_measure.tendsto_iff_forall_integral_tendsto MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto
 
+end convergence_in_distribution -- section
+
+section Hausdorff
+
+variable [TopologicalSpace Ω] [HasOuterApproxClosed Ω] [BorelSpace Ω]
+variable (Ω)
+
+/-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
+continuous functions (`HasOuterApproxClosed`), the topology of convergence in distribution of Borel
+probability measures is Hausdorff (`T2Space`). -/
+instance t2Space : T2Space (ProbabilityMeasure Ω) :=
+  Embedding.t2Space (toFiniteMeasure_embedding Ω)
+
+end Hausdorff -- section
+
 end ProbabilityMeasure
 
 -- namespace
@@ -318,14 +348,14 @@ total mass. -/
 def normalize : ProbabilityMeasure Ω :=
   if zero : μ.mass = 0 then ⟨Measure.dirac ‹Nonempty Ω›.some, Measure.dirac.isProbabilityMeasure⟩
   else
-    { val := μ.mass⁻¹ • μ
+    { val := ↑(μ.mass⁻¹ • μ)
       property := by
         refine' ⟨_⟩
-        -- porting note: paying the price that this isn't `simp` lemma now.
+        -- Porting note: paying the price that this isn't `simp` lemma now.
         rw [FiniteMeasure.toMeasure_smul]
         simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
           Measure.nnreal_smul_coe_apply, ne_eq, mass_zero_iff, ENNReal.coe_inv zero, ennreal_mass]
-        rw [←Ne.def, ←ENNReal.coe_ne_zero, ennreal_mass] at zero
+        rw [← Ne.def, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
         exact ENNReal.inv_mul_cancel zero μ.prop.measure_univ_lt_top.ne }
 #align measure_theory.finite_measure.normalize MeasureTheory.FiniteMeasure.normalize
 
@@ -337,7 +367,7 @@ theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize 
   have mass_nonzero : μ.mass ≠ 0 := by rwa [μ.mass_nonzero_iff]
   simp only [normalize, dif_neg mass_nonzero]
   change μ s = mass μ * ((mass μ)⁻¹ • μ) s
-  -- porting note: this `change` is a hack, but I had trouble coming up with something better
+  -- Porting note: this `change` is a hack, but I had trouble coming up with something better
   simp only [toMeasure_smul, Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
     Measure.nnreal_smul_coe_apply, ne_eq, mass_zero_iff, ENNReal.toNNReal_mul, ENNReal.toNNReal_coe,
     mul_inv_cancel_left₀ mass_nonzero]
@@ -388,8 +418,7 @@ theorem average_eq_integral_normalize {E : Type*} [NormedAddCommGroup E] [Normed
     average (μ : Measure Ω) f = ∫ ω, f ω ∂(μ.normalize : Measure Ω) := by
   rw [μ.toMeasure_normalize_eq_of_nonzero nonzero, average]
   congr
-  simp only [RingHom.toFun_eq_coe, ENNReal.coe_ofNNRealHom,
-    ENNReal.coe_inv (μ.mass_nonzero_iff.mpr nonzero), ennreal_mass]
+  simp [ENNReal.coe_inv (μ.mass_nonzero_iff.mpr nonzero), ennreal_mass]
 #align measure_theory.finite_measure.average_eq_integral_normalize MeasureTheory.FiniteMeasure.average_eq_integral_normalize
 
 variable [TopologicalSpace Ω]
@@ -406,7 +435,6 @@ theorem normalize_testAgainstNN (nonzero : μ ≠ 0) (f : Ω →ᵇ ℝ≥0) :
 #align measure_theory.finite_measure.normalize_test_against_nn MeasureTheory.FiniteMeasure.normalize_testAgainstNN
 
 variable [OpensMeasurableSpace Ω]
-
 variable {μ}
 
 theorem tendsto_testAgainstNN_of_tendsto_normalize_testAgainstNN_of_tendsto_mass {γ : Type*}
@@ -485,13 +513,75 @@ theorem tendsto_normalize_iff_tendsto {γ : Type*} {F : Filter γ} {μs : γ →
   · rintro ⟨normalized_lim, mass_lim⟩
     exact tendsto_of_tendsto_normalize_testAgainstNN_of_tendsto_mass normalized_lim mass_lim
   · intro μs_lim
-    refine' ⟨tendsto_normalize_of_tendsto μs_lim nonzero, μs_lim.mass⟩
+    exact ⟨tendsto_normalize_of_tendsto μs_lim nonzero, μs_lim.mass⟩
 #align measure_theory.finite_measure.tendsto_normalize_iff_tendsto MeasureTheory.FiniteMeasure.tendsto_normalize_iff_tendsto
 
-end FiniteMeasure
+end FiniteMeasure --namespace
 
---namespace
-end NormalizeFiniteMeasure
+end NormalizeFiniteMeasure -- section
 
--- section
-end MeasureTheory
+section map
+
+variable {Ω Ω' : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
+
+namespace ProbabilityMeasure
+
+/-- The push-forward of a probability measure by a measurable function. -/
+noncomputable def map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν) :
+    ProbabilityMeasure Ω' :=
+  ⟨(ν : Measure Ω).map f,
+   ⟨by simp only [Measure.map_apply_of_aemeasurable f_aemble MeasurableSet.univ,
+                  preimage_univ, measure_univ]⟩⟩
+
+@[simp] lemma toMeasure_map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (hf : AEMeasurable f ν) :
+    (ν.map hf).toMeasure = ν.toMeasure.map f := rfl
+
+/-- Note that this is an equality of elements of `ℝ≥0∞`. See also
+`MeasureTheory.ProbabilityMeasure.map_apply` for the corresponding equality as elements of `ℝ≥0`. -/
+lemma map_apply' (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
+    {A : Set Ω'} (A_mble : MeasurableSet A) :
+    (ν.map f_aemble : Measure Ω') A = (ν : Measure Ω) (f ⁻¹' A) :=
+  Measure.map_apply_of_aemeasurable f_aemble A_mble
+
+lemma map_apply_of_aemeasurable (ν : ProbabilityMeasure Ω) {f : Ω → Ω'}
+    (f_aemble : AEMeasurable f ν) {A : Set Ω'} (A_mble : MeasurableSet A) :
+    (ν.map f_aemble) A = ν (f ⁻¹' A) := by
+  have := ν.map_apply' f_aemble A_mble
+  exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr this
+
+lemma map_apply (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
+    {A : Set Ω'} (A_mble : MeasurableSet A) :
+    (ν.map f_aemble) A = ν (f ⁻¹' A) :=
+  map_apply_of_aemeasurable ν f_aemble A_mble
+
+variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
+variable [TopologicalSpace Ω'] [BorelSpace Ω']
+
+/-- If `f : X → Y` is continuous and `Y` is equipped with the Borel sigma algebra, then
+convergence (in distribution) of `ProbabilityMeasure`s on `X` implies convergence (in
+distribution) of the push-forwards of these measures by `f`. -/
+lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
+    (νs : ι → ProbabilityMeasure Ω) (ν : ProbabilityMeasure Ω) (lim : Tendsto νs L (𝓝 ν))
+    {f : Ω → Ω'} (f_cont : Continuous f) :
+    Tendsto (fun i ↦ (νs i).map f_cont.measurable.aemeasurable) L
+      (𝓝 (ν.map f_cont.measurable.aemeasurable)) := by
+  rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
+  intro g
+  convert lim (g.compContinuous ⟨f, f_cont⟩) <;>
+  · simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
+    refine lintegral_map ?_ f_cont.measurable
+    exact (ENNReal.continuous_coe.comp g.continuous).measurable
+
+/-- If `f : X → Y` is continuous and `Y` is equipped with the Borel sigma algebra, then
+the push-forward of probability measures `f* : ProbabilityMeasure X → ProbabilityMeasure Y`
+is continuous (in the topologies of convergence in distribution). -/
+lemma continuous_map {f : Ω → Ω'} (f_cont : Continuous f) :
+    Continuous (fun ν ↦ ProbabilityMeasure.map ν f_cont.measurable.aemeasurable) := by
+  rw [continuous_iff_continuousAt]
+  exact fun _ ↦ tendsto_map_of_tendsto_of_continuous _ _ continuous_id.continuousAt f_cont
+
+end ProbabilityMeasure -- namespace
+
+end map -- section
+
+end MeasureTheory -- namespace

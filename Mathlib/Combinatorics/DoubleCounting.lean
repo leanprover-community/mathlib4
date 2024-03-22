@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Data.Set.Basic
 
 #align_import combinatorics.double_counting from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 

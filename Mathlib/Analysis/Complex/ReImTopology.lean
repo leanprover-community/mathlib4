@@ -42,12 +42,12 @@ namespace Complex
 
 /-- `Complex.re` turns `ℂ` into a trivial topological fiber bundle over `ℝ`. -/
 theorem isHomeomorphicTrivialFiberBundle_re : IsHomeomorphicTrivialFiberBundle ℝ re :=
-  ⟨equivRealProdClm.toHomeomorph, fun _ => rfl⟩
+  ⟨equivRealProdCLM.toHomeomorph, fun _ => rfl⟩
 #align complex.is_homeomorphic_trivial_fiber_bundle_re Complex.isHomeomorphicTrivialFiberBundle_re
 
 /-- `Complex.im` turns `ℂ` into a trivial topological fiber bundle over `ℝ`. -/
 theorem isHomeomorphicTrivialFiberBundle_im : IsHomeomorphicTrivialFiberBundle ℝ im :=
-  ⟨equivRealProdClm.toHomeomorph.trans (Homeomorph.prodComm ℝ ℝ), fun _ => rfl⟩
+  ⟨equivRealProdCLM.toHomeomorph.trans (Homeomorph.prodComm ℝ ℝ), fun _ => rfl⟩
 #align complex.is_homeomorphic_trivial_fiber_bundle_im Complex.isHomeomorphicTrivialFiberBundle_im
 
 theorem isOpenMap_re : IsOpenMap re :=
@@ -171,8 +171,8 @@ theorem frontier_setOf_lt_im (a : ℝ) : frontier { z : ℂ | a < z.im } = { z |
 #align complex.frontier_set_of_lt_im Complex.frontier_setOf_lt_im
 
 theorem closure_reProdIm (s t : Set ℝ) : closure (s ×ℂ t) = closure s ×ℂ closure t := by
-  simpa only [← preimage_eq_preimage equivRealProdClm.symm.toHomeomorph.surjective,
-    equivRealProdClm.symm.toHomeomorph.preimage_closure] using @closure_prod_eq _ _ _ _ s t
+  simpa only [← preimage_eq_preimage equivRealProdCLM.symm.toHomeomorph.surjective,
+    equivRealProdCLM.symm.toHomeomorph.preimage_closure] using @closure_prod_eq _ _ _ _ s t
 #align complex.closure_re_prod_im Complex.closure_reProdIm
 
 theorem interior_reProdIm (s t : Set ℝ) : interior (s ×ℂ t) = interior s ×ℂ interior t := by
@@ -181,8 +181,8 @@ theorem interior_reProdIm (s t : Set ℝ) : interior (s ×ℂ t) = interior s ×
 
 theorem frontier_reProdIm (s t : Set ℝ) :
     frontier (s ×ℂ t) = closure s ×ℂ frontier t ∪ frontier s ×ℂ closure t := by
-  simpa only [← preimage_eq_preimage equivRealProdClm.symm.toHomeomorph.surjective,
-    equivRealProdClm.symm.toHomeomorph.preimage_frontier] using frontier_prod_eq s t
+  simpa only [← preimage_eq_preimage equivRealProdCLM.symm.toHomeomorph.surjective,
+    equivRealProdCLM.symm.toHomeomorph.preimage_frontier] using frontier_prod_eq s t
 #align complex.frontier_re_prod_im Complex.frontier_reProdIm
 
 theorem frontier_setOf_le_re_and_le_im (a b : ℝ) :
@@ -210,6 +210,6 @@ theorem IsClosed.reProdIm (hs : IsClosed s) (ht : IsClosed t) : IsClosed (s ×�
   (hs.preimage continuous_re).inter (ht.preimage continuous_im)
 #align is_closed.re_prod_im IsClosed.reProdIm
 
-theorem Metric.Bounded.reProdIm (hs : Bounded s) (ht : Bounded t) : Bounded (s ×ℂ t) :=
-  antilipschitz_equivRealProd.bounded_preimage (hs.prod ht)
-#align metric.bounded.re_prod_im Metric.Bounded.reProdIm
+theorem Bornology.IsBounded.reProdIm (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ×ℂ t) :=
+  antilipschitz_equivRealProd.isBounded_preimage (hs.prod ht)
+#align metric.bounded.re_prod_im Bornology.IsBounded.reProdIm

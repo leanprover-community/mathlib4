@@ -15,10 +15,9 @@ import Mathlib.Combinatorics.SimpleGraph.Connectivity
 
 -/
 
-set_option autoImplicit true
-
 namespace SimpleGraph
 
+universe u v
 variable {V : Type u} {V' : Type v} {G : SimpleGraph V} {G' : SimpleGraph V'}
 
 namespace Subgraph
@@ -98,7 +97,7 @@ protected lemma Connected.mono' {H H' : G.Subgraph}
   exact h.mono ⟨hv.le, hle⟩ hv
 
 protected lemma Connected.sup {H K : G.Subgraph}
-    (hH : H.Connected) (hK : K.Connected) (hn : (H ⊓ K).verts.Nonempty ) :
+    (hH : H.Connected) (hK : K.Connected) (hn : (H ⊓ K).verts.Nonempty) :
     (H ⊔ K).Connected := by
   rw [Subgraph.connected_iff', connected_iff_exists_forall_reachable]
   obtain ⟨u, hu, hu'⟩ := hn
@@ -111,15 +110,14 @@ lemma _root_.SimpleGraph.Walk.toSubgraph_connected {u v : V} (p : G.Walk u v) :
     p.toSubgraph.Connected := by
   induction p with
   | nil => apply singletonSubgraph_connected
-  | cons h p ih =>
+  | @cons _ w _ h p ih =>
     apply (subgraphOfAdj_connected h).sup ih
-    rename_i w _
     exists w
     simp
 
 lemma induce_union_connected {H : G.Subgraph} {s t : Set V}
     (sconn : (H.induce s).Connected) (tconn : (H.induce t).Connected)
-    (sintert : (s ⊓ t).Nonempty ) :
+    (sintert : (s ⊓ t).Nonempty) :
     (H.induce (s ∪ t)).Connected := by
   refine (sconn.sup tconn sintert).mono ?_ ?_
   · apply le_induce_union
@@ -148,20 +146,22 @@ lemma preconnected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
       (p.toSubgraph_connected ⟨_, p.start_mem_verts_toSubgraph⟩ ⟨_, p.end_mem_verts_toSubgraph⟩)
 
 lemma connected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
-    H.Connected ↔ H.verts.Nonempty ∧ ∀ {u v}, u ∈ H.verts → v ∈ H.verts →
-                                        ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
+    H.Connected ↔
+      H.verts.Nonempty ∧
+        ∀ {u v}, u ∈ H.verts → v ∈ H.verts → ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
   rw [H.connected_iff, preconnected_iff_forall_exists_walk_subgraph, and_comm]
 
 end Subgraph
 
 section induced_subgraphs
 
-lemma connected_induce_iff : (G.induce s).Connected ↔ ((⊤ : G.Subgraph).induce s).Connected := by
+lemma connected_induce_iff {s : Set V} :
+    (G.induce s).Connected ↔ ((⊤ : G.Subgraph).induce s).Connected := by
   rw [induce_eq_coe_induce_top, ← Subgraph.connected_iff']
 
 lemma induce_union_connected {s t : Set V}
     (sconn : (G.induce s).Connected) (tconn : (G.induce t).Connected)
-    (sintert : (s ∩ t).Nonempty ) :
+    (sintert : (s ∩ t).Nonempty) :
     (G.induce (s ∪ t)).Connected := by
   rw [connected_induce_iff] at sconn tconn ⊢
   exact Subgraph.induce_union_connected sconn tconn sintert
@@ -181,7 +181,7 @@ lemma Walk.connected_induce_support {u v : V} (p : G.Walk u v) :
   rw [← p.verts_toSubgraph]
   exact p.toSubgraph_connected.induce_verts
 
-lemma induce_connected_adj_union {s t : Set V}
+lemma induce_connected_adj_union {v w : V} {s t : Set V}
     (sconn : (G.induce s).Connected) (tconn : (G.induce t).Connected)
     (hv : v ∈ s) (hw : w ∈ t) (ha : G.Adj v w) :
     (G.induce (s ∪ t)).Connected := by
@@ -196,7 +196,7 @@ lemma induce_connected_adj_union {s t : Set V}
     simp [Set.insert_subset_iff, Set.singleton_subset_iff, hv, hw]
 
 lemma induce_connected_of_patches {s : Set V} (u : V) (hu : u ∈ s)
-    (patches : ∀ {v} (_ : v ∈ s), ∃ (s' : Set V) (_ : s' ⊆ s) (hu' : u ∈ s') (hv' : v ∈ s'),
+    (patches : ∀ {v}, v ∈ s → ∃ s' ⊆ s, ∃ (hu' : u ∈ s') (hv' : v ∈ s'),
                   (G.induce s').Reachable ⟨u, hu'⟩ ⟨v, hv'⟩) : (G.induce s).Connected := by
   rw [connected_iff_exists_forall_reachable]
   refine ⟨⟨u, hu⟩, ?_⟩
@@ -223,7 +223,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
   obtain ⟨u, ut⟩ := tn
   refine ⟨t.biUnion (fun v => (Gpc u v).some.support.toFinset), fun v vt => ?_, ?_⟩
   · simp only [Finset.mem_biUnion, List.mem_toFinset, exists_prop]
-    refine ⟨v, vt, Walk.end_mem_support _⟩
+    exact ⟨v, vt, Walk.end_mem_support _⟩
   · apply G.induce_connected_of_patches u
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset, Set.mem_iUnion,
                  Set.mem_setOf_eq, Walk.start_mem_support, exists_prop, and_true]

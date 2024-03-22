@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.Basis
 
@@ -39,9 +38,7 @@ namespace IsScalarTower
 section Semiring
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-
 variable [Algebra R S] [Algebra S A] [Algebra S B] [Algebra R A] [Algebra R B]
-
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
 
@@ -65,7 +62,6 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
 
 end CommSemiring
@@ -75,9 +71,7 @@ end IsScalarTower
 section AlgebraMapCoeffs
 
 variable {R} {ι M : Type*} [CommSemiring R] [Semiring A] [AddCommMonoid M]
-
 variable [Algebra R A] [Module A M] [Module R M] [IsScalarTower R A M]
-
 variable (b : Basis ι R M) (h : Function.Bijective (algebraMap R A))
 
 /-- If `R` and `A` have a bijective `algebraMap R A` and act identically on `M`,
@@ -103,15 +97,14 @@ section Semiring
 
 open Finsupp
 
-open BigOperators Classical
+open scoped Classical
+open BigOperators
 
 universe v₁ w₁
 
 variable {R S A}
-
-variable [CommSemiring R] [Semiring S] [AddCommMonoid A]
-
-variable [Algebra R S] [Module S A] [Module R A] [IsScalarTower R S A]
+variable [Semiring R] [Semiring S] [AddCommMonoid A]
+variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁} {c : ι' → A}
     (hb : LinearIndependent R b) (hc : LinearIndependent S c) :
@@ -129,10 +122,23 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
   exact hg _ hik
 #align linear_independent_smul linearIndependent_smul
 
+variable (R)
+
+-- LinearIndependent is enough if S is a ring rather than semiring.
+theorem Basis.isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : IsScalarTower R S S :=
+  (b.repr.symm.comp <| lsingle <| Classical.arbitrary ι).isScalarTower_of_injective R
+    (b.repr.symm.injective.comp <| single_injective _)
+
+theorem Basis.isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S (ι →₀ S) :=
+  b.repr.symm.isScalarTower_of_injective R b.repr.symm.injective
+
+variable {R}
+
 /-- `Basis.SMul (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
 where the `(i, j)`th basis vector is `b i • c j`. -/
 noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) :
     Basis (ι × ι') R A :=
+  haveI := c.isScalarTower_finsupp R
   .ofRepr
     (c.repr.restrictScalars R ≪≫ₗ
       (Finsupp.lcongr (Equiv.refl _) b.repr ≪≫ₗ
@@ -142,7 +148,9 @@ noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R 
 
 @[simp]
 theorem Basis.smul_repr {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
-    (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by simp [Basis.smul]
+    (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
+  set_option tactic.skipAssignedInstances false in
+  simp [Basis.smul]; rfl
 #align basis.smul_repr Basis.smul_repr
 
 theorem Basis.smul_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)
@@ -169,7 +177,6 @@ end Semiring
 section Ring
 
 variable {R S}
-
 variable [CommRing R] [Ring S] [Algebra R S]
 
 -- Porting note: Needed to add Algebra.toModule below

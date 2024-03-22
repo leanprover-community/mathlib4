@@ -83,7 +83,7 @@ theorem tendsto_atBot_of_leadingCoeff_nonpos (hdeg : 0 < P.degree) (hnps : P.lea
 
 theorem abs_tendsto_atTop (hdeg : 0 < P.degree) :
     Tendsto (fun x => abs <| eval x P) atTop atTop := by
-  cases' le_total 0 P.leadingCoeff with hP hP
+  rcases le_total 0 P.leadingCoeff with hP | hP
   · exact tendsto_abs_atTop_atTop.comp (P.tendsto_atTop_of_leadingCoeff_nonneg hdeg hP)
   · exact tendsto_abs_atBot_atTop.comp (P.tendsto_atBot_of_leadingCoeff_nonpos hdeg hP)
 #align polynomial.abs_tendsto_at_top Polynomial.abs_tendsto_atTop
@@ -108,7 +108,7 @@ theorem tendsto_nhds_iff {c : 𝕜} :
   · have := P.isEquivalent_atTop_lead.tendsto_nhds h
     by_cases hP : P.leadingCoeff = 0
     · simp only [hP, zero_mul, tendsto_const_nhds_iff] at this
-      refine' ⟨_root_.trans hP this, by simp [leadingCoeff_eq_zero.1 hP]⟩
+      exact ⟨_root_.trans hP this, by simp [leadingCoeff_eq_zero.1 hP]⟩
     · rw [tendsto_const_mul_pow_nhds_iff hP, natDegree_eq_zero_iff_degree_le_zero] at this
       exact this.symm
   · refine' P.isEquivalent_atTop_lead.symm.tendsto_nhds _
@@ -142,7 +142,7 @@ theorem div_tendsto_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
   refine' (isEquivalent_atTop_div P Q).symm.tendsto_nhds _
   rw [← mul_zero]
   refine' (tendsto_zpow_atTop_zero _).const_mul _
-  linarith
+  omega
 #align polynomial.div_tendsto_zero_of_degree_lt Polynomial.div_tendsto_zero_of_degree_lt
 
 theorem div_tendsto_zero_iff_degree_lt (hQ : Q ≠ 0) :
@@ -179,7 +179,7 @@ theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
   refine' (isEquivalent_atTop_div P Q).symm.tendsto_atTop _
   apply Tendsto.const_mul_atTop hpos
   apply tendsto_zpow_atTop_atTop
-  linarith
+  omega
 #align polynomial.div_tendsto_at_top_of_degree_gt' Polynomial.div_tendsto_atTop_of_degree_gt'
 
 theorem div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
@@ -202,7 +202,7 @@ theorem div_tendsto_atBot_of_degree_gt' (hdeg : Q.degree < P.degree)
   refine' (isEquivalent_atTop_div P Q).symm.tendsto_atBot _
   apply Tendsto.neg_const_mul_atTop hneg
   apply tendsto_zpow_atTop_atTop
-  linarith
+  omega
 #align polynomial.div_tendsto_at_bot_of_degree_gt' Polynomial.div_tendsto_atBot_of_degree_gt'
 
 theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)

@@ -133,10 +133,10 @@ theorem inverseAssociator_map_inr_inr {X Y : E} (f : inr (inr X) ⟶ inr (inr Y)
 def associativity : Sum (Sum C D) E ≌ Sum C (Sum D E) :=
   Equivalence.mk (associator C D E) (inverseAssociator C D E)
     (NatIso.ofComponents (fun X => eqToIso
-      (by rcases X with ((_|_)|_) <;> rfl)) -- Porting notes: aesop_cat fails
+      (by rcases X with ((_|_)|_) <;> rfl)) -- Porting note: aesop_cat fails
       (by rintro ((_|_)|_) ((_|_)|_) f <;> first | cases f | aesop_cat))
     (NatIso.ofComponents (fun X => eqToIso
-      (by rcases X with (_|(_|_)) <;> rfl)) -- Porting notes: aesop_cat fails
+      (by rcases X with (_|(_|_)) <;> rfl)) -- Porting note: aesop_cat fails
       (by rintro (_|(_|_)) (_|(_|_)) f <;> first | cases f | aesop_cat))
 #align category_theory.sum.associativity CategoryTheory.sum.associativity
 

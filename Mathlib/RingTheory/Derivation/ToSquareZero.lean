@@ -22,7 +22,6 @@ section ToSquareZero
 universe u v w
 
 variable {R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [CommSemiring A] [CommRing B]
-
 variable [Algebra R A] [Algebra R B] (I : Ideal B) (hI : I ^ 2 = ⊥)
 
 /-- If `f₁ f₂ : A →ₐ[R] B` are two lifts of the same `A →ₐ[R] B ⧸ I`,
@@ -80,12 +79,15 @@ theorem derivationToSquareZeroOfLift_apply (f : A →ₐ[R] B)
 
 /-- Given a tower of algebras `R → A → B`, and a square-zero `I : Ideal B`, each `R`-derivation
 from `A` to `I` corresponds to a lift `A →ₐ[R] B` of the canonical map `A →ₐ[R] B ⧸ I`. -/
-@[simps (config := { isSimp := false })]
+@[simps (config := .lemmasOnly)]
 def liftOfDerivationToSquareZero (f : Derivation R A I) : A →ₐ[R] B :=
   { ((I.restrictScalars R).subtype.comp f.toLinearMap + (IsScalarTower.toAlgHom R A B).toLinearMap :
       A →ₗ[R] B) with
     toFun := fun x => f x + algebraMap A B x
-    map_one' := by dsimp; rw [map_one, f.map_one_eq_zero, Submodule.coe_zero, zero_add]
+    map_one' := by
+      dsimp
+      -- Note: added the `(algebraMap _ _)` hint because otherwise it would match `f 1`
+      rw [map_one (algebraMap _ _), f.map_one_eq_zero, Submodule.coe_zero, zero_add]
     map_mul' := fun x y => by
       have : (f x : B) * f y = 0 := by
         rw [← Ideal.mem_bot, ← hI, pow_two]

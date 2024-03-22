@@ -19,7 +19,7 @@ called a *Henstock* partition. We do not include this assumption into the defini
 (pre)partition because McShane integral is defined as a limit along tagged partitions without this
 requirement.
 
-### Tags
+## Tags
 
 rectangular box, box partition
 -/
@@ -27,7 +27,8 @@ rectangular box, box partition
 
 noncomputable section
 
-open Classical ENNReal NNReal
+open scoped Classical
+open ENNReal NNReal
 
 open Set Function
 
@@ -99,7 +100,7 @@ theorem isPartition_iff_iUnion_eq : IsPartition π ↔ π.iUnion = I :=
 #align box_integral.tagged_prepartition.is_partition_iff_Union_eq BoxIntegral.TaggedPrepartition.isPartition_iff_iUnion_eq
 
 /-- The tagged partition made of boxes of `π` that satisfy predicate `p`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def filter (p : Box ι → Prop) : TaggedPrepartition I :=
   ⟨π.1.filter p, π.2, π.3⟩
 #align box_integral.tagged_prepartition.filter BoxIntegral.TaggedPrepartition.filter
@@ -178,7 +179,7 @@ returns the tagged partition of `I` into all the boxes of all `πi J hJ`. The ta
 is defined to be the `π.tag` of the box of the partition `π` that includes `J`.
 
 Note that usually the result is not a Henstock partition. -/
-@[simps (config := { fullyApplied := false }) tag]
+@[simps (config := .asFn) tag]
 def biUnionPrepartition (π : TaggedPrepartition I) (πi : ∀ J : Box ι, Prepartition J) :
     TaggedPrepartition I where
   toPrepartition := π.toPrepartition.biUnion πi
@@ -237,7 +238,7 @@ theorem IsHenstock.card_filter_tag_eq_le [Fintype ι] (h : π.IsHenstock) (x : �
   calc
     (π.boxes.filter fun J => π.tag J = x).card ≤
         (π.boxes.filter fun J : Box ι => x ∈ Box.Icc J).card := by
-      refine' Finset.card_le_of_subset fun J hJ => _
+      refine' Finset.card_le_card fun J hJ => _
       rw [Finset.mem_filter] at hJ ⊢; rcases hJ with ⟨hJ, rfl⟩
       exact ⟨hJ, h J hJ⟩
     _ ≤ 2 ^ Fintype.card ι := π.toPrepartition.card_filter_mem_Icc_le x
@@ -284,12 +285,12 @@ theorem IsSubordinate.diam_le [Fintype ι] {π : TaggedPrepartition I} (h : π.I
     (hJ : J ∈ π.boxes) : diam (Box.Icc J) ≤ 2 * r (π.tag J) :=
   calc
     diam (Box.Icc J) ≤ diam (closedBall (π.tag J) (r <| π.tag J)) :=
-      diam_mono (h J hJ) bounded_closedBall
+      diam_mono (h J hJ) isBounded_closedBall
     _ ≤ 2 * r (π.tag J) := diam_closedBall (le_of_lt (r _).2)
 #align box_integral.tagged_prepartition.is_subordinate.diam_le BoxIntegral.TaggedPrepartition.IsSubordinate.diam_le
 
 /-- Tagged prepartition with single box and prescribed tag. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def single (I J : Box ι) (hJ : J ≤ I) (x : ι → ℝ) (h : x ∈ Box.Icc I) : TaggedPrepartition I :=
   ⟨Prepartition.single I J hJ, fun _ => x, fun _ => h⟩
 #align box_integral.tagged_prepartition.single BoxIntegral.TaggedPrepartition.single

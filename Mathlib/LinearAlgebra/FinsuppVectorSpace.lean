@@ -3,6 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.StdBasis
 
 #align_import linear_algebra.finsupp_vector_space from "leanprover-community/mathlib"@"59628387770d82eb6f6dd7b7107308aa2509ec95"
@@ -19,8 +20,7 @@ This file contains results on the `R`-module structure on functions of finite su
 noncomputable section
 
 open Set LinearMap Submodule
-
-open Cardinal
+open scoped Cardinal BigOperators
 
 universe u v w
 
@@ -29,7 +29,6 @@ namespace Finsupp
 section Ring
 
 variable {R : Type*} {M : Type*} {ι : Type*}
-
 variable [Ring R] [AddCommGroup M] [Module R M]
 
 theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
@@ -57,13 +56,12 @@ end Ring
 section Semiring
 
 variable {R : Type*} {M : Type*} {ι : Type*}
-
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 open LinearMap Submodule
 
 open scoped Classical in
-/-- The basis on `ι →₀ M` with basis vectors `λ ⟨i, x⟩, single i (b i x)`. -/
+/-- The basis on `ι →₀ M` with basis vectors `fun ⟨i, x⟩ ↦ single i (b i x)`. -/
 protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (Σi, φ i) R (ι →₀ M) :=
   Basis.ofRepr
     { toFun := fun g =>
@@ -78,7 +76,8 @@ protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (�
             (b i).repr.symm (g.comapDomain _ (Set.injOn_of_injective sigma_mk_injective _))
           support := g.support.image Sigma.fst
           mem_support_toFun := fun i => by
-            rw [Ne.def, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply, FunLike.ext_iff]
+            rw [Ne.def, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply,
+                DFunLike.ext_iff]
             simp only [exists_prop, LinearEquiv.map_zero, comapDomain_apply, zero_apply,
               exists_and_right, mem_support_iff, exists_eq_right, Sigma.exists, Finset.mem_image,
               not_forall] }
@@ -136,42 +135,39 @@ end Semiring
 
 end Finsupp
 
+namespace DFinsupp
+variable {ι : Type*} {R : Type*} {M : ι → Type*}
+variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+
+/-- The direct sum of free modules is free.
+
+Note that while this is stated for `DFinsupp` not `DirectSum`, the types are defeq. -/
+noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
+    Basis (Σi, η i) R (Π₀ i, M i) :=
+  .ofRepr
+    ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
+#align dfinsupp.basis DFinsupp.basis
+
+end DFinsupp
+
 /-! TODO: move this section to an earlier file. -/
 
 
 namespace Basis
 
 variable {R M n : Type*}
-
-variable [DecidableEq n] [Fintype n]
-
+variable [DecidableEq n]
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
--- Porting note: looks like a diamond with Subtype.fintype
-attribute [-instance] fintypePure fintypeSingleton
-theorem _root_.Finset.sum_single_ite (a : R) (i : n) :
-    (Finset.univ.sum fun x : n => Finsupp.single x (ite (i = x) a 0)) = Finsupp.single i a := by
-  rw [Finset.sum_congr_set {i} (fun x : n => Finsupp.single x (ite (i = x) a 0)) fun _ =>
-      Finsupp.single i a]
-  · simp
-  · intro x hx
-    rw [Set.mem_singleton_iff] at hx
-    simp [hx]
-  intro x hx
-  have hx' : ¬i = x := by
-    refine' ne_comm.mp _
-    rwa [mem_singleton_iff] at hx
-  simp [hx']
+theorem _root_.Finset.sum_single_ite [Fintype n] (a : R) (i : n) :
+    (∑ x : n, Finsupp.single x (if i = x then a else 0)) = Finsupp.single i a := by
+  simp only [apply_ite (Finsupp.single _), Finsupp.single_zero, Finset.sum_ite_eq,
+    if_pos (Finset.mem_univ _)]
 #align finset.sum_single_ite Finset.sum_single_ite
 
--- Porting note: LHS of equivFun_symm_stdBasis simplifies to this
-@[simp]
-theorem _root_.Finset.sum_univ_ite (b : n → M) (i : n) :
-    (Finset.sum Finset.univ fun (x : n) => (if i = x then (1:R) else 0) • b x) = b i := by
-  simp only [ite_smul, zero_smul, one_smul, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
-
-theorem equivFun_symm_stdBasis (b : Basis n R M) (i : n) :
+theorem equivFun_symm_stdBasis [Finite n] (b : Basis n R M) (i : n) :
     b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by
+  cases nonempty_fintype n
   simp
 #align basis.equiv_fun_symm_std_basis Basis.equivFun_symm_stdBasis
 

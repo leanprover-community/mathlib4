@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.Hom.NonUnitalAlg
-import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Star.Module
+import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.LinearAlgebra.Prod
 
 #align_import algebra.algebra.unitization from "leanprover-community/mathlib"@"8f66240cab125b938b327d3850169d490cfbcdd8"
 
@@ -16,7 +16,7 @@ import Mathlib.Algebra.Star.Module
 
 Given a non-unital `R`-algebra `A` (given via the type classes
 `[NonUnitalRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]`) we construct
-the minimal unital `R`-algebra containing `A` as an ideal. This object `algebra.unitization R A` is
+the minimal unital `R`-algebra containing `A` as an ideal. This object `Unitization R A` is
 a type synonym for `R × A` on which we place a different multiplicative structure, namely,
 `(r₁, a₁) * (r₂, a₂) = (r₁ * r₂, r₁ • a₂ + r₂ • a₁ + a₁ * a₂)` where the multiplicative identity
 is `(1, 0)`.
@@ -73,7 +73,7 @@ def inl [Zero A] (r : R) : Unitization R A :=
   (r, 0)
 #align unitization.inl Unitization.inl
 
--- porting note: we need a def to which we can attach `@[coe]`
+-- Porting note: we need a def to which we can attach `@[coe]`
 /-- The canonical inclusion `A → Unitization R A`. -/
 @[coe]
 def inr [Zero R] (a : A) : Unitization R A :=
@@ -156,6 +156,9 @@ section Additive
 
 variable {T : Type*} {S : Type*} {R : Type*} {A : Type*}
 
+instance instCanLift [Zero R] : CanLift (Unitization R A) A inr (fun x ↦ x.fst = 0) where
+  prf x hx := ⟨x.snd, ext (hx ▸ fst_inr R (snd x)) rfl⟩
+
 instance instInhabited [Inhabited R] [Inhabited A] : Inhabited (Unitization R A) :=
   instInhabitedProd
 
@@ -197,7 +200,7 @@ instance instIsScalarTower [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMul T S
     [IsScalarTower T S R] [IsScalarTower T S A] : IsScalarTower T S (Unitization R A) :=
   Prod.isScalarTower
 
-instance instSmulCommClass [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMulCommClass T S R]
+instance instSMulCommClass [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMulCommClass T S R]
     [SMulCommClass T S A] : SMulCommClass T S (Unitization R A) :=
   Prod.smulCommClass
 
@@ -578,8 +581,9 @@ instance instStarModule [CommSemiring R] [StarRing R] [AddCommMonoid A] [StarAdd
     [Module R A] [StarModule R A] : StarModule R (Unitization R A) where
   star_smul r x := ext (by simp) (by simp)
 
-instance instStarRing [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A] [Module R A]
-    [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] : StarRing (Unitization R A) :=
+instance instStarRing [CommSemiring R] [StarRing R] [NonUnitalNonAssocSemiring A] [StarRing A]
+    [Module R A] [StarModule R A] :
+    StarRing (Unitization R A) :=
   { Unitization.instStarAddMonoid with
     star_mul := fun x y =>
       ext (by simp [-star_mul']) (by simp [-star_mul', add_comm (star x.fst • star y.snd)]) }
@@ -669,16 +673,18 @@ variable {S R A : Type*} [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
   [SMulCommClass R A A] [IsScalarTower R A A] {B : Type*} [Semiring B] [Algebra S B] [Algebra S R]
   [DistribMulAction S A] [IsScalarTower S R A] {C : Type*} [Semiring C] [Algebra R C]
 
-theorem algHom_ext {F : Type*} [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
+theorem algHom_ext {F : Type*}
+    [FunLike F (Unitization R A) B] [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a)
     (h' : ∀ r, φ (algebraMap R (Unitization R A) r) = ψ (algebraMap R (Unitization R A) r)) :
     φ = ψ := by
-  refine FunLike.ext φ ψ (fun x ↦ ?_)
+  refine DFunLike.ext φ ψ (fun x ↦ ?_)
   induction x using Unitization.ind
   simp only [map_add, ← algebraMap_eq_inl, h, h']
 #align unitization.alg_hom_ext Unitization.algHom_ext
 
-lemma algHom_ext'' {F : Type*} [AlgHomClass F R (Unitization R A) C] {φ ψ : F}
+lemma algHom_ext'' {F : Type*}
+    [FunLike F (Unitization R A) C] [AlgHomClass F R (Unitization R A) C] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a) : φ = ψ :=
   algHom_ext h (fun r => by simp only [AlgHomClass.commutes])
 
@@ -758,7 +764,7 @@ theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
     (h : (φ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A) =
       (ψ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A)) :
     φ = ψ :=
-  Unitization.algHom_ext'' <| FunLike.congr_fun h
+  Unitization.algHom_ext'' <| DFunLike.congr_fun h
 
 /-- Non-unital star algebra homomorphisms from `A` into a unital star `R`-algebra `C` lift uniquely
 to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the unitization. -/

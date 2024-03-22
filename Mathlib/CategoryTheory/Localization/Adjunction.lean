@@ -15,7 +15,7 @@ functors `G : C₁ ⥤ C₂` and `F : C₂ ⥤ C₁` induce functors
 have localization functors `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` with respect
 to morphism properties `W₁` and `W₂` respectively, and 2-commutative diagrams
 `[CatCommSq G L₁ L₂ G']` and `[CatCommSq F L₂ L₁ F']`, then we have an
-induced adjunction `adj.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F'`.
+induced adjunction `Adjunction.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F'`.
 
 -/
 
@@ -107,14 +107,14 @@ noncomputable def localization : G' ⊣ F' :=
 
 @[simp]
 lemma localization_unit_app (X₁ : C₁) :
-  (adj.localization L₁ W₁ L₂ W₂ G' F').unit.app (L₁.obj X₁) =
+    (adj.localization L₁ W₁ L₂ W₂ G' F').unit.app (L₁.obj X₁) =
     L₁.map (adj.unit.app X₁) ≫ (CatCommSq.iso F L₂ L₁ F').hom.app (G.obj X₁) ≫
       F'.map ((CatCommSq.iso G L₁ L₂ G').hom.app X₁) := by
   apply Localization.ε_app
 
 @[simp]
 lemma localization_counit_app (X₂ : C₂) :
-  (adj.localization L₁ W₁ L₂ W₂ G' F').counit.app (L₂.obj X₂) =
+    (adj.localization L₁ W₁ L₂ W₂ G' F').counit.app (L₂.obj X₂) =
     G'.map ((CatCommSq.iso F L₂ L₁ F').inv.app X₂) ≫
       (CatCommSq.iso G L₁ L₂ G').inv.app (F.obj X₂) ≫
       L₂.map (adj.counit.app X₂) := by

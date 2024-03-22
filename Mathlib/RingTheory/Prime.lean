@@ -37,8 +37,7 @@ theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Fin
       ⟨t, u, b, c, htus, htu, hbc, rfl, rfl⟩
     have hit : i ∉ t := fun hit ↦ his (htus ▸ mem_union_left _ hit)
     have hiu : i ∉ u := fun hiu ↦ his (htus ▸ mem_union_right _ hiu)
-    obtain ⟨d, rfl⟩ | ⟨d, rfl⟩ : p i ∣ b ∨ p i ∣ c
-    exact hpi.dvd_or_dvd ⟨a, by rw [← hbc, mul_comm]⟩
+    obtain ⟨d, rfl⟩ | ⟨d, rfl⟩ : p i ∣ b ∨ p i ∣ c := hpi.dvd_or_dvd ⟨a, by rw [← hbc, mul_comm]⟩
     · rw [mul_assoc, mul_comm a, mul_right_inj' hpi.ne_zero] at hbc
       exact ⟨insert i t, u, d, c, by rw [insert_union, htus], disjoint_insert_left.2 ⟨hiu, htu⟩, by
           simp [hbc, prod_insert hit, mul_assoc, mul_comm, mul_left_comm]⟩
@@ -47,14 +46,14 @@ theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Fin
           simp [← hbc, prod_insert hiu, mul_assoc, mul_comm, mul_left_comm]⟩
 #align mul_eq_mul_prime_prod mul_eq_mul_prime_prod
 
-/-- If ` x * y = a * p ^ n` where `p` is prime, then `x` and `y` can both be written
+/-- If `x * y = a * p ^ n` where `p` is prime, then `x` and `y` can both be written
   as the product of a power of `p` and a divisor of `a`. -/
 theorem mul_eq_mul_prime_pow {x y a p : R} {n : ℕ} (hp : Prime p) (hx : x * y = a * p ^ n) :
     ∃ (i j : ℕ) (b c : R), i + j = n ∧ a = b * c ∧ x = b * p ^ i ∧ y = c * p ^ j := by
   rcases mul_eq_mul_prime_prod (fun _ _ ↦ hp)
     (show x * y = a * (range n).prod fun _ ↦ p by simpa) with
       ⟨t, u, b, c, htus, htu, rfl, rfl, rfl⟩
-  exact ⟨t.card, u.card, b, c, by rw [← card_disjoint_union htu, htus, card_range], by simp⟩
+  exact ⟨t.card, u.card, b, c, by rw [← card_union_of_disjoint htu, htus, card_range], by simp⟩
 #align mul_eq_mul_prime_pow mul_eq_mul_prime_pow
 
 end CancelCommMonoidWithZero
