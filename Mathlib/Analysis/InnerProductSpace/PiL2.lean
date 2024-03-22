@@ -153,16 +153,11 @@ theorem EuclideanSpace.sphere_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 
 
 section
 
-instance EuclideanSpace.instFiniteDimensional [Finite ι] :
-    FiniteDimensional 𝕜 (EuclideanSpace 𝕜 ι) :=
-  inferInstance
-#align euclidean_space.finite_dimensional EuclideanSpace.instFiniteDimensional
+#align euclidean_space.finite_dimensional WithLp.instModuleFinite
 
 variable [Fintype ι]
 
-instance EuclideanSpace.instInnerProductSpace : InnerProductSpace 𝕜 (EuclideanSpace 𝕜 ι) :=
-  inferInstance
-#align euclidean_space.inner_product_space EuclideanSpace.instInnerProductSpace
+#align euclidean_space.inner_product_space PiLp.innerProductSpace
 
 @[simp]
 theorem finrank_euclideanSpace :
