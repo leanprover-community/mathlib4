@@ -67,9 +67,7 @@ class IsArtinian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
 section
 
 variable {R M P N : Type*}
-
 variable [Ring R] [AddCommGroup M] [AddCommGroup P] [AddCommGroup N]
-
 variable [Module R M] [Module R P] [Module R N]
 
 open IsArtinian

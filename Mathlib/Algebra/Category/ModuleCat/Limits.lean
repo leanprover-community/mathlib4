@@ -28,11 +28,8 @@ noncomputable section
 
 namespace ModuleCat
 
-variable (R : Type u) [Ring R]
-
+variable {R : Type u} [Ring R]
 variable {J : Type v} [Category.{t} J]
-
-variable {R}
 
 instance addCommGroupObj (F : J ⥤ ModuleCat.{w} R) (j) :
     AddCommGroup ((F ⋙ forget (ModuleCat R)).obj j) :=
@@ -196,13 +193,9 @@ section DirectLimit
 open Module
 
 variable {ι : Type v}
-
 variable [dec_ι : DecidableEq ι] [Preorder ι]
-
 variable (G : ι → Type v)
-
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
-
 variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j h => f i j h]
 
 /-- The diagram (in the sense of `CategoryTheory`)

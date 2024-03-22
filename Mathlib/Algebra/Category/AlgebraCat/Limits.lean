@@ -31,7 +31,6 @@ noncomputable section
 namespace AlgebraCat
 
 variable {R : Type u} [CommRing R]
-
 variable {J : Type v} [Category.{t} J]
 
 instance semiringObj (F : J ⥤ AlgebraCat.{w} R) (j) :
