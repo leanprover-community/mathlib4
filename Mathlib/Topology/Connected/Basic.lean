@@ -318,7 +318,7 @@ protected theorem IsPreconnected.image [TopologicalSpace β] {s : Set α} (H : I
   replace huv : s ⊆ u' ∪ v' := by
     rw [image_subset_iff, preimage_union] at huv
     replace huv := subset_inter huv Subset.rfl
-    rw [inter_distrib_right, u'_eq, v'_eq, ← inter_distrib_right] at huv
+    rw [union_inter_distrib_right, u'_eq, v'_eq, ← union_inter_distrib_right] at huv
     exact (subset_inter_iff.1 huv).1
   -- Now `s ⊆ u' ∪ v'`, so we can apply `‹IsPreconnected s›`
   obtain ⟨z, hz⟩ : (s ∩ (u' ∩ v')).Nonempty := by
@@ -1121,7 +1121,7 @@ theorem isPreconnected_iff_subset_of_fully_disjoint_closed {s : Set α} (hs : Is
   rw [subset_inter_iff, subset_inter_iff] at H1
   simp only [Subset.refl, and_true] at H1
   apply H1 (hu.inter hs) (hv.inter hs)
-  · rw [← inter_distrib_right]
+  · rw [← union_inter_distrib_right]
     exact subset_inter hss Subset.rfl
   · rwa [disjoint_iff_inter_eq_empty, ← inter_inter_distrib_right, inter_comm]
 #align is_preconnected_iff_subset_of_fully_disjoint_closed isPreconnected_iff_subset_of_fully_disjoint_closed

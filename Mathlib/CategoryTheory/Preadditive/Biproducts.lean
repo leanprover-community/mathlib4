@@ -683,9 +683,7 @@ end
 section
 
 variable [HasBinaryBiproducts.{v} C]
-
 variable {X₁ X₂ Y₁ Y₂ : C}
-
 variable (f₁₁ : X₁ ⟶ Y₁) (f₁₂ : X₁ ⟶ Y₂) (f₂₁ : X₂ ⟶ Y₁) (f₂₂ : X₂ ⟶ Y₂)
 
 /-- The "matrix" morphism `X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂` with specified components.
@@ -896,7 +894,6 @@ def Biproduct.columnNonzeroOfIso {σ τ : Type} [Fintype τ] {S : σ → C} [Has
 section Preadditive
 
 variable {D : Type u'} [Category.{v'} D] [Preadditive.{v'} D]
-
 variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 
 namespace Limits

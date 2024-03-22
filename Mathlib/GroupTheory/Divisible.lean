@@ -133,7 +133,6 @@ noncomputable def rootableByOfPowLeftSurj
 section Pi
 
 variable {ι β : Type*} (B : ι → Type*) [∀ i : ι, Pow (B i) β]
-
 variable [Zero β] [∀ i : ι, Monoid (B i)] [∀ i, RootableBy (B i) β]
 
 @[to_additive]
@@ -149,7 +148,6 @@ end Pi
 section Prod
 
 variable {β B B' : Type*} [Pow B β] [Pow B' β]
-
 variable [Zero β] [Monoid B] [Monoid B'] [RootableBy B β] [RootableBy B' β]
 
 @[to_additive]
@@ -242,7 +240,7 @@ def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
     -- Porting note: replaced `norm_num`
-    simpa only [zpow_coe_nat] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
+    simpa only [zpow_natCast] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
 #align group.rootable_by_nat_of_rootable_by_int Group.rootableByNatOfRootableByInt
 #align add_group.divisible_by_nat_of_divisible_by_int AddGroup.divisibleByNatOfDivisibleByInt
 
@@ -252,9 +250,7 @@ section Hom
 
 -- Porting note: reordered variables to fix `to_additive` on `QuotientGroup.rootableBy`
 variable {A B α : Type*}
-
 variable [Zero α] [Monoid A] [Monoid B] [Pow A α] [Pow B α] [RootableBy A α]
-
 variable (f : A → B)
 
 /--

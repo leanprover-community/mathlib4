@@ -119,7 +119,7 @@ theorem ClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y} (he 
     simp only [← hU] at hu ⊢
     have heU : range e ⊆ ⋃ i, U i := by
       simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using hu
-    rcases precise_refinement_set he.closed_range U hUo heU with ⟨V, hVo, heV, hVf, hVU⟩
+    rcases precise_refinement_set he.isClosed_range U hUo heU with ⟨V, hVo, heV, hVf, hVU⟩
     refine ⟨α, fun a ↦ e ⁻¹' (V a), fun a ↦ (hVo a).preimage he.continuous, ?_,
       hVf.preimage_continuous he.continuous, fun a ↦ ⟨a, preimage_mono (hVU a)⟩⟩
     simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using heV

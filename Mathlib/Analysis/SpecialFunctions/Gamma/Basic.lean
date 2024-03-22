@@ -105,8 +105,8 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
     exact ContinuousAt.comp this continuous_ofReal.continuousAt
   · rw [← hasFiniteIntegral_norm_iff]
     refine' HasFiniteIntegral.congr (Real.GammaIntegral_convergent hs).2 _
-    refine' (ae_restrict_iff' measurableSet_Ioi).mpr (ae_of_all _ fun x hx => _)
-    dsimp only
+    apply (ae_restrict_iff' measurableSet_Ioi).mpr
+    filter_upwards with x hx
     rw [norm_eq_abs, map_mul, abs_of_nonneg <| le_of_lt <| exp_pos <| -x,
       abs_cpow_eq_rpow_re_of_pos hx _]
     simp
@@ -195,7 +195,7 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
   refine' (((Real.GammaIntegral_convergent hs).mono_set
     Ioc_subset_Ioi_self).hasFiniteIntegral.congr _).const_mul _
   rw [EventuallyEq, ae_restrict_iff']
-  · apply ae_of_all; intro x hx
+  · filter_upwards with x hx
     rw [abs_of_nonneg (exp_pos _).le, abs_cpow_eq_rpow_re_of_pos hx.1]
     simp
   · exact measurableSet_Ioc
