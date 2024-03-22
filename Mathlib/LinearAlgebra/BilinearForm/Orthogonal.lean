@@ -184,8 +184,6 @@ theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : �
     exact fun _ hp => hp <| Finset.mem_singleton_self _
 #align bilin_form.span_singleton_inf_orthogonal_eq_bot LinearMap.BilinForm.span_singleton_inf_orthogonal_eq_bot
 
-variable {B : BilinForm K V} (x : V)
-
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
 theorem orthogonal_span_singleton_eq_toLin_ker {B : BilinForm K V} (x : V) :
     B.orthogonal (K ∙ x) = LinearMap.ker (LinearMap.BilinForm.toLinHomAux₁ B x) := by
