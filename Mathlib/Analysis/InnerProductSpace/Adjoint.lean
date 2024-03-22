@@ -67,8 +67,7 @@ variable [CompleteSpace E] [CompleteSpace G]
 definition for the main definition `adjoint`, where this is bundled as a conjugate-linear isometric
 equivalence. -/
 noncomputable def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
-  (ContinuousLinearMap.compSL _ _ _ _ _ ((toDual 𝕜 E).symm : Dual 𝕜 E →L⋆[𝕜] E)).comp
-    (toSesqForm : (E →L[𝕜] F) →L[𝕜] F →L⋆[𝕜] Dual 𝕜 E)
+  (ContinuousLinearMap.compSL _ _ _ _ _ (toDual 𝕜 E).symm).comp (toSesqForm (𝕜 := 𝕜) (E := E))
 #align continuous_linear_map.adjoint_aux ContinuousLinearMap.adjointAux
 
 @[simp]

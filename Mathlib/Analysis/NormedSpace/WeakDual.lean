@@ -110,6 +110,8 @@ namespace NormedSpace
 
 namespace Dual
 
+open TopologicalSpace
+
 /-- For normed spaces `E`, there is a canonical map `Dual 𝕜 E → WeakDual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. -/
 def toWeakDual : Dual 𝕜 E ≃ₗ[𝕜] WeakDual 𝕜 E :=
@@ -151,7 +153,7 @@ end NormedSpace
 
 namespace WeakDual
 
-open NormedSpace
+open NormedSpace TopologicalSpace
 
 /-- For normed spaces `E`, there is a canonical map `WeakDual 𝕜 E → Dual 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. Here it is implemented as the inverse of the linear
