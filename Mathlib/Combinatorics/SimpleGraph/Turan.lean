@@ -38,21 +38,21 @@ def IsTuranMaximal (r : ℕ) : Prop :=
 /-- The canonical `r + 1`-cliquefree Turán graph on `n` vertices. -/
 def turanGraph (n r : ℕ) : SimpleGraph (Fin n) where Adj v w := v % r ≠ w % r
 
-/-- `turanGraph n 0` is complete. Since the only 1-cliquefree graph is the empty graph,
-this shows that `0 < r` is needed in the statement of Turán's theorem. -/
-theorem turanGraph_zero_eq_top {n : ℕ} : turanGraph n 0 = ⊤ := by
-  ext a b
-  simp_rw [turanGraph, top_adj, Nat.mod_zero, not_iff_not, Fin.val_inj]
-
 variable {n r : ℕ}
 
 instance : DecidableRel (turanGraph n r).Adj := by dsimp only [turanGraph]; infer_instance
 
-/-- For `n ≤ r`, `turanGraph n r` is complete. -/
-theorem turanGraph_eq_top_of_le {n r} (h : n ≤ r) : turanGraph n r = ⊤ := by
-  ext a b
-  simp_rw [turanGraph, top_adj, Nat.mod_eq_of_lt (a.2.trans_le h),
-    Nat.mod_eq_of_lt (b.2.trans_le h), not_iff_not, Fin.val_inj]
+@[simp]
+theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
+  simp_rw [SimpleGraph.ext_iff, Function.funext_iff, turanGraph, top_adj, eq_iff_iff, not_iff_not]
+  constructor <;> intro h
+  · contrapose! h
+    use ⟨0, (Nat.pos_of_ne_zero h.1).trans h.2⟩, ⟨r, h.2⟩
+    simp [h.1.symm]
+  · intro a b
+    cases' h with h h
+    · simp_rw [h, Nat.mod_zero, Fin.val_inj]
+    · rw [Nat.mod_eq_of_lt (a.2.trans_le h), Nat.mod_eq_of_lt (b.2.trans_le h), Fin.val_inj]
 
 variable (hr : 0 < r)
 
@@ -68,10 +68,9 @@ theorem turanGraph_cliqueFree : (turanGraph n r).CliqueFree (r + 1) := by
   exact absurd c ((@ha x y).mpr d)
 
 /-- For `n ≤ r` and `0 < r`, `turanGraph n r` is Turán-maximal. -/
-theorem isTuranMaximal_turanGraph (h : n ≤ r) : (turanGraph n r).IsTuranMaximal r := by
-  refine' ⟨turanGraph_cliqueFree hr, _⟩
-  intro H _ _
-  exact card_le_card (edgeFinset_mono ((turanGraph_eq_top_of_le h).symm ▸ le_top (a := H)))
+theorem isTuranMaximal_turanGraph (h : n ≤ r) : (turanGraph n r).IsTuranMaximal r :=
+  ⟨turanGraph_cliqueFree hr, fun _ _ _ ↦
+    card_le_card (edgeFinset_mono ((turanGraph_eq_top.mpr (Or.inr h)).symm ▸ le_top))⟩
 
 /-- An `r + 1`-cliquefree Turán-maximal graph is _not_ `r`-cliquefree
 if it can accommodate such a clique. -/
