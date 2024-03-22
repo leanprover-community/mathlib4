@@ -37,8 +37,7 @@ as this is not needed for the proof of the fundamental theorem on Galois categor
 
 ## References
 
-* H. W. Lenstra. Galois theory for schemes
-  <https://websites.math.leidenuniv.nl/algebra/GSchemes.pdf>
+* [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
 
 -/
 

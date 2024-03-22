@@ -73,7 +73,7 @@ continuous function `g : C(X₂, Y)` such that `g ∘ e = f`. -/
 theorem ContinuousMap.exists_extension (f : C(X₁, Y)) :
     ∃ (g : C(X, Y)), g.comp ⟨e, he.continuous⟩ = f := by
   let e' : X₁ ≃ₜ Set.range e := Homeomorph.ofEmbedding _ he.toEmbedding
-  obtain ⟨g, hg⟩ := (f.comp e'.symm).exists_restrict_eq he.closed_range
+  obtain ⟨g, hg⟩ := (f.comp e'.symm).exists_restrict_eq he.isClosed_range
   exact ⟨g, by ext x; simpa using congr($(hg) ⟨e' x, x, rfl⟩)⟩
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
@@ -333,7 +333,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
   have hac : a < c := left_lt_add_div_two.2 hlt
   have hcb : c < b := add_div_two_lt_right.2 hlt
   have hsub : c - a = b - c := by
-    field_simp
+    field_simp [c]
     ring
   /- Due to `exists_extension_forall_mem_Icc_of_closedEmbedding`, there exists an extension `g`
     such that `g y ∈ [a, b]` for all `y`. However, if `a` and/or `b` do not belong to the range of
@@ -354,7 +354,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         exact ha' ⟨x, (congr_fun hgf x).symm⟩
       · exact Set.disjoint_singleton_right.2 hac.not_le
     rcases exists_bounded_mem_Icc_of_closed_of_le
-        (he.closed_range.union <| isClosed_Ici.preimage g.continuous)
+        (he.isClosed_range.union <| isClosed_Ici.preimage g.continuous)
         (isClosed_singleton.preimage g.continuous) hd (sub_nonneg.2 hac.le) with
       ⟨dg, dg0, dga, dgmem⟩
     replace hgf : ∀ x, (g + dg) (e x) = f x := by
@@ -387,7 +387,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
       exact hb' ⟨x, (congr_fun hgf x).symm⟩
     · exact Set.disjoint_singleton_right.2 hcb.not_le
   rcases exists_bounded_mem_Icc_of_closed_of_le
-      (he.closed_range.union <| isClosed_Iic.preimage g.continuous)
+      (he.isClosed_range.union <| isClosed_Iic.preimage g.continuous)
       (isClosed_singleton.preimage g.continuous) hd (sub_nonneg.2 hcb.le) with
     ⟨dg, dg0, dgb, dgmem⟩
   replace hgf : ∀ x, (g - dg) (e x) = f x := by
@@ -431,7 +431,7 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : X →ᵇ ℝ) {t : S
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ t) ∧ g ∘ e = f := by
   cases isEmpty_or_nonempty X
   · rcases hne with ⟨c, hc⟩
-    refine' ⟨const Y c, fun _ => hc, funext fun x => isEmptyElim x⟩
+    exact ⟨const Y c, fun _ => hc, funext fun x => isEmptyElim x⟩
   rcases exists_extension_forall_exists_le_ge_of_closedEmbedding f he with ⟨g, hg, hgf⟩
   refine' ⟨g, fun y => _, hgf⟩
   rcases hg y with ⟨xl, xu, h⟩

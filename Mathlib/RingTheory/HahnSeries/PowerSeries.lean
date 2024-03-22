@@ -32,7 +32,8 @@ set_option linter.uppercaseLean3 false
 
 open Finset Function
 
-open BigOperators Classical Pointwise Polynomial
+open scoped Classical
+open BigOperators Pointwise Polynomial
 
 noncomputable section
 

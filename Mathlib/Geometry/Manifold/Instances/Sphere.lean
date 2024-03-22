@@ -175,7 +175,7 @@ theorem contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
     nlinarith
   have h₂ : ContDiff ℝ ⊤ fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
     refine' (contDiff_const.smul contDiff_id).add _
-    refine' (h₀.sub contDiff_const).smul contDiff_const
+    exact (h₀.sub contDiff_const).smul contDiff_const
   exact h₁.smul h₂
 #align cont_diff_stereo_inv_fun_aux contDiff_stereoInvFunAux
 
@@ -223,11 +223,11 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   have pythag : 1 = a ^ 2 + ‖y‖ ^ 2 := by
     have hvy' : ⟪a • v, y⟫_ℝ = 0 := by simp only [inner_smul_left, hvy, mul_zero]
     convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ hvy' using 2
-    -- Porting note: was simp [← split] but wasn't finding `norm_eq_of_mem_sphere`
+    -- porting note (#10745): was simp [← split] but wasn't finding `norm_eq_of_mem_sphere`
     · simp only [norm_eq_of_mem_sphere, Nat.cast_one, mul_one, ← split]
     · simp [norm_smul, hv, ← sq, sq_abs]
     · exact sq _
-  -- Porting note : added to work around cancel_denoms and nlinarith failures
+  -- Porting note: added to work around cancel_denoms and nlinarith failures
   have duh : ‖y.val‖ ^ 2 = 1 - a ^ 2 := by
     rw [← Submodule.coe_norm, pythag]; ring
   -- two facts which will be helpful for clearing denominators in the main calculation
@@ -253,7 +253,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     ring
   convert
     congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
-  · simp [inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
+  · simp [a, inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
       mul_pow, Real.norm_eq_abs, sq_abs, norm_smul]
     -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
     · rw [split, add_comm]
@@ -458,9 +458,7 @@ theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
 #align cont_mdiff_coe_sphere contMDiff_coe_sphere
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
-
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
 
 /-- If a `ContMDiff` function `f : M → E`, where `M` is some manifold, takes values in the

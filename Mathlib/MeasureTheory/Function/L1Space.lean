@@ -49,14 +49,13 @@ integrable, function space, l1
 
 noncomputable section
 
-open Classical Topology BigOperators ENNReal MeasureTheory NNReal
+open scoped Classical
+open Topology BigOperators ENNReal MeasureTheory NNReal
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 
 variable {α β γ δ : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
-
 variable [NormedAddCommGroup β]
-
 variable [NormedAddCommGroup γ]
 
 namespace MeasureTheory
@@ -434,7 +433,7 @@ end NormedSpace
 /-! ### The predicate `Integrable` -/
 
 
--- variables [measurable_space β] [measurable_space γ] [measurable_space δ]
+-- variable [MeasurableSpace β] [MeasurableSpace γ] [MeasurableSpace δ]
 /-- `Integrable f μ` means that `f` is measurable and that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.
   `Integrable f` means `Integrable f volume`. -/
 def Integrable {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
@@ -1109,7 +1108,6 @@ end BoundedSMul
 section NormedSpaceOverCompleteField
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem integrable_smul_const {f : α → 𝕜} {c : E} (hc : c ≠ 0) :

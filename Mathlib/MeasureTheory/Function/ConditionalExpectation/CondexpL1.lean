@@ -163,8 +163,7 @@ theorem condexpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSe
   push_cast
   rw [((toSpanSingleton ℝ x).compLpL 2 μ).map_add]
   refine' (Lp.coeFn_add _ _).trans _
-  refine' eventually_of_forall fun y => _
-  rfl
+  filter_upwards with y using rfl
 #align measure_theory.condexp_ind_L1_fin_disjoint_union MeasureTheory.condexpIndL1Fin_disjoint_union
 
 end CondexpIndL1Fin
@@ -484,7 +483,7 @@ theorem condexpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     condexpL1CLM F' hm μ (f : α →₁[μ] F') = ↑f := by
   let g := lpMeasToLpTrimLie F' ℝ 1 μ hm f
   have hfg : f = (lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g := by
-    simp only [LinearIsometryEquiv.symm_apply_apply]
+    simp only [g, LinearIsometryEquiv.symm_apply_apply]
   rw [hfg]
   refine' @Lp.induction α F' m _ 1 (μ.trim hm) _ ENNReal.coe_ne_top (fun g : α →₁[μ.trim hm] F' =>
     condexpL1CLM F' hm μ ((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g : α →₁[μ] F') =

@@ -3,7 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 
 #align_import category_theory.monoidal.center from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
@@ -216,8 +216,6 @@ def tensorHom {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶
 #align category_theory.center.tensor_hom CategoryTheory.Center.tensorHom
 
 section
-
-attribute [local simp] id_tensorHom tensorHom_id
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]

@@ -162,7 +162,7 @@ theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
   · replace hx : 0 < n := by
       contrapose! hx
       simpa only [← neg_nonneg, ← zsmul_neg, zsmul_neg'] using zsmul_nonneg hp.le (neg_nonneg.2 hx)
-    exact ⟨n.toNat, by rw [← coe_nat_zsmul, Int.toNat_of_nonneg hx.le]⟩
+    exact ⟨n.toNat, by rw [← natCast_zsmul, Int.toNat_of_nonneg hx.le]⟩
   · exact ⟨(n : ℤ), by simp⟩
 #align add_circle.coe_eq_zero_of_pos_iff AddCircle.coe_eq_zero_of_pos_iff
 
@@ -170,7 +170,7 @@ theorem coe_period : (p : AddCircle p) = 0 :=
   (QuotientAddGroup.eq_zero_iff p).2 <| mem_zmultiples p
 #align add_circle.coe_period AddCircle.coe_period
 
-/- Porting note: `simp` attribute removed because linter reports:
+/- Porting note (#10618): `simp` attribute removed because linter reports:
 simp can prove this:
   by simp only [@mem_zmultiples, @QuotientAddGroup.mk_add_of_mem]
 -/
@@ -441,7 +441,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
             ← Int.cast_ofNat m₂, ← Int.cast_sub, coe_eq_zero_iff] at h
           obtain ⟨m, hm⟩ := h
           rw [← mul_div_right_comm, eq_div_iff, mul_comm, ← zsmul_eq_mul, mul_smul_comm, ←
-            nsmul_eq_mul, ← coe_nat_zsmul, smul_smul,
+            nsmul_eq_mul, ← natCast_zsmul, smul_smul,
             (zsmul_strictMono_left hp.out).injective.eq_iff, mul_comm] at hm
           swap
           · exact Nat.cast_ne_zero.2 hn.ne'

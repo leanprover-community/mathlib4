@@ -79,7 +79,7 @@ abbrev PiLp (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : Type _ :=
 instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
   ⟨fun _ => default⟩
 
-@[ext] -- porting note: new lemma
+@[ext] -- Porting note (#10756): new lemma
 protected theorem PiLp.ext {p : ℝ≥0∞} {ι : Type*} {α : ι → Type*} {x y : PiLp p α}
     (h : ∀ i, x i = y i) : x = y := funext h
 
@@ -92,7 +92,6 @@ for Pi types will not trigger. -/
 variable {𝕜 p α}
 variable [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 variable [∀ i, Module 𝕜 (β i)] [∀ i, BoundedSMul 𝕜 (β i)] (c : 𝕜)
-
 variable (x y : PiLp p β) (i : ι)
 
 @[simp]
@@ -302,7 +301,6 @@ explaining why having definitionally the right uniformity is often important.
 
 
 variable [Fact (1 ≤ p)] [∀ i, PseudoMetricSpace (α i)] [∀ i, PseudoEMetricSpace (β i)]
-
 variable [Fintype ι]
 
 /-- Endowing the space `PiLp p β` with the `L^p` pseudoemetric structure. This definition is not
@@ -688,9 +686,7 @@ def equivₗᵢ : PiLp ∞ β ≃ₗᵢ[𝕜] ∀ i, β i :=
 #align pi_Lp.equivₗᵢ PiLp.equivₗᵢ
 
 variable {ι' : Type*}
-
 variable [Fintype ι']
-
 variable (p 𝕜)
 variable (E : Type*) [NormedAddCommGroup E] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
@@ -720,7 +716,7 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_apply (e : ι ≃ ι') (v : PiL
 theorem _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
     (LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e).symm =
       LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e.symm :=
-  LinearIsometryEquiv.ext fun z => by -- porting note: was `rfl`
+  LinearIsometryEquiv.ext fun z => by -- Porting note: was `rfl`
     simp only [LinearIsometryEquiv.piLpCongrLeft, LinearIsometryEquiv.symm,
       LinearIsometryEquiv.coe_mk]
     unfold PiLp WithLp
@@ -742,7 +738,6 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_single [DecidableEq ι] [Decida
 section Single
 
 variable (p)
-
 variable [DecidableEq ι]
 
 -- Porting note: added `hp`

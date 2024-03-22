@@ -152,7 +152,7 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
     -- and `lucas_lehmer_residue p = 0 → 2^p - 1 ∣ s_mod p (p-2)`.
     intro h
     simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says
-      simp only [ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two, pow_pos, cast_pred,
+      simp only [ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, ofNat_pos, pow_pos, cast_pred,
         cast_pow, cast_ofNat] at h
     apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
     · exact sMod_nonneg _ (by positivity) _
@@ -425,7 +425,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   dsimp [lucasLehmerResidue] at h
   rw [sZMod_eq_s p'] at h
   simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says
-    simp only [add_tsub_cancel_right, ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two,
+    simp only [add_tsub_cancel_right, ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, ofNat_pos,
       pow_pos, cast_pred, cast_pow, cast_ofNat] at h
   cases' h with k h
   use k
@@ -557,7 +557,7 @@ theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) =
   have h1 := calc
     4 = 2 ^ 2 := by norm_num
     _ ≤ 2 ^ p := Nat.pow_le_pow_of_le_right (by norm_num) hp
-  have h2 : 1 ≤ 2 ^ p := by linarith
+  have h2 : 1 ≤ 2 ^ p := by omega
   induction k with
   | zero =>
     rw [sMod', sMod, Int.ofNat_emod]

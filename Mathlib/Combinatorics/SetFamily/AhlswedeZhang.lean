@@ -5,9 +5,8 @@ Authors: Yaël Dillies, Vladimir Ivanov
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Sups
-import Mathlib.Order.Hom.Lattice
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
@@ -60,7 +59,7 @@ private lemma binomial_sum_eq (h : n < m) :
   have hi₄ : (i + 1 : ℚ) ≠ 0 := i.cast_add_one_ne_zero
   have := congr_arg ((↑) : ℕ → ℚ) (choose_succ_right_eq m i)
   push_cast at this
-  dsimp [hf]
+  dsimp [f, hf]
   rw [(eq_mul_inv_iff_mul_eq₀ hi₄).mpr this]
   have := congr_arg ((↑) : ℕ → ℚ) (choose_succ_right_eq n i)
   push_cast at this

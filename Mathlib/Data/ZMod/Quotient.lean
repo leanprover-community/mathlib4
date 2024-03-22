@@ -92,7 +92,7 @@ noncomputable def zmultiplesQuotientStabilizerEquiv :
   (ofBijective
           (map _ (stabilizer (zmultiples a) b) (zmultiplesHom (zmultiples a) ⟨a, mem_zmultiples a⟩)
             (by
-              rw [zmultiples_le, mem_comap, mem_stabilizer_iff, zmultiplesHom_apply, coe_nat_zsmul]
+              rw [zmultiples_le, mem_comap, mem_stabilizer_iff, zmultiplesHom_apply, natCast_zsmul]
               simp_rw [← vadd_iterate]
               exact isPeriodicPt_minimalPeriod (a +ᵥ ·) b))
           ⟨by
@@ -144,15 +144,17 @@ noncomputable def _root_.AddAction.orbitZMultiplesEquiv {α β : Type*} [AddGrou
     (zmultiplesQuotientStabilizerEquiv a b).toEquiv
 #align add_action.orbit_zmultiples_equiv AddAction.orbitZMultiplesEquiv
 
-attribute [to_additive existing AddAction.orbitZMultiplesEquiv] orbitZPowersEquiv
+attribute [to_additive existing] orbitZPowersEquiv
 
-@[to_additive orbit_zmultiples_equiv_symm_apply]
+@[to_additive]
 theorem orbitZPowersEquiv_symm_apply (k : ZMod (minimalPeriod (a • ·) b)) :
     (orbitZPowersEquiv a b).symm k =
       (⟨a, mem_zpowers a⟩ : zpowers a) ^ (cast k : ℤ) • ⟨b, mem_orbit_self b⟩ :=
   rfl
 #align mul_action.orbit_zpowers_equiv_symm_apply MulAction.orbitZPowersEquiv_symm_apply
-#align add_action.orbit_zmultiples_equiv_symm_apply AddAction.orbit_zmultiples_equiv_symm_apply
+#align add_action.orbit_zmultiples_equiv_symm_apply AddAction.orbitZMultiplesEquiv_symm_apply
+/- 2024-02-21 -/ @[deprecated] alias _root_.AddAction.orbit_zmultiples_equiv_symm_apply :=
+  orbitZMultiplesEquiv_symm_apply
 
 theorem orbitZPowersEquiv_symm_apply' (k : ℤ) :
     (orbitZPowersEquiv a b).symm k =
@@ -165,18 +167,18 @@ theorem _root_.AddAction.orbitZMultiplesEquiv_symm_apply' {α β : Type*} [AddGr
     [AddAction α β] (b : β) (k : ℤ) :
     (AddAction.orbitZMultiplesEquiv a b).symm k =
       k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddAction.mem_orbit_self b⟩ := by
-  rw [AddAction.orbit_zmultiples_equiv_symm_apply, ZMod.coe_int_cast]
-  -- porting note: times out without `a b` explicit
+  rw [AddAction.orbitZMultiplesEquiv_symm_apply, ZMod.coe_int_cast]
+  -- Porting note: times out without `a b` explicit
   exact Subtype.ext (zsmul_vadd_mod_minimalPeriod a b k)
 #align add_action.orbit_zmultiples_equiv_symm_apply' AddAction.orbitZMultiplesEquiv_symm_apply'
 
-attribute [to_additive existing AddAction.orbitZMultiplesEquiv_symm_apply']
+attribute [to_additive existing]
   orbitZPowersEquiv_symm_apply'
 
 @[to_additive]
 theorem minimalPeriod_eq_card [Fintype (orbit (zpowers a) b)] :
     minimalPeriod (a • ·) b = Fintype.card (orbit (zpowers a) b) := by
-  -- porting note: added `(_)` to find `Fintype` by unification
+  -- Porting note: added `(_)` to find `Fintype` by unification
   rw [← Fintype.ofEquiv_card (orbitZPowersEquiv a b), @ZMod.card _ (_)]
 #align mul_action.minimal_period_eq_card MulAction.minimalPeriod_eq_card
 #align add_action.minimal_period_eq_card AddAction.minimalPeriod_eq_card
@@ -201,7 +203,7 @@ open Subgroup
 variable {α : Type*} [Group α] (a : α)
 
 /-- See also `Fintype.card_zpowers`. -/
-@[to_additive (attr := simp) Nat.card_zmultiples "See also `Fintype.card_zmultiples`."]
+@[to_additive (attr := simp) "See also `Fintype.card_zmultiples`."]
 theorem Nat.card_zpowers : Nat.card (zpowers a) = orderOf a := by
   have := Nat.card_congr (MulAction.orbitZPowersEquiv a (1 : α))
   rwa [Nat.card_zmod, orbit_subgroup_one_eq_self] at this
@@ -210,15 +212,15 @@ theorem Nat.card_zpowers : Nat.card (zpowers a) = orderOf a := by
 
 variable {a}
 
-@[to_additive (attr := simp) finite_zmultiples]
+@[to_additive (attr := simp)]
 lemma finite_zpowers : (zpowers a : Set α).Finite ↔ IsOfFinOrder a := by
   simp only [← orderOf_pos_iff, ← Nat.card_zpowers, Nat.card_pos_iff, ← SetLike.coe_sort_coe,
     nonempty_coe_sort, Nat.card_pos_iff, Set.finite_coe_iff, Subgroup.coe_nonempty, true_and]
 
-@[to_additive (attr := simp) infinite_zmultiples]
+@[to_additive (attr := simp)]
 lemma infinite_zpowers : (zpowers a : Set α).Infinite ↔ ¬IsOfFinOrder a := finite_zpowers.not
 
-@[to_additive IsOfFinAddOrder.finite_zmultiples]
+@[to_additive]
 protected alias ⟨_, IsOfFinOrder.finite_zpowers⟩ := finite_zpowers
 #align is_of_fin_order.finite_zpowers IsOfFinOrder.finite_zpowers
 #align is_of_fin_add_order.finite_zmultiples IsOfFinAddOrder.finite_zmultiples

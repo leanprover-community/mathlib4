@@ -117,7 +117,7 @@ theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by
   · intro l a ih
     dsimp only [List.length]
     refine' Tendsto.comp (tendsto_pure_pure (fun x => x + 1) _) _
-    refine' Tendsto.comp ih tendsto_snd
+    exact Tendsto.comp ih tendsto_snd
 #align list.continuous_at_length List.continuousAt_length
 
 theorem tendsto_insertNth' {a : α} :

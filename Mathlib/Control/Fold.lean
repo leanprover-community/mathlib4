@@ -61,7 +61,6 @@ open ULift CategoryTheory MulOpposite
 namespace Monoid
 
 variable {m : Type u → Type u} [Monad m]
-
 variable {α β : Type u}
 
 /-- For a list, foldl f x [y₀,y₁] reduces as follows:
@@ -88,10 +87,11 @@ We can view the above as a composition of functions:
 
 We can use traverse and const to construct this composition:
 ```
-calc   const.run (traverse (λ y, const.mk' (flip f y)) [y₀,y₁]) x
-     = const.run ((::) <$> const.mk' (flip f y₀) <*> traverse (λ y, const.mk' (flip f y)) [y₁]) x
+calc   const.run (traverse (fun y ↦ const.mk' (flip f y)) [y₀,y₁]) x
+     = const.run ((::) <$> const.mk' (flip f y₀) <*>
+         traverse (fun y ↦ const.mk' (flip f y)) [y₁]) x
 ...  = const.run ((::) <$> const.mk' (flip f y₀) <*>
-         ( (::) <$> const.mk' (flip f y₁) <*> traverse (λ y, const.mk' (flip f y)) [] )) x
+         ( (::) <$> const.mk' (flip f y₁) <*> traverse (fun y ↦ const.mk' (flip f y)) [] )) x
 ...  = const.run ((::) <$> const.mk' (flip f y₀) <*>
          ( (::) <$> const.mk' (flip f y₁) <*> pure [] )) x
 ...  = const.run ( ((::) <$> const.mk' (flip f y₁) <*> pure []) ∘
@@ -271,7 +271,6 @@ theorem foldl.unop_ofFreeMonoid (f : β → α → β) (xs : FreeMonoid α) (a :
 #align traversable.foldl.unop_of_free_monoid Traversable.foldl.unop_ofFreeMonoid
 
 variable (m : Type u → Type u) [Monad m] [LawfulMonad m]
-
 variable {t : Type u → Type u} [Traversable t] [LawfulTraversable t]
 
 open LawfulTraversable
@@ -299,7 +298,6 @@ open LawfulTraversable
 open List (cons)
 
 variable {α β γ : Type u}
-
 variable {t : Type u → Type u} [Traversable t] [LawfulTraversable t]
 
 @[simp]
@@ -318,7 +316,8 @@ theorem foldr.ofFreeMonoid_comp_of (f : β → α → α) :
 theorem foldlm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β → m α) :
     foldlM.ofFreeMonoid f ∘ FreeMonoid.of = foldlM.mk ∘ flip f := by
   ext1 x
-  simp [(· ∘ ·), foldlM.ofFreeMonoid, foldlM.mk, flip]
+  simp only [foldlM.ofFreeMonoid, flip, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply,
+    FreeMonoid.toList_of, List.foldlM_cons, List.foldlM_nil, bind_pure, foldlM.mk, op_inj]
   rfl
 #align traversable.mfoldl.of_free_monoid_comp_of Traversable.foldlm.ofFreeMonoid_comp_of
 

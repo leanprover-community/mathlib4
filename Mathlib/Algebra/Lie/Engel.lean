@@ -70,9 +70,7 @@ into a single statement about nilpotency of Lie modules. This is not usually emp
 universe u₁ u₂ u₃ u₄
 
 variable {R : Type u₁} {L : Type u₂} {L₂ : Type u₃} {M : Type u₄}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L₂] [LieAlgebra R L₂]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieSubmodule
@@ -181,7 +179,7 @@ theorem Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function
   have surj_id : Function.Surjective (LinearMap.id : M →ₗ[R] M) := Function.surjective_id
   haveI : LieModule.IsNilpotent R L M := h M hnp
   apply hf.lieModuleIsNilpotent surj_id
-  -- Porting note: was `simp`
+  -- porting note (#10745): was `simp`
   intros; simp only [LinearMap.id_coe, id_eq]; rfl
 #align function.surjective.is_engelian Function.Surjective.isEngelian
 

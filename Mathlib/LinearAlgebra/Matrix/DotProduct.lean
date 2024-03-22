@@ -45,7 +45,7 @@ theorem dotProduct_stdBasis_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n)
   exact fun hi => False.elim (hi <| Finset.mem_univ _)
 #align matrix.dot_product_std_basis_eq_mul Matrix.dotProduct_stdBasis_eq_mul
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem dotProduct_stdBasis_one [DecidableEq n] (v : n → R) (i : n) :
     dotProduct v (LinearMap.stdBasis R (fun _ => R) i 1) = v i := by
   rw [dotProduct_stdBasis_eq_mul, mul_one]

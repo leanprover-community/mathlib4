@@ -42,7 +42,6 @@ open scoped BigOperators
 open Finset Submodule FiniteDimensional
 
 variable (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [IsWellOrder ι (· < ·)]
 
 attribute [local instance] IsWellOrder.toHasWellFounded
@@ -153,7 +152,6 @@ theorem gramSchmidt_mem_span (f : ι → E) :
   exact smul_mem _ _
     (span_mono (image_subset f <| Iic_subset_Iic.2 hkj.le) <| gramSchmidt_mem_span _ le_rfl)
 termination_by j => j
-decreasing_by exact hkj
 #align gram_schmidt_mem_span gramSchmidt_mem_span
 
 theorem span_gramSchmidt_Iic (f : ι → E) (c : ι) :
@@ -211,7 +209,7 @@ theorem gramSchmidt_ne_zero_coe {f : ι → E} (n : ι)
     simp only [Set.mem_image, Set.mem_Iio, orthogonalProjection_singleton]
     apply Submodule.smul_mem _ _ _
     rw [Finset.mem_Iio] at ha
-    refine' subset_span ⟨a, ha, by rfl⟩
+    exact subset_span ⟨a, ha, by rfl⟩
   have h₂ : (f ∘ ((↑) : Set.Iic n → ι)) ⟨n, le_refl n⟩ ∈
       span 𝕜 (f ∘ ((↑) : Set.Iic n → ι) '' Set.Iio ⟨n, le_refl n⟩) := by
     rw [image_comp]

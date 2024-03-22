@@ -94,7 +94,7 @@ theorem normUnit_one : normUnit (1 : α) = 1 :=
   normUnit_coe_units 1
 #align norm_unit_one normUnit_one
 
--- Porting note: quite slow. Improve performance?
+-- Porting note (#11083): quite slow. Improve performance?
 /-- Chooses an element of each associate class, by multiplying by `normUnit` -/
 def normalize : α →*₀ α where
   toFun x := x * normUnit x
@@ -133,13 +133,13 @@ theorem normalize_apply (x : α) : normalize x = x * normUnit x :=
   rfl
 #align normalize_apply normalize_apply
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 theorem normalize_zero : normalize (0 : α) = 0 :=
   normalize.map_zero
 #align normalize_zero normalize_zero
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 theorem normalize_one : normalize (1 : α) = 1 :=
   normalize.map_one
@@ -157,7 +157,7 @@ theorem normalize_eq_one {x : α} : normalize x = 1 ↔ IsUnit x :=
   ⟨fun hx => isUnit_iff_exists_inv.2 ⟨_, hx⟩, fun ⟨u, hu⟩ => hu ▸ normalize_coe_units u⟩
 #align normalize_eq_one normalize_eq_one
 
--- Porting note: quite slow. Improve performance?
+-- Porting note (#11083): quite slow. Improve performance?
 @[simp]
 theorem normUnit_mul_normUnit (a : α) : normUnit (a * normUnit a) = 1 := by
   nontriviality α using Subsingleton.elim a 0
@@ -951,7 +951,7 @@ theorem normUnit_eq_one (x : α) : normUnit x = 1 :=
   rfl
 #align norm_unit_eq_one normUnit_eq_one
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 theorem normalize_eq (x : α) : normalize x = x :=
   mul_one x
@@ -1048,14 +1048,14 @@ noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)
     lcm := fun a b =>
       if a = 0 then 0 else Classical.choose ((gcd_dvd_left a b).trans (Dvd.intro b rfl))
     gcd_mul_lcm := fun a b => by
-      -- Porting note: need `dsimp only` before `split_ifs`
+      -- Porting note (#10971): need `dsimp only` before `split_ifs`
       dsimp only
       split_ifs with a0
       · rw [mul_zero, a0, zero_mul]
       · rw [← Classical.choose_spec ((gcd_dvd_left a b).trans (Dvd.intro b rfl))]
     lcm_zero_left := fun a => if_pos rfl
     lcm_zero_right := fun a => by
-      -- Porting note: need `dsimp only` before `split_ifs`
+      -- Porting note (#10971): need `dsimp only` before `split_ifs`
       dsimp only
       split_ifs with a0
       · rfl
@@ -1108,7 +1108,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
         rw [← normalize_gcd] at this
         rwa [normalize.map_mul, normalize_gcd, mul_right_inj' h1] at h2
     gcd_mul_lcm := fun a b => by
-      -- Porting note: need `dsimp only`
+      -- Porting note (#10971): need `dsimp only`
       dsimp only
       split_ifs with a0
       · rw [mul_zero, a0, zero_mul]
@@ -1117,7 +1117,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
         exact normalize_associated (a * b)
     lcm_zero_left := fun a => if_pos rfl
     lcm_zero_right := fun a => by
-      -- Porting note: need `dsimp only`
+      -- Porting note (#10971): need `dsimp only`
       dsimp only
       split_ifs with a0
       · rfl
@@ -1141,16 +1141,16 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
   { lcm
     gcd := fun a b => if a = 0 then b else if b = 0 then a else Classical.choose (exists_gcd a b)
     gcd_mul_lcm := fun a b => by
-      -- Porting note: need `dsimp only`
+      -- Porting note (#10971): need `dsimp only`
       dsimp only
       split_ifs with h h_1
       · rw [h, eq_zero_of_zero_dvd (dvd_lcm_left _ _), mul_zero, zero_mul]
-      · rw [h_1, eq_zero_of_zero_dvd (dvd_lcm_right _ _), mul_zero]
+      · rw [h_1, eq_zero_of_zero_dvd (dvd_lcm_right _ _)]
       rw [mul_comm, ← Classical.choose_spec (exists_gcd a b)]
     lcm_zero_left := fun a => eq_zero_of_zero_dvd (dvd_lcm_left _ _)
     lcm_zero_right := fun a => eq_zero_of_zero_dvd (dvd_lcm_right _ _)
     gcd_dvd_left := fun a b => by
-      -- Porting note: need `dsimp only`
+      -- Porting note (#10971): need `dsimp only`
       dsimp only
       split_ifs with h h_1
       · rw [h]
@@ -1167,7 +1167,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
         mul_dvd_mul_iff_right h]
       apply dvd_lcm_right
     gcd_dvd_right := fun a b => by
-      -- Porting note: need `dsimp only`
+      -- Porting note (#10971): need `dsimp only`
       dsimp only
       split_ifs with h h_1
       · exact dvd_rfl
@@ -1184,7 +1184,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
         mul_dvd_mul_iff_right h_1]
       apply dvd_lcm_left
     dvd_gcd := fun {a b c} ac ab => by
-      -- Porting note: need `dsimp only`
+      -- Porting note (#10971): need `dsimp only`
       dsimp only
       split_ifs with h h_1
       · exact ab
@@ -1206,7 +1206,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
       apply ac }
 #align gcd_monoid_of_lcm gcdMonoidOfLCM
 
--- Porting note: very slow; improve performance?
+-- Porting note (#11083): very slow; improve performance?
 /-- Define `NormalizedGCDMonoid` on a structure just from the `lcm` and its properties. -/
 noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq α] (lcm : α → α → α)
     (dvd_lcm_left : ∀ a b, a ∣ lcm a b) (dvd_lcm_right : ∀ a b, b ∣ lcm a b)
@@ -1351,13 +1351,13 @@ namespace CommGroupWithZero
 
 variable (G₀ : Type*) [CommGroupWithZero G₀] [DecidableEq G₀]
 
--- Porting note: very slow; improve performance?
+-- Porting note (#11083): very slow; improve performance?
 -- see Note [lower instance priority]
 instance (priority := 100) : NormalizedGCDMonoid G₀ where
   normUnit x := if h : x = 0 then 1 else (Units.mk0 x h)⁻¹
   normUnit_zero := dif_pos rfl
   normUnit_mul := fun {x y} x0 y0 => Units.eq_iff.1 (by
-    -- Porting note: need `dsimp only`, also `simp` reaches maximum heartbeat
+    -- Porting note (#10971): need `dsimp only`, also `simp` reaches maximum heartbeat
     -- by Units.eq_iff.mp (by simp only [x0, y0, mul_comm])
     dsimp only
     split_ifs with h
@@ -1367,25 +1367,25 @@ instance (priority := 100) : NormalizedGCDMonoid G₀ where
       · exact absurd ‹y = 0› y0
     · rw [Units.mk0_mul, mul_inv_rev, mul_comm] )
   normUnit_coe_units u := by
-    -- Porting note: need `dsimp only`
+    -- Porting note (#10971): need `dsimp only`
     dsimp only
     rw [dif_neg (Units.ne_zero _), Units.mk0_val]
   gcd a b := if a = 0 ∧ b = 0 then 0 else 1
   lcm a b := if a = 0 ∨ b = 0 then 0 else 1
   gcd_dvd_left a b := by
-    -- Porting note: need `dsimp only`
+    -- Porting note (#10971): need `dsimp only`
     dsimp only
     split_ifs with h
     · rw [h.1]
     · exact one_dvd _
   gcd_dvd_right a b := by
-    -- Porting note: need `dsimp only`
+    -- Porting note (#10971): need `dsimp only`
     dsimp only
     split_ifs with h
     · rw [h.2]
     · exact one_dvd _
   dvd_gcd := fun {a b c} hac hab => by
-    -- Porting note: need `dsimp only`
+    -- Porting note (#10971): need `dsimp only`
     dsimp only
     split_ifs with h
     · apply dvd_zero
@@ -1402,7 +1402,7 @@ instance (priority := 100) : NormalizedGCDMonoid G₀ where
     · by_cases hb : b = 0
       · simp only [hb, and_true, or_true, ite_true, mul_zero]
         exact Associated.refl _
-      -- Porting note: need `dsimp only`
+      -- Porting note (#10971): need `dsimp only`
       · dsimp only
         rw [if_neg (not_and_of_not_left _ ha), one_mul, if_neg (not_or_of_not ha hb)]
         exact (associated_one_iff_isUnit.mpr ((IsUnit.mk0 _ ha).mul (IsUnit.mk0 _ hb))).symm
