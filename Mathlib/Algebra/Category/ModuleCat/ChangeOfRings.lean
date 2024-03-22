@@ -738,7 +738,7 @@ def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by
   · intro s z
     dsimp
     induction' z using TensorProduct.induction_on with s' y z1 z2 ih1 ih2
-    · rw [smul_zero, map_zero, smul_zero] -- [0.444407s]
+    · rw [smul_zero, map_zero, smul_zero]
     · rw [ExtendScalars.smul_tmul, LinearMap.coe_mk]
       erw [TensorProduct.lift.tmul, TensorProduct.lift.tmul]
       set s' : S := s'
