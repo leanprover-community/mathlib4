@@ -156,7 +156,7 @@ lemma tendsto_harmonic_sub_log :
   simp_rw [eulerMascheroniSeq', hn, if_false]
 
 lemma eulerMascheroniSeq_lt_eulerMascheroniConstant (n : ℕ) :
-     eulerMascheroniSeq n < eulerMascheroniConstant := by
+    eulerMascheroniSeq n < eulerMascheroniConstant := by
   refine (strictMono_eulerMascheroniSeq (Nat.lt_succ_self n)).trans_le ?_
   apply strictMono_eulerMascheroniSeq.monotone.ge_of_tendsto tendsto_eulerMascheroniSeq
 
