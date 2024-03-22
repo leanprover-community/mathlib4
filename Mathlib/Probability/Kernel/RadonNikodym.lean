@@ -19,6 +19,26 @@ and a kernel `kernel.singularPart κ η : kernel α γ` such that
 
 Furthermore, the sets `{a | κ a ≪ η a}` and `{a | κ a ⟂ₘ η a}` are measurable.
 
+The construction of the derivative starts from `kernel.density`: for two finite kernels
+`κ' : kernel α (γ × β)` and `η' : kernel α γ` with `fst κ' ≤ η'`, the function
+`density κ' η' : α → γ → Set β → ℝ` is jointly measurable in the first two arguments and satisfies
+that for all `a : α` and all measurable sets `s : Set β` and `A : Set γ`,
+`∫ x in A, density κ' η' a x s ∂(η' a) = (κ' a (A ×ˢ s)).toReal`.
+We use that definition for `β = Unit` and `κ' = map κ (fun a ↦ (a, ()))`. We can't choose `η' = η`
+in general because we might not have `κ ≤ η`, but if we could, we would get a measurable function
+`f` with the property `κ = withDensity η f`, which is the decomposition we want for `κ ≤ η`.
+To circumvent that difficulty, we take `η' = κ + η` and thus define `rnDerivAux κ η`.
+Finally, `rnDeriv κ η a x` is given by
+`ENNReal.ofReal (rnDerivAux κ (κ + η) a x) / ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x)`.
+Up to some conversions between `ℝ` and `ℝ≥0`, the singular part is
+`withDensity (κ + η) (rnDerivAux κ (κ + η) - (1 - rnDerivAux κ (κ + η)) * rnDeriv κ η)`.
+
+The countably generated measurable space assumption is not needed to have a decomposition for
+measures, but the additional difficulty with kernels is to obtain joint measurability of the
+derivative. This is why we can't simply define `rnDeriv κ η` by `a ↦ (κ a).rnDeriv (ν a)`
+everywhere (although `rnDeriv κ η` has that value almost everywhere). See the construction of
+`kernel.density` for details on how the countably generated hypothesis is used.
+
 ## Main definitions
 
 * `ProbabilityTheory.kernel.rnDeriv`: a function `α → γ → ℝ≥0∞` jointly measurable on `α × γ`
@@ -168,8 +188,7 @@ lemma measure_mutuallySingularSetSlice (κ η : kernel α γ) [IsFiniteKernel κ
 /-- Radon-Nikodym derivative of the kernel `κ` with respect to the kernel `η`. -/
 noncomputable
 def rnDeriv (κ η : kernel α γ) (a : α) (x : γ) : ℝ≥0∞ :=
-  ENNReal.ofReal (rnDerivAux κ (κ + η) a x)
-    / ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x)
+  ENNReal.ofReal (rnDerivAux κ (κ + η) a x) / ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x)
 
 lemma rnDeriv_def (κ η : kernel α γ) :
     rnDeriv κ η = fun a x ↦ ENNReal.ofReal (rnDerivAux κ (κ + η) a x)
@@ -243,8 +262,7 @@ lemma singularPart_compl_mutuallySingularSetSlice (κ η : kernel α γ) [IsSFin
   · simp [lt_of_le_of_ne (rnDerivAux_le_one (le_add_of_nonneg_right bot_le)) hx]
 
 lemma singularPart_subset_compl_mutuallySingularSetSlice [IsFiniteKernel κ]
-    [IsFiniteKernel η] {a : α} {s : Set γ}
-    (hs : s ⊆ (mutuallySingularSetSlice κ η a)ᶜ) :
+    [IsFiniteKernel η] {a : α} {s : Set γ} (hs : s ⊆ (mutuallySingularSetSlice κ η a)ᶜ) :
     singularPart κ η a s = 0 := by
   exact measure_mono_null hs (singularPart_compl_mutuallySingularSetSlice κ η a)
 
