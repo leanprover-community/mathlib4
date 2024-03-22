@@ -2247,15 +2247,15 @@ theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z 
   simpa [not_or] using this
 #align cardinal.three_le Cardinal.three_le
 
-lemma Cardinal.succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
+lemma succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
   rw [← Cardinal.nat_succ]
   norm_cast
 
-lemma leq_iff_le_succ {n : ℕ} {c : Cardinal} : n < c ↔ n + 1 ≤ c := by
+lemma natCast_add_one_le_iff {n : ℕ} {c : Cardinal} : n + 1 ≤ c ↔ n < c := by
   rw [← Order.succ_le_iff, Cardinal.succ_natCast]
 
-lemma two_le_mk_iff_one_lt {c : Cardinal} : 1 < c ↔ 2 ≤ c := by
-  convert leq_iff_le_succ
+lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c := by
+  convert natCast_add_one_le_iff
   norm_cast
 
 /-- The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. -/
