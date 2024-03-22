@@ -418,7 +418,8 @@ theorem ContinuousOn.locallyIntegrableOn [IsLocallyFiniteMeasure μ]
 
 theorem Continuous.integral_pos_of_integrable_nonneg_nonzero [IsOpenPosMeasure μ] {f : X → ℝ}
     {x : X} (f_cont : Continuous f) (f_int : Integrable f μ) (f_nonneg : 0 ≤ f) (f_x : f x ≠ 0) :
-    0 < (∫ x, f x ∂μ) := (integral_pos_iff_support_of_nonneg f_nonneg f_int).2
+    0 < (∫ x, f x ∂μ) :=
+  (integral_pos_iff_support_of_nonneg f_nonneg f_int).2
     (IsOpen.measure_pos μ f_cont.isOpen_support ⟨x, f_x⟩)
 
 variable [IsFiniteMeasureOnCompacts μ]
@@ -479,7 +480,8 @@ theorem Continuous.integrable_of_hasCompactSupport (hf : Continuous f) (hcf : Ha
 
 theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero [IsOpenPosMeasure μ]
     {f : X → ℝ} {x : X} (f_cont : Continuous f) (f_comp : HasCompactSupport f) (f_nonneg : 0 ≤ f)
-    (f_x : f x ≠ 0) : 0 < (∫ x, f x ∂μ) := f_cont.integral_pos_of_integrable_nonneg_nonzero
+    (f_x : f x ≠ 0) : 0 < (∫ x, f x ∂μ) :=
+  f_cont.integral_pos_of_integrable_nonneg_nonzero
     (f_cont.integrable_of_hasCompactSupport f_comp) f_nonneg f_x
 
 end borel
