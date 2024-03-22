@@ -9,6 +9,7 @@ import Mathlib.Lean.Meta.CongrTheorems
 import Lean.Meta.Tactic.Assumption
 import Lean.Meta.Tactic.Rfl
 import Std.Data.List.Basic
+import Mathlib.Logic.Basic
 
 /-!
 # The `congr!` tactic
