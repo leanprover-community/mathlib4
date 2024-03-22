@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.BilinearForm.Properties
 
-
 /-!
 
 # Dual submodule with respect to a bilinear form.
