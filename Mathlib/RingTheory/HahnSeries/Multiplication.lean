@@ -315,6 +315,32 @@ theorem mul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ]
     Finset.sum_singleton]
 #align hahn_series.mul_coeff_order_add_order HahnSeries.mul_coeff_order_add_order
 
+theorem order_mul_of_nonzero_prod {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R}
+    (h : x.coeff x.order * y.coeff y.order ≠ 0) : (x * y).order = x.order + y.order := by
+  have hx : x.coeff x.order ≠ 0 := by aesop
+  have hy : y.coeff y.order ≠ 0 := by aesop
+  have hxy : (x * y).coeff (x.order + y.order) ≠ 0 :=
+    Eq.mpr (congrArg (fun _a ↦ _a ≠ 0) (mul_coeff_order_add_order x y)) h
+  refine le_antisymm (order_le_of_coeff_ne_zero
+    (Eq.mpr (congrArg (fun _a ↦ _a ≠ 0) (mul_coeff_order_add_order x y)) h)) ?_
+  rw [order_of_ne <| ne_zero_of_coeff_ne_zero hx, order_of_ne <| ne_zero_of_coeff_ne_zero hy,
+    order_of_ne <| ne_zero_of_coeff_ne_zero hxy, ← Set.IsWF.min_add]
+  exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
+
+theorem order_mul_single_of_nonzero_divisor {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [NonUnitalNonAssocSemiring R] {g : Γ} {r : R} (hr : ∀ (s : R), r * s = 0 → s = 0)
+    {x : HahnSeries Γ R} (hx : x ≠ 0) : (((single g) r) * x).order = g + x.order := by
+  have hR : ∃ (y : R), y ≠ 0 := Exists.intro (x.coeff (order x)) (coeff_order_ne_zero hx)
+  have hrne : r ≠ 0 := by
+    by_contra hr'
+    let y := Exists.choose hR
+    exact (Exists.choose_spec hR) (hr y (mul_eq_zero_of_left hr' y))
+  have hrx : ((single g) r).coeff (order ((single g) r)) * x.coeff x.order ≠ 0 := by
+    rw [order_single hrne, single_coeff_same]
+    exact fun hrx' => (coeff_order_ne_zero hx) (hr (x.coeff x.order) hrx')
+  rw [order_mul_of_nonzero_prod hrx, order_single hrne]
+
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     x * y * z = x * (y * z) := by
   ext b
@@ -404,13 +430,8 @@ instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R] :
 @[simp]
 theorem order_mul {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R]
     [NoZeroDivisors R] {x y : HahnSeries Γ R} (hx : x ≠ 0) (hy : y ≠ 0) :
-    (x * y).order = x.order + y.order := by
-  apply le_antisymm
-  · apply order_le_of_coeff_ne_zero
-    rw [mul_coeff_order_add_order x y]
-    exact mul_ne_zero (coeff_order_ne_zero hx) (coeff_order_ne_zero hy)
-  · rw [order_of_ne hx, order_of_ne hy, order_of_ne (mul_ne_zero hx hy), ← Set.IsWF.min_add]
-    exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
+    (x * y).order = x.order + y.order :=
+  order_mul_of_nonzero_prod (mul_ne_zero (coeff_order_ne_zero hx) (coeff_order_ne_zero hy))
 #align hahn_series.order_mul HahnSeries.order_mul
 
 @[simp]
