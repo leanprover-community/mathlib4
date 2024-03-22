@@ -2450,13 +2450,3 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
   refine' ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, _, hb mem_connectedComponent, disjoint_compl_left⟩
   exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
 #align connected_components.t2 ConnectedComponents.t2
-
-section TotallySeparated
-
-/-- A totally separated space is T2. -/
-instance TotallySeparatedSpace.t2Space [TotallySeparatedSpace X] : T2Space X where
-  t2 x y h := by
-    obtain ⟨u, v, h₁, h₂, h₃, h₄, _, h₅⟩ := isTotallySeparated_univ x trivial y trivial h
-    exact ⟨u, v, h₁, h₂, h₃, h₄, h₅⟩
-
-end TotallySeparated
