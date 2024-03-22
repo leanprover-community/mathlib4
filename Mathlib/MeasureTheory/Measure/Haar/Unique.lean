@@ -10,6 +10,7 @@ import Mathlib.Topology.Metrizable.Urysohn
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Measure.EverywherePos
+import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-!
 # Uniqueness of Haar measure in locally compact groups

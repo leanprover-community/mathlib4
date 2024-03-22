@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Integral.IntegrableOn
-import Mathlib.MeasureTheory.Integral.Bochner
 
 #align_import measure_theory.function.locally_integrable from "leanprover-community/mathlib"@"08a4542bec7242a5c60f179e4e49de8c0d677b1b"
 
@@ -416,12 +415,6 @@ theorem ContinuousOn.locallyIntegrableOn [IsLocallyFiniteMeasure μ]
   hf.integrableAt_nhdsWithin hK hx
 #align continuous_on.locally_integrable_on ContinuousOn.locallyIntegrableOn
 
-theorem Continuous.integral_pos_of_integrable_nonneg_nonzero [IsOpenPosMeasure μ] {f : X → ℝ}
-    {x : X} (f_cont : Continuous f) (f_int : Integrable f μ) (f_nonneg : 0 ≤ f) (f_x : f x ≠ 0) :
-    0 < (∫ x, f x ∂μ) :=
-  (integral_pos_iff_support_of_nonneg f_nonneg f_int).2
-    (IsOpen.measure_pos μ f_cont.isOpen_support ⟨x, f_x⟩)
-
 variable [IsFiniteMeasureOnCompacts μ]
 
 /-- A function `f` continuous on a compact set `K` is integrable on this set with respect to any
@@ -477,12 +470,6 @@ theorem Continuous.integrable_of_hasCompactSupport (hf : Continuous f) (hcf : Ha
   (integrableOn_iff_integrable_of_support_subset (subset_tsupport f)).mp <|
     hf.continuousOn.integrableOn_compact' hcf (isClosed_tsupport _).measurableSet
 #align continuous.integrable_of_has_compact_support Continuous.integrable_of_hasCompactSupport
-
-theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero [IsOpenPosMeasure μ]
-    {f : X → ℝ} {x : X} (f_cont : Continuous f) (f_comp : HasCompactSupport f) (f_nonneg : 0 ≤ f)
-    (f_x : f x ≠ 0) : 0 < (∫ x, f x ∂μ) :=
-  f_cont.integral_pos_of_integrable_nonneg_nonzero
-    (f_cont.integrable_of_hasCompactSupport f_comp) f_nonneg f_x
 
 end borel
 
