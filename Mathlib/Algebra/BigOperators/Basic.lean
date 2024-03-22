@@ -99,30 +99,6 @@ In practice, this means that parentheses should be placed as follows:
 namespace BigOperators
 open Std.ExtendedBinder Lean Meta
 
-/-- `finset% t` elaborates `t` as a `Finset`.
-If `t` is a `Set`, then inserts `Set.toFinset`.
-Does not make use of the expected type; useful for big operators over finsets.
-```
-#check finset% Finset.range 2 -- Finset Nat
-#check finset% (Set.univ : Set Bool) -- Finset Bool
-```
--/
-elab (name := finsetStx) "finset% " t:term : term => do
-  let u ← mkFreshLevelMVar
-  let ty ← mkFreshExprMVar (mkSort (.succ u))
-  let x ← Elab.Term.elabTerm t (mkApp (.const ``Finset [u]) ty)
-  let xty ← whnfR (← inferType x)
-  if xty.isAppOfArity ``Set 1 then
-    Elab.Term.elabAppArgs (.const ``Set.toFinset [u]) #[] #[.expr x] none false false
-  else
-    return x
-
-open Lean.Elab.Term.Quotation in
-/-- `quot_precheck` for the `finset%` syntax. -/
-@[quot_precheck BigOperators.finsetStx] def precheckFinsetStx : Precheck
-  | `(finset% $t) => precheck t
-  | _ => Elab.throwUnsupportedSyntax
-
 -- TODO: contribute this modification back to `extBinder`
 
 /-- A `bigOpBinder` is like an `extBinder` and has the form `x`, `x : ty`, or `x pred`
@@ -267,7 +243,7 @@ to show the domain type when the product is over `Finset.univ`. -/
     let ss ← withNaryArg 3 <| delab
     `(∏ $(.mk i):ident ∈ $ss, $body)
 
-/-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
+/-- Delaborator for `Finset.sum`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
 @[scoped delab app.Finset.sum] def delabFinsetSum : Delab := whenPPOption getPPNotation do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
