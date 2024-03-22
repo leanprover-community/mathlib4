@@ -1807,24 +1807,28 @@ theorem inter_union_distrib_left (s t u : Finset α) : s ∩ (t ∪ u) = s ∩ t
   inf_sup_left _ _ _
 #align finset.inter_distrib_left Finset.inter_union_distrib_left
 
+-- 2024-03-22
 @[deprecated] alias inter_distrib_left := inter_union_distrib_left
 
 theorem inter_union_distrib_right (s t u : Finset α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
   sup_inf_right _ _ _
 #align finset.union_distrib_right Finset.inter_union_distrib_right
 
+-- 2024-03-22
 @[deprecated] alias union_distrib_right := inter_union_distrib_right
 
 theorem union_inter_distrib_left (s t u : Finset α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
   sup_inf_left _ _ _
 #align finset.union_distrib_left Finset.union_inter_distrib_left
 
+-- 2024-03-22
 @[deprecated] alias union_distrib_left := union_inter_distrib_left
 
 theorem union_inter_distrib_right (s t u : Finset α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
   inf_sup_right _ _ _
 #align finset.inter_distrib_right Finset.union_inter_distrib_right
 
+-- 2024-03-22
 @[deprecated] alias inter_distrib_right := union_inter_distrib_right
 
 theorem union_union_distrib_left (s t u : Finset α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
