@@ -329,13 +329,13 @@ def continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E where
 variable (𝕜 E) in
 @[simp]
 theorem toWeakSpace_eq_continuousLinearMapToWeakSpace (x : E) :
-    toWeakSpace 𝕜 E x = (continuousLinearMapToWeakSpace 𝕜 E) x := by rfl
+    continuousLinearMapToWeakSpace 𝕜 E x= toWeakSpace 𝕜 E x := by rfl
 
 theorem injective_continuousLinearMapToWeakSpace :
     Function.Injective (continuousLinearMapToWeakSpace 𝕜 E) := by
   intro x y hxy
-  rw [← toWeakSpace_eq_continuousLinearMapToWeakSpace,
-    ← toWeakSpace_eq_continuousLinearMapToWeakSpace] at hxy
+  rw [toWeakSpace_eq_continuousLinearMapToWeakSpace,
+    toWeakSpace_eq_continuousLinearMapToWeakSpace] at hxy
   exact LinearEquiv.injective (toWeakSpace 𝕜 E) hxy
 
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
@@ -372,12 +372,9 @@ theorem isOpen_of_isOpen_WeakSpace' (V : Set E)
    ext x
    constructor
    · intro hx
-     have : (continuousLinearMapToWeakSpace 𝕜 E) x ∈ (continuousLinearMapToWeakSpace 𝕜 E) '' V := by
-       exact hx
      obtain ⟨y, hy⟩ := hx
-     rw [← toWeakSpace_eq_continuousLinearMapToWeakSpace] at this
-     rw [← toWeakSpace_eq_continuousLinearMapToWeakSpace,
-       ← toWeakSpace_eq_continuousLinearMapToWeakSpace] at hy
+     rw [toWeakSpace_eq_continuousLinearMapToWeakSpace,
+       toWeakSpace_eq_continuousLinearMapToWeakSpace] at hy
      have : y = x := LinearEquiv.injective (toWeakSpace 𝕜 E) hy.2
      rw [this] at hy
      exact hy.1
