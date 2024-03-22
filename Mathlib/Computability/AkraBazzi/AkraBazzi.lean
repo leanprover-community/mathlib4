@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Computability.AkraBazzi.GrowsPolynomially
 import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
