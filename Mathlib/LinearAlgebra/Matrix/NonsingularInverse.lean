@@ -772,9 +772,8 @@ theorem inv_reindex (e₁ e₂ : n ≃ m) (A : Matrix n n α) : (reindex e₁ e�
 
 end Submatrix
 
-end Fintype
-
 /-! ### More results about determinants -/
+
 
 section Det
 
