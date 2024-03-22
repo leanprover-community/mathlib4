@@ -51,7 +51,7 @@ def galLift (σ : B →ₐ[A] B) : L →ₐ[K] L :=
     simp only [RingHom.coe_comp, Function.comp_apply, ← IsScalarTower.algebraMap_apply A K L,
       IsScalarTower.algebraMap_apply A B L, IsLocalization.lift_eq,
       RingHom.coe_coe, AlgHom.commutes]
-  { IsLocalization.lift (S := L) H with commutes' := FunLike.congr_fun H_eq }
+  { IsLocalization.lift (S := L) H with commutes' := DFunLike.congr_fun H_eq }
 
 /-- The restriction `End(L/K) → End(B/A)` in an AKLB setup.
 Also see `galRestrict` for the `AlgEquiv` version. -/
@@ -166,7 +166,6 @@ lemma Algebra.map_intTraceAux [IsIntegrallyClosed A] (x : B) :
   IsIntegralClosure.algebraMap_equiv A (integralClosure A K) K A _
 
 variable (A B)
-
 variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
 variable [Module.Finite A B] [NoZeroSMulDivisors A B]
 
@@ -301,7 +300,6 @@ lemma Algebra.map_intNormAux [IsIntegrallyClosed A] [IsSeparable K L] (x : B) :
   exact IsIntegralClosure.algebraMap_mk' _ _ _
 
 variable (A B)
-
 variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
 variable [Module.Finite A B] [NoZeroSMulDivisors A B]
 variable [IsSeparable (FractionRing A) (FractionRing B)] -- TODO: remove this

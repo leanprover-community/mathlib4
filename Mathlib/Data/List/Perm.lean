@@ -5,7 +5,9 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Permutation
-import Mathlib.Data.List.Range
+import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.InsertNth
+import Mathlib.Data.List.Lattice
 import Mathlib.Data.Nat.Factorial.Basic
 
 #align_import data.list.perm from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
@@ -277,7 +279,7 @@ theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : Left
 
 section
 
-variable {op : α → α → α} [IA : IsAssociative α op] [IC : IsCommutative α op]
+variable {op : α → α → α} [IA : Std.Associative op] [IC : Std.Commutative op]
 
 -- mathport name: op
 local notation a " * " b => op a b
@@ -351,7 +353,7 @@ alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 #align list.subperm.of_cons List.subperm.of_cons
 #align list.subperm.cons List.subperm.cons
 
---Porting note: commented out
+-- Porting note: commented out
 --attribute [protected] subperm.cons
 
 theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (h₁ : a ∉ l₁) (h₂ : a ∈ l₂)
@@ -652,7 +654,7 @@ theorem perm_of_mem_permutationsAux :
   rcases m with (m | ⟨l₁, l₂, m, _, rfl⟩)
   · exact (IH1 _ m).trans perm_middle
   · have p : l₁ ++ l₂ ~ is := by
-      simp [permutations] at m
+      simp only [mem_cons] at m
       cases' m with e m
       · simp [e]
       exact is.append_nil ▸ IH2 _ m
@@ -711,7 +713,7 @@ theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
   ⟨perm_of_mem_permutations, mem_permutations_of_perm_lemma mem_permutationsAux_of_perm⟩
 #align list.mem_permutations List.mem_permutations
 
---Porting note: temporary theorem to solve diamond issue
+-- Porting note: temporary theorem to solve diamond issue
 private theorem DecEq_eq {α : Type*} [DecidableEq α] :
      instBEqList = @instBEq (List α) instDecidableEqList :=
   congr_arg BEq.mk <| by
@@ -746,7 +748,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
 theorem Perm.permutations' {s t : List α} (p : s ~ t) : permutations' s ~ permutations' t := by
   induction' p with a s t _ IH a b l s t u _ _ IH₁ IH₂; · simp
   · exact IH.bind_right _
-  · dsimp [permutations']
+  · dsimp
     rw [bind_assoc, bind_assoc]
     apply Perm.bind_left
     intro l' _

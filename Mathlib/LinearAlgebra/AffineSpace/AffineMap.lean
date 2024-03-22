@@ -59,9 +59,9 @@ structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Typ
 induces a corresponding linear map from `V1` to `V2`. -/
 notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
-instance AffineMap.funLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
+instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
-    [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 fun _ => P2
+    [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2
     where
   coe := AffineMap.toFun
   coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
@@ -69,12 +69,12 @@ instance AffineMap.funLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P
     congr with v
     apply vadd_right_cancel (f p)
     erw [← f_add, h, ← g_add]
-#align affine_map.fun_like AffineMap.funLike
+#align affine_map.fun_like AffineMap.instFunLike
 
 instance AffineMap.hasCoeToFun (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
     [AffineSpace V2 P2] : CoeFun (P1 →ᵃ[k] P2) fun _ => P1 → P2 :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 #align affine_map.has_coe_to_fun AffineMap.hasCoeToFun
 
 namespace LinearMap
@@ -140,7 +140,7 @@ theorem linearMap_vsub (f : P1 →ᵃ[k] P2) (p1 p2 : P1) : f.linear (p1 -ᵥ p2
 /-- Two affine maps are equal if they coerce to the same function. -/
 @[ext]
 theorem ext {f g : P1 →ᵃ[k] P2} (h : ∀ p, f p = g p) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align affine_map.ext AffineMap.ext
 
 theorem ext_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ ∀ p, f p = g p :=
@@ -148,7 +148,7 @@ theorem ext_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ ∀ p, f p = g p :=
 #align affine_map.ext_iff AffineMap.ext_iff
 
 theorem coeFn_injective : @Function.Injective (P1 →ᵃ[k] P2) (P1 → P2) (⇑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align affine_map.coe_fn_injective AffineMap.coeFn_injective
 
 protected theorem congr_arg (f : P1 →ᵃ[k] P2) {x y : P1} (h : x = y) : f x = f y :=
@@ -175,7 +175,7 @@ theorem coe_const (p : P2) : ⇑(const k P1 p) = Function.const P1 p :=
   rfl
 #align affine_map.coe_const AffineMap.coe_const
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem const_apply (p : P2) (q : P1) : (const k P1 p) q = p := rfl
 
@@ -226,7 +226,7 @@ section SMul
 variable {R : Type*} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
 instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
-  -- porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
+  -- Porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
   smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add, map_vadd f]⟩
   one_smul f := ext fun p => one_smul _ _
   mul_smul c₁ c₂ f := ext fun p => mul_smul _ _ _
@@ -482,7 +482,7 @@ theorem linear_bijective_iff (f : P1 →ᵃ[k] P2) :
 theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v
-  -- porting note: `simp` needs `Set.mem_vsub` to be an expression
+  -- Porting note: `simp` needs `Set.mem_vsub` to be an expression
   simp only [(Set.mem_vsub), Set.mem_image,
     exists_exists_and_eq_and, exists_and_left, ← f.linearMap_vsub]
   constructor
@@ -709,7 +709,6 @@ variable {R k V1 P1 V2 : Type*}
 section Ring
 
 variable [Ring k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
-
 variable [Module k V1] [Module k V2]
 
 section DistribMulAction
@@ -747,10 +746,10 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) w
   left_inv f := by
     ext
     rw [f.decomp]
-    simp [const_apply _ _]  -- porting note: `simp` needs `_`s to use this lemma
+    simp [const_apply _ _]  -- Porting note: `simp` needs `_`s to use this lemma
   right_inv := by
     rintro ⟨v, f⟩
-    ext <;> simp [const_apply _ _, const_linear _ _]  -- porting note: `simp` needs `_`s
+    ext <;> simp [const_apply _ _, const_linear _ _]  -- Porting note: `simp` needs `_`s
   map_add' := by simp
   map_smul' := by simp
 #align affine_map.to_const_prod_linear_map AffineMap.toConstProdLinearMap
@@ -762,7 +761,6 @@ end Ring
 section CommRing
 
 variable [CommRing k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
-
 variable [Module k V1] [Module k V2]
 
 /-- `homothety c r` is the homothety (also known as dilation) about `c` with scale factor `r`. -/

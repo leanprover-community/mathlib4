@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Init.Core
 import Mathlib.Init.Function
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Inhabit
@@ -405,32 +404,21 @@ theorem map_involutive [Nonempty α] [Nonempty β] {f : α → α} {g : β → �
   map_leftInverse
 #align prod.map_involutive Prod.map_involutive
 
-end Prod
-
 section delaborators
 open Lean PrettyPrinter Delaborator
 
-/-- Delaborator for simple product projections. -/
-@[delab app.Prod.fst, delab app.Prod.snd]
-def delabProdProjs : Delab := do
-  let #[_, _, _] := (← SubExpr.getExpr).getAppArgs | failure
-  let stx ← delabProjectionApp
-  match stx with
-  | `($(x).fst) => `($(x).1)
-  | `($(x).snd) => `($(x).2)
-  | _ => failure
+/-- Delaborator for `Prod.fst x` as `x.1`. -/
+@[delab app.Prod.fst]
+def delabProdFst : Delab := withOverApp 3 do
+  let x ← SubExpr.withAppArg delab
+  `($(x).1)
 
-/-- Delaborator for product first projection when the projection is a function
-that is then applied. -/
-@[app_unexpander Prod.fst]
-def unexpandProdFst : Lean.PrettyPrinter.Unexpander
-  | `($(_) $p $xs*) => `($p.1 $xs*)
-  | _ => throw ()
+/-- Delaborator for `Prod.snd x` as `x.2`. -/
+@[delab app.Prod.snd]
+def delabProdSnd : Delab := withOverApp 3 do
+  let x ← SubExpr.withAppArg delab
+  `($(x).2)
 
-/-- Delaborator for product second projection when the projection is a function
-that is then applied. -/
-@[app_unexpander Prod.snd]
-def unexpandProdSnd : Lean.PrettyPrinter.Unexpander
-  | `($(_) $p $xs*) => `($p.2 $xs*)
-  | _ => throw ()
 end delaborators
+
+end Prod

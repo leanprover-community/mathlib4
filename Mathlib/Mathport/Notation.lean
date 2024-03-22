@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
 import Mathlib.Lean.Elab.Term
-import Mathlib.Lean.Expr
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Tactic.ScopedNS
-import Mathlib.Util.Syntax
-import Std.Data.Option.Basic
+import Std.Linter.UnreachableTactic
+import Std.Util.ExtendedBinder
+import Std.Lean.Syntax
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.

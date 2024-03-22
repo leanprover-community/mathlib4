@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
+import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.Order.Group.Lattice
 
 #align_import algebra.order.group.abs from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
@@ -192,8 +193,8 @@ lemma mabs_div_sup_mul_mabs_div_inf [CovariantClass α α (· * ·) (· ≤ ·)]
     _ = (b ⊔ c ⊔ (a ⊔ c)) / ((b ⊔ c) ⊓ (a ⊔ c)) * ((b ⊓ c ⊔ a ⊓ c) / (b ⊓ c ⊓ (a ⊓ c))) := by
         rw [sup_div_inf_eq_mabs_div (b ⊓ c) (a ⊓ c)]
     _ = (b ⊔ a ⊔ c) / (b ⊓ a ⊔ c) * (((b ⊔ a) ⊓ c) / (b ⊓ a ⊓ c)) := by
-        rw [← sup_inf_right, ← inf_sup_right, sup_assoc, @sup_comm _ _ c (a ⊔ c), sup_right_idem,
-          sup_assoc, inf_assoc, @inf_comm _ _ c (a ⊓ c), inf_right_idem, inf_assoc]
+        rw [← sup_inf_right, ← inf_sup_right, sup_assoc, sup_comm c (a ⊔ c), sup_right_idem,
+          sup_assoc, inf_assoc, inf_comm c (a ⊓ c), inf_right_idem, inf_assoc]
     _ = (b ⊔ a ⊔ c) * ((b ⊔ a) ⊓ c) / ((b ⊓ a ⊔ c) * (b ⊓ a ⊓ c)) := by rw [div_mul_div_comm]
     _ = (b ⊔ a) * c / ((b ⊓ a) * c) := by
         rw [mul_comm, inf_mul_sup, mul_comm (b ⊓ a ⊔ c), inf_mul_sup]
@@ -253,7 +254,7 @@ variable [Group α] [LinearOrder α] {a b : α}
 @[to_additive] lemma mabs_eq_mabs : |a|ₘ = |b|ₘ ↔ a = b ∨ a = b⁻¹ := by
   refine' ⟨fun h ↦ ?_, by rintro (h | h) <;> simp [h, abs_neg]⟩
   obtain rfl | rfl := eq_or_eq_inv_of_mabs_eq h <;>
-    simpa only [inv_eq_iff_eq_inv (a := |b|ₘ), inv_inj, or_comm] using mabs_choice b
+    simpa only [inv_eq_iff_eq_inv (a := |b|ₘ), inv_inv, inv_inj, or_comm] using mabs_choice b
 #align abs_eq_abs abs_eq_abs
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
@@ -325,6 +326,43 @@ variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 #align max_sub_min_eq_abs max_sub_min_eq_abs
 
 end LinearOrder
+
+section LinearOrderedCommGroup
+variable [LinearOrderedCommGroup α] {a b : α}
+
+@[to_additive] lemma mabs_pow (n : ℕ) (a : α) : |a ^ n|ₘ = |a|ₘ ^ n := by
+  obtain ha | ha := le_total a 1
+  · rw [mabs_of_le_one ha, ← mabs_inv, ← inv_pow, mabs_of_one_le]
+    exact one_le_pow_of_one_le' (one_le_inv'.2 ha) n
+  · rw [mabs_of_one_le ha, mabs_of_one_le (one_le_pow_of_one_le' ha n)]
+#align abs_nsmul abs_nsmul
+
+@[to_additive] private lemma mabs_mul_eq_mul_mabs_le (hab : a ≤ b) :
+    |a * b|ₘ = |a|ₘ * |b|ₘ ↔ 1 ≤ a ∧ 1 ≤ b ∨ a ≤ 1 ∧ b ≤ 1 := by
+  obtain ha | ha := le_or_lt 1 a <;> obtain hb | hb := le_or_lt 1 b
+  · simp [ha, hb, mabs_of_one_le, one_le_mul ha hb]
+  · exact (lt_irrefl (1 : α) <| ha.trans_lt <| hab.trans_lt hb).elim
+  any_goals simp [ha.le, hb.le, mabs_of_le_one, mul_le_one', mul_comm]
+  have : (|a * b|ₘ = a⁻¹ * b ↔ b ≤ 1) ↔
+    (|a * b|ₘ = |a|ₘ * |b|ₘ ↔ 1 ≤ a ∧ 1 ≤ b ∨ a ≤ 1 ∧ b ≤ 1) := by
+    simp [ha.le, ha.not_le, hb, mabs_of_le_one, mabs_of_one_le]
+  refine this.mp ⟨fun h ↦ ?_, fun h ↦ by simp only [h.antisymm hb, mabs_of_lt_one ha, mul_one]⟩
+  obtain ab | ab := le_or_lt (a * b) 1
+  · refine (eq_one_of_inv_eq' ?_).le
+    rwa [mabs_of_le_one ab, mul_inv_rev, mul_comm, mul_right_inj] at h
+  · rw [mabs_of_one_lt ab, mul_left_inj] at h
+    rw [eq_one_of_inv_eq' h.symm] at ha
+    cases ha.false
+#noalign abs_add_eq_add_abs_le
+
+@[to_additive] lemma mabs_mul_eq_mul_mabs_iff (a b : α) :
+    |a * b|ₘ = |a|ₘ * |b|ₘ ↔ 1 ≤ a ∧ 1 ≤ b ∨ a ≤ 1 ∧ b ≤ 1 := by
+  obtain ab | ab := le_total a b
+  · exact mabs_mul_eq_mul_mabs_le ab
+  · simpa only [mul_comm, and_comm] using mabs_mul_eq_mul_mabs_le ab
+#align abs_add_eq_add_abs_iff abs_add_eq_add_abs_iff
+
+end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
@@ -418,6 +456,18 @@ theorem abs_abs_sub_abs_le_abs_sub (a b : α) : |(|a| - |b|)| ≤ |a - b| :=
     ⟨abs_sub_abs_le_abs_sub _ _, by rw [abs_sub_comm]; apply abs_sub_abs_le_abs_sub⟩
 #align abs_abs_sub_abs_le_abs_sub abs_abs_sub_abs_le_abs_sub
 
+/-- `|a - b| ≤ n` if `0 ≤ a ≤ n` and `0 ≤ b ≤ n`. -/
+theorem abs_sub_le_of_nonneg_of_le {a b n : α} (a_nonneg : 0 ≤ a) (a_le_n : a ≤ n)
+    (b_nonneg : 0 ≤ b) (b_le_n : b ≤ n) : |a - b| ≤ n := by
+  rw [abs_sub_le_iff, sub_le_iff_le_add, sub_le_iff_le_add]
+  exact ⟨le_add_of_le_of_nonneg a_le_n b_nonneg, le_add_of_le_of_nonneg b_le_n a_nonneg⟩
+
+/-- `|a - b| < n` if `0 ≤ a < n` and `0 ≤ b < n`. -/
+theorem abs_sub_lt_of_nonneg_of_lt {a b n : α} (a_nonneg : 0 ≤ a) (a_lt_n : a < n)
+    (b_nonneg : 0 ≤ b) (b_lt_n : b < n) : |a - b| < n := by
+  rw [abs_sub_lt_iff, sub_lt_iff_lt_add, sub_lt_iff_lt_add]
+  exact ⟨lt_add_of_lt_of_nonneg a_lt_n b_nonneg, lt_add_of_lt_of_nonneg b_lt_n a_nonneg⟩
+
 theorem abs_eq (hb : 0 ≤ b) : |a| = b ↔ a = b ∨ a = -b := by
   refine' ⟨eq_or_eq_neg_of_abs_eq, _⟩
   rintro (rfl | rfl) <;> simp only [abs_neg, abs_of_nonneg hb]
@@ -472,6 +522,12 @@ theorem eq_of_abs_sub_nonpos (h : |a - b| ≤ 0) : a = b :=
   eq_of_abs_sub_eq_zero (le_antisymm h (abs_nonneg (a - b)))
 #align eq_of_abs_sub_nonpos eq_of_abs_sub_nonpos
 
+theorem abs_sub_nonpos : |a - b| ≤ 0 ↔ a = b :=
+  ⟨eq_of_abs_sub_nonpos, by rintro rfl; rw [sub_self, abs_zero]⟩
+
+theorem abs_sub_pos : 0 < |a - b| ↔ a ≠ b :=
+  not_le.symm.trans abs_sub_nonpos.not
+
 @[simp]
 theorem abs_eq_self : |a| = a ↔ 0 ≤ a := by
   rw [abs_eq_max_neg, max_eq_left_iff, neg_le_self_iff]
@@ -501,6 +557,37 @@ theorem max_zero_add_max_neg_zero_eq_abs_self (a : α) : max a 0 + max (-a) 0 = 
 #align max_zero_add_max_neg_zero_eq_abs_self max_zero_add_max_neg_zero_eq_abs_self
 
 end LinearOrderedAddCommGroup
+
+namespace LatticeOrderedAddCommGroup
+variable [Lattice α] [AddCommGroup α] {s t : Set α}
+
+/-- A set `s` in a lattice ordered group is *solid* if for all `x ∈ s` and all `y ∈ α` such that
+`|y| ≤ |x|`, then `y ∈ s`. -/
+def IsSolid (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, |y| ≤ |x| → y ∈ s
+#align lattice_ordered_add_comm_group.is_solid LatticeOrderedAddCommGroup.IsSolid
+
+/-- The solid closure of a subset `s` is the smallest superset of `s` that is solid. -/
+def solidClosure (s : Set α) : Set α := {y | ∃ x ∈ s, |y| ≤ |x|}
+#align lattice_ordered_add_comm_group.solid_closure LatticeOrderedAddCommGroup.solidClosure
+
+lemma isSolid_solidClosure (s : Set α) : IsSolid (solidClosure s) :=
+  fun _ ⟨y, hy, hxy⟩ _ hzx ↦ ⟨y, hy, hzx.trans hxy⟩
+#align lattice_ordered_add_comm_group.is_solid_solid_closure LatticeOrderedAddCommGroup.isSolid_solidClosure
+
+lemma solidClosure_min (hst : s ⊆ t) (ht : IsSolid t) : solidClosure s ⊆ t :=
+  fun _ ⟨_, hy, hxy⟩ ↦ ht (hst hy) hxy
+#align lattice_ordered_add_comm_group.solid_closure_min LatticeOrderedAddCommGroup.solidClosure_min
+
+end LatticeOrderedAddCommGroup
+
+namespace Pi
+variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Lattice (α i)]
+
+@[simp] lemma abs_apply (f : ∀ i, α i) (i : ι) : |f| i = |f i| := rfl
+
+lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
+
+end Pi
 
 @[deprecated] alias neg_le_abs_self := neg_le_abs
 @[deprecated] alias neg_abs_le_self := neg_abs_le

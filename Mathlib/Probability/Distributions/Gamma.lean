@@ -3,8 +3,6 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-
-import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Cdf
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
@@ -14,13 +12,13 @@ import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 Define the gamma measure over the reals.
 
 ## Main definitions
-* `gammaPdfReal`: the function `a r x ↦ r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))`
+* `gammaPDFReal`: the function `a r x ↦ r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))`
   for `0 ≤ x` or `0` else, which is the probability density function of a gamma distribution with
   shape `a` and rate `r` (when `ha : 0 < a ` and `hr : 0 < r`).
-* `gammaPdf`: `ℝ≥0∞`-valued pdf,
-  `gammaPdf a r = ENNReal.ofReal (gammaPdfReal a r)`.
+* `gammaPDF`: `ℝ≥0∞`-valued pdf,
+  `gammaPDF a r = ENNReal.ofReal (gammaPDFReal a r)`.
 * `gammaMeasure`: a gamma measure on `ℝ`, parametrized by its shape `a` and rate `r`.
-* `gammaCdfReal`: the CDF given by the definition of CDF in `ProbabilityTheory.Cdf` applied to the
+* `gammaCDFReal`: the CDF given by the definition of CDF in `ProbabilityTheory.CDF` applied to the
   gamma measure.
 -/
 
@@ -38,73 +36,74 @@ lemma lintegral_Iic_eq_lintegral_Iio_add_Icc {y z : ℝ} (f : ℝ → ℝ≥0∞
 
 namespace ProbabilityTheory
 
-section GammaPdf
+section GammaPDF
 
 /-- The pdf of the gamma distribution depending on its scale and rate -/
 noncomputable
-def gammaPdfReal (a r x : ℝ) : ℝ :=
+def gammaPDFReal (a r x : ℝ) : ℝ :=
   if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0
 
 /-- The pdf of the gamma distribution, as a function valued in `ℝ≥0∞` -/
 noncomputable
-def gammaPdf (a r x : ℝ) : ℝ≥0∞ :=
-  ENNReal.ofReal (gammaPdfReal a r x)
+def gammaPDF (a r x : ℝ) : ℝ≥0∞ :=
+  ENNReal.ofReal (gammaPDFReal a r x)
 
-lemma gammaPdf_eq (a r x : ℝ) :
-    gammaPdf a r x = ENNReal.ofReal (if 0 ≤ x then
+lemma gammaPDF_eq (a r x : ℝ) :
+    gammaPDF a r x = ENNReal.ofReal (if 0 ≤ x then
     r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0) := rfl
 
-lemma gammaPdf_of_neg {a r x : ℝ} (hx : x < 0) : gammaPdf a r x = 0 := by
-  simp only [gammaPdf_eq, if_neg (not_le.mpr hx), ENNReal.ofReal_zero]
+lemma gammaPDF_of_neg {a r x : ℝ} (hx : x < 0) : gammaPDF a r x = 0 := by
+  simp only [gammaPDF_eq, if_neg (not_le.mpr hx), ENNReal.ofReal_zero]
 
-lemma gammaPdf_of_nonneg {a r x : ℝ} (hx : 0 ≤ x) :
-    gammaPdf a r x = ENNReal.ofReal (r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))) := by
-  simp only [gammaPdf_eq, if_pos hx]
+lemma gammaPDF_of_nonneg {a r x : ℝ} (hx : 0 ≤ x) :
+    gammaPDF a r x = ENNReal.ofReal (r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))) := by
+  simp only [gammaPDF_eq, if_pos hx]
 
 /-- The Lebesgue integral of the gamma pdf over nonpositive reals equals 0 -/
-lemma lintegral_gammaPdf_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
-    ∫⁻ y in Iio x, gammaPdf a r y = 0 := by
+lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
+    ∫⁻ y in Iio x, gammaPDF a r y = 0 := by
   rw [set_lintegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
-  · simp only [gammaPdf_eq, ge_iff_le, ENNReal.ofReal_eq_zero]
-    apply ae_of_all _ fun a (_ : a < _) ↦ by rw [if_neg (by linarith)]
+  · simp only [gammaPDF_eq, ge_iff_le, ENNReal.ofReal_eq_zero]
+    filter_upwards with a (_ : a < _)
+    rw [if_neg (by linarith)]
 
 /-- The gamma pdf is measurable. -/
 @[measurability]
-lemma measurable_gammaPdfReal (a r : ℝ) : Measurable (gammaPdfReal a r) :=
+lemma measurable_gammaPDFReal (a r : ℝ) : Measurable (gammaPDFReal a r) :=
   Measurable.ite measurableSet_Ici (((measurable_id'.pow_const _).const_mul _).mul
     (measurable_id'.const_mul _).neg.exp) measurable_const
 
 /-- The gamma pdf is strongly measurable -/
 @[measurability]
- lemma stronglyMeasurable_gammaPdfReal (a r : ℝ) :
-     StronglyMeasurable (gammaPdfReal a r) :=
-   (measurable_gammaPdfReal a r).stronglyMeasurable
+ lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
+     StronglyMeasurable (gammaPDFReal a r) :=
+   (measurable_gammaPDFReal a r).stronglyMeasurable
 
 /-- The gamma pdf is positive for all positive reals -/
-lemma gammaPdfReal_pos {x a r : ℝ} (ha : 0 < a) (hr : 0 < r) (hx : 0 < x) :
-    0 < gammaPdfReal a r x := by
-  simp only [gammaPdfReal, if_pos hx.le]
+lemma gammaPDFReal_pos {x a r : ℝ} (ha : 0 < a) (hr : 0 < r) (hx : 0 < x) :
+    0 < gammaPDFReal a r x := by
+  simp only [gammaPDFReal, if_pos hx.le]
   positivity
 
 /-- The gamma pdf is nonnegative -/
-lemma gammaPdfReal_nonneg {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
-    0 ≤ gammaPdfReal a r x := by
-  unfold gammaPdfReal
+lemma gammaPDFReal_nonneg {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
+    0 ≤ gammaPDFReal a r x := by
+  unfold gammaPDFReal
   split_ifs <;> positivity
 
 open Measure
 
 /-- The pdf of the gamma distribution integrates to 1 -/
 @[simp]
-lemma lintegral_gammaPdf_eq_one {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
-    ∫⁻ x, gammaPdf a r x = 1 := by
-  have leftSide : ∫⁻ x in Iio 0, gammaPdf a r x = 0 := by
+lemma lintegral_gammaPDF_eq_one {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
+    ∫⁻ x, gammaPDF a r x = 1 := by
+  have leftSide : ∫⁻ x in Iio 0, gammaPDF a r x = 0 := by
     rw [set_lintegral_congr_fun measurableSet_Iio
-      (ae_of_all _ (fun x (hx : x < 0) ↦ gammaPdf_of_neg hx)), lintegral_zero]
-  have rightSide : ∫⁻ x in Ici 0, gammaPdf a r x =
+      (ae_of_all _ (fun x (hx : x < 0) ↦ gammaPDF_of_neg hx)), lintegral_zero]
+  have rightSide : ∫⁻ x in Ici 0, gammaPDF a r x =
       ∫⁻ x in Ici 0, ENNReal.ofReal (r ^ a / Gamma a * x ^ (a - 1) * exp (-(r * x))) :=
-    set_lintegral_congr_fun measurableSet_Ici (ae_of_all _ (fun _ ↦ gammaPdf_of_nonneg))
+    set_lintegral_congr_fun measurableSet_Ici (ae_of_all _ (fun _ ↦ gammaPDF_of_nonneg))
   rw [← ENNReal.toReal_eq_one_iff, ← lintegral_add_compl _ measurableSet_Ici, compl_Ici,
     leftSide, rightSide, add_zero, ← integral_eq_lintegral_of_nonneg_ae]
   · simp_rw [integral_Ici_eq_integral_Ioi, mul_assoc]
@@ -113,42 +112,42 @@ lemma lintegral_gammaPdf_eq_one {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
       div_rpow zero_le_one hr.le, one_rpow, mul_one_div, div_self (rpow_pos_of_pos hr _).ne']
   · rw [EventuallyLE, ae_restrict_iff' measurableSet_Ici]
     exact ae_of_all _ (fun x (hx : 0 ≤ x) ↦ by positivity)
-  · apply (measurable_gammaPdfReal a r).aestronglyMeasurable.congr
+  · apply (measurable_gammaPDFReal a r).aestronglyMeasurable.congr
     refine (ae_restrict_iff' measurableSet_Ici).mpr <| ae_of_all _ fun x (hx : 0 ≤ x) ↦ ?_
-    simp_rw [gammaPdfReal, eq_true_intro hx, ite_true]
+    simp_rw [gammaPDFReal, eq_true_intro hx, ite_true]
 
-end GammaPdf
+end GammaPDF
 
 open MeasureTheory
 
 /-- Measure defined by the gamma distribution -/
 noncomputable
 def gammaMeasure (a r : ℝ) : Measure ℝ :=
-  volume.withDensity (gammaPdf a r)
+  volume.withDensity (gammaPDF a r)
 
 lemma isProbabilityMeasureGamma {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     IsProbabilityMeasure (gammaMeasure a r) where
-  measure_univ := by simp [gammaMeasure, lintegral_gammaPdf_eq_one ha hr]
+  measure_univ := by simp [gammaMeasure, lintegral_gammaPDF_eq_one ha hr]
 
-section GammaCdf
+section GammaCDF
 
 /-- CDF of the gamma distribution -/
 noncomputable
-def gammaCdfReal (a r : ℝ) : StieltjesFunction :=
+def gammaCDFReal (a r : ℝ) : StieltjesFunction :=
   cdf (gammaMeasure a r)
 
-lemma gammaCdfReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
-    gammaCdfReal a r x = ∫ x in Iic x, gammaPdfReal a r x := by
+lemma gammaCDFReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
+    gammaCDFReal a r x = ∫ x in Iic x, gammaPDFReal a r x := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasureGamma ha hr
-  rw [gammaCdfReal, cdf_eq_toReal, gammaMeasure, withDensity_apply _ measurableSet_Iic]
+  rw [gammaCDFReal, cdf_eq_toReal, gammaMeasure, withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
-  · exact ae_of_all _ fun b ↦ by simp only [Pi.zero_apply, gammaPdfReal_nonneg ha hr]
-  · exact (measurable_gammaPdfReal a r).aestronglyMeasurable.restrict
+  · exact ae_of_all _ fun b ↦ by simp only [Pi.zero_apply, gammaPDFReal_nonneg ha hr]
+  · exact (measurable_gammaPDFReal a r).aestronglyMeasurable.restrict
 
-lemma gammaCdfReal_eq_lintegral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
-    gammaCdfReal a r x = ENNReal.toReal (∫⁻ x in Iic x, gammaPdf a r x) := by
+lemma gammaCDFReal_eq_lintegral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
+    gammaCDFReal a r x = ENNReal.toReal (∫⁻ x in Iic x, gammaPDF a r x) := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasureGamma ha hr
-  simp only [gammaPdf, gammaCdfReal, cdf_eq_toReal]
-  simp only [gammaMeasure, measurableSet_Iic, withDensity_apply, gammaPdf]
+  simp only [gammaPDF, gammaCDFReal, cdf_eq_toReal]
+  simp only [gammaMeasure, measurableSet_Iic, withDensity_apply, gammaPDF]
 
-end GammaCdf
+end GammaCDF

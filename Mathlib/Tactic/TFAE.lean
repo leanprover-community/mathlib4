@@ -3,6 +3,8 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carneiro
 -/
+import Qq
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Util.AtomM
 import Mathlib.Data.List.TFAE
 
@@ -126,20 +128,21 @@ partial def proveChain (i : ℕ) (is : List ℕ) (P : Q(Prop)) (l : Q(List Prop)
   match l with
   | ~q([]) => return q(Chain.nil)
   | ~q($P' :: $l') =>
-    let i' :: is' := is | unreachable!
+    -- `id` is a workaround for https://github.com/leanprover-community/quote4/issues/30
+    let i' :: is' := id is | unreachable!
     have cl' : Q(Chain (· → ·) $P' $l') := ← proveChain i' is' q($P') q($l')
     let p ← proveImpl hyps atoms i i' P P'
     return q(Chain.cons $p $cl')
 
-set_option linter.deprecated false in
-/-- Attempt to prove `ilast' P' l → P` given an explicit list `l`. -/
-partial def proveILast'Impl (i i' : ℕ) (is : List ℕ) (P P' : Q(Prop)) (l : Q(List Prop)) :
-    MetaM Q(ilast' $P' $l → $P) := do
+/-- Attempt to prove `getLastD l P' → P` given an explicit list `l`. -/
+partial def proveGetLastDImpl (i i' : ℕ) (is : List ℕ) (P P' : Q(Prop)) (l : Q(List Prop)) :
+    MetaM Q(getLastD $l $P' → $P) := do
   match l with
   | ~q([]) => proveImpl hyps atoms i' i P' P
   | ~q($P'' :: $l') =>
-    let i'' :: is' := is | unreachable!
-    proveILast'Impl i i'' is' P P'' l'
+    -- `id` is a workaround for https://github.com/leanprover-community/quote4/issues/30
+    let i'' :: is' := id is | unreachable!
+    proveGetLastDImpl i i'' is' P P'' l'
 
 /-- Attempt to prove a statement of the form `TFAE [P₁, P₂, ...]`. -/
 def proveTFAE (is : List ℕ) (l : Q(List Prop)) : MetaM Q(TFAE $l) := do
@@ -147,9 +150,10 @@ def proveTFAE (is : List ℕ) (l : Q(List Prop)) : MetaM Q(TFAE $l) := do
   | ~q([]) => return q(tfae_nil)
   | ~q([$P]) => return q(tfae_singleton $P)
   | ~q($P :: $P' :: $l') =>
-    let i :: i' :: is' := is | unreachable!
+    -- `id` is a workaround for https://github.com/leanprover-community/quote4/issues/30
+    let i :: i' :: is' := id is | unreachable!
     let c ← proveChain hyps atoms i (i'::is') P q($P' :: $l')
-    let il ← proveILast'Impl hyps atoms i i' is' P P' l'
+    let il ← proveGetLastDImpl hyps atoms i i' is' P P' l'
     return q(tfae_of_cycle $c $il)
 
 /-! # `tfae_have` components -/
@@ -161,7 +165,7 @@ def mkTFAEHypName (i j : TSyntax `num) (arr : TSyntax ``impArrow) : MetaM Name :
   | `(impArrow| → ) => pure "to"
   | `(impArrow| ↔ ) => pure "iff"
   | _ => throwErrorAt arr "expected '←', '→', or '↔'"
-  return String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
+  return .mkSimple <| String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
 
 open Elab in
 /-- The core of `tfae_have`, which behaves like `haveLetCore` in `Mathlib.Tactic.Have`. -/

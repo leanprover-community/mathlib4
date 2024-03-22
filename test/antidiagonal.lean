@@ -1,4 +1,6 @@
+import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.PiAntidiagonal
+import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 
 /-!

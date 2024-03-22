@@ -3,11 +3,13 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.SMulWithZero
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.NNRat.Defs
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Logic.Basic
 import Mathlib.Tactic.Abel
 
 #align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
@@ -252,7 +254,7 @@ theorem neg_smul : -r • x = -(r • x) :=
   eq_neg_of_add_eq_zero_left <| by rw [← add_smul, add_left_neg, zero_smul]
 #align neg_smul neg_smul
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 --@[simp]
 theorem neg_smul_neg : -r • -x = r • x := by rw [neg_smul, smul_neg, neg_neg]
 #align neg_smul_neg neg_smul_neg
@@ -403,7 +405,7 @@ theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b :=
   have : (smulAddHom ℤ M).flip b = ((smulAddHom R M).flip b).comp (Int.castAddHom R) := by
     apply AddMonoidHom.ext_int
     simp
-  FunLike.congr_fun this n
+  DFunLike.congr_fun this n
 #align zsmul_eq_smul_cast zsmul_eq_smul_cast
 
 end
@@ -423,18 +425,19 @@ def AddCommGroup.intModule.unique : Unique (Module ℤ M) where
 
 end AddCommGroup
 
-theorem map_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [AddMonoidHomClass F M M₂]
-    (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂] (x : ℤ) (a : M) :
+theorem map_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
+    [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂]
+    (x : ℤ) (a : M) :
     f ((x : R) • a) = (x : S) • f a := by simp only [← zsmul_eq_smul_cast, map_zsmul]
 #align map_int_cast_smul map_int_cast_smul
 
-theorem map_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
+theorem map_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
   simp only [← nsmul_eq_smul_cast, AddMonoidHom.map_nsmul, map_nsmul]
 #align map_nat_cast_smul map_nat_cast_smul
 
-theorem map_inv_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
+theorem map_inv_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*)
     [DivisionSemiring R] [DivisionSemiring S] [Module R M]
     [Module S M₂] (n : ℕ) (x : M) : f ((n⁻¹ : R) • x) = (n⁻¹ : S) • f x := by
@@ -452,7 +455,7 @@ theorem map_inv_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
   · rw [← inv_smul_smul₀ hS (f _), ← map_nat_cast_smul f R S, smul_inv_smul₀ hR]
 #align map_inv_nat_cast_smul map_inv_nat_cast_smul
 
-theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*}
+theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
     [Module S M₂] (z : ℤ) (x : M) : f ((z⁻¹ : R) • x) = (z⁻¹ : S) • f x := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
@@ -461,21 +464,30 @@ theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*}
       map_inv_nat_cast_smul _ R S]
 #align map_inv_int_cast_smul map_inv_int_cast_smul
 
-theorem map_rat_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [AddMonoidHomClass F M M₂]
-    (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M] [Module S M₂] (c : ℚ)
-    (x : M) : f ((c : R) • x) = (c : S) • f x := by
+theorem map_rat_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
+    [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
+    [Module S M₂] (c : ℚ) (x : M) :
+    f ((c : R) • x) = (c : S) • f x := by
   rw [Rat.cast_def, Rat.cast_def, div_eq_mul_inv, div_eq_mul_inv, mul_smul, mul_smul,
     map_int_cast_smul f R S, map_inv_nat_cast_smul f R S]
 #align map_rat_cast_smul map_rat_cast_smul
 
-theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂] [Module ℚ M] [Module ℚ M₂] {F : Type*}
-    [AddMonoidHomClass F M M₂] (f : F) (c : ℚ) (x : M) : f (c • x) = c • f x :=
+theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
+    [_instM : Module ℚ M] [_instM₂ : Module ℚ M₂]
+    {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂]
+    (f : F) (c : ℚ) (x : M) : f (c • x) = c • f x :=
   map_rat_cast_smul f ℚ ℚ c x
 #align map_rat_smul map_rat_smul
 
+
+/-- A `Module` over `ℚ` restricts to a `Module` over `ℚ≥0`. -/
+instance [AddCommMonoid α] [Module ℚ α] : Module NNRat α :=
+  Module.compHom α NNRat.coeHom
+
 /-- There can be at most one `Module ℚ E` structure on an additive commutative group. -/
 instance subsingleton_rat_module (E : Type*) [AddCommGroup E] : Subsingleton (Module ℚ E) :=
-  ⟨fun P Q => (Module.ext' P Q) fun r x => @map_rat_smul _ _ _ _ P Q _ _ (AddMonoidHom.id E) r x⟩
+  ⟨fun P Q => (Module.ext' P Q) fun r x =>
+    map_rat_smul (_instM := P) (_instM₂ := Q) (AddMonoidHom.id E) r x⟩
 #align subsingleton_rat_module subsingleton_rat_module
 
 /-- If `E` is a vector space over two division semirings `R` and `S`, then scalar multiplications
@@ -553,6 +565,7 @@ is the result `smul_eq_zero`: a scalar multiple is `0` iff either argument is `0
 
 It is a generalization of the `NoZeroDivisors` class to heterogeneous multiplication.
 -/
+@[mk_iff]
 class NoZeroSMulDivisors (R M : Type*) [Zero R] [Zero M] [SMul R M] : Prop where
   /-- If scalar multiplication yields zero, either the scalar or the vector was zero. -/
   eq_zero_or_eq_zero_of_smul_eq_zero : ∀ {c : R} {x : M}, c • x = 0 → c = 0 ∨ x = 0
@@ -610,8 +623,6 @@ section Nat
 variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R) (M)
 
---include R
-
 theorem Nat.noZeroSMulDivisors : NoZeroSMulDivisors ℕ M :=
   ⟨by
     intro c x
@@ -666,7 +677,6 @@ section Nat
 
 variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R M)
---include R
 
 theorem self_eq_neg {v : M} : v = -v ↔ v = 0 := by
   rw [← two_nsmul_eq_zero R M, two_smul, add_eq_zero_iff_eq_neg]
@@ -749,13 +759,13 @@ instance (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module
 
 end NoZeroSMulDivisors
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 --@[simp]
 theorem Nat.smul_one_eq_coe {R : Type*} [Semiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]
 #align nat.smul_one_eq_coe Nat.smul_one_eq_coe
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 --@[simp]
 theorem Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
@@ -764,8 +774,15 @@ theorem Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑
 namespace Function
 
 lemma support_smul_subset_left [Zero R] [Zero M] [SMulWithZero R M] (f : α → R) (g : α → M) :
-    support (f • g) ⊆ support f := fun x hfg hf ↦ hfg <| by rw [Pi.smul_apply', hf, zero_smul]
+    support (f • g) ⊆ support f := fun x hfg hf ↦
+  hfg <| by rw [Pi.smul_apply', hf, zero_smul]
 #align function.support_smul_subset_left Function.support_smul_subset_left
+
+-- Changed (2024-01-21): this lemma was generalised;
+-- the old version is now called `support_const_smul_subset`.
+lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (f : α → R) (g : α → M) :
+    support (f • g) ⊆ support g :=
+  fun x hbf hf ↦ hbf <| by rw [Pi.smul_apply', hf, smul_zero]
 
 lemma support_const_smul_of_ne_zero [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
     (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
@@ -777,10 +794,9 @@ lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
   ext fun _ => smul_ne_zero_iff
 #align function.support_smul Function.support_smul
 
-lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (a : R) (f : α → M) :
-    support (a • f) ⊆ support f := fun x hbf hf =>
-  hbf <| by rw [Pi.smul_apply, hf, smul_zero]
-#align function.support_smul_subset_right Function.support_smul_subset_right
+lemma support_const_smul_subset [Zero M] [SMulZeroClass R M] (a : R) (f : α → M) :
+    support (a • f) ⊆ support f := support_smul_subset_right (fun _ ↦ a) f
+#align function.support_smul_subset_right Function.support_const_smul_subset
 
 end Function
 

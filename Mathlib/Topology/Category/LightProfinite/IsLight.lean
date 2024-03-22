@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.Countable
 import Mathlib.Topology.Category.LightProfinite.Basic
 import Mathlib.Topology.Category.Profinite.AsLimit
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
-import Mathlib.Topology.Category.Profinite.Limits
 import Mathlib.Topology.ClopenBox
 /-!
 # Being light is a property of profinite spaces
@@ -27,7 +26,7 @@ that the underlying profinite space of a `LightProfinite` is light.
 * Prove the Stone duality theorem that `Profinite` is equivalent to the opposite category of
   boolean algebras. Then the property of being light says precisely that the corresponding
   boolean algebra is countable. Maybe constructions of limits and colimits in `LightProfinite`
-  becomes easier when transporting over this equivalence.
+  become easier when transporting over this equivalence.
 
 -/
 
@@ -37,66 +36,23 @@ open CategoryTheory Limits FintypeCat Opposite TopologicalSpace
 
 open scoped Classical
 
+namespace Profinite
+
 /-- A profinite space *is light* if it has countably many clopen subsets.  -/
-class Profinite.IsLight (S : Profinite) : Prop where
+class IsLight (S : Profinite) : Prop where
   /-- The set of clopens is countable -/
   countable_clopens : Countable (Clopens S)
 
 attribute [instance] Profinite.IsLight.countable_clopens
 
-instance (X Y : Profinite) [X.IsLight] [Y.IsLight] : (Profinite.of (X × Y)).IsLight where
+instance instIsLightProd (X Y : Profinite) [X.IsLight] [Y.IsLight] :
+    (Profinite.of (X × Y)).IsLight where
   countable_clopens := Clopens.countable_prod
 
-instance (S : Profinite) [S.IsLight] : Countable (DiscreteQuotient S) := by
-  refine @Function.Surjective.countable ({t : Finset (Clopens S) //
-    (∀ (i j : (Clopens S)), i ∈ t → j ∈ t → i ≠ j → i.1 ∩ j.1 = ∅) ∧
-    ∀ (x : S), ∃ i, i ∈ t ∧ x ∈ i.1}) _ _ ?_ ?_
-  · intro t
-    refine ⟨⟨fun x y ↦ ∃ i, i ∈ t.val ∧ x ∈ i.1 ∧ y ∈ i.1, ⟨by simpa using t.prop.2,
-      fun ⟨i, h⟩ ↦ ⟨i, ⟨h.1, h.2.2, h.2.1⟩⟩, ?_⟩⟩, ?_⟩
-    · intro x y z ⟨ixy, hxy⟩ ⟨iyz, hyz⟩
-      refine ⟨ixy, hxy.1, hxy.2.1, ?_⟩
-      convert hyz.2.2
-      by_contra h
-      have hh := t.prop.1 ixy iyz hxy.1 hyz.1 h
-      apply Set.not_mem_empty y
-      rw [← hh]
-      exact ⟨hxy.2.2, hyz.2.1⟩
-    · intro x
-      simp only [setOf, Setoid.Rel]
-      obtain ⟨i, h⟩ := t.prop.2 x
-      convert i.2.1 with z
-      refine ⟨fun ⟨j, hh⟩ ↦ ?_, fun hh ↦ ?_⟩
-      · suffices i = j by rw [this]; exact hh.2.2
-        by_contra hhh
-        have hhhh := t.prop.1 i j h.1 hh.1 hhh
-        apply Set.not_mem_empty x
-        rw [← hhhh]
-        exact ⟨h.2, hh.2.1⟩
-      · exact ⟨i, h.1, h.2, hh⟩
-  · intro d
-    have : Fintype d := Fintype.ofFinite _
-    refine ⟨⟨(Set.range (fun x ↦ ⟨d.proj ⁻¹' {x}, d.isClopen_preimage _⟩)).toFinset, ?_, ?_⟩, ?_⟩
-    · intro i j hi hj hij
-      simp only [Set.toFinset_range, Finset.mem_image, Finset.mem_univ, true_and] at hi hj
-      obtain ⟨ai, hi⟩ := hi
-      obtain ⟨aj, hj⟩ := hj
-      rw [← hi, ← hj]
-      dsimp
-      ext x
-      refine ⟨fun ⟨hhi, hhj⟩ ↦ ?_, fun h ↦ by simp at h⟩
-      simp only [Set.mem_preimage, Set.mem_singleton_iff] at hhi hhj
-      exfalso
-      apply hij
-      rw [← hi, ← hj, ← hhi, ← hhj]
-    · intro x
-      refine ⟨⟨d.proj ⁻¹' {d.proj x}, d.isClopen_preimage _⟩, ?_⟩
-      simp
-    · ext x y
-      simp only [DiscreteQuotient.proj, Set.toFinset_range, Finset.mem_image, Finset.mem_univ,
-        true_and, exists_exists_eq_and, Set.mem_preimage, Set.mem_singleton_iff, exists_eq_left',
-        Quotient.eq'']
-      exact ⟨d.iseqv.symm , d.iseqv.symm⟩
+instance instCountableDiscreteQuotientOfIsLight (S : Profinite) [S.IsLight] :
+    Countable (DiscreteQuotient S) := (DiscreteQuotient.finsetClopens_inj S).countable
+
+end Profinite
 
 namespace LightProfinite
 
@@ -108,8 +64,7 @@ noncomputable def ofIsLight (S : Profinite.{u}) [S.IsLight] : LightProfinite.{u}
 
 instance (S : LightProfinite.{u}) : S.toProfinite.IsLight where
   countable_clopens := by
-    refine @Countable.of_equiv _ _ ?_
-      ((LocallyConstant.equivClopens (X := S.toProfinite)).trans Clopens.equivSubtype.symm)
+    refine @Countable.of_equiv _ _ ?_ (LocallyConstant.equivClopens (X := S.toProfinite))
     refine @Function.Surjective.countable
       (Σ (n : ℕ), LocallyConstant ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩) (Fin 2)) _ ?_ ?_ ?_
     · apply @instCountableSigma _ _ _ ?_
@@ -189,7 +144,7 @@ def lightProfiniteConeOfHom_π_app (n : ℕᵒᵖ) :
 
 /-- The cone on `lightProfiniteDiagramOfHom` -/
 def lightProfiniteConeOfHom :
-    Cone ((lightProfiniteDiagramOfHom f) ⋙ FintypeCat.toProfinite) where
+    Cone (lightProfiniteDiagramOfHom f ⋙ FintypeCat.toProfinite) where
   pt := X
   π := {
     app := fun n ↦ lightProfiniteConeOfHom_π_app f n
@@ -215,15 +170,16 @@ instance [Mono f] : IsIso ((Profinite.limitConeIsLimit ((lightProfiniteDiagramOf
       FintypeCat.toProfinite)).pt ↦ f.val n at h
     erw [ContinuousMap.coe_mk, Subtype.ext_iff] at h
     exact h
-  · suffices : ∃ x, ∀ n, lightProfiniteConeOfHom_π_app f (op n) x = a.val (op n)
-    · obtain ⟨x, h⟩ := this
+  · suffices ∃ x, ∀ n, lightProfiniteConeOfHom_π_app f (op n) x = a.val (op n) by
+      obtain ⟨x, h⟩ := this
       use x
       apply Subtype.ext
       apply funext
       intro n
       exact h (unop n)
-    have : Set.Nonempty (⋂ (n : ℕ), (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)})
-    · refine IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+    have : Set.Nonempty
+        (⋂ (n : ℕ), (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)}) := by
+      refine IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
         (fun n ↦ (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)})
           (directed_of_isDirected_le ?_)
         (fun _ ↦ (Set.singleton_nonempty _).preimage fun ⟨a, ⟨b, hb⟩⟩ ↦ ⟨b, Subtype.ext hb⟩)

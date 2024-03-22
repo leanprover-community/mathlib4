@@ -47,13 +47,13 @@ lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 
 /-- The order on `DFinsupp`s over a partial order embeds into the order on functions -/
 def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
-  toFun := FunLike.coe
-  inj' := FunLike.coe_injective
+  toFun := DFunLike.coe
+  inj' := DFunLike.coe_injective
   map_rel_iff' := by rfl
 #align dfinsupp.order_embedding_to_fun DFinsupp.orderEmbeddingToFun
 
 @[simp, norm_cast]
-lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = FunLike.coe := rfl
+lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = DFunLike.coe := rfl
 
 -- Porting note: we added implicit arguments here in #3414.
 theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
@@ -87,7 +87,7 @@ instance [∀ i, PartialOrder (α i)] : PartialOrder (Π₀ i, α i) :=
 
 instance [∀ i, SemilatticeInf (α i)] : SemilatticeInf (Π₀ i, α i) :=
   { (inferInstance : PartialOrder (DFinsupp α)) with
-    inf := zipWith (fun _ ↦ (· ⊓ ·)) fun _ ↦ inf_idem
+    inf := zipWith (fun _ ↦ (· ⊓ ·)) fun _ ↦ inf_idem _
     inf_le_left := fun _ _ _ ↦ inf_le_left
     inf_le_right := fun _ _ _ ↦ inf_le_right
     le_inf := fun _ _ _ hf hg i ↦ le_inf (hf i) (hg i) }
@@ -101,7 +101,7 @@ theorem inf_apply [∀ i, SemilatticeInf (α i)] (f g : Π₀ i, α i) (i : ι) 
 
 instance [∀ i, SemilatticeSup (α i)] : SemilatticeSup (Π₀ i, α i) :=
   { (inferInstance : PartialOrder (DFinsupp α)) with
-    sup := zipWith (fun _ ↦ (· ⊔ ·)) fun _ ↦ sup_idem
+    sup := zipWith (fun _ ↦ (· ⊔ ·)) fun _ ↦ sup_idem _
     le_sup_left := fun _ _ _ ↦ le_sup_left
     le_sup_right := fun _ _ _ ↦ le_sup_right
     sup_le := fun _ _ _ hf hg i ↦ sup_le (hf i) (hg i) }
@@ -189,7 +189,7 @@ end Module
 
 section CanonicallyOrderedAddCommMonoid
 
--- porting note: Split into 2 lines to satisfy the unusedVariables linter.
+-- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
 variable (α)
 variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)]
 
@@ -205,12 +205,16 @@ protected theorem bot_eq_zero : (⊥ : Π₀ i, α i) = 0 :=
 
 @[simp]
 theorem add_eq_zero_iff (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
-  simp [FunLike.ext_iff, forall_and]
+  simp [DFunLike.ext_iff, forall_and]
 #align dfinsupp.add_eq_zero_iff DFinsupp.add_eq_zero_iff
 
 section LE
 
-variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Finset ι}
+variable [DecidableEq ι]
+
+section
+
+variable [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Finset ι}
 
 theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
   ⟨fun h s _ ↦ h s, fun h s ↦
@@ -234,14 +238,16 @@ instance decidableLE [∀ i, DecidableRel (@LE.le (α i) _)] : DecidableRel (@LE
 
 variable {α}
 
+end
+
 @[simp]
-theorem single_le_iff {i : ι} {a : α i} : single i a ≤ f ↔ a ≤ f i :=
-  (le_iff' support_single_subset).trans <| by simp
+theorem single_le_iff {f : Π₀ i, α i} {i : ι} {a : α i} : single i a ≤ f ↔ a ≤ f i := by
+  classical exact (le_iff' support_single_subset).trans <| by simp
 #align dfinsupp.single_le_iff DFinsupp.single_le_iff
 
 end LE
 
--- porting note: Split into 2 lines to satisfy the unusedVariables linter.
+-- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
 variable (α)
 variable [∀ i, Sub (α i)] [∀ i, OrderedSub (α i)] {f g : Π₀ i, α i} {i : ι} {a b : α i}
 

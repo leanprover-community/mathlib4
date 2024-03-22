@@ -3,7 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 
@@ -19,7 +19,6 @@ namespace CategoryTheory
 open Limits Opposite
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C)
-
 variable (D : Type*) [Category D]
 
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/

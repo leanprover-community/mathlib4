@@ -5,13 +5,10 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
-import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Tactic.GCongr.Core
-import Mathlib.Tactic.Positivity
 
 #align_import algebra.order.smul from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
@@ -44,8 +41,6 @@ This file is now mostly useless. We should try deleting `OrderedSMul`
 
 ordered module, ordered scalar, ordered smul, ordered action, ordered vector space
 -/
-
-open LatticeOrderedCommGroup
 
 /-- The ordered scalar product property is when an ordered additive commutative monoid
 with a partial order has a scalar multiplication which is compatible with the order.
@@ -98,7 +93,7 @@ instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ 
 instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
   OrderedSMul.mk'' fun n hn => by
     cases n
-    · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, coe_nat_zsmul] at hn ⊢
+    · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, natCast_zsmul] at hn ⊢
       exact strictMono_smul_left_of_pos hn
     · cases (Int.negSucc_not_pos _).1 hn
 #align int.ordered_smul Int.orderedSMul

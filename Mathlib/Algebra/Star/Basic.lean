@@ -3,12 +3,16 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Algebra.Field.Opposite
+import Mathlib.Algebra.Invertible.Defs
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Field.Opposite
-import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.Algebra.Invertible.Defs
+import Mathlib.Data.NNRat.Defs
+import Mathlib.Data.Rat.Cast.Defs
 import Mathlib.Data.SetLike.Basic
+import Mathlib.GroupTheory.GroupAction.Opposite
 
 #align_import algebra.star.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -36,6 +40,7 @@ assert_not_exists Subgroup
 universe u v w
 
 open MulOpposite
+open scoped NNRat
 
 /-- Notation typeclass (with no default notation!) for an algebraic structure with a star operation.
 -/
@@ -62,7 +67,7 @@ class StarMemClass (S R : Type*) [Star R] [SetLike S R] : Prop where
 
 export StarMemClass (star_mem)
 
-attribute [aesop safe apply (rule_sets [SetLike])] star_mem
+attribute [aesop safe apply (rule_sets := [SetLike])] star_mem
 
 namespace StarMemClass
 
@@ -70,6 +75,8 @@ variable {S : Type w} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)
 
 instance instStar : Star s where
   star r := ⟨star (r : R), star_mem r.prop⟩
+
+@[simp] lemma coe_star (x : s) : star x = star (x : R) := rfl
 
 end StarMemClass
 
@@ -331,7 +338,7 @@ theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) 
   (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
 #align star_nat_cast star_natCast
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
     star (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
@@ -383,7 +390,7 @@ scoped[ComplexConjugate] notation "conj" => starRingEnd _
 theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 #align star_ring_end_apply starRingEnd_apply
 
-/- Porting note: removed `simp` attribute due to report by linter:
+/- Porting note (#11119): removed `simp` attribute due to report by linter:
 
 simp can prove this:
   by simp only [RingHomCompTriple.comp_apply, RingHom.id_apply]
@@ -468,9 +475,13 @@ def starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
 #align star_ring_of_comm starRingOfComm
 
 instance Nat.instStarRing : StarRing ℕ := starRingOfComm
+instance Int.instStarRing : StarRing ℤ := starRingOfComm
 instance Rat.instStarRing : StarRing ℚ := starRingOfComm
+instance NNRat.instStarRing : StarRing ℚ≥0 := starRingOfComm
 instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
+instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
 instance Rat.instTrivialStar : TrivialStar ℚ := ⟨fun _ ↦ rfl⟩
+instance NNRat.instTrivialStar : TrivialStar ℚ≥0 := ⟨fun _ ↦ rfl⟩
 
 /-- A star module `A` over a star ring `R` is a module which is a star add monoid,
 and the two star structures are compatible in the sense
@@ -513,8 +524,8 @@ end RingHomInvPair
 section
 
 /-- `StarHomClass F R S` states that `F` is a type of `star`-preserving maps from `R` to `S`. -/
-class StarHomClass (F : Type*) (R S : outParam (Type*)) [Star R] [Star S] extends
-  FunLike F R fun _ => S where
+class StarHomClass (F : Type*) (R S : outParam Type*) [Star R] [Star S] [FunLike F R S] : Prop
+  where
   /-- the maps preserve star -/
   map_star : ∀ (f : F) (r : R), f (star r) = star (f r)
 #align star_hom_class StarHomClass
@@ -554,7 +565,7 @@ instance {A : Type*} [Star A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
 
 end Units
 
-theorem IsUnit.star [Monoid R] [StarMul R] {a : R} : IsUnit a → IsUnit (star a)
+protected theorem IsUnit.star [Monoid R] [StarMul R] {a : R} : IsUnit a → IsUnit (star a)
   | ⟨u, hu⟩ => ⟨Star.star u, hu ▸ rfl⟩
 #align is_unit.star IsUnit.star
 
@@ -571,7 +582,7 @@ theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
   rw [Ring.inverse_non_unit _ ha, Ring.inverse_non_unit _ (mt isUnit_star.mp ha), star_zero]
 #align ring.inverse_star Ring.inverse_star
 
-instance Invertible.star {R : Type*} [MulOneClass R] [StarMul R] (r : R) [Invertible r] :
+protected instance Invertible.star {R : Type*} [MulOneClass R] [StarMul R] (r : R) [Invertible r] :
     Invertible (star r) where
   invOf := Star.star (⅟ r)
   invOf_mul_self := by rw [← star_mul, mul_invOf_self, star_one]

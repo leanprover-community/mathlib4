@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.Category.LightProfinite.Limits
-import Mathlib.CategoryTheory.Sites.RegularExtensive
+import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 /-!
 
 # Effective epimorphisms in `LightProfinite`
@@ -30,15 +30,16 @@ noncomputable
 def EffectiveEpi.struct {B X : LightProfinite.{u}} (π : X ⟶ B) (hπ : Function.Surjective π) :
     EffectiveEpiStruct π where
   desc e h := (QuotientMap.of_surjective_continuous hπ π.continuous).lift e fun a b hab ↦
-    FunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
+    DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
     (by ext; exact hab)) a
   fac e h := ((QuotientMap.of_surjective_continuous hπ π.continuous).lift_comp e
-    fun a b hab ↦ FunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
+    fun a b hab ↦ DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
     (by ext; exact hab)) a)
   uniq e h g hm := by
     suffices g = (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv ⟨e,
-      fun a b hab ↦ FunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-      (by ext; exact hab)) a⟩ by assumption
+      fun a b hab ↦
+        DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
+        (by ext; exact hab)) a⟩ by assumption
     rw [← Equiv.symm_apply_eq (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv]
     ext
     simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
@@ -67,16 +68,16 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
         rw [← cancel_epi f]
         ext x
         apply ULift.ext
-        dsimp [LocallyConstant.ofIsClopen]
+        dsimp [g, LocallyConstant.ofIsClopen]
         erw [LightProfinite.instCategoryLightProfinite_comp_apply, ContinuousMap.coe_mk,
           LightProfinite.instCategoryLightProfinite_comp_apply, ContinuousMap.coe_mk,
           Function.comp_apply, if_neg]
         refine' mt (fun α => hVU α) _
-        simp only [concreteCategory_forget_obj, Set.mem_compl_iff, Set.mem_range, not_exists,
+        simp only [U, C, concreteCategory_forget_obj, Set.mem_compl_iff, Set.mem_range, not_exists,
           not_forall, not_not]
         exact ⟨x, rfl⟩
       apply_fun fun e => (e y).down at H
-      dsimp [LocallyConstant.ofIsClopen] at H
+      dsimp [g, LocallyConstant.ofIsClopen] at H
       erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]

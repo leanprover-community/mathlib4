@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Ring.ULift
+import Mathlib.Algebra.Group.ULift
 
 #align_import algebra.field.ulift from "leanprover-community/mathlib"@"13e18cfa070ea337ea960176414f5ae3a1534aae"
 
@@ -21,7 +21,7 @@ variable {α : Type u} {x y : ULift.{v} α}
 
 namespace ULift
 
-instance [RatCast α] : RatCast (ULift α) := ⟨λ a ↦ up a⟩
+instance [RatCast α] : RatCast (ULift α) := ⟨(up ·)⟩
 
 @[simp, norm_cast]
 theorem up_ratCast [RatCast α] (q : ℚ) : up (q : α) = q :=

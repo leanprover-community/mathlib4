@@ -3,10 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
 -/
-import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 
 #align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
@@ -24,9 +24,7 @@ noncomputable section
 universe u v v' w
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'} {ι : Type w}
-
 variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
-
 variable [Module R M] [Module R M'] [Module R M₁]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
@@ -52,8 +50,8 @@ lemma rank_eq_zero_iff :
   · contrapose!
     rintro ⟨x, hx⟩
     rw [← Cardinal.one_le_iff_ne_zero]
-    have : LinearIndependent R (fun _ : Unit ↦ x)
-    · exact linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
+    have : LinearIndependent R (fun _ : Unit ↦ x) :=
+      linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
         hx _ H ((Finsupp.total_unique _ _ _).symm.trans hl))
     simpa using this.cardinal_lift_le_rank
   · intro h
@@ -64,10 +62,9 @@ lemma rank_eq_zero_iff :
     rintro ⟨i : s⟩
     obtain ⟨a, ha, ha'⟩ := h i
     apply ha
-    simpa using FunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
+    simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
 variable [Nontrivial R]
-
 variable [NoZeroSMulDivisors R M]
 
 theorem rank_zero_iff_forall_zero [NoZeroSMulDivisors R M] :
@@ -190,9 +187,9 @@ theorem lt_aleph0_of_finite {ι : Type w}
     [Module.Finite R M] {v : ι → M} (h : LinearIndependent R v) : #ι < ℵ₀ := by
   apply Cardinal.lift_lt.1
   apply lt_of_le_of_lt
-  apply h.cardinal_lift_le_rank
-  rw [← finrank_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_natCast]
-  apply Cardinal.nat_lt_aleph0
+  · apply h.cardinal_lift_le_rank
+  · rw [← finrank_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_natCast]
+    apply Cardinal.nat_lt_aleph0
 
 theorem finite [Module.Finite R M] {ι : Type*} {f : ι → M}
     (h : LinearIndependent R f) : Finite ι :=
@@ -309,15 +306,16 @@ theorem Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
   -- After this, it's a matter of verifying the properties,
   -- based on the corresponding properties for `g`.
   · rw [sum_map, Embedding.coeFn_mk] at gsum
-    simp_rw [← t.sum_erase_add _ x₀_mem, if_pos, neg_smul, sum_smul,
+    simp_rw [f, ← t.sum_erase_add _ x₀_mem, if_pos, neg_smul, sum_smul,
              ← sub_eq_add_neg, ← sum_sub_distrib, ← gsum, smul_sub]
     refine sum_congr rfl fun x x_mem ↦ ?_
     rw [if_neg (mem_erase.mp x_mem).1]
-  · simp_rw [← t.sum_erase_add _ x₀_mem, if_pos, add_neg_eq_zero]
+  · simp_rw [f, ← t.sum_erase_add _ x₀_mem, if_pos, add_neg_eq_zero]
     exact sum_congr rfl fun x x_mem ↦ if_neg (mem_erase.mp x_mem).1
   · obtain ⟨x₁, x₁_mem', rfl⟩ := Finset.mem_map.mp x₁_mem
     have := mem_erase.mp x₁_mem'
-    exact ⟨x₁, by simpa only [Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, if_neg this.1]⟩
+    exact ⟨x₁, by
+      simpa only [f, Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, if_neg this.1]⟩
 #align finite_dimensional.exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
 
 end
@@ -364,20 +362,16 @@ variable [StrongRankCondition R] [Module.Finite R M]
 
 /-- A finite rank torsion-free module has positive `finrank` iff it has a nonzero element. -/
 theorem FiniteDimensional.finrank_pos_iff_exists_ne_zero [NoZeroSMulDivisors R M] :
-    0 < finrank R M ↔ ∃ x : M, x ≠ 0 :=
-  Iff.trans
-    (by
-      rw [← finrank_eq_rank]
-      norm_cast)
-    (@rank_pos_iff_exists_ne_zero R M _ _ _ _ _)
+    0 < finrank R M ↔ ∃ x : M, x ≠ 0 := by
+  rw [← @rank_pos_iff_exists_ne_zero R M, ← finrank_eq_rank]
+  norm_cast
 #align finite_dimensional.finrank_pos_iff_exists_ne_zero FiniteDimensional.finrank_pos_iff_exists_ne_zero
 
 /-- An `R`-finite torsion-free module has positive `finrank` iff it is nontrivial. -/
 theorem FiniteDimensional.finrank_pos_iff [NoZeroSMulDivisors R M] :
-    0 < finrank R M ↔ Nontrivial M :=
-  Iff.trans
-    (by rw [← finrank_eq_rank]; norm_cast)
-    (rank_pos_iff_nontrivial (R := R))
+    0 < finrank R M ↔ Nontrivial M := by
+  rw [← rank_pos_iff_nontrivial (R := R), ← finrank_eq_rank]
+  norm_cast
 #align finite_dimensional.finrank_pos_iff FiniteDimensional.finrank_pos_iff
 
 /-- A nontrivial finite dimensional space has positive `finrank`. -/
@@ -389,26 +383,23 @@ theorem FiniteDimensional.finrank_pos [NoZeroSMulDivisors R M] [h : Nontrivial M
 /-- See `FiniteDimensional.finrank_zero_iff`
   for the stronger version with `NoZeroSMulDivisors R M`. -/
 theorem FiniteDimensional.finrank_eq_zero_iff [Module.Finite R M] :
-    finrank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 :=
-  Iff.trans
-    (by rw [← finrank_eq_rank]; norm_cast)
-    (rank_eq_zero_iff (R := R))
+    finrank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
+  rw [← rank_eq_zero_iff (R := R), ← finrank_eq_rank]
+  norm_cast
 
 /-- The `StrongRankCondition` is automatic. See `commRing_strongRankCondition`. -/
 theorem FiniteDimensional.finrank_eq_zero_iff_isTorsion {R} [CommRing R] [StrongRankCondition R]
     [IsDomain R] [Module R M] [Module.Finite R M] :
-    finrank R M = 0 ↔ Module.IsTorsion R M :=
-  Iff.trans
-    (by rw [← finrank_eq_rank]; norm_cast)
-    (rank_eq_zero_iff_isTorsion (R := R))
+    finrank R M = 0 ↔ Module.IsTorsion R M := by
+  rw [← rank_eq_zero_iff_isTorsion (R := R), ← finrank_eq_rank]
+  norm_cast
 
 /-- A finite dimensional space has zero `finrank` iff it is a subsingleton.
 This is the `finrank` version of `rank_zero_iff`. -/
 theorem FiniteDimensional.finrank_zero_iff [NoZeroSMulDivisors R M] :
-    finrank R M = 0 ↔ Subsingleton M :=
-  Iff.trans
-    (by rw [← finrank_eq_rank]; norm_cast)
-    (rank_zero_iff (R := R))
+    finrank R M = 0 ↔ Subsingleton M := by
+  rw [← rank_zero_iff (R := R), ← finrank_eq_rank]
+  norm_cast
 #align finite_dimensional.finrank_zero_iff FiniteDimensional.finrank_zero_iff
 
 end StrongRankCondition

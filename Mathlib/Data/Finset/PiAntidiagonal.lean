@@ -3,11 +3,9 @@ Copyright (c) 2023 Antoine Chambert-Loir and María Inés de Frutos-Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta
 -/
-
 import Mathlib.Data.Finset.Antidiagonal
-import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Finsupp.Interval
+import Mathlib.Data.Finsupp.Basic
 
 /-!
 # Partial HasAntidiagonal for functions with finite support
@@ -96,12 +94,12 @@ def finAntidiagonal₀ (d : ℕ) (n : μ) : Finset (Fin d →₀ μ) :=
     { toFun := fun f =>
         -- this is `Finsupp.onFinset`, but computable
         { toFun := f, support := univ.filter (f · ≠ 0), mem_support_toFun := fun x => by simp }
-      inj' := fun _ _ h => FunLike.coe_fn_eq.mpr h }
+      inj' := fun _ _ h => DFunLike.coe_fn_eq.mpr h }
 
 lemma mem_finAntidiagonal₀' (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
     f ∈ finAntidiagonal₀ d n ↔ ∑ i, f i = n := by
   simp only [finAntidiagonal₀, mem_map, Embedding.coeFn_mk, ← mem_finAntidiagonal,
-    ← FunLike.coe_injective.eq_iff, Finsupp.coe_mk, exists_eq_right]
+    ← DFunLike.coe_injective.eq_iff, Finsupp.coe_mk, exists_eq_right]
 
 lemma mem_finAntidiagonal₀ (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
     f ∈ finAntidiagonal₀ d n ↔ sum f (fun _ x => x) = n := by
@@ -220,7 +218,7 @@ theorem piAntidiagonal_insert [DecidableEq ι] [DecidableEq μ] {a : ι} {s : Fi
         ⟨fun f => Finsupp.update f.val a p.fst,
         (fun ⟨f, hf⟩ ⟨g, hg⟩ hfg => Subtype.ext <| by
           simp only [mem_val, mem_piAntidiagonal] at hf hg
-          simp only [FunLike.ext_iff] at hfg ⊢
+          simp only [DFunLike.ext_iff] at hfg ⊢
           intro x
           obtain rfl | hx := eq_or_ne x a
           · replace hf := mt (hf.1 ·) h
@@ -270,7 +268,7 @@ theorem piAntidiagonal_zero (s : Finset ι) :
     piAntidiagonal s (0 : μ) = {(0 : ι →₀ μ)} := by
   ext f
   simp_rw [mem_piAntidiagonal', mem_singleton, sum_eq_zero_iff, Finset.subset_iff,
-    mem_support_iff, not_imp_comm, ← forall_and, ← or_imp, FunLike.ext_iff, zero_apply, or_comm,
+    mem_support_iff, not_imp_comm, ← forall_and, ← or_imp, DFunLike.ext_iff, zero_apply, or_comm,
     or_not, true_imp_iff]
 
 end CanonicallyOrderedAddCommMonoid

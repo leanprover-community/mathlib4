@@ -17,7 +17,8 @@ such as irreducibility under the assumption `B` is a domain.
 -/
 
 
-open Classical Polynomial Set Function
+open scoped Classical
+open Polynomial Set Function
 
 variable {A B B' : Type*}
 
@@ -45,7 +46,6 @@ namespace minpoly
 section Ring
 
 variable [CommRing A] [Ring B] [Ring B'] [Algebra A B] [Algebra A B']
-
 variable {x : B}
 
 /-- A minimal polynomial is monic. -/
@@ -181,7 +181,6 @@ variable [CommRing A]
 section Ring
 
 variable [Ring B] [Algebra A B]
-
 variable {x : B}
 
 /-- The degree of a minimal polynomial, as a natural number, is positive. -/
@@ -248,7 +247,6 @@ end Ring
 section IsDomain
 
 variable [Ring B] [Algebra A B]
-
 variable {x : B}
 
 /-- If `a` strictly divides the minimal polynomial of `x`, then `x` cannot be a root for `a`. -/
