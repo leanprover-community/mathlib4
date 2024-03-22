@@ -10,7 +10,7 @@ import Mathlib.Data.Finite.Defs
 # Functors preserving effective epimorphisms
 
 This file concerns functors which preserve and/or reflect effective epimorphisms and effective
-epimporphic families.
+epimorphic families.
 
 ## TODO
 - Are there nice sufficient conditions on functors to preserve/reflect effective epis, similar to
@@ -191,8 +191,19 @@ lemma finite_effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsFiniteEffectiveEpi
     EffectiveEpiFamily X π :=
   ReflectsFiniteEffectiveEpiFamilies.reflects X π h
 
-instance (F : C ⥤ D) [PreservesEffectiveEpiFamilies F] : PreservesEffectiveEpis F where
-  preserves _ := inferInstance
+instance (F : C ⥤ D) [PreservesEffectiveEpiFamilies F] : PreservesFiniteEffectiveEpiFamilies F where
+  preserves _ _ := inferInstance
+
+instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies F] : ReflectsEffectiveEpis F where
+  reflects _ h := by
+    rw [effectiveEpi_iff_effectiveEpiFamily] at h
+    have := F.effectiveEpiFamily_of_map _ _ h
+    infer_instance
+
+instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies F] : ReflectsFiniteEffectiveEpiFamilies F where
+  reflects _ _ h := by
+    have := F.effectiveEpiFamily_of_map _ _ h
+    infer_instance
 
 instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpiFamilies where
   preserves _ _ := inferInstance
