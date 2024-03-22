@@ -160,7 +160,7 @@ lemma mem_piAntidiagonal' (s : Finset ι) (n : μ) (f) :
   exact fun _ _ => rfl
 
 @[simp]
-theorem piAntidiagonal_empty_of_zero :
+theorem piAntidiagonal_empty_zero :
     piAntidiagonal (∅ : Finset ι) (0 : μ) = {0} := by
   ext f
   rw [mem_piAntidiagonal]
@@ -168,6 +168,9 @@ theorem piAntidiagonal_empty_of_zero :
   rw [support_eq_empty, and_iff_left_iff_imp]
   intro hf
   rw [hf, sum_zero_index]
+
+@[deprecated]
+alias piAntidiagonal_empty_of_zero := piAntidiagonal_empty_zero
 
 theorem piAntidiagonal_empty_of_ne_zero {n : μ} (hn : n ≠ 0) :
     piAntidiagonal (∅ : Finset ι) n = ∅ := by
@@ -183,7 +186,7 @@ theorem piAntidiagonal_empty [DecidableEq μ] (n : μ) :
     piAntidiagonal (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by
   split_ifs with hn
   · rw [hn]
-    apply piAntidiagonal_empty_of_zero
+    apply piAntidiagonal_empty_zero
   · apply piAntidiagonal_empty_of_ne_zero hn
 
 theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
