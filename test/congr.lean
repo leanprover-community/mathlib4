@@ -321,7 +321,7 @@ example (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : Li
 /--
 error: unsolved goals
 case h.e'_2
-α : Type ?u.83134
+α : Type
 inst1 : BEq α
 inst✝¹ : LawfulBEq α
 inst2 : BEq α
@@ -331,6 +331,6 @@ x : α
 ⊢ inst1 = inst2
 -/
 #guard_msgs in
-example (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
+example {α : Type} (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
     @List.erase _ inst1 xs x = @List.erase _ inst2 xs x := by
   congr! (config := { beqEq := false })
