@@ -238,9 +238,14 @@ theorem det_transpose (M : Matrix n n R) : Mᵀ.det = M.det := by
 
 /-- Permuting the columns changes the sign of the determinant. -/
 theorem det_permute (σ : Perm n) (M : Matrix n n R) :
-    (Matrix.det fun i => M (σ i)) = Perm.sign σ * M.det :=
+    (M.submatrix σ id).det = Perm.sign σ * M.det :=
   ((detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_perm M σ).trans (by simp [Units.smul_def])
 #align matrix.det_permute Matrix.det_permute
+
+/-- Permuting the rows changes the sign of the determinant. -/
+theorem det_permute' (σ : Perm n) (M : Matrix n n R) :
+    (M.submatrix id σ).det = Perm.sign σ * M.det := by
+  rw [← det_transpose, transpose_submatrix, det_permute, det_transpose]
 
 /-- Permuting rows and columns with the same equivalence has no effect. -/
 @[simp]
@@ -756,11 +761,12 @@ theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin
   congr
   rw [← det_permute, det_succ_row_zero]
   refine' Finset.sum_congr rfl fun j _ => _
-  rw [mul_assoc, Matrix.submatrix, Matrix.submatrix]
+  rw [mul_assoc, Matrix.submatrix_apply, submatrix_submatrix, id_comp, Function.comp_def, id.def]
   congr
   · rw [Equiv.Perm.inv_def, Fin.cycleRange_symm_zero]
   · ext i' j'
-    rw [Equiv.Perm.inv_def, Fin.cycleRange_symm_succ]
+    rw [Equiv.Perm.inv_def, Matrix.submatrix_apply, Matrix.submatrix_apply,
+      Fin.cycleRange_symm_succ]
 #align matrix.det_succ_row Matrix.det_succ_row
 
 /-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along column `j`. -/
