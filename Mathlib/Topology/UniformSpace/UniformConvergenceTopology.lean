@@ -201,7 +201,6 @@ open UniformConvergence
 namespace UniformFun
 
 variable (α β : Type*) {γ ι : Type*}
-
 variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
 
 /-- Basis sets for the uniformity of uniform convergence: `gen α β V` is the set of pairs `(f, g)`
@@ -539,7 +538,6 @@ end UniformFun
 namespace UniformOnFun
 
 variable {α β : Type*} {γ ι : Type*}
-
 variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
 
 -- mathport name: «expr𝒰( , , )»

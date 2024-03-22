@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
 -/
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.InsertNth
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
@@ -1664,7 +1664,7 @@ def Relabelling.addCongr : ∀ {w x y z : PGame.{u}}, w ≡r x → y ≡r z → 
     · exact Hwx.addCongr (hL₂ j)
     · exact (hR₁ i).addCongr Hyz
     · exact Hwx.addCongr (hR₂ j)
-termination_by w x y z => (x, z)
+termination_by _ x _ z => (x, z)
 #align pgame.relabelling.add_congr SetTheory.PGame.Relabelling.addCongr
 
 instance : Sub PGame :=

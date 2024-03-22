@@ -44,7 +44,6 @@ section Module
 section
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable (R M)
 
 /-- The rank of a module, defined as a term of type `Cardinal`.
