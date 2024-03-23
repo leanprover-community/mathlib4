@@ -247,12 +247,15 @@ protected theorem coe_pow [OrderedSemiring α] (a : { x : α // 0 ≤ x }) (n : 
     (↑(a ^ n) : α) = (a : α) ^ n :=
   rfl
 #align nonneg.coe_pow Nonneg.coe_pow
-
 @[simp]
 theorem mk_pow [OrderedSemiring α] {x : α} (hx : 0 ≤ x) (n : ℕ) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) ^ n = ⟨x ^ n, pow_nonneg hx n⟩ :=
   rfl
 #align nonneg.mk_pow Nonneg.mk_pow
+
+instance nontrivial [Nontrivial α] [OrderedSemiring α] : Nontrivial { x : α // 0 ≤ x } :=
+  pullback_nonzero Subtype.val rfl rfl
+#align nonneg.nontrivial Nonneg.nontrivial
 
 instance orderedSemiring [OrderedSemiring α] : OrderedSemiring { x : α // 0 ≤ x } :=
   fast_instance%
@@ -263,7 +266,7 @@ instance orderedSemiring [OrderedSemiring α] : OrderedSemiring { x : α // 0 �
 
 instance strictOrderedSemiring [StrictOrderedSemiring α] :
     StrictOrderedSemiring { x : α // 0 ≤ x } :=
-  -- fast_instance% -- TODO: fix
+  fast_instance%
   Subtype.coe_injective.strictOrderedSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
@@ -300,10 +303,6 @@ instance semiring [OrderedSemiring α] : Semiring { x : α // 0 ≤ x } :=
 instance commSemiring [OrderedCommSemiring α] : CommSemiring { x : α // 0 ≤ x } :=
   inferInstance
 #align nonneg.comm_semiring Nonneg.commSemiring
-
-instance nontrivial [LinearOrderedSemiring α] : Nontrivial { x : α // 0 ≤ x } :=
-  ⟨⟨0, 1, fun h => zero_ne_one (congr_arg Subtype.val h)⟩⟩
-#align nonneg.nontrivial Nonneg.nontrivial
 
 instance linearOrderedSemiring [LinearOrderedSemiring α] :
     LinearOrderedSemiring { x : α // 0 ≤ x } :=
