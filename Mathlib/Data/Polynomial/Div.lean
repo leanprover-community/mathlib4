@@ -709,7 +709,7 @@ theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p 
 /-- See `Polynomial.mul_right_modByMonic` for the other multiplication order. This version, unlike
 that one, requires commutativity. -/
 @[simp]
-lemma mul_left_modByMonic (hq : q.Monic) : (p * q) %ₘ q = 0 := by
+lemma mul_self_modByMonic (hq : q.Monic) : (p * q) %ₘ q = 0 := by
   rw [modByMonic_eq_zero_iff_dvd hq]
   exact dvd_mul_left q p
 
