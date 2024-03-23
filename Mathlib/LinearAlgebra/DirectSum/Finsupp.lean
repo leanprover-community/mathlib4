@@ -141,3 +141,13 @@ theorem finsuppTensorFinsupp'_symm_single (i : ι × κ) (r₁ r₂ : R) :
 --     (finsuppTensorFinsupp' R ι κ).symm (Finsupp.single i r₁ * Finsupp.single i r₂) =
 --       Finsupp.single i.1 r₁ ⊗ₜ Finsupp.single i.2 r₂ := by
 --   rw [← Finsupp.single_mul, finsuppTensorFinsupp'_symm_single]
+
+theorem finsuppTensorFinsuppLid_self :
+    finsuppTensorFinsuppLid R R ι κ = finsuppTensorFinsupp' R ι κ := rfl
+
+theorem finsuppTensorFinsuppRid_self :
+    finsuppTensorFinsuppRid R R ι κ = finsuppTensorFinsupp' R ι κ := by
+  rw [finsuppTensorFinsupp', finsuppTensorFinsuppLid, finsuppTensorFinsuppRid]
+  congr
+  -- TODO: extract the proof of `TensorProduct.rid R R = TensorProduct.lid R R` as a separate lemma
+  exact LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ ↦ by simp [mul_comm]
