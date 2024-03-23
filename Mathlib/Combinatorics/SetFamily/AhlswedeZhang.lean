@@ -5,9 +5,8 @@ Authors: Yaël Dillies, Vladimir Ivanov
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Sups
-import Mathlib.Order.Hom.Lattice
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 

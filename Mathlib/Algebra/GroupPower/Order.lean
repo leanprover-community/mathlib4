@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Algebra.Order.WithZero
 
 #align_import algebra.group_power.order from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
@@ -25,7 +24,7 @@ variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
 
 @[to_additive zsmul_pos] lemma one_lt_zpow' (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
   obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hn.le
-  rw [zpow_coe_nat]
+  rw [zpow_natCast]
   refine' one_lt_pow' ha ?_
   rintro rfl
   simp at hn
@@ -508,31 +507,6 @@ lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
 
 end LinearOrderedRing
 
-section LinearOrderedCommMonoidWithZero
-
-variable [LinearOrderedCommMonoidWithZero M] [NoZeroDivisors M] {a : M} {n : ℕ}
-
-theorem pow_pos_iff (hn : n ≠ 0) : 0 < a ^ n ↔ 0 < a := by simp_rw [zero_lt_iff, pow_ne_zero_iff hn]
-#align pow_pos_iff pow_pos_iff
-
-end LinearOrderedCommMonoidWithZero
-
-section LinearOrderedCommGroupWithZero
-
-variable [LinearOrderedCommGroupWithZero M] {a : M} {m n : ℕ}
-
-theorem pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
-  rw [← one_mul (a ^ n), pow_succ]
-  exact mul_lt_right₀ _ ha (pow_ne_zero _ (zero_lt_one.trans ha).ne')
-#align pow_lt_pow_succ pow_lt_pow_succ
-
-theorem pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
-  induction' hmn with n _ ih
-  exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
-#align pow_lt_pow₀ pow_lt_pow_right₀
-
-end LinearOrderedCommGroupWithZero
-
 namespace MonoidHom
 
 variable [Ring R] [Monoid M] [LinearOrder M] [CovariantClass M M (· * ·) (· ≤ ·)] (f : R →* M)
@@ -571,5 +545,4 @@ Those lemmas have been deprecated on 2023-12-23.
 @[deprecated] alias pow_lt_pow_of_lt_one := pow_lt_pow_right_of_lt_one
 @[deprecated] alias lt_of_pow_lt_pow := lt_of_pow_lt_pow_left
 @[deprecated] alias le_of_pow_le_pow := le_of_pow_le_pow_left
-@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀
 @[deprecated] alias self_le_pow := le_self_pow
