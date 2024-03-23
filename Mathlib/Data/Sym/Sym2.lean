@@ -724,31 +724,13 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
 
 theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
     ((s ×ˢ s).image Sym2.mk).filter IsDiag = s.diag.image Sym2.mk := by
-  ext z
-  induction' z using Sym2.inductionOn
-  simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
-  constructor
-  · rintro ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩
-    rw [← h, Sym2.mk_isDiag_iff] at hab
-    exact ⟨a, b, ⟨ha, hab⟩, h⟩
-  · rintro ⟨a, b, ⟨ha, rfl⟩, h⟩
-    rw [← h]
-    exact ⟨⟨a, a, ⟨ha, ha⟩, rfl⟩, rfl⟩
+  simp_rw [Finset.filter_image, isDiag_iff_proj_eq, Finset.filter_eq_product_eq_diag]
 #align sym2.filter_image_quotient_mk_is_diag Sym2.filter_image_mk_isDiag
 
 theorem filter_image_mk_not_isDiag [DecidableEq α] (s : Finset α) :
     (((s ×ˢ s).image Sym2.mk).filter fun a : Sym2 α => ¬a.IsDiag) =
       s.offDiag.image Sym2.mk := by
-  ext z
-  induction z using Sym2.inductionOn
-  simp only [mem_image, mem_offDiag, mem_filter, Prod.exists, mem_product]
-  constructor
-  · rintro ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩
-    rw [← h, Sym2.mk_isDiag_iff] at hab
-    exact ⟨a, b, ⟨ha, hb, hab⟩, h⟩
-  · rintro ⟨a, b, ⟨ha, hb, hab⟩, h⟩
-    rw [Ne.def, ← Sym2.mk_isDiag_iff, h] at hab
-    exact ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩
+  simp_rw [Finset.filter_image, isDiag_iff_proj_eq, Finset.offDiag]
 #align sym2.filter_image_quotient_mk_not_is_diag Sym2.filter_image_mk_not_isDiag
 
 end Decidable

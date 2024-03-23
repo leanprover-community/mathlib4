@@ -471,10 +471,13 @@ instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x
   h x.1 x.2
 #align set.decidable_mem_diagonal Set.decidableMemDiagonal
 
+theorem preimage_prodMap_diagonal {β : Type*} {f : α → β} (hf : Injective f) :
+    Prod.map f f ⁻¹' diagonal β = diagonal α := by
+  ext; apply hf.eq_iff
+
 theorem preimage_coe_coe_diagonal (s : Set α) :
-    Prod.map (fun x : s => (x : α)) (fun x : s => (x : α)) ⁻¹' diagonal α = diagonal s := by
-  ext ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
-  simp [Set.diagonal]
+    Prod.map (fun x : s => (x : α)) (fun x : s => (x : α)) ⁻¹' diagonal α = diagonal s :=
+  preimage_prodMap_diagonal Subtype.coe_injective
 #align set.preimage_coe_coe_diagonal Set.preimage_coe_coe_diagonal
 
 @[simp]
@@ -502,13 +505,7 @@ theorem diag_preimage_prod_self (s : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ s
 #align set.diag_preimage_prod_self Set.diag_preimage_prod_self
 
 theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×ˢ s := by
-  ext x
-  constructor
-  · rintro ⟨x, hx, rfl⟩
-    exact ⟨rfl, hx, hx⟩
-  · obtain ⟨x, y⟩ := x
-    rintro ⟨rfl : x = y, h2x⟩
-    exact mem_image_of_mem _ h2x.1
+  rw [← range_diag, ← image_preimage_eq_range_inter, diag_preimage_prod_self]
 #align set.diag_image Set.diag_image
 
 theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by

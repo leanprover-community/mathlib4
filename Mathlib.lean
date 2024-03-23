@@ -1645,6 +1645,7 @@ import Mathlib.Data.Finset.Antidiagonal
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Diag
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Finsupp
 import Mathlib.Data.Finset.Fold

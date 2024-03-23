@@ -3,7 +3,7 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Oliver Nash
 -/
-import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Diag
 
 #align_import data.finset.prod from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -16,8 +16,6 @@ This file defines finset constructions on the product type `α × β`. Beware no
 ## Main declarations
 
 * `Finset.product`: Turns `s : Finset α`, `t : Finset β` into their product in `Finset (α × β)`.
-* `Finset.diag`: For `s : Finset α`, `s.diag` is the `Finset (α × α)` of pairs `(a, a)` with
-  `a ∈ s`.
 * `Finset.offDiag`: For `s : Finset α`, `s.offDiag` is the `Finset (α × α)` of pairs `(a, b)` with
   `a, b ∈ s` and `a ≠ b`.
 -/
@@ -87,14 +85,17 @@ theorem subset_product [DecidableEq α] [DecidableEq β] {s : Finset (α × β)}
   mem_product.2 ⟨mem_image_of_mem _ hp, mem_image_of_mem _ hp⟩
 #align finset.subset_product Finset.subset_product
 
+@[gcongr]
 theorem product_subset_product (hs : s ⊆ s') (ht : t ⊆ t') : s ×ˢ t ⊆ s' ×ˢ t' := fun ⟨_, _⟩ h =>
   mem_product.2 ⟨hs (mem_product.1 h).1, ht (mem_product.1 h).2⟩
 #align finset.product_subset_product Finset.product_subset_product
 
+@[gcongr]
 theorem product_subset_product_left (hs : s ⊆ s') : s ×ˢ t ⊆ s' ×ˢ t :=
   product_subset_product hs (Subset.refl _)
 #align finset.product_subset_product_left Finset.product_subset_product_left
 
+@[gcongr]
 theorem product_subset_product_right (ht : t ⊆ t') : s ×ˢ t ⊆ s ×ˢ t' :=
   product_subset_product (Subset.refl _) ht
 #align finset.product_subset_product_right Finset.product_subset_product_right
@@ -284,12 +285,6 @@ section Diag
 
 variable [DecidableEq α] (s t : Finset α)
 
-/-- Given a finite set `s`, the diagonal, `s.diag` is the set of pairs of the form `(a, a)` for
-`a ∈ s`. -/
-def diag :=
-  (s ×ˢ s).filter fun a : α × α => a.fst = a.snd
-#align finset.diag Finset.diag
-
 /-- Given a finite set `s`, the off-diagonal, `s.offDiag` is the set of pairs `(a, b)` with `a ≠ b`
 for `a, b ∈ s`. -/
 def offDiag :=
@@ -299,14 +294,13 @@ def offDiag :=
 variable {s} {x : α × α}
 
 @[simp]
-theorem mem_diag : x ∈ s.diag ↔ x.1 ∈ s ∧ x.1 = x.2 := by
-  simp (config := { contextual := true }) [diag]
-#align finset.mem_diag Finset.mem_diag
-
-@[simp]
 theorem mem_offDiag : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 := by
   simp [offDiag, and_assoc]
 #align finset.mem_off_diag Finset.mem_offDiag
+
+@[simp]
+theorem filter_eq_product_eq_diag : (s ×ˢ s).filter (fun x ↦ x.1 = x.2) = s.diag :=
+  coe_injective <| by push_cast [coe_diag, mem_product, Set.inter_comm (Set.diagonal α)]; rfl
 
 variable (s)
 
@@ -315,48 +309,29 @@ theorem coe_offDiag : (s.offDiag : Set (α × α)) = (s : Set α).offDiag :=
   Set.ext fun _ => mem_offDiag
 #align finset.coe_off_diag Finset.coe_offDiag
 
-@[simp]
-theorem diag_card : (diag s).card = s.card := by
-  suffices diag s = s.image fun a => (a, a) by
-    rw [this]
-    apply card_image_of_injOn
-    exact fun x1 _ x2 _ h3 => (Prod.mk.inj h3).1
-  ext ⟨a₁, a₂⟩
-  rw [mem_diag]
-  constructor <;> intro h <;> rw [Finset.mem_image] at *
-  · use a₁
-    simpa using h
-  · rcases h with ⟨a, h1, h2⟩
-    have h := Prod.mk.inj h2
-    rw [← h.1, ← h.2]
-    use h1
-#align finset.diag_card Finset.diag_card
+@[simp] theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag := by simp [disjoint_left]
+#align finset.disjoint_diag_off_diag Finset.disjoint_diag_offDiag
 
 @[simp]
-theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
-  suffices (diag s).card + (offDiag s).card = s.card * s.card by
-    conv_rhs => { rw [← s.diag_card] }
-    simp only [diag_card] at *
-    rw [tsub_eq_of_eq_add_rev]
-    rw [this]
-  by rw [← card_product, diag, offDiag]
-     conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a => a.1 = a.2)]
-#align finset.off_diag_card Finset.offDiag_card
+theorem diag_disjUnion_offDiag : s.diag.disjUnion s.offDiag s.disjoint_diag_offDiag = s ×ˢ s := by
+  ext ⟨x, y⟩
+  rcases eq_or_ne x y with rfl | hxy <;> simp [*]
+
+@[simp]
+theorem card_offDiag : (offDiag s).card = s.card * s.card - s.card := by
+  rw [← card_product, ← diag_disjUnion_offDiag, card_disjUnion, card_diag, Nat.add_sub_cancel_left]
+#align finset.off_diag_card Finset.card_offDiag
+
+@[deprecated] alias offDiag_card := card_offDiag -- 2024-03-23
+
+@[gcongr]
+theorem offDiag_subset_offDiag {s t : Finset α} (h : s ⊆ t) : offDiag s ⊆ offDiag t := by
+  unfold offDiag; gcongr
 
 @[mono]
-theorem diag_mono : Monotone (diag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
-  mem_diag.2 <| And.imp_left (@h _) <| mem_diag.1 hx
-#align finset.diag_mono Finset.diag_mono
-
-@[mono]
-theorem offDiag_mono : Monotone (offDiag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
-  mem_offDiag.2 <| And.imp (@h _) (And.imp_left <| @h _) <| mem_offDiag.1 hx
+theorem offDiag_mono : Monotone (offDiag : Finset α → Finset (α × α)) := fun _ _ ↦
+  offDiag_subset_offDiag
 #align finset.off_diag_mono Finset.offDiag_mono
-
-@[simp]
-theorem diag_empty : (∅ : Finset α).diag = ∅ :=
-  rfl
-#align finset.diag_empty Finset.diag_empty
 
 @[simp]
 theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
@@ -365,37 +340,22 @@ theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
 
 @[simp]
 theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by
-  conv_rhs => rw [← filter_union_filter_neg_eq (fun a => a.1 = a.2) (s ×ˢ s)]
+  rw [← diag_disjUnion_offDiag, disjUnion_eq_union]
 #align finset.diag_union_off_diag Finset.diag_union_offDiag
 
-@[simp]
-theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag :=
-  disjoint_filter_filter_neg (s ×ˢ s) (s ×ˢ s) (fun a => a.1 = a.2)
-#align finset.disjoint_diag_off_diag Finset.disjoint_diag_offDiag
-
 theorem product_sdiff_diag : s ×ˢ s \ s.diag = s.offDiag := by
-  rw [← diag_union_offDiag, union_comm, union_sdiff_self,
-    sdiff_eq_self_of_disjoint (disjoint_diag_offDiag _).symm]
+  rw [← diag_union_offDiag, union_sdiff_cancel_left s.disjoint_diag_offDiag]
 #align finset.product_sdiff_diag Finset.product_sdiff_diag
 
 theorem product_sdiff_offDiag : s ×ˢ s \ s.offDiag = s.diag := by
-  rw [← diag_union_offDiag, union_sdiff_self, sdiff_eq_self_of_disjoint (disjoint_diag_offDiag _)]
+  rw [← diag_union_offDiag, union_sdiff_cancel_right s.disjoint_diag_offDiag]
 #align finset.product_sdiff_off_diag Finset.product_sdiff_offDiag
-
-theorem diag_inter : (s ∩ t).diag = s.diag ∩ t.diag :=
-  ext fun x => by simpa only [mem_diag, mem_inter] using and_and_right
-#align finset.diag_inter Finset.diag_inter
 
 theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
   coe_injective <| by
     push_cast
     exact Set.offDiag_inter _ _
 #align finset.off_diag_inter Finset.offDiag_inter
-
-theorem diag_union : (s ∪ t).diag = s.diag ∪ t.diag := by
-  ext ⟨i, j⟩
-  simp only [mem_diag, mem_union, or_and_right]
-#align finset.diag_union Finset.diag_union
 
 variable {s t}
 
@@ -411,14 +371,6 @@ variable (a : α)
 @[simp]
 theorem offDiag_singleton : ({a} : Finset α).offDiag = ∅ := by simp [← Finset.card_eq_zero]
 #align finset.off_diag_singleton Finset.offDiag_singleton
-
-theorem diag_singleton : ({a} : Finset α).diag = {(a, a)} := by
-  rw [← product_sdiff_offDiag, offDiag_singleton, sdiff_empty, singleton_product_singleton]
-#align finset.diag_singleton Finset.diag_singleton
-
-theorem diag_insert : (insert a s).diag = insert (a, a) s.diag := by
-  rw [insert_eq, insert_eq, diag_union, diag_singleton]
-#align finset.diag_insert Finset.diag_insert
 
 theorem offDiag_insert (has : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
   rw [insert_eq, union_comm, offDiag_union (disjoint_singleton_right.2 has), offDiag_singleton,
