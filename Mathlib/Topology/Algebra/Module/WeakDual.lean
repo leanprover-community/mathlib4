@@ -324,14 +324,14 @@ def continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E where
 
 variable (𝕜 E) in
 @[simp]
-theorem toWeakSpace_eq_continuousLinearMapToWeakSpace (x : E) :
+theorem continuousLinearMapToWeakSpace_eq_toWeakSpace (x : E) :
     continuousLinearMapToWeakSpace 𝕜 E x = toWeakSpace 𝕜 E x := by rfl
 
 theorem injective_continuousLinearMapToWeakSpace :
     Function.Injective (continuousLinearMapToWeakSpace 𝕜 E) := by
   intro x y hxy
-  rw [toWeakSpace_eq_continuousLinearMapToWeakSpace,
-    toWeakSpace_eq_continuousLinearMapToWeakSpace] at hxy
+  rw [continuousLinearMapToWeakSpace_eq_toWeakSpace,
+    continuousLinearMapToWeakSpace_eq_toWeakSpace] at hxy
   exact LinearEquiv.injective (toWeakSpace 𝕜 E) hxy
 
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
@@ -359,6 +359,16 @@ theorem isOpen_of_isOpen_WeakSpace (U : Set (WeakSpace 𝕜 E))
     IsOpen ((continuousLinearMapToWeakSpace 𝕜 E) ⁻¹' U) := by
   exact ((continuousLinearMapToWeakSpace 𝕜 E).cont).isOpen_preimage U hU
 
+/-- The canonical map from `WeakSpace 𝕜 E` to `E` is an open map. -/
+theorem isOpenMap_inv_toWeakSpace : IsOpenMap (toWeakSpace 𝕜 E).symm := by
+  apply IsOpenMap.of_inverse (continuousLinearMapToWeakSpace 𝕜 E).cont _ _
+  intro x
+  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe,
+    continuousLinearMapToWeakSpace_eq_toWeakSpace, LinearEquiv.symm_apply_apply]
+  intro x
+  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe,
+    continuousLinearMapToWeakSpace_eq_toWeakSpace, LinearEquiv.apply_symm_apply]
+
 /-- A set in `E` which is open in the weak topology is open. -/
 theorem isOpen_of_isOpen_WeakSpace' (V : Set E)
     (hV : IsOpen[(WeakSpace.instTopologicalSpace)]
@@ -369,8 +379,8 @@ theorem isOpen_of_isOpen_WeakSpace' (V : Set E)
    constructor
    · intro hx
      obtain ⟨y, hy⟩ := hx
-     rw [toWeakSpace_eq_continuousLinearMapToWeakSpace,
-       toWeakSpace_eq_continuousLinearMapToWeakSpace] at hy
+     rw [continuousLinearMapToWeakSpace_eq_toWeakSpace,
+       continuousLinearMapToWeakSpace_eq_toWeakSpace] at hy
      have : y = x := LinearEquiv.injective (toWeakSpace 𝕜 E) hy.2
      rw [this] at hy
      exact hy.1
@@ -402,7 +412,7 @@ then `y ∘ f` is convergent for any `y : E →L[𝕜] 𝕜`. -/
 theorem eval_tendsto_of_tendsto
     {α : Type*} {l : Filter α} {f : α → E} {p : E} (hf : Tendsto f l (nhds p)) (y : E →L[𝕜] 𝕜) :
     Tendsto (fun x => y (f x)) l (nhds (y p)) := by
-  exact Tendsto.comp (Continuous.tendsto (ContinuousLinearMap.continuous y) p) hf
+  exact ((y.continuous).tendsto p).comp hf
 
 /-- If `f : E → α` is continuous from `E` in the weak topology,
 then it is continuous in the original topology. -/
