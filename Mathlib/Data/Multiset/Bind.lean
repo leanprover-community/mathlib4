@@ -84,9 +84,9 @@ theorem map_join (f : α → β) (S : Multiset (Multiset α)) :
   | cons ih => simp [ih]
 
 @[to_additive (attr := simp)]
-theorem prod_join [CommMonoid α] {l : Multiset (Multiset α)} :
-    prod (join l) = prod (map prod l) := by
-  induction l using Multiset.induction with
+theorem prod_join [CommMonoid α] {S : Multiset (Multiset α)} :
+    prod (join S) = prod (map prod S) := by
+  induction S using Multiset.induction with
   | empty => simp
   | cons ih => simp [ih]
 
