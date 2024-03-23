@@ -550,26 +550,6 @@ lemma npowBinRec_eq_npowRec [One M] [Mul M]
     npowBinRec (M := M) = npowRec := by
   ext; simp [npowBinRec, npowBinRecAux_eq_npowRec_mul, *]
 
-@[to_additive]
-lemma npowBinRec_succ [One M] [Mul M]
-    (one_mul : ∀ x : M, 1 * x = x) (mul_one : ∀ x : M, x * 1 = x)
-    (mul_assoc : ∀ x y z : M, x * y * z = x * (y * z)) (n : ℕ) (x : M) :
-    npowBinRec (n + 1) x = x * npowBinRec n x := by
-  simp [npowBinRec_eq_npowRec, npowRec, *]
-
-@[to_additive]
-lemma npowBinRec_inv [One M] [Mul M] [Inv M]
-    (one_mul : ∀ x : M, 1 * x = x) (mul_one : ∀ x : M, x * 1 = x)
-    (mul_assoc : ∀ x y z : M, x * y * z = x * (y * z))
-    (inv_one : (1 : M)⁻¹ = 1)
-    (mul_inv_rev : ∀ x y : M, (x * y)⁻¹ = y⁻¹ * x⁻¹) (n : ℕ) (x : M) :
-    npowBinRec n x⁻¹ = (npowBinRec n x)⁻¹ := by
-  rw [npowBinRec_eq_npowRec one_mul mul_one mul_assoc]
-  induction n with
-  | zero => exact inv_one.symm
-  | succ n ih => rw [npowRec, Nat.succ_eq_add_one, npowRec_add one_mul mul_assoc, ih, npowRec,
-    npowRec, mul_one, mul_inv_rev]
-
 end
 
 library_note "forgetful inheritance"/--
@@ -655,10 +635,39 @@ need right away.
 -/
 
 
+/--
+An abbreviation for `npowBinRec` with the arguments to prove the `csimp` theorem
+`nsmulRec'_eq_nsmulBinRec'`.
+-/
+@[to_additive (attr := nolint unusedArguments)
+"An abbreviation for `nsmulBinRec` with the arguments to prove the `csimp` theorem
+`nsmulRec'_eq_nsmulBinRec'`."]
+abbrev npowBinRec' {M : Type*} [Semigroup M] [One M]
+    (_one_mul : ∀ m : M, 1 * m = m) (_mul_one : ∀ m : M, m * 1 = m) (k : ℕ) (m : M) : M :=
+  npowBinRec k m
+
+/--
+An abbreviation for `npowRec` with the typeclass hypotheses matching `npowBinRec'`,
+so that we can use `@[csimp]` to replace it with an implementation by repeated squaring in compiled
+code.
+-/
+@[to_additive (attr := nolint unusedArguments)
+"An abbreviation for `nsmulRec` with the typeclass hypotheses matching `nsmulBinRec'`,
+so that we can use `@[csimp]` to replace it with an implementation by repeated doubling in compiled
+code."]
+abbrev npowRec' {M : Type*} [Semigroup M] [One M]
+    (_one_mul : ∀ m : M, 1 * m = m) (_mul_one : ∀ m : M, m * 1 = m) (k : ℕ) (m : M) : M :=
+  npowRec k m
+
+@[to_additive (attr := csimp)] theorem npowRec'_eq_npowBinRec' : @npowRec' = @npowBinRec' := by
+  funext M _ _ one_mul mul_one k m
+  unfold npowRec' npowBinRec'
+  rw [npowBinRec_eq_npowRec one_mul mul_one mul_assoc]
+
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by a natural number. -/
-  protected nsmul : ℕ → M → M := nsmulRec
+  protected nsmul : ℕ → M → M := @nsmulRec' M _ _ zero_add add_zero
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
   protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
@@ -675,7 +684,7 @@ attribute [instance 50] AddZeroClass.toAdd
 @[to_additive]
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   /-- Raising to the power of a natural number. -/
-  protected npow : ℕ → M → M := npowRec
+  protected npow : ℕ → M → M := @npowRec' M _ _ one_mul mul_one
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
   protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
@@ -720,12 +729,6 @@ theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a * a ^ n :=
   Monoid.npow_succ n a
 #align pow_succ pow_succ
 #align succ_nsmul succ_nsmul
-
-@[to_additive (attr := simp)]
-lemma npowBinRec_eq (n : ℕ) (x : M) :
-    npowBinRec n x = x ^ n :=
-  n.rec (pow_zero x).symm (fun n ih ↦ ((npowBinRec_succ one_mul mul_one mul_assoc n x).trans
-    (congr_arg _ ih)).trans (pow_succ x n).symm)
 
 end
 
@@ -858,26 +861,6 @@ def zsmulRec {M : Type*} [Zero M] [Add M] [Neg M] : ℤ → M → M
 #align zsmul_rec zsmulRec
 
 attribute [to_additive existing] zpowRec
-
-/-- `zpow` implemented using binary recursion. Friendlier to compute than `zpowRec`. -/
-@[to_additive "`zsmul` implemented using binary recursion. Friendlier to compute than `zsmulRec`."]
-def zpowBinRec {M : Type*} [One M] [Mul M] [Inv M] (a : ℤ) (x : M) : M :=
-  match a with
-  | Int.ofNat n => npowBinRec n x
-  | Int.negSucc n => (npowBinRec n.succ x)⁻¹
-
-@[to_additive]
-lemma zpowBinRec_succ {M : Type*} [One M] [Mul M] [Inv M]
-    (one_mul : ∀ x : M, 1 * x = x) (mul_one : ∀ x : M, x * 1 = x)
-    (mul_assoc : ∀ x y z : M, x * y * z = x * (y * z)) (n : ℕ) (a : M) :
-    zpowBinRec (Int.ofNat n.succ) a = a * zpowBinRec (Int.ofNat n) a :=
-  npowBinRec_succ one_mul mul_one mul_assoc n a
-
-@[to_additive]
-lemma zpowBinRec_neg {M : Type*} [One M] [Mul M] [Inv M]
-    (n : ℕ) (a : M) :
-    zpowBinRec (Int.negSucc n) a = (zpowBinRec n.succ a)⁻¹ :=
-  rfl
 
 section InvolutiveInv
 
@@ -1085,13 +1068,6 @@ theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
 
 alias division_def := div_eq_mul_inv
 #align division_def division_def
-
-@[to_additive (attr := simp)]
-lemma zpowBinRec_eq (n : ℤ) (x : G) :
-    zpowBinRec n x = x ^ n :=
-  match n with
-  | .ofNat n => (npowBinRec_eq n x).trans (zpow_ofNat x n).symm
-  | .negSucc _ => (congr_arg _ (npowBinRec_eq _ x)).trans (zpow_negSucc _ _).symm
 
 end DivInvMonoid
 

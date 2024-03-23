@@ -340,7 +340,7 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction' k using Nat.binaryRec with b'' k hk
   -- Porting note: was `simp [hn]`
   -- This is necessary because these are simp lemmas in mathlib
-  <;> simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
+  <;> simp [hn, Bool.or_assoc, Bool.and_assoc]))
 
 theorem xor_assoc (n m k : ℕ) : (n ^^^ m) ^^^ k = n ^^^ (m ^^^ k) := by bitwise_assoc_tac
 #align nat.lxor_assoc Nat.xor_assoc
@@ -414,8 +414,8 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ≠ b ^^^ c) :
   obtain ⟨i, ⟨hi, hi'⟩⟩ := exists_most_significant_bit (xor_ne_zero.2 h)
   have : testBit a i = true ∨ testBit b i = true ∨ testBit c i = true := by
     contrapose! hi
-    simp only [Bool.eq_false_eq_not_eq_true, Ne, testBit_xor, Bool.bne_eq_xor] at hi ⊢
-    rw [hi.1, hi.2.1, hi.2.2, Bool.xor_false, Bool.xor_false]
+    simp only [Bool.eq_false_eq_not_eq_true, Ne, testBit_xor] at hi ⊢
+    rw [hi.1, hi.2.1, hi.2.2, Bool.xor, Bool.xor_false, Bool.xor_false]
   -- If, say, `a` has a one bit at position `i`, then `a xor v` has a zero bit at position `i`, but
   -- the same bits as `a` in positions greater than `j`, so `a xor v < a`.
   rcases this with (h | h | h)

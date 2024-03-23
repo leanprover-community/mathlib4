@@ -272,7 +272,7 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
 theorem bitwise_xor : bitwise xor = Int.xor := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
-    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, Bool.bne_eq_xor,
+    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
       cond_false, cond_true, lor, Nat.ldiff, Bool.and_true, negSucc.injEq, Bool.false_xor,
       Bool.true_xor, Bool.and_false, Nat.land, Bool.not_true, ldiff,
       HOr.hOr, OrOp.or, Nat.lor, Int.xor, HXor.hXor, Xor.xor, Nat.xor]
