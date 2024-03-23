@@ -537,11 +537,12 @@ termination_by goalArity - args.size
 /-- Normalize an application of a heterogenous binary operator like `HAdd.hAdd`, using:
 - `f = fun x => f x` to increase the arity to 6
 - `(f + g) a = f a + g a` to decrease the arity to 6
-- `(fun x => f x + g x) = f + g` to get rid of any lambdas in front -/
+- `(fun x => f x + g x) = f + g` to get rid of some lambdas in front -/
 def reduceHBinOpAux (args : Array Expr) (lambdas : List FVarId) (instH instPi : Name) :
-    OptionT MetaM (Expr × Expr × Expr × List FVarId) := do
-  let some (mkApp2 (.const instH' _) type inst) := args[3]? | failure
-  guard (instH == instH')
+    MetaM (Option (Expr × Expr × Expr × List FVarId)) := do
+  let some (mkApp2 (.const instH' _) type inst) := args[3]? | return none
+  unless (instH == instH') do return none
+  some <$> do
   if args.size ≤ 6 then
     etaExpand args type lambdas 6 fun args lambdas =>
       distributeLambdas lambdas type args[4]! args[5]!
@@ -584,7 +585,7 @@ Optionally return the `(type, lhs, rhs, lambdas)`. -/
 
 /-- Normalize an application of a unary operator like `Inv.inv`, using:
 - `f⁻¹ a = (f a)⁻¹` to decrease the arity to 3
-- `(fun x => (f a)⁻¹) = f⁻¹` to get rid of any lambdas in front -/
+- `(fun x => (f x)⁻¹) = f⁻¹` to get rid of some lambdas in front -/
 def reduceUnOpAux (args : Array Expr) (lambdas : List FVarId) (instPi : Name) :
     OptionT MetaM (Expr × Expr × List FVarId) := do
   guard (args.size ≥ 3)

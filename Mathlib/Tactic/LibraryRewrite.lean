@@ -21,7 +21,9 @@ After this, each lemma is checked one by one to see whether it is applicable.
 The `RefinedDiscrTree` lookup groups the results by match pattern and gives a score to each pattern.
 This is used to display the results in sections, ordered by the score of the pattern.
 
-When a rewrite lemma intoduces new goals, these are shown to the user after a `⊢`.
+When a rewrite lemma intoduces new goals, these are shown with a `⊢`.
+
+The filter icon can be used to switch to an unfiltered view that also gives the lemma names.
 -/
 
 namespace Mathlib.Tactic.LibraryRewrite
@@ -301,28 +303,44 @@ structure Section where
   isLocal : Bool
   results : Array RewriteApplication
 
-def renderResults (results : Array Section) (showNames : Bool)
-    (range : Lsp.Range) (doc : FileWorker.EditableDocument) : Html :=
-  if results.isEmpty then
-    .text "No applicable rewrite lemmata found."
-  else
-    let htmls := results.map renderSection;
-    <details «open»={true}>
-      <summary className="mv2 pointer"> Rewrite suggestions: </summary>
-      {.element "div" #[("style", json% {"marginLeft" : "4px"})] htmls}
-    </details>
+
+structure FilterDetailsProps where
+  message : String
+  filtered : Html
+  all : Html
+  initiallyFiltered : Bool
+deriving RpcEncodable
+
+@[widget_module]
+def FilterDetails : Component FilterDetailsProps where
+  javascript := include_str "FilterDetails.js"
+
+def renderFilterResults (results : Array Section × Array Section) (range : Lsp.Range)
+    (doc : FileWorker.EditableDocument) : Html :=
+  let (filtered, all) := results;
+  <FilterDetails message={"Rewrite suggestions:"}
+    all={renderResults true all}
+    filtered={renderResults false filtered}
+    initiallyFiltered={true} />
 where
-  renderSection (sec : Section) : Html :=
+  renderResults (showNames : Bool) (results : Array Section) : Html :=
+    if results.isEmpty then
+      .text "No applicable rewrite lemmata found."
+    else
+      let htmls := results.map (renderSection showNames)
+      .element "div" #[("style", json% {"marginLeft" : "4px"})] htmls
+
+  renderSection (showNames : Bool) (sec : Section) : Html :=
     <details «open»={true}>
       <summary className="mv2 pointer">
         {.text "Pattern "}
         <InteractiveCode fmt={sec.pattern}/>
         {.text (if sec.isLocal then " (local results)" else "")}
       </summary>
-      {renderSectionCore sec}
+      {renderSectionCore showNames sec}
     </details>
 
-  renderSectionCore (sec : Section) : Html :=
+  renderSectionCore (showNames : Bool)  (sec : Section): Html :=
     .element "ul" #[("style", json% { "padding-left" : "30px"})] <|
     sec.results.map fun rw =>
       <li> { .element "p" #[] <|
@@ -345,12 +363,6 @@ def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
   let allResults := localResults.map (·.1, true) ++ cachedResults.map (·.1, false)
   return allResults
 
-structure Config where
-  showNames : Bool := false
-  deriving ToJson
-
-structure LibraryRewriteParams extends Config, SelectInsertParams
-  deriving RpcEncodable
 
 def checkLemmata (ass : Array (Array RewriteLemma × Bool)) (loc : SubExpr.GoalLocation)
     (subExpr : Expr) (occ : Option Nat) (initNames : PersistentHashMap Name MVarId) :
@@ -387,8 +399,8 @@ where
         | some name => name == lem.name
         | none      => true
 
-def getLibraryRewrites (loc : SubExpr.GoalsLocation) (showNames : Bool) :
-    ExceptT String MetaM (Array Section) := do
+def getLibraryRewrites (loc : SubExpr.GoalsLocation) :
+    ExceptT String MetaM (Array Section × Array Section) := do
   let { userNames := initNames, .. } ← getMCtx
   let e ← loc.rootExpr
   let pos := loc.pos
@@ -402,11 +414,10 @@ def getLibraryRewrites (loc : SubExpr.GoalsLocation) (showNames : Bool) :
   let positions ← kabstractPositions subExpr e
   let occurrence := if positions.size == 1 then none else
     positions.findIdx? (· == pos) |>.map (· + 1)
-  let (dedups, results) ← checkLemmata rwLemmas loc subExpr occurrence initNames
-  return if showNames then results else dedups
+  checkLemmata rwLemmas loc subExpr occurrence initNames
 
 @[server_rpc_method_cancellable]
-def LibraryRewrite.rpc (props : LibraryRewriteParams) : RequestM (RequestTask Html) :=
+def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
   let some loc := props.selectedLocations.back? |
@@ -423,12 +434,12 @@ def LibraryRewrite.rpc (props : LibraryRewriteParams) : RequestM (RequestTask Ht
     Meta.withLCtx lctx md.localInstances do
       profileitM Exception "libraryRewrite" (← getOptions) do
         (fun
-          | .ok results => renderResults results props.showNames props.replaceRange doc
+          | .ok results => renderFilterResults results props.replaceRange doc
           | .error msg  => .text msg)
-        <$> getLibraryRewrites loc props.showNames
+        <$> getLibraryRewrites loc
 
 @[widget_module]
-def LibraryRewrite : Component LibraryRewriteParams :=
+def LibraryRewrite : Component SelectInsertParams :=
   mk_rpc_widget% LibraryRewrite.rpc
 
 declare_config_elab elabLibraryRewriteConfig Config
@@ -436,13 +447,14 @@ declare_config_elab elabLibraryRewriteConfig Config
 /--
 To use `rw??`, shift-click an expression in the tactic state.
 This gives a list of rewrite suggestions for the selected expression.
-Clicking on a suggestion will replace `rw??` by a tactic that performs this rewrite.
+Click on a suggestion to replace `rw??` by a tactic that performs this rewrite.
+Click on the filter icon to switch to an unfiltered view that also shows the lemma names.
 -/
-syntax (name := rw??) "rw??" (Lean.Parser.Tactic.config)? : tactic
+syntax (name := rw??) "rw??" : tactic
 
 @[tactic Mathlib.Tactic.LibraryRewrite.rw??]
 def elabRw?? : Elab.Tactic.Tactic := fun stx => do
-  let cfg ← elabLibraryRewriteConfig stx[1]
+  -- let cfg ← elabLibraryRewriteConfig stx[1]
   let some range := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash LibraryRewrite.javascript)
-    (pure $ Json.mergeObj (json% { replaceRange : $range }) (json% $cfg)) stx
+    (pure $ json% { replaceRange : $range }) stx
