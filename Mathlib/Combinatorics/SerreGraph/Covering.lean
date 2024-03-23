@@ -120,18 +120,20 @@ namespace Morphism
 
 variable {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂} (f: Morphism G₁ G₂)
 
-theorem append_map {u v w : V₁}(η : EdgePath G₁ u v)(η' : EdgePath G₁ v w):
-   (η ++ η').map f = (η.map f) ++ (η'.map f) := by
+theorem append_map {u v w : V₁}(η : EdgePath G₁ u v)
+    (η' : EdgePath G₁ v w):
+    (η ++ η').map f = (η.map f) ++ (η'.map f) := by
       apply eq_of_toList_eq
       simp [map_toList, append_toList]
 
-theorem cons_map {u v w : V₁}(e : G₁.EdgeBetween u v)(η : EdgePath G₁ v w):
-  (cons e η).map f = cons (e.map f) (η.map f) := by
+theorem cons_map {u v w : V₁}(e : G₁.EdgeBetween u v)
+    (η : EdgePath G₁ v w):
+    (cons e η).map f = cons (e.map f) (η.map f) := by
       apply eq_of_toList_eq
       simp [map_toList, EdgeBetween.map_toList, cons_toList]
 
 theorem reverse_map {u v : V₁}(η : EdgePath G₁ u v):
-  η.reverse.map f = (η.map f).reverse := by
+    η.reverse.map f = (η.map f).reverse := by
       apply eq_of_toList_eq
       simp [map_toList, reverse_toList, List.map_reverse]
       congr
@@ -139,18 +141,18 @@ theorem reverse_map {u v : V₁}(η : EdgePath G₁ u v):
       simp only [Function.comp, f.toFuncE_bar]
 
 theorem map_of_reduction {v w : V₁} (η₁ η₂ : EdgePath G₁ v w):
-  Reduction η₁ η₂ → Reduction (η₁.map f) (η₂.map f)
+    Reduction η₁ η₂ → Reduction (η₁.map f) (η₂.map f)
   | Reduction.step u u' e p₁ p₂ => by
     simp [append_map, cons_map]
     rw [← EdgeBetween.map_bar]
     apply Reduction.step
 
 theorem reduced_of_image_reduced {v w : V₁} (η : EdgePath G₁ v w):
-  reduced (η.map f) → reduced η := by
-    intro hyp η' contra
-    apply hyp (η'.map f)
-    apply map_of_reduction
-    exact contra
+    reduced (η.map f) → reduced η := by
+  intro hyp η' contra
+  apply hyp (η'.map f)
+  apply map_of_reduction
+  exact contra
 
 /--
 Composition of morphisms.
@@ -183,63 +185,69 @@ protected def id : Morphism G₁ G₁ where
     simp
 
 protected theorem comp_id  (f: Morphism G₁ G₂) :
-  Morphism.comp (Morphism.id) f = f := by
-    cases f
-    rfl
+    Morphism.comp (Morphism.id) f = f := by
+  cases f
+  rfl
 
 protected theorem id_comp (f: Morphism G₁ G₂) :
-  Morphism.id.comp f  = f := by
-    cases f
-    rfl
+    Morphism.id.comp f  = f := by
+  cases f
+  rfl
 
-theorem comp_toFuncV {G₃: SerreGraph V₃ E₃} (g: Morphism G₂ G₃)(f: Morphism G₁ G₂) (v : V₁) :
-  (g.comp f).toFuncV v = g.toFuncV (f.toFuncV v) := by
-    rfl
+theorem comp_toFuncV {G₃: SerreGraph V₃ E₃} (g: Morphism G₂ G₃)
+    (f: Morphism G₁ G₂) (v : V₁) :
+    (g.comp f).toFuncV v = g.toFuncV (f.toFuncV v) := by
+  rfl
 
-theorem comp_toFuncE {G₃: SerreGraph V₃ E₃} (g: Morphism G₂ G₃)(f: Morphism G₁ G₂) (e : E₁) :
-  (g.comp f).toFuncE e = g.toFuncE (f.toFuncE e) := by
-    rfl
+theorem comp_toFuncE {G₃: SerreGraph V₃ E₃} (g: Morphism G₂ G₃)
+    (f: Morphism G₁ G₂) (e : E₁) :
+    (g.comp f).toFuncE e = g.toFuncE (f.toFuncE e) := by
+  rfl
 
-theorem comp_toFuncE' {G₃: SerreGraph V₃ E₃} (g: Morphism G₂ G₃)(f: Morphism G₁ G₂)  :
-  (g.comp f).toFuncE  = g.toFuncE ∘ f.toFuncE  := by
-    rfl
+theorem comp_toFuncE' {G₃: SerreGraph V₃ E₃} (g: Morphism G₂ G₃)
+    (f: Morphism G₁ G₂)  :
+    (g.comp f).toFuncE  = g.toFuncE ∘ f.toFuncE  := by
+  rfl
 
 
-theorem comp_assoc {G₃ G₄: SerreGraph V₃ E₃} (h: Morphism G₃ G₄) (g: Morphism G₂ G₃)(f: Morphism G₁ G₂) :
-  Morphism.comp h (Morphism.comp g f) = Morphism.comp (Morphism.comp h g) f := by
-    cases h
-    cases g
-    cases f
-    rfl
+theorem comp_assoc {G₃ G₄: SerreGraph V₃ E₃} (h: Morphism G₃ G₄)
+    (g: Morphism G₂ G₃)(f: Morphism G₁ G₂) :
+    Morphism.comp h (Morphism.comp g f) =
+    Morphism.comp (Morphism.comp h g) f := by
+  cases h
+  cases g
+  cases f
+  rfl
 
 end Morphism
 
 namespace PathClass
 
-variable {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂} (f: Morphism G₁ G₂)
+variable {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+    (f: Morphism G₁ G₂)
 
 /--
 Map on path classes induced by a morphism.
 -/
 def map  {v w : V₁}:
-  PathClass G₁ v w → PathClass G₂ (f.toFuncV v) (f.toFuncV w) := by
-    apply Quot.lift (fun η => [[η.map f ]])
-    intro η₁ η₂ step
-    apply Quot.sound
-    apply Morphism.map_of_reduction f η₁ η₂ step
+    PathClass G₁ v w → PathClass G₂ (f.toFuncV v) (f.toFuncV w) := by
+  apply Quot.lift (fun η => [[η.map f ]])
+  intro η₁ η₂ step
+  apply Quot.sound
+  apply Morphism.map_of_reduction f η₁ η₂ step
 
 theorem map_on_quotient  {v w : V₁}
-  (η : EdgePath G₁ v w) : [[ η ]].map f = [[ η.map f ]] := by
-    rfl
+    (η : EdgePath G₁ v w) : [[ η ]].map f = [[ η.map f ]] := by
+  rfl
 
 theorem map_mul {v w u : V₁}:
-  (η₁ : PathClass G₁ v w) →  (η₂ : PathClass G₁ w u) →
+    (η₁ : PathClass G₁ v w) →  (η₂ : PathClass G₁ w u) →
     (η₁ * η₂).map f = η₁.map f * η₂.map f := by
-    apply Quot.ind
-    intro a
-    apply Quot.ind
-    intro b
-    simp only [mul_path_path, map_on_quotient, Morphism.append_map]
+  apply Quot.ind
+  intro a
+  apply Quot.ind
+  intro b
+  simp only [mul_path_path, map_on_quotient, Morphism.append_map]
 
 
 end PathClass
@@ -248,15 +256,15 @@ end PathClass
 Map on fundamental groups induced by a morphism.
 -/
 def Morphism.π₁map  (v₁ : V₁)(v₂ : V₂)
-  {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
-  (f: Morphism G₁ G₂) (hyp : f.toFuncV v₁ = v₂) :
+    {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+    (f: Morphism G₁ G₂) (hyp : f.toFuncV v₁ = v₂) :
     π₁ G₁ v₁  →* π₁ G₂ v₂  := by
-    cases hyp
-    exact {
-      toFun := fun η => η.map f,
-      map_mul' := fun η₁ η₂ => map_mul f η₁ η₂,
-      map_one' := by rfl
-      }
+  cases hyp
+  exact {
+    toFun := fun η => η.map f,
+    map_mul' := fun η₁ η₂ => map_mul f η₁ η₂,
+    map_one' := by rfl
+    }
 
 
 
@@ -297,18 +305,19 @@ theorem init_localSection {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ 
       G₁.ι (localSection p v₁ e₂ h) = v₁ :=
         CoveringMap.init_localSection v₁ e₂ h
 
-theorem toFuncE_localSection {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
-      (p: Morphism G₁ G₂) [CoveringMap p] (v₁ : V₁) (e₂ : E₂)
-      (h : p.toFuncV v₁ = G₂.ι e₂) :
-      p.toFuncE (localSection p v₁ e₂ h) = e₂ :=
+theorem toFuncE_localSection {G₁ : SerreGraph V₁ E₁}
+    {G₂ : SerreGraph V₂ E₂}
+    (p: Morphism G₁ G₂) [CoveringMap p] (v₁ : V₁) (e₂ : E₂)
+    (h : p.toFuncV v₁ = G₂.ι e₂) :
+    p.toFuncE (localSection p v₁ e₂ h) = e₂ :=
         CoveringMap.toFuncE_localSection v₁ e₂ h
 
 
 theorem localSection_toFuncE {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
-      (p: Morphism G₁ G₂) [CoveringMap p] (v₁ : V₁) (e₁ : E₁)
-      (h : v₁ = G₁.ι e₁) :
-      localSection p v₁ (p.toFuncE e₁) (by rw [← p.toFuncV_init, h]) =
-        e₁ :=
+    (p: Morphism G₁ G₂) [CoveringMap p] (v₁ : V₁) (e₁ : E₁)
+    (h : v₁ = G₁.ι e₁) :
+    localSection p v₁ (p.toFuncE e₁)
+    (by rw [← p.toFuncV_init, h]) = e₁ :=
           CoveringMap.localSection_toFuncE v₁ e₁ h
 
 end Morphism
@@ -491,7 +500,8 @@ theorem EdgePath.lift_reverse {G₁ : SerreGraph V₁ E₁}
         (e.lift p v₁ h).reverse := by
         apply unique_Pathlift
 
-def PathLift.cons_bar_cons {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
+def PathLift.cons_bar_cons {G₁ : SerreGraph V₁ E₁}
+    {G₂ : SerreGraph V₂ E₂}
     {p : Morphism G₁ G₂}[CoveringMap p] {v₁: V₁} {v₂ w₂ w₂' : V₂}
     {h : p.toFuncV v₁ = v₂}{e: EdgeBetween G₂ v₂ w₂'}{e': EdgePath G₂ v₂ w₂}(lift' : PathLift p v₁  h e') :
       PathLift p v₁ h (cons e (cons e.bar e')) :=
