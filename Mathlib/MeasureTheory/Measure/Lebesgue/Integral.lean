@@ -65,8 +65,8 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] 
   -- Porting note: `refine` was able to find that on its own before
   · intro n
     exact ⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩
-  · simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel', ENNReal.toReal_ofReal zero_le_one,
-      mul_one, norm_le _ (norm_nonneg _)]
+  · simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel_left,
+      ENNReal.toReal_ofReal zero_le_one, mul_one, norm_le _ (norm_nonneg _)]
     intro x
     have := ((f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)).norm_coe_le_norm
         ⟨x - n, ⟨sub_nonneg.mpr x.2.1, sub_le_iff_le_add'.mpr x.2.2⟩⟩

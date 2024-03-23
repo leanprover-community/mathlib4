@@ -93,12 +93,12 @@ theorem integral_abs_condexp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ �
   by_cases hm : m ≤ m0
   swap
   · simp_rw [condexp_of_not_le hm, Pi.zero_apply, abs_zero, integral_zero]
-    exact integral_nonneg fun x => abs_nonneg _
+    positivity
   by_cases hfint : Integrable f μ
   swap
   · simp only [condexp_undef hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
       mul_zero]
-    exact integral_nonneg fun x => abs_nonneg _
+    positivity
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
   · rw [ENNReal.toReal_le_toReal] <;> simp_rw [← Real.norm_eq_abs, ofReal_norm_eq_coe_nnnorm]
     · rw [← snorm_one_eq_lintegral_nnnorm, ← snorm_one_eq_lintegral_nnnorm]
@@ -118,12 +118,12 @@ theorem set_integral_abs_condexp_le {s : Set α} (hs : MeasurableSet[m] s) (f : 
   by_cases hnm : m ≤ m0
   swap
   · simp_rw [condexp_of_not_le hnm, Pi.zero_apply, abs_zero, integral_zero]
-    exact integral_nonneg fun x => abs_nonneg _
+    positivity
   by_cases hfint : Integrable f μ
   swap
   · simp only [condexp_undef hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
       mul_zero]
-    exact integral_nonneg fun x => abs_nonneg _
+    positivity
   have : ∫ x in s, |(μ[f|m]) x| ∂μ = ∫ x, |(μ[s.indicator f|m]) x| ∂μ := by
     rw [← integral_indicator (hnm _ hs)]
     refine' integral_congr_ae _

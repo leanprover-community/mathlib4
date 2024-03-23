@@ -243,7 +243,7 @@ theorem norm_mod_lt (x : ℤ[i]) {y : ℤ[i]} (hy : y ≠ 0) : (x % y).norm < y.
     calc
       ↑(Zsqrtd.norm (x % y)) = Complex.normSq (x - y * (x / y : ℤ[i]) : ℂ) := by simp [mod_def]
       _ = Complex.normSq (y : ℂ) * Complex.normSq (x / y - (x / y : ℤ[i]) : ℂ) := by
-        rw [← normSq_mul, mul_sub, mul_div_cancel' _ this]
+        rw [← normSq_mul, mul_sub, mul_div_cancel₀ _ this]
       _ < Complex.normSq (y : ℂ) * 1 :=
         (mul_lt_mul_of_pos_left (normSq_div_sub_div_lt_one _ _) (normSq_pos.2 this))
       _ = Zsqrtd.norm y := by simp

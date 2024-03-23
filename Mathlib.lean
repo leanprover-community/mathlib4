@@ -745,6 +745,7 @@ import Mathlib.Analysis.Convex.Cone.InnerDual
 import Mathlib.Analysis.Convex.Cone.Pointed
 import Mathlib.Analysis.Convex.Cone.Proper
 import Mathlib.Analysis.Convex.Contractible
+import Mathlib.Analysis.Convex.Deriv
 import Mathlib.Analysis.Convex.Exposed
 import Mathlib.Analysis.Convex.Extrema
 import Mathlib.Analysis.Convex.Extreme
@@ -1515,6 +1516,7 @@ import Mathlib.Combinatorics.SimpleGraph.StronglyRegular
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.Trails
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
+import Mathlib.Combinatorics.SimpleGraph.Turan
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Computability.Ackermann
@@ -3844,6 +3846,7 @@ import Mathlib.Topology.CompletelyRegular
 import Mathlib.Topology.Connected.Basic
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Topology.Connected.Separation
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousFunction.Algebra

@@ -102,7 +102,7 @@ theorem sq_abs (z : ℂ) : Complex.abs z ^ 2 = normSq z :=
 
 @[simp]
 theorem sq_abs_sub_sq_re (z : ℂ) : Complex.abs z ^ 2 - z.re ^ 2 = z.im ^ 2 := by
-  rw [sq_abs, normSq_apply, ← sq, ← sq, add_sub_cancel']
+  rw [sq_abs, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
 #align complex.sq_abs_sub_sq_re Complex.sq_abs_sub_sq_re
 
 @[simp]

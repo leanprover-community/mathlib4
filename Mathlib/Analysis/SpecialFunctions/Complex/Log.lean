@@ -45,8 +45,8 @@ theorem log_im_le_pi (x : ℂ) : (log x).im ≤ π := by simp only [log_im, arg_
 theorem exp_log {x : ℂ} (hx : x ≠ 0) : exp (log x) = x := by
   rw [log, exp_add_mul_I, ← ofReal_sin, sin_arg, ← ofReal_cos, cos_arg hx, ← ofReal_exp,
     Real.exp_log (abs.pos hx), mul_add, ofReal_div, ofReal_div,
-    mul_div_cancel' _ (ofReal_ne_zero.2 <| abs.ne_zero hx), ← mul_assoc,
-    mul_div_cancel' _ (ofReal_ne_zero.2 <| abs.ne_zero hx), re_add_im]
+    mul_div_cancel₀ _ (ofReal_ne_zero.2 <| abs.ne_zero hx), ← mul_assoc,
+    mul_div_cancel₀ _ (ofReal_ne_zero.2 <| abs.ne_zero hx), re_add_im]
 #align complex.exp_log Complex.exp_log
 
 @[simp]
@@ -140,8 +140,8 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
       Nat.cast_two, ofReal_mul, neg_add, mul_neg, neg_neg]
     norm_num; rw [two_mul] -- Porting note: added to simplify `↑2`
     split_ifs
-    · rw [add_sub_right_comm, sub_add_cancel']
-    · rw [add_sub_right_comm, sub_add_cancel']
+    · rw [add_sub_right_comm, sub_add_cancel_left]
+    · rw [add_sub_right_comm, sub_add_cancel_left]
   · rwa [inv_pos, Complex.normSq_pos]
   · rwa [map_ne_zero]
 #align complex.log_inv_eq_ite Complex.log_inv_eq_ite

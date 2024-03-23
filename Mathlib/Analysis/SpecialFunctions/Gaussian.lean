@@ -106,7 +106,7 @@ theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤
         rw [neg_mul, one_mul]
   · simp_rw [← hp, Real.rpow_one]
     convert Real.GammaIntegral_convergent (by linarith : 0 < s + 1) using 2
-    rw [add_sub_cancel, mul_comm]
+    rw [add_sub_cancel_right, mul_comm]
 
 theorem integrableOn_rpow_mul_exp_neg_mul_rpow {p s b : ℝ} (hs : -1 < s) (hp : 1 ≤ p) (hb : 0 < b) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (- b * x ^ p)) (Ioi 0) := by
@@ -261,8 +261,7 @@ theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = sqrt (π /
     · exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
     · simpa only [not_lt, integrable_exp_neg_mul_sq_iff] using hb
   -- Assume now `b > 0`. Then both sides are non-negative and their squares agree.
-  refine' (sq_eq_sq _ (sqrt_nonneg _)).1 _
-  · exact integral_nonneg fun x => (exp_pos _).le
+  refine' (sq_eq_sq (by positivity) (by positivity)).1 _
   rw [← ofReal_inj, ofReal_pow, ← coe_algebraMap, IsROrC.algebraMap_eq_ofReal, ← integral_ofReal,
     sq_sqrt (div_pos pi_pos hb).le, ← IsROrC.algebraMap_eq_ofReal, coe_algebraMap, ofReal_div]
   convert integral_gaussian_sq_complex (by rwa [ofReal_re] : 0 < (b : ℂ).re) with _ x
@@ -384,7 +383,7 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = sqrt π := by
     rw [smul_eq_mul, this]
     field_simp [(ne_of_lt (show 0 < x from hx)).symm]
     norm_num; ring
-  · rw [div_one, ← mul_div_assoc, mul_comm, mul_div_cancel _ (two_ne_zero' ℝ)]
+  · rw [div_one, ← mul_div_assoc, mul_comm, mul_div_cancel_right₀ _ (two_ne_zero' ℝ)]
 set_option linter.uppercaseLean3 false in
 #align real.Gamma_one_half_eq Real.Gamma_one_half_eq
 

@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Computability.AkraBazzi.GrowsPolynomially
 import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
@@ -204,7 +203,7 @@ lemma eventually_r_ge (C : ℝ) : ∀ᶠ (n:ℕ) in atTop, ∀ i, C ≤ r i n :=
   intro i
   calc C = c * (C / c) := by
             rw [← mul_div_assoc]
-            exact (mul_div_cancel_left _ (by positivity)).symm
+            exact (mul_div_cancel_left₀ _ (by positivity)).symm
        _ ≤ c * ⌈C / c⌉₊ := by gcongr; simp [Nat.le_ceil]
        _ ≤ c * n := by gcongr
        _ ≤ r i n := hn₂ i
