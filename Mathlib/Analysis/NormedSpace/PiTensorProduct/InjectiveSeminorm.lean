@@ -19,16 +19,16 @@ expressing the universal property of the tensor product induces an isometric lin
 
 The idea is the following: Every normed `𝕜`-vector space `F` defines a linear map
 from `⨂[𝕜] i, Eᵢ` to `ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] F`, which sends `x` to the map
-`f ↦ f.lift x`. Thanks to `PiTensorProduct.projectiveSeminorm_bound`, this map lands in
+`f ↦ f.lift x`. Thanks to `PiTensorProduct.norm_eval_le_projectiveSeminorm`, this map lands in
 `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F`. As this last space has a natural operator (semi)norm,
-we get an induced seminorm on `⨂[𝕜] i, Eᵢ`, which, by `PiTensorProduct.projectiveSeminorm_bound`,
-is bounded above by the projective seminorm `PiTensorProduct.projectiveSeminorm`.
-We then take the `sup` of these seminorms as `F` varies; as this family of seminorms is bounded,
-its `sup` has good properties.
+we get an induced seminorm on `⨂[𝕜] i, Eᵢ`, which, by
+`PiTensorProduct.norm_eval_le_projectiveSeminorm`, is bounded above by the projective seminorm
+`PiTensorProduct.projectiveSeminorm`. We then take the `sup` of these seminorms as `F` varies;
+as this family of seminorms is bounded, its `sup` has good properties.
 
 In fact, we cannot take the `sup` over all normed spaces `F` because of set-theoretical issues,
 so we only take spaces `F` in the same universe as `⨂[𝕜] i, Eᵢ`. We prove in
-`injectiveSeminorm_bound` that this gives the same result, because every multilinear map
+`norm_eval_le_injectiveSeminorm` that this gives the same result, because every multilinear map
 from `E = Πᵢ Eᵢ` to `F` factors though a normed vector space in the same universe as
 `⨂[𝕜] i, Eᵢ`.
 
@@ -55,8 +55,8 @@ induced by a family of continuous linear maps `Eᵢ →L[𝕜] E'ᵢ`.
 
 ## Main results
 
-* `PiTensorProduct.injectiveSeminorm_bound`: The main property of the injective seminorm on
-`⨂[𝕜] i, Eᵢ`: for every `x` in `⨂[𝕜] i, Eᵢ` and every continuous multilinear map `f` from
+* `PiTensorProduct.norm_eval_le_injectiveSeminorm`: The main property of the injective seminorm
+on `⨂[𝕜] i, Eᵢ`: for every `x` in `⨂[𝕜] i, Eᵢ` and every continuous multilinear map `f` from
 `E = Πᵢ Eᵢ` to a normed space `F`, we have `‖f.lift x‖ ≤ ‖f‖ * injectiveSeminorm x `.
 * `PiTensorProduct.mapL_opNorm`: If `f` is a family of continuous linear maps
 `fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
@@ -101,7 +101,7 @@ noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[�
     (fun _ ↦ by simp only [LinearMap.coe_comp, Function.comp_apply,
                   ContinuousMultilinearMap.toMultilinearMapLinear_apply, LinearMap.flip_apply,
                   LinearEquiv.coe_coe]
-                exact projectiveSeminorm_bound _ _ _)
+                exact norm_eval_le_projectiveSeminorm _ _ _)
   map_add' x y := by
     ext _
     simp only [map_add, LinearMap.mkContinuous_apply, LinearMap.coe_comp, Function.comp_apply,
@@ -114,7 +114,7 @@ noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[�
       LinearMap.flip_apply, LinearEquiv.coe_coe, RingHom.id_apply, ContinuousLinearMap.coe_smul',
       Pi.smul_apply]
 
-theorem toDualContinuousMultilinearMap_bound (x : ⨂[𝕜] i, E i) :
+theorem toDualContinuousMultilinearMap_le_projectiveSeminorm (x : ⨂[𝕜] i, E i) :
     ‖toDualContinuousMultilinearMap x (F := F)‖ ≤ projectiveSeminorm x := by
   simp only [toDualContinuousMultilinearMap, LinearMap.coe_mk, AddHom.coe_mk]
   apply LinearMap.mkContinuous_norm_le _ (apply_nonneg _ _)
@@ -122,7 +122,7 @@ theorem toDualContinuousMultilinearMap_bound (x : ⨂[𝕜] i, E i) :
 /-- The injective seminorm on `⨂[𝕜] i, Eᵢ`. Morally, it sends `x` in `⨂[𝕜] i, Eᵢ` to the
 `sup` of the operator norms of the `PiTensorProduct.toDualContinuousMultilinearMap x`, for all
 normed vector spaces `F`. In fact, we only take in the same universe as `⨂[𝕜] i, Eᵢ`, and then
-prove in `PiTensorProduct.injectiveSeminorm_bound` that this gives the same result.
+prove in `PiTensorProduct.norm_eval_le_injectiveSeminorm` that this gives the same result.
 -/
 noncomputable irreducible_def injectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) :=
   sSup {p | ∃ (G : Type (max (max uι u𝕜) uE)) (_ : SeminormedAddCommGroup G)
@@ -140,7 +140,7 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max (max uι u𝕜) u
   rw [hp]
   intro x
   simp only [Seminorm.comp_apply, coe_normSeminorm]
-  exact toDualContinuousMultilinearMap_bound _
+  exact toDualContinuousMultilinearMap_le_projectiveSeminorm _
 
 theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max (max uι u𝕜) uE))
@@ -150,7 +150,7 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
   simp [injectiveSeminorm]
   exact Seminorm.sSup_apply dualSeminorms_bounded
 
-theorem injectiveSeminorm_bound (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
+theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
     ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
 -- If `F` were in `Type (max (max uι u𝕜) uE)` (which is the type of `⨂[𝕜] i, E i`), then the
 -- property that we want to prove would hold by definition of `injectiveSeminorm`. This is
@@ -217,7 +217,7 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
     simp only [Set.mem_setOf_eq] at hp
     obtain ⟨G, _, _, h⟩ := hp
     rw [h]; intro x; simp only [Seminorm.comp_apply, coe_normSeminorm]
-    exact toDualContinuousMultilinearMap_bound _
+    exact toDualContinuousMultilinearMap_le_projectiveSeminorm _
 
 theorem injectiveSeminorm_tprod_le (m : Π (i : ι), E i) :
     injectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ :=
@@ -240,7 +240,7 @@ induced by `PiTensorProduct.lift`, for every normed space `F`.
 @[simps]
 noncomputable def liftEquiv : ContinuousMultilinearMap 𝕜 E F ≃ₗ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F where
   toFun f := LinearMap.mkContinuous (lift f.toMultilinearMap) ‖f‖
-    (fun x ↦ injectiveSeminorm_bound f x)
+    (fun x ↦ norm_eval_le_injectiveSeminorm f x)
   map_add' f g := by ext _; simp only [ContinuousMultilinearMap.toMultilinearMap_add, map_add,
     LinearMap.mkContinuous_apply, LinearMap.add_apply, ContinuousLinearMap.add_apply]
   map_smul' a f := by ext _; simp only [ContinuousMultilinearMap.toMultilinearMap_smul, map_smul,
@@ -426,7 +426,8 @@ theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
   intro x
   rw [mapL, liftIsometry]
   simp only [LinearIsometryEquiv.coe_mk, liftEquiv_apply, LinearMap.mkContinuous_apply]
-  refine le_trans (injectiveSeminorm_bound _ _) (mul_le_mul_of_nonneg_right ?_ (norm_nonneg x))
+  refine le_trans (norm_eval_le_injectiveSeminorm _ _)
+    (mul_le_mul_of_nonneg_right ?_ (norm_nonneg x))
   rw [ContinuousMultilinearMap.opNorm_le_iff _ (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
   intro m
   simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply]

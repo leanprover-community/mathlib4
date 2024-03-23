@@ -24,7 +24,7 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
 
 ## Main results
 
-* `PiTensorProduct.projectiveSeminorm_bound`: If `f` is a continuous multilinear map on
+* `PiTensorProduct.norm_eval_le_projectiveSeminorm`: If `f` is a continuous multilinear map on
 `E = Π i, Eᵢ` and `x` is in `⨂[𝕜] i, Eᵢ`, then `‖f.lift x‖ ≤ projectiveSeminorm x * ‖f‖`.
 
 ## TODO
@@ -108,11 +108,11 @@ noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := by
     · letI : Nonempty (lifts 0) := ⟨0, lifts_zero (R := 𝕜) (s := E)⟩
       exact le_ciInf (fun p ↦ projectiveSeminormAux_nonneg p.1)
   · intro x y
-    letI := liftsNonempty x; letI := liftsNonempty y
+    letI := nonempty_subtype.mpr (nonempty_lifts x); letI := nonempty_subtype.mpr (nonempty_lifts y)
     exact le_ciInf_add_ciInf (fun p q ↦ ciInf_le_of_le (projectiveSemiNormAuxBddBelow _)
-      ⟨p.1 + q.1, lifts_add p q⟩ (projectiveSeminormAux_add_le p.1 q.1))
+      ⟨p.1 + q.1, lifts_add p.2 q.2⟩ (projectiveSeminormAux_add_le p.1 q.1))
   · intro a x
-    letI := liftsNonempty x
+    letI := nonempty_subtype.mpr (nonempty_lifts x)
     rw [Real.mul_iInf_of_nonneg (norm_nonneg _)]
     refine le_ciInf ?_
     intro p
@@ -131,10 +131,10 @@ theorem projectiveSeminorm_tprod_le (m : Π i, E i) :
     List.map_nil, List.sum_cons, List.sum_nil, add_zero]
   · rw [mem_lifts_iff, List.map_singleton, List.sum_singleton, one_smul]
 
-theorem projectiveSeminorm_bound (x : ⨂[𝕜] i, E i) (G : Type*) [SeminormedAddCommGroup G]
+theorem norm_eval_le_projectiveSeminorm (x : ⨂[𝕜] i, E i) (G : Type*) [SeminormedAddCommGroup G]
     [NormedSpace 𝕜 G] (f : ContinuousMultilinearMap 𝕜 E G) :
     ‖lift f.toMultilinearMap x‖ ≤ projectiveSeminorm x * ‖f‖ := by
-  letI := liftsNonempty x
+  letI := nonempty_subtype.mpr (nonempty_lifts x)
   rw [projectiveSeminorm_apply, Real.iInf_mul_of_nonneg (norm_nonneg _), projectiveSeminormAux]
   refine le_ciInf ?_
   intro ⟨p, hp⟩
