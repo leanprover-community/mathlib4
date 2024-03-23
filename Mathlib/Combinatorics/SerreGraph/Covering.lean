@@ -70,7 +70,7 @@ def Morphism.pathMapAux {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E�
         rename_i  w₁'' u'
         let e₁ := f.toFuncE e.edge
         let init_vert : G₂.ι e₁ = f.toFuncV v₁ := by
-          rw [←e.init_eq, ←toFuncV_init]
+          rw [← e.init_eq, ← toFuncV_init]
         let term_vert : G₂.τ e₁ = f.toFuncV u' := by
           rw [← toFuncV_term, e.term_eq]
         let edge₂ : EdgeBetween G₂ (f.toFuncV v₁) (f.toFuncV u') :=
