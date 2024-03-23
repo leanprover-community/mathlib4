@@ -295,12 +295,12 @@ namespace Morphism
 Local section of a covering map on edges adjacent to a vertex.
 -/
 def localSection {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
-      (p: Morphism G₁ G₂) [CoveringMap p] (v₁ : V₁) (e₂ : E₂)
+    (p: Morphism G₁ G₂) [CoveringMap p] (v₁ : V₁) (e₂ : E₂)
       (h : p.toFuncV v₁ = G₂.ι e₂) : E₁ :=
         CoveringMap.localSection v₁ e₂ h
 
 theorem init_localSection {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
-      (p: Morphism G₁ G₂) [CoveringMap p] (v₁ : V₁) (e₂ : E₂)
+    (p: Morphism G₁ G₂) [CoveringMap p] (v₁ : V₁) (e₂ : E₂)
       (h : p.toFuncV v₁ = G₂.ι e₂) :
       G₁.ι (localSection p v₁ e₂ h) = v₁ :=
         CoveringMap.init_localSection v₁ e₂ h
@@ -503,7 +503,8 @@ theorem EdgePath.lift_reverse {G₁ : SerreGraph V₁ E₁}
 def PathLift.cons_bar_cons {G₁ : SerreGraph V₁ E₁}
     {G₂ : SerreGraph V₂ E₂}
     {p : Morphism G₁ G₂}[CoveringMap p] {v₁: V₁} {v₂ w₂ w₂' : V₂}
-    {h : p.toFuncV v₁ = v₂}{e: EdgeBetween G₂ v₂ w₂'}{e': EdgePath G₂ v₂ w₂}(lift' : PathLift p v₁  h e') :
+    {h : p.toFuncV v₁ = v₂}{e: EdgeBetween G₂ v₂ w₂'}
+    {e': EdgePath G₂ v₂ w₂}(lift' : PathLift p v₁  h e') :
       PathLift p v₁ h (cons e (cons e.bar e')) :=
       let edgeLift := p.localSection v₁ e.edge (by rw [h, e.init_eq])
       let edgeBetween : EdgeBetween G₁ v₁ (G₁.τ edgeLift) :=
