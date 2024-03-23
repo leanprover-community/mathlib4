@@ -517,16 +517,17 @@ alias Membership.mem.ne_of_not_mem' := ne_of_mem_of_not_mem'
 section Equality
 
 -- todo: change name
-theorem ball_cond_comm {α} {s : α → Prop} {p : α → α → Prop} :
+theorem forall_cond_comm {α} {s : α → Prop} {p : α → α → Prop} :
     (∀ a, s a → ∀ b, s b → p a b) ↔ ∀ a b, s a → s b → p a b :=
   ⟨fun h a b ha hb ↦ h a ha b hb, fun h a ha b hb ↦ h a b ha hb⟩
-#align ball_cond_comm ball_cond_comm
+#align ball_cond_comm forall_cond_comm
 
 theorem forall_mem_comm {α β} [Membership α β] {s : β} {p : α → α → Prop} :
     (∀ a (_ : a ∈ s) b (_ : b ∈ s), p a b) ↔ ∀ a b, a ∈ s → b ∈ s → p a b :=
-  ball_cond_comm
+  forall_cond_comm
 #align ball_mem_comm forall_mem_comm
 
+@[deprecated] alias ball_cond_comm := forall_cond_comm
 @[deprecated] alias ball_mem_comm := forall_mem_comm
 
 #align ne_of_apply_ne ne_of_apply_ne

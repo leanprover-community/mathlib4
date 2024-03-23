@@ -1057,7 +1057,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
   · induction U using Finset.induction_on with
     | empty => exact absurd (by simpa using hsU) hne.not_subset_empty
     | @insert u U uU IH =>
-      simp only [← ball_cond_comm, Finset.forall_mem_insert, Finset.exists_mem_insert,
+      simp only [← forall_cond_comm, Finset.forall_mem_insert, Finset.exists_mem_insert,
         Finset.coe_insert, sUnion_insert, implies_true, true_and] at *
       refine (h _ hUo.1 (⋃₀ ↑U) (isOpen_sUnion hUo.2) hsU ?_).imp_right ?_
       · refine subset_empty_iff.1 fun x ⟨hxs, hxu, v, hvU, hxv⟩ => ?_
