@@ -65,7 +65,7 @@ theorem not_dvd_one_of_finite_one_right {a : α} : Finite a 1 → ¬a ∣ 1 := f
 #align multiplicity.not_dvd_one_of_finite_one_right multiplicity.not_dvd_one_of_finite_one_right
 
 @[norm_cast]
-theorem Int.coe_nat_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) = multiplicity a b := by
+theorem Int.natCast_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) = multiplicity a b := by
   apply Part.ext'
   · rw [← @finite_iff_dom ℕ, @finite_def ℕ, ← @finite_iff_dom ℤ, @finite_def ℤ]
     norm_cast
@@ -74,7 +74,7 @@ theorem Int.coe_nat_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) 
       · apply Nat.find_mono
         norm_cast
         simp
-#align multiplicity.int.coe_nat_multiplicity multiplicity.Int.coe_nat_multiplicity
+#align multiplicity.int.coe_nat_multiplicity multiplicity.Int.natCast_multiplicity
 
 theorem not_finite_iff_forall {a b : α} : ¬Finite a b ↔ ∀ n : ℕ, a ^ n ∣ b :=
   ⟨fun h n =>
@@ -435,8 +435,8 @@ protected theorem neg (a b : α) : multiplicity a (-b) = multiplicity a b :=
 
 theorem Int.natAbs (a : ℕ) (b : ℤ) : multiplicity a b.natAbs = multiplicity (a : ℤ) b := by
   cases' Int.natAbs_eq b with h h <;> conv_rhs => rw [h]
-  · rw [Int.coe_nat_multiplicity]
-  · rw [multiplicity.neg, Int.coe_nat_multiplicity]
+  · rw [Int.natCast_multiplicity]
+  · rw [multiplicity.neg, Int.natCast_multiplicity]
 #align multiplicity.int.nat_abs multiplicity.Int.natAbs
 
 theorem multiplicity_add_of_gt {p a b : α} (h : multiplicity p b < multiplicity p a) :

@@ -662,9 +662,9 @@ theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=
   sup_eq_bot_iff
 #align ennreal.sup_eq_zero ENNReal.sup_eq_zero
 
-theorem iSup_coe_nat : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
+theorem iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
   (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
-#align ennreal.supr_coe_nat ENNReal.iSup_coe_nat
+#align ennreal.supr_coe_nat ENNReal.iSup_natCast
 
 end iSup
 

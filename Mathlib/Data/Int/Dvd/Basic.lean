@@ -19,7 +19,7 @@ open Nat
 namespace Int
 
 @[norm_cast]
-theorem coe_nat_dvd {m n : ℕ} : (↑m : ℤ) ∣ ↑n ↔ m ∣ n :=
+theorem natCast_dvd_natCast {m n : ℕ} : (↑m : ℤ) ∣ ↑n ↔ m ∣ n :=
   ⟨fun ⟨a, ae⟩ =>
     m.eq_zero_or_pos.elim (fun m0 => by
       simp only [m0, Nat.cast_zero, zero_mul, cast_eq_zero] at ae
@@ -33,13 +33,13 @@ theorem coe_nat_dvd {m n : ℕ} : (↑m : ℤ) ∣ ↑n ↔ m ∣ n :=
     fun ⟨k, e⟩ => Dvd.intro k <| by rw [e, Int.ofNat_mul]⟩
 #align int.coe_nat_dvd Int.coe_nat_dvd
 
-theorem coe_nat_dvd_left {n : ℕ} {z : ℤ} : (↑n : ℤ) ∣ z ↔ n ∣ z.natAbs := by
+theorem natCast_dvd {n : ℕ} {z : ℤ} : (↑n : ℤ) ∣ z ↔ n ∣ z.natAbs := by
   rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [← coe_nat_dvd, Int.dvd_neg]
-#align int.coe_nat_dvd_left Int.coe_nat_dvd_left
+#align int.coe_nat_dvd_left Int.natCast_dvd
 
-theorem coe_nat_dvd_right {n : ℕ} {z : ℤ} : z ∣ (↑n : ℤ) ↔ z.natAbs ∣ n := by
+theorem dvd_natCast {n : ℕ} {z : ℤ} : z ∣ (↑n : ℤ) ↔ z.natAbs ∣ n := by
   rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [← coe_nat_dvd, Int.neg_dvd]
-#align int.coe_nat_dvd_right Int.coe_nat_dvd_right
+#align int.coe_nat_dvd_right Int.dvd_natCast
 
 #align int.le_of_dvd Int.le_of_dvd
 

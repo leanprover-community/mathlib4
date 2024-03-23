@@ -969,7 +969,6 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 #align zpow_of_nat zpow_natCast
 #align coe_nat_zsmul natCast_zsmul
 #align of_nat_zsmul natCast_zsmul
-#align matrix.zpow_nat_cast zpow_natCast
 
 -- 2024-03-20
 @[deprecated] alias zpow_coe_nat := zpow_natCast

@@ -37,20 +37,20 @@ def ofNatHom : ℕ →+* ℤ :=
 
 -- Porting note: no need to be `@[simp]`, as `Nat.cast_pos` handles this.
 -- @[simp]
-theorem coe_nat_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n :=
+theorem natCast_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n :=
   Nat.cast_pos
-#align int.coe_nat_pos Int.coe_nat_pos
+#align int.coe_nat_pos Int.natCast_pos
 
-theorem coe_nat_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
-  Int.coe_nat_pos.2 (succ_pos n)
-#align int.coe_nat_succ_pos Int.coe_nat_succ_pos
+theorem natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
+  Int.natCast_pos.2 (succ_pos n)
+#align int.coe_nat_succ_pos Int.natCast_succ_pos
 
 lemma toNat_lt' {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.toNat < b ↔ a < b := by
-  rw [← toNat_lt_toNat, toNat_coe_nat]; exact coe_nat_pos.2 hb.bot_lt
+  rw [← toNat_lt_toNat, toNat_natCast]; exact natCast_pos.2 hb.bot_lt
 #align int.to_nat_lt Int.toNat_lt'
 
 lemma natMod_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.natMod b < b :=
-  (toNat_lt' hb).2 <| emod_lt_of_pos _ <| coe_nat_pos.2 hb.bot_lt
+  (toNat_lt' hb).2 <| emod_lt_of_pos _ <| natCast_pos.2 hb.bot_lt
 #align int.nat_mod_lt Int.natMod_lt
 
 section cast

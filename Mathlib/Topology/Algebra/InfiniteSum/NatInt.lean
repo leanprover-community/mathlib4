@@ -371,9 +371,9 @@ theorem HasSum.nat_add_neg {f : ℤ → M} (hf : HasSum f m) :
     simp only [u1, u2, mem_union, mem_image, exists_prop]
     rcases le_total 0 x with (h'x | h'x)
     · refine Or.inl ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, ?_⟩
-      simp only [Int.coe_natAbs, abs_eq_self, h'x]
+      simp only [Int.natCast_natAbs, abs_eq_self, h'x]
     · refine Or.inr ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, ?_⟩
-      simp only [abs_of_nonpos h'x, Int.coe_natAbs, neg_neg]
+      simp only [abs_of_nonpos h'x, Int.natCast_natAbs, neg_neg]
   exact ⟨_, A, calc
     (∑ x in u1 ∪ u2, (f x + if x = 0 then f 0 else 0)) =
         (∑ x in u1 ∪ u2, f x) + ∑ x in u1 ∩ u2, f x := by

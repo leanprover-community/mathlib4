@@ -16,7 +16,7 @@ import Mathlib.Data.Int.Units
 namespace Int
 
 theorem isUnit_iff_abs_eq {x : ℤ} : IsUnit x ↔ abs x = 1 := by
-  rw [isUnit_iff_natAbs_eq, abs_eq_natAbs, ← Int.ofNat_one, coe_nat_inj']
+  rw [isUnit_iff_natAbs_eq, abs_eq_natAbs, ← Int.ofNat_one, natCast_inj]
 #align int.is_unit_iff_abs_eq Int.isUnit_iff_abs_eq
 
 theorem isUnit_sq {a : ℤ} (ha : IsUnit a) : a ^ 2 = 1 := by rw [sq, isUnit_mul_self ha]

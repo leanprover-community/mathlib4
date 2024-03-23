@@ -28,7 +28,7 @@ variable {α : Type*} [DivisionRing α]
 theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
   cases' n with n
   · simp
-  rw [cast_def, inv_coe_nat_num, inv_coe_nat_den, if_neg n.succ_ne_zero,
+  rw [cast_def, inv_natCast_num, inv_natCast_den, if_neg n.succ_ne_zero,
     Int.sign_eq_one_of_pos (Nat.cast_pos.mpr n.succ_pos), Int.cast_one, one_div]
 #align rat.cast_inv_nat Rat.cast_inv_nat
 
