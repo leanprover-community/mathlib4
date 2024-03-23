@@ -2079,3 +2079,26 @@ theorem snorm_one_le_of_le' {r : ℝ} {f : α → ℝ} (hfint : Integrable f μ)
 end SnormBound
 
 end MeasureTheory
+
+namespace Mathlib.Meta.Positivity
+
+open Qq Lean Meta MeasureTheory
+
+/-- Positivity extension for integrals.
+
+This extension only proves non-negativity, strict positivity is more delicate for integration and
+requires more assumptions. -/
+@[positivity MeasureTheory.integral _ _]
+def evalIntegral : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@MeasureTheory.integral $i ℝ _ $inst2 _ _ $f) =>
+    let i : Q($i) ← mkFreshExprMVarQ q($i) .syntheticOpaque
+    have body : Q(ℝ) := .betaRev f #[i]
+    let rbody ← core zα pα body
+    let pbody ← rbody.toNonneg
+    let pr : Q(∀ x, 0 ≤ $f x) ← mkLambdaFVars #[i] pbody
+    assertInstancesCommute
+    return .nonnegative q(integral_nonneg $pr)
+  | _ => throwError "not MeasureTheory.integral"
+
+end Mathlib.Meta.Positivity
