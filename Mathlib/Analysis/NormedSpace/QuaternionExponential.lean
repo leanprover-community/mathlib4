@@ -131,7 +131,7 @@ theorem normSq_exp (q : ℍ[ℝ]) : normSq (exp ℝ q) = exp ℝ q.re ^ 2 :=
       · simp [hv]
       rw [normSq_add, normSq_smul, star_smul, coe_mul_eq_smul, smul_re, smul_re, star_re, im_re,
         smul_zero, smul_zero, mul_zero, add_zero, div_pow, normSq_coe,
-        normSq_eq_norm_mul_self, ← sq, div_mul_cancel _ (pow_ne_zero _ hv)]
+        normSq_eq_norm_mul_self, ← sq, div_mul_cancel₀ _ (pow_ne_zero _ hv)]
     _ = exp ℝ q.re ^ 2 := by rw [Real.cos_sq_add_sin_sq, mul_one]
 
 #align quaternion.norm_sq_exp Quaternion.normSq_exp

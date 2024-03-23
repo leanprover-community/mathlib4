@@ -31,7 +31,7 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) :
     rw [← lt_div_iff, ← sin_pi_over_two_pow_succ]; apply sin_lt; apply div_pos pi_pos
     all_goals apply pow_pos; norm_num
   apply lt_of_le_of_lt (le_of_eq _) this
-  rw [pow_succ' _ (n + 1), ← mul_assoc, div_mul_cancel, mul_comm]; norm_num
+  rw [pow_succ' _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; norm_num
 #align real.pi_gt_sqrt_two_add_series Real.pi_gt_sqrtTwoAddSeries
 
 theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :

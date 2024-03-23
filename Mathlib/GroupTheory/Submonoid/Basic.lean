@@ -441,22 +441,22 @@ is preserved under multiplication, then `p` holds for all elements of the closur
       "An induction principle for additive closure membership. If `p` holds for `0` and all
       elements of `s`, and is preserved under addition, then `p` holds for all elements of the
       additive closure of `s`."]
-theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x) (H1 : p 1)
-    (Hmul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨p, Hmul _ _⟩, H1⟩).2 Hs h
+theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x) (one : p 1)
+    (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
+  (@closure_le _ _ _ ⟨⟨p, mul _ _⟩, one⟩).2 mem h
 #align submonoid.closure_induction Submonoid.closure_induction
 #align add_submonoid.closure_induction AddSubmonoid.closure_induction
 
 /-- A dependent version of `Submonoid.closure_induction`.  -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubmonoid.closure_induction`. "]
 theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
-    (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (H1 : p 1 (one_mem _))
-    (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (one : p 1 (one_mem _))
+    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
     p x hx := by
   refine' Exists.elim _ fun (hx : x ∈ closure s) (hc : p x hx) => hc
   exact
-    closure_induction hx (fun x hx => ⟨_, Hs x hx⟩) ⟨_, H1⟩ fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
-      ⟨_, Hmul _ _ _ _ hx hy⟩
+    closure_induction hx (fun x hx => ⟨_, mem x hx⟩) ⟨_, one⟩ fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
+      ⟨_, mul _ _ _ _ hx hy⟩
 #align submonoid.closure_induction' Submonoid.closure_induction'
 #align add_submonoid.closure_induction' AddSubmonoid.closure_induction'
 
@@ -481,9 +481,10 @@ and verify that `p x` and `p y` imply `p (x * y)`. -/
       "If `s` is a dense set in an additive monoid `M`, `AddSubmonoid.closure s = ⊤`, then in
       order to prove that some predicate `p` holds for all `x : M` it suffices to verify `p x` for
       `x ∈ s`, verify `p 0`, and verify that `p x` and `p y` imply `p (x + y)`."]
-theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure s = ⊤) (Hs : ∀ x ∈ s, p x)
-    (H1 : p 1) (Hmul : ∀ x y, p x → p y → p (x * y)) : p x := by
-  have : ∀ x ∈ closure s, p x := fun x hx => closure_induction hx Hs H1 Hmul
+theorem dense_induction {p : M → Prop} (x : M) {s : Set M} (hs : closure s = ⊤)
+    (mem : ∀ x ∈ s, p x)
+    (one : p 1) (mul : ∀ x y, p x → p y → p (x * y)) : p x := by
+  have : ∀ x ∈ closure s, p x := fun x hx => closure_induction hx mem one mul
   simpa [hs] using this x
 #align submonoid.dense_induction Submonoid.dense_induction
 #align add_submonoid.dense_induction AddSubmonoid.dense_induction

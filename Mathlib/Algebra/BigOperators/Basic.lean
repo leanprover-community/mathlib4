@@ -1632,7 +1632,7 @@ theorem prod_range_div' {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
 
 @[to_additive]
 theorem eq_prod_range_div {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
-    f n = f 0 * ∏ i in range n, f (i + 1) / f i := by rw [prod_range_div, mul_div_cancel'_right]
+    f n = f 0 * ∏ i in range n, f (i + 1) / f i := by rw [prod_range_div, mul_div_cancel]
 #align finset.eq_prod_range_div Finset.eq_prod_range_div
 #align finset.eq_sum_range_sub Finset.eq_sum_range_sub
 
@@ -2264,9 +2264,9 @@ lemma _root_.Equiv.prod_comp (e : ι ≃ κ) (g : κ → α) : ∏ i, g (e i) = 
 #align equiv.sum_comp Equiv.sum_comp
 
 @[to_additive]
-lemma prod_of_injective (e : ι → κ) (hf : Injective e) (f : ι → α) (g : κ → α)
+lemma prod_of_injective (e : ι → κ) (he : Injective e) (f : ι → α) (g : κ → α)
     (h' : ∀ i ∉ Set.range e, g i = 1) (h : ∀ i, f i = g (e i)) : ∏ i, f i = ∏ j, g j :=
-  prod_of_injOn e (hf.injOn _) (by simp) (by simpa using h') (fun i _ ↦ h i)
+  prod_of_injOn e (he.injOn _) (by simp) (by simpa using h') (fun i _ ↦ h i)
 
 @[to_additive]
 lemma prod_fiberwise [DecidableEq κ] [Fintype ι] (g : ι → κ) (f : ι → α) :

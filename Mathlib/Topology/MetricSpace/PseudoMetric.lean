@@ -666,7 +666,7 @@ theorem iUnion_inter_closedBall_nat (s : Set α) (x : α) : ⋃ n : ℕ, s ∩ c
 #align metric.Union_inter_closed_ball_nat Metric.iUnion_inter_closedBall_nat
 
 theorem ball_subset (h : dist x y ≤ ε₂ - ε₁) : ball x ε₁ ⊆ ball y ε₂ := fun z zx => by
-  rw [← add_sub_cancel'_right ε₁ ε₂]
+  rw [← add_sub_cancel ε₁ ε₂]
   exact lt_of_le_of_lt (dist_triangle z x y) (add_lt_add_of_lt_of_le zx h)
 #align metric.ball_subset Metric.ball_subset
 
@@ -1397,13 +1397,13 @@ theorem Real.closedBall_eq_Icc {x r : ℝ} : closedBall x r = Icc (x - r) (x + r
 #align real.closed_ball_eq_Icc Real.closedBall_eq_Icc
 
 theorem Real.Ioo_eq_ball (x y : ℝ) : Ioo x y = ball ((x + y) / 2) ((y - x) / 2) := by
-  rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel', add_self_div_two,
-    ← add_div, add_assoc, add_sub_cancel'_right, add_self_div_two]
+  rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
+    ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
 #align real.Ioo_eq_ball Real.Ioo_eq_ball
 
 theorem Real.Icc_eq_closedBall (x y : ℝ) : Icc x y = closedBall ((x + y) / 2) ((y - x) / 2) := by
-  rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel', add_self_div_two, ←
-    add_div, add_assoc, add_sub_cancel'_right, add_self_div_two]
+  rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
+    ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
 #align real.Icc_eq_closed_ball Real.Icc_eq_closedBall
 
 section MetricOrdered
