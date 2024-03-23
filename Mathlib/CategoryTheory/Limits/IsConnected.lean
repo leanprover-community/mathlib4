@@ -32,7 +32,8 @@ variable (C : Type u) [Category.{v} C]
 /-- The functor mapping every object to `PUnit`. -/
 def unitValuedFunctor : C ⥤ Type w := (Functor.const C).obj PUnit.{w + 1}
 
-instance instSubsingletonColimitPUnit [IsPreconnected C] [HasColimit (unitValuedFunctor.{v, u, w} C)] :
+instance instSubsingletonColimitPUnit
+    [IsPreconnected C] [HasColimit (unitValuedFunctor.{v, u, w} C)] :
     Subsingleton (colimit (unitValuedFunctor.{v, u, w} C)) where
   allEq a b := by
     obtain ⟨c, ⟨⟩, rfl⟩ :=
@@ -43,14 +44,14 @@ instance instSubsingletonColimitPUnit [IsPreconnected C] [HasColimit (unitValued
     exact fun c d f => colimit_sound'' f rfl
 
 /-- Given a connected index category, the colimit of the constant unit-valued functor is `PUnit`. -/
-noncomputable def colimitConstPUnitIsoPUnit [IsConnected C] [HasColimit (unitValuedFunctor.{v, u, w} C)] :
+noncomputable def colimitConstPUnitIsoPUnit
+    [IsConnected C] [HasColimit (unitValuedFunctor.{v, u, w} C)] :
     colimit (unitValuedFunctor.{v, u, w} C) ≅ PUnit.{w + 1} where
   hom := fun _ => PUnit.unit
   inv := fun _ => colimit.ι (unitValuedFunctor.{v, u, w} C) Classical.ofNonempty PUnit.unit
 
 /-- Let `F` be a `Type`-valued functor. If two elements `a : F c` and `b : F d` represent the same
-element of `colimit F`, then `c` and `d` are related by a `Zigzag`.
--/
+element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
 theorem zigzag_of_eqvGen_quot_rel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
     (h : EqvGen (Quot.Rel F) c d) : Zigzag c.1 d.1 := by
   induction h with
@@ -60,8 +61,7 @@ theorem zigzag_of_eqvGen_quot_rel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
   | trans _ _ _ _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 
 /-- An index category is connected iff the colimit of the constant singleton-valued functor is a
-singleton.
--/
+singleton. -/
 theorem connected_iff_colimit_const_pUnit_iso_pUnit :
     IsConnected C ↔ Nonempty (colimit (unitValuedFunctor.{v, u, max v u w} C) ≅ PUnit) := by
   refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit.{v, u, max v u w} C⟩, fun ⟨h⟩ => ?_⟩
