@@ -138,18 +138,20 @@ end HasLimits
 open HasLimits
 
 /-- If `(F ⋙ forget (ModuleCat R)).sections` is `u`-small, `F` has a limit. -/
-instance hasLimit : HasLimit F := HasLimit.mk {
+lemma hasLimit : HasLimit F := HasLimit.mk {
     cone := limitCone F
     isLimit := limitConeIsLimit F
   }
 
 /-- If `J` is `u`-small, the category of `R`-modules has limits of shape `J`. -/
-instance hasLimitsOfShape [Small.{w} J] : HasLimitsOfShape J (ModuleCat.{w} R) where
+lemma hasLimitsOfShape [Small.{w} J] : HasLimitsOfShape J (ModuleCat.{w} R) where
+  has_limit F := hasLimit F
 
 -- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
 -- is a `Prop`, declaring this as `irreducible` should presumably have no effect
 /-- The category of R-modules has all limits. -/
-instance hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (ModuleCat.{w} R) where
+lemma hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (ModuleCat.{w} R) where
+  has_limits_of_shape _ := hasLimitsOfShape
 #align Module.has_limits_of_size ModuleCat.hasLimitsOfSize
 
 instance hasLimits : HasLimits (ModuleCat.{w} R) :=
