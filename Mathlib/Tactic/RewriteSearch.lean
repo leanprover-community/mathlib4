@@ -47,8 +47,7 @@ set_option autoImplicit true
 
 namespace Mathlib.Tactic.RewriteSearch
 
-open Lean Meta
-open Mathlib.Tactic.Rewrites
+open Lean Meta Rewrites
 
 initialize registerTraceClass `rw_search
 initialize registerTraceClass `rw_search.detail
@@ -237,13 +236,21 @@ try rewriting the current goal in the `SearchNode` by one of them,
 returning a `MLList MetaM SearchNode`, i.e. a lazy list of next possible goals.
 -/
 def rewrites (hyps : Array (Expr × Bool × Nat))
-    (lemmas : DiscrTree (Name × Bool × Nat) × DiscrTree (Name × Bool × Nat))
-    (forbidden : NameSet := ∅) (n : SearchNode) : MLList MetaM SearchNode := .squash fun _ => do
+    (moduleRef : LazyDiscrTree.ModuleDiscrTreeRef (Name × Bool × Nat))
+    (forbidden : NameSet := ∅) (n : SearchNode) : MetaM (List SearchNode) := do
   if ← isTracingEnabledFor `rw_search then do
     trace[rw_search] "searching:\n{← toString n}"
-  return rewritesCore hyps lemmas n.mctx n.goal n.type forbidden
-    |>.enum
+  return ← (← findRewrites hyps moduleRef n.goal n.type forbidden .solveByElim true).enum
     |>.filterMapM fun ⟨k, r⟩ => do n.rewrite r k
+
+/--
+When `rw?` was upstreamed, the laziness was removed.
+We put it back here as a wrapper, but I suspect this will break `rw_search`.
+-/
+def rewrites' (hyps : Array (Expr × Bool × Nat))
+    (moduleRef : LazyDiscrTree.ModuleDiscrTreeRef (Name × Bool × Nat))
+    (forbidden : NameSet := ∅) (n : SearchNode) : MLList MetaM SearchNode := .squash fun _ => do
+  return MLList.ofList (← rewrites hyps moduleRef forbidden n)
 
 /--
 Perform best first search on the graph of rewrites from the specified `SearchNode`.
@@ -253,10 +260,10 @@ def search (n : SearchNode)
     (forbidden : NameSet := ∅) (maxQueued : Option Nat := none) :
     MLList MetaM SearchNode := .squash fun _ => do
   let hyps ← localHypotheses
-  let lemmas ← rewriteLemmas.get
+  let moduleRef ← createModuleTreeRef
   let search := bestFirstSearchCore (maxQueued := maxQueued)
     (β := String) (removeDuplicatesBy? := some SearchNode.ppGoal)
-    prio estimator (rewrites hyps lemmas forbidden) n
+    prio estimator (rewrites' hyps moduleRef forbidden) n
   let search ←
     if ← isTracingEnabledFor `rw_search then do
       pure <| search.mapM fun n => do trace[rw_search] "{← toString n}"; pure n
@@ -273,7 +280,7 @@ def search (n : SearchNode)
 
 end SearchNode
 
-open Elab Tactic
+open Elab Tactic Lean.Parser.Tactic
 
 /--
 `rw_search` attempts to solve an equality goal
@@ -290,7 +297,7 @@ separating delimiters `(`, `)`, `[`, `]`, and `,` into their own tokens.)
 You can use `rw_search [-my_lemma, -my_theorem]`
 to prevent `rw_search` from using the names theorems.
 -/
-syntax "rw_search" (forbidden)? : tactic
+syntax "rw_search" (rewrites_forbidden)? : tactic
 
 open Lean.Meta.Tactic.TryThis
 
