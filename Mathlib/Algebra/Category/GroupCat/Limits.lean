@@ -141,7 +141,7 @@ instance hasLimit : HasLimit F :=
 /-- If `J` is `u`-small, `GroupCat.{u}` has limits of shape `J`. -/
 @[to_additive "If `J` is `u`-small, `AddGroupCat.{u}` has limits of shape `J`."]
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J GroupCat.{u} where
-  has_limit _ := inferInstance 
+  has_limit _ := inferInstance
 
 /-- The category of groups has all limits. -/
 @[to_additive "The category of additive groups has all limits."]
