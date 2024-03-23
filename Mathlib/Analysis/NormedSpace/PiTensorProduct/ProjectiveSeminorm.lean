@@ -121,7 +121,7 @@ noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := by
     lifts_smul p.2 a⟩ (le_refl _)
 
 theorem projectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
-    projectiveSeminorm x = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.1) := by rfl
+    projectiveSeminorm x = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.1) := rfl
 
 theorem projectiveSeminorm_tprod_le (m : Π i, E i) :
     projectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ := by
