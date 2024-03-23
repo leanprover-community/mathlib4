@@ -21,7 +21,6 @@ open Real Set Filter Topology
 
 open Nat
 
-set_option profiler true in
 /-- Explicit formula for the derivative of the Gamma function at integers, in terms of harmonic
 numbers and the Euler-Mascheroni constant `γ`. -/
 lemma Real.deriv_Gamma_nat (n : ℕ) :
