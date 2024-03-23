@@ -616,19 +616,19 @@ theorem isCountablySpanning_spanningSets (μ : Measure α) [SigmaFinite μ] :
   ⟨spanningSets μ, mem_range_self, iUnion_spanningSets μ⟩
 #align measure_theory.is_countably_spanning_spanning_sets MeasureTheory.isCountablySpanning_spanningSets
 
-open Classical in
+open scoped Classical in
 /-- `spanningSetsIndex μ x` is the least `n : ℕ` such that `x ∈ spanningSets μ n`. -/
 noncomputable def spanningSetsIndex (μ : Measure α) [SigmaFinite μ] (x : α) : ℕ :=
   Nat.find <| iUnion_eq_univ_iff.1 (iUnion_spanningSets μ) x
 #align measure_theory.spanning_sets_index MeasureTheory.spanningSetsIndex
 
-open Classical in
+open scoped Classical in
 theorem measurable_spanningSetsIndex (μ : Measure α) [SigmaFinite μ] :
     Measurable (spanningSetsIndex μ) :=
   measurable_find _ <| measurable_spanningSets μ
 #align measure_theory.measurable_spanning_sets_index MeasureTheory.measurable_spanningSetsIndex
 
-open Classical in
+open scoped Classical in
 theorem preimage_spanningSetsIndex_singleton (μ : Measure α) [SigmaFinite μ] (n : ℕ) :
     spanningSetsIndex μ ⁻¹' {n} = disjointed (spanningSets μ) n :=
   preimage_find_eq_disjointed _ _ _
@@ -1232,7 +1232,7 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
     [SecondCountableTopology α] [IsLocallyFiniteMeasure μ] : SigmaFinite μ := by
   choose s hsx hsμ using μ.finiteAt_nhds
   rcases TopologicalSpace.countable_cover_nhds hsx with ⟨t, htc, htU⟩
-  refine' Measure.sigmaFinite_of_countable (htc.image s) (ball_image_iff.2 fun x _ => hsμ x) _
+  refine' Measure.sigmaFinite_of_countable (htc.image s) (forall_mem_image.2 fun x _ => hsμ x) _
   rwa [sUnion_image]
 #align measure_theory.sigma_finite_of_locally_finite MeasureTheory.sigmaFinite_of_locallyFinite
 
@@ -1425,7 +1425,7 @@ variable [TopologicalSpace α] [MeasurableSpace α] {μ : Measure α} {s : Set �
 /-- If `s` is a compact set and `μ` is finite at `𝓝 x` for every `x ∈ s`, then `s` admits an open
 superset of finite measure. -/
 theorem exists_open_superset_measure_lt_top' (h : IsCompact s)
-    (hμ : ∀ x ∈ s, μ.FiniteAtFilter (𝓝 x)) : ∃ (U : _) (_ : U ⊇ s), IsOpen U ∧ μ U < ∞ := by
+    (hμ : ∀ x ∈ s, μ.FiniteAtFilter (𝓝 x)) : ∃ U ⊇ s, IsOpen U ∧ μ U < ∞ := by
   refine' IsCompact.induction_on h _ _ _ _
   · use ∅
     simp [Superset]
@@ -1443,7 +1443,7 @@ theorem exists_open_superset_measure_lt_top' (h : IsCompact s)
 /-- If `s` is a compact set and `μ` is a locally finite measure, then `s` admits an open superset of
 finite measure. -/
 theorem exists_open_superset_measure_lt_top (h : IsCompact s) (μ : Measure α)
-    [IsLocallyFiniteMeasure μ] : ∃ (U : _) (_ : U ⊇ s), IsOpen U ∧ μ U < ∞ :=
+    [IsLocallyFiniteMeasure μ] : ∃ U ⊇ s, IsOpen U ∧ μ U < ∞ :=
   h.exists_open_superset_measure_lt_top' fun x _ => μ.finiteAt_nhds x
 #align is_compact.exists_open_superset_measure_lt_top IsCompact.exists_open_superset_measure_lt_top
 
@@ -1493,13 +1493,13 @@ def MeasureTheory.Measure.finiteSpanningSetsInOpen [TopologicalSpace α] [SigmaC
     μ.FiniteSpanningSetsIn { K | IsOpen K } where
   set n := ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose
   set_mem n :=
-    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.snd.1
+    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.2.1
   finite n :=
-    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.snd.2
+    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.2.2
   spanning :=
     eq_univ_of_subset
       (iUnion_mono fun n =>
-        ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.fst)
+        ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.1)
       (iUnion_compactCovering α)
 #align measure_theory.measure.finite_spanning_sets_in_open MeasureTheory.Measure.finiteSpanningSetsInOpen
 

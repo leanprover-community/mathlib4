@@ -55,7 +55,7 @@ theorem UniqueMDiffOn.image_denseRange' (hs : UniqueMDiffOn I s) {f : M → M'}
     {f' : M → E →L[𝕜] E'} (hf : ∀ x ∈ s, HasMFDerivWithinAt I I' f s x (f' x))
     (hd : ∀ x ∈ s, DenseRange (f' x)) :
     UniqueMDiffOn I' (f '' s) :=
-  ball_image_iff.2 fun x hx ↦ (hs x hx).image_denseRange (hf x hx) (hd x hx)
+  forall_mem_image.2 fun x hx ↦ (hs x hx).image_denseRange (hf x hx) (hd x hx)
 
 /-- If `s` has the unique differential property, `f` is differentiable on `s` and its derivative
 at every point of `s` has dense range, then `f '' s` has the unique differential property. -/

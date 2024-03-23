@@ -94,8 +94,9 @@ class DivisionRing (K : Type u) extends Ring K, DivInvMonoid K, Nontrivial K, Ra
   protected ratCast_mk : ∀ (a : ℤ) (b : ℕ) (h1 h2), Rat.cast ⟨a, b, h1, h2⟩ = a * (b : K)⁻¹ := by
     intros
     rfl
-  /-- Multiplication by a rational number. -/
-  protected qsmul : ℚ → K → K := qsmulRec Rat.cast
+  /-- Multiplication by a rational number.
+  Set this to `qsmulRec _` unless there is a risk of a `Module ℚ _` instance diamond. -/
+  protected qsmul : ℚ → K → K
   /-- However `qsmul` is defined,
   propositionally it must be equal to multiplication by `ratCast`. -/
   protected qsmul_eq_mul' : ∀ (a : ℚ) (x : K), qsmul a x = Rat.cast a * x := by

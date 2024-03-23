@@ -196,7 +196,6 @@ instance : IsRightAdjoint (forget (AlgebraCat.{u} R)) :=
 end AlgebraCat
 
 variable {R}
-
 variable {X₁ X₂ : Type u}
 
 /-- Build an isomorphism in the category `AlgebraCat R` from a `AlgEquiv` between `Algebra`s. -/

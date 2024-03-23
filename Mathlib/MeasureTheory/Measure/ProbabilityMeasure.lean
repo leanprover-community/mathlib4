@@ -146,7 +146,7 @@ theorem toMeasure_injective : Function.Injective ((↑) : ProbabilityMeasure Ω 
   Subtype.coe_injective
 #align measure_theory.probability_measure.coe_injective MeasureTheory.ProbabilityMeasure.toMeasure_injective
 
--- Porting note: removed `@[simp]` because `simp` can prove it
+-- Porting note (#10618): removed `@[simp]` because `simp` can prove it
 theorem coeFn_univ (ν : ProbabilityMeasure Ω) : ν univ = 1 :=
   congr_arg ENNReal.toNNReal ν.prop.measure_univ
 #align measure_theory.probability_measure.coe_fn_univ MeasureTheory.ProbabilityMeasure.coeFn_univ
@@ -312,7 +312,6 @@ end convergence_in_distribution -- section
 section Hausdorff
 
 variable [TopologicalSpace Ω] [HasOuterApproxClosed Ω] [BorelSpace Ω]
-
 variable (Ω)
 
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
@@ -436,7 +435,6 @@ theorem normalize_testAgainstNN (nonzero : μ ≠ 0) (f : Ω →ᵇ ℝ≥0) :
 #align measure_theory.finite_measure.normalize_test_against_nn MeasureTheory.FiniteMeasure.normalize_testAgainstNN
 
 variable [OpensMeasurableSpace Ω]
-
 variable {μ}
 
 theorem tendsto_testAgainstNN_of_tendsto_normalize_testAgainstNN_of_tendsto_mass {γ : Type*}

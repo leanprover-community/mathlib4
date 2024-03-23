@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.List.Forall2
 import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Int.Basic
 
 #align_import data.list.big_operators.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
@@ -201,8 +202,7 @@ theorem prod_take_succ :
 @[to_additive "A list with sum not zero must have positive length."]
 theorem length_pos_of_prod_ne_one (L : List M) (h : L.prod ≠ 1) : 0 < L.length := by
   cases L
-  · contrapose h
-    simp
+  · simp at h
   · simp
 #align list.length_pos_of_prod_ne_one List.length_pos_of_prod_ne_one
 #align list.length_pos_of_sum_ne_zero List.length_pos_of_sum_ne_zero
@@ -576,8 +576,9 @@ theorem sum_le_foldr_max [AddMonoid M] [AddMonoid N] [LinearOrder N] (f : M → 
 theorem prod_erase_of_comm [DecidableEq M] [Monoid M] {a} {l : List M} (ha : a ∈ l)
     (comm : ∀ x ∈ l, ∀ y ∈ l, x * y = y * x) :
     a * (l.erase a).prod = l.prod := by
-  induction' l with b l ih; simp at ha
-  obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem ha; simp
+  induction' l with b l ih; simp only [not_mem_nil] at ha
+  obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem ha
+  simp only [erase_cons_head, prod_cons]
   rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
     comm a ha b (l.mem_cons_self b), mul_assoc,
     ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]

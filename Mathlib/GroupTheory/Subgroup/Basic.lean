@@ -88,7 +88,6 @@ open Function
 open Int
 
 variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
-
 variable {A : Type*} [AddGroup A]
 
 section SubgroupClass
@@ -148,7 +147,7 @@ theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
 @[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
 theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
   | (n : ℕ) => by
-    rw [zpow_coe_nat]
+    rw [zpow_natCast]
     exact pow_mem hx n
   | -[n+1] => by
     rw [zpow_negSucc]
@@ -979,7 +978,7 @@ theorem mem_sInf {S : Set (Subgroup G)} {x : G} : x ∈ sInf S ↔ ∀ p ∈ S, 
 
 @[to_additive]
 theorem mem_iInf {ι : Sort*} {S : ι → Subgroup G} {x : G} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_range_iff]
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align subgroup.mem_infi Subgroup.mem_iInf
 #align add_subgroup.mem_infi AddSubgroup.mem_iInf
 
@@ -1119,22 +1118,22 @@ of `k`. -/
       "An induction principle for additive closure membership. If `p`
       holds for `0` and all elements of `k`, and is preserved under addition and inverses, then `p`
       holds for all elements of the additive closure of `k`."]
-theorem closure_induction {p : G → Prop} {x} (h : x ∈ closure k) (Hk : ∀ x ∈ k, p x) (H1 : p 1)
-    (Hmul : ∀ x y, p x → p y → p (x * y)) (Hinv : ∀ x, p x → p x⁻¹) : p x :=
-  (@closure_le _ _ ⟨⟨⟨setOf p, fun {x y} ↦ Hmul x y⟩, H1⟩, fun {x} ↦ Hinv x⟩ k).2 Hk h
+theorem closure_induction {p : G → Prop} {x} (h : x ∈ closure k) (mem : ∀ x ∈ k, p x) (one : p 1)
+    (mul : ∀ x y, p x → p y → p (x * y)) (inv : ∀ x, p x → p x⁻¹) : p x :=
+  (@closure_le _ _ ⟨⟨⟨setOf p, fun {x y} ↦ mul x y⟩, one⟩, fun {x} ↦ inv x⟩ k).2 mem h
 #align subgroup.closure_induction Subgroup.closure_induction
 #align add_subgroup.closure_induction AddSubgroup.closure_induction
 
 /-- A dependent version of `Subgroup.closure_induction`.  -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubgroup.closure_induction`. "]
 theorem closure_induction' {p : ∀ x, x ∈ closure k → Prop}
-    (Hs : ∀ (x) (h : x ∈ k), p x (subset_closure h)) (H1 : p 1 (one_mem _))
-    (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    (Hinv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx)) {x} (hx : x ∈ closure k) : p x hx := by
+    (mem : ∀ (x) (h : x ∈ k), p x (subset_closure h)) (one : p 1 (one_mem _))
+    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx)) {x} (hx : x ∈ closure k) : p x hx := by
   refine' Exists.elim _ fun (hx : x ∈ closure k) (hc : p x hx) => hc
   exact
-    closure_induction hx (fun x hx => ⟨_, Hs x hx⟩) ⟨_, H1⟩
-      (fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ => ⟨_, Hmul _ _ _ _ hx hy⟩) fun x ⟨hx', hx⟩ => ⟨_, Hinv _ _ hx⟩
+    closure_induction hx (fun x hx => ⟨_, mem x hx⟩) ⟨_, one⟩
+      (fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ => ⟨_, mul _ _ _ _ hx hy⟩) fun x ⟨hx', hx⟩ => ⟨_, inv _ _ hx⟩
 #align subgroup.closure_induction' Subgroup.closure_induction'
 #align add_subgroup.closure_induction' AddSubgroup.closure_induction'
 
@@ -1680,7 +1679,7 @@ theorem subgroupOf_inj {H₁ H₂ K : Subgroup G} :
 
 @[to_additive (attr := simp)]
 theorem inf_subgroupOf_right (H K : Subgroup G) : (H ⊓ K).subgroupOf K = H.subgroupOf K :=
-  subgroupOf_inj.2 inf_right_idem
+  subgroupOf_inj.2 (inf_right_idem _ _)
 #align subgroup.inf_subgroup_of_right Subgroup.inf_subgroupOf_right
 #align add_subgroup.inf_add_subgroup_of_right AddSubgroup.inf_addSubgroupOf_right
 
@@ -2225,7 +2224,7 @@ theorem center_le_normalizer : center G ≤ H.normalizer := fun x hx y => by
 #align subgroup.center_le_normalizer Subgroup.center_le_normalizer
 #align add_subgroup.center_le_normalizer AddSubgroup.center_le_normalizer
 
-open Classical
+open scoped Classical
 
 @[to_additive]
 theorem le_normalizer_of_normal [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) : K ≤ H.normalizer :=
@@ -3335,7 +3334,6 @@ end Subgroup
 namespace MonoidHom
 
 variable {G₁ G₂ G₃ : Type*} [Group G₁] [Group G₂] [Group G₃]
-
 variable (f : G₁ →* G₂) (f_inv : G₂ → G₁)
 
 /-- Auxiliary definition used to define `liftOfRightInverse` -/

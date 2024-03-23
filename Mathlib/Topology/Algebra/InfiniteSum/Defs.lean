@@ -65,7 +65,7 @@ def Summable (f : β → α) : Prop :=
   ∃ a, HasSum f a
 #align summable Summable
 
-open Classical in
+open scoped Classical in
 /-- `∑' i, f i` is the sum of `f` it exists, or 0 otherwise. -/
 irreducible_def tsum {β} (f : β → α) :=
   if h : Summable f then
@@ -73,7 +73,7 @@ irreducible_def tsum {β} (f : β → α) :=
   When the support of `f` is finite, we make the most reasonable choice to use the finite sum over
   the support. Otherwise, we choose arbitrarily an `a` satisfying `HasSum f a`. -/
     if (support f).Finite then finsum f
-    else choose h
+    else h.choose
   else 0
 #align tsum tsum
 
@@ -123,7 +123,7 @@ theorem Summable.hasSum (ha : Summable f) : HasSum f (∑' b, f b) := by
   simp only [tsum_def, ha, dite_true]
   by_cases H : (support f).Finite
   · simp [H, hasSum_sum_of_ne_finset_zero, finsum_eq_sum]
-  · simpa [H] using Classical.choose_spec ha
+  · simpa [H] using ha.choose_spec
 #align summable.has_sum Summable.hasSum
 
 theorem HasSum.unique {a₁ a₂ : α} [T2Space α] : HasSum f a₁ → HasSum f a₂ → a₁ = a₂ := by

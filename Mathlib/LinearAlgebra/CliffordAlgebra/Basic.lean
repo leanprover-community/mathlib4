@@ -46,11 +46,8 @@ This file is almost identical to `Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.le
 
 
 variable {R : Type*} [CommRing R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
-
 variable (Q : QuadraticForm R M)
-
 variable {n : ℕ}
 
 namespace CliffordAlgebra
@@ -307,11 +304,8 @@ theorem ι_range_map_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebra
 section Map
 
 variable {M₁ M₂ M₃ : Type*}
-
 variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
-
 variable [Module R M₁] [Module R M₂] [Module R M₃]
-
 variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} {Q₃ : QuadraticForm R M₃}
 
 /-- Any linear map that preserves the quadratic form lifts to an `AlgHom` between algebras.

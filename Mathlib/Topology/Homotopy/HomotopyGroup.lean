@@ -552,7 +552,7 @@ theorem one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦const⟧ :=
 
 /-- Characterization of multiplication -/
 theorem mul_spec [Nonempty N] {i} {p q : Ω^ N X x} :
-    -- Porting note: TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
+    -- Porting note (#11215): TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
     ((· * ·) : _ → _ → HomotopyGroup N X x) ⟦p⟧ ⟦q⟧ = ⟦transAt i q p⟧ := by
   rw [transAt_indep _ q, ← fromLoop_trans_toLoop]; apply Quotient.sound; rfl
 #align homotopy_group.mul_spec HomotopyGroup.mul_spec

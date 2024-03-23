@@ -55,7 +55,7 @@ def Subfield.topologicalClosure (K : Subfield α) : Subfield α :=
       dsimp only at hx ⊢
       rcases eq_or_ne x 0 with (rfl | h)
       · rwa [inv_zero]
-      · -- Porting note: todo: Lean fails to find InvMemClass instance
+      · -- Porting note (#11215): TODO: Lean fails to find InvMemClass instance
         rw [← @inv_coe_set α (Subfield α) _ _ SubfieldClass.toInvMemClass K, ← Set.image_inv]
         exact mem_closure_image (continuousAt_inv₀ h) hx }
 #align subfield.topological_closure Subfield.topologicalClosure
@@ -96,9 +96,9 @@ def affineHomeomorph (a b : 𝕜) (h : a ≠ 0) : 𝕜 ≃ₜ 𝕜 where
   toFun x := a * x + b
   invFun y := (y - b) / a
   left_inv x := by
-    simp only [add_sub_cancel]
-    exact mul_div_cancel_left x h
-  right_inv y := by simp [mul_div_cancel' _ h]
+    simp only [add_sub_cancel_right]
+    exact mul_div_cancel_left₀ x h
+  right_inv y := by simp [mul_div_cancel₀ _ h]
 #align affine_homeomorph affineHomeomorph
 
 end affineHomeomorph

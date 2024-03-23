@@ -546,7 +546,7 @@ theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
 theorem cast_neg_one {R : Type*} [Ring R] (n : ℕ) : cast (-1 : ZMod n) = (n - 1 : R) := by
   cases' n with n
   · dsimp [ZMod, ZMod.cast]; simp
-  · rw [← nat_cast_val, val_neg_one, Nat.cast_succ, add_sub_cancel]
+  · rw [← nat_cast_val, val_neg_one, Nat.cast_succ, add_sub_cancel_right]
 #align zmod.cast_neg_one ZMod.cast_neg_one
 
 theorem cast_sub_one {R : Type*} [Ring R] {n : ℕ} (k : ZMod n) :
@@ -1221,7 +1221,7 @@ theorem natAbs_min_of_le_div_two (n : ℕ) (x y : ℤ) (he : (x : ZMod n) = y) (
   apply hl.trans
   rw [← add_le_add_iff_right x.natAbs]
   refine' le_trans (le_trans ((add_le_add_iff_left _).2 hl) _) (Int.natAbs_sub_le _ _)
-  rw [add_sub_cancel, Int.natAbs_mul, Int.natAbs_ofNat]
+  rw [add_sub_cancel_right, Int.natAbs_mul, Int.natAbs_ofNat]
   refine' le_trans _ (Nat.le_mul_of_pos_right _ <| Int.natAbs_pos.2 hm)
   rw [← mul_two]; apply Nat.div_mul_le_self
 #align zmod.nat_abs_min_of_le_div_two ZMod.natAbs_min_of_le_div_two
@@ -1248,7 +1248,8 @@ instance : Field (ZMod p) :=
   { inferInstanceAs (CommRing (ZMod p)), inferInstanceAs (Inv (ZMod p)),
     ZMod.nontrivial p with
     mul_inv_cancel := mul_inv_cancel_aux p
-    inv_zero := inv_zero p }
+    inv_zero := inv_zero p
+    qsmul := qsmulRec _ }
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
 instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
@@ -1357,3 +1358,17 @@ theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = 
 end lift
 
 end ZMod
+
+/-- The range of `(m * · + k)` on natural numbers is the set of elements `≥ k` in the
+residue class of `k` mod `m`. -/
+lemma Nat.range_mul_add (m k : ℕ) :
+    Set.range (fun n : ℕ ↦ m * n + k) = {n : ℕ | (n : ZMod m) = k ∧ k ≤ n} := by
+  ext n
+  simp only [Set.mem_range, Set.mem_setOf_eq]
+  conv => enter [1, 1, y]; rw [add_comm, eq_comm]
+  refine ⟨fun ⟨a, ha⟩ ↦ ⟨?_, le_iff_exists_add.mpr ⟨_, ha⟩⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
+  · simpa using congr_arg ((↑) : ℕ → ZMod m) ha
+  · obtain ⟨a, ha⟩ := le_iff_exists_add.mp H₂
+    simp only [ha, Nat.cast_add, add_right_eq_self, ZMod.nat_cast_zmod_eq_zero_iff_dvd] at H₁
+    obtain ⟨b, rfl⟩ := H₁
+    exact ⟨b, ha⟩
