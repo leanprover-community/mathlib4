@@ -167,7 +167,7 @@
 45:
   title  : The Partition Theorem
   author : Bhavik Mehta, Aaron Anderson
-  decls  : Theorems100.partition_theorem
+  decl   : Theorems100.partition_theorem
 46:
   title  : The Solution of the General Quartic Equation
 47:

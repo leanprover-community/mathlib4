@@ -49,6 +49,8 @@ for index, entry in hundred.items():
   if 'decl' in entry:
     hundred_decls.append((f'{index} {title}', entry['decl']))
   elif 'decls' in entry:
+    if not isinstance(entry['decls'], list):
+      raise ValueError(f"For key {index} ({title}): did you mean `decl` instead of `decls`?")
     hundred_decls = hundred_decls + [(f'{index} {title}', d) for d in entry['decls']]
 
 overview_decls = tiered_extract(overview)
