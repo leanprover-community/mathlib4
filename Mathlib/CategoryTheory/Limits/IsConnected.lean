@@ -31,7 +31,7 @@ See `unitValuedFunctor` for the definition of the constant functor used in the s
 unit-valued, singleton, colimit
 -/
 
-universe v u w
+universe w v u
 
 namespace CategoryTheory.Limits.Types
 
@@ -44,8 +44,8 @@ variable (C : Type u) [Category.{v} C]
 def unitValuedFunctor : C ⥤ Type w := (Functor.const C).obj PUnit.{w + 1}
 
 instance instSubsingletonColimitPUnit
-    [IsPreconnected C] [HasColimit (unitValuedFunctor.{v, u, w} C)] :
-    Subsingleton (colimit (unitValuedFunctor.{v, u, w} C)) where
+    [IsPreconnected C] [HasColimit (unitValuedFunctor.{w} C)] :
+    Subsingleton (colimit (unitValuedFunctor.{w} C)) where
   allEq a b := by
     obtain ⟨c, ⟨⟩, rfl⟩ :=
       jointly_surjective_of_isColimit (colimit.isColimit (unitValuedFunctor C)) a
@@ -56,10 +56,10 @@ instance instSubsingletonColimitPUnit
 
 /-- Given a connected index category, the colimit of the constant unit-valued functor is `PUnit`. -/
 noncomputable def colimitConstPUnitIsoPUnit
-    [IsConnected C] [HasColimit (unitValuedFunctor.{v, u, w} C)] :
-    colimit (unitValuedFunctor.{v, u, w} C) ≅ PUnit.{w + 1} where
+    [IsConnected C] [HasColimit (unitValuedFunctor.{w} C)] :
+    colimit (unitValuedFunctor.{w} C) ≅ PUnit.{w + 1} where
   hom := fun _ => PUnit.unit
-  inv := fun _ => colimit.ι (unitValuedFunctor.{v, u, w} C) Classical.ofNonempty PUnit.unit
+  inv := fun _ => colimit.ι (unitValuedFunctor.{w} C) Classical.ofNonempty PUnit.unit
 
 /-- Let `F` be a `Type`-valued functor. If two elements `a : F c` and `b : F d` represent the same
 element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
@@ -73,9 +73,10 @@ theorem zigzag_of_eqvGen_quot_rel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
 
 /-- An index category is connected iff the colimit of the constant singleton-valued functor is a
 singleton. -/
-theorem connected_iff_colimit_const_pUnit_iso_pUnit :
-    IsConnected C ↔ Nonempty (colimit (unitValuedFunctor.{v, u, max v u w} C) ≅ PUnit) := by
-  refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit.{v, u, max v u w} C⟩, fun ⟨h⟩ => ?_⟩
+theorem connected_iff_colimit_const_pUnit_iso_pUnit
+    [HasColimit (unitValuedFunctor.{w} C)] :
+    IsConnected C ↔ Nonempty (colimit (unitValuedFunctor.{w} C) ≅ PUnit) := by
+  refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit.{w} C⟩, fun ⟨h⟩ => ?_⟩
   have : Nonempty C := nonempty_of_nonempty_colimit <| Nonempty.map h.inv inferInstance
   refine zigzag_isConnected <| fun c d => ?_
   refine zigzag_of_eqvGen_quot_rel _ (unitValuedFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
