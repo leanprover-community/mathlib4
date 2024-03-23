@@ -5,7 +5,6 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.Jensen
-import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.Connected
@@ -193,15 +192,13 @@ theorem joinedIn_compl_zero_of_not_mem_span {x y : E} (hx : x ≠ 0)
 variable {E F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
   [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGroup F] [ContinuousSMul ℝ F]
 
--- FIXME: should these rather be stated as `1 < rank`?
-
 /-- Let `E` be a linear subspace in a real vector space.
 If `E` has codimension at least two, its complement is path-connected. -/
 theorem isPathConnected_compl_of_two_le_codim {E : Submodule ℝ F}
     (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) : IsPathConnected (Eᶜ : Set F) := by
   rcases E.exists_isCompl with ⟨E', hE'⟩
   refine isPathConnected_compl_of_isPathConnected_compl_zero hE'.symm
-    (isPathConnected_compl_singleton_of_one_lt_rank (two_le_iff_one_lt.mp ?_) 0)
+    (isPathConnected_compl_singleton_of_one_lt_rank (Cardinal.two_le_iff_one_lt.mp ?_) 0)
   rwa [← (E.quotientEquivOfIsCompl E' hE').rank_eq]
 
 /-- Let `E` be a linear subspace in a real vector space.
