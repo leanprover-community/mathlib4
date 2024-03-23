@@ -19,7 +19,8 @@ An isomorphism `α : X ≅ Y` defines
 
 For completeness, we also define
 `CategoryTheory.Iso.homCongr : (X ≅ X₁) → (Y ≅ Y₁) → (X ⟶ Y) ≃ (X₁ ⟶ Y₁)`,
-cf. `Equiv.arrowCongr`.
+cf. `Equiv.arrowCongr`,
+and `CategoryTheory.Iso.isoCongr : (f : X₁ ≅ X₂) → (g : Y₁ ≅ Y₂) → (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂)`.
 -/
 
 
@@ -70,8 +71,6 @@ theorem homCongr_symm {X₁ Y₁ X₂ Y₂ : C} (α : X₁ ≅ X₂) (β : Y₁ 
     (α.homCongr β).symm = α.symm.homCongr β.symm :=
   rfl
 #align category_theory.iso.hom_congr_symm CategoryTheory.Iso.homCongr_symm
-
--- FME-99
 
 /-- If `X` is isomorphic to `X₁` and `Y` is isomorphic to `Y₁`, then
 there is a bijection between `X ≅ Y` and `X₁ ≅ Y₁`. -/

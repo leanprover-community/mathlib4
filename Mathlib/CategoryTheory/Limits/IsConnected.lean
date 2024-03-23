@@ -13,11 +13,18 @@ import Mathlib.CategoryTheory.Conj
 /-!
 # Colimits of connected index categories
 
-This file proves that a category $\mathsf{C}$ is connected if and only if `colim F` is a singleton,
-where `F.obj _ = PUnit` (in a `Type _` category).
+This file proves theorems about connected categories related to limits.
 
-See `connected_iff_colimit_const_pUnit_iso_pUnit` for the proof of this characterization and
-`unitValuedFunctor` for the definition of the constant functor used in the statement.
+## Main definitions
+
+See `unitValuedFunctor` for the definition of the constant functor used in the statement.
+
+## Main theorems
+
+* `connected_iff_colimit_const_pUnit_iso_pUnit` proves that a category $\mathsf{C}$ is connected if
+  and only if `colim F` is a singleton, where `F.obj _ = PUnit` (in a `Type _` category).
+* `isConnected_iff_of_final` proves that the domain of a final functor is connected if and only if
+  the codomain is connected.
 
 ## Tags
 
@@ -73,8 +80,6 @@ theorem connected_iff_colimit_const_pUnit_iso_pUnit :
   refine zigzag_isConnected <| fun c d => ?_
   refine zigzag_of_eqvGen_quot_rel _ (unitValuedFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
   exact colimit_eq <| h.toEquiv.injective rfl
-
--- FME-99; remove this!
 
 universe v₂ u₂
 variable {C : Type u} {D: Type u₂} [Category.{v} C] [Category.{v₂} D]
