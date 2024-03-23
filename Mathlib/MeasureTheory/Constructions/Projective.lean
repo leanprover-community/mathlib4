@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 import Mathlib.MeasureTheory.Constructions.Cylinders
+import Mathlib.MeasureTheory.Measure.Typeclasses
 
 /-!
 # Projective measure families and projective limits
@@ -92,8 +93,7 @@ lemma congr_cylinder (hP : IsProjectiveMeasureFamily P)
   let U := (fun f : ∀ i : (I ∪ J : Finset ι), α i
         ↦ fun j : I ↦ f ⟨j, Finset.mem_union_left J j.prop⟩) ⁻¹' S ∩
       (fun f ↦ fun j : J ↦ f ⟨j, Finset.mem_union_right I j.prop⟩) ⁻¹' T
-  suffices : P (I ∪ J) U = P I S ∧ P (I ∪ J) U = P J T
-  exact this.1.symm.trans this.2
+  suffices P (I ∪ J) U = P I S ∧ P (I ∪ J) U = P J T from this.1.symm.trans this.2
   constructor
   · have h_eq_union : cylinder I S = cylinder (I ∪ J) U := by
       rw [← inter_cylinder, h_eq, inter_self]

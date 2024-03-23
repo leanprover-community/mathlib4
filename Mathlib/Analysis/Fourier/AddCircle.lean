@@ -188,7 +188,7 @@ theorem fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
     zero_div, Complex.exp_zero]
 #align fourier_eval_zero fourier_eval_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem fourier_one {x : AddCircle T} : fourier 1 x = toCircle x := by rw [fourier_apply, one_zsmul]
 #align fourier_one fourier_one
 
@@ -219,7 +219,7 @@ theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
   rw [ContinuousMap.norm_eq_iSup_norm]
   have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x => abs_coe_circle _
   simp_rw [this]
-  exact @ciSup_const _ _ _ Zero.nonempty _
+  exact @ciSup_const _ _ _ Zero.instNonempty _
 #align fourier_norm fourier_norm
 
 /-- For `n ≠ 0`, a translation by `T / 2 / n` negates the function `fourier n`. -/
@@ -358,7 +358,8 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
     fourierCoeff f n = (1 / T) • ∫ x in a..a + T, @fourier T (-n) x • f x := by
   have : ∀ x : ℝ, @fourier T (-n) x • f x = (fun z : AddCircle T => @fourier T (-n) z • f z) x := by
     intro x; rfl
-  simp_rw [this]
+  -- After leanprover/lean4#3124, we need to add `singlePass := true` to avoid an infinite loop.
+  simp_rw (config := {singlePass := true}) [this]
   rw [fourierCoeff, AddCircle.intervalIntegral_preimage T a (fun z => _ • _),
     volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
     ← smul_assoc, smul_eq_mul, one_div_mul_cancel hT.out.ne', one_smul]
@@ -476,7 +477,6 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
   have H₃ := congr_arg IsROrC.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
   rw [← integral_re] at H₃
   · simp only [← norm_sq_eq_inner] at H₃
-    conv_rhs at H₃ => enter [2, a]; rw [← norm_sq_eq_inner]
     rw [← H₁, H₂, H₃]
   · exact L2.integrable_inner f f
 #align tsum_sq_fourier_coeff tsum_sq_fourierCoeff
@@ -511,7 +511,7 @@ theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
 converges everywhere pointwise to `f`. -/
 theorem has_pointwise_sum_fourier_series_of_summable (h : Summable (fourierCoeff f))
     (x : AddCircle T) : HasSum (fun i => fourierCoeff f i • fourier i x) (f x) := by
-  convert (ContinuousMap.evalClm ℂ x).hasSum (hasSum_fourier_series_of_summable h)
+  convert (ContinuousMap.evalCLM ℂ x).hasSum (hasSum_fourier_series_of_summable h)
 #align has_pointwise_sum_fourier_series_of_summable has_pointwise_sum_fourier_series_of_summable
 
 end Convergence
@@ -550,11 +550,7 @@ theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0
       (fourier (-n) (x : AddCircle T)) x := by
   convert (hasDerivAt_fourier_neg T n x).div_const (-2 * π * I * n / T) using 1
   · ext1 y; rw [div_div_eq_mul_div]; ring
-  · rw [mul_div_cancel_left]
-    simp only [Ne.def, div_eq_zero_iff, neg_eq_zero, mul_eq_zero, bit0_eq_zero, one_ne_zero,
-      ofReal_eq_zero, false_or_iff, Int.cast_eq_zero, not_or]
-    norm_num
-    exact ⟨⟨⟨Real.pi_ne_zero, I_ne_zero⟩, hn⟩, hT.out.ne'⟩
+  · simp [mul_div_cancel_left, hn, (Fact.out : 0 < T).ne', Real.pi_pos.ne']
 #align has_antideriv_at_fourier_neg has_antideriv_at_fourier_neg
 
 /-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/

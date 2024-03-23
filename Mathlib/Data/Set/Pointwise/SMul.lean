@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Data.Set.Pairwise.Lattice
+import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Pointwise.Basic
 
 #align_import data.set.pointwise.smul from "leanprover-community/mathlib"@"5e526d18cea33550268dcbbddcb822d5cde40654"
@@ -89,7 +89,7 @@ theorem image_smul_prod : (fun x : α × β ↦ x.fst • x.snd) '' s ×ˢ t = s
 #align set.image_smul_prod Set.image_smul_prod
 
 @[to_additive]
-theorem mem_smul : b ∈ s • t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x • y = b :=
+theorem mem_smul : b ∈ s • t ↔ ∃ x ∈ s, ∃ y ∈ t, x • y = b :=
   Iff.rfl
 #align set.mem_smul Set.mem_smul
 #align set.mem_vadd Set.mem_vadd
@@ -337,7 +337,7 @@ theorem smul_set_eq_empty : a • s = ∅ ↔ s = ∅ :=
 
 @[to_additive (attr := simp)]
 theorem smul_set_nonempty : (a • s).Nonempty ↔ s.Nonempty :=
-  nonempty_image_iff
+  image_nonempty
 #align set.smul_set_nonempty Set.smul_set_nonempty
 #align set.vadd_set_nonempty Set.vadd_set_nonempty
 
@@ -612,7 +612,7 @@ theorem image_vsub_prod : (fun x : β × β ↦ x.fst -ᵥ x.snd) '' s ×ˢ t = 
   image_prod _
 #align set.image_vsub_prod Set.image_vsub_prod
 
-theorem mem_vsub : a ∈ s -ᵥ t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x -ᵥ y = a :=
+theorem mem_vsub : a ∈ s -ᵥ t ↔ ∃ x ∈ s, ∃ y ∈ t, x -ᵥ y = a :=
   Iff.rfl
 #align set.mem_vsub Set.mem_vsub
 
@@ -768,8 +768,9 @@ theorem image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : 
 #align set.image_vadd_comm Set.image_vadd_comm
 
 @[to_additive]
-theorem image_smul_distrib [MulOneClass α] [MulOneClass β] [MonoidHomClass F α β] (f : F) (a : α)
-    (s : Set α) : f '' (a • s) = f a • f '' s :=
+theorem image_smul_distrib [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
+    (f : F) (a : α) (s : Set α) :
+    f '' (a • s) = f a • f '' s :=
   image_comm <| map_mul _ _
 #align set.image_smul_distrib Set.image_smul_distrib
 #align set.image_vadd_distrib Set.image_vadd_distrib
@@ -789,6 +790,30 @@ theorem op_smul_set_smul_eq_smul_smul_set (a : α) (s : Set β) (t : Set γ)
 
 end SMul
 
+section SMulZeroClass
+
+variable [Zero β] [SMulZeroClass α β] {s : Set α} {t : Set β} {a : α}
+
+theorem smul_zero_subset (s : Set α) : s • (0 : Set β) ⊆ 0 := by simp [subset_def, mem_smul]
+#align set.smul_zero_subset Set.smul_zero_subset
+
+theorem Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Set β) = 0 :=
+  s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
+#align set.nonempty.smul_zero Set.Nonempty.smul_zero
+
+theorem zero_mem_smul_set (h : (0 : β) ∈ t) : (0 : β) ∈ a • t := ⟨0, h, smul_zero _⟩
+#align set.zero_mem_smul_set Set.zero_mem_smul_set
+
+variable [Zero α] [NoZeroSMulDivisors α β]
+
+theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
+  refine' ⟨_, zero_mem_smul_set⟩
+  rintro ⟨b, hb, h⟩
+  rwa [(eq_zero_or_eq_zero_of_smul_eq_zero h).resolve_left ha] at hb
+#align set.zero_mem_smul_set_iff Set.zero_mem_smul_set_iff
+
+end SMulZeroClass
+
 section SMulWithZero
 
 variable [Zero α] [Zero β] [SMulWithZero α β] {s : Set α} {t : Set β}
@@ -798,16 +823,8 @@ Note that we have neither `SMulWithZero α (Set β)` nor `SMulWithZero (Set α) 
 because `0 * ∅ ≠ 0`.
 -/
 
-
-theorem smul_zero_subset (s : Set α) : s • (0 : Set β) ⊆ 0 := by simp [subset_def, mem_smul]
-#align set.smul_zero_subset Set.smul_zero_subset
-
 theorem zero_smul_subset (t : Set β) : (0 : Set α) • t ⊆ 0 := by simp [subset_def, mem_smul]
 #align set.zero_smul_subset Set.zero_smul_subset
-
-theorem Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Set β) = 0 :=
-  s.smul_zero_subset.antisymm <| by simpa [mem_smul] using hs
-#align set.nonempty.smul_zero Set.Nonempty.smul_zero
 
 theorem Nonempty.zero_smul (ht : t.Nonempty) : (0 : Set α) • t = 0 :=
   t.zero_smul_subset.antisymm <| by simpa [mem_smul] using ht
@@ -826,29 +843,19 @@ theorem subsingleton_zero_smul_set (s : Set β) : ((0 : α) • s).Subsingleton 
   subsingleton_singleton.anti <| zero_smul_set_subset s
 #align set.subsingleton_zero_smul_set Set.subsingleton_zero_smul_set
 
-theorem zero_mem_smul_set {t : Set β} {a : α} (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
-  ⟨0, h, smul_zero _⟩
-#align set.zero_mem_smul_set Set.zero_mem_smul_set
-
 variable [NoZeroSMulDivisors α β] {a : α}
 
 theorem zero_mem_smul_iff :
     (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty := by
   constructor
-  · rintro ⟨a, b, ha, hb, h⟩
+  · rintro ⟨a, ha, b, hb, h⟩
     obtain rfl | rfl := eq_zero_or_eq_zero_of_smul_eq_zero h
     · exact Or.inl ⟨ha, b, hb⟩
     · exact Or.inr ⟨hb, a, ha⟩
   · rintro (⟨hs, b, hb⟩ | ⟨ht, a, ha⟩)
-    · exact ⟨0, b, hs, hb, zero_smul _ _⟩
-    · exact ⟨a, 0, ha, ht, smul_zero _⟩
+    · exact ⟨0, hs, b, hb, zero_smul _ _⟩
+    · exact ⟨a, ha, 0, ht, smul_zero _⟩
 #align set.zero_mem_smul_iff Set.zero_mem_smul_iff
-
-theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
-  refine' ⟨_, zero_mem_smul_set⟩
-  rintro ⟨b, hb, h⟩
-  rwa [(eq_zero_or_eq_zero_of_smul_eq_zero h).resolve_left ha] at hb
-#align set.zero_mem_smul_set_iff Set.zero_mem_smul_set_iff
 
 end SMulWithZero
 
@@ -945,6 +952,7 @@ theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
 #align set.smul_set_sdiff Set.smul_set_sdiff
 #align set.vadd_set_sdiff Set.vadd_set_sdiff
 
+open scoped symmDiff in
 @[to_additive]
 theorem smul_set_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff (MulAction.injective a) _ _
@@ -960,9 +968,13 @@ theorem smul_set_univ : a • (univ : Set β) = univ :=
 @[to_additive (attr := simp)]
 theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ :=
   let ⟨a, ha⟩ := hs
-  eq_univ_of_forall fun b ↦ ⟨a, a⁻¹ • b, ha, trivial, smul_inv_smul _ _⟩
+  eq_univ_of_forall fun b ↦ ⟨a, ha, a⁻¹ • b, trivial, smul_inv_smul _ _⟩
 #align set.smul_univ Set.smul_univ
 #align set.vadd_univ Set.vadd_univ
+
+@[to_additive]
+theorem smul_set_compl : a • sᶜ = (a • s)ᶜ := by
+  simp_rw [Set.compl_eq_univ_diff, smul_set_sdiff, smul_set_univ]
 
 @[to_additive]
 theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
@@ -1018,6 +1030,10 @@ lemma inv_smul_set_distrib (a : α) (s : Set α) : (a • s)⁻¹ = op a⁻¹ �
 lemma inv_op_smul_set_distrib (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹ • s⁻¹ := by
   ext; simp [mem_smul_set_iff_inv_smul_mem]
 
+@[to_additive (attr := simp)]
+lemma smul_set_disjoint_iff : Disjoint (a • s) (a • t) ↔ Disjoint s t := by
+  simp [disjoint_iff, ← smul_set_inter]
+
 end Group
 
 section GroupWithZero
@@ -1066,6 +1082,7 @@ theorem smul_set_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
   image_diff (MulAction.injective₀ ha) _ _
 #align set.smul_set_sdiff₀ Set.smul_set_sdiff₀
 
+open scoped symmDiff in
 theorem smul_set_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff (MulAction.injective₀ ha) _ _
 #align set.smul_set_symm_diff₀ Set.smul_set_symmDiff₀
@@ -1076,7 +1093,7 @@ theorem smul_set_univ₀ (ha : a ≠ 0) : a • (univ : Set β) = univ :=
 
 theorem smul_univ₀ {s : Set α} (hs : ¬s ⊆ 0) : s • (univ : Set β) = univ :=
   let ⟨a, ha, ha₀⟩ := not_subset.1 hs
-  eq_univ_of_forall fun b ↦ ⟨a, a⁻¹ • b, ha, trivial, smul_inv_smul₀ ha₀ _⟩
+  eq_univ_of_forall fun b ↦ ⟨a, ha, a⁻¹ • b, trivial, smul_inv_smul₀ ha₀ _⟩
 #align set.smul_univ₀ Set.smul_univ₀
 
 theorem smul_univ₀' {s : Set α} (hs : s.Nontrivial) : s • (univ : Set β) = univ :=
@@ -1118,7 +1135,7 @@ section Semiring
 
 variable [Semiring α] [AddCommMonoid β] [Module α β]
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b • s := by
   rintro _ ⟨x, hx, rfl⟩
   simpa only [add_smul] using add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hx)

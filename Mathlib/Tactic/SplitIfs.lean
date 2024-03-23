@@ -53,7 +53,7 @@ better match the behavior of mathlib3's `split_ifs`.
 -/
 private def discharge? (e : Expr) : SimpM (Option Expr) := do
   let e ← instantiateMVars e
-  if let some e1 ← SplitIf.discharge? false e
+  if let some e1 ← (← SplitIf.mkDischarge? false) e
     then return some e1
   if e.isConstOf `True
     then return some (mkConst `True.intro)
@@ -64,7 +64,7 @@ private def discharge? (e : Expr) : SimpM (Option Expr) := do
 private def reduceIfsAt (loc : Location) : TacticM Unit := do
   let ctx ← SplitIf.getSimpContext
   let ctx := { ctx with config := { ctx.config with failIfUnchanged := false } }
-  let _ ← simpLocation ctx discharge? loc
+  let _ ← simpLocation ctx {} discharge? loc
   pure ()
 
 /-- Splits a single if-then-else expression and then reduces the resulting goals.

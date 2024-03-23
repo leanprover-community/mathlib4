@@ -59,7 +59,7 @@ theorem of_isBigO_im_re_rpow (hre : Tendsto re l atTop) (r : ℝ) (hr : im =O[l]
   ⟨hre, fun n =>
     IsLittleO.isBigO <|
       calc
-        (fun z : ℂ => z.im ^ n) =O[l] fun z => (z.re ^ r) ^ n := by norm_cast; exact hr.pow n
+        (fun z : ℂ => z.im ^ n) =O[l] fun z => (z.re ^ r) ^ n := hr.pow n
         _ =ᶠ[l] fun z => z.re ^ (r * n) :=
           ((hre.eventually_ge_atTop 0).mono fun z hz => by
             simp only [Real.rpow_mul hz r n, Real.rpow_nat_cast])
@@ -173,7 +173,7 @@ theorem isLittleO_cpow_exp (hl : IsExpCmpFilter l) (a : ℂ) {b : ℝ} (hb : 0 <
       hl.isTheta_cpow_exp_re_mul_log a
     _ =o[l] fun z => exp (b * z) :=
       IsLittleO.of_norm_right <| by
-        simp only [norm_eq_abs, abs_exp, ofReal_mul_re, Real.isLittleO_exp_comp_exp_comp]
+        simp only [norm_eq_abs, abs_exp, re_ofReal_mul, Real.isLittleO_exp_comp_exp_comp]
         refine (IsEquivalent.refl.sub_isLittleO ?_).symm.tendsto_atTop
           (hl.tendsto_re.const_mul_atTop hb)
         exact (hl.isLittleO_log_abs_re.const_mul_left _).const_mul_right hb.ne'

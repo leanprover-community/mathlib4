@@ -86,7 +86,7 @@ This file also defines:
 * `SetLike.homogeneousSubmonoid A`, which is, as the name suggests, the submonoid consisting of
   all the homogeneous elements.
 
-## tags
+## Tags
 
 graded monoid
 -/
@@ -446,7 +446,7 @@ theorem List.dProd_cons (fι : α → ι) (fA : ∀ a, A (fι a)) (a : α) (l : 
 theorem GradedMonoid.mk_list_dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :
     GradedMonoid.mk _ (l.dProd fι fA) = (l.map fun a => GradedMonoid.mk (fι a) (fA a)).prod := by
   match l with
-  | [] => simp; rfl
+  | [] => simp only [List.dProdIndex_nil, List.dProd_nil, List.map_nil, List.prod_nil]; rfl
   | head::tail =>
     simp[← GradedMonoid.mk_list_dProd tail _ _, GradedMonoid.mk_mul_mk, List.prod_cons]
 #align graded_monoid.mk_list_dprod GradedMonoid.mk_list_dProd
@@ -593,7 +593,6 @@ class SetLike.GradedMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (
 namespace SetLike
 
 variable {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι]
-
 variable {A : ι → S} [SetLike.GradedMonoid A]
 
 theorem pow_mem_graded (n : ℕ) {r : R} {i : ι} (h : r ∈ A i) : r ^ n ∈ A (n • i) := by
@@ -616,7 +615,7 @@ theorem list_prod_map_mem_graded {ι'} (l : List ι') (i : ι' → ι) (r : ι' 
     rw [List.map_cons, List.map_cons, List.prod_cons, List.sum_cons]
     exact
       mul_mem_graded (h _ <| List.mem_cons_self _ _)
-        (list_prod_map_mem_graded tail _ _ <| fun j hj => h _ <| List.mem_cons_of_mem _ hj)
+        (list_prod_map_mem_graded tail _ _ fun j hj => h _ <| List.mem_cons_of_mem _ hj)
 #align set_like.list_prod_map_mem_graded SetLike.list_prod_map_mem_graded
 
 theorem list_prod_ofFn_mem_graded {n} (i : Fin n → ι) (r : Fin n → R) (h : ∀ j, r j ∈ A (i j)) :

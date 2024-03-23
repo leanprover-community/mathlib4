@@ -116,7 +116,7 @@ theorem drop_append1 {α : TypeVec n} {β : Type*} {i : Fin2 n} : drop (append1 
 #align typevec.drop_append1 TypeVec.drop_append1
 
 theorem drop_append1' {α : TypeVec n} {β : Type*} : drop (append1 α β) = α :=
-  funext <| fun _ => drop_append1
+  funext fun _ => drop_append1
 #align typevec.drop_append1' TypeVec.drop_append1'
 
 theorem last_append1 {α : TypeVec n} {β : Type*} : last (append1 α β) = β :=
@@ -163,14 +163,14 @@ def lastFun {α β : TypeVec (n + 1)} (f : α ⟹ β) : last α → last β :=
   f Fin2.fz
 #align typevec.last_fun TypeVec.lastFun
 
--- porting note: Lean wasn't able to infer the motive in term mode
+-- Porting note: Lean wasn't able to infer the motive in term mode
 /-- arrow in the category of `0-length` vectors -/
 def nilFun {α : TypeVec 0} {β : TypeVec 0} : α ⟹ β := fun i => by apply Fin2.elim0 i
 #align typevec.nil_fun TypeVec.nilFun
 
 theorem eq_of_drop_last_eq {α β : TypeVec (n + 1)} {f g : α ⟹ β} (h₀ : dropFun f = dropFun g)
     (h₁ : lastFun f = lastFun g) : f = g := by
-  -- porting note: FIXME: congr_fun h₀ <;> ext1 ⟨⟩ <;> apply_assumption
+  -- Porting note: FIXME: congr_fun h₀ <;> ext1 ⟨⟩ <;> apply_assumption
   refine funext (fun x => ?_)
   cases x
   · apply h₁
@@ -264,7 +264,7 @@ theorem appendFun_comp' {α₀ α₁ α₂ : TypeVec n} {β₀ β₁ β₂ : Typ
 #align typevec.append_fun_comp' TypeVec.appendFun_comp'
 
 theorem nilFun_comp {α₀ : TypeVec 0} (f₀ : α₀ ⟹ Fin2.elim0) : nilFun ⊚ f₀ = f₀ :=
-  funext fun x => by apply Fin2.elim0 x -- porting note: `by apply` is necessary?
+  funext fun x => by apply Fin2.elim0 x -- Porting note: `by apply` is necessary?
 #align typevec.nil_fun_comp TypeVec.nilFun_comp
 
 theorem appendFun_comp_id {α : TypeVec n} {β₀ β₁ β₂ : Type u} (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
@@ -295,7 +295,7 @@ theorem appendFun_id_id {α : TypeVec n} {β : Type*} :
 #align typevec.append_fun_id_id TypeVec.appendFun_id_id
 
 instance subsingleton0 : Subsingleton (TypeVec 0) :=
-  ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- porting note: `by apply` necessary?
+  ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- Porting note: `by apply` necessary?
 #align typevec.subsingleton0 TypeVec.subsingleton0
 
 -- Porting note: `simp` attribute `TypeVec` moved to file `Tactic/Attr/Register.lean`
@@ -489,15 +489,14 @@ def ofRepeat {α : Sort _} : ∀ {n i}, «repeat» n α i → α
 #align typevec.of_repeat TypeVec.ofRepeat
 
 theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i x) ↔ p := by
-  induction i
-  case fz      => rfl
-  case fs _ ih => erw [TypeVec.const, @ih (drop α) x]
+  induction i with
+  | fz      => rfl
+  | fs _ ih => erw [TypeVec.const, @ih (drop α) x]
 #align typevec.const_iff_true TypeVec.const_iff_true
 
 
 section
 variable {α β γ : TypeVec.{u} n}
-
 variable (p : α ⟹ «repeat» n Prop) (r : α ⊗ α ⟹ «repeat» n Prop)
 
 /-- left projection of a `prod` vector -/
@@ -556,28 +555,28 @@ protected def prod.map : ∀ {n} {α α' β β' : TypeVec.{u} n}, α ⟹ β → 
 
 theorem fst_prod_mk {α α' β β' : TypeVec n} (f : α ⟹ β) (g : α' ⟹ β') :
     TypeVec.prod.fst ⊚ (f ⊗' g) = f ⊚ TypeVec.prod.fst := by
-  funext i; induction i
-  case fz => rfl
-  case fs _ _ i_ih => apply i_ih
+  funext i; induction i with
+  | fz => rfl
+  | fs _ i_ih => apply i_ih
 #align typevec.fst_prod_mk TypeVec.fst_prod_mk
 
 theorem snd_prod_mk {α α' β β' : TypeVec n} (f : α ⟹ β) (g : α' ⟹ β') :
     TypeVec.prod.snd ⊚ (f ⊗' g) = g ⊚ TypeVec.prod.snd := by
-  funext i; induction i
-  case fz => rfl
-  case fs _ _ i_ih => apply i_ih
+  funext i; induction i with
+  | fz => rfl
+  | fs _ i_ih => apply i_ih
 #align typevec.snd_prod_mk TypeVec.snd_prod_mk
 
 theorem fst_diag {α : TypeVec n} : TypeVec.prod.fst ⊚ (prod.diag : α ⟹ _) = id := by
-  funext i; induction i
-  case fz => rfl
-  case fs _ _ i_ih => apply i_ih
+  funext i; induction i with
+  | fz => rfl
+  | fs _ i_ih => apply i_ih
 #align typevec.fst_diag TypeVec.fst_diag
 
 theorem snd_diag {α : TypeVec n} : TypeVec.prod.snd ⊚ (prod.diag : α ⟹ _) = id := by
-  funext i; induction i
-  case fz => rfl
-  case fs _ _ i_ih => apply i_ih
+  funext i; induction i with
+  | fz => rfl
+  | fs _ i_ih => apply i_ih
 #align typevec.snd_diag TypeVec.snd_diag
 
 theorem repeatEq_iff_eq {α : TypeVec n} {i x y} :

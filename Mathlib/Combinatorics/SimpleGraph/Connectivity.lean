@@ -3,7 +3,6 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Data.List.Rotate
 
@@ -77,7 +76,6 @@ universe u v w
 namespace SimpleGraph
 
 variable {V : Type u} {V' : Type v} {V'' : Type w}
-
 variable (G : SimpleGraph V) (G' : SimpleGraph V') (G'' : SimpleGraph V'')
 
 /-- A walk is a sequence of adjacent vertices.  For vertices `u v : V`,
@@ -654,13 +652,13 @@ theorem chain_dartAdj_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v
     List.Chain G.DartAdj d p.darts := by
   induction p generalizing d with
   | nil => exact List.Chain.nil
-  -- porting note: needed to defer `h` and `rfl` to help elaboration
+  -- Porting note: needed to defer `h` and `rfl` to help elaboration
   | cons h' p ih => exact List.Chain.cons (by exact h) (ih (by rfl))
 #align simple_graph.walk.chain_dart_adj_darts SimpleGraph.Walk.chain_dartAdj_darts
 
 theorem chain'_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.DartAdj p.darts
   | nil => trivial
-  -- porting note: needed to defer `rfl` to help elaboration
+  -- Porting note: needed to defer `rfl` to help elaboration
   | cons h p => chain_dartAdj_darts (by rfl) p
 #align simple_graph.walk.chain'_dart_adj_darts SimpleGraph.Walk.chain'_dartAdj_darts
 
@@ -834,12 +832,12 @@ inductive Nil : {v w : V} → G.Walk v w → Prop
 
 @[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
 
-@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := fun.
+@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := nofun
 
 instance (p : G.Walk v w) : Decidable p.Nil :=
   match p with
   | nil => isTrue .nil
-  | cons _ _ => isFalse fun.
+  | cons _ _ => isFalse nofun
 
 protected lemma Nil.eq {p : G.Walk v w} : p.Nil → v = w | .nil => rfl
 
@@ -916,7 +914,7 @@ structure IsPath {u v : V} (p : G.Walk u v) extends IsTrail p : Prop where
   support_nodup : p.support.Nodup
 #align simple_graph.walk.is_path SimpleGraph.Walk.IsPath
 
--- porting note: used to use `extends to_trail : is_trail p` in structure
+-- Porting note: used to use `extends to_trail : is_trail p` in structure
 protected lemma IsPath.isTrail (h : IsPath p) : IsTrail p := h.toIsTrail
 #align simple_graph.walk.is_path.to_trail SimpleGraph.Walk.IsPath.isTrail
 
@@ -927,7 +925,7 @@ structure IsCircuit {u : V} (p : G.Walk u u) extends IsTrail p : Prop where
 #align simple_graph.walk.is_circuit SimpleGraph.Walk.IsCircuit
 #align simple_graph.walk.is_circuit_def SimpleGraph.Walk.isCircuit_def
 
--- porting note: used to use `extends to_trail : is_trail p` in structure
+-- Porting note: used to use `extends to_trail : is_trail p` in structure
 protected lemma IsCircuit.isTrail (h : IsCircuit p) : IsTrail p := h.toIsTrail
 #align simple_graph.walk.is_circuit.to_trail SimpleGraph.Walk.IsCircuit.isTrail
 
@@ -937,7 +935,7 @@ structure IsCycle {u : V} (p : G.Walk u u) extends IsCircuit p : Prop where
   support_nodup : p.support.tail.Nodup
 #align simple_graph.walk.is_cycle SimpleGraph.Walk.IsCycle
 
--- porting note: used to use `extends to_circuit : is_circuit p` in structure
+-- Porting note: used to use `extends to_circuit : is_circuit p` in structure
 protected lemma IsCycle.isCircuit (h : IsCycle p) : IsCircuit p := h.toIsCircuit
 #align simple_graph.walk.is_cycle.to_circuit SimpleGraph.Walk.IsCycle.isCircuit
 
@@ -1273,7 +1271,7 @@ protected theorem IsPath.takeUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
   IsPath.of_append_left (by rwa [← take_spec _ h] at hc)
 #align simple_graph.walk.is_path.take_until SimpleGraph.Walk.IsPath.takeUntil
 
--- porting note: p was previously accidentally an explicit argument
+-- Porting note: p was previously accidentally an explicit argument
 protected theorem IsPath.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.dropUntil u h).IsPath :=
   IsPath.of_append_right (by rwa [← take_spec _ h] at hc)
@@ -1759,7 +1757,7 @@ protected def transfer {u v : V} (p : G.Walk u v)
     (H : SimpleGraph V) (h : ∀ e, e ∈ p.edges → e ∈ H.edgeSet) : H.Walk u v :=
   match p with
   | nil => nil
-  | cons' u v w a p =>
+  | cons' u v w _ p =>
     cons (h s(u, v) (by simp)) (p.transfer H fun e he => h e (by simp [he]))
 #align simple_graph.walk.transfer SimpleGraph.Walk.transfer
 
@@ -1812,7 +1810,7 @@ protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
 
 variable (p)
 
--- porting note: this failed the simpNF linter since it was originally of the form
+-- Porting note: this failed the simpNF linter since it was originally of the form
 -- `(p.transfer H hp).transfer K hp' = p.transfer K hp''` with `hp'` a function of `hp` and `hp'`.
 -- This was a mistake and it's corrected here.
 @[simp]
@@ -2037,7 +2035,7 @@ This follows the convention observed by mathlib that something is connected iff 
 exactly one connected component.
 
 There is a `CoeFun` instance so that `h u v` can be used instead of `h.Preconnected u v`. -/
-@[mk_iff connected_iff]
+@[mk_iff]
 structure Connected : Prop where
   protected preconnected : G.Preconnected
   protected [nonempty : Nonempty V]
@@ -2591,7 +2589,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   let puw := (c.takeUntil v hv).takeUntil w hw
   let pwv := (c.takeUntil v hv).dropUntil w hw
   let pvu := c.dropUntil v hv
-  have : c = (puw.append pwv).append pvu := by simp
+  have : c = (puw.append pwv).append pvu := by simp [puw, pwv, pvu]
   -- We have two walks from v to w
   --      pvu     puw
   --   v ----> u ----> w
@@ -2607,7 +2605,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   exact List.disjoint_of_nodup_append hc hbq hpq'
 #align simple_graph.reachable_delete_edges_iff_exists_cycle.aux SimpleGraph.reachable_deleteEdges_iff_exists_cycle.aux
 
--- porting note: the unused variable checker helped eliminate a good amount of this proof (!)
+-- Porting note: the unused variable checker helped eliminate a good amount of this proof (!)
 theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     G.Adj v w ∧ (G \ fromEdgeSet {s(v, w)}).Reachable v w ↔
       ∃ (u : V) (p : G.Walk u u), p.IsCycle ∧ s(v, w) ∈ p.edges := by
