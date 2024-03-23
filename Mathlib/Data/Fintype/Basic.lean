@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Fin.OrderHom
-import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import data.fintype.basic from "leanprover-community/mathlib"@"d78597269638367c3863d40d45108f52207e03cf"
 
@@ -627,7 +626,6 @@ def ofIsEmpty [IsEmpty α] : Fintype α :=
 
 /-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Finset.univ_eq_empty`. -/
-@[simp]
 theorem univ_ofIsEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
   rfl
 #align fintype.univ_of_is_empty Fintype.univ_ofIsEmpty
@@ -1096,8 +1094,7 @@ noncomputable def finsetEquivSet : Finset α ≃ Set α where
 #align fintype.finset_equiv_set_apply Fintype.finsetEquivSet_apply
 
 @[simp] lemma finsetEquivSet_symm_apply (s : Set α) [Fintype s] :
-    finsetEquivSet.symm s = s.toFinset := by
-  simp [finsetEquivSet]; congr; exact Subsingleton.elim _ _
+    finsetEquivSet.symm s = s.toFinset := by simp [finsetEquivSet]
 #align fintype.finset_equiv_set_symm_apply Fintype.finsetEquivSet_symm_apply
 
 /-- Given a fintype `α`, `finsetOrderIsoSet` is the order isomorphism between `Finset α` and `Set α`
@@ -1117,7 +1114,7 @@ end Fintype
 
 instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     Fintype (Quotient s) :=
-  Fintype.ofSurjective Quotient.mk'' fun x => Quotient.inductionOn x fun x => ⟨x, rfl⟩
+  Fintype.ofSurjective Quotient.mk'' Quotient.surjective_Quotient_mk''
 #align quotient.fintype Quotient.fintype
 
 instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
@@ -1276,7 +1273,6 @@ noncomputable def seqOfForallFinsetExistsAux {α : Type*} [DecidableEq α] (P : 
       (h
         (Finset.image (fun i : Fin n => seqOfForallFinsetExistsAux P r h i)
           (Finset.univ : Finset (Fin n))))
-  decreasing_by all_goals exact i.2
 #align seq_of_forall_finset_exists_aux seqOfForallFinsetExistsAux
 
 /-- Induction principle to build a sequence, by adding one point at a time satisfying a given

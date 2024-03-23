@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.MvPolynomial.Variables
+import Mathlib.Data.MvPolynomial.Degrees
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Algebra.BigOperators.Fin
@@ -121,7 +121,6 @@ theorem mapEquiv_trans [CommSemiring S₁] [CommSemiring S₂] [CommSemiring S�
 #align mv_polynomial.map_equiv_trans MvPolynomial.mapEquiv_trans
 
 variable {A₁ A₂ A₃ : Type*} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
-
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 
 /-- If `e : A ≃ₐ[R] B` is an isomorphism of `R`-algebras, then so is `map e`. -/

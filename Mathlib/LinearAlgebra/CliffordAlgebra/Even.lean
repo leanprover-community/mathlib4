@@ -41,7 +41,6 @@ namespace CliffordAlgebra
 universe uR uM uA uB
 
 variable {R : Type uR} {M : Type uM} [CommRing R] [AddCommGroup M] [Module R M]
-
 variable {Q : QuadraticForm R M}
 
 -- put this after `Q` since we want to talk about morphisms from `CliffordAlgebra Q` to `A` and
@@ -89,7 +88,6 @@ def EvenHom.compr₂ (g : EvenHom Q A) (f : A →ₐ[R] B) : EvenHom Q B where
 variable (Q)
 
 /-- The embedding of pairs of vectors into the even subalgebra, as a bilinear map. -/
-@[simps! bilin_apply_apply_coe]
 nonrec def even.ι : EvenHom Q (even Q) where
   bilin :=
     LinearMap.mk₂ R (fun m₁ m₂ => ⟨ι Q m₁ * ι Q m₂, ι_mul_ι_mem_evenOdd_zero Q _ _⟩)

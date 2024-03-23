@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.FinCategory.AsType
 
 #align_import category_theory.limits.preserves.finite from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
 
@@ -32,11 +32,8 @@ namespace CategoryTheory.Limits
 universe w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {E : Type u₃} [Category.{v₃} E]
-
 variable {J : Type w} [SmallCategory J] {K : J ⥤ C}
 
 /-- A functor is said to preserve finite limits, if it preserves all limits of shape `J`,

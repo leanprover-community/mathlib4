@@ -59,7 +59,6 @@ noncomputable section
 universe u v w x
 
 variable {F : Type*} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x} {ι : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
 open unitInterval
@@ -242,8 +241,8 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
         (G.continuous.comp (by continuity)).continuousOn _
     rintro x hx
     norm_num [hx]
-  map_zero_left x := by norm_num
-  map_one_left x := by norm_num
+  map_zero_left x := by set_option tactic.skipAssignedInstances false in norm_num
+  map_one_left x := by set_option tactic.skipAssignedInstances false in norm_num
 #align continuous_map.homotopy.trans ContinuousMap.Homotopy.trans
 
 theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) (x : I × X) :
@@ -404,7 +403,7 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 `P : C(X, Y) → Prop`
 -/
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
-  -- Porting note: todo: use `toHomotopy.curry t`
+  -- Porting note (#11215): TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
   prop' : ∀ t, P ⟨fun x => toFun (t, x),
     Continuous.comp continuous_toFun (continuous_const.prod_mk continuous_id')⟩

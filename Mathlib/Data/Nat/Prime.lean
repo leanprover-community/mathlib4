@@ -43,7 +43,7 @@ variable {n : ℕ}
 
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
   at least 2 whose only divisors are `p` and `1`. -/
--- Porting note: removed @[pp_nodot]
+-- Porting note (#11180): removed @[pp_nodot]
 def Prime (p : ℕ) :=
   Irreducible p
 #align nat.prime Nat.Prime

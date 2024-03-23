@@ -56,7 +56,8 @@ open Set Function Metric Filter
 
 noncomputable section
 
-open NNReal Classical Topology
+open scoped Classical
+open NNReal Topology
 
 namespace BoxIntegral
 

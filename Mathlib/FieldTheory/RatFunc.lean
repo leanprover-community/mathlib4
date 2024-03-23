@@ -117,7 +117,6 @@ namespace RatFunc
 section CommRing
 
 variable {K}
-
 variable [CommRing K]
 
 section Rec
@@ -463,9 +462,7 @@ set_option linter.uppercaseLean3 false in
 section IsDomain
 
 variable [IsDomain K]
-
 variable [Monoid R] [DistribMulAction R K[X]]
-
 variable [IsScalarTower R K[X] K[X]]
 
 theorem mk_smul (c : R) (p q : K[X]) : RatFunc.mk (c • p) q = c • RatFunc.mk p q := by
@@ -791,7 +788,8 @@ instance instField [IsDomain K] : Field (RatFunc K) :=
     div := (· / ·)
     div_eq_mul_inv := by frac_tac
     mul_inv_cancel := fun _ => mul_inv_cancel
-    zpow := zpowRec }
+    zpow := zpowRec
+    qsmul := qsmulRec _ }
 
 section IsFractionRing
 
@@ -1078,6 +1076,7 @@ open GCDMonoid Polynomial
 
 variable [Field K]
 
+set_option tactic.skipAssignedInstances false in
 /-- `RatFunc.numDenom` are numerator and denominator of a rational function over a field,
 normalized such that the denominator is monic. -/
 def numDenom (x : RatFunc K) : K[X] × K[X] :=

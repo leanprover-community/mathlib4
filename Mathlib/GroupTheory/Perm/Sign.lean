@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Int.Order.Units
@@ -219,26 +218,9 @@ theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
     if h : f⁻¹ b < f⁻¹ a then by
       simp_all [signBijAux, dif_pos h, if_neg h.not_le, apply_inv_self, apply_inv_self,
         if_neg (mem_finPairsLT.1 hab).not_le]
-      split_ifs with h₁
-      · dsimp [finPairsLT] at hab
-        simp? at hab says
-          simp only [mem_sigma, mem_univ, mem_attachFin, mem_range, Fin.val_fin_lt,
-            true_and] at hab
-        exact absurd h₁ (not_le_of_gt hab)
-      · rfl
     else by
       simp_all [signBijAux, if_pos (le_of_not_gt h), dif_neg h, apply_inv_self, apply_inv_self,
         if_pos (mem_finPairsLT.1 hab).le]
-      split_ifs with h₁ h₂ h₃
-      · rfl
-      · exact absurd h (not_le_of_gt h₁)
-      · rfl
-      · dsimp at *
-        dsimp [finPairsLT] at hab
-        simp? at * says
-          simp only [mem_sigma, mem_univ, mem_attachFin, mem_range, Fin.val_fin_lt,
-            true_and, not_lt, apply_inv_self, not_le, neg_units_ne_self] at *
-        exact absurd h₃ (asymm_of LT.lt hab)
 #align equiv.perm.sign_aux_inv Equiv.Perm.signAux_inv
 
 theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f * signAux g := by
@@ -253,9 +235,6 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
   by_cases h : g b < g a
   · rw [dif_pos h]
     simp only [not_le_of_gt hab, mul_one, mul_ite, mul_neg, Perm.inv_apply_self, if_false]
-    split_ifs with h₁ h₂ h₃ <;> dsimp at *
-    · exact absurd hab (not_lt_of_ge h₂)
-    · exact absurd hab (not_lt_of_ge h₃)
   · rw [dif_neg h, inv_apply_self, inv_apply_self, if_pos hab.le]
     by_cases h₁ : f (g b) ≤ f (g a)
     · have : f (g b) ≠ f (g a) := by
@@ -291,6 +270,7 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
       · rw [swap_apply_of_ne_of_ne (ne_of_gt H) (ne_of_gt lt),
           swap_apply_of_ne_of_ne (ne_of_gt H') (ne_of_gt lt'), if_neg ha₁.not_le]
 
+set_option tactic.skipAssignedInstances false in
 private theorem signAux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
     signAux (swap (⟨0, lt_of_lt_of_le (by decide) hn⟩ : Fin n) ⟨1, lt_of_lt_of_le (by decide) hn⟩) =
       -1 := by
@@ -513,7 +493,6 @@ theorem sign_subtypePerm (f : Perm α) {p : α → Prop} [DecidablePred p] (h₁
   conv =>
     congr
     rw [← l.2.1]
-    skip
   simp_rw [← hl'₂]
   rw [sign_prod_list_swap l.2.2, sign_prod_list_swap hl', List.length_map]
 #align equiv.perm.sign_subtype_perm Equiv.Perm.sign_subtypePerm

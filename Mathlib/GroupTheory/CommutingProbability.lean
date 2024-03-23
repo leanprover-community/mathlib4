@@ -30,7 +30,7 @@ set_option autoImplicit true
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 open BigOperators
 
@@ -146,7 +146,7 @@ namespace DihedralGroup
 lemma commProb_odd {n : ℕ} (hn : Odd n) :
     commProb (DihedralGroup n) = (n + 3) / (4 * n) := by
   rw [commProb_def', DihedralGroup.card_conjClasses_odd hn, nat_card]
-  qify [show 2 ∣ n + 3 by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, Nat.odd_iff.mp hn]; rfl]
+  qify [show 2 ∣ n + 3 by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, Nat.odd_iff.mp hn]]
   rw [div_div, ← mul_assoc]
   congr
 
@@ -165,7 +165,6 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
     3 :: reciprocalFactors (n / 2)
   else
     n % 4 * n :: reciprocalFactors (n / 4 + 1)
-decreasing_by all_goals { simp_wf; omega }
 
 @[simp] lemma reciprocalFactors_zero : reciprocalFactors 0 = [0] := rfl
 

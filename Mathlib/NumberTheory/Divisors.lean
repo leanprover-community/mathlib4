@@ -32,7 +32,8 @@ divisors, perfect numbers
 -/
 
 
-open BigOperators Classical Finset
+open scoped Classical
+open BigOperators Finset
 
 namespace Nat
 
@@ -409,8 +410,7 @@ theorem sum_properDivisors_dvd (h : (∑ x in n.properDivisors, x) ∣ n) :
   cases' n with n
   · simp
   · cases' n with n
-    · contrapose! h
-      simp
+    · simp at h
     · rw [or_iff_not_imp_right]
       intro ne_n
       have hlt : ∑ x in n.succ.succ.properDivisors, x < n.succ.succ :=

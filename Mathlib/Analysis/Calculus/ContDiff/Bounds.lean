@@ -176,6 +176,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
   have Bu_le : ‖Bu‖ ≤ ‖B‖ := by
     refine' ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun y => _
     refine' ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => _
+    set_option tactic.skipAssignedInstances false in
     simp only [Bu, ContinuousLinearMap.compL_apply, ContinuousLinearMap.coe_comp',
       Function.comp_apply, LinearIsometryEquiv.coe_coe'', ContinuousLinearMap.flip_apply,
       LinearIsometryEquiv.norm_map]

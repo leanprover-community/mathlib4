@@ -43,50 +43,50 @@ theorem isCauSeq_exp (z : ℂ) : IsCauSeq abs fun n => ∑ m in range n, z ^ m /
 
 /-- The Cauchy sequence consisting of partial sums of the Taylor series of
 the complex exponential function -/
-----@[pp_nodot] Porting note: removed Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def exp' (z : ℂ) : CauSeq ℂ Complex.abs :=
   ⟨fun n => ∑ m in range n, z ^ m / m.factorial, isCauSeq_exp z⟩
 #align complex.exp' Complex.exp'
 
 /-- The complex exponential function, defined via its Taylor series -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 -- Porting note: removed `irreducible` attribute, so I can prove things
 def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
 #align complex.exp Complex.exp
 
 /-- The complex sine function, defined via `exp` -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def sin (z : ℂ) : ℂ :=
   (exp (-z * I) - exp (z * I)) * I / 2
 #align complex.sin Complex.sin
 
 /-- The complex cosine function, defined via `exp` -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def cos (z : ℂ) : ℂ :=
   (exp (z * I) + exp (-z * I)) / 2
 #align complex.cos Complex.cos
 
 /-- The complex tangent function, defined as `sin z / cos z` -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def tan (z : ℂ) : ℂ :=
   sin z / cos z
 #align complex.tan Complex.tan
 
 /-- The complex hyperbolic sine function, defined via `exp` -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def sinh (z : ℂ) : ℂ :=
   (exp z - exp (-z)) / 2
 #align complex.sinh Complex.sinh
 
 /-- The complex hyperbolic cosine function, defined via `exp` -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def cosh (z : ℂ) : ℂ :=
   (exp z + exp (-z)) / 2
 #align complex.cosh Complex.cosh
 
 /-- The complex hyperbolic tangent function, defined as `sinh z / cosh z` -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 #align complex.tanh Complex.tanh
@@ -105,44 +105,44 @@ open Complex
 noncomputable section
 
 /-- The real exponential function, defined as the real part of the complex exponential -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def exp (x : ℝ) : ℝ :=
   (exp x).re
 #align real.exp Real.exp
 
 /-- The real sine function, defined as the real part of the complex sine -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def sin (x : ℝ) : ℝ :=
   (sin x).re
 #align real.sin Real.sin
 
 /-- The real cosine function, defined as the real part of the complex cosine -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def cos (x : ℝ) : ℝ :=
   (cos x).re
 #align real.cos Real.cos
 
 /-- The real tangent function, defined as the real part of the complex tangent -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def tan (x : ℝ) : ℝ :=
   (tan x).re
 #align real.tan Real.tan
 
 /-- The real hypebolic sine function, defined as the real part of the complex hyperbolic sine -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def sinh (x : ℝ) : ℝ :=
   (sinh x).re
 #align real.sinh Real.sinh
 
 /-- The real hypebolic cosine function, defined as the real part of the complex hyperbolic cosine -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def cosh (x : ℝ) : ℝ :=
   (cosh x).re
 #align real.cosh Real.cosh
 
 /-- The real hypebolic tangent function, defined as the real part of
 the complex hyperbolic tangent -/
---@[pp_nodot] Porting note: removed
+-- Porting note (#11180): removed `@[pp_nodot]`
 nonrec def tanh (x : ℝ) : ℝ :=
   (tanh x).re
 #align real.tanh Real.tanh
@@ -195,7 +195,7 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
   exact cauchy_product (isCauSeq_abs_exp x) (isCauSeq_exp y)
 #align complex.exp_add Complex.exp_add
 
--- Porting note: New definition
+-- Porting note (#11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℂ` to `ℂ` -/
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
   { toFun := fun z => exp (Multiplicative.toAdd z),
@@ -816,7 +816,7 @@ theorem exp_zero : exp 0 = 1 := by simp [Real.exp]
 nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
 #align real.exp_add Real.exp_add
 
--- Porting note: New definition
+-- Porting note (#11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℝ` to `ℝ` -/
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℝ) ℝ :=
   { toFun := fun x => exp (Multiplicative.toAdd x),
@@ -1374,6 +1374,7 @@ theorem abs_exp_sub_one_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1) ≤ 2 
     _ = 2 * abs x := by simp [two_mul, mul_two, mul_add, mul_comm, add_mul, Nat.factorial]
 #align complex.abs_exp_sub_one_le Complex.abs_exp_sub_one_le
 
+set_option tactic.skipAssignedInstances false in
 theorem abs_exp_sub_one_sub_id_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1 - x) ≤ abs x ^ 2 :=
   calc
     abs (exp x - 1 - x) = abs (exp x - ∑ m in range 2, x ^ m / m.factorial) := by
@@ -1604,7 +1605,7 @@ theorem cos_one_le : cos 1 ≤ 2 / 3 :=
   calc
     cos 1 ≤ |(1 : ℝ)| ^ 4 * (5 / 96) + (1 - 1 ^ 2 / 2) :=
       sub_le_iff_le_add.1 (abs_sub_le_iff.1 (cos_bound (by simp))).1
-    _ ≤ 2 / 3 := by norm_num
+    _ ≤ 2 / 3 := by set_option tactic.skipAssignedInstances false in norm_num
 #align real.cos_one_le Real.cos_one_le
 
 theorem cos_one_pos : 0 < cos 1 :=
@@ -1633,7 +1634,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- This proof should be restored after the norm_num plugin for big operators is ported.
       -- (It may also need the positivity extensions in #3907.)
       repeat erw [Finset.sum_range_succ]
-      norm_num [Nat.factorial]
+      set_option tactic.skipAssignedInstances false in norm_num [Nat.factorial]
       nlinarith
     _ < 1 / (1 - x) := by rw [lt_div_iff] <;> nlinarith
 #align real.exp_bound_div_one_sub_of_interval' Real.exp_bound_div_one_sub_of_interval'

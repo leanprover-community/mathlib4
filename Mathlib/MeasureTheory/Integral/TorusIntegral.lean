@@ -57,7 +57,6 @@ integral, torus
 
 
 variable {n : ℕ}
-
 variable {E : Type*} [NormedAddCommGroup E]
 
 noncomputable section
@@ -107,7 +106,7 @@ def TorusIntegrable (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : Prop :=
 
 namespace TorusIntegrable
 
--- Porting note: todo: restore notation; `neg`, `add` etc fail if I use notation here
+-- Porting note (#11215): TODO: restore notation; `neg`, `add` etc fail if I use notation here
 variable {f g : (Fin n → ℂ) → E} {c : Fin n → ℂ} {R : Fin n → ℝ}
 
 /-- Constant functions are torus integrable -/

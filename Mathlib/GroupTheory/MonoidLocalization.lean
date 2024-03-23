@@ -2102,7 +2102,7 @@ instance partialOrder : PartialOrder (Localization s) where
     induction' b using Localization.rec with b₁ b₂
     simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
     exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
-    all_goals intros; rfl
+    all_goals rfl
   lt_iff_le_not_le a b := Localization.induction_on₂ a b fun a b => lt_iff_le_not_le
 
 @[to_additive]

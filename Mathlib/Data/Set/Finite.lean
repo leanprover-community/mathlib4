@@ -302,8 +302,8 @@ protected theorem toFinset_image [DecidableEq β] (f : α → β) (hs : s.Finite
   simp
 #align set.finite.to_finset_image Set.Finite.toFinset_image
 
--- Porting note: now `simp` can prove it but it needs the `fintypeRange` instance from the next
--- section
+-- Porting note (#10618): now `simp` can prove it but it needs the `fintypeRange` instance
+-- from the next section
 protected theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) (h : (range f).Finite) :
     h.toFinset = Finset.univ.image f := by
   ext
@@ -475,7 +475,7 @@ def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g
 #align set.fintype_of_fintype_image Set.fintypeOfFintypeImage
 
 instance fintypeRange [DecidableEq α] (f : ι → α) [Fintype (PLift ι)] : Fintype (range f) :=
-  Fintype.ofFinset (Finset.univ.image <| f ∘ PLift.down) <| by simp [Equiv.plift.exists_congr_left]
+  Fintype.ofFinset (Finset.univ.image <| f ∘ PLift.down) <| by simp
 #align set.fintype_range Set.fintypeRange
 
 instance fintypeMap {α β} [DecidableEq β] :
@@ -589,7 +589,7 @@ Some set instances do not appear here since they are consequences of others, for
 
 namespace Finite.Set
 
-open Classical
+open scoped Classical
 
 example {s : Set α} [Finite α] : Finite s :=
   inferInstance

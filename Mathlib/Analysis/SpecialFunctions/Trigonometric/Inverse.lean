@@ -20,7 +20,8 @@ Basic inequalities on trigonometric functions.
 
 noncomputable section
 
-open Classical Topology Filter
+open scoped Classical
+open Topology Filter
 
 open Set Filter
 

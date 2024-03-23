@@ -63,7 +63,8 @@ on `(-∞, 0]` and to `y` on `[1, +∞)`.
 
 noncomputable section
 
-open Classical Topology Filter unitInterval Set Function
+open scoped Classical
+open Topology Filter unitInterval Set Function
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*}
 
@@ -315,6 +316,7 @@ theorem ofLine_mem {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h�
 
 attribute [local simp] Iic_def
 
+set_option tactic.skipAssignedInstances false in
 /-- Concatenation of two paths from `x` to `y` and from `y` to `z`, putting the first
 path on `[0, 1/2]` and the second one on `[1/2, 1]`. -/
 @[trans]
@@ -1138,7 +1140,6 @@ theorem pathConnectedSpace_iff_zerothHomotopy :
     exact Quotient.sound (PathConnectedSpace.joined x y)
   · unfold ZerothHomotopy
     rintro ⟨h, h'⟩
-    skip
     exact ⟨(nonempty_quotient_iff _).mp h, fun x y => Quotient.exact <| Subsingleton.elim ⟦x⟧ ⟦y⟧⟩
 #align path_connected_space_iff_zeroth_homotopy pathConnectedSpace_iff_zerothHomotopy
 

@@ -50,7 +50,6 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 
 
 variable {𝕜 : Type*} [IsROrC 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
@@ -226,7 +225,7 @@ theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
   change HasEigenvector T (IsROrC.re μ) v
   have key : HasEigenvector T μ v := by
     have H₁ : v ∈ eigenspace T μ := by
-      simp_rw [eigenvectorBasis]
+      simp_rw [v, eigenvectorBasis]
       exact
         hT.direct_sum_isInternal.subordinateOrthonormalBasis_subordinate hn i
           hT.orthogonalFamily_eigenspaces'

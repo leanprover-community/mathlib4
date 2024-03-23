@@ -55,12 +55,14 @@ export CompactIccSpace (isCompact_Icc)
 
 variable {α : Type*}
 
--- Porting note: new lemma; TODO: make it the definition
+-- Porting note (#10756): new lemma;
+-- Porting note (#11215): TODO: make it the definition
 lemma CompactIccSpace.mk' [TopologicalSpace α] [Preorder α]
     (h : ∀ {a b : α}, a ≤ b → IsCompact (Icc a b)) : CompactIccSpace α where
   isCompact_Icc {a b} := by_cases h fun hab => by rw [Icc_eq_empty hab]; exact isCompact_empty
 
--- Porting note: new lemma; TODO: drop one `'`
+-- Porting note (#10756): new lemma;
+-- Porting note (#11215): TODO: drop one `'`
 lemma CompactIccSpace.mk'' [TopologicalSpace α] [PartialOrder α]
     (h : ∀ {a b : α}, a < b → IsCompact (Icc a b)) : CompactIccSpace α :=
   .mk' fun hab => hab.eq_or_lt.elim (by rintro rfl; simp) h
@@ -107,9 +109,10 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
     rw [diff_subset_iff]
     exact Subset.trans Icc_subset_Icc_union_Ioc <| union_subset_union Subset.rfl <|
       Ioc_subset_Ioc_left hy.1.le
-  rcases hc.2.eq_or_lt with (rfl | hlt); · exact hcs.2
-  contrapose! hf
-  intro U hU
+  rcases hc.2.eq_or_lt with (rfl | hlt)
+  · exact hcs.2
+  exfalso
+  refine hf fun U hU => ?_
   rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
       (mem_nhdsWithin_of_mem_nhds hU) with
     ⟨y, hxy, hyU⟩
@@ -256,12 +259,23 @@ theorem cocompact_eq_atTop [LinearOrder α] [NoMaxOrder α] [OrderBot α]
     [ClosedIciTopology α] [CompactIccSpace α] : cocompact α = atTop :=
   cocompact_le_atTop.antisymm atTop_le_cocompact
 
--- Porting note: new lemma; defeq to the old one but allows us to use dot notation
+-- Porting note (#10756): new lemma; defeq to the old one but allows us to use dot notation
 /-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set. -/
 theorem IsCompact.exists_isMinOn [ClosedIicTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, IsMinOn f s x := by
   rcases (hs.image_of_continuousOn hf).exists_isLeast (ne_s.image f) with ⟨_, ⟨x, hxs, rfl⟩, hx⟩
-  exact ⟨x, hxs, ball_image_iff.1 hx⟩
+  exact ⟨x, hxs, forall_mem_image.1 hx⟩
+
+/-- If a continuous function lies strictly above `a` on a compact set,
+  it has a lower bound strictly above `a`. -/
+theorem IsCompact.exists_forall_le' [ClosedIicTopology α] [NoMaxOrder α] {f : β → α}
+    {s : Set β} (hs : IsCompact s) (hf : ContinuousOn f s) {a : α} (hf' : ∀ b ∈ s, a < f b) :
+    ∃ a', a < a' ∧ ∀ b ∈ s, a' ≤ f b := by
+  rcases s.eq_empty_or_nonempty with (rfl | hs')
+  · obtain ⟨a', ha'⟩ := exists_gt a
+    exact ⟨a', ha', fun _ a ↦ a.elim⟩
+  · obtain ⟨x, hx, hx'⟩ := hs.exists_isMinOn hs' hf
+    exact ⟨f x, hf' x hx, hx'⟩
 
 /-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set. -/
 @[deprecated IsCompact.exists_isMinOn]
@@ -270,7 +284,7 @@ theorem IsCompact.exists_forall_le [ClosedIicTopology α] {s : Set β} (hs : IsC
   hs.exists_isMinOn ne_s hf
 #align is_compact.exists_forall_le IsCompact.exists_forall_le
 
--- Porting note: new lemma; defeq to the old one but allows us to use dot notation
+-- Porting note (#10756): new lemma; defeq to the old one but allows us to use dot notation
 /-- The **extreme value theorem**: a continuous function realizes its maximum on a compact set. -/
 theorem IsCompact.exists_isMaxOn [ClosedIciTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, IsMaxOn f s x :=
@@ -358,7 +372,7 @@ theorem Continuous.exists_forall_le_of_hasCompactMulSupport [ClosedIicTopology �
     [One α] {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) :
     ∃ x : β, ∀ y : β, f x ≤ f y := by
   obtain ⟨_, ⟨x, rfl⟩, hx⟩ := (h.isCompact_range hf).exists_isLeast (range_nonempty _)
-  rw [mem_lowerBounds, forall_range_iff] at hx
+  rw [mem_lowerBounds, forall_mem_range] at hx
   exact ⟨x, hx⟩
 #align continuous.exists_forall_le_of_has_compact_mul_support Continuous.exists_forall_le_of_hasCompactMulSupport
 #align continuous.exists_forall_le_of_has_compact_support Continuous.exists_forall_le_of_hasCompactSupport
@@ -560,7 +574,7 @@ theorem eq_Icc_of_connected_compact {s : Set α} (h₁ : IsConnected s) (h₂ : 
 conditionally complete linear order, and `K : Set β` is a compact set, then
 `fun x ↦ sSup (f x '' K)` is a continuous function.
 
-Porting note: todo: generalize. The following version seems to be true:
+Porting note (#11215): TODO: generalize. The following version seems to be true:
 ```
 theorem IsCompact.tendsto_sSup {f : γ → β → α} {g : β → α} {K : Set β} {l : Filter γ}
     (hK : IsCompact K) (hf : ∀ y ∈ K, Tendsto ↿f (l ×ˢ 𝓝[K] y) (𝓝 (g y)))

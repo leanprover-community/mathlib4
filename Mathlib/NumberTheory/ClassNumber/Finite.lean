@@ -36,21 +36,13 @@ open scoped BigOperators
 section EuclideanDomain
 
 variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
-
 variable [Field K] [Field L]
-
 variable [Algebra R K] [IsFractionRing R K]
-
 variable [Algebra K L] [FiniteDimensional K L] [IsSeparable K L]
-
 variable [algRL : Algebra R L] [IsScalarTower R K L]
-
 variable [Algebra R S] [Algebra S L]
-
 variable [ist : IsScalarTower R S L] [iic : IsIntegralClosure S R L]
-
 variable (abv : AbsoluteValue R ℤ)
-
 variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 
 /-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer
@@ -128,14 +120,12 @@ theorem norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
 
 
 /-- A nonzero ideal has an element of minimal norm. -/
--- Porting note: port of Int.exists_least_of_bdd requires DecidablePred, so we use classical
 theorem exists_min (I : (Ideal S)⁰) :
     ∃ b ∈ (I : Ideal S),
       b ≠ 0 ∧ ∀ c ∈ (I : Ideal S), abv (Algebra.norm R c) < abv (Algebra.norm R b) → c =
       (0 : S) := by
-  classical
   obtain ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩, min⟩ := @Int.exists_least_of_bdd
-      (fun a => ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a) _
+      (fun a => ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a)
     (by
       use 0
       rintro _ ⟨b, _, _, rfl⟩

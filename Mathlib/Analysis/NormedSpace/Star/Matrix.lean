@@ -98,7 +98,7 @@ namespace Matrix
 open LinearMap
 
 variable [IsROrC 𝕜]
-variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [Fintype l] [DecidableEq l]
+variable [Fintype m] [Fintype n] [DecidableEq n] [Fintype l] [DecidableEq l]
 
 /-- The natural star algebra equivalence between matrices and continuous linear endomoporphisms
 of Euclidean space induced by the orthonormal basis `EuclideanSpace.basisFun`.
@@ -186,7 +186,7 @@ lemma l2_opNNNorm_def (A : Matrix m n 𝕜) :
 alias l2_op_nnnorm_def :=
   l2_opNNNorm_def -- deprecated on 2024-02-02
 
-lemma l2_opNorm_conjTranspose (A : Matrix m n 𝕜) : ‖Aᴴ‖ = ‖A‖ := by
+lemma l2_opNorm_conjTranspose [DecidableEq m] (A : Matrix m n 𝕜) : ‖Aᴴ‖ = ‖A‖ := by
   rw [l2_opNorm_def, toEuclideanLin_eq_toLin_orthonormal, LinearEquiv.trans_apply,
     toLin_conjTranspose, adjoint_toContinuousLinearMap]
   exact ContinuousLinearMap.adjoint.norm_map _
@@ -195,7 +195,7 @@ lemma l2_opNorm_conjTranspose (A : Matrix m n 𝕜) : ‖Aᴴ‖ = ‖A‖ := by
 alias l2_op_norm_conjTranspose :=
   l2_opNorm_conjTranspose -- deprecated on 2024-02-02
 
-lemma l2_opNNNorm_conjTranspose (A : Matrix m n 𝕜) : ‖Aᴴ‖₊ = ‖A‖₊ :=
+lemma l2_opNNNorm_conjTranspose [DecidableEq m] (A : Matrix m n 𝕜) : ‖Aᴴ‖₊ = ‖A‖₊ :=
   Subtype.ext <| l2_opNorm_conjTranspose _
 
 @[deprecated]
@@ -203,6 +203,7 @@ alias l2_op_nnnorm_conjTranspose :=
   l2_opNNNorm_conjTranspose -- deprecated on 2024-02-02
 
 lemma l2_opNorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖ = ‖A‖ * ‖A‖ := by
+  classical
   rw [l2_opNorm_def, toEuclideanLin_eq_toLin_orthonormal, LinearEquiv.trans_apply,
     Matrix.toLin_mul (v₂ := (EuclideanSpace.basisFun m 𝕜).toBasis), toLin_conjTranspose]
   exact ContinuousLinearMap.norm_adjoint_comp_self _
