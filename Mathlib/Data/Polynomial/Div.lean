@@ -418,7 +418,7 @@ theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
 /-- See `Polynomial.mul_left_modByMonic` for the other multiplication order. That version, unlike
 this one, requires commutativity. -/
 @[simp]
-lemma mul_right_modByMonic (hq : q.Monic) : (q * p) %ₘ q = 0 := by
+lemma self_mul_modByMonic (hq : q.Monic) : (q * p) %ₘ q = 0 := by
   rw [modByMonic_eq_zero_iff_dvd hq]
   exact dvd_mul_right q p
 
