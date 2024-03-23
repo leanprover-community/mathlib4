@@ -597,3 +597,7 @@ example (h : False): True := by
     -- this should not panic:
     nlinarith
   trivial
+
+example (x : Nat) : 0 ≤ x ^ 9890 := by
+  fail_if_success linarith -- this should not stack overflow
+  apply zero_le
