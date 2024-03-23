@@ -94,6 +94,7 @@ namespace NonUnitalSubringClass
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
 instance (priority := 75) toNonUnitalNonAssocRing : NonUnitalNonAssocRing s :=
+  fast_instance%
   Subtype.val_injective.nonUnitalNonAssocRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
@@ -101,6 +102,7 @@ instance (priority := 75) toNonUnitalNonAssocRing : NonUnitalNonAssocRing s :=
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
 instance (priority := 75) toNonUnitalRing {R : Type*} [NonUnitalRing R] [SetLike S R]
     [NonUnitalSubringClass S R] (s : S) : NonUnitalRing s :=
+  fast_instance%
   Subtype.val_injective.nonUnitalRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
@@ -108,6 +110,7 @@ instance (priority := 75) toNonUnitalRing {R : Type*} [NonUnitalRing R] [SetLike
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
 instance (priority := 75) toNonUnitalCommRing {R} [NonUnitalCommRing R] [SetLike S R]
     [NonUnitalSubringClass S R] : NonUnitalCommRing s :=
+  fast_instance%
   Subtype.val_injective.nonUnitalCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
