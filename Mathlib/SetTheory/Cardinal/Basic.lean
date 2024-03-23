@@ -1562,6 +1562,10 @@ theorem lt_aleph0 {c : Cardinal} : c < ℵ₀ ↔ ∃ n : ℕ, c = n :=
     exact ⟨Infinite.natEmbedding S⟩, fun ⟨n, e⟩ => e.symm ▸ nat_lt_aleph0 _⟩
 #align cardinal.lt_aleph_0 Cardinal.lt_aleph0
 
+lemma succ_eq_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : Order.succ c = c + 1 := by
+  obtain ⟨n, hn⟩ := Cardinal.lt_aleph0.mp h
+  rw [hn, succ_natCast]
+
 theorem aleph0_le {c : Cardinal} : ℵ₀ ≤ c ↔ ∀ n : ℕ, ↑n ≤ c :=
   ⟨fun h n => (nat_lt_aleph0 _).le.trans h, fun h =>
     le_of_not_lt fun hn => by
