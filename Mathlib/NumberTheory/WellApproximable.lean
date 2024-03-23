@@ -377,7 +377,7 @@ lemma exists_norm_nsmul_le (ξ : 𝕊) {n : ℕ} (hn : 0 < n) :
     ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ T / ↑(n + 1) := by
   apply NormedAddCommGroup.exists_norm_nsmul_le (μ := volume) ξ hn
   rw [AddCircle.measure_univ, volume_closedBall, ← ENNReal.ofReal_nsmul,
-    mul_div_cancel' _ two_ne_zero, min_eq_right (div_le_self hT.out.le <| by simp), nsmul_eq_mul,
-    mul_div_cancel' _ (Nat.cast_ne_zero.mpr n.succ_ne_zero)]
+    mul_div_cancel₀ _ two_ne_zero, min_eq_right (div_le_self hT.out.le <| by simp), nsmul_eq_mul,
+    mul_div_cancel₀ _ (Nat.cast_ne_zero.mpr n.succ_ne_zero)]
 
 end AddCircle
