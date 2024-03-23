@@ -153,6 +153,7 @@ theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n 
   induction n <;> simp [add_succ, add_assoc, Nat.add_zero, Nat.cast_one, Nat.cast_zero, *]
 #align nat.cast_add Nat.cast_addₓ
 
+/-- Computationally friendlier cast than `Nat.unaryCast`, using binary representation. -/
 protected def binCast [Zero R] [One R] [Add R] : ℕ → R
   | 0 => 0
   | n + 1 => if (n + 1) % 2 = 0

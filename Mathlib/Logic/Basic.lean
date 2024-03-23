@@ -572,13 +572,13 @@ theorem rec_heq_of_heq {C : α → Sort*} {x : C a} {y : β} (e : a = b) (h : HE
 theorem rec_heq_iff_heq {C : α → Sort*} {x : C a} {y : β} {e : a = b} :
     HEq (e ▸ x) y ↔ HEq x y :=
   eqRec_heq_iff_heq _ e y
+#align rec_heq_iff_heq rec_heq_iff_heq
 
 theorem heq_rec_iff_heq {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
     HEq x (e ▸ y) ↔ HEq x y :=
   heq_eqRec_iff_heq _ e x
-
-#align rec_heq_iff_heq rec_heq_iff_heq
 #align heq_rec_iff_heq heq_rec_iff_heq
+
 #align eq.congr Eq.congr
 #align eq.congr_left Eq.congr_left
 #align eq.congr_right Eq.congr_right
