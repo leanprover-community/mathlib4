@@ -326,8 +326,8 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
           (toMeasurable μ sᶜ ∪ ⋃ n, toMeasurable (ρ + μ) (w n)) ⊆
         toMeasurable μ sᶜ ∪
           ⋃ (m) (n), toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n) := by
-      simp only [inter_distrib_left, inter_distrib_right, true_and_iff, subset_union_left,
-        union_subset_iff, inter_self]
+      simp only [inter_union_distrib_left, union_inter_distrib_right, true_and_iff,
+        subset_union_left, union_subset_iff, inter_self]
       refine' ⟨_, _, _⟩
       · exact (inter_subset_right _ _).trans (subset_union_left _ _)
       · exact (inter_subset_left _ _).trans (subset_union_left _ _)
@@ -917,12 +917,8 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
   have A : IntegrableOn (fun y => (‖f y - f x‖₊ : ℝ)) a μ := by
     simp_rw [coe_nnnorm]
     exact (h''a.sub (integrableOn_const.2 (Or.inr h'a))).norm
-  rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal]
-  · simp_rw [coe_nnnorm]
-    rfl
-  · apply integral_nonneg
-    intro x
-    exact NNReal.coe_nonneg _
+  rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal (by positivity)]
+  rfl
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `f` on `a` tends to `f x` as `a` shrinks to `x` along a Vitali family.-/
