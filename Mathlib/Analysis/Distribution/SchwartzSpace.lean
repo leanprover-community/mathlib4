@@ -1068,10 +1068,6 @@ def integralCLM : 𝓢(D, V) →L[𝕜] V :=
       rcases hμ.exists_integrable with ⟨n, h⟩
       let m := (n, 0)
       use Finset.Iic m, 2 ^ n * ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ
-      have hpos : 0 ≤ ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ := by
-        apply integral_nonneg
-        intro
-        positivity
       refine ⟨by positivity, fun f ↦ (norm_integral_le_integral_norm f).trans ?_⟩
       have h' : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(n : ℝ)) *
           (2 ^ n * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm 𝕜 m'.1 m'.2) f)) := by
