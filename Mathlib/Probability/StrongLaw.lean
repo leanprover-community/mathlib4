@@ -757,7 +757,8 @@ lemma strong_law_ae_of_measurable
     have I : ∀ k i, (fun ω ↦ ‖(X i - Y k i) ω‖) = (G k) ∘ (X i) := fun k i ↦ rfl
     apply strong_law_ae_real (fun i ω ↦ ‖(X i - Y k i) ω‖)
     · exact (hint.sub ((φ k).comp (X 0) h'.measurable).integrable_of_isFiniteMeasure).norm
-    · simp_rw [I]
+    · unfold Function.onFun
+      simp_rw [I]
       intro i j hij
       exact (hindep hij).comp (G_meas k) (G_meas k)
     · intro i
