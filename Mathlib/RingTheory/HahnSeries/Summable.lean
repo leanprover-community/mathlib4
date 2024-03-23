@@ -431,8 +431,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
         by_cases hb : b ∈ Set.range f
         · simp only [Ne.def, Set.mem_setOf_eq, dif_pos hb] at h
           exact ⟨Classical.choose hb, h, Classical.choose_spec hb⟩
-        · contrapose! h
-          simp only [Ne.def, Set.mem_setOf_eq, dif_neg hb, Classical.not_not, zero_coeff])
+        · simp only [Ne.def, Set.mem_setOf_eq, dif_neg hb, zero_coeff, not_true_eq_false] at h)
 #align hahn_series.summable_family.emb_domain HahnSeries.SummableFamily.embDomain
 
 variable (s : SummableFamily Γ R α) (f : α ↪ β) {a : α} {b : β}

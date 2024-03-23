@@ -310,9 +310,9 @@ theorem le_card_support_of_mem_cycleType {n : ℕ} {σ : Perm α} (h : n ∈ cyc
 theorem cycleType_of_card_le_mem_cycleType_add_two {n : ℕ} {g : Perm α}
     (hn2 : Fintype.card α < n + 2) (hng : n ∈ g.cycleType) : g.cycleType = {n} := by
   obtain ⟨c, g', rfl, hd, hc, rfl⟩ := mem_cycleType_iff.1 hng
-  by_cases g'1 : g' = 1
-  · rw [hd.cycleType, hc.cycleType, coe_singleton, g'1, cycleType_one, add_zero]
-  contrapose! hn2
+  suffices g'1 : g' = 1 by
+    rw [hd.cycleType, hc.cycleType, coe_singleton, g'1, cycleType_one, add_zero]
+  contrapose! hn2 with g'1
   apply le_trans _ (c * g').support.card_le_univ
   rw [hd.card_support_mul]
   exact add_le_add_left (two_le_card_support_of_ne_one g'1) _
