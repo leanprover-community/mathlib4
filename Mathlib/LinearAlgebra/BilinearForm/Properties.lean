@@ -122,7 +122,7 @@ protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm :=
 #align bilin_form.is_symm.neg LinearMap.BilinForm.IsSymm.neg
 
 protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
-  {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := fun x y =>
+    {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := fun x y =>
   congr_arg (a • ·) (hB x y)
 #align bilin_form.is_symm.smul LinearMap.BilinForm.IsSymm.smul
 
