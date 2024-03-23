@@ -1656,7 +1656,7 @@ theorem prod_range_div' {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
 
 @[to_additive]
 theorem eq_prod_range_div {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
-    f n = f 0 * ∏ i in range n, f (i + 1) / f i := by rw [prod_range_div, mul_div_cancel'_right]
+    f n = f 0 * ∏ i in range n, f (i + 1) / f i := by rw [prod_range_div, mul_div_cancel]
 #align finset.eq_prod_range_div Finset.eq_prod_range_div
 #align finset.eq_sum_range_sub Finset.eq_sum_range_sub
 
