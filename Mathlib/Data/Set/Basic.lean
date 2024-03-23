@@ -614,10 +614,10 @@ theorem subset_eq_empty {s t : Set α} (h : t ⊆ s) (e : s = ∅) : t = ∅ :=
   subset_empty_iff.1 <| e ▸ h
 #align set.subset_eq_empty Set.subset_eq_empty
 
-theorem forall_empty_iff {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
+theorem forall_mem_empty {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
   iff_true_intro fun _ => False.elim
-#align set.ball_empty_iff Set.forall_empty_iff
-@[deprecated] alias Set.ball_empty_iff := Set.forall_empty_iff -- 2024-03-23
+#align set.ball_empty_iff Set.forall_mem_empty
+@[deprecated] alias ball_empty_iff := forall_mem_empty -- 2024-03-23
 
 instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
   ⟨fun x => x.2⟩
@@ -1211,13 +1211,13 @@ theorem exists_insert_iff {P : α → Prop} {a : α} {s : Set α} :
     (∃ x ∈ insert a s, P x) ↔ (P a ∨ ∃ x ∈ s, P x) := by
   simp [mem_insert_iff, or_and_right, exists_and_left, exists_or]
 #align set.bex_insert_iff Set.exists_insert_iff
-@[deprecated] alias Set.bex_insert_iff := Set.exists_insert_iff -- 2024-03-23
+@[deprecated] alias bex_insert_iff := exists_insert_iff -- 2024-03-23
 
 theorem forall_insert_iff {P : α → Prop} {a : α} {s : Set α} :
     (∀ x ∈ insert a s, P x) ↔ P a ∧ ∀ x ∈ s, P x :=
   ball_or_left.trans <| and_congr_left' forall_eq
 #align set.ball_insert_iff Set.forall_insert_iff
-@[deprecated] alias Set.ball_insert_iff := Set.forall_insert_iff -- 2024-03-23
+@[deprecated] alias ball_insert_iff := forall_insert_iff -- 2024-03-23
 
 /-! ### Lemmas about singletons -/
 

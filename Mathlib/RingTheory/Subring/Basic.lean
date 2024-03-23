@@ -546,7 +546,7 @@ theorem coe_map (f : R →+* S) (s : Subring R) : (s.map f : Set S) = f '' s :=
 
 @[simp]
 theorem mem_map {f : R →+* S} {s : Subring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
-  Set.mem_image_iff_exists.trans <| by simp
+  Set.mem_image.trans <| by simp
 #align subring.mem_map Subring.mem_map
 
 @[simp]
