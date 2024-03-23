@@ -83,6 +83,13 @@ theorem finsuppTensorFinsuppLid_single_tmul_single (a : ι) (b : κ) (r : R) (n 
       Finsupp.single (a, b) (r • n) := by
   simp [finsuppTensorFinsuppLid]
 
+@[simp]
+theorem finsuppTensorFinsuppLid_symm_single (i : ι × κ) (r : R) (n : N) :
+    (finsuppTensorFinsuppLid R N ι κ).symm (Finsupp.single i (r • n)) =
+      Finsupp.single i.1 r ⊗ₜ Finsupp.single i.2 n :=
+  Prod.casesOn i fun _ _ =>
+    (LinearEquiv.symm_apply_eq _).2 (finsuppTensorFinsuppLid_single_tmul_single ..).symm
+
 /-- A variant of `finsuppTensorFinsupp` where the second module is the ground ring. -/
 def finsuppTensorFinsuppRid : (ι →₀ M) ⊗[R] (κ →₀ R) ≃ₗ[R] ι × κ →₀ M :=
   finsuppTensorFinsupp R M R ι κ ≪≫ₗ Finsupp.lcongr (Equiv.refl _) (TensorProduct.rid R M)
@@ -97,6 +104,13 @@ theorem finsuppTensorFinsuppRid_single_tmul_single (a : ι) (b : κ) (m : M) (r 
     finsuppTensorFinsuppRid R M ι κ (Finsupp.single a m ⊗ₜ[R] Finsupp.single b r) =
       Finsupp.single (a, b) (r • m) := by
   simp [finsuppTensorFinsuppRid]
+
+@[simp]
+theorem finsuppTensorFinsuppRid_symm_single (i : ι × κ) (m : M) (r : R) :
+    (finsuppTensorFinsuppRid R M ι κ).symm (Finsupp.single i (r • m)) =
+      Finsupp.single i.1 m ⊗ₜ Finsupp.single i.2 r :=
+  Prod.casesOn i fun _ _ =>
+    (LinearEquiv.symm_apply_eq _).2 (finsuppTensorFinsuppRid_single_tmul_single ..).symm
 
 /-- A variant of `finsuppTensorFinsupp` where both modules are the ground ring. -/
 def finsuppTensorFinsupp' : (ι →₀ R) ⊗[R] (κ →₀ R) ≃ₗ[R] ι × κ →₀ R :=
@@ -115,5 +129,11 @@ theorem finsuppTensorFinsupp'_single_tmul_single (a : ι) (b : κ) (r₁ r₂ : 
       Finsupp.single (a, b) (r₁ * r₂) :=
   finsuppTensorFinsuppLid_single_tmul_single R R ι κ a b r₁ r₂
 #align finsupp_tensor_finsupp'_single_tmul_single finsuppTensorFinsupp'_single_tmul_single
+
+@[simp]
+theorem finsuppTensorFinsupp'_symm_single (i : ι × κ) (r₁ r₂ : R) :
+    (finsuppTensorFinsupp' R ι κ).symm (Finsupp.single i (r₁ * r₂)) =
+      Finsupp.single i.1 r₁ ⊗ₜ Finsupp.single i.2 r₂ :=
+  finsuppTensorFinsuppLid_symm_single R R ι κ i r₁ r₂
 
 end
