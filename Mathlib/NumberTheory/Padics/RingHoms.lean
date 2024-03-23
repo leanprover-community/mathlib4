@@ -369,7 +369,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
     congr
     simp only [hc]
   rw [show (x - (appr x n : ℤ_[p])).valuation = ((p : ℤ_[p]) ^ n * c).valuation by rw [hc]]
-  rw [valuation_p_pow_mul _ _ hc', add_sub_cancel', _root_.pow_succ', ← mul_sub]
+  rw [valuation_p_pow_mul _ _ hc', add_sub_cancel_left, _root_.pow_succ', ← mul_sub]
   apply mul_dvd_mul_left
   obtain hc0 | hc0 := eq_or_ne c.valuation.natAbs 0
   · simp only [hc0, mul_one, _root_.pow_zero]

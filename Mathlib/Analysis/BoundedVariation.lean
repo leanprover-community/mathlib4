@@ -759,7 +759,7 @@ protected theorem sub_self_monotoneOn {f : α → ℝ} {s : Set α} (hf : Locall
       apply eVariationOn.edist_le f
       exacts [⟨bs, le_rfl, bc⟩, ⟨cs, bc, le_rfl⟩]
     _ = variationOnFromTo f s a c - variationOnFromTo f s a b := by
-      rw [← variationOnFromTo.add hf as bs cs, add_sub_cancel']
+      rw [← variationOnFromTo.add hf as bs cs, add_sub_cancel_left]
 
 #align variation_on_from_to.sub_self_monotone_on variationOnFromTo.sub_self_monotoneOn
 

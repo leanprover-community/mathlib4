@@ -38,7 +38,7 @@ theorem cast_sub {m n} (h : m ≤ n) : ((n - m : ℕ) : R) = n - m :=
 @[simp, norm_cast]
 theorem cast_pred : ∀ {n}, 0 < n → ((n - 1 : ℕ) : R) = n - 1
   | 0, h => by cases h
-  | n + 1, _ => by rw [cast_succ, add_sub_cancel]; rfl
+  | n + 1, _ => by rw [cast_succ, add_sub_cancel_right]; rfl
 #align nat.cast_pred Nat.cast_pred
 
 end Nat

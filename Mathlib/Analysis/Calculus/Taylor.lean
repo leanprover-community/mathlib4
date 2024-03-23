@@ -192,7 +192,7 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
   specialize hk hf.of_succ ((hdiff y hy).mono_of_mem hs')
   convert hk.add (hasDerivWithinAt_taylor_coeff_within hs'_unique
     (nhdsWithin_mono _ h self_mem_nhdsWithin) hf') using 1
-  exact (add_sub_cancel'_right _ _).symm
+  exact (add_sub_cancel _ _).symm
 #align has_deriv_within_at_taylor_within_eval hasDerivWithinAt_taylorWithinEval
 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
@@ -247,7 +247,7 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
   use y, hy
   -- The rest is simplifications and trivial calculations
   simp only [taylorWithinEval_self] at h
-  rw [mul_comm, ← div_left_inj' (g'_ne y hy), mul_div_cancel _ (g'_ne y hy)] at h
+  rw [mul_comm, ← div_left_inj' (g'_ne y hy), mul_div_cancel_right₀ _ (g'_ne y hy)] at h
   rw [← h]
   field_simp [g'_ne y hy]
   ring

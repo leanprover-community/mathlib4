@@ -80,12 +80,12 @@ theorem HasSum.hasSum_compl_iff {s : Set β} (hf : HasSum (f ∘ (↑) : s → �
   refine' ⟨fun h ↦ hf.add_compl h, fun h ↦ _⟩
   rw [hasSum_subtype_iff_indicator] at hf ⊢
   rw [Set.indicator_compl]
-  simpa only [add_sub_cancel'] using h.sub hf
+  simpa only [add_sub_cancel_left] using h.sub hf
 #align has_sum.has_sum_compl_iff HasSum.hasSum_compl_iff
 
 theorem HasSum.hasSum_iff_compl {s : Set β} (hf : HasSum (f ∘ (↑) : s → α) a₁) :
     HasSum f a₂ ↔ HasSum (f ∘ (↑) : ↑sᶜ → α) (a₂ - a₁) :=
-  Iff.symm <| hf.hasSum_compl_iff.trans <| by rw [add_sub_cancel'_right]
+  Iff.symm <| hf.hasSum_compl_iff.trans <| by rw [add_sub_cancel]
 #align has_sum.has_sum_iff_compl HasSum.hasSum_iff_compl
 
 theorem Summable.summable_compl_iff {s : Set β} (hf : Summable (f ∘ (↑) : s → α)) :
@@ -148,7 +148,7 @@ remaining terms. -/
 theorem tsum_eq_add_tsum_ite [DecidableEq β] (hf : Summable f) (b : β) :
     ∑' n, f n = f b + ∑' n, ite (n = b) 0 (f n) := by
   rw [(hasSum_ite_sub_hasSum hf.hasSum b).tsum_eq]
-  exact (add_sub_cancel'_right _ _).symm
+  exact (add_sub_cancel _ _).symm
 #align tsum_eq_add_tsum_ite tsum_eq_add_tsum_ite
 
 end tsum
@@ -180,7 +180,7 @@ theorem cauchySeq_finset_iff_vanishing :
     use s₁ ∪ s₂
     intro t ht
     specialize h (s₁ ∪ s₂, s₁ ∪ s₂ ∪ t) ⟨le_sup_left, le_sup_of_le_left le_sup_right⟩
-    simpa only [Finset.sum_union ht.symm, add_sub_cancel'] using h
+    simpa only [Finset.sum_union ht.symm, add_sub_cancel_left] using h
   · rintro h e he
     rcases exists_nhds_half_neg he with ⟨d, hd, hde⟩
     rcases h d hd with ⟨s, h⟩

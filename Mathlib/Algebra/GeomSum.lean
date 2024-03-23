@@ -170,7 +170,7 @@ protected theorem Commute.geom_sum₂_mul [Ring α] {x y : α} (h : Commute x y)
     (∑ i in range n, x ^ i * y ^ (n - 1 - i)) * (x - y) = x ^ n - y ^ n := by
   have := (h.sub_left (Commute.refl y)).geom_sum₂_mul_add n
   rw [sub_add_cancel] at this
-  rw [← this, add_sub_cancel]
+  rw [← this, add_sub_cancel_right]
 #align commute.geom_sum₂_mul Commute.geom_sum₂_mul
 
 theorem Commute.mul_neg_geom_sum₂ [Ring α] {x y : α} (h : Commute x y) (n : ℕ) :
@@ -266,7 +266,7 @@ theorem geom_sum₂_comm {α : Type u} [CommSemiring α] (x y : α) (n : ℕ) :
 protected theorem Commute.geom_sum₂ [DivisionRing α] {x y : α} (h' : Commute x y) (h : x ≠ y)
     (n : ℕ) : ∑ i in range n, x ^ i * y ^ (n - 1 - i) = (x ^ n - y ^ n) / (x - y) := by
   have : x - y ≠ 0 := by simp_all [sub_eq_iff_eq_add]
-  rw [← h'.geom_sum₂_mul, mul_div_cancel _ this]
+  rw [← h'.geom_sum₂_mul, mul_div_cancel_right₀ _ this]
 #align commute.geom_sum₂ Commute.geom_sum₂
 
 theorem geom₂_sum [Field α] {x y : α} (h : x ≠ y) (n : ℕ) :
@@ -277,7 +277,7 @@ theorem geom₂_sum [Field α] {x y : α} (h : x ≠ y) (n : ℕ) :
 theorem geom_sum_eq [DivisionRing α] {x : α} (h : x ≠ 1) (n : ℕ) :
     ∑ i in range n, x ^ i = (x ^ n - 1) / (x - 1) := by
   have : x - 1 ≠ 0 := by simp_all [sub_eq_iff_eq_add]
-  rw [← geom_sum_mul, mul_div_cancel _ this]
+  rw [← geom_sum_mul, mul_div_cancel_right₀ _ this]
 #align geom_sum_eq geom_sum_eq
 
 protected theorem Commute.mul_geom_sum₂_Ico [Ring α] {x y : α} (h : Commute x y) {m n : ℕ}
@@ -354,7 +354,7 @@ protected theorem Commute.geom_sum₂_Ico [DivisionRing α] {x y : α} (h : Comm
     {m n : ℕ} (hmn : m ≤ n) :
     (∑ i in Finset.Ico m n, x ^ i * y ^ (n - 1 - i)) = (x ^ n - y ^ (n - m) * x ^ m) / (x - y) := by
   have : x - y ≠ 0 := by simp_all [sub_eq_iff_eq_add]
-  rw [← h.geom_sum₂_Ico_mul hmn, mul_div_cancel _ this]
+  rw [← h.geom_sum₂_Ico_mul hmn, mul_div_cancel_right₀ _ this]
 #align commute.geom_sum₂_Ico Commute.geom_sum₂_Ico
 
 theorem geom_sum₂_Ico [Field α] {x y : α} (hxy : x ≠ y) {m n : ℕ} (hmn : m ≤ n) :

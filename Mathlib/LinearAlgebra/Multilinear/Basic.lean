@@ -1333,7 +1333,7 @@ lemma map_add_sub_map_add_sub_linearDeriv [DecidableEq ι] [Fintype ι] (x h h' 
     f (x + h) - f (x + h') - f.linearDeriv x (h - h') =
     ∑ s in univ.powerset.filter (2 ≤ ·.card), (f (s.piecewise h x) - f (s.piecewise h' x)) := by
   simp_rw [map_add_eq_map_add_linearDeriv_add, add_assoc, add_sub_add_comm, sub_self, zero_add,
-    ← LinearMap.map_sub, add_sub_cancel', sum_sub_distrib]
+    ← LinearMap.map_sub, add_sub_cancel_left, sum_sub_distrib]
 
 end AddCommGroup
 

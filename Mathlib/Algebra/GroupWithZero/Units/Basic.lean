@@ -337,11 +337,12 @@ lemma eq_mul_of_inv_mul_eq₀ (hc : c ≠ 0) (h : b⁻¹ * a = c) : a = b * c :=
 lemma eq_mul_of_mul_inv_eq₀ (hb : b ≠ 0) (h : a * c⁻¹ = b) : a = b * c := by
   rwa [← mul_inv_eq_iff_eq_mul₀]; rintro rfl; simp [hb.symm] at h
 
-@[simp] lemma div_mul_cancel (a : G₀) (h : b ≠ 0) : a / b * b = a := h.isUnit.div_mul_cancel _
-#align div_mul_cancel div_mul_cancel
+@[simp] lemma div_mul_cancel₀ (a : G₀) (h : b ≠ 0) : a / b * b = a := h.isUnit.div_mul_cancel _
+#align div_mul_cancel div_mul_cancel₀
 
-@[simp] lemma mul_div_cancel (a : G₀) (h : b ≠ 0) : a * b / b = a := h.isUnit.mul_div_cancel _
-#align mul_div_cancel mul_div_cancel
+@[simp] lemma mul_div_cancel_right₀ (a : G₀) (h : b ≠ 0) : a * b / b = a :=
+  h.isUnit.mul_div_cancel_right _
+#align mul_div_cancel mul_div_cancel_right₀
 
 lemma mul_one_div_cancel (h : a ≠ 0) : a * (1 / a) = 1 := h.isUnit.mul_one_div_cancel
 #align mul_one_div_cancel mul_one_div_cancel
@@ -374,6 +375,10 @@ lemma eq_div_of_mul_eq (hc : c ≠ 0) : a * c = b → a = b / c := hc.isUnit.eq_
 lemma div_eq_one_iff_eq (hb : b ≠ 0) : a / b = 1 ↔ a = b := hb.isUnit.div_eq_one_iff_eq
 #align div_eq_one_iff_eq div_eq_one_iff_eq
 
+lemma div_mul_cancel_right₀ (hb : b ≠ 0) (a : G₀) : b / (a * b) = a⁻¹ :=
+  hb.isUnit.div_mul_cancel_right _
+
+@[deprecated div_mul_cancel_right₀] -- 2024-03-20
 lemma div_mul_left (hb : b ≠ 0) : b / (a * b) = 1 / a := hb.isUnit.div_mul_left
 #align div_mul_left div_mul_left
 
@@ -386,11 +391,11 @@ lemma mul_mul_div (a : G₀) (hb : b ≠ 0) : a = a * b * (1 / b) := (hb.isUnit.
 #align mul_mul_div mul_mul_div
 
 lemma div_div_div_cancel_right (a : G₀) (hc : c ≠ 0) : a / c / (b / c) = a / b := by
-  rw [div_div_eq_mul_div, div_mul_cancel _ hc]
+  rw [div_div_eq_mul_div, div_mul_cancel₀ _ hc]
 #align div_div_div_cancel_right div_div_div_cancel_right
 
 lemma div_mul_div_cancel (a : G₀) (hc : c ≠ 0) : a / c * (c / b) = a / b := by
-  rw [← mul_div_assoc, div_mul_cancel _ hc]
+  rw [← mul_div_assoc, div_mul_cancel₀ _ hc]
 #align div_mul_div_cancel div_mul_div_cancel
 
 lemma div_mul_cancel_of_imp (h : b = 0 → a = 0) : a / b * b = a := by
@@ -436,6 +441,10 @@ instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
   __ := GroupWithZero.toDivisionMonoid
 #align comm_group_with_zero.to_division_comm_monoid CommGroupWithZero.toDivisionCommMonoid
 
+lemma div_mul_cancel_left₀ (ha : a ≠ 0) (b : G₀) : a / (a * b) = b⁻¹ :=
+  ha.isUnit.div_mul_cancel_left _
+
+@[deprecated div_mul_cancel_left₀] -- 2024-03-22
 lemma div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b := ha.isUnit.div_mul_right _
 #align div_mul_right div_mul_right
 
@@ -443,16 +452,16 @@ lemma mul_div_cancel_left_of_imp (h : a = 0 → b = 0) : a * b / a = b := by
   rw [mul_comm, mul_div_cancel_of_imp h]
 #align mul_div_cancel_left_of_imp mul_div_cancel_left_of_imp
 
-lemma mul_div_cancel_left (b : G₀) (ha : a ≠ 0) : a * b / a = b := ha.isUnit.mul_div_cancel_left _
-#align mul_div_cancel_left mul_div_cancel_left
+lemma mul_div_cancel_left₀ (b : G₀) (ha : a ≠ 0) : a * b / a = b := ha.isUnit.mul_div_cancel_left _
+#align mul_div_cancel_left mul_div_cancel_left₀
 
 lemma mul_div_cancel_of_imp' (h : b = 0 → a = 0) : b * (a / b) = a := by
   rw [mul_comm, div_mul_cancel_of_imp h]
 #align mul_div_cancel_of_imp' mul_div_cancel_of_imp'
 
-lemma mul_div_cancel' (a : G₀) (hb : b ≠ 0) : b * (a / b) = a :=
-  hb.isUnit.mul_div_cancel' _
-#align mul_div_cancel' mul_div_cancel'
+lemma mul_div_cancel₀ (a : G₀) (hb : b ≠ 0) : b * (a / b) = a :=
+  hb.isUnit.mul_div_cancel _
+#align mul_div_cancel' mul_div_cancel₀
 
 lemma mul_div_mul_left (a b : G₀) (hc : c ≠ 0) : c * a / (c * b) = a / b :=
   hc.isUnit.mul_div_mul_left _ _
@@ -460,7 +469,7 @@ lemma mul_div_mul_left (a b : G₀) (hc : c ≠ 0) : c * a / (c * b) = a / b :=
 
 lemma mul_eq_mul_of_div_eq_div (a c : G₀) (hb : b ≠ 0) (hd : d ≠ 0)
     (h : a / b = c / d) : a * d = c * b := by
-  rw [← mul_one a, ← div_self hb, ← mul_comm_div, h, div_mul_eq_mul_div, div_mul_cancel _ hd]
+  rw [← mul_one a, ← div_self hb, ← mul_comm_div, h, div_mul_eq_mul_div, div_mul_cancel₀ _ hd]
 #align mul_eq_mul_of_div_eq_div mul_eq_mul_of_div_eq_div
 
 @[field_simps] lemma div_eq_div_iff (hb : b ≠ 0) (hd : d ≠ 0) : a / b = c / d ↔ a * d = c * b :=
@@ -469,8 +478,8 @@ lemma mul_eq_mul_of_div_eq_div (a c : G₀) (hb : b ≠ 0) (hd : d ≠ 0)
 
 /-- The `CommGroupWithZero` version of `div_eq_div_iff_div_eq_div`. -/
 lemma div_eq_div_iff_div_eq_div' (hb : b ≠ 0) (hc : c ≠ 0) : a / b = c / d ↔ a / c = b / d := by
-  conv_lhs => rw [← mul_left_inj' hb, div_mul_cancel _ hb]
-  conv_rhs => rw [← mul_left_inj' hc, div_mul_cancel _ hc]
+  conv_lhs => rw [← mul_left_inj' hb, div_mul_cancel₀ _ hb]
+  conv_rhs => rw [← mul_left_inj' hc, div_mul_cancel₀ _ hc]
   rw [mul_comm _ c, div_mul_eq_mul_div, mul_div_assoc]
 
 lemma div_div_cancel' (ha : a ≠ 0) : a / (a / b) = b := ha.isUnit.div_div_cancel
@@ -480,7 +489,7 @@ lemma div_div_cancel_left' (ha : a ≠ 0) : a / b / a = b⁻¹ := ha.isUnit.div_
 #align div_div_cancel_left' div_div_cancel_left'
 
 lemma div_helper (b : G₀) (h : a ≠ 0) : 1 / (a * b) * a = 1 / b := by
-  rw [div_mul_eq_mul_div, one_mul, div_mul_right _ h]
+  rw [div_mul_eq_mul_div, one_mul, div_mul_cancel_left₀ h, one_div]
 #align div_helper div_helper
 
 lemma div_div_div_cancel_left' (a b : G₀) (hc : c ≠ 0) : c / a / (c / b) = b / a := by
@@ -518,3 +527,10 @@ end NoncomputableDefs
 
 -- Guard against import creep
 assert_not_exists Multiplicative
+
+-- 2024-03-20
+-- The names `div_mul_cancel`, `mul_div_cancel` and `mul_div_cancel_left` have been reused
+-- @[deprecated] alias div_mul_cancel := div_mul_cancel₀
+-- @[deprecated] alias mul_div_cancel := mul_div_cancel_right₀
+-- @[deprecated] alias mul_div_cancel_left := mul_div_cancel_left₀
+@[deprecated] alias mul_div_cancel' := mul_div_cancel₀

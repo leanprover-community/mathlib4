@@ -117,7 +117,7 @@ theorem exists_unique_nilpotent_sub_and_aeval_eq_zero
     have ⟨u, hu⟩ := binomExpansion (P.map (algebraMap R S)) r₁ (r₂ - r₁)
     suffices IsUnit (aeval r₁ (derivative P) + u * (r₂ - r₁)) by
       rwa [derivative_map, eval_map_algebraMap, eval_map_algebraMap, eval_map_algebraMap,
-        add_sub_cancel'_right, hr₂', hr₁', zero_add, pow_two, ← mul_assoc, ← add_mul, eq_comm,
+        add_sub_cancel, hr₂', hr₁', zero_add, pow_two, ← mul_assoc, ← add_mul, eq_comm,
         this.mul_right_eq_zero, sub_eq_zero, eq_comm] at hu
     have : IsUnit (aeval r₁ (derivative P)) :=
       isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub h' hr₁

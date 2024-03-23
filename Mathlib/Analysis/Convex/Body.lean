@@ -223,7 +223,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     obtain ⟨n, hn⟩ := hu (ε / C) (div_pos hε hC_pos)
     obtain ⟨y, hyK, rfl⟩ := Set.mem_smul_set.mp (Set.mem_iInter.mp h n)
     refine ⟨y, hyK, ?_⟩
-    rw [show (1 + u n : ℝ) • y - y = (u n : ℝ) • y by rw [add_smul, one_smul, add_sub_cancel'],
+    rw [show (1 + u n : ℝ) • y - y = (u n : ℝ) • y by rw [add_smul, one_smul, add_sub_cancel_left],
       norm_smul, Real.norm_eq_abs]
     specialize hn n le_rfl
     rw [_root_.lt_div_iff' hC_pos, mul_comm, NNReal.coe_zero, sub_zero, Real.norm_eq_abs] at hn

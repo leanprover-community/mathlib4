@@ -171,7 +171,7 @@ theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+
   set_option tactic.skipAssignedInstances false in
   nontriviality S using Subsingleton.eq_zero
   convert @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
-  rw [← mul_div_assoc, mul_comm, mul_div_cancel]
+  rw [← mul_div_assoc, mul_comm, mul_div_cancel_right₀]
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
 #align polynomial.scale_roots_eval₂_eq_zero_of_eval₂_div_eq_zero Polynomial.scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero
 

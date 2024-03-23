@@ -76,7 +76,7 @@ theorem fourier_integral_half_period_translate {w : V} (hw : w ≠ 0) :
     (∫ v : V, 𝐞[-⟪v, w⟫] • f (v + i w)) = -∫ v : V, 𝐞[-⟪v, w⟫] • f v := by
   have hiw : ⟪i w, w⟫ = 1 / 2 := by
     rw [inner_smul_left, inner_self_eq_norm_sq_to_K, IsROrC.ofReal_real_eq_id, id.def,
-      IsROrC.conj_to_real, ← div_div, div_mul_cancel]
+      IsROrC.conj_to_real, ← div_div, div_mul_cancel₀]
     rwa [Ne.def, sq_eq_zero_iff, norm_eq_zero]
   have :
     (fun v : V => 𝐞[-⟪v, w⟫] • f (v + i w)) =
@@ -149,7 +149,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     exact add_pos one_half_pos (one_div_pos.mpr <| mul_pos two_pos hδ1)
   have hw'_nm : ‖i w‖ = 1 / (2 * ‖w‖) := by
     rw [norm_smul, norm_div, Real.norm_of_nonneg (mul_nonneg two_pos.le <| sq_nonneg _), norm_one,
-      sq, ← div_div, ← div_div, ← div_div, div_mul_cancel _ (norm_eq_zero.not.mpr hw_ne)]
+      sq, ← div_div, ← div_div, ← div_div, div_mul_cancel₀ _ (norm_eq_zero.not.mpr hw_ne)]
   --* Rewrite integral in terms of `f v - f (v + w')`.
   have : ‖(1 / 2 : ℂ)‖ = 2⁻¹ := by norm_num
   rw [fourier_integral_eq_half_sub_half_period_translate hw_ne
@@ -178,7 +178,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     simp_rw [norm_norm]
     simp_rw [dist_eq_norm] at hδ2
     refine' fun x _ => (hδ2 _).le
-    rw [sub_add_cancel', norm_neg, hw'_nm, ← div_div, div_lt_iff (norm_pos_iff.mpr hw_ne), ←
+    rw [sub_add_cancel_left, norm_neg, hw'_nm, ← div_div, div_lt_iff (norm_pos_iff.mpr hw_ne), ←
       div_lt_iff' hδ1, div_div]
     exact (lt_add_of_pos_left _ one_half_pos).trans_le hw_bd
   have bdA2 := norm_set_integral_le_of_norm_le_const (hB_vol.trans_lt ENNReal.coe_lt_top) bdA ?_

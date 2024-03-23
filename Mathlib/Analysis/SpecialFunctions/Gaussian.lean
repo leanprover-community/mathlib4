@@ -106,7 +106,7 @@ theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤
         rw [neg_mul, one_mul]
   · simp_rw [← hp, Real.rpow_one]
     convert Real.GammaIntegral_convergent (by linarith : 0 < s + 1) using 2
-    rw [add_sub_cancel, mul_comm]
+    rw [add_sub_cancel_right, mul_comm]
 
 theorem integrableOn_rpow_mul_exp_neg_mul_rpow {p s b : ℝ} (hs : -1 < s) (hp : 1 ≤ p) (hb : 0 < b) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (- b * x ^ p)) (Ioi 0) := by
@@ -383,7 +383,7 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = sqrt π := by
     rw [smul_eq_mul, this]
     field_simp [(ne_of_lt (show 0 < x from hx)).symm]
     norm_num; ring
-  · rw [div_one, ← mul_div_assoc, mul_comm, mul_div_cancel _ (two_ne_zero' ℝ)]
+  · rw [div_one, ← mul_div_assoc, mul_comm, mul_div_cancel_right₀ _ (two_ne_zero' ℝ)]
 set_option linter.uppercaseLean3 false in
 #align real.Gamma_one_half_eq Real.Gamma_one_half_eq
 

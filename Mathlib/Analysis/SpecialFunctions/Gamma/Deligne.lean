@@ -153,7 +153,7 @@ lemma Gammaℝ_div_Gammaℝ_one_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -(2 * n
   calc Gammaℝ s / Gammaℝ (1 - s)
   _ = (Gammaℝ s * Gammaℝ (s + 1)) / (Gammaℝ (1 - s) * Gammaℝ (1 + s)) := by
     rw [add_comm 1 s, mul_comm (Gammaℝ (1 - s)) (Gammaℝ (s + 1)), ← div_div,
-      mul_div_cancel _ this]
+      mul_div_cancel_right₀ _ this]
   _ = (2 * (2 * π) ^ (-s) * Gamma s) / ((cos (π * s / 2))⁻¹) := by
     rw [Gammaℝ_one_sub_mul_Gammaℝ_one_add, Gammaℝ_mul_Gammaℝ_add_one, Gammaℂ_def]
   _ = _ := by rw [Gammaℂ_def, div_eq_mul_inv, inv_inv]
@@ -181,7 +181,7 @@ lemma inv_Gammaℝ_two_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
   · rw [h, (by ring : 2 - 1 = (1 : ℂ)), Gammaℝ_one, Gammaℝ,
     neg_div, (by norm_num : (1 + 1) / 2 = (1 : ℂ)), Complex.Gamma_one, Gammaℂ_one,
     mul_one, Complex.sin_pi_div_two, mul_one, cpow_neg_one, mul_one, inv_inv,
-    div_mul_cancel _ (ofReal_ne_zero.mpr pi_ne_zero), inv_one]
+    div_mul_cancel₀ _ (ofReal_ne_zero.mpr pi_ne_zero), inv_one]
   rw [← Ne.def, ← sub_ne_zero] at h
   have h' (n : ℕ) : s - 1 ≠ -n := by
     cases' n with m

@@ -470,7 +470,7 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       _ = ‖a.c j‖ - ‖a.c i‖ + ‖d - a.c i‖ := by
         nth_rw 1 [← one_smul ℝ (a.c j)]
         rw [add_left_inj, hd, ← sub_smul, norm_smul, Real.norm_eq_abs, abs_of_nonneg, sub_mul,
-          one_mul, div_mul_cancel _ (zero_le_two.trans_lt hj).ne']
+          one_mul, div_mul_cancel₀ _ (zero_le_two.trans_lt hj).ne']
         rwa [sub_nonneg, div_le_iff (zero_lt_two.trans hj), one_mul]
   have J : a.r j - ‖a.c j - a.c i‖ ≤ s / 2 * δ :=
     calc

@@ -175,7 +175,7 @@ private theorem Gamma_integrand_interval_integrable (s : ℂ) {X : ℝ} (hs : 0 
 private theorem Gamma_integrand_deriv_integrable_A {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) :
     IntervalIntegrable (fun x => -((-x).exp * x ^ s) : ℝ → ℂ) volume 0 X := by
   convert (Gamma_integrand_interval_integrable (s + 1) _ hX).neg
-  · simp only [ofReal_exp, ofReal_neg, add_sub_cancel]; rfl
+  · simp only [ofReal_exp, ofReal_neg, add_sub_cancel_right]; rfl
   · simp only [add_re, one_re]; linarith
 
 private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y : ℝ} (hY : 0 ≤ Y) :
@@ -203,7 +203,7 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
 /-- The recurrence relation for the indefinite version of the `Γ` function. -/
 theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) :
     partialGamma (s + 1) X = s * partialGamma s X - (-X).exp * X ^ s := by
-  rw [partialGamma, partialGamma, add_sub_cancel]
+  rw [partialGamma, partialGamma, add_sub_cancel_right]
   have F_der_I : ∀ x : ℝ, x ∈ Ioo 0 X → HasDerivAt (fun x => (-x).exp * x ^ s : ℝ → ℂ)
       (-((-x).exp * x ^ s) + (-x).exp * (s * x ^ (s - 1))) x := by
     intro x hx
@@ -276,7 +276,7 @@ theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
   induction' n with n hn generalizing s
   · simp only [Nat.zero_eq, CharP.cast_eq_zero, Left.neg_neg_iff] at h1
     dsimp only [GammaAux]; rw [GammaIntegral_add_one h1]
-    rw [mul_comm, mul_div_cancel]; contrapose! h1; rw [h1]
+    rw [mul_comm, mul_div_cancel_right₀]; contrapose! h1; rw [h1]
     simp
   · dsimp only [GammaAux]
     have hh1 : -(s + 1).re < n := by
@@ -290,7 +290,7 @@ theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
   cases' n with n n
   · simp only [Nat.zero_eq, CharP.cast_eq_zero, Left.neg_neg_iff] at h1
     dsimp only [GammaAux]
-    rw [GammaIntegral_add_one h1, mul_div_cancel_left]
+    rw [GammaIntegral_add_one h1, mul_div_cancel_left₀]
     rintro rfl
     rw [zero_re] at h1
     exact h1.false
@@ -395,7 +395,7 @@ lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr 
     ∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-(r * t)) = (1 / r) ^ a * Gamma a := by
   have aux : (1 / r : ℂ) ^ a = 1 / r * (1 / r) ^ (a - 1) := by
     nth_rewrite 2 [← cpow_one (1 / r : ℂ)]
-    rw [← cpow_add _ _ (one_div_ne_zero <| ofReal_ne_zero.mpr hr.ne'), add_sub_cancel'_right]
+    rw [← cpow_add _ _ (one_div_ne_zero <| ofReal_ne_zero.mpr hr.ne'), add_sub_cancel]
   calc
     _ = ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a - 1) * (r * t) ^ (a - 1) * exp (-(r * t)) := by
       refine MeasureTheory.set_integral_congr measurableSet_Ioi (fun x hx ↦ ?_)

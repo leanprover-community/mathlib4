@@ -36,13 +36,11 @@ theorem cast_neg_natCast {R} [DivisionRing R] (n : ℕ) : ((-n : ℤ) : R) = -n 
 #align int.cast_neg_nat_cast Int.cast_neg_natCast
 
 @[simp]
-theorem cast_div [DivisionRing α] {m n : ℤ} (n_dvd : n ∣ m) (n_nonzero : (n : α) ≠ 0) :
+theorem cast_div [DivisionRing α] {m n : ℤ} (n_dvd : n ∣ m) (hn : (n : α) ≠ 0) :
     ((m / n : ℤ) : α) = m / n := by
   rcases n_dvd with ⟨k, rfl⟩
-  have : n ≠ 0 := by
-    rintro rfl
-    simp at n_nonzero
-  rw [Int.mul_ediv_cancel_left _ this, mul_comm n k, Int.cast_mul, mul_div_cancel _ n_nonzero]
+  have : n ≠ 0 := by rintro rfl; simp at hn
+  rw [Int.mul_ediv_cancel_left _ this, mul_comm n, Int.cast_mul, mul_div_cancel_right₀ _ hn]
 #align int.cast_div Int.cast_div
 
 end Int

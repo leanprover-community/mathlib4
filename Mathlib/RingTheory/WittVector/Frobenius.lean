@@ -166,7 +166,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   clear IH
   rw [add_comm (X i ^ p), add_pow, sum_range_succ', pow_zero, tsub_zero, Nat.choose_zero_right,
     one_mul, Nat.cast_one, mul_one, mul_add, add_mul, Nat.succ_sub (le_of_lt hi),
-    Nat.succ_eq_add_one (n - i), pow_succ, pow_mul, add_sub_cancel, mul_sum, sum_mul]
+    Nat.succ_eq_add_one (n - i), pow_succ, pow_mul, add_sub_cancel_right, mul_sum, sum_mul]
   apply sum_congr rfl
   intro j hj
   rw [mem_range] at hj

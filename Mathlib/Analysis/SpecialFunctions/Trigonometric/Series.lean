@@ -43,7 +43,7 @@ theorem Complex.hasSum_cos' (z : ℂ) :
   rw [Fin.sum_univ_two]
   simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ', pow_mul, mul_pow, neg_sq, ← two_mul,
     neg_mul, mul_neg, neg_div, add_right_neg, zero_div, add_zero,
-    mul_div_cancel_left _ (two_ne_zero : (2 : ℂ) ≠ 0)]
+    mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0)]
 #align complex.has_sum_cos' Complex.hasSum_cos'
 
 theorem Complex.hasSum_sin' (z : ℂ) :
@@ -61,7 +61,7 @@ theorem Complex.hasSum_sin' (z : ℂ) :
   rw [Fin.sum_univ_two]
   simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ', pow_mul, mul_pow, neg_sq, sub_self,
     zero_mul, zero_div, zero_add, neg_mul, mul_neg, neg_div, ← neg_add', ← two_mul,
-    neg_mul, neg_div, mul_assoc, mul_div_cancel_left _ (two_ne_zero : (2 : ℂ) ≠ 0), Complex.div_I]
+    neg_mul, neg_div, mul_assoc, mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0), Complex.div_I]
 #align complex.has_sum_sin' Complex.hasSum_sin'
 
 /-- The power series expansion of `Complex.cos`. -/

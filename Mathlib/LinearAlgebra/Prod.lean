@@ -878,7 +878,7 @@ theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f �
   have : y - x ∈ ker f ⊔ ker g := by simp only [h, mem_top]
   rcases mem_sup.1 this with ⟨x', hx', y', hy', H⟩
   refine' ⟨x' + x, _, _⟩
-  · rwa [add_sub_cancel]
+  · rwa [add_sub_cancel_right]
   · simp [← eq_sub_iff_add_eq.1 H, map_add, add_left_inj, self_eq_add_right, mem_ker.mp hy']
 #align linear_map.range_prod_eq LinearMap.range_prod_eq
 

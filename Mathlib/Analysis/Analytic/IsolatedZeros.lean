@@ -165,7 +165,7 @@ lemma unique_eventuallyEq_zpow_smul_nonzero {m n : ℤ}
     apply Filter.Eventually.frequently
     rw [eventually_nhdsWithin_iff] at hg_eq hj_eq ⊢
     filter_upwards [hg_eq, hj_eq] with z hfz hfz' hz
-    rw [← add_sub_cancel' n m, add_sub_assoc, zpow_add₀ <| sub_ne_zero.mpr hz, mul_smul,
+    rw [← add_sub_cancel_left n m, add_sub_assoc, zpow_add₀ <| sub_ne_zero.mpr hz, mul_smul,
       hfz' hz, smul_right_inj <| zpow_ne_zero _ <| sub_ne_zero.mpr hz] at hfz
     exact hfz hz
   rw [frequently_eq_iff_eventually_eq hj_an] at this

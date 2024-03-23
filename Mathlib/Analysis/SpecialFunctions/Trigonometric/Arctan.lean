@@ -162,7 +162,7 @@ theorem arctan_eq_arcsin (x : ℝ) : arctan x = arcsin (x / sqrt (1 + x ^ 2)) :=
 theorem arcsin_eq_arctan {x : ℝ} (h : x ∈ Ioo (-(1 : ℝ)) 1) :
     arcsin x = arctan (x / sqrt (1 - x ^ 2)) := by
   rw_mod_cast [arctan_eq_arcsin, div_pow, sq_sqrt, one_add_div, div_div, ← sqrt_mul,
-    mul_div_cancel', sub_add_cancel, sqrt_one, div_one] <;> simp at h <;> nlinarith [h.1, h.2]
+    mul_div_cancel₀, sub_add_cancel, sqrt_one, div_one] <;> simp at h <;> nlinarith [h.1, h.2]
 #align real.arcsin_eq_arctan Real.arcsin_eq_arctan
 
 @[simp]
@@ -201,7 +201,8 @@ theorem arctan_neg (x : ℝ) : arctan (-x) = -arctan x := by simp [arctan_eq_arc
 theorem arctan_eq_arccos {x : ℝ} (h : 0 ≤ x) : arctan x = arccos (sqrt (1 + x ^ 2))⁻¹ := by
   rw [arctan_eq_arcsin, arccos_eq_arcsin]; swap; · exact inv_nonneg.2 (sqrt_nonneg _)
   congr 1
-  rw_mod_cast [← sqrt_inv, sq_sqrt, ← one_div, one_sub_div, add_sub_cancel', sqrt_div, sqrt_sq h]
+  rw_mod_cast [← sqrt_inv, sq_sqrt, ← one_div, one_sub_div, add_sub_cancel_left, sqrt_div,
+    sqrt_sq h]
   all_goals positivity
 #align real.arctan_eq_arccos Real.arctan_eq_arccos
 

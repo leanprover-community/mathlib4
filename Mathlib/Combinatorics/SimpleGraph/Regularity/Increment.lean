@@ -143,7 +143,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
   calc
     _ = (∑ x in P.parts.offDiag, (G.edgeDensity x.1 x.2 : ℝ) ^ 2 +
           P.parts.card ^ 2 * (ε ^ 5 / 4) : ℝ) / P.parts.card ^ 2 := by
-        rw [coe_energy, add_div, mul_div_cancel_left]; positivity
+        rw [coe_energy, add_div, mul_div_cancel_left₀]; positivity
     _ ≤ (∑ x in P.parts.offDiag.attach, (∑ i in distinctPairs G ε hP x,
           G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ P.parts.card) / P.parts.card ^ 2 := ?_
     _ = (∑ x in P.parts.offDiag.attach, ∑ i in distinctPairs G ε hP x,

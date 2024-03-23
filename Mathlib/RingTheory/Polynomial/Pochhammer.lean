@@ -344,7 +344,7 @@ theorem descPochhammer_eval_eq_ascPochhammer (r : R) (n : ℕ) :
   induction n with
   | zero => rw [descPochhammer_zero, eval_one, ascPochhammer_zero, eval_one]
   | succ n ih =>
-    rw [Nat.cast_succ, sub_add, add_sub_cancel, descPochhammer_succ_eval, ih,
+    rw [Nat.cast_succ, sub_add, add_sub_cancel_right, descPochhammer_succ_eval, ih,
       ascPochhammer_succ_left, X_mul, eval_mul_X, show (X + 1 : R[X]) =
       (X + 1 : ℕ[X]).map (algebraMap ℕ R) by simp only [Polynomial.map_add, map_X,
       Polynomial.map_one], ascPochhammer_eval_comp, eval₂_add, eval₂_X, eval₂_one]

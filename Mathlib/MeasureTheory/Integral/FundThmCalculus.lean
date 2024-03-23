@@ -1361,7 +1361,7 @@ theorem integral_mul_deriv_eq_deriv_mul {u v u' v' : ℝ → A}
     (hu' : IntervalIntegrable u' volume a b) (hv' : IntervalIntegrable v' volume a b) :
     ∫ x in a..b, u x * v' x = u b * v b - u a * v a - ∫ x in a..b, u' x * v x := by
   rw [← integral_deriv_mul_eq_sub hu hv hu' hv', ← integral_sub]
-  · exact integral_congr fun x _ => by simp only [add_sub_cancel']
+  · exact integral_congr fun x _ => by simp only [add_sub_cancel_left]
   · exact
       (hu'.mul_continuousOn (HasDerivAt.continuousOn hv)).add
         (hv'.continuousOn_mul (HasDerivAt.continuousOn hu))

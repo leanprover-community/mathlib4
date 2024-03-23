@@ -1590,7 +1590,7 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
     _ ≤ c'.toReal * (ε / 2 / c'.toReal) :=
       (mul_le_mul le_rfl hfg.le toReal_nonneg toReal_nonneg)
     _ = ε / 2 := by
-      refine' mul_div_cancel' (ε / 2) _; rw [Ne.def, toReal_eq_zero_iff]; simp [hc', hc'0]
+      refine' mul_div_cancel₀ (ε / 2) _; rw [Ne.def, toReal_eq_zero_iff]; simp [hc', hc'0]
     _ < ε := half_lt_self hε_pos
 #align measure_theory.continuous_L1_to_L1 MeasureTheory.continuous_L1_toL1
 

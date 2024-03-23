@@ -194,10 +194,10 @@ theorem norm_sub_le_of_mem_A {c : 𝕜} (hc : 1 < ‖c‖) {r ε : ℝ} (hε : 0
       apply add_le_add
       · apply le_of_mem_A h₂
         · simp only [le_of_lt (half_pos hr), mem_closedBall, dist_self]
-        · simp only [dist_eq_norm, add_sub_cancel', mem_closedBall, ylt.le]
+        · simp only [dist_eq_norm, add_sub_cancel_left, mem_closedBall, ylt.le]
       · apply le_of_mem_A h₁
         · simp only [le_of_lt (half_pos hr), mem_closedBall, dist_self]
-        · simp only [dist_eq_norm, add_sub_cancel', mem_closedBall, ylt.le]
+        · simp only [dist_eq_norm, add_sub_cancel_left, mem_closedBall, ylt.le]
     _ = 2 * ε * r := by ring
     _ ≤ 2 * ε * (2 * ‖c‖ * ‖y‖) := by gcongr
     _ = 4 * ‖c‖ * ε * ‖y‖ := by ring
@@ -336,12 +336,12 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       apply le_of_mem_A (hn e (n e) m le_rfl m_ge).2.2
       · simp only [mem_closedBall, dist_self]
         positivity
-      · simpa only [dist_eq_norm, add_sub_cancel', mem_closedBall, pow_succ', mul_one_div] using
+      · simpa only [dist_eq_norm, add_sub_cancel_left, mem_closedBall, pow_succ', mul_one_div] using
           h'k
     have J2 : ‖f (x + y) - f x - L e (n e) m y‖ ≤ 4 * (1 / 2) ^ e * ‖y‖ :=
       calc
         ‖f (x + y) - f x - L e (n e) m y‖ ≤ (1 / 2) ^ e * (1 / 2) ^ m := by
-          simpa only [add_sub_cancel'] using J1
+          simpa only [add_sub_cancel_left] using J1
         _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by field_simp; ring
         _ ≤ 4 * (1 / 2) ^ e * ‖y‖ := by gcongr
     -- use the previous estimates to see that `f (x + y) - f x - f' y` is small.
