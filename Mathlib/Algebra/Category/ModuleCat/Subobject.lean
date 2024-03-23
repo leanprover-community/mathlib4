@@ -102,7 +102,8 @@ are equal if they differ by an element of the image.
 The application is for homology:
 two elements in homology are equal if they differ by a boundary.
 -/
--- Porting note: TODO compiler complains that this is marked with `@[ext]`. Should this be changed?
+-- Porting note (#11215): TODO compiler complains that this is marked with `@[ext]`.
+-- Should this be changed?
 -- @[ext] this is no longer an ext lemma under the current interpretation see eg
 -- the conversation beginning at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/

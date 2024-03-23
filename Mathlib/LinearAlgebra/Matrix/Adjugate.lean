@@ -47,7 +47,6 @@ namespace Matrix
 universe u v w
 
 variable {m : Type u} {n : Type v} {α : Type w}
-
 variable [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m] [CommRing α]
 
 open Matrix BigOperators Polynomial Equiv Equiv.Perm Finset
@@ -448,7 +447,7 @@ theorem det_eq_sum_mul_adjugate_row (A : Matrix n n α) (i : n) :
   obtain ⟨e⟩ := Fintype.truncEquivFinOfCardEq hn'
   let A' := reindex e e A
   suffices det A' = ∑ j : Fin n'.succ, A' (e i) j * adjugate A' j (e i) by
-    simp_rw [det_reindex_self, adjugate_reindex, reindex_apply, submatrix_apply, ← e.sum_comp,
+    simp_rw [A', det_reindex_self, adjugate_reindex, reindex_apply, submatrix_apply, ← e.sum_comp,
       Equiv.symm_apply_apply] at this
     exact this
   rw [det_succ_row A' (e i)]
@@ -511,7 +510,7 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
   have hu : ∀ M : Matrix n n α, IsRegular (g M).det := by
     intro M
     refine' Polynomial.Monic.isRegular _
-    simp only [g, Polynomial.Monic.def, ← Polynomial.leadingCoeff_det_X_one_add_C M, add_comm]
+    simp only [g, Polynomial.Monic.def', ← Polynomial.leadingCoeff_det_X_one_add_C M, add_comm]
   rw [← f'_adj, ← f'_adj, ← f'_adj, ← f'.map_mul, ←
     adjugate_mul_distrib_aux _ _ (hu A).left (hu B).left, RingHom.map_adjugate,
     RingHom.map_adjugate, f'_inv, f'_g_mul]

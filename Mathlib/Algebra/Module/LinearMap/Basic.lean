@@ -226,7 +226,7 @@ def toDistribMulActionHom (f : M →ₗ[R] M₂) : DistribMulActionHom R M M₂ 
 @[simp]
 theorem coe_toAddHom (f : M →ₛₗ[σ] M₃) : ⇑f.toAddHom = f := rfl
 
--- porting note: no longer a `simp`
+-- Porting note: no longer a `simp`
 theorem toFun_eq_coe {f : M →ₛₗ[σ] M₃} : f.toFun = (f : M → M₃) := rfl
 #align linear_map.to_fun_eq_coe LinearMap.toFun_eq_coe
 
@@ -441,7 +441,7 @@ See also `LinearMap.map_smul_of_tower`. -/
   map_smul' := fₗ.map_smul_of_tower
 #align linear_map.restrict_scalars LinearMap.restrictScalars
 
--- porting note: generalized from `Algebra` to `CompatibleSMul`
+-- Porting note: generalized from `Algebra` to `CompatibleSMul`
 instance coeIsScalarTower : CoeHTCT (M →ₗ[S] M₂) (M →ₗ[R] M₂) :=
   ⟨restrictScalars R⟩
 #align linear_map.coe_is_scalar_tower LinearMap.coeIsScalarTower

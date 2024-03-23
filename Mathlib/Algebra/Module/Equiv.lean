@@ -46,7 +46,7 @@ variable {N₁ : Type*} {N₂ : Type*} {N₃ : Type*} {N₄ : Type*} {ι : Type*
 section
 
 /-- A linear equivalence is an invertible linear map. -/
---Porting note: TODO @[nolint has_nonempty_instance]
+-- Porting note (#11215): TODO @[nolint has_nonempty_instance]
 structure LinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
   {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
   [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
@@ -115,9 +115,7 @@ end
 namespace SemilinearEquivClass
 
 variable (F : Type*) [Semiring R] [Semiring S]
-
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
-
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
@@ -131,15 +129,12 @@ namespace LinearEquiv
 section AddCommMonoid
 
 variable {M₄ : Type*}
-
 variable [Semiring R] [Semiring S]
 
 section
 
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
-
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
-
 variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
 instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
@@ -186,8 +181,8 @@ instance : FunLike (M ≃ₛₗ[σ] M₂) M M₂ where
   coe_injective' := DFunLike.coe_injective
 
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
-  map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
-  map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
+  map_add := (·.map_add') --map_add' Porting note (#11215): TODO why did I need to change this?
+  map_smulₛₗ := (·.map_smul') --map_smul' Porting note (#11215): TODO why did I need to change this?
 
 -- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
 @[simp]
@@ -204,17 +199,11 @@ end
 section
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
-
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
-
 variable [AddCommMonoid M₃] [AddCommMonoid M₄]
-
 variable [AddCommMonoid N₁] [AddCommMonoid N₂]
-
 variable {module_M : Module R M} {module_S_M₂ : Module S M₂} {σ : R →+* S} {σ' : S →+* R}
-
 variable {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ}
-
 variable (e e' : M ≃ₛₗ[σ] M₂)
 
 @[simp, norm_cast]
@@ -232,7 +221,7 @@ theorem coe_toLinearMap : ⇑e.toLinearMap = e :=
   rfl
 #align linear_equiv.coe_to_linear_map LinearEquiv.coe_toLinearMap
 
--- porting note: no longer a `simp`
+-- Porting note: no longer a `simp`
 theorem toFun_eq_coe : e.toFun = e := rfl
 #align linear_equiv.to_fun_eq_coe LinearEquiv.toFun_eq_coe
 
@@ -316,23 +305,14 @@ theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm :=
 #align linear_equiv.coe_to_equiv_symm LinearEquiv.coe_toEquiv_symm
 
 variable {module_M₁ : Module R₁ M₁} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
-
 variable {module_N₁ : Module R₁ N₁} {module_N₂ : Module R₁ N₂}
-
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃}
-
 variable {σ₂₁ : R₂ →+* R₁} {σ₃₂ : R₃ →+* R₂} {σ₃₁ : R₃ →+* R₁}
-
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-
 variable [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
-
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₃ : RingHomInvPair σ₂₃ σ₃₂}
-
 variable [RingHomInvPair σ₁₃ σ₃₁] {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
-
 variable {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomInvPair σ₃₁ σ₁₃]
-
 variable (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃)
 
 -- Porting note: Lean 4 aggressively removes unused variables declared using `variables`, so
@@ -593,7 +573,6 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
 #align ring_equiv.to_semilinear_equiv_symm_apply RingEquiv.toSemilinearEquiv_symm_apply
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
-
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 
 /-- An involutive linear map is a linear equivalence. -/
@@ -773,7 +752,6 @@ end Module
 namespace DistribMulAction
 
 variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable [Group S] [DistribMulAction S M] [SMulCommClass S R M]
 
 /-- Each element of the group defines a linear equivalence.
@@ -804,9 +782,7 @@ namespace AddEquiv
 section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-
 variable [Module R M] [Module R M₂]
-
 variable (e : M ≃+ M₂)
 
 /-- An additive equivalence whose underlying function preserves `smul` is a linear equivalence. -/
@@ -871,7 +847,6 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-
 variable (e : M ≃+ M₂)
 
 /-- An additive equivalence between commutative additive groups is a linear

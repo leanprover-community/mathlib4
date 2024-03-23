@@ -235,7 +235,7 @@ theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field
   have := Char.card_pow_char_pow (hχ₂.comp (algebraMap F' FF')) ψ.char
     (ringChar FF') n' hch₁ (hchar ▸ hch₂)
     (gaussSum_sq (hχ₁.comp <| RingHom.injective _) (hχ₂.comp _) ψ.prim)
-  simp_rw [FF'_def] at this
+  simp_rw [ψ, FF'_def] at this
   exact this
 #align char.card_pow_card Char.card_pow_card
 
@@ -333,7 +333,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
       -- Matrix.cons_vecAlt1, Int.cast_neg]
       simp_rw [χ₈_apply]
       rw [← h₄]
-      dsimp only
+      dsimp only [τ]
       congr
       · rw [Matrix.cons_val_zero]; simp
       · simp only [Matrix.vecCons, ne_eq, Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, mul_eq_zero,

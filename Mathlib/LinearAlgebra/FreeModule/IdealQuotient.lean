@@ -24,7 +24,6 @@ namespace Ideal
 open scoped BigOperators DirectSum
 
 variable {ι R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-
 variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]
 
 /-- We can write the quotient of an ideal over a PID as a product of quotients by principal ideals.
@@ -115,7 +114,7 @@ variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R
 noncomputable def quotientEquivDirectSum :
     (S ⧸ I) ≃ₗ[F] ⨁ i, R ⧸ span ({I.smithCoeffs b hI i} : Set R) := by
   haveI := Fintype.ofFinite ι
-  -- porting note: manual construction of `CompatibleSMul` typeclass no longer needed
+  -- Porting note: manual construction of `CompatibleSMul` typeclass no longer needed
   exact ((I.quotientEquivPiSpan b _).restrictScalars F).trans
     (DirectSum.linearEquivFunOnFintype _ _ _).symm
 #align ideal.quotient_equiv_direct_sum Ideal.quotientEquivDirectSum

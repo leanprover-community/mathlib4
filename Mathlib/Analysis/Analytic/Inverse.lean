@@ -62,7 +62,6 @@ noncomputable def leftInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
     -∑ c : { c : Composition (n + 2) // c.length < n + 2 },
         (leftInv p i (c : Composition (n + 2)).length).compAlongComposition
           (p.compContinuousLinearMap i.symm) c
-  decreasing_by exact c.2
 #align formal_multilinear_series.left_inv FormalMultilinearSeries.leftInv
 
 @[simp]
@@ -570,7 +569,7 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
       _ ≤ ∑ k in Ico 1 (n + 1), a ^ k * ‖p.rightInv i k‖ :=
         (haveI : ∀ k ∈ Ico 1 (n + 1), 0 ≤ a ^ k * ‖p.rightInv i k‖ := fun k _ => by positivity
         single_le_sum this (by simp [one_le_n]))
-      _ ≤ (I + 1) * a := IRec (n + 1) (by norm_num)
+      _ ≤ (I + 1) * a := IRec (n + 1) (by set_option tactic.skipAssignedInstances false in norm_num)
 #align formal_multilinear_series.radius_right_inv_pos_of_radius_pos FormalMultilinearSeries.radius_rightInv_pos_of_radius_pos
 
 end FormalMultilinearSeries

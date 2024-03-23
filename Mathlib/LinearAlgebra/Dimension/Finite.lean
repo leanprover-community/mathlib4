@@ -24,9 +24,7 @@ noncomputable section
 universe u v v' w
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'} {ι : Type w}
-
 variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
-
 variable [Module R M] [Module R M'] [Module R M₁]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
@@ -67,7 +65,6 @@ lemma rank_eq_zero_iff :
     simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
 variable [Nontrivial R]
-
 variable [NoZeroSMulDivisors R M]
 
 theorem rank_zero_iff_forall_zero [NoZeroSMulDivisors R M] :
@@ -309,11 +306,11 @@ theorem Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
   -- After this, it's a matter of verifying the properties,
   -- based on the corresponding properties for `g`.
   · rw [sum_map, Embedding.coeFn_mk] at gsum
-    simp_rw [← t.sum_erase_add _ x₀_mem, if_pos, neg_smul, sum_smul,
+    simp_rw [f, ← t.sum_erase_add _ x₀_mem, if_pos, neg_smul, sum_smul,
              ← sub_eq_add_neg, ← sum_sub_distrib, ← gsum, smul_sub]
     refine sum_congr rfl fun x x_mem ↦ ?_
     rw [if_neg (mem_erase.mp x_mem).1]
-  · simp_rw [← t.sum_erase_add _ x₀_mem, if_pos, add_neg_eq_zero]
+  · simp_rw [f, ← t.sum_erase_add _ x₀_mem, if_pos, add_neg_eq_zero]
     exact sum_congr rfl fun x x_mem ↦ if_neg (mem_erase.mp x_mem).1
   · obtain ⟨x₁, x₁_mem', rfl⟩ := Finset.mem_map.mp x₁_mem
     have := mem_erase.mp x₁_mem'

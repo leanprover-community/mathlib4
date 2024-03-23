@@ -294,7 +294,7 @@ theorem u_int_pos : 0 < ∫ x : E, u x ∂μ := by
 #align exists_cont_diff_bump_base.u_int_pos ExistsContDiffBumpBase.u_int_pos
 
 variable {E}
--- porting note: `W` upper case
+-- Porting note: `W` upper case
 set_option linter.uppercaseLean3 false
 
 /-- An auxiliary function to construct partitions of unity on finite-dimensional real vector spaces,
@@ -356,9 +356,9 @@ def y (D : ℝ) : E → ℝ :=
 
 theorem y_neg (D : ℝ) (x : E) : y D (-x) = y D x := by
   apply convolution_neg_of_neg_eq
-  · apply eventually_of_forall fun x => _
+  · filter_upwards with x
     simp only [w_def, Real.rpow_nat_cast, mul_inv_rev, smul_neg, u_neg, smul_eq_mul, forall_const]
-  · apply eventually_of_forall fun x => _
+  · filter_upwards with x
     simp only [φ, indicator, mem_closedBall, dist_zero_right, norm_neg, forall_const]
 #align exists_cont_diff_bump_base.Y_neg ExistsContDiffBumpBase.y_neg
 

@@ -51,9 +51,7 @@ open LinearMap (ker range)
 open BigOperators Topology
 
 variable {𝕜 E F : Type*} [IsROrC 𝕜]
-
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 
 -- mathport name: «expr⟪ , ⟫»
@@ -77,7 +75,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   let δ := ⨅ w : K, ‖u - w‖
   letI : Nonempty K := ne.to_subtype
   have zero_le_δ : 0 ≤ δ := le_ciInf fun _ => norm_nonneg _
-  have δ_le : ∀ w : K, δ ≤ ‖u - w‖ := ciInf_le ⟨0, Set.forall_range_iff.2 fun _ => norm_nonneg _⟩
+  have δ_le : ∀ w : K, δ ≤ ‖u - w‖ := ciInf_le ⟨0, Set.forall_mem_range.2 fun _ => norm_nonneg _⟩
   have δ_le' : ∀ w ∈ K, δ ≤ ‖u - w‖ := fun w hw => δ_le ⟨w, hw⟩
   -- Step 1: since `δ` is the infimum, can find a sequence `w : ℕ → K` in `K`
   -- such that `‖u - w n‖ < δ + 1 / (n + 1)` (which implies `‖u - w n‖ --> δ`);
@@ -202,7 +200,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
             simp only [sq]; apply mul_self_le_mul_self (norm_nonneg _)
             rw [eq]; apply δ_le'
             apply h hw hv
-            exacts [le_of_lt hθ₁, sub_nonneg.2 hθ₂, add_sub_cancel'_right _ _]
+            exacts [le_of_lt hθ₁, sub_nonneg.2 hθ₂, add_sub_cancel _ _]
           _ = ‖u - v - θ • (w - v)‖ ^ 2 := by
             have : u - (θ • w + (1 - θ) • v) = u - v - θ • (w - v) := by
               rw [smul_sub, sub_smul, one_smul]
@@ -240,10 +238,11 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       have eq₁ : θ * q ≤ p :=
         calc
           θ * q ≤ p / q * q := mul_le_mul_of_nonneg_right (min_le_right _ _) (sq_nonneg _)
-          _ = p := div_mul_cancel _ hq
+          _ = p := div_mul_cancel₀ _ hq
       have : 2 * p ≤ p :=
         calc
           2 * p ≤ θ * q := by
+            set_option tactic.skipAssignedInstances false in
             exact this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num [θ])
           _ ≤ p := eq₁
       linarith
@@ -385,7 +384,7 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv [HasOrthogonalProjectio
     HasOrthogonalProjection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) where
   exists_orthogonal v := by
     rcases HasOrthogonalProjection.exists_orthogonal (K := K) (f.symm v) with ⟨w, hwK, hw⟩
-    refine ⟨f w, Submodule.mem_map_of_mem hwK, Set.ball_image_iff.2 fun u hu ↦ ?_⟩
+    refine ⟨f w, Submodule.mem_map_of_mem hwK, Set.forall_mem_image.2 fun u hu ↦ ?_⟩
     erw [← f.symm.inner_map_map, f.symm_apply_apply, map_sub, f.symm_apply_apply, hw u hu]
 
 instance HasOrthogonalProjection.map_linearIsometryEquiv' [HasOrthogonalProjection K]
@@ -685,7 +684,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
           ContinuousLinearMap.coe_coe]
         dsimp [v]
         abel
-      · simp only [v, add_sub_cancel'_right, eq_self_iff_true] }
+      · simp only [v, add_sub_cancel, eq_self_iff_true] }
 #align reflection reflection
 
 variable {K}
@@ -793,7 +792,7 @@ theorem Submodule.sup_orthogonal_inf_of_completeSpace {K₁ K₂ : Submodule �
   constructor
   · rintro ⟨y, hy, z, hz, rfl⟩
     exact K₂.add_mem (h hy) hz.2
-  · exact fun hx => ⟨v, v.prop, x - v, ⟨hvm, K₂.sub_mem hx (h v.prop)⟩, add_sub_cancel'_right _ _⟩
+  · exact fun hx => ⟨v, v.prop, x - v, ⟨hvm, K₂.sub_mem hx (h v.prop)⟩, add_sub_cancel _ _⟩
 #align submodule.sup_orthogonal_inf_of_complete_space Submodule.sup_orthogonal_inf_of_completeSpace
 
 variable {K}
@@ -947,7 +946,7 @@ theorem orthogonalProjection_tendsto_closure_iSup [CompleteSpace E] {ι : Type*}
   rw [norm_sub_rev, orthogonalProjection_minimal]
   refine' lt_of_le_of_lt _ hay
   change _ ≤ ‖y - (⟨a, hU hi hI⟩ : U i)‖
-  exact ciInf_le ⟨0, Set.forall_range_iff.mpr fun _ => norm_nonneg _⟩ _
+  exact ciInf_le ⟨0, Set.forall_mem_range.mpr fun _ => norm_nonneg _⟩ _
 #align orthogonal_projection_tendsto_closure_supr orthogonalProjection_tendsto_closure_iSup
 
 /-- Given a monotone family `U` of complete submodules of `E` with dense span supremum,
@@ -1089,7 +1088,7 @@ theorem inner_orthogonalProjection_eq_of_mem_right [HasOrthogonalProjection K] (
     ⟪orthogonalProjection K v, u⟫ = ⟪(orthogonalProjection K v : E), u⟫ := K.coe_inner _ _
     _ = ⟪(orthogonalProjection K v : E), u⟫ + ⟪v - orthogonalProjection K v, u⟫ := by
       rw [orthogonalProjection_inner_eq_zero _ _ (Submodule.coe_mem _), add_zero]
-    _ = ⟪v, u⟫ := by rw [← inner_add_left, add_sub_cancel'_right]
+    _ = ⟪v, u⟫ := by rw [← inner_add_left, add_sub_cancel]
 #align inner_orthogonal_projection_eq_of_mem_right inner_orthogonalProjection_eq_of_mem_right
 
 -- Porting note: The priority should be higher than `Submodule.coe_inner`.
@@ -1298,7 +1297,7 @@ open DirectSum
 theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Submodule 𝕜 E}
     [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (x : E) (hx : x ∈ iSup V) : (∑ i, (orthogonalProjection (V i) x : E)) = x := by
-  -- porting note: switch to the better `induction _ using`. Need the primed induction principle,
+  -- Porting note: switch to the better `induction _ using`. Need the primed induction principle,
   -- the unprimed one doesn't work with `induction` (as it isn't as syntactically general)
   induction hx using Submodule.iSup_induction' with
   | mem i x hx =>
@@ -1323,7 +1322,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
   induction' x using DirectSum.induction_on with j x x y hx hy
   · simp
   · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
-    -- porting note: was in the previous `simp_rw`, no longer works
+    -- Porting note: was in the previous `simp_rw`, no longer works
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [DFinsupp.singleAddHom_apply]
     obtain rfl | hij := Decidable.eq_or_ne i j

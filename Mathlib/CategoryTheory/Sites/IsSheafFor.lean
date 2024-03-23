@@ -75,9 +75,7 @@ open Opposite CategoryTheory Category Limits Sieve
 namespace Presieve
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {P Q U : Cᵒᵖ ⥤ Type w}
-
 variable {X Y : C} {S : Sieve X} {R : Presieve X}
 
 /-- A family of elements for a presheaf `P` given a collection of arrows `R` with fixed codomain `X`
@@ -248,7 +246,7 @@ theorem restrict_inj {x₁ x₂ : FamilyOfElements P (generate R)} (t₁ : x₁.
     (t₂ : x₂.Compatible) : x₁.restrict (le_generate R) = x₂.restrict (le_generate R) → x₁ = x₂ :=
   fun h => by
   rw [← extend_restrict t₁, ← extend_restrict t₂]
-  -- porting note: congr fails to make progress
+  -- Porting note: congr fails to make progress
   apply congr_arg
   exact h
 #align category_theory.presieve.restrict_inj CategoryTheory.Presieve.restrict_inj
@@ -275,7 +273,6 @@ theorem FamilyOfElements.comp_of_compatible (S : Sieve X) {x : FamilyOfElements 
 section FunctorPullback
 
 variable {D : Type u₂} [Category.{v₂} D] (F : D ⥤ C) {Z : D}
-
 variable {T : Presieve (F.obj Z)} {x : FamilyOfElements P T}
 
 /--

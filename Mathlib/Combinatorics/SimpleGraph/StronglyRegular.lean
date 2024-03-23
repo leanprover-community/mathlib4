@@ -86,7 +86,7 @@ theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k �
       2 * k - Fintype.card (G.commonNeighbors v w) := by
   apply Nat.add_right_cancel (m := Fintype.card (G.commonNeighbors v w))
   rw [Nat.sub_add_cancel, ← Set.toFinset_card]
-  -- porting note: Set.toFinset_inter needs workaround to use unification to solve for one of the
+  -- Porting note: Set.toFinset_inter needs workaround to use unification to solve for one of the
   -- instance arguments:
   · simp [commonNeighbors, @Set.toFinset_inter _ _ _ _ _ _ (_),
       ← neighborFinset_def, Finset.card_union_add_card_inter, card_neighborFinset_eq_degree,

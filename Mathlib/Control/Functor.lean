@@ -33,9 +33,7 @@ universe u v w
 section Functor
 
 variable {F : Type u → Type v}
-
 variable {α β γ : Type u}
-
 variable [Functor F] [LawfulFunctor F]
 
 theorem Functor.map_id : (id <$> ·) = (id : F α → F α) := funext id_map
@@ -44,7 +42,7 @@ theorem Functor.map_id : (id <$> ·) = (id : F α → F α) := funext id_map
 theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
     ((g <$> ·) ∘ (f <$> ·) : F α → F γ) = ((g ∘ f) <$> ·) :=
   funext fun _ => (comp_map _ _ _).symm
-  -- porting note: was `apply funext <;> intro <;> rw [comp_map]` but `rw` failed?
+  -- Porting note: was `apply funext <;> intro <;> rw [comp_map]` but `rw` failed?
 #align functor.map_comp_map Functor.map_comp_map
 
 theorem Functor.ext {F} :
@@ -199,18 +197,17 @@ protected theorem run_map {α β} (h : α → β) (x : Comp F G α) :
 #align functor.comp.run_map Functor.Comp.run_map
 
 variable [LawfulFunctor F] [LawfulFunctor G]
-
 variable {α β γ : Type v}
 
 protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
-  | Comp.mk x => by simp [Comp.map, Functor.map_id]; rfl
-  -- porting note: `rfl` wasn't needed in mathlib3
+  | Comp.mk x => by simp only [Comp.map, id_map, id_map']; rfl
+  -- Porting note: `rfl` wasn't needed in mathlib3
 #align functor.comp.id_map Functor.Comp.id_map
 
 protected theorem comp_map (g' : α → β) (h : β → γ) :
     ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
   | Comp.mk x => by simp [Comp.map, Comp.mk, Functor.map_comp_map, functor_norm]
-  -- porting note: `Comp.mk` wasn't needed in mathlib3
+  -- Porting note: `Comp.mk` wasn't needed in mathlib3
 #align functor.comp.comp_map Functor.Comp.comp_map
 
 instance lawfulFunctor : LawfulFunctor (Comp F G) where
@@ -218,13 +215,13 @@ instance lawfulFunctor : LawfulFunctor (Comp F G) where
   id_map := @Comp.id_map F G _ _ _ _
   comp_map := @Comp.comp_map F G _ _ _ _
 
--- porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
+-- Porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
 theorem functor_comp_id {F} [AF : Functor F] [LawfulFunctor F] :
     @Comp.functor F Id _ _ = AF :=
   @Functor.ext F _ AF (@Comp.lawfulFunctor F Id _ _ _ _) _ fun _ _ _ _ => rfl
 #align functor.comp.functor_comp_id Functor.Comp.functor_comp_id
 
--- porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
+-- Porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
 theorem functor_id_comp {F} [AF : Functor F] [LawfulFunctor F] : @Comp.functor Id F _ _ = AF :=
   @Functor.ext F _ AF (@Comp.lawfulFunctor Id F _ _ _ _) _ fun _ _ _ _ => rfl
 #align functor.comp.functor_id_comp Functor.Comp.functor_id_comp
@@ -238,7 +235,6 @@ open Function hiding comp
 open Functor
 
 variable {F : Type u → Type w} {G : Type v → Type u}
-
 variable [Applicative F] [Applicative G]
 
 /-- The `<*>` operation for the composition of applicative functors. -/

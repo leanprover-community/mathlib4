@@ -134,7 +134,6 @@ noncomputable section
 universe u v w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
-
 variable (K : Type w) [Field K] [Algebra F K]
 
 section IsPurelyInseparable
@@ -730,7 +729,7 @@ private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
     (finrank_eq_card_basis b).symm
   let f (i : ι) : ι' := ⟨v i, h'.subset_extend _ ⟨i, rfl⟩⟩
   convert H.comp f fun _ _ heq ↦ h.injective (by simpa only [f, Subtype.mk.injEq] using heq)
-  simp_rw [Function.comp_apply, Basis.extend_apply_self]
+  simp_rw [Function.comp_apply, b, Basis.extend_apply_self]
 
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is a
 family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }` is also
@@ -1006,8 +1005,8 @@ theorem IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInsepara
     rintro x ⟨y, hy⟩
     obtain ⟨n, z, hz⟩ := IsPurelyInseparable.pow_mem F q y
     refine ⟨n, algebraMap F M z, ?_⟩
-    rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply F E K, hz, ← hy, map_pow]
-    rfl
+    rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply F E K, hz, ← hy, map_pow,
+      AlgHom.toRingHom_eq_coe, IsScalarTower.coe_toAlgHom]
   have h := lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic F E L
     (IsPurelyInseparable.isAlgebraic F E)
   rw [IsPurelyInseparable.sepDegree_eq_one F E, Cardinal.lift_one, one_mul] at h

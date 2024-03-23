@@ -30,7 +30,6 @@ open scoped Polynomial Cyclotomic
 namespace IsPrimitiveRoot
 
 variable {n : ℕ+} {K : Type u} [Field K] [CharZero K] {ζ : K}
-
 variable [ce : IsCyclotomicExtension {n} ℚ K]
 
 /-- The discriminant of the power basis given by a primitive root of unity `ζ` is the same as the
@@ -54,9 +53,9 @@ end IsPrimitiveRoot
 namespace IsCyclotomicExtension
 
 variable {p : ℕ+} {k : ℕ} {K : Type u} {L : Type v} {ζ : L} [Field K] [Field L]
-
 variable [Algebra K L]
 
+set_option tactic.skipAssignedInstances false in
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ (k + 1)} K L`, then the discriminant of
 `hζ.powerBasis K` is `(-1) ^ ((p ^ (k + 1).totient) / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1))`
 if `Irreducible (cyclotomic (p ^ (k + 1)) K))`, and `p ^ (k + 1) ≠ 2`. -/
@@ -133,6 +132,7 @@ theorem discr_prime_pow_ne_two' [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : 
   by simpa [totient_prime_pow hp.out (succ_pos k)] using discr_prime_pow_ne_two hζ hirr hk
 #align is_cyclotomic_extension.discr_prime_pow_ne_two' IsCyclotomicExtension.discr_prime_pow_ne_two'
 
+set_option tactic.skipAssignedInstances false in
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ k} K L`, then the discriminant of
 `hζ.powerBasis K` is `(-1) ^ ((p ^ k).totient / 2) * p ^ (p ^ (k - 1) * ((p - 1) * k - 1))`
 if `Irreducible (cyclotomic (p ^ k) K))`. Beware that in the cases `p ^ k = 1` and `p ^ k = 2`
@@ -183,10 +183,10 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
       · simp only [discr, traceMatrix_apply, Matrix.det_unique, Fin.default_eq_zero, Fin.val_zero,
           _root_.pow_zero, traceForm_apply, mul_one]
         rw [← (algebraMap K L).map_one, trace_algebraMap, finrank _ hirr]; norm_num
-        simp [← coe_two, Even.neg_pow (by decide : Even (1 / 2))]
     · exact discr_prime_pow_ne_two hζ hirr hk
 #align is_cyclotomic_extension.discr_prime_pow IsCyclotomicExtension.discr_prime_pow
 
+set_option tactic.skipAssignedInstances false in
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ k} K L`, then there are `u : ℤˣ` and
 `n : ℕ` such that the discriminant of `hζ.powerBasis K` is `u * p ^ n`. Often this is enough and
 less cumbersome to use than `IsCyclotomicExtension.discr_prime_pow`. -/

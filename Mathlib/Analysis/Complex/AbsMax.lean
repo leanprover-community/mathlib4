@@ -120,7 +120,7 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
       hd.circleIntegral_sub_inv_smul (mem_ball_self hr)
     simp [A, norm_smul, Real.pi_pos.le]
   suffices ‖∮ ζ in C(z, r), (ζ - z)⁻¹ • f ζ‖ < 2 * π * r * (‖f z‖ / r) by
-    rwa [mul_assoc, mul_div_cancel' _ hr.ne'] at this
+    rwa [mul_assoc, mul_div_cancel₀ _ hr.ne'] at this
   /- This inequality is true because `‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r` for all `ζ` on the circle and
     this inequality is strict at `ζ = w`. -/
   have hsub : sphere z r ⊆ closedBall z r := sphere_subset_closedBall
