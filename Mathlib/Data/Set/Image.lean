@@ -207,10 +207,11 @@ variable {f : α → β} {s t : Set α}
 -- Porting note: `Set.image` is already defined in `Init.Set`
 #align set.image Set.image
 
-theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
+theorem mem_image_iff_exists {f : α → β} {s : Set α} {y : β} :
     y ∈ f '' s ↔ ∃ (x : _) (_ : x ∈ s), f x = y :=
   bex_def.symm
-#align set.mem_image_iff_bex Set.mem_image_iff_bex
+#align set.mem_image_iff_bex Set.mem_image_iff_exists
+@[deprecated] alias Set.mem_image_iff_bex := Set.mem_image_iff_exists -- 2024-03-23
 
 theorem image_eta (f : α → β) : f '' s = (fun x => f x) '' s :=
   rfl

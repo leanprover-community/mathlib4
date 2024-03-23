@@ -1403,7 +1403,7 @@ theorem coe_map (f : G →* N) (K : Subgroup G) : (K.map f : Set N) = f '' K :=
 
 @[to_additive (attr := simp)]
 theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y := by
-  erw [mem_image_iff_bex]; simp
+  erw [mem_image_iff_exists]; simp
 #align subgroup.mem_map Subgroup.mem_map
 #align add_subgroup.mem_map AddSubgroup.mem_map
 
