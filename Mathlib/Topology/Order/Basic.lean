@@ -8,8 +8,8 @@ import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Filter.Interval
 import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.NormNum
+import Mathlib.Topology.Order.LeftRight
 import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Algebra.Order.LeftRight
 
 #align_import topology.order.basic from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 

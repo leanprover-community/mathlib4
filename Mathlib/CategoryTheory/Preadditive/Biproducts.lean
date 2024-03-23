@@ -534,7 +534,7 @@ def isBilimitBinaryBiconeOfIsSplitMonoOfCokernel {X Y : C} {f : X ⟶ Y} [IsSpli
       dsimp only [binaryBiconeOfIsSplitMonoOfCokernel_pt]
       rw [isColimitCoforkOfCokernelCofork_desc, isCokernelEpiComp_desc]
       simp only [binaryBiconeOfIsSplitMonoOfCokernel_inl, Cofork.IsColimit.π_desc,
-        cokernelCoforkOfCofork_π, Cofork.π_ofπ, add_sub_cancel'_right])
+        cokernelCoforkOfCofork_π, Cofork.π_ofπ, add_sub_cancel])
 #align category_theory.limits.is_bilimit_binary_bicone_of_is_split_mono_of_cokernel CategoryTheory.Limits.isBilimitBinaryBiconeOfIsSplitMonoOfCokernel
 
 /-- If `b` is a binary bicone such that `b.inl` is a kernel of `b.snd`, then `b` is a bilimit
