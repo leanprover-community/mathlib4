@@ -130,7 +130,7 @@ variable [DecidableEq α]
 
 /-- The `diag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `s.card`. -/
 theorem card_image_diag (s : Finset α) : (s.diag.image Sym2.mk).card = s.card := by
-  rw [card_image_of_injOn, diag_card]
+  rw [card_image_of_injOn, card_diag]
   rintro ⟨x₀, x₁⟩ hx _ _ h
   cases Sym2.eq.1 h
   · rfl
@@ -164,7 +164,7 @@ This is because every element `s(x, y)` of `Sym2 α` not on the diagonal comes f
 pairs: `(x, y)` and `(y, x)`. -/
 theorem card_image_offDiag (s : Finset α) :
     (s.offDiag.image Sym2.mk).card = s.card.choose 2 := by
-  rw [Nat.choose_two_right, mul_tsub, mul_one, ← offDiag_card,
+  rw [Nat.choose_two_right, mul_tsub, mul_one, ← card_offDiag,
     Nat.div_eq_of_eq_mul_right zero_lt_two (two_mul_card_image_offDiag s).symm]
 #align sym2.card_image_off_diag Sym2.card_image_offDiag
 

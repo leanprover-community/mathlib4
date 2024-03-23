@@ -160,7 +160,7 @@ theorem A_card_upper_bound {k : ℕ}
     (hk : ∀ p : JudgePair J, p.Distinct → (agreedContestants r p).card ≤ k) :
     (A r).card ≤ k * (Fintype.card J * Fintype.card J - Fintype.card J) := by
   change _ ≤ k * (Finset.card _ * Finset.card _ - Finset.card _)
-  rw [← Finset.offDiag_card]
+  rw [← Finset.card_offDiag]
   apply Finset.card_le_mul_card_image_of_maps_to (A_maps_to_offDiag_judgePair r)
   intro p hp
   have hp' : p.Distinct := by simp [Finset.mem_offDiag] at hp; exact hp
@@ -211,7 +211,7 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
     · unfold_let s t
       suffices p.judge₁ = p.judge₂ by simp [this]
       aesop
-  have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diag_card, ← hJ]; rfl
+  have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.card_diag, ← hJ]; rfl
   rw [Finset.filter_and, ← Finset.sdiff_sdiff_self_left s t, Finset.card_sdiff]
   · rw [hst']; rw [add_assoc] at hs; apply le_tsub_of_add_le_right hs
   · apply Finset.sdiff_subset
