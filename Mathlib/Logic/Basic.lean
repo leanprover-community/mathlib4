@@ -1032,9 +1032,9 @@ theorem BEx.intro (a : α) (h₁ : p a) (h₂ : P a h₁) : ∃ (x : _) (h : p x
   ⟨a, h₁, h₂⟩
 #align bex.intro BEx.intro
 
-theorem ball_congr (H : ∀ x h, P x h ↔ Q x h) : (∀ x h, P x h) ↔ ∀ x h, Q x h :=
+theorem forall_mem_congr (H : ∀ x h, P x h ↔ Q x h) : (∀ x h, P x h) ↔ ∀ x h, Q x h :=
   forall_congr' fun x ↦ forall_congr' (H x)
-#align ball_congr ball_congr
+#align ball_congr forall_mem_congr
 
 theorem bex_congr (H : ∀ x h, P x h ↔ Q x h) : (∃ x h, P x h) ↔ ∃ x h, Q x h :=
   exists_congr fun x ↦ exists_congr (H x)
@@ -1043,6 +1043,9 @@ theorem bex_congr (H : ∀ x h, P x h ↔ Q x h) : (∃ x h, P x h) ↔ ∃ x h,
 theorem bex_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
   simp only [exists_prop, exists_eq_left]
 #align bex_eq_left bex_eq_left
+
+-- 2024-03-23
+@[deprecated] alias ball_congr := forall_mem_congr
 
 theorem BAll.imp_right (H : ∀ x h, P x h → Q x h) (h₁ : ∀ x h, P x h) (x h) : Q x h :=
   H _ _ <| h₁ _ _
@@ -1060,11 +1063,15 @@ theorem BEx.imp_left (H : ∀ x, p x → q x) : (∃ (x : _) (_ : p x), r x) →
   | ⟨x, hp, hr⟩ => ⟨x, H _ hp, hr⟩
 #align bex.imp_left BEx.imp_left
 
-theorem ball_of_forall (h : ∀ x, p x) (x) : p x := h x
-#align ball_of_forall ball_of_forall
+theorem forall_mem_of_forall (h : ∀ x, p x) (x) : p x := h x
+#align ball_of_forall forall_mem_of_forall
 
-theorem forall_of_ball (H : ∀ x, p x) (h : ∀ x, p x → q x) (x) : q x := h x <| H x
-#align forall_of_ball forall_of_ball
+theorem forall_of_forall_mem (H : ∀ x, p x) (h : ∀ x, p x → q x) (x) : q x := h x <| H x
+#align forall_of_ball forall_of_forall_mem
+
+-- 2024-03-23
+@[deprecated] alias forall_of_ball := forall_of_forall_mem
+@[deprecated] alias ball_of_forall := forall_mem_of_forall
 
 theorem bex_of_exists (H : ∀ x, p x) : (∃ x, q x) → ∃ (x : _) (_ : p x), q x
   | ⟨x, hq⟩ => ⟨x, H x, hq⟩
