@@ -25,7 +25,7 @@ open Finset
 
 namespace SimpleGraph
 variable {V : Type*} [Fintype V] [DecidableEq V] (G H : SimpleGraph V) [DecidableRel G.Adj]
-  {n r : ℕ} {s : Finset V}
+  {n r : ℕ}
 
 /-- An `r + 1`-cliquefree graph is `r`-Turán-maximal if any other `r + 1`-cliquefree graph on
 the same vertex set has the same or fewer number of edges. -/
@@ -35,9 +35,9 @@ def IsTuranMaximal (r : ℕ) : Prop :=
 
 variable {G H}
 
-lemma IsTuranMaximal.le_iff_eq (hG : IsTuranMaximal G r) (hH : H.CliqueFree (r + 1)) :
+lemma IsTuranMaximal.le_iff_eq (hG : G.IsTuranMaximal r) (hH : H.CliqueFree (r + 1)) :
     G ≤ H ↔ G = H := by
-  classical exact ⟨fun hGH ↦ edgeFinset_inj.1 $ eq_of_subset_of_card_le
+  classical exact ⟨fun hGH ↦ edgeFinset_inj.1 <| eq_of_subset_of_card_le
     (edgeFinset_subset_edgeFinset.2 hGH) (hG.2 _ hH), le_of_eq⟩
 
 /-- The canonical `r + 1`-cliquefree Turán graph on `n` vertices. -/
@@ -81,14 +81,14 @@ theorem isTuranMaximal_turanGraph (h : n ≤ r) : (turanGraph n r).IsTuranMaxima
 
 /-- An `r + 1`-cliquefree Turán-maximal graph is _not_ `r`-cliquefree
 if it can accommodate such a clique. -/
-theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ Fintype.card V) (hG : IsTuranMaximal G r) :
+theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ Fintype.card V) (hG : G.IsTuranMaximal r) :
     ¬G.CliqueFree r := by
   rintro h
   obtain ⟨K, _, rfl⟩ := exists_smaller_set (univ : Finset V) r hn
   obtain ⟨a, -, b, -, hab, hGab⟩ : ∃ a ∈ K, ∃ b ∈ K, a ≠ b ∧ ¬ G.Adj a b := by
     simpa only [isNClique_iff, IsClique, Set.Pairwise, mem_coe, ne_eq, and_true, not_forall,
       exists_prop, exists_and_right] using h K
-  exact hGab $ le_sup_right.trans_eq ((hG.le_iff_eq $ h.sup_edge _ _).1 le_sup_left).symm $
+  exact hGab <| le_sup_right.trans_eq ((hG.le_iff_eq <| h.sup_edge _ _).1 le_sup_left).symm <|
     (edge_adj ..).2 ⟨Or.inl ⟨rfl, rfl⟩, hab⟩
 
 end SimpleGraph
