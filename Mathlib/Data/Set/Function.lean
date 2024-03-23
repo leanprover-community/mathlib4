@@ -251,6 +251,9 @@ theorem eqOn_range {ι : Sort*} {f : ι → α} {g₁ g₂ : α → β} :
 alias ⟨EqOn.comp_eq, _⟩ := eqOn_range
 #align set.eq_on.comp_eq Set.EqOn.comp_eq
 
+lemma update_eqOn [DecidableEq α] (ha : a ∉ s) : EqOn (update f a b) f s :=
+  fun x hx ↦ by unfold update; aesop
+
 /-! ### Congruence lemmas -/
 
 
