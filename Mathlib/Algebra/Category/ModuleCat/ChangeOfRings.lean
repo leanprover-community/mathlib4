@@ -155,24 +155,24 @@ variable {R : Type u₁} [Ring R] (f : R →+* R) (hf : f = RingHom.id R)
 
 /-- For a `R`-module `M`, the restriction of scalars of `M` by the identity morphisms identifies
 to `M`. -/
-def restrictScalarsId'_app (M : ModuleCat R) : (restrictScalars f).obj M ≅ M :=
+def restrictScalarsId'App (M : ModuleCat R) : (restrictScalars f).obj M ≅ M :=
   LinearEquiv.toModuleIso' <|
     @AddEquiv.toLinearEquiv _ _ _ _ _ _ (((restrictScalars f).obj M).isModule) _
       (by rfl) (fun r x ↦ by subst hf; rfl)
 
-lemma restrictScalarsId'_app_hom_apply (M : ModuleCat R) (x : M) :
-    (restrictScalarsId'_app f hf M).hom x = x :=
+lemma restrictScalarsId'App_hom_apply (M : ModuleCat R) (x : M) :
+    (restrictScalarsId'App f hf M).hom x = x :=
   rfl
 
-lemma restrictScalarsId'_app_inv_apply (M : ModuleCat R) (x : M) :
-    (restrictScalarsId'_app f hf M).inv x = x :=
+lemma restrictScalarsId'App_inv_apply (M : ModuleCat R) (x : M) :
+    (restrictScalarsId'App f hf M).inv x = x :=
   rfl
 
 /-- The restriction of scalars by a ring morphism that is the identity identify to the
 identity functor. -/
 @[simps! hom_app inv_app]
 def restrictScalarsId' : ModuleCat.restrictScalars.{v} f ≅ 𝟭 _ :=
-    NatIso.ofComponents <| fun M ↦ restrictScalarsId'_app f hf M
+    NatIso.ofComponents <| fun M ↦ restrictScalarsId'App f hf M
 
 variable (R)
 
@@ -189,16 +189,16 @@ variable {R₁ : Type u₁} {R₂ : Type u₂} {R₃ : Type u₃} [Ring R₁] [R
 
 /-- For each `R₃`-module `M`, restriction of scalars of `M` by a composition of ring morphisms
 identifies to successively restricting scalars. -/
-def restrictScalarsComp'_app (M : ModuleCat R₃) :
+def restrictScalarsComp'App (M : ModuleCat R₃) :
     (restrictScalars gf).obj M ≅ (restrictScalars f).obj ((restrictScalars g).obj M) :=
   (AddEquiv.toLinearEquiv (by rfl) (fun r x ↦ by subst hgf; rfl)).toModuleIso'
 
-lemma restrictScalarsComp'_app_hom_apply (M : ModuleCat R₃) (x : M) :
-    (restrictScalarsComp'_app f g gf hgf M).hom x = x :=
+lemma restrictScalarsComp'App_hom_apply (M : ModuleCat R₃) (x : M) :
+    (restrictScalarsComp'App f g gf hgf M).hom x = x :=
   rfl
 
-lemma restrictScalarsComp'_app_inv_apply (M : ModuleCat R₃) (x : M) :
-    (restrictScalarsComp'_app f g gf hgf M).inv x = x :=
+lemma restrictScalarsComp'App_inv_apply (M : ModuleCat R₃) (x : M) :
+    (restrictScalarsComp'App f g gf hgf M).inv x = x :=
   rfl
 
 /-- The restriction of scalars by a composition of ring morphisms identify to the
@@ -207,7 +207,7 @@ composition of the restriction of scalars functors. -/
 def restrictScalarsComp' :
     ModuleCat.restrictScalars.{v} gf ≅
       ModuleCat.restrictScalars g ⋙ ModuleCat.restrictScalars f :=
-  NatIso.ofComponents <| fun M ↦ restrictScalarsComp'_app f g gf hgf M
+  NatIso.ofComponents <| fun M ↦ restrictScalarsComp'App f g gf hgf M
 
 /-- The restriction of scalars by a composition of ring morphisms identify to the
 composition of the restriction of scalars functors. -/
