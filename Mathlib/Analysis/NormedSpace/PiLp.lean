@@ -26,7 +26,7 @@ We give instances of this construction for emetric spaces, metric spaces, normed
 spaces.
 
 To avoid conflicting instances, all these are defined on a copy of the original Π-type, named
-`PiLp p α`. The assumption `[Fact (1 ≤ p)]` is required for the metric and normed space instances.
+`PiLp p α`. The assumption `[Fact (p ∉ Set.Ioo 0 1)]` is required for the metric and normed space instances.
 
 We ensure that the topology, bornology and uniform structure on `PiLp p α` are (defeq to) the
 product topology, product bornology and product uniformity, to be able to use freely continuity
@@ -142,7 +142,7 @@ variable [Fintype ι]
 ### Definition of `edist`, `dist` and `norm` on `PiLp`
 
 In this section we define the `edist`, `dist` and `norm` functions on `PiLp p α` without assuming
-`[Fact (1 ≤ p)]` or metric properties of the spaces `α i`. This allows us to provide the rewrite
+`[Fact (p ∉ Set.Ioo 0 1)]` or metric properties of the spaces `α i`. This allows us to provide the rewrite
 lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.to_real`.
 -/
 
@@ -153,7 +153,7 @@ variable [∀ i, EDist (β i)]
 
 /-- Endowing the space `PiLp p β` with the `L^p` edistance. We register this instance
 separate from `pi_Lp.pseudo_emetric` since the latter requires the type class hypothesis
-`[Fact (1 ≤ p)]` in order to prove the triangle inequality.
+`[Fact (p ∉ Set.Ioo 0 1)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future emetric-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. The terminology for this varies throughout the
@@ -189,7 +189,7 @@ section EdistProp
 variable {β}
 variable [∀ i, PseudoEMetricSpace (β i)]
 
-/-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
+/-- This holds independent of `p` and does not require `[Fact (p ∉ Set.Ioo 0 1)]`. We keep it separate
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
 protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
@@ -198,7 +198,7 @@ protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
   · simp [edist_eq_sum h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
 #align pi_Lp.edist_self PiLp.edist_self
 
-/-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
+/-- This holds independent of `p` and does not require `[Fact (p ∉ Set.Ioo 0 1)]`. We keep it separate
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
 protected theorem edist_comm (f g : PiLp p β) : edist f g = edist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
@@ -215,7 +215,7 @@ variable [∀ i, Dist (α i)]
 
 /-- Endowing the space `PiLp p β` with the `L^p` distance. We register this instance
 separate from `pi_Lp.pseudo_metric` since the latter requires the type class hypothesis
-`[Fact (1 ≤ p)]` in order to prove the triangle inequality.
+`[Fact (p ∉ Set.Ioo 0 1)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future metric-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. The terminology for this varies throughout the
@@ -252,7 +252,7 @@ variable [∀ i, Norm (β i)]
 
 /-- Endowing the space `PiLp p β` with the `L^p` norm. We register this instance
 separate from `PiLp.seminormedAddCommGroup` since the latter requires the type class hypothesis
-`[Fact (1 ≤ p)]` in order to prove the triangle inequality.
+`[Fact (p ∉ Set.Ioo 0 1)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future norm-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
@@ -420,14 +420,12 @@ def pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
 
 attribute [local instance] PiLp.pseudoMetricAux
 
-theorem lipschitzWith_equiv_aux : LipschitzWith 1 (WithLp.equiv p (∀ i, β i)) := by
+theorem lipschitzWith_equiv_aux (hp : p ≠ 0) : LipschitzWith 1 (WithLp.equiv p (∀ i, β i)) := by
   intro x y
   simp only [ENNReal.coe_one, one_mul, edist_pi_def, Finset.sup_le_iff, Finset.mem_univ,
     forall_prop_of_true]
   rcases p.trichotomy' with (rfl | rfl | h)
-  · intro i
-    simp only [edist_eq_card, WithLp.equiv_pi_apply]
-    simp
+  · exact (hp rfl).elim
   · simpa only [edist_eq_iSup] using le_iSup fun i => edist (x i) (y i)
   · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (zero_lt_one.trans_le h).ne'
     rw [edist_eq_sum (zero_lt_one.trans_le h)]
@@ -440,10 +438,11 @@ theorem lipschitzWith_equiv_aux : LipschitzWith 1 (WithLp.equiv p (∀ i, β i))
         exact Finset.single_le_sum (fun i _ => (bot_le : (0 : ℝ≥0∞) ≤ _)) (Finset.mem_univ i)
 #align pi_Lp.lipschitz_with_equiv_aux PiLp.lipschitzWith_equiv_aux
 
-theorem antilipschitzWith_equiv_aux :
+theorem antilipschitzWith_equiv_aux (hp : p ≠ 0) :
     AntilipschitzWith ((Fintype.card ι : ℝ≥0) ^ (1 / p).toReal) (WithLp.equiv p (∀ i, β i)) := by
   intro x y
-  rcases p.dichotomy with (rfl | h)
+  rcases p.trichotomy' with (rfl | rfl | h)
+  · exact (hp rfl).elim
   · simp only [edist_eq_iSup, ENNReal.div_top, ENNReal.zero_toReal, NNReal.rpow_zero,
       ENNReal.coe_one, one_mul, iSup_le_iff]
     -- Porting note: `Finset.le_sup` needed some help
@@ -469,9 +468,11 @@ theorem antilipschitzWith_equiv_aux :
 #align pi_Lp.antilipschitz_with_equiv_aux PiLp.antilipschitzWith_equiv_aux
 
 theorem aux_uniformity_eq : 𝓤 (PiLp p β) = 𝓤[Pi.uniformSpace _] := by
-  have A : UniformInducing (WithLp.equiv p (∀ i, β i)) :=
-    (antilipschitzWith_equiv_aux p β).uniformInducing
-      (lipschitzWith_equiv_aux p β).uniformContinuous
+  have A : UniformInducing (WithLp.equiv p (∀ i, β i)) := by
+    obtain rfl | hp := eq_or_ne p 0
+    · sorry
+    · exact (antilipschitzWith_equiv_aux p β hp).uniformInducing
+        (lipschitzWith_equiv_aux p β hp).uniformContinuous
   have : (fun x : PiLp p β × PiLp p β => (WithLp.equiv p _ x.fst, WithLp.equiv p _ x.snd)) = id :=
     by ext i <;> rfl
   rw [← A.comap_uniformity, this, comap_id]
@@ -520,7 +521,7 @@ instance bornology [∀ i, Bornology (β i)] : Bornology (PiLp p β) :=
 #align pi_Lp.bornology PiLp.bornology
 
 -- throughout the rest of the file, we assume `1 ≤ p`
-variable [Fact (1 ≤ p)]
+variable [Fact (p ∉ Set.Ioo 0 1)]
 
 section Fintype
 
@@ -547,7 +548,7 @@ and having as uniformity the product uniformity. -/
 instance [∀ i, MetricSpace (α i)] : MetricSpace (PiLp p α) :=
   MetricSpace.ofT0PseudoMetricSpace _
 
-theorem nndist_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)]
+theorem nndist_eq_sum {p : ℝ≥0∞} [Fact (p ∉ Set.Ioo 0 1)] {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)]
     (hp : p ≠ ∞) (x y : PiLp p β) :
     nndist x y = (∑ i : ι, nndist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) :=
   -- Porting note: was `Subtype.ext`
@@ -605,7 +606,7 @@ instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGr
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 #align pi_Lp.normed_add_comm_group PiLp.normedAddCommGroup
 
-theorem nnnorm_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} (hp : p ≠ ∞)
+theorem nnnorm_eq_sum {p : ℝ≥0∞} [Fact (p ∉ Set.Ioo 0 1)] {β : ι → Type*} (hp : p ≠ ∞)
     [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp p β) :
     ‖f‖₊ = (∑ i, ‖f i‖₊ ^ p.toReal) ^ (1 / p.toReal) := by
   ext
@@ -636,7 +637,7 @@ theorem nnnorm_eq_ciSup (f : PiLp ∞ β) : ‖f‖₊ = ⨆ i, ‖f i‖₊ := 
 
 end Linfty
 
-theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
+theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (p ∉ Set.Ioo 0 1)] {β : ι → Type*}
     [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ n) ^ (1 / (n : ℝ)) := by
   have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.nat_ne_top n)
