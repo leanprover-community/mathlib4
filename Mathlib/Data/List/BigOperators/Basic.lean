@@ -448,7 +448,7 @@ theorem prod_drop_succ :
 #align list.sum_drop_succ List.sum_drop_succ
 
 /-- Cancellation of a telescoping product. -/
-@[to_additive "Cancellation of a telescoping sum"]
+@[to_additive "Cancellation of a telescoping sum."]
 theorem prod_range_div' (n : ℕ) (f : ℕ → G) :
     ((range n).map fun k ↦ f k / f (k + 1)).prod = f 0 / f n := by
   induction' n with n h
@@ -470,7 +470,7 @@ theorem prod_inv : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).prod
 #align list.sum_neg List.sum_neg
 
 /-- Cancellation of a telescoping product. -/
-@[to_additive "Cancellation of a telescoping sum"]
+@[to_additive "Cancellation of a telescoping sum."]
 theorem prod_range_div (n : ℕ) (f : ℕ → G) :
     ((range n).map fun k ↦ f (k + 1) / f k).prod = f n / f 0 := by
   have h : ((·⁻¹) ∘ fun k ↦ f (k + 1) / f k) = fun k ↦ f k / f (k + 1) := by ext; apply inv_div
