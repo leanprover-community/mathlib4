@@ -488,8 +488,6 @@ section
 
 variable {M : Type u}
 
--- use `x * npowRec n x` and not `npowRec n x * x` in the definition to make sure that
--- definitional unfolding of `npowRec` is blocked, to avoid deep recursion issues.
 /-- The fundamental power operation in a monoid. `npowRec n a = a*a*...*a` n times.
 Use instead `a ^ n`, which has better definitional behavior. -/
 def npowRec [One M] [Mul M] : ℕ → M → M
