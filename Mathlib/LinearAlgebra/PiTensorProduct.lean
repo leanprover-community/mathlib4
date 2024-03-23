@@ -331,8 +331,8 @@ lemma _root_.FreeAddMonoid.toPiTensorProduct (p : FreeAddMonoid (R × Π i, s i)
                  ← tprodCoeff_eq_smul_tprod]; rfl
 
 /-- The set of lifts of an element `x` of `⨂[R] i, s i` in `FreeAddMonoid (R × Π i, s i)`.-/
-def lifts (x : ⨂[R] i, s i) := {p : FreeAddMonoid (R × Π i, s i) |
-    AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p = x}
+def lifts (x : ⨂[R] i, s i) : Set (FreeAddMonoid (R × Π i, s i)) := 
+  {p | AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p = x}
 
 /-- An element `p` of `FreeAddMonoid (R × Π i, s i)` lifts an element `x` of `⨂[R] i, s i`
 if and only if `x` is equal to to the sum of `a • ⨂ₜ[R] i, m i` over all the entries
