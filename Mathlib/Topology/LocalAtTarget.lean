@@ -75,6 +75,15 @@ theorem Set.restrictPreimage_isClosedMap (s : Set β) (H : IsClosedMap f) :
   exact ⟨fun ⟨a, b, c⟩ => ⟨a, b, c.symm ▸ hx, c⟩, fun ⟨a, b, _, c⟩ => ⟨a, b, c⟩⟩
 #align set.restrict_preimage_is_closed_map Set.restrictPreimage_isClosedMap
 
+theorem Set.restrictPreimage_isOpenMap (s : Set β) (H : IsOpenMap f) :
+    IsOpenMap (s.restrictPreimage f) := by
+  intro t ⟨u, hu, e⟩
+  refine' ⟨f '' u, H u hu, _⟩
+  unfold restrictPreimage
+  rw [← preimage_image_eq  (_ '' t) (Subtype.coe_injective), ← image_comp, MapsTo.restrict_commutes,
+    ← e, image_comp, image_preimage_eq_inter_range, Subtype.range_coe, image_inter_preimage,
+    inter_comm, Subtype.preimage_coe_self_inter]
+
 theorem isOpen_iff_inter_of_iSup_eq_top (s : Set β) : IsOpen s ↔ ∀ i, IsOpen (s ∩ U i) := by
   constructor
   · exact fun H i => H.inter (U i).2
