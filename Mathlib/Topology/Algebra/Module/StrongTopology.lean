@@ -85,6 +85,7 @@ instance funLike [TopologicalSpace F] [TopologicalAddGroup F]
 instance continuousSemilinearMapClass [TopologicalSpace F] [TopologicalAddGroup F]
     (𝔖 : Set (Set E)) : ContinuousSemilinearMapClass (UniformConvergenceCLM σ F 𝔖) σ E F :=
   ContinuousLinearMap.continuousSemilinearMapClass
+
 instance instTopologicalSpace [TopologicalSpace F]
     [TopologicalAddGroup F] (𝔖 : Set (Set E)) : TopologicalSpace (UniformConvergenceCLM σ F 𝔖) :=
   (@UniformOnFun.topologicalSpace E F (TopologicalAddGroup.toUniformSpace F) 𝔖).induced
@@ -100,6 +101,10 @@ instance instUniformSpace [UniformSpace F] [UniformAddGroup F]
       (DFunLike.coe : (UniformConvergenceCLM σ F 𝔖) → (E →ᵤ[𝔖] F)))
     (by rw [UniformConvergenceCLM.instTopologicalSpace, UniformAddGroup.toUniformSpace_eq]; rfl)
 #align continuous_linear_map.strong_uniformity UniformConvergenceCLM.instUniformSpace
+
+theorem uniformSpace_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
+    instUniformSpace σ F 𝔖 = UniformSpace.comap DFunLike.coe (UniformOnFun.uniformSpace E F 𝔖) := by
+  rw [instUniformSpace, UniformSpace.replaceTopology_eq]
 
 @[simp]
 theorem uniformity_toTopologicalSpace_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
@@ -206,6 +211,20 @@ theorem tendsto_iff_tendstoUniformlyOn {ι : Type*} {p : Filter ι} [UniformSpac
     Filter.Tendsto a p (𝓝 a₀) ↔ ∀ s ∈ 𝔖, TendstoUniformlyOn (a · ·) a₀ p s := by
   rw [(embedding_coeFn σ F 𝔖).tendsto_nhds_iff, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
   rfl
+
+variable {𝔖₁ 𝔖₂ : Set (Set E)}
+
+theorem uniformSpace_mono [UniformSpace F] [UniformAddGroup F] (h : 𝔖₂ ⊆ 𝔖₁) :
+    instUniformSpace σ F 𝔖₁ ≤ instUniformSpace σ F 𝔖₂ := by
+  simp_rw [uniformSpace_eq]
+  exact UniformSpace.comap_mono (UniformOnFun.mono (le_refl _) h)
+
+theorem topologicalSpace_mono [TopologicalSpace F] [TopologicalAddGroup F] (h : 𝔖₂ ⊆ 𝔖₁) :
+    instTopologicalSpace σ F 𝔖₁ ≤ instTopologicalSpace σ F 𝔖₂ := by
+  letI := TopologicalAddGroup.toUniformSpace F
+  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  simp_rw [← uniformity_toTopologicalSpace_eq]
+  exact UniformSpace.toTopologicalSpace_mono (uniformSpace_mono σ F h)
 
 end UniformConvergenceCLM
 
