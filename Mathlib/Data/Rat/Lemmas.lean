@@ -3,12 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Div
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Tactic.Replace
 import Mathlib.Data.PNat.Defs
+import Mathlib.Data.Rat.Defs
 
 #align_import data.rat.lemmas from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
@@ -194,8 +192,7 @@ theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
 #align rat.mul_denom_eq_num Rat.mul_den_eq_num
 
 theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m := by
-  replace hn : (n : ℚ) ≠ 0
-  · rwa [Ne.def, ← Int.cast_zero, coe_int_inj]
+  replace hn : (n : ℚ) ≠ 0 := by rwa [Ne.def, ← Int.cast_zero, coe_int_inj]
   constructor
   · intro h
     -- Porting note: was `lift (m : ℚ) / n to ℤ using h with k hk`
@@ -204,7 +201,7 @@ theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den
     simp_rw [eq_div_iff_mul_eq hn, ← Int.cast_mul] at hk
     rwa [mul_comm, eq_comm, coe_int_inj] at hk
   · rintro ⟨d, rfl⟩
-    rw [Int.cast_mul, mul_comm, mul_div_cancel _ hn, Rat.coe_int_den]
+    rw [Int.cast_mul, mul_comm, mul_div_cancel_right₀ _ hn, Rat.coe_int_den]
 #align rat.denom_div_cast_eq_one_iff Rat.den_div_cast_eq_one_iff
 
 theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
@@ -291,6 +288,10 @@ theorem inv_coe_nat_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
 #align rat.inv_coe_nat_num Rat.inv_coe_nat_num
 
 @[simp]
+theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℚ))⁻¹.num = 1 :=
+  inv_coe_nat_num_of_pos (NeZero.pos a)
+
+@[simp]
 theorem inv_coe_int_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by
   induction a using Int.induction_on <;>
     simp [← Int.negSucc_coe', Int.negSucc_coe, -neg_add_rev, Rat.inv_neg, Int.ofNat_add_one_out,
@@ -301,6 +302,11 @@ theorem inv_coe_int_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.
 theorem inv_coe_nat_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by
   simpa [-inv_coe_int_den, ofInt_eq_cast] using inv_coe_int_den a
 #align rat.inv_coe_nat_denom Rat.inv_coe_nat_den
+
+@[simp]
+theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
+    (no_index (OfNat.ofNat a : ℚ))⁻¹.den = OfNat.ofNat a :=
+  inv_coe_nat_den_of_pos (NeZero.pos a)
 
 protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=
   ⟨fun h _ _ => h _,

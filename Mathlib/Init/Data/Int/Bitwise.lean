@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Nat.Bitwise
+import Mathlib.Init.ZeroOne
 
 #align_import init.data.int.bitwise from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 

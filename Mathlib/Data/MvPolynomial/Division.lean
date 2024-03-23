@@ -70,7 +70,7 @@ theorem divMonomial_zero (x : MvPolynomial σ R) : x /ᵐᵒⁿᵒᵐⁱᵃˡ 0 
 
 theorem add_divMonomial (x y : MvPolynomial σ R) (s : σ →₀ ℕ) :
     (x + y) /ᵐᵒⁿᵒᵐⁱᵃˡ s = x /ᵐᵒⁿᵒᵐⁱᵃˡ s + y /ᵐᵒⁿᵒᵐⁱᵃˡ s :=
-  map_add _ _ _
+  map_add (N := _ →₀ _) _ _ _
 #align mv_polynomial.add_div_monomial MvPolynomial.add_divMonomial
 
 theorem divMonomial_add (a b : σ →₀ ℕ) (x : MvPolynomial σ R) :

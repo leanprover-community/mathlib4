@@ -72,10 +72,9 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
   convert (config := { sameFun := true })
     integral_mul_deriv_eq_deriv_mul der1 (fun x _ => antideriv_cos_comp_const_mul hz x) _ _ using 2
   · ext1 x; rw [mul_comm]
-  · rw [Complex.ofReal_zero, mul_zero, Complex.sin_zero, zero_div,
-      mul_zero, sub_zero, cos_pi_div_two, Complex.ofReal_zero,
-      zero_pow (by positivity : 0 < n), zero_mul, zero_sub, ← integral_neg, ←
-      integral_const_mul]
+  · rw [Complex.ofReal_zero, mul_zero, Complex.sin_zero, zero_div, mul_zero, sub_zero,
+      cos_pi_div_two, Complex.ofReal_zero, zero_pow (by positivity : n ≠ 0), zero_mul, zero_sub,
+      ← integral_neg, ← integral_const_mul]
     refine' integral_congr fun x _ => _
     field_simp; ring
   · apply Continuous.intervalIntegrable
@@ -103,7 +102,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
     · simp only [Complex.ofReal_cos, Complex.ofReal_sin]
       rw [mul_neg, mul_neg, ← sub_eq_add_neg, Function.comp_apply]
       congr 1
-      · rw [← pow_succ, Nat.sub_add_cancel (by linarith : 1 ≤ n)]
+      · rw [← pow_succ, Nat.sub_add_cancel (by omega : 1 ≤ n)]
       · have : ((n - 1 : ℕ) : ℂ) = (n : ℂ) - 1 := by
           rw [Nat.cast_sub (one_le_two.trans hn), Nat.cast_one]
         rw [Nat.sub_sub, this]
@@ -128,7 +127,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
         continuous_const.mul
           ((Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).mul
             ((Complex.continuous_ofReal.comp continuous_cos).pow (n - 2)))
-    · apply Nat.sub_pos_of_lt; exact one_lt_two.trans_le hn
+    · exact Nat.sub_ne_zero_of_lt hn
     refine' integral_congr fun x _ => _
     dsimp only
     -- get rid of real trig functions and divisions by 2 * z:
@@ -168,7 +167,7 @@ theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
         ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n + 2)) =
       (2 * n + 1 : ℂ) / (2 * n + 2) *
         ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n) := by
-  convert integral_cos_mul_cos_pow (by linarith : 2 ≤ 2 * n + 2) hz using 3
+  convert integral_cos_mul_cos_pow (by omega : 2 ≤ 2 * n + 2) hz using 3
   · simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_two]
     nth_rw 2 [← mul_one (2 : ℂ)]
     rw [← mul_add, mul_pow, ← div_div]
@@ -228,7 +227,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
     have aux' : 2 * n.succ = 2 * n + 2 := by rw [Nat.succ_eq_add_one, mul_add, mul_one]
     have : (∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n.succ)) = (2 * (n : ℝ) + 1) / (2 * n + 2) * C := by
       rw [integral_cos_pow_eq]
-      dsimp only
+      dsimp only [C]
       rw [integral_cos_pow_eq, aux', integral_sin_pow, sin_zero, sin_pi, pow_succ,
         zero_mul, zero_mul, zero_mul, sub_zero, zero_div,
         zero_add, ← mul_assoc, ← mul_assoc, mul_comm (1 / 2 : ℝ) _, Nat.cast_mul, Nat.cast_eq_ofNat]
@@ -311,13 +310,10 @@ theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
   have : 𝓝 (Complex.sin (π * z)) = 𝓝 (Complex.sin (π * z) * 1) := by rw [mul_one]
   simp_rw [this, mul_div_assoc] at A
   convert (tendsto_mul_iff_of_ne_zero _ one_ne_zero).mp A
-  suffices :
-    Tendsto
-      (fun n : ℕ =>
+  suffices Tendsto (fun n : ℕ =>
         (∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) /
-          (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ))
-      atTop (𝓝 1)
-  exact this.comp (tendsto_id.const_mul_atTop' zero_lt_two)
+          (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ)) atTop (𝓝 1) from
+    this.comp (tendsto_id.const_mul_atTop' zero_lt_two)
   have : ContinuousOn (fun x : ℝ => Complex.cos (2 * z * x)) (Icc 0 (π / 2)) :=
     (Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).continuousOn
   convert tendsto_integral_cos_pow_mul_div this using 1
@@ -331,7 +327,7 @@ theorem _root_.Real.tendsto_euler_sin_prod (x : ℝ) :
       atTop (𝓝 <| sin (π * x)) := by
   convert (Complex.continuous_re.tendsto _).comp (Complex.tendsto_euler_sin_prod x) using 1
   · ext1 n
-    rw [Function.comp_apply, ← Complex.ofReal_mul, Complex.ofReal_mul_re]
+    rw [Function.comp_apply, ← Complex.ofReal_mul, Complex.re_ofReal_mul]
     suffices
       (∏ j : ℕ in Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℂ) =
         (∏ j : ℕ in Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℝ) by

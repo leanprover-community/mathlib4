@@ -23,16 +23,11 @@ definition, which is made irreducible for this purpose.
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
 
-set_option autoImplicit true
-
-
-universe uR uS uT uA
+universe uR uS uT uA u₄
 
 variable {R : Type uR} [Semiring R]
-
 variable {S : Type uS} [CommSemiring S]
 variable {T : Type uT}
-
 variable {A : Type uA} [Semiring A] [Algebra S A]
 
 namespace RingCon
@@ -195,7 +190,7 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
             -- mysteriously doesn't work
             have := congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih
             dsimp only at this
-            simp [mul_def] at this
+            simp? [mul_def] at this says simp only [mul_def, Quot.map₂_mk, mk.injEq] at this
             exact this)
         a⟩
 
@@ -278,11 +273,11 @@ theorem smul_quot [Algebra S R] {n : S} {a : R} :
 
 instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
     [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
-  ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
+  ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
 
 instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
-  ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
+  ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
 
 instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) where
   add := (· + ·)
@@ -629,8 +624,8 @@ theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) :
 #align ring_quot.mk_alg_hom_rel RingQuot.mkAlgHom_rel
 
 theorem mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgHom S s) := by
-  suffices : Function.Surjective fun x ↦ (⟨.mk (Rel s) x⟩ : RingQuot s)
-  · simpa [mkAlgHom_def, mkRingHom_def]
+  suffices Function.Surjective fun x ↦ (⟨.mk (Rel s) x⟩ : RingQuot s) by
+    simpa [mkAlgHom_def, mkRingHom_def]
   rintro ⟨⟨a⟩⟩
   use a
 #align ring_quot.mk_alg_hom_surjective RingQuot.mkAlgHom_surjective

@@ -32,7 +32,6 @@ open Opposite
 namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {J : Type u₂} [Category.{v₂} J]
 
 /-- Turn a colimit for `F : J ⥤ C` into a limit for `F.op : Jᵒᵖ ⥤ Cᵒᵖ`. -/
@@ -468,8 +467,8 @@ theorem desc_op_comp_opCoproductIsoProduct_hom {X : C} (π : (a : α) → Z a �
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a ↦ (π a).op) := by
   convert desc_op_comp_opCoproductIsoProduct'_hom (coproductIsCoproduct Z)
     (productIsProduct (op <| Z ·)) (Cofan.mk _ π)
-  · ext; simp [Sigma.desc, colimit.desc, coproductIsCoproduct]
-  · ext; simp [Pi.lift, limit.lift, productIsProduct]
+  · ext; simp [Sigma.desc, coproductIsCoproduct]
+  · ext; simp [Pi.lift, productIsProduct]
 
 end OppositeCoproducts
 
@@ -542,8 +541,8 @@ theorem opProductIsoCoproduct_inv_comp_lift {X : C} (π : (a : α) → X ⟶ Z a
     (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op  = Sigma.desc (fun a ↦ (π a).op) := by
   convert opProductIsoCoproduct'_inv_comp_lift (productIsProduct Z)
     (coproductIsCoproduct (op <| Z ·)) (Fan.mk _ π)
-  · ext; simp [Pi.lift, limit.lift, productIsProduct]
-  · ext; simp [Sigma.desc, colimit.desc, coproductIsCoproduct]
+  · ext; simp [Pi.lift, productIsProduct]
+  · ext; simp [Sigma.desc, coproductIsCoproduct]
 
 end OppositeProducts
 
@@ -623,7 +622,7 @@ def opSpan {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
 
 namespace PushoutCocone
 
--- porting note: it was originally @[simps (config := lemmasOnly)]
+-- Porting note: it was originally @[simps (config := lemmasOnly)]
 /-- The obvious map `PushoutCocone f g → PullbackCone f.unop g.unop` -/
 @[simps!]
 def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
@@ -633,17 +632,17 @@ def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
       (Cocone.whisker walkingCospanOpEquiv.functor c))
 #align category_theory.limits.pushout_cocone.unop CategoryTheory.Limits.PushoutCocone.unop
 
--- porting note: removed simp attribute as the equality can already be obtained by simp
+-- Porting note (#10618): removed simp attribute as the equality can already be obtained by simp
 theorem unop_fst {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.unop.fst = c.inl.unop := by simp
 #align category_theory.limits.pushout_cocone.unop_fst CategoryTheory.Limits.PushoutCocone.unop_fst
 
--- porting note: removed simp attribute as the equality can already be obtained by simp
+-- Porting note (#10618): removed simp attribute as the equality can already be obtained by simp
 theorem unop_snd {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.unop.snd = c.inr.unop := by aesop_cat
 #align category_theory.limits.pushout_cocone.unop_snd CategoryTheory.Limits.PushoutCocone.unop_snd
 
--- porting note: it was originally @[simps (config := lemmasOnly)]
+-- Porting note: it was originally @[simps (config := lemmasOnly)]
 /-- The obvious map `PushoutCocone f.op g.op → PullbackCone f g` -/
 @[simps!]
 def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : PullbackCone f.op g.op :=
@@ -651,12 +650,12 @@ def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : Pullbac
     (Cone.whisker walkingSpanOpEquiv.inverse (Cocone.op c))
 #align category_theory.limits.pushout_cocone.op CategoryTheory.Limits.PushoutCocone.op
 
--- porting note: removed simp attribute as the equality can already be obtained by simp
+-- Porting note (#10618): removed simp attribute as the equality can already be obtained by simp
 theorem op_fst {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.op.fst = c.inl.op :=
   by aesop_cat
 #align category_theory.limits.pushout_cocone.op_fst CategoryTheory.Limits.PushoutCocone.op_fst
 
--- porting note: removed simp attribute as the equality can already be obtained by simp
+-- Porting note (#10618): removed simp attribute as the equality can already be obtained by simp
 theorem op_snd {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.op.snd = c.inr.op :=
   by aesop_cat
 #align category_theory.limits.pushout_cocone.op_snd CategoryTheory.Limits.PushoutCocone.op_snd
@@ -665,7 +664,7 @@ end PushoutCocone
 
 namespace PullbackCone
 
--- porting note: it was originally @[simps (config := lemmasOnly)]
+-- Porting note: it was originally @[simps (config := lemmasOnly)]
 /-- The obvious map `PullbackCone f g → PushoutCocone f.unop g.unop` -/
 @[simps!]
 def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
@@ -675,12 +674,12 @@ def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
       (Cone.whisker walkingSpanOpEquiv.functor c))
 #align category_theory.limits.pullback_cone.unop CategoryTheory.Limits.PullbackCone.unop
 
--- porting note: removed simp attribute as the equality can already be obtained by simp
+-- Porting note (#10618): removed simp attribute as the equality can already be obtained by simp
 theorem unop_inl {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.unop.inl = c.fst.unop := by aesop_cat
 #align category_theory.limits.pullback_cone.unop_inl CategoryTheory.Limits.PullbackCone.unop_inl
 
--- porting note: removed simp attribute as the equality can already be obtained by simp
+-- Porting note (#10618): removed simp attribute as the equality can already be obtained by simp
 theorem unop_inr {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.unop.inr = c.snd.unop := by aesop_cat
 #align category_theory.limits.pullback_cone.unop_inr CategoryTheory.Limits.PullbackCone.unop_inr
@@ -692,12 +691,12 @@ def op {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : PushoutC
     (Cocone.whisker walkingCospanOpEquiv.inverse (Cone.op c))
 #align category_theory.limits.pullback_cone.op CategoryTheory.Limits.PullbackCone.op
 
--- porting note: removed simp attribute as the equality can already be obtained by simp
+-- Porting note (#10618): removed simp attribute as the equality can already be obtained by simp
 theorem op_inl {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.inl = c.fst.op :=
   by aesop_cat
 #align category_theory.limits.pullback_cone.op_inl CategoryTheory.Limits.PullbackCone.op_inl
 
--- porting note: removed simp attribute as the equality can already be obtained by simp
+-- Porting note (#10618): removed simp attribute as the equality can already be obtained by simp
 theorem op_inr {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.inr = c.snd.op :=
   by aesop_cat
 #align category_theory.limits.pullback_cone.op_inr CategoryTheory.Limits.PullbackCone.op_inr

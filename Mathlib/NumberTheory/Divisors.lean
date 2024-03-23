@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Data.Nat.Interval
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Nat.Factors
+import Mathlib.Data.Nat.Interval
 
 #align_import number_theory.divisors from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -31,7 +32,8 @@ divisors, perfect numbers
 -/
 
 
-open BigOperators Classical Finset
+open scoped Classical
+open BigOperators Finset
 
 namespace Nat
 
@@ -94,7 +96,7 @@ theorem cons_self_properDivisors (h : n ≠ 0) :
 theorem mem_divisors {m : ℕ} : n ∈ divisors m ↔ n ∣ m ∧ m ≠ 0 := by
   rcases eq_or_ne m 0 with (rfl | hm); · simp [divisors]
   simp only [hm, Ne.def, not_false_iff, and_true_iff, ← filter_dvd_eq_divisors hm, mem_filter,
-    mem_range, and_iff_right_iff_imp, lt_succ_iff]
+    mem_range, and_iff_right_iff_imp, Nat.lt_succ_iff]
   exact le_of_dvd hm.bot_lt
 #align nat.mem_divisors Nat.mem_divisors
 
@@ -126,7 +128,8 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     simp only [succ_le_of_lt (Nat.pos_of_ne_zero h.1), succ_le_of_lt (Nat.pos_of_ne_zero h.2),
       true_and_iff]
     exact
-      ⟨le_mul_of_pos_right (Nat.pos_of_ne_zero h.2), le_mul_of_pos_left (Nat.pos_of_ne_zero h.1)⟩
+      ⟨Nat.le_mul_of_pos_right _ (Nat.pos_of_ne_zero h.2),
+        Nat.le_mul_of_pos_left _ (Nat.pos_of_ne_zero h.1)⟩
 #align nat.mem_divisors_antidiagonal Nat.mem_divisorsAntidiagonal
 
 -- Porting note: Redundant binder annotation update
@@ -172,6 +175,14 @@ theorem properDivisors_zero : properDivisors 0 = ∅ := by
   simp
 #align nat.proper_divisors_zero Nat.properDivisors_zero
 
+@[simp]
+lemma nonempty_divisors : (divisors n).Nonempty ↔ n ≠ 0 :=
+  ⟨fun ⟨m, hm⟩ hn ↦ by simp [hn] at hm, fun hn ↦ ⟨1, one_mem_divisors.2 hn⟩⟩
+
+@[simp]
+lemma divisors_eq_empty : divisors n = ∅ ↔ n = 0 :=
+  not_nonempty_iff_eq_empty.symm.trans nonempty_divisors.not_left
+
 theorem properDivisors_subset_divisors : properDivisors n ⊆ divisors n :=
   filter_subset_filter _ <| Ico_subset_Ico_right n.le_succ
 #align nat.proper_divisors_subset_divisors Nat.properDivisors_subset_divisors
@@ -207,6 +218,32 @@ lemma sup_divisors_id (n : ℕ) : n.divisors.sup id = n := by
   rcases Decidable.eq_or_ne n 0 with rfl | hn
   · apply zero_le
   · exact Finset.le_sup (f := id) <| mem_divisors_self n hn
+
+lemma one_lt_of_mem_properDivisors {m n : ℕ} (h : m ∈ n.properDivisors) : 1 < n :=
+  lt_of_le_of_lt (pos_of_mem_properDivisors h) (mem_properDivisors.1 h).2
+
+lemma one_lt_div_of_mem_properDivisors {m n : ℕ} (h : m ∈ n.properDivisors) :
+    1 < n / m := by
+  obtain ⟨h_dvd, h_lt⟩ := mem_properDivisors.mp h
+  rwa [Nat.lt_div_iff_mul_lt h_dvd, mul_one]
+
+/-- See also `Nat.mem_properDivisors`. -/
+lemma mem_properDivisors_iff_exists {m n : ℕ} (hn : n ≠ 0) :
+    m ∈ n.properDivisors ↔ ∃ k > 1, n = m * k := by
+  refine ⟨fun h ↦ ⟨n / m, one_lt_div_of_mem_properDivisors h, ?_⟩, ?_⟩
+  · exact (Nat.mul_div_cancel' (mem_properDivisors.mp h).1).symm
+  · rintro ⟨k, hk, rfl⟩
+    rw [mul_ne_zero_iff] at hn
+    exact mem_properDivisors.mpr ⟨⟨k, rfl⟩, lt_mul_of_one_lt_right (Nat.pos_of_ne_zero hn.1) hk⟩
+
+@[simp]
+lemma nonempty_properDivisors : n.properDivisors.Nonempty ↔ 1 < n :=
+  ⟨fun ⟨_m, hm⟩ ↦ one_lt_of_mem_properDivisors hm, fun hn ↦
+    ⟨1, one_mem_properDivisors_iff_one_lt.2 hn⟩⟩
+
+@[simp]
+lemma properDivisors_eq_empty : n.properDivisors = ∅ ↔ n ≤ 1 := by
+  rw [← not_nonempty_iff_eq_empty, nonempty_properDivisors, not_lt]
 
 @[simp]
 theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
@@ -288,8 +325,9 @@ theorem map_div_left_divisors :
     n.divisors.map ⟨fun d => (n / d, d), fun p₁ p₂ => congr_arg Prod.snd⟩ =
       n.divisorsAntidiagonal := by
   apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
+  ext
   rw [map_swap_divisorsAntidiagonal, ← map_div_right_divisors, Finset.map_map]
-  rfl
+  simp
 #align nat.map_div_left_divisors Nat.map_div_left_divisors
 
 theorem sum_divisors_eq_sum_properDivisors_add_self :
@@ -333,7 +371,7 @@ theorem Prime.properDivisors {p : ℕ} (pp : p.Prime) : properDivisors p = {1} :
 #align nat.prime.proper_divisors Nat.Prime.properDivisors
 
 theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
-    divisors (p ^ k) = (Finset.range (k + 1)).map ⟨(p ^ ·), pow_right_injective pp.two_le⟩ := by
+    divisors (p ^ k) = (Finset.range (k + 1)).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
   rw [mem_divisors_prime_pow pp]
   simp [Nat.lt_succ, eq_comm]
@@ -344,7 +382,7 @@ theorem divisors_injective : Function.Injective divisors :=
 
 @[simp]
 theorem divisors_inj {a b : ℕ} : a.divisors = b.divisors ↔ a = b :=
-  ⟨fun x => divisors_injective x, congrArg divisors⟩
+  divisors_injective.eq_iff
 
 theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆ n.properDivisors) :
     ((∑ x in s, x) = ∑ x in n.properDivisors, x) → s = n.properDivisors := by
@@ -372,8 +410,7 @@ theorem sum_properDivisors_dvd (h : (∑ x in n.properDivisors, x) ∣ n) :
   cases' n with n
   · simp
   · cases' n with n
-    · contrapose! h
-      simp
+    · simp at h
     · rw [or_iff_not_imp_right]
       intro ne_n
       have hlt : ∑ x in n.succ.succ.properDivisors, x < n.succ.succ :=
@@ -381,7 +418,7 @@ theorem sum_properDivisors_dvd (h : (∑ x in n.properDivisors, x) ∣ n) :
       symm
       rw [← mem_singleton, eq_properDivisors_of_subset_of_sum_eq_sum (singleton_subset_iff.2
         (mem_properDivisors.2 ⟨h, hlt⟩)) (sum_singleton _ _), mem_properDivisors]
-      refine' ⟨one_dvd _, Nat.succ_lt_succ (Nat.succ_pos _)⟩
+      exact ⟨one_dvd _, Nat.succ_lt_succ (Nat.succ_pos _)⟩
 #align nat.sum_proper_divisors_dvd Nat.sum_properDivisors_dvd
 
 @[to_additive (attr := simp)]
@@ -438,16 +475,15 @@ theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ
   intro a
   constructor <;> intro h
   · rcases h with ⟨_h_left, rfl, h_right⟩
-    rw [pow_lt_pow_iff pp.one_lt] at h_right
+    rw [pow_lt_pow_iff_right pp.one_lt] at h_right
     exact ⟨h_right, by rfl⟩
   · rcases h with ⟨h_left, rfl⟩
-    rw [pow_lt_pow_iff pp.one_lt]
+    rw [pow_lt_pow_iff_right pp.one_lt]
     simp [h_left, le_of_lt]
 #align nat.mem_proper_divisors_prime_pow Nat.mem_properDivisors_prime_pow
 
--- Porting note: Specified pow to Nat.pow
 theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
-    properDivisors (p ^ k) = (Finset.range k).map ⟨Nat.pow p, pow_right_injective pp.two_le⟩ := by
+    properDivisors (p ^ k) = (Finset.range k).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
   simp only [mem_properDivisors, Nat.isUnit_iff, mem_map, mem_range, Function.Embedding.coeFn_mk,
     pow_eq]

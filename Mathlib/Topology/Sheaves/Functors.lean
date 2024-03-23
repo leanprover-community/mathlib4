@@ -37,9 +37,7 @@ open CategoryTheory.Limits
 open TopologicalSpace
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : TopCat.{w}} (f : X ⟶ Y)
-
 variable ⦃ι : Type w⦄ {U : ι → Opens Y}
 
 namespace TopCat

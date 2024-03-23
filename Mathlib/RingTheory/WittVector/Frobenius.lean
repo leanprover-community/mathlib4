@@ -138,7 +138,7 @@ theorem map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n -
       add_assoc, tsub_right_comm, add_comm i,
       tsub_add_cancel_of_le (le_tsub_of_add_le_right ((le_tsub_iff_left hi).mp h₁))]
   have hle : p ^ m ≤ j + 1 := h ▸ Nat.le_of_dvd j.succ_pos (multiplicity.pow_multiplicity_dvd _)
-  exact ⟨(pow_le_pow_iff hp.1.one_lt).1 (hle.trans hj),
+  exact ⟨(pow_le_pow_iff_right hp.1.one_lt).1 (hle.trans hj),
      Nat.le_of_lt_succ ((Nat.lt_pow_self hp.1.one_lt m).trans_le hle)⟩
 #align witt_vector.map_frobenius_poly.key₂ WittVector.map_frobeniusPoly.key₂
 
@@ -166,7 +166,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   clear IH
   rw [add_comm (X i ^ p), add_pow, sum_range_succ', pow_zero, tsub_zero, Nat.choose_zero_right,
     one_mul, Nat.cast_one, mul_one, mul_add, add_mul, Nat.succ_sub (le_of_lt hi),
-    Nat.succ_eq_add_one (n - i), pow_succ, pow_mul, add_sub_cancel, mul_sum, sum_mul]
+    Nat.succ_eq_add_one (n - i), pow_succ, pow_mul, add_sub_cancel_right, mul_sum, sum_mul]
   apply sum_congr rfl
   intro j hj
   rw [mem_range] at hj

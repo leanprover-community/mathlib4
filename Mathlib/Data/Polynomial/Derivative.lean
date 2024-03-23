@@ -5,6 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.Polynomial.Eval
+import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import data.polynomial.derivative from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
 
@@ -72,7 +73,7 @@ theorem coeff_derivative (p : R[X]) (n : ℕ) :
     simp [h]
 #align polynomial.coeff_derivative Polynomial.coeff_derivative
 
---Porting note: removed `simp`: `simp` can prove it.
+-- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_zero : derivative (0 : R[X]) = 0 :=
   derivative.map_zero
 #align polynomial.derivative_zero Polynomial.derivative_zero
@@ -113,7 +114,7 @@ theorem derivative_X_pow (n : ℕ) : derivative (X ^ n : R[X]) = C (n : R) * X ^
 set_option linter.uppercaseLean3 false in
 #align polynomial.derivative_X_pow Polynomial.derivative_X_pow
 
---Porting note: removed `simp`: `simp` can prove it.
+-- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_X_sq : derivative (X ^ 2 : R[X]) = C 2 * X := by
   rw [derivative_X_pow, Nat.cast_two, pow_one]
 set_option linter.uppercaseLean3 false in
@@ -140,33 +141,33 @@ theorem derivative_one : derivative (1 : R[X]) = 0 :=
 #align polynomial.derivative_one Polynomial.derivative_one
 
 set_option linter.deprecated false in
---Porting note: removed `simp`: `simp` can prove it.
+-- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_bit0 {a : R[X]} : derivative (bit0 a) = bit0 (derivative a) := by simp [bit0]
 #align polynomial.derivative_bit0 Polynomial.derivative_bit0
 
 set_option linter.deprecated false in
---Porting note: removed `simp`: `simp` can prove it.
+-- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_bit1 {a : R[X]} : derivative (bit1 a) = bit0 (derivative a) := by simp [bit1]
 #align polynomial.derivative_bit1 Polynomial.derivative_bit1
 
---Porting note: removed `simp`: `simp` can prove it.
+-- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_add {f g : R[X]} : derivative (f + g) = derivative f + derivative g :=
   derivative.map_add f g
 #align polynomial.derivative_add Polynomial.derivative_add
 
---Porting note: removed `simp`: `simp` can prove it.
+-- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_X_add_C (c : R) : derivative (X + C c) = 1 := by
   rw [derivative_add, derivative_X, derivative_C, add_zero]
 set_option linter.uppercaseLean3 false in
 #align polynomial.derivative_X_add_C Polynomial.derivative_X_add_C
 
---Porting note: removed `simp`: `simp` can prove it.
+-- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
     derivative (∑ b in s, f b) = ∑ b in s, derivative (f b) :=
   map_sum ..
 #align polynomial.derivative_sum Polynomial.derivative_sum
 
---Porting note: removed `simp`: `simp` can prove it.
+-- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S)
     (p : R[X]) : derivative (s • p) = s • derivative p :=
   derivative.map_smul_of_tower s p
@@ -206,7 +207,7 @@ theorem degree_derivative_le {p : R[X]} : p.derivative.degree ≤ p.degree :=
 
 theorem natDegree_derivative_lt {p : R[X]} (hp : p.natDegree ≠ 0) :
     p.derivative.natDegree < p.natDegree := by
-  cases' eq_or_ne (derivative p) 0 with hp' hp'
+  rcases eq_or_ne (derivative p) 0 with hp' | hp'
   · rw [hp', Polynomial.natDegree_zero]
     exact hp.bot_lt
   · rw [natDegree_lt_natDegree_iff hp']
@@ -233,7 +234,7 @@ theorem derivative_nat_cast {n : ℕ} : derivative (n : R[X]) = 0 := by
   exact derivative_C
 #align polynomial.derivative_nat_cast Polynomial.derivative_nat_cast
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] :
     derivative (no_index (OfNat.ofNat n) : R[X]) = 0 :=
@@ -448,7 +449,7 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
     refine' sum_congr rfl fun k hk => _
     rw [mem_range] at hk
     congr
-    rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hk), Nat.succ_sub_succ]
+    omega
   · rw [Nat.choose_zero_right, tsub_zero]
 #align polynomial.iterate_derivative_mul Polynomial.iterate_derivative_mul
 
@@ -474,6 +475,23 @@ theorem derivative_pow (p : R[X]) (n : ℕ) :
 theorem derivative_sq (p : R[X]) : derivative (p ^ 2) = C 2 * p * derivative p := by
   rw [derivative_pow_succ, Nat.cast_one, one_add_one_eq_two, pow_one]
 #align polynomial.derivative_sq Polynomial.derivative_sq
+
+theorem pow_sub_one_dvd_derivative_of_pow_dvd {p q : R[X]} {n : ℕ}
+    (dvd : q ^ n ∣ p) : q ^ (n - 1) ∣ derivative p := by
+  obtain ⟨r, rfl⟩ := dvd
+  rw [derivative_mul, derivative_pow]
+  exact (((dvd_mul_left _ _).mul_right _).mul_right _).add ((pow_dvd_pow q n.pred_le).mul_right _)
+
+theorem pow_sub_dvd_iterate_derivative_of_pow_dvd {p q : R[X]} {n : ℕ} (m : ℕ)
+    (dvd : q ^ n ∣ p) : q ^ (n - m) ∣ derivative^[m] p := by
+  induction m generalizing p with
+  | zero => simpa
+  | succ m ih =>
+    rw [Nat.sub_succ, Function.iterate_succ']
+    exact pow_sub_one_dvd_derivative_of_pow_dvd (ih dvd)
+
+theorem pow_sub_dvd_iterate_derivative_pow (p : R[X]) (n m : ℕ) :
+    p ^ (n - m) ∣ derivative^[m] (p ^ n) := pow_sub_dvd_iterate_derivative_of_pow_dvd m dvd_rfl
 
 theorem dvd_iterate_derivative_pow (f : R[X]) (n : ℕ) {m : ℕ} (c : R) (hm : m ≠ 0) :
     (n : R) ∣ eval c (derivative^[m] (f ^ n)) := by
@@ -572,7 +590,7 @@ section Ring
 
 variable [Ring R]
 
---Porting note: removed `simp`: `simp` can prove it.
+-- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_neg (f : R[X]) : derivative (-f) = -derivative f :=
   LinearMap.map_neg derivative f
 #align polynomial.derivative_neg Polynomial.derivative_neg
@@ -582,12 +600,12 @@ theorem iterate_derivative_neg {f : R[X]} {k : ℕ} : derivative^[k] (-f) = -der
   (@derivative R _).toAddMonoidHom.iterate_map_neg _ _
 #align polynomial.iterate_derivative_neg Polynomial.iterate_derivative_neg
 
---Porting note: removed `simp`: `simp` can prove it.
+-- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_sub {f g : R[X]} : derivative (f - g) = derivative f - derivative g :=
   LinearMap.map_sub derivative f g
 #align polynomial.derivative_sub Polynomial.derivative_sub
 
---Porting note: removed `simp`: `simp` can prove it.
+-- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_X_sub_C (c : R) : derivative (X - C c) = 1 := by
   rw [derivative_sub, derivative_X, derivative_C, sub_zero]
 set_option linter.uppercaseLean3 false in
@@ -658,10 +676,14 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.derivative_X_sub_C_sq Polynomial.derivative_X_sub_C_sq
 
 theorem iterate_derivative_X_sub_pow (n k : ℕ) (c : R) :
-    (derivative^[k]) ((X - C c) ^ n : R[X]) = n.descFactorial k • (X - C c) ^ (n - k) := by
+    derivative^[k] ((X - C c) ^ n) = n.descFactorial k • (X - C c) ^ (n - k) := by
   rw [sub_eq_add_neg, ← C_neg, iterate_derivative_X_add_pow]
 set_option linter.uppercaseLean3 false in
 #align polynomial.iterate_derivative_X_sub_pow Polynomial.iterate_derivative_X_sub_powₓ
+
+theorem iterate_derivative_X_sub_pow_self (n : ℕ) (c : R) :
+    derivative^[n] ((X - C c) ^ n) = n.factorial := by
+  rw [iterate_derivative_X_sub_pow, n.sub_self, pow_zero, nsmul_one, n.descFactorial_self]
 
 end CommRing
 

@@ -3,6 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Tactic.Abel
 
@@ -17,18 +18,15 @@ We define chain homotopies, and prove that homotopic chain maps induce the same 
 
 universe v u
 
-open Classical
+open scoped Classical
 
 noncomputable section
 
 open CategoryTheory Category Limits HomologicalComplex
 
 variable {ι : Type*}
-
 variable {V : Type u} [Category.{v} V] [Preadditive V]
-
 variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
-
 variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
 
 section
@@ -56,6 +54,11 @@ theorem dNext_eq (f : ∀ i j, C.X i ⟶ D.X j) {i i' : ι} (w : c.Rel i i') :
   rfl
 #align d_next_eq dNext_eq
 
+lemma dNext_eq_zero (f : ∀ i j, C.X i ⟶ D.X j) (i : ι) (hi : ¬ c.Rel i (c.next i)) :
+    dNext i f = 0 := by
+  dsimp [dNext]
+  rw [shape _ _ _ hi, zero_comp]
+
 @[simp 1100]
 theorem dNext_comp_left (f : C ⟶ D) (g : ∀ i j, D.X i ⟶ E.X j) (i : ι) :
     (dNext i fun i j => f.f i ≫ g i j) = f.f i ≫ dNext i g :=
@@ -73,6 +76,11 @@ def prevD (j : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.X j ⟶ D.X j) :=
   AddMonoidHom.mk' (fun f => f j (c.prev j) ≫ D.d (c.prev j) j) fun _ _ =>
     Preadditive.add_comp _ _ _ _ _ _
 #align prev_d prevD
+
+lemma prevD_eq_zero (f : ∀ i j, C.X i ⟶ D.X j) (i : ι) (hi : ¬ c.Rel (c.prev i) i) :
+    prevD i f = 0 := by
+  dsimp [prevD]
+  rw [shape _ _ _ hi, comp_zero]
 
 /-- `f j (c.prev j)`. -/
 def toPrev (j : ι) : (∀ i j, C.X i ⟶ D.X j) →+ (C.X j ⟶ D.xPrev j) :=
@@ -122,7 +130,7 @@ theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶
   · congr <;> simp
 #align prev_d_nat prevD_nat
 
--- porting note: removed @[has_nonempty_instance]
+-- Porting note: removed @[has_nonempty_instance]
 /-- A homotopy `h` between chain maps `f` and `g` consists of components `h i j : C.X i ⟶ D.X j`
 which are zero unless `c.Rel j i`, satisfying the homotopy condition.
 -/
@@ -195,6 +203,20 @@ def add {f₁ g₁ f₂ g₂ : C ⟶ D} (h₁ : Homotopy f₁ g₁) (h₂ : Homo
     simp only [HomologicalComplex.add_f_apply, h₁.comm, h₂.comm, AddMonoidHom.map_add]
     abel
 #align homotopy.add Homotopy.add
+
+/-- the scalar multiplication of an homotopy -/
+@[simps!]
+def smul {R : Type*} [Semiring R] [Linear R V] (h : Homotopy f g) (a : R) :
+    Homotopy (a • f) (a • g) where
+  hom i j := a • h.hom i j
+  zero i j hij := by
+    dsimp
+    rw [h.zero i j hij, smul_zero]
+  comm i := by
+    dsimp
+    rw [h.comm]
+    dsimp [fromNext, toPrev]
+    simp only [smul_add, Linear.comp_smul, Linear.smul_comp]
 
 /-- homotopy is closed under composition (on the right) -/
 @[simps]

@@ -42,11 +42,8 @@ namespace Orientation
 attribute [local instance] Complex.finrank_real_complex_fact
 
 variable {V V' : Type*}
-
 variable [NormedAddCommGroup V] [NormedAddCommGroup V']
-
 variable [InnerProductSpace ℝ V] [InnerProductSpace ℝ V']
-
 variable [Fact (finrank ℝ V = 2)] [Fact (finrank ℝ V' = 2)] (o : Orientation ℝ V (Fin 2))
 
 local notation "ω" => o.areaForm
@@ -79,7 +76,7 @@ theorem oangle_zero_right (x : V) : o.oangle x 0 = 0 := by simp [oangle]
 /-- If the two vectors passed to `oangle` are the same, the result is 0. -/
 @[simp]
 theorem oangle_self (x : V) : o.oangle x x = 0 := by
-  rw [oangle, kahler_apply_self, ← ofReal_pow]; norm_cast
+  rw [oangle, kahler_apply_self, ← ofReal_pow]
   convert QuotientAddGroup.mk_zero (AddSubgroup.zmultiples (2 * π))
   apply arg_ofReal_of_nonneg
   positivity
@@ -264,13 +261,13 @@ theorem oangle_neg_self_right {x : V} (hx : x ≠ 0) : o.oangle x (-x) = π := b
 #align orientation.oangle_neg_self_right Orientation.oangle_neg_self_right
 
 /-- Twice the angle between the negation of a vector and that vector is 0. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem two_zsmul_oangle_neg_self_left (x : V) : (2 : ℤ) • o.oangle (-x) x = 0 := by
   by_cases hx : x = 0 <;> simp [hx]
 #align orientation.two_zsmul_oangle_neg_self_left Orientation.two_zsmul_oangle_neg_self_left
 
 /-- Twice the angle between a vector and its negation is 0. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem two_zsmul_oangle_neg_self_right (x : V) : (2 : ℤ) • o.oangle x (-x) = 0 := by
   by_cases hx : x = 0 <;> simp [hx]
 #align orientation.two_zsmul_oangle_neg_self_right Orientation.two_zsmul_oangle_neg_self_right
@@ -705,7 +702,7 @@ theorem oangle_eq_of_angle_eq_of_sign_eq {w x y z : V}
     rcases h' with ⟨hwx, hyz⟩
     have hpi : π / 2 ≠ π := by
       intro hpi
-      rw [div_eq_iff, eq_comm, ← sub_eq_zero, mul_two, add_sub_cancel] at hpi
+      rw [div_eq_iff, eq_comm, ← sub_eq_zero, mul_two, add_sub_cancel_right] at hpi
       · exact Real.pi_pos.ne.symm hpi
       · exact two_ne_zero
     have h0wx : w = 0 ∨ x = 0 := by
@@ -913,7 +910,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
   have hf : ContinuousOn (fun z : V × V => o.oangle z.1 z.2) s := by
     refine' ContinuousAt.continuousOn fun z hz => o.continuousAt_oangle _ _
     all_goals
-      simp_rw [Set.mem_image] at hz
+      simp_rw [s, Set.mem_image] at hz
       obtain ⟨r', -, rfl⟩ := hz
       simp only [Prod.fst, Prod.snd]
       intro hz
@@ -921,7 +918,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
     · simpa [hz] using (h' r').1
   have hs : ∀ z : V × V, z ∈ s → o.oangle z.1 z.2 ≠ 0 ∧ o.oangle z.1 z.2 ≠ π := by
     intro z hz
-    simp_rw [Set.mem_image] at hz
+    simp_rw [s, Set.mem_image] at hz
     obtain ⟨r', -, rfl⟩ := hz
     exact h' r'
   have hx : (x, y) ∈ s := by
@@ -1030,7 +1027,7 @@ theorem oangle_sign_sub_left_swap (x y : V) : (o.oangle (x - y) x).sign = (o.oan
 /-- The sign of the angle between a vector, and a linear combination of that vector with a second
 vector, is the sign of the factor by which the second vector is multiplied in that combination
 multiplied by the sign of the angle between the two vectors. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem oangle_sign_smul_add_smul_right (x y : V) (r₁ r₂ : ℝ) :
     (o.oangle x (r₁ • x + r₂ • y)).sign = SignType.sign r₂ * (o.oangle x y).sign := by
   rw [← o.oangle_sign_smul_add_right x (r₁ • x + r₂ • y) (-r₁)]
@@ -1040,7 +1037,7 @@ theorem oangle_sign_smul_add_smul_right (x y : V) (r₁ r₂ : ℝ) :
 /-- The sign of the angle between a linear combination of two vectors and the second vector is
 the sign of the factor by which the first vector is multiplied in that combination multiplied by
 the sign of the angle between the two vectors. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem oangle_sign_smul_add_smul_left (x y : V) (r₁ r₂ : ℝ) :
     (o.oangle (r₁ • x + r₂ • y) y).sign = SignType.sign r₁ * (o.oangle x y).sign := by
   simp_rw [o.oangle_rev y, Real.Angle.sign_neg, add_comm (r₁ • x), oangle_sign_smul_add_smul_right,
@@ -1058,10 +1055,10 @@ theorem oangle_sign_smul_add_smul_smul_add_smul (x y : V) (r₁ r₂ r₃ r₄ :
       oangle_sign_smul_left, add_comm, oangle_sign_smul_add_smul_right, oangle_rev,
       Real.Angle.sign_neg, sign_mul, mul_neg, mul_neg, neg_mul, mul_assoc]
   · rw [← o.oangle_sign_smul_add_right (r₁ • x + r₂ • y) (r₃ • x + r₄ • y) (-r₃ / r₁), smul_add,
-      smul_smul, smul_smul, div_mul_cancel _ hr₁, neg_smul, ← add_assoc, add_comm (-(r₃ • x)), ←
+      smul_smul, smul_smul, div_mul_cancel₀ _ hr₁, neg_smul, ← add_assoc, add_comm (-(r₃ • x)), ←
       sub_eq_add_neg, sub_add_cancel, ← add_smul, oangle_sign_smul_right,
       oangle_sign_smul_add_smul_left, ← mul_assoc, ← sign_mul, add_mul, mul_assoc, mul_comm r₂ r₁, ←
-      mul_assoc, div_mul_cancel _ hr₁, add_comm, neg_mul, ← sub_eq_add_neg, mul_comm r₄,
+      mul_assoc, div_mul_cancel₀ _ hr₁, add_comm, neg_mul, ← sub_eq_add_neg, mul_comm r₄,
       mul_comm r₃]
 #align orientation.oangle_sign_smul_add_smul_smul_add_smul Orientation.oangle_sign_smul_add_smul_smul_add_smul
 

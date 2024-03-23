@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Tactic.Ring
+import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import ring_theory.localization.basic from "leanprover-community/mathlib"@"b69c9a770ecf37eb21f7b8cf4fa00de3b62694ec"
 
@@ -92,13 +91,12 @@ open BigOperators
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
-
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 /-- The typeclass `IsLocalization (M : Submonoid R) S` where `S` is an `R`-algebra
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
-class IsLocalization : Prop where
-  --Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
+@[mk_iff] class IsLocalization : Prop where
+  -- Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
   /-- Everything in the image of `algebraMap` is a unit -/
   map_units' : ∀ y : M, IsUnit (algebraMap R S y)
   /-- The `algebraMap` is surjective -/
@@ -175,6 +173,10 @@ theorem toLocalizationMap_toMap_apply (x) : (toLocalizationMap M S).toMap x = al
   rfl
 #align is_localization.to_localization_map_to_map_apply IsLocalization.toLocalizationMap_toMap_apply
 
+theorem surj₂ : ∀ z w : S, ∃ z' w' : R, ∃ d : M,
+    (z * algebraMap R S d = algebraMap R S z') ∧ (w * algebraMap R S d = algebraMap R S w') :=
+  (toLocalizationMap M S).surj₂
+
 end
 
 variable (M) {S}
@@ -205,6 +207,9 @@ theorem sec_spec' (z : S) :
 #align is_localization.sec_spec' IsLocalization.sec_spec'
 
 variable {M}
+
+/-- If `M` contains `0` then the localization at `M` is trivial. -/
+theorem subsingleton (h : 0 ∈ M) : Subsingleton S := (toLocalizationMap M S).subsingleton h
 
 theorem map_right_cancel {x y} {c : M} (h : algebraMap R S (c * x) = algebraMap R S (c * y)) :
     algebraMap R S x = algebraMap R S y :=
@@ -380,6 +385,9 @@ theorem mk'_eq_of_eq' {a₁ b₁ : R} {a₂ b₂ : M} (H : b₁ * ↑a₂ = a₁
   (toLocalizationMap M S).mk'_eq_of_eq' H
 #align is_localization.mk'_eq_of_eq' IsLocalization.mk'_eq_of_eq'
 
+theorem mk'_cancel (a : R) (b c : M) :
+    mk' S (a * c) (b * c) = mk' S a b := (toLocalizationMap M S).mk'_cancel _ _ _
+
 variable (S)
 
 @[simp]
@@ -533,12 +541,12 @@ theorem lift_eq_iff {x y : R × M} :
 
 @[simp]
 theorem lift_comp : (lift hg).comp (algebraMap R S) = g :=
-  RingHom.ext <| (FunLike.ext_iff (F := MonoidHom _ _)).1 <| (toLocalizationMap M S).lift_comp _
+  RingHom.ext <| (DFunLike.ext_iff (F := MonoidHom _ _)).1 <| (toLocalizationMap M S).lift_comp _
 #align is_localization.lift_comp IsLocalization.lift_comp
 
 @[simp]
 theorem lift_of_comp (j : S →+* P) : lift (isUnit_comp M j) = j :=
-  RingHom.ext <| (FunLike.ext_iff (F := MonoidHom _ _)).1 <|
+  RingHom.ext <| (DFunLike.ext_iff (F := MonoidHom _ _)).1 <|
     (toLocalizationMap M S).lift_of_comp j.toMonoidHom
 #align is_localization.lift_of_comp IsLocalization.lift_of_comp
 
@@ -547,7 +555,7 @@ variable (M)
 /-- See note [partially-applied ext lemmas] -/
 theorem monoidHom_ext ⦃j k : S →* P⦄
     (h : j.comp (algebraMap R S : R →* S) = k.comp (algebraMap R S)) : j = k :=
-  Submonoid.LocalizationMap.epic_of_localizationMap (toLocalizationMap M S) <| FunLike.congr_fun h
+  Submonoid.LocalizationMap.epic_of_localizationMap (toLocalizationMap M S) <| DFunLike.congr_fun h
 #align is_localization.monoid_hom_ext IsLocalization.monoidHom_ext
 
 /-- See note [partially-applied ext lemmas] -/
@@ -581,7 +589,7 @@ variable {M}
 
 theorem lift_unique {j : S →+* P} (hj : ∀ x, j ((algebraMap R S) x) = g x) : lift hg = j :=
   RingHom.ext <|
-    (FunLike.ext_iff (F := MonoidHom _ _)).1 <|
+    (DFunLike.ext_iff (F := MonoidHom _ _)).1 <|
       Submonoid.LocalizationMap.lift_unique (toLocalizationMap M S) (g := g.toMonoidHom) hg
         (j := j.toMonoidHom) hj
 #align is_localization.lift_unique IsLocalization.lift_unique
@@ -604,7 +612,6 @@ theorem lift_injective_iff :
 section Map
 
 variable {T : Submonoid P} {Q : Type*} [CommSemiring Q] (hy : M ≤ T.comap g)
-
 variable [Algebra P Q] [IsLocalization T Q]
 
 section
@@ -623,7 +630,7 @@ noncomputable def map (g : R →+* P) (hy : M ≤ T.comap g) : S →+* Q :=
 
 end
 
---Porting note: added `simp` attribute, since it proves very similar lemmas marked `simp`
+-- Porting note: added `simp` attribute, since it proves very similar lemmas marked `simp`
 @[simp]
 theorem map_eq (x) : map Q g hy ((algebraMap R S) x) = algebraMap P Q (g x) :=
   lift_eq (fun y => map_units _ ⟨g y, hy y.2⟩) x
@@ -639,7 +646,7 @@ theorem map_mk' (x) (y : M) : map Q g hy (mk' S x y) = mk' Q (g x) ⟨g y, hy y.
     (fun y => hy y.2) (k := toLocalizationMap T Q) ..
 #align is_localization.map_mk' IsLocalization.map_mk'
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem map_id_mk' {Q : Type*} [CommSemiring Q] [Algebra R Q] [IsLocalization M Q] (x) (y : M) :
     map Q (RingHom.id R) (le_refl M) (mk' S x y) = mk' Q x y :=
@@ -711,7 +718,7 @@ theorem ringEquivOfRingEquiv_eq_map {j : R ≃+* P} (H : M.map j.toMonoidHom = T
   rfl
 #align is_localization.ring_equiv_of_ring_equiv_eq_map IsLocalization.ringEquivOfRingEquiv_eq_map
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem ringEquivOfRingEquiv_eq {j : R ≃+* P} (H : M.map j.toMonoidHom = T) (x) :
     ringEquivOfRingEquiv S Q j H ((algebraMap R S) x) = algebraMap P Q (j x) := by
   simp
@@ -743,12 +750,12 @@ noncomputable def algEquiv : S ≃ₐ[R] Q :=
 
 end
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y :=
   by simp
 #align is_localization.alg_equiv_mk' IsLocalization.algEquiv_mk'
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem algEquiv_symm_mk' (x : R) (y : M) : (algEquiv M S Q).symm (mk' Q x y) = mk' S x y := by simp
 #align is_localization.alg_equiv_symm_mk' IsLocalization.algEquiv_symm_mk'
 
@@ -782,6 +789,17 @@ noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
 
 end at_units
 
+section
+
+variable (M S) (Q : Type*) [CommSemiring Q] [Algebra P Q]
+
+/-- Injectivity of a map descends to the map induced on localizations. -/
+theorem map_injective_of_injective (h : Function.Injective g) [IsLocalization (M.map g) Q] :
+    Function.Injective (map Q g M.le_comap_map : S → Q) :=
+  (toLocalizationMap M S).map_injective_of_injective h (toLocalizationMap (M.map g) Q)
+
+end
+
 end IsLocalization
 
 section
@@ -811,8 +829,8 @@ theorem isLocalization_iff_of_algEquiv [Algebra R P] (h : S ≃ₐ[R] P) :
 #align is_localization.is_localization_iff_of_alg_equiv IsLocalization.isLocalization_iff_of_algEquiv
 
 theorem isLocalization_iff_of_ringEquiv (h : S ≃+* P) :
-    IsLocalization M S ↔ have := (h.toRingHom.comp <| algebraMap R S).toAlgebra;
-      IsLocalization M P :=
+    IsLocalization M S ↔
+      haveI := (h.toRingHom.comp <| algebraMap R S).toAlgebra; IsLocalization M P :=
   letI := (h.toRingHom.comp <| algebraMap R S).toAlgebra
   isLocalization_iff_of_algEquiv M { h with commutes' := fun _ => rfl }
 #align is_localization.is_localization_iff_of_ring_equiv IsLocalization.isLocalization_iff_of_ringEquiv
@@ -820,8 +838,8 @@ theorem isLocalization_iff_of_ringEquiv (h : S ≃+* P) :
 variable (S)
 
 theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
-    have := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra;
-      IsLocalization (M.map h.toMonoidHom) S := by
+    haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
+    IsLocalization (M.map h.toMonoidHom) S := by
   letI : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   constructor
   · rintro ⟨_, ⟨y, hy, rfl⟩⟩
@@ -843,7 +861,8 @@ theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
 #align is_localization.is_localization_of_base_ring_equiv IsLocalization.isLocalization_of_base_ringEquiv
 
 theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
-    IsLocalization M S ↔ haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra;
+    IsLocalization M S ↔
+      haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
       IsLocalization (M.map h.toMonoidHom) S := by
   letI : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   refine' ⟨fun _ => isLocalization_of_base_ringEquiv M S h, _⟩
@@ -1066,7 +1085,7 @@ theorem mk_eq_mk'_apply (x y) : mk x y = IsLocalization.mk' (Localization M) x y
   rw [mk_eq_monoidOf_mk'_apply, mk', toLocalizationMap_eq_monoidOf]
 #align localization.mk_eq_mk'_apply Localization.mk_eq_mk'_apply
 
---Porting note: removed `simp`. Left hand side can be simplified; not clear what normal form should
+-- Porting note: removed `simp`. Left hand side can be simplified; not clear what normal form should
 --be.
 theorem mk_eq_mk' : (mk : R → M → Localization M) = IsLocalization.mk' (Localization M) :=
   mk_eq_monoidOf_mk'
@@ -1102,12 +1121,12 @@ noncomputable def _root_.IsLocalization.unique (R Rₘ) [CommSemiring R] [CommSe
 
 end
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note (#10618): removed `simp`, `simp` can prove it
 nonrec theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S (mk' (Localization M) x y) = mk' S x y :=
   algEquiv_mk' _ _
 #align localization.alg_equiv_mk' Localization.algEquiv_mk'
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note (#10618): removed `simp`, `simp` can prove it
 nonrec theorem algEquiv_symm_mk' (x : R) (y : M) :
     (algEquiv M S).symm (mk' S x y) = mk' (Localization M) x y :=
   algEquiv_symm_mk' _ _
@@ -1135,7 +1154,6 @@ end CommSemiring
 section CommRing
 
 variable {R : Type*} [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
-
 variable [Algebra R S] {P : Type*} [CommRing P]
 
 namespace Localization
@@ -1242,26 +1260,7 @@ theorem sec_fst_ne_zero [Nontrivial R] [NoZeroDivisors S] (hM : M ≤ nonZeroDiv
   · exact IsLocalization.injective S hM
 #align is_localization.sec_fst_ne_zero IsLocalization.sec_fst_ne_zero
 
-variable (S M) (Q : Type*) [CommRing Q] {g : R →+* P} [Algebra P Q]
-
-/-- Injectivity of a map descends to the map induced on localizations. -/
-theorem map_injective_of_injective (hg : Function.Injective g)
-    [i : IsLocalization (M.map g : Submonoid P) Q] :
-    Function.Injective (map Q g (Submonoid.le_comap_map M) : S → Q) := by
-  rw [injective_iff_map_eq_zero]
-  intro z hz
-  obtain ⟨a, b, rfl⟩ := mk'_surjective M z
-  rw [map_mk', mk'_eq_zero_iff] at hz
-  obtain ⟨⟨m', hm'⟩, hm⟩ := hz
-  rw [Submonoid.mem_map] at hm'
-  obtain ⟨n, hn, hnm⟩ := hm'
-  rw [Subtype.coe_mk, ← hnm, ← map_mul, ← map_zero g] at hm
-  rw [mk'_eq_zero_iff]
-  exact ⟨⟨n, hn⟩, hg hm⟩
-#align is_localization.map_injective_of_injective IsLocalization.map_injective_of_injective
-
-variable {S Q M}
-
+variable {Q : Type*} [CommRing Q] {g : R →+* P} [Algebra P Q]
 variable (A : Type*) [CommRing A] [IsDomain A]
 
 /-- A `CommRing` `S` which is the localization of a ring `R` without zero divisors at a subset of
@@ -1334,9 +1333,7 @@ theorem Field.localization_map_bijective {K Kₘ : Type*} [Field K] [CommRing K�
 section Algebra
 
 variable {S} {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
-
 variable [Algebra R Rₘ] [IsLocalization M Rₘ]
-
 variable [Algebra S Sₘ] [i : IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
 
 section
@@ -1364,7 +1361,6 @@ end
 section
 
 variable [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
-
 variable (S Rₘ Sₘ)
 
 theorem IsLocalization.map_units_map_submonoid (y : M) : IsUnit (algebraMap R Sₘ y) := by
@@ -1413,7 +1409,7 @@ theorem IsLocalization.algebraMap_apply_eq_map_map_submonoid (x) :
     algebraMap Rₘ Sₘ x =
       map Sₘ (algebraMap R S)
         (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) x :=
-  FunLike.congr_fun (IsLocalization.algebraMap_eq_map_map_submonoid _ _ _ _) x
+  DFunLike.congr_fun (IsLocalization.algebraMap_eq_map_map_submonoid _ _ _ _) x
 #align is_localization.algebra_map_apply_eq_map_map_submonoid IsLocalization.algebraMap_apply_eq_map_map_submonoid
 
 theorem IsLocalization.lift_algebraMap_eq_algebraMap :
@@ -1429,7 +1425,8 @@ variable (Rₘ Sₘ)
 /-- Injectivity of the underlying `algebraMap` descends to the algebra induced by localization. -/
 theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)) :
     Function.Injective (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) :=
-  IsLocalization.map_injective_of_injective (M := M) _ hRS (i := i)
+  have : IsLocalization (M.map (algebraMap R S)) Sₘ := i
+  IsLocalization.map_injective_of_injective _ _ _ hRS
 #align localization_algebra_injective localizationAlgebra_injective
 
 end Algebra

@@ -118,8 +118,8 @@ section BPosAndNeOne
 variable (b_pos : 0 < b) (b_ne_one : b ≠ 1)
 
 private theorem log_b_ne_zero : log b ≠ 0 := by
-  have b_ne_zero : b ≠ 0; linarith
-  have b_ne_minus_one : b ≠ -1; linarith
+  have b_ne_zero : b ≠ 0 := by linarith
+  have b_ne_minus_one : b ≠ -1 := by linarith
   simp [b_ne_one, b_ne_zero, b_ne_minus_one]
 
 @[simp]
@@ -182,7 +182,7 @@ private theorem b_ne_one' : b ≠ 1 := by linarith
 
 @[simp]
 theorem logb_le_logb (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ x ≤ y := by
-  rw [logb, logb, div_le_div_right (log_pos hb), log_le_log h h₁]
+  rw [logb, logb, div_le_div_right (log_pos hb), log_le_log_iff h h₁]
 #align real.logb_le_logb Real.logb_le_logb
 
 @[gcongr]
@@ -295,7 +295,7 @@ private theorem b_ne_one : b ≠ 1 := by linarith
 
 @[simp]
 theorem logb_le_logb_of_base_lt_one (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ y ≤ x := by
-  rw [logb, logb, div_le_div_right_of_neg (log_neg b_pos b_lt_one), log_le_log h₁ h]
+  rw [logb, logb, div_le_div_right_of_neg (log_neg b_pos b_lt_one), log_le_log_iff h₁ h]
 #align real.logb_le_logb_of_base_lt_one Real.logb_le_logb_of_base_lt_one
 
 theorem logb_lt_logb_of_base_lt_one (hx : 0 < x) (hxy : x < y) : logb b y < logb b x := by
@@ -414,7 +414,7 @@ theorem ceil_logb_nat_cast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
   have hb1' : 1 < (b : ℝ) := Nat.one_lt_cast.mpr hb
   apply le_antisymm
   · rw [Int.ceil_le, logb_le_iff_le_rpow hb1' hr, rpow_int_cast]
-    refine' Int.self_le_zpow_clog hb r
+    exact Int.self_le_zpow_clog hb r
   · rw [← Int.le_zpow_iff_clog_le hb hr, ← rpow_int_cast b]
     refine' (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr).symm.trans_le _
     exact rpow_le_rpow_of_exponent_le hb1'.le (Int.le_ceil _)

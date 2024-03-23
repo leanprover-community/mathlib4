@@ -3,10 +3,13 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
-import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Basic
+import Mathlib.Init.ZeroOne
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
+import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.ToAdditive
+import Mathlib.Util.AssertExists
 
 #align_import algebra.group.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -30,6 +33,9 @@ actions and register the following instances:
 
 - `Pow M ℕ`, for monoids `M`, and `Pow G ℤ` for groups `G`;
 - `SMul ℕ M` for additive monoids `M`, and `SMul ℤ G` for additive groups `G`.
+
+`SMul` is typically, but not exclusively, used for scalar multiplication-like operators.
+See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` (vector addition)`.
 
 ## Notation
 
@@ -76,23 +82,29 @@ attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
 
 /-- Type class for the `+ᵥ` notation. -/
 class VAdd (G : Type u) (P : Type v) where
+  /-- `a +ᵥ b` computes the sum of `a` and `b`. The meaning of this notation is type-dependent,
+  but it is intended to be used for left actions. -/
   vadd : G → P → P
 #align has_vadd VAdd
 
 /-- Type class for the `-ᵥ` notation. -/
 class VSub (G : outParam (Type*)) (P : Type*) where
+  /-- `a -ᵥ b` computes the difference of `a` and `b`. The meaning of this notation is
+  type-dependent, but it is intended to be used for additive torsors. -/
   vsub : P → P → G
 #align has_vsub VSub
 
 /-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
 @[to_additive (attr := ext)]
 class SMul (M : Type u) (α : Type v) where
+  /-- `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent,
+  but it is intended to be used for left actions. -/
   smul : M → α → α
 #align has_smul SMul
 
-infixl:65 " +ᵥ " => HVAdd.hVAdd
-infixl:65 " -ᵥ " => VSub.vsub
-infixr:73 " • " => HSMul.hSMul
+@[inherit_doc] infixl:65 " +ᵥ " => HVAdd.hVAdd
+@[inherit_doc] infixl:65 " -ᵥ " => VSub.vsub
+@[inherit_doc] infixr:73 " • " => HSMul.hSMul
 
 /-!
 We have a macro to make `x • y` notation participate in the expression tree elaborator,
@@ -107,7 +119,7 @@ variable [Ring R] [AddCommMonoid M] [Module R M] (r : R) (N : Submodule R M) (m 
 ```
 Without the macro, the expression would elaborate as `m + ↑(r • n : ↑N) : M`.
 With the macro, the expression elaborates as `m + r • (↑n : M) : M`.
-To get the first intepretation, one can write `m + (r • n :)`.
+To get the first interpretation, one can write `m + (r • n :)`.
 
 Here is a quick review of the expression tree elaborator:
 1. It builds up an expression tree of all the immediately accessible operations
@@ -138,6 +150,9 @@ attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 @[to_additive (attr := default_instance)]
 instance instHSMul {α β} [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
+
+@[to_additive]
+theorem SMul.smul_eq_hSMul {α β} [SMul α β] : (SMul.smul : α → β → β) = HSMul.hSMul := rfl
 
 attribute [to_additive existing (reorder := 1 2)] instHPow
 
@@ -217,26 +232,9 @@ theorem mul_left_cancel : a * b = a * c → b = c :=
 
 @[to_additive]
 theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
-  ⟨mul_left_cancel, congr_arg _⟩
+  ⟨mul_left_cancel, congrArg _⟩
 #align mul_left_cancel_iff mul_left_cancel_iff
 #align add_left_cancel_iff add_left_cancel_iff
-
-@[to_additive]
-theorem mul_right_injective (a : G) : Injective (a * ·) := fun _ _ ↦ mul_left_cancel
-#align mul_right_injective mul_right_injective
-#align add_right_injective add_right_injective
-
-@[to_additive (attr := simp)]
-theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
-  (mul_right_injective a).eq_iff
-#align mul_right_inj mul_right_inj
-#align add_right_inj add_right_inj
-
-@[to_additive]
-theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
-  (mul_right_injective a).ne_iff
-#align mul_ne_mul_right mul_ne_mul_right
-#align add_ne_add_right add_ne_add_right
 
 end IsLeftCancelMul
 
@@ -252,26 +250,9 @@ theorem mul_right_cancel : a * b = c * b → a = c :=
 
 @[to_additive]
 theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
-  ⟨mul_right_cancel, congr_arg (· * a)⟩
+  ⟨mul_right_cancel, congrArg (· * a)⟩
 #align mul_right_cancel_iff mul_right_cancel_iff
 #align add_right_cancel_iff add_right_cancel_iff
-
-@[to_additive]
-theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ ↦ mul_right_cancel
-#align mul_left_injective mul_left_injective
-#align add_left_injective add_left_injective
-
-@[to_additive (attr := simp)]
-theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
-  (mul_left_injective a).eq_iff
-#align mul_left_inj mul_left_inj
-#align add_left_inj add_left_inj
-
-@[to_additive]
-theorem mul_ne_mul_left (a : G) {b c : G} : b * a ≠ c * a ↔ b ≠ c :=
-  (mul_left_injective a).ne_iff
-#align mul_ne_mul_left mul_ne_mul_left
-#align add_ne_add_left add_ne_add_left
 
 end IsRightCancelMul
 
@@ -307,24 +288,18 @@ theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
 #align mul_assoc mul_assoc
 #align add_assoc add_assoc
 
-@[to_additive]
-instance Semigroup.to_isAssociative : IsAssociative G (· * ·) :=
-  ⟨mul_assoc⟩
-#align semigroup.to_is_associative Semigroup.to_isAssociative
-#align add_semigroup.to_is_associative AddSemigroup.to_isAssociative
-
 end Semigroup
 
-/-- A commutative addition is a type with an addition which commutes-/
+/-- A commutative additive magma is a type with an addition which commutes. -/
 @[ext]
 class AddCommMagma (G : Type u) extends Add G where
-  /-- Addition is commutative in an additive commutative semigroup. -/
+  /-- Addition is commutative in an commutative additive magma. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
-/-- A commutative multiplication is a type with a multiplication which commutes-/
+/-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
 @[ext]
 class CommMagma (G : Type u) extends Mul G where
-  /-- Multiplication is commutative in a commutative semigroup. -/
+  /-- Multiplication is commutative in a commutative multiplicative magma. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
 
 attribute [to_additive] CommMagma
@@ -354,11 +329,6 @@ variable [CommMagma G]
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 #align mul_comm mul_comm
 #align add_comm add_comm
-
-@[to_additive]
-instance CommMagma.to_isCommutative : IsCommutative G (· * ·) := ⟨mul_comm⟩
-#align comm_semigroup.to_is_commutative CommMagma.to_isCommutative
-#align add_comm_semigroup.to_is_commutative AddCommMagma.to_isCommutative
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
 @[to_additive AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd "Any `AddCommMagma G` that satisfies
@@ -623,8 +593,9 @@ need right away.
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
-  /-- Multiplication by a natural number. -/
-  protected nsmul : ℕ → M → M := nsmulRec
+  /-- Multiplication by a natural number.
+  Set this to `nsmulRec` unless `Module` diamonds are possible. -/
+  protected nsmul : ℕ → M → M
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
   protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
@@ -949,12 +920,15 @@ explanations on this.
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   protected sub := SubNegMonoid.sub'
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
-  protected zsmul : ℤ → G → G := zsmulRec
+  /-- Multiplication by an integer.
+  Set this to `zsmulRec` unless `Module` diamonds are possible. -/
+  protected zsmul : ℤ → G → G
   protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
   protected zsmul_succ' (n : ℕ) (a : G) :
       zsmul (Int.ofNat n.succ) a = a + zsmul (Int.ofNat n) a := by
     intros; rfl
-  protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by intros; rfl
+  protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by
+    intros; rfl
 #align sub_neg_monoid SubNegMonoid
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
@@ -984,25 +958,35 @@ variable [DivInvMonoid G] {a b : G}
 #align zpow_zero zpow_zero
 #align zero_zsmul zero_zsmul
 
-@[to_additive (attr := norm_cast) ofNat_zsmul]
-theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
+@[to_additive (attr := simp, norm_cast) natCast_zsmul]
+theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
     a ^ (↑(n + 1) : ℤ) = a * a ^ (n : ℤ) := DivInvMonoid.zpow_succ' _ _
-    _ = a * a ^ n := congr_arg (a * ·) (zpow_ofNat a n)
+    _ = a * a ^ n := congrArg (a * ·) (zpow_natCast a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
-#align zpow_coe_nat zpow_ofNat
-#align zpow_of_nat zpow_ofNat
-#align of_nat_zsmul ofNat_zsmul
+#align zpow_coe_nat zpow_natCast
+#align zpow_of_nat zpow_natCast
+#align coe_nat_zsmul natCast_zsmul
+#align of_nat_zsmul natCast_zsmul
+
+-- 2024-03-20
+@[deprecated] alias zpow_coe_nat := zpow_natCast
+@[deprecated] alias coe_nat_zsmul := natCast_zsmul
+
+-- See note [no_index around OfNat.ofNat]
+@[to_additive ofNat_zsmul]
+lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (no_index (OfNat.ofNat n) : ℤ) = a ^ OfNat.ofNat n :=
+  zpow_natCast ..
 
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
-  rw [← zpow_ofNat]
+  rw [← zpow_natCast]
   exact DivInvMonoid.zpow_neg' n a
 #align zpow_neg_succ_of_nat zpow_negSucc
 
 theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
     Int.negSucc n • a = -((n + 1) • a) := by
-  rw [← ofNat_zsmul]
+  rw [← natCast_zsmul]
   exact SubNegMonoid.zsmul_neg' n a
 #align zsmul_neg_succ_of_nat negSucc_zsmul
 
@@ -1223,12 +1207,6 @@ instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
 
 end Group
 
-@[to_additive]
-theorem Group.toDivInvMonoid_injective {G : Type*} :
-    Function.Injective (@Group.toDivInvMonoid G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
-#align group.to_div_inv_monoid_injective Group.toDivInvMonoid_injective
-#align add_group.to_sub_neg_add_monoid_injective AddGroup.toSubNegAddMonoid_injective
-
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 #align add_comm_group AddCommGroup
@@ -1239,12 +1217,6 @@ class CommGroup (G : Type u) extends Group G, CommMonoid G
 #align comm_group CommGroup
 
 attribute [to_additive existing] CommGroup.toCommMonoid
-
-@[to_additive]
-theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by
-  rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
-#align comm_group.to_group_injective CommGroup.toGroup_injective
-#align add_comm_group.to_add_group_injective AddCommGroup.toAddGroup_injective
 
 section CommGroup
 
@@ -1259,6 +1231,16 @@ instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
 @[to_additive]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
   { ‹CommGroup G›, Group.toDivisionMonoid with }
+
+@[to_additive (attr := simp)] lemma inv_mul_cancel_comm (a b : G) : a⁻¹ * b * a = b := by
+  rw [mul_comm, mul_inv_cancel_left]
+#align inv_mul_cancel_comm inv_mul_cancel_comm
+#align neg_add_cancel_comm neg_add_cancel_comm
+
+@[to_additive (attr := simp)] lemma inv_mul_cancel_comm_assoc (a b : G) : a⁻¹ * (b * a) = b := by
+  rw [mul_comm, mul_inv_cancel_right]
+#align inv_mul_cancel_comm_assoc inv_mul_cancel_comm_assoc
+#align neg_add_cancel_comm_assoc neg_add_cancel_comm_assoc
 
 end CommGroup
 
@@ -1300,3 +1282,6 @@ initialize_simps_projections Group
 initialize_simps_projections AddGroup
 initialize_simps_projections CommGroup
 initialize_simps_projections AddCommGroup
+
+assert_not_exists Function.Injective
+assert_not_exists IsCommutative

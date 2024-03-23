@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Baire
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Baire.CompleteMetrizable
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 #align_import analysis.normed_space.banach from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -16,8 +18,8 @@ This file contains the Banach open mapping theorem, i.e., the fact that a biject
 bounded linear map between Banach spaces has a bounded inverse.
 -/
 
-
-open Function Metric Set Filter Finset Classical Topology BigOperators NNReal
+open scoped Classical
+open Function Metric Set Filter Finset Topology BigOperators NNReal
 
 open LinearMap (range ker)
 
@@ -59,7 +61,7 @@ noncomputable def ContinuousLinearEquiv.toNonlinearRightInverse (f : E ≃L[𝕜
     ContinuousLinearMap.NonlinearRightInverse (f : E →L[𝕜] F) where
   toFun := f.invFun
   nnnorm := ‖(f.symm : F →L[𝕜] E)‖₊
-  bound' _ := ContinuousLinearMap.le_op_norm (f.symm : F →L[𝕜] E) _
+  bound' _ := ContinuousLinearMap.le_opNorm (f.symm : F →L[𝕜] E) _
   right_inv' := f.apply_symm_apply
 #align continuous_linear_equiv.to_nonlinear_right_inverse ContinuousLinearEquiv.toNonlinearRightInverse
 
@@ -94,72 +96,59 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
   simp only [mem_interior_iff_mem_nhds, Metric.mem_nhds_iff] at this
   rcases this with ⟨n, a, ε, ⟨εpos, H⟩⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  refine' ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, _, fun y => _⟩
-  · refine' mul_nonneg (mul_nonneg (mul_nonneg _ (norm_nonneg _)) (by norm_num)) _
-    exacts [inv_nonneg.2 (div_nonneg (le_of_lt εpos) (by norm_num)), n.cast_nonneg]
-  · by_cases hy : y = 0
-    · use 0
-      simp [hy]
-    · rcases rescale_to_shell hc (half_pos εpos) hy with ⟨d, hd, ydlt, -, dinv⟩
-      let δ := ‖d‖ * ‖y‖ / 4
-      have δpos : 0 < δ := div_pos (mul_pos (norm_pos_iff.2 hd) (norm_pos_iff.2 hy)) (by norm_num)
-      have : a + d • y ∈ ball a ε := by
-        simp [dist_eq_norm, lt_of_le_of_lt ydlt.le (half_lt_self εpos)]
-      rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₁, z₁im, h₁⟩
-      rcases (mem_image _ _ _).1 z₁im with ⟨x₁, hx₁, xz₁⟩
-      rw [← xz₁] at h₁
-      rw [mem_ball, dist_eq_norm, sub_zero] at hx₁
-      have : a ∈ ball a ε := by
-        simp only [mem_ball, dist_self]
-        exact εpos
-      rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₂, z₂im, h₂⟩
-      rcases (mem_image _ _ _).1 z₂im with ⟨x₂, hx₂, xz₂⟩
-      rw [← xz₂] at h₂
-      rw [mem_ball, dist_eq_norm, sub_zero] at hx₂
-      let x := x₁ - x₂
-      have I : ‖f x - d • y‖ ≤ 2 * δ :=
-        calc
-          ‖f x - d • y‖ = ‖f x₁ - (a + d • y) - (f x₂ - a)‖ := by
-            congr 1
-            simp only [f.map_sub]
-            abel
-          _ ≤ ‖f x₁ - (a + d • y)‖ + ‖f x₂ - a‖ := (norm_sub_le _ _)
-          _ ≤ δ + δ := by
-            apply add_le_add
-            · rw [← dist_eq_norm, dist_comm]
-              exact le_of_lt h₁
-            · rw [← dist_eq_norm, dist_comm]
-              exact le_of_lt h₂
-          _ = 2 * δ := (two_mul _).symm
-      have J : ‖f (d⁻¹ • x) - y‖ ≤ 1 / 2 * ‖y‖ :=
-        calc
-          ‖f (d⁻¹ • x) - y‖ = ‖d⁻¹ • f x - (d⁻¹ * d) • y‖ := by
-            rwa [f.map_smul _, inv_mul_cancel, one_smul]
-          _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
-          _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
-          _ ≤ ‖d‖⁻¹ * (2 * δ) := by
-            apply mul_le_mul_of_nonneg_left I
-            rw [inv_nonneg]
-            exact norm_nonneg _
-          _ = ‖d‖⁻¹ * ‖d‖ * ‖y‖ / 2 := by
-            simp only
-            ring
-          _ = ‖y‖ / 2 := by
-            rw [inv_mul_cancel, one_mul]
-            simp [norm_eq_zero, hd]
-          _ = 1 / 2 * ‖y‖ := by ring
-      rw [← dist_eq_norm] at J
-      have K : ‖d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
-        calc
-          ‖d⁻¹ • x‖ = ‖d‖⁻¹ * ‖x₁ - x₂‖ := by rw [norm_smul, norm_inv]
-          _ ≤ (ε / 2)⁻¹ * ‖c‖ * ‖y‖ * (n + n) := by
-            refine' mul_le_mul dinv _ (norm_nonneg _) _
-            · exact le_trans (norm_sub_le _ _) (add_le_add (le_of_lt hx₁) (le_of_lt hx₂))
-            · apply mul_nonneg (mul_nonneg _ (norm_nonneg _)) (norm_nonneg _)
-              exact inv_nonneg.2 (le_of_lt (half_pos εpos))
-          _ = (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ := by ring
-
-      exact ⟨d⁻¹ • x, J, K⟩
+  refine ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, by positivity, fun y => ?_⟩
+  rcases eq_or_ne y 0 with rfl | hy
+  · use 0
+    simp
+  · rcases rescale_to_shell hc (half_pos εpos) hy with ⟨d, hd, ydlt, -, dinv⟩
+    let δ := ‖d‖ * ‖y‖ / 4
+    have δpos : 0 < δ := div_pos (mul_pos (norm_pos_iff.2 hd) (norm_pos_iff.2 hy)) (by norm_num)
+    have : a + d • y ∈ ball a ε := by
+      simp [dist_eq_norm, lt_of_le_of_lt ydlt.le (half_lt_self εpos)]
+    rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₁, z₁im, h₁⟩
+    rcases (mem_image _ _ _).1 z₁im with ⟨x₁, hx₁, xz₁⟩
+    rw [← xz₁] at h₁
+    rw [mem_ball, dist_eq_norm, sub_zero] at hx₁
+    have : a ∈ ball a ε := by
+      simp only [mem_ball, dist_self]
+      exact εpos
+    rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₂, z₂im, h₂⟩
+    rcases (mem_image _ _ _).1 z₂im with ⟨x₂, hx₂, xz₂⟩
+    rw [← xz₂] at h₂
+    rw [mem_ball, dist_eq_norm, sub_zero] at hx₂
+    let x := x₁ - x₂
+    have I : ‖f x - d • y‖ ≤ 2 * δ :=
+      calc
+        ‖f x - d • y‖ = ‖f x₁ - (a + d • y) - (f x₂ - a)‖ := by
+          congr 1
+          simp only [f.map_sub]
+          abel
+        _ ≤ ‖f x₁ - (a + d • y)‖ + ‖f x₂ - a‖ := (norm_sub_le _ _)
+        _ ≤ δ + δ := by rw [dist_eq_norm'] at h₁ h₂; gcongr
+        _ = 2 * δ := (two_mul _).symm
+    have J : ‖f (d⁻¹ • x) - y‖ ≤ 1 / 2 * ‖y‖ :=
+      calc
+        ‖f (d⁻¹ • x) - y‖ = ‖d⁻¹ • f x - (d⁻¹ * d) • y‖ := by
+          rwa [f.map_smul _, inv_mul_cancel, one_smul]
+        _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
+        _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
+        _ ≤ ‖d‖⁻¹ * (2 * δ) := by gcongr
+        _ = ‖d‖⁻¹ * ‖d‖ * ‖y‖ / 2 := by
+          simp only [δ]
+          ring
+        _ = ‖y‖ / 2 := by
+          rw [inv_mul_cancel, one_mul]
+          simp [norm_eq_zero, hd]
+        _ = 1 / 2 * ‖y‖ := by ring
+    rw [← dist_eq_norm] at J
+    have K : ‖d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
+      calc
+        ‖d⁻¹ • x‖ = ‖d‖⁻¹ * ‖x₁ - x₂‖ := by rw [norm_smul, norm_inv]
+        _ ≤ (ε / 2)⁻¹ * ‖c‖ * ‖y‖ * (n + n) := by
+          gcongr
+          exact le_trans (norm_sub_le _ _) (by gcongr)
+        _ = (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ := by ring
+    exact ⟨d⁻¹ • x, J, K⟩
 #align continuous_linear_map.exists_approx_preimage_norm_le ContinuousLinearMap.exists_approx_preimage_norm_le
 
 variable [CompleteSpace E]
@@ -189,18 +178,16 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     · rw [iterate_succ']
       apply le_trans (hle _) _
       rw [pow_succ, mul_assoc]
-      apply mul_le_mul_of_nonneg_left IH
-      norm_num
+      gcongr
   let u n := g (h^[n] y)
-  have ule : ∀ n, ‖u n‖ ≤ (1 / 2) ^ n * (C * ‖y‖) := by
-    intro n
-    apply le_trans (hg _).2 _
+  have ule : ∀ n, ‖u n‖ ≤ (1 / 2) ^ n * (C * ‖y‖) := fun n ↦ by
+    apply le_trans (hg _).2
     calc
       C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := mul_le_mul_of_nonneg_left (hnle n) C0
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
   have sNu : Summable fun n => ‖u n‖ := by
     refine' .of_nonneg_of_le (fun n => norm_nonneg _) ule _
-    exact Summable.mul_right _ (summable_geometric_of_lt_1 (by norm_num) (by norm_num))
+    exact Summable.mul_right _ (summable_geometric_of_lt_one (by norm_num) (by norm_num))
   have su : Summable u := sNu.of_norm
   let x := tsum u
   have x_ineq : ‖x‖ ≤ (2 * C + 1) * ‖y‖ :=
@@ -227,7 +214,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     simp only [sub_zero]
     refine' squeeze_zero (fun _ => norm_nonneg _) hnle _
     rw [← zero_mul ‖y‖]
-    refine' (_root_.tendsto_pow_atTop_nhds_0_of_lt_1 _ _).mul tendsto_const_nhds <;> norm_num
+    refine' (_root_.tendsto_pow_atTop_nhds_zero_of_lt_one _ _).mul tendsto_const_nhds <;> norm_num
   have feq : f x = y - 0 := tendsto_nhds_unique L₁ L₂
   rw [sub_zero] at feq
   exact ⟨x, feq, x_ineq⟩
@@ -243,7 +230,7 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
   rcases isOpen_iff.1 hs x xs with ⟨ε, εpos, hε⟩
   refine' ⟨ε / C, div_pos εpos Cpos, fun z hz => _⟩
   rcases hC (z - y) with ⟨w, wim, wnorm⟩
-  have : f (x + w) = z := by rw [f.map_add, wim, fxy, add_sub_cancel'_right]
+  have : f (x + w) = z := by rw [f.map_add, wim, fxy, add_sub_cancel]
   rw [← this]
   have : x + w ∈ ball x ε :=
     calc
@@ -254,7 +241,7 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
       _ < C * (ε / C) := by
         apply mul_lt_mul_of_pos_left _ Cpos
         rwa [mem_ball, dist_eq_norm] at hz
-      _ = ε := mul_div_cancel' _ (ne_of_gt Cpos)
+      _ = ε := mul_div_cancel₀ _ (ne_of_gt Cpos)
 
   exact Set.mem_image_of_mem _ (hε this)
 #align continuous_linear_map.is_open_map ContinuousLinearMap.isOpenMap
@@ -352,6 +339,30 @@ theorem coeFn_toContinuousLinearEquivOfContinuous_symm (e : E ≃ₗ[𝕜] F) (h
 #align linear_equiv.coe_fn_to_continuous_linear_equiv_of_continuous_symm LinearEquiv.coeFn_toContinuousLinearEquivOfContinuous_symm
 
 end LinearEquiv
+
+namespace ContinuousLinearMap
+
+variable [CompleteSpace E]
+
+/-- An injective continuous linear map with a closed range defines a continuous linear equivalence
+between its domain and its range. -/
+noncomputable def equivRange (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+    E ≃L[𝕜] LinearMap.range f :=
+  have : CompleteSpace (LinearMap.range f) := hclo.completeSpace_coe
+  LinearEquiv.toContinuousLinearEquivOfContinuous (LinearEquiv.ofInjective f.toLinearMap hinj) <|
+    (f.continuous.codRestrict fun x ↦ LinearMap.mem_range_self f x).congr fun _ ↦ rfl
+
+@[simp]
+theorem coe_linearMap_equivRange (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+    f.equivRange hinj hclo = f.rangeRestrict :=
+  rfl
+
+@[simp]
+theorem coe_equivRange (f : E →L[𝕜] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+    (f.equivRange hinj hclo : E → LinearMap.range f) = f.rangeRestrict :=
+  rfl
+
+end ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
 

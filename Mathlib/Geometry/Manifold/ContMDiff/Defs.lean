@@ -84,8 +84,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
   [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
-  {e : LocalHomeomorph M H}
-  {e' : LocalHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
+  {e : PartialHomeomorph M H}
+  {e' : PartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
 
 /-- Property in the model space of a model with corners of being `C^n` within at set at a point,
 when read in the model vector space. This property will be lifted to manifolds to define smooth
@@ -124,7 +124,8 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     symm
     apply contDiffWithinAt_inter
     have : u ∈ 𝓝 (I.symm (I x)) := by
-      rw [ModelWithCorners.left_inv]; exact IsOpen.mem_nhds u_open xu
+      rw [ModelWithCorners.left_inv]
+      exact u_open.mem_nhds xu
     apply ContinuousAt.preimage_mem_nhds I.continuous_symm.continuousAt this
   right_invariance' := by
     intro s x f e he hx h
@@ -165,7 +166,7 @@ theorem contDiffWithinAtProp_mono_of_mem (n : ℕ∞) ⦃s x t⦄ ⦃f : H → H
 #align cont_diff_within_at_prop_mono_of_mem contDiffWithinAtProp_mono_of_mem
 
 theorem contDiffWithinAtProp_id (x : H) : ContDiffWithinAtProp I I n id univ x := by
-  simp only [ContDiffWithinAtProp._eq_1, comp.left_id, preimage_univ, univ_inter]
+  simp only [ContDiffWithinAtProp, id_comp, preimage_univ, univ_inter]
   have : ContDiffWithinAt 𝕜 n id (range I) (I x) := contDiff_id.contDiffAt.contDiffWithinAt
   refine this.congr (fun y hy => ?_) ?_
   · simp only [ModelWithCorners.right_inv I hy, mfld_simps]
@@ -359,9 +360,9 @@ theorem contMDiffWithinAt_iff_target :
     ContinuousWithinAt f s x ∧ ContinuousWithinAt (extChartAt I' (f x) ∘ f) s x ↔
         ContinuousWithinAt f s x :=
       and_iff_left_of_imp <| (continuousAt_extChartAt _ _).comp_continuousWithinAt
-  simp_rw [cont, ContDiffWithinAtProp, extChartAt, LocalHomeomorph.extend, LocalEquiv.coe_trans,
-    ModelWithCorners.toLocalEquiv_coe, LocalHomeomorph.coe_coe, modelWithCornersSelf_coe,
-    chartAt_self_eq, LocalHomeomorph.refl_apply, comp.left_id]
+  simp_rw [cont, ContDiffWithinAtProp, extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
+    ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
+    chartAt_self_eq, PartialHomeomorph.refl_apply, id_comp]
   rfl
 #align cont_mdiff_within_at_iff_target contMDiffWithinAt_iff_target
 
@@ -437,9 +438,9 @@ theorem contMDiffWithinAt_iff_of_mem_source' {x' : M} {y : M'} (hx : x' ∈ (cha
   rw [and_congr_right_iff]
   set e := extChartAt I x; set e' := extChartAt I' (f x)
   refine' fun hc => contDiffWithinAt_congr_nhds _
-  rw [← e.image_source_inter_eq', ← map_extChartAt_nhdsWithin_eq_image' I x hx, ←
-    map_extChartAt_nhdsWithin' I x hx, inter_comm, nhdsWithin_inter_of_mem]
-  exact hc (extChartAt_source_mem_nhds' _ _ hy)
+  rw [← e.image_source_inter_eq', ← map_extChartAt_nhdsWithin_eq_image' I hx, ←
+    map_extChartAt_nhdsWithin' I hx, inter_comm, nhdsWithin_inter_of_mem]
+  exact hc (extChartAt_source_mem_nhds' _ hy)
 #align cont_mdiff_within_at_iff_of_mem_source' contMDiffWithinAt_iff_of_mem_source'
 
 theorem contMDiffAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source)
@@ -464,7 +465,7 @@ theorem contMDiffWithinAt_iff_target_of_mem_source {x : M} {y : M'}
   simp_rw [StructureGroupoid.liftPropWithinAt_self_target]
   simp_rw [((chartAt H' y).continuousAt hy).comp_continuousWithinAt hf]
   rw [← extChartAt_source I'] at hy
-  simp_rw [(continuousAt_extChartAt' I' _ hy).comp_continuousWithinAt hf]
+  simp_rw [(continuousAt_extChartAt' I' hy).comp_continuousWithinAt hf]
   rfl
 #align cont_mdiff_within_at_iff_target_of_mem_source contMDiffWithinAt_iff_target_of_mem_source
 
@@ -507,7 +508,7 @@ theorem contMDiffOn_iff_of_mem_maximalAtlas (he : e ∈ maximalAtlas I M)
     ContMDiffOn I I' n f s ↔
       ContinuousOn f s ∧
         ContDiffOn 𝕜 n (e'.extend I' ∘ f ∘ (e.extend I).symm) (e.extend I '' s) := by
-  simp_rw [ContinuousOn, ContDiffOn, Set.ball_image_iff, ← forall_and, ContMDiffOn]
+  simp_rw [ContinuousOn, ContDiffOn, Set.forall_mem_image, ← forall_and, ContMDiffOn]
   exact forall₂_congr fun x hx => contMDiffWithinAt_iff_image he he' hs (hs hx) (h2s hx)
 #align cont_mdiff_on_iff_of_mem_maximal_atlas contMDiffOn_iff_of_mem_maximalAtlas
 
@@ -559,12 +560,12 @@ theorem contMDiffOn_iff :
     refine' ⟨fun x hx => (h x hx).1, fun x y z hz => _⟩
     simp only [mfld_simps] at hz
     let w := (extChartAt I x).symm z
-    have : w ∈ s := by simp only [hz, mfld_simps]
+    have : w ∈ s := by simp only [w, hz, mfld_simps]
     specialize h w this
-    have w1 : w ∈ (chartAt H x).source := by simp only [hz, mfld_simps]
-    have w2 : f w ∈ (chartAt H' y).source := by simp only [hz, mfld_simps]
+    have w1 : w ∈ (chartAt H x).source := by simp only [w, hz, mfld_simps]
+    have w2 : f w ∈ (chartAt H' y).source := by simp only [w, hz, mfld_simps]
     convert ((contMDiffWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
-    · simp only [hz, mfld_simps]
+    · simp only [w, hz, mfld_simps]
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
     refine' (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_iff.mpr _
@@ -582,8 +583,8 @@ theorem contMDiffOn_iff_target :
         ∀ y : M',
           ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (s ∩ f ⁻¹' (extChartAt I' y).source) := by
   simp only [contMDiffOn_iff, ModelWithCorners.source_eq, chartAt_self_eq,
-    LocalHomeomorph.refl_localEquiv, LocalEquiv.refl_trans, extChartAt, LocalHomeomorph.extend,
-    Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
+    PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_trans, extChartAt,
+    PartialHomeomorph.extend, Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
   intro h
   constructor
   · refine' fun h' y => ⟨_, fun x _ => h' x y⟩
@@ -801,7 +802,7 @@ theorem SmoothOn.smoothAt (h : SmoothOn I I' f s) (hx : s ∈ 𝓝 x) : SmoothAt
 theorem contMDiffOn_iff_source_of_mem_maximalAtlas (he : e ∈ maximalAtlas I M) (hs : s ⊆ e.source) :
     ContMDiffOn I I' n f s ↔
       ContMDiffOn 𝓘(𝕜, E) I' n (f ∘ (e.extend I).symm) (e.extend I '' s) := by
-  simp_rw [ContMDiffOn, Set.ball_image_iff]
+  simp_rw [ContMDiffOn, Set.forall_mem_image]
   refine' forall₂_congr fun x hx => _
   rw [contMDiffWithinAt_iff_source_of_mem_maximalAtlas he (hs hx)]
   apply contMDiffWithinAt_congr_nhds
@@ -809,7 +810,7 @@ theorem contMDiffOn_iff_source_of_mem_maximalAtlas (he : e ∈ maximalAtlas I M)
     e.extend_symm_preimage_inter_range_eventuallyEq I hs (hs hx)]
 #align cont_mdiff_on_iff_source_of_mem_maximal_atlas contMDiffOn_iff_source_of_mem_maximalAtlas
 
--- porting note: didn't compile; fixed by golfing the proof and moving parts to lemmas
+-- Porting note: didn't compile; fixed by golfing the proof and moving parts to lemmas
 /-- A function is `C^n` within a set at a point, for `n : ℕ`, if and only if it is `C^n` on
 a neighborhood of this point. -/
 theorem contMDiffWithinAt_iff_contMDiffOn_nhds {n : ℕ} :
@@ -838,7 +839,7 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds {n : ℕ} :
     have hv₂ : MapsTo f ((extChartAt I x).symm '' v) (extChartAt I' (f x)).source := by
       rintro _ ⟨y, hy, rfl⟩
       exact (hsub hy).2.2
-    rwa [contMDiffOn_iff_of_subset_source' hv₁ hv₂, LocalEquiv.image_symm_image_of_subset_target]
+    rwa [contMDiffOn_iff_of_subset_source' hv₁ hv₂, PartialEquiv.image_symm_image_of_subset_target]
     exact hsub.trans (inter_subset_left _ _)
 #align cont_mdiff_within_at_iff_cont_mdiff_on_nhds contMDiffWithinAt_iff_contMDiffOn_nhds
 
@@ -901,6 +902,10 @@ theorem contMDiffOn_congr (h₁ : ∀ y ∈ s, f₁ y = f y) :
     ContMDiffOn I I' n f₁ s ↔ ContMDiffOn I I' n f s :=
   (contDiffWithinAt_localInvariantProp I I' n).liftPropOn_congr_iff h₁
 #align cont_mdiff_on_congr contMDiffOn_congr
+
+theorem ContMDiffOn.congr_mono (hf : ContMDiffOn I I' n f s) (h₁ : ∀ y ∈ s₁, f₁ y = f y)
+    (hs : s₁ ⊆ s) : ContMDiffOn I I' n f₁ s₁ :=
+  (hf.mono hs).congr h₁
 
 /-! ### Locality -/
 

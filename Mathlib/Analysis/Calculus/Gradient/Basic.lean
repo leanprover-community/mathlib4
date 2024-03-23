@@ -42,9 +42,7 @@ open Topology InnerProductSpace Set
 noncomputable section
 
 variable {𝕜 F : Type*} [IsROrC 𝕜]
-
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
-
 variable {f : F → 𝕜} {f' x : F}
 
 /-- A function `f` has the gradient `f'` as derivative along the filter `L` if
@@ -157,14 +155,14 @@ variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
     HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g'
-  · ext; simp
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
+    ext; simp
   rwa [HasDerivAtFilter, this]
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
     HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g')
-  · ext; simp
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
+    ext; simp
   rwa [HasGradientAtFilter, ← this]
 
 theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
@@ -211,12 +209,12 @@ section GradientProperties
 theorem hasGradientAtFilter_iff_isLittleO :
     HasGradientAtFilter f f' x L ↔
     (fun x' : F => f x' - f x - ⟪f', x' - x⟫) =o[L] fun x' => x' - x :=
-  Iff.rfl
+  hasFDerivAtFilter_iff_isLittleO ..
 
 theorem hasGradientWithinAt_iff_isLittleO :
     HasGradientWithinAt f f' s x ↔
     (fun x' : F => f x' - f x - ⟪f', x' - x⟫) =o[𝓝[s] x] fun x' => x' - x :=
-  Iff.rfl
+  hasGradientAtFilter_iff_isLittleO
 
 theorem hasGradientWithinAt_iff_tendsto :
     HasGradientWithinAt f f' s x ↔
@@ -225,7 +223,7 @@ theorem hasGradientWithinAt_iff_tendsto :
 
 theorem hasGradientAt_iff_isLittleO : HasGradientAt f f' x ↔
     (fun x' : F => f x' - f x - ⟪f', x' - x⟫) =o[𝓝 x] fun x' => x' - x :=
-  Iff.rfl
+  hasGradientAtFilter_iff_isLittleO
 
 theorem hasGradientAt_iff_tendsto :
     HasGradientAt f f' x ↔

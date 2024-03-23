@@ -3,7 +3,8 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean
+import Lean.CoreM
+import Lean.Util.FoldConsts
 
 /-!
 A rudimentary export format, adapted from
@@ -72,7 +73,7 @@ namespace Export
 
 def alloc {α} [BEq α] [Hashable α] [OfState α] (a : α) : ExportM Nat := do
   let n := (OfState.get (α := α) (← get)).next
-  modify $ OfState.modify (α := α) fun s ↦ {map := s.map.insert a n, next := n+1}
+  modify <| OfState.modify (α := α) fun s ↦ {map := s.map.insert a n, next := n+1}
   pure n
 
 def exportName (n : Name) : ExportM Nat := do

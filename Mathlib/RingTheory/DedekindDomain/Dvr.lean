@@ -59,8 +59,8 @@ TODO: prove the equivalence.
 -/
 structure IsDedekindDomainDvr : Prop where
   isNoetherianRing : IsNoetherianRing A
-  is_dvr_at_nonzero_prime :
-    ∀ (P) (_ : P ≠ (⊥ : Ideal A)) (_ : P.IsPrime), DiscreteValuationRing (Localization.AtPrime P)
+  is_dvr_at_nonzero_prime : ∀ P ≠ (⊥ : Ideal A), ∀ _ : P.IsPrime,
+    DiscreteValuationRing (Localization.AtPrime P)
 #align is_dedekind_domain_dvr IsDedekindDomainDvr
 
 /-- Localizing a domain of Krull dimension `≤ 1` gives another ring of Krull dimension `≤ 1`.
@@ -79,8 +79,8 @@ theorem Ring.DimensionLEOne.localization {R : Type*} (Rₘ : Type*) [CommRing R]
     ((IsLocalization.orderIsoOfPrime M Rₘ) ⟨p, hpp⟩).2.1
   haveI : Ideal.IsPrime (Ideal.comap (algebraMap R Rₘ) P) :=
     ((IsLocalization.orderIsoOfPrime M Rₘ) ⟨P, hPm.isPrime⟩).2.1
-  have _ : Ideal.comap (algebraMap R Rₘ) p < Ideal.comap (algebraMap R Rₘ) P := hpP'
-  refine' h.not_lt_lt ⊥ (Ideal.comap _ _) (Ideal.comap _ _) ⟨_, hpP'⟩
+  have hlt : Ideal.comap (algebraMap R Rₘ) p < Ideal.comap (algebraMap R Rₘ) P := hpP'
+  refine' h.not_lt_lt ⊥ (Ideal.comap _ _) (Ideal.comap _ _) ⟨_, hlt⟩
   exact IsLocalization.bot_lt_comap_prime _ _ hM _ hp0⟩
 #align ring.dimension_le_one.localization Ring.DimensionLEOne.localization
 

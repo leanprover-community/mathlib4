@@ -39,8 +39,8 @@ theorem deriv_arcsin_aux {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
   cases' h₂.lt_or_lt with h₂ h₂
   · have : 0 < sqrt (1 - x ^ 2) := sqrt_pos.2 (by nlinarith [h₁, h₂])
     simp only [← cos_arcsin, one_div] at this ⊢
-    exact ⟨sinLocalHomeomorph.hasStrictDerivAt_symm ⟨h₁, h₂⟩ this.ne' (hasStrictDerivAt_sin _),
-      sinLocalHomeomorph.contDiffAt_symm_deriv this.ne' ⟨h₁, h₂⟩ (hasDerivAt_sin _)
+    exact ⟨sinPartialHomeomorph.hasStrictDerivAt_symm ⟨h₁, h₂⟩ this.ne' (hasStrictDerivAt_sin _),
+      sinPartialHomeomorph.contDiffAt_symm_deriv this.ne' ⟨h₁, h₂⟩ (hasDerivAt_sin _)
         contDiff_sin.contDiffAt⟩
   · have : 1 - x ^ 2 < 0 := by nlinarith [h₂]
     rw [sqrt_eq_zero'.2 this.le, div_zero]
