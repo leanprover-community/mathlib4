@@ -5,6 +5,10 @@ Authors: Paul Reichert
 -/
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.IsConnected
+import Mathlib.CategoryTheory.Limits.Creates
+
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Conj
 
 /-!
 # Colimits of connected index categories
@@ -69,5 +73,18 @@ theorem connected_iff_colimit_const_pUnit_iso_pUnit :
   refine zigzag_isConnected <| fun c d => ?_
   refine zigzag_of_eqvGen_quot_rel _ (unitValuedFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
   exact colimit_eq <| h.toEquiv.injective rfl
+
+-- FME-99; remove this!
+
+universe v₂ u₂
+variable {C : Type u} {D: Type u₂} [Category.{v} C] [Category.{v₂} D]
+
+/-- The source of a final functor is connected if and only if the target is connected. -/
+theorem isConnected_iff_of_final (F : C ⥤ D) [CategoryTheory.Functor.Final F] :
+    IsConnected C ↔ IsConnected D := by
+  refine Iff.trans (connected_iff_colimit_const_pUnit_iso_pUnit.{v, u, max v₂ u₂} C) ?_
+  refine Iff.trans ?_ (connected_iff_colimit_const_pUnit_iso_pUnit.{v₂, u₂, max v u} D).symm
+  exact Equiv.nonempty_congr <| Iso.isoCongrLeft <|
+    CategoryTheory.Functor.Final.colimitIso F <| unitValuedFunctor.{v₂, u₂, max u v u₂ v₂} D
 
 end CategoryTheory.Limits.Types

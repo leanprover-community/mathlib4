@@ -71,6 +71,24 @@ theorem homCongr_symm {X₁ Y₁ X₂ Y₂ : C} (α : X₁ ≅ X₂) (β : Y₁ 
   rfl
 #align category_theory.iso.hom_congr_symm CategoryTheory.Iso.homCongr_symm
 
+-- FME-99
+
+/-- If `X` is isomorphic to `X₁` and `Y` is isomorphic to `Y₁`, then
+there is a bijection between `X ≅ Y` and `X₁ ≅ Y₁`. -/
+def isoCongr {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ≅ X₂) (g : Y₁ ≅ Y₂) : (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂) where
+  toFun h := f.symm.trans <| h.trans <| g
+  invFun h := f.trans <| h.trans <| g.symm
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
+/-- If `X₁` is isomorphic to `X₂`, then there is a bijection between `X₁ ≅ Y` and `X₂ ≅ Y`. -/
+def isoCongrLeft {X₁ X₂ Y : C} (f : X₁ ≅ X₂) : (X₁ ≅ Y) ≃ (X₂ ≅ Y) :=
+  isoCongr f (Iso.refl _)
+
+/-- If `Y₁` is isomorphic to `Y₂`, then there is a bijection between `X ≅ Y₁` and `X ≅ Y₂`. -/
+def isoCongrRight {X Y₁ Y₂ : C} (g : Y₁ ≅ Y₂) : (X ≅ Y₁) ≃ (X ≅ Y₂) :=
+  isoCongr (Iso.refl _) g
+
 variable {X Y : C} (α : X ≅ Y)
 
 /-- An isomorphism between two objects defines a monoid isomorphism between their
