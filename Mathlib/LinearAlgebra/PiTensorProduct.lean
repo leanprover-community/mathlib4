@@ -320,7 +320,7 @@ theorem tprodCoeff_eq_smul_tprod (z : R) (f : Π i, s i) : tprodCoeff R z f = z 
 #align pi_tensor_product.tprod_coeff_eq_smul_tprod PiTensorProduct.tprodCoeff_eq_smul_tprod
 
 /-- The image of an element `p` of `FreeAddMonoid (R × Π i, s i)` in the `PiTensorProduct` is
-equal to the sum of `a • ⨂ₜ[R] i, m i` over all the entries `(a,m)` of `p`.
+equal to the sum of `a • ⨂ₜ[R] i, m i` over all the entries `(a, m)` of `p`.
 -/
 lemma _root_.FreeAddMonoid.toPiTensorProduct (p : FreeAddMonoid (R × Π i, s i)) :
     AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p =
