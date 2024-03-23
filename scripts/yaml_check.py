@@ -27,7 +27,7 @@ def flatten_names(data: List[Tuple[List[str], str]]) -> List[Tuple[str, str]]:
   return [(' :: '.join(id), v) for id, v in data]
 
 def print_list(fn: str, pairs: List[Tuple[str, str]]) -> None:
-  with open(fn, 'w') as out:
+  with open(fn, 'w', encoding='utf8') as out:
     for (id, val) in pairs:
       out.write(f'{id}\n{val.strip()}\n\n')
 
@@ -35,11 +35,11 @@ hundred_yaml = sys.argv[1]
 overview_yaml = sys.argv[2]
 undergrad_yaml = sys.argv[3]
 
-with open(hundred_yaml, 'r') as hy:
+with open(hundred_yaml, 'r', encoding='utf8') as hy:
   hundred = yaml.safe_load(hy)
-with open(overview_yaml, 'r') as hy:
+with open(overview_yaml, 'r', encoding='utf8') as hy:
   overview = yaml.safe_load(hy)
-with open(undergrad_yaml, 'r') as hy:
+with open(undergrad_yaml, 'r', encoding='utf8') as hy:
   undergrad = yaml.safe_load(hy)
 
 hundred_decls:List[Tuple[str, str]] = []
