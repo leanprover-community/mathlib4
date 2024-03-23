@@ -37,17 +37,16 @@ noncomputable section
 
 namespace SemiRingCat
 
-variable {J : Type v} [Category.{w} J]
+variable {J : Type v} [Category.{w} J] (F : J ⥤ SemiRingCat.{u})
 
-instance semiringObj (F : J ⥤ SemiRingCat.{u}) (j) :
-    Semiring ((F ⋙ forget SemiRingCat).obj j) :=
+instance semiringObj (j) : Semiring ((F ⋙ forget SemiRingCat).obj j) :=
   inferInstanceAs <| Semiring (F.obj j)
 set_option linter.uppercaseLean3 false in
 #align SemiRing.semiring_obj SemiRingCat.semiringObj
 
 /-- The flat sections of a functor into `SemiRingCat` form a subsemiring of all sections.
 -/
-def sectionsSubsemiring (F : J ⥤ SemiRingCat.{u}) : Subsemiring (∀ j, F.obj j) :=
+def sectionsSubsemiring : Subsemiring (∀ j, F.obj j) :=
   -- Porting note: if `f` and `g` were inlined, it does not compile
   letI f : J ⥤ AddMonCat.{u} := F ⋙ forget₂ SemiRingCat.{u} AddCommMonCat.{u} ⋙
     forget₂ AddCommMonCat AddMonCat
@@ -58,13 +57,12 @@ def sectionsSubsemiring (F : J ⥤ SemiRingCat.{u}) : Subsemiring (∀ j, F.obj 
 set_option linter.uppercaseLean3 false in
 #align SemiRing.sections_subsemiring SemiRingCat.sectionsSubsemiring
 
-instance sectionsSemiring (F : J ⥤ SemiRingCat.{u}) :
-    Semiring (F ⋙ forget SemiRingCat.{u}).sections :=
+instance sectionsSemiring : Semiring (F ⋙ forget SemiRingCat.{u}).sections :=
   (sectionsSubsemiring F).toSemiring
 
-variable [Small.{u} J]
+variable [Small.{u} (Functor.sections (F ⋙ forget SemiRingCat.{u}))]
 
-instance limitSemiring (F : J ⥤ SemiRingCat.{u}) :
+instance limitSemiring :
     Semiring (Types.Small.limitCone.{v, u} (F ⋙ forget SemiRingCat.{u})).pt :=
   letI : Semiring (F ⋙ forget SemiRingCat).sections := (sectionsSubsemiring F).toSemiring
   inferInstanceAs <| Semiring (Shrink (F ⋙ forget SemiRingCat).sections)
@@ -72,11 +70,15 @@ set_option linter.uppercaseLean3 false in
 #align SemiRing.limit_semiring SemiRingCat.limitSemiring
 
 /-- `limit.π (F ⋙ forget SemiRingCat) j` as a `RingHom`. -/
-def limitπRingHom (F : J ⥤ SemiRingCat.{u}) (j) :
+def limitπRingHom (j) :
     (Types.Small.limitCone.{v, u} (F ⋙ forget SemiRingCat)).pt →+* (F ⋙ forget SemiRingCat).obj j :=
   -- Porting note: if `f` and `g` were inlined, it does not compile
   letI f : J ⥤ AddMonCat.{u} := F ⋙ forget₂ SemiRingCat.{u} AddCommMonCat.{u} ⋙
     forget₂ AddCommMonCat AddMonCat
+  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ MonCat) ⋙ forget MonCat)) :=
+    inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget SemiRingCat.{u}))
+  letI : Small.{u} (Functor.sections (f ⋙ forget AddMonCat)) :=
+    inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget SemiRingCat.{u}))
   { AddMonCat.limitπAddMonoidHom f j,
     MonCat.limitπMonoidHom (F ⋙ forget₂ SemiRingCat MonCat.{u}) j with
     toFun := (Types.Small.limitCone (F ⋙ forget SemiRingCat)).π.app j }
@@ -91,7 +93,7 @@ namespace HasLimits
 /-- Construction of a limit cone in `SemiRingCat`.
 (Internal use only; use the limits API.)
 -/
-def limitCone (F : J ⥤ SemiRingCat.{u}) : Cone F where
+def limitCone : Cone F where
   pt := SemiRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
   π :=
     { app := limitπRingHom.{v, u} F
@@ -103,7 +105,7 @@ set_option linter.uppercaseLean3 false in
 /-- Witness that the limit cone in `SemiRingCat` is a limit cone.
 (Internal use only; use the limits API.)
 -/
-def limitConeIsLimit (F : J ⥤ SemiRingCat.{u}) : IsLimit (limitCone F) := by
+def limitConeIsLimit : IsLimit (limitCone F) := by
   refine IsLimit.ofFaithful (forget SemiRingCat.{u}) (Types.Small.limitConeIsLimit.{v, u} _)
     (fun s => { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_})
     (fun s => rfl)
@@ -126,9 +128,11 @@ end HasLimits
 
 open HasLimits
 
+/-- If `(F ⋙ forget SemiRingCat).sections` is `u`-small, `F` has a limit. -/
+instance hasLimit : HasLimit F := ⟨limitCone.{v, u} F, limitConeIsLimit.{v, u} F⟩
+
 /-- If `J` is `u`-small, `SemiRingCat.{u}` has limits of shape `J`. -/
-instance hasLimitsOfShape : HasLimitsOfShape J SemiRingCat.{u} where
-  has_limit {F} := ⟨limitCone.{v, u} F, limitConeIsLimit.{v, u} F⟩
+instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J SemiRingCat.{u} where
 
 /- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
@@ -145,8 +149,10 @@ set_option linter.uppercaseLean3 false in
 /--
 Auxiliary lemma to prove the cone induced by `limitCone` is a limit cone.
 -/
-def forget₂AddCommMonPreservesLimitsAux (F : J ⥤ SemiRingCat.{u}) :
+def forget₂AddCommMonPreservesLimitsAux :
     IsLimit ((forget₂ SemiRingCat AddCommMonCat).mapCone (limitCone F)) := by
+  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ AddCommMonCat) ⋙ forget _)) :=
+    inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget SemiRingCat))
   apply AddCommMonCat.limitConeIsLimit.{v, u}
 set_option linter.uppercaseLean3 false in
 #align SemiRing.forget₂_AddCommMon_preserves_limits_aux SemiRingCat.forget₂AddCommMonPreservesLimitsAux
@@ -170,8 +176,10 @@ set_option linter.uppercaseLean3 false in
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
-def forget₂MonPreservesLimitsAux (F : J ⥤ SemiRingCat.{u}) :
+def forget₂MonPreservesLimitsAux :
     IsLimit ((forget₂ SemiRingCat MonCat).mapCone (limitCone F)) := by
+  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ MonCat) ⋙ forget MonCat)) :=
+    inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget SemiRingCat))
   apply MonCat.HasLimits.limitConeIsLimit (F ⋙ forget₂ SemiRingCat MonCat.{u})
 set_option linter.uppercaseLean3 false in
 #align SemiRing.forget₂_Mon_preserves_limits_aux SemiRingCat.forget₂MonPreservesLimitsAux
@@ -217,17 +225,17 @@ abbrev CommSemiRingCatMax.{u1, u2} := CommSemiRingCat.{max u1 u2}
 
 namespace CommSemiRingCat
 
-variable {J : Type v} [Category.{w} J]
+variable {J : Type v} [Category.{w} J] (F : J ⥤ CommSemiRingCat.{u})
 
-instance commSemiringObj (F : J ⥤ CommSemiRingCat.{u}) (j) :
+instance commSemiringObj (j) :
     CommSemiring ((F ⋙ forget CommSemiRingCat).obj j) :=
   inferInstanceAs <| CommSemiring (F.obj j)
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.comm_semiring_obj CommSemiRingCat.commSemiringObj
 
-variable [Small.{u} J]
+variable [Small.{u} (Functor.sections (F ⋙ forget CommSemiRingCat))]
 
-instance limitCommSemiring (F : J ⥤ CommSemiRingCat.{u}) :
+instance limitCommSemiring :
     CommSemiring (Types.Small.limitCone.{v, u} (F ⋙ forget CommSemiRingCat.{u})).pt :=
   letI : CommSemiring (F ⋙ forget CommSemiRingCat.{u}).sections :=
     @Subsemiring.toCommSemiring (∀ j, F.obj j) _
@@ -241,7 +249,7 @@ set_option linter.uppercaseLean3 false in
 All we need to do is notice that the limit point has a `CommSemiring` instance available,
 and then reuse the existing limit.
 -/
-instance (F : J ⥤ CommSemiRingCat.{u}) :
+instance :
     CreatesLimit F (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}) :=
   -- Porting note: `CommSemiRingCat ⥤ Type` reflecting isomorphism is needed to make Lean see that
   -- `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism. `CommSemiRingCat ⥤ Type` reflecting
@@ -252,6 +260,8 @@ instance (F : J ⥤ CommSemiRingCat.{u}) :
   letI : ReflectsIsomorphisms
     (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}) :=
     CategoryTheory.reflectsIsomorphisms_forget₂ CommSemiRingCat.{u} SemiRingCat.{u}
+  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
+    inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget CommSemiRingCat))
   let c : Cone F :=
     { pt := CommSemiRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
       π :=
@@ -269,7 +279,9 @@ instance (F : J ⥤ CommSemiRingCat.{u}) :
 /-- A choice of limit cone for a functor into `CommSemiRingCat`.
 (Generally, you'll just want to use `limit F`.)
 -/
-def limitCone (F : J ⥤ CommSemiRingCat.{u}) : Cone F :=
+def limitCone : Cone F :=
+  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat.{u}) ⋙ forget _)) :=
+    inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   liftLimit (limit.isLimit (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u}))
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.limit_cone CommSemiRingCat.limitCone
@@ -277,17 +289,20 @@ set_option linter.uppercaseLean3 false in
 /-- The chosen cone is a limit cone.
 (Generally, you'll just want to use `limit.cone F`.)
 -/
-def limitConeIsLimit (F : J ⥤ CommSemiRingCat.{u}) : IsLimit (limitCone F) :=
+def limitConeIsLimit : IsLimit (limitCone F) :=
   liftedLimitIsLimit _
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.limit_cone_is_limit CommSemiRingCat.limitConeIsLimit
 
+/-- If `(F ⋙ forget CommSemiRingCat).sections` is `u`-small, `F` has a limit. -/
+instance hasLimit : HasLimit F := ⟨limitCone.{v, u} F, limitConeIsLimit.{v, u} F⟩
+
+/-- If `J` is `u`-small, `CommSemiRingCat.{u}` has limits of shape `J`. -/
+instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommSemiRingCat.{u} where
+
 /- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
-instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommSemiRingCat.{u} :=
-  { has_limits_of_shape := fun _ _ =>
-      { has_limit := fun F =>
-          hasLimit_of_created F (forget₂ CommSemiRingCat SemiRingCat.{u}) } }
+instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommSemiRingCat.{u} where
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.has_limits_of_size CommSemiRingCat.hasLimitsOfSize
 
@@ -303,7 +318,7 @@ instance forget₂SemiRingPreservesLimitsOfSize [UnivLE.{v, u}] :
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
-          (SemiRingCat.HasLimits.limitConeIsLimit _) }
+          (SemiRingCat.HasLimits.limitConeIsLimit (F ⋙ forget₂ _ SemiRingCat)) }
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.forget₂_SemiRing_preserves_limits_of_size CommSemiRingCat.forget₂SemiRingPreservesLimitsOfSize
 
@@ -339,16 +354,16 @@ abbrev RingCatMax.{u1, u2} := RingCat.{max u1 u2}
 
 namespace RingCat
 
-variable {J : Type v} [Category.{w} J]
+variable {J : Type v} [Category.{w} J] (F : J ⥤ RingCat.{u})
 
-instance ringObj (F : J ⥤ RingCat.{u}) (j) : Ring ((F ⋙ forget RingCat).obj j) :=
+instance ringObj (j) : Ring ((F ⋙ forget RingCat).obj j) :=
   inferInstanceAs <| Ring (F.obj j)
 set_option linter.uppercaseLean3 false in
 #align Ring.ring_obj RingCat.ringObj
 
 /-- The flat sections of a functor into `RingCat` form a subring of all sections.
 -/
-def sectionsSubring (F : J ⥤ RingCat.{u}) : Subring (∀ j, F.obj j) :=
+def sectionsSubring : Subring (∀ j, F.obj j) :=
   letI f : J ⥤ AddGroupCat.{u} :=
     F ⋙ forget₂ RingCat.{u} AddCommGroupCat.{u} ⋙
     forget₂ AddCommGroupCat.{u} AddGroupCat.{u}
@@ -359,22 +374,23 @@ def sectionsSubring (F : J ⥤ RingCat.{u}) : Subring (∀ j, F.obj j) :=
 set_option linter.uppercaseLean3 false in
 #align Ring.sections_subring RingCat.sectionsSubring
 
-variable [Small.{u} J]
+variable [Small.{u} (Functor.sections (F ⋙ forget RingCat.{u}))]
 
-instance limitRing (F : J ⥤ RingCat.{u}) :
-    Ring.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget RingCat.{u})).pt :=
+instance limitRing : Ring.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget RingCat.{u})).pt :=
   letI : Ring (F ⋙ forget RingCat.{u}).sections := (sectionsSubring F).toRing
   inferInstanceAs <| Ring (Shrink _)
 set_option linter.uppercaseLean3 false in
 #align Ring.limit_ring RingCat.limitRing
+
+local instance : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
+  inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
 
 /-- We show that the forgetful functor `CommRingCat ⥤ RingCat` creates limits.
 
 All we need to do is notice that the limit point has a `Ring` instance available,
 and then reuse the existing limit.
 -/
-instance (F : J ⥤ RingCat.{u}) :
-    CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
+instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
   letI : ReflectsIsomorphisms (forget₂ RingCat SemiRingCat) :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   letI c : Cone F :=
@@ -393,7 +409,7 @@ instance (F : J ⥤ RingCat.{u}) :
 /-- A choice of limit cone for a functor into `RingCat`.
 (Generally, you'll just want to use `limit F`.)
 -/
-def limitCone (F : J ⥤ RingCat.{u}) : Cone F :=
+def limitCone : Cone F :=
   liftLimit (limit.isLimit (F ⋙ forget₂ RingCat.{u} SemiRingCat.{u}))
 set_option linter.uppercaseLean3 false in
 #align Ring.limit_cone RingCat.limitCone
@@ -401,14 +417,16 @@ set_option linter.uppercaseLean3 false in
 /-- The chosen cone is a limit cone.
 (Generally, you'll just want to use `limit.cone F`.)
 -/
-def limitConeIsLimit (F : J ⥤ RingCat.{u}) : IsLimit (limitCone F) :=
+def limitConeIsLimit : IsLimit (limitCone F) :=
   liftedLimitIsLimit _
 set_option linter.uppercaseLean3 false in
 #align Ring.limit_cone_is_limit RingCat.limitConeIsLimit
 
+/-- If `(F ⋙ forget RingCat).sections` is `u`-small, `F` has a limit. -/
+instance hasLimit : HasLimit F := hasLimit_of_created F (forget₂ RingCat.{u} SemiRingCat.{u})
+
 /-- If `J` is `u`-small, `RingCat.{u}` has limits of shape `J`. -/
-instance hasLimitsOfShape : HasLimitsOfShape J RingCat.{u} where
-  has_limit {F} := hasLimit_of_created F (forget₂ RingCat.{u} SemiRingCat.{u})
+instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J RingCat.{u} where
 
 /- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
@@ -439,10 +457,12 @@ set_option linter.uppercaseLean3 false in
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
-def forget₂AddCommGroupPreservesLimitsAux (F : J ⥤ RingCat.{u}) :
+def forget₂AddCommGroupPreservesLimitsAux :
     IsLimit ((forget₂ RingCat.{u} AddCommGroupCat).mapCone (limitCone.{v, u} F)) := by
   -- Porting note: inline `f` would not compile
   letI f := (F ⋙ forget₂ RingCat.{u} AddCommGroupCat.{u})
+  letI : Small.{u} (Functor.sections (f ⋙ forget _)) :=
+    inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   apply AddCommGroupCat.limitConeIsLimit.{v, u} f
 set_option linter.uppercaseLean3 false in
 #align Ring.forget₂_AddCommGroup_preserves_limits_aux RingCat.forget₂AddCommGroupPreservesLimitsAux
@@ -490,17 +510,16 @@ abbrev CommRingCatMax.{u1, u2} := CommRingCat.{max u1 u2}
 
 namespace CommRingCat
 
-variable {J : Type v} [Category.{w} J]
+variable {J : Type v} [Category.{w} J] (F : J ⥤ CommRingCat.{u})
 
-instance commRingObj (F : J ⥤ CommRingCat.{u}) (j) :
-    CommRing ((F ⋙ forget CommRingCat).obj j) :=
+instance commRingObj (j) : CommRing ((F ⋙ forget CommRingCat).obj j) :=
   inferInstanceAs <| CommRing (F.obj j)
 set_option linter.uppercaseLean3 false in
 #align CommRing.comm_ring_obj CommRingCat.commRingObj
 
-variable [Small.{u} J]
+variable [Small.{u} (Functor.sections (F ⋙ forget CommRingCat))]
 
-instance limitCommRing (F : J ⥤ CommRingCat.{u}) :
+instance limitCommRing :
     CommRing.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget CommRingCat.{u})).pt :=
   letI : CommRing (F ⋙ forget CommRingCat).sections := @Subring.toCommRing (∀ j, F.obj j) _
     (RingCat.sectionsSubring.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{u}))
@@ -508,12 +527,16 @@ instance limitCommRing (F : J ⥤ CommRingCat.{u}) :
 set_option linter.uppercaseLean3 false in
 #align CommRing.limit_comm_ring CommRingCat.limitCommRing
 
+local instance : Small.{u}
+    (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
+  inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
+
 /-- We show that the forgetful functor `CommRingCat ⥤ RingCat` creates limits.
 
 All we need to do is notice that the limit point has a `CommRing` instance available,
 and then reuse the existing limit.
 -/
-instance (F : J ⥤ CommRingCat.{u}) :
+instance :
    CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
   /-
     A terse solution here would be
@@ -525,6 +548,9 @@ instance (F : J ⥤ CommRingCat.{u}) :
     -- Porting note: need to add these instances manually
     letI : ReflectsIsomorphisms (forget₂ CommRingCat.{u} RingCat.{u}) :=
       CategoryTheory.reflectsIsomorphisms_forget₂ _ _
+    letI : Small.{u}
+        (Functor.sections ((F ⋙ forget₂ _ RingCat ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
+      inferInstanceAs <| Small.{u} (F ⋙ forget _).sections
     letI c : Cone F :=
     { pt := CommRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
       π :=
@@ -552,7 +578,7 @@ instance (F : J ⥤ CommRingCat.{u}) :
 /-- A choice of limit cone for a functor into `CommRingCat`.
 (Generally, you'll just want to use `limit F`.)
 -/
-def limitCone (F : J ⥤ CommRingCat.{u}) : Cone F :=
+def limitCone : Cone F :=
   liftLimit (limit.isLimit (F ⋙ forget₂ CommRingCat.{u} RingCat.{u}))
 set_option linter.uppercaseLean3 false in
 #align CommRing.limit_cone CommRingCat.limitCone
@@ -560,14 +586,17 @@ set_option linter.uppercaseLean3 false in
 /-- The chosen cone is a limit cone.
 (Generally, you'll just want to use `limit.cone F`.)
 -/
-def limitConeIsLimit (F : J ⥤ CommRingCat.{u}) : IsLimit (limitCone.{v, u} F) :=
+def limitConeIsLimit : IsLimit (limitCone.{v, u} F) :=
   liftedLimitIsLimit _
 set_option linter.uppercaseLean3 false in
 #align CommRing.limit_cone_is_limit CommRingCat.limitConeIsLimit
 
+/-- If `(F ⋙ forget CommRingCat).sections` is `u`-small, `F` has a limit. -/
+instance hasLimit : HasLimit F :=
+  hasLimit_of_created F (forget₂ CommRingCat.{u} RingCat.{u})
+
 /-- If `J` is `u`-small, `CommRingCat.{u}` has limits of shape `J`. -/
-instance hasLimitsOfShape : HasLimitsOfShape J CommRingCat.{u} where
-  has_limit {F} := hasLimit_of_created F (forget₂ CommRingCat.{u} RingCat.{u})
+instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommRingCat.{u} where
 
 /- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of commutative rings has all limits. -/
@@ -599,8 +628,10 @@ set_option linter.uppercaseLean3 false in
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
-def forget₂CommSemiRingPreservesLimitsAux (F : J ⥤ CommRingCat.{u}) :
+def forget₂CommSemiRingPreservesLimitsAux :
     IsLimit ((forget₂ CommRingCat CommSemiRingCat).mapCone (limitCone F)) := by
+  letI : Small.{u} ((F ⋙ forget₂ _ CommSemiRingCat) ⋙ forget _).sections :=
+    inferInstanceAs <| Small.{u} (F ⋙ forget _).sections
   apply CommSemiRingCat.limitConeIsLimit (F ⋙ forget₂ CommRingCat CommSemiRingCat.{u})
 set_option linter.uppercaseLean3 false in
 #align CommRing.forget₂_CommSemiRing_preserves_limits_aux CommRingCat.forget₂CommSemiRingPreservesLimitsAux

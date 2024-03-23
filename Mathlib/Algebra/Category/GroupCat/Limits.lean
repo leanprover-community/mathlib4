@@ -30,8 +30,10 @@ variable {J : Type v} [Category.{w} J]
 
 namespace GroupCat
 
+variable (F : J ⥤ GroupCat.{u})
+
 @[to_additive]
-instance groupObj (F : J ⥤ GroupCat.{u}) (j) : Group ((F ⋙ forget GroupCat).obj j) :=
+instance groupObj (j) : Group ((F ⋙ forget GroupCat).obj j) :=
   inferInstanceAs <| Group (F.obj j)
 set_option linter.uppercaseLean3 false in
 #align Group.group_obj GroupCat.groupObj
@@ -42,7 +44,7 @@ set_option linter.uppercaseLean3 false in
 -/
 @[to_additive
   "The flat sections of a functor into `AddGroupCat` form an additive subgroup of all sections."]
-def sectionsSubgroup (F : J ⥤ GroupCat.{u}) : Subgroup (∀ j, F.obj j) :=
+def sectionsSubgroup : Subgroup (∀ j, F.obj j) :=
   { MonCat.sectionsSubmonoid (F ⋙ forget₂ GroupCat MonCat) with
     carrier := (F ⋙ forget GroupCat).sections
     inv_mem' := fun {a} ah j j' f => by
@@ -55,19 +57,23 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.sections_add_subgroup AddGroupCat.sectionsAddSubgroup
 
 @[to_additive]
-instance sectionsGroup (F : J ⥤ GroupCat.{u}) : Group (F ⋙ forget GroupCat.{u}).sections :=
+instance sectionsGroup : Group (F ⋙ forget GroupCat.{u}).sections :=
   (sectionsSubgroup F).toGroup
 
-variable [Small.{u} J]
+variable [Small.{u} (Functor.sections (F ⋙ forget GroupCat))]
 
 @[to_additive]
-noncomputable instance limitGroup (F : J ⥤ GroupCat.{u}) :
+noncomputable instance limitGroup :
     Group (Types.Small.limitCone.{v, u} (F ⋙ forget GroupCat.{u})).pt :=
   inferInstanceAs <| Group (Shrink (F ⋙ forget GroupCat.{u}).sections)
 set_option linter.uppercaseLean3 false in
 #align Group.limit_group GroupCat.limitGroup
 set_option linter.uppercaseLean3 false in
 #align AddGroup.limit_add_group AddGroupCat.limitAddGroup
+
+@[to_additive]
+instance : Small.{u} (Functor.sections ((F ⋙ forget₂ GroupCat MonCat) ⋙ forget MonCat)) :=
+  inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget GroupCat))
 
 /-- We show that the forgetful functor `GroupCat ⥤ MonCat` creates limits.
 
@@ -77,7 +83,7 @@ the existing limit. -/
 
 All we need to do is notice that the limit point has an `AddGroup` instance available, and then
 reuse the existing limit."]
-noncomputable instance Forget₂.createsLimit (F : J ⥤ GroupCat.{u}) :
+noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ GroupCat.{u} MonCat.{u}) :=
   -- Porting note: need to add `forget₂ GrpCat MonCat` reflects isomorphism
   letI : ReflectsIsomorphisms (forget₂ GroupCat.{u} MonCat.{u}) :=
@@ -105,7 +111,7 @@ set_option linter.uppercaseLean3 false in
 -/
 @[to_additive "A choice of limit cone for a functor into `GroupCat`.
   (Generally, you'll just want to use `limit F`.)"]
-noncomputable def limitCone (F : J ⥤ GroupCat.{u}) : Cone F :=
+noncomputable def limitCone : Cone F :=
   liftLimit (limit.isLimit (F ⋙ forget₂ GroupCat.{u} MonCat.{u}))
 set_option linter.uppercaseLean3 false in
 #align Group.limit_cone GroupCat.limitCone
@@ -117,20 +123,25 @@ set_option linter.uppercaseLean3 false in
 -/
 @[to_additive "The chosen cone is a limit cone.
   (Generally, you'll just want to use `limit.cone F`.)"]
-noncomputable def limitConeIsLimit (F : J ⥤ GroupCat.{u}) : IsLimit (limitCone F) :=
+noncomputable def limitConeIsLimit : IsLimit (limitCone F) :=
   liftedLimitIsLimit _
 set_option linter.uppercaseLean3 false in
 #align Group.limit_cone_is_limit GroupCat.limitConeIsLimit
 set_option linter.uppercaseLean3 false in
 #align AddGroup.limit_cone_is_limit AddGroupCat.limitConeIsLimit
 
-/-- If `J` is `u`-small, `GroupCat.{u}` has limits of shape `J`. -/
-@[to_additive "If `J` is `u`-small, `AddGroupCat.{u}` has limits of shape `J`."]
-instance hasLimitsOfShape : HasLimitsOfShape J GroupCat.{u} where
-  has_limit F := HasLimit.mk {
+/-- If `(F ⋙ forget GroupCat).sections` is `u`-small, `F` has a limit. -/
+@[to_additive "If `(F ⋙ forget AddGroupCat).sections` is `u`-small, `F` has a limit."]
+instance hasLimit : HasLimit F :=
+  HasLimit.mk {
     cone := limitCone F
     isLimit := limitConeIsLimit F
   }
+
+/-- If `J` is `u`-small, `GroupCat.{u}` has limits of shape `J`. -/
+@[to_additive "If `J` is `u`-small, `AddGroupCat.{u}` has limits of shape `J`."]
+instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J GroupCat.{u} where
+  has_limit _ := inferInstance 
 
 /-- The category of groups has all limits. -/
 @[to_additive "The category of additive groups has all limits."]
@@ -179,7 +190,7 @@ set_option linter.uppercaseLean3 false in
 /-- If `J` is `u`-small, the forgetful functor from `GroupCat.{u}` preserves limits of shape `J`. -/
 @[to_additive "If `J` is `u`-small, the forgetful functor from `AddGroupCat.{u}`\n
 preserves limits of shape `J`."]
-noncomputable instance forgetPreservesLimitsOfShape :
+noncomputable instance forgetPreservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget GroupCat.{u}) where
   preservesLimit {F} := preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
     (Types.Small.limitConeIsLimit (F ⋙ forget _))
@@ -212,19 +223,20 @@ end GroupCat
 
 namespace CommGroupCat
 
+variable (F : J ⥤ CommGroupCat.{u})
+
 @[to_additive]
-instance commGroupObj (F : J ⥤ CommGroupCat.{u}) (j) :
-    CommGroup ((F ⋙ forget CommGroupCat).obj j) :=
+instance commGroupObj (j) : CommGroup ((F ⋙ forget CommGroupCat).obj j) :=
   inferInstanceAs <| CommGroup (F.obj j)
 set_option linter.uppercaseLean3 false in
 #align CommGroup.comm_group_obj CommGroupCat.commGroupObj
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.add_comm_group_obj AddCommGroupCat.addCommGroupObj
 
-variable [Small.{u} J]
+variable [Small.{u} (Functor.sections (F ⋙ forget CommGroupCat))]
 
 @[to_additive]
-noncomputable instance limitCommGroup (F : J ⥤ CommGroupCat.{u}) :
+noncomputable instance limitCommGroup :
     CommGroup (Types.Small.limitCone.{v, u} (F ⋙ forget CommGroupCat.{u})).pt :=
   letI : CommGroup (F ⋙ forget CommGroupCat.{u}).sections :=
     @Subgroup.toCommGroup (∀ j, F.obj j) _
@@ -235,6 +247,11 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.limit_add_comm_group AddCommGroupCat.limitAddCommGroup
 
+@[to_additive]
+local instance : Small.{u}
+    (Functor.sections ((F ⋙ forget₂ CommGroupCat GroupCat) ⋙ forget GroupCat)) :=
+  inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGroupCat))
+
 /-- We show that the forgetful functor `CommGroupCat ⥤ GroupCat` creates limits.
 
 All we need to do is notice that the limit point has a `CommGroup` instance available,
@@ -244,10 +261,13 @@ and then reuse the existing limit.
 
   All we need to do is notice that the limit point has an `AddCommGroup` instance available,
   and then reuse the existing limit."]
-noncomputable instance Forget₂.createsLimit (F : J ⥤ CommGroupCat.{u}) :
+noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ CommGroupCat GroupCat.{u}) :=
   letI : ReflectsIsomorphisms (forget₂ CommGroupCat.{u} GroupCat.{u}) :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
+  letI : Small.{u}
+      (Functor.sections ((F ⋙ forget₂ _ GroupCat ⋙ forget₂ _ MonCat) ⋙ forget MonCat)) :=
+    inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGroupCat))
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone :=
         { pt := CommGroupCat.of (Types.Small.limitCone.{v, u} (F ⋙ forget CommGroupCat)).pt
@@ -270,7 +290,7 @@ set_option linter.uppercaseLean3 false in
 @[to_additive
   "A choice of limit cone for a functor into `AddCommGroupCat`.
   (Generally, you'll just want to use `limit F`.)"]
-noncomputable def limitCone (F : J ⥤ CommGroupCat.{u}) : Cone F :=
+noncomputable def limitCone : Cone F :=
   liftLimit (limit.isLimit (F ⋙ forget₂ CommGroupCat.{u} GroupCat.{u}))
 set_option linter.uppercaseLean3 false in
 #align CommGroup.limit_cone CommGroupCat.limitCone
@@ -283,21 +303,25 @@ set_option linter.uppercaseLean3 false in
 @[to_additive
   "The chosen cone is a limit cone.
   (Generally, you'll just want to use `limit.cone F`.)"]
-noncomputable def limitConeIsLimit (F : J ⥤ CommGroupCat.{u}) :
-    IsLimit (limitCone.{v, u} F) :=
+noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) :=
   liftedLimitIsLimit _
 set_option linter.uppercaseLean3 false in
 #align CommGroup.limit_cone_is_limit CommGroupCat.limitConeIsLimit
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.limit_cone_is_limit AddCommGroupCat.limitConeIsLimit
 
-/-- If `J` is `u`-small, `CommGroupCat.{u}` has limits of shape `J`. -/
-@[to_additive "If `J` is `u`-small, `AddCommGroupCat.{u}` has limits of shape `J`."]
-instance hasLimitsOfShape : HasLimitsOfShape J CommGroupCat.{u} where
-  has_limit F := HasLimit.mk {
+/-- If `(F ⋙ forget CommGroupCat).sections` is `u`-small, `F` has a limit. -/
+@[to_additive "If `(F ⋙ forget AddCommGroupCat).sections` is `u`-small, `F` has a limit."]
+instance hasLimit : HasLimit F :=
+  HasLimit.mk {
     cone := limitCone F
     isLimit := limitConeIsLimit F
   }
+
+/-- If `J` is `u`-small, `CommGroupCat.{u}` has limits of shape `J`. -/
+@[to_additive "If `J` is `u`-small, `AddCommGroupCat.{u}` has limits of shape `J`."]
+instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommGroupCat.{u} where
+  has_limit _ := inferInstance
 
 /-- The category of commutative groups has all limits. -/
 @[to_additive "The category of additive commutative groups has all limits."]
@@ -346,8 +370,10 @@ set_option linter.uppercaseLean3 false in
 -/
 @[to_additive AddCommGroupCat.forget₂AddCommMonPreservesLimitsAux
   "An auxiliary declaration to speed up typechecking."]
-noncomputable def forget₂CommMonPreservesLimitsAux (F : J ⥤ CommGroupCat.{u}) :
+noncomputable def forget₂CommMonPreservesLimitsAux :
     IsLimit ((forget₂ CommGroupCat.{u} CommMonCat.{u}).mapCone (limitCone.{v, u} F)) :=
+  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ CommMonCat) ⋙ forget CommMonCat)) :=
+    inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGroupCat))
   CommMonCat.limitConeIsLimit.{v, u} (F ⋙ forget₂ CommGroupCat.{u} CommMonCat.{u})
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget₂_CommMon_preserves_limits_aux CommGroupCat.forget₂CommMonPreservesLimitsAux
@@ -359,7 +385,7 @@ preserves limits of shape `J`. -/
 @[to_additive AddCommGroupCat.forget₂AddCommMonPreservesLimitsOfShape
   "If `J` is `u`-small, the forgetful functor from `AddCommGroupCat.{u}`
   to `AddCommMonCat.{u}` preserves limits of shape `J`."]
-noncomputable instance forget₂CommMonPreservesLimitsOfShape :
+noncomputable instance forget₂CommMonPreservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget₂ CommGroupCat.{u} CommMonCat.{u}) where
   preservesLimit {F} := preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
       (forget₂CommMonPreservesLimitsAux.{v, u} F)
@@ -384,7 +410,7 @@ set_option linter.uppercaseLean3 false in
 shape `J`. -/
 @[to_additive "If `J` is `u`-small, the forgetful functor from `AddCommGroupCat.{u}`\n
 preserves limits of shape `J`."]
-noncomputable instance forgetPreservesLimitsOfShape :
+noncomputable instance forgetPreservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget CommGroupCat.{u}) where
   preservesLimit {F} := preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
     (Types.Small.limitConeIsLimit (F ⋙ forget _))
