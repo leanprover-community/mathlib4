@@ -8,7 +8,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.SemiconjSup
 import Mathlib.Tactic.Monotonicity
-import Mathlib.Topology.Algebra.Order.MonotoneContinuity
+import Mathlib.Topology.Order.MonotoneContinuity
 
 #align_import dynamics.circle.rotation_number.translation_number from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

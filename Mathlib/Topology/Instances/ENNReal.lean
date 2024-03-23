@@ -3,13 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Instances.NNReal
-import Mathlib.Topology.Algebra.Order.MonotoneContinuity
+import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.Algebra.Order.T5
+import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.Order.T5
 
 #align_import topology.instances.ennreal from "leanprover-community/mathlib"@"ec4b2eeb50364487f80421c0b4c41328a611f30d"
 

@@ -6,7 +6,7 @@ Authors: Yury G. Kudryashov
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.Extr
-import Mathlib.Topology.Algebra.Order.ExtrClosure
+import Mathlib.Topology.Order.ExtrClosure
 
 #align_import analysis.complex.abs_max from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
