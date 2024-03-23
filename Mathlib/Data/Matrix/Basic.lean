@@ -74,28 +74,10 @@ theorem ext_iff : (∀ i j, M i j = N i j) ↔ M = N :=
   ⟨fun h => funext fun i => funext <| h i, fun h => by simp [h]⟩
 #align matrix.ext_iff Matrix.ext_iff
 
--- Porting note: `ext` does not like this, see new lemma below.
--- @[ext]
+@[ext]
 theorem ext : (∀ i j, M i j = N i j) → M = N :=
   ext_iff.mp
 #align matrix.ext Matrix.ext
-
--- Porting note: `ext` does not like if there are two variables introduced at once. E.g.
--- ```
--- example (A B : Matrix m n α) : A = B := by
---   ext i j
---   sorry
--- ```
--- would only introduce the first variable, so that afterwards, the state is
--- ```
--- i : m
--- ⊢ ∀ (j : n), A i j = B i j
--- ```
--- This is probably a bug in `ext`. Once it is fixed, you should delete `Matrix.ext'` below
--- and restore the `@[ext]` attribute on `Matrix.ext` above.
-@[ext]
-theorem ext' : (∀ i, M i = N i) → M = N :=
-  fun h => Matrix.ext fun i => by simp[h]
 
 end Ext
 

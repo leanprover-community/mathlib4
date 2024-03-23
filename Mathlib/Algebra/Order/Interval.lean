@@ -517,7 +517,7 @@ variable [OrderedCommGroup α] {s t : NonemptyInterval α}
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
   refine' ⟨fun h => _, _⟩
-  · rw [ext_iff, Prod.ext_iff] at h
+  · rw [NonemptyInterval.ext_iff, Prod.ext_iff] at h
     have := (mul_le_mul_iff_of_ge s.fst_le_snd t.fst_le_snd).1 (h.2.trans h.1.symm).le
     refine' ⟨s.fst, t.fst, _, _, h.1⟩ <;> apply NonemptyInterval.ext <;> dsimp [pure]
     · nth_rw 2 [this.1]
