@@ -531,10 +531,6 @@ instance limitCommRing :
 set_option linter.uppercaseLean3 false in
 #align CommRing.limit_comm_ring CommRingCat.limitCommRing
 
-local instance : Small.{u}
-    (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
-  inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
-
 /-- We show that the forgetful functor `CommRingCat ⥤ RingCat` creates limits.
 
 All we need to do is notice that the limit point has a `CommRing` instance available,
@@ -552,6 +548,9 @@ instance :
     -- Porting note: need to add these instances manually
     letI : ReflectsIsomorphisms (forget₂ CommRingCat.{u} RingCat.{u}) :=
       CategoryTheory.reflectsIsomorphisms_forget₂ _ _
+    letI : Small.{u}
+        (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
+      inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
     letI : Small.{u}
         (Functor.sections ((F ⋙ forget₂ _ RingCat ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
       inferInstanceAs <| Small.{u} (F ⋙ forget _).sections
@@ -583,6 +582,8 @@ instance :
 (Generally, you'll just want to use `limit F`.)
 -/
 def limitCone : Cone F :=
+  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
+    inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   liftLimit (limit.isLimit (F ⋙ forget₂ CommRingCat.{u} RingCat.{u}))
 set_option linter.uppercaseLean3 false in
 #align CommRing.limit_cone CommRingCat.limitCone
@@ -597,6 +598,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- If `(F ⋙ forget CommRingCat).sections` is `u`-small, `F` has a limit. -/
 instance hasLimit : HasLimit F :=
+  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
+    inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   hasLimit_of_created F (forget₂ CommRingCat.{u} RingCat.{u})
 
 /-- If `J` is `u`-small, `CommRingCat.{u}` has limits of shape `J`. -/
