@@ -94,7 +94,7 @@ theorem normUnit_one : normUnit (1 : α) = 1 :=
   normUnit_coe_units 1
 #align norm_unit_one normUnit_one
 
--- Porting note: quite slow. Improve performance?
+-- Porting note (#11083): quite slow. Improve performance?
 /-- Chooses an element of each associate class, by multiplying by `normUnit` -/
 def normalize : α →*₀ α where
   toFun x := x * normUnit x
@@ -157,7 +157,7 @@ theorem normalize_eq_one {x : α} : normalize x = 1 ↔ IsUnit x :=
   ⟨fun hx => isUnit_iff_exists_inv.2 ⟨_, hx⟩, fun ⟨u, hu⟩ => hu ▸ normalize_coe_units u⟩
 #align normalize_eq_one normalize_eq_one
 
--- Porting note: quite slow. Improve performance?
+-- Porting note (#11083): quite slow. Improve performance?
 @[simp]
 theorem normUnit_mul_normUnit (a : α) : normUnit (a * normUnit a) = 1 := by
   nontriviality α using Subsingleton.elim a 0
@@ -1206,7 +1206,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
       apply ac }
 #align gcd_monoid_of_lcm gcdMonoidOfLCM
 
--- Porting note: very slow; improve performance?
+-- Porting note (#11083): very slow; improve performance?
 /-- Define `NormalizedGCDMonoid` on a structure just from the `lcm` and its properties. -/
 noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq α] (lcm : α → α → α)
     (dvd_lcm_left : ∀ a b, a ∣ lcm a b) (dvd_lcm_right : ∀ a b, b ∣ lcm a b)
@@ -1351,7 +1351,7 @@ namespace CommGroupWithZero
 
 variable (G₀ : Type*) [CommGroupWithZero G₀] [DecidableEq G₀]
 
--- Porting note: very slow; improve performance?
+-- Porting note (#11083): very slow; improve performance?
 -- see Note [lower instance priority]
 instance (priority := 100) : NormalizedGCDMonoid G₀ where
   normUnit x := if h : x = 0 then 1 else (Units.mk0 x h)⁻¹

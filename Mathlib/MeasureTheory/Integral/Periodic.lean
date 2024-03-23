@@ -196,7 +196,6 @@ namespace UnitAddCircle
 
 attribute [local instance] Real.fact_zero_lt_one
 
-@[simp]
 protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by simp
 #align unit_add_circle.measure_univ UnitAddCircle.measure_univ
 
@@ -302,7 +301,6 @@ section RealValued
 open Filter
 
 variable {g : ℝ → ℝ}
-
 variable (hg : Periodic g T) (h_int : ∀ t₁ t₂, IntervalIntegrable g MeasureSpace.volume t₁ t₂)
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0`, then for any `t : ℝ`, the function

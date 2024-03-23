@@ -44,7 +44,8 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open Classical Topology Filter Set
+open scoped Classical
+open Topology Filter Set
 
 namespace Complex
 
@@ -578,7 +579,7 @@ theorem cos_eq_one_iff_of_lt_of_lt {x : ℝ} (hx₁ : -(2 * π) < x) (hx₂ : x 
     rw [mul_lt_iff_lt_one_left two_pi_pos] at hx₂
     rw [neg_lt, neg_mul_eq_neg_mul, mul_lt_iff_lt_one_left two_pi_pos] at hx₁
     norm_cast at hx₁ hx₂
-    obtain rfl : n = 0 := le_antisymm (by linarith) (by linarith)
+    obtain rfl : n = 0 := le_antisymm (by omega) (by omega)
     simp, fun h => by simp [h]⟩
 #align real.cos_eq_one_iff_of_lt_of_lt Real.cos_eq_one_iff_of_lt_of_lt
 
@@ -978,7 +979,7 @@ theorem tan_periodic : Function.Periodic tan π := by
   simpa only [Function.Periodic, tan_eq_sin_div_cos] using sin_antiperiodic.div cos_antiperiodic
 #align real.tan_periodic Real.tan_periodic
 
--- Porting note: added
+-- Porting note (#10756): added theorem
 @[simp]
 theorem tan_pi : tan π = 0 := by rw [tan_periodic.eq, tan_zero]
 

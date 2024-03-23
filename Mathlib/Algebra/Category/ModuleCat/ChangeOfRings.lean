@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import algebra.category.Module.change_of_rings from "leanprover-community/mathlib"@"56b71f0b55c03f70332b862e65c3aa1aa1249ca1"
 
@@ -53,7 +53,6 @@ universe v u₁ u₂ u₃
 namespace RestrictScalars
 
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
-
 variable (M : ModuleCat.{v} S)
 
 /-- Any `S`-module M is also an `R`-module via a ring homomorphism `f : R ⟶ S` by defining
@@ -481,6 +480,7 @@ def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars 
     map_add' := fun y1 y2 =>
       LinearMap.ext fun s : S => by
         -- Porting note: double dsimp seems odd
+        set_option tactic.skipAssignedInstances false in
         dsimp
         rw [LinearMap.add_apply, LinearMap.coe_mk, LinearMap.coe_mk, LinearMap.coe_mk]
         dsimp
@@ -795,7 +795,7 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
         rw [Function.comp_apply, ExtendRestrictScalarsAdj.counit_app]
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [ExtendRestrictScalarsAdj.Counit.map_apply]
-        dsimp
+        set_option tactic.skipAssignedInstances false in dsimp
         rw [TensorProduct.lift.tmul]
         rfl
       · rw [map_add,map_add]

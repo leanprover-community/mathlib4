@@ -214,7 +214,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
       fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) (inter_subset_left _ _)
   intro i j hj
   have A : ((↑(2 * j + r))⁻¹ : ℝ≥0∞) < (↑(2 * i + 1 + r))⁻¹ := by
-    rw [ENNReal.inv_lt_inv, Nat.cast_lt]; linarith
+    rw [ENNReal.inv_lt_inv, Nat.cast_lt]; omega
   refine' ⟨(↑(2 * i + 1 + r))⁻¹ - (↑(2 * j + r))⁻¹, by simpa [tsub_eq_zero_iff_le] using A,
     fun x hx y hy => _⟩
   have : infEdist y t < (↑(2 * j + r))⁻¹ := not_le.1 fun hle => hy.2 ⟨hy.1, hle⟩
@@ -871,7 +871,7 @@ variable {f : X → Y} {d : ℝ}
 theorem hausdorffMeasure_image (hf : Isometry f) (hd : 0 ≤ d ∨ Surjective f) (s : Set X) :
     μH[d] (f '' s) = μH[d] s := by
   simp only [hausdorffMeasure, ← OuterMeasure.coe_mkMetric, ← OuterMeasure.comap_apply]
-  -- porting note: this proof was slightly nicer before the port
+  -- Porting note: this proof was slightly nicer before the port
   simp only [mkMetric_toOuterMeasure]
   have : 0 ≤ d → Monotone fun r : ℝ≥0∞ ↦ r ^ d := by
     exact fun hd x y hxy => ENNReal.rpow_le_rpow hxy hd
@@ -1079,7 +1079,7 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
   -- break lineMap into pieces
   suffices
       μH[1] ((‖v‖ • ·) '' (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v) '' s)) = ‖v‖₊ • μH[1] s by
-    -- porting note: proof was shorter, could need some golf
+    -- Porting note: proof was shorter, could need some golf
     simp only [hausdorffMeasure_real, nnreal_smul_coe_apply]
     convert this
     · simp only [image_smul, LinearMap.toSpanSingleton_apply, Set.image_image]
@@ -1101,7 +1101,6 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
 section NormedFieldAffine
 
 variable [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace P]
-
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Scaling by `c` around `x` scales the measure by `‖c‖₊ ^ d`. -/
@@ -1133,7 +1132,6 @@ end NormedFieldAffine
 section RealAffine
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace P]
-
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 /-- Mapping a set of reals along a line segment scales the measure by the length of a segment.

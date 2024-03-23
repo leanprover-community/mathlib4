@@ -365,7 +365,7 @@ scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L
 -- The former reported an error.
 variable {L M N} {P : Type*} [Structure L P] {Q : Type*} [Structure L Q]
 
---Porting note: new definition
+-- Porting note (#11445): new definition
 /-- Interpretation of a constant symbol -/
 @[coe]
 def constantMap (c : L.Constants) : M := funMap c default
@@ -412,9 +412,7 @@ set_option linter.uppercaseLean3 false in
 namespace Structure
 
 variable {c f₁ f₂ : Type u} {r₁ r₂ : Type v}
-
 variable {c' : c → M} {f₁' : f₁ → M → M} {f₂' : f₂ → M → M → M}
-
 variable {r₁' : r₁ → Set M} {r₂' : r₂ → M → M → Prop}
 
 @[simp]
@@ -470,7 +468,7 @@ class StrongHomClass (L : outParam Language) (F M N : Type*)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
 #align first_order.language.strong_hom_class FirstOrder.Language.StrongHomClass
 
---Porting note: using implicit brackets for `Structure` arguments
+-- Porting note: using implicit brackets for `Structure` arguments
 instance (priority := 100) StrongHomClass.homClass [L.Structure M]
     [L.Structure N] [FunLike F M N] [StrongHomClass L F M N] : HomClass L F M N where
   map_fun := StrongHomClass.map_fun

@@ -41,7 +41,7 @@ theorem Int.sq_ne_two_mod_four (z : ℤ) : z * z % 4 ≠ 2 := by
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 /-- Three integers `x`, `y`, and `z` form a Pythagorean triple if `x * x + y * y = z * z`. -/
 def PythagoreanTriple (x y z : ℤ) : Prop :=
@@ -473,7 +473,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     exact h0
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1
-    -- porting note: `contrapose` unfolds local names, refold them
+    -- Porting note: `contrapose` unfolds local names, refold them
     replace hw1 : w = -1 := hw1; show v = 0
     rw [hw1, neg_sq, one_pow, add_left_eq_self] at hq
     exact pow_eq_zero hq
@@ -604,7 +604,7 @@ theorem coprime_classification :
         (x = m ^ 2 - n ^ 2 ∧ y = 2 * m * n ∨ x = 2 * m * n ∧ y = m ^ 2 - n ^ 2) ∧
           (z = m ^ 2 + n ^ 2 ∨ z = -(m ^ 2 + n ^ 2)) ∧
             Int.gcd m n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) := by
-  clear h -- porting note: don't want this variable, but can't use `include` / `omit`
+  clear h -- Porting note: don't want this variable, but can't use `include` / `omit`
   constructor
   · intro h
     obtain ⟨m, n, H⟩ := h.left.isPrimitiveClassified_of_coprime h.right

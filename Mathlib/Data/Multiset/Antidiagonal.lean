@@ -76,9 +76,9 @@ theorem antidiagonal_cons (a : α) (s) :
       map (Prod.map id (cons a)) (antidiagonal s) + map (Prod.map (cons a) id) (antidiagonal s) :=
   Quotient.inductionOn s fun l ↦ by
     simp only [revzip, reverse_append, quot_mk_to_coe, coe_eq_coe, powersetAux'_cons, cons_coe,
-      coe_map, antidiagonal_coe', coe_add]
+      map_coe, antidiagonal_coe', coe_add]
     rw [← zip_map, ← zip_map, zip_append, (_ : _ ++ _ = _)]
-    · congr; simp; rw [map_reverse]; simp
+    · congr; simp only [List.map_id]; rw [map_reverse]; simp
     · simp
 #align multiset.antidiagonal_cons Multiset.antidiagonal_cons
 

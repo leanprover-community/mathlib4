@@ -438,7 +438,7 @@ section ToList
 
 @[to_additive (attr := simp)]
 theorem prod_to_list (s : Finset α) (f : α → β) : (s.toList.map f).prod = s.prod f := by
-  rw [Finset.prod, ← Multiset.coe_prod, ← Multiset.coe_map, Finset.coe_toList]
+  rw [Finset.prod, ← Multiset.prod_coe, ← Multiset.map_coe, Finset.coe_toList]
 #align finset.prod_to_list Finset.prod_to_list
 #align finset.sum_to_list Finset.sum_to_list
 
@@ -977,8 +977,7 @@ theorem prod_eq_mul_of_mem {s : Finset α} {f : α → β} (a b : α) (ha : a �
     apply not_or.mp
     intro hab
     apply hcs
-    apply mem_insert.mpr
-    rw [mem_singleton]
+    rw [mem_insert, mem_singleton]
     exact hab
   rw [← prod_subset hu hf]
   exact Finset.prod_pair hn
@@ -1563,7 +1562,7 @@ theorem prod_multiset_count_of_subset [DecidableEq α] [CommMonoid α] (m : Mult
     (hs : m.toFinset ⊆ s) : m.prod = ∏ i in s, i ^ m.count i := by
   revert hs
   refine' Quot.induction_on m fun l => _
-  simp only [quot_mk_to_coe'', coe_prod, coe_count]
+  simp only [quot_mk_to_coe'', prod_coe, coe_count]
   apply prod_list_count_of_subset l s
 #align finset.prod_multiset_count_of_subset Finset.prod_multiset_count_of_subset
 #align finset.sum_multiset_count_of_subset Finset.sum_multiset_count_of_subset
@@ -2265,9 +2264,9 @@ lemma _root_.Equiv.prod_comp (e : ι ≃ κ) (g : κ → α) : ∏ i, g (e i) = 
 #align equiv.sum_comp Equiv.sum_comp
 
 @[to_additive]
-lemma prod_of_injective (e : ι → κ) (hf : Injective e) (f : ι → α) (g : κ → α)
+lemma prod_of_injective (e : ι → κ) (he : Injective e) (f : ι → α) (g : κ → α)
     (h' : ∀ i ∉ Set.range e, g i = 1) (h : ∀ i, f i = g (e i)) : ∏ i, f i = ∏ j, g j :=
-  prod_of_injOn e (hf.injOn _) (by simp) (by simpa using h') (fun i _ ↦ h i)
+  prod_of_injOn e (he.injOn _) (by simp) (by simpa using h') (fun i _ ↦ h i)
 
 @[to_additive]
 lemma prod_fiberwise [DecidableEq κ] [Fintype ι] (g : ι → κ) (f : ι → α) :
@@ -2371,7 +2370,7 @@ theorem disjoint_list_sum_right {a : Multiset α} {l : List (Multiset α)} :
 theorem disjoint_sum_left {a : Multiset α} {i : Multiset (Multiset α)} :
     Multiset.Disjoint i.sum a ↔ ∀ b ∈ i, Multiset.Disjoint b a :=
   Quotient.inductionOn i fun l => by
-    rw [quot_mk_to_coe, Multiset.coe_sum]
+    rw [quot_mk_to_coe, Multiset.sum_coe]
     exact disjoint_list_sum_left
 #align multiset.disjoint_sum_left Multiset.disjoint_sum_left
 
@@ -2443,6 +2442,13 @@ theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a
     _ = (s.map fun _ => 1).sum := (Finset.sum_multiset_map_count _ _).symm
     _ = card s := by simp
 #align multiset.to_finset_sum_count_eq Multiset.toFinset_sum_count_eq
+
+@[simp]
+theorem sum_count_eq [Fintype α] (s : Multiset α) : ∑ a, s.count a = Multiset.card s := by
+  rw [← toFinset_sum_count_eq, ← Finset.sum_filter_ne_zero]
+  congr
+  ext
+  simp
 
 theorem count_sum' {s : Finset β} {a : α} {f : β → Multiset α} :
     count a (∑ x in s, f x) = ∑ x in s, count a (f x) := by

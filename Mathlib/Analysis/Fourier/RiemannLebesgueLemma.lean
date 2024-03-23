@@ -61,10 +61,10 @@ variable [NormedAddCommGroup V] [MeasurableSpace V] [BorelSpace V] [InnerProduct
 /-- The integrand in the Riemann-Lebesgue lemma for `f` is integrable iff `f` is. -/
 theorem fourier_integrand_integrable (w : V) :
     Integrable f ↔ Integrable fun v : V => 𝐞[-⟪v, w⟫] • f v := by
-  have hL : Continuous fun p : V × V => BilinForm.toLin bilinFormOfRealInner p.1 p.2 :=
+  have hL : Continuous fun p : V × V => bilinFormOfRealInner p.1 p.2 :=
     continuous_inner
   rw [VectorFourier.fourier_integral_convergent_iff Real.continuous_fourierChar hL w]
-  simp only [BilinForm.toLin_apply, bilinFormOfRealInner_apply]
+  simp only [bilinFormOfRealInner_apply_apply, ofAdd_neg, map_inv, coe_inv_unitSphere]
 #align fourier_integrand_integrable fourier_integrand_integrable
 
 variable [CompleteSpace E]
@@ -151,15 +151,10 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     rw [norm_smul, norm_div, Real.norm_of_nonneg (mul_nonneg two_pos.le <| sq_nonneg _), norm_one,
       sq, ← div_div, ← div_div, ← div_div, div_mul_cancel _ (norm_eq_zero.not.mpr hw_ne)]
   --* Rewrite integral in terms of `f v - f (v + w')`.
-  -- Porting note: this was
-  -- rw [norm_eq_abs, ← Complex.ofReal_one, ← ofReal_bit0, ← of_real_div,
-  --   Complex.abs_of_nonneg one_half_pos.le]
-  have : ‖(1 / 2 : ℂ)‖ = 1 / 2 := by norm_num
+  have : ‖(1 / 2 : ℂ)‖ = 2⁻¹ := by norm_num
   rw [fourier_integral_eq_half_sub_half_period_translate hw_ne
       (hf1.integrable_of_hasCompactSupport hf2),
-    norm_smul, this]
-  have : ε = 1 / 2 * (2 * ε) := by field_simp; rw [mul_comm]
-  rw [this, mul_lt_mul_left (one_half_pos : (0 : ℝ) < 1 / 2)]
+    norm_smul, this, inv_mul_eq_div, div_lt_iff' two_pos]
   refine' lt_of_le_of_lt (norm_integral_le_integral_norm _) _
   simp_rw [norm_smul, norm_eq_abs, abs_coe_circle, one_mul]
   --* Show integral can be taken over A only.
@@ -176,7 +171,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
       refine' (div_le_one <| norm_pos_iff.mpr hw_ne).mpr _
       refine' le_trans (le_add_of_nonneg_right <| one_div_nonneg.mpr <| _) hw_bd
       exact (mul_pos (zero_lt_two' ℝ) hδ1).le
-    · exact ((le_add_iff_nonneg_right _).mpr zero_le_one).trans hv.le
+    · exact (le_add_of_nonneg_right zero_le_one).trans hv.le
   rw [int_A]; clear int_A
   --* Bound integral using fact that `‖f v - f (v + w')‖` is small.
   have bdA : ∀ v : V, v ∈ A → ‖‖f v - f (v + i w)‖‖ ≤ ε / B := by
@@ -185,10 +180,9 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     refine' fun x _ => (hδ2 _).le
     rw [sub_add_cancel', norm_neg, hw'_nm, ← div_div, div_lt_iff (norm_pos_iff.mpr hw_ne), ←
       div_lt_iff' hδ1, div_div]
-    refine' (lt_add_of_pos_left _ _).trans_le hw_bd
-    exact one_half_pos
+    exact (lt_add_of_pos_left _ one_half_pos).trans_le hw_bd
   have bdA2 := norm_set_integral_le_of_norm_le_const (hB_vol.trans_lt ENNReal.coe_lt_top) bdA ?_
-  swap;
+  swap
   · apply Continuous.aestronglyMeasurable
     exact
       continuous_norm.comp <|
@@ -234,7 +228,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
       ← smul_sub, ← Pi.sub_apply]
     exact
       VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 volume
-        (BilinForm.toLin bilinFormOfRealInner) (f - g) w
+        (bilinFormOfRealInner) (f - g) w
   replace := add_lt_add_of_le_of_lt this hI
   rw [add_halves] at this
   refine' ((le_of_eq _).trans (norm_add_le _ _)).trans_lt this

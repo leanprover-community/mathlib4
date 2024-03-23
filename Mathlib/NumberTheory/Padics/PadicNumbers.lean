@@ -64,7 +64,7 @@ p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 open Nat multiplicity padicNorm CauSeq CauSeq.Completion Metric
 
@@ -530,7 +530,7 @@ theorem coe_inj {q r : ℚ} : (↑q : ℚ_[p]) = ↑r ↔ q = r :=
 
 instance : CharZero ℚ_[p] :=
   ⟨fun m n ↦ by
-    rw [← Rat.cast_coe_nat]
+    rw [← Rat.cast_natCast]
     norm_cast
     exact id⟩
 
@@ -675,7 +675,7 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
 #align padic.rat_dense' Padic.rat_dense'
 
-open Classical
+open scoped Classical
 
 private theorem div_nat_pos (n : ℕ) : 0 < 1 / (n + 1 : ℚ) :=
   div_pos zero_lt_one (mod_cast succ_pos _)
@@ -836,10 +836,10 @@ theorem eq_padicNorm (q : ℚ) : ‖(q : ℚ_[p])‖ = padicNorm p q := by
 
 @[simp]
 theorem norm_p : ‖(p : ℚ_[p])‖ = (p : ℝ)⁻¹ := by
-  rw [← @Rat.cast_coe_nat ℝ _ p]
-  rw [← @Rat.cast_coe_nat ℚ_[p] _ p]
+  rw [← @Rat.cast_natCast ℝ _ p]
+  rw [← @Rat.cast_natCast ℚ_[p] _ p]
   simp [hp.1.ne_zero, hp.1.ne_one, norm, padicNorm, padicValRat, padicValInt, zpow_neg,
-    -Rat.cast_coe_nat]
+    -Rat.cast_natCast]
 #align padic_norm_e.norm_p padicNormE.norm_p
 
 theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
@@ -857,7 +857,7 @@ theorem norm_p_zpow (n : ℤ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n) := by
 -- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
 @[simp (high)]
 theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by
-  rw [← norm_p_zpow, zpow_coe_nat]
+  rw [← norm_p_zpow, zpow_natCast]
 #align padic_norm_e.norm_p_pow padicNormE.norm_p_pow
 
 instance : NontriviallyNormedField ℚ_[p] :=
@@ -896,14 +896,14 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
   | ⟨n, d, hn, hd⟩ => fun hq : ¬p ∣ d ↦
     if hnz : n = 0 then by
       have : (⟨n, d, hn, hd⟩ : ℚ) = 0 := Rat.zero_iff_num_zero.mpr hnz
-      norm_num [this]
+      set_option tactic.skipAssignedInstances false in norm_num [this]
     else by
       have hnz' : (⟨n, d, hn, hd⟩ : ℚ) ≠ 0 := mt Rat.zero_iff_num_zero.1 hnz
       rw [padicNormE.eq_padicNorm]
       norm_cast
       -- Porting note: `Nat.cast_zero` instead of another `norm_cast` call
       rw [padicNorm.eq_zpow_of_nonzero hnz', padicValRat, neg_sub,
-        padicValNat.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_coe_nat]
+        padicValNat.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_natCast]
       apply inv_le_one
       · norm_cast
         apply one_le_pow
@@ -966,7 +966,7 @@ variable {p : ℕ} [hp : Fact p.Prime]
 -- Porting note: remove `set_option eqn_compiler.zeta true`
 
 instance complete : CauSeq.IsComplete ℚ_[p] norm where
-  isComplete := fun f => by
+  isComplete f := by
     have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
       have h := isCauSeq f ε (mod_cast hε)
       dsimp [norm] at h
@@ -1052,7 +1052,7 @@ theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.va
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
   rw [PadicSeq.norm_eq_pow_val]
   change ↑((p : ℚ) ^ (-PadicSeq.valuation f)) = (p : ℝ) ^ (-PadicSeq.valuation f)
-  · rw [Rat.cast_zpow, Rat.cast_coe_nat]
+  · rw [Rat.cast_zpow, Rat.cast_natCast]
   · apply CauSeq.not_limZero_of_not_congr_zero
     -- Porting note: was `contrapose! hf`
     intro hf'

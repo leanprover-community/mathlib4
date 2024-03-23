@@ -87,7 +87,7 @@ namespace Pretriangulated
 
 variable [∀ n : ℤ, Functor.Additive (CategoryTheory.shiftFunctor C n)] [hC : Pretriangulated C]
 
--- porting note: increased the priority so that we can write `T ∈ distTriang C`, and
+-- Porting note: increased the priority so that we can write `T ∈ distTriang C`, and
 -- not just `T ∈ (distTriang C)`
 /-- distinguished triangles in a pretriangulated category -/
 notation:60 "distTriang " C => @distinguishedTriangles C _ _ _ _ _ _

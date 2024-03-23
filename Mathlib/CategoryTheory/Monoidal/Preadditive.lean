@@ -17,7 +17,7 @@ is linear in both factors.
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 namespace CategoryTheory
 
@@ -85,20 +85,20 @@ theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [Monoid
   { whiskerLeft_zero := by
       intros
       apply F.toFunctor.map_injective
-      simp [F.map_whiskerLeft']
+      simp [F.map_whiskerLeft]
     zero_whiskerRight := by
       intros
       apply F.toFunctor.map_injective
-      simp [F.map_whiskerRight']
+      simp [F.map_whiskerRight]
     whiskerLeft_add := by
       intros
       apply F.toFunctor.map_injective
-      simp only [F.map_whiskerLeft', Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
+      simp only [F.map_whiskerLeft, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
         MonoidalPreadditive.whiskerLeft_add]
     add_whiskerRight := by
       intros
       apply F.toFunctor.map_injective
-      simp only [F.map_whiskerRight', Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
+      simp only [F.map_whiskerRight, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
         MonoidalPreadditive.add_whiskerRight] }
 #align category_theory.monoidal_preadditive_of_faithful CategoryTheory.monoidalPreadditive_of_faithful
 
@@ -202,7 +202,7 @@ theorem leftDistributor_assoc {J : Type} [Fintype J] (X Y : C) (f : J → C) :
   simp_rw [← id_tensorHom]
   simp only [← id_tensor_comp, biproduct.ι_π]
   simp only [id_tensor_comp, tensor_dite, comp_dite]
-  simp [id_tensorHom]
+  simp
 #align category_theory.left_distributor_assoc CategoryTheory.leftDistributor_assoc
 
 /-- The isomorphism showing how tensor product on the right distributes over direct sums. -/

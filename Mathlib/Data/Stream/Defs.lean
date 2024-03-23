@@ -78,7 +78,7 @@ def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.get n)
 def const (a : α) : Stream' α := fun _ => a
 #align stream.const Stream'.const
 
--- porting note: used to be implemented using RecOn
+-- Porting note: used to be implemented using RecOn
 /-- Iterates of a function as a stream. -/
 def iterate (f : α → α) (a : α) : Stream' α
   | 0 => a
@@ -96,7 +96,7 @@ def corec' (f : α → β × α) : α → Stream' β :=
   corec (Prod.fst ∘ f) (Prod.snd ∘ f)
 #align stream.corec' Stream'.corec'
 
--- porting note: this `#align` should be elsewhere but idk where
+-- Porting note: this `#align` should be elsewhere but idk where
 #align state StateM
 
 /-- Use a state monad to generate a stream through corecursion -/

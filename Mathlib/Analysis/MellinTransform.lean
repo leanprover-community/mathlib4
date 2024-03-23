@@ -99,11 +99,20 @@ theorem MellinConvergent.comp_rpow {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : a �
     add_sub_assoc, sub_add_cancel]
 #align mellin_convergent.comp_rpow MellinConvergent.comp_rpow
 
+/-- A function `f` is `VerticalIntegrable` at `σ` if `y ↦ f(σ + yi)` is integrable. -/
+def Complex.VerticalIntegrable (f : ℂ → E) (σ : ℝ) (μ : Measure ℝ := by volume_tac) : Prop :=
+  Integrable (fun (y : ℝ) ↦ f (σ + y * I)) μ
+
 /-- The Mellin transform of a function `f` (for a complex exponent `s`), defined as the integral of
 `t ^ (s - 1) • f` over `Ioi 0`. -/
 def mellin (f : ℝ → E) (s : ℂ) : E :=
   ∫ t : ℝ in Ioi 0, (t : ℂ) ^ (s - 1) • f t
 #align mellin mellin
+
+/-- The Mellin inverse transform of a function `f`, defined as `1 / (2π)` times
+the integral of `y ↦ x ^ -(σ + yi) • f (σ + yi)`. -/
+def mellinInv (σ : ℝ) (f : ℂ → E) (x : ℝ) : E :=
+  (1 / (2 * π)) • ∫ y : ℝ, (x : ℂ) ^ (-(σ + y * I)) • f (σ + y * I)
 
 -- next few lemmas don't require convergence of the Mellin transform (they are just 0 = 0 otherwise)
 theorem mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :
@@ -154,7 +163,7 @@ theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
   rw [set_integral_congr measurableSet_Ioi this, integral_smul,
     integral_comp_mul_left_Ioi (fun u ↦ (u : ℂ) ^ (s - 1) • f u) _ ha,
     mul_zero, ← Complex.coe_smul, ← mul_smul, sub_eq_add_neg,
-    cpow_add _ _ (ofReal_ne_zero.mpr ha.ne'), cpow_one, abs_of_pos (inv_pos.mpr ha), ofReal_inv,
+    cpow_add _ _ (ofReal_ne_zero.mpr ha.ne'), cpow_one, ofReal_inv,
     mul_assoc, mul_comm, inv_mul_cancel_right₀ (ofReal_ne_zero.mpr ha.ne')]
 #align mellin_comp_mul_left mellin_comp_mul_left
 
@@ -369,7 +378,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
   have h4 : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0),
       ∀ z : ℂ, z ∈ Metric.ball s v → ‖F' z t‖ ≤ bound t := by
     refine' (ae_restrict_mem measurableSet_Ioi).mono fun t ht z hz => _
-    simp_rw [norm_smul, norm_mul, Complex.norm_eq_abs (log _), Complex.abs_ofReal,
+    simp_rw [F', bound, norm_smul, norm_mul, Complex.norm_eq_abs (log _), Complex.abs_ofReal,
       mul_assoc]
     gcongr
     rw [Complex.norm_eq_abs, abs_cpow_eq_rpow_re_of_pos ht]
@@ -387,7 +396,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
       have hz' := (re_le_abs _).trans hz.le
       rwa [sub_re, sub_le_iff_le_add, ← sub_le_iff_le_add'] at hz'
   have h5 : IntegrableOn bound (Ioi 0) := by
-    simp_rw [add_mul, mul_assoc]
+    simp_rw [bound, add_mul, mul_assoc]
     suffices ∀ {j : ℝ}, b < j → j < a →
         IntegrableOn (fun t : ℝ => t ^ (j - 1) * (|log t| * ‖f t‖)) (Ioi 0) volume by
       refine' Integrable.add (this _ _) (this _ _)
