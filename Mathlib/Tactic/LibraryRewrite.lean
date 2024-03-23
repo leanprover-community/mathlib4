@@ -313,7 +313,7 @@ deriving RpcEncodable
 
 @[widget_module]
 def FilterDetails : Component FilterDetailsProps where
-  javascript := include_str "FilterDetails.js"
+  javascript := include_str "LibraryRewrite" / "FilterDetails.js"
 
 def renderFilterResults (results : Array Section × Array Section) (range : Lsp.Range)
     (doc : FileWorker.EditableDocument) : Html :=
