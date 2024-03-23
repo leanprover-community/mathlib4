@@ -149,7 +149,6 @@ theorem matches'_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches' 
   | n + 1 => (matches'_mul _ _).trans <| Eq.trans
       (congrFun (congrArg HMul.hMul (matches'_pow P n)) (matches' P))
       (pow_succ _ n).symm
-
 #align regular_expression.matches_pow RegularExpression.matches'_pow
 
 @[simp]
