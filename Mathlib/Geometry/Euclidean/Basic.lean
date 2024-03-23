@@ -318,28 +318,6 @@ theorem orthogonalProjection_linear {s : AffineSubspace ℝ P} [Nonempty s]
   rfl
 #align euclidean_geometry.orthogonal_projection_linear EuclideanGeometry.orthogonalProjection_linear
 
-instance : HasOrthogonalProjection (⊤ : AffineSubspace ℝ P).direction := by
-  rw [direction_top]
-  infer_instance
-
-example : P ≃ᵃ[ℝ] (⊤ : AffineSubspace ℝ P) := by apply?
-def AffineEquiv.ofTop (S : AffineSubspace ℝ P) (hS : S = ⊤) :
-    haveI : Nonempty S := hS ▸ inferInstance
-    S ≃ᵃ[ℝ] P :=
-  haveI : Nonempty S := hS ▸ inferInstance
-  { toFun := (↑)
-    invFun := fun p => ⟨p, hS ▸ trivial⟩
-    left_inv := _
-    right_inv := _
-    linear := LinearEquiv.ofTop _ <| by rw [hS, direction_top]
-    map_vadd' := _ }
-
-@[simp]
-theorem orthogonalProjection_top :
-  orthogonalProjection (⊤ : AffineSubspace ℝ P) = (by apply?) := sorry
-
-
-#exit
 /-- The intersection of the subspace and the orthogonal subspace
 through the given point is the `orthogonalProjection` of that point
 onto the subspace. -/
@@ -400,6 +378,17 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [No
   rw [orthogonalProjection_eq_self_iff]
   exact p.2
 #align euclidean_geometry.orthogonal_projection_mem_subspace_eq_self EuclideanGeometry.orthogonalProjection_mem_subspace_eq_self
+
+instance : HasOrthogonalProjection (⊤ : AffineSubspace ℝ P).direction := by
+  rw [direction_top]
+  infer_instance
+
+@[simp]
+theorem orthogonalProjection_top :
+    orthogonalProjection (⊤ : AffineSubspace ℝ P) = (topEquiv ℝ V P).symm := by
+  ext p
+  lift p to (⊤ : AffineSubspace ℝ P) using trivial
+  simp
 
 /-- Orthogonal projection is idempotent. -/
 -- @[simp] -- Porting note (#10618): simp can prove this
