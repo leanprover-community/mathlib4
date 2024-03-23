@@ -51,7 +51,7 @@ theorem toFuncV_term {G₁ : SerreGraph V₁ E₁} {G₂ : SerreGraph V₂ E₂}
     (f: Morphism G₁ G₂) :
       ∀ (e : E₁), f.toFuncV (G₁.τ e)=  G₂.τ (f.toFuncE e)  := by
   intro e
-  rw [SerreGraph.τ, SerreGraph.τ, ←toFuncE_bar, ←toFuncV_init]
+  rw [SerreGraph.τ, SerreGraph.τ, ← toFuncE_bar, ← toFuncV_init]
 
 /--
 An auxiliary function to define the induced map on paths of a Morphism.
