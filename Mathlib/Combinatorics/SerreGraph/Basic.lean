@@ -3,10 +3,10 @@ Copyright (c) 2024 Siddhartha Gadgil, Anand Rao Tadipatri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil, Anand Rao Tadipatri
 -/
-import Mathlib.Data.Bool.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic
+import Mathlib.Data.Rat.Field
+import Mathlib.Tactic.Use
 /-!
 # Graphs (a la Serre)
 
