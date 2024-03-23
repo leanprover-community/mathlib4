@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Init.Data.Int.Basic
-import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
