@@ -396,8 +396,8 @@ theorem chineseRemainder_modEq_unique (co : n.Coprime m) {a b z}
 theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℕ} (hmn : m.Coprime n) :
     a ≡ b [MOD m] ∧ a ≡ b [MOD n] ↔ a ≡ b [MOD m * n] :=
   ⟨fun h => by
-    rw [Nat.modEq_iff_dvd, Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.natCast_dvd_natCast, ← Int.dvd_natAbs,
-      Int.natCast_dvd_natCast] at h
+    rw [Nat.modEq_iff_dvd, Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.natCast_dvd_natCast,
+      ← Int.dvd_natAbs, Int.natCast_dvd_natCast] at h
     rw [Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.natCast_dvd_natCast]
     exact hmn.mul_dvd_of_dvd_of_dvd h.1 h.2,
    fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩

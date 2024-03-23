@@ -661,7 +661,8 @@ theorem isOfFinOrder_inv_iff {x : G} : IsOfFinOrder x⁻¹ ↔ IsOfFinOrder x :=
 theorem orderOf_dvd_iff_zpow_eq_one : (orderOf x : ℤ) ∣ i ↔ x ^ i = 1 := by
   rcases Int.eq_nat_or_neg i with ⟨i, rfl | rfl⟩
   · rw [Int.natCast_dvd_natCast, orderOf_dvd_iff_pow_eq_one, zpow_natCast]
-  · rw [dvd_neg, Int.natCast_dvd_natCast, zpow_neg, inv_eq_one, zpow_natCast, orderOf_dvd_iff_pow_eq_one]
+  · rw [dvd_neg, Int.natCast_dvd_natCast, zpow_neg, inv_eq_one, zpow_natCast,
+      orderOf_dvd_iff_pow_eq_one]
 #align order_of_dvd_iff_zpow_eq_one orderOf_dvd_iff_zpow_eq_one
 #align add_order_of_dvd_iff_zsmul_eq_zero addOrderOf_dvd_iff_zsmul_eq_zero
 
@@ -1087,8 +1088,8 @@ lemma pow_mod_card (a : G) (n : ℕ) : a ^ (n % card G) = a ^ n := by
 
 @[to_additive (attr := simp) mod_card_zsmul]
 theorem zpow_mod_card (a : G) (n : ℤ) : a ^ (n % Fintype.card G : ℤ) = a ^ n := by
-  rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n (Int.natCast_dvd_natCast.2 orderOf_dvd_card),
-    zpow_mod_orderOf]
+  rw [eq_comm, ← zpow_mod_orderOf,
+    ← Int.emod_emod_of_dvd n (Int.natCast_dvd_natCast.2 orderOf_dvd_card), zpow_mod_orderOf]
 #align zpow_eq_mod_card zpow_mod_card
 #align zsmul_eq_mod_card mod_card_zsmul
 

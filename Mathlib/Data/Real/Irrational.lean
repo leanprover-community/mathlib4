@@ -73,9 +73,8 @@ theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (
     Irrational x := by
   rcases Nat.eq_zero_or_pos n with (rfl | hnpos)
   · rw [eq_comm, pow_zero, ← Int.cast_one, Int.cast_inj] at hxr
-    simp [hxr,
-      multiplicity.one_right (mt isUnit_iff_dvd_one.1 (mt Int.natCast_dvd_natCast.1 hp.1.not_dvd_one)),
-      Nat.zero_mod] at hv
+    simp [hxr, multiplicity.one_right (mt isUnit_iff_dvd_one.1
+      (mt Int.natCast_dvd_natCast.1 hp.1.not_dvd_one)), Nat.zero_mod] at hv
   refine' irrational_nrt_of_notint_nrt _ _ hxr _ hnpos
   rintro ⟨y, rfl⟩
   rw [← Int.cast_pow, Int.cast_inj] at hxr
