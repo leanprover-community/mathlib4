@@ -308,10 +308,9 @@ theorem MeasureTheory.Integrable.convolution_integrand (hf : Integrable f ν) (h
   · simp only [integral_sub_right_eq_self (‖g ·‖)]
     exact (hf.norm.const_mul _).mul_const _
   · simp_rw [← integral_mul_left]
-    rw [Real.norm_of_nonneg]
-    · exact integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
-        ((hg.comp_sub_right t).norm.const_mul _) (eventually_of_forall fun t => L.le_opNorm₂ _ _)
-    exact integral_nonneg fun x => norm_nonneg _
+    rw [Real.norm_of_nonneg (by positivity)]
+    exact integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
+      ((hg.comp_sub_right t).norm.const_mul _) (eventually_of_forall fun t => L.le_opNorm₂ _ _)
 #align measure_theory.integrable.convolution_integrand MeasureTheory.Integrable.convolution_integrand
 
 theorem MeasureTheory.Integrable.ae_convolution_exists (hf : Integrable f ν) (hg : Integrable g μ) :
@@ -1000,12 +999,11 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
   refine' (hfgk.const_mul (‖L₃‖ * ‖L₄‖)).mono' h2_meas
     (((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht => _)
   · simp_rw [convolution_def, mul_apply', mul_mul_mul_comm ‖L₃‖ ‖L₄‖, ← integral_mul_left]
-    rw [Real.norm_of_nonneg]
-    · refine' integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
-        ((ht.const_mul _).const_mul _) (eventually_of_forall fun s => _)
-      simp only [← mul_assoc ‖L₄‖]
-      apply_rules [ContinuousLinearMap.le_of_opNorm₂_le_of_le, le_rfl]
-    exact integral_nonneg fun x => norm_nonneg _
+    rw [Real.norm_of_nonneg (by positivity)]
+    refine' integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
+      ((ht.const_mul _).const_mul _) (eventually_of_forall fun s => _)
+    simp only [← mul_assoc ‖L₄‖]
+    apply_rules [ContinuousLinearMap.le_of_opNorm₂_le_of_le, le_rfl]
 #align convolution_assoc convolution_assoc
 
 end Assoc
