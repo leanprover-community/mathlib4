@@ -82,7 +82,7 @@ def Basis.piTensorProduct (b : Π i, Basis (κ i) R (M i)) :
   Finsupp.basisSingleOne.map
     ((PiTensorProduct.congr (fun i ↦ (b i).repr)).trans <|
         (finsuppPiTensorProduct R _ _).trans <|
-          Finsupp.lcongr (Equiv.refl _) (constantBaseRingEquiv _ R)).symm
+          Finsupp.lcongr (Equiv.refl _) (constantBaseRingEquiv _ R)).toLinearEquiv.symm
 
 end PiTensorProduct
 
