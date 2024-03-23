@@ -77,8 +77,8 @@ protected theorem smul {α} [CommSemiring α] [Module α R] [SMulCommClass R α 
     smul_eq_zero_of_right _ (hB _ _ hBz)
 #align bilin_form.is_refl.smul LinearMap.BilinForm.IsRefl.smul
 
-protected theorem groupSMul {α} [Group α] [DistribMulAction α R]
-    [SMulCommClass R α R] (a : α) {B : BilinForm R M} (hB : B.IsRefl) : (a • B).IsRefl := fun x y =>
+protected theorem groupSMul {α} [Group α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
+  {B : BilinForm R M} (hB : B.IsRefl) : (a • B).IsRefl := fun x y =>
   (smul_eq_zero_iff_eq _).mpr ∘ hB x y ∘ (smul_eq_zero_iff_eq _).mp
 #align bilin_form.is_refl.group_smul LinearMap.BilinForm.IsRefl.groupSMul
 
@@ -121,8 +121,8 @@ protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm :=
   congr_arg Neg.neg (hB x y)
 #align bilin_form.is_symm.neg LinearMap.BilinForm.IsSymm.neg
 
-protected theorem smul {α} [Monoid α] [DistribMulAction α R]
-    [SMulCommClass R α R] (a : α) {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := fun x y =>
+protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
+  {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := fun x y =>
   congr_arg (a • ·) (hB x y)
 #align bilin_form.is_symm.smul LinearMap.BilinForm.IsSymm.smul
 
@@ -182,8 +182,8 @@ protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsAlt) : (-B).IsAlt := f
   neg_eq_zero.mpr <| hB x
 #align bilin_form.is_alt.neg LinearMap.BilinForm.IsAlt.neg
 
-protected theorem smul {α} [Monoid α] [DistribMulAction α R]
-    [SMulCommClass R α R] (a : α) {B : BilinForm R M} (hB : B.IsAlt) : (a • B).IsAlt := fun x =>
+protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
+  {B : BilinForm R M} (hB : B.IsAlt) : (a • B).IsAlt := fun x =>
   (congr_arg (a • ·) (hB x)).trans <| smul_zero _
 #align bilin_form.is_alt.smul LinearMap.BilinForm.IsAlt.smul
 
@@ -527,8 +527,6 @@ noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B�
     V →ₗ[K] V :=
   (B₂.toDual b₂).symm.toLinearMap.comp (BilinForm.toLin B₁)
 #align bilin_form.symm_comp_of_nondegenerate LinearMap.BilinForm.symmCompOfNondegenerate
-
-variable {B₂ : BilinForm K V} (b₂ : B₂.Nondegenerate)
 
 theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
     (b₂ : B₂.Nondegenerate) (v : V) :
