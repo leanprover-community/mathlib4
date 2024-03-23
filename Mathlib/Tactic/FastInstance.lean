@@ -30,7 +30,7 @@ private partial def makeFastInstance (provided : Expr) : MetaM Expr := do
     Lean.logError "Could not work out type of instance"
     return provided
   e := mkAppN e mvars
-  -- the parameters should haev been assigned by unification
+  -- the parameters should have been assigned by unification
   for arg in mvars.extract 0 ctor.numParams do
     guard (← arg.mvarId!.isAssigned)
   -- substitute parent classes with direct instances, if possible
@@ -38,17 +38,15 @@ private partial def makeFastInstance (provided : Expr) : MetaM Expr := do
       bi in binders.extract ctor.numParams (ctor.numParams + ctor.numFields) do
     if let .instImplicit := bi then
       let arg_ty ← inferType arg
-      if let .some new_arg ← trySynthInstance arg_ty then
-        if ← isDefEq arg new_arg then
-          continue
+      let new_arg ← do
+        if let .some new_arg ← trySynthInstance arg_ty then
+          pure new_arg
         else
-          Lean.logError m!"Field is not defeq, given{indentExpr arg}\ncalculate{indentExpr new_arg}"
+          makeFastInstance arg
+      if ← withReducibleAndInstances <| isDefEq arg new_arg then
+        continue
       else
-        let new_arg ← makeFastInstance arg
-        if ← isDefEq arg new_arg then
-          continue
-        else
-          Lean.logError m!"Field is not defeq, given{indentExpr arg}\ncalculate{indentExpr new_arg}"
+        Lean.logError m!"Field is not defeq, given{indentExpr arg}\ncalculate{indentExpr new_arg}"
   e ← instantiateMVars e
   -- must be defeq to what the user passed
   if !(← isDefEq provided e) then
