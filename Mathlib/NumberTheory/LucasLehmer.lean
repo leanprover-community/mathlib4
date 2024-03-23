@@ -377,7 +377,9 @@ set_option linter.uppercaseLean3 false in
 
 theorem ω_mul_ωb (q : ℕ+) : (ω : X q) * ωb = 1 := by
   dsimp [ω, ωb]
-  ext <;> simp; ring
+  ext
+  · simp only [mul_fst, mul_one, mul_neg, one_fst]; ring
+  · simp
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.ω_mul_ωb LucasLehmer.X.ω_mul_ωb
 
@@ -446,8 +448,9 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
 
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
 theorem mersenne_coe_X (p : ℕ) : (mersenne p : X (q p)) = 0 := by
-  ext <;> simp [mersenne, q, ZMod.nat_cast_zmod_eq_zero_iff_dvd, -pow_pos]
-  apply Nat.minFac_dvd
+  ext
+  · simpa [mersenne, q, ZMod.nat_cast_zmod_eq_zero_iff_dvd, -pow_pos] using Nat.minFac_dvd _
+  · rfl
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.mersenne_coe_X LucasLehmer.mersenne_coe_X
 

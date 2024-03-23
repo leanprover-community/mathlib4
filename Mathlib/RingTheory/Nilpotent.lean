@@ -163,7 +163,7 @@ noncomputable def nilpotencyClass : ℕ := sInf {k | x ^ k = 0}
 @[simp] lemma nilpotencyClass_eq_zero_of_subsingleton [Subsingleton R] :
     nilpotencyClass x = 0 := by
   let s : Set ℕ := {k | x ^ k = 0}
-  suffices s = univ by change sInf _ = 0; simp [s] at this; simp [this]
+  suffices s = univ by change sInf _ = 0; simp only [s] at this; simp [this]
   exact eq_univ_iff_forall.mpr fun k ↦ Subsingleton.elim _ _
 
 lemma isNilpotent_of_pos_nilpotencyClass (hx : 0 < nilpotencyClass x) :

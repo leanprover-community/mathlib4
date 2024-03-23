@@ -305,11 +305,8 @@ theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
     natDegree (map f p) = natDegree p ↔ f (p.leadingCoeff) ≠ 0 ∨ natDegree p = 0 := by
   rcases eq_or_ne (natDegree p) 0 with h|h
   · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le f p]
-  have h2 : p ≠ 0 := by rintro rfl; simp at h
-  have h3 : degree p ≠ (0 : ℕ)  := degree_ne_of_natDegree_ne h
-  simp_rw [h, or_false, natDegree, WithBot.unbot'_eq_unbot'_iff, degree_map_eq_iff]
-  simp [h, h2, h3] -- simp doesn't rewrite in the hypothesis for some reason
-  tauto
+  have h2 : p ≠ 0 := by aesop
+  simp_all [h, or_false, natDegree, WithBot.unbot'_eq_unbot'_iff, degree_map_eq_iff]
 
 theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by
   rw [nextCoeff] at h

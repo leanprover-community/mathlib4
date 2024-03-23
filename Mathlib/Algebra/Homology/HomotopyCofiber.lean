@@ -280,7 +280,7 @@ noncomputable def desc :
   comm' j k hjk := by
     obtain rfl := c.next_eq' hjk
     dsimp
-    simp [dif_pos hjk]
+    simp only [dif_pos hjk, add_comp, assoc, Hom.comm]
     have H := hα.comm (c.next j)
     simp only [comp_f, zero_f, add_zero, prevD_eq _ hjk] at H
     split_ifs with hj

@@ -886,7 +886,7 @@ theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ 
     rw [← this, orderOf_dvd_iff_pow_eq_one,
       (hf.isCycle_subtypePerm hs).pow_eq_one_iff'
         (ne_of_apply_ne ((↑) : s → α) <| hf.apply_ne hs (⟨a, ha⟩ : s).2)]
-    simp
+    simp_rw [coe_sort_coe, subtypePerm_pow]
     -- This used to be the end of the proof before leanprover/lean4#2644
     erw [subtypePerm_apply]
     simp

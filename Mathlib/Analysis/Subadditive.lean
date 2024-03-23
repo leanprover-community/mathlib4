@@ -56,7 +56,7 @@ theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
       u ((k + 1) * n + r) = u (n + (k * n + r)) := by congr 1; ring
       _ ≤ u n + u (k * n + r) := h _ _
       _ ≤ u n + (k * u n + u r) := add_le_add_left IH _
-      _ = (k + 1 : ℕ) * u n + u r := by simp; ring
+      _ = (k + 1 : ℕ) * u n + u r := by simp only [Nat.cast_add, Nat.cast_one]; ring
 #align subadditive.apply_mul_add_le Subadditive.apply_mul_add_le
 
 theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n / n < L) :

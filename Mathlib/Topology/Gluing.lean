@@ -175,8 +175,7 @@ theorem eqvGen_of_π_eq
     dsimp only [coequalizer.π, ContinuousMap.toFun_eq_coe] at h
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [← ι_preservesColimitsIso_hom, forget_map_eq_coe, types_comp_apply, h]
-    simp
-    rfl
+    aesop
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
       (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ :=

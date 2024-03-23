@@ -670,7 +670,7 @@ theorem tendsto_nhdsWithin_nhdsWithin {t : Set β} {a b} :
       ∀ ε > 0, ∃ δ > 0, ∀ ⦃x⦄, x ∈ s → edist x a < δ → f x ∈ t ∧ edist (f x) b < ε :=
   (nhdsWithin_basis_eball.tendsto_iff nhdsWithin_basis_eball).trans <|
     forall₂_congr fun ε _ => exists_congr fun δ => and_congr_right fun _ =>
-      forall_congr' fun x => by simp; tauto
+      forall_congr' fun x => by aesop
 #align emetric.tendsto_nhds_within_nhds_within EMetric.tendsto_nhdsWithin_nhdsWithin
 
 theorem tendsto_nhdsWithin_nhds {a b} :

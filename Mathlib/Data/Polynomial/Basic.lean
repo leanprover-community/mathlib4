@@ -430,9 +430,9 @@ theorem card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
 def monomial (n : ℕ) : R →ₗ[R] R[X] where
   toFun t := ⟨Finsupp.single n t⟩
   -- porting note (#10745): was `simp`.
-  map_add' x y := by simp; rw [ofFinsupp_add]
+  map_add' x y := by simp_rw [Finsupp.single_add]; rw [ofFinsupp_add]
   -- porting note (#10745): was `simp [← ofFinsupp_smul]`.
-  map_smul' r x := by simp; rw [← ofFinsupp_smul, smul_single']
+  map_smul' r x := by rw [smul_eq_mul, RingHom.id_apply, ← ofFinsupp_smul, smul_single']
 #align polynomial.monomial Polynomial.monomial
 
 @[simp]
@@ -475,7 +475,7 @@ theorem monomial_pow (n : ℕ) (r : R) (k : ℕ) : monomial n r ^ k = monomial (
 
 theorem smul_monomial {S} [SMulZeroClass S R] (a : S) (n : ℕ) (b : R) :
     a • monomial n b = monomial n (a • b) :=
-  toFinsupp_injective <| by simp; rw [smul_single]
+  toFinsupp_injective <| by simp_rw [toFinsupp_smul, toFinsupp_monomial]; rw [smul_single]
 #align polynomial.smul_monomial Polynomial.smul_monomial
 
 theorem monomial_injective (n : ℕ) : Function.Injective (monomial n : R → R[X]) :=
@@ -990,7 +990,7 @@ theorem mul_eq_sum_sum :
     p * q = ∑ i in p.support, q.sum fun j a => (monomial (i + j)) (p.coeff i * a) := by
   apply toFinsupp_injective
   rcases p with ⟨⟩; rcases q with ⟨⟩
-  simp [support, sum, coeff, toFinsupp_sum]
+  simp only [toFinsupp_mul, support, sum, coeff, toFinsupp_sum, toFinsupp_monomial]
   rfl
 #align polynomial.mul_eq_sum_sum Polynomial.mul_eq_sum_sum
 

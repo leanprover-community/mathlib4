@@ -274,7 +274,8 @@ lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦
     have hu : IsOpen (f ⁻¹' u) := (isOpen_compl_iff.2 isClosed_Iic).preimage hf
     rw [isOpen_iff_isUpperSet_and_dirSupInacc] at hu
     obtain ⟨c, hcd, hfcb⟩ := hu.2 d₁ d₂ d₃ h
-    simp [upperBounds] at hb
+    simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+      mem_setOf_eq] at hb
     exact hfcb <| hb _ hcd
 
 end Preorder

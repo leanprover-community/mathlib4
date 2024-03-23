@@ -234,7 +234,7 @@ def algebraMap₀ : R ≃ₗ[R] (⨂[R]^0) M :=
 #align tensor_power.algebra_map₀ TensorPower.algebraMap₀
 
 theorem algebraMap₀_eq_smul_one (r : R) : (algebraMap₀ r : (⨂[R]^0) M) = r • ₜ1 := by
-  simp [algebraMap₀]; congr
+  aesop
 #align tensor_power.algebra_map₀_eq_smul_one TensorPower.algebraMap₀_eq_smul_one
 
 theorem algebraMap₀_one : (algebraMap₀ 1 : (⨂[R]^0) M) = ₜ1 :=
