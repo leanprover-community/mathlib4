@@ -247,11 +247,6 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.limit_add_comm_group AddCommGroupCat.limitAddCommGroup
 
-@[to_additive]
-local instance : Small.{u}
-    (Functor.sections ((F ⋙ forget₂ CommGroupCat GroupCat) ⋙ forget GroupCat)) :=
-  inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGroupCat))
-
 /-- We show that the forgetful functor `CommGroupCat ⥤ GroupCat` creates limits.
 
 All we need to do is notice that the limit point has a `CommGroup` instance available,
@@ -265,6 +260,9 @@ noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ CommGroupCat GroupCat.{u}) :=
   letI : ReflectsIsomorphisms (forget₂ CommGroupCat.{u} GroupCat.{u}) :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
+  letI : Small.{u}
+      (Functor.sections ((F ⋙ forget₂ CommGroupCat GroupCat) ⋙ forget GroupCat)) :=
+    inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGroupCat))
   letI : Small.{u}
       (Functor.sections ((F ⋙ forget₂ _ GroupCat ⋙ forget₂ _ MonCat) ⋙ forget MonCat)) :=
     inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGroupCat))
@@ -291,6 +289,8 @@ set_option linter.uppercaseLean3 false in
   "A choice of limit cone for a functor into `AddCommGroupCat`.
   (Generally, you'll just want to use `limit F`.)"]
 noncomputable def limitCone : Cone F :=
+  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ CommGroupCat GroupCat) ⋙ forget GroupCat)) :=
+    inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGroupCat))
   liftLimit (limit.isLimit (F ⋙ forget₂ CommGroupCat.{u} GroupCat.{u}))
 set_option linter.uppercaseLean3 false in
 #align CommGroup.limit_cone CommGroupCat.limitCone

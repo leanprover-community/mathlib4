@@ -382,9 +382,6 @@ instance limitRing : Ring.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget RingCa
 set_option linter.uppercaseLean3 false in
 #align Ring.limit_ring RingCat.limitRing
 
-local instance : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
-  inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
-
 /-- We show that the forgetful functor `CommRingCat ⥤ RingCat` creates limits.
 
 All we need to do is notice that the limit point has a `Ring` instance available,
@@ -393,6 +390,8 @@ and then reuse the existing limit.
 instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
   letI : ReflectsIsomorphisms (forget₂ RingCat SemiRingCat) :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
+  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
+    inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   letI c : Cone F :=
   { pt := RingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
     π :=
@@ -410,6 +409,8 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
 (Generally, you'll just want to use `limit F`.)
 -/
 def limitCone : Cone F :=
+  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
+    inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   liftLimit (limit.isLimit (F ⋙ forget₂ RingCat.{u} SemiRingCat.{u}))
 set_option linter.uppercaseLean3 false in
 #align Ring.limit_cone RingCat.limitCone
@@ -423,7 +424,10 @@ set_option linter.uppercaseLean3 false in
 #align Ring.limit_cone_is_limit RingCat.limitConeIsLimit
 
 /-- If `(F ⋙ forget RingCat).sections` is `u`-small, `F` has a limit. -/
-instance hasLimit : HasLimit F := hasLimit_of_created F (forget₂ RingCat.{u} SemiRingCat.{u})
+instance hasLimit : HasLimit F :=
+  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
+    inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
+  hasLimit_of_created F (forget₂ RingCat.{u} SemiRingCat.{u})
 
 /-- If `J` is `u`-small, `RingCat.{u}` has limits of shape `J`. -/
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J RingCat.{u} where
