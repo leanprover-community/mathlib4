@@ -30,7 +30,9 @@ We do not allow here edges to be mapped to vertices. That will be a separate not
 This definition is restrictive but useful for covering spaces.
 -/
 @[ext] structure Morphism (G₁ : SerreGraph V₁ E₁) (G₂ : SerreGraph V₂ E₂) where
+  /-- Map on vertices. -/
   toFuncV : V₁ → V₂
+  /-- Map on edges. -/
   toFuncE : E₁ → E₂
   toFuncV_init : ∀ (e : E₁),  toFuncV (G₁.ι e) = G₂.ι (toFuncE e)
   toFuncE_bar : ∀ (e : E₁), toFuncE (G₁.bar e) = G₂.bar (toFuncE e)
@@ -500,6 +502,9 @@ theorem EdgePath.lift_reverse {G₁ : SerreGraph V₁ E₁}
         (e.lift p v₁ h).reverse := by
         apply unique_Pathlift
 
+/--
+Lift of a path followed by an edge and its inverse.
+-/
 def PathLift.cons_bar_cons {G₁ : SerreGraph V₁ E₁}
     {G₂ : SerreGraph V₂ E₂}
     {p : Morphism G₁ G₂}[CoveringMap p] {v₁: V₁} {v₂ w₂ w₂' : V₂}
