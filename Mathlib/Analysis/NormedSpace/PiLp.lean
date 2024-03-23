@@ -300,8 +300,17 @@ explaining why having definitionally the right uniformity is often important.
 -/
 
 
-variable [Fact (1 ≤ p)] [∀ i, PseudoMetricSpace (α i)] [∀ i, PseudoEMetricSpace (β i)]
+variable [Fact (p ∉ Set.Ioo 0 1)] [∀ i, PseudoMetricSpace (α i)] [∀ i, PseudoEMetricSpace (β i)]
 variable [Fintype ι]
+
+protected theorem _root_.ENNReal.trichotomy' (p : ℝ≥0∞) [Fact (p ∉ Set.Ioo 0 1)] :
+    p = 0 ∨ p = ∞ ∨ 1 ≤ p.toReal := by
+  obtain rfl | hp := eq_zero_or_pos p
+  · left; rfl
+  · right
+    refine @ENNReal.dichotomy p ⟨?_⟩
+    have : p ∉ Set.Ioo 0 1 := Fact.out
+    simpa [hp] using this
 
 /-- Endowing the space `PiLp p β` with the `L^p` pseudoemetric structure. This definition is not
 satisfactory, as it does not register the fact that the topology and the uniform structure coincide
@@ -313,7 +322,21 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
   edist_self := PiLp.edist_self p
   edist_comm := PiLp.edist_comm p
   edist_triangle f g h := by
-    rcases p.dichotomy with (rfl | hp)
+    rcases p.trichotomy' with (rfl | rfl | hp)
+    · classical
+      simp only [edist_eq_card, Finite.toFinset_setOf, ←Nat.cast_add, Nat.cast_le]
+      refine le_trans (Finset.card_mono ?_) (Finset.card_union_le _ _)
+      rw [← Finset.filter_or]
+      refine Finset.monotone_filter_right _ fun i hi ↦ ?_
+      have := hi.ne_or_ne
+      rw [←not_and_or]
+      rintro ⟨hf, hg⟩
+      apply hi
+      have hfg := congr($hf + $hg)
+      rw [add_zero] at hfg
+      have := edist_triangle (f i) (g i) (h i)
+      rw [hfg] at this
+      exact eq_bot_iff.mpr this
     · simp only [edist_eq_iSup]
       cases isEmpty_or_nonempty ι
       · simp only [ciSup_of_empty, ENNReal.bot_eq_zero, add_zero, nonpos_iff_eq_zero]
@@ -359,7 +382,9 @@ See note [reducible non-instances] -/
 def pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by
-      rcases p.dichotomy with (rfl | h)
+      rcases p.trichotomy' with (rfl | rfl | h)
+      · simp only [edist_eq_card, Finite.toFinset_setOf]
+        exact nat_ne_top _
       · exact iSup_edist_ne_top_aux f g
       · rw [edist_eq_sum (zero_lt_one.trans_le h)]
         exact
@@ -368,7 +393,9 @@ def pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
               ENNReal.sum_lt_top fun i hi =>
                 ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)))
     fun f g => by
-    rcases p.dichotomy with (rfl | h)
+    rcases p.trichotomy' with (rfl | rfl | h)
+    · simp_rw [edist_eq_card, dist_eq_card, Finite.toFinset_setOf, toReal_nat, edist_nndist,
+        ←coe_nndist, ENNReal.coe_ne_zero, NNReal.coe_ne_zero]
     · rw [edist_eq_iSup, dist_eq_iSup]
       · cases isEmpty_or_nonempty ι
         · simp only [Real.iSup_of_isEmpty, ciSup_of_empty, ENNReal.bot_eq_zero, ENNReal.zero_toReal]
@@ -395,13 +422,15 @@ attribute [local instance] PiLp.pseudoMetricAux
 
 theorem lipschitzWith_equiv_aux : LipschitzWith 1 (WithLp.equiv p (∀ i, β i)) := by
   intro x y
-  rcases p.dichotomy with (rfl | h)
-  · simpa only [ENNReal.coe_one, one_mul, edist_eq_iSup, edist, Finset.sup_le_iff, Finset.mem_univ,
-      forall_true_left] using le_iSup fun i => edist (x i) (y i)
+  simp only [ENNReal.coe_one, one_mul, edist_pi_def, Finset.sup_le_iff, Finset.mem_univ,
+    forall_prop_of_true]
+  rcases p.trichotomy' with (rfl | rfl | h)
+  · intro i
+    simp only [edist_eq_card, WithLp.equiv_pi_apply]
+    simp
+  · simpa only [edist_eq_iSup] using le_iSup fun i => edist (x i) (y i)
   · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (zero_lt_one.trans_le h).ne'
     rw [edist_eq_sum (zero_lt_one.trans_le h)]
-    simp only [edist, forall_prop_of_true, one_mul, Finset.mem_univ, Finset.sup_le_iff,
-      ENNReal.coe_one]
     intro i
     calc
       edist (x i) (y i) = (edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
