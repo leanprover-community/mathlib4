@@ -72,8 +72,8 @@ alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
 #align list.mem_append_left List.mem_append_left
 #align list.mem_append_right List.mem_append_right
 
-theorem not_bex_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x := fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
-#align list.not_bex_nil List.not_bex_nil
+theorem not_exists_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x := fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
+#align list.not_bex_nil List.not_exists_nil
 
 #align list.ball_nil List.forall_mem_nil
 
@@ -86,6 +86,8 @@ theorem exists_cons (p : α → Prop) (a : α) (l : List α) : (∃ x ∈ a :: l
   fun o =>
     o.elim (fun pa => ⟨a, mem_cons_self _ _, pa⟩) fun ⟨x, h, px⟩ => ⟨x, mem_cons_of_mem _ h, px⟩⟩
 #align list.bex_cons List.exists_cons
+
+@[deprecated] alias List.not_bex_nil := List.not_exists_nil -- 2024-03-23
 @[deprecated] alias List.bex_cons := List.exists_cons -- 2024-03-23
 
 #align list.ball_cons List.forall_mem_consₓ
