@@ -1488,6 +1488,17 @@ theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   rw [← Nat.cast_succ]
   exact natCast_lt.2 (Nat.lt_succ_self _)
 
+lemma succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
+  rw [← Cardinal.nat_succ]
+  norm_cast
+
+lemma natCast_add_one_le_iff {n : ℕ} {c : Cardinal} : n + 1 ≤ c ↔ n < c := by
+  rw [← Order.succ_le_iff, Cardinal.succ_natCast]
+
+lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c := by
+  convert natCast_add_one_le_iff
+  norm_cast
+
 @[simp]
 theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
 #align cardinal.succ_zero Cardinal.succ_zero
@@ -2246,17 +2257,6 @@ theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z 
   have := exists_not_mem_of_length_lt [x, y] this
   simpa [not_or] using this
 #align cardinal.three_le Cardinal.three_le
-
-lemma succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
-  rw [← Cardinal.nat_succ]
-  norm_cast
-
-lemma natCast_add_one_le_iff {n : ℕ} {c : Cardinal} : n + 1 ≤ c ↔ n < c := by
-  rw [← Order.succ_le_iff, Cardinal.succ_natCast]
-
-lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c := by
-  convert natCast_add_one_le_iff
-  norm_cast
 
 /-- The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. -/
 def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=
