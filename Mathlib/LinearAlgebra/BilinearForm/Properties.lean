@@ -78,7 +78,7 @@ protected theorem smul {α} [CommSemiring α] [Module α R] [SMulCommClass R α 
 #align bilin_form.is_refl.smul LinearMap.BilinForm.IsRefl.smul
 
 protected theorem groupSMul {α} [Group α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
-  {B : BilinForm R M} (hB : B.IsRefl) : (a • B).IsRefl := fun x y =>
+    {B : BilinForm R M} (hB : B.IsRefl) : (a • B).IsRefl := fun x y =>
   (smul_eq_zero_iff_eq _).mpr ∘ hB x y ∘ (smul_eq_zero_iff_eq _).mp
 #align bilin_form.is_refl.group_smul LinearMap.BilinForm.IsRefl.groupSMul
 
