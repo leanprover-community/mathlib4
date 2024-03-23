@@ -100,7 +100,7 @@ partial def Sum.pow (s : Sum) : ℕ → Sum
   | n =>
     let m := n >>> 1
     let a := s.pow m
-    if n &&& 1 == 0 then
+    if n &&& 1 = 0 then
       a.mul a
     else
       a.mul a |>.mul s
