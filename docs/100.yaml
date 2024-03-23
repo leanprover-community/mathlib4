@@ -54,8 +54,8 @@
   author : Yury G. Kudryashov (first) and Benjamin Davidson (second)
 16:
   title  : Insolvability of General Higher Degree Equations (Abel-Ruffini Theorem)
-  author: Thomas Browning
-  decl : AbelRuffini.exists_not_solvable_by_rad
+  author : Thomas Browning
+  decl   : AbelRuffini.exists_not_solvable_by_rad
 17:
   title  : De Moivre’s Formula
   decl   : Complex.cos_add_sin_mul_I_pow
@@ -157,7 +157,7 @@
 42:
   title  : Sum of the Reciprocals of the Triangular Numbers
   author : Jalex Stark, Yury Kudryashov
-  decl   : Theorem100.inverse_triangle_sum
+  decl   : Theorems100.inverse_triangle_sum
 43:
   title  : The Isoperimetric Theorem
 44:
@@ -291,7 +291,7 @@
   author : Yury G. Kudryashov
 76:
   title  : Fourier Series
-  decls   :
+  decls  :
     - fourierCoeff
     - hasSum_fourier_series_L2
   author : Heather Macbeth
@@ -323,17 +323,17 @@
   note   : "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
 81:
   title  : Divergence of the Prime Reciprocal Series
-  decls   :
+  decls  :
     - Theorems100.Real.tendsto_sum_one_div_prime_atTop
     - not_summable_one_div_on_primes
   author : Manuel Candales (archive), Michael Stoll (Mathlib)
 82:
   title  : Dissection of Cubes (J.E. Littlewood’s ‘elegant’ proof)
-  decl : 'Theorems100.82.cannot_cube_a_cube'
+  decl   : Theorems100.cannot_cube_a_cube
   author : Floris van Doorn
 83:
   title  : The Friendship Theorem
-  decl  : Theorems100.friendship_theorem
+  decl   : Theorems100.friendship_theorem
   author : Aaron Anderson, Jalex Stark, Kyle Miller
 84:
   title  : Morley’s Theorem
