@@ -130,10 +130,14 @@ theorem finsuppTensorFinsupp'_single_tmul_single (a : ι) (b : κ) (r₁ r₂ : 
   finsuppTensorFinsuppLid_single_tmul_single R R ι κ a b r₁ r₂
 #align finsupp_tensor_finsupp'_single_tmul_single finsuppTensorFinsupp'_single_tmul_single
 
-@[simp]
 theorem finsuppTensorFinsupp'_symm_single (i : ι × κ) (r₁ r₂ : R) :
     (finsuppTensorFinsupp' R ι κ).symm (Finsupp.single i (r₁ * r₂)) =
       Finsupp.single i.1 r₁ ⊗ₜ Finsupp.single i.2 r₂ :=
   finsuppTensorFinsuppLid_symm_single R R ι κ i r₁ r₂
 
-end
+-- -- cannot add this because we need to import Mathlib.Data.Finsupp.Pointwise
+-- @[simp]
+-- theorem finsuppTensorFinsupp'_symm_single_mul_single (i : ι × κ) (r₁ r₂ : R) :
+--     (finsuppTensorFinsupp' R ι κ).symm (Finsupp.single i r₁ * Finsupp.single i r₂) =
+--       Finsupp.single i.1 r₁ ⊗ₜ Finsupp.single i.2 r₂ := by
+--   rw [← Finsupp.single_mul, finsuppTensorFinsupp'_symm_single]
