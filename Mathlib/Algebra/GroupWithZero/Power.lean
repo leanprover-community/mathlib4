@@ -178,7 +178,7 @@ variable {G₀ : Type*} [CommGroupWithZero G₀]
 theorem div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
   by_cases ha : a = 0
   · simp [ha]
-  rw [sq, mul_assoc, mul_div_cancel_left _ ha]
+  rw [sq, mul_assoc, mul_div_cancel_left₀ _ ha]
 #align div_sq_cancel div_sq_cancel
 
 end
