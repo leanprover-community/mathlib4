@@ -88,9 +88,9 @@ variable {C : Type u} {D: Type u₂} [Category.{v} C] [Category.{v₂} D]
 /-- The source of a final functor is connected if and only if the target is connected. -/
 theorem isConnected_iff_of_final (F : C ⥤ D) [CategoryTheory.Functor.Final F] :
     IsConnected C ↔ IsConnected D := by
-  refine Iff.trans (connected_iff_colimit_const_pUnit_iso_pUnit.{v, u, max v₂ u₂} C) ?_
-  refine Iff.trans ?_ (connected_iff_colimit_const_pUnit_iso_pUnit.{v₂, u₂, max v u} D).symm
+  refine Iff.trans (connected_iff_colimit_const_pUnit_iso_pUnit.{max v u v₂ u₂} C) ?_
+  refine Iff.trans ?_ (connected_iff_colimit_const_pUnit_iso_pUnit.{max v u v₂ u₂} D).symm
   exact Equiv.nonempty_congr <| Iso.isoCongrLeft <|
-    CategoryTheory.Functor.Final.colimitIso F <| unitValuedFunctor.{v₂, u₂, max u v u₂ v₂} D
+    CategoryTheory.Functor.Final.colimitIso F <| unitValuedFunctor.{max u v u₂ v₂} D
 
 end CategoryTheory.Limits.Types
