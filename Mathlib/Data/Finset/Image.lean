@@ -396,7 +396,7 @@ instance canLift (c) (p) [CanLift β α c p] :
 theorem image_congr (h : (s : Set α).EqOn f g) : Finset.image f s = Finset.image g s := by
   ext
   simp_rw [mem_image, ← bex_def]
-  exact bex_congr fun x hx => by rw [h hx]
+  exact exists_mem_congr fun x hx => by rw [h hx]
 #align finset.image_congr Finset.image_congr
 
 theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :

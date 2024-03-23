@@ -527,6 +527,7 @@ theorem forall_mem_comm {α β} [Membership α β] {s : β} {p : α → α → P
   forall_cond_comm
 #align ball_mem_comm forall_mem_comm
 
+-- 2024-03-23
 @[deprecated] alias ball_cond_comm := forall_cond_comm
 @[deprecated] alias ball_mem_comm := forall_mem_comm
 
@@ -1039,16 +1040,18 @@ theorem forall_mem_congr (H : ∀ x h, P x h ↔ Q x h) : (∀ x h, P x h) ↔ �
   forall_congr' fun x ↦ forall_congr' (H x)
 #align ball_congr forall_mem_congr
 
-theorem bex_congr (H : ∀ x h, P x h ↔ Q x h) : (∃ x h, P x h) ↔ ∃ x h, Q x h :=
+theorem exists_mem_congr (H : ∀ x h, P x h ↔ Q x h) : (∃ x h, P x h) ↔ ∃ x h, Q x h :=
   exists_congr fun x ↦ exists_congr (H x)
-#align bex_congr bex_congr
+#align bex_congr exists_mem_congr
 
-theorem bex_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
+theorem exists_mem_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
   simp only [exists_prop, exists_eq_left]
-#align bex_eq_left bex_eq_left
+#align bex_eq_left exists_mem_eq_left
 
 -- 2024-03-23
 @[deprecated] alias ball_congr := forall_mem_congr
+@[deprecated] alias bex_congr := exists_mem_congr
+@[deprecated] alias bex_eq_left := exists_mem_eq_left
 
 theorem BAll.imp_right (H : ∀ x h, P x h → Q x h) (h₁ : ∀ x h, P x h) (x h) : Q x h :=
   H _ _ <| h₁ _ _
@@ -1080,16 +1083,17 @@ theorem exists_of_exists_mem : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
   | ⟨x, _, hq⟩ => ⟨x, hq⟩
 #align exists_of_bex exists_of_exists_mem
 
-theorem bex_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by simp
-#align bex_imp_distrib bex_imp
+theorem exists_mem_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by simp
+#align bex_imp_distrib exists_mem_imp
 
 -- 2024-03-23
 @[deprecated] alias forall_of_ball := forall_of_forall_mem
 @[deprecated] alias ball_of_forall := forall_mem_of_forall
 @[deprecated] alias bex_of_exists := exists_mem_of_exists
 @[deprecated] alias exists_of_bex := exists_of_exists_mem
+@[deprecated] alias bex_imp := exists_mem_imp
 
-theorem not_exists_mem : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := bex_imp
+theorem not_exists_mem : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := exists_mem_imp
 #align not_bex not_exists_mem
 
 theorem not_forall_mem_of_exists_mem_not : (∃ x h, ¬P x h) → ¬∀ x h, P x h
