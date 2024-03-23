@@ -409,7 +409,7 @@ theorem add_conj (z : K) : z + conj z = 2 * re z :=
 #align is_R_or_C.add_conj IsROrC.add_conj
 
 theorem re_eq_add_conj (z : K) : ↑(re z) = (z + conj z) / 2 := by
-  rw [add_conj, mul_div_cancel_left (re z : K) two_ne_zero]
+  rw [add_conj, mul_div_cancel_left₀ (re z : K) two_ne_zero]
 #align is_R_or_C.re_eq_add_conj IsROrC.re_eq_add_conj
 
 theorem im_eq_conj_sub (z : K) : ↑(im z) = I * (conj z - z) / 2 := by
