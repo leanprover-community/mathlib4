@@ -209,7 +209,6 @@ theorem gnpowRec_zero (a : GradedMonoid A) : GradedMonoid.mk _ (gnpowRec 0 a.snd
 theorem gnpowRec_succ (n : ℕ) (a : GradedMonoid A) :
     (GradedMonoid.mk _ <| gnpowRec n.succ a.snd) = ⟨_, gnpowRec n a.snd⟩ * a :=
   Sigma.ext (succ_nsmul _ _) (heq_of_cast_eq _ rfl).symm
-
 #align graded_monoid.gmonoid.gnpow_rec_succ GradedMonoid.GMonoid.gnpowRec_succ
 
 end GMonoid
