@@ -168,13 +168,14 @@ variable [(x : R) → Decidable (x ≠ 0)]
 -/
 def finsuppPiTensorProduct' : (⨂[R] i, (κ i →₀ R)) ≃ₗ[R] ((i : ι) → κ i) →₀ R :=
   finsuppPiTensorProduct R κ (fun _ ↦ R) ≪≫ₗ
-  Finsupp.lcongr (Equiv.refl ((i : ι) → κ i)) (constantBaseRingEquiv ι R)
+  Finsupp.lcongr (Equiv.refl ((i : ι) → κ i)) (constantBaseRingEquiv ι R).toLinearEquiv
 
 @[simp]
 theorem finsuppPiTensorProduct'_apply_apply (f : (i : ι) → κ i →₀ R) (p : (i : ι) → κ i) :
     finsuppPiTensorProduct' R κ (⨂ₜ[R] i, f i) p = ∏ i, f i (p i) := by
   simp only [finsuppPiTensorProduct', LinearEquiv.trans_apply, Finsupp.lcongr_apply_apply,
-    Equiv.refl_symm, Equiv.refl_apply, finsuppPiTensorProduct_apply, constantBaseRingEquiv_tprod]
+    Equiv.refl_symm, Equiv.refl_apply, finsuppPiTensorProduct_apply, AlgEquiv.toLinearEquiv_apply,
+    constantBaseRingEquiv_tprod]
 
 @[simp]
 theorem finsuppPiTensorProduct'_tprod_single (p : (i : ι) → κ i) (r : ι → R) :
