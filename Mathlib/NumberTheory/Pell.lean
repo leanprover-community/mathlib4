@@ -140,7 +140,7 @@ theorem prop_y (a : Solution₁ d) : d * a.y ^ 2 = a.x ^ 2 - 1 := by rw [← a.p
 /-- Two solutions are equal if their `x` and `y` components are equal. -/
 @[ext]
 theorem ext {a b : Solution₁ d} (hx : a.x = b.x) (hy : a.y = b.y) : a = b :=
-  Subtype.ext <| ext.mpr ⟨hx, hy⟩
+  Subtype.ext <| Zsqrtd.ext _ _ hx hy
 #align pell.solution₁.ext Pell.Solution₁.ext
 
 /-- Construct a solution from `x`, `y` and a proof that the equation is satisfied. -/
@@ -161,7 +161,7 @@ theorem y_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (mk x y prop).y = y :=
 
 @[simp]
 theorem coe_mk (x y : ℤ) (prop : x ^ 2 - d * y ^ 2 = 1) : (↑(mk x y prop) : ℤ√d) = ⟨x, y⟩ :=
-  Zsqrtd.ext.mpr ⟨x_mk x y prop, y_mk x y prop⟩
+  Zsqrtd.ext _ _ (x_mk x y prop) (y_mk x y prop)
 #align pell.solution₁.coe_mk Pell.Solution₁.coe_mk
 
 @[simp]
@@ -242,7 +242,7 @@ theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare 
   have hp := a.prop
   rintro ⟨b, rfl⟩
   simp_rw [← sq, ← mul_pow, sq_sub_sq, Int.mul_eq_one_iff_eq_one_or_neg_one] at hp
-  rcases hp with (⟨hp₁, hp₂⟩ | ⟨hp₁, hp₂⟩) <;> linarith [ha, hp₁, hp₂]
+  rcases hp with (⟨hp₁, hp₂⟩ | ⟨hp₁, hp₂⟩) <;> omega
 #align pell.solution₁.d_nonsquare_of_one_lt_x Pell.Solution₁.d_nonsquare_of_one_lt_x
 
 /-- A solution with `x = 1` is trivial. -/
@@ -271,7 +271,7 @@ theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a *
   · positivity
   · rw [(eq_zero_of_d_neg h a).resolve_left ha.ne', (eq_zero_of_d_neg h b).resolve_left hb.ne']
     -- Porting note: was
-    -- rw [zero_pow two_pos, zero_add, zero_mul, zero_add]
+    -- rw [zero_pow two_ne_zero, zero_add, zero_mul, zero_add]
     -- exact one_pos
     -- but this relied on the exact output of `ring_nf`
     simp
@@ -317,7 +317,7 @@ theorem y_zpow_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) {n : ℤ}
 theorem x_zpow_pos {a : Solution₁ d} (hax : 0 < a.x) (n : ℤ) : 0 < (a ^ n).x := by
   cases n with
   | ofNat n =>
-    rw [Int.ofNat_eq_coe, zpow_ofNat]
+    rw [Int.ofNat_eq_coe, zpow_natCast]
     exact x_pow_pos hax n
   | negSucc n =>
     rw [zpow_negSucc]
@@ -330,7 +330,7 @@ theorem sign_y_zpow_eq_sign_of_x_pos_of_y_pos {a : Solution₁ d} (hax : 0 < a.x
     (n : ℤ) : (a ^ n).y.sign = n.sign := by
   rcases n with ((_ | n) | n)
   · rfl
-  · rw [Int.ofNat_eq_coe, zpow_ofNat]
+  · rw [Int.ofNat_eq_coe, zpow_natCast]
     exact Int.sign_eq_one_of_pos (y_pow_succ_pos hax hay n)
   · rw [zpow_negSucc]
     exact Int.sign_eq_neg_one_of_neg (neg_neg_of_pos (y_pow_succ_pos hax hay n))
@@ -555,9 +555,9 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
   rcases le_or_lt 0 n with hn | hn
   · exact H n hn
   · let m : ℤ := -n - 1
-    have hm : n = -m - 1 := by simp only [neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
+    have hm : n = -m - 1 := by simp only [m, neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
     rw [hm, sub_add_cancel, ← neg_add', zpow_neg, zpow_neg, y_inv, y_inv, neg_lt_neg_iff]
-    exact H _ (by linarith [hn])
+    exact H _ (by omega)
 #align pell.is_fundamental.y_strict_mono Pell.IsFundamental.y_strictMono
 
 /-- If `a` is a fundamental solution, then `(a^m).y < (a^n).y` if and only if `m < n`. -/

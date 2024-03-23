@@ -5,7 +5,7 @@ Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Order.Module
+import Mathlib.Algebra.Order.Module.OrderedSMul
 
 /-!
 # Modules over nonnegative elements
@@ -18,7 +18,6 @@ These instances are useful for working with `ConvexCone`.
 -/
 
 variable {𝕜 𝕜' E : Type*}
-
 variable [OrderedSemiring 𝕜]
 
 local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}

@@ -126,7 +126,7 @@ instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0�
 #align measure_theory.is_finite_measure_smul_of_nnreal_tower MeasureTheory.isFiniteMeasureSMulOfNNRealTower
 
 theorem isFiniteMeasure_of_le (μ : Measure α) [IsFiniteMeasure μ] (h : ν ≤ μ) : IsFiniteMeasure ν :=
-  { measure_univ_lt_top := lt_of_le_of_lt (h Set.univ MeasurableSet.univ) (measure_lt_top _ _) }
+  { measure_univ_lt_top := (h Set.univ).trans_lt (measure_lt_top _ _) }
 #align measure_theory.is_finite_measure_of_le MeasureTheory.isFiniteMeasure_of_le
 
 @[instance]
@@ -154,7 +154,7 @@ theorem measureUnivNNReal_pos [IsFiniteMeasure μ] (hμ : μ ≠ 0) : 0 < measur
 /-- `le_of_add_le_add_left` is normally applicable to `OrderedCancelAddCommMonoid`,
 but it holds for measures with the additional assumption that μ is finite. -/
 theorem Measure.le_of_add_le_add_left [IsFiniteMeasure μ] (A2 : μ + ν₁ ≤ μ + ν₂) : ν₁ ≤ ν₂ :=
-  fun S B1 => ENNReal.le_of_add_le_add_left (MeasureTheory.measure_ne_top μ S) (A2 S B1)
+  fun S => ENNReal.le_of_add_le_add_left (MeasureTheory.measure_ne_top μ S) (A2 S)
 #align measure_theory.measure.le_of_add_le_add_left MeasureTheory.Measure.le_of_add_le_add_left
 
 theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
@@ -185,13 +185,15 @@ theorem ae_mem_iff_measure_eq [IsFiniteMeasure μ] {s : Set α} (hs : NullMeasur
   ae_iff_measure_eq hs
 #align measure_theory.ae_mem_iff_measure_eq MeasureTheory.ae_mem_iff_measure_eq
 
+open scoped symmDiff
+
 theorem abs_toReal_measure_sub_le_measure_symmDiff'
     (hs : MeasurableSet s) (ht : MeasurableSet t) (hs' : μ s ≠ ∞) (ht' : μ t ≠ ∞) :
     |(μ s).toReal - (μ t).toReal| ≤ (μ (s ∆ t)).toReal := by
   have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset (diff_subset s t) hs').ne
   have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset (diff_subset t s) ht').ne
-  suffices : (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal
-  · rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
+  suffices (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal by
+    rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
     convert abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
   rw [measure_diff' s ht ht', measure_diff' t hs hs',
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (measure_union_ne_top hs' ht'),
@@ -245,44 +247,56 @@ theorem prob_le_one [IsProbabilityMeasure μ] : μ s ≤ 1 :=
   (measure_mono <| Set.subset_univ _).trans_eq measure_univ
 #align measure_theory.prob_le_one MeasureTheory.prob_le_one
 
--- porting note: made an `instance`, using `NeZero`
+-- Porting note: made an `instance`, using `NeZero`
 instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
     IsProbabilityMeasure ((μ univ)⁻¹ • μ) :=
   ⟨ENNReal.inv_mul_cancel (NeZero.ne (μ univ)) (measure_ne_top _ _)⟩
 #align measure_theory.is_probability_measure_smul MeasureTheory.isProbabilityMeasureSMulₓ
 
-theorem isProbabilityMeasure_map [IsProbabilityMeasure μ] {f : α → β} (hf : AEMeasurable f μ) :
+variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
+
+theorem isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=
   ⟨by simp [map_apply_of_aemeasurable, hf]⟩
 #align measure_theory.is_probability_measure_map MeasureTheory.isProbabilityMeasure_map
 
 @[simp]
-theorem one_le_prob_iff [IsProbabilityMeasure μ] : 1 ≤ μ s ↔ μ s = 1 :=
+theorem one_le_prob_iff : 1 ≤ μ s ↔ μ s = 1 :=
   ⟨fun h => le_antisymm prob_le_one h, fun h => h ▸ le_refl _⟩
 #align measure_theory.one_le_prob_iff MeasureTheory.one_le_prob_iff
 
 /-- Note that this is not quite as useful as it looks because the measure takes values in `ℝ≥0∞`.
 Thus the subtraction appearing is the truncated subtraction of `ℝ≥0∞`, rather than the
 better-behaved subtraction of `ℝ`. -/
-theorem prob_compl_eq_one_sub [IsProbabilityMeasure μ] (hs : MeasurableSet s) : μ sᶜ = 1 - μ s :=
-  by simpa only [measure_univ] using measure_compl hs (measure_lt_top μ s).ne
+lemma prob_compl_eq_one_sub₀ (h : NullMeasurableSet s μ) : μ sᶜ = 1 - μ s := by
+  rw [measure_compl₀ h (measure_ne_top _ _), measure_univ]
+
+/-- Note that this is not quite as useful as it looks because the measure takes values in `ℝ≥0∞`.
+Thus the subtraction appearing is the truncated subtraction of `ℝ≥0∞`, rather than the
+better-behaved subtraction of `ℝ`. -/
+theorem prob_compl_eq_one_sub (hs : MeasurableSet s) : μ sᶜ = 1 - μ s :=
+  prob_compl_eq_one_sub₀ hs.nullMeasurableSet
 #align measure_theory.prob_compl_eq_one_sub MeasureTheory.prob_compl_eq_one_sub
 
-@[simp]
-theorem prob_compl_eq_zero_iff [IsProbabilityMeasure μ] (hs : MeasurableSet s) :
-    μ sᶜ = 0 ↔ μ s = 1 := by
-  rw [prob_compl_eq_one_sub hs, tsub_eq_zero_iff_le, one_le_prob_iff]
+@[simp] lemma prob_compl_eq_zero_iff₀ (hs : NullMeasurableSet s μ) : μ sᶜ = 0 ↔ μ s = 1 := by
+  rw [prob_compl_eq_one_sub₀ hs, tsub_eq_zero_iff_le, one_le_prob_iff]
+
+@[simp] lemma prob_compl_eq_zero_iff (hs : MeasurableSet s) : μ sᶜ = 0 ↔ μ s = 1 :=
+  prob_compl_eq_zero_iff₀ hs.nullMeasurableSet
 #align measure_theory.prob_compl_eq_zero_iff MeasureTheory.prob_compl_eq_zero_iff
 
-@[simp]
-theorem prob_compl_eq_one_iff [IsProbabilityMeasure μ] (hs : MeasurableSet s) :
-    μ sᶜ = 1 ↔ μ s = 0 := by rw [← prob_compl_eq_zero_iff hs.compl, compl_compl]
+@[simp] lemma prob_compl_eq_one_iff₀ (hs : NullMeasurableSet s μ) : μ sᶜ = 1 ↔ μ s = 0 := by
+  rw [← prob_compl_eq_zero_iff₀ hs.compl, compl_compl]
+
+@[simp] lemma prob_compl_eq_one_iff (hs : MeasurableSet s) : μ sᶜ = 1 ↔ μ s = 0 :=
+  prob_compl_eq_one_iff₀ hs.nullMeasurableSet
 #align measure_theory.prob_compl_eq_one_iff MeasureTheory.prob_compl_eq_one_iff
 
-variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
+lemma mem_ae_iff_prob_eq_one₀ (hs : NullMeasurableSet s μ) : s ∈ μ.ae ↔ μ s = 1 :=
+  mem_ae_iff.trans <| prob_compl_eq_zero_iff₀ hs
 
 lemma mem_ae_iff_prob_eq_one (hs : MeasurableSet s) : s ∈ μ.ae ↔ μ s = 1 :=
-  mem_ae_iff.trans $ prob_compl_eq_zero_iff hs
+  mem_ae_iff.trans <| prob_compl_eq_zero_iff hs
 
 lemma ae_iff_prob_eq_one (hp : Measurable p) : (∀ᵐ a ∂μ, p a) ↔ μ {a | p a} = 1 :=
   mem_ae_iff_prob_eq_one hp.setOf
@@ -298,6 +312,14 @@ lemma isProbabilityMeasure_comap (hf : Injective f) (hf' : ∀ᵐ a ∂μ, a ∈
 protected lemma _root_.MeasurableEmbedding.isProbabilityMeasure_comap (hf : MeasurableEmbedding f)
     (hf' : ∀ᵐ a ∂μ, a ∈ range f) : IsProbabilityMeasure (μ.comap f) :=
   isProbabilityMeasure_comap hf.injective hf' hf.measurableSet_image'
+
+instance isProbabilityMeasure_map_up [IsProbabilityMeasure μ] :
+    IsProbabilityMeasure (μ.map ULift.up) := isProbabilityMeasure_map measurable_up.aemeasurable
+
+instance isProbabilityMeasure_comap_down [IsProbabilityMeasure μ] :
+    IsProbabilityMeasure (μ.comap ULift.down) :=
+  MeasurableEquiv.ulift.measurableEmbedding.isProbabilityMeasure_comap <| ae_of_all _ <| by
+    simp [Function.Surjective.range_eq <| EquivLike.surjective _]
 
 end IsProbabilityMeasure
 
@@ -594,19 +616,19 @@ theorem isCountablySpanning_spanningSets (μ : Measure α) [SigmaFinite μ] :
   ⟨spanningSets μ, mem_range_self, iUnion_spanningSets μ⟩
 #align measure_theory.is_countably_spanning_spanning_sets MeasureTheory.isCountablySpanning_spanningSets
 
-open Classical in
+open scoped Classical in
 /-- `spanningSetsIndex μ x` is the least `n : ℕ` such that `x ∈ spanningSets μ n`. -/
 noncomputable def spanningSetsIndex (μ : Measure α) [SigmaFinite μ] (x : α) : ℕ :=
   Nat.find <| iUnion_eq_univ_iff.1 (iUnion_spanningSets μ) x
 #align measure_theory.spanning_sets_index MeasureTheory.spanningSetsIndex
 
-open Classical in
+open scoped Classical in
 theorem measurable_spanningSetsIndex (μ : Measure α) [SigmaFinite μ] :
     Measurable (spanningSetsIndex μ) :=
   measurable_find _ <| measurable_spanningSets μ
 #align measure_theory.measurable_spanning_sets_index MeasureTheory.measurable_spanningSetsIndex
 
-open Classical in
+open scoped Classical in
 theorem preimage_spanningSetsIndex_singleton (μ : Measure α) [SigmaFinite μ] (n : ℕ) :
     spanningSetsIndex μ ⁻¹' {n} = disjointed (spanningSets μ) n :=
   preimage_find_eq_disjointed _ _ _
@@ -734,13 +756,13 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} {_ 
   set fairmeas := fun n : ℕ => { i : ι | as n ≤ μ (As i) }
   have countable_union : posmeas = ⋃ n, fairmeas n := by
     have fairmeas_eq : ∀ n, fairmeas n = (fun i => μ (As i)) ⁻¹' Ici (as n) := fun n => by
-      simp only []
+      simp only [fairmeas]
       rfl
     simpa only [fairmeas_eq, posmeas_def, ← preimage_iUnion,
       iUnion_Ici_eq_Ioi_of_lt_of_tendsto (0 : ℝ≥0∞) (fun n => (as_mem n).1) as_lim]
   rw [countable_union]
   refine' countable_iUnion fun n => Finite.countable _
-  refine' finite_const_le_meas_of_disjoint_iUnion₀ μ (as_mem n).1 As_mble As_disj Union_As_finite
+  exact finite_const_le_meas_of_disjoint_iUnion₀ μ (as_mem n).1 As_mble As_disj Union_As_finite
 
 /-- If the union of disjoint measurable sets has finite measure, then there are only
 countably many members of the union whose measure is positive. -/
@@ -845,7 +867,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
     let w n := toMeasurable μ (t ∩ v n)
     have hw : ∀ n, μ (w n) < ∞ := by
       intro n
-      simp_rw [measure_toMeasurable]
+      simp_rw [w, measure_toMeasurable]
       exact (h'v n).lt_top
     set t' := ⋃ n, toMeasurable μ (t ∩ disjointed w n) with ht'
     have tt' : t ⊆ t' :=
@@ -959,7 +981,7 @@ end FiniteSpanningSetsIn
 theorem sigmaFinite_of_countable {S : Set (Set α)} (hc : S.Countable) (hμ : ∀ s ∈ S, μ s < ∞)
     (hU : ⋃₀ S = univ) : SigmaFinite μ := by
   obtain ⟨s, hμ, hs⟩ : ∃ s : ℕ → Set α, (∀ n, μ (s n) < ∞) ∧ ⋃ n, s n = univ
-  exact (@exists_seq_cover_iff_countable _ (fun x => μ x < ⊤) ⟨∅, by simp⟩).2 ⟨S, hc, hμ, hU⟩
+  exact (@exists_seq_cover_iff_countable _ (fun x => μ x < ∞) ⟨∅, by simp⟩).2 ⟨S, hc, hμ, hU⟩
   exact ⟨⟨⟨fun n => s n, fun _ => trivial, hμ, hs⟩⟩⟩
 #align measure_theory.measure.sigma_finite_of_countable MeasureTheory.Measure.sigmaFinite_of_countable
 
@@ -1009,7 +1031,7 @@ theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFinite
   have hs_univ : ⋃ i, s i = Set.univ := iUnion_spanningSets μ
   have hs_meas : ∀ i, MeasurableSet[⊥] (s i) := measurable_spanningSets μ
   simp_rw [MeasurableSpace.measurableSet_bot_iff] at hs_meas
-  by_cases h_univ_empty : Set.univ = ∅
+  by_cases h_univ_empty : (Set.univ : Set α) = ∅
   · rw [h_univ_empty, @measure_empty α ⊥]
     exact ENNReal.zero_ne_top.lt_top
   obtain ⟨i, hsi⟩ : ∃ i, s i = Set.univ := by
@@ -1155,6 +1177,11 @@ theorem _root_.IsCompact.measure_lt_top [TopologicalSpace α] {μ : Measure α}
   IsFiniteMeasureOnCompacts.lt_top_of_isCompact hK
 #align is_compact.measure_lt_top IsCompact.measure_lt_top
 
+/-- A compact subset has finite measure for a measure which is finite on compacts. -/
+theorem _root_.IsCompact.measure_ne_top [TopologicalSpace α] {μ : Measure α}
+    [IsFiniteMeasureOnCompacts μ] ⦃K : Set α⦄ (hK : IsCompact K) : μ K ≠ ∞ :=
+  hK.measure_lt_top.ne
+
 /-- A bounded subset has finite measure for a measure which is finite on compact sets, in a
 proper space. -/
 theorem _root_.Bornology.IsBounded.measure_lt_top [PseudoMetricSpace α] [ProperSpace α]
@@ -1205,7 +1232,7 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
     [SecondCountableTopology α] [IsLocallyFiniteMeasure μ] : SigmaFinite μ := by
   choose s hsx hsμ using μ.finiteAt_nhds
   rcases TopologicalSpace.countable_cover_nhds hsx with ⟨t, htc, htU⟩
-  refine' Measure.sigmaFinite_of_countable (htc.image s) (ball_image_iff.2 fun x _ => hsμ x) _
+  refine' Measure.sigmaFinite_of_countable (htc.image s) (forall_mem_image.2 fun x _ => hsμ x) _
   rwa [sUnion_image]
 #align measure_theory.sigma_finite_of_locally_finite MeasureTheory.sigmaFinite_of_locallyFinite
 
@@ -1340,7 +1367,7 @@ theorem inf_of_right (h : μ.FiniteAtFilter g) : μ.FiniteAtFilter (f ⊓ g) :=
 theorem inf_ae_iff : μ.FiniteAtFilter (f ⊓ μ.ae) ↔ μ.FiniteAtFilter f := by
   refine' ⟨_, fun h => h.filter_mono inf_le_left⟩
   rintro ⟨s, ⟨t, ht, u, hu, rfl⟩, hμ⟩
-  suffices : μ t ≤ μ (t ∩ u); exact ⟨t, ht, this.trans_lt hμ⟩
+  suffices μ t ≤ μ (t ∩ u) from ⟨t, ht, this.trans_lt hμ⟩
   exact measure_mono_ae (mem_of_superset hu fun x hu ht => ⟨ht, hu⟩)
 #align measure_theory.measure.finite_at_filter.inf_ae_iff MeasureTheory.Measure.FiniteAtFilter.inf_ae_iff
 
@@ -1398,7 +1425,7 @@ variable [TopologicalSpace α] [MeasurableSpace α] {μ : Measure α} {s : Set �
 /-- If `s` is a compact set and `μ` is finite at `𝓝 x` for every `x ∈ s`, then `s` admits an open
 superset of finite measure. -/
 theorem exists_open_superset_measure_lt_top' (h : IsCompact s)
-    (hμ : ∀ x ∈ s, μ.FiniteAtFilter (𝓝 x)) : ∃ (U : _) (_ : U ⊇ s), IsOpen U ∧ μ U < ∞ := by
+    (hμ : ∀ x ∈ s, μ.FiniteAtFilter (𝓝 x)) : ∃ U ⊇ s, IsOpen U ∧ μ U < ∞ := by
   refine' IsCompact.induction_on h _ _ _ _
   · use ∅
     simp [Superset]
@@ -1416,7 +1443,7 @@ theorem exists_open_superset_measure_lt_top' (h : IsCompact s)
 /-- If `s` is a compact set and `μ` is a locally finite measure, then `s` admits an open superset of
 finite measure. -/
 theorem exists_open_superset_measure_lt_top (h : IsCompact s) (μ : Measure α)
-    [IsLocallyFiniteMeasure μ] : ∃ (U : _) (_ : U ⊇ s), IsOpen U ∧ μ U < ∞ :=
+    [IsLocallyFiniteMeasure μ] : ∃ U ⊇ s, IsOpen U ∧ μ U < ∞ :=
   h.exists_open_superset_measure_lt_top' fun x _ => μ.finiteAt_nhds x
 #align is_compact.exists_open_superset_measure_lt_top IsCompact.exists_open_superset_measure_lt_top
 
@@ -1466,13 +1493,13 @@ def MeasureTheory.Measure.finiteSpanningSetsInOpen [TopologicalSpace α] [SigmaC
     μ.FiniteSpanningSetsIn { K | IsOpen K } where
   set n := ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose
   set_mem n :=
-    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.snd.1
+    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.2.1
   finite n :=
-    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.snd.2
+    ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.2.2
   spanning :=
     eq_univ_of_subset
       (iUnion_mono fun n =>
-        ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.fst)
+        ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.1)
       (iUnion_compactCovering α)
 #align measure_theory.measure.finite_spanning_sets_in_open MeasureTheory.Measure.finiteSpanningSetsInOpen
 
@@ -1483,8 +1510,7 @@ sequence of open sets. -/
 noncomputable irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [TopologicalSpace α]
   [SecondCountableTopology α] {m : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
   μ.FiniteSpanningSetsIn { K | IsOpen K } := by
-  suffices H : Nonempty (μ.FiniteSpanningSetsIn { K | IsOpen K })
-  exact H.some
+  suffices H : Nonempty (μ.FiniteSpanningSetsIn { K | IsOpen K }) from H.some
   cases isEmpty_or_nonempty α
   · exact
       ⟨{  set := fun _ => ∅

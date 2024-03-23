@@ -3,10 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Count
-import Mathlib.Data.List.Lex
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
+import Mathlib.Data.List.Basic
 
 #align_import data.list.pairwise from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -152,14 +151,14 @@ theorem Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : �
 
 theorem pairwise_of_forall_mem_list {l : List α} {r : α → α → Prop} (h : ∀ a ∈ l, ∀ b ∈ l, r a b) :
     l.Pairwise r := by
-  apply pairwise_iff_forall_sublist.mpr
+  rw [pairwise_iff_forall_sublist]
   intro a b hab
   apply h <;> (apply hab.subset; simp)
 #align list.pairwise_of_forall_mem_list List.pairwise_of_forall_mem_list
 
 theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop} (hr : Reflexive r)
     (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
-  apply pairwise_iff_forall_sublist.mpr
+  rw [pairwise_iff_forall_sublist]
   intro a b hab
   if heq : a = b then
     cases heq; apply hr

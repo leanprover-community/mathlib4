@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
+import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Module
-import Mathlib.LinearAlgebra.AffineSpace.MidpointZero
+import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.LinearAlgebra.AffineSpace.Slope
+import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.Tactic.FieldSimp
 
 #align_import linear_algebra.affine_space.ordered from "leanprover-community/mathlib"@"78261225eb5cedc61c5c74ecb44e5b385d13b733"
@@ -45,7 +47,6 @@ other arguments belong to specific domains.
 section OrderedRing
 
 variable [OrderedRing k] [OrderedAddCommGroup E] [Module k E] [OrderedSMul k E]
-
 variable {a a' b b' : E} {r r' : k}
 
 theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lineMap a' b r := by
@@ -117,7 +118,6 @@ end LinearOrderedRing
 section LinearOrderedField
 
 variable [LinearOrderedField k] [OrderedAddCommGroup E]
-
 variable [Module k E] [OrderedSMul k E]
 
 section

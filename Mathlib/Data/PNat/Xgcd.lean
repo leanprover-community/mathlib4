@@ -70,9 +70,9 @@ instance : SizeOf XgcdType :=
  reflects the matrix/vector interpretation as above. -/
 instance : Repr XgcdType where
   reprPrec
-  | g, _ => s!"[[[ {repr (g.wp + 1)}, {(repr g.x)} ], [" ++
-            s!"{repr g.y}, {repr (g.zp + 1)}]], [" ++
-            s!"{repr (g.ap + 1)}, {repr (g.bp + 1)}]]"
+  | g, _ => s!"[[[{repr (g.wp + 1)}, {repr g.x}], \
+                 [{repr g.y}, {repr (g.zp + 1)}]], \
+                [{repr (g.ap + 1)}, {repr (g.bp + 1)}]]"
 
 /-- Another `mk` using ℕ and ℕ+ -/
 def mk' (w : ℕ+) (x : ℕ) (y : ℕ) (z : ℕ+) (a : ℕ+) (b : ℕ+) : XgcdType :=

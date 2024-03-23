@@ -5,7 +5,6 @@ Authors: Kevin H. Wilson
 -/
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Data.Set.Function
-import Mathlib.Analysis.SpecialFunctions.Integrals
 
 #align_import analysis.sum_integral_comparisons from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 

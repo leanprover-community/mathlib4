@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Nat.Interval
-import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite.Basic
 
 #align_import data.fin.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -41,19 +41,19 @@ open Finset Fin Function
 
 open BigOperators
 
+namespace Fin
+
 variable (n : ℕ)
 
-instance : LocallyFiniteOrder (Fin n) :=
+instance instLocallyFiniteOrder : LocallyFiniteOrder (Fin n) :=
   OrderIso.locallyFiniteOrder Fin.orderIsoSubtype
 
-instance : LocallyFiniteOrderBot (Fin n) :=
+instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (Fin n) :=
   OrderIso.locallyFiniteOrderBot Fin.orderIsoSubtype
 
-instance : ∀ n, LocallyFiniteOrderTop (Fin n)
+instance instLocallyFiniteOrderTop : ∀ n, LocallyFiniteOrderTop (Fin n)
   | 0 => IsEmpty.toLocallyFiniteOrderTop
   | _ + 1 => inferInstance
-
-namespace Fin
 
 variable {n} (a b : Fin n)
 
@@ -126,25 +126,25 @@ theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
   rw [← Nat.card_uIcc, ← map_subtype_embedding_uIcc, card_map]
 #align fin.card_uIcc Fin.card_uIcc
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by
   rw [← card_Icc, Fintype.card_ofFinset]
 #align fin.card_fintype_Icc Fin.card_fintypeIcc
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by
   rw [← card_Ico, Fintype.card_ofFinset]
 #align fin.card_fintype_Ico Fin.card_fintypeIco
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by
   rw [← card_Ioc, Fintype.card_ofFinset]
 #align fin.card_fintype_Ioc Fin.card_fintypeIoc
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
   rw [← card_Ioo, Fintype.card_ofFinset]
@@ -237,25 +237,25 @@ theorem card_Iio : (Iio b).card = b := by
   rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
 #align fin.card_Iio Fin.card_Iio
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIci : Fintype.card (Set.Ici a) = n - a := by
   rw [Fintype.card_ofFinset, card_Ici]
 #align fin.card_fintype_Ici Fin.card_fintypeIci
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIoi : Fintype.card (Set.Ioi a) = n - 1 - a := by
   rw [Fintype.card_ofFinset, card_Ioi]
 #align fin.card_fintype_Ioi Fin.card_fintypeIoi
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
   rw [Fintype.card_ofFinset, card_Iic]
 #align fin.card_fintype_Iic Fin.card_fintypeIic
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by
   rw [Fintype.card_ofFinset, card_Iio]

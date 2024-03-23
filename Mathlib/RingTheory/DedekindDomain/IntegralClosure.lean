@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Localization.Module
@@ -57,11 +58,8 @@ open Algebra
 open scoped BigOperators
 
 variable [Algebra A K] [IsFractionRing A K]
-
 variable (L : Type*) [Field L] (C : Type*) [CommRing C]
-
 variable [Algebra K L] [Algebra A L] [IsScalarTower A K L]
-
 variable [Algebra C L] [IsIntegralClosure C A L] [Algebra A C] [IsScalarTower A C L]
 
 /- If `L` is an algebraic extension of `K = Frac(A)` and `L` has no zero smul divisors by `A`,
@@ -91,7 +89,6 @@ theorem IsIntegralClosure.isLocalization_of_isSeparable [IsSeparable K L] :
 #align is_integral_closure.is_localization IsIntegralClosure.isLocalization_of_isSeparable
 
 variable [FiniteDimensional K L]
-
 variable {A K L}
 
 theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι]
@@ -120,7 +117,7 @@ variable (A K)
 /-- Send a set of `x`s in a finite extension `L` of the fraction field of `R`
 to `(y : R) • x ∈ integralClosure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
-    ∃ (y : _) (_ : y ≠ (0 : A)), ∀ x ∈ s, IsIntegral A (y • x) := by
+    ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) := by
   haveI := Classical.decEq L
   refine' s.induction _ _
   · use 1, one_ne_zero
@@ -201,10 +198,10 @@ theorem IsIntegralClosure.isNoetherianRing [IsIntegrallyClosed A] [IsNoetherianR
 and `L` has no zero smul divisors by `A`, the integral closure `C` of `A` in `L` is
 a free `A`-module. -/
 theorem IsIntegralClosure.module_free [NoZeroSMulDivisors A L] [IsPrincipalIdealRing A] :
-    Module.Free A C := by
+    Module.Free A C :=
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
   haveI : IsNoetherian A C := IsIntegralClosure.isNoetherian A K L _
-  exact Module.free_of_finite_type_torsion_free'
+  inferInstance
 #align is_integral_closure.module_free IsIntegralClosure.module_free
 
 /- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a principal ring
@@ -260,7 +257,6 @@ theorem integralClosure.isDedekindDomain [IsDedekindDomain A] :
 #align integral_closure.is_dedekind_domain integralClosure.isDedekindDomain
 
 variable [Algebra (FractionRing A) L] [IsScalarTower A (FractionRing A) L]
-
 variable [FiniteDimensional (FractionRing A) L] [IsSeparable (FractionRing A) L]
 
 /- If `L` is a finite separable extension of `Frac(A)`, where `A` is a Dedekind domain,

@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Tactic.NormNum.Eq
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
+import Mathlib.Algebra.Order.Invertible
 
 /-!
 # `norm_num` extensions for inequalities.

@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Discriminant
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+import Mathlib.NumberTheory.KummerDedekind
 
 /-!
 # The different ideal
@@ -14,6 +15,14 @@ import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 - `Submodule.traceDual`: The dual `L`-sub `B`-module under the trace form.
 - `FractionalIdeal.dual`: The dual fractional ideal under the trace form.
 - `differentIdeal`: The different ideal of an extension of integral domains.
+
+## Main results
+- `conductor_mul_differentIdeal`:
+  If `L = K[x]`, with `x` integral over `A`, then `𝔣 * 𝔇 = (f'(x))`
+    with `f` being the minimal polynomial of `x`.
+- `aeval_derivative_mem_differentIdeal`:
+  If `L = K[x]`, with `x` integral over `A`, then `f'(x) ∈ 𝔇`
+    with `f` being the minimal polynomial of `x`.
 
 ## TODO
 - Show properties of the different ideal
@@ -128,8 +137,8 @@ lemma isIntegral_discr_mul_of_mem_traceDual
   have hinv : IsUnit (traceMatrix K b).det := by
     simpa [← discr_def] using discr_isUnit_of_basis _ b
   have H := mulVec_cramer (traceMatrix K b) fun i => trace K L (x * a * b i)
-  have : Function.Injective (traceMatrix K b).mulVec
-  · rwa [mulVec_injective_iff_isUnit, isUnit_iff_isUnit_det]
+  have : Function.Injective (traceMatrix K b).mulVec := by
+    rwa [mulVec_injective_iff_isUnit, isUnit_iff_isUnit_det]
   rw [← traceMatrix_of_basis_mulVec, ← mulVec_smul, this.eq_iff,
     traceMatrix_of_basis_mulVec] at H
   rw [← b.equivFun.symm_apply_apply (_ * _), b.equivFun_symm_apply]
@@ -166,7 +175,7 @@ lemma map_equiv_traceDual [NoZeroSMulDivisors A B] (I : Submodule B (FractionRin
   apply (FractionRing.algEquiv B L).forall_congr
   simp only [restrictScalars_mem, traceForm_apply, AlgEquiv.toEquiv_eq_coe,
     EquivLike.coe_coe, mem_comap, AlgEquiv.toLinearMap_apply, AlgEquiv.symm_apply_apply]
-  refine fun {y} ↦ (forall_congr' $ fun hy ↦ ?_)
+  refine fun {y} ↦ (forall_congr' fun hy ↦ ?_)
   rw [Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv]
   swap
@@ -299,8 +308,8 @@ lemma dual_eq_mul_inv :
     dual A K I = dual A K 1 * I⁻¹ := by
   by_cases hI : I = 0; · simp [hI]
   apply le_antisymm
-  · suffices : dual A K I * I ≤ dual A K 1
-    · convert mul_right_mono I⁻¹ this using 1; simp only [mul_inv_cancel hI, mul_one, mul_assoc]
+  · suffices dual A K I * I ≤ dual A K 1 by
+      convert mul_right_mono I⁻¹ this using 1; simp only [mul_inv_cancel hI, mul_one, mul_assoc]
     rw [← le_dual_iff A K hI]
   rw [le_dual_iff A K hI, mul_assoc, inv_mul_cancel hI, mul_one]
 
@@ -386,9 +395,9 @@ lemma coeSubmodule_differentIdeal [NoZeroSMulDivisors A B] :
     Algebra.linearMap B L := by ext; simp
   rw [coeSubmodule, ← this]
   have H : RingHom.comp (algebraMap (FractionRing A) (FractionRing B))
-    ↑(FractionRing.algEquiv A K).symm.toRingEquiv =
-      RingHom.comp ↑(FractionRing.algEquiv B L).symm.toRingEquiv (algebraMap K L)
-  · apply IsLocalization.ringHom_ext A⁰
+      ↑(FractionRing.algEquiv A K).symm.toRingEquiv =
+        RingHom.comp ↑(FractionRing.algEquiv B L).symm.toRingEquiv (algebraMap K L) := by
+    apply IsLocalization.ringHom_ext A⁰
     ext
     simp only [AlgEquiv.toRingEquiv_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
       AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes,
@@ -432,3 +441,94 @@ lemma differentialIdeal_le_iff {I : Ideal B} (hI : I ≠ ⊥) [NoZeroSMulDivisor
       ((Algebra.trace K L).restrictScalars A) ≤ 1 :=
   (FractionalIdeal.coeIdeal_le_coeIdeal _).symm.trans
     (differentialIdeal_le_fractionalIdeal_iff (I := (I : FractionalIdeal B⁰ L)) (by simpa))
+
+variable (A K)
+
+open Pointwise Polynomial in
+lemma traceForm_dualSubmodule_adjoin
+    {x : L} (hx : Algebra.adjoin K {x} = ⊤) (hAx : IsIntegral A x) :
+    (traceForm K L).dualSubmodule (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
+      (aeval x (derivative <| minpoly K x) : L)⁻¹ •
+        (Subalgebra.toSubmodule (Algebra.adjoin A {x})) := by
+  classical
+  have hKx : IsIntegral K x := Algebra.IsIntegral.of_finite (R := K) (B := L) x
+  let pb := (Algebra.adjoin.powerBasis' hKx).map
+    ((Subalgebra.equivOfEq _ _ hx).trans (Subalgebra.topEquiv))
+  have pbgen : pb.gen = x := by simp [pb]
+  have hpb : ⇑(BilinForm.dualBasis (traceForm K L) _ pb.basis) = _ :=
+    _root_.funext (traceForm_dualBasis_powerBasis_eq pb)
+  have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
+      Submodule.span A (Set.range pb.basis) := by
+    rw [← span_range_natDegree_eq_adjoin (minpoly.monic hAx) (minpoly.aeval _ _)]
+    congr; ext y
+    have : natDegree (minpoly A x) = natDegree (minpoly K x) := by
+      rw [minpoly.isIntegrallyClosed_eq_field_fractions' K hAx, (minpoly.monic hAx).natDegree_map]
+    simp only [Finset.coe_image, Finset.coe_range, Set.mem_image, Set.mem_Iio, Set.mem_range,
+      pb.basis_eq_pow, pbgen]
+    simp only [PowerBasis.map_dim, adjoin.powerBasis'_dim, this]
+    exact ⟨fun ⟨a, b, c⟩ ↦ ⟨⟨a, b⟩, c⟩, fun ⟨⟨a, b⟩, c⟩ ↦ ⟨a, b, c⟩⟩
+  clear_value pb
+  conv_lhs => rw [this]
+  rw [← span_coeff_minpolyDiv hAx, BilinForm.dualSubmodule_span_of_basis,
+    Submodule.smul_span, hpb]
+  show _ = Submodule.span A (_ '' _)
+  simp only [← Set.range_comp, smul_eq_mul, div_eq_inv_mul, pbgen,
+    minpolyDiv_eq_of_isIntegrallyClosed K hAx]
+  apply le_antisymm <;> rw [Submodule.span_le]
+  · rintro _ ⟨i, rfl⟩; exact Submodule.subset_span ⟨i, rfl⟩
+  · rintro _ ⟨i, rfl⟩
+    by_cases hi : i < pb.dim
+    · exact Submodule.subset_span ⟨⟨i, hi⟩, rfl⟩
+    · rw [Function.comp_apply, coeff_eq_zero_of_natDegree_lt, mul_zero]; exact zero_mem _
+      rw [← pb.natDegree_minpoly, pbgen, ← natDegree_minpolyDiv_succ hKx,
+        ← Nat.succ_eq_add_one] at hi
+      exact le_of_not_lt hi
+
+variable (L)
+
+open Polynomial Pointwise in
+lemma conductor_mul_differentIdeal [NoZeroSMulDivisors A B]
+    (x : B) (hx : Algebra.adjoin K {algebraMap B L x} = ⊤) :
+    (conductor A x) * differentIdeal A B = Ideal.span {aeval x (derivative (minpoly A x))} := by
+  classical
+  have hAx : IsIntegral A x := IsIntegralClosure.isIntegral A L x
+  haveI := IsIntegralClosure.isFractionRing_of_finite_extension A K L B
+  apply FractionalIdeal.coeIdeal_injective (K := L)
+  simp only [FractionalIdeal.coeIdeal_mul, FractionalIdeal.coeIdeal_span_singleton]
+  rw [coeIdeal_differentIdeal A K L B,
+    mul_inv_eq_iff_eq_mul₀]
+  swap; exact FractionalIdeal.dual_ne_zero A K one_ne_zero
+  apply FractionalIdeal.coeToSubmodule_injective
+  simp only [FractionalIdeal.coe_coeIdeal, FractionalIdeal.coe_mul,
+    FractionalIdeal.coe_spanSingleton, Submodule.span_singleton_mul]
+  ext y
+  have hne₁ : aeval (algebraMap B L x) (derivative (minpoly K (algebraMap B L x))) ≠ 0 :=
+    (IsSeparable.separable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
+  have : algebraMap B L (aeval x (derivative (minpoly A x))) ≠ 0 := by
+    rwa [minpoly.isIntegrallyClosed_eq_field_fractions K L hAx, derivative_map,
+      aeval_map_algebraMap, aeval_algebraMap_apply] at hne₁
+  rw [Submodule.mem_smul_iff_inv_mul_mem this, FractionalIdeal.mem_coe, FractionalIdeal.mem_dual,
+    mem_coeSubmodule_conductor]
+  swap; exact one_ne_zero
+  have hne₂ : (aeval (algebraMap B L x) (derivative (minpoly K (algebraMap B L x))))⁻¹ ≠ 0 := by
+    rwa [ne_eq, inv_eq_zero]
+  have : IsIntegral A (algebraMap B L x) := IsIntegral.map (IsScalarTower.toAlgHom A B L) hAx
+  simp_rw [← Subalgebra.mem_toSubmodule, ← Submodule.mul_mem_smul_iff (y := y * _)
+    (mem_nonZeroDivisors_of_ne_zero hne₂)]
+  rw [← traceForm_dualSubmodule_adjoin A K hx this]
+  simp only [BilinForm.mem_dualSubmodule, traceForm_apply, Subalgebra.mem_toSubmodule,
+    minpoly.isIntegrallyClosed_eq_field_fractions K L hAx,
+    derivative_map, aeval_map_algebraMap, aeval_algebraMap_apply, mul_assoc,
+    FractionalIdeal.mem_one_iff, forall_exists_index, forall_apply_eq_imp_iff]
+  simp_rw [← IsScalarTower.toAlgHom_apply A B L x, ← AlgHom.map_adjoin_singleton]
+  simp only [Subalgebra.mem_map, IsScalarTower.coe_toAlgHom',
+    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, ← _root_.map_mul]
+  exact ⟨fun H b ↦ (mul_one b) ▸ H b 1 (one_mem _), fun H _ _ _ ↦ H _⟩
+
+open Polynomial Pointwise in
+lemma aeval_derivative_mem_differentIdeal [NoZeroSMulDivisors A B]
+    (x : B) (hx : Algebra.adjoin K {algebraMap B L x} = ⊤) :
+    aeval x (derivative (minpoly A x)) ∈ differentIdeal A B := by
+  refine SetLike.le_def.mp ?_ (Ideal.mem_span_singleton_self _)
+  rw [← conductor_mul_differentIdeal A K L x hx]
+  exact Ideal.mul_le_left

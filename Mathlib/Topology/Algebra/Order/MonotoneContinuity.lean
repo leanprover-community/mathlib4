@@ -30,7 +30,6 @@ open Topology
 section LinearOrder
 
 variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-
 variable [LinearOrder β] [TopologicalSpace β] [OrderTopology β]
 
 /-- If `f` is a function strictly monotone on a right neighborhood of `a` and the
@@ -303,9 +302,8 @@ variable {α β : Type*} [PartialOrder α] [PartialOrder β] [TopologicalSpace �
   [OrderTopology α] [OrderTopology β]
 
 protected theorem continuous (e : α ≃o β) : Continuous e := by
-  rw [‹OrderTopology β›.topology_eq_generate_intervals]
-  refine' continuous_generateFrom fun s hs => _
-  rcases hs with ⟨a, rfl | rfl⟩
+  rw [‹OrderTopology β›.topology_eq_generate_intervals, continuous_generateFrom_iff]
+  rintro s ⟨a, rfl | rfl⟩
   · rw [e.preimage_Ioi]
     apply isOpen_lt'
   · rw [e.preimage_Iio]

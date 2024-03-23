@@ -6,8 +6,9 @@ Authors: Neil Strickland
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Nat.Parity
+import Mathlib.Tactic.Abel
 
 #align_import algebra.geom_sum from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -29,7 +30,7 @@ which `x` and `y` commute. Even versions not using division or subtraction, vali
 are recorded.
 -/
 
---porting note: corrected type in the description of `geom_sum₂_Ico` (in the doc string only).
+-- Porting note: corrected type in the description of `geom_sum₂_Ico` (in the doc string only).
 
 universe u
 
@@ -76,13 +77,13 @@ theorem zero_geom_sum : ∀ {n}, ∑ i in range n, (0 : α) ^ i = if n = 0 then 
 theorem one_geom_sum (n : ℕ) : ∑ i in range n, (1 : α) ^ i = n := by simp
 #align one_geom_sum one_geom_sum
 
--- porting note: simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem op_geom_sum (x : α) (n : ℕ) : op (∑ i in range n, x ^ i) = ∑ i in range n, op x ^ i := by
   simp
 #align op_geom_sum op_geom_sum
 
---porting note: linter suggested to change left hand side
+-- Porting note: linter suggested to change left hand side
 @[simp]
 theorem op_geom_sum₂ (x y : α) (n : ℕ) : ∑ i in range n, op y ^ (n - 1 - i) * op x ^ i =
     ∑ i in range n, op y ^ i * op x ^ (n - 1 - i) := by
@@ -103,7 +104,7 @@ theorem geom_sum₂_with_one (x : α) (n : ℕ) :
 protected theorem Commute.geom_sum₂_mul_add {x y : α} (h : Commute x y) (n : ℕ) :
     (∑ i in range n, (x + y) ^ i * y ^ (n - 1 - i)) * x + y ^ n = (x + y) ^ n := by
   let f :  ℕ → ℕ → α := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
-  -- porting note: adding `hf` here, because below in two places `dsimp [f]` didn't work
+  -- Porting note: adding `hf` here, because below in two places `dsimp [f]` didn't work
   have hf : ∀ m i : ℕ, f m i = (x + y) ^ i * y ^ (m - 1 - i) := by
     simp only [ge_iff_le, tsub_le_iff_right, forall_const]
   change (∑ i in range n, (f n) i) * x + y ^ n = (x + y) ^ n
@@ -191,7 +192,7 @@ theorem geom_sum₂_mul [CommRing α] (x y : α) (n : ℕ) :
 
 theorem Commute.sub_dvd_pow_sub_pow [Ring α] {x y : α} (h : Commute x y) (n : ℕ) :
     x - y ∣ x ^ n - y ^ n :=
-  Dvd.intro _ $ h.mul_geom_sum₂ _
+  Dvd.intro _ <| h.mul_geom_sum₂ _
 
 theorem sub_dvd_pow_sub_pow [CommRing α] (x y : α) (n : ℕ) : x - y ∣ x ^ n - y ^ n :=
   (Commute.all x y).sub_dvd_pow_sub_pow n
@@ -335,7 +336,7 @@ protected theorem Commute.geom_sum₂_Ico_mul [Ring α] {x y : α} (h : Commute 
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
     simpa [Commute, SemiconjBy] using hp
   simp only [this]
-  -- porting note: gives deterministic timeout without this intermediate `have`
+  -- Porting note: gives deterministic timeout without this intermediate `have`
   convert (Commute.op h).mul_geom_sum₂_Ico hmn
 #align commute.geom_sum₂_Ico_mul Commute.geom_sum₂_Ico_mul
 
@@ -591,14 +592,15 @@ variable {m n : ℕ} {s : Finset ℕ}
 `m ≥ 2` is less than `m ^ n`. -/
 lemma Nat.geomSum_eq (hm : 2 ≤ m) (n : ℕ) :
     ∑ k in range n, m ^ k = (m ^ n - 1) / (m - 1) := by
-  refine (Nat.div_eq_of_eq_mul_left (tsub_pos_iff_lt.2 hm) $ tsub_eq_of_eq_add ?_).symm
-  simpa only [tsub_add_cancel_of_le $ one_le_two.trans hm, eq_comm] using geom_sum_mul_add (m - 1) n
+  refine (Nat.div_eq_of_eq_mul_left (tsub_pos_iff_lt.2 hm) <| tsub_eq_of_eq_add ?_).symm
+  simpa only [tsub_add_cancel_of_le (one_le_two.trans hm), eq_comm] using geom_sum_mul_add (m - 1) n
 
 /-- If all the elements of a finset of naturals are less than `n`, then the sum of their powers of
 `m ≥ 2` is less than `m ^ n`. -/
 lemma Nat.geomSum_lt (hm : 2 ≤ m) (hs : ∀ k ∈ s, k < n) : ∑ k in s, m ^ k < m ^ n :=
   calc
-    ∑ k in s, m ^ k ≤ ∑ k in range n, m ^ k := sum_le_sum_of_subset fun k hk ↦ mem_range.2 $ hs _ hk
+    ∑ k in s, m ^ k ≤ ∑ k in range n, m ^ k := sum_le_sum_of_subset fun k hk ↦
+      mem_range.2 <| hs _ hk
     _ = (m ^ n - 1) / (m - 1) := Nat.geomSum_eq hm _
     _ ≤ m ^ n - 1 := Nat.div_le_self _ _
     _ < m ^ n := tsub_lt_self (by positivity) zero_lt_one

@@ -44,7 +44,8 @@ assert_not_exists Real
 
 open Set LinearMap
 
-open Classical Pointwise
+open scoped Classical
+open Pointwise
 
 variable {𝕜 E F G : Type*}
 
@@ -95,7 +96,7 @@ theorem ext {S T : ConvexCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :
   SetLike.ext h
 #align convex_cone.ext ConvexCone.ext
 
-@[aesop safe apply (rule_sets [SetLike])]
+@[aesop safe apply (rule_sets := [SetLike])]
 theorem smul_mem {c : 𝕜} {x : E} (hc : 0 < c) (hx : x ∈ S) : c • x ∈ S :=
   S.smul_mem' hc hx
 #align convex_cone.smul_mem ConvexCone.smul_mem
@@ -212,7 +213,6 @@ end Module
 section Maps
 
 variable [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G]
-
 variable [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
 
 /-- The image of a convex cone under a `𝕜`-linear map is a convex cone. -/
@@ -258,7 +258,7 @@ theorem coe_comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : (S.comap f : 
   rfl
 #align convex_cone.coe_comap ConvexCone.coe_comap
 
-@[simp] -- porting note: was not a `dsimp` lemma
+@[simp] -- Porting note: was not a `dsimp` lemma
 theorem comap_id (S : ConvexCone 𝕜 E) : S.comap LinearMap.id = S :=
   rfl
 #align convex_cone.comap_id ConvexCone.comap_id
@@ -284,7 +284,6 @@ variable [LinearOrderedField 𝕜]
 section MulAction
 
 variable [AddCommMonoid E]
-
 variable [MulAction 𝕜 E] (S : ConvexCone 𝕜 E)
 
 theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : E} : c • x ∈ S ↔ x ∈ S :=
@@ -443,19 +442,19 @@ theorem pointed_zero : (0 : ConvexCone 𝕜 E).Pointed := by rw [Pointed, mem_ze
 
 instance instAdd : Add (ConvexCone 𝕜 E) :=
   ⟨fun K₁ K₂ =>
-    { carrier := { z | ∃ x y : E, x ∈ K₁ ∧ y ∈ K₂ ∧ x + y = z }
+    { carrier := { z | ∃ x ∈ K₁, ∃ y ∈ K₂, x + y = z }
       smul_mem' := by
-        rintro c hc _ ⟨x, y, hx, hy, rfl⟩
+        rintro c hc _ ⟨x, hx, y, hy, rfl⟩
         rw [smul_add]
-        use c • x, c • y, K₁.smul_mem hc hx, K₂.smul_mem hc hy
+        use c • x, K₁.smul_mem hc hx, c • y, K₂.smul_mem hc hy
       add_mem' := by
-        rintro _ ⟨x₁, x₂, hx₁, hx₂, rfl⟩ y ⟨y₁, y₂, hy₁, hy₂, rfl⟩
-        use x₁ + y₁, x₂ + y₂, K₁.add_mem hx₁ hy₁, K₂.add_mem hx₂ hy₂
+        rintro _ ⟨x₁, hx₁, x₂, hx₂, rfl⟩ y ⟨y₁, hy₁, y₂, hy₂, rfl⟩
+        use x₁ + y₁, K₁.add_mem hx₁ hy₁, x₂ + y₂, K₂.add_mem hx₂ hy₂
         abel }⟩
 
 @[simp]
 theorem mem_add {K₁ K₂ : ConvexCone 𝕜 E} {a : E} :
-    a ∈ K₁ + K₂ ↔ ∃ x y : E, x ∈ K₁ ∧ y ∈ K₂ ∧ x + y = a :=
+    a ∈ K₁ + K₂ ↔ ∃ x ∈ K₁, ∃ y ∈ K₂, x + y = a :=
   Iff.rfl
 #align convex_cone.mem_add ConvexCone.mem_add
 
@@ -465,8 +464,8 @@ instance instAddZeroClass : AddZeroClass (ConvexCone 𝕜 E) where
 
 instance instAddCommSemigroup : AddCommSemigroup (ConvexCone 𝕜 E) where
   add := Add.add
-  add_assoc _ _ _ := SetLike.coe_injective <| Set.addCommSemigroup.add_assoc _ _ _
-  add_comm _ _ := SetLike.coe_injective <| Set.addCommSemigroup.add_comm _ _
+  add_assoc _ _ _ := SetLike.coe_injective <| add_assoc _ _ _
+  add_comm _ _ := SetLike.coe_injective <| add_comm _ _
 
 end Module
 

@@ -57,7 +57,7 @@ theorem Monic.as_sum (hp : p.Monic) :
 
 theorem ne_zero_of_ne_zero_of_monic (hp : p ≠ 0) (hq : Monic q) : q ≠ 0 := by
   rintro rfl
-  rw [Monic.def, leadingCoeff_zero] at hq
+  rw [Monic.def', leadingCoeff_zero] at hq
   rw [← mul_one p, ← C_1, ← hq, C_0, mul_zero] at hp
   exact hp rfl
 #align polynomial.ne_zero_of_ne_zero_of_monic Polynomial.ne_zero_of_ne_zero_of_monic
@@ -104,8 +104,13 @@ theorem monic_X_pow_add {n : ℕ} (H : degree p ≤ n) : Monic (X ^ (n + 1) + p)
 set_option linter.uppercaseLean3 false in
 #align polynomial.monic_X_pow_add Polynomial.monic_X_pow_add
 
+variable (a) in
+theorem monic_X_pow_add_C {n : ℕ} (h : n ≠ 0) : (X ^ n + C a).Monic := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
+  exact monic_X_pow_add <| degree_C_le.trans Nat.WithBot.coe_nonneg
+
 theorem monic_X_add_C (x : R) : Monic (X + C x) :=
-  pow_one (X : R[X]) ▸ monic_X_pow_add degree_C_le
+  pow_one (X : R[X]) ▸ monic_X_pow_add_C x one_ne_zero
 set_option linter.uppercaseLean3 false in
 #align polynomial.monic_X_add_C Polynomial.monic_X_add_C
 
@@ -116,8 +121,8 @@ theorem Monic.mul (hp : Monic p) (hq : Monic q) : Monic (p * q) :=
     Subsingleton.elim _ _
   else by
     have : p.leadingCoeff * q.leadingCoeff ≠ 0 := by
-      simp [Monic.def.1 hp, Monic.def.1 hq, Ne.symm h0]
-    rw [Monic.def, leadingCoeff_mul' this, Monic.def.1 hp, Monic.def.1 hq, one_mul]
+      simp [Monic.def'.1 hp, Monic.def'.1 hq, Ne.symm h0]
+    rw [Monic.def', leadingCoeff_mul' this, Monic.def'.1 hp, Monic.def'.1 hq, one_mul]
 #align polynomial.monic.mul Polynomial.Monic.mul
 
 theorem Monic.pow (hp : Monic p) : ∀ n : ℕ, Monic (p ^ n)
@@ -137,13 +142,13 @@ theorem Monic.add_of_right (hq : Monic q) (hpq : degree p < degree q) : Monic (p
 
 theorem Monic.of_mul_monic_left (hp : p.Monic) (hpq : (p * q).Monic) : q.Monic := by
   contrapose! hpq
-  rw [Monic.def] at hpq ⊢
+  rw [Monic.def'] at hpq ⊢
   rwa [leadingCoeff_monic_mul hp]
 #align polynomial.monic.of_mul_monic_left Polynomial.Monic.of_mul_monic_left
 
 theorem Monic.of_mul_monic_right (hq : q.Monic) (hpq : (p * q).Monic) : p.Monic := by
   contrapose! hpq
-  rw [Monic.def] at hpq ⊢
+  rw [Monic.def'] at hpq ⊢
   rwa [leadingCoeff_mul_monic hq]
 #align polynomial.monic.of_mul_monic_right Polynomial.Monic.of_mul_monic_right
 
@@ -159,7 +164,7 @@ theorem natDegree_eq_zero_iff_eq_one (hp : p.Monic) : p.natDegree = 0 ↔ p = 1 
     rw [← Polynomial.degree_le_zero_iff]
     rwa [Polynomial.natDegree_eq_zero_iff_degree_le_zero] at h
   rw [this]
-  rw [← h, ← Polynomial.leadingCoeff, Monic.def.1 hp, C_1]
+  rw [← h, ← Polynomial.leadingCoeff, Monic.def'.1 hp, C_1]
 #align polynomial.monic.nat_degree_eq_zero_iff_eq_one Polynomial.Monic.natDegree_eq_zero_iff_eq_one
 
 @[simp]
@@ -184,7 +189,7 @@ theorem degree_mul_comm (hp : p.Monic) (q : R[X]) : (p * q).degree = (q * p).deg
 
 nonrec theorem natDegree_mul' (hp : p.Monic) (hq : q ≠ 0) :
     (p * q).natDegree = p.natDegree + q.natDegree := by
-  rw [natDegree_mul', add_comm]
+  rw [natDegree_mul']
   simpa [hp.leadingCoeff, leadingCoeff_ne_zero]
 #align polynomial.monic.nat_degree_mul' Polynomial.Monic.natDegree_mul'
 
@@ -214,6 +219,11 @@ theorem nextCoeff_mul (hp : Monic p) (hq : Monic q) :
     simp [coeff_mul, antidiagonal, hp.leadingCoeff, hq.leadingCoeff, add_comm,
       show Nat.succ 0 = 1 from rfl]
 #align polynomial.monic.next_coeff_mul Polynomial.Monic.nextCoeff_mul
+
+theorem nextCoeff_pow (hp : p.Monic) (n : ℕ) : (p ^ n).nextCoeff = n • p.nextCoeff := by
+  induction n with
+  | zero => rw [pow_zero, Nat.zero_eq, zero_smul, ← map_one (f := C), nextCoeff_C_eq_zero]
+  | succ n ih => rw [pow_succ, hp.nextCoeff_mul (hp.pow n), ih, succ_nsmul]
 
 theorem eq_one_of_map_eq_one {S : Type*} [Semiring S] [Nontrivial S] (f : R →+* S) (hp : p.Monic)
     (map_eq : p.map f = 1) : p = 1 := by
@@ -388,9 +398,7 @@ set_option linter.uppercaseLean3 false in
 /-- `X ^ n - a` is monic. -/
 theorem monic_X_pow_sub_C {R : Type u} [Ring R] (a : R) {n : ℕ} (h : n ≠ 0) :
     (X ^ n - C a).Monic := by
-  obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  apply monic_X_pow_sub _
-  exact le_trans degree_C_le Nat.WithBot.coe_nonneg
+  simpa only [map_neg, ← sub_eq_add_neg] using monic_X_pow_add_C (-a) h
 set_option linter.uppercaseLean3 false in
 #align polynomial.monic_X_pow_sub_C Polynomial.monic_X_pow_sub_C
 
@@ -518,7 +526,7 @@ theorem leadingCoeff_smul_of_smul_regular {S : Type*} [Monoid S] [DistribMulActi
 
 theorem monic_of_isUnit_leadingCoeff_inv_smul (h : IsUnit p.leadingCoeff) :
     Monic (h.unit⁻¹ • p) := by
-  rw [Monic.def, leadingCoeff_smul_of_smul_regular _ (isSMulRegular_of_group _), Units.smul_def]
+  rw [Monic.def', leadingCoeff_smul_of_smul_regular _ (isSMulRegular_of_group _), Units.smul_def]
   obtain ⟨k, hk⟩ := h
   simp only [← hk, smul_eq_mul, ← Units.val_mul, Units.val_eq_one, inv_mul_eq_iff_eq_mul]
   simp [Units.ext_iff, IsUnit.unit_spec]

@@ -193,7 +193,6 @@ theorem mk_coe (S : Set L) (h₁ h₂ h₃ h₄) :
   rfl
 #align lie_subalgebra.mk_coe LieSubalgebra.mk_coe
 
-@[simp]
 theorem coe_to_submodule_mk (p : Submodule R L) (h) :
     (({ p with lie_mem' := h } : LieSubalgebra R L) : Submodule R L) = p := by
   cases p
@@ -229,7 +228,6 @@ theorem coe_to_submodule : ((L' : Submodule R L) : Set L) = L' :=
 section LieModule
 
 variable {M : Type w} [AddCommGroup M] [LieRingModule L M]
-
 variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N] [LieModule R L N]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
@@ -526,14 +524,16 @@ instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
-instance addCommMonoid : AddCommMonoid (LieSubalgebra R L)
-    where
-  add := (· ⊔ ·)
-  add_assoc _ _ _ := sup_assoc
-  zero := ⊥
-  zero_add _ := bot_sup_eq
-  add_zero _ := sup_bot_eq
-  add_comm _ _ := sup_comm
+instance : Add (LieSubalgebra R L) where add := Sup.sup
+
+instance : Zero (LieSubalgebra R L) where zero := ⊥
+
+instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
+  add_assoc := sup_assoc
+  zero_add := bot_sup_eq
+  add_zero := sup_bot_eq
+  add_comm := sup_comm
+  nsmul := nsmulRec
 
 instance : CanonicallyOrderedAddCommMonoid (LieSubalgebra R L) :=
   { LieSubalgebra.addCommMonoid,
@@ -756,13 +756,12 @@ end LieSubalgebra
 namespace LieEquiv
 
 variable {R : Type u} {L₁ : Type v} {L₂ : Type w}
-
 variable [CommRing R] [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂]
 
 /-- An injective Lie algebra morphism is an equivalence onto its range. -/
 noncomputable def ofInjective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Injective f) : L₁ ≃ₗ⁅R⁆ f.range :=
   { LinearEquiv.ofInjective (f : L₁ →ₗ[R] L₂) <| by rwa [LieHom.coe_toLinearMap] with
-    map_lie' := @fun x y ↦ SetCoe.ext $ f.map_lie x y }
+    map_lie' := @fun x y ↦ SetCoe.ext <| f.map_lie x y }
 #align lie_equiv.of_injective LieEquiv.ofInjective
 
 @[simp]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Grade
-import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite.Basic
 
 #align_import data.finset.interval from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
@@ -33,7 +33,7 @@ section Decidable
 
 variable [DecidableEq α] (s t : Finset α)
 
-instance : LocallyFiniteOrder (Finset α)
+instance instLocallyFiniteOrder : LocallyFiniteOrder (Finset α)
     where
   finsetIcc s t := t.powerset.filter (s ⊆ ·)
   finsetIco s t := t.ssubsets.filter (s ⊆ ·)
@@ -140,7 +140,7 @@ section Cons
 /-- A function `f` from `Finset α` is monotone if and only if `f s ≤ f (cons a s ha)` for all `s`
 and `a ∉ s`. -/
 lemma monotone_iff_forall_le_cons : Monotone f ↔ ∀ s, ∀ ⦃a⦄ (ha), f s ≤ f (cons a s ha) := by
-  classical simp [monotone_iff_forall_covby, covby_iff_exists_cons]
+  classical simp [monotone_iff_forall_covBy, covBy_iff_exists_cons]
 
 /-- A function `f` from `Finset α` is antitone if and only if `f (cons a s ha) ≤ f s` for all
 `s` and `a ∉ s`. -/
@@ -150,7 +150,7 @@ lemma antitone_iff_forall_cons_le : Antitone f ↔ ∀ s ⦃a⦄ ha, f (cons a s
 /-- A function `f` from `Finset α` is strictly monotone if and only if `f s < f (cons a s ha)` for
 all `s` and `a ∉ s`. -/
 lemma strictMono_iff_forall_lt_cons : StrictMono f ↔ ∀ s ⦃a⦄ ha, f s < f (cons a s ha) := by
-  classical simp [strictMono_iff_forall_covby, covby_iff_exists_cons]
+  classical simp [strictMono_iff_forall_covBy, covBy_iff_exists_cons]
 
 /-- A function `f` from `Finset α` is strictly antitone if and only if `f (cons a s ha) < f s` for
 all `s` and `a ∉ s`. -/

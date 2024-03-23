@@ -302,7 +302,7 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
     ‖∫ τ in Ι (v.t₀ : ℝ) t, f₁.vComp τ - f₂.vComp τ‖ ≤
         ∫ τ in Ι (v.t₀ : ℝ) t, v.L * ((v.L * |τ - v.t₀|) ^ n / n ! * d) := by
       refine' norm_integral_le_of_norm_le (Continuous.integrableOn_uIoc _) _
-      · -- porting note: was `continuity`
+      · -- Porting note: was `continuity`
         refine .mul continuous_const <| .mul (.div_const ?_ _) continuous_const
         refine .pow (.mul continuous_const <| .abs <| ?_) _
         exact .sub continuous_id continuous_const
@@ -423,18 +423,19 @@ variable [CompleteSpace E]
 
 /-- A time-independent, continuously differentiable ODE admits a solution in some open interval. -/
 theorem exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt (hv : ContDiffAt ℝ 1 v x₀) :
-    ∃ ε > (0 : ℝ),
-      ∃ f : ℝ → E, f t₀ = x₀ ∧ ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt f (v (f t)) t := by
+    ∃ f : ℝ → E, f t₀ = x₀ ∧
+      ∃ ε > (0 : ℝ), ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt f (v (f t)) t := by
   obtain ⟨ε, hε, _, _, _, hpl⟩ := exists_isPicardLindelof_const_of_contDiffAt t₀ hv
   obtain ⟨f, hf1, hf2⟩ := hpl.exists_forall_hasDerivWithinAt_Icc_eq x₀
-  exact ⟨ε, hε, f, hf1, fun t ht =>
+  exact ⟨f, hf1, ε, hε, fun t ht =>
     (hf2 t (Ioo_subset_Icc_self ht)).hasDerivAt (Icc_mem_nhds ht.1 ht.2)⟩
 #align exists_forall_deriv_at_Ioo_eq_of_cont_diff_on_nhds exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt
 
 /-- A time-independent, continuously differentiable ODE admits a solution in some open interval. -/
 theorem exists_forall_hasDerivAt_Ioo_eq_of_contDiff (hv : ContDiff ℝ 1 v) :
-    ∃ ε > (0 : ℝ), ∃ f : ℝ → E, f t₀ = x₀ ∧ ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt f (v (f t)) t :=
-  let ⟨ε, hε, f, hf1, hf2⟩ :=
+    ∃ f : ℝ → E, f t₀ = x₀ ∧
+      ∃ ε > (0 : ℝ), ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt f (v (f t)) t :=
+  let ⟨f, hf1, ε, hε, hf2⟩ :=
     exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀ hv.contDiffAt
-  ⟨ε, hε, f, hf1, fun _ h => hf2 _ h⟩
+  ⟨f, hf1, ε, hε, fun _ h => hf2 _ h⟩
 #align exists_forall_deriv_at_Ioo_eq_of_cont_diff exists_forall_hasDerivAt_Ioo_eq_of_contDiff

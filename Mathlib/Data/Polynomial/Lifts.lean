@@ -148,8 +148,7 @@ theorem monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s �
   obtain ⟨q, hq⟩ := hl
   replace hq := (ext_iff.1 hq) n
   have hcoeff : f (q.coeff n) = s := by
-    simp? [coeff_monomial] at hq says
-      simp only [coeff_map, coeff_monomial, ite_true] at hq
+    simp? [coeff_monomial] at hq says simp only [coeff_map, coeff_monomial, ↓reduceIte] at hq
     exact hq
   use monomial n (q.coeff n)
   constructor
@@ -235,7 +234,7 @@ theorem lifts_and_natDegree_eq_and_monic {p : S[X]} (hlifts : p ∈ lifts f) (hp
     ∃ q : R[X], map f q = p ∧ q.natDegree = p.natDegree ∧ q.Monic := by
   cases' subsingleton_or_nontrivial S with hR hR
   · obtain rfl : p = 1 := Subsingleton.elim _ _
-    refine' ⟨1, Subsingleton.elim _ _, by simp, by simp⟩
+    exact ⟨1, Subsingleton.elim _ _, by simp, by simp⟩
   obtain ⟨p', h₁, h₂, h₃⟩ := lifts_and_degree_eq_and_monic hlifts hp
   exact ⟨p', h₁, natDegree_eq_of_degree_eq h₂, h₃⟩
 #align polynomial.lifts_and_nat_degree_eq_and_monic Polynomial.lifts_and_natDegree_eq_and_monic

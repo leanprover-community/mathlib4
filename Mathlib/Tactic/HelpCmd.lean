@@ -3,7 +3,7 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Lean.Expr.Basic
+import Lean.Elab.Syntax
 
 /-!
 
@@ -66,7 +66,7 @@ private def elabHelpOption (id : Option Ident) : CommandElabM Unit := do
     | .ofNat val => s!"Nat := {repr val}"
     | .ofInt val => s!"Int := {repr val}"
     | .ofSyntax val => s!"Syntax := {repr val}"
-    if let some val := opts.find name then
+    if let some val := opts.find (.mkSimple name) then
       msg1 := s!"{msg1}  (currently: {val})"
     msg := msg ++ .nest 2 (f!"option {name} : {msg1}" ++ .line ++ decl.descr) ++ .line ++ .line
   logInfo msg
