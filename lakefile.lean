@@ -41,7 +41,6 @@ require importGraph from git "https://github.com/leanprover-community/import-gra
 lean_lib Mathlib
 
 lean_lib Cache
-lean_lib MathlibExtras
 lean_lib Archive
 lean_lib Counterexamples
 /-- Additional documentation in the form of modules that only contain module docstrings. -/

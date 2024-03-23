@@ -1,4 +1,3 @@
-import Mathlib.Tactic.Rewrites
 import Mathlib.Data.Nat.Prime
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.InsertNth
@@ -9,12 +8,6 @@ set_option autoImplicit true
 
 -- To see the (sorted) list of lemmas that `rw?` will try rewriting by, use:
 -- set_option trace.Tactic.rewrites.lemmas true
-
--- Recall that `rw?` caches the discrimination tree on disk.
--- If you are modifying the way that `rewrites` indexes lemmas,
--- while testing you will probably want to delete
--- `.lake/build/lib/MathlibExtras/Rewrites.extra`
--- so that the cache is rebuilt.
 
 set_option autoImplicit true
 
