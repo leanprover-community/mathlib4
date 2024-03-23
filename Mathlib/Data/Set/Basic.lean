@@ -1212,10 +1212,11 @@ theorem exists_insert_iff {P : α → Prop} {a : α} {s : Set α} :
 #align set.bex_insert_iff Set.exists_insert_iff
 @[deprecated] alias Set.bex_insert_iff := Set.exists_insert_iff -- 2024-03-23
 
-theorem ball_insert_iff {P : α → Prop} {a : α} {s : Set α} :
+theorem forall_insert_iff {P : α → Prop} {a : α} {s : Set α} :
     (∀ x ∈ insert a s, P x) ↔ P a ∧ ∀ x ∈ s, P x :=
   ball_or_left.trans <| and_congr_left' forall_eq
-#align set.ball_insert_iff Set.ball_insert_iff
+#align set.ball_insert_iff Set.forall_insert_iff
+@[deprecated] alias Set.ball_insert_iff := Set.forall_insert_iff -- 2024-03-23
 
 /-! ### Lemmas about singletons -/
 
