@@ -1674,7 +1674,7 @@ protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
 /-- A finite union of sets which are all bounded above is still bounded above.-/
 theorem Finite.bddAbove_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddAbove (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddAbove (S i) :=
-  Finite.induction_on H (by simp only [biUnion_empty, bddAbove_empty, ball_empty_iff])
+  Finite.induction_on H (by simp only [biUnion_empty, bddAbove_empty, forall_empty_iff])
     fun _ _ hs => by simp only [biUnion_insert, forall_insert_iff, bddAbove_union, hs]
 #align set.finite.bdd_above_bUnion Set.Finite.bddAbove_biUnion
 

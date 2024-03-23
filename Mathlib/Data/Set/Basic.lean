@@ -614,9 +614,10 @@ theorem subset_eq_empty {s t : Set α} (h : t ⊆ s) (e : s = ∅) : t = ∅ :=
   subset_empty_iff.1 <| e ▸ h
 #align set.subset_eq_empty Set.subset_eq_empty
 
-theorem ball_empty_iff {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
+theorem forall_empty_iff {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
   iff_true_intro fun _ => False.elim
-#align set.ball_empty_iff Set.ball_empty_iff
+#align set.ball_empty_iff Set.forall_empty_iff
+@[deprecated] alias Set.ball_empty_iff := Set.forall_empty_iff -- 2024-03-23
 
 instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
   ⟨fun x => x.2⟩
