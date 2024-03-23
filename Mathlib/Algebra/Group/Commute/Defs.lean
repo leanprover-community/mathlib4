@@ -259,7 +259,7 @@ section Monoid
 variable {M : Type*} [Monoid M] {n : ℕ}
 
 @[to_additive succ_nsmul']
-lemma pow_succ' (a : M) (n : ℕ) : a ^ (n + 1) = a * a ^ n := -- by
+lemma pow_succ' (a : M) (n : ℕ) : a ^ (n + 1) = a * a ^ n :=
   (pow_succ a n).trans (Commute.self_pow _ _).symm
 #align pow_succ pow_succ'
 #align succ_nsmul succ_nsmul'
