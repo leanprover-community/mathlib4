@@ -42,7 +42,7 @@ discrete valuation ring
 -/
 
 
-open Classical
+open scoped Classical
 
 universe u
 
@@ -318,7 +318,6 @@ theorem ofHasUnitMulPowIrreducibleFactorization {R : Type u} [CommRing R] [IsDom
 section
 
 variable [CommRing R] [IsDomain R] [DiscreteValuationRing R]
-
 variable {R}
 
 theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irreducible ϖ) :

@@ -18,7 +18,7 @@ In this we prove various simple lemmas about intervals in `Π i, α i`. Closed i
 usually include the corresponding products as proper subsets.
 -/
 
--- porting note: Added, since dot notation no longer works on `Function.update`
+-- Porting note: Added, since dot notation no longer works on `Function.update`
 open Function
 
 variable {ι : Type*} {α : ι → Type*}
@@ -124,7 +124,7 @@ section PiPartialOrder
 
 variable [DecidableEq ι] [∀ i, PartialOrder (α i)]
 
--- porting note: Dot notation on `Function.update` broke
+-- Porting note: Dot notation on `Function.update` broke
 theorem image_update_Icc (f : ∀ i, α i) (i : ι) (a b : α i) :
     update f i '' Icc a b = Icc (update f i a) (update f i b) := by
   ext x

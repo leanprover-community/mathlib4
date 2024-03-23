@@ -528,7 +528,7 @@ theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u�
   simp only [divp, mul_inv_rev, Units.val_mul, mul_assoc]
 #align divp_divp_eq_divp_mul divp_divp_eq_divp_mul
 
-/- Port note: to match the mathlib3 behavior, this needs to have higher simp
+/- Porting note: to match the mathlib3 behavior, this needs to have higher simp
 priority than eq_divp_iff_mul_eq. -/
 @[field_simps 1010]
 theorem divp_eq_iff_mul_eq {x : α} {u : αˣ} {y : α} : x /ₚ u = y ↔ y * u = x :=
@@ -639,11 +639,20 @@ def IsUnit [Monoid M] (a : M) : Prop :=
 #align is_unit IsUnit
 #align is_add_unit IsAddUnit
 
-@[to_additive]
+/-- See `isUnit_iff_exists_and_exists` for a similar lemma with two existentials. -/
+@[to_additive "See `isAddUnit_iff_exists_and_exists` for a similar lemma with two existentials."]
 lemma isUnit_iff_exists [Monoid M] {x : M} : IsUnit x ↔ ∃ b, x * b = 1 ∧ b * x = 1 := by
   refine ⟨fun ⟨u, hu⟩ => ?_, fun ⟨b, h1b, h2b⟩ => ⟨⟨x, b, h1b, h2b⟩, rfl⟩⟩
   subst x
   exact ⟨u.inv, u.val_inv, u.inv_val⟩
+
+/-- See `isUnit_iff_exists` for a similar lemma with one existential. -/
+@[to_additive "See `isAddUnit_iff_exists` for a similar lemma with one existential."]
+theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
+    IsUnit a ↔ (∃ b, a * b = 1) ∧ (∃ c, c * a = 1) :=
+  isUnit_iff_exists.trans
+    ⟨fun ⟨b, hba, hab⟩ => ⟨⟨b, hba⟩, ⟨b, hab⟩⟩,
+      fun ⟨⟨b, hb⟩, ⟨_, hc⟩⟩ => ⟨b, hb, left_inv_eq_right_inv hc hb ▸ hc⟩⟩
 
 @[to_additive (attr := nontriviality)]
 theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
@@ -914,7 +923,7 @@ def unit' (h : IsUnit a) : αˣ := ⟨a, a⁻¹, h.mul_inv_cancel, h.inv_mul_can
 #align is_unit.coe_unit' IsUnit.val_unit'
 #align is_add_unit.coe_add_unit' IsAddUnit.val_addUnit'
 
--- Porting note: TODO: `simps val_inv` fails
+-- Porting note (#11215): TODO: `simps val_inv` fails
 @[to_additive] lemma val_inv_unit' (h : IsUnit a) : ↑(h.unit'⁻¹) = a⁻¹ := rfl
 #align is_unit.coe_inv_unit' IsUnit.val_inv_unit'
 #align is_add_unit.coe_neg_add_unit' IsAddUnit.val_neg_addUnit'

@@ -30,7 +30,8 @@ monotone convergence
 
 open Filter Set Function
 
-open Filter Topology Classical
+open scoped Classical
+open Filter Topology
 
 variable {α β : Type*}
 
@@ -190,7 +191,7 @@ instance Prod.supConvergenceClass
   have B : Tendsto (fun x : s => (x : α × β).2) atTop (𝓝 b) :=
     tendsto_atTop_isLUB (monotone_snd.restrict s) h.2
   convert A.prod_mk_nhds B
-  -- porting note: previously required below to close
+  -- Porting note: previously required below to close
   -- ext1 ⟨⟨x, y⟩, h⟩
   -- rfl
 
@@ -243,6 +244,12 @@ theorem tendsto_iff_tendsto_subseq_of_monotone {ι₁ ι₂ α : Type*} [Semilat
     · exact (not_tendsto_atTop_of_tendsto_nhds h (h'.comp hg)).elim
     · rwa [tendsto_nhds_unique h (hl'.comp hg)]
 #align tendsto_iff_tendsto_subseq_of_monotone tendsto_iff_tendsto_subseq_of_monotone
+
+theorem tendsto_iff_tendsto_subseq_of_antitone {ι₁ ι₂ α : Type*} [SemilatticeSup ι₁] [Preorder ι₂]
+    [Nonempty ι₁] [TopologicalSpace α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+    [NoMinOrder α] {f : ι₂ → α} {φ : ι₁ → ι₂} {l : α} (hf : Antitone f)
+    (hg : Tendsto φ atTop atTop) : Tendsto f atTop (𝓝 l) ↔ Tendsto (f ∘ φ) atTop (𝓝 l) :=
+  tendsto_iff_tendsto_subseq_of_monotone (α := αᵒᵈ) hf hg
 
 /-! The next family of results, such as `isLUB_of_tendsto_atTop` and `iSup_eq_of_tendsto`, are
 converses to the standard fact that bounded monotone functions converge. They state, that if a

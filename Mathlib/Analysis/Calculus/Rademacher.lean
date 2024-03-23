@@ -99,14 +99,14 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
     Tendsto (fun (t : ℝ) ↦ ∫ x, (t⁻¹ • (f (x + t • v) - f x)) * g x ∂μ) (𝓝[>] 0)
       (𝓝 (∫ x, lineDeriv ℝ f x v * g x ∂μ)) := by
   apply tendsto_integral_filter_of_dominated_convergence (fun x ↦ (C * ‖v‖) * ‖g x‖)
-  · apply eventually_of_forall (fun t ↦ ?_)
+  · filter_upwards with t
     apply AEStronglyMeasurable.mul ?_ hg.aestronglyMeasurable
     apply aestronglyMeasurable_const.smul
     apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
     apply AEMeasurable.aestronglyMeasurable
     exact hf.continuous.measurable.comp_aemeasurable' (aemeasurable_id'.add_const _)
   · filter_upwards [self_mem_nhdsWithin] with t (ht : 0 < t)
-    apply eventually_of_forall (fun x ↦ ?_)
+    filter_upwards with x
     calc ‖t⁻¹ • (f (x + t • v) - f x) * g x‖
       = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := by simp [norm_mul, ht.le]
     _ ≤ (t⁻¹ * (C * ‖(x + t • v) - x‖)) * ‖g x‖ := by
@@ -124,7 +124,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
   have K_compact : IsCompact K := IsCompact.cthickening h'f
   apply tendsto_integral_filter_of_dominated_convergence
       (K.indicator (fun x ↦ (C * ‖v‖) * ‖g x‖))
-  · apply eventually_of_forall (fun t ↦ ?_)
+  · filter_upwards with t
     apply AEStronglyMeasurable.mul ?_ hg.aestronglyMeasurable
     apply aestronglyMeasurable_const.smul
     apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
@@ -132,7 +132,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
     exact hf.continuous.measurable.comp_aemeasurable' (aemeasurable_id'.add_const _)
   · filter_upwards [Ioc_mem_nhdsWithin_Ioi' zero_lt_one] with t ht
     have t_pos : 0 < t := ht.1
-    apply eventually_of_forall (fun x ↦ ?_)
+    filter_upwards with x
     by_cases hx : x ∈ K
     · calc ‖t⁻¹ • (f (x + t • v) - f x) * g x‖
         = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := by simp [norm_mul, t_pos.le]
@@ -249,7 +249,7 @@ theorem ae_exists_fderiv_of_countable
   let L : E →L[ℝ] ℝ :=
     LinearMap.toContinuousLinearMap (B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i)))
   refine ⟨L, fun v hv ↦ ?_⟩
-  have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [B.sum_repr v]
+  have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [L, B.sum_repr v]
   simpa [J] using (h'x v hv).hasLineDerivAt
 
 /-- If a Lipschitz functions has line derivatives in a dense set of directions, all of them given by
@@ -270,7 +270,7 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
     exact (isCompact_sphere 0 1).elim_finite_subcover_image (fun y _hy ↦ isOpen_ball) this
   have I : ∀ᶠ t in 𝓝 (0 : ℝ), ∀ v ∈ q, ‖f (x + t • v) - f x - t • L v‖ ≤ δ * ‖t‖ := by
     apply (Finite.eventually_all q_fin).2 (fun v hv ↦ ?_)
-    apply Asymptotics.IsLittleO.def ?_ δpos
+    apply Asymptotics.IsLittleO.definition ?_ δpos
     exact hasLineDerivAt_iff_isLittleO_nhds_zero.1 (hL v (hqs hv))
   obtain ⟨r, r_pos, hr⟩ : ∃ (r : ℝ), 0 < r ∧ ∀ (t : ℝ), ‖t‖ < r →
       ∀ v ∈ q, ‖f (x + t • v) - f x - t • L v‖ ≤ δ * ‖t‖ := by

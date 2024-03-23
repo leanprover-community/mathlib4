@@ -115,7 +115,6 @@ theorem _root_.isSelfAdjoint_starHom_apply {F R S : Type*} [Star R] [Star S] [Fu
 section AddMonoid
 
 variable [AddMonoid R] [StarAddMonoid R]
-
 variable (R)
 
 @[simp] theorem _root_.isSelfAdjoint_zero : IsSelfAdjoint (0 : R) := star_zero R
@@ -184,7 +183,6 @@ end Semigroup
 section MulOneClass
 
 variable [MulOneClass R] [StarMul R]
-
 variable (R)
 
 @[simp] theorem _root_.isSelfAdjoint_one : IsSelfAdjoint (1 : R) :=
@@ -217,6 +215,12 @@ theorem bit1 {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint (bit1 x) := by
 theorem _root_.isSelfAdjoint_natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
 #align is_self_adjoint_nat_cast isSelfAdjoint_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem _root_.isSelfAdjoint_ofNat (n : ℕ) [n.AtLeastTwo] :
+    IsSelfAdjoint (no_index (OfNat.ofNat n : R)) :=
+  _root_.isSelfAdjoint_natCast n
 
 end Semiring
 
@@ -538,7 +542,7 @@ section SMul
 
 variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
 
-@[aesop safe apply (rule_sets [SetLike])]
+@[aesop safe apply (rule_sets := [SetLike])]
 theorem smul_mem [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) {x : A}
     (h : x ∈ skewAdjoint A) : r • x ∈ skewAdjoint A := by
   rw [mem_iff, star_smul, star_trivial, mem_iff.mp h, smul_neg r]

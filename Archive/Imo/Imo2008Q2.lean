@@ -101,13 +101,13 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
         let x : ℚ := -(t + 1) / t ^ 2
         let y : ℚ := t / (t + 1) ^ 2
         set z : ℚ := -t * (t + 1) with hz_def
-        simp only [Set.mem_image, Prod.exists]
+        simp only [t, W, K, g, Set.mem_image, Prod.exists]
         use x, y, z; constructor
         simp only [Set.mem_setOf_eq]
         · use x, y, z; constructor
           rfl
           · use t; constructor
-            · simp only [gt_iff_lt, lt_max_iff]; right; trivial
+            · simp only [t, gt_iff_lt, lt_max_iff]; right; trivial
             exact ⟨rfl, rfl, rfl⟩
         · have hg : -z = g (x, y, z) := rfl
           rw [hg, hz_def]; ring

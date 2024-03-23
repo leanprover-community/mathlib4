@@ -61,7 +61,7 @@ theorem le_ndinsert_self (a : α) (s : Multiset α) : s ≤ ndinsert a s :=
   Quot.inductionOn s fun _ => (sublist_insert _ _).subperm
 #align multiset.le_ndinsert_self Multiset.le_ndinsert_self
 
---Porting note: removing @[simp], simp can prove it
+-- Porting note: removing @[simp], simp can prove it
 theorem mem_ndinsert_self (a : α) (s : Multiset α) : a ∈ ndinsert a s :=
   mem_ndinsert.2 (Or.inl rfl)
 #align multiset.mem_ndinsert_self Multiset.mem_ndinsert_self
@@ -146,7 +146,7 @@ theorem coe_ndunion (l₁ l₂ : List α) : @ndunion α _ l₁ l₂ = (l₁ ∪ 
   rfl
 #align multiset.coe_ndunion Multiset.coe_ndunion
 
---Porting note: removing @[simp], simp can prove it
+-- Porting note: removing @[simp], simp can prove it
 theorem zero_ndunion (s : Multiset α) : ndunion 0 s = s :=
   Quot.inductionOn s fun _ => rfl
 #align multiset.zero_ndunion Multiset.zero_ndunion

@@ -114,7 +114,7 @@ theorem image₂_subset_iff_right : image₂ f s t ⊆ u ↔ ∀ b ∈ t, (s.ima
   simp_rw [image₂_subset_iff, image_subset_iff, @forall₂_swap α]
 #align finset.image₂_subset_iff_right Finset.image₂_subset_iff_right
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem image₂_nonempty_iff : (image₂ f s t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := by
   rw [← coe_nonempty, coe_image₂]
   exact image2_nonempty_iff

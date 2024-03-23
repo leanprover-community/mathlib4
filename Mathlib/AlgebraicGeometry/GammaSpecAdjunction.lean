@@ -127,7 +127,7 @@ theorem isUnit_res_toΓSpecMapBasicOpen : IsUnit (X.toToΓSpecMapBasicOpen r r) 
   convert
     (X.presheaf.map <| (eqToHom <| X.toΓSpecMapBasicOpen_eq r).op).isUnit_map
       (X.toRingedSpace.isUnit_res_basicOpen r)
-  -- Porting note : `rw [comp_apply]` to `erw [comp_apply]`
+  -- Porting note: `rw [comp_apply]` to `erw [comp_apply]`
   erw [← comp_apply, ← Functor.map_comp]
   congr
 #align algebraic_geometry.LocallyRingedSpace.is_unit_res_to_Γ_Spec_map_basic_open AlgebraicGeometry.LocallyRingedSpace.isUnit_res_toΓSpecMapBasicOpen
@@ -154,7 +154,7 @@ theorem toΓSpecCApp_iff
   --pick_goal 5; exact is_localization.to_basic_open _ r
   constructor
   · intro h
-    --Porting Note: Type class problem got stuck, same as above
+    -- Porting note: Type class problem got stuck, same as above
     refine' @IsLocalization.ringHom_ext _ _ _ _ _ _ _ _ loc_inst _ _ _
     exact h
     --pick_goal 5; exact is_localization.to_basic_open _ r; exact h
@@ -202,7 +202,7 @@ theorem toΓSpecSheafedSpace_app_eq :
 
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_eq
 
--- Porting note : need a helper lemma `toΓSpecSheafedSpace_app_spec_assoc` to help compile
+-- Porting note: need a helper lemma `toΓSpecSheafedSpace_app_spec_assoc` to help compile
 -- `toStalk_stalkMap_to_Γ_Spec`
 @[reassoc] theorem toΓSpecSheafedSpace_app_spec (r : Γ.obj (op X)) :
     toOpen (Γ.obj (op X)) (basicOpen r) ≫ X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) =
@@ -219,7 +219,7 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
       ⟨X.toΓSpecFun x, by rw [basicOpen_one]; trivial⟩]
   rw [← Category.assoc, Category.assoc (toOpen _ _)]
   erw [stalkFunctor_map_germ]
-  -- Porting note : was `rw [← assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
+  -- Porting note: was `rw [← assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
   rw [toΓSpecSheafedSpace_app_spec_assoc]
   unfold ΓToStalk
   rw [← stalkPushforward_germ _ X.toΓSpecBase X.presheaf ⊤]
@@ -250,7 +250,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     rw [← toStalk_stalkMap_toΓSpec]
     erw [comp_apply, ← he]
     rw [RingHom.map_mul]
-    -- Porting note : `IsLocalization.map_units` and the goal needs to be simplified before Lean
+    -- Porting note: `IsLocalization.map_units` and the goal needs to be simplified before Lean
     -- realize it is useful
     have := IsLocalization.map_units (R := Γ.obj (op X)) S s
     dsimp at this ⊢
@@ -266,11 +266,11 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace} {R : CommRingCat} {f : R ⟶ 
           toOpen R (basicOpen r) ≫ β.1.c.app (op (basicOpen r))) :
     X.toΓSpec ≫ Spec.locallyRingedSpaceMap f = β := by
   ext1
-  -- Porting note : need more hand holding here
+  -- Porting note: need more hand holding here
   change (X.toΓSpec.1 ≫ _).base = _ at w
   apply Spec.basicOpen_hom_ext w
   intro r U
-  -- Porting note : changed `rw` to `erw`
+  -- Porting note: changed `rw` to `erw`
   erw [LocallyRingedSpace.comp_val_c_app]
   erw [toOpen_comp_comap_assoc]
   rw [Category.assoc]
@@ -298,7 +298,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
     apply LocallyRingedSpace.comp_ring_hom_ext
     · ext1 x
       dsimp [Spec.topMap, LocallyRingedSpace.toΓSpecFun]
-      --Porting Note: Had to add the next four lines
+      -- Porting note: Had to add the next four lines
       rw [comp_apply, comp_apply]
       dsimp [toΓSpecBase]
       -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
@@ -344,7 +344,7 @@ theorem right_triangle (R : CommRingCat) :
 #align algebraic_geometry.Γ_Spec.right_triangle AlgebraicGeometry.ΓSpec.right_triangle
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
---Porting Note: `simps` cause a time out, so `Unit` and `counit` will be added manually
+-- Porting note: `simps` cause a time out, so `Unit` and `counit` will be added manually
 def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} :=
   Adjunction.mkOfUnitCounit
     { unit := identityToΓSpec
@@ -354,7 +354,7 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
         exact congr_arg Quiver.Hom.op (left_triangle X)
       right_triangle := by
         ext R : 2
-        -- Porting note : a little bit hand holding
+        -- Porting note: a little bit hand holding
         change identityToΓSpec.app _ ≫ 𝟙 _ ≫ Spec.toLocallyRingedSpace.map _ =
           𝟙 _
         simp_rw [Category.id_comp, show (NatIso.op SpecΓIdentity).inv.app R =
@@ -386,7 +386,7 @@ theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     ΓSpec.adjunction.homEquiv X R f = locallyRingedSpaceAdjunction.homEquiv X.1 R f := by
   dsimp [adjunction, Adjunction.restrictFullyFaithful]
   simp only [Category.comp_id, Category.id_comp]
-  rfl --Porting Note: Added
+  rfl -- Porting note: Added
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_apply
 
 theorem adjunction_homEquiv (X : Scheme) (R : CommRingCatᵒᵖ) :

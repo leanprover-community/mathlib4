@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Invertible.GroupWithZero
+import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupPower.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Ring.Defs
 
 #align_import algebra.invertible from "leanprover-community/mathlib"@"722b3b152ddd5e0cf21c0a29787c76596cb6b422"
@@ -14,9 +16,6 @@ import Mathlib.Algebra.Ring.Defs
 # Theorems about invertible elements
 
 -/
-
-set_option autoImplicit true
-
 
 universe u
 
@@ -213,7 +212,7 @@ def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) 
   ⟨b / a, by simp [← mul_div_assoc], by simp [← mul_div_assoc]⟩
 #align invertible_div invertibleDiv
 
--- Porting note: removed `simp` attribute as `simp` can prove it
+-- Porting note (#10618): removed `simp` attribute as `simp` can prove it
 theorem invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
     ⅟ (a / b) = b / a :=
   invOf_eq_right_inv (by simp [← mul_div_assoc])
