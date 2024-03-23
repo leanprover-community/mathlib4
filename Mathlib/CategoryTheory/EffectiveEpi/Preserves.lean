@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.EffectiveEpi.Comp
-import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Fintype.Card
 /-!
 
 # Functors preserving effective epimorphisms
@@ -13,8 +13,8 @@ This file concerns functors which preserve and/or reflect effective epimorphisms
 epimorphic families.
 
 ## TODO
-- Are there nice sufficient conditions on functors to preserve/reflect effective epis, similar to
-  `CategoryTheory.preserves_epi_of_preservesColimit`?
+- Find nice sufficient conditions in terms of preserving/reflecting (co)limits, to preserve/reflect
+  effective epis, similar to `CategoryTheory.preserves_epi_of_preservesColimit`.
 -/
 
 universe u
@@ -128,11 +128,11 @@ instance map_finite_effectiveEpiFamily (F : C ⥤ D) [F.PreservesFiniteEffective
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a)) :=
   PreservesFiniteEffectiveEpiFamilies.preserves X π
 
-instance (F : C ⥤ D) [PreservesEffectiveEpiFamilies F] : PreservesEffectiveEpis F where
-  preserves _ := inferInstance
-
 instance (F : C ⥤ D) [PreservesEffectiveEpiFamilies F] : PreservesFiniteEffectiveEpiFamilies F where
   preserves _ _ := inferInstance
+
+instance (F : C ⥤ D) [PreservesFiniteEffectiveEpiFamilies F] : PreservesEffectiveEpis F where
+  preserves _ := inferInstance
 
 instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpiFamilies where
   preserves _ _ := inferInstance
@@ -214,6 +214,12 @@ instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies F] : ReflectsEffectiveEpis 
 instance (F : C ⥤ D) [ReflectsEffectiveEpiFamilies F] : ReflectsFiniteEffectiveEpiFamilies F where
   reflects _ _ h := by
     have := F.effectiveEpiFamily_of_map _ _ h
+    infer_instance
+
+instance (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F] : ReflectsEffectiveEpis F where
+  reflects _ h := by
+    rw [effectiveEpi_iff_effectiveEpiFamily] at h
+    have := F.finite_effectiveEpiFamily_of_map _ _ h
     infer_instance
 
 instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpiFamilies where
