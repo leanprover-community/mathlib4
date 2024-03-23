@@ -15,10 +15,11 @@ variable {V : Type*} {P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
 /-- Get the face of `s` that doesn't include `i` -/
+@[simps?]
 def faceWithout {n : ℕ} (s : Affine.Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     Affine.Simplex ℝ P n where
-  points := s.points ∘ Fin.succAbove i
-  Independent := s.Independent.comp_embedding <| (Fin.succAboveEmb i).toEmbedding
+  points j := s.points (Fin.succAbove i j)
+  independent := s.independent.comp_embedding <| (Fin.succAboveEmb i).toEmbedding
 
 
 /-- The volume of a simplex. -/
@@ -38,16 +39,26 @@ protected def volume {n : ℕ} (s : Affine.Simplex ℝ P n) : ℝ :=
   have h1 : s.points 1 ∈ affineSpan ℝ (Set.range (s.faceWithout 0).points) := sorry
   rw [orthogonalProjectionSpan]
   simp
-  -- have := (s.faceWithout 0).dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
-  --   (s.points 0) h1
-  simp? at this
+  have := (s.faceWithout 0).dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
+    (s.points 0) h1
+  simp? [orthogonalProjectionSpan] at this
+  -- set q := (EuclideanGeometry.orthogonalProjection (affineSpan ℝ (Set.range (faceWithout s 0).points))) (s.points 0)
+  rw [←sq_eq_sq dist_nonneg dist_nonneg, dist_comm _ (s.points 1), sq, sq, this,
+    self_eq_add_left, mul_self_eq_zero, dist_eq_zero, faceWithout]
+  clear this
+  simp?
+  dsimp
+  norm_num
+  sorry
+example (a b : ℤ) : a = a + b ↔ b = 0 := by exact?
 
 /---/
 theorem volume_succ {n : ℕ} (s : Affine.Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
   s.volume =
     dist
       (s.points i)
-      ((s.faceWithout i).orthogonalProjectionSpan (s.points 0)) * (s.faceWithout i).volume
+      ((s.faceWithout i).orthogonalProjectionSpan (s.points 0)) * (s.faceWithout i).volume :=
+  sorry
 
 
 #check AffineBasis
