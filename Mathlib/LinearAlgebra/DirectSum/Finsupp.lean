@@ -105,21 +105,13 @@ open PiTensorProduct BigOperators
 attribute [local ext] TensorProduct.ext
 
 variable (R : Type*) [CommSemiring R]
-
 variable {ι : Type*}
-
 variable [Fintype ι]
-
 variable [DecidableEq ι]
-
 variable (κ : ι → Type*) [(i : ι) → DecidableEq (κ i)]
-
 variable (M : ι → Type*)
-
 variable [∀ i, AddCommMonoid (M i)]
-
 variable [∀ i, Module R (M i)]
-
 variable [(i : ι) → (x : M i) → Decidable (x ≠ 0)]
 
 /-- If `ι` is a `Fintype`, `κ i` is a family of types indexed by `ι` and `M i` is a family
