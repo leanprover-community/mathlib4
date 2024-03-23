@@ -88,7 +88,7 @@ instance estimator' :
     simp only at eq
     dsimp [EstimatorData.bound]
     rw [eq]
-    simp only [←split]
+    simp only [← split]
     constructor
     · simp only [List.minimum_of_length_pos_le_iff]
       exact suffixLevenshtein_minimum_le_levenshtein_append _ _ _
@@ -112,7 +112,7 @@ instance estimator' :
       · refine (?_ : _ ≤ _).trans (List.minimum_of_length_pos_le_getElem _)
         simp only [List.minimum_of_length_pos_le_iff, List.coe_minimum_of_length_pos, d_eq]
         apply le_suffixLevenshtein_cons_minimum
-      · simp [←split]
+      · simp [← split]
     | y₁ :: y₂ :: t, split, b_eq, d_eq =>
       simp only [EstimatorData.bound, Prod.lt_iff]
       right

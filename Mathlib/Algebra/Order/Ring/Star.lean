@@ -27,17 +27,8 @@ type class assumptions to be satisfied without a `CommSemiring` intance already 
 it is impossible, only that it shouldn't occur in practice. -/
 example {R : Type*} [OrderedSemiring R] [StarOrderedRing R] {x y : R} (hx : 0 ≤ x) (hy : 0 ≤ y) :
     x * y = y * x := by
-  -- nonnegative elements are self-adjoint; we prove it by hand to avoid adding imports
-  have : ∀ z : R, 0 ≤ z → star z = z := by
-    intros z hz
-    rw [nonneg_iff] at hz
-    induction hz using AddSubmonoid.closure_induction' with
-    | Hs _ h => obtain ⟨x, rfl⟩ := h; simp
-    | H1 => simp
-    | Hmul x hx y hy => simp only [←nonneg_iff] at hx hy; aesop
-  -- `0 ≤ y * x`, and hence `y * x` is self-adjoint
-  have := this _ <| mul_nonneg hy hx
-  aesop
+  rw [← IsSelfAdjoint.of_nonneg (mul_nonneg hy hx), star_mul, IsSelfAdjoint.of_nonneg hx,
+    IsSelfAdjoint.of_nonneg hy]
 
 /- This will be implied by the instance below, we only prove it to avoid duplicating the
 argument in the instance below for `mul_le_mul_of_nonneg_right`. -/
@@ -47,11 +38,11 @@ private lemma mul_le_mul_of_nonneg_left {R : Type*} [CommSemiring R] [PartialOrd
   induction hc using AddSubmonoid.closure_induction' with
   | Hs _ h =>
     obtain ⟨x, rfl⟩ := h
-    simp_rw [mul_assoc, mul_comm x, ←mul_assoc]
+    simp_rw [mul_assoc, mul_comm x, ← mul_assoc]
     exact conjugate_le_conjugate hab x
   | H1 => simp
   | Hmul x hx y hy =>
-    simp only [←nonneg_iff, add_mul] at hx hy ⊢
+    simp only [← nonneg_iff, add_mul] at hx hy ⊢
     apply add_le_add <;> aesop
 
 /-- A commutative star-ordered semiring is an ordered semiring.

@@ -73,8 +73,8 @@ theorem smul (ra : IsSMulRegular M a) (rs : IsSMulRegular M s) : IsSMulRegular M
 element, then `b` is `M`-regular. -/
 theorem of_smul (a : R) (ab : IsSMulRegular M (a • s)) : IsSMulRegular M s :=
   @Function.Injective.of_comp _ _ _ (fun m : M => a • m) _ fun c d cd => by
-  dsimp only [Function.comp] at cd
-  rw [←smul_assoc, ←smul_assoc] at cd
+  dsimp only [Function.comp_def] at cd
+  rw [← smul_assoc, ← smul_assoc] at cd
   exact ab cd
 #align is_smul_regular.of_smul IsSMulRegular.of_smul
 
@@ -117,7 +117,7 @@ theorem mul_and_mul_iff [Mul R] [IsScalarTower R R M] :
     IsSMulRegular M (a * b) ∧ IsSMulRegular M (b * a) ↔ IsSMulRegular M a ∧ IsSMulRegular M b := by
   refine' ⟨_, _⟩
   · rintro ⟨ab, ba⟩
-    refine' ⟨ba.of_mul, ab.of_mul⟩
+    exact ⟨ba.of_mul, ab.of_mul⟩
   · rintro ⟨ha, hb⟩
     exact ⟨ha.mul hb, hb.mul ha⟩
 #align is_smul_regular.mul_and_mul_iff IsSMulRegular.mul_and_mul_iff
@@ -127,13 +127,12 @@ end SMul
 section Monoid
 
 variable [Monoid R] [MulAction R M]
-
 variable (M)
 
 /-- One is always `M`-regular. -/
 @[simp]
 theorem one : IsSMulRegular M (1 : R) := fun a b ab => by
-  dsimp only [Function.comp] at ab
+  dsimp only [Function.comp_def] at ab
   rw [one_smul, one_smul] at ab
   assumption
 #align is_smul_regular.one IsSMulRegular.one
@@ -186,7 +185,7 @@ variable [MonoidWithZero R] [MonoidWithZero S] [Zero M] [MulActionWithZero R M]
 
 /-- The element `0` is `M`-regular if and only if `M` is trivial. -/
 protected theorem subsingleton (h : IsSMulRegular M (0 : R)) : Subsingleton M :=
-  ⟨fun a b => h (by dsimp only [Function.comp]; repeat' rw [MulActionWithZero.zero_smul])⟩
+  ⟨fun a b => h (by dsimp only [Function.comp_def]; repeat' rw [MulActionWithZero.zero_smul])⟩
 #align is_smul_regular.subsingleton IsSMulRegular.subsingleton
 
 /-- The element `0` is `M`-regular if and only if `M` is trivial. -/

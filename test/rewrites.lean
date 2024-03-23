@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Rewrites
 import Mathlib.Data.Nat.Prime
 import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.InsertNth
 import Mathlib.Algebra.Group.Basic
 
 private axiom test_sorry : ∀ {α}, α
@@ -13,7 +13,7 @@ set_option autoImplicit true
 -- Recall that `rw?` caches the discrimination tree on disk.
 -- If you are modifying the way that `rewrites` indexes lemmas,
 -- while testing you will probably want to delete
--- `build/lib/MathlibExtras/Rewrites.extra`
+-- `.lake/build/lib/MathlibExtras/Rewrites.extra`
 -- so that the cache is rebuilt.
 
 set_option autoImplicit true

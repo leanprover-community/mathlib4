@@ -30,12 +30,9 @@ that needs to happen in characteristic 0.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace WittVector
 
 variable (p : ℕ) [hp : Fact p.Prime]
-
 variable {k : Type*} [CommRing k]
 
 local notation "𝕎" => WittVector p
@@ -112,7 +109,7 @@ theorem remainder_vars (n : ℕ) : (remainder p n).vars ⊆ univ ×ˢ range (n +
     · apply Subset.trans Finsupp.support_single_subset
       simpa using mem_range.mp hx
     · apply pow_ne_zero
-      exact_mod_cast hp.out.ne_zero
+      exact mod_cast hp.out.ne_zero
 #align witt_vector.remainder_vars WittVector.remainder_vars
 
 /-- This is the polynomial whose degree we want to get a handle on. -/
@@ -214,7 +211,7 @@ theorem polyOfInterest_vars_eq (n : ℕ) : (polyOfInterest p n).vars =
   have : (p : 𝕄) ^ (n + 1) = C ((p : ℤ) ^ (n + 1)) := by norm_cast
   rw [polyOfInterest, this, vars_C_mul]
   apply pow_ne_zero
-  exact_mod_cast hp.out.ne_zero
+  exact mod_cast hp.out.ne_zero
 #align witt_vector.poly_of_interest_vars_eq WittVector.polyOfInterest_vars_eq
 
 theorem polyOfInterest_vars (n : ℕ) : (polyOfInterest p n).vars ⊆ univ ×ˢ range (n + 1) := by
@@ -243,15 +240,11 @@ theorem peval_polyOfInterest' (n : ℕ) (x y : 𝕎 k) :
         x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
   rw [peval_polyOfInterest]
   have : (p : k) = 0 := CharP.cast_eq_zero k p
-  simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow', zero_mul, add_zero]
-  have sum_zero_pow_mul_pow_p : ∀ y : 𝕎 k, ∑ x : ℕ in range (n + 1 + 1),
+  simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow, zero_mul, add_zero,
+    not_false_eq_true]
+  have sum_zero_pow_mul_pow_p (y : 𝕎 k) : ∑ x : ℕ in range (n + 1 + 1),
       (0 : k) ^ x * y.coeff x ^ p ^ (n + 1 - x) = y.coeff 0 ^ p ^ (n + 1) := by
-    intro y
-    rw [Finset.sum_eq_single_of_mem 0]
-    · simp
-    · simp
-    · intro j _ hj
-      simp [zero_pow (zero_lt_iff.mpr hj)]
+    rw [Finset.sum_eq_single_of_mem 0] <;> simp (config := { contextual := true })
   congr <;> apply sum_zero_pow_mul_pow_p
 #align witt_vector.peval_poly_of_interest' WittVector.peval_polyOfInterest'
 
@@ -273,10 +266,10 @@ theorem nth_mul_coeff' (n : ℕ) :
     simp_rw [product_val, this, Multiset.mem_product, mem_univ_val, true_and_iff, range_val,
       Multiset.range_succ, Multiset.mem_cons, Multiset.mem_range] at ha
     refine' ⟨a.fst, ⟨a.snd, _⟩⟩
-    cases' ha with ha ha <;> linarith only [ha]
+    cases' ha with ha ha <;> omega
   use f
   intro x y
-  dsimp [peval]
+  dsimp [f, peval]
   rw [← hf₀]
   congr
   ext a

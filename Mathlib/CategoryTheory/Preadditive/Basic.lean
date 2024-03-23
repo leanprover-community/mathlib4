@@ -198,12 +198,12 @@ instance {P Q : C} {f : P ⟶ Q} [Mono f] : Mono (-f) :=
   ⟨fun g g' H => by rwa [comp_neg, comp_neg, ← neg_comp, ← neg_comp, cancel_mono, neg_inj] at H⟩
 
 instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C where
-  Zero := inferInstance
+  zero := inferInstance
   comp_zero f R := show leftComp R f 0 = 0 from map_zero _
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 #align category_theory.preadditive.preadditive_has_zero_morphisms CategoryTheory.Preadditive.preadditiveHasZeroMorphisms
 
-/--Porting note: adding this before the ring instance allowed moduleEndRight to find
+/-- Porting note: adding this before the ring instance allowed moduleEndRight to find
 the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms
 to make use of them -/
 instance {X : C} : Semiring (End X) :=

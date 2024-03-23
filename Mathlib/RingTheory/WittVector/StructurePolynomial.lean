@@ -109,10 +109,12 @@ variable (p) [hp : Fact p.Prime]
 
 -- Notation with ring of coefficients explicit
 set_option quotPrecheck false in
+@[inherit_doc]
 scoped[Witt] notation "W_" => wittPolynomial p
 
 -- Notation with ring of coefficients implicit
 set_option quotPrecheck false in
+@[inherit_doc]
 scoped[Witt] notation "W" => wittPolynomial p _
 
 /-- `wittStructureRat Φ` is a family of polynomials `ℕ → MvPolynomial (idx × ℕ) ℚ`
@@ -232,7 +234,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
         m < n →
           map (Int.castRingHom ℚ) (wittStructureInt p Φ m) =
             wittStructureRat p (map (Int.castRingHom ℚ) Φ) m) :
-    (C (p ^ n : ℤ) : MvPolynomial (idx × ℕ) ℤ) ∣
+    (C ((p ^ n :) : ℤ) : MvPolynomial (idx × ℕ) ℤ) ∣
       bind₁ (fun b : idx => rename (fun i => (b, i)) (wittPolynomial p ℤ n)) Φ -
         ∑ i in range n, C ((p : ℤ) ^ i) * wittStructureInt p Φ i ^ p ^ (n - i) := by
   cases' n with n
@@ -249,7 +251,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
   rw [bind₁, aeval_wittPolynomial, map_sum, map_sum, Finset.sum_congr rfl]
   intro k hk
   rw [Finset.mem_range, Nat.lt_succ_iff] at hk
-  -- Porting note: was much slower
+  -- Porting note (#11083): was much slower
   -- simp only [← sub_eq_zero, ← RingHom.map_sub, ← C_dvd_iff_zmod, C_eq_coe_nat, ← mul_sub, ←
   --   Nat.cast_pow]
   rw [← sub_eq_zero, ← RingHom.map_sub, ← C_dvd_iff_zmod, C_eq_coe_nat, ← Nat.cast_pow,
@@ -261,7 +263,6 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
   apply mul_dvd_mul_left ((p : MvPolynomial (idx × ℕ) ℤ) ^ k)
   rw [show p ^ (n + 1 - k) = p * p ^ (n - k) by rw [← pow_succ, ← tsub_add_eq_add_tsub hk]]
   rw [pow_mul]
-  rw [← Nat.cast_pow] -- Porting note: added
   -- the machine!
   apply dvd_sub_pow_of_dvd_sub
   rw [← C_eq_coe_nat, C_dvd_iff_zmod, RingHom.map_sub, sub_eq_zero, map_expand, RingHom.map_pow,
@@ -294,7 +295,7 @@ theorem map_wittStructureInt (Φ : MvPolynomial idx ℤ) (n : ℕ) :
     map_bind₁, ← RingHom.map_sub, coeff_map]
   rw [show (p : ℚ) ^ n = ((↑(p ^ n) : ℤ) : ℚ) by norm_cast]
   rw [← Rat.den_eq_one_iff, eq_intCast, Rat.den_div_cast_eq_one_iff]
-  swap; · exact_mod_cast pow_ne_zero n hp.1.ne_zero
+  swap; · exact mod_cast pow_ne_zero n hp.1.ne_zero
   revert c; rw [← C_dvd_iff_dvd_coeff]
   exact C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum Φ n IH
 #align map_witt_structure_int map_wittStructureInt

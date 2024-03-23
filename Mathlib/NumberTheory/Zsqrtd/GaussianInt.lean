@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.NumberTheory.Zsqrtd.Basic
-import Mathlib.Data.Complex.Abs
 import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Real.Archimedean
 
 #align_import number_theory.zsqrtd.gaussian_int from "leanprover-community/mathlib"@"5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9"
 
@@ -101,32 +102,32 @@ theorem toComplex_re (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).re = x := by si
 theorem toComplex_im (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).im = y := by simp [toComplex_def]
 #align gaussian_int.to_complex_im GaussianInt.toComplex_im
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem toComplex_add (x y : ℤ[i]) : ((x + y : ℤ[i]) : ℂ) = x + y :=
   toComplex.map_add _ _
 #align gaussian_int.to_complex_add GaussianInt.toComplex_add
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem toComplex_mul (x y : ℤ[i]) : ((x * y : ℤ[i]) : ℂ) = x * y :=
   toComplex.map_mul _ _
 #align gaussian_int.to_complex_mul GaussianInt.toComplex_mul
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem toComplex_one : ((1 : ℤ[i]) : ℂ) = 1 :=
   toComplex.map_one
 #align gaussian_int.to_complex_one GaussianInt.toComplex_one
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem toComplex_zero : ((0 : ℤ[i]) : ℂ) = 0 :=
   toComplex.map_zero
 #align gaussian_int.to_complex_zero GaussianInt.toComplex_zero
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem toComplex_neg (x : ℤ[i]) : ((-x : ℤ[i]) : ℂ) = -x :=
   toComplex.map_neg _
 #align gaussian_int.to_complex_neg GaussianInt.toComplex_neg
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem toComplex_sub (x y : ℤ[i]) : ((x - y : ℤ[i]) : ℂ) = x - y :=
   toComplex.map_sub _ _
 #align gaussian_int.to_complex_sub GaussianInt.toComplex_sub

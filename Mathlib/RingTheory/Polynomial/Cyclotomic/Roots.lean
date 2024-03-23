@@ -78,7 +78,7 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
     rw [isRoot_of_unity_iff hnpos _]
     exact ⟨n, n.mem_divisors_self hnpos.ne', hμ⟩
   by_contra hnμ
-  have ho : 0 < orderOf μ := (isOfFinOrder_iff_pow_eq_one.2 $ ⟨n, hnpos, hμn⟩).orderOf_pos
+  have ho : 0 < orderOf μ := (isOfFinOrder_iff_pow_eq_one.2 <| ⟨n, hnpos, hμn⟩).orderOf_pos
   have := pow_orderOf_eq_one μ
   rw [isRoot_of_unity_iff ho] at this
   obtain ⟨i, hio, hiμ⟩ := this
@@ -113,7 +113,7 @@ theorem roots_cyclotomic_nodup [NeZero (n : R)] : (cyclotomic n R).roots.Nodup :
   rw [mem_roots <| cyclotomic_ne_zero n R, isRoot_cyclotomic_iff] at hζ
   refine' Multiset.nodup_of_le
     (roots.le_of_dvd (X_pow_sub_C_ne_zero (NeZero.pos_of_neZero_natCast R) 1) <|
-      cyclotomic.dvd_X_pow_sub_one n R) hζ.nthRoots_nodup
+      cyclotomic.dvd_X_pow_sub_one n R) hζ.nthRoots_one_nodup
 #align polynomial.roots_cyclotomic_nodup Polynomial.roots_cyclotomic_nodup
 
 theorem cyclotomic.roots_to_finset_eq_primitiveRoots [NeZero (n : R)] :
@@ -170,7 +170,7 @@ theorem cyclotomic_injective [CharZero R] : Function.Injective fun n => cyclotom
 theorem _root_.IsPrimitiveRoot.minpoly_dvd_cyclotomic {n : ℕ} {K : Type*} [Field K] {μ : K}
     (h : IsPrimitiveRoot μ n) (hpos : 0 < n) [CharZero K] : minpoly ℤ μ ∣ cyclotomic n ℤ := by
   apply minpoly.isIntegrallyClosed_dvd (h.isIntegral hpos)
-  simpa [aeval_def, eval₂_eq_eval_map, IsRoot.def] using h.isRoot_cyclotomic hpos
+  simpa [aeval_def, eval₂_eq_eval_map, IsRoot.definition] using h.isRoot_cyclotomic hpos
 #align is_primitive_root.minpoly_dvd_cyclotomic IsPrimitiveRoot.minpoly_dvd_cyclotomic
 
 section minpoly
@@ -182,7 +182,7 @@ theorem _root_.IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible {K : Type*} 
     (h : Irreducible <| cyclotomic n K) [NeZero (n : K)] : cyclotomic n K = minpoly K μ := by
   haveI := NeZero.of_noZeroSMulDivisors K R n
   refine' minpoly.eq_of_irreducible_of_monic h _ (cyclotomic.monic n K)
-  rwa [aeval_def, eval₂_eq_eval_map, map_cyclotomic, ← IsRoot.def, isRoot_cyclotomic_iff]
+  rwa [aeval_def, eval₂_eq_eval_map, map_cyclotomic, ← IsRoot.definition, isRoot_cyclotomic_iff]
 #align is_primitive_root.minpoly_eq_cyclotomic_of_irreducible IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible
 
 /-- `cyclotomic n ℤ` is the minimal polynomial of a primitive `n`-th root of unity `μ`. -/

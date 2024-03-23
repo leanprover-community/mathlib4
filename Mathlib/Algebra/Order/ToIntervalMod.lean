@@ -11,6 +11,7 @@ import Mathlib.Data.Int.SuccPred
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Order.Circular
 import Mathlib.Data.List.TFAE
+import Mathlib.Data.Set.Lattice
 
 #align_import algebra.order.to_interval_mod from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
@@ -690,23 +691,23 @@ theorem Ico_eq_locus_Ioc_eq_iUnion_Ioo :
     Classical.not_not]
 #align Ico_eq_locus_Ioc_eq_Union_Ioo Ico_eq_locus_Ioc_eq_iUnion_Ioo
 
-theorem toIocDiv_wcovby_toIcoDiv (a b : α) : toIocDiv hp a b ⩿ toIcoDiv hp a b := by
+theorem toIocDiv_wcovBy_toIcoDiv (a b : α) : toIocDiv hp a b ⩿ toIcoDiv hp a b := by
   suffices toIocDiv hp a b = toIcoDiv hp a b ∨ toIocDiv hp a b + 1 = toIcoDiv hp a b by
-    rwa [wcovby_iff_eq_or_covby, ← Order.succ_eq_iff_covby]
+    rwa [wcovBy_iff_eq_or_covBy, ← Order.succ_eq_iff_covBy]
   rw [eq_comm, ← not_modEq_iff_toIcoDiv_eq_toIocDiv, eq_comm, ←
     modEq_iff_toIcoDiv_eq_toIocDiv_add_one]
   exact em' _
-#align to_Ioc_div_wcovby_to_Ico_div toIocDiv_wcovby_toIcoDiv
+#align to_Ioc_div_wcovby_to_Ico_div toIocDiv_wcovBy_toIcoDiv
 
 theorem toIcoMod_le_toIocMod (a b : α) : toIcoMod hp a b ≤ toIocMod hp a b := by
   rw [toIcoMod, toIocMod, sub_le_sub_iff_left]
-  exact zsmul_mono_left hp.le (toIocDiv_wcovby_toIcoDiv _ _ _).le
+  exact zsmul_mono_left hp.le (toIocDiv_wcovBy_toIcoDiv _ _ _).le
 #align to_Ico_mod_le_to_Ioc_mod toIcoMod_le_toIocMod
 
 theorem toIocMod_le_toIcoMod_add (a b : α) : toIocMod hp a b ≤ toIcoMod hp a b + p := by
   rw [toIcoMod, toIocMod, sub_add, sub_le_sub_iff_left, sub_le_iff_le_add, ← add_one_zsmul,
     (zsmul_strictMono_left hp).le_iff_le]
-  apply (toIocDiv_wcovby_toIcoDiv _ _ _).le_succ
+  apply (toIocDiv_wcovBy_toIcoDiv _ _ _).le_succ
 #align to_Ioc_mod_le_to_Ico_mod_add toIocMod_le_toIcoMod_add
 
 end IcoIoc
@@ -856,18 +857,17 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
     toIcoMod hp x₂ x₃ ≤ toIocMod hp x₂ x₁ := by
   let x₂' := toIcoMod hp x₁ x₂
   let x₃' := toIcoMod hp x₂' x₃
-  have h : x₂' ≤ toIocMod hp x₁ x₃' := by simpa
+  have h : x₂' ≤ toIocMod hp x₁ x₃' := by simpa [x₃']
   have h₂₁ : x₂' < x₁ + p := toIcoMod_lt_right _ _ _
   have h₃₂ : x₃' - p < x₂' := sub_lt_iff_lt_add.2 (toIcoMod_lt_right _ _ _)
-  suffices hequiv : x₃' ≤ toIocMod hp x₂' x₁
-  · obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
+  suffices hequiv : x₃' ≤ toIocMod hp x₂' x₁ by
+    obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
     rw [hd, toIocMod_add_zsmul', toIcoMod_add_zsmul', add_le_add_iff_right]
     assumption -- Porting note: was `simpa`
-  cases' le_or_lt x₃' (x₁ + p) with h₃₁ h₁₃
-  · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p
-    · exact hIoc₂₁.symm.trans_ge h₃₁
+  rcases le_or_lt x₃' (x₁ + p) with h₃₁ | h₁₃
+  · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p from hIoc₂₁.symm.trans_ge h₃₁
     apply (toIocMod_eq_iff hp).2
-    exact ⟨⟨h₂₁, by simp [left_le_toIcoMod]⟩, -1, by simp⟩
+    exact ⟨⟨h₂₁, by simp [x₂', left_le_toIcoMod]⟩, -1, by simp⟩
   have hIoc₁₃ : toIocMod hp x₁ x₃' = x₃' - p := by
     apply (toIocMod_eq_iff hp).2
     exact ⟨⟨lt_sub_iff_add_lt.2 h₁₃, le_of_lt (h₃₂.trans h₂₁)⟩, 1, by simp⟩
@@ -877,7 +877,7 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
 private theorem toIxxMod_antisymm (h₁₂₃ : toIcoMod hp a b ≤ toIocMod hp a c)
     (h₁₃₂ : toIcoMod hp a c ≤ toIocMod hp a b) :
     b ≡ a [PMOD p] ∨ c ≡ b [PMOD p] ∨ a ≡ c [PMOD p] := by
-  by_contra' h
+  by_contra! h
   rw [modEq_comm] at h
   rw [← (not_modEq_iff_toIcoMod_eq_toIocMod hp).mp h.2.2] at h₁₂₃
   rw [← (not_modEq_iff_toIcoMod_eq_toIocMod hp).mp h.1] at h₁₃₂
@@ -889,7 +889,7 @@ private theorem toIxxMod_total' (a b c : α) :
     Thus if a ≠ b and b ≠ c then ({a-b} + {b-c}) + ({c-b} + {b-a}) = 2 * period, so one of
     `{a-b} + {b-c}` and `{c-b} + {b-a}` must be `≤ period` -/
   have := congr_arg₂ (· + ·) (toIcoMod_add_toIocMod_zero hp a b) (toIcoMod_add_toIocMod_zero hp c b)
-  simp only [add_add_add_comm] at this -- Porting note: was `rw`
+  simp only [add_add_add_comm] at this -- Porting note (#10691): Was `rw`
   rw [_root_.add_comm (toIocMod _ _ _), add_add_add_comm, ← two_nsmul] at this
   replace := min_le_of_add_le_two_nsmul this.le
   rw [min_le_iff] at this
@@ -907,8 +907,8 @@ private theorem toIxxMod_trans {x₁ x₂ x₃ x₄ : α}
     (h₂₃₄ : toIcoMod hp x₂ x₄ ≤ toIocMod hp x₂ x₃ ∧ ¬toIcoMod hp x₃ x₄ ≤ toIocMod hp x₃ x₂) :
     toIcoMod hp x₁ x₄ ≤ toIocMod hp x₁ x₃ ∧ ¬toIcoMod hp x₃ x₄ ≤ toIocMod hp x₃ x₁ := by
   constructor
-  · suffices h : ¬x₃ ≡ x₂ [PMOD p]
-    · have h₁₂₃' := toIxxMod_cyclic_left _ (toIxxMod_cyclic_left _ h₁₂₃.1)
+  · suffices h : ¬x₃ ≡ x₂ [PMOD p] by
+      have h₁₂₃' := toIxxMod_cyclic_left _ (toIxxMod_cyclic_left _ h₁₂₃.1)
       have h₂₃₄' := toIxxMod_cyclic_left _ (toIxxMod_cyclic_left _ h₂₃₄.1)
       rw [(not_modEq_iff_toIcoMod_eq_toIocMod hp).1 h] at h₂₃₄'
       exact toIxxMod_cyclic_left _ (h₁₂₃'.trans h₂₃₄')

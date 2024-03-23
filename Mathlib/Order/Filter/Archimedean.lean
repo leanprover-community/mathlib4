@@ -46,7 +46,7 @@ theorem Filter.Eventually.nat_cast_atTop [OrderedSemiring R] [Archimedean R] {p 
 @[simp] theorem Int.comap_cast_atTop [StrictOrderedRing R] [Archimedean R] :
     comap ((↑) : ℤ → R) atTop = atTop :=
   comap_embedding_atTop (fun _ _ => Int.cast_le) fun r =>
-    let ⟨n, hn⟩ := exists_nat_ge r; ⟨n, by exact_mod_cast hn⟩
+    let ⟨n, hn⟩ := exists_nat_ge r; ⟨n, mod_cast hn⟩
 #align int.comap_coe_at_top Int.comap_cast_atTop
 
 @[simp]
@@ -74,11 +74,11 @@ theorem tendsto_int_cast_atTop_atTop [StrictOrderedRing R] [Archimedean R] :
 
 theorem Filter.Eventually.int_cast_atTop [StrictOrderedRing R] [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x:R) in atTop, p x) : ∀ᶠ (n:ℤ) in atTop, p n := by
-  rw [←Int.comap_cast_atTop (R := R)]; exact h.comap _
+  rw [← Int.comap_cast_atTop (R := R)]; exact h.comap _
 
 theorem Filter.Eventually.int_cast_atBot [StrictOrderedRing R] [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x:R) in atBot, p x) : ∀ᶠ (n:ℤ) in atBot, p n := by
-  rw [←Int.comap_cast_atBot (R := R)]; exact h.comap _
+  rw [← Int.comap_cast_atBot (R := R)]; exact h.comap _
 
 @[simp]
 theorem Rat.comap_cast_atTop [LinearOrderedField R] [Archimedean R] :
@@ -91,7 +91,7 @@ theorem Rat.comap_cast_atTop [LinearOrderedField R] [Archimedean R] :
     comap ((↑) : ℚ → R) atBot = atBot :=
   comap_embedding_atBot (fun _ _ => Rat.cast_le) fun r =>
     let ⟨n, hn⟩ := exists_nat_ge (-r)
-    ⟨-n, by simpa [neg_le] ⟩
+    ⟨-n, by simpa [neg_le]⟩
 #align rat.comap_coe_at_bot Rat.comap_cast_atBot
 
 theorem tendsto_rat_cast_atTop_iff [LinearOrderedField R] [Archimedean R] {f : α → ℚ}
@@ -106,13 +106,13 @@ theorem tendsto_rat_cast_atBot_iff [LinearOrderedField R] [Archimedean R] {f : �
 
 theorem Filter.Eventually.rat_cast_atTop [LinearOrderedField R] [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x:R) in atTop, p x) : ∀ᶠ (n:ℚ) in atTop, p n := by
-  rw [←Rat.comap_cast_atTop (R := R)]; exact h.comap _
+  rw [← Rat.comap_cast_atTop (R := R)]; exact h.comap _
 
 theorem Filter.Eventually.rat_cast_atBot [LinearOrderedField R] [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x:R) in atBot, p x) : ∀ᶠ (n:ℚ) in atBot, p n := by
-  rw [←Rat.comap_cast_atBot (R := R)]; exact h.comap _
+  rw [← Rat.comap_cast_atBot (R := R)]; exact h.comap _
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem atTop_hasAntitoneBasis_of_archimedean [OrderedSemiring R] [Archimedean R] :
     (atTop : Filter R).HasAntitoneBasis fun n : ℕ => Ici n :=
   hasAntitoneBasis_atTop.comp_mono Nat.mono_cast tendsto_nat_cast_atTop_atTop
@@ -122,7 +122,7 @@ theorem atTop_hasCountableBasis_of_archimedean [StrictOrderedSemiring R] [Archim
   ⟨atTop_hasAntitoneBasis_of_archimedean.1, to_countable _⟩
 #align at_top_countable_basis_of_archimedean atTop_hasCountableBasis_of_archimedean
 
--- porting note: todo: generalize to a `StrictOrderedRing`
+-- Porting note (#11215): TODO: generalize to a `StrictOrderedRing`
 theorem atBot_hasCountableBasis_of_archimedean [LinearOrderedRing R] [Archimedean R] :
     (atBot : Filter R).HasCountableBasis (fun _ : ℤ => True) fun m => Iic m :=
   { countable := to_countable _
@@ -226,7 +226,7 @@ theorem Tendsto.atTop_nsmul_const {f : α → ℕ} (hr : 0 < r) (hf : Tendsto f 
     Tendsto (fun x => f x • r) l atTop := by
   refine' tendsto_atTop.mpr fun s => _
   obtain ⟨n : ℕ, hn : s ≤ n • r⟩ := Archimedean.arch s hr
-  exact (tendsto_atTop.mp hf n).mono fun a ha => hn.trans (nsmul_le_nsmul hr.le ha)
+  exact (tendsto_atTop.mp hf n).mono fun a ha => hn.trans (nsmul_le_nsmul_left hr.le ha)
 #align filter.tendsto.at_top_nsmul_const Filter.Tendsto.atTop_nsmul_const
 
 end LinearOrderedCancelAddCommMonoid
@@ -243,7 +243,7 @@ theorem Tendsto.atTop_zsmul_const {f : α → ℤ} (hr : 0 < r) (hf : Tendsto f 
     Tendsto (fun x => f x • r) l atTop := by
   refine' tendsto_atTop.mpr fun s => _
   obtain ⟨n : ℕ, hn : s ≤ n • r⟩ := Archimedean.arch s hr
-  replace hn : s ≤ (n : ℤ) • r; · simpa
+  replace hn : s ≤ (n : ℤ) • r := by simpa
   exact (tendsto_atTop.mp hf n).mono fun a ha => hn.trans (zsmul_le_zsmul hr.le ha)
 #align filter.tendsto.at_top_zsmul_const Filter.Tendsto.atTop_zsmul_const
 

@@ -70,7 +70,7 @@ instance quasiCompactComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCom
   rw [Scheme.comp_val_base, coe_comp, Set.preimage_comp]
   apply QuasiCompact.isCompact_preimage
   · exact Continuous.isOpen_preimage (by
-    -- porting note: `continuity` failed
+    -- Porting note: `continuity` failed
     -- see https://github.com/leanprover-community/mathlib4/issues/5030
       exact Scheme.Hom.continuous g) _ hU
   apply QuasiCompact.isCompact_preimage <;> assumption
@@ -96,7 +96,7 @@ theorem isCompact_open_iff_eq_basicOpen_union {X : Scheme} [IsAffine X] (U : Set
 theorem quasiCompact_iff_forall_affine :
     QuasiCompact f ↔
       ∀ U : Opens Y.carrier, IsAffineOpen U → IsCompact (f.1.base ⁻¹' (U : Set Y.carrier)) := by
-  rw [QuasiCompact_iff]
+  rw [quasiCompact_iff]
   refine' ⟨fun H U hU => H U U.isOpen hU.isCompact, _⟩
   intro H U hU hU'
   obtain ⟨S, hS, rfl⟩ := (isCompact_open_iff_eq_finset_affine_union U).mp ⟨hU', hU⟩
@@ -146,7 +146,7 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X.carrier} (hU : IsCompact (
   rw [e, Set.iUnion₂_inter]
   apply le_antisymm <;> apply Set.iUnion₂_subset
   · intro i hi
-    -- porting note: had to make explicit the first given parameter to `Set.subset_iUnion₂`
+    -- Porting note: had to make explicit the first given parameter to `Set.subset_iUnion₂`
     exact Set.Subset.trans (Set.Subset.rfl : _ ≤ g ⟨i, hi⟩)
       (@Set.subset_iUnion₂ _ _ _
         (fun (i : Scheme.affineOpens X) (_ : i ∈ Set.range g) => (i : Set X.toPresheafedSpace)) _
@@ -251,8 +251,8 @@ theorem QuasiCompact.affineProperty_stableUnderBaseChange :
   intro X Y S _ _ f g h
   rw [QuasiCompact.affineProperty] at h ⊢
   let 𝒰 := Scheme.Pullback.openCoverOfRight Y.affineCover.finiteSubcover f g
-  have : Finite 𝒰.J := by dsimp; infer_instance
-  have : ∀ i, CompactSpace (𝒰.obj i).carrier := by intro i; dsimp; infer_instance
+  have : Finite 𝒰.J := by dsimp [𝒰]; infer_instance
+  have : ∀ i, CompactSpace (𝒰.obj i).carrier := by intro i; dsimp [𝒰]; infer_instance
   exact 𝒰.compactSpace
 #align algebraic_geometry.quasi_compact.affine_property_stable_under_base_change AlgebraicGeometry.QuasiCompact.affineProperty_stableUnderBaseChange
 
@@ -296,7 +296,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
     {U : Opens X} (hU : IsAffineOpen U) (x f : X.presheaf.obj (op U))
     (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
   rw [← map_zero (X.presheaf.map (homOfLE <| X.basicOpen_le f : X.basicOpen f ⟶ U).op)] at H
-  obtain ⟨⟨_, n, rfl⟩, e⟩ := (hU.isLocalization_basicOpen f).eq_iff_exists'.mp H
+  obtain ⟨⟨_, n, rfl⟩, e⟩ := (hU.isLocalization_basicOpen f).exists_of_eq H
   exact ⟨n, by simpa [mul_comm x] using e⟩
 #align algebraic_geometry.exists_pow_mul_eq_zero_of_res_basic_open_eq_zero_of_is_affine_open AlgebraicGeometry.exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen
 
@@ -306,13 +306,13 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     {U : Opens X.carrier} (hU : IsCompact U.1) (x f : X.presheaf.obj (op U))
     (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
   obtain ⟨s, hs, e⟩ := (isCompact_open_iff_eq_finset_affine_union U.1).mp ⟨hU, U.2⟩
-  replace e : U = iSup fun i : s => (i : Opens X.carrier)
-  · ext1; simpa using e
+  replace e : U = iSup fun i : s => (i : Opens X.carrier) := by
+    ext1; simpa using e
   have h₁ : ∀ i : s, i.1.1 ≤ U := by
     intro i
     change (i : Opens X.carrier) ≤ U
     rw [e]
-    -- porting note: `exact le_iSup _ _` no longer works
+    -- Porting note: `exact le_iSup _ _` no longer works
     exact le_iSup (fun (i : s) => (i : Opens (X.toPresheafedSpace))) _
   have H' := fun i : s =>
     exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen X i.1.2
@@ -320,10 +320,12 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   swap
   · delta TopCat.Presheaf.restrictOpen TopCat.Presheaf.restrict at H ⊢
     convert congr_arg (X.presheaf.map (homOfLE _).op) H
-    · simp only [← comp_apply, ← Functor.map_comp]
+    -- Note: the below was `simp only [← comp_apply]`
+    · rw [← comp_apply, ← comp_apply]
+      simp only [← Functor.map_comp]
       rfl
+      · simp only [Scheme.basicOpen_res, ge_iff_le, inf_le_right]
     · rw [map_zero]
-      simp only [Scheme.basicOpen_res, ge_iff_le, inf_le_right]
   choose n hn using H'
   haveI := hs.to_subtype
   cases nonempty_fintype s

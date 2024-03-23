@@ -51,7 +51,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
               _ ≤ natDegree (C (coeff p n)) + n • degree q :=
                 (add_le_add degree_le_natDegree (degree_pow_le _ _))
               _ ≤ natDegree (C (coeff p n)) + n • ↑(natDegree q) :=
-                (add_le_add_left (nsmul_le_nsmul_of_le_right (@degree_le_natDegree _ _ q) n) _)
+                (add_le_add_left (nsmul_le_nsmul_right (@degree_le_natDegree _ _ q) n) _)
               _ = (n * natDegree q : ℕ) := by
                 rw [natDegree_C, Nat.cast_zero, zero_add, nsmul_eq_mul];
                   simp
@@ -162,14 +162,11 @@ theorem natDegree_lt_coeff_mul (h : p.natDegree + q.natDegree < m + n) :
 
 theorem coeff_mul_of_natDegree_le (pm : p.natDegree ≤ m) (qn : q.natDegree ≤ n) :
     (p * q).coeff (m + n) = p.coeff m * q.coeff n := by
-  rcases eq_or_lt_of_le pm with (rfl | hm) <;> rcases eq_or_lt_of_le qn with (rfl | hn)
-  · exact natDegree_add_coeff_mul _ _
-  · rw [coeff_eq_zero_of_natDegree_lt hn, mul_zero]
-    exact natDegree_lt_coeff_mul (add_lt_add_left hn _)
-  · rw [coeff_eq_zero_of_natDegree_lt hm, zero_mul]
-    exact natDegree_lt_coeff_mul (add_lt_add_right hm _)
-  · rw [coeff_eq_zero_of_natDegree_lt hn, mul_zero]
-    exact natDegree_lt_coeff_mul (add_lt_add hm hn)
+  simp_rw [← Polynomial.toFinsupp_apply, toFinsupp_mul]
+  refine AddMonoidAlgebra.apply_add_of_supDegree_le ?_ Function.injective_id ?_ ?_
+  · simp
+  · rwa [supDegree_eq_natDegree, id_eq]
+  · rwa [supDegree_eq_natDegree, id_eq]
 #align polynomial.coeff_mul_of_nat_degree_le Polynomial.coeff_mul_of_natDegree_le
 
 theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
@@ -186,7 +183,7 @@ theorem coeff_pow_eq_ite_of_natDegree_le_of_le {o : ℕ}
     coeff (p ^ m) o = if o = m * n then (coeff p n) ^ m else 0 := by
   rcases eq_or_ne o (m * n) with rfl | h
   · simpa only [ite_true] using coeff_pow_of_natDegree_le pn
-  · simpa only [h, ite_false] using coeff_eq_zero_of_natDegree_lt $
+  · simpa only [h, ite_false] using coeff_eq_zero_of_natDegree_lt <|
       lt_of_le_of_lt (natDegree_pow_le_of_le m pn) (lt_of_le_of_ne mno h.symm)
 
 theorem coeff_add_eq_left_of_lt (qn : q.natDegree < n) : (p + q).coeff n = p.coeff n :=
@@ -298,10 +295,9 @@ theorem degree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
   · simp [h]
   simp only [h, or_false]
   refine ⟨fun h2 ↦ ?_, degree_map_eq_of_leadingCoeff_ne_zero f⟩
-  have h3 : natDegree (map f p) = natDegree p
-  · simp_rw [natDegree, h2]
-  have h4 : map f p ≠ 0
-  · rwa [ne_eq, ← degree_eq_bot, h2, degree_eq_bot]
+  have h3 : natDegree (map f p) = natDegree p := by simp_rw [natDegree, h2]
+  have h4 : map f p ≠ 0 := by
+    rwa [ne_eq, ← degree_eq_bot, h2, degree_eq_bot]
   rwa [← coeff_natDegree, ← coeff_map, ← h3, coeff_natDegree, ne_eq, leadingCoeff_eq_zero]
 
 @[simp]
@@ -314,6 +310,12 @@ theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
   simp_rw [h, or_false, natDegree, WithBot.unbot'_eq_unbot'_iff, degree_map_eq_iff]
   simp [h, h2, h3] -- simp doesn't rewrite in the hypothesis for some reason
   tauto
+
+theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by
+  rw [nextCoeff] at h
+  by_cases hpz : p.natDegree = 0
+  · simp_all only [ne_eq, zero_le, ite_true, not_true_eq_false]
+  · apply Nat.zero_lt_of_ne_zero hpz
 
 end Degree
 
@@ -349,7 +351,7 @@ end Ring
 
 section NoZeroDivisors
 
-variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
+variable [Semiring R] [NoZeroDivisors R] {p q : R[X]} {a : R}
 
 theorem degree_mul_C (a0 : a ≠ 0) : (p * C a).degree = p.degree := by
   rw [degree_mul, degree_C a0, add_zero]
@@ -370,6 +372,24 @@ theorem natDegree_C_mul (a0 : a ≠ 0) : (C a * p).natDegree = p.natDegree := by
   simp only [natDegree, degree_C_mul a0]
 set_option linter.uppercaseLean3 false in
 #align polynomial.nat_degree_C_mul Polynomial.natDegree_C_mul
+
+@[simp]
+lemma nextCoeff_C_mul_X_add_C (ha : a ≠ 0) (c : R) : nextCoeff (C a * X + C c) = c := by
+  rw [nextCoeff_of_natDegree_pos] <;> simp [ha]
+
+lemma natDegree_eq_one : p.natDegree = 1 ↔ ∃ a ≠ 0, ∃ b, C a * X + C b = p := by
+  refine ⟨fun hp ↦ ⟨p.coeff 1, fun h ↦ ?_, p.coeff 0, ?_⟩, ?_⟩
+  · rw [← hp, coeff_natDegree, leadingCoeff_eq_zero] at h
+    aesop
+  · ext n
+    obtain _ | _ | n := n
+    · simp
+    · simp
+    · simp only [coeff_add, coeff_mul_X, coeff_C_succ, add_zero]
+      rw [coeff_eq_zero_of_natDegree_lt]
+      simp [hp]
+  · rintro ⟨a, ha, b, rfl⟩
+    simp [ha]
 
 theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
   by_cases q0 : q.natDegree = 0
@@ -396,5 +416,60 @@ theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
 #align polynomial.leading_coeff_comp Polynomial.leadingCoeff_comp
 
 end NoZeroDivisors
+
+section DivisionRing
+
+variable {K : Type*} [DivisionRing K]
+
+/-! Useful lemmas for the "monicization" of a nonzero polynomial `p`. -/
+@[simp]
+theorem irreducible_mul_leadingCoeff_inv {p : K[X]} :
+    Irreducible (p * C (leadingCoeff p)⁻¹) ↔ Irreducible p := by
+  by_cases hp0 : p = 0
+  · simp [hp0]
+  exact irreducible_mul_isUnit
+    (isUnit_C.mpr (IsUnit.mk0 _ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))
+
+@[simp] lemma dvd_mul_leadingCoeff_inv {p q : K[X]} (hp0 : p ≠ 0) :
+    q ∣ p * C (leadingCoeff p)⁻¹ ↔ q ∣ p :=
+  IsUnit.dvd_mul_right <| isUnit_C.mpr <| IsUnit.mk0 _ <|
+    inv_ne_zero <| leadingCoeff_ne_zero.mpr hp0
+
+theorem monic_mul_leadingCoeff_inv {p : K[X]} (h : p ≠ 0) : Monic (p * C (leadingCoeff p)⁻¹) := by
+  rw [Monic, leadingCoeff_mul, leadingCoeff_C,
+    mul_inv_cancel (show leadingCoeff p ≠ 0 from mt leadingCoeff_eq_zero.1 h)]
+#align polynomial.monic_mul_leading_coeff_inv Polynomial.monic_mul_leadingCoeff_inv
+
+-- `simp` normal form of `degree_mul_leadingCoeff_inv`
+@[simp] lemma degree_leadingCoeff_inv {p : K[X]} (hp0 : p ≠ 0) :
+    degree (C (leadingCoeff p)⁻¹) = 0 :=
+  degree_C (inv_ne_zero <| leadingCoeff_ne_zero.mpr hp0)
+
+theorem degree_mul_leadingCoeff_inv (p : K[X]) {q : K[X]} (h : q ≠ 0) :
+    degree (p * C (leadingCoeff q)⁻¹) = degree p := by
+  have h₁ : (leadingCoeff q)⁻¹ ≠ 0 := inv_ne_zero (mt leadingCoeff_eq_zero.1 h)
+  rw [degree_mul_C h₁]
+#align polynomial.degree_mul_leading_coeff_inv Polynomial.degree_mul_leadingCoeff_inv
+
+theorem natDegree_mul_leadingCoeff_inv (p : K[X]) {q : K[X]} (h : q ≠ 0) :
+    natDegree (p * C (leadingCoeff q)⁻¹) = natDegree p :=
+  natDegree_eq_of_degree_eq (degree_mul_leadingCoeff_inv _ h)
+
+theorem degree_mul_leadingCoeff_self_inv (p : K[X]) :
+    degree (p * C (leadingCoeff p)⁻¹) = degree p := by
+  by_cases hp : p = 0
+  · simp [hp]
+  exact degree_mul_leadingCoeff_inv _ hp
+
+theorem natDegree_mul_leadingCoeff_self_inv (p : K[X]) :
+    natDegree (p * C (leadingCoeff p)⁻¹) = natDegree p :=
+  natDegree_eq_of_degree_eq (degree_mul_leadingCoeff_self_inv _)
+
+-- `simp` normal form of `degree_mul_leadingCoeff_self_inv`
+@[simp] lemma degree_add_degree_leadingCoeff_inv (p : K[X]) :
+    degree p + degree (C (leadingCoeff p)⁻¹) = degree p := by
+  rw [← degree_mul, degree_mul_leadingCoeff_self_inv]
+
+end DivisionRing
 
 end Polynomial

@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
+import Mathlib.Order.Hom.Basic
 
 #align_import data.pnat.basic from "leanprover-community/mathlib"@"172bf2812857f5e56938cc148b7a539f52f84ca9"
 
@@ -20,16 +21,14 @@ It is defined in `Data.PNat.Defs`, but most of the development is deferred to he
 that `Data.PNat.Defs` can have very few imports.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
   LinearOrderedCancelCommMonoid, Add, Mul, Distrib for PNat
 
 namespace PNat
 
 -- Porting note: this instance is no longer automatically inferred in Lean 4.
-instance : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
-instance : IsWellOrder ℕ+ (· < ·) where
+instance instWellFoundedLT : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
+instance instIsWellOrder : IsWellOrder ℕ+ (· < ·) where
 
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
@@ -68,6 +67,9 @@ theorem natPred_le_natPred {m n : ℕ+} : m.natPred ≤ n.natPred ↔ m ≤ n :=
 theorem natPred_inj {m n : ℕ+} : m.natPred = n.natPred ↔ m = n :=
   natPred_injective.eq_iff
 #align pnat.nat_pred_inj PNat.natPred_inj
+
+@[simp]
+lemma val_ofNat (n : ℕ) : ((no_index (OfNat.ofNat n.succ) : ℕ+) : ℕ) = n.succ := rfl
 
 end PNat
 
@@ -170,7 +172,7 @@ theorem lt_add_one_iff : ∀ {a b : ℕ+}, a < b + 1 ↔ a ≤ b := Nat.lt_add_o
 theorem add_one_le_iff : ∀ {a b : ℕ+}, a + 1 ≤ b ↔ a < b := Nat.add_one_le_iff
 #align pnat.add_one_le_iff PNat.add_one_le_iff
 
-instance : OrderBot ℕ+ where
+instance instOrderBot : OrderBot ℕ+ where
   bot := 1
   bot_le a := a.property
 
@@ -179,7 +181,7 @@ theorem bot_eq_one : (⊥ : ℕ+) = 1 :=
   rfl
 #align pnat.bot_eq_one PNat.bot_eq_one
 
--- Porting note: deprecated
+-- Porting note (#11229): deprecated
 section deprecated
 
 set_option linter.deprecated false
@@ -254,7 +256,7 @@ theorem lt_add_right (n m : ℕ+) : n < n + m :=
   (lt_add_left n m).trans_eq (add_comm _ _)
 #align pnat.lt_add_right PNat.lt_add_right
 
--- Porting note: deprecated
+-- Porting note (#11229): deprecated
 section deprecated
 
 set_option linter.deprecated false
@@ -272,14 +274,14 @@ theorem coe_bit1 (a : ℕ+) : ((bit1 a : ℕ+) : ℕ) = bit1 (a : ℕ) :=
 end deprecated
 
 @[simp, norm_cast]
-theorem pow_coe (m : ℕ+) (n : ℕ) : (m ^ n : ℕ) = (m : ℕ) ^ n :=
+theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
   rfl
 #align pnat.pow_coe PNat.pow_coe
 
 /-- Subtraction a - b is defined in the obvious way when
   a > b, and by a - b = 1 if a ≤ b.
 -/
-instance : Sub ℕ+ :=
+instance instSub : Sub ℕ+ :=
   ⟨fun a b => toPNat' (a - b : ℕ)⟩
 
 theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ) 1 := by
@@ -312,7 +314,7 @@ def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
   · exact (lt_irrefl 0 kprop).elim
   cases' k with k
   · exact hz
-  exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (lt_succ_iff.2 hm)
+  exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (Nat.lt_succ_iff.2 hm)
 #align pnat.case_strong_induction_on PNat.caseStrongInductionOn
 
 /-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
@@ -383,7 +385,7 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
     · rw [h₁, mul_zero] at hm
       exact (lt_irrefl _ hm).elim
     · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
-        -- Porting note : Specified type of `h₂` explicitly because `rw` could not unify
+        -- Porting note: Specified type of `h₂` explicitly because `rw` could not unify
         -- `succ 0` with `1`.
         Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))
       rw [mul_one] at h₂
@@ -396,13 +398,11 @@ theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
   · rcases h with ⟨_, rfl⟩
     apply dvd_mul_right
   · rcases h with ⟨a, h⟩
-    cases a with
-    | zero =>
-      contrapose h
-      apply ne_zero
-    | succ n =>
-      use ⟨n.succ, n.succ_pos⟩
-      rw [← coe_inj, h, mul_coe, mk_coe]
+    obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (n := a) <| by
+      rintro rfl
+      simp only [mul_zero, ne_zero] at h
+    use ⟨n.succ, n.succ_pos⟩
+    rw [← coe_inj, h, mul_coe, mk_coe]
 #align pnat.dvd_iff PNat.dvd_iff
 
 theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by

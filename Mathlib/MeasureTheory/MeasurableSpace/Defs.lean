@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Order.Disjointed
 import Mathlib.Tactic.Measurability
 
@@ -40,7 +39,7 @@ measurable space, σ-algebra, measurable function
 
 open Set Encodable Function Equiv
 
-open Classical
+open scoped Classical
 
 variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
 
@@ -65,16 +64,18 @@ def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 #align measurable_set MeasurableSet
 
--- porting note: todo: `scoped[MeasureTheory]` doesn't work for unknown reason
+-- Porting note (#11215): TODO: `scoped[MeasureTheory]` doesn't work for unknown reason
 namespace MeasureTheory
 set_option quotPrecheck false in
-/-- Notation for `MeasurableSet` with respect to a non-standanrd σ-algebra. -/
+/-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
 scoped notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
 end MeasureTheory
 open MeasureTheory
 
 section
+
+open scoped symmDiff
 
 @[simp, measurability]
 theorem MeasurableSet.empty [MeasurableSpace α] : MeasurableSet (∅ : Set α) :=
@@ -208,10 +209,18 @@ protected theorem MeasurableSet.diff {s₁ s₂ : Set α} (h₁ : MeasurableSet 
 #align measurable_set.diff MeasurableSet.diff
 
 @[simp, measurability]
+protected lemma MeasurableSet.himp {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁) (h₂ : MeasurableSet s₂) :
+    MeasurableSet (s₁ ⇨ s₂) := by rw [himp_eq]; exact h₂.union h₁.compl
+
+@[simp, measurability]
 protected theorem MeasurableSet.symmDiff {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
     (h₂ : MeasurableSet s₂) : MeasurableSet (s₁ ∆ s₂) :=
   (h₁.diff h₂).union (h₂.diff h₁)
 #align measurable_set.symm_diff MeasurableSet.symmDiff
+
+@[simp, measurability]
+protected lemma MeasurableSet.bihimp {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
+    (h₂ : MeasurableSet s₂) : MeasurableSet (s₁ ⇔ s₂) := (h₂.himp h₁).inter (h₁.himp h₂)
 
 @[simp, measurability]
 protected theorem MeasurableSet.ite {t s₁ s₂ : Set α} (ht : MeasurableSet t)
@@ -444,12 +453,20 @@ theorem generateFrom_sup_generateFrom {s t : Set (Set α)} :
   (@giGenerateFrom α).gc.l_sup.symm
 #align measurable_space.generate_from_sup_generate_from MeasurableSpace.generateFrom_sup_generateFrom
 
+lemma iSup_generateFrom (s : ι → Set (Set α)) :
+    ⨆ i, generateFrom (s i) = generateFrom (⋃ i, s i) :=
+  (@MeasurableSpace.giGenerateFrom α).gc.l_iSup.symm
+
+@[simp]
+lemma generateFrom_empty : generateFrom (∅ : Set (Set α)) = ⊥ :=
+  le_bot_iff.mp (generateFrom_le (by simp))
+
 theorem generateFrom_singleton_empty : generateFrom {∅} = (⊥ : MeasurableSpace α) :=
-  bot_unique $ generateFrom_le <| by simp [@MeasurableSet.empty α ⊥]
+  bot_unique <| generateFrom_le <| by simp [@MeasurableSet.empty α ⊥]
 #align measurable_space.generate_from_singleton_empty MeasurableSpace.generateFrom_singleton_empty
 
 theorem generateFrom_singleton_univ : generateFrom {Set.univ} = (⊥ : MeasurableSpace α) :=
-  bot_unique $ generateFrom_le <| by simp
+  bot_unique <| generateFrom_le <| by simp
 #align measurable_space.generate_from_singleton_univ MeasurableSpace.generateFrom_singleton_univ
 
 @[simp]
@@ -469,7 +486,7 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
     { MeasurableSet' := fun s => s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
       measurableSet_compl := by simp (config := { contextual := true }) [or_imp]
-      measurableSet_iUnion := fun f hf => sUnion_mem_empty_univ (forall_range_iff.2 hf) }
+      measurableSet_iUnion := fun f hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
   have : b = ⊥ :=
     bot_unique fun s hs =>
       hs.elim (fun s => s.symm ▸ @measurableSet_empty _ ⊥) fun s =>
@@ -480,7 +497,8 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
 @[simp, measurability] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
 #align measurable_space.measurable_set_top MeasurableSpace.measurableSet_top
 
-@[simp, nolint simpNF] -- porting note: todo: `simpNF` claims that this lemma doesn't simplify LHS
+@[simp, nolint simpNF] -- Porting note (#11215): TODO: `simpNF` claims that
+-- this lemma doesn't simplify LHS
 theorem measurableSet_inf {m₁ m₂ : MeasurableSpace α} {s : Set α} :
     MeasurableSet[m₁ ⊓ m₂] s ↔ MeasurableSet[m₁] s ∧ MeasurableSet[m₂] s :=
   Iff.rfl
@@ -494,7 +512,7 @@ theorem measurableSet_sInf {ms : Set (MeasurableSpace α)} {s : Set α} :
 
 theorem measurableSet_iInf {ι} {m : ι → MeasurableSpace α} {s : Set α} :
     MeasurableSet[iInf m] s ↔ ∀ i, MeasurableSet[m i] s := by
-  rw [iInf, measurableSet_sInf, forall_range_iff]
+  rw [iInf, measurableSet_sInf, forall_mem_range]
 #align measurable_space.measurable_set_infi MeasurableSpace.measurableSet_iInf
 
 theorem measurableSet_sup {m₁ m₂ : MeasurableSpace α} {s : Set α} :
@@ -561,7 +579,7 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
 #align measurable.comp Measurable.comp
 
 -- This is needed due to reducibility issues with the `measurability` tactic.
-@[aesop safe 50 (rule_sets [Measurable])]
+@[aesop safe 50 (rule_sets := [Measurable])]
 protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (fun x => g (f x)) := Measurable.comp hg hf
@@ -575,8 +593,36 @@ theorem Measurable.le {α} {m m0 : MeasurableSpace α} {_ : MeasurableSpace β} 
     {f : α → β} (hf : Measurable[m] f) : Measurable[m0] f := fun _ hs => hm _ (hf hs)
 #align measurable.le Measurable.le
 
-theorem MeasurableSpace.Top.measurable {α β : Type*} [MeasurableSpace β] (f : α → β) :
-    Measurable[⊤] f := fun _ _ => MeasurableSpace.measurableSet_top
-#align measurable_space.top.measurable MeasurableSpace.Top.measurable
-
 end MeasurableFunctions
+
+/-- A typeclass mixin for `MeasurableSpace`s such that all sets are measurable. -/
+class DiscreteMeasurableSpace (α : Type*) [MeasurableSpace α] : Prop where
+  /-- Do not use this. Use `measurableSet_discrete` instead. -/
+  forall_measurableSet : ∀ s : Set α, MeasurableSet s
+
+instance : @DiscreteMeasurableSpace α ⊤ :=
+  @DiscreteMeasurableSpace.mk _ (_) fun _ ↦ MeasurableSpace.measurableSet_top
+
+-- See note [lower instance priority]
+instance (priority := 100) MeasurableSingletonClass.toDiscreteMeasurableSpace [MeasurableSpace α]
+    [MeasurableSingletonClass α] [Countable α] : DiscreteMeasurableSpace α where
+  forall_measurableSet _ := (Set.to_countable _).measurableSet
+
+section DiscreteMeasurableSpace
+variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α]
+
+@[measurability] lemma measurableSet_discrete (s : Set α) : MeasurableSet s :=
+  DiscreteMeasurableSpace.forall_measurableSet _
+
+@[measurability]
+lemma measurable_discrete (f : α → β) : Measurable f := fun _ _ ↦ measurableSet_discrete _
+#align measurable_space.top.measurable measurable_discrete
+
+/-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
+To be monitored. -/
+-- See note [lower instance priority]
+instance (priority := 100) DiscreteMeasurableSpace.toMeasurableSingletonClass :
+    MeasurableSingletonClass α where
+  measurableSet_singleton _ := measurableSet_discrete _
+
+end DiscreteMeasurableSpace

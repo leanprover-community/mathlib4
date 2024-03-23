@@ -159,10 +159,10 @@ theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
     (x : AddCircle p) = 0 ↔ ∃ n : ℕ, n • p = x := by
   rw [coe_eq_zero_iff]
   constructor <;> rintro ⟨n, rfl⟩
-  · replace hx : 0 < n
-    · contrapose! hx
+  · replace hx : 0 < n := by
+      contrapose! hx
       simpa only [← neg_nonneg, ← zsmul_neg, zsmul_neg'] using zsmul_nonneg hp.le (neg_nonneg.2 hx)
-    exact ⟨n.toNat, by rw [← coe_nat_zsmul, Int.toNat_of_nonneg hx.le]⟩
+    exact ⟨n.toNat, by rw [← natCast_zsmul, Int.toNat_of_nonneg hx.le]⟩
   · exact ⟨(n : ℤ), by simp⟩
 #align add_circle.coe_eq_zero_of_pos_iff AddCircle.coe_eq_zero_of_pos_iff
 
@@ -170,7 +170,7 @@ theorem coe_period : (p : AddCircle p) = 0 :=
   (QuotientAddGroup.eq_zero_iff p).2 <| mem_zmultiples p
 #align add_circle.coe_period AddCircle.coe_period
 
-/- Porting note: `simp` attribute removed because linter reports:
+/- Porting note (#10618): `simp` attribute removed because linter reports:
 simp can prove this:
   by simp only [@mem_zmultiples, @QuotientAddGroup.mk_add_of_mem]
 -/
@@ -334,8 +334,7 @@ instance : DivisibleBy (AddCircle p) ℤ where
   div_zero x := by
     simp only [algebraMap.coe_zero, Int.cast_zero, inv_zero, zero_mul, QuotientAddGroup.mk_zero]
   div_cancel {n} x hn := by
-    replace hn : (n : 𝕜) ≠ 0
-    · norm_cast
+    replace hn : (n : 𝕜) ≠ 0 := by norm_cast
     change n • QuotientAddGroup.mk' _ ((n : 𝕜)⁻¹ * ↑(equivIco p 0 x)) = x
     rw [← map_zsmul, ← smul_mul_assoc, zsmul_eq_mul, mul_inv_cancel hn, one_mul]
     exact (equivIco p 0).symm_apply_apply x
@@ -405,11 +404,11 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
   rw [nsmul_eq_mul, mul_comm, ← div_eq_iff h0, ← a.ediv_add_emod' n, add_smul, add_div,
     zsmul_eq_mul, Int.cast_mul, Int.cast_ofNat, mul_assoc, ← mul_div, mul_comm _ p,
     mul_div_cancel p h0] at ha
-  have han : _ = a % n := Int.toNat_of_nonneg (Int.emod_nonneg _ <| by exact_mod_cast h.ne')
-  have he : (↑(↑((a % n).toNat) / ↑n * p) : AddCircle p) = k
-  · convert congr_arg (QuotientAddGroup.mk : 𝕜 → (AddCircle p)) ha using 1
+  have han : _ = a % n := Int.toNat_of_nonneg (Int.emod_nonneg _ <| mod_cast h.ne')
+  have he : (↑(↑((a % n).toNat) / ↑n * p) : AddCircle p) = k := by
+    convert congr_arg (QuotientAddGroup.mk : 𝕜 → (AddCircle p)) ha using 1
     rw [coe_add, ← Int.cast_ofNat, han, zsmul_eq_mul, mul_div_right_comm, eq_comm, add_left_eq_self,
-      ←zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
+      ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
   refine' ⟨(a % n).toNat, _, _, he⟩
   · rw [← Int.ofNat_lt, han]
     exact Int.emod_lt_of_pos _ (Int.ofNat_lt.2 h)
@@ -442,7 +441,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
             ← Int.cast_ofNat m₂, ← Int.cast_sub, coe_eq_zero_iff] at h
           obtain ⟨m, hm⟩ := h
           rw [← mul_div_right_comm, eq_div_iff, mul_comm, ← zsmul_eq_mul, mul_smul_comm, ←
-            nsmul_eq_mul, ← coe_nat_zsmul, smul_smul,
+            nsmul_eq_mul, ← natCast_zsmul, smul_smul,
             (zsmul_strictMono_left hp.out).injective.eq_iff, mul_comm] at hm
           swap
           · exact Nat.cast_ne_zero.2 hn.ne'
@@ -484,7 +483,7 @@ end LinearOrderedField
 
 variable (p : ℝ)
 
-instance pathConnectedSpace : PathConnectedSpace $ AddCircle p :=
+instance pathConnectedSpace : PathConnectedSpace <| AddCircle p :=
   (inferInstance : PathConnectedSpace (Quotient _))
 
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is compact. -/
@@ -570,7 +569,7 @@ theorem equivIccQuot_comp_mk_eq_toIocMod :
       Quot.mk _ ⟨toIocMod hp.out a x, Ioc_subset_Icc_self <| toIocMod_mem_Ioc _ _ x⟩ := by
   rw [equivIccQuot_comp_mk_eq_toIcoMod]
   funext x
-  by_cases a ≡ x [PMOD p]
+  by_cases h : a ≡ x [PMOD p]
   · simp_rw [(modEq_iff_toIcoMod_eq_left hp.out).1 h, (modEq_iff_toIocMod_eq_right hp.out).1 h]
     exact Quot.sound EndpointIdent.mk
   · simp_rw [(not_modEq_iff_toIcoMod_eq_toIocMod hp.out).1 h]

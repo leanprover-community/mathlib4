@@ -32,15 +32,15 @@ def Angle : Type :=
 
 namespace Angle
 
--- Porting note: added due to missing instances due to no deriving
+-- Porting note (#10754): added due to missing instances due to no deriving
 instance : NormedAddCommGroup Angle :=
   inferInstanceAs (NormedAddCommGroup (AddCircle (2 * π)))
 
--- Porting note: added due to missing instances due to no deriving
+-- Porting note (#10754): added due to missing instances due to no deriving
 instance : Inhabited Angle :=
   inferInstanceAs (Inhabited (AddCircle (2 * π)))
 
--- Porting note: added due to missing instances due to no deriving
+-- Porting note (#10754): added due to missing instances due to no deriving
 -- also, without this, a plain `QuotientAddGroup.mk`
 -- causes coerced terms to be of type `ℝ ⧸ AddSubgroup.zmultiples (2 * π)`
 /-- The canonical map from `ℝ` to the quotient `Angle`. -/
@@ -144,12 +144,12 @@ theorem two_zsmul_coe_div_two (θ : ℝ) : (2 : ℤ) • (↑(θ / 2) : Angle) =
   rw [← coe_zsmul, two_zsmul, add_halves]
 #align real.angle.two_zsmul_coe_div_two Real.Angle.two_zsmul_coe_div_two
 
--- Porting note: @[simp] can prove it
+-- Porting note (#10618): @[simp] can prove it
 theorem two_nsmul_neg_pi_div_two : (2 : ℕ) • (↑(-π / 2) : Angle) = π := by
   rw [two_nsmul_coe_div_two, coe_neg, neg_coe_pi]
 #align real.angle.two_nsmul_neg_pi_div_two Real.Angle.two_nsmul_neg_pi_div_two
 
--- Porting note: @[simp] can prove it
+-- Porting note (#10618): @[simp] can prove it
 theorem two_zsmul_neg_pi_div_two : (2 : ℤ) • (↑(-π / 2) : Angle) = π := by
   rw [two_zsmul, ← two_nsmul, two_nsmul_neg_pi_div_two]
 #align real.angle.two_zsmul_neg_pi_div_two Real.Angle.two_zsmul_neg_pi_div_two
@@ -184,12 +184,12 @@ theorem two_zsmul_eq_iff {ψ θ : Angle} : (2 : ℤ) • ψ = (2 : ℤ) • θ �
   -- Porting note: no `Int.natAbs_bit0` anymore
   have : Int.natAbs 2 = 2 := rfl
   rw [zsmul_eq_iff two_ne_zero, this, Fin.exists_fin_two, Fin.val_zero,
-    Fin.val_one, zero_smul, coe_zero, add_zero, one_smul, Int.cast_two,
+    Fin.val_one, zero_smul, add_zero, one_smul, Int.cast_two,
     mul_div_cancel_left (_ : ℝ) two_ne_zero]
 #align real.angle.two_zsmul_eq_iff Real.Angle.two_zsmul_eq_iff
 
 theorem two_nsmul_eq_iff {ψ θ : Angle} : (2 : ℕ) • ψ = (2 : ℕ) • θ ↔ ψ = θ ∨ ψ = θ + ↑π := by
-  simp_rw [← coe_nat_zsmul, Nat.cast_ofNat, two_zsmul_eq_iff]
+  simp_rw [← natCast_zsmul, Nat.cast_ofNat, two_zsmul_eq_iff]
 #align real.angle.two_nsmul_eq_iff Real.Angle.two_nsmul_eq_iff
 
 theorem two_nsmul_eq_zero_iff {θ : Angle} : (2 : ℕ) • θ = 0 ↔ θ = 0 ∨ θ = π := by
@@ -224,12 +224,12 @@ theorem neg_ne_self_iff {θ : Angle} : -θ ≠ θ ↔ θ ≠ 0 ∧ θ ≠ π := 
 #align real.angle.neg_ne_self_iff Real.Angle.neg_ne_self_iff
 
 theorem two_nsmul_eq_pi_iff {θ : Angle} : (2 : ℕ) • θ = π ↔ θ = (π / 2 : ℝ) ∨ θ = (-π / 2 : ℝ) := by
-  have h : (π : Angle) = (2 : ℕ) • (π / 2 : ℝ) := by rw [two_nsmul, add_halves]
+  have h : (π : Angle) = ((2 : ℕ) • (π / 2 : ℝ) :) := by rw [two_nsmul, add_halves]
   nth_rw 1 [h]
   rw [coe_nsmul, two_nsmul_eq_iff]
   -- Porting note: `congr` didn't simplify the goal of iff of `Or`s
   convert Iff.rfl
-  rw [add_comm, ← coe_add, ← sub_eq_zero, ← coe_sub, neg_div, ←neg_sub, sub_neg_eq_add, add_assoc,
+  rw [add_comm, ← coe_add, ← sub_eq_zero, ← coe_sub, neg_div, ← neg_sub, sub_neg_eq_add, add_assoc,
     add_halves, ← two_mul, coe_neg, coe_two_pi, neg_zero]
 #align real.angle.two_nsmul_eq_pi_iff Real.Angle.two_nsmul_eq_pi_iff
 
@@ -355,7 +355,7 @@ theorem sin_eq_iff_eq_or_add_eq_pi {θ ψ : Angle} : sin θ = sin ψ ↔ θ = ψ
 theorem sin_zero : sin (0 : Angle) = 0 := by rw [← coe_zero, sin_coe, Real.sin_zero]
 #align real.angle.sin_zero Real.Angle.sin_zero
 
--- Porting note: @[simp] can prove it
+-- Porting note (#10618): @[simp] can prove it
 theorem sin_coe_pi : sin (π : Angle) = 0 := by rw [sin_coe, Real.sin_pi]
 #align real.angle.sin_coe_pi Real.Angle.sin_coe_pi
 
@@ -395,7 +395,7 @@ theorem sin_sub_pi (θ : Angle) : sin (θ - π) = -sin θ :=
 theorem cos_zero : cos (0 : Angle) = 1 := by rw [← coe_zero, cos_coe, Real.cos_zero]
 #align real.angle.cos_zero Real.Angle.cos_zero
 
--- Porting note: @[simp] can prove it
+-- Porting note (#10618): @[simp] can prove it
 theorem cos_coe_pi : cos (π : Angle) = -1 := by rw [cos_coe, Real.cos_pi]
 #align real.angle.cos_coe_pi Real.Angle.cos_coe_pi
 
@@ -660,14 +660,14 @@ theorem abs_toReal_eq_pi_div_two_iff {θ : Angle} :
 theorem nsmul_toReal_eq_mul {n : ℕ} (h : n ≠ 0) {θ : Angle} :
     (n • θ).toReal = n * θ.toReal ↔ θ.toReal ∈ Set.Ioc (-π / n) (π / n) := by
   nth_rw 1 [← coe_toReal θ]
-  have h' : 0 < (n : ℝ) := by exact_mod_cast Nat.pos_of_ne_zero h
+  have h' : 0 < (n : ℝ) := mod_cast Nat.pos_of_ne_zero h
   rw [← coe_nsmul, nsmul_eq_mul, toReal_coe_eq_self_iff, Set.mem_Ioc, div_lt_iff' h',
     le_div_iff' h']
 #align real.angle.nsmul_to_real_eq_mul Real.Angle.nsmul_toReal_eq_mul
 
 theorem two_nsmul_toReal_eq_two_mul {θ : Angle} :
-    ((2 : ℕ) • θ).toReal = 2 * θ.toReal ↔ θ.toReal ∈ Set.Ioc (-π / 2) (π / 2) := by
-  exact_mod_cast nsmul_toReal_eq_mul two_ne_zero
+    ((2 : ℕ) • θ).toReal = 2 * θ.toReal ↔ θ.toReal ∈ Set.Ioc (-π / 2) (π / 2) :=
+  mod_cast nsmul_toReal_eq_mul two_ne_zero
 #align real.angle.two_nsmul_to_real_eq_two_mul Real.Angle.two_nsmul_toReal_eq_two_mul
 
 theorem two_zsmul_toReal_eq_two_mul {θ : Angle} :
@@ -689,7 +689,8 @@ theorem toReal_coe_eq_self_sub_two_pi_iff {θ : ℝ} :
 
 theorem toReal_coe_eq_self_add_two_pi_iff {θ : ℝ} :
     (θ : Angle).toReal = θ + 2 * π ↔ θ ∈ Set.Ioc (-3 * π) (-π) := by
-  convert @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ (-1) using 2 <;> norm_num
+  convert @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ (-1) using 2 <;>
+    set_option tactic.skipAssignedInstances false in norm_num
 #align real.angle.to_real_coe_eq_self_add_two_pi_iff Real.Angle.toReal_coe_eq_self_add_two_pi_iff
 
 theorem two_nsmul_toReal_eq_two_mul_sub_two_pi {θ : Angle} :
@@ -786,7 +787,7 @@ theorem tan_coe (x : ℝ) : tan (x : Angle) = Real.tan x := by
 theorem tan_zero : tan (0 : Angle) = 0 := by rw [← coe_zero, tan_coe, Real.tan_zero]
 #align real.angle.tan_zero Real.Angle.tan_zero
 
--- Porting note: @[simp] can now prove it
+-- Porting note (#10618): @[simp] can now prove it
 theorem tan_coe_pi : tan (π : Angle) = 0 := by rw [tan_coe, Real.tan_pi]
 #align real.angle.tan_coe_pi Real.Angle.tan_coe_pi
 

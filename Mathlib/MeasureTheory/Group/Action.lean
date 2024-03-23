@@ -121,7 +121,7 @@ theorem smulInvariantMeasure_map [SMul M α] [SMul M β]
     _ = μ (f ⁻¹' ((m • ·) ⁻¹' S)) := map_apply hf <| hS.preimage (measurable_const_smul _)
     _ = μ ((m • f ·) ⁻¹' S) := by rw [preimage_preimage]
     _ = μ ((f <| m • ·) ⁻¹' S) := by simp_rw [hsmul]
-    _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [←preimage_preimage]
+    _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [← preimage_preimage]
     _ = μ (f ⁻¹' S) := by rw [SMulInvariantMeasure.measure_preimage_smul m (hS.preimage hf)]
     _ = map f μ S := (map_apply hf hS).symm
 
@@ -260,7 +260,7 @@ theorem isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempt
     IsLocallyFiniteMeasure μ :=
   ⟨fun x =>
     let ⟨g, hg⟩ := hU.exists_smul_mem G x hne
-    ⟨(· • ·) g ⁻¹' U, (hU.preimage (continuous_id.const_smul _)).mem_nhds hg,
+    ⟨(g • ·) ⁻¹' U, (hU.preimage (continuous_id.const_smul _)).mem_nhds hg,
       Ne.lt_top <| by rwa [measure_preimage_smul]⟩⟩
 #align measure_theory.is_locally_finite_measure_of_smul_invariant MeasureTheory.isLocallyFiniteMeasure_of_smulInvariant
 #align measure_theory.is_locally_finite_measure_of_vadd_invariant MeasureTheory.isLocallyFiniteMeasure_of_vaddInvariant
@@ -301,7 +301,7 @@ theorem smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[�
   have he' : QuasiMeasurePreserving e.symm μ μ :=
     (measurePreserving_smul x⁻¹ μ).quasiMeasurePreserving
   have h := he.image_zpow_ae_eq he' k hs
-  simp only [← MonoidHom.map_zpow] at h
+  simp only [e, ← MonoidHom.map_zpow] at h
   simpa only [MulAction.toPermHom_apply, MulAction.toPerm_apply, image_smul] using h
 #align measure_theory.smul_ae_eq_self_of_mem_zpowers MeasureTheory.smul_ae_eq_self_of_mem_zpowers
 
@@ -318,10 +318,10 @@ theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α
       measurable_smul_const := fun a =>
         @measurable_vadd_const (Multiplicative G) α (inferInstanceAs (VAdd G α)) _ _
           (inferInstanceAs (MeasurableVAdd G α)) a }
-  exact @smul_ae_eq_self_of_mem_zpowers (Multiplicative G) α _ _ _ _ _ _ _ _ _ _ hs hy
+  exact smul_ae_eq_self_of_mem_zpowers (G := Multiplicative G) hs hy
 #align measure_theory.vadd_ae_eq_self_of_mem_zmultiples MeasureTheory.vadd_ae_eq_self_of_mem_zmultiples
 
-attribute [to_additive existing vadd_ae_eq_self_of_mem_zmultiples] smul_ae_eq_self_of_mem_zpowers
+attribute [to_additive existing] smul_ae_eq_self_of_mem_zpowers
 
 @[to_additive]
 theorem inv_smul_ae_eq_self {x : G} (hs : (x • s : Set α) =ᵐ[μ] s) : (x⁻¹ • s : Set α) =ᵐ[μ] s :=

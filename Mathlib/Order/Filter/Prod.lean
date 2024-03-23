@@ -127,8 +127,8 @@ theorem prod_sup (f : Filter α) (g₁ g₂ : Filter β) : f ×ˢ (g₁ ⊔ g₂
 theorem eventually_prod_iff {p : α × β → Prop} :
     (∀ᶠ x in f ×ˢ g, p x) ↔
       ∃ pa : α → Prop, (∀ᶠ x in f, pa x) ∧ ∃ pb : β → Prop, (∀ᶠ y in g, pb y) ∧
-        ∀ {x}, pa x → ∀ {y}, pb y → p (x, y) :=
-  by simpa only [Set.prod_subset_iff] using @mem_prod_iff α β p f g
+        ∀ {x}, pa x → ∀ {y}, pb y → p (x, y) := by
+  simpa only [Set.prod_subset_iff] using @mem_prod_iff α β p f g
 #align filter.eventually_prod_iff Filter.eventually_prod_iff
 
 theorem tendsto_fst : Tendsto Prod.fst (f ×ˢ g) f :=
@@ -181,6 +181,10 @@ theorem Eventually.curry {la : Filter α} {lb : Filter β} {p : α × β → Pro
   exact ha.mono fun a ha => hb.mono fun b hb => h ha hb
 #align filter.eventually.curry Filter.Eventually.curry
 
+protected lemma Frequently.uncurry {la : Filter α} {lb : Filter β} {p : α → β → Prop}
+    (h : ∃ᶠ x in la, ∃ᶠ y in lb, p x y) : ∃ᶠ xy in la ×ˢ lb, p xy.1 xy.2 :=
+  mt (fun h ↦ by simpa only [not_frequently] using h.curry) h
+
 /-- A fact that is eventually true about all pairs `l ×ˢ l` is eventually true about
 all diagonal pairs `(i, i)` -/
 theorem Eventually.diag_of_prod {p : α × α → Prop} (h : ∀ᶠ i in f ×ˢ f, p i) :
@@ -193,14 +197,14 @@ theorem Eventually.diag_of_prod_left {f : Filter α} {g : Filter γ} {p : (α ×
     (∀ᶠ x in (f ×ˢ f) ×ˢ g, p x) → ∀ᶠ x : α × γ in f ×ˢ g, p ((x.1, x.1), x.2) := by
   intro h
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
-  refine' (ht.diag_of_prod.prod_mk hs).mono fun x hx => by simp only [hst hx.1 hx.2]
+  exact (ht.diag_of_prod.prod_mk hs).mono fun x hx => by simp only [hst hx.1 hx.2]
 #align filter.eventually.diag_of_prod_left Filter.Eventually.diag_of_prod_left
 
 theorem Eventually.diag_of_prod_right {f : Filter α} {g : Filter γ} {p : α × γ × γ → Prop} :
     (∀ᶠ x in f ×ˢ (g ×ˢ g), p x) → ∀ᶠ x : α × γ in f ×ˢ g, p (x.1, x.2, x.2) := by
   intro h
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
-  refine' (ht.prod_mk hs.diag_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2]
+  exact (ht.prod_mk hs.diag_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2]
 #align filter.eventually.diag_of_prod_right Filter.Eventually.diag_of_prod_right
 
 theorem tendsto_diag : Tendsto (fun i => (i, i)) f (f ×ˢ f) :=
@@ -319,8 +323,8 @@ theorem tendsto_prodAssoc_symm {h : Filter γ} :
 /-- A useful lemma when dealing with uniformities. -/
 theorem map_swap4_prod {h : Filter γ} {k : Filter δ} :
     map (fun p : (α × β) × γ × δ => ((p.1.1, p.2.1), (p.1.2, p.2.2))) ((f ×ˢ g) ×ˢ (h ×ˢ k)) =
-      (f ×ˢ h) ×ˢ (g ×ˢ k) :=
-  by simp_rw [map_swap4_eq_comap, SProd.sprod, Filter.prod, comap_inf, comap_comap]; ac_rfl
+      (f ×ˢ h) ×ˢ (g ×ˢ k) := by
+  simp_rw [map_swap4_eq_comap, SProd.sprod, Filter.prod, comap_inf, comap_comap]; ac_rfl
 #align filter.map_swap4_prod Filter.map_swap4_prod
 
 theorem tendsto_swap4_prod {h : Filter γ} {k : Filter δ} :
@@ -413,6 +417,7 @@ theorem prod_pure_pure {a : α} {b : β} :
     (pure a : Filter α) ×ˢ (pure b : Filter β) = pure (a, b) := by simp
 #align filter.prod_pure_pure Filter.prod_pure_pure
 
+@[simp]
 theorem prod_eq_bot : f ×ˢ g = ⊥ ↔ f = ⊥ ∨ g = ⊥ := by
   simp_rw [← empty_mem_iff_bot, mem_prod_iff, subset_empty_iff, prod_eq_empty_iff, ← exists_prop,
     Subtype.exists', exists_or, exists_const, Subtype.exists, exists_prop, exists_eq_right]
@@ -428,11 +433,11 @@ theorem prod_neBot : NeBot (f ×ˢ g) ↔ NeBot f ∧ NeBot g := by
   simp only [neBot_iff, Ne, prod_eq_bot, not_or]
 #align filter.prod_ne_bot Filter.prod_neBot
 
-theorem NeBot.prod (hf : NeBot f) (hg : NeBot g) : NeBot (f ×ˢ g) := prod_neBot.2 ⟨hf, hg⟩
+protected theorem NeBot.prod (hf : NeBot f) (hg : NeBot g) : NeBot (f ×ˢ g) := prod_neBot.2 ⟨hf, hg⟩
 #align filter.ne_bot.prod Filter.NeBot.prod
 
-instance prod_neBot' [hf : NeBot f] [hg : NeBot g] : NeBot (f ×ˢ g) := hf.prod hg
-#align filter.prod_ne_bot' Filter.prod_neBot'
+instance prod.instNeBot [hf : NeBot f] [hg : NeBot g] : NeBot (f ×ˢ g) := hf.prod hg
+#align filter.prod_ne_bot' Filter.prod.instNeBot
 
 @[simp]
 lemma disjoint_prod {f' : Filter α} {g' : Filter β} :
@@ -447,8 +452,8 @@ theorem frequently_prod_and {p : α → Prop} {q : β → Prop} :
   rfl
 
 theorem tendsto_prod_iff {f : α × β → γ} {x : Filter α} {y : Filter β} {z : Filter γ} :
-    Tendsto f (x ×ˢ y) z ↔ ∀ W ∈ z, ∃ U ∈ x, ∃ V ∈ y, ∀ x y, x ∈ U → y ∈ V → f (x, y) ∈ W :=
-  by simp only [tendsto_def, mem_prod_iff, prod_sub_preimage_iff, exists_prop, iff_self_iff]
+    Tendsto f (x ×ˢ y) z ↔ ∀ W ∈ z, ∃ U ∈ x, ∃ V ∈ y, ∀ x y, x ∈ U → y ∈ V → f (x, y) ∈ W := by
+  simp only [tendsto_def, mem_prod_iff, prod_sub_preimage_iff, exists_prop, iff_self_iff]
 #align filter.tendsto_prod_iff Filter.tendsto_prod_iff
 
 theorem tendsto_prod_iff' {g' : Filter γ} {s : α → β × γ} :

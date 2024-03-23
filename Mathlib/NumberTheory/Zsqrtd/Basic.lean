@@ -26,11 +26,13 @@ to choices of square roots of `d` in `R`.
 /-- The ring of integers adjoined with a square root of `d`.
   These have the form `a + b √d` where `a b : ℤ`. The components
   are called `re` and `im` by analogy to the negative `d` case. -/
+@[ext]
 structure Zsqrtd (d : ℤ) where
   re : ℤ
   im : ℤ
   deriving DecidableEq
 #align zsqrtd Zsqrtd
+#align zsqrtd.ext Zsqrtd.ext_iff
 
 prefix:100 "ℤ√" => Zsqrtd
 
@@ -39,12 +41,6 @@ namespace Zsqrtd
 section
 
 variable {d : ℤ}
-
-theorem ext : ∀ {z w : ℤ√d}, z = w ↔ z.re = w.re ∧ z.im = w.im
-  | ⟨x, y⟩, ⟨x', y'⟩ =>
-    ⟨fun h => by injection h; constructor <;> assumption,
-     fun ⟨h₁, h₂⟩ => by congr⟩
-#align zsqrtd.ext Zsqrtd.ext
 
 /-- Convert an integer to a `ℤ√d` -/
 def ofInt (n : ℤ) : ℤ√d :=
@@ -190,7 +186,16 @@ instance addCommGroup : AddCommGroup (ℤ√d) := by
     add_left_neg := ?_
     add_comm := ?_ } <;>
   intros <;>
-  simp [ext, add_comm, add_left_comm]
+  ext <;>
+  simp [add_comm, add_left_comm]
+
+@[simp]
+theorem sub_re (z w : ℤ√d) : (z - w).re = z.re - w.re :=
+  rfl
+
+@[simp]
+theorem sub_im (z w : ℤ√d) : (z - w).im = z.im - w.im :=
+  rfl
 
 instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
   { Zsqrtd.addCommGroup with
@@ -213,7 +218,7 @@ instance commRing : CommRing (ℤ√d) := by
     mul_one := ?_
     mul_comm := ?_ } <;>
   intros <;>
-  refine ext.mpr ⟨?_, ?_⟩ <;>
+  ext <;>
   simp <;>
   ring
 
@@ -259,13 +264,13 @@ theorem star_im (z : ℤ√d) : (star z).im = -z.im :=
 #align zsqrtd.star_im Zsqrtd.star_im
 
 instance : StarRing (ℤ√d) where
-  star_involutive x := ext.mpr ⟨rfl, neg_neg _⟩
-  star_mul a b := ext.mpr ⟨by simp; ring, by simp; ring⟩
-  star_add a b := ext.mpr ⟨rfl, neg_add _ _⟩
+  star_involutive x := Zsqrtd.ext _ _ rfl (neg_neg _)
+  star_mul a b := by ext <;> simp <;> ring
+  star_add a b := Zsqrtd.ext _ _ rfl (neg_add _ _)
 
 -- Porting note: proof was `by decide`
 instance nontrivial : Nontrivial (ℤ√d) :=
-  ⟨⟨0, 1, ext.not.mpr <| by simp⟩⟩
+  ⟨⟨0, 1, (Zsqrtd.ext_iff 0 1).not.mpr (by simp)⟩⟩
 
 @[simp]
 theorem coe_nat_re (n : ℕ) : (n : ℤ√d).re = n :=
@@ -297,17 +302,17 @@ theorem coe_int_re (n : ℤ) : (n : ℤ√d).re = n := by cases n <;> rfl
 theorem coe_int_im (n : ℤ) : (n : ℤ√d).im = 0 := by cases n <;> rfl
 #align zsqrtd.coe_int_im Zsqrtd.coe_int_im
 
-theorem coe_int_val (n : ℤ) : (n : ℤ√d) = ⟨n, 0⟩ := by simp [ext]
+theorem coe_int_val (n : ℤ) : (n : ℤ√d) = ⟨n, 0⟩ := by ext <;> simp
 #align zsqrtd.coe_int_val Zsqrtd.coe_int_val
 
-instance : CharZero (ℤ√d) where cast_injective m n := by simp [ext]
+instance : CharZero (ℤ√d) where cast_injective m n := by simp [Zsqrtd.ext_iff]
 
 @[simp]
-theorem ofInt_eq_coe (n : ℤ) : (ofInt n : ℤ√d) = n := by simp [ext, ofInt_re, ofInt_im]
+theorem ofInt_eq_coe (n : ℤ) : (ofInt n : ℤ√d) = n := by ext <;> simp [ofInt_re, ofInt_im]
 #align zsqrtd.of_int_eq_coe Zsqrtd.ofInt_eq_coe
 
 @[simp]
-theorem smul_val (n x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by simp [ext]
+theorem smul_val (n x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by ext <;> simp
 #align zsqrtd.smul_val Zsqrtd.smul_val
 
 theorem smul_re (a : ℤ) (b : ℤ√d) : (↑a * b).re = a * b.re := by simp
@@ -317,34 +322,34 @@ theorem smul_im (a : ℤ) (b : ℤ√d) : (↑a * b).im = a * b.im := by simp
 #align zsqrtd.smul_im Zsqrtd.smul_im
 
 @[simp]
-theorem muld_val (x y : ℤ) : sqrtd (d := d) * ⟨x, y⟩ = ⟨d * y, x⟩ := by simp [ext]
+theorem muld_val (x y : ℤ) : sqrtd (d := d) * ⟨x, y⟩ = ⟨d * y, x⟩ := by ext <;> simp
 #align zsqrtd.muld_val Zsqrtd.muld_val
 
 @[simp]
-theorem dmuld : sqrtd (d := d) * sqrtd (d := d) = d := by simp [ext]
+theorem dmuld : sqrtd (d := d) * sqrtd (d := d) = d := by ext <;> simp
 #align zsqrtd.dmuld Zsqrtd.dmuld
 
 @[simp]
-theorem smuld_val (n x y : ℤ) : sqrtd * (n : ℤ√d) * ⟨x, y⟩ = ⟨d * n * y, n * x⟩ := by simp [ext]
+theorem smuld_val (n x y : ℤ) : sqrtd * (n : ℤ√d) * ⟨x, y⟩ = ⟨d * n * y, n * x⟩ := by ext <;> simp
 #align zsqrtd.smuld_val Zsqrtd.smuld_val
 
-theorem decompose {x y : ℤ} : (⟨x, y⟩ : ℤ√d) = x + sqrtd (d := d) * y := by simp [ext]
+theorem decompose {x y : ℤ} : (⟨x, y⟩ : ℤ√d) = x + sqrtd (d := d) * y := by ext <;> simp
 #align zsqrtd.decompose Zsqrtd.decompose
 
 theorem mul_star {x y : ℤ} : (⟨x, y⟩ * star ⟨x, y⟩ : ℤ√d) = x * x - d * y * y := by
-  simp [ext, sub_eq_add_neg, mul_comm]
+  ext <;> simp [sub_eq_add_neg, mul_comm]
 #align zsqrtd.mul_star Zsqrtd.mul_star
 
 protected theorem coe_int_add (m n : ℤ) : (↑(m + n) : ℤ√d) = ↑m + ↑n :=
-  (Int.castRingHom _).map_add _ _
+  Int.cast_add m n
 #align zsqrtd.coe_int_add Zsqrtd.coe_int_add
 
 protected theorem coe_int_sub (m n : ℤ) : (↑(m - n) : ℤ√d) = ↑m - ↑n :=
-  (Int.castRingHom _).map_sub _ _
+  Int.cast_sub m n
 #align zsqrtd.coe_int_sub Zsqrtd.coe_int_sub
 
 protected theorem coe_int_mul (m n : ℤ) : (↑(m * n) : ℤ√d) = ↑m * ↑n :=
-  (Int.castRingHom _).map_mul _ _
+  Int.cast_mul m n
 #align zsqrtd.coe_int_mul Zsqrtd.coe_int_mul
 
 protected theorem coe_int_inj {m n : ℤ} (h : (↑m : ℤ√d) = ↑n) : m = n := by
@@ -358,7 +363,7 @@ theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ 
       mul_re, mul_zero, coe_int_im]
   · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
     use ⟨r, i⟩
-    rw [smul_val, ext]
+    rw [smul_val, Zsqrtd.ext_iff]
     exact ⟨hr, hi⟩
 #align zsqrtd.coe_int_dvd_iff Zsqrtd.coe_int_dvd_iff
 
@@ -374,14 +379,14 @@ theorem coe_int_dvd_coe_int (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
 
 protected theorem eq_of_smul_eq_smul_left {a : ℤ} {b c : ℤ√d} (ha : a ≠ 0) (h : ↑a * b = a * c) :
     b = c := by
-  rw [ext] at h ⊢
+  rw [Zsqrtd.ext_iff] at h ⊢
   apply And.imp _ _ h <;> simpa only [smul_re, smul_im] using mul_left_cancel₀ ha
 #align zsqrtd.eq_of_smul_eq_smul_left Zsqrtd.eq_of_smul_eq_smul_left
 
 section Gcd
 
 theorem gcd_eq_zero_iff (a : ℤ√d) : Int.gcd a.re a.im = 0 ↔ a = 0 := by
-  simp only [Int.gcd_eq_zero_iff, ext, eq_self_iff_true, zero_im, zero_re]
+  simp only [Int.gcd_eq_zero_iff, Zsqrtd.ext_iff, eq_self_iff_true, zero_im, zero_re]
 #align zsqrtd.gcd_eq_zero_iff Zsqrtd.gcd_eq_zero_iff
 
 theorem gcd_pos_iff (a : ℤ√d) : 0 < Int.gcd a.re a.im ↔ a ≠ 0 :=
@@ -392,8 +397,7 @@ theorem coprime_of_dvd_coprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.im) 
     IsCoprime b.re b.im := by
   apply isCoprime_of_dvd
   · rintro ⟨hre, him⟩
-    obtain rfl : b = 0 := by
-      simp only [ext, hre, eq_self_iff_true, zero_im, him, and_self_iff, zero_re]
+    obtain rfl : b = 0 := Zsqrtd.ext b 0 hre him
     rw [zero_dvd_iff] at hdvd
     simp [hdvd, zero_im, zero_re, not_isCoprime_zero_zero] at hcoprime
   · rintro z hz - hzdvdu hzdvdv
@@ -411,8 +415,7 @@ theorem exists_coprime_of_gcd_pos {a : ℤ√d} (hgcd : 0 < Int.gcd a.re a.im) :
   obtain ⟨re, im, H1, Hre, Him⟩ := Int.exists_gcd_one hgcd
   rw [mul_comm] at Hre Him
   refine' ⟨⟨re, im⟩, _, _⟩
-  · rw [smul_val, ext, ← Hre, ← Him]
-    constructor <;> rfl
+  · rw [smul_val, ← Hre, ← Him]
   · rw [← Int.gcd_eq_one_iff_coprime, H1]
 #align zsqrtd.exists_coprime_of_gcd_pos Zsqrtd.exists_coprime_of_gcd_pos
 
@@ -437,7 +440,7 @@ theorem sqLe_add_mixed {c d x y z w : ℕ} (xy : SqLe x c y d) (zw : SqLe z c w 
 theorem sqLe_add {c d x y z w : ℕ} (xy : SqLe x c y d) (zw : SqLe z c w d) :
     SqLe (x + z) c (y + w) d := by
   have xz := sqLe_add_mixed xy zw
-  simp [SqLe, mul_assoc] at xy zw
+  simp? [SqLe, mul_assoc] at xy zw says simp only [SqLe, mul_assoc] at xy zw
   simp [SqLe, mul_add, mul_comm, mul_left_comm, add_le_add, *]
 #align zsqrtd.sq_le_add Zsqrtd.sqLe_add
 
@@ -551,8 +554,7 @@ def normMonoidHom : ℤ√d →* ℤ where
 #align zsqrtd.norm_monoid_hom Zsqrtd.normMonoidHom
 
 theorem norm_eq_mul_conj (n : ℤ√d) : (norm n : ℤ√d) = n * star n := by
-  cases n
-  simp [norm, star, Zsqrtd.ext, mul_comm, sub_eq_add_neg]
+  ext <;> simp [norm, star, mul_comm, sub_eq_add_neg]
 #align zsqrtd.norm_eq_mul_conj Zsqrtd.norm_eq_mul_conj
 
 @[simp]
@@ -607,12 +609,11 @@ theorem norm_eq_one_iff' {d : ℤ} (hd : d ≤ 0) (z : ℤ√d) : z.norm = 1 ↔
 theorem norm_eq_zero_iff {d : ℤ} (hd : d < 0) (z : ℤ√d) : z.norm = 0 ↔ z = 0 := by
   constructor
   · intro h
-    rw [ext, zero_re, zero_im]
     rw [norm_def, sub_eq_add_neg, mul_assoc] at h
     have left := mul_self_nonneg z.re
     have right := neg_nonneg.mpr (mul_nonpos_of_nonpos_of_nonneg hd.le (mul_self_nonneg z.im))
     obtain ⟨ha, hb⟩ := (add_eq_zero_iff' left right).mp h
-    constructor <;> apply eq_zero_of_mul_self_eq_zero
+    ext <;> apply eq_zero_of_mul_self_eq_zero
     · exact ha
     · rw [neg_eq_zero, mul_eq_zero] at hb
       exact hb.resolve_left hd.ne
@@ -1005,12 +1006,12 @@ instance : OrderedRing (ℤ√d) := by infer_instance
 end
 
 theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
-  refine' ⟨fun ha => ext.mpr _, fun h => by rw [h, norm_zero]⟩
+  refine' ⟨fun ha => (Zsqrtd.ext_iff _ _).mpr _, fun h => by rw [h, norm_zero]⟩
   dsimp only [norm] at ha
   rw [sub_eq_zero] at ha
   by_cases h : 0 ≤ d
   · obtain ⟨d', rfl⟩ := Int.eq_ofNat_of_zero_le h
-    haveI : Nonsquare d' := ⟨fun n h => h_nonsquare n <| by exact_mod_cast h⟩
+    haveI : Nonsquare d' := ⟨fun n h => h_nonsquare n <| mod_cast h⟩
     exact divides_sq_eq_zero_z ha
   · push_neg at h
     suffices a.re * a.re = 0 by

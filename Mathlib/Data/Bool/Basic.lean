@@ -3,7 +3,6 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 
@@ -23,39 +22,32 @@ bool, boolean, Bool, De Morgan
 namespace Bool
 
 theorem decide_True {h} : @decide True h = true :=
-  decide_eq_true True.intro
+  _root_.decide_eq_true True.intro
 #align bool.to_bool_true Bool.decide_True
 
 theorem decide_False {h} : @decide False h = false :=
-  decide_eq_false id
+  _root_.decide_eq_false id
 #align bool.to_bool_false Bool.decide_False
 
 @[simp]
 theorem decide_coe (b : Bool) {h} : @decide b h = b := by
   cases b
-  · exact decide_eq_false $ λ j => by cases j
-  · exact decide_eq_true $ rfl
+  · exact _root_.decide_eq_false <| fun j ↦ by cases j
+  · exact _root_.decide_eq_true <| rfl
 #align bool.to_bool_coe Bool.decide_coe
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
   match d with
-  | isTrue hp => ⟨λ _ => hp, λ _ => rfl⟩
-  | isFalse hnp => ⟨λ h => Bool.noConfusion h, λ hp => (hnp hp).elim⟩
+  | isTrue hp => ⟨fun _ ↦ hp, fun _ ↦ rfl⟩
+  | isFalse hnp => ⟨fun h ↦ Bool.noConfusion h, fun hp ↦ (hnp hp).elim⟩
 #align bool.coe_to_bool Bool.coe_decide
 
 theorem of_decide_iff {p : Prop} [Decidable p] : decide p ↔ p :=
   coe_decide p
 #align bool.of_to_bool_iff Bool.of_decide_iff
 
-@[simp]
-theorem true_eq_decide_iff {p : Prop} [Decidable p] : true = decide p ↔ p :=
-  eq_comm.trans of_decide_iff
-#align bool.tt_eq_to_bool_iff Bool.true_eq_decide_iff
-
-@[simp]
-theorem false_eq_decide_iff {p : Prop} [Decidable p] : false = decide p ↔ ¬p :=
-  eq_comm.trans (decide_false_iff _)
-#align bool.ff_eq_to_bool_iff Bool.false_eq_decide_iff
+#align bool.tt_eq_to_bool_iff true_eq_decide_iff
+#align bool.ff_eq_to_bool_iff false_eq_decide_iff
 
 theorem decide_not (p : Prop) [Decidable p] : (decide ¬p) = !(decide p) := by
   by_cases p <;> simp [*]
@@ -73,18 +65,24 @@ theorem decide_or (p q : Prop) [Decidable p] [Decidable q] : decide (p ∨ q) = 
 
 #align bool.to_bool_eq decide_eq_decide
 
-theorem not_false' : ¬false := fun.
+theorem not_false' : ¬false := nofun
 #align bool.not_ff Bool.not_false'
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) := by
   cases a <;> cases b <;> simp
 
--- Porting note: new theorem
-theorem beq_eq_decide_eq {α} [DecidableEq α]
-    (a b : α) : (a == b) = decide (a = b) := rfl
+-- Porting note (#10756): new theorem
+/- Even though `DecidableEq α` implies an instance of (`Lawful`)`BEq α`, we keep the seemingly
+redundant typeclass assumptions so that the theorem is also applicable for types that have
+overridden this default instance of `LawfulBEq α` -/
+theorem beq_eq_decide_eq {α} [BEq α] [LawfulBEq α] [DecidableEq α]
+    (a b : α) : (a == b) = decide (a = b) := by
+  cases h : a == b
+  · simp [ne_of_beq_false h]
+  · simp [eq_of_beq h]
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem beq_comm {α} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
   eq_iff_eq_true_iff.2 (by simp [@eq_comm α])
 
@@ -96,17 +94,21 @@ theorem default_bool : default = false :=
 theorem dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
 #align bool.dichotomy Bool.dichotomy
 
+theorem forall_bool' {p : Bool → Prop} (b : Bool) : (∀ x, p x) ↔ p b ∧ p !b :=
+  ⟨fun h ↦ ⟨h _, h _⟩, fun ⟨h₁, h₂⟩ x ↦ by cases b <;> cases x <;> assumption⟩
+
 @[simp]
 theorem forall_bool {p : Bool → Prop} : (∀ b, p b) ↔ p false ∧ p true :=
-  ⟨fun h ↦ by simp [h], fun ⟨h₁, h₂⟩ b ↦ by cases b <;> assumption⟩
+  forall_bool' false
 #align bool.forall_bool Bool.forall_bool
+
+theorem exists_bool' {p : Bool → Prop} (b : Bool) : (∃ x, p x) ↔ p b ∨ p !b :=
+  ⟨fun ⟨x, hx⟩ ↦ by cases x <;> cases b <;> first | exact .inl ‹_› | exact .inr ‹_›,
+    fun h ↦ by cases h <;> exact ⟨_, ‹_›⟩⟩
 
 @[simp]
 theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
-  ⟨fun ⟨b, h⟩ ↦ by cases b; exact Or.inl h; exact Or.inr h,
-  fun h ↦ match h with
-  | .inl h => ⟨_, h⟩
-  | .inr h => ⟨_, h⟩ ⟩
+  exists_bool' false
 #align bool.exists_bool Bool.exists_bool
 
 /-- If `p b` is decidable for all `b : Bool`, then `∀ b, p b` is decidable -/
@@ -263,6 +265,8 @@ instance linearOrder : LinearOrder Bool where
   le_antisymm := by decide
   le_total := by decide
   decidableLE := inferInstance
+  decidableEq := inferInstance
+  decidableLT := inferInstance
   lt_iff_le_not_le := by decide
   max_def := by decide
   min_def := by decide
@@ -302,21 +306,12 @@ theorem right_le_or : ∀ x y : Bool, y ≤ (x || y) := by decide
 theorem or_le : ∀ {x y z}, x ≤ z → y ≤ z → (x || y) ≤ z := by decide
 #align bool.bor_le Bool.or_le
 
-/-- convert a `Bool` to a `ℕ`, `false -> 0`, `true -> 1` -/
-def toNat (b : Bool) : Nat :=
-  cond b 1 0
 #align bool.to_nat Bool.toNat
-
-lemma toNat_le_one (b : Bool) : b.toNat ≤ 1 := by
-  cases b <;> simp only
 
 /-- convert a `ℕ` to a `Bool`, `0 -> false`, everything else -> `true` -/
 def ofNat (n : Nat) : Bool :=
   decide (n ≠ 0)
 #align bool.of_nat Bool.ofNat
-
-@[simp] lemma toNat_true  : toNat true = 1  := rfl
-@[simp] lemma toNat_false : toNat false = 0 := rfl
 
 @[simp] lemma toNat_beq_zero (b : Bool) : (b.toNat == 0) = !b := by cases b <;> rfl
 @[simp] lemma toNat_bne_zero (b : Bool) : (b.toNat != 0) =  b := by simp [bne]
@@ -326,15 +321,15 @@ def ofNat (n : Nat) : Bool :=
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   simp only [ofNat, ne_eq, _root_.decide_not]
   cases Nat.decEq n 0 with
-  | isTrue hn => rw [decide_eq_true hn]; exact Bool.false_le _
+  | isTrue hn => rw [_root_.decide_eq_true hn]; exact Bool.false_le _
   | isFalse hn =>
     cases Nat.decEq m 0 with
-    | isFalse hm => rw [decide_eq_false hm]; exact Bool.le_true _
+    | isFalse hm => rw [_root_.decide_eq_false hm]; exact Bool.le_true _
     | isTrue hm => subst hm; have h := le_antisymm h (Nat.zero_le n); contradiction
 #align bool.of_nat_le_of_nat Bool.ofNat_le_ofNat
 
 theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
-  cases b₀ <;> cases b₁ <;> simp_all
+  cases b₀ <;> cases b₁ <;> simp_all (config := { decide := true })
 #align bool.to_nat_le_to_nat Bool.toNat_le_toNat
 
 theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by

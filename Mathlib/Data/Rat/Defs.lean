@@ -44,6 +44,11 @@ theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
 #align rat.of_int_eq_cast Rat.ofInt_eq_cast
 
+-- TODO: Replace `Rat.ofNat_num`/`Rat.ofNat_den` in Std
+-- See note [no_index around OfNat.ofNat]
+@[simp] lemma num_ofNat (n : ℕ) : num (no_index (OfNat.ofNat n)) = OfNat.ofNat n := rfl
+@[simp] lemma den_ofNat (n : ℕ) : den (no_index (OfNat.ofNat n)) = 1 := rfl
+
 @[simp, norm_cast]
 theorem coe_int_num (n : ℤ) : (n : ℚ).num = n :=
   rfl
@@ -56,7 +61,7 @@ theorem coe_int_den (n : ℤ) : (n : ℚ).den = 1 :=
 
 #noalign rat.mk_pnat
 
--- Porting note: TODO Should this be namespaced?
+-- Porting note (#11215): TODO Should this be namespaced?
 #align rat.mk_nat mkRat
 
 #noalign rat.mk_pnat_eq
@@ -87,7 +92,7 @@ lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
 
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
-  rw [←zero_divInt b, divInt_eq_iff b0 b0, zero_mul, mul_eq_zero, or_iff_left b0]
+  rw [← zero_divInt b, divInt_eq_iff b0 b0, zero_mul, mul_eq_zero, or_iff_left b0]
 #align rat.mk_eq_zero Rat.divInt_eq_zero
 
 theorem divInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
@@ -147,8 +152,8 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
   generalize ha : a /. b = x; cases' x with n₁ d₁ h₁ c₁; rw [num_den'] at ha
   generalize hc : c /. d = x; cases' x with n₂ d₂ h₂ c₂; rw [num_den'] at hc
   rw [fv]
-  have d₁0 := ne_of_gt (Int.ofNat_lt.2 $ Nat.pos_of_ne_zero h₁)
-  have d₂0 := ne_of_gt (Int.ofNat_lt.2 $ Nat.pos_of_ne_zero h₂)
+  have d₁0 := ne_of_gt (Int.ofNat_lt.2 <| Nat.pos_of_ne_zero h₁)
+  have d₂0 := ne_of_gt (Int.ofNat_lt.2 <| Nat.pos_of_ne_zero h₂)
   exact (divInt_eq_iff (f0 d₁0 d₂0) (f0 b0 d0)).2
     (H ((divInt_eq_iff b0 d₁0).1 ha) ((divInt_eq_iff d0 d₂0).1 hc))
 #align rat.lift_binop_eq Rat.lift_binop_eq
@@ -197,7 +202,7 @@ theorem inv_def' {a b : ℤ} : (a /. b)⁻¹ = b /. a := inv_divInt ..
 
 variable (a b c : ℚ)
 
--- Porting note: TODO this is a workaround.
+-- Porting note (#11215): TODO this is a workaround.
 attribute [-simp] divInt_ofNat
 
 protected theorem add_zero : a + 0 = a :=
@@ -240,21 +245,26 @@ theorem divInt_zero_one : 0 /. 1 = 0 :=
 theorem divInt_one_one : 1 /. 1 = 1 :=
   show divInt _ _ = _ by
     rw [divInt]
-    simp
+    simp only [inline, mkRat, one_ne_zero, ↓reduceDite, normalize, Int.natAbs_one, Nat.gcd_self,
+      maybeNormalize_eq, Nat.cast_one, ne_eq, not_false_eq_true, Int.div_self, zero_lt_one,
+      Nat.div_self, mk_den_one]
+    rfl
 #align rat.mk_one_one Rat.divInt_one_one
 
 @[simp]
 theorem divInt_neg_one_one : -1 /. 1 = -1 :=
   show divInt _ _ = _ by
     rw [divInt]
-    simp
+    simp only [inline, mkRat, one_ne_zero, ↓reduceDite, normalize, Int.reduceNeg, Int.natAbs_neg,
+      Int.natAbs_one, Nat.gcd_self, maybeNormalize_eq, Nat.cast_one, Int.div_one, zero_lt_one,
+      Nat.div_self, mk_den_one, intCast_neg]
+    rfl
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
 
 theorem divInt_one (n : ℤ) : n /. 1 = n :=
   show divInt _ _ = _ by
     rw [divInt]
     simp [mkRat, normalize]
-    rfl
 
 theorem mkRat_one {n : ℤ} : mkRat n 1 = n := by
   simp [Rat.mkRat_eq, Rat.divInt_one]
@@ -326,6 +336,8 @@ instance commRing : CommRing ℚ where
   left_distrib := Rat.mul_add
   right_distrib := Rat.add_mul
   sub_eq_add_neg := Rat.sub_eq_add_neg
+  nsmul := nsmulRec
+  zsmul := zsmulRec
   intCast := fun n => n
   natCast n := Int.cast n
   natCast_zero := rfl
@@ -529,15 +541,15 @@ theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
   rw [← Int.cast_ofNat, coe_int_eq_divInt]
 #align rat.coe_nat_eq_mk Rat.coe_nat_eq_divInt
 
-@[simp, norm_cast]
-theorem coe_nat_num (n : ℕ) : (n : ℚ).num = n := by
-  rw [← Int.cast_ofNat, coe_int_num]
-#align rat.coe_nat_num Rat.coe_nat_num
+@[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
+#align rat.coe_nat_num Rat.num_natCast
 
-@[simp, norm_cast]
-theorem coe_nat_den (n : ℕ) : (n : ℚ).den = 1 := by
-  rw [← Int.cast_ofNat, coe_int_den]
-#align rat.coe_nat_denom Rat.coe_nat_den
+@[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
+#align rat.coe_nat_denom Rat.den_natCast
+
+-- TODO: Fix the names in Std
+alias num_intCast := intCast_num
+alias den_intCast := intCast_den
 
 -- Will be subsumed by `Int.coe_inj` after we have defined
 -- `LinearOrderedField ℚ` (which implies characteristic zero).
@@ -549,13 +561,13 @@ end Casts
 
 theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
   simp only [mkRat, zero_mk]
-  by_cases d = 0
+  by_cases h : d = 0
   · simp [h]
-  · simp [h, HDiv.hDiv, Rat.div, Div.div]
+  · simp only [h, ↓reduceDite, HDiv.hDiv, Div.div, Rat.div]
     unfold Rat.inv
     have h₁ : 0 < d := Nat.pos_iff_ne_zero.2 h
     have h₂ : ¬ (d : ℤ) < 0 := of_decide_eq_false rfl
-    simp [h₁, h₂, ←Rat.normalize_eq_mk', Rat.normalize_eq_mkRat, ← mkRat_one,
+    simp [h₁, h₂, ← Rat.normalize_eq_mk', Rat.normalize_eq_mkRat, ← mkRat_one,
       Rat.mkRat_mul_mkRat]
 
 end Rat

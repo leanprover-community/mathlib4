@@ -138,7 +138,7 @@ theorem map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n -
       add_assoc, tsub_right_comm, add_comm i,
       tsub_add_cancel_of_le (le_tsub_of_add_le_right ((le_tsub_iff_left hi).mp h₁))]
   have hle : p ^ m ≤ j + 1 := h ▸ Nat.le_of_dvd j.succ_pos (multiplicity.pow_multiplicity_dvd _)
-  exact ⟨(pow_le_pow_iff hp.1.one_lt).1 (hle.trans hj),
+  exact ⟨(pow_le_pow_iff_right hp.1.one_lt).1 (hle.trans hj),
      Nat.le_of_lt_succ ((Nat.lt_pow_self hp.1.one_lt m).trans_le hle)⟩
 #align witt_vector.map_frobenius_poly.key₂ WittVector.map_frobeniusPoly.key₂
 
@@ -188,9 +188,9 @@ theorem map_frobeniusPoly (n : ℕ) :
       = (p : ℚ) ^ j * p * ↑((p ^ (n - i)).choose (j + 1) * p ^ i) *
         (p : ℚ) ^ (n - i - v p ⟨j + 1, j.succ_pos⟩) by
     have aux : ∀ k : ℕ, (p : ℚ)^ k ≠ 0 := by
-      intro; apply pow_ne_zero; exact_mod_cast hp.1.ne_zero
-    simpa [aux, -one_div, field_simps] using this.symm
-  rw [mul_comm _ (p : ℚ), mul_assoc, Nat.cast_pow, mul_assoc, ← pow_add,
+      intro; apply pow_ne_zero; exact mod_cast hp.1.ne_zero
+    simpa [aux, -one_div, -pow_eq_zero_iff', field_simps] using this.symm
+  rw [mul_comm _ (p : ℚ), mul_assoc, mul_assoc, ← pow_add,
     map_frobeniusPoly.key₂ p hi.le hj, Nat.cast_mul, Nat.cast_pow]
   ring
 #align witt_vector.map_frobenius_poly WittVector.map_frobeniusPoly

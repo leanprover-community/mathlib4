@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 #align_import measure_theory.measure.lebesgue.integral from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -16,7 +17,6 @@ open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 section regionBetween
 
 variable {α : Type*}
-
 variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
 
 theorem volume_regionBetween_eq_integral' [SigmaFinite μ] (f_int : IntegrableOn f s μ)
@@ -50,19 +50,19 @@ open ContinuousMap
 /- The following lemma is a minor variation on `integrable_of_summable_norm_restrict` in
 `Mathlib/MeasureTheory/Integral/SetIntegral.lean`, but it is placed here because it needs to know
 that `Icc a b` has volume `b - a`. -/
-/-- If the sequence with `n`-th term the the sup norm of `λ x, f (x + n)` on the interval `Icc 0 1`,
+/-- If the sequence with `n`-th term the sup norm of `fun x ↦ f (x + n)` on the interval `Icc 0 1`,
 for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
 theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] {f : C(ℝ, E)}
     (hf : Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)‖) :
     Integrable f := by
   refine'
-    @integrable_of_summable_norm_restrict ℝ ℤ E _ volume _ _ _ _ _ _ _ _
+    @integrable_of_summable_norm_restrict ℝ E _ ℤ _ volume _ _ _ _ _ _ _
       (.of_nonneg_of_le
         (fun n : ℤ => mul_nonneg (norm_nonneg
             (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
             ENNReal.toReal_nonneg)
         (fun n => _) hf) _
-  -- porting note: `refine` was able to find that on its own before
+  -- Porting note: `refine` was able to find that on its own before
   · intro n
     exact ⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩
   · simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel', ENNReal.toReal_ofReal zero_le_one,

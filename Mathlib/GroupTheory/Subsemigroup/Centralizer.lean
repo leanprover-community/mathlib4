@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Jireh Loreaux
 -/
 import Mathlib.GroupTheory.Subsemigroup.Center
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 #align_import group_theory.subsemigroup.centralizer from "leanprover-community/mathlib"@"cc67cd75b4e54191e13c2e8d722289a89e67e4fa"
 
@@ -73,8 +72,8 @@ theorem mul_mem_centralizer [Semigroup M] (ha : a ∈ centralizer S) (hb : b ∈
 #align set.add_mem_add_centralizer Set.add_mem_addCentralizer
 
 @[to_additive (attr := simp) neg_mem_addCentralizer]
-theorem inv_mem_centralizer [Group M] (ha : a ∈ centralizer S) : a⁻¹ ∈ centralizer S := fun g hg =>
-  by rw [mul_inv_eq_iff_eq_mul, mul_assoc, eq_inv_mul_iff_mul_eq, ha g hg]
+theorem inv_mem_centralizer [Group M] (ha : a ∈ centralizer S) : a⁻¹ ∈ centralizer S :=
+  fun g hg => by rw [mul_inv_eq_iff_eq_mul, mul_assoc, eq_inv_mul_iff_mul_eq, ha g hg]
 #align set.inv_mem_centralizer Set.inv_mem_centralizer
 #align set.neg_mem_add_centralizer Set.neg_mem_addCentralizer
 

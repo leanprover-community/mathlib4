@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite.Basic
 
 #align_import data.multiset.locally_finite from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
@@ -97,15 +97,15 @@ theorem Ioo_eq_zero_of_le (h : b ≤ a) : Ioo a b = 0 :=
 
 variable (a)
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem Ico_self : Ico a a = 0 := by rw [Ico, Finset.Ico_self, Finset.empty_val]
 #align multiset.Ico_self Multiset.Ico_self
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem Ioc_self : Ioc a a = 0 := by rw [Ioc, Finset.Ioc_self, Finset.empty_val]
 #align multiset.Ioc_self Multiset.Ioc_self
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem Ioo_self : Ioo a a = 0 := by rw [Ioo, Finset.Ioo_self, Finset.empty_val]
 #align multiset.Ioo_self Multiset.Ioo_self
 
@@ -127,22 +127,22 @@ theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b :=
   Finset.right_mem_Ioc
 #align multiset.right_mem_Ioc Multiset.right_mem_Ioc
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem left_not_mem_Ioc : a ∉ Ioc a b :=
   Finset.left_not_mem_Ioc
 #align multiset.left_not_mem_Ioc Multiset.left_not_mem_Ioc
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem left_not_mem_Ioo : a ∉ Ioo a b :=
   Finset.left_not_mem_Ioo
 #align multiset.left_not_mem_Ioo Multiset.left_not_mem_Ioo
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem right_not_mem_Ico : b ∉ Ico a b :=
   Finset.right_not_mem_Ico
 #align multiset.right_not_mem_Ico Multiset.right_not_mem_Ico
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem right_not_mem_Ioo : b ∉ Ioo a b :=
   Finset.right_not_mem_Ioo
 #align multiset.right_not_mem_Ioo Multiset.right_not_mem_Ioo
@@ -164,18 +164,18 @@ theorem Ico_filter_lt_of_le_right [DecidablePred (· < c)] (hcb : c ≤ b) :
   rfl
 #align multiset.Ico_filter_lt_of_le_right Multiset.Ico_filter_lt_of_le_right
 
-theorem Ico_filter_le_of_le_left [DecidablePred ((· ≤ ·) c)] (hca : c ≤ a) :
+theorem Ico_filter_le_of_le_left [DecidablePred (c ≤ ·)] (hca : c ≤ a) :
     ((Ico a b).filter fun x => c ≤ x) = Ico a b := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_le_left hca]
 #align multiset.Ico_filter_le_of_le_left Multiset.Ico_filter_le_of_le_left
 
-theorem Ico_filter_le_of_right_le [DecidablePred ((· ≤ ·) b)] :
+theorem Ico_filter_le_of_right_le [DecidablePred (b ≤ ·)] :
     ((Ico a b).filter fun x => b ≤ x) = ∅ := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_right_le]
   rfl
 #align multiset.Ico_filter_le_of_right_le Multiset.Ico_filter_le_of_right_le
 
-theorem Ico_filter_le_of_left_le [DecidablePred ((· ≤ ·) c)] (hac : a ≤ c) :
+theorem Ico_filter_le_of_left_le [DecidablePred (c ≤ ·)] (hac : a ≤ c) :
     ((Ico a b).filter fun x => c ≤ x) = Ico c b := by
   rw [Ico, ← Finset.filter_val, Finset.Ico_filter_le_of_left_le hac]
   rfl
@@ -283,22 +283,22 @@ section OrderedCancelAddCommMonoid
 
 variable [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [LocallyFiniteOrder α]
 
-theorem map_add_left_Icc (a b c : α) : (Icc a b).map ((· + ·) c) = Icc (c + a) (c + b) := by
+theorem map_add_left_Icc (a b c : α) : (Icc a b).map (c + ·) = Icc (c + a) (c + b) := by
   classical rw [Icc, Icc, ← Finset.image_add_left_Icc, Finset.image_val,
       ((Finset.nodup _).map <| add_right_injective c).dedup]
 #align multiset.map_add_left_Icc Multiset.map_add_left_Icc
 
-theorem map_add_left_Ico (a b c : α) : (Ico a b).map ((· + ·) c) = Ico (c + a) (c + b) := by
+theorem map_add_left_Ico (a b c : α) : (Ico a b).map (c + ·) = Ico (c + a) (c + b) := by
   classical rw [Ico, Ico, ← Finset.image_add_left_Ico, Finset.image_val,
       ((Finset.nodup _).map <| add_right_injective c).dedup]
 #align multiset.map_add_left_Ico Multiset.map_add_left_Ico
 
-theorem map_add_left_Ioc (a b c : α) : (Ioc a b).map ((· + ·) c) = Ioc (c + a) (c + b) := by
+theorem map_add_left_Ioc (a b c : α) : (Ioc a b).map (c + ·) = Ioc (c + a) (c + b) := by
   classical rw [Ioc, Ioc, ← Finset.image_add_left_Ioc, Finset.image_val,
       ((Finset.nodup _).map <| add_right_injective c).dedup]
 #align multiset.map_add_left_Ioc Multiset.map_add_left_Ioc
 
-theorem map_add_left_Ioo (a b c : α) : (Ioo a b).map ((· + ·) c) = Ioo (c + a) (c + b) := by
+theorem map_add_left_Ioo (a b c : α) : (Ioo a b).map (c + ·) = Ioo (c + a) (c + b) := by
   classical rw [Ioo, Ioo, ← Finset.image_add_left_Ioo, Finset.image_val,
       ((Finset.nodup _).map <| add_right_injective c).dedup]
 #align multiset.map_add_left_Ioo Multiset.map_add_left_Ioo

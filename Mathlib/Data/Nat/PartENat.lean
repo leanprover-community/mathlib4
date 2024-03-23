@@ -41,7 +41,7 @@ with `+` and `≤`.
 clear what `0 * ⊤` should be. `mul` is hence left undefined. Similarly `⊤ - ⊤` is ambiguous
 so there is no `-` defined on `PartENat`.
 
-Before the `open Classical` line, various proofs are made with decidability assumptions.
+Before the `open scoped Classical` line, various proofs are made with decidability assumptions.
 This can cause issues -- see for example the non-simp lemma `toWithTopZero` proved by `rfl`,
 followed by `@[simp] lemma toWithTopZero'` whose proof uses `convert`.
 
@@ -96,6 +96,7 @@ instance addCommMonoid : AddCommMonoid PartENat where
   zero_add x := Part.ext' (true_and_iff _) fun _ _ => zero_add _
   add_zero x := Part.ext' (and_true_iff _) fun _ _ => add_zero _
   add_assoc x y z := Part.ext' and_assoc fun _ _ => add_assoc _ _ _
+  nsmul := nsmulRec
 
 instance : AddCommMonoidWithOne PartENat :=
   { PartENat.addCommMonoid with
@@ -561,7 +562,7 @@ theorem add_eq_top_iff {a b : PartENat} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ :=
   refine PartENat.casesOn a ?_ ?_
   <;> refine PartENat.casesOn b ?_ ?_
   <;> simp [top_add, add_top]
-  simp only [←Nat.cast_add, PartENat.natCast_ne_top, forall_const]
+  simp only [← Nat.cast_add, PartENat.natCast_ne_top, forall_const, not_false_eq_true]
 #align part_enat.add_eq_top_iff PartENat.add_eq_top_iff
 
 protected theorem add_right_cancel_iff {a b c : PartENat} (hc : c ≠ ⊤) : a + c = b + c ↔ a = b := by
@@ -569,7 +570,7 @@ protected theorem add_right_cancel_iff {a b c : PartENat} (hc : c ≠ ⊤) : a +
   refine PartENat.casesOn a ?_ ?_
   <;> refine PartENat.casesOn b ?_ ?_
   <;> simp [add_eq_top_iff, natCast_ne_top, @eq_comm _ (⊤ : PartENat), top_add]
-  simp only [←Nat.cast_add, add_left_cancel_iff, PartENat.natCast_inj, add_comm, forall_const]
+  simp only [← Nat.cast_add, add_left_cancel_iff, PartENat.natCast_inj, add_comm, forall_const]
 #align part_enat.add_right_cancel_iff PartENat.add_right_cancel_iff
 
 protected theorem add_left_cancel_iff {a b c : PartENat} (ha : a ≠ ⊤) : a + b = a + c ↔ b = c := by
@@ -671,7 +672,7 @@ theorem toWithTop_lt {x y : PartENat} [Decidable x.Dom] [Decidable y.Dom] :
 
 end WithTop
 
--- Porting note : new, extracted from `withTopEquiv`.
+-- Porting note: new, extracted from `withTopEquiv`.
 /-- Coercion from `ℕ∞` to `PartENat`. -/
 @[coe]
 def ofENat : ℕ∞ → PartENat :=
@@ -679,37 +680,37 @@ def ofENat : ℕ∞ → PartENat :=
   | Option.none => none
   | Option.some n => some n
 
--- Porting note : new
+-- Porting note (#10754): new instance
 instance : Coe ℕ∞ PartENat := ⟨ofENat⟩
 
 -- Porting note: new. This could probably be moved to tests or removed.
 example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
 
--- Porting note : new
+-- Porting note (#10756): new lemma
 @[simp]
 lemma ofENat_none : ofENat Option.none = ⊤ := rfl
 
--- Porting note : new
+-- Porting note (#10756): new lemma
 @[simp]
 lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := rfl
 
--- Porting note : new
+-- Porting note (#10756): new theorem
 @[simp, norm_cast]
 theorem toWithTop_ofENat (n : ℕ∞) {_ : Decidable (n : PartENat).Dom} : toWithTop (↑n) = n := by
   induction n with
-  | none => simp
+  | none => simp; rfl
   | some n =>
     simp only [toWithTop_natCast', ofENat_some]
     rfl
 
 section WithTopEquiv
 
-open Classical
+open scoped Classical
 
 @[simp]
 theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWithTop y := by
   refine PartENat.casesOn y ?_ ?_ <;> refine PartENat.casesOn x ?_ ?_
-  --Porting note: was `simp [← Nat.cast_add, ← ENat.coe_add]`
+  -- Porting note: was `simp [← Nat.cast_add, ← ENat.coe_add]`
   · simp only [add_top, toWithTop_top', _root_.add_top]
   · simp only [add_top, toWithTop_top', toWithTop_natCast', _root_.add_top, forall_const]
   · simp only [top_add, toWithTop_top', toWithTop_natCast', _root_.top_add, forall_const]
@@ -727,7 +728,6 @@ noncomputable def withTopEquiv : PartENat ≃ ℕ∞ where
   invFun x := ↑x
   left_inv x := by
     induction x using PartENat.casesOn <;>
-    intros <;>
     simp <;>
     rfl
   right_inv x := by
@@ -875,7 +875,7 @@ theorem lt_find_iff (n : ℕ) : (n : PartENat) < find P ↔ ∀ m ≤ n, ¬P m :
 
 theorem find_le (n : ℕ) (h : P n) : find P ≤ n := by
   rw [le_coe_iff]
-  refine' ⟨⟨_, h⟩, @Nat.find_min' P _ _ _ h⟩
+  exact ⟨⟨_, h⟩, @Nat.find_min' P _ _ _ h⟩
 #align part_enat.find_le PartENat.find_le
 
 theorem find_eq_top_iff : find P = ⊤ ↔ ∀ n, ¬P n :=

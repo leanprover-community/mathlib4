@@ -89,7 +89,7 @@ theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
   repeat' rw [add_tsub_cancel_left]
 #align polynomial.rev_at_add Polynomial.revAt_add
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem revAt_zero (N : ℕ) : revAt N 0 = N := by simp
 #align polynomial.rev_at_zero Polynomial.revAt_zero
 
@@ -143,7 +143,7 @@ theorem reflect_C_mul (f : R[X]) (r : R) (N : ℕ) : reflect N (C r * f) = C r *
 set_option linter.uppercaseLean3 false in
 #align polynomial.reflect_C_mul Polynomial.reflect_C_mul
 
--- @[simp] -- Porting note: simp can prove this (once `reflect_monomial` is in simp scope)
+-- @[simp] -- Porting note (#10618): simp can prove this (once `reflect_monomial` is in simp scope)
 theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c * X ^ revAt N n := by
   ext
   rw [reflect_C_mul, coeff_C_mul, coeff_C_mul, coeff_X_pow, coeff_reflect]

@@ -23,7 +23,6 @@ open Polynomial
 universe u
 
 variable {R : Type u} {a b : R} {m n : ℕ}
-
 variable [Semiring R] {p q r : R[X]}
 
 theorem monomial_one_eq_iff [Nontrivial R] {i j : ℕ} :
@@ -53,7 +52,7 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
       simp [this, Ne.symm hi, coeff_monomial]
   · rintro ⟨n, a, rfl⟩
     rw [← Finset.card_singleton n]
-    apply Finset.card_le_of_subset
+    apply Finset.card_le_card
     exact support_monomial' _ _
 #align polynomial.card_support_le_one_iff_monomial Polynomial.card_support_le_one_iff_monomial
 
@@ -65,7 +64,7 @@ theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a)
     -- Porting note: Was `ext; simp [..]; simpa [..] using h₂`.
     ext : 1
     · ext
-      simp [h₁, RingEquiv.toRingHom_eq_coe]
+      simp [f', g', h₁, RingEquiv.toRingHom_eq_coe]
     · refine MonoidHom.ext_mnat ?_
       simpa [RingEquiv.toRingHom_eq_coe] using h₂
   have B : f = f'.comp (toFinsuppIso R) := by

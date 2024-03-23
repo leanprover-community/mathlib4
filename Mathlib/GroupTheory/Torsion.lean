@@ -106,12 +106,12 @@ theorem IsTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG 
 @[to_additive AddIsTorsion.extension_closed "Additive torsion groups are closed under extensions."]
 theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsion H)
     (tN : IsTorsion N) : IsTorsion G := fun g => by
-    obtain ⟨ngn, ngnpos, hngn⟩ := (tH <| f g).exists_pow_eq_one
-    have hmem := f.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
-    lift g ^ ngn to N using hN.symm ▸ hmem with gn h
-    obtain ⟨nn, nnpos, hnn⟩ := (tN gn).exists_pow_eq_one
-    exact isOfFinOrder_iff_pow_eq_one.mpr <| ⟨ngn * nn, mul_pos ngnpos nnpos, by
-        rw [pow_mul, ← h, ← Subgroup.coe_pow, hnn, Subgroup.coe_one]⟩
+  obtain ⟨ngn, ngnpos, hngn⟩ := (tH <| f g).exists_pow_eq_one
+  have hmem := f.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
+  lift g ^ ngn to N using hN.symm ▸ hmem with gn h
+  obtain ⟨nn, nnpos, hnn⟩ := (tN gn).exists_pow_eq_one
+  exact isOfFinOrder_iff_pow_eq_one.mpr <| ⟨ngn * nn, mul_pos ngnpos nnpos, by
+      rw [pow_mul, ← h, ← Subgroup.coe_pow, hnn, Subgroup.coe_one]⟩
 #align is_torsion.extension_closed IsTorsion.extension_closed
 #align add_is_torsion.extension_closed AddIsTorsion.extension_closed
 
@@ -138,7 +138,7 @@ theorem ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g =
       "The group exponent exists for any bounded additive torsion group."]
 theorem IsTorsion.exponentExists (tG : IsTorsion G)
     (bounded : (Set.range fun g : G => orderOf g).Finite) : ExponentExists G :=
-  exponentExists_iff_ne_zero.mpr <|
+  exponent_ne_zero.mp <|
     (exponent_ne_zero_iff_range_orderOf_finite fun g => (tG g).orderOf_pos).mpr bounded
 #align is_torsion.exponent_exists IsTorsion.exponentExists
 #align is_add_torsion.exponent_exists IsAddTorsion.exponentExists
@@ -146,7 +146,7 @@ theorem IsTorsion.exponentExists (tG : IsTorsion G)
 /-- Finite groups are torsion groups. -/
 @[to_additive is_add_torsion_of_finite "Finite additive groups are additive torsion groups."]
 theorem isTorsion_of_finite [Finite G] : IsTorsion G :=
-  ExponentExists.isTorsion <| exponentExists_iff_ne_zero.mpr exponent_ne_zero_of_finite
+  ExponentExists.isTorsion .of_finite
 #align is_torsion_of_finite isTorsion_of_finite
 #align is_add_torsion_of_finite is_add_torsion_of_finite
 
@@ -373,6 +373,12 @@ theorem not_isTorsionFree_iff : ¬IsTorsionFree G ↔ ∃ g : G, g ≠ 1 ∧ IsO
 lemma isTorsionFree_of_subsingleton [Subsingleton G] : IsTorsionFree G :=
   fun _a ha _ => ha <| Subsingleton.elim _ _
 
+@[to_additive]
+lemma isTorsionFree_iff_torsion_eq_bot {G} [CommGroup G] :
+    IsTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
+  rw [IsTorsionFree, eq_bot_iff, SetLike.le_def]
+  simp [not_imp_not, CommGroup.mem_torsion]
+
 end Monoid
 
 section Group
@@ -443,3 +449,21 @@ theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun
 #align add_is_torsion_free.quotient_torsion AddIsTorsionFree.quotient_torsion
 
 end CommGroup
+
+lemma isTorsionFree_iff_noZeroSMulDivisors_nat {M : Type*} [AddMonoid M] :
+    AddMonoid.IsTorsionFree M ↔ NoZeroSMulDivisors ℕ M := by
+  simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_nsmul_eq_zero, not_exists, not_and,
+    pos_iff_ne_zero, noZeroSMulDivisors_iff, forall_swap (β := ℕ)]
+  exact forall₂_congr fun _ _ ↦ by tauto
+
+lemma isTorsionFree_iff_noZeroSMulDivisors_int [AddGroup G] :
+    AddMonoid.IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
+  simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_zsmul_eq_zero, not_exists, not_and,
+    noZeroSMulDivisors_iff, forall_swap (β := ℤ)]
+  exact forall₂_congr fun _ _ ↦ by tauto
+
+@[deprecated] -- 2024-02-29
+alias AddMonoid.IsTorsionFree_iff_noZeroSMulDivisors := isTorsionFree_iff_noZeroSMulDivisors_int
+
+lemma IsTorsionFree.of_noZeroSMulDivisors {M : Type*} [AddMonoid M] [NoZeroSMulDivisors ℕ M] :
+    AddMonoid.IsTorsionFree M := isTorsionFree_iff_noZeroSMulDivisors_nat.2 ‹_›

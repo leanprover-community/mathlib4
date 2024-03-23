@@ -140,7 +140,7 @@ example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
 
 example (x y : ℤ) (h1 : x = -3) (_h2 : y = 10) : 2 * x = -6 := by
   linear_combination (norm := skip) 2 * h1
-  simp
+  simp (config := {decide := true})
 
 /-! ### Cases without any arguments provided -/
 

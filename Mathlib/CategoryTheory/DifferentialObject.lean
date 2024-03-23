@@ -3,7 +3,8 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Data.Int.Cast.Defs
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
@@ -29,7 +30,6 @@ universe v u
 namespace CategoryTheory
 
 variable (S : Type*) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
-
 variable [HasZeroMorphisms C] [HasShift C S]
 
 /-- A differential object in a category with zero morphisms and a shift is
@@ -175,7 +175,6 @@ namespace Functor
 universe v' u'
 
 variable (D : Type u') [Category.{v'} D]
-
 variable [HasZeroMorphisms D] [HasShift D S]
 
 /-- A functor `F : C ⥤ D` which commutes with shift functors on `C` and `D` and preserves zero
@@ -200,8 +199,8 @@ def mapDifferentialObject (F : C ⥤ D)
         slice_lhs 2 3 => rw [← Functor.comp_map F (shiftFunctor D (1 : S)), ← η.naturality f.f]
         slice_lhs 1 2 => rw [Functor.comp_map, ← F.map_comp, f.comm, F.map_comp]
         rw [Category.assoc] }
-  map_id := by intros; ext; simp
-  map_comp := by intros; ext; simp
+  map_id := by intros; ext; simp [autoParam]
+  map_comp := by intros; ext; simp [autoParam]
 #align category_theory.functor.map_differential_object CategoryTheory.Functor.mapDifferentialObject
 
 end Functor
@@ -213,7 +212,6 @@ namespace CategoryTheory
 namespace DifferentialObject
 
 variable (S : Type*) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
-
 variable [HasZeroObject C] [HasZeroMorphisms C] [HasShift C S]
 variable [(shiftFunctor C (1 : S)).PreservesZeroMorphisms]
 
@@ -248,7 +246,6 @@ end DifferentialObject
 namespace DifferentialObject
 
 variable {S : Type*} [AddCommGroupWithOne S] (C : Type u) [Category.{v} C]
-
 variable [HasZeroMorphisms C] [HasShift C S]
 
 noncomputable section

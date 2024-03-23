@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.GaloisConnection
-import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Data.Set.Lattice
 
 #align_import data.rel from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
 
@@ -128,12 +128,12 @@ theorem comp_left_bot (r : Rel α β) : (⊥ : Rel γ α) • r = ⊥ := by
   simp [comp, Bot.bot]
 
 @[simp]
-theorem comp_right_top (r : Rel α β) : r • (⊤ : Rel β γ) = λ x _ ↦ x ∈ r.dom := by
+theorem comp_right_top (r : Rel α β) : r • (⊤ : Rel β γ) = fun x _ ↦ x ∈ r.dom := by
   ext x z
   simp [comp, Top.top, dom]
 
 @[simp]
-theorem comp_left_top (r : Rel α β) : (⊤ : Rel γ α) • r = λ _ y ↦ y ∈ r.codom := by
+theorem comp_left_top (r : Rel α β) : (⊤ : Rel γ α) • r = fun _ y ↦ y ∈ r.codom := by
   ext x z
   simp [comp, Top.top, codom]
 
@@ -148,10 +148,16 @@ theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv
 #align rel.inv_comp Rel.inv_comp
 
 @[simp]
-theorem inv_bot : (⊥ : Rel α β).inv = (⊥ : Rel β α) := by simp [Bot.bot, inv, flip]
+theorem inv_bot : (⊥ : Rel α β).inv = (⊥ : Rel β α) := by
+  -- Adaptation note: nightly-2024-03-16: simp was
+  -- simp [Bot.bot, inv, flip]
+  simp [Bot.bot, inv, Function.flip_def]
 
 @[simp]
-theorem inv_top : (⊤ : Rel α β).inv = (⊤ : Rel β α) := by simp [Top.top, inv, flip]
+theorem inv_top : (⊤ : Rel α β).inv = (⊤ : Rel β α) := by
+  -- Adaptation note: nightly-2024-03-16: simp was
+  -- simp [Top.top, inv, flip]
+  simp [Top.top, inv, Function.flip_def]
 
 /-- Image of a set under a relation -/
 def image (s : Set α) : Set β := { y | ∃ x ∈ s, r x y }
@@ -211,7 +217,7 @@ theorem image_bot (s : Set α) : (⊥ : Rel α β).image s = ∅ := by
 @[simp]
 theorem image_top {s : Set α} (h : Set.Nonempty s) :
     (⊤ : Rel α β).image s = Set.univ :=
-  Set.eq_univ_of_forall λ x ↦ ⟨h.some, by simp [h.some_mem, Top.top]⟩
+  Set.eq_univ_of_forall fun x ↦ ⟨h.some, by simp [h.some_mem, Top.top]⟩
 
 /-- Preimage of a set under a relation `r`. Same as the image of `s` under `r.inv` -/
 def preimage (s : Set β) : Set α :=
@@ -289,7 +295,7 @@ theorem image_inter_dom_eq (s : Set α) : r.image (s ∩ r.dom) = r.image s := b
 
 @[simp]
 theorem preimage_inter_codom_eq (s : Set β) : r.preimage (s ∩ r.codom) = r.preimage s := by
-  rw[←dom_inv, preimage, preimage, image_inter_dom_eq]
+  rw [← dom_inv, preimage, preimage, image_inter_dom_eq]
 
 theorem inter_dom_subset_preimage_image (s : Set α) : s ∩ r.dom ⊆ r.preimage (r.image s) := by
   intro x hx
@@ -336,7 +342,7 @@ theorem core_id (s : Set α) : core (@Eq α) s = s := by simp [core]
 #align rel.core_id Rel.core_id
 
 theorem core_comp (s : Rel β γ) (t : Set γ) : core (r • s) t = core r (core s t) := by
-  ext x; simp [core, comp]; constructor
+  ext x; simp only [core, comp, forall_exists_index, and_imp, Set.mem_setOf_eq]; constructor
   · exact fun h y rxy z => h z y rxy
   · exact fun h z y rzy => h y rzy z
 #align rel.core_comp Rel.core_comp
@@ -363,7 +369,7 @@ def graph (f : α → β) : Rel α β := fun x y => f x = y
 
 @[simp] lemma graph_def (f : α → β) (x y) : f.graph x y ↔ (f x = y) := Iff.rfl
 
-theorem graph_id : graph id = @Eq α := by simp [graph]
+theorem graph_id : graph id = @Eq α := by simp  (config := { unfoldPartialApp := true }) [graph]
 
 theorem graph_comp {f : β → γ} {g : α → β} : graph (f ∘ g) = Rel.comp (graph g) (graph f) := by
   ext x y
@@ -382,7 +388,7 @@ theorem Relation.is_graph_iff (r : Rel α β) : (∃! f, Function.graph f = r) �
     use f x
     simp only [forall_eq', and_self]
   · intro h
-    rcases Classical.axiomOfChoice (λ x ↦ (h x).exists) with ⟨f,hf⟩
+    choose f hf using fun x ↦ (h x).exists
     use f
     constructor
     · ext x _

@@ -3,7 +3,8 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Selsam
 -/
-import Lean
+import Lean.Elab.Command
+import Lean.Linter.Util
 
 set_option autoImplicit true
 
@@ -54,11 +55,17 @@ def RenameMap.insert (m : RenameMap) (e : NameEntry) : RenameMap :=
 /-- Look up a lean 4 name from the lean 3 name. Also return the `dubious` error message. -/
 def RenameMap.find? (m : RenameMap) : Name → Option (String × Name) := m.toLean4.find?
 
+-- TODO: upstream into core/std
+instance [Inhabited α] : Inhabited (Thunk α) where
+  default := .pure default
+
 /-- This extension stores the lookup data generated from `#align` commands. -/
-initialize renameExtension : SimplePersistentEnvExtension NameEntry RenameMap ←
+-- wrap state in `Thunk` as downstream projects rarely actually query it; it only
+-- gets queried when new `#align`s are added.
+initialize renameExtension : SimplePersistentEnvExtension NameEntry (Thunk RenameMap) ←
   registerSimplePersistentEnvExtension {
-    addEntryFn := (·.insert)
-    addImportedFn := mkStateFromImportedEntries (·.insert) {}
+    addEntryFn := fun t e => t.map (·.insert e)
+    addImportedFn := fun es => ⟨fun _ => mkStateFromImportedEntries (·.insert) {} es⟩
   }
 
 /-- Insert a new name alignment into the rename extension. -/
@@ -121,7 +128,7 @@ syntax (name := align) "#align " ident ppSpace ident : command
 
 /-- Checks that `id` has not already been `#align`ed or `#noalign`ed. -/
 def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
-  if let some (_, n) := (renameExtension.getState (← getEnv)).toLean4.find? id then
+  if let some (_, n) := (renameExtension.getState (← getEnv)).get.toLean4.find? id then
     if n.isAnonymous then
       throwError "{id} has already been no-aligned"
     else
@@ -154,17 +161,17 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
         let note := "(add `set_option align.precheck false` to suppress this message)"
         let inner := match ← try some <$> resolveGlobalConstWithInfos id4 catch _ => pure none with
         | none => m!""
-        | some cs => m!" Did you mean:\n\n{
-            ("\n":MessageData).joinSep (cs.map fun c' => m!"  #align {id3} {c'}")
-          }\n\n#align inputs have to be fully qualified.{""
-          } (Double check the lean 3 name too, we can't check that!)"
+        | some cs => m!" Did you mean:\n\n\
+              {("\n":MessageData).joinSep (cs.map fun c' => m!"  #align {id3} {c'}")}\n\n\
+            #align inputs have to be fully qualified. \
+            (Double check the lean 3 name too, we can't check that!)"
         throwErrorAt id4 "Declaration {c} not found.{inner}\n{note}"
       if Linter.getLinterValue linter.uppercaseLean3 (← getOptions) then
         if id3.getId.anyS suspiciousLean3Name then
-          Linter.logLint linter.uppercaseLean3 id3 $
-            "Lean 3 names are usually lowercase. This might be a typo.\n" ++
-            "If the Lean 3 name is correct, then above this line, add:\n" ++
-            "set_option linter.uppercaseLean3 false in\n"
+          Linter.logLint linter.uppercaseLean3 id3
+            "Lean 3 names are usually lowercase. This might be a typo.\n\
+             If the Lean 3 name is correct, then above this line, add:\n\
+             set_option linter.uppercaseLean3 false in\n"
     withRef id3 <| ensureUnused id3.getId
     liftCoreM <| addNameAlignment id3.getId id4.getId
   | _ => throwUnsupportedSyntax
@@ -181,7 +188,7 @@ syntax (name := noalign) "#noalign " ident : command
 @[command_elab noalign] def elabNoAlign : CommandElab
   | `(#noalign $id3:ident) => do
     withRef id3 <| ensureUnused id3.getId
-    liftCoreM $ addNameAlignment id3.getId .anonymous
+    liftCoreM <| addNameAlignment id3.getId .anonymous
   | _ => throwUnsupportedSyntax
 
 /-- Show information about the alignment status of a lean 3 definition. -/
@@ -191,7 +198,7 @@ syntax (name := lookup3) "#lookup3 " ident : command
 @[command_elab lookup3] def elabLookup3 : CommandElab
   | `(#lookup3%$tk $id3:ident) => do
     let n3 := id3.getId
-    let m := renameExtension.getState (← getEnv)
+    let m := renameExtension.getState (← getEnv) |>.get
     match m.find? n3 with
     | none    => logInfoAt tk s!"name `{n3} not found"
     | some (dubious, n4) => do

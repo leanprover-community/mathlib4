@@ -3,9 +3,8 @@ Copyright (c) 2020 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
-import Mathlib.Analysis.NormedSpace.OperatorNorm
-import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Data.IsROrC.Basic
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 
 #align_import analysis.normed_space.extend from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
@@ -49,7 +48,7 @@ noncomputable def extendTo𝕜' (fr : F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :
   let fc : F → 𝕜 := fun x => (fr x : 𝕜) - (I : 𝕜) * fr ((I : 𝕜) • x)
   have add : ∀ x y : F, fc (x + y) = fc x + fc y := by
     intro x y
-    simp only [smul_add, LinearMap.map_add, ofReal_add]
+    simp only [fc, smul_add, LinearMap.map_add, ofReal_add]
     rw [mul_add]
     abel
   have A : ∀ (c : ℝ) (x : F), (fr ((c : 𝕜) • x) : 𝕜) = (c : 𝕜) * (fr x : 𝕜) := by
@@ -59,12 +58,12 @@ noncomputable def extendTo𝕜' (fr : F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :
     rw [IsROrC.ofReal_alg, smul_assoc, fr.map_smul, Algebra.id.smul_eq_mul, one_smul]
   have smul_ℝ : ∀ (c : ℝ) (x : F), fc ((c : 𝕜) • x) = (c : 𝕜) * fc x := by
     intro c x
-    dsimp only
+    dsimp only [fc]
     rw [A c x, smul_smul, mul_comm I (c : 𝕜), ← smul_smul, A, mul_sub]
     ring
   have smul_I : ∀ x : F, fc ((I : 𝕜) • x) = (I : 𝕜) * fc x := by
     intro x
-    dsimp only
+    dsimp only [fc]
     cases' @I_mul_I_ax 𝕜 _ with h h
     · simp [h]
     rw [mul_sub, ← mul_assoc, smul_smul, h]
@@ -94,7 +93,7 @@ theorem norm_extendTo𝕜'_apply_sq (fr : F →ₗ[ℝ] ℝ) (x : F) :
     ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) :=
   calc
     ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = re (conj (fr.extendTo𝕜' x) * fr.extendTo𝕜' x : 𝕜) := by
-      rw [IsROrC.conj_mul, normSq_eq_def', ofReal_re]
+      rw [IsROrC.conj_mul, ← ofReal_pow, ofReal_re]
     _ = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) := by
       rw [← smul_eq_mul, ← map_smul, extendTo𝕜'_apply_re]
 #align linear_map.norm_extend_to_𝕜'_apply_sq LinearMap.norm_extendTo𝕜'_apply_sq
@@ -116,7 +115,7 @@ theorem norm_extendTo𝕜'_bound (fr : F →L[ℝ] ℝ) (x : F) :
   calc
     ‖lm x‖ ^ 2 = fr (conj (lm x : 𝕜) • x) := fr.toLinearMap.norm_extendTo𝕜'_apply_sq x
     _ ≤ ‖fr (conj (lm x : 𝕜) • x)‖ := (le_abs_self _)
-    _ ≤ ‖fr‖ * ‖conj (lm x : 𝕜) • x‖ := (le_op_norm _ _)
+    _ ≤ ‖fr‖ * ‖conj (lm x : 𝕜) • x‖ := (le_opNorm _ _)
     _ = ‖(lm x : 𝕜)‖ * (‖fr‖ * ‖x‖) := by rw [norm_smul, norm_conj, mul_left_comm]
 #align continuous_linear_map.norm_extend_to_𝕜'_bound ContinuousLinearMap.norm_extendTo𝕜'_bound
 
@@ -132,16 +131,16 @@ theorem extendTo𝕜'_apply (fr : F →L[ℝ] ℝ) (x : F) :
 @[simp]
 theorem norm_extendTo𝕜' (fr : F →L[ℝ] ℝ) : ‖(fr.extendTo𝕜' : F →L[𝕜] 𝕜)‖ = ‖fr‖ :=
   le_antisymm (LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _) <|
-    op_norm_le_bound _ (norm_nonneg _) fun x =>
+    opNorm_le_bound _ (norm_nonneg _) fun x =>
       calc
         ‖fr x‖ = ‖re (fr.extendTo𝕜' x : 𝕜)‖ := congr_arg norm (fr.extendTo𝕜'_apply_re x).symm
         _ ≤ ‖(fr.extendTo𝕜' x : 𝕜)‖ := (abs_re_le_norm _)
-        _ ≤ ‖(fr.extendTo𝕜' : F →L[𝕜] 𝕜)‖ * ‖x‖ := le_op_norm _ _
+        _ ≤ ‖(fr.extendTo𝕜' : F →L[𝕜] 𝕜)‖ * ‖x‖ := le_opNorm _ _
 #align continuous_linear_map.norm_extend_to_𝕜' ContinuousLinearMap.norm_extendTo𝕜'
 
 end ContinuousLinearMap
 
--- Porting note: Added a new instance. This instance is needed for the rest of the file.
+-- Porting note (#10754): Added a new instance. This instance is needed for the rest of the file.
 instance : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) := by
   unfold RestrictScalars
   infer_instance

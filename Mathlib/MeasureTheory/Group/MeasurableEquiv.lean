@@ -54,7 +54,7 @@ def smul (c : G) : α ≃ᵐ α where
 #align measurable_equiv.vadd MeasurableEquiv.vadd
 
 @[to_additive]
-theorem _root_.measurableEmbedding_const_smul (c : G) : MeasurableEmbedding ((· • ·) c : α → α) :=
+theorem _root_.measurableEmbedding_const_smul (c : G) : MeasurableEmbedding (c • · : α → α) :=
   (smul c).measurableEmbedding
 #align measurable_embedding_const_smul measurableEmbedding_const_smul
 #align measurable_embedding_const_vadd measurableEmbedding_const_vadd
@@ -71,9 +71,7 @@ def smul₀ (c : G₀) (hc : c ≠ 0) : α ≃ᵐ α :=
   MeasurableEquiv.smul (Units.mk0 c hc)
 #align measurable_equiv.smul₀ MeasurableEquiv.smul₀
 
-@[simp]
-theorem coe_smul₀ {c : G₀} (hc : c ≠ 0) : ⇑(smul₀ c hc : α ≃ᵐ α) = (· • ·) c :=
-  rfl
+@[simp] lemma coe_smul₀ {c : G₀} (hc : c ≠ 0) : ⇑(smul₀ c hc : α ≃ᵐ α) = (c • ·) := rfl
 #align measurable_equiv.coe_smul₀ MeasurableEquiv.coe_smul₀
 
 @[simp]
@@ -83,7 +81,7 @@ theorem symm_smul₀ {c : G₀} (hc : c ≠ 0) :
 #align measurable_equiv.symm_smul₀ MeasurableEquiv.symm_smul₀
 
 theorem _root_.measurableEmbedding_const_smul₀ {c : G₀} (hc : c ≠ 0) :
-    MeasurableEmbedding ((· • ·) c : α → α) :=
+    MeasurableEmbedding (c • · : α → α) :=
   (smul₀ c hc).measurableEmbedding
 #align measurable_embedding_const_smul₀ measurableEmbedding_const_smul₀
 
@@ -102,7 +100,7 @@ def mulLeft (g : G) : G ≃ᵐ G :=
 #align measurable_equiv.add_left MeasurableEquiv.addLeft
 
 @[to_additive (attr := simp)]
-theorem coe_mulLeft (g : G) : ⇑(mulLeft g) = (· * ·) g :=
+theorem coe_mulLeft (g : G) : ⇑(mulLeft g) = (g * ·) :=
   rfl
 #align measurable_equiv.coe_mul_left MeasurableEquiv.coe_mulLeft
 #align measurable_equiv.coe_add_left MeasurableEquiv.coe_addLeft
@@ -120,7 +118,7 @@ theorem toEquiv_mulLeft (g : G) : (mulLeft g).toEquiv = Equiv.mulLeft g :=
 #align measurable_equiv.to_equiv_add_left MeasurableEquiv.toEquiv_addLeft
 
 @[to_additive]
-theorem _root_.measurableEmbedding_mulLeft (g : G) : MeasurableEmbedding ((· * ·) g) :=
+theorem _root_.measurableEmbedding_mulLeft (g : G) : MeasurableEmbedding (g * ·) :=
   (mulLeft g).measurableEmbedding
 #align measurable_embedding_mul_left measurableEmbedding_mulLeft
 #align measurable_embedding_add_left measurableEmbedding_addLeft
@@ -168,13 +166,11 @@ def mulLeft₀ (g : G₀) (hg : g ≠ 0) : G₀ ≃ᵐ G₀ :=
 #align measurable_equiv.mul_left₀ MeasurableEquiv.mulLeft₀
 
 theorem _root_.measurableEmbedding_mulLeft₀ {g : G₀} (hg : g ≠ 0) :
-    MeasurableEmbedding ((· * ·) g) :=
+    MeasurableEmbedding (g * ·) :=
   (mulLeft₀ g hg).measurableEmbedding
 #align measurable_embedding_mul_left₀ measurableEmbedding_mulLeft₀
 
-@[simp]
-theorem coe_mulLeft₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulLeft₀ g hg) = (· * ·) g :=
-  rfl
+@[simp] lemma coe_mulLeft₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulLeft₀ g hg) = (g * ·) := rfl
 #align measurable_equiv.coe_mul_left₀ MeasurableEquiv.coe_mulLeft₀
 
 @[simp]
