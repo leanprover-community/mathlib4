@@ -183,7 +183,7 @@ protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsAlt) : (-B).IsAlt := f
 #align bilin_form.is_alt.neg LinearMap.BilinForm.IsAlt.neg
 
 protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
-  {B : BilinForm R M} (hB : B.IsAlt) : (a • B).IsAlt := fun x =>
+    {B : BilinForm R M} (hB : B.IsAlt) : (a • B).IsAlt := fun x =>
   (congr_arg (a • ·) (hB x)).trans <| smul_zero _
 #align bilin_form.is_alt.smul LinearMap.BilinForm.IsAlt.smul
 
