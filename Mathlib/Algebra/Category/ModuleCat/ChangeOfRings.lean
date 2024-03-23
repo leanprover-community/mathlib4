@@ -153,27 +153,26 @@ section
 
 variable {R : Type u₁} [Ring R] (f : R →+* R) (hf : f = RingHom.id R)
 
+/-- For a `R`-module `M`, the restriction of scalars of `M` by the identity morphisms identifies
+to `M`. -/
+def restrictScalarsId'_app (M : ModuleCat R) : (restrictScalars f).obj M ≅ M :=
+  LinearEquiv.toModuleIso' <|
+    @AddEquiv.toLinearEquiv _ _ _ _ _ _ (((restrictScalars f).obj M).isModule) _
+      (by rfl) (fun r x ↦ by subst hf; rfl)
+
+lemma restrictScalarsId'_app_hom_apply (M : ModuleCat R) (x : M) :
+    (restrictScalarsId'_app f hf M).hom x = x :=
+  rfl
+
+lemma restrictScalarsId'_app_inv_apply (M : ModuleCat R) (x : M) :
+    (restrictScalarsId'_app f hf M).inv x = x :=
+  rfl
+
 /-- The restriction of scalars by a ring morphism that is the identity identify to the
 identity functor. -/
+@[simps! hom_app inv_app]
 def restrictScalarsId' : ModuleCat.restrictScalars.{v} f ≅ 𝟭 _ :=
-    NatIso.ofComponents <| fun M ↦ by
-  fapply Iso.mk
-  · simp only [restrictScalars, RestrictScalars.obj']
-    exact ⟨⟨fun x ↦ x, fun x y ↦ rfl⟩, fun r x ↦ by subst hf; rfl⟩
-  · simp only [restrictScalars, RestrictScalars.obj']
-    exact ⟨⟨fun x ↦ x, fun x y ↦ rfl⟩, fun r x ↦ by subst hf; rfl⟩
-  · rfl
-  · rfl
-
--- This lemma has always been bad, but lean4#2644 made `simp` start noticing
-@[simp]
-lemma restrictScalarsId'_inv_apply (M : ModuleCat R) (x : M) :
-    (restrictScalarsId' f hf).inv.app M x = x := rfl
-
--- This lemma has always been bad, but lean4#2644 made `simp` start noticing
-@[simp]
-lemma restrictScalarsId'_hom_apply (M : ModuleCat R) (x : M) :
-    (restrictScalarsId' f hf).hom.app M x = x := rfl
+    NatIso.ofComponents <| fun M ↦ restrictScalarsId'_app f hf M
 
 variable (R)
 
@@ -188,27 +187,27 @@ section
 variable {R₁ : Type u₁} {R₂ : Type u₂} {R₃ : Type u₃} [Ring R₁] [Ring R₂] [Ring R₃]
   (f : R₁ →+* R₂) (g : R₂ →+* R₃) (gf : R₁ →+* R₃) (hgf : gf = g.comp f)
 
+/-- For each `R₃`-module `M`, restriction of scalars of `M` by a composition of ring morphisms
+identifies to successively restricting scalars. -/
+def restrictScalarsComp'_app (M : ModuleCat R₃) :
+    (restrictScalars gf).obj M ≅ (restrictScalars f).obj ((restrictScalars g).obj M) :=
+  (AddEquiv.toLinearEquiv (by rfl) (fun r x ↦ by subst hgf; rfl)).toModuleIso'
+
+lemma restrictScalarsComp'_app_hom_apply (M : ModuleCat R₃) (x : M) :
+    (restrictScalarsComp'_app f g gf hgf M).hom x = x :=
+  rfl
+
+lemma restrictScalarsComp'_app_inv_apply (M : ModuleCat R₃) (x : M) :
+    (restrictScalarsComp'_app f g gf hgf M).inv x = x :=
+  rfl
+
 /-- The restriction of scalars by a composition of ring morphisms identify to the
 composition of the restriction of scalars functors. -/
+@[simps! hom_app inv_app]
 def restrictScalarsComp' :
     ModuleCat.restrictScalars.{v} gf ≅
       ModuleCat.restrictScalars g ⋙ ModuleCat.restrictScalars f :=
-  NatIso.ofComponents <| fun M ↦ ⟨
-     ⟨⟨fun x ↦ x, fun x y ↦ rfl⟩, fun r x ↦ by subst hgf; rfl⟩,
-     ⟨⟨fun x ↦ x, fun x y ↦ rfl⟩, fun r x ↦ by subst hgf; rfl⟩,
-     rfl,
-     rfl
-  ⟩
-
--- This lemma has always been bad, but lean4#2644 made `simp` start noticing
-@[simp]
-lemma restrictScalarsComp'_hom_apply (M : ModuleCat R₃) (x : M) :
-    (restrictScalarsComp' f g gf hgf).hom.app M x = x := rfl
-
--- This lemma has always been bad, but lean4#2644 made `simp` start noticing
-@[simp]
-lemma restrictScalarsComp'_inv_apply (M : ModuleCat R₃) (x : M) :
-    (restrictScalarsComp' f g gf hgf).inv.app M x = x := rfl
+  NatIso.ofComponents <| fun M ↦ restrictScalarsComp'_app f g gf hgf M
 
 /-- The restriction of scalars by a composition of ring morphisms identify to the
 composition of the restriction of scalars functors. -/
