@@ -97,6 +97,7 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
 
+-- 2024-03-23
 @[deprecated] alias mem_split := append_of_mem
 #align list.mem_split List.append_of_mem
 
