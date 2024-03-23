@@ -35,7 +35,6 @@ open CategoryTheory MonoidalCategory
 namespace CategoryTheory.Monoidal
 
 variable (C : Type u₁) [Category.{v₁} C]
-
 variable (D : Type u₂) [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 namespace MonFunctorCategoryEquivalence

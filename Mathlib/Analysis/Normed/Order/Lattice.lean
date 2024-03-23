@@ -107,8 +107,9 @@ theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ 
 /-- Let `α` be a normed lattice ordered group, then the order dual is also a
 normed lattice ordered group.
 -/
-instance (priority := 100) OrderDual.normedLatticeAddCommGroup : NormedLatticeAddCommGroup αᵒᵈ :=
-  { OrderDual.orderedAddCommGroup, OrderDual.normedAddCommGroup, OrderDual.lattice α with
+instance (priority := 100) OrderDual.instNormedLatticeAddCommGroup :
+    NormedLatticeAddCommGroup αᵒᵈ :=
+  { OrderDual.orderedAddCommGroup, OrderDual.normedAddCommGroup, OrderDual.instLattice α with
     solid := dual_solid (α := α) }
 
 theorem norm_abs_eq_norm (a : α) : ‖|a|‖ = ‖a‖ :=

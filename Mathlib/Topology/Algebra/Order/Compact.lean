@@ -55,13 +55,13 @@ export CompactIccSpace (isCompact_Icc)
 
 variable {α : Type*}
 
--- Porting note: new lemma;
+-- Porting note (#10756): new lemma;
 -- Porting note (#11215): TODO: make it the definition
 lemma CompactIccSpace.mk' [TopologicalSpace α] [Preorder α]
     (h : ∀ {a b : α}, a ≤ b → IsCompact (Icc a b)) : CompactIccSpace α where
   isCompact_Icc {a b} := by_cases h fun hab => by rw [Icc_eq_empty hab]; exact isCompact_empty
 
--- Porting note: new lemma;
+-- Porting note (#10756): new lemma;
 -- Porting note (#11215): TODO: drop one `'`
 lemma CompactIccSpace.mk'' [TopologicalSpace α] [PartialOrder α]
     (h : ∀ {a b : α}, a < b → IsCompact (Icc a b)) : CompactIccSpace α :=
@@ -109,9 +109,10 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
     rw [diff_subset_iff]
     exact Subset.trans Icc_subset_Icc_union_Ioc <| union_subset_union Subset.rfl <|
       Ioc_subset_Ioc_left hy.1.le
-  rcases hc.2.eq_or_lt with (rfl | hlt); · exact hcs.2
-  contrapose! hf
-  intro U hU
+  rcases hc.2.eq_or_lt with (rfl | hlt)
+  · exact hcs.2
+  exfalso
+  refine hf fun U hU => ?_
   rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
       (mem_nhdsWithin_of_mem_nhds hU) with
     ⟨y, hxy, hyU⟩
