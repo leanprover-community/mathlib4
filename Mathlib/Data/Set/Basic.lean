@@ -1206,10 +1206,11 @@ theorem forall_insert_of_forall {P : α → Prop} {a : α} {s : Set α} (H : ∀
 
 /- Porting note: ∃ x ∈ insert a s, P x is parsed as ∃ x, x ∈ insert a s ∧ P x,
  where in Lean3 it was parsed as `∃ x, ∃ (h : x ∈ insert a s), P x` -/
-theorem bex_insert_iff {P : α → Prop} {a : α} {s : Set α} :
+theorem exists_insert_iff {P : α → Prop} {a : α} {s : Set α} :
     (∃ x ∈ insert a s, P x) ↔ (P a ∨ ∃ x ∈ s, P x) := by
   simp [mem_insert_iff, or_and_right, exists_and_left, exists_or]
-#align set.bex_insert_iff Set.bex_insert_iff
+#align set.bex_insert_iff Set.exists_insert_iff
+@[deprecated] alias Set.bex_insert_iff := Set.exists_insert_iff -- 2024-03-23
 
 theorem ball_insert_iff {P : α → Prop} {a : α} {s : Set α} :
     (∀ x ∈ insert a s, P x) ↔ P a ∧ ∀ x ∈ s, P x :=
