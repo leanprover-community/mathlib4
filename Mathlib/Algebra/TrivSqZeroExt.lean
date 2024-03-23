@@ -658,11 +658,6 @@ theorem inl_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
   ext rfl <| by simp [snd_pow_eq_sum]
 #align triv_sq_zero_ext.inl_pow TrivSqZeroExt.inl_pow
 
-example [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
-    [SMulCommClass R Rᵐᵒᵖ M]
-    (a b : R) (m : M) : a •> m <• b = a •> (m <• b) := by
-  rw [← smul_comm]
-
 instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] : Monoid (tsze R M) :=
   { TrivSqZeroExt.mulOneClass with

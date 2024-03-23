@@ -264,11 +264,6 @@ instance pow [One α] [Pow α ℕ] : Pow (WithZero α) ℕ :=
     | none, _ + 1 => 0
     | some x, n => ↑(x ^ n)⟩
 
-example [Monoid α] (n : ℕ) :
-    (0 : WithZero α) ^ (n + 1) = (0 : WithZero α) ^ n * 0 :=  by
-  simp only [mul_zero]; rfl
-
-
 @[simp, norm_cast]
 theorem coe_pow [One α] [Pow α ℕ] {a : α} (n : ℕ) :
     ↑(a ^ n : α) = ((a : WithZero α) ^ n : WithZero α) :=

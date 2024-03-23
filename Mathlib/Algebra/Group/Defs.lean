@@ -655,8 +655,8 @@ theorem pow_zero (a : M) : a ^ 0 = 1 :=
 @[to_additive succ_nsmul]
 theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
   Monoid.npow_succ n a
-#align pow_succ pow_succ
-#align succ_nsmul succ_nsmul
+#align pow_succ' pow_succ
+#align succ_nsmul' succ_nsmul
 
 end
 
