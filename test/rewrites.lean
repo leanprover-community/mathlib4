@@ -3,6 +3,9 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.InsertNth
 import Mathlib.Algebra.Group.Basic
 
+-- This is partially duplicative with the tests for `rw?` in Lean.
+-- It's useful to re-test here with a larger environment.
+
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
 
