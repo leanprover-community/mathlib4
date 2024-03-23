@@ -109,7 +109,7 @@ protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
   abv.add_le' x y
 #align absolute_value.add_le AbsoluteValue.add_le
 
--- Porting note: was `@[simp]` but `simp` can prove it
+-- Porting note (#10618): was `@[simp]` but `simp` can prove it
 protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
   abv.map_mul' x y
 #align absolute_value.map_mul AbsoluteValue.map_mul
@@ -135,7 +135,7 @@ theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
 #align absolute_value.map_one_of_is_regular AbsoluteValue.map_one_of_isLeftRegular
 
--- Porting note: was `@[simp]` but `simp` can prove it
+-- Porting note (#10618): was `@[simp]` but `simp` can prove it
 protected theorem map_zero : abv 0 = 0 :=
   abv.eq_zero.2 rfl
 #align absolute_value.map_zero AbsoluteValue.map_zero
@@ -170,7 +170,7 @@ section IsDomain
 variable {R S : Type*} [Semiring R] [OrderedRing S] (abv : AbsoluteValue R S)
 variable [IsDomain S] [Nontrivial R]
 
--- Porting note: was `@[simp]` but `simp` can prove it
+-- Porting note (#10618): was `@[simp]` but `simp` can prove it
 protected theorem map_one : abv 1 = 1 :=
   abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
 #align absolute_value.map_one AbsoluteValue.map_one
@@ -200,7 +200,7 @@ theorem coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
   rfl
 #align absolute_value.coe_to_monoid_hom AbsoluteValue.coe_toMonoidHom
 
--- Porting note: was `@[simp]` but `simp` can prove it
+-- Porting note (#10618): was `@[simp]` but `simp` can prove it
 protected theorem map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n :=
   abv.toMonoidHom.map_pow a n
 #align absolute_value.map_pow AbsoluteValue.map_pow

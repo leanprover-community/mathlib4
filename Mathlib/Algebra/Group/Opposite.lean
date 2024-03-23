@@ -158,7 +158,7 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ :=
     zpow_zero' := fun x => unop_injective <| DivInvMonoid.zpow_zero' x.unop,
     zpow_succ' := fun n x => unop_injective <| by
       simp only [Int.ofNat_eq_coe]
-      rw [unop_op, zpow_coe_nat, pow_succ', unop_mul, unop_op, zpow_coe_nat],
+      rw [unop_op, zpow_natCast, pow_succ', unop_mul, unop_op, zpow_natCast],
     zpow_neg' := fun z x => unop_injective <| DivInvMonoid.zpow_neg' z x.unop }
 
 @[to_additive AddOpposite.subtractionMonoid]

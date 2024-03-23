@@ -74,28 +74,10 @@ theorem ext_iff : (∀ i j, M i j = N i j) ↔ M = N :=
   ⟨fun h => funext fun i => funext <| h i, fun h => by simp [h]⟩
 #align matrix.ext_iff Matrix.ext_iff
 
--- Porting note: `ext` does not like this, see new lemma below.
--- @[ext]
+@[ext]
 theorem ext : (∀ i j, M i j = N i j) → M = N :=
   ext_iff.mp
 #align matrix.ext Matrix.ext
-
--- Porting note: `ext` does not like if there are two variables introduced at once. E.g.
--- ```
--- example (A B : Matrix m n α) : A = B := by
---   ext i j
---   sorry
--- ```
--- would only introduce the first variable, so that afterwards, the state is
--- ```
--- i : m
--- ⊢ ∀ (j : n), A i j = B i j
--- ```
--- This is probably a bug in `ext`. Once it is fixed, you should delete `Matrix.ext'` below
--- and restore the `@[ext]` attribute on `Matrix.ext` above.
-@[ext]
-theorem ext' : (∀ i, M i = N i) → M = N :=
-  fun h => Matrix.ext fun i => by simp[h]
 
 end Ext
 
@@ -200,6 +182,12 @@ instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
 -- Porting note: new, Lean3 found this automatically
 instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
   Fintype.decidablePiFintype
+
+instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fintype α] :
+    Fintype (Matrix m n α) := inferInstanceAs (Fintype (m → n → α))
+
+instance {n m} [Finite m] [Finite n] (α) [Finite α] :
+    Finite (Matrix m n α) := inferInstanceAs (Finite (m → n → α))
 
 instance add [Add α] : Add (Matrix m n α) :=
   Pi.instAdd
@@ -1931,6 +1919,11 @@ theorem mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : A *ᵥ (-v) 
   apply dotProduct_neg
 #align matrix.mul_vec_neg Matrix.mulVec_neg
 
+theorem mulVec_sub [Fintype n] (A : Matrix m n α) (x y : n → α) :
+    A *ᵥ (x - y) = A *ᵥ x - A *ᵥ y := by
+  ext
+  apply dotProduct_sub
+
 theorem sub_mulVec [Fintype n] (A B : Matrix m n α) (x : n → α) :
     (A - B) *ᵥ x = A *ᵥ x - B *ᵥ x := by simp [sub_eq_add_neg, add_mulVec, neg_mulVec]
 #align matrix.sub_mul_vec Matrix.sub_mulVec
@@ -1938,6 +1931,11 @@ theorem sub_mulVec [Fintype n] (A B : Matrix m n α) (x : n → α) :
 theorem vecMul_sub [Fintype m] (A B : Matrix m n α) (x : m → α) :
     x ᵥ* (A - B) = x ᵥ* A - x ᵥ* B := by simp [sub_eq_add_neg, vecMul_add, vecMul_neg]
 #align matrix.vec_mul_sub Matrix.vecMul_sub
+
+theorem sub_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
+    (x - y) ᵥ* A = x ᵥ* A - y ᵥ* A := by
+  ext
+  apply sub_dotProduct
 
 end NonUnitalNonAssocRing
 
