@@ -93,7 +93,7 @@ theorem slope_comm (f : k → PE) (a b : k) : slope f a b = slope f b a := by
   rw [slope, slope, ← neg_vsub_eq_vsub_rev, smul_neg, ← neg_smul, neg_inv, neg_sub]
 #align slope_comm slope_comm
 
-@[simp] lemma slope_neg (f : k → E) (x y : k) : slope (fun t ↦ -f t) x y = -slope f x y:= by
+@[simp] lemma slope_neg (f : k → E) (x y : k) : slope (fun t ↦ -f t) x y = -slope f x y := by
   simp only [slope_def_module, neg_sub_neg, ← smul_neg, neg_sub]
 
 /-- `slope f a c` is a linear combination of `slope f a b` and `slope f b c`. This version
