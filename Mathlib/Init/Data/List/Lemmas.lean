@@ -77,7 +77,7 @@ theorem not_bex_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x := fun ⟨_, hx
 
 #align list.ball_nil List.forall_mem_nil
 
-theorem bex_cons (p : α → Prop) (a : α) (l : List α) : (∃ x ∈ a :: l, p x) ↔ p a ∨ ∃ x ∈ l, p x :=
+theorem exists_cons (p : α → Prop) (a : α) (l : List α) : (∃ x ∈ a :: l, p x) ↔ p a ∨ ∃ x ∈ l, p x :=
   ⟨fun ⟨x, h, px⟩ => by
     simp only [find?, mem_cons] at h
     cases' h with h h
@@ -85,7 +85,8 @@ theorem bex_cons (p : α → Prop) (a : α) (l : List α) : (∃ x ∈ a :: l, p
     · exact Or.inr ⟨x, h, px⟩,
   fun o =>
     o.elim (fun pa => ⟨a, mem_cons_self _ _, pa⟩) fun ⟨x, h, px⟩ => ⟨x, mem_cons_of_mem _ h, px⟩⟩
-#align list.bex_cons List.bex_cons
+#align list.bex_cons List.exists_cons
+@[deprecated] alias List.bex_cons := List.exists_cons -- 2024-03-23
 
 #align list.ball_cons List.forall_mem_consₓ
 
