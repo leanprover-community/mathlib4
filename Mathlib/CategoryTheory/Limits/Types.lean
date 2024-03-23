@@ -592,7 +592,8 @@ theorem colimit_sound' {j j' : J} {x : F.obj j} {x' : F.obj j'} {j'' : J}
   rw [types_comp_apply, types_comp_apply, w]
 #align category_theory.limits.types.colimit_sound' CategoryTheory.Limits.Types.colimit_sound'
 
-theorem colimit_sound'' {F : J ⥤ Type u} [HasColimit F] {j j' : J} {x : F.obj j} {x' : F.obj j'} (f : j ⟶ j')
+theorem colimit_sound'' {F : J ⥤ Type u} [HasColimit F]
+    {j j' : J} {x : F.obj j} {x' : F.obj j'} (f : j ⟶ j')
     (w : F.map f x = x') : colimit.ι F j x = colimit.ι F j' x' := by
   rw [← colimit.w F f, types_comp_apply, w]
 
