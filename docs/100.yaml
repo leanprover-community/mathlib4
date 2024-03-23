@@ -261,7 +261,7 @@
   author : mathlib
 70:
   title  : The Perfect Number Theorem
-  decl   : Theorems100.eq_two_pow_mul_prime_mersenne_of_even_perfect
+  decl   : Theorems100.Nat.eq_two_pow_mul_prime_mersenne_of_even_perfect
   author : Aaron Anderson
 71:
   title  : Order of a Subgroup
