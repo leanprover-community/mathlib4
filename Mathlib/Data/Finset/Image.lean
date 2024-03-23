@@ -659,7 +659,7 @@ theorem disjoint_image {s t : Finset α} {f : α → β} (hf : Injective f) :
 
 theorem image_const {s : Finset α} (h : s.Nonempty) (b : β) : (s.image fun _ => b) = singleton b :=
   ext fun b' => by
-    simp only [mem_image, exists_prop, exists_and_right, h.exists, true_and_iff, mem_singleton,
+    simp only [mem_image, exists_prop, exists_and_right, h.exists_mem, true_and_iff, mem_singleton,
       eq_comm]
 #align finset.image_const Finset.image_const
 

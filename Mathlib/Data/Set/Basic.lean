@@ -1207,17 +1207,17 @@ theorem forall_insert_of_forall {P : α → Prop} {a : α} {s : Set α} (H : ∀
 
 /- Porting note: ∃ x ∈ insert a s, P x is parsed as ∃ x, x ∈ insert a s ∧ P x,
  where in Lean3 it was parsed as `∃ x, ∃ (h : x ∈ insert a s), P x` -/
-theorem exists_insert_iff {P : α → Prop} {a : α} {s : Set α} :
+theorem exists_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∃ x ∈ insert a s, P x) ↔ (P a ∨ ∃ x ∈ s, P x) := by
   simp [mem_insert_iff, or_and_right, exists_and_left, exists_or]
-#align set.bex_insert_iff Set.exists_insert_iff
-@[deprecated] alias bex_insert_iff := exists_insert_iff -- 2024-03-23
+#align set.bex_insert_iff Set.exists_mem_insert
+@[deprecated] alias bex_insert_iff := exists_mem_insert -- 2024-03-23
 
-theorem forall_insert_iff {P : α → Prop} {a : α} {s : Set α} :
+theorem forall_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∀ x ∈ insert a s, P x) ↔ P a ∧ ∀ x ∈ s, P x :=
   ball_or_left.trans <| and_congr_left' forall_eq
-#align set.ball_insert_iff Set.forall_insert_iff
-@[deprecated] alias ball_insert_iff := forall_insert_iff -- 2024-03-23
+#align set.ball_insert_iff Set.forall_mem_insert
+@[deprecated] alias ball_insert_iff := forall_mem_insert -- 2024-03-23
 
 /-! ### Lemmas about singletons -/
 

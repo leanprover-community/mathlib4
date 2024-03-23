@@ -940,7 +940,7 @@ theorem diam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set α) 
 
 theorem diam_insert : diam (insert x s) = max (⨆ y ∈ s, edist x y) (diam s) :=
   eq_of_forall_ge_iff fun d => by
-    simp only [diam_le_iff, forall_insert_iff, edist_self, edist_comm x, max_le_iff, iSup_le_iff,
+    simp only [diam_le_iff, forall_mem_insert, edist_self, edist_comm x, max_le_iff, iSup_le_iff,
       zero_le, true_and_iff, forall_and, and_self_iff, ← and_assoc]
 #align emetric.diam_insert EMetric.diam_insert
 
