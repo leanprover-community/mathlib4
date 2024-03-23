@@ -82,11 +82,8 @@ open Set Filter Asymptotics
 namespace FormalMultilinearSeries
 
 variable [Ring 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
-
 variable [TopologicalSpace E] [TopologicalSpace F]
-
 variable [TopologicalAddGroup E] [TopologicalAddGroup F]
-
 variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 
 /-- Given a formal multilinear series `p` and a vector `x`, then `p.sum x` is the sum `Σ pₙ xⁿ`. A
@@ -1448,7 +1445,6 @@ theorem hasFPowerSeriesAt_iff :
       simp only [dist_zero_right] at h
       apply FormalMultilinearSeries.le_radius_of_tendsto
       convert tendsto_norm.comp (h le_z).summable.tendsto_atTop_zero
-      funext
       simp [norm_smul, mul_comm]
     refine' lt_of_lt_of_le _ this
     simp only [ENNReal.coe_pos]

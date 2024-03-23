@@ -33,9 +33,7 @@ commutative ring, field of fractions
 
 
 variable (R : Type*) [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
-
 variable [Algebra R S] {P : Type*} [CommRing P]
-
 variable {A : Type*} [CommRing A] [IsDomain A] (K : Type*)
 
 -- TODO: should this extend `Algebra` instead of assuming it?
@@ -140,7 +138,8 @@ noncomputable def toField : Field K :=
     inv_zero := by
       change IsFractionRing.inv A (0 : K) = 0
       rw [IsFractionRing.inv]
-      exact dif_pos rfl }
+      exact dif_pos rfl
+    qsmul := qsmulRec _ }
 #align is_fraction_ring.to_field IsFractionRing.toField
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where

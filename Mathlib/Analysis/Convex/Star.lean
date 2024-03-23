@@ -115,7 +115,7 @@ theorem starConvex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, StarConvex 𝕜 x 
 
 theorem starConvex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, StarConvex 𝕜 x (s i)) :
     StarConvex 𝕜 x (⋂ i, s i) :=
-  sInter_range s ▸ starConvex_sInter <| forall_range_iff.2 h
+  sInter_range s ▸ starConvex_sInter <| forall_mem_range.2 h
 #align star_convex_Inter starConvex_iInter
 
 theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :

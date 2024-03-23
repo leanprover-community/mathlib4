@@ -3,13 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Order.Partition.Finpartition
 import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.NormNum
+import Mathlib.Order.Partition.Finpartition
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
 
 #align_import combinatorics.simple_graph.density from "leanprover-community/mathlib"@"a4ec43f53b0bd44c697bcc3f5a62edd56f269ef1"
 
@@ -263,7 +263,6 @@ end Asymmetric
 section Symmetric
 
 variable (r : α → α → Prop) [DecidableRel r] {s s₁ s₂ t t₁ t₂ : Finset α} {a b : α}
-
 variable {r} (hr : Symmetric r)
 
 @[simp]

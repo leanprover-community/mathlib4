@@ -425,6 +425,10 @@ theorem dist_one_right (a : E) : dist a 1 = ‖a‖ := by rw [dist_eq_norm_div, 
 #align dist_one_right dist_one_right
 #align dist_zero_right dist_zero_right
 
+@[to_additive]
+theorem inseparable_one_iff_norm {a : E} : Inseparable a 1 ↔ ‖a‖ = 0 := by
+  rw [Metric.inseparable_iff, dist_one_right]
+
 @[to_additive (attr := simp)]
 theorem dist_one_left : dist (1 : E) = norm :=
   funext fun a => by rw [dist_comm, dist_one_right]
@@ -762,6 +766,11 @@ theorem Bornology.IsBounded.exists_pos_norm_le' (hs : IsBounded s) : ∃ R > 0, 
   ⟨max R₀ 1, by positivity, fun x hx => (hR₀ x hx).trans <| le_max_left _ _⟩
 #align metric.bounded.exists_pos_norm_le' Bornology.IsBounded.exists_pos_norm_le'
 #align metric.bounded.exists_pos_norm_le Bornology.IsBounded.exists_pos_norm_le
+
+@[to_additive Bornology.IsBounded.exists_pos_norm_lt]
+theorem Bornology.IsBounded.exists_pos_norm_lt' (hs : IsBounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ < R :=
+  let ⟨R, hR₀, hR⟩ := hs.exists_pos_norm_le'
+  ⟨R + 1, by positivity, fun x hx ↦ (hR x hx).trans_lt (lt_add_one _)⟩
 
 @[to_additive (attr := simp 1001) mem_sphere_iff_norm]
 -- Porting note: increase priority so the left-hand side doesn't reduce
@@ -1450,7 +1459,6 @@ end SeminormedGroup
 section Induced
 
 variable (E F)
-
 variable [FunLike 𝓕 E F]
 
 -- See note [reducible non-instances]

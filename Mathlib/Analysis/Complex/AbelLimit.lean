@@ -104,9 +104,6 @@ lemma stolzCone_subset_stolzSet_aux {s : ℝ} (hs : 0 < s) :
     ← abs_eq_sqrt_sq_add_sq, ← norm_eq_abs] at H
   exact ⟨sub_pos.mp <| (mul_pos_iff_of_pos_left hM).mp <| (norm_nonneg _).trans_lt H, H⟩
 
-@[deprecated] -- 2024-03-02
-alias stolzCone_subset_StolzSet_aux := stolzCone_subset_stolzSet_aux
-
 lemma nhdsWithin_stolzCone_le_nhdsWithin_stolzSet {s : ℝ} (hs : 0 < s) :
     ∃ M, 𝓝[stolzCone s] 1 ≤ 𝓝[stolzSet M] 1 := by
   obtain ⟨M, ε, _, hε, H⟩ := stolzCone_subset_stolzSet_aux hs
