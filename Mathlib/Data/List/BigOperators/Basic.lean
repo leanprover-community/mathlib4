@@ -449,7 +449,7 @@ theorem prod_drop_succ :
 
 /-- Cancellation of a telescoping product. -/
 @[to_additive "Cancellation of a telescoping product"]
-theorem prod_range_div (n : ℕ) (f : ℕ → G) :
+theorem prod_range_div' (n : ℕ) (f : ℕ → G) :
     ((range n).map fun k ↦ f k / f (k + 1)).prod = f 0 / f n := by
   induction' n with n h
   · exact (div_self' (f 0)).symm
@@ -460,6 +460,12 @@ end Group
 section CommGroup
 
 variable [CommGroup G]
+
+/-- Cancellation of a telescoping product. -/
+@[to_additive "Cancellation of a telescoping product"]
+theorem prod_range_div (n : ℕ) (f : ℕ → G) :
+    ((range n).map fun k ↦ f (k + 1) / f k).prod = f n / f 0 := by
+  simp_rw [← inv_inj, prod_inv, inv_div, prod_range_div']
 
 /-- This is the `List.prod` version of `mul_inv` -/
 @[to_additive "This is the `List.sum` version of `add_neg`"]
