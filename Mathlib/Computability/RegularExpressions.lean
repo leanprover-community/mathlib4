@@ -396,7 +396,6 @@ protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
   | 0 => by dsimp; rfl
   | n + 1 => (congr_arg (· * map f P) (RegularExpression.map_pow f P n) : _)
-
 #align regular_expression.map_pow RegularExpression.map_pow
 
 @[simp]
