@@ -1084,22 +1084,22 @@ theorem exists_of_bex : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
 theorem bex_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by simp
 #align bex_imp_distrib bex_imp
 
-theorem not_bex : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := bex_imp
-#align not_bex not_bex
+theorem not_exists_mem : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := bex_imp
+#align not_bex not_exists_mem
 
-theorem not_ball_of_bex_not : (∃ x h, ¬P x h) → ¬∀ x h, P x h
+theorem not_forall_mem_of_exists_mem_not : (∃ x h, ¬P x h) → ¬∀ x h, P x h
   | ⟨x, h, hp⟩, al => hp <| al x h
-#align not_ball_of_bex_not not_ball_of_bex_not
+#align not_ball_of_bex_not not_forall_mem_of_exists_mem_not
 
 -- See Note [decidable namespace]
-protected theorem Decidable.not_ball [Decidable (∃ x h, ¬P x h)] [∀ x h, Decidable (P x h)] :
+protected theorem Decidable.not_forall_mem [Decidable (∃ x h, ¬P x h)] [∀ x h, Decidable (P x h)] :
     (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h :=
   ⟨Not.decidable_imp_symm fun nx x h ↦ nx.decidable_imp_symm
-    fun h' ↦ ⟨x, h, h'⟩, not_ball_of_bex_not⟩
-#align decidable.not_ball Decidable.not_ball
+    fun h' ↦ ⟨x, h, h'⟩, not_forall_mem_of_exists_mem_not⟩
+#align decidable.not_ball Decidable.not_forall_mem
 
-theorem not_ball : (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h := Decidable.not_ball
-#align not_ball not_ball
+theorem not_forall_mem : (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h := Decidable.not_forall_mem
+#align not_ball not_forall_mem
 
 theorem ball_true_iff (p : α → Prop) : (∀ x, p x → True) ↔ True :=
   iff_true_intro fun _ _ ↦ trivial
@@ -1108,6 +1108,12 @@ theorem ball_true_iff (p : α → Prop) : (∀ x, p x → True) ↔ True :=
 theorem ball_and : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ x h, Q x h :=
   Iff.trans (forall_congr' fun _ ↦ forall_and) forall_and
 #align ball_and_distrib ball_and
+
+-- 2023-03-23
+@[deprecated] alias not_ball_of_bex_not := not_forall_mem_of_exists_mem_not
+@[deprecated] alias Decidable.not_ball := Decidable.not_forall_mem
+@[deprecated] alias not_ball := not_forall_mem
+@[deprecated] alias not_bex := not_exists_mem
 
 theorem bex_or : (∃ x h, P x h ∨ Q x h) ↔ (∃ x h, P x h) ∨ ∃ x h, Q x h :=
   Iff.trans (exists_congr fun _ ↦ exists_or) exists_or
