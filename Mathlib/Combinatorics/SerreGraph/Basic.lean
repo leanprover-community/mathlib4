@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil, Anand Rao Tadipatri
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Tactic.Basic
-import Mathlib.Data.Rat.Field
+import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Prod.Basic
+import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Quot
 import Mathlib.Tactic.Use
 /-!
 # Graphs (a la Serre)
@@ -64,6 +66,7 @@ deriving DecidableEq
 
 /-- Edge with given initial and terminal vertice in the graph `G` -/
 @[ext] structure EdgeBetween (v w : V) where
+  /-- The underlying edge -/
   edge : E
   init_eq : G.ι edge = v
   term_eq : G.τ edge = w
@@ -161,7 +164,7 @@ instance  G.edgePathAppend {v w u : V} {G : SerreGraph V E} :
     ⟨append⟩
 
 @[simp] theorem nil_append  {u v : V} (p: G.EdgePath u v) :
-  EdgePath.nil (G := G) u ++ p = p := rfl
+    EdgePath.nil (G := G) u ++ p = p := rfl
 
 @[simp] theorem append_nil  {u v : V} (p: G.EdgePath u v) :
   p ++ EdgePath.nil (G := G) v = p := by
@@ -220,7 +223,9 @@ However, they determine the paths.
 This makes proofs of paths much easier by avoiding
 the need to reason about indexed inductive types.
 -/
-
+/--
+The list of edges associated to a path.
+-/
 def toList {G : SerreGraph V E} {v w : V} (p : EdgePath G v w) :
     List E :=
   match p with
@@ -463,6 +468,7 @@ abbrev homotopyClass  {v w : V} (p : G.EdgePath v w) :
     PathClass G v w  :=
   Quot.mk _ p
 
+/-- Homotopy class of an edge-path. -/
 notation "[[" p "]]" => homotopyClass p
 
 attribute [aesop safe apply] Quot.sound
@@ -524,6 +530,9 @@ The constant path, identity in the fundamental group, with graph explicit.
 protected def id' (G : SerreGraph V E) (v : V) : G.PathClass v v :=
   [[.nil v]]
 
+/--
+The product of two path-classes.
+-/
 protected def mul {v w u : V} :
     G.PathClass v w → G.PathClass w u → G.PathClass v u := by
   apply Quot.lift₂ (fun p₁ p₂ ↦ [[ p₁ ++ p₂ ]])
@@ -536,7 +545,9 @@ protected def mul {v w u : V} :
     apply SerreGraph.right_append_step
     simp_all only
 
-
+/--
+The inverse of a path-class.
+-/
 @[aesop norm unfold]
 protected def inv {u v : V} : G.PathClass u v → G.PathClass v u :=
   Quot.lift ([[·.reverse]]) reverse_step
@@ -574,6 +585,9 @@ theorem concat_equiv_of_equiv {G: SerreGraph V E}{v w u : V}
     rw [append_concat, append_nil]
   rw [this, ← mul_path_path, ← mul_path_path, r]
 
+/--
+The fundamental group of a graph.
+-/
 abbrev π₁ (G: SerreGraph V E) (v : V) := G.PathClass v v
 
 @[local simp] lemma mul_path_path' (p : G.EdgePath u v)
@@ -595,10 +609,7 @@ protected theorem mul_assoc { v w u u' :  V}:
     intro c
     simp [append_assoc]
 
-/--
-Induction principle for path-classes.
--/
-def ind {β : (PathClass G u v) → Prop} :
+theorem ind {β : (PathClass G u v) → Prop} :
     (∀ p : G.EdgePath u v, β [[p]]) → (∀ q : PathClass G u v, β q) :=
   Quot.ind
 
@@ -635,6 +646,9 @@ instance : Group (π₁ G v) where
   inv := PathClass.inv
   mul_left_inv := PathClass.inv_mul
 
+/--
+The wedge of circles indexed by a given type `S`.
+-/
 def wedgeCircles (S: Type) : SerreGraph Unit (S × Bool) := {
   ι := fun _ ↦ ()
   bar := fun (e, b) ↦ (e, !b)
@@ -642,7 +656,12 @@ def wedgeCircles (S: Type) : SerreGraph Unit (S × Bool) := {
   bar_ne_self := by aesop
 }
 
+/--
+A path class with given initial vertex but arbitrary terminal vertex.
+-/
 @[ext]
 structure PathClassFrom (G : SerreGraph V E) (v : V) where
+  /-- The terminal vertex. -/
   τ  : V
+  /-- The path class. -/
   pathClass : PathClass G v τ
