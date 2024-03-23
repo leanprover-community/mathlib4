@@ -329,7 +329,7 @@
   author : Manuel Candales (archive), Michael Stoll (Mathlib)
 82:
   title  : Dissection of Cubes (J.E. Littlewood’s ‘elegant’ proof)
-  decl : Theorems100.82.cannot_cube_a_cube
+  decl : 'Theorems100.82.cannot_cube_a_cube'
   author : Floris van Doorn
 83:
   title  : The Friendship Theorem
