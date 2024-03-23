@@ -62,9 +62,14 @@ theorem lapMatrix_mulVec_eq_zero_of_forall_adj [NonAssocRing R] {vec : V → R}
 theorem lapMatrix_mulVec_const_eq_zero [NonAssocRing R] : mulVec (G.lapMatrix R) (fun _ ↦ 1) = 0 :=
   lapMatrix_mulVec_eq_zero_of_forall_adj _ fun _ _ _ ↦ rfl
 
-theorem dotProduct_mulVec_degMatrix [CommRing R] (x : V → R) :
-    x ⬝ᵥ (G.degMatrix R).mulVec x = ∑ i : V, G.degree i * x i * x i := by
-  simp only [dotProduct, degMatrix, mulVec_diagonal, ← mul_assoc, mul_comm]
+theorem dotProduct_mulVec_degMatrix [Ring R] (x y : V → R) :
+    x ⬝ᵥ (G.degMatrix R *ᵥ y) = ∑ i : V, G.degree i * x i * y i := by
+  simp only [dotProduct, degMatrix, mulVec_diagonal, ← mul_assoc, ← Nat.cast_comm]
+
+theorem dotProduct_mulVec_lapMatrix [Ring R] (x y : V → R) :
+    x ⬝ᵥ (G.lapMatrix R *ᵥ y) = ∑ e in G.edgeFinset,
+      Sym2.lift ⟨fun v w ↦ (x v - x w) * (y v - y w), fun _ _ ↦ by ring⟩ e := by
+
 
 variable (R)
 
@@ -72,6 +77,13 @@ theorem degree_eq_sum_if_adj [AddCommMonoidWithOne R] (i : V) :
     (G.degree i : R) = ∑ j : V, if G.Adj i j then 1 else 0 := by
   unfold degree neighborFinset neighborSet
   rw [sum_boole, Set.toFinset_setOf]
+
+theorem lapMatrix_toLinearMap₂'_apply [CommRing R] (x y : V → R) :
+    toLinearMap₂' (G.lapMatrix R) x y = ∑ e in G.edgeFinset,
+      Sym2.lift ⟨fun v w ↦ (x v - x w) * (y v - y w), fun _ _ ↦ by ring⟩ e := by
+  simp_rw [toLinearMap₂'_apply', lapMatrix, sub_mulVec, dotProduct_sub, dotProduct_mulVec_degMatrix,
+    dotProduct_mulVec_adjMatrix]
+  simp_rw [sub_mul, mul_sub]
 
 /-- Let $L$ be the graph Laplacian and let $x \in \mathbb{R}$, then
 $$x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}$$,
