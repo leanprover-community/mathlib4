@@ -5,7 +5,6 @@ Authors: Paul Reichert
 -/
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Limits.Creates
 
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Conj
