@@ -3,12 +3,12 @@ Copyright (c) 2024 Siddhartha Gadgil, Anand Rao Tadipatri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil, Anand Rao Tadipatri
 -/
-import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Quot
 import Mathlib.Tactic.Use
+import Aesop
 /-!
 # Graphs (a la Serre)
 
