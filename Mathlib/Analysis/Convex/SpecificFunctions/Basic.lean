@@ -103,34 +103,28 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
 `s ≠ 0`, we have `1 + p * s < (1 + s) ^ p`. -/
 theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 0) {p : ℝ} (hp : 1 < p) :
     1 + p * s < (1 + s) ^ p := by
+  have hp' : 0 < p := zero_lt_one.trans hp
   rcases eq_or_lt_of_le hs with (rfl | hs)
-  · have : p ≠ 0 := by positivity
-    simpa [zero_rpow this]
-  have hs1 : 0 < 1 + s := by linarith
+  · rwa [add_right_neg, zero_rpow hp'.ne', mul_neg, mul_one, add_neg_lt_iff_lt_add, zero_add]
+  have hs1 : 0 < 1 + s := neg_lt_iff_pos_add'.mp hs
   rcases le_or_lt (1 + p * s) 0 with hs2 | hs2
   · exact hs2.trans_lt (rpow_pos_of_pos hs1 _)
+  have hs3 : 1 + s ≠ 1 := hs' ∘ add_right_eq_self.mp
+  have hs4 : 1 + p * s ≠ 1 := by
+    contrapose! hs'; rwa [add_right_eq_self, mul_eq_zero, eq_false_intro hp'.ne', false_or] at hs'
   rw [rpow_def_of_pos hs1, ← exp_log hs2]
   apply exp_strictMono
-  have hp : 0 < p := by positivity
-  have hs3 : 1 + s ≠ 1 := by contrapose! hs'; linarith
-  have hs4 : 1 + p * s ≠ 1 := by contrapose! hs'; nlinarith
   cases' lt_or_gt_of_ne hs' with hs' hs'
-  · rw [← div_lt_iff hp, ← div_lt_div_right_of_neg hs']
-    -- Porting note: previously we could write `zero_lt_one` inline,
-    -- but now Lean doesn't guess we are talking about `1` fast enough.
-    haveI : (1 : ℝ) ∈ Ioi 0 := zero_lt_one
-    convert strictConcaveOn_log_Ioi.secant_strict_mono this hs2 hs1 hs4 hs3 _ using 1
-    · field_simp
-    · field_simp
-    · nlinarith
-  · rw [← div_lt_iff hp, ← div_lt_div_right hs']
-    -- Porting note: previously we could write `zero_lt_one` inline,
-    -- but now Lean doesn't guess we are talking about `1` fast enough.
-    haveI : (1 : ℝ) ∈ Ioi 0 := zero_lt_one
-    convert strictConcaveOn_log_Ioi.secant_strict_mono this hs1 hs2 hs3 hs4 _ using 1
-    · field_simp
-    · field_simp
-    · nlinarith
+  · rw [← div_lt_iff hp', ← div_lt_div_right_of_neg hs']
+    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
+    · rw [add_sub_cancel_left, log_one, sub_zero]
+    · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
+    · apply add_lt_add_left (mul_lt_of_one_lt_left hs' hp)
+  · rw [← div_lt_iff hp', ← div_lt_div_right hs']
+    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
+    · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
+    · rw [add_sub_cancel_left, log_one, sub_zero]
+    · apply add_lt_add_left (lt_mul_of_one_lt_left hs' hp)
 #align one_add_mul_self_lt_rpow_one_add one_add_mul_self_lt_rpow_one_add
 
 /-- **Bernoulli's inequality** for real exponents, non-strict version: for `1 ≤ p` and `-1 ≤ s`
@@ -149,28 +143,29 @@ with `s ≠ 0`, we have `(1 + s) ^ p < 1 + p * s`. -/
 theorem rpow_one_add_lt_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 0) {p : ℝ} (hp1 : 0 < p)
     (hp2 : p < 1) : (1 + s) ^ p < 1 + p * s := by
   rcases eq_or_lt_of_le hs with (rfl | hs)
-  · have : p ≠ 0 := by positivity
-    simpa [zero_rpow this]
-  have hs1 : 0 < 1 + s := by linarith
-  rcases le_or_lt (1 + p * s) 0 with hs2 | hs2
-  · nlinarith
+  · rwa [add_right_neg, zero_rpow hp1.ne', mul_neg, mul_one, lt_add_neg_iff_add_lt, zero_add]
+  have hs1 : 0 < 1 + s := neg_lt_iff_pos_add'.mp hs
+  have hs2 : 0 < 1 + p * s := by
+    rw [← neg_lt_iff_pos_add']
+    rcases lt_or_gt_of_ne hs' with h | h
+    · exact hs.trans (lt_mul_of_lt_one_left h hp2)
+    · exact neg_one_lt_zero.trans (mul_pos hp1 h)
+  have hs3 : 1 + s ≠ 1 := hs' ∘ add_right_eq_self.mp
+  have hs4 : 1 + p * s ≠ 1 := by
+    contrapose! hs'; rwa [add_right_eq_self, mul_eq_zero, eq_false_intro hp1.ne', false_or] at hs'
   rw [rpow_def_of_pos hs1, ← exp_log hs2]
   apply exp_strictMono
-  have hs3 : 1 + s ≠ 1 := by contrapose! hs'; linarith
-  have hs4 : 1 + p * s ≠ 1 := by contrapose! hs'; nlinarith
   cases' lt_or_gt_of_ne hs' with hs' hs'
   · rw [← lt_div_iff hp1, ← div_lt_div_right_of_neg hs']
-    haveI : (1 : ℝ) ∈ Ioi 0 := zero_lt_one
-    convert strictConcaveOn_log_Ioi.secant_strict_mono this hs1 hs2 hs3 hs4 _ using 1
-    · field_simp
-    · field_simp
-    · nlinarith
+    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
+    · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
+    · rw [add_sub_cancel_left, log_one, sub_zero]
+    · apply add_lt_add_left (lt_mul_of_lt_one_left hs' hp2)
   · rw [← lt_div_iff hp1, ← div_lt_div_right hs']
-    haveI : (1 : ℝ) ∈ Ioi 0 := zero_lt_one
-    convert strictConcaveOn_log_Ioi.secant_strict_mono this hs2 hs1 hs4 hs3 _ using 1
-    · field_simp
-    · field_simp
-    · nlinarith
+    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
+    · rw [add_sub_cancel_left, log_one, sub_zero]
+    · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
+    · apply add_lt_add_left (mul_lt_of_lt_one_left hs' hp2)
 
 /-- **Bernoulli's inequality** for real exponents, non-strict version: for `0 ≤ p ≤ 1` and `-1 ≤ s`
 we have `(1 + s) ^ p ≤ 1 + p * s`. -/
@@ -188,48 +183,31 @@ theorem rpow_one_add_le_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
-theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ p := by
+theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
   apply strictConvexOn_of_slope_strict_mono_adjacent (convex_Ici (0 : ℝ))
   rintro x y z (hx : 0 ≤ x) (hz : 0 ≤ z) hxy hyz
-  have hy : 0 < y := by linarith
+  have hy : 0 < y := hx.trans_lt hxy
   have hy' : 0 < y ^ p := rpow_pos_of_pos hy _
-  have H1 : y ^ (p - 1 + 1) = y ^ (p - 1) * y := rpow_add_one hy.ne' _
-  ring_nf at H1
   trans p * y ^ (p - 1)
-  · have h3 : 0 < y - x := by linarith only [hxy]
-    have hyx'' : x / y < 1 := by rwa [div_lt_one hy]
-    have hyx''' : x / y - 1 < 0 := by linarith only [hyx'']
-    have hyx'''' : 0 ≤ x / y := by positivity
-    have hyx''''' : -1 ≤ x / y - 1 := by linarith only [hyx'''']
-    have : 1 - (1 + (x / y - 1)) ^ p < -p * (x / y - 1) := by
-      linarith [one_add_mul_self_lt_rpow_one_add hyx''''' hyx'''.ne hp]
-    rw [div_lt_iff h3, ← div_lt_div_right hy']
-    convert this using 1
-    · have H : (x / y) ^ p = x ^ p / y ^ p := div_rpow hx hy.le _
-      ring_nf at H ⊢
-      field_simp at H ⊢
-      linear_combination H
-    · ring_nf at H1 ⊢
-      field_simp
-      linear_combination p * (-y + x) * H1
-  · have hyz' : 0 < z - y := by linarith only [hyz]
-    have hyz'' : 1 < z / y := by rwa [one_lt_div hy]
-    have hyz''' : 0 < z / y - 1 := by linarith only [hyz'']
-    have hyz'''' : -1 ≤ z / y - 1 := by linarith only [hyz'']
-    have : p * (z / y - 1) < (1 + (z / y - 1)) ^ p - 1 := by
-      linarith [one_add_mul_self_lt_rpow_one_add hyz'''' hyz'''.ne' hp]
-    rw [lt_div_iff hyz', ← div_lt_div_right hy']
-    convert this using 1
-    · ring_nf at H1 ⊢
-      field_simp at H1 ⊢
-      linear_combination p * (y - z) * y ^ p * H1
-    · have H : (z / y) ^ p = z ^ p / y ^ p := div_rpow hz hy.le _
-      ring_nf at H ⊢
-      field_simp at H ⊢
-      linear_combination -H
+  · have q : 0 < y - x := by rwa [sub_pos]
+    rw [div_lt_iff q, ← div_lt_div_right hy', _root_.sub_div, div_self hy'.ne', ← div_rpow hx hy.le,
+      sub_lt_comm, ← add_sub_cancel_right (x / y) 1, add_comm, add_sub_assoc, ← div_mul_eq_mul_div,
+      mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one, mul_assoc, ← div_eq_inv_mul,
+      sub_eq_add_neg, ← mul_neg, ← neg_div, neg_sub, _root_.sub_div, div_self hy.ne']
+    apply one_add_mul_self_lt_rpow_one_add _ _ hp
+    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]; exact Or.inl ⟨hx, hy.le⟩
+    · rw [sub_ne_zero]; exact ((div_lt_one hy).mpr hxy).ne
+  · have q : 0 < z - y := by rwa [sub_pos]
+    rw [lt_div_iff q, ← div_lt_div_right hy', _root_.sub_div, div_self hy'.ne', ← div_rpow hz hy.le,
+      lt_tsub_iff_left, ← add_sub_cancel_right (z / y) 1, add_comm _ 1, add_sub_assoc,
+      ← div_mul_eq_mul_div, mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one,
+      mul_assoc, ← div_eq_inv_mul, _root_.sub_div, div_self hy.ne']
+    apply one_add_mul_self_lt_rpow_one_add _ _ hp
+    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]; exact Or.inl ⟨hz, hy.le⟩
+    · rw [sub_ne_zero]; exact ((one_lt_div hy).mpr hyz).ne'
 #align strict_convex_on_rpow strictConvexOn_rpow
 
-theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ p := by
+theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
   rcases eq_or_lt_of_le hp with (rfl | hp)
   · simpa using convexOn_id (convex_Ici _)
   exact (strictConvexOn_rpow hp).convexOn
@@ -240,48 +218,31 @@ theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : �
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
 theorem strictConcaveOn_rpow {p : ℝ} (hp1 : 0 < p) (hp2 : p < 1) :
-    StrictConcaveOn ℝ (Ici 0) fun x : ℝ => x ^ p := by
+    StrictConcaveOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
   apply strictConcaveOn_of_slope_strict_anti_adjacent (convex_Ici (0 : ℝ))
   rintro x y z (hx : 0 ≤ x) (hz : 0 ≤ z) hxy hyz
   have hy : 0 < y := by linarith
   have hy' : 0 < y ^ p := rpow_pos_of_pos hy _
-  have H1 : y ^ (p - 1 + 1) = y ^ (p - 1) * y := rpow_add_one hy.ne' _
-  ring_nf at H1
   trans p * y ^ (p - 1)
-  · have hyz' : 0 < z - y := by linarith only [hyz]
-    have hyz'' : 1 < z / y := by rwa [one_lt_div hy]
-    have hyz''' : 0 < z / y - 1 := by linarith only [hyz'']
-    have hyz'''' : -1 ≤ z / y - 1 := by linarith only [hyz'']
-    have : (1 + (z / y - 1)) ^ p - 1 < p * (z / y - 1) := by
-      linarith [rpow_one_add_lt_one_add_mul_self hyz'''' hyz'''.ne' hp1 hp2]
-    rw [div_lt_iff hyz', ← div_lt_div_right hy']
-    convert this using 1
-    · have H : (z / y) ^ p = z ^ p / y ^ p := div_rpow hz hy.le _
-      ring_nf at H ⊢
-      field_simp at H ⊢
-      linear_combination -H
-    · ring_nf at H1 ⊢
-      field_simp at H1 ⊢
-      linear_combination p * (y - z) * y ^ p * H1
-  · have h3 : 0 < y - x := by linarith only [hxy]
-    have hyx'' : x / y < 1 := by rwa [div_lt_one hy]
-    have hyx''' : x / y - 1 < 0 := by linarith only [hyx'']
-    have hyx'''' : 0 ≤ x / y := by positivity
-    have hyx''''' : -1 ≤ x / y - 1 := by linarith only [hyx'''']
-    have : -p * (x / y - 1) < 1 - (1 + (x / y - 1)) ^ p := by
-      linarith [rpow_one_add_lt_one_add_mul_self hyx''''' hyx'''.ne hp1 hp2]
-    rw [lt_div_iff h3, ← div_lt_div_right hy']
-    convert this using 1
-    · ring_nf at H1 ⊢
-      field_simp
-      linear_combination p * (-y + x) * H1
-    · have H : (x / y) ^ p = x ^ p / y ^ p := div_rpow hx hy.le _
-      ring_nf at H ⊢
-      field_simp at H ⊢
-      linear_combination H
+  · have q : 0 < z - y := by linarith only [hyz]
+    rw [div_lt_iff q, ← div_lt_div_right hy', _root_.sub_div, div_self hy'.ne', ← div_rpow hz hy.le,
+      sub_lt_iff_lt_add', ← add_sub_cancel_right (z / y) 1, add_comm _ 1, add_sub_assoc,
+      ← div_mul_eq_mul_div, mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one,
+      mul_assoc, ← div_eq_inv_mul, _root_.sub_div, div_self hy.ne']
+    apply rpow_one_add_lt_one_add_mul_self _ _ hp1 hp2
+    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]; exact Or.inl ⟨hz, hy.le⟩
+    · rw [sub_ne_zero]; exact ((one_lt_div hy).mpr hyz).ne'
+  · have q : 0 < y - x := by linarith only [hxy]
+    rw [lt_div_iff q, ← div_lt_div_right hy', _root_.sub_div, div_self hy'.ne', ← div_rpow hx hy.le,
+      lt_sub_comm, ← add_sub_cancel_right (x / y) 1, add_comm, add_sub_assoc, ← div_mul_eq_mul_div,
+      mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one, mul_assoc, ← div_eq_inv_mul,
+      sub_eq_add_neg 1, ← mul_neg, ← neg_div, neg_sub, _root_.sub_div, div_self hy.ne']
+    apply rpow_one_add_lt_one_add_mul_self _ _ hp1 hp2
+    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]; exact Or.inl ⟨hx, hy.le⟩
+    · rw [sub_ne_zero]; exact ((div_lt_one hy).mpr hxy).ne
 
 theorem concaveOn_rpow {p : ℝ} (hp1 : 0 ≤ p) (hp2 : p ≤ 1) :
-    ConcaveOn ℝ (Ici 0) fun x : ℝ => x ^ p := by
+    ConcaveOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
   rcases eq_or_lt_of_le hp1 with (rfl | hp1)
   · simpa using concaveOn_const (c := 1) (convex_Ici _)
   rcases eq_or_lt_of_le hp2 with (rfl | hp2)
