@@ -345,7 +345,7 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
   generalize eq : [(x1, not b1), (x2, b2)] = L'
   intro L h'
   cases h'
-  simp [List.cons_eq_append_iff, List.nil_eq_append] at eq
+  simp [List.cons_eq_append, List.nil_eq_append] at eq
   rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩
   simp at h
 #align free_group.red.red_iff_irreducible FreeGroup.Red.red_iff_irreducible
