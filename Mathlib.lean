@@ -259,6 +259,7 @@ import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
 import Mathlib.Algebra.Homology.Bifunctor
+import Mathlib.Algebra.Homology.BifunctorHomotopy
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.ComplexShapeSigns
 import Mathlib.Algebra.Homology.ConcreteCategory
@@ -2359,6 +2360,7 @@ import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.FiniteAbelian
 import Mathlib.GroupTheory.Finiteness
+import Mathlib.GroupTheory.FixedPointFree
 import Mathlib.GroupTheory.FreeAbelianGroup
 import Mathlib.GroupTheory.FreeAbelianGroupFinsupp
 import Mathlib.GroupTheory.FreeGroup.Basic
@@ -2962,6 +2964,7 @@ import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.NumberTheory.FunctionField
 import Mathlib.NumberTheory.Harmonic.Bounds
 import Mathlib.NumberTheory.Harmonic.Defs
+import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 import Mathlib.NumberTheory.Harmonic.Int
 import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.LSeries.AbstractFuncEq
@@ -3743,6 +3746,7 @@ import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.Module.LinearPMap
 import Mathlib.Topology.Algebra.Module.LocallyConvex
 import Mathlib.Topology.Algebra.Module.Multilinear.Basic
+import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Star
 import Mathlib.Topology.Algebra.Module.StrongTopology
