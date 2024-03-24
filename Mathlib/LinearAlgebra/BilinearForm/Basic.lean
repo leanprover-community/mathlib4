@@ -44,6 +44,7 @@ In this file we use the following type variables:
 Bilinear form,
 -/
 
+export LinearMap (BilinForm)
 
 open BigOperators
 
