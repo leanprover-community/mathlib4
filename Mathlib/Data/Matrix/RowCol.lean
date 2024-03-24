@@ -26,20 +26,18 @@ variable {R : Type*} {α : Type v} {β : Type w}
 
 namespace Matrix
 
-variable {ι : Type*} [Unique ι]
-
 /-- `Matrix.col u` is the column matrix whose entries are given by `u`.
 
 Warning: In any abstract use of `col`, you might want to use
 `Matrix.col (ι := Fin 1) u`.
 -/
-def col (w : m → α) : Matrix m ι α :=
+def col {ι : Type*} [Unique ι] (w : m → α) : Matrix m ι α :=
   of fun x _ => w x
 #align matrix.col Matrix.col
 
 -- TODO: set as an equation lemma for `col`, see mathlib4#3024
 @[simp]
-theorem col_apply (w : m → α) (i) (j : ι) : col w i j = w i :=
+theorem col_apply {ι : Type*} [Unique ι] (w : m → α) (i) (j : ι) : col w i j = w i :=
   rfl
 #align matrix.col_apply Matrix.col_apply
 
@@ -48,9 +46,11 @@ theorem col_apply (w : m → α) (i) (j : ι) : col w i j = w i :=
 Warning: In any abstract use of `row`, you might want to use
 `Matrix.row (ι := Fin 1) u`.
 -/
-def row (v : n → α) : Matrix ι n α :=
+def row {ι : Type*} [Unique ι] (v : n → α) : Matrix ι n α :=
   of fun _ y => v y
 #align matrix.row Matrix.row
+
+variable {ι : Type*} [Unique ι]
 
 -- TODO: set as an equation lemma for `row`, see mathlib4#3024
 @[simp]
@@ -223,14 +223,14 @@ theorem updateColumn_apply [DecidableEq n] {j' : n} :
 
 @[simp]
 theorem updateColumn_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : m → R) :
-    A.updateColumn i b = (col b).submatrix id (Function.const n 0) := by
+    A.updateColumn i b = (col (ι := Fin 1) b).submatrix id (Function.const n 0) := by
   ext x y
   simp [updateColumn_apply, Subsingleton.elim i y]
 #align matrix.update_column_subsingleton Matrix.updateColumn_subsingleton
 
 @[simp]
 theorem updateRow_subsingleton [Subsingleton m] (A : Matrix m n R) (i : m) (b : n → R) :
-    A.updateRow i b = (row b).submatrix (Function.const m 0) id := by
+    A.updateRow i b = (row (ι := Fin 1) b).submatrix (Function.const m 0) id := by
   ext x y
   simp [updateColumn_apply, Subsingleton.elim i x]
 #align matrix.update_row_subsingleton Matrix.updateRow_subsingleton
