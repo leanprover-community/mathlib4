@@ -1433,7 +1433,9 @@ theorem Associated.lcm [CancelCommMonoidWithZero α] [GCDMonoid α]
 
 namespace Associates
 
-instance [CancelCommMonoidWithZero α] [GCDMonoid α] : GCDMonoid (Associates α) where
+variable [CancelCommMonoidWithZero α] [GCDMonoid α]
+
+instance instGCDMonoid : GCDMonoid (Associates α) where
   gcd := Quotient.map₂' gcd fun a₁ a₂ (ha : Associated _ _) b₁ b₂ (hb : Associated _ _) => ha.gcd hb
   lcm := Quotient.map₂' lcm fun a₁ a₂ (ha : Associated _ _) b₁ b₂ (hb : Associated _ _) => ha.lcm hb
   gcd_dvd_left := by rintro ⟨a⟩ ⟨b⟩; exact mk_le_mk_of_dvd (gcd_dvd_left _ _)
@@ -1447,5 +1449,10 @@ instance [CancelCommMonoidWithZero α] [GCDMonoid α] : GCDMonoid (Associates α
     exact Quotient.sound <| gcd_mul_lcm _ _
   lcm_zero_left := by rintro ⟨a⟩; exact congr_arg Associates.mk <| lcm_zero_left _
   lcm_zero_right := by rintro ⟨a⟩; exact congr_arg Associates.mk <| lcm_zero_right _
+
+theorem gcd_mk_mk {a b : α} : gcd (Associates.mk a) (Associates.mk b) = Associates.mk (gcd a b) :=
+  rfl
+theorem lcm_mk_mk {a b : α} : lcm (Associates.mk a) (Associates.mk b) = Associates.mk (lcm a b) :=
+  rfl
 
 end Associates
