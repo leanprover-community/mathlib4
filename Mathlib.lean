@@ -1471,6 +1471,7 @@ import Mathlib.Combinatorics.Schnirelmann
 import Mathlib.Combinatorics.SerreGraph.Basic
 import Mathlib.Combinatorics.SerreGraph.Covering
 import Mathlib.Combinatorics.SerreGraph.ReducedPaths
+import Mathlib.Combinatorics.SerreGraph.SubgroupCover
 import Mathlib.Combinatorics.SerreGraph.UniversalCover
 import Mathlib.Combinatorics.SetFamily.AhlswedeZhang
 import Mathlib.Combinatorics.SetFamily.CauchyDavenport
