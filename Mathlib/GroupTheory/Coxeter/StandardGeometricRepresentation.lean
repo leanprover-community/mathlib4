@@ -347,10 +347,10 @@ private lemma orthoReflection_mul_orthoReflection_pow_order_apply_v {v v' : V} {
         (((r hv) * (r hv')) ^ m) v = v := by
   rw [orthoReflection_mul_orthoReflection_pow_apply hM, hvv']
   rw [U_real_neg_cos_eq _ hm, USubOne_real_neg_cos_eq _ hm]
-  rw [Nat.cast_mul, Nat.cast_two, add_div, mul_div_cancel 2 (by positivity : (m : ℝ) ≠ 0),
+  rw [Nat.cast_mul, Nat.cast_two, add_div, mul_div_cancel_right₀ _ (by positivity : (m : ℝ) ≠ 0),
     mul_add π, mul_comm π, mul_one_div, add_comm (2 * π)]
   rw [sin_add_two_pi, sin_two_pi]
-  rw [mul_div_cancel _ (sin_pi_div_m_ne_zero hm)]
+  rw [mul_div_cancel_right₀ _ (sin_pi_div_m_ne_zero hm)]
   simp
 
 private lemma orthoReflection_mul_orthoReflection_pow_order_apply_v' {v v' : V} {m : ℕ}
