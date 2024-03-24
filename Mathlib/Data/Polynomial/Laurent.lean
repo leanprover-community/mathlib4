@@ -165,6 +165,10 @@ set_option linter.uppercaseLean3 false in
 @[simp] lemma C_apply (t : R) (n : ℤ) : C t n = if n = 0 then t else 0 := by
   rw [← single_eq_C, Finsupp.single_apply]; aesop
 
+@[simp]
+lemma smul_C (r s : R) : r • C s = C (r * s) := by
+  rw [← single_eq_C, smul_single', ← @single_eq_C]
+
 /-- The function `n ↦ T ^ n`, implemented as a sequence `ℤ → R[T;T⁻¹]`.
 
 Using directly `T ^ n` does not work, since we want the exponents to be of Type `ℤ` and there
@@ -650,5 +654,75 @@ lemma toLaurent_reverse (p : R[X]) :
   · simpa [natDegree_mul_X hp]
 
 end Inversion
+
+section Eval
+
+section SMulWithZero
+
+variable {S : Type*} [Semiring R] [AddCommMonoid S] [SMulWithZero R S] [Monoid S] (f g : R[T;T⁻¹])
+  (x y : Sˣ)
+
+/-- Evaluate a Laurent polynomial at a unit. -/
+def eval : S := Finsupp.sum f fun n r => r • (x ^ n).val
+
+theorem eval_eq_sum : f.eval x =  Finsupp.sum f fun n r => r • (x ^ n).val := rfl
+
+theorem eval_congr : f = g → x = y → f.eval x = g.eval y := by rintro rfl rfl; rfl
+
+@[simp]
+theorem eval_zero : (0 : R[T;T⁻¹]).eval x = (0 : S) := by
+  simp only [eval_eq_sum, Finsupp.sum_zero_index]
+
+@[simp]
+theorem eval_single (n : ℤ) (r : R) : eval (Finsupp.single n r) x = r • (x ^ n).val := by
+  simp only [eval_eq_sum]
+  rw [Finsupp.sum_single_index (zero_smul R (x ^ n).val)]
+
+@[simp]
+theorem eval_C (r : R) : (C r).eval x = r • 1 := by
+  rw [← @single_eq_C, eval_single x (0 : ℤ) r, zpow_zero, Units.val_one]
+
+end SMulWithZero
+
+variable {S : Type*} [Semiring R] [AddCommMonoid S] [MulActionWithZero R S] [Monoid S]
+  (f g : R[T;T⁻¹]) (x y : Sˣ)
+
+@[simp]
+theorem eval_T_pow (n : ℤ) (x : Sˣ) : (T n : R[T;T⁻¹]).eval x = (x ^ n).val := by
+  rw [T, eval_single, one_smul]
+
+@[simp]
+theorem eval_one : (1 : R[T;T⁻¹]).eval x = 1 := by
+  rw [← T_zero, eval_T_pow 0 x, zpow_zero, Units.val_eq_one]
+
+variable {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] [Monoid S] (f g : R[T;T⁻¹])
+  (x y : Sˣ)
+
+@[simp]
+theorem eval_add : (f + g).eval x = f.eval x + g.eval x := by
+  simp only [eval_eq_sum]
+  rw [Finsupp.sum_add_index (fun n _ => zero_smul R (x ^ n).val) (fun n _ r r' => add_smul r r' _)]
+
+@[simp]
+theorem eval_smul (r : R) : (r • f).eval x = r • (f.eval x) := by
+  induction f using LaurentPolynomial.induction_on with
+  | h_C s =>
+    rw [smul_C, eval_C, eval_C, mul_smul]
+  | h_add hp hq=>
+    rw [smul_add, eval_add, eval_add, hp, hq, smul_add]
+  | h_C_mul_T n s _ =>
+    rw [← single_eq_C_mul_T, smul_single', eval_single, eval_single, mul_smul]
+  | h_C_mul_T_Z n s _ =>
+    rw [← single_eq_C_mul_T, smul_single', eval_single, eval_single, mul_smul]
+
+def eval.linearMap : R[T;T⁻¹] →ₗ[R] S where -- make R explicit?
+  toFun f := f.eval x
+  map_add' f g := eval_add f g x
+  map_smul' r f := eval_smul f x r
+
+-- TODO: linear map from R[T;T⁻¹] ⊗[R] M to M via unit in R.
+-- TODO: R-algebra maps from R[T;T⁻¹] to S are in bijection with units in S.
+
+end Eval
 
 end LaurentPolynomial

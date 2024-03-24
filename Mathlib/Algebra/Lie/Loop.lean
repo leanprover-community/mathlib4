@@ -14,17 +14,22 @@ can mean many different things, e.g., continuous maps, smooth maps, polynomial m
 we consider the simplest case of polynomial maps, meaning we take a base change with the ring of
 Laurent polynomials.
 
-Representations of loop algebras are not particularly interesting - a theorem of Rao (1993) shows
-that when `L` is complex semisimple, any irreducible representation is just given by evaluation of
-loops at specific points.  However, the theory becomes much richer when one considers projective
-representations, i.e., representations of a central extension.
+Representations of loop algebras are not particularly interesting - a theorem of Rao (1993) asserts
+that when `L` is complex semisimple, any irreducible representation of `L[z,z^{-1}]` is just given
+by evaluation of loops at a finite set of specific points. However, the theory becomes much richer
+when one considers projective representations, i.e., representations of a central extension. Common
+examples include generalized Verma modules, given by pulling a representation of `L` back to a
+representation of `L[z] ⊕ C` along the homomorphism `z ↦ 0` together with a central character, and
+inducing to the central extension of the loop algebra.
 
-## Main definitions (Todo for now)
+
+## Main definitions
 
 * Loop Algebra
-* Central extension
-* representation with fixed central character
-* Positive energy representation
+* Evaluation representation
+* Construction of central extensions from invariant forms. (todo)
+* representation with fixed central character (todo)
+* Positive energy representation (todo)
 
 ## Tags
 
@@ -39,16 +44,30 @@ variable (R A L M : Type*)
 
 namespace LieAlgebra
 
-variable [CommRing R] [CommRing A] [Algebra R A] [LieRing L] [LieAlgebra R L]
+variable [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
-/-- A loop algebra is the base change of a Lie algebra by the algebra of Laurent polynomials. -/
-abbrev LoopAlgebra := (LaurentPolynomial R ⊗[R] L)
+/-- A loop algebra is the base change of a Lie algebra `L` over `R` by `R[z,z^{-1}]`, seen
+as a Lie algebra over `R`. -/
+abbrev LoopAlgebra := RestrictScalars R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L)
 
 namespace LoopAlgebra
 
 instance instLieRing : LieRing (LoopAlgebra R L) :=
   ExtendScalars.instLieRing R (LaurentPolynomial R) L
 
-instance instLieAlgebra : LieAlgebra (LaurentPolynomial R) (LoopAlgebra R L) :=
-  ExtendScalars.instLieAlgebra R (LaurentPolynomial R) L
+instance instLieAlgebra : LieAlgebra R (LoopAlgebra R L) :=
+  LieAlgebra.RestrictScalars.lieAlgebra R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L)
+
+/-!
+/-- The evaluation representation, given by composing a representation with the evaluation map
+`L[z,z^{-1}] → L` attached to a unit in `R`. -/
+def eval (x : Units R) : (LoopAlgebra R L) →ₗ⁅R⁆ L where
+  toFun l := sorry
+  map_add' := sorry
+  map_smul' := sorry
+  map_lie' := sorry
+
+/-- The evaluation module -/
+def eval.LieModule
+-/
