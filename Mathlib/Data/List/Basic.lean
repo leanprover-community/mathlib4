@@ -1361,7 +1361,7 @@ theorem take_one_drop_eq_of_lt_length' {l : List α} {n : ℕ} (h : n < l.length
 #align list.ext List.ext
 theorem ext_get? : ∀ {l₁ l₂ : List α}, (∀ n, l₁.get? n = l₂.get? n) → l₁ = l₂ := List.ext
 theorem ext_get?' {l₁ l₂ : List α} (h : l₁.length ≤ l₂.length)
-  (h' : ∀ n < l₂.length, l₁.get? n = l₂.get? n) : l₁ = l₂ := by
+    (h' : ∀ n < l₂.length, l₁.get? n = l₂.get? n) : l₁ = l₂ := by
   apply ext_get?; intro n; rcases Nat.lt_or_ge n l₂.length with hn | hn
   exact h' _ hn; simp[List.get?_eq_none.mpr hn, le_trans h hn]
 
