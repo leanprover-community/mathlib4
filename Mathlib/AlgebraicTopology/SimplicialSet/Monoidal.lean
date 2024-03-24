@@ -6,7 +6,6 @@ Authors: Joël Riou, Jack McKoen
 import Mathlib.AlgebraicTopology.SimplicialSet
 import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
---import Mathlib.CategoryTheory.Limits.Shapes.FunctorToTypes
 
 /-!
 # The monoidal category structure on simplicial sets
