@@ -97,21 +97,15 @@ lemma rightUnitor_inv_app (F : J ⥤ C) (j : J) :
 @[reassoc (attr := simp)]
 lemma tensorHom_app_fst {F₁ F₁' F₂ F₂' : J ⥤ C} (f : F₁ ⟶ F₁') (g : F₂ ⟶ F₂') (j : J) :
     (f ⊗ g).app j ≫ fst _ _ = fst _ _ ≫ f.app j := by
-  change ((𝟙 _ ≫ (_ ≫ 𝟙 _)) ≫ 𝟙 _) ≫ _ = _
-  rw [id_comp, comp_id, comp_id]
-  erw [IsLimit.fac]
-  dsimp [inv, IsEquivalence.inverse]
-  rw [comp_id]
+  change (f ⊗ g).app j ≫ (fst F₁' F₂').app j = _
+  rw [← NatTrans.comp_app, tensorHom_fst, NatTrans.comp_app]
   rfl
 
 @[reassoc (attr := simp)]
 lemma tensorHom_app_snd {F₁ F₁' F₂ F₂' : J ⥤ C} (f : F₁ ⟶ F₁') (g : F₂ ⟶ F₂') (j : J) :
     (f ⊗ g).app j ≫ snd _ _ = snd _ _ ≫ g.app j := by
-  change ((𝟙 _ ≫ (_ ≫ 𝟙 _)) ≫ 𝟙 _) ≫ _ = _
-  rw [id_comp, comp_id, comp_id]
-  erw [IsLimit.fac]
-  dsimp [inv, IsEquivalence.inverse]
-  rw [comp_id]
+  change (f ⊗ g).app j ≫ (snd F₁' F₂').app j = _
+  rw [← NatTrans.comp_app, tensorHom_snd, NatTrans.comp_app]
   rfl
 
 @[reassoc (attr := simp)]
