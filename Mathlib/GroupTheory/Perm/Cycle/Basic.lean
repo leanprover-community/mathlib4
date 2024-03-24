@@ -740,7 +740,7 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.car
   erw [hσ.zpowersEquivSupport_symm_apply (n + 1)]
   -- This used to be a `simp only` before leanprover/lean4#2644
   erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply, zpowersEquivSupport_apply]
- `-- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   simp_rw [pow_succ', Perm.mul_apply]
   rfl
 #align equiv.perm.is_cycle.is_conj Equiv.Perm.IsCycle.isConj
