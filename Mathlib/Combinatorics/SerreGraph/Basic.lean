@@ -672,16 +672,25 @@ The inverse of a path-class.
 protected def inv {u v : V} : G.PathClass u v → G.PathClass v u :=
   Quot.lift ([[·.reverse]]) reverse_step
 
+/--
+The inverse of a homotopy class is the
+homotopy class of the reverse of the path.
+-/
 theorem inv_equiv_reverse {v w : V} (η : EdgePath G v w):
     [[ η ]].inv = [[ η.reverse ]] := by rfl
 
+/--
+The product on homotopy classes of paths.
+-/
 instance {v w u: V}: HMul (G.PathClass v w) (G.PathClass w u)
     (G.PathClass v u) where
   hMul := PathClass.mul
 
 end PathClass
 
-
+/--
+The product of two path-classes is the homotopy class of the concatenation of the paths.
+-/
 @[local simp] lemma mul_path_path (p : G.EdgePath u v)
     (p' : G.EdgePath v w) :
     [[p]] * [[p']] = [[p ++ p']] := rfl
@@ -716,7 +725,9 @@ abbrev π₁ (G: SerreGraph V E) (v : V) := G.PathClass v v
 
 
 namespace PathClass
-
+/--
+The product on homotopy classes of paths is associative.
+-/
 protected theorem mul_assoc { v w u u' :  V}:
     (p : G.PathClass v w) → (q : G.PathClass w  u) →
     (r : G.PathClass u  u') →
@@ -729,14 +740,23 @@ protected theorem mul_assoc { v w u u' :  V}:
     intro c
     simp [append_assoc]
 
+/--
+Induction principle for homotopy classes of paths.
+-/
 theorem ind {β : (PathClass G u v) → Prop} :
     (∀ p : G.EdgePath u v, β [[p]]) → (∀ q : PathClass G u v, β q) :=
   Quot.ind
 
+/--
+The identity path is the left identity for the product of homotopy classes.
+-/
 @[simp] protected theorem id_mul  {u v : V} : ∀ p : PathClass G u v,
     (PathClass.id' G u) * p = p := by
     apply PathClass.ind; aesop
 
+/--
+The identity path is the right identity for the product of homotopy classes.
+-/
 @[simp] protected theorem mul_id  {u v : V} : ∀ p : PathClass G u v,
     p * (PathClass.id' G v) = p := by
   apply PathClass.ind; aesop
