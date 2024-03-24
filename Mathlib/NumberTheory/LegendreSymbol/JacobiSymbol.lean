@@ -170,8 +170,8 @@ theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 �
       -- Porting note: Initially, `and_assoc'` and `and_comm'` were used on line 164 but they have
       -- been deprecated so we replace them with `and_assoc` and `and_comm`
       simp_rw [legendreSym.eq_zero_iff _ _, int_cast_zmod_eq_zero_iff_dvd,
-        mem_factors (NeZero.ne b), ← Int.natCast_dvd, Int.natCast_dvd_natCast, exists_prop, and_assoc,
-        and_comm])
+        mem_factors (NeZero.ne b), ← Int.natCast_dvd, Int.natCast_dvd_natCast, exists_prop,
+        and_assoc, and_comm])
 #align jacobi_sym.eq_zero_iff_not_coprime jacobiSym.eq_zero_iff_not_coprime
 
 /-- The symbol `J(a | b)` is nonzero when `a` and `b` are coprime. -/

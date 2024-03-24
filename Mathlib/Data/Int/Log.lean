@@ -151,7 +151,7 @@ theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤
   · rw [log_of_right_le_one _ h₁, log_of_right_le_one _ h₂, neg_le_neg_iff, Int.ofNat_le]
     exact Nat.clog_mono_right _ (Nat.ceil_mono <| inv_le_inv_of_le h₀ h)
   · rw [log_of_right_le_one _ h₁, log_of_one_le_right _ h₂]
-    exact (neg_nonpos.mpr (Int.natCast_nonneg _)).trans (Int. _)
+    exact (neg_nonpos.mpr (Int.natCast_nonneg _)).trans (Int.natCast_nonneg _)
   · obtain rfl := le_antisymm h (h₂.trans h₁)
     rfl
   · rw [log_of_one_le_right _ h₁, log_of_one_le_right _ h₂, Int.ofNat_le]
