@@ -1,7 +1,13 @@
-section SymEquiv
+import Mathlib.Data.Sym.Basic
+import Mathlib.Data.Sym2.Basic
+
+open Sym
+
+namespace Sym2
+
+variable {α : Type*}
 
 /-! ### Equivalence to the second symmetric power -/
-
 
 attribute [local instance] Vector.Perm.isSetoid
 
@@ -73,6 +79,4 @@ in case the definition for `Sym` changes.) -/
 def equivMultiset (α : Type*) : Sym2 α ≃ { s : Multiset α // Multiset.card s = 2 } :=
   equivSym α
 #align sym2.equiv_multiset Sym2.equivMultiset
-
-end SymEquiv
 

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.Sym.Sym2
+import Mathlib.Data.Sym2.EquivSym
+import Mathlib.Data.List.Nodup
 
 /-! # Unordered tuples of elements of a list
 

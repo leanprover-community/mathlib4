@@ -2147,8 +2147,10 @@ import Mathlib.Data.Sum.Lattice
 import Mathlib.Data.Sum.Order
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Card
-import Mathlib.Data.Sym.Sym2
-import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Data.Sym2.Basic
+import Mathlib.Data.Sym2.EquivSym
+import Mathlib.Data.Sym2.Finset
+import Mathlib.Data.Sym2.Init
 import Mathlib.Data.Tree
 import Mathlib.Data.TwoPointing
 import Mathlib.Data.TypeMax
