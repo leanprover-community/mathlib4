@@ -1095,11 +1095,9 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     exact h ⟨y, hys, hyu⟩ ⟨x, hxs, hxv⟩
   · rw [isPreconnected_closed_iff]
     intro u v hu hv hs hsu hsv
-    rw [nonempty_iff_ne_empty]
-    intro H
-    specialize h u v hu hv hs H
-    contrapose H
-    apply Nonempty.ne_empty
+    by_contra H
+    specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
+    apply H
     cases' h with h h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩

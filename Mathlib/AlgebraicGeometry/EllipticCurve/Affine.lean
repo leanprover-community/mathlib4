@@ -613,7 +613,7 @@ lemma nonsingular_add' {x₁ x₂ y₁ y₂ : F} (h₁ : W.nonsingular x₁ y₁
       · subst hx
         contradiction
       · rwa [addY', ← neg_sub, mul_neg, hx₂, slope_of_Xne hx,
-          div_mul_cancel _ <| sub_ne_zero_of_ne hx, neg_sub, sub_add_cancel]
+          div_mul_cancel₀ _ <| sub_ne_zero_of_ne hx, neg_sub, sub_add_cancel]
     · apply nonsingular_add_of_eval_derivative_ne_zero <| equation_add' h₁.1 h₂.1 hxy
       rw [derivative_addPolynomial_slope h₁.left h₂.left hxy]
       eval_simp

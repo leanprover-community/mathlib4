@@ -67,7 +67,7 @@ lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
     (Continuous.continuousOn <| by continuity)
     (fun x _ ↦ ((hasDerivAt_cos ..).add <| (hasDerivAt_pow ..).div_const _).hasDerivWithinAt)
     fun x hx ↦ ?_
-  simpa [mul_div_cancel_left] using sin_le <| interior_subset hx
+  simpa [mul_div_cancel_left₀] using sin_le <| interior_subset hx
 
 /-- **Jordan's inequality**. -/
 lemma two_div_pi_mul_le_sin (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 2 / π * x ≤ sin x := by

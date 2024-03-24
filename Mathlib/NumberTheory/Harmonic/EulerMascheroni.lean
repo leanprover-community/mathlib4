@@ -50,14 +50,14 @@ lemma eulerMascheroniSeq_zero : eulerMascheroniSeq 0 = 0 := by
 lemma strictMono_eulerMascheroniSeq : StrictMono eulerMascheroniSeq := by
   refine strictMono_nat_of_lt_succ (fun n ↦ ?_)
   rw [eulerMascheroniSeq, eulerMascheroniSeq, ← sub_pos, sub_sub_sub_comm,
-    harmonic_succ, add_comm, Rat.cast_add, add_sub_cancel,
+    harmonic_succ, add_comm, Rat.cast_add, add_sub_cancel_right,
     ← log_div (by positivity) (by positivity), add_div, Nat.cast_add_one,
     Nat.cast_add_one, div_self (by positivity), sub_pos, one_div, Rat.cast_inv, Rat.cast_add,
     Rat.cast_one, Rat.cast_natCast]
   refine (log_lt_sub_one_of_pos ?_ (ne_of_gt <| lt_add_of_pos_right _ ?_)).trans_le (le_of_eq ?_)
   · positivity
   · positivity
-  · simp only [add_sub_cancel']
+  · simp only [add_sub_cancel_left]
 
 lemma one_half_lt_eulerMascheroniSeq_six : 1 / 2 < eulerMascheroniSeq 6 := by
   have : eulerMascheroniSeq 6 = 49 / 20 - log 7 := by
@@ -103,7 +103,7 @@ lemma eulerMascheroniSeq'_six_lt_two_thirds : eulerMascheroniSeq' 6 < 2 / 3 := b
   have := rpow_lt_rpow (exp_pos _).le exp_one_lt_d9 (by norm_num : (0 : ℝ) < 107 / 60)
   rw [exp_one_rpow] at this
   refine lt_trans this ?_
-  rw [← rpow_lt_rpow_iff (z := 60), ← rpow_mul, div_mul_cancel, ← Nat.cast_ofNat,
+  rw [← rpow_lt_rpow_iff (z := 60), ← rpow_mul, div_mul_cancel₀, ← Nat.cast_ofNat,
     ← Nat.cast_ofNat, rpow_nat_cast, Nat.cast_ofNat, ← Nat.cast_ofNat (n := 60), rpow_nat_cast]
   norm_num
   all_goals positivity
