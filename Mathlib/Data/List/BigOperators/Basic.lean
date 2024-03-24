@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.List.Forall2
 import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Int.Basic
 
 #align_import data.list.big_operators.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
@@ -201,8 +202,7 @@ theorem prod_take_succ :
 @[to_additive "A list with sum not zero must have positive length."]
 theorem length_pos_of_prod_ne_one (L : List M) (h : L.prod ≠ 1) : 0 < L.length := by
   cases L
-  · contrapose h
-    simp
+  · simp at h
   · simp
 #align list.length_pos_of_prod_ne_one List.length_pos_of_prod_ne_one
 #align list.length_pos_of_sum_ne_zero List.length_pos_of_sum_ne_zero
