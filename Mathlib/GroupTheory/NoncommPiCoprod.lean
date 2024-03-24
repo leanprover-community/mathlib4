@@ -90,7 +90,6 @@ variable {M : Type*} [Monoid M]
 -- We have a family of monoids
 -- The fintype assumption is not always used, but declared here, to keep things in order
 variable {ι : Type*} [DecidableEq ι] [Fintype ι]
-
 variable {N : ι → Type*} [∀ i, Monoid (N i)]
 
 -- And morphisms ϕ into G
@@ -181,13 +180,9 @@ end FamilyOfMonoids
 section FamilyOfGroups
 
 variable {G : Type*} [Group G]
-
 variable {ι : Type*} [hdec : DecidableEq ι] [hfin : Fintype ι]
-
 variable {H : ι → Type*} [∀ i, Group (H i)]
-
 variable (ϕ : ∀ i : ι, H i →* G)
-
 variable {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)}
 
 -- We use `f` and `g` to denote elements of `Π (i : ι), H i`
@@ -218,7 +213,7 @@ theorem injective_noncommPiCoprod_of_independent
     (hinj : ∀ i, Function.Injective (ϕ i)) : Function.Injective (noncommPiCoprod ϕ hcomm) := by
   classical
     apply (MonoidHom.ker_eq_bot_iff _).mp
-    apply eq_bot_iff.mpr
+    rw [eq_bot_iff]
     intro f heq1
     have : ∀ i, i ∈ Finset.univ → ϕ i (f i) = 1 :=
       Subgroup.eq_one_of_noncommProd_eq_one_of_independent _ _ (fun _ _ _ _ h => hcomm h _ _)
@@ -256,7 +251,7 @@ theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     exact (orderOf_map_dvd _ _).trans orderOf_dvd_card
   change f = 1
   rw [← pow_one f, ← orderOf_dvd_iff_pow_eq_one]
-  -- porting note: ouch, had to replace an ugly `convert`
+  -- Porting note: ouch, had to replace an ugly `convert`
   obtain ⟨c, hc⟩ := Nat.dvd_gcd hxp hxi
   use c
   rw [← hc]
@@ -275,7 +270,6 @@ namespace Subgroup
 
 -- We have a family of subgroups
 variable {G : Type*} [Group G]
-
 variable {ι : Type*} [hdec : DecidableEq ι] [hfin : Fintype ι] {H : ι → Subgroup G}
 
 -- Elements of `Π (i : ι), H i` are called `f` and `g` here

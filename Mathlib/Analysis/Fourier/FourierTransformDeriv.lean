@@ -106,7 +106,7 @@ theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V]
         L.continuous.aestronglyMeasurable.prod_mk hf.1
       apply aux0.comp_aestronglyMeasurable aux1
   have h4 : (∀ᵐ v ∂μ, ∀ (w' : W), w' ∈ Metric.ball w 1 → ‖F' w' v‖ ≤ B v) := by
-    refine ae_of_all _ (fun v w' _ ↦ ?_)
+    filter_upwards with v w' _
     exact norm_fderiv_fourier_transform_integrand_right_le L f v w'
   have h5 : Integrable B μ := by simpa only [← mul_assoc] using hf'.const_mul (2 * π * ‖L‖)
   have h6 : ∀ᵐ v ∂μ, ∀ w', w' ∈ Metric.ball w 1 → HasFDerivAt (fun x ↦ F x v) (F' w' v) w' :=
@@ -155,6 +155,6 @@ lemma hasDerivAt_fourierIntegral [CompleteSpace E]
   convert (hasFDerivAt_fourier L hf hf'' w).hasDerivAt using 1
   erw [ContinuousLinearMap.integral_apply h_int]
   simp_rw [ContinuousLinearMap.smul_apply, mul_L, ContinuousLinearMap.smul_apply,
-    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.mul_apply', mul_one,
+    ContinuousLinearMap.smulRight_apply, L, ContinuousLinearMap.mul_apply', mul_one,
     ← neg_mul, mul_smul]
   rfl

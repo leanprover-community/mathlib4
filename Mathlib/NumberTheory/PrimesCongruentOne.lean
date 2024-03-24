@@ -40,8 +40,9 @@ theorem exists_prime_gt_modEq_one {k : ℕ} (n : ℕ) (hk0 : k ≠ 0) :
   haveI hprime : Fact p.Prime := ⟨minFac_prime (ne_of_lt hgt).symm⟩
   have hroot : IsRoot (cyclotomic k (ZMod p)) (castRingHom (ZMod p) b) := by
     have : ((b : ℤ) : ZMod p) = ↑(Int.castRingHom (ZMod p) b) := by simp
-    rw [IsRoot.def, ← map_cyclotomic_int k (ZMod p), eval_map, coe_castRingHom, ← Int.cast_ofNat,
-      this, eval₂_hom, Int.coe_castRingHom, ZMod.int_cast_zmod_eq_zero_iff_dvd _ _]
+    rw [IsRoot.definition, ← map_cyclotomic_int k (ZMod p), eval_map, coe_castRingHom,
+      ← Int.cast_ofNat, this, eval₂_hom, Int.coe_castRingHom,
+      ZMod.int_cast_zmod_eq_zero_iff_dvd _ _]
     apply Int.dvd_natAbs.1
     exact mod_cast minFac_dvd (eval (↑b) (cyclotomic k ℤ)).natAbs
   have hpb : ¬p ∣ b :=

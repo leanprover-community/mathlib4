@@ -194,7 +194,7 @@ def ofNatList (l : List ℕ) (h : ∀ p : ℕ, p ∈ l → p.Prime) : PrimeMulti
 
 theorem prod_ofNatList (l : List ℕ) (h) : ((ofNatList l h).prod : ℕ) = l.prod := by
   have := prod_ofNatMultiset (l : Multiset ℕ) h
-  rw [Multiset.coe_prod] at this
+  rw [Multiset.prod_coe] at this
   exact this
 #align prime_multiset.prod_of_nat_list PrimeMultiset.prod_ofNatList
 
@@ -206,7 +206,7 @@ def ofPNatList (l : List ℕ+) (h : ∀ p : ℕ+, p ∈ l → p.Prime) : PrimeMu
 
 theorem prod_ofPNatList (l : List ℕ+) (h) : (ofPNatList l h).prod = l.prod := by
   have := prod_ofPNatMultiset (l : Multiset ℕ+) h
-  rw [Multiset.coe_prod] at this
+  rw [Multiset.prod_coe] at this
   exact this
 #align prime_multiset.prod_of_pnat_list PrimeMultiset.prod_ofPNatList
 
@@ -263,7 +263,7 @@ theorem factorMultiset_prod (v : PrimeMultiset) : v.prod.factorMultiset = v := b
   rcases v with ⟨l⟩
   --unfold_coes
   dsimp [PrimeMultiset.toNatMultiset]
-  rw [Multiset.coe_prod]
+  rw [Multiset.prod_coe]
   let l' := l.map (Coe.coe : Nat.Primes → ℕ)
   have : ∀ p : ℕ, p ∈ l' → p.Prime := fun p hp => by
     rcases List.mem_map.mp hp with ⟨⟨_, hp'⟩, ⟨_, h_eq⟩⟩
@@ -388,7 +388,6 @@ theorem factorMultiset_lcm (m n : ℕ+) :
  is the same as the p-adic valuation of m. -/
 theorem count_factorMultiset (m : ℕ+) (p : Nat.Primes) (k : ℕ) :
     (p : ℕ+) ^ k ∣ m ↔ k ≤ m.factorMultiset.count p := by
-  intros
   rw [Multiset.le_count_iff_replicate_le, ← factorMultiset_le_iff, factorMultiset_pow,
     factorMultiset_ofPrime]
   congr! 2

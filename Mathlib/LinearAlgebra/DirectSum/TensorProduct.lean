@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.Algebra.DirectSum.Module
 
 #align_import linear_algebra.direct_sum.tensor_product from "leanprover-community/mathlib"@"9b9d125b7be0930f564a68f1d73ace10cf46064d"
@@ -36,17 +36,11 @@ open LinearMap
 attribute [local ext] TensorProduct.ext
 
 variable (R : Type u) [CommSemiring R]
-
 variable {ι₁ : Type v₁} {ι₂ : Type v₂}
-
 variable [DecidableEq ι₁] [DecidableEq ι₂]
-
 variable (M₁ : ι₁ → Type w₁) (M₁' : Type w₁') (M₂ : ι₂ → Type w₂) (M₂' : Type w₂')
-
 variable [∀ i₁, AddCommMonoid (M₁ i₁)] [AddCommMonoid M₁']
-
 variable [∀ i₂, AddCommMonoid (M₂ i₂)] [AddCommMonoid M₂']
-
 variable [∀ i₁, Module R (M₁ i₁)] [Module R M₁'] [∀ i₂, Module R (M₂ i₂)] [Module R M₂']
 
 
@@ -54,7 +48,7 @@ variable [∀ i₁, Module R (M₁ i₁)] [Module R M₁'] [∀ i₂, Module R (
 "tensor product distributes over direct sum". -/
 protected def directSum :
     ((⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂) ≃ₗ[R] ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2 := by
-  -- porting note: entirely rewritten to allow unification to happen one step at a time
+  -- Porting note: entirely rewritten to allow unification to happen one step at a time
   refine LinearEquiv.ofLinear (R := R) (R₂ := R) ?toFun ?invFun ?left ?right
   · refine lift ?_
     refine DirectSum.toModule R _ _ fun i₁ => ?_
@@ -67,7 +61,7 @@ protected def directSum :
   · refine DirectSum.linearMap_ext R fun ⟨i₁, i₂⟩ => ?_
     refine TensorProduct.ext ?_
     refine LinearMap.ext₂ fun m₁ m₂ => ?_
-    -- porting note: seems much nicer than the `repeat` lean 3 proof.
+    -- Porting note: seems much nicer than the `repeat` lean 3 proof.
     simp only [compr₂_apply, comp_apply, id_apply, mk_apply, DirectSum.toModule_lof, map_tmul,
         lift.tmul, flip_apply, curry_apply]
   · -- `(_)` prevents typeclass search timing out on problems that can be solved immediately by
@@ -77,7 +71,7 @@ protected def directSum :
     refine LinearMap.ext fun x₁ => ?_
     refine DirectSum.linearMap_ext _ fun i₂ => ?_
     refine LinearMap.ext fun x₂ => ?_
-    -- porting note: seems much nicer than the `repeat` lean 3 proof.
+    -- Porting note: seems much nicer than the `repeat` lean 3 proof.
     simp only [compr₂_apply, comp_apply, id_apply, mk_apply, DirectSum.toModule_lof, map_tmul,
         lift.tmul, flip_apply, curry_apply]
   /- was:

@@ -26,7 +26,8 @@ set_option linter.uppercaseLean3 false
 
 open Finset Function
 
-open BigOperators Classical
+open scoped Classical
+open BigOperators
 
 noncomputable section
 
@@ -50,6 +51,7 @@ instance : Add (HahnSeries Γ R) where
 instance : AddMonoid (HahnSeries Γ R) where
   zero := 0
   add := (· + ·)
+  nsmul := nsmulRec
   add_assoc x y z := by
     ext
     apply add_assoc
@@ -130,13 +132,16 @@ section AddGroup
 
 variable [AddGroup R]
 
+instance : Neg (HahnSeries Γ R) where
+  neg x :=
+    { coeff := fun a => -x.coeff a
+      isPWO_support' := by
+        rw [Function.support_neg]
+        exact x.isPWO_support }
+
 instance : AddGroup (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
-    neg := fun x =>
-      { coeff := fun a => -x.coeff a
-        isPWO_support' := by
-          rw [Function.support_neg]
-          exact x.isPWO_support }
+    zsmul := zsmulRec
     add_left_neg := fun x => by
       ext
       apply add_left_neg }

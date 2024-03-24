@@ -546,12 +546,14 @@ variable {R}
 
 /-- If some predicate holds for all `x ∈ (s : Set A)` and this predicate is closed under the
 `algebraMap`, addition, multiplication and star operations, then it holds for `a ∈ adjoin R s`. -/
+@[elab_as_elim]
 theorem adjoin_induction {s : Set A} {p : A → Prop} {a : A} (h : a ∈ adjoin R s)
-    (Hs : ∀ x ∈ s, p x) (Hadd : ∀ x y, p x → p y → p (x + y)) (H0 : p 0)
-    (Hmul : ∀ x y, p x → p y → p (x * y)) (Hsmul : ∀ (r : R) x, p x → p (r • x)) : p a :=
+    (mem : ∀ x ∈ s, p x) (add : ∀ x y, p x → p y → p (x + y)) (zero : p 0)
+    (mul : ∀ x y, p x → p y → p (x * y)) (smul : ∀ (r : R) x, p x → p (r • x)) : p a :=
   Submodule.span_induction h
-    (fun _a ha => NonUnitalSubsemiring.closure_induction ha Hs H0 Hadd Hmul) H0 Hadd Hsmul
+    (fun _a ha => NonUnitalSubsemiring.closure_induction ha mem zero add mul) zero add smul
 
+@[elab_as_elim]
 theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin R s)
     (hb : b ∈ adjoin R s) (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y) (H0_left : ∀ y, p 0 y)
     (H0_right : ∀ x, p x 0) (Hadd_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
@@ -567,21 +569,22 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
     H0_left H0_right Hadd_left Hadd_right Hsmul_left Hsmul_right
 
 /-- The difference with `NonUnitalAlgebra.adjoin_induction` is that this acts on the subtype. -/
+@[elab_as_elim]
 lemma adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
-    (Hs : ∀ x (h : x ∈ s), p ⟨x, subset_adjoin R h⟩)
-    (Hadd : ∀ x y, p x → p y → p (x + y)) (H0 : p 0)
-    (Hmul : ∀ x y, p x → p y → p (x * y)) (Hsmul : ∀ (r : R) x, p x → p (r • x)) : p a :=
+    (mem : ∀ x (h : x ∈ s), p ⟨x, subset_adjoin R h⟩)
+    (add : ∀ x y, p x → p y → p (x + y)) (zero : p 0)
+    (mul : ∀ x y, p x → p y → p (x * y)) (smul : ∀ (r : R) x, p x → p (r • x)) : p a :=
   Subtype.recOn a fun b hb => by
     refine Exists.elim ?_ (fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc)
-    apply adjoin_induction hb
-    · exact fun x hx => ⟨subset_adjoin R hx, Hs x hx⟩
+    refine adjoin_induction hb ?_ ?_ ?_ ?_ ?_
+    · exact fun x hx => ⟨subset_adjoin R hx, mem x hx⟩
     · exact fun x y hx hy => Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy =>
-        ⟨add_mem hx' hy', Hadd _ _ hx hy⟩
-    · exact ⟨_, H0⟩
+        ⟨add_mem hx' hy', add _ _ hx hy⟩
+    · exact ⟨_, zero⟩
     · exact fun x y hx hy => Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy =>
-        ⟨mul_mem hx' hy', Hmul _ _ hx hy⟩
+        ⟨mul_mem hx' hy', mul _ _ hx hy⟩
     · exact fun r x hx => Exists.elim hx fun hx' hx =>
-        ⟨SMulMemClass.smul_mem r hx', Hsmul r _ hx⟩
+        ⟨SMulMemClass.smul_mem r hx', smul r _ hx⟩
 
 protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalSubalgebra R A) (↑) :=
   fun s S =>
@@ -714,7 +717,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubalgebra R A} :
     (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by simp [iInf]
 
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubalgebra R A} {x : A} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
+    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
 theorem iInf_toSubmodule {ι : Sort*} (S : ι → NonUnitalSubalgebra R A) :
