@@ -49,7 +49,7 @@ theorem prod_singleton : [a].prod = a :=
 theorem prod_one_cons : (1 :: l).prod = l.prod := by
   rw [prod, foldl, mul_one]
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem prod_map_one {l : List ι} :
     (l.map fun _ => (1 : M)).prod = 1 := by
   induction l with
