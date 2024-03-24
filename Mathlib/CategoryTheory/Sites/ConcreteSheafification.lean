@@ -28,7 +28,6 @@ open CategoryTheory.Limits Opposite
 universe w v u
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-
 variable {D : Type w} [Category.{max v u} D]
 
 section
@@ -146,9 +145,7 @@ variable [ConcreteCategory.{max v u} D]
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable [PreservesLimits (forget D)]
-
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
 noncomputable section
@@ -457,7 +454,6 @@ end
 end Plus
 
 variable (J)
-
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
@@ -597,7 +593,6 @@ theorem sheafifyMap_sheafifyLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q 
 end GrothendieckTopology
 
 variable (J)
-
 variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
   [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]

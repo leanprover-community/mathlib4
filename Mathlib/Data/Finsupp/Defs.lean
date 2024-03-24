@@ -319,7 +319,7 @@ theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
-  classical exact Pi.single_eq_same (f := λ _ => M) a b
+  classical exact Pi.single_eq_same (f := fun _ ↦ M) a b
 #align finsupp.single_eq_same Finsupp.single_eq_same
 
 @[simp]
@@ -660,6 +660,11 @@ theorem erase_same {a : α} {f : α →₀ M} : (f.erase a) a = 0 := by
 theorem erase_ne {a a' : α} {f : α →₀ M} (h : a' ≠ a) : (f.erase a) a' = f a' := by
   classical simp only [erase, coe_mk, h, ite_false]
 #align finsupp.erase_ne Finsupp.erase_ne
+
+theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
+    f.erase a a' = if a' = a then 0 else f a' := by
+  rw [erase, coe_mk]
+  convert rfl
 
 @[simp]
 theorem erase_single {a : α} {b : M} : erase a (single a b) = 0 := by

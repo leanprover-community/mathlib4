@@ -82,8 +82,8 @@ Here, `I.Boundaryless` is a typeclass property ensuring that there is no boundar
 instance the case for `modelWithCornersSelf`, or products of these). Note that one could consider
 as a natural assumption to only use the trivial model with corners `modelWithCornersSelf ℝ E`,
 but again in product manifolds the natural model with corners will not be this one but the product
-one (and they are not defeq as `(λp : E × F, (p.1, p.2))` is not defeq to the identity). So, it is
-important to use the above incantation to maximize the applicability of theorems.
+one (and they are not defeq as `(fun p : E × F ↦ (p.1, p.2))` is not defeq to the identity).
+So, it is important to use the above incantation to maximize the applicability of theorems.
 
 ## Implementation notes
 
@@ -301,9 +301,11 @@ protected theorem closedEmbedding : ClosedEmbedding I :=
   I.leftInverse.closedEmbedding I.continuous_symm I.continuous
 #align model_with_corners.closed_embedding ModelWithCorners.closedEmbedding
 
-theorem closed_range : IsClosed (range I) :=
-  I.closedEmbedding.closed_range
-#align model_with_corners.closed_range ModelWithCorners.closed_range
+theorem isClosed_range : IsClosed (range I) :=
+  I.closedEmbedding.isClosed_range
+#align model_with_corners.closed_range ModelWithCorners.isClosed_range
+
+@[deprecated] alias closed_range := isClosed_range -- 2024-03-17
 
 theorem map_nhds_eq (x : H) : map I (𝓝 x) = 𝓝[range I] I x :=
   I.closedEmbedding.toEmbedding.map_nhds_eq x
@@ -359,7 +361,7 @@ protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorn
     exact ((compact_basis_nhds (I x)).inf_principal _).map _
   refine' .of_hasBasis this _
   rintro x s ⟨-, hsc⟩
-  exact (hsc.inter_right I.closed_range).image I.continuous_symm
+  exact (hsc.inter_right I.isClosed_range).image I.continuous_symm
 #align model_with_corners.locally_compact ModelWithCorners.locallyCompactSpace
 
 open TopologicalSpace
@@ -650,7 +652,7 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
 instance : ClosedUnderRestriction (contDiffGroupoid n I) :=
   (closedUnderRestriction_iff_id_le _).mpr
     (by
-      apply StructureGroupoid.le_iff.mpr
+      rw [StructureGroupoid.le_iff]
       rintro e ⟨s, hs, hes⟩
       apply (contDiffGroupoid n I).mem_of_eqOnSource' _ _ _ hes
       exact ofSet_mem_contDiffGroupoid n I hs)
@@ -788,7 +790,7 @@ theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
 instance : ClosedUnderRestriction (analyticGroupoid I) :=
   (closedUnderRestriction_iff_id_le _).mpr
     (by
-      apply StructureGroupoid.le_iff.mpr
+      rw [StructureGroupoid.le_iff]
       rintro e ⟨s, hs, hes⟩
       apply (analyticGroupoid I).mem_of_eqOnSource' _ _ _ hes
       exact ofSet_mem_analyticGroupoid I hs)

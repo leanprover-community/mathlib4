@@ -40,9 +40,7 @@ open Limits
 universe v v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {S : Type u₁} {L : Type u₂} {D : Type u₃}
-
 variable [Category.{v₁} S] [Category.{v₂} L] [Category.{v₃} D]
-
 variable (ι : S ⥤ L)
 
 namespace Ran

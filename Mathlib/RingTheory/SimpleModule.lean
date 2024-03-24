@@ -219,7 +219,7 @@ instance quotient : IsSemisimpleModule R (M ⧸ m) :=
   .congr (m.quotientEquivOfIsCompl P compl)
 
 -- does not work as an instance, not sure why
-protected theorem range [IsSemisimpleModule R M] (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
+protected theorem range (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
   .congr (quotKerEquivRange _).symm
 
 section
@@ -405,6 +405,7 @@ noncomputable instance _root_.Module.End.divisionRing
     simp_rw [dif_neg a0]; ext
     exact (LinearEquiv.ofBijective _ <| bijective_of_ne_zero a0).right_inv _
   inv_zero := dif_pos rfl
+  qsmul := qsmulRec _
 #align module.End.division_ring Module.End.divisionRing
 
 end LinearMap

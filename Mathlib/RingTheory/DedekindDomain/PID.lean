@@ -64,8 +64,7 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
         simp only [Ideal.span_singleton_le_iff_mem, pow_one] <;>
       assumption
   by_cases hQp : IsPrime Q
-  · skip
-    refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
+  · refine' (Ideal.count_normalizedFactors_eq _ _).le <;>
       -- Porting note: included `zero_add` in the simp arguments
       simp only [Ideal.span_singleton_le_iff_mem, zero_add, pow_one, pow_zero, one_eq_top,
                  Submodule.mem_top]
@@ -193,17 +192,11 @@ theorem IsPrincipalIdealRing.of_finite_primes [IsDomain R] [IsDedekindDomain R]
 #align is_principal_ideal_ring.of_finite_primes IsPrincipalIdealRing.of_finite_primes
 
 variable [IsDomain R] [IsDedekindDomain R]
-
 variable (S : Type*) [CommRing S] [IsDomain S]
-
 variable [Algebra R S] [Module.Free R S] [Module.Finite R S]
-
 variable (p : Ideal R) (hp0 : p ≠ ⊥) [IsPrime p]
-
 variable {Sₚ : Type*} [CommRing Sₚ] [Algebra S Sₚ]
-
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
-
 variable [Algebra R Sₚ] [IsScalarTower R S Sₚ]
 
 /- The first hypothesis below follows from properties of the localization but is needed for the
@@ -212,9 +205,8 @@ variable [IsDomain Sₚ] [IsDedekindDomain Sₚ]
 
 /-- If `p` is a prime in the Dedekind domain `R`, `S` an extension of `R` and `Sₚ` the localization
 of `S` at `p`, then all primes in `Sₚ` are factors of the image of `p` in `Sₚ`. -/
-theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [DecidableEq (Ideal Sₚ)]
-    {P : Ideal Sₚ} (hP : IsPrime P) (hP0 : P ≠ ⊥) :
-    P ∈ normalizedFactors (Ideal.map (algebraMap R Sₚ) p) := by
+theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime {P : Ideal Sₚ} (hP : IsPrime P)
+    (hP0 : P ≠ ⊥) : P ∈ normalizedFactors (Ideal.map (algebraMap R Sₚ) p) := by
   have non_zero_div : Algebra.algebraMapSubmonoid S p.primeCompl ≤ S⁰ :=
     map_le_nonZeroDivisors_of_injective _ (NoZeroSMulDivisors.algebraMap_injective _ _)
       p.primeCompl_le_nonZeroDivisors

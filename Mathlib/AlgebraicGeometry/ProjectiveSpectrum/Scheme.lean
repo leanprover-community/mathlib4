@@ -84,11 +84,8 @@ open DirectSum SetLike.GradedMonoid Localization
 open Finset hiding mk_zero
 
 variable {R A : Type*}
-
 variable [CommRing R] [CommRing A] [Algebra R A]
-
 variable (𝒜 : ℕ → Submodule R A)
-
 variable [GradedAlgebra 𝒜]
 
 open TopCat TopologicalSpace
@@ -688,7 +685,7 @@ lemma fromSpec_toSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x :
   · intro i
     erw [ToSpec.mem_carrier_iff, HomogeneousLocalization.val_mk'']
     dsimp only [GradedAlgebra.proj_apply]
-    rw [show (mk (decompose 𝒜 z i ^ m) ⟨f^i, ⟨i, rfl⟩⟩: Away f) =
+    rw [show (mk (decompose 𝒜 z i ^ m) ⟨f^i, ⟨i, rfl⟩⟩ : Away f) =
       (decompose 𝒜 z i ^ m : A) • (mk 1 ⟨f^i, ⟨i, rfl⟩⟩ : Away f) by
       · rw [smul_mk, smul_eq_mul, mul_one], Algebra.smul_def]
     exact Ideal.mul_mem_right _ _ <|
