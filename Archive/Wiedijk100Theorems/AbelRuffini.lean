@@ -92,7 +92,7 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
   · intro n hn
     rw [mem_span_singleton]
     rw [degree_Phi] at hn; norm_cast at hn
-    interval_cases hn : n <;>
+    interval_cases n <;>
     simp (config := {decide := true}) only [Φ, coeff_X_pow, coeff_C, Int.coe_nat_dvd.mpr, hpb,
       if_true, coeff_C_mul, if_false, coeff_X_zero, hpa, coeff_add, zero_add, mul_zero, coeff_sub,
       add_zero, zero_sub, dvd_neg, neg_zero, dvd_mul_of_dvd_left]
