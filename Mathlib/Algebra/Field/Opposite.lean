@@ -13,15 +13,11 @@ import Mathlib.Data.Int.Cast.Lemmas
 # Field structure on the multiplicative/additive opposite
 -/
 
+variable {α : Type*}
+
 namespace MulOpposite
 
-variable (α : Type*)
-
-@[to_additive]
-instance ratCast [RatCast α] : RatCast αᵐᵒᵖ :=
-  ⟨fun n => op n⟩
-
-variable {α}
+@[to_additive] instance instRatCast [RatCast α] : RatCast αᵐᵒᵖ := ⟨fun q ↦ op q⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem op_ratCast [RatCast α] (q : ℚ) : op (q : α) = q :=
@@ -40,12 +36,12 @@ variable (α)
 instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ :=
   { MulOpposite.instGroupWithZero α, MulOpposite.instSemiring α with }
 
-instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ :=
-  { MulOpposite.instDivisionSemiring α, MulOpposite.instRing α, MulOpposite.ratCast α with
-    ratCast_mk := fun a b hb h => unop_injective <| by
-      rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv, unop_natCast, unop_intCast,
-        Int.commute_cast, div_eq_mul_inv]
-    qsmul := qsmulRec _ }
+instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ where
+  toRing := instRing _
+  __ := instDivisionSemiring _
+  ratCast_def q := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_div,
+    unop_natCast, unop_intCast, Int.commute_cast, div_eq_mul_inv]
+  qsmul := qsmulRec _
 
 instance instSemifield [Semifield α] : Semifield αᵐᵒᵖ :=
   { MulOpposite.instDivisionSemiring α, MulOpposite.instCommSemiring α with }
@@ -57,22 +53,23 @@ end MulOpposite
 
 namespace AddOpposite
 
-variable {α : Type*}
+instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ where
+  __ := instSemiring _
+  __ := instGroupWithZero _
 
-instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ :=
-  { AddOpposite.instGroupWithZero α, AddOpposite.instSemiring α with }
+instance instDivisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ where
+  toRing := instRing _
+  __ := instDivisionSemiring
+  ratCast_def q := unop_injective <| by rw [unop_ratCast, Rat.cast_def, unop_div, unop_natCast,
+    unop_intCast, div_eq_mul_inv]
+  qsmul := qsmulRec _
 
-instance instDivisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ :=
-  { AddOpposite.instRing α, AddOpposite.instGroupWithZero α, AddOpposite.ratCast α with
-    ratCast_mk := fun a b hb h => unop_injective <| by
-      rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv, unop_natCast, unop_intCast,
-        div_eq_mul_inv]
-    qsmul := qsmulRec _ }
+instance instSemifield [Semifield α] : Semifield αᵃᵒᵖ where
+  toCommSemiring := instCommSemiring _
+  __ := instDivisionSemiring
 
-instance instSemifield [Semifield α] : Semifield αᵃᵒᵖ :=
-  { AddOpposite.instDivisionSemiring, AddOpposite.instCommSemiring α with }
-
-instance instField [Field α] : Field αᵃᵒᵖ :=
-  { AddOpposite.instDivisionRing, AddOpposite.instCommRing α with }
+instance instField [Field α] : Field αᵃᵒᵖ where
+  toCommRing := instCommRing _
+  __ := instDivisionRing
 
 end AddOpposite

@@ -90,6 +90,8 @@ lemma num_eq_zero {q : ℚ} : q.num = 0 ↔ q = 0 := by
 
 lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
 
+@[simp] lemma den_ne_zero (q : ℚ) : q.den ≠ 0 := q.den_pos.ne'
+
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
   rw [← zero_divInt b, divInt_eq_iff b0 b0, zero_mul, mul_eq_zero, or_iff_left b0]
@@ -313,7 +315,7 @@ protected theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
 
 /-! At this point in the import hierarchy we have not defined the `Field` typeclass.
 Instead we'll instantiate `CommRing` and `CommGroupWithZero` at this point.
-The `Rat.field` instance and any field-specific lemmas can be found in `Mathlib.Data.Rat.Basic`.
+The `Rat.instField` instance and any field-specific lemmas can be found in `Mathlib.Data.Rat.Basic`.
 -/
 
 instance commRing : CommRing ℚ where
