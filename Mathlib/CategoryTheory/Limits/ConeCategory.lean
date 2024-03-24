@@ -280,14 +280,9 @@ noncomputable def colimit.toOver (F : J ⥤ C) [HasColimit F] :
   pt := Over.mk (𝟙 (colimit F))
   ι := { app := fun j => Over.homMk (colimit.ι F j) (by simp) }
 
-<<<<<<< HEAD
-@[simps!]
-def Cocone.mapConeToOver {F : J ⥤ C} (c : Cocone F) : (Over.forget c.pt).mapCocone c.toOver ≅ c :=
-=======
 /-- `c.toOver` is a lift of `c` under the forgetful functor. -/
 @[simps!]
 def Cocone.mapCoconeToOver {F : J ⥤ C} (c : Cocone F) : (Over.forget c.pt).mapCocone c.toOver ≅ c :=
->>>>>>> origin/master
   Iso.refl _
 
 /-- Given a diagram `CostructuredArrow F X`s, we may obtain a cocone with cone point `X`. -/
