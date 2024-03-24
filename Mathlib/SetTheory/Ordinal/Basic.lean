@@ -550,7 +550,7 @@ theorem relIso_enum' {α β : Type u} {r : α → α → Prop} {s : β → β �
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) :
     ∀ (hr : o < type r) (hs : o < type s), f (enum r o hr) = enum s o hs := by
   refine' inductionOn o _; rintro γ t wo ⟨g⟩ ⟨h⟩
-  skip; rw [enum_type g, enum_type (PrincipalSeg.ltEquiv g f)]; rfl
+  rw [enum_type g, enum_type (PrincipalSeg.ltEquiv g f)]; rfl
 #align ordinal.rel_iso_enum' Ordinal.relIso_enum'
 
 theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
@@ -1340,7 +1340,7 @@ theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card :=
   inductionOn c fun α =>
     Ordinal.inductionOn o fun β s _ => by
       let ⟨r, _, e⟩ := ord_eq α
-      skip; simp only [card_type]; constructor <;> intro h
+      simp only [card_type]; constructor <;> intro h
       · rw [e] at h
         exact
           let ⟨f⟩ := h

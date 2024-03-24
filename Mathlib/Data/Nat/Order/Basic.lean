@@ -171,16 +171,12 @@ theorem add_eq_one_iff : m + n = 1 ↔ m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 := by
 #align nat.add_eq_one_iff Nat.add_eq_one_iff
 
 theorem add_eq_two_iff : m + n = 2 ↔ m = 0 ∧ n = 2 ∨ m = 1 ∧ n = 1 ∨ m = 2 ∧ n = 0 := by
-  cases n <;>
-  simp [(succ_ne_zero 1).symm, (show 2 = Nat.succ 1 from rfl),
-    succ_eq_add_one, ← add_assoc, succ_inj', add_eq_one_iff]
+  omega
 #align nat.add_eq_two_iff Nat.add_eq_two_iff
 
 theorem add_eq_three_iff :
     m + n = 3 ↔ m = 0 ∧ n = 3 ∨ m = 1 ∧ n = 2 ∨ m = 2 ∧ n = 1 ∨ m = 3 ∧ n = 0 := by
-  cases n <;>
-  simp [(succ_ne_zero 1).symm, succ_eq_add_one, (show 3 = Nat.succ 2 from rfl),
-    ← add_assoc, succ_inj', add_eq_two_iff]
+  omega
 #align nat.add_eq_three_iff Nat.add_eq_three_iff
 
 theorem le_add_one_iff : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 := by
@@ -327,7 +323,7 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
     have _ : a + (b + 1) < (a + 1) + (b + 1) := by simp
     apply diag_induction P ha hb hd a (b + 1)
     apply lt_of_le_of_lt (Nat.le_succ _) h
-  termination_by a b c => a + b
+  termination_by a b _c => a + b
   decreasing_by all_goals assumption
 #align nat.diag_induction Nat.diag_induction
 
@@ -504,7 +500,7 @@ section Find
 
 variable {p q : ℕ → Prop} [DecidablePred p] [DecidablePred q]
 
--- Porting note: removing `simp` attribute as `simp` can prove it
+-- Porting note (#10618): removing `simp` attribute as `simp` can prove it
 theorem find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 := by
   rw [pos_iff_ne_zero, Ne, Nat.find_eq_zero]
 #align nat.find_pos Nat.find_pos

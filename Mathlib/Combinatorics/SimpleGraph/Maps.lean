@@ -455,6 +455,8 @@ protected def completeGraph {α β : Type*} (f : α ↪ β) :
   { f with map_rel_iff' := by simp }
 #align simple_graph.embedding.complete_graph SimpleGraph.Embedding.completeGraph
 
+@[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
+
 variable {G'' : SimpleGraph X}
 
 /-- Composition of graph embeddings. -/

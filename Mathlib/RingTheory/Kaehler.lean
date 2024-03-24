@@ -57,7 +57,6 @@ theorem KaehlerDifferential.one_smul_sub_smul_one_mem_ideal (a : S) :
 #align kaehler_differential.one_smul_sub_smul_one_mem_ideal KaehlerDifferential.one_smul_sub_smul_one_mem_ideal
 
 variable {R}
-
 variable {M : Type*} [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 
 /-- For a `R`-derivation `S → M`, this is the map `S ⊗[R] S →ₗ[S] M` sending `s ⊗ₜ t ↦ s • D t`. -/
@@ -264,9 +263,10 @@ def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ
     (Submodule.Quotient.restrictScalarsEquiv S _).symm.toLinearMap
   · exact D.tensorProductTo.comp ((KaehlerDifferential.ideal R S).subtype.restrictScalars S)
   · intro x hx
-    change _ = _
+    rw [LinearMap.mem_ker]
     refine Submodule.smul_induction_on hx ?_ ?_
-    · rintro x (hx : _ = _) y -
+    · rintro x hx y -
+      rw [RingHom.mem_ker] at hx
       dsimp
       rw [Derivation.tensorProductTo_mul, hx, y.prop, zero_smul, zero_smul, zero_add]
     · intro x y ex ey; rw [map_add, ex, ey, zero_add]
@@ -590,7 +590,6 @@ set_option linter.uppercaseLean3 false in
 #align kaehler_differential.quot_ker_total_equiv_symm_comp_D KaehlerDifferential.quotKerTotalEquiv_symm_comp_D
 
 variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra S B] [Algebra R B]
-
 variable [Algebra A B] [IsScalarTower R S B] [IsScalarTower R A B]
 
 unsuppress_compilation in
@@ -632,12 +631,10 @@ A --→ B
 |     |
 R --→ S -/
 variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
-
 variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
-
 variable [SMulCommClass S A B]
 
-/-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄R]` given a square
+/-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
 A --→ B
 ↑     ↑
 |     |

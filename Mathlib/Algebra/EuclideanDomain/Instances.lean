@@ -5,7 +5,7 @@ Authors: Louis Carlin, Mario Carneiro
 -/
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Order.Basic
 
@@ -37,7 +37,7 @@ instance (priority := 100) Field.toEuclideanDomain {K : Type*} [Field K] : Eucli
 { toCommRing := Field.toCommRing
   quotient := (· / ·), remainder := fun a b => a - a * b / b, quotient_zero := div_zero,
   quotient_mul_add_remainder_eq := fun a b => by
-    by_cases h : b = 0 <;> simp [h, mul_div_cancel']
+    by_cases h : b = 0 <;> simp [h, mul_div_cancel₀]
   r := fun a b => a = 0 ∧ b ≠ 0,
   r_wellFounded :=
     WellFounded.intro fun a =>

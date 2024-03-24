@@ -33,7 +33,6 @@ section MultiplicationLinear
 section NonUnital
 
 variable (𝕜) (𝕜' : Type*) [NonUnitalSeminormedRing 𝕜']
-
 variable [NormedSpace 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜']
 
 /-- Multiplication in a non-unital normed algebra as a continuous bilinear map. -/
@@ -211,7 +210,6 @@ end MultiplicationLinear
 section SMulLinear
 
 variable (𝕜) (𝕜' : Type*) [NormedField 𝕜']
-
 variable [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 
 /-- Scalar multiplication as a continuous bilinear map. -/
@@ -267,7 +265,6 @@ section Normed
 namespace ContinuousLinearMap
 
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] (c : 𝕜)
-
 variable (𝕜) (𝕜' : Type*)
 
 section
