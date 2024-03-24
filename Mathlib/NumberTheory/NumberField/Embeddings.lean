@@ -547,17 +547,17 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
       contrapose! h
       exact h₂ h.symm
     rw [(mk_embedding w).symm, mk_eq_iff] at main
-    by_cases hw : IsReal w
-    · rw [conjugate_embedding_eq_of_isReal hw, or_self] at main
+    cases h₃ with
+    | inl hw =>
+      rw [conjugate_embedding_eq_of_isReal hw, or_self] at main
       exact congr_arg RingHom.toRatAlgHom main
-    · refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ ?_)
+    | inr hw =>
+      refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ hw.not_le ?_)
       have : (embedding w x).im = 0 := by
         erw [← Complex.conj_eq_iff_im, RingHom.congr_fun h' x]
         exact hψ.symm
-      contrapose! h
-      rw [← norm_embedding_eq, ← Complex.re_add_im (embedding w x), this, Complex.ofReal_zero,
-        zero_mul, add_zero, Complex.norm_eq_abs, Complex.abs_ofReal]
-      exact h₃.resolve_left hw
+      rwa [← norm_embedding_eq, ← Complex.re_add_im (embedding w x), this, Complex.ofReal_zero,
+        zero_mul, add_zero, Complex.norm_eq_abs, Complex.abs_ofReal] at h
   · exact fun x ↦ IsAlgClosed.splits_codomain (minpoly ℚ x)
 
 theorem _root_.NumberField.adjoin_eq_top_of_infinitePlace_lt {x : 𝓞 K} {w : InfinitePlace K}
