@@ -104,7 +104,7 @@ scoped instance vertSetoid  : Setoid (Vert G x₀) where
     · intro ⟨τ₁, v₁, _⟩ ⟨τ₂, v₂, _⟩ ⟨τ₃, v₃, _⟩
       if c₁:τ₁=τ₂ then
         cases c₁
-        simp
+        simp only [↓reduceDite]
         if c₂:τ₁=τ₃ then
           cases c₂
           simp only [dite_eq_ite, ite_true]
@@ -158,11 +158,11 @@ scoped instance edgeSetoid : Setoid (Edge G x₀) where
       if c₁:τ₀=τ₀' ∧ τ₁ = τ₁' then
         cases c₁.left
         cases c₁.right
-        simp
+        simp only [and_self, ↓reduceDite, and_imp]
         if c₂:τ₀=τ₀'' ∧ τ₁ = τ₁'' then
           cases c₂.left
           cases c₂.right
-          simp
+          simp only [and_self, ↓reduceDite, and_imp]
           intro hyp₁ hyp₂ hyp₃ hyp₄
           apply And.intro
           · apply relH_trans H hyp₁ hyp₃
@@ -319,7 +319,7 @@ def toFuncV : Quotient (vertSetoid H) → V := by
   apply terminal_eq_of_r H
 
 theorem toFuncV_defn (v : Vert G x₀):
-  toFuncV H ⟦ v ⟧ = v.τ := rfl
+    toFuncV H ⟦ v ⟧ = v.τ := rfl
 
 /--
 The projection of an edge in the cover.
@@ -380,7 +380,7 @@ def univGroupProj : Morphism (G.univ x₀) (groupCover H)  where
     rfl
 
 theorem projections_compose :
-  (groupCoverProj H).comp (univGroupProj H) =
+    (groupCoverProj H).comp (univGroupProj H) =
     UniversalCover.proj G x₀ := by
     ext
     · rfl
@@ -389,10 +389,10 @@ theorem projections_compose :
 namespace Quot
 
 theorem toFuncV_defn' (v : Vert G x₀):
-  (groupCoverProj H).toFuncV ⟦ v ⟧ = v.τ := rfl
+    (groupCoverProj H).toFuncV ⟦ v ⟧ = v.τ := rfl
 
 theorem toFuncE_defn' (τ₀ : V) (τ₁: V)(nxt: EdgeBetween G τ₀ τ₁)
-  (p: EdgePath G x₀ τ₀)(red: reduced p):
+    (p: EdgePath G x₀ τ₀)(red: reduced p):
   (groupCoverProj H).toFuncE ⟦ ⟨τ₀, τ₁, nxt, p, red⟩  ⟧ = nxt.edge := rfl
 
 /--
@@ -409,7 +409,7 @@ def localSection : (v₁ : Quotient (vertSetoid H)) → (e : E) →
   intro ⟨τ, p, is_reduced⟩ ⟨τ', p', is_reduced'⟩ rel
   have : τ = τ' := terminal_eq_of_r H rel
   cases this
-  simp
+  simp only [heq_eq_eq]
   simp [HasEquiv.Equiv, Setoid.r, relH] at rel
   funext e h
   apply Quotient.sound
@@ -453,7 +453,7 @@ theorem localSection_composition' (τ : V) (p : EdgePath G x₀ τ)
     have l {τ : V}(pf: G.τ nxt.edge = τ) :
       HEq (rfl: G.τ nxt.edge  = G.τ nxt.edge ) pf   := by
       cases pf
-      simp
+      simp only [heq_eq_eq]
     apply l nxt.term_eq
   rw [this]
   apply @Setoid.refl _ (edgeSetoid H)
