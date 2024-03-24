@@ -455,9 +455,8 @@ noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) 
 
 variable {𝕜 E E'}
 
-theorem mapLMultilinear_opNorm : ‖mapLMultilinear 𝕜 E E'‖ ≤ 1 := by
-  simp only [mapLMultilinear]
-  apply MultilinearMap.mkContinuous_norm_le _ zero_le_one
+theorem mapLMultilinear_opNorm : ‖mapLMultilinear 𝕜 E E'‖ ≤ 1 :=
+  MultilinearMap.mkContinuous_norm_le _ zero_le_one _
 
 end map
 
