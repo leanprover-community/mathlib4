@@ -157,29 +157,6 @@ lemma prod_ext' (a : C) (z w : (F ⨯ G).obj a)
 
 end prod
 
-section terminal
-
-variable (C)
-
-/-- The (limit) cone which shows that the constant functor with value `PUnit` is terminal. -/
-@[simps]
-def terminalCone : Cone (Functor.empty.{w'} (C ⥤ Type w)) where
-  pt := (Functor.const C).obj PUnit.{w + 1}
-  π := Discrete.natTrans (by rintro ⟨⟨⟩⟩)
-
-/-- The constant functor with value `PUnit` is terminal. -/
-def terminalConeLimit : IsLimit (terminalCone.{w', w} C) where
-  lift s :=
-    { app := fun _ _ => PUnit.unit }
-  fac _ := by rintro ⟨⟨⟩⟩
-
-/-- The limit cone corresponding to the terminal object of `C ⥤ Type w`
-given by the constant functor with value `PUnit`. -/
-def functorEmptyLimitCone : LimitCone (Functor.empty.{w'} (C ⥤ Type w)) :=
-  ⟨_, terminalConeLimit C⟩
-
-end terminal
-
 section coprod
 
 /-- `coprod F G` is the explicit binary coproduct of type-valued functors `F` and `G`. -/
