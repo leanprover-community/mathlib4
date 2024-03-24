@@ -247,7 +247,7 @@ def bar : Quotient (edgeSetoid H) → Quotient (edgeSetoid H) := by
   simp only at lem₀
   cases lem₀
   cases lem₁
-  simp only [bar_eq_bar]
+  simp only [bar_definition]
   have h': edgeSetoid H |>.r ⟨τ₀, τ₁, e, p, pf⟩ ⟨τ₀, τ₁, e', p', pf'⟩ := h
   simp [Setoid.r, relH] at h'
   apply Quotient.sound
@@ -282,7 +282,7 @@ theorem bar_ne_self : (ebar : Quotient (edgeSetoid H)) →
     ebar ≠ bar H ebar := by
   apply Quotient.ind
   intro ⟨τ₀, τ₁, e, p, pf⟩
-  simp only [bar_eq_barn, Edge.bar_eq_bar]
+  simp only [bar_eq_barn, bar_definition]
   intro contra
   rw [@Quotient.eq _ (edgeSetoid H)] at contra
   let lem := terminal₀_eq_of_r H contra

@@ -16,7 +16,7 @@ We construct the universal cover given a baspoint `x₀` with
 
 The non-trivial part is the construction of the `bar` map.
 The initial vertex should be the terminal vertex of the given edge.
-This is obtained by reduced concat, using the fact that the
+This is obtained by reduced-concat, using the fact that the
 result is reduced. The other result is used to show that
 the `bar` map is an involution.
 -/
@@ -86,6 +86,9 @@ def bar (e : Edge G x₀) : Edge G x₀ :=
   ⟨e.τ₁, e.τ₀, e.nxt.bar, e.p :+ e.nxt,  reducedConcat_reduced e.p e.nxt e.is_reduced⟩
 
 
+/--
+The involution on the edges of the universal cover is an involution.
+-/
 theorem bar_bar (e : Edge G x₀) :
     bar G x₀ (bar G x₀ e) = e := by
   simp only [bar, EdgeBetween.bar_bar]
@@ -103,6 +106,9 @@ The list of edges of a path in the universal cover.
 def toList (e : Edge G x₀) : List E :=
   e.p.toList
 
+/--
+The involution on the edges of the universal cover has no fixed edges.
+-/
 theorem bar_neq_self (e: Edge G x₀) :
     e ≠ bar G x₀ e := by
   intro contra
@@ -124,7 +130,7 @@ def _root_.SerreGraph.univ : SerreGraph (Vert G x₀) (Edge G x₀) where
   bar_bar := bar_bar G x₀
   bar_ne_self := bar_neq_self G x₀
 
-theorem bar_eq_bar (τ₀ τ₁ : V)
+theorem bar_definition (τ₀ τ₁ : V)
     (nxt: EdgeBetween G τ₀ τ₁)
     (p : EdgePath G x₀ τ₀)
     (is_reduced : reduced p) :
@@ -301,12 +307,20 @@ def rayLift (G: SerreGraph V E)(x₀ τ : V)(p : EdgePath G x₀ τ)
     simp [rayTo_proj_list]
   }
 
+/--
+The lift of a reduced path `p` to the universal cover
+is the ray to the vertex corresponding to `p`.
+-/
 theorem lift_of_reduced {G: SerreGraph V E}{x₀ τ: V}(p : EdgePath G x₀ τ)
     (hyp : reduced p) :
     p.lift (proj G x₀) (basepoint G x₀) rfl =
       rayLift G x₀ τ p hyp := by
       apply unique_Pathlift
 
+/--
+The terminal vertex of the lift of a reduced path `p` to the universal cover
+is the vertex corresponding to `p`.
+-/
 theorem reduced_liftTerminal {G: SerreGraph V E}{x₀ τ: V}
     (p : EdgePath G x₀ τ)
     (hyp : reduced p) :
@@ -315,7 +329,10 @@ theorem reduced_liftTerminal {G: SerreGraph V E}{x₀ τ: V}
       simp [liftTerminal, liftClass, lift_of_reduced p hyp, rayLift]
       rfl
 
-theorem reduced_unique {G: SerreGraph V E}(x₀ τ: V)
+/--
+If two reduced paths are homotopic, then they are equal.
+-/
+theorem eq_of_homotopic_of_reduced {G: SerreGraph V E}(x₀ τ: V)
     {p₁ p₂ : EdgePath G x₀ τ}
     (hyp₁ : reduced p₁)(hyp₂ : reduced p₂):
     [[ p₁ ]] = [[ p₂ ]] → p₁ = p₂ := by
@@ -330,6 +347,9 @@ theorem reduced_unique {G: SerreGraph V E}(x₀ τ: V)
   simp [reduced_liftTerminal p₁ hyp₁, reduced_liftTerminal p₂ hyp₂] at leq
   exact leq
 
+/--
+Two paths are homotopic if and only if their reductions are equal.
+-/
 theorem homotopic_iff_reduction_eq {G: SerreGraph V E}(x₀ τ: V)
     (p₁ p₂ : EdgePath G x₀ τ):
     [[ p₁ ]] = [[ p₂ ]] ↔ reduction p₁ = reduction p₂ := by
@@ -340,7 +360,7 @@ theorem homotopic_iff_reduction_eq {G: SerreGraph V E}(x₀ τ: V)
       apply reduction_reduced
     have red₂ : reduced (reduction p₂) := by
       apply reduction_reduced
-    exact reduced_unique x₀ τ red₁ red₂ eql
+    exact eq_of_homotopic_of_reduced x₀ τ red₁ red₂ eql
   · intro hyp
     rw [← reduction_homotopic_self p₁, ← reduction_homotopic_self p₂]
     rw [hyp]
@@ -374,6 +394,9 @@ theorem proj_liftTerminal {G: SerreGraph V E}{x₀: V}{vert : Vert G x₀}
   simp [lift_of_proj]
   rfl
 
+/--
+Any two paths in the universal cover with the same endpoints are homotopic.
+-/
 theorem simple_connectivity_for_paths {G: SerreGraph V E}{x₀: V}
     {vert : Vert G x₀}
     (e₁ e₂: EdgePath (G.univ x₀) (basepoint G x₀) vert) :
