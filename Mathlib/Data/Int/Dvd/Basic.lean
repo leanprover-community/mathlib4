@@ -31,14 +31,14 @@ theorem natCast_dvd_natCast {m n : ℕ} : (↑m : ℤ) ∣ ↑n ↔ m ∣ n :=
       subst a
       exact ⟨k, Int.ofNat.inj ae⟩,
     fun ⟨k, e⟩ => Dvd.intro k <| by rw [e, Int.ofNat_mul]⟩
-#align int.coe_nat_dvd Int.coe_nat_dvd
+#align int.coe_nat_dvd Int.natCast_dvd_natCast
 
 theorem natCast_dvd {n : ℕ} {z : ℤ} : (↑n : ℤ) ∣ z ↔ n ∣ z.natAbs := by
-  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [← coe_nat_dvd, Int.dvd_neg]
+  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [← natCast_dvd_natCast, Int.dvd_neg]
 #align int.coe_nat_dvd_left Int.natCast_dvd
 
 theorem dvd_natCast {n : ℕ} {z : ℤ} : z ∣ (↑n : ℤ) ↔ z.natAbs ∣ n := by
-  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [← coe_nat_dvd, Int.neg_dvd]
+  rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [← natCast_dvd_natCast, Int.neg_dvd]
 #align int.coe_nat_dvd_right Int.dvd_natCast
 
 #align int.le_of_dvd Int.le_of_dvd
