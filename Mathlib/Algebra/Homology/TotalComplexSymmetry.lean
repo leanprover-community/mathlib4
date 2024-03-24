@@ -38,6 +38,8 @@ noncomputable def totalFlipIsoX (j : J) : (K.flip.total c).X j ≅ (K.total c).X
     rw [← ComplexShape.π_symm c₁ c₂ c i₁ i₂, h]))
   inv := K.totalDesc (fun i₁ i₂ h => ComplexShape.σ c₁ c₂ c i₁ i₂ • K.flip.ιTotal c i₂ i₁ j (by
     rw [ComplexShape.π_symm c₁ c₂ c i₁ i₂, h]))
+  hom_inv_id := by ext; simp
+  inv_hom_id := by ext; simp
 
 @[reassoc]
 lemma totalFlipIsoX_hom_D₁ (j j' : J) :
