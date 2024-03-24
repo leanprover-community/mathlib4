@@ -147,7 +147,7 @@ theorem reduced_redCons (G : SerreGraph V E) {u v w : V}
           simp [redCons_cons_edge_eq p' c']
           intro p'' red'
           let ⟨u, u', e, p₁, p₂, eqn⟩   := red'.property
-          rw [←eqn, ← cons_append] at hyp
+          rw [← eqn, ← cons_append] at hyp
           let red := hyp <| cons e' p₁ ++ p₂
           apply red
           apply Reduction.step
