@@ -230,7 +230,7 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
   rcases isOpen_iff.1 hs x xs with ⟨ε, εpos, hε⟩
   refine' ⟨ε / C, div_pos εpos Cpos, fun z hz => _⟩
   rcases hC (z - y) with ⟨w, wim, wnorm⟩
-  have : f (x + w) = z := by rw [f.map_add, wim, fxy, add_sub_cancel'_right]
+  have : f (x + w) = z := by rw [f.map_add, wim, fxy, add_sub_cancel]
   rw [← this]
   have : x + w ∈ ball x ε :=
     calc
@@ -241,7 +241,7 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
       _ < C * (ε / C) := by
         apply mul_lt_mul_of_pos_left _ Cpos
         rwa [mem_ball, dist_eq_norm] at hz
-      _ = ε := mul_div_cancel' _ (ne_of_gt Cpos)
+      _ = ε := mul_div_cancel₀ _ (ne_of_gt Cpos)
 
   exact Set.mem_image_of_mem _ (hε this)
 #align continuous_linear_map.is_open_map ContinuousLinearMap.isOpenMap

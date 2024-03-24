@@ -293,7 +293,7 @@ theorem implicitToPartialHomeomorphOfComplemented_apply (hf : HasStrictFDerivAt 
 theorem implicitToPartialHomeomorphOfComplemented_apply_ker (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) (y : ker f') :
     hf.implicitToPartialHomeomorphOfComplemented f f' hf' hker (y + a) = (f (y + a), y) := by
-  simp only [implicitToPartialHomeomorphOfComplemented_apply, add_sub_cancel,
+  simp only [implicitToPartialHomeomorphOfComplemented_apply, add_sub_cancel_right,
     Classical.choose_spec hker]
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_of_complemented_apply_ker HasStrictFDerivAt.implicitToPartialHomeomorphOfComplemented_apply_ker
 
