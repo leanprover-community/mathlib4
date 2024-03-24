@@ -121,7 +121,7 @@ theorem measurePreserving_homeomorphUnitSphereProd :
   rw [(Homeomorph.measurableEmbedding _).map_apply, toSphere_apply' _ hs, volumeIoiPow_apply_Iio,
     comap_subtype_coe_apply (measurableSet_singleton _).compl, toSphere_apply_aux, this,
     smul_assoc, μ.addHaar_smul_of_nonneg r.2.out.le, Nat.sub_add_cancel hpos, Nat.cast_pred hpos,
-    sub_add_cancel, mul_right_comm, ← ENNReal.ofReal_coe_nat, ← ENNReal.ofReal_mul, mul_div_cancel']
+    sub_add_cancel, mul_right_comm, ← ENNReal.ofReal_coe_nat, ← ENNReal.ofReal_mul, mul_div_cancel₀]
   exacts [(Nat.cast_pos.2 hpos).ne', Nat.cast_nonneg _]
 
 end Measure
