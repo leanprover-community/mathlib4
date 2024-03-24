@@ -7,7 +7,8 @@ import Mathlib.Combinatorics.SerreGraph.Basic
 import Mathlib.Data.List.Basic
 
 /-!
-Covering space theory for Serre graphs.
+## Covering space theory for Serre graphs.
+
 We define covering maps, and the notion of a lift of a path.
 We prove the basic results about existence and uniqueness of lifts.
 
