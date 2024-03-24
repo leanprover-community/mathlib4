@@ -235,7 +235,7 @@ theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field
   have := Char.card_pow_char_pow (hχ₂.comp (algebraMap F' FF')) ψ.char
     (ringChar FF') n' hch₁ (hchar ▸ hch₂)
     (gaussSum_sq (hχ₁.comp <| RingHom.injective _) (hχ₂.comp _) ψ.prim)
-  simp_rw [FF'_def] at this
+  simp_rw [ψ, FF'_def] at this
   exact this
 #align char.card_pow_card Char.card_pow_card
 
@@ -291,7 +291,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   -- Porting note: The type is actually `PrimitiveAddChar (ZMod (8 : ℕ+)) F`, but this seems faster.
   let ψ₈ : PrimitiveAddChar (ZMod 8) F :=
     primitiveZModChar 8 F (by convert hp2 3 using 1; norm_cast)
-  -- Porting note: unifying this is very slow, so only do it once.
+  -- Porting note (#11083): unifying this is very slow, so only do it once.
   let ψ₈char : AddChar (ZMod 8) FF := ψ₈.char
   let τ : FF := ψ₈char 1
   have τ_spec : τ ^ 4 = -1 := by
@@ -333,7 +333,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
       -- Matrix.cons_vecAlt1, Int.cast_neg]
       simp_rw [χ₈_apply]
       rw [← h₄]
-      dsimp only
+      dsimp only [τ]
       congr
       · rw [Matrix.cons_val_zero]; simp
       · simp only [Matrix.vecCons, ne_eq, Nat.cast_ofNat, id_eq, eq_mpr_eq_cast, mul_eq_zero,

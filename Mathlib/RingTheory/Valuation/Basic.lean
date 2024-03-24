@@ -61,7 +61,8 @@ boilerplate lemmas to `ValuationClass`.
 -/
 
 
-open Classical BigOperators Function Ideal
+open scoped Classical
+open BigOperators Function Ideal
 
 noncomputable section
 
@@ -71,7 +72,7 @@ section
 
 variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
---porting note: removed @[nolint has_nonempty_instance]
+--porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- The type of `Γ₀`-valued valuations on `R`.
 
 When you extend this structure, make sure to extend `ValuationClass`. -/
@@ -105,9 +106,7 @@ end
 namespace Valuation
 
 variable {Γ₀ : Type*}
-
 variable {Γ'₀ : Type*}
-
 variable {Γ''₀ : Type*} [LinearOrderedCommMonoidWithZero Γ''₀]
 
 section Basic
@@ -133,7 +132,7 @@ instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
 theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 #align valuation.to_fun_eq_coe Valuation.toFun_eq_coe
 
-@[simp] --Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
+@[simp] -- Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
 theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) :
     (v.toMonoidWithZeroHom : R → Γ₀) = v := rfl
 
@@ -488,7 +487,7 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
   · rw [isEquiv_iff_val_eq_one]
     intro h x
     by_cases hx : x = 0
-    · -- porting note: this proof was `simp only [(zero_iff _).2 hx, zero_ne_one]`
+    · -- Porting note: this proof was `simp only [(zero_iff _).2 hx, zero_ne_one]`
       rw [(zero_iff _).2 hx, (zero_iff _).2 hx]
       simp only [zero_ne_one]
     constructor
@@ -531,9 +530,7 @@ end
 section Supp
 
 variable [CommRing R]
-
 variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
-
 variable (v : Valuation R Γ₀)
 
 /-- The support of a valuation `v : R → Γ₀` is the ideal of `R` where `v` vanishes. -/
@@ -594,7 +591,7 @@ section AddMonoid
 variable (R) [Ring R] (Γ₀ : Type*) [LinearOrderedAddCommMonoidWithTop Γ₀]
 
 /-- The type of `Γ₀`-valued additive valuations on `R`. -/
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 def AddValuation :=
   Valuation R (Multiplicative Γ₀ᵒᵈ)
 #align add_valuation AddValuation
@@ -621,7 +618,6 @@ variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCom
 section
 
 variable (f : R → Γ₀) (h0 : f 0 = ⊤) (h1 : f 1 = 0)
-
 variable (hadd : ∀ x y, min (f x) (f y) ≤ f (x + y)) (hmul : ∀ x y, f (x * y) = f x + f y)
 
 /-- An alternate constructor of `AddValuation`, that doesn't reference `Multiplicative Γ₀ᵒᵈ` -/
@@ -865,9 +861,7 @@ end IsEquiv
 section Supp
 
 variable [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
-
 variable [CommRing R]
-
 variable (v : AddValuation R Γ₀)
 
 /-- The support of an additive valuation `v : R → Γ₀` is the ideal of `R` where `v x = ⊤` -/

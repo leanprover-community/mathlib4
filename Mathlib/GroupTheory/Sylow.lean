@@ -62,7 +62,7 @@ namespace Sylow
 
 attribute [coe] Sylow.toSubgroup
 
---Porting note: Changed to `CoeOut`
+-- Porting note: Changed to `CoeOut`
 instance : CoeOut (Sylow p G) (Subgroup G) :=
   ⟨Sylow.toSubgroup⟩
 

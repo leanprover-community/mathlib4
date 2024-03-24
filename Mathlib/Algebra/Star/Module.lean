@@ -145,7 +145,7 @@ theorem IsSelfAdjoint.selfAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     selfAdjointPart R x = ⟨x, hx⟩ :=
   Subtype.eq (hx.coe_selfAdjointPart_apply R)
 
--- porting note: todo: make it a `simp`
+-- Porting note (#11215): TODO: make it a `simp`
 theorem selfAdjointPart_comp_subtype_selfAdjoint :
     (selfAdjointPart R).comp (selfAdjoint.submodule R A).subtype = .id :=
   LinearMap.ext fun x ↦ x.2.selfAdjointPart_apply R
@@ -154,17 +154,17 @@ theorem IsSelfAdjoint.skewAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     skewAdjointPart R x = 0 := Subtype.eq <| by
   rw [skewAdjointPart_apply_coe, hx.star_eq, sub_self, smul_zero, ZeroMemClass.coe_zero]
 
--- porting note: todo: make it a `simp`
+-- Porting note (#11215): TODO: make it a `simp`
 theorem skewAdjointPart_comp_subtype_selfAdjoint :
     (skewAdjointPart R).comp (selfAdjoint.submodule R A).subtype = 0 :=
   LinearMap.ext fun x ↦ x.2.skewAdjointPart_apply R
 
--- porting note: todo: make it a `simp`
+-- Porting note (#11215): TODO: make it a `simp`
 theorem selfAdjointPart_comp_subtype_skewAdjoint :
     (selfAdjointPart R).comp (skewAdjoint.submodule R A).subtype = 0 :=
   LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by simp [hx]
 
--- porting note: todo: make it a `simp`
+-- Porting note (#11215): TODO: make it a `simp`
 theorem skewAdjointPart_comp_subtype_skewAdjoint :
     (skewAdjointPart R).comp (skewAdjoint.submodule R A).subtype = .id :=
   LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by

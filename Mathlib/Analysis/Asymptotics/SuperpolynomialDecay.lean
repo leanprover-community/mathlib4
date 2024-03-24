@@ -157,7 +157,6 @@ end OrderedCommSemiring
 section LinearOrderedCommRing
 
 variable [TopologicalSpace β] [LinearOrderedCommRing β] [OrderTopology β]
-
 variable (l k f)
 
 theorem superpolynomialDecay_iff_abs_tendsto_zero :
@@ -216,7 +215,6 @@ end Field
 section LinearOrderedField
 
 variable [TopologicalSpace β] [LinearOrderedField β] [OrderTopology β]
-
 variable (f)
 
 theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
@@ -240,7 +238,7 @@ theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
 
 theorem superpolynomialDecay_iff_zpow_tendsto_zero (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k f ↔ ∀ z : ℤ, Tendsto (fun a : α => k a ^ z * f a) l (𝓝 0) := by
-  refine' ⟨fun h z => _, fun h n => by simpa only [zpow_ofNat] using h (n : ℤ)⟩
+  refine' ⟨fun h z => _, fun h n => by simpa only [zpow_natCast] using h (n : ℤ)⟩
   by_cases hz : 0 ≤ z
   · unfold Tendsto
     lift z to ℕ using hz
@@ -311,7 +309,6 @@ end LinearOrderedField
 section NormedLinearOrderedField
 
 variable [NormedLinearOrderedField β]
-
 variable (l k f)
 
 theorem superpolynomialDecay_iff_norm_tendsto_zero :
@@ -326,7 +323,6 @@ theorem superpolynomialDecay_iff_superpolynomialDecay_norm :
 #align asymptotics.superpolynomial_decay_iff_superpolynomial_decay_norm Asymptotics.superpolynomialDecay_iff_superpolynomialDecay_norm
 
 variable {l k}
-
 variable [OrderTopology β]
 
 theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :

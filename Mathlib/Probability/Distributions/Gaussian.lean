@@ -84,7 +84,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
       refine (integrable_exp_neg_mul_sq ?_).const_mul (Real.sqrt (2 * π * v))⁻¹
       simp [lt_of_le_of_ne (zero_le _) (Ne.symm hv)]
     ext x
-    simp only [zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe, Real.sqrt_mul',
+    simp only [g, zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe, Real.sqrt_mul',
       mul_inv_rev, NNReal.coe_mul, NNReal.coe_inv, NNReal.coe_ofNat, neg_mul, mul_eq_mul_left_iff,
       Real.exp_eq_exp, mul_eq_zero, inv_eq_zero, Real.sqrt_eq_zero, NNReal.coe_eq_zero, hv,
       false_or]
@@ -265,7 +265,7 @@ lemma gaussianReal_map_add_const (y : ℝ) :
   rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs']
   simp only [abs_neg, abs_one, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, one_mul, ne_eq]
   rw [gaussianReal_apply_eq_integral _ hv s']
-  simp [gaussianPDFReal_sub _ y, Homeomorph.addRight, ← sub_eq_add_neg]
+  simp [e, gaussianPDFReal_sub _ y, Homeomorph.addRight, ← sub_eq_add_neg]
 
 /-- The map of a Gaussian distribution by addition of a constant is a Gaussian. -/
 lemma gaussianReal_map_const_add (y : ℝ) :
@@ -299,7 +299,7 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
   · simp only [ne_eq, mul_eq_zero, hv, or_false]
     rw [← NNReal.coe_inj]
     simp [hc]
-  simp only [Homeomorph.mulLeft₀, Equiv.toFun_as_coe, Equiv.mulLeft₀_apply, Equiv.invFun_as_coe,
+  simp only [e, Homeomorph.mulLeft₀, Equiv.toFun_as_coe, Equiv.mulLeft₀_apply, Equiv.invFun_as_coe,
     Equiv.mulLeft₀_symm_apply, Homeomorph.toMeasurableEquiv_coe, Homeomorph.homeomorph_mk_coe_symm,
     Equiv.coe_fn_symm_mk, gaussianPDFReal_inv_mul hc]
   congr with x

@@ -140,6 +140,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
       ← Algebra.smul_def]
     erw [id_apply]
   mul_assoc := by
+    set_option tactic.skipAssignedInstances false in
     -- Porting note: `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
       LinearMap.ext fun z => ?_

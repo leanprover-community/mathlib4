@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.Homology.Additive
+import Mathlib.Algebra.Homology.Linear
+import Mathlib.CategoryTheory.Quotient.Linear
 import Mathlib.CategoryTheory.Quotient.Preadditive
 
 #align_import algebra.homology.homotopy_category from "leanprover-community/mathlib"@"13ff898b0eee75d3cc75d1c06a491720eaaf911d"
@@ -21,17 +22,14 @@ set_option autoImplicit true
 
 universe v u
 
-open Classical
+open scoped Classical
 
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits HomologicalComplex
 
-variable {ι : Type*}
-
-variable (V : Type u) [Category.{v} V] [Preadditive V]
-
-variable (c : ComplexShape ι)
+variable {R : Type*} [Semiring R]
+  {ι : Type*} (V : Type u) [Category.{v} V] [Preadditive V] (c : ComplexShape ι)
 
 /-- The congruence on `HomologicalComplex V c` given by the existence of a homotopy.
 -/
@@ -75,6 +73,17 @@ instance : EssSurj (quotient V c) := Quotient.essSurj_functor _
 
 instance : (quotient V c).Additive where
 
+instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) :=
+  (inferInstance : Preadditive (HomotopyCategory V c))
+
+instance : Functor.Additive (Quotient.functor (homotopic V c)) where
+
+instance [Linear R V] : Linear R (HomotopyCategory V c) :=
+  Quotient.linear R (homotopic V c) (fun _ _ _ _ _ h => ⟨h.some.smul _⟩)
+
+instance [Linear R V] : Functor.Linear R (HomotopyCategory.quotient V c) :=
+  Quotient.linear_functor _ _ _
+
 open ZeroObject
 
 instance [HasZeroObject V] : Inhabited (HomotopyCategory V c) :=
@@ -86,7 +95,7 @@ instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
 
 variable {V c}
 
--- porting note: removed @[simp] attribute because it hinders the automatic application of the
+-- Porting note: removed @[simp] attribute because it hinders the automatic application of the
 -- more useful `quotient_map_out`
 theorem quotient_obj_as (C : HomologicalComplex V c) : ((quotient V c).obj C).as = C :=
   rfl
@@ -97,7 +106,7 @@ theorem quotient_map_out {C D : HomotopyCategory V c} (f : C ⟶ D) : (quotient 
   Quot.out_eq _
 #align homotopy_category.quotient_map_out HomotopyCategory.quotient_map_out
 
--- porting note: added to ease the port
+-- Porting note: added to ease the port
 theorem quot_mk_eq_quotient_map {C D : HomologicalComplex V c} (f : C ⟶ D) :
     Quot.mk _ f = (quotient V c).map f := rfl
 
@@ -240,7 +249,7 @@ namespace CategoryTheory
 
 variable {V} {W : Type*} [Category W] [Preadditive W]
 
--- porting note: given a simpler definition of this functor
+-- Porting note: given a simpler definition of this functor
 /-- An additive functor induces a functor between homotopy categories. -/
 @[simps! obj]
 def Functor.mapHomotopyCategory (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
