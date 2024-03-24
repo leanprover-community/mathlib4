@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.TypesFiltered
 
 #align_import category_theory.limits.filtered from "leanprover-community/mathlib"@"e4ee4e30418efcb8cf304ba76ad653aeec04ba6e"
 

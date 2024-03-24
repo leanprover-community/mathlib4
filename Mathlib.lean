@@ -1252,6 +1252,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.CategoryTheory.Limits.SmallComplete
 import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.Limits.Unit
 import Mathlib.CategoryTheory.Limits.VanKampen
 import Mathlib.CategoryTheory.Limits.Yoneda
