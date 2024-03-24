@@ -1110,9 +1110,7 @@ protected theorem Decidable.not_forall₂ [Decidable (∃ x h, ¬P x h)] [∀ x 
 theorem not_forall₂ : (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h := Decidable.not_forall₂
 #align not_ball not_forall₂
 
-theorem forall_mem_true_iff (p : α → Prop) : (∀ x, p x → True) ↔ True :=
-  iff_true_intro fun _ _ ↦ trivial
-#align ball_true_iff forall_mem_true_iff
+#align ball_true_iff forall₂_true_iff
 
 theorem forall_mem_and : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ x h, Q x h :=
   Iff.trans (forall_congr' fun _ ↦ forall_and) forall_and
@@ -1136,7 +1134,7 @@ theorem exists_mem_or_left :
 @[deprecated] alias not_ball_of_bex_not := not_forall₂_of_exists₂_not
 @[deprecated] alias Decidable.not_ball := Decidable.not_forall₂
 @[deprecated] alias not_ball := not_forall₂
-@[deprecated] alias ball_true_iff := forall_mem_true_iff
+@[deprecated] alias ball_true_iff := forall₂_true_iff
 @[deprecated] alias ball_and := forall_mem_and
 @[deprecated] alias not_bex := not_exists_mem
 @[deprecated] alias bex_or := exists_mem_or
