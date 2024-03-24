@@ -135,8 +135,7 @@ instance baseChange [Module.Flat R M] : Module.Flat S (S ⊗[R] M) := by
   intro I
   simp only [← auxRTensorBaseChange_eq, auxRTensorBaseChange, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EmbeddingLike.comp_injective, EquivLike.injective_comp]
-  let p : I →ₗ[R] S := Submodule.subtype I
-  exact preserves_injective_linearMap p Subtype.val_injective
+  exact preserves_injective_linearMap (I.subtype : I →ₗ[R] S) Subtype.val_injective
 
 /-- A base change of a flat module is flat. -/
 theorem isBaseChange [Module.Flat R M] (N : Type t) [AddCommGroup N] [Module R N] [Module S N]
