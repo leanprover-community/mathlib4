@@ -139,14 +139,15 @@ theorem map (hφ : IsSymmetric φ) (f : R →+* S) : IsSymmetric (map f φ) := f
   rw [← map_rename, hφ]
 #align mv_polynomial.is_symmetric.map MvPolynomial.IsSymmetric.map
 
-theorem rename (hφ : φ.IsSymmetric) (e : σ ≃ τ) : (rename e φ).IsSymmetric := fun _ => by
+protected theorem rename (hφ : φ.IsSymmetric) (e : σ ≃ τ) : (rename e φ).IsSymmetric := fun _ => by
   apply rename_injective _ e.symm.injective
   simp_rw [rename_rename, ← Equiv.coe_trans, Equiv.self_trans_symm, Equiv.coe_refl, rename_id]
   rw [hφ]
 
 @[simp]
-theorem rename_iff {e : σ ≃ τ} : (MvPolynomial.rename e φ).IsSymmetric ↔ φ.IsSymmetric :=
-  ⟨fun h => by simpa using (rename (R := R) h e.symm), (rename · e)⟩
+theorem _root_.MvPolynomial.isSymmetric_rename {e : σ ≃ τ} :
+    (MvPolynomial.rename e φ).IsSymmetric ↔ φ.IsSymmetric :=
+  ⟨fun h => by simpa using (IsSymmetric.rename (R := R) h e.symm), (IsSymmetric.rename · e)⟩
 
 end CommSemiring
 
