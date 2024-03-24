@@ -3,8 +3,8 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Order.IntermediateValue
-import Mathlib.Topology.LocalExtr
+import Mathlib.Topology.Order.LocalExtr
+import Mathlib.Topology.Order.IntermediateValue
 import Mathlib.Topology.Support
 
 #align_import topology.algebra.order.compact from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
@@ -109,9 +109,10 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
     rw [diff_subset_iff]
     exact Subset.trans Icc_subset_Icc_union_Ioc <| union_subset_union Subset.rfl <|
       Ioc_subset_Ioc_left hy.1.le
-  rcases hc.2.eq_or_lt with (rfl | hlt); · exact hcs.2
-  contrapose! hf
-  intro U hU
+  rcases hc.2.eq_or_lt with (rfl | hlt)
+  · exact hcs.2
+  exfalso
+  refine hf fun U hU => ?_
   rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
       (mem_nhdsWithin_of_mem_nhds hU) with
     ⟨y, hxy, hyU⟩
