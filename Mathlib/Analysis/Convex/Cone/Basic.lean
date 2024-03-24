@@ -632,7 +632,7 @@ def toCone (s : Set E) (hs : Convex 𝕜 s) : ConvexCone 𝕜 E := by
   · rintro _ ⟨cx, cx_pos, x, hx, rfl⟩ _ ⟨cy, cy_pos, y, hy, rfl⟩
     have : 0 < cx + cy := add_pos cx_pos cy_pos
     refine' ⟨_, this, _, convex_iff_div.1 hs hx hy cx_pos.le cy_pos.le this, _⟩
-    simp only [smul_add, smul_smul, mul_div_assoc', mul_div_cancel_left _ this.ne']
+    simp only [smul_add, smul_smul, mul_div_assoc', mul_div_cancel_left₀ _ this.ne']
 #align convex.to_cone Convex.toCone
 
 variable {s : Set E} (hs : Convex 𝕜 s) {x : E}
