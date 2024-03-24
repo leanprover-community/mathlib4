@@ -156,39 +156,6 @@ theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
 
 section
 
-variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
-
-/-- For `x` and `y` in a real vector space, if `x ≠ 0` and `0` is in the segment from
-`x` to `y` then `y` is on the line spanned by `x`.  -/
-theorem mem_span_of_zero_mem_segment {x y : E} (hx : x ≠ 0) (h : (0 : E) ∈ [x -[ℝ] y]) :
-    y ∈ Submodule.span ℝ ({x} : Set E) := by
-  rw [segment_eq_image] at h
-  rcases h with ⟨t, -, htxy⟩
-  rw [Submodule.mem_span_singleton]
-  use (t - 1) / t
-  have : t ≠ 0 := by
-    intro h
-    rw [h] at htxy
-    refine hx ?_
-    simpa using htxy
-  rw [← smul_eq_zero_iff_right (neg_ne_zero.mpr <| inv_ne_zero this), smul_add, smul_smul,
-    smul_smul, ← neg_one_mul, mul_assoc, mul_assoc, inv_mul_cancel this, mul_one, neg_one_smul,
-    add_neg_eq_zero] at htxy
-  convert htxy using 2
-  ring
-
-variable [TopologicalAddGroup E] [ContinuousSMul ℝ E]
-
-open AffineMap in
-/-- For `x` and `y` in a real vector space, if `x ≠ 0` and `y` is not on the line
-spanned by `x` then `x` and `y` can be joined by a path in the complement of `{0}`.  -/
-theorem joinedIn_compl_zero_of_not_mem_span {x y : E} (hx : x ≠ 0)
-    (hy : y ∉ Submodule.span ℝ {x}) : JoinedIn ({0}ᶜ : Set E) x y := by
-  refine JoinedIn.ofLine lineMap_continuous.continuousOn
-    (lineMap_apply_zero _ _) (lineMap_apply_one _ _) ?_
-  rw [← segment_eq_image_lineMap]
-  exact fun t ht h' ↦ (mt (mem_span_of_zero_mem_segment hx) hy) (h' ▸ ht)
-
 variable {E F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
   [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGroup F] [ContinuousSMul ℝ F]
 
