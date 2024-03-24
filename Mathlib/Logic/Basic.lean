@@ -1112,17 +1112,17 @@ theorem not_forall₂ : (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h := Decidable.not
 
 #align ball_true_iff forall₂_true_iff
 
-theorem forall_mem_and : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ x h, Q x h :=
+theorem forall₂_and : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ x h, Q x h :=
   Iff.trans (forall_congr' fun _ ↦ forall_and) forall_and
-#align ball_and_distrib forall_mem_and
+#align ball_and_distrib forall₂_and
 
 theorem exists_mem_or : (∃ x h, P x h ∨ Q x h) ↔ (∃ x h, P x h) ∨ ∃ x h, Q x h :=
   Iff.trans (exists_congr fun _ ↦ exists_or) exists_or
 #align bex_or_distrib exists_mem_or
 
-theorem forall_mem_or_left : (∀ x, p x ∨ q x → r x) ↔ (∀ x, p x → r x) ∧ ∀ x, q x → r x :=
+theorem forall₂_or_left : (∀ x, p x ∨ q x → r x) ↔ (∀ x, p x → r x) ∧ ∀ x, q x → r x :=
   Iff.trans (forall_congr' fun _ ↦ or_imp) forall_and
-#align ball_or_left_distrib forall_mem_or_left
+#align ball_or_left_distrib forall₂_or_left
 
 theorem exists_mem_or_left :
     (∃ (x : _) (_ : p x ∨ q x), r x) ↔ (∃ (x : _) (_ : p x), r x) ∨ ∃ (x : _) (_ : q x), r x := by
@@ -1135,10 +1135,10 @@ theorem exists_mem_or_left :
 @[deprecated] alias Decidable.not_ball := Decidable.not_forall₂
 @[deprecated] alias not_ball := not_forall₂
 @[deprecated] alias ball_true_iff := forall₂_true_iff
-@[deprecated] alias ball_and := forall_mem_and
+@[deprecated] alias ball_and := forall₂_and
 @[deprecated] alias not_bex := not_exists_mem
 @[deprecated] alias bex_or := exists_mem_or
-@[deprecated] alias ball_or_left := forall_mem_or_left
+@[deprecated] alias ball_or_left := forall₂_or_left
 @[deprecated] alias bex_or_left := exists_mem_or_left
 
 end BoundedQuantifiers

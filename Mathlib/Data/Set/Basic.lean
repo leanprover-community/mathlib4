@@ -1215,7 +1215,7 @@ theorem exists_mem_insert {P : α → Prop} {a : α} {s : Set α} :
 
 theorem forall_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∀ x ∈ insert a s, P x) ↔ P a ∧ ∀ x ∈ s, P x :=
-  forall_mem_or_left.trans <| and_congr_left' forall_eq
+  forall₂_or_left.trans <| and_congr_left' forall_eq
 #align set.ball_insert_iff Set.forall_mem_insert
 @[deprecated] alias ball_insert_iff := forall_mem_insert -- 2024-03-23
 
