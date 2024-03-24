@@ -373,8 +373,6 @@ theorem liftIsometry_comp_mapL (h : ContinuousMultilinearMap 𝕜 E' F) :
     liftIsometry_apply_apply, lift.tprod, ContinuousMultilinearMap.coe_coe,
     ContinuousMultilinearMap.compContinuousLinearMap_apply]
 
-attribute [local ext high] ext
-
 @[simp]
 theorem mapL_id : mapL (fun i ↦ ContinuousLinearMap.id 𝕜 (E i)) = ContinuousLinearMap.id _ _ := by
   apply ContinuousLinearMap.coe_injective
