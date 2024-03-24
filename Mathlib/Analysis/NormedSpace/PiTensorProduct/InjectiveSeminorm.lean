@@ -126,11 +126,11 @@ normed vector spaces `F`. In fact, we only take in the same universe as `⨂[�
 prove in `PiTensorProduct.norm_eval_le_injectiveSeminorm` that this gives the same result.
 -/
 noncomputable irreducible_def injectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) :=
-  sSup {p | ∃ (G : Type (max (max uι u𝕜) uE)) (_ : SeminormedAddCommGroup G)
+  sSup {p | ∃ (G : Type (max uι u𝕜 uE)) (_ : SeminormedAddCommGroup G)
   (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
   (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}
 
-lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max (max uι u𝕜) uE))
+lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
     p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))} := by
@@ -144,7 +144,7 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max (max uι u𝕜) u
   exact toDualContinuousMultilinearMap_le_projectiveSeminorm _
 
 theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
-    injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max (max uι u𝕜) uE))
+    injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max uι u𝕜 uE))
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
     (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}, p.1 x := by
@@ -156,7 +156,7 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
     /- If `F` were in `Type (max uι u𝕜 uE)` (which is the type of `⨂[𝕜] i, E i`), then the
     property that we want to prove would hold by definition of `injectiveSeminorm`. This is
     not necessarily true, but we will show that there exists a normed vector space `G` in
-    `Type (max (max uι u𝕜) uE)` and an injective isometry from `G` to `F` such that `f` factors
+    `Type (max uι u𝕜 uE)` and an injective isometry from `G` to `F` such that `f` factors
     through a continuous multilinear map `f'` from `E = Π i, E i` to `G`, to which we can apply
     the definition of `injectiveSeminorm`. The desired inequality for `f` then follows
     immediately.
@@ -261,7 +261,10 @@ noncomputable def liftEquiv : ContinuousMultilinearMap 𝕜 E F ≃ₗ[𝕜] (�
       lift.tprod, ContinuousMultilinearMap.coe_coe, MultilinearMap.coe_mkContinuous,
       ContinuousLinearMap.coe_coe]
 
-/-- The equivalence `PiTensorProduct.liftEquiv` as an isometric linear equivalence.
+/-- For a normed space `F`, we have constructed in `PiTensorProduct.liftEquiv` the canonical
+linear equivalence between `ContinuousMultilinearMap 𝕜 E F` and `(⨂[𝕜] i, Eᵢ) →L[𝕜] F`
+(induced by `PiTensorProduct.lift`). Here we give the upgrade of this equivalence to
+an isometric linear equivalence; in particular, it is a continuous linear equivalence.
 -/
 noncomputable def liftIsometry  : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F :=
   {liftEquiv 𝕜 E F with
