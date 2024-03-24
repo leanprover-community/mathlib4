@@ -263,7 +263,7 @@ def flipHomAux : (BilinForm R M) →ₗ[R] (BilinForm R M) where
 #align bilin_form.flip_hom_aux LinearMap.BilinForm.flipHomAux
 
 theorem flip_flip_aux (A : BilinForm R M) :
-    flipHomAux.toFun (flipHomAux.toFun A) = A := by
+    flipHomAux (M := M) (flipHomAux (M := M) A) = A := by
   ext A
   simp [flipHomAux]
 #align bilin_form.flip_flip_aux LinearMap.BilinForm.flip_flip_aux
@@ -271,7 +271,7 @@ theorem flip_flip_aux (A : BilinForm R M) :
 /-- The flip of a bilinear form, obtained by exchanging the left and right arguments. -/
 def flipHom : BilinForm R M ≃ₗ[R] BilinForm R M :=
   { flipHomAux with
-    invFun := flipHomAux.toFun
+    invFun := flipHomAux (M := M)
     left_inv := flip_flip_aux
     right_inv := flip_flip_aux }
 #align bilin_form.flip_hom LinearMap.BilinForm.flipHom

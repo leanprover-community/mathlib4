@@ -73,7 +73,7 @@ variable (B)
 
 theorem sum_left {α} (t : Finset α) (g : α → M) (w : M) :
     B (∑ i in t, g i) w = ∑ i in t, B (g i) w :=
-  (BilinForm.toLinHom.toFun B).map_sum₂ t g w
+  (BilinForm.toLinHom (M := M) B).map_sum₂ t g w
 #align bilin_form.sum_left LinearMap.BilinForm.sum_left
 
 variable (w : M)
@@ -96,7 +96,7 @@ def toLinHomFlip : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R :=
   toLinHom.comp flipHom.toLinearMap
 #align bilin_form.to_lin_hom_flip LinearMap.BilinForm.toLinHomFlip
 
-theorem toLin'Flip_apply (A : BilinForm R M) (x : M) : toLinHomFlip.toFun A x = fun y => A y x :=
+theorem toLin'Flip_apply (A : BilinForm R M) (x : M) : toLinHomFlip (M := M) A x = fun y => A y x :=
   rfl
 #align bilin_form.to_lin'_flip_apply LinearMap.BilinForm.toLin'Flip_apply
 
