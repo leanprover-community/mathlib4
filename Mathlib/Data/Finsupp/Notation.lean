@@ -37,13 +37,13 @@ local syntax:lead (name := stxUpdate₀) "update₀" term:arg term:arg term:arg 
 
 @[term_elab stxSingle₀]
 def elabSingle₀ : Elab.Term.TermElab
-| `(term| single₀ $i $x) => fun ty => do Elab.Term.elabTerm (← `(Finsupp.single $i $x)) ty
-| _ => fun _ => Elab.throwUnsupportedSyntax
+  | `(term| single₀ $i $x) => fun ty => do Elab.Term.elabTerm (← `(Finsupp.single $i $x)) ty
+  | _ => fun _ => Elab.throwUnsupportedSyntax
 
 @[term_elab stxUpdate₀]
 def elabUpdate₀ : Elab.Term.TermElab
-| `(term| update₀ $f $i $x) => fun ty => do Elab.Term.elabTerm (← `(Finsupp.update $f $i $x)) ty
-| _ => fun _ => Elab.throwUnsupportedSyntax
+  | `(term| update₀ $f $i $x) => fun ty => do Elab.Term.elabTerm (← `(Finsupp.update $f $i $x)) ty
+  | _ => fun _ => Elab.throwUnsupportedSyntax
 
 macro_rules
   | `(term| fun₀ $x:matchAlt*) => do
