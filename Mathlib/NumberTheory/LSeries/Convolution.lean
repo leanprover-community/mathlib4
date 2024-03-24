@@ -99,19 +99,22 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
       have hS : m ⁻¹' {0} = {0} ×ˢ univ ∪ (univ \ {0}) ×ˢ {0} := by
         ext
         simp only [m, mem_preimage, mem_singleton_iff, _root_.mul_eq_zero, mem_union, mem_prod,
-          mem_univ, mem_diff]
+          mem_univ, mem_diff, and_true, true_and]
         tauto
       rw [tsum_congr_set_coe h hS,
         tsum_union_disjoint (Disjoint.set_prod_left disjoint_sdiff_right ..) ?_ ?_,
-          -- (hsum.subtype _) (hsum.subtype _),
         tsum_setProd_singleton_left 0 _ h, tsum_setProd_singleton_right _ 0 h]
       · simp only [h, term_zero, zero_mul, tsum_zero, mul_zero, add_zero]
       · simp only [h, Function.comp_def]
-        convert summable_zero with p
-        rw [Set.mem_singleton_iff.mp p.prop.1, term_zero, zero_mul]
+        have : (fun x : {0} ×ˢ (@univ ℕ) ↦ term f s x.val.1 * term g s x.val.2) = 0 := by
+          ext p
+          rw [Set.mem_singleton_iff.mp p.prop.1, term_zero, zero_mul, Pi.zero_apply]
+        exact this ▸ summable_zero
       · simp only [h, Function.comp_def]
-        convert summable_zero with p
-        rw [Set.mem_singleton_iff.mp p.prop.2, term_zero, mul_zero]
+        have : (fun x : (@univ ℕ \ {0}) ×ˢ {0} ↦ term f s x.val.1 * term g s x.val.2) = 0 := by
+          ext p
+          rw [Set.mem_singleton_iff.mp p.prop.2, term_zero, mul_zero, Pi.zero_apply]
+        exact this ▸ summable_zero
   -- now `n > 0`
   have H : n.divisorsAntidiagonal = m ⁻¹' {n} := by
     ext x
