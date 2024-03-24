@@ -199,7 +199,7 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
     · rw [sub_ne_zero]; exact ((div_lt_one hy).mpr hxy).ne
   · have q : 0 < z - y := by rwa [sub_pos]
     rw [lt_div_iff q, ← div_lt_div_right hy', _root_.sub_div, div_self hy'.ne', ← div_rpow hz hy.le,
-      lt_tsub_iff_left, ← add_sub_cancel_right (z / y) 1, add_comm _ 1, add_sub_assoc,
+      lt_sub_iff_add_lt', ← add_sub_cancel_right (z / y) 1, add_comm _ 1, add_sub_assoc,
       ← div_mul_eq_mul_div, mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one,
       mul_assoc, ← div_eq_inv_mul, _root_.sub_div, div_self hy.ne']
     apply one_add_mul_self_lt_rpow_one_add _ _ hp
