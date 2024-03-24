@@ -62,17 +62,6 @@ namespace LinearMap
 
 namespace BilinForm
 
-instance : CoeFun (BilinForm R M) fun _ => M → M → R := ⟨fun B₃ x y => B₃ x y⟩
-
-/-
-initialize_simps_projections BilinForm (bilin → apply)
-
--- Porting note: removed for simpVarHead @[simp]
-theorem coeFn_mk (f : M → M → R) (h₁ h₂ h₃ h₄) : (BilinForm.mk f h₁ h₂ h₃ h₄ : M → M → R) = f :=
-  rfl
-#align bilin_form.coe_fn_mk BilinForm.coeFn_mk
--/
-
 theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
   | _, _, _, _, rfl, rfl => rfl
 #align bilin_form.coe_fn_congr LinearMap.BilinForm.coeFn_congr
@@ -124,9 +113,10 @@ lemma smul_right_of_tower (r : S) (x y : M) : B x (r • y) = r • B x y := by
 variable {D : BilinForm R M} {D₁ : BilinForm R₁ M₁}
 
 -- TODO: instantiate `FunLike`
-theorem coe_injective : Function.Injective ((↑) : BilinForm R M → M → M → R) := fun B D h => by
-  ext x y
-  apply congrFun₂ h
+theorem coe_injective : Function.Injective ((fun B x y => B x y) : BilinForm R M → M → M → R) :=
+  fun B D h => by
+    ext x y
+    apply congrFun₂ h
 #align bilin_form.coe_injective LinearMap.BilinForm.coe_injective
 
 @[ext]
@@ -201,8 +191,7 @@ instance {α} [Monoid α] [DistribMulAction α R] [DistribMulAction αᵐᵒᵖ 
     IsCentralScalar α (BilinForm R M) :=
   ⟨fun a B => ext₂ fun x y => op_smul_eq_smul a (B x y)⟩
 
-instance : AddCommMonoid (BilinForm R M) :=
-  Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
+instance : AddCommMonoid (BilinForm R M) := by infer_instance
 
 instance : Neg (BilinForm R₁ M₁) := LinearMap.instNegLinearMapToAddCommMonoid
 
@@ -226,26 +215,23 @@ theorem sub_apply (x y : M₁) : (B₁ - D₁) x y = B₁ x y - D₁ x y :=
   rfl
 #align bilin_form.sub_apply LinearMap.BilinForm.sub_apply
 
-instance : AddCommGroup (BilinForm R₁ M₁) :=
-  Function.Injective.addCommGroup _ coe_injective coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
+instance : AddCommGroup (BilinForm R₁ M₁) := by infer_instance
 
 instance : Inhabited (BilinForm R M) :=
   ⟨0⟩
 
 /-- `coeFn` as an `AddMonoidHom` -/
 def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
-  toFun := (↑)
-  map_zero' := coe_zero
-  map_add' := coe_add
+  toFun := (fun B x y => B x y)
+  map_zero' := rfl
+  map_add' _ _ := rfl
 #align bilin_form.coe_fn_add_monoid_hom LinearMap.BilinForm.coeFnAddMonoidHom
 
 instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] :
-    DistribMulAction α (BilinForm R M) :=
-  Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
+    DistribMulAction α (BilinForm R M) := by infer_instance
 
 instance {α} [CommSemiring α] [Module α R] [SMulCommClass R α R] : Module α (BilinForm R M) :=
-  Function.Injective.module _ coeFnAddMonoidHom coe_injective coe_smul
+  by infer_instance
 
 section flip
 

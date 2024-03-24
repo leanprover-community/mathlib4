@@ -408,7 +408,6 @@ theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R M} :
   rw [LinearMap.ker_eq_bot']
   constructor <;> intro h
   · refine' fun m hm => h _ fun x => _
-    simp only
     rw [hm]
     rfl
   · intro m hm

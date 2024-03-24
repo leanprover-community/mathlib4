@@ -56,8 +56,6 @@ namespace BilinForm
 
 section ToLin'
 
--- TODO: this coe instance prevents partial application
-attribute [-instance] LinearMap.BilinForm.instCoeFunBilinFormForAll in
 /-- Auxiliary definition to define `toLinHom`; see below. -/
 def toLinHomAux₁ (A : BilinForm R M) (x : M) : M →ₗ[R] R := A x
 #align bilin_form.to_lin_hom_aux₁ LinearMap.BilinForm.toLinHomAux₁
