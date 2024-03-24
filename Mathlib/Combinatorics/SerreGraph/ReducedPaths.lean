@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil
 -/
 import Mathlib.Combinatorics.SerreGraph.Basic
-import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Parity
 /-!
 ## Reduced paths in graphs
