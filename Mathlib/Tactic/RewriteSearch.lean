@@ -3,7 +3,7 @@ Copyright (c) 2023 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Init.Core
+import Lean.Meta.Tactic.Rewrites
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Data.Nat.Interval
@@ -47,7 +47,9 @@ set_option autoImplicit true
 
 namespace Mathlib.Tactic.RewriteSearch
 
-open Lean Meta Rewrites
+open Lean Meta
+open Lean.Meta.Rewrites
+open Lean.Meta.LazyDiscrTree (ModuleDiscrTreeRef)
 
 initialize registerTraceClass `rw_search
 initialize registerTraceClass `rw_search.detail
@@ -236,21 +238,17 @@ try rewriting the current goal in the `SearchNode` by one of them,
 returning a `MLList MetaM SearchNode`, i.e. a lazy list of next possible goals.
 -/
 def rewrites (hyps : Array (Expr × Bool × Nat))
-    (moduleRef : LazyDiscrTree.ModuleDiscrTreeRef (Name × Bool × Nat))
-    (forbidden : NameSet := ∅) (n : SearchNode) : MetaM (List SearchNode) := do
+    (lemmas : ModuleDiscrTreeRef (Name × Bool × Nat))
+    (forbidden : NameSet := ∅) (n : SearchNode) : MLList MetaM SearchNode := .squash fun _ => do
   if ← isTracingEnabledFor `rw_search then do
     trace[rw_search] "searching:\n{← toString n}"
-  return ← (← findRewrites hyps moduleRef n.goal n.type forbidden .solveByElim true).enum
+  let candidates ← rewriteCandidates hyps lemmas n.type forbidden
+  -- Lift to a monadic list, so the caller can decide how much of the computation to run.
+  return MLList.ofArray candidates
+    |>.filterMapM (fun ⟨lem, symm, weight⟩ =>
+        rwLemma n.mctx n.goal n.type .solveByElim lem symm weight)
+    |>.enum
     |>.filterMapM fun ⟨k, r⟩ => do n.rewrite r k
-
-/--
-When `rw?` was upstreamed, the laziness was removed.
-We put it back here as a wrapper, but I suspect this will break `rw_search`.
--/
-def rewrites' (hyps : Array (Expr × Bool × Nat))
-    (moduleRef : LazyDiscrTree.ModuleDiscrTreeRef (Name × Bool × Nat))
-    (forbidden : NameSet := ∅) (n : SearchNode) : MLList MetaM SearchNode := .squash fun _ => do
-  return MLList.ofList (← rewrites hyps moduleRef forbidden n)
 
 /--
 Perform best first search on the graph of rewrites from the specified `SearchNode`.
@@ -263,7 +261,7 @@ def search (n : SearchNode)
   let moduleRef ← createModuleTreeRef
   let search := bestFirstSearchCore (maxQueued := maxQueued)
     (β := String) (removeDuplicatesBy? := some SearchNode.ppGoal)
-    prio estimator (rewrites' hyps moduleRef forbidden) n
+    prio estimator (rewrites hyps moduleRef forbidden) n
   let search ←
     if ← isTracingEnabledFor `rw_search then do
       pure <| search.mapM fun n => do trace[rw_search] "{← toString n}"; pure n

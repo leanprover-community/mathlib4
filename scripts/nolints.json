@@ -1009,7 +1009,6 @@
  ["docBlame", "Mathlib.Tactic.LibrarySearch.tacticLibrary_search"],
  ["docBlame", "Mathlib.Tactic.LibrarySearch.«termExact?%»"],
  ["docBlame", "Mathlib.Tactic.Propose.proposeLemmas"],
- ["docBlame", "Mathlib.Tactic.Rewrites.cachePath"],
  ["docBlame", "Mathlib.Tactic.Widget.commutativeSquarePresenter"],
  ["docBlame", "Mathlib.Tactic.Widget.commutativeTrianglePresenter"],
  ["docBlame", "Mathlib.Tactic.evalIntrov.intro1PStep"],

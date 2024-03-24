@@ -7,7 +7,7 @@
    "rev": "4dbc8fabbc625b7775e14faadb25fa7466b539bb",
    "name": "std",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "nightly-testing",
+   "inputRev": "nightly-testing-2024-03-19",
    "inherited": false,
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover-community/quote4",
