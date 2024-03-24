@@ -331,6 +331,9 @@ def reducedConcat {G : SerreGraph V E} {v w u : V}
   EdgePath G v u :=
   reverse <| redCons e.bar (reverse p)
 
+/--
+Reduction of a path obtained by concatenating an edge to a reduced path.
+-/
 infixl:65 ":+" => reducedConcat
 
 theorem reducedConcat_reduced {G : SerreGraph V E} {v w u : V}
