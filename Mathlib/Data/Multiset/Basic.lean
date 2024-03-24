@@ -60,7 +60,8 @@ theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ 
   Quotient.eq
 #align multiset.coe_eq_coe Multiset.coe_eq_coe
 
--- Porting note: new, TODO move to better place
+-- Porting note: new instance;
+-- Porting note (#11215): TODO: move to better place
 instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (l₁ ≈ l₂) :=
   inferInstanceAs (Decidable (l₁ ~ l₂))
 
@@ -257,7 +258,7 @@ theorem forall_mem_cons {p : α → Prop} {a : α} {s : Multiset α} :
 
 theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a ::ₘ t :=
   Quot.inductionOn s fun l (h : a ∈ l) =>
-    let ⟨l₁, l₂, e⟩ := mem_split h
+    let ⟨l₁, l₂, e⟩ := append_of_mem h
     e.symm ▸ ⟨(l₁ ++ l₂ : List α), Quot.sound perm_middle⟩
 #align multiset.exists_cons_of_mem Multiset.exists_cons_of_mem
 
@@ -602,7 +603,7 @@ theorem le_cons_of_not_mem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
   revert m
   refine' leInductionOn h _
   introv s m₁ m₂
-  rcases mem_split m₂ with ⟨r₁, r₂, rfl⟩
+  rcases append_of_mem m₂ with ⟨r₁, r₂, rfl⟩
   exact
     perm_middle.subperm_left.2
       ((subperm_cons _).2 <| ((sublist_or_mem_of_sublist s).resolve_right m₁).subperm)
@@ -682,6 +683,7 @@ instance : OrderedCancelAddCommMonoid (Multiset α) where
   add_zero := fun s => Quotient.inductionOn s fun l => congr_arg _ <| append_nil l
   add_le_add_left := fun s₁ s₂ => add_le_add_left
   le_of_add_le_add_left := fun s₁ s₂ s₃ => le_of_add_le_add_left
+  nsmul := nsmulRec
 
 theorem le_add_right (s t : Multiset α) : s ≤ s + t := by simpa using add_le_add_left (zero_le t) s
 #align multiset.le_add_right Multiset.le_add_right
@@ -1780,11 +1782,11 @@ theorem map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f)
     congr_arg ofList (by rw [List.map_append f, List.map_diff finj])
 #align multiset.map_union Multiset.map_union
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp] theorem zero_union : 0 ∪ s = s := by
   simp [union_def]
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp] theorem union_zero : s ∪ 0 = s := by
   simp [union_def]
 
@@ -1876,12 +1878,10 @@ theorem union_le_iff : s ∪ t ≤ u ↔ s ≤ u ∧ t ≤ u :=
   sup_le_iff
 #align multiset.union_le_iff Multiset.union_le_iff
 
-theorem union_comm (s t : Multiset α) : s ∪ t = t ∪ s :=
-  sup_comm
+theorem union_comm (s t : Multiset α) : s ∪ t = t ∪ s := sup_comm _ _
 #align multiset.union_comm Multiset.union_comm
 
-theorem inter_comm (s t : Multiset α) : s ∩ t = t ∩ s :=
-  inf_comm
+theorem inter_comm (s t : Multiset α) : s ∩ t = t ∩ s := inf_comm _ _
 #align multiset.inter_comm Multiset.inter_comm
 
 theorem eq_union_right (h : s ≤ t) : s ∪ t = t := by rw [union_comm, eq_union_left h]
@@ -2681,11 +2681,11 @@ theorem inter_replicate (s : Multiset α) (n : ℕ) (x : α) :
   rw [inter_comm, replicate_inter, min_comm]
 #align multiset.inter_replicate Multiset.inter_replicate
 
-theorem erase_attach_map_val [DecidableEq α] (s : Multiset α) (x : {x // x ∈ s}) :
+theorem erase_attach_map_val (s : Multiset α) (x : {x // x ∈ s}) :
     (s.attach.erase x).map (↑) = s.erase x := by
   rw [Multiset.map_erase _ val_injective, attach_map_val]
 
-theorem erase_attach_map [DecidableEq α] (s : Multiset α) (f : α → β) (x : {x // x ∈ s}) :
+theorem erase_attach_map (s : Multiset α) (f : α → β) (x : {x // x ∈ s}) :
     (s.attach.erase x).map (fun j : {x // x ∈ s} ↦ f j) = (s.erase x).map f := by
   simp only [← Function.comp_apply (f := f)]
   rw [← map_map, erase_attach_map_val]

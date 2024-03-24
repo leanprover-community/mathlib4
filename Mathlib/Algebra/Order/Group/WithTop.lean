@@ -20,11 +20,13 @@ section LinearOrderedAddCommGroup
 
 variable [LinearOrderedAddCommGroup α] {a b c d : α}
 
+instance instNeg : Neg (WithTop α) where neg := Option.map fun a : α => -a
+
 instance linearOrderedAddCommGroupWithTop : LinearOrderedAddCommGroupWithTop (WithTop α) where
   __ := WithTop.linearOrderedAddCommMonoidWithTop
   __ := Option.nontrivial
-  neg := Option.map fun a : α => -a
   neg_top := Option.map_none
+  zsmul := zsmulRec
   add_neg_cancel := by
     rintro (a | a) ha
     · exact (ha rfl).elim

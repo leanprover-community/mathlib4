@@ -267,7 +267,7 @@ theorem supIndep_product_iff {s : Finset ι} {t : Finset ι'} {f : ι × ι' →
   refine' ⟨_, fun h => h.1.product h.2⟩
   simp_rw [supIndep_iff_pairwiseDisjoint]
   refine' fun h => ⟨fun i hi j hj hij => _, fun i hi j hj hij => _⟩ <;>
-      simp_rw [Function.onFun, Finset.disjoint_sup_left, Finset.disjoint_sup_right] <;>
+      simp_rw [Finset.disjoint_sup_left, Finset.disjoint_sup_right] <;>
     intro i' hi' j' hj'
   · exact h (mk_mem_product hi hi') (mk_mem_product hj hj') (ne_of_apply_ne Prod.fst hij)
   · exact h (mk_mem_product hi' hi) (mk_mem_product hj' hj) (ne_of_apply_ne Prod.snd hij)
@@ -361,7 +361,7 @@ theorem independent_def' : Independent t ↔ ∀ i, Disjoint (t i) (sSup (t '' {
 #align complete_lattice.independent_def' CompleteLattice.independent_def'
 
 theorem independent_def'' :
-    Independent t ↔ ∀ i, Disjoint (t i) (sSup { a | ∃ (j : _) (_ : j ≠ i), t j = a }) := by
+    Independent t ↔ ∀ i, Disjoint (t i) (sSup { a | ∃ j ≠ i, t j = a }) := by
   rw [independent_def']
   aesop
 #align complete_lattice.independent_def'' CompleteLattice.independent_def''
@@ -432,7 +432,7 @@ theorem Independent.injOn (ht : Independent t) : InjOn t {i | t i ≠ ⊥} := by
     rwa [h, disjoint_self] at ht
   replace contra : j ≠ i := Ne.symm contra
   -- Porting note: needs explicit `f`
-  exact @le_iSup₂ _ _ _ _ (fun x _ => t x) j contra
+  exact le_iSup₂ (f := fun x _ ↦ t x) j contra
 
 theorem Independent.injective (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Injective t := by
   suffices univ = {i | t i ≠ ⊥} by rw [injective_iff_injOn_univ, this]; exact ht.injOn

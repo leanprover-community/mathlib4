@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 -/
 import Mathlib.Algebra.Star.Order
-import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Instances.NNReal
+import Mathlib.Topology.Order.MonotoneContinuity
 
 #align_import data.real.sqrt from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -155,7 +155,7 @@ begin
   { intros }
 end -/
 
--- Porting note: todo: was @[pp_nodot]
+-- Porting note (#11215): TODO: was @[pp_nodot]
 /-- The square root of a real number. This returns 0 for negative inputs. -/
 noncomputable def sqrt (x : ℝ) : ℝ :=
   NNReal.sqrt (Real.toNNReal x)

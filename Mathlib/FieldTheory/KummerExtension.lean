@@ -332,7 +332,7 @@ def autAdjoinRootXPowSubCEquiv :
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
       have : (η : Kˣ) = 1 := (pow_one _).symm.trans η.prop
       simp only [PNat.mk_one, this, Units.val_one, map_one]
-    · exact mul_div_cancel _ (root_X_pow_sub_C_ne_zero' hn h)
+    · exact mul_div_cancel_right₀ _ (root_X_pow_sub_C_ne_zero' hn h)
   right_inv := by
     intro e
     have := Fact.mk H
@@ -347,7 +347,7 @@ def autAdjoinRootXPowSubCEquiv :
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
       rw [(pow_one _).symm.trans (root_X_pow_sub_C_pow 1 a), one_mul,
         ← AdjoinRoot.algebraMap_eq, AlgEquiv.commutes]
-    · refine div_mul_cancel _ (root_X_pow_sub_C_ne_zero' hn h)
+    · refine div_mul_cancel₀ _ (root_X_pow_sub_C_ne_zero' hn h)
 
 lemma autAdjoinRootXPowSubCEquiv_root (η) :
     autAdjoinRootXPowSubCEquiv hζ hn H η (root _) = ((η : Kˣ) : K) • root _ :=
@@ -365,7 +365,7 @@ lemma autAdjoinRootXPowSubCEquiv_symm_smul (σ) :
   simp_rw [← root_X_pow_sub_C_eq_zero_iff H]
   split_ifs with h
   · rw [h, mul_zero, map_zero]
-  · rw [div_mul_cancel _ h]
+  · rw [div_mul_cancel₀ _ h]
 
 end AdjoinRoot
 
@@ -499,7 +499,7 @@ lemma autEquivZmod_symm_apply_intCast {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m :
 
 lemma autEquivZmod_symm_apply_natCast {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℕ) :
     (autEquivZmod H L hζ).symm (Multiplicative.ofAdd (m : ZMod n)) α = ζ ^ m • α := by
-  simpa only [Int.cast_ofNat, zpow_coe_nat] using autEquivZmod_symm_apply_intCast H L hα hζ m
+  simpa only [Int.cast_ofNat, zpow_natCast] using autEquivZmod_symm_apply_intCast H L hα hζ m
 
 lemma isCyclic_of_isSplittingField_X_pow_sub_C : IsCyclic (L ≃ₐ[K] L) :=
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)

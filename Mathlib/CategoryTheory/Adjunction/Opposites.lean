@@ -141,8 +141,6 @@ theorem homEquiv_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : 
   apply coyoneda.map_injective
   --swap; infer_instance
   ext
-  -- Porting note: Why do I need this with the `ext` from the previous line?
-  funext
   simp [leftAdjointUniq, leftAdjointsCoyonedaEquiv]
 #align category_theory.adjunction.hom_equiv_left_adjoint_uniq_hom_app CategoryTheory.Adjunction.homEquiv_leftAdjointUniq_hom_app
 
@@ -167,7 +165,6 @@ theorem leftAdjointUniq_hom_counit {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ 
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
   ext
-  funext
   simp [leftAdjointUniq, leftAdjointsCoyonedaEquiv]
 #align category_theory.adjunction.left_adjoint_uniq_hom_counit CategoryTheory.Adjunction.leftAdjointUniq_hom_counit
 
@@ -194,7 +191,6 @@ theorem leftAdjointUniq_trans {F F' F'' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
   ext
-  funext
   simp [leftAdjointsCoyonedaEquiv, leftAdjointUniq]
 #align category_theory.adjunction.left_adjoint_uniq_trans CategoryTheory.Adjunction.leftAdjointUniq_trans
 
@@ -214,7 +210,6 @@ theorem leftAdjointUniq_refl {F : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) :
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
   ext
-  funext
   simp [leftAdjointsCoyonedaEquiv, leftAdjointUniq]
 #align category_theory.adjunction.left_adjoint_uniq_refl CategoryTheory.Adjunction.leftAdjointUniq_refl
 

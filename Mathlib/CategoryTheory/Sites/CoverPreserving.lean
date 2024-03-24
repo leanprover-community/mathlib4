@@ -56,11 +56,8 @@ open CategoryTheory Opposite CategoryTheory.Presieve.FamilyOfElements CategoryTh
 namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
-
 variable {A : Type u₃} [Category.{v₃} A]
-
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-
 variable {L : GrothendieckTopology A}
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
@@ -100,7 +97,6 @@ structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop
 #align category_theory.compatible_preserving CategoryTheory.CompatiblePreserving
 
 variable {J K} {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : SheafOfTypes.{w} K) {Z : C}
-
 variable {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T} (h : x.Compatible)
 
 /-- `CompatiblePreserving` functors indeed preserve compatible families. -/

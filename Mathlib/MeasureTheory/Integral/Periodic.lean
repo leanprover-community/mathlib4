@@ -260,7 +260,7 @@ theorem intervalIntegral_add_eq (hf : Periodic f T) (t s : ℝ) :
   · exact hf.intervalIntegral_add_eq_of_pos hT t s
   · simp
   · rw [← neg_inj, ← integral_symm, ← integral_symm]
-    simpa only [← sub_eq_add_neg, add_sub_cancel] using
+    simpa only [← sub_eq_add_neg, add_sub_cancel_right] using
       hf.neg.intervalIntegral_add_eq_of_pos (neg_pos.2 hT) (t + T) (s + T)
 #align function.periodic.interval_integral_add_eq Function.Periodic.intervalIntegral_add_eq
 
@@ -301,7 +301,6 @@ section RealValued
 open Filter
 
 variable {g : ℝ → ℝ}
-
 variable (hg : Periodic g T) (h_int : ∀ t₁ t₂, IntervalIntegrable g MeasureSpace.volume t₁ t₂)
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0`, then for any `t : ℝ`, the function
