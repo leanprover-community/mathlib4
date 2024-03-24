@@ -113,9 +113,9 @@ $\tilde{\psi}_n$ associated to the $n$-division polynomials $\psi_n$ for $n \in 
 @[pp_dot]
 noncomputable def divisionPolynomial' (n : ℕ) : R[X] :=
   preNormEDS' (W.divisionPolynomial2Sq ^ 2)
-    (3 * X ^ 4 + C W.b₂ * X ^ 3 + 3 * C W.b₄ * X ^ 2 + 3 * C W.b₆ * X + C W.b₈)
-    (2 * X ^ 6 + C W.b₂ * X ^ 5 + 5 * C W.b₄ * X ^ 4 + 10 * C W.b₆ * X ^ 3 + 10 * C W.b₈ * X ^ 2 +
-      C (W.b₂ * W.b₈ - W.b₄ * W.b₆) * X + C (W.b₄ * W.b₈ - W.b₆ ^ 2)) n
+    (C 3 * X ^ 4 + C W.b₂ * X ^ 3 + C (3 * W.b₄) * X ^ 2 + C (3 * W.b₆) * X + C W.b₈)
+    (C 2 * X ^ 6 + C W.b₂ * X ^ 5 + C (5 * W.b₄) * X ^ 4 + C (10 * W.b₆) * X ^ 3
+      + C (10 * W.b₈) * X ^ 2 + C (W.b₂ * W.b₈ - W.b₄ * W.b₆) * X + C (W.b₄ * W.b₈ - W.b₆ ^ 2)) n
 
 @[simp]
 lemma divisionPolynomial'_zero : W.divisionPolynomial' 0 = 0 :=
@@ -131,13 +131,13 @@ lemma divisionPolynomial'_two : W.divisionPolynomial' 2 = 1 :=
 
 @[simp]
 lemma divisionPolynomial'_three : W.divisionPolynomial' 3 =
-    3 * X ^ 4 + C W.b₂ * X ^ 3 + 3 * C W.b₄ * X ^ 2 + 3 * C W.b₆ * X + C W.b₈ :=
+    C 3 * X ^ 4 + C W.b₂ * X ^ 3 + C (3 * W.b₄) * X ^ 2 + C (3 * W.b₆) * X + C W.b₈ :=
   preNormEDS'_three ..
 
 @[simp]
 lemma divisionPolynomial'_four : W.divisionPolynomial' 4 =
-    2 * X ^ 6 + C W.b₂ * X ^ 5 + 5 * C W.b₄ * X ^ 4 + 10 * C W.b₆ * X ^ 3 + 10 * C W.b₈ * X ^ 2 +
-      C (W.b₂ * W.b₈ - W.b₄ * W.b₆) * X + C (W.b₄ * W.b₈ - W.b₆ ^ 2) :=
+    C 2 * X ^ 6 + C W.b₂ * X ^ 5 + C (5 * W.b₄) * X ^ 4 + C (10 * W.b₆) * X ^ 3
+      + C (10 * W.b₈) * X ^ 2 + C (W.b₂ * W.b₈ - W.b₄ * W.b₆) * X + C (W.b₄ * W.b₈ - W.b₆ ^ 2) :=
   preNormEDS'_four ..
 
 lemma divisionPolynomial'_odd (m : ℕ) : W.divisionPolynomial' (2 * (m + 2) + 1) =
