@@ -570,7 +570,8 @@ theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻�
     Subtype.coe_preimage_self, Set.univ_inter]
 #align set.range_restrict_preimage Set.range_restrictPreimage
 
-theorem image_restrictPreimage : t.restrictPreimage f '' (Subtype.val ⁻¹' s) = Subtype.val ⁻¹' (f '' s) := by
+theorem image_restrictPreimage :
+    t.restrictPreimage f '' (Subtype.val ⁻¹' s) = Subtype.val ⁻¹' (f '' s) := by
   delta Set.restrictPreimage
   rw [← preimage_image_eq  (_ '' (_ ⁻¹' s)) (Subtype.coe_injective), ← image_comp,
     MapsTo.restrict_commutes, image_comp, image_preimage_eq_inter_range, Subtype.range_coe,
