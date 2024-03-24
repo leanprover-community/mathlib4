@@ -705,7 +705,7 @@ lemma IsUnit.exists_right_inv (h : IsUnit a) : ∃ b, a * b = 1 := by
 #align is_add_unit.exists_neg IsAddUnit.exists_neg
 
 @[to_additive IsAddUnit.exists_neg']
-lemma IsUnit.exists_left_inv [Monoid M] {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
+lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
   rcases h with ⟨⟨a, b, _, hba⟩, rfl⟩
   exact ⟨b, hba⟩
 #align is_unit.exists_left_inv IsUnit.exists_left_inv
