@@ -37,7 +37,7 @@ example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by apply?
 
 /- info: Try this: exact Nat.mul_dvd_mul_left a w -/
 #guard_msgs (drop info) in
-example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
+example (_ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
 
 -- Could be any number of results (`Int.one`, `Int.zero`, etc)
 #guard_msgs (drop info) in
@@ -167,7 +167,7 @@ axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 #guard_msgs in
 example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by apply?
 
-/-- info: Try this: exact List.join L -/
+/-- info: Try this: exact L.join -/
 #guard_msgs in
 example (L _M : List (List ℕ)) : List ℕ := by apply? using L
 

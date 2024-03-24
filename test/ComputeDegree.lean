@@ -78,7 +78,7 @@ example : natDegree (X + X ^ 2 : ℕ[X]) = 0 := by compute_degree!
 
 /--
 error: 'compute_degree' inapplicable. The goal
-  natDegree X ≠ 0
+  X.natDegree ≠ 0
 is expected to be '≤' or '='.
 -/
 #guard_msgs in
