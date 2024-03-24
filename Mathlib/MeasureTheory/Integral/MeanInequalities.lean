@@ -233,20 +233,20 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
           = ∫⁻ a, f i₀ a ^ p i₀ * ∏ i in s, f i a ^ p i ∂μ := by simp [hi₀]
         _ = ∫⁻ a, f i₀ a ^ p i₀ * (∏ i in s, f i a ^ q i) ^ (1 - p i₀) ∂μ := by
             simp [← ENNReal.prod_rpow_of_nonneg hpi₀, ← ENNReal.rpow_mul,
-              div_mul_cancel (h := h2pi₀)]
+              div_mul_cancel₀ (h := h2pi₀)]
         _ ≤ (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * (∫⁻ a, ∏ i in s, f i a ^ q i ∂μ) ^ (1 - p i₀) := by
             apply ENNReal.lintegral_mul_norm_pow_le
             · exact hf i₀ <| mem_insert_self ..
             · exact s.aemeasurable_prod fun i hi ↦ (hf i <| mem_insert_of_mem hi).pow_const _
             · exact h2p i₀ <| mem_insert_self ..
             · exact hpi₀
-            · apply add_sub_cancel'_right
+            · apply add_sub_cancel
         _ ≤ (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * (∏ i in s, (∫⁻ a, f i a ∂μ) ^ q i) ^ (1 - p i₀) := by
             gcongr -- behavior of gcongr is heartbeat-dependent, which makes code really fragile...
             exact ih (fun i hi ↦ hf i <| mem_insert_of_mem hi) hq h2q
         _ = (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
             simp [← ENNReal.prod_rpow_of_nonneg hpi₀, ← ENNReal.rpow_mul,
-              div_mul_cancel (h := h2pi₀)]
+              div_mul_cancel₀ (h := h2pi₀)]
         _ = ∏ i in insert i₀ s, (∫⁻ a, f i a ∂μ) ^ p i := by simp [hi₀]
 
 /-- A version of Hölder with multiple arguments, one of which plays a distinguished role. -/
@@ -381,7 +381,7 @@ theorem lintegral_rpow_add_le_add_snorm_mul_lintegral_rpow_add {p q : ℝ}
         exact le_top
       refine' le_of_eq _
       nth_rw 2 [← ENNReal.rpow_one ((f + g) a)]
-      rw [← ENNReal.rpow_add _ _ h_zero h_top, add_sub_cancel'_right]
+      rw [← ENNReal.rpow_add _ _ h_zero h_top, add_sub_cancel]
     _ = (∫⁻ a : α, f a * (f + g) a ^ (p - 1) ∂μ) + ∫⁻ a : α, g a * (f + g) a ^ (p - 1) ∂μ := by
       have h_add_m : AEMeasurable (fun a : α => (f + g) a ^ (p - 1 : ℝ)) μ :=
         (hf.add hg).pow_const _

@@ -44,7 +44,7 @@ theorem precoherent : Precoherent D where
       infer_instance
     · simpa using congrArg ((fun f ↦ f ≫ e.counit.app _) ∘ e.functor.map) (h' b)
 
-instance [EssentiallySmall C] [Precoherent C] :
+instance [EssentiallySmall C] :
     Precoherent (SmallModel C) := (equivSmallModel C).precoherent
 
 /--
@@ -124,7 +124,7 @@ theorem preregular : Preregular D where
       e.functor.map i' ≫ e.counit.app _, ?_⟩
     simpa using congrArg ((fun f ↦ f ≫ e.counit.app _) ∘ e.functor.map) w
 
-instance [EssentiallySmall C] [Preregular C] :
+instance [EssentiallySmall C] :
     Preregular (SmallModel C) := (equivSmallModel C).preregular
 
 /--
