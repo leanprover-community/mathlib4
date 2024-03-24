@@ -1171,7 +1171,6 @@ instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
 @[to_additive "The quotient of an `AddSemigroup` by an additive congruence relation is
 an `AddSemigroup`."]
 instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient :=
-  fast_instance%
   Function.Surjective.semigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl
 #align con.semigroup Con.semigroup
 #align add_con.add_semigroup AddCon.addSemigroup
@@ -1180,7 +1179,6 @@ instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient 
 @[to_additive "The quotient of an `AddCommSemigroup` by an additive congruence relation is
 an `AddCommSemigroup`."]
 instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
-  fast_instance%
   Function.Surjective.commSemigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl
 #align con.comm_semigroup Con.commSemigroup
 #align add_con.add_comm_semigroup AddCon.addCommSemigroup
@@ -1189,7 +1187,6 @@ instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup
 @[to_additive "The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`."]
 instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
-  fast_instance%
   Function.Surjective.monoid
     _ Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) fun _ _ => rfl
 #align con.monoid Con.monoid
@@ -1199,7 +1196,6 @@ instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
 @[to_additive "The quotient of an `AddCommMonoid` by an additive congruence
 relation is an `AddCommMonoid`."]
 instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient :=
-  fast_instance%
   Function.Surjective.commMonoid
     _ Quotient.surjective_Quotient_mk'' rfl
       (fun _ _ => rfl) fun _ _ => rfl
