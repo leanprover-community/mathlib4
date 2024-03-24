@@ -91,7 +91,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
         eq_add_neg_iff_add_eq, *]
     · exact (by positivity : 0 < a ^ n + b ^ n).not_lt <| habc.trans_lt <| hn.pow_neg hc
     · refine' h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
-        (Int.natCast_inj1 _)
+        (Int.natCast_inj.1 _)
       push_cast
       simp only [abs_of_pos, habc, *]
   tfae_have 2 → 3

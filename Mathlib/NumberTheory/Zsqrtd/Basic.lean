@@ -584,7 +584,7 @@ theorem norm_eq_one_iff {x : ℤ√d} : x.norm.natAbs = 1 ↔ IsUnit x :=
       (le_total 0 (norm x)).casesOn
         (fun hx =>
           ⟨star x, by
-            rwa [← Int.natCast_inj Int.natAbs_of_nonneg hx, ← @Int.cast_inj (ℤ√d) _ _,
+            rwa [← Int.natCast_inj, Int.natAbs_of_nonneg hx, ← @Int.cast_inj (ℤ√d) _ _,
               norm_eq_mul_conj, eq_comm] at h⟩)
         fun hx =>
           ⟨-star x, by
