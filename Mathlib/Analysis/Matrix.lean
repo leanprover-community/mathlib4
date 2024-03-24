@@ -286,7 +286,7 @@ alias linfty_op_nnnorm_def :=
   linfty_opNNNorm_def -- deprecated on 2024-02-02
 
 @[simp, nolint simpNF] -- Porting note: linter times out
-theorem linfty_opNNNorm_col (v : m → α) : ‖col v‖₊ = ‖v‖₊ := by
+theorem linfty_opNNNorm_col {ι : Type*} [Unique ι] (v : m → α) : ‖col (ι := ι) v‖₊ = ‖v‖₊ := by
   rw [linfty_opNNNorm_def, Pi.nnnorm_def]
   simp
 #align matrix.linfty_op_nnnorm_col Matrix.linfty_opNNNorm_col
@@ -296,7 +296,7 @@ alias linfty_op_nnnorm_col :=
   linfty_opNNNorm_col -- deprecated on 2024-02-02
 
 @[simp]
-theorem linfty_opNorm_col (v : m → α) : ‖col v‖ = ‖v‖ :=
+theorem linfty_opNorm_col {ι : Type*} [Unique ι] (v : m → α) : ‖col (ι := ι) v‖ = ‖v‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_col v
 #align matrix.linfty_op_norm_col Matrix.linfty_opNorm_col
 
@@ -382,8 +382,8 @@ alias linfty_op_norm_mul :=
   linfty_opNorm_mul -- deprecated on 2024-02-02
 
 theorem linfty_opNNNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖₊ ≤ ‖A‖₊ * ‖v‖₊ := by
-  rw [← linfty_opNNNorm_col (A *ᵥ v), ← linfty_opNNNorm_col v]
-  exact linfty_opNNNorm_mul A (col v)
+  rw [← linfty_opNNNorm_col (ι := Fin 1) (A *ᵥ v), ← linfty_opNNNorm_col v (ι := Fin 1)]
+  exact linfty_opNNNorm_mul A (col (ι := Fin 1) v)
 #align matrix.linfty_op_nnnorm_mul_vec Matrix.linfty_opNNNorm_mulVec
 
 @[deprecated]
@@ -651,13 +651,15 @@ theorem frobenius_nnnorm_row {ι : Type*} [Unique ι] (v : m → α) :
 #align matrix.frobenius_nnnorm_row Matrix.frobenius_nnnorm_row
 
 @[simp]
-theorem frobenius_norm_col (v : n → α) : ‖col v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
+theorem frobenius_norm_col {ι : Type*} [Unique ι] (v : n → α) :
+    ‖col (ι := ι) v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
   simp_rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
   simp only [col_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
 #align matrix.frobenius_norm_col Matrix.frobenius_norm_col
 
 @[simp]
-theorem frobenius_nnnorm_col (v : n → α) : ‖col v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
+theorem frobenius_nnnorm_col {ι : Type*} [Unique ι]  (v : n → α) :
+    ‖col (ι := ι) v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
   Subtype.ext <| frobenius_norm_col v
 #align matrix.frobenius_nnnorm_col Matrix.frobenius_nnnorm_col
 
