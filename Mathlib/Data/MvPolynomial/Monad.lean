@@ -167,9 +167,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (f : σ → MvPolynomial τ R)
 
-@[simp]
-theorem bind₁_C_right (f : σ → MvPolynomial τ R) (x) : bind₁ f (C x) = C x := by
-  simp [bind₁, algebraMap_eq]
+theorem bind₁_C_right (f : σ → MvPolynomial τ R) (x) : bind₁ f (C x) = C x := algHom_C _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.bind₁_C_right MvPolynomial.bind₁_C_right
 
