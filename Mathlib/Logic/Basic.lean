@@ -1069,11 +1069,13 @@ theorem BEx.imp_left (H : ∀ x, p x → q x) : (∃ (x : _) (_ : p x), r x) →
   | ⟨x, hp, hr⟩ => ⟨x, H _ hp, hr⟩
 #align bex.imp_left BEx.imp_left
 
-theorem forall_mem_of_forall (h : ∀ x, p x) (x) : p x := h x
-#align ball_of_forall forall_mem_of_forall
+@[deprecated id] -- 2024-03-23
+theorem ball_of_forall (h : ∀ x, p x) (x) : p x := h x
+#align ball_of_forall ball_of_forall
 
-theorem forall_of_forall_mem (H : ∀ x, p x) (h : ∀ x, p x → q x) (x) : q x := h x <| H x
-#align forall_of_ball forall_of_forall_mem
+@[deprecated forall_imp] -- 2024-03-23
+theorem forall_of_ball (H : ∀ x, p x) (h : ∀ x, p x → q x) (x) : q x := h x <| H x
+#align forall_of_ball forall_of_ball
 
 theorem exists_mem_of_exists (H : ∀ x, p x) : (∃ x, q x) → ∃ (x : _) (_ : p x), q x
   | ⟨x, hq⟩ => ⟨x, H x, hq⟩
@@ -1087,8 +1089,6 @@ theorem exists₂_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by si
 #align bex_imp_distrib exists₂_imp
 
 -- 2024-03-23
-@[deprecated] alias forall_of_ball := forall_of_forall_mem
-@[deprecated] alias ball_of_forall := forall_mem_of_forall
 @[deprecated] alias bex_of_exists := exists_mem_of_exists
 @[deprecated] alias exists_of_bex := exists_of_exists_mem
 @[deprecated] alias bex_imp := exists₂_imp
@@ -1096,19 +1096,19 @@ theorem exists₂_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by si
 theorem not_exists_mem : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := exists₂_imp
 #align not_bex not_exists_mem
 
-theorem not_forall_mem_of_exists_mem_not : (∃ x h, ¬P x h) → ¬∀ x h, P x h
+theorem not_forall₂_of_exists₂_not : (∃ x h, ¬P x h) → ¬∀ x h, P x h
   | ⟨x, h, hp⟩, al => hp <| al x h
-#align not_ball_of_bex_not not_forall_mem_of_exists_mem_not
+#align not_ball_of_bex_not not_forall₂_of_exists₂_not
 
 -- See Note [decidable namespace]
-protected theorem Decidable.not_forall_mem [Decidable (∃ x h, ¬P x h)] [∀ x h, Decidable (P x h)] :
+protected theorem Decidable.not_forall₂ [Decidable (∃ x h, ¬P x h)] [∀ x h, Decidable (P x h)] :
     (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h :=
   ⟨Not.decidable_imp_symm fun nx x h ↦ nx.decidable_imp_symm
-    fun h' ↦ ⟨x, h, h'⟩, not_forall_mem_of_exists_mem_not⟩
-#align decidable.not_ball Decidable.not_forall_mem
+    fun h' ↦ ⟨x, h, h'⟩, not_forall₂_of_exists₂_not⟩
+#align decidable.not_ball Decidable.not_forall₂
 
-theorem not_forall_mem : (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h := Decidable.not_forall_mem
-#align not_ball not_forall_mem
+theorem not_forall₂ : (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h := Decidable.not_forall₂
+#align not_ball not_forall₂
 
 theorem forall_mem_true_iff (p : α → Prop) : (∀ x, p x → True) ↔ True :=
   iff_true_intro fun _ _ ↦ trivial
@@ -1133,9 +1133,9 @@ theorem exists_mem_or_left :
 #align bex_or_left_distrib exists_mem_or_left
 
 -- 2023-03-23
-@[deprecated] alias not_ball_of_bex_not := not_forall_mem_of_exists_mem_not
-@[deprecated] alias Decidable.not_ball := Decidable.not_forall_mem
-@[deprecated] alias not_ball := not_forall_mem
+@[deprecated] alias not_ball_of_bex_not := not_forall₂_of_exists₂_not
+@[deprecated] alias Decidable.not_ball := Decidable.not_forall₂
+@[deprecated] alias not_ball := not_forall₂
 @[deprecated] alias ball_true_iff := forall_mem_true_iff
 @[deprecated] alias ball_and := forall_mem_and
 @[deprecated] alias not_bex := not_exists_mem
