@@ -114,7 +114,7 @@ theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
         _ _)]
   simp_rw [ofReal_one, ofReal_zero, sub_zero, one_mul]
   rw [QuotientAddGroup.mk_zero, fourier_eval_zero, one_mul, ← ofReal_sub, bernoulliFun_eval_one,
-    add_sub_cancel']
+    add_sub_cancel_left]
   congr 2
   · split_ifs <;> simp only [ofReal_one, ofReal_zero, one_mul]
   · simp_rw [ofReal_mul, ofReal_nat_cast, fourierCoeffOn.const_mul]
@@ -220,7 +220,7 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
       ((summable_bernoulli_fourier hk).congr fun n => (step1 n).symm) y
   simp_rw [step1] at step2
   convert step2.mul_left (-(2 * ↑π * I) ^ k / (k ! : ℂ)) using 2 with n
-  rw [smul_eq_mul, ← mul_assoc, mul_div, mul_neg, div_mul_cancel, neg_neg, mul_pow _ (n : ℂ),
+  rw [smul_eq_mul, ← mul_assoc, mul_div, mul_neg, div_mul_cancel₀, neg_neg, mul_pow _ (n : ℂ),
     ← div_div, div_self]
   · rw [Ne.def, pow_eq_zero_iff', not_and_or]
     exact Or.inl two_pi_I_ne_zero

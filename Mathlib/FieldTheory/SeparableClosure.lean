@@ -68,7 +68,6 @@ noncomputable section
 universe u v w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
-
 variable (K : Type w) [Field K] [Algebra F K]
 
 section separableClosure

@@ -42,7 +42,6 @@ open scoped BigOperators
 open Finset Submodule FiniteDimensional
 
 variable (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [IsWellOrder ι (· < ·)]
 
 attribute [local instance] IsWellOrder.toHasWellFounded
@@ -100,7 +99,7 @@ theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
   rw [Finset.sum_eq_single_of_mem a (Finset.mem_Iio.mpr h₀)]
   · by_cases h : gramSchmidt 𝕜 f a = 0
     · simp only [h, inner_zero_left, zero_div, zero_mul, sub_zero]
-    · rw [IsROrC.ofReal_pow, ← inner_self_eq_norm_sq_to_K, div_mul_cancel, sub_self]
+    · rw [IsROrC.ofReal_pow, ← inner_self_eq_norm_sq_to_K, div_mul_cancel₀, sub_self]
       rwa [inner_self_ne_zero]
   intro i hi hia
   simp only [mul_eq_zero, div_eq_zero_iff, inner_self_eq_zero]

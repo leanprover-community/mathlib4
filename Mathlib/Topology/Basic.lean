@@ -715,7 +715,8 @@ theorem frontier_inter_subset (s t : Set X) :
     frontier (s ∩ t) ⊆ frontier s ∩ closure t ∪ closure s ∩ frontier t := by
   simp only [frontier_eq_closure_inter_closure, compl_inter, closure_union]
   refine' (inter_subset_inter_left _ (closure_inter_subset_inter_closure s t)).trans_eq _
-  simp only [inter_distrib_left, inter_distrib_right, inter_assoc, inter_comm (closure t)]
+  simp only [inter_union_distrib_left, union_inter_distrib_right, inter_assoc,
+    inter_comm (closure t)]
 #align frontier_inter_subset frontier_inter_subset
 
 theorem frontier_union_subset (s t : Set X) :
@@ -1262,7 +1263,7 @@ theorem dense_compl_singleton (x : X) [NeBot (𝓝[≠] x)] : Dense ({x}ᶜ : Se
 
 /-- If `x` is not an isolated point of a topological space, then the closure of `{x}ᶜ` is the whole
 space. -/
--- Porting note: was a `@[simp]` lemma but `simp` can prove it
+-- Porting note (#10618): was a `@[simp]` lemma but `simp` can prove it
 theorem closure_compl_singleton (x : X) [NeBot (𝓝[≠] x)] : closure {x}ᶜ = (univ : Set X) :=
   (dense_compl_singleton x).closure_eq
 #align closure_compl_singleton closure_compl_singleton
@@ -1758,7 +1759,6 @@ theorem tendsto_lift'_closure_nhds (hf : Continuous f) (x : X) :
 section DenseRange
 
 variable {α ι : Type*} (f : α → X) (g : X → Y)
-
 variable {f : α → X} {s : Set X}
 
 /-- A surjective map has dense range. -/
