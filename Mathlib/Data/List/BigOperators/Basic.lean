@@ -23,9 +23,9 @@ variable {ι α M N P M₀ G R : Type*}
 
 namespace List
 
-section Monoid
+section Mul
 
-variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
+variable [Mul M] [One M] {l l₁ l₂ : List M} {a : M}
 
 @[to_additive (attr := simp)]
 theorem prod_nil : ([] : List M).prod = 1 :=
@@ -33,11 +33,27 @@ theorem prod_nil : ([] : List M).prod = 1 :=
 #align list.prod_nil List.prod_nil
 #align list.sum_nil List.sum_nil
 
+end Mul
+
+section MulOneClass
+
+variable [MulOneClass M] {l l₁ l₂ : List M} {a : M}
+
 @[to_additive]
 theorem prod_singleton : [a].prod = a :=
   one_mul a
 #align list.prod_singleton List.prod_singleton
 #align list.sum_singleton List.sum_singleton
+
+@[to_additive (attr := simp)]
+theorem prod_one_cons : (1 :: l).prod = l.prod := by
+  rw [prod, foldl, mul_one]
+
+end MulOneClass
+
+section Monoid
+
+variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 
 @[to_additive (attr := simp)]
 theorem prod_cons : (a :: l).prod = a * l.prod :=
@@ -143,10 +159,12 @@ theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α
 #align list.prod_map_mul List.prod_map_mul
 #align list.sum_map_add List.sum_map_add
 
-@[to_additive]
-theorem prod_map_one {α : Type*} [CommMonoid α] {l : List ι} :
+@[to_additive (attr := simp)]
+theorem prod_map_one {α : Type*} [MulOneClass α] {l : List ι} :
     (l.map fun _ => (1 : α)).prod = 1 := by
-  simp
+  induction l with
+  | nil => rfl
+  | cons hd tl ih => rw [map_cons, prod_one_cons, ih]
 
 @[simp]
 theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
