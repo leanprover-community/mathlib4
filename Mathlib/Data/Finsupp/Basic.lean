@@ -1649,12 +1649,12 @@ instance noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Ty
       Finsupp.ext fun i => (smul_eq_zero.mp (DFunLike.ext_iff.mp h i)).resolve_left hc⟩
 #align finsupp.no_zero_smul_divisors Finsupp.noZeroSMulDivisors
 
-section DistribMulActionHom
+section DistribMulActionSemiHom
 
 variable [Semiring R]
 variable [AddCommMonoid M] [AddCommMonoid N] [DistribMulAction R M] [DistribMulAction R N]
 
-/-- `Finsupp.single` as a `DistribMulActionHom`.
+/-- `Finsupp.single` as a `DistribMulActionSemiHom`.
 
 See also `Finsupp.lsingle` for the version as a linear map. -/
 def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
@@ -1680,7 +1680,7 @@ theorem distribMulActionHom_ext' {f g : (α →₀ M) →+[R] N}
   distribMulActionHom_ext fun a => DistribMulActionHom.congr_fun (h a)
 #align finsupp.distrib_mul_action_hom_ext' Finsupp.distribMulActionHom_ext'
 
-end DistribMulActionHom
+end DistribMulActionSemiHom
 
 section
 

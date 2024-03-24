@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Data.Finsupp.Basic
 import Mathlib.LinearAlgebra.Finsupp
 
 #align_import algebra.monoid_algebra.basic from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
@@ -701,7 +702,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
         -- Porting note: `dsimp` is required for beta reduction.
         dsimp only []
         rw [Finsupp.smul_sum, sum_smul_index']
-        · simp_rw [smul_assoc]
+        · simp_rw [smul_assoc, MonoidHom.id_apply]
         · intro m
           exact zero_smul k (f m)
       map_mul' := fun a₁ a₂ => by

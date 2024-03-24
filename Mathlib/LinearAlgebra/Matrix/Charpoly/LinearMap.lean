@@ -141,7 +141,7 @@ theorem Matrix.Represents.zero : (0 : Matrix ι ι R).Represents b 0 := by
 theorem Matrix.Represents.smul {A : Matrix ι ι R} {f : Module.End R M} (h : A.Represents b f)
     (r : R) : (r • A).Represents b (r • f) := by
   delta Matrix.Represents at h ⊢
-  rw [SMulHomClass.map_smul, SMulHomClass.map_smul, h]
+  rw [_root_.map_smul, _root_.map_smul, h]
 #align matrix.represents.smul Matrix.Represents.smul
 
 theorem Matrix.Represents.algebraMap (r : R) :

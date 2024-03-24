@@ -657,7 +657,7 @@ variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Modu
 def toQuadraticForm (B : BilinForm R M) : QuadraticForm R M where
   toFun x := B x x
   toFun_smul a x := by
-    simp only [SMulHomClass.map_smul, LinearMap.smul_apply, smul_eq_mul, mul_assoc]
+    simp only [_root_.map_smul, LinearMap.smul_apply, smul_eq_mul, mul_assoc]
   exists_companion' := ⟨B + B.flip,
     fun x y => by simp only [map_add, LinearMap.add_apply, LinearMap.flip_apply]; abel⟩
 #align bilin_form.to_quadratic_form LinearMap.BilinForm.toQuadraticForm
