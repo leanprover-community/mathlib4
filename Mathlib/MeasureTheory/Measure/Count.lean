@@ -183,7 +183,7 @@ theorem count_injective_image [MeasurableSingletonClass α] [MeasurableSingleton
   rw [count_apply_infinite hs]
 #align measure_theory.measure.count_injective_image MeasureTheory.Measure.count_injective_image
 
-instance count.isFiniteMeasure [Finite α] [MeasurableSpace α] :
+instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
   ⟨by
     cases nonempty_fintype α

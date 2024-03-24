@@ -247,7 +247,7 @@ variable [DecidableEq α]
   rw [birkhoffSet_inf, OrderIso.coe_toOrderEmbedding]
   simpa using OrderIso.map_inf _ _ _
 
-@[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
+@[simp] lemma birkhoffSet_apply (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by
   simp [birkhoffSet]; convert rfl
 

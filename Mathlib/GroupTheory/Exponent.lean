@@ -429,10 +429,10 @@ end Submonoid
 
 section LeftCancelMonoid
 
-variable [LeftCancelMonoid G]
+variable [LeftCancelMonoid G] [Finite G]
 
 @[to_additive]
-theorem ExponentExists.of_finite [Finite G] : ExponentExists G := by
+theorem ExponentExists.of_finite : ExponentExists G := by
   let _inst := Fintype.ofFinite G
   simp only [Monoid.ExponentExists]
   refine ⟨(Finset.univ : Finset G).lcm orderOf, ?_, fun g => ?_⟩
@@ -441,14 +441,13 @@ theorem ExponentExists.of_finite [Finite G] : ExponentExists G := by
     exact order_dvd_exponent g
 
 @[to_additive]
-theorem exponent_ne_zero_of_finite [Finite G] : exponent G ≠ 0 :=
+theorem exponent_ne_zero_of_finite : exponent G ≠ 0 :=
   ExponentExists.of_finite.exponent_ne_zero
 #align monoid.exponent_ne_zero_of_finite Monoid.exponent_ne_zero_of_finite
 #align add_monoid.exponent_ne_zero_of_finite AddMonoid.exponent_ne_zero_of_finite
 
 @[to_additive AddMonoid.one_lt_exponent]
-lemma one_lt_exponent [LeftCancelMonoid G] [Finite G] [Nontrivial G] :
-    1 < Monoid.exponent G := by
+lemma one_lt_exponent [Nontrivial G] : 1 < Monoid.exponent G := by
   rw [Nat.one_lt_iff_ne_zero_and_ne_one]
   exact ⟨exponent_ne_zero_of_finite, mt exp_eq_one_iff.mp (not_subsingleton G)⟩
 

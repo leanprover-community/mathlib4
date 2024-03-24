@@ -551,7 +551,7 @@ theorem IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'}
 
 /-- The sum over all values of the trivial multiplicative character on a finite ring is
 the cardinality of its unit group. -/
-theorem sum_one_eq_card_units [Fintype R] [DecidableEq R] :
+theorem sum_one_eq_card_units [DecidableEq R] :
     (∑ a, (1 : MulChar R R') a) = Fintype.card Rˣ := by
   calc
     (∑ a, (1 : MulChar R R') a) = ∑ a : R, if IsUnit a then 1 else 0 :=

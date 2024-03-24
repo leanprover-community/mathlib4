@@ -125,12 +125,12 @@ instance : FunLike (α -o β) α β where
 
 instance : HasUncurry (α ->> β) α β :=
   ⟨fun f x => f x⟩
-instance [Obj β] [HasUncurry β γ δ] : HasUncurry (α ->> β) (α × γ) δ :=
+instance [HasUncurry β γ δ] : HasUncurry (α ->> β) (α × γ) δ :=
   ⟨fun f p ↦ (↿(f p.1)) p.2⟩
 
 instance : HasUncurry (α -o β) α β :=
   ⟨fun f x => f x⟩
-instance [Obj β] [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
+instance [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
   ⟨fun f p ↦ (↿(f p.1)) p.2⟩
 
 
