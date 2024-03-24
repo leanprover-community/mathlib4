@@ -27,6 +27,7 @@ instance instNontrivialInt : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 @[simp] lemma ofNat_eq_natCast : Int.ofNat n = n := rfl
 
 @[norm_cast] lemma natCast_inj (m n : ℕ) : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
+#align int.coe_nat_inj' Int.natCast_inj
 
 @[simp, norm_cast] lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 
@@ -42,9 +43,6 @@ protected lemma natCast_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m 
 
 #align int.coe_nat_le Int.ofNat_le
 #align int.coe_nat_lt Int.ofNat_lt
-
-lemma natCast_inj : (↑m : ℤ) = ↑n ↔ m = n := Int.ofNat_inj
-#align int.coe_nat_inj' Int.natCast_inj
 
 lemma natCast_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
 #align int.coe_nat_nonneg Int.natCast_nonneg
