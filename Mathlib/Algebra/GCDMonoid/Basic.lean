@@ -1421,6 +1421,16 @@ theorem normalize_eq_one {a : G₀} (h0 : a ≠ 0) : normalize a = 1 := by simp 
 
 end CommGroupWithZero
 
+theorem Associated.gcd [CancelCommMonoidWithZero α] [GCDMonoid α]
+    {a₁ a₂ b₁ b₂ : α} (ha : Associated a₁ a₂) (hb : Associated b₁ b₂) :
+    Associated (gcd a₁ b₁) (gcd a₂ b₂) :=
+  associated_of_dvd_dvd (gcd_dvd_gcd ha.dvd hb.dvd) (gcd_dvd_gcd ha.symm.dvd hb.symm.dvd)
+
+theorem Associated.lcm [CancelCommMonoidWithZero α] [GCDMonoid α]
+    {a₁ a₂ b₁ b₂ : α} (ha : Associated a₁ a₂) (hb : Associated b₁ b₂) :
+    Associated (lcm a₁ b₁) (lcm a₂ b₂) :=
+  associated_of_dvd_dvd (lcm_dvd_lcm ha.dvd hb.dvd) (lcm_dvd_lcm ha.symm.dvd hb.symm.dvd)
+
 namespace Associates
 
 noncomputable instance [CancelCommMonoidWithZero α] [GCDMonoid α] : GCDMonoid (Associates α) where
