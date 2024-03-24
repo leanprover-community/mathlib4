@@ -532,7 +532,7 @@ def map : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
 
 theorem map_range_eq_span_tprod :
     LinearMap.range (map f) =
-      Submodule.span R { t | ∃ (m : Π i, s i), tprod R (fun i ↦ f i (m i)) = t } := by
+      Submodule.span R {t | ∃ (m : Π i, s i), tprod R (fun i ↦ f i (m i)) = t} := by
   rw [← Submodule.map_top, ← span_tprod_eq_top, Submodule.map_span, ← Set.range_comp]
   apply congrArg; ext x
   simp only [Set.mem_range, comp_apply, map_tprod, Set.mem_setOf_eq]

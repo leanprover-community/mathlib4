@@ -267,17 +267,17 @@ linear equivalence between `ContinuousMultilinearMap 𝕜 E F` and `(⨂[𝕜] i
 an isometric linear equivalence; in particular, it is a continuous linear equivalence.
 -/
 noncomputable def liftIsometry  : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F :=
-  {liftEquiv 𝕜 E F with
-   norm_map' := by
-     intro f
-     refine le_antisymm ?_ ?_
-     · simp only [liftEquiv, lift_symm, LinearEquiv.coe_mk]
-       exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) _
-     · conv_lhs => rw [← (liftEquiv 𝕜 E F).left_inv f]
-       simp only [liftEquiv, lift_symm, AddHom.toFun_eq_coe, AddHom.coe_mk,
-         LinearEquiv.invFun_eq_symm, LinearEquiv.coe_symm_mk, LinearMap.mkContinuous_coe,
-         LinearEquiv.coe_mk]
-       exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg _) _}
+  { liftEquiv 𝕜 E F with
+    norm_map' := by
+      intro f
+      refine le_antisymm ?_ ?_
+      · simp only [liftEquiv, lift_symm, LinearEquiv.coe_mk]
+        exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) _
+      · conv_lhs => rw [← (liftEquiv 𝕜 E F).left_inv f]
+        simp only [liftEquiv, lift_symm, AddHom.toFun_eq_coe, AddHom.coe_mk,
+          LinearEquiv.invFun_eq_symm, LinearEquiv.coe_symm_mk, LinearMap.mkContinuous_coe,
+          LinearEquiv.coe_mk]
+        exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg _) _ }
 
 variable {𝕜 E F}
 
@@ -450,7 +450,7 @@ noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) 
   MultilinearMap.mkContinuous
   { toFun := mapL
     map_smul':= fun _ _ _ _ ↦ PiTensorProduct.mapL_smul _ _ _ _
-    map_add' := fun _ _ _ _ ↦ PiTensorProduct.mapL_add _ _ _ _}
+    map_add' := fun _ _ _ _ ↦ PiTensorProduct.mapL_add _ _ _ _ }
   1 (fun f ↦ by rw [one_mul]; exact mapL_opNorm f)
 
 variable {𝕜 E E'}
