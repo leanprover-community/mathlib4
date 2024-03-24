@@ -16,7 +16,7 @@ set_option autoImplicit true
 namespace Array
 
 theorem extract_len_aux {a : Array α} :
-  ∀ i s e,
+    ∀ i s e,
    (s + i ≤ a.size) →
    List.length (Array.extract.loop a i s e).data = i + e.size:= by
   intro i
