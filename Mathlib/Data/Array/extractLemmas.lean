@@ -40,7 +40,7 @@ theorem extract_len_aux {a : Array α} :
   simp_arith
 
 theorem extract_loop_len {a : Array α} :
-  ∀ i s e,
+    ∀ i s e,
    (s + i ≤ a.size) →
    (Array.extract.loop a i s e).size = i + e.size:= by
   intro i s e h
