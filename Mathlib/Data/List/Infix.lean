@@ -216,7 +216,7 @@ theorem prefix_iff_eq_take : l₁ <+: l₂ ↔ l₁ = take (length l₁) l₂ :=
     fun e => e.symm ▸ take_prefix _ _⟩
 #align list.prefix_iff_eq_take List.prefix_iff_eq_take
 
-theorem List.prefix_take_iff {x y : List α} {n : ℕ}: x <+: y.take n ↔ x <+: y ∧ x.length ≤ n := by
+theorem prefix_take_iff {x y : List α} {n : ℕ}: x <+: y.take n ↔ x <+: y ∧ x.length ≤ n := by
   constructor
   { intro h; constructor
     exact List.IsPrefix.trans h (List.take_prefix _ _)
@@ -526,12 +526,12 @@ theorem mem_of_mem_suffix (hx : a ∈ l₁) (hl : l₁ <:+ l₂) : a ∈ l₂ :=
   hl.subset hx
 #align list.mem_of_mem_suffix List.mem_of_mem_suffix
 
-theorem List.ne_nil_prefix {x y : List α} (hx : x ≠ []) (h : x <+: y) : y ≠ [] := by
+theorem ne_nil_prefix {x y : List α} (hx : x ≠ []) (h : x <+: y) : y ≠ [] := by
   rintro rfl; apply hx; exact List.prefix_nil.mp h
-theorem List.get_eq_prefix {x y : List α} {n} (hn : n < x.length) (h : x <+: y) :
-    List.get x ⟨n, hn⟩ = List.get y ⟨n, by replace h := h.length_le; omega⟩ := by
+theorem get_eq_prefix {x y : List α} {n} (hn : n < x.length) (h : x <+: y) :
+    x.get ⟨n, hn⟩ = y.get ⟨n, by replace h := h.length_le; omega⟩ := by
   obtain ⟨_, rfl⟩ := h; symm; apply List.get_append
-theorem List.head_eq_prefix {x y : List α} (hx : x ≠ []) (h : x <+: y) :
+theorem head_eq_prefix {x y : List α} (hx : x ≠ []) (h : x <+: y) :
     x.head hx = y.head (ne_nil_prefix hx h) := by
   cases x <;> cases y <;> simp at *; simp at hx
   all_goals {obtain ⟨_, h⟩ := h; injection h}

@@ -395,9 +395,9 @@ theorem cons_eq_append_iff {a b c : List α} {x : α} :
 @[deprecated] alias append_right_cancel := append_cancel_right -- deprecated since 2024-01-18
 #align list.append_right_cancel List.append_cancel_right
 
-@[simp] theorem List.append_left_cancel_nil_left {x y : List α}: x ++ y = x ↔ y = [] := by
+@[simp] theorem append_left_cancel_nil_left {x y : List α}: x ++ y = x ↔ y = [] := by
   constructor <;> intro h; apply List.append_cancel_left (as := x); all_goals simp[h]
-@[simp] theorem List.append_left_cancel_nil_right {x y : List α}: x = x ++ y ↔ y = [] :=
+@[simp] theorem append_left_cancel_nil_right {x y : List α}: x = x ++ y ↔ y = [] :=
   by rw[eq_comm, append_left_cancel_nil_left]
 
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
@@ -490,8 +490,8 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
   (replicate_left_injective a).eq_iff
 #align list.replicate_left_inj List.replicate_left_inj
 
-@[simp] theorem List.head_replicate {n} {a : α} (h : List.replicate n a ≠ []) :
-  List.head _ h = a := by
+@[simp] theorem head_replicate {n} {a : α} (h : List.replicate n a ≠ []) :
+  head _ h = a := by
   cases n <;> simp at *; exfalso; exact h rfl
 /-! ### pure -/
 
@@ -779,7 +779,7 @@ theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?)
 
 /-! ### head(!?) and tail -/
 
-@[simp] theorem List.head_tail (x : List α) (h : x ≠ []) : (x.head h) :: x.tail = x := by
+@[simp] theorem head_tail (x : List α) (h : x ≠ []) : (x.head h) :: x.tail = x := by
   cases x <;> simp at h ⊢
 
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
