@@ -100,12 +100,9 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
 
-theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = s ++ a :: t := by
-  induction' l with b l ih; {cases h}; rcases h with (_ | ⟨_, h⟩)
-  · exact ⟨[], l, rfl⟩
-  · rcases ih h with ⟨s, t, rfl⟩
-    exact ⟨b :: s, t, rfl⟩
-#align list.mem_split List.mem_split
+-- 2024-03-23
+@[deprecated] alias mem_split := append_of_mem
+#align list.mem_split List.append_of_mem
 
 #align list.mem_of_ne_of_mem List.mem_of_ne_of_mem
 
@@ -1750,74 +1747,15 @@ theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: tak
 #align list.take_cons List.take_cons
 
 #align list.take_length List.take_length
-
-theorem take_all_of_le : ∀ {n} {l : List α}, length l ≤ n → take n l = l
-  | 0, [], _ => rfl
-  | 0, a :: l, h => absurd h (not_le_of_gt (zero_lt_succ _))
-  | n + 1, [], _ => rfl
-  | n + 1, a :: l, h => by
-    change a :: take n l = a :: l
-    rw [take_all_of_le (le_of_succ_le_succ h)]
 #align list.take_all_of_le List.take_all_of_le
-
-@[simp]
-theorem take_left : ∀ l₁ l₂ : List α, take (length l₁) (l₁ ++ l₂) = l₁
-  | [], _ => rfl
-  | a :: l₁, l₂ => congr_arg (cons a) (take_left l₁ l₂)
 #align list.take_left List.take_left
-
-theorem take_left' {l₁ l₂ : List α} {n} (h : length l₁ = n) : take n (l₁ ++ l₂) = l₁ := by
-  rw [← h]; apply take_left
 #align list.take_left' List.take_left'
-
-theorem take_take : ∀ (n m) (l : List α), take n (take m l) = take (min n m) l
-  | n, 0, l => by rw [Nat.min_zero, take_zero, take_nil]
-  | 0, m, l => by rw [Nat.zero_min, take_zero, take_zero]
-  | succ n, succ m, nil => by simp only [take_nil]
-  | succ n, succ m, a :: l => by
-    simp only [take, succ_min_succ, take_take n m l]
 #align list.take_take List.take_take
-
-theorem take_replicate (a : α) : ∀ n m : ℕ, take n (replicate m a) = replicate (min n m) a
-  | n, 0 => by simp
-  | 0, m => by simp
-  | succ n, succ m => by simp [succ_min_succ, take_replicate]
 #align list.take_replicate List.take_replicate
-
-theorem map_take {α β : Type*} (f : α → β) :
-    ∀ (L : List α) (i : ℕ), (L.take i).map f = (L.map f).take i
-  | [], i => by simp
-  | _, 0 => by simp
-  | h :: t, n + 1 => by dsimp; rw [map_take f t n]
 #align list.map_take List.map_take
-
-/-- Taking the first `n` elements in `l₁ ++ l₂` is the same as appending the first `n` elements
-of `l₁` to the first `n - l₁.length` elements of `l₂`. -/
-theorem take_append_eq_append_take {l₁ l₂ : List α} {n : ℕ} :
-    take n (l₁ ++ l₂) = take n l₁ ++ take (n - l₁.length) l₂ := by
-  induction l₁ generalizing n; {simp}
-  cases n <;> simp [*]
 #align list.take_append_eq_append_take List.take_append_eq_append_take
-
-theorem take_append_of_le_length {l₁ l₂ : List α} {n : ℕ} (h : n ≤ l₁.length) :
-    (l₁ ++ l₂).take n = l₁.take n := by
-  simp [take_append_eq_append_take, Nat.sub_eq_zero_iff_le.mpr h]
 #align list.take_append_of_le_length List.take_append_of_le_length
-
-/-- Taking the first `l₁.length + i` elements in `l₁ ++ l₂` is the same as appending the first
-`i` elements of `l₂` to `l₁`. -/
-theorem take_append {l₁ l₂ : List α} (i : ℕ) :
-    take (l₁.length + i) (l₁ ++ l₂) = l₁ ++ take i l₂ := by
-  rw [take_append_eq_append_take, take_all_of_le (by omega), append_cancel_left_eq]
-  congr
-  omega
 #align list.take_append List.take_append
-
-/-- The `i`-th element of a list coincides with the `i`-th element of any of its prefixes of
-length `> i`. Version designed to rewrite from the big list to the small list. -/
-theorem get_take (L : List α) {i j : ℕ} (hi : i < L.length) (hj : i < j) :
-    get L ⟨i, hi⟩ = get (L.take j) ⟨i, length_take .. ▸ lt_min hj hi⟩ :=
-  get_of_eq (take_append_drop j L).symm _ ▸ get_append ..
 
 set_option linter.deprecated false in
 /-- The `i`-th element of a list coincides with the `i`-th element of any of its prefixes of
@@ -1828,15 +1766,6 @@ theorem nthLe_take (L : List α) {i j : ℕ} (hi : i < L.length) (hj : i < j) :
   get_take _ hi hj
 #align list.nth_le_take List.nthLe_take
 
-/-- The `i`-th element of a list coincides with the `i`-th element of any of its prefixes of
-length `> i`. Version designed to rewrite from the small list to the big list. -/
-theorem get_take' (L : List α) {j i} :
-    get (L.take j) i = get L ⟨i.1, lt_of_lt_of_le i.2 (by simp only [length_take]; omega)⟩ := by
-  let ⟨i, hi⟩ := i
-  simp only [length_take] at hi
-  rw [get_take L]
-  dsimp
-  omega
 set_option linter.deprecated false in
 /-- The `i`-th element of a list coincides with the `i`-th element of any of its prefixes of
 length `> i`. Version designed to rewrite from the small list to the big list. -/
@@ -1846,106 +1775,18 @@ theorem nthLe_take' (L : List α) {i j : ℕ} (hi : i < (L.take j).length) :
   get_take' _
 #align list.nth_le_take' List.nthLe_take'
 
-theorem get?_take {l : List α} {n m : ℕ} (h : m < n) : (l.take n).get? m = l.get? m := by
-  induction' n with n hn generalizing l m
-  · simp only [Nat.zero_eq] at h
-    exact absurd h (not_lt_of_le m.zero_le)
-  · cases' l with hd tl
-    · simp only [take_nil]
-    · cases m
-      · simp only [get?, take]
-      · simpa only using hn (Nat.lt_of_succ_lt_succ h)
 #align list.nth_take List.get?_take
-
-@[simp]
-theorem nth_take_of_succ {l : List α} {n : ℕ} : (l.take (n + 1)).get? n = l.get? n :=
-  get?_take (Nat.lt_succ_self n)
 #align list.nth_take_of_succ List.nth_take_of_succ
-
-theorem take_succ {l : List α} {n : ℕ} : l.take (n + 1) = l.take n ++ (l.get? n).toList := by
-  induction' l with hd tl hl generalizing n
-  · simp only [Option.toList, get?, take_nil, append_nil]
-  · cases n
-    · simp only [Option.toList, get?, eq_self_iff_true, and_self_iff, take, nil_append]
-    · simp only [hl, cons_append, get?, eq_self_iff_true, and_self_iff, take]
 #align list.take_succ List.take_succ
-
-@[simp]
-theorem take_eq_nil_iff {l : List α} {k : ℕ} : l.take k = [] ↔ l = [] ∨ k = 0 := by
-  cases l <;> cases k <;> simp [Nat.succ_ne_zero]
 #align list.take_eq_nil_iff List.take_eq_nil_iff
-
-theorem take_eq_take :
-    ∀ {l : List α} {m n : ℕ}, l.take m = l.take n ↔ min m l.length = min n l.length
-  | [], m, n => by simp
-  | _ :: xs, 0, 0 => by simp
-  | x :: xs, m + 1, 0 => by simp; omega
-  | x :: xs, 0, n + 1 => by simp; omega
-  | x :: xs, m + 1, n + 1 => by simp [Nat.succ_min_succ, take_eq_take]
 #align list.take_eq_take List.take_eq_take
-
-theorem take_add (l : List α) (m n : ℕ) : l.take (m + n) = l.take m ++ (l.drop m).take n := by
-  convert_to take (m + n) (take m l ++ drop m l) = take m l ++ take n (drop m l)
-  · rw [take_append_drop]
-  rw [take_append_eq_append_take, take_all_of_le, append_right_inj]
-  · simp only [take_eq_take, length_take, length_drop]
-    generalize l.length = k; by_cases h : m ≤ k
-    · omega
-    · push_neg at h
-      simp [Nat.sub_eq_zero_of_le (le_of_lt h)]
-  · trans m
-    · apply length_take_le
-    · omega
 #align list.take_add List.take_add
-
-theorem dropLast_eq_take (l : List α) : l.dropLast = l.take l.length.pred := by
-  cases' l with x l
-  · simp [dropLast]
-  · induction' l with hd tl hl generalizing x
-    · simp [dropLast]
-    · simp [dropLast, hl]
 #align list.init_eq_take List.dropLast_eq_take
-
-theorem dropLast_take {n : ℕ} {l : List α} (h : n < l.length) :
-    (l.take n).dropLast = l.take n.pred := by
-  simp only [dropLast_eq_take, length_take, pred_eq_sub_one, take_take]
-  congr
-  omega
 #align list.init_take List.dropLast_take
-
-theorem dropLast_cons_of_ne_nil {α : Type*} {x : α}
-    {l : List α} (h : l ≠ []) : (x :: l).dropLast = x :: l.dropLast := by simp [h, dropLast]
 #align list.init_cons_of_ne_nil List.dropLast_cons_of_ne_nil
-
-@[simp]
-theorem dropLast_append_of_ne_nil {α : Type*} {l : List α} :
-    ∀ (l' : List α) (_ : l ≠ []), (l' ++ l).dropLast = l' ++ l.dropLast
-  | [], _ => by simp only [nil_append]
-  | a :: l', h => by
-    rw [cons_append, dropLast, dropLast_append_of_ne_nil l' h, cons_append]
-    simp [h]
 #align list.init_append_of_ne_nil List.dropLast_append_of_ne_nil
-
 #align list.drop_eq_nil_of_le List.drop_eq_nil_of_le
-
-theorem drop_eq_nil_iff_le {l : List α} {k : ℕ} : l.drop k = [] ↔ l.length ≤ k := by
-  refine' ⟨fun h => _, drop_eq_nil_of_le⟩
-  induction' k with k hk generalizing l
-  · simp only [drop] at h
-    simp [h]
-  · cases l
-    · simp
-    · simp only [drop] at h
-      simpa [Nat.succ_le_succ_iff] using hk h
 #align list.drop_eq_nil_iff_le List.drop_eq_nil_iff_le
-
-@[simp]
-theorem tail_drop (l : List α) (n : ℕ) : (l.drop n).tail = l.drop (n + 1) := by
-  induction' l with hd tl hl generalizing n
-  · simp
-  · cases n
-    · simp
-    · simp [hl]
 #align list.tail_drop List.tail_drop
 
 @[simp]
@@ -1973,59 +1814,12 @@ theorem cons_nthLe_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
 #align list.drop_left List.drop_left
 #align list.drop_left' List.drop_left'
 #align list.drop_eq_nth_le_cons List.drop_eq_get_consₓ -- nth_le vs get
-
 #align list.drop_length List.drop_length
-
-theorem drop_length_cons {l : List α} (h : l ≠ []) (a : α) :
-    (a :: l).drop l.length = [l.getLast h] := by
-  induction' l with y l ih generalizing a
-  · cases h rfl
-  · simp only [drop, length]
-    by_cases h₁ : l = []
-    · simp [h₁]
-    rw [getLast_cons h₁]
-    exact ih h₁ y
 #align list.drop_length_cons List.drop_length_cons
-
 #align list.drop_append_eq_append_drop List.drop_append_eq_append_drop
-
 #align list.drop_append_of_le_length List.drop_append_of_le_length
-
-/-- Dropping the elements up to `l₁.length + i` in `l₁ + l₂` is the same as dropping the elements
-up to `i` in `l₂`. -/
-theorem drop_append {l₁ l₂ : List α} (i : ℕ) : drop (l₁.length + i) (l₁ ++ l₂) = drop i l₂ := by
-  rw [drop_append_eq_append_drop, drop_eq_nil_of_le]
-  · simp only [nil_append]
-    congr
-    omega
-  · omega
 #align list.drop_append List.drop_append
-
-theorem drop_sizeOf_le [SizeOf α] (l : List α) : ∀ n : ℕ, sizeOf (l.drop n) ≤ sizeOf l := by
-  induction' l with _ _ lih <;> intro n
-  · rw [drop_nil]
-  · induction' n with n
-    · rfl
-    · specialize lih n
-      simp_all only [cons.sizeOf_spec, drop_succ_cons]
-      omega
 #align list.drop_sizeof_le List.drop_sizeOf_le
-
-set_option linter.deprecated false in -- FIXME
-/-- The `i + j`-th element of a list coincides with the `j`-th element of the list obtained by
-dropping the first `i` elements. Version designed to rewrite from the big list to the small list. -/
-theorem get_drop (L : List α) {i j : ℕ} (h : i + j < L.length) :
-    get L ⟨i + j, h⟩ = get (L.drop i) ⟨j, by
-      have A : i < L.length := lt_of_le_of_lt (Nat.le.intro rfl) h
-      rw [(take_append_drop i L).symm] at h
-      simp_all only [take_append_drop, length_drop, gt_iff_lt]
-      omega⟩ := by
-  rw [← nthLe_eq, ← nthLe_eq]
-  rw [nthLe_of_eq (take_append_drop i L).symm h, nthLe_append_right]
-  congr
-  all_goals
-    simp only [length_take]
-    omega
 
 set_option linter.deprecated false in
 /-- The `i + j`-th element of a list coincides with the `j`-th element of the list obtained by
@@ -2039,12 +1833,6 @@ theorem nthLe_drop (L : List α) {i j : ℕ} (h : i + j < L.length) :
       omega) := get_drop ..
 #align list.nth_le_drop List.nthLe_drop
 
-/-- The `i + j`-th element of a list coincides with the `j`-th element of the list obtained by
-dropping the first `i` elements. Version designed to rewrite from the small list to the big list. -/
-theorem get_drop' (L : List α) {i j} :
-    get (L.drop i) j = get L ⟨i + j, have := length_drop i L; by omega⟩ := by
-  rw [get_drop]
-
 set_option linter.deprecated false in
 /-- The `i + j`-th element of a list coincides with the `j`-th element of the list obtained by
 dropping the first `i` elements. Version designed to rewrite from the small list to the big list. -/
@@ -2054,45 +1842,10 @@ theorem nthLe_drop' (L : List α) {i j : ℕ} (h : j < (L.drop i).length) :
   get_drop' ..
 #align list.nth_le_drop' List.nthLe_drop'
 
-theorem get?_drop (L : List α) (i j : ℕ) : get? (L.drop i) j = get? L (i + j) := by
-  ext
-  simp only [get?_eq_some, get_drop', Option.mem_def]
-  constructor <;> exact fun ⟨h, ha⟩ => ⟨by simp_all only [length_drop, exists_prop]; omega, ha⟩
 #align list.nth_drop List.get?_drop
-
-@[simp]
-theorem drop_drop (n : ℕ) : ∀ (m) (l : List α), drop n (drop m l) = drop (n + m) l
-  | m, [] => by simp
-  | 0, l => by simp
-  | m + 1, a :: l =>
-    calc
-      drop n (drop (m + 1) (a :: l)) = drop n (drop m l) := rfl
-      _ = drop (n + m) l := drop_drop n m l
-      _ = drop (n + (m + 1)) (a :: l) := rfl
 #align list.drop_drop List.drop_drop
-
-theorem drop_take : ∀ (m : ℕ) (n : ℕ) (l : List α), drop m (take (m + n) l) = take n (drop m l)
-  | 0, n, _ => by simp
-  | m + 1, n, nil => by simp
-  | m + 1, n, _ :: l => by
-    have h : m + 1 + n = m + n + 1 := by omega
-    simpa [take_cons, h] using drop_take m n l
 #align list.drop_take List.drop_take
-
-theorem map_drop {α β : Type*} (f : α → β) :
-    ∀ (L : List α) (i : ℕ), (L.drop i).map f = (L.map f).drop i
-  | [], i => by simp
-  | L, 0 => by simp
-  | h :: t, n + 1 => by
-    dsimp
-    rw [map_drop f t]
 #align list.map_drop List.map_drop
-
-theorem modifyNthTail_eq_take_drop (f : List α → List α) (H : f [] = []) :
-    ∀ n l, modifyNthTail f n l = take n l ++ f (drop n l)
-  | 0, _ => rfl
-  | _ + 1, [] => H.symm
-  | n + 1, b :: l => congr_arg (cons b) (modifyNthTail_eq_take_drop f H n l)
 #align list.modify_nth_tail_eq_take_drop List.modifyNthTail_eq_take_drop
 
 @[simp]
@@ -2107,42 +1860,10 @@ theorem modifyNth_zero_cons (f : α → α) (a : α) (l : List α) :
 theorem modifyNth_succ_cons (f : α → α) (n : ℕ) (a : α) (l : List α) :
     modifyNth f (n + 1) (a :: l) = a :: modifyNth f n l := rfl
 
-theorem modifyNth_eq_take_drop (f : α → α) :
-    ∀ n l, modifyNth f n l = take n l ++ modifyHead f (drop n l) :=
-  modifyNthTail_eq_take_drop _ rfl
 #align list.modify_nth_eq_take_drop List.modifyNth_eq_take_drop
-
-theorem modifyNth_eq_take_cons_drop (f : α → α) {n l} (h) :
-    modifyNth f n l = take n l ++ f (get l ⟨n, h⟩) :: drop (n + 1) l := by
-  rw [modifyNth_eq_take_drop, drop_eq_get_cons h]; rfl
 #align list.modify_nth_eq_take_cons_drop List.modifyNth_eq_take_cons_drop
-
-theorem set_eq_take_cons_drop (a : α) {n l} (h : n < length l) :
-    set l n a = take n l ++ a :: drop (n + 1) l := by
-  rw [set_eq_modifyNth, modifyNth_eq_take_cons_drop _ h]
 #align list.update_nth_eq_take_cons_drop List.set_eq_take_cons_drop
-
-theorem reverse_take {α} {xs : List α} (n : ℕ) (h : n ≤ xs.length) :
-    xs.reverse.take n = (xs.drop (xs.length - n)).reverse := by
-  induction' xs with xs_hd xs_tl xs_ih generalizing n <;>
-    simp only [reverse_nil, reverse_cons, take_nil, length, Nat.zero_sub, drop_nil]
-  cases' h.lt_or_eq_dec with h' h'
-  · replace h' := le_of_succ_le_succ h'
-    rw [take_append_of_le_length, xs_ih _ h']
-    rw [show xs_tl.length + 1 - n = succ (xs_tl.length - n) from _, drop]
-    · omega
-    · rwa [length_reverse]
-  · subst h'
-    rw [length, Nat.sub_self, drop]
-    suffices xs_tl.length + 1 = (xs_tl.reverse ++ [xs_hd]).length by
-      rw [this, take_length, reverse_cons]
-    rw [length_append, length_reverse]
-    rfl
 #align list.reverse_take List.reverse_take
-
-@[simp]
-theorem set_eq_nil (l : List α) (n : ℕ) (a : α) : l.set n a = [] ↔ l = [] := by
-  cases l <;> cases n <;> simp only [set]
 #align list.update_nth_eq_nil List.set_eq_nil
 
 section TakeI

@@ -276,6 +276,7 @@
    "Mathlib.Data.Fintype.Sigma",
    "Mathlib.Data.Fintype.Sum"],
   "Mathlib.Tactic.Continuity": ["Mathlib.Tactic.Continuity.Init"],
+  "Mathlib.Tactic.Congr!": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Choose": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Tactic.CategoryTheory.Slice":
   ["Mathlib.CategoryTheory.Category.Basic"],
