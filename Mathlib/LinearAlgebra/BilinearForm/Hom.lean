@@ -50,11 +50,10 @@ namespace BilinForm
 
 section ToLin'
 
+-- TODO: this coe instance prevents partial application
+attribute [-instance] LinearMap.BilinForm.instCoeFunBilinFormForAll in
 /-- Auxiliary definition to define `toLinHom`; see below. -/
-def toLinHomAux₁ (A : BilinForm R M) (x : M) : M →ₗ[R] R where
-  toFun := A x
-  map_add' := map_add _
-  map_smul' := map_smul _
+def toLinHomAux₁ (A : BilinForm R M) (x : M) : M →ₗ[R] R := A x
 #align bilin_form.to_lin_hom_aux₁ LinearMap.BilinForm.toLinHomAux₁
 
 /-- Auxiliary definition to define `toLinHom`; see below. -/
@@ -63,13 +62,7 @@ def toLinHomAux₂ (A : BilinForm R M) : M →ₗ[R] M →ₗ[R] R := A
 
 /-- The linear map obtained from a `BilinForm` by fixing the left co-ordinate and evaluating in
 the right. -/
-def toLinHom : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R where
-  toFun := toLinHomAux₂
-  map_add' A₁ A₂ :=
-    LinearMap.ext fun x => by
-      dsimp only [toLinHomAux₂]
-  map_smul' c A := by
-    dsimp [toLinHomAux₂]
+def toLinHom : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R := LinearMap.id
 #align bilin_form.to_lin_hom LinearMap.BilinForm.toLinHom
 
 theorem toLin'_apply (A : BilinForm R M) (x : M) : toLinHom (M := M) A x = A x :=
