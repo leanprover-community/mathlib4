@@ -170,11 +170,8 @@ variable {R' : Type*} [CommSemiring R'] [Algebra R' R] [Module R' M] [IsScalarTo
 
 /-- Apply a linear map on the output of a bilinear form. -/
 @[simps!]
-def compBilinForm (f : R →ₗ[R'] R') (B : BilinForm R M) : BilinForm R' M := LinearMap.mk₂ R'
-  (fun x y => f (B x y)) (by simp only [map_add, add_apply, forall_const])
-  (by simp only [map_smul_of_tower, smul_apply, map_smul, smul_eq_mul, forall_const])
-  (by simp only [map_add, forall_const])
-  (by simp only [map_smul_of_tower, map_smul, smul_eq_mul, forall_const])
+def compBilinForm (f : R →ₗ[R'] R') (B : BilinForm R M) : BilinForm R' M :=
+  compr₂ (restrictScalars₁₂ R' R' B) f
 #align linear_map.comp_bilin_form LinearMap.compBilinForm
 
 end LinearMap
