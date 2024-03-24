@@ -287,12 +287,12 @@ section congr
 def congr (e : M ≃ₗ[R] M') : BilinForm R M ≃ₗ[R] BilinForm R M' where
   toFun B := B.comp e.symm e.symm
   invFun B := B.comp e e
-  left_inv B := ext fun x => by
+  left_inv B := ext₂ fun x => by
     simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, forall_const]
-  right_inv B := ext fun x => by
+  right_inv B := ext₂ fun x => by
     simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply, forall_const]
-  map_add' B B' := ext fun x y => rfl
-  map_smul' B B' := ext fun x y => rfl
+  map_add' B B' := ext₂ fun x y => rfl
+  map_smul' B B' := ext₂ fun x y => rfl
 #align bilin_form.congr LinearMap.BilinForm.congr
 
 @[simp]
@@ -310,7 +310,7 @@ theorem congr_symm (e : M ≃ₗ[R] M') : (congr e).symm = congr e.symm := by
 
 @[simp]
 theorem congr_refl : congr (LinearEquiv.refl R M) = LinearEquiv.refl R _ :=
-  LinearEquiv.ext fun _ => ext fun _ _ => rfl
+  LinearEquiv.ext fun _ => ext₂ fun _ _ => rfl
 #align bilin_form.congr_refl LinearMap.BilinForm.congr_refl
 
 theorem congr_trans (e : M ≃ₗ[R] M') (f : M' ≃ₗ[R] M'') :
