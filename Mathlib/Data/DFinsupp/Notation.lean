@@ -30,9 +30,7 @@ def elabSingle₀ : Elab.Term.TermElab
 | `(term| single₀ $i $x) => fun ty? => do
     Elab.Term.tryPostponeIfNoneOrMVar ty?
     let .some ty := ty? | Elab.throwUnsupportedSyntax
-    match_expr ← Meta.withReducible (Meta.whnf ty) with
-    | DFinsupp _ _ _ => pure ()
-    | _ => Elab.throwUnsupportedSyntax
+    let_expr DFinsupp _ _ _ := ← Meta.withReducible (Meta.whnf ty) | Elab.throwUnsupportedSyntax
     Elab.Term.elabTerm (← `(DFinsupp.single $i $x)) ty?
 | _ => fun _ => Elab.throwUnsupportedSyntax
 
@@ -41,9 +39,7 @@ def elabUpdate₀ : Elab.Term.TermElab
 | `(term| update₀ $f $i $x) => fun ty? => do
     Elab.Term.tryPostponeIfNoneOrMVar ty?
     let .some ty := ty? | Elab.throwUnsupportedSyntax
-    match_expr ← Meta.withReducible (Meta.whnf ty) with
-    | DFinsupp _ _ _ => pure ()
-    | _ => Elab.throwUnsupportedSyntax
+    let_expr DFinsupp _ _ _ := ← Meta.withReducible (Meta.whnf ty) | Elab.throwUnsupportedSyntax
     Elab.Term.elabTerm (← `(DFinsupp.update $i $f $x)) ty?
 | _ => fun _ => Elab.throwUnsupportedSyntax
 
