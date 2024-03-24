@@ -1586,10 +1586,7 @@ theorem map_join (f : α → β) (L : List (List α)) : map f (join L) = join (m
 #align list.map_join List.map_join
 
 theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l := by
-  unfold List.bind
-  induction l <;>
-    simp (config := { unfoldPartialApp := true })
-      [map, join, List.ret, cons_append, nil_append, *] at *
+  induction l <;> [rfl; simp [*, List.ret]]
 #align list.bind_ret_eq_map List.bind_ret_eq_map
 
 theorem bind_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
@@ -3462,10 +3459,7 @@ theorem enum_append (xs ys : List α) : enum (xs ++ ys) = enum xs ++ enumFrom xs
 
 theorem map_fst_add_enumFrom_eq_enumFrom (l : List α) (n k : ℕ) :
     map (Prod.map (· + n) id) (enumFrom k l) = enumFrom (n + k) l := by
-  induction' l with hd tl IH generalizing n k
-  · simp [enumFrom]
-  · simp only [enumFrom, map, zero_add, Prod.map_mk, id.def, eq_self_iff_true, true_and_iff]
-    simp [IH, add_comm n k, add_assoc, Nat.add_left_comm]
+  induction l generalizing n k <;> [rfl; simp_all [add_assoc, add_comm k]]
 #align list.map_fst_add_enum_from_eq_enum_from List.map_fst_add_enumFrom_eq_enumFrom
 
 theorem map_fst_add_enum_eq_enumFrom (l : List α) (n : ℕ) :
