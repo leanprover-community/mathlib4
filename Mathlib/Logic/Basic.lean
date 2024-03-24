@@ -1083,17 +1083,17 @@ theorem exists_of_exists_mem : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
   | ⟨x, _, hq⟩ => ⟨x, hq⟩
 #align exists_of_bex exists_of_exists_mem
 
-theorem exists_mem_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by simp
-#align bex_imp_distrib exists_mem_imp
+theorem exists₂_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by simp
+#align bex_imp_distrib exists₂_imp
 
 -- 2024-03-23
 @[deprecated] alias forall_of_ball := forall_of_forall_mem
 @[deprecated] alias ball_of_forall := forall_mem_of_forall
 @[deprecated] alias bex_of_exists := exists_mem_of_exists
 @[deprecated] alias exists_of_bex := exists_of_exists_mem
-@[deprecated] alias bex_imp := exists_mem_imp
+@[deprecated] alias bex_imp := exists₂_imp
 
-theorem not_exists_mem : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := exists_mem_imp
+theorem not_exists_mem : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := exists₂_imp
 #align not_bex not_exists_mem
 
 theorem not_forall_mem_of_exists_mem_not : (∃ x h, ¬P x h) → ¬∀ x h, P x h
