@@ -7,6 +7,7 @@ import Lean.Elab.Command
 import Lean.Linter.Util
 import Std.Data.Array.Basic
 import Std.Data.List.Basic
+import Std.Data.Array.Merge
 import Mathlib.adomaniLeanUtils.inspect_syntax
 
 /-!
@@ -150,7 +151,7 @@ def extractRealGoalsCtx' : InfoTree → Array (Syntax × MetavarContext × Metav
     let kargs := (args.map extractRealGoalsCtx').foldl (· ++ ·) #[]
     if let Lean.Elab.Info.ofTacticInfo i := k then
       if take? i.stx && (i.stx.getRange? true).isSome then
-        kargs.push (i.stx, i.mctxBefore, i.mctxAfter, i.activeGoalsBefore, i.activeGoalsAfter) else kargs
+        #[(i.stx, i.mctxBefore, i.mctxAfter, i.activeGoalsBefore, i.activeGoalsAfter)] ++ kargs else kargs
     else kargs
   | .context _ t => extractRealGoalsCtx' t
   | _ => default
@@ -254,7 +255,7 @@ inductive stained
   | name     : Name → stained
   | goal     : stained
   | wildcard : stained
-  deriving Repr, Inhabited, DecidableEq
+  deriving Repr, Inhabited, DecidableEq, Hashable
 
 /-- Converting a `stained` to a `String`:
 * a `Name` is represented by the corresponding string;
@@ -264,12 +265,9 @@ inductive stained
 instance : ToString stained where
   toString | .name n => n.toString | .goal => "⊢" | .wildcard => "*"
 
-/-- `getStained stx` expects `stx` to be an argument of a node of `SyntaxNodeKind`
-`Lean.Parser.Tactic.location`.
-Typically, we apply `getStained` to the output of `getLocs`. -/
 partial
-def getStainedAux : Syntax → Array stained
-  | .node _ _ args => (args.map getStainedAux).flatten
+def getStainedold : Syntax → Array stained
+  | .node _ _ args => (args.map getStainedold).flatten
   | .atom _ v => match v with
                   | "*" => #[.wildcard]
                   | "⊢" => #[.goal]
@@ -277,9 +275,41 @@ def getStainedAux : Syntax → Array stained
                   | _ => default
   | stx => #[.name stx.getId]
 
-def getStained (stx : Syntax) : Array stained :=
-  let firstGuess := getStainedAux stx
-  if firstGuess.size == 0 then #[.goal] else firstGuess
+def getStained!old (stx : Syntax) : Array stained :=
+  match getStainedold stx with
+    | #[] => #[.goal]
+    | out => out
+
+partial
+def getL : Syntax → Array stained
+  | .node _ _ arg => (arg.map getL).flatten
+  | .ident _ _ v _ => #[.name v]
+  | .atom _ v => match v with
+                  | "*" => #[.wildcard]
+                  | "⊢" => #[.goal]
+                  | "|" => #[.goal]
+                  | _ => default
+  | _ => default
+
+
+/-- `getStained stx` expects `stx` to be an argument of a node of `SyntaxNodeKind`
+`Lean.Parser.Tactic.location`.
+Typically, we apply `getStained` to the output of `getLocs`. -/
+partial
+def getStained (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Array stained :=
+  match stx with
+    | stx@(.node _ ``Lean.Parser.Tactic.location loc) =>
+      if all? stx then #[] else (loc.map getL).flatten
+    | .node _ _ args => (args.map (getStained · all?)).flatten
+    | _ => default
+
+/-- `getStained! stx` acts almost like `getStained stx`, except that it returns
+`#[⊢]` if `getStained stx = #[]`. -/
+def getStained! (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Array stained :=
+  match getStained stx all? with
+    | #[] => #[.goal]
+    | out => out
+
 
 open Lean Elab Command
 elab "get " cmd:command : command => do
@@ -288,10 +318,14 @@ elab "get " cmd:command : command => do
   for tac in tcts do
 --    let locs := getLocs tac
 --    logInfoAt tac m!"may act on {locs.map getStained}"
+--    dbg_trace "{tac}:\nlocs: {getLocs tac}\n"
+    let _ ← (getLocs tac).mapM (Meta.inspect ·)
+    dbg_trace "{tac.getKind} {getStained tac}"
     let locs := getStained tac
+
 --    Meta.inspect tac
 --    dbg_trace "{tac}\n{locs}\n"
-    logInfoAt tac m!"may act on {locs}"
+    logInfoAt tac m!"may act on {locs} and {getStained! tac}"
     --logInfo m!"tactic: '{tac}'\nacts:   {locs}\natoms: {locs.map getStained}"
 --    let _ ← locs.mapM Meta.inspect
 --    dbg_trace "{locs}"
@@ -450,6 +484,26 @@ def stained.toFVarId (lctx: LocalContext) : stained → Array FVarId
   | goal     => #[default]
   | wildcard => lctx.getFVarIds.push default
 
+/-- `SyntaxNodeKind`s that are mostly "formatting": mostly they are ignored
+because we do not want the linter to spend time on them.
+The nodes that they contain will be visited by the linter anyway. -/
+def ignored : HashSet Name := HashSet.empty
+  |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented
+  |>.insert ``Lean.Parser.Tactic.tacticSeq
+  |>.insert ``Lean.Parser.Term.byTactic
+  |>.insert `null
+  |>.insert `by
+--  |>.insert ``Lean.Parser.Tactic.rwSeq
+  -- even ignoring `try`, the linter still looks at the "tried" tactics
+  |>.insert ``Lean.Parser.Tactic.tacticTry_
+  |>.insert `«]»
+
+/-- `SyntaxNodeKind`s of tactics that stain the locations on which they act
+and that can only be followed by other `stainers`. -/
+def stainers : HashSet Name := HashSet.empty
+  |>.insert ``Lean.Parser.Tactic.simp
+
+
 /-- The main entry point to the unreachable tactic linter. -/
 def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) && (← getInfoState).enabled do
@@ -461,25 +515,67 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --  let (_, map) ← (addNonSimpOnlysList trees).run {}
 --  dbg_trace "processing1"
 --  Meta.inspect _stx
-  let xx := trees.toList.map (extractGoals ( ``Lean.Parser.Tactic.tacticHave_))
-  for d in xx do
-    for (s, b, a) in d do
+  --let xx := trees.toList.map (extractGoals ( ``Lean.Parser.Tactic.tacticHave_))
+  --for d in xx do
+  --  for (s, b, a) in d do
 --      logInfo m!"{s}\nbefore: {b.map (·.name)}\nafter:  {a.map (·.name)}\n"
 --  let x := trees.toList.map (extractRealGoalsCtx (·.getKind == ``Lean.Parser.Tactic.tacticHave_))
   let x := trees.toList.map (extractRealGoalsCtx' (fun _ => true)) -- (·.getKind == ``Lean.Parser.Tactic.tacticHave_))
+  let mut stains : HashSet stained := .empty
+--  let mut stains : HashSet FVarId := .empty
+  let _ : Ord FVarId := ⟨fun f g => compare f.name.toString g.name.toString⟩
   for d in x do for (s, ctxb, ctx, mvsb, mvs) in d do
-    if ¬ s.getKind ∈ [``Lean.Parser.Tactic.tacticSeq1Indented, ``Lean.Parser.Tactic.tacticSeq,
-    ``Lean.Parser.Term.byTactic] then
+    if ignored.contains s.getKind then continue
 --    logInfo m!"generating syntax: '{s}'"  Lean.Parser.Term.byTactic
     --logInfoAt s m!"{s} has locs: {getLocs s}"
-    for locs in getLocs s do
+--    for locs in getLocs s do
+--    for locs in getStained! s do
 --      Meta.inspect s
-      logInfoAt s m!"{s}\nstains '{locs}'"
-      let decls := (ctxb.decls.find? (mvsb.getD 0 default)).getD default
-      let lctx := decls.lctx
-      logInfoAt s m!"in mvar {((getStained locs).map (stained.toFVarId lctx)).flatten.map fun d =>
-        (d.name)}"
-    let stains := (getLocs s).map getStained
+--      logInfoAt s m!"{s}\nstains '{locs}'"
+    let decls := (ctx.decls.find? (mvs.getD 0 default)).getD default
+    let decls := (ctxb.decls.find? (mvsb.getD 0 default)).getD default
+    let declsIdxs := ctx.decls.toList.map fun m => (m.2.index)
+    let dsorted := declsIdxs.toArray.qsort (· < ·)
+    dbg_trace "index: [0,{declsIdxs.length-1}]? {dsorted == Array.range declsIdxs.length} {declsIdxs.length}\n"
+    let lctx := decls.lctx
+    let newStained := getStained! s
+    let all := if newStained.contains .wildcard then
+      lctx.decls.toArray.reduceOption.map (stained.name ·.userName) else #[]
+    let newStained := (newStained.erase .wildcard) ++ all
+    let fvs := (newStained).map (stained.toFVarId lctx)
+    let fvs := fvs.flatten.sortAndDeduplicate
+--    dbg_trace s!"syntax: {s}\n{s.getKind}\n"
+    dbg_trace s!"---\n{s.getKind}"
+--    dbg_trace "already stained: {stains.toList.map (·.name)}"
+    dbg_trace "already stained: {stains.toList}"
+    dbg_trace "getStained! s: {newStained}"
+    dbg_trace "getLocs s:     {getLocs s}"
+    dbg_trace "fvrs stains: {fvs.map (·.name)}\n"
+    dbg_trace "goal? '{(lctx.decls.get! 0).get!.userName}'"
+    let inds := fvs.erase default
+--    for v in inds do
+--      dbg_trace "checking {v.name}"
+--      let uname := ((lctx.find? v).getD default).userName
+--      if stains.contains v then logInfoAt s m!"'{s.getKind}' acts on '{(v.name, uname)}' is stained!" else stains := stains.insert v
+    for v in newStained do
+      dbg_trace "checking {v}"
+      let stainer? := stainers.contains s.getKind
+      if stains.contains v && !stainer? then
+          logInfoAt s m!"'{s.getKind}' acts on the stained '{v}'!"
+      else
+        if stainer? then
+          stains := stains.insert v
+        else
+          dbg_trace "{s.getKind} does not stain '{v}'"
+
+initialize addLinter nonTerminalSimpLinter
+#exit
+
+    logInfoAt s m!"{s}\nstains '{(getStained! s).zip (fvs.map fun ls => ls.map (·.name))}'"
+
+--      logInfoAt s m!"in mvar {((getStained locs).map (stained.toFVarId lctx)).flatten.map fun d =>
+--        (d.name)}"
+--    let stains := (getLocs s).map getStained!
     let mdecls := (mvs.map ctx.findDecl?).reduceOption
     let cts := mdecls.map (·.lctx)
     let sepLdecls := cts.map (·.decls.toList |>.reduceOption)
