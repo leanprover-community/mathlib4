@@ -31,6 +31,7 @@ namespace Matrix
 Warning: In any abstract use of `col`, you might want to use
 `Matrix.col (ι := Fin 1) u`.
 -/
+@[nolint unusedArguments]
 def col {ι : Type*} [Unique ι] (w : m → α) : Matrix m ι α :=
   of fun x _ => w x
 #align matrix.col Matrix.col
@@ -46,6 +47,7 @@ theorem col_apply {ι : Type*} [Unique ι] (w : m → α) (i) (j : ι) : col w i
 Warning: In any abstract use of `row`, you might want to use
 `Matrix.row (ι := Fin 1) u`.
 -/
+@[nolint unusedArguments]
 def row {ι : Type*} [Unique ι] (v : n → α) : Matrix ι n α :=
   of fun _ y => v y
 #align matrix.row Matrix.row
