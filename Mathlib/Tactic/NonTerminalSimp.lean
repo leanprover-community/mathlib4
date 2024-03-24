@@ -268,8 +268,8 @@ instance : ToString stained where
 `Lean.Parser.Tactic.location`.
 Typically, we apply `getStained` to the output of `getLocs`. -/
 partial
-def getStained : Syntax → Array stained
-  | .node _ _ args => (args.map getStained).flatten
+def getStainedAux : Syntax → Array stained
+  | .node _ _ args => (args.map getStainedAux).flatten
   | .atom _ v => match v with
                   | "*" => #[.wildcard]
                   | "⊢" => #[.goal]
@@ -277,21 +277,29 @@ def getStained : Syntax → Array stained
                   | _ => default
   | stx => #[.name stx.getId]
 
+def getStained (stx : Syntax) : Array stained :=
+  let firstGuess := getStainedAux stx
+  if firstGuess.size == 0 then #[.goal] else firstGuess
+
 open Lean Elab Command
 elab "get " cmd:command : command => do
   let tcts := getTactics cmd
 --  logInfo m!"{tcts.map fun t => (t, getLocs t)}"
-  for cmd in tcts do
-    let locs := getLocs cmd
-    logInfoAt cmd m!"may act on {locs.map getStained}"
-    --logInfo m!"tactic: '{cmd}'\nacts:   {locs}\natoms: {locs.map getStained}"
-    let _ ← locs.mapM Meta.inspect
+  for tac in tcts do
+--    let locs := getLocs tac
+--    logInfoAt tac m!"may act on {locs.map getStained}"
+    let locs := getStained tac
+--    Meta.inspect tac
+--    dbg_trace "{tac}\n{locs}\n"
+    logInfoAt tac m!"may act on {locs}"
+    --logInfo m!"tactic: '{tac}'\nacts:   {locs}\natoms: {locs.map getStained}"
+--    let _ ← locs.mapM Meta.inspect
 --    dbg_trace "{locs}"
 --    let _ ← locs.flatten.mapM Meta.inspect
 --    let _ ← inspect locs[0]!
 --    logInfo m!"{locs}"
-    sloc cmd
-  Meta.inspect cmd
+    sloc tac
+  --Meta.inspect cmd
   elabCommand cmd
 
 #eval show MetaM _ from do
