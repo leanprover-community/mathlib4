@@ -19,9 +19,12 @@ namespace SerreGraph
 
 open EdgePath PathClass
 
-universe u v
+universe u v u₁ v₁ u₂ v₂ u₃ v₃
 
-variable {V V₁ V₂ V₃ : Type u} {E E₁ E₂ E₃ : Type v}
+variable {V  : Type u} {E  : Type v}
+variable {V₁ : Type u₁} {E₁ : Type v₁}
+variable {V₂ : Type u₂} {E₂ : Type v₂}
+variable {V₃ : Type u₃} {E₃ : Type v₃}
 
 /--
 A morphism of Serre graphs.
