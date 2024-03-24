@@ -531,13 +531,7 @@ lemma set_lintegral_toKernel_Iic [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
 lemma set_lintegral_toKernel_univ [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫⁻ b in s, hf.toKernel f (a, b) univ ∂(ν a) = κ a (s ×ˢ univ) := by
-  have : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
-    -- todo: move `Real.iUnion_Iic_rat` to an earlier file and use it here
-    ext1 x
-    simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
-    obtain ⟨r, hr⟩ := exists_rat_gt x
-    exact ⟨r, hr.le⟩
-  rw [← this, prod_iUnion]
+  rw [← Real.iUnion_Iic_rat, prod_iUnion]
   have h_dir : Directed (fun x y ↦ x ⊆ y) fun q : ℚ ↦ Iic (q : ℝ) := by
     refine Monotone.directed_le fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
     exact mod_cast hrr'

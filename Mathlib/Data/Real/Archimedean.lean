@@ -346,4 +346,17 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
       norm_cast
 #align infi_Ioi_eq_infi_rat_gt Real.iInf_Ioi_eq_iInf_rat_gt
 
+theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
+  ext1 x
+  simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
+  obtain ⟨r, hr⟩ := exists_rat_gt x
+  exact ⟨r, hr.le⟩
+#align real.Union_Iic_rat Real.iUnion_Iic_rat
+
+theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
+  ext1 x
+  simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false_iff, not_forall, not_le]
+  exact exists_rat_lt x
+#align real.Inter_Iic_rat Real.iInter_Iic_rat
+
 end Real
