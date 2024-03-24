@@ -77,6 +77,7 @@ section
 
 variable {J : Type w} [Category.{t} J]
 
+/-- The cone of `F` corresponding to an element in `(F ⋙ yoneda.obj X).sections`. -/
 @[simps]
 def Limits.coneOfSectionCompYoneda (F : J ⥤ Cᵒᵖ) (X : C)
     (s : (F ⋙ yoneda.obj X).sections) : Cone F where
@@ -113,6 +114,7 @@ def yonedaJointlyReflectsLimits (F : J ⥤ Cᵒᵖ) (c : Cone F)
     rw [eq, Category.comp_id, ← hm, unop_comp])
 #align category_theory.yoneda_jointly_reflects_limits CategoryTheory.yonedaJointlyReflectsLimits
 
+/-- The cone of `F` corresponding to an element in `(F ⋙ coyoneda.obj X).sections`. -/
 @[simps]
 def Limits.coneOfSectionCompCoyoneda (F : J ⥤ C) (X : Cᵒᵖ)
     (s : (F ⋙ coyoneda.obj X).sections) : Cone F where
