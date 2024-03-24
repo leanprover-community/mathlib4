@@ -312,7 +312,6 @@ theorem coe_offDiag : (s.offDiag : Set (α × α)) = (s : Set α).offDiag :=
 @[simp] theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag := by simp [disjoint_left]
 #align finset.disjoint_diag_off_diag Finset.disjoint_diag_offDiag
 
-@[simp]
 theorem diag_disjUnion_offDiag : s.diag.disjUnion s.offDiag s.disjoint_diag_offDiag = s ×ˢ s := by
   ext ⟨x, y⟩
   rcases eq_or_ne x y with rfl | hxy <;> simp [*]
