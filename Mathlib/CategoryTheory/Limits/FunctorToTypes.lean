@@ -32,3 +32,4 @@ theorem jointly_surjective' (k : K) (x : (colimit F).obj k) : ∃ j y, x = (coli
   jointly_surjective _ _ (colimit.isColimit _) x
 
 end CategoryTheory.FunctorToTypes
+
