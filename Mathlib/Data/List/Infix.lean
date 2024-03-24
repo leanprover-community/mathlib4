@@ -69,6 +69,12 @@ theorem infix_rfl : l <:+: l :=
 
 theorem prefix_concat (a : α) (l) : l <+: concat l a := by simp
 #align list.prefix_concat List.prefix_concat
+theorem prefix_concat_iff {x y : List α} {a : α}: x <+: y ++ [a] ↔ x <+: y ∨ x = y ++ [a] := by
+  constructor
+  { intro ⟨z, h⟩; induction' z using List.reverseRecOn with z
+    right; rw[List.append_nil] at h; exact h
+    left; rw[← List.append_assoc] at h; use z; exact List.append_inj_left' h rfl }
+  rintro (h | rfl); exact List.IsPrefix.trans h (List.prefix_append _ _); exact List.prefix_rfl
 
 #align list.infix_cons List.infix_cons
 #align list.infix_concat List.infix_concat
@@ -209,6 +215,19 @@ theorem prefix_iff_eq_take : l₁ <+: l₂ ↔ l₁ = take (length l₁) l₂ :=
   ⟨fun h => append_cancel_right <| (prefix_iff_eq_append.1 h).trans (take_append_drop _ _).symm,
     fun e => e.symm ▸ take_prefix _ _⟩
 #align list.prefix_iff_eq_take List.prefix_iff_eq_take
+
+theorem List.prefix_take_iff {x y : List α} {n : ℕ}: x <+: y.take n ↔ x <+: y ∧ x.length ≤ n := by
+  constructor
+  { intro h; constructor
+    exact List.IsPrefix.trans h (List.take_prefix _ _)
+    replace h := h.length_le; simp[Nat.le_min] at h; exact h.left }
+  { intro ⟨hp, hl⟩; have hl' := hp.length_le; rw[List.prefix_iff_eq_take] at *
+    rw[hp, List.take_take]; simp[min_eq_left, hl, hl'] }
+theorem concat_prefix_of_length_lt {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
+  x ++ [y.get ⟨x.length, hl⟩] <+: y := by
+  use y.drop (x.length + 1); dsimp; nth_rw 1[List.prefix_iff_eq_take.mp h]
+  convert List.take_append_drop (x.length + 1) y using 2
+  rw[← List.take_concat_get, List.concat_eq_append]; rfl
 
 theorem suffix_iff_eq_drop : l₁ <:+ l₂ ↔ l₁ = drop (length l₂ - length l₁) l₂ :=
   ⟨fun h => append_cancel_left <| (suffix_iff_eq_append.1 h).trans (take_append_drop _ _).symm,
@@ -506,5 +525,15 @@ end Insert
 theorem mem_of_mem_suffix (hx : a ∈ l₁) (hl : l₁ <:+ l₂) : a ∈ l₂ :=
   hl.subset hx
 #align list.mem_of_mem_suffix List.mem_of_mem_suffix
+
+theorem List.ne_nil_prefix {x y : List α} (hx : x ≠ []) (h : x <+: y) : y ≠ [] := by
+  rintro rfl; apply hx; exact List.prefix_nil.mp h
+theorem List.get_eq_prefix {x y : List α} {n} (hn : n < x.length) (h : x <+: y) :
+  List.get x ⟨n, hn⟩ = List.get y ⟨n, by replace h := h.length_le; omega⟩ := by
+  obtain ⟨_, rfl⟩ := h; symm; apply List.get_append
+theorem List.head_eq_prefix {x y : List α} (hx : x ≠ []) (h : x <+: y) :
+  x.head hx = y.head (ne_nil_prefix hx h) := by
+    cases x <;> cases y <;> simp at *; simp at hx
+    all_goals {obtain ⟨_, h⟩ := h; injection h}
 
 end List

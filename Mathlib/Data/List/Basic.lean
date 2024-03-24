@@ -395,6 +395,11 @@ theorem cons_eq_append_iff {a b c : List α} {x : α} :
 @[deprecated] alias append_right_cancel := append_cancel_right -- deprecated since 2024-01-18
 #align list.append_right_cancel List.append_cancel_right
 
+@[simp] theorem List.append_left_cancel_nil_left {x y : List α}: x ++ y = x ↔ y = [] := by
+  constructor <;> intro h; apply List.append_cancel_left (as := x); all_goals simp[h]
+@[simp] theorem List.append_left_cancel_nil_right {x y : List α}: x = x ++ y ↔ y = [] :=
+  by rw[eq_comm, append_left_cancel_nil_left]
+
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
   fun _ _ ↦ append_cancel_left
 #align list.append_right_injective List.append_right_injective
@@ -485,6 +490,9 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
   (replicate_left_injective a).eq_iff
 #align list.replicate_left_inj List.replicate_left_inj
 
+@[simp] theorem List.head_replicate {n} {a : α} (h : List.replicate n a ≠ []) :
+  List.head _ h = a := by
+  cases n <;> simp at *; exfalso; exact h rfl
 /-! ### pure -/
 
 @[simp]
@@ -770,6 +778,9 @@ theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?)
 #align list.last'_append List.getLast?_append
 
 /-! ### head(!?) and tail -/
+
+@[simp] theorem List.head_tail (x : List α) (h : x ≠ []) : (x.head h) :: x.tail = x := by
+  cases x <;> simp at h ⊢
 
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
 #align list.head_eq_head' List.head!_eq_head?
@@ -1348,6 +1359,11 @@ theorem take_one_drop_eq_of_lt_length' {l : List α} {n : ℕ} (h : n < l.length
 #align list.take_one_drop_eq_of_lt_length List.take_one_drop_eq_of_lt_length'
 
 #align list.ext List.ext
+theorem ext_get? : ∀ {l₁ l₂ : List α}, (∀ n, l₁.get? n = l₂.get? n) → l₁ = l₂ := List.ext
+theorem ext_get?' {l₁ l₂ : List α} (h : l₁.length ≤ l₂.length)
+  (h' : ∀ n < l₂.length, l₁.get? n = l₂.get? n) : l₁ = l₂ := by
+  apply ext_get?; intro n; rcases Nat.lt_or_ge n l₂.length with hn | hn
+  exact h' _ hn; simp[List.get?_eq_none.mpr hn, le_trans h hn]
 
 @[deprecated ext_get]
 theorem ext_nthLe {l₁ l₂ : List α} (hl : length l₁ = length l₂)
