@@ -168,9 +168,36 @@ theorem map_linearIndependent_left (H : M.LinearDisjoint N) [Module.Flat R N]
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hm
   exact H.injective.comp (Module.Flat.preserves_injective_linearMap (M := N) _ hm)
 
+-- TODO: move to suitable file ?
+lemma _root_.TensorProduct.coe_congr_right_refl {R : Type*} [CommSemiring R] {M N P : Type*}
+    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+    [Module R M] [Module R N] [Module R P] (f : M ≃ₗ[R] P) :
+    (TensorProduct.congr f (LinearEquiv.refl R N)).toLinearMap = LinearMap.rTensor N f :=
+  TensorProduct.ext' fun _ _ ↦ by simp
+
+-- TODO: move to suitable file ?
+lemma _root_.TensorProduct.coe_congr_left_refl {R : Type*} [CommSemiring R] {M N Q : Type*}
+    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid Q]
+    [Module R M] [Module R N] [Module R Q] (g : N ≃ₗ[R] Q) :
+    (TensorProduct.congr (LinearEquiv.refl R M) g).toLinearMap = LinearMap.lTensor M g :=
+  TensorProduct.ext' fun _ _ ↦ by simp
+
+-- unused
+-- TODO: move to suitable file ?
+lemma _root_.TensorProduct.congr_symm {R : Type*} [CommSemiring R] {M N P Q : Type*}
+    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
+    [Module R M] [Module R N] [Module R P] [Module R Q] (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
+    (TensorProduct.congr f g).symm = TensorProduct.congr f.symm g.symm :=
+  LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ ↦ by simp
+
 theorem of_map_linearIndependent_left {ι : Type*} (m : Basis ι R M)
     (H : LinearMap.ker (mulLeftMap N m) = ⊥) : M.LinearDisjoint N := by
-  sorry
+  -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
+  letI : AddCommGroup (ι →₀ N) := Finsupp.instAddCommGroup
+  simp_rw [LinearMap.ker_eq_bot, mulLeftMap, ← Basis.coe_repr_symm,
+    ← TensorProduct.coe_congr_right_refl, LinearEquiv.comp_coe, LinearMap.coe_comp,
+    LinearEquiv.coe_coe, EquivLike.injective_comp] at H
+  exact H
 
 variable {N} in
 /-- If `n : ι → N` is a family of elements, then there is an `R`-linear map from `ι →₀ M` to
@@ -195,7 +222,7 @@ theorem mulRightMap_apply {ι : Type*} (n : ι → N) (m : ι →₀ M) :
     mulRightMap M n m = Finsupp.sum m fun (i : ι) (m : M) ↦ m.1 * (n i).1 :=
   congr($(mulRightMap_def' M n) m)
 
--- TODO: move to suitable file
+-- TODO: move to suitable file ?
 theorem _root_.Module.Flat.preserves_injective_linearMap'
     {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
     {N : Type w} [AddCommGroup N] [Module R N] {M' : Type*} [AddCommGroup M'] [Module R M']
@@ -216,7 +243,12 @@ theorem map_linearIndependent_right (H : M.LinearDisjoint N) [Module.Flat R M]
 
 theorem of_map_linearIndependent_right {ι : Type*} (n : Basis ι R N)
     (H : LinearMap.ker (mulRightMap M n) = ⊥) : M.LinearDisjoint N := by
-  sorry
+  -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
+  letI : AddCommGroup (ι →₀ M) := Finsupp.instAddCommGroup
+  simp_rw [LinearMap.ker_eq_bot, mulRightMap, ← Basis.coe_repr_symm,
+    ← TensorProduct.coe_congr_left_refl, LinearEquiv.comp_coe, LinearMap.coe_comp,
+    LinearEquiv.coe_coe, EquivLike.injective_comp] at H
+  exact H
 
 variable {M N} in
 theorem map_linearIndependent_mul_of_flat_left (H : M.LinearDisjoint N) [Module.Flat R M]
