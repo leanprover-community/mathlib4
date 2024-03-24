@@ -929,7 +929,6 @@ theorem constantCoeff_comp_C : constantCoeff.comp (C : R →+* MvPolynomial σ R
   exact constantCoeff_C σ x
 #align mv_polynomial.constant_coeff_comp_C MvPolynomial.constantCoeff_comp_C
 
-@[simp]
 theorem constantCoeff_comp_algebraMap :
     constantCoeff.comp (algebraMap R (MvPolynomial σ R)) = RingHom.id R :=
   constantCoeff_comp_C _ _
@@ -1641,12 +1640,10 @@ theorem aevalTower_comp_C : (aevalTower g y : MvPolynomial σ R →+* A).comp C 
   RingHom.ext <| aevalTower_C _ _
 #align mv_polynomial.aeval_tower_comp_C MvPolynomial.aevalTower_comp_C
 
-@[simp]
 theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R (MvPolynomial σ R) x) = g x :=
   eval₂_C _ _ _
 #align mv_polynomial.aeval_tower_algebra_map MvPolynomial.aevalTower_algebraMap
 
-@[simp]
 theorem aevalTower_comp_algebraMap :
     (aevalTower g y : MvPolynomial σ R →+* A).comp (algebraMap R (MvPolynomial σ R)) = g :=
   aevalTower_comp_C _ _
