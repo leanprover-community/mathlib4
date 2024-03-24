@@ -64,7 +64,7 @@ theorem pred_iterate (a : ℤ) : ∀ n, pred^[n] a = a - n
 instance : IsSuccArchimedean ℤ :=
   ⟨fun {a b} h =>
     ⟨(b - a).toNat, by
-      rw [succ_eq_succ, succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel']⟩⟩
+      rw [succ_eq_succ, succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel_left]⟩⟩
 
 instance : IsPredArchimedean ℤ :=
   ⟨fun {a b} h =>

@@ -375,7 +375,7 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_nth_roots [IsDomain B] {ζ : B} {n : �
     simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq]
     rw [isRoot_of_unity_iff n.pos]
     refine' ⟨n, Nat.mem_divisors_self n n.ne_zero, _⟩
-    rw [IsRoot.def, ← map_cyclotomic n (algebraMap A B), eval_map, ← aeval_def]
+    rw [IsRoot.definition, ← map_cyclotomic n (algebraMap A B), eval_map, ← aeval_def]
     exact hx.2
   · simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq] at hx
     obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx n.pos
@@ -545,7 +545,7 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : K)] :
   obtain ⟨ζ, hζ⟩ :=
     exists_root_of_splits (algebraMap K (CyclotomicField n K)) (SplittingField.splits _)
       (degree_cyclotomic_pos n K n.pos).ne'
-  rw [← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
+  rw [← eval_map, ← IsRoot.definition, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
 -- Porting note: the first `?_` was `forall_eq.2 ⟨ζ, hζ⟩` that now fails.
   refine ⟨?_, ?_⟩
   · simp only [mem_singleton_iff, forall_eq]
@@ -731,7 +731,7 @@ theorem IsAlgClosed.isCyclotomicExtension (h : ∀ a ∈ S, NeZero ((a : ℕ) : 
   obtain ⟨r, hr⟩ := IsAlgClosed.exists_aeval_eq_zero K _ (degree_cyclotomic_pos a K a.pos).ne'
   refine' ⟨r, _⟩
   haveI := h a ha
-  rwa [coe_aeval_eq_eval, ← IsRoot.def, isRoot_cyclotomic_iff] at hr
+  rwa [coe_aeval_eq_eval, ← IsRoot.definition, isRoot_cyclotomic_iff] at hr
 #align is_alg_closed.is_cyclotomic_extension IsAlgClosed.isCyclotomicExtension
 
 instance IsAlgClosedOfCharZero.isCyclotomicExtension [CharZero K] :

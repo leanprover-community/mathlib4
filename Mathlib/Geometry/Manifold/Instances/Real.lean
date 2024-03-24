@@ -186,7 +186,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     dsimp at hz h'z
     have A : x + z 0 ≤ y := by linarith
     rw [Subsingleton.elim i 0]
-    simp only [A, add_comm, add_sub_cancel', min_eq_left]
+    simp only [A, add_comm, add_sub_cancel_left, min_eq_left]
   open_source :=
     haveI : IsOpen { z : ℝ | z < y } := isOpen_Iio
     this.preimage continuous_subtype_val

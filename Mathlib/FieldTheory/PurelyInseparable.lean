@@ -1005,8 +1005,8 @@ theorem IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInsepara
     rintro x ⟨y, hy⟩
     obtain ⟨n, z, hz⟩ := IsPurelyInseparable.pow_mem F q y
     refine ⟨n, algebraMap F M z, ?_⟩
-    rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply F E K, hz, ← hy, map_pow]
-    rfl
+    rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply F E K, hz, ← hy, map_pow,
+      AlgHom.toRingHom_eq_coe, IsScalarTower.coe_toAlgHom]
   have h := lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic F E L
     (IsPurelyInseparable.isAlgebraic F E)
   rw [IsPurelyInseparable.sepDegree_eq_one F E, Cardinal.lift_one, one_mul] at h
