@@ -44,7 +44,9 @@ theorem redCons_nil {G : SerreGraph V E} {u v : V}
   simp [redCons]
 
 theorem redCons_cons_vertex_neq {G : SerreGraph V E} {u v v' w : V}
-    (e: EdgeBetween G u v) (e' : EdgeBetween G v v') (p : EdgePath G v' w) (h : v' ≠ u) : redCons e (cons e' p) = cons e (cons e' p) := by
+    (e: EdgeBetween G u v) (e' : EdgeBetween G v v')
+    (p : EdgePath G v' w) (h : v' ≠ u) : redCons e (cons e' p) =
+    cons e (cons e' p) := by
   simp [redCons, h]
 
 theorem redCons_cons_edge_neq {G : SerreGraph V E} {u v w : V}
@@ -280,7 +282,8 @@ theorem reduction_reduced {G: SerreGraph V E} {v w : V} (p : EdgePath G v w) :
     apply reduced_redCons
     assumption
 
-theorem reduction_eq_self_of_reduced {G: SerreGraph V E} {v w : V} (p : EdgePath G v w) (hyp : reduced p) :
+theorem reduction_eq_self_of_reduced {G: SerreGraph V E} {v w : V}
+    (p : EdgePath G v w) (hyp : reduced p) :
     reduction p = p := by
   induction p with
   | nil _ =>
@@ -345,12 +348,10 @@ theorem reducedConcat_cancel_pair {G : SerreGraph V E} {v w u : V}
     p :+ e :+ e.bar = p := by
   have hyp' :=  reverse_reduced p hyp
   simp only [reducedConcat, EdgeBetween.bar_bar, reverse_reverse]
-  let lm :
-    redCons e.bar.bar (redCons (EdgeBetween.bar e) (reverse p))
-      = reverse p :=
-    by
-      apply cancelling_steps_redCons
-      assumption
+  let lm : redCons e.bar.bar (redCons (EdgeBetween.bar e) (reverse p))
+      = reverse p := by
+    apply cancelling_steps_redCons
+    assumption
   simp at lm
   rw [lm, reverse_reverse]
 
