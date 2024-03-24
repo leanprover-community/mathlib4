@@ -83,7 +83,7 @@ theorem projectiveSeminormAux_smul (p : FreeAddMonoid (𝕜 × Π i, E i)) (a : 
   simp only [Function.comp_apply, norm_mul, smul_eq_mul]
   rw [mul_assoc]
 
-theorem projectiveSemiNormAuxBddBelow (x : ⨂[𝕜] i, E i) :
+theorem bddBelow_projectiveSemiNormAux (x : ⨂[𝕜] i, E i) :
     BddBelow (Set.range (fun (p : lifts x) ↦ projectiveSeminormAux p.1)) := by
   existsi 0
   rw [mem_lowerBounds]
