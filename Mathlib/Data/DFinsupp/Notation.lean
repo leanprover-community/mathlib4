@@ -23,21 +23,17 @@ open Lean
 open Lean.Parser
 open Lean.Parser.Term
 
-macro_rules
-  | `(term| fun₀ $x:matchAlt*) => do
-    let mut stx : Term ← `(0)
-    let mut fst : Bool := true
-    for xi in x do
-      for xii in (← Elab.Term.expandMatchAlt xi) do
-        match xii with
-        | `(matchAltExpr| | $pat => $val) =>
-          if fst then
-            stx ← `(DFinsupp.single $pat $val)
-          else
-            stx ← `(DFinsupp.update $pat $stx $val)
-          fst := false
-        | _ => Macro.throwUnsupported
-    pure stx
+attribute [term_parser] Finsupp.stxSingle₀ Finsupp.stxUpdate₀
+
+@[term_elab Finsupp.stxSingle₀]
+def elabSingle₀ : Elab.Term.TermElab
+| `(term| single₀ $i $x) => fun ty => do Elab.Term.elabTerm (← `(DFinsupp.single $i $x)) ty
+| _ => fun _ => Elab.throwUnsupportedSyntax
+
+@[term_elab Finsupp.stxUpdate₀]
+def elabUpdate₀ : Elab.Term.TermElab
+| `(term| update₀ $f $i $x) => fun ty => do Elab.Term.elabTerm (← `(DFinsupp.update $i $f $x)) ty
+| _ => fun _ => Elab.throwUnsupportedSyntax
 
 /-- Unexpander for the `fun₀ | i => x` notation. -/
 @[app_unexpander Finsupp.single]

@@ -32,6 +32,19 @@ As a result, if multiple match arms coincide, the last one takes precedence. -/
 def fun₀ := leading_parser:maxPrec
   ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> fun₀.matchAlts
 
+local syntax:lead (name := stxSingle₀) "single₀" term:arg term:arg : term
+local syntax:lead (name := stxUpdate₀) "update₀" term:arg term:arg term:arg : term
+
+@[term_elab stxSingle₀]
+def elabSingle₀ : Elab.Term.TermElab
+| `(term| single₀ $i $x) => fun ty => do Elab.Term.elabTerm (← `(Finsupp.single $i $x)) ty
+| _ => fun _ => Elab.throwUnsupportedSyntax
+
+@[term_elab stxUpdate₀]
+def elabUpdate₀ : Elab.Term.TermElab
+| `(term| update₀ $f $i $x) => fun ty => do Elab.Term.elabTerm (← `(Finsupp.update $f $i $x)) ty
+| _ => fun _ => Elab.throwUnsupportedSyntax
+
 macro_rules
   | `(term| fun₀ $x:matchAlt*) => do
     let mut stx : Term ← `(0)
@@ -41,9 +54,9 @@ macro_rules
         match xii with
         | `(matchAltExpr| | $pat => $val) =>
           if fst then
-            stx ← `(Finsupp.single $pat $val)
+            stx ← `(single₀ $pat $val)
           else
-            stx ← `(Finsupp.update $stx $pat $val)
+            stx ← `(update₀ $stx $pat $val)
           fst := false
         | _ => Macro.throwUnsupported
     pure stx
