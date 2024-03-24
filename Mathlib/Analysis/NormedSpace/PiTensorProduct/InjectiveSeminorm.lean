@@ -153,19 +153,19 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
 
 theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
     ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
--- If `F` were in `Type (max (max uι u𝕜) uE)` (which is the type of `⨂[𝕜] i, E i`), then the
--- property that we want to prove would hold by definition of `injectiveSeminorm`. This is
--- not necessarily true, but we will show that there exists a normed vector space `G` in
--- `Type (max (max uι u𝕜) uE)` and an injective isometry from `G` to `F` such that `f` factors
--- through a continuous multilinear map `f'` from `E = Π i, E i` to `G`, to which we can apply
--- the definition of `injectiveSeminorm`. The desired inequality for `f` then follows
--- immediately.
--- The idea is very simple: the multilinear map `f` corresponds by `PiTensorProduct.lift`
--- to a linear map from `⨂[𝕜] i, E i` to `F`, say `l`. We want to take `G` to be the image of
--- `l`, with the norm induced from that of `F`; to make sure that we are in the correct universe,
--- it is actually more convenient to take `G` equal to the coimage of `l` (i.e. the quotient
--- of `⨂[𝕜] i, E i` by the kernel of `l`), which is canonically isomorphic to its image by
--- `LinearMap.quotKerEquivRange`.
+    /- If `F` were in `Type (max uι u𝕜 uE)` (which is the type of `⨂[𝕜] i, E i`), then the
+    property that we want to prove would hold by definition of `injectiveSeminorm`. This is
+    not necessarily true, but we will show that there exists a normed vector space `G` in
+    `Type (max (max uι u𝕜) uE)` and an injective isometry from `G` to `F` such that `f` factors
+    through a continuous multilinear map `f'` from `E = Π i, E i` to `G`, to which we can apply
+    the definition of `injectiveSeminorm`. The desired inequality for `f` then follows
+    immediately.
+    The idea is very simple: the multilinear map `f` corresponds by `PiTensorProduct.lift`
+    to a linear map from `⨂[𝕜] i, E i` to `F`, say `l`. We want to take `G` to be the image of
+    `l`, with the norm induced from that of `F`; to make sure that we are in the correct universe,
+    it is actually more convenient to take `G` equal to the coimage of `l` (i.e. the quotient
+    of `⨂[𝕜] i, E i` by the kernel of `l`), which is canonically isomorphic to its image by
+    `LinearMap.quotKerEquivRange`. -/
   set G := (⨂[𝕜] i, E i) ⧸ LinearMap.ker (lift f.toMultilinearMap)
   set G' := LinearMap.range (lift f.toMultilinearMap)
   set e := LinearMap.quotKerEquivRange (lift f.toMultilinearMap)
