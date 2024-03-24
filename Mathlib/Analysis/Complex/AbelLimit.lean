@@ -225,8 +225,8 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
         rw [tsum_geometric_of_lt_one (by positivity) zn, ← div_eq_mul_inv]
       _ < M * (1 - ‖z‖) * (ε / 4 / M) / (1 - ‖z‖) := by gcongr; linarith only [zn]
       _ = _ := by
-        rw [← mul_rotate, mul_div_cancel _ (by linarith only [zn]),
-          div_mul_cancel _ (by linarith only [hM])]
+        rw [← mul_rotate, mul_div_cancel_right₀ _ (by linarith only [zn]),
+          div_mul_cancel₀ _ (by linarith only [hM])]
   convert add_lt_add S₁ S₂ using 1
   linarith only
 
