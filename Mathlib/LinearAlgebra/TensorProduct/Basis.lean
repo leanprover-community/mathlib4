@@ -84,6 +84,17 @@ def Basis.piTensorProduct (b : Π i, Basis (κ i) R (M i)) :
         (finsuppPiTensorProduct R _ _).trans <|
           Finsupp.lcongr (Equiv.refl _) (constantBaseRingEquiv _ R).toLinearEquiv).symm
 
+theorem Basis.piTensorProduct_apply (b : Π i, Basis (κ i) R (M i)) (p : Π i, κ i) :
+    Basis.piTensorProduct b p = ⨂ₜ[R] i, (b i) (p i) := by
+  simp only [piTensorProduct, LinearEquiv.trans_symm, Finsupp.lcongr_symm, Equiv.refl_symm,
+    AlgEquiv.toLinearEquiv_symm, map_apply, Finsupp.coe_basisSingleOne, LinearEquiv.trans_apply,
+    Finsupp.lcongr_single, Equiv.refl_apply, AlgEquiv.toLinearEquiv_apply, _root_.map_one]
+  apply LinearEquiv.injective (PiTensorProduct.congr (fun i ↦ (b i).repr))
+  simp only [LinearEquiv.apply_symm_apply, congr_tprod, repr_self]
+  apply LinearEquiv.injective (finsuppPiTensorProduct R κ fun _ ↦ R)
+  simp only [LinearEquiv.apply_symm_apply, finsuppPiTensorProduct_single]
+  rfl
+
 end PiTensorProduct
 
 end

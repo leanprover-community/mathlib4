@@ -1874,15 +1874,16 @@ variable (M : ι → Type*) [Π i, AddCommMonoid (M i)] [Π i, Module R (M i)]
 sending `⨂ₜ[R] i, f i` to the composition of `PiTensorProduct.map f` with
 the linear equivalence `⨂[R] i, R →ₗ R` given by multiplication. -/
 def dualDistrib : (⨂[R] i, Dual R (M i)) →ₗ[R] Dual R (⨂[R] i, M i) :=
-  LinearMap.comp (LinearMap.compRight (constantBaseRingEquiv ι R)) piTensorHomMap
+  LinearMap.comp (LinearMap.compRight (constantBaseRingEquiv ι R).toLinearMap) piTensorHomMap
 
 variable {R M}
 
 @[simp]
 theorem dualDistrib_apply (f : Π i, Dual R (M i)) (m : Π i, M i) :
     dualDistrib R M (⨂ₜ[R] i, f i) (⨂ₜ[R] i, m i) = ∏ i, (f i) (m i) := by
-  simp only [dualDistrib, coe_comp, Function.comp_apply, compRight_apply, LinearEquiv.coe_coe,
-    piTensorHomMap_tprod_tprod, constantBaseRingEquiv_tprod]
+  simp only [dualDistrib, AlgEquiv.toLinearEquiv_toLinearMap, coe_comp, Function.comp_apply,
+    compRight_apply, piTensorHomMap_tprod_tprod, AlgEquiv.toLinearMap_apply,
+    constantBaseRingEquiv_tprod]
 
 end SemiRing
 
@@ -1910,44 +1911,35 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Π i, Basis (κ i) R
     comp (dualDistrib R M) (dualDistribInvOfBasis b) = LinearMap.id := by
   refine (Basis.piTensorProduct b).dualBasis.ext (fun p ↦ ?_)
   refine (Basis.piTensorProduct b).ext (fun q ↦ ?_)
-  simp only [dualDistrib, constantBaseRingEquiv, Basis.piTensorProduct, LinearEquiv.trans_symm,
-    Finsupp.lcongr_symm, Equiv.refl_symm, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
-    dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.map_repr, LinearEquiv.symm_symm,
+  conv_lhs => rw [Basis.piTensorProduct_apply]
+  simp only [Basis.coe_dualBasis, coe_comp, Function.comp_apply, dualDistribInvOfBasis_apply,
+    Basis.coord_apply, map_sum, map_smul, coeFn_sum, Finset.sum_apply, smul_apply, smul_eq_mul,
+    id_coe, id_eq, Basis.repr_self]
+  simp only [Basis.piTensorProduct, LinearEquiv.trans_symm, Finsupp.lcongr_symm, Equiv.refl_symm,
+    AlgEquiv.toLinearEquiv_symm, Basis.map_repr, LinearEquiv.symm_symm, AlgEquiv.symm_symm,
     Finsupp.basisSingleOne_repr, LinearEquiv.trans_refl, LinearEquiv.trans_apply, congr_tprod,
     Basis.repr_self, finsuppPiTensorProduct_single, Finsupp.lcongr_single, Equiv.refl_apply,
-    LinearEquiv.ofLinear_apply, lift.tprod, MultilinearMap.mkPiAlgebra_apply, Finset.prod_const_one,
-    map_sum, SMulHomClass.map_smul, compRight_apply, Basis.map_apply, Finsupp.coe_basisSingleOne,
-    LinearEquiv.ofLinear_symm_apply, coe_mk, AddHom.coe_mk, one_smul,
-    finsuppPiTensorProduct_symm_single, congr_symm_tprod, Basis.repr_symm_apply,
-    Finsupp.total_single, coeFn_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
-    piTensorHomMap_tprod_tprod, smul_eq_mul, id_coe, id_eq]
-  rw [← Finset.sum_subset (Finset.subset_univ {p})
-    (fun _ _ h ↦ by rw [Finsupp.single_eq_of_ne (Finset.not_mem_singleton.mp h), zero_mul]),
-    Finset.sum_singleton, Finsupp.single_eq_same, one_mul]
-  by_cases h : p = q
-  · rw [h, Finset.prod_eq_one (fun i _ ↦ by rw [Finsupp.single_eq_same]), Finsupp.single_eq_same]
-  · obtain ⟨i, hi⟩ := Function.ne_iff.mp h
-    rw [Finsupp.single_eq_of_ne (Ne.symm h), Finset.prod_eq_zero (Finset.mem_univ i)
-      (by rw [Finsupp.single_eq_of_ne (Ne.symm hi)])]
+    AlgEquiv.toLinearEquiv_apply, constantBaseRingEquiv_tprod, Finset.prod_const_one,
+    dualDistrib_apply, Basis.coord_apply]
+  rw [← Finset.sum_subset (Finset.subset_univ {p}), Finset.sum_singleton]
+  · by_cases h : p = q
+    · simp only [h, Finsupp.single_eq_same, Finset.prod_const_one, mul_one]
+    · obtain ⟨i, hi⟩ := Function.ne_iff.mp h
+      rw [Finsupp.single_eq_of_ne (Ne.symm h), Finset.prod_eq_zero (Finset.mem_univ i)
+        (by rw [Finsupp.single_eq_of_ne (Ne.symm hi)]), mul_zero]
+  · exact fun _ _ h ↦ by rw [Finsupp.single_eq_of_ne (Finset.not_mem_singleton.mp h), zero_mul]
 
 theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Π i, Basis (κ i) R (M i)) :
     comp (dualDistribInvOfBasis b) (dualDistrib R M) = LinearMap.id := by
   refine (Basis.piTensorProduct (fun i ↦ (b i).dualBasis)).ext (fun p ↦ ?_)
-  simp only [dualDistrib, constantBaseRingEquiv, Basis.piTensorProduct, LinearEquiv.trans_symm,
-    Finsupp.lcongr_symm, Equiv.refl_symm, Basis.map_apply, Finsupp.coe_basisSingleOne,
-    LinearEquiv.trans_apply, Finsupp.lcongr_single, Equiv.refl_apply,
-    LinearEquiv.ofLinear_symm_apply, coe_mk, AddHom.coe_mk, one_smul,
-    finsuppPiTensorProduct_symm_single, congr_symm_tprod, Basis.repr_symm_apply,
-    Basis.coe_dualBasis, Finsupp.total_single, coe_comp, Function.comp_apply, compRight_apply,
-    dualDistribInvOfBasis_apply, LinearEquiv.coe_coe, piTensorHomMap_tprod_tprod, Basis.coord_apply,
-    Basis.repr_self, LinearEquiv.ofLinear_apply, lift.tprod, MultilinearMap.mkPiAlgebra_apply,
-    id_coe, id_eq]
+  simp only [Basis.piTensorProduct_apply, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
+    dualDistribInvOfBasis_apply, dualDistrib_apply, Basis.coord_apply, Basis.repr_self, id_coe,
+    id_eq]
   rw [← Finset.sum_subset (Finset.subset_univ {p})]
   · simp only [Finset.sum_singleton, Finsupp.single_eq_same, Finset.prod_const_one, one_smul]
-  · intro q _ hq
-    obtain ⟨i, hi⟩ := Function.ne_iff.mp (Finset.not_mem_singleton.mp hq)
-    rw [Finset.prod_eq_zero (Finset.mem_univ i), zero_smul]
-    rw [Finsupp.single_eq_of_ne hi]
+  · intro _ _ h
+    obtain ⟨i, hi⟩ := Function.ne_iff.mp (Finset.not_mem_singleton.mp h)
+    rw [Finset.prod_eq_zero (Finset.mem_univ i), zero_smul]; rw [Finsupp.single_eq_of_ne hi]
 
 /-- A linear equivalence between `⨂[R] i, Dual R (M i)` and `Dual R (⨂[R] i, M i)`
 given bases for all `M i`. If `f : (i : ι) → Dual R (s i)`, then this equivalence sends
