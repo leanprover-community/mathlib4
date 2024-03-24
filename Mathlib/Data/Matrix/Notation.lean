@@ -188,7 +188,8 @@ theorem col_empty (v : Fin 0 → α) : col (ι := ι) v = vecEmpty :=
 #align matrix.col_empty Matrix.col_empty
 
 @[simp]
-theorem col_cons (x : α) (u : Fin m → α) : col (ι := ι) (vecCons x u) = vecCons (fun _ => x) (col u) := by
+theorem col_cons (x : α) (u : Fin m → α) :
+    col (ι := ι) (vecCons x u) = vecCons (fun _ => x) (col u) := by
   ext i j
   refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
 #align matrix.col_cons Matrix.col_cons

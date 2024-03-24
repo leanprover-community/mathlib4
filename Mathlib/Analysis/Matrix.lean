@@ -305,7 +305,8 @@ alias linfty_op_norm_col :=
   linfty_opNorm_col -- deprecated on 2024-02-02
 
 @[simp]
-theorem linfty_opNNNorm_row {ι : Type*} [Unique ι] (v : n → α) : ‖row (ι := ι) v‖₊ = ∑ i, ‖v i‖₊ := by simp [linfty_opNNNorm_def]
+theorem linfty_opNNNorm_row {ι : Type*} [Unique ι] (v : n → α) :
+    ‖row (ι := ι) v‖₊ = ∑ i, ‖v i‖₊ := by simp [linfty_opNNNorm_def]
 #align matrix.linfty_op_nnnorm_row Matrix.linfty_opNNNorm_row
 
 @[deprecated]
@@ -637,13 +638,15 @@ instance frobenius_normedStarGroup [StarAddMonoid α] [NormedStarGroup α] :
 #align matrix.frobenius_normed_star_group Matrix.frobenius_normedStarGroup
 
 @[simp]
-theorem frobenius_norm_row {ι : Type*} [Unique ι] (v : m → α) : ‖row (ι := ι) v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
+theorem frobenius_norm_row {ι : Type*} [Unique ι] (v : m → α) :
+    ‖row (ι := ι) v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
   rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
   simp only [row_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
 #align matrix.frobenius_norm_row Matrix.frobenius_norm_row
 
 @[simp]
-theorem frobenius_nnnorm_row {ι : Type*} [Unique ι] (v : m → α) : ‖row (ι := ι) v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
+theorem frobenius_nnnorm_row {ι : Type*} [Unique ι] (v : m → α) :
+    ‖row (ι := ι) v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
   Subtype.ext <| frobenius_norm_row v
 #align matrix.frobenius_nnnorm_row Matrix.frobenius_nnnorm_row
 

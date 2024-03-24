@@ -82,7 +82,8 @@ theorem col_smul [SMul R α] (x : R) (v : m → α) : col (ι := ι) (x • v) =
 theorem row_injective : Function.Injective (row : (n → α) → Matrix ι n α) :=
   fun _x _y h => funext fun j => congr_fun₂ h default j
 
-@[simp] theorem row_inj {v w : n → α} : row (ι := ι) v = row (ι := ι) w ↔ v = w := row_injective.eq_iff
+@[simp] theorem row_inj {v w : n → α} : row (ι := ι) v = row (ι := ι) w ↔ v = w :=
+  row_injective.eq_iff
 
 @[simp] theorem row_zero [Zero α] : row (ι := ι) (0 : n → α) = 0 := rfl
 
