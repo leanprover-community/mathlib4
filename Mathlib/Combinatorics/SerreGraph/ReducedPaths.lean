@@ -302,7 +302,7 @@ theorem reduction_homotopic_self {G: SerreGraph V E} {v w : V}
   | nil _ =>
     simp [reduction_nil]
   | cons e p ih =>
-    simp [reduction_cons, ←cons_homotopic_redCons]
+    simp [reduction_cons, ← cons_homotopic_redCons]
     apply cons_equiv_of_equiv
     assumption
 
