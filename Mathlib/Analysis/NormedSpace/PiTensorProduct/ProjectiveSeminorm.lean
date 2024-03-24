@@ -91,12 +91,14 @@ theorem bddBelow_projectiveSemiNormAux (x : ⨂[𝕜] i, E i) :
     forall_apply_eq_imp_iff₂]
   exact fun p _ ↦ projectiveSeminormAux_nonneg p
 
-/-- The projective seminorm on `⨂[𝕜] i, Eᵢ`.
+/-- The projective seminorm on `⨂[𝕜] i, Eᵢ`. It sends an element `x` of `⨂[𝕜] i, Eᵢ` to the
+infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` in `Π i, Eᵢ`)
+of `∑ j, Π i, ‖mⱼ i‖`.
 -/
 noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := by
   refine Seminorm.ofSMulLE (fun x ↦ iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.1)) ?_ ?_ ?_
   · refine le_antisymm ?_ ?_
-    · refine ciInf_le_of_le (projectiveSemiNormAuxBddBelow (0 : ⨂[𝕜] i, E i)) ⟨0, lifts_zero⟩ ?_
+    · refine ciInf_le_of_le (bddBelow_projectiveSemiNormAux (0 : ⨂[𝕜] i, E i)) ⟨0, lifts_zero⟩ ?_
       simp only [projectiveSeminormAux, Function.comp_apply]
       rw [List.sum_eq_zero]
       intro _
@@ -109,7 +111,7 @@ noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := by
       exact le_ciInf (fun p ↦ projectiveSeminormAux_nonneg p.1)
   · intro x y
     letI := nonempty_subtype.mpr (nonempty_lifts x); letI := nonempty_subtype.mpr (nonempty_lifts y)
-    exact le_ciInf_add_ciInf (fun p q ↦ ciInf_le_of_le (projectiveSemiNormAuxBddBelow _)
+    exact le_ciInf_add_ciInf (fun p q ↦ ciInf_le_of_le (bddBelow_projectiveSemiNormAux _)
       ⟨p.1 + q.1, lifts_add p.2 q.2⟩ (projectiveSeminormAux_add_le p.1 q.1))
   · intro a x
     letI := nonempty_subtype.mpr (nonempty_lifts x)
@@ -117,7 +119,7 @@ noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := by
     refine le_ciInf ?_
     intro p
     rw [← projectiveSeminormAux_smul]
-    exact ciInf_le_of_le (projectiveSemiNormAuxBddBelow _) ⟨(List.map (fun y ↦ (a * y.1, y.2)) p.1),
+    exact ciInf_le_of_le (bddBelow_projectiveSemiNormAux _) ⟨(List.map (fun y ↦ (a * y.1, y.2)) p.1),
     lifts_smul p.2 a⟩ (le_refl _)
 
 theorem projectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
@@ -126,7 +128,7 @@ theorem projectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
 theorem projectiveSeminorm_tprod_le (m : Π i, E i) :
     projectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ := by
   rw [projectiveSeminorm_apply]
-  convert ciInf_le (projectiveSemiNormAuxBddBelow _) ⟨[((1 : 𝕜), m)] ,?_⟩
+  convert ciInf_le (bddBelow_projectiveSemiNormAux _) ⟨[((1 : 𝕜), m)] ,?_⟩
   · simp only [projectiveSeminormAux, Function.comp_apply, List.map_cons, norm_one, one_mul,
     List.map_nil, List.sum_cons, List.sum_nil, add_zero]
   · rw [mem_lifts_iff, List.map_singleton, List.sum_singleton, one_smul]

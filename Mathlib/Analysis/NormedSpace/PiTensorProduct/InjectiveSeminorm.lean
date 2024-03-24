@@ -88,6 +88,7 @@ namespace PiTensorProduct
 
 section seminorm
 
+variable (F) in
 /-- The linear map from `⨂[𝕜] i, Eᵢ` to `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F` sending
 `x` in `⨂[𝕜] i, Eᵢ` to the map `f ↦ f.lift x`.
 -/
@@ -115,24 +116,24 @@ noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[�
       Pi.smul_apply]
 
 theorem toDualContinuousMultilinearMap_le_projectiveSeminorm (x : ⨂[𝕜] i, E i) :
-    ‖toDualContinuousMultilinearMap x (F := F)‖ ≤ projectiveSeminorm x := by
+    ‖toDualContinuousMultilinearMap F x‖ ≤ projectiveSeminorm x := by
   simp only [toDualContinuousMultilinearMap, LinearMap.coe_mk, AddHom.coe_mk]
   apply LinearMap.mkContinuous_norm_le _ (apply_nonneg _ _)
 
 /-- The injective seminorm on `⨂[𝕜] i, Eᵢ`. Morally, it sends `x` in `⨂[𝕜] i, Eᵢ` to the
-`sup` of the operator norms of the `PiTensorProduct.toDualContinuousMultilinearMap x`, for all
+`sup` of the operator norms of the `PiTensorProduct.toDualContinuousMultilinearMap F x`, for all
 normed vector spaces `F`. In fact, we only take in the same universe as `⨂[𝕜] i, Eᵢ`, and then
 prove in `PiTensorProduct.norm_eval_le_injectiveSeminorm` that this gives the same result.
 -/
 noncomputable irreducible_def injectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) :=
   sSup {p | ∃ (G : Type (max (max uι u𝕜) uE)) (_ : SeminormedAddCommGroup G)
   (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
-  (toDualContinuousMultilinearMap (F := G) (𝕜 := 𝕜) (E := E))}
+  (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}
 
 lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max (max uι u𝕜) uE))
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
     p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
-    (toDualContinuousMultilinearMap (F := G) (𝕜 := 𝕜) (E := E))} := by
+    (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))} := by
   existsi projectiveSeminorm
   rw [mem_upperBounds]
   simp only [Set.mem_setOf_eq, forall_exists_index]
@@ -146,7 +147,7 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max (max uι u𝕜) uE))
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
     (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
-    (toDualContinuousMultilinearMap (F := G) (𝕜 := 𝕜) (E := E))}, p.1 x := by
+    (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}, p.1 x := by
   simp [injectiveSeminorm]
   exact Seminorm.sSup_apply dualSeminorms_bounded
 
@@ -191,7 +192,7 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
     rw [heq] at h
     refine le_trans h (mul_le_mul_of_nonneg_right hnorm (apply_nonneg _ _))
   have hle : Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
-      (toDualContinuousMultilinearMap (F := G) (𝕜 := 𝕜) (E := E)) ≤ injectiveSeminorm := by
+      (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E)) ≤ injectiveSeminorm := by
     simp only [injectiveSeminorm]
     refine le_csSup dualSeminorms_bounded ?_
     rw [Set.mem_setOf]
@@ -211,7 +212,7 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
     existsi PUnit, inferInstance, inferInstance
     ext x
     simp only [Seminorm.zero_apply, Seminorm.comp_apply, coe_normSeminorm]
-    have heq : toDualContinuousMultilinearMap (F := PUnit) x = 0 := by ext _
+    have heq : toDualContinuousMultilinearMap PUnit x = 0 := by ext _
     rw [heq, norm_zero]
   · intro p hp
     simp only [Set.mem_setOf_eq] at hp
