@@ -39,8 +39,6 @@ In this file we use the following type variables:
 Bilinear form,
 -/
 
-#check LinearMap.BilinForm
-
 open BigOperators
 
 open LinearMap (BilinForm)
