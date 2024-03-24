@@ -92,7 +92,7 @@ theorem tail_reducible_of_split {G : SerreGraph V E} {u v w u' v' w': V}
   let lhyp := congrArg EdgePath.toList hyp
   simp only [cons_toList, append_toList, EdgeBetween.bar_eq_bar, List.cons.injEq] at lhyp
   have : v' = v := by
-    rw [← e.term_eq, ←ph.term_eq]
+    rw [← e.term_eq, ← ph.term_eq]
     symm
     apply congrArg G.τ lhyp.left
   cases this
