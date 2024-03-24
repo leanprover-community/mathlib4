@@ -52,7 +52,7 @@ theorem extract_loop_0 {array: Array α }: Array.extract.loop array 0 i e = e :=
   simp
 
 theorem extract_end_le_start_eq_empty {a: Array α } :
-  (j ≤ i) → a.extract i j = #[] := by
+    (j ≤ i) → a.extract i j = #[] := by
   intro h
   simp only [extract, Nat.min_def, Nat.sub_eq, mkEmpty_eq]
   split <;> rename_i h1
