@@ -29,15 +29,12 @@ theory.
 
 ## See also
 
-`Analysis.Convex.Mul` for convexity of `x ↦ x ^ n``
+`Analysis.Convex.Mul` for convexity of `x ↦ x ^ n`
 -/
 
 open Real Set BigOperators NNReal
 
-/-- `Real.exp` is strictly convex on the whole real line.
-
-We give an elementary proof rather than using the second derivative test, since this lemma is
-needed early in the analysis library. -/
+/-- `Real.exp` is strictly convex on the whole real line. -/
 theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
   apply strictConvexOn_of_slope_strict_mono_adjacent convex_univ
   rintro x y z - - hxy hyz
@@ -65,13 +62,10 @@ theorem convexOn_exp : ConvexOn ℝ univ exp :=
   strictConvexOn_exp.convexOn
 #align convex_on_exp convexOn_exp
 
-/- `Real.log` is strictly concave on $(0, +∞)$.
-
-We give an elementary proof rather than using the second derivative test, since this lemma is
-needed early in the analysis library. -/
+/- `Real.log` is strictly concave on $(0, +∞)$. -/
 theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
   apply strictConcaveOn_of_slope_strict_anti_adjacent (convex_Ioi (0 : ℝ))
-  rintro x y z (hx : 0 < x) (hz : 0 < z) hxy hyz
+  intro x y z (hx : 0 < x) (hz : 0 < z) hxy hyz
   have hy : 0 < y := hx.trans hxy
   trans y⁻¹
   · have h : 0 < z - y := by linarith
@@ -104,8 +98,8 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
 theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 0) {p : ℝ} (hp : 1 < p) :
     1 + p * s < (1 + s) ^ p := by
   have hp' : 0 < p := zero_lt_one.trans hp
-  rcases eq_or_lt_of_le hs with (rfl | hs)
-  · rwa [add_right_neg, zero_rpow hp'.ne', mul_neg, mul_one, add_neg_lt_iff_lt_add, zero_add]
+  rcases eq_or_lt_of_le hs with rfl | hs
+  · rwa [add_right_neg, zero_rpow hp'.ne', mul_neg_one, add_neg_lt_iff_lt_add, zero_add]
   have hs1 : 0 < 1 + s := neg_lt_iff_pos_add'.mp hs
   rcases le_or_lt (1 + p * s) 0 with hs2 | hs2
   · exact hs2.trans_lt (rpow_pos_of_pos hs1 _)
@@ -142,8 +136,8 @@ theorem one_add_mul_self_le_rpow_one_add {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
 with `s ≠ 0`, we have `(1 + s) ^ p < 1 + p * s`. -/
 theorem rpow_one_add_lt_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 0) {p : ℝ} (hp1 : 0 < p)
     (hp2 : p < 1) : (1 + s) ^ p < 1 + p * s := by
-  rcases eq_or_lt_of_le hs with (rfl | hs)
-  · rwa [add_right_neg, zero_rpow hp1.ne', mul_neg, mul_one, lt_add_neg_iff_add_lt, zero_add]
+  rcases eq_or_lt_of_le hs with rfl | hs
+  · rwa [add_right_neg, zero_rpow hp1.ne', mul_neg_one, lt_add_neg_iff_add_lt, zero_add]
   have hs1 : 0 < 1 + s := neg_lt_iff_pos_add'.mp hs
   have hs2 : 0 < 1 + p * s := by
     rw [← neg_lt_iff_pos_add']
@@ -179,13 +173,10 @@ theorem rpow_one_add_le_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
   · simp [hs']
   exact (rpow_one_add_lt_one_add_mul_self hs hs' hp1 hp2).le
 
-/-- For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $[0, +∞)$.
-
-We give an elementary proof rather than using the second derivative test, since this lemma is
-needed early in the analysis library. -/
+/-- For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $[0, +∞)$. -/
 theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
   apply strictConvexOn_of_slope_strict_mono_adjacent (convex_Ici (0 : ℝ))
-  rintro x y z (hx : 0 ≤ x) (hz : 0 ≤ z) hxy hyz
+  intro x y z (hx : 0 ≤ x) (hz : 0 ≤ z) hxy hyz
   have hy : 0 < y := hx.trans_lt hxy
   have hy' : 0 < y ^ p := rpow_pos_of_pos hy _
   trans p * y ^ (p - 1)
@@ -195,16 +186,20 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
       mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one, mul_assoc, ← div_eq_inv_mul,
       sub_eq_add_neg, ← mul_neg, ← neg_div, neg_sub, _root_.sub_div, div_self hy.ne']
     apply one_add_mul_self_lt_rpow_one_add _ _ hp
-    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]; exact Or.inl ⟨hx, hy.le⟩
-    · rw [sub_ne_zero]; exact ((div_lt_one hy).mpr hxy).ne
+    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]
+      exact Or.inl ⟨hx, hy.le⟩
+    · rw [sub_ne_zero]
+      exact ((div_lt_one hy).mpr hxy).ne
   · have q : 0 < z - y := by rwa [sub_pos]
     rw [lt_div_iff q, ← div_lt_div_right hy', _root_.sub_div, div_self hy'.ne', ← div_rpow hz hy.le,
       lt_sub_iff_add_lt', ← add_sub_cancel_right (z / y) 1, add_comm _ 1, add_sub_assoc,
       ← div_mul_eq_mul_div, mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one,
       mul_assoc, ← div_eq_inv_mul, _root_.sub_div, div_self hy.ne']
     apply one_add_mul_self_lt_rpow_one_add _ _ hp
-    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]; exact Or.inl ⟨hz, hy.le⟩
-    · rw [sub_ne_zero]; exact ((one_lt_div hy).mpr hyz).ne'
+    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]
+      exact Or.inl ⟨hz, hy.le⟩
+    · rw [sub_ne_zero]
+      exact ((one_lt_div hy).mpr hyz).ne'
 #align strict_convex_on_rpow strictConvexOn_rpow
 
 theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
@@ -213,14 +208,11 @@ theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : �
   exact (strictConvexOn_rpow hp).convexOn
 #align convex_on_rpow convexOn_rpow
 
-/-- For `p : ℝ` with `0 < p < 1`, `fun x ↦ x ^ p` is strictly concave on $[0, +∞)$.
-
-We give an elementary proof rather than using the second derivative test, since this lemma is
-needed early in the analysis library. -/
+/-- For `p : ℝ` with `0 < p < 1`, `fun x ↦ x ^ p` is strictly concave on $[0, +∞)$. -/
 theorem strictConcaveOn_rpow {p : ℝ} (hp1 : 0 < p) (hp2 : p < 1) :
     StrictConcaveOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
   apply strictConcaveOn_of_slope_strict_anti_adjacent (convex_Ici (0 : ℝ))
-  rintro x y z (hx : 0 ≤ x) (hz : 0 ≤ z) hxy hyz
+  intro x y z (hx : 0 ≤ x) (hz : 0 ≤ z) hxy hyz
   have hy : 0 < y := by linarith
   have hy' : 0 < y ^ p := rpow_pos_of_pos hy _
   trans p * y ^ (p - 1)
@@ -230,16 +222,20 @@ theorem strictConcaveOn_rpow {p : ℝ} (hp1 : 0 < p) (hp2 : p < 1) :
       ← div_mul_eq_mul_div, mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one,
       mul_assoc, ← div_eq_inv_mul, _root_.sub_div, div_self hy.ne']
     apply rpow_one_add_lt_one_add_mul_self _ _ hp1 hp2
-    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]; exact Or.inl ⟨hz, hy.le⟩
-    · rw [sub_ne_zero]; exact ((one_lt_div hy).mpr hyz).ne'
+    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]
+      exact Or.inl ⟨hz, hy.le⟩
+    · rw [sub_ne_zero]
+      exact ((one_lt_div hy).mpr hyz).ne'
   · have q : 0 < y - x := by linarith only [hxy]
     rw [lt_div_iff q, ← div_lt_div_right hy', _root_.sub_div, div_self hy'.ne', ← div_rpow hx hy.le,
       lt_sub_comm, ← add_sub_cancel_right (x / y) 1, add_comm, add_sub_assoc, ← div_mul_eq_mul_div,
       mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one, mul_assoc, ← div_eq_inv_mul,
       sub_eq_add_neg 1, ← mul_neg, ← neg_div, neg_sub, _root_.sub_div, div_self hy.ne']
     apply rpow_one_add_lt_one_add_mul_self _ _ hp1 hp2
-    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]; exact Or.inl ⟨hx, hy.le⟩
-    · rw [sub_ne_zero]; exact ((div_lt_one hy).mpr hxy).ne
+    · rw [le_sub_iff_add_le, add_left_neg, div_nonneg_iff]
+      exact Or.inl ⟨hx, hy.le⟩
+    · rw [sub_ne_zero]
+      exact ((div_lt_one hy).mpr hxy).ne
 
 theorem concaveOn_rpow {p : ℝ} (hp1 : 0 ≤ p) (hp2 : p ≤ 1) :
     ConcaveOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
@@ -251,7 +247,7 @@ theorem concaveOn_rpow {p : ℝ} (hp1 : 0 ≤ p) (hp2 : p ≤ 1) :
 
 theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   refine' ⟨convex_Iio _, _⟩
-  rintro x (hx : x < 0) y (hy : y < 0) hxy a b ha hb hab
+  intro x (hx : x < 0) y (hy : y < 0) hxy a b ha hb hab
   have hx' : 0 < -x := by linarith
   have hy' : 0 < -y := by linarith
   have hxy' : -x ≠ -y := by contrapose! hxy; linarith
