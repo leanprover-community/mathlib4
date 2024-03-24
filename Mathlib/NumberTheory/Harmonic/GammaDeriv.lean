@@ -60,12 +60,12 @@ lemma Real.deriv_Gamma_nat (n : ℕ) :
     refine (le_of_eq ?_).trans <| hc.slope_le_deriv (mem_Ioi.mpr <| Nat.cast_pos.mpr hn)
       (by positivity : _ < (_ : ℝ)) (by linarith) (hder <| by positivity)
     rw [slope_def_field, show n + 1 - n = (1 : ℝ) by ring, div_one, h_rec n (by positivity),
-      add_sub_cancel']
+      add_sub_cancel_left]
   have derivUB (n : ℕ) : deriv f (n + 1) ≤ log (n + 1) := by
     refine (hc.deriv_le_slope (by positivity : (0 : ℝ) < n + 1) (by positivity : (0 : ℝ) < n + 2)
         (by linarith) (hder <| by positivity)).trans (le_of_eq ?_)
     rw [slope_def_field, show n + 2 - (n + 1) = (1 : ℝ) by ring, div_one,
-      show n + 2 = (n + 1) + (1 : ℝ) by ring, h_rec (n + 1) (by positivity), add_sub_cancel']
+      show n + 2 = (n + 1) + (1 : ℝ) by ring, h_rec (n + 1) (by positivity), add_sub_cancel_left]
   -- deduce `-deriv f 1` is bounded above + below by sequences which both tend to `γ`
   apply le_antisymm
   · apply ge_of_tendsto tendsto_harmonic_sub_log
