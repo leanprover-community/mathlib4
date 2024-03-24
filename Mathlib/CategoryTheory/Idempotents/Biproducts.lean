@@ -117,7 +117,7 @@ instance (P : Karoubi C) : HasBinaryBiproduct P P.complement :=
     (by
       simp only [id_eq, complement_X, comp_f,
         decompId_i_f, decompId_p_f, complement_p, instAdd_add, idem,
-        comp_sub, comp_id, sub_comp, id_comp, sub_self, sub_zero, add_sub_cancel'_right])
+        comp_sub, comp_id, sub_comp, id_comp, sub_self, sub_zero, add_sub_cancel])
 
 attribute [-simp] hom_ext_iff
 
@@ -144,7 +144,7 @@ def decomposition (P : Karoubi C) : P ⊞ P.complement ≅ (toKaroubi _).obj P.X
   inv_hom_id := by
     simp only [biprod.lift_desc, instAdd_add, toKaroubi_obj_X, comp_f,
       decompId_p_f, decompId_i_f, idem, complement_X, complement_p, comp_sub, comp_id,
-      sub_comp, id_comp, sub_self, sub_zero, add_sub_cancel'_right,
+      sub_comp, id_comp, sub_self, sub_zero, add_sub_cancel,
       id_eq, toKaroubi_obj_p]
 #align category_theory.idempotents.karoubi.decomposition CategoryTheory.Idempotents.Karoubi.decomposition
 

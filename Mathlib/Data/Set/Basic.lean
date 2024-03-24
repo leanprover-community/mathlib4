@@ -1021,38 +1021,27 @@ theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a
 
 /-! ### Distributivity laws -/
 
-
-theorem inter_distrib_left (s t u : Set α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
+theorem inter_union_distrib_left (s t u : Set α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
   inf_sup_left _ _ _
-#align set.inter_distrib_left Set.inter_distrib_left
+#align set.inter_distrib_left Set.inter_union_distrib_left
 
-theorem inter_union_distrib_left {s t u : Set α} : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
-  inf_sup_left _ _ _
-#align set.inter_union_distrib_left Set.inter_union_distrib_left
-
-theorem inter_distrib_right (s t u : Set α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
+theorem union_inter_distrib_right (s t u : Set α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
   inf_sup_right _ _ _
-#align set.inter_distrib_right Set.inter_distrib_right
+#align set.inter_distrib_right Set.union_inter_distrib_right
 
-theorem union_inter_distrib_right {s t u : Set α} : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
-  inf_sup_right _ _ _
-#align set.union_inter_distrib_right Set.union_inter_distrib_right
-
-theorem union_distrib_left (s t u : Set α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
+theorem union_inter_distrib_left (s t u : Set α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
   sup_inf_left _ _ _
-#align set.union_distrib_left Set.union_distrib_left
+#align set.union_distrib_left Set.union_inter_distrib_left
 
-theorem union_inter_distrib_left {s t u : Set α} : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
-  sup_inf_left _ _ _
-#align set.union_inter_distrib_left Set.union_inter_distrib_left
-
-theorem union_distrib_right (s t u : Set α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
+theorem inter_union_distrib_right (s t u : Set α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
   sup_inf_right _ _ _
-#align set.union_distrib_right Set.union_distrib_right
+#align set.union_distrib_right Set.inter_union_distrib_right
 
-theorem inter_union_distrib_right {s t u : Set α} : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
-  sup_inf_right _ _ _
-#align set.inter_union_distrib_right Set.inter_union_distrib_right
+-- 2024-03-22
+@[deprecated] alias inter_distrib_left := inter_union_distrib_left
+@[deprecated] alias inter_distrib_right := union_inter_distrib_right
+@[deprecated] alias union_distrib_left := union_inter_distrib_left
+@[deprecated] alias union_distrib_right := inter_union_distrib_right
 
 theorem union_union_distrib_left (s t u : Set α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
   sup_sup_distrib_left _ _ _
@@ -1373,14 +1362,9 @@ theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
   union_comm _ _
 #align set.pair_comm Set.pair_comm
 
--- Porting note: first branch after `constructor` used to be by `tauto!`.
 theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
-  simp only [Set.Subset.antisymm_iff, Set.insert_subset_iff, Set.mem_insert_iff,
-    Set.mem_singleton_iff, Set.singleton_subset_iff]
-  constructor
-  · rintro ⟨⟨rfl | rfl, rfl | rfl⟩, ⟨h₁, h₂⟩⟩ <;> simp [h₁, h₂] at * <;> simp [h₁, h₂]
-  · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp
+  simp [subset_antisymm_iff, insert_subset_iff]; aesop
 #align set.pair_eq_pair_iff Set.pair_eq_pair_iff
 
 /-! ### Lemmas about sets defined as `{x ∈ s | p x}`. -/
@@ -1448,7 +1432,7 @@ theorem sep_univ : { x ∈ (univ : Set α) | p x } = { x | p x } :=
 
 @[simp]
 theorem sep_union : { x | (x ∈ s ∨ x ∈ t) ∧ p x } = { x ∈ s | p x } ∪ { x ∈ t | p x } :=
-  union_inter_distrib_right
+  union_inter_distrib_right { x | x ∈ s } { x | x ∈ t } p
 #align set.sep_union Set.sep_union
 
 @[simp]
@@ -1463,7 +1447,7 @@ theorem sep_and : { x ∈ s | p x ∧ q x } = { x ∈ s | p x } ∩ { x ∈ s | 
 
 @[simp]
 theorem sep_or : { x ∈ s | p x ∨ q x } = { x ∈ s | p x } ∪ { x ∈ s | q x } :=
-  inter_union_distrib_left
+  inter_union_distrib_left s p q
 #align set.sep_or Set.sep_or
 
 @[simp]

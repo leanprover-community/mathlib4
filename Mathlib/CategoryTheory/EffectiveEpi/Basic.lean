@@ -267,3 +267,31 @@ def effectiveEpiStructOfIsIso {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpiSt
 instance {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpi f := ⟨⟨effectiveEpiStructOfIsIso f⟩⟩
 
 example {X : C} : EffectiveEpiFamily (fun _ => X : Unit → C) (fun _ => 𝟙 X) := inferInstance
+
+/--
+Reindex the indexing type of an effective epi family struct.
+-/
+def EffectiveEpiFamilyStruct.reindex
+    {B : C} {α α' : Type*}
+    (X : α → C)
+    (π : (a : α) → (X a ⟶ B))
+    (e : α' ≃ α)
+    (P : EffectiveEpiFamilyStruct (fun a => X (e a)) (fun a => π (e a))) :
+    EffectiveEpiFamilyStruct X π where
+  desc := fun f h => P.desc (fun a => f _) (fun a₁ a₂ => h _ _)
+  fac _ _ a := by
+    obtain ⟨a,rfl⟩ := e.surjective a
+    apply P.fac
+  uniq _ _ m hm := P.uniq _ _ _ fun a => hm _
+
+/--
+Reindex the indexing type of an effective epi family.
+-/
+lemma EffectiveEpiFamily.reindex
+    {B : C} {α α' : Type*}
+    (X : α → C)
+    (π : (a : α) → (X a ⟶ B))
+    (e : α' ≃ α)
+    (h : EffectiveEpiFamily (fun a => X (e a)) (fun a => π (e a))) :
+    EffectiveEpiFamily X π :=
+  .mk <| .intro <| @EffectiveEpiFamily.getStruct _ _ _ _ _ _ h |>.reindex _ _ e
