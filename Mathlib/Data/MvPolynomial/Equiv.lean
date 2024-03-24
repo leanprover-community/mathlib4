@@ -287,7 +287,7 @@ polynomials with coefficients in `MvPolynomial S₁ R`.
 def optionEquivLeft : MvPolynomial (Option S₁) R ≃ₐ[R] Polynomial (MvPolynomial S₁ R) :=
   AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o => o.elim Polynomial.X fun s => Polynomial.C (X s))
     (Polynomial.aevalTower (MvPolynomial.rename some) (X none))
-    (by ext : 2 <;> simp [← Polynomial.C_eq_algebraMap]) (by ext i : 2; cases i <;> simp)
+    (by ext : 2 <;> simp) (by ext i : 2; cases i <;> simp)
 #align mv_polynomial.option_equiv_left MvPolynomial.optionEquivLeft
 
 lemma optionEquivLeft_X_some (x : S₁) : optionEquivLeft R S₁ (X (some x)) = Polynomial.C (X x) := by
