@@ -401,15 +401,15 @@ section Zlattice
 
 open Submodule FiniteDimensional
 
- -- TODO: generalize this class to other rings than `ℤ`
- /-- An `L : Addsubgroup E` where `E` is a vector space over a normed field `K` is a `ℤ`-lattice if
- it is discrete and spans `E` over `K`. -/
- class IsZlattice (K : Type*) [NormedField K] {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
-     (L : AddSubgroup E) [DiscreteTopology L] : Prop where
-   /-- `L` spans the full space `E` over `K`. -/
-   span_top : span K (L : Set E) = ⊤
+-- TODO: generalize this class to other rings than `ℤ`
+/-- An `L : Addsubgroup E` where `E` is a vector space over a normed field `K` is a `ℤ`-lattice if
+it is discrete and spans `E` over `K`. -/
+class IsZlattice (K : Type*) [NormedField K] {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
+    (L : AddSubgroup E) [DiscreteTopology L] : Prop where
+  /-- `L` spans the full space `E` over `K`. -/
+  span_top : span K (L : Set E) = ⊤
 
- theorem _root_.Zspan.isZlattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem _root_.Zspan.isZlattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [Finite ι] (b : Basis ι ℝ E) :
     IsZlattice ℝ (span ℤ (Set.range b)).toAddSubgroup where
   span_top := Zspan.span_top b
@@ -496,8 +496,6 @@ instance instModuleFree__of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup
     change NoZeroSMulDivisors ℤ (AddSubgroup.toIntSubmodule L)
     exact noZeroSMulDivisors _
   infer_instance
-
-open FiniteDimensional
 
 theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
   classical
