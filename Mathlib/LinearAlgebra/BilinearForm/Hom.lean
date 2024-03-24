@@ -67,9 +67,9 @@ def toLinHom : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R where
   toFun := toLinHomAux₂
   map_add' A₁ A₂ :=
     LinearMap.ext fun x => by
-      dsimp only [toLinHomAux₁, toLinHomAux₂]
+      dsimp only [toLinHomAux₂]
   map_smul' c A := by
-    dsimp [toLinHomAux₁, toLinHomAux₂]
+    dsimp [toLinHomAux₂]
 #align bilin_form.to_lin_hom LinearMap.BilinForm.toLinHom
 
 theorem toLin'_apply (A : BilinForm R M) (x : M) : toLinHom.toFun A x = A x :=
