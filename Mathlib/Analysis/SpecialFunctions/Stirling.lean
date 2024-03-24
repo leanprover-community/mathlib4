@@ -74,15 +74,14 @@ theorem log_stirlingSeq_formula (n : ℕ) :
    `∑ 1 / (2 * (k + 1) + 1) * (1 / 2 * (m + 1) + 1)^(2 * (k + 1))`
 -/
 theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
-    HasSum (fun k : ℕ => ↑1 / (↑2 * ↑(k + 1) + ↑1) * (((1:ℝ)/(↑2 * ↑(m + 1) + ↑1)) ^ 2) ^ ↑(k + 1))
+    HasSum (fun k : ℕ => (1 : ℝ) / (2 * ↑(k + 1) + 1) * ((1 / (2 * ↑(m + 1) + 1)) ^ 2) ^ ↑(k + 1))
       (log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))) := by
-  change HasSum
-    ((fun b : ℕ => (1:ℝ) / ((2:ℝ) * b + (1:ℝ)) * (((1:ℝ) / (2 * (m + 1 :) + 1)) ^ 2) ^ b) ∘ succ) _
-  refine' (hasSum_nat_add_iff (g := _ - _) -- Porting note: must give implicit arguments
-    (f := (fun b : ℕ => ↑1 / (↑2 * b + ↑1) * (((1:ℝ) / (2 * ↑(m + 1) + 1)) ^ 2) ^ b)) 1).mpr _
-  convert (hasSum_log_one_add_inv <|
-    cast_pos.mpr (succ_pos m)).mul_left ((↑(m + 1) : ℝ) + 1 / 2) using 1
+  let f (k : ℕ) := (1 : ℝ) / (2 * k + 1) * ((1 / (2 * ↑(m + 1) + 1)) ^ 2) ^ k
+  change HasSum (fun k => f (k + 1)) _
+  rw [hasSum_nat_add_iff]
+  convert (hasSum_log_one_add_inv m.cast_add_one_pos).mul_left ((↑(m + 1) : ℝ) + 1 / 2) using 1
   · ext k
+    dsimp only [f]
     rw [← pow_mul, pow_add]
     push_cast
     field_simp
@@ -103,18 +102,18 @@ theorem log_stirlingSeq'_antitone : Antitone (Real.log ∘ stirlingSeq ∘ succ)
 -/
 theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
     log (stirlingSeq (n + 1)) - log (stirlingSeq (n + 2)) ≤
-      ((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 / (↑1 - ((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) := by
-  have h_nonneg : (0 : ℝ) ≤ ((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 := sq_nonneg _
-  have g : HasSum (fun k : ℕ => (((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1))
-      (((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 / (↑1 - ((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)) := by
-    have := (hasSum_geometric_of_lt_one h_nonneg ?_).mul_left (((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)
-    · simp_rw [← _root_.pow_succ] at this
+      ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 / (1 - ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) := by
+  have h_nonneg : (0 : ℝ) ≤ ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 := sq_nonneg _
+  have g : HasSum (fun k : ℕ => (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1))
+      (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 / (1 - ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)) := by
+    have := (hasSum_geometric_of_lt_one h_nonneg ?_).mul_left (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)
+    · simp_rw [← pow_succ] at this
       exact this
     rw [one_div, inv_pow]
     exact inv_lt_one (one_lt_pow ((lt_add_iff_pos_left 1).mpr <| by positivity) two_ne_zero)
-  have hab : ∀ k : ℕ, (1:ℝ) / (↑2 * ↑(k + 1) + ↑1) * (((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) ≤
-      (((1:ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) := by
-    refine' fun k => mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) _
+  have hab (k : ℕ) : (1 : ℝ) / (2 * ↑(k + 1) + 1) * ((1 / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) ≤
+      (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) := by
+    refine' mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) _
     rw [one_div]
     exact inv_le_one (le_add_of_nonneg_left <| by positivity)
   exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
@@ -128,11 +127,11 @@ set_option maxHeartbeats 400000 in
 -/
 theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
     log (stirlingSeq (n + 1)) - log (stirlingSeq (n + 2)) ≤ 1 / (4 * (↑(n + 1):ℝ) ^ 2) := by
-  have h₁ : (0 : ℝ) < ↑4 * ((n:ℝ) + 1) ^ 2 := by positivity
-  have h₃ : (0 : ℝ) < (2 * ((n:ℝ) + 1) + 1) ^ 2 := by positivity
-  have h₂ : (0 : ℝ) < ↑1 - (1 / (2 * ((n:ℝ) + 1) + 1)) ^ 2 := by
+  have h₁ : (0 : ℝ) < 4 * ((n : ℝ) + 1) ^ 2 := by positivity
+  have h₃ : (0 : ℝ) < (2 * ((n : ℝ) + 1) + 1) ^ 2 := by positivity
+  have h₂ : (0 : ℝ) < 1 - (1 / (2 * ((n : ℝ) + 1) + 1)) ^ 2 := by
     rw [← mul_lt_mul_right h₃]
-    have H : ↑0 < (2 * ((n:ℝ) + 1) + 1) ^ 2 - 1 := by nlinarith [@cast_nonneg ℝ _ n]
+    have H : 0 < (2 * ((n : ℝ) + 1) + 1) ^ 2 - 1 := by nlinarith [@cast_nonneg ℝ _ n]
     convert H using 1 <;> field_simp [h₃.ne']
   refine' (log_stirlingSeq_diff_le_geo_sum n).trans _
   push_cast
@@ -151,20 +150,18 @@ theorem log_stirlingSeq_bounded_aux :
   use 1 / 4 * d
   let log_stirlingSeq' : ℕ → ℝ := fun k => log (stirlingSeq (k + 1))
   intro n
-  have h₁ : ∀ k, log_stirlingSeq' k - log_stirlingSeq' (k + 1) ≤
-      ↑1 / ↑4 * (↑1 / (↑(k + 1):ℝ) ^ 2) := by
-    intro k; convert log_stirlingSeq_sub_log_stirlingSeq_succ k using 1; field_simp
-  have h₂ : (∑ k : ℕ in range n, ↑1 / (↑(k + 1):ℝ) ^ 2) ≤ d := by
+  have h₁ k : log_stirlingSeq' k - log_stirlingSeq' (k + 1) ≤ 1 / 4 * (1 / (↑(k + 1) : ℝ) ^ 2) := by
+    convert log_stirlingSeq_sub_log_stirlingSeq_succ k using 1; field_simp
+  have h₂ : (∑ k : ℕ in range n, 1 / (↑(k + 1) : ℝ) ^ 2) ≤ d := by
     have := (summable_nat_add_iff 1).mpr <| Real.summable_one_div_nat_pow.mpr one_lt_two
-    simp only [rpow_nat_cast] at this
     exact sum_le_tsum (range n) (fun k _ => by positivity) this
   calc
     log (stirlingSeq 1) - log (stirlingSeq (n + 1)) = log_stirlingSeq' 0 - log_stirlingSeq' n :=
       rfl
     _ = ∑ k in range n, (log_stirlingSeq' k - log_stirlingSeq' (k + 1)) := by
       rw [← sum_range_sub' log_stirlingSeq' n]
-    _ ≤ ∑ k in range n, ↑1 / ↑4 * (↑1 / ↑((k + 1)) ^ 2) := (sum_le_sum fun k _ => h₁ k)
-    _ = ↑1 / ↑4 * ∑ k in range n, ↑1 / ↑((k + 1)) ^ 2 := by rw [mul_sum]
+    _ ≤ ∑ k in range n, 1 / 4 * (1 / ↑((k + 1)) ^ 2) := (sum_le_sum fun k _ => h₁ k)
+    _ = 1 / 4 * ∑ k in range n, 1 / ↑((k + 1)) ^ 2 := by rw [mul_sum]
     _ ≤ 1 / 4 * d := by gcongr
 #align stirling.log_stirling_seq_bounded_aux Stirling.log_stirlingSeq_bounded_aux
 
@@ -241,7 +238,7 @@ theorem second_wallis_limit (a : ℝ) (hane : a ≠ 0) (ha : Tendsto stirlingSeq
     Tendsto Wallis.W atTop (𝓝 (a ^ 2 / 2)) := by
   refine' Tendsto.congr' (eventually_atTop.mpr ⟨1, fun n hn =>
     stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq n (one_le_iff_ne_zero.mp hn)⟩) _
-  have h : a ^ 2 / ↑2 = a ^ 4 / a ^ 2 * (1 / 2) := by
+  have h : a ^ 2 / 2 = a ^ 4 / a ^ 2 * (1 / 2) := by
     rw [mul_one_div, ← mul_one_div (a ^ 4) (a ^ 2), one_div, ← pow_sub_of_lt a]
     norm_num
   rw [h]

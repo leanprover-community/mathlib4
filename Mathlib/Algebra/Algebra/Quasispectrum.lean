@@ -210,8 +210,8 @@ lemma IsQuasiregular.isUnit_one_add {R : Type*} [Semiring R] {x : R} (hx : IsQua
     IsUnit (1 + x) := by
   obtain ⟨y, hy₁, hy₂⟩ := isQuasiregular_iff.mp hx
   refine ⟨⟨1 + x, 1 + y, ?_, ?_⟩, rfl⟩
-  · convert congr(1 + $(hy₁)) using 1 <;> first | noncomm_ring | simp
-  · convert congr(1 + $(hy₂)) using 1 <;> first | noncomm_ring | simp
+  · convert congr(1 + $(hy₁)) using 1 <;> [noncomm_ring; simp]
+  · convert congr(1 + $(hy₂)) using 1 <;> [noncomm_ring; simp]
 
 lemma isQuasiregular_iff_isUnit {R : Type*} [Ring R] {x : R} :
     IsQuasiregular x ↔ IsUnit (1 + x) := by

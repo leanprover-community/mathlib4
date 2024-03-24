@@ -1158,7 +1158,6 @@ theorem liftRel_flatten {R : α → β → Prop} {c1 : Computation (WSeq α)} {c
   ⟨S, ⟨c1, c2, rfl, rfl, h⟩, fun {s t} h =>
     match s, t, h with
     | _, _, ⟨c1, c2, rfl, rfl, h⟩ => by
-      -- Porting note: `exists_and_left` should be excluded.
       simp only [destruct_flatten]; apply liftRel_bind _ _ h
       intro a b ab; apply Computation.LiftRel.imp _ _ _ (liftRel_destruct ab)
       intro a b; apply LiftRelO.imp_right
@@ -1176,7 +1175,6 @@ theorem tail_congr {s t : WSeq α} (h : s ~ʷ t) : tail s ~ʷ tail t := by
   apply flatten_congr
   dsimp only [(· <$> ·)]; rw [← Computation.bind_pure, ← Computation.bind_pure]
   apply liftRel_bind _ _ (destruct_congr h)
-  -- Porting note: These 2 theorems should be excluded.
   intro a b h; simp only [comp_apply, liftRel_pure]
   cases' a with a <;> cases' b with b
   · trivial
