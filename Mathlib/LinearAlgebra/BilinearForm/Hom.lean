@@ -52,24 +52,13 @@ section ToLin'
 
 /-- Auxiliary definition to define `toLinHom`; see below. -/
 def toLinHomAux₁ (A : BilinForm R M) (x : M) : M →ₗ[R] R where
-  toFun y := A x y
+  toFun := A x
   map_add' := map_add _
   map_smul' := map_smul _
 #align bilin_form.to_lin_hom_aux₁ LinearMap.BilinForm.toLinHomAux₁
 
 /-- Auxiliary definition to define `toLinHom`; see below. -/
-def toLinHomAux₂ (A : BilinForm R M) : M →ₗ[R] M →ₗ[R] R where
-  toFun := toLinHomAux₁ A
-  map_add' x₁ x₂ :=
-    LinearMap.ext fun x => by
-      simp only [toLinHomAux₁, LinearMap.coe_mk, LinearMap.add_apply, add_left, AddHom.coe_mk]
-  map_smul' c x :=
-    LinearMap.ext <| by
-      dsimp [toLinHomAux₁]
-      intros
-      -- Porting note: moved out of `simp only`
-      rw [← algebraMap_smul R c x]
-      simp only [Algebra.id.map_eq_id, RingHom.id_apply, smul_left]
+def toLinHomAux₂ (A : BilinForm R M) : M →ₗ[R] M →ₗ[R] R := A
 #align bilin_form.to_lin_hom_aux₂ LinearMap.BilinForm.toLinHomAux₂
 
 /-- The linear map obtained from a `BilinForm` by fixing the left co-ordinate and evaluating in
@@ -79,18 +68,8 @@ def toLinHom : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R where
   map_add' A₁ A₂ :=
     LinearMap.ext fun x => by
       dsimp only [toLinHomAux₁, toLinHomAux₂]
-      apply LinearMap.ext
-      intro y
-      simp only [toLinHomAux₂, toLinHomAux₁, LinearMap.coe_mk, LinearMap.add_apply, add_apply,
-        AddHom.coe_mk]
   map_smul' c A := by
     dsimp [toLinHomAux₁, toLinHomAux₂]
-    apply LinearMap.ext
-    intro x
-    apply LinearMap.ext
-    intro y
-    simp only [toLinHomAux₂, toLinHomAux₁, LinearMap.coe_mk, LinearMap.smul_apply, smul_apply,
-      AddHom.coe_mk]
 #align bilin_form.to_lin_hom LinearMap.BilinForm.toLinHom
 
 theorem toLin'_apply (A : BilinForm R M) (x : M) : toLinHom.toFun A x = A x :=
