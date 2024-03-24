@@ -97,7 +97,7 @@ theorem get_append_only_frist_aux {a b: Array α } (h : i < a.size) : i < (a ++ 
   exact Nat.le_add_right (size a) (size b)
 
 theorem get_append_only_first {a b: Array α } (h : i < a.size):
-  (a ++ b)[i]'(get_append_only_frist_aux h) = a[i] := by
+    (a ++ b)[i]'(get_append_only_frist_aux h) = a[i] := by
   simp only [get_eq_list_get, append_data]
   exact List.get_append i h
 
