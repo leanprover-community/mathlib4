@@ -51,8 +51,16 @@ attribute [simp] bar_bar
 /-- Terminal vertex of an edge in the graph `G`-/
 def τ (e : E) : V := G.ι (G.bar e)
 
+/--
+The initial vertex of the reversed edge is the
+terminal vertex of the original edge.
+-/
 @[simp] theorem ι_bar (e : E) :  G.ι (G.bar e) = G.τ e := rfl
 
+/--
+The terminal vertex of the reversed edge is the
+initial vertex of the original edge.
+-/
 @[simp] theorem τ_bar (e : E) :  G.τ (G.bar e) = G.ι e := by
   aesop (add norm unfold [τ])
 
@@ -64,7 +72,10 @@ def τ (e : E) : V := G.ι (G.bar e)
   init_eq : G.ι edge = v
 deriving DecidableEq
 
-/-- Edge with given initial and terminal vertice in the graph `G` -/
+/-- Edge with given initial and terminal vertice in the graph `G`.
+We often work with this structure to avoid subtleties of
+indexed types and motives.
+-/
 @[ext] structure EdgeBetween (v w : V) where
   /-- The underlying edge -/
   edge : E
@@ -76,29 +87,35 @@ attribute [aesop safe forward] EdgeBetween.init_eq EdgeBetween.term_eq
 
 variable {G} (e : G.EdgeBetween v w)
 
+namespace EdgeBetween
 /-- Reversing the orientation for an edge between `v` and `w`. -/
-def EdgeBetween.bar (e : G.EdgeBetween v w) : G.EdgeBetween w v :=
+def bar (e : G.EdgeBetween v w) : G.EdgeBetween w v :=
   { edge := G.bar e.edge
   , init_eq := by aesop
   , term_eq := by aesop
   }
 
 /-- Edge as edge between specified vertices. -/
-def EdgeBetween.ofEdge (e : E) : G.EdgeBetween (G.ι e) (G.τ e) where
+def ofEdge (e : E) : G.EdgeBetween (G.ι e) (G.τ e) where
   edge := e
   init_eq := rfl
   term_eq := rfl
 
-@[simp] lemma EdgeBetween.ofEdge_eq_self (e : E) :
+@[simp] lemma ofEdge_eq_self (e : E) :
   (EdgeBetween.ofEdge (G := G) e).edge = e := rfl
 
-@[simp] theorem EdgeBetween.bar_eq_bar : e.bar.edge = G.bar e.edge := rfl
+@[simp] theorem bar_eq_bar : e.bar.edge = G.bar e.edge := rfl
 
-@[simp] theorem EdgeBetween.bar_bar : e.bar.bar = e := by
+@[simp] theorem bar_bar : e.bar.bar = e := by
     ext; aesop (add norm simp [EdgeBetween.bar])
 
+end EdgeBetween
+
 -- @[aesop unsafe [cases, constructors]]
-/-- A path consisting of edges of the graph `G` between specified vertices. -/
+/-- A path consisting of edges of the graph `G` between specified vertices.
+
+It is either a point or obtained by adding an edge to a path.
+-/
 inductive EdgePath (G : SerreGraph V E) : V → V → Type _ where
   | nil (v) : G.EdgePath v v
   | cons {v w u} : G.EdgeBetween v w → G.EdgePath w u → G.EdgePath v u
@@ -121,6 +138,9 @@ def concat {v w u : V} (p : G.EdgePath v w) (e : G.EdgeBetween w u) :
   | nil .(v) => cons e (nil u)
   | cons  e' p'  => cons e' (concat p' e)
 
+/--
+Concatenation and prepending (`cons`) commute.
+-/
 @[simp] theorem concat_cons {v w u u': V} (e: G.EdgeBetween v w)
     (p: G.EdgePath w u) (e': G.EdgeBetween u u')  :
     concat (cons e p) e' = cons e (concat p e') := by rfl
@@ -133,12 +153,26 @@ def reverse {v w : V} (p : G.EdgePath v w) : G.EdgePath w v :=
   | cons  e p  =>
       concat (reverse p) e.bar
 
+/--
+The reverse of a single point is the point itself.
+-/
 @[simp] theorem reverse_nil {v : V} :
   reverse (.nil (G := G) v) = .nil (G := G) v := by rfl
 
+/--
+The reverse of a path obtained by prepending is
+the concatenation of the reverse of the tail
+and the reverse of the edge.
+-/
 theorem reverse_cons {v w u : V} (e : G.EdgeBetween v w) (p : G.EdgePath w u) :
     reverse (cons e p) = concat (reverse p) e.bar := by rfl
 
+/--
+The reverse of the concatenation of a path between `v` and `w`
+and an edge between `w` and `u`
+is the result of prepending the reverse of the edge and
+the reverse of the path.
+-/
 theorem reverse_concat {v w u : V} (p: G.EdgePath v w)
     (e: G.EdgeBetween w u) :
     reverse (concat p e) = cons e.bar (reverse p) := by
@@ -163,50 +197,87 @@ instance  G.edgePathAppend {v w u : V} {G : SerreGraph V E} :
   HAppend (G.EdgePath v w) (G.EdgePath w u) (G.EdgePath v u) :=
     ⟨append⟩
 
+/--
+The empty path is the left identity for appending paths.
+-/
 @[simp] theorem nil_append  {u v : V} (p: G.EdgePath u v) :
     EdgePath.nil (G := G) u ++ p = p := rfl
-
+/--
+The empty path is the right identity for appending paths.
+-/
 @[simp] theorem append_nil  {u v : V} (p: G.EdgePath u v) :
   p ++ EdgePath.nil (G := G) v = p := by
     show append _ _ = _
     induction p <;> aesop (add norm simp [append])
 
+/--
+Appending paths commutes with prepending.
+-/
 @[simp] theorem cons_append {v' v w u : V}
     (e: G.EdgeBetween v' v)(p: G.EdgePath v w)(q: G.EdgePath w u) :
     (cons e p) ++ q = cons e (p ++ q) := by rfl
 
+/--
+Appending paths with the first path being the concatenation of a path and an edge
+is appending the result of prepending the edge to the second path.
+-/
 @[simp] theorem concat_append { v w w' u : V}
     (e : G.EdgeBetween w w')(p: G.EdgePath v w)(q: G.EdgePath w' u) :
     (concat p e) ++ q = p ++ (cons e q) := by
     induction p <;> aesop
 
+/--
+Appending paths with the second path being the concatenation of a path and an edge
+is the concatenation of the appended paths and the edge.
+-/
 theorem append_concat {v w w' u : V} (e : EdgeBetween G w' u)
     (p: EdgePath G v w)(q: EdgePath G w w') :
     p ++ (concat q e) = concat (p ++ q) e := by
   induction p <;> aesop
 
+/--
+Prepending an edge is the same as appending to a path with a single edge.
+-/
 theorem cons_eq_append_singletonPath {u v w : V}
     (e : G.EdgeBetween u v) (p : G.EdgePath v w) :
     EdgePath.cons e p = G.singletonPath e ++ p := rfl
 
+/--
+The reverse of a singleton path is the
+singleton from the reverse of the edge.
+-/
 theorem singletonPath_bar (e : G.EdgeBetween u v) :
     G.singletonPath e.bar = reverse (G.singletonPath e) := rfl
 
+/--
+Concatenating a path with a single edge is the same as
+appending a singleton path to the path.
+-/
 theorem concat_eq_append_edge {v w u : V} (e : G.EdgeBetween w u)
     (p : G.EdgePath v w) :
     p.concat e = p ++ (cons e (nil u)) := by
   have := concat_append e p (.nil _)
   aesop
 
+/--
+Appending is associative.
+-/
 theorem append_assoc { v w u u' :  V}
     (p: G.EdgePath v w)(q: G.EdgePath w u)(r: G.EdgePath u u') :
     (p ++ q) ++ r = p ++ (q ++ r) := by
     induction p <;> aesop
 
+/--
+The reverse of the reverse of a path is the path itself.
+-/
 @[simp] theorem reverse_reverse {v w : V} (p : G.EdgePath v w) :
   p.reverse.reverse = p := by
   induction p <;> aesop (add norm simp [reverse_cons, reverse_concat])
 
+/--
+Reversing the path obtained by appending two paths is the
+appending of the reverse of the paths.
+-/
 theorem reverse_append {u v w : V} (p : G.EdgePath u v)
     (q : G.EdgePath v w) :
     (p ++ q).reverse = q.reverse ++ p.reverse := by
@@ -218,7 +289,7 @@ theorem reverse_append {u v w : V} (p : G.EdgePath u v)
 
 We associate lists of edges to paths in the obvious way.
 Note that lists of edges are not typically associated to paths.
-However, they determine the paths.
+However, we show that they determine the path (if it is non-empty).
 
 This makes proofs of paths much easier by avoiding
 the need to reason about indexed inductive types.
@@ -232,13 +303,23 @@ def toList {G : SerreGraph V E} {v w : V} (p : EdgePath G v w) :
   | nil _ => []
   | cons e p' =>  e.edge :: p'.toList
 
+/--
+The list of edges associated to the empty path is the empty list.
+-/
 theorem nil_toList {G : SerreGraph V E} {v : V}  :
     (nil v : EdgePath G v v).toList = [] := rfl
 
+/--
+The list of edges associated to a path obtained by adding an edge to a path
+-/
 theorem cons_toList {G: SerreGraph V E} {v w u: V} (e : EdgeBetween G v w)
     (p : EdgePath G w u) :
   (cons e p).toList = e.edge :: p.toList := rfl
 
+/--
+The list of edges associated to the result of appending two paths
+is the result of appending the lists of edges.
+-/
 theorem append_toList {G : SerreGraph V E}{v w u : V}
     (p₁ : EdgePath G v w) (p₂ : EdgePath G w u) :
     (p₁ ++ p₂).toList = p₁.toList ++ p₂.toList := by
@@ -249,6 +330,10 @@ theorem append_toList {G : SerreGraph V E}{v w u : V}
       simp [cons_toList]
       apply ih
 
+/--
+The list of edges associated to the result of concatenating a path with an edge
+is the result of appending the list of edges of the path with the edge.
+-/
 theorem concat_toList {G : SerreGraph V E}{v w u : V} (p : EdgePath G v w)
     (e : EdgeBetween G w u) :
     (concat p e).toList = List.concat p.toList e.edge := by
@@ -259,7 +344,12 @@ theorem concat_toList {G : SerreGraph V E}{v w u : V} (p : EdgePath G v w)
     | cons e p' ih =>
       simp [cons_toList, ih]
 
-theorem reverse_toList {G : SerreGraph V E}{v w : V} (p : EdgePath G v w):
+/--
+The list of edges associated to the reverse of a path is the
+reverse of the list of edges associated to the path.
+-/
+theorem reverse_toList {G : SerreGraph V E}{v w : V}
+    (p : EdgePath G v w):
     p.reverse.toList  = p.toList.reverse.map (G.bar) := by
   induction p with
   | nil _ =>
@@ -268,7 +358,8 @@ theorem reverse_toList {G : SerreGraph V E}{v w : V} (p : EdgePath G v w):
     simp [cons_toList, reverse_cons, concat_toList]
     simp [ih, EdgeBetween.bar]
 
-theorem toList_reverse {G : SerreGraph V E}{v w : V} (p : EdgePath G v w):
+theorem toList_reverse {G : SerreGraph V E}{v w : V}
+    (p : EdgePath G v w):
     p.toList.reverse = p.reverse.toList.map (G.bar) := by
   induction p with
   | nil _ =>
@@ -289,6 +380,10 @@ Terminal vertices of a path.
 def termVerts (p : G.EdgePath u v) : List V :=
   p.toList.map G.τ
 
+/--
+Given two paths with the same initial and terminal vertices,
+if their lists of edges are equal, then the paths are equal.
+-/
 @[ext] theorem eq_of_toList_eq {G: SerreGraph V E}{v w: V}
     (p₁ p₂ : EdgePath G v w) : p₁.toList = p₂.toList → p₁ = p₂ := by
   induction p₁ with
@@ -324,6 +419,10 @@ theorem eq_of_edge_eq {G: SerreGraph V E}{v w: V}
       ext
       exact h
 
+/--
+Given two paths with equal initial vertices
+and lists of edges, their terminal vertices are equal.
+-/
 theorem terminal_eq_of_toList_eq {G: SerreGraph V E}{v₁ v₂ w₁ w₂: V}
     (p₁ : EdgePath G v₁ w₁) (p₂ : EdgePath G v₂ w₂) :
     p₁.toList = p₂.toList → (v₁ = v₂) → (w₁ = w₂)  := by
@@ -416,6 +515,10 @@ end EdgePath
 
 open EdgePath
 
+/--
+If a path `p` is of the form `p₁ ++ (cons e (cons e.bar p₂))`,
+then `p` is not reduced.
+-/
 theorem not_reduced_of_split {v w u u': V}{p : G.EdgePath v w}
     {e : G.EdgeBetween u u'}{p₁ : G.EdgePath v u}{p₂ : G.EdgePath u w} :
     p = p₁ ++ (cons e (cons e.bar p₂)) → ¬ reduced p := by
@@ -425,6 +528,9 @@ theorem not_reduced_of_split {v w u u': V}{p : G.EdgePath v w}
   apply red'
   apply Reduction.step
 
+/--
+The tail of a reduced path is reduced.
+-/
 theorem tail_reduced {u v w : V} (e: EdgeBetween G u v)
     (p : G.EdgePath v w) : reduced (cons e p) → reduced p := by
   intro red p' red'
@@ -436,6 +542,9 @@ theorem tail_reduced {u v w : V} (e: EdgeBetween G u v)
   let h' := not_reduced_of_split (Eq.symm eqn')
   contradiction
 
+/--
+The reverse of a reduced path is reduced.
+-/
 theorem reverse_reduced {v w : V} (p : G.EdgePath v w):
     reduced p →   reduced p.reverse := by
   intro red rev_targ rev_red
@@ -450,6 +559,9 @@ theorem reverse_reduced {v w : V} (p : G.EdgePath v w):
   rw [← eqn'']
   apply Reduction.step
 
+/--
+A path is reduced if and only if its reverse is reduced.
+-/
 theorem reverse_reduced_iff {v w : V} (p : G.EdgePath v w) :
     reduced p ↔ reduced p.reverse := by
   apply Iff.intro
@@ -503,12 +615,20 @@ theorem reverse_step {v w : V} (a₁ a₂ : G.EdgePath v w)
   induction rel
   aesop (add norm simp [reverse_append, reverse_cons])
 
+/--
+The result of appending the reverse of a path to the path
+is homotopic to the empty path.
+-/
 @[simp] theorem reverse_append_self {v w : V}
 (p : G.EdgePath v w) :
     [[p.reverse ++ p]] = [[.nil w]] := by
   induction p <;>
     aesop (add norm simp [reverse_cons, reverse_concat, cons_append])
 
+/--
+The result of appending a path to the reverse of the path
+is homotopic to the empty path.
+-/
 @[simp] theorem self_append_reverse {v w : V} (p : G.EdgePath w v) :
     [[p ++ p.reverse]] = [[.nil w]] := by
   have := reverse_append_self p.reverse
