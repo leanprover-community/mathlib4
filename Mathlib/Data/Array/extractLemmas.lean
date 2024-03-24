@@ -115,7 +115,7 @@ theorem extract_append_only_first {a b: Array α} {i j : Nat}:
   have : j = i + m := by
     exact (Nat.sub_eq_iff_eq_add' h1).mp rfl
   rw [this, extract_append_only_first_aux]
-  rw [←this]
+  rw [← this]
   exact h
   simp at h1
   rw [extract_end_le_start_eq_empty, extract_end_le_start_eq_empty]
