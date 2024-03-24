@@ -13,6 +13,13 @@ import Mathlib.Algebra.Algebra.Bilinear
 
 This file describes the relation between bilinear forms and linear maps.
 
+## TODO
+
+A lot of this file is now pointless folowing the replacement of the dedicated `_root_.BilinForm`
+structure with `LinearMap.BilinForm`, which is just an alias for `M →ₗ[R] M →ₗ[R] R`. For example
+`LinearMap.BilinForm.toLinHom` is now just the identity map. This pointless code should be removed
+in the future.
+
 ## Notations
 
 Given any term `B` of type `BilinForm`, due to a coercion, can use
@@ -32,6 +39,7 @@ In this file we use the following type variables:
 Bilinear form,
 -/
 
+#check LinearMap.BilinForm
 
 open BigOperators
 
