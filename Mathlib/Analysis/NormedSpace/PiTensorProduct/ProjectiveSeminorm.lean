@@ -119,8 +119,8 @@ noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := by
     refine le_ciInf ?_
     intro p
     rw [← projectiveSeminormAux_smul]
-    exact ciInf_le_of_le (bddBelow_projectiveSemiNormAux _) ⟨(List.map (fun y ↦ (a * y.1, y.2)) p.1),
-    lifts_smul p.2 a⟩ (le_refl _)
+    exact ciInf_le_of_le (bddBelow_projectiveSemiNormAux _)
+      ⟨(List.map (fun y ↦ (a * y.1, y.2)) p.1), lifts_smul p.2 a⟩ (le_refl _)
 
 theorem projectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     projectiveSeminorm x = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.1) := rfl
