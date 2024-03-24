@@ -14,7 +14,11 @@ We construct the universal cover given a baspoint `x₀` with
 * Vertices: reduced edge paths starting at `x₀`
 * Edges: reduces edge paths starting at `x₀` followed by an edge.
 
-The non-trivial part is the construction of the `bar` map. The initial vertex should be the terminal vertex of the given edge. This is obtained by reduced concat, using the fact that the result is reduced. The other result is used to show that the `bar` map is an involution.
+The non-trivial part is the construction of the `bar` map.
+The initial vertex should be the terminal vertex of the given edge.
+This is obtained by reduced concat, using the fact that the
+result is reduced. The other result is used to show that
+the `bar` map is an involution.
 -/
 
 namespace SerreGraph
@@ -102,8 +106,7 @@ def toList (e : Edge G x₀) : List E :=
 theorem bar_neq_self (e: Edge G x₀) :
     e ≠ bar G x₀ e := by
   intro contra
-  have : e.p.toList.length =  (bar G x₀ e).p.toList.length
-     := by
+  have : e.p.toList.length =  (bar G x₀ e).p.toList.length := by
       rw [← contra]
   simp [bar, Edge.p] at this
   let h' := concat_parity e.p e.nxt
@@ -299,13 +302,14 @@ def rayLift (G: SerreGraph V E)(x₀ τ : V)(p : EdgePath G x₀ τ)
   }
 
 theorem lift_of_reduced {G: SerreGraph V E}{x₀ τ: V}(p : EdgePath G x₀ τ)
-  (hyp : reduced p) :
+    (hyp : reduced p) :
     p.lift (proj G x₀) (basepoint G x₀) rfl =
       rayLift G x₀ τ p hyp := by
       apply unique_Pathlift
 
-theorem reduced_liftTerminal {G: SerreGraph V E}{x₀ τ: V}(p : EdgePath G x₀ τ)
-  (hyp : reduced p) :
+theorem reduced_liftTerminal {G: SerreGraph V E}{x₀ τ: V}
+    (p : EdgePath G x₀ τ)
+    (hyp : reduced p) :
     liftTerminal (proj G x₀) (basepoint G x₀)  rfl p =
       ⟨τ, p, hyp⟩ := by
       simp [liftTerminal, liftClass, lift_of_reduced p hyp, rayLift]
@@ -355,7 +359,7 @@ theorem homotopic_of_liftTerminal_eq  {G: SerreGraph V E}{x₀ τ: V}
     liftTerminal_eq_of_homotopic (proj G x₀) (basepoint G x₀)  rfl red₁
   let _l₂ :=
     liftTerminal_eq_of_homotopic (proj G x₀) (basepoint G x₀)  rfl red₂
-  rw [←l₁, ←_l₂] at hyp
+  rw [← l₁, ← _l₂] at hyp
   rw [reduced_liftTerminal (reduction p₁) (reduction_reduced p₁)] at hyp
   rw [reduced_liftTerminal (reduction p₂) (reduction_reduced p₂)] at hyp
   simp at hyp
