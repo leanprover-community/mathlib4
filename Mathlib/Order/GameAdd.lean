@@ -5,6 +5,7 @@ Authors: Junyan Xu
 -/
 import Mathlib.Data.Sym2.Basic
 import Mathlib.Logic.Relation
+import Mathlib.Order.RelIso.Basic
 
 #align_import order.game_add from "leanprover-community/mathlib"@"fee218fb033b2fd390c447f8be27754bc9093be9"
 

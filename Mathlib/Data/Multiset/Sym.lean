@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Data.List.Sym
+import Mathlib.Data.Multiset.Nodup
 
 /-! # Unordered tuples of elements of a multiset
 

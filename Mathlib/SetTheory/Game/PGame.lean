@@ -7,6 +7,7 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.InsertNth
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
+import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.GameAdd
 
 #align_import set_theory.game.pgame from "leanprover-community/mathlib"@"8900d545017cd21961daa2a1734bb658ef52c618"
