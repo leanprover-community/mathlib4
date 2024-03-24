@@ -6,6 +6,11 @@ Authors: Joël Riou
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.RingTheory.Kaehler
 
+/-!
+# The presheaf of differentials of a presheaf of modules
+
+-/
+
 universe v u v₁ u₁
 
 open CategoryTheory LinearMap Opposite
@@ -17,6 +22,10 @@ instance : HasForget₂ CommRingCat AddCommGroupCat where
     { obj := fun R => AddCommGroupCat.of R.α
       map := fun {R R'} φ => AddCommGroupCat.ofHom (AddMonoidHom.mk' φ.toFun (by simp)) }
 
+lemma ModuleCat.comp_apply {R : Type*} [Ring R] {M₁ M₂ M₃ : ModuleCat R} (f : M₁ ⟶ M₂)
+    (g : M₂ ⟶ M₃) (x : M₁) :
+    (f ≫ g) x = g (f x) := rfl
+
 variable {C : Type u₁} [Category.{v₁} C]
 
 namespace PresheafOfModules
@@ -24,29 +33,30 @@ namespace PresheafOfModules
 abbrev smul {R : Cᵒᵖ ⥤ RingCat.{u}} (M : PresheafOfModules.{v} R) {X : Cᵒᵖ}
     (r : R.obj X) (m : M.obj X) : M.obj X := r • m
 
-variable {R : Cᵒᵖ ⥤ CommRingCat.{u}} (M : PresheafOfModules.{u}
-  (R ⋙ forget₂ CommRingCat RingCat))
+variable {R : Cᵒᵖ ⥤ CommRingCat.{u}}
+  (M : PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat))
 
 structure AbsoluteDerivation where
-  d : R ⋙ forget₂ _ AddCommGroupCat ⟶ M.presheaf
-  d_one (X : Cᵒᵖ) : d.app X (1 : R.obj X) = 0
-  d_mul {X : Cᵒᵖ} (a b : R.obj X) : d.app X (a * b) = M.smul a (d.app X b) + M.smul b (d.app X a)
+  d {X : Cᵒᵖ} : R.obj X →+ M.obj X
+  d_one (X : Cᵒᵖ) : d (X := X) 1 = 0 := by aesop_cat
+  d_mul {X : Cᵒᵖ} (a b : R.obj X) : d (a * b) = a • d b + b • d a := by aesop_cat
+  d_map {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : R.obj X) :
+    d (R.map f x) = M.presheaf.map f (d x) := by aesop_cat
 
 namespace AbsoluteDerivation
 
 variable {M}
 variable (d : M.AbsoluteDerivation)
-    {M' : PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat)} (f : M ⟶ M')
+
+attribute [simp] d_one d_mul d_map
+
+variable {M' : PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat)} (f : M ⟶ M')
 
 def postComp : AbsoluteDerivation M' where
-  d := d.d ≫ f.hom
-  d_one X := by
+  d {X} := (f.app X).toAddMonoidHom.comp d.d
+  d_map {X Y} g x := by
     dsimp
-    erw [d.d_one, map_zero]
-  d_mul {X} a b := by
-    dsimp
-    erw [d.d_mul, map_add, (f.app X).map_smul, (f.app X).map_smul]
-    rfl
+    rw [d_map, naturality_apply]
 
 structure Universal where
   desc {M' : PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat)}
@@ -86,39 +96,47 @@ noncomputable def absoluteDifferentialsBundledCore :
     convert KaehlerDifferential.linearMap_ext ℤ (R.obj X) _ _ _
     intro x
     dsimp
-    erw [ModuleCat.restrictScalarsId'_inv_apply, KaehlerDifferential.map_D, R.map_id]
-    rfl
+    erw [ModuleCat.restrictScalarsId'App_inv_apply]
+    rw [KaehlerDifferential.map_D, R.map_id, Algebra.id.map_eq_id, RingHom.id_apply]
   map_comp {X Y Z} f g := by
     convert KaehlerDifferential.linearMap_ext ℤ (R.obj X) _ _ _
     intro x
-    dsimp
     letI := (R.map f).toAlgebra
     letI := (R.map g).toAlgebra
-    erw [KaehlerDifferential.map_D, ModuleCat.restrictScalarsComp'_inv_apply,
-      ModuleCat.restrictScalars.map_apply,
-      KaehlerDifferential.map_D ℤ ℤ (R.obj X) (R.obj Y),
-      KaehlerDifferential.map_D ℤ ℤ (R.obj Y) (R.obj Z),
-      R.map_comp]
+    dsimp
+    erw [ModuleCat.comp_apply, ModuleCat.comp_apply]
+    dsimp
+    rw [KaehlerDifferential.map_D,
+      ModuleCat.restrictScalarsComp'App_inv_apply]
+    erw [KaehlerDifferential.map_D ℤ ℤ (R.obj X) (R.obj Y),
+      KaehlerDifferential.map_D ℤ ℤ (R.obj Y) (R.obj Z), R.map_comp]
     rfl
 
-noncomputable abbrev absoluteDifferentials :
+noncomputable def absoluteDifferentials :
     PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat) :=
   PresheafOfModules.mk'' (absoluteDifferentialsBundledCore R)
 
-@[simp]
 lemma absoluteDifferentials_presheaf_obj (X : Cᵒᵖ) :
-    ((absoluteDifferentials R).presheaf.obj X : Type _) = Ω[(R.obj X)⁄ℤ] := rfl
+    (absoluteDifferentials R).presheaf.obj X = AddCommGroupCat.of (Ω[(R.obj X)⁄ℤ]) := rfl
+
+lemma absoluteDifferentials_presheaf_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : Ω[(R.obj X)⁄ℤ]) :
+    (absoluteDifferentials R).presheaf.map f x =
+      letI := (R.map f).toAlgebra
+      KaehlerDifferential.map ℤ ℤ (R.obj X) (R.obj Y) x := rfl
+
+@[simp]
+lemma absoluteDifferentials_presheaf_map_apply_d {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : R.obj X) :
+    (absoluteDifferentials R).presheaf.map f (KaehlerDifferential.D ℤ _ x) =
+      KaehlerDifferential.D ℤ _ (R.map f x) := by
+  letI := (R.map f).toAlgebra
+  rw [absoluteDifferentials_presheaf_map_apply]
+  apply KaehlerDifferential.map_D
 
 noncomputable def absoluteDerivation : (absoluteDifferentials R).AbsoluteDerivation where
-  d :=
-    { app := fun X => AddMonoidHom.mk' (fun (x : R.obj X) => KaehlerDifferential.D ℤ (R.obj X) x)
-        (by simp)
-      naturality := fun X Y f => by
-        ext x
-        erw [KaehlerDifferential.map_D]
-        rfl }
-  d_one _ := by dsimp; simp
-  d_mul _ _ := by dsimp; simp
+  d {X} := AddMonoidHom.mk' (fun x => KaehlerDifferential.D ℤ (R.obj X) x) (by simp)
+  d_one := by dsimp; simp
+  d_mul := by dsimp; simp
+  d_map {X Y} f x := ((absoluteDifferentials_presheaf_map_apply_d R f x)).symm
 
 proof_wanted absoluteDerivationUniversal : Nonempty (absoluteDerivation R).Universal
 

@@ -203,6 +203,11 @@ instance : Preadditive (PresheafOfModules R) where
 
 end Hom
 
+lemma naturality_apply {M M' : PresheafOfModules R} (f : M ⟶ M')
+    {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : M.obj X) :
+    f.app Y (M.presheaf.map g x) = M'.presheaf.map g (f.app X x) :=
+  congr_fun ((forget _).congr_map (f.hom.naturality g)) x
+
 variable (R)
 
 /-- The functor from presheaves of modules over a specified presheaf of rings,
@@ -334,6 +339,10 @@ def mk' (M : CorePresheafOfModules R) : PresheafOfModules R where
 lemma mk'_obj (M : CorePresheafOfModules R) (X : Cᵒᵖ) :
     (mk' M).obj X = ModuleCat.of _ (M.obj X) := rfl
 
+@[simp]
+lemma mk'_presheaf_map_apply (M : CorePresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
+    (mk' M).presheaf.map f x = M.map f x := rfl
+
 end PresheafOfModules
 
 variable (R) in
@@ -381,6 +390,11 @@ noncomputable def mk'' (M : BundledCorePresheafOfModules R) : PresheafOfModules 
 @[simp]
 lemma mk''_obj (M : BundledCorePresheafOfModules R) (X : Cᵒᵖ) :
     (mk'' M).obj X = (M.obj X).carrier := rfl
+
+@[simp]
+lemma mk''_presheaf_map_apply (M : BundledCorePresheafOfModules R)
+    {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
+    (mk'' M).presheaf.map f x = M.map f x := rfl
 
 @[simp]
 lemma restrictionApp_mk'' (M : BundledCorePresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
