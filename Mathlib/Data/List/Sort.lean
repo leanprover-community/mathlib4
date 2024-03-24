@@ -104,7 +104,7 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ 
   induction' hs₁ with a l₁ h₁ hs₁ IH generalizing l₂
   · exact hp.nil_eq
   · have : a ∈ l₂ := hp.subset (mem_cons_self _ _)
-    rcases mem_split this with ⟨u₂, v₂, rfl⟩
+    rcases append_of_mem this with ⟨u₂, v₂, rfl⟩
     have hp' := (perm_cons a).1 (hp.trans perm_middle)
     obtain rfl := IH hp' (hs₂.sublist <| by simp)
     change a :: u₂ ++ v₂ = u₂ ++ ([a] ++ v₂)

@@ -520,7 +520,7 @@ instance DivInvMonoid.measurableZPow (G : Type u) [DivInvMonoid G] [MeasurableSp
     [MeasurableMul₂ G] [MeasurableInv G] : MeasurablePow G ℤ :=
   ⟨measurable_from_prod_countable fun n => by
       cases' n with n n
-      · simp_rw [Int.ofNat_eq_coe, zpow_coe_nat]
+      · simp_rw [Int.ofNat_eq_coe, zpow_natCast]
         exact measurable_id.pow_const _
       · simp_rw [zpow_negSucc]
         exact (measurable_id.pow_const (n + 1)).inv⟩
@@ -709,7 +709,7 @@ instance SubNegMonoid.measurableSMul_int₂ (M : Type*) [SubNegMonoid M] [Measur
     suffices Measurable fun p : M × ℤ => p.2 • p.1 by apply this.comp measurable_swap
     refine' measurable_from_prod_countable fun n => _
     induction' n with n n ih
-    · simp only [Int.ofNat_eq_coe, coe_nat_zsmul]
+    · simp only [Int.ofNat_eq_coe, natCast_zsmul]
       exact measurable_const_smul _
     · simp only [negSucc_zsmul]
       exact (measurable_const_smul _).neg⟩

@@ -47,9 +47,9 @@ of `Shrinkable MyType` and `SampleableExt MyType`. We can define one as follows:
 
 ```lean
 instance : Shrinkable MyType where
-  shrink := λ ⟨x,y,h⟩ =>
+  shrink := fun ⟨x,y,h⟩ ↦
     let proxy := Shrinkable.shrink (x, y - x)
-    proxy.map (λ ⟨⟨fst, snd⟩, ha⟩ => ⟨⟨fst, fst + snd, sorry⟩, sorry⟩)
+    proxy.map (fun ⟨⟨fst, snd⟩, ha⟩ ↦ ⟨⟨fst, fst + snd, sorry⟩, sorry⟩)
 
 instance : SampleableExt MyType :=
   SampleableExt.mkSelfContained do
@@ -509,8 +509,8 @@ open Lean
 quantifiers and add `NamedBinder` annotations next to them. -/
 partial def addDecorations (e : Expr) : MetaM Expr :=
   Meta.transform e fun expr => do
-    if not (← Meta.inferType e).isProp then
-      return .continue
+    if not (← Meta.inferType expr).isProp then
+      return .done expr
     else if let Expr.forallE name type body data := expr then
       let newType ← addDecorations type
       let newBody ← Meta.withLocalDecl name data type fun fvar => do

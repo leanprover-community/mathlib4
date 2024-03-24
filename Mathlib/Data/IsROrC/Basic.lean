@@ -354,7 +354,7 @@ theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
 theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : K)) = OfNat.ofNat n :=
   map_ofNat _ _
 
-@[isROrC_simps] -- Porting note: was a `simp` but `simp` can prove it
+@[isROrC_simps] -- Porting note (#10618): was a `simp` but `simp` can prove it
 theorem conj_neg_I : conj (-I) = (I : K) := by rw [map_neg, conj_I, neg_neg]
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.conj_neg_I IsROrC.conj_neg_I
@@ -383,7 +383,7 @@ theorem add_conj (z : K) : z + conj z = 2 * re z :=
 #align is_R_or_C.add_conj IsROrC.add_conj
 
 theorem re_eq_add_conj (z : K) : ↑(re z) = (z + conj z) / 2 := by
-  rw [add_conj, mul_div_cancel_left (re z : K) two_ne_zero]
+  rw [add_conj, mul_div_cancel_left₀ (re z : K) two_ne_zero]
 #align is_R_or_C.re_eq_add_conj IsROrC.re_eq_add_conj
 
 theorem im_eq_conj_sub (z : K) : ↑(im z) = I * (conj z - z) / 2 := by

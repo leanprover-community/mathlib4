@@ -6,8 +6,8 @@ Authors: Koundinya Vajjha, Thomas Browning
 
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.Linarith
-import Mathlib.Data.Nat.Interval
 
 /-!
 
@@ -31,10 +31,11 @@ lemma harmonic_zero : harmonic 0 = 0 :=
 lemma harmonic_succ (n : ℕ) : harmonic (n + 1) = harmonic n + (↑(n + 1))⁻¹ :=
   Finset.sum_range_succ ..
 
-lemma harmonic_pos {n : ℕ} (Hn : n ≠ 0) : 0 < harmonic n :=
-  Finset.sum_pos (fun _ _ => inv_pos.mpr (by norm_cast; linarith)) <|
-    Finset.nonempty_range_iff.mpr Hn
+lemma harmonic_pos {n : ℕ} (Hn : n ≠ 0) : 0 < harmonic n := by
+  unfold harmonic
+  rw [← Finset.nonempty_range_iff] at Hn
+  positivity
 
-lemma harmonic_eq_sum_Icc {n : ℕ} :  harmonic n = ∑ i in Finset.Icc 1 n, (↑i)⁻¹ := by
+lemma harmonic_eq_sum_Icc {n : ℕ} : harmonic n = ∑ i in Finset.Icc 1 n, (↑i)⁻¹ := by
   rw [harmonic, Finset.range_eq_Ico, Finset.sum_Ico_add' (fun (i : ℕ) ↦ (i : ℚ)⁻¹) 0 n (c := 1),
     Nat.Ico_succ_right]

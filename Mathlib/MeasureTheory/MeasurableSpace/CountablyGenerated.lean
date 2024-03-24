@@ -122,6 +122,48 @@ lemma generateFrom_memPartition_le_succ (t : ℕ → Set α) (n : ℕ) :
     generateFrom (memPartition t n) ≤ generateFrom (memPartition t (n + 1)) :=
   generateFrom_le (fun _ hs ↦ measurableSet_succ_memPartition t n hs)
 
+lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ) (s : Set α) :
+    MeasurableSet[generateFrom (memPartition t n)] s
+      ↔ ∃ S : Finset (Set α), ↑S ⊆ memPartition t n ∧ s = ⋃₀ S := by
+  refine ⟨fun h ↦ ?_, fun ⟨S, hS_subset, hS_eq⟩ ↦ ?_⟩
+  · refine MeasurableSpace.generateFrom_induction
+      (p := fun u ↦ ∃ S : Finset (Set α), ↑S ⊆ memPartition t n ∧ u = ⋃₀ ↑S)
+      (C := memPartition t n) ?_ ?_ ?_ ?_ h
+    · exact fun u hu ↦ ⟨{u}, by simp [hu], by simp⟩
+    · exact ⟨∅, by simp, by simp⟩
+    · rintro u ⟨S, hS_subset, rfl⟩
+      classical
+      refine ⟨(memPartition t n).toFinset \ S, ?_, ?_⟩
+      · simp only [Finset.coe_sdiff, coe_toFinset]
+        exact diff_subset _ _
+      · simp only [Finset.coe_sdiff, coe_toFinset]
+        refine (IsCompl.eq_compl ⟨?_, ?_⟩).symm
+        · rw [disjoint_iff_inter_eq_empty]
+          ext x
+          simp only [mem_inter_iff, mem_sUnion, mem_diff, Finset.mem_coe, mem_empty_iff_false,
+            iff_false, not_and, not_exists, forall_exists_index, and_imp]
+          intro u hu huS hxu v hvS
+          have huv : u ≠ v := fun h_eq ↦ absurd hvS (h_eq ▸ huS)
+          have : Disjoint u v := disjoint_memPartition t n hu (hS_subset hvS) huv
+          exact fun hxv ↦ absurd rfl (this.ne_of_mem hxu hxv)
+        · rw [codisjoint_iff]
+          simp only [sup_eq_union, top_eq_univ]
+          rw [← sUnion_memPartition t n, union_comm, ← sUnion_union, union_diff_cancel hS_subset]
+    · intro f h
+      choose S hS_subset hS_eq using h
+      have : Fintype (⋃ n, (S n : Set (Set α))) := by
+        refine (Finite.subset (finite_memPartition t n) ?_).fintype
+        simp only [iUnion_subset_iff]
+        exact hS_subset
+      refine ⟨(⋃ n, (S n : Set (Set α))).toFinset, ?_, ?_⟩
+      · simp only [coe_toFinset, iUnion_subset_iff]
+        exact hS_subset
+      · simp only [coe_toFinset, sUnion_iUnion, hS_eq]
+  · rw [hS_eq, sUnion_eq_biUnion]
+    refine MeasurableSet.biUnion ?_ (fun t ht ↦ ?_)
+    · exact S.countable_toSet
+    · exact measurableSet_generateFrom (hS_subset ht)
+
 lemma measurableSet_generateFrom_memPartition (t : ℕ → Set α) (n : ℕ) :
     MeasurableSet[generateFrom (memPartition t (n + 1))] (t n) := by
   have : t n = ⋃ u ∈ memPartition t n, u ∩ t n := by
@@ -210,6 +252,11 @@ lemma disjoint_countablePartition {n : ℕ} {s t : Set α}
 lemma sUnion_countablePartition (α : Type*) [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) :
     ⋃₀ countablePartition α n = univ :=
   sUnion_memPartition _ n
+
+lemma measurableSet_generateFrom_countablePartition_iff (n : ℕ) (s : Set α) :
+    MeasurableSet[generateFrom (countablePartition α n)] s
+      ↔ ∃ S : Finset (Set α), ↑S ⊆ countablePartition α n ∧ s = ⋃₀ S :=
+  measurableSet_generateFrom_memPartition_iff _ n s
 
 lemma measurableSet_succ_countablePartition (n : ℕ) {s : Set α} (hs : s ∈ countablePartition α n) :
     MeasurableSet[generateFrom (countablePartition α (n + 1))] s :=

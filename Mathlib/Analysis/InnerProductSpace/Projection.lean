@@ -51,9 +51,7 @@ open LinearMap (ker range)
 open BigOperators Topology
 
 variable {𝕜 E F : Type*} [IsROrC 𝕜]
-
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 
 -- mathport name: «expr⟪ , ⟫»
@@ -202,7 +200,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
             simp only [sq]; apply mul_self_le_mul_self (norm_nonneg _)
             rw [eq]; apply δ_le'
             apply h hw hv
-            exacts [le_of_lt hθ₁, sub_nonneg.2 hθ₂, add_sub_cancel'_right _ _]
+            exacts [le_of_lt hθ₁, sub_nonneg.2 hθ₂, add_sub_cancel _ _]
           _ = ‖u - v - θ • (w - v)‖ ^ 2 := by
             have : u - (θ • w + (1 - θ) • v) = u - v - θ • (w - v) := by
               rw [smul_sub, sub_smul, one_smul]
@@ -240,7 +238,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       have eq₁ : θ * q ≤ p :=
         calc
           θ * q ≤ p / q * q := mul_le_mul_of_nonneg_right (min_le_right _ _) (sq_nonneg _)
-          _ = p := div_mul_cancel _ hq
+          _ = p := div_mul_cancel₀ _ hq
       have : 2 * p ≤ p :=
         calc
           2 * p ≤ θ * q := by
@@ -686,7 +684,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
           ContinuousLinearMap.coe_coe]
         dsimp [v]
         abel
-      · simp only [v, add_sub_cancel'_right, eq_self_iff_true] }
+      · simp only [v, add_sub_cancel, eq_self_iff_true] }
 #align reflection reflection
 
 variable {K}
@@ -794,7 +792,7 @@ theorem Submodule.sup_orthogonal_inf_of_completeSpace {K₁ K₂ : Submodule �
   constructor
   · rintro ⟨y, hy, z, hz, rfl⟩
     exact K₂.add_mem (h hy) hz.2
-  · exact fun hx => ⟨v, v.prop, x - v, ⟨hvm, K₂.sub_mem hx (h v.prop)⟩, add_sub_cancel'_right _ _⟩
+  · exact fun hx => ⟨v, v.prop, x - v, ⟨hvm, K₂.sub_mem hx (h v.prop)⟩, add_sub_cancel _ _⟩
 #align submodule.sup_orthogonal_inf_of_complete_space Submodule.sup_orthogonal_inf_of_completeSpace
 
 variable {K}
@@ -1090,7 +1088,7 @@ theorem inner_orthogonalProjection_eq_of_mem_right [HasOrthogonalProjection K] (
     ⟪orthogonalProjection K v, u⟫ = ⟪(orthogonalProjection K v : E), u⟫ := K.coe_inner _ _
     _ = ⟪(orthogonalProjection K v : E), u⟫ + ⟪v - orthogonalProjection K v, u⟫ := by
       rw [orthogonalProjection_inner_eq_zero _ _ (Submodule.coe_mem _), add_zero]
-    _ = ⟪v, u⟫ := by rw [← inner_add_left, add_sub_cancel'_right]
+    _ = ⟪v, u⟫ := by rw [← inner_add_left, add_sub_cancel]
 #align inner_orthogonal_projection_eq_of_mem_right inner_orthogonalProjection_eq_of_mem_right
 
 -- Porting note: The priority should be higher than `Submodule.coe_inner`.
