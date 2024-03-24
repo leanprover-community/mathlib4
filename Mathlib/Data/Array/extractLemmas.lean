@@ -73,7 +73,7 @@ theorem extract_size {a: Array α} : (e ≤ a.size) → (a.extract s e).size = e
   by_cases h2: s ≤ e
   simp [extract, Nat.min_def, h]
   rw [Array.extract_loop_len]
-  simp
+  simp?
   rw [Nat.add_comm, Nat.sub_add_cancel]
   exact h
   exact h2
