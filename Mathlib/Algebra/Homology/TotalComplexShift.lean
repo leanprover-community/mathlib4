@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 import Mathlib.Algebra.Homology.TotalComplex
+
 /-!
 # Behaviour of the total complex with respect to shifts
 
