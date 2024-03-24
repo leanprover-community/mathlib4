@@ -24,11 +24,11 @@ Many of the relevant definitions, including `Module`, `Submodule`, and `LinearMa
 ## Main definitions
 
 * Many constructors for (semi)linear maps
-* The kernel `ker` and range `range` of a linear map are submodules of the domain and codomain
-  respectively.
+* The kernel `LearnMap.ker` and range `range` of a linear map are submodules of the domain and
+  codomain respectively.
 
-See `LinearAlgebra.Span` for the span of a set (as a submodule),
-and `LinearAlgebra.Quotient` for quotients by submodules.
+See `Submodule.span` for the span of a set (as a submodule),
+and `Submodule.hasQuotient` for quotients by submodules.
 
 ## Main theorems
 
