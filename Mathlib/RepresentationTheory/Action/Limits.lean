@@ -326,13 +326,11 @@ set_option linter.uppercaseLean3 false in
 
 variable {H : MonCat.{u}} (f : G ⟶ H)
 
-instance res_additive [Preadditive V] : (res V f).Additive where
+instance res_additive : (res V f).Additive where
 set_option linter.uppercaseLean3 false in
 #align Action.res_additive Action.res_additive
 
-variable {R : Type*} [Semiring R]
-
-instance res_linear [Preadditive V] [Linear R V] : (res V f).Linear R where
+instance res_linear : (res V f).Linear R where
 set_option linter.uppercaseLean3 false in
 #align Action.res_linear Action.res_linear
 

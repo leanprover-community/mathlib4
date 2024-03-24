@@ -52,7 +52,6 @@ namespace ValuationRing
 section
 
 variable (A : Type u) [CommRing A]
-
 variable (K : Type v) [Field K] [Algebra A K]
 
 /-- The value group of the valuation ring `A`. Note: this is actually a group with zero. -/
@@ -280,7 +279,6 @@ end
 section
 
 variable {R : Type*} [CommRing R] [IsDomain R] {K : Type*}
-
 variable [Field K] [Algebra R K] [IsFractionRing R K]
 
 theorem iff_dvd_total : ValuationRing R ↔ IsTotal R (· ∣ ·) := by

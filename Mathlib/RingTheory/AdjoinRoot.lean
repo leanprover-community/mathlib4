@@ -646,7 +646,6 @@ end minpoly
 section Equiv'
 
 variable [CommRing R] [CommRing S] [Algebra R S]
-
 variable (g : R[X]) (pb : PowerBasis R S)
 
 /-- If `S` is an extension of `R` with power basis `pb` and `g` is a monic polynomial over `R`

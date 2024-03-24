@@ -25,11 +25,8 @@ noncomputable section
 open CategoryTheory Category Limits HomologicalComplex
 
 variable {ι : Type*}
-
 variable {V : Type u} [Category.{v} V] [Preadditive V]
-
 variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
-
 variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
 
 section

@@ -152,10 +152,10 @@ lemma mabs_mabs_div_mabs_le (a b : α) : |(|a|ₘ / |b|ₘ)|ₘ ≤ |a / b|ₘ :
   constructor
   · apply div_le_iff_le_mul.2
     convert mabs_mul_le (a / b) b
-    rw [div_mul_cancel']
+    rw [div_mul_cancel]
   · rw [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_le_iff_le_mul, mabs_div_comm]
     convert mabs_mul_le (b / a) a
-    · rw [div_mul_cancel']
+    · rw [div_mul_cancel]
 #align lattice_ordered_comm_group.abs_abs_div_abs_le mabs_mabs_div_mabs_le
 #align lattice_ordered_comm_group.abs_abs_sub_abs_le abs_abs_sub_abs_le
 
@@ -183,7 +183,7 @@ lemma inf_sq_eq_mul_div_mabs_div (a b : α) : (a ⊓ b) ^ 2 = a * b / |b / a|ₘ
 -- See, e.g. Zaanen, Lectures on Riesz Spaces
 -- 3rd lecture
 @[to_additive]
-lemma mabs_div_sup_mul_mabs_div_inf [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+lemma mabs_div_sup_mul_mabs_div_inf (a b c : α) :
     |(a ⊔ c) / (b ⊔ c)|ₘ * |(a ⊓ c) / (b ⊓ c)|ₘ = |a / b|ₘ := by
   letI : DistribLattice α := CommGroup.toDistribLattice α
   calc

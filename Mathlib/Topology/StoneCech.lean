@@ -264,9 +264,7 @@ theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech 
 section Extension
 
 variable {γ : Type u} [TopologicalSpace γ] [T2Space γ] [CompactSpace γ]
-
 variable {γ' : Type u} [TopologicalSpace γ'] [T2Space γ']
-
 variable {f : α → γ} (hf : Continuous f)
 
 -- Porting note: missing attribute

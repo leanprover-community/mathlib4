@@ -304,7 +304,6 @@ theorem ext {p q : MulRingNorm R} : (∀ x, p x = q x) → p = q :=
 #align mul_ring_norm.ext MulRingNorm.ext
 
 variable (R)
-
 variable [DecidableEq R] [NoZeroDivisors R] [Nontrivial R]
 
 /-- The trivial norm on a ring `R` is the `MulRingNorm` taking value `0` at `0` and `1` at every
