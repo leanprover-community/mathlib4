@@ -50,10 +50,9 @@ def relH {τ : V} (v₁ v₂ : EdgePath G x₀ τ) : Prop :=
   [[v₁ ++ v₂.reverse]] ∈ H
 
 
-theorem relH_refl {τ : V} (v : EdgePath G x₀ τ) : relH H v v :=
-  by
-    simp [relH]
-    apply one_mem
+theorem relH_refl {τ : V} (v : EdgePath G x₀ τ) : relH H v v := by
+  simp [relH]
+  apply one_mem
 
 
 theorem relH_symm {τ : V} {v₁ v₂ : EdgePath G x₀ τ} :
@@ -403,7 +402,9 @@ def localSection : (v₁ : Quotient (vertSetoid H)) → (e : E) →
     Quotient (edgeSetoid H) := by
   intro v₁
   apply Quotient.hrecOn v₁
-    (motive:= fun v₁ ↦ (e : E) → Morphism.toFuncV (groupCoverProj H) v₁ = SerreGraph.ι G e → Quotient (edgeSetoid H))
+    (motive:= fun v₁ ↦ (e : E) →
+    Morphism.toFuncV (groupCoverProj H) v₁ = SerreGraph.ι G e →
+    Quotient (edgeSetoid H))
     (fun ⟨τ, p, is_reduced⟩ e h ↦
         ⟦ ⟨τ, G.τ e, ⟨e, Eq.symm h, rfl⟩, p, is_reduced⟩ ⟧)
   intro ⟨τ, p, is_reduced⟩ ⟨τ', p', is_reduced'⟩ rel
@@ -513,7 +514,8 @@ instance groupCovering : CoveringMap (groupCoverProj H)  where
     exact rel
 
 /-!
-- Show that lifts are compositions of lifts to the universal cover and pushdowns, using uniqueness of lifts.
+- Show that lifts are compositions of lifts to the universal cover
+and pushdowns, using uniqueness of lifts.
 - Conclude terminal points of lifts are pushforwards of terminal points.
 - Can take initial points as basepoints
 -/
