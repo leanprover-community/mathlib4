@@ -462,7 +462,7 @@ theorem lcm_one_right (i : ℤ) : lcm i 1 = natAbs i := by
 theorem lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k := by
   rw [Int.lcm]
   intro hi hj
-  exact natCast_dvd_natCast_left.2 (Nat.lcm_dvd (natAbs_dvd_natAbs.2 hi) (natAbs_dvd_natAbs.2 hj))
+  exact natCast_dvd.2 (Nat.lcm_dvd (natAbs_dvd_natAbs.2 hi) (natAbs_dvd_natAbs.2 hj))
 #align int.lcm_dvd Int.lcm_dvd
 
 theorem lcm_mul_left {m n k : ℤ} : (m * n).lcm (m * k) = natAbs m * n.lcm k := by

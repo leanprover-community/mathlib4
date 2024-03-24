@@ -36,5 +36,5 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Nat.Prime 
 theorem Prime.dvd_natAbs_of_coe_dvd_sq {p : ℕ} (hp : p.Prime) (k : ℤ) (h : (p : ℤ) ∣ k ^ 2) :
     p ∣ k.natAbs := by
   apply @Nat.Prime.dvd_of_dvd_pow _ _ 2 hp
-  rwa [sq, ← natAbs_mul, ← natCast_dvd_natCast_left, ← sq]
+  rwa [sq, ← natAbs_mul, ← natCast_dvd, ← sq]
 #align int.prime.dvd_nat_abs_of_coe_dvd_sq Int.Prime.dvd_natAbs_of_coe_dvd_sq
