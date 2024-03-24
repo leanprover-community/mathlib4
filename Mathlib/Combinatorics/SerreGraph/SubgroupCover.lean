@@ -635,7 +635,11 @@ theorem range_proj : MonoidHom.range
     use h
     rw [heq]
 
-theorem group_of_cover_is_subgroup :
+/--
+Equivalence of the fundamental group of the cover
+corresponding to the subgroup `H` and the subgroup `H`.
+-/
+noncomputable def group_of_cover_is_subgroup :
     π₁ (groupCover H) (basepoint H) ≃* H := by
   let hf :=
     cover_π₁injective (groupCoverProj H) (basepoint H) x₀ rfl
