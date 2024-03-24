@@ -49,6 +49,13 @@ theorem prod_singleton : [a].prod = a :=
 theorem prod_one_cons : (1 :: l).prod = l.prod := by
   rw [prod, foldl, mul_one]
 
+@[to_additive (attr := simp)]
+theorem prod_map_one {l : List ι} :
+    (l.map fun _ => (1 : M)).prod = 1 := by
+  induction l with
+  | nil => rfl
+  | cons hd tl ih => rw [map_cons, prod_one_cons, ih]
+
 end MulOneClass
 
 section Monoid
@@ -158,13 +165,6 @@ theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α
   l.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 #align list.prod_map_mul List.prod_map_mul
 #align list.sum_map_add List.sum_map_add
-
-@[to_additive (attr := simp)]
-theorem prod_map_one {α : Type*} [MulOneClass α] {l : List ι} :
-    (l.map fun _ => (1 : α)).prod = 1 := by
-  induction l with
-  | nil => rfl
-  | cons hd tl ih => rw [map_cons, prod_one_cons, ih]
 
 @[simp]
 theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
