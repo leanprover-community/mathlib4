@@ -478,7 +478,6 @@ theorem aestronglyMeasurable'_condexpL1CLM (f : α →₁[μ] F') :
     exact isClosed_aeStronglyMeasurable' hm
 #align measure_theory.ae_strongly_measurable'_condexp_L1_clm MeasureTheory.aestronglyMeasurable'_condexpL1CLM
 
-set_option synthInstance.maxHeartbeats 25000 in
 theorem condexpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     condexpL1CLM F' hm μ (f : α →₁[μ] F') = ↑f := by
   let g := lpMeasToLpTrimLie F' ℝ 1 μ hm f
@@ -496,10 +495,11 @@ theorem condexpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     rw [LinearIsometryEquiv.map_add]
     push_cast
     rw [map_add, hf_eq, hg_eq]
-  · refine isClosed_eq ?_ ?_
+  · refine' isClosed_eq _ _
     · refine' (condexpL1CLM F' hm μ).continuous.comp (continuous_induced_dom.comp _)
       exact LinearIsometryEquiv.continuous _
-    · exact continuous_induced_dom.comp (LinearIsometryEquiv.continuous _)
+    · refine' continuous_induced_dom.comp _
+      exact LinearIsometryEquiv.continuous _
 #align measure_theory.condexp_L1_clm_Lp_meas MeasureTheory.condexpL1CLM_lpMeas
 
 theorem condexpL1CLM_of_aestronglyMeasurable' (f : α →₁[μ] F') (hfm : AEStronglyMeasurable' m f μ) :
