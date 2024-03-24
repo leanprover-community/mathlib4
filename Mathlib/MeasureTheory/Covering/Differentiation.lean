@@ -326,8 +326,8 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
           (toMeasurable μ sᶜ ∪ ⋃ n, toMeasurable (ρ + μ) (w n)) ⊆
         toMeasurable μ sᶜ ∪
           ⋃ (m) (n), toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n) := by
-      simp only [inter_distrib_left, inter_distrib_right, true_and_iff, subset_union_left,
-        union_subset_iff, inter_self]
+      simp only [inter_union_distrib_left, union_inter_distrib_right, true_and_iff,
+        subset_union_left, union_subset_iff, inter_self]
       refine' ⟨_, _, _⟩
       · exact (inter_subset_right _ _).trans (subset_union_left _ _)
       · exact (inter_subset_left _ _).trans (subset_union_left _ _)
@@ -841,9 +841,7 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : 
       v.eventually_filterAt_measurableSet x] with a ha h'a
     congr 1
     apply set_lintegral_congr_fun h'a
-    apply eventually_of_forall fun y => ?_
-    intro hy
-    simp only [ha hy, indicator_of_mem]
+    filter_upwards with y hy using (by simp only [ha hy, indicator_of_mem])
   apply ENNReal.tendsto_nhds_zero.2 fun ε εpos => ?_
   obtain ⟨c, ct, xc⟩ : ∃ c ∈ t, (‖f x - c‖₊ : ℝ≥0∞) < ε / 2 := by
     simp_rw [← edist_eq_coe_nnnorm_sub]

@@ -238,38 +238,44 @@ def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) w
   obj M := M.obj X
   map f := f.app X
 
+variable {R}
+
+/-- Given a presheaf of modules `M` on a category `C` and `f : X ⟶ Y` in `Cᵒᵖ`, this
+is the restriction map `M.obj X ⟶ M.obj Y`, considered as a linear map to
+the restriction of scalars of `M.obj Y`. -/
+noncomputable def restrictionApp {X Y : Cᵒᵖ} (f : X ⟶ Y) (M : PresheafOfModules.{v} R) :
+    M.obj X ⟶ (ModuleCat.restrictScalars (R.map f)).obj (M.obj Y) :=
+  ModuleCat.semilinearMapAddEquiv (R.map f) _ _ (M.map f)
+
+lemma restrictionApp_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (M : PresheafOfModules R) (x : M.obj X) :
+    restrictionApp f M x = M.map f x := by
+  rfl
+
+variable (R)
+
 /-- The restriction natural transformation on presheaves of modules, considered as linear maps
 to restriction of scalars. -/
+@[simps]
 noncomputable def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     evaluation R X ⟶ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f) where
-  app M := ModuleCat.semilinearMapAddEquiv (R.map f) _ _ (M.map f)
+  app := restrictionApp f
   naturality := fun M N φ => by
     ext x
     exact (congr_hom (φ.hom.naturality f) x).symm
 
 variable {R}
 
-lemma restriction_app_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (M : PresheafOfModules R) (x : M.obj X) :
-    (restriction R f).app M x = M.map f x := by
-  rfl
+attribute [local simp] restrictionApp_apply
 
 lemma restriction_app_id (M : PresheafOfModules R) (X : Cᵒᵖ) :
-    (restriction R (𝟙 X)).app M =
-      (ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).inv.app (M.obj X) := by
-  ext x
-  rw [restriction_app_apply, map_id, id'_apply]
-  erw [ModuleCat.restrictScalarsId'_inv_apply]
+    restrictionApp (𝟙 X) M =
+      (ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).inv.app (M.obj X) := by aesop
 
 lemma restriction_app_comp (M : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (restriction R (f ≫ g)).app M =
-      (restriction R f).app M ≫
-        (ModuleCat.restrictScalars (R.map f)).map ((restriction R g).app M) ≫
-        (ModuleCat.restrictScalarsComp' _ _ _ (R.map_comp f g)).inv.app (M.obj Z) := by
-  ext x
-  dsimp
-  erw [ModuleCat.restrictScalarsComp'_inv_apply, M.restriction_app_apply f,
-    M.restriction_app_apply g, M.restriction_app_apply (f ≫ g), map_comp]
-  rfl
+    restrictionApp (f ≫ g) M =
+      restrictionApp f M ≫
+        (ModuleCat.restrictScalars (R.map f)).map (restrictionApp g M) ≫
+        (ModuleCat.restrictScalarsComp' _ _ _ (R.map_comp f g)).inv.app (M.obj Z) := by aesop
 
 end PresheafOfModules
 
@@ -354,17 +360,12 @@ namespace BundledCorePresheafOfModules
 
 variable (M : BundledCorePresheafOfModules R)
 
+attribute [local simp] map_id map_comp
+
 /-- The obvious map `BundledCorePresheafOfModules R → CorePresheafOfModules R`. -/
 noncomputable def toCorePresheafOfModules : CorePresheafOfModules R where
   obj X := (M.obj X).carrier
   map {X Y} f := (ModuleCat.semilinearMapAddEquiv (R.map f) (M.obj X) (M.obj Y)).symm (M.map f)
-  map_id X x := by
-    dsimp
-    erw [M.map_id, ModuleCat.restrictScalarsId'_inv_apply]
-  map_comp {X Y Z} f g x := by
-    dsimp
-    erw [M.map_comp, ModuleCat.restrictScalarsComp'_inv_apply]
-    rfl
 
 end BundledCorePresheafOfModules
 
@@ -382,16 +383,16 @@ lemma mk''_obj (M : BundledCorePresheafOfModules R) (X : Cᵒᵖ) :
     (mk'' M).obj X = (M.obj X).carrier := rfl
 
 @[simp]
-lemma restriction_app_mk'' (M : BundledCorePresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    (restriction R f).app (mk'' M) = M.map f := rfl
+lemma restrictionApp_mk'' (M : BundledCorePresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    restrictionApp f (mk'' M) = M.map f := rfl
 
 namespace Hom
 
 variable {P Q : PresheafOfModules R}
   (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
   (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
-    (restriction R f).app P ≫ (ModuleCat.restrictScalars (R.map f)).map (app Y) =
-      ModuleCat.ofHom (app X) ≫ (restriction R f).app Q)
+    restrictionApp f P ≫ (ModuleCat.restrictScalars (R.map f)).map (app Y) =
+      ModuleCat.ofHom (app X) ≫ restrictionApp f Q)
 
 /-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
 of a family of linear maps over the various rings `R.obj X`, and for which the

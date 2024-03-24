@@ -6,6 +6,7 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
@@ -34,9 +35,7 @@ universe w' w v u
 open CategoryTheory CategoryTheory.Limits
 
 variable {J : Type w} [Category.{w'} J]
-
 variable {C : Type u} [Category.{v} C]
-
 variable {X : C}
 
 namespace CategoryTheory.Over
@@ -69,6 +68,24 @@ theorem epi_left_of_epi [HasPushouts C] {f g : Over X} (h : f ⟶ g) [Epi h] : E
 theorem epi_iff_epi_left [HasPushouts C] {f g : Over X} (h : f ⟶ g) : Epi h ↔ Epi h.left :=
   CostructuredArrow.epi_iff_epi_left _
 #align category_theory.over.epi_iff_epi_left CategoryTheory.Over.epi_iff_epi_left
+
+instance createsColimitsOfSizeMapCompForget {Y : C} (f : X ⟶ Y) :
+    CreatesColimitsOfSize.{w, w'} (map f ⋙ forget Y) :=
+  show CreatesColimitsOfSize.{w, w'} (forget X) from inferInstance
+
+instance preservesColimitsOfSizeMap [HasColimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
+    PreservesColimitsOfSize.{w, w'} (map f) :=
+  preservesColimitsOfReflectsOfPreserves (map f) (forget Y)
+
+/-- If `c` is a colimit cocone, then so is the cocone `c.toOver` with cocone point `𝟙 c.pt`. -/
+def isColimitToOver {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsColimit c.toOver :=
+  isColimitOfReflects (forget c.pt) <| IsColimit.equivIsoColimit c.mapCoconeToOver.symm hc
+
+/-- If `F` has a colimit, then the cocone `colimit.toOver F` with cocone point `𝟙 (colimit F)` is
+    also a colimit cocone. -/
+def _root_.CategoryTheory.Limits.colimit.isColimitToOver (F : J ⥤ C) [HasColimit F] :
+    IsColimit (colimit.toOver F) :=
+  Over.isColimitToOver (colimit.isColimit F)
 
 section
 
@@ -114,7 +131,7 @@ def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
       }
 #align category_theory.over.map_pullback_adj CategoryTheory.Over.mapPullbackAdj
 
-/-- pullback (𝟙 A) : over A ⥤ over A is the identity functor. -/
+/-- pullback (𝟙 A) : Over A ⥤ Over A is the identity functor. -/
 def pullbackId {A : C} : pullback (𝟙 A) ≅ 𝟭 _ :=
   Adjunction.rightAdjointUniq (mapPullbackAdj _) (Adjunction.id.ofNatIsoLeft (Over.mapId A).symm)
 #align category_theory.over.pullback_id CategoryTheory.Over.pullbackId
@@ -163,6 +180,24 @@ example [HasLimits C] : PreservesLimits (forget X) :=
 
 example : ReflectsLimits (forget X) :=
   inferInstance
+
+instance createLimitsOfSizeMapCompForget {Y : C} (f : X ⟶ Y) :
+    CreatesLimitsOfSize.{w, w'} (map f ⋙ forget X) :=
+  show CreatesLimitsOfSize.{w, w'} (forget Y) from inferInstance
+
+instance preservesLimitsOfSizeMap [HasLimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
+    PreservesLimitsOfSize.{w, w'} (map f) :=
+  preservesLimitsOfReflectsOfPreserves (map f) (forget X)
+
+/-- If `c` is a limit cone, then so is the cone `c.toUnder` with cone point `𝟙 c.pt`. -/
+def isLimitToUnder {F : J ⥤ C} {c : Cone F} (hc : IsLimit c) : IsLimit c.toUnder :=
+  isLimitOfReflects (forget c.pt) (IsLimit.equivIsoLimit c.mapConeToUnder.symm hc)
+
+/-- If `F` has a limit, then the cone `limit.toUnder F` with cone point `𝟙 (limit F)` is
+    also a limit cone. -/
+def _root_.CategoryTheory.Limits.limit.isLimitToOver (F : J ⥤ C) [HasLimit F] :
+    IsLimit (limit.toUnder F) :=
+  Under.isLimitToUnder (limit.isLimit F)
 
 section
 

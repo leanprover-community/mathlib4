@@ -392,7 +392,7 @@ theorem isLittleO_exp_comp_exp_comp {f g : α → ℝ} :
     imp_true_iff, tendsto_exp_comp_nhds_zero, neg_sub]
 #align real.is_o_exp_comp_exp_comp Real.isLittleO_exp_comp_exp_comp
 
--- Porting note: @[simp] can prove:  by simp only [@Asymptotics.isLittleO_one_left_iff,
+-- Porting note (#10618): @[simp] can prove:  by simp only [@Asymptotics.isLittleO_one_left_iff,
 --   Real.norm_eq_abs, Real.abs_exp, @Real.tendsto_exp_comp_atTop]
 theorem isLittleO_one_exp_comp {f : α → ℝ} :
     ((fun _ => 1 : α → ℝ) =o[l] fun x => exp (f x)) ↔ Tendsto f l atTop := by
@@ -432,6 +432,12 @@ lemma summable_exp_nat_mul_iff {a : ℝ} :
 
 lemma summable_exp_neg_nat : Summable fun n : ℕ ↦ exp (-n) := by
   simpa only [mul_neg_one] using summable_exp_nat_mul_iff.mpr neg_one_lt_zero
+
+lemma summable_pow_mul_exp_neg_nat_mul (k : ℕ) {r : ℝ} (hr : 0 < r) :
+    Summable fun n : ℕ ↦ n ^ k * exp (-r * n) := by
+  simp_rw [mul_comm (-r), exp_nat_mul]
+  apply summable_pow_mul_geometric_of_norm_lt_one
+  rwa [norm_of_nonneg (exp_nonneg _), exp_lt_one_iff, neg_lt_zero]
 
 end Real
 

@@ -33,7 +33,6 @@ section HammingDistNorm
 open Finset Function
 
 variable {α ι : Type*} {β : ι → Type*} [Fintype ι] [∀ i, DecidableEq (β i)]
-
 variable {γ : ι → Type*} [∀ i, DecidableEq (γ i)]
 
 /-- The Hamming distance function to the naturals. -/
@@ -332,12 +331,14 @@ theorem ofHamming_toHamming (x : ∀ i, β i) : ofHamming (toHamming x) = x :=
   rfl
 #align hamming.of_hamming_to_hamming Hamming.ofHamming_toHamming
 
---@[simp] -- Porting note: removing `simp`, `simp` can prove it and `dsimp` cannot use `Iff.rfl`
+--@[simp] -- Porting note (#10618): removing `simp`, `simp` can prove it
+-- and `dsimp` cannot use `Iff.rfl`
 theorem toHamming_inj {x y : ∀ i, β i} : toHamming x = toHamming y ↔ x = y :=
   Iff.rfl
 #align hamming.to_hamming_inj Hamming.toHamming_inj
 
---@[simp] -- Porting note: removing `simp`, `simp` can prove it and `dsimp` cannot use `Iff.rfl`
+--@[simp] -- Porting note (#10618): removing `simp`, `simp` can prove it
+-- and `dsimp` cannot use `Iff.rfl`
 theorem ofHamming_inj {x y : Hamming β} : ofHamming x = ofHamming y ↔ x = y :=
   Iff.rfl
 #align hamming.of_hamming_inj Hamming.ofHamming_inj
