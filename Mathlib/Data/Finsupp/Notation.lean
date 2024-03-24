@@ -32,14 +32,18 @@ As a result, if multiple match arms coincide, the last one takes precedence. -/
 def fun₀ := leading_parser:maxPrec
   ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> fun₀.matchAlts
 
+/-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/
 local syntax:lead (name := stxSingle₀) "single₀" term:arg term:arg : term
+/-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/
 local syntax:lead (name := stxUpdate₀) "update₀" term:arg term:arg term:arg : term
 
+/-- `Finsupp` elaborator for `single₀`. -/
 @[term_elab stxSingle₀]
 def elabSingle₀ : Elab.Term.TermElab
   | `(term| single₀ $i $x) => fun ty => do Elab.Term.elabTerm (← `(Finsupp.single $i $x)) ty
   | _ => fun _ => Elab.throwUnsupportedSyntax
 
+/-- `Finsupp` elaborator for `update₀`. -/
 @[term_elab stxUpdate₀]
 def elabUpdate₀ : Elab.Term.TermElab
   | `(term| update₀ $f $i $x) => fun ty => do Elab.Term.elabTerm (← `(Finsupp.update $f $i $x)) ty

@@ -25,6 +25,7 @@ open Lean.Parser.Term
 
 attribute [term_parser] Finsupp.stxSingle₀ Finsupp.stxUpdate₀
 
+/-- `DFinsupp` elaborator for `single₀`. -/
 @[term_elab Finsupp.stxSingle₀]
 def elabSingle₀ : Elab.Term.TermElab
   | `(term| single₀ $i $x) => fun ty? => do
@@ -34,6 +35,7 @@ def elabSingle₀ : Elab.Term.TermElab
     Elab.Term.elabTerm (← `(DFinsupp.single $i $x)) ty?
   | _ => fun _ => Elab.throwUnsupportedSyntax
 
+/-- `DFinsupp` elaborator for `update₀`. -/
 @[term_elab Finsupp.stxUpdate₀]
 def elabUpdate₀ : Elab.Term.TermElab
   | `(term| update₀ $f $i $x) => fun ty? => do
@@ -56,7 +58,6 @@ def updateUnexpander : Lean.PrettyPrinter.Unexpander
     | `(fun₀ $xs:matchAlt*) => `(fun₀ $xs:matchAlt* | $pat => $val)
     | _ => throw ()
   | _ => throw ()
-
 
 /-- Display `DFinsupp` using `fun₀` notation. -/
 unsafe instance {α : Type*} {β : α → Type*} [Repr α] [∀ i, Repr (β i)] [∀ i, Zero (β i)] :
