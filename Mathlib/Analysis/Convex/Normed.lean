@@ -153,30 +153,3 @@ theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
   exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
 #align is_connected_set_of_same_ray_and_ne_zero isConnected_setOf_sameRay_and_ne_zero
-
-section
-
-variable {E F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
-  [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGroup F] [ContinuousSMul ℝ F]
-
-/-- Let `E` be a linear subspace in a real vector space.
-If `E` has codimension at least two, its complement is path-connected. -/
-theorem isPathConnected_compl_of_two_le_codim {E : Submodule ℝ F}
-    (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) : IsPathConnected (Eᶜ : Set F) := by
-  rcases E.exists_isCompl with ⟨E', hE'⟩
-  refine isPathConnected_compl_of_isPathConnected_compl_zero hE'.symm
-    (isPathConnected_compl_singleton_of_one_lt_rank (Cardinal.two_le_iff_one_lt.mp ?_) 0)
-  rwa [← (E.quotientEquivOfIsCompl E' hE').rank_eq]
-
-/-- Let `E` be a linear subspace in a real vector space.
-If `E` has codimension at least two, its complement is connected. -/
-theorem isConnected_compl_of_two_le_codim {E : Submodule ℝ F} (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) :
-    IsConnected (Eᶜ : Set F) :=
-  (isPathConnected_compl_of_two_le_codim hcodim).isConnected
-
-theorem Submodule.connectedComponentIn_eq_self_of_two_le_codim (E : Submodule ℝ F)
-    (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) {x : F} (hx : x ∉ E) :
-    connectedComponentIn ((E : Set F)ᶜ) x = (E : Set F)ᶜ :=
-  (isConnected_compl_of_two_le_codim hcodim).2.connectedComponentIn hx
-
-end

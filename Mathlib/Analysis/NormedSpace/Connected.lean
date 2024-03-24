@@ -16,6 +16,8 @@ We show several results related to the (path)-connectedness of subsets of real v
 * `isPathConnected_compl_singleton_of_one_lt_rank` is the special case of the complement of a
   singleton.
 * `isPathConnected_sphere` shows that any sphere is path-connected in dimension `> 1`.
+* `isPathConnected_compl_of_two_le_codim` shows that the complement of a subspace
+  of codimension `> 1` is path-connected.
 
 Statements with connectedness instead of path-connectedness are also given.
 -/
@@ -166,3 +168,30 @@ theorem isPreconnected_sphere (h : 1 < Module.rank ℝ E) (x : E) (r : ℝ) :
   · simpa [hr] using isPreconnected_empty
 
 end NormedSpace
+
+section
+
+variable {E F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+  [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGroup F] [ContinuousSMul ℝ F]
+
+/-- Let `E` be a linear subspace in a real vector space.
+If `E` has codimension at least two, its complement is path-connected. -/
+theorem isPathConnected_compl_of_two_le_codim {E : Submodule ℝ F}
+    (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) : IsPathConnected (Eᶜ : Set F) := by
+  rcases E.exists_isCompl with ⟨E', hE'⟩
+  refine isPathConnected_compl_of_isPathConnected_compl_zero hE'.symm
+    (isPathConnected_compl_singleton_of_one_lt_rank (Cardinal.two_le_iff_one_lt.mp ?_) 0)
+  rwa [← (E.quotientEquivOfIsCompl E' hE').rank_eq]
+
+/-- Let `E` be a linear subspace in a real vector space.
+If `E` has codimension at least two, its complement is connected. -/
+theorem isConnected_compl_of_two_le_codim {E : Submodule ℝ F} (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) :
+    IsConnected (Eᶜ : Set F) :=
+  (isPathConnected_compl_of_two_le_codim hcodim).isConnected
+
+theorem Submodule.connectedComponentIn_eq_self_of_two_le_codim (E : Submodule ℝ F)
+    (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) {x : F} (hx : x ∉ E) :
+    connectedComponentIn ((E : Set F)ᶜ) x = (E : Set F)ᶜ :=
+  (isConnected_compl_of_two_le_codim hcodim).2.connectedComponentIn hx
+
+end
