@@ -456,12 +456,10 @@ theorem aevalTower_comp_C : (aevalTower g y : R[X] →+* A').comp C = g :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.aeval_tower_comp_C Polynomial.aevalTower_comp_C
 
-@[simp]
 theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R R[X] x) = g x :=
   eval₂_C _ _
 #align polynomial.aeval_tower_algebra_map Polynomial.aevalTower_algebraMap
 
-@[simp]
 theorem aevalTower_comp_algebraMap : (aevalTower g y : R[X] →+* A').comp (algebraMap R R[X]) = g :=
   aevalTower_comp_C _ _
 #align polynomial.aeval_tower_comp_algebra_map Polynomial.aevalTower_comp_algebraMap
