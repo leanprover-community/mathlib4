@@ -11,17 +11,12 @@ import Std.Data.Int.Order
 
 open Nat
 
--- TODO: backport?
 #align int.neg_succ_of_nat Int.negSucc
 
--- @[inherit_doc]
+@[inherit_doc]
 notation "ℤ" => Int
 
 namespace Int
-
-protected theorem coe_nat_eq (n : ℕ) : ↑n = Int.ofNat n :=
-  rfl
-#align int.coe_nat_eq Int.coe_nat_eq
 
 /-- The number `0 : ℤ`, as a standalone definition. -/
 @[deprecated] protected def zero : ℤ := ofNat 0

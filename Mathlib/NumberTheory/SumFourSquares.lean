@@ -39,7 +39,7 @@ theorem Nat.euler_four_squares (a b c d x y z w : ℕ) :
       ((a : ℤ) * z - b * w + c * x + d * y).natAbs ^ 2 +
       ((a : ℤ) * w + b * z - c * y + d * x).natAbs ^ 2 =
       (a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2) * (x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) := by
-  rw [← Int.coe_nat_inj']
+  rw [← Int.natCast_inj]
   push_cast
   simp only [sq_abs, _root_.euler_four_squares]
 
@@ -178,7 +178,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     -- `m ∣ |f a| ^ 2 + |f b| ^ 2 + |f c| ^ 2 + |f d| ^ 2`
     obtain ⟨r, hr⟩ :
         m ∣ (f a).natAbs ^ 2 + (f b).natAbs ^ 2 + (f c).natAbs ^ 2 + (f d).natAbs ^ 2 := by
-      simp only [← Int.coe_nat_dvd, ← ZMod.int_cast_zmod_eq_zero_iff_dvd]
+      simp only [← Int.natCast_dvd_natCast, ← ZMod.int_cast_zmod_eq_zero_iff_dvd]
       push_cast [hf_mod, sq_abs]
       norm_cast
       simp [habcd]

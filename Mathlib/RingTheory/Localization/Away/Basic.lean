@@ -191,7 +191,7 @@ theorem selfZPow_of_nonneg {n : ℤ} (hn : 0 ≤ n) : selfZPow x B n = algebraMa
 
 @[simp]
 theorem selfZPow_coe_nat (d : ℕ) : selfZPow x B d = algebraMap R B x ^ d :=
-  selfZPow_of_nonneg _ _ (Int.coe_nat_nonneg d)
+  selfZPow_of_nonneg _ _ (Int.natCast_nonneg d)
 #align self_zpow_coe_nat selfZPow_coe_nat
 
 @[simp]
@@ -213,7 +213,7 @@ theorem selfZPow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
 
 @[simp]
 theorem selfZPow_neg_coe_nat (d : ℕ) : selfZPow x B (-d) = mk' _ (1 : R) (Submonoid.pow x d) := by
-  simp [selfZPow_of_nonpos _ _ (neg_nonpos.mpr (Int.coe_nat_nonneg d))]
+  simp [selfZPow_of_nonpos _ _ (neg_nonpos.mpr (Int.natCast_nonneg d))]
 #align self_zpow_neg_coe_nat selfZPow_neg_coe_nat
 
 @[simp]
