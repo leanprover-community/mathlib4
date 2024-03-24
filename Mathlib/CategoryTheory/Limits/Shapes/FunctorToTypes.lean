@@ -17,7 +17,7 @@ Also defines isomorphisms to the categorical product and coproduct, respectively
 
 open CategoryTheory.Limits
 
-universe w' w v u
+universe w v u
 
 namespace CategoryTheory.FunctorToTypes
 
@@ -289,3 +289,4 @@ def binaryCoproductEquiv (a : C) :
 end coprod
 
 end CategoryTheory.FunctorToTypes
+
