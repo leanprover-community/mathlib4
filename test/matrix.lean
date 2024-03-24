@@ -167,4 +167,13 @@ example : Matrix.col ![1, 1] = !![1; 1] := by
   ext i j
   fin_cases i <;> simp
 
+/- By design, we need to choose the Finite type indexing our unique row. -/
+example  : Matrix.row (ι := Unit) (fun (n : Fin 3) => 0) = 0 := by
+  simp_all
+  rfl
+
+example  : Matrix.row (ι := Fin 1) (fun (n : Fin 3) => 0) = 0 := by
+  simp_all
+  rfl
+
 end Matrix

@@ -26,9 +26,13 @@ variable {R : Type*} {α : Type v} {β : Type w}
 
 namespace Matrix
 
-variable {ι : Type} [Unique ι]
+variable {ι : Type*} [Unique ι]
 
-/-- `Matrix.col u` is the column matrix whose entries are given by `u`. -/
+/-- `Matrix.col u` is the column matrix whose entries are given by `u`.
+
+Warning: In any abstract use of `col`, you might want to use
+`Matrix.col (ι := Fin 1) u`.
+-/
 def col (w : m → α) : Matrix m ι α :=
   of fun x _ => w x
 #align matrix.col Matrix.col
@@ -39,7 +43,11 @@ theorem col_apply (w : m → α) (i) (j : ι) : col w i j = w i :=
   rfl
 #align matrix.col_apply Matrix.col_apply
 
-/-- `Matrix.row u` is the row matrix whose entries are given by `u`. -/
+/-- `Matrix.row u` is the row matrix whose entries are given by `u`.
+
+Warning: In any abstract use of `row`, you might want to use
+`Matrix.row (ι := Fin 1) u`.
+-/
 def row (v : n → α) : Matrix ι n α :=
   of fun _ y => v y
 #align matrix.row Matrix.row

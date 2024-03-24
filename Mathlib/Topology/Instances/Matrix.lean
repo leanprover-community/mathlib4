@@ -98,12 +98,12 @@ instance [Star R] [ContinuousStar R] : ContinuousStar (Matrix m m R) :=
   ⟨continuous_id.matrix_conjTranspose⟩
 
 @[continuity]
-theorem Continuous.matrix_col {A : X → n → R} (hA : Continuous A) : Continuous fun x => col (A x) :=
+theorem Continuous.matrix_col {ι : Type*} [Unique ι] {A : X → n → R} (hA : Continuous A) : Continuous fun x => col (ι := ι) (A x) :=
   continuous_matrix fun i _ => (continuous_apply i).comp hA
 #align continuous.matrix_col Continuous.matrix_col
 
 @[continuity]
-theorem Continuous.matrix_row {A : X → n → R} (hA : Continuous A) : Continuous fun x => row (A x) :=
+theorem Continuous.matrix_row {ι : Type*} [Unique ι] {A : X → n → R} (hA : Continuous A) : Continuous fun x => row (ι := ι) (A x) :=
   continuous_matrix fun _ _ => (continuous_apply _).comp hA
 #align continuous.matrix_row Continuous.matrix_row
 
