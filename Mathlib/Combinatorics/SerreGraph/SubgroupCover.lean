@@ -255,7 +255,8 @@ def bar : Quotient (edgeSetoid H) → Quotient (edgeSetoid H) := by
   apply And.intro
   · rw [← h'.2]
     rw [← mul_path_path]
-    simp [reducedConcat,← inv_equiv_reverse, ← cons_homotopic_redCons, cons_equiv_of_equiv, PathClass]
+    simp [reducedConcat,← inv_equiv_reverse,
+    ← cons_homotopic_redCons, cons_equiv_of_equiv, PathClass]
     rw [inv_equiv_reverse, mul_path_path, reverse_cons,
       reverse_reverse, EdgeBetween.bar_bar, concat_append]
     have : [[p ++ cons e (cons (e.bar) (p'.reverse))]] = [[ p ++ p'.reverse ]] := by
