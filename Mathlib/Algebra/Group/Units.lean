@@ -705,7 +705,7 @@ lemma IsUnit.exists_right_inv (h : IsUnit a) : ∃ b, a * b = 1 := by
 #align is_add_unit.exists_neg IsAddUnit.exists_neg
 
 @[to_additive IsAddUnit.exists_neg']
-lemma IsUnit.exists_left_inv [Monoid M] {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
+lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
   rcases h with ⟨⟨a, b, _, hba⟩, rfl⟩
   exact ⟨b, hba⟩
 #align is_unit.exists_left_inv IsUnit.exists_left_inv
@@ -1012,10 +1012,10 @@ protected lemma div_mul_cancel (h : IsUnit b) (a : α) : a / b * b = a := by
 #align is_add_unit.sub_add_cancel IsAddUnit.sub_add_cancel
 
 @[to_additive (attr := simp)]
-protected lemma mul_div_cancel (h : IsUnit b) (a : α) : a * b / b = a := by
+protected lemma mul_div_cancel_right (h : IsUnit b) (a : α) : a * b / b = a := by
   rw [div_eq_mul_inv, h.mul_inv_cancel_right]
-#align is_unit.mul_div_cancel IsUnit.mul_div_cancel
-#align is_add_unit.add_sub_cancel IsAddUnit.add_sub_cancel
+#align is_unit.mul_div_cancel mul_div_cancel_right
+#align is_add_unit.add_sub_cancel add_sub_cancel_right
 
 @[to_additive]
 protected lemma mul_one_div_cancel (h : IsUnit a) : a * (1 / a) = 1 := by simp [h]
@@ -1077,10 +1077,13 @@ protected lemma div_eq_one_iff_eq (h : IsUnit b) : a / b = 1 ↔ a = b :=
 #align is_unit.div_eq_one_iff_eq IsUnit.div_eq_one_iff_eq
 #align is_add_unit.sub_eq_zero_iff_eq IsAddUnit.sub_eq_zero_iff_eq
 
-/-- The `Group` version of this lemma is `div_mul_cancel'''` -/
-@[to_additive "The `AddGroup` version of this lemma is `sub_add_cancel''`"]
+@[to_additive]
+protected lemma div_mul_cancel_right (h : IsUnit b) (a : α) : b / (a * b) = a⁻¹ := by
+  rw [div_eq_mul_inv, mul_inv_rev, h.mul_inv_cancel_left]
+
+@[to_additive]
 protected lemma div_mul_left (h : IsUnit b) : b / (a * b) = 1 / a := by
-  rw [div_eq_mul_inv, mul_inv_rev, h.mul_inv_cancel_left, one_div]
+  rw [h.div_mul_cancel_right, one_div]
 #align is_unit.div_mul_left IsUnit.div_mul_left
 #align is_add_unit.sub_add_left IsAddUnit.sub_add_left
 
@@ -1101,6 +1104,10 @@ section DivisionCommMonoid
 variable [DivisionCommMonoid α] {a b c d : α}
 
 @[to_additive]
+protected lemma div_mul_cancel_left (h : IsUnit a) (b : α) : a / (a * b) = b⁻¹ := by
+  rw [mul_comm, h.div_mul_cancel_right]
+
+@[to_additive]
 protected lemma div_mul_right (h : IsUnit a) (b : α) : a / (a * b) = 1 / b := by
   rw [mul_comm, h.div_mul_left]
 #align is_unit.div_mul_right IsUnit.div_mul_right
@@ -1108,15 +1115,15 @@ protected lemma div_mul_right (h : IsUnit a) (b : α) : a / (a * b) = 1 / b := b
 
 @[to_additive]
 protected lemma mul_div_cancel_left (h : IsUnit a) (b : α) : a * b / a = b := by
-  rw [mul_comm, h.mul_div_cancel]
-#align is_unit.mul_div_cancel_left IsUnit.mul_div_cancel_left
-#align is_add_unit.add_sub_cancel_left IsAddUnit.add_sub_cancel_left
+  rw [mul_comm, h.mul_div_cancel_right]
+#align is_unit.mul_div_cancel_left mul_div_cancel_left
+#align is_add_unit.add_sub_cancel_left add_sub_cancel_left
 
 @[to_additive]
-protected lemma mul_div_cancel' (h : IsUnit a) (b : α) : a * (b / a) = b := by
+protected lemma mul_div_cancel (h : IsUnit a) (b : α) : a * (b / a) = b := by
   rw [mul_comm, h.div_mul_cancel]
-#align is_unit.mul_div_cancel' IsUnit.mul_div_cancel'
-#align is_add_unit.add_sub_cancel' IsAddUnit.add_sub_cancel'
+#align is_unit.mul_div_cancel' IsUnit.mul_div_cancel
+#align is_add_unit.add_sub_cancel' IsAddUnit.add_sub_cancel
 
 @[to_additive]
 protected lemma mul_div_mul_left (h : IsUnit c) (a b : α) : c * a / (c * b) = a / b := by
@@ -1191,3 +1198,14 @@ noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a
 #align comm_group_of_is_unit commGroupOfIsUnit
 
 end NoncomputableDefs
+
+-- 2024--03-20
+attribute [deprecated div_mul_cancel_right] IsUnit.div_mul_left
+attribute [deprecated sub_add_cancel_right] IsAddUnit.sub_add_left
+attribute [deprecated div_mul_cancel_left] IsUnit.div_mul_right
+attribute [deprecated sub_add_cancel_left] IsAddUnit.sub_add_right
+-- The names `IsUnit.mul_div_cancel` and `IsAddUnit.add_sub_cancel` have been reused
+-- @[deprecated] alias IsUnit.mul_div_cancel := IsUnit.mul_div_cancel_right
+-- @[deprecated] alias IsAddUnit.add_sub_cancel := IsAddUnit.add_sub_cancel_right
+@[deprecated] alias IsUnit.mul_div_cancel' := IsUnit.mul_div_cancel
+@[deprecated] alias IsAddUnit.add_sub_cancel' := IsAddUnit.add_sub_cancel

@@ -40,7 +40,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
       use (x - a).toNat
       rw [← lt_add_one_iff] at hb
       rw [toNat_sub_of_le ha]
-      exact ⟨sub_lt_sub_right hb _, add_sub_cancel'_right _ _⟩
+      exact ⟨sub_lt_sub_right hb _, add_sub_cancel _ _⟩
   finset_mem_Ico a b x := by
     simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
@@ -50,7 +50,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
     · rintro ⟨ha, hb⟩
       use (x - a).toNat
       rw [toNat_sub_of_le ha]
-      exact ⟨sub_lt_sub_right hb _, add_sub_cancel'_right _ _⟩
+      exact ⟨sub_lt_sub_right hb _, add_sub_cancel _ _⟩
   finset_mem_Ioc a b x := by
     simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
@@ -60,8 +60,8 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
       exact ⟨Int.le.intro a rfl, h⟩
     · rintro ⟨ha, hb⟩
       use (x - (a + 1)).toNat
-      rw [toNat_sub_of_le ha, ← add_one_le_iff, sub_add, add_sub_cancel]
-      exact ⟨sub_le_sub_right hb _, add_sub_cancel'_right _ _⟩
+      rw [toNat_sub_of_le ha, ← add_one_le_iff, sub_add, add_sub_cancel_right]
+      exact ⟨sub_le_sub_right hb _, add_sub_cancel _ _⟩
   finset_mem_Ioo a b x := by
     simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
@@ -72,7 +72,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
     · rintro ⟨ha, hb⟩
       use (x - (a + 1)).toNat
       rw [toNat_sub_of_le ha, sub_sub]
-      exact ⟨sub_lt_sub_right hb _, add_sub_cancel'_right _ _⟩
+      exact ⟨sub_lt_sub_right hb _, add_sub_cancel _ _⟩
 
 variable (a b : ℤ)
 
