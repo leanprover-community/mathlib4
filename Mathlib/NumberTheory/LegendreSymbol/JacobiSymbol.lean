@@ -237,8 +237,8 @@ theorem mod_left (a : ℤ) (b : ℕ) : J(a | b) = J(a % b | b) :=
         rintro p hp _ h₂
         letI : Fact p.Prime := ⟨h₂⟩
         conv_rhs =>
-          rw [legendreSym.mod, Int.emod_emod_of_dvd _ (Int.natCast_dvd_natCast.2 <| dvd_of_mem_factors hp),
-            ← legendreSym.mod])
+          rw [legendreSym.mod, Int.emod_emod_of_dvd _ (Int.natCast_dvd_natCast.2 <|
+            dvd_of_mem_factors hp), ← legendreSym.mod])
 #align jacobi_sym.mod_left jacobiSym.mod_left
 
 /-- The symbol `J(a | b)` depends only on `a` mod `b`. -/
