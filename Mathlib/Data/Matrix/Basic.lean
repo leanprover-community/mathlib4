@@ -74,28 +74,10 @@ theorem ext_iff : (∀ i j, M i j = N i j) ↔ M = N :=
   ⟨fun h => funext fun i => funext <| h i, fun h => by simp [h]⟩
 #align matrix.ext_iff Matrix.ext_iff
 
--- Porting note: `ext` does not like this, see new lemma below.
--- @[ext]
+@[ext]
 theorem ext : (∀ i j, M i j = N i j) → M = N :=
   ext_iff.mp
 #align matrix.ext Matrix.ext
-
--- Porting note: `ext` does not like if there are two variables introduced at once. E.g.
--- ```
--- example (A B : Matrix m n α) : A = B := by
---   ext i j
---   sorry
--- ```
--- would only introduce the first variable, so that afterwards, the state is
--- ```
--- i : m
--- ⊢ ∀ (j : n), A i j = B i j
--- ```
--- This is probably a bug in `ext`. Once it is fixed, you should delete `Matrix.ext'` below
--- and restore the `@[ext]` attribute on `Matrix.ext` above.
-@[ext]
-theorem ext' : (∀ i, M i = N i) → M = N :=
-  fun h => Matrix.ext fun i => by simp[h]
 
 end Ext
 
@@ -1290,12 +1272,11 @@ theorem scalar_inj [Nonempty n] {r s : α} : scalar n r = scalar n s ↔ r = s :
   (diagonal_injective.comp Function.const_injective).eq_iff
 #align matrix.scalar_inj Matrix.scalar_inj
 
-theorem scalar_commute_iff [Fintype n] [DecidableEq n] {r : α} {M : Matrix n n α} :
+theorem scalar_commute_iff {r : α} {M : Matrix n n α} :
     Commute (scalar n r) M ↔ r • M = MulOpposite.op r • M := by
   simp_rw [Commute, SemiconjBy, scalar_apply, ← smul_eq_diagonal_mul, ← op_smul_eq_mul_diagonal]
 
-theorem scalar_commute [Fintype n] [DecidableEq n] (r : α) (hr : ∀ r', Commute r r')
-    (M : Matrix n n α) :
+theorem scalar_commute (r : α) (hr : ∀ r', Commute r r') (M : Matrix n n α) :
     Commute (scalar n r) M := scalar_commute_iff.2 <| ext fun _ _ => hr _
 #align matrix.scalar.commute Matrix.scalar_commuteₓ
 
