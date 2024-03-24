@@ -202,8 +202,7 @@ theorem prod_take_succ :
 @[to_additive "A list with sum not zero must have positive length."]
 theorem length_pos_of_prod_ne_one (L : List M) (h : L.prod ≠ 1) : 0 < L.length := by
   cases L
-  · contrapose h
-    simp
+  · simp at h
   · simp
 #align list.length_pos_of_prod_ne_one List.length_pos_of_prod_ne_one
 #align list.length_pos_of_sum_ne_zero List.length_pos_of_sum_ne_zero
@@ -448,6 +447,14 @@ theorem prod_drop_succ :
 #align list.prod_drop_succ List.prod_drop_succ
 #align list.sum_drop_succ List.sum_drop_succ
 
+/-- Cancellation of a telescoping product. -/
+@[to_additive "Cancellation of a telescoping sum."]
+theorem prod_range_div' (n : ℕ) (f : ℕ → G) :
+    ((range n).map fun k ↦ f k / f (k + 1)).prod = f 0 / f n := by
+  induction' n with n h
+  · exact (div_self' (f 0)).symm
+  · rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel']
+
 end Group
 
 section CommGroup
@@ -461,6 +468,13 @@ theorem prod_inv : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).prod
   | x :: xs => by simp [mul_comm, prod_inv xs]
 #align list.prod_inv List.prod_inv
 #align list.sum_neg List.sum_neg
+
+/-- Cancellation of a telescoping product. -/
+@[to_additive "Cancellation of a telescoping sum."]
+theorem prod_range_div (n : ℕ) (f : ℕ → G) :
+    ((range n).map fun k ↦ f (k + 1) / f k).prod = f n / f 0 := by
+  have h : ((·⁻¹) ∘ fun k ↦ f (k + 1) / f k) = fun k ↦ f k / f (k + 1) := by ext; apply inv_div
+  rw [← inv_inj, prod_inv, map_map, inv_div, h, prod_range_div']
 
 /-- Alternative version of `List.prod_set` when the list is over a group -/
 @[to_additive "Alternative version of `List.sum_set` when the list is over a group"]

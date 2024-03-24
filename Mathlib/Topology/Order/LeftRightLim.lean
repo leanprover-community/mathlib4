@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.Algebra.Order.LeftRight
+import Mathlib.Topology.Order.LeftRight
 
 #align_import topology.algebra.order.left_right_lim from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
