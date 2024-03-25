@@ -25,10 +25,9 @@ open Polynomial
 namespace Polynomial
 
 variable (R : Type*) [Semiring R]
-
 variable {M}
 
--- porting note: changed `(· • ·) m` to `HSMul.hSMul m`
+-- Porting note: changed `(· • ·) m` to `HSMul.hSMul m`
 theorem smul_eq_map [MulSemiringAction M R] (m : M) :
     HSMul.hSMul m = map (MulSemiringAction.toRingHom M R m) := by
   suffices DistribMulAction.toAddMonoidHom R[X] m =
@@ -50,7 +49,6 @@ noncomputable instance [MulSemiringAction M R] : MulSemiringAction M R[X] :=
       smul_eq_map R m ▸ Polynomial.map_mul (MulSemiringAction.toRingHom M R m) }
 
 variable {M R}
-
 variable [MulSemiringAction M R]
 
 @[simp]
@@ -83,10 +81,9 @@ theorem smul_eval [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
 end Polynomial
 
 section CommRing
-set_option linter.uppercaseLean3 false  -- porting note: `prod_X_*`
+set_option linter.uppercaseLean3 false  -- Porting note: `prod_X_*`
 
 variable (G : Type*) [Group G] [Fintype G]
-
 variable (R : Type*) [CommRing R] [MulSemiringAction G R]
 
 open MulAction
@@ -125,9 +122,7 @@ end CommRing
 namespace MulSemiringActionHom
 
 variable {M}
-
 variable {P : Type*} [CommSemiring P] [MulSemiringAction M P]
-
 variable {Q : Type*} [CommSemiring Q] [MulSemiringAction M Q]
 
 open Polynomial
@@ -144,7 +139,7 @@ protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X] w
       rw [smul_mul', smul_C, smul_pow', smul_X, Polynomial.map_mul, map_C, Polynomial.map_pow,
         map_X, coe_fn_coe, g.map_smul, Polynomial.map_mul, map_C, Polynomial.map_pow, map_X,
         smul_mul', smul_C, smul_pow', smul_X, coe_fn_coe]
-  -- porting note: added `.toRingHom`
+  -- Porting note: added `.toRingHom`
   map_zero' := Polynomial.map_zero g.toRingHom
   map_add' p q := Polynomial.map_add g.toRingHom
   map_one' := Polynomial.map_one g.toRingHom

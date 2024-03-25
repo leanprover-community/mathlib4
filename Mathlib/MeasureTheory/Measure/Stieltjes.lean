@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.Algebra.Order.LeftRightLim
+import Mathlib.Topology.Order.LeftRightLim
 
 #align_import measure_theory.measure.stieltjes from "leanprover-community/mathlib"@"20d5763051978e9bc6428578ed070445df6a18b3"
 
@@ -26,7 +26,8 @@ a Borel measure `f.measure`.
 
 noncomputable section
 
-open Classical Set Filter Function BigOperators ENNReal NNReal Topology MeasureTheory
+open scoped Classical
+open Set Filter Function BigOperators ENNReal NNReal Topology MeasureTheory
 
 open ENNReal (ofReal)
 

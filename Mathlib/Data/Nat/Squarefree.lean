@@ -353,7 +353,7 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
       (one_lt_pow 2 x two_ne_zero (one_lt_iff_ne_zero_and_ne_one.mpr ⟨fun h => by simp_all, hx⟩))
       using 1
     rw [mul_pow]
-  · simp_rw [hsa, Finset.mem_filter, Finset.mem_range]
+  · simp_rw [S, hsa, Finset.mem_filter, Finset.mem_range]
     refine' ⟨Nat.lt_succ_iff.mpr (le_of_dvd hn _), _, ⟨b * x, rfl⟩⟩ <;> use y <;> rw [hy] <;> ring
 #align nat.sq_mul_squarefree_of_pos Nat.sq_mul_squarefree_of_pos
 

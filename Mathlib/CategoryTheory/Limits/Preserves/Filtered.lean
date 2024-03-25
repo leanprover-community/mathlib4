@@ -28,11 +28,8 @@ universe v u₁ u₂ u₃
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 variable {C : Type u₁} [Category.{v} C]
-
 variable {D : Type u₂} [Category.{v} D]
-
 variable {E : Type u₃} [Category.{v} E]
-
 variable {J : Type v} [SmallCategory J] {K : J ⥤ C}
 
 /--

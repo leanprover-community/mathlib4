@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, David Renshaw
 
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Main
-import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.NormNum.Core
@@ -152,6 +151,10 @@ elab_rules : tactic
 | `(tactic| field_simp $[$cfg:config]? $[(discharger := $dis)]? $[only%$only?]?
     $[$sa:simpArgs]? $[$loc:location]?) => withMainContext do
   let cfg ← elabSimpConfig (mkOptionalNode cfg) .simp
+  -- The `field_simp` discharger relies on recursively calling the discharger.
+  -- Prior to https://github.com/leanprover/lean4/pull/3523,
+  -- the maxDischargeDepth wasn't actually being checked: now we have to set it higher.
+  let cfg := { cfg with maxDischargeDepth := 7 }
   let loc := expandOptLocation (mkOptionalNode loc)
 
   let dis ← match dis with

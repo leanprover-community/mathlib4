@@ -58,7 +58,6 @@ variable {𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type*}
 section FilterBasis
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable (𝕜 E ι)
 
 /-- An abbreviation for indexed families of seminorms. This is mainly to allow for dot-notation. -/
@@ -215,9 +214,7 @@ section Bounded
 namespace Seminorm
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [NormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
-
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 -- Todo: This should be phrased entirely in terms of the von Neumann bornology.
@@ -278,7 +275,6 @@ theorem WithSeminorms.withSeminorms_eq {p : SeminormFamily 𝕜 E ι} [t : Topol
 #align with_seminorms.with_seminorms_eq WithSeminorms.withSeminorms_eq
 
 variable [TopologicalSpace E]
-
 variable {p : SeminormFamily 𝕜 E ι}
 
 theorem WithSeminorms.topologicalAddGroup (hp : WithSeminorms p) : TopologicalAddGroup E := by
@@ -374,7 +370,6 @@ end Topology
 section Tendsto
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonempty ι] [TopologicalSpace E]
-
 variable {p : SeminormFamily 𝕜 E ι}
 
 /-- Convergence along filters for `WithSeminorms`.
@@ -409,7 +404,6 @@ end Tendsto
 section TopologicalAddGroup
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [Nonempty ι]
 
 section TopologicalSpace
@@ -504,9 +498,7 @@ end NormedSpace
 section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonempty ι]
-
 variable {p : SeminormFamily 𝕜 E ι}
-
 variable [TopologicalSpace E]
 
 theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp : WithSeminorms p) :
@@ -539,7 +531,7 @@ theorem WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded (f : G →
     (hp : WithSeminorms p) :
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔
       ∀ I : Finset ι, ∃ r > 0, ∀ x ∈ s, I.sup p (f x) < r := by
-  simp_rw [hp.isVonNBounded_iff_finset_seminorm_bounded, Set.ball_image_iff]
+  simp_rw [hp.isVonNBounded_iff_finset_seminorm_bounded, Set.forall_mem_image]
 
 set_option linter.uppercaseLean3 false in
 #align with_seminorms.image_is_vonN_bounded_iff_finset_seminorm_bounded WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded
@@ -571,7 +563,7 @@ set_option linter.uppercaseLean3 false in
 theorem WithSeminorms.image_isVonNBounded_iff_seminorm_bounded (f : G → E) {s : Set G}
     (hp : WithSeminorms p) :
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔ ∀ i : ι, ∃ r > 0, ∀ x ∈ s, p i (f x) < r := by
-  simp_rw [hp.isVonNBounded_iff_seminorm_bounded, Set.ball_image_iff]
+  simp_rw [hp.isVonNBounded_iff_seminorm_bounded, Set.forall_mem_image]
 
 set_option linter.uppercaseLean3 false in
 #align with_seminorms.image_is_vonN_bounded_iff_seminorm_bounded WithSeminorms.image_isVonNBounded_iff_seminorm_bounded
@@ -584,17 +576,11 @@ section continuous_of_bounded
 namespace Seminorm
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [NormedField 𝕝] [Module 𝕝 E]
-
 variable [NontriviallyNormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
-
 variable [NormedField 𝕝₂] [Module 𝕝₂ F]
-
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
-
 variable {τ₁₂ : 𝕝 →+* 𝕝₂} [RingHomIsometric τ₁₂]
-
 variable [Nonempty ι] [Nonempty ι']
 
 theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [TopologicalSpace E]
@@ -694,7 +680,7 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type*}
       simpa using (hx k).le
     have bdd : BddAbove (range fun k ↦ (q i).comp (f k)) :=
       Seminorm.bddAbove_of_absorbent (absorbent_nhds_zero this)
-        (fun x hx ↦ ⟨1, forall_range_iff.mpr hx⟩)
+        (fun x hx ↦ ⟨1, forall_mem_range.mpr hx⟩)
     rw [← Seminorm.coe_iSup_eq bdd]
     refine ⟨bdd, Seminorm.continuous' (r := 1) ?_⟩
     filter_upwards [this] with x hx
@@ -899,9 +885,7 @@ end NormedSpace
 section TopologicalConstructions
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [NormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
-
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 /-- The family of seminorms obtained by composing each seminorm by a linear map. -/
@@ -960,9 +944,7 @@ end TopologicalConstructions
 section TopologicalProperties
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonempty ι] [Countable ι]
-
 variable {p : SeminormFamily 𝕜 E ι}
-
 variable [TopologicalSpace E]
 
 /-- If the topology of a space is induced by a countable family of seminorms, then the topology

@@ -56,12 +56,11 @@ Lots is missing!
 -- A "better" definition of `trunc` would be as an `R`-linear map.  This works:
 --  ```
 --  def trunc : R[T;T⁻¹] →[R] R[X] :=
---  begin
---    refine (_ : R[ℕ] →[R] R[X]).comp _,
---    { exact ⟨(toFinsuppIso R).symm, by simp⟩ },
---    { refine ⟨λ r, comapDomain _ r (Set.injOn_of_injective (λ a b ab, Int.ofNat.inj ab) _), _⟩,
---      exact λ r f, comapDomain_smul _ _ _ }
---  end
+--    refine (?_ : R[ℕ] →[R] R[X]).comp ?_
+--    · exact ⟨(toFinsuppIso R).symm, by simp⟩
+--    · refine ⟨fun r ↦ comapDomain _ r
+--        (Set.injOn_of_injective (fun _ _ ↦ Int.ofNat.inj) _), ?_⟩
+--      exact fun r f ↦ comapDomain_smul ..
 --  ```
 --  but it would make sense to bundle the maps better, for a smoother user experience.
 --  I (DT) did not have the strength to embark on this (possibly short!) journey, after getting to

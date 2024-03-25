@@ -229,7 +229,6 @@ class WithIdeal (R : Type*) [CommRing R] where
 namespace WithIdeal
 
 variable (R)
-
 variable [WithIdeal R]
 
 instance (priority := 100) : TopologicalSpace R :=

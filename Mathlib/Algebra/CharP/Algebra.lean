@@ -144,7 +144,6 @@ end FreeAlgebra
 namespace IsFractionRing
 
 variable (R : Type*) {K : Type*} [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
-
 variable (p : ℕ)
 
 /-- If `R` has characteristic `p`, then so does Frac(R). -/

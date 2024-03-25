@@ -199,8 +199,8 @@ theorem xa_sq (i : ZMod (2 * n)) : xa i ^ 2 = a n := by simp [sq]
 
 @[simp]
 theorem xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 := by
-  rw [pow_succ, pow_succ, sq, xa_mul_xa, xa_mul_a, xa_mul_xa, add_sub_cancel, add_sub_assoc,
-    add_sub_cancel']
+  rw [pow_succ, pow_succ, sq, xa_mul_xa, xa_mul_a, xa_mul_xa, add_sub_cancel_right, add_sub_assoc,
+    add_sub_cancel_left]
   norm_cast
   rw [← two_mul]
   simp [one_def]
@@ -262,6 +262,7 @@ theorem orderOf_a [NeZero n] (i : ZMod (2 * n)) :
 
 theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
   rw [← normalize_eq 2, ← lcm_mul_left, normalize_eq]
+  set_option tactic.skipAssignedInstances false in
   norm_num
   cases' eq_zero_or_neZero n with hn hn
   · subst hn

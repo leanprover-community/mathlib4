@@ -54,7 +54,7 @@ open CategoryTheory
 
 open CategoryTheory.Functor
 
-open Classical
+open scoped Classical
 
 namespace CategoryTheory
 
@@ -156,6 +156,20 @@ def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
     { hom := G.map f.hom
       wπ := fun j => by simp [-BiconeMorphism.wπ, ← f.wπ j]
       wι := fun j => by simp [-BiconeMorphism.wι, ← f.wι j] }
+
+variable (G : C ⥤ D)
+
+instance functorialityFull [Functor.PreservesZeroMorphisms G] [Full G] [Faithful G] :
+    Full (functoriality F G) where
+  preimage t :=
+    { hom := G.preimage t.hom
+      wι := fun j => G.map_injective (by simpa using t.wι j)
+      wπ := fun j => G.map_injective (by simpa using t.wπ j) }
+
+instance functoriality_faithful [Functor.PreservesZeroMorphisms G] [Faithful G] :
+    Faithful (functoriality F G) where
+  map_injective {_X} {_Y} f g h :=
+    BiconeMorphism.ext f g <| G.map_injective <| congr_arg BiconeMorphism.hom h
 
 end Bicones
 
@@ -450,7 +464,6 @@ end Limits
 namespace Limits
 
 variable {J : Type w} {K : Type*}
-
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 
 /-- `biproduct f` computes the biproduct of a family of elements `f`. (It is defined as an
@@ -484,7 +497,7 @@ theorem biproduct.bicone_ι (f : J → C) [HasBiproduct f] (b : J) :
 #align category_theory.limits.biproduct.bicone_ι CategoryTheory.Limits.biproduct.bicone_ι
 
 /-- Note that as this lemma has an `if` in the statement, we include a `DecidableEq` argument.
-This means you may not be able to `simp` using this lemma unless you `open Classical`. -/
+This means you may not be able to `simp` using this lemma unless you `open scoped Classical`. -/
 @[reassoc]
 theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J) :
     biproduct.ι f j ≫ biproduct.π f j' = if h : j = j' then eqToHom (congr_arg f h) else 0 := by
@@ -739,7 +752,6 @@ section πKernel
 section
 
 variable (f : J → C) [HasBiproduct f]
-
 variable (p : J → Prop) [HasBiproduct (Subtype.restrict p f)]
 
 /-- The canonical morphism from the biproduct over a restricted index type to the biproduct of
@@ -902,7 +914,7 @@ end
 
 section
 
-open Classical
+open scoped Classical
 
 -- Per leanprover-community/mathlib#15067, we only allow indexing in `Type 0` here.
 variable {K : Type} [Finite K] [HasFiniteBiproducts C] (f : K → C)
@@ -1217,11 +1229,12 @@ def ext {P Q : C} {c c' : BinaryBicone P Q} (φ : c.pt ≅ c'.pt)
       winl := φ.comp_inv_eq.mpr winl.symm
       winr := φ.comp_inv_eq.mpr winr.symm }
 
+variable (P Q : C) (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
+
 /-- A functor `F : C ⥤ D` sends binary bicones for `P` and `Q`
 to binary bicones for `G.obj P` and `G.obj Q` functorially. -/
 @[simps]
-def functoriality (P Q : C) (F : C ⥤ D) [Functor.PreservesZeroMorphisms F] :
-    BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
+def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
   obj A :=
     { pt := F.obj A.pt
       fst := F.map A.fst
@@ -1238,6 +1251,18 @@ def functoriality (P Q : C) (F : C ⥤ D) [Functor.PreservesZeroMorphisms F] :
       wsnd := by simp [-BinaryBiconeMorphism.wsnd, ← f.wsnd]
       winl := by simp [-BinaryBiconeMorphism.winl, ← f.winl]
       winr := by simp [-BinaryBiconeMorphism.winr, ← f.winr] }
+
+instance functorialityFull [Full F] [Faithful F] : Full (functoriality P Q F) where
+  preimage t :=
+    { hom := F.preimage t.hom
+      winl := F.map_injective (by simpa using t.winl)
+      winr := F.map_injective (by simpa using t.winr)
+      wfst := F.map_injective (by simpa using t.wfst)
+      wsnd := F.map_injective (by simpa using t.wsnd) }
+
+instance functoriality_faithful [Faithful F] : Faithful (functoriality P Q F) where
+  map_injective {_X} {_Y} f g h :=
+    BinaryBiconeMorphism.ext f g <| F.map_injective <| congr_arg BinaryBiconeMorphism.hom h
 
 end BinaryBicones
 

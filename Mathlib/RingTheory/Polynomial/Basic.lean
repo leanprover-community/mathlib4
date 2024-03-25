@@ -197,7 +197,7 @@ theorem exists_degree_le_of_mem_span {s : Set R[X]} {p : R[X]}
   by_contra! h
   by_cases hp_zero : p = 0
   · rw [hp_zero, degree_zero] at h
-    rcases hs with ⟨x,hx⟩
+    rcases hs with ⟨x, hx⟩
     exact not_lt_bot (h x hx)
   · have : p ∈ degreeLT R (natDegree p) := by
       refine (Submodule.span_le.mpr fun p' p'_mem => ?_) hp
@@ -214,9 +214,8 @@ theorem exists_degree_le_of_mem_span_of_finite {s : Set R[X]} (s_fin : s.Finite)
   rcases Set.Finite.exists_maximal_wrt degree s s_fin hs with ⟨a, has, hmax⟩
   refine ⟨a, has, fun p hp => ?_⟩
   rcases exists_degree_le_of_mem_span hs hp with ⟨p', hp'⟩
-  have p'max := hmax p' hp'.left
   by_cases h : degree a ≤ degree p'
-  · rw [← p'max h] at hp'; exact hp'.right
+  · rw [← hmax p' hp'.left h] at hp'; exact hp'.right
   · exact le_trans hp'.right (not_le.mp h).le
 
 /-- The span of every finite set of polynomials is contained in a `degreeLE n` for some `n`. -/
@@ -523,7 +522,7 @@ variable {q : R[X]}
 
 theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
     p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
-  LinearMap.mem_ker.trans (dvd_iff_modByMonic_eq_zero hq)
+  LinearMap.mem_ker.trans (modByMonic_eq_zero_iff_dvd hq)
 #align polynomial.mem_ker_mod_by_monic Polynomial.mem_ker_modByMonic
 
 @[simp]
@@ -815,7 +814,6 @@ end CommRing
 end Ideal
 
 variable {σ : Type v} {M : Type w}
-
 variable [CommRing R] [CommRing S] [AddCommGroup M] [Module R M]
 
 section Prime
@@ -884,18 +882,23 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     have : (rename (↑)).toRingHom = eqv.toAlgHom.toRingHom.comp C := by
       apply ringHom_ext
       · intro
-        dsimp [eqv]
-        erw [iterToSum_C_C, rename_C, rename_C]
+        simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_C,
+          AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp,
+          AlgEquiv.coe_trans, Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply,
+          iterToSum_C_C, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply]
       · intro
-        dsimp [eqv]
-        erw [iterToSum_C_X, rename_X, rename_X]
-        rfl
-    rw [← @prime_C_iff (MvPolynomial s R) (↥sᶜ) instCommRingMvPolynomial p]
-    rw [@MulEquiv.prime_iff (MvPolynomial ↑sᶜ (MvPolynomial ↑s R)) (MvPolynomial σ R) (_) (_)]
-    rotate_left
-    exact eqv.toMulEquiv
-    convert Iff.rfl
-    apply RingHom.congr_fun this p
+        simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_X,
+          AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp,
+          AlgEquiv.coe_trans, Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply,
+          iterToSum_C_X, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply, Sum.swap_inr,
+          Equiv.Set.sumCompl_apply_inl]
+    apply_fun (· p) at this
+    simp_rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe] at this
+    rw [← prime_C_iff, eqv.toMulEquiv.prime_iff, this]
+    simp only [MulEquiv.coe_mk, AlgEquiv.toEquiv_eq_coe, EquivLike.coe_coe, AlgEquiv.trans_apply,
+      MvPolynomial.sumAlgEquiv_symm_apply, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply,
+      AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, RingHom.coe_coe,
+      AlgEquiv.coe_trans, Function.comp_apply]
 #align mv_polynomial.prime_rename_iff MvPolynomial.prime_rename_iff
 
 end MvPolynomial

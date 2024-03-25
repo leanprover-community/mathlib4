@@ -92,7 +92,7 @@ instance inhabited : Inhabited (WithOne α) :=
 instance nontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
--- porting note: this new declaration is here to make `((a : α): WithOne α)` have type `WithOne α`;
+-- Porting note: this new declaration is here to make `((a : α): WithOne α)` have type `WithOne α`;
 -- otherwise the coercion kicks in and it becomes `Option.some a : WithOne α` which
 -- becomes `Option.some a : Option α`.
 /-- The canonical map from `α` into `WithOne α` -/
@@ -113,7 +113,7 @@ def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) :
 #align with_one.rec_one_coe WithOne.recOneCoe
 #align with_zero.rec_zero_coe WithZero.recZeroCoe
 
--- porting note: in Lean 3 the to-additivised declaration
+-- Porting note: in Lean 3 the to-additivised declaration
 -- would automatically get this; right now in Lean 4...I don't
 -- know if it does or not, and I don't know how to check, so
 -- I'll add it manually just to be sure.
@@ -139,7 +139,7 @@ lemma coe_unone : ∀ {x : WithOne α} (hx : x ≠ 1), unone hx = x
 #align with_one.coe_unone WithOne.coe_unone
 #align with_zero.coe_unzero WithZero.coe_unzero
 
--- porting note: in Lean 4 the `some_eq_coe` lemmas present in the lean 3 version
+-- Porting note: in Lean 4 the `some_eq_coe` lemmas present in the lean 3 version
 -- of this file are syntactic tautologies
 #noalign with_one.some_eq_coe
 #noalign with_zero.some_eq_coe

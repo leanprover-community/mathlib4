@@ -124,16 +124,17 @@ variable [FunLike F α β]
 @[to_additive]
 theorem le_map_mul_map_div [Group α] [CommSemigroup β] [LE β] [SubmultiplicativeHomClass F α β]
     (f : F) (a b : α) : f a ≤ f b * f (a / b) := by
-  simpa only [mul_comm, div_mul_cancel'] using map_mul_le_mul f (a / b) b
+  simpa only [mul_comm, div_mul_cancel] using map_mul_le_mul f (a / b) b
 #align le_map_mul_map_div le_map_mul_map_div
 #align le_map_add_map_sub le_map_add_map_sub
 
 @[to_additive existing]
 theorem le_map_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHomClass F α β] (f : F)
     (a b : α) : f a ≤ f b + f (a / b) := by
-  simpa only [add_comm, div_mul_cancel'] using map_mul_le_add f (a / b) b
+  simpa only [add_comm, div_mul_cancel] using map_mul_le_add f (a / b) b
 #align le_map_add_map_div le_map_add_map_div
--- #align le_map_add_map_sub le_map_add_map_sub -- Porting note: TODO: `to_additive` clashes
+-- #align le_map_add_map_sub le_map_add_map_sub
+-- Porting note (#11215): TODO: `to_additive` clashes
 
 @[to_additive]
 theorem le_map_div_mul_map_div [Group α] [CommSemigroup β] [LE β] [SubmultiplicativeHomClass F α β]
@@ -147,7 +148,8 @@ theorem le_map_div_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAd
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) + f (b / c) := by
     simpa only [div_mul_div_cancel'] using map_mul_le_add f (a / b) (b / c)
 #align le_map_div_add_map_div le_map_div_add_map_div
--- #align le_map_sub_add_map_sub le_map_sub_add_map_sub -- Porting note: TODO: `to_additive` clashes
+-- #align le_map_sub_add_map_sub le_map_sub_add_map_sub
+-- Porting note (#11215): TODO: `to_additive` clashes
 
 namespace Mathlib.Meta.Positivity
 
@@ -218,11 +220,11 @@ export AddGroupNormClass (eq_zero_of_map_eq_zero)
 
 export GroupNormClass (eq_one_of_map_eq_zero)
 
-attribute [simp] map_one_eq_zero -- porting note: `to_additive` translation already exists
+attribute [simp] map_one_eq_zero -- Porting note: `to_additive` translation already exists
 
 attribute [simp] map_neg_eq_map
 
-attribute [simp] map_inv_eq_map -- porting note: `to_additive` translation already exists
+attribute [simp] map_inv_eq_map -- Porting note: `to_additive` translation already exists
 
 attribute [to_additive] GroupSeminormClass.toMulLEAddHomClass
 
@@ -250,7 +252,7 @@ theorem map_div_rev : f (x / y) = f (y / x) := by rw [← inv_div, map_inv_eq_ma
 
 @[to_additive]
 theorem le_map_add_map_div' : f x ≤ f y + f (y / x) := by
-  simpa only [add_comm, map_div_rev, div_mul_cancel'] using map_mul_le_add f (x / y) y
+  simpa only [add_comm, map_div_rev, div_mul_cancel] using map_mul_le_add f (x / y) y
 #align le_map_add_map_div' le_map_add_map_div'
 #align le_map_add_map_sub' le_map_add_map_sub'
 

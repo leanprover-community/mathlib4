@@ -55,12 +55,12 @@ theorem one_div_mul_add_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : 
 #align one_div_mul_add_mul_one_div_eq_one_div_add_one_div one_div_mul_add_mul_one_div_eq_one_div_add_one_div
 
 theorem add_div_eq_mul_add_div (a b : α) (hc : c ≠ 0) : a + b / c = (a * c + b) / c :=
-  (eq_div_iff_mul_eq hc).2 <| by rw [right_distrib, div_mul_cancel _ hc]
+  (eq_div_iff_mul_eq hc).2 <| by rw [right_distrib, div_mul_cancel₀ _ hc]
 #align add_div_eq_mul_add_div add_div_eq_mul_add_div
 
 @[field_simps]
 theorem add_div' (a b c : α) (hc : c ≠ 0) : b + a / c = (b * c + a) / c := by
-  rw [add_div, mul_div_cancel _ hc]
+  rw [add_div, mul_div_cancel_right₀ _ hc]
 #align add_div' add_div'
 
 @[field_simps]
@@ -267,7 +267,7 @@ variable {R : Type*} [Nontrivial R]
 /-- Constructs a `DivisionRing` structure on a `Ring` consisting only of units and 0. -/
 noncomputable def divisionRingOfIsUnitOrEqZero [hR : Ring R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     DivisionRing R :=
-  { groupWithZeroOfIsUnitOrEqZero h, hR with }
+  { groupWithZeroOfIsUnitOrEqZero h, hR with qsmul := qsmulRec _}
 #align division_ring_of_is_unit_or_eq_zero divisionRingOfIsUnitOrEqZero
 
 /-- Constructs a `Field` structure on a `CommRing` consisting only of units and 0.
@@ -275,7 +275,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 noncomputable def fieldOfIsUnitOrEqZero [hR : CommRing R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     Field R :=
-  { groupWithZeroOfIsUnitOrEqZero h, hR with }
+  { divisionRingOfIsUnitOrEqZero h, hR with }
 #align field_of_is_unit_or_eq_zero fieldOfIsUnitOrEqZero
 
 end NoncomputableDefs
