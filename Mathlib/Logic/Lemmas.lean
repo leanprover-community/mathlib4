@@ -79,4 +79,8 @@ open Function
 
 lemma not_involutive : Involutive Not := fun _ ↦ propext not_not
 
-lemma not_injective : Injective Not := Involutive.injective not_involutive
+lemma not_injective : Injective Not := not_involutive.injective
+
+lemma not_surjective : Surjective Not := not_involutive.surjective
+
+lemma not_bijective : Bijective Not := not_involutive.bijective
