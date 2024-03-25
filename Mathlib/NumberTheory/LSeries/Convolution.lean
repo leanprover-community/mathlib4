@@ -101,38 +101,28 @@ lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
 open Set Nat in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
 in terms of an a priori infinte sum over all pairs `(k, m)` with `k * m = n`
-(the set we sum over is infinite when `n = 0`). This is the version needed for the
+(the set we sum over is infinite when `n = 0`). This is the version needed for the±
 proof that `L (f ⍟ g) = L f * L g`. -/
 lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     term (f ⍟ g) s n =
       ∑' (b : (fun p : ℕ × ℕ ↦ p.1 * p.2) ⁻¹' {n}), term f s b.val.1 * term g s b.val.2 := by
-  let m : ℕ × ℕ → ℕ := fun p ↦ p.1 * p.2
-  let h : ℕ × ℕ → ℂ := fun x ↦ term f s x.1 * term g s x.2
   rcases eq_or_ne n 0 with rfl | hn
-  · trans 0 -- show that both sides vanish when `n = 0`; this is the hardest part of the proof!
-    · -- by definition, the left hand sum is over the empty set
-      exact term_zero ..
-    · -- the right hand sum is over the union below, but in each term, one factor is always zero
-      have hS : m ⁻¹' {0} = {0} ×ˢ univ ∪ (univ \ {0}) ×ˢ {0} := by
-        ext
-        simp only [m, mem_preimage, mem_singleton_iff, _root_.mul_eq_zero, mem_union, mem_prod,
-          mem_univ, mem_diff, and_true, true_and, or_and_left, or_not]
-      rw [tsum_congr_set_coe h hS,
-        tsum_union_disjoint (Disjoint.set_prod_left disjoint_sdiff_right ..) ?_ ?_,
-        tsum_setProd_singleton_left 0 _ h, tsum_setProd_singleton_right _ 0 h] <;>
-          simp only [h, Function.comp_def]
-      · simp only [term_zero, zero_mul, tsum_zero, mul_zero, add_zero]
-      · have : (fun x : {0} ×ˢ (@univ ℕ) ↦ term f s x.val.1 * term g s x.val.2) = 0 := by
-          ext p
-          rw [Set.mem_singleton_iff.mp p.prop.1, term_zero, zero_mul, Pi.zero_apply]
-        exact this ▸ summable_zero
-      · have : (fun x : (@univ ℕ \ {0}) ×ˢ {0} ↦ term f s x.val.1 * term g s x.val.2) = 0 := by
-          ext p
-          rw [Set.mem_singleton_iff.mp p.prop.2, term_zero, mul_zero, Pi.zero_apply]
-        exact this ▸ summable_zero
+  · -- show that both sides vanish when `n = 0`; this is the hardest part of the proof!
+    refine (term_zero ..).trans ?_
+    -- the right hand sum is over the union below, but in each term, one factor is always zero
+    have hS : (fun p ↦ p.1 * p.2) ⁻¹' {0} = {0} ×ˢ univ ∪ univ ×ˢ {0} := by
+      ext
+      simp only [mem_preimage, mem_singleton_iff, _root_.mul_eq_zero, mem_union, mem_prod, mem_univ,
+        and_true, true_and]
+    have : ∀ p : (fun p : ℕ × ℕ ↦ p.1 * p.2) ⁻¹' {0}, term f s p.val.1 * term g s p.val.2 = 0 := by
+      rintro ⟨⟨p₁, p₂⟩, hp⟩
+      simp only [hS] at hp
+      rcases hp with ⟨rfl, -⟩ | ⟨-, rfl⟩ <;> simp only [term_zero, zero_mul, mul_zero]
+    simp only [this, tsum_zero]
   -- now `n ≠ 0`
-  rw [show m ⁻¹' {n} = n.divisorsAntidiagonal by ext; simp [hn],
-    Finset.tsum_subtype' n.divisorsAntidiagonal h, term_convolution' f g s n]
+  rw [show (fun p : ℕ × ℕ ↦ p.1 * p.2) ⁻¹' {n} = n.divisorsAntidiagonal by ext; simp [hn],
+    Finset.tsum_subtype' n.divisorsAntidiagonal fun p ↦ term f s p.1 * term g s p.2,
+    term_convolution' f g s n]
 
 end LSeries
 
