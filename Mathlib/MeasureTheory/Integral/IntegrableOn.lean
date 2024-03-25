@@ -91,13 +91,6 @@ def IntegrableOn (f : α → E) (s : Set α) (μ : Measure α := by volume_tac) 
   Integrable f (μ.restrict s)
 #align measure_theory.integrable_on MeasureTheory.IntegrableOn
 
--- Porting note (#11215): TODO Delete this when leanprover/lean4#2243 is fixed.
-theorem integrableOn_def (f : α → E) (s : Set α) (μ : Measure α) :
-    IntegrableOn f s μ ↔ Integrable f (μ.restrict s) :=
-  Iff.rfl
-
-attribute [eqns integrableOn_def] IntegrableOn
-
 theorem IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ.restrict s) :=
   h
 #align measure_theory.integrable_on.integrable MeasureTheory.IntegrableOn.integrable

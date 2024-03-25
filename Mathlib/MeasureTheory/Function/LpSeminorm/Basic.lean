@@ -109,13 +109,6 @@ def Memℒp {α} {_ : MeasurableSpace α} (f : α → E) (p : ℝ≥0∞)
   AEStronglyMeasurable f μ ∧ snorm f p μ < ∞
 #align measure_theory.mem_ℒp MeasureTheory.Memℒp
 
--- Porting note (#11215): TODO Delete this when leanprover/lean4#2243 is fixed.
-theorem memℒp_def {α} {_ : MeasurableSpace α} (f : α → E) (p : ℝ≥0∞) (μ : Measure α) :
-    Memℒp f p μ ↔ (AEStronglyMeasurable f μ ∧ snorm f p μ < ∞) :=
-  Iff.rfl
-
-attribute [eqns memℒp_def] Memℒp
-
 theorem Memℒp.aestronglyMeasurable {f : α → E} {p : ℝ≥0∞} (h : Memℒp f p μ) :
     AEStronglyMeasurable f μ :=
   h.1
