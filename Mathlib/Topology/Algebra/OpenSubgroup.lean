@@ -241,7 +241,7 @@ theorem mem_inf {x} : x ∈ U ⊓ V ↔ x ∈ U ∧ x ∈ V :=
 @[to_additive]
 instance instPartialOrderOpenSubgroup : PartialOrder (OpenSubgroup G) := inferInstance
 
--- porting note: we override `toPartialorder` to get better `le`
+-- Porting note: we override `toPartialorder` to get better `le`
 @[to_additive]
 instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
   { SetLike.coe_injective.semilatticeInf ((↑) : OpenSubgroup G → Set G) fun _ _ => rfl with
@@ -353,7 +353,7 @@ theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = �
 #align open_subgroup.coe_subgroup_sup OpenSubgroup.toSubgroup_sup
 #align open_add_subgroup.coe_add_subgroup_sup OpenAddSubgroup.toAddSubgroup_sup
 
--- porting note: we override `toPartialorder` to get better `le`
+-- Porting note: we override `toPartialorder` to get better `le`
 @[to_additive]
 instance : Lattice (OpenSubgroup G) :=
   { instSemilatticeInfOpenSubgroup,
@@ -367,7 +367,6 @@ namespace Submodule
 open OpenAddSubgroup
 
 variable {R : Type*} {M : Type*} [CommRing R]
-
 variable [AddCommGroup M] [TopologicalSpace M] [TopologicalAddGroup M] [Module R M]
 
 theorem isOpen_mono {U P : Submodule R M} (h : U ≤ P) (hU : IsOpen (U : Set M)) :
@@ -380,7 +379,6 @@ end Submodule
 namespace Ideal
 
 variable {R : Type*} [CommRing R]
-
 variable [TopologicalSpace R] [TopologicalRing R]
 
 theorem isOpen_of_isOpen_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U : Set R)) :

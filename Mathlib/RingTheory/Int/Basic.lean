@@ -309,7 +309,7 @@ theorem Nat.factors_eq {n : ℕ} : normalizedFactors n = n.factors := by
   | succ n =>
     rw [← Multiset.rel_eq, ← associated_eq_eq]
     apply UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor _
-    · rw [Multiset.coe_prod, Nat.prod_factors n.succ_ne_zero]
+    · rw [Multiset.prod_coe, Nat.prod_factors n.succ_ne_zero]
       apply normalizedFactors_prod (Nat.succ_ne_zero _)
     · intro x hx
       rw [Nat.irreducible_iff_prime, ← Nat.prime_iff]

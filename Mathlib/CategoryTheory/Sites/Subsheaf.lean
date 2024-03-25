@@ -193,7 +193,7 @@ def Subpresheaf.sheafify : Subpresheaf F where
 theorem Subpresheaf.le_sheafify : G ≤ G.sheafify J := by
   intro U s hs
   change _ ∈ J _
-  convert J.top_mem U.unop -- porting note: `U.unop` can not be inferred now
+  convert J.top_mem U.unop -- Porting note: `U.unop` can not be inferred now
   rw [eq_top_iff]
   rintro V i -
   exact G.map i.op hs
@@ -218,7 +218,7 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
   intro U S hS x hx
   let S' := Sieve.bind S fun Y f hf => G.sieveOfSection (x f hf).1
   have := fun (V) (i : V ⟶ U) (hi : S' i) => hi
-  -- porting note: change to explicit variable so that `choose` can find the correct
+  -- Porting note: change to explicit variable so that `choose` can find the correct
   -- dependent functions. Thus everything follows need two additional explicit variables.
   choose W i₁ i₂ hi₂ h₁ h₂ using this
   dsimp [-Sieve.bind_apply] at *
@@ -290,7 +290,7 @@ noncomputable def Subpresheaf.sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presie
     change _ = F'.map (j ≫ i.unop).op _
     refine' Eq.trans _ (Presieve.IsSheafFor.valid_glue (h _ s.2)
       ((G.family_of_elements_compatible s.1).compPresheafMap f) (j ≫ i.unop) _).symm
-    swap -- porting note: need to swap two goals otherwise the first goal needs to be proven
+    swap -- Porting note: need to swap two goals otherwise the first goal needs to be proven
     -- inside the second goal any way
     · dsimp [Presieve.FamilyOfElements.compPresheafMap] at hj ⊢
       rwa [FunctorToTypes.map_comp_apply]
@@ -304,7 +304,7 @@ theorem Subpresheaf.to_sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSh
   apply (h _ ((Subpresheaf.homOfLe (G.le_sheafify J)).app U s).prop).isSeparatedFor.ext
   intro V i hi
   have := elementwise_of% f.naturality
-  -- porting note: filled in some underscores where Lean3 could automatically fill.
+  -- Porting note: filled in some underscores where Lean3 could automatically fill.
   exact (Presieve.IsSheafFor.valid_glue (h _ ((homOfLe (_ : G ≤ sheafify J G)).app U s).2)
     ((G.family_of_elements_compatible _).compPresheafMap _) _ hi).trans (this _ _)
 #align category_theory.grothendieck_topology.subpresheaf.to_sheafify_lift CategoryTheory.GrothendieckTopology.Subpresheaf.to_sheafifyLift

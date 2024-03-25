@@ -408,7 +408,7 @@ theorem integral_zpow {n : ℤ} (h : 0 ≤ n ∨ n ≠ -1 ∧ (0 : ℝ) ∉ [[a,
 
 @[simp]
 theorem integral_pow : ∫ x in a..b, x ^ n = (b ^ (n + 1) - a ^ (n + 1)) / (n + 1) := by
-  simpa only [← Int.ofNat_succ, zpow_coe_nat] using integral_zpow (Or.inl (Int.coe_nat_nonneg n))
+  simpa only [← Int.ofNat_succ, zpow_natCast] using integral_zpow (Or.inl (Int.coe_nat_nonneg n))
 #align integral_pow integral_pow
 
 /-- Integral of `|x - a| ^ n` over `Ι a b`. This integral appears in the proof of the
@@ -494,7 +494,7 @@ theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
   have D : ∀ x : ℝ, HasDerivAt (fun y : ℝ => Complex.exp (c * y) / c) (Complex.exp (c * x)) x := by
     intro x
     conv => congr
-    rw [← mul_div_cancel (Complex.exp (c * x)) hc]
+    rw [← mul_div_cancel_right₀ (Complex.exp (c * x)) hc]
     apply ((Complex.hasDerivAt_exp _).comp x _).div_const c
     simpa only [mul_one] using ((hasDerivAt_id (x : ℂ)).const_mul _).comp_ofReal
   rw [integral_deriv_eq_sub' _ (funext fun x => (D x).deriv) fun x _ => (D x).differentiableAt]
@@ -557,7 +557,7 @@ theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
   simp only [mul_comm] at d
   convert d using 1
   conv_rhs => arg 1; rw [mul_comm]
-  rw [mul_div_cancel _ hz]
+  rw [mul_div_cancel_right₀ _ hz]
 #align integral_cos_mul_complex integral_cos_mul_complex
 
 theorem integral_cos_sq_sub_sin_sq :

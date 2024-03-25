@@ -61,7 +61,7 @@ section LocallyFiniteOrderBot
 variable [∀ i, LocallyFiniteOrderBot (α i)] (b : ∀ i, α i)
 
 instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (∀ i, α i) :=
-  LocallyFiniteOrderTop.ofIic _ (fun b => piFinset fun i => Iic (b i)) fun b x => by
+  .ofIic _ (fun b => piFinset fun i => Iic (b i)) fun b x => by
     simp_rw [mem_piFinset, mem_Iic, le_def]
 
 theorem card_Iic : (Iic b).card = ∏ i, (Iic (b i)).card :=

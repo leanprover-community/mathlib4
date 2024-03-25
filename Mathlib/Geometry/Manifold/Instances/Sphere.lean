@@ -458,9 +458,7 @@ theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
 #align cont_mdiff_coe_sphere contMDiff_coe_sphere
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
-
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
 
 /-- If a `ContMDiff` function `f : M → E`, where `M` is some manifold, takes values in the

@@ -230,11 +230,15 @@ def smulAux' (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
   num g z / denom g z
 #align upper_half_plane.smul_aux' UpperHalfPlane.smulAux'
 
+-- Adaptation note: after v4.7.0-rc1, there is a performance problem in `field_simp`.
+-- (Part of the code was ignoring the `maxDischargeDepth` setting: now that we have to increase it,
+-- other paths becomes slow.)
+set_option maxHeartbeats 400000 in
 theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
     (smulAux' g z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) := by
   rw [smulAux', Complex.div_im]
   field_simp [smulAux', num, denom]
-  -- porting note: the local notation still didn't work here
+  -- Porting note: the local notation still didn't work here
   rw [Matrix.det_fin_two ((g : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ)]
   ring
 #align upper_half_plane.smul_aux'_im UpperHalfPlane.smulAux'_im

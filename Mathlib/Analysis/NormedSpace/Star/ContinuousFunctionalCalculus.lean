@@ -61,7 +61,6 @@ open scoped Pointwise ENNReal NNReal ComplexOrder
 open WeakDual WeakDual.CharacterSpace elementalStarAlgebra
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A]
-
 variable [StarRing A] [CstarRing A] [StarModule ℂ A]
 
 instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [StarRing A]
@@ -70,7 +69,7 @@ instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [S
   { SubringClass.toNormedRing (elementalStarAlgebra R a) with
     mul_comm := mul_comm }
 
--- porting note: these hack instances no longer seem to be necessary
+-- Porting note: these hack instances no longer seem to be necessary
 #noalign elemental_star_algebra.complex.normed_algebra
 
 variable [CompleteSpace A] (a : A) [IsStarNormal a] (S : StarSubalgebra ℂ A)
