@@ -124,8 +124,9 @@ theorem LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_isNegInvariant
   · exact integrableOn_univ.mp (by convert integrableOn_empty)
   let a := -|Classical.arbitrary α|
   have h_int := (hf.locallyIntegrableOn (Ici a)).integrableOn_of_isBigO_atTop ho hg
-  refine integrableOn_univ.mp <| show univ = Iic (-a) ∪ Ici a by simp [Iic_union_Ici_of_le] ▸
-    integrableOn_union.mpr ⟨?_, h_int⟩
+  have : Iic (-a) ∪ Ici a = univ :=
+    Iic_union_Ici_of_le <| Right.self_le_neg <| neg_nonpos_of_nonneg <| abs_nonneg _
+  refine integrableOn_univ.mp <| this ▸ integrableOn_union.mpr ⟨?_, h_int⟩
   have h_map_neg : (μ.restrict (Ici a)).map Neg.neg = μ.restrict (Iic (-a)) := by
     conv => rhs; rw [← Measure.map_neg_eq_self μ, measurableEmbedding_neg.restrict_map]
     simp

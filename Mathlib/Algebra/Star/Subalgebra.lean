@@ -37,11 +37,8 @@ namespace StarSubalgebra
 add_decl_doc StarSubalgebra.toSubalgebra
 
 variable {F R A B C : Type*} [CommSemiring R] [StarRing R]
-
 variable [Semiring A] [StarRing A] [Algebra R A] [StarModule R A]
-
 variable [Semiring B] [StarRing B] [Algebra R B] [StarModule R B]
-
 variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
 
 instance setLike : SetLike (StarSubalgebra R A) A where
@@ -331,9 +328,7 @@ namespace Subalgebra
 open Pointwise
 
 variable {F R A B : Type*} [CommSemiring R] [StarRing R]
-
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-
 variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
 
 /-- The pointwise `star` of a subalgebra is a subalgebra. -/
@@ -418,11 +413,8 @@ end Subalgebra
 namespace StarSubalgebra
 
 variable {F R A B : Type*} [CommSemiring R] [StarRing R]
-
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-
 variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
-
 variable (R)
 
 /-- The minimal star subalgebra that contains `s`. -/
@@ -496,15 +488,17 @@ theorem _root_.Subalgebra.starClosure_eq_adjoin (S : Subalgebra R A) :
 
 /-- If some predicate holds for all `x ∈ (s : Set A)` and this predicate is closed under the
 `algebraMap`, addition, multiplication and star operations, then it holds for `a ∈ adjoin R s`. -/
+@[elab_as_elim]
 theorem adjoin_induction {s : Set A} {p : A → Prop} {a : A} (h : a ∈ adjoin R s)
-    (Hs : ∀ x : A, x ∈ s → p x) (Halg : ∀ r : R, p (algebraMap R A r))
-    (Hadd : ∀ x y : A, p x → p y → p (x + y)) (Hmul : ∀ x y : A, p x → p y → p (x * y))
-    (Hstar : ∀ x : A, p x → p (star x)) : p a :=
+    (mem : ∀ x : A, x ∈ s → p x) (algebraMap : ∀ r : R, p (algebraMap R A r))
+    (add : ∀ x y : A, p x → p y → p (x + y)) (mul : ∀ x y : A, p x → p y → p (x * y))
+    (star : ∀ x : A, p x → p (star x)) : p a :=
   Algebra.adjoin_induction h
-    (fun x hx => hx.elim (fun hx => Hs x hx) fun hx => star_star x ▸ Hstar _ (Hs _ hx)) Halg Hadd
-    Hmul
+    (fun x hx => hx.elim (fun hx => mem x hx) fun hx => star_star x ▸ star _ (mem _ hx))
+    algebraMap add mul
 #align star_subalgebra.adjoin_induction StarSubalgebra.adjoin_induction
 
+@[elab_as_elim]
 theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin R s)
     (hb : b ∈ adjoin R s) (Hs : ∀ x : A, x ∈ s → ∀ y : A, y ∈ s → p x y)
     (Halg : ∀ r₁ r₂ : R, p (algebraMap R A r₁) (algebraMap R A r₂))
@@ -535,18 +529,18 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
 /-- The difference with `StarSubalgebra.adjoin_induction` is that this acts on the subtype. -/
 @[elab_as_elim]
 theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
-    (Hs : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin R s h⟩) (Halg : ∀ r, p (algebraMap R _ r))
-    (Hadd : ∀ x y, p x → p y → p (x + y)) (Hmul : ∀ x y, p x → p y → p (x * y))
-    (Hstar : ∀ x, p x → p (star x)) : p a :=
+    (mem : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin R s h⟩) (algebraMap : ∀ r, p (algebraMap R _ r))
+    (add : ∀ x y, p x → p y → p (x + y)) (mul : ∀ x y, p x → p y → p (x * y))
+    (star : ∀ x, p x → p (star x)) : p a :=
   Subtype.recOn a fun b hb => by
     refine' Exists.elim _ fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc
-    apply adjoin_induction hb
-    exacts [fun x hx => ⟨subset_adjoin R s hx, Hs x hx⟩, fun r =>
-      ⟨StarSubalgebra.algebraMap_mem _ r, Halg r⟩, fun x y hx hy =>
-      Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy => ⟨add_mem hx' hy', Hadd _ _ hx hy⟩,
+    refine adjoin_induction hb ?_ ?_ ?_ ?_ ?_
+    exacts [fun x hx => ⟨subset_adjoin R s hx, mem x hx⟩, fun r =>
+      ⟨StarSubalgebra.algebraMap_mem _ r, algebraMap r⟩, fun x y hx hy =>
+      Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy => ⟨add_mem hx' hy', add _ _ hx hy⟩,
       fun x y hx hy =>
-      Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy => ⟨mul_mem hx' hy', Hmul _ _ hx hy⟩,
-      fun x hx => Exists.elim hx fun hx' hx => ⟨star_mem hx', Hstar _ hx⟩]
+      Exists.elim hx fun hx' hx => Exists.elim hy fun hy' hy => ⟨mul_mem hx' hy', mul _ _ hx hy⟩,
+      fun x hx => Exists.elim hx fun hx' hx => ⟨star_mem hx', star _ hx⟩]
 #align star_subalgebra.adjoin_induction' StarSubalgebra.adjoin_induction'
 
 variable (R)
@@ -727,11 +721,8 @@ namespace StarAlgHom
 open StarSubalgebra
 
 variable {F R A B : Type*} [CommSemiring R] [StarRing R]
-
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-
 variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
-
 variable [FunLike F A B] [AlgHomClass F R A B] [StarAlgHomClass F R A B] (f g : F)
 
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
@@ -754,7 +745,7 @@ theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃f g : F⦄ (h
   DFunLike.ext f g fun _x => StarAlgHom.adjoin_le_equalizer f g hs <| h.symm ▸ trivial
 #align star_alg_hom.ext_of_adjoin_eq_top StarAlgHom.ext_of_adjoin_eq_top
 
-theorem map_adjoin [StarModule R B] (f : A →⋆ₐ[R] B) (s : Set A) :
+theorem map_adjoin (f : A →⋆ₐ[R] B) (s : Set A) :
     map f (adjoin R s) = adjoin R (f '' s) :=
   GaloisConnection.l_comm_of_u_comm Set.image_preimage (gc_map_comap f) StarSubalgebra.gc
     StarSubalgebra.gc fun _ => rfl

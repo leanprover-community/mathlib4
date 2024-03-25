@@ -233,18 +233,17 @@ theorem tensorHom_id {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
 @[reassoc, simp]
 theorem whiskerLeft_comp (W : C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     W ◁ (f ≫ g) = W ◁ f ≫ W ◁ g := by
-  intros; simp only [← id_tensorHom, ← tensor_comp, comp_id]
+  simp only [← id_tensorHom, ← tensor_comp, comp_id]
 
 @[reassoc, simp]
 theorem id_whiskerLeft {X Y : C} (f : X ⟶ Y) :
     𝟙_ C ◁ f = (λ_ X).hom ≫ f ≫ (λ_ Y).inv := by
-  intros; rw [← assoc, ← leftUnitor_naturality]; simp [id_tensorHom]
+  rw [← assoc, ← leftUnitor_naturality]; simp [id_tensorHom]
 #align category_theory.monoidal_category.left_unitor_conjugation CategoryTheory.MonoidalCategory.id_whiskerLeft
 
 @[reassoc, simp]
 theorem tensor_whiskerLeft (X Y : C) {Z Z' : C} (f : Z ⟶ Z') :
     (X ⊗ Y) ◁ f = (α_ X Y Z).hom ≫ X ◁ Y ◁ f ≫ (α_ X Y Z').inv := by
-  intros
   simp only [← id_tensorHom, ← tensorHom_id]
   rw [← assoc, ← associator_naturality]
   simp
@@ -252,18 +251,17 @@ theorem tensor_whiskerLeft (X Y : C) {Z Z' : C} (f : Z ⟶ Z') :
 @[reassoc, simp]
 theorem comp_whiskerRight {W X Y : C} (f : W ⟶ X) (g : X ⟶ Y) (Z : C) :
     (f ≫ g) ▷ Z = f ▷ Z ≫ g ▷ Z := by
-  intros; simp only [← tensorHom_id, ← tensor_comp, id_comp]
+  simp only [← tensorHom_id, ← tensor_comp, id_comp]
 
 @[reassoc, simp]
 theorem whiskerRight_id {X Y : C} (f : X ⟶ Y) :
     f ▷ 𝟙_ C = (ρ_ X).hom ≫ f ≫ (ρ_ Y).inv := by
-   intros; rw [← assoc, ← rightUnitor_naturality]; simp [tensorHom_id]
+  rw [← assoc, ← rightUnitor_naturality]; simp [tensorHom_id]
 #align category_theory.monoidal_category.right_unitor_conjugation CategoryTheory.MonoidalCategory.whiskerRight_id
 
 @[reassoc, simp]
 theorem whiskerRight_tensor {X X' : C} (f : X ⟶ X') (Y Z : C) :
     f ▷ (Y ⊗ Z) = (α_ X Y Z).inv ≫ f ▷ Y ▷ Z ≫ (α_ X' Y Z).hom := by
-  intros
   simp only [← id_tensorHom, ← tensorHom_id]
   rw [associator_naturality]
   simp [tensor_id]
@@ -271,7 +269,6 @@ theorem whiskerRight_tensor {X X' : C} (f : X ⟶ X') (Y Z : C) :
 @[reassoc, simp]
 theorem whisker_assoc (X : C) {Y Y' : C} (f : Y ⟶ Y') (Z : C) :
     (X ◁ f) ▷ Z = (α_ X Y Z).hom ≫ X ◁ f ▷ Z ≫ (α_ X Y' Z).inv := by
-  intros
   simp only [← id_tensorHom, ← tensorHom_id]
   rw [← assoc, ← associator_naturality]
   simp
@@ -1002,7 +999,6 @@ section
 universe v₁ v₂ u₁ u₂
 
 variable (C₁ : Type u₁) [Category.{v₁} C₁] [MonoidalCategory.{v₁} C₁]
-
 variable (C₂ : Type u₂) [Category.{v₂} C₂] [MonoidalCategory.{v₂} C₂]
 
 attribute [local simp] associator_naturality leftUnitor_naturality rightUnitor_naturality pentagon

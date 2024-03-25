@@ -977,8 +977,7 @@ theorem prod_eq_mul_of_mem {s : Finset α} {f : α → β} (a b : α) (ha : a �
     apply not_or.mp
     intro hab
     apply hcs
-    apply mem_insert.mpr
-    rw [mem_singleton]
+    rw [mem_insert, mem_singleton]
     exact hab
   rw [← prod_subset hu hf]
   exact Finset.prod_pair hn
@@ -1633,7 +1632,7 @@ theorem prod_range_div' {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
 
 @[to_additive]
 theorem eq_prod_range_div {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
-    f n = f 0 * ∏ i in range n, f (i + 1) / f i := by rw [prod_range_div, mul_div_cancel'_right]
+    f n = f 0 * ∏ i in range n, f (i + 1) / f i := by rw [prod_range_div, mul_div_cancel]
 #align finset.eq_prod_range_div Finset.eq_prod_range_div
 #align finset.eq_sum_range_sub Finset.eq_sum_range_sub
 
@@ -2265,12 +2264,12 @@ lemma _root_.Equiv.prod_comp (e : ι ≃ κ) (g : κ → α) : ∏ i, g (e i) = 
 #align equiv.sum_comp Equiv.sum_comp
 
 @[to_additive]
-lemma prod_of_injective (e : ι → κ) (hf : Injective e) (f : ι → α) (g : κ → α)
+lemma prod_of_injective (e : ι → κ) (he : Injective e) (f : ι → α) (g : κ → α)
     (h' : ∀ i ∉ Set.range e, g i = 1) (h : ∀ i, f i = g (e i)) : ∏ i, f i = ∏ j, g j :=
-  prod_of_injOn e (hf.injOn _) (by simp) (by simpa using h') (fun i _ ↦ h i)
+  prod_of_injOn e (he.injOn _) (by simp) (by simpa using h') (fun i _ ↦ h i)
 
 @[to_additive]
-lemma prod_fiberwise [DecidableEq κ] [Fintype ι] (g : ι → κ) (f : ι → α) :
+lemma prod_fiberwise [DecidableEq κ] (g : ι → κ) (f : ι → α) :
     ∏ j, ∏ i : {i // g i = j}, f i = ∏ i, f i := by
   rw [← Finset.prod_fiberwise _ g f]
   congr with j
@@ -2279,7 +2278,7 @@ lemma prod_fiberwise [DecidableEq κ] [Fintype ι] (g : ι → κ) (f : ι → �
 #align fintype.sum_fiberwise Fintype.sum_fiberwise
 
 @[to_additive]
-lemma prod_fiberwise' [DecidableEq κ] [Fintype ι] (g : ι → κ) (f : κ → α) :
+lemma prod_fiberwise' [DecidableEq κ] (g : ι → κ) (f : κ → α) :
     ∏ j, ∏ _i : {i // g i = j}, f j = ∏ i, f (g i) := by
   rw [← Finset.prod_fiberwise' _ g f]
   congr with j
@@ -2443,6 +2442,13 @@ theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a
     _ = (s.map fun _ => 1).sum := (Finset.sum_multiset_map_count _ _).symm
     _ = card s := by simp
 #align multiset.to_finset_sum_count_eq Multiset.toFinset_sum_count_eq
+
+@[simp]
+theorem sum_count_eq [Fintype α] (s : Multiset α) : ∑ a, s.count a = Multiset.card s := by
+  rw [← toFinset_sum_count_eq, ← Finset.sum_filter_ne_zero]
+  congr
+  ext
+  simp
 
 theorem count_sum' {s : Finset β} {a : α} {f : β → Multiset α} :
     count a (∑ x in s, f x) = ∑ x in s, count a (f x) := by

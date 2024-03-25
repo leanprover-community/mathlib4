@@ -383,6 +383,18 @@ theorem measurableSet_eq_fun {m : MeasurableSpace α} {E} [MeasurableSpace E] [A
   simp_rw [Set.mem_setOf_eq, Pi.sub_apply, sub_eq_zero]
 #align measurable_set_eq_fun measurableSet_eq_fun
 
+@[measurability]
+lemma measurableSet_eq_fun' {β : Type*} [CanonicallyOrderedAddCommMonoid β] [Sub β] [OrderedSub β]
+    {_ : MeasurableSpace β} [MeasurableSub₂ β] [MeasurableSingletonClass β]
+    {f g : α → β} (hf : Measurable f) (hg : Measurable g) :
+    MeasurableSet {x | f x = g x} := by
+  have : {a | f a = g a} = {a | (f - g) a = 0} ∩ {a | (g - f) a = 0} := by
+    ext
+    simp only [Set.mem_setOf_eq, Pi.sub_apply, tsub_eq_zero_iff_le, Set.mem_inter_iff]
+    exact ⟨fun h ↦ ⟨h.le, h.symm.le⟩, fun h ↦ le_antisymm h.1 h.2⟩
+  rw [this]
+  exact ((hf.sub hg) (measurableSet_singleton 0)).inter ((hg.sub hf) (measurableSet_singleton 0))
+
 theorem nullMeasurableSet_eq_fun {E} [MeasurableSpace E] [AddGroup E] [MeasurableSingletonClass E]
     [MeasurableSub₂ E] {f g : α → E} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     NullMeasurableSet { x | f x = g x } μ := by
@@ -513,7 +525,7 @@ instance DivInvMonoid.measurableZPow (G : Type u) [DivInvMonoid G] [MeasurableSp
     [MeasurableMul₂ G] [MeasurableInv G] : MeasurablePow G ℤ :=
   ⟨measurable_from_prod_countable fun n => by
       cases' n with n n
-      · simp_rw [Int.ofNat_eq_coe, zpow_coe_nat]
+      · simp_rw [Int.ofNat_eq_coe, zpow_natCast]
         exact measurable_id.pow_const _
       · simp_rw [zpow_negSucc]
         exact (measurable_id.pow_const (n + 1)).inv⟩
@@ -702,7 +714,7 @@ instance SubNegMonoid.measurableSMul_int₂ (M : Type*) [SubNegMonoid M] [Measur
     suffices Measurable fun p : M × ℤ => p.2 • p.1 by apply this.comp measurable_swap
     refine' measurable_from_prod_countable fun n => _
     induction' n with n n ih
-    · simp only [Int.ofNat_eq_coe, coe_nat_zsmul]
+    · simp only [Int.ofNat_eq_coe, natCast_zsmul]
       exact measurable_const_smul _
     · simp only [negSucc_zsmul]
       exact (measurable_const_smul _).neg⟩

@@ -113,7 +113,7 @@ theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : �
   /- After rewriting with `commProb_def`, we reduce to showing that `G` has at least as many
       commuting pairs as `H`. -/
   rw [commProb_def, commProb_def, div_le_iff, mul_assoc, ← mul_pow, ← Nat.cast_mul,
-    mul_comm H.index, H.card_mul_index, div_mul_cancel, Nat.cast_le]
+    mul_comm H.index, H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
   · refine' Finite.card_le_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) _
     exact fun p q h ↦ by simpa only [Subtype.ext_iff, Prod.ext_iff] using h
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr Finite.card_pos.ne')
@@ -124,7 +124,7 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
   /- After rewriting with `commProb_def'`, we reduce to showing that `G` has at least as many
       conjugacy classes as `G ⧸ H`. -/
   rw [commProb_def', commProb_def', div_le_iff, mul_assoc, ← Nat.cast_mul, ← Subgroup.index,
-    H.card_mul_index, div_mul_cancel, Nat.cast_le]
+    H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
   · apply Finite.card_le_of_surjective
     show Function.Surjective (ConjClasses.map (QuotientGroup.mk' H))
     exact ConjClasses.map_surjective Quotient.surjective_Quotient_mk''
@@ -165,7 +165,6 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
     3 :: reciprocalFactors (n / 2)
   else
     n % 4 * n :: reciprocalFactors (n / 4 + 1)
-decreasing_by all_goals { simp_wf; omega }
 
 @[simp] lemma reciprocalFactors_zero : reciprocalFactors 0 = [0] := rfl
 
