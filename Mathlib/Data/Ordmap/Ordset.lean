@@ -808,7 +808,7 @@ theorem Raised.add_right (k) {n m} (H : Raised n m) : Raised (n + k) (m + k) := 
 
 theorem Raised.right {l x₁ x₂ r₁ r₂} (H : Raised (size r₁) (size r₂)) :
     Raised (size (@node' α l x₁ r₁)) (size (@node' α l x₂ r₂)) := by
-  rw [node', size, size, size_node]; generalize size r₂ = m at H ⊢
+  rw [node', size, size_node]; generalize size r₂ = m at H ⊢
   rcases H with (rfl | rfl)
   · exact Or.inl rfl
   · exact Or.inr rfl
