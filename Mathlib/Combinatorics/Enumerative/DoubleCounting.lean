@@ -53,10 +53,10 @@ theorem bipartiteBelow_swap : t.bipartiteBelow (swap r) a = t.bipartiteAbove r a
 theorem bipartiteAbove_swap : s.bipartiteAbove (swap r) b = s.bipartiteBelow r b := rfl
 
 @[simp, norm_cast]
-theorem coe_bipartiteBelow : (s.bipartiteBelow r b : Set α) = { a ∈ s | r a b } := coe_filter _ _
+theorem coe_bipartiteBelow : s.bipartiteBelow r b = ({a ∈ s | r a b} : Set α) := coe_filter _ _
 
 @[simp, norm_cast]
-theorem coe_bipartiteAbove : (t.bipartiteAbove r a : Set β) = { b ∈ t | r a b } := coe_filter _ _
+theorem coe_bipartiteAbove : t.bipartiteAbove r a = ({b ∈ t | r a b} : Set β) := coe_filter _ _
 
 variable {s t a a' b b'}
 
