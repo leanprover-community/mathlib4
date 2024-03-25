@@ -307,9 +307,8 @@ instance : IsTrans (List α) Subset where
   trans := fun _ _ _ => List.Subset.trans
 
 #align list.subset_def List.subset_def
-
 #align list.subset_append_of_subset_left List.subset_append_of_subset_left
-
+#align list.subset_append_of_subset_right List.subset_append_of_subset_right
 #align list.cons_subset List.cons_subset
 
 theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
@@ -1190,6 +1189,7 @@ theorem nthLe_get? {l : List α} {n} (h) : get? l n = some (nthLe l n h) := get?
 theorem get?_length (l : List α) : l.get? l.length = none := get?_len_le le_rfl
 #align list.nth_length List.get?_length
 
+#align list.nth_eq_some List.get?_eq_some
 #align list.nth_eq_none_iff List.get?_eq_none
 #align list.nth_of_mem List.get?_of_mem
 
@@ -1264,6 +1264,8 @@ theorem nthLe_zero [Inhabited α] {L : List α} (h : 0 < L.length) : List.nthLe 
   simp [nthLe]
 #align list.nth_le_zero List.nthLe_zero
 
+#align list.nth_le_append List.get_append
+
 @[deprecated get_append_right']
 theorem nthLe_append_right {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length ≤ n) (h₂) :
     (l₁ ++ l₂).nthLe n h₂ = l₂.nthLe (n - l₁.length) (get_append_right_aux h₁ h₂) :=
@@ -1271,6 +1273,7 @@ theorem nthLe_append_right {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length �
 #align list.nth_le_append_right_aux List.get_append_right_aux
 #align list.nth_le_append_right List.nthLe_append_right
 
+#align list.nth_le_replicate List.get_replicate
 #align list.nth_append List.get?_append
 #align list.nth_append_right List.get?_append_right
 #align list.last_eq_nth_le List.getLast_eq_get
@@ -1279,6 +1282,7 @@ theorem get_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
     l.get ⟨l.length - 1, h⟩ = l.getLast (by rintro rfl; exact Nat.lt_irrefl 0 h) :=
   (getLast_eq_get l _).symm
 
+#align list.nth_le_length_sub_one List.get_length_sub_one
 #align list.nth_concat_length List.get?_concat_length
 
 @[deprecated get_cons_length]
@@ -1303,6 +1307,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
     rw [drop, get]
     apply ih
 
+#align list.take_one_drop_eq_of_lt_length List.take_one_drop_eq_of_lt_length
 #align list.ext List.ext
 
 @[deprecated ext_get]
@@ -1399,6 +1404,9 @@ theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l
   rw [get?_eq_some]
   simp [n.2]
 
+#align list.nth_le_eq_iff List.get_eq_iff
+#align list.some_nth_le_eq List.get?_eq_get
+
 end deprecated
 
 theorem modifyNthTail_modifyNthTail {f g : List α → List α} (m : ℕ) :
@@ -1468,14 +1476,15 @@ theorem length_modifyNth (f : α → α) : ∀ n l, length (modifyNth f n l) = l
 #align list.update_nth_succ List.set_succ
 #align list.update_nth_comm List.set_comm
 
+#align list.nth_le_update_nth_eq List.get_set_eq
 @[simp]
 theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
     (hj : j < (l.set i a).length) :
     (l.set i a).get ⟨j, hj⟩ = l.get ⟨j, by simpa using hj⟩ := by
   rw [← Option.some_inj, ← List.get?_eq_get, List.get?_set_ne _ _ h, List.get?_eq_get]
 
+#align list.nth_le_update_nth_of_ne List.get_set_of_ne
 #align list.mem_or_eq_of_mem_update_nth List.mem_or_eq_of_mem_set
-
 
 /-! ### map -/
 
@@ -1720,6 +1729,7 @@ theorem cons_get_drop_succ {l : List α} {n} :
       simp only [Nat.succ_lt_succ_iff, List.length] at hn
       simpa [List.get, List.drop] using hl
 
+#align list.cons_nth_le_drop_succ List.cons_get_drop_succ
 #align list.drop_nil List.drop_nil
 #align list.drop_one List.drop_one
 #align list.drop_add List.drop_add
@@ -3392,12 +3402,14 @@ theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length)
     (l.enumFrom n).get i = (n + i, l.get ⟨i, hi⟩) := by
   rw [← Option.some_inj, ← get?_eq_get]
   simp [enumFrom_get?, get?_eq_get hi]
+#align list.nth_le_enum_from List.get_enumFrom
 
 theorem get_enum (l : List α) (i : Fin l.enum.length)
     (hi : i < l.length := (by simpa using i.2)) :
     l.enum.get i = (i.1, l.get ⟨i, hi⟩) := by
   convert get_enumFrom _ _ i
   exact (zero_add _).symm
+#align list.nth_le_enum List.get_enum
 
 @[simp]
 theorem enumFrom_eq_nil {n : ℕ} {l : List α} : List.enumFrom n l = [] ↔ l = [] := by
@@ -3755,6 +3767,7 @@ theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = (L.attach.map Subtype.val).get ⟨i, by simpa using i.2⟩ :=
       by rw [get_map]
     _ = L.get { val := i, isLt := _ } := by congr 2 <;> simp
+#align list.nth_le_attach List.get_attach
 
 @[simp 1100]
 theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :

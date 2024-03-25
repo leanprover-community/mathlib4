@@ -80,6 +80,8 @@ protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 
 
 #align int.nat_abs Int.natAbs
 
+#align int.nat_abs_pos_of_ne_zero Int.natAbs_pos
+#align int.eq_zero_of_nat_abs_eq_zero Int.natAbs_eq_zero
 #align int.nat_abs_zero Int.natAbs_zero
 #align int.nat_abs_one Int.natAbs_one
 #align int.nat_abs_mul_self Int.natAbs_mul_self
