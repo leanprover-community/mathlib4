@@ -440,6 +440,10 @@ lemma add_sub_one_le_mul (ha : a ≠ 0) (hb : b ≠ 0) : a + b - 1 ≤ a * b := 
     exact Nat.add_le_add_right (Nat.le_mul_of_pos_right _ $ Nat.pos_iff_ne_zero.2 hb) _
 #align nat.add_sub_one_le_mul Nat.add_sub_one_le_mul
 
+protected lemma add_le_mul {a : ℕ} (ha : 2 ≤ a) : ∀ {b : ℕ} (_ : 2 ≤ b), a + b ≤ a * b
+  | 2, _ => by omega
+  | b + 3, _ => by have := Nat.add_le_mul ha (Nat.le_add_left _ b); rw [mul_succ]; omega
+
 /-! ### `div` -/
 
 #align nat.pow_div Nat.pow_div
