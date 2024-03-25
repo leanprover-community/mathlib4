@@ -17,7 +17,7 @@ behave under various operations on representations.
 
 A key result is the orthogonality of characters for irreducible representations of finite group
 over an algebraically closed field whose characteristic doesn't divide the order of the group. It
-is the therem `char_orthonormal`
+is the theorem `char_orthonormal`
 
 # Implementation notes
 
