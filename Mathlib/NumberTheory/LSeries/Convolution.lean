@@ -49,12 +49,10 @@ lemma ArithmeticFunction.toArithmeticFunction_eq_self {R : Type*} [Zero R]
 
 We define this in terms of the already existing definition for arithmetic functions. -/
 noncomputable def LSeries.convolution {R : Type*} [Semiring R] (f g : ℕ → R) : ℕ → R :=
-  (toArithmeticFunction f * toArithmeticFunction g :)
+  ⇑(toArithmeticFunction f * toArithmeticFunction g)
 
 @[inherit_doc]
 scoped[LSeries.notation] infixl:70 " ⍟ " => LSeries.convolution
-
-open scoped LSeries.notation
 
 /-- The product of two arithmetic functions defines the same function as the Dirichlet convolution
 of the functions defined by them. -/
