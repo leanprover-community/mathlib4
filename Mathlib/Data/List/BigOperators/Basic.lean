@@ -23,9 +23,9 @@ variable {ι α M N P M₀ G R : Type*}
 
 namespace List
 
-section Mul
+section MulOneClass
 
-variable [Mul M] [One M]
+variable [MulOneClass M] {l : List M} {a : M}
 
 @[to_additive (attr := simp)]
 theorem prod_nil : ([] : List M).prod = 1 :=
@@ -33,11 +33,6 @@ theorem prod_nil : ([] : List M).prod = 1 :=
 #align list.prod_nil List.prod_nil
 #align list.sum_nil List.sum_nil
 
-end Mul
-
-section MulOneClass
-
-variable [MulOneClass M] {l : List M} {a : M}
 
 @[to_additive]
 theorem prod_singleton : [a].prod = a :=
