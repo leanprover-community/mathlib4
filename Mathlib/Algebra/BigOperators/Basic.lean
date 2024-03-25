@@ -212,18 +212,18 @@ theorem map_prod [CommMonoid β] [CommMonoid γ] {G : Type*} [FunLike G β γ] [
 #align map_prod map_prod
 #align map_sum map_sum
 
-#align monoid_hom.map_prod map_prodₓ
-#align add_monoid_hom.map_sum map_sumₓ
-#align mul_equiv.map_prod map_prodₓ
-#align add_equiv.map_sum map_sumₓ
+#align monoid_hom.map_prod map_prod
+#align add_monoid_hom.map_sum map_sum
+#align mul_equiv.map_prod map_prod
+#align add_equiv.map_sum map_sum
+#align ring_hom.map_list_prod map_list_prod
+#align ring_hom.map_list_sum map_list_sum
+#align ring_hom.unop_map_list_prod unop_map_list_prod
+#align ring_hom.map_multiset_prod map_multiset_prod
+#align ring_hom.map_multiset_sum map_multiset_sum
+#align ring_hom.map_prod map_prod
+#align ring_hom.map_sum map_sum
 
-#align ring_hom.map_list_prod RingHom.map_list_prod
-#align ring_hom.map_list_sum RingHom.map_list_sum
-#align ring_hom.unop_map_list_prod RingHom.unop_map_list_prod
-#align ring_hom.map_multiset_prod RingHom.map_multiset_prod
-#align ring_hom.map_multiset_sum RingHom.map_multiset_sum
-#align ring_hom.map_prod RingHom.map_prod
-#align ring_hom.map_sum RingHom.map_sum
 @[to_additive]
 theorem MonoidHom.coe_finset_prod [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α) :
     ⇑(∏ x in s, f x) = ∏ x in s, ⇑(f x) :=
