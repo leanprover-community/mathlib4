@@ -44,6 +44,14 @@ variable {V W : Type uE} [NormedAddCommGroup V] [NormedSpace ℝ V]
 `v ↦ (w ↦ -2 * π * I * L(v, w) • f v)`. -/
 def mul_L (v : V) : (W →L[ℝ] E) := -(2 * π * I) • (L v).smulRight (f v)
 
+#check ContinuousLinearMap.module
+
+#synth Module ℂ (W →L[ℝ] E)
+
+#synth Module ℂ (W [×2]→L[ℝ] E)
+
+#check ContinuousMultilinearMap.instModuleContinuousMultilinearMapAddCommMonoid
+
 /-- The `w`-derivative of the Fourier transform integrand. -/
 lemma hasFDerivAt_fourier_transform_integrand_right (v : V) (w : W) :
     HasFDerivAt (fun w' ↦ 𝐞 (-L v w') • f v) (𝐞 (-L v w) • mul_L L f v) w := by
@@ -147,11 +155,38 @@ theorem glouk [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
         simpa using hf 0 bot_le
       · simpa using hf 1 (Nat.le_add_left 1 n)
 
+/-- The formal multilinear series whose `n`-th term is
+`(w₁, ..., wₙ) ↦ (-2Iπ)^n * L v w₁ * ... * L v wₙ * f v`. -/
+def bloublou (f : V → E) (v : V) : FormalMultilinearSeries ℝ W E := fun n ↦
+  (- (2 * π * I))^n • ((ContinuousMultilinearMap.mkPiRing ℝ (Fin n) (f v)).compContinuousLinearMap
+  (fun _i ↦ L v))
 
+def bloublou_fourier [MeasurableSpace V] [BorelSpace V] (μ : Measure V)
+    [SecondCountableTopologyEither V (W →L[ℝ] ℝ)]
+    (f : V → E) (w : W) : FormalMultilinearSeries ℝ W E := fun n ↦
+  VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ bloublou L f v n) w
 
+#check ContinuousLinearMap.integral_apply
+
+lemma truc [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
+    [SecondCountableTopologyEither V (W →L[ℝ] ℝ)] (n : ℕ)
+    (hf : ∀ k ≤ n, Integrable (fun v ↦ ‖v‖^k * ‖f v‖) μ) (h'f : AEStronglyMeasurable f μ) :
+    HasFTaylorSeriesUpTo n (VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f)
+    (fun w n ↦ VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ bloublou L f v n) w) := by
+  constructor
+  · simp
+    intro w
+    simp only [fourierIntegral]
+    rw [ContinuousMultilinearMap.integral_apply]
 
 
 #exit
+
+
+def ContDiff (n : ℕ∞) (f : E → F) : Prop :=
+  ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpTo n f p
+#align cont_diff ContDiff
+
 
 
 section inner
