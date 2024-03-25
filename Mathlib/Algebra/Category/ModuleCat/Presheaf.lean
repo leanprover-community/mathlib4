@@ -404,7 +404,7 @@ lemma toPresheafOfModules_presheaf_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : 
     M.toPresheafOfModules.presheaf.map f x = M.map f x := rfl
 
 @[simp]
-lemma restrictionApp_toPresheafOfModules (M : BundledCorePresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+lemma restrictionApp_toPresheafOfModules {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     PresheafOfModules.restrictionApp f M.toPresheafOfModules = M.map f := rfl
 
 end BundledCorePresheafOfModules
