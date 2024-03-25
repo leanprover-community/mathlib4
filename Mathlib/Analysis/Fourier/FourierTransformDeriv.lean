@@ -31,11 +31,13 @@ lemma Real.hasDerivAt_fourierChar (x : ℝ) : HasDerivAt (𝐞 · : ℝ → ℂ)
     ring_nf
   simpa only [h1, Int.cast_one, ofReal_one, div_one, mul_one] using hasDerivAt_fourier 1 1 x
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+universe uE
+
+variable {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 namespace VectorFourier
 
-variable {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+variable {V W : Type uE} [NormedAddCommGroup V] [NormedSpace ℝ V]
   [NormedAddCommGroup W] [NormedSpace ℝ W] (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E)
 
 /-- Send a function `f : V → E` to the function `f : V → Hom (W, E)` given by
@@ -105,6 +107,52 @@ theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V]
   have h6 : ∀ᵐ v ∂μ, ∀ w', w' ∈ Metric.ball w 1 → HasFDerivAt (fun x ↦ F x v) (F' w' v) w' :=
     ae_of_all _ (fun v w' _ ↦ hasFDerivAt_fourier_transform_integrand_right L f v w')
   exact hasFDerivAt_integral_of_dominated_of_fderiv_le one_pos h1 (h0 w) h3 h4 h5 h6
+
+/-- Main theorem of this section: if both `f` and `x ↦ ‖x‖ * ‖f x‖` are integrable, then the
+Fourier transform of `f` has a Fréchet derivative (everywhere in its domain) and its derivative is
+the Fourier transform of `mul_L L f`. -/
+theorem glouk [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
+    [SecondCountableTopologyEither V (W →L[ℝ] ℝ)] (n : ℕ)
+    (hf : ∀ k ≤ n, Integrable (fun v ↦ ‖v‖^k * ‖f v‖) μ) (h'f : AEStronglyMeasurable f μ) :
+    ContDiff ℝ n (VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f) := by
+  by_cases hE : CompleteSpace E; swap
+  · have : VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f = 0 := by
+      ext x; simp [VectorFourier.fourierIntegral, integral, hE]
+    simpa [this] using contDiff_const
+  induction n generalizing f E with
+  | zero =>
+    simp only [Nat.zero_eq, CharP.cast_eq_zero, contDiff_zero]
+    apply fourierIntegral_continuous Real.continuous_fourierChar (by apply L.continuous₂)
+    apply (integrable_norm_iff h'f).1
+    simpa using hf _ le_rfl
+  | succ n ih =>
+    have A : AEStronglyMeasurable (mul_L L f) μ := by
+      apply (AEStronglyMeasurable.const_smul' _ _)
+      apply (ContinuousLinearMap.smulRightL ℝ W E).continuous₂.comp_aestronglyMeasurable
+        (L.continuous.aestronglyMeasurable.prod_mk h'f)
+    rw [contDiff_succ_iff_hasFDerivAt]
+    refine ⟨VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ (mul_L L f), ?_, fun w ↦ ?_⟩
+    · apply ih (fun k hk ↦ ?_) A (by infer_instance)
+      apply Integrable.mono' ((hf (k + 1) (Nat.add_le_add_right hk 1)).const_mul (2 * π * ‖L‖))
+      · exact (continuous_norm.aestronglyMeasurable.pow _).mul A.norm
+      · filter_upwards with v
+        calc
+        ‖‖v‖ ^ k * ‖mul_L L f v‖‖
+          = ‖v‖ ^ k * (2 * π * (‖L v‖ * ‖f v‖)) := by
+          simp [mul_L, norm_smul, _root_.abs_of_nonneg pi_nonneg]
+        _ ≤ ‖v‖ ^ k * (2 * π * ((‖L‖ * ‖v‖) * ‖f v‖)) := by gcongr; exact L.le_opNorm v
+        _ = 2 * π * ‖L‖ * (‖v‖ ^ (k + 1) * ‖f v‖) := by rw [pow_succ]; ring
+    · apply hasFDerivAt_fourier
+      · apply (integrable_norm_iff h'f).1
+        simpa using hf 0 bot_le
+      · simpa using hf 1 (Nat.le_add_left 1 n)
+
+
+
+
+
+#exit
+
 
 section inner
 
