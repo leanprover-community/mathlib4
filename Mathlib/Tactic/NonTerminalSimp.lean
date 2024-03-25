@@ -8,7 +8,7 @@ import Lean.Linter.Util
 import Std.Data.Array.Basic
 import Std.Data.List.Basic
 import Std.Data.Array.Merge
-import Mathlib.adomaniLeanUtils.inspect_syntax
+--import Mathlib.adomaniLeanUtils.inspect_syntax
 
 /-!
 #  The non-terminal `simp` linter
