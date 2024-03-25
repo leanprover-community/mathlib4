@@ -33,7 +33,7 @@ back and forth, dense, countable, order
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 namespace Order
 

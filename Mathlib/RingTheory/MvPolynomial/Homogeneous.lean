@@ -108,7 +108,7 @@ theorem homogeneousSubmodule_mul [CommSemiring R] (m n : ℕ) :
   rw [← hde, ← hφ, ← hψ, Finset.sum_subset Finsupp.support_add, Finset.sum_subset hd',
     Finset.sum_subset he', ← Finset.sum_add_distrib]
   · congr
-  all_goals intro i hi; apply Finsupp.not_mem_support_iff.mp
+  all_goals intro _ _; apply Finsupp.not_mem_support_iff.mp
 #align mv_polynomial.homogeneous_submodule_mul MvPolynomial.homogeneousSubmodule_mul
 
 section
@@ -210,9 +210,12 @@ lemma C_mul (hφ : φ.IsHomogeneous m) (r : R) :
     (C r * φ).IsHomogeneous m := by
   simpa only [zero_add] using (isHomogeneous_C _ _).mul hφ
 
-lemma _root_.MvPolynomial.C_mul_X (r : R) (i : σ) :
+lemma _root_.MvPolynomial.isHomogeneous_C_mul_X (r : R) (i : σ) :
     (C r * X i).IsHomogeneous 1 :=
   (isHomogeneous_X _ _).C_mul _
+
+@[deprecated] -- 2024-03-21
+alias _root_.MvPolynomial.C_mul_X := _root_.MvPolynomial.isHomogeneous_C_mul_X
 
 lemma pow (hφ : φ.IsHomogeneous m) (n : ℕ) : (φ ^ n).IsHomogeneous (m * n) := by
   rw [show φ ^ n = ∏ _i in Finset.range n, φ by simp]
@@ -261,18 +264,22 @@ theorem sub (hφ : IsHomogeneous φ n) (hψ : IsHomogeneous ψ n) : IsHomogeneou
 
 end CommRing
 
+/-- The homogeneous degree bounds the total degree.
+
+See also `MvPolynomial.IsHomogeneous.totalDegree` when `φ` is non-zero. -/
+lemma totalDegree_le (hφ : IsHomogeneous φ n) : φ.totalDegree ≤ n := by
+  apply Finset.sup_le
+  intro d hd
+  rw [mem_support_iff] at hd
+  rw [Finsupp.sum, hφ hd]
+
 theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ = n := by
-  rw [MvPolynomial.totalDegree]
-  apply le_antisymm
-  · apply Finset.sup_le
-    intro d hd
-    rw [mem_support_iff] at hd
-    rw [Finsupp.sum, hφ hd]
-  · obtain ⟨d, hd⟩ : ∃ d, coeff d φ ≠ 0 := exists_coeff_ne_zero h
-    simp only [← hφ hd, Finsupp.sum]
-    replace hd := Finsupp.mem_support_iff.mpr hd
-    -- Porting note: Original proof did not define `f`
-    exact Finset.le_sup (f := fun s ↦ ∑ x in s.support, (⇑s) x) hd
+  apply le_antisymm hφ.totalDegree_le
+  obtain ⟨d, hd⟩ : ∃ d, coeff d φ ≠ 0 := exists_coeff_ne_zero h
+  simp only [← hφ hd, MvPolynomial.totalDegree, Finsupp.sum]
+  replace hd := Finsupp.mem_support_iff.mpr hd
+  -- Porting note: Original proof did not define `f`
+  exact Finset.le_sup (f := fun s ↦ ∑ x in s.support, s x) hd
 #align mv_polynomial.is_homogeneous.total_degree MvPolynomial.IsHomogeneous.totalDegree
 
 theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n):
@@ -311,7 +318,7 @@ lemma coeff_isHomogeneous_of_optionEquivLeft_symm
   suffices IsHomogeneous (F (p.coeff i)) j by
     rwa [← (IsHomogeneous.rename_isHomogeneous_iff e.injective)]
   convert hφ.finSuccEquiv_coeff_isHomogeneous i j h using 1
-  dsimp only [renameEquiv_apply]
+  dsimp only [φ, F', F, renameEquiv_apply]
   rw [finSuccEquiv_rename_finSuccEquiv, AlgEquiv.apply_symm_apply]
   simp
 

@@ -82,10 +82,9 @@ def aevalMultiset_map (f : σ → S) (p : symmetricSubalgebra σ R) :
     rw [← AlgEquiv.apply_symm_apply (equiv_symmetricSubalgebra R rfl) p]
   erw [esymmAlgHom_apply]
   have : (fun i : Fin (Fintype.card σ) ↦ (Finset.univ.val.map f).esymm (↑i + 1)) =
-    (fun (i : Fin (Fintype.card σ)) ↦ aeval f (esymm σ R (↑i + 1)))
-  · simp_rw [aeval_esymm_eq_multiset_esymm]
-  rw [this, ← comp_aeval]
-  rfl
+    (fun (i : Fin (Fintype.card σ)) ↦ aeval f (esymm σ R (↑i + 1))) := by
+    simp_rw [aeval_esymm_eq_multiset_esymm]
+  rw [this, ← comp_aeval, AlgHom.coe_comp, Function.comp_apply]
 
 def aevalMultiset_map' (f : τ → S) (p : symmetricSubalgebra σ R)
     (h : Fintype.card σ = Fintype.card τ) :
@@ -136,8 +135,9 @@ lemma scaleAEvalRoots_eq_aevalMultiset (q : S[X]) (p : symmetricSubalgebra σ R)
   · simp_rw [← aeval_algebraMap_apply, (· ∘ ·), map_mul, ← Polynomial.coeff_map]
     congr
     funext i
-    have hroots' : Multiset.card (q.map (algebraMap S A)).roots = (q.map (algebraMap S A)).natDegree
-    · rw [hroots, Polynomial.natDegree_map_eq_of_injective inj]
+    have hroots' :
+        Multiset.card (q.map (algebraMap S A)).roots = (q.map (algebraMap S A)).natDegree := by
+      rw [hroots, Polynomial.natDegree_map_eq_of_injective inj]
     rw [Polynomial.coeff_eq_esymm_roots_of_card hroots',
       Polynomial.natDegree_map_eq_of_injective inj, Polynomial.leadingCoeff_map' inj,
       ← mul_assoc, mul_left_comm, ← mul_assoc, ← mul_assoc, mul_assoc _ _ (_ ^ _),
@@ -168,13 +168,13 @@ variable {σ}
 lemma aevalMultiset_sumPolynomial
     (m : Multiset S) (p : R[X]) (hm : Multiset.card m = Fintype.card σ) :
     aevalMultiset σ R m (sumPolynomial σ p) = (m.map (fun x ↦ Polynomial.aeval x p)).sum := by
-  have eq_univ_map : m = Finset.univ.val.map (fun i : Fin m.toList.length ↦ m.toList.get i)
-  · have toFinset_finRange : ∀ n, (List.finRange n).toFinset = Finset.univ :=
+  have eq_univ_map : m = Finset.univ.val.map (fun i : Fin m.toList.length ↦ m.toList.get i) := by
+    have toFinset_finRange : ∀ n, (List.finRange n).toFinset = Finset.univ :=
       fun n ↦ Finset.eq_univ_iff_forall.mpr fun x ↦ List.mem_toFinset.mpr <| List.mem_finRange x
-    have : (Finset.univ.val : Multiset (Fin m.toList.length)) = List.finRange m.toList.length
-    · rw [← toFinset_finRange, List.toFinset_val, List.dedup_eq_self.mpr]
+    have : (Finset.univ.val : Multiset (Fin m.toList.length)) = List.finRange m.toList.length := by
+      rw [← toFinset_finRange, List.toFinset_val, List.dedup_eq_self.mpr]
       exact List.nodup_finRange _
-    rw [this, Multiset.coe_map]
+    rw [this, Multiset.map_coe]
     conv_lhs => rw [← m.coe_toList]
     refine congr_arg _ (List.ext_get ?_ (fun n h₁ h₂ ↦ ?_))
     · rw [List.length_map, List.length_finRange]

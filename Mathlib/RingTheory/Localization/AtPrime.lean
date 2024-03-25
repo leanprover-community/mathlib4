@@ -33,7 +33,6 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
-
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 section AtPrime
@@ -78,7 +77,7 @@ theorem AtPrime.Nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
 #align is_localization.at_prime.nontrivial IsLocalization.AtPrime.Nontrivial
 
 theorem AtPrime.localRing [IsLocalization.AtPrime S P] : LocalRing S :=
-  -- Porting Note : since I couldn't get local instance running, I just specify it manually
+  -- Porting note: since I couldn't get local instance running, I just specify it manually
   letI := AtPrime.Nontrivial S P
   LocalRing.of_nonunits_add
     (by
@@ -95,8 +94,7 @@ theorem AtPrime.localRing [IsLocalization.AtPrime S P] : LocalRing S :=
       rw [← hry] at hy
       obtain ⟨t, ht⟩ := IsLocalization.eq.1 hxyz
       simp only [mul_one, one_mul, Submonoid.coe_mul, Subtype.coe_mk] at ht
-      suffices : (t : R) * (sx * sy * sz) ∈ P
-      exact
+      suffices (t : R) * (sx * sy * sz) ∈ P from
         not_or_of_not (mt hp.mem_or_mem <| not_or_of_not sx.2 sy.2) sz.2
           (hp.mem_or_mem <| (hp.mem_or_mem this).resolve_left t.2)
       rw [← ht]
@@ -132,6 +130,12 @@ instance isDomain_of_local_atPrime {P : Ideal A} (_ : P.IsPrime) :
 namespace AtPrime
 
 variable (I : Ideal R) [hI : I.IsPrime] [IsLocalization.AtPrime S I]
+
+/-- The prime ideals in the localization of a commutative ring at a prime ideal I are in
+order-preserving bijection with the prime ideals contained in I. -/
+def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPrime ∧ p ≤ I } :=
+  (IsLocalization.orderIsoOfPrime I.primeCompl S).trans <| .setCongr _ _ <| show setOf _ = setOf _
+    by ext; simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left]
 
 theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.primeCompl :=
   ⟨fun h hx =>
@@ -177,7 +181,6 @@ open IsLocalization
 attribute [local instance] Classical.propDecidable
 
 variable (I : Ideal R) [hI : I.IsPrime]
-
 variable {I}
 
 /-- The unique maximal ideal of the localization at `I.primeCompl` lies over the ideal `I`. -/
@@ -185,7 +188,7 @@ theorem AtPrime.comap_maximalIdeal :
     Ideal.comap (algebraMap R (Localization.AtPrime I))
         (LocalRing.maximalIdeal (Localization I.primeCompl)) =
       I :=
-  -- Porting Note : need to provide full name
+  -- Porting note: need to provide full name
   IsLocalization.AtPrime.comap_maximalIdeal _ _
 #align localization.at_prime.comap_maximal_ideal Localization.AtPrime.comap_maximalIdeal
 
@@ -195,9 +198,9 @@ theorem AtPrime.map_eq_maximalIdeal :
     Ideal.map (algebraMap R (Localization.AtPrime I)) I =
       LocalRing.maximalIdeal (Localization I.primeCompl) := by
   convert congr_arg (Ideal.map (algebraMap R (Localization.AtPrime I)))
-  -- Porting Note : `algebraMap R ...` can not be solve by unification
+  -- Porting note: `algebraMap R ...` can not be solve by unification
     (AtPrime.comap_maximalIdeal (hI := hI)).symm
-  -- Porting Note : can not find `hI`
+  -- Porting note: can not find `hI`
   rw [map_comap I.primeCompl]
 #align localization.at_prime.map_eq_maximal_ideal Localization.AtPrime.map_eq_maximalIdeal
 
@@ -255,7 +258,7 @@ theorem localRingHom_id : localRingHom I I (RingHom.id R) (Ideal.comap_id I).sym
   localRingHom_unique _ _ _ _ fun _ => rfl
 #align localization.local_ring_hom_id Localization.localRingHom_id
 
--- Porting note : simplifier won't pick up this lemma, so deleted @[simp]
+-- Porting note: simplifier won't pick up this lemma, so deleted @[simp]
 theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsPrime] (K : Ideal P)
     [hK : K.IsPrime] (f : R →+* S) (hIJ : I = J.comap f) (g : S →+* P) (hJK : J = K.comap g) :
     localRingHom I K (g.comp f) (by rw [hIJ, hJK, Ideal.comap_comap f g]) =

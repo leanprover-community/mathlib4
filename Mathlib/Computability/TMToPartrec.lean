@@ -1240,8 +1240,7 @@ def K'.elim (a b c d : List Γ') : K' → List Γ'
   | K'.stack => d
 #align turing.partrec_to_TM2.K'.elim Turing.PartrecToTM2.K'.elim
 
-/- Porting note: The equation lemma of `elim` simplifies to `match` structures. To prevent this,
-we replace equation lemmas of `elim`. -/
+-- The equation lemma of `elim` simplifies to `match` structures.
 
 theorem K'.elim_main (a b c d) : K'.elim a b c d K'.main = a := rfl
 
@@ -1251,7 +1250,6 @@ theorem K'.elim_aux (a b c d) : K'.elim a b c d K'.aux = c := rfl
 
 theorem K'.elim_stack (a b c d) : K'.elim a b c d K'.stack = d := rfl
 
-attribute [eqns K'.elim_main K'.elim_rev K'.elim_aux K'.elim_stack] K'.elim
 attribute [simp] K'.elim
 
 @[simp]
@@ -1463,10 +1461,10 @@ theorem head_main_ok {q s L} {c d : List Γ'} :
     (move_ok (by decide)
           (splitAtPred_eq _ _ (trNat L.headI) o (trList L.tail) (trNat_natEnd _) _)).trans
       (TransGen.head rfl (TransGen.head rfl _))
-  · cases L <;> simp
+  · cases L <;> simp [o]
   simp only [TM2.step, Option.mem_def, TM2.stepAux, elim_update_main, elim_rev, elim_update_rev,
     Function.update_same, trList]
-  rw [if_neg (show o ≠ some Γ'.consₗ by cases L <;> simp)]
+  rw [if_neg (show o ≠ some Γ'.consₗ by cases L <;> simp [o])]
   refine' (clear_ok (splitAtPred_eq _ _ _ none [] _ ⟨rfl, rfl⟩)).trans _
   · exact fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)
   convert unrev_ok using 2; simp [List.reverseAux_eq]
@@ -1600,7 +1598,7 @@ theorem trNormal_respects (c k v s) :
     let o : Option Γ' := List.casesOn v none fun _ _ => some Γ'.cons
     refine' ⟨_, ⟨o, rfl⟩, _⟩; convert clear_ok _ using 2; simp; rfl; swap
     refine' splitAtPred_eq _ _ (trNat v.headI) _ _ (trNat_natEnd _) _
-    cases v <;> simp
+    cases v <;> simp [o]
   | cons f fs IHf _ =>
     obtain ⟨c, h₁, h₂⟩ := IHf (Cont.cons₁ fs v k) v none
     refine' ⟨c, h₁, TransGen.head rfl <| (move_ok (by decide) (splitAtPred_false _)).trans _⟩

@@ -41,7 +41,8 @@ which removes some boilerplate code.
 
 noncomputable section
 
-open Classical Nat LocalRing Padic
+open scoped Classical
+open Nat LocalRing Padic
 
 namespace PadicInt
 
@@ -109,8 +110,8 @@ theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     Int.cast_mul, zero_mul, add_zero] at this
   push_cast
   rw [mul_right_comm, mul_assoc, ← this]
-  suffices rdcp : r.den.Coprime p
-  · rw [rdcp.gcd_eq_one]
+  suffices rdcp : r.den.Coprime p by
+    rw [rdcp.gcd_eq_one]
     simp only [mul_one, cast_one, sub_self]
   apply Coprime.symm
   apply (coprime_or_dvd_of_prime hp_prime.1 _).resolve_right
@@ -368,7 +369,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
     congr
     simp only [hc]
   rw [show (x - (appr x n : ℤ_[p])).valuation = ((p : ℤ_[p]) ^ n * c).valuation by rw [hc]]
-  rw [valuation_p_pow_mul _ _ hc', add_sub_cancel', _root_.pow_succ', ← mul_sub]
+  rw [valuation_p_pow_mul _ _ hc', add_sub_cancel_left, _root_.pow_succ', ← mul_sub]
   apply mul_dvd_mul_left
   obtain hc0 | hc0 := eq_or_ne c.valuation.natAbs 0
   · simp only [hc0, mul_one, _root_.pow_zero]
@@ -532,7 +533,7 @@ theorem nthHomSeq_one : nthHomSeq f_compat 1 ≈ 1 := by
   change _ < _ at hε
   use 1
   intro j hj
-  haveI : Fact (1 < p ^ j) := ⟨Nat.one_lt_pow _ _ (by linarith) hp_prime.1.one_lt⟩
+  haveI : Fact (1 < p ^ j) := ⟨Nat.one_lt_pow _ _ (by omega) hp_prime.1.one_lt⟩
   suffices (ZMod.cast (1 : ZMod (p ^ j)) : ℚ) = 1 by simp [nthHomSeq, nthHom, this, hε]
   rw [ZMod.cast_eq_val, ZMod.val_one, Nat.cast_one]
 #align padic_int.nth_hom_seq_one PadicInt.nthHomSeq_one

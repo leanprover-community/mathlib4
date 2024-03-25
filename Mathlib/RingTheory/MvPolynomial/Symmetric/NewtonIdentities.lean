@@ -233,9 +233,9 @@ theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
 theorem sum_antidiagonal_card_esymm_psum_eq_zero :
     ∑ a in antidiagonal (Fintype.card σ), (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0 := by
   let k := Fintype.card σ
-  suffices : (-1 : MvPolynomial σ R) ^ (k + 1) *
-    ∑ a in antidiagonal k, (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0
-  · simpa using this
+  suffices (-1 : MvPolynomial σ R) ^ (k + 1) *
+      ∑ a in antidiagonal k, (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0 by
+    simpa using this
   simp [← sum_filter_add_sum_filter_not (antidiagonal k) (fun a ↦ a.fst < k), ← mul_esymm_eq_sum,
     mul_add, ← mul_assoc, ← pow_add, mul_comm ↑k (esymm σ R k)]
 
@@ -252,7 +252,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
   have sub_both_sides := congrArg (· - (-1 : MvPolynomial σ R) ^ (k + 1) *
     ∑ a in ((antidiagonal k).filter (fun a ↦ a.fst < k)).filter (fun a ↦ 0 < a.fst),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd) hesymm
-  simp only [left_distrib, add_sub_cancel'] at sub_both_sides
+  simp only [left_distrib, add_sub_cancel_left] at sub_both_sides
   have sub_both_sides := congrArg ((-1 : MvPolynomial σ R) ^ (k + 1) * ·) sub_both_sides
   simp only [mul_sub_left_distrib, ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k + 1, rfl⟩, one_mul,
     not_le, lt_one_iff, filter_filter (fun a : ℕ × ℕ ↦ a.fst < k) (fun a ↦ ¬0 < a.fst)]

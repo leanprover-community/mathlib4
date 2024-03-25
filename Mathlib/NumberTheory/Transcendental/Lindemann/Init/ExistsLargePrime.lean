@@ -52,8 +52,8 @@ theorem linear_independent_exp_exists_prime (n : ℕ) (a : ℝ) (c : ℝ) :
   obtain ⟨n0, h⟩ := linear_independent_exp_exists_prime_nat ⌈|a|⌉.natAbs ⌈|c|⌉.natAbs
   obtain ⟨p, hp, prime_p⟩ := (max (n + 1) n0).exists_infinite_primes
   use p, (le_max_left _ _).trans hp, prime_p
-  have : a * c ^ p ≤ ⌈|a|⌉ * (⌈|c|⌉ : ℝ) ^ p
-  · refine' (le_abs_self _).trans _
+  have : a * c ^ p ≤ ⌈|a|⌉ * (⌈|c|⌉ : ℝ) ^ p := by
+    refine' (le_abs_self _).trans _
     rw [_root_.abs_mul, _root_.abs_pow]
     refine'
       mul_le_mul (Int.le_ceil _) (pow_le_pow_left (abs_nonneg _) (Int.le_ceil _) _)

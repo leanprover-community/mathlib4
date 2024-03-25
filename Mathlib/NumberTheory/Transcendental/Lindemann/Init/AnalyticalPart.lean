@@ -43,11 +43,11 @@ theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
   have h :
     s * p.sumIderiv.eval (x • s) -
         (derivative (R := ℂ) (sumIderiv p)).eval (x • s) * s =
-      s * p.eval (x • s)
-  · conv_lhs =>
+      s * p.eval (x • s) := by
+    conv_lhs =>
       congr
       rw [sumIderiv_eq_self_add, sumIderiv_derivative]
-    rw [mul_comm _ s, eval_add, mul_add, add_sub_cancel]
+    rw [mul_comm _ s, eval_add, mul_add, add_sub_cancel_right]
   rw [← mul_neg, neg_add', neg_mul, neg_neg, h, mul_left_comm]
   any_goals apply Differentiable.differentiableAt
   rotate_left 5; apply @Differentiable.real_of_complex fun c : ℂ => exp (-(c * s))
@@ -156,13 +156,13 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
             Complex.abs (n • exp r - q • aeval r gp : ℂ) ≤ c ^ q / (q - 1)! := by
   let p' q := (X ^ (q - 1) * p ^ q).map (algebraMap ℤ ℂ)
   have : ∀ s : ℂ, ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc (0 : ℝ) 1,
-      Complex.abs ((p' q).eval (x • s)) ≤ c ^ q
-  · intro s; dsimp only
+      Complex.abs ((p' q).eval (x • s)) ≤ c ^ q := by
+    intro s; dsimp only [p']
     simp_rw [Polynomial.map_mul, Polynomial.map_pow, map_X, eval_mul, eval_pow, eval_X, map_mul,
       Complex.abs_pow, real_smul, map_mul, abs_ofReal, ← eval₂_eq_eval_map, ← aeval_def]
     have : Bornology.IsBounded
-        ((fun x : ℝ => max (x * abs s) 1 * Complex.abs (aeval (x * s) p)) '' Set.Ioc 0 1)
-    · have h :
+        ((fun x : ℝ => max (x * abs s) 1 * Complex.abs (aeval (x * s) p)) '' Set.Ioc 0 1) := by
+      have h :
         (fun x : ℝ => max (x * abs s) 1 * Complex.abs (aeval (↑x * s) p)) '' Set.Ioc 0 1 ⊆
           (fun x : ℝ => max (x * abs s) 1 * Complex.abs (aeval (↑x * s) p)) '' Set.Icc 0 1 :=
         Set.image_subset _ Set.Ioc_subset_Icc_self
@@ -185,8 +185,8 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
   choose c' c'0 Pp'_le using fun r ↦ P_le p' r (this r)
   let c :=
     if h : ((p.aroots ℂ).map c').toFinset.Nonempty then ((p.aroots ℂ).map c').toFinset.max' h else 0
-  have hc : ∀ x ∈ p.aroots ℂ, c' x ≤ c
-  · intro x hx; dsimp only
+  have hc : ∀ x ∈ p.aroots ℂ, c' x ≤ c := by
+    intro x hx; dsimp only [c]
     split_ifs with h
     · apply Finset.le_max'; rw [Multiset.mem_toFinset]
       refine' Multiset.mem_map_of_mem _ hx
@@ -226,8 +226,8 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
         (X ^ (q - 1) *
           (C (map (algebraMap ℤ ℂ) p).leadingCoeff *
               (((p.aroots ℂ).erase r).map fun a : ℂ => X - C a).prod) ^
-            q)
-  · rw [mul_left_comm, ← mul_pow, mul_left_comm (_ - _),
+            q) := by
+    rw [mul_left_comm, ← mul_pow, mul_left_comm (_ - _),
       Multiset.prod_map_erase (f := fun a =>  X - C a) hr]
     have : Multiset.card (p.aroots ℂ) = (p.map (algebraMap ℤ ℂ)).natDegree :=
       splits_iff_card_roots.mp (IsAlgClosed.splits _)

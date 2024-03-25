@@ -214,11 +214,12 @@ theorem sumIderiv_sl' [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq
     exact fun h => X_sub_C_ne_zero r (pow_eq_zero h)
   let c k := if hk : q ≤ k then (iterate_derivative_large A p q hk).choose else 0
   have c_le : ∀ k, (c k).natDegree ≤ p.natDegree - k := fun k => by
-    dsimp only; split_ifs with h; · exact (iterate_derivative_large A p q h).choose_spec.1
-    rw [natDegree_zero]; exact Nat.zero_le _
+    dsimp only [c]; split_ifs with h
+    · exact (iterate_derivative_large A p q h).choose_spec.1
+    · rw [natDegree_zero]; exact Nat.zero_le _
   have hc : ∀ (k) (_ : q ≤ k) (r : A), aeval r ((derivative^[k]) p) = q ! • aeval r (c k) :=
     fun k hk => by
-      simp_rw [dif_pos hk]
+      simp_rw [c, dif_pos hk]
       exact (iterate_derivative_large A p q hk).choose_spec.2
   refine' ⟨∑ x : ℕ in Ico q (p.natDegree + 1), c x, _, _⟩
   · refine' (natDegree_sum_le _ _).trans _

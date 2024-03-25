@@ -25,7 +25,6 @@ spectral theorem, diagonalization theorem
 namespace Matrix
 
 variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
-
 variable {A : Matrix n n 𝕜}
 
 open scoped BigOperators
@@ -35,7 +34,6 @@ namespace IsHermitian
 section DecidableEq
 
 variable [DecidableEq n]
-
 variable (hA : A.IsHermitian)
 
 /-- The eigenvalues of a hermitian matrix, indexed by `Fin (Fintype.card n)` where `n` is the index
@@ -180,8 +178,8 @@ end DecidableEq
 lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
     ∃ (v : n → 𝕜) (t : ℝ), t ≠ 0 ∧ v ≠ 0 ∧ A *ᵥ v = t • v := by
   classical
-  have : hA.eigenvalues ≠ 0
-  · contrapose! h_ne
+  have : hA.eigenvalues ≠ 0 := by
+    contrapose! h_ne
     have := hA.spectral_theorem'
     rwa [h_ne, Pi.comp_zero, IsROrC.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
       diagonal_zero, mul_zero, zero_mul] at this

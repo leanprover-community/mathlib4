@@ -271,10 +271,11 @@ theorem minpoly_inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = min
   conv in y => rw [← IntermediateField.AdjoinSimple.algebraMap_gen F y]
   rw [AlgEquiv.liftNormal_commutes]
   apply congr_arg
-  simp_rw [AlgEquiv.trans_apply, ← fd.symm_apply_eq,
+  simp_rw [f', fc, fd, AlgEquiv.trans_apply, ← fd.symm_apply_eq,
     IntermediateField.adjoinRootEquivAdjoin_symm_apply_gen]
-  have {px py} (h : px = py) : AdjoinRoot.root py = congr_f h (AdjoinRoot.root px)
-  · subst h; rfl
+  rw [IntermediateField.adjoinRootEquivAdjoin_symm_apply_gen]
+  have {px py} (h : px = py) : AdjoinRoot.root py = congr_f h (AdjoinRoot.root px) := by
+    subst h; rfl
   exact this h
 
 #align gal_conj_classes.minpoly.inj GalConjClasses.minpoly_inj

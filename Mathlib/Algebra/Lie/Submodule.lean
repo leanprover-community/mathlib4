@@ -38,9 +38,7 @@ universe u v w w₁ w₂
 section LieSubmodule
 
 variable (R : Type u) (L : Type v) (M : Type w)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-
 variable [LieRingModule L M] [LieModule R L M]
 
 /-- A Lie submodule of a Lie module is a submodule that is closed under the Lie bracket.
@@ -66,6 +64,9 @@ instance : AddSubgroupClass (LieSubmodule R L M) M where
   zero_mem N := N.zero_mem'
   neg_mem {N} x hx := show -x ∈ N.toSubmodule from neg_mem hx
 
+instance instSmulMemClass : SMulMemClass (LieSubmodule R L M) R M where
+  smul_mem {s} c _ h := s.smul_mem'  c h
+
 /-- The zero module is a Lie submodule of any Lie module. -/
 instance : Zero (LieSubmodule R L M) :=
   ⟨{ (0 : Submodule R M) with
@@ -86,7 +87,7 @@ theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl
 #align lie_submodule.coe_to_submodule LieSubmodule.coe_toSubmodule
 
--- Porting note: `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
+-- Porting note (#10618): `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
 -- but `dsimp` can't.
 @[simp, nolint simpNF]
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
@@ -117,7 +118,7 @@ protected theorem zero_mem : (0 : M) ∈ N :=
   zero_mem N
 #align lie_submodule.zero_mem LieSubmodule.zero_mem
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem mk_eq_zero {x} (h : x ∈ N) : (⟨x, h⟩ : N) = 0 ↔ x = 0 :=
   Subtype.ext_iff_val
 #align lie_submodule.mk_eq_zero LieSubmodule.mk_eq_zero
@@ -337,11 +338,8 @@ end LieSubmodule
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-
 variable [LieRingModule L M] [LieModule R L M]
-
 variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 section LatticeStructure
@@ -533,7 +531,7 @@ theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {C : (x : M) → (x
   · exact ⟨_, hN _ _ hx⟩
   · exact ⟨_, h0⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
-    refine' ⟨_, hadd _ _ _ _ Cx Cy⟩
+    exact ⟨_, hadd _ _ _ _ Cx Cy⟩
 
 theorem disjoint_iff_coe_toSubmodule :
     Disjoint N N' ↔ Disjoint (N : Submodule R M) (N' : Submodule R M) := by
@@ -553,13 +551,16 @@ theorem iSup_eq_top_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R 
     ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
   rw [← iSup_coe_toSubmodule, ← top_coeSubmodule (L := L), coe_toSubmodule_eq_iff]
 
+instance : Add (LieSubmodule R L M) where add := Sup.sup
+
+instance : Zero (LieSubmodule R L M) where zero := ⊥
+
 instance : AddCommMonoid (LieSubmodule R L M) where
-  add := (· ⊔ ·)
-  add_assoc _ _ _ := sup_assoc
-  zero := ⊥
-  zero_add _ := bot_sup_eq
-  add_zero _ := sup_bot_eq
-  add_comm _ _ := sup_comm
+  add_assoc := sup_assoc
+  zero_add := bot_sup_eq
+  add_zero := sup_bot_eq
+  add_comm := sup_comm
+  nsmul := nsmulRec
 
 @[simp]
 theorem add_eq_sup : N + N' = N ⊔ N' :=
@@ -804,11 +805,8 @@ end LieSubmodule
 section LieSubmoduleMapAndComap
 
 variable {R : Type u} {L : Type v} {L' : Type w₂} {M : Type w} {M' : Type w₁}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable [AddCommGroup M'] [Module R M'] [LieRingModule L M'] [LieModule R L M']
 
 namespace LieSubmodule
@@ -1350,13 +1348,9 @@ end LieSubmoduleMapAndComap
 namespace LieModuleHom
 
 variable {R : Type u} {L : Type v} {M : Type w} {N : Type w₁}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable [AddCommGroup N] [Module R N] [LieRingModule L N] [LieModule R L N]
-
 variable (f : M →ₗ⁅R,L⁆ N)
 
 /-- The kernel of a morphism of Lie algebras, as an ideal in the domain. -/
@@ -1442,11 +1436,8 @@ end LieModuleHom
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable (N : LieSubmodule R L M)
 
 @[simp]
@@ -1489,7 +1480,6 @@ end LieSubmodule
 section TopEquiv
 
 variable {R : Type u} {L : Type v}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- The natural equivalence between the 'top' Lie subalgebra and the enclosing Lie algebra.

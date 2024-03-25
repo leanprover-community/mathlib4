@@ -21,8 +21,8 @@ theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algeb
   have :
     (fun x : S => k ^ e • aeval x q) =
       (fun x => aeval x (∑ i in range (e + 1), monomial i (k' ^ i * k ^ (e - i) * q.coeff i))) ∘
-        fun x => p.leadingCoeff • x
-  · funext x; rw [Function.comp_apply]
+        fun x => p.leadingCoeff • x := by
+    funext x; rw [Function.comp_apply]
     simp_rw [map_sum, aeval_eq_sum_range' (Nat.lt_add_one_iff.mpr he), aeval_monomial, smul_sum]
     refine' sum_congr rfl fun i hi => _
     rw [← Algebra.smul_def, smul_pow, smul_smul, smul_smul, mul_comm (_ * _) (_ ^ _), ← mul_assoc,
@@ -30,8 +30,8 @@ theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algeb
       add_tsub_cancel_of_le (Nat.lt_add_one_iff.mp (mem_range.mp hi))]
   rw [this, ← Multiset.map_map _ fun x => p.leadingCoeff • x]
   have : Multiset.card ((p.aroots S).map fun x => p.leadingCoeff • x) =
-      Fintype.card (Fin (Multiset.card (p.aroots S)))
-  · rw [Multiset.card_map, Fintype.card_fin]
+      Fintype.card (Fin (Multiset.card (p.aroots S))) := by
+    rw [Multiset.card_map, Fintype.card_fin]
   rw [← MvPolynomial.symmetricSubalgebra.aevalMultiset_sumPolynomial _ _ this,
     ← MvPolynomial.symmetricSubalgebra.scaleAEvalRoots_eq_aevalMultiset]
   exact ⟨_, rfl⟩

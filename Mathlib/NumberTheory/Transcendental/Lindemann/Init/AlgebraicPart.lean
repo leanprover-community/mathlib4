@@ -231,7 +231,6 @@ theorem ratCoeffEquiv_apply_apply (x : ratCoeff s) (i : K s) :
 theorem support_ratCoeffEquiv (x : ratCoeff s) :
     (ratCoeffEquiv s x).support = (x : AddMonoidAlgebra (K s) (K s)).support := by
   simp [Finsupp.support_mapRange_of_injective _ _ (AlgEquiv.injective _)]
-  rfl -- TODO better simps lemma
 #align support_rat_coeff_equiv support_ratCoeffEquiv
 
 section
@@ -556,35 +555,35 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
       (0 : GalConjClasses ℚ (K s)) ∉ q) (w' : GalConjClasses ℚ (K s) → ℚ),
       (w + ∑ c in q, w' c • ∑ x in c.orbit.toFinset, exp (algebraMap (K s) ℂ x) : ℂ) = 0 := by
   let V := ∏ f : Gal s, AddMonoidAlgebra.domCongrAut ℚ _ f.toAddEquiv x
-  have hV : V ∈ mapDomainFixed s ℚ
-  · intro f; dsimp only
+  have hV : V ∈ mapDomainFixed s ℚ := by
+    intro f; dsimp only [V]
     rw [map_prod]; simp_rw [← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
     exact
       (Group.mulLeft_bijective f).prod_comp fun g =>
         AddMonoidAlgebra.domCongrAut ℚ _ g.toAddEquiv x
-  have V0 : V ≠ 0
-  · dsimp only; rw [prod_ne_zero_iff]; intro f _hf
+  have V0 : V ≠ 0 := by
+    dsimp only [V]; rw [prod_ne_zero_iff]; intro f _hf
     rwa [AddEquivClass.map_ne_zero_iff]
-  have V_ker : V ∈ RingHom.ker (Eval s ℚ)
-  · dsimp only
+  have V_ker : V ∈ RingHom.ker (Eval s ℚ) := by
+    dsimp only [V]
     rw [← mul_prod_erase (univ : Finset (Gal s)) _ (mem_univ 1)]
     erw [map_one]
     rw [AlgEquiv.one_apply]
     exact Ideal.mul_mem_right _ _ x_ker
   set V' := toConjAlgEquiv s ℚ ⟨V, hV⟩ with V'_def
-  have V'0 : V' ≠ 0
-  · dsimp only; rw [AddEquivClass.map_ne_zero_iff]
+  have V'0 : V' ≠ 0 := by
+    dsimp only [V']; rw [AddEquivClass.map_ne_zero_iff]
     exact fun h => absurd (Subtype.mk.inj h) V0
   obtain ⟨i, hi⟩ := Finsupp.support_nonempty_iff.mpr V'0
   set V'' := V' * Finsupp.single (-i) (1 : ℚ) with V''_def
-  have V''0 : V'' ≠ 0
-  · have : NoZeroDivisors (GalConjClasses ℚ (K s) →₀ ℚ) := IsDomain.to_noZeroDivisors _
+  have V''0 : V'' ≠ 0 := by
+    have : NoZeroDivisors (GalConjClasses ℚ (K s) →₀ ℚ) := IsDomain.to_noZeroDivisors _
     rw [V''_def]
     refine' mul_ne_zero V'0 fun h => _
     rw [Finsupp.single_eq_zero] at h
     exact one_ne_zero h
-  have hV'' : V'' 0 ≠ 0
-  · rw [V''_def, ← V'.sum_single, Finsupp.sum, ← add_sum_erase _ _ hi, add_mul, sum_mul,
+  have hV'' : V'' 0 ≠ 0 := by
+    rw [V''_def, ← V'.sum_single, Finsupp.sum, ← add_sum_erase _ _ hi, add_mul, sum_mul,
       Finsupp.add_apply]
     convert_to
       ((Finsupp.single i (V' i) * Finsupp.single (-i) 1 : GalConjClasses ℚ (K s) →₀ ℚ) 0 + 0) ≠ 0
@@ -600,8 +599,8 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
     · rwa [Finsupp.mem_support_iff] at hi
     · exact one_ne_zero
   have zero_mem : (0 : GalConjClasses ℚ (K s)) ∈ V''.support := by rwa [Finsupp.mem_support_iff]
-  have Eval_V'' : Eval s ℚ ((toConjAlgEquiv s ℚ).symm V'') = 0
-  · dsimp only
+  have Eval_V'' : Eval s ℚ ((toConjAlgEquiv s ℚ).symm V'') = 0 := by
+    dsimp only [V'']
     rw [map_mul, Subalgebra.coe_mul, map_mul, AlgEquiv.symm_apply_apply, Subtype.coe_mk]
     rw [RingHom.mem_ker] at V_ker
     rw [V_ker, MulZeroClass.zero_mul]
@@ -620,15 +619,15 @@ theorem linear_independent_exp_aux1 (s : Finset ℂ) (x : AddMonoidAlgebra (K s)
       (0 : GalConjClasses ℚ (K s)) ∉ q) (w' : GalConjClasses ℚ (K s) → ℚ),
       (w + ∑ c in q, w' c • ∑ x in c.orbit.toFinset, exp (algebraMap (K s) ℂ x) : ℂ) = 0 := by
   let U := ∏ f : Gal s, AddMonoidAlgebra.mapRangeAlgAut f x
-  have hU : ∀ f : Gal s, AddMonoidAlgebra.mapRangeAlgAut f U = U
-  · intro f; dsimp only
+  have hU : ∀ f : Gal s, AddMonoidAlgebra.mapRangeAlgAut f U = U := by
+    intro f; dsimp only [U]
     simp_rw [map_prod, ← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
     exact (Group.mulLeft_bijective f).prod_comp fun g => AddMonoidAlgebra.mapRangeAlgAut g x
-  have U0 : U ≠ 0
-  · dsimp only; rw [prod_ne_zero_iff]; intro f _hf
+  have U0 : U ≠ 0 := by
+    dsimp only [U]; rw [prod_ne_zero_iff]; intro f _hf
     rwa [AddEquivClass.map_ne_zero_iff]
-  have U_ker : U ∈ RingHom.ker (Eval s (K s))
-  · suffices
+  have U_ker : U ∈ RingHom.ker (Eval s (K s)) := by
+    suffices
       (fun f : Gal s => AddMonoidAlgebra.mapRangeAlgAut f x) 1 *
           ∏ f : Gal s in univ.erase 1, AddMonoidAlgebra.mapRangeAlgAut f x ∈
             RingHom.ker (Eval s (K s)) by
@@ -636,24 +635,24 @@ theorem linear_independent_exp_aux1 (s : Finset ℂ) (x : AddMonoidAlgebra (K s)
       exact (mul_prod_erase (univ : Finset (Gal s)) _ (mem_univ _)).symm
     dsimp only
     rw [map_one]; exact Ideal.mul_mem_right _ _ x_ker
-  have U_mem : ∀ i : K s, U i ∈ IntermediateField.fixedField (⊤ : Subgroup (K s ≃ₐ[ℚ] K s))
-  · intro i; dsimp [IntermediateField.fixedField, FixedPoints.intermediateField]
+  have U_mem : ∀ i : K s, U i ∈ IntermediateField.fixedField (⊤ : Subgroup (K s ≃ₐ[ℚ] K s)) := by
+    intro i; dsimp [IntermediateField.fixedField, FixedPoints.intermediateField]
     rintro ⟨f, hf⟩; rw [Subgroup.smul_def, Subgroup.coe_mk]
-    replace hU : AddMonoidAlgebra.mapRangeAlgAut f U i = U i; · rw [hU f]
+    replace hU : AddMonoidAlgebra.mapRangeAlgAut f U i = U i := by rw [hU f]
     rwa [AddMonoidAlgebra.mapRangeAlgAut_apply, AddMonoidAlgebra.mapRangeAlgEquiv_apply,
       Finsupp.mapRange_apply] at hU
-  replace U_mem : U ∈ ratCoeff s
-  · intro i; specialize U_mem i
+  replace U_mem : U ∈ ratCoeff s := by
+    intro i; specialize U_mem i
     have := ((@IsGalois.tfae ℚ _ (K s) _ _ _).out 0 1).mp (by infer_instance)
     rwa [this] at U_mem
   let U' := ratCoeffEquiv s ⟨U, U_mem⟩
-  have U'0 : U' ≠ 0
-  · dsimp only
+  have U'0 : U' ≠ 0 := by
+    dsimp only [U']
     rw [map_ne_zero_iff, ZeroMemClass.zero_def]
     exact fun h => absurd (Subtype.mk.inj h) U0
     exact AlgEquiv.injective (ratCoeffEquiv s)
-  have U'_ker : U' ∈ RingHom.ker (Eval s ℚ)
-  · dsimp only
+  have U'_ker : U' ∈ RingHom.ker (Eval s ℚ) := by
+    dsimp only [U']
     rw [RingHom.mem_ker, ← Eval_ratCoeff]
     rwa [RingHom.mem_ker] at U_ker
   exact linear_independent_exp_aux2 s U' U'0 U'_ker
@@ -678,22 +677,22 @@ theorem linear_independent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral 
       (w + ∑ c in q, w' c • ∑ x in c.orbit.toFinset, exp (algebraMap (K (range u v)) ℂ x) : ℂ) =
         0 := by
   let s := range u v
-  have hs : ∀ x ∈ s, IsIntegral ℚ x
-  · intro x hx
+  have hs : ∀ x ∈ s, IsIntegral ℚ x := by
+    intro x hx
     cases' mem_union.mp hx with hxu hxv
     · obtain ⟨i, _, rfl⟩ := mem_image.mp hxu
       exact hu i
     · obtain ⟨i, _, rfl⟩ := mem_image.mp hxv
       exact hv i
-  have u_mem : ∀ i, u i ∈ K' s
-  · intro i
+  have u_mem : ∀ i, u i ∈ K' s := by
+    intro i
     apply IntermediateField.subset_adjoin
     rw [mem_rootSet, map_prod, prod_eq_zero_iff]
     exact
       ⟨poly_ne_zero s hs, u i, mem_union_left _ (mem_image.mpr ⟨i, mem_univ _, rfl⟩),
         minpoly.aeval _ _⟩
-  have v_mem : ∀ i, v i ∈ K' s
-  · intro i
+  have v_mem : ∀ i, v i ∈ K' s := by
+    intro i
     apply IntermediateField.subset_adjoin
     rw [mem_rootSet, map_prod, prod_eq_zero_iff]
     exact
@@ -703,8 +702,8 @@ theorem linear_independent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral 
   let v' : ∀ _, K s := fun i : ι => Lift s ⟨v i, v_mem i⟩
   have u'_inj : Function.Injective u' := fun i j hij =>
     u_inj (Subtype.mk.inj ((Lift s).injective hij))
-  replace h : ∑ i, algebraMap (K s) ℂ (v' i) * exp (algebraMap (K s) ℂ (u' i)) = 0
-  · simp_rw [algebraMap_K_apply, AlgEquiv.symm_apply_apply, ← h]
+  replace h : ∑ i, algebraMap (K s) ℂ (v' i) * exp (algebraMap (K s) ℂ (u' i)) = 0 := by
+    simp_rw [algebraMap_K_apply, u', v', AlgEquiv.symm_apply_apply, ← h]
   let f : AddMonoidAlgebra (K s) (K s) :=
     Finsupp.onFinset (image u' univ)
       (fun x =>
@@ -712,18 +711,18 @@ theorem linear_independent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral 
           v' (u'_inj.invOfMemRange ⟨x, mem_image_univ_iff_mem_range.mp hx⟩)
         else 0)
       fun x => by contrapose!; intro hx; rw [dif_neg hx]
-  replace hf : Eval s (K s) f = 0
-  · rw [Eval_apply, ← h, Finsupp.onFinset_sum _ fun a => _]; swap; · intro _; rw [zero_smul]
+  replace hf : Eval s (K s) f = 0 := by
+    rw [Eval_apply, ← h, Finsupp.onFinset_sum _ fun a => _]; swap; · intro _; rw [zero_smul]
     rw [sum_image, sum_congr rfl]; swap; · exact fun i _ j _ hij => u'_inj hij
     intro x _
     rw [dif_pos, u'_inj.right_inv_of_invOfMemRange]; · rfl
     exact mem_image_of_mem _ (mem_univ _)
-  have f0 : f ≠ 0
-  · rw [Ne.def, Function.funext_iff] at v0; push_neg at v0
+  have f0 : f ≠ 0 := by
+    rw [Ne.def, Function.funext_iff] at v0; push_neg at v0
     cases' v0 with i hi
     rw [Pi.zero_apply] at hi
-    have h : f (u' i) ≠ 0
-    · rwa [Finsupp.onFinset_apply, dif_pos, u'_inj.right_inv_of_invOfMemRange, Ne.def,
+    have h : f (u' i) ≠ 0 := by
+      rwa [Finsupp.onFinset_apply, dif_pos, u'_inj.right_inv_of_invOfMemRange, Ne.def,
         map_eq_zero_iff, ← ZeroMemClass.coe_eq_zero]
       exact AlgEquiv.injective (Lift s)
       exact mem_image_of_mem _ (mem_univ _)
@@ -743,17 +742,17 @@ theorem linear_independent_exp_aux'' (u : ι → ℂ) (hu : ∀ i, IsIntegral �
         0 := by
   obtain ⟨w, w0, q, hq, w', h⟩ := linear_independent_exp_aux_rat u hu u_inj v hv v0 h
   let N := w.den * ∏ c in q, (w' c).den
-  have wN0 : (w * N).num ≠ 0
-  · refine' Rat.num_ne_zero_of_ne_zero (mul_ne_zero w0 _); dsimp only
+  have wN0 : (w * N).num ≠ 0 := by
+    refine' Rat.num_ne_zero_of_ne_zero (mul_ne_zero w0 _); dsimp only
     rw [Nat.cast_ne_zero, mul_ne_zero_iff, prod_ne_zero_iff]
     exact ⟨Rat.den_nz _, fun c _hc => Rat.den_nz _⟩
   use (w * N).num, wN0, q, hq, fun c => (w' c * N).num
-  have hw : ((w * N).num : ℚ) = w * N
-  · dsimp only
+  have hw : ((w * N).num : ℚ) = w * N := by
+    dsimp only [N]
     rw [← Rat.den_eq_one_iff, Nat.cast_mul, ← mul_assoc, Rat.mul_den_eq_num]
     norm_cast
-  have hw' : ∀ c ∈ q, ((w' c * N).num : ℚ) = w' c * N
-  · intro c hc; dsimp only
+  have hw' : ∀ c ∈ q, ((w' c * N).num : ℚ) = w' c * N := by
+    intro c hc; dsimp only [N]
     rw [← Rat.den_eq_one_iff, ← mul_prod_erase _ _ hc, mul_left_comm, Nat.cast_mul, ← mul_assoc,
       Rat.mul_den_eq_num]
     norm_cast
@@ -795,8 +794,9 @@ theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ
     ((fun c ↦ w' c • ((c.minpoly.aroots ℂ).map exp).sum) ·),
     sum_coe_sort _ (fun c ↦ w' c • ((c.minpoly.aroots ℂ).map exp).sum)]
   refine' sum_congr rfl fun c _hc => _
-  have : c.minpoly.aroots ℂ = (c.minpoly.aroots (K (range u v))).map (algebraMap (K (range u v)) ℂ)
-  · change roots _ = _
+  have : c.minpoly.aroots ℂ =
+      (c.minpoly.aroots (K (range u v))).map (algebraMap (K (range u v)) ℂ) := by
+    change roots _ = _
     rw [← roots_map, Polynomial.map_map, IsScalarTower.algebraMap_eq ℚ (K (range u v)) ℂ]
     rw [splits_map_iff, RingHom.id_comp]; exact c.splits_minpoly
   rw [this, c.aroots_minpoly_eq_orbit_val, Multiset.map_map, sum_eq_multiset_sum]; rfl
