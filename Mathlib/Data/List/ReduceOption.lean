@@ -17,15 +17,11 @@ list of options and unwraps the `some` elements.
 
 open Function
 
-open Nat hiding one_pos
-
-assert_not_exists Set.range
-
 namespace List
 
 universe u v w
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
+variable {α : Type u} {β : Type v}
 
 @[simp]
 theorem reduceOption_cons_of_some (x : α) (l : List (Option α)) :
