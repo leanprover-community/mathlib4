@@ -130,7 +130,7 @@ open scoped Classical
 instance : HasKernels (FdRep k G) := by infer_instance
 
 /-- Schur's Lemma: the dimension of the `Hom`-space between two irreducible representation is `0` if
-they are not isomorphic, and `1` if they are. It applies out of the box. -/
+they are not isomorphic, and `1` if they are. -/
 theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FdRep k G) [Simple V] [Simple W] :
     finrank k (V ⟶ W) = if Nonempty (V ≅ W) then 1 else 0 :=
   CategoryTheory.finrank_hom_simple_simple k V W
