@@ -163,12 +163,12 @@ as a term of `Tropical R` via `trop x`. -/
 def tropRec {F : Tropical R → Sort v} (h : ∀ X, F (trop X)) : ∀ X, F X := fun X => h (untrop X)
 #align tropical.trop_rec Tropical.tropRec
 
-instance [DecidableEq R] : DecidableEq (Tropical R) := fast_instance% fun _ _ =>
+instance [DecidableEq R] : DecidableEq (Tropical R) := fun _ _ =>
   decidable_of_iff _ injective_untrop.eq_iff
 
 section Order
 
-instance instLETropical [LE R] : LE (Tropical R) where le x y := fast_instance% untrop x ≤ untrop y
+instance instLETropical [LE R] : LE (Tropical R) where le x y := untrop x ≤ untrop y
 
 @[simp]
 theorem untrop_le_iff [LE R] {x y : Tropical R} : untrop x ≤ untrop y ↔ x ≤ y :=
@@ -180,7 +180,7 @@ instance decidableLE [LE R] [DecidableRel ((· ≤ ·) : R → R → Prop)] :
   ‹DecidableRel (· ≤ ·)› (untrop x) (untrop y)
 #align tropical.decidable_le Tropical.decidableLE
 
-instance instLTTropical [LT R] : LT (Tropical R) where lt x y := fast_instance% untrop x < untrop y
+instance instLTTropical [LT R] : LT (Tropical R) where lt x y := untrop x < untrop y
 
 @[simp]
 theorem untrop_lt_iff [LT R] {x y : Tropical R} : untrop x < untrop y ↔ x < y :=
@@ -444,7 +444,7 @@ instance instSemigroupTropical [AddSemigroup R] : Semigroup (Tropical R) where
 instance instCommSemigroupTropical [AddCommSemigroup R] : CommSemigroup (Tropical R) := fast_instance%
   { instSemigroupTropical with mul_comm := fun _ _ => untrop_injective (add_comm _ _) }
 
-instance {α : Type*} [SMul α R] : Pow (Tropical R) α where pow x n := fast_instance% trop <| n • untrop x
+instance {α : Type*} [SMul α R] : Pow (Tropical R) α where pow x n := trop <| n • untrop x
 
 @[simp]
 theorem untrop_pow {α : Type*} [SMul α R] (x : Tropical R) (n : α) :

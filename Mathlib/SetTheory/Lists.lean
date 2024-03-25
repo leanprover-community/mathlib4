@@ -256,7 +256,7 @@ theorem of_toList : ∀ {l : Lists α}, IsList l → ofList (toList l) = l
 instance : Inhabited (Lists α) := fast_instance%
   ⟨of' Lists'.nil⟩
 
-instance [DecidableEq α] : DecidableEq (Lists α) := fast_instance% by unfold Lists; infer_instance
+instance [DecidableEq α] : DecidableEq (Lists α) := by unfold Lists; infer_instance
 
 instance [SizeOf α] : SizeOf (Lists α) := fast_instance% by unfold Lists; infer_instance
 
@@ -474,7 +474,7 @@ instance : EmptyCollection (Finsets α) := fast_instance%
 instance : Inhabited (Finsets α) := fast_instance%
   ⟨∅⟩
 
-instance [DecidableEq α] : DecidableEq (Finsets α) := fast_instance% by
+instance [DecidableEq α] : DecidableEq (Finsets α) := by
   unfold Finsets
   -- Porting note: infer_instance does not work for some reason
   exact (Quotient.decidableEq (d := fun _ _ => Lists.Equiv.decidable _ _))

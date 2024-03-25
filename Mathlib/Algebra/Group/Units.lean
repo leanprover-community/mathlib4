@@ -162,7 +162,7 @@ theorem ext_iff {a b : αˣ} : a = b ↔ (a : α) = b :=
 /-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive "Additive units have decidable equality
 if the base `AddMonoid` has deciable equality."]
-instance [DecidableEq α] : DecidableEq αˣ := fast_instance% fun _ _ => decidable_of_iff' _ ext_iff
+instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ ext_iff
 
 @[to_additive (attr := simp)]
 theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=

@@ -176,7 +176,7 @@ theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {s : Multiset α} {
   Quot.induction_on s (fun _ _ => List.Nodup.pmap hf) H
 #align multiset.nodup.pmap Multiset.Nodup.pmap
 
-instance nodupDecidable [DecidableEq α] (s : Multiset α) : Decidable (Nodup s) := fast_instance%
+instance nodupDecidable [DecidableEq α] (s : Multiset α) : Decidable (Nodup s) :=
   Quotient.recOnSubsingleton s fun l => l.nodupDecidable
 #align multiset.nodup_decidable Multiset.nodupDecidable
 

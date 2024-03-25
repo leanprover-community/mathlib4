@@ -806,12 +806,12 @@ end Prod
 
 namespace ULift
 
-instance [Top α] : Top (ULift.{v} α) where top := fast_instance% up ⊤
+instance [Top α] : Top (ULift.{v} α) where top := up ⊤
 
 @[simp] theorem up_top [Top α] : up (⊤ : α) = ⊤ := rfl
 @[simp] theorem down_top [Top α] : down (⊤ : ULift α) = ⊤ := rfl
 
-instance [Bot α] : Bot (ULift.{v} α) where bot := fast_instance% up ⊥
+instance [Bot α] : Bot (ULift.{v} α) where bot := up ⊥
 
 @[simp] theorem up_bot [Bot α] : up (⊥ : α) = ⊥ := rfl
 @[simp] theorem down_bot [Bot α] : down (⊥ : ULift α) = ⊥ := rfl

@@ -481,7 +481,7 @@ theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
 
 
 /-- A `Module` over `ℚ` restricts to a `Module` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [Module ℚ α] : Module NNRat α := fast_instance%
+instance [AddCommMonoid α] [Module ℚ α] : Module NNRat α :=
   Module.compHom α NNRat.coeHom
 
 /-- There can be at most one `Module ℚ E` structure on an additive commutative group. -/

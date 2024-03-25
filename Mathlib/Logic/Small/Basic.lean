@@ -23,7 +23,7 @@ section
 
 open scoped Classical
 
-instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w} { x // P x } := fast_instance%
+instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w} { x // P x } :=
   small_map (equivShrink α).subtypeEquivOfSubtype'
 #align small_subtype small_subtype
 

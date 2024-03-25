@@ -190,7 +190,7 @@ theorem nsmul_coe [OrderedAddCommMonoid α] (n : ℕ) (r : { x : α // 0 ≤ x }
   Nonneg.coeAddMonoidHom.map_nsmul _ _
 #align nonneg.nsmul_coe Nonneg.nsmul_coe
 
-instance one [OrderedSemiring α] : One { x : α // 0 ≤ x } where one := fast_instance% ⟨1, zero_le_one⟩
+instance one [OrderedSemiring α] : One { x : α // 0 ≤ x } where one := ⟨1, zero_le_one⟩
 #align nonneg.has_one Nonneg.one
 
 @[simp, norm_cast]
@@ -253,7 +253,7 @@ theorem mk_pow [OrderedSemiring α] {x : α} (hx : 0 ≤ x) (n : ℕ) :
   rfl
 #align nonneg.mk_pow Nonneg.mk_pow
 
-instance nontrivial [Nontrivial α] [OrderedSemiring α] : Nontrivial { x : α // 0 ≤ x } := fast_instance%
+instance nontrivial [Nontrivial α] [OrderedSemiring α] : Nontrivial { x : α // 0 ≤ x } :=
   pullback_nonzero Subtype.val rfl rfl
 #align nonneg.nontrivial Nonneg.nontrivial
 

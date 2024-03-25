@@ -286,7 +286,7 @@ structure SageError where
 /-- The result of a sage call. -/
 def SageResult := Except SageError SageSuccess
 
-instance : FromJson SageResult where fromJson? j := fast_instance% do
+instance : FromJson SageResult where fromJson? j := do
   if let .ok true := fromJson? <| j.getObjValD "success" then
     return .ok (← fromJson? j)
   else

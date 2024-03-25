@@ -143,7 +143,7 @@ def ofVector : Vector α n → Sym α n :=
 /-- This is the quotient map that takes a list of n elements as an n-tuple and produces an nth
 symmetric power.
 -/
-instance : Coe (Vector α n) (Sym α n) where coe x := fast_instance% ofVector x
+instance : Coe (Vector α n) (Sym α n) where coe x := ofVector x
 
 @[simp]
 theorem ofVector_nil : ↑(Vector.nil : Vector α 0) = (Sym.nil : Sym α 0) :=
@@ -362,7 +362,7 @@ theorem replicate_right_injective {n : ℕ} (h : n ≠ 0) :
     Function.Injective (replicate n : α → Sym α n) := fun _ _ => (replicate_right_inj h).1
 #align sym.replicate_right_injective Sym.replicate_right_injective
 
-instance (n : ℕ) [Nontrivial α] : Nontrivial (Sym α (n + 1)) := fast_instance%
+instance (n : ℕ) [Nontrivial α] : Nontrivial (Sym α (n + 1)) :=
   (replicate_right_injective n.succ_ne_zero).nontrivial
 
 /-- A function `α → β` induces a function `Sym α n → Sym β n` by applying it to every element of

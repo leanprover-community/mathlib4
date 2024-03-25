@@ -91,7 +91,7 @@ protected def Mem (a : α) (o : Part α) : Prop :=
   ∃ h, o.get h = a
 #align part.mem Part.Mem
 
-instance : Membership α (Part α) := fast_instance%
+instance : Membership α (Part α) :=
   ⟨Part.Mem⟩
 
 theorem mem_eq (a : α) (o : Part α) : (a ∈ o) = ∃ h, o.get h = a :=
@@ -123,7 +123,7 @@ def none : Part α :=
   ⟨False, False.rec⟩
 #align part.none Part.none
 
-instance : Inhabited (Part α) := fast_instance%
+instance : Inhabited (Part α) :=
   ⟨none⟩
 
 @[simp]
@@ -252,11 +252,11 @@ theorem some_toOption (a : α) [Decidable (some a).Dom] : (some a).toOption = Op
   dif_pos trivial
 #align part.some_to_option Part.some_toOption
 
-instance noneDecidable : Decidable (@none α).Dom := fast_instance%
+instance noneDecidable : Decidable (@none α).Dom :=
   instDecidableFalse
 #align part.none_decidable Part.noneDecidable
 
-instance someDecidable (a : α) : Decidable (some a).Dom := fast_instance%
+instance someDecidable (a : α) : Decidable (some a).Dom :=
   instDecidableTrue
 #align part.some_decidable Part.someDecidable
 
@@ -345,7 +345,7 @@ theorem ofOption_eq_get {α} (o : Option α) : ofOption o = ⟨_, @Option.get _ 
     · rfl
 #align part.of_option_eq_get Part.ofOption_eq_get
 
-instance : Coe (Option α) (Part α) := fast_instance%
+instance : Coe (Option α) (Part α) :=
   ⟨ofOption⟩
 
 theorem mem_coe {a : α} {o : Option α} : a ∈ (o : Part α) ↔ a ∈ o :=
@@ -627,7 +627,7 @@ theorem bind_le {α} (x : Part α) (f : α → Part β) (y : Part β) :
 #align part.bind_le Part.bind_le
 
 -- Porting note: No MonadFail in Lean4 yet
--- instance : MonadFail Part := fast_instance%
+-- instance : MonadFail Part :=
 --   { Part.monad with fail := fun _ _ => none }
 
 /-- `restrict p o h` replaces the domain of `o` with `p`, and is well defined when
@@ -673,26 +673,26 @@ This section could be moved to a separate file to avoid the import of `Mathlib.A
 -/
 
 @[to_additive]
-instance [One α] : One (Part α) where one := fast_instance% pure 1
+instance [One α] : One (Part α) where one :=  pure 1
 
 @[to_additive]
-instance [Mul α] : Mul (Part α) where mul a b := fast_instance% (· * ·) <$> a <*> b
+instance [Mul α] : Mul (Part α) where mul a b :=  (· * ·) <$> a <*> b
 
 @[to_additive]
-instance [Inv α] : Inv (Part α) where inv := fast_instance% map Inv.inv
+instance [Inv α] : Inv (Part α) where inv :=  map Inv.inv
 
 @[to_additive]
-instance [Div α] : Div (Part α) where div a b := fast_instance% (· / ·) <$> a <*> b
+instance [Div α] : Div (Part α) where div a b :=  (· / ·) <$> a <*> b
 
-instance [Mod α] : Mod (Part α) where mod a b := fast_instance% (· % ·) <$> a <*> b
+instance [Mod α] : Mod (Part α) where mod a b :=  (· % ·) <$> a <*> b
 
-instance [Append α] : Append (Part α) where append a b := fast_instance% (· ++ ·) <$> a <*> b
+instance [Append α] : Append (Part α) where append a b :=  (· ++ ·) <$> a <*> b
 
-instance [Inter α] : Inter (Part α) where inter a b := fast_instance% (· ∩ ·) <$> a <*> b
+instance [Inter α] : Inter (Part α) where inter a b :=  (· ∩ ·) <$> a <*> b
 
-instance [Union α] : Union (Part α) where union a b := fast_instance% (· ∪ ·) <$> a <*> b
+instance [Union α] : Union (Part α) where union a b :=  (· ∪ ·) <$> a <*> b
 
-instance [SDiff α] : SDiff (Part α) where sdiff a b := fast_instance% (· \ ·) <$> a <*> b
+instance [SDiff α] : SDiff (Part α) where sdiff a b :=  (· \ ·) <$> a <*> b
 
 section
 -- Porting note (#10756): new theorems to unfold definitions

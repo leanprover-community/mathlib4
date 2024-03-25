@@ -67,7 +67,7 @@ def discreteEquiv {α : Type u₁} : Discrete α ≃ α where
   right_inv := by aesop_cat
 #align category_theory.discrete_equiv CategoryTheory.discreteEquiv
 
-instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) := fast_instance%
+instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
   discreteEquiv.decidableEq
 
 /-- The "Discrete" category on a type, whose morphisms are equalities.

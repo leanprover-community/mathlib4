@@ -83,7 +83,7 @@ protected theorem nonneg_total : Rat.Nonneg a ∨ Rat.Nonneg (-a) := by
   cases' a with n; exact Or.imp_right neg_nonneg_of_nonpos (le_total 0 n)
 #align rat.nonneg_total Rat.nonneg_total
 
-instance decidableNonneg : Decidable (Rat.Nonneg a) := fast_instance% by
+instance decidableNonneg : Decidable (Rat.Nonneg a) := by
   cases a; unfold Rat.Nonneg; infer_instance
 #align rat.decidable_nonneg Rat.decidableNonneg
 

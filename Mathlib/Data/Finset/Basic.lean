@@ -446,7 +446,7 @@ theorem exists_of_ssubset {s₁ s₂ : Finset α} (h : s₁ ⊂ s₂) : ∃ x �
   Set.exists_of_ssubset h
 #align finset.exists_of_ssubset Finset.exists_of_ssubset
 
-instance isWellFounded_ssubset : IsWellFounded (Finset α) (· ⊂ ·) := fast_instance%
+instance isWellFounded_ssubset : IsWellFounded (Finset α) (· ⊂ ·) :=
   Subrelation.isWellFounded (InvImage _ _) val_lt_iff.2
 #align finset.is_well_founded_ssubset Finset.isWellFounded_ssubset
 
@@ -482,7 +482,7 @@ to the dot notation. -/
 #align finset.nonempty Finset.Nonempty
 
 -- Porting note: Much longer than in Lean3
-instance decidableNonempty {s : Finset α} : Decidable s.Nonempty := fast_instance%
+instance decidableNonempty {s : Finset α} : Decidable s.Nonempty :=
   Quotient.recOnSubsingleton (motive := fun s : Multiset α => Decidable (∃ a, a ∈ s)) s.1
     (fun l : List α =>
       match l with
@@ -634,7 +634,7 @@ theorem isEmpty_coe_sort {s : Finset α} : IsEmpty (s : Type _) ↔ s = ∅ := b
   simpa using @Set.isEmpty_coe_sort α s
 #align finset.is_empty_coe_sort Finset.isEmpty_coe_sort
 
-instance instIsEmpty : IsEmpty (∅ : Finset α) := fast_instance%
+instance instIsEmpty : IsEmpty (∅ : Finset α) :=
   isEmpty_coe_sort.2 rfl
 
 /-- A `Finset` for an empty type is empty. -/
@@ -842,7 +842,7 @@ theorem Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = 
   fun ⟨a, ha⟩ => (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
 #align finset.nonempty.exists_eq_singleton_or_nontrivial Finset.Nonempty.exists_eq_singleton_or_nontrivial
 
-instance instNontrivial [Nonempty α] : Nontrivial (Finset α) := fast_instance%
+instance instNontrivial [Nonempty α] : Nontrivial (Finset α) :=
   ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
 #align finset.nontrivial' Finset.instNontrivial
 

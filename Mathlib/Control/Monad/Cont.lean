@@ -88,7 +88,7 @@ instance : Monad (ContT r m) where
   pure x f := f x
   bind x f g := x fun i => f i g
 
-instance : LawfulMonad (ContT r m) := fast_instance% LawfulMonad.mk'
+instance : LawfulMonad (ContT r m) := LawfulMonad.mk'
   (id_map := by intros; rfl)
   (pure_bind := by intros; ext; rfl)
   (bind_assoc := by intros; ext; rfl)

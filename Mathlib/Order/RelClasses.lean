@@ -485,7 +485,7 @@ theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [hr 
     wf := ⟨fun a => ⟨_, fun y h => (not_rel_of_subsingleton r y a h).elim⟩⟩ }
 #align subsingleton.is_well_order Subsingleton.isWellOrder
 
-instance [Subsingleton α] : IsWellOrder α EmptyRelation := fast_instance%
+instance [Subsingleton α] : IsWellOrder α EmptyRelation :=
   Subsingleton.isWellOrder _
 
 instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder α r where

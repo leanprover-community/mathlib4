@@ -373,7 +373,7 @@ theorem eq_of_pure_mem {a a' : α} (h : a' ∈ pure a) : a' = a :=
   mem_unique h (ret_mem _)
 #align computation.eq_of_ret_mem Computation.eq_of_pure_mem
 
-instance ret_terminates (a : α) : Terminates (pure a) := fast_instance%
+instance ret_terminates (a : α) : Terminates (pure a) :=
   terminates_of_mem (ret_mem _)
 #align computation.ret_terminates Computation.ret_terminates
 
@@ -853,7 +853,7 @@ instance monad : Monad Computation where
   pure := @pure
   bind := @bind
 
-instance : LawfulMonad Computation := fast_instance% LawfulMonad.mk'
+instance : LawfulMonad Computation := LawfulMonad.mk'
   (id_map := @map_id)
   (bind_pure_comp := @bind_pure)
   (pure_bind := @ret_bind)
@@ -889,7 +889,7 @@ theorem exists_of_mem_map {f : α → β} {b : β} {s : Computation α} (h : b �
   exact ⟨a, as, mem_unique (ret_mem _) fb⟩
 #align computation.exists_of_mem_map Computation.exists_of_mem_map
 
-instance terminates_map (f : α → β) (s : Computation α) [Terminates s] : Terminates (map f s) := fast_instance% by
+instance terminates_map (f : α → β) (s : Computation α) [Terminates s] : Terminates (map f s) := by
   rw [← bind_pure]; exact terminates_of_mem (mem_bind (get_mem s) (get_mem (f (get s))))
 #align computation.terminates_map Computation.terminates_map
 

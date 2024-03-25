@@ -90,9 +90,9 @@ theorem down_ssubset_down {s t : SetSemiring α} : SetSemiring.down s ⊂ SetSem
   Iff.rfl
 #align set_semiring.down_ssubset_down SetSemiring.down_ssubset_down
 
-instance : Zero (SetSemiring α) where zero := fast_instance% Set.up (∅ : Set α)
+instance : Zero (SetSemiring α) where zero := Set.up (∅ : Set α)
 
-instance : Add (SetSemiring α) where add s t := fast_instance% Set.up (SetSemiring.down s ∪ SetSemiring.down t)
+instance : Add (SetSemiring α) where add s t := Set.up (SetSemiring.down s ∪ SetSemiring.down t)
 
 -- Porting note (#11036): dot notation no longer works
 instance : AddCommMonoid (SetSemiring α) where
@@ -187,7 +187,7 @@ section One
 
 variable [One α]
 
-instance : One (SetSemiring α) where one := fast_instance% Set.up (1 : Set α)
+instance : One (SetSemiring α) where one := Set.up (1 : Set α)
 
 theorem one_def : (1 : SetSemiring α) = Set.up 1 :=
   rfl

@@ -50,10 +50,10 @@ variable [OrderedSemiring α]
 
 namespace Set.Icc
 
-instance zero : Zero (Icc (0 : α) 1) where zero := fast_instance% ⟨0, left_mem_Icc.2 zero_le_one⟩
+instance zero : Zero (Icc (0 : α) 1) where zero := ⟨0, left_mem_Icc.2 zero_le_one⟩
 #align set.Icc.has_zero Set.Icc.zero
 
-instance one : One (Icc (0 : α) 1) where one := fast_instance% ⟨1, right_mem_Icc.2 zero_le_one⟩
+instance one : One (Icc (0 : α) 1) where one := ⟨1, right_mem_Icc.2 zero_le_one⟩
 #align set.Icc.has_one Set.Icc.one
 
 @[simp, norm_cast]
@@ -187,7 +187,7 @@ end Set.Icc
 
 namespace Set.Ico
 
-instance zero [Nontrivial α] : Zero (Ico (0 : α) 1) where zero := fast_instance% ⟨0, left_mem_Ico.2 zero_lt_one⟩
+instance zero [Nontrivial α] : Zero (Ico (0 : α) 1) where zero := ⟨0, left_mem_Ico.2 zero_lt_one⟩
 #align set.Ico.has_zero Set.Ico.zero
 
 @[simp, norm_cast]
@@ -254,7 +254,7 @@ variable [StrictOrderedSemiring α]
 
 namespace Set.Ioc
 
-instance one [Nontrivial α] : One (Ioc (0 : α) 1) where one := fast_instance% ⟨1, ⟨zero_lt_one, le_refl 1⟩⟩
+instance one [Nontrivial α] : One (Ioc (0 : α) 1) where one := ⟨1, ⟨zero_lt_one, le_refl 1⟩⟩
 #align set.Ioc.has_one Set.Ioc.one
 
 @[simp, norm_cast]
@@ -308,17 +308,17 @@ theorem coe_pow (x : Ioc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = ((x : α) ^ n) :=
   rfl
 #align set.Ioc.coe_pow Set.Ioc.coe_pow
 
-instance semigroup : Semigroup (Ioc (0 : α) 1) := fast_instance%
+instance semigroup : Semigroup (Ioc (0 : α) 1) :=
   fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ioc.semigroup Set.Ioc.semigroup
 
-instance monoid [Nontrivial α] : Monoid (Ioc (0 : α) 1) := fast_instance%
+instance monoid [Nontrivial α] : Monoid (Ioc (0 : α) 1) :=
   fast_instance%
   Subtype.coe_injective.monoid _ coe_one coe_mul coe_pow
 #align set.Ioc.monoid Set.Ioc.monoid
 
-instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioc (0 : α) 1) := fast_instance%
+instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioc (0 : α) 1) :=
   fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ioc.comm_semigroup Set.Ioc.commSemigroup
@@ -330,7 +330,7 @@ instance commMonoid {α : Type*} [StrictOrderedCommSemiring α] [Nontrivial α] 
 #align set.Ioc.comm_monoid Set.Ioc.commMonoid
 
 instance cancelMonoid {α : Type*} [StrictOrderedRing α] [IsDomain α] :
-    CancelMonoid (Ioc (0 : α) 1) :=
+    CancelMonoid (Ioc (0 : α) 1) := fast_instance%
   { Set.Ioc.monoid with
     mul_left_cancel := fun a _ _ h =>
       Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' <| (congr_arg Subtype.val h : _)
@@ -339,7 +339,7 @@ instance cancelMonoid {α : Type*} [StrictOrderedRing α] [IsDomain α] :
 #align set.Ioc.cancel_monoid Set.Ioc.cancelMonoid
 
 instance cancelCommMonoid {α : Type*} [StrictOrderedCommRing α] [IsDomain α] :
-    CancelCommMonoid (Ioc (0 : α) 1) :=
+    CancelCommMonoid (Ioc (0 : α) 1) := fast_instance%
   { Set.Ioc.cancelMonoid, Set.Ioc.commMonoid with }
 #align set.Ioc.cancel_comm_monoid Set.Ioc.cancelCommMonoid
 

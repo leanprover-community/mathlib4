@@ -131,7 +131,7 @@ def StateT.uliftable' {m : Type u₀ → Type v₀} {m' : Type u₁ → Type v�
     StateT.equiv <| Equiv.piCongr F fun _ => ULiftable.congr <| Equiv.prodCongr G F
 #align state_t.uliftable' StateTₓ.uliftable'
 
-instance {m m'} [ULiftable m m'] : ULiftable (StateT s m) (StateT (ULift s) m') := fast_instance%
+instance {m m'} [ULiftable m m'] : ULiftable (StateT s m) (StateT (ULift s) m') :=
   StateT.uliftable' Equiv.ulift.symm
 
 instance StateT.instULiftableULiftULift {m m'} [ULiftable m m'] :
@@ -144,7 +144,7 @@ def ReaderT.uliftable' {m m'} [ULiftable m m'] (F : s ≃ s') :
   congr G := ReaderT.equiv <| Equiv.piCongr F fun _ => ULiftable.congr G
 #align reader_t.uliftable' ReaderTₓ.uliftable'
 
-instance {m m'} [ULiftable m m'] : ULiftable (ReaderT s m) (ReaderT (ULift s) m') := fast_instance%
+instance {m m'} [ULiftable m m'] : ULiftable (ReaderT s m) (ReaderT (ULift s) m') :=
   ReaderT.uliftable' Equiv.ulift.symm
 
 instance ReaderT.instULiftableULiftULift {m m'} [ULiftable m m'] :
@@ -157,7 +157,7 @@ def ContT.uliftable' {m m'} [ULiftable m m'] (F : r ≃ r') :
   congr := ContT.equiv (ULiftable.congr F)
 #align cont_t.uliftable' ContT.uliftable'
 
-instance {s m m'} [ULiftable m m'] : ULiftable (ContT s m) (ContT (ULift s) m') := fast_instance%
+instance {s m m'} [ULiftable m m'] : ULiftable (ContT s m) (ContT (ULift s) m') :=
   ContT.uliftable' Equiv.ulift.symm
 
 instance ContT.instULiftableULiftULift {m m'} [ULiftable m m'] :
@@ -170,7 +170,7 @@ def WriterT.uliftable' {m m'} [ULiftable m m'] (F : w ≃ w') :
   congr G := WriterT.equiv <| ULiftable.congr <| Equiv.prodCongr G F
 #align writer_t.uliftable' WriterTₓ.uliftable'
 
-instance {m m'} [ULiftable m m'] : ULiftable (WriterT s m) (WriterT (ULift s) m') := fast_instance%
+instance {m m'} [ULiftable m m'] : ULiftable (WriterT s m) (WriterT (ULift s) m') :=
   WriterT.uliftable' Equiv.ulift.symm
 
 instance WriterT.instULiftableULiftULift {m m'} [ULiftable m m'] :

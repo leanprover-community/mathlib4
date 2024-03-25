@@ -196,7 +196,7 @@ theorem mul_seq {α β : Type u} {f g : FreeMagma (α → β)} {x : FreeMagma α
 #align free_magma.mul_seq FreeMagma.mul_seq
 
 @[to_additive]
-instance instLawfulMonad : LawfulMonad FreeMagma.{u} := fast_instance% LawfulMonad.mk'
+instance instLawfulMonad : LawfulMonad FreeMagma.{u} := LawfulMonad.mk'
   (pure_bind := fun f x ↦ rfl)
   (bind_assoc := fun x f g ↦ FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
     rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
@@ -626,7 +626,7 @@ theorem mul_seq {f g : FreeSemigroup (α → β)} {x : FreeSemigroup α} :
 #align free_semigroup.mul_seq FreeSemigroup.mul_seq
 
 @[to_additive]
-instance instLawfulMonad : LawfulMonad FreeSemigroup.{u} := fast_instance% LawfulMonad.mk'
+instance instLawfulMonad : LawfulMonad FreeSemigroup.{u} := LawfulMonad.mk'
   (pure_bind := fun _ _ ↦ rfl)
   (bind_assoc := fun x g f ↦
     recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
@@ -708,7 +708,7 @@ instance : LawfulTraversable FreeSemigroup.{u} := fast_instance%
 end Category
 
 @[to_additive]
-instance [DecidableEq α] : DecidableEq (FreeSemigroup α) := fast_instance%
+instance [DecidableEq α] : DecidableEq (FreeSemigroup α) :=
   fun _ _ ↦ decidable_of_iff' _ (FreeSemigroup.ext_iff _ _)
 
 end FreeSemigroup

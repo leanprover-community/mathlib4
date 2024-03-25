@@ -13,76 +13,76 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 variable {α : Type*}
 
-instance : ∀ [LE α], LE (Multiplicative α) := fast_instance%
+instance : ∀ [LE α], LE (Multiplicative α) :=
   fun {inst} => inst
 
-instance : ∀ [LE α], LE (Additive α) := fast_instance%
+instance : ∀ [LE α], LE (Additive α) :=
   fun {inst} => inst
 
-instance : ∀ [LT α], LT (Multiplicative α) := fast_instance%
+instance : ∀ [LT α], LT (Multiplicative α) :=
   fun {inst} => inst
 
-instance : ∀ [LT α], LT (Additive α) := fast_instance%
+instance : ∀ [LT α], LT (Additive α) :=
   fun {inst} => inst
 
-instance Multiplicative.preorder : ∀ [Preorder α], Preorder (Multiplicative α) := fast_instance%
+instance Multiplicative.preorder : ∀ [Preorder α], Preorder (Multiplicative α) :=
   fun {inst} => inst
 
-instance Additive.preorder : ∀ [Preorder α], Preorder (Additive α) := fast_instance%
+instance Additive.preorder : ∀ [Preorder α], Preorder (Additive α) :=
   fun {inst} => inst
 
-instance Multiplicative.partialOrder : ∀ [PartialOrder α], PartialOrder (Multiplicative α) := fast_instance%
+instance Multiplicative.partialOrder : ∀ [PartialOrder α], PartialOrder (Multiplicative α) :=
   fun {inst} => inst
 
-instance Additive.partialOrder : ∀ [PartialOrder α], PartialOrder (Additive α) := fast_instance%
+instance Additive.partialOrder : ∀ [PartialOrder α], PartialOrder (Additive α) :=
   fun {inst} => inst
 
-instance Multiplicative.linearOrder : ∀ [LinearOrder α], LinearOrder (Multiplicative α) := fast_instance%
+instance Multiplicative.linearOrder : ∀ [LinearOrder α], LinearOrder (Multiplicative α) :=
   fun {inst} => inst
 
-instance Additive.linearOrder : ∀ [LinearOrder α], LinearOrder (Additive α) := fast_instance%
+instance Additive.linearOrder : ∀ [LinearOrder α], LinearOrder (Additive α) :=
   fun {inst} => inst
 
-instance Multiplicative.orderBot [LE α] : ∀ [OrderBot α], OrderBot (Multiplicative α) := fast_instance%
+instance Multiplicative.orderBot [LE α] : ∀ [OrderBot α], OrderBot (Multiplicative α) :=
   fun {inst} => inst
 
-instance Additive.orderBot [LE α] : ∀ [OrderBot α], OrderBot (Additive α) := fast_instance%
+instance Additive.orderBot [LE α] : ∀ [OrderBot α], OrderBot (Additive α) :=
   fun {inst} => inst
 
-instance Multiplicative.orderTop [LE α] : ∀ [OrderTop α], OrderTop (Multiplicative α) := fast_instance%
+instance Multiplicative.orderTop [LE α] : ∀ [OrderTop α], OrderTop (Multiplicative α) :=
   fun {inst} => inst
 
-instance Additive.orderTop [LE α] : ∀ [OrderTop α], OrderTop (Additive α) := fast_instance%
+instance Additive.orderTop [LE α] : ∀ [OrderTop α], OrderTop (Additive α) :=
   fun {inst} => inst
 
-instance Multiplicative.boundedOrder [LE α] : ∀ [BoundedOrder α], BoundedOrder (Multiplicative α) := fast_instance%
+instance Multiplicative.boundedOrder [LE α] : ∀ [BoundedOrder α], BoundedOrder (Multiplicative α) :=
   fun {inst} => inst
 
-instance Additive.boundedOrder [LE α] : ∀ [BoundedOrder α], BoundedOrder (Additive α) := fast_instance%
+instance Additive.boundedOrder [LE α] : ∀ [BoundedOrder α], BoundedOrder (Additive α) :=
   fun {inst} => inst
 
 instance Multiplicative.orderedCommMonoid [OrderedAddCommMonoid α] :
-    OrderedCommMonoid (Multiplicative α) :=
+    OrderedCommMonoid (Multiplicative α) := fast_instance%
   { Multiplicative.partialOrder, Multiplicative.commMonoid with
     mul_le_mul_left := @OrderedAddCommMonoid.add_le_add_left α _ }
 
 instance Additive.orderedAddCommMonoid [OrderedCommMonoid α] :
-    OrderedAddCommMonoid (Additive α) :=
+    OrderedAddCommMonoid (Additive α) := fast_instance%
   { Additive.partialOrder, Additive.addCommMonoid with
     add_le_add_left := @OrderedCommMonoid.mul_le_mul_left α _ }
 
 instance Multiplicative.orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
-    OrderedCancelCommMonoid (Multiplicative α) :=
+    OrderedCancelCommMonoid (Multiplicative α) := fast_instance%
   { Multiplicative.orderedCommMonoid with
     le_of_mul_le_mul_left := @OrderedCancelAddCommMonoid.le_of_add_le_add_left α _ }
 
 instance Additive.orderedCancelAddCommMonoid [OrderedCancelCommMonoid α] :
-    OrderedCancelAddCommMonoid (Additive α) :=
+    OrderedCancelAddCommMonoid (Additive α) := fast_instance%
   { Additive.orderedAddCommMonoid with
     le_of_add_le_add_left := @OrderedCancelCommMonoid.le_of_mul_le_mul_left α _ }
 
 instance Multiplicative.linearOrderedCommMonoid [LinearOrderedAddCommMonoid α] :
-    LinearOrderedCommMonoid (Multiplicative α) :=
+    LinearOrderedCommMonoid (Multiplicative α) := fast_instance%
   { Multiplicative.linearOrder, Multiplicative.orderedCommMonoid with }
 
 instance Additive.linearOrderedAddCommMonoid [LinearOrderedCommMonoid α] :
@@ -90,29 +90,29 @@ instance Additive.linearOrderedAddCommMonoid [LinearOrderedCommMonoid α] :
   { Additive.linearOrder, Additive.orderedAddCommMonoid with }
 
 instance Multiplicative.existsMulOfLe [Add α] [LE α] [ExistsAddOfLE α] :
-    ExistsMulOfLE (Multiplicative α) :=
+    ExistsMulOfLE (Multiplicative α) := fast_instance%
   ⟨@exists_add_of_le α _ _ _⟩
 
 instance Additive.existsAddOfLe [Mul α] [LE α] [ExistsMulOfLE α] : ExistsAddOfLE (Additive α) := fast_instance%
   ⟨@exists_mul_of_le α _ _ _⟩
 
 instance Multiplicative.canonicallyOrderedCommMonoid [CanonicallyOrderedAddCommMonoid α] :
-    CanonicallyOrderedCommMonoid (Multiplicative α) :=
+    CanonicallyOrderedCommMonoid (Multiplicative α) := fast_instance%
   { Multiplicative.orderedCommMonoid, Multiplicative.orderBot,
     Multiplicative.existsMulOfLe with le_self_mul := @le_self_add α _ }
 
 instance Additive.canonicallyOrderedAddCommMonoid [CanonicallyOrderedCommMonoid α] :
-    CanonicallyOrderedAddCommMonoid (Additive α) :=
+    CanonicallyOrderedAddCommMonoid (Additive α) := fast_instance%
   { Additive.orderedAddCommMonoid, Additive.orderBot, Additive.existsAddOfLe with
     le_self_add := @le_self_mul α _ }
 
 instance Multiplicative.canonicallyLinearOrderedCommMonoid
     [CanonicallyLinearOrderedAddCommMonoid α] :
-    CanonicallyLinearOrderedCommMonoid (Multiplicative α) :=
+    CanonicallyLinearOrderedCommMonoid (Multiplicative α) := fast_instance%
   { Multiplicative.canonicallyOrderedCommMonoid, Multiplicative.linearOrder with }
 
 instance [CanonicallyLinearOrderedCommMonoid α] :
-    CanonicallyLinearOrderedAddCommMonoid (Additive α) :=
+    CanonicallyLinearOrderedAddCommMonoid (Additive α) := fast_instance%
   { Additive.canonicallyOrderedAddCommMonoid, Additive.linearOrder with }
 
 namespace Additive

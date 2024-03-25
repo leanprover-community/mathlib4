@@ -601,7 +601,7 @@ theorem star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
 namespace MulOpposite
 
 /-- The opposite type carries the same star operation. -/
-instance [Star R] : Star Rᵐᵒᵖ where star r := fast_instance% op (star r.unop)
+instance [Star R] : Star Rᵐᵒᵖ where star r := op (star r.unop)
 
 @[simp]
 theorem unop_star [Star R] (r : Rᵐᵒᵖ) : unop (star r) = star (unop r) :=

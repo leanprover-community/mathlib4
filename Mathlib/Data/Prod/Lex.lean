@@ -48,10 +48,10 @@ instance inhabited (α β : Type*) [Inhabited α] [Inhabited β] : Inhabited (α
 #align prod.lex.inhabited Prod.Lex.inhabited
 
 /-- Dictionary / lexicographic ordering on pairs.  -/
-instance instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := fast_instance% Prod.Lex (· < ·) (· ≤ ·)
+instance instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := Prod.Lex (· < ·) (· ≤ ·)
 #align prod.lex.has_le Prod.Lex.instLE
 
-instance instLT (α β : Type*) [LT α] [LT β] : LT (α ×ₗ β) where lt := fast_instance% Prod.Lex (· < ·) (· < ·)
+instance instLT (α β : Type*) [LT α] [LT β] : LT (α ×ₗ β) where lt := Prod.Lex (· < ·) (· < ·)
 #align prod.lex.has_lt Prod.Lex.instLT
 
 theorem le_iff [LT α] [LE β] (a b : α × β) :

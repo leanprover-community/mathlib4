@@ -315,7 +315,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
-instance : CoeFun (LowerAdjoint u) fun _ => α → β where coe := fast_instance% toFun
+instance : CoeFun (LowerAdjoint u) fun _ => α → β where coe := toFun
 
 theorem gc : GaloisConnection l u :=
   l.gc'

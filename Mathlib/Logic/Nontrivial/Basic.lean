@@ -55,7 +55,7 @@ noncomputable def nontrivialPSumUnique (α : Type*) [Inhabited α] :
           exact h ⟨_, _, H⟩ }
 #align nontrivial_psum_unique nontrivialPSumUnique
 
-instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) := fast_instance% by
+instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) :=  by
   inhabit α
   exact ⟨none, some default, nofun⟩
 
@@ -76,10 +76,10 @@ protected theorem Function.Injective.exists_ne [Nontrivial α] {f : α → β}
   · exact ⟨x₂, h⟩
 #align function.injective.exists_ne Function.Injective.exists_ne
 
-instance nontrivial_prod_right [Nonempty α] [Nontrivial β] : Nontrivial (α × β) := fast_instance%
+instance nontrivial_prod_right [Nonempty α] [Nontrivial β] : Nontrivial (α × β) :=
   Prod.snd_surjective.nontrivial
 
-instance nontrivial_prod_left [Nontrivial α] [Nonempty β] : Nontrivial (α × β) := fast_instance%
+instance nontrivial_prod_left [Nontrivial α] [Nonempty β] : Nontrivial (α × β) :=
   Prod.fst_surjective.nontrivial
 
 namespace Pi
@@ -103,7 +103,7 @@ instance nontrivial [Inhabited I] [∀ i, Nonempty (f i)] [Nontrivial (f default
 
 end Pi
 
-instance Function.nontrivial [h : Nonempty α] [Nontrivial β] : Nontrivial (α → β) := fast_instance%
+instance Function.nontrivial [h : Nonempty α] [Nontrivial β] : Nontrivial (α → β) :=
   h.elim fun a ↦ Pi.nontrivial_at a
 
 @[nontriviality]

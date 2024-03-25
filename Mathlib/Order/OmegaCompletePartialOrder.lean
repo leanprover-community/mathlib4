@@ -109,7 +109,7 @@ variable (c c' : Chain α)
 variable (f : α →o β)
 variable (g : β →o γ)
 
-instance : LE (Chain α) where le x y := fast_instance% ∀ i, ∃ j, x i ≤ y j
+instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
 
 lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_range (OrderHomClass.mono c)
 

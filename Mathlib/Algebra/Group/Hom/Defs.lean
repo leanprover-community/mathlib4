@@ -213,7 +213,7 @@ theorem Subsingleton.of_oneHomClass [Subsingleton M] [OneHomClass F M N] :
     Subsingleton F where
   allEq f g := DFunLike.ext _ _ fun x ↦ by simp [Subsingleton.elim x 1]
 
-@[to_additive] instance [Subsingleton M] : Subsingleton (OneHom M N) := fast_instance% .of_oneHomClass
+@[to_additive] instance [Subsingleton M] : Subsingleton (OneHom M N) :=  .of_oneHomClass
 
 @[to_additive]
 theorem map_eq_one_iff [OneHomClass F M N] (f : F) (hf : Function.Injective f)
@@ -246,7 +246,7 @@ def OneHomClass.toOneHom [OneHomClass F M N] (f : F) : OneHom M N where
 /-- Any type satisfying `OneHomClass` can be cast into `OneHom` via `OneHomClass.toOneHom`. -/
 @[to_additive "Any type satisfying `ZeroHomClass` can be cast into `ZeroHom` via
 `ZeroHomClass.toZeroHom`. "]
-instance [OneHomClass F M N] : CoeTC F (OneHom M N) := fast_instance%
+instance [OneHomClass F M N] : CoeTC F (OneHom M N) :=
   ⟨OneHomClass.toOneHom⟩
 
 @[to_additive (attr := simp)]
@@ -326,7 +326,7 @@ def MulHomClass.toMulHom [MulHomClass F M N] (f : F) : M →ₙ* N where
 /-- Any type satisfying `MulHomClass` can be cast into `MulHom` via `MulHomClass.toMulHom`. -/
 @[to_additive "Any type satisfying `AddHomClass` can be cast into `AddHom` via
 `AddHomClass.toAddHom`."]
-instance [MulHomClass F M N] : CoeTC F (M →ₙ* N) := fast_instance%
+instance [MulHomClass F M N] : CoeTC F (M →ₙ* N) :=
   ⟨MulHomClass.toMulHom⟩
 
 @[to_additive (attr := simp)]
@@ -387,7 +387,7 @@ instance MonoidHom.instMonoidHomClass : MonoidHomClass (M →* N) M N where
 #align monoid_hom.monoid_hom_class MonoidHom.instMonoidHomClass
 #align add_monoid_hom.add_monoid_hom_class AddMonoidHom.instAddMonoidHomClass
 
-@[to_additive] instance [Subsingleton M] : Subsingleton (M →* N) := fast_instance% .of_oneHomClass
+@[to_additive] instance [Subsingleton M] : Subsingleton (M →* N) :=  .of_oneHomClass
 
 variable [FunLike F M N]
 
@@ -403,7 +403,7 @@ def MonoidHomClass.toMonoidHom [MonoidHomClass F M N] (f : F) : M →* N :=
 `MonoidHomClass.toMonoidHom`. -/
 @[to_additive "Any type satisfying `AddMonoidHomClass` can be cast into `AddMonoidHom` via
 `AddMonoidHomClass.toAddMonoidHom`."]
-instance [MonoidHomClass F M N] : CoeTC F (M →* N) := fast_instance%
+instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
   ⟨MonoidHomClass.toMonoidHom⟩
 
 @[to_additive (attr := simp)]
@@ -1104,11 +1104,11 @@ instance : Monoid (Monoid.End M) where
   mul_one := MonoidHom.comp_id
   one_mul := MonoidHom.id_comp
 
-instance : Inhabited (Monoid.End M) := fast_instance% ⟨1⟩
+instance : Inhabited (Monoid.End M) :=  ⟨1⟩
 
-instance : FunLike (Monoid.End M) M M := fast_instance% MonoidHom.instFunLike
+instance : FunLike (Monoid.End M) M M :=  MonoidHom.instFunLike
 
-instance : MonoidHomClass (Monoid.End M) M M := fast_instance% MonoidHom.instMonoidHomClass
+instance : MonoidHomClass (Monoid.End M) M M :=  MonoidHom.instMonoidHomClass
 
 end End
 
@@ -1139,11 +1139,11 @@ instance monoid : Monoid (AddMonoid.End A) where
   mul_one := AddMonoidHom.comp_id
   one_mul := AddMonoidHom.id_comp
 
-instance : Inhabited (AddMonoid.End A) := fast_instance% ⟨1⟩
+instance : Inhabited (AddMonoid.End A) :=  ⟨1⟩
 
-instance : FunLike (AddMonoid.End A) A A := fast_instance% AddMonoidHom.instFunLike
+instance : FunLike (AddMonoid.End A) A A :=  AddMonoidHom.instFunLike
 
-instance : AddMonoidHomClass (AddMonoid.End A) A A := fast_instance% AddMonoidHom.instAddMonoidHomClass
+instance : AddMonoidHomClass (AddMonoid.End A) A A :=  AddMonoidHom.instAddMonoidHomClass
 
 end End
 
@@ -1161,16 +1161,16 @@ end End
 
 /-- `1` is the homomorphism sending all elements to `1`. -/
 @[to_additive "`0` is the homomorphism sending all elements to `0`."]
-instance [One M] [One N] : One (OneHom M N) := fast_instance% ⟨⟨fun _ => 1, rfl⟩⟩
+instance [One M] [One N] : One (OneHom M N) :=  ⟨⟨fun _ => 1, rfl⟩⟩
 
 /-- `1` is the multiplicative homomorphism sending all elements to `1`. -/
 @[to_additive "`0` is the additive homomorphism sending all elements to `0`"]
-instance [Mul M] [MulOneClass N] : One (M →ₙ* N) := fast_instance%
+instance [Mul M] [MulOneClass N] : One (M →ₙ* N) :=
   ⟨⟨fun _ => 1, fun _ _ => (one_mul 1).symm⟩⟩
 
 /-- `1` is the monoid homomorphism sending all elements to `1`. -/
 @[to_additive "`0` is the additive monoid homomorphism sending all elements to `0`."]
-instance [MulOneClass M] [MulOneClass N] : One (M →* N) := fast_instance%
+instance [MulOneClass M] [MulOneClass N] : One (M →* N) :=
   ⟨⟨⟨fun _ => 1, rfl⟩, fun _ _ => (one_mul 1).symm⟩⟩
 
 @[to_additive (attr := simp)]
@@ -1197,13 +1197,13 @@ theorem OneHom.comp_one [One M] [One N] [One P] (f : OneHom N P) : f.comp (1 : O
 #align zero_hom.comp_zero ZeroHom.comp_zero
 
 @[to_additive]
-instance [One M] [One N] : Inhabited (OneHom M N) := fast_instance% ⟨1⟩
+instance [One M] [One N] : Inhabited (OneHom M N) :=  ⟨1⟩
 
 @[to_additive]
-instance [Mul M] [MulOneClass N] : Inhabited (M →ₙ* N) := fast_instance% ⟨1⟩
+instance [Mul M] [MulOneClass N] : Inhabited (M →ₙ* N) :=  ⟨1⟩
 
 @[to_additive]
-instance [MulOneClass M] [MulOneClass N] : Inhabited (M →* N) := fast_instance% ⟨1⟩
+instance [MulOneClass M] [MulOneClass N] : Inhabited (M →* N) :=  ⟨1⟩
 
 namespace MonoidHom
 

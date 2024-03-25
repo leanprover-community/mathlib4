@@ -118,7 +118,7 @@ def TerminatedAt (s : Seq α) (n : ℕ) : Prop :=
 #align stream.seq.terminated_at Stream'.Seq.TerminatedAt
 
 /-- It is decidable whether a sequence terminates at a given position. -/
-instance terminatedAtDecidable (s : Seq α) (n : ℕ) : Decidable (s.TerminatedAt n) := fast_instance%
+instance terminatedAtDecidable (s : Seq α) (n : ℕ) : Decidable (s.TerminatedAt n) :=
   decidable_of_iff' (s.get? n).isNone <| by unfold TerminatedAt; cases s.get? n <;> simp
 #align stream.seq.terminated_at_decidable Stream'.Seq.terminatedAtDecidable
 
@@ -735,7 +735,7 @@ theorem map_get? (f : α → β) : ∀ s n, get? (map f s) n = (get? s n).map f
   | ⟨_, _⟩, _ => rfl
 #align stream.seq.map_nth Stream'.Seq.map_get?
 
-instance : Functor Seq where map := fast_instance% @map
+instance : Functor Seq where map := @map
 
 instance : LawfulFunctor Seq where
   id_map := @map_id
@@ -1053,7 +1053,7 @@ instance monad : Monad Seq1 where
   bind := @bind
 #align stream.seq1.monad Stream'.Seq1.monad
 
-instance lawfulMonad : LawfulMonad Seq1 := fast_instance% LawfulMonad.mk'
+instance lawfulMonad : LawfulMonad Seq1 := LawfulMonad.mk'
   (id_map := @map_id)
   (bind_pure_comp := @bind_ret)
   (pure_bind := @ret_bind)

@@ -36,7 +36,7 @@ def FreeBicategory (B : Type u) :=
   B
 #align category_theory.free_bicategory CategoryTheory.FreeBicategory
 
-instance (B : Type u) : ∀ [Inhabited B], Inhabited (FreeBicategory B) := fast_instance% by
+instance (B : Type u) : ∀ [Inhabited B], Inhabited (FreeBicategory B) := by
   intro h
   exact id h
 

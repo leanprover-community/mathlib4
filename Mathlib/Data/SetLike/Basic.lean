@@ -106,7 +106,7 @@ namespace SetLike
 
 variable {A : Type*} {B : Type*} [i : SetLike A B]
 
-instance : CoeTC A (Set B) where coe := fast_instance% SetLike.coe
+instance : CoeTC A (Set B) where coe := SetLike.coe
 
 instance (priority := 100) instMembership : Membership B A :=
   ⟨fun x p => x ∈ (p : Set B)⟩

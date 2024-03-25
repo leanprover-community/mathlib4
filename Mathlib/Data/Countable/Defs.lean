@@ -44,7 +44,7 @@ class Countable (α : Sort u) : Prop where
 lemma Countable.exists_injective_nat (α : Sort u) [Countable α] : ∃ f : α → ℕ, Injective f :=
   Countable.exists_injective_nat'
 
-instance : Countable ℕ := fast_instance%
+instance : Countable ℕ :=
   ⟨⟨id, injective_id⟩⟩
 
 export Countable (exists_injective_nat)
@@ -77,7 +77,7 @@ theorem Equiv.countable_iff (e : α ≃ β) : Countable α ↔ Countable β :=
   ⟨fun h => @Countable.of_equiv _ _ h e, fun h => @Countable.of_equiv _ _ h e.symm⟩
 #align equiv.countable_iff Equiv.countable_iff
 
-instance {β : Type v} [Countable β] : Countable (ULift.{u} β) := fast_instance%
+instance {β : Type v} [Countable β] : Countable (ULift.{u} β) :=
   Countable.of_equiv _ Equiv.ulift.symm
 
 /-!
@@ -85,7 +85,7 @@ instance {β : Type v} [Countable β] : Countable (ULift.{u} β) := fast_instanc
 -/
 
 
-instance [Countable α] : Countable (PLift α) := fast_instance%
+instance [Countable α] : Countable (PLift α) :=
   Equiv.plift.injective.countable
 
 instance (priority := 100) Subsingleton.to_countable [Subsingleton α] : Countable α :=
@@ -95,23 +95,23 @@ instance (priority := 500) Subtype.countable [Countable α] {p : α → Prop} :
     Countable { x // p x } :=
   Subtype.val_injective.countable
 
-instance {n : ℕ} : Countable (Fin n) := fast_instance%
+instance {n : ℕ} : Countable (Fin n) :=
   Function.Injective.countable (@Fin.eq_of_val_eq n)
 
 instance (priority := 100) Finite.to_countable [Finite α] : Countable α :=
   let ⟨_, ⟨e⟩⟩ := Finite.exists_equiv_fin α
   Countable.of_equiv _ e.symm
 
-instance : Countable PUnit.{u} := fast_instance%
+instance : Countable PUnit.{u} :=
   Subsingleton.to_countable
 
 instance (priority := 100) Prop.countable (p : Prop) : Countable p :=
   Subsingleton.to_countable
 
-instance Bool.countable : Countable Bool := fast_instance%
+instance Bool.countable : Countable Bool :=
   ⟨⟨fun b => cond b 0 1, Bool.injective_iff.2 Nat.one_ne_zero⟩⟩
 
-instance Prop.countable' : Countable Prop := fast_instance%
+instance Prop.countable' : Countable Prop :=
   Countable.of_equiv Bool Equiv.propEquivBool.symm
 
 instance (priority := 500) Quotient.countable [Countable α] {r : α → α → Prop} :
@@ -166,10 +166,10 @@ theorem Uncountable.of_equiv (α : Sort*) [Uncountable α] (e : α ≃ β) : Unc
 theorem Equiv.uncountable_iff (e : α ≃ β) : Uncountable α ↔ Uncountable β :=
   ⟨fun h => @Uncountable.of_equiv _ _ h e, fun h => @Uncountable.of_equiv _ _ h e.symm⟩
 
-instance {β : Type v} [Uncountable β] : Uncountable (ULift.{u} β) := fast_instance%
+instance {β : Type v} [Uncountable β] : Uncountable (ULift.{u} β) :=
   .of_equiv _ Equiv.ulift.symm
 
-instance [Uncountable α] : Uncountable (PLift α) := fast_instance%
+instance [Uncountable α] : Uncountable (PLift α) :=
   .of_equiv _ Equiv.plift.symm
 
 instance (priority := 100) [Uncountable α] : Infinite α :=

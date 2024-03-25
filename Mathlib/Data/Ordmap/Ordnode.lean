@@ -366,7 +366,7 @@ def Emem (x : α) : Ordnode α → Prop :=
   Any (Eq x)
 #align ordnode.emem Ordnode.Emem
 
-instance Emem.decidable (x : α) [DecidableEq α] : ∀ t, Decidable (Emem x t) := fast_instance% by
+instance Emem.decidable (x : α) [DecidableEq α] : ∀ t, Decidable (Emem x t) := by
   dsimp [Emem]; infer_instance
 #align ordnode.emem.decidable Ordnode.Emem.decidable
 
@@ -678,7 +678,7 @@ def Equiv (t₁ t₂ : Ordnode α) : Prop :=
   t₁.size = t₂.size ∧ t₁.toList = t₂.toList
 #align ordnode.equiv Ordnode.Equiv
 
-instance [DecidableEq α] : DecidableRel (@Equiv α) := fast_instance% fun _ _ => And.decidable
+instance [DecidableEq α] : DecidableRel (@Equiv α) := fun _ _ => And.decidable
 
 /-- O(2^n). Constructs the powerset of a given set, that is, the set of all subsets.
 

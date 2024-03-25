@@ -176,7 +176,7 @@ instance Transported.instMonoidalCategoryStruct (e : C ≌ D) :
     MonoidalCategoryStruct (Transported e) :=
   transportStruct e
 
-instance Transported.instMonoidalCategory (e : C ≌ D) : MonoidalCategory (Transported e) := fast_instance%
+instance Transported.instMonoidalCategory (e : C ≌ D) : MonoidalCategory (Transported e) :=
   transport e
 
 instance (e : C ≌ D) : Inhabited (Transported e) := fast_instance%

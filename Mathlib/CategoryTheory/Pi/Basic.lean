@@ -75,7 +75,7 @@ variable {J : Type w₁}
 /- Porting note: add this because Lean cannot see directly through the `∘` for
 `Function.comp` -/
 
-instance (f : J → I) : (j : J) → Category ((C ∘ f) j) := fast_instance% by
+instance (f : J → I) : (j : J) → Category ((C ∘ f) j) := by
   dsimp
   infer_instance
 

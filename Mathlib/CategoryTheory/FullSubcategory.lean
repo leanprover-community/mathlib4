@@ -79,7 +79,7 @@ def inducedFunctor : InducedCategory D F ⥤ D where
 #align category_theory.induced_functor_map CategoryTheory.inducedFunctor_map
 #align category_theory.induced_functor_obj CategoryTheory.inducedFunctor_obj
 
-instance InducedCategory.full : Full (inducedFunctor F) where preimage f := fast_instance% f
+instance InducedCategory.full : Full (inducedFunctor F) where preimage f := f
 #align category_theory.induced_category.full CategoryTheory.InducedCategory.full
 
 instance InducedCategory.faithful : Faithful (inducedFunctor F) where
@@ -211,7 +211,7 @@ instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Faithful F] :
     Faithful (FullSubcategory.lift P F hF) :=
   Faithful.of_comp_iso (FullSubcategory.lift_comp_inclusion P F hF)
 
-instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Full F] : Full (FullSubcategory.lift P F hF) := fast_instance%
+instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Full F] : Full (FullSubcategory.lift P F hF) :=
   Full.ofCompFaithfulIso (FullSubcategory.lift_comp_inclusion P F hF)
 
 @[simp]

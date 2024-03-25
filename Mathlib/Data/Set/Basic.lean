@@ -517,7 +517,7 @@ theorem Nonempty.to_subtype : s.Nonempty → Nonempty (↥s) :=
 theorem Nonempty.to_type : s.Nonempty → Nonempty α := fun ⟨x, _⟩ => ⟨x⟩
 #align set.nonempty.to_type Set.Nonempty.to_type
 
-instance univ.nonempty [Nonempty α] : Nonempty (↥(Set.univ : Set α)) := fast_instance%
+instance univ.nonempty [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
   Set.univ_nonempty.to_subtype
 #align set.univ.nonempty Set.univ.nonempty
 
@@ -761,11 +761,11 @@ theorem union_assoc (a b c : Set α) : a ∪ b ∪ c = a ∪ (b ∪ c) :=
   ext fun _ => or_assoc
 #align set.union_assoc Set.union_assoc
 
-instance union_isAssoc : Std.Associative (α := fast_instance% Set α) (· ∪ ·) :=
+instance union_isAssoc : Std.Associative (α := Set α) (· ∪ ·) :=
   ⟨union_assoc⟩
 #align set.union_is_assoc Set.union_isAssoc
 
-instance union_isComm : Std.Commutative (α := fast_instance% Set α) (· ∪ ·) :=
+instance union_isComm : Std.Commutative (α := Set α) (· ∪ ·) :=
   ⟨union_comm⟩
 #align set.union_is_comm Set.union_isComm
 
@@ -913,11 +913,11 @@ theorem inter_assoc (a b c : Set α) : a ∩ b ∩ c = a ∩ (b ∩ c) :=
   ext fun _ => and_assoc
 #align set.inter_assoc Set.inter_assoc
 
-instance inter_isAssoc : Std.Associative (α := fast_instance% Set α) (· ∩ ·) :=
+instance inter_isAssoc : Std.Associative (α := Set α) (· ∩ ·) :=
   ⟨inter_assoc⟩
 #align set.inter_is_assoc Set.inter_isAssoc
 
-instance inter_isComm : Std.Commutative (α := fast_instance% Set α) (· ∩ ·) :=
+instance inter_isComm : Std.Commutative (α := Set α) (· ∩ ·) :=
   ⟨inter_comm⟩
 #align set.inter_is_comm Set.inter_isComm
 
@@ -1188,7 +1188,7 @@ theorem insert_nonempty (a : α) (s : Set α) : (insert a s).Nonempty :=
   ⟨a, mem_insert a s⟩
 #align set.insert_nonempty Set.insert_nonempty
 
-instance (a : α) (s : Set α) : Nonempty (insert a s : Set α) := fast_instance%
+instance (a : α) (s : Set α) : Nonempty (insert a s : Set α) :=
   (insert_nonempty a s).to_subtype
 
 theorem insert_inter_distrib (a : α) (s t : Set α) : insert a (s ∩ t) = insert a s ∩ insert a t :=
@@ -2878,14 +2878,14 @@ instance decidableCompl [Decidable (a ∈ s)] : Decidable (a ∈ sᶜ) := fast_i
   (by infer_instance : Decidable (a ∉ s))
 #align set.decidable_compl Set.decidableCompl
 
-instance decidableEmptyset : DecidablePred (· ∈ (∅ : Set α)) := fast_instance% fun _ => Decidable.isFalse (by simp)
+instance decidableEmptyset : DecidablePred (· ∈ (∅ : Set α)) := fun _ => Decidable.isFalse (by simp)
 #align set.decidable_emptyset Set.decidableEmptyset
 
-instance decidableUniv : DecidablePred (· ∈ (Set.univ : Set α)) := fast_instance% fun _ =>
+instance decidableUniv : DecidablePred (· ∈ (Set.univ : Set α)) := fun _ =>
   Decidable.isTrue (by simp)
 #align set.decidable_univ Set.decidableUniv
 
-instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := fast_instance% by
+instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := by
   assumption
 #align set.decidable_set_of Set.decidableSetOf
 

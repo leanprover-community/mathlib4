@@ -276,7 +276,7 @@ def valOrderEmbedding (n) : Fin n ↪o ℕ :=
 #align fin.coe_order_embedding Fin.valOrderEmbedding
 
 /-- The ordering on `Fin n` is a well order. -/
-instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) := fast_instance%
+instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) :=
   (valOrderEmbedding n).isWellOrder
 #align fin.fin.lt.is_well_order Fin.Lt.isWellOrder
 
@@ -479,7 +479,7 @@ instance orderIso_subsingleton : Subsingleton (Fin n ≃o α) := fast_instance%
       coe_orderIso_apply]⟩
 #align fin.order_iso_subsingleton Fin.orderIso_subsingleton
 
-instance orderIso_subsingleton' : Subsingleton (α ≃o Fin n) := fast_instance%
+instance orderIso_subsingleton' : Subsingleton (α ≃o Fin n) :=
   OrderIso.symm_injective.subsingleton
 #align fin.order_iso_subsingleton' Fin.orderIso_subsingleton'
 
@@ -894,7 +894,7 @@ theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by
 
 @[simp]
 theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} : cast h (0 : Fin n) =
-    by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} := fast_instance%
+    by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} :=
   ext rfl
 #align fin.cast_zero Fin.cast_zero
 

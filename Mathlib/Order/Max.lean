@@ -69,10 +69,10 @@ export NoMinOrder (exists_lt)
 
 export NoMaxOrder (exists_gt)
 
-instance nonempty_lt [LT α] [NoMinOrder α] (a : α) : Nonempty { x // x < a } := fast_instance%
+instance nonempty_lt [LT α] [NoMinOrder α] (a : α) : Nonempty { x // x < a } :=
   nonempty_subtype.2 (exists_lt a)
 
-instance nonempty_gt [LT α] [NoMaxOrder α] (a : α) : Nonempty { x // a < x } := fast_instance%
+instance nonempty_gt [LT α] [NoMaxOrder α] (a : α) : Nonempty { x // a < x } :=
   nonempty_subtype.2 (exists_gt a)
 
 instance IsEmpty.toNoMaxOrder [LT α] [IsEmpty α] : NoMaxOrder α := fast_instance% ⟨isEmptyElim⟩

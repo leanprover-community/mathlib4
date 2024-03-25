@@ -45,11 +45,11 @@ instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) := fast_instance%
       | a :: _ => isEmptyElim a }
 #align list.unique_of_is_empty List.uniqueOfIsEmpty
 
-instance : Std.LawfulIdentity (α := fast_instance% List α) Append.append [] where
+instance : Std.LawfulIdentity (α := List α) Append.append [] where
   left_id := nil_append
   right_id := append_nil
 
-instance : Std.Associative (α := fast_instance% List α) Append.append where
+instance : Std.Associative (α := List α) Append.append where
   assoc := append_assoc
 
 #align list.cons_ne_nil List.cons_ne_nil
@@ -4297,7 +4297,7 @@ theorem forall_map_iff {p : β → Prop} (f : α → β) : Forall p (l.map f) �
   induction l <;> simp [*]
 #align list.all₂_map_iff List.forall_map_iff
 
-instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fast_instance% fun _ =>
+instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _ =>
   decidable_of_iff' _ forall_iff_forall_mem
 
 end Forall

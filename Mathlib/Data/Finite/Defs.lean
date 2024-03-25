@@ -106,10 +106,10 @@ theorem Finite.ofBijective [Finite α] {f : α → β} (h : Bijective f) : Finit
   h.finite_iff.mp ‹_›
 #align finite.of_bijective Finite.ofBijective
 
-instance [Finite α] : Finite (PLift α) := fast_instance%
+instance [Finite α] : Finite (PLift α) :=
   Finite.of_equiv α Equiv.plift.symm
 
-instance {α : Type v} [Finite α] : Finite (ULift.{u} α) := fast_instance%
+instance {α : Type v} [Finite α] : Finite (ULift.{u} α) :=
   Finite.of_equiv α Equiv.ulift.symm
 
 /-- A type is said to be infinite if it is not finite. Note that `Infinite α` is equivalent to
@@ -133,10 +133,10 @@ theorem Equiv.infinite_iff (e : α ≃ β) : Infinite α ↔ Infinite β :=
   not_finite_iff_infinite.symm.trans <| e.finite_iff.not.trans not_finite_iff_infinite
 #align equiv.infinite_iff Equiv.infinite_iff
 
-instance [Infinite α] : Infinite (PLift α) := fast_instance%
+instance [Infinite α] : Infinite (PLift α) :=
   Equiv.plift.infinite_iff.2 ‹_›
 
-instance {α : Type v} [Infinite α] : Infinite (ULift.{u} α) := fast_instance%
+instance {α : Type v} [Infinite α] : Infinite (ULift.{u} α) :=
   Equiv.ulift.infinite_iff.2 ‹_›
 
 theorem finite_or_infinite (α : Sort*) : Finite α ∨ Infinite α :=

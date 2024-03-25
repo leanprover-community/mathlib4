@@ -219,18 +219,18 @@ namespace ComplexShape
 
 variable (α : Type*) [AddRightCancelSemigroup α] [DecidableEq α]
 
-instance (a : α) : DecidableRel (ComplexShape.up' a).Rel := fast_instance%
+instance (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
   fun _ _ => by dsimp; infer_instance
 
-instance (a : α) : DecidableRel (ComplexShape.down' a).Rel := fast_instance%
+instance (a : α) : DecidableRel (ComplexShape.down' a).Rel :=
   fun _ _ => by dsimp; infer_instance
 
 variable [One α]
 
-instance : DecidableRel (ComplexShape.up α).Rel := fast_instance% by
+instance : DecidableRel (ComplexShape.up α).Rel := by
   dsimp [ComplexShape.up]; infer_instance
 
-instance : DecidableRel (ComplexShape.down α).Rel := fast_instance% by
+instance : DecidableRel (ComplexShape.down α).Rel := by
   dsimp [ComplexShape.down]; infer_instance
 
 end ComplexShape

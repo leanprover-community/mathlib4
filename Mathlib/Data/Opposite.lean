@@ -114,9 +114,9 @@ theorem unop_eq_iff_eq_op {x} {y : α} : unop x = y ↔ x = op y :=
 instance [Inhabited α] : Inhabited αᵒᵖ := fast_instance%
   ⟨op default⟩
 
-instance [Nonempty α] : Nonempty αᵒᵖ := fast_instance% Nonempty.map op ‹_›
+instance [Nonempty α] : Nonempty αᵒᵖ := Nonempty.map op ‹_›
 
-instance [Subsingleton α] : Subsingleton αᵒᵖ := fast_instance% unop_injective.subsingleton
+instance [Subsingleton α] : Subsingleton αᵒᵖ := unop_injective.subsingleton
 
 /-- A recursor for `Opposite`.
 The `@[eliminator]` attribute makes it the default induction principle for `Opposite`

@@ -298,7 +298,7 @@ namespace IsAtomic
 
 variable [OrderBot α] [IsAtomic α]
 
-instance isCoatomic_dual : IsCoatomic αᵒᵈ := fast_instance%
+instance isCoatomic_dual : IsCoatomic αᵒᵈ :=
   isCoatomic_dual_iff_isAtomic.2 ‹IsAtomic α›
 #align is_atomic.is_coatomic_dual IsAtomic.isCoatomic_dual
 
@@ -314,7 +314,7 @@ namespace IsCoatomic
 
 variable [OrderTop α] [IsCoatomic α]
 
-instance isCoatomic : IsAtomic αᵒᵈ := fast_instance%
+instance isCoatomic : IsAtomic αᵒᵈ :=
   isAtomic_dual_iff_isCoatomic.2 ‹IsCoatomic α›
 #align is_coatomic.is_coatomic IsCoatomic.isCoatomic
 
@@ -429,7 +429,7 @@ theorem isAtomistic_dual_iff_isCoatomistic : IsAtomistic αᵒᵈ ↔ IsCoatomis
 
 namespace IsAtomistic
 
-instance isCoatomistic_dual [h : IsAtomistic α] : IsCoatomistic αᵒᵈ := fast_instance%
+instance isCoatomistic_dual [h : IsAtomistic α] : IsCoatomistic αᵒᵈ :=
   isCoatomistic_dual_iff_isAtomistic.2 h
 #align is_atomistic.is_coatomistic_dual IsAtomistic.isCoatomistic_dual
 
@@ -475,7 +475,7 @@ end IsAtomistic
 
 namespace IsCoatomistic
 
-instance isAtomistic_dual [h : IsCoatomistic α] : IsAtomistic αᵒᵈ := fast_instance%
+instance isAtomistic_dual [h : IsCoatomistic α] : IsAtomistic αᵒᵈ :=
   isAtomistic_dual_iff_isCoatomistic.2 h
 #align is_coatomistic.is_atomistic_dual IsCoatomistic.isAtomistic_dual
 
@@ -507,7 +507,7 @@ instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α where
     nontriviality α
     cases g c <;> simp
 
-instance {α} [CompleteAtomicBooleanAlgebra α] : IsCoatomistic α := fast_instance%
+instance {α} [CompleteAtomicBooleanAlgebra α] : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 inferInstance
 
 end CompleteAtomicBooleanAlgebra
@@ -543,7 +543,7 @@ section IsSimpleOrder
 
 variable [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α]
 
-instance {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] : IsSimpleOrder αᵒᵈ := fast_instance%
+instance {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] : IsSimpleOrder αᵒᵈ :=
   isSimpleOrder_iff_isSimpleOrder_orderDual.1 (by infer_instance)
 
 /-- A simple `BoundedOrder` induces a preorder. This is not an instance to prevent loops. -/
@@ -750,7 +750,7 @@ instance (priority := 100) : IsAtomistic α :=
       ⟨{⊤}, h.trans sSup_singleton.symm, fun _ ha =>
         (Set.mem_singleton_iff.1 ha).symm ▸ isAtom_top⟩⟩
 
-instance : IsCoatomistic α := fast_instance%
+instance : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 (by infer_instance)
 
 end IsSimpleOrder

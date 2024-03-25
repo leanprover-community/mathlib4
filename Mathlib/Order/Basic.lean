@@ -809,16 +809,16 @@ notation:max α "ᵒᵈ" => OrderDual α
 
 namespace OrderDual
 
-instance (α : Type*) [h : Nonempty α] : Nonempty αᵒᵈ := fast_instance%
+instance (α : Type*) [h : Nonempty α] : Nonempty αᵒᵈ :=
   h
 
-instance (α : Type*) [h : Subsingleton α] : Subsingleton αᵒᵈ := fast_instance%
+instance (α : Type*) [h : Subsingleton α] : Subsingleton αᵒᵈ :=
   h
 
-instance (α : Type*) [LE α] : LE αᵒᵈ := fast_instance%
+instance (α : Type*) [LE α] : LE αᵒᵈ :=
   ⟨fun x y : α ↦ y ≤ x⟩
 
-instance (α : Type*) [LT α] : LT αᵒᵈ := fast_instance%
+instance (α : Type*) [LT α] : LT αᵒᵈ :=
   ⟨fun x y : α ↦ y < x⟩
 
 instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
@@ -841,7 +841,7 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
   decidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
 #align order_dual.linear_order OrderDual.instLinearOrder
 
-instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fast_instance% fun [x : Inhabited α] => x
+instance : ∀ [Inhabited α], Inhabited αᵒᵈ :=  fun [x : Inhabited α] => x
 
 theorem Preorder.dual_dual (α : Type*) [H : Preorder α] : OrderDual.instPreorder αᵒᵈ = H :=
   Preorder.ext fun _ _ ↦ Iff.rfl
@@ -862,11 +862,11 @@ end OrderDual
 /-! ### `HasCompl` -/
 
 
-instance Prop.hasCompl : HasCompl Prop := fast_instance%
+instance Prop.hasCompl : HasCompl Prop :=
   ⟨Not⟩
 #align Prop.has_compl Prop.hasCompl
 
-instance Pi.hasCompl {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] : HasCompl (∀ i, α i) := fast_instance%
+instance Pi.hasCompl {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] : HasCompl (∀ i, α i) :=
   ⟨fun x i ↦ (x i)ᶜ⟩
 #align pi.has_compl Pi.hasCompl
 
@@ -881,11 +881,11 @@ theorem Pi.compl_apply {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i
   rfl
 #align pi.compl_apply Pi.compl_apply
 
-instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α rᶜ := fast_instance%
+instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α rᶜ :=
   ⟨@irrefl α r _⟩
 #align is_irrefl.compl IsIrrefl.compl
 
-instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ := fast_instance%
+instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 #align is_refl.compl IsRefl.compl
 
@@ -1003,7 +1003,7 @@ theorem update_lt_self_iff : update x i a < x ↔ a < x i := by simp [lt_iff_le_
 
 end Function
 
-instance Pi.sdiff {ι : Type u} {α : ι → Type v} [∀ i, SDiff (α i)] : SDiff (∀ i, α i) := fast_instance%
+instance Pi.sdiff {ι : Type u} {α : ι → Type v} [∀ i, SDiff (α i)] : SDiff (∀ i, α i) :=
   ⟨fun x y i ↦ x i \ y i⟩
 #align pi.has_sdiff Pi.sdiff
 
@@ -1201,10 +1201,10 @@ def LinearOrder.liftWithOrd' {α β} [LinearOrder β] [Ord α] (f : α → β)
 
 namespace Subtype
 
-instance le [LE α] {p : α → Prop} : LE (Subtype p) := fast_instance%
+instance le [LE α] {p : α → Prop} : LE (Subtype p) :=
   ⟨fun x y ↦ (x : α) ≤ y⟩
 
-instance lt [LT α] {p : α → Prop} : LT (Subtype p) := fast_instance%
+instance lt [LT α] {p : α → Prop} : LT (Subtype p) :=
   ⟨fun x y ↦ (x : α) < y⟩
 
 @[simp]
@@ -1229,10 +1229,10 @@ theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y �
   Iff.rfl
 #align subtype.coe_lt_coe Subtype.coe_lt_coe
 
-instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) := fast_instance%
+instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
   Preorder.lift (fun (a : Subtype p) ↦ (a : α))
 
-instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) := fast_instance%
+instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
   PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
 #align subtype.partial_order Subtype.partialOrder
 
@@ -1247,7 +1247,7 @@ instance decidableLT [Preorder α] [h : @DecidableRel α (· < ·)] {p : α → 
 /-- A subtype of a linear order is a linear order. We explicitly give the proofs of decidable
 equality and decidable order in order to ensure the decidability instances are all definitionally
 equal. -/
-instance instLinearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) := fast_instance%
+instance instLinearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
   @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
     ⟨fun x y ↦ ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) ↦ (a : α))
     Subtype.coe_injective (fun _ _ ↦ rfl) fun _ _ ↦
@@ -1265,7 +1265,7 @@ type synonym `α ×ₗ β = α × β`.
 
 namespace Prod
 
-instance (α : Type u) (β : Type v) [LE α] [LE β] : LE (α × β) := fast_instance%
+instance (α : Type u) (β : Type v) [LE α] [LE β] : LE (α × β) :=
   ⟨fun p q ↦ p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
 
 -- Porting note (#10754): new instance
@@ -1366,7 +1366,7 @@ theorem denselyOrdered_orderDual [LT α] : DenselyOrdered αᵒᵈ ↔ DenselyOr
   ⟨by convert @OrderDual.denselyOrdered αᵒᵈ _, @OrderDual.denselyOrdered α _⟩
 #align densely_ordered_order_dual denselyOrdered_orderDual
 
-instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] : DenselyOrdered (α × β) := fast_instance%
+instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] : DenselyOrdered (α × β) :=
   ⟨fun a b ↦ by
     simp_rw [Prod.lt_iff]
     rintro (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩)
@@ -1464,7 +1464,7 @@ theorem not_lt : ¬a < b :=
   not_false
 #align punit.not_lt PUnit.not_lt
 
-instance : DenselyOrdered PUnit := fast_instance%
+instance : DenselyOrdered PUnit :=
   ⟨fun _ _ ↦ False.elim⟩
 
 end PUnit
@@ -1472,7 +1472,7 @@ end PUnit
 section «Prop»
 
 /-- Propositions form a complete boolean algebra, where the `≤` relation is given by implication. -/
-instance Prop.le : LE Prop := fast_instance%
+instance Prop.le : LE Prop :=
   ⟨(· → ·)⟩
 #align Prop.has_le Prop.le
 
@@ -1504,7 +1504,7 @@ def AsLinearOrder (α : Type u) :=
   α
 #align as_linear_order AsLinearOrder
 
-instance {α} [Inhabited α] : Inhabited (AsLinearOrder α) := fast_instance%
+instance {α} [Inhabited α] : Inhabited (AsLinearOrder α) :=
   ⟨(default : α)⟩
 
 noncomputable instance AsLinearOrder.linearOrder {α} [PartialOrder α] [IsTotal α (· ≤ ·)] :

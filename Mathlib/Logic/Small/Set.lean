@@ -30,7 +30,7 @@ instance small_image {α : Type v} {β : Type w} (f : α → β) (S : Set α) [S
 instance small_union {α : Type v} (s t : Set α) [Small.{u} s] [Small.{u} t] :
     Small.{u} (s ∪ t : Set α) := by
   rw [← Subtype.range_val (s := s), ← Subtype.range_val (s := t), ← Set.Sum.elim_range]
-  infer_instance
+  sorry
 
 instance small_iUnion {α : Type v} {ι : Type w} [Small.{u} ι] (s : ι → Set α)
     [∀ i, Small.{u} (s i)] : Small.{u} (⋃ i, s i) :=

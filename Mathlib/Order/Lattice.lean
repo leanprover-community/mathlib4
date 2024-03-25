@@ -98,10 +98,10 @@ def SemilatticeSup.mk' {α : Type*} [Sup α] (sup_comm : ∀ a b : α, a ⊔ b =
   sup_le a b c hac hbc := by dsimp; rwa [sup_assoc, hbc]
 #align semilattice_sup.mk' SemilatticeSup.mk'
 
-instance OrderDual.instSup (α : Type*) [Inf α] : Sup αᵒᵈ := fast_instance%
+instance OrderDual.instSup (α : Type*) [Inf α] : Sup αᵒᵈ :=
   ⟨((· ⊓ ·) : α → α → α)⟩
 
-instance OrderDual.instInf (α : Type*) [Sup α] : Inf αᵒᵈ := fast_instance%
+instance OrderDual.instInf (α : Type*) [Sup α] : Inf αᵒᵈ :=
   ⟨((· ⊔ ·) : α → α → α)⟩
 
 section SemilatticeSup
@@ -221,18 +221,18 @@ theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
 theorem sup_idem (a : α) : a ⊔ a = a := by simp
 #align sup_idem sup_idem
 
-instance : Std.IdempotentOp (α := fast_instance% α) (· ⊔ ·) := ⟨sup_idem⟩
+instance : Std.IdempotentOp (α :=  α) (· ⊔ ·) := ⟨sup_idem⟩
 
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by apply le_antisymm <;> simp
 #align sup_comm sup_comm
 
-instance : Std.Commutative (α := fast_instance% α) (· ⊔ ·) := ⟨sup_comm⟩
+instance : Std.Commutative (α :=  α) (· ⊔ ·) := ⟨sup_comm⟩
 
 theorem sup_assoc (a b c : α) : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
   eq_of_forall_ge_iff fun x => by simp only [sup_le_iff]; rw [and_assoc]
 #align sup_assoc sup_assoc
 
-instance : Std.Associative (α := fast_instance% α)  (· ⊔ ·) := ⟨sup_assoc⟩
+instance : Std.Associative (α :=  α)  (· ⊔ ·) := ⟨sup_assoc⟩
 
 theorem sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
   rw [sup_comm, sup_comm a, sup_assoc]
@@ -460,17 +460,17 @@ theorem inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c 
 theorem inf_idem (a : α) : a ⊓ a = a := by simp
 #align inf_idem inf_idem
 
-instance : Std.IdempotentOp (α := fast_instance% α) (· ⊓ ·) := ⟨inf_idem⟩
+instance : Std.IdempotentOp (α :=  α) (· ⊓ ·) := ⟨inf_idem⟩
 
 theorem inf_comm (a b : α) : a ⊓ b = b ⊓ a := @sup_comm αᵒᵈ _ _ _
 #align inf_comm inf_comm
 
-instance : Std.Commutative (α := fast_instance% α) (· ⊓ ·) := ⟨inf_comm⟩
+instance : Std.Commutative (α :=  α) (· ⊓ ·) := ⟨inf_comm⟩
 
 theorem inf_assoc (a b c : α) : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) := @sup_assoc αᵒᵈ _ _ _ _
 #align inf_assoc inf_assoc
 
-instance : Std.Associative (α := fast_instance% α) (· ⊓ ·) := ⟨inf_assoc⟩
+instance : Std.Associative (α :=  α) (· ⊓ ·) := ⟨inf_assoc⟩
 
 theorem inf_left_right_swap (a b c : α) : a ⊓ b ⊓ c = c ⊓ b ⊓ a :=
   @sup_left_right_swap αᵒᵈ _ _ _ _
@@ -899,8 +899,8 @@ instance (priority := 100) {α : Type u} [LinearOrder α] : DistribLattice α wh
     | Or.inl h => inf_le_of_left_le <| sup_le_sup_left (le_inf (le_refl b) h) _
     | Or.inr h => inf_le_of_right_le <| sup_le_sup_left (le_inf h (le_refl c)) _
 
-instance : DistribLattice ℕ := fast_instance% inferInstance
-instance : Lattice ℤ := fast_instance% inferInstance
+instance : DistribLattice ℕ :=  inferInstance
+instance : Lattice ℤ :=  inferInstance
 
 /-! ### Dual order -/
 
@@ -960,7 +960,7 @@ namespace Pi
 
 variable {ι : Type*} {α' : ι → Type*}
 
-instance [∀ i, Sup (α' i)] : Sup (∀ i, α' i) := fast_instance%
+instance [∀ i, Sup (α' i)] : Sup (∀ i, α' i) :=
   ⟨fun f g i => f i ⊔ g i⟩
 
 @[simp]
@@ -972,7 +972,7 @@ theorem sup_def [∀ i, Sup (α' i)] (f g : ∀ i, α' i) : f ⊔ g = fun i => f
   rfl
 #align pi.sup_def Pi.sup_def
 
-instance [∀ i, Inf (α' i)] : Inf (∀ i, α' i) := fast_instance%
+instance [∀ i, Inf (α' i)] : Inf (∀ i, α' i) :=
   ⟨fun f g i => f i ⊓ g i⟩
 
 @[simp]
@@ -1257,10 +1257,10 @@ namespace Prod
 
 variable (α β)
 
-instance [Sup α] [Sup β] : Sup (α × β) := fast_instance%
+instance [Sup α] [Sup β] : Sup (α × β) :=
   ⟨fun p q => ⟨p.1 ⊔ q.1, p.2 ⊔ q.2⟩⟩
 
-instance [Inf α] [Inf β] : Inf (α × β) := fast_instance%
+instance [Inf α] [Inf β] : Inf (α × β) :=
   ⟨fun p q => ⟨p.1 ⊓ q.1, p.2 ⊓ q.2⟩⟩
 
 @[simp]
@@ -1488,24 +1488,24 @@ end lift
 
 namespace ULift
 
-instance [SemilatticeSup α] : SemilatticeSup (ULift.{v} α) := fast_instance%
+instance [SemilatticeSup α] : SemilatticeSup (ULift.{v} α) :=
   ULift.down_injective.semilatticeSup _ down_sup
 
-instance [SemilatticeInf α] : SemilatticeInf (ULift.{v} α) := fast_instance%
+instance [SemilatticeInf α] : SemilatticeInf (ULift.{v} α) :=
   ULift.down_injective.semilatticeInf _ down_inf
 
-instance [Lattice α] : Lattice (ULift.{v} α) := fast_instance%
+instance [Lattice α] : Lattice (ULift.{v} α) :=
   ULift.down_injective.lattice _ down_sup down_inf
 
-instance [DistribLattice α] : DistribLattice (ULift.{v} α) := fast_instance%
+instance [DistribLattice α] : DistribLattice (ULift.{v} α) :=
   ULift.down_injective.distribLattice _ down_sup down_inf
 
-instance [LinearOrder α] : LinearOrder (ULift.{v} α) := fast_instance%
+instance [LinearOrder α] : LinearOrder (ULift.{v} α) :=
   LinearOrder.liftWithOrd ULift.down ULift.down_injective down_sup down_inf
     fun _x _y => (down_compare _ _).symm
 
 end ULift
 
 --To avoid noncomputability poisoning from `Bool.completeBooleanAlgebra`
-instance Bool.instDistribLattice : DistribLattice Bool := fast_instance%
+instance Bool.instDistribLattice : DistribLattice Bool :=
   inferInstance

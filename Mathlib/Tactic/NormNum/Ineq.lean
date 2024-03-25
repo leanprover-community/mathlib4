@@ -139,8 +139,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm
   | .isNat ra na pa, .isNat rb nb pb =>
     let _i ← inferOrderedSemiring α
-    haveI' : $ra =Q by clear! $ra $rb; infer_instance := fast_instance% ⟨⟩
-    haveI' : $rb =Q by clear! $ra $rb; infer_instance := fast_instance% ⟨⟩
+    haveI' : $ra =Q by clear! $ra $rb; infer_instance := ⟨⟩
+    haveI' : $rb =Q by clear! $ra $rb; infer_instance := ⟨⟩
     guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
     haveI' : $e =Q ($a ≤ $b) := ⟨⟩
     if na.natLit! ≤ nb.natLit! then
@@ -196,8 +196,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm
   | .isNat ra na pa, .isNat rb nb pb =>
     let _i ← inferOrderedSemiring α
-    haveI' : $ra =Q by clear! $ra $rb; infer_instance := fast_instance% ⟨⟩
-    haveI' : $rb =Q by clear! $ra $rb; infer_instance := fast_instance% ⟨⟩
+    haveI' : $ra =Q by clear! $ra $rb; infer_instance := ⟨⟩
+    haveI' : $rb =Q by clear! $ra $rb; infer_instance := ⟨⟩
     haveI' : $e =Q ($a < $b) := ⟨⟩
     guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
     if na.natLit! < nb.natLit! then

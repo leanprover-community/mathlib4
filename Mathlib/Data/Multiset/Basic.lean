@@ -233,7 +233,7 @@ theorem mem_coe {a : α} {l : List α} : a ∈ (l : Multiset α) ↔ a ∈ l :=
   Iff.rfl
 #align multiset.mem_coe Multiset.mem_coe
 
-instance decidableMem [DecidableEq α] (a : α) (s : Multiset α) : Decidable (a ∈ s) := fast_instance%
+instance decidableMem [DecidableEq α] (a : α) (s : Multiset α) : Decidable (a ∈ s) :=
   Quot.recOnSubsingleton' s fun l ↦ inferInstanceAs (Decidable (a ∈ l))
 #align multiset.decidable_mem Multiset.decidableMem
 
@@ -520,7 +520,7 @@ instance : PartialOrder (Multiset α) where
   le_trans := by rintro ⟨l₁⟩ ⟨l₂⟩ ⟨l₃⟩; exact @Subperm.trans _ _ _ _
   le_antisymm := by rintro ⟨l₁⟩ ⟨l₂⟩ h₁ h₂; exact Quot.sound (Subperm.antisymm h₁ h₂)
 
-instance decidableLE [DecidableEq α] : DecidableRel ((· ≤ ·) : Multiset α → Multiset α → Prop) := fast_instance%
+instance decidableLE [DecidableEq α] : DecidableRel ((· ≤ ·) : Multiset α → Multiset α → Prop) :=
   fun s t => Quotient.recOnSubsingleton₂ s t List.decidableSubperm
 #align multiset.decidable_le Multiset.decidableLE
 

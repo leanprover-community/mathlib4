@@ -39,7 +39,7 @@ def Booleanisation (α : Type*) := α ⊕ α
 
 namespace Booleanisation
 
-instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) := fast_instance% Sum.instDecidableEqSum
+instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) := Sum.instDecidableEqSum
 
 variable [GeneralizedBooleanAlgebra α] {x y : Booleanisation α} {a b : α}
 

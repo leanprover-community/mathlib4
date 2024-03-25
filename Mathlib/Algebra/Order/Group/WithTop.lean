@@ -20,7 +20,7 @@ section LinearOrderedAddCommGroup
 
 variable [LinearOrderedAddCommGroup α] {a b c d : α}
 
-instance instNeg : Neg (WithTop α) where neg := fast_instance% Option.map fun a : α => -a
+instance instNeg : Neg (WithTop α) where neg := Option.map fun a : α => -a
 
 instance linearOrderedAddCommGroupWithTop : LinearOrderedAddCommGroupWithTop (WithTop α) where
   __ := WithTop.linearOrderedAddCommMonoidWithTop

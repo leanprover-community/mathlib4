@@ -85,7 +85,7 @@ theorem smul_mk_zero {β : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M 
 variable [Pow α E] [Pow β E]
 
 @[to_additive existing smul]
-instance pow : Pow (α × β) E where pow p c := fast_instance% (p.1 ^ c, p.2 ^ c)
+instance pow : Pow (α × β) E where pow p c := (p.1 ^ c, p.2 ^ c)
 #align prod.has_pow Prod.pow
 #align prod.has_smul Prod.smul
 

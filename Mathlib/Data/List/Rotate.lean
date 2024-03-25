@@ -702,7 +702,7 @@ section Decidable
 
 variable [DecidableEq α]
 
-instance isRotatedDecidable (l l' : List α) : Decidable (l ~r l') := fast_instance%
+instance isRotatedDecidable (l l' : List α) : Decidable (l ~r l') :=
   decidable_of_iff' _ isRotated_iff_mem_map_range
 #align list.is_rotated_decidable List.isRotatedDecidable
 

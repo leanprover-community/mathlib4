@@ -42,7 +42,7 @@ def Prod.bitraverse {α α' β β'} (f : α → F α') (f' : β → F β') : α 
   | (x, y) => Prod.mk <$> f x <*> f' y
 #align prod.bitraverse Prod.bitraverse
 
-instance : Bitraversable Prod where bitraverse := fast_instance% @Prod.bitraverse
+instance : Bitraversable Prod where bitraverse := @Prod.bitraverse
 
 instance : LawfulBitraversable Prod := fast_instance% by
   constructor <;> intros <;> casesm _ × _ <;>
@@ -56,7 +56,7 @@ def Sum.bitraverse {α α' β β'} (f : α → F α') (f' : β → F β') : Sum 
   | Sum.inr x => Sum.inr <$> f' x
 #align sum.bitraverse Sum.bitraverse
 
-instance : Bitraversable Sum where bitraverse := fast_instance% @Sum.bitraverse
+instance : Bitraversable Sum where bitraverse := @Sum.bitraverse
 
 instance : LawfulBitraversable Sum := fast_instance% by
   constructor <;> intros <;> casesm _ ⊕ _ <;>
@@ -71,7 +71,7 @@ def Const.bitraverse {F : Type u → Type u} [Applicative F] {α α' β β'} (f 
   f
 #align const.bitraverse Const.bitraverse
 
-instance Bitraversable.const : Bitraversable Const where bitraverse := fast_instance% @Const.bitraverse
+instance Bitraversable.const : Bitraversable Const where bitraverse := @Const.bitraverse
 #align bitraversable.const Bitraversable.const
 
 instance LawfulBitraversable.const : LawfulBitraversable Const := fast_instance% by
@@ -84,7 +84,7 @@ nonrec def flip.bitraverse {α α' β β'} (f : α → F α') (f' : β → F β'
   (bitraverse f' f : t β α → F (t β' α'))
 #align flip.bitraverse flip.bitraverse
 
-instance Bitraversable.flip : Bitraversable (flip t) where bitraverse := fast_instance% @flip.bitraverse t _
+instance Bitraversable.flip : Bitraversable (flip t) where bitraverse := @flip.bitraverse t _
 #align bitraversable.flip Bitraversable.flip
 
 open LawfulBitraversable
@@ -123,7 +123,7 @@ nonrec def Bicompl.bitraverse {m} [Applicative m] {α β α' β'} (f : α → m 
   (bitraverse (traverse f) (traverse f') : t (F α) (G α') → m _)
 #align bicompl.bitraverse Bicompl.bitraverse
 
-instance : Bitraversable (bicompl t F G) where bitraverse := fast_instance% @Bicompl.bitraverse t _ F G _ _
+instance : Bitraversable (bicompl t F G) where bitraverse := @Bicompl.bitraverse t _ F G _ _
 
 instance [LawfulTraversable F] [LawfulTraversable G] [LawfulBitraversable t] :
     LawfulBitraversable (bicompl t F G) := by
@@ -146,7 +146,7 @@ nonrec def Bicompr.bitraverse {m} [Applicative m] {α β α' β'} (f : α → m 
   (traverse (bitraverse f f') : F (t α α') → m _)
 #align bicompr.bitraverse Bicompr.bitraverse
 
-instance : Bitraversable (bicompr F t) where bitraverse := fast_instance% @Bicompr.bitraverse t _ F _
+instance : Bitraversable (bicompr F t) where bitraverse := @Bicompr.bitraverse t _ F _
 
 instance [LawfulTraversable F] [LawfulBitraversable t] : LawfulBitraversable (bicompr F t) := fast_instance% by
   constructor <;> intros <;>

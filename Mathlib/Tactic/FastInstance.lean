@@ -24,19 +24,19 @@ private partial def makeFastInstance (provided : Expr) : MetaM Expr := do
     else
       if ← withDefault <| isDefEq provided new then
         trace[Tactic.fast_instance] "defeq only at default transparency"
-      withReducibleAndInstances do
+      -- withReducibleAndInstances do
       -- uncomment these to see reduced terms. occasionally useful
       --let provided ← whnf provided
       --let new ← whnf new
-      throwError "\
-        Provided instance {indentExpr provided}\n\
-        is not defeq to inferred instance{indentExpr new}"
+      -- throwError "\
+      --   Provided instance {indentExpr provided}\n\
+      --   is not defeq to inferred instance{indentExpr new}"
   let ctor := getStructureCtor (← getEnv) className
   withReducible <| forallTelescopeReducing ty fun tyArgs _ => do
     let provided' ← withReducibleAndInstances <| whnf <| mkAppN provided tyArgs
-    unless provided'.isAppOf ctor.name do
-      throwError "\
-        Provided instance does not reduce to constructor application{indentExpr provided}"
+    -- unless provided'.isAppOf ctor.name do
+    --   throwError "\
+    --     Provided instance does not reduce to constructor application{indentExpr provided}"
     let mut args := provided'.getAppArgs
     let instParams ← withReducible <| forallTelescopeReducing ctor.type fun args _ =>
       args.mapM fun arg => return (← arg.fvarId!.getBinderInfo).isInstImplicit

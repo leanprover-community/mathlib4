@@ -102,7 +102,7 @@ instance : SetLike (Subsemigroup M) M := fast_instance%
   ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
 
 @[to_additive]
-instance : MulMemClass (Subsemigroup M) M where mul_mem := fast_instance% fun {_ _ _} => Subsemigroup.mul_mem' _
+instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
 initialize_simps_projections Subsemigroup (carrier → coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe)
@@ -263,7 +263,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subsemigroup M} : (↑(⨅ i, S i) : S
 
 /-- subsemigroups of a monoid form a complete lattice. -/
 @[to_additive "The `AddSubsemigroup`s of an `AddMonoid` form a complete lattice."]
-instance : CompleteLattice (Subsemigroup M) := fast_instance%
+instance : CompleteLattice (Subsemigroup M) :=
   { completeLatticeOfInf (Subsemigroup M) fun _ =>
       IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     le := (· ≤ ·)

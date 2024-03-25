@@ -1019,7 +1019,7 @@ theorem isPrimal_iff {a : α} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
 theorem decompositionMonoid_iff : DecompositionMonoid (Associates α) ↔ DecompositionMonoid α := by
   simp_rw [_root_.decompositionMonoid_iff, forall_associated, isPrimal_iff]
 
-instance instDecompositionMonoid [DecompositionMonoid α] : DecompositionMonoid (Associates α) := fast_instance%
+instance instDecompositionMonoid [DecompositionMonoid α] : DecompositionMonoid (Associates α) :=
   decompositionMonoid_iff.mpr ‹_›
 
 theorem mk_isRelPrime_iff {a b : α} :

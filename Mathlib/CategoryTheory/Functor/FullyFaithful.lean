@@ -265,7 +265,7 @@ namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-instance Full.id : Full (𝟭 C) where preimage f := fast_instance% f
+instance Full.id : Full (𝟭 C) where preimage f := f
 #align category_theory.full.id CategoryTheory.Full.id
 
 instance Faithful.id : Faithful (𝟭 C) := fast_instance% { }

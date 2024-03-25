@@ -76,7 +76,7 @@ theorem map_functorial_obj (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) : map F.obj f =
   rfl
 #align category_theory.map_functorial_obj CategoryTheory.map_functorial_obj
 
-instance functorial_id : Functorial.{v₁, v₁} (id : C → C) where map' f := fast_instance% f
+instance functorial_id : Functorial.{v₁, v₁} (id : C → C) where map' f := f
 #align category_theory.functorial_id CategoryTheory.functorial_id
 
 section

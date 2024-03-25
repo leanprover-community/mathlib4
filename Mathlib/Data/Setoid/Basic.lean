@@ -168,7 +168,7 @@ instance : PartialOrder (Setoid α) where
 
 /-- The complete lattice of equivalence relations on a type, with bottom element `=`
     and top element the trivial equivalence relation. -/
-instance completeLattice : CompleteLattice (Setoid α) := fast_instance%
+instance completeLattice : CompleteLattice (Setoid α) :=
   { (completeLatticeOfInf (Setoid α)) fun _ =>
       ⟨fun _ hr _ _ h => h _ hr, fun _ hr _ _ h _ hr' => hr hr' h⟩ with
     inf := Inf.inf

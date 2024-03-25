@@ -236,7 +236,7 @@ theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
 
 open Lean in
 open Qq in
-protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) := fast_instance%
+protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
   have lu := toLevel.{u}
   have eα : Q(Type $lu) := toTypeExpr α
   have toTypeExpr := q(Fin $n → $eα)

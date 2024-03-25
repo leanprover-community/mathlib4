@@ -76,7 +76,7 @@ instance : Bot (Estimator.trivial a) := fast_instance% ⟨⟨a, rfl⟩⟩
 instance : WellFoundedGT Unit where
   wf := ⟨fun .unit => ⟨.unit, nofun⟩⟩
 
-instance (a : α) : WellFoundedGT (Estimator.trivial a) := fast_instance%
+instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
   let f : Estimator.trivial a ≃o Unit := RelIso.relIsoOfUniqueOfRefl _ _
   let f' : Estimator.trivial a ↪o Unit := f.toOrderEmbedding
   f'.wellFoundedGT
@@ -203,7 +203,7 @@ structure Estimator.fst
 
 variable [∀ a : α, WellFoundedGT { x // x ≤ a }]
 
-instance [Estimator a ε] : WellFoundedGT (range (bound a : ε → α)) := fast_instance%
+instance [Estimator a ε] : WellFoundedGT (range (bound a : ε → α)) :=
   let f : range (bound a : ε → α) ↪o { x // x ≤ a.get } :=
     Subtype.orderEmbedding (by rintro _ ⟨e, rfl⟩; exact Estimator.bound_le e)
   f.wellFoundedGT

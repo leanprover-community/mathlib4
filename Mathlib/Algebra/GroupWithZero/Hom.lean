@@ -102,7 +102,7 @@ instance monoidWithZeroHomClass : MonoidWithZeroHomClass (α →*₀ β) α β w
   map_zero f := f.map_zero'
 #align monoid_with_zero_hom.monoid_with_zero_hom_class MonoidWithZeroHom.monoidWithZeroHomClass
 
-instance [Subsingleton α] : Subsingleton (α →*₀ β) := fast_instance% .of_oneHomClass
+instance [Subsingleton α] : Subsingleton (α →*₀ β) := .of_oneHomClass
 
 variable [FunLike F α β]
 

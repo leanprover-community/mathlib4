@@ -186,54 +186,54 @@ attribute [nolint simpComm] AddOpposite.unop_inj
 variable (α)
 
 @[to_additive]
-instance nontrivial [Nontrivial α] : Nontrivial αᵐᵒᵖ := fast_instance%
+instance nontrivial [Nontrivial α] : Nontrivial αᵐᵒᵖ :=
   op_injective.nontrivial
 
 @[to_additive]
-instance inhabited [Inhabited α] : Inhabited αᵐᵒᵖ := fast_instance%
+instance inhabited [Inhabited α] : Inhabited αᵐᵒᵖ :=
   ⟨op default⟩
 
 @[to_additive]
-instance subsingleton [Subsingleton α] : Subsingleton αᵐᵒᵖ := fast_instance%
+instance subsingleton [Subsingleton α] : Subsingleton αᵐᵒᵖ :=
   unop_injective.subsingleton
 
 @[to_additive]
-instance unique [Unique α] : Unique αᵐᵒᵖ := fast_instance%
+instance unique [Unique α] : Unique αᵐᵒᵖ :=
   Unique.mk' _
 
 @[to_additive]
-instance isEmpty [IsEmpty α] : IsEmpty αᵐᵒᵖ := fast_instance%
+instance isEmpty [IsEmpty α] : IsEmpty αᵐᵒᵖ :=
   Function.isEmpty unop
 
 @[to_additive]
-instance instDecidableEq [DecidableEq α] : DecidableEq αᵐᵒᵖ := fast_instance% unop_injective.decidableEq
+instance instDecidableEq [DecidableEq α] : DecidableEq αᵐᵒᵖ :=  unop_injective.decidableEq
 
-instance zero [Zero α] : Zero αᵐᵒᵖ where zero := fast_instance% op 0
+instance zero [Zero α] : Zero αᵐᵒᵖ where zero :=  op 0
 
 @[to_additive]
-instance one [One α] : One αᵐᵒᵖ where one := fast_instance% op 1
+instance one [One α] : One αᵐᵒᵖ where one :=  op 1
 
-instance add [Add α] : Add αᵐᵒᵖ where add x y := fast_instance% op (unop x + unop y)
+instance add [Add α] : Add αᵐᵒᵖ where add x y :=  op (unop x + unop y)
 
-instance sub [Sub α] : Sub αᵐᵒᵖ where sub x y := fast_instance% op (unop x - unop y)
+instance sub [Sub α] : Sub αᵐᵒᵖ where sub x y :=  op (unop x - unop y)
 
-instance neg [Neg α] : Neg αᵐᵒᵖ where neg x := fast_instance% op <| -unop x
+instance neg [Neg α] : Neg αᵐᵒᵖ where neg x :=  op <| -unop x
 
-instance involutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ := fast_instance%
+instance involutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ :=
   { MulOpposite.neg α with neg_neg := fun _ => unop_injective <| neg_neg _ }
 
 @[to_additive]
-instance mul [Mul α] : Mul αᵐᵒᵖ where mul x y := fast_instance% op (unop y * unop x)
+instance mul [Mul α] : Mul αᵐᵒᵖ where mul x y :=  op (unop y * unop x)
 
 @[to_additive]
-instance inv [Inv α] : Inv αᵐᵒᵖ where inv x := fast_instance% op <| (unop x)⁻¹
+instance inv [Inv α] : Inv αᵐᵒᵖ where inv x :=  op <| (unop x)⁻¹
 
 @[to_additive]
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ := fast_instance%
+instance involutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ :=
   { MulOpposite.inv α with inv_inv := fun _ => unop_injective <| inv_inv _ }
 
 @[to_additive]
-instance smul (R : Type*) [SMul R α] : SMul R αᵐᵒᵖ where smul c x := fast_instance% op (c • unop x)
+instance smul (R : Type*) [SMul R α] : SMul R αᵐᵒᵖ where smul c x :=  op (c • unop x)
 
 section
 
@@ -367,7 +367,7 @@ end MulOpposite
 
 namespace AddOpposite
 
-instance one [One α] : One αᵃᵒᵖ where one := fast_instance% op 1
+instance one [One α] : One αᵃᵒᵖ where one :=  op 1
 
 @[simp]
 theorem op_one [One α] : op (1 : α) = 1 :=
@@ -391,7 +391,7 @@ theorem unop_eq_one_iff [One α] {a : αᵃᵒᵖ} : unop a = 1 ↔ a = 1 :=
 
 attribute [nolint simpComm] unop_eq_one_iff
 
-instance mul [Mul α] : Mul αᵃᵒᵖ where mul a b := fast_instance% op (unop a * unop b)
+instance mul [Mul α] : Mul αᵃᵒᵖ where mul a b :=  op (unop a * unop b)
 
 @[simp]
 theorem op_mul [Mul α] (a b : α) : op (a * b) = op a * op b :=
@@ -403,9 +403,9 @@ theorem unop_mul [Mul α] (a b : αᵃᵒᵖ) : unop (a * b) = unop a * unop b :
   rfl
 #align add_opposite.unop_mul AddOpposite.unop_mul
 
-instance inv [Inv α] : Inv αᵃᵒᵖ where inv a := fast_instance% op (unop a)⁻¹
+instance inv [Inv α] : Inv αᵃᵒᵖ where inv a :=  op (unop a)⁻¹
 
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv αᵃᵒᵖ := fast_instance%
+instance involutiveInv [InvolutiveInv α] : InvolutiveInv αᵃᵒᵖ :=
   { AddOpposite.inv with inv_inv := fun _ => unop_injective <| inv_inv _ }
 
 @[simp]
@@ -418,7 +418,7 @@ theorem unop_inv [Inv α] (a : αᵃᵒᵖ) : unop a⁻¹ = (unop a)⁻¹ :=
   rfl
 #align add_opposite.unop_inv AddOpposite.unop_inv
 
-instance div [Div α] : Div αᵃᵒᵖ where div a b := fast_instance% op (unop a / unop b)
+instance div [Div α] : Div αᵃᵒᵖ where div a b :=  op (unop a / unop b)
 
 @[simp]
 theorem op_div [Div α] (a b : α) : op (a / b) = op a / op b :=

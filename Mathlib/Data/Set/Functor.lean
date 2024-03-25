@@ -70,7 +70,7 @@ theorem image2_def {α β γ : Type u} (f : α → β → γ) (s : Set α) (t : 
   simp
 #align set.image2_def Set.image2_def
 
-instance : LawfulMonad Set := fast_instance% LawfulMonad.mk'
+instance : LawfulMonad Set := LawfulMonad.mk'
   (id_map := image_id)
   (pure_bind := biUnion_singleton)
   (bind_assoc := fun _ _ _ => by simp only [bind_def, biUnion_iUnion])
@@ -164,7 +164,7 @@ end Set
 /-- This is `Set` but with a `Monad` instance. -/
 def SetM (α : Type u) := Set α
 
-instance : Monad SetM := fast_instance% Set.monad
+instance : Monad SetM := Set.monad
 
 /-- Evaluates the `SetM` monad, yielding a `Set`.
 Implementation note: this is the identity function. -/
