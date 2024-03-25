@@ -581,9 +581,7 @@ theorem _root_.DenseRange.topologicalClosure_map_submodule [RingHomSurjective σ
 section SMulMonoid
 
 variable {S₂ T₂ : Type*} [Monoid S₂] [Monoid T₂]
-
 variable [DistribMulAction S₂ M₂] [SMulCommClass R₂ S₂ M₂] [ContinuousConstSMul S₂ M₂]
-
 variable [DistribMulAction T₂ M₂] [SMulCommClass R₂ T₂ M₂] [ContinuousConstSMul T₂ M₂]
 
 instance instSMul : SMul S₂ (M₁ →SL[σ₁₂] M₂) where
@@ -1257,7 +1255,6 @@ theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
 section ToSpanSingleton
 
 variable (R₁)
-
 variable [ContinuousSMul R₁ M₁]
 
 /-- Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous
@@ -1521,7 +1518,7 @@ instance ring [TopologicalAddGroup M] : Ring (M →L[R] M) where
   __ := ContinuousLinearMap.semiring
   __ := ContinuousLinearMap.addCommGroup
   intCast z := z • (1 : M →L[R] M)
-  intCast_ofNat := coe_nat_zsmul _
+  intCast_ofNat := natCast_zsmul _
   intCast_negSucc := negSucc_zsmul _
 #align continuous_linear_map.ring ContinuousLinearMap.ring
 
@@ -1611,7 +1608,6 @@ theorem smul_comp (c : S₃) (h : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁�
 #align continuous_linear_map.smul_comp ContinuousLinearMap.smul_comp
 
 variable [DistribMulAction S₃ M₂] [ContinuousConstSMul S₃ M₂] [SMulCommClass R₂ S₃ M₂]
-
 variable [DistribMulAction S N₂] [ContinuousConstSMul S N₂] [SMulCommClass R S N₂]
 
 @[simp]
@@ -2599,9 +2595,7 @@ variable {R : Type*} {M : Type*} {M₂ : Type*} [TopologicalSpace M] [Topologica
 section
 
 variable [Semiring R]
-
 variable [AddCommMonoid M₂] [Module R M₂]
-
 variable [AddCommMonoid M] [Module R M]
 
 /-- Introduce a function `inverse` from `M →L[R] M₂` to `M₂ →L[R] M`, which sends `f` to `f.symm` if
@@ -2632,9 +2626,7 @@ end
 section
 
 variable [Ring R]
-
 variable [AddCommGroup M] [TopologicalAddGroup M] [Module R M]
-
 variable [AddCommGroup M₂] [Module R M₂]
 
 @[simp]

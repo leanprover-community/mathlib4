@@ -64,6 +64,21 @@ lemma compProd_congr [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel η]
     filter_upwards [h] with a ha using by rw [ha]
   rw [compProd_apply hs, lintegral_congr_ae this, compProd_apply hs]
 
+lemma ae_compProd_of_ae_ae [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
+    (hp : MeasurableSet {x | p x}) (h : ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b)) :
+    ∀ᵐ x ∂(μ ⊗ₘ κ), p x :=
+  kernel.ae_compProd_of_ae_ae hp h
+
+lemma ae_ae_of_ae_compProd [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
+    (h : ∀ᵐ x ∂(μ ⊗ₘ κ), p x) :
+    ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b) :=
+  kernel.ae_ae_of_ae_compProd h
+
+lemma ae_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
+    (hp : MeasurableSet {x | p x}) :
+    (∀ᵐ x ∂(μ ⊗ₘ κ), p x) ↔ ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b) :=
+  kernel.ae_compProd_iff hp
+
 lemma compProd_add_left (μ ν : Measure α) [SFinite μ] [SFinite ν] (κ : kernel α β)
     [IsSFiniteKernel κ] :
     (μ + ν) ⊗ₘ κ = μ ⊗ₘ κ + ν ⊗ₘ κ := by
