@@ -100,9 +100,10 @@ open Set Nat in
 in terms of an a priori infinte sum over all pairs `(k, m)` with `k * m = n`
 (the set we sum over is infinite when `n = 0`). This is the version needed for the
 proof that `L (f ⍟ g) = L f * L g`. -/
-lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
-    term (f ⍟ g) s n =
+lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) :
+    term (f ⍟ g) s = fun n ↦
       ∑' (b : (fun p : ℕ × ℕ ↦ p.1 * p.2) ⁻¹' {n}), term f s b.val.1 * term g s b.val.2 := by
+  ext n
   rcases eq_or_ne n 0 with rfl | hn
   · -- show that both sides vanish when `n = 0`; this is the hardest part of the proof!
     refine (term_zero ..).trans ?_
@@ -128,11 +129,9 @@ equals the product of their L-series, assuming both L-series converge. -/
 lemma LSeriesHasSum.convolution {f g : ℕ → ℂ} {s a b : ℂ} (hf : LSeriesHasSum f s a)
     (hg : LSeriesHasSum g s b) :
     LSeriesHasSum (f ⍟ g) s (a * b) := by
-  simp only [LSeriesHasSum]
+  simp only [LSeriesHasSum, term_convolution]
   have hsum := summable_mul_of_summable_norm hf.summable.norm hg.summable.norm
-  let m : ℕ × ℕ → ℕ := fun p ↦ p.1 * p.2
-  convert (HasSum.mul hf hg hsum).tsum_fiberwise m with n
-  exact term_convolution ..
+  exact (HasSum.mul hf hg hsum).tsum_fiberwise (fun p ↦ p.1 * p.2)
 
 /-- The L-series of the convolution product `f ⍟ g` of two sequences `f` and `g`
 equals the product of their L-series, assuming both L-series converge. -/
