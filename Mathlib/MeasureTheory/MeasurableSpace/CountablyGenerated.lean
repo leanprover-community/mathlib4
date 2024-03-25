@@ -125,9 +125,9 @@ class SeparatesPoints (α : Type*) [m : MeasurableSpace α] : Prop where
   separates : ∀ x y : α, (∀ s, MeasurableSet s → (x ∈ s → y ∈ s)) → x = y
 
 theorem separatesPoints_def [MeasurableSpace α] [hs : SeparatesPoints α] {x y : α}
-    (h : (∀ s, MeasurableSet s → (x ∈ s → y ∈ s))) : x = y := hs.separates _ _ h
+    (h : ∀ s, MeasurableSet s → (x ∈ s → y ∈ s)) : x = y := hs.separates _ _ h
 
-theorem exists_measurableSet_of_neq [MeasurableSpace α] [SeparatesPoints α] {x y : α}
+theorem exists_measurableSet_of_ne [MeasurableSpace α] [SeparatesPoints α] {x y : α}
     (h : x ≠ y) : ∃ s, MeasurableSet s ∧ x ∈ s ∧ y ∉ s := by
   contrapose! h
   exact separatesPoints_def h
@@ -152,12 +152,12 @@ instance (priority := 100) Subtype.separatesPoints [MeasurableSpace α] [h : Sep
 
 instance (priority := 100) separatesPoints_of_measurableSingletonClass [MeasurableSpace α]
     [MeasurableSingletonClass α] : SeparatesPoints α := by
-  refine' ⟨fun x y h ↦ _⟩
+  refine ⟨fun x y h ↦ ?_⟩
   specialize h _ (MeasurableSet.singleton x)
   simp_rw [mem_singleton_iff, forall_true_left] at h
   exact h.symm
 
-instance(priority := 100) [MeasurableSpace α] {s : Set α}
+instance (priority := 100) [MeasurableSpace α] {s : Set α}
     [h : CountablyGenerated s] [SeparatesPoints s] :
     HasCountableSeparatingOn α MeasurableSet s := by
   suffices HasCountableSeparatingOn s MeasurableSet univ from this.of_subtype fun _ ↦ id
@@ -224,7 +224,7 @@ theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
   rw [← Equiv.image_eq_preimage _ _]
-  refine' ⟨{y | y n}, by measurability, _⟩
+  refine ⟨{y | y n}, by measurability, ?_⟩
   rw [← Equiv.preimage_eq_iff_eq_image]
   simp[map_nat_bool_of_countablyGenerated]
 
@@ -235,8 +235,8 @@ theorem measurable_injection_nat_bool_of_hasCountableSeparatingOn [MeasurableSpa
     [HasCountableSeparatingOn α MeasurableSet univ] :
     ∃ f : α → ℕ → Bool, Measurable f ∧ Injective f := by
   rcases exists_countablyGenerated_le_of_hasCountableSeparatingOn α with ⟨m', _, _, m'le⟩
-  refine' ⟨map_nat_bool_of_countablyGenerated α, _, injective_map_nat_bool_of_countablyGenerated _⟩
-  exact (measurable_map_nat_bool_of_countablyGenerated _).mono m'le (by rfl)
+  refine ⟨map_nat_bool_of_countablyGenerated α, ?_, injective_map_nat_bool_of_countablyGenerated _⟩
+  exact (measurable_map_nat_bool_of_countablyGenerated _).mono m'le le_rfl
 
 variable {α}
 
