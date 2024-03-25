@@ -293,9 +293,10 @@ lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nons
       zero_pow, zero_eq_mul, pow_eq_zero_iff, not_or, sub_self, not_true_eq_false, false_or]
     at hP hQ
   simp? [pow_eq_zero hP.left.symm, pow_eq_zero hQ.left.symm] at * says
-    simp only [Fin.isValue, pow_eq_zero hP.left.symm, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
-      zero_pow, or_true, not_true_eq_false, mul_zero, zero_mul, add_zero, pow_eq_zero_iff, false_or,
-      true_and, pow_eq_zero hQ.left.symm] at *
+    simp only [Fin.isValue, pow_eq_zero hP.left.symm, ne_eq, OfNat.ofNat_ne_zero,
+      not_false_eq_true, zero_pow, not_true_eq_false, and_false, mul_zero, zero_mul, add_zero,
+      pow_eq_zero_iff, false_or, true_and, pow_eq_zero hQ.left.symm, Nat.succ_eq_add_one,
+      Nat.reduceAdd] at *
   exact ⟨Units.mk0 (P y / Q y) <| div_ne_zero hP hQ, by simp [div_mul_cancel₀ _ hQ]⟩
 
 lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (h : W.Nonsingular P) (hPz : P z = 0) :
