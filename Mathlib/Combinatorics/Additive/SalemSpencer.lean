@@ -312,7 +312,7 @@ variable [DecidableEq α]
 
 section Monoid
 
-variable [Monoid α] [DecidableEq β] [Monoid β] (s t : Finset α)
+variable [Monoid α] [DecidableEq β] [Monoid β] (s t : Finset α) {m : ℕ}
 
 /-- The multiplicative Roth number of a finset is the cardinality of its biggest multiplicative
 Salem-Spencer subset. -/
@@ -320,7 +320,7 @@ Salem-Spencer subset. -/
 Salem-Spencer subset. The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see
 `rothNumberNat`. "]
 def mulRothNumber : Finset α →o ℕ :=
-  ⟨fun s ↦ Nat.findGreatest (fun m => ∃ t ⊆ s, t.card = m ∧ MulSalemSpencer (t : Set α)) s.card, by
+  ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, t.card = m ∧ MulSalemSpencer (t : Set α)) s.card, by
     rintro t u htu
     refine' Nat.findGreatest_mono (fun m => _) (card_le_card htu)
     rintro ⟨v, hvt, hv⟩

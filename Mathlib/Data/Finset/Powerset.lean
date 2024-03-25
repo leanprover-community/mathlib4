@@ -128,15 +128,15 @@ instance decidableForallOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Pro
 #align finset.decidable_forall_of_decidable_subsets Finset.decidableForallOfDecidableSubsets
 
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for any subset. -/
-def decidableExistsOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ t, Decidable (p t)) : Decidable (∃ t ⊆ s, p t) :=
-  decidable_of_iff  (∃ (t : _) (_h : t ⊆ s), p t) $ by simp
+instance decidableExistsOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
+    [∀ t, Decidable (p t)] : Decidable (∃ t ⊆ s, p t) :=
+  decidable_of_iff (∃ (t : _) (_h : t ⊆ s), p t) $ by simp
 #align finset.decidable_exists_of_decidable_subsets' Finset.decidableExistsOfDecidableSubsets'
 
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for every subset. -/
-def decidableForallOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ t, Decidable (p t)) : Decidable (∀ t ⊆ s, p t) :=
-  decidable_of_iff  (∀ (t : _) (_h : t ⊆ s), p t) $ by simp
+instance decidableForallOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
+    [∀ t, Decidable (p t)] : Decidable (∀ t ⊆ s, p t) :=
+  decidable_of_iff (∀ (t : _) (_h : t ⊆ s), p t) $ by simp
 #align finset.decidable_forall_of_decidable_subsets' Finset.decidableForallOfDecidableSubsets'
 
 end Powerset
