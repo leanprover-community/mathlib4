@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Anand Rao
 -/
 import Mathlib.Lean.Meta.RefinedDiscrTree.RefinedDiscrTree
-import Mathlib.Tactic.Widget.SelectPanelUtils
+import Mathlib.Tactic.InteractiveUnfold
 
 /-!
 # Point & click library rewriting
@@ -141,53 +141,6 @@ def getLocalRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) := do
 end
 
 
-/-- The `Expr` at a `SubExpr.GoalsLocation`. -/
-def _root_.Lean.SubExpr.GoalsLocation.rootExpr : SubExpr.GoalsLocation → MetaM Expr
-  | ⟨_, .hyp fvarId⟩        => fvarId.getType
-  | ⟨_, .hypType fvarId _⟩  => fvarId.getType
-  | ⟨_, .hypValue fvarId _⟩ => do return (← fvarId.getDecl).value
-  | ⟨mvarId, .target _⟩     => mvarId.getType
-
-/-- The `SubExpr.Pos` of a `SubExpr.GoalsLocation`. -/
-def _root_.Lean.SubExpr.GoalsLocation.pos : SubExpr.GoalsLocation → SubExpr.Pos
-  | ⟨_, .hyp _⟩          => .root
-  | ⟨_, .hypType _ pos⟩  => pos
-  | ⟨_, .hypValue _ pos⟩ => pos
-  | ⟨_, .target pos⟩     => pos
-
-/-- find the positions of the pattern that `kabstract` would find -/
-def kabstractPositions (p e : Expr) : MetaM (Array SubExpr.Pos) := do
-  let e ← instantiateMVars e
-  let pHeadIdx := p.toHeadIndex
-  let pNumArgs := p.headNumArgs
-  let rec visit (e : Expr) (pos : SubExpr.Pos) (positions : Array SubExpr.Pos) :
-      MetaM (Array SubExpr.Pos) := do
-    let visitChildren : Array SubExpr.Pos → MetaM (Array SubExpr.Pos) :=
-      match e with
-      | .app f a         => visit f pos.pushAppFn
-                        >=> visit a pos.pushAppArg
-      | .mdata _ b       => visit b pos
-      | .proj _ _ b      => visit b pos.pushProj
-      | .letE _ t v b _  => visit t pos.pushLetVarType
-                        >=> visit v pos.pushLetValue
-                        >=> visit b pos.pushLetBody
-      | .lam _ d b _     => visit d pos.pushBindingDomain
-                        >=> visit b pos.pushBindingBody
-      | .forallE _ d b _ => visit d pos.pushBindingDomain
-                        >=> visit b pos.pushBindingBody
-      | _                => pure
-    if e.hasLooseBVars || e.toHeadIndex != pHeadIdx || e.headNumArgs != pNumArgs then
-      visitChildren positions
-    else
-      let mctx ← getMCtx
-      if (← isDefEq e p) then
-        setMCtx mctx
-        visitChildren (positions.push pos)
-      else
-        visitChildren positions
-  visit e .root #[]
-
-
 
 open Widget ProofWidgets Jsx
 
@@ -311,23 +264,29 @@ structure FilterDetailsProps where
   initiallyFiltered : Bool
 deriving RpcEncodable
 
+/-- `FilterDetails` is a details component that has a button for switching between a filtered
+and a non-filtered view. -/
 @[widget_module]
 def FilterDetails : Component FilterDetailsProps where
   javascript := include_str "LibraryRewrite" / "FilterDetails.js"
 
-def renderFilterResults (results : Array Section × Array Section) (range : Lsp.Range)
-    (doc : FileWorker.EditableDocument) : Html :=
+def renderFilterResults (results : Array Section × Array Section) (init : Option Html)
+    (range : Lsp.Range) (doc : FileWorker.EditableDocument) : Html :=
   let (filtered, all) := results;
-  <FilterDetails message={"Rewrite suggestions:"}
+  <FilterDetails
+    message={"Rewrite suggestions:"}
     all={renderResults true all}
     filtered={renderResults false filtered}
     initiallyFiltered={true} />
 where
   renderResults (showNames : Bool) (results : Array Section) : Html :=
+    let htmls := results.map (renderSection showNames)
+    let htmls := match init with
+      | some html => #[html] ++ htmls
+      | none => htmls
     if results.isEmpty then
-      .text "No applicable rewrite lemmata found."
+      .text "No rewrites found."
     else
-      let htmls := results.map (renderSection showNames)
       .element "div" #[("style", json% {"marginLeft" : "4px"})] htmls
 
   renderSection (showNames : Bool) (sec : Section) : Html :=
@@ -347,7 +306,7 @@ where
         let button :=
           <span className="font-code"> {
             Html.ofComponent MakeEditLink
-              (.ofReplaceRange doc.meta range rw.tactic none)
+              (.ofReplaceRange doc.meta range rw.tactic)
               #[.text rw.replacement] }
           </span>
         let extraGoals := rw.extraGoals.concatMap fun extraGoal =>
@@ -362,7 +321,6 @@ def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
   let cachedResults ← (← getCachedRewriteLemmas).getMatchWithScore e (unify := true)
   let allResults := localResults.map (·.1, true) ++ cachedResults.map (·.1, false)
   return allResults
-
 
 def checkLemmata (ass : Array (Array RewriteLemma × Bool)) (loc : SubExpr.GoalLocation)
     (subExpr : Expr) (occ : Option Nat) (initNames : PersistentHashMap Name MVarId) :
@@ -403,18 +361,14 @@ def getLibraryRewrites (loc : SubExpr.GoalsLocation) :
     ExceptT String MetaM (Array Section × Array Section) := do
   let { userNames := initNames, .. } ← getMCtx
   let e ← loc.rootExpr
-  let pos := loc.pos
-  let loc := loc.loc
-  let subExpr ← Core.viewSubexpr pos e
+  let subExpr ← Core.viewSubexpr loc.pos e
   if subExpr.hasLooseBVars then
     throwThe String "rw doesn't work on expressions with bound variables."
   let rwLemmas ← getCandidates subExpr
-  if rwLemmas.isEmpty then
-    throwThe String "No rewrite lemmata found."
   let positions ← kabstractPositions subExpr e
   let occurrence := if positions.size == 1 then none else
-    positions.findIdx? (· == pos) |>.map (· + 1)
-  checkLemmata rwLemmas loc subExpr occurrence initNames
+    positions.findIdx? (· == loc.pos) |>.map (· + 1)
+  checkLemmata rwLemmas loc.loc subExpr occurrence initNames
 
 @[server_rpc_method_cancellable]
 def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
@@ -428,21 +382,20 @@ def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html
     return .text "There is no goal to solve!"
   if loc.mvarId != goal.mvarId then
     return .text "The selected expression should be in the main goal."
-  goal.ctx.val.runMetaM {} do -- similar to `SelectInsertConv`
+  goal.ctx.val.runMetaM {} do
     let md ← goal.mvarId.getDecl
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
       profileitM Exception "libraryRewrite" (← getOptions) do
-        (fun
-          | .ok results => renderFilterResults results props.replaceRange doc
-          | .error msg  => .text msg)
-        <$> getLibraryRewrites loc
+        let unfolds ← getDefinitions loc
+        let unfolds := (renderDefinitions · props.replaceRange doc) <$> unfolds.toOption
+        match ← getLibraryRewrites loc with
+        | .ok results => return renderFilterResults results unfolds props.replaceRange doc
+        | .error msg  => return .text msg
 
 @[widget_module]
 def LibraryRewrite : Component SelectInsertParams :=
   mk_rpc_widget% LibraryRewrite.rpc
-
-declare_config_elab elabLibraryRewriteConfig Config
 
 /--
 To use `rw??`, shift-click an expression in the tactic state.
@@ -450,11 +403,7 @@ This gives a list of rewrite suggestions for the selected expression.
 Click on a suggestion to replace `rw??` by a tactic that performs this rewrite.
 Click on the filter icon to switch to an unfiltered view that also shows the lemma names.
 -/
-syntax (name := rw??) "rw??" : tactic
-
-@[tactic Mathlib.Tactic.LibraryRewrite.rw??]
-def elabRw?? : Elab.Tactic.Tactic := fun stx => do
-  -- let cfg ← elabLibraryRewriteConfig stx[1]
+elab stx:"rw??" : tactic => do
   let some range := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash LibraryRewrite.javascript)
     (pure $ json% { replaceRange : $range }) stx
