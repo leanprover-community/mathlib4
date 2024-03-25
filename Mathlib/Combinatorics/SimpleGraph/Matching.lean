@@ -157,6 +157,9 @@ section Finite
 
 variable [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
 
+/--
+ Decidable instance for membership of support of a connected component.
+-/
 instance (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
   c.recOn
     (fun w => by simp only [ConnectedComponent.mem_supp_iff, ConnectedComponent.eq]; infer_instance)
@@ -172,6 +175,10 @@ lemma even_if_perfect_matching {M : Subgraph G} (c : ConnectedComponent G)
     simp only [ConnectedComponent.mem_supp_iff, Finset.mem_univ, forall_true_left]
     exact Set.filter_mem_univ_eq_toFinset fun x => connectedComponentMk G x = c
 
+/--
+  Local instance of Fintype for sets in a Fintype.
+  Chosen as local because it is noncomputable.
+-/
 noncomputable local instance (u : Set V) : Fintype u := Fintype.ofFinite ↑u
 
 
