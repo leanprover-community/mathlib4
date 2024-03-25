@@ -13,12 +13,16 @@ namespace Tests
 -- set_option trace.variable? true
 
 section
--- works like `variable` when there are no missing instances
-/-- info: Try this: variable? (x : Nat) [DecidableEq α] => (x : Nat) [DecidableEq α] -/
-#guard_msgs in
-variable? (x : Nat) [DecidableEq α]
 
-example : Nat := x
+-- FIXME nightly-testing: this should not be producing an unused variable warning!
+-- I've temporarily renamed `x` to `_x` to suppress warning.
+
+-- -- works like `variable` when there are no missing instances
+/-- info: Try this: variable? (_x : Nat) [DecidableEq α] => (_x : Nat) [DecidableEq α] -/
+#guard_msgs in
+variable? (_x : Nat) [DecidableEq α]
+
+example : Nat := _x
 example : DecidableEq α := inferInstance
 end
 

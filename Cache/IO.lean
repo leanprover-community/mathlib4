@@ -130,7 +130,6 @@ private def CacheM.getContext : IO CacheM.Context := do
   let root ← CacheM.mathlibDepPath
   return ⟨root, .ofList [
     ("Mathlib", root),
-    ("MathlibExtras", root),
     ("Archive", root),
     ("Counterexamples", root),
     ("Aesop", LAKEPACKAGESDIR / "aesop"),
@@ -344,8 +343,6 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with
   | "Mathlib" :: _ => true
   | ["Mathlib.lean"] => true
-  | "MathlibExtras" :: _ => true
-  | ["MathlibExtras.lean"] => true
   | _ => false
 
 /-- Decompresses build files into their respective folders -/

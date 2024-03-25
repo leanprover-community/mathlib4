@@ -66,13 +66,13 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
             refine ⟨fun _ => ?_, fun _ => ?_⟩
             · congr
               ext w
-              by_cases h : w = v <;> rename_i x
+              by_cases h : w = v
               · substs h
                 simp_all
               · simp_all
             · congr
               ext w
-              by_cases h : w = v <;> rename_i x
+              by_cases h : w = v
               · substs h
                 simp_all
               · simp_all
@@ -80,13 +80,13 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
             refine ⟨fun _ => ?_, fun _ => ?_⟩
             · congr
               ext w
-              by_cases h : w = v <;> rename_i x
+              by_cases h : w = v
               · substs h
                 simp_all
               · simp_all
             · congr
               ext w
-              by_cases h : w = v <;> rename_i x
+              by_cases h : w = v
               · substs h
                 simp_all
               · simp_all
