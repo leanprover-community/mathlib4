@@ -86,8 +86,7 @@ in terms of a sum over `Nat.divisorsAntidiagonal`. -/
 lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     term (f ⍟ g) s n = ∑ p in n.divisorsAntidiagonal, term f s p.1 * term g s p.2 := by
   rcases eq_or_ne n 0 with rfl | hn
-  · simp only [term, ↓reduceIte, Nat.divisorsAntidiagonal_zero, mul_ite, mul_zero, ite_mul,
-      zero_mul, Finset.sum_empty]
+  · simp only [term_zero, Nat.divisorsAntidiagonal_zero, Finset.sum_empty]
   -- now `n ≠ 0`
   rw [term_of_ne_zero hn, convolution_def, Finset.sum_div]
   refine Finset.sum_congr rfl fun p hp ↦ ?_
