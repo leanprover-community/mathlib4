@@ -49,12 +49,16 @@ having the same terminal point.
 def relH {τ : V} (v₁ v₂ : EdgePath G x₀ τ) : Prop :=
   [[v₁ ++ v₂.reverse]] ∈ H
 
-
+/--
+Reflexivity of the relation on edge-paths corresponding to lifts in the cover.
+-/
 theorem relH_refl {τ : V} (v : EdgePath G x₀ τ) : relH H v v := by
   simp [relH]
   apply one_mem
 
-
+/--
+Symmetry of the relation on edge-paths corresponding to lifts in the cover.
+-/
 theorem relH_symm {τ : V} {v₁ v₂ : EdgePath G x₀ τ} :
     relH H v₁ v₂ → relH H v₂ v₁ :=by
   simp [relH]
@@ -64,6 +68,9 @@ theorem relH_symm {τ : V} {v₁ v₂ : EdgePath G x₀ τ} :
     reverse_append,  reverse_reverse] at h'
   exact h'
 
+/--
+Transitivity of the relation on edge-paths corresponding to lifts in the cover.
+-/
 theorem relH_trans {τ : V} {v₁ v₂ v₃ : EdgePath G x₀ τ} :
     relH H v₁ v₂ → relH H v₂ v₃ → relH H v₁ v₃ := by
   simp [relH]
@@ -113,6 +120,9 @@ scoped instance vertSetoid  : Setoid (Vert G x₀) where
       else
         simp [c₁]
 
+/--
+Related paths have the same terminal vertices.
+-/
 theorem terminal_eq_of_r {v₁ v₂ : Vert G x₀ } :
     vertSetoid H |>.r v₁ v₂ → v₁.τ = v₂.τ := by
   intro h
@@ -120,6 +130,9 @@ theorem terminal_eq_of_r {v₁ v₂ : Vert G x₀ } :
   by_cases c:v₁.τ=v₂.τ <;> simp [c] at h
   simp [c]
 
+/--
+Paths are related if and only if their difference is in `H`.
+-/
 theorem path_eq_iff_r {τ : V}(p₁ p₂ : EdgePath G x₀ τ)
     {red₁ : reduced p₁} {red₂ : reduced p₂} :
     (vertSetoid H |>.r ⟨τ, p₁, red₁⟩ ⟨τ, p₂, red₂⟩) ↔
@@ -272,12 +285,18 @@ theorem initial_defn (e: Edge G x₀):
 theorem bar_eq_barn (e : Edge G x₀):
     bar H ⟦ e ⟧ = ⟦ (G.univ x₀).bar e ⟧ := rfl
 
+/--
+The inverse on edges is an involution.
+-/
 theorem bar_bar :(ebar : Quotient (edgeSetoid H)) →
     bar H (bar H ebar) = ebar := by
   apply Quotient.ind
   intro e
   simp [bar_eq_barn]
 
+/--
+The inverse on edges has no fixed points.
+-/
 theorem bar_ne_self : (ebar : Quotient (edgeSetoid H)) →
     ebar ≠ bar H ebar := by
   apply Quotient.ind
@@ -336,9 +355,17 @@ theorem toFuncE_defn (e : Edge G x₀):
 theorem initial (e : Edge G x₀):
     (groupCover H).ι ⟦ e ⟧ = ⟦ (G.univ x₀).ι e⟧ := rfl
 
+/--
+The inverse of an edge in the intermediate cover
+is the same as in the finite cover.
+-/
 theorem bar_eq_barn' (e : Edge G x₀):
     (groupCover H).bar ⟦ e ⟧ = ⟦ (G.univ x₀).bar e ⟧ := rfl
 
+/--
+The initial vertex of the inverse of an edge maps to
+the initial vertex of the image of the edge.
+-/
 theorem toFuncV_init : (ebar : Quotient (edgeSetoid H)) →
     toFuncV H ((groupCover H).ι ebar) =
     G.ι (toFuncE H ebar) := by
@@ -348,6 +375,9 @@ theorem toFuncV_init : (ebar : Quotient (edgeSetoid H)) →
   rw [toFuncV_defn, toFuncE_defn]
   apply (proj G x₀).toFuncV_init
 
+/--
+The image of the inverse of an edge maps to the image of the edge.
+-/
 theorem toFuncE_bar : (ebar : Quotient (edgeSetoid H)) →
     toFuncE H ((groupCover H).bar ebar) = G.bar (toFuncE H ebar) := by
   apply Quotient.ind
@@ -379,6 +409,11 @@ def univGroupProj : Morphism (G.univ x₀) (groupCover H)  where
     intro e
     rfl
 
+/--
+The projection morphism of the universal cover to the intermediate cover
+composed with the projection morphism of the intermediate cover to the base graph
+is the projection morphism of the universal cover to the base graph.
+-/
 theorem projections_compose :
     (groupCoverProj H).comp (univGroupProj H) =
     UniversalCover.proj G x₀ := by
@@ -542,30 +577,51 @@ def liftViaUniv {w₂ : V}
       simp only [projections_compose, univPath.list_pushdown]
   }
 
+/--
+The lift of an edge-path in the cover corresponding to the subgroup `H`
+is the function `liftViaUniv` given by lifting to the universal cover
+and pushing down.
+-/
 theorem liftFactors {w₂ : V}(e: EdgePath G x₀ w₂) :
     (e.lift (groupCoverProj H) (basepoint H) rfl) = liftViaUniv H e := by
     apply unique_Pathlift
 
+/--
+The terminal point of the lift of an edge-path in the cover
+corresponding to the subgroup `H`
+is the terminal point of the image under the function `liftViaUniv`.
+-/
 theorem liftTermFactors {w₂ : V}(e: EdgePath G x₀ w₂) :
     (e.lift (groupCoverProj H) (basepoint H) rfl).τ =
     ⟦liftTerminal (proj G x₀) (UniversalCover.basepoint G x₀) rfl e⟧ := by
   rw [liftFactors]
   rfl
 
+/--
+The lift of a reduced edge-path in the cover corresponding to the subgroup `H`
+has terminal point the class of the edge-path.
+-/
 theorem reduced_liftTerminal_factor {w₂ : V}(e: EdgePath G x₀ w₂)
     (hyp : reduced e) :
     (e.lift (groupCoverProj H) (basepoint H) rfl).τ =
     ⟦ ⟨w₂, e, hyp⟩ ⟧ := by
   rw [liftTermFactors, reduced_liftTerminal]
 
+/--
+The lift of a reduced edge-path in the cover corresponding to the subgroup `H`
+has terminal point the class of the edge-path.
+-/
 theorem reduced_liftTerminal_factor' {w₂ : V}(e: EdgePath G x₀ w₂)
     (hyp : reduced e) :
     (liftTerminal (groupCoverProj H) (basepoint H) rfl e) =
     ⟦ ⟨w₂, e, hyp⟩ ⟧ := by
   apply reduced_liftTerminal_factor
 
-
-theorem imageInSubgroup : ∀ h : π₁ (groupCover H) (basepoint H),
+/--
+The image of an element in the fundamental group of the
+cover corresponding to the subgroup `H` is in the subgroup `H`.
+-/
+theorem proj_image_in_subgroup : ∀ h : π₁ (groupCover H) (basepoint H),
     (groupCoverProj H).π₁map (basepoint H) x₀ rfl h ∈ H := by
   apply Quot.ind
   intro η
@@ -584,7 +640,10 @@ theorem imageInSubgroup : ∀ h : π₁ (groupCover H) (basepoint H),
   simp [HasEquiv.Equiv, Setoid.r, relH] at term_eqn
   exact term_eqn
 
-
+/--
+The image of the fundamental group of the cover
+corresponding to the subgroup `H` is in the subgroup `H`.
+-/
 theorem proj_image : ∀ (g : π₁ G x₀),
     (g ∈ H ↔ ∃ h' : π₁ (groupCover H) (basepoint H),
     g = (groupCoverProj H).π₁map (basepoint H) x₀ rfl h') := by
@@ -617,8 +676,12 @@ apply Iff.intro
   rw [EdgePath.map_toList, toList_shiftTarget,
     pL.list_pushdown]
 · intro ⟨h, heqn⟩
-  simp [imageInSubgroup H h, heqn]
+  simp [proj_image_in_subgroup H h, heqn]
 
+/--
+The range of the projection morphism of the cover
+corresponding to the subgroup `H` is the subgroup `H`.
+-/
 theorem range_proj : MonoidHom.range
     (Morphism.π₁map (basepoint H) x₀ (groupCoverProj H) rfl) = H := by
   apply Subgroup.ext
