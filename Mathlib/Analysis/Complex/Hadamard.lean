@@ -64,12 +64,13 @@ def closedStrip (a : ℝ) (b : ℝ) : Set ℂ := re ⁻¹' Icc a b
 
 /-- The supremum of the absolute value of `f` on imaginary lines. (Fixed real part)
 This is also known as the function `M` -/
-noncomputable def sSupAbsIm [NormedAddCommGroup E] [NormedSpace ℂ E] (f : ℂ → E) (x : ℝ) : ℝ :=
+noncomputable def sSupAbsIm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+    (f : ℂ → E) (x : ℝ) : ℝ :=
   sSup ((norm ∘ f) '' (re ⁻¹' {x}))
 
 section invInterpStrip
 
-variable [NormedAddCommGroup E] [NormedSpace ℂ E] (f : ℂ → E)
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] (f : ℂ → E)
 variable (h0 : 0 < sSupAbsIm f 0) (h1 : 0 < sSupAbsIm f 1)
 
 /--
@@ -260,11 +261,9 @@ lemma transl_DiffCont (hd : DiffContOnCl ℂ f (strip 0 1)) :
 
 variable (hB : BddAbove ((norm ∘ f) '' (closedStrip 0 1)))
 
-/-image_eq_range-/
-
 instance ClosedStrip.instNonempty : Nonempty (closedStrip 0 1) := by
   use 0
-  simp [HadamardThreeLines.closedStrip]
+  simp only [closedStrip, mem_preimage, zero_re, mem_Icc, le_refl, zero_le_one, and_self]
 
 lemma transl_BddAbove : BddAbove ((norm ∘ (transl f ε)) '' (closedStrip 0 1)) := by
   rw [image_eq_range] at *
@@ -340,21 +339,24 @@ lemma sSupAbsIm_transl_nhds_zero_pos :
   cases' lt_or_eq_of_le (sSupAbsIm_nonneg f 0) with h0pos h0zero
   · cases' lt_or_eq_of_le (sSupAbsIm_nonneg f 1) with h1pos h1zero
     · use min (sSupAbsIm f 0) (sSupAbsIm f 1)
-      simp [h0pos, h1pos]
+      simp only [gt_iff_lt, lt_min_iff, h0pos, h1pos, and_self, mem_inter_iff, mem_compl_iff,
+        mem_singleton_iff, Metric.mem_ball, dist_zero_right, and_imp, true_and]
       exact fun ε _ hε_0 hε_1 ↦ ⟨hc_pos 0 ε hε_0 (Set.left_mem_Icc.mpr zero_le_one),
         hc_pos 1 ε hε_1 (Set.right_mem_Icc.mpr zero_le_one) ⟩
     use sSupAbsIm f 0
-    simp [h0pos]
+    simp only [gt_iff_lt, h0pos, mem_inter_iff, mem_compl_iff, mem_singleton_iff, Metric.mem_ball,
+      dist_zero_right, and_imp, true_and]
     exact fun ε hε_ne_zero hε_0 ↦ ⟨hc_pos 0 ε hε_0 (Set.left_mem_Icc.mpr zero_le_one),
         hc_zero 1 ε h1zero (Set.right_mem_Icc.mpr zero_le_one) hε_ne_zero⟩
   cases' lt_or_eq_of_le (sSupAbsIm_nonneg f 1) with h1pos h1zero
   · use sSupAbsIm f 1
-    simp [h1pos]
-    exact fun ε hε_ne_zero hε_1 ↦
-      ⟨hc_zero 0 ε h0zero (Set.left_mem_Icc.mpr zero_le_one) hε_ne_zero,
+    simp only [gt_iff_lt, h1pos, mem_inter_iff, mem_compl_iff, mem_singleton_iff, Metric.mem_ball,
+      dist_zero_right, and_imp, true_and]
+    exact fun ε hε_ne_zero hε_1 ↦ ⟨hc_zero 0 ε h0zero (Set.left_mem_Icc.mpr zero_le_one) hε_ne_zero,
       hc_pos 1 ε hε_1 (Set.right_mem_Icc.mpr zero_le_one)⟩
   use 1
-  simp
+  simp only [gt_iff_lt, zero_lt_one, mem_inter_iff, mem_compl_iff, mem_singleton_iff,
+    Metric.mem_ball, dist_zero_right, and_imp, true_and]
   exact fun ε hε_ne_zero _ ↦ ⟨hc_zero 0 ε h0zero (Set.left_mem_Icc.mpr zero_le_one) hε_ne_zero,
       hc_zero 1 ε h1zero (Set.right_mem_Icc.mpr zero_le_one) hε_ne_zero⟩
 
@@ -403,8 +405,9 @@ lemma Tendsto_interpStrip (hz: z ∈ strip 0 1) (h : sSupAbsIm f 0 = 0 ∨ sSupA
   have : (interpStrip f z) =
       (↑(sSupAbsIm (transl f 0) 0) ^ (1 - z) * ↑(sSupAbsIm (transl f 0) 1) ^ z) := by
     rw [strip, mem_preimage, mem_Ioo] at hz
-    simp [- ne_eq, interpStrip_eq_of_zero f _ h]
-    rw [transl_def]; simp
+    simp only [interpStrip_eq_of_zero f _ h, zero_eq_mul, cpow_eq_zero_iff, ofReal_eq_zero]
+    rw [transl_def]
+    simp only [add_zero, ne_eq]
     cases' h with h1 h2
     · left
       refine ⟨h1, ?_⟩
