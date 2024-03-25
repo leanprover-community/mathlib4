@@ -497,6 +497,7 @@ def ignored : HashSet Name := HashSet.empty
   -- even ignoring `try`, the linter still looks at the "tried" tactics
   |>.insert ``Lean.Parser.Tactic.tacticTry_
   |>.insert `«]»
+  |>.insert `Std.Tactic.«tacticOn_goal-_=>_»
 
 /-- `SyntaxNodeKind`s of tactics that stain the locations on which they act
 and that can only be followed by other `stainers`. -/
@@ -527,6 +528,8 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --  let mut stains : HashSet FVarId := .empty
   let _ : Ord FVarId := ⟨fun f g => compare f.name.toString g.name.toString⟩
   for d in x do for (s, ctxb, ctx, mvsb, mvs) in d do
+    let newMVb := mvsb.diff mvs
+    let newMVa := mvs.diff mvsb
     if ignored.contains s.getKind then continue
 --    logInfo m!"generating syntax: '{s}'"  Lean.Parser.Term.byTactic
     --logInfoAt s m!"{s} has locs: {getLocs s}"
@@ -534,8 +537,8 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --    for locs in getStained! s do
 --      Meta.inspect s
 --      logInfoAt s m!"{s}\nstains '{locs}'"
-    let declsb := (ctxb.decls.find? (mvsb.getD 0 default)).getD default
-    let decls := (ctx.decls.find? (mvs.getD 0 default)).getD default
+    let declsb := (ctxb.decls.find? (newMVb.getD 0 default)).getD default
+    let decls := (ctx.decls.find? (newMVa.getD 0 default)).getD default
 --    liftCoreM do
 --      return (← Meta.MetaM.run do
 --        logInfo m!"ctx.decls: {← ctx.decls.toList.mapM fun m => do
@@ -555,14 +558,18 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
     let fvs := fvs.flatten.sortAndDeduplicate
 --    dbg_trace s!"syntax: {s}\n{s.getKind}\n"
     --Meta.inspect s
-    dbg_trace s!"---\n{s[0]} ({s.getKind})"
+    dbg_trace s!"\n---\n{s[0]} ({s.getKind})"
 --    dbg_trace "already stained: {stains.toList.map (·.name)}"
     dbg_trace "already stained: {stains.toList}"
     dbg_trace "already sfvrsed: {sfvrs.toList.map (·.name)}"
     dbg_trace "getStained! s: {newStained}"
     dbg_trace "getLocs s:     {getLocs s}"
-    dbg_trace "fvrsb stains:  {fvsb.map (·.name)}"
-    dbg_trace "fvrs stains:   {fvs.map (·.name)}\n"
+    dbg_trace "(fvrsb, fvrs) stains:  {(fvsb.map (·.name)).zip (fvs.map (·.name))} -- {fvsb.size == fvs.size}"
+    dbg_trace "(mvsb, mvsa) stains:\nb: {newMVb.map (·.name)}\na: {newMVa.map (·.name)}"
+    let unchMVs := mvsb.diff newMVb
+    if unchMVs != mvs.diff newMVa then logErrorAt s "unchanged diff!"
+    dbg_trace "unchanged: {unchMVs.map (·.name)} {unchMVs == mvs.diff newMVa}"
+--    dbg_trace "fvrs stains:   {fvs.map (·.name)}\n"
 --    dbg_trace "goal? '{(lctxb.decls.get! 0).get!.userName}'"
     let inds := fvs.erase default
 --    for v in inds do
@@ -573,7 +580,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
       dbg_trace "checking {v}"
       let stainer? := stainers.contains s.getKind
       if stains.contains v && !stainer? then
-          logInfoAt s m!"'{s}' acts on the stained '{v}'!\n({s.getKind})"
+          logInfoAt s m!"'{s}' acts on the stained '{v}'!\n({s.getKind}) --hyps"
       else
         if stainer? then
           stains := stains.insert v
@@ -584,7 +591,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
       dbg_trace "checking {v.name}"
       let stainer? := stainers.contains s.getKind
       if sfvrs.contains v && !stainer? then
-          logInfoAt s m!"'{s}' acts on the stained '{v.name}'!\n({s.getKind})"
+          logInfoAt s m!"'{s}' acts on the stained '{v.name}'!\n({s.getKind}) --fvars"
       else
         if stainer? then
           sfvrs := sfvrs.insert v
