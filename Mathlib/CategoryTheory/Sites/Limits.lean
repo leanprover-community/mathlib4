@@ -143,7 +143,7 @@ theorem isSheaf_of_isLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshea
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.is_sheaf_of_is_limit CategoryTheory.Sheaf.isSheaf_of_isLimit
 
-instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
+instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) := fast_instance%
   createsLimitOfReflectsIso fun E hE =>
     { liftedCone := ⟨⟨E.pt, isSheaf_of_isLimit _ _ hE⟩,
         ⟨fun t => ⟨E.π.app _⟩, fun u v e => Sheaf.Hom.ext _ _ <| E.π.naturality _⟩⟩
@@ -162,18 +162,18 @@ instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
 
 instance createsLimitsOfShape : CreatesLimitsOfShape K (sheafToPresheaf J D) where
 
-instance : HasLimitsOfShape K (Sheaf J D) :=
+instance : HasLimitsOfShape K (Sheaf J D) := fast_instance%
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (sheafToPresheaf J D)
 
-instance [HasFiniteProducts D] : HasFiniteProducts (Sheaf J D) :=
+instance [HasFiniteProducts D] : HasFiniteProducts (Sheaf J D) := fast_instance%
   ⟨inferInstance⟩
 
 end
 
-instance createsLimits [HasLimits D] : CreatesLimits (sheafToPresheaf J D) :=
+instance createsLimits [HasLimits D] : CreatesLimits (sheafToPresheaf J D) := fast_instance%
   ⟨createsLimitsOfShape⟩
 
-instance [HasLimits D] : HasLimits (Sheaf J D) :=
+instance [HasLimits D] : HasLimits (Sheaf J D) := fast_instance%
   hasLimits_of_hasLimits_createsLimits (sheafToPresheaf J D)
 
 end
@@ -236,14 +236,14 @@ noncomputable def isColimitSheafifyCocone {F : K ⥤ Sheaf J D}
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.is_colimit_sheafify_cocone CategoryTheory.Sheaf.isColimitSheafifyCocone
 
-instance [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
+instance [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) := fast_instance%
   ⟨fun _ => HasColimit.mk
     ⟨sheafifyCocone (colimit.cocone _), isColimitSheafifyCocone _ (colimit.isColimit _)⟩⟩
 
-instance [HasFiniteCoproducts D] : HasFiniteCoproducts (Sheaf J D) :=
+instance [HasFiniteCoproducts D] : HasFiniteCoproducts (Sheaf J D) := fast_instance%
   ⟨inferInstance⟩
 
-instance [HasColimits D] : HasColimits (Sheaf J D) :=
+instance [HasColimits D] : HasColimits (Sheaf J D) := fast_instance%
   ⟨inferInstance⟩
 
 end Colimits

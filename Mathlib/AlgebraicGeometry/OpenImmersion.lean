@@ -125,7 +125,7 @@ def affineCover (X : Scheme) : OpenCover X where
     infer_instance
 #align algebraic_geometry.Scheme.affine_cover AlgebraicGeometry.Scheme.affineCover
 
-instance : Inhabited X.OpenCover :=
+instance : Inhabited X.OpenCover := fast_instance%
   ⟨X.affineCover⟩
 
 /-- Given an open cover `{ Uᵢ }` of `X`, and for each `Uᵢ` an open cover, we may combine these
@@ -208,7 +208,7 @@ def OpenCover.add {X : Scheme} (𝒰 : X.OpenCover) {Y : Scheme} (f : Y ⟶ X) [
 -- about open immersion (which in turn needs the open cover API).
 -- attribute [local reducible] CommRingCat.of CommRingCat.ofHom
 
-instance val_base_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.1.base :=
+instance val_base_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.1.base := fast_instance%
   Scheme.forgetToTop.map_isIso f
 #align algebraic_geometry.Scheme.val_base_is_iso AlgebraicGeometry.Scheme.val_base_isIso
 
@@ -306,7 +306,7 @@ def OpenCover.finiteSubcover {X : Scheme} (𝒰 : OpenCover X) [H : CompactSpace
       Covers := fun x => (h x).choose_spec }
 #align algebraic_geometry.Scheme.open_cover.finite_subcover AlgebraicGeometry.Scheme.OpenCover.finiteSubcover
 
-instance [H : CompactSpace X] : Fintype 𝒰.finiteSubcover.J := by
+instance [H : CompactSpace X] : Fintype 𝒰.finiteSubcover.J := fast_instance% by
   delta OpenCover.finiteSubcover; infer_instance
 
 end Scheme
@@ -352,7 +352,7 @@ theorem toSchemeHom_val : (toSchemeHom Y f).val = f :=
   rfl
 #align algebraic_geometry.PresheafedSpace.IsOpenImmersion.to_Scheme_hom_val AlgebraicGeometry.PresheafedSpace.IsOpenImmersionₓ.toSchemeHom_val
 
-instance toSchemeHom_isOpenImmersion : AlgebraicGeometry.IsOpenImmersion (toSchemeHom Y f) :=
+instance toSchemeHom_isOpenImmersion : AlgebraicGeometry.IsOpenImmersion (toSchemeHom Y f) := fast_instance%
   H
 #align algebraic_geometry.PresheafedSpace.IsOpenImmersion.to_Scheme_hom_IsOpenImmersion AlgebraicGeometry.PresheafedSpace.IsOpenImmersionₓ.toSchemeHom_isOpenImmersionₓ
 
@@ -452,11 +452,11 @@ def isoRestrict : X ≅ (Z.restrict H.base_open : _) :=
 
 local notation "forget" => Scheme.forgetToLocallyRingedSpace
 
-instance mono : Mono f :=
+instance mono : Mono f := fast_instance%
   (inducedFunctor _).mono_of_mono_map (show @Mono LocallyRingedSpace _ _ _ f by infer_instance)
 #align algebraic_geometry.IsOpenImmersion.mono AlgebraicGeometry.IsOpenImmersion.mono
 
-instance forget_map_isOpenImmersion : LocallyRingedSpace.IsOpenImmersion ((forget).map f) :=
+instance forget_map_isOpenImmersion : LocallyRingedSpace.IsOpenImmersion ((forget).map f) := fast_instance%
   ⟨H.base_open, H.c_iso⟩
 #align algebraic_geometry.IsOpenImmersion.forget_map_IsOpenImmersion AlgebraicGeometry.IsOpenImmersion.forget_map_isOpenImmersion
 
@@ -474,7 +474,7 @@ instance hasLimit_cospan_forget_of_left' :
   show HasLimit (cospan ((forget).map f) ((forget).map g)) from inferInstance
 #align algebraic_geometry.IsOpenImmersion.has_limit_cospan_forget_of_left' AlgebraicGeometry.IsOpenImmersion.hasLimit_cospan_forget_of_left'
 
-instance hasLimit_cospan_forget_of_right : HasLimit (cospan g f ⋙ forget) := by
+instance hasLimit_cospan_forget_of_right : HasLimit (cospan g f ⋙ forget) := fast_instance% by
   apply @hasLimitOfIso _ _ _ _ _ _ ?_ (diagramIsoCospan.{u} _).symm
   change HasLimit (cospan ((forget).map g) ((forget).map f))
   infer_instance
@@ -485,35 +485,35 @@ instance hasLimit_cospan_forget_of_right' :
   show HasLimit (cospan ((forget).map g) ((forget).map f)) from inferInstance
 #align algebraic_geometry.IsOpenImmersion.has_limit_cospan_forget_of_right' AlgebraicGeometry.IsOpenImmersion.hasLimit_cospan_forget_of_right'
 
-instance forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget :=
+instance forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget := fast_instance%
   createsLimitOfFullyFaithfulOfIso
     (PresheafedSpace.IsOpenImmersion.toScheme Y (@pullback.snd LocallyRingedSpace _ _ _ _ f g _).1)
     (eqToIso (by simp) ≪≫ HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 #align algebraic_geometry.IsOpenImmersion.forget_creates_pullback_of_left AlgebraicGeometry.IsOpenImmersion.forgetCreatesPullbackOfLeft
 
-instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
+instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget := fast_instance%
   createsLimitOfFullyFaithfulOfIso
     (PresheafedSpace.IsOpenImmersion.toScheme Y (@pullback.fst LocallyRingedSpace _ _ _ _ g f _).1)
     (eqToIso (by simp) ≪≫ HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 #align algebraic_geometry.IsOpenImmersion.forget_creates_pullback_of_right AlgebraicGeometry.IsOpenImmersion.forgetCreatesPullbackOfRight
 
-instance forgetPreservesOfLeft : PreservesLimit (cospan f g) forget :=
+instance forgetPreservesOfLeft : PreservesLimit (cospan f g) forget := fast_instance%
   CategoryTheory.preservesLimitOfCreatesLimitAndHasLimit _ _
 #align algebraic_geometry.IsOpenImmersion.forget_preserves_of_left AlgebraicGeometry.IsOpenImmersion.forgetPreservesOfLeft
 
-instance forgetPreservesOfRight : PreservesLimit (cospan g f) forget :=
+instance forgetPreservesOfRight : PreservesLimit (cospan g f) forget := fast_instance%
   preservesPullbackSymmetry _ _ _
 #align algebraic_geometry.IsOpenImmersion.forget_preserves_of_right AlgebraicGeometry.IsOpenImmersion.forgetPreservesOfRight
 
-instance hasPullback_of_left : HasPullback f g :=
+instance hasPullback_of_left : HasPullback f g := fast_instance%
   hasLimit_of_created (cospan f g) forget
 #align algebraic_geometry.IsOpenImmersion.has_pullback_of_left AlgebraicGeometry.IsOpenImmersion.hasPullback_of_left
 
-instance hasPullback_of_right : HasPullback g f :=
+instance hasPullback_of_right : HasPullback g f := fast_instance%
   hasLimit_of_created (cospan g f) forget
 #align algebraic_geometry.IsOpenImmersion.has_pullback_of_right AlgebraicGeometry.IsOpenImmersion.hasPullback_of_right
 
-instance pullback_snd_of_left : IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := by
+instance pullback_snd_of_left : IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := fast_instance% by
   have := PreservesPullback.iso_hom_snd forget f g
   dsimp only [Scheme.forgetToLocallyRingedSpace, inducedFunctor_map] at this
   rw [← this]
@@ -521,7 +521,7 @@ instance pullback_snd_of_left : IsOpenImmersion (pullback.snd : pullback f g ⟶
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.pullback_snd_of_left AlgebraicGeometry.IsOpenImmersion.pullback_snd_of_left
 
-instance pullback_fst_of_right : IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
+instance pullback_fst_of_right : IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := fast_instance% by
   rw [← pullbackSymmetry_hom_comp_snd]
   -- Porting note: was just `infer_instance`, it is a bit weird that no explicit class instance is
   -- provided but still class inference fail to find this
@@ -537,7 +537,7 @@ instance pullback_to_base [IsOpenImmersion g] :
   exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _
 #align algebraic_geometry.IsOpenImmersion.pullback_to_base AlgebraicGeometry.IsOpenImmersion.pullback_to_base
 
-instance forgetToTopPreservesOfLeft : PreservesLimit (cospan f g) Scheme.forgetToTop := by
+instance forgetToTopPreservesOfLeft : PreservesLimit (cospan f g) Scheme.forgetToTop := fast_instance% by
   delta Scheme.forgetToTop
   apply @Limits.compPreservesLimit (K := cospan f g) (F := forget)
     (G := LocallyRingedSpace.forgetToTop) ?_ ?_
@@ -547,7 +547,7 @@ instance forgetToTopPreservesOfLeft : PreservesLimit (cospan f g) Scheme.forgetT
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.forget_to_Top_preserves_of_left AlgebraicGeometry.IsOpenImmersion.forgetToTopPreservesOfLeft
 
-instance forgetToTopPreservesOfRight : PreservesLimit (cospan g f) Scheme.forgetToTop :=
+instance forgetToTopPreservesOfRight : PreservesLimit (cospan g f) Scheme.forgetToTop := fast_instance%
   preservesPullbackSymmetry _ _ _
 #align algebraic_geometry.IsOpenImmersion.forget_to_Top_preserves_of_right AlgebraicGeometry.IsOpenImmersion.forgetToTopPreservesOfRight
 

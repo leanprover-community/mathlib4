@@ -98,11 +98,11 @@ attribute [to_additive AddSubsemigroup] Subsemigroup
 namespace Subsemigroup
 
 @[to_additive]
-instance : SetLike (Subsemigroup M) M :=
+instance : SetLike (Subsemigroup M) M := fast_instance%
   ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
 
 @[to_additive]
-instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
+instance : MulMemClass (Subsemigroup M) M where mul_mem := fast_instance% fun {_ _ _} => Subsemigroup.mul_mem' _
 
 initialize_simps_projections Subsemigroup (carrier → coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe)
@@ -172,18 +172,18 @@ protected theorem mul_mem {x y : M} : x ∈ S → y ∈ S → x * y ∈ S :=
 
 /-- The subsemigroup `M` of the magma `M`. -/
 @[to_additive "The additive subsemigroup `M` of the magma `M`."]
-instance : Top (Subsemigroup M) :=
+instance : Top (Subsemigroup M) := fast_instance%
   ⟨{  carrier := Set.univ
       mul_mem' := fun _ _ => Set.mem_univ _ }⟩
 
 /-- The trivial subsemigroup `∅` of a magma `M`. -/
 @[to_additive "The trivial `AddSubsemigroup` `∅` of an additive magma `M`."]
-instance : Bot (Subsemigroup M) :=
+instance : Bot (Subsemigroup M) := fast_instance%
   ⟨{  carrier := ∅
       mul_mem' := False.elim }⟩
 
 @[to_additive]
-instance : Inhabited (Subsemigroup M) :=
+instance : Inhabited (Subsemigroup M) := fast_instance%
   ⟨⊥⟩
 
 @[to_additive]
@@ -212,7 +212,7 @@ theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
 
 /-- The inf of two subsemigroups is their intersection. -/
 @[to_additive "The inf of two `AddSubsemigroup`s is their intersection."]
-instance : Inf (Subsemigroup M) :=
+instance : Inf (Subsemigroup M) := fast_instance%
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
@@ -230,7 +230,7 @@ theorem mem_inf {p p' : Subsemigroup M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧
 #align add_subsemigroup.mem_inf AddSubsemigroup.mem_inf
 
 @[to_additive]
-instance : InfSet (Subsemigroup M) :=
+instance : InfSet (Subsemigroup M) := fast_instance%
   ⟨fun s =>
     { carrier := ⋂ t ∈ s, ↑t
       mul_mem' := fun hx hy =>
@@ -263,7 +263,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subsemigroup M} : (↑(⨅ i, S i) : S
 
 /-- subsemigroups of a monoid form a complete lattice. -/
 @[to_additive "The `AddSubsemigroup`s of an `AddMonoid` form a complete lattice."]
-instance : CompleteLattice (Subsemigroup M) :=
+instance : CompleteLattice (Subsemigroup M) := fast_instance%
   { completeLatticeOfInf (Subsemigroup M) fun _ =>
       IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     le := (· ≤ ·)
@@ -287,7 +287,7 @@ theorem subsingleton_of_subsingleton [Subsingleton (Subsemigroup M)] : Subsingle
 #align add_subsemigroup.subsingleton_of_subsingleton AddSubsemigroup.subsingleton_of_subsingleton
 
 @[to_additive]
-instance [hn : Nonempty M] : Nontrivial (Subsemigroup M) :=
+instance [hn : Nonempty M] : Nontrivial (Subsemigroup M) := fast_instance%
   ⟨⟨⊥, ⊤, fun h => by
       obtain ⟨x⟩ := id hn
       refine' absurd (_ : x ∈ ⊥) not_mem_bot

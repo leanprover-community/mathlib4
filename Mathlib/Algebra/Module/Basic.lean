@@ -481,11 +481,11 @@ theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
 
 
 /-- A `Module` over `ℚ` restricts to a `Module` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [Module ℚ α] : Module NNRat α :=
+instance [AddCommMonoid α] [Module ℚ α] : Module NNRat α := fast_instance%
   Module.compHom α NNRat.coeHom
 
 /-- There can be at most one `Module ℚ E` structure on an additive commutative group. -/
-instance subsingleton_rat_module (E : Type*) [AddCommGroup E] : Subsingleton (Module ℚ E) :=
+instance subsingleton_rat_module (E : Type*) [AddCommGroup E] : Subsingleton (Module ℚ E) := fast_instance%
   ⟨fun P Q => (Module.ext' P Q) fun r x =>
     map_rat_smul (_instM := P) (_instM₂ := Q) (AddMonoidHom.id E) r x⟩
 #align subsingleton_rat_module subsingleton_rat_module
@@ -718,7 +718,7 @@ theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : 
 
 end SMulInjective
 
-instance [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
+instance [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M := fast_instance%
   ⟨fun {c x} hcx ↦ by rwa [nsmul_eq_smul_cast ℤ c x, smul_eq_zero, Nat.cast_eq_zero] at hcx⟩
 
 variable (R M)

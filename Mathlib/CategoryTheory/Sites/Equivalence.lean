@@ -105,18 +105,18 @@ class TransportsGrothendieckTopology : Prop where
   /-- `K` is equal to the induced topology. -/
   eq_inducedTopology : K = (e.locallyCoverDense J).inducedTopology
 
-instance : e.TransportsGrothendieckTopology J (e.locallyCoverDense J).inducedTopology := ⟨rfl⟩
+instance : e.TransportsGrothendieckTopology J (e.locallyCoverDense J).inducedTopology := fast_instance% ⟨rfl⟩
 
 variable [e.TransportsGrothendieckTopology J K]
 
 theorem eq_inducedTopology_of_transports : K = (e.locallyCoverDense J).inducedTopology :=
   TransportsGrothendieckTopology.eq_inducedTopology
 
-instance : IsContinuous e.functor J K := by
+instance : IsContinuous e.functor J K := fast_instance% by
   rw [e.eq_inducedTopology_of_transports J K]
   exact IsCoverDense.isContinuous _ _ _ (e.coverPreserving J)
 
-instance : IsContinuous e.inverse K J := by
+instance : IsContinuous e.inverse K J := fast_instance% by
   rw [eq_inducedTopology_of_transports J K e]
   exact IsCoverDense.isContinuous _ _ _ (e.locallyCoverDense J).inducedTopology_coverPreserving
 
@@ -229,10 +229,10 @@ noncomputable
 def smallSheafificationAdjunction : smallSheafify J A ⊣ sheafToPresheaf J A :=
   (equivSmallModel C).transportSheafificationAdjunction J _ A
 
-noncomputable instance hasSheafifyEssentiallySmallSite : HasSheafify J A :=
+noncomputable instance hasSheafifyEssentiallySmallSite : HasSheafify J A := fast_instance%
   (equivSmallModel C).hasSheafify J ((equivSmallModel C).locallyCoverDense J).inducedTopology A
 
-instance hasSheafComposeEssentiallySmallSite : HasSheafCompose J F :=
+instance hasSheafComposeEssentiallySmallSite : HasSheafCompose J F := fast_instance%
   (equivSmallModel C).hasSheafCompose J ((equivSmallModel C).locallyCoverDense J).inducedTopology F
 
 instance hasLimitsEssentiallySmallSite

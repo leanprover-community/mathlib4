@@ -76,7 +76,7 @@ theorem w {s t : LeftExtension f g} (η : s ⟶ t) :
 /-- The left extension along the identity. -/
 def alongId (g : a ⟶ c) : LeftExtension (𝟙 a) g := .mk _ (λ_ g).inv
 
-instance : Inhabited (LeftExtension (𝟙 a) g) := ⟨alongId g⟩
+instance : Inhabited (LeftExtension (𝟙 a) g) := fast_instance% ⟨alongId g⟩
 
 /-- Whisker a 1-morphism to an extension.
 ```
@@ -167,7 +167,7 @@ theorem w {s t : LeftLift f g} (h : s ⟶ t) :
 /-- The left lift along the identity. -/
 def alongId (g : c ⟶ a) : LeftLift (𝟙 a) g := .mk _ (ρ_ g).inv
 
-instance : Inhabited (LeftLift (𝟙 a) g) := ⟨alongId g⟩
+instance : Inhabited (LeftLift (𝟙 a) g) := fast_instance% ⟨alongId g⟩
 
 /-- Whisker a 1-morphism to a lift.
 ```
@@ -258,7 +258,7 @@ theorem w {s t : RightExtension f g} (η : s ⟶ t) :
 /-- The right extension along the identity. -/
 def alongId (g : a ⟶ c) : RightExtension (𝟙 a) g := .mk _ (λ_ g).hom
 
-instance : Inhabited (RightExtension (𝟙 a) g) := ⟨alongId g⟩
+instance : Inhabited (RightExtension (𝟙 a) g) := fast_instance% ⟨alongId g⟩
 
 end RightExtension
 
@@ -303,7 +303,7 @@ theorem w {s t : RightLift f g} (h : s ⟶ t) :
 /-- The right lift along the identity. -/
 def alongId (g : c ⟶ a) : RightLift (𝟙 a) g := .mk _ (ρ_ g).hom
 
-instance : Inhabited (RightLift (𝟙 a) g) := ⟨alongId g⟩
+instance : Inhabited (RightLift (𝟙 a) g) := fast_instance% ⟨alongId g⟩
 
 end RightLift
 

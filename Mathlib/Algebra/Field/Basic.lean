@@ -360,19 +360,19 @@ protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'
 /-! ### Order dual -/
 
 
-instance [h : RatCast α] : RatCast αᵒᵈ :=
+instance [h : RatCast α] : RatCast αᵒᵈ := fast_instance%
   h
 
-instance [h : DivisionSemiring α] : DivisionSemiring αᵒᵈ :=
+instance [h : DivisionSemiring α] : DivisionSemiring αᵒᵈ := fast_instance%
   h
 
-instance [h : DivisionRing α] : DivisionRing αᵒᵈ :=
+instance [h : DivisionRing α] : DivisionRing αᵒᵈ := fast_instance%
   h
 
-instance [h : Semifield α] : Semifield αᵒᵈ :=
+instance [h : Semifield α] : Semifield αᵒᵈ := fast_instance%
   h
 
-instance [h : Field α] : Field αᵒᵈ :=
+instance [h : Field α] : Field αᵒᵈ := fast_instance%
   h
 
 @[simp]
@@ -387,19 +387,19 @@ theorem ofDual_rat_cast [RatCast α] (n : ℚ) : (ofDual n : α) = n :=
 
 /-! ### Lexicographic order -/
 
-instance [h : RatCast α] : RatCast (Lex α) :=
+instance [h : RatCast α] : RatCast (Lex α) := fast_instance%
   h
 
-instance [h : DivisionSemiring α] : DivisionSemiring (Lex α) :=
+instance [h : DivisionSemiring α] : DivisionSemiring (Lex α) := fast_instance%
   h
 
-instance [h : DivisionRing α] : DivisionRing (Lex α) :=
+instance [h : DivisionRing α] : DivisionRing (Lex α) := fast_instance%
   h
 
-instance [h : Semifield α] : Semifield (Lex α) :=
+instance [h : Semifield α] : Semifield (Lex α) := fast_instance%
   h
 
-instance [h : Field α] : Field (Lex α) :=
+instance [h : Field α] : Field (Lex α) := fast_instance%
   h
 
 @[simp]

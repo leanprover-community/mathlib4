@@ -203,7 +203,7 @@ instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
 @[to_additive "Helper instance for when there's too many metavariables to apply
 `DFunLike.hasCoeToFun`. "]
-instance : CoeFun (GroupSeminorm E) fun _ => E → ℝ :=
+instance : CoeFun (GroupSeminorm E) fun _ => E → ℝ := fast_instance%
   ⟨DFunLike.coe⟩
 
 @[to_additive (attr := simp)]
@@ -219,7 +219,7 @@ theorem ext : (∀ x, p x = q x) → p = q :=
 #align add_group_seminorm.ext AddGroupSeminorm.ext
 
 @[to_additive]
-instance : PartialOrder (GroupSeminorm E) :=
+instance : PartialOrder (GroupSeminorm E) := fast_instance%
   PartialOrder.lift _ DFunLike.coe_injective
 
 @[to_additive]
@@ -249,7 +249,7 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
 variable (p q) (f : F →* E)
 
 @[to_additive]
-instance instZeroGroupSeminorm : Zero (GroupSeminorm E) :=
+instance instZeroGroupSeminorm : Zero (GroupSeminorm E) := fast_instance%
   ⟨{  toFun := 0
       map_one' := Pi.zero_apply _
       mul_le' := fun _ _ => (zero_add _).ge
@@ -268,11 +268,11 @@ theorem zero_apply (x : E) : (0 : GroupSeminorm E) x = 0 :=
 #align add_group_seminorm.zero_apply AddGroupSeminorm.zero_apply
 
 @[to_additive]
-instance : Inhabited (GroupSeminorm E) :=
+instance : Inhabited (GroupSeminorm E) := fast_instance%
   ⟨0⟩
 
 @[to_additive]
-instance : Add (GroupSeminorm E) :=
+instance : Add (GroupSeminorm E) := fast_instance%
   ⟨fun p q =>
     { toFun := fun x => p x + q x
       map_one' := by simp_rw [map_one_eq_zero p, map_one_eq_zero q, zero_add]
@@ -296,7 +296,7 @@ theorem add_apply (x : E) : (p + q) x = p x + q x :=
 -- TODO: define `SupSet` too, from the skeleton at
 -- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
 @[to_additive]
-instance : Sup (GroupSeminorm E) :=
+instance : Sup (GroupSeminorm E) := fast_instance%
   ⟨fun p q =>
     { toFun := p ⊔ q
       map_one' := by
@@ -319,7 +319,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
 #align add_group_seminorm.sup_apply AddGroupSeminorm.sup_apply
 
 @[to_additive]
-instance semilatticeSup : SemilatticeSup (GroupSeminorm E) :=
+instance semilatticeSup : SemilatticeSup (GroupSeminorm E) := fast_instance%
   DFunLike.coe_injective.semilatticeSup _ coe_sup
 
 /-- Composition of a group seminorm with a monoid homomorphism as a group seminorm. -/
@@ -406,7 +406,7 @@ theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
 #align add_group_seminorm.add_bdd_below_range_add AddGroupSeminorm.add_bddBelow_range_add
 
 @[to_additive]
-noncomputable instance : Inf (GroupSeminorm E) :=
+noncomputable instance : Inf (GroupSeminorm E) := fast_instance%
   ⟨fun p q =>
     { toFun := fun x => ⨅ y, p y + q (x / y)
       map_one' :=
@@ -430,7 +430,7 @@ theorem inf_apply : (p ⊓ q) x = ⨅ y, p y + q (x / y) :=
 #align add_group_seminorm.inf_apply AddGroupSeminorm.inf_apply
 
 @[to_additive]
-noncomputable instance : Lattice (GroupSeminorm E) :=
+noncomputable instance : Lattice (GroupSeminorm E) := fast_instance%
   { GroupSeminorm.semilatticeSup with
     inf := (· ⊓ ·)
     inf_le_left := fun p q x =>
@@ -451,7 +451,7 @@ namespace AddGroupSeminorm
 
 variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (p : AddGroupSeminorm E)
 
-instance toOne [DecidableEq E] : One (AddGroupSeminorm E) :=
+instance toOne [DecidableEq E] : One (AddGroupSeminorm E) := fast_instance%
   ⟨{  toFun := fun x => if x = 0 then 0 else 1
       map_zero' := if_pos rfl
       add_le' := fun x y => by
@@ -469,7 +469,7 @@ theorem apply_one [DecidableEq E] (x : E) : (1 : AddGroupSeminorm E) x = if x = 
 #align add_group_seminorm.apply_one AddGroupSeminorm.apply_one
 
 /-- Any action on `ℝ` which factors through `ℝ≥0` applies to an `AddGroupSeminorm`. -/
-instance toSMul : SMul R (AddGroupSeminorm E) :=
+instance toSMul : SMul R (AddGroupSeminorm E) := fast_instance%
   ⟨fun r p =>
     { toFun := fun x => r • p x
       map_zero' := by
@@ -522,7 +522,7 @@ instance nonarchAddGroupSeminormClass : NonarchAddGroupSeminormClass (NonarchAdd
 #align nonarch_add_group_seminorm.nonarch_add_group_seminorm_class NonarchAddGroupSeminorm.nonarchAddGroupSeminormClass
 
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
-instance : CoeFun (NonarchAddGroupSeminorm E) fun _ => E → ℝ :=
+instance : CoeFun (NonarchAddGroupSeminorm E) fun _ => E → ℝ := fast_instance%
   ⟨DFunLike.coe⟩
 
 -- Porting note: `simpNF` said the left hand side simplified to this
@@ -536,7 +536,7 @@ theorem ext : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
 #align nonarch_add_group_seminorm.ext NonarchAddGroupSeminorm.ext
 
-noncomputable instance : PartialOrder (NonarchAddGroupSeminorm E) :=
+noncomputable instance : PartialOrder (NonarchAddGroupSeminorm E) := fast_instance%
   PartialOrder.lift _ DFunLike.coe_injective
 
 theorem le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
@@ -559,7 +559,7 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
 
 variable (p q) (f : F →+ E)
 
-instance : Zero (NonarchAddGroupSeminorm E) :=
+instance : Zero (NonarchAddGroupSeminorm E) := fast_instance%
   ⟨{  toFun := 0
       map_zero' := Pi.zero_apply _
       add_le_max' := fun r s => by simp only [Pi.zero_apply]; rw [max_eq_right]; rfl
@@ -575,12 +575,12 @@ theorem zero_apply (x : E) : (0 : NonarchAddGroupSeminorm E) x = 0 :=
   rfl
 #align nonarch_add_group_seminorm.zero_apply NonarchAddGroupSeminorm.zero_apply
 
-instance : Inhabited (NonarchAddGroupSeminorm E) :=
+instance : Inhabited (NonarchAddGroupSeminorm E) := fast_instance%
   ⟨0⟩
 
 -- TODO: define `SupSet` too, from the skeleton at
 -- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
-instance : Sup (NonarchAddGroupSeminorm E) :=
+instance : Sup (NonarchAddGroupSeminorm E) := fast_instance%
   ⟨fun p q =>
     { toFun := p ⊔ q
       map_zero' := by rw [Pi.sup_apply, ← map_zero p, sup_eq_left, map_zero p, map_zero q]
@@ -599,7 +599,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 #align nonarch_add_group_seminorm.sup_apply NonarchAddGroupSeminorm.sup_apply
 
-noncomputable instance : SemilatticeSup (NonarchAddGroupSeminorm E) :=
+noncomputable instance : SemilatticeSup (NonarchAddGroupSeminorm E) := fast_instance%
   DFunLike.coe_injective.semilatticeSup _ coe_sup
 
 end AddGroup
@@ -625,7 +625,7 @@ namespace GroupSeminorm
 variable [Group E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
 @[to_additive existing AddGroupSeminorm.toOne]
-instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
+instance toOne [DecidableEq E] : One (GroupSeminorm E) := fast_instance%
   ⟨{  toFun := fun x => if x = 1 then 0 else 1
       map_one' := if_pos rfl
       mul_le' := fun x y => by
@@ -644,7 +644,7 @@ theorem apply_one [DecidableEq E] (x : E) : (1 : GroupSeminorm E) x = if x = 1 t
 
 /-- Any action on `ℝ` which factors through `ℝ≥0` applies to an `AddGroupSeminorm`. -/
 @[to_additive existing AddGroupSeminorm.toSMul]
-instance : SMul R (GroupSeminorm E) :=
+instance : SMul R (GroupSeminorm E) := fast_instance%
   ⟨fun r p =>
     { toFun := fun x => r • p x
       map_one' := by
@@ -685,7 +685,7 @@ namespace NonarchAddGroupSeminorm
 
 variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
-instance [DecidableEq E] : One (NonarchAddGroupSeminorm E) :=
+instance [DecidableEq E] : One (NonarchAddGroupSeminorm E) := fast_instance%
   ⟨{  toFun := fun x => if x = 0 then 0 else 1
       map_zero' := if_pos rfl
       add_le_max' := fun x y => by
@@ -703,7 +703,7 @@ theorem apply_one [DecidableEq E] (x : E) :
 #align nonarch_add_group_seminorm.apply_one NonarchAddGroupSeminorm.apply_one
 
 /-- Any action on `ℝ` which factors through `ℝ≥0` applies to a `NonarchAddGroupSeminorm`. -/
-instance : SMul R (NonarchAddGroupSeminorm E) :=
+instance : SMul R (NonarchAddGroupSeminorm E) := fast_instance%
   ⟨fun r p =>
     { toFun := fun x => r • p x
       map_zero' := by
@@ -768,7 +768,7 @@ instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ
 directly. -/
 @[to_additive "Helper instance for when there's too many metavariables to apply
 `DFunLike.hasCoeToFun` directly. "]
-instance : CoeFun (GroupNorm E) fun _ => E → ℝ :=
+instance : CoeFun (GroupNorm E) fun _ => E → ℝ := fast_instance%
   DFunLike.hasCoeToFun
 
 -- Porting note: `simpNF` told me the left-hand side simplified to this
@@ -785,7 +785,7 @@ theorem ext : (∀ x, p x = q x) → p = q :=
 #align add_group_norm.ext AddGroupNorm.ext
 
 @[to_additive]
-instance : PartialOrder (GroupNorm E) :=
+instance : PartialOrder (GroupNorm E) := fast_instance%
   PartialOrder.lift _ DFunLike.coe_injective
 
 @[to_additive]
@@ -815,7 +815,7 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
 variable (p q) (f : F →* E)
 
 @[to_additive]
-instance : Add (GroupNorm E) :=
+instance : Add (GroupNorm E) := fast_instance%
   ⟨fun p q =>
     { p.toGroupSeminorm + q.toGroupSeminorm with
       eq_one_of_map_eq_zero' := fun _x hx =>
@@ -835,7 +835,7 @@ theorem add_apply (x : E) : (p + q) x = p x + q x :=
 
 -- TODO: define `SupSet`
 @[to_additive]
-instance : Sup (GroupNorm E) :=
+instance : Sup (GroupNorm E) := fast_instance%
   ⟨fun p q =>
     { p.toGroupSeminorm ⊔ q.toGroupSeminorm with
       eq_one_of_map_eq_zero' := fun _x hx =>
@@ -854,7 +854,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
 #align add_group_norm.sup_apply AddGroupNorm.sup_apply
 
 @[to_additive]
-instance : SemilatticeSup (GroupNorm E) :=
+instance : SemilatticeSup (GroupNorm E) := fast_instance%
   DFunLike.coe_injective.semilatticeSup _ coe_sup
 
 end Group
@@ -865,7 +865,7 @@ namespace AddGroupNorm
 
 variable [AddGroup E] [DecidableEq E]
 
-instance : One (AddGroupNorm E) :=
+instance : One (AddGroupNorm E) := fast_instance%
   ⟨{ (1 : AddGroupSeminorm E) with
       eq_zero_of_map_eq_zero' := fun _x => zero_ne_one.ite_eq_left_iff.1 }⟩
 
@@ -874,21 +874,21 @@ theorem apply_one (x : E) : (1 : AddGroupNorm E) x = if x = 0 then 0 else 1 :=
   rfl
 #align add_group_norm.apply_one AddGroupNorm.apply_one
 
-instance : Inhabited (AddGroupNorm E) :=
+instance : Inhabited (AddGroupNorm E) := fast_instance%
   ⟨1⟩
 
 end AddGroupNorm
 
 namespace GroupNorm
 
-instance _root_.AddGroupNorm.toOne [AddGroup E] [DecidableEq E] : One (AddGroupNorm E) :=
+instance _root_.AddGroupNorm.toOne [AddGroup E] [DecidableEq E] : One (AddGroupNorm E) := fast_instance%
   ⟨{ (1 : AddGroupSeminorm E) with
     eq_zero_of_map_eq_zero' := fun _ => zero_ne_one.ite_eq_left_iff.1 }⟩
 
 variable [Group E] [DecidableEq E]
 
 @[to_additive existing AddGroupNorm.toOne]
-instance toOne : One (GroupNorm E) :=
+instance toOne : One (GroupNorm E) := fast_instance%
   ⟨{ (1 : GroupSeminorm E) with eq_one_of_map_eq_zero' := fun _ => zero_ne_one.ite_eq_left_iff.1 }⟩
 
 @[to_additive (attr := simp) existing AddGroupNorm.apply_one]
@@ -897,7 +897,7 @@ theorem apply_one (x : E) : (1 : GroupNorm E) x = if x = 1 then 0 else 1 :=
 #align group_norm.apply_one GroupNorm.apply_one
 
 @[to_additive existing]
-instance : Inhabited (GroupNorm E) :=
+instance : Inhabited (GroupNorm E) := fast_instance%
   ⟨1⟩
 
 end GroupNorm
@@ -922,7 +922,7 @@ instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNor
 #align nonarch_add_group_norm.nonarch_add_group_norm_class NonarchAddGroupNorm.nonarchAddGroupNormClass
 
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
-noncomputable instance : CoeFun (NonarchAddGroupNorm E) fun _ => E → ℝ :=
+noncomputable instance : CoeFun (NonarchAddGroupNorm E) fun _ => E → ℝ := fast_instance%
   DFunLike.hasCoeToFun
 
 -- Porting note: `simpNF` told me the left-hand side simplified to this
@@ -936,7 +936,7 @@ theorem ext : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
 #align nonarch_add_group_norm.ext NonarchAddGroupNorm.ext
 
-noncomputable instance : PartialOrder (NonarchAddGroupNorm E) :=
+noncomputable instance : PartialOrder (NonarchAddGroupNorm E) := fast_instance%
   PartialOrder.lift _ DFunLike.coe_injective
 
 theorem le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
@@ -959,7 +959,7 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
 
 variable (p q) (f : F →+ E)
 
-instance : Sup (NonarchAddGroupNorm E) :=
+instance : Sup (NonarchAddGroupNorm E) := fast_instance%
   ⟨fun p q =>
     { p.toNonarchAddGroupSeminorm ⊔ q.toNonarchAddGroupSeminorm with
       eq_zero_of_map_eq_zero' := fun _x hx =>
@@ -975,10 +975,10 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 #align nonarch_add_group_norm.sup_apply NonarchAddGroupNorm.sup_apply
 
-noncomputable instance : SemilatticeSup (NonarchAddGroupNorm E) :=
+noncomputable instance : SemilatticeSup (NonarchAddGroupNorm E) := fast_instance%
   DFunLike.coe_injective.semilatticeSup _ coe_sup
 
-instance [DecidableEq E] : One (NonarchAddGroupNorm E) :=
+instance [DecidableEq E] : One (NonarchAddGroupNorm E) := fast_instance%
   ⟨{ (1 : NonarchAddGroupSeminorm E) with
       eq_zero_of_map_eq_zero' := fun _ => zero_ne_one.ite_eq_left_iff.1 }⟩
 
@@ -988,7 +988,7 @@ theorem apply_one [DecidableEq E] (x : E) :
   rfl
 #align nonarch_add_group_norm.apply_one NonarchAddGroupNorm.apply_one
 
-instance [DecidableEq E] : Inhabited (NonarchAddGroupNorm E) :=
+instance [DecidableEq E] : Inhabited (NonarchAddGroupNorm E) := fast_instance%
   ⟨1⟩
 
 end AddGroup

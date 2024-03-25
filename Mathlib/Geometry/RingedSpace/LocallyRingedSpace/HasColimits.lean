@@ -44,7 +44,7 @@ theorem colimit_exists_rep (x : colimit (C := SheafedSpace C) F) :
     (isColimitOfPreserves (SheafedSpace.forget _) (colimit.isColimit F)) x
 #align algebraic_geometry.SheafedSpace.colimit_exists_rep AlgebraicGeometry.SheafedSpaceₓ.colimit_exists_rep
 
-instance {X Y : SheafedSpace C} (f g : X ⟶ Y) : Epi (coequalizer.π f g).base := by
+instance {X Y : SheafedSpace C} (f g : X ⟶ Y) : Epi (coequalizer.π f g).base := fast_instance% by
   erw [←
     show _ = (coequalizer.π f g).base from
       ι_comp_coequalizerComparison f g (SheafedSpace.forget C)]
@@ -123,7 +123,7 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
         congr_arg LocallyRingedSpace.Hom.val (h j))
 #align algebraic_geometry.LocallyRingedSpace.coproduct_cofan_is_colimit AlgebraicGeometry.LocallyRingedSpace.coproductCofanIsColimit
 
-instance : HasCoproducts.{u} LocallyRingedSpace.{u} := fun _ =>
+instance : HasCoproducts.{u} LocallyRingedSpace.{u} := fast_instance% fun _ =>
   ⟨fun F => ⟨⟨⟨_, coproductCofanIsColimit F⟩⟩⟩⟩
 
 noncomputable instance (J : Type _) :
@@ -313,10 +313,10 @@ noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g)
   · exact h
 #align algebraic_geometry.LocallyRingedSpace.coequalizer_cofork_is_colimit AlgebraicGeometry.LocallyRingedSpace.coequalizerCoforkIsColimit
 
-instance : HasCoequalizer f g :=
+instance : HasCoequalizer f g := fast_instance%
   ⟨⟨⟨_, coequalizerCoforkIsColimit f g⟩⟩⟩
 
-instance : HasCoequalizers LocallyRingedSpace :=
+instance : HasCoequalizers LocallyRingedSpace := fast_instance%
   hasCoequalizers_of_hasColimit_parallelPair _
 
 noncomputable instance preservesCoequalizer :
@@ -335,7 +335,7 @@ noncomputable instance preservesCoequalizer :
 
 end HasCoequalizer
 
-instance : HasColimits LocallyRingedSpace :=
+instance : HasColimits LocallyRingedSpace := fast_instance%
   has_colimits_of_hasCoequalizers_and_coproducts
 
 noncomputable instance preservesColimits_forgetToSheafedSpace :

@@ -200,7 +200,7 @@ theorem iff_quotient_mvPolynomial'' :
     exact FiniteType.of_surjective (FiniteType.mvPolynomial R (Fin n)) f hsur
 #align algebra.finite_type.iff_quotient_mv_polynomial'' Algebra.FiniteType.iff_quotient_mvPolynomial''
 
-instance prod [hA : FiniteType R A] [hB : FiniteType R B] : FiniteType R (A × B) :=
+instance prod [hA : FiniteType R A] [hB : FiniteType R B] : FiniteType R (A × B) := fast_instance%
   ⟨by rw [← Subalgebra.prod_top]; exact hA.1.prod hB.1⟩
 #align algebra.finite_type.prod Algebra.FiniteType.prod
 
@@ -677,7 +677,7 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
     exact ⟨r • P, AlgHom.map_smul _ _ _⟩
 
 /-- If a monoid `M` is finitely generated then `MonoidAlgebra R M` is of finite type. -/
-instance finiteType_of_fg [CommRing R] [Monoid.FG M] : FiniteType R (MonoidAlgebra R M) :=
+instance finiteType_of_fg [CommRing R] [Monoid.FG M] : FiniteType R (MonoidAlgebra R M) := fast_instance%
   (AddMonoidAlgebra.finiteType_of_fg R (Additive M)).equiv (toAdditiveAlgEquiv R M).symm
 #align monoid_algebra.finite_type_of_fg MonoidAlgebra.finiteType_of_fg
 

@@ -146,7 +146,7 @@ section CommRing
 variable [CommRing R]
 
 /-- Multivariate formal power series over a local ring form a local ring. -/
-instance [LocalRing R] : LocalRing (MvPowerSeries σ R) :=
+instance [LocalRing R] : LocalRing (MvPowerSeries σ R) := fast_instance%
   LocalRing.of_isUnit_or_isUnit_one_sub_self <| by
     intro φ
     rcases LocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff σ R φ) with (⟨u, h⟩ | ⟨u, h⟩) <;>
@@ -165,7 +165,7 @@ variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f
 -- not actually need R and S to be local rings!
 /-- The map between multivariate formal power series over the same indexing set
  induced by a local ring hom `A → B` is local -/
-instance map.isLocalRingHom : IsLocalRingHom (map σ f) :=
+instance map.isLocalRingHom : IsLocalRingHom (map σ f) := fast_instance%
   ⟨by
     rintro φ ⟨ψ, h⟩
     replace h := congr_arg (constantCoeff σ S) h
@@ -187,7 +187,7 @@ protected def inv (φ : MvPowerSeries σ k) : MvPowerSeries σ k :=
   inv.aux (constantCoeff σ k φ)⁻¹ φ
 #align mv_power_series.inv MvPowerSeries.inv
 
-instance : Inv (MvPowerSeries σ k) :=
+instance : Inv (MvPowerSeries σ k) := fast_instance%
   ⟨MvPowerSeries.inv⟩
 
 theorem coeff_inv [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ k) :
@@ -274,7 +274,7 @@ protected theorem mul_inv_rev (φ ψ : MvPowerSeries σ k) :
       MvPowerSeries.inv_mul_cancel _ h.right]
 #align mv_power_series.mul_inv_rev MvPowerSeries.mul_inv_rev
 
-instance : InvOneClass (MvPowerSeries σ k) :=
+instance : InvOneClass (MvPowerSeries σ k) := fast_instance%
   { inferInstanceAs (One (MvPowerSeries σ k)),
     inferInstanceAs (Inv (MvPowerSeries σ k)) with
     inv_one := by

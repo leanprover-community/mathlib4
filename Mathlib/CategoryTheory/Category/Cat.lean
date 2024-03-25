@@ -38,14 +38,14 @@ set_option linter.uppercaseLean3 false in
 
 namespace Cat
 
-instance : Inhabited Cat :=
+instance : Inhabited Cat := fast_instance%
   ⟨⟨Type u, CategoryTheory.types⟩⟩
 
 -- Porting note: maybe this coercion should be defined to be `objects.obj`?
-instance : CoeSort Cat (Type u) :=
+instance : CoeSort Cat (Type u) := fast_instance%
   ⟨Bundled.α⟩
 
-instance str (C : Cat.{v, u}) : Category.{v, u} C :=
+instance str (C : Cat.{v, u}) : Category.{v, u} C := fast_instance%
   Bundled.str C
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.str CategoryTheory.Cat.str
@@ -82,7 +82,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.bicategory.strict CategoryTheory.Cat.bicategory.strict
 
 /-- Category structure on `Cat` -/
-instance category : LargeCategory.{max v u} Cat.{v, u} :=
+instance category : LargeCategory.{max v u} Cat.{v, u} := fast_instance%
   StrictBicategory.category Cat.{v, u}
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.category CategoryTheory.Cat.category
@@ -115,7 +115,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.objects CategoryTheory.Cat.objects
 
 -- Porting note: this instance was needed for CategoryTheory.Category.Cat.Limit
-instance (X : Cat.{v, u}) : Category (objects.obj X) := (inferInstance : Category X)
+instance (X : Cat.{v, u}) : Category (objects.obj X) := fast_instance% (inferInstance : Category X)
 
 section
 

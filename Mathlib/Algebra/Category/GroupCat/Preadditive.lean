@@ -19,7 +19,7 @@ universe u
 namespace AddCommGroupCat
 
 -- porting note (#10670): this instance was not necessary in mathlib
-instance (P Q : AddCommGroupCat) : AddCommGroup (P ⟶ Q) :=
+instance (P Q : AddCommGroupCat) : AddCommGroup (P ⟶ Q) := fast_instance%
   (inferInstance : AddCommGroup (AddMonoidHom P Q))
 
 -- porting note (#10688): this lemma was not necessary in mathlib

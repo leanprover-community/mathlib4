@@ -72,7 +72,7 @@ instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
     exact Function.funext_iff.1 h x
 #align first_order.language.elementary_embedding.fun_like FirstOrder.Language.ElementaryEmbedding.instFunLike
 
-instance : CoeFun (M ↪ₑ[L] N) fun _ => M → N :=
+instance : CoeFun (M ↪ₑ[L] N) fun _ => M → N := fast_instance%
   DFunLike.hasCoeToFun
 
 @[simp]
@@ -125,7 +125,7 @@ theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
   exact h.1
 #align first_order.language.elementary_embedding.injective FirstOrder.Language.ElementaryEmbedding.injective
 
-instance embeddingLike : EmbeddingLike (M ↪ₑ[L] N) M N :=
+instance embeddingLike : EmbeddingLike (M ↪ₑ[L] N) M N := fast_instance%
   { show FunLike (M ↪ₑ[L] N) M N from inferInstance with injective' := injective }
 #align first_order.language.elementary_embedding.embedding_like FirstOrder.Language.ElementaryEmbedding.embeddingLike
 
@@ -206,7 +206,7 @@ def refl : M ↪ₑ[L] M where toFun := id
 
 variable {L} {M}
 
-instance : Inhabited (M ↪ₑ[L] M) :=
+instance : Inhabited (M ↪ₑ[L] M) := fast_instance%
   ⟨refl L M⟩
 
 @[simp]

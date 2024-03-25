@@ -43,7 +43,7 @@ def MonoidalSingleObj (C : Type*) [Category C] [MonoidalCategory C] :=
 #align category_theory.monoidal_single_obj CategoryTheory.MonoidalSingleObj
 
 -- Porting note: `deriving` didn't work. Create this instance manually.
-instance : Inhabited (MonoidalSingleObj C) := by
+instance : Inhabited (MonoidalSingleObj C) := fast_instance% by
   unfold MonoidalSingleObj
   infer_instance
 

@@ -37,7 +37,7 @@ open MvFunctor MvPFunctor
 
 variable {F G} {α β : TypeVec.{u} m} (f : α ⟹ β)
 
-instance [I : Inhabited (F fun i : Fin2 n ↦ G i α)] : Inhabited (Comp F G α) := I
+instance [I : Inhabited (F fun i : Fin2 n ↦ G i α)] : Inhabited (Comp F G α) := fast_instance% I
 
 /-- Constructor for functor composition -/
 protected def mk (x : F fun i ↦ G i α) : Comp F G α := x
@@ -64,7 +64,7 @@ protected def map : (Comp F G) α → (Comp F G) β :=
   (map fun _i ↦ map f : (F fun i ↦ G i α) → F fun i ↦ G i β)
 #align mvqpf.comp.map MvQPF.Comp.map
 
-instance : MvFunctor (Comp F G) where map := Comp.map
+instance : MvFunctor (Comp F G) where map := fast_instance% Comp.map
 
 theorem map_mk (x : F fun i ↦ G i α) :
     f <$$> Comp.mk x = Comp.mk ((fun i (x : G i α) ↦ f <$$> x) <$$> x) := rfl

@@ -14,7 +14,7 @@ set_option autoImplicit true
 
 noncomputable section
 
-instance [Semiring α] [AddCommMonoid β] [Module α β] [Small β] : Module α (Shrink β) :=
+instance [Semiring α] [AddCommMonoid β] [Module α β] [Small β] : Module α (Shrink β) := fast_instance%
   (equivShrink _).symm.module α
 
 /-- A small module is linearly equivalent to its small model. -/
@@ -22,7 +22,7 @@ def linearEquivShrink (α β) [Semiring α] [AddCommMonoid β] [Module α β] [S
     β ≃ₗ[α] Shrink β :=
   ((equivShrink β).symm.linearEquiv α).symm
 
-instance [CommSemiring α] [Semiring β] [Algebra α β] [Small β] : Algebra α (Shrink β) :=
+instance [CommSemiring α] [Semiring β] [Algebra α β] [Small β] : Algebra α (Shrink β) := fast_instance%
   (equivShrink _).symm.algebra α
 
 /-- A small algebra is algebra equivalent to its small model. -/

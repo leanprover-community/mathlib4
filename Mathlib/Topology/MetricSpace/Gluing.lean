@@ -491,7 +491,7 @@ def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
   @SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace.toTopologicalSpace
 #align metric.glue_space Metric.GlueSpace
 
-instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (GlueSpace hΦ hΨ) :=
+instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (GlueSpace hΦ hΨ) := fast_instance%
   inferInstanceAs <| MetricSpace <|
     @SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace.toTopologicalSpace
 
@@ -623,7 +623,7 @@ def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
 #align metric.inductive_limit Metric.InductiveLimit
 
 set_option autoImplicit true in
-instance : MetricSpace (InductiveLimit (f := f) I) :=
+instance : MetricSpace (InductiveLimit (f := fast_instance% f) I) :=
   inferInstanceAs <| MetricSpace <|
     @SeparationQuotient _ (inductivePremetric I).toUniformSpace.toTopologicalSpace
 
@@ -632,7 +632,7 @@ def toInductiveLimit (I : ∀ n, Isometry (f n)) (n : ℕ) (x : X n) : Metric.In
   Quotient.mk'' (Sigma.mk n x)
 #align metric.to_inductive_limit Metric.toInductiveLimit
 
-instance (I : ∀ n, Isometry (f n)) [Inhabited (X 0)] : Inhabited (InductiveLimit I) :=
+instance (I : ∀ n, Isometry (f n)) [Inhabited (X 0)] : Inhabited (InductiveLimit I) := fast_instance%
   ⟨toInductiveLimit _ 0 default⟩
 
 /-- The map `toInductiveLimit n` mapping `X n` to the inductive limit is an isometry. -/

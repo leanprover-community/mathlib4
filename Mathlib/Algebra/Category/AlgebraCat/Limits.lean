@@ -158,7 +158,7 @@ lemma hasLimitsOfSize : HasLimitsOfSize.{v, v} (AlgebraCatMax.{v, w} R) :=
           isLimit := limitConeIsLimit F } } }
 #align Algebra.has_limits_of_size AlgebraCat.hasLimitsOfSize
 
-instance hasLimits : HasLimits (AlgebraCat.{w} R) :=
+instance hasLimits : HasLimits (AlgebraCat.{w} R) := fast_instance%
   AlgebraCat.hasLimitsOfSize.{w, w, u}
 #align Algebra.has_limits AlgebraCat.hasLimits
 
@@ -173,7 +173,7 @@ instance forget₂RingPreservesLimitsOfSize :
             (_ ⋙ forget₂ (AlgebraCatMax.{v, w} R) RingCatMax.{v, w})) }
 #align Algebra.forget₂_Ring_preserves_limits_of_size AlgebraCat.forget₂RingPreservesLimitsOfSize
 
-instance forget₂RingPreservesLimits : PreservesLimits (forget₂ (AlgebraCat R) RingCat.{w}) :=
+instance forget₂RingPreservesLimits : PreservesLimits (forget₂ (AlgebraCat R) RingCat.{w}) := fast_instance%
   AlgebraCat.forget₂RingPreservesLimitsOfSize.{w, w}
 #align Algebra.forget₂_Ring_preserves_limits AlgebraCat.forget₂RingPreservesLimits
 
@@ -203,7 +203,7 @@ instance forgetPreservesLimitsOfSize :
           (Types.limitConeIsLimit (_ ⋙ forget _)) }
 #align Algebra.forget_preserves_limits_of_size AlgebraCat.forgetPreservesLimitsOfSize
 
-instance forgetPreservesLimits : PreservesLimits (forget (AlgebraCat.{w} R)) :=
+instance forgetPreservesLimits : PreservesLimits (forget (AlgebraCat.{w} R)) := fast_instance%
   AlgebraCat.forgetPreservesLimitsOfSize.{w, w}
 #align Algebra.forget_preserves_limits AlgebraCat.forgetPreservesLimits
 

@@ -29,7 +29,7 @@ section One
 variable [One α] {a : α}
 
 @[to_additive]
-instance one : One (WithTop α) :=
+instance one : One (WithTop α) := fast_instance%
   ⟨(1 : α)⟩
 #align with_top.has_one WithTop.one
 #align with_top.has_zero WithTop.zero
@@ -100,7 +100,7 @@ protected theorem map_one {β} (f : α → β) : (1 : WithTop α).map f = (f 1 :
 #align with_top.map_one WithTop.map_one
 #align with_top.map_zero WithTop.map_zero
 
-instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
+instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) := fast_instance%
   ⟨some_le_some.2 zero_le_one⟩
 
 end One
@@ -109,7 +109,7 @@ section Add
 
 variable [Add α] {a b c d : WithTop α} {x y : α}
 
-instance add : Add (WithTop α) :=
+instance add : Add (WithTop α) := fast_instance%
   ⟨Option.map₂ (· + ·)⟩
 #align with_top.has_add WithTop.add
 
@@ -316,15 +316,15 @@ protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]
 
 end Add
 
-instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
+instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) := fast_instance%
   { WithTop.add with
     add_assoc := fun _ _ _ => Option.map₂_assoc add_assoc }
 
-instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) :=
+instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) := fast_instance%
   { WithTop.addSemigroup with
     add_comm := fun _ _ => Option.map₂_comm add_comm }
 
-instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
+instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) := fast_instance%
   { WithTop.zero, WithTop.add with
     zero_add := Option.map₂_left_identity zero_add
     add_zero := Option.map₂_right_identity add_zero }
@@ -357,13 +357,13 @@ def addHom : α →+ WithTop α where
 
 end AddMonoid
 
-instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
+instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) := fast_instance%
   { WithTop.addMonoid, WithTop.addCommSemigroup with }
 
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]
 
-instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
+instance addMonoidWithOne : AddMonoidWithOne (WithTop α) := fast_instance%
   { WithTop.one, WithTop.addMonoid with
     natCast := fun n => ↑(n : α),
     natCast_zero := by
@@ -384,11 +384,11 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
 
 end AddMonoidWithOne
 
-instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
+instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) := fast_instance%
   { cast_injective := Function.Injective.comp (f := Nat.cast (R := α))
       (fun _ _ => WithTop.coe_eq_coe.1) Nat.cast_injective}
 
-instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
+instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) := fast_instance%
   { WithTop.addMonoidWithOne, WithTop.addCommMonoid with }
 
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithTop α) where
@@ -399,7 +399,7 @@ instance linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
   { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid with
     top_add' := WithTop.top_add }
 
-instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithTop α) :=
+instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithTop α) := fast_instance%
   ⟨fun {a} {b} =>
     match a, b with
     | ⊤, ⊤ => by simp
@@ -469,7 +469,7 @@ namespace WithBot
 section One
 variable [One α] {a : α}
 
-@[to_additive] instance one : One (WithBot α) := WithTop.one
+@[to_additive] instance one : One (WithBot α) := fast_instance% WithTop.one
 
 @[to_additive (attr := simp, norm_cast)] lemma coe_one : ((1 : α) : WithBot α) = 1 := rfl
 #align with_bot.coe_one WithBot.coe_one
@@ -524,27 +524,27 @@ protected theorem map_one {β} (f : α → β) : (1 : WithBot α).map f = (f 1 :
 #align with_bot.map_one WithBot.map_one
 #align with_bot.map_zero WithBot.map_zero
 
-instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
+instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) := fast_instance%
   ⟨some_le_some.2 zero_le_one⟩
 
 end One
 
-instance add [Add α] : Add (WithBot α) :=
+instance add [Add α] : Add (WithBot α) := fast_instance%
   WithTop.add
 
-instance AddSemigroup [AddSemigroup α] : AddSemigroup (WithBot α) :=
+instance AddSemigroup [AddSemigroup α] : AddSemigroup (WithBot α) := fast_instance%
   WithTop.addSemigroup
 
-instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithBot α) :=
+instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithBot α) := fast_instance%
   WithTop.addCommSemigroup
 
-instance addZeroClass [AddZeroClass α] : AddZeroClass (WithBot α) :=
+instance addZeroClass [AddZeroClass α] : AddZeroClass (WithBot α) := fast_instance%
   WithTop.addZeroClass
 
 section AddMonoid
 variable [AddMonoid α]
 
-instance addMonoid : AddMonoid (WithBot α) := WithTop.addMonoid
+instance addMonoid : AddMonoid (WithBot α) := fast_instance% WithTop.addMonoid
 
 /-- Coercion from `α` to `WithBot α` as an `AddMonoidHom`. -/
 def addHom : α →+ WithBot α where
@@ -561,13 +561,13 @@ lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithBot α) :=
 
 end AddMonoid
 
-instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
+instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) := fast_instance%
   WithTop.addCommMonoid
 
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]
 
-instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWithOne
+instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := fast_instance% WithTop.addMonoidWithOne
 
 @[norm_cast] lemma coe_nat (n : ℕ) : ((n : α) : WithBot α) = n := rfl
 #align with_bot.coe_nat WithBot.coe_nat
@@ -580,10 +580,10 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWi
 
 end AddMonoidWithOne
 
-instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=
+instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) := fast_instance%
   WithTop.charZero
 
-instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) :=
+instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) := fast_instance%
   WithTop.addCommMonoidWithOne
 
 section Add
@@ -775,7 +775,7 @@ protected theorem add_lt_add_of_lt_of_le [CovariantClass α α (· + ·) (· ≤
 
 end Add
 
-instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithBot α) :=
+instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithBot α) := fast_instance%
   { WithBot.partialOrder, WithBot.addCommMonoid with
     add_le_add_left := fun _ _ h c => add_le_add_left h c }
 

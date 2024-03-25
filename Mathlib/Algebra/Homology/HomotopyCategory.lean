@@ -51,14 +51,14 @@ def HomotopyCategory :=
   CategoryTheory.Quotient (homotopic V c)
 #align homotopy_category HomotopyCategory
 
-instance : Category (HomotopyCategory V v) := by
+instance : Category (HomotopyCategory V v) := fast_instance% by
   dsimp only [HomotopyCategory]
   infer_instance
 
 -- TODO the homotopy_category is preadditive
 namespace HomotopyCategory
 
-instance : Preadditive (HomotopyCategory V c) := Quotient.preadditive _ (by
+instance : Preadditive (HomotopyCategory V c) := fast_instance% Quotient.preadditive _ (by
   rintro _ _ _ _ _ _ ⟨h⟩ ⟨h'⟩
   exact ⟨Homotopy.add h h'⟩)
 
@@ -67,29 +67,29 @@ def quotient : HomologicalComplex V c ⥤ HomotopyCategory V c :=
   CategoryTheory.Quotient.functor _
 #align homotopy_category.quotient HomotopyCategory.quotient
 
-instance : Full (quotient V c) := Quotient.fullFunctor _
+instance : Full (quotient V c) := fast_instance% Quotient.fullFunctor _
 
-instance : EssSurj (quotient V c) := Quotient.essSurj_functor _
+instance : EssSurj (quotient V c) := fast_instance% Quotient.essSurj_functor _
 
 instance : (quotient V c).Additive where
 
-instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) :=
+instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) := fast_instance%
   (inferInstance : Preadditive (HomotopyCategory V c))
 
 instance : Functor.Additive (Quotient.functor (homotopic V c)) where
 
-instance [Linear R V] : Linear R (HomotopyCategory V c) :=
+instance [Linear R V] : Linear R (HomotopyCategory V c) := fast_instance%
   Quotient.linear R (homotopic V c) (fun _ _ _ _ _ h => ⟨h.some.smul _⟩)
 
-instance [Linear R V] : Functor.Linear R (HomotopyCategory.quotient V c) :=
+instance [Linear R V] : Functor.Linear R (HomotopyCategory.quotient V c) := fast_instance%
   Quotient.linear_functor _ _ _
 
 open ZeroObject
 
-instance [HasZeroObject V] : Inhabited (HomotopyCategory V c) :=
+instance [HasZeroObject V] : Inhabited (HomotopyCategory V c) := fast_instance%
   ⟨(quotient V c).obj 0⟩
 
-instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
+instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) := fast_instance%
   ⟨(quotient V c).obj 0, by
     rw [IsZero.iff_id_eq_zero, ← (quotient V c).map_id, id_zero, Functor.map_zero]⟩
 
@@ -237,7 +237,7 @@ noncomputable def homologyFunctorFactors (i : ι) :
 -- this is to prevent any abuse of defeq
 attribute [irreducible] homologyFunctor homologyFunctorFactors
 
-instance (i : ι) : (homologyFunctor V c i).Additive := by
+instance (i : ι) : (homologyFunctor V c i).Additive := fast_instance% by
   have := Functor.additive_of_iso (homologyFunctorFactors V c i).symm
   exact Functor.additive_of_full_essSurj_comp (quotient V c) _
 

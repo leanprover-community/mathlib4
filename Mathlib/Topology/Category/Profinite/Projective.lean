@@ -62,6 +62,6 @@ def projectivePresentation (X : Profinite.{u}) : ProjectivePresentation X where
     ⟨(pure x : Ultrafilter X), congr_fun (ultrafilter_extend_extends (𝟙 X)) x⟩
 #align Profinite.projective_presentation Profinite.projectivePresentation
 
-instance : EnoughProjectives Profinite.{u} where presentation X := ⟨projectivePresentation X⟩
+instance : EnoughProjectives Profinite.{u} where presentation X := fast_instance% ⟨projectivePresentation X⟩
 
 end Profinite

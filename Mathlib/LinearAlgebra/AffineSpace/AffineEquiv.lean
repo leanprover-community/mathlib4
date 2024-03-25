@@ -98,10 +98,10 @@ instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
   coe_injective' _ _ h _ := toAffineMap_injective (DFunLike.coe_injective h)
 #align affine_equiv.equiv_like AffineEquiv.equivLike
 
-instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
+instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ := fast_instance%
   DFunLike.hasCoeToFun
 
-instance : CoeOut (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
+instance : CoeOut (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) := fast_instance%
   ⟨AffineEquiv.toEquiv⟩
 
 @[simp]
@@ -114,7 +114,7 @@ theorem coe_toEquiv (e : P₁ ≃ᵃ[k] P₂) : ⇑e.toEquiv = e :=
   rfl
 #align affine_equiv.coe_to_equiv AffineEquiv.coe_toEquiv
 
-instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ →ᵃ[k] P₂) :=
+instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ →ᵃ[k] P₂) := fast_instance%
   ⟨toAffineMap⟩
 
 @[simp]

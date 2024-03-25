@@ -66,20 +66,20 @@ instance for `array` was)
 
 -- variable {n : ℕ}
 
--- instance : Traversable (Array' n) :=
+-- instance : Traversable (Array' n) := fast_instance%
 --   @Equiv.traversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _
 
--- instance : LawfulTraversable (Array' n) :=
+-- instance : LawfulTraversable (Array' n) := fast_instance%
 --   @Equiv.isLawfulTraversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _ _
 
 -- end Array'
 
 /-- If `α` is encodable, then so is `Array α`. -/
-instance Array.encodable {α} [Encodable α] : Encodable (Array α) :=
+instance Array.encodable {α} [Encodable α] : Encodable (Array α) := fast_instance%
   Encodable.ofEquiv _ (Equiv.arrayEquivList _)
 #noalign array.encodable
 
 /-- If `α` is countable, then so is `Array α`. -/
-instance Array.countable {α} [Countable α] : Countable (Array α) :=
+instance Array.countable {α} [Countable α] : Countable (Array α) := fast_instance%
   Countable.of_equiv _ (Equiv.arrayEquivList α).symm
 #noalign array.countable

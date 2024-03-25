@@ -113,7 +113,7 @@ namespace ProbabilityMeasure
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
-instance [Inhabited Ω] : Inhabited (ProbabilityMeasure Ω) :=
+instance [Inhabited Ω] : Inhabited (ProbabilityMeasure Ω) := fast_instance%
   ⟨⟨Measure.dirac default, Measure.dirac.isProbabilityMeasure⟩⟩
 
 -- Porting note: as with other subtype synonyms (e.g., `ℝ≥0`), we need a new function for the
@@ -126,10 +126,10 @@ def toMeasure : ProbabilityMeasure Ω → Measure Ω := Subtype.val
 instance : Coe (ProbabilityMeasure Ω) (MeasureTheory.Measure Ω) where
   coe := toMeasure
 
-instance : CoeFun (ProbabilityMeasure Ω) fun _ => Set Ω → ℝ≥0 :=
+instance : CoeFun (ProbabilityMeasure Ω) fun _ => Set Ω → ℝ≥0 := fast_instance%
   ⟨fun μ s => ((μ : Measure Ω) s).toNNReal⟩
 
-instance (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) :=
+instance (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) := fast_instance%
   μ.prop
 
 -- Porting note: syntactic tautology because of the way coercions work in Lean 4
@@ -231,7 +231,7 @@ theorem testAgainstNN_lipschitz (μ : ProbabilityMeasure Ω) :
 /-- The topology of weak convergence on `MeasureTheory.ProbabilityMeasure Ω`. This is inherited
 (induced) from the topology of weak convergence of finite measures via the inclusion
 `MeasureTheory.ProbabilityMeasure.toFiniteMeasure`. -/
-instance : TopologicalSpace (ProbabilityMeasure Ω) :=
+instance : TopologicalSpace (ProbabilityMeasure Ω) := fast_instance%
   TopologicalSpace.induced toFiniteMeasure inferInstance
 
 theorem toFiniteMeasure_continuous :
@@ -317,7 +317,7 @@ variable (Ω)
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
 continuous functions (`HasOuterApproxClosed`), the topology of convergence in distribution of Borel
 probability measures is Hausdorff (`T2Space`). -/
-instance t2Space : T2Space (ProbabilityMeasure Ω) :=
+instance t2Space : T2Space (ProbabilityMeasure Ω) := fast_instance%
   Embedding.t2Space (toFiniteMeasure_embedding Ω)
 
 end Hausdorff -- section

@@ -99,7 +99,7 @@ section Algebras
 variable (L : ι → Type w)
 variable [∀ i, LieRing (L i)] [∀ i, LieAlgebra R (L i)]
 
-instance lieRing : LieRing (⨁ i, L i) :=
+instance lieRing : LieRing (⨁ i, L i) := fast_instance%
   { (inferInstance : AddCommGroup _) with
     bracket := zipWith (fun i => fun x y => ⁅x, y⁆) fun i => lie_zero 0
     add_lie := fun x y z => by
@@ -144,7 +144,7 @@ theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
   · simp only [lie_of_of_ne L hij x y, hij, dif_neg, dite_false]
 #align direct_sum.lie_of DirectSum.lie_of
 
-instance lieAlgebra : LieAlgebra R (⨁ i, L i) :=
+instance lieAlgebra : LieAlgebra R (⨁ i, L i) := fast_instance%
   { (inferInstance : Module R _) with
     lie_smul := fun c x y => by
       refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
@@ -242,12 +242,12 @@ variable {L : Type w} [LieRing L] [LieAlgebra R L] (I : ι → LieIdeal R L)
 /-- The fact that this instance is necessary seems to be a bug in typeclass inference. See
 [this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/
 Typeclass.20resolution.20under.20binders/near/245151099). -/
-instance lieRingOfIdeals : LieRing (⨁ i, I i) :=
+instance lieRingOfIdeals : LieRing (⨁ i, I i) := fast_instance%
   DirectSum.lieRing fun i => ↥(I i)
 #align direct_sum.lie_ring_of_ideals DirectSum.lieRingOfIdeals
 
 /-- See `DirectSum.lieRingOfIdeals` comment. -/
-instance lieAlgebraOfIdeals : LieAlgebra R (⨁ i, I i) :=
+instance lieAlgebraOfIdeals : LieAlgebra R (⨁ i, I i) := fast_instance%
   DirectSum.lieAlgebra fun i => ↥(I i)
 #align direct_sum.lie_algebra_of_ideals DirectSum.lieAlgebraOfIdeals
 

@@ -43,7 +43,7 @@ def image.ι : image f ⟶ H :=
   f.range.subtype
 #align Module.image.ι ModuleCat.image.ι
 
-instance : Mono (image.ι f) :=
+instance : Mono (image.ι f) := fast_instance%
   ConcreteCategory.mono_of_injective (image.ι f) Subtype.val_injective
 
 /-- The corestriction map to the image -/

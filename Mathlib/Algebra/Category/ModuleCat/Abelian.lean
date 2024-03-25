@@ -85,7 +85,7 @@ set_option linter.uppercaseLean3 false in
 section ReflectsLimits
 
 -- Porting note: added to make the following definitions work
-instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) := ModuleCat.hasLimitsOfSize
+instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) := fast_instance% ModuleCat.hasLimitsOfSize
 
 /- We need to put this in this weird spot because we need to know that the category of modules
     is balanced. -/
@@ -101,12 +101,12 @@ instance forget₂ReflectsLimitsOfSize :
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_reflects_limits_of_size ModuleCat.forget₂ReflectsLimitsOfSize
 
-instance forgetReflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) :=
+instance forgetReflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) := fast_instance%
   ModuleCat.forgetReflectsLimitsOfSize.{v, v}
 set_option linter.uppercaseLean3 false in
 #align Module.forget_reflects_limits ModuleCat.forgetReflectsLimits
 
-instance forget₂ReflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}) :=
+instance forget₂ReflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}) := fast_instance%
   ModuleCat.forget₂ReflectsLimitsOfSize.{v, v}
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_reflects_limits ModuleCat.forget₂ReflectsLimits

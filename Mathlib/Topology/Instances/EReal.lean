@@ -38,15 +38,15 @@ variable {α : Type*} [TopologicalSpace α]
 
 namespace EReal
 
-instance : TopologicalSpace EReal := Preorder.topology EReal
-instance : OrderTopology EReal := ⟨rfl⟩
-instance : T5Space EReal := inferInstance
-instance : T2Space EReal := inferInstance
+instance : TopologicalSpace EReal := fast_instance% Preorder.topology EReal
+instance : OrderTopology EReal := fast_instance% ⟨rfl⟩
+instance : T5Space EReal := fast_instance% inferInstance
+instance : T2Space EReal := fast_instance% inferInstance
 
 lemma denseRange_ratCast : DenseRange (fun r : ℚ ↦ ((r : ℝ) : EReal)) :=
   dense_of_exists_between fun _ _ h => exists_range_iff.2 <| exists_rat_btwn_of_lt h
 
-instance : SecondCountableTopology EReal :=
+instance : SecondCountableTopology EReal := fast_instance%
   have : SeparableSpace EReal := ⟨⟨_, countable_range _, denseRange_ratCast⟩⟩
   .of_separableSpace_orderTopology _
 
@@ -240,7 +240,7 @@ theorem continuousAt_add {p : EReal × EReal} (h : p.1 ≠ ⊤ ∨ p.2 ≠ ⊥) 
 
 /-! ### Negation -/
 
-instance : ContinuousNeg EReal := ⟨negOrderIso.continuous⟩
+instance : ContinuousNeg EReal := fast_instance% ⟨negOrderIso.continuous⟩
 
 /-- Negation on `EReal` as a homeomorphism -/
 @[deprecated Homeomorph.neg]

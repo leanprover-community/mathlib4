@@ -183,7 +183,7 @@ lemma toEndomorphism_eq (x : L) :
 
 /-- By Engel's theorem, if `M` is Noetherian, the shifted action `⁅x, m⁆ - χ x • m` makes the
 `χ`-weight space into a nilpotent Lie module. -/
-instance [IsNoetherian R M] : IsNilpotent R L (shiftedWeightSpace R L M χ) :=
+instance [IsNoetherian R M] : IsNilpotent R L (shiftedWeightSpace R L M χ) := fast_instance%
   LieModule.isNilpotent_iff_forall'.mpr fun x ↦ isNilpotent_toEndomorphism_sub_algebraMap M χ x
 
 end shiftedWeightSpace

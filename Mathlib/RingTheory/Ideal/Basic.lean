@@ -321,7 +321,7 @@ theorem IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) 
   eq_iff_le_not_lt.2 ⟨IJ, fun h => hJ (hI.1.2 _ h)⟩
 #align ideal.is_maximal.eq_of_le Ideal.IsMaximal.eq_of_le
 
-instance : IsCoatomic (Ideal α) := by
+instance : IsCoatomic (Ideal α) := fast_instance% by
   apply CompleteLattice.coatomic_of_top_compact
   rw [← span_singleton_one]
   exact Submodule.singleton_span_isCompactElement 1
@@ -349,7 +349,7 @@ theorem exists_maximal [Nontrivial α] : ∃ M : Ideal α, M.IsMaximal :=
 
 variable {α}
 
-instance [Nontrivial α] : Nontrivial (Ideal α) := by
+instance [Nontrivial α] : Nontrivial (Ideal α) := fast_instance% by
   rcases@exists_maximal α _ _ with ⟨M, hM, _⟩
   exact nontrivial_of_ne M ⊤ hM
 
@@ -741,11 +741,11 @@ def equivFinTwo [DecidableEq (Ideal K)] : Ideal K ≃ Fin 2 where
   left_inv := fun I ↦ by rcases eq_bot_or_top I with rfl | rfl <;> simp
   right_inv := fun i ↦ by fin_cases i <;> simp
 
-instance : Finite (Ideal K) := let _i := Classical.decEq (Ideal K); ⟨equivFinTwo K⟩
+instance : Finite (Ideal K) := fast_instance% let _i := Classical.decEq (Ideal K); ⟨equivFinTwo K⟩
 
 /-- Ideals of a `DivisionSemiring` are a simple order. Thanks to the way abbreviations work,
 this automatically gives an `IsSimpleModule K` instance. -/
-instance isSimpleOrder : IsSimpleOrder (Ideal K) :=
+instance isSimpleOrder : IsSimpleOrder (Ideal K) := fast_instance%
   ⟨eq_bot_or_top⟩
 #align ideal.is_simple_order Ideal.isSimpleOrder
 

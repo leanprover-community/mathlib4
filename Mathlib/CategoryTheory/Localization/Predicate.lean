@@ -98,7 +98,7 @@ def strictUniversalPropertyFixedTargetQ : StrictUniversalPropertyFixedTarget W.Q
 set_option linter.uppercaseLean3 false in
 #align category_theory.localization.strict_universal_property_fixed_target_Q CategoryTheory.Localization.strictUniversalPropertyFixedTargetQ
 
-instance : Inhabited (StrictUniversalPropertyFixedTarget W.Q W E) :=
+instance : Inhabited (StrictUniversalPropertyFixedTarget W.Q W E) := fast_instance%
   ⟨strictUniversalPropertyFixedTargetQ _ _⟩
 
 /-- When `W` consists of isomorphisms, the identity satisfies the universal property
@@ -170,7 +170,7 @@ def isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) : L.obj X ≅ L.obj Y :=
   asIso (L.map f)
 #align category_theory.localization.iso_of_hom CategoryTheory.Localization.isoOfHom
 
-instance : IsEquivalence (Localization.Construction.lift L (inverts L W)) :=
+instance : IsEquivalence (Localization.Construction.lift L (inverts L W)) := fast_instance%
   (inferInstance : L.IsLocalization W).nonempty_isEquivalence.some
 
 /-- A chosen equivalence of categories `W.Localization ≅ D` for a functor
@@ -214,7 +214,7 @@ def whiskeringLeftFunctor : (D ⥤ E) ⥤ W.FunctorsInverting E :=
     (MorphismProperty.IsInvertedBy.of_comp W L (inverts L W))
 #align category_theory.localization.whiskering_left_functor CategoryTheory.Localization.whiskeringLeftFunctor
 
-instance : IsEquivalence (whiskeringLeftFunctor L W E) := by
+instance : IsEquivalence (whiskeringLeftFunctor L W E) := fast_instance% by
   refine'
     IsEquivalence.ofIso _
       (IsEquivalence.ofEquivalence
@@ -265,13 +265,13 @@ theorem whiskeringLeftFunctor'_obj (F : D ⥤ E) : (whiskeringLeftFunctor' L W E
   rfl
 #align category_theory.localization.whiskering_left_functor'_obj CategoryTheory.Localization.whiskeringLeftFunctor'_obj
 
-instance : Full (whiskeringLeftFunctor' L W E) := by
+instance : Full (whiskeringLeftFunctor' L W E) := fast_instance% by
   rw [whiskeringLeftFunctor'_eq]
   apply @Full.comp _ _ _ _ _ _ _ _ ?_ ?_
   infer_instance
   apply InducedCategory.full -- why is it not found automatically ???
 
-instance : Faithful (whiskeringLeftFunctor' L W E) := by
+instance : Faithful (whiskeringLeftFunctor' L W E) := fast_instance% by
   rw [whiskeringLeftFunctor'_eq]
   apply @Faithful.comp _ _ _ _ _ _ _ _ ?_ ?_
   infer_instance
@@ -382,12 +382,12 @@ instance compRight {E' : Type*} [Category E'] (F : C ⥤ E) (F' : D ⥤ E) [Lift
 #align category_theory.localization.lifting.comp_right CategoryTheory.Localization.Lifting.compRight
 
 @[simps]
-instance id : Lifting L W L (𝟭 D) :=
+instance id : Lifting L W L (𝟭 D) := fast_instance%
   ⟨Functor.rightUnitor L⟩
 #align category_theory.localization.lifting.id CategoryTheory.Localization.Lifting.id
 
 @[simps]
-instance compLeft (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := ⟨Iso.refl _⟩
+instance compLeft (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := fast_instance% ⟨Iso.refl _⟩
 
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ D`, then a functor `F₂'` which
@@ -470,8 +470,8 @@ def compUniqFunctor : L₁ ⋙ (uniq L₁ L₂ W').functor ≅ L₂ :=
 compatible with the localization functors. -/
 def compUniqInverse : L₂ ⋙ (uniq L₁ L₂ W').inverse ≅ L₁ := compUniqFunctor L₂ L₁ W'
 
-instance : Lifting L₁ W' L₂ (uniq L₁ L₂ W').functor := ⟨compUniqFunctor L₁ L₂ W'⟩
-instance : Lifting L₂ W' L₁ (uniq L₁ L₂ W').inverse := ⟨compUniqInverse L₁ L₂ W'⟩
+instance : Lifting L₁ W' L₂ (uniq L₁ L₂ W').functor := fast_instance% ⟨compUniqFunctor L₁ L₂ W'⟩
+instance : Lifting L₂ W' L₁ (uniq L₁ L₂ W').inverse := fast_instance% ⟨compUniqInverse L₁ L₂ W'⟩
 
 /-- If `L₁ : C ⥤ D₁` and `L₂ : C ⥤ D₂` are two localization functors for the
 same `MorphismProperty C`, any functor `F : D₁ ⥤ D₂` equipped with an isomorphism

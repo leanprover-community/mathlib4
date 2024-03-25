@@ -205,7 +205,7 @@ variable {a : A} (ha : p a)
 a version for continuous functions on the spectrum.
 
 In this case, the user must supply the fact that `a` satisfies the predicate `p`, for otherwise it
-may be the case that no star algebra homomorphism exists. For instance if `R := ℝ` and `a` is an
+may be the case that no star algebra homomorphism exists. For instance if `R := fast_instance% ℝ` and `a` is an
 element whose spectrum (in `ℂ`) is disjoint from `ℝ`, then `spectrum ℝ a = ∅` and so there can be
 no star algebra homomorphism between these spaces.
 

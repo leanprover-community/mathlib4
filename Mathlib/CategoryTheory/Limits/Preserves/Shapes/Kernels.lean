@@ -140,7 +140,7 @@ theorem PreservesKernel.iso_hom : (PreservesKernel.iso G f).hom = kernelComparis
   simp [PreservesKernel.iso]
 #align category_theory.limits.preserves_kernel.iso_hom CategoryTheory.Limits.PreservesKernel.iso_hom
 
-instance : IsIso (kernelComparison f G) := by
+instance : IsIso (kernelComparison f G) := fast_instance% by
   rw [← PreservesKernel.iso_hom]
   infer_instance
 
@@ -269,7 +269,7 @@ theorem PreservesCokernel.iso_inv : (PreservesCokernel.iso G f).inv = cokernelCo
   simp [PreservesCokernel.iso]
 #align category_theory.limits.preserves_cokernel.iso_inv CategoryTheory.Limits.PreservesCokernel.iso_inv
 
-instance : IsIso (cokernelComparison f G) := by
+instance : IsIso (cokernelComparison f G) := fast_instance% by
   rw [← PreservesCokernel.iso_inv]
   infer_instance
 

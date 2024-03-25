@@ -73,9 +73,9 @@ def CliffordAlgebra :=
 namespace CliffordAlgebra
 
 -- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
-instance instInhabited : Inhabited (CliffordAlgebra Q) := RingQuot.instInhabited _
+instance instInhabited : Inhabited (CliffordAlgebra Q) := fast_instance% RingQuot.instInhabited _
 #align clifford_algebra.inhabited CliffordAlgebra.instInhabited
-instance instRing : Ring (CliffordAlgebra Q) := RingQuot.instRing _
+instance instRing : Ring (CliffordAlgebra Q) := fast_instance% RingQuot.instRing _
 #align clifford_algebra.ring CliffordAlgebra.instRing
 
 instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
@@ -91,7 +91,7 @@ example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 example : (algebraInt _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 
 -- shortcut instance, as the other instance is slow
-instance instAlgebra : Algebra R (CliffordAlgebra Q) := instAlgebra' _
+instance instAlgebra : Algebra R (CliffordAlgebra Q) := fast_instance% instAlgebra' _
 #align clifford_algebra.algebra CliffordAlgebra.instAlgebra
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]

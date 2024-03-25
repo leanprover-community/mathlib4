@@ -100,10 +100,10 @@ theorem trans (x y z : X) : S.Rel x y → S.Rel y z → S.Rel x z := S.trans'
 /-- The setoid whose quotient yields the discrete quotient. -/
 add_decl_doc toSetoid
 
-instance : CoeSort (DiscreteQuotient X) (Type _) :=
+instance : CoeSort (DiscreteQuotient X) (Type _) := fast_instance%
   ⟨fun S => Quotient S.toSetoid⟩
 
-instance : TopologicalSpace S :=
+instance : TopologicalSpace S := fast_instance%
   inferInstanceAs (TopologicalSpace (Quotient S.toSetoid))
 
 /-- The projection from `X` to the given discrete quotient. -/
@@ -126,7 +126,7 @@ theorem proj_continuous : Continuous S.proj :=
   S.proj_quotientMap.continuous
 #align discrete_quotient.proj_continuous DiscreteQuotient.proj_continuous
 
-instance : DiscreteTopology S :=
+instance : DiscreteTopology S := fast_instance%
   singletons_open_iff_discrete.1 <| S.proj_surjective.forall.2 fun x => by
     rw [← S.proj_quotientMap.isOpen_preimage, fiber_eq]
     exact S.isOpen_setOf_rel _
@@ -152,23 +152,23 @@ theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.Rel x)) := by
   apply isClopen_preimage
 #align discrete_quotient.is_clopen_set_of_rel DiscreteQuotient.isClopen_setOf_rel
 
-instance : Inf (DiscreteQuotient X) :=
+instance : Inf (DiscreteQuotient X) := fast_instance%
   ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
 
-instance : SemilatticeInf (DiscreteQuotient X) :=
+instance : SemilatticeInf (DiscreteQuotient X) := fast_instance%
   Injective.semilatticeInf toSetoid toSetoid_injective fun _ _ => rfl
 
 instance : OrderTop (DiscreteQuotient X) where
   top := ⟨⊤, fun _ => isOpen_univ⟩
   le_top a := by tauto
 
-instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
+instance : Inhabited (DiscreteQuotient X) := fast_instance% ⟨⊤⟩
 
-instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
+instance inhabitedQuotient [Inhabited X] : Inhabited S := fast_instance% ⟨S.proj default⟩
 #align discrete_quotient.inhabited_quotient DiscreteQuotient.inhabitedQuotient
 
 -- Porting note (#11215): TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
-instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
+instance [Nonempty X] : Nonempty S := fast_instance% Nonempty.map S.proj ‹_›
 
 -- Porting note (#10756): new lemma
 /-- The quotient by `⊤ : DiscreteQuotient X` is a `Subsingleton`. -/
@@ -391,7 +391,7 @@ theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
 #align discrete_quotient.exists_of_compat DiscreteQuotient.exists_of_compat
 
 /-- If `X` is a compact space, then any discrete quotient of `X` is finite. -/
-instance [CompactSpace X] : Finite S := by
+instance [CompactSpace X] : Finite S := fast_instance% by
   have : CompactSpace S := Quotient.compactSpace
   rwa [← isCompact_univ_iff, isCompact_iff_finite, finite_univ_iff] at this
 

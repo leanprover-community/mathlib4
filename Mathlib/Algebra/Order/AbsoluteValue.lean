@@ -57,15 +57,15 @@ instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   map_zero f := (f.eq_zero' _).2 rfl
 #align absolute_value.zero_hom_class AbsoluteValue.zeroHomClass
 
-instance mulHomClass : MulHomClass (AbsoluteValue R S) R S :=
+instance mulHomClass : MulHomClass (AbsoluteValue R S) R S := fast_instance%
   { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_mul := fun f => f.map_mul' }
 #align absolute_value.mul_hom_class AbsoluteValue.mulHomClass
 
-instance nonnegHomClass : NonnegHomClass (AbsoluteValue R S) R S :=
+instance nonnegHomClass : NonnegHomClass (AbsoluteValue R S) R S := fast_instance%
   { AbsoluteValue.zeroHomClass (R := R) (S := S) with apply_nonneg := fun f => f.nonneg' }
 #align absolute_value.nonneg_hom_class AbsoluteValue.nonnegHomClass
 
-instance subadditiveHomClass : SubadditiveHomClass (AbsoluteValue R S) R S :=
+instance subadditiveHomClass : SubadditiveHomClass (AbsoluteValue R S) R S := fast_instance%
   { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_add_le_add := fun f => f.add_le' }
 #align absolute_value.subadditive_hom_class AbsoluteValue.subadditiveHomClass
 
@@ -88,7 +88,7 @@ initialize_simps_projections AbsoluteValue (toMulHom_toFun → apply)
 
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.has_coe_to_fun`
 directly. -/
-instance : CoeFun (AbsoluteValue R S) fun _ => R → S :=
+instance : CoeFun (AbsoluteValue R S) fun _ => R → S := fast_instance%
   DFunLike.hasCoeToFun
 
 @[simp]
@@ -175,7 +175,7 @@ protected theorem map_one : abv 1 = 1 :=
   abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
 #align absolute_value.map_one AbsoluteValue.map_one
 
-instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
+instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S := fast_instance%
   { AbsoluteValue.mulHomClass with
     map_zero := fun f => f.map_zero
     map_one := fun f => f.map_one }
@@ -244,7 +244,7 @@ protected theorem le_add (a b : R) : abv a - abv b ≤ abv (a + b) := by
 lemma sub_le_add (a b : R) : abv (a - b) ≤ abv a + abv b := by
   simpa only [← sub_eq_add_neg, AbsoluteValue.map_neg] using abv.add_le a (-b)
 
-instance [Nontrivial R] [IsDomain S] : MulRingNormClass (AbsoluteValue R S) R S :=
+instance [Nontrivial R] [IsDomain S] : MulRingNormClass (AbsoluteValue R S) R S := fast_instance%
   { AbsoluteValue.subadditiveHomClass,
     AbsoluteValue.monoidWithZeroHomClass with
     map_neg_eq_map := fun f => f.map_neg
@@ -268,7 +268,7 @@ protected def abs : AbsoluteValue S S where
 #align absolute_value.abs_apply AbsoluteValue.abs_apply
 #align absolute_value.abs_to_mul_hom_apply AbsoluteValue.abs_apply
 
-instance : Inhabited (AbsoluteValue S S) :=
+instance : Inhabited (AbsoluteValue S S) := fast_instance%
   ⟨AbsoluteValue.abs⟩
 
 end LinearOrderedRing
@@ -365,7 +365,7 @@ section LinearOrderedRing
 
 variable {S : Type*} [LinearOrderedRing S]
 
-instance abs_isAbsoluteValue : IsAbsoluteValue (abs : S → S) :=
+instance abs_isAbsoluteValue : IsAbsoluteValue (abs : S → S) := fast_instance%
   AbsoluteValue.abs.isAbsoluteValue
 #align is_absolute_value.abs_is_absolute_value IsAbsoluteValue.abs_isAbsoluteValue
 

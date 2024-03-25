@@ -109,7 +109,7 @@ instance : EquivLike (M ≃ₘ^n⟮I, I'⟯ M') M M' where
 def toContMDiffMap (Φ : M ≃ₘ^n⟮I, I'⟯ M') : C^n⟮I, M; I', M'⟯ :=
   ⟨Φ, Φ.contMDiff_toFun⟩
 
-instance : Coe (M ≃ₘ^n⟮I, I'⟯ M') C^n⟮I, M; I', M'⟯ :=
+instance : Coe (M ≃ₘ^n⟮I, I'⟯ M') C^n⟮I, M; I', M'⟯ := fast_instance%
   ⟨toContMDiffMap⟩
 
 @[continuity]

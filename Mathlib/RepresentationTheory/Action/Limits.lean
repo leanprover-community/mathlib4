@@ -37,7 +37,7 @@ instance [HasFiniteLimits V] : HasFiniteLimits (Action V G) where
   out _ _ _ :=
     Adjunction.hasLimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
-instance [HasLimits V] : HasLimits (Action V G) :=
+instance [HasLimits V] : HasLimits (Action V G) := fast_instance%
   Adjunction.has_limits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
 /-- If `V` has limits of shape `J`, so does `Action V G`.-/
@@ -53,7 +53,7 @@ instance [HasFiniteColimits V] : HasFiniteColimits (Action V G) where
   out _ _ _ :=
     Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
-instance [HasColimits V] : HasColimits (Action V G) :=
+instance [HasColimits V] : HasColimits (Action V G) := fast_instance%
   Adjunction.has_colimits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
 /-- If `V` has colimits of shape `J`, so does `Action V G`.-/
@@ -161,7 +161,7 @@ noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasColimitsOfShape J
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
   infer_instance
 
-noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (Action.forget V G) := by
+noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (Action.forget V G) := fast_instance% by
   show PreservesFiniteLimits ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
   have : PreservesFiniteLimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
@@ -170,7 +170,7 @@ noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (Action.forge
     infer_instance
   apply compPreservesFiniteLimits
 
-noncomputable instance [HasFiniteColimits V] : PreservesFiniteColimits (Action.forget V G) := by
+noncomputable instance [HasFiniteColimits V] : PreservesFiniteColimits (Action.forget V G) := fast_instance% by
   show PreservesFiniteColimits ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
   have : PreservesFiniteColimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
@@ -207,7 +207,7 @@ variable [HasZeroMorphisms V]
 
 -- porting note (#10688): in order to ease automation, the `Zero` instance is introduced separately,
 -- and the lemma `zero_hom` was moved just below
-instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by aesop_cat⟩
+instance {X Y : Action V G} : Zero (X ⟶ Y) := fast_instance% ⟨0, by aesop_cat⟩
 
 @[simp]
 theorem zero_hom {X Y : Action V G} : (0 : X ⟶ Y).hom = 0 :=
@@ -346,7 +346,7 @@ def abelianAux : Action V G ≌ ULift.{u} (SingleObj G) ⥤ V :=
 set_option linter.uppercaseLean3 false in
 #align Action.abelian_aux Action.abelianAux
 
-noncomputable instance [Abelian V] : Abelian (Action V G) :=
+noncomputable instance [Abelian V] : Abelian (Action V G) := fast_instance%
   abelianOfEquivalence abelianAux.functor
 
 end Abelian

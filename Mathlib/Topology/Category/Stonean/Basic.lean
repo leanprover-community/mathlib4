@@ -47,7 +47,7 @@ structure Stonean where
 namespace CompHaus
 
 /-- `Projective` implies `ExtremallyDisconnected`. -/
-instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
+instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := fast_instance% by
   apply CompactT2.Projective.extremallyDisconnected
   intro A B _ _ _ _ _ _ f g hf hg hsurj
   have : CompactSpace (TopCat.of A) := by assumption
@@ -78,7 +78,7 @@ end CompHaus
 namespace Stonean
 
 /-- Stonean spaces form a large category. -/
-instance : LargeCategory Stonean.{u} :=
+instance : LargeCategory Stonean.{u} := fast_instance%
   show Category (InducedCategory CompHaus (·.compHaus)) from inferInstance
 
 /-- The (forgetful) functor from Stonean spaces to compact Hausdorff spaces. -/
@@ -98,28 +98,28 @@ instance : Full toCompHaus where
   preimage := fun f => f
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is faithful. -/
-instance : Faithful toCompHaus := {}
+instance : Faithful toCompHaus := fast_instance% {}
 
 /-- Stonean spaces are a concrete category. -/
 instance : ConcreteCategory Stonean where
   forget := toCompHaus ⋙ forget _
 
-instance : CoeSort Stonean.{u} (Type u) := ConcreteCategory.hasCoeToSort _
-instance {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X Y := ConcreteCategory.instFunLike
+instance : CoeSort Stonean.{u} (Type u) := fast_instance% ConcreteCategory.hasCoeToSort _
+instance {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X Y := fast_instance% ConcreteCategory.instFunLike
 
 /-- Stonean spaces are topological spaces. -/
-instance instTopologicalSpace (X : Stonean.{u}) : TopologicalSpace X :=
+instance instTopologicalSpace (X : Stonean.{u}) : TopologicalSpace X := fast_instance%
   show TopologicalSpace X.compHaus from inferInstance
 
 /-- Stonean spaces are compact. -/
-instance (X : Stonean.{u}) : CompactSpace X :=
+instance (X : Stonean.{u}) : CompactSpace X := fast_instance%
   show CompactSpace X.compHaus from inferInstance
 
 /-- Stonean spaces are Hausdorff. -/
-instance (X : Stonean.{u}) : T2Space X :=
+instance (X : Stonean.{u}) : T2Space X := fast_instance%
   show T2Space X.compHaus from inferInstance
 
-instance (X : Stonean.{u}) : ExtremallyDisconnected X :=
+instance (X : Stonean.{u}) : ExtremallyDisconnected X := fast_instance%
   X.2
 
 /-- The functor from Stonean spaces to profinite spaces. -/
@@ -135,7 +135,7 @@ instance : Full toProfinite where
   preimage f := f
 
 /-- The functor from Stonean spaces to profinite spaces is faithful. -/
-instance : Faithful toProfinite := {}
+instance : Faithful toProfinite := fast_instance% {}
 
 /-- The functor from Stonean spaces to compact Hausdorff spaces
     factors through profinite spaces. -/
@@ -210,11 +210,11 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
   rw [if_pos hyV] at H
   exact one_ne_zero H
 
-instance {X Y : Stonean} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
+instance {X Y : Stonean} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := fast_instance% by
   rw [CompHaus.epi_iff_surjective]
   rwa [Stonean.epi_iff_surjective] at *
 
-instance {X Y : Stonean} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
+instance {X Y : Stonean} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := fast_instance% by
   rw [Stonean.epi_iff_surjective]
   rwa [CompHaus.epi_iff_surjective] at *
 
@@ -279,7 +279,7 @@ def presentation.π (X : CompHaus) : X.presentation.compHaus ⟶ X :=
 
 /-- The morphism from `presentation X` to `X` is an epimorphism. -/
 noncomputable
-instance presentation.epi_π (X : CompHaus) : Epi (π X) :=
+instance presentation.epi_π (X : CompHaus) : Epi (π X) := fast_instance%
   (projectivePresentation X).epi
 
 /--
@@ -333,7 +333,7 @@ def presentation.π (X : Profinite) : Stonean.toProfinite.obj X.presentation ⟶
 
 /-- The morphism from `presentation X` to `X` is an epimorphism. -/
 noncomputable
-instance presentation.epi_π (X : Profinite) : Epi (π X) := by
+instance presentation.epi_π (X : Profinite) : Epi (π X) := fast_instance% by
   have := X.toCompHaus.projectivePresentation.epi
   rw [CompHaus.epi_iff_surjective] at this
   rw [epi_iff_surjective]

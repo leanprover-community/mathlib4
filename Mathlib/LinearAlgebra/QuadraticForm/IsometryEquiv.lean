@@ -62,7 +62,7 @@ instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
   map_smulₛₗ f := map_smulₛₗ f.toLinearEquiv
 
 -- Porting note: was `Coe`
-instance : CoeOut (Q₁.IsometryEquiv Q₂) (M₁ ≃ₗ[R] M₂) :=
+instance : CoeOut (Q₁.IsometryEquiv Q₂) (M₁ ≃ₗ[R] M₂) := fast_instance%
   ⟨IsometryEquiv.toLinearEquiv⟩
 
 -- Porting note: syntaut

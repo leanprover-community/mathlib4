@@ -516,7 +516,7 @@ theorem quot_map_mk (β : Type v) (f : List (α × Bool) → List (β × Bool))
 #align free_add_group.quot_map_mk FreeAddGroup.quot_map_mk
 
 @[to_additive]
-instance : One (FreeGroup α) :=
+instance : One (FreeGroup α) := fast_instance%
   ⟨mk []⟩
 
 @[to_additive]
@@ -526,14 +526,14 @@ theorem one_eq_mk : (1 : FreeGroup α) = mk [] :=
 #align free_add_group.zero_eq_mk FreeAddGroup.zero_eq_mk
 
 @[to_additive]
-instance : Inhabited (FreeGroup α) :=
+instance : Inhabited (FreeGroup α) := fast_instance%
   ⟨1⟩
 
 @[to_additive]
-instance [IsEmpty α] : Unique (FreeGroup α) := by unfold FreeGroup; infer_instance
+instance [IsEmpty α] : Unique (FreeGroup α) := fast_instance% by unfold FreeGroup; infer_instance
 
 @[to_additive]
-instance : Mul (FreeGroup α) :=
+instance : Mul (FreeGroup α) := fast_instance%
   ⟨fun x y =>
     Quot.liftOn x
       (fun L₁ =>
@@ -596,7 +596,7 @@ theorem invRev_bijective : Function.Bijective (@invRev α) :=
 #align free_add_group.neg_rev_bijective FreeAddGroup.negRev_bijective
 
 @[to_additive]
-instance : Inv (FreeGroup α) :=
+instance : Inv (FreeGroup α) := fast_instance%
   ⟨Quot.map invRev
       (by
         intro a b h
@@ -1077,7 +1077,7 @@ theorem inv_bind (f : α → FreeGroup β) (x : FreeGroup α) : x⁻¹ >>= f = (
 #align free_add_group.neg_bind FreeAddGroup.neg_bind
 
 @[to_additive]
-instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
+instance : LawfulMonad FreeGroup.{u} := fast_instance% LawfulMonad.mk'
   (id_map := fun x =>
     FreeGroup.induction_on x (map_one id) (fun x => map_pure id x) (fun x ih => by rw [map_inv, ih])
       fun x y ihx ihy => by rw [map_mul, ihx, ihy])
@@ -1347,7 +1347,7 @@ def reduce.churchRosser (H12 : Red L₁ L₂) (H13 : Red L₁ L₃) : { L₄ // 
 #align free_add_group.reduce.church_rosser FreeAddGroup.reduce.churchRosser
 
 @[to_additive]
-instance : DecidableEq (FreeGroup α) :=
+instance : DecidableEq (FreeGroup α) := fast_instance%
   toWord_injective.decidableEq
 
 -- TODO @[to_additive] doesn't succeed, possibly due to a bug
@@ -1382,7 +1382,7 @@ theorem Red.enum.complete (H : Red L₁ L₂) : L₂ ∈ Red.enum L₁ :=
   List.mem_filter_of_mem (List.mem_sublists.2 <| Red.sublist H) (decide_eq_true H)
 #align free_group.red.enum.complete FreeGroup.Red.enum.complete
 
-instance : Fintype { L₂ // Red L₁ L₂ } :=
+instance : Fintype { L₂ // Red L₁ L₂ } := fast_instance%
   Fintype.subtype (List.toFinset <| Red.enum L₁) fun _L₂ =>
     ⟨fun H => Red.enum.sound <| List.mem_toFinset.1 H, fun H =>
       List.mem_toFinset.2 <| Red.enum.complete H⟩

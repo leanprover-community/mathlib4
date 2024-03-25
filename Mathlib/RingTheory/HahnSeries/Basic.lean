@@ -82,14 +82,14 @@ theorem mem_support (x : HahnSeries Γ R) (a : Γ) : a ∈ x.support ↔ x.coeff
   Iff.refl _
 #align hahn_series.mem_support HahnSeries.mem_support
 
-instance : Zero (HahnSeries Γ R) :=
+instance : Zero (HahnSeries Γ R) := fast_instance%
   ⟨{  coeff := 0
       isPWO_support' := by simp }⟩
 
-instance : Inhabited (HahnSeries Γ R) :=
+instance : Inhabited (HahnSeries Γ R) := fast_instance%
   ⟨0⟩
 
-instance [Subsingleton R] : Subsingleton (HahnSeries Γ R) :=
+instance [Subsingleton R] : Subsingleton (HahnSeries Γ R) := fast_instance%
   ⟨fun a b => a.ext b (Subsingleton.elim _ _)⟩
 
 @[simp]
@@ -212,7 +212,7 @@ theorem single_eq_zero_iff {a : Γ} {r : R} : single a r = 0 ↔ r = 0 :=
   map_eq_zero_iff _ <| single_injective a
 #align hahn_series.single_eq_zero_iff HahnSeries.single_eq_zero_iff
 
-instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
+instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) := fast_instance%
   ⟨by
     obtain ⟨r, s, rs⟩ := exists_pair_ne R
     inhabit Γ

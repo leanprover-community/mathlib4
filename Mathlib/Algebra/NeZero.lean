@@ -96,7 +96,7 @@ namespace NeZero
 
 variable {M : Type*} {x : M}
 
-instance succ {n : ℕ} : NeZero (n + 1) := ⟨n.succ_ne_zero⟩
+instance succ {n : ℕ} : NeZero (n + 1) :=  ⟨n.succ_ne_zero⟩
 
 theorem of_pos [Preorder M] [Zero M] (h : 0 < x) : NeZero x := ⟨ne_of_gt h⟩
 #align ne_zero.of_pos NeZero.of_pos

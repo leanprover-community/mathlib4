@@ -85,7 +85,7 @@ protected def id : C ⥤ C where
 /-- Notation for the identity functor on a category. -/
 scoped [CategoryTheory] notation "𝟭" => Functor.id -- Type this as `\sb1`
 
-instance : Inhabited (C ⥤ C) :=
+instance : Inhabited (C ⥤ C) := fast_instance%
   ⟨Functor.id C⟩
 
 variable {C}

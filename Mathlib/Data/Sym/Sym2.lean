@@ -398,7 +398,7 @@ theorem eq_of_ne_mem {x y : α} {z z' : Sym2 α} (h : x ≠ y) (h1 : x ∈ z) (h
   ((mem_and_mem_iff h).mp ⟨h1, h2⟩).trans ((mem_and_mem_iff h).mp ⟨h3, h4⟩).symm
 #align sym2.eq_of_ne_mem Sym2.eq_of_ne_mem
 
-instance Mem.decidable [DecidableEq α] (x : α) (z : Sym2 α) : Decidable (x ∈ z) :=
+instance Mem.decidable [DecidableEq α] (x : α) (z : Sym2 α) : Decidable (x ∈ z) := fast_instance%
   z.recOnSubsingleton fun ⟨_, _⟩ => decidable_of_iff' _ mem_iff
 #align sym2.mem.decidable Sym2.Mem.decidable
 
@@ -475,7 +475,7 @@ theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (
   ⟨IsDiag.mem_range_diag, fun ⟨i, hi⟩ => hi ▸ diag_isDiag i⟩
 #align sym2.is_diag_iff_mem_range_diag Sym2.isDiag_iff_mem_range_diag
 
-instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
+instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) := fast_instance%
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
 #align sym2.is_diag.decidable_pred Sym2.IsDiag.decidablePred
 
@@ -649,18 +649,18 @@ section Decidable
 
 /-- Given `[DecidableEq α]` and `[Fintype α]`, the following instance gives `Fintype (Sym2 α)`.
 -/
-instance instDecidableRel [DecidableEq α] : DecidableRel (Rel α) :=
+instance instDecidableRel [DecidableEq α] : DecidableRel (Rel α) := fast_instance%
   fun _ _ => decidable_of_iff' _ rel_iff
 
 section
 attribute [local instance] Sym2.Rel.setoid
 
-instance instDecidableRel' [DecidableEq α] : DecidableRel (HasEquiv.Equiv (α := α × α)) :=
+instance instDecidableRel' [DecidableEq α] : DecidableRel (HasEquiv.Equiv (α := fast_instance% α × α)) :=
   instDecidableRel
 
 end
 
-instance [DecidableEq α] : DecidableEq (Sym2 α) :=
+instance [DecidableEq α] : DecidableEq (Sym2 α) := fast_instance%
   inferInstanceAs <| DecidableEq (Quotient (Sym2.Rel.setoid α))
 
 /-! ### The other element of an element of the symmetric square -/
@@ -753,16 +753,16 @@ theorem filter_image_mk_not_isDiag [DecidableEq α] (s : Finset α) :
 
 end Decidable
 
-instance [Subsingleton α] : Subsingleton (Sym2 α) :=
+instance [Subsingleton α] : Subsingleton (Sym2 α) := fast_instance%
   (equivSym α).injective.subsingleton
 
-instance [Unique α] : Unique (Sym2 α) :=
+instance [Unique α] : Unique (Sym2 α) := fast_instance%
   Unique.mk' _
 
-instance [IsEmpty α] : IsEmpty (Sym2 α) :=
+instance [IsEmpty α] : IsEmpty (Sym2 α) := fast_instance%
   (equivSym α).isEmpty
 
-instance [Nontrivial α] : Nontrivial (Sym2 α) :=
+instance [Nontrivial α] : Nontrivial (Sym2 α) := fast_instance%
   diag_injective.nontrivial
 
 end Sym2

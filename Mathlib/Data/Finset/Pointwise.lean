@@ -1923,7 +1923,7 @@ protected def mulDistribMulActionFinset [Monoid α] [Monoid β] [MulDistribMulAc
 scoped[Pointwise]
   attribute [instance] Finset.distribMulActionFinset Finset.mulDistribMulActionFinset
 
-instance [DecidableEq α] [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Finset α) :=
+instance [DecidableEq α] [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Finset α) := fast_instance%
   Function.Injective.noZeroDivisors (↑) coe_injective coe_zero coe_mul
 
 instance noZeroSMulDivisors [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :

@@ -73,7 +73,7 @@ instance instFunLike {μ : YoungDiagram} : FunLike (SemistandardYoungTableau μ)
 #align ssyt.fun_like SemistandardYoungTableau.instFunLike
 
 /-- Helper instance for when there's too many metavariables to apply `CoeFun.coe` directly. -/
-instance {μ : YoungDiagram} : CoeFun (SemistandardYoungTableau μ) fun _ ↦ ℕ → ℕ → ℕ :=
+instance {μ : YoungDiagram} : CoeFun (SemistandardYoungTableau μ) fun _ ↦ ℕ → ℕ → ℕ := fast_instance%
   inferInstance
 
 @[simp]
@@ -158,7 +158,7 @@ theorem highestWeight_apply {μ : YoungDiagram} {i j : ℕ} :
   rfl
 #align ssyt.highest_weight_apply SemistandardYoungTableau.highestWeight_apply
 
-instance {μ : YoungDiagram} : Inhabited (SemistandardYoungTableau μ) :=
+instance {μ : YoungDiagram} : Inhabited (SemistandardYoungTableau μ) := fast_instance%
   ⟨highestWeight μ⟩
 
 end SemistandardYoungTableau

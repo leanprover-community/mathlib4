@@ -96,7 +96,7 @@ instance : IsInvariantSubfield M (FixedPoints.subfield M F) where
 instance : SMulCommClass M (FixedPoints.subfield M F) F where
   smul_comm m f f' := show m • (↑f * f') = f * m • f' by rw [smul_mul', f.prop m]
 
-instance smulCommClass' : SMulCommClass (FixedPoints.subfield M F) M F :=
+instance smulCommClass' : SMulCommClass (FixedPoints.subfield M F) M F := fast_instance%
   SMulCommClass.symm _ _ _
 #align fixed_points.smul_comm_class' FixedPoints.smulCommClass'
 
@@ -113,7 +113,7 @@ theorem smul_polynomial (m : M) (p : Polynomial (FixedPoints.subfield M F)) : m 
     rw [smul_mul', Polynomial.smul_C, smul, smul_pow', Polynomial.smul_X]
 #align fixed_points.smul_polynomial FixedPoints.smul_polynomial
 
-instance : Algebra (FixedPoints.subfield M F) F := by infer_instance
+instance : Algebra (FixedPoints.subfield M F) F := fast_instance% by infer_instance
 
 theorem coe_algebraMap :
     algebraMap (FixedPoints.subfield M F) F = Subfield.subtype (FixedPoints.subfield M F) :=
@@ -275,7 +275,7 @@ section Finite
 
 variable [Finite G]
 
-instance normal : Normal (FixedPoints.subfield G F) F :=
+instance normal : Normal (FixedPoints.subfield G F) F := fast_instance%
   ⟨fun x => (isIntegral G F x).isAlgebraic, fun x =>
     (Polynomial.splits_id_iff_splits _).1 <| by
       cases nonempty_fintype G
@@ -284,7 +284,7 @@ instance normal : Normal (FixedPoints.subfield G F) F :=
       exact Polynomial.splits_prod _ fun _ _ => Polynomial.splits_X_sub_C _⟩
 #align fixed_points.normal FixedPoints.normal
 
-instance separable : IsSeparable (FixedPoints.subfield G F) F :=
+instance separable : IsSeparable (FixedPoints.subfield G F) F := fast_instance%
   ⟨fun x => by
     cases nonempty_fintype G
     -- this was a plain rw when we were using unbundled subrings
@@ -293,7 +293,7 @@ instance separable : IsSeparable (FixedPoints.subfield G F) F :=
     exact Polynomial.separable_prod_X_sub_C_iff.2 (injective_ofQuotientStabilizer G x)⟩
 #align fixed_points.separable FixedPoints.separable
 
-instance : FiniteDimensional (subfield G F) F := by
+instance : FiniteDimensional (subfield G F) F := fast_instance% by
   cases nonempty_fintype G
   exact IsNoetherian.iff_fg.1
       (IsNoetherian.iff_rank_lt_aleph0.2 <| (rank_le_card G F).trans_lt <| Cardinal.nat_lt_aleph0 _)

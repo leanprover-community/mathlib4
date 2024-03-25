@@ -91,7 +91,7 @@ theorem Closeds.edist_eq {s t : Closeds α} : edist s t = hausdorffEdist (s : Se
 
 /-- In a complete space, the type of closed subsets is complete for the
 Hausdorff edistance. -/
-instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
+instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) := fast_instance% by
   /- We will show that, if a sequence of sets `s n` satisfies
     `edist (s n) (s (n+1)) < 2^{-n}`, then it converges. This is enough to guarantee
     completeness, by a standard completeness criterion.
@@ -189,7 +189,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
 #align emetric.closeds.complete_space EMetric.Closeds.completeSpace
 
 /-- In a compact space, the type of closed subsets is compact. -/
-instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
+instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) := fast_instance%
   ⟨by
     /- by completeness, it suffices to show that it is totally bounded,
         i.e., for all ε>0, there is a finite set which is ε-dense.
@@ -295,7 +295,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
 
 /-- In a complete space, the type of nonempty compact subsets is complete. This follows
 from the same statement for closed subsets -/
-instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
+instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) := fast_instance%
   (completeSpace_iff_isComplete_range
         NonemptyCompacts.ToCloseds.uniformEmbedding.toUniformInducing).2 <|
     NonemptyCompacts.isClosed_in_closeds.isComplete
@@ -303,7 +303,7 @@ instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (None
 
 /-- In a compact space, the type of nonempty compact subsets is compact. This follows from
 the same statement for closed subsets -/
-instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
+instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) := fast_instance%
   ⟨by
     rw [NonemptyCompacts.ToCloseds.uniformEmbedding.embedding.isCompact_iff, image_univ]
     exact NonemptyCompacts.isClosed_in_closeds.isCompact⟩
@@ -400,7 +400,7 @@ variable {α : Type u} [MetricSpace α]
 
 /-- `NonemptyCompacts α` inherits a metric space structure, as the Hausdorff
 edistance between two such sets is finite. -/
-instance NonemptyCompacts.metricSpace : MetricSpace (NonemptyCompacts α) :=
+instance NonemptyCompacts.metricSpace : MetricSpace (NonemptyCompacts α) := fast_instance%
   EMetricSpace.toMetricSpace fun x y =>
     hausdorffEdist_ne_top_of_nonempty_of_bounded x.nonempty y.nonempty x.isCompact.isBounded
       y.isCompact.isBounded

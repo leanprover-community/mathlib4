@@ -29,10 +29,10 @@ variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 open scoped Manifold
 
 -- the following two instances prevent poorly understood type class inference timeout problems
-instance smoothFunctionsAlgebra : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯ := by infer_instance
+instance smoothFunctionsAlgebra : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯ := fast_instance% by infer_instance
 #align smooth_functions_algebra smoothFunctionsAlgebra
 
-instance smooth_functions_tower : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ := by infer_instance
+instance smooth_functions_tower : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ := fast_instance% by infer_instance
 #align smooth_functions_tower smooth_functions_tower
 
 /-- Type synonym, introduced to put a different `SMul` action on `C^n⟮I, M; 𝕜⟯`
@@ -51,29 +51,29 @@ namespace PointedSmoothMap
 
 open scoped Derivation
 
-instance instFunLike {x : M} : FunLike C^∞⟮I, M; 𝕜⟯⟨x⟩ M 𝕜 :=
+instance instFunLike {x : M} : FunLike C^∞⟮I, M; 𝕜⟯⟨x⟩ M 𝕜 := fast_instance%
   ContMDiffMap.instFunLike
 #align pointed_smooth_map.fun_like PointedSmoothMap.instFunLike
 
-instance {x : M} : CommRing C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
+instance {x : M} : CommRing C^∞⟮I, M; 𝕜⟯⟨x⟩ := fast_instance%
   SmoothMap.commRing
 
-instance {x : M} : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
+instance {x : M} : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ := fast_instance%
   SmoothMap.algebra
 
-instance {x : M} : Inhabited C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
+instance {x : M} : Inhabited C^∞⟮I, M; 𝕜⟯⟨x⟩ := fast_instance%
   ⟨0⟩
 
-instance {x : M} : Algebra C^∞⟮I, M; 𝕜⟯⟨x⟩ C^∞⟮I, M; 𝕜⟯ :=
+instance {x : M} : Algebra C^∞⟮I, M; 𝕜⟯⟨x⟩ C^∞⟮I, M; 𝕜⟯ := fast_instance%
   Algebra.id C^∞⟮I, M; 𝕜⟯
 
-instance {x : M} : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ C^∞⟮I, M; 𝕜⟯ :=
+instance {x : M} : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ C^∞⟮I, M; 𝕜⟯ := fast_instance%
   IsScalarTower.right
 
 variable {I}
 
 /-- `SmoothMap.evalRingHom` gives rise to an algebra structure of `C^∞⟮I, M; 𝕜⟯` on `𝕜`. -/
-instance evalAlgebra {x : M} : Algebra C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜 :=
+instance evalAlgebra {x : M} : Algebra C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜 := fast_instance%
   (SmoothMap.evalRingHom x : C^∞⟮I, M; 𝕜⟯⟨x⟩ →+* 𝕜).toAlgebra
 #align pointed_smooth_map.eval_algebra PointedSmoothMap.evalAlgebra
 

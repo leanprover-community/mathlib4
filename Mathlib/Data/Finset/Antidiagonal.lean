@@ -67,7 +67,7 @@ attribute [simp] mem_antidiagonal
 variable {A : Type*}
 
 /-- All `HasAntidiagonal` instances are equal -/
-instance [AddMonoid A] : Subsingleton (HasAntidiagonal A) :=
+instance [AddMonoid A] : Subsingleton (HasAntidiagonal A) := fast_instance%
   ⟨by
     rintro ⟨a, ha⟩ ⟨b, hb⟩
     congr with n xy

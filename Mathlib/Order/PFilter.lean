@@ -69,7 +69,7 @@ section Preorder
 
 variable [Preorder P] {x y : P} (F s t : PFilter P)
 
-instance [Inhabited P] : Inhabited (PFilter P) := ⟨⟨default⟩⟩
+instance [Inhabited P] : Inhabited (PFilter P) := fast_instance% ⟨⟨default⟩⟩
 
 /-- A filter on `P` is a subset of `P`. -/
 instance : SetLike (PFilter P) P where

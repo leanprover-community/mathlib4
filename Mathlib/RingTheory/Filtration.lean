@@ -88,13 +88,13 @@ def _root_.Ideal.trivialFiltration (I : Ideal R) (N : Submodule R M) : I.Filtrat
 #align ideal.trivial_filtration Ideal.trivialFiltration
 
 /-- The `sup` of two `I.Filtration`s is an `I.Filtration`. -/
-instance : Sup (I.Filtration M) :=
+instance : Sup (I.Filtration M) := fast_instance%
   ⟨fun F F' =>
     ⟨F.N ⊔ F'.N, fun i => sup_le_sup (F.mono i) (F'.mono i), fun i =>
       (Submodule.smul_sup _ _ _).trans_le <| sup_le_sup (F.smul_le i) (F'.smul_le i)⟩⟩
 
 /-- The `sSup` of a family of `I.Filtration`s is an `I.Filtration`. -/
-instance : SupSet (I.Filtration M) :=
+instance : SupSet (I.Filtration M) := fast_instance%
   ⟨fun S =>
     { N := sSup (Ideal.Filtration.N '' S)
       mono := fun i => by
@@ -108,13 +108,13 @@ instance : SupSet (I.Filtration M) :=
         exact F.smul_le i }⟩
 
 /-- The `inf` of two `I.Filtration`s is an `I.Filtration`. -/
-instance : Inf (I.Filtration M) :=
+instance : Inf (I.Filtration M) := fast_instance%
   ⟨fun F F' =>
     ⟨F.N ⊓ F'.N, fun i => inf_le_inf (F.mono i) (F'.mono i), fun i =>
       (Submodule.smul_inf_le _ _ _).trans <| inf_le_inf (F.smul_le i) (F'.smul_le i)⟩⟩
 
 /-- The `sInf` of a family of `I.Filtration`s is an `I.Filtration`. -/
-instance : InfSet (I.Filtration M) :=
+instance : InfSet (I.Filtration M) := fast_instance%
   ⟨fun S =>
     { N := sInf (Ideal.Filtration.N '' S)
       mono := fun i => by
@@ -128,10 +128,10 @@ instance : InfSet (I.Filtration M) :=
         rintro ⟨_, F, hF, rfl⟩
         exact F.smul_le i }⟩
 
-instance : Top (I.Filtration M) :=
+instance : Top (I.Filtration M) := fast_instance%
   ⟨I.trivialFiltration ⊤⟩
 
-instance : Bot (I.Filtration M) :=
+instance : Bot (I.Filtration M) := fast_instance%
   ⟨I.trivialFiltration ⊥⟩
 
 @[simp]
@@ -182,11 +182,11 @@ theorem iInf_N {ι : Sort*} (f : ι → I.Filtration M) : (iInf f).N = ⨅ i, (f
 set_option linter.uppercaseLean3 false in
 #align ideal.filtration.infi_N Ideal.Filtration.iInf_N
 
-instance : CompleteLattice (I.Filtration M) :=
+instance : CompleteLattice (I.Filtration M) := fast_instance%
   Function.Injective.completeLattice Ideal.Filtration.N Ideal.Filtration.ext sup_N inf_N
     (fun _ => sSup_image) (fun _ => sInf_image) top_N bot_N
 
-instance : Inhabited (I.Filtration M) :=
+instance : Inhabited (I.Filtration M) := fast_instance%
   ⟨⊥⟩
 
 /-- An `I` filtration is stable if `I • F.N n = F.N (n+1)` for large enough `n`. -/

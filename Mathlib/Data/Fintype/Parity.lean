@@ -23,7 +23,7 @@ instance IsSquare.decidablePred [Mul α] [Fintype α] [DecidableEq α] :
 
 /-- The cardinality of `Fin 2` is even, `Fact` version.
 This `Fact` is needed as an instance by `Matrix.SpecialLinearGroup.instNeg`. -/
-instance card_fin_two : Fact (Even (Fintype.card (Fin 2))) :=
+instance card_fin_two : Fact (Even (Fintype.card (Fin 2))) := fast_instance%
   ⟨⟨1, rfl⟩⟩
 #noalign fintype.card_fin_even
 

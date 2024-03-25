@@ -143,7 +143,7 @@ instance : LawfulFunctor PMF where
   id_map := bind_pure
   comp_map _ _ _ := (map_comp _ _ _).symm
 
-instance : LawfulMonad PMF := LawfulMonad.mk'
+instance : LawfulMonad PMF := fast_instance% LawfulMonad.mk'
   (bind_pure_comp := fun f x => rfl)
   (id_map := id_map)
   (pure_bind := pure_bind)

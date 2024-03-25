@@ -32,10 +32,10 @@ def BoolRing :=
 
 namespace BoolRing
 
-instance : CoeSort BoolRing (Type*) :=
+instance : CoeSort BoolRing (Type*) := fast_instance%
   Bundled.coeSort
 
-instance (X : BoolRing) : BooleanRing X :=
+instance (X : BoolRing) : BooleanRing X := fast_instance%
   X.str
 
 /-- Construct a bundled `BoolRing` from a `BooleanRing`. -/
@@ -48,17 +48,17 @@ theorem coe_of (α : Type*) [BooleanRing α] : ↥(of α) = α :=
   rfl
 #align BoolRing.coe_of BoolRing.coe_of
 
-instance : Inhabited BoolRing :=
+instance : Inhabited BoolRing := fast_instance%
   ⟨of PUnit⟩
 
-instance : BundledHom.ParentProjection @BooleanRing.toCommRing :=
+instance : BundledHom.ParentProjection @BooleanRing.toCommRing := fast_instance%
   ⟨⟩
 
 -- Porting note: `deriving` `ConcreteCategory` failed, added it manually
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for BoolRing
 
-instance : ConcreteCategory BoolRing := by
+instance : ConcreteCategory BoolRing := fast_instance% by
   dsimp [BoolRing]
   infer_instance
 
@@ -67,7 +67,7 @@ instance : ConcreteCategory BoolRing := by
 --   The given definition is not a constructor application:
 --     inferInstance.1
 -- @[simps]
-instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat :=
+instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat := fast_instance%
   BundledHom.forget₂ _ _
 #align BoolRing.has_forget_to_CommRing BoolRing.hasForgetToCommRing
 

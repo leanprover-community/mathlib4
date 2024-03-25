@@ -130,7 +130,7 @@ theorem PreservesTerminal.iso_hom : (PreservesTerminal.iso G).hom = terminalComp
   rfl
 #align category_theory.limits.preserves_terminal.iso_hom CategoryTheory.Limits.PreservesTerminal.iso_hom
 
-instance : IsIso (terminalComparison G) := by
+instance : IsIso (terminalComparison G) := fast_instance% by
   rw [← PreservesTerminal.iso_hom]
   infer_instance
 
@@ -231,7 +231,7 @@ theorem PreservesInitial.iso_hom : (PreservesInitial.iso G).inv = initialCompari
   rfl
 #align category_theory.limits.preserves_initial.iso_hom CategoryTheory.Limits.PreservesInitial.iso_hom
 
-instance : IsIso (initialComparison G) := by
+instance : IsIso (initialComparison G) := fast_instance% by
   rw [← PreservesInitial.iso_hom]
   infer_instance
 

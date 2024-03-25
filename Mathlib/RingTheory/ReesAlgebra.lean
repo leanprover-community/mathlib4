@@ -123,8 +123,8 @@ theorem reesAlgebra.fg (hI : I.FG) : (reesAlgebra I).FG := by
     rw [Submodule.map_span, Algebra.adjoin_span]
 #align rees_algebra.fg reesAlgebra.fg
 
-instance [IsNoetherianRing R] : Algebra.FiniteType R (reesAlgebra I) :=
+instance [IsNoetherianRing R] : Algebra.FiniteType R (reesAlgebra I) := fast_instance%
   ⟨(reesAlgebra I).fg_top.mpr (reesAlgebra.fg <| IsNoetherian.noetherian I)⟩
 
-instance [IsNoetherianRing R] : IsNoetherianRing (reesAlgebra I) :=
+instance [IsNoetherianRing R] : IsNoetherianRing (reesAlgebra I) := fast_instance%
   Algebra.FiniteType.isNoetherianRing R _

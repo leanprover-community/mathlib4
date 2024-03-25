@@ -182,43 +182,43 @@ def eval {k : ℕ} (φ : ℕ → MvPolynomial (Fin k × ℕ) ℤ) (x : Fin k →
 
 variable (R) [Fact p.Prime]
 
-instance : Zero (𝕎 R) :=
+instance : Zero (𝕎 R) := fast_instance%
   ⟨eval (wittZero p) ![]⟩
 
-instance : Inhabited (𝕎 R) :=
+instance : Inhabited (𝕎 R) := fast_instance%
   ⟨0⟩
 
-instance : One (𝕎 R) :=
+instance : One (𝕎 R) := fast_instance%
   ⟨eval (wittOne p) ![]⟩
 
-instance : Add (𝕎 R) :=
+instance : Add (𝕎 R) := fast_instance%
   ⟨fun x y => eval (wittAdd p) ![x, y]⟩
 
-instance : Sub (𝕎 R) :=
+instance : Sub (𝕎 R) := fast_instance%
   ⟨fun x y => eval (wittSub p) ![x, y]⟩
 
-instance hasNatScalar : SMul ℕ (𝕎 R) :=
+instance hasNatScalar : SMul ℕ (𝕎 R) := fast_instance%
   ⟨fun n x => eval (wittNSMul p n) ![x]⟩
 #align witt_vector.has_nat_scalar WittVector.hasNatScalar
 
-instance hasIntScalar : SMul ℤ (𝕎 R) :=
+instance hasIntScalar : SMul ℤ (𝕎 R) := fast_instance%
   ⟨fun n x => eval (wittZSMul p n) ![x]⟩
 #align witt_vector.has_int_scalar WittVector.hasIntScalar
 
-instance : Mul (𝕎 R) :=
+instance : Mul (𝕎 R) := fast_instance%
   ⟨fun x y => eval (wittMul p) ![x, y]⟩
 
-instance : Neg (𝕎 R) :=
+instance : Neg (𝕎 R) := fast_instance%
   ⟨fun x => eval (wittNeg p) ![x]⟩
 
-instance hasNatPow : Pow (𝕎 R) ℕ :=
+instance hasNatPow : Pow (𝕎 R) ℕ := fast_instance%
   ⟨fun x n => eval (wittPow p n) ![x]⟩
 #align witt_vector.has_nat_pow WittVector.hasNatPow
 
-instance : NatCast (𝕎 R) :=
+instance : NatCast (𝕎 R) := fast_instance%
   ⟨Nat.unaryCast⟩
 
-instance : IntCast (𝕎 R) :=
+instance : IntCast (𝕎 R) := fast_instance%
   ⟨Int.castDef⟩
 
 end RingOperations

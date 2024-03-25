@@ -63,7 +63,7 @@ namespace XgcdType
 
 variable (u : XgcdType)
 
-instance : SizeOf XgcdType :=
+instance : SizeOf XgcdType := fast_instance%
   ⟨fun u => u.bp⟩
 
 /-- The `Repr` instance converts terms to strings in a way that

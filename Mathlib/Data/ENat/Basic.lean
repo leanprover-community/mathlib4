@@ -45,12 +45,12 @@ notation "ℕ∞" => ENat
 namespace ENat
 
 -- Porting note: instances that derive failed to find
-instance : OrderBot ℕ∞ := WithTop.orderBot
-instance : OrderTop ℕ∞ := WithTop.orderTop
-instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
-instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
-instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
-instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
+instance : OrderBot ℕ∞ := fast_instance% WithTop.orderBot
+instance : OrderTop ℕ∞ := fast_instance% WithTop.orderTop
+instance : OrderedSub ℕ∞ := fast_instance% inferInstanceAs (OrderedSub (WithTop ℕ))
+instance : SuccOrder ℕ∞ := fast_instance% inferInstanceAs (SuccOrder (WithTop ℕ))
+instance : WellFoundedLT ℕ∞ := fast_instance% inferInstanceAs (WellFoundedLT (WithTop ℕ))
+instance : CharZero ℕ∞ := fast_instance% inferInstanceAs (CharZero (WithTop ℕ))
 instance : IsWellOrder ℕ∞ (· < ·) where
 
 variable {m n : ℕ∞}
@@ -89,7 +89,7 @@ theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
 @[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
 @[simp] theorem top_mul (hm : m ≠ 0) : ⊤ * m = ⊤ := WithTop.top_mul hm
 
-instance canLift : CanLift ℕ∞ ℕ (↑) (· ≠ ⊤) := WithTop.canLift
+instance canLift : CanLift ℕ∞ ℕ (↑) (· ≠ ⊤) := fast_instance% WithTop.canLift
 #align enat.can_lift ENat.canLift
 
 instance : WellFoundedRelation ℕ∞ where

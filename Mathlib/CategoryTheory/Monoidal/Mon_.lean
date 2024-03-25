@@ -65,7 +65,7 @@ def trivial : Mon_ C where
   mul_one := by coherence
 #align Mon_.trivial Mon_.trivial
 
-instance : Inhabited (Mon_ C) :=
+instance : Inhabited (Mon_ C) := fast_instance%
   ⟨trivial C⟩
 
 variable {C}
@@ -101,7 +101,7 @@ def id (M : Mon_ C) : Hom M M where
   hom := 𝟙 M.X
 #align Mon_.id Mon_.id
 
-instance homInhabited (M : Mon_ C) : Inhabited (Hom M M) :=
+instance homInhabited (M : Mon_ C) : Inhabited (Hom M M) := fast_instance%
   ⟨id M⟩
 #align Mon_.hom_inhabited Mon_.homInhabited
 
@@ -148,7 +148,7 @@ end
 instance forget_faithful : Faithful (@forget C _ _) where
 #align Mon_.forget_faithful Mon_.forget_faithful
 
-instance {A B : Mon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.hom :=
+instance {A B : Mon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.hom := fast_instance%
   e
 
 /-- The forgetful functor from monoid objects to the ambient category reflects isomorphisms. -/
@@ -192,7 +192,7 @@ instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
 
 open CategoryTheory.Limits
 
-instance : HasInitial (Mon_ C) :=
+instance : HasInitial (Mon_ C) := fast_instance%
   hasInitial_of_unique (trivial C)
 
 end Mon_
@@ -467,7 +467,7 @@ theorem mul_rightUnitor {M : Mon_ C} :
 #align Mon_.mul_right_unitor Mon_.mul_rightUnitor
 
 @[simps tensorObj_X tensorHom_hom]
-instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
+instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) := fast_instance%
   let tensorObj (M N : Mon_ C) : Mon_ C :=
     { X := M.X ⊗ N.X
       one := (λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one)

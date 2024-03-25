@@ -66,10 +66,10 @@ class GSMul [VAdd ιA ιM] where
 #align graded_monoid.ghas_smul GradedMonoid.GSMul
 
 /-- A graded version of `Mul.toSMul` -/
-instance GMul.toGSMul [Add ιA] [GMul A] : GSMul A A where smul := GMul.mul
+instance GMul.toGSMul [Add ιA] [GMul A] : GSMul A A where smul := fast_instance% GMul.mul
 #align graded_monoid.ghas_mul.to_ghas_smul GradedMonoid.GMul.toGSMul
 
-instance GSMul.toSMul [VAdd ιA ιM] [GSMul A M] : SMul (GradedMonoid A) (GradedMonoid M) :=
+instance GSMul.toSMul [VAdd ιA ιM] [GSMul A M] : SMul (GradedMonoid A) (GradedMonoid M) := fast_instance%
   ⟨fun x y ↦ ⟨_, GSMul.smul x.snd y.snd⟩⟩
 #align graded_monoid.ghas_smul.to_has_smul GradedMonoid.GSMul.toSMul
 
@@ -87,7 +87,7 @@ class GMulAction [AddMonoid ιA] [VAdd ιA ιM] [GMonoid A] extends GSMul A M wh
 #align graded_monoid.gmul_action GradedMonoid.GMulAction
 
 /-- The graded version of `Monoid.toMulAction`. -/
-instance GMonoid.toGMulAction [AddMonoid ιA] [GMonoid A] : GMulAction A A :=
+instance GMonoid.toGMulAction [AddMonoid ιA] [GMonoid A] : GMulAction A A := fast_instance%
   { GMul.toGSMul _ with
     one_smul := GMonoid.one_mul
     mul_smul := GMonoid.mul_assoc }

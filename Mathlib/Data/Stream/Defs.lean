@@ -57,7 +57,7 @@ def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (get s n)
 #align stream.any Stream'.Any
 
 /-- `a ∈ s` means that `a = Stream'.get n s` for some `n`. -/
-instance : Membership α (Stream' α) :=
+instance : Membership α (Stream' α) := fast_instance%
   ⟨fun a s => Any (fun b => a = b) s⟩
 
 /-- Apply a function `f` to all elements of a stream `s`. -/

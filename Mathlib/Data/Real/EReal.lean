@@ -58,20 +58,20 @@ def EReal := WithBot (WithTop ℝ)
   deriving Bot, Zero, One, Nontrivial, AddMonoid, PartialOrder
 #align ereal EReal
 
-instance : ZeroLEOneClass EReal := inferInstanceAs (ZeroLEOneClass (WithBot (WithTop ℝ)))
-instance : SupSet EReal := inferInstanceAs (SupSet (WithBot (WithTop ℝ)))
-instance : InfSet EReal := inferInstanceAs (InfSet (WithBot (WithTop ℝ)))
+instance : ZeroLEOneClass EReal := fast_instance% inferInstanceAs (ZeroLEOneClass (WithBot (WithTop ℝ)))
+instance : SupSet EReal := fast_instance% inferInstanceAs (SupSet (WithBot (WithTop ℝ)))
+instance : InfSet EReal := fast_instance% inferInstanceAs (InfSet (WithBot (WithTop ℝ)))
 
-instance : CompleteLinearOrder EReal :=
+instance : CompleteLinearOrder EReal := fast_instance%
   inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℝ)))
 
-instance : LinearOrderedAddCommMonoid EReal :=
+instance : LinearOrderedAddCommMonoid EReal := fast_instance%
   inferInstanceAs (LinearOrderedAddCommMonoid (WithBot (WithTop ℝ)))
 
-instance : AddCommMonoidWithOne EReal :=
+instance : AddCommMonoidWithOne EReal := fast_instance%
   inferInstanceAs (AddCommMonoidWithOne (WithBot (WithTop ℝ)))
 
-instance : DenselyOrdered EReal :=
+instance : DenselyOrdered EReal := fast_instance%
   inferInstanceAs (DenselyOrdered (WithBot (WithTop ℝ)))
 
 /-- The canonical inclusion from reals to ereals. Registered as a coercion. -/
@@ -81,14 +81,14 @@ instance : DenselyOrdered EReal :=
 namespace EReal
 
 -- things unify with `WithBot.decidableLT` later if we don't provide this explicitly.
-instance decidableLT : DecidableRel ((· < ·) : EReal → EReal → Prop) :=
+instance decidableLT : DecidableRel ((· < ·) : EReal → EReal → Prop) := fast_instance%
   WithBot.decidableLT
 #align ereal.decidable_lt EReal.decidableLT
 
 -- TODO: Provide explicitly, otherwise it is inferred noncomputably from `CompleteLinearOrder`
-instance : Top EReal := ⟨some ⊤⟩
+instance : Top EReal := fast_instance% ⟨some ⊤⟩
 
-instance : Coe ℝ EReal := ⟨Real.toEReal⟩
+instance : Coe ℝ EReal := fast_instance% ⟨Real.toEReal⟩
 
 theorem coe_strictMono : StrictMono Real.toEReal :=
   WithBot.coe_strictMono.comp WithTop.coe_strictMono
@@ -123,11 +123,11 @@ protected theorem coe_ne_coe_iff {x y : ℝ} : (x : EReal) ≠ (y : EReal) ↔ x
   | .some x => x.1
 #align ennreal.to_ereal ENNReal.toEReal
 
-instance hasCoeENNReal : Coe ℝ≥0∞ EReal :=
+instance hasCoeENNReal : Coe ℝ≥0∞ EReal := fast_instance%
   ⟨ENNReal.toEReal⟩
 #align ereal.has_coe_ennreal EReal.hasCoeENNReal
 
-instance : Inhabited EReal := ⟨0⟩
+instance : Inhabited EReal := fast_instance% ⟨0⟩
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : ℝ) : EReal) = 0 := rfl
@@ -165,7 +165,7 @@ protected def mul : EReal → EReal → EReal
   | (x : ℝ), (y : ℝ) => (x * y : ℝ)
 #align ereal.mul EReal.mul
 
-instance : Mul EReal := ⟨EReal.mul⟩
+instance : Mul EReal := fast_instance% ⟨EReal.mul⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : ℝ) : (↑(x * y) : EReal) = x * y :=
@@ -685,7 +685,7 @@ theorem coe_ennreal_nonneg (x : ℝ≥0∞) : (0 : EReal) ≤ x :=
     | ⊤ => fun _ => ⟨⊤, rfl⟩
     | (x : ℝ) => fun h => ⟨.some ⟨x, EReal.coe_nonneg.1 h⟩, rfl⟩
 
-instance : CanLift EReal ℝ≥0∞ (↑) (0 ≤ ·) := ⟨range_coe_ennreal.ge⟩
+instance : CanLift EReal ℝ≥0∞ (↑) (0 ≤ ·) := fast_instance% ⟨range_coe_ennreal.ge⟩
 
 @[simp, norm_cast]
 theorem coe_ennreal_pos {x : ℝ≥0∞} : (0 : EReal) < x ↔ 0 < x := by
@@ -880,7 +880,7 @@ protected def neg : EReal → EReal
   | (x : ℝ) => (-x : ℝ)
 #align ereal.neg EReal.neg
 
-instance : Neg EReal := ⟨EReal.neg⟩
+instance : Neg EReal := fast_instance% ⟨EReal.neg⟩
 
 instance : SubNegZeroMonoid EReal where
   neg_zero := congr_arg Real.toEReal neg_zero
@@ -1324,24 +1324,24 @@ theorem le_iff_sign {x y : EReal} :
     all_goals rw [← x.sign_mul_abs, ← y.sign_mul_abs]; simp [h]
 #align ereal.le_iff_sign EReal.le_iff_sign
 
-instance : CommMonoidWithZero EReal :=
+instance : CommMonoidWithZero EReal := fast_instance%
   { inferInstanceAs (MulZeroOneClass EReal) with
     mul_assoc := fun x y z => by
       rw [← sign_eq_and_abs_eq_iff_eq]
       simp only [mul_assoc, abs_mul, eq_self_iff_true, sign_mul, and_self_iff]
     mul_comm := EReal.mul_comm }
 
-instance : PosMulMono EReal := posMulMono_iff_covariant_pos.2 <| .mk <| by
+instance : PosMulMono EReal := fast_instance% posMulMono_iff_covariant_pos.2 <| .mk <| by
   rintro ⟨x, x0⟩ a b h
   simp only [le_iff_sign, EReal.sign_mul, sign_pos x0, one_mul, EReal.abs_mul] at h ⊢
   exact h.imp_right <| Or.imp (And.imp_right <| And.imp_right (mul_le_mul_left' · _)) <|
     Or.imp_right <| And.imp_right <| And.imp_right (mul_le_mul_left' · _)
 
-instance : MulPosMono EReal := posMulMono_iff_mulPosMono.1 inferInstance
+instance : MulPosMono EReal := fast_instance% posMulMono_iff_mulPosMono.1 inferInstance
 
-instance : PosMulReflectLT EReal := PosMulMono.toPosMulReflectLT
+instance : PosMulReflectLT EReal := fast_instance% PosMulMono.toPosMulReflectLT
 
-instance : MulPosReflectLT EReal :=
+instance : MulPosReflectLT EReal := fast_instance%
   MulPosMono.toMulPosReflectLT
 
 @[simp, norm_cast]

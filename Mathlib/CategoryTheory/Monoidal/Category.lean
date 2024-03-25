@@ -338,7 +338,7 @@ def whiskerLeftIso (X : C) {Y Z : C} (f : Y ≅ Z) : X ⊗ Y ≅ X ⊗ Z where
   hom := X ◁ f.hom
   inv := X ◁ f.inv
 
-instance whiskerLeft_isIso (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] : IsIso (X ◁ f) :=
+instance whiskerLeft_isIso (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] : IsIso (X ◁ f) := fast_instance%
   IsIso.of_iso (whiskerLeftIso X (asIso f))
 
 @[simp]
@@ -366,7 +366,7 @@ def whiskerRightIso {X Y : C} (f : X ≅ Y) (Z : C) : X ⊗ Z ≅ Y ⊗ Z where
   hom := f.hom ▷ Z
   inv := f.inv ▷ Z
 
-instance whiskerRight_isIso {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] : IsIso (f ▷ Z) :=
+instance whiskerRight_isIso {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] : IsIso (f ▷ Z) := fast_instance%
   IsIso.of_iso (whiskerRightIso (asIso f) Z)
 
 @[simp]
@@ -409,7 +409,7 @@ section
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 
-instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=
+instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) := fast_instance%
   IsIso.of_iso (asIso f ⊗ asIso g)
 #align category_theory.monoidal_category.tensor_is_iso CategoryTheory.MonoidalCategory.tensor_isIso
 

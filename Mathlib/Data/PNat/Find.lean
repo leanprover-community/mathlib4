@@ -19,7 +19,7 @@ namespace PNat
 
 variable {p q : ℕ+ → Prop} [DecidablePred p] [DecidablePred q] (h : ∃ n, p n)
 
-instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+) (_ : n' = n), p n :=
+instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+) (_ : n' = n), p n := fast_instance%
   fun n' =>
   decidable_of_iff' (∃ h : 0 < n', p ⟨n', h⟩) <|
     Subtype.exists.trans <| by

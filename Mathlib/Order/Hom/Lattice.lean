@@ -327,19 +327,19 @@ end BooleanAlgebra
 
 variable [FunLike F α β]
 
-instance [Sup α] [Sup β] [SupHomClass F α β] : CoeTC F (SupHom α β) :=
+instance [Sup α] [Sup β] [SupHomClass F α β] : CoeTC F (SupHom α β) := fast_instance%
   ⟨fun f => ⟨f, map_sup f⟩⟩
 
-instance [Inf α] [Inf β] [InfHomClass F α β] : CoeTC F (InfHom α β) :=
+instance [Inf α] [Inf β] [InfHomClass F α β] : CoeTC F (InfHom α β) := fast_instance%
   ⟨fun f => ⟨f, map_inf f⟩⟩
 
-instance [Sup α] [Sup β] [Bot α] [Bot β] [SupBotHomClass F α β] : CoeTC F (SupBotHom α β) :=
+instance [Sup α] [Sup β] [Bot α] [Bot β] [SupBotHomClass F α β] : CoeTC F (SupBotHom α β) := fast_instance%
   ⟨fun f => ⟨f, map_bot f⟩⟩
 
-instance [Inf α] [Inf β] [Top α] [Top β] [InfTopHomClass F α β] : CoeTC F (InfTopHom α β) :=
+instance [Inf α] [Inf β] [Top α] [Top β] [InfTopHomClass F α β] : CoeTC F (InfTopHom α β) := fast_instance%
   ⟨fun f => ⟨f, map_top f⟩⟩
 
-instance [Lattice α] [Lattice β] [LatticeHomClass F α β] : CoeTC F (LatticeHom α β) :=
+instance [Lattice α] [Lattice β] [LatticeHomClass F α β] : CoeTC F (LatticeHom α β) := fast_instance%
   ⟨fun f =>
     { toFun := f
       map_sup' := map_sup f
@@ -403,7 +403,7 @@ protected def id : SupHom α α :=
   ⟨id, fun _ _ => rfl⟩
 #align sup_hom.id SupHom.id
 
-instance : Inhabited (SupHom α α) :=
+instance : Inhabited (SupHom α α) := fast_instance%
   ⟨SupHom.id α⟩
 
 @[simp]
@@ -479,28 +479,28 @@ theorem const_apply (b : β) (a : α) : const α b a = b :=
 
 variable {α}
 
-instance : Sup (SupHom α β) :=
+instance : Sup (SupHom α β) := fast_instance%
   ⟨fun f g =>
     ⟨f ⊔ g, fun a b => by
       rw [Pi.sup_apply, map_sup, map_sup]
       exact sup_sup_sup_comm _ _ _ _⟩⟩
 
-instance : SemilatticeSup (SupHom α β) :=
+instance : SemilatticeSup (SupHom α β) := fast_instance%
   (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
 
-instance [Bot β] : Bot (SupHom α β) :=
+instance [Bot β] : Bot (SupHom α β) := fast_instance%
   ⟨SupHom.const α ⊥⟩
 
-instance [Top β] : Top (SupHom α β) :=
+instance [Top β] : Top (SupHom α β) := fast_instance%
   ⟨SupHom.const α ⊤⟩
 
-instance [OrderBot β] : OrderBot (SupHom α β) :=
+instance [OrderBot β] : OrderBot (SupHom α β) := fast_instance%
   OrderBot.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
-instance [OrderTop β] : OrderTop (SupHom α β) :=
+instance [OrderTop β] : OrderTop (SupHom α β) := fast_instance%
   OrderTop.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
-instance [BoundedOrder β] : BoundedOrder (SupHom α β) :=
+instance [BoundedOrder β] : BoundedOrder (SupHom α β) := fast_instance%
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
 @[simp]
@@ -587,7 +587,7 @@ protected def id : InfHom α α :=
   ⟨id, fun _ _ => rfl⟩
 #align inf_hom.id InfHom.id
 
-instance : Inhabited (InfHom α α) :=
+instance : Inhabited (InfHom α α) := fast_instance%
   ⟨InfHom.id α⟩
 
 @[simp]
@@ -663,28 +663,28 @@ theorem const_apply (b : β) (a : α) : const α b a = b :=
 
 variable {α}
 
-instance : Inf (InfHom α β) :=
+instance : Inf (InfHom α β) := fast_instance%
   ⟨fun f g =>
     ⟨f ⊓ g, fun a b => by
       rw [Pi.inf_apply, map_inf, map_inf]
       exact inf_inf_inf_comm _ _ _ _⟩⟩
 
-instance : SemilatticeInf (InfHom α β) :=
+instance : SemilatticeInf (InfHom α β) := fast_instance%
   (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
 
-instance [Bot β] : Bot (InfHom α β) :=
+instance [Bot β] : Bot (InfHom α β) := fast_instance%
   ⟨InfHom.const α ⊥⟩
 
-instance [Top β] : Top (InfHom α β) :=
+instance [Top β] : Top (InfHom α β) := fast_instance%
   ⟨InfHom.const α ⊤⟩
 
-instance [OrderBot β] : OrderBot (InfHom α β) :=
+instance [OrderBot β] : OrderBot (InfHom α β) := fast_instance%
   OrderBot.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
-instance [OrderTop β] : OrderTop (InfHom α β) :=
+instance [OrderTop β] : OrderTop (InfHom α β) := fast_instance%
   OrderTop.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
-instance [BoundedOrder β] : BoundedOrder (InfHom α β) :=
+instance [BoundedOrder β] : BoundedOrder (InfHom α β) := fast_instance%
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
 @[simp]
@@ -782,7 +782,7 @@ protected def id : SupBotHom α α :=
   ⟨SupHom.id α, rfl⟩
 #align sup_bot_hom.id SupBotHom.id
 
-instance : Inhabited (SupBotHom α α) :=
+instance : Inhabited (SupBotHom α α) := fast_instance%
   ⟨SupBotHom.id α⟩
 
 @[simp]
@@ -840,10 +840,10 @@ end Sup
 
 variable [SemilatticeSup β] [OrderBot β]
 
-instance : Sup (SupBotHom α β) :=
+instance : Sup (SupBotHom α β) := fast_instance%
   ⟨fun f g => { f.toBotHom ⊔ g.toBotHom with toSupHom := f.toSupHom ⊔ g.toSupHom }⟩
 
-instance : SemilatticeSup (SupBotHom α β) :=
+instance : SemilatticeSup (SupBotHom α β) := fast_instance%
   (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
 
 instance : OrderBot (SupBotHom α β) where
@@ -934,7 +934,7 @@ protected def id : InfTopHom α α :=
   ⟨InfHom.id α, rfl⟩
 #align inf_top_hom.id InfTopHom.id
 
-instance : Inhabited (InfTopHom α α) :=
+instance : Inhabited (InfTopHom α α) := fast_instance%
   ⟨InfTopHom.id α⟩
 
 @[simp]
@@ -992,10 +992,10 @@ end Inf
 
 variable [SemilatticeInf β] [OrderTop β]
 
-instance : Inf (InfTopHom α β) :=
+instance : Inf (InfTopHom α β) := fast_instance%
   ⟨fun f g => { f.toTopHom ⊓ g.toTopHom with toInfHom := f.toInfHom ⊓ g.toInfHom }⟩
 
-instance : SemilatticeInf (InfTopHom α β) :=
+instance : SemilatticeInf (InfTopHom α β) := fast_instance%
   (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
 
 instance : OrderTop (InfTopHom α β) where
@@ -1080,7 +1080,7 @@ protected def id : LatticeHom α α where
   map_inf' _ _ := rfl
 #align lattice_hom.id LatticeHom.id
 
-instance : Inhabited (LatticeHom α α) :=
+instance : Inhabited (LatticeHom α α) := fast_instance%
   ⟨LatticeHom.id α⟩
 
 @[simp]
@@ -1266,7 +1266,7 @@ protected def id : BoundedLatticeHom α α :=
   { LatticeHom.id α, BoundedOrderHom.id α with }
 #align bounded_lattice_hom.id BoundedLatticeHom.id
 
-instance : Inhabited (BoundedLatticeHom α α) :=
+instance : Inhabited (BoundedLatticeHom α α) := fast_instance%
   ⟨BoundedLatticeHom.id α⟩
 
 @[simp]

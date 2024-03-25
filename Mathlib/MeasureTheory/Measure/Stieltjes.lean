@@ -49,7 +49,7 @@ namespace StieltjesFunction
 
 attribute [coe] toFun
 
-instance instCoeFun : CoeFun StieltjesFunction fun _ => ℝ → ℝ :=
+instance instCoeFun : CoeFun StieltjesFunction fun _ => ℝ → ℝ := fast_instance%
   ⟨toFun⟩
 #align stieltjes_function.has_coe_to_fun StieltjesFunction.instCoeFun
 
@@ -104,7 +104,7 @@ theorem id_leftLim (x : ℝ) : leftLim StieltjesFunction.id x = x :=
     continuousAt_id.tendsto.mono_left nhdsWithin_le_nhds
 #align stieltjes_function.id_left_lim StieltjesFunction.id_leftLim
 
-instance instInhabited : Inhabited StieltjesFunction :=
+instance instInhabited : Inhabited StieltjesFunction := fast_instance%
   ⟨StieltjesFunction.id⟩
 #align stieltjes_function.inhabited StieltjesFunction.instInhabited
 
@@ -453,7 +453,7 @@ lemma isFiniteMeasure {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendst
 lemma isProbabilityMeasure (hf_bot : Tendsto f atBot (𝓝 0)) (hf_top : Tendsto f atTop (𝓝 1)) :
     IsProbabilityMeasure f.measure := ⟨by simp [f.measure_univ hf_bot hf_top]⟩
 
-instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure :=
+instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure := fast_instance%
   ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩
 #align stieltjes_function.measure.measure_theory.is_locally_finite_measure StieltjesFunction.instIsLocallyFiniteMeasure
 

@@ -67,7 +67,7 @@ open scoped TensorProduct DirectSum
 open PiTensorProduct
 
 /-- As a graded monoid, `⨂[R]^i M` has a `1 : ⨂[R]^0 M`. -/
-instance gOne : GradedMonoid.GOne fun i => ⨂[R]^i M where one := tprod R <| @Fin.elim0 M
+instance gOne : GradedMonoid.GOne fun i => ⨂[R]^i M where one := fast_instance% tprod R <| @Fin.elim0 M
 #align tensor_power.ghas_one TensorPower.gOne
 
 local notation "ₜ1" => @GradedMonoid.GOne.one ℕ (fun i => ⨂[R]^i M) _ _
@@ -220,7 +220,7 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
 #align tensor_power.mul_assoc TensorPower.mul_assoc
 
 -- for now we just use the default for the `gnpow` field as it's easier.
-instance gmonoid : GradedMonoid.GMonoid fun i => ⨂[R]^i M :=
+instance gmonoid : GradedMonoid.GMonoid fun i => ⨂[R]^i M := fast_instance%
   { TensorPower.gMul, TensorPower.gOne with
     one_mul := fun a => gradedMonoid_eq_of_cast (zero_add _) (one_mul _)
     mul_one := fun a => gradedMonoid_eq_of_cast (add_zero _) (mul_one _)
@@ -259,7 +259,7 @@ theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
   exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
 #align tensor_power.algebra_map₀_mul_algebra_map₀ TensorPower.algebraMap₀_mul_algebraMap₀
 
-instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=
+instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M := fast_instance%
   { TensorPower.gmonoid with
     mul_zero := fun a => LinearMap.map_zero _
     zero_mul := fun b => LinearMap.map_zero₂ _ _

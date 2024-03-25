@@ -99,14 +99,14 @@ noncomputable def monTypeEquivalenceMonForget :
 set_option linter.uppercaseLean3 false in
 #align Mon_Type_equivalence_Mon_forget monTypeEquivalenceMonForget
 
-noncomputable instance monTypeInhabited : Inhabited (Mon_ (Type u)) :=
+noncomputable instance monTypeInhabited : Inhabited (Mon_ (Type u)) := fast_instance%
   ⟨MonTypeEquivalenceMon.inverse.obj (MonCat.of PUnit)⟩
 set_option linter.uppercaseLean3 false in
 #align Mon_Type_inhabited monTypeInhabited
 
 namespace CommMonTypeEquivalenceCommMon
 
-instance commMonCommMonoid (A : CommMon_ (Type u)) : CommMonoid A.X :=
+instance commMonCommMonoid (A : CommMon_ (Type u)) : CommMonoid A.X := fast_instance%
   { MonTypeEquivalenceMon.monMonoid A.toMon_ with
     mul_comm := fun x y => by convert congr_fun A.mul_comm (y, x) }
 set_option linter.uppercaseLean3 false in
@@ -173,7 +173,7 @@ noncomputable def commMonTypeEquivalenceCommMonForget :
 set_option linter.uppercaseLean3 false in
 #align CommMon_Type_equivalence_CommMon_forget commMonTypeEquivalenceCommMonForget
 
-noncomputable instance commMonTypeInhabited : Inhabited (CommMon_ (Type u)) :=
+noncomputable instance commMonTypeInhabited : Inhabited (CommMon_ (Type u)) := fast_instance%
   ⟨CommMonTypeEquivalenceCommMon.inverse.obj (CommMonCat.of PUnit)⟩
 set_option linter.uppercaseLean3 false in
 #align CommMon_Type_inhabited commMonTypeInhabited

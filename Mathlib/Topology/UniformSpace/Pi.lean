@@ -21,7 +21,7 @@ universe u
 
 variable {ι ι' β : Type*} (α : ι → Type u) [U : ∀ i, UniformSpace (α i)] [UniformSpace β]
 
-instance Pi.uniformSpace : UniformSpace (∀ i, α i) :=
+instance Pi.uniformSpace : UniformSpace (∀ i, α i) := fast_instance%
   UniformSpace.ofCoreEq (⨅ i, UniformSpace.comap (fun a : ∀ i, α i => a i) (U i)).toCore
       Pi.topologicalSpace <|
     Eq.symm toTopologicalSpace_iInf

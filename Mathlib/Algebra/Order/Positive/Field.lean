@@ -20,7 +20,7 @@ variable {K : Type*} [LinearOrderedField K]
 
 namespace Positive
 
-instance Subtype.inv : Inv { x : K // 0 < x } :=
+instance Subtype.inv : Inv { x : K // 0 < x } := fast_instance%
   ⟨fun x => ⟨x⁻¹, inv_pos.2 x.2⟩⟩
 
 @[simp]
@@ -28,7 +28,7 @@ theorem coe_inv (x : { x : K // 0 < x }) : ↑x⁻¹ = (x⁻¹ : K) :=
   rfl
 #align positive.coe_inv Positive.coe_inv
 
-instance : Pow { x : K // 0 < x } ℤ :=
+instance : Pow { x : K // 0 < x } ℤ := fast_instance%
   ⟨fun x n => ⟨(x: K) ^ n, zpow_pos_of_pos x.2 _⟩⟩
 
 @[simp]
@@ -36,7 +36,7 @@ theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :
   rfl
 #align positive.coe_zpow Positive.coe_zpow
 
-instance : LinearOrderedCommGroup { x : K // 0 < x } :=
+instance : LinearOrderedCommGroup { x : K // 0 < x } := fast_instance%
   { Positive.Subtype.inv, Positive.linearOrderedCancelCommMonoid with
     mul_left_inv := fun a => Subtype.ext <| inv_mul_cancel a.2.ne' }
 

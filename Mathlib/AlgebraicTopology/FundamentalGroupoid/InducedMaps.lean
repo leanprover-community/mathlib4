@@ -235,7 +235,7 @@ def homotopicMapsNatIso : @Quiver.Hom _ Functor.category.toQuiver (πₘ f) (π�
   naturality x y p := by erw [(H.eq_diag_path p).1, (H.eq_diag_path p).2]
 #align fundamental_groupoid_functor.homotopic_maps_nat_iso FundamentalGroupoidFunctor.homotopicMapsNatIso
 
-instance : IsIso (homotopicMapsNatIso H) := by apply NatIso.isIso_of_isIso_app
+instance : IsIso (homotopicMapsNatIso H) := fast_instance% by apply NatIso.isIso_of_isIso_app
 
 open scoped ContinuousMap
 

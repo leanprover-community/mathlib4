@@ -129,7 +129,7 @@ def cast (f : α →ₘ[μ] β) : α → β :=
   AEStronglyMeasurable.mk _ (Quotient.out' f : { f : α → β // AEStronglyMeasurable f μ }).2
 
 /-- A measurable representative of an `AEEqFun` [f] -/
-instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
+instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := fast_instance% ⟨cast⟩
 #align measure_theory.ae_eq_fun.has_coe_to_fun MeasureTheory.AEEqFun.instCoeFun
 
 protected theorem stronglyMeasurable (f : α →ₘ[μ] β) : StronglyMeasurable f :=
@@ -500,7 +500,7 @@ theorem liftRel_iff_coeFn {r : β → γ → Prop} {f : α →ₘ[μ] β} {g : �
 
 section Order
 
-instance instPreorder [Preorder β] : Preorder (α →ₘ[μ] β) :=
+instance instPreorder [Preorder β] : Preorder (α →ₘ[μ] β) := fast_instance%
   Preorder.lift toGerm
 #align measure_theory.ae_eq_fun.preorder MeasureTheory.AEEqFun.instPreorder
 
@@ -514,7 +514,7 @@ theorem coeFn_le [Preorder β] {f g : α →ₘ[μ] β} : (f : α → β) ≤ᵐ
   liftRel_iff_coeFn.symm
 #align measure_theory.ae_eq_fun.coe_fn_le MeasureTheory.AEEqFun.coeFn_le
 
-instance instPartialOrder [PartialOrder β] : PartialOrder (α →ₘ[μ] β) :=
+instance instPartialOrder [PartialOrder β] : PartialOrder (α →ₘ[μ] β) := fast_instance%
   PartialOrder.lift toGerm toGerm_injective
 #align measure_theory.ae_eq_fun.partial_order MeasureTheory.AEEqFun.instPartialOrder
 
@@ -524,7 +524,7 @@ section Sup
 
 variable [SemilatticeSup β] [ContinuousSup β]
 
-instance instSup : Sup (α →ₘ[μ] β) where sup f g := AEEqFun.comp₂ (· ⊔ ·) continuous_sup f g
+instance instSup : Sup (α →ₘ[μ] β) where sup f g := fast_instance% AEEqFun.comp₂ (· ⊔ ·) continuous_sup f g
 #align measure_theory.ae_eq_fun.has_sup MeasureTheory.AEEqFun.instSup
 
 theorem coeFn_sup (f g : α →ₘ[μ] β) : ⇑(f ⊔ g) =ᵐ[μ] fun x => f x ⊔ g x :=
@@ -558,7 +558,7 @@ section Inf
 
 variable [SemilatticeInf β] [ContinuousInf β]
 
-instance instInf : Inf (α →ₘ[μ] β) where inf f g := AEEqFun.comp₂ (· ⊓ ·) continuous_inf f g
+instance instInf : Inf (α →ₘ[μ] β) where inf f g := fast_instance% AEEqFun.comp₂ (· ⊓ ·) continuous_inf f g
 #align measure_theory.ae_eq_fun.has_inf MeasureTheory.AEEqFun.instInf
 
 theorem coeFn_inf (f g : α →ₘ[μ] β) : ⇑(f ⊓ g) =ᵐ[μ] fun x => f x ⊓ g x :=
@@ -588,7 +588,7 @@ protected theorem le_inf (f' f g : α →ₘ[μ] β) (hf : f' ≤ f) (hg : f' �
 
 end Inf
 
-instance instLattice [Lattice β] [TopologicalLattice β] : Lattice (α →ₘ[μ] β) :=
+instance instLattice [Lattice β] [TopologicalLattice β] : Lattice (α →ₘ[μ] β) := fast_instance%
   { AEEqFun.instPartialOrder with
     sup := Sup.sup
     le_sup_left := AEEqFun.le_sup_left
@@ -618,12 +618,12 @@ theorem coeFn_const (b : β) : (const α b : α →ₘ[μ] β) =ᵐ[μ] Function
 
 variable {α}
 
-instance instInhabited [Inhabited β] : Inhabited (α →ₘ[μ] β) :=
+instance instInhabited [Inhabited β] : Inhabited (α →ₘ[μ] β) := fast_instance%
   ⟨const α default⟩
 #align measure_theory.ae_eq_fun.inhabited MeasureTheory.AEEqFun.instInhabited
 
 @[to_additive]
-instance instOne [One β] : One (α →ₘ[μ] β) :=
+instance instOne [One β] : One (α →ₘ[μ] β) := fast_instance%
   ⟨const α 1⟩
 #align measure_theory.ae_eq_fun.has_one MeasureTheory.AEEqFun.instOne
 #align measure_theory.ae_eq_fun.has_zero MeasureTheory.AEEqFun.instZero
@@ -654,7 +654,7 @@ variable {𝕜 𝕜' : Type*}
 variable [SMul 𝕜 γ] [ContinuousConstSMul 𝕜 γ]
 variable [SMul 𝕜' γ] [ContinuousConstSMul 𝕜' γ]
 
-instance instSMul : SMul 𝕜 (α →ₘ[μ] γ) :=
+instance instSMul : SMul 𝕜 (α →ₘ[μ] γ) := fast_instance%
   ⟨fun c f => comp (c • ·) (continuous_id.const_smul c) f⟩
 #align measure_theory.ae_eq_fun.has_smul MeasureTheory.AEEqFun.instSMul
 
@@ -672,15 +672,15 @@ theorem smul_toGerm (c : 𝕜) (f : α →ₘ[μ] γ) : (c • f).toGerm = c •
   comp_toGerm _ _ _
 #align measure_theory.ae_eq_fun.smul_to_germ MeasureTheory.AEEqFun.smul_toGerm
 
-instance instSMulCommClass [SMulCommClass 𝕜 𝕜' γ] : SMulCommClass 𝕜 𝕜' (α →ₘ[μ] γ) :=
+instance instSMulCommClass [SMulCommClass 𝕜 𝕜' γ] : SMulCommClass 𝕜 𝕜' (α →ₘ[μ] γ) := fast_instance%
   ⟨fun a b f => induction_on f fun f hf => by simp_rw [smul_mk, smul_comm]⟩
 #align measure_theory.ae_eq_fun.smul_comm_class MeasureTheory.AEEqFun.instSMulCommClass
 
-instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' γ] : IsScalarTower 𝕜 𝕜' (α →ₘ[μ] γ) :=
+instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' γ] : IsScalarTower 𝕜 𝕜' (α →ₘ[μ] γ) := fast_instance%
   ⟨fun a b f => induction_on f fun f hf => by simp_rw [smul_mk, smul_assoc]⟩
 #align measure_theory.ae_eq_fun.is_scalar_tower MeasureTheory.AEEqFun.instIsScalarTower
 
-instance instIsCentralScalar [SMul 𝕜ᵐᵒᵖ γ] [IsCentralScalar 𝕜 γ] : IsCentralScalar 𝕜 (α →ₘ[μ] γ) :=
+instance instIsCentralScalar [SMul 𝕜ᵐᵒᵖ γ] [IsCentralScalar 𝕜 γ] : IsCentralScalar 𝕜 (α →ₘ[μ] γ) := fast_instance%
   ⟨fun a f => induction_on f fun f hf => by simp_rw [smul_mk, op_smul_eq_smul]⟩
 #align measure_theory.ae_eq_fun.is_central_scalar MeasureTheory.AEEqFun.instIsCentralScalar
 
@@ -691,7 +691,7 @@ section Mul
 variable [Mul γ] [ContinuousMul γ]
 
 @[to_additive]
-instance instMul : Mul (α →ₘ[μ] γ) :=
+instance instMul : Mul (α →ₘ[μ] γ) := fast_instance%
   ⟨comp₂ (· * ·) continuous_mul⟩
 #align measure_theory.ae_eq_fun.has_mul MeasureTheory.AEEqFun.instMul
 #align measure_theory.ae_eq_fun.has_add MeasureTheory.AEEqFun.instAdd
@@ -717,11 +717,11 @@ theorem mul_toGerm (f g : α →ₘ[μ] γ) : (f * g).toGerm = f.toGerm * g.toGe
 
 end Mul
 
-instance instAddMonoid [AddMonoid γ] [ContinuousAdd γ] : AddMonoid (α →ₘ[μ] γ) :=
+instance instAddMonoid [AddMonoid γ] [ContinuousAdd γ] : AddMonoid (α →ₘ[μ] γ) := fast_instance%
   toGerm_injective.addMonoid toGerm zero_toGerm add_toGerm fun _ _ => smul_toGerm _ _
 #align measure_theory.ae_eq_fun.add_monoid MeasureTheory.AEEqFun.instAddMonoid
 
-instance instAddCommMonoid [AddCommMonoid γ] [ContinuousAdd γ] : AddCommMonoid (α →ₘ[μ] γ) :=
+instance instAddCommMonoid [AddCommMonoid γ] [ContinuousAdd γ] : AddCommMonoid (α →ₘ[μ] γ) := fast_instance%
   toGerm_injective.addCommMonoid toGerm zero_toGerm add_toGerm fun _ _ => smul_toGerm _ _
 #align measure_theory.ae_eq_fun.add_comm_monoid MeasureTheory.AEEqFun.instAddCommMonoid
 
@@ -729,7 +729,7 @@ section Monoid
 
 variable [Monoid γ] [ContinuousMul γ]
 
-instance instPowNat : Pow (α →ₘ[μ] γ) ℕ :=
+instance instPowNat : Pow (α →ₘ[μ] γ) ℕ := fast_instance%
   ⟨fun f n => comp _ (continuous_pow n) f⟩
 #align measure_theory.ae_eq_fun.nat.has_pow MeasureTheory.AEEqFun.instPowNat
 
@@ -750,7 +750,7 @@ theorem pow_toGerm (f : α →ₘ[μ] γ) (n : ℕ) : (f ^ n).toGerm = f.toGerm 
 #align measure_theory.ae_eq_fun.pow_to_germ MeasureTheory.AEEqFun.pow_toGerm
 
 @[to_additive existing]
-instance instMonoid : Monoid (α →ₘ[μ] γ) :=
+instance instMonoid : Monoid (α →ₘ[μ] γ) := fast_instance%
   toGerm_injective.monoid toGerm one_toGerm mul_toGerm pow_toGerm
 #align measure_theory.ae_eq_fun.monoid MeasureTheory.AEEqFun.instMonoid
 
@@ -768,7 +768,7 @@ def toGermMonoidHom : (α →ₘ[μ] γ) →* μ.ae.Germ γ where
 end Monoid
 
 @[to_additive existing]
-instance instCommMonoid [CommMonoid γ] [ContinuousMul γ] : CommMonoid (α →ₘ[μ] γ) :=
+instance instCommMonoid [CommMonoid γ] [ContinuousMul γ] : CommMonoid (α →ₘ[μ] γ) := fast_instance%
   toGerm_injective.commMonoid toGerm one_toGerm mul_toGerm pow_toGerm
 #align measure_theory.ae_eq_fun.comm_monoid MeasureTheory.AEEqFun.instCommMonoid
 
@@ -779,7 +779,7 @@ variable [Group γ] [TopologicalGroup γ]
 section Inv
 
 @[to_additive]
-instance instInv : Inv (α →ₘ[μ] γ) :=
+instance instInv : Inv (α →ₘ[μ] γ) := fast_instance%
   ⟨comp Inv.inv continuous_inv⟩
 #align measure_theory.ae_eq_fun.has_inv MeasureTheory.AEEqFun.instInv
 #align measure_theory.ae_eq_fun.has_neg MeasureTheory.AEEqFun.instNeg
@@ -807,7 +807,7 @@ end Inv
 section Div
 
 @[to_additive]
-instance instDiv : Div (α →ₘ[μ] γ) :=
+instance instDiv : Div (α →ₘ[μ] γ) := fast_instance%
   ⟨comp₂ Div.div continuous_div'⟩
 #align measure_theory.ae_eq_fun.has_div MeasureTheory.AEEqFun.instDiv
 #align measure_theory.ae_eq_fun.has_sub MeasureTheory.AEEqFun.instSub
@@ -835,7 +835,7 @@ end Div
 
 section ZPow
 
-instance instPowInt : Pow (α →ₘ[μ] γ) ℤ :=
+instance instPowInt : Pow (α →ₘ[μ] γ) ℤ := fast_instance%
   ⟨fun f n => comp _ (continuous_zpow n) f⟩
 #align measure_theory.ae_eq_fun.has_int_pow MeasureTheory.AEEqFun.instPowInt
 
@@ -858,22 +858,22 @@ end ZPow
 
 end Group
 
-instance instAddGroup [AddGroup γ] [TopologicalAddGroup γ] : AddGroup (α →ₘ[μ] γ) :=
+instance instAddGroup [AddGroup γ] [TopologicalAddGroup γ] : AddGroup (α →ₘ[μ] γ) := fast_instance%
   toGerm_injective.addGroup toGerm zero_toGerm add_toGerm neg_toGerm sub_toGerm
     (fun _ _ => smul_toGerm _ _) fun _ _ => smul_toGerm _ _
 #align measure_theory.ae_eq_fun.add_group MeasureTheory.AEEqFun.instAddGroup
 
-instance instAddCommGroup [AddCommGroup γ] [TopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
+instance instAddCommGroup [AddCommGroup γ] [TopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) := fast_instance%
   { add_comm := add_comm }
 #align measure_theory.ae_eq_fun.add_comm_group MeasureTheory.AEEqFun.instAddCommGroup
 
 @[to_additive existing]
-instance instGroup [Group γ] [TopologicalGroup γ] : Group (α →ₘ[μ] γ) :=
+instance instGroup [Group γ] [TopologicalGroup γ] : Group (α →ₘ[μ] γ) := fast_instance%
   toGerm_injective.group _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
 #align measure_theory.ae_eq_fun.group MeasureTheory.AEEqFun.instGroup
 
 @[to_additive existing]
-instance instCommGroup [CommGroup γ] [TopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
+instance instCommGroup [CommGroup γ] [TopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) := fast_instance%
   { mul_comm := mul_comm }
 #align measure_theory.ae_eq_fun.comm_group MeasureTheory.AEEqFun.instCommGroup
 

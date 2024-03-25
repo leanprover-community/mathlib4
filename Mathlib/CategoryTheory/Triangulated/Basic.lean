@@ -76,7 +76,7 @@ variable [HasZeroObject C] [HasZeroMorphisms C]
 
 open ZeroObject
 
-instance : Inhabited (Triangle C) :=
+instance : Inhabited (Triangle C) := fast_instance%
   ⟨⟨0, 0, 0, 0, 0, 0⟩⟩
 
 /-- For each object in `C`, there is a triangle of the form `(X,X,0,𝟙 X,0,0)`
@@ -132,7 +132,7 @@ def triangleMorphismId (T : Triangle C) : TriangleMorphism T T
   hom₃ := 𝟙 T.obj₃
 #align category_theory.pretriangulated.triangle_morphism_id CategoryTheory.Pretriangulated.triangleMorphismId
 
-instance (T : Triangle C) : Inhabited (TriangleMorphism T T) :=
+instance (T : Triangle C) : Inhabited (TriangleMorphism T T) := fast_instance%
   ⟨triangleMorphismId T⟩
 
 variable {T₁ T₂ T₃ : Triangle C}
@@ -355,9 +355,9 @@ section
 
 variable {A B : Triangle C} (φ : A ⟶ B) [IsIso φ]
 
-instance : IsIso φ.hom₁ := (inferInstance : IsIso (π₁.map φ))
-instance : IsIso φ.hom₂ := (inferInstance : IsIso (π₂.map φ))
-instance : IsIso φ.hom₃ := (inferInstance : IsIso (π₃.map φ))
+instance : IsIso φ.hom₁ := fast_instance% (inferInstance : IsIso (π₁.map φ))
+instance : IsIso φ.hom₂ := fast_instance% (inferInstance : IsIso (π₂.map φ))
+instance : IsIso φ.hom₃ := fast_instance% (inferInstance : IsIso (π₃.map φ))
 
 end
 

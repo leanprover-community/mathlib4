@@ -76,7 +76,7 @@ abbrev PiLp (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : Type _ :=
   WithLp p (∀ i : ι, α i)
 #align pi_Lp PiLp
 
-instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
+instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) := fast_instance%
   ⟨fun _ => default⟩
 
 @[ext] -- Porting note (#10756): new lemma
@@ -461,7 +461,7 @@ end Aux
 /-! ### Instances on finite `L^p` products -/
 
 
-instance uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) :=
+instance uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) := fast_instance%
   Pi.uniformSpace _
 #align pi_Lp.uniform_space PiLp.uniformSpace
 
@@ -488,7 +488,7 @@ theorem continuous_equiv_symm [∀ i, UniformSpace (β i)] :
 
 variable [Fintype ι]
 
-instance bornology [∀ i, Bornology (β i)] : Bornology (PiLp p β) :=
+instance bornology [∀ i, Bornology (β i)] : Bornology (PiLp p β) := fast_instance%
   Pi.instBornology
 #align pi_Lp.bornology PiLp.bornology
 
@@ -497,23 +497,23 @@ variable [Fact (1 ≤ p)]
 
 /-- pseudoemetric space instance on the product of finitely many pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
-instance [∀ i, PseudoEMetricSpace (β i)] : PseudoEMetricSpace (PiLp p β) :=
+instance [∀ i, PseudoEMetricSpace (β i)] : PseudoEMetricSpace (PiLp p β) := fast_instance%
   (pseudoEmetricAux p β).replaceUniformity (aux_uniformity_eq p β).symm
 
 /-- emetric space instance on the product of finitely many emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/
-instance [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) :=
+instance [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) := fast_instance%
   @EMetricSpace.ofT0PseudoEMetricSpace (PiLp p α) _ Pi.instT0Space
 
 /-- pseudometric space instance on the product of finitely many pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
-instance [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) :=
+instance [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) := fast_instance%
   ((pseudoMetricAux p β).replaceUniformity (aux_uniformity_eq p β).symm).replaceBornology fun s =>
     Filter.ext_iff.1 (aux_cobounded_eq p β).symm sᶜ
 
 /-- metric space instance on the product of finitely many metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/
-instance [∀ i, MetricSpace (α i)] : MetricSpace (PiLp p α) :=
+instance [∀ i, MetricSpace (α i)] : MetricSpace (PiLp p α) := fast_instance%
   MetricSpace.ofT0PseudoMetricSpace _
 
 theorem nndist_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)]
@@ -569,7 +569,7 @@ instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
 #align pi_Lp.seminormed_add_comm_group PiLp.seminormedAddCommGroup
 
 /-- normed group instance on the product of finitely many normed groups, using the `L^p` norm. -/
-instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGroup (PiLp p α) :=
+instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGroup (PiLp p α) := fast_instance%
   { PiLp.seminormedAddCommGroup p α with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 #align pi_Lp.normed_add_comm_group PiLp.normedAddCommGroup

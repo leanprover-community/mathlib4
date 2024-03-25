@@ -78,7 +78,7 @@ variable {A : Type v} [Semiring A] [Algebra R A]
 variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
 /-- `1 : Submodule R A` is the submodule R of A. -/
-instance one : One (Submodule R A) :=
+instance one : One (Submodule R A) := fast_instance%
   -- Porting note: `f.range` notation doesn't work
   ⟨LinearMap.range (Algebra.linearMap R A)⟩
 #align submodule.has_one Submodule.one
@@ -156,7 +156,7 @@ theorem comap_unop_one :
 
 /-- Multiplication of sub-R-modules of an R-algebra A. The submodule `M * N` is the
 smallest R-submodule of `A` containing the elements `m * n` for `m ∈ M` and `n ∈ N`. -/
-instance mul : Mul (Submodule R A) :=
+instance mul : Mul (Submodule R A) := fast_instance%
   ⟨Submodule.map₂ <| LinearMap.mul R A⟩
 #align submodule.has_mul Submodule.mul
 
@@ -420,7 +420,7 @@ theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M
     exact smul_mem_pointwise_smul _ _ _ (mul_mem_mul hm hn)
 
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
-instance idemSemiring : IdemSemiring (Submodule R A) :=
+instance idemSemiring : IdemSemiring (Submodule R A) := fast_instance%
   { toAddSubmonoid_injective.semigroup _ fun m n : Submodule R A => mul_toAddSubmonoid m n,
     AddMonoidWithOne.unary, Submodule.pointwiseAddCommMonoid,
     (by infer_instance :
@@ -636,7 +636,7 @@ protected theorem mul_comm : M * N = N * M :=
 #align submodule.mul_comm Submodule.mul_comm
 
 /-- Sub-R-modules of an R-algebra A form a semiring. -/
-instance : IdemCommSemiring (Submodule R A) :=
+instance : IdemCommSemiring (Submodule R A) := fast_instance%
   { Submodule.idemSemiring with mul_comm := Submodule.mul_comm }
 
 theorem prod_span {ι : Type*} (s : Finset ι) (M : ι → Set A) :
@@ -701,7 +701,7 @@ which is equivalent to `x • J ⊆ I` (see `mem_div_iff_smul_subset`), but nice
 
 This is the general form of the ideal quotient, traditionally written $I : J$.
 -/
-instance : Div (Submodule R A) :=
+instance : Div (Submodule R A) := fast_instance%
   ⟨fun I J =>
     { carrier := { x | ∀ y ∈ J, x * y ∈ I }
       zero_mem' := fun y _ => by

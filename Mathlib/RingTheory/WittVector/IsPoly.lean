@@ -154,17 +154,17 @@ class IsPoly (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R) : Prop wh
 #align witt_vector.is_poly WittVector.IsPoly
 
 /-- The identity function on Witt vectors is a polynomial function. -/
-instance idIsPoly : IsPoly p fun _ _ => id :=
+instance idIsPoly : IsPoly p fun _ _ => id := fast_instance%
   ⟨⟨X, by intros; simp only [aeval_X, id]⟩⟩
 #align witt_vector.id_is_poly WittVector.idIsPoly
 
-instance idIsPolyI' : IsPoly p fun _ _ a => a :=
+instance idIsPolyI' : IsPoly p fun _ _ a => a := fast_instance%
   WittVector.idIsPoly _
 #align witt_vector.id_is_poly_i' WittVector.idIsPolyI'
 
 namespace IsPoly
 
-instance : Inhabited (IsPoly p fun _ _ => id) :=
+instance : Inhabited (IsPoly p fun _ _ => id) := fast_instance%
   ⟨WittVector.idIsPoly p⟩
 
 variable {p}
@@ -268,7 +268,7 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
 
 /-- The diagonal `fun x ↦f x x` of a polynomial function `f` is polynomial. -/
 -- Porting note (#10754): made this an instance
-instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x x := by
+instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x x := fast_instance% by
   obtain ⟨φ, hf⟩ := hf
   refine' ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), _⟩⟩
   intros; funext n
@@ -289,7 +289,7 @@ instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x 
 
 /-- The additive negation is a polynomial function on Witt vectors. -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
-instance negIsPoly [Fact p.Prime] : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ :=
+instance negIsPoly [Fact p.Prime] : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ := fast_instance%
   ⟨⟨fun n => rename Prod.snd (wittNeg p n), by
       intros; funext n
       rw [neg_coeff, aeval_eq_eval₂Hom, eval₂Hom_rename]
@@ -302,7 +302,7 @@ section ZeroOne
 /- To avoid a theory of 0-ary functions (a.k.a. constants)
 we model them as constant unary functions. -/
 /-- The function that is constantly zero on Witt vectors is a polynomial function. -/
-instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
+instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 := fast_instance%
   ⟨⟨0, by intros; funext n; simp only [Pi.zero_apply, AlgHom.map_zero, zero_coeff]⟩⟩
 #align witt_vector.zero_is_poly WittVector.zeroIsPoly
 
@@ -334,7 +334,7 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
 #align witt_vector.bind₁_one_poly_witt_polynomial WittVector.bind₁_onePoly_wittPolynomial
 
 /-- The function that is constantly one on Witt vectors is a polynomial function. -/
-instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
+instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 := fast_instance%
   ⟨⟨onePoly, by
       intros; funext n; cases n
       · -- Porting note: was `simp only [...]` but with slightly different `[...]`.
@@ -349,7 +349,7 @@ end ZeroOne
 
 /-- Addition of Witt vectors is a polynomial function. -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
-instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
+instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) := fast_instance%
   --  porting note: the proof was
   --  `⟨⟨wittAdd p, by intros; dsimp only [WittVector.hasAdd]; simp [eval]⟩⟩`
   ⟨⟨wittAdd p, by intros; ext; exact add_coeff _ _ _⟩⟩
@@ -357,7 +357,7 @@ instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
 
 /-- Multiplication of Witt vectors is a polynomial function. -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
-instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
+instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) := fast_instance%
   --  porting note: the proof was
   -- `⟨⟨wittMul p, by intros; dsimp only [WittVector.hasMul]; simp [eval]⟩⟩`
   ⟨⟨wittMul p, by intros; ext; exact mul_coeff _ _ _⟩⟩
@@ -380,7 +380,7 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
 namespace IsPoly₂
 
 --  porting note: the argument `(fun _ _ => (· + ·))` to `IsPoly₂` was just `_`.
-instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) :=
+instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) := fast_instance%
   ⟨addIsPoly₂⟩
 
 -- Porting note: maybe just drop this now that it works by `inferInstance`

@@ -150,7 +150,7 @@ open SlashInvariantForm
 
 variable {F : Type*} {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
 
-instance add : Add (ModularForm Γ k) :=
+instance add : Add (ModularForm Γ k) := fast_instance%
   ⟨fun f g =>
     { toSlashInvariantForm := f + g
       holo' := f.holo'.add g.holo'
@@ -167,7 +167,7 @@ theorem add_apply (f g : ModularForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
   rfl
 #align modular_form.add_apply ModularForm.add_apply
 
-instance instZero : Zero (ModularForm Γ k) :=
+instance instZero : Zero (ModularForm Γ k) := fast_instance%
   ⟨ { toSlashInvariantForm := 0
       holo' := fun _ => mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
       bdd_at_infty' := fun A => by simpa using zero_form_isBoundedAtImInfty } ⟩
@@ -187,7 +187,7 @@ section
 
 variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
-instance instSMul : SMul α (ModularForm Γ k) :=
+instance instSMul : SMul α (ModularForm Γ k) := fast_instance%
   ⟨fun c f =>
     { toSlashInvariantForm := c • f.1
       holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
@@ -206,7 +206,7 @@ theorem smul_apply (f : ModularForm Γ k) (n : α) (z : ℍ) : (n • f) z = n �
 
 end
 
-instance instNeg : Neg (ModularForm Γ k) :=
+instance instNeg : Neg (ModularForm Γ k) := fast_instance%
   ⟨fun f =>
     { toSlashInvariantForm := -f.1
       holo' := f.holo'.neg
@@ -223,7 +223,7 @@ theorem neg_apply (f : ModularForm Γ k) (z : ℍ) : (-f) z = -f z :=
   rfl
 #align modular_form.neg_apply ModularForm.neg_apply
 
-instance instSub : Sub (ModularForm Γ k) :=
+instance instSub : Sub (ModularForm Γ k) := fast_instance%
   ⟨fun f g => f + -g⟩
 #align modular_form.has_sub ModularForm.instSub
 
@@ -237,7 +237,7 @@ theorem sub_apply (f g : ModularForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
   rfl
 #align modular_form.sub_apply ModularForm.sub_apply
 
-instance : AddCommGroup (ModularForm Γ k) :=
+instance : AddCommGroup (ModularForm Γ k) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
 
 /-- Additive coercion from `ModularForm` to `ℍ → ℂ`. -/
@@ -248,10 +248,10 @@ def coeHom : ModularForm Γ k →+ ℍ → ℂ where
   map_add' _ _ := rfl
 #align modular_form.coe_hom ModularForm.coeHom
 
-instance : Module ℂ (ModularForm Γ k) :=
+instance : Module ℂ (ModularForm Γ k) := fast_instance%
   Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
 
-instance : Inhabited (ModularForm Γ k) :=
+instance : Inhabited (ModularForm Γ k) := fast_instance%
   ⟨0⟩
 
 /-- The modular form of weight `k_1 + k_2` given by the product of two modular forms of weights
@@ -318,7 +318,7 @@ open ModularForm
 
 variable {F : Type*} {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
 
-instance hasAdd : Add (CuspForm Γ k) :=
+instance hasAdd : Add (CuspForm Γ k) := fast_instance%
   ⟨fun f g =>
     { toSlashInvariantForm := f + g
       holo' := f.holo'.add g.holo'
@@ -335,7 +335,7 @@ theorem add_apply (f g : CuspForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
   rfl
 #align cusp_form.add_apply CuspForm.add_apply
 
-instance instZero : Zero (CuspForm Γ k) :=
+instance instZero : Zero (CuspForm Γ k) := fast_instance%
   ⟨ { toSlashInvariantForm := 0
       holo' := fun _ => mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
       zero_at_infty' := by simpa using Filter.zero_zeroAtFilter _ } ⟩
@@ -355,7 +355,7 @@ section
 
 variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
-instance instSMul : SMul α (CuspForm Γ k) :=
+instance instSMul : SMul α (CuspForm Γ k) := fast_instance%
   ⟨fun c f =>
     { toSlashInvariantForm := c • f.1
       holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
@@ -374,7 +374,7 @@ theorem smul_apply (f : CuspForm Γ k) (n : α) {z : ℍ} : (n • f) z = n • 
 
 end
 
-instance instNeg : Neg (CuspForm Γ k) :=
+instance instNeg : Neg (CuspForm Γ k) := fast_instance%
   ⟨fun f =>
     { toSlashInvariantForm := -f.1
       holo' := f.holo'.neg
@@ -391,7 +391,7 @@ theorem neg_apply (f : CuspForm Γ k) (z : ℍ) : (-f) z = -f z :=
   rfl
 #align cusp_form.neg_apply CuspForm.neg_apply
 
-instance instSub : Sub (CuspForm Γ k) :=
+instance instSub : Sub (CuspForm Γ k) := fast_instance%
   ⟨fun f g => f + -g⟩
 #align cusp_form.has_sub CuspForm.instSub
 
@@ -405,7 +405,7 @@ theorem sub_apply (f g : CuspForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
   rfl
 #align cusp_form.sub_apply CuspForm.sub_apply
 
-instance : AddCommGroup (CuspForm Γ k) :=
+instance : AddCommGroup (CuspForm Γ k) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
 
 /-- Additive coercion from `CuspForm` to `ℍ → ℂ`. -/
@@ -416,10 +416,10 @@ def coeHom : CuspForm Γ k →+ ℍ → ℂ where
   map_add' _ _ := rfl
 #align cusp_form.coe_hom CuspForm.coeHom
 
-instance : Module ℂ (CuspForm Γ k) :=
+instance : Module ℂ (CuspForm Γ k) := fast_instance%
   Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
 
-instance : Inhabited (CuspForm Γ k) :=
+instance : Inhabited (CuspForm Γ k) := fast_instance%
   ⟨0⟩
 
 instance (priority := 99) [FunLike F ℍ ℂ] [CuspFormClass F Γ k] : ModularFormClass F Γ k where

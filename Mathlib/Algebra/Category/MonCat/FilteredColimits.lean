@@ -165,7 +165,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
 
 /-- Multiplication in the colimit. See also `colimitMulAux`. -/
 @[to_additive "Addition in the colimit. See also `colimitAddAux`."]
-noncomputable instance colimitMul : Mul (M.{v, u} F) :=
+noncomputable instance colimitMul : Mul (M.{v, u} F) := fast_instance%
 { mul := fun x y => by
     refine' Quot.lift₂ (colimitMulAux F) _ _ x y
     · intro x y y' h
@@ -204,7 +204,7 @@ theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1
 #align AddMon.filtered_colimits.colimit_add_mk_eq AddMonCat.FilteredColimits.colimit_add_mk_eq
 
 @[to_additive]
-noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
+noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) := fast_instance%
   { colimitOne F,
     colimitMul F with
     one_mul := fun x => by
@@ -225,7 +225,7 @@ noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
       rfl }
 
 @[to_additive]
-noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
+noncomputable instance colimitMonoid : Monoid (M.{v, u} F) := fast_instance%
   { colimitMulOneClass F with
     mul_assoc := fun x y z => by
       refine Quot.induction_on₃ x y z ?_
@@ -368,7 +368,7 @@ noncomputable abbrev M : MonCat.{max v u} :=
 #align AddCommMon.filtered_colimits.M AddCommMonCat.FilteredColimits.M
 
 @[to_additive]
-noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
+noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) := fast_instance%
   { (M.{v, u} F) with
     mul_comm := fun x y => by
       refine Quot.induction_on₂ x y ?_

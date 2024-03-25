@@ -58,7 +58,7 @@ inductive Prequotient
   | add : Prequotient → Prequotient → Prequotient
 #align AddCommGroup.colimits.prequotient AddCommGroupCat.Colimits.Prequotient
 
-instance : Inhabited (Prequotient.{w} F) :=
+instance : Inhabited (Prequotient.{w} F) := fast_instance%
   ⟨Prequotient.zero⟩
 
 open Prequotient
@@ -128,7 +128,7 @@ instance : AddCommGroup (ColimitType.{w} F) where
   nsmul := nsmulRec
   zsmul := zsmulRec
 
-instance ColimitTypeInhabited : Inhabited (ColimitType.{w} F) := ⟨0⟩
+instance ColimitTypeInhabited : Inhabited (ColimitType.{w} F) := fast_instance% ⟨0⟩
 
 @[simp]
 theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType.{w} F) :=
@@ -262,14 +262,14 @@ lemma hasColimitsOfShape : HasColimitsOfShape J AddCommGroupCat.{max u v w} wher
 lemma hasColimitsOfSize : HasColimitsOfSize.{v, u} AddCommGroupCat.{max u v w} :=
   ⟨fun _ => hasColimitsOfShape.{w} _⟩
 
-instance hasColimits : HasColimits AddCommGroupCat.{w} := hasColimitsOfSize.{w}
+instance hasColimits : HasColimits AddCommGroupCat.{w} := fast_instance% hasColimitsOfSize.{w}
 #align AddCommGroup.colimits.has_colimits_AddCommGroup AddCommGroupCat.hasColimits
 
-instance : HasColimitsOfSize.{v, v} (AddCommGroupCatMax.{u, v}) := hasColimitsOfSize.{u}
-instance : HasColimitsOfSize.{u, u} (AddCommGroupCatMax.{u, v}) := hasColimitsOfSize.{v}
-instance : HasColimitsOfSize.{u, v} (AddCommGroupCatMax.{u, v}) := hasColimitsOfSize.{u}
-instance : HasColimitsOfSize.{v, u} (AddCommGroupCatMax.{u, v}) := hasColimitsOfSize.{u}
-instance : HasColimitsOfSize.{0, 0} (AddCommGroupCat.{u}) := hasColimitsOfSize.{u, 0, 0}
+instance : HasColimitsOfSize.{v, v} (AddCommGroupCatMax.{u, v}) := fast_instance% hasColimitsOfSize.{u}
+instance : HasColimitsOfSize.{u, u} (AddCommGroupCatMax.{u, v}) := fast_instance% hasColimitsOfSize.{v}
+instance : HasColimitsOfSize.{u, v} (AddCommGroupCatMax.{u, v}) := fast_instance% hasColimitsOfSize.{u}
+instance : HasColimitsOfSize.{v, u} (AddCommGroupCatMax.{u, v}) := fast_instance% hasColimitsOfSize.{u}
+instance : HasColimitsOfSize.{0, 0} (AddCommGroupCat.{u}) := fast_instance% hasColimitsOfSize.{u, 0, 0}
 
 example : HasColimits AddCommGroupCatMax.{v, u} :=
   inferInstance

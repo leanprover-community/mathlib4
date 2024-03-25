@@ -173,7 +173,7 @@ theorem closedEmbedding_of_pairwise_le_dist {α : Type*} [TopologicalSpace α] [
 `f` is a uniform embedding with respect to the discrete uniformity on `β`. -/
 theorem uniformEmbedding_bot_of_pairwise_le_dist {β : Type*} {ε : ℝ} (hε : 0 < ε) {f : β → α}
     (hf : Pairwise fun x y => ε ≤ dist (f x) (f y)) :
-    @UniformEmbedding _ _ ⊥ (by infer_instance) f :=
+    @UniformEmbedding _ _ ⊥ (by infer_instance) f := fast_instance%
   uniformEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
 #align metric.uniform_embedding_bot_of_pairwise_le_dist Metric.uniformEmbedding_bot_of_pairwise_le_dist
 
@@ -278,7 +278,7 @@ instance Subtype.metricSpace {α : Type*} {p : α → Prop} [MetricSpace α] :
 #align subtype.metric_space Subtype.metricSpace
 
 @[to_additive]
-instance {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ :=
+instance {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ := fast_instance%
   MetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
 
 instance : MetricSpace Empty where
@@ -307,24 +307,24 @@ instance : MetricSpace PUnit.{u + 1} where
 section Real
 
 /-- Instantiate the reals as a metric space. -/
-instance Real.metricSpace : MetricSpace ℝ := .ofT0PseudoMetricSpace ℝ
+instance Real.metricSpace : MetricSpace ℝ := fast_instance% .ofT0PseudoMetricSpace ℝ
 #align real.metric_space Real.metricSpace
 
 end Real
 
 section NNReal
 
-instance : MetricSpace ℝ≥0 :=
+instance : MetricSpace ℝ≥0 := fast_instance%
   Subtype.metricSpace
 
 end NNReal
 
-instance [MetricSpace β] : MetricSpace (ULift β) :=
+instance [MetricSpace β] : MetricSpace (ULift β) := fast_instance%
   MetricSpace.induced ULift.down ULift.down_injective ‹_›
 
 section Prod
 
-instance Prod.metricSpaceMax [MetricSpace β] : MetricSpace (γ × β) := .ofT0PseudoMetricSpace _
+instance Prod.metricSpaceMax [MetricSpace β] : MetricSpace (γ × β) := fast_instance% .ofT0PseudoMetricSpace _
 #align prod.metric_space_max Prod.metricSpaceMax
 
 end Prod
@@ -336,7 +336,7 @@ open Finset
 variable {π : β → Type*} [Fintype β] [∀ b, MetricSpace (π b)]
 
 /-- A finite product of metric spaces is a metric space, with the sup distance. -/
-instance metricSpacePi : MetricSpace (∀ b, π b) := .ofT0PseudoMetricSpace _
+instance metricSpacePi : MetricSpace (∀ b, π b) := fast_instance% .ofT0PseudoMetricSpace _
 #align metric_space_pi metricSpacePi
 
 end Pi
@@ -400,8 +400,8 @@ section
 
 variable [Dist X]
 
-instance : Dist (Additive X) := ‹Dist X›
-instance : Dist (Multiplicative X) := ‹Dist X›
+instance : Dist (Additive X) := fast_instance% ‹Dist X›
+instance : Dist (Multiplicative X) := fast_instance% ‹Dist X›
 
 @[simp] theorem dist_ofMul (a b : X) : dist (ofMul a) (ofMul b) = dist a b := rfl
 #align dist_of_mul dist_ofMul
@@ -421,8 +421,8 @@ section
 
 variable [PseudoMetricSpace X]
 
-instance : PseudoMetricSpace (Additive X) := ‹PseudoMetricSpace X›
-instance : PseudoMetricSpace (Multiplicative X) := ‹PseudoMetricSpace X›
+instance : PseudoMetricSpace (Additive X) := fast_instance% ‹PseudoMetricSpace X›
+instance : PseudoMetricSpace (Multiplicative X) := fast_instance% ‹PseudoMetricSpace X›
 
 @[simp] theorem nndist_ofMul (a b : X) : nndist (ofMul a) (ofMul b) = nndist a b := rfl
 #align nndist_of_mul nndist_ofMul
@@ -439,11 +439,11 @@ theorem nndist_toAdd (a b : Multiplicative X) : nndist (toAdd a) (toAdd b) = nnd
 
 end
 
-instance [MetricSpace X] : MetricSpace (Additive X) := ‹MetricSpace X›
-instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
+instance [MetricSpace X] : MetricSpace (Additive X) := fast_instance% ‹MetricSpace X›
+instance [MetricSpace X] : MetricSpace (Multiplicative X) := fast_instance% ‹MetricSpace X›
 
-instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Additive X) := ‹ProperSpace X›
-instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Multiplicative X) := ‹ProperSpace X›
+instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Additive X) := fast_instance% ‹ProperSpace X›
+instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Multiplicative X) := fast_instance% ‹ProperSpace X›
 
 /-!
 ### Order dual
@@ -457,7 +457,7 @@ section
 
 variable [Dist X]
 
-instance : Dist Xᵒᵈ := ‹Dist X›
+instance : Dist Xᵒᵈ := fast_instance% ‹Dist X›
 
 @[simp] theorem dist_toDual (a b : X) : dist (toDual a) (toDual b) = dist a b := rfl
 #align dist_to_dual dist_toDual
@@ -471,7 +471,7 @@ section
 
 variable [PseudoMetricSpace X]
 
-instance : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
+instance : PseudoMetricSpace Xᵒᵈ := fast_instance% ‹PseudoMetricSpace X›
 
 @[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
 #align nndist_to_dual nndist_toDual
@@ -481,6 +481,6 @@ instance : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
 
 end
 
-instance [MetricSpace X] : MetricSpace Xᵒᵈ := ‹MetricSpace X›
+instance [MetricSpace X] : MetricSpace Xᵒᵈ := fast_instance% ‹MetricSpace X›
 
-instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace Xᵒᵈ := ‹ProperSpace X›
+instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace Xᵒᵈ := fast_instance% ‹ProperSpace X›

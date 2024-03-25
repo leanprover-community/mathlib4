@@ -50,7 +50,7 @@ attribute [coe] Filtration.seq
 
 variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
 
-instance [Preorder ι] : CoeFun (Filtration ι m) fun _ => ι → MeasurableSpace Ω :=
+instance [Preorder ι] : CoeFun (Filtration ι m) fun _ => ι → MeasurableSpace Ω := fast_instance%
   ⟨fun f => f.seq⟩
 
 namespace Filtration
@@ -84,19 +84,19 @@ theorem const_apply {m' : MeasurableSpace Ω} {hm' : m' ≤ m} (i : ι) : const 
   rfl
 #align measure_theory.filtration.const_apply MeasureTheory.Filtration.const_apply
 
-instance : Inhabited (Filtration ι m) :=
+instance : Inhabited (Filtration ι m) := fast_instance%
   ⟨const ι m le_rfl⟩
 
-instance : LE (Filtration ι m) :=
+instance : LE (Filtration ι m) := fast_instance%
   ⟨fun f g => ∀ i, f i ≤ g i⟩
 
-instance : Bot (Filtration ι m) :=
+instance : Bot (Filtration ι m) := fast_instance%
   ⟨const ι ⊥ bot_le⟩
 
-instance : Top (Filtration ι m) :=
+instance : Top (Filtration ι m) := fast_instance%
   ⟨const ι m le_rfl⟩
 
-instance : Sup (Filtration ι m) :=
+instance : Sup (Filtration ι m) := fast_instance%
   ⟨fun f g =>
     { seq := fun i => f i ⊔ g i
       mono' := fun _ _ hij =>
@@ -108,7 +108,7 @@ theorem coeFn_sup {f g : Filtration ι m} : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 #align measure_theory.filtration.coe_fn_sup MeasureTheory.Filtration.coeFn_sup
 
-instance : Inf (Filtration ι m) :=
+instance : Inf (Filtration ι m) := fast_instance%
   ⟨fun f g =>
     { seq := fun i => f i ⊓ g i
       mono' := fun _ _ hij =>
@@ -120,7 +120,7 @@ theorem coeFn_inf {f g : Filtration ι m} : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
   rfl
 #align measure_theory.filtration.coe_fn_inf MeasureTheory.Filtration.coeFn_inf
 
-instance : SupSet (Filtration ι m) :=
+instance : SupSet (Filtration ι m) := fast_instance%
   ⟨fun s =>
     { seq := fun i => sSup ((fun f : Filtration ι m => f i) '' s)
       mono' := fun i j hij => by
@@ -143,7 +143,7 @@ theorem sSup_def (s : Set (Filtration ι m)) (i : ι) :
   rfl
 #align measure_theory.filtration.Sup_def MeasureTheory.Filtration.sSup_def
 
-noncomputable instance : InfSet (Filtration ι m) :=
+noncomputable instance : InfSet (Filtration ι m) := fast_instance%
   ⟨fun s =>
     { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
       mono' := fun i j hij => by

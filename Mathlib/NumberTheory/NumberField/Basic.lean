@@ -60,7 +60,7 @@ protected theorem isAlgebraic : Algebra.IsAlgebraic ℚ K :=
   Algebra.IsAlgebraic.of_finite _ _
 #align number_field.is_algebraic NumberField.isAlgebraic
 
-instance [NumberField L] [Algebra K L] : FiniteDimensional K L :=
+instance [NumberField L] [Algebra K L] : FiniteDimensional K L := fast_instance%
   Module.Finite.of_restrictScalars_finite ℚ K L
 
 /-- The ring of integers (or number ring) corresponding to a number field
@@ -84,7 +84,7 @@ theorem isIntegral_of_mem_ringOfIntegers {K : Type*} [Field K] {x : K} (hx : x �
 #align number_field.is_integral_of_mem_ring_of_integers NumberField.isIntegral_of_mem_ringOfIntegers
 
 /-- Given an algebra between two fields, create an algebra between their two rings of integers. -/
-instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
+instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) := fast_instance%
   RingHom.toAlgebra
     { toFun := fun k => ⟨algebraMap K L k, IsIntegral.algebraMap k.2⟩
       map_zero' := Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_zero, map_zero]
@@ -102,13 +102,13 @@ namespace RingOfIntegers
 
 variable {K}
 
-instance [NumberField K] : IsFractionRing (𝓞 K) K :=
+instance [NumberField K] : IsFractionRing (𝓞 K) K := fast_instance%
   integralClosure.isFractionRing_of_finite_extension ℚ _
 
-instance : IsIntegralClosure (𝓞 K) ℤ K :=
+instance : IsIntegralClosure (𝓞 K) ℤ K := fast_instance%
   integralClosure.isIntegralClosure _ _
 
-instance [NumberField K] : IsIntegrallyClosed (𝓞 K) :=
+instance [NumberField K] : IsIntegrallyClosed (𝓞 K) := fast_instance%
   integralClosure.isIntegrallyClosedOfFiniteExtension ℚ
 
 theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (x : K) :=
@@ -129,10 +129,10 @@ protected noncomputable def equiv (R : Type*) [CommRing R] [Algebra R K]
 
 variable (K)
 
-instance : CharZero (𝓞 K) :=
+instance : CharZero (𝓞 K) := fast_instance%
   CharZero.of_module _ K
 
-instance : IsNoetherian ℤ (𝓞 K) :=
+instance : IsNoetherian ℤ (𝓞 K) := fast_instance%
   IsIntegralClosure.isNoetherian _ ℚ K _
 
 /-- The ring of integers of a number field is not a field. -/
@@ -143,13 +143,13 @@ theorem not_isField : ¬IsField (𝓞 K) := by
     (((IsIntegralClosure.isIntegral_algebra ℤ K).isField_iff_isField h_inj).mpr hf)
 #align number_field.ring_of_integers.not_is_field NumberField.RingOfIntegers.not_isField
 
-instance : IsDedekindDomain (𝓞 K) :=
+instance : IsDedekindDomain (𝓞 K) := fast_instance%
   IsIntegralClosure.isDedekindDomain ℤ ℚ K _
 
-instance : Free ℤ (𝓞 K) :=
+instance : Free ℤ (𝓞 K) := fast_instance%
   IsIntegralClosure.module_free ℤ ℚ K (𝓞 K)
 
-instance : IsLocalization (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) K :=
+instance : IsLocalization (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) K := fast_instance%
   IsIntegralClosure.isLocalization_of_isSeparable ℤ ℚ K (𝓞 K)
 
 /-- A ℤ-basis of the ring of integers of `K`. -/

@@ -253,7 +253,7 @@ def residual (X : Type*) [TopologicalSpace X] : Filter X :=
   Filter.countableGenerate { t | IsOpen t ∧ Dense t }
 #align residual residual
 
-instance countableInterFilter_residual : CountableInterFilter (residual X) := by
+instance countableInterFilter_residual : CountableInterFilter (residual X) := fast_instance% by
   rw [residual]; infer_instance
 #align countable_Inter_filter_residual countableInterFilter_residual
 

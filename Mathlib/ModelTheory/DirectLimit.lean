@@ -71,7 +71,7 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
       Embedding.comp_apply, ih]
 #align first_order.language.directed_system.coe_nat_le_rec FirstOrder.Language.DirectedSystem.coe_natLERec
 
-instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i j h :=
+instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i j h := fast_instance%
   ⟨fun i x _ => congr (congr rfl (Nat.leRecOn_self _)) rfl,
    fun hij hjk => by simp [Nat.leRecOn_trans hij hjk]⟩
 #align first_order.language.directed_system.nat_le_rec.directed_system FirstOrder.Language.DirectedSystem.natLERec.directedSystem
@@ -245,7 +245,7 @@ noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f) wh
 #align first_order.language.direct_limit.prestructure FirstOrder.Language.DirectLimit.prestructure
 
 /-- The `L.Structure` on a direct limit of `L.Structure`s. -/
-noncomputable instance instStructureDirectLimit : L.Structure (DirectLimit G f) :=
+noncomputable instance instStructureDirectLimit : L.Structure (DirectLimit G f) := fast_instance%
   Language.quotientStructure
 set_option linter.uppercaseLean3 false in
 #align first_order.language.direct_limit.Structure FirstOrder.Language.DirectLimit.instStructureDirectLimit

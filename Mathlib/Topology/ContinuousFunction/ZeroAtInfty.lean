@@ -86,7 +86,7 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass C₀(
   map_continuous f := f.continuous_toFun
   zero_at_infty f := f.zero_at_infty'
 
-instance instCoeTC : CoeTC F C₀(α, β) :=
+instance instCoeTC : CoeTC F C₀(α, β) := fast_instance%
   ⟨fun f =>
     { toFun := f
       continuous_toFun := map_continuous f
@@ -166,10 +166,10 @@ section AlgebraicStructure
 
 variable [TopologicalSpace β] (x : α)
 
-instance instZero [Zero β] : Zero C₀(α, β) :=
+instance instZero [Zero β] : Zero C₀(α, β) := fast_instance%
   ⟨⟨0, tendsto_const_nhds⟩⟩
 
-instance instInhabited [Zero β] : Inhabited C₀(α, β) :=
+instance instInhabited [Zero β] : Inhabited C₀(α, β) := fast_instance%
   ⟨0⟩
 
 @[simp]
@@ -181,7 +181,7 @@ theorem zero_apply [Zero β] : (0 : C₀(α, β)) x = 0 :=
   rfl
 #align zero_at_infty_continuous_map.zero_apply ZeroAtInftyContinuousMap.zero_apply
 
-instance instMul [MulZeroClass β] [ContinuousMul β] : Mul C₀(α, β) :=
+instance instMul [MulZeroClass β] [ContinuousMul β] : Mul C₀(α, β) := fast_instance%
   ⟨fun f g =>
     ⟨f * g, by simpa only [mul_zero] using (zero_at_infty f).mul (zero_at_infty g)⟩⟩
 
@@ -194,14 +194,14 @@ theorem mul_apply [MulZeroClass β] [ContinuousMul β] (f g : C₀(α, β)) : (f
   rfl
 #align zero_at_infty_continuous_map.mul_apply ZeroAtInftyContinuousMap.mul_apply
 
-instance instMulZeroClass [MulZeroClass β] [ContinuousMul β] : MulZeroClass C₀(α, β) :=
+instance instMulZeroClass [MulZeroClass β] [ContinuousMul β] : MulZeroClass C₀(α, β) := fast_instance%
   DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
 
 instance instSemigroupWithZero [SemigroupWithZero β] [ContinuousMul β] :
     SemigroupWithZero C₀(α, β) :=
   DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
-instance instAdd [AddZeroClass β] [ContinuousAdd β] : Add C₀(α, β) :=
+instance instAdd [AddZeroClass β] [ContinuousAdd β] : Add C₀(α, β) := fast_instance%
   ⟨fun f g => ⟨f + g, by simpa only [add_zero] using (zero_at_infty f).add (zero_at_infty g)⟩⟩
 
 @[simp]
@@ -213,7 +213,7 @@ theorem add_apply [AddZeroClass β] [ContinuousAdd β] (f g : C₀(α, β)) : (f
   rfl
 #align zero_at_infty_continuous_map.add_apply ZeroAtInftyContinuousMap.add_apply
 
-instance instAddZeroClass [AddZeroClass β] [ContinuousAdd β] : AddZeroClass C₀(α, β) :=
+instance instAddZeroClass [AddZeroClass β] [ContinuousAdd β] : AddZeroClass C₀(α, β) := fast_instance%
   DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 section AddMonoid
@@ -226,24 +226,24 @@ theorem coe_nsmulRec : ∀ n, ⇑(nsmulRec n f) = n • ⇑f
   | n + 1 => by rw [nsmulRec, succ_nsmul, coe_add, coe_nsmulRec n]
 #align zero_at_infty_continuous_map.coe_nsmul_rec ZeroAtInftyContinuousMap.coe_nsmulRec
 
-instance instNatSMul : SMul ℕ C₀(α, β) :=
+instance instNatSMul : SMul ℕ C₀(α, β) := fast_instance%
   ⟨fun n f => ⟨n • (f : C(α, β)),
     by simpa [coe_nsmulRec] using zero_at_infty (nsmulRec n f)⟩⟩
 #align zero_at_infty_continuous_map.has_nat_scalar ZeroAtInftyContinuousMap.instNatSMul
 
-instance instAddMonoid : AddMonoid C₀(α, β) :=
+instance instAddMonoid : AddMonoid C₀(α, β) := fast_instance%
   DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
 
 end AddMonoid
 
-instance instAddCommMonoid [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid C₀(α, β) :=
+instance instAddCommMonoid [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid C₀(α, β) := fast_instance%
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
 section AddGroup
 
 variable [AddGroup β] [TopologicalAddGroup β] (f g : C₀(α, β))
 
-instance instNeg : Neg C₀(α, β) :=
+instance instNeg : Neg C₀(α, β) := fast_instance%
   ⟨fun f => ⟨-f, by simpa only [neg_zero] using (zero_at_infty f).neg⟩⟩
 
 @[simp]
@@ -255,7 +255,7 @@ theorem neg_apply : (-f) x = -f x :=
   rfl
 #align zero_at_infty_continuous_map.neg_apply ZeroAtInftyContinuousMap.neg_apply
 
-instance instSub : Sub C₀(α, β) :=
+instance instSub : Sub C₀(α, β) := fast_instance%
   ⟨fun f g => ⟨f - g, by simpa only [sub_zero] using (zero_at_infty f).sub (zero_at_infty g)⟩⟩
 
 @[simp]
@@ -273,18 +273,18 @@ theorem coe_zsmulRec : ∀ z, ⇑(zsmulRec z f) = z • ⇑f
   | Int.negSucc n => by rw [zsmulRec, negSucc_zsmul, coe_neg, coe_nsmulRec]
 #align zero_at_infty_continuous_map.coe_zsmul_rec ZeroAtInftyContinuousMap.coe_zsmulRec
 
-instance instIntSMul : SMul ℤ C₀(α, β) :=
+instance instIntSMul : SMul ℤ C₀(α, β) := fast_instance%
   -- Porting note: Original version didn't have `Continuous.const_smul f.continuous n`
   ⟨fun n f => ⟨⟨n • ⇑f, Continuous.const_smul f.continuous n⟩,
     by simpa using zero_at_infty (zsmulRec n f)⟩⟩
 #align zero_at_infty_continuous_map.has_int_scalar ZeroAtInftyContinuousMap.instIntSMul
 
-instance instAddGroup : AddGroup C₀(α, β) :=
+instance instAddGroup : AddGroup C₀(α, β) := fast_instance%
   DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
 end AddGroup
 
-instance instAddCommGroup [AddCommGroup β] [TopologicalAddGroup β] : AddCommGroup C₀(α, β) :=
+instance instAddCommGroup [AddCommGroup β] [TopologicalAddGroup β] : AddCommGroup C₀(α, β) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
     rfl
 
@@ -338,7 +338,7 @@ instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing β] [TopologicalRing �
   DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
-instance instNonUnitalRing [NonUnitalRing β] [TopologicalRing β] : NonUnitalRing C₀(α, β) :=
+instance instNonUnitalRing [NonUnitalRing β] [TopologicalRing β] : NonUnitalRing C₀(α, β) := fast_instance%
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ => rfl)
     fun _ _ => rfl
 
@@ -438,7 +438,7 @@ variable {C : ℝ} {f g : C₀(α, β)}
 
 /-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
 inclusion `ZeroAtInftyContinuousMap.toBCF`, is a pseudo-metric space. -/
-noncomputable instance instPseudoMetricSpace : PseudoMetricSpace C₀(α, β) :=
+noncomputable instance instPseudoMetricSpace : PseudoMetricSpace C₀(α, β) := fast_instance%
   PseudoMetricSpace.induced toBCF inferInstance
 
 /-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
@@ -484,7 +484,7 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
 
 /-- Continuous functions vanishing at infinity taking values in a complete space form a
 complete space. -/
-instance instCompleteSpace [CompleteSpace β] : CompleteSpace C₀(α, β) :=
+instance instCompleteSpace [CompleteSpace β] : CompleteSpace C₀(α, β) := fast_instance%
   (completeSpace_iff_isComplete_range isometry_toBCF.uniformInducing).mpr
     isClosed_range_toBCF.isComplete
 
@@ -518,7 +518,7 @@ theorem norm_toBCF_eq_norm {f : C₀(α, β)} : ‖f.toBCF‖ = ‖f‖ :=
   rfl
 #align zero_at_infty_continuous_map.norm_to_bcf_eq_norm ZeroAtInftyContinuousMap.norm_toBCF_eq_norm
 
-instance : NormedSpace 𝕜 C₀(α, β) where norm_smul_le k f := (norm_smul_le k f.toBCF : _)
+instance : NormedSpace 𝕜 C₀(α, β) where norm_smul_le k f := fast_instance% (norm_smul_le k f.toBCF : _)
 
 end NormedSpace
 
@@ -607,7 +607,7 @@ section StarRing
 variable [NonUnitalSemiring β] [StarRing β] [TopologicalSpace β] [ContinuousStar β]
   [TopologicalSemiring β]
 
-instance instStarRing : StarRing C₀(α, β) :=
+instance instStarRing : StarRing C₀(α, β) := fast_instance%
   { ZeroAtInftyContinuousMap.instStarAddMonoid with
     star_mul := fun f g => ext fun x => star_mul (f x) (g x) }
 

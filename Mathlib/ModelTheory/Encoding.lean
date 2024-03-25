@@ -151,18 +151,18 @@ theorem card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi,
           rw [Sigma.ext_iff.2 ⟨h.1, h.2.1⟩]
 #align first_order.language.term.card_sigma FirstOrder.Language.Term.card_sigma
 
-instance [Encodable α] [Encodable (Σi, L.Functions i)] : Encodable (L.Term α) :=
+instance [Encodable α] [Encodable (Σi, L.Functions i)] : Encodable (L.Term α) := fast_instance%
   Encodable.ofLeftInjection listEncode (fun l => (listDecode l).head?.join) fun t => by
     simp only
     rw [← bind_singleton listEncode, listDecode_encode_list]
     simp only [Option.join, head?, List.map, Option.some_bind, id.def]
 
-instance [h1 : Countable α] [h2 : Countable (Σl, L.Functions l)] : Countable (L.Term α) := by
+instance [h1 : Countable α] [h2 : Countable (Σl, L.Functions l)] : Countable (L.Term α) := fast_instance% by
   refine' mk_le_aleph0_iff.1 (card_le.trans (max_le_iff.2 _))
   simp only [le_refl, mk_sum, add_le_aleph0, lift_le_aleph0, true_and_iff]
   exact ⟨Cardinal.mk_le_aleph0, Cardinal.mk_le_aleph0⟩
 
-instance small [Small.{u} α] : Small.{u} (L.Term α) :=
+instance small [Small.{u} α] : Small.{u} (L.Term α) := fast_instance%
   small_of_injective listEncode_injective
 #align first_order.language.term.small FirstOrder.Language.Term.small
 

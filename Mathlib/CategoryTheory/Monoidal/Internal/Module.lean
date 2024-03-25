@@ -43,7 +43,7 @@ namespace MonModuleEquivalenceAlgebra
 -- Porting note: `simps(!)` doesn't work, I guess we will see what `simp` lemmas are needed and
 -- add them manually
 -- @[simps!]
-instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
+instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X := fast_instance%
   { (inferInstance : AddCommGroup A.X) with
     one := A.one (1 : R)
     mul := fun x y => A.mul (x ⊗ₜ y)
@@ -73,7 +73,7 @@ instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
     mul_zero := fun x => show A.mul _ = 0 by
       rw [TensorProduct.tmul_zero, map_zero] }
 
-instance Algebra_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Algebra R A.X :=
+instance Algebra_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Algebra R A.X := fast_instance%
   { A.one with
     map_zero' := A.one.map_zero
     map_one' := rfl

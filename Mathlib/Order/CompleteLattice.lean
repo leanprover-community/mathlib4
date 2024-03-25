@@ -49,10 +49,10 @@ open Function OrderDual Set
 
 variable {α β β₂ γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
 
-instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
+instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ := fast_instance%
   ⟨(sInf : Set α → α)⟩
 
-instance OrderDual.infSet (α) [SupSet α] : InfSet αᵒᵈ :=
+instance OrderDual.infSet (α) [SupSet α] : InfSet αᵒᵈ := fast_instance%
   ⟨(sSup : Set α → α)⟩
 
 /-- Note that we rarely use `CompleteSemilatticeSup`
@@ -1726,11 +1726,11 @@ theorem iInf_Prop_eq {p : ι → Prop} : ⨅ i, p i = ∀ i, p i :=
   le_antisymm (fun h i => h _ ⟨i, rfl⟩) fun h _ ⟨i, Eq⟩ => Eq ▸ h i
 #align infi_Prop_eq iInf_Prop_eq
 
-instance Pi.supSet {α : Type*} {β : α → Type*} [∀ i, SupSet (β i)] : SupSet (∀ i, β i) :=
+instance Pi.supSet {α : Type*} {β : α → Type*} [∀ i, SupSet (β i)] : SupSet (∀ i, β i) := fast_instance%
   ⟨fun s i => ⨆ f : s, (f : ∀ i, β i) i⟩
 #align pi.has_Sup Pi.supSet
 
-instance Pi.infSet {α : Type*} {β : α → Type*} [∀ i, InfSet (β i)] : InfSet (∀ i, β i) :=
+instance Pi.infSet {α : Type*} {β : α → Type*} [∀ i, InfSet (β i)] : InfSet (∀ i, β i) := fast_instance%
   ⟨fun s i => ⨅ f : s, (f : ∀ i, β i) i⟩
 #align pi.has_Inf Pi.infSet
 
@@ -1808,10 +1808,10 @@ namespace Prod
 
 variable (α β)
 
-instance supSet [SupSet α] [SupSet β] : SupSet (α × β) :=
+instance supSet [SupSet α] [SupSet β] : SupSet (α × β) := fast_instance%
   ⟨fun s => (sSup (Prod.fst '' s), sSup (Prod.snd '' s))⟩
 
-instance infSet [InfSet α] [InfSet β] : InfSet (α × β) :=
+instance infSet [InfSet α] [InfSet β] : InfSet (α × β) := fast_instance%
   ⟨fun s => (sInf (Prod.fst '' s), sInf (Prod.snd '' s))⟩
 
 variable {α β}
@@ -1972,12 +1972,12 @@ namespace ULift
 
 universe v
 
-instance supSet [SupSet α] : SupSet (ULift.{v} α) where sSup s := ULift.up (sSup <| ULift.up ⁻¹' s)
+instance supSet [SupSet α] : SupSet (ULift.{v} α) where sSup s := fast_instance% ULift.up (sSup <| ULift.up ⁻¹' s)
 
 theorem down_sSup [SupSet α] (s : Set (ULift.{v} α)) : (sSup s).down = sSup (ULift.up ⁻¹' s) := rfl
 theorem up_sSup [SupSet α] (s : Set α) : up (sSup s) = sSup (ULift.down ⁻¹' s) := rfl
 
-instance infSet [InfSet α] : InfSet (ULift.{v} α) where sInf s := ULift.up (sInf <| ULift.up ⁻¹' s)
+instance infSet [InfSet α] : InfSet (ULift.{v} α) where sInf s := fast_instance% ULift.up (sInf <| ULift.up ⁻¹' s)
 
 theorem down_sInf [InfSet α] (s : Set (ULift.{v} α)) : (sInf s).down = sInf (ULift.up ⁻¹' s) := rfl
 theorem up_sInf [InfSet α] (s : Set α) : up (sInf s) = sInf (ULift.down ⁻¹' s) := rfl
@@ -1994,7 +1994,7 @@ theorem down_iInf [InfSet α] (f : ι → ULift.{v} α) : (⨅ i, f i).down = �
 theorem up_iInf [InfSet α] (f : ι → α) : up (⨅ i, f i) = ⨅ i, up (f i) :=
   congr_arg ULift.up <| (down_iInf _).symm
 
-instance instCompleteLattice [CompleteLattice α] : CompleteLattice (ULift.{v} α) :=
+instance instCompleteLattice [CompleteLattice α] : CompleteLattice (ULift.{v} α) := fast_instance%
   ULift.down_injective.completeLattice _ down_sup down_inf
     (fun s => by rw [sSup_eq_iSup', down_iSup, iSup_subtype''])
     (fun s => by rw [sInf_eq_iInf', down_iInf, iInf_subtype'']) down_top down_bot

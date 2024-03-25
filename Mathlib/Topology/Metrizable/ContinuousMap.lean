@@ -21,11 +21,11 @@ variable {X Y : Type*}
   [TopologicalSpace X] [WeaklyLocallyCompactSpace X] [SigmaCompactSpace X]
   [TopologicalSpace Y]
 
-instance [PseudoMetrizableSpace Y] : PseudoMetrizableSpace C(X, Y) :=
+instance [PseudoMetrizableSpace Y] : PseudoMetrizableSpace C(X, Y) := fast_instance%
   let _ := pseudoMetrizableSpacePseudoMetric Y
   inferInstance
 
-instance [MetrizableSpace Y] : MetrizableSpace C(X, Y) :=
+instance [MetrizableSpace Y] : MetrizableSpace C(X, Y) := fast_instance%
   let _ := metrizableSpaceMetric Y
   UniformSpace.metrizableSpace
 

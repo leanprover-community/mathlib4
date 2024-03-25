@@ -103,7 +103,7 @@ theorem inclusionOfMooreComplexMap_comp_PInfty (X : SimplicialObject A) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.inclusion_of_Moore_complex_map_comp_P_infty AlgebraicTopology.DoldKan.inclusionOfMooreComplexMap_comp_PInfty
 
-instance : Mono (inclusionOfMooreComplexMap X) :=
+instance : Mono (inclusionOfMooreComplexMap X) := fast_instance%
   ⟨fun _ _ hf => by
     ext n
     dsimp

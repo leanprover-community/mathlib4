@@ -182,7 +182,7 @@ theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (·
 end Lex
 
 --Note: this overrides an instance in core lean
-instance LT' [LT α] : LT (List α) :=
+instance LT' [LT α] : LT (List α) := fast_instance%
   ⟨Lex (· < ·)⟩
 #align list.has_lt' List.LT'
 
@@ -190,11 +190,11 @@ theorem nil_lt_cons [LT α] (a : α) (l : List α) : [] < a :: l :=
   Lex.nil
 #align list.nil_lt_cons List.nil_lt_cons
 
-instance [LinearOrder α] : LinearOrder (List α) :=
+instance [LinearOrder α] : LinearOrder (List α) := fast_instance%
   linearOrderOfSTO (Lex (· < ·))
 
 --Note: this overrides an instance in core lean
-instance LE' [LinearOrder α] : LE (List α) :=
+instance LE' [LinearOrder α] : LE (List α) := fast_instance%
   Preorder.toLE
 #align list.has_le' List.LE'
 

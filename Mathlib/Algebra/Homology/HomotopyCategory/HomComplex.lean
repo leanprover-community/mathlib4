@@ -61,11 +61,11 @@ of a family of morphisms `F.X p ⟶ G.X q` whenever `p + n = q`, i.e. for all
 triplets in `HomComplex.Triplet n`. -/
 def Cochain := ∀ (T : Triplet n), F.X T.p ⟶ G.X T.q
 
-instance : AddCommGroup (Cochain F G n) := by
+instance : AddCommGroup (Cochain F G n) := fast_instance% by
   dsimp only [Cochain]
   infer_instance
 
-instance : Module R (Cochain F G n) := by
+instance : Module R (Cochain F G n) := fast_instance% by
   dsimp only [Cochain]
   infer_instance
 
@@ -578,7 +578,7 @@ def cocycle : AddSubgroup (Cochain F G n) :=
 /-- The type of `n`-cocycles, as a subtype of `Cochain F G n`. -/
 def Cocycle : Type v := cocycle F G n
 
-instance : AddCommGroup (Cocycle F G n) := by
+instance : AddCommGroup (Cocycle F G n) := fast_instance% by
   dsimp only [Cocycle]
   infer_instance
 

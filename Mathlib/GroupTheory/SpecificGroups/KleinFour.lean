@@ -77,7 +77,7 @@ instance {G : Type*} [AddGroup G] [IsAddKleinFour G] :
 namespace IsKleinFour
 
 @[to_additive]
-instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
+instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G := fast_instance%
   Nat.finite_of_card_ne_zero <| by norm_num [IsKleinFour.card_four]
 
 @[to_additive (attr := simp)]

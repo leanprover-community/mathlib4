@@ -360,13 +360,13 @@ protected theorem le_or_le (s : Flag α) (ha : a ∈ s) (hb : b ∈ s) : a ≤ b
   s.chain_le.total ha hb
 #align flag.le_or_le Flag.le_or_le
 
-instance [OrderTop α] (s : Flag α) : OrderTop s :=
+instance [OrderTop α] (s : Flag α) : OrderTop s := fast_instance%
   Subtype.orderTop s.top_mem
 
-instance [OrderBot α] (s : Flag α) : OrderBot s :=
+instance [OrderBot α] (s : Flag α) : OrderBot s := fast_instance%
   Subtype.orderBot s.bot_mem
 
-instance [BoundedOrder α] (s : Flag α) : BoundedOrder s :=
+instance [BoundedOrder α] (s : Flag α) : BoundedOrder s := fast_instance%
   Subtype.boundedOrder s.bot_mem s.top_mem
 
 end Preorder

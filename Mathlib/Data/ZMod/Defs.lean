@@ -43,7 +43,7 @@ to register the ring structure on `ZMod n` as type class instance.
 open Nat.ModEq Int
 
 /-- Multiplicative commutative semigroup structure on `Fin n`. -/
-instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
+instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) := fast_instance%
   { inferInstanceAs (Mul (Fin n)) with
     mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
       Fin.eq_of_val_eq <|
@@ -63,7 +63,7 @@ private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a 
       _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
 
 /-- Commutative ring structure on `Fin n`. -/
-instance instDistrib (n : ℕ) : Distrib (Fin n) :=
+instance instDistrib (n : ℕ) : Distrib (Fin n) := fast_instance%
   { Fin.addCommSemigroup n, Fin.instCommSemigroup n with
     left_distrib := left_distrib_aux n
     right_distrib := fun a b c => by
@@ -71,7 +71,7 @@ instance instDistrib (n : ℕ) : Distrib (Fin n) :=
 #align fin.distrib Fin.instDistrib
 
 /-- Commutative ring structure on `Fin n`. -/
-instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
+instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) := fast_instance%
   { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
     one_mul := Fin.one_mul'
     mul_one := Fin.mul_one',
@@ -82,7 +82,7 @@ instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
 #align fin.comm_ring Fin.instCommRing
 
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
-instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
+instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) := fast_instance%
   { toInvolutiveNeg := Fin.instInvolutiveNeg n
     mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
     neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul }
@@ -108,14 +108,14 @@ instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
 
 namespace ZMod
 
-instance instUnique : Unique (ZMod 1) := Fin.uniqueFinOne
+instance instUnique : Unique (ZMod 1) := fast_instance% Fin.uniqueFinOne
 
 instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (ZMod n)
   | 0, h => (h.ne rfl).elim
   | n + 1, _ => Fin.fintype (n + 1)
 #align zmod.fintype ZMod.fintype
 
-instance infinite : Infinite (ZMod 0) :=
+instance infinite : Infinite (ZMod 0) := fast_instance%
   Int.infinite
 #align zmod.infinite ZMod.infinite
 
@@ -191,7 +191,7 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
     fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_succ
 #align zmod.comm_ring ZMod.commRing
 
-instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
+instance inhabited (n : ℕ) : Inhabited (ZMod n) := fast_instance%
   ⟨0⟩
 #align zmod.inhabited ZMod.inhabited
 

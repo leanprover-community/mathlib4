@@ -165,8 +165,8 @@ instance Rat.shrinkable : Shrinkable Rat where
   shrink r :=
     (Shrinkable.shrink r.num).bind fun d => Nat.shrink r.den |>.map fun n => Rat.divInt d n
 
-instance Bool.shrinkable : Shrinkable Bool := {}
-instance Char.shrinkable : Shrinkable Char := {}
+instance Bool.shrinkable : Shrinkable Bool := fast_instance% {}
+instance Char.shrinkable : Shrinkable Char := fast_instance% {}
 
 instance Prod.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
     Shrinkable (Prod α β) where
@@ -196,27 +196,27 @@ section Samplers
 
 open SampleableExt
 
-instance Nat.sampleableExt : SampleableExt Nat :=
+instance Nat.sampleableExt : SampleableExt Nat := fast_instance%
   mkSelfContained (do choose Nat 0 (← getSize) (Nat.zero_le _))
 
-instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
+instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) := fast_instance%
   mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (← getSize)) (by
     simp only [Fin.ofNat, Fin.val_zero]
     exact Nat.zero_le _))
 
-instance Int.sampleableExt : SampleableExt Int :=
+instance Int.sampleableExt : SampleableExt Int := fast_instance%
   mkSelfContained (do
     choose Int (-(← getSize)) (← getSize)
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _)))
 
-instance Rat.sampleableExt : SampleableExt Rat :=
+instance Rat.sampleableExt : SampleableExt Rat := fast_instance%
   mkSelfContained (do
     let d ← choose Int (-(← getSize)) (← getSize)
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _))
     let n ← choose Nat 0 (← getSize) (Nat.zero_le _)
     return Rat.divInt d n)
 
-instance Bool.sampleableExt : SampleableExt Bool :=
+instance Bool.sampleableExt : SampleableExt Bool := fast_instance%
   mkSelfContained <| chooseAny Bool
 
 /-- This can be specialized into customized `SampleableExt Char` instances.
@@ -232,7 +232,7 @@ def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) 
     else
       elements chars pos
 
-instance Char.sampleableDefault : SampleableExt Char :=
+instance Char.sampleableDefault : SampleableExt Char := fast_instance%
   Char.sampleable 3 " 0123abcABC:,;`\\/".toList (by decide)
 
 instance Prod.sampleableExt {α : Type u} {β : Type v} [SampleableExt α] [SampleableExt β] :
@@ -265,13 +265,13 @@ namespace NoShrink
 def mk (x : α) : NoShrink α := x
 def get (x : NoShrink α) : α := x
 
-instance inhabited [inst : Inhabited α] : Inhabited (NoShrink α) := inst
-instance repr [inst : Repr α] : Repr (NoShrink α) := inst
+instance inhabited [inst : Inhabited α] : Inhabited (NoShrink α) := fast_instance% inst
+instance repr [inst : Repr α] : Repr (NoShrink α) := fast_instance% inst
 
 instance shrinkable : Shrinkable (NoShrink α) where
   shrink := fun _ ↦ []
 
-instance sampleableExt [SampleableExt α] [Repr α] : SampleableExt (NoShrink α) :=
+instance sampleableExt [SampleableExt α] [Repr α] : SampleableExt (NoShrink α) := fast_instance%
   SampleableExt.mkSelfContained <| (NoShrink.mk ∘ SampleableExt.interp) <$> SampleableExt.sample
 
 end NoShrink

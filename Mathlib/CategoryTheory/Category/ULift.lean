@@ -103,7 +103,7 @@ def ULiftHom.{w,u} (C : Type u) : Type u :=
   C
 #align category_theory.ulift_hom CategoryTheory.ULiftHom
 
-instance {C} [Inhabited C] : Inhabited (ULiftHom C) :=
+instance {C} [Inhabited C] : Inhabited (ULiftHom C) := fast_instance%
   ⟨(default : C)⟩
 
 /-- The obvious function `ULiftHom C → C`. -/
@@ -199,7 +199,7 @@ def AsSmall.equiv : C ≌ AsSmall C where
   counitIso := NatIso.ofComponents fun X => eqToIso <| ULift.ext _ _ rfl
 #align category_theory.as_small.equiv CategoryTheory.AsSmall.equiv
 
-instance [Inhabited C] : Inhabited (AsSmall C) :=
+instance [Inhabited C] : Inhabited (AsSmall C) := fast_instance%
   ⟨⟨default⟩⟩
 
 /-- The equivalence between `C` and `ULiftHom (ULift C)`. -/

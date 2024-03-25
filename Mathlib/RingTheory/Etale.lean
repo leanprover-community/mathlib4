@@ -243,7 +243,7 @@ open scoped Polynomial
 
 variable (R : Type u) [CommSemiring R]
 
-instance FormallySmooth.mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynomial σ R) := by
+instance FormallySmooth.mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynomial σ R) := fast_instance% by
   constructor
   intro C _ _ I _ f
   have : ∀ s : σ, ∃ c : C, Ideal.Quotient.mk I c = f (MvPolynomial.X s) := fun s =>
@@ -255,7 +255,7 @@ instance FormallySmooth.mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynom
   rfl
 #align algebra.formally_smooth.mv_polynomial Algebra.FormallySmooth.mvPolynomial
 
-instance FormallySmooth.polynomial : FormallySmooth R R[X] :=
+instance FormallySmooth.polynomial : FormallySmooth R R[X] := fast_instance%
   FormallySmooth.of_equiv (MvPolynomial.pUnitAlgEquiv R)
 #align algebra.formally_smooth.polynomial Algebra.FormallySmooth.polynomial
 
@@ -433,7 +433,7 @@ instance FormallyUnramified.base_change [FormallyUnramified R A] :
   · exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
 #align algebra.formally_unramified.base_change Algebra.FormallyUnramified.base_change
 
-instance FormallySmooth.base_change [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
+instance FormallySmooth.base_change [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := fast_instance% by
   constructor
   intro C _ _ I hI f
   letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
@@ -447,7 +447,7 @@ instance FormallySmooth.base_change [FormallySmooth R A] : FormallySmooth B (B �
     rw [← Algebra.smul_def, ← map_smul, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
 #align algebra.formally_smooth.base_change Algebra.FormallySmooth.base_change
 
-instance FormallyEtale.base_change [FormallyEtale R A] : FormallyEtale B (B ⊗[R] A) :=
+instance FormallyEtale.base_change [FormallyEtale R A] : FormallyEtale B (B ⊗[R] A) := fast_instance%
   FormallyEtale.iff_unramified_and_smooth.mpr ⟨inferInstance, inferInstance⟩
 #align algebra.formally_etale.base_change Algebra.FormallyEtale.base_change
 

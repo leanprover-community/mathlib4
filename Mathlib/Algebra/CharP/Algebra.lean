@@ -130,12 +130,12 @@ namespace FreeAlgebra
 variable {R X : Type*} [CommSemiring R] (p : ℕ)
 
 /-- If `R` has characteristic `p`, then so does `FreeAlgebra R X`. -/
-instance charP [CharP R p] : CharP (FreeAlgebra R X) p :=
+instance charP [CharP R p] : CharP (FreeAlgebra R X) p := fast_instance%
   charP_of_injective_algebraMap FreeAlgebra.algebraMap_leftInverse.injective p
 #align free_algebra.char_p FreeAlgebra.charP
 
 /-- If `R` has characteristic `0`, then so does `FreeAlgebra R X`. -/
-instance charZero [CharZero R] : CharZero (FreeAlgebra R X) :=
+instance charZero [CharZero R] : CharZero (FreeAlgebra R X) := fast_instance%
   charZero_of_injective_algebraMap FreeAlgebra.algebraMap_leftInverse.injective
 #align free_algebra.char_zero FreeAlgebra.charZero
 
@@ -159,12 +159,12 @@ theorem charZero_of_isFractionRing [CharZero R] : CharZero K :=
 variable [IsDomain R]
 
 /-- If `R` has characteristic `p`, then so does `FractionRing R`. -/
-instance charP [CharP R p] : CharP (FractionRing R) p :=
+instance charP [CharP R p] : CharP (FractionRing R) p := fast_instance%
   charP_of_isFractionRing R p
 #align is_fraction_ring.char_p IsFractionRing.charP
 
 /-- If `R` has characteristic `0`, then so does `FractionRing R`. -/
-instance charZero [CharZero R] : CharZero (FractionRing R) :=
+instance charZero [CharZero R] : CharZero (FractionRing R) := fast_instance%
   charZero_of_isFractionRing R
 #align is_fraction_ring.char_zero IsFractionRing.charZero
 

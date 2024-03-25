@@ -63,11 +63,11 @@ structure Comonad extends C ⥤ C where
 variable {C}
 variable (T : Monad C) (G : Comonad C)
 
-instance coeMonad : Coe (Monad C) (C ⥤ C) :=
+instance coeMonad : Coe (Monad C) (C ⥤ C) := fast_instance%
   ⟨fun T => T.toFunctor⟩
 #align category_theory.coe_monad CategoryTheory.coeMonad
 
-instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
+instance coeComonad : Coe (Comonad C) (C ⥤ C) := fast_instance%
   ⟨fun G => G.toFunctor⟩
 #align category_theory.coe_comonad CategoryTheory.coeComonad
 
@@ -235,7 +235,7 @@ instance : Category (Comonad C) where
   comp_id _ := ComonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, comp_id])
   assoc _ _ _ := ComonadHom.ext _ _ (by funext; simp only [assoc])
 
-instance {T : Monad C} : Inhabited (MonadHom T T) :=
+instance {T : Monad C} : Inhabited (MonadHom T T) := fast_instance%
   ⟨𝟙 T⟩
 
 @[simp]
@@ -249,7 +249,7 @@ theorem MonadHom.comp_toNatTrans {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) 
   rfl
 #align category_theory.monad_hom.comp_to_nat_trans CategoryTheory.MonadHom.comp_toNatTrans
 
-instance {G : Comonad C} : Inhabited (ComonadHom G G) :=
+instance {G : Comonad C} : Inhabited (ComonadHom G G) := fast_instance%
   ⟨𝟙 G⟩
 
 @[simp]
@@ -376,7 +376,7 @@ def id : Monad C where
   μ' := 𝟙 (𝟭 C)
 #align category_theory.monad.id CategoryTheory.Monad.id
 
-instance : Inhabited (Monad C) :=
+instance : Inhabited (Monad C) := fast_instance%
   ⟨Monad.id C⟩
 
 end Monad
@@ -391,7 +391,7 @@ def id : Comonad C where
   δ' := 𝟙 (𝟭 C)
 #align category_theory.comonad.id CategoryTheory.Comonad.id
 
-instance : Inhabited (Comonad C) :=
+instance : Inhabited (Comonad C) := fast_instance%
   ⟨Comonad.id C⟩
 
 end Comonad

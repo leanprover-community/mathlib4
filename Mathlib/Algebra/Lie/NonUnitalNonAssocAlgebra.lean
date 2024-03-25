@@ -48,7 +48,7 @@ def CommutatorRing (L : Type v) : Type v := L
 
 /-- A `LieRing` can be regarded as a `NonUnitalNonAssocSemiring` by turning its
 `Bracket` (denoted `⁅, ⁆`) into a `Mul` (denoted `*`). -/
-instance : NonUnitalNonAssocSemiring (CommutatorRing L) :=
+instance : NonUnitalNonAssocSemiring (CommutatorRing L) := fast_instance%
   show NonUnitalNonAssocSemiring L from
     { (inferInstance : AddCommMonoid L) with
       mul := Bracket.bracket
@@ -59,22 +59,22 @@ instance : NonUnitalNonAssocSemiring (CommutatorRing L) :=
 
 namespace LieAlgebra
 
-instance (L : Type v) [Nonempty L] : Nonempty (CommutatorRing L) := ‹Nonempty L›
+instance (L : Type v) [Nonempty L] : Nonempty (CommutatorRing L) := fast_instance% ‹Nonempty L›
 
-instance (L : Type v) [Inhabited L] : Inhabited (CommutatorRing L) := ‹Inhabited L›
+instance (L : Type v) [Inhabited L] : Inhabited (CommutatorRing L) := fast_instance% ‹Inhabited L›
 
-instance : LieRing (CommutatorRing L) := show LieRing L by infer_instance
+instance : LieRing (CommutatorRing L) := fast_instance% show LieRing L by infer_instance
 
-instance : LieAlgebra R (CommutatorRing L) := show LieAlgebra R L by infer_instance
+instance : LieAlgebra R (CommutatorRing L) := fast_instance% show LieAlgebra R L by infer_instance
 
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocSemiring`, we can
 reinterpret the `smul_lie` law as an `IsScalarTower`. -/
-instance isScalarTower : IsScalarTower R (CommutatorRing L) (CommutatorRing L) := ⟨smul_lie⟩
+instance isScalarTower : IsScalarTower R (CommutatorRing L) (CommutatorRing L) := fast_instance% ⟨smul_lie⟩
 #align lie_algebra.is_scalar_tower LieAlgebra.isScalarTower
 
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocSemiring`, we can
 reinterpret the `lie_smul` law as an `SMulCommClass`. -/
-instance smulCommClass : SMulCommClass R (CommutatorRing L) (CommutatorRing L) :=
+instance smulCommClass : SMulCommClass R (CommutatorRing L) (CommutatorRing L) := fast_instance%
   ⟨fun t x y => (lie_smul t x y).symm⟩
 #align lie_algebra.smul_comm_class LieAlgebra.smulCommClass
 

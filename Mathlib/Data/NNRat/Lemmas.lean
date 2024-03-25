@@ -26,7 +26,7 @@ deriving instance CanonicallyLinearOrderedSemifield, LinearOrderedCommGroupWithZ
 namespace NNRat
 variable {α : Type*} {p q : ℚ≥0}
 
-instance instDenselyOrdered : DenselyOrdered ℚ≥0 := Nonneg.instDenselyOrdered
+instance instDenselyOrdered : DenselyOrdered ℚ≥0 := fast_instance% Nonneg.instDenselyOrdered
 
 @[simp, norm_cast] lemma coe_inv (q : ℚ≥0) : ((q⁻¹ : ℚ≥0) : ℚ) = (q : ℚ)⁻¹ := rfl
 #align nnrat.coe_inv NNRat.coe_inv
@@ -35,11 +35,11 @@ instance instDenselyOrdered : DenselyOrdered ℚ≥0 := Nonneg.instDenselyOrdere
 #align nnrat.coe_div NNRat.coe_div
 
 /-- A `MulAction` over `ℚ` restricts to a `MulAction` over `ℚ≥0`. -/
-instance [MulAction ℚ α] : MulAction ℚ≥0 α :=
+instance [MulAction ℚ α] : MulAction ℚ≥0 α := fast_instance%
   MulAction.compHom α coeHom.toMonoidHom
 
 /-- A `DistribMulAction` over `ℚ` restricts to a `DistribMulAction` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [DistribMulAction ℚ α] : DistribMulAction ℚ≥0 α :=
+instance [AddCommMonoid α] [DistribMulAction ℚ α] : DistribMulAction ℚ≥0 α := fast_instance%
   DistribMulAction.compHom α coeHom.toMonoidHom
 
 @[simp, norm_cast]

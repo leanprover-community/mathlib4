@@ -34,10 +34,10 @@ structure TopCommRingCat where
 
 namespace TopCommRingCat
 
-instance : Inhabited TopCommRingCat :=
+instance : Inhabited TopCommRingCat := fast_instance%
   ⟨⟨PUnit⟩⟩
 
-instance : CoeSort TopCommRingCat (Type u) :=
+instance : CoeSort TopCommRingCat (Type u) := fast_instance%
   ⟨TopCommRingCat.α⟩
 
 attribute [instance] isCommRing isTopologicalSpace isTopologicalRing
@@ -76,7 +76,7 @@ instance forgetTopologicalSpace (R : TopCommRingCat) :
   R.isTopologicalSpace
 #align TopCommRing.forget_topological_space TopCommRingCat.forgetTopologicalSpace
 
-instance forgetCommRing (R : TopCommRingCat) : CommRing ((forget TopCommRingCat).obj R) :=
+instance forgetCommRing (R : TopCommRingCat) : CommRing ((forget TopCommRingCat).obj R) := fast_instance%
   R.isCommRing
 #align TopCommRing.forget_comm_ring TopCommRingCat.forgetCommRing
 
@@ -85,7 +85,7 @@ instance forgetTopologicalRing (R : TopCommRingCat) :
   R.isTopologicalRing
 #align TopCommRing.forget_topological_ring TopCommRingCat.forgetTopologicalRing
 
-instance hasForgetToCommRingCat : HasForget₂ TopCommRingCat CommRingCat :=
+instance hasForgetToCommRingCat : HasForget₂ TopCommRingCat CommRingCat := fast_instance%
   HasForget₂.mk' (fun R => CommRingCat.of R) (fun _ => rfl) (fun f => f.val) HEq.rfl
 #align TopCommRing.has_forget_to_CommRing TopCommRingCat.hasForgetToCommRingCat
 
@@ -95,7 +95,7 @@ instance forgetToCommRingCatTopologicalSpace (R : TopCommRingCat) :
 #align TopCommRing.forget_to_CommRing_topological_space TopCommRingCat.forgetToCommRingCatTopologicalSpace
 
 /-- The forgetful functor to `TopCat`. -/
-instance hasForgetToTopCat : HasForget₂ TopCommRingCat TopCat :=
+instance hasForgetToTopCat : HasForget₂ TopCommRingCat TopCat := fast_instance%
   HasForget₂.mk' (fun R => TopCat.of R) (fun _ => rfl) (fun f => ⟨⇑f.1, f.2⟩) HEq.rfl
 #align TopCommRing.has_forget_to_Top TopCommRingCat.hasForgetToTopCat
 

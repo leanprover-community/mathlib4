@@ -19,7 +19,7 @@ open Metric Set Filter
 
 namespace Nat
 
-noncomputable instance : Dist ℕ :=
+noncomputable instance : Dist ℕ := fast_instance%
   ⟨fun x y => dist (x : ℝ) y⟩
 
 theorem dist_eq (x y : ℕ) : dist x y = |(x : ℝ) - y| := rfl
@@ -44,7 +44,7 @@ theorem closedEmbedding_coe_real : ClosedEmbedding ((↑) : ℕ → ℝ) :=
   closedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 #align nat.closed_embedding_coe_real Nat.closedEmbedding_coe_real
 
-instance : MetricSpace ℕ := Nat.uniformEmbedding_coe_real.comapMetricSpace _
+instance : MetricSpace ℕ := fast_instance% Nat.uniformEmbedding_coe_real.comapMetricSpace _
 
 theorem preimage_ball (x : ℕ) (r : ℝ) : (↑) ⁻¹' ball (x : ℝ) r = ball x r := rfl
 #align nat.preimage_ball Nat.preimage_ball
@@ -63,12 +63,12 @@ theorem closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r
       linarith
 #align nat.closed_ball_eq_Icc Nat.closedBall_eq_Icc
 
-instance : ProperSpace ℕ :=
+instance : ProperSpace ℕ := fast_instance%
   ⟨fun x r => by
     rw [closedBall_eq_Icc]
     exact (Set.finite_Icc _ _).isCompact⟩
 
-instance : NoncompactSpace ℕ :=
+instance : NoncompactSpace ℕ := fast_instance%
   noncompactSpace_of_neBot <| by simp [Filter.atTop_neBot]
 
 end Nat

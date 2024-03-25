@@ -55,10 +55,10 @@ def alternatingGroup : Subgroup (Perm α) :=
 #align alternating_group alternatingGroup
 
 -- Porting note (#10754): manually added instance
-instance fta : Fintype (alternatingGroup α) :=
+instance fta : Fintype (alternatingGroup α) := fast_instance%
   @Subtype.fintype _ _ sign.decidableMemKer _
 
-instance [Subsingleton α] : Unique (alternatingGroup α) :=
+instance [Subsingleton α] : Unique (alternatingGroup α) := fast_instance%
   ⟨⟨1⟩, fun ⟨p, _⟩ => Subtype.eq (Subsingleton.elim p _)⟩
 
 variable {α}
@@ -104,7 +104,7 @@ namespace alternatingGroup
 
 open Equiv.Perm
 
-instance normal : (alternatingGroup α).Normal :=
+instance normal : (alternatingGroup α).Normal := fast_instance%
   sign.normal_ker
 #align alternating_group.normal alternatingGroup.normal
 
@@ -223,7 +223,7 @@ theorem nontrivial_of_three_le_card (h3 : 3 ≤ card α) : Nontrivial (alternati
   exact le_trans h3 (card α).self_le_factorial
 #align alternating_group.nontrivial_of_three_le_card alternatingGroup.nontrivial_of_three_le_card
 
-instance {n : ℕ} : Nontrivial (alternatingGroup (Fin (n + 3))) :=
+instance {n : ℕ} : Nontrivial (alternatingGroup (Fin (n + 3))) := fast_instance%
   nontrivial_of_three_le_card
     (by
       rw [card_fin]
@@ -306,7 +306,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
 
 /-- Shows that $A_5$ is simple by taking an arbitrary non-identity element and showing by casework
   on its cycle type that its normal closure is all of $A_5$. -/
-instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
+instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) := fast_instance%
   ⟨fun H => by
     intro Hn
     refine' or_not.imp id fun Hb => _

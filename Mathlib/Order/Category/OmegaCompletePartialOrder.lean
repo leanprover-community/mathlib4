@@ -49,9 +49,9 @@ instance : BundledHom @ContinuousHom where
 
 -- Porting note: `deriving instance ConcreteCategory` didn't work.
 deriving instance LargeCategory for ωCPO
-instance : ConcreteCategory ωCPO := by unfold ωCPO; infer_instance
+instance : ConcreteCategory ωCPO := fast_instance% by unfold ωCPO; infer_instance
 
-instance : CoeSort ωCPO (Type*) :=
+instance : CoeSort ωCPO (Type*) := fast_instance%
   Bundled.coeSort
 
 /-- Construct a bundled ωCPO from the underlying type and typeclass. -/
@@ -64,10 +64,10 @@ theorem coe_of (α : Type*) [OmegaCompletePartialOrder α] : ↥(of α) = α :=
   rfl
 #align ωCPO.coe_of ωCPO.coe_of
 
-instance : Inhabited ωCPO :=
+instance : Inhabited ωCPO := fast_instance%
   ⟨of PUnit⟩
 
-instance (α : ωCPO) : OmegaCompletePartialOrder α :=
+instance (α : ωCPO) : OmegaCompletePartialOrder α := fast_instance%
   α.str
 
 section
@@ -95,7 +95,7 @@ def isProduct (J : Type v) (f : J → ωCPO) : IsLimit (product f) where
   fac s j := rfl
 #align ωCPO.has_products.is_product ωCPO.HasProducts.isProduct
 
-instance (J : Type v) (f : J → ωCPO.{v}) : HasProduct f :=
+instance (J : Type v) (f : J → ωCPO.{v}) : HasProduct f := fast_instance%
   HasLimit.mk ⟨_, isProduct _ f⟩
 
 end HasProducts
@@ -138,16 +138,16 @@ def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=
 
 end HasEqualizers
 
-instance : HasProducts.{v} ωCPO.{v} :=
+instance : HasProducts.{v} ωCPO.{v} := fast_instance%
   fun _ => { has_limit := fun _ => hasLimitOfIso Discrete.natIsoFunctor.symm }
 
-instance {X Y : ωCPO.{v}} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
+instance {X Y : ωCPO.{v}} (f g : X ⟶ Y) : HasLimit (parallelPair f g) := fast_instance%
   HasLimit.mk ⟨_, HasEqualizers.isEqualizer f g⟩
 
-instance : HasEqualizers ωCPO.{v} :=
+instance : HasEqualizers ωCPO.{v} := fast_instance%
   hasEqualizers_of_hasLimit_parallelPair _
 
-instance : HasLimits ωCPO.{v} :=
+instance : HasLimits ωCPO.{v} := fast_instance%
   has_limits_of_hasEqualizers_and_products
 
 end

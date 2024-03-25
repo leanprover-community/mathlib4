@@ -56,7 +56,7 @@ variable (S : IntermediateField K L)
 
 namespace IntermediateField
 
-instance : SetLike (IntermediateField K L) L :=
+instance : SetLike (IntermediateField K L) L := fast_instance%
   ⟨fun S => S.toSubalgebra.carrier, by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp ⟩
@@ -330,7 +330,7 @@ def Subfield.toIntermediateField (S : Subfield L) (algebra_map_mem : ∀ x, alge
 namespace IntermediateField
 
 /-- An intermediate field inherits a field structure -/
-instance toField : Field S :=
+instance toField : Field S := fast_instance%
   S.toSubfield.toField
 #align intermediate_field.to_field IntermediateField.toField
 
@@ -353,11 +353,11 @@ theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L
 /-! `IntermediateField`s inherit structure from their `Subalgebra` coercions. -/
 
 
-instance module' {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] : Module R S :=
+instance module' {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] : Module R S := fast_instance%
   S.toSubalgebra.module'
 #align intermediate_field.module' IntermediateField.module'
 
-instance module : Module K S :=
+instance module : Module K S := fast_instance%
   inferInstanceAs (Module K S.toSubsemiring)
 #align intermediate_field.module IntermediateField.module
 
@@ -374,7 +374,7 @@ theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
 
 #noalign intermediate_field.algebra'
 
-instance algebra : Algebra K S :=
+instance algebra : Algebra K S := fast_instance%
   inferInstanceAs (Algebra K S.toSubsemiring)
 #align intermediate_field.algebra IntermediateField.algebra
 
@@ -384,7 +384,7 @@ instance algebra : Algebra K S :=
 
 @[simp] lemma coe_algebraMap_apply (x : K) : ↑(algebraMap K S x) = algebraMap K L x := rfl
 
-instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
+instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R := fast_instance%
   IsScalarTower.subalgebra _ _ _ S.toSubalgebra
 #align intermediate_field.is_scalar_tower_bot IntermediateField.isScalarTower_bot
 
@@ -394,16 +394,16 @@ instance isScalarTower_mid {R : Type*} [Semiring R] [Algebra L R] [Algebra K R]
 #align intermediate_field.is_scalar_tower_mid IntermediateField.isScalarTower_mid
 
 /-- Specialize `is_scalar_tower_mid` to the common case where the top field is `L` -/
-instance isScalarTower_mid' : IsScalarTower K S L :=
+instance isScalarTower_mid' : IsScalarTower K S L := fast_instance%
   S.isScalarTower_mid
 #align intermediate_field.is_scalar_tower_mid' IntermediateField.isScalarTower_mid'
 
 section shortcut_instances
 variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
-instance : Algebra S T := T.algebra
-instance : Module S T := Algebra.toModule
-instance : SMul S T := Algebra.toSMul
-instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
+instance : Algebra S T := fast_instance% T.algebra
+instance : Module S T := fast_instance% Algebra.toModule
+instance : SMul S T := fast_instance% Algebra.toSMul
+instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := fast_instance% T.isScalarTower
 end shortcut_instances
 
 /-- Given `f : L →ₐ[K] L'`, `S.comap f` is the intermediate field between `K` and `L`
@@ -532,7 +532,7 @@ theorem fieldRange_val : S.val.fieldRange = S :=
   SetLike.ext' Subtype.range_val
 #align intermediate_field.field_range_val IntermediateField.fieldRange_val
 
-instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
+instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) := fast_instance%
   ⟨S.val⟩
 #align intermediate_field.alg_hom.inhabited IntermediateField.AlgHom.inhabited
 
@@ -744,11 +744,11 @@ section FiniteDimensional
 
 variable (F E : IntermediateField K L)
 
-instance finiteDimensional_left [FiniteDimensional K L] : FiniteDimensional K F :=
+instance finiteDimensional_left [FiniteDimensional K L] : FiniteDimensional K F := fast_instance%
   left K F L
 #align intermediate_field.finite_dimensional_left IntermediateField.finiteDimensional_left
 
-instance finiteDimensional_right [FiniteDimensional K L] : FiniteDimensional F L :=
+instance finiteDimensional_right [FiniteDimensional K L] : FiniteDimensional F L := fast_instance%
   right K F L
 #align intermediate_field.finite_dimensional_right IntermediateField.finiteDimensional_right
 

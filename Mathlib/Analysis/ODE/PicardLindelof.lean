@@ -77,10 +77,10 @@ namespace PicardLindelof
 
 variable (v : PicardLindelof E)
 
-instance : CoeFun (PicardLindelof E) fun _ => ℝ → E → E :=
+instance : CoeFun (PicardLindelof E) fun _ => ℝ → E → E := fast_instance%
   ⟨toFun⟩
 
-instance : Inhabited (PicardLindelof E) :=
+instance : Inhabited (PicardLindelof E) := fast_instance%
   ⟨⟨0, 0, 0, ⟨0, le_rfl, le_rfl⟩, 0, 0, 0, 0,
       { ht₀ := by rw [Subtype.coe_mk, Icc_self]; exact mem_singleton _
         hR := le_rfl
@@ -166,10 +166,10 @@ namespace FunSpace
 
 variable {v} (f : FunSpace v)
 
-instance : CoeFun (FunSpace v) fun _ => Icc v.tMin v.tMax → E :=
+instance : CoeFun (FunSpace v) fun _ => Icc v.tMin v.tMax → E := fast_instance%
   ⟨toFun⟩
 
-instance : Inhabited v.FunSpace :=
+instance : Inhabited v.FunSpace := fast_instance%
   ⟨⟨fun _ => v.x₀, rfl, (LipschitzWith.const _).weaken (zero_le _)⟩⟩
 
 protected theorem lipschitz : LipschitzWith v.C f :=
@@ -185,7 +185,7 @@ def toContinuousMap : v.FunSpace ↪ C(Icc v.tMin v.tMax, E) :=
   ⟨fun f => ⟨f, f.continuous⟩, fun f g h => by cases f; cases g; simpa using h⟩
 #align picard_lindelof.fun_space.to_continuous_map PicardLindelof.FunSpace.toContinuousMap
 
-instance : MetricSpace v.FunSpace :=
+instance : MetricSpace v.FunSpace := fast_instance%
   MetricSpace.induced toContinuousMap toContinuousMap.injective inferInstance
 
 theorem uniformInducing_toContinuousMap : UniformInducing (@toContinuousMap _ _ _ v) :=
@@ -244,7 +244,7 @@ theorem dist_le_of_forall {f₁ f₂ : FunSpace v} {d : ℝ} (h : ∀ t, dist (f
     v.nonempty_Icc.to_subtype).2 h
 #align picard_lindelof.fun_space.dist_le_of_forall PicardLindelof.FunSpace.dist_le_of_forall
 
-instance [CompleteSpace E] : CompleteSpace v.FunSpace := by
+instance [CompleteSpace E] : CompleteSpace v.FunSpace := fast_instance% by
   refine' (completeSpace_iff_isComplete_range uniformInducing_toContinuousMap).2
       (IsClosed.isComplete _)
   rw [range_toContinuousMap, setOf_and]

@@ -37,7 +37,7 @@ def LeftExactFunctor :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.LeftExactFunctor CategoryTheory.LeftExactFunctor
 
-instance : Category (LeftExactFunctor C D) :=
+instance : Category (LeftExactFunctor C D) := fast_instance%
   FullSubcategory.category _
 
 /-- `C ⥤ₗ D` denotes left exact functors `C ⥤ D` -/
@@ -49,10 +49,10 @@ def LeftExactFunctor.forget : (C ⥤ₗ D) ⥤ C ⥤ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.LeftExactFunctor.forget CategoryTheory.LeftExactFunctor.forget
 
-instance : Full (LeftExactFunctor.forget C D) :=
+instance : Full (LeftExactFunctor.forget C D) := fast_instance%
   FullSubcategory.full _
 
-instance : Faithful (LeftExactFunctor.forget C D) :=
+instance : Faithful (LeftExactFunctor.forget C D) := fast_instance%
   FullSubcategory.faithful _
 
 -- porting note (#10927): removed @[nolint has_nonempty_instance]
@@ -62,7 +62,7 @@ def RightExactFunctor :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.RightExactFunctor CategoryTheory.RightExactFunctor
 
-instance : Category (RightExactFunctor C D) :=
+instance : Category (RightExactFunctor C D) := fast_instance%
   FullSubcategory.category _
 
 /-- `C ⥤ᵣ D` denotes right exact functors `C ⥤ D` -/
@@ -74,10 +74,10 @@ def RightExactFunctor.forget : (C ⥤ᵣ D) ⥤ C ⥤ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.RightExactFunctor.forget CategoryTheory.RightExactFunctor.forget
 
-instance : Full (RightExactFunctor.forget C D) :=
+instance : Full (RightExactFunctor.forget C D) := fast_instance%
   FullSubcategory.full _
 
-instance : Faithful (RightExactFunctor.forget C D) :=
+instance : Faithful (RightExactFunctor.forget C D) := fast_instance%
   FullSubcategory.faithful _
 
 -- porting note (#10927): removed @[nolint has_nonempty_instance]
@@ -88,7 +88,7 @@ def ExactFunctor :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.ExactFunctor CategoryTheory.ExactFunctor
 
-instance : Category (ExactFunctor C D) :=
+instance : Category (ExactFunctor C D) := fast_instance%
   FullSubcategory.category _
 
 -- mathport name: «expr ⥤ₑ »
@@ -101,10 +101,10 @@ def ExactFunctor.forget : (C ⥤ₑ D) ⥤ C ⥤ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.ExactFunctor.forget CategoryTheory.ExactFunctor.forget
 
-instance : Full (ExactFunctor.forget C D) :=
+instance : Full (ExactFunctor.forget C D) := fast_instance%
   FullSubcategory.full _
 
-instance : Faithful (ExactFunctor.forget C D) :=
+instance : Faithful (ExactFunctor.forget C D) := fast_instance%
   FullSubcategory.faithful _
 
 /-- Turn an exact functor into a left exact functor. -/
@@ -113,10 +113,10 @@ def LeftExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ₗ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.LeftExactFunctor.of_exact CategoryTheory.LeftExactFunctor.ofExact
 
-instance : Full (LeftExactFunctor.ofExact C D) :=
+instance : Full (LeftExactFunctor.ofExact C D) := fast_instance%
   FullSubcategory.full_map _
 
-instance : Faithful (LeftExactFunctor.ofExact C D) :=
+instance : Faithful (LeftExactFunctor.ofExact C D) := fast_instance%
   FullSubcategory.faithful_map _
 
 /-- Turn an exact functor into a left exact functor. -/
@@ -125,10 +125,10 @@ def RightExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ᵣ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.RightExactFunctor.of_exact CategoryTheory.RightExactFunctor.ofExact
 
-instance : Full (RightExactFunctor.ofExact C D) :=
+instance : Full (RightExactFunctor.ofExact C D) := fast_instance%
   FullSubcategory.full_map _
 
-instance : Faithful (RightExactFunctor.ofExact C D) :=
+instance : Faithful (RightExactFunctor.ofExact C D) := fast_instance%
   FullSubcategory.faithful_map _
 
 variable {C D}
@@ -256,16 +256,16 @@ theorem ExactFunctor.forget_obj_of (F : C ⥤ D) [PreservesFiniteLimits F]
 set_option linter.uppercaseLean3 false in
 #align category_theory.ExactFunctor.forget_obj_of CategoryTheory.ExactFunctor.forget_obj_of
 
-noncomputable instance (F : C ⥤ₗ D) : PreservesFiniteLimits F.obj :=
+noncomputable instance (F : C ⥤ₗ D) : PreservesFiniteLimits F.obj := fast_instance%
   F.property.some
 
-noncomputable instance (F : C ⥤ᵣ D) : PreservesFiniteColimits F.obj :=
+noncomputable instance (F : C ⥤ᵣ D) : PreservesFiniteColimits F.obj := fast_instance%
   F.property.some
 
-noncomputable instance (F : C ⥤ₑ D) : PreservesFiniteLimits F.obj :=
+noncomputable instance (F : C ⥤ₑ D) : PreservesFiniteLimits F.obj := fast_instance%
   F.property.1.some
 
-noncomputable instance (F : C ⥤ₑ D) : PreservesFiniteColimits F.obj :=
+noncomputable instance (F : C ⥤ₑ D) : PreservesFiniteColimits F.obj := fast_instance%
   F.property.2.some
 
 end

@@ -34,7 +34,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Mod
 
 open Pointwise
 
-instance hasSMul' : SMul (Ideal R) (Submodule R M) :=
+instance hasSMul' : SMul (Ideal R) (Submodule R M) := fast_instance%
   ⟨Submodule.map₂ (LinearMap.lsmul R M)⟩
 #align submodule.has_smul' Submodule.hasSMul'
 
@@ -481,7 +481,7 @@ section MulAndRadical
 variable {R : Type u} {ι : Type*} [CommSemiring R]
 variable {I J K L : Ideal R}
 
-instance : Mul (Ideal R) :=
+instance : Mul (Ideal R) := fast_instance%
   ⟨(· • ·)⟩
 
 @[simp]
@@ -1133,7 +1133,7 @@ theorem radical_bot_of_noZeroDivisors {R : Type u} [CommSemiring R] [NoZeroDivis
   eq_bot_iff.2 isRadical_bot_of_noZeroDivisors
 #align ideal.radical_bot_of_no_zero_divisors Ideal.radical_bot_of_noZeroDivisors
 
-instance : IdemCommSemiring (Ideal R) :=
+instance : IdemCommSemiring (Ideal R) := fast_instance%
   inferInstance
 
 variable (R)
@@ -1476,7 +1476,7 @@ theorem comap_le_map_of_inverse (g : G) (I : Ideal S) (h : Function.LeftInverse 
   comap_le_map_of_inv_on _ _ _ <| h.leftInvOn _
 #align ideal.comap_le_map_of_inverse Ideal.comap_le_map_of_inverse
 
-instance IsPrime.comap [hK : K.IsPrime] : (comap f K).IsPrime :=
+instance IsPrime.comap [hK : K.IsPrime] : (comap f K).IsPrime := fast_instance%
   ⟨comap_ne_top _ hK.1, fun {x y} => by simp only [mem_comap, map_mul]; apply hK.2⟩
 #align ideal.is_prime.comap Ideal.IsPrime.comap
 

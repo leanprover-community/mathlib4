@@ -171,7 +171,7 @@ instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Mono f]
   rw [imageMonoFactorisation_e']
   exact IsIso.comp_isIso
 
-instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Epi f] : IsIso (imageMonoFactorisation f).m := by
+instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Epi f] : IsIso (imageMonoFactorisation f).m := fast_instance% by
   dsimp
   infer_instance
 
@@ -303,15 +303,15 @@ attribute [local instance] nonPreadditiveAbelian
 variable {P Q : C} (f : P ⟶ Q)
 
 /-- The map `p : P ⟶ image f` is an epimorphism -/
-instance : Epi (Abelian.factorThruImage f) := by infer_instance
+instance : Epi (Abelian.factorThruImage f) := fast_instance% by infer_instance
 
-instance isIso_factorThruImage [Mono f] : IsIso (Abelian.factorThruImage f) := by infer_instance
+instance isIso_factorThruImage [Mono f] : IsIso (Abelian.factorThruImage f) := fast_instance% by infer_instance
 #align category_theory.abelian.is_iso_factor_thru_image CategoryTheory.Abelian.isIso_factorThruImage
 
 /-- The canonical morphism `i : coimage f ⟶ Q` is a monomorphism -/
-instance : Mono (Abelian.factorThruCoimage f) := by infer_instance
+instance : Mono (Abelian.factorThruCoimage f) := fast_instance% by infer_instance
 
-instance isIso_factorThruCoimage [Epi f] : IsIso (Abelian.factorThruCoimage f) := by infer_instance
+instance isIso_factorThruCoimage [Epi f] : IsIso (Abelian.factorThruCoimage f) := fast_instance% by infer_instance
 #align category_theory.abelian.is_iso_factor_thru_coimage CategoryTheory.Abelian.isIso_factorThruCoimage
 
 end
@@ -392,7 +392,7 @@ variable {X Y : C} (f : X ⟶ Y)
 /-- The coimage-image comparison morphism is always an isomorphism in an abelian category.
 See `CategoryTheory.Abelian.ofCoimageImageComparisonIsIso` for the converse.
 -/
-instance : IsIso (coimageImageComparison f) := by
+instance : IsIso (coimageImageComparison f) := fast_instance% by
   convert
     IsIso.of_iso
       (IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage
@@ -611,7 +611,7 @@ variable [Limits.HasPullbacks C] {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- In an abelian category, the pullback of an epimorphism is an epimorphism.
     Proof from [aluffi2016, IX.2.3], cf. [borceux-vol2, 1.7.6] -/
-instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y) :=
+instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y) := fast_instance%
   -- It will suffice to consider some morphism e : Y ⟶ R such that
     -- pullback.snd ≫ e = 0 and show that e = 0.
     epi_of_cancel_zero _ fun {R} e h => by
@@ -644,7 +644,7 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y)
 #align category_theory.abelian.epi_pullback_of_epi_f CategoryTheory.Abelian.epi_pullback_of_epi_f
 
 /-- In an abelian category, the pullback of an epimorphism is an epimorphism. -/
-instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X) :=
+instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X) := fast_instance%
   -- It will suffice to consider some morphism e : X ⟶ R such that
   -- pullback.fst ≫ e = 0 and show that e = 0.
   epi_of_cancel_zero _ fun {R} e h => by
@@ -703,7 +703,7 @@ section MonoPushout
 
 variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
-instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g) :=
+instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g) := fast_instance%
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift (0 : R ⟶ Y) e
     have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa [u]
@@ -726,7 +726,7 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g
       _ = 0 := zero_comp
 #align category_theory.abelian.mono_pushout_of_mono_f CategoryTheory.Abelian.mono_pushout_of_mono_f
 
-instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g) :=
+instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g) := fast_instance%
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift e (0 : R ⟶ Z)
     have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa [u]

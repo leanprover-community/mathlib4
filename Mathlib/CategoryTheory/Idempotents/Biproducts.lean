@@ -99,7 +99,7 @@ def complement (P : Karoubi C) : Karoubi C where
   idem := idem_of_id_sub_idem P.p P.idem
 #align category_theory.idempotents.karoubi.complement CategoryTheory.Idempotents.Karoubi.complement
 
-instance (P : Karoubi C) : HasBinaryBiproduct P P.complement :=
+instance (P : Karoubi C) : HasBinaryBiproduct P P.complement := fast_instance%
   hasBinaryBiproduct_of_total
     { pt := P.X
       fst := P.decompId_p

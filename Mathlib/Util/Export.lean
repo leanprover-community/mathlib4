@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Lean.CoreM
 import Lean.Util.FoldConsts
+import Mathlib.Tactic.FastInstance
 
 /-!
 A rudimentary export format, adapted from
@@ -32,9 +33,9 @@ inductive Entry
   | defn (n : Name)
 deriving Inhabited
 
-instance : Coe Name Entry := ⟨Entry.name⟩
-instance : Coe Level Entry := ⟨Entry.level⟩
-instance : Coe Expr Entry := ⟨Entry.expr⟩
+instance : Coe Name Entry := fast_instance% ⟨Entry.name⟩
+instance : Coe Level Entry := fast_instance% ⟨Entry.level⟩
+instance : Coe Expr Entry := fast_instance% ⟨Entry.expr⟩
 
 structure Alloc (α) [BEq α] [Hashable α] where
   map : HashMap α Nat

@@ -31,7 +31,7 @@ class QuasiIso (φ : S₁ ⟶ S₂) : Prop where
   /-- the homology map is an isomorphism -/
   isIso' : IsIso (homologyMap φ)
 
-instance QuasiIso.isIso (φ : S₁ ⟶ S₂) [QuasiIso φ] : IsIso (homologyMap φ) := QuasiIso.isIso'
+instance QuasiIso.isIso (φ : S₁ ⟶ S₂) [QuasiIso φ] : IsIso (homologyMap φ) := fast_instance% QuasiIso.isIso'
 
 lemma quasiIso_iff (φ : S₁ ⟶ S₂) :
     QuasiIso φ ↔ IsIso (homologyMap φ) := by
@@ -41,7 +41,7 @@ lemma quasiIso_iff (φ : S₁ ⟶ S₂) :
   · intro h
     exact ⟨h⟩
 
-instance quasiIso_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ] : QuasiIso φ :=
+instance quasiIso_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ] : QuasiIso φ := fast_instance%
   ⟨IsIso.of_iso (homologyMapIso (asIso φ))⟩
 
 instance quasiIso_comp (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) [hφ : QuasiIso φ] [hφ' : QuasiIso φ'] :

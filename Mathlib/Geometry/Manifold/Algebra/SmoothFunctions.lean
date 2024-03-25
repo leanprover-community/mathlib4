@@ -324,7 +324,7 @@ def C : 𝕜 →+* C^∞⟮I, N; 𝓘(𝕜, A), A⟯ where
 set_option linter.uppercaseLean3 false in
 #align smooth_map.C SmoothMap.C
 
-instance algebra : Algebra 𝕜 C^∞⟮I, N; 𝓘(𝕜, A), A⟯ :=
+instance algebra : Algebra 𝕜 C^∞⟮I, N; 𝓘(𝕜, A), A⟯ := fast_instance%
   { --SmoothMap.semiring with -- Porting note: Commented this out.
     smul := fun r f => ⟨r • f, smooth_const.smul f.smooth⟩
     toRingHom := SmoothMap.C

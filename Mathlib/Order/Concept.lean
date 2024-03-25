@@ -199,7 +199,7 @@ theorem fst_injective : Injective fun c : Concept α β r => c.fst := fun _ _ =>
 theorem snd_injective : Injective fun c : Concept α β r => c.snd := fun _ _ => ext'
 #align concept.snd_injective Concept.snd_injective
 
-instance instSupConcept : Sup (Concept α β r) :=
+instance instSupConcept : Sup (Concept α β r) := fast_instance%
   ⟨fun c d =>
     { fst := extentClosure r (c.snd ∩ d.snd)
       snd := c.snd ∩ d.snd
@@ -208,7 +208,7 @@ instance instSupConcept : Sup (Concept α β r) :=
           intentClosure_extentClosure_intentClosure]
       closure_snd := rfl }⟩
 
-instance instInfConcept : Inf (Concept α β r) :=
+instance instInfConcept : Inf (Concept α β r) := fast_instance%
   ⟨fun c d =>
     { fst := c.fst ∩ d.fst
       snd := intentClosure r (c.fst ∩ d.fst)
@@ -217,7 +217,7 @@ instance instInfConcept : Inf (Concept α β r) :=
         rw [← c.closure_snd, ← d.closure_snd, ← extentClosure_union,
           extentClosure_intentClosure_extentClosure] }⟩
 
-instance instSemilatticeInfConcept : SemilatticeInf (Concept α β r) :=
+instance instSemilatticeInfConcept : SemilatticeInf (Concept α β r) := fast_instance%
   (fst_injective.semilatticeInf _) fun _ _ => rfl
 
 @[simp]
@@ -252,7 +252,7 @@ theorem strictAnti_snd : StrictAnti (Prod.snd ∘ toProd : Concept α β r → S
   snd_ssubset_snd_iff.2
 #align concept.strict_anti_snd Concept.strictAnti_snd
 
-instance instLatticeConcept : Lattice (Concept α β r) :=
+instance instLatticeConcept : Lattice (Concept α β r) := fast_instance%
   { Concept.instSemilatticeInfConcept with
     sup := (· ⊔ ·)
     le_sup_left := fun c d => snd_subset_snd_iff.1 <| inter_subset_left _ _
@@ -267,7 +267,7 @@ instance instBoundedOrderConcept : BoundedOrder (Concept α β r) where
   bot := ⟨⟨extentClosure r univ, univ⟩, eq_univ_of_forall fun _ _ ha => ha trivial, rfl⟩
   bot_le _ := snd_subset_snd_iff.1 <| subset_univ _
 
-instance : SupSet (Concept α β r) :=
+instance : SupSet (Concept α β r) := fast_instance%
   ⟨fun S =>
     { fst := extentClosure r (⋂ c ∈ S, (c : Concept _ _ _).snd)
       snd := ⋂ c ∈ S, (c : Concept _ _ _).snd
@@ -276,7 +276,7 @@ instance : SupSet (Concept α β r) :=
           intentClosure_extentClosure_intentClosure]
       closure_snd := rfl }⟩
 
-instance : InfSet (Concept α β r) :=
+instance : InfSet (Concept α β r) := fast_instance%
   ⟨fun S =>
     { fst := ⋂ c ∈ S, (c : Concept _ _ _).fst
       snd := intentClosure r (⋂ c ∈ S, (c : Concept _ _ _).fst)
@@ -285,7 +285,7 @@ instance : InfSet (Concept α β r) :=
         simp_rw [← closure_snd, ← extentClosure_iUnion₂,
           extentClosure_intentClosure_extentClosure] }⟩
 
-instance : CompleteLattice (Concept α β r) :=
+instance : CompleteLattice (Concept α β r) := fast_instance%
   { Concept.instLatticeConcept,
     Concept.instBoundedOrderConcept with
     sup := Concept.instSupConcept.sup
@@ -358,7 +358,7 @@ theorem sInf_snd (S : Set (Concept α β r)) :
   rfl
 #align concept.Inf_snd Concept.sInf_snd
 
-instance : Inhabited (Concept α β r) :=
+instance : Inhabited (Concept α β r) := fast_instance%
   ⟨⊥⟩
 
 /-- Swap the sets of a concept to make it a concept of the dual context. -/

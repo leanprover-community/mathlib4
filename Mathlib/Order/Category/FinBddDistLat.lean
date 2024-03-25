@@ -30,13 +30,13 @@ structure FinBddDistLat where
 
 namespace FinBddDistLat
 
-instance : CoeSort FinBddDistLat (Type*) :=
+instance : CoeSort FinBddDistLat (Type*) := fast_instance%
   ⟨fun X => X.toBddDistLat⟩
 
-instance (X : FinBddDistLat) : DistribLattice X :=
+instance (X : FinBddDistLat) : DistribLattice X := fast_instance%
   X.toBddDistLat.toDistLat.str
 
-instance (X : FinBddDistLat) : BoundedOrder X :=
+instance (X : FinBddDistLat) : BoundedOrder X := fast_instance%
   X.toBddDistLat.isBoundedOrder
 
 attribute [instance] FinBddDistLat.isFintype
@@ -56,18 +56,18 @@ def of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDist
   ⟨⟨{α := α}⟩⟩
 #align FinBddDistLat.of' FinBddDistLat.of'
 
-instance : Inhabited FinBddDistLat :=
+instance : Inhabited FinBddDistLat := fast_instance%
   ⟨of PUnit⟩
 
-instance largeCategory : LargeCategory FinBddDistLat :=
+instance largeCategory : LargeCategory FinBddDistLat := fast_instance%
   InducedCategory.category toBddDistLat
 #align FinBddDistLat.large_category FinBddDistLat.largeCategory
 
-instance concreteCategory : ConcreteCategory FinBddDistLat :=
+instance concreteCategory : ConcreteCategory FinBddDistLat := fast_instance%
   InducedCategory.concreteCategory toBddDistLat
 #align FinBddDistLat.concrete_category FinBddDistLat.concreteCategory
 
-instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat :=
+instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat := fast_instance%
   InducedCategory.hasForget₂ FinBddDistLat.toBddDistLat
 #align FinBddDistLat.has_forget_to_BddDistLat FinBddDistLat.hasForgetToBddDistLat
 

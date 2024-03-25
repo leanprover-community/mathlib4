@@ -57,7 +57,7 @@ def defaultCost [DecidableEq α] : Cost α α ℕ where
   insert _ := 1
   substitute a b := if a = b then 0 else 1
 
-instance [DecidableEq α] : Inhabited (Cost α α ℕ) := ⟨defaultCost⟩
+instance [DecidableEq α] : Inhabited (Cost α α ℕ) := fast_instance% ⟨defaultCost⟩
 
 /--
 Cost structure given by a function.

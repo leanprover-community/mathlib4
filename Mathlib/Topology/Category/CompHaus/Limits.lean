@@ -232,14 +232,14 @@ lemma finiteCoproduct.ι_desc_apply {B : CompHaus} {π : (a : α) → X a ⟶ B}
   simp only [ι_desc]
 -- `elementwise` should work here, but doesn't
 
-instance : PreservesFiniteCoproducts compHausToTop := by
+instance : PreservesFiniteCoproducts compHausToTop := fast_instance% by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) compHausToTop from
     preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (CompHaus.finiteCoproduct.isColimit _)
   exact TopCat.sigmaCofanIsColimit _
 
-instance : FinitaryExtensive CompHaus :=
+instance : FinitaryExtensive CompHaus := fast_instance%
   finitaryExtensive_of_preserves_and_reflects compHausToTop
 
 end FiniteCoproducts

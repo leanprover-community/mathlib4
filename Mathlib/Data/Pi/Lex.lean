@@ -87,7 +87,7 @@ theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r)
           Or.inr <| Or.inr <| ⟨i, fun j hj => (hri j hj).symm, hi.resolve_left hne⟩] }
 #align pi.is_trichotomous_lex Pi.isTrichotomous_lex
 
-instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) :=
+instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) := fast_instance%
   ⟨Pi.Lex (· < ·) @fun _ => (· < ·)⟩
 
 instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
@@ -101,7 +101,7 @@ instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
       ⟨N₂, fun j hj => (lt_N₁ _ (hj.trans H)).trans (lt_N₂ _ hj), (lt_N₁ _ H).symm ▸ b_lt_c⟩]
 #align pi.lex.is_strict_order Pi.Lex.isStrictOrder
 
-instance [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Lex (∀ i, β i)) :=
+instance [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Lex (∀ i, β i)) := fast_instance%
   partialOrderOfSO (· < ·)
 
 /-- `Πₗ i, α i` is a linear order if the original order is well-founded. -/

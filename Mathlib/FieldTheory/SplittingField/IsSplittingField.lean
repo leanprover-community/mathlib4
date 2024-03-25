@@ -69,7 +69,7 @@ section ScalarTower
 
 variable [Algebra F K] [Algebra F L] [IsScalarTower F K L]
 
-instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <| algebraMap F K) :=
+instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <| algebraMap F K) := fast_instance%
   ⟨by rw [splits_map_iff, ← IsScalarTower.algebraMap_eq]; exact splits L f,
     Subalgebra.restrictScalars_injective F <| by
       rw [rootSet, aroots, map_map, ← IsScalarTower.algebraMap_eq, Subalgebra.restrictScalars_top,

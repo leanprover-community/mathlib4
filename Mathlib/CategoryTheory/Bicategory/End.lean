@@ -24,10 +24,10 @@ def EndMonoidal (X : C) :=
 
 -- Porting note: Deriving this fails in the definition above.
 -- Adding category instance manually.
-instance (X : C) : Category (EndMonoidal X) :=
+instance (X : C) : Category (EndMonoidal X) := fast_instance%
   show Category (X ⟶ X) from inferInstance
 
-instance (X : C) : Inhabited (EndMonoidal X) :=
+instance (X : C) : Inhabited (EndMonoidal X) := fast_instance%
   ⟨𝟙 X⟩
 
 open Bicategory

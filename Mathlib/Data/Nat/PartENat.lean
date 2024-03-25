@@ -69,19 +69,19 @@ def some : ℕ → PartENat :=
   Part.some
 #align part_enat.some PartENat.some
 
-instance : Zero PartENat :=
+instance : Zero PartENat := fast_instance%
   ⟨some 0⟩
 
-instance : Inhabited PartENat :=
+instance : Inhabited PartENat := fast_instance%
   ⟨0⟩
 
-instance : One PartENat :=
+instance : One PartENat := fast_instance%
   ⟨some 1⟩
 
-instance : Add PartENat :=
+instance : Add PartENat := fast_instance%
   ⟨fun x y => ⟨x.Dom ∧ y.Dom, fun h => get x h.1 + get y h.2⟩⟩
 
-instance (n : ℕ) : Decidable (some n).Dom :=
+instance (n : ℕ) : Decidable (some n).Dom := fast_instance%
   isTrue trivial
 
 @[simp]
@@ -98,7 +98,7 @@ instance addCommMonoid : AddCommMonoid PartENat where
   add_assoc x y z := Part.ext' and_assoc fun _ _ => add_assoc _ _ _
   nsmul := nsmulRec
 
-instance : AddCommMonoidWithOne PartENat :=
+instance : AddCommMonoidWithOne PartENat := fast_instance%
   { PartENat.addCommMonoid with
     one := 1
     natCast := some
@@ -135,19 +135,19 @@ theorem dom_zero : (0 : PartENat).Dom :=
 theorem dom_one : (1 : PartENat).Dom :=
   trivial
 
-instance : CanLift PartENat ℕ (↑) Dom :=
+instance : CanLift PartENat ℕ (↑) Dom := fast_instance%
   ⟨fun n hn => ⟨n.get hn, Part.some_get _⟩⟩
 
-instance : LE PartENat :=
+instance : LE PartENat := fast_instance%
   ⟨fun x y => ∃ h : y.Dom → x.Dom, ∀ hy : y.Dom, x.get (h hy) ≤ y.get hy⟩
 
-instance : Top PartENat :=
+instance : Top PartENat := fast_instance%
   ⟨none⟩
 
-instance : Bot PartENat :=
+instance : Bot PartENat := fast_instance%
   ⟨0⟩
 
-instance : Sup PartENat :=
+instance : Sup PartENat := fast_instance%
   ⟨fun x y => ⟨x.Dom ∧ y.Dom, fun h => x.get h.1 ⊔ y.get h.2⟩⟩
 
 theorem le_def (x y : PartENat) :
@@ -235,7 +235,7 @@ theorem dom_of_le_natCast {x : PartENat} {y : ℕ} (h : x ≤ y) : x.Dom := by
   exact dom_of_le_some h
 #align part_enat.dom_of_le_coe PartENat.dom_of_le_natCast
 
-instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Decidable (x ≤ y) :=
+instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Decidable (x ≤ y) := fast_instance%
   if hx : x.Dom then
     decidable_of_decidable_of_iff (by rw [le_def])
   else
@@ -277,14 +277,14 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
     exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_le (h _) (H _)⟩
 #align part_enat.lt_def PartENat.lt_def
 
-noncomputable instance orderedAddCommMonoid : OrderedAddCommMonoid PartENat :=
+noncomputable instance orderedAddCommMonoid : OrderedAddCommMonoid PartENat := fast_instance%
   { PartENat.partialOrder, PartENat.addCommMonoid with
     add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
       PartENat.casesOn c (by simp [top_add]) fun c =>
         ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
           simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
 
-instance semilatticeSup : SemilatticeSup PartENat :=
+instance semilatticeSup : SemilatticeSup PartENat := fast_instance%
   { PartENat.partialOrder with
     sup := (· ⊔ ·)
     le_sup_left := fun _ _ => ⟨And.left, fun _ => le_sup_left⟩
@@ -443,7 +443,7 @@ instance isTotal : IsTotal PartENat (· ≤ ·) where
       (PartENat.casesOn y (fun _ => Or.inl le_top) fun x y =>
         (le_total x y).elim (Or.inr ∘ coe_le_coe.2) (Or.inl ∘ coe_le_coe.2))
 
-noncomputable instance linearOrder : LinearOrder PartENat :=
+noncomputable instance linearOrder : LinearOrder PartENat := fast_instance%
   { PartENat.partialOrder with
     le_total := IsTotal.total
     decidableLE := Classical.decRel _
@@ -454,17 +454,17 @@ noncomputable instance linearOrder : LinearOrder PartENat :=
       rw [@sup_eq_maxDefault PartENat _ (id _) _]
       rfl }
 
-instance boundedOrder : BoundedOrder PartENat :=
+instance boundedOrder : BoundedOrder PartENat := fast_instance%
   { PartENat.orderTop, PartENat.orderBot with }
 
-noncomputable instance lattice : Lattice PartENat :=
+noncomputable instance lattice : Lattice PartENat := fast_instance%
   { PartENat.semilatticeSup with
     inf := min
     inf_le_left := min_le_left
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }
 
-noncomputable instance : CanonicallyOrderedAddCommMonoid PartENat :=
+noncomputable instance : CanonicallyOrderedAddCommMonoid PartENat := fast_instance%
   { PartENat.semilatticeSup, PartENat.orderBot,
     PartENat.orderedAddCommMonoid with
     le_self_add := fun a b =>
@@ -681,7 +681,7 @@ def ofENat : ℕ∞ → PartENat :=
   | Option.some n => some n
 
 -- Porting note (#10754): new instance
-instance : Coe ℕ∞ PartENat := ⟨ofENat⟩
+instance : Coe ℕ∞ PartENat := fast_instance% ⟨ofENat⟩
 
 -- Porting note: new. This could probably be moved to tests or removed.
 example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
@@ -826,12 +826,12 @@ theorem lt_wf : @WellFounded PartENat (· < ·) := by
     exact InvImage.wf _ wellFounded_lt
 #align part_enat.lt_wf PartENat.lt_wf
 
-instance : WellFoundedLT PartENat :=
+instance : WellFoundedLT PartENat := fast_instance%
   ⟨lt_wf⟩
 
-instance isWellOrder : IsWellOrder PartENat (· < ·) := {}
+instance isWellOrder : IsWellOrder PartENat (· < ·) := fast_instance% {}
 
-instance wellFoundedRelation : WellFoundedRelation PartENat :=
+instance wellFoundedRelation : WellFoundedRelation PartENat := fast_instance%
   ⟨(· < ·), lt_wf⟩
 
 section Find
@@ -885,11 +885,11 @@ theorem find_eq_top_iff : find P = ⊤ ↔ ∀ n, ¬P n :=
 
 end Find
 
-noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
+noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat := fast_instance%
   { PartENat.linearOrder, PartENat.orderedAddCommMonoid, PartENat.orderTop with
     top_add' := top_add }
 
-noncomputable instance : CompleteLinearOrder PartENat :=
+noncomputable instance : CompleteLinearOrder PartENat := fast_instance%
   { PartENat.lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,
     PartENat.linearOrder with
     inf := (· ⊓ ·)

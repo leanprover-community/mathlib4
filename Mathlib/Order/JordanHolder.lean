@@ -146,7 +146,7 @@ instance coeFun : CoeFun (CompositionSeries X) fun x => Fin (x.length + 1) → X
   coe := CompositionSeries.series
 #align composition_series.has_coe_to_fun CompositionSeries.coeFun
 
-instance inhabited [Inhabited X] : Inhabited (CompositionSeries X) :=
+instance inhabited [Inhabited X] : Inhabited (CompositionSeries X) := fast_instance%
   ⟨{  length := 0
       series := default
       step' := fun x => x.elim0 }⟩
@@ -181,7 +181,7 @@ protected theorem inj (s : CompositionSeries X) {i j : Fin s.length.succ} : s i 
   s.injective.eq_iff
 #align composition_series.inj CompositionSeries.inj
 
-instance membership : Membership X (CompositionSeries X) :=
+instance membership : Membership X (CompositionSeries X) := fast_instance%
   ⟨fun x s => x ∈ Set.range s⟩
 #align composition_series.has_mem CompositionSeries.membership
 

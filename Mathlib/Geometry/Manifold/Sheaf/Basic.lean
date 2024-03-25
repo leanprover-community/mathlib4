@@ -42,12 +42,12 @@ variable {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
   (M : Type u) [TopologicalSpace M] [ChartedSpace H M] (M' : Type u) [TopologicalSpace M']
   [ChartedSpace H' M']
 
-instance TopCat.of.chartedSpace : ChartedSpace H (TopCat.of M) :=
+instance TopCat.of.chartedSpace : ChartedSpace H (TopCat.of M) := fast_instance%
   (inferInstance : ChartedSpace H M)
 set_option linter.uppercaseLean3 false in
 #align Top.of.charted_space TopCat.of.chartedSpace
 
-instance TopCat.of.hasGroupoid [HasGroupoid M G] : HasGroupoid (TopCat.of M) G :=
+instance TopCat.of.hasGroupoid [HasGroupoid M G] : HasGroupoid (TopCat.of M) G := fast_instance%
   (inferInstance : HasGroupoid M G)
 set_option linter.uppercaseLean3 false in
 #align Top.of.has_groupoid TopCat.of.hasGroupoid

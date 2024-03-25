@@ -54,7 +54,7 @@ namespace Game
 instance : Neg Game where
   neg := Quot.map Neg.neg <| fun _ _ => (neg_equiv_neg_iff).2
 
-instance : Zero Game where zero := ⟦0⟧
+instance : Zero Game where zero := fast_instance% ⟦0⟧
 instance : Add Game where
   add := Quotient.map₂ HAdd.hAdd <| fun _ _ hx _ _ hy => PGame.add_congr hx hy
 
@@ -77,7 +77,7 @@ instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   nsmul := nsmulRec
   zsmul := zsmulRec
 
-instance : Inhabited Game :=
+instance : Inhabited Game := fast_instance%
   ⟨0⟩
 
 instance instPartialOrderGame : PartialOrder Game where
@@ -121,7 +121,7 @@ theorem not_lf : ∀ {x y : Game}, ¬x ⧏ y ↔ y ≤ x := by
 #align game.not_lf SetTheory.Game.not_lf
 
 -- Porting note: had to replace ⧏ with LF, otherwise cannot differentiate with the operator on PGame
-instance : IsTrichotomous Game LF :=
+instance : IsTrichotomous Game LF := fast_instance%
   ⟨by
     rintro ⟨x⟩ ⟨y⟩
     change _ ∨ ⟦x⟧ = ⟦y⟧ ∨ _
@@ -163,25 +163,25 @@ theorem PGame.fuzzy_iff_game_fuzzy {x y : PGame} : PGame.Fuzzy x y ↔ ⟦x⟧ �
   Iff.rfl
 #align game.pgame.fuzzy_iff_game_fuzzy SetTheory.Game.PGame.fuzzy_iff_game_fuzzy
 
-instance covariantClass_add_le : CovariantClass Game Game (· + ·) (· ≤ ·) :=
+instance covariantClass_add_le : CovariantClass Game Game (· + ·) (· ≤ ·) := fast_instance%
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_le_add_left _ _ _ _ b c h a⟩
 #align game.covariant_class_add_le SetTheory.Game.covariantClass_add_le
 
-instance covariantClass_swap_add_le : CovariantClass Game Game (swap (· + ·)) (· ≤ ·) :=
+instance covariantClass_swap_add_le : CovariantClass Game Game (swap (· + ·)) (· ≤ ·) := fast_instance%
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_le_add_right _ _ _ _ b c h a⟩
 #align game.covariant_class_swap_add_le SetTheory.Game.covariantClass_swap_add_le
 
-instance covariantClass_add_lt : CovariantClass Game Game (· + ·) (· < ·) :=
+instance covariantClass_add_lt : CovariantClass Game Game (· + ·) (· < ·) := fast_instance%
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_lt_add_left _ _ _ _ b c h a⟩
 #align game.covariant_class_add_lt SetTheory.Game.covariantClass_add_lt
 
-instance covariantClass_swap_add_lt : CovariantClass Game Game (swap (· + ·)) (· < ·) :=
+instance covariantClass_swap_add_lt : CovariantClass Game Game (swap (· + ·)) (· < ·) := fast_instance%
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_lt_add_right _ _ _ _ b c h a⟩
@@ -197,7 +197,7 @@ theorem add_lf_add_left : ∀ {b c : Game} (_ : b ⧏ c) (a), (a + b : Game) ⧏
   apply PGame.add_lf_add_left h
 #align game.add_lf_add_left SetTheory.Game.add_lf_add_left
 
-instance orderedAddCommGroup : OrderedAddCommGroup Game :=
+instance orderedAddCommGroup : OrderedAddCommGroup Game := fast_instance%
   { Game.instAddCommGroupWithOneGame, Game.instPartialOrderGame with
     add_le_add_left := @add_le_add_left _ _ _ Game.covariantClass_add_le }
 #align game.ordered_add_comm_group SetTheory.Game.orderedAddCommGroup
@@ -259,7 +259,7 @@ Hence we define them here. -/
 
 /-- The product of `x = {xL | xR}` and `y = {yL | yR}` is
 `{xL*y + x*yL - xL*yL, xR*y + x*yR - xR*yR | xL*y + x*yR - xL*yR, x*yL + xR*y - xR*yL }`. -/
-instance : Mul PGame.{u} :=
+instance : Mul PGame.{u} := fast_instance%
   ⟨fun x y => by
     induction' x with xl xr _ _ IHxl IHxr generalizing y
     induction' y with yl yr yL yR IHyl IHyr
@@ -434,22 +434,22 @@ theorem mul_comm_equiv (x y : PGame) : x * y ≈ y * x :=
   Quotient.exact <| quot_mul_comm _ _
 #align pgame.mul_comm_equiv SetTheory.PGame.mul_comm_equiv
 
-instance isEmpty_mul_zero_leftMoves (x : PGame.{u}) : IsEmpty (x * 0).LeftMoves := by
+instance isEmpty_mul_zero_leftMoves (x : PGame.{u}) : IsEmpty (x * 0).LeftMoves := fast_instance% by
   cases x
   exact instIsEmptySum
 #align pgame.is_empty_mul_zero_left_moves SetTheory.PGame.isEmpty_mul_zero_leftMoves
 
-instance isEmpty_mul_zero_rightMoves (x : PGame.{u}) : IsEmpty (x * 0).RightMoves := by
+instance isEmpty_mul_zero_rightMoves (x : PGame.{u}) : IsEmpty (x * 0).RightMoves := fast_instance% by
   cases x
   apply instIsEmptySum
 #align pgame.is_empty_mul_zero_right_moves SetTheory.PGame.isEmpty_mul_zero_rightMoves
 
-instance isEmpty_zero_mul_leftMoves (x : PGame.{u}) : IsEmpty (0 * x).LeftMoves := by
+instance isEmpty_zero_mul_leftMoves (x : PGame.{u}) : IsEmpty (0 * x).LeftMoves := fast_instance% by
   cases x
   apply instIsEmptySum
 #align pgame.is_empty_zero_mul_left_moves SetTheory.PGame.isEmpty_zero_mul_leftMoves
 
-instance isEmpty_zero_mul_rightMoves (x : PGame.{u}) : IsEmpty (0 * x).RightMoves := by
+instance isEmpty_zero_mul_rightMoves (x : PGame.{u}) : IsEmpty (0 * x).RightMoves := fast_instance% by
   cases x
   apply instIsEmptySum
 #align pgame.is_empty_zero_mul_right_moves SetTheory.PGame.isEmpty_zero_mul_rightMoves
@@ -856,13 +856,13 @@ inductive InvTy (l r : Type u) : Bool → Type u
   | right₂ : r → InvTy l r true → InvTy l r true
 #align pgame.inv_ty SetTheory.PGame.InvTy
 
-instance (l r : Type u) [IsEmpty l] [IsEmpty r] : IsEmpty (InvTy l r true) :=
+instance (l r : Type u) [IsEmpty l] [IsEmpty r] : IsEmpty (InvTy l r true) := fast_instance%
   ⟨by rintro (_ | _ | _ | a | a) <;> exact isEmptyElim a⟩
 
-instance InvTy.instInhabited (l r : Type u) : Inhabited (InvTy l r false) :=
+instance InvTy.instInhabited (l r : Type u) : Inhabited (InvTy l r false) := fast_instance%
   ⟨InvTy.zero⟩
 
-instance uniqueInvTy (l r : Type u) [IsEmpty l] [IsEmpty r] : Unique (InvTy l r false) :=
+instance uniqueInvTy (l r : Type u) [IsEmpty l] [IsEmpty r] : Unique (InvTy l r false) := fast_instance%
   { InvTy.instInhabited l r with
     uniq := by
       rintro (a | a | a)
@@ -946,10 +946,10 @@ theorem inv'_one_equiv : inv' 1 ≈ 1 :=
 #align pgame.inv'_one_equiv SetTheory.PGame.inv'_one_equiv
 
 /-- The inverse of a pre-game in terms of the inverse on positive pre-games. -/
-noncomputable instance : Inv PGame :=
+noncomputable instance : Inv PGame := fast_instance%
   ⟨by classical exact fun x => if x ≈ 0 then 0 else if 0 < x then inv' x else -inv' (-x)⟩
 
-noncomputable instance : Div PGame :=
+noncomputable instance : Div PGame := fast_instance%
   ⟨fun x y => x * y⁻¹⟩
 
 theorem inv_eq_of_equiv_zero {x : PGame} (h : x ≈ 0) : x⁻¹ = 0 := by classical exact if_pos h

@@ -22,7 +22,7 @@ variable {m n : ℕ}
 -- TODO: Tag in Std
 attribute [simp] natAbs_pos
 
-instance instNontrivialInt : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
+instance instNontrivialInt : Nontrivial ℤ :=  ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
 @[simp] lemma ofNat_eq_cast : Int.ofNat n = n := rfl
 

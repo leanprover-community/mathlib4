@@ -313,7 +313,7 @@ set_option linter.uppercaseLean3 false in
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] AlgebraicGeometry.toSpecΓ_apply_coe
 
-instance isIso_toSpecΓ (R : CommRingCat) : IsIso (toSpecΓ R) := by
+instance isIso_toSpecΓ (R : CommRingCat) : IsIso (toSpecΓ R) := fast_instance% by
   cases R; apply StructureSheaf.isIso_to_global
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.is_iso_to_Spec_Γ AlgebraicGeometry.isIso_toSpecΓ
@@ -346,7 +346,7 @@ theorem Spec_map_localization_isIso (R : CommRingCat) (M : Submonoid R)
       (PresheafedSpace.stalkMap
         (Spec.toPresheafedSpace.map (CommRingCat.ofHom (algebraMap R (Localization M))).op) x) := by
   erw [← localRingHom_comp_stalkIso]
-  -- Porting note: replaced `apply (config := { instances := false })`.
+  -- Porting note: replaced `apply (config := { instances := fast_instance% false })`.
   -- See https://github.com/leanprover/lean4/issues/2273
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ _ (?_)
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ (?_) _
@@ -383,7 +383,7 @@ theorem toPushforwardStalk_comp :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_sheaf.to_pushforward_stalk_comp AlgebraicGeometry.StructureSheaf.toPushforwardStalk_comp
 
-instance : Algebra R ((Spec.topMap f _* (structureSheaf S).1).stalk p) :=
+instance : Algebra R ((Spec.topMap f _* (structureSheaf S).1).stalk p) := fast_instance%
   (f ≫ StructureSheaf.toPushforwardStalk f p).toAlgebra
 
 theorem algebraMap_pushforward_stalk :

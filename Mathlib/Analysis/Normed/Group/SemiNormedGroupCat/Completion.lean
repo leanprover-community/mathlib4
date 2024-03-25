@@ -51,7 +51,7 @@ def completion : SemiNormedGroupCat.{u} ⥤ SemiNormedGroupCat.{u} where
   map_comp f g := (completion_comp f g).symm
 #align SemiNormedGroup.Completion SemiNormedGroupCat.completion
 
-instance completion_completeSpace {V : SemiNormedGroupCat} : CompleteSpace (completion.obj V) :=
+instance completion_completeSpace {V : SemiNormedGroupCat} : CompleteSpace (completion.obj V) := fast_instance%
   Completion.completeSpace _
 #align SemiNormedGroup.Completion_complete_space SemiNormedGroupCat.completion_completeSpace
 

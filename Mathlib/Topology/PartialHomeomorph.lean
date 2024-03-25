@@ -73,7 +73,7 @@ While we may want to switch to this behavior later, doing it mid-port will break
 
 /-- Coercion of a `PartialHomeomorph` to function.
 Note that a `PartialHomeomorph` is not `DFunLike`. -/
-instance : CoeFun (PartialHomeomorph X Y) fun _ => X → Y :=
+instance : CoeFun (PartialHomeomorph X Y) fun _ => X → Y := fast_instance%
   ⟨fun e => e.toFun'⟩
 
 /-- The inverse of a partial homeomorphism -/
@@ -963,7 +963,7 @@ theorem eqOnSource_iff (e e' : PartialHomeomorph X Y) :
 #align local_homeomorph.eq_on_source_iff PartialHomeomorph.eqOnSource_iff
 
 /-- `EqOnSource` is an equivalence relation. -/
-instance eqOnSourceSetoid : Setoid (PartialHomeomorph X Y) :=
+instance eqOnSourceSetoid : Setoid (PartialHomeomorph X Y) := fast_instance%
   { PartialEquiv.eqOnSourceSetoid.comap toPartialEquiv with r := EqOnSource }
 
 theorem eqOnSource_refl : e ≈ e := Setoid.refl _

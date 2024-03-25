@@ -175,16 +175,16 @@ theorem Filter.mem_ofCountableUnion {p : Set α → Prop} {hunion hmono s} :
     s ∈ ofCountableUnion p hunion hmono ↔ p sᶜ :=
   Iff.rfl
 
-instance countableInterFilter_principal (s : Set α) : CountableInterFilter (𝓟 s) :=
+instance countableInterFilter_principal (s : Set α) : CountableInterFilter (𝓟 s) := fast_instance%
   ⟨fun _ _ hS => subset_sInter hS⟩
 #align countable_Inter_filter_principal countableInterFilter_principal
 
-instance countableInterFilter_bot : CountableInterFilter (⊥ : Filter α) := by
+instance countableInterFilter_bot : CountableInterFilter (⊥ : Filter α) := fast_instance% by
   rw [← principal_empty]
   apply countableInterFilter_principal
 #align countable_Inter_filter_bot countableInterFilter_bot
 
-instance countableInterFilter_top : CountableInterFilter (⊤ : Filter α) := by
+instance countableInterFilter_top : CountableInterFilter (⊤ : Filter α) := fast_instance% by
   rw [← principal_univ]
   apply countableInterFilter_principal
 #align countable_Inter_filter_top countableInterFilter_top
@@ -197,7 +197,7 @@ instance (l : Filter β) [CountableInterFilter l] (f : α → β) :
   refine' ⟨_, this, _⟩
   simpa [preimage_iInter] using iInter₂_mono ht
 
-instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInterFilter (map f l) := by
+instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInterFilter (map f l) := fast_instance% by
   refine' ⟨fun S hSc hS => _⟩
   simp only [mem_map, sInter_eq_biInter, preimage_iInter₂] at hS ⊢
   exact (countable_bInter_mem hSc).2 hS
@@ -244,7 +244,7 @@ def countableGenerate : Filter α :=
 #align filter.countable_generate Filter.countableGenerate
 
 -- Porting note: could not de derived
-instance : CountableInterFilter (countableGenerate g) := by
+instance : CountableInterFilter (countableGenerate g) := fast_instance% by
   delta countableGenerate; infer_instance
 
 variable {g}

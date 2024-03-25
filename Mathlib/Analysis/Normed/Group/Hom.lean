@@ -208,7 +208,7 @@ def opNorm (f : NormedAddGroupHom V₁ V₂) :=
   sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ }
 #align normed_add_group_hom.op_norm NormedAddGroupHom.opNorm
 
-instance hasOpNorm : Norm (NormedAddGroupHom V₁ V₂) :=
+instance hasOpNorm : Norm (NormedAddGroupHom V₁ V₂) := fast_instance%
   ⟨opNorm⟩
 #align normed_add_group_hom.has_op_norm NormedAddGroupHom.hasOpNorm
 
@@ -323,7 +323,7 @@ alias _root_.AddMonoidHom.mkNormedAddGroupHom_norm_le' := mkNormedAddGroupHom_no
 
 
 /-- Addition of normed group homs. -/
-instance add : Add (NormedAddGroupHom V₁ V₂) :=
+instance add : Add (NormedAddGroupHom V₁ V₂) := fast_instance%
   ⟨fun f g =>
     (f.toAddMonoidHom + g.toAddMonoidHom).mkNormedAddGroupHom (‖f‖ + ‖g‖) fun v =>
       calc
@@ -361,10 +361,10 @@ theorem add_apply (f g : NormedAddGroupHom V₁ V₂) (v : V₁) :
 /-! ### The zero normed group hom -/
 
 
-instance zero : Zero (NormedAddGroupHom V₁ V₂) :=
+instance zero : Zero (NormedAddGroupHom V₁ V₂) := fast_instance%
   ⟨(0 : V₁ →+ V₂).mkNormedAddGroupHom 0 (by simp)⟩
 
-instance inhabited : Inhabited (NormedAddGroupHom V₁ V₂) :=
+instance inhabited : Inhabited (NormedAddGroupHom V₁ V₂) := fast_instance%
   ⟨0⟩
 
 /-- The norm of the `0` operator is `0`. -/
@@ -447,7 +447,7 @@ theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
 
 
 /-- Opposite of a normed group hom. -/
-instance neg : Neg (NormedAddGroupHom V₁ V₂) :=
+instance neg : Neg (NormedAddGroupHom V₁ V₂) := fast_instance%
   ⟨fun f => (-f.toAddMonoidHom).mkNormedAddGroupHom ‖f‖ fun v => by simp [le_opNorm f v]⟩
 
 @[simp]
@@ -469,7 +469,7 @@ theorem opNorm_neg (f : NormedAddGroupHom V₁ V₂) : ‖-f‖ = ‖f‖ := by
 
 
 /-- Subtraction of normed group homs. -/
-instance sub : Sub (NormedAddGroupHom V₁ V₂) :=
+instance sub : Sub (NormedAddGroupHom V₁ V₂) := fast_instance%
   ⟨fun f g =>
     { f.toAddMonoidHom - g.toAddMonoidHom with
       bound' := by
@@ -580,13 +580,13 @@ theorem zsmul_apply (r : ℤ) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r 
 
 
 /-- Homs between two given normed groups form a commutative additive group. -/
-instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
+instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) := fast_instance%
   coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     fun _ _ => rfl
 
 /-- Normed group homomorphisms themselves form a seminormed group with respect to
     the operator norm. -/
-instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
+instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V₁ V₂) := fast_instance%
   AddGroupSeminorm.toSeminormedAddCommGroup
     { toFun := opNorm
       map_zero' := opNorm_zero

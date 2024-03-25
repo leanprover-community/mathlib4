@@ -762,7 +762,7 @@ theorem IsCompact.ne_univ [NoncompactSpace X] (hs : IsCompact s) : s ≠ univ :=
   noncompact_univ X (h ▸ hs)
 #align is_compact.ne_univ IsCompact.ne_univ
 
-instance [NoncompactSpace X] : NeBot (Filter.cocompact X) := by
+instance [NoncompactSpace X] : NeBot (Filter.cocompact X) := fast_instance% by
   refine' Filter.hasBasis_cocompact.neBot_iff.2 fun hs => _
   contrapose hs; rw [not_nonempty_iff_eq_empty, compl_empty_iff] at hs
   rw [hs]; exact noncompact_univ X
@@ -772,7 +772,7 @@ theorem Filter.cocompact_eq_bot [CompactSpace X] : Filter.cocompact X = ⊥ :=
   Filter.hasBasis_cocompact.eq_bot_iff.mpr ⟨Set.univ, isCompact_univ, Set.compl_univ⟩
 #align filter.cocompact_eq_bot Filter.cocompact_eq_bot
 
-instance [NoncompactSpace X] : NeBot (Filter.coclosedCompact X) :=
+instance [NoncompactSpace X] : NeBot (Filter.coclosedCompact X) := fast_instance%
   neBot_of_le Filter.cocompact_le_coclosedCompact
 
 theorem noncompactSpace_of_neBot (_ : NeBot (Filter.cocompact X)) : NoncompactSpace X :=
@@ -787,7 +787,7 @@ theorem not_compactSpace_iff : ¬CompactSpace X ↔ NoncompactSpace X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩
 #align not_compact_space_iff not_compactSpace_iff
 
-instance : NoncompactSpace ℤ :=
+instance : NoncompactSpace ℤ := fast_instance%
   noncompactSpace_of_neBot <| by simp only [Filter.cocompact_eq_cofinite, Filter.cofinite_neBot]
 
 -- Note: We can't make this into an instance because it loops with `Finite.compactSpace`.
@@ -996,11 +996,11 @@ instance (priority := 100) Finite.compactSpace [Finite X] : CompactSpace X where
 #align finite.compact_space Finite.compactSpace
 
 /-- The product of two compact spaces is compact. -/
-instance [CompactSpace X] [CompactSpace Y] : CompactSpace (X × Y) :=
+instance [CompactSpace X] [CompactSpace Y] : CompactSpace (X × Y) := fast_instance%
   ⟨by rw [← univ_prod_univ]; exact isCompact_univ.prod isCompact_univ⟩
 
 /-- The disjoint union of two compact spaces is compact. -/
-instance [CompactSpace X] [CompactSpace Y] : CompactSpace (X ⊕ Y) :=
+instance [CompactSpace X] [CompactSpace Y] : CompactSpace (X ⊕ Y) := fast_instance%
   ⟨by
     rw [← range_inl_union_range_inr]
     exact (isCompact_range continuous_inl).union (isCompact_range continuous_inr)⟩
@@ -1062,11 +1062,11 @@ theorem isCompact_univ_pi {s : ∀ i, Set (X i)} (h : ∀ i, IsCompact (s i)) :
   simp only [← mem_univ_pi, setOf_mem_eq]
 #align is_compact_univ_pi isCompact_univ_pi
 
-instance Pi.compactSpace [∀ i, CompactSpace (X i)] : CompactSpace (∀ i, X i) :=
+instance Pi.compactSpace [∀ i, CompactSpace (X i)] : CompactSpace (∀ i, X i) := fast_instance%
   ⟨by rw [← pi_univ univ]; exact isCompact_univ_pi fun i => isCompact_univ⟩
 #align pi.compact_space Pi.compactSpace
 
-instance Function.compactSpace [CompactSpace Y] : CompactSpace (ι → Y) :=
+instance Function.compactSpace [CompactSpace Y] : CompactSpace (ι → Y) := fast_instance%
   Pi.compactSpace
 #align function.compact_space Function.compactSpace
 
@@ -1099,13 +1099,13 @@ set_option linter.uppercaseLean3 false in
 
 end Tychonoff
 
-instance Quot.compactSpace {r : X → X → Prop} [CompactSpace X] : CompactSpace (Quot r) :=
+instance Quot.compactSpace {r : X → X → Prop} [CompactSpace X] : CompactSpace (Quot r) := fast_instance%
   ⟨by
     rw [← range_quot_mk]
     exact isCompact_range continuous_quot_mk⟩
 #align quot.compact_space Quot.compactSpace
 
-instance Quotient.compactSpace {s : Setoid X} [CompactSpace X] : CompactSpace (Quotient s) :=
+instance Quotient.compactSpace {s : Setoid X} [CompactSpace X] : CompactSpace (Quotient s) := fast_instance%
   Quot.compactSpace
 #align quotient.compact_space Quotient.compactSpace
 

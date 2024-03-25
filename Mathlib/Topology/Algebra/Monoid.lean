@@ -62,7 +62,7 @@ section ContinuousMul
 variable [TopologicalSpace M] [Mul M] [ContinuousMul M]
 
 @[to_additive]
-instance : ContinuousMul Mᵒᵈ :=
+instance : ContinuousMul Mᵒᵈ := fast_instance%
   ‹ContinuousMul M›
 
 @[to_additive (attr := continuity)]
@@ -72,13 +72,13 @@ theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
 #align continuous_add continuous_add
 
 @[to_additive]
-instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
+instance ContinuousMul.to_continuousSMul : ContinuousSMul M M := fast_instance%
   ⟨continuous_mul⟩
 #align has_continuous_mul.to_has_continuous_smul ContinuousMul.to_continuousSMul
 #align has_continuous_add.to_has_continuous_vadd ContinuousAdd.to_continuousVAdd
 
 @[to_additive]
-instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
+instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M := fast_instance%
   ⟨show Continuous ((fun p : M × M => p.1 * p.2) ∘ Prod.swap ∘ Prod.map MulOpposite.unop id) from
       continuous_mul.comp <|
         continuous_swap.comp <| Continuous.prod_map MulOpposite.continuous_unop continuous_id⟩
@@ -246,7 +246,7 @@ instance Pi.continuousMul {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [�
 Lean 3 fails to use `Pi.continuousMul` for non-dependent functions. -/
 @[to_additive "A version of `Pi.continuousAdd` for non-dependent functions. It is needed
 because sometimes Lean fails to use `Pi.continuousAdd` for non-dependent functions."]
-instance Pi.continuousMul' : ContinuousMul (ι → M) :=
+instance Pi.continuousMul' : ContinuousMul (ι → M) := fast_instance%
   Pi.continuousMul
 #align pi.has_continuous_mul' Pi.continuousMul'
 #align pi.has_continuous_add' Pi.continuousAdd'
@@ -692,7 +692,7 @@ namespace MulOpposite
 
 /-- If multiplication is continuous in `α`, then it also is in `αᵐᵒᵖ`. -/
 @[to_additive "If addition is continuous in `α`, then it also is in `αᵃᵒᵖ`."]
-instance [TopologicalSpace α] [Mul α] [ContinuousMul α] : ContinuousMul αᵐᵒᵖ :=
+instance [TopologicalSpace α] [Mul α] [ContinuousMul α] : ContinuousMul αᵐᵒᵖ := fast_instance%
   ⟨continuous_op.comp (continuous_unop.snd'.mul continuous_unop.fst')⟩
 
 end MulOpposite
@@ -713,7 +713,7 @@ of the monoid, with respect to the induced topology, is continuous.
 
 Negation is also continuous, but we register this in a later file, `Topology.Algebra.Group`, because
 the predicate `ContinuousNeg` has not yet been defined."]
-instance : ContinuousMul αˣ :=
+instance : ContinuousMul αˣ := fast_instance%
   inducing_embedProduct.continuousMul (embedProduct α)
 
 end Units

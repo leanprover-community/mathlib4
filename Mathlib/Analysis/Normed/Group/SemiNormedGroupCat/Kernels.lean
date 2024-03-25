@@ -100,11 +100,11 @@ namespace SemiNormedGroupCat
 section EqualizersAndKernels
 
 -- Porting note: these weren't needed in Lean 3
-instance {V W : SemiNormedGroupCat.{u}} : Sub (V ⟶ W) :=
+instance {V W : SemiNormedGroupCat.{u}} : Sub (V ⟶ W) := fast_instance%
   (inferInstance : Sub (NormedAddGroupHom V W))
-noncomputable instance {V W : SemiNormedGroupCat.{u}} : Norm (V ⟶ W) :=
+noncomputable instance {V W : SemiNormedGroupCat.{u}} : Norm (V ⟶ W) := fast_instance%
   (inferInstance : Norm (NormedAddGroupHom V W))
-noncomputable instance {V W : SemiNormedGroupCat.{u}} : NNNorm (V ⟶ W) :=
+noncomputable instance {V W : SemiNormedGroupCat.{u}} : NNNorm (V ⟶ W) := fast_instance%
   (inferInstance : NNNorm (NormedAddGroupHom V W))
 /-- The equalizer cone for a parallel pair of morphisms of seminormed groups. -/
 def fork {V W : SemiNormedGroupCat.{u}} (f g : V ⟶ W) : Fork f g :=
@@ -137,7 +137,7 @@ instance hasLimit_parallelPair {V W : SemiNormedGroupCat.{u}} (f g : V ⟶ W) :
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.has_limit_parallel_pair SemiNormedGroupCat.hasLimit_parallelPair
 
-instance : Limits.HasEqualizers.{u, u + 1} SemiNormedGroupCat :=
+instance : Limits.HasEqualizers.{u, u + 1} SemiNormedGroupCat := fast_instance%
   @hasEqualizers_of_hasLimit_parallelPair SemiNormedGroupCat _ fun {_ _ f g} =>
     SemiNormedGroupCat.hasLimit_parallelPair f g
 

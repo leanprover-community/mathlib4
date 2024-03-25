@@ -21,6 +21,8 @@ in the do block are combined.
 
 -/
 
+import Mathlib.Tactic.FastInstance
+
 /-! StateList -/
 
 namespace Mathlib.Meta.FunProp
@@ -56,7 +58,7 @@ private def append : (xs ys : StateList σ α) → StateList σ α
   | .nil,         bs => bs
   | .cons a s l, bs => .cons a s (l.append bs)
 
-instance : Append (StateList σ α) := ⟨StateList.append⟩
+instance : Append (StateList σ α) := fast_instance% ⟨StateList.append⟩
 
 @[specialize]
 private def foldrM {m} [Monad m] : (f : α → σ → β → m β) → (init : β) → StateList σ α → m β
@@ -143,13 +145,13 @@ protected def modifyGet (f : σ → α × σ) : StateListT σ m α :=
 protected def lift (t : m α) : StateListT σ m α :=
   fun s => do let a ← t; return StateList.nil.cons a s
 
-instance : MonadLift m (StateListT σ m) := ⟨StateListT.lift⟩
+instance : MonadLift m (StateListT σ m) := fast_instance% ⟨StateListT.lift⟩
 
 @[always_inline]
-instance : MonadFunctor m (StateListT σ m) := ⟨fun f x s => f (x s)⟩
+instance : MonadFunctor m (StateListT σ m) := fast_instance% ⟨fun f x s => f (x s)⟩
 
 @[always_inline]
-instance{ε} [MonadExceptOf ε m] : MonadExceptOf ε (StateListT σ m) := {
+instance{ε} [MonadExceptOf ε m] : MonadExceptOf ε (StateListT σ m) := fast_instance% {
   throw    := StateListT.lift ∘ throwThe ε
   tryCatch := fun x c s => tryCatchThe ε (x s) (fun e => c e s)
 }

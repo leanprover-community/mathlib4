@@ -64,7 +64,7 @@ instance : EquivLike (X ≃ₜ Y) X Y where
   right_inv := fun h => h.right_inv
   coe_injective' := fun _ _ H _ => toEquiv_injective <| DFunLike.ext' H
 
-instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨DFunLike.coe⟩
+instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := fast_instance% ⟨DFunLike.coe⟩
 
 @[simp] theorem homeomorph_mk_coe (a : X ≃ Y) (b c) : (Homeomorph.mk a b c : X → Y) = a :=
   rfl

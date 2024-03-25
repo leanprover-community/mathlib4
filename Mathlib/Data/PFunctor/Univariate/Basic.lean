@@ -37,7 +37,7 @@ structure PFunctor where
 
 namespace PFunctor
 
-instance : Inhabited PFunctor :=
+instance : Inhabited PFunctor := fast_instance%
   ⟨⟨default, default⟩⟩
 
 variable (P : PFunctor.{u}) {α : Type v₁} {β : Type v₂} {γ : Type v₃}
@@ -56,11 +56,11 @@ def map (f : α → β) : P α → P β :=
   fun ⟨a, g⟩ => ⟨a, f ∘ g⟩
 #align pfunctor.map PFunctor.map
 
-instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) :=
+instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) := fast_instance%
   ⟨⟨default, default⟩⟩
 #align pfunctor.obj.inhabited PFunctor.Obj.inhabited
 
-instance : Functor.{v, max u v} P.Obj where map := @map P
+instance : Functor.{v, max u v} P.Obj where map := fast_instance% @map P
 
 /-- We prefer `PFunctor.map` to `Functor.map` because it is universe-polymorphic. -/
 @[simp]
@@ -137,7 +137,7 @@ def Idx :=
   Σ x : P.A, P.B x
 #align pfunctor.Idx PFunctor.Idx
 
-instance Idx.inhabited [Inhabited P.A] [Inhabited (P.B default)] : Inhabited P.Idx :=
+instance Idx.inhabited [Inhabited P.A] [Inhabited (P.B default)] : Inhabited P.Idx := fast_instance%
   ⟨⟨default, default⟩⟩
 #align pfunctor.Idx.inhabited PFunctor.Idx.inhabited
 

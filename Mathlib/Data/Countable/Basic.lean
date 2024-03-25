@@ -20,7 +20,7 @@ universe u v w
 
 open Function
 
-instance : Countable ℤ :=
+instance : Countable ℤ := fast_instance%
   Countable.of_equiv ℕ Equiv.intEquivNat.symm
 
 /-!
@@ -59,37 +59,37 @@ section type
 
 variable {α : Type u} {β : Type v} {π : α → Type w}
 
-instance [Countable α] [Countable β] : Countable (α ⊕ β) := by
+instance [Countable α] [Countable β] : Countable (α ⊕ β) := fast_instance% by
   rcases exists_injective_nat α with ⟨f, hf⟩
   rcases exists_injective_nat β with ⟨g, hg⟩
   exact (Equiv.natSumNatEquivNat.injective.comp <| hf.sum_map hg).countable
 
-instance Sum.uncountable_inl [Uncountable α] : Uncountable (α ⊕ β) :=
+instance Sum.uncountable_inl [Uncountable α] : Uncountable (α ⊕ β) := fast_instance%
   inl_injective.uncountable
 
-instance Sum.uncountable_inr [Uncountable β] : Uncountable (α ⊕ β) :=
+instance Sum.uncountable_inr [Uncountable β] : Uncountable (α ⊕ β) := fast_instance%
   inr_injective.uncountable
 
-instance [Countable α] : Countable (Option α) :=
+instance [Countable α] : Countable (Option α) := fast_instance%
   Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{_, 0} α).symm
 
-instance Option.instUncountable [Uncountable α] : Uncountable (Option α) :=
+instance Option.instUncountable [Uncountable α] : Uncountable (Option α) := fast_instance%
   Injective.uncountable fun _ _ ↦ Option.some_inj.1
 
-instance [Countable α] [Countable β] : Countable (α × β) := by
+instance [Countable α] [Countable β] : Countable (α × β) := fast_instance% by
   rcases exists_injective_nat α with ⟨f, hf⟩
   rcases exists_injective_nat β with ⟨g, hg⟩
   exact (Nat.pairEquiv.injective.comp <| hf.Prod_map hg).countable
 
-instance [Uncountable α] [Nonempty β] : Uncountable (α × β) := by
+instance [Uncountable α] [Nonempty β] : Uncountable (α × β) := fast_instance% by
   inhabit β
   exact (Prod.mk.inj_right default).uncountable
 
-instance [Nonempty α] [Uncountable β] : Uncountable (α × β) := by
+instance [Nonempty α] [Uncountable β] : Uncountable (α × β) := fast_instance% by
   inhabit α
   exact (Prod.mk.inj_left default).uncountable
 
-instance [Countable α] [∀ a, Countable (π a)] : Countable (Sigma π) := by
+instance [Countable α] [∀ a, Countable (π a)] : Countable (Sigma π) := fast_instance% by
   rcases exists_injective_nat α with ⟨f, hf⟩
   choose g hg using fun a => exists_injective_nat (π a)
   exact ((Equiv.sigmaEquivProd ℕ ℕ).injective.comp <| hf.sigma_map hg).countable
@@ -97,7 +97,7 @@ instance [Countable α] [∀ a, Countable (π a)] : Countable (Sigma π) := by
 lemma Sigma.uncountable (a : α) [Uncountable (π a)] : Uncountable (Sigma π) :=
   (sigma_mk_injective (i := a)).uncountable
 
-instance [Nonempty α] [∀ a, Uncountable (π a)] : Uncountable (Sigma π) := by
+instance [Nonempty α] [∀ a, Uncountable (π a)] : Uncountable (Sigma π) := fast_instance% by
   inhabit α; exact Sigma.uncountable default
 
 instance (priority := 500) SetCoe.countable [Countable α] (s : Set α) : Countable s :=
@@ -114,16 +114,16 @@ variable {α : Sort u} {β : Sort v} {π : α → Sort w}
 ### Operations on `Sort*`s
 -/
 
-instance [Countable α] [Countable β] : Countable (α ⊕' β) :=
+instance [Countable α] [Countable β] : Countable (α ⊕' β) := fast_instance%
   Countable.of_equiv (PLift α ⊕ PLift β) (Equiv.plift.sumPSum Equiv.plift)
 
-instance [Countable α] [Countable β] : Countable (PProd α β) :=
+instance [Countable α] [Countable β] : Countable (PProd α β) := fast_instance%
   Countable.of_equiv (PLift α × PLift β) (Equiv.plift.prodPProd Equiv.plift)
 
-instance [Countable α] [∀ a, Countable (π a)] : Countable (PSigma π) :=
+instance [Countable α] [∀ a, Countable (π a)] : Countable (PSigma π) := fast_instance%
   Countable.of_equiv (Σa : PLift α, PLift (π a.down)) (Equiv.psigmaEquivSigmaPLift π).symm
 
-instance [Finite α] [∀ a, Countable (π a)] : Countable (∀ a, π a) := by
+instance [Finite α] [∀ a, Countable (π a)] : Countable (∀ a, π a) := fast_instance% by
   have : ∀ n, Countable (Fin n → ℕ) := by
     intro n
     induction' n with n ihn

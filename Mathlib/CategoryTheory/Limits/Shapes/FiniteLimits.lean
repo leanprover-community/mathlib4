@@ -166,7 +166,7 @@ variable {J : Type v}
 
 namespace WidePullbackShape
 
-instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
+instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) := fast_instance%
   instFintypeOption
 #align category_theory.limits.wide_pullback_shape.fintype_obj CategoryTheory.Limits.WidePullbackShape.fintypeObj
 
@@ -190,7 +190,7 @@ end WidePullbackShape
 
 namespace WidePushoutShape
 
-instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) := by
+instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) := fast_instance% by
   rw [WidePushoutShape]; infer_instance
 #align category_theory.limits.wide_pushout_shape.fintype_obj CategoryTheory.Limits.WidePushoutShape.fintypeObj
 

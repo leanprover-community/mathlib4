@@ -35,8 +35,8 @@ namespace Ordinal
 
 variable {s : Set Ordinal.{u}} {a : Ordinal.{u}}
 
-instance : TopologicalSpace Ordinal.{u} := Preorder.topology Ordinal.{u}
-instance : OrderTopology Ordinal.{u} := ⟨rfl⟩
+instance : TopologicalSpace Ordinal.{u} := fast_instance% Preorder.topology Ordinal.{u}
+instance : OrderTopology Ordinal.{u} := fast_instance% ⟨rfl⟩
 
 theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a := by
   refine' ⟨fun h ⟨h₀, hsucc⟩ => _, fun ha => _⟩

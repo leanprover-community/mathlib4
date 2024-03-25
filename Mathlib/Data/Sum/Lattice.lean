@@ -87,7 +87,7 @@ end SemilatticeInf
 section Lattice
 variable [Lattice α] [Lattice β]
 
-instance instLattice : Lattice (α ⊕ₗ β) := { instSemilatticeSup, instSemilatticeInf with }
+instance instLattice : Lattice (α ⊕ₗ β) := fast_instance% { instSemilatticeSup, instSemilatticeInf with }
 
 /-- `Sum.Lex.inlₗ` as a lattice homomorphism. -/
 def inlLatticeHom : LatticeHom α (α ⊕ₗ β) where

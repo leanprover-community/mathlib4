@@ -137,7 +137,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
-instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
+instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) := fast_instance%
   ⟨toLinearMap⟩
 
 -- This exists for compatibility, previously `≃ₗ[R]` extended `≃` instead of `≃+`.
@@ -690,7 +690,7 @@ protected theorem smul_def (f : M ≃ₗ[R] M) (a : M) : f • a = f a :=
 #align linear_equiv.smul_def LinearEquiv.smul_def
 
 /-- `LinearEquiv.applyDistribMulAction` is faithful. -/
-instance apply_faithfulSMul : FaithfulSMul (M ≃ₗ[R] M) M :=
+instance apply_faithfulSMul : FaithfulSMul (M ≃ₗ[R] M) M := fast_instance%
   ⟨@fun _ _ => LinearEquiv.ext⟩
 #align linear_equiv.apply_has_faithful_smul LinearEquiv.apply_faithfulSMul
 

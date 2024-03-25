@@ -33,7 +33,7 @@ namespace Subfield
 variable {K : Type*}
 
 /-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
-instance toLinearOrderedField [LinearOrderedField K] (s : Subfield K) : LinearOrderedField s :=
+instance toLinearOrderedField [LinearOrderedField K] (s : Subfield K) : LinearOrderedField s := fast_instance%
   fast_instance%
   Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)

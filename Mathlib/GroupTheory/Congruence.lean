@@ -115,7 +115,7 @@ section
 variable [Mul M] [Mul N] [Mul P] (c : Con M)
 
 @[to_additive]
-instance : Inhabited (Con M) :=
+instance : Inhabited (Con M) := fast_instance%
   ⟨conGen EmptyRelation⟩
 
 -- Porting note: upgraded to FunLike
@@ -170,7 +170,7 @@ theorem rel_mk {s : Setoid M} {h a b} : Con.mk s h a b ↔ r a b :=
     `x, y`, `(x, y) ∈ M × M` iff `x` is related to `y` by `c`. -/
 @[to_additive "Given a type `M` with an addition, `x, y ∈ M`, and an additive congruence relation
 `c` on `M`, `(x, y) ∈ M × M` iff `x` is related to `y` by `c`."]
-instance : Membership (M × M) (Con M) :=
+instance : Membership (M × M) (Con M) := fast_instance%
   ⟨fun x c => c x.1 x.2⟩
 
 variable {c}
@@ -359,7 +359,7 @@ protected theorem eq {a b : M} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :
     multiplication. -/
 @[to_additive "The addition induced on the quotient by an additive congruence relation on a type
 with an addition."]
-instance hasMul : Mul c.Quotient :=
+instance hasMul : Mul c.Quotient := fast_instance%
   ⟨Quotient.map₂' (· * ·) fun _ _ h1 _ _ h2 => c.mul h1 h2⟩
 #align con.has_mul Con.hasMul
 #align add_con.has_add AddCon.hasAdd
@@ -780,7 +780,7 @@ def ofSubmonoid (N : Submonoid (M × M)) (H : Equivalence fun x y => (x, y) ∈ 
 @[to_additive "Coercion from a congruence relation `c` on an `AddMonoid` `M`
 to the `add_submonoid` of `M × M` whose elements are `(x, y)` such that `x`
 is related to `y` by `c`."]
-instance toSubmonoid : Coe (Con M) (Submonoid (M × M)) :=
+instance toSubmonoid : Coe (Con M) (Submonoid (M × M)) := fast_instance%
   ⟨fun c => c.submonoid⟩
 #align con.to_submonoid Con.toSubmonoid
 #align add_con.to_add_submonoid AddCon.toAddSubmonoid
@@ -821,7 +821,7 @@ theorem ker_rel (f : M →* P) {x y} : ker f x y ↔ f x = f y :=
 /-- There exists an element of the quotient of a monoid by a congruence relation (namely 1). -/
 @[to_additive "There exists an element of the quotient of an `AddMonoid` by a congruence relation
 (namely 0)."]
-instance Quotient.inhabited : Inhabited c.Quotient :=
+instance Quotient.inhabited : Inhabited c.Quotient := fast_instance%
   ⟨((1 : M) : c.Quotient)⟩
 #align con.quotient.inhabited Con.Quotient.inhabited
 #align add_con.quotient.inhabited AddCon.Quotient.inhabited
@@ -1170,7 +1170,7 @@ instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
 /-- The quotient of a semigroup by a congruence relation is a semigroup. -/
 @[to_additive "The quotient of an `AddSemigroup` by an additive congruence relation is
 an `AddSemigroup`."]
-instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient :=
+instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient := fast_instance%
   fast_instance%
   Function.Surjective.semigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl
 #align con.semigroup Con.semigroup
@@ -1179,7 +1179,7 @@ instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient 
 /-- The quotient of a commutative semigroup by a congruence relation is a semigroup. -/
 @[to_additive "The quotient of an `AddCommSemigroup` by an additive congruence relation is
 an `AddCommSemigroup`."]
-instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
+instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient := fast_instance%
   fast_instance%
   Function.Surjective.commSemigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl
 #align con.comm_semigroup Con.commSemigroup
@@ -1188,7 +1188,7 @@ instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup
 /-- The quotient of a monoid by a congruence relation is a monoid. -/
 @[to_additive "The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`."]
-instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
+instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient := fast_instance%
   fast_instance%
   Function.Surjective.monoid
     _ Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) fun _ _ => rfl
@@ -1198,7 +1198,7 @@ instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
 /-- The quotient of a `CommMonoid` by a congruence relation is a `CommMonoid`. -/
 @[to_additive "The quotient of an `AddCommMonoid` by an additive congruence
 relation is an `AddCommMonoid`."]
-instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient :=
+instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient := fast_instance%
   fast_instance%
   Function.Surjective.commMonoid
     _ Quotient.surjective_Quotient_mk'' rfl
@@ -1260,7 +1260,7 @@ protected theorem zpow : ∀ (n : ℤ) {w x}, c w x → c (w ^ n) (x ^ n)
     inversion. -/
 @[to_additive "The negation induced on the quotient by an additive congruence relation on a type
 with a negation."]
-instance hasInv : Inv c.Quotient :=
+instance hasInv : Inv c.Quotient := fast_instance%
   ⟨(Quotient.map' Inv.inv) fun _ _ => c.inv⟩
 #align con.has_inv Con.hasInv
 #align add_con.has_neg AddCon.hasNeg
@@ -1269,7 +1269,7 @@ instance hasInv : Inv c.Quotient :=
     division. -/
 @[to_additive "The subtraction induced on the quotient by an additive congruence relation on a type
 with a subtraction."]
-instance hasDiv : Div c.Quotient :=
+instance hasDiv : Div c.Quotient := fast_instance%
   ⟨(Quotient.map₂' (· / ·)) fun _ _ h₁ _ _ h₂ => c.div h₁ h₂⟩
 #align con.has_div Con.hasDiv
 #align add_con.has_sub AddCon.hasSub
@@ -1284,14 +1284,14 @@ instance _root_.AddCon.Quotient.zsmul {M : Type*} [AddGroup M] (c : AddCon M) :
 /-- The integer power induced on the quotient by a congruence relation on a type with a
     division. -/
 @[to_additive existing AddCon.Quotient.zsmul]
-instance zpowinst : Pow c.Quotient ℤ :=
+instance zpowinst : Pow c.Quotient ℤ := fast_instance%
   ⟨fun x z => Quotient.map' (fun x => x ^ z) (fun _ _ h => c.zpow z h) x⟩
 #align con.has_zpow Con.zpowinst
 
 /-- The quotient of a group by a congruence relation is a group. -/
 @[to_additive "The quotient of an `AddGroup` by an additive congruence relation is
 an `AddGroup`."]
-instance group : Group c.Quotient :=
+instance group : Group c.Quotient := fast_instance%
   { (Function.Surjective.group Quotient.mk''
       Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)
         (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl : Group c.Quotient) with

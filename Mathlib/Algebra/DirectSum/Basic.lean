@@ -41,17 +41,17 @@ def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
 #align direct_sum DirectSum
 
 -- Porting note (#10754): Added inhabited instance manually
-instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
+instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) := fast_instance%
   inferInstanceAs (Inhabited (Π₀ i, β i))
 
 -- Porting note (#10754): Added addCommMonoid instance manually
-instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
+instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) := fast_instance%
   inferInstanceAs (AddCommMonoid (Π₀ i, β i))
 
-instance [∀ i, AddCommMonoid (β i)] : DFunLike (DirectSum ι β) _ fun i : ι => β i :=
+instance [∀ i, AddCommMonoid (β i)] : DFunLike (DirectSum ι β) _ fun i : ι => β i := fast_instance%
   inferInstanceAs (DFunLike (Π₀ i, β i) _ _)
 
-instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i : ι, β i :=
+instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i : ι, β i := fast_instance%
   inferInstanceAs (CoeFun (Π₀ i, β i) fun _ => ∀ i : ι, β i)
 
 /-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
@@ -77,7 +77,7 @@ section AddCommGroup
 
 variable [∀ i, AddCommGroup (β i)]
 
-instance : AddCommGroup (DirectSum ι β) :=
+instance : AddCommGroup (DirectSum ι β) := fast_instance%
   inferInstanceAs (AddCommGroup (Π₀ i, β i))
 variable {β}
 
@@ -253,12 +253,12 @@ def setToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, β i) →+ ⨁ i : T, β
 
 variable {β}
 
-instance unique [∀ i, Subsingleton (β i)] : Unique (⨁ i, β i) :=
+instance unique [∀ i, Subsingleton (β i)] : Unique (⨁ i, β i) := fast_instance%
   DFinsupp.unique
 #align direct_sum.unique DirectSum.unique
 
 /-- A direct sum over an empty type is trivial. -/
-instance uniqueOfIsEmpty [IsEmpty ι] : Unique (⨁ i, β i) :=
+instance uniqueOfIsEmpty [IsEmpty ι] : Unique (⨁ i, β i) := fast_instance%
   DFinsupp.uniqueOfIsEmpty
 #align direct_sum.unique_of_is_empty DirectSum.uniqueOfIsEmpty
 

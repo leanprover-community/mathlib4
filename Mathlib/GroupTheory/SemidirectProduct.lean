@@ -76,7 +76,7 @@ theorem mul_left (a b : N ⋊[φ] G) : (a * b).left = a.left * φ a.right b.left
 theorem mul_right (a b : N ⋊[φ] G) : (a * b).right = a.right * b.right := rfl
 #align semidirect_product.mul_right SemidirectProduct.mul_right
 
-instance : One (SemidirectProduct N G φ) where one := ⟨1, 1⟩
+instance : One (SemidirectProduct N G φ) where one := fast_instance% ⟨1, 1⟩
 
 @[simp]
 theorem one_left : (1 : N ⋊[φ] G).left = 1 := rfl
@@ -103,7 +103,7 @@ instance : Group (N ⋊[φ] G) where
   mul_one a := SemidirectProduct.ext _ _ (by simp) (mul_one _)
   mul_left_inv a := SemidirectProduct.ext _ _ (by simp) (by simp)
 
-instance : Inhabited (N ⋊[φ] G) := ⟨1⟩
+instance : Inhabited (N ⋊[φ] G) := fast_instance% ⟨1⟩
 
 /-- The canonical map `N →* N ⋊[φ] G` sending `n` to `⟨n, 1⟩` -/
 def inl : N →* N ⋊[φ] G where

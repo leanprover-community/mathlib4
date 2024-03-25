@@ -876,7 +876,7 @@ theorem NormedSpace.toLocallyConvexSpace' [NormedSpace 𝕜 E] [Module ℝ E] [I
 
 /-- See `NormedSpace.toLocallyConvexSpace'` for a slightly stronger version which is not an
 instance. -/
-instance NormedSpace.toLocallyConvexSpace [NormedSpace ℝ E] : LocallyConvexSpace ℝ E :=
+instance NormedSpace.toLocallyConvexSpace [NormedSpace ℝ E] : LocallyConvexSpace ℝ E := fast_instance%
   NormedSpace.toLocallyConvexSpace' ℝ
 #align normed_space.to_locally_convex_space NormedSpace.toLocallyConvexSpace
 

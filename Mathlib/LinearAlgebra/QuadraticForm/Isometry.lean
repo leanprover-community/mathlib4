@@ -119,7 +119,7 @@ instance hasZeroOfSubsingleton [Subsingleton M₁] : Zero (Q₁ →qᵢ Q₂) wh
     map_app' := fun m => Subsingleton.elim 0 m ▸ (map_zero _).trans (map_zero _).symm }
 
 /-- Maps into the zero module are trivial -/
-instance [Subsingleton M₂] : Subsingleton (Q₁ →qᵢ Q₂) :=
+instance [Subsingleton M₂] : Subsingleton (Q₁ →qᵢ Q₂) := fast_instance%
   ⟨fun _ _ => ext fun _ => Subsingleton.elim _ _⟩
 
 end Isometry

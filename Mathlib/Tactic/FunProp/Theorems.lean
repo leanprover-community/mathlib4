@@ -191,7 +191,7 @@ structure FunctionTheorem where
   form : TheoremForm
   deriving Inhabited, BEq
 
-private local instance : Ord Name := ⟨Name.quickCmp⟩
+private local instance : Ord Name := fast_instance% ⟨Name.quickCmp⟩
 
 /-- -/
 structure FunctionTheorems where

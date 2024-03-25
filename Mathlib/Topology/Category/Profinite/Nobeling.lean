@@ -302,14 +302,14 @@ def Products (I : Type*) [LinearOrder I] := {l : List I // l.Chain' (·>·)}
 
 namespace Products
 
-instance : LinearOrder (Products I) :=
+instance : LinearOrder (Products I) := fast_instance%
   inferInstanceAs (LinearOrder {l : List I // l.Chain' (·>·)})
 
 @[simp]
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (·<·) l.val m.val := by
   cases l; cases m; rw [Subtype.mk_lt_mk]; exact Iff.rfl
 
-instance : IsWellFounded (Products I) (·<·) := by
+instance : IsWellFounded (Products I) (·<·) := fast_instance% by
   have : (· < · : Products I → _ → _) = (fun l m ↦ List.Lex (·<·) l.val m.val) := by
     ext; exact lt_iff_lex_lt _ _
   rw [this]
@@ -482,7 +482,7 @@ theorem eval_eq_πJ (l : Products I) (hl : l.isGood (π C (· ∈ s))) :
 
 /-- `π C (· ∈ s)` is finite for a finite set `s`. -/
 noncomputable
-instance : Fintype (π C (· ∈ s)) := by
+instance : Fintype (π C (· ∈ s)) := fast_instance% by
   let f : π C (· ∈ s) → (s → Bool) := fun x j ↦ x.val j.val
   refine Fintype.ofInjective f ?_
   intro ⟨_, x, hx, rfl⟩ ⟨_, y, hy, rfl⟩ h
@@ -756,10 +756,10 @@ section Zero
 In this case, we have `contained C 0` which means that `C` is either empty or a singleton.
 -/
 
-instance : Subsingleton (LocallyConstant (∅ : Set (I → Bool)) ℤ) :=
+instance : Subsingleton (LocallyConstant (∅ : Set (I → Bool)) ℤ) := fast_instance%
   subsingleton_iff.mpr (fun _ _ ↦ LocallyConstant.ext isEmptyElim)
 
-instance : IsEmpty { l // Products.isGood (∅ : Set (I → Bool)) l } :=
+instance : IsEmpty { l // Products.isGood (∅ : Set (I → Bool)) l } := fast_instance%
   isEmpty_iff.mpr fun ⟨l, hl⟩ ↦ hl <| by
     rw [subsingleton_iff.mp inferInstance (Products.eval ∅ l) 0]
     exact Submodule.zero_mem _
@@ -775,7 +775,7 @@ theorem Products.lt_nil_empty : { m : Products I | m < Products.nil } = ∅ := b
   refine ⟨fun h ↦ ?_, by tauto⟩
   simp only [Set.mem_setOf_eq, lt_iff_lex_lt, nil, List.Lex.not_nil_right] at h
 
-instance {α : Type*} [TopologicalSpace α] [Nonempty α] : Nontrivial (LocallyConstant α ℤ) :=
+instance {α : Type*} [TopologicalSpace α] [Nonempty α] : Nontrivial (LocallyConstant α ℤ) := fast_instance%
   ⟨0, 1, ne_of_apply_ne DFunLike.coe <| (Function.const_injective (β := ℤ)).ne zero_ne_one⟩
 
 theorem Products.isGood_nil : Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil := by
@@ -811,7 +811,7 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     rw [Products.span_nil_eq_top]
     exact Submodule.mem_top
 
-instance (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyConstant α ℤ) := by
+instance (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyConstant α ℤ) := fast_instance% by
   constructor
   intro c f h
   rw [or_iff_not_imp_left]

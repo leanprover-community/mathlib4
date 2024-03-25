@@ -17,7 +17,7 @@ import Mathlib.Data.Nat.Order.Basic
 * `Field.toEuclideanDomain`: shows that any field is a Euclidean domain.
 -/
 
-instance Int.euclideanDomain : EuclideanDomain ℤ :=
+instance Int.euclideanDomain : EuclideanDomain ℤ := fast_instance%
   { inferInstanceAs (CommRing Int), inferInstanceAs (Nontrivial Int) with
     quotient := (· / ·), quotient_zero := Int.ediv_zero, remainder := (· % ·),
     quotient_mul_add_remainder_eq := Int.ediv_add_emod,

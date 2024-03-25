@@ -138,16 +138,16 @@ def gluedScheme : Scheme := by
   · infer_instance
 #align algebraic_geometry.Scheme.glue_data.glued_Scheme AlgebraicGeometry.Scheme.GlueData.gluedScheme
 
-instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
+instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace := fast_instance%
   createsColimitOfFullyFaithfulOfIso D.gluedScheme
     (HasColimit.isoOfNatIso (𝖣.diagramIso forgetToLocallyRingedSpace).symm)
 
 -- Porting note: we need to use `CommRingCatMax.{u, u}` instead of just `CommRingCat`.
-instance : PreservesColimit (𝖣.diagram.multispan) forgetToTop :=
+instance : PreservesColimit (𝖣.diagram.multispan) forgetToTop := fast_instance%
   inferInstanceAs (PreservesColimit (𝖣.diagram).multispan (forgetToLocallyRingedSpace ⋙
       LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCatMax.{u, u}))
 
-instance : HasMulticoequalizer 𝖣.diagram :=
+instance : HasMulticoequalizer 𝖣.diagram := fast_instance%
   hasColimit_of_created _ forgetToLocallyRingedSpace
 
 /-- The glued scheme of a glued space. -/
@@ -171,7 +171,7 @@ theorem ι_isoLocallyRingedSpace_inv (i : D.J) :
   𝖣.ι_gluedIso_inv forgetToLocallyRingedSpace i
 #align algebraic_geometry.Scheme.glue_data.ι_iso_LocallyRingedSpace_inv AlgebraicGeometry.Scheme.GlueData.ι_isoLocallyRingedSpace_inv
 
-instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
+instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := fast_instance% by
   rw [← D.ι_isoLocallyRingedSpace_inv]; infer_instance
 #align algebraic_geometry.Scheme.glue_data.ι_is_open_immersion AlgebraicGeometry.Scheme.GlueData.ι_isOpenImmersion
 
@@ -424,7 +424,7 @@ theorem fromGlued_openEmbedding : OpenEmbedding 𝒰.fromGlued.1.base :=
     (ContinuousMap.continuous_toFun _) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_embedding AlgebraicGeometry.Scheme.OpenCover.fromGlued_openEmbedding
 
-instance : Epi 𝒰.fromGlued.val.base := by
+instance : Epi 𝒰.fromGlued.val.base := fast_instance% by
   rw [TopCat.epi_iff_surjective]
   intro x
   obtain ⟨y, h⟩ := 𝒰.Covers x
@@ -433,11 +433,11 @@ instance : Epi 𝒰.fromGlued.val.base := by
   rw [← 𝒰.ι_fromGlued (𝒰.f x)] at h
   exact h
 
-instance fromGlued_open_immersion : IsOpenImmersion 𝒰.fromGlued :=
+instance fromGlued_open_immersion : IsOpenImmersion 𝒰.fromGlued := fast_instance%
   SheafedSpace.IsOpenImmersion.of_stalk_iso _ 𝒰.fromGlued_openEmbedding
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_immersion AlgebraicGeometry.Scheme.OpenCover.fromGlued_open_immersion
 
-instance : IsIso 𝒰.fromGlued :=
+instance : IsIso 𝒰.fromGlued := fast_instance%
   let F := Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToSheafedSpace ⋙
     SheafedSpace.forgetToPresheafedSpace
   have : IsIso (F.map (fromGlued 𝒰)) := by

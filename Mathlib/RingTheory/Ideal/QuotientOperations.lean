@@ -299,7 +299,7 @@ variable [CommSemiring R₁] [CommSemiring R₂] [CommRing A]
 variable [Algebra R₁ A] [Algebra R₂ A]
 
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/
-instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
+instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) := fast_instance%
   { toRingHom := (Ideal.Quotient.mk I).comp (algebraMap R₁ A)
     smul_def' := fun _ x =>
       Quotient.inductionOn' x fun _ =>

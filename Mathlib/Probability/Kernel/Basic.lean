@@ -176,7 +176,7 @@ instance IsMarkovKernel.is_probability_measure' [IsMarkovKernel κ] (a : α) :
   IsMarkovKernel.isProbabilityMeasure a
 #align probability_theory.is_markov_kernel.is_probability_measure' ProbabilityTheory.IsMarkovKernel.is_probability_measure'
 
-instance IsFiniteKernel.isFiniteMeasure [IsFiniteKernel κ] (a : α) : IsFiniteMeasure (κ a) :=
+instance IsFiniteKernel.isFiniteMeasure [IsFiniteKernel κ] (a : α) : IsFiniteMeasure (κ a) := fast_instance%
   ⟨(kernel.measure_le_bound κ a Set.univ).trans_lt (IsFiniteKernel.bound_lt_top κ)⟩
 #align probability_theory.is_finite_kernel.is_finite_measure ProbabilityTheory.IsFiniteKernel.isFiniteMeasure
 
@@ -319,7 +319,7 @@ instance isFiniteKernel_seq (κ : kernel α β) [h : IsSFiniteKernel κ] (n : �
   h.tsum_finite.choose_spec.1 n
 #align probability_theory.kernel.is_finite_kernel_seq ProbabilityTheory.kernel.isFiniteKernel_seq
 
-instance IsSFiniteKernel.sFinite [IsSFiniteKernel κ] (a : α) : SFinite (κ a) :=
+instance IsSFiniteKernel.sFinite [IsSFiniteKernel κ] (a : α) : SFinite (κ a) := fast_instance%
   ⟨⟨fun n ↦ seq κ n a, inferInstance, (measure_sum_seq κ a).symm⟩⟩
 
 instance IsSFiniteKernel.add (κ η : kernel α β) [IsSFiniteKernel κ] [IsSFiniteKernel η] :

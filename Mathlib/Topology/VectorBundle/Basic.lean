@@ -573,7 +573,7 @@ def trivialVectorBundleCore (ι : Type*) [Inhabited ι] : VectorBundleCore R B F
   continuousOn_coordChange _ _ := continuousOn_const
 #align trivial_vector_bundle_core trivialVectorBundleCore
 
-instance (ι : Type*) [Inhabited ι] : Inhabited (VectorBundleCore R B F ι) :=
+instance (ι : Type*) [Inhabited ι] : Inhabited (VectorBundleCore R B F ι) := fast_instance%
   ⟨trivialVectorBundleCore R B F ι⟩
 
 namespace VectorBundleCore
@@ -592,7 +592,7 @@ def toFiberBundleCore : FiberBundleCore ι B F :=
 #align vector_bundle_core.to_fiber_bundle_core VectorBundleCore.toFiberBundleCore
 
 -- Porting note (#11215): TODO: restore coercion
--- instance toFiberBundleCoreCoe : Coe (VectorBundleCore R B F ι) (FiberBundleCore ι B F) :=
+-- instance toFiberBundleCoreCoe : Coe (VectorBundleCore R B F ι) (FiberBundleCore ι B F) := fast_instance%
 --   ⟨toFiberBundleCore⟩
 -- #align vector_bundle_core.to_fiber_bundle_core_coe VectorBundleCore.toFiberBundleCoreCoe
 
@@ -621,16 +621,16 @@ def Fiber : B → Type _ :=
   Z.toFiberBundleCore.Fiber
 #align vector_bundle_core.fiber VectorBundleCore.Fiber
 
-instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) :=
+instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := fast_instance%
   Z.toFiberBundleCore.topologicalSpaceFiber x
 #align vector_bundle_core.topological_space_fiber VectorBundleCore.topologicalSpaceFiber
 
 -- Porting note: fixed: used to assume both `[NormedAddCommGroup F]` and `[AddCommGroupCat F]`
-instance addCommGroupFiber (x : B) : AddCommGroup (Z.Fiber x) :=
+instance addCommGroupFiber (x : B) : AddCommGroup (Z.Fiber x) := fast_instance%
   inferInstanceAs (AddCommGroup F)
 #align vector_bundle_core.add_comm_group_fiber VectorBundleCore.addCommGroupFiber
 
-instance moduleFiber (x : B) : Module R (Z.Fiber x) :=
+instance moduleFiber (x : B) : Module R (Z.Fiber x) := fast_instance%
   inferInstanceAs (Module R F)
 #align vector_bundle_core.module_fiber VectorBundleCore.moduleFiber
 
@@ -660,7 +660,7 @@ theorem mem_trivChange_source (i j : ι) (p : B × F) :
 
 /-- Topological structure on the total space of a vector bundle created from core, designed so
 that all the local trivialization are continuous. -/
-instance toTopologicalSpace : TopologicalSpace Z.TotalSpace :=
+instance toTopologicalSpace : TopologicalSpace Z.TotalSpace := fast_instance%
   Z.toFiberBundleCore.toTopologicalSpace
 #align vector_bundle_core.to_topological_space VectorBundleCore.toTopologicalSpace
 
@@ -760,7 +760,7 @@ theorem mem_localTrivAt_baseSet : b ∈ (Z.localTrivAt b).baseSet :=
   Z.toFiberBundleCore.mem_localTrivAt_baseSet b
 #align vector_bundle_core.mem_local_triv_at_base_set VectorBundleCore.mem_localTrivAt_baseSet
 
-instance fiberBundle : FiberBundle F Z.Fiber :=
+instance fiberBundle : FiberBundle F Z.Fiber := fast_instance%
   Z.toFiberBundleCore.fiberBundle
 #align vector_bundle_core.fiber_bundle VectorBundleCore.fiberBundle
 

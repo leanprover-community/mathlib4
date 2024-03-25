@@ -70,7 +70,7 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
     Module.injective_object_of_injective_module (inj := (Module.Baer.of_divisible A).injective)
 #align AddCommGroup.injective_of_divisible AddCommGroupCat.injective_of_divisible
 
-instance injective_ratCircle : Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
+instance injective_ratCircle : Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) := fast_instance%
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
   injective_of_divisible _
 

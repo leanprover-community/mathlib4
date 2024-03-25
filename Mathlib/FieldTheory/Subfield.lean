@@ -93,7 +93,7 @@ theorem coe_rat_mem (s : S) (x : ℚ) : (x : K) ∈ s := by
   simpa only [Rat.cast_def] using div_mem (coe_int_mem s x.num) (coe_nat_mem s x.den)
 #align subfield_class.coe_rat_mem SubfieldClass.coe_rat_mem
 
-instance (s : S) : RatCast s :=
+instance (s : S) : RatCast s := fast_instance%
   ⟨fun x => ⟨↑x, coe_rat_mem s x⟩⟩
 
 @[simp]
@@ -112,7 +112,7 @@ lemma ofScientific_mem (s : S) {b : Bool} {n m : ℕ} :
     (OfScientific.ofScientific n b m : K) ∈ s :=
   SubfieldClass.coe_rat_mem ..
 
-instance (s : S) : SMul ℚ s :=
+instance (s : S) : SMul ℚ s := fast_instance%
   ⟨fun a x => ⟨a • (x : K), rat_smul_mem s a x⟩⟩
 
 @[simp]
@@ -328,26 +328,26 @@ theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
   · simpa [pow_succ] using s.inv_mem (s.mul_mem hx (s.pow_mem hx _))
 #align subfield.zpow_mem Subfield.zpow_mem
 
-instance : Ring s :=
+instance : Ring s := fast_instance%
   s.toSubring.toRing
 
-instance : Div s :=
+instance : Div s := fast_instance%
   ⟨fun x y => ⟨x / y, s.div_mem x.2 y.2⟩⟩
 
-instance : Inv s :=
+instance : Inv s := fast_instance%
   ⟨fun x => ⟨x⁻¹, s.inv_mem x.2⟩⟩
 
-instance : Pow s ℤ :=
+instance : Pow s ℤ := fast_instance%
   ⟨fun x z => ⟨x ^ z, s.zpow_mem x.2 z⟩⟩
 
-instance toDivisionRing (s : Subfield K) : DivisionRing s :=
+instance toDivisionRing (s : Subfield K) : DivisionRing s := fast_instance%
   fast_instance%
   Subtype.coe_injective.divisionRing ((↑) : s → K) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) fun _ ↦ rfl
 
 /-- A subfield inherits a field structure -/
-instance toField {K} [Field K] (s : Subfield K) : Field s :=
+instance toField {K} [Field K] (s : Subfield K) : Field s := fast_instance%
   fast_instance%
   Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
@@ -439,10 +439,10 @@ theorem coe_toAddSubgroup : (s.toAddSubgroup : Set K) = s :=
 
 
 /-- The subfield of `K` containing all elements of `K`. -/
-instance : Top (Subfield K) :=
+instance : Top (Subfield K) := fast_instance%
   ⟨{ (⊤ : Subring K) with inv_mem' := fun x _ => Subring.mem_top x }⟩
 
-instance : Inhabited (Subfield K) :=
+instance : Inhabited (Subfield K) := fast_instance%
   ⟨⊤⟩
 
 @[simp]
@@ -560,7 +560,7 @@ theorem map_fieldRange : f.fieldRange.map g = (g.comp f).fieldRange := by
 /-- The range of a morphism of fields is a fintype, if the domain is a fintype.
 
 Note that this instance can cause a diamond with `Subtype.Fintype` if `L` is also a fintype.-/
-instance fintypeFieldRange [Fintype K] [DecidableEq L] (f : K →+* L) : Fintype f.fieldRange :=
+instance fintypeFieldRange [Fintype K] [DecidableEq L] (f : K →+* L) : Fintype f.fieldRange := fast_instance%
   Set.fintypeRange f
 #align ring_hom.fintype_field_range RingHom.fintypeFieldRange
 
@@ -572,7 +572,7 @@ namespace Subfield
 
 
 /-- The inf of two subfields is their intersection. -/
-instance : Inf (Subfield K) :=
+instance : Inf (Subfield K) := fast_instance%
   ⟨fun s t =>
     { s.toSubring ⊓ t.toSubring with
       inv_mem' := fun _ hx =>
@@ -589,7 +589,7 @@ theorem mem_inf {p p' : Subfield K} {x : K} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x �
   Iff.rfl
 #align subfield.mem_inf Subfield.mem_inf
 
-instance : InfSet (Subfield K) :=
+instance : InfSet (Subfield K) := fast_instance%
   ⟨fun S =>
     { sInf (Subfield.toSubring '' S) with
       inv_mem' := by
@@ -637,7 +637,7 @@ theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
 #align subfield.is_glb_Inf Subfield.isGLB_sInf
 
 /-- Subfields of a ring form a complete lattice. -/
-instance : CompleteLattice (Subfield K) :=
+instance : CompleteLattice (Subfield K) := fast_instance%
   { completeLatticeOfInf (Subfield K) isGLB_sInf with
     top := ⊤
     le_top := fun _ _ _ => trivial
@@ -913,7 +913,7 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ 
   prod_mem h
 #align subfield.prod_mem Subfield.prod_mem
 
-instance toAlgebra : Algebra s K :=
+instance toAlgebra : Algebra s K := fast_instance%
   RingHom.toAlgebra s.subtype
 #align subfield.to_algebra Subfield.toAlgebra
 

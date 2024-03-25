@@ -47,17 +47,17 @@ protected def order : Language :=
   Language.mk₂ Empty Empty Empty Empty Unit
 #align first_order.language.order FirstOrder.Language.order
 
-instance orderStructure [LE M] : Language.order.Structure M :=
+instance orderStructure [LE M] : Language.order.Structure M := fast_instance%
   Structure.mk₂ Empty.elim Empty.elim Empty.elim Empty.elim fun _ => (· ≤ ·)
 #align first_order.language.order_Structure FirstOrder.Language.orderStructure
 
 namespace Order
 
-instance Language.instIsRelational : IsRelational Language.order :=
+instance Language.instIsRelational : IsRelational Language.order := fast_instance%
   Language.isRelational_mk₂
 #align first_order.language.order.first_order.language.is_relational FirstOrder.Language.Order.Language.instIsRelational
 
-instance Language.instSubsingleton : Subsingleton (Language.order.Relations n) :=
+instance Language.instSubsingleton : Subsingleton (Language.order.Relations n) := fast_instance%
   Language.subsingleton_mk₂_relations
 #align first_order.language.order.relations.subsingleton FirstOrder.Language.Order.Language.instSubsingleton
 
@@ -94,7 +94,7 @@ def orderLHom : Language.order →ᴸ L :=
 
 end IsOrdered
 
-instance : IsOrdered Language.order :=
+instance : IsOrdered Language.order := fast_instance%
   ⟨Unit.unit⟩
 
 @[simp]
@@ -108,7 +108,7 @@ theorem orderLHom_order : orderLHom Language.order = LHom.id Language.order :=
   LHom.funext (Subsingleton.elim _ _) (Subsingleton.elim _ _)
 #align first_order.language.order_Lhom_order FirstOrder.Language.orderLHom_order
 
-instance sum.instIsOrdered : IsOrdered (L.sum Language.order) :=
+instance sum.instIsOrdered : IsOrdered (L.sum Language.order) := fast_instance%
   ⟨Sum.inr IsOrdered.leSymb⟩
 #align first_order.language.sum.is_ordered FirstOrder.Language.sum.instIsOrdered
 
@@ -171,26 +171,26 @@ theorem orderedStructure_iff [IsOrdered L] [LE M] [L.Structure M] :
   Iff.rfl
 #align first_order.language.ordered_structure_iff FirstOrder.Language.orderedStructure_iff
 
-instance orderedStructure_LE [LE M] : OrderedStructure Language.order M := by
+instance orderedStructure_LE [LE M] : OrderedStructure Language.order M := fast_instance% by
   rw [orderedStructure_iff, orderLHom_order]
   exact LHom.id_isExpansionOn M
 #align first_order.language.ordered_structure_has_le FirstOrder.Language.orderedStructure_LE
 
-instance model_preorder [Preorder M] : M ⊨ Language.order.preorderTheory := by
+instance model_preorder [Preorder M] : M ⊨ Language.order.preorderTheory := fast_instance% by
   simp only [preorderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, forall_eq,
     Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ _ => le_trans⟩
 #align first_order.language.model_preorder FirstOrder.Language.model_preorder
 
-instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrderTheory := by
+instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrderTheory := fast_instance% by
   simp only [partialOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
     forall_eq, Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans⟩
 #align first_order.language.model_partial_order FirstOrder.Language.model_partialOrder
 
-instance model_linearOrder [LinearOrder M] : M ⊨ Language.order.linearOrderTheory := by
+instance model_linearOrder [LinearOrder M] : M ⊨ Language.order.linearOrderTheory := fast_instance% by
   simp only [linearOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
     Relations.realize_transitive, forall_eq, Relations.realize_total]

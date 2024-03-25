@@ -494,7 +494,7 @@ def IsRoot (p : R[X]) (a : R) : Prop :=
   p.eval a = 0
 #align polynomial.is_root Polynomial.IsRoot
 
-instance IsRoot.decidable [DecidableEq R] : Decidable (IsRoot p a) := by
+instance IsRoot.decidable [DecidableEq R] : Decidable (IsRoot p a) := fast_instance% by
   unfold IsRoot; infer_instance
 #align polynomial.is_root.decidable Polynomial.IsRoot.decidable
 

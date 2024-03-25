@@ -34,7 +34,7 @@ namespace Units
 
 variable {R : Type*} [NormedRing R] [CompleteSpace R]
 
-instance : ChartedSpace R Rˣ :=
+instance : ChartedSpace R Rˣ := fast_instance%
   openEmbedding_val.singletonChartedSpace
 
 theorem chartAt_apply {a : Rˣ} {b : Rˣ} : chartAt R a b = b :=
@@ -47,7 +47,7 @@ theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
 
-instance : SmoothManifoldWithCorners 𝓘(𝕜, R) Rˣ :=
+instance : SmoothManifoldWithCorners 𝓘(𝕜, R) Rˣ := fast_instance%
   openEmbedding_val.singleton_smoothManifoldWithCorners 𝓘(𝕜, R)
 
 /-- For a complete normed ring `R`, the embedding of the units `Rˣ` into `R` is a smooth map between

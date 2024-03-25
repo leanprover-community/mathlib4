@@ -95,28 +95,28 @@ noncomputable def ofInjective {α β} (f : α → β) [DecidableEq α] [FinEnum 
       simp only [h, Function.partialInv_left])
 #align fin_enum.of_injective FinEnum.ofInjective
 
-instance pempty : FinEnum PEmpty :=
+instance pempty : FinEnum PEmpty := fast_instance%
   ofList [] fun x => PEmpty.elim x
 #align fin_enum.pempty FinEnum.pempty
 
-instance empty : FinEnum Empty :=
+instance empty : FinEnum Empty := fast_instance%
   ofList [] fun x => Empty.elim x
 #align fin_enum.empty FinEnum.empty
 
-instance punit : FinEnum PUnit :=
+instance punit : FinEnum PUnit := fast_instance%
   ofList [PUnit.unit] fun x => by cases x; simp
 #align fin_enum.punit FinEnum.punit
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-instance prod {β} [FinEnum α] [FinEnum β] : FinEnum (α × β) :=
+instance prod {β} [FinEnum α] [FinEnum β] : FinEnum (α × β) := fast_instance%
   ofList (toList α ×ˢ toList β) fun x => by cases x; simp
 #align fin_enum.prod FinEnum.prod
 
-instance sum {β} [FinEnum α] [FinEnum β] : FinEnum (Sum α β) :=
+instance sum {β} [FinEnum α] [FinEnum β] : FinEnum (Sum α β) := fast_instance%
   ofList ((toList α).map Sum.inl ++ (toList β).map Sum.inr) fun x => by cases x <;> simp
 #align fin_enum.sum FinEnum.sum
 
-instance fin {n} : FinEnum (Fin n) :=
+instance fin {n} : FinEnum (Fin n) := fast_instance%
   ofList (List.finRange _) (by simp)
 #align fin_enum.fin FinEnum.fin
 
@@ -168,20 +168,20 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
         exact (h h₀).elim
 #align fin_enum.finset.mem_enum FinEnum.Finset.mem_enum
 
-instance Finset.finEnum [FinEnum α] : FinEnum (Finset α) :=
+instance Finset.finEnum [FinEnum α] : FinEnum (Finset α) := fast_instance%
   ofList (Finset.enum (toList α)) (by intro; simp)
 #align fin_enum.finset.fin_enum FinEnum.Finset.finEnum
 
-instance Subtype.finEnum [FinEnum α] (p : α → Prop) [DecidablePred p] : FinEnum { x // p x } :=
+instance Subtype.finEnum [FinEnum α] (p : α → Prop) [DecidablePred p] : FinEnum { x // p x } := fast_instance%
   ofList ((toList α).filterMap fun x => if h : p x then some ⟨_, h⟩ else none)
     (by rintro ⟨x, h⟩; simp; exists x; simp [*])
 #align fin_enum.subtype.fin_enum FinEnum.Subtype.finEnum
 
-instance (β : α → Type v) [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Sigma β) :=
+instance (β : α → Type v) [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Sigma β) := fast_instance%
   ofList ((toList α).bind fun a => (toList (β a)).map <| Sigma.mk a)
     (by intro x; cases x; simp)
 
-instance PSigma.finEnum [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Σ'a, β a) :=
+instance PSigma.finEnum [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Σ'a, β a) := fast_instance%
   FinEnum.ofEquiv _ (Equiv.psigmaEquivSigma _)
 #align fin_enum.psigma.fin_enum FinEnum.PSigma.finEnum
 

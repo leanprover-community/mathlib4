@@ -483,18 +483,18 @@ end LinearOrderedField
 
 variable (p : ℝ)
 
-instance pathConnectedSpace : PathConnectedSpace <| AddCircle p :=
+instance pathConnectedSpace : PathConnectedSpace <| AddCircle p := fast_instance%
   (inferInstance : PathConnectedSpace (Quotient _))
 
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is compact. -/
-instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by
+instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := fast_instance% by
   rw [← isCompact_univ_iff, ← coe_image_Icc_eq p 0]
   exact isCompact_Icc.image (AddCircle.continuous_mk' p)
 #align add_circle.compact_space AddCircle.compactSpace
 
 /-- The action on `ℝ` by right multiplication of its the subgroup `zmultiples p` (the multiples of
 `p:ℝ`) is properly discontinuous. -/
-instance : ProperlyDiscontinuousVAdd (zmultiples p).op ℝ :=
+instance : ProperlyDiscontinuousVAdd (zmultiples p).op ℝ := fast_instance%
   (zmultiples p).properlyDiscontinuousVAdd_opposite_of_tendsto_cofinite
     (AddSubgroup.tendsto_zmultiples_subtype_cofinite p)
 

@@ -161,7 +161,7 @@ section PartialOrder
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
 variable [∀ i, PartialOrder (α i)] [∀ i, Zero (α i)] [∀ i, LocallyFiniteOrder (α i)]
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder (Π₀ i, α i) :=
+instance instLocallyFiniteOrder : LocallyFiniteOrder (Π₀ i, α i) := fast_instance%
   LocallyFiniteOrder.ofIcc (Π₀ i, α i)
     (fun f g => (f.support ∪ g.support).dfinsupp <| f.rangeIcc g)
     (fun f g x => by

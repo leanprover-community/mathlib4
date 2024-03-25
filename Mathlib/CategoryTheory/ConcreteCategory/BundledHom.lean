@@ -60,7 +60,7 @@ set_option synthInstance.checkSynthOrder false in
 This instance generates the type-class problem `BundledHom ?m`.
 Currently that is not a problem, as there are almost no instances of `BundledHom`.
 -/
-instance category : Category (Bundled c) := by
+instance category : Category (Bundled c) := fast_instance% by
   refine' { Hom := fun X Y => @hom X Y X.str Y.str
             id := fun X => @BundledHom.id c hom 𝒞 X X.str
             comp := @fun X Y Z f g => @BundledHom.comp c hom 𝒞 X Y Z X.str Y.str Z.str g f
@@ -130,7 +130,7 @@ which we would like to use to automatically construct `BundledHom` instances fro
 
 Once we've set up `MonCat` as the category of bundled monoids,
 this allows us to set up `CommMonCat` by defining an instance
-```instance : ParentProjection (CommMonoid.toMonoid) := ⟨⟩```
+```instance : ParentProjection (CommMonoid.toMonoid) := fast_instance% ⟨⟩```
 -/
 class ParentProjection (F : ∀ {α}, d α → c α) : Prop
 #align category_theory.bundled_hom.parent_projection CategoryTheory.BundledHom.ParentProjection

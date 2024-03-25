@@ -629,16 +629,16 @@ section Preorder
 
 variable [Preorder α] [LocallyFiniteOrder α] (a b : α)
 
-instance fintypeIcc : Fintype (Icc a b) := Fintype.ofFinset (Finset.Icc a b) fun _ => Finset.mem_Icc
+instance fintypeIcc : Fintype (Icc a b) := fast_instance% Fintype.ofFinset (Finset.Icc a b) fun _ => Finset.mem_Icc
 #align set.fintype_Icc Set.fintypeIcc
 
-instance fintypeIco : Fintype (Ico a b) := Fintype.ofFinset (Finset.Ico a b) fun _ => Finset.mem_Ico
+instance fintypeIco : Fintype (Ico a b) := fast_instance% Fintype.ofFinset (Finset.Ico a b) fun _ => Finset.mem_Ico
 #align set.fintype_Ico Set.fintypeIco
 
-instance fintypeIoc : Fintype (Ioc a b) := Fintype.ofFinset (Finset.Ioc a b) fun _ => Finset.mem_Ioc
+instance fintypeIoc : Fintype (Ioc a b) := fast_instance% Fintype.ofFinset (Finset.Ioc a b) fun _ => Finset.mem_Ioc
 #align set.fintype_Ioc Set.fintypeIoc
 
-instance fintypeIoo : Fintype (Ioo a b) := Fintype.ofFinset (Finset.Ioo a b) fun _ => Finset.mem_Ioo
+instance fintypeIoo : Fintype (Ioo a b) := fast_instance% Fintype.ofFinset (Finset.Ioo a b) fun _ => Finset.mem_Ioo
 #align set.fintype_Ioo Set.fintypeIoo
 
 theorem finite_Icc : (Icc a b).Finite :=
@@ -663,10 +663,10 @@ section OrderTop
 
 variable [Preorder α] [LocallyFiniteOrderTop α] (a : α)
 
-instance fintypeIci : Fintype (Ici a) := Fintype.ofFinset (Finset.Ici a) fun _ => Finset.mem_Ici
+instance fintypeIci : Fintype (Ici a) := fast_instance% Fintype.ofFinset (Finset.Ici a) fun _ => Finset.mem_Ici
 #align set.fintype_Ici Set.fintypeIci
 
-instance fintypeIoi : Fintype (Ioi a) := Fintype.ofFinset (Finset.Ioi a) fun _ => Finset.mem_Ioi
+instance fintypeIoi : Fintype (Ioi a) := fast_instance% Fintype.ofFinset (Finset.Ioi a) fun _ => Finset.mem_Ioi
 #align set.fintype_Ioi Set.fintypeIoi
 
 theorem finite_Ici : (Ici a).Finite :=
@@ -683,10 +683,10 @@ section OrderBot
 
 variable [Preorder α] [LocallyFiniteOrderBot α] (b : α)
 
-instance fintypeIic : Fintype (Iic b) := Fintype.ofFinset (Finset.Iic b) fun _ => Finset.mem_Iic
+instance fintypeIic : Fintype (Iic b) := fast_instance% Fintype.ofFinset (Finset.Iic b) fun _ => Finset.mem_Iic
 #align set.fintype_Iic Set.fintypeIic
 
-instance fintypeIio : Fintype (Iio b) := Fintype.ofFinset (Finset.Iio b) fun _ => Finset.mem_Iio
+instance fintypeIio : Fintype (Iio b) := fast_instance% Fintype.ofFinset (Finset.Iio b) fun _ => Finset.mem_Iio
 #align set.fintype_Iio Set.fintypeIio
 
 theorem finite_Iic : (Iic b).Finite :=
@@ -702,7 +702,7 @@ end OrderBot
 section Lattice
 variable [Lattice α] [LocallyFiniteOrder α] (a b : α)
 
-instance fintypeUIcc : Fintype (uIcc a b) :=
+instance fintypeUIcc : Fintype (uIcc a b) := fast_instance%
   Fintype.ofFinset (Finset.uIcc a b) fun _ => Finset.mem_uIcc
 #align set.fintype_uIcc Set.fintypeUIcc
 
@@ -748,7 +748,7 @@ def Fintype.toLocallyFiniteOrder [Fintype α] [@DecidableRel α (· < ·)] [@Dec
   finset_mem_Ioo a b x := by simp only [Set.mem_toFinset, Set.mem_Ioo]
 #align fintype.to_locally_finite_order Fintype.toLocallyFiniteOrder
 
-instance : Subsingleton (LocallyFiniteOrder α) :=
+instance : Subsingleton (LocallyFiniteOrder α) := fast_instance%
   Subsingleton.intro fun h₀ h₁ => by
     cases' h₀ with h₀_finset_Icc h₀_finset_Ico h₀_finset_Ioc h₀_finset_Ioo
       h₀_finset_mem_Icc h₀_finset_mem_Ico h₀_finset_mem_Ioc h₀_finset_mem_Ioo
@@ -768,7 +768,7 @@ instance : Subsingleton (LocallyFiniteOrder α) :=
       rw [h₀_finset_mem_Ioo, h₁_finset_mem_Ioo]
     simp_rw [hIcc, hIco, hIoc, hIoo]
 
-instance : Subsingleton (LocallyFiniteOrderTop α) :=
+instance : Subsingleton (LocallyFiniteOrderTop α) := fast_instance%
   Subsingleton.intro fun h₀ h₁ => by
     cases' h₀ with h₀_finset_Ioi h₀_finset_Ici h₀_finset_mem_Ici h₀_finset_mem_Ioi
     cases' h₁ with h₁_finset_Ioi h₁_finset_Ici h₁_finset_mem_Ici h₁_finset_mem_Ioi
@@ -780,7 +780,7 @@ instance : Subsingleton (LocallyFiniteOrderTop α) :=
       rw [h₀_finset_mem_Ioi, h₁_finset_mem_Ioi]
     simp_rw [hIci, hIoi]
 
-instance : Subsingleton (LocallyFiniteOrderBot α) :=
+instance : Subsingleton (LocallyFiniteOrderBot α) := fast_instance%
   Subsingleton.intro fun h₀ h₁ => by
     cases' h₀ with h₀_finset_Iio h₀_finset_Iic h₀_finset_mem_Iic h₀_finset_mem_Iio
     cases' h₁ with h₁_finset_Iio h₁_finset_Iic h₁_finset_mem_Iic h₁_finset_mem_Iio
@@ -1171,7 +1171,7 @@ namespace WithBot
 
 variable (α) [PartialOrder α] [OrderBot α] [LocallyFiniteOrder α]
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder (WithBot α) :=
+instance instLocallyFiniteOrder : LocallyFiniteOrder (WithBot α) := fast_instance%
   OrderDual.instLocallyFiniteOrder (α := WithTop αᵒᵈ)
 
 variable (a b : α)
@@ -1471,28 +1471,28 @@ instance (priority := low) [Preorder α] [DecidableRel ((· : α) < ·)] [Locall
     simp only [Finset.mem_subtype, Finset.mem_Ioo, Subtype.coe_lt_coe, and_iff_right_iff_imp]
     exact fun _ => b.property
 
-instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
+instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := fast_instance% by
   apply Set.Finite.to_subtype
   convert (Finset.Iic y).finite_toSet using 1
   ext
   simp
   rfl
 
-instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
+instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := fast_instance% by
   apply Set.Finite.to_subtype
   convert (Finset.Iio y).finite_toSet using 1
   ext
   simp
   rfl
 
-instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y ≤ x } := by
+instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y ≤ x } := fast_instance% by
   apply Set.Finite.to_subtype
   convert (Finset.Ici y).finite_toSet using 1
   ext
   simp
   rfl
 
-instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y < x } := by
+instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y < x } := fast_instance% by
   apply Set.Finite.to_subtype
   convert (Finset.Ioi y).finite_toSet using 1
   ext

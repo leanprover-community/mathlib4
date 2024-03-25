@@ -527,7 +527,7 @@ lemma nonLindelof_univ (X : Type*) [TopologicalSpace X] [NonLindelofSpace X] :
 theorem IsLindelof.ne_univ [NonLindelofSpace X] (hs : IsLindelof s) : s ≠ univ := fun h ↦
   nonLindelof_univ X (h ▸ hs)
 
-instance [NonLindelofSpace X] : NeBot (Filter.coLindelof X) := by
+instance [NonLindelofSpace X] : NeBot (Filter.coLindelof X) := fast_instance% by
   refine' hasBasis_coLindelof.neBot_iff.2 fun {s} hs => _
   contrapose hs
   rw [not_nonempty_iff_eq_empty, compl_empty_iff] at hs
@@ -538,7 +538,7 @@ instance [NonLindelofSpace X] : NeBot (Filter.coLindelof X) := by
 theorem Filter.coLindelof_eq_bot [LindelofSpace X] : Filter.coLindelof X = ⊥ :=
   hasBasis_coLindelof.eq_bot_iff.mpr ⟨Set.univ, isLindelof_univ, Set.compl_univ⟩
 
-instance [NonLindelofSpace X] : NeBot (Filter.coclosedLindelof X) :=
+instance [NonLindelofSpace X] : NeBot (Filter.coclosedLindelof X) := fast_instance%
   neBot_of_le coLindelof_le_coclosedLindelof
 
 theorem nonLindelofSpace_of_neBot (_ : NeBot (Filter.coLindelof X)) : NonLindelofSpace X :=
@@ -664,7 +664,7 @@ instance Quot.LindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofS
     rw [← range_quot_mk]
     exact isLindelof_range continuous_quot_mk
 
-instance Quotient.LindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
+instance Quotient.LindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) := fast_instance%
   Quot.LindelofSpace
 
 /-- A continuous image of a Lindelöf set is a Lindelöf set within the codomain. -/

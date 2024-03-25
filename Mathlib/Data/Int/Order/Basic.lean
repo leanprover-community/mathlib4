@@ -32,7 +32,7 @@ open Function Nat
 
 namespace Int
 
-instance linearOrderedCommRing : LinearOrderedCommRing ℤ :=
+instance linearOrderedCommRing : LinearOrderedCommRing ℤ := fast_instance%
   { instCommRingInt, instLinearOrderInt, instNontrivialInt with
     add_le_add_left := @Int.add_le_add_left,
     mul_pos := @Int.mul_pos, zero_le_one := le_of_lt Int.zero_lt_one }
@@ -41,13 +41,13 @@ instance linearOrderedCommRing : LinearOrderedCommRing ℤ :=
 -/
 
 
-instance orderedCommRing : OrderedCommRing ℤ :=
+instance orderedCommRing : OrderedCommRing ℤ := fast_instance%
   StrictOrderedCommRing.toOrderedCommRing'
 
-instance orderedRing : OrderedRing ℤ :=
+instance orderedRing : OrderedRing ℤ := fast_instance%
   StrictOrderedRing.toOrderedRing'
 
-instance linearOrderedAddCommGroup : LinearOrderedAddCommGroup ℤ := by infer_instance
+instance linearOrderedAddCommGroup : LinearOrderedAddCommGroup ℤ := fast_instance% by infer_instance
 
 end Int
 

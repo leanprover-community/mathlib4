@@ -38,7 +38,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.is_zero_of_subsingleton AddGroupCat.isZero_of_subsingleton
 
 @[to_additive AddGroupCat.hasZeroObject]
-instance : HasZeroObject GroupCat :=
+instance : HasZeroObject GroupCat := fast_instance%
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
 end GroupCat
@@ -59,7 +59,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.is_zero_of_subsingleton AddCommGroupCat.isZero_of_subsingleton
 
 @[to_additive AddCommGroupCat.hasZeroObject]
-instance : HasZeroObject CommGroupCat :=
+instance : HasZeroObject CommGroupCat := fast_instance%
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
 end CommGroupCat

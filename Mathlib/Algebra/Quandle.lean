@@ -376,7 +376,7 @@ def id (S : Type*) [Shelf S] : S →◃ S where
   map_act' := by simp
 #align shelf_hom.id ShelfHom.id
 
-instance inhabited (S : Type*) [Shelf S] : Inhabited (S →◃ S) :=
+instance inhabited (S : Type*) [Shelf S] : Inhabited (S →◃ S) := fast_instance%
   ⟨id S⟩
 #align shelf_hom.inhabited ShelfHom.inhabited
 
@@ -589,7 +589,7 @@ inductive PreEnvelGroup (R : Type u) : Type u
   | inv (a : PreEnvelGroup R) : PreEnvelGroup R
 #align rack.pre_envel_group Rack.PreEnvelGroup
 
-instance PreEnvelGroup.inhabited (R : Type u) : Inhabited (PreEnvelGroup R) :=
+instance PreEnvelGroup.inhabited (R : Type u) : Inhabited (PreEnvelGroup R) := fast_instance%
   ⟨PreEnvelGroup.unit⟩
 #align rack.pre_envel_group.inhabited Rack.PreEnvelGroup.inhabited
 
@@ -684,11 +684,11 @@ instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R)
   one_mul a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.one_mul a).rel
   mul_one a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_one a).rel
 
-instance (R : Type*) [Rack R] : Group (EnvelGroup R) :=
+instance (R : Type*) [Rack R] : Group (EnvelGroup R) := fast_instance%
   { mul_left_inv := fun a =>
       Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_left_inv a).rel }
 
-instance EnvelGroup.inhabited (R : Type*) [Rack R] : Inhabited (EnvelGroup R) :=
+instance EnvelGroup.inhabited (R : Type*) [Rack R] : Inhabited (EnvelGroup R) := fast_instance%
   ⟨1⟩
 #align rack.envel_group.inhabited Rack.EnvelGroup.inhabited
 

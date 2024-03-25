@@ -337,7 +337,7 @@ theorem star_val_eq {x : selfAdjoint R} : star (x : R) = x :=
   x.prop
 #align self_adjoint.star_coe_eq selfAdjoint.star_val_eq
 
-instance : Inhabited (selfAdjoint R) :=
+instance : Inhabited (selfAdjoint R) := fast_instance%
   ⟨0⟩
 
 end AddGroup
@@ -350,7 +350,7 @@ section Ring
 
 variable [Ring R] [StarRing R]
 
-instance : One (selfAdjoint R) :=
+instance : One (selfAdjoint R) := fast_instance%
   ⟨⟨1, isSelfAdjoint_one R⟩⟩
 
 @[simp, norm_cast]
@@ -358,7 +358,7 @@ theorem val_one : ↑(1 : selfAdjoint R) = (1 : R) :=
   rfl
 #align self_adjoint.coe_one selfAdjoint.val_one
 
-instance [Nontrivial R] : Nontrivial (selfAdjoint R) :=
+instance [Nontrivial R] : Nontrivial (selfAdjoint R) := fast_instance%
   ⟨⟨0, 1, Subtype.ne_of_val_ne zero_ne_one⟩⟩
 
 instance : NatCast (selfAdjoint R) where
@@ -395,7 +395,7 @@ section CommRing
 
 variable [CommRing R] [StarRing R]
 
-instance : CommRing (selfAdjoint R) :=
+instance : CommRing (selfAdjoint R) := fast_instance%
   Function.Injective.commRing _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
     (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
     (selfAdjoint R).coe_nsmul (selfAdjoint R).coe_zsmul val_pow
@@ -449,7 +449,7 @@ theorem val_rat_smul (x : selfAdjoint R) (a : ℚ) : ↑(a • x) = a • (x : R
   rfl
 #align self_adjoint.coe_rat_smul selfAdjoint.val_rat_smul
 
-instance : Field (selfAdjoint R) :=
+instance : Field (selfAdjoint R) := fast_instance%
   Function.Injective.field _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
     (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
     val_inv val_div (selfAdjoint R).coe_nsmul (selfAdjoint R).coe_zsmul
@@ -469,10 +469,10 @@ theorem val_smul [SMul R A] [StarModule R A] (r : R) (x : selfAdjoint A) : ↑(r
   rfl
 #align self_adjoint.coe_smul selfAdjoint.val_smul
 
-instance [Monoid R] [MulAction R A] [StarModule R A] : MulAction R (selfAdjoint A) :=
+instance [Monoid R] [MulAction R A] [StarModule R A] : MulAction R (selfAdjoint A) := fast_instance%
   Function.Injective.mulAction (↑) Subtype.coe_injective val_smul
 
-instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (selfAdjoint A) :=
+instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (selfAdjoint A) := fast_instance%
   Function.Injective.distribMulAction (selfAdjoint A).subtype Subtype.coe_injective val_smul
 
 end SMul
@@ -481,7 +481,7 @@ section Module
 
 variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
 
-instance [Semiring R] [Module R A] [StarModule R A] : Module R (selfAdjoint A) :=
+instance [Semiring R] [Module R A] [StarModule R A] : Module R (selfAdjoint A) := fast_instance%
   Function.Injective.module R (selfAdjoint A).subtype Subtype.coe_injective val_smul
 
 end Module
@@ -504,7 +504,7 @@ theorem star_val_eq {x : skewAdjoint R} : star (x : R) = -x :=
   x.prop
 #align skew_adjoint.star_coe_eq skewAdjoint.star_val_eq
 
-instance : Inhabited (skewAdjoint R) :=
+instance : Inhabited (skewAdjoint R) := fast_instance%
   ⟨0⟩
 
 set_option linter.deprecated false in
@@ -533,7 +533,7 @@ theorem isStarNormal_of_mem {x : R} (hx : x ∈ skewAdjoint R) : IsStarNormal x 
     simp only [hx, Commute.neg_left, Commute.refl]⟩
 #align skew_adjoint.is_star_normal_of_mem skewAdjoint.isStarNormal_of_mem
 
-instance (x : skewAdjoint R) : IsStarNormal (x : R) :=
+instance (x : skewAdjoint R) : IsStarNormal (x : R) := fast_instance%
   isStarNormal_of_mem (SetLike.coe_mem _)
 
 end Ring
@@ -557,10 +557,10 @@ theorem val_smul [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) (x :
   rfl
 #align skew_adjoint.coe_smul skewAdjoint.val_smul
 
-instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (skewAdjoint A) :=
+instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (skewAdjoint A) := fast_instance%
   Function.Injective.distribMulAction (skewAdjoint A).subtype Subtype.coe_injective val_smul
 
-instance [Semiring R] [Module R A] [StarModule R A] : Module R (skewAdjoint A) :=
+instance [Semiring R] [Module R A] [StarModule R A] : Module R (skewAdjoint A) := fast_instance%
   Function.Injective.module R (skewAdjoint A).subtype Subtype.coe_injective val_smul
 
 end SMul
@@ -583,11 +583,11 @@ theorem isSelfAdjoint_smul_of_mem_skewAdjoint [Ring R] [AddCommGroup A] [Module 
   (star_smul _ _).trans <| (congr_arg₂ _ hr ha).trans <| neg_smul_neg _ _
 #align is_self_adjoint_smul_of_mem_skew_adjoint isSelfAdjoint_smul_of_mem_skewAdjoint
 
-instance isStarNormal_zero [Semiring R] [StarRing R] : IsStarNormal (0 : R) :=
+instance isStarNormal_zero [Semiring R] [StarRing R] : IsStarNormal (0 : R) := fast_instance%
   ⟨by simp only [Commute.refl, star_comm_self, star_zero]⟩
 #align is_star_normal_zero isStarNormal_zero
 
-instance isStarNormal_one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
+instance isStarNormal_one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) := fast_instance%
   ⟨by simp only [Commute.refl, star_comm_self, star_one]⟩
 #align is_star_normal_one isStarNormal_one
 

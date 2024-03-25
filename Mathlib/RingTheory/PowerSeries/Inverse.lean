@@ -124,7 +124,7 @@ protected def inv : PowerSeries k → PowerSeries k :=
   MvPowerSeries.inv
 #align power_series.inv PowerSeries.inv
 
-instance : Inv (PowerSeries k) :=
+instance : Inv (PowerSeries k) := fast_instance%
   ⟨PowerSeries.inv⟩
 
 theorem inv_eq_inv_aux (φ : PowerSeries k) : φ⁻¹ = inv.aux (constantCoeff k φ)⁻¹ φ :=
@@ -198,7 +198,7 @@ protected theorem mul_inv_rev (φ ψ : PowerSeries k) : (φ * ψ)⁻¹ = ψ⁻¹
   MvPowerSeries.mul_inv_rev _ _
 #align power_series.mul_inv_rev PowerSeries.mul_inv_rev
 
-instance : InvOneClass (PowerSeries k) :=
+instance : InvOneClass (PowerSeries k) := fast_instance%
   { inferInstanceAs <| InvOneClass <| MvPowerSeries Unit k with }
 
 @[simp]
@@ -224,13 +224,13 @@ section LocalRing
 
 variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
 
-instance map.isLocalRingHom : IsLocalRingHom (map f) :=
+instance map.isLocalRingHom : IsLocalRingHom (map f) := fast_instance%
   MvPowerSeries.map.isLocalRingHom f
 #align power_series.map.is_local_ring_hom PowerSeries.map.isLocalRingHom
 
 variable [LocalRing R] [LocalRing S]
 
-instance : LocalRing R⟦X⟧ :=
+instance : LocalRing R⟦X⟧ := fast_instance%
   { inferInstanceAs <| LocalRing <| MvPowerSeries Unit R with }
 
 

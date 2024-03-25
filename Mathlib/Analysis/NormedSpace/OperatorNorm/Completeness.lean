@@ -88,7 +88,7 @@ theorem tendsto_of_tendsto_pointwise_of_cauchySeq {f : ℕ → E' →SL[σ₁₂
 
 /-- If the target space is complete, the space of continuous linear maps with its norm is also
 complete. This works also if the source space is seminormed. -/
-instance [CompleteSpace F] : CompleteSpace (E' →SL[σ₁₂] F) := by
+instance [CompleteSpace F] : CompleteSpace (E' →SL[σ₁₂] F) := fast_instance% by
   -- We show that every Cauchy sequence converges.
   refine' Metric.complete_of_cauchySeq_tendsto fun f hf => _
   -- The evaluation at any point `v : E` is Cauchy.

@@ -31,7 +31,7 @@ namespace Units
 
 
 @[to_additive]
-instance [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := (m : M) • a
+instance [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := fast_instance% (m : M) • a
 
 @[to_additive]
 theorem smul_def [Monoid M] [SMul M α] (m : Mˣ) (a : α) : m • a = (m : M) • a :=

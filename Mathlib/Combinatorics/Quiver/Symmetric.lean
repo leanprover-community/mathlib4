@@ -32,7 +32,7 @@ namespace Quiver
 def Symmetrify (V : Type*) := V
 #align quiver.symmetrify Quiver.Symmetrify
 
-instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
+instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) := fast_instance%
   ⟨fun a b : V ↦ Sum (a ⟶ b) (b ⟶ a)⟩
 
 variable (U V W : Type*) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} W]
@@ -107,7 +107,7 @@ instance _root_.Prefunctor.mapReverseId :
 
 end MapReverse
 
-instance : HasReverse (Symmetrify V) :=
+instance : HasReverse (Symmetrify V) := fast_instance%
   ⟨fun e => e.swap⟩
 
 instance :
@@ -254,7 +254,7 @@ theorem of_reverse [HasInvolutiveReverse V] (X Y : V) (f : X ⟶ Y) :
   rfl
 #align quiver.push.of_reverse Quiver.Push.of_reverse
 
-instance ofMapReverse [h : HasInvolutiveReverse V] : (Push.of σ).MapReverse :=
+instance ofMapReverse [h : HasInvolutiveReverse V] : (Push.of σ).MapReverse := fast_instance%
   ⟨by simp [of_reverse]⟩
 #align quiver.push.of_map_reverse Quiver.Push.ofMapReverse
 

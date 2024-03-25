@@ -85,7 +85,7 @@ theorem mem_mk (c : ℕ × ℕ) (cells) (isLowerSet) :
   Iff.rfl
 #align young_diagram.mem_mk YoungDiagram.mem_mk
 
-instance decidableMem (μ : YoungDiagram) : DecidablePred (· ∈ μ) :=
+instance decidableMem (μ : YoungDiagram) : DecidablePred (· ∈ μ) := fast_instance%
   inferInstanceAs (DecidablePred (· ∈ μ.cells))
 #align young_diagram.decidable_mem YoungDiagram.decidableMem
 
@@ -185,10 +185,10 @@ theorem not_mem_bot (x : ℕ × ℕ) : x ∉ (⊥ : YoungDiagram) :=
   Finset.not_mem_empty x
 #align young_diagram.not_mem_bot YoungDiagram.not_mem_bot
 
-instance : Inhabited YoungDiagram :=
+instance : Inhabited YoungDiagram := fast_instance%
   ⟨⊥⟩
 
-instance : DistribLattice YoungDiagram :=
+instance : DistribLattice YoungDiagram := fast_instance%
   Function.Injective.distribLattice YoungDiagram.cells (fun μ ν h => by rwa [YoungDiagram.ext_iff])
     (fun _ _ => rfl) fun _ _ => rfl
 

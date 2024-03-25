@@ -87,7 +87,7 @@ and a maximal list of elements having that value.
 def groupBy [DecidableEq β] (L : MLList m α) (f : α → β) : MLList m (β × List α) :=
   L.groupByM fun a => pure (f a)
 
--- local instance : DecidableEq (ULift Bool) := fun a b => by
+-- local instance : DecidableEq (ULift Bool) := fast_instance% fun a b => by
 --   cases' a with a; cases' b with b; cases a <;> cases b <;>
 
 /--

@@ -38,7 +38,7 @@ def Arrow :=
 #align category_theory.arrow CategoryTheory.Arrow
 
 /- Porting note: could not derive `Category` above so this instance works in its place-/
-instance : Category (Arrow T) := commaCategory
+instance : Category (Arrow T) := fast_instance% commaCategory
 
 -- Satisfying the inhabited linter
 instance Arrow.inhabited [Inhabited T] : Inhabited (Arrow T) where

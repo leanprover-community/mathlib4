@@ -613,7 +613,7 @@ theorem ι_isoPresheafedSpace_inv (i : D.J) :
   𝖣.ι_gluedIso_inv _ _
 #align algebraic_geometry.SheafedSpace.glue_data.ι_iso_PresheafedSpace_inv AlgebraicGeometry.SheafedSpaceₓ.GlueData.ι_isoPresheafedSpace_inv
 
-instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
+instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := fast_instance% by
   rw [← D.ι_isoPresheafedSpace_inv]
   -- Porting note: was `inferInstance`
   refine PresheafedSpace.IsOpenImmersion.comp (hf := ?_) (hg := inferInstance)
@@ -690,14 +690,14 @@ theorem ι_isoSheafedSpace_inv (i : D.J) :
   𝖣.ι_gluedIso_inv forgetToSheafedSpace i
 #align algebraic_geometry.LocallyRingedSpace.glue_data.ι_iso_SheafedSpace_inv AlgebraicGeometry.LocallyRingedSpace.GlueData.ι_isoSheafedSpace_inv
 
-instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
+instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := fast_instance% by
   delta IsOpenImmersion; rw [← D.ι_isoSheafedSpace_inv]
   apply (config := { allowSynthFailures := true }) PresheafedSpace.IsOpenImmersion.comp
   -- Porting note: this was automatic
   exact (D.toSheafedSpaceGlueData).ιIsOpenImmersion i
 #align algebraic_geometry.LocallyRingedSpace.glue_data.ι_IsOpenImmersion AlgebraicGeometry.LocallyRingedSpace.GlueData.ι_isOpenImmersion
 
-instance (i j k : D.J) : PreservesLimit (cospan (𝖣.f i j) (𝖣.f i k)) forgetToSheafedSpace :=
+instance (i j k : D.J) : PreservesLimit (cospan (𝖣.f i j) (𝖣.f i k)) forgetToSheafedSpace := fast_instance%
   inferInstance
 
 theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).1.base y = x :=

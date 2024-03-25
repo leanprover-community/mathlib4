@@ -18,7 +18,7 @@ namespace Units
 variable {α : Type*}
 
 @[to_additive]
-instance [Monoid α] [Preorder α] : Preorder αˣ :=
+instance [Monoid α] [Preorder α] : Preorder αˣ := fast_instance%
   Preorder.lift val
 
 @[to_additive (attr := simp, norm_cast)]
@@ -34,13 +34,13 @@ theorem val_lt_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) < b ↔ a <
 #align add_units.coe_lt_coe AddUnits.val_lt_val
 
 @[to_additive]
-instance instPartialOrderUnits [Monoid α] [PartialOrder α] : PartialOrder αˣ :=
+instance instPartialOrderUnits [Monoid α] [PartialOrder α] : PartialOrder αˣ := fast_instance%
   PartialOrder.lift val Units.ext
 #align units.partial_order Units.instPartialOrderUnits
 #align add_units.partial_order AddUnits.instPartialOrderAddUnits
 
 @[to_additive]
-instance [Monoid α] [LinearOrder α] : LinearOrder αˣ :=
+instance [Monoid α] [LinearOrder α] : LinearOrder αˣ := fast_instance%
   LinearOrder.lift' val Units.ext
 
 /-- `val : αˣ → α` as an order embedding. -/

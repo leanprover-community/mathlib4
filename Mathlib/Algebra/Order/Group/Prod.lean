@@ -20,7 +20,7 @@ namespace Prod
 variable {G H : Type*}
 
 @[to_additive]
-instance [OrderedCommGroup G] [OrderedCommGroup H] : OrderedCommGroup (G × H) :=
+instance [OrderedCommGroup G] [OrderedCommGroup H] : OrderedCommGroup (G × H) := fast_instance%
   { Prod.instCommGroup, Prod.instPartialOrder G H, Prod.instOrderedCancelCommMonoid
     with }
 

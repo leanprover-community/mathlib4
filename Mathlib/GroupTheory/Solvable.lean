@@ -150,7 +150,7 @@ theorem solvable_of_solvable_injective (hf : Function.Injective f) [IsSolvable G
   solvable_of_ker_le_range (1 : G' →* G) f ((f.ker_eq_bot_iff.mpr hf).symm ▸ bot_le)
 #align solvable_of_solvable_injective solvable_of_solvable_injective
 
-instance subgroup_solvable_of_solvable (H : Subgroup G) [IsSolvable G] : IsSolvable H :=
+instance subgroup_solvable_of_solvable (H : Subgroup G) [IsSolvable G] : IsSolvable H := fast_instance%
   solvable_of_solvable_injective H.subtype_injective
 #align subgroup_solvable_of_solvable subgroup_solvable_of_solvable
 

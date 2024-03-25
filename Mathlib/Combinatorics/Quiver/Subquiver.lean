@@ -38,18 +38,18 @@ instance wideSubquiverHasCoeToSort {V} [Quiver V] :
     CoeSort (WideSubquiver V) (Type u) where coe H := WideSubquiver.toType V H
 
 /-- A wide subquiver viewed as a quiver on its own. -/
-instance WideSubquiver.quiver {V} [Quiver V] (H : WideSubquiver V) : Quiver H :=
+instance WideSubquiver.quiver {V} [Quiver V] (H : WideSubquiver V) : Quiver H := fast_instance%
   ⟨fun a b ↦ { f // f ∈ H a b }⟩
 
 namespace Quiver
 
-instance {V} [Quiver V] : Bot (WideSubquiver V) :=
+instance {V} [Quiver V] : Bot (WideSubquiver V) := fast_instance%
   ⟨fun _ _ ↦ ∅⟩
 
-instance {V} [Quiver V] : Top (WideSubquiver V) :=
+instance {V} [Quiver V] : Top (WideSubquiver V) := fast_instance%
   ⟨fun _ _ ↦ Set.univ⟩
 
-noncomputable instance {V} [Quiver V] : Inhabited (WideSubquiver V) :=
+noncomputable instance {V} [Quiver V] : Inhabited (WideSubquiver V) := fast_instance%
   ⟨⊤⟩
 
 -- TODO Unify with `CategoryTheory.Arrow`? (The fields have been named to match.)
@@ -82,7 +82,7 @@ def Labelling (V : Type u) [Quiver V] (L : Sort*) :=
   ∀ ⦃a b : V⦄, (a ⟶ b) → L
 #align quiver.labelling Quiver.Labelling
 
-instance {V : Type u} [Quiver V] (L) [Inhabited L] : Inhabited (Labelling V L) :=
+instance {V : Type u} [Quiver V] (L) [Inhabited L] : Inhabited (Labelling V L) := fast_instance%
   ⟨fun _ _ _ ↦ default⟩
 
 end Quiver

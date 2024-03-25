@@ -142,7 +142,7 @@ instance : Inf (ExtensionOf i f) where
           x ∈ X1.toLinearPMap.eqLocus X2.toLinearPMap)
       is_extension := fun m => X1.is_extension _ }
 
-instance : SemilatticeInf (ExtensionOf i f) :=
+instance : SemilatticeInf (ExtensionOf i f) := fast_instance%
   Function.Injective.semilatticeInf ExtensionOf.toLinearPMap
     (fun X Y h =>
       ExtensionOf.ext (by rw [h]) fun x y h' => by

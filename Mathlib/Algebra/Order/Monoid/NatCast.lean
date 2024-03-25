@@ -97,9 +97,9 @@ lemma zero_lt_three' : (0 : α) < 3 := zero_lt_three
 lemma zero_lt_four' : (0 : α) < 4 := zero_lt_four
 #align zero_lt_four' zero_lt_four'
 
-instance ZeroLEOneClass.neZero.two : NeZero (2 : α) := ⟨zero_lt_two.ne'⟩
-instance ZeroLEOneClass.neZero.three : NeZero (3 : α) := ⟨zero_lt_three.ne'⟩
-instance ZeroLEOneClass.neZero.four : NeZero (4 : α) := ⟨zero_lt_four.ne'⟩
+instance ZeroLEOneClass.neZero.two : NeZero (2 : α) := fast_instance% ⟨zero_lt_two.ne'⟩
+instance ZeroLEOneClass.neZero.three : NeZero (3 : α) := fast_instance% ⟨zero_lt_three.ne'⟩
+instance ZeroLEOneClass.neZero.four : NeZero (4 : α) := fast_instance% ⟨zero_lt_four.ne'⟩
 
 end
 

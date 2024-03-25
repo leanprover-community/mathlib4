@@ -196,11 +196,11 @@ theorem cobounded_eq_aux :
 end Aux
 
 /-- The uniformity on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
-instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
+instance instUniformSpace : UniformSpace (Unitization 𝕜 A) := fast_instance%
   instUniformSpaceProd.comap (addEquiv 𝕜 A)
 
 /-- The bornology on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
-instance instBornology : Bornology (Unitization 𝕜 A) :=
+instance instBornology : Bornology (Unitization 𝕜 A) := fast_instance%
   Bornology.induced <| addEquiv 𝕜 A
 
 theorem uniformEmbedding_addEquiv : UniformEmbedding (addEquiv 𝕜 A) where
@@ -215,7 +215,7 @@ instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
 /-- Pull back the metric structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`, but replace the bornology and the uniformity so
 that they coincide with `𝕜 × A`. -/
-noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
+noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) := fast_instance%
   (normedRingAux.toMetricSpace.replaceUniformity uniformity_eq_aux).replaceBornology
     fun s => Filter.ext_iff.1 cobounded_eq_aux (sᶜ)
 

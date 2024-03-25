@@ -459,7 +459,7 @@ def isColimitOfReflects (F : C ⥤ D) {c : Cocone K} (t : IsColimit (F.mapCocone
   ReflectsColimit.reflects t
 #align category_theory.limits.is_colimit_of_reflects CategoryTheory.Limits.isColimitOfReflects
 
-instance reflectsLimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) : Subsingleton (ReflectsLimit K F) := by
+instance reflectsLimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) : Subsingleton (ReflectsLimit K F) := fast_instance% by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 #align category_theory.limits.reflects_limit_subsingleton CategoryTheory.Limits.reflectsLimit_subsingleton
 

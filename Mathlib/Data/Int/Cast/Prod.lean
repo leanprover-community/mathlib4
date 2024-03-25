@@ -16,7 +16,7 @@ namespace Prod
 
 variable {α β : Type*} [AddGroupWithOne α] [AddGroupWithOne β]
 
-instance : AddGroupWithOne (α × β) :=
+instance : AddGroupWithOne (α × β) := fast_instance%
   { Prod.instAddMonoidWithOne, Prod.instAddGroup with
     intCast := fun n => (n, n)
     intCast_ofNat := fun _ => by simp only [Int.cast_ofNat]; rfl

@@ -175,7 +175,7 @@ namespace Final
 
 variable (F : C ⥤ D) [Final F]
 
-instance (d : D) : Nonempty (StructuredArrow d F) :=
+instance (d : D) : Nonempty (StructuredArrow d F) := fast_instance%
   IsConnected.is_nonempty
 
 variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)
@@ -323,7 +323,7 @@ theorem colimit_pre_is_iso_aux {t : Cocone G} (P : IsColimit t) :
   simp
 #align category_theory.functor.final.colimit_pre_is_iso_aux CategoryTheory.Functor.Final.colimit_pre_is_iso_aux
 
-instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by
+instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := fast_instance% by
   rw [colimit.pre_eq (colimitCoconeComp F (getColimitCocone G)) (getColimitCocone G)]
   erw [colimit_pre_is_iso_aux]
   dsimp
@@ -472,7 +472,7 @@ namespace Initial
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D) [Initial F]
 
-instance (d : D) : Nonempty (CostructuredArrow F d) :=
+instance (d : D) : Nonempty (CostructuredArrow F d) := fast_instance%
   IsConnected.is_nonempty
 
 variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)
@@ -622,7 +622,7 @@ theorem limit_pre_is_iso_aux {t : Cone G} (P : IsLimit t) :
   simp
 #align category_theory.functor.initial.limit_pre_is_iso_aux CategoryTheory.Functor.Initial.limit_pre_is_iso_aux
 
-instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := by
+instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := fast_instance% by
   rw [limit.pre_eq (limitConeComp F (getLimitCone G)) (getLimitCone G)]
   erw [limit_pre_is_iso_aux]
   dsimp

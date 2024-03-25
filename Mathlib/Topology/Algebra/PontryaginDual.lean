@@ -34,21 +34,21 @@ def PontryaginDual :=
 #align pontryagin_dual PontryaginDual
 
 -- Porting note: `deriving` doesn't derive these instances
-instance : TopologicalSpace (PontryaginDual A) :=
+instance : TopologicalSpace (PontryaginDual A) := fast_instance%
   (inferInstance : TopologicalSpace (ContinuousMonoidHom A circle))
 
-instance : T2Space (PontryaginDual A) :=
+instance : T2Space (PontryaginDual A) := fast_instance%
   (inferInstance : T2Space (ContinuousMonoidHom A circle))
 
 -- Porting note: instance is now noncomputable
-noncomputable instance : CommGroup (PontryaginDual A) :=
+noncomputable instance : CommGroup (PontryaginDual A) := fast_instance%
   (inferInstance : CommGroup (ContinuousMonoidHom A circle))
 
-instance : TopologicalGroup (PontryaginDual A) :=
+instance : TopologicalGroup (PontryaginDual A) := fast_instance%
   (inferInstance : TopologicalGroup (ContinuousMonoidHom A circle))
 
 -- Porting note: instance is now noncomputable
-noncomputable instance : Inhabited (PontryaginDual A) :=
+noncomputable instance : Inhabited (PontryaginDual A) := fast_instance%
   (inferInstance : Inhabited (ContinuousMonoidHom A circle))
 
 variable {A B C D E}
@@ -57,10 +57,10 @@ namespace PontryaginDual
 
 open ContinuousMonoidHom
 
-instance : FunLike (PontryaginDual A) A circle :=
+instance : FunLike (PontryaginDual A) A circle := fast_instance%
   ContinuousMonoidHom.funLike
 
-noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A circle :=
+noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A circle := fast_instance%
   ContinuousMonoidHom.ContinuousMonoidHomClass
 
 /-- `PontryaginDual` is a contravariant functor. -/

@@ -223,7 +223,7 @@ theorem map_involutive {p : α → Prop} {f : α → α} (h : ∀ a, p a → p (
   fun x ↦ Subtype.ext (hf x)
 #align subtype.map_involutive Subtype.map_involutive
 
-instance [HasEquiv α] (p : α → Prop) : HasEquiv (Subtype p) :=
+instance [HasEquiv α] (p : α → Prop) : HasEquiv (Subtype p) := fast_instance%
   ⟨fun s t ↦ (s : α) ≈ (t : α)⟩
 
 theorem equiv_iff [HasEquiv α] {p : α → Prop} {s t : Subtype p} : s ≈ t ↔ (s : α) ≈ (t : α) :=
@@ -248,7 +248,7 @@ theorem equivalence (p : α → Prop) : Equivalence (@HasEquiv.Equiv (Subtype p)
   .mk (Subtype.refl) (@Subtype.symm _ p _) (@Subtype.trans _ p _)
 #align subtype.equivalence Subtype.equivalence
 
-instance (p : α → Prop) : Setoid (Subtype p) :=
+instance (p : α → Prop) : Setoid (Subtype p) := fast_instance%
   Setoid.mk (· ≈ ·) (equivalence p)
 
 end Subtype

@@ -96,7 +96,7 @@ open Nat (pair unpair)
 
 open Nat.Partrec (Code)
 
-instance instInhabited : Inhabited Code :=
+instance instInhabited : Inhabited Code := fast_instance%
   ⟨zero⟩
 #align nat.partrec.code.inhabited Nat.Partrec.Code.instInhabited
 
@@ -185,7 +185,7 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
     cases n.bodd <;> cases n.div2.bodd <;>
       simp [encodeCode, ofNatCode, IH, IH1, IH2, Nat.bit_val]
 
-instance instDenumerable : Denumerable Code :=
+instance instDenumerable : Denumerable Code := fast_instance%
   mk'
     ⟨encodeCode, ofNatCode, fun c => by
         induction c <;> try {rfl} <;> simp [encodeCode, ofNatCode, Nat.div2_val, *],
@@ -524,7 +524,7 @@ theorem eval_prec_succ (cf cg : Code) (a k : ℕ) :
   simp
 #align nat.partrec.code.eval_prec_succ Nat.Partrec.Code.eval_prec_succ
 
-instance : Membership (ℕ →. ℕ) Code :=
+instance : Membership (ℕ →. ℕ) Code := fast_instance%
   ⟨fun f c => eval c = f⟩
 
 @[simp]

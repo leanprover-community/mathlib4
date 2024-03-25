@@ -40,7 +40,7 @@ def binaryFanZeroLeftIsLimit (X : C) : IsLimit (binaryFanZeroLeft X) :=
     (fun s m _ h₂ => by simpa using h₂)
 #align category_theory.limits.binary_fan_zero_left_is_limit CategoryTheory.Limits.binaryFanZeroLeftIsLimit
 
-instance hasBinaryProduct_zero_left (X : C) : HasBinaryProduct (0 : C) X :=
+instance hasBinaryProduct_zero_left (X : C) : HasBinaryProduct (0 : C) X := fast_instance%
   HasLimit.mk ⟨_, binaryFanZeroLeftIsLimit X⟩
 #align category_theory.limits.has_binary_product_zero_left CategoryTheory.Limits.hasBinaryProduct_zero_left
 
@@ -71,7 +71,7 @@ def binaryFanZeroRightIsLimit (X : C) : IsLimit (binaryFanZeroRight X) :=
     (fun s m h₁ _ => by simpa using h₁)
 #align category_theory.limits.binary_fan_zero_right_is_limit CategoryTheory.Limits.binaryFanZeroRightIsLimit
 
-instance hasBinaryProduct_zero_right (X : C) : HasBinaryProduct X (0 : C) :=
+instance hasBinaryProduct_zero_right (X : C) : HasBinaryProduct X (0 : C) := fast_instance%
   HasLimit.mk ⟨_, binaryFanZeroRightIsLimit X⟩
 #align category_theory.limits.has_binary_product_zero_right CategoryTheory.Limits.hasBinaryProduct_zero_right
 
@@ -102,7 +102,7 @@ def binaryCofanZeroLeftIsColimit (X : C) : IsColimit (binaryCofanZeroLeft X) :=
     (fun s m _ h₂ => by simpa using h₂)
 #align category_theory.limits.binary_cofan_zero_left_is_colimit CategoryTheory.Limits.binaryCofanZeroLeftIsColimit
 
-instance hasBinaryCoproduct_zero_left (X : C) : HasBinaryCoproduct (0 : C) X :=
+instance hasBinaryCoproduct_zero_left (X : C) : HasBinaryCoproduct (0 : C) X := fast_instance%
   HasColimit.mk ⟨_, binaryCofanZeroLeftIsColimit X⟩
 #align category_theory.limits.has_binary_coproduct_zero_left CategoryTheory.Limits.hasBinaryCoproduct_zero_left
 
@@ -133,7 +133,7 @@ def binaryCofanZeroRightIsColimit (X : C) : IsColimit (binaryCofanZeroRight X) :
     (fun s m h₁ _ => by simpa using h₁)
 #align category_theory.limits.binary_cofan_zero_right_is_colimit CategoryTheory.Limits.binaryCofanZeroRightIsColimit
 
-instance hasBinaryCoproduct_zero_right (X : C) : HasBinaryCoproduct X (0 : C) :=
+instance hasBinaryCoproduct_zero_right (X : C) : HasBinaryCoproduct X (0 : C) := fast_instance%
   HasColimit.mk ⟨_, binaryCofanZeroRightIsColimit X⟩
 #align category_theory.limits.has_binary_coproduct_zero_right CategoryTheory.Limits.hasBinaryCoproduct_zero_right
 

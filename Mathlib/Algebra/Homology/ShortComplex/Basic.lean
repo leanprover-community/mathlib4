@@ -113,7 +113,7 @@ def homMk {S₁ S₂ : ShortComplex C} (τ₁ : S₁.X₁ ⟶ S₂.X₁) (τ₂ 
 
 attribute [simp] comp_τ₁ comp_τ₂ comp_τ₃
 
-instance : Zero (S₁ ⟶ S₂) := ⟨{ τ₁ := 0, τ₂ := 0, τ₃ := 0 }⟩
+instance : Zero (S₁ ⟶ S₂) := fast_instance% ⟨{ τ₁ := 0, τ₂ := 0, τ₃ := 0 }⟩
 
 variable (S₁ S₂)
 
@@ -147,9 +147,9 @@ instance preservesZeroMorphisms_π₁ : Functor.PreservesZeroMorphisms (π₁ : 
 instance preservesZeroMorphisms_π₂ : Functor.PreservesZeroMorphisms (π₂ : _ ⥤ C) where
 instance preservesZeroMorphisms_π₃ : Functor.PreservesZeroMorphisms (π₃ : _ ⥤ C) where
 
-instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₁ := (inferInstance : IsIso (π₁.mapIso (asIso f)).hom)
-instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₂ := (inferInstance : IsIso (π₂.mapIso (asIso f)).hom)
-instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₃ := (inferInstance : IsIso (π₃.mapIso (asIso f)).hom)
+instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₁ := fast_instance% (inferInstance : IsIso (π₁.mapIso (asIso f)).hom)
+instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₂ := fast_instance% (inferInstance : IsIso (π₂.mapIso (asIso f)).hom)
+instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₃ := fast_instance% (inferInstance : IsIso (π₃.mapIso (asIso f)).hom)
 
 /-- The natural transformation `π₁ ⟶ π₂` induced by `S.f` for all `S : ShortComplex C`. -/
 @[simps] def π₁Toπ₂ : (π₁ : _ ⥤ C) ⟶ π₂ where

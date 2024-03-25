@@ -157,7 +157,7 @@ instance (priority := 10) UniformGroup.to_topologicalGroup : TopologicalGroup α
 #align uniform_add_group.to_topological_add_group UniformAddGroup.to_topologicalAddGroup
 
 @[to_additive]
-instance [UniformSpace β] [Group β] [UniformGroup β] : UniformGroup (α × β) :=
+instance [UniformSpace β] [Group β] [UniformGroup β] : UniformGroup (α × β) := fast_instance%
   ⟨((uniformContinuous_fst.comp uniformContinuous_fst).div
           (uniformContinuous_fst.comp uniformContinuous_snd)).prod_mk
       ((uniformContinuous_snd.comp uniformContinuous_fst).div
@@ -197,7 +197,7 @@ theorem uniformEmbedding_translate_mul (a : α) : UniformEmbedding fun x : α =>
 namespace MulOpposite
 
 @[to_additive]
-instance : UniformGroup αᵐᵒᵖ :=
+instance : UniformGroup αᵐᵒᵖ := fast_instance%
   ⟨uniformContinuous_op.comp
       ((uniformContinuous_unop.comp uniformContinuous_snd).inv.mul <|
         uniformContinuous_unop.comp uniformContinuous_fst)⟩
@@ -256,7 +256,7 @@ end LatticeOps
 namespace Subgroup
 
 @[to_additive]
-instance uniformGroup (S : Subgroup α) : UniformGroup S := .comap S.subtype
+instance uniformGroup (S : Subgroup α) : UniformGroup S := fast_instance% .comap S.subtype
 #align subgroup.uniform_group Subgroup.uniformGroup
 #align add_subgroup.uniform_add_group AddSubgroup.uniformAddGroup
 

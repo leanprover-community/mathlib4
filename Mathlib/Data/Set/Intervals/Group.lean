@@ -57,7 +57,7 @@ variable [OrderedAddCommGroup α] {a b c d : α}
 /-! `add_mem_Ixx_iff_left` -/
 
 
--- Porting note: instance search needs help `(α := α)`
+-- Porting note: instance search needs help `(α := fast_instance% α)`
 theorem add_mem_Icc_iff_left : a + b ∈ Set.Icc c d ↔ a ∈ Set.Icc (c - b) (d - b) :=
   (and_congr (sub_le_iff_le_add (α := α)) (le_sub_iff_add_le (α := α))).symm
 #align set.add_mem_Icc_iff_left Set.add_mem_Icc_iff_left

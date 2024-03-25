@@ -157,14 +157,14 @@ theorem comp_apply {M N K : Mat_ C} (f : M ⟶ N) (g : N ⟶ K) (i k) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.comp_apply CategoryTheory.Mat_.comp_apply
 
-instance (M N : Mat_ C) : Inhabited (M ⟶ N) :=
+instance (M N : Mat_ C) : Inhabited (M ⟶ N) := fast_instance%
   ⟨fun i j => (0 : M.X i ⟶ N.X j)⟩
 
 end
 
 -- Porting note: to ease the construction of the preadditive structure, the `AddCommGroup`
 -- was introduced separately and the lemma `add_apply` was moved upwards
-instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) := by
+instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) := fast_instance% by
   change AddCommGroup (DMatrix M.ι N.ι _)
   infer_instance
 
@@ -316,13 +316,13 @@ namespace Embedding
 instance : Faithful (embedding C) where
   map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
 
-instance : Full (embedding C) where preimage f := f PUnit.unit PUnit.unit
+instance : Full (embedding C) where preimage f := fast_instance% f PUnit.unit PUnit.unit
 
 instance : Functor.Additive (embedding C) where
 
 end Embedding
 
-instance [Inhabited C] : Inhabited (Mat_ C) :=
+instance [Inhabited C] : Inhabited (Mat_ C) := fast_instance%
   ⟨(embedding C).obj default⟩
 
 open CategoryTheory.Limits
@@ -548,11 +548,11 @@ def Mat (_ : Type u) :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat CategoryTheory.Mat
 
-instance (R : Type u) : Inhabited (Mat R) := by
+instance (R : Type u) : Inhabited (Mat R) := fast_instance% by
   dsimp [Mat]
   infer_instance
 
-instance (R : Type u) : CoeSort (Mat R) (Type u) :=
+instance (R : Type u) : CoeSort (Mat R) (Type u) := fast_instance%
   Bundled.coeSort
 
 open Matrix
@@ -611,7 +611,7 @@ theorem comp_apply {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) (i k) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.comp_apply CategoryTheory.Mat.comp_apply
 
-instance (M N : Mat R) : Inhabited (M ⟶ N) :=
+instance (M N : Mat R) : Inhabited (M ⟶ N) := fast_instance%
   ⟨fun (_ : M) (_ : N) => (0 : R)⟩
 
 end
@@ -660,7 +660,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj CategoryTheory.Mat.equivalenceSingleObj
 
 -- Porting note: added as this was not found automatically
-instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
+instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := fast_instance% by
   change AddCommGroup (Matrix X Y R)
   infer_instance
 

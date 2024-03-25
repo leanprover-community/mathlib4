@@ -443,7 +443,7 @@ local notation "e" => ramificationIdx f p P
 
 /-- `R / p` has a canonical map to `S / (P ^ e)`, where `e` is the ramification index
 of `P` over `p`. -/
-noncomputable instance Quotient.algebraQuotientPowRamificationIdx : Algebra (R ⧸ p) (S ⧸ P ^ e) :=
+noncomputable instance Quotient.algebraQuotientPowRamificationIdx : Algebra (R ⧸ p) (S ⧸ P ^ e) := fast_instance%
   Quotient.algebraQuotientOfLEComap (Ideal.map_le_iff_le_comap.mp le_pow_ramificationIdx)
 #align ideal.quotient.algebra_quotient_pow_ramification_idx Ideal.Quotient.algebraQuotientPowRamificationIdx
 

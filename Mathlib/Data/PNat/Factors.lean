@@ -41,7 +41,7 @@ instance : OrderedSub PrimeMultiset where
 namespace PrimeMultiset
 
 -- `@[derive]` doesn't work for `meta` instances
-unsafe instance : Repr PrimeMultiset := by delta PrimeMultiset; infer_instance
+unsafe instance : Repr PrimeMultiset := fast_instance% by delta PrimeMultiset; infer_instance
 
 /-- The multiset consisting of a single prime -/
 def ofPrime (p : Nat.Primes) : PrimeMultiset :=
@@ -63,7 +63,7 @@ theorem card_ofPrime (p : Nat.Primes) : Multiset.card (ofPrime p) = 1 :=
 def toNatMultiset : PrimeMultiset → Multiset ℕ := fun v => v.map Coe.coe
 #align prime_multiset.to_nat_multiset PrimeMultiset.toNatMultiset
 
-instance coeNat : Coe PrimeMultiset (Multiset ℕ) :=
+instance coeNat : Coe PrimeMultiset (Multiset ℕ) := fast_instance%
   ⟨toNatMultiset⟩
 #align prime_multiset.coe_nat PrimeMultiset.coeNat
 
@@ -95,7 +95,7 @@ theorem coeNat_prime (v : PrimeMultiset) (p : ℕ) (h : p ∈ (v : Multiset ℕ)
 def toPNatMultiset : PrimeMultiset → Multiset ℕ+ := fun v => v.map Coe.coe
 #align prime_multiset.to_pnat_multiset PrimeMultiset.toPNatMultiset
 
-instance coePNat : Coe PrimeMultiset (Multiset ℕ+) :=
+instance coePNat : Coe PrimeMultiset (Multiset ℕ+) := fast_instance%
   ⟨toPNatMultiset⟩
 #align prime_multiset.coe_pnat PrimeMultiset.coePNat
 
@@ -123,7 +123,7 @@ theorem coePNat_prime (v : PrimeMultiset) (p : ℕ+) (h : p ∈ (v : Multiset �
   exact h_eq ▸ hp'
 #align prime_multiset.coe_pnat_prime PrimeMultiset.coePNat_prime
 
-instance coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) :=
+instance coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) := fast_instance%
   ⟨fun v => v.map Coe.coe⟩
 #align prime_multiset.coe_multiset_pnat_nat PrimeMultiset.coeMultisetPNatNat
 

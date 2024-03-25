@@ -484,7 +484,7 @@ theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ 
 
 open CategoryTheory.Equivalence
 
-instance hasLimitEquivalenceComp (e : K ≌ J) [HasLimit F] : HasLimit (e.functor ⋙ F) :=
+instance hasLimitEquivalenceComp (e : K ≌ J) [HasLimit F] : HasLimit (e.functor ⋙ F) := fast_instance%
   HasLimit.mk
     { cone := Cone.whisker e.functor (limit.cone F)
       isLimit := IsLimit.whiskerEquivalence (limit.isLimit F) e }
@@ -579,12 +579,12 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim where
     simp
 #align category_theory.limits.const_lim_adj CategoryTheory.Limits.constLimAdj
 
-instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=
+instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) := fast_instance%
   ⟨_, constLimAdj⟩
 
 end LimFunctor
 
-instance limMap_mono' {F G : J ⥤ C} [HasLimitsOfShape J C] (α : F ⟶ G) [Mono α] : Mono (limMap α) :=
+instance limMap_mono' {F G : J ⥤ C} [HasLimitsOfShape J C] (α : F ⟶ G) [Mono α] : Mono (limMap α) := fast_instance%
   (lim : (J ⥤ C) ⥤ C).map_mono α
 #align category_theory.limits.lim_map_mono' CategoryTheory.Limits.limMap_mono'
 
@@ -1087,7 +1087,7 @@ theorem colimit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J �
 
 open CategoryTheory.Equivalence
 
-instance hasColimit_equivalence_comp (e : K ≌ J) [HasColimit F] : HasColimit (e.functor ⋙ F) :=
+instance hasColimit_equivalence_comp (e : K ≌ J) [HasColimit F] : HasColimit (e.functor ⋙ F) := fast_instance%
   HasColimit.mk
     { cocone := Cocone.whisker e.functor (colimit.cocone F)
       isColimit := IsColimit.whiskerEquivalence (colimit.isColimit F) e }
@@ -1183,7 +1183,7 @@ def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J where
   counit := { app := fun c => colimit.desc _ ⟨_, 𝟙 _⟩ }
 #align category_theory.limits.colim_const_adj CategoryTheory.Limits.colimConstAdj
 
-instance : IsLeftAdjoint (colim : (J ⥤ C) ⥤ C) :=
+instance : IsLeftAdjoint (colim : (J ⥤ C) ⥤ C) := fast_instance%
   ⟨_, colimConstAdj⟩
 
 end ColimFunctor

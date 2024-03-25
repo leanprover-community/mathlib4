@@ -63,7 +63,7 @@ lemma generate_singleton_mem_coherentTopology (B : CompHaus) :
     exact ⟨(), (CompHaus.epi_iff_surjective (presentation.π B)).mp (presentation.epi_π B) b⟩
 
 open CompHaus in
-instance isCoverDense : Stonean.toCompHaus.IsCoverDense (coherentTopology _)  := by
+instance isCoverDense : Stonean.toCompHaus.IsCoverDense (coherentTopology _)  := fast_instance% by
   constructor
   intro B
   convert generate_singleton_mem_coherentTopology B
@@ -121,7 +121,7 @@ instance coverLifting :
   rw [coherentTopology_is_induced]
   apply LocallyCoverDense.inducedTopology_isCocontinuous
 
-instance : Stonean.toCompHaus.IsContinuous (coherentTopology _) (coherentTopology _) :=
+instance : Stonean.toCompHaus.IsContinuous (coherentTopology _) (coherentTopology _) := fast_instance%
   Functor.IsCoverDense.isContinuous _ _ _ coverPreserving
 
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `CompHaus`
@@ -159,7 +159,7 @@ lemma generate_singleton_mem_coherentTopology (B : Profinite) :
     exact ⟨(), (Profinite.epi_iff_surjective (presentation.π B)).mp (presentation.epi_π B) b⟩
 
 open Profinite in
-instance coverDense : Stonean.toProfinite.IsCoverDense (coherentTopology _) := by
+instance coverDense : Stonean.toProfinite.IsCoverDense (coherentTopology _) := fast_instance% by
   constructor
   intro B
   convert generate_singleton_mem_coherentTopology B
@@ -214,7 +214,7 @@ instance isCocontinuous :
   rw [coherentTopology_is_induced]
   apply LocallyCoverDense.inducedTopology_isCocontinuous
 
-instance : Stonean.toProfinite.IsContinuous (coherentTopology _) (coherentTopology _) :=
+instance : Stonean.toProfinite.IsContinuous (coherentTopology _) (coherentTopology _) := fast_instance%
   Functor.IsCoverDense.isContinuous _ _ _ coverPreserving
 
 /-- The equivalence from coherent sheaves on `Stonean` to coherent sheaves on `Profinite`. -/

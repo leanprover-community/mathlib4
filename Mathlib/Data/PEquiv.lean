@@ -66,7 +66,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x}
 
 open Function Option
 
-instance : FunLike (α ≃. β) α (Option β) :=
+instance : FunLike (α ≃. β) α (Option β) := fast_instance%
   { coe := toFun
     coe_injective' := by
       rintro ⟨f₁, f₂, hf⟩ ⟨g₁, g₂, hg⟩ (rfl : f₁ = g₁)
@@ -291,12 +291,12 @@ theorem trans_symm_eq_iff_forall_isSome {f : α ≃. β} :
   rw [self_trans_symm, ofSet_eq_refl, Set.eq_univ_iff_forall]; rfl
 #align pequiv.trans_symm_eq_iff_forall_is_some PEquiv.trans_symm_eq_iff_forall_isSome
 
-instance instBotPEquiv : Bot (α ≃. β) :=
+instance instBotPEquiv : Bot (α ≃. β) := fast_instance%
   ⟨{  toFun := fun _ => none
       invFun := fun _ => none
       inv := by simp }⟩
 
-instance : Inhabited (α ≃. β) :=
+instance : Inhabited (α ≃. β) := fast_instance%
   ⟨⊥⟩
 
 @[simp]
@@ -431,10 +431,10 @@ theorem le_def {f g : α ≃. β} : f ≤ g ↔ ∀ (a : α) (b : β), b ∈ f a
   Iff.rfl
 #align pequiv.le_def PEquiv.le_def
 
-instance : OrderBot (α ≃. β) :=
+instance : OrderBot (α ≃. β) := fast_instance%
   { instBotPEquiv with bot_le := fun _ _ _ h => (not_mem_none _ h).elim }
 
-instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
+instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) := fast_instance%
   { instPartialOrderPEquiv with
     inf := fun f g =>
       { toFun := fun a => if f a = g a then f a else none

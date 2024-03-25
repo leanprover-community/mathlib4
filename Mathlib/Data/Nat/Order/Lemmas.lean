@@ -35,7 +35,7 @@ instance Subtype.orderBot (s : Set ℕ) [DecidablePred (· ∈ s)] [h : Nonempty
   bot_le x := Nat.find_min' _ x.2
 #align nat.subtype.order_bot Nat.Subtype.orderBot
 
-instance Subtype.semilatticeSup (s : Set ℕ) : SemilatticeSup s :=
+instance Subtype.semilatticeSup (s : Set ℕ) : SemilatticeSup s := fast_instance%
   { Subtype.instLinearOrder s, LinearOrder.toLattice with }
 #align nat.subtype.semilattice_sup Nat.Subtype.semilatticeSup
 

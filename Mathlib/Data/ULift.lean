@@ -24,19 +24,19 @@ namespace PLift
 
 variable {α : Sort u} {β : Sort v} {f : α → β}
 
-instance [Subsingleton α] : Subsingleton (PLift α) :=
+instance [Subsingleton α] : Subsingleton (PLift α) := fast_instance%
   Equiv.plift.subsingleton
 
-instance [Nonempty α] : Nonempty (PLift α) :=
+instance [Nonempty α] : Nonempty (PLift α) := fast_instance%
   Equiv.plift.nonempty
 
-instance [Unique α] : Unique (PLift α) :=
+instance [Unique α] : Unique (PLift α) := fast_instance%
   Equiv.plift.unique
 
-instance [DecidableEq α] : DecidableEq (PLift α) :=
+instance [DecidableEq α] : DecidableEq (PLift α) := fast_instance%
   Equiv.plift.decidableEq
 
-instance [IsEmpty α] : IsEmpty (PLift α) :=
+instance [IsEmpty α] : IsEmpty (PLift α) := fast_instance%
   Equiv.plift.isEmpty
 
 theorem up_injective : Injective (@up α) :=
@@ -89,19 +89,19 @@ namespace ULift
 
 variable {α : Type u} {β : Type v} {f : α → β}
 
-instance [Subsingleton α] : Subsingleton (ULift α) :=
+instance [Subsingleton α] : Subsingleton (ULift α) := fast_instance%
   Equiv.ulift.subsingleton
 
-instance [Nonempty α] : Nonempty (ULift α) :=
+instance [Nonempty α] : Nonempty (ULift α) := fast_instance%
   Equiv.ulift.nonempty
 
-instance [Unique α] : Unique (ULift α) :=
+instance [Unique α] : Unique (ULift α) := fast_instance%
   Equiv.ulift.unique
 
-instance [DecidableEq α] : DecidableEq (ULift α) :=
+instance [DecidableEq α] : DecidableEq (ULift α) := fast_instance%
   Equiv.ulift.decidableEq
 
-instance [IsEmpty α] : IsEmpty (ULift α) :=
+instance [IsEmpty α] : IsEmpty (ULift α) := fast_instance%
   Equiv.ulift.isEmpty
 
 theorem up_injective : Injective (@up α) :=

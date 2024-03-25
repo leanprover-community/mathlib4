@@ -94,7 +94,7 @@ theorem map_mul_right_eq_self (μ : Measure G) [IsMulRightInvariant μ] (g : G) 
 #align measure_theory.map_add_right_eq_self MeasureTheory.map_add_right_eq_self
 
 @[to_additive MeasureTheory.isAddLeftInvariant_smul]
-instance isMulLeftInvariant_smul [IsMulLeftInvariant μ] (c : ℝ≥0∞) : IsMulLeftInvariant (c • μ) :=
+instance isMulLeftInvariant_smul [IsMulLeftInvariant μ] (c : ℝ≥0∞) : IsMulLeftInvariant (c • μ) := fast_instance%
   ⟨fun g => by rw [Measure.map_smul, map_mul_left_eq_self]⟩
 #align measure_theory.is_mul_left_invariant_smul MeasureTheory.isMulLeftInvariant_smul
 #align measure_theory.is_add_left_invariant_smul MeasureTheory.isAddLeftInvariant_smul
@@ -432,7 +432,7 @@ theorem measurePreserving_inv (μ : Measure G) [IsInvInvariant μ] : MeasurePres
 #align measure_theory.measure.measure_preserving_neg MeasureTheory.Measure.measurePreserving_neg
 
 @[to_additive]
-instance inv.instSFinite (μ : Measure G) [SFinite μ] : SFinite μ.inv := by
+instance inv.instSFinite (μ : Measure G) [SFinite μ] : SFinite μ.inv := fast_instance% by
   rw [Measure.inv]; infer_instance
 
 end Inv
@@ -467,7 +467,7 @@ theorem measure_preimage_inv (μ : Measure G) [IsInvInvariant μ] (A : Set G) :
 #align measure_theory.measure.measure_preimage_neg MeasureTheory.Measure.measure_preimage_neg
 
 @[to_additive]
-instance inv.instSigmaFinite (μ : Measure G) [SigmaFinite μ] : SigmaFinite μ.inv :=
+instance inv.instSigmaFinite (μ : Measure G) [SigmaFinite μ] : SigmaFinite μ.inv := fast_instance%
   (MeasurableEquiv.inv G).sigmaFinite_map ‹_›
 #align measure_theory.measure.inv.measure_theory.sigma_finite MeasureTheory.Measure.inv.instSigmaFinite
 #align measure_theory.measure.neg.measure_theory.sigma_finite MeasureTheory.Measure.neg.instSigmaFinite
@@ -479,7 +479,7 @@ section DivisionMonoid
 variable [DivisionMonoid G] [MeasurableMul G] [MeasurableInv G] {μ : Measure G}
 
 @[to_additive]
-instance inv.instIsMulRightInvariant [IsMulLeftInvariant μ] : IsMulRightInvariant μ.inv := by
+instance inv.instIsMulRightInvariant [IsMulLeftInvariant μ] : IsMulRightInvariant μ.inv := fast_instance% by
   constructor
   intro g
   conv_rhs => rw [← map_mul_left_eq_self μ g⁻¹]
@@ -489,7 +489,7 @@ instance inv.instIsMulRightInvariant [IsMulLeftInvariant μ] : IsMulRightInvaria
 #align measure_theory.measure.neg.is_mul_right_invariant MeasureTheory.Measure.neg.instIsAddRightInvariant
 
 @[to_additive]
-instance inv.instIsMulLeftInvariant [IsMulRightInvariant μ] : IsMulLeftInvariant μ.inv := by
+instance inv.instIsMulLeftInvariant [IsMulRightInvariant μ] : IsMulLeftInvariant μ.inv := fast_instance% by
   constructor
   intro g
   conv_rhs => rw [← map_mul_right_eq_self μ g⁻¹]
@@ -559,13 +559,13 @@ instance Measure.IsOpenPosMeasure.inv [ContinuousInv G] [IsOpenPosMeasure μ] :
   (Homeomorph.inv G).continuous.isOpenPosMeasure_map (Homeomorph.inv G).surjective
 
 @[to_additive]
-instance Measure.Regular.inv [ContinuousInv G] [Regular μ] : Regular μ.inv :=
+instance Measure.Regular.inv [ContinuousInv G] [Regular μ] : Regular μ.inv := fast_instance%
   Regular.map (Homeomorph.inv G)
 #align measure_theory.measure.regular.inv MeasureTheory.Measure.Regular.inv
 #align measure_theory.measure.regular.neg MeasureTheory.Measure.Regular.neg
 
 @[to_additive]
-instance Measure.InnerRegular.inv [ContinuousInv G] [InnerRegular μ] : InnerRegular μ.inv :=
+instance Measure.InnerRegular.inv [ContinuousInv G] [InnerRegular μ] : InnerRegular μ.inv := fast_instance%
   InnerRegular.map (Homeomorph.inv G)
 
 /-- The image of an inner regular measure under map of a left action is again inner regular. -/

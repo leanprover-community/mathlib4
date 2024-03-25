@@ -38,10 +38,10 @@ section Topology
 
 variable [TopologicalSpace R] [TopologicalSpace M]
 
-instance instTopologicalSpace : TopologicalSpace (tsze R M) :=
+instance instTopologicalSpace : TopologicalSpace (tsze R M) := fast_instance%
   TopologicalSpace.induced fst ‹_› ⊓ TopologicalSpace.induced snd ‹_›
 
-instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
+instance [T2Space R] [T2Space M] : T2Space (tsze R M) := fast_instance%
   Prod.t2Space
 
 theorem nhds_def (x : tsze R M) : 𝓝 x = (𝓝 x.fst).prod (𝓝 x.snd) := by
@@ -111,7 +111,7 @@ def inrCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : M →L[R] tsze R M 
 
 variable {R M}
 
-instance [Add R] [Add M] [ContinuousAdd R] [ContinuousAdd M] : ContinuousAdd (tsze R M) :=
+instance [Add R] [Add M] [ContinuousAdd R] [ContinuousAdd M] : ContinuousAdd (tsze R M) := fast_instance%
   Prod.continuousAdd
 
 instance [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] [ContinuousMul R] [ContinuousSMul R M]
@@ -121,7 +121,7 @@ instance [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] [ContinuousMul R] [Conti
         ((MulOpposite.continuous_op.comp <| continuous_fst.comp <| continuous_snd).smul
           (continuous_snd.comp continuous_fst))⟩
 
-instance [Neg R] [Neg M] [ContinuousNeg R] [ContinuousNeg M] : ContinuousNeg (tsze R M) :=
+instance [Neg R] [Neg M] [ContinuousNeg R] [ContinuousNeg M] : ContinuousNeg (tsze R M) := fast_instance%
   Prod.continuousNeg
 
 /-- This is not an instance due to complaints by the `fails_quickly` linter. At any rate, we only
@@ -174,7 +174,7 @@ instance instUniformSpace : UniformSpace (tsze R M) where
   toTopologicalSpace := instTopologicalSpace
   __ := instUniformSpaceProd
 
-instance [CompleteSpace R] [CompleteSpace M] : CompleteSpace (tsze R M) :=
+instance [CompleteSpace R] [CompleteSpace M] : CompleteSpace (tsze R M) := fast_instance%
   inferInstanceAs <| CompleteSpace (R × M)
 
 instance [AddGroup R] [AddGroup M] [UniformAddGroup R] [UniformAddGroup M] :

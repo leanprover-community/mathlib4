@@ -73,15 +73,15 @@ def ofStream (l : Stream' α) : WSeq α :=
   ofSeq l
 #align stream.wseq.of_stream Stream'.WSeq.ofStream
 
-instance coeSeq : Coe (Seq α) (WSeq α) :=
+instance coeSeq : Coe (Seq α) (WSeq α) := fast_instance%
   ⟨ofSeq⟩
 #align stream.wseq.coe_seq Stream'.WSeq.coeSeq
 
-instance coeList : Coe (List α) (WSeq α) :=
+instance coeList : Coe (List α) (WSeq α) := fast_instance%
   ⟨ofList⟩
 #align stream.wseq.coe_list Stream'.WSeq.coeList
 
-instance coeStream : Coe (Stream' α) (WSeq α) :=
+instance coeStream : Coe (Stream' α) (WSeq α) := fast_instance%
   ⟨ofStream⟩
 #align stream.wseq.coe_stream Stream'.WSeq.coeStream
 
@@ -90,7 +90,7 @@ def nil : WSeq α :=
   Seq.nil
 #align stream.wseq.nil Stream'.WSeq.nil
 
-instance inhabited : Inhabited (WSeq α) :=
+instance inhabited : Inhabited (WSeq α) := fast_instance%
   ⟨nil⟩
 #align stream.wseq.inhabited Stream'.WSeq.inhabited
 
@@ -125,7 +125,7 @@ protected def Mem (a : α) (s : WSeq α) :=
   Seq.Mem (some a) s
 #align stream.wseq.mem Stream'.WSeq.Mem
 
-instance membership : Membership α (WSeq α) :=
+instance membership : Membership α (WSeq α) := fast_instance%
   ⟨WSeq.Mem⟩
 #align stream.wseq.has_mem Stream'.WSeq.membership
 
@@ -194,7 +194,7 @@ class IsFinite (s : WSeq α) : Prop where
   out : (toList s).Terminates
 #align stream.wseq.is_finite Stream'.WSeq.IsFinite
 
-instance toList_terminates (s : WSeq α) [h : IsFinite s] : (toList s).Terminates :=
+instance toList_terminates (s : WSeq α) [h : IsFinite s] : (toList s).Terminates := fast_instance%
   h.out
 #align stream.wseq.to_list_terminates Stream'.WSeq.toList_terminates
 
@@ -215,11 +215,11 @@ theorem productive_iff (s : WSeq α) : Productive s ↔ ∀ n, (get? s n).Termin
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 #align stream.wseq.productive_iff Stream'.WSeq.productive_iff
 
-instance get?_terminates (s : WSeq α) [h : Productive s] : ∀ n, (get? s n).Terminates :=
+instance get?_terminates (s : WSeq α) [h : Productive s] : ∀ n, (get? s n).Terminates := fast_instance%
   h.get?_terminates
 #align stream.wseq.nth_terminates Stream'.WSeq.get?_terminates
 
-instance head_terminates (s : WSeq α) [Productive s] : (head s).Terminates :=
+instance head_terminates (s : WSeq α) [Productive s] : (head s).Terminates := fast_instance%
   s.get?_terminates 0
 #align stream.wseq.head_terminates Stream'.WSeq.head_terminates
 
@@ -869,11 +869,11 @@ theorem head_some_of_get?_some {s : WSeq α} {a n} (h : some a ∈ get? s n) :
       exact IH h'
 #align stream.wseq.head_some_of_nth_some Stream'.WSeq.head_some_of_get?_some
 
-instance productive_tail (s : WSeq α) [Productive s] : Productive (tail s) :=
+instance productive_tail (s : WSeq α) [Productive s] : Productive (tail s) := fast_instance%
   ⟨fun n => by rw [get?_tail]; infer_instance⟩
 #align stream.wseq.productive_tail Stream'.WSeq.productive_tail
 
-instance productive_dropn (s : WSeq α) [Productive s] (n) : Productive (drop s n) :=
+instance productive_dropn (s : WSeq α) [Productive s] (n) : Productive (drop s n) := fast_instance%
   ⟨fun m => by rw [← get?_add]; infer_instance⟩
 #align stream.wseq.productive_dropn Stream'.WSeq.productive_dropn
 
@@ -1388,7 +1388,7 @@ theorem get?_ofSeq (s : Seq α) (n) : get? (ofSeq s) n = Computation.pure (Seq.g
   dsimp [get?]; rw [dropn_ofSeq, head_ofSeq, Seq.head_dropn]
 #align stream.wseq.nth_of_seq Stream'.WSeq.get?_ofSeq
 
-instance productive_ofSeq (s : Seq α) : Productive (ofSeq s) :=
+instance productive_ofSeq (s : Seq α) : Productive (ofSeq s) := fast_instance%
   ⟨fun n => by rw [get?_ofSeq]; infer_instance⟩
 #align stream.wseq.productive_of_seq Stream'.WSeq.productive_ofSeq
 
@@ -1824,7 +1824,7 @@ instance monad : Monad WSeq where
   with a lifted equivalence relation, and pure quotients cannot handle
   this type of construction.
 
-instance lawfulMonad : LawfulMonad WSeq :=
+instance lawfulMonad : LawfulMonad WSeq := fast_instance%
   { id_map := @map_id,
     bind_pure_comp := @bind_ret,
     pure_bind := @ret_bind,

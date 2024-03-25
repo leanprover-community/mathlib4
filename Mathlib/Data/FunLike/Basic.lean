@@ -28,12 +28,12 @@ namespace MyHom
 variable (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "morphism class" design below:
-instance : FunLike (MyHom A B) A B :=
+instance : FunLike (MyHom A B) A B := fast_instance%
   { coe := MyHom.toFun, coe_injective' := fun f g h => by cases f; cases g; congr' }
 
 /-- Helper instance for when there's too many metavariables to apply
 `DFunLike.coe` directly. -/
-instance : CoeFun (MyHom A B) (fun _ => A → B) := ⟨MyHom.toFun⟩
+instance : CoeFun (MyHom A B) (fun _ => A → B) := fast_instance% ⟨MyHom.toFun⟩
 
 @[ext] theorem ext {f g : MyHom A B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
@@ -68,7 +68,7 @@ class MyHomClass (F : Type*) (A B : outParam Type*) [MyClass A] [MyClass B]
 MyHomClass.map_op
 
 -- You can add the below instance next to `MyHomClass.instFunLike`:
-instance : MyHomClass (MyHom A B) A B :=
+instance : MyHomClass (MyHom A B) A B := fast_instance%
   { coe := MyHom.toFun,
     coe_injective' := λ f g h, by cases f; cases g; congr',
     map_op := MyHom.map_op' }
@@ -100,7 +100,7 @@ class CoolerHomClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass
 MyHomClass.map_op
 
 -- You can add the below instance next to `MyHom.instFunLike`:
-instance : CoolerHomClass (CoolHom A B) A B :=
+instance : CoolerHomClass (CoolHom A B) A B := fast_instance%
   { coe := CoolHom.toFun,
     coe_injective' := λ f g h, by cases f; cases g; congr',
     map_op := CoolHom.map_op',

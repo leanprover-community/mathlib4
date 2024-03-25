@@ -41,16 +41,16 @@ open UniformSpace CauchyFilter Filter Set
 
 variable [UniformSpace α]
 
-instance [Zero α] : Zero (Completion α) :=
+instance [Zero α] : Zero (Completion α) := fast_instance%
   ⟨(0 : α)⟩
 
-instance [Neg α] : Neg (Completion α) :=
+instance [Neg α] : Neg (Completion α) := fast_instance%
   ⟨Completion.map (fun a ↦ -a : α → α)⟩
 
-instance [Add α] : Add (Completion α) :=
+instance [Add α] : Add (Completion α) := fast_instance%
   ⟨Completion.map₂ (· + ·)⟩
 
-instance [Sub α] : Sub (Completion α) :=
+instance [Sub α] : Sub (Completion α) := fast_instance%
   ⟨Completion.map₂ Sub.sub⟩
 
 @[norm_cast]
@@ -95,7 +95,7 @@ theorem coe_add (a b : α) : ((a + b : α) : Completion α) = a + b :=
   (map₂_coe_coe a b (· + ·) uniformContinuous_add).symm
 #align uniform_space.completion.coe_add UniformSpace.Completion.coe_add
 
-instance : AddMonoid (Completion α) :=
+instance : AddMonoid (Completion α) := fast_instance%
   { (inferInstance : Zero <| Completion α),
     (inferInstance : Add <| Completion α) with
     zero_add := fun a ↦
@@ -126,7 +126,7 @@ instance : AddMonoid (Completion α) :=
         show (n + 1) • (a : Completion α) = (a : Completion α) + n • (a : Completion α) by
           rw [← coe_smul, succ_nsmul, coe_add, coe_smul] }
 
-instance : SubNegMonoid (Completion α) :=
+instance : SubNegMonoid (Completion α) := fast_instance%
   { (inferInstance : AddMonoid <| Completion α),
     (inferInstance : Neg <| Completion α),
     (inferInstance : Sub <| Completion α) with
@@ -152,7 +152,7 @@ instance : SubNegMonoid (Completion α) :=
             rw [← coe_smul, show (Int.negSucc n) • a = -((n.succ : ℤ) • a) from
               SubNegMonoid.zsmul_neg' n a, coe_neg, coe_smul] }
 
-instance addGroup : AddGroup (Completion α) :=
+instance addGroup : AddGroup (Completion α) := fast_instance%
   { (inferInstance : SubNegMonoid <| Completion α) with
     add_left_neg := fun a ↦
       Completion.induction_on a
@@ -162,7 +162,7 @@ instance addGroup : AddGroup (Completion α) :=
           rw_mod_cast [add_left_neg]
           rfl }
 
-instance uniformAddGroup : UniformAddGroup (Completion α) :=
+instance uniformAddGroup : UniformAddGroup (Completion α) := fast_instance%
   ⟨uniformContinuous_map₂ Sub.sub⟩
 
 instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
@@ -201,7 +201,7 @@ section UniformAddCommGroup
 
 variable [UniformSpace α] [AddCommGroup α] [UniformAddGroup α]
 
-instance : AddCommGroup (Completion α) :=
+instance : AddCommGroup (Completion α) := fast_instance%
   { (inferInstance : AddGroup <| Completion α) with
     add_comm := fun a b ↦
       Completion.induction_on₂ a b

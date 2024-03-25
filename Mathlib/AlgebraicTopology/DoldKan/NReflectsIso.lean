@@ -34,7 +34,7 @@ variable {C : Type*} [Category C] [Preadditive C]
 
 open MorphComponents
 
-instance : ReflectsIsomorphisms (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)) :=
+instance : ReflectsIsomorphisms (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)) := fast_instance%
   ⟨fun {X Y} f => by
     intro
     -- restating the result in a way that allows induction on the degree n
@@ -96,7 +96,7 @@ set_option linter.uppercaseLean3 false in
 /-- We deduce that `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ))`
 reflects isomorphisms from the fact that
 `N₁ : SimplicialObject (Karoubi C) ⥤ Karoubi (ChainComplex (Karoubi C) ℕ)` does. -/
-instance : ReflectsIsomorphisms (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)) :=
+instance : ReflectsIsomorphisms (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)) := fast_instance%
   ⟨fun f => by
     intro
     -- The following functor `F` reflects isomorphism because it is

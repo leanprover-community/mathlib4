@@ -99,7 +99,7 @@ def finiteSpanningSetsIn_volumeIoiPow_range_Iio (n : ℕ) :
   finite k := by simp [volumeIoiPow_apply_Iio]
   spanning := iUnion_eq_univ_iff.2 fun x ↦ ⟨⌊x.1⌋₊, Nat.lt_floor_add_one x.1⟩
 
-instance (n : ℕ) : SigmaFinite (volumeIoiPow n) :=
+instance (n : ℕ) : SigmaFinite (volumeIoiPow n) := fast_instance%
   (finiteSpanningSetsIn_volumeIoiPow_range_Iio n).sigmaFinite
 
 /-- The homeomorphism `homeomorphUnitSphereProd E` sends an additive Haar measure `μ`

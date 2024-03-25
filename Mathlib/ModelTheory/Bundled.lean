@@ -90,7 +90,7 @@ namespace ModelType
 
 attribute [coe] ModelType.Carrier
 
-instance instCoeSort : CoeSort T.ModelType (Type w) :=
+instance instCoeSort : CoeSort T.ModelType (Type w) := fast_instance%
   ⟨ModelType.Carrier⟩
 #align first_order.language.Theory.Model.has_coe_to_sort FirstOrder.Language.Theory.ModelType.instCoeSort
 
@@ -107,7 +107,7 @@ theorem coe_of (M : Type w) [L.Structure M] [M ⊨ T] [Nonempty M] : (of T M : T
   rfl
 #align first_order.language.Theory.Model.coe_of FirstOrder.Language.Theory.ModelType.coe_of
 
-instance instNonempty (M : T.ModelType) : Nonempty M :=
+instance instNonempty (M : T.ModelType) : Nonempty M := fast_instance%
   inferInstance
 #align first_order.language.Theory.Model.nonempty FirstOrder.Language.Theory.ModelType.instNonempty
 
@@ -115,7 +115,7 @@ section Inhabited
 
 attribute [local instance] Inhabited.trivialStructure
 
-instance instInhabited : Inhabited (ModelType.{u, v, w} (∅ : L.Theory)) :=
+instance instInhabited : Inhabited (ModelType.{u, v, w} (∅ : L.Theory)) := fast_instance%
   ⟨ModelType.of _ PUnit⟩
 #align first_order.language.Theory.Model.inhabited FirstOrder.Language.Theory.ModelType.instInhabited
 
@@ -171,7 +171,7 @@ noncomputable def defaultExpansion {L' : Language} {φ : L →ᴸ L'} (h : φ.In
       M.is_model
 #align first_order.language.Theory.Model.default_expansion FirstOrder.Language.Theory.ModelType.defaultExpansion
 
-instance leftStructure {L' : Language} {T : (L.sum L').Theory} (M : T.ModelType) : L.Structure M :=
+instance leftStructure {L' : Language} {T : (L.sum L').Theory} (M : T.ModelType) : L.Structure M := fast_instance%
   (LHom.sumInl : L →ᴸ L.sum L').reduct M
 #align first_order.language.Theory.Model.left_Structure FirstOrder.Language.Theory.ModelType.leftStructure
 

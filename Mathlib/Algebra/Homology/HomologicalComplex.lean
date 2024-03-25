@@ -240,7 +240,7 @@ theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
   · rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
 #align homological_complex.hom.comm HomologicalComplex.Hom.comm
 
-instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
+instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) := fast_instance%
   ⟨{ f := fun i => 0 }⟩
 
 /-- Identity chain map. -/
@@ -295,7 +295,7 @@ theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
     Function.Injective fun f : Hom C₁ C₂ => f.f := by aesop_cat
 #align homological_complex.hom_f_injective HomologicalComplex.hom_f_injective
 
-instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
+instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) := fast_instance%
   ⟨{ f := fun i => 0}⟩
 
 @[simp]
@@ -321,10 +321,10 @@ theorem isZero_zero [HasZeroObject V] : IsZero (zero : HomologicalComplex V c) :
     apply Subsingleton.elim
 #align homological_complex.is_zero_zero HomologicalComplex.isZero_zero
 
-instance [HasZeroObject V] : HasZeroObject (HomologicalComplex V c) :=
+instance [HasZeroObject V] : HasZeroObject (HomologicalComplex V c) := fast_instance%
   ⟨⟨zero, isZero_zero⟩⟩
 
-noncomputable instance [HasZeroObject V] : Inhabited (HomologicalComplex V c) :=
+noncomputable instance [HasZeroObject V] : Inhabited (HomologicalComplex V c) := fast_instance%
   ⟨zero⟩
 
 theorem congr_hom {C D : HomologicalComplex V c} {f g : C ⟶ D} (w : f = g) (i : ι) :

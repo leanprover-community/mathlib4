@@ -336,13 +336,13 @@ theorem smul_apply' (s : S) (g : (restrictScalars f).obj ⟨S⟩ →ₗ[R] M) (s
   rfl
 #align category_theory.Module.coextend_scalars.smul_apply' ModuleCat.CoextendScalars.smul_apply'
 
-instance mulAction : MulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
+instance mulAction : MulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M := fast_instance%
   { CoextendScalars.hasSMul f _ with
     one_smul := fun g => LinearMap.ext fun s : S => by simp
     mul_smul := fun (s t : S) g => LinearMap.ext fun x : S => by simp [mul_assoc] }
 #align category_theory.Module.coextend_scalars.mul_action ModuleCat.CoextendScalars.mulAction
 
-instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
+instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M := fast_instance%
   { CoextendScalars.mulAction f _ with
     smul_add := fun s g h => LinearMap.ext fun _ : S => by simp
     smul_zero := fun s => LinearMap.ext fun _ : S => by simp }
@@ -351,7 +351,7 @@ instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj ⟨S�
 /-- `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`, this action defines an `S`-module structure on
 Hom(S, M).
  -/
-instance isModule : Module S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
+instance isModule : Module S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M := fast_instance%
   { CoextendScalars.distribMulAction f _ with
     add_smul := fun s1 s2 g => LinearMap.ext fun x : S => by simp [mul_add, LinearMap.map_add]
     zero_smul := fun g => LinearMap.ext fun x : S => by simp [LinearMap.map_zero] }
@@ -367,7 +367,7 @@ def obj' : ModuleCat S :=
   ⟨(restrictScalars f).obj ⟨S⟩ →ₗ[R] M⟩
 #align category_theory.Module.coextend_scalars.obj' ModuleCat.CoextendScalars.obj'
 
-instance : CoeFun (obj' f M) fun _ => S → M where coe g := g.toFun
+instance : CoeFun (obj' f M) fun _ => S → M where coe g := fast_instance% g.toFun
 
 /-- If `M, M'` are `R`-modules, then any `R`-linear map `g : M ⟶ M'` induces an `S`-linear map
 `(S →ₗ[R] M) ⟶ (S →ₗ[R] M')` defined by `h ↦ g ∘ h`-/
@@ -399,7 +399,7 @@ namespace CoextendScalars
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 
 -- Porting note: this coercion doesn't line up well with task below
-instance (M : ModuleCat R) : CoeFun ((coextendScalars f).obj M) fun _ => S → M :=
+instance (M : ModuleCat R) : CoeFun ((coextendScalars f).obj M) fun _ => S → M := fast_instance%
   inferInstanceAs <| CoeFun (CoextendScalars.obj' f M) _
 
 theorem smul_apply (M : ModuleCat R) (g : (coextendScalars f).obj M) (s s' : S) :

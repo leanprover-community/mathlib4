@@ -31,7 +31,7 @@ variable (R A B)
 
 open Algebra
 
-instance algebra : Algebra R (A × B) :=
+instance algebra : Algebra R (A × B) := fast_instance%
   { Prod.instModule,
     RingHom.prod (algebraMap R A) (algebraMap R B) with
     commutes' := by

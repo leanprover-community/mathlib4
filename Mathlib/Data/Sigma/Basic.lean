@@ -39,7 +39,7 @@ variable {α α₁ α₂ : Type*} {β : α → Type*} {β₁ : α₁ → Type*} 
 
 namespace Sigma
 
-instance instInhabitedSigma [Inhabited α] [Inhabited (β default)] : Inhabited (Sigma β) :=
+instance instInhabitedSigma [Inhabited α] [Inhabited (β default)] : Inhabited (Sigma β) := fast_instance%
   ⟨⟨default, default⟩⟩
 
 instance instDecidableEqSigma [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] :
@@ -226,7 +226,7 @@ theorem elim_val {γ} (f : ∀ a, β a → γ) (a b) : PSigma.elim f ⟨a, b⟩ 
   rfl
 #align psigma.elim_val PSigma.elim_val
 
-instance [Inhabited α] [Inhabited (β default)] : Inhabited (PSigma β) :=
+instance [Inhabited α] [Inhabited (β default)] : Inhabited (PSigma β) := fast_instance%
   ⟨⟨default, default⟩⟩
 
 instance decidableEq [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] : DecidableEq (PSigma β)

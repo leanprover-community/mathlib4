@@ -36,7 +36,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Pointed
 
-instance : CoeSort Pointed (Type*) :=
+instance : CoeSort Pointed (Type*) := fast_instance%
   ⟨X⟩
 
 -- Porting note: protected attribute does not work
@@ -58,7 +58,7 @@ alias _root_.Prod.Pointed := of
 set_option linter.uppercaseLean3 false in
 #align prod.Pointed Prod.Pointed
 
-instance : Inhabited Pointed :=
+instance : Inhabited Pointed := fast_instance%
   ⟨of ((), ())⟩
 
 /-- Morphisms in `Pointed`. -/
@@ -80,7 +80,7 @@ def id (X : Pointed) : Pointed.Hom X X :=
 set_option linter.uppercaseLean3 false in
 #align Pointed.hom.id Pointed.Hom.id
 
-instance (X : Pointed) : Inhabited (Pointed.Hom X X) :=
+instance (X : Pointed) : Inhabited (Pointed.Hom X X) := fast_instance%
   ⟨id X⟩
 
 /-- Composition of morphisms of `Pointed`. -/

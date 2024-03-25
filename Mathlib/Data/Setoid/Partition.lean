@@ -274,7 +274,7 @@ theorem classes_mkClasses (c : Set (Set α)) (hc : IsPartition c) : (mkClasses c
 #align setoid.classes_mk_classes Setoid.classes_mkClasses
 
 /-- Defining `≤` on partitions as the `≤` defined on their induced equivalence relations. -/
-instance Partition.le : LE (Subtype (@IsPartition α)) :=
+instance Partition.le : LE (Subtype (@IsPartition α)) := fast_instance%
   ⟨fun x y => mkClasses x.1 x.2.2 ≤ mkClasses y.1 y.2.2⟩
 #align setoid.partition.le Setoid.Partition.le
 
@@ -310,7 +310,7 @@ variable {α}
 
 /-- A complete lattice instance for partitions; there is more infrastructure for the
     equivalent complete lattice on equivalence relations. -/
-instance Partition.completeLattice : CompleteLattice (Subtype (@IsPartition α)) :=
+instance Partition.completeLattice : CompleteLattice (Subtype (@IsPartition α)) := fast_instance%
   GaloisInsertion.liftCompleteLattice <|
     @OrderIso.toGaloisInsertion _ (Subtype (@IsPartition α)) _ (PartialOrder.toPreorder) <|
       Partition.orderIso α
@@ -378,7 +378,7 @@ open Set
 variable {ι α : Type*} {s : ι → Set α} (hs : IndexedPartition s)
 
 /-- On a unique index set there is the obvious trivial partition -/
-instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι => (Set.univ : Set α)) :=
+instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι => (Set.univ : Set α)) := fast_instance%
   ⟨{  eq_of_mem := fun {_x _i _j} _hi _hj => Subsingleton.elim _ _
       some := default
       some_mem := Set.mem_univ
@@ -434,7 +434,7 @@ def proj : α → hs.Quotient :=
   Quotient.mk''
 #align indexed_partition.proj IndexedPartition.proj
 
-instance [Inhabited α] : Inhabited hs.Quotient :=
+instance [Inhabited α] : Inhabited hs.Quotient := fast_instance%
   ⟨hs.proj default⟩
 
 theorem proj_eq_iff {x y : α} : hs.proj x = hs.proj y ↔ hs.index x = hs.index y :=

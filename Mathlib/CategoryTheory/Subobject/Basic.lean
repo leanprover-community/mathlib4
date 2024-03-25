@@ -98,7 +98,7 @@ def Subobject (X : C) :=
   ThinSkeleton (MonoOver X)
 #align category_theory.subobject CategoryTheory.Subobject
 
-instance (X : C) : PartialOrder (Subobject X) := by
+instance (X : C) : PartialOrder (Subobject X) := fast_instance% by
   dsimp only [Subobject]
   infer_instance
 
@@ -180,7 +180,7 @@ noncomputable def underlying {X : C} : Subobject X ⥤ C :=
   representative ⋙ MonoOver.forget _ ⋙ Over.forget _
 #align category_theory.subobject.underlying CategoryTheory.Subobject.underlying
 
-instance : CoeOut (Subobject X) C where coe Y := underlying.obj Y
+instance : CoeOut (Subobject X) C where coe Y := fast_instance% underlying.obj Y
 
 -- Porting note: removed as it has become a syntactic tautology
 -- @[simp]
@@ -202,7 +202,7 @@ noncomputable def arrow {X : C} (Y : Subobject X) : (Y : C) ⟶ X :=
   (representative.obj Y).obj.hom
 #align category_theory.subobject.arrow CategoryTheory.Subobject.arrow
 
-instance arrow_mono {X : C} (Y : Subobject X) : Mono Y.arrow :=
+instance arrow_mono {X : C} (Y : Subobject X) : Mono Y.arrow := fast_instance%
   (representative.obj Y).property
 #align category_theory.subobject.arrow_mono CategoryTheory.Subobject.arrow_mono
 
@@ -321,7 +321,7 @@ theorem ofLE_arrow {B : C} {X Y : Subobject B} (h : X ≤ Y) : ofLE X Y h ≫ Y.
   underlying_arrow _
 #align category_theory.subobject.of_le_arrow CategoryTheory.Subobject.ofLE_arrow
 
-instance {B : C} (X Y : Subobject B) (h : X ≤ Y) : Mono (ofLE X Y h) := by
+instance {B : C} (X Y : Subobject B) (h : X ≤ Y) : Mono (ofLE X Y h) := fast_instance% by
   fconstructor
   intro Z f g w
   replace w := w =≫ Y.arrow

@@ -127,37 +127,37 @@ theorem ofMul_toMul (x : Additive α) : ofMul (toMul x) = x :=
   rfl
 #align of_mul_to_mul ofMul_toMul
 
-instance [Subsingleton α] : Subsingleton (Additive α) := toMul.injective.subsingleton
-instance [Subsingleton α] : Subsingleton (Multiplicative α) := toAdd.injective.subsingleton
+instance [Subsingleton α] : Subsingleton (Additive α) := fast_instance% toMul.injective.subsingleton
+instance [Subsingleton α] : Subsingleton (Multiplicative α) := fast_instance% toAdd.injective.subsingleton
 
-instance [Inhabited α] : Inhabited (Additive α) :=
+instance [Inhabited α] : Inhabited (Additive α) := fast_instance%
   ⟨ofMul default⟩
 
-instance [Inhabited α] : Inhabited (Multiplicative α) :=
+instance [Inhabited α] : Inhabited (Multiplicative α) := fast_instance%
   ⟨ofAdd default⟩
 
-instance [Unique α] : Unique (Additive α) := toMul.unique
-instance [Unique α] : Unique (Multiplicative α) := toAdd.unique
+instance [Unique α] : Unique (Additive α) := fast_instance% toMul.unique
+instance [Unique α] : Unique (Multiplicative α) := fast_instance% toAdd.unique
 
-instance [Finite α] : Finite (Additive α) :=
+instance [Finite α] : Finite (Additive α) := fast_instance%
   Finite.of_equiv α (by rfl)
 
-instance [Finite α] : Finite (Multiplicative α) :=
+instance [Finite α] : Finite (Multiplicative α) := fast_instance%
   Finite.of_equiv α (by rfl)
 
-instance [h : Infinite α] : Infinite (Additive α) := h
+instance [h : Infinite α] : Infinite (Additive α) := fast_instance% h
 
-instance [h : Infinite α] : Infinite (Multiplicative α) := h
+instance [h : Infinite α] : Infinite (Multiplicative α) := fast_instance% h
 
-instance [h : DecidableEq α] : DecidableEq (Multiplicative α) := h
+instance [h : DecidableEq α] : DecidableEq (Multiplicative α) := fast_instance% h
 
-instance [h : DecidableEq α] : DecidableEq (Additive α) := h
+instance [h : DecidableEq α] : DecidableEq (Additive α) := fast_instance% h
 
-instance Additive.instNontrivial [Nontrivial α] : Nontrivial (Additive α) :=
+instance Additive.instNontrivial [Nontrivial α] : Nontrivial (Additive α) := fast_instance%
   ofMul.injective.nontrivial
 #align additive.nontrivial Additive.instNontrivial
 
-instance Multiplicative.instNontrivial [Nontrivial α] : Nontrivial (Multiplicative α) :=
+instance Multiplicative.instNontrivial [Nontrivial α] : Nontrivial (Multiplicative α) := fast_instance%
   ofAdd.injective.nontrivial
 #align multiplicative.nontrivial Multiplicative.instNontrivial
 
@@ -183,36 +183,36 @@ theorem ofMul_mul [Mul α] (x y : α) : ofMul (x * y) = ofMul x + ofMul y := rfl
 theorem toMul_add [Mul α] (x y : Additive α) : toMul (x + y) = toMul x * toMul y := rfl
 #align to_mul_add toMul_add
 
-instance Additive.addSemigroup [Semigroup α] : AddSemigroup (Additive α) :=
+instance Additive.addSemigroup [Semigroup α] : AddSemigroup (Additive α) := fast_instance%
   { Additive.add with add_assoc := @mul_assoc α _ }
 
-instance Multiplicative.semigroup [AddSemigroup α] : Semigroup (Multiplicative α) :=
+instance Multiplicative.semigroup [AddSemigroup α] : Semigroup (Multiplicative α) := fast_instance%
   { Multiplicative.mul with mul_assoc := @add_assoc α _ }
 
-instance Additive.addCommSemigroup [CommSemigroup α] : AddCommSemigroup (Additive α) :=
+instance Additive.addCommSemigroup [CommSemigroup α] : AddCommSemigroup (Additive α) := fast_instance%
   { Additive.addSemigroup with add_comm := @mul_comm α _ }
 
-instance Multiplicative.commSemigroup [AddCommSemigroup α] : CommSemigroup (Multiplicative α) :=
+instance Multiplicative.commSemigroup [AddCommSemigroup α] : CommSemigroup (Multiplicative α) := fast_instance%
   { Multiplicative.semigroup with mul_comm := @add_comm α _ }
 
-instance Additive.isLeftCancelAdd [Mul α] [IsLeftCancelMul α] : IsLeftCancelAdd (Additive α) :=
+instance Additive.isLeftCancelAdd [Mul α] [IsLeftCancelMul α] : IsLeftCancelAdd (Additive α) := fast_instance%
   ⟨@mul_left_cancel α _ _⟩
 
 instance Multiplicative.isLeftCancelMul [Add α] [IsLeftCancelAdd α] :
     IsLeftCancelMul (Multiplicative α) :=
   ⟨@add_left_cancel α _ _⟩
 
-instance Additive.isRightCancelAdd [Mul α] [IsRightCancelMul α] : IsRightCancelAdd (Additive α) :=
+instance Additive.isRightCancelAdd [Mul α] [IsRightCancelMul α] : IsRightCancelAdd (Additive α) := fast_instance%
   ⟨@mul_right_cancel α _ _⟩
 
 instance Multiplicative.isRightCancelMul [Add α] [IsRightCancelAdd α] :
     IsRightCancelMul (Multiplicative α) :=
   ⟨@add_right_cancel α _ _⟩
 
-instance Additive.isCancelAdd [Mul α] [IsCancelMul α] : IsCancelAdd (Additive α) :=
+instance Additive.isCancelAdd [Mul α] [IsCancelMul α] : IsCancelAdd (Additive α) := fast_instance%
   ⟨⟩
 
-instance Multiplicative.isCancelMul [Add α] [IsCancelAdd α] : IsCancelMul (Multiplicative α) :=
+instance Multiplicative.isCancelMul [Add α] [IsCancelAdd α] : IsCancelMul (Multiplicative α) := fast_instance%
   ⟨⟩
 
 instance Additive.addLeftCancelSemigroup [LeftCancelSemigroup α] :
@@ -231,7 +231,7 @@ instance Multiplicative.rightCancelSemigroup [AddRightCancelSemigroup α] :
     RightCancelSemigroup (Multiplicative α) :=
   { Multiplicative.semigroup, Multiplicative.isRightCancelMul with }
 
-instance [One α] : Zero (Additive α) :=
+instance [One α] : Zero (Additive α) := fast_instance%
   ⟨Additive.ofMul 1⟩
 
 @[simp]
@@ -246,7 +246,7 @@ theorem ofMul_eq_zero {A : Type*} [One A] {x : A} : Additive.ofMul x = 0 ↔ x =
 theorem toMul_zero [One α] : toMul (0 : Additive α) = 1 := rfl
 #align to_mul_zero toMul_zero
 
-instance [Zero α] : One (Multiplicative α) :=
+instance [Zero α] : One (Multiplicative α) := fast_instance%
   ⟨Multiplicative.ofAdd 0⟩
 
 @[simp]
@@ -276,13 +276,13 @@ instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicat
   one_mul := @zero_add α _
   mul_one := @add_zero α _
 
-instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) :=
+instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) := fast_instance%
   { Additive.addZeroClass, Additive.addSemigroup with
     nsmul := @Monoid.npow α h
     nsmul_zero := @Monoid.npow_zero α h
     nsmul_succ := @Monoid.npow_succ α h }
 
-instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :=
+instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) := fast_instance%
   { Multiplicative.mulOneClass, Multiplicative.semigroup with
     npow := @AddMonoid.nsmul α h
     npow_zero := @AddMonoid.nsmul_zero α h
@@ -306,27 +306,27 @@ theorem ofAdd_nsmul [AddMonoid α] (n : ℕ) (a : α) : ofAdd (n • a) = ofAdd 
 theorem toAdd_pow [AddMonoid α] (a : Multiplicative α) (n : ℕ) : toAdd (a ^ n) = n • toAdd a :=
   rfl
 
-instance Additive.addLeftCancelMonoid [LeftCancelMonoid α] : AddLeftCancelMonoid (Additive α) :=
+instance Additive.addLeftCancelMonoid [LeftCancelMonoid α] : AddLeftCancelMonoid (Additive α) := fast_instance%
   { Additive.addMonoid, Additive.addLeftCancelSemigroup with }
 
 instance Multiplicative.leftCancelMonoid [AddLeftCancelMonoid α] :
     LeftCancelMonoid (Multiplicative α) :=
   { Multiplicative.monoid, Multiplicative.leftCancelSemigroup with }
 
-instance Additive.addRightCancelMonoid [RightCancelMonoid α] : AddRightCancelMonoid (Additive α) :=
+instance Additive.addRightCancelMonoid [RightCancelMonoid α] : AddRightCancelMonoid (Additive α) := fast_instance%
   { Additive.addMonoid, Additive.addRightCancelSemigroup with }
 
 instance Multiplicative.rightCancelMonoid [AddRightCancelMonoid α] :
     RightCancelMonoid (Multiplicative α) :=
   { Multiplicative.monoid, Multiplicative.rightCancelSemigroup with }
 
-instance Additive.addCommMonoid [CommMonoid α] : AddCommMonoid (Additive α) :=
+instance Additive.addCommMonoid [CommMonoid α] : AddCommMonoid (Additive α) := fast_instance%
   { Additive.addMonoid, Additive.addCommSemigroup with }
 
-instance Multiplicative.commMonoid [AddCommMonoid α] : CommMonoid (Multiplicative α) :=
+instance Multiplicative.commMonoid [AddCommMonoid α] : CommMonoid (Multiplicative α) := fast_instance%
   { Multiplicative.monoid, Multiplicative.commSemigroup with }
 
-instance Additive.neg [Inv α] : Neg (Additive α) :=
+instance Additive.neg [Inv α] : Neg (Additive α) := fast_instance%
   ⟨fun x => ofAdd (toMul x)⁻¹⟩
 
 @[simp]
@@ -339,7 +339,7 @@ theorem toMul_neg [Inv α] (x : Additive α) : toMul (-x) = (toMul x)⁻¹ :=
   rfl
 #align to_mul_neg toMul_neg
 
-instance Multiplicative.inv [Neg α] : Inv (Multiplicative α) :=
+instance Multiplicative.inv [Neg α] : Inv (Multiplicative α) := fast_instance%
   ⟨fun x => ofMul (-toAdd x)⟩
 
 @[simp]
@@ -380,13 +380,13 @@ theorem toMul_sub [Div α] (x y : Additive α) : toMul (x - y) = toMul x / toMul
   rfl
 #align to_mul_sub toMul_sub
 
-instance Additive.involutiveNeg [InvolutiveInv α] : InvolutiveNeg (Additive α) :=
+instance Additive.involutiveNeg [InvolutiveInv α] : InvolutiveNeg (Additive α) := fast_instance%
   { Additive.neg with neg_neg := @inv_inv α _ }
 
-instance Multiplicative.involutiveInv [InvolutiveNeg α] : InvolutiveInv (Multiplicative α) :=
+instance Multiplicative.involutiveInv [InvolutiveNeg α] : InvolutiveInv (Multiplicative α) := fast_instance%
   { Multiplicative.inv with inv_inv := @neg_neg α _ }
 
-instance Additive.subNegMonoid [DivInvMonoid α] : SubNegMonoid (Additive α) :=
+instance Additive.subNegMonoid [DivInvMonoid α] : SubNegMonoid (Additive α) := fast_instance%
   { Additive.neg, Additive.sub, Additive.addMonoid with
     sub_eq_add_neg := @div_eq_mul_inv α _
     zsmul := @DivInvMonoid.zpow α _
@@ -394,7 +394,7 @@ instance Additive.subNegMonoid [DivInvMonoid α] : SubNegMonoid (Additive α) :=
     zsmul_succ' := @DivInvMonoid.zpow_succ' α _
     zsmul_neg' := @DivInvMonoid.zpow_neg' α _ }
 
-instance Multiplicative.divInvMonoid [SubNegMonoid α] : DivInvMonoid (Multiplicative α) :=
+instance Multiplicative.divInvMonoid [SubNegMonoid α] : DivInvMonoid (Multiplicative α) := fast_instance%
   { Multiplicative.inv, Multiplicative.div, Multiplicative.monoid with
     div_eq_mul_inv := @sub_eq_add_neg α _
     zpow := @SubNegMonoid.zsmul α _
@@ -420,12 +420,12 @@ theorem ofAdd_zsmul [SubNegMonoid α] (z : ℤ) (a : α) : ofAdd (z • a) = ofA
 theorem toAdd_zpow [SubNegMonoid α] (a : Multiplicative α) (z : ℤ) : toAdd (a ^ z) = z • toAdd a :=
   rfl
 
-instance Additive.subtractionMonoid [DivisionMonoid α] : SubtractionMonoid (Additive α) :=
+instance Additive.subtractionMonoid [DivisionMonoid α] : SubtractionMonoid (Additive α) := fast_instance%
   { Additive.subNegMonoid, Additive.involutiveNeg with
     neg_add_rev := @mul_inv_rev α _
     neg_eq_of_add := @inv_eq_of_mul_eq_one_right α _ }
 
-instance Multiplicative.divisionMonoid [SubtractionMonoid α] : DivisionMonoid (Multiplicative α) :=
+instance Multiplicative.divisionMonoid [SubtractionMonoid α] : DivisionMonoid (Multiplicative α) := fast_instance%
   { Multiplicative.divInvMonoid, Multiplicative.involutiveInv with
     mul_inv_rev := @neg_add_rev α _
     inv_eq_of_mul := @neg_eq_of_add_eq_zero_right α _ }
@@ -438,16 +438,16 @@ instance Multiplicative.divisionCommMonoid [SubtractionCommMonoid α] :
     DivisionCommMonoid (Multiplicative α) :=
   { Multiplicative.divisionMonoid, Multiplicative.commSemigroup with }
 
-instance Additive.addGroup [Group α] : AddGroup (Additive α) :=
+instance Additive.addGroup [Group α] : AddGroup (Additive α) := fast_instance%
   { Additive.subNegMonoid with add_left_neg := @mul_left_inv α _ }
 
-instance Multiplicative.group [AddGroup α] : Group (Multiplicative α) :=
+instance Multiplicative.group [AddGroup α] : Group (Multiplicative α) := fast_instance%
   { Multiplicative.divInvMonoid with mul_left_inv := @add_left_neg α _ }
 
-instance Additive.addCommGroup [CommGroup α] : AddCommGroup (Additive α) :=
+instance Additive.addCommGroup [CommGroup α] : AddCommGroup (Additive α) := fast_instance%
   { Additive.addGroup, Additive.addCommMonoid with }
 
-instance Multiplicative.commGroup [AddCommGroup α] : CommGroup (Multiplicative α) :=
+instance Multiplicative.commGroup [AddCommGroup α] : CommGroup (Multiplicative α) := fast_instance%
   { Multiplicative.group, Multiplicative.commMonoid with }
 
 /-- Reinterpret `α →+ β` as `Multiplicative α →* Multiplicative β`. -/

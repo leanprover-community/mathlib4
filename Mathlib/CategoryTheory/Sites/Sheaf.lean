@@ -304,7 +304,7 @@ instance instCategorySheaf : Category (Sheaf J A) where
   assoc _ _ _ := Hom.ext _ _ <| assoc _ _ _
 
 -- Let's make the inhabited linter happy.../sips
-instance (X : Sheaf J A) : Inhabited (Hom X X) :=
+instance (X : Sheaf J A) : Inhabited (Hom X X) := fast_instance%
   ⟨𝟙 X⟩
 
 -- Porting note: added because `Sheaf.Hom.ext` was not triggered automatically
@@ -327,7 +327,7 @@ set_option linter.uppercaseLean3 false in
 /-- The sections of a sheaf (i.e. evaluation as a presheaf on `C`). -/
 abbrev sheafSections : Cᵒᵖ ⥤ Sheaf J A ⥤ A := (sheafToPresheaf J A).flip
 
-instance : Full (sheafToPresheaf J A) where preimage f := ⟨f⟩
+instance : Full (sheafToPresheaf J A) where preimage f := fast_instance% ⟨f⟩
 
 instance : Faithful (sheafToPresheaf J A) where
 
@@ -338,7 +338,7 @@ theorem Sheaf.Hom.mono_of_presheaf_mono {F G : Sheaf J A} (f : F ⟶ G) [h : Mon
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.hom.mono_of_presheaf_mono CategoryTheory.Sheaf.Hom.mono_of_presheaf_mono
 
-instance Sheaf.Hom.epi_of_presheaf_epi {F G : Sheaf J A} (f : F ⟶ G) [h : Epi f.1] : Epi f :=
+instance Sheaf.Hom.epi_of_presheaf_epi {F G : Sheaf J A} (f : F ⟶ G) [h : Epi f.1] : Epi f := fast_instance%
   (sheafToPresheaf J A).epi_of_epi_map h
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.hom.epi_of_presheaf_epi CategoryTheory.Sheaf.Hom.epi_of_presheaf_epi
@@ -386,7 +386,7 @@ def sheafEquivSheafOfTypes : Sheaf J (Type w) ≌ SheafOfTypes J where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_equiv_SheafOfTypes CategoryTheory.sheafEquivSheafOfTypes
 
-instance : Inhabited (Sheaf (⊥ : GrothendieckTopology C) (Type w)) :=
+instance : Inhabited (Sheaf (⊥ : GrothendieckTopology C) (Type w)) := fast_instance%
   ⟨(sheafEquivSheafOfTypes _).inverse.obj default⟩
 
 variable {J} {A}
@@ -421,9 +421,9 @@ instance sheafHomHasZSMul : SMul ℤ (P ⟶ Q) where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_hom_has_zsmul CategoryTheory.sheafHomHasZSMul
 
-instance : Sub (P ⟶ Q) where sub f g := Sheaf.Hom.mk <| f.1 - g.1
+instance : Sub (P ⟶ Q) where sub f g := fast_instance% Sheaf.Hom.mk <| f.1 - g.1
 
-instance : Neg (P ⟶ Q) where neg f := Sheaf.Hom.mk <| -f.1
+instance : Neg (P ⟶ Q) where neg f := fast_instance% Sheaf.Hom.mk <| -f.1
 
 instance sheafHomHasNSMul : SMul ℕ (P ⟶ Q) where
   smul n f :=
@@ -437,9 +437,9 @@ instance sheafHomHasNSMul : SMul ℕ (P ⟶ Q) where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_hom_has_nsmul CategoryTheory.sheafHomHasNSMul
 
-instance : Zero (P ⟶ Q) where zero := Sheaf.Hom.mk 0
+instance : Zero (P ⟶ Q) where zero := fast_instance% Sheaf.Hom.mk 0
 
-instance : Add (P ⟶ Q) where add f g := Sheaf.Hom.mk <| f.1 + g.1
+instance : Add (P ⟶ Q) where add f g := fast_instance% Sheaf.Hom.mk <| f.1 + g.1
 
 @[simp]
 theorem Sheaf.Hom.add_app (f g : P ⟶ Q) (U) : (f + g).1.app U = f.1.app U + g.1.app U :=
@@ -447,7 +447,7 @@ theorem Sheaf.Hom.add_app (f g : P ⟶ Q) (U) : (f + g).1.app U = f.1.app U + g.
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.hom.add_app CategoryTheory.Sheaf.Hom.add_app
 
-instance Sheaf.Hom.addCommGroup : AddCommGroup (P ⟶ Q) :=
+instance Sheaf.Hom.addCommGroup : AddCommGroup (P ⟶ Q) := fast_instance%
   Function.Injective.addCommGroup (fun f : Sheaf.Hom P Q => f.1)
     (fun _ _ h => Sheaf.Hom.ext _ _ h) rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => by aesop_cat) (fun _ _ => by aesop_cat)

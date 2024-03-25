@@ -28,7 +28,7 @@ section AddBasic
 
 variable [AddMonoid M] [Preorder M] [CovariantClass M M (· + ·) (· < ·)]
 
-instance : Add { x : M // 0 < x } :=
+instance : Add { x : M // 0 < x } := fast_instance%
   ⟨fun x y => ⟨x + y, add_pos x.2 y.2⟩⟩
 
 @[simp, norm_cast]
@@ -36,7 +36,7 @@ theorem coe_add (x y : { x : M // 0 < x }) : ↑(x + y) = (x + y : M) :=
   rfl
 #align positive.coe_add Positive.coe_add
 
-instance addSemigroup : AddSemigroup { x : M // 0 < x } :=
+instance addSemigroup : AddSemigroup { x : M // 0 < x } := fast_instance%
   fast_instance%
   Subtype.coe_injective.addSemigroup _ coe_add
 #align positive.subtype.add_semigroup Positive.addSemigroup
@@ -101,7 +101,7 @@ section Mul
 
 variable [StrictOrderedSemiring R]
 
-instance : Mul { x : R // 0 < x } :=
+instance : Mul { x : R // 0 < x } := fast_instance%
   ⟨fun x y => ⟨x * y, mul_pos x.2 y.2⟩⟩
 
 @[simp]
@@ -109,7 +109,7 @@ theorem val_mul (x y : { x : R // 0 < x }) : ↑(x * y) = (x * y : R) :=
   rfl
 #align positive.coe_mul Positive.val_mul
 
-instance : Pow { x : R // 0 < x } ℕ :=
+instance : Pow { x : R // 0 < x } ℕ := fast_instance%
   ⟨fun x n => ⟨(x : R) ^ n , pow_pos x.2 n⟩⟩
 
 @[simp]
@@ -118,15 +118,15 @@ theorem val_pow (x : { x : R // 0 < x }) (n : ℕ) :
   rfl
 #align positive.coe_pow Positive.val_pow
 
-instance : Semigroup { x : R // 0 < x } :=
+instance : Semigroup { x : R // 0 < x } := fast_instance%
   fast_instance%
   Subtype.coe_injective.semigroup Subtype.val val_mul
 
-instance : Distrib { x : R // 0 < x } :=
+instance : Distrib { x : R // 0 < x } := fast_instance%
   fast_instance%
   Subtype.coe_injective.distrib _ coe_add val_mul
 
-instance [Nontrivial R] : One { x : R // 0 < x } :=
+instance [Nontrivial R] : One { x : R // 0 < x } := fast_instance%
   ⟨⟨1, one_pos⟩⟩
 
 @[simp]
@@ -134,7 +134,7 @@ theorem val_one [Nontrivial R] : ((1 : { x : R // 0 < x }) : R) = 1 :=
   rfl
 #align positive.coe_one Positive.val_one
 
-instance [Nontrivial R] : Monoid { x : R // 0 < x } :=
+instance [Nontrivial R] : Monoid { x : R // 0 < x } := fast_instance%
   fast_instance%
   Subtype.coe_injective.monoid _ val_one val_mul val_pow
 

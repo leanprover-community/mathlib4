@@ -56,7 +56,7 @@ theorem ofInt_im (n : ℤ) : (ofInt n : ℤ√d).im = 0 :=
 #align zsqrtd.of_int_im Zsqrtd.ofInt_im
 
 /-- The zero of the ring -/
-instance : Zero (ℤ√d) :=
+instance : Zero (ℤ√d) := fast_instance%
   ⟨ofInt 0⟩
 
 @[simp]
@@ -69,11 +69,11 @@ theorem zero_im : (0 : ℤ√d).im = 0 :=
   rfl
 #align zsqrtd.zero_im Zsqrtd.zero_im
 
-instance : Inhabited (ℤ√d) :=
+instance : Inhabited (ℤ√d) := fast_instance%
   ⟨0⟩
 
 /-- The one of the ring -/
-instance : One (ℤ√d) :=
+instance : One (ℤ√d) := fast_instance%
   ⟨ofInt 1⟩
 
 @[simp]
@@ -102,7 +102,7 @@ theorem sqrtd_im : (sqrtd : ℤ√d).im = 1 :=
 #align zsqrtd.sqrtd_im Zsqrtd.sqrtd_im
 
 /-- Addition of elements of `ℤ√d` -/
-instance : Add (ℤ√d) :=
+instance : Add (ℤ√d) := fast_instance%
   ⟨fun z w => ⟨z.1 + w.1, z.2 + w.2⟩⟩
 
 @[simp]
@@ -145,7 +145,7 @@ theorem bit1_im (z) : (bit1 z : ℤ√d).im = bit0 z.im := by simp [bit1]
 end bit
 
 /-- Negation in `ℤ√d` -/
-instance : Neg (ℤ√d) :=
+instance : Neg (ℤ√d) := fast_instance%
   ⟨fun z => ⟨-z.1, -z.2⟩⟩
 
 @[simp]
@@ -159,7 +159,7 @@ theorem neg_im (z : ℤ√d) : (-z).im = -z.im :=
 #align zsqrtd.neg_im Zsqrtd.neg_im
 
 /-- Multiplication in `ℤ√d` -/
-instance : Mul (ℤ√d) :=
+instance : Mul (ℤ√d) := fast_instance%
   ⟨fun z w => ⟨z.1 * w.1 + d * z.2 * w.2, z.1 * w.2 + z.2 * w.1⟩⟩
 
 @[simp]
@@ -172,7 +172,7 @@ theorem mul_im (z w : ℤ√d) : (z * w).im = z.re * w.im + z.im * w.re :=
   rfl
 #align zsqrtd.mul_im Zsqrtd.mul_im
 
-instance addCommGroup : AddCommGroup (ℤ√d) := by
+instance addCommGroup : AddCommGroup (ℤ√d) := fast_instance% by
   refine
   { add := (· + ·)
     zero := (0 : ℤ√d)
@@ -197,13 +197,13 @@ theorem sub_re (z w : ℤ√d) : (z - w).re = z.re - w.re :=
 theorem sub_im (z w : ℤ√d) : (z - w).im = z.im - w.im :=
   rfl
 
-instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
+instance addGroupWithOne : AddGroupWithOne (ℤ√d) := fast_instance%
   { Zsqrtd.addCommGroup with
     natCast := fun n => ofInt n
     intCast := ofInt
     one := 1 }
 
-instance commRing : CommRing (ℤ√d) := by
+instance commRing : CommRing (ℤ√d) := fast_instance% by
   refine
   { Zsqrtd.addGroupWithOne with
     mul := (· * ·)
@@ -222,27 +222,27 @@ instance commRing : CommRing (ℤ√d) := by
   simp <;>
   ring
 
-instance : AddMonoid (ℤ√d) := by infer_instance
+instance : AddMonoid (ℤ√d) := fast_instance% by infer_instance
 
-instance : Monoid (ℤ√d) := by infer_instance
+instance : Monoid (ℤ√d) := fast_instance% by infer_instance
 
-instance : CommMonoid (ℤ√d) := by infer_instance
+instance : CommMonoid (ℤ√d) := fast_instance% by infer_instance
 
-instance : CommSemigroup (ℤ√d) := by infer_instance
+instance : CommSemigroup (ℤ√d) := fast_instance% by infer_instance
 
-instance : Semigroup (ℤ√d) := by infer_instance
+instance : Semigroup (ℤ√d) := fast_instance% by infer_instance
 
-instance : AddCommSemigroup (ℤ√d) := by infer_instance
+instance : AddCommSemigroup (ℤ√d) := fast_instance% by infer_instance
 
-instance : AddSemigroup (ℤ√d) := by infer_instance
+instance : AddSemigroup (ℤ√d) := fast_instance% by infer_instance
 
-instance : CommSemiring (ℤ√d) := by infer_instance
+instance : CommSemiring (ℤ√d) := fast_instance% by infer_instance
 
-instance : Semiring (ℤ√d) := by infer_instance
+instance : Semiring (ℤ√d) := fast_instance% by infer_instance
 
-instance : Ring (ℤ√d) := by infer_instance
+instance : Ring (ℤ√d) := fast_instance% by infer_instance
 
-instance : Distrib (ℤ√d) := by infer_instance
+instance : Distrib (ℤ√d) := fast_instance% by infer_instance
 
 /-- Conjugation in `ℤ√d`. The conjugate of `a + b √d` is `a - b √d`. -/
 instance : Star (ℤ√d) where
@@ -269,7 +269,7 @@ instance : StarRing (ℤ√d) where
   star_add a b := Zsqrtd.ext _ _ rfl (neg_add _ _)
 
 -- Porting note: proof was `by decide`
-instance nontrivial : Nontrivial (ℤ√d) :=
+instance nontrivial : Nontrivial (ℤ√d) := fast_instance%
   ⟨⟨0, 1, (Zsqrtd.ext_iff 0 1).not.mpr (by simp)⟩⟩
 
 @[simp]
@@ -305,7 +305,7 @@ theorem coe_int_im (n : ℤ) : (n : ℤ√d).im = 0 := by cases n <;> rfl
 theorem coe_int_val (n : ℤ) : (n : ℤ√d) = ⟨n, 0⟩ := by ext <;> simp
 #align zsqrtd.coe_int_val Zsqrtd.coe_int_val
 
-instance : CharZero (ℤ√d) where cast_injective m n := by simp [Zsqrtd.ext_iff]
+instance : CharZero (ℤ√d) where cast_injective m n := fast_instance% by simp [Zsqrtd.ext_iff]
 
 @[simp]
 theorem ofInt_eq_coe (n : ℤ) : (ofInt n : ℤ√d) = n := by ext <;> simp [ofInt_re, ofInt_im]
@@ -640,13 +640,13 @@ def Nonneg : ℤ√d → Prop
   | ⟨a, b⟩ => Nonnegg d 1 a b
 #align zsqrtd.nonneg Zsqrtd.Nonneg
 
-instance : LE (ℤ√d) :=
+instance : LE (ℤ√d) := fast_instance%
   ⟨fun a b => Nonneg (b - a)⟩
 
-instance : LT (ℤ√d) :=
+instance : LT (ℤ√d) := fast_instance%
   ⟨fun a b => ¬b ≤ a⟩
 
-instance decidableNonnegg (c d a b) : Decidable (Nonnegg c d a b) := by
+instance decidableNonnegg (c d a b) : Decidable (Nonnegg c d a b) := fast_instance% by
   cases a <;> cases b <;> unfold Nonnegg SqLe <;> infer_instance
 #align zsqrtd.decidable_nonnegg Zsqrtd.decidableNonnegg
 
@@ -654,7 +654,7 @@ instance decidableNonneg : ∀ a : ℤ√d, Decidable (Nonneg a)
   | ⟨_, _⟩ => Zsqrtd.decidableNonnegg _ _ _ _
 #align zsqrtd.decidable_nonneg Zsqrtd.decidableNonneg
 
-instance decidableLE : @DecidableRel (ℤ√d) (· ≤ ·) := fun _ _ => decidableNonneg _
+instance decidableLE : @DecidableRel (ℤ√d) (· ≤ ·) := fast_instance% fun _ _ => decidableNonneg _
 #align zsqrtd.decidable_le Zsqrtd.decidableLE
 
 open Int in
@@ -944,7 +944,7 @@ theorem le_antisymm {a b : ℤ√d} (ab : a ≤ b) (ba : b ≤ a) : a = b :=
   eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
 #align zsqrtd.le_antisymm Zsqrtd.le_antisymm
 
-instance linearOrder : LinearOrder (ℤ√d) :=
+instance linearOrder : LinearOrder (ℤ√d) := fast_instance%
   { Zsqrtd.preorder with
     le_antisymm := fun _ _ => Zsqrtd.le_antisymm
     le_total := Zsqrtd.le_total
@@ -983,7 +983,7 @@ protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b
 instance : NoZeroDivisors (ℤ√d) where
   eq_zero_or_eq_zero_of_mul_eq_zero := Zsqrtd.eq_zero_or_eq_zero_of_mul_eq_zero
 
-instance : IsDomain (ℤ√d) :=
+instance : IsDomain (ℤ√d) := fast_instance%
   NoZeroDivisors.to_isDomain _
 
 protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b := fun ab =>
@@ -993,15 +993,15 @@ protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b 
     (fun e => ne_of_gt a0 e) fun e => ne_of_gt b0 e
 #align zsqrtd.mul_pos Zsqrtd.mul_pos
 
-instance : LinearOrderedCommRing (ℤ√d) :=
+instance : LinearOrderedCommRing (ℤ√d) := fast_instance%
   { Zsqrtd.commRing, Zsqrtd.linearOrder, Zsqrtd.nontrivial with
     add_le_add_left := Zsqrtd.add_le_add_left
     mul_pos := Zsqrtd.mul_pos
     zero_le_one := by trivial }
 
-instance : LinearOrderedRing (ℤ√d) := by infer_instance
+instance : LinearOrderedRing (ℤ√d) := fast_instance% by infer_instance
 
-instance : OrderedRing (ℤ√d) := by infer_instance
+instance : OrderedRing (ℤ√d) := fast_instance% by infer_instance
 
 end
 

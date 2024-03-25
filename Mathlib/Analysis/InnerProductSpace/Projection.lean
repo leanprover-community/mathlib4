@@ -392,7 +392,7 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv' [HasOrthogonalProjecti
     HasOrthogonalProjection (K.map f.toLinearIsometry) :=
   HasOrthogonalProjection.map_linearIsometryEquiv K f
 
-instance : HasOrthogonalProjection (⊤ : Submodule 𝕜 E) := ⟨fun v ↦ ⟨v, trivial, by simp⟩⟩
+instance : HasOrthogonalProjection (⊤ : Submodule 𝕜 E) := fast_instance% ⟨fun v ↦ ⟨v, trivial, by simp⟩⟩
 
 section orthogonalProjection
 

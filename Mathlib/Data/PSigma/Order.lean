@@ -44,16 +44,16 @@ notation3 "Σₗ' "(...)", "r:(scoped p => _root_.Lex (PSigma.{_+1, _+1} p)) => 
 namespace Lex
 
 /-- The lexicographical `≤` on a sigma type. -/
-instance le [LT ι] [∀ i, LE (α i)] : LE (Σₗ' i, α i) :=
+instance le [LT ι] [∀ i, LE (α i)] : LE (Σₗ' i, α i) := fast_instance%
   ⟨Lex (· < ·) fun _ => (· ≤ ·)⟩
 #align psigma.lex.has_le PSigma.Lex.le
 
 /-- The lexicographical `<` on a sigma type. -/
-instance lt [LT ι] [∀ i, LT (α i)] : LT (Σₗ' i, α i) :=
+instance lt [LT ι] [∀ i, LT (α i)] : LT (Σₗ' i, α i) := fast_instance%
   ⟨Lex (· < ·) fun _ => (· < ·)⟩
 #align psigma.lex.has_lt PSigma.Lex.lt
 
-instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, α i) :=
+instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, α i) := fast_instance%
   { Lex.le, Lex.lt with
     le_refl := fun ⟨i, a⟩ => Lex.right _ le_rfl,
     le_trans := by
@@ -81,7 +81,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
 #align psigma.lex.preorder PSigma.Lex.preorder
 
 /-- Dictionary / lexicographic partial_order for dependent pairs. -/
-instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOrder (Σₗ' i, α i) :=
+instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOrder (Σₗ' i, α i) := fast_instance%
   { Lex.preorder with
     le_antisymm := by
       rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ (⟨_, _, hlt₁⟩ | ⟨_, hlt₁⟩) (⟨_, _, hlt₂⟩ | ⟨_, hlt₂⟩)
@@ -92,7 +92,7 @@ instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOr
 #align psigma.lex.partial_order PSigma.Lex.partialOrder
 
 /-- Dictionary / lexicographic linear_order for pairs. -/
-instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder (Σₗ' i, α i) :=
+instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder (Σₗ' i, α i) := fast_instance%
   { Lex.partialOrder with
     le_total := by
       rintro ⟨i, a⟩ ⟨j, b⟩

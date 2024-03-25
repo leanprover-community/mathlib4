@@ -19,7 +19,7 @@ open MeasureTheory
 
 namespace unitInterval
 
-noncomputable instance : MeasureSpace I := Measure.Subtype.measureSpace
+noncomputable instance : MeasureSpace I := fast_instance% Measure.Subtype.measureSpace
 
 theorem volume_def : (volume : Measure I) = volume.comap Subtype.val := rfl
 

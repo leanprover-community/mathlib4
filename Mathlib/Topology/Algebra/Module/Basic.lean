@@ -400,7 +400,7 @@ variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} [Semiring R₁] [Semiring 
 
 attribute [coe] ContinuousLinearMap.toLinearMap
 /-- Coerce continuous linear maps to linear maps. -/
-instance LinearMap.coe : Coe (M₁ →SL[σ₁₂] M₂) (M₁ →ₛₗ[σ₁₂] M₂) := ⟨toLinearMap⟩
+instance LinearMap.coe : Coe (M₁ →SL[σ₁₂] M₂) (M₁ →ₛₗ[σ₁₂] M₂) := fast_instance% ⟨toLinearMap⟩
 #align continuous_linear_map.linear_map.has_coe ContinuousLinearMap.LinearMap.coe
 
 #noalign continuous_linear_map.to_linear_map_eq_coe
@@ -425,7 +425,7 @@ instance continuousSemilinearMapClass :
 
 -- see Note [function coercion]
 /-- Coerce continuous linear maps to functions. -/
---instance toFun' : CoeFun (M₁ →SL[σ₁₂] M₂) fun _ => M₁ → M₂ := ⟨DFunLike.coe⟩
+--instance toFun' : CoeFun (M₁ →SL[σ₁₂] M₂) fun _ => M₁ → M₂ := fast_instance% ⟨DFunLike.coe⟩
 
 -- porting note (#10618): was `simp`, now `simp only` proves it
 theorem coe_mk (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ →ₛₗ[σ₁₂] M₂) = f :=
@@ -611,18 +611,18 @@ instance isScalarTower [SMul S₂ T₂] [IsScalarTower S₂ T₂ M₂] :
   ⟨fun a b f => ext fun x => smul_assoc a b (f x)⟩
 #align continuous_linear_map.is_scalar_tower ContinuousLinearMap.isScalarTower
 
-instance smulCommClass [SMulCommClass S₂ T₂ M₂] : SMulCommClass S₂ T₂ (M₁ →SL[σ₁₂] M₂) :=
+instance smulCommClass [SMulCommClass S₂ T₂ M₂] : SMulCommClass S₂ T₂ (M₁ →SL[σ₁₂] M₂) := fast_instance%
   ⟨fun a b f => ext fun x => smul_comm a b (f x)⟩
 #align continuous_linear_map.smul_comm_class ContinuousLinearMap.smulCommClass
 
 end SMulMonoid
 
 /-- The continuous map that is constantly zero. -/
-instance zero : Zero (M₁ →SL[σ₁₂] M₂) :=
+instance zero : Zero (M₁ →SL[σ₁₂] M₂) := fast_instance%
   ⟨⟨0, continuous_zero⟩⟩
 #align continuous_linear_map.has_zero ContinuousLinearMap.zero
 
-instance inhabited : Inhabited (M₁ →SL[σ₁₂] M₂) :=
+instance inhabited : Inhabited (M₁ →SL[σ₁₂] M₂) := fast_instance%
   ⟨0⟩
 #align continuous_linear_map.inhabited ContinuousLinearMap.inhabited
 
@@ -649,11 +649,11 @@ theorem coe_zero' : ⇑(0 : M₁ →SL[σ₁₂] M₂) = 0 :=
   rfl
 #align continuous_linear_map.coe_zero' ContinuousLinearMap.coe_zero'
 
-instance uniqueOfLeft [Subsingleton M₁] : Unique (M₁ →SL[σ₁₂] M₂) :=
+instance uniqueOfLeft [Subsingleton M₁] : Unique (M₁ →SL[σ₁₂] M₂) := fast_instance%
   coe_injective.unique
 #align continuous_linear_map.unique_of_left ContinuousLinearMap.uniqueOfLeft
 
-instance uniqueOfRight [Subsingleton M₂] : Unique (M₁ →SL[σ₁₂] M₂) :=
+instance uniqueOfRight [Subsingleton M₂] : Unique (M₁ →SL[σ₁₂] M₂) := fast_instance%
   coe_injective.unique
 #align continuous_linear_map.unique_of_right ContinuousLinearMap.uniqueOfRight
 
@@ -673,7 +673,7 @@ def id : M₁ →L[R₁] M₁ :=
 
 end
 
-instance one : One (M₁ →L[R₁] M₁) :=
+instance one : One (M₁ →L[R₁] M₁) := fast_instance%
   ⟨id R₁ M₁⟩
 #align continuous_linear_map.has_one ContinuousLinearMap.one
 
@@ -705,7 +705,7 @@ theorem one_apply (x : M₁) : (1 : M₁ →L[R₁] M₁) x = x :=
   rfl
 #align continuous_linear_map.one_apply ContinuousLinearMap.one_apply
 
-instance [Nontrivial M₁] : Nontrivial (M₁ →L[R₁] M₁) :=
+instance [Nontrivial M₁] : Nontrivial (M₁ →L[R₁] M₁) := fast_instance%
   ⟨0, 1, fun e ↦
     have ⟨x, hx⟩ := exists_ne (0 : M₁); hx (by simpa using DFunLike.congr_fun e.symm x)⟩
 
@@ -713,7 +713,7 @@ section Add
 
 variable [ContinuousAdd M₂]
 
-instance add : Add (M₁ →SL[σ₁₂] M₂) :=
+instance add : Add (M₁ →SL[σ₁₂] M₂) := fast_instance%
   ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
 #align continuous_linear_map.has_add ContinuousLinearMap.add
 
@@ -847,7 +847,7 @@ theorem comp_assoc {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₁₄ :
   rfl
 #align continuous_linear_map.comp_assoc ContinuousLinearMap.comp_assoc
 
-instance instMul : Mul (M₁ →L[R₁] M₁) :=
+instance instMul : Mul (M₁ →L[R₁] M₁) := fast_instance%
   ⟨comp⟩
 #align continuous_linear_map.has_mul ContinuousLinearMap.instMul
 
@@ -915,7 +915,7 @@ variable [ContinuousAdd M₁]
 /-- The tautological action by `M₁ →L[R₁] M₁` on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyModule : Module (M₁ →L[R₁] M₁) M₁ :=
+instance applyModule : Module (M₁ →L[R₁] M₁) M₁ := fast_instance%
   Module.compHom _ toLinearMapRingHom
 #align continuous_linear_map.apply_module ContinuousLinearMap.applyModule
 
@@ -925,7 +925,7 @@ protected theorem smul_def (f : M₁ →L[R₁] M₁) (a : M₁) : f • a = f a
 #align continuous_linear_map.smul_def ContinuousLinearMap.smul_def
 
 /-- `ContinuousLinearMap.applyModule` is faithful. -/
-instance applyFaithfulSMul : FaithfulSMul (M₁ →L[R₁] M₁) M₁ :=
+instance applyFaithfulSMul : FaithfulSMul (M₁ →L[R₁] M₁) M₁ := fast_instance%
   ⟨fun {_ _} => ContinuousLinearMap.ext⟩
 #align continuous_linear_map.apply_has_faithful_smul ContinuousLinearMap.applyFaithfulSMul
 
@@ -937,7 +937,7 @@ instance applySMulCommClass' : SMulCommClass (M₁ →L[R₁] M₁) R₁ M₁ wh
   smul_comm := ContinuousLinearMap.map_smul
 #align continuous_linear_map.apply_smul_comm_class' ContinuousLinearMap.applySMulCommClass'
 
-instance continuousConstSMul_apply : ContinuousConstSMul (M₁ →L[R₁] M₁) M₁ :=
+instance continuousConstSMul_apply : ContinuousConstSMul (M₁ →L[R₁] M₁) M₁ := fast_instance%
   ⟨ContinuousLinearMap.continuous⟩
 #align continuous_linear_map.has_continuous_const_smul ContinuousLinearMap.continuousConstSMul_apply
 
@@ -1430,7 +1430,7 @@ section
 
 variable [TopologicalAddGroup M₂]
 
-instance neg : Neg (M →SL[σ₁₂] M₂) :=
+instance neg : Neg (M →SL[σ₁₂] M₂) := fast_instance%
   ⟨fun f => ⟨-f, f.2.neg⟩⟩
 #align continuous_linear_map.has_neg ContinuousLinearMap.neg
 
@@ -1449,11 +1449,11 @@ theorem coe_neg' (f : M →SL[σ₁₂] M₂) : ⇑(-f) = -f :=
   rfl
 #align continuous_linear_map.coe_neg' ContinuousLinearMap.coe_neg'
 
-instance sub : Sub (M →SL[σ₁₂] M₂) :=
+instance sub : Sub (M →SL[σ₁₂] M₂) := fast_instance%
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 #align continuous_linear_map.has_sub ContinuousLinearMap.sub
 
-instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := by
+instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := fast_instance% by
   refine'
     { ContinuousLinearMap.addCommMonoid with
       neg := (-·)
@@ -1749,7 +1749,7 @@ variable {R : Type*} [CommRing R] {M : Type*} [TopologicalSpace M] [AddCommGroup
 
 variable [TopologicalAddGroup M₂] [ContinuousConstSMul R M₂]
 
-instance algebra : Algebra R (M₂ →L[R] M₂) :=
+instance algebra : Algebra R (M₂ →L[R] M₂) := fast_instance%
   Algebra.ofModule smul_comp fun _ _ _ => comp_smul _ _ _
 #align continuous_linear_map.algebra ContinuousLinearMap.algebra
 
@@ -1858,7 +1858,7 @@ def toContinuousLinearMap (e : M₁ ≃SL[σ₁₂] M₂) : M₁ →SL[σ₁₂]
 #align continuous_linear_equiv.to_continuous_linear_map ContinuousLinearEquiv.toContinuousLinearMap
 
 /-- Coerce continuous linear equivs to continuous linear maps. -/
-instance ContinuousLinearMap.coe : Coe (M₁ ≃SL[σ₁₂] M₂) (M₁ →SL[σ₁₂] M₂) :=
+instance ContinuousLinearMap.coe : Coe (M₁ ≃SL[σ₁₂] M₂) (M₁ →SL[σ₁₂] M₂) := fast_instance%
   ⟨toContinuousLinearMap⟩
 #align continuous_linear_equiv.continuous_linear_map.has_coe ContinuousLinearEquiv.ContinuousLinearMap.coe
 
@@ -1885,7 +1885,7 @@ instance continuousSemilinearEquivClass :
 
 -- see Note [function coercion]
 -- /-- Coerce continuous linear equivs to maps. -/
--- instance : CoeFun (M₁ ≃SL[σ₁₂] M₂) fun _ => M₁ → M₂ :=
+-- instance : CoeFun (M₁ ≃SL[σ₁₂] M₂) fun _ => M₁ → M₂ := fast_instance%
 -- ⟨fun f => f⟩
 
 -- Porting note: Syntactic tautology.
@@ -2732,14 +2732,14 @@ variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace 
   (S : Submodule R M)
 
 -- Porting note: This is required in Lean4.
-instance _root_.QuotientModule.Quotient.topologicalSpace : TopologicalSpace (M ⧸ S) :=
+instance _root_.QuotientModule.Quotient.topologicalSpace : TopologicalSpace (M ⧸ S) := fast_instance%
   inferInstanceAs (TopologicalSpace (Quotient S.quotientRel))
 
 theorem isOpenMap_mkQ [TopologicalAddGroup M] : IsOpenMap S.mkQ :=
   QuotientAddGroup.isOpenMap_coe S.toAddSubgroup
 #align submodule.is_open_map_mkq Submodule.isOpenMap_mkQ
 
-instance topologicalAddGroup_quotient [TopologicalAddGroup M] : TopologicalAddGroup (M ⧸ S) :=
+instance topologicalAddGroup_quotient [TopologicalAddGroup M] : TopologicalAddGroup (M ⧸ S) := fast_instance%
   _root_.topologicalAddGroup_quotient S.toAddSubgroup
 #align submodule.topological_add_group_quotient Submodule.topologicalAddGroup_quotient
 

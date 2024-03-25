@@ -86,7 +86,7 @@ class CstarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_star_mul_self : ∀ {x : E}, ‖x⋆ * x‖ = ‖x‖ * ‖x‖
 #align cstar_ring CstarRing
 
-instance : CstarRing ℝ where norm_star_mul_self {x} := by simp only [star, id.def, norm_mul]
+instance : CstarRing ℝ where norm_star_mul_self {x} := fast_instance% by simp only [star, id.def, norm_mul]
 
 namespace CstarRing
 
@@ -161,7 +161,7 @@ variable [∀ i, NonUnitalNormedRing (R i)] [∀ i, StarRing (R i)]
 
 /-- This instance exists to short circuit type class resolution because of problems with
 inference involving Π-types. -/
-instance _root_.Pi.starRing' : StarRing (∀ i, R i) :=
+instance _root_.Pi.starRing' : StarRing (∀ i, R i) := fast_instance%
   inferInstance
 #align pi.star_ring' Pi.starRing'
 
@@ -188,7 +188,7 @@ instance _root_.Pi.cstarRing : CstarRing (∀ i, R i) where
           (fun x y h => by simpa only [sq] using mul_le_mul' h h) (by simp)).symm
 #align pi.cstar_ring Pi.cstarRing
 
-instance _root_.Pi.cstarRing' : CstarRing (ι → R₁) :=
+instance _root_.Pi.cstarRing' : CstarRing (ι → R₁) := fast_instance%
   Pi.cstarRing
 #align pi.cstar_ring' Pi.cstarRing'
 

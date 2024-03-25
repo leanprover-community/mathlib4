@@ -79,17 +79,17 @@ def Localizations (P : PrimeSpectrum.Top R) : Type u :=
 #align algebraic_geometry.structure_sheaf.localizations AlgebraicGeometry.StructureSheaf.Localizations
 
 -- Porting note: can't derive `CommRingCat`
-instance commRingLocalizations (P : PrimeSpectrum.Top R) : CommRing <| Localizations R P :=
+instance commRingLocalizations (P : PrimeSpectrum.Top R) : CommRing <| Localizations R P := fast_instance%
   inferInstanceAs <| CommRing <| Localization.AtPrime P.asIdeal
 
 -- Porting note: can't derive `LocalRing`
-instance localRingLocalizations (P : PrimeSpectrum.Top R) : LocalRing <| Localizations R P :=
+instance localRingLocalizations (P : PrimeSpectrum.Top R) : LocalRing <| Localizations R P := fast_instance%
   inferInstanceAs <| LocalRing <| Localization.AtPrime P.asIdeal
 
-instance (P : PrimeSpectrum.Top R) : Inhabited (Localizations R P) :=
+instance (P : PrimeSpectrum.Top R) : Inhabited (Localizations R P) := fast_instance%
   ⟨1⟩
 
-instance (U : Opens (PrimeSpectrum.Top R)) (x : U) : Algebra R (Localizations R x) :=
+instance (U : Opens (PrimeSpectrum.Top R)) (x : U) : Algebra R (Localizations R x) := fast_instance%
   inferInstanceAs <| Algebra R (Localization.AtPrime x.1.asIdeal)
 
 instance (U : Opens (PrimeSpectrum.Top R)) (x : U) :
@@ -599,10 +599,10 @@ def stalkIso (x : PrimeSpectrum.Top R) :
           stalkToFiberRingHom_toStalk]; rw [RingHom.comp_apply, RingHom.id_apply]
 #align algebraic_geometry.structure_sheaf.stalk_iso AlgebraicGeometry.StructureSheaf.stalkIso
 
-instance (x : PrimeSpectrum R) : IsIso (stalkToFiberRingHom R x) :=
+instance (x : PrimeSpectrum R) : IsIso (stalkToFiberRingHom R x) := fast_instance%
   IsIso.of_iso (stalkIso R x)
 
-instance (x : PrimeSpectrum R) : IsIso (localizationToStalk R x) :=
+instance (x : PrimeSpectrum R) : IsIso (localizationToStalk R x) := fast_instance%
   IsIso.of_iso (stalkIso R x).symm
 
 @[simp, reassoc]
@@ -931,7 +931,7 @@ def basicOpenIso (f : R) :
   (asIso (show CommRingCat.of (Localization.Away f) ⟶ _ from toBasicOpen R f)).symm
 #align algebraic_geometry.structure_sheaf.basic_open_iso AlgebraicGeometry.StructureSheaf.basicOpenIso
 
-instance stalkAlgebra (p : PrimeSpectrum R) : Algebra R ((structureSheaf R).presheaf.stalk p) :=
+instance stalkAlgebra (p : PrimeSpectrum R) : Algebra R ((structureSheaf R).presheaf.stalk p) := fast_instance%
   (toStalk R p).toAlgebra
 #align algebraic_geometry.structure_sheaf.stalk_algebra AlgebraicGeometry.StructureSheaf.stalkAlgebra
 
@@ -956,7 +956,7 @@ instance IsLocalization.to_stalk (p : PrimeSpectrum R) :
   exact toStalk_comp_stalkToFiberRingHom R p
 #align algebraic_geometry.structure_sheaf.is_localization.to_stalk AlgebraicGeometry.StructureSheaf.IsLocalization.to_stalk
 
-instance openAlgebra (U : (Opens (PrimeSpectrum R))ᵒᵖ) : Algebra R ((structureSheaf R).val.obj U) :=
+instance openAlgebra (U : (Opens (PrimeSpectrum R))ᵒᵖ) : Algebra R ((structureSheaf R).val.obj U) := fast_instance%
   (toOpen R (unop U)).toAlgebra
 #align algebraic_geometry.structure_sheaf.open_algebra AlgebraicGeometry.StructureSheaf.openAlgebra
 
@@ -978,7 +978,7 @@ instance IsLocalization.to_basicOpen (r : R) :
   exact (localization_toBasicOpen R r).symm
 #align algebraic_geometry.structure_sheaf.is_localization.to_basic_open AlgebraicGeometry.StructureSheaf.IsLocalization.to_basicOpen
 
-instance to_basicOpen_epi (r : R) : Epi (toOpen R (PrimeSpectrum.basicOpen r)) :=
+instance to_basicOpen_epi (r : R) : Epi (toOpen R (PrimeSpectrum.basicOpen r)) := fast_instance%
   ⟨fun {S} f g h => by
     refine' IsLocalization.ringHom_ext (R := R)
       (S := (structureSheaf R).val.obj (op <| PrimeSpectrum.basicOpen r)) _ _
@@ -999,7 +999,7 @@ theorem to_global_factors :
   rw [localization_toBasicOpen R, toOpen_res]
 #align algebraic_geometry.structure_sheaf.to_global_factors AlgebraicGeometry.StructureSheaf.to_global_factors
 
-instance isIso_to_global : IsIso (toOpen R ⊤) := by
+instance isIso_to_global : IsIso (toOpen R ⊤) := fast_instance% by
   let hom := CommRingCat.ofHom (algebraMap R (Localization.Away (1 : R)))
   haveI : IsIso hom :=
     IsIso.of_iso (IsLocalization.atOne R (Localization.Away (1 : R))).toRingEquiv.toCommRingCatIso

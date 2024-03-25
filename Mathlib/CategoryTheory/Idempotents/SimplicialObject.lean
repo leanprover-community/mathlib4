@@ -25,10 +25,10 @@ namespace Idempotents
 
 variable {C : Type*} [Category C] [IsIdempotentComplete C]
 
-instance : IsIdempotentComplete (SimplicialObject C) :=
+instance : IsIdempotentComplete (SimplicialObject C) := fast_instance%
   Idempotents.functor_category_isIdempotentComplete _ _
 
-instance : IsIdempotentComplete (CosimplicialObject C) :=
+instance : IsIdempotentComplete (CosimplicialObject C) := fast_instance%
   Idempotents.functor_category_isIdempotentComplete _ _
 
 end Idempotents

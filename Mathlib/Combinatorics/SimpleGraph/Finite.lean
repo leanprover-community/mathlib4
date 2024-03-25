@@ -247,7 +247,7 @@ theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     simp [card_union_of_disjoint (Set.disjoint_toFinset.mpr (compl_neighborSet_disjoint G v))]
 #align simple_graph.degree_compl SimpleGraph.degree_compl
 
-instance incidenceSetFintype [DecidableEq V] : Fintype (G.incidenceSet v) :=
+instance incidenceSetFintype [DecidableEq V] : Fintype (G.incidenceSet v) := fast_instance%
   Fintype.ofEquiv (G.neighborSet v) (G.incidenceSetEquivNeighborSet v).symm
 #align simple_graph.incidence_set_fintype SimpleGraph.incidenceSetFintype
 
@@ -318,7 +318,7 @@ section Finite
 
 variable [Fintype V]
 
-instance neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSet v) :=
+instance neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSet v) := fast_instance%
   @Subtype.fintype _ _
     (by
       simp_rw [mem_neighborSet]

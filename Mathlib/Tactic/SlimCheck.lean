@@ -232,10 +232,10 @@ set_option trace.Meta.synthInstance true
 
 -- /-- format an `instance_tree` -/
 -- meta def instance_tree.to_format : instance_tree → tactic format
--- | (instance_tree.node n p xs) := do
+-- | (instance_tree.node n p xs) := fast_instance% do
 --   xs ← format.join <$> (xs.mmap <| λ t, flip format.indent 2 <$> instance_tree.to_format t),
 --   ys ← pformat!"testable ({p})",
 --   pformat!"+ {n} :{format.indent ys 2}\n{xs}"
 
--- meta instance instance_tree.has_to_tactic_format : has_to_tactic_format instance_tree :=
+-- meta instance instance_tree.has_to_tactic_format : has_to_tactic_format instance_tree := fast_instance%
 -- ⟨ instance_tree.to_format ⟩

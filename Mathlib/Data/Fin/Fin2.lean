@@ -112,10 +112,10 @@ class IsLT (m n : ℕ) : Prop where
   h : m < n
 #align fin2.is_lt Fin2.IsLT
 
-instance IsLT.zero (n) : IsLT 0 (succ n) :=
+instance IsLT.zero (n) : IsLT 0 (succ n) := fast_instance%
   ⟨succ_pos _⟩
 
-instance IsLT.succ (m n) [l : IsLT m n] : IsLT (succ m) (succ n) :=
+instance IsLT.succ (m n) [l : IsLT m n] : IsLT (succ m) (succ n) := fast_instance%
   ⟨succ_lt_succ l.h⟩
 
 /-- Use type class inference to infer the boundedness proof, so that we can directly convert a
@@ -128,7 +128,7 @@ def ofNat' : ∀ {n} (m) [IsLT m n], Fin2 n
 
 @[inherit_doc] local prefix:arg "&" => ofNat'
 
-instance : Inhabited (Fin2 1) :=
+instance : Inhabited (Fin2 1) := fast_instance%
   ⟨fz⟩
 
 instance instFintype : ∀ n, Fintype (Fin2 n)

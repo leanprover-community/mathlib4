@@ -78,13 +78,13 @@ def FreeAbelianGroup : Type u :=
 
 -- FIXME: this is super broken, because the functions have type `Additive .. → ..`
 -- instead of `FreeAbelianGroup α → ..` and those are not defeq!
-instance FreeAbelianGroup.addCommGroup : AddCommGroup (FreeAbelianGroup α) :=
+instance FreeAbelianGroup.addCommGroup : AddCommGroup (FreeAbelianGroup α) := fast_instance%
   @Additive.addCommGroup _ <| Abelianization.commGroup _
 
-instance : Inhabited (FreeAbelianGroup α) :=
+instance : Inhabited (FreeAbelianGroup α) := fast_instance%
   ⟨0⟩
 
-instance [IsEmpty α] : Unique (FreeAbelianGroup α) := by unfold FreeAbelianGroup; infer_instance
+instance [IsEmpty α] : Unique (FreeAbelianGroup α) := fast_instance% by unfold FreeAbelianGroup; infer_instance
 
 variable {α}
 
@@ -319,7 +319,7 @@ theorem seq_sub (f : FreeAbelianGroup (α → β)) (x y : FreeAbelianGroup α) :
   (seqAddGroupHom f).map_sub x y
 #align free_abelian_group.seq_sub FreeAbelianGroup.seq_sub
 
-instance : LawfulMonad FreeAbelianGroup.{u} := LawfulMonad.mk'
+instance : LawfulMonad FreeAbelianGroup.{u} := fast_instance% LawfulMonad.mk'
   (id_map := fun x ↦ FreeAbelianGroup.induction_on' x (FreeAbelianGroup.map_zero id) (map_pure id)
     (fun x ih ↦ by rw [FreeAbelianGroup.map_neg, ih])
     fun x y ihx ihy ↦ by rw [FreeAbelianGroup.map_add, ihx, ihy])
@@ -402,7 +402,7 @@ section Mul
 
 variable [Mul α]
 
-instance mul : Mul (FreeAbelianGroup α) :=
+instance mul : Mul (FreeAbelianGroup α) := fast_instance%
   ⟨fun x ↦ lift fun x₂ ↦ lift (fun x₁ ↦ of (x₁ * x₂)) x⟩
 
 variable {α}
@@ -421,12 +421,12 @@ theorem of_mul (x y : α) : of (x * y) = of x * of y :=
   Eq.symm <| of_mul_of x y
 #align free_abelian_group.of_mul FreeAbelianGroup.of_mul
 
-instance distrib : Distrib (FreeAbelianGroup α) :=
+instance distrib : Distrib (FreeAbelianGroup α) := fast_instance%
   { FreeAbelianGroup.mul α, FreeAbelianGroup.addCommGroup α with
     left_distrib := fun x y z ↦ (lift _).map_add _ _
     right_distrib := fun x y z ↦ by simp only [(· * ·), Mul.mul, map_add, ← Pi.add_def, lift.add'] }
 
-instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) :=
+instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) := fast_instance%
   { FreeAbelianGroup.distrib,
     FreeAbelianGroup.addCommGroup _ with
     zero_mul := fun a ↦ by
@@ -436,10 +436,10 @@ instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) :=
 
 end Mul
 
-instance one [One α] : One (FreeAbelianGroup α) :=
+instance one [One α] : One (FreeAbelianGroup α) := fast_instance%
   ⟨of 1⟩
 
-instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) :=
+instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) := fast_instance%
   { FreeAbelianGroup.nonUnitalNonAssocRing with
     mul_assoc := fun x y z ↦ by
       refine' FreeAbelianGroup.induction_on z (by simp only [mul_zero])
@@ -460,7 +460,7 @@ section Monoid
 
 variable {R : Type*} [Monoid α] [Ring R]
 
-instance ring : Ring (FreeAbelianGroup α) :=
+instance ring : Ring (FreeAbelianGroup α) := fast_instance%
   { FreeAbelianGroup.nonUnitalRing _,
     FreeAbelianGroup.one _ with
     mul_one := fun x ↦ by
@@ -555,7 +555,7 @@ theorem of_one : (of 1 : FreeAbelianGroup α) = 1 :=
 
 end Monoid
 
-instance [CommMonoid α] : CommRing (FreeAbelianGroup α) :=
+instance [CommMonoid α] : CommRing (FreeAbelianGroup α) := fast_instance%
   { FreeAbelianGroup.ring α with
     mul_comm := fun x y ↦ by
       refine' FreeAbelianGroup.induction_on x (zero_mul y) _ _ _

@@ -136,7 +136,7 @@ def W (α : TypeVec n) : Type _ :=
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W MvPFunctor.W
 
-instance mvfunctorW : MvFunctor P.W := by delta MvPFunctor.W; infer_instance
+instance mvfunctorW : MvFunctor P.W := fast_instance% by delta MvPFunctor.W; infer_instance
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.mvfunctor_W MvPFunctor.mvfunctorW
 

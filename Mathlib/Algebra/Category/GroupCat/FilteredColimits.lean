@@ -111,7 +111,7 @@ theorem colimit_inv_mk_eq (x : Σ j, F.obj j) : (G.mk.{v, u} F x)⁻¹ = G.mk F 
 #align AddGroup.filtered_colimits.colimit_neg_mk_eq AddGroupCat.FilteredColimits.colimit_neg_mk_eq
 
 @[to_additive]
-noncomputable instance colimitGroup : Group (G.{v, u} F) :=
+noncomputable instance colimitGroup : Group (G.{v, u} F) := fast_instance%
   { colimitInv.{v, u} F, (G.{v, u} F).str with
     mul_left_inv := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
@@ -198,7 +198,7 @@ noncomputable abbrev G : GroupCat.{max v u} :=
 #align AddCommGroup.filtered_colimits.G AddCommGroupCat.FilteredColimits.G
 
 @[to_additive]
-noncomputable instance colimitCommGroup : CommGroup.{max v u} (G.{v, u} F) :=
+noncomputable instance colimitCommGroup : CommGroup.{max v u} (G.{v, u} F) := fast_instance%
   { (G F).str,
     CommMonCat.FilteredColimits.colimitCommMonoid
       (F ⋙ forget₂ CommGroupCat CommMonCat.{max v u}) with }

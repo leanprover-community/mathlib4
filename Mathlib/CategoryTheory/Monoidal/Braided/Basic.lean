@@ -385,7 +385,7 @@ def id : LaxBraidedFunctor C C :=
   { MonoidalFunctor.id C with }
 #align category_theory.lax_braided_functor.id CategoryTheory.LaxBraidedFunctor.id
 
-instance : Inhabited (LaxBraidedFunctor C C) :=
+instance : Inhabited (LaxBraidedFunctor C C) := fast_instance%
   ⟨id C⟩
 
 variable {C D E}
@@ -402,7 +402,7 @@ def comp (F : LaxBraidedFunctor C D) (G : LaxBraidedFunctor D E) : LaxBraidedFun
       simp only [Category.assoc] }
 #align category_theory.lax_braided_functor.comp CategoryTheory.LaxBraidedFunctor.comp
 
-instance categoryLaxBraidedFunctor : Category (LaxBraidedFunctor C D) :=
+instance categoryLaxBraidedFunctor : Category (LaxBraidedFunctor C D) := fast_instance%
   InducedCategory.category LaxBraidedFunctor.toLaxMonoidalFunctor
 #align category_theory.lax_braided_functor.category_lax_braided_functor CategoryTheory.LaxBraidedFunctor.categoryLaxBraidedFunctor
 
@@ -465,7 +465,7 @@ def id : BraidedFunctor C C :=
   { MonoidalFunctor.id C with }
 #align category_theory.braided_functor.id CategoryTheory.BraidedFunctor.id
 
-instance : Inhabited (BraidedFunctor C C) :=
+instance : Inhabited (BraidedFunctor C C) := fast_instance%
   ⟨id C⟩
 
 variable {C D E}
@@ -476,7 +476,7 @@ def comp (F : BraidedFunctor C D) (G : BraidedFunctor D E) : BraidedFunctor C E 
   { MonoidalFunctor.comp F.toMonoidalFunctor G.toMonoidalFunctor with }
 #align category_theory.braided_functor.comp CategoryTheory.BraidedFunctor.comp
 
-instance categoryBraidedFunctor : Category (BraidedFunctor C D) :=
+instance categoryBraidedFunctor : Category (BraidedFunctor C D) := fast_instance%
   InducedCategory.category BraidedFunctor.toMonoidalFunctor
 #align category_theory.braided_functor.category_braided_functor CategoryTheory.BraidedFunctor.categoryBraidedFunctor
 

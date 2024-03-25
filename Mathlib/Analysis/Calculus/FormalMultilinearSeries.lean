@@ -51,10 +51,10 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Ring 𝕜] [
 #align formal_multilinear_series FormalMultilinearSeries
 
 -- Porting note: was `deriving`
-instance : AddCommGroup (FormalMultilinearSeries 𝕜 E F) :=
+instance : AddCommGroup (FormalMultilinearSeries 𝕜 E F) := fast_instance%
   inferInstanceAs <| AddCommGroup <| ∀ n : ℕ, E[×n]→L[𝕜] F
 
-instance : Inhabited (FormalMultilinearSeries 𝕜 E F) :=
+instance : Inhabited (FormalMultilinearSeries 𝕜 E F) := fast_instance%
   ⟨0⟩
 
 section Module

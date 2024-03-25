@@ -245,7 +245,7 @@ theorem SameCycle.exists_pow_eq'' [Finite α] (h : SameCycle f x y) :
     · exact ⟨i.succ, i.zero_lt_succ, hi.le, by rfl⟩
 #align equiv.perm.same_cycle.exists_pow_eq'' Equiv.Perm.SameCycle.exists_pow_eq''
 
-instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f) := fun x y =>
+instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f) := fast_instance% fun x y =>
   decidable_of_iff (∃ n ∈ List.range (Fintype.card (Perm α)), (f ^ n) x = y)
     ⟨fun ⟨n, _, hn⟩ => ⟨n, hn⟩, fun ⟨i, hi⟩ => ⟨(i % orderOf f).natAbs,
       List.mem_range.2 (Int.ofNat_lt.1 <| by

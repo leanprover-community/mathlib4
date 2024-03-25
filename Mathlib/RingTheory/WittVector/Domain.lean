@@ -107,7 +107,7 @@ This argument is adapted from
 -/
 
 
-instance [CharP R p] [NoZeroDivisors R] : NoZeroDivisors (𝕎 R) :=
+instance [CharP R p] [NoZeroDivisors R] : NoZeroDivisors (𝕎 R) := fast_instance%
   ⟨fun {x y} => by
     contrapose!
     rintro ⟨ha, hb⟩
@@ -118,7 +118,7 @@ instance [CharP R p] [NoZeroDivisors R] : NoZeroDivisors (𝕎 R) :=
     rw [iterate_verschiebung_mul_coeff, zero_coeff]
     exact mul_ne_zero (pow_ne_zero _ hwa0) (pow_ne_zero _ hwb0)⟩
 
-instance instIsDomain [CharP R p] [IsDomain R] : IsDomain (𝕎 R) :=
+instance instIsDomain [CharP R p] [IsDomain R] : IsDomain (𝕎 R) := fast_instance%
   NoZeroDivisors.to_isDomain _
 
 end WittVector

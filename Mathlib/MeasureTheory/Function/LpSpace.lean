@@ -154,7 +154,7 @@ end Memℒp
 
 namespace Lp
 
-instance instCoeFun : CoeFun (Lp E p μ) (fun _ => α → E) :=
+instance instCoeFun : CoeFun (Lp E p μ) (fun _ => α → E) := fast_instance%
   ⟨fun f => ((f : α →ₘ[μ] E) : α → E)⟩
 #align measure_theory.Lp.has_coe_to_fun MeasureTheory.Lp.instCoeFun
 
@@ -244,18 +244,18 @@ theorem const_mem_Lp (α) {_ : MeasurableSpace α} (μ : Measure α) (c : E) [Is
   (memℒp_const c).snorm_mk_lt_top
 #align measure_theory.Lp.mem_Lp_const MeasureTheory.Lp.const_mem_Lp
 
-instance instNorm : Norm (Lp E p μ) where norm f := ENNReal.toReal (snorm f p μ)
+instance instNorm : Norm (Lp E p μ) where norm f := fast_instance% ENNReal.toReal (snorm f p μ)
 #align measure_theory.Lp.has_norm MeasureTheory.Lp.instNorm
 
 -- note: we need this to be defeq to the instance from `SeminormedAddGroup.toNNNorm`, so
 -- can't use `ENNReal.toNNReal (snorm f p μ)`
-instance instNNNorm : NNNorm (Lp E p μ) where nnnorm f := ⟨‖f‖, ENNReal.toReal_nonneg⟩
+instance instNNNorm : NNNorm (Lp E p μ) where nnnorm f := fast_instance% ⟨‖f‖, ENNReal.toReal_nonneg⟩
 #align measure_theory.Lp.has_nnnorm MeasureTheory.Lp.instNNNorm
 
-instance instDist : Dist (Lp E p μ) where dist f g := ‖f - g‖
+instance instDist : Dist (Lp E p μ) where dist f g := fast_instance% ‖f - g‖
 #align measure_theory.Lp.has_dist MeasureTheory.Lp.instDist
 
-instance instEDist : EDist (Lp E p μ) where edist f g := snorm (⇑f - ⇑g) p μ
+instance instEDist : EDist (Lp E p μ) where edist f g := fast_instance% snorm (⇑f - ⇑g) p μ
 #align measure_theory.Lp.has_edist MeasureTheory.Lp.instEDist
 
 theorem norm_def (f : Lp E p μ) : ‖f‖ = ENNReal.toReal (snorm f p μ) :=
@@ -441,7 +441,7 @@ theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC :
   rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
 #align measure_theory.Lp.norm_le_of_ae_bound MeasureTheory.Lp.norm_le_of_ae_bound
 
-instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
+instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) := fast_instance%
   { AddGroupNorm.toNormedAddCommGroup
       { toFun := (norm : Lp E p μ → ℝ)
         map_zero' := norm_zero
@@ -491,7 +491,7 @@ theorem coe_LpSubmodule : (LpSubmodule E p μ 𝕜).toAddSubgroup = Lp E p μ :=
   rfl
 #align measure_theory.Lp.coe_Lp_submodule MeasureTheory.Lp.coe_LpSubmodule
 
-instance instModule : Module 𝕜 (Lp E p μ) :=
+instance instModule : Module 𝕜 (Lp E p μ) := fast_instance%
   { (LpSubmodule E p μ 𝕜).module with }
 #align measure_theory.Lp.module MeasureTheory.Lp.instModule
 
@@ -511,7 +511,7 @@ instance instSMulCommClass [SMulCommClass 𝕜 𝕜' E] : SMulCommClass 𝕜 �
 instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E] : IsScalarTower 𝕜 𝕜' (Lp E p μ) where
   smul_assoc k k' f := Subtype.ext <| smul_assoc k k' (f : α →ₘ[μ] E)
 
-instance instBoundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp E p μ) :=
+instance instBoundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp E p μ) := fast_instance%
   -- TODO: add `BoundedSMul.of_nnnorm_smul_le`
   BoundedSMul.of_norm_smul_le fun r f => by
     suffices (‖r • f‖₊ : ℝ≥0∞) ≤ ‖r‖₊ * ‖f‖₊ from mod_cast this
@@ -1695,7 +1695,7 @@ theorem cauchy_complete_ℒp [CompleteSpace E] (hp : 1 ≤ p) {f : ℕ → α �
 
 /-! ### `Lp` is complete for `1 ≤ p` -/
 
-instance instCompleteSpace [CompleteSpace E] [hp : Fact (1 ≤ p)] : CompleteSpace (Lp E p μ) :=
+instance instCompleteSpace [CompleteSpace E] [hp : Fact (1 ≤ p)] : CompleteSpace (Lp E p μ) := fast_instance%
   completeSpace_lp_of_cauchy_complete_ℒp fun _f hf _B hB h_cau =>
     cauchy_complete_ℒp hp.elim hf hB.ne h_cau
 #align measure_theory.Lp.complete_space MeasureTheory.Lp.instCompleteSpace

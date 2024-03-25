@@ -43,7 +43,7 @@ theorem sqrt_nonneg (q : ℚ) : 0 ≤ Rat.sqrt q :=
 #align rat.sqrt_nonneg Rat.sqrt_nonneg
 
 /-- `IsSquare` can be decided on `ℚ` by checking against the square root. -/
-instance : DecidablePred (IsSquare : ℚ → Prop) :=
+instance : DecidablePred (IsSquare : ℚ → Prop) := fast_instance%
   fun m => decidable_of_iff' (sqrt m * sqrt m = m) <| by
     simp_rw [← exists_mul_self m, IsSquare, eq_comm]
 

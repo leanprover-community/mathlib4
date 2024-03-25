@@ -206,7 +206,7 @@ def refl (f : C(X, Y)) : Homotopy f f where
   map_one_left _ := rfl
 #align continuous_map.homotopy.refl ContinuousMap.Homotopy.refl
 
-instance : Inhabited (Homotopy (ContinuousMap.id X) (ContinuousMap.id X)) :=
+instance : Inhabited (Homotopy (ContinuousMap.id X) (ContinuousMap.id X)) := fast_instance%
   ⟨Homotopy.refl _⟩
 
 /-- Given a `Homotopy f₀ f₁`, we can define a `Homotopy f₁ f₀` by reversing the homotopy.
@@ -485,7 +485,7 @@ def refl (f : C(X, Y)) (hf : P f) : HomotopyWith f f P where
   prop' := fun _ => hf
 #align continuous_map.homotopy_with.refl ContinuousMap.HomotopyWith.refl
 
-instance : Inhabited (HomotopyWith (ContinuousMap.id X) (ContinuousMap.id X) fun _ => True) :=
+instance : Inhabited (HomotopyWith (ContinuousMap.id X) (ContinuousMap.id X) fun _ => True) := fast_instance%
   ⟨HomotopyWith.refl _ trivial⟩
 
 /--

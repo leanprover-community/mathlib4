@@ -148,12 +148,12 @@ lemma snd_dirac_unit_compProd_const (μ : Measure β) [IsFiniteMeasure μ] :
   rw [dirac_unit_compProd_const, snd, map_map measurable_snd measurable_prod_mk_left]
   simp
 
-instance : SFinite (μ ⊗ₘ κ) := by rw [compProd]; infer_instance
+instance : SFinite (μ ⊗ₘ κ) := fast_instance% by rw [compProd]; infer_instance
 
-instance [IsFiniteMeasure μ] [IsFiniteKernel κ] : IsFiniteMeasure (μ ⊗ₘ κ) := by
+instance [IsFiniteMeasure μ] [IsFiniteKernel κ] : IsFiniteMeasure (μ ⊗ₘ κ) := fast_instance% by
   rw [compProd]; infer_instance
 
-instance [IsProbabilityMeasure μ] [IsMarkovKernel κ] : IsProbabilityMeasure (μ ⊗ₘ κ) := by
+instance [IsProbabilityMeasure μ] [IsMarkovKernel κ] : IsProbabilityMeasure (μ ⊗ₘ κ) := fast_instance% by
   rw [compProd]; infer_instance
 
 end MeasureTheory.Measure

@@ -57,16 +57,16 @@ def Gal :=
 
 namespace Gal
 
-instance instGroup : Group (Gal p) :=
+instance instGroup : Group (Gal p) := fast_instance%
   inferInstanceAs (Group (p.SplittingField ≃ₐ[F] p.SplittingField))
-instance instFintype : Fintype (Gal p) :=
+instance instFintype : Fintype (Gal p) := fast_instance%
   inferInstanceAs (Fintype (p.SplittingField ≃ₐ[F] p.SplittingField))
 
-instance : CoeFun p.Gal fun _ => p.SplittingField → p.SplittingField :=
+instance : CoeFun p.Gal fun _ => p.SplittingField → p.SplittingField := fast_instance%
   -- Porting note: was AlgEquiv.hasCoeToFun
   inferInstanceAs (CoeFun (p.SplittingField ≃ₐ[F] p.SplittingField) _)
 
-instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
+instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField := fast_instance%
   AlgEquiv.applyMulSemiringAction
 #align polynomial.gal.apply_mul_semiring_action Polynomial.Gal.applyMulSemiringAction
 
@@ -90,41 +90,41 @@ def uniqueGalOfSplits (h : p.Splits (RingHom.id F)) : Unique p.Gal where
       rw [AlgEquiv.commutes, AlgEquiv.commutes]
 #align polynomial.gal.unique_gal_of_splits Polynomial.Gal.uniqueGalOfSplits
 
-instance [h : Fact (p.Splits (RingHom.id F))] : Unique p.Gal :=
+instance [h : Fact (p.Splits (RingHom.id F))] : Unique p.Gal := fast_instance%
   uniqueGalOfSplits _ h.1
 
-instance uniqueGalZero : Unique (0 : F[X]).Gal :=
+instance uniqueGalZero : Unique (0 : F[X]).Gal := fast_instance%
   uniqueGalOfSplits _ (splits_zero _)
 #align polynomial.gal.unique_gal_zero Polynomial.Gal.uniqueGalZero
 
-instance uniqueGalOne : Unique (1 : F[X]).Gal :=
+instance uniqueGalOne : Unique (1 : F[X]).Gal := fast_instance%
   uniqueGalOfSplits _ (splits_one _)
 #align polynomial.gal.unique_gal_one Polynomial.Gal.uniqueGalOne
 
-instance uniqueGalC (x : F) : Unique (C x).Gal :=
+instance uniqueGalC (x : F) : Unique (C x).Gal := fast_instance%
   uniqueGalOfSplits _ (splits_C _ _)
 set_option linter.uppercaseLean3 false in
 #align polynomial.gal.unique_gal_C Polynomial.Gal.uniqueGalC
 
-instance uniqueGalX : Unique (X : F[X]).Gal :=
+instance uniqueGalX : Unique (X : F[X]).Gal := fast_instance%
   uniqueGalOfSplits _ (splits_X _)
 set_option linter.uppercaseLean3 false in
 #align polynomial.gal.unique_gal_X Polynomial.Gal.uniqueGalX
 
-instance uniqueGalXSubC (x : F) : Unique (X - C x).Gal :=
+instance uniqueGalXSubC (x : F) : Unique (X - C x).Gal := fast_instance%
   uniqueGalOfSplits _ (splits_X_sub_C _)
 set_option linter.uppercaseLean3 false in
 #align polynomial.gal.unique_gal_X_sub_C Polynomial.Gal.uniqueGalXSubC
 
-instance uniqueGalXPow (n : ℕ) : Unique (X ^ n : F[X]).Gal :=
+instance uniqueGalXPow (n : ℕ) : Unique (X ^ n : F[X]).Gal := fast_instance%
   uniqueGalOfSplits _ (splits_X_pow _ _)
 set_option linter.uppercaseLean3 false in
 #align polynomial.gal.unique_gal_X_pow Polynomial.Gal.uniqueGalXPow
 
-instance [h : Fact (p.Splits (algebraMap F E))] : Algebra p.SplittingField E :=
+instance [h : Fact (p.Splits (algebraMap F E))] : Algebra p.SplittingField E := fast_instance%
   (IsSplittingField.lift p.SplittingField p h.1).toRingHom.toAlgebra
 
-instance [h : Fact (p.Splits (algebraMap F E))] : IsScalarTower F p.SplittingField E :=
+instance [h : Fact (p.Splits (algebraMap F E))] : IsScalarTower F p.SplittingField E := fast_instance%
   IsScalarTower.of_algebraMap_eq fun x =>
     ((IsSplittingField.lift p.SplittingField p h.1).commutes x).symm
 

@@ -343,19 +343,19 @@ section Algebra
 
 /-! ### The coordinate ring as an `R[X]`-algebra -/
 
-noncomputable instance instAlgebraCoordinateRing : Algebra R[X] W.CoordinateRing :=
+noncomputable instance instAlgebraCoordinateRing : Algebra R[X] W.CoordinateRing := fast_instance%
   Quotient.algebra R[X]
 #align weierstrass_curve.coordinate_ring.algebra WeierstrassCurve.Affine.CoordinateRing.instAlgebraCoordinateRing
 
-noncomputable instance instAlgebraCoordinateRing' : Algebra R W.CoordinateRing :=
+noncomputable instance instAlgebraCoordinateRing' : Algebra R W.CoordinateRing := fast_instance%
   Quotient.algebra R
 #align weierstrass_curve.coordinate_ring.algebra' WeierstrassCurve.Affine.CoordinateRing.instAlgebraCoordinateRing'
 
-instance instIsScalarTowerCoordinateRing : IsScalarTower R R[X] W.CoordinateRing :=
+instance instIsScalarTowerCoordinateRing : IsScalarTower R R[X] W.CoordinateRing := fast_instance%
   Quotient.isScalarTower R R[X] _
 #align weierstrass_curve.coordinate_ring.is_scalar_tower WeierstrassCurve.Affine.CoordinateRing.instIsScalarTowerCoordinateRing
 
-instance instSubsingletonCoordinateRing [Subsingleton R] : Subsingleton W.CoordinateRing :=
+instance instSubsingletonCoordinateRing [Subsingleton R] : Subsingleton W.CoordinateRing := fast_instance%
   Module.subsingleton R[X] _
 #align weierstrass_curve.coordinate_ring.subsingleton WeierstrassCurve.Affine.CoordinateRing.instSubsingletonCoordinateRing
 

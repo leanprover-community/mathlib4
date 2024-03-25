@@ -44,7 +44,7 @@ namespace SingleObj
 
 variable (α β γ : Type*)
 
-instance : Quiver (SingleObj α) :=
+instance : Quiver (SingleObj α) := fast_instance%
   ⟨fun _ _ => α⟩
 
 /-- The single object in `SingleObj α`. -/
@@ -52,7 +52,7 @@ def star : SingleObj α :=
   Unit.unit
 #align quiver.single_obj.star Quiver.SingleObj.star
 
-instance : Inhabited (SingleObj α) :=
+instance : Inhabited (SingleObj α) := fast_instance%
   ⟨star α⟩
 
 variable {α β γ}

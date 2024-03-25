@@ -300,7 +300,7 @@ protected irreducible_def zero : RatFunc K :=
   ⟨0⟩
 #align ratfunc.zero RatFunc.zero
 
-instance : Zero (RatFunc K) :=
+instance : Zero (RatFunc K) := fast_instance%
   ⟨RatFunc.zero⟩
 
 -- Porting note: added `OfNat.ofNat`.  using `simp?` produces `simp only [zero_def]`
@@ -314,7 +314,7 @@ protected irreducible_def add : RatFunc K → RatFunc K → RatFunc K
   | ⟨p⟩, ⟨q⟩ => ⟨p + q⟩
 #align ratfunc.add RatFunc.add
 
-instance : Add (RatFunc K) :=
+instance : Add (RatFunc K) := fast_instance%
   ⟨RatFunc.add⟩
 
 -- Porting note: added `HAdd.hAdd`.  using `simp?` produces `simp only [add_def]`
@@ -329,7 +329,7 @@ protected irreducible_def sub : RatFunc K → RatFunc K → RatFunc K
   | ⟨p⟩, ⟨q⟩ => ⟨p - q⟩
 #align ratfunc.sub RatFunc.sub
 
-instance : Sub (RatFunc K) :=
+instance : Sub (RatFunc K) := fast_instance%
   ⟨RatFunc.sub⟩
 
 -- Porting note: added `HSub.hSub`.  using `simp?` produces `simp only [sub_def]`
@@ -344,7 +344,7 @@ protected irreducible_def neg : RatFunc K → RatFunc K
   | ⟨p⟩ => ⟨-p⟩
 #align ratfunc.neg RatFunc.neg
 
-instance : Neg (RatFunc K) :=
+instance : Neg (RatFunc K) := fast_instance%
   ⟨RatFunc.neg⟩
 
 theorem ofFractionRing_neg (p : FractionRing K[X]) :
@@ -356,7 +356,7 @@ protected irreducible_def one : RatFunc K :=
   ⟨1⟩
 #align ratfunc.one RatFunc.one
 
-instance : One (RatFunc K) :=
+instance : One (RatFunc K) := fast_instance%
   ⟨RatFunc.one⟩
 
 -- Porting note: added `OfNat.ofNat`.  using `simp?` produces `simp only [one_def]`
@@ -370,7 +370,7 @@ protected irreducible_def mul : RatFunc K → RatFunc K → RatFunc K
   | ⟨p⟩, ⟨q⟩ => ⟨p * q⟩
 #align ratfunc.mul RatFunc.mul
 
-instance : Mul (RatFunc K) :=
+instance : Mul (RatFunc K) := fast_instance%
   ⟨RatFunc.mul⟩
 
 -- Porting note: added `HMul.hMul`.  using `simp?` produces `simp only [mul_def]`
@@ -389,7 +389,7 @@ protected irreducible_def div : RatFunc K → RatFunc K → RatFunc K
   | ⟨p⟩, ⟨q⟩ => ⟨p / q⟩
 #align ratfunc.div RatFunc.div
 
-instance : Div (RatFunc K) :=
+instance : Div (RatFunc K) := fast_instance%
   ⟨RatFunc.div⟩
 
 -- Porting note: added `HDiv.hDiv`.  using `simp?` produces `simp only [div_def]`
@@ -404,7 +404,7 @@ protected irreducible_def inv : RatFunc K → RatFunc K
   | ⟨p⟩ => ⟨p⁻¹⟩
 #align ratfunc.inv RatFunc.inv
 
-instance : Inv (RatFunc K) :=
+instance : Inv (RatFunc K) := fast_instance%
   ⟨RatFunc.inv⟩
 
 theorem ofFractionRing_inv (p : FractionRing K[X]) :
@@ -434,7 +434,7 @@ protected irreducible_def smul [SMul R (FractionRing K[X])] : R → RatFunc K �
 
 -- cannot reproduce
 --@[nolint fails_quickly]  -- Porting note: `linter 'fails_quickly' not found`
-instance [SMul R (FractionRing K[X])] : SMul R (RatFunc K) :=
+instance [SMul R (FractionRing K[X])] : SMul R (RatFunc K) := fast_instance%
   ⟨RatFunc.smul⟩
 
 -- Porting note: added `SMul.hSMul`.  using `simp?` produces `simp only [smul_def]`
@@ -472,7 +472,7 @@ theorem mk_smul (c : R) (p q : K[X]) : RatFunc.mk (c • p) q = c • RatFunc.mk
       ofFractionRing_smul]
 #align ratfunc.mk_smul RatFunc.mk_smul
 
-instance : IsScalarTower R K[X] (RatFunc K) :=
+instance : IsScalarTower R K[X] (RatFunc K) := fast_instance%
   ⟨fun c p q => q.induction_on' fun q r _ => by rw [← mk_smul, smul_assoc, mk_smul, mk_smul]⟩
 
 end IsDomain
@@ -481,13 +481,13 @@ end SMul
 
 variable (K)
 
-instance [Subsingleton K] : Subsingleton (RatFunc K) :=
+instance [Subsingleton K] : Subsingleton (RatFunc K) := fast_instance%
   toFractionRing_injective.subsingleton
 
-instance : Inhabited (RatFunc K) :=
+instance : Inhabited (RatFunc K) := fast_instance%
   ⟨0⟩
 
-instance instNontrivial [Nontrivial K] : Nontrivial (RatFunc K) :=
+instance instNontrivial [Nontrivial K] : Nontrivial (RatFunc K) := fast_instance%
   ofFractionRing_injective.nontrivial
 #align ratfunc.nontrivial RatFunc.instNontrivial
 
@@ -576,7 +576,7 @@ def instAddCommGroup : AddCommGroup (RatFunc K) where
   zsmul_succ' _ := by smul_tac
   zsmul_neg' _ := by smul_tac
 
-instance instCommRing : CommRing (RatFunc K) :=
+instance instCommRing : CommRing (RatFunc K) := fast_instance%
   { instCommMonoid K, instAddCommGroup K with
     zero := 0
     sub := Sub.sub
@@ -780,7 +780,7 @@ end LiftHom
 
 variable (K)
 
-instance instField [IsDomain K] : Field (RatFunc K) :=
+instance instField [IsDomain K] : Field (RatFunc K) := fast_instance%
   { RatFunc.instCommRing K, RatFunc.instNontrivial K with
     inv := Inv.inv
     -- Porting note: used to be `by frac_tac`
@@ -1671,7 +1671,7 @@ This is the implementation of `coeToLaurentSeries`.
 def coeToLaurentSeries_fun {F : Type u} [Field F] : RatFunc F → LaurentSeries F :=
   coeAlgHom F
 
-instance coeToLaurentSeries : Coe (RatFunc F) (LaurentSeries F) :=
+instance coeToLaurentSeries : Coe (RatFunc F) (LaurentSeries F) := fast_instance%
   ⟨coeToLaurentSeries_fun⟩
 #align ratfunc.coe_to_laurent_series RatFunc.coeToLaurentSeries
 
@@ -1761,7 +1761,7 @@ theorem coe_X : ((X : RatFunc F) : LaurentSeries F) = single 1 1 := by
 set_option linter.uppercaseLean3 false in
 #align ratfunc.coe_X RatFunc.coe_X
 
-instance : Algebra (RatFunc F) (LaurentSeries F) :=
+instance : Algebra (RatFunc F) (LaurentSeries F) := fast_instance%
   RingHom.toAlgebra (coeAlgHom F).toRingHom
 
 theorem algebraMap_apply_div :
@@ -1773,7 +1773,7 @@ theorem algebraMap_apply_div :
       Algebra.ofId_apply]
 #align ratfunc.algebra_map_apply_div RatFunc.algebraMap_apply_div
 
-instance : IsScalarTower F[X] (RatFunc F) (LaurentSeries F) :=
+instance : IsScalarTower F[X] (RatFunc F) (LaurentSeries F) := fast_instance%
   ⟨fun x y z => by
     ext
     simp⟩

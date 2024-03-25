@@ -104,7 +104,7 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
 #align has_fderiv_at_polar_coord_symm hasFDerivAt_polarCoord_symm
 
 -- Porting note: this instance is needed but not automatically synthesised
-instance : Measure.IsAddHaarMeasure volume (G := ℝ × ℝ) :=
+instance : Measure.IsAddHaarMeasure volume (G := fast_instance% ℝ × ℝ) :=
   Measure.prod.instIsAddHaarMeasure _ _
 
 theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by

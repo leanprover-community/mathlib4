@@ -64,22 +64,22 @@ when applicable:
 * Instances transferred elementwise to products, like `Prod.Monoid`.
   See `Mathlib.Algebra.Group.Prod` for more examples.
   ```
-  instance Prod.Z [Z M] [Z N] : Z (M × N) := ...
+  instance Prod.Z [Z M] [Z N] : Z (M × N) := fast_instance% ...
   ```
 * Instances transferred elementwise to pi types, like `Pi.Monoid`.
   See `Mathlib.Algebra.Group.Pi` for more examples.
   ```
-  instance Pi.Z [∀ i, Z <| f i] : Z (Π i : I, f i) := ...
+  instance Pi.Z [∀ i, Z <| f i] : Z (Π i : I, f i) := fast_instance% ...
   ```
 * Instances transferred to `MulOpposite M`, like `MulOpposite.Monoid`.
   See `Mathlib.Algebra.Opposites` for more examples.
   ```
-  instance MulOpposite.Z [Z M] : Z (MulOpposite M) := ...
+  instance MulOpposite.Z [Z M] : Z (MulOpposite M) := fast_instance% ...
   ```
 * Instances transferred to `ULift M`, like `ULift.Monoid`.
   See `Mathlib.Algebra.Group.ULift` for more examples.
   ```
-  instance ULift.Z [Z M] : Z (ULift M) := ...
+  instance ULift.Z [Z M] : Z (ULift M) := fast_instance% ...
   ```
 * Definitions for transferring the proof fields of instances along
   injective or surjective functions that agree on the data fields,
@@ -98,12 +98,12 @@ when applicable:
 * Instances transferred elementwise to `Finsupp`s, like `Finsupp.semigroup`.
   See `Mathlib.Data.Finsupp.Pointwise` for more examples.
   ```
-  instance FinSupp.Z [Z β] : Z (α →₀ β) := ...
+  instance FinSupp.Z [Z β] : Z (α →₀ β) := fast_instance% ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
   See `Mathlib.Algebra.Pointwise` for more examples.
   ```
-  instance Set.Z [Z α] : Z (Set α) := ...
+  instance Set.Z [Z α] : Z (Set α) := fast_instance% ...
   ```
 * Definitions for transferring the entire structure across an equivalence, like `Equiv.monoid`.
   See `Mathlib.Data.Equiv.TransferInstance` for more examples. See also the `transport` tactic.
@@ -130,7 +130,7 @@ you should provide instances transferring
 `Z α` to `Z (SubY α)`, like `Submonoid.toCommMonoid`.
 Typically this is done using the `Function.Injective.Z` definition mentioned above.
 ```
-instance SubY.toZ [Z α] : Z (SubY α) :=
+instance SubY.toZ [Z α] : Z (SubY α) := fast_instance%
   coe_injective.Z coe ...
 ```
 

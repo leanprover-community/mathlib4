@@ -49,7 +49,7 @@ instance instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpace X] :
     TopologicalSpace (Subtype p) :=
   induced (↑) t
 
-instance {r : X → X → Prop} [t : TopologicalSpace X] : TopologicalSpace (Quot r) :=
+instance {r : X → X → Prop} [t : TopologicalSpace X] : TopologicalSpace (Quot r) := fast_instance%
   coinduced (Quot.mk r) t
 
 instance instTopologicalSpaceQuotient {s : Setoid X} [t : TopologicalSpace X] :
@@ -73,7 +73,7 @@ instance Pi.topologicalSpace {ι : Type*} {Y : ι → Type v} [t₂ : (i : ι) �
   ⨅ i, induced (fun f => f i) (t₂ i)
 #align Pi.topological_space Pi.topologicalSpace
 
-instance ULift.topologicalSpace [t : TopologicalSpace X] : TopologicalSpace (ULift.{v, u} X) :=
+instance ULift.topologicalSpace [t : TopologicalSpace X] : TopologicalSpace (ULift.{v, u} X) := fast_instance%
   t.induced ULift.down
 #align ulift.topological_space ULift.topologicalSpace
 
@@ -89,11 +89,11 @@ variable [TopologicalSpace X]
 
 open Additive Multiplicative
 
-instance : TopologicalSpace (Additive X) := ‹TopologicalSpace X›
-instance : TopologicalSpace (Multiplicative X) := ‹TopologicalSpace X›
+instance : TopologicalSpace (Additive X) := fast_instance% ‹TopologicalSpace X›
+instance : TopologicalSpace (Multiplicative X) := fast_instance% ‹TopologicalSpace X›
 
-instance [DiscreteTopology X] : DiscreteTopology (Additive X) := ‹DiscreteTopology X›
-instance [DiscreteTopology X] : DiscreteTopology (Multiplicative X) := ‹DiscreteTopology X›
+instance [DiscreteTopology X] : DiscreteTopology (Additive X) := fast_instance% ‹DiscreteTopology X›
+instance [DiscreteTopology X] : DiscreteTopology (Multiplicative X) := fast_instance% ‹DiscreteTopology X›
 
 theorem continuous_ofMul : Continuous (ofMul : X → Additive X) := continuous_id
 #align continuous_of_mul continuous_ofMul
@@ -158,8 +158,8 @@ variable [TopologicalSpace X]
 
 open OrderDual
 
-instance : TopologicalSpace Xᵒᵈ := ‹TopologicalSpace X›
-instance [DiscreteTopology X] : DiscreteTopology Xᵒᵈ := ‹DiscreteTopology X›
+instance : TopologicalSpace Xᵒᵈ := fast_instance% ‹TopologicalSpace X›
+instance [DiscreteTopology X] : DiscreteTopology Xᵒᵈ := fast_instance% ‹DiscreteTopology X›
 
 theorem continuous_toDual : Continuous (toDual : X → Xᵒᵈ) := continuous_id
 #align continuous_to_dual continuous_toDual
@@ -204,7 +204,7 @@ theorem DenseRange.quotient [Setoid X] [TopologicalSpace X] {f : Y → X} (hf : 
   Quotient.surjective_Quotient_mk''.denseRange.comp hf continuous_coinduced_rng
 #align dense_range.quotient DenseRange.quotient
 
-instance {p : X → Prop} [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (Subtype p) :=
+instance {p : X → Prop} [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (Subtype p) := fast_instance%
   ⟨bot_unique fun s _ => ⟨(↑) '' s, isOpen_discrete _, preimage_image_eq _ Subtype.val_injective⟩⟩
 
 instance Sum.discreteTopology [TopologicalSpace X] [TopologicalSpace Y] [h : DiscreteTopology X]
@@ -270,7 +270,7 @@ def of : X ≃ CofiniteTopology X :=
   Equiv.refl X
 #align cofinite_topology.of CofiniteTopology.of
 
-instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
+instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := fast_instance% of default
 
 instance : TopologicalSpace (CofiniteTopology X) where
   IsOpen s := s.Nonempty → Set.Finite sᶜ
@@ -582,7 +582,7 @@ theorem Prod.tendsto_iff {X} (seq : X → Y × Z) {f : Filter X} (p : Y × Z) :
   rw [nhds_prod_eq, Filter.tendsto_prod_iff']
 #align prod.tendsto_iff Prod.tendsto_iff
 
-instance [DiscreteTopology X] [DiscreteTopology Y] : DiscreteTopology (X × Y) :=
+instance [DiscreteTopology X] [DiscreteTopology Y] : DiscreteTopology (X × Y) := fast_instance%
   discreteTopology_iff_nhds.2 fun (a, b) => by
     rw [nhds_prod_eq, nhds_discrete X, nhds_discrete Y, prod_pure_pure]
 
@@ -1551,7 +1551,7 @@ theorem inducing_iInf_to_pi {X : Type*} (f : ∀ i, X → π i) :
 variable [Finite ι] [∀ i, DiscreteTopology (π i)]
 
 /-- A finite product of discrete spaces is discrete. -/
-instance Pi.discreteTopology : DiscreteTopology (∀ i, π i) :=
+instance Pi.discreteTopology : DiscreteTopology (∀ i, π i) := fast_instance%
   singletons_open_iff_discrete.mp fun x => by
     rw [← univ_pi_singleton]
     exact isOpen_set_pi finite_univ fun i _ => (isOpen_discrete {x i})
@@ -1743,7 +1743,7 @@ theorem ULift.closedEmbedding_down [TopologicalSpace X] :
   ⟨embedding_uLift_down, by simp only [ULift.down_surjective.range_eq, isClosed_univ]⟩
 #align ulift.closed_embedding_down ULift.closedEmbedding_down
 
-instance [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (ULift X) :=
+instance [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (ULift X) := fast_instance%
   embedding_uLift_down.discreteTopology
 
 end ULift

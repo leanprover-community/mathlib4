@@ -159,7 +159,7 @@ noncomputable def algHomEquiv : (K →ₐ[F] normalClosure F K L) ≃ (K →ₐ[
   left_inv _ := rfl
   right_inv _ := rfl
 
-instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
+instance normal [h : Normal F L] : Normal F (normalClosure F K L) := fast_instance% by
   obtain _ | φ := isEmpty_or_nonempty (K →ₐ[F] L)
   · rw [normalClosure, iSup_of_empty]; exact Normal.of_algEquiv (botEquiv F L).symm
   · exact (isNormalClosure_normalClosure F K L).normal
@@ -179,12 +179,12 @@ noncomputable instance algebra :
     { ⨆ f : K →ₐ[F] L, f.fieldRange with
       algebraMap_mem' := fun r ↦ (toAlgHom F K L).fieldRange_le_normalClosure ⟨r, rfl⟩ }
 
-instance : IsScalarTower F K (normalClosure F K L) := by
+instance : IsScalarTower F K (normalClosure F K L) := fast_instance% by
   apply of_algebraMap_eq'
   ext x
   exact algebraMap_apply F K L x
 
-instance : IsScalarTower K (normalClosure F K L) L :=
+instance : IsScalarTower K (normalClosure F K L) L := fast_instance%
   of_algebraMap_eq' rfl
 
 lemma restrictScalars_eq :

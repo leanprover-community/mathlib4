@@ -240,13 +240,13 @@ instance OrderDual.gradeOrder [GradeOrder 𝕆 α] : GradeOrder 𝕆ᵒᵈ αᵒ
   grade_strictMono := grade_strictMono.dual
   covBy_grade _ _ h := (h.ofDual.grade _).toDual
 
-instance OrderDual.gradeMinOrder [GradeMaxOrder 𝕆 α] : GradeMinOrder 𝕆ᵒᵈ αᵒᵈ :=
+instance OrderDual.gradeMinOrder [GradeMaxOrder 𝕆 α] : GradeMinOrder 𝕆ᵒᵈ αᵒᵈ := fast_instance%
   { OrderDual.gradeOrder with isMin_grade := fun _ => IsMax.grade (α := α) 𝕆 }
 
-instance OrderDual.gradeMaxOrder [GradeMinOrder 𝕆 α] : GradeMaxOrder 𝕆ᵒᵈ αᵒᵈ :=
+instance OrderDual.gradeMaxOrder [GradeMinOrder 𝕆 α] : GradeMaxOrder 𝕆ᵒᵈ αᵒᵈ := fast_instance%
   { OrderDual.gradeOrder with isMax_grade := fun _ => IsMin.grade (α := α) 𝕆 }
 
-instance [GradeBoundedOrder 𝕆 α] : GradeBoundedOrder 𝕆ᵒᵈ αᵒᵈ :=
+instance [GradeBoundedOrder 𝕆 α] : GradeBoundedOrder 𝕆ᵒᵈ αᵒᵈ := fast_instance%
   { OrderDual.gradeMinOrder, OrderDual.gradeMaxOrder with }
 
 @[simp]
@@ -354,6 +354,6 @@ def GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrder 
     exact isMin_bot
 #align grade_min_order.fin_to_nat GradeMinOrder.finToNat
 
-instance GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α :=
+instance GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α := fast_instance%
   (GradeOrder.liftLeft _ Int.coe_nat_strictMono) fun _ _ => CovBy.cast_int
 #align grade_order.nat_to_int GradeOrder.natToInt

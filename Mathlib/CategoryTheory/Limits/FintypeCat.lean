@@ -57,7 +57,7 @@ noncomputable instance inclusionPreservesFiniteLimits :
     preservesLimitOfShapeOfCreatesLimitsOfShapeAndHasLimitsOfShape FintypeCat.incl
 
 /- Help typeclass inference to infer preservation of finite limits for the forgtful functor. -/
-noncomputable instance : PreservesFiniteLimits (forget FintypeCat) :=
+noncomputable instance : PreservesFiniteLimits (forget FintypeCat) := fast_instance%
   FintypeCat.inclusionPreservesFiniteLimits
 
 /-- Any functor from a finite category to Types that only involves finite objects,
@@ -90,7 +90,7 @@ noncomputable instance inclusionPreservesFiniteColimits :
     preservesColimitOfShapeOfCreatesColimitsOfShapeAndHasColimitsOfShape FintypeCat.incl
 
 /- Help typeclass inference to infer preservation of finite colimits for the forgtful functor. -/
-noncomputable instance : PreservesFiniteColimits (forget FintypeCat) :=
+noncomputable instance : PreservesFiniteColimits (forget FintypeCat) := fast_instance%
   FintypeCat.inclusionPreservesFiniteColimits
 
 end CategoryTheory.Limits.FintypeCat

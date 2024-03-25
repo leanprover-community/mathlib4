@@ -105,7 +105,7 @@ lemma finite_hasEigenvalue : Set.Finite f.HasEigenvalue := by
   rw [hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot, coe_aeval_eq_eval]
 
 /-- An endomorphism of a finite-dimensional vector space has finitely many eigenvalues. -/
-noncomputable instance : Fintype f.Eigenvalues :=
+noncomputable instance : Fintype f.Eigenvalues := fast_instance%
   Set.Finite.fintype f.finite_hasEigenvalue
 
 end End

@@ -117,7 +117,7 @@ def pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U where
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition.pairwise_to_opens_le_cover TopCat.Presheaf.SheafCondition.pairwiseToOpensLeCover
 
-instance (V : OpensLeCover U) : Nonempty (StructuredArrow V (pairwiseToOpensLeCover U)) :=
+instance (V : OpensLeCover U) : Nonempty (StructuredArrow V (pairwiseToOpensLeCover U)) := fast_instance%
   ⟨@StructuredArrow.mk _ _ _ _ _ (single V.index) _ V.homToIndex⟩
 
 -- This is a case bash: for each pair of types of objects in `pairwise ι`,
@@ -125,7 +125,7 @@ instance (V : OpensLeCover U) : Nonempty (StructuredArrow V (pairwiseToOpensLeCo
 /-- The diagram consisting of the `U i` and `U i ⊓ U j` is cofinal in the diagram
 of all opens contained in some `U i`.
 -/
-instance : Functor.Final (pairwiseToOpensLeCover U) :=
+instance : Functor.Final (pairwiseToOpensLeCover U) := fast_instance%
   ⟨fun V =>
     isConnected_of_zigzag fun A B => by
       rcases A with ⟨⟨⟨⟩⟩, ⟨i⟩ | ⟨i, j⟩, a⟩ <;> rcases B with ⟨⟨⟨⟩⟩, ⟨i'⟩ | ⟨i', j'⟩, b⟩

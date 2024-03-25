@@ -21,7 +21,7 @@ namespace Int
 
 -- so that Lean reads `Int.succ` through `SuccOrder.succ`
 @[reducible]
-instance : SuccOrder ℤ :=
+instance : SuccOrder ℤ := fast_instance%
   { SuccOrder.ofSuccLeIff succ fun {_ _} => Iff.rfl with succ := succ }
 
 -- so that Lean reads `Int.pred` through `PredOrder.pred`
@@ -61,12 +61,12 @@ theorem pred_iterate (a : ℤ) : ∀ n, pred^[n] a = a - n
     exact congr_arg _ (pred_iterate a n)
 #align int.pred_iterate Int.pred_iterate
 
-instance : IsSuccArchimedean ℤ :=
+instance : IsSuccArchimedean ℤ := fast_instance%
   ⟨fun {a b} h =>
     ⟨(b - a).toNat, by
       rw [succ_eq_succ, succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel']⟩⟩
 
-instance : IsPredArchimedean ℤ :=
+instance : IsPredArchimedean ℤ := fast_instance%
   ⟨fun {a b} h =>
     ⟨(b - a).toNat, by rw [pred_eq_pred, pred_iterate, toNat_sub_of_le h, sub_sub_cancel]⟩⟩
 

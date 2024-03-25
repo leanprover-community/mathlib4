@@ -66,7 +66,7 @@ protected theorem rfl : x ≡ x [SMOD U] :=
   SModEq.refl _
 #align smodeq.rfl SModEq.rfl
 
-instance : IsRefl _ (SModEq U) :=
+instance : IsRefl _ (SModEq U) := fast_instance%
   ⟨SModEq.refl⟩
 
 @[symm]

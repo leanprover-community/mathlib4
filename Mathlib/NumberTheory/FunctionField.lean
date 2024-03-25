@@ -102,10 +102,10 @@ namespace ringOfIntegers
 
 variable [Algebra Fq[X] F]
 
-instance : IsDomain (ringOfIntegers Fq F) :=
+instance : IsDomain (ringOfIntegers Fq F) := fast_instance%
   (ringOfIntegers Fq F).isDomain
 
-instance : IsIntegralClosure (ringOfIntegers Fq F) Fq[X] F :=
+instance : IsIntegralClosure (ringOfIntegers Fq F) Fq[X] F := fast_instance%
   integralClosure.isIntegralClosure _ _
 
 variable [Algebra (RatFunc Fq) F] [IsScalarTower Fq[X] (RatFunc Fq) F]
@@ -129,16 +129,16 @@ theorem not_isField : ¬IsField (ringOfIntegers Fq F) := by
 
 variable [FunctionField Fq F]
 
-instance : IsFractionRing (ringOfIntegers Fq F) F :=
+instance : IsFractionRing (ringOfIntegers Fq F) F := fast_instance%
   integralClosure.isFractionRing_of_finite_extension (RatFunc Fq) F
 
-instance : IsIntegrallyClosed (ringOfIntegers Fq F) :=
+instance : IsIntegrallyClosed (ringOfIntegers Fq F) := fast_instance%
   integralClosure.isIntegrallyClosedOfFiniteExtension (RatFunc Fq)
 
-instance [IsSeparable (RatFunc Fq) F] : IsNoetherian Fq[X] (ringOfIntegers Fq F) :=
+instance [IsSeparable (RatFunc Fq) F] : IsNoetherian Fq[X] (ringOfIntegers Fq F) := fast_instance%
   IsIntegralClosure.isNoetherian _ (RatFunc Fq) F _
 
-instance [IsSeparable (RatFunc Fq) F] : IsDedekindDomain (ringOfIntegers Fq F) :=
+instance [IsSeparable (RatFunc Fq) F] : IsDedekindDomain (ringOfIntegers Fq F) := fast_instance%
   IsIntegralClosure.isDedekindDomain Fq[X] (RatFunc Fq) F _
 
 end ringOfIntegers
@@ -256,15 +256,15 @@ def FqtInfty :=
 set_option linter.uppercaseLean3 false in
 #align function_field.Fqt_infty FunctionField.FqtInfty
 
-instance : Field (FqtInfty Fq) :=
+instance : Field (FqtInfty Fq) := fast_instance%
   letI := inftyValuedFqt Fq
   UniformSpace.Completion.instField
 
-instance : Inhabited (FqtInfty Fq) :=
+instance : Inhabited (FqtInfty Fq) := fast_instance%
   ⟨(0 : FqtInfty Fq)⟩
 
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
-instance valuedFqtInfty : Valued (FqtInfty Fq) ℤₘ₀ :=
+instance valuedFqtInfty : Valued (FqtInfty Fq) ℤₘ₀ := fast_instance%
   @Valued.valuedCompletion _ _ _ _ (inftyValuedFqt Fq)
 set_option linter.uppercaseLean3 false in
 #align function_field.valued_Fqt_infty FunctionField.valuedFqtInfty

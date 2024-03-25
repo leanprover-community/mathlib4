@@ -94,7 +94,7 @@ instance {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Star (C i)]
     [∀ i, ContinuousStar (C i)] : ContinuousStar (∀ i, C i) where
   continuous_star := continuous_pi fun i => Continuous.star (continuous_apply i)
 
-instance [Star R] [TopologicalSpace R] [ContinuousStar R] : ContinuousStar Rᵐᵒᵖ :=
+instance [Star R] [TopologicalSpace R] [ContinuousStar R] : ContinuousStar Rᵐᵒᵖ := fast_instance%
   ⟨MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.star⟩
 
 instance [Monoid R] [StarMul R] [TopologicalSpace R] [ContinuousStar R] :

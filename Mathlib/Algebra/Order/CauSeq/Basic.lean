@@ -172,7 +172,7 @@ section Ring
 
 variable [Ring β] {abv : β → α}
 
-instance : CoeFun (CauSeq β abv) fun _ => ℕ → β :=
+instance : CoeFun (CauSeq β abv) fun _ => ℕ → β := fast_instance%
   ⟨Subtype.val⟩
 
 -- Porting note: Remove coeFn theorem
@@ -217,7 +217,7 @@ theorem bounded (f : CauSeq β abv) : ∃ r, ∀ i, abv (f i) < r := f.2.bounded
 theorem bounded' (f : CauSeq β abv) (x : α) : ∃ r > x, ∀ i, abv (f i) < r := f.2.bounded' x
 #align cau_seq.bounded' CauSeq.bounded'
 
-instance : Add (CauSeq β abv) :=
+instance : Add (CauSeq β abv) := fast_instance%
   ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
 
 @[simp, norm_cast]
@@ -255,13 +255,13 @@ theorem const_inj {x y : β} : (const x : CauSeq β abv) = const y ↔ x = y :=
   ⟨fun h => congr_arg (fun f : CauSeq β abv => (f : ℕ → β) 0) h, congr_arg _⟩
 #align cau_seq.const_inj CauSeq.const_inj
 
-instance : Zero (CauSeq β abv) :=
+instance : Zero (CauSeq β abv) := fast_instance%
   ⟨const 0⟩
 
-instance : One (CauSeq β abv) :=
+instance : One (CauSeq β abv) := fast_instance%
   ⟨const 1⟩
 
-instance : Inhabited (CauSeq β abv) :=
+instance : Inhabited (CauSeq β abv) := fast_instance%
   ⟨0⟩
 
 @[simp, norm_cast]
@@ -298,7 +298,7 @@ theorem const_add (x y : β) : const (x + y) = const x + const y :=
   rfl
 #align cau_seq.const_add CauSeq.const_add
 
-instance : Mul (CauSeq β abv) := ⟨fun f g ↦ ⟨f * g, f.2.mul g.2⟩⟩
+instance : Mul (CauSeq β abv) := fast_instance% ⟨fun f g ↦ ⟨f * g, f.2.mul g.2⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (f g : CauSeq β abv) : ⇑(f * g) = (f : ℕ → β) * g :=
@@ -314,7 +314,7 @@ theorem const_mul (x y : β) : const (x * y) = const x * const y :=
   rfl
 #align cau_seq.const_mul CauSeq.const_mul
 
-instance : Neg (CauSeq β abv) := ⟨fun f ↦ ⟨-f, f.2.neg⟩⟩
+instance : Neg (CauSeq β abv) := fast_instance% ⟨fun f ↦ ⟨-f, f.2.neg⟩⟩
 
 @[simp, norm_cast]
 theorem coe_neg (f : CauSeq β abv) : ⇑(-f) = -f :=
@@ -330,7 +330,7 @@ theorem const_neg (x : β) : const (-x) = -const x :=
   rfl
 #align cau_seq.const_neg CauSeq.const_neg
 
-instance : Sub (CauSeq β abv) :=
+instance : Sub (CauSeq β abv) := fast_instance%
   ⟨fun f g => ofEq (f + -g) (fun x => f x - g x) fun i => by simp [sub_eq_add_neg]⟩
 
 @[simp, norm_cast]
@@ -351,7 +351,7 @@ section SMul
 
 variable {G : Type*} [SMul G β] [IsScalarTower G β β]
 
-instance : SMul G (CauSeq β abv) :=
+instance : SMul G (CauSeq β abv) := fast_instance%
   ⟨fun a f => (ofEq (const (a • (1 : β)) * f) (a • (f : ℕ → β))) fun _ => smul_one_mul _ _⟩
 
 @[simp, norm_cast]
@@ -368,20 +368,20 @@ theorem const_smul (a : G) (x : β) : const (a • x) = a • const x :=
   rfl
 #align cau_seq.const_smul CauSeq.const_smul
 
-instance : IsScalarTower G (CauSeq β abv) (CauSeq β abv) :=
+instance : IsScalarTower G (CauSeq β abv) (CauSeq β abv) := fast_instance%
   ⟨fun a f g => Subtype.ext <| smul_assoc a (f : ℕ → β) (g : ℕ → β)⟩
 
 end SMul
 
-instance addGroup : AddGroup (CauSeq β abv) :=
+instance addGroup : AddGroup (CauSeq β abv) := fast_instance%
   Function.Injective.addGroup Subtype.val Subtype.val_injective rfl coe_add coe_neg coe_sub
     (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
-instance instNatCast : NatCast (CauSeq β abv) := ⟨fun n => const n⟩
+instance instNatCast : NatCast (CauSeq β abv) := fast_instance% ⟨fun n => const n⟩
 
-instance instIntCast : IntCast (CauSeq β abv) := ⟨fun n => const n⟩
+instance instIntCast : IntCast (CauSeq β abv) := fast_instance% ⟨fun n => const n⟩
 
-instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) :=
+instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) := fast_instance%
   Function.Injective.addGroupWithOne Subtype.val Subtype.val_injective rfl rfl
   coe_add coe_neg coe_sub
   (by intros; rfl)
@@ -389,7 +389,7 @@ instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) :=
   (by intros; rfl)
   (by intros; rfl)
 
-instance : Pow (CauSeq β abv) ℕ :=
+instance : Pow (CauSeq β abv) ℕ := fast_instance%
   ⟨fun f n =>
     (ofEq (npowRec n f) fun i => f i ^ n) <| by induction n <;> simp [*, npowRec, pow_succ]⟩
 
@@ -407,11 +407,11 @@ theorem const_pow (x : β) (n : ℕ) : const (x ^ n) = const x ^ n :=
   rfl
 #align cau_seq.const_pow CauSeq.const_pow
 
-instance ring : Ring (CauSeq β abv) :=
+instance ring : Ring (CauSeq β abv) := fast_instance%
   Function.Injective.ring Subtype.val Subtype.val_injective rfl rfl coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_pow (fun _ => rfl) fun _ => rfl
 
-instance {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
+instance {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) := fast_instance%
   { CauSeq.ring with
     mul_comm := fun a b => ext fun n => by simp [mul_left_comm, mul_comm] }
 
@@ -469,7 +469,7 @@ theorem const_limZero {x : β} : LimZero (const x) ↔ x = 0 :=
     fun e => e.symm ▸ zero_limZero⟩
 #align cau_seq.const_lim_zero CauSeq.const_limZero
 
-instance equiv : Setoid (CauSeq β abv) :=
+instance equiv : Setoid (CauSeq β abv) := fast_instance%
   ⟨fun f g => LimZero (f - g),
     ⟨fun f => by simp [zero_limZero],
     fun f ε hε => by simpa using neg_limZero f ε hε,
@@ -724,10 +724,10 @@ theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
     exact le_trans (le_of_lt (abs_lt.1 <| h₂ _ ij).2) h₁
 #align cau_seq.trichotomy CauSeq.trichotomy
 
-instance : LT (CauSeq α abs) :=
+instance : LT (CauSeq α abs) := fast_instance%
   ⟨fun f g => Pos (g - f)⟩
 
-instance : LE (CauSeq α abs) :=
+instance : LE (CauSeq α abs) := fast_instance%
   ⟨fun f g => f < g ∨ f ≈ g⟩
 
 theorem lt_of_lt_of_eq {f g h : CauSeq α abs} (fg : f < g) (gh : g ≈ h) : f < h :=
@@ -827,14 +827,14 @@ theorem rat_inf_continuous_lemma {ε : α} {a₁ a₂ b₁ b₂ : α} :
   (abs_min_sub_min_le_max _ _ _ _).trans_lt (max_lt h₁ h₂)
 #align rat_inf_continuous_lemma CauSeq.rat_inf_continuous_lemma
 
-instance : Sup (CauSeq α abs) :=
+instance : Sup (CauSeq α abs) := fast_instance%
   ⟨fun f g =>
     ⟨f ⊔ g, fun _ ε0 =>
       (exists_forall_ge_and (f.cauchy₃ ε0) (g.cauchy₃ ε0)).imp fun _ H _ ij =>
         let ⟨H₁, H₂⟩ := H _ le_rfl
         rat_sup_continuous_lemma (H₁ _ ij) (H₂ _ ij)⟩⟩
 
-instance : Inf (CauSeq α abs) :=
+instance : Inf (CauSeq α abs) := fast_instance%
   ⟨fun f g =>
     ⟨f ⊓ g, fun _ ε0 =>
       (exists_forall_ge_and (f.cauchy₃ ε0) (g.cauchy₃ ε0)).imp fun _ H _ ij =>

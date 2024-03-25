@@ -36,7 +36,7 @@ def FreeBicategory (B : Type u) :=
   B
 #align category_theory.free_bicategory CategoryTheory.FreeBicategory
 
-instance (B : Type u) : ∀ [Inhabited B], Inhabited (FreeBicategory B) := by
+instance (B : Type u) : ∀ [Inhabited B], Inhabited (FreeBicategory B) := fast_instance% by
   intro h
   exact id h
 
@@ -53,7 +53,7 @@ inductive Hom : B → B → Type max u v
   | comp {a b c : B} (f : Hom a b) (g : Hom b c) : Hom a c
 #align category_theory.free_bicategory.hom CategoryTheory.FreeBicategory.Hom
 
-instance (a b : B) [Inhabited (a ⟶ b)] : Inhabited (Hom a b) :=
+instance (a b : B) [Inhabited (a ⟶ b)] : Inhabited (Hom a b) := fast_instance%
   ⟨Hom.of default⟩
 
 instance quiver : Quiver.{max u v + 1} (FreeBicategory B) where

@@ -39,7 +39,7 @@ def id : ∀ X : Σi, C i, SigmaHom X X
 -- Porting note: reordered universes
 #align category_theory.sigma.sigma_hom.id CategoryTheory.Sigma.SigmaHom.idₓ
 
-instance (X : Σi, C i) : Inhabited (SigmaHom X X) :=
+instance (X : Σi, C i) : Inhabited (SigmaHom X X) := fast_instance%
   ⟨id X⟩
 
 /-- Composition of sigma homomorphisms. -/

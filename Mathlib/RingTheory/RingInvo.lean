@@ -64,7 +64,7 @@ variable {R} [Semiring R] [EquivLike F R Rᵐᵒᵖ]
 
 /-- Any type satisfying `RingInvoClass` can be cast into `RingInvo` via
 `RingInvoClass.toRingInvo`. -/
-instance [Semiring R] [RingInvoClass F R] : CoeTC F (RingInvo R) :=
+instance [Semiring R] [RingInvoClass F R] : CoeTC F (RingInvo R) := fast_instance%
   ⟨RingInvoClass.toRingInvo⟩
 
 instance [Semiring R] : EquivLike (RingInvo R) R Rᵐᵒᵖ where
@@ -93,7 +93,7 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
 #align ring_invo.mk' RingInvo.mk'
 
 -- Porting note: removed CoeFun instance, undesired in lean4
--- instance : CoeFun (RingInvo R) fun _ => R → Rᵐᵒᵖ :=
+-- instance : CoeFun (RingInvo R) fun _ => R → Rᵐᵒᵖ := fast_instance%
 --   ⟨fun f => f.toRingEquiv.toFun⟩
 #noalign ring_invo.to_fun_eq_coe
 
@@ -103,7 +103,7 @@ theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
 #align ring_invo.involution RingInvo.involution
 
 -- Porting note: remove Coe instance, not needed
--- instance hasCoeToRingEquiv : Coe (RingInvo R) (R ≃+* Rᵐᵒᵖ) :=
+-- instance hasCoeToRingEquiv : Coe (RingInvo R) (R ≃+* Rᵐᵒᵖ) := fast_instance%
 --   ⟨RingInvo.toRingEquiv⟩
 -- #align ring_invo.has_coe_to_ring_equiv RingInvo.hasCoeToRingEquiv
 
@@ -131,7 +131,7 @@ protected def RingInvo.id : RingInvo R :=
   { RingEquiv.toOpposite R with involution' := fun _ => rfl }
 #align ring_invo.id RingInvo.id
 
-instance : Inhabited (RingInvo R) :=
+instance : Inhabited (RingInvo R) := fast_instance%
   ⟨RingInvo.id _⟩
 
 end CommRing

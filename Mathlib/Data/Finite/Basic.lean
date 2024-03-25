@@ -58,16 +58,16 @@ instance (priority := 100) of_subsingleton {α : Sort*} [Subsingleton α] : Fini
 
 -- Higher priority for `Prop`s
 -- @[nolint instance_priority] -- Porting note: linter not found
-instance prop (p : Prop) : Finite p :=
+instance prop (p : Prop) : Finite p := fast_instance%
   Finite.of_subsingleton
 #align finite.prop Finite.prop
 
-instance [Finite α] [Finite β] : Finite (α × β) := by
+instance [Finite α] [Finite β] : Finite (α × β) := fast_instance% by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofFinite β
   infer_instance
 
-instance {α β : Sort*} [Finite α] [Finite β] : Finite (PProd α β) :=
+instance {α β : Sort*} [Finite α] [Finite β] : Finite (PProd α β) := fast_instance%
   of_equiv _ Equiv.pprodEquivProdPLift.symm
 
 theorem prod_left (β) [Finite (α × β)] [Nonempty β] : Finite α :=
@@ -78,7 +78,7 @@ theorem prod_right (α) [Finite (α × β)] [Nonempty α] : Finite β :=
   of_surjective (Prod.snd : α × β → β) Prod.snd_surjective
 #align finite.prod_right Finite.prod_right
 
-instance [Finite α] [Finite β] : Finite (Sum α β) := by
+instance [Finite α] [Finite β] : Finite (Sum α β) := fast_instance% by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofFinite β
   infer_instance
@@ -91,15 +91,15 @@ theorem sum_right (α) [Finite (Sum α β)] : Finite β :=
   of_injective (Sum.inr : β → Sum α β) Sum.inr_injective
 #align finite.sum_right Finite.sum_right
 
-instance {β : α → Type*} [Finite α] [∀ a, Finite (β a)] : Finite (Σa, β a) := by
+instance {β : α → Type*} [Finite α] [∀ a, Finite (β a)] : Finite (Σa, β a) := fast_instance% by
   letI := Fintype.ofFinite α
   letI := fun a => Fintype.ofFinite (β a)
   infer_instance
 
-instance {ι : Sort*} {π : ι → Sort*} [Finite ι] [∀ i, Finite (π i)] : Finite (Σ'i, π i) :=
+instance {ι : Sort*} {π : ι → Sort*} [Finite ι] [∀ i, Finite (π i)] : Finite (Σ'i, π i) := fast_instance%
   of_equiv _ (Equiv.psigmaEquivSigmaPLift π).symm
 
-instance [Finite α] : Finite (Set α) := by
+instance [Finite α] : Finite (Set α) := fast_instance% by
   cases nonempty_fintype α
   infer_instance
 
@@ -114,20 +114,20 @@ instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (
       (Equiv.piCongr Equiv.plift fun _ => Equiv.plift)
 #align pi.finite Pi.finite
 
-instance Vector.finite {α : Type*} [Finite α] {n : ℕ} : Finite (Vector α n) := by
+instance Vector.finite {α : Type*} [Finite α] {n : ℕ} : Finite (Vector α n) := fast_instance% by
   haveI := Fintype.ofFinite α
   infer_instance
 #align vector.finite Vector.finite
 
-instance Quot.finite {α : Sort*} [Finite α] (r : α → α → Prop) : Finite (Quot r) :=
+instance Quot.finite {α : Sort*} [Finite α] (r : α → α → Prop) : Finite (Quot r) := fast_instance%
   Finite.of_surjective _ (surjective_quot_mk r)
 #align quot.finite Quot.finite
 
-instance Quotient.finite {α : Sort*} [Finite α] (s : Setoid α) : Finite (Quotient s) :=
+instance Quotient.finite {α : Sort*} [Finite α] (s : Setoid α) : Finite (Quotient s) := fast_instance%
   Quot.finite _
 #align quotient.finite Quotient.finite
 
-instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ β) := by
+instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ β) := fast_instance% by
   cases' isEmpty_or_nonempty (α ↪ β) with _ h
   · -- Porting note: infer_instance fails because it applies `Finite.of_fintype` and produces a
     -- "stuck at solving universe constraint" error.
@@ -138,15 +138,15 @@ instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ 
     exact Finite.of_injective _ DFunLike.coe_injective
 #align function.embedding.finite Function.Embedding.finite
 
-instance Equiv.finite_right {α β : Sort*} [Finite β] : Finite (α ≃ β) :=
+instance Equiv.finite_right {α β : Sort*} [Finite β] : Finite (α ≃ β) := fast_instance%
   Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by
     convert DFunLike.congr_fun h using 0
 #align equiv.finite_right Equiv.finite_right
 
-instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) :=
+instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) := fast_instance%
   Finite.of_equiv _ ⟨Equiv.symm, Equiv.symm, Equiv.symm_symm, Equiv.symm_symm⟩
 #align equiv.finite_left Equiv.finite_left
 
-instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
+instance [Finite α] {n : ℕ} : Finite (Sym α n) := fast_instance% by
   haveI := Fintype.ofFinite α
   infer_instance

@@ -585,10 +585,10 @@ attribute [local instance] finrank_real_complex_fact'
 
 /-- The unit circle in `ℂ` is a charted space modelled on `EuclideanSpace ℝ (Fin 1)`.  This
 follows by definition from the corresponding result for `Metric.Sphere`. -/
-instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) circle :=
+instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) circle := fast_instance%
   EuclideanSpace.instChartedSpaceSphere
 
-instance : SmoothManifoldWithCorners (𝓡 1) circle :=
+instance : SmoothManifoldWithCorners (𝓡 1) circle := fast_instance%
   EuclideanSpace.instSmoothManifoldWithCornersSphere (E := ℂ)
 
 /-- The unit circle in `ℂ` is a Lie group. -/

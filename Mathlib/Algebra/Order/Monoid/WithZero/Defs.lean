@@ -38,13 +38,13 @@ instance (priority := 100) canonicallyOrderedAddCommMonoid.toZeroLeOneClass
 
 namespace WithZero
 
-instance preorder [Preorder α] : Preorder (WithZero α) :=
+instance preorder [Preorder α] : Preorder (WithZero α) := fast_instance%
   WithBot.preorder
 
-instance partialOrder [PartialOrder α] : PartialOrder (WithZero α) :=
+instance partialOrder [PartialOrder α] : PartialOrder (WithZero α) := fast_instance%
   WithBot.partialOrder
 
-instance orderBot [Preorder α] : OrderBot (WithZero α) :=
+instance orderBot [Preorder α] : OrderBot (WithZero α) := fast_instance%
   WithBot.orderBot
 
 theorem zero_le [Preorder α] (a : WithZero α) : 0 ≤ a :=
@@ -69,10 +69,10 @@ theorem coe_le_coe [Preorder α] {a b : α} : (a : WithZero α) ≤ b ↔ a ≤ 
   WithBot.coe_le_coe
 #align with_zero.coe_le_coe WithZero.coe_le_coe
 
-instance lattice [Lattice α] : Lattice (WithZero α) :=
+instance lattice [Lattice α] : Lattice (WithZero α) := fast_instance%
   WithBot.lattice
 
-instance linearOrder [LinearOrder α] : LinearOrder (WithZero α) :=
+instance linearOrder [LinearOrder α] : LinearOrder (WithZero α) := fast_instance%
   WithBot.linearOrder
 
 instance covariantClass_mul_le [Mul α] [Preorder α]
@@ -102,7 +102,7 @@ nonrec theorem min_le_iff [LinearOrder α] {a b c : α} :
   simp only [WithZero.coe_le_coe, min_le_iff]
 #align with_zero.min_le_iff WithZero.min_le_iff
 
-instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
+instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) := fast_instance%
   { WithZero.commMonoidWithZero.toCommMonoid, WithZero.partialOrder with
     mul_le_mul_left := fun _ _ => mul_le_mul_left' }
 

@@ -253,11 +253,11 @@ irreducible_def Basis.addHaar (b : Basis ι ℝ E) : Measure E :=
   Measure.addHaarMeasure b.parallelepiped
 #align basis.add_haar Basis.addHaar
 
-instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar := by
+instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar := fast_instance% by
   rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
 #align is_add_haar_measure_basis_add_haar IsAddHaarMeasure_basis_addHaar
 
-instance (b : Basis ι ℝ E) : SigmaFinite b.addHaar := by
+instance (b : Basis ι ℝ E) : SigmaFinite b.addHaar := fast_instance% by
   have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
   rw [Basis.addHaar_def]; exact sigmaFinite_addHaarMeasure
 
@@ -303,7 +303,7 @@ instance [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ
 
 /- This instance should not be necessary, but Lean has difficulties to find it in product
 situations if we do not declare it explicitly. -/
-instance Real.measureSpace : MeasureSpace ℝ := by infer_instance
+instance Real.measureSpace : MeasureSpace ℝ := fast_instance% by infer_instance
 #align real.measure_space Real.measureSpace
 
 /-! # Miscellaneous instances for `EuclideanSpace`
@@ -317,9 +317,9 @@ namespace EuclideanSpace
 variable (ι)
 
 -- TODO: do we want these instances for `PiLp` too?
-instance : MeasurableSpace (EuclideanSpace ℝ ι) := MeasurableSpace.pi
+instance : MeasurableSpace (EuclideanSpace ℝ ι) := fast_instance% MeasurableSpace.pi
 
-instance : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
+instance : BorelSpace (EuclideanSpace ℝ ι) := fast_instance% Pi.borelSpace
 
 /-- `WithLp.equiv` as a `MeasurableEquiv`. -/
 @[simps toEquiv]

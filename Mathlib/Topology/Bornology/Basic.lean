@@ -320,7 +320,7 @@ nonrec lemma Filter.Tendsto.eventually_ne_cobounded [Bornology α] {f : β → �
     (h : Tendsto f l (cobounded α)) (a : α) : ∀ᶠ x in l, f x ≠ a :=
   h.eventually <| eventually_ne_cobounded a
 
-instance : Bornology PUnit :=
+instance : Bornology PUnit := fast_instance%
   ⟨⊥, bot_le⟩
 
 /-- The cofinite filter as a bornology -/

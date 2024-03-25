@@ -265,10 +265,10 @@ namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-instance Full.id : Full (𝟭 C) where preimage f := f
+instance Full.id : Full (𝟭 C) where preimage f := fast_instance% f
 #align category_theory.full.id CategoryTheory.Full.id
 
-instance Faithful.id : Faithful (𝟭 C) := { }
+instance Faithful.id : Faithful (𝟭 C) := fast_instance% { }
 #align category_theory.faithful.id CategoryTheory.Faithful.id
 
 variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]

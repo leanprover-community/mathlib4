@@ -36,7 +36,7 @@ variable {α β : Type u} [∀ P, Decidable P]
 
 /-- Because `Finset.image` requires a `DecidableEq` instance for the target type, we can only
 construct `Functor Finset` when working classically. -/
-protected instance functor : Functor Finset where map f s := s.image f
+protected instance functor : Functor Finset where map f s := fast_instance% s.image f
 
 instance lawfulFunctor : LawfulFunctor Finset where
   id_map s := image_id
@@ -52,7 +52,7 @@ end Functor
 /-! ### Pure -/
 
 
-protected instance pure : Pure Finset :=
+protected instance pure : Pure Finset := fast_instance%
   ⟨fun x => {x}⟩
 
 @[simp]
@@ -66,7 +66,7 @@ section Applicative
 
 variable {α β : Type u} [∀ P, Decidable P]
 
-protected instance applicative : Applicative Finset :=
+protected instance applicative : Applicative Finset := fast_instance%
   { Finset.functor, Finset.pure with
     seq := fun t s => t.sup fun f => (s ()).image f
     seqLeft := fun s t => if t () = ∅ then ∅ else s
@@ -95,7 +95,7 @@ theorem image₂_def {α β γ : Type u} (f : α → β → γ) (s : Finset α) 
   simp [mem_sup]
 #align finset.image₂_def Finset.image₂_def
 
-instance lawfulApplicative : LawfulApplicative Finset :=
+instance lawfulApplicative : LawfulApplicative Finset := fast_instance%
   { Finset.lawfulFunctor with
     seqLeft_eq := fun s t => by
       rw [seq_def, fmap_def, seqLeft_def]
@@ -135,7 +135,7 @@ instance lawfulApplicative : LawfulApplicative Finset :=
       · rintro ⟨c, ⟨_, ⟨g, hg, rfl⟩, f, hf, rfl⟩, a, ha, rfl⟩
         exact ⟨g, hg, f a, ⟨f, hf, a, ha, rfl⟩, rfl⟩ }
 
-instance commApplicative : CommApplicative Finset :=
+instance commApplicative : CommApplicative Finset := fast_instance%
   { Finset.lawfulApplicative with
     commutative_prod := fun s t => by
       simp_rw [seq_def, fmap_def, sup_image, sup_eq_biUnion]
@@ -152,7 +152,7 @@ section Monad
 
 variable [∀ P, Decidable P]
 
-instance : Monad Finset :=
+instance : Monad Finset := fast_instance%
   { Finset.applicative with bind := sup }
 
 @[simp]
@@ -160,7 +160,7 @@ theorem bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
   rfl
 #align finset.bind_def Finset.bind_def
 
-instance : LawfulMonad Finset :=
+instance : LawfulMonad Finset := fast_instance%
   { Finset.lawfulApplicative with
     bind_pure_comp := fun f s => sup_singleton'' _ _
     bind_map := fun t s => rfl
@@ -176,7 +176,7 @@ section Alternative
 
 variable [∀ P, Decidable P]
 
-instance : Alternative Finset :=
+instance : Alternative Finset := fast_instance%
   { Finset.applicative with
     orElse := fun s t => (s ∪ t ())
     failure := ∅ }

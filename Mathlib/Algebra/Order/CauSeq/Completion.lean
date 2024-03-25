@@ -52,13 +52,13 @@ def ofRat (x : β) : Cauchy abv :=
   mk (const abv x)
 #align cau_seq.completion.of_rat CauSeq.Completion.ofRat
 
-instance : Zero (Cauchy abv) :=
+instance : Zero (Cauchy abv) := fast_instance%
   ⟨ofRat 0⟩
 
-instance : One (Cauchy abv) :=
+instance : One (Cauchy abv) := fast_instance%
   ⟨ofRat 1⟩
 
-instance : Inhabited (Cauchy abv) :=
+instance : Inhabited (Cauchy abv) := fast_instance%
   ⟨0⟩
 
 theorem ofRat_zero : (ofRat 0 : Cauchy abv) = 0 :=
@@ -75,7 +75,7 @@ theorem mk_eq_zero {f : CauSeq _ abv} : mk f = 0 ↔ LimZero f := by
   rwa [sub_zero] at this
 #align cau_seq.completion.mk_eq_zero CauSeq.Completion.mk_eq_zero
 
-instance : Add (Cauchy abv) :=
+instance : Add (Cauchy abv) := fast_instance%
   ⟨(Quotient.map₂ (· + ·)) fun _ _ hf _ _ hg => add_equiv_add hf hg⟩
 
 @[simp]
@@ -83,7 +83,7 @@ theorem mk_add (f g : CauSeq β abv) : mk f + mk g = mk (f + g) :=
   rfl
 #align cau_seq.completion.mk_add CauSeq.Completion.mk_add
 
-instance : Neg (Cauchy abv) :=
+instance : Neg (Cauchy abv) := fast_instance%
   ⟨(Quotient.map Neg.neg) fun _ _ hf => neg_equiv_neg hf⟩
 
 @[simp]
@@ -91,7 +91,7 @@ theorem mk_neg (f : CauSeq β abv) : -mk f = mk (-f) :=
   rfl
 #align cau_seq.completion.mk_neg CauSeq.Completion.mk_neg
 
-instance : Mul (Cauchy abv) :=
+instance : Mul (Cauchy abv) := fast_instance%
   ⟨(Quotient.map₂ (· * ·)) fun _ _ hf _ _ hg => mul_equiv_mul hf hg⟩
 
 @[simp]
@@ -99,7 +99,7 @@ theorem mk_mul (f g : CauSeq β abv) : mk f * mk g = mk (f * g) :=
   rfl
 #align cau_seq.completion.mk_mul CauSeq.Completion.mk_mul
 
-instance : Sub (Cauchy abv) :=
+instance : Sub (Cauchy abv) := fast_instance%
   ⟨(Quotient.map₂ Sub.sub) fun _ _ hf _ _ hg => sub_equiv_sub hf hg⟩
 
 @[simp]
@@ -107,7 +107,7 @@ theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
   rfl
 #align cau_seq.completion.mk_sub CauSeq.Completion.mk_sub
 
-instance {γ : Type*} [SMul γ β] [IsScalarTower γ β β] : SMul γ (Cauchy abv) :=
+instance {γ : Type*} [SMul γ β] [IsScalarTower γ β β] : SMul γ (Cauchy abv) := fast_instance%
   ⟨fun c => (Quotient.map (c • ·)) fun _ _ hf => smul_equiv_smul _ hf⟩
 
 @[simp]
@@ -116,7 +116,7 @@ theorem mk_smul {γ : Type*} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f :
   rfl
 #align cau_seq.completion.mk_smul CauSeq.Completion.mk_smul
 
-instance : Pow (Cauchy abv) ℕ :=
+instance : Pow (Cauchy abv) ℕ := fast_instance%
   ⟨fun x n => Quotient.map (· ^ n) (fun _ _ hf => pow_equiv_pow hf _) x⟩
 
 @[simp]
@@ -124,10 +124,10 @@ theorem mk_pow (n : ℕ) (f : CauSeq β abv) : mk f ^ n = mk (f ^ n) :=
   rfl
 #align cau_seq.completion.mk_pow CauSeq.Completion.mk_pow
 
-instance : NatCast (Cauchy abv) :=
+instance : NatCast (Cauchy abv) := fast_instance%
   ⟨fun n => mk n⟩
 
-instance : IntCast (Cauchy abv) :=
+instance : IntCast (Cauchy abv) := fast_instance%
   ⟨fun n => mk n⟩
 
 @[simp]
@@ -160,7 +160,7 @@ private theorem zero_def : 0 = @mk _ _ _ _ abv _ 0 :=
 private theorem one_def : 1 = @mk _ _ _ _ abv _ 1 :=
   rfl
 
-instance Cauchy.ring : Ring (Cauchy abv) :=
+instance Cauchy.ring : Ring (Cauchy abv) := fast_instance%
   fast_instance%
   Function.Surjective.ring mk (surjective_quotient_mk' _) zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
@@ -189,7 +189,7 @@ section
 variable {α : Type*} [LinearOrderedField α]
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
-instance Cauchy.commRing : CommRing (Cauchy abv) :=
+instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
   fast_instance%
   Function.Surjective.commRing mk (surjective_quotient_mk' _) zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
@@ -205,7 +205,7 @@ section
 variable {α : Type*} [LinearOrderedField α]
 variable {β : Type*} [DivisionRing β] {abv : β → α} [IsAbsoluteValue abv]
 
-instance : RatCast (Cauchy abv) :=
+instance : RatCast (Cauchy abv) := fast_instance%
   ⟨fun q => ofRat q⟩
 
 @[simp, coe]
@@ -213,7 +213,7 @@ theorem ofRat_ratCast (q : ℚ) : ofRat (↑q : β) = (q : (Cauchy abv)) :=
   rfl
 #align cau_seq.completion.of_rat_rat_cast CauSeq.Completion.ofRat_ratCast
 
-noncomputable instance : Inv (Cauchy abv) :=
+noncomputable instance : Inv (Cauchy abv) := fast_instance%
   ⟨fun x =>
     (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
       have := limZero_congr fg
@@ -301,7 +301,7 @@ variable {α : Type*} [LinearOrderedField α]
 variable {β : Type*} [Field β] {abv : β → α} [IsAbsoluteValue abv]
 
 /-- The Cauchy completion forms a field. -/
-noncomputable instance Cauchy.field : Field (Cauchy abv) :=
+noncomputable instance Cauchy.field : Field (Cauchy abv) := fast_instance%
   { Cauchy.divisionRing, Cauchy.commRing with }
 
 end

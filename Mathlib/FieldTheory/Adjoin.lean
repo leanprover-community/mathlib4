@@ -99,10 +99,10 @@ instance : CompleteLattice (IntermediateField F E) where
       inv_mem' := by rintro x ⟨r, rfl⟩; exact ⟨r⁻¹, map_inv₀ _ _⟩ }
   bot_le x := (bot_le : ⊥ ≤ x.toSubalgebra)
 
-instance : Inhabited (IntermediateField F E) :=
+instance : Inhabited (IntermediateField F E) := fast_instance%
   ⟨⊤⟩
 
-instance : Unique (IntermediateField F F) :=
+instance : Unique (IntermediateField F F) := fast_instance%
   { inferInstanceAs (Inhabited (IntermediateField F F)) with
     uniq := fun _ ↦ toSubalgebra_injective <| Subsingleton.elim _ _ }
 
@@ -236,7 +236,7 @@ theorem botEquiv_symm (x : F) : (botEquiv F E).symm x = algebraMap F _ x :=
   rfl
 #align intermediate_field.bot_equiv_symm IntermediateField.botEquiv_symm
 
-noncomputable instance algebraOverBot : Algebra (⊥ : IntermediateField F E) F :=
+noncomputable instance algebraOverBot : Algebra (⊥ : IntermediateField F E) F := fast_instance%
   (IntermediateField.botEquiv F E).toAlgHom.toRingHom.toAlgebra
 #align intermediate_field.algebra_over_bot IntermediateField.algebraOverBot
 
@@ -246,7 +246,7 @@ theorem coe_algebraMap_over_bot :
   rfl
 #align intermediate_field.coe_algebra_map_over_bot IntermediateField.coe_algebraMap_over_bot
 
-instance isScalarTower_over_bot : IsScalarTower (⊥ : IntermediateField F E) F E :=
+instance isScalarTower_over_bot : IsScalarTower (⊥ : IntermediateField F E) F E := fast_instance%
   IsScalarTower.of_algebraMap_eq
     (by
       intro x
@@ -360,7 +360,7 @@ instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
 theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure (Or.inr hx)
 #align intermediate_field.subset_adjoin IntermediateField.subset_adjoin
 
-instance adjoin.setCoe : CoeTC S (adjoin F S) where coe x := ⟨x, subset_adjoin F S (Subtype.mem x)⟩
+instance adjoin.setCoe : CoeTC S (adjoin F S) where coe x := fast_instance% ⟨x, subset_adjoin F S (Subtype.mem x)⟩
 #align intermediate_field.adjoin.set_coe IntermediateField.adjoin.setCoe
 
 @[mono]
@@ -873,7 +873,7 @@ theorem adjoin_finite_isCompactElement {S : Set E} (h : S.Finite) : IsCompactEle
 #align intermediate_field.adjoin_finite_is_compact_element IntermediateField.adjoin_finite_isCompactElement
 
 /-- The lattice of intermediate fields is compactly generated. -/
-instance : IsCompactlyGenerated (IntermediateField F E) :=
+instance : IsCompactlyGenerated (IntermediateField F E) := fast_instance%
   ⟨fun s =>
     ⟨(fun x => F⟮x⟯) '' s,
       ⟨by rintro t ⟨x, _, rfl⟩; exact adjoin_simple_isCompactElement x,

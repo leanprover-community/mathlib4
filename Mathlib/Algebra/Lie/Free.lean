@@ -118,7 +118,7 @@ def FreeLieAlgebra :=
   Quot (FreeLieAlgebra.Rel R X)
 #align free_lie_algebra FreeLieAlgebra
 
-instance : Inhabited (FreeLieAlgebra R X) := by rw [FreeLieAlgebra]; infer_instance
+instance : Inhabited (FreeLieAlgebra R X) := fast_instance% by rw [FreeLieAlgebra]; infer_instance
 
 namespace FreeLieAlgebra
 
@@ -129,24 +129,24 @@ instance {S : Type*} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒ
     [IsScalarTower S R R] [IsCentralScalar S R] : IsCentralScalar S (FreeLieAlgebra R X) where
   op_smul_eq_smul t := Quot.ind fun a => congr_arg (Quot.mk _) (op_smul_eq_smul t a)
 
-instance : Zero (FreeLieAlgebra R X) where zero := Quot.mk _ 0
+instance : Zero (FreeLieAlgebra R X) where zero := fast_instance% Quot.mk _ 0
 
 instance : Add (FreeLieAlgebra R X) where
   add := Quot.map₂ (· + ·) (fun _ _ _ => Rel.addLeft _) fun _ _ _ => Rel.add_right _
 
-instance : Neg (FreeLieAlgebra R X) where neg := Quot.map Neg.neg fun _ _ => Rel.neg
+instance : Neg (FreeLieAlgebra R X) where neg := fast_instance% Quot.map Neg.neg fun _ _ => Rel.neg
 
 instance : Sub (FreeLieAlgebra R X) where
   sub := Quot.map₂ Sub.sub (fun _ _ _ => Rel.subLeft _) fun _ _ _ => Rel.subRight _
 
-instance : AddGroup (FreeLieAlgebra R X) :=
+instance : AddGroup (FreeLieAlgebra R X) := fast_instance%
   Function.Surjective.addGroup (Quot.mk _) (surjective_quot_mk _) rfl (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance : AddCommSemigroup (FreeLieAlgebra R X) :=
+instance : AddCommSemigroup (FreeLieAlgebra R X) := fast_instance%
   Function.Surjective.addCommSemigroup (Quot.mk _) (surjective_quot_mk _) fun _ _ => rfl
 
-instance : AddCommGroup (FreeLieAlgebra R X) :=
+instance : AddCommGroup (FreeLieAlgebra R X) := fast_instance%
   { (inferInstance : AddGroup (FreeLieAlgebra R X)),
     (inferInstance :  AddCommSemigroup (FreeLieAlgebra R X)) with }
 

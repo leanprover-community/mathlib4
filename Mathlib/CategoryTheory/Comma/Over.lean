@@ -41,7 +41,7 @@ def Over (X : T) :=
   CostructuredArrow (𝟭 T) X
 #align category_theory.over CategoryTheory.Over
 
-instance (X : T) : Category (Over X) := commaCategory
+instance (X : T) : Category (Over X) := fast_instance% commaCategory
 
 -- Satisfying the inhabited linter
 instance Over.inhabited [Inhabited T] : Inhabited (Over (default : T)) where
@@ -240,7 +240,7 @@ If `k` is a monomorphism, then `k.left` is a monomorphism. In other words, `Over
 monomorphisms.
 The converse of `CategoryTheory.Over.mono_of_mono_left`.
 -/
-instance mono_left_of_mono {f g : Over X} (k : f ⟶ g) [Mono k] : Mono k.left := by
+instance mono_left_of_mono {f g : Over X} (k : f ⟶ g) [Mono k] : Mono k.left := fast_instance% by
   refine' ⟨fun { Y : T } l m a => _⟩
   let l' : mk (m ≫ f.hom) ⟶ f := homMk l (by
         dsimp; rw [← Over.w k, ← Category.assoc, congrArg (· ≫ g.hom) a, Category.assoc])
@@ -319,13 +319,13 @@ variable {D : Type u₂} [Category.{v₂} D]
 def toOver (F : D ⥤ T) (X : T) : CostructuredArrow F X ⥤ Over X :=
   CostructuredArrow.pre F (𝟭 T) X
 
-instance (F : D ⥤ T) (X : T) [Faithful F] : Faithful (toOver F X) :=
+instance (F : D ⥤ T) (X : T) [Faithful F] : Faithful (toOver F X) := fast_instance%
   show Faithful (CostructuredArrow.pre _ _ _) from inferInstance
 
-instance (F : D ⥤ T) (X : T) [Full F] : Full (toOver F X) :=
+instance (F : D ⥤ T) (X : T) [Full F] : Full (toOver F X) := fast_instance%
   show Full (CostructuredArrow.pre _ _ _) from inferInstance
 
-instance (F : D ⥤ T) (X : T) [EssSurj F] : EssSurj (toOver F X) :=
+instance (F : D ⥤ T) (X : T) [EssSurj F] : EssSurj (toOver F X) := fast_instance%
   show EssSurj (CostructuredArrow.pre _ _ _) from inferInstance
 
 /-- An equivalence `F` induces an equivalence `CostructuredArrow F X ≌ Over X`. -/
@@ -341,7 +341,7 @@ def Under (X : T) :=
   StructuredArrow X (𝟭 T)
 #align category_theory.under CategoryTheory.Under
 
-instance (X : T) : Category (Under X) := commaCategory
+instance (X : T) : Category (Under X) := fast_instance% commaCategory
 
 -- Satisfying the inhabited linter
 instance Under.inhabited [Inhabited T] : Inhabited (Under (default : T)) where
@@ -522,7 +522,7 @@ If `k` is an epimorphism, then `k.right` is an epimorphism. In other words, `Und
 preserves epimorphisms.
 The converse of `CategoryTheory.under.epi_of_epi_right`.
 -/
-instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right := by
+instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right := fast_instance% by
   refine' ⟨fun { Y : T } l m a => _⟩
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
@@ -557,13 +557,13 @@ variable {D : Type u₂} [Category.{v₂} D]
 def toUnder (X : T) (F : D ⥤ T) : StructuredArrow X F ⥤ Under X :=
   StructuredArrow.pre X F (𝟭 T)
 
-instance (X : T) (F : D ⥤ T) [Faithful F] : Faithful (toUnder X F) :=
+instance (X : T) (F : D ⥤ T) [Faithful F] : Faithful (toUnder X F) := fast_instance%
   show Faithful (StructuredArrow.pre _ _ _) from inferInstance
 
-instance (X : T) (F : D ⥤ T) [Full F] : Full (toUnder X F) :=
+instance (X : T) (F : D ⥤ T) [Full F] : Full (toUnder X F) := fast_instance%
   show Full (StructuredArrow.pre _ _ _) from inferInstance
 
-instance (X : T) (F : D ⥤ T) [EssSurj F] : EssSurj (toUnder X F) :=
+instance (X : T) (F : D ⥤ T) [EssSurj F] : EssSurj (toUnder X F) := fast_instance%
   show EssSurj (StructuredArrow.pre _ _ _) from inferInstance
 
 /-- An equivalence `F` induces an equivalence `StructuredArrow X F ≌ Under X`. -/

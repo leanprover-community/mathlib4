@@ -52,16 +52,16 @@ theorem diagonal_snd : diagonal f ≫ pullback.snd = 𝟙 _ :=
   pullback.lift_snd _ _ _
 #align category_theory.limits.pullback.diagonal_snd CategoryTheory.Limits.pullback.diagonal_snd
 
-instance : IsSplitMono (diagonal f) :=
+instance : IsSplitMono (diagonal f) := fast_instance%
   ⟨⟨⟨pullback.fst, diagonal_fst f⟩⟩⟩
 
-instance : IsSplitEpi (pullback.fst : pullback f f ⟶ X) :=
+instance : IsSplitEpi (pullback.fst : pullback f f ⟶ X) := fast_instance%
   ⟨⟨⟨diagonal f, diagonal_fst f⟩⟩⟩
 
-instance : IsSplitEpi (pullback.snd : pullback f f ⟶ X) :=
+instance : IsSplitEpi (pullback.snd : pullback f f ⟶ X) := fast_instance%
   ⟨⟨⟨diagonal f, diagonal_snd f⟩⟩⟩
 
-instance [Mono f] : IsIso (diagonal f) := by
+instance [Mono f] : IsIso (diagonal f) := fast_instance% by
   rw [(IsIso.inv_eq_of_inv_hom_id (diagonal_fst f)).symm]
   infer_instance
 

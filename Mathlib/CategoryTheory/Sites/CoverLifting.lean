@@ -79,7 +79,7 @@ lemma Functor.cover_lift [G.IsCocontinuous J K] {U : C} {S : Sieve (G.obj U)}
   IsCocontinuous.cover_lift hS
 
 /-- The identity functor on a site is cocontinuous. -/
-instance isCocontinuous_id : Functor.IsCocontinuous (𝟭 C) J J :=
+instance isCocontinuous_id : Functor.IsCocontinuous (𝟭 C) J J := fast_instance%
   ⟨fun h => by simpa using h⟩
 #align category_theory.id_cover_lifting CategoryTheory.isCocontinuous_id
 
@@ -125,7 +125,7 @@ variable {G}
 variable (ℱ : Sheaf J A)
 variable {X : A} {U : D} (S : Sieve U) (hS : S ∈ K U)
 
-instance (X : Dᵒᵖ) : HasLimitsOfShape (StructuredArrow X G.op) A :=
+instance (X : Dᵒᵖ) : HasLimitsOfShape (StructuredArrow X G.op) A := fast_instance%
   haveI := Limits.hasLimitsOfSizeShrink.{v, max u v, max u v, max u v} A
   HasLimitsOfSize.has_limits_of_shape _
 

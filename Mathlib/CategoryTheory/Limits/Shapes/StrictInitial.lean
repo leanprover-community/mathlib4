@@ -113,7 +113,7 @@ theorem isInitialMul_inv (X : C) [HasBinaryProduct I X] (hI : IsInitial I) :
 
 variable [HasInitial C]
 
-instance initial_isIso_to {A : C} (f : A ⟶ ⊥_ C) : IsIso f :=
+instance initial_isIso_to {A : C} (f : A ⟶ ⊥_ C) : IsIso f := fast_instance%
   initialIsInitial.isIso_to _
 #align category_theory.limits.initial_is_iso_to CategoryTheory.Limits.initial_isIso_to
 
@@ -239,7 +239,7 @@ theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
 
 variable [HasTerminal C]
 
-instance terminal_isIso_from {A : C} (f : ⊤_ C ⟶ A) : IsIso f :=
+instance terminal_isIso_from {A : C} (f : ⊤_ C ⟶ A) : IsIso f := fast_instance%
   terminalIsTerminal.isIso_from _
 #align category_theory.limits.terminal_is_iso_from CategoryTheory.Limits.terminal_isIso_from
 

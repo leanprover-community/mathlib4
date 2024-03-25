@@ -390,7 +390,7 @@ protected theorem refl [Monoid α] (x : α) : x ~ᵤ x :=
   ⟨1, by simp⟩
 #align associated.refl Associated.refl
 
-instance [Monoid α] : IsRefl α Associated :=
+instance [Monoid α] : IsRefl α Associated := fast_instance%
   ⟨Associated.refl⟩
 
 @[symm]
@@ -398,7 +398,7 @@ protected theorem symm [Monoid α] : ∀ {x y : α}, x ~ᵤ y → y ~ᵤ x
   | x, _, ⟨u, rfl⟩ => ⟨u⁻¹, by rw [mul_assoc, Units.mul_inv, mul_one]⟩
 #align associated.symm Associated.symm
 
-instance [Monoid α] : IsSymm α Associated :=
+instance [Monoid α] : IsSymm α Associated := fast_instance%
   ⟨fun _ _ => Associated.symm⟩
 
 protected theorem comm [Monoid α] {x y : α} : x ~ᵤ y ↔ y ~ᵤ x :=
@@ -410,7 +410,7 @@ protected theorem trans [Monoid α] : ∀ {x y z : α}, x ~ᵤ y → y ~ᵤ z �
   | x, _, _, ⟨u, rfl⟩, ⟨v, rfl⟩ => ⟨u * v, by rw [Units.val_mul, mul_assoc]⟩
 #align associated.trans Associated.trans
 
-instance [Monoid α] : IsTrans α Associated :=
+instance [Monoid α] : IsTrans α Associated := fast_instance%
   ⟨fun _ _ _ => Associated.trans⟩
 
 /-- The setoid of the relation `x ~ᵤ y` iff there is a unit `u` such that `x * u = y` -/
@@ -799,7 +799,7 @@ protected abbrev mk {α : Type*} [Monoid α] (a : α) : Associates α :=
   ⟦a⟧
 #align associates.mk Associates.mk
 
-instance [Monoid α] : Inhabited (Associates α) :=
+instance [Monoid α] : Inhabited (Associates α) := fast_instance%
   ⟨⟦1⟧⟩
 
 theorem mk_eq_mk_iff_associated [Monoid α] {a b : α} : Associates.mk a = Associates.mk b ↔ a ~ᵤ b :=
@@ -828,7 +828,7 @@ theorem mk_surjective [Monoid α] : Function.Surjective (@Associates.mk α _) :=
   forall_associated.2 fun a => ⟨a, rfl⟩
 #align associates.mk_surjective Associates.mk_surjective
 
-instance [Monoid α] : One (Associates α) :=
+instance [Monoid α] : One (Associates α) := fast_instance%
   ⟨⟦1⟧⟩
 
 @[simp]
@@ -840,7 +840,7 @@ theorem one_eq_mk_one [Monoid α] : (1 : Associates α) = Associates.mk 1 :=
   rfl
 #align associates.one_eq_mk_one Associates.one_eq_mk_one
 
-instance [Monoid α] : Bot (Associates α) :=
+instance [Monoid α] : Bot (Associates α) := fast_instance%
   ⟨1⟩
 
 theorem bot_eq_one [Monoid α] : (⊥ : Associates α) = 1 :=
@@ -868,7 +868,7 @@ section CommMonoid
 
 variable [CommMonoid α]
 
-instance instMul : Mul (Associates α) :=
+instance instMul : Mul (Associates α) := fast_instance%
   ⟨fun a' b' =>
     (Quotient.liftOn₂ a' b' fun a b => ⟦a * b⟧) fun a₁ a₂ b₁ b₂ ⟨c₁, h₁⟩ ⟨c₂, h₂⟩ =>
       Quotient.sound <| ⟨c₁ * c₂, by
@@ -1019,7 +1019,7 @@ theorem isPrimal_iff {a : α} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
 theorem decompositionMonoid_iff : DecompositionMonoid (Associates α) ↔ DecompositionMonoid α := by
   simp_rw [_root_.decompositionMonoid_iff, forall_associated, isPrimal_iff]
 
-instance instDecompositionMonoid [DecompositionMonoid α] : DecompositionMonoid (Associates α) :=
+instance instDecompositionMonoid [DecompositionMonoid α] : DecompositionMonoid (Associates α) := fast_instance%
   decompositionMonoid_iff.mpr ‹_›
 
 theorem mk_isRelPrime_iff {a b : α} :
@@ -1028,10 +1028,10 @@ theorem mk_isRelPrime_iff {a b : α} :
 
 end CommMonoid
 
-instance [Zero α] [Monoid α] : Zero (Associates α) :=
+instance [Zero α] [Monoid α] : Zero (Associates α) := fast_instance%
   ⟨⟦0⟧⟩
 
-instance [Zero α] [Monoid α] : Top (Associates α) :=
+instance [Zero α] [Monoid α] : Top (Associates α) := fast_instance%
   ⟨0⟩
 
 section MonoidWithZero
@@ -1047,7 +1047,7 @@ theorem mk_ne_zero {a : α} : Associates.mk a ≠ 0 ↔ a ≠ 0 :=
   not_congr mk_eq_zero
 #align associates.mk_ne_zero Associates.mk_ne_zero
 
-instance [Nontrivial α] : Nontrivial (Associates α) :=
+instance [Nontrivial α] : Nontrivial (Associates α) := fast_instance%
   ⟨⟨0, 1, fun h =>
       have : (0 : α) ~ᵤ 1 := Quotient.exact h
       have : (0 : α) = 1 := ((associated_zero_iff_eq_zero 1).1 this.symm).symm
@@ -1172,7 +1172,7 @@ instance instPartialOrder : PartialOrder (Associates α) where
 instance instOrderedCommMonoid : OrderedCommMonoid (Associates α) where
     mul_le_mul_left := fun a _ ⟨d, hd⟩ c => hd.symm ▸ mul_assoc c a d ▸ le_mul_right
 
-instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates α) :=
+instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates α) := fast_instance%
 { (by infer_instance : CommMonoidWithZero (Associates α)) with
   mul_left_cancel_of_ne_zero := by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ha h
@@ -1183,7 +1183,7 @@ instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates α)
 theorem _root_.associates_irreducible_iff_prime [DecompositionMonoid α] {p : Associates α} :
     Irreducible p ↔ Prime p := irreducible_iff_prime
 
-instance : NoZeroDivisors (Associates α) := by infer_instance
+instance : NoZeroDivisors (Associates α) := fast_instance% by infer_instance
 
 theorem le_of_mul_le_mul_left (a b c : Associates α) (ha : a ≠ 0) : a * b ≤ a * c → b ≤ c
   | ⟨d, hd⟩ => ⟨d, mul_left_cancel₀ ha <| by rwa [← mul_assoc]⟩

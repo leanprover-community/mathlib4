@@ -46,7 +46,7 @@ defined as sheaves on `CompHaus.{u}` with respect to the coherent Grothendieck t
 def Condensed (C : Type w) [Category.{v} C] :=
   Sheaf (coherentTopology CompHaus.{u}) C
 
-instance {C : Type w} [Category.{v} C] : Category (Condensed.{u} C) :=
+instance {C : Type w} [Category.{v} C] : Category (Condensed.{u} C) := fast_instance%
   show Category (Sheaf _ _) from inferInstance
 
 /--

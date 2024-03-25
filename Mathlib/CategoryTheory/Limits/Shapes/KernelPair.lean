@@ -57,7 +57,7 @@ abbrev IsKernelPair :=
 namespace IsKernelPair
 
 /-- The data expressing that `(a, b)` is a kernel pair is subsingleton. -/
-instance : Subsingleton (IsKernelPair f a b) :=
+instance : Subsingleton (IsKernelPair f a b) := fast_instance%
   ⟨fun P Q => by
     cases P
     cases Q
@@ -68,7 +68,7 @@ theorem id_of_mono [Mono f] : IsKernelPair f (𝟙 _) (𝟙 _) :=
   ⟨⟨rfl⟩, ⟨PullbackCone.isLimitMkIdId _⟩⟩
 #align category_theory.is_kernel_pair.id_of_mono CategoryTheory.IsKernelPair.id_of_mono
 
-instance [Mono f] : Inhabited (IsKernelPair f (𝟙 _) (𝟙 _)) :=
+instance [Mono f] : Inhabited (IsKernelPair f (𝟙 _) (𝟙 _)) := fast_instance%
   ⟨id_of_mono f⟩
 
 variable {f a b}

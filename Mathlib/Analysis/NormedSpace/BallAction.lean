@@ -37,7 +37,7 @@ instance mulActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul _ _ _
 #align mul_action_closed_ball_ball mulActionClosedBallBall
 
-instance continuousSMul_closedBall_ball : ContinuousSMul (closedBall (0 : 𝕜) 1) (ball (0 : E) r) :=
+instance continuousSMul_closedBall_ball : ContinuousSMul (closedBall (0 : 𝕜) 1) (ball (0 : E) r) := fast_instance%
   ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
 #align has_continuous_smul_closed_ball_ball continuousSMul_closedBall_ball
 
@@ -68,7 +68,7 @@ instance mulActionSphereBall : MulAction (sphere (0 : 𝕜) 1) (ball (0 : E) r) 
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 #align mul_action_sphere_ball mulActionSphereBall
 
-instance continuousSMul_sphere_ball : ContinuousSMul (sphere (0 : 𝕜) 1) (ball (0 : E) r) :=
+instance continuousSMul_sphere_ball : ContinuousSMul (sphere (0 : 𝕜) 1) (ball (0 : E) r) := fast_instance%
   ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
 #align has_continuous_smul_sphere_ball continuousSMul_sphere_ball
 
@@ -93,7 +93,7 @@ instance mulActionSphereSphere : MulAction (sphere (0 : 𝕜) 1) (sphere (0 : E)
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul _ _ _
 #align mul_action_sphere_sphere mulActionSphereSphere
 
-instance continuousSMul_sphere_sphere : ContinuousSMul (sphere (0 : 𝕜) 1) (sphere (0 : E) r) :=
+instance continuousSMul_sphere_sphere : ContinuousSMul (sphere (0 : 𝕜) 1) (sphere (0 : E) r) := fast_instance%
   ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
 #align has_continuous_smul_sphere_sphere continuousSMul_sphere_sphere
 

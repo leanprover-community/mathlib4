@@ -427,7 +427,7 @@ typeclass inference -/
 def Fiber (_ : FiberBundleCore ι B F) (_x : B) := F
 #align fiber_bundle_core.fiber FiberBundleCore.Fiber
 
-instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹_›
+instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := fast_instance% ‹_›
 #align fiber_bundle_core.topological_space_fiber FiberBundleCore.topologicalSpaceFiber
 
 /-- The total space of the fiber bundle, as a convenience function for dot notation.
@@ -542,7 +542,7 @@ theorem localTrivAsPartialEquiv_trans (i j : ι) :
 
 /-- Topological structure on the total space of a fiber bundle created from core, designed so
 that all the local trivialization are continuous. -/
-instance toTopologicalSpace : TopologicalSpace (Bundle.TotalSpace F Z.Fiber) :=
+instance toTopologicalSpace : TopologicalSpace (Bundle.TotalSpace F Z.Fiber) := fast_instance%
   TopologicalSpace.generateFrom <| ⋃ (i : ι) (s : Set (B × F)) (_ : IsOpen s),
     {(Z.localTrivAsPartialEquiv i).source ∩ Z.localTrivAsPartialEquiv i ⁻¹' s}
 #align fiber_bundle_core.to_topological_space FiberBundleCore.toTopologicalSpace

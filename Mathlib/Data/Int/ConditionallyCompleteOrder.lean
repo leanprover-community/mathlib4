@@ -21,7 +21,7 @@ open Int
 noncomputable section
 open scoped Classical
 
-instance : ConditionallyCompleteLinearOrder ℤ :=
+instance : ConditionallyCompleteLinearOrder ℤ := fast_instance%
   { Int.linearOrderedCommRing,
     LinearOrder.toLattice with
     sSup := fun s =>

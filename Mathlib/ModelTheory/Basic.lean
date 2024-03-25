@@ -77,19 +77,19 @@ namespace Sequence₂
 
 variable (a₀ a₁ a₂ : Type u)
 
-instance inhabited₀ [h : Inhabited a₀] : Inhabited (Sequence₂ a₀ a₁ a₂ 0) :=
+instance inhabited₀ [h : Inhabited a₀] : Inhabited (Sequence₂ a₀ a₁ a₂ 0) := fast_instance%
   h
 #align first_order.sequence₂.inhabited₀ FirstOrder.Sequence₂.inhabited₀
 
-instance inhabited₁ [h : Inhabited a₁] : Inhabited (Sequence₂ a₀ a₁ a₂ 1) :=
+instance inhabited₁ [h : Inhabited a₁] : Inhabited (Sequence₂ a₀ a₁ a₂ 1) := fast_instance%
   h
 #align first_order.sequence₂.inhabited₁ FirstOrder.Sequence₂.inhabited₁
 
-instance inhabited₂ [h : Inhabited a₂] : Inhabited (Sequence₂ a₀ a₁ a₂ 2) :=
+instance inhabited₂ [h : Inhabited a₂] : Inhabited (Sequence₂ a₀ a₁ a₂ 2) := fast_instance%
   h
 #align first_order.sequence₂.inhabited₂ FirstOrder.Sequence₂.inhabited₂
 
-instance {n : ℕ} : IsEmpty (Sequence₂ a₀ a₁ a₂ (n + 3)) := inferInstanceAs (IsEmpty PEmpty)
+instance {n : ℕ} : IsEmpty (Sequence₂ a₀ a₁ a₂ (n + 3)) := fast_instance% inferInstanceAs (IsEmpty PEmpty)
 
 @[simp]
 theorem lift_mk {i : ℕ} :
@@ -122,7 +122,7 @@ protected def empty : Language :=
   ⟨fun _ => Empty, fun _ => Empty⟩
 #align first_order.language.empty FirstOrder.Language.empty
 
-instance : Inhabited Language :=
+instance : Inhabited Language := fast_instance%
   ⟨Language.empty⟩
 
 /-- The sum of two languages consists of the disjoint union of their symbols. -/
@@ -178,10 +178,10 @@ theorem card_eq_card_functions_add_card_relations :
   simp [card, Symbols]
 #align first_order.language.card_eq_card_functions_add_card_relations FirstOrder.Language.card_eq_card_functions_add_card_relations
 
-instance [L.IsRelational] {n : ℕ} : IsEmpty (L.Functions n) :=
+instance [L.IsRelational] {n : ℕ} : IsEmpty (L.Functions n) := fast_instance%
   IsRelational.empty_functions n
 
-instance [L.IsAlgebraic] {n : ℕ} : IsEmpty (L.Relations n) :=
+instance [L.IsAlgebraic] {n : ℕ} : IsEmpty (L.Relations n) := fast_instance%
   IsAlgebraic.empty_relations n
 
 instance isRelational_of_empty_functions {symb : ℕ → Type*} :
@@ -189,23 +189,23 @@ instance isRelational_of_empty_functions {symb : ℕ → Type*} :
   ⟨fun _ => instIsEmptyEmpty⟩
 #align first_order.language.is_relational_of_empty_functions FirstOrder.Language.isRelational_of_empty_functions
 
-instance isAlgebraic_of_empty_relations {symb : ℕ → Type*} : IsAlgebraic ⟨symb, fun _ => Empty⟩ :=
+instance isAlgebraic_of_empty_relations {symb : ℕ → Type*} : IsAlgebraic ⟨symb, fun _ => Empty⟩ := fast_instance%
   ⟨fun _ => instIsEmptyEmpty⟩
 #align first_order.language.is_algebraic_of_empty_relations FirstOrder.Language.isAlgebraic_of_empty_relations
 
-instance isRelational_empty : IsRelational Language.empty :=
+instance isRelational_empty : IsRelational Language.empty := fast_instance%
   Language.isRelational_of_empty_functions
 #align first_order.language.is_relational_empty FirstOrder.Language.isRelational_empty
 
-instance isAlgebraic_empty : IsAlgebraic Language.empty :=
+instance isAlgebraic_empty : IsAlgebraic Language.empty := fast_instance%
   Language.isAlgebraic_of_empty_relations
 #align first_order.language.is_algebraic_empty FirstOrder.Language.isAlgebraic_empty
 
-instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.sum L') :=
+instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.sum L') := fast_instance%
   ⟨fun _ => instIsEmptySum⟩
 #align first_order.language.is_relational_sum FirstOrder.Language.isRelational_sum
 
-instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L') :=
+instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L') := fast_instance%
   ⟨fun _ => instIsEmptySum⟩
 #align first_order.language.is_algebraic_sum FirstOrder.Language.isAlgebraic_sum
 
@@ -240,12 +240,12 @@ instance subsingleton_mk₂_relations {c f₁ f₂ : Type u} {r₁ r₂ : Type v
 theorem empty_card : Language.empty.card = 0 := by simp [card_eq_card_functions_add_card_relations]
 #align first_order.language.empty_card FirstOrder.Language.empty_card
 
-instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
+instance isEmpty_empty : IsEmpty Language.empty.Symbols := fast_instance% by
   simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]
   exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
 #align first_order.language.is_empty_empty FirstOrder.Language.isEmpty_empty
 
-instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σl, L.Functions l) :=
+instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σl, L.Functions l) := fast_instance%
   @Function.Injective.countable _ _ h _ Sum.inl_injective
 #align first_order.language.countable.countable_functions FirstOrder.Language.Countable.countable_functions
 
@@ -370,7 +370,7 @@ variable {L M N} {P : Type*} [Structure L P] {Q : Type*} [Structure L Q]
 @[coe]
 def constantMap (c : L.Constants) : M := funMap c default
 
-instance : CoeTC L.Constants M :=
+instance : CoeTC L.Constants M := fast_instance%
   ⟨constantMap⟩
 
 theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x = c :=
@@ -507,10 +507,10 @@ instance homClass : HomClass L (M →[L] N) M N where
   map_rel := map_rel'
 #align first_order.language.hom.hom_class FirstOrder.Language.Hom.homClass
 
-instance [L.IsAlgebraic] : StrongHomClass L (M →[L] N) M N :=
+instance [L.IsAlgebraic] : StrongHomClass L (M →[L] N) M N := fast_instance%
   HomClass.strongHomClassOfIsAlgebraic
 
-instance hasCoeToFun : CoeFun (M →[L] N) fun _ => M → N :=
+instance hasCoeToFun : CoeFun (M →[L] N) fun _ => M → N := fast_instance%
   DFunLike.hasCoeToFun
 #align first_order.language.hom.has_coe_to_fun FirstOrder.Language.Hom.hasCoeToFun
 
@@ -555,7 +555,7 @@ def id : M →[L] M where
 
 variable {L} {M}
 
-instance : Inhabited (M →[L] M) :=
+instance : Inhabited (M →[L] M) := fast_instance%
   ⟨id L M⟩
 
 @[simp]
@@ -700,7 +700,7 @@ def refl : M ↪[L] M where toEmbedding := Function.Embedding.refl M
 
 variable {L} {M}
 
-instance : Inhabited (M ↪[L] M) :=
+instance : Inhabited (M ↪[L] M) := fast_instance%
   ⟨refl L M⟩
 
 @[simp]
@@ -805,7 +805,7 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
       rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
 #align first_order.language.equiv.symm FirstOrder.Language.Equiv.symm
 
-instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=
+instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N := fast_instance%
   DFunLike.hasCoeToFun
 #align first_order.language.equiv.has_coe_to_fun FirstOrder.Language.Equiv.hasCoeToFun
 
@@ -903,7 +903,7 @@ def refl : M ≃[L] M where toEquiv := _root_.Equiv.refl M
 
 variable {L} {M}
 
-instance : Inhabited (M ≃[L] M) :=
+instance : Inhabited (M ≃[L] M) := fast_instance%
   ⟨refl L M⟩
 
 @[simp]
@@ -1074,12 +1074,12 @@ theorem empty.nonempty_equiv_iff :
 
 end
 
-instance emptyStructure : Language.empty.Structure M :=
+instance emptyStructure : Language.empty.Structure M := fast_instance%
   ⟨Empty.elim, Empty.elim⟩
 set_option linter.uppercaseLean3 false in
 #align first_order.language.empty_Structure FirstOrder.Language.emptyStructure
 
-instance : Unique (Language.empty.Structure M) :=
+instance : Unique (Language.empty.Structure M) := fast_instance%
   ⟨⟨Language.emptyStructure⟩, fun a => by
     ext _ f <;> exact Empty.elim f⟩
 

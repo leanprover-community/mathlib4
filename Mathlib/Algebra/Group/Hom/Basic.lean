@@ -56,7 +56,7 @@ namespace MulHom
 sending `x` to `f x * g x`. -/
 @[to_additive "Given two additive morphisms `f`, `g` to an additive commutative semigroup,
 `f + g` is the additive morphism sending `x` to `f x + g x`."]
-instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
+instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) := fast_instance%
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_mul' := fun x y => by
@@ -167,7 +167,7 @@ variable [MulOneClass M] [CommMonoid N]
 /-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
 sending `x` to `f x * g x`. -/
 @[to_additive]
-instance mul : Mul (M →* N) :=
+instance mul : Mul (M →* N) := fast_instance%
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_one' := show f 1 * g 1 = 1 by simp,

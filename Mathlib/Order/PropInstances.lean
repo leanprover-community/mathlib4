@@ -44,11 +44,11 @@ theorem Prop.top_eq_true : (⊤ : Prop) = True :=
   rfl
 #align Prop.top_eq_true Prop.top_eq_true
 
-instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
+instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) := fast_instance%
   ⟨fun p q => by by_cases h : q <;> simp [h]⟩
 #align Prop.le_is_total Prop.le_isTotal
 
-noncomputable instance Prop.linearOrder : LinearOrder Prop := by
+noncomputable instance Prop.linearOrder : LinearOrder Prop := fast_instance% by
   classical
   exact Lattice.toLinearOrder Prop
 #align Prop.linear_order Prop.linearOrder
@@ -114,12 +114,12 @@ section decidable_instances
 universe u
 variable {α : Type u}
 
-instance Prop.decidablePredBot : DecidablePred (⊥ : α → Prop) := fun _ => instDecidableFalse
+instance Prop.decidablePredBot : DecidablePred (⊥ : α → Prop) := fast_instance% fun _ => instDecidableFalse
 
-instance Prop.decidablePredTop : DecidablePred (⊤ : α → Prop) := fun _ => instDecidableTrue
+instance Prop.decidablePredTop : DecidablePred (⊤ : α → Prop) := fast_instance% fun _ => instDecidableTrue
 
-instance Prop.decidableRelBot : DecidableRel (⊥ : α → α → Prop) := fun _ _ => instDecidableFalse
+instance Prop.decidableRelBot : DecidableRel (⊥ : α → α → Prop) := fast_instance% fun _ _ => instDecidableFalse
 
-instance Prop.decidableRelTop : DecidableRel (⊤ : α → α → Prop) := fun _ _ => instDecidableTrue
+instance Prop.decidableRelTop : DecidableRel (⊤ : α → α → Prop) := fast_instance% fun _ _ => instDecidableTrue
 
 end decidable_instances

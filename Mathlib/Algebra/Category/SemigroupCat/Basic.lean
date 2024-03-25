@@ -47,7 +47,7 @@ add_decl_doc AddMagmaCat
 namespace MagmaCat
 
 @[to_additive]
-instance bundledHom : BundledHom @MulHom :=
+instance bundledHom : BundledHom @MulHom := fast_instance%
   ⟨@MulHom.toFun, @MulHom.id, @MulHom.comp,
     -- Porting note: was `@MulHom.coe_inj` which is deprecated
     by intros; apply @DFunLike.coe_injective, by aesop_cat, by aesop_cat⟩
@@ -58,7 +58,7 @@ instance bundledHom : BundledHom @MulHom :=
 -- "default handlers have not been implemented yet"
 -- https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for MagmaCat
-instance instConcreteCategory : ConcreteCategory MagmaCat := BundledHom.concreteCategory MulHom
+instance instConcreteCategory : ConcreteCategory MagmaCat := fast_instance% BundledHom.concreteCategory MulHom
 
 attribute [to_additive] instMagmaCatLargeCategory instConcreteCategory
 
@@ -73,14 +73,14 @@ unif_hint _root_.AddMagmaCat.forget_obj_eq_coe (R : AddMagmaCat) where ⊢
   (forget AddMagmaCat).obj R ≟ R
 
 @[to_additive]
-instance (X : MagmaCat) : Mul X := X.str
+instance (X : MagmaCat) : Mul X := fast_instance% X.str
 
 @[to_additive]
-instance instFunLike (X Y : MagmaCat) : FunLike (X ⟶ Y) X Y :=
+instance instFunLike (X Y : MagmaCat) : FunLike (X ⟶ Y) X Y := fast_instance%
   inferInstanceAs <| FunLike (X →ₙ* Y) X Y
 
 @[to_additive]
-instance instMulHomClass (X Y : MagmaCat) : MulHomClass (X ⟶ Y) X Y :=
+instance instMulHomClass (X Y : MagmaCat) : MulHomClass (X ⟶ Y) X Y := fast_instance%
   inferInstanceAs <| MulHomClass (X →ₙ* Y) X Y
 
 /-- Construct a bundled `MagmaCat` from the underlying type and typeclass. -/
@@ -121,7 +121,7 @@ theorem ofHom_apply {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) (x : X) : o
 #align AddMagma.of_hom_apply AddMagmaCat.ofHom_apply
 
 @[to_additive]
-instance : Inhabited MagmaCat :=
+instance : Inhabited MagmaCat := fast_instance%
   ⟨MagmaCat.of PEmpty⟩
 
 end MagmaCat
@@ -139,14 +139,14 @@ add_decl_doc AddSemigroupCat
 namespace SemigroupCat
 
 @[to_additive]
-instance : BundledHom.ParentProjection @Semigroup.toMul := ⟨⟩
+instance : BundledHom.ParentProjection @Semigroup.toMul := fast_instance% ⟨⟩
 
 deriving instance LargeCategory for SemigroupCat
 
 -- Porting note: deriving failed for `ConcreteCategory`,
 -- "default handlers have not been implemented yet"
 -- https://github.com/leanprover-community/mathlib4/issues/5020
-instance instConcreteCategory : ConcreteCategory SemigroupCat :=
+instance instConcreteCategory : ConcreteCategory SemigroupCat := fast_instance%
   BundledHom.concreteCategory (fun _ _ => _)
 
 attribute [to_additive] instSemigroupCatLargeCategory SemigroupCat.instConcreteCategory
@@ -162,14 +162,14 @@ unif_hint _root_.AddSemigroupCat.forget_obj_eq_coe (R : AddSemigroupCat) where �
   (forget AddSemigroupCat).obj R ≟ R
 
 @[to_additive]
-instance (X : SemigroupCat) : Semigroup X := X.str
+instance (X : SemigroupCat) : Semigroup X := fast_instance% X.str
 
 @[to_additive]
-instance instFunLike (X Y : SemigroupCat) : FunLike (X ⟶ Y) X Y :=
+instance instFunLike (X Y : SemigroupCat) : FunLike (X ⟶ Y) X Y := fast_instance%
   inferInstanceAs <| FunLike (X →ₙ* Y) X Y
 
 @[to_additive]
-instance instMulHomClass (X Y : SemigroupCat) : MulHomClass (X ⟶ Y) X Y :=
+instance instMulHomClass (X Y : SemigroupCat) : MulHomClass (X ⟶ Y) X Y := fast_instance%
   inferInstanceAs <| MulHomClass (X →ₙ* Y) X Y
 
 /-- Construct a bundled `SemigroupCat` from the underlying type and typeclass. -/
@@ -212,11 +212,11 @@ theorem ofHom_apply {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y)
 #align AddSemigroup.of_hom_apply AddSemigroupCat.ofHom_apply
 
 @[to_additive]
-instance : Inhabited SemigroupCat :=
+instance : Inhabited SemigroupCat := fast_instance%
   ⟨SemigroupCat.of PEmpty⟩
 
 @[to_additive]
-instance hasForgetToMagmaCat : HasForget₂ SemigroupCat MagmaCat :=
+instance hasForgetToMagmaCat : HasForget₂ SemigroupCat MagmaCat := fast_instance%
   BundledHom.forget₂ _ _
 #align Semigroup.has_forget_to_Magma SemigroupCat.hasForgetToMagmaCat
 #align AddSemigroup.has_forget_to_AddMagma AddSemigroupCat.hasForgetToAddMagmaCat
@@ -326,7 +326,7 @@ instance SemigroupCat.forgetReflectsIsos : ReflectsIsomorphisms (forget Semigrou
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]
-instance SemigroupCat.forget₂Full : Full (forget₂ SemigroupCat MagmaCat) where preimage f := f
+instance SemigroupCat.forget₂Full : Full (forget₂ SemigroupCat MagmaCat) where preimage f := fast_instance% f
 
 /-!
 Once we've shown that the forgetful functors to type reflect isomorphisms,

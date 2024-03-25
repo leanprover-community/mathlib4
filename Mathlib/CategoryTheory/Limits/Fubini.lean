@@ -257,7 +257,7 @@ noncomputable def DiagramOfCones.mkOfHasLimits : DiagramOfCones F where
 #align category_theory.limits.diagram_of_cones.mk_of_has_limits CategoryTheory.Limits.DiagramOfCones.mkOfHasLimits
 
 -- Satisfying the inhabited linter.
-noncomputable instance diagramOfConesInhabited : Inhabited (DiagramOfCones F) :=
+noncomputable instance diagramOfConesInhabited : Inhabited (DiagramOfCones F) := fast_instance%
   ⟨DiagramOfCones.mkOfHasLimits F⟩
 #align category_theory.limits.diagram_of_cones_inhabited CategoryTheory.Limits.diagramOfConesInhabited
 
@@ -317,7 +317,7 @@ noncomputable def DiagramOfCocones.mkOfHasColimits : DiagramOfCocones F where
   map f := { hom := colim.map (F.map f) }
 
 -- Satisfying the inhabited linter.
-noncomputable instance diagramOfCoconesInhabited : Inhabited (DiagramOfCocones F) :=
+noncomputable instance diagramOfCoconesInhabited : Inhabited (DiagramOfCocones F) := fast_instance%
   ⟨DiagramOfCocones.mkOfHasColimits F⟩
 
 @[simp]

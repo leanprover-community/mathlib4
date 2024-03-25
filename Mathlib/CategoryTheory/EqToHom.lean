@@ -184,7 +184,7 @@ theorem eqToHom_unop {X Y : Cᵒᵖ} (h : X = Y) :
   rfl
 #align category_theory.eq_to_hom_unop CategoryTheory.eqToHom_unop
 
-instance {X Y : C} (h : X = Y) : IsIso (eqToHom h) :=
+instance {X Y : C} (h : X = Y) : IsIso (eqToHom h) := fast_instance%
   IsIso.of_iso (eqToIso h)
 
 @[simp]

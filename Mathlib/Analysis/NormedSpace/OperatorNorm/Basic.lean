@@ -124,7 +124,7 @@ def opNorm (f : E →SL[σ₁₂] F) :=
   sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ }
 #align continuous_linear_map.op_norm ContinuousLinearMap.opNorm
 
-instance hasOpNorm : Norm (E →SL[σ₁₂] F) :=
+instance hasOpNorm : Norm (E →SL[σ₁₂] F) := fast_instance%
   ⟨opNorm⟩
 #align continuous_linear_map.has_op_norm ContinuousLinearMap.hasOpNorm
 
@@ -415,7 +415,7 @@ private lemma uniformity_eq_seminorm :
     rw [mul_comm] at hδ
     exact le_trans (le_of_opNorm_le_of_le _ hf.le (hε _ hx)) hδ.le
 
-instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .replaceUniformity
+instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := fast_instance% .replaceUniformity
   ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace uniformity_eq_seminorm
 #align continuous_linear_map.to_pseudo_metric_space ContinuousLinearMap.toPseudoMetricSpace
 
@@ -452,14 +452,14 @@ alias op_norm_comp_le :=
   opNorm_comp_le -- deprecated on 2024-02-02
 
 /-- Continuous linear maps form a seminormed ring with respect to the operator norm. -/
-instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
+instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) := fast_instance%
   { ContinuousLinearMap.toSeminormedAddCommGroup, ContinuousLinearMap.ring with
     norm_mul := fun f g => opNorm_comp_le f g }
 #align continuous_linear_map.to_semi_normed_ring ContinuousLinearMap.toSemiNormedRing
 
 /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 respect to the operator norm. -/
-instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) :=
+instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) := fast_instance%
   { algebra with
     norm_smul_le := by
       intro c f

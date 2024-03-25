@@ -97,7 +97,7 @@ instance instFunLike : FunLike (M [⋀^ι]→ₗ[R] N) (ι → M) N where
 #align alternating_map.fun_like AlternatingMap.instFunLike
 
 -- shortcut instance
-instance coeFun : CoeFun (M [⋀^ι]→ₗ[R] N) fun _ => (ι → M) → N :=
+instance coeFun : CoeFun (M [⋀^ι]→ₗ[R] N) fun _ => (ι → M) → N := fast_instance%
   ⟨DFunLike.coe⟩
 #align alternating_map.has_coe_to_fun AlternatingMap.coeFun
 
@@ -143,7 +143,7 @@ theorem ext_iff {f g : M [⋀^ι]→ₗ[R] N} : f = g ↔ ∀ x, f x = g x :=
 
 attribute [coe] AlternatingMap.toMultilinearMap
 
-instance coe : Coe (M [⋀^ι]→ₗ[R] N) (MultilinearMap R (fun _ : ι => M) N) :=
+instance coe : Coe (M [⋀^ι]→ₗ[R] N) (MultilinearMap R (fun _ : ι => M) N) := fast_instance%
   ⟨fun x => x.toMultilinearMap⟩
 #align alternating_map.multilinear_map.has_coe AlternatingMap.coe
 
@@ -238,7 +238,7 @@ section SMul
 
 variable {S : Type*} [Monoid S] [DistribMulAction S N] [SMulCommClass R S N]
 
-instance smul : SMul S (M [⋀^ι]→ₗ[R] N) :=
+instance smul : SMul S (M [⋀^ι]→ₗ[R] N) := fast_instance%
   ⟨fun c f =>
     { c • (f : MultilinearMap R (fun _ : ι => M) N) with
       map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij] }⟩
@@ -314,7 +314,7 @@ theorem coe_smulRight {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M
   rfl
 #align alternating_map.coe_smul_right AlternatingMap.coe_smulRight
 
-instance add : Add (M [⋀^ι]→ₗ[R] N) :=
+instance add : Add (M [⋀^ι]→ₗ[R] N) := fast_instance%
   ⟨fun a b =>
     { (a + b : MultilinearMap R (fun _ : ι => M) N) with
       map_eq_zero_of_eq' := fun v i j h hij => by
@@ -331,7 +331,7 @@ theorem coe_add : (↑(f + f') : MultilinearMap R (fun _ : ι => M) N) = f + f' 
   rfl
 #align alternating_map.coe_add AlternatingMap.coe_add
 
-instance zero : Zero (M [⋀^ι]→ₗ[R] N) :=
+instance zero : Zero (M [⋀^ι]→ₗ[R] N) := fast_instance%
   ⟨{ (0 : MultilinearMap R (fun _ : ι => M) N) with
       map_eq_zero_of_eq' := fun v i j _ _ => by simp }⟩
 #align alternating_map.has_zero AlternatingMap.zero
@@ -351,15 +351,15 @@ theorem mk_zero :
     mk (0 : MultilinearMap R (fun _ : ι ↦ M) N) (0 : M [⋀^ι]→ₗ[R] N).2 = 0 :=
   rfl
 
-instance inhabited : Inhabited (M [⋀^ι]→ₗ[R] N) :=
+instance inhabited : Inhabited (M [⋀^ι]→ₗ[R] N) := fast_instance%
   ⟨0⟩
 #align alternating_map.inhabited AlternatingMap.inhabited
 
-instance addCommMonoid : AddCommMonoid (M [⋀^ι]→ₗ[R] N) :=
+instance addCommMonoid : AddCommMonoid (M [⋀^ι]→ₗ[R] N) := fast_instance%
   coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => coeFn_smul _ _
 #align alternating_map.add_comm_monoid AlternatingMap.addCommMonoid
 
-instance neg : Neg (M [⋀^ι]→ₗ[R] N') :=
+instance neg : Neg (M [⋀^ι]→ₗ[R] N') := fast_instance%
   ⟨fun f =>
     { -(f : MultilinearMap R (fun _ : ι => M) N') with
       map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij] }⟩
@@ -375,7 +375,7 @@ theorem coe_neg : ((-g : M [⋀^ι]→ₗ[R] N') : MultilinearMap R (fun _ : ι 
   rfl
 #align alternating_map.coe_neg AlternatingMap.coe_neg
 
-instance sub : Sub (M [⋀^ι]→ₗ[R] N') :=
+instance sub : Sub (M [⋀^ι]→ₗ[R] N') := fast_instance%
   ⟨fun f g =>
     { (f - g : MultilinearMap R (fun _ : ι => M) N') with
       map_eq_zero_of_eq' := fun v i j h hij => by
@@ -392,7 +392,7 @@ theorem coe_sub : (↑(g - g₂) : MultilinearMap R (fun _ : ι => M) N') = g - 
   rfl
 #align alternating_map.coe_sub AlternatingMap.coe_sub
 
-instance addCommGroup : AddCommGroup (M [⋀^ι]→ₗ[R] N') :=
+instance addCommGroup : AddCommGroup (M [⋀^ι]→ₗ[R] N') := fast_instance%
   coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
 #align alternating_map.add_comm_group AlternatingMap.addCommGroup

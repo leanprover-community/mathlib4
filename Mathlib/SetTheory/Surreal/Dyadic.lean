@@ -68,15 +68,15 @@ theorem powHalf_succ_moveRight (n i) : (powHalf (n + 1)).moveRight i = powHalf n
   rfl
 #align pgame.pow_half_succ_move_right SetTheory.PGame.powHalf_succ_moveRight
 
-instance uniquePowHalfLeftMoves (n) : Unique (powHalf n).LeftMoves := by
+instance uniquePowHalfLeftMoves (n) : Unique (powHalf n).LeftMoves := fast_instance% by
   cases n <;> exact PUnit.unique
 #align pgame.unique_pow_half_left_moves SetTheory.PGame.uniquePowHalfLeftMoves
 
-instance isEmpty_powHalf_zero_rightMoves : IsEmpty (powHalf 0).RightMoves :=
+instance isEmpty_powHalf_zero_rightMoves : IsEmpty (powHalf 0).RightMoves := fast_instance%
   inferInstanceAs (IsEmpty PEmpty)
 #align pgame.is_empty_pow_half_zero_right_moves SetTheory.PGame.isEmpty_powHalf_zero_rightMoves
 
-instance uniquePowHalfSuccRightMoves (n) : Unique (powHalf (n + 1)).RightMoves :=
+instance uniquePowHalfSuccRightMoves (n) : Unique (powHalf (n + 1)).RightMoves := fast_instance%
   PUnit.unique
 #align pgame.unique_pow_half_succ_right_moves SetTheory.PGame.uniquePowHalfSuccRightMoves
 

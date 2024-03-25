@@ -27,11 +27,11 @@ def ltb (s₁ s₂ : Iterator) : Bool :=
   else false
 #align string.ltb String.ltb
 
-instance LT' : LT String :=
+instance LT' : LT String := fast_instance%
   ⟨fun s₁ s₂ ↦ ltb s₁.iter s₂.iter⟩
 #align string.has_lt' String.LT'
 
-instance decidableLT : @DecidableRel String (· < ·) := by
+instance decidableLT : @DecidableRel String (· < ·) := fast_instance% by
   simp only [LT']
   infer_instance -- short-circuit type class inference
 #align string.decidable_lt String.decidableLT
@@ -101,11 +101,11 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
         · assumption
 #align string.lt_iff_to_list_lt String.lt_iff_toList_lt
 
-instance LE : LE String :=
+instance LE : LE String := fast_instance%
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
 #align string.has_le String.LE
 
-instance decidableLE : @DecidableRel String (· ≤ ·) := by
+instance decidableLE : @DecidableRel String (· ≤ ·) := fast_instance% by
   simp only [LE]
   infer_instance -- short-circuit type class inference
 #align string.decidable_le String.decidableLE

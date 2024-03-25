@@ -86,7 +86,7 @@ variable {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, LocallyCompa
 
 /-- In general it suffices that all but finitely many of the spaces are compact,
   but that's not straightforward to state and use. -/
-instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀ i, X i) :=
+instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀ i, X i) := fast_instance%
   ⟨fun t n hn => by
     rw [nhds_pi, Filter.mem_pi] at hn
     obtain ⟨s, -, n', hn', hsub⟩ := hn
@@ -98,7 +98,7 @@ instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀
 #align pi.locally_compact_space_of_finite Pi.locallyCompactSpace_of_finite
 
 /-- For spaces that are not Hausdorff. -/
-instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpace (∀ i, X i) :=
+instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpace (∀ i, X i) := fast_instance%
   ⟨fun t n hn => by
     rw [nhds_pi, Filter.mem_pi] at hn
     obtain ⟨s, hs, n', hn', hsub⟩ := hn

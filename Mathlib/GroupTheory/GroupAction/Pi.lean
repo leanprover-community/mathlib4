@@ -36,7 +36,7 @@ variable (x y : ∀ i, f i) (i : I)
 namespace Pi
 
 @[to_additive]
-instance smul' {g : I → Type*} [∀ i, SMul (f i) (g i)] : SMul (∀ i, f i) (∀ i : I, g i) :=
+instance smul' {g : I → Type*} [∀ i, SMul (f i) (g i)] : SMul (∀ i, f i) (∀ i : I, g i) := fast_instance%
   ⟨fun s x => fun i => s i • x i⟩
 #align pi.has_smul' Pi.smul'
 #align pi.has_vadd' Pi.vadd'
@@ -227,7 +227,7 @@ is not present. -/
 @[to_additive
   "Non-dependent version of `Pi.vadd`. Lean gets confused by the dependent instance
   if this is not present."]
-instance hasSMul {ι R M : Type*} [SMul R M] : SMul R (ι → M) :=
+instance hasSMul {ι R M : Type*} [SMul R M] : SMul R (ι → M) := fast_instance%
   Pi.instSMul
 #align function.has_smul Function.hasSMul
 #align function.has_vadd Function.hasVAdd

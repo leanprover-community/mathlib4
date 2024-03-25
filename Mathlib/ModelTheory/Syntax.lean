@@ -232,11 +232,11 @@ theorem constantsVarsEquivLeft_symm_apply (t : L.Term (Sum (Sum γ α) β)) :
   rfl
 #align first_order.language.term.constants_vars_equiv_left_symm_apply FirstOrder.Language.Term.constantsVarsEquivLeft_symm_apply
 
-instance inhabitedOfVar [Inhabited α] : Inhabited (L.Term α) :=
+instance inhabitedOfVar [Inhabited α] : Inhabited (L.Term α) := fast_instance%
   ⟨var default⟩
 #align first_order.language.term.inhabited_of_var FirstOrder.Language.Term.inhabitedOfVar
 
-instance inhabitedOfConstant [Inhabited L.Constants] : Inhabited (L.Term α) :=
+instance inhabitedOfConstant [Inhabited L.Constants] : Inhabited (L.Term α) := fast_instance%
   ⟨(default : L.Constants).term⟩
 #align first_order.language.term.inhabited_of_constant FirstOrder.Language.Term.inhabitedOfConstant
 
@@ -383,10 +383,10 @@ def Term.equal (t₁ t₂ : L.Term α) : L.Formula α :=
 
 namespace BoundedFormula
 
-instance : Inhabited (L.BoundedFormula α n) :=
+instance : Inhabited (L.BoundedFormula α n) := fast_instance%
   ⟨falsum⟩
 
-instance : Bot (L.BoundedFormula α n) :=
+instance : Bot (L.BoundedFormula α n) := fast_instance%
   ⟨falsum⟩
 
 /-- The negation of a bounded formula is also a bounded formula. -/
@@ -401,13 +401,13 @@ protected def ex (φ : L.BoundedFormula α (n + 1)) : L.BoundedFormula α n :=
   φ.not.all.not
 #align first_order.language.bounded_formula.ex FirstOrder.Language.BoundedFormula.ex
 
-instance : Top (L.BoundedFormula α n) :=
+instance : Top (L.BoundedFormula α n) := fast_instance%
   ⟨BoundedFormula.not ⊥⟩
 
-instance : Inf (L.BoundedFormula α n) :=
+instance : Inf (L.BoundedFormula α n) := fast_instance%
   ⟨fun f g => (f.imp g.not).not⟩
 
-instance : Sup (L.BoundedFormula α n) :=
+instance : Sup (L.BoundedFormula α n) := fast_instance%
   ⟨fun f g => f.not.imp g⟩
 
 /-- The biimplication between two bounded formulas. -/

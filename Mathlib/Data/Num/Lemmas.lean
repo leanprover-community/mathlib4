@@ -400,7 +400,7 @@ instance addMonoid : AddMonoid Num where
   nsmul := nsmulRec
 #align num.add_monoid Num.addMonoid
 
-instance addMonoidWithOne : AddMonoidWithOne Num :=
+instance addMonoidWithOne : AddMonoidWithOne Num := fast_instance%
   { Num.addMonoid with
     natCast := Num.ofNat'
     one := 1
@@ -408,7 +408,7 @@ instance addMonoidWithOne : AddMonoidWithOne Num :=
     natCast_succ := fun _ => ofNat'_succ }
 #align num.add_monoid_with_one Num.addMonoidWithOne
 
-instance commSemiring : CommSemiring Num := by
+instance commSemiring : CommSemiring Num := fast_instance% by
   refine'
     { Num.addMonoid,
       Num.addMonoidWithOne with
@@ -430,7 +430,7 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
   le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
 #align num.ordered_cancel_add_comm_monoid Num.orderedCancelAddCommMonoid
 
-instance linearOrderedSemiring : LinearOrderedSemiring Num :=
+instance linearOrderedSemiring : LinearOrderedSemiring Num := fast_instance%
   { Num.commSemiring,
     Num.orderedCancelAddCommMonoid with
     le_total := by
@@ -539,7 +539,7 @@ theorem succ'_pred' (n) : succ' (pred' n) = n :=
     rw [succ'_to_nat, pred'_to_nat, Nat.add_one, Nat.succ_pred_eq_of_pos (to_nat_pos _)]
 #align pos_num.succ'_pred' PosNum.succ'_pred'
 
-instance dvd : Dvd PosNum :=
+instance dvd : Dvd PosNum := fast_instance%
   ⟨fun m n => pos m ∣ pos n⟩
 #align pos_num.has_dvd PosNum.dvd
 
@@ -588,11 +588,11 @@ example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
-instance addCommSemigroup : AddCommSemigroup PosNum := by
+instance addCommSemigroup : AddCommSemigroup PosNum := fast_instance% by
   refine' { add := (· + ·).. } <;> transfer
 #align pos_num.add_comm_semigroup PosNum.addCommSemigroup
 
-instance commMonoid : CommMonoid PosNum := by
+instance commMonoid : CommMonoid PosNum := fast_instance% by
   refine'
     { mul := (· * ·)
       one := (1 : PosNum)
@@ -601,7 +601,7 @@ instance commMonoid : CommMonoid PosNum := by
   transfer
 #align pos_num.comm_monoid PosNum.commMonoid
 
-instance distrib : Distrib PosNum := by
+instance distrib : Distrib PosNum := fast_instance% by
   refine'
     { add := (· + ·)
       mul := (· * ·).. } <;>
@@ -1438,7 +1438,7 @@ instance addMonoid : AddMonoid ZNum where
   add_zero := add_zero
   nsmul := nsmulRec
 
-instance addCommGroup : AddCommGroup ZNum :=
+instance addCommGroup : AddCommGroup ZNum := fast_instance%
   { ZNum.addMonoid with
     add_comm := by transfer
     neg := Neg.neg
@@ -1446,7 +1446,7 @@ instance addCommGroup : AddCommGroup ZNum :=
     add_left_neg := by transfer }
 #align znum.add_comm_group ZNum.addCommGroup
 
-instance addMonoidWithOne : AddMonoidWithOne ZNum :=
+instance addMonoidWithOne : AddMonoidWithOne ZNum := fast_instance%
   { ZNum.addMonoid with
     one := 1
     natCast := fun n => ZNum.ofInt' n
@@ -1466,7 +1466,7 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
   transfer_rw
   exact fun h => _root_.add_le_add_left h c
 
-instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
+instance linearOrderedCommRing : LinearOrderedCommRing ZNum := fast_instance%
   { ZNum.linearOrder, ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul := (· * ·)
     mul_assoc := by transfer
@@ -1760,16 +1760,16 @@ def ofSnum : SNum → ℤ :=
   SNum.rec' (fun a => cond a (-1) 0) fun a _p IH => cond a (bit1 IH) (bit0 IH)
 #align int.of_snum Int.ofSnum
 
-instance snumCoe : Coe SNum ℤ :=
+instance snumCoe : Coe SNum ℤ := fast_instance%
   ⟨ofSnum⟩
 #align int.snum_coe Int.snumCoe
 
 end Int
 
-instance SNum.lt : LT SNum :=
+instance SNum.lt : LT SNum := fast_instance%
   ⟨fun a b => (a : ℤ) < b⟩
 #align snum.has_lt SNum.lt
 
-instance SNum.le : LE SNum :=
+instance SNum.le : LE SNum := fast_instance%
   ⟨fun a b => (a : ℤ) ≤ b⟩
 #align snum.has_le SNum.le

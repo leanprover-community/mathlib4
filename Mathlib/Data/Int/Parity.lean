@@ -91,9 +91,9 @@ theorem two_dvd_ne_zero : ¬2 ∣ n ↔ n % 2 = 1 :=
   even_iff_two_dvd.symm.not.trans not_even_iff
 #align int.two_dvd_ne_zero Int.two_dvd_ne_zero
 
-instance : DecidablePred (Even : ℤ → Prop) := fun _ => decidable_of_iff _ even_iff.symm
+instance : DecidablePred (Even : ℤ → Prop) := fast_instance% fun _ => decidable_of_iff _ even_iff.symm
 
-instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ odd_iff_not_even.symm
+instance : DecidablePred (Odd : ℤ → Prop) := fast_instance% fun _ => decidable_of_iff _ odd_iff_not_even.symm
 
 @[simp]
 theorem not_even_one : ¬Even (1 : ℤ) := by

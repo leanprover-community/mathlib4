@@ -218,7 +218,7 @@ theorem exists_mem_compactCovering (x : X) : ∃ n, x ∈ compactCovering X n :=
   iUnion_eq_univ_iff.mp (iUnion_compactCovering X) x
 #align exists_mem_compact_covering exists_mem_compactCovering
 
-instance [SigmaCompactSpace Y] : SigmaCompactSpace (X × Y) :=
+instance [SigmaCompactSpace Y] : SigmaCompactSpace (X × Y) := fast_instance%
   ⟨⟨fun n => compactCovering X n ×ˢ compactCovering Y n, fun _ =>
       (isCompact_compactCovering _ _).prod (isCompact_compactCovering _ _), by
       simp only [iUnion_prod_of_monotone (compactCovering_subset X) (compactCovering_subset Y),
@@ -232,7 +232,7 @@ instance [Finite ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, 
   · simp only [iUnion_compactCovering, pi_univ]
   · exact fun i => compactCovering_subset (X i)
 
-instance [SigmaCompactSpace Y] : SigmaCompactSpace (Sum X Y) :=
+instance [SigmaCompactSpace Y] : SigmaCompactSpace (Sum X Y) := fast_instance%
   ⟨⟨fun n => Sum.inl '' compactCovering X n ∪ Sum.inr '' compactCovering Y n, fun n =>
       ((isCompact_compactCovering X n).image continuous_inl).union
         ((isCompact_compactCovering Y n).image continuous_inr),
@@ -265,7 +265,7 @@ protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEm
 theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
   (closedEmbedding_subtype_val hs).sigmaCompactSpace
 
-instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
+instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) := fast_instance%
   ULift.closedEmbedding_down.sigmaCompactSpace
 
 /-- If `X` is a `σ`-compact space, then a locally finite family of nonempty sets of `X` can have

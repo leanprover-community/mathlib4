@@ -18,7 +18,7 @@ namespace Prod
 
 variable [AddMonoidWithOne α] [AddMonoidWithOne β]
 
-instance instAddMonoidWithOne : AddMonoidWithOne (α × β) :=
+instance instAddMonoidWithOne : AddMonoidWithOne (α × β) := fast_instance%
   { Prod.instAddMonoid, @Prod.instOne α β _ _ with
     natCast := fun n => (n, n)
     natCast_zero := congr_arg₂ Prod.mk Nat.cast_zero Nat.cast_zero

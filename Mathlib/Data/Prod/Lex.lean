@@ -39,19 +39,19 @@ namespace Prod.Lex
 -- This will be fixed in nightly-2022-11-30
 @[inherit_doc] notation:35 α " ×ₗ " β:34 => _root_.Lex (Prod α β)
 
-instance decidableEq (α β : Type*) [DecidableEq α] [DecidableEq β] : DecidableEq (α ×ₗ β) :=
+instance decidableEq (α β : Type*) [DecidableEq α] [DecidableEq β] : DecidableEq (α ×ₗ β) := fast_instance%
   instDecidableEqProd
 #align prod.lex.decidable_eq Prod.Lex.decidableEq
 
-instance inhabited (α β : Type*) [Inhabited α] [Inhabited β] : Inhabited (α ×ₗ β) :=
+instance inhabited (α β : Type*) [Inhabited α] [Inhabited β] : Inhabited (α ×ₗ β) := fast_instance%
   instInhabitedProd
 #align prod.lex.inhabited Prod.Lex.inhabited
 
 /-- Dictionary / lexicographic ordering on pairs.  -/
-instance instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := Prod.Lex (· < ·) (· ≤ ·)
+instance instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := fast_instance% Prod.Lex (· < ·) (· ≤ ·)
 #align prod.lex.has_le Prod.Lex.instLE
 
-instance instLT (α β : Type*) [LT α] [LT β] : LT (α ×ₗ β) where lt := Prod.Lex (· < ·) (· < ·)
+instance instLT (α β : Type*) [LT α] [LT β] : LT (α ×ₗ β) where lt := fast_instance% Prod.Lex (· < ·) (· < ·)
 #align prod.lex.has_lt Prod.Lex.instLT
 
 theorem le_iff [LT α] [LE β] (a b : α × β) :
@@ -67,7 +67,7 @@ theorem lt_iff [LT α] [LT β] (a b : α × β) :
 example (x : α) (y : β) : toLex (x, y) = toLex (x, y) := rfl
 
 /-- Dictionary / lexicographic preorder for pairs. -/
-instance preorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×ₗ β) :=
+instance preorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×ₗ β) := fast_instance%
   { Prod.Lex.instLE α β, Prod.Lex.instLT α β with
     le_refl := refl_of <| Prod.Lex _ _,
     le_trans := fun _ _ _ => trans_of <| Prod.Lex _ _,
@@ -125,7 +125,7 @@ theorem toLex_strictMono : StrictMono (toLex : α × β → α ×ₗ β) := by
 end Preorder
 
 /-- Dictionary / lexicographic partial order for pairs. -/
-instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : PartialOrder (α ×ₗ β) :=
+instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : PartialOrder (α ×ₗ β) := fast_instance%
   { Prod.Lex.preorder α β with
     le_antisymm := by
       haveI : IsStrictOrder α (· < ·) := { irrefl := lt_irrefl, trans := fun _ _ _ => lt_trans }
@@ -134,7 +134,7 @@ instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : Part
 #align prod.lex.partial_order Prod.Lex.partialOrder
 
 /-- Dictionary / lexicographic linear order for pairs. -/
-instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) :=
+instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) := fast_instance%
   { Prod.Lex.partialOrder α β with
     le_total := total_of (Prod.Lex _ _),
     decidableLE := Prod.Lex.decidable _ _,

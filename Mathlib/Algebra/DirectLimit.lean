@@ -93,16 +93,16 @@ def DirectLimit : Type max v w :=
 
 namespace DirectLimit
 
-instance addCommGroup : AddCommGroup (DirectLimit G f) :=
+instance addCommGroup : AddCommGroup (DirectLimit G f) := fast_instance%
   Quotient.addCommGroup _
 
-instance module : Module R (DirectLimit G f) :=
+instance module : Module R (DirectLimit G f) := fast_instance%
   Quotient.module _
 
-instance inhabited : Inhabited (DirectLimit G f) :=
+instance inhabited : Inhabited (DirectLimit G f) := fast_instance%
   ⟨0⟩
 
-instance unique [IsEmpty ι] : Unique (DirectLimit G f) :=
+instance unique [IsEmpty ι] : Unique (DirectLimit G f) := fast_instance%
   inferInstanceAs <| Unique (Quotient _)
 
 variable (R ι)
@@ -376,13 +376,13 @@ protected theorem directedSystem [h : DirectedSystem G fun i j h => f i j h] :
 
 attribute [local instance] DirectLimit.directedSystem
 
-instance : AddCommGroup (DirectLimit G f) :=
+instance : AddCommGroup (DirectLimit G f) := fast_instance%
   Module.DirectLimit.addCommGroup G fun i j hij => (f i j hij).toIntLinearMap
 
-instance : Inhabited (DirectLimit G f) :=
+instance : Inhabited (DirectLimit G f) := fast_instance%
   ⟨0⟩
 
-instance [IsEmpty ι] : Unique (DirectLimit G f) := Module.DirectLimit.unique _ _
+instance [IsEmpty ι] : Unique (DirectLimit G f) := fast_instance% Module.DirectLimit.unique _ _
 
 /-- The canonical map from a component to the direct limit. -/
 def of (i) : G i →+ DirectLimit G f :=
@@ -559,18 +559,18 @@ def DirectLimit : Type max v w :=
 
 namespace DirectLimit
 
-instance commRing : CommRing (DirectLimit G f) :=
+instance commRing : CommRing (DirectLimit G f) := fast_instance%
   Ideal.Quotient.commRing _
 
-instance ring : Ring (DirectLimit G f) :=
+instance ring : Ring (DirectLimit G f) := fast_instance%
   CommRing.toRing
 
 -- Porting note: Added a `Zero` instance to get rid of `0` errors.
-instance zero : Zero (DirectLimit G f) := by
+instance zero : Zero (DirectLimit G f) := fast_instance% by
   unfold DirectLimit
   exact ⟨0⟩
 
-instance : Inhabited (DirectLimit G f) :=
+instance : Inhabited (DirectLimit G f) := fast_instance%
   ⟨0⟩
 
 /-- The canonical map from a component to the direct limit. -/

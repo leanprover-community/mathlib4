@@ -196,19 +196,19 @@ theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [Co
 #align submodule.adjoint_orthogonal_projection Submodule.adjoint_orthogonalProjection
 
 /-- `E →L[𝕜] E` is a star algebra with the adjoint as the star operation. -/
-instance : Star (E →L[𝕜] E) :=
+instance : Star (E →L[𝕜] E) := fast_instance%
   ⟨adjoint⟩
 
-instance : InvolutiveStar (E →L[𝕜] E) :=
+instance : InvolutiveStar (E →L[𝕜] E) := fast_instance%
   ⟨adjoint_adjoint⟩
 
-instance : StarMul (E →L[𝕜] E) :=
+instance : StarMul (E →L[𝕜] E) := fast_instance%
   ⟨adjoint_comp⟩
 
-instance : StarRing (E →L[𝕜] E) :=
+instance : StarRing (E →L[𝕜] E) := fast_instance%
   ⟨LinearIsometryEquiv.map_add adjoint⟩
 
-instance : StarModule 𝕜 (E →L[𝕜] E) :=
+instance : StarModule 𝕜 (E →L[𝕜] E) := fast_instance%
   ⟨LinearIsometryEquiv.map_smulₛₗ adjoint⟩
 
 theorem star_eq_adjoint (A : E →L[𝕜] E) : star A = A† :=
@@ -444,19 +444,19 @@ theorem eq_adjoint_iff_basis_right {ι : Type*} (b : Basis ι 𝕜 F) (A : E →
 #align linear_map.eq_adjoint_iff_basis_right LinearMap.eq_adjoint_iff_basis_right
 
 /-- `E →ₗ[𝕜] E` is a star algebra with the adjoint as the star operation. -/
-instance : Star (E →ₗ[𝕜] E) :=
+instance : Star (E →ₗ[𝕜] E) := fast_instance%
   ⟨adjoint⟩
 
-instance : InvolutiveStar (E →ₗ[𝕜] E) :=
+instance : InvolutiveStar (E →ₗ[𝕜] E) := fast_instance%
   ⟨adjoint_adjoint⟩
 
-instance : StarMul (E →ₗ[𝕜] E) :=
+instance : StarMul (E →ₗ[𝕜] E) := fast_instance%
   ⟨adjoint_comp⟩
 
-instance : StarRing (E →ₗ[𝕜] E) :=
+instance : StarRing (E →ₗ[𝕜] E) := fast_instance%
   ⟨LinearEquiv.map_add adjoint⟩
 
-instance : StarModule 𝕜 (E →ₗ[𝕜] E) :=
+instance : StarModule 𝕜 (E →ₗ[𝕜] E) := fast_instance%
   ⟨LinearEquiv.map_smulₛₗ adjoint⟩
 
 theorem star_eq_adjoint (A : E →ₗ[𝕜] E) : star A = LinearMap.adjoint A :=

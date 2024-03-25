@@ -53,7 +53,7 @@ theorem UnivLE.trans [UnivLE.{u, v}] [UnivLE.{v, w}] : UnivLE.{u, w} :=
   fun α ↦ Small.trans_univLE α
 
 /- This is the crucial instance that subsumes `univLE_max`. -/
-instance univLE_of_max [UnivLE.{max u v, v}] : UnivLE.{u, v} := @UnivLE.trans univLE_max.{v,u} ‹_›
+instance univLE_of_max [UnivLE.{max u v, v}] : UnivLE.{u, v} := fast_instance% @UnivLE.trans univLE_max.{v,u} ‹_›
 
 /- When `small_Pi` from `Mathlib.Logic.Small.Basic` is imported, we have : -/
 -- example (α : Type u) (β : Type v) [UnivLE.{u, v}] : Small.{v} (α → β) := inferInstance

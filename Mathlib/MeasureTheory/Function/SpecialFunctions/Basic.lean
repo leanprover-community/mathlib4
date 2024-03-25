@@ -231,23 +231,23 @@ end ComplexComposition
 
 section PowInstances
 
-instance Complex.hasMeasurablePow : MeasurablePow ℂ ℂ :=
+instance Complex.hasMeasurablePow : MeasurablePow ℂ ℂ := fast_instance%
   ⟨Measurable.ite (measurable_fst (measurableSet_singleton 0))
       (Measurable.ite (measurable_snd (measurableSet_singleton 0)) measurable_one measurable_zero)
       (measurable_fst.clog.mul measurable_snd).cexp⟩
 #align complex.has_measurable_pow Complex.hasMeasurablePow
 
-instance Real.hasMeasurablePow : MeasurablePow ℝ ℝ :=
+instance Real.hasMeasurablePow : MeasurablePow ℝ ℝ := fast_instance%
   ⟨Complex.measurable_re.comp <|
       (Complex.measurable_ofReal.comp measurable_fst).pow
         (Complex.measurable_ofReal.comp measurable_snd)⟩
 #align real.has_measurable_pow Real.hasMeasurablePow
 
-instance NNReal.hasMeasurablePow : MeasurablePow ℝ≥0 ℝ :=
+instance NNReal.hasMeasurablePow : MeasurablePow ℝ≥0 ℝ := fast_instance%
   ⟨(measurable_fst.coe_nnreal_real.pow measurable_snd).subtype_mk⟩
 #align nnreal.has_measurable_pow NNReal.hasMeasurablePow
 
-instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := by
+instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := fast_instance% by
   refine' ⟨ENNReal.measurable_of_measurable_nnreal_prod _ _⟩
   · simp_rw [ENNReal.coe_rpow_def]
     refine' Measurable.ite _ measurable_const (measurable_fst.pow measurable_snd).coe_nnreal_ennreal

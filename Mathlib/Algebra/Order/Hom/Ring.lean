@@ -243,7 +243,7 @@ protected def id : α →+*o α :=
   { RingHom.id _, OrderHom.id with }
 #align order_ring_hom.id OrderRingHom.id
 
-instance : Inhabited (α →+*o α) :=
+instance : Inhabited (α →+*o α) := fast_instance%
   ⟨OrderRingHom.id α⟩
 
 @[simp]
@@ -320,10 +320,10 @@ end Preorder
 
 variable [NonAssocSemiring β]
 
-instance [Preorder β] : Preorder (OrderRingHom α β) :=
+instance [Preorder β] : Preorder (OrderRingHom α β) := fast_instance%
   Preorder.lift ((⇑) : _ → α → β)
 
-instance [PartialOrder β] : PartialOrder (OrderRingHom α β) :=
+instance [PartialOrder β] : PartialOrder (OrderRingHom α β) := fast_instance%
   PartialOrder.lift _ DFunLike.coe_injective
 
 end OrderRingHom
@@ -410,7 +410,7 @@ protected def refl : α ≃+*o α :=
   ⟨RingEquiv.refl α, Iff.rfl⟩
 #align order_ring_iso.refl OrderRingIso.refl
 
-instance : Inhabited (α ≃+*o α) :=
+instance : Inhabited (α ≃+*o α) := fast_instance%
   ⟨OrderRingIso.refl α⟩
 
 @[simp]

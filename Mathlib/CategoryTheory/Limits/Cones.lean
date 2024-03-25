@@ -127,7 +127,7 @@ structure Cone (F : J ⥤ C) where
 set_option linter.uppercaseLean3 false in
 #align category_theory.limits.cone.X CategoryTheory.Limits.Cone.pt
 
-instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
+instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) := fast_instance%
   ⟨{  pt := F.obj ⟨⟨⟩⟩
       π := { app := fun ⟨⟨⟩⟩ => 𝟙 _
              naturality := by
@@ -165,7 +165,7 @@ structure Cocone (F : J ⥤ C) where
 set_option linter.uppercaseLean3 false in
 #align category_theory.limits.cocone.X CategoryTheory.Limits.Cocone.pt
 
-instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
+instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) := fast_instance%
   ⟨{  pt := F.obj ⟨⟨⟩⟩
       ι := { app := fun ⟨⟨⟩⟩ => 𝟙 _
              naturality := by
@@ -285,7 +285,7 @@ structure ConeMorphism (A B : Cone F) where
 
 attribute [reassoc (attr := simp)] ConeMorphism.w
 
-instance inhabitedConeMorphism (A : Cone F) : Inhabited (ConeMorphism A A) :=
+instance inhabitedConeMorphism (A : Cone F) : Inhabited (ConeMorphism A A) := fast_instance%
   ⟨{ hom := 𝟙 _ }⟩
 #align category_theory.limits.inhabited_cone_morphism CategoryTheory.Limits.inhabitedConeMorphism
 
@@ -480,7 +480,7 @@ structure CoconeMorphism (A B : Cocone F) where
 #align category_theory.limits.cocone_morphism CategoryTheory.Limits.CoconeMorphism
 #align category_theory.limits.cocone_morphism.w' CategoryTheory.Limits.CoconeMorphism.w
 
-instance inhabitedCoconeMorphism (A : Cocone F) : Inhabited (CoconeMorphism A A) :=
+instance inhabitedCoconeMorphism (A : Cocone F) : Inhabited (CoconeMorphism A A) := fast_instance%
   ⟨{ hom := 𝟙 _ }⟩
 #align category_theory.limits.inhabited_cocone_morphism CategoryTheory.Limits.inhabitedCoconeMorphism
 

@@ -738,7 +738,7 @@ theorem aemeasurable_const_smul_iff (c : G) :
 #align ae_measurable_const_vadd_iff aemeasurable_const_vadd_iff
 
 @[to_additive]
-instance Units.instMeasurableSpace : MeasurableSpace Mˣ := MeasurableSpace.comap ((↑) : Mˣ → M) ‹_›
+instance Units.instMeasurableSpace : MeasurableSpace Mˣ := fast_instance% MeasurableSpace.comap ((↑) : Mˣ → M) ‹_›
 #align units.measurable_space Units.instMeasurableSpace
 #align add_units.measurable_space AddUnits.instMeasurableSpace
 

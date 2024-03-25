@@ -57,7 +57,7 @@ variable {𝕜 E F : Type*} [Field 𝕜] [TopologicalSpace 𝕜] [AddCommGroup E
   [ContinuousSMul 𝕜 F]
 
 /-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional. -/
-instance [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] : FiniteDimensional 𝕜 (E →L[𝕜] F) :=
+instance [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] : FiniteDimensional 𝕜 (E →L[𝕜] F) := fast_instance%
   FiniteDimensional.of_injective (ContinuousLinearMap.coeLM 𝕜 : (E →L[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F)
     ContinuousLinearMap.coe_injective
 
@@ -338,7 +338,7 @@ theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Sur
   · simp only [map_sub, map_add, ← comp_apply f g, hg, id_apply, sub_add_cancel]
 #align linear_map.is_open_map_of_finite_dimensional LinearMap.isOpenMap_of_finiteDimensional
 
-instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F) (↑) fun _ => True :=
+instance canLiftContinuousLinearMap : CanLift (E →ₗ[𝕜] F) (E →L[𝕜] F) (↑) fun _ => True := fast_instance%
   ⟨fun f _ => ⟨LinearMap.toContinuousLinearMap f, rfl⟩⟩
 #align linear_map.can_lift_continuous_linear_map LinearMap.canLiftContinuousLinearMap
 

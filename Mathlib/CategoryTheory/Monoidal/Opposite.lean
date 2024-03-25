@@ -164,9 +164,9 @@ end Iso
 
 namespace IsIso
 
-instance {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.mop :=
+instance {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.mop := fast_instance%
   (mopFunctor C).map_isIso f
-instance {X Y : Cᴹᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unmop :=
+instance {X Y : Cᴹᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unmop := fast_instance%
   (unmopFunctor C).map_isIso f
 
 end IsIso

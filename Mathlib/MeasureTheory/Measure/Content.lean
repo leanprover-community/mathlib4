@@ -75,7 +75,7 @@ structure Content (G : Type w) [TopologicalSpace G] where
   sup_le' : ∀ K₁ K₂ : Compacts G, toFun (K₁ ⊔ K₂) ≤ toFun K₁ + toFun K₂
 #align measure_theory.content MeasureTheory.Content
 
-instance : Inhabited (Content G) :=
+instance : Inhabited (Content G) := fast_instance%
   ⟨{  toFun := fun _ => 0
       mono' := by simp
       sup_disjoint' := by simp
@@ -84,7 +84,7 @@ instance : Inhabited (Content G) :=
 /-- Although the `toFun` field of a content takes values in `ℝ≥0`, we register a coercion to
 functions taking values in `ℝ≥0∞` as most constructions below rely on taking iSups and iInfs, which
 is more convenient in a complete lattice, and aim at constructing a measure. -/
-instance : CoeFun (Content G) fun _ => Compacts G → ℝ≥0∞ :=
+instance : CoeFun (Content G) fun _ => Compacts G → ℝ≥0∞ := fast_instance%
   ⟨fun μ s => μ.toFun s⟩
 
 namespace Content
@@ -401,7 +401,7 @@ theorem measure_apply {s : Set G} (hs : MeasurableSet s) : μ.measure s = μ.out
   toMeasure_apply _ _ hs
 #align measure_theory.content.measure_apply MeasureTheory.Content.measure_apply
 
-instance outerRegular : μ.measure.OuterRegular := by
+instance outerRegular : μ.measure.OuterRegular := fast_instance% by
   refine ⟨fun A hA r (hr : _ < _) ↦ ?_⟩
   rw [μ.measure_apply hA, outerMeasure_eq_iInf] at hr
   simp only [iInf_lt_iff] at hr
@@ -410,7 +410,7 @@ instance outerRegular : μ.measure.OuterRegular := by
   exact ⟨U, hAU, hUo, hr⟩
 
 /-- In a locally compact space, any measure constructed from a content is regular. -/
-instance regular [WeaklyLocallyCompactSpace G] : μ.measure.Regular := by
+instance regular [WeaklyLocallyCompactSpace G] : μ.measure.Regular := fast_instance% by
   have : IsFiniteMeasureOnCompacts μ.measure := by
     refine' ⟨fun K hK => _⟩
     apply (measure_mono subset_closure).trans_lt _

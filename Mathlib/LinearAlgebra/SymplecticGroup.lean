@@ -103,7 +103,7 @@ theorem mem_iff {A : Matrix (Sum l l) (Sum l l) R} :
 #align symplectic_group.mem_iff SymplecticGroup.mem_iff
 
 -- Porting note: Previous proof was `by infer_instance`
-instance coeMatrix : Coe (symplecticGroup l R) (Matrix (Sum l l) (Sum l l) R) :=
+instance coeMatrix : Coe (symplecticGroup l R) (Matrix (Sum l l) (Sum l l) R) := fast_instance%
   ⟨Subtype.val⟩
 #align symplectic_group.coe_matrix SymplecticGroup.coeMatrix
 
@@ -208,7 +208,7 @@ theorem inv_eq_symplectic_inv (A : Matrix (Sum l l) (Sum l l) R) (hA : A ∈ sym
   inv_eq_left_inv (by simp only [Matrix.neg_mul, inv_left_mul_aux hA])
 #align symplectic_group.inv_eq_symplectic_inv SymplecticGroup.inv_eq_symplectic_inv
 
-instance : Group (symplecticGroup l R) :=
+instance : Group (symplecticGroup l R) := fast_instance%
   { SymplecticGroup.hasInv, Submonoid.toMonoid _ with
     mul_left_inv := fun A => by
       apply Subtype.ext

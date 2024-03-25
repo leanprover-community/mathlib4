@@ -136,7 +136,7 @@ theorem coe_copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
 theorem copy_eq (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
 
-instance (S : NonUnitalSubalgebra R A) : Inhabited S :=
+instance (S : NonUnitalSubalgebra R A) : Inhabited S := fast_instance%
   ⟨(0 : S.toNonUnitalSubsemiring)⟩
 
 end NonUnitalNonAssocSemiring
@@ -146,7 +146,7 @@ variable [CommRing R]
 variable [NonUnitalNonAssocRing A] [NonUnitalNonAssocRing B] [NonUnitalNonAssocRing C]
 variable [Module R A] [Module R B] [Module R C]
 
-instance instNonUnitalSubringClass : NonUnitalSubringClass (NonUnitalSubalgebra R A) A :=
+instance instNonUnitalSubringClass : NonUnitalSubringClass (NonUnitalSubalgebra R A) A := fast_instance%
   { NonUnitalSubalgebra.instNonUnitalSubsemiringClass with
     neg_mem := @fun _ x hx => neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx }
 
@@ -242,10 +242,10 @@ section
 
 /-! ### `NonUnitalSubalgebra`s inherit structure from their `Submodule` coercions. -/
 
-instance instModule' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S :=
+instance instModule' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S := fast_instance%
   SMulMemClass.toModule' _ R' R A S
 
-instance instModule : Module R S :=
+instance instModule : Module R S := fast_instance%
   S.instModule'
 
 instance instIsScalarTower' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
@@ -262,7 +262,7 @@ instance instSMulCommClass' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTow
 instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : A) (y : A)
 
-instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
+instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S := fast_instance%
   ⟨fun {c x} h =>
     have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg ((↑) : S → A) h)
     this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
@@ -601,7 +601,7 @@ protected def gi : GaloisInsertion (adjoin R : Set A → NonUnitalSubalgebra R A
   le_l_u S := (NonUnitalAlgebra.gc (S : Set A) (adjoin R S)).1 <| le_rfl
   choice_eq _ _ := NonUnitalSubalgebra.copy_eq _ _ _
 
-instance : CompleteLattice (NonUnitalSubalgebra R A) :=
+instance : CompleteLattice (NonUnitalSubalgebra R A) := fast_instance%
   GaloisInsertion.liftCompleteLattice NonUnitalAlgebra.gi
 
 theorem adjoin_le {S : NonUnitalSubalgebra R A} {s : Set A} (hs : s ⊆ S) : adjoin R s ≤ S :=
@@ -724,7 +724,7 @@ theorem iInf_toSubmodule {ι : Sort*} (S : ι → NonUnitalSubalgebra R A) :
     (⨅ i, S i).toSubmodule = ⨅ i, (S i).toSubmodule :=
   SetLike.coe_injective <| by simp
 
-instance : Inhabited (NonUnitalSubalgebra R A) :=
+instance : Inhabited (NonUnitalSubalgebra R A) := fast_instance%
   ⟨⊥⟩
 
 theorem mem_bot {x : A} : x ∈ (⊥ : NonUnitalSubalgebra R A) ↔ x = 0 :=
@@ -781,7 +781,7 @@ variable [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulC
 variable [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B] [SMulCommClass R B B]
 variable (S : NonUnitalSubalgebra R A)
 
-instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (NonUnitalSubalgebra R A) :=
+instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (NonUnitalSubalgebra R A) := fast_instance%
   ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
 
 instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra R A)] :
@@ -979,7 +979,7 @@ theorem coe_center : (center R A : Set A) = Set.center A :=
   rfl
 
 /-- The center of a non-unital algebra is commutative and associative -/
-instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
+instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) := fast_instance%
   NonUnitalSubsemiring.center.instNonUnitalCommSemiring _
 
 instance center.instNonUnitalCommRing {A : Type*} [NonUnitalNonAssocRing A] [Module R A]

@@ -99,13 +99,13 @@ structure Basis where
 
 end
 
-instance uniqueBasis [Subsingleton R] : Unique (Basis ι R M) :=
+instance uniqueBasis [Subsingleton R] : Unique (Basis ι R M) := fast_instance%
   ⟨⟨⟨default⟩⟩, fun ⟨b⟩ => by rw [Subsingleton.elim b]⟩
 #align unique_basis uniqueBasis
 
 namespace Basis
 
-instance : Inhabited (Basis ι R (ι →₀ R)) :=
+instance : Inhabited (Basis ι R (ι →₀ R)) := fast_instance%
   ⟨.ofRepr (LinearEquiv.refl _ _)⟩
 
 variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)

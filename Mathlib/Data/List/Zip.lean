@@ -231,7 +231,7 @@ theorem zipWith3_same_right (f : α → β → β → γ) :
   | _ :: as, _ :: bs => congr_arg (cons _) <| zipWith3_same_right f as bs
 #align list.zip_with3_same_right List.zipWith3_same_right
 
-instance (f : α → α → β) [IsSymmOp α β f] : IsSymmOp (List α) (List β) (zipWith f) :=
+instance (f : α → α → β) [IsSymmOp α β f] : IsSymmOp (List α) (List β) (zipWith f) := fast_instance%
   ⟨zipWith_comm_of_comm f IsSymmOp.symm_op⟩
 
 @[simp]

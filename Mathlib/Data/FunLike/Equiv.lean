@@ -25,7 +25,7 @@ namespace MyIso
 variable (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Isomorphism class" design below:
-instance : EquivLike (MyIso A B) A (λ _, B) :=
+instance : EquivLike (MyIso A B) A (λ _, B) := fast_instance%
   { coe := MyIso.toEquiv.toFun,
     inv := MyIso.toEquiv.invFun,
     left_inv := MyIso.toEquiv.left_inv,
@@ -33,7 +33,7 @@ instance : EquivLike (MyIso A B) A (λ _, B) :=
     coe_injective' := λ f g h, by cases f; cases g; congr' }
 
 /-- Helper instance for when there's too many metavariables to apply `EquivLike.coe` directly. -/
-instance : CoeFun (MyIso A B) := DFunLike.instCoeFunForAll
+instance : CoeFun (MyIso A B) := fast_instance% DFunLike.instCoeFunForAll
 
 @[ext] theorem ext {f g : MyIso A B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
@@ -69,7 +69,7 @@ class MyIsoClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
 end
 
 -- You can replace `MyIso.EquivLike` with the below instance:
-instance : MyIsoClass (MyIso A B) A B :=
+instance : MyIsoClass (MyIso A B) A B := fast_instance%
   { coe := MyIso.toFun,
     inv := MyIso.invFun,
     left_inv := MyIso.left_inv,
@@ -101,7 +101,7 @@ end
   (f : F) : f CoolClass.cool = CoolClass.cool :=
 CoolerIsoClass.map_cool
 
-instance : CoolerIsoClass (CoolerIso A B) A B :=
+instance : CoolerIsoClass (CoolerIso A B) A B := fast_instance%
   { coe := CoolerIso.toFun,
     coe_injective' := λ f g h, by cases f; cases g; congr',
     map_op := CoolerIso.map_op',

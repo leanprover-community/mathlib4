@@ -47,7 +47,7 @@ instance KleisliCat.categoryStruct {m} [Monad.{u, v} m] :
   comp f g := f >=> g
 #align category_theory.Kleisli.category_struct CategoryTheory.KleisliCat.categoryStruct
 
-instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (KleisliCat m) := by
+instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (KleisliCat m) := fast_instance% by
   -- Porting note: was
   -- refine' { id_comp' := _, comp_id' := _, assoc' := _ } <;> intros <;> ext <;> unfold_projs <;>
   --  simp only [(· >=> ·), functor_norm]
@@ -65,10 +65,10 @@ theorem KleisliCat.comp_def {m} [Monad m] (α β γ : KleisliCat m) (xs : α ⟶
   rfl
 #align category_theory.Kleisli.comp_def CategoryTheory.KleisliCat.comp_def
 
-instance : Inhabited (KleisliCat id) :=
+instance : Inhabited (KleisliCat id) := fast_instance%
   ⟨PUnit⟩
 
-instance {α : Type u} [Inhabited α] : Inhabited (KleisliCat.mk id α) :=
+instance {α : Type u} [Inhabited α] : Inhabited (KleisliCat.mk id α) := fast_instance%
   ⟨show α from default⟩
 
 end CategoryTheory

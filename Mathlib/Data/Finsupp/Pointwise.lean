@@ -38,7 +38,7 @@ variable [MulZeroClass β]
 
 /-- The product of `f g : α →₀ β` is the finitely supported function
   whose value at `a` is `f a * g a`. -/
-instance : Mul (α →₀ β) :=
+instance : Mul (α →₀ β) := fast_instance%
   ⟨zipWith (· * ·) (mul_zero 0)⟩
 
 theorem coe_mul (g₁ g₂ : α →₀ β) : ⇑(g₁ * g₂) = g₁ * g₂ :=
@@ -65,32 +65,32 @@ theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
   cases' w with w w <;> (rw [w]; simp)
 #align finsupp.support_mul Finsupp.support_mul
 
-instance : MulZeroClass (α →₀ β) :=
+instance : MulZeroClass (α →₀ β) := fast_instance%
   DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
 
 end
 
-instance [SemigroupWithZero β] : SemigroupWithZero (α →₀ β) :=
+instance [SemigroupWithZero β] : SemigroupWithZero (α →₀ β) := fast_instance%
   DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
-instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →₀ β) :=
+instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →₀ β) := fast_instance%
   DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
-instance [NonUnitalSemiring β] : NonUnitalSemiring (α →₀ β) :=
+instance [NonUnitalSemiring β] : NonUnitalSemiring (α →₀ β) := fast_instance%
   DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
-instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →₀ β) :=
+instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →₀ β) := fast_instance%
   DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
-instance [NonUnitalNonAssocRing β] : NonUnitalNonAssocRing (α →₀ β) :=
+instance [NonUnitalNonAssocRing β] : NonUnitalNonAssocRing (α →₀ β) := fast_instance%
   DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
-instance [NonUnitalRing β] : NonUnitalRing (α →₀ β) :=
+instance [NonUnitalRing β] : NonUnitalRing (α →₀ β) := fast_instance%
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ ↦ rfl)
     fun _ _ ↦ rfl
 
-instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
+instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) := fast_instance%
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
@@ -114,7 +114,7 @@ theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : �
 #align finsupp.coe_pointwise_smul Finsupp.coe_pointwise_smul
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
-instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
+instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) := fast_instance%
   Function.Injective.module _ coeFnAddHom DFunLike.coe_injective coe_pointwise_smul
 #align finsupp.pointwise_module Finsupp.pointwiseModule
 

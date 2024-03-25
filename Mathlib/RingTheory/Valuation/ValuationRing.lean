@@ -58,9 +58,9 @@ variable (K : Type v) [Field K] [Algebra A K]
 def ValueGroup : Type v := Quotient (MulAction.orbitRel Aˣ K)
 #align valuation_ring.value_group ValuationRing.ValueGroup
 
-instance : Inhabited (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
+instance : Inhabited (ValueGroup A K) := fast_instance% ⟨Quotient.mk'' 0⟩
 
-instance : LE (ValueGroup A K) :=
+instance : LE (ValueGroup A K) := fast_instance%
   LE.mk fun x y =>
     Quotient.liftOn₂' x y (fun a b => ∃ c : A, c • b = a)
       (by
@@ -76,11 +76,11 @@ instance : LE (ValueGroup A K) :=
           rw [mul_comm]
           simp only [← mul_assoc, ← Units.val_mul, mul_inv_self, one_mul])
 
-instance : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
+instance : Zero (ValueGroup A K) := fast_instance% ⟨Quotient.mk'' 0⟩
 
-instance : One (ValueGroup A K) := ⟨Quotient.mk'' 1⟩
+instance : One (ValueGroup A K) := fast_instance% ⟨Quotient.mk'' 1⟩
 
-instance : Mul (ValueGroup A K) :=
+instance : Mul (ValueGroup A K) := fast_instance%
   Mul.mk fun x y =>
     Quotient.liftOn₂' x y (fun a b => Quotient.mk'' <| a * b)
       (by
@@ -91,7 +91,7 @@ instance : Mul (ValueGroup A K) :=
         simp only [mul_smul, Algebra.smul_def, Units.smul_def, RingHom.map_mul, Units.val_mul]
         ring)
 
-instance : Inv (ValueGroup A K) :=
+instance : Inv (ValueGroup A K) := fast_instance%
   Inv.mk fun x =>
     Quotient.liftOn' x (fun a => Quotient.mk'' a⁻¹)
       (by
@@ -257,7 +257,7 @@ instance (priority := 100) localRing : LocalRing A :=
         apply isUnit_of_mul_eq_one _ (c + 1)
         simp [mul_add, h])
 
-instance [DecidableRel ((· ≤ ·) : Ideal A → Ideal A → Prop)] : LinearOrder (Ideal A) :=
+instance [DecidableRel ((· ≤ ·) : Ideal A → Ideal A → Prop)] : LinearOrder (Ideal A) := fast_instance%
   { (inferInstance : CompleteLattice (Ideal A)) with
     le_total := by
       intro α β

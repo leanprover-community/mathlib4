@@ -120,19 +120,19 @@ theorem IsLowerSet.div_right (hs : IsLowerSet s) : IsLowerSet (s / t) := hs.toDu
 namespace UpperSet
 
 @[to_additive]
-instance : One (UpperSet α) :=
+instance : One (UpperSet α) := fast_instance%
   ⟨Ici 1⟩
 
 @[to_additive]
-instance : Mul (UpperSet α) :=
+instance : Mul (UpperSet α) := fast_instance%
   ⟨fun s t ↦ ⟨image2 (· * ·) s t, s.2.mul_right⟩⟩
 
 @[to_additive]
-instance : Div (UpperSet α) :=
+instance : Div (UpperSet α) := fast_instance%
   ⟨fun s t ↦ ⟨image2 (· / ·) s t, s.2.div_right⟩⟩
 
 @[to_additive]
-instance : SMul α (UpperSet α) :=
+instance : SMul α (UpperSet α) := fast_instance%
   ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
 
 @[to_additive (attr := simp,norm_cast)]
@@ -160,11 +160,11 @@ theorem Ici_one : Ici (1 : α) = 1 :=
 #align upper_set.Ici_zero UpperSet.Ici_zero
 
 @[to_additive]
-instance : MulAction α (UpperSet α) :=
+instance : MulAction α (UpperSet α) := fast_instance%
   SetLike.coe_injective.mulAction _ (fun _ _ => rfl)
 
 @[to_additive]
-instance commSemigroup : CommSemigroup (UpperSet α) :=
+instance commSemigroup : CommSemigroup (UpperSet α) := fast_instance%
   { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (UpperSet α)) with }
 
 @[to_additive]
@@ -175,7 +175,7 @@ private theorem one_mul (s : UpperSet α) : 1 * s = s :=
       exact Set.iUnion₂_subset fun _ ↦ s.upper.smul_subset
 
 @[to_additive]
-instance : CommMonoid (UpperSet α) :=
+instance : CommMonoid (UpperSet α) := fast_instance%
   { UpperSet.commSemigroup with
     one := 1
     one_mul := one_mul
@@ -188,19 +188,19 @@ end UpperSet
 namespace LowerSet
 
 @[to_additive]
-instance : One (LowerSet α) :=
+instance : One (LowerSet α) := fast_instance%
   ⟨Iic 1⟩
 
 @[to_additive]
-instance : Mul (LowerSet α) :=
+instance : Mul (LowerSet α) := fast_instance%
   ⟨fun s t ↦ ⟨image2 (· * ·) s t, s.2.mul_right⟩⟩
 
 @[to_additive]
-instance : Div (LowerSet α) :=
+instance : Div (LowerSet α) := fast_instance%
   ⟨fun s t ↦ ⟨image2 (· / ·) s t, s.2.div_right⟩⟩
 
 @[to_additive]
-instance : SMul α (LowerSet α) :=
+instance : SMul α (LowerSet α) := fast_instance%
   ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
 
 @[to_additive (attr := simp,norm_cast)]
@@ -222,11 +222,11 @@ theorem Iic_one : Iic (1 : α) = 1 :=
 #align lower_set.Iic_zero LowerSet.Iic_zero
 
 @[to_additive]
-instance : MulAction α (LowerSet α) :=
+instance : MulAction α (LowerSet α) := fast_instance%
   SetLike.coe_injective.mulAction _ (fun _ _ => rfl)
 
 @[to_additive]
-instance commSemigroup : CommSemigroup (LowerSet α) :=
+instance commSemigroup : CommSemigroup (LowerSet α) := fast_instance%
   { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (LowerSet α)) with }
 
 @[to_additive]
@@ -237,7 +237,7 @@ private theorem one_mul (s : LowerSet α) : 1 * s = s :=
       exact Set.iUnion₂_subset fun _ ↦ s.lower.smul_subset
 
 @[to_additive]
-instance : CommMonoid (LowerSet α) :=
+instance : CommMonoid (LowerSet α) := fast_instance%
   { LowerSet.commSemigroup with
     one := 1
     one_mul := one_mul

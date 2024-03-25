@@ -36,21 +36,21 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
 
 namespace Pi
 
-instance addMonoidWithOne [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (∀ i : I, f i) :=
+instance addMonoidWithOne [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (∀ i : I, f i) := fast_instance%
   { addMonoid with
     natCast := fun n _ => n
     natCast_zero := funext fun _ => AddMonoidWithOne.natCast_zero
     natCast_succ := fun n => funext fun _ => AddMonoidWithOne.natCast_succ n
   }
 
-instance addGroupWithOne [∀ i, AddGroupWithOne <| f i] : AddGroupWithOne (∀ i : I, f i) :=
+instance addGroupWithOne [∀ i, AddGroupWithOne <| f i] : AddGroupWithOne (∀ i : I, f i) := fast_instance%
   { addGroup, addMonoidWithOne with
     intCast := fun z _ => z
     intCast_ofNat := fun n => funext fun _ => AddGroupWithOne.intCast_ofNat n
     intCast_negSucc := fun n => funext fun _ => AddGroupWithOne.intCast_negSucc n
   }
 
-instance mulZeroClass [∀ i, MulZeroClass <| f i] : MulZeroClass (∀ i : I, f i) :=
+instance mulZeroClass [∀ i, MulZeroClass <| f i] : MulZeroClass (∀ i : I, f i) := fast_instance%
   { zero := (0 : ∀ i, f i)
     mul := (· * ·)
     --pi_instance
@@ -59,19 +59,19 @@ instance mulZeroClass [∀ i, MulZeroClass <| f i] : MulZeroClass (∀ i : I, f 
 }
 #align pi.mul_zero_class Pi.mulZeroClass
 
-instance mulZeroOneClass [∀ i, MulZeroOneClass <| f i] : MulZeroOneClass (∀ i : I, f i) :=
+instance mulZeroOneClass [∀ i, MulZeroOneClass <| f i] : MulZeroOneClass (∀ i : I, f i) := fast_instance%
   { mulZeroClass, mulOneClass with }
 #align pi.mul_zero_one_class Pi.mulZeroOneClass
 
-instance monoidWithZero [∀ i, MonoidWithZero <| f i] : MonoidWithZero (∀ i : I, f i) :=
+instance monoidWithZero [∀ i, MonoidWithZero <| f i] : MonoidWithZero (∀ i : I, f i) := fast_instance%
   { monoid, mulZeroClass with }
 #align pi.monoid_with_zero Pi.monoidWithZero
 
-instance commMonoidWithZero [∀ i, CommMonoidWithZero <| f i] : CommMonoidWithZero (∀ i : I, f i) :=
+instance commMonoidWithZero [∀ i, CommMonoidWithZero <| f i] : CommMonoidWithZero (∀ i : I, f i) := fast_instance%
   { monoidWithZero, commMonoid with }
 #align pi.comm_monoid_with_zero Pi.commMonoidWithZero
 
-instance semigroupWithZero [∀ i, SemigroupWithZero <| f i] : SemigroupWithZero (∀ i : I, f i) :=
+instance semigroupWithZero [∀ i, SemigroupWithZero <| f i] : SemigroupWithZero (∀ i : I, f i) := fast_instance%
   { semigroup, mulZeroClass with }
 #align pi.semigroup_with_zero Pi.semigroupWithZero
 

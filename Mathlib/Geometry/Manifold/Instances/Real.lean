@@ -67,16 +67,16 @@ without the following reducibility attribute (which is only set in this section)
 
 variable {n : ℕ}
 
-instance [Zero (Fin n)] : TopologicalSpace (EuclideanHalfSpace n) :=
+instance [Zero (Fin n)] : TopologicalSpace (EuclideanHalfSpace n) := fast_instance%
   instTopologicalSpaceSubtype
 
-instance : TopologicalSpace (EuclideanQuadrant n) :=
+instance : TopologicalSpace (EuclideanQuadrant n) := fast_instance%
   instTopologicalSpaceSubtype
 
-instance [Zero (Fin n)] : Inhabited (EuclideanHalfSpace n) :=
+instance [Zero (Fin n)] : Inhabited (EuclideanHalfSpace n) := fast_instance%
   ⟨⟨0, le_rfl⟩⟩
 
-instance : Inhabited (EuclideanQuadrant n) :=
+instance : Inhabited (EuclideanQuadrant n) := fast_instance%
   ⟨⟨0, fun _ => le_rfl⟩⟩
 
 @[ext] -- Porting note (#10756): new theorem
@@ -324,8 +324,8 @@ section
 
 attribute [local instance] Real.fact_zero_lt_one
 
-instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
+instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := fast_instance% by infer_instance
 
-instance : SmoothManifoldWithCorners (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
+instance : SmoothManifoldWithCorners (𝓡∂ 1) (Icc (0 : ℝ) 1) := fast_instance% by infer_instance
 
 end

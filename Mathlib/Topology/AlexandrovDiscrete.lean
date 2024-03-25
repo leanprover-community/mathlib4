@@ -255,13 +255,13 @@ instance AlexandrovDiscrete.toLocallyCompactSpace : LocallyCompactSpace α where
     isOpen_exterior.mem_nhds <| subset_exterior <| mem_singleton _,
       exterior_singleton_subset_iff_mem_nhds.2 hU, (finite_singleton _).isCompact_exterior⟩
 
-instance Subtype.instAlexandrovDiscrete {p : α → Prop} : AlexandrovDiscrete {a // p a} :=
+instance Subtype.instAlexandrovDiscrete {p : α → Prop} : AlexandrovDiscrete {a // p a} := fast_instance%
   inducing_subtype_val.alexandrovDiscrete
 
-instance Quotient.instAlexandrovDiscrete {s : Setoid α} : AlexandrovDiscrete (Quotient s) :=
+instance Quotient.instAlexandrovDiscrete {s : Setoid α} : AlexandrovDiscrete (Quotient s) := fast_instance%
   alexandrovDiscrete_coinduced
 
-instance Sum.instAlexandrovDiscrete : AlexandrovDiscrete (α ⊕ β) :=
+instance Sum.instAlexandrovDiscrete : AlexandrovDiscrete (α ⊕ β) := fast_instance%
   alexandrovDiscrete_coinduced.sup alexandrovDiscrete_coinduced
 
 instance Sigma.instAlexandrovDiscrete {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]

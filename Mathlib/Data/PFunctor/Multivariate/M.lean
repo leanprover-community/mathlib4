@@ -102,7 +102,7 @@ def M (α : TypeVec n) : Type _ :=
   P.mp α
 #align mvpfunctor.M MvPFunctor.M
 
-instance mvfunctorM : MvFunctor P.M := by delta M; infer_instance
+instance mvfunctorM : MvFunctor P.M := fast_instance% by delta M; infer_instance
 #align mvpfunctor.mvfunctor_M MvPFunctor.mvfunctorM
 
 instance inhabitedM {α : TypeVec _} [I : Inhabited P.A] [∀ i : Fin2 n, Inhabited (α i)] :

@@ -37,7 +37,7 @@ variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : Lis
 -- attribute [inline] List.head!
 
 /-- There is only one list of an empty type -/
-instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
+instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) := fast_instance%
   { instInhabitedList with
     uniq := fun l =>
       match l with
@@ -45,11 +45,11 @@ instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
       | a :: _ => isEmptyElim a }
 #align list.unique_of_is_empty List.uniqueOfIsEmpty
 
-instance : Std.LawfulIdentity (α := List α) Append.append [] where
+instance : Std.LawfulIdentity (α := fast_instance% List α) Append.append [] where
   left_id := nil_append
   right_id := append_nil
 
-instance : Std.Associative (α := List α) Append.append where
+instance : Std.Associative (α := fast_instance% List α) Append.append where
   assoc := append_assoc
 
 #align list.cons_ne_nil List.cons_ne_nil
@@ -230,14 +230,14 @@ theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c
 /-! ### set-theoretic notation of lists -/
 
 -- ADHOC Porting note: instance from Lean3 core
-instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
+instance instSingletonList : Singleton α (List α) := fast_instance% ⟨fun x => [x]⟩
 #align list.has_singleton List.instSingletonList
 
 -- ADHOC Porting note: instance from Lean3 core
-instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
+instance [DecidableEq α] : Insert α (List α) := fast_instance% ⟨List.insert⟩
 
 -- ADHOC Porting note: instance from Lean3 core
-instance [DecidableEq α] : IsLawfulSingleton α (List α) :=
+instance [DecidableEq α] : IsLawfulSingleton α (List α) := fast_instance%
   { insert_emptyc_eq := fun x =>
       show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg (not_mem_nil _) }
 
@@ -4297,7 +4297,7 @@ theorem forall_map_iff {p : β → Prop} (f : α → β) : Forall p (l.map f) �
   induction l <;> simp [*]
 #align list.all₂_map_iff List.forall_map_iff
 
-instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _ =>
+instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fast_instance% fun _ =>
   decidable_of_iff' _ forall_iff_forall_mem
 
 end Forall

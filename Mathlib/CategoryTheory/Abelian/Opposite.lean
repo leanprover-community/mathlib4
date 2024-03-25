@@ -28,7 +28,7 @@ variable (C : Type*) [Category C] [Abelian C]
 --  hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts
 --  Abelian.hasFiniteBiproducts
 
-instance : Abelian Cᵒᵖ := by
+instance : Abelian Cᵒᵖ := fast_instance% by
   -- Porting note: priorities of `Abelian.has_kernels` and `Abelian.has_cokernels` have
   -- been set to 90 in `Abelian.Basic` in order to prevent a timeout here
   exact {

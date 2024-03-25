@@ -27,7 +27,7 @@ deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigr
 namespace PNat
 
 -- Porting note: this instance is no longer automatically inferred in Lean 4.
-instance instWellFoundedLT : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
+instance instWellFoundedLT : WellFoundedLT ℕ+ := fast_instance% WellFoundedRelation.isWellFounded
 instance instIsWellOrder : IsWellOrder ℕ+ (· < ·) where
 
 @[simp]
@@ -130,16 +130,16 @@ def coeAddHom : AddHom ℕ+ ℕ where
   map_add' := add_coe
 #align pnat.coe_add_hom PNat.coeAddHom
 
-instance covariantClass_add_le : CovariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) :=
+instance covariantClass_add_le : CovariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) := fast_instance%
   Positive.covariantClass_add_le
 
-instance covariantClass_add_lt : CovariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
+instance covariantClass_add_lt : CovariantClass ℕ+ ℕ+ (· + ·) (· < ·) := fast_instance%
   Positive.covariantClass_add_lt
 
-instance contravariantClass_add_le : ContravariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) :=
+instance contravariantClass_add_le : ContravariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) := fast_instance%
   Positive.contravariantClass_add_le
 
-instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
+instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· < ·) := fast_instance%
   Positive.contravariantClass_add_lt
 
 /-- An equivalence between `ℕ+` and `ℕ` given by `PNat.natPred` and `Nat.succPNat`. -/
@@ -281,7 +281,7 @@ theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
 /-- Subtraction a - b is defined in the obvious way when
   a > b, and by a - b = 1 if a ≤ b.
 -/
-instance instSub : Sub ℕ+ :=
+instance instSub : Sub ℕ+ := fast_instance%
   ⟨fun a b => toPNat' (a - b : ℕ)⟩
 
 theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ) 1 := by

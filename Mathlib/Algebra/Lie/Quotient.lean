@@ -40,14 +40,14 @@ variable [LieRingModule L M] [LieModule R L M]
 variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 /-- The quotient of a Lie module by a Lie submodule. It is a Lie module. -/
-instance : HasQuotient M (LieSubmodule R L M) :=
+instance : HasQuotient M (LieSubmodule R L M) := fast_instance%
   ⟨fun N => M ⧸ N.toSubmodule⟩
 
 namespace Quotient
 
 variable {N I}
 
-instance addCommGroup : AddCommGroup (M ⧸ N) :=
+instance addCommGroup : AddCommGroup (M ⧸ N) := fast_instance%
   Submodule.Quotient.addCommGroup _
 #align lie_submodule.quotient.add_comm_group LieSubmodule.Quotient.addCommGroup
 
@@ -56,7 +56,7 @@ instance module' {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower
   Submodule.Quotient.module' _
 #align lie_submodule.quotient.module' LieSubmodule.Quotient.module'
 
-instance module : Module R (M ⧸ N) :=
+instance module : Module R (M ⧸ N) := fast_instance%
   Submodule.Quotient.module _
 #align lie_submodule.quotient.module LieSubmodule.Quotient.module
 
@@ -66,7 +66,7 @@ instance isCentralScalar {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsSca
   Submodule.Quotient.isCentralScalar _
 #align lie_submodule.quotient.is_central_scalar LieSubmodule.Quotient.isCentralScalar
 
-instance inhabited : Inhabited (M ⧸ N) :=
+instance inhabited : Inhabited (M ⧸ N) := fast_instance%
   ⟨0⟩
 #align lie_submodule.quotient.inhabited LieSubmodule.Quotient.inhabited
 
@@ -99,20 +99,20 @@ def actionAsEndoMap : L →ₗ⁅R⁆ Module.End R (M ⧸ N) :=
 
 /-- Given a Lie module `M` over a Lie algebra `L`, together with a Lie submodule `N ⊆ M`, there is
 a natural bracket action of `L` on the quotient `M/N`. -/
-instance actionAsEndoMapBracket : Bracket L (M ⧸ N) :=
+instance actionAsEndoMapBracket : Bracket L (M ⧸ N) := fast_instance%
   ⟨fun x n => actionAsEndoMap N x n⟩
 #align lie_submodule.quotient.action_as_endo_map_bracket LieSubmodule.Quotient.actionAsEndoMapBracket
 
-instance lieQuotientLieRingModule : LieRingModule L (M ⧸ N) :=
+instance lieQuotientLieRingModule : LieRingModule L (M ⧸ N) := fast_instance%
   { LieRingModule.compLieHom _ (actionAsEndoMap N) with bracket := Bracket.bracket }
 #align lie_submodule.quotient.lie_quotient_lie_ring_module LieSubmodule.Quotient.lieQuotientLieRingModule
 
 /-- The quotient of a Lie module by a Lie submodule, is a Lie module. -/
-instance lieQuotientLieModule : LieModule R L (M ⧸ N) :=
+instance lieQuotientLieModule : LieModule R L (M ⧸ N) := fast_instance%
   LieModule.compLieHom _ (actionAsEndoMap N)
 #align lie_submodule.quotient.lie_quotient_lie_module LieSubmodule.Quotient.lieQuotientLieModule
 
-instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
+instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) := fast_instance%
   ⟨by
     intro x y
     apply Quotient.liftOn₂' x y fun x' y' => mk ⁅x', y'⁆
@@ -188,7 +188,7 @@ theorem surjective_mk' : Function.Surjective (mk' N) := surjective_quot_mk _
 @[simp]
 theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by simp [LieModuleHom.range_eq_top]
 
-instance isNoetherian [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
+instance isNoetherian [IsNoetherian R M] : IsNoetherian R (M ⧸ N) := fast_instance%
   Submodule.Quotient.isNoetherian (N : Submodule R M)
 
 -- Porting note: LHS simplifies @[simp]

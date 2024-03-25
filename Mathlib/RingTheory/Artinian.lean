@@ -86,7 +86,7 @@ theorem isArtinian_of_injective (f : M →ₗ[R] P) (h : Function.Injective f) [
     (InvImage.wf (Submodule.map f) (IsArtinian.wellFounded_submodule_lt R P))⟩
 #align is_artinian_of_injective isArtinian_of_injective
 
-instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian R N :=
+instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian R N := fast_instance%
   isArtinian_of_injective N.subtype Subtype.val_injective
 #align is_artinian_submodule' isArtinian_submodule'
 
@@ -120,7 +120,7 @@ theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →�
     (by simp [Submodule.map_comap_eq, inf_comm]) (by simp [Submodule.comap_map_eq, h])⟩
 #align is_artinian_of_range_eq_ker isArtinian_of_range_eq_ker
 
-instance isArtinian_prod [IsArtinian R M] [IsArtinian R P] : IsArtinian R (M × P) :=
+instance isArtinian_prod [IsArtinian R M] [IsArtinian R P] : IsArtinian R (M × P) := fast_instance%
   isArtinian_of_range_eq_ker (LinearMap.inl R M P) (LinearMap.snd R M P) LinearMap.inl_injective
     LinearMap.snd_surjective (LinearMap.range_inl R M P)
 #align is_artinian_prod isArtinian_prod
@@ -366,7 +366,7 @@ def IsArtinianRing (R) [Ring R] :=
 theorem isArtinianRing_iff {R} [Ring R] : IsArtinianRing R ↔ IsArtinian R R := Iff.rfl
 #align is_artinian_ring_iff isArtinianRing_iff
 
-instance DivisionRing.instIsArtinianRing {K : Type*} [DivisionRing K] : IsArtinianRing K :=
+instance DivisionRing.instIsArtinianRing {K : Type*} [DivisionRing K] : IsArtinianRing K := fast_instance%
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
 theorem Ring.isArtinian_of_zero_eq_one {R} [Ring R] (h01 : (0 : R) = 1) : IsArtinianRing R :=
@@ -390,7 +390,7 @@ theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [Al
   exact (Submodule.restrictScalarsEmbedding R S M).wellFounded h
 #align is_artinian_of_tower isArtinian_of_tower
 
-instance (R) [CommRing R] [IsArtinianRing R] (I : Ideal R) : IsArtinianRing (R ⧸ I) :=
+instance (R) [CommRing R] [IsArtinianRing R] (I : Ideal R) : IsArtinianRing (R ⧸ I) := fast_instance%
   isArtinian_of_tower R inferInstance
 
 theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M]
@@ -507,12 +507,12 @@ theorem localization_artinian : IsArtinianRing L :=
 
 /-- `IsArtinianRing.localization_artinian` can't be made an instance, as it would make `S` + `R`
 into metavariables. However, this is safe. -/
-instance : IsArtinianRing (Localization S) :=
+instance : IsArtinianRing (Localization S) := fast_instance%
   localization_artinian S _
 
 end Localization
 
-instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
+instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal := fast_instance%
   Ideal.Quotient.maximal_of_isField _ <|
     (MulEquiv.ofBijective _ ⟨IsFractionRing.injective (R ⧸ p) (FractionRing (R ⧸ p)),
       localization_surjective (nonZeroDivisors (R ⧸ p)) (FractionRing (R ⧸ p))⟩).isField _
@@ -540,7 +540,7 @@ lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
   simp_rw [← isPrime_iff_isMaximal]
   apply primeSpectrum_finite R
 
-@[local instance] lemma subtype_isMaximal_finite : Finite {I : Ideal R | I.IsMaximal} :=
+@[local instance] lemma subtype_isMaximal_finite : Finite {I : Ideal R | I.IsMaximal} := fast_instance%
   (maximal_ideals_finite R).to_subtype
 
 /-- A temporary field instance on the quotients by maximal ideals. -/
@@ -563,9 +563,9 @@ noncomputable def equivPi [IsReduced R] : R ≃+* ∀ I : {I : Ideal R | I.IsMax
   .trans (.symm <| .quotientBot R) <| .trans
     (Ideal.quotEquivOfEq (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
 
-instance [IsReduced R] : DecompositionMonoid R := MulEquiv.decompositionMonoid (equivPi R)
+instance [IsReduced R] : DecompositionMonoid R := fast_instance% MulEquiv.decompositionMonoid (equivPi R)
 
-instance [IsReduced R] : DecompositionMonoid (Polynomial R) :=
+instance [IsReduced R] : DecompositionMonoid (Polynomial R) := fast_instance%
   MulEquiv.decompositionMonoid <| (Polynomial.mapEquiv <| equivPi R).trans (Polynomial.piEquiv _)
 
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=

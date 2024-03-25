@@ -111,5 +111,5 @@ instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
     exact ⟨c * s, by simpa only [← Quotient.mk_smul, Submodule.Quotient.eq,
       ← smul_sub, mul_smul, hc] using M'.smul_mem c hx⟩
 
-instance (M' : Submodule R M) : IsLocalizedModule p (M'.toLocalizedQuotient p) :=
+instance (M' : Submodule R M) : IsLocalizedModule p (M'.toLocalizedQuotient p) := fast_instance%
   IsLocalizedModule.toLocalizedQuotient' _ _ _ _

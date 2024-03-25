@@ -118,7 +118,7 @@ def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
 @[to_additive "Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom` via
   `OrderAddMonoidHomClass.toOrderAddMonoidHom`"]
-instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
+instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) := fast_instance%
   ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
 end Monoid
@@ -162,7 +162,7 @@ end
 
 variable [FunLike F α β]
 
-instance [OrderHomClass F α β] [MonoidWithZeroHomClass F α β] : CoeTC F (α →*₀o β) :=
+instance [OrderHomClass F α β] [MonoidWithZeroHomClass F α β] : CoeTC F (α →*₀o β) := fast_instance%
   ⟨OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom⟩
 
 end MonoidWithZero
@@ -353,7 +353,7 @@ theorem coe_id : ⇑(OrderMonoidHom.id α) = id :=
 #align order_add_monoid_hom.coe_id OrderAddMonoidHom.coe_id
 
 @[to_additive]
-instance : Inhabited (α →*o α) :=
+instance : Inhabited (α →*o α) := fast_instance%
   ⟨OrderMonoidHom.id α⟩
 
 variable {α}
@@ -426,7 +426,7 @@ theorem cancel_left {g : β →*o γ} {f₁ f₂ : α →*o β} (hg : Function.I
 
 /-- `1` is the homomorphism sending all elements to `1`. -/
 @[to_additive "`0` is the homomorphism sending all elements to `0`."]
-instance : One (α →*o β) :=
+instance : One (α →*o β) := fast_instance%
   ⟨{ (1 : α →* β) with monotone' := monotone_const }⟩
 
 @[to_additive (attr := simp)]
@@ -463,7 +463,7 @@ variable [OrderedCommMonoid α] [OrderedCommMonoid β] [OrderedCommMonoid γ]
 sending `a` to `f a * g a`. -/
 @[to_additive "For two ordered additive monoid morphisms `f` and `g`, their product is the ordered
 additive monoid morphism sending `a` to `f a + g a`."]
-instance : Mul (α →*o β) :=
+instance : Mul (α →*o β) := fast_instance%
   ⟨fun f g => { (f * g : α →* β) with monotone' := f.monotone'.mul' g.monotone' }⟩
 
 @[to_additive (attr := simp)]
@@ -618,7 +618,7 @@ theorem coe_id : ⇑(OrderMonoidWithZeroHom.id α) = id :=
   rfl
 #align order_monoid_with_zero_hom.coe_id OrderMonoidWithZeroHom.coe_id
 
-instance : Inhabited (α →*₀o α) :=
+instance : Inhabited (α →*₀o α) := fast_instance%
   ⟨OrderMonoidWithZeroHom.id α⟩
 
 variable {α}
@@ -683,7 +683,7 @@ variable [LinearOrderedCommMonoidWithZero α] [LinearOrderedCommMonoidWithZero �
 
 /-- For two ordered monoid morphisms `f` and `g`, their product is the ordered monoid morphism
 sending `a` to `f a * g a`. -/
-instance : Mul (α →*₀o β) :=
+instance : Mul (α →*₀o β) := fast_instance%
   ⟨fun f g => { (f * g : α →*₀ β) with monotone' := f.monotone'.mul' g.monotone' }⟩
 
 @[simp]

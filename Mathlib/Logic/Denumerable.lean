@@ -115,7 +115,7 @@ def equiv₂ (α β) [Denumerable α] [Denumerable β] : α ≃ β :=
   (eqv α).trans (eqv β).symm
 #align denumerable.equiv₂ Denumerable.equiv₂
 
-instance nat : Denumerable ℕ :=
+instance nat : Denumerable ℕ := fast_instance%
   ⟨fun _ => ⟨_, rfl, rfl⟩⟩
 #align denumerable.nat Denumerable.nat
 
@@ -125,7 +125,7 @@ theorem ofNat_nat (n) : ofNat ℕ n = n :=
 #align denumerable.of_nat_nat Denumerable.ofNat_nat
 
 /-- If `α` is denumerable, then so is `Option α`. -/
-instance option : Denumerable (Option α) :=
+instance option : Denumerable (Option α) := fast_instance%
   ⟨fun n => by
     cases n with
     | zero =>
@@ -139,7 +139,7 @@ instance option : Denumerable (Option α) :=
 
 set_option linter.deprecated false in
 /-- If `α` and `β` are denumerable, then so is their sum. -/
-instance sum : Denumerable (Sum α β) :=
+instance sum : Denumerable (Sum α β) := fast_instance%
   ⟨fun n => by
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
     simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some',
@@ -152,7 +152,7 @@ section Sigma
 variable {γ : α → Type*} [∀ a, Denumerable (γ a)]
 
 /-- A denumerable collection of denumerable types is denumerable. -/
-instance sigma : Denumerable (Sigma γ) :=
+instance sigma : Denumerable (Sigma γ) := fast_instance%
   ⟨fun n => by simp [decodeSigma]⟩
 #align denumerable.sigma Denumerable.sigma
 
@@ -165,7 +165,7 @@ theorem sigma_ofNat_val (n : ℕ) :
 end Sigma
 
 /-- If `α` and `β` are denumerable, then so is their product. -/
-instance prod : Denumerable (α × β) :=
+instance prod : Denumerable (α × β) := fast_instance%
   ofEquiv _ (Equiv.sigmaEquivProd α β).symm
 #align denumerable.prod Denumerable.prod
 
@@ -178,21 +178,21 @@ theorem prod_ofNat_val (n : ℕ) : ofNat (α × β) n = (ofNat α (unpair n).1, 
 theorem prod_nat_ofNat : ofNat (ℕ × ℕ) = unpair := by funext; simp
 #align denumerable.prod_nat_of_nat Denumerable.prod_nat_ofNat
 
-instance int : Denumerable ℤ :=
+instance int : Denumerable ℤ := fast_instance%
   Denumerable.mk' Equiv.intEquivNat
 #align denumerable.int Denumerable.int
 
-instance pnat : Denumerable ℕ+ :=
+instance pnat : Denumerable ℕ+ := fast_instance%
   Denumerable.mk' Equiv.pnatEquivNat
 #align denumerable.pnat Denumerable.pnat
 
 /-- The lift of a denumerable type is denumerable. -/
-instance ulift : Denumerable (ULift α) :=
+instance ulift : Denumerable (ULift α) := fast_instance%
   ofEquiv _ Equiv.ulift
 #align denumerable.ulift Denumerable.ulift
 
 /-- The lift of a denumerable type is denumerable. -/
-instance plift : Denumerable (PLift α) :=
+instance plift : Denumerable (PLift α) := fast_instance%
   ofEquiv _ Equiv.plift
 #align denumerable.plift Denumerable.plift
 

@@ -61,9 +61,9 @@ theorem LatticeOrderedAddCommGroup.isSolid_ball (r : ℝ) :
   mem_ball_zero_iff.mpr ((HasSolidNorm.solid hxy).trans_lt (mem_ball_zero_iff.mp hx))
 #align lattice_ordered_add_comm_group.is_solid_ball LatticeOrderedAddCommGroup.isSolid_ball
 
-instance : HasSolidNorm ℝ := ⟨fun _ _ => id⟩
+instance : HasSolidNorm ℝ := fast_instance% ⟨fun _ _ => id⟩
 
-instance : HasSolidNorm ℚ := ⟨fun _ _ _ => by simpa only [norm, ← Rat.cast_abs, Rat.cast_le]⟩
+instance : HasSolidNorm ℚ := fast_instance% ⟨fun _ _ _ => by simpa only [norm, ← Rat.cast_abs, Rat.cast_le]⟩
 
 end SolidNorm
 

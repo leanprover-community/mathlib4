@@ -110,7 +110,7 @@ def maximalIdeal : Ideal R where
   smul_mem' _ _ := mul_mem_nonunits_right
 #align local_ring.maximal_ideal LocalRing.maximalIdeal
 
-instance maximalIdeal.isMaximal : (maximalIdeal R).IsMaximal := by
+instance maximalIdeal.isMaximal : (maximalIdeal R).IsMaximal := fast_instance% by
   rw [Ideal.isMaximal_iff]
   constructor
   · intro h
@@ -351,13 +351,13 @@ def ResidueField :=
 #align local_ring.residue_field LocalRing.ResidueField
 
 -- Porting note: failed at `deriving` instances automatically
-instance ResidueFieldCommRing : CommRing (ResidueField R) :=
+instance ResidueFieldCommRing : CommRing (ResidueField R) := fast_instance%
   show CommRing (R ⧸ maximalIdeal R) from inferInstance
 
-instance ResidueFieldInhabited : Inhabited (ResidueField R) :=
+instance ResidueFieldInhabited : Inhabited (ResidueField R) := fast_instance%
   show Inhabited (R ⧸ maximalIdeal R) from inferInstance
 
-noncomputable instance ResidueField.field : Field (ResidueField R) :=
+noncomputable instance ResidueField.field : Field (ResidueField R) := fast_instance%
   Ideal.Quotient.field (maximalIdeal R)
 #align local_ring.residue_field.field LocalRing.ResidueField.field
 
@@ -366,7 +366,7 @@ def residue : R →+* ResidueField R :=
   Ideal.Quotient.mk _
 #align local_ring.residue LocalRing.residue
 
-instance ResidueField.algebra : Algebra R (ResidueField R) :=
+instance ResidueField.algebra : Algebra R (ResidueField R) := fast_instance%
   Ideal.Quotient.algebra _
 #align local_ring.residue_field.algebra LocalRing.ResidueField.algebra
 
@@ -374,7 +374,7 @@ theorem ResidueField.algebraMap_eq : algebraMap R (ResidueField R) = residue R :
   rfl
 #align local_ring.residue_field.algebra_map_eq LocalRing.ResidueField.algebraMap_eq
 
-instance : IsLocalRingHom (LocalRing.residue R) :=
+instance : IsLocalRingHom (LocalRing.residue R) := fast_instance%
   ⟨fun _ ha =>
     Classical.not_not.mp (Ideal.Quotient.eq_zero_iff_mem.not.mp (isUnit_iff_ne_zero.mp ha))⟩
 
@@ -484,7 +484,7 @@ section MulSemiringAction
 variable (G : Type*) [Group G] [MulSemiringAction G R]
 
 /-- If `G` acts on `R` as a `MulSemiringAction`, then it also acts on `LocalRing.ResidueField R`. -/
-instance : MulSemiringAction G (LocalRing.ResidueField R) :=
+instance : MulSemiringAction G (LocalRing.ResidueField R) := fast_instance%
   MulSemiringAction.compHom _ <| mapAut.comp (MulSemiringAction.toRingAut G R)
 
 @[simp]

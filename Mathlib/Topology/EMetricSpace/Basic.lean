@@ -408,7 +408,7 @@ def PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpace �
 #align pseudo_emetric_space.induced PseudoEMetricSpace.induced
 
 /-- Pseudoemetric space instance on subsets of pseudoemetric spaces -/
-instance {α : Type*} {p : α → Prop} [PseudoEMetricSpace α] : PseudoEMetricSpace (Subtype p) :=
+instance {α : Type*} {p : α → Prop} [PseudoEMetricSpace α] : PseudoEMetricSpace (Subtype p) := fast_instance%
   PseudoEMetricSpace.induced Subtype.val ‹_›
 
 /-- The extended pseudodistance on a subset of a pseudoemetric space is the restriction of
@@ -420,7 +420,7 @@ namespace MulOpposite
 
 /-- Pseudoemetric space instance on the multiplicative opposite of a pseudoemetric space. -/
 @[to_additive "Pseudoemetric space instance on the additive opposite of a pseudoemetric space."]
-instance {α : Type*} [PseudoEMetricSpace α] : PseudoEMetricSpace αᵐᵒᵖ :=
+instance {α : Type*} [PseudoEMetricSpace α] : PseudoEMetricSpace αᵐᵒᵖ := fast_instance%
   PseudoEMetricSpace.induced unop ‹_›
 
 @[to_additive]
@@ -437,7 +437,7 @@ end MulOpposite
 
 section ULift
 
-instance : PseudoEMetricSpace (ULift α) := PseudoEMetricSpace.induced ULift.down ‹_›
+instance : PseudoEMetricSpace (ULift α) := fast_instance% PseudoEMetricSpace.induced ULift.down ‹_›
 
 theorem ULift.edist_eq (x y : ULift α) : edist x y = edist x.down y.down := rfl
 #align ulift.edist_eq ULift.edist_eq
@@ -1091,21 +1091,21 @@ def EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m 
 #align emetric_space.induced EMetricSpace.induced
 
 /-- EMetric space instance on subsets of emetric spaces -/
-instance {α : Type*} {p : α → Prop} [EMetricSpace α] : EMetricSpace (Subtype p) :=
+instance {α : Type*} {p : α → Prop} [EMetricSpace α] : EMetricSpace (Subtype p) := fast_instance%
   EMetricSpace.induced Subtype.val Subtype.coe_injective ‹_›
 
 /-- EMetric space instance on the multiplicative opposite of an emetric space. -/
 @[to_additive "EMetric space instance on the additive opposite of an emetric space."]
-instance {α : Type*} [EMetricSpace α] : EMetricSpace αᵐᵒᵖ :=
+instance {α : Type*} [EMetricSpace α] : EMetricSpace αᵐᵒᵖ := fast_instance%
   EMetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
 
-instance {α : Type*} [EMetricSpace α] : EMetricSpace (ULift α) :=
+instance {α : Type*} [EMetricSpace α] : EMetricSpace (ULift α) := fast_instance%
   EMetricSpace.induced ULift.down ULift.down_injective ‹_›
 
 /-- The product of two emetric spaces, with the max distance, is an extended
 metric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
-instance Prod.emetricSpaceMax [EMetricSpace β] : EMetricSpace (γ × β) :=
+instance Prod.emetricSpaceMax [EMetricSpace β] : EMetricSpace (γ × β) := fast_instance%
   .ofT0PseudoEMetricSpace _
 #align prod.emetric_space_max Prod.emetricSpaceMax
 
@@ -1125,7 +1125,7 @@ an emetric space.
 This construction would also work for infinite products, but it would not give rise
 to the product topology. Hence, we only formalize it in the good situation of finitely many
 spaces. -/
-instance emetricSpacePi [∀ b, EMetricSpace (π b)] : EMetricSpace (∀ b, π b) :=
+instance emetricSpacePi [∀ b, EMetricSpace (π b)] : EMetricSpace (∀ b, π b) := fast_instance%
   .ofT0PseudoEMetricSpace _
 #align emetric_space_pi emetricSpacePi
 
@@ -1173,7 +1173,7 @@ instance [PseudoEMetricSpace X] : EDist (SeparationQuotient X) where
 #align uniform_space.separation_quotient.edist_mk SeparationQuotient.edist_mk
 
 open SeparationQuotient in
-instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) :=
+instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) := fast_instance%
   @EMetricSpace.ofT0PseudoEMetricSpace (SeparationQuotient X)
     { edist_self := surjective_mk.forall.2 edist_self,
       edist_comm := surjective_mk.forall₂.2 edist_comm,
@@ -1195,8 +1195,8 @@ section
 
 variable [EDist X]
 
-instance : EDist (Additive X) := ‹EDist X›
-instance : EDist (Multiplicative X) := ‹EDist X›
+instance : EDist (Additive X) := fast_instance% ‹EDist X›
+instance : EDist (Multiplicative X) := fast_instance% ‹EDist X›
 
 @[simp]
 theorem edist_ofMul (a b : X) : edist (ofMul a) (ofMul b) = edist a b :=
@@ -1220,10 +1220,10 @@ theorem edist_toAdd (a b : Multiplicative X) : edist (toAdd a) (toAdd b) = edist
 
 end
 
-instance [PseudoEMetricSpace X] : PseudoEMetricSpace (Additive X) := ‹PseudoEMetricSpace X›
-instance [PseudoEMetricSpace X] : PseudoEMetricSpace (Multiplicative X) := ‹PseudoEMetricSpace X›
-instance [EMetricSpace X] : EMetricSpace (Additive X) := ‹EMetricSpace X›
-instance [EMetricSpace X] : EMetricSpace (Multiplicative X) := ‹EMetricSpace X›
+instance [PseudoEMetricSpace X] : PseudoEMetricSpace (Additive X) := fast_instance% ‹PseudoEMetricSpace X›
+instance [PseudoEMetricSpace X] : PseudoEMetricSpace (Multiplicative X) := fast_instance% ‹PseudoEMetricSpace X›
+instance [EMetricSpace X] : EMetricSpace (Additive X) := fast_instance% ‹EMetricSpace X›
+instance [EMetricSpace X] : EMetricSpace (Multiplicative X) := fast_instance% ‹EMetricSpace X›
 
 /-!
 ### Order dual
@@ -1238,7 +1238,7 @@ section
 
 variable [EDist X]
 
-instance : EDist Xᵒᵈ := ‹EDist X›
+instance : EDist Xᵒᵈ := fast_instance% ‹EDist X›
 
 @[simp]
 theorem edist_toDual (a b : X) : edist (toDual a) (toDual b) = edist a b :=
@@ -1252,5 +1252,5 @@ theorem edist_ofDual (a b : Xᵒᵈ) : edist (ofDual a) (ofDual b) = edist a b :
 
 end
 
-instance [PseudoEMetricSpace X] : PseudoEMetricSpace Xᵒᵈ := ‹PseudoEMetricSpace X›
-instance [EMetricSpace X] : EMetricSpace Xᵒᵈ := ‹EMetricSpace X›
+instance [PseudoEMetricSpace X] : PseudoEMetricSpace Xᵒᵈ := fast_instance% ‹PseudoEMetricSpace X›
+instance [EMetricSpace X] : EMetricSpace Xᵒᵈ := fast_instance% ‹EMetricSpace X›

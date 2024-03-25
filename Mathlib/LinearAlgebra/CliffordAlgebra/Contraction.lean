@@ -124,7 +124,7 @@ local infixl:70 "⌊" => contractRight (R := R) (M := M) (Q := Q)
 
 -- Porting note: Lean needs to be reminded of this instance otherwise the statement of the
 -- next result times out
-instance : SMul R (CliffordAlgebra Q) := inferInstance
+instance : SMul R (CliffordAlgebra Q) := fast_instance% inferInstance
 
 /-- This is [grinberg_clifford_2016][] Theorem 6  -/
 theorem contractLeft_ι_mul (a : M) (b : CliffordAlgebra Q) :

@@ -66,7 +66,7 @@ structure Partition (n : ℕ) where
 namespace Partition
 
 -- TODO: This should be automatically derived, see lean4#2914
-instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
+instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) := fast_instance%
   fun _ _ => decidable_of_iff' _ <| Partition.ext_iff _ _
 
 /-- A composition induces a partition (just convert the list to a multiset). -/
@@ -106,7 +106,7 @@ def ofMultiset (l : Multiset ℕ) : Partition l.sum := ofSums _ l rfl
 def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
 #align nat.partition.indiscrete_partition Nat.Partition.indiscrete
 
-instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
+instance {n : ℕ} : Inhabited (Partition n) := fast_instance% ⟨indiscrete n⟩
 
 @[simp] lemma indiscrete_parts {n : ℕ} (hn : n ≠ 0) : (indiscrete n).parts = {n} := by
   simp [indiscrete, filter_eq_self, hn]
@@ -144,7 +144,7 @@ theorem count_ofSums_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) :
 /-- Show there are finitely many partitions by considering the surjection from compositions to
 partitions.
 -/
-instance (n : ℕ) : Fintype (Partition n) :=
+instance (n : ℕ) : Fintype (Partition n) := fast_instance%
   Fintype.ofSurjective (ofComposition n) ofComposition_surj
 
 /-- The finset of those partitions in which every part is odd. -/

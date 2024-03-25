@@ -146,7 +146,7 @@ theorem coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (
 
 end exp
 
-instance : PreservesColimits (prod.functor.obj A) :=
+instance : PreservesColimits (prod.functor.obj A) := fast_instance%
   (ihom.adjunction A).leftAdjointPreservesColimits
 
 variable {A}
@@ -379,7 +379,7 @@ theorem strict_initial {I : C} (t : IsInitial I) (f : A ⟶ I) : IsIso f := by
   apply isIso_of_mono_of_isSplitEpi
 #align category_theory.strict_initial CategoryTheory.strict_initial
 
-instance to_initial_isIso [HasInitial C] (f : A ⟶ ⊥_ C) : IsIso f :=
+instance to_initial_isIso [HasInitial C] (f : A ⟶ ⊥_ C) : IsIso f := fast_instance%
   strict_initial initialIsInitial _
 #align category_theory.to_initial_is_iso CategoryTheory.to_initial_isIso
 
@@ -391,7 +391,7 @@ theorem initial_mono {I : C} (B : C) (t : IsInitial I) [CartesianClosed C] : Mon
     exact eq_of_inv_eq_inv (t.hom_ext _ _)⟩
 #align category_theory.initial_mono CategoryTheory.initial_mono
 
-instance Initial.mono_to [HasInitial C] (B : C) [CartesianClosed C] : Mono (initial.to B) :=
+instance Initial.mono_to [HasInitial C] (B : C) [CartesianClosed C] : Mono (initial.to B) := fast_instance%
   initial_mono B initialIsInitial
 #align category_theory.initial.mono_to CategoryTheory.Initial.mono_to
 

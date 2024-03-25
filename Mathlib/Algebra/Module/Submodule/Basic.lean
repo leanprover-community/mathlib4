@@ -248,23 +248,23 @@ theorem smul_mem_iff' [Group G] [MulAction G M] [SMul G R] [IsScalarTower G R M]
   p.toSubMulAction.smul_mem_iff' g
 #align submodule.smul_mem_iff' Submodule.smul_mem_iff'
 
-instance add : Add p :=
+instance add : Add p := fast_instance%
   ⟨fun x y => ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩
 #align submodule.has_add Submodule.add
 
-instance zero : Zero p :=
+instance zero : Zero p := fast_instance%
   ⟨⟨0, zero_mem _⟩⟩
 #align submodule.has_zero Submodule.zero
 
-instance inhabited : Inhabited p :=
+instance inhabited : Inhabited p := fast_instance%
   ⟨0⟩
 #align submodule.inhabited Submodule.inhabited
 
-instance smul [SMul S R] [SMul S M] [IsScalarTower S R M] : SMul S p :=
+instance smul [SMul S R] [SMul S M] [IsScalarTower S R M] : SMul S p := fast_instance%
   ⟨fun c x => ⟨c • x.1, smul_of_tower_mem _ c x.2⟩⟩
 #align submodule.has_smul Submodule.smul
 
-instance isScalarTower [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTower S R p :=
+instance isScalarTower [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTower S R p := fast_instance%
   p.toSubMulAction.isScalarTower
 #align submodule.is_scalar_tower Submodule.isScalarTower
 
@@ -326,11 +326,11 @@ theorem coe_mem (x : p) : (x : M) ∈ p :=
 
 variable (p)
 
-instance addCommMonoid : AddCommMonoid p :=
+instance addCommMonoid : AddCommMonoid p := fast_instance%
   { p.toAddSubmonoid.toAddCommMonoid with }
 #align submodule.add_comm_monoid Submodule.addCommMonoid
 
-instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
+instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p := fast_instance%
   { (show MulAction S p from p.toSubMulAction.mulAction') with
     smul_zero := fun a => by ext; simp
     zero_smul := fun a => by ext; simp
@@ -338,11 +338,11 @@ instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Mo
     smul_add := fun a x y => by ext; simp [smul_add] }
 #align submodule.module' Submodule.module'
 
-instance module : Module R p :=
+instance module : Module R p := fast_instance%
   p.module'
 #align submodule.module Submodule.module
 
-instance noZeroSMulDivisors [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R p :=
+instance noZeroSMulDivisors [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R p := fast_instance%
   ⟨fun {c} {x : p} h =>
     have : c = 0 ∨ (x : M) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
     this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
@@ -361,14 +361,14 @@ These instances work particularly well in conjunction with `AddGroup.toAddAction
 
 variable {α β : Type*}
 
-instance [VAdd M α] : VAdd p α :=
+instance [VAdd M α] : VAdd p α := fast_instance%
   p.toAddSubmonoid.vadd
 
-instance vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCommClass p α β :=
+instance vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCommClass p α β := fast_instance%
   ⟨fun a => (vadd_comm (a : M) : _)⟩
 #align submodule.vadd_comm_class Submodule.vaddCommClass
 
-instance [VAdd M α] [FaithfulVAdd M α] : FaithfulVAdd p α :=
+instance [VAdd M α] [FaithfulVAdd M α] : FaithfulVAdd p α := fast_instance%
   ⟨fun h => Subtype.ext <| eq_of_vadd_eq_vadd h⟩
 
 variable {p}
@@ -388,7 +388,7 @@ variable {module_M : Module R M}
 variable (p p' : Submodule R M)
 variable {r : R} {x y : M}
 
-instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
+instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M := fast_instance%
   { Submodule.addSubmonoidClass with neg_mem := fun p {_} => p.toSubMulAction.neg_mem }
 #align submodule.add_subgroup_class Submodule.addSubgroupClass
 
@@ -466,7 +466,7 @@ theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_right hx, p.neg_mem_iff]
 #align submodule.sub_mem_iff_right Submodule.sub_mem_iff_right
 
-instance addCommGroup : AddCommGroup p :=
+instance addCommGroup : AddCommGroup p := fast_instance%
   { p.toAddSubgroup.toAddCommGroup with }
 #align submodule.add_comm_group Submodule.addCommGroup
 

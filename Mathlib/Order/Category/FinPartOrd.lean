@@ -36,10 +36,10 @@ structure FinPartOrd where
 
 namespace FinPartOrd
 
-instance : CoeSort FinPartOrd (Type*) :=
+instance : CoeSort FinPartOrd (Type*) := fast_instance%
   ⟨fun X => X.toPartOrd⟩
 
-instance (X : FinPartOrd) : PartialOrder X :=
+instance (X : FinPartOrd) : PartialOrder X := fast_instance%
   X.toPartOrd.str
 
 attribute [instance] FinPartOrd.isFintype
@@ -56,18 +56,18 @@ def of (α : Type*) [PartialOrder α] [Fintype α] : FinPartOrd :=
 theorem coe_of (α : Type*) [PartialOrder α] [Fintype α] : ↥(of α) = α := rfl
 #align FinPartOrd.coe_of FinPartOrd.coe_of
 
-instance : Inhabited FinPartOrd :=
+instance : Inhabited FinPartOrd := fast_instance%
   ⟨of PUnit⟩
 
-instance largeCategory : LargeCategory FinPartOrd :=
+instance largeCategory : LargeCategory FinPartOrd := fast_instance%
   InducedCategory.category FinPartOrd.toPartOrd
 #align FinPartOrd.large_category FinPartOrd.largeCategory
 
-instance concreteCategory : ConcreteCategory FinPartOrd :=
+instance concreteCategory : ConcreteCategory FinPartOrd := fast_instance%
   InducedCategory.concreteCategory FinPartOrd.toPartOrd
 #align FinPartOrd.concrete_category FinPartOrd.concreteCategory
 
-instance hasForgetToPartOrd : HasForget₂ FinPartOrd PartOrd :=
+instance hasForgetToPartOrd : HasForget₂ FinPartOrd PartOrd := fast_instance%
   InducedCategory.hasForget₂ FinPartOrd.toPartOrd
 #align FinPartOrd.has_forget_to_PartOrd FinPartOrd.hasForgetToPartOrd
 

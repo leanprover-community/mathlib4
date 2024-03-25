@@ -21,7 +21,7 @@ namespace CategoryTheory
 
 open MonoidalCategory
 
-instance typesSymmetric : SymmetricCategory.{u} (Type u) :=
+instance typesSymmetric : SymmetricCategory.{u} (Type u) := fast_instance%
   symmetricOfChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
 #align category_theory.types_symmetric CategoryTheory.typesSymmetric
 

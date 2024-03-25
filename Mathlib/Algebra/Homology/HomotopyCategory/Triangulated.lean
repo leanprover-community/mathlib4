@@ -186,7 +186,7 @@ lemma mappingConeCompTriangleh_distinguished :
     congr 2
     exact (CochainComplex.mappingConeCompHomotopyEquiv_comm₂ f g).symm
 
-noncomputable instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) :=
+noncomputable instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ)) := fast_instance%
   IsTriangulated.mk' (by
     rintro ⟨X₁ : CochainComplex C ℤ⟩ ⟨X₂ : CochainComplex C ℤ⟩ ⟨X₃ : CochainComplex C ℤ⟩ u₁₂' u₂₃'
     obtain ⟨u₁₂, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective u₁₂'

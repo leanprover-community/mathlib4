@@ -113,12 +113,12 @@ run_cmd
     `CommGroup, `NonAssocSemiring, `NonUnitalSemiring, `NonAssocSemiring, `Semiring,
     `Ring, `CommRing].map Lean.mkIdent do
   Lean.Elab.Command.elabCommand (← `(
-    @[to_additive] instance [$n Mᵐᵒᵖ] : $n Mᵈᵐᵃ := ‹_›
+    @[to_additive] instance [$n Mᵐᵒᵖ] : $n Mᵈᵐᵃ := fast_instance% ‹_›
   ))
 
-@[to_additive] instance [Mul Mᵐᵒᵖ] [IsLeftCancelMul Mᵐᵒᵖ] : IsLeftCancelMul Mᵈᵐᵃ := ‹_›
-@[to_additive] instance [Mul Mᵐᵒᵖ] [IsRightCancelMul Mᵐᵒᵖ] : IsRightCancelMul Mᵈᵐᵃ := ‹_›
-@[to_additive] instance [Mul Mᵐᵒᵖ] [IsCancelMul Mᵐᵒᵖ] : IsCancelMul Mᵈᵐᵃ := ‹_›
+@[to_additive] instance [Mul Mᵐᵒᵖ] [IsLeftCancelMul Mᵐᵒᵖ] : IsLeftCancelMul Mᵈᵐᵃ := fast_instance% ‹_›
+@[to_additive] instance [Mul Mᵐᵒᵖ] [IsRightCancelMul Mᵐᵒᵖ] : IsRightCancelMul Mᵈᵐᵃ := fast_instance% ‹_›
+@[to_additive] instance [Mul Mᵐᵒᵖ] [IsCancelMul Mᵐᵒᵖ] : IsCancelMul Mᵈᵐᵃ := fast_instance% ‹_›
 
 @[to_additive (attr := simp)]
 lemma mk_one [One M] : mk (1 : M) = 1 := rfl
@@ -212,7 +212,7 @@ theorem smul_monoidHom_apply (c : Mᵈᵐᵃ) (f : A →* B) (a : A) : (c • f)
 @[simp]
 theorem mk_smul_monoidHom_apply (c : M) (f : A →* B) (a : A) : (mk c • f) a = f (c • a) := rfl
 
-instance : MulAction Mᵈᵐᵃ (A →* B) := DFunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
+instance : MulAction Mᵈᵐᵃ (A →* B) := fast_instance% DFunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
 
 end MonoidHom
 
@@ -225,10 +225,10 @@ variable [AddMonoid A] [DistribSMul M A] [AddZeroClass B]
 instance : SMul Mᵈᵐᵃ (A →+ B) where
   smul c f := f.comp (DistribSMul.toAddMonoidHom _ (mk.symm c))
 
-instance [DistribSMul M' A] [SMulCommClass M M' A] : SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (A →+ B) :=
+instance [DistribSMul M' A] [SMulCommClass M M' A] : SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (A →+ B) := fast_instance%
   DFunLike.coe_injective.smulCommClass (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
-instance [DistribSMul M' B] : SMulCommClass Mᵈᵐᵃ M' (A →+ B) :=
+instance [DistribSMul M' B] : SMulCommClass Mᵈᵐᵃ M' (A →+ B) := fast_instance%
   DFunLike.coe_injective.smulCommClass (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 theorem smul_addMonoidHom_apply (c : Mᵈᵐᵃ) (f : A →+ B) (a : A) : (c • f) a = f (mk.symm c • a) :=

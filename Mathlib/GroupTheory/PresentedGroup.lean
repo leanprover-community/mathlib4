@@ -38,7 +38,7 @@ def PresentedGroup (rels : Set (FreeGroup α)) :=
 
 namespace PresentedGroup
 
-instance (rels : Set (FreeGroup α)) : Group (PresentedGroup rels) :=
+instance (rels : Set (FreeGroup α)) : Group (PresentedGroup rels) := fast_instance%
   QuotientGroup.Quotient.group _
 
 /-- `of` is the canonical map from `α` to a presented group with generators `x : α`. The term `x` is
@@ -114,7 +114,7 @@ theorem equivPresentedGroup_symm_apply_of (x : β) (rels : Set (FreeGroup α)) (
 
 end ToGroup
 
-instance (rels : Set (FreeGroup α)) : Inhabited (PresentedGroup rels) :=
+instance (rels : Set (FreeGroup α)) : Inhabited (PresentedGroup rels) := fast_instance%
   ⟨1⟩
 
 end PresentedGroup

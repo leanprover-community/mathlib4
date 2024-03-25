@@ -151,11 +151,11 @@ private lemma finite_setOf_bounded (α) [Finite α] (n : ℕ) : Finite {f : α �
   ((Set.Finite.pi' fun _ ↦ Set.finite_le_nat _).preimage <|
     DFunLike.coe_injective.injOn _).to_subtype
 
-instance [Finite σ] (N : ℕ) : Module.Finite R (restrictDegree σ R N) :=
+instance [Finite σ] (N : ℕ) : Module.Finite R (restrictDegree σ R N) := fast_instance%
   have := finite_setOf_bounded σ N
   Module.Finite.of_basis (basisRestrictSupport R _)
 
-instance [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) :=
+instance [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) := fast_instance%
   have := finite_setOf_bounded σ N
   have : Finite {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ N} := by
     rw [Set.finite_coe_iff] at this ⊢

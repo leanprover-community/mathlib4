@@ -56,10 +56,10 @@ instance [SMul N α] [SMulCommClass M N α] [SMulInvariantMeasure N α μ] [Meas
     SMulCommClass Mᵈᵐᵃ Nᵈᵐᵃ (Lp E p μ) :=
   Subtype.val_injective.smulCommClass (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
-instance [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] : SMulCommClass Mᵈᵐᵃ 𝕜 (Lp E p μ) :=
+instance [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] : SMulCommClass Mᵈᵐᵃ 𝕜 (Lp E p μ) := fast_instance%
   Subtype.val_injective.smulCommClass (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
-instance [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] : SMulCommClass 𝕜 Mᵈᵐᵃ (Lp E p μ) :=
+instance [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] : SMulCommClass 𝕜 Mᵈᵐᵃ (Lp E p μ) := fast_instance%
   .symm _ _ _
 
 -- We don't have a typeclass for additive versions of the next few lemmas
@@ -105,7 +105,7 @@ theorem edist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : edist (c • f) (c �
 
 variable [Fact (1 ≤ p)]
 
-instance : IsometricSMul Mᵈᵐᵃ (Lp E p μ) := ⟨edist_smul_Lp⟩
+instance : IsometricSMul Mᵈᵐᵃ (Lp E p μ) := fast_instance% ⟨edist_smul_Lp⟩
 
 end SMul
 
@@ -114,9 +114,9 @@ section MulAction
 variable [Monoid M] [MulAction M α] [SMulInvariantMeasure M α μ] [MeasurableSMul M α]
 
 @[to_additive]
-instance : MulAction Mᵈᵐᵃ (Lp E p μ) := Subtype.val_injective.mulAction _ fun _ _ ↦ rfl
+instance : MulAction Mᵈᵐᵃ (Lp E p μ) := fast_instance% Subtype.val_injective.mulAction _ fun _ _ ↦ rfl
 
-instance : DistribMulAction Mᵈᵐᵃ (Lp E p μ) :=
+instance : DistribMulAction Mᵈᵐᵃ (Lp E p μ) := fast_instance%
   Subtype.val_injective.distribMulAction ⟨⟨_, rfl⟩, fun _ _ ↦ rfl⟩ fun _ _ ↦ rfl
 
 end MulAction

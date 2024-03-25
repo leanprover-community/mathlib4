@@ -122,18 +122,18 @@ theorem norm_id [Nontrivial E] : ‖id 𝕜 E‖ = 1 := by
 @[simp]
 lemma nnnorm_id [Nontrivial E] : ‖id 𝕜 E‖₊ = 1 := NNReal.eq norm_id
 
-instance normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
+instance normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) := fast_instance%
   ⟨norm_id⟩
 #align continuous_linear_map.norm_one_class ContinuousLinearMap.normOneClass
 
 /-- Continuous linear maps themselves form a normed space with respect to
     the operator norm. -/
-instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
+instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) := fast_instance%
   NormedAddCommGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
 #align continuous_linear_map.to_normed_add_comm_group ContinuousLinearMap.toNormedAddCommGroup
 
 /-- Continuous linear maps form a normed ring with respect to the operator norm. -/
-instance toNormedRing : NormedRing (E →L[𝕜] E) :=
+instance toNormedRing : NormedRing (E →L[𝕜] E) := fast_instance%
   { ContinuousLinearMap.toNormedAddCommGroup, ContinuousLinearMap.toSemiNormedRing with }
 #align continuous_linear_map.to_normed_ring ContinuousLinearMap.toNormedRing
 

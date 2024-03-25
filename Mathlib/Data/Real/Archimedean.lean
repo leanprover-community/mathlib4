@@ -20,14 +20,14 @@ open Pointwise CauSeq
 
 namespace Real
 
-instance instArchimedean : Archimedean ℝ :=
+instance instArchimedean : Archimedean ℝ := fast_instance%
   archimedean_iff_rat_le.2 fun x =>
     Real.ind_mk x fun f =>
       let ⟨M, _, H⟩ := f.bounded' 0
       ⟨M, mk_le_of_forall_le ⟨0, fun i _ => Rat.cast_le.2 <| le_of_lt (abs_lt.1 (H i)).2⟩⟩
 #align real.archimedean Real.instArchimedean
 
-noncomputable instance : FloorRing ℝ :=
+noncomputable instance : FloorRing ℝ := fast_instance%
   Archimedean.floorRing _
 
 theorem isCauSeq_iff_lift {f : ℕ → ℚ} : IsCauSeq abs f ↔ IsCauSeq abs fun i => (f i : ℝ) :=
@@ -107,7 +107,7 @@ theorem exists_isLUB (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ 
           le_trans hx (h xS)⟩
 #align real.exists_is_lub Real.exists_isLUB
 
-noncomputable instance : SupSet ℝ :=
+noncomputable instance : SupSet ℝ := fast_instance%
   ⟨fun S => if h : S.Nonempty ∧ BddAbove S then Classical.choose (exists_isLUB S h.1 h.2) else 0⟩
 
 theorem sSup_def (S : Set ℝ) :
@@ -121,7 +121,7 @@ protected theorem isLUB_sSup (S : Set ℝ) (h₁ : S.Nonempty) (h₂ : BddAbove 
   apply Classical.choose_spec
 #align real.is_lub_Sup Real.isLUB_sSup
 
-noncomputable instance : InfSet ℝ :=
+noncomputable instance : InfSet ℝ := fast_instance%
   ⟨fun S => -sSup (-S)⟩
 
 theorem sInf_def (S : Set ℝ) : sInf S = -sSup (-S) :=
@@ -134,7 +134,7 @@ protected theorem is_glb_sInf (S : Set ℝ) (h₁ : S.Nonempty) (h₂ : BddBelow
   exact Real.isLUB_sSup _ h₁.neg h₂.neg
 #align real.is_glb_Inf Real.is_glb_sInf
 
-noncomputable instance : ConditionallyCompleteLinearOrder ℝ :=
+noncomputable instance : ConditionallyCompleteLinearOrder ℝ := fast_instance%
   { Real.linearOrder, Real.lattice with
     sSup := SupSet.sSup
     sInf := InfSet.sInf
@@ -317,7 +317,7 @@ theorem cauSeq_converges (f : CauSeq ℝ abs) : ∃ x, f ≈ const abs x := by
     exact ih _ ij
 #align real.cau_seq_converges Real.cauSeq_converges
 
-instance : CauSeq.IsComplete ℝ abs :=
+instance : CauSeq.IsComplete ℝ abs := fast_instance%
   ⟨cauSeq_converges⟩
 
 open Set

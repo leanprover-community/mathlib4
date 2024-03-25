@@ -59,7 +59,7 @@ noncomputable def absIsAdmissible : IsAdmissible AbsoluteValue.abs :=
     exists_partition' := fun n _ hε _ hb ↦ exists_partition_int n hε hb }
 #align absolute_value.abs_is_admissible AbsoluteValue.absIsAdmissible
 
-noncomputable instance : Inhabited (IsAdmissible AbsoluteValue.abs) :=
+noncomputable instance : Inhabited (IsAdmissible AbsoluteValue.abs) := fast_instance%
   ⟨absIsAdmissible⟩
 
 end AbsoluteValue

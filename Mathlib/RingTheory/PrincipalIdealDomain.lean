@@ -46,11 +46,11 @@ section
 
 variable [Ring R] [AddCommGroup M] [Module R M]
 
-instance bot_isPrincipal : (⊥ : Submodule R M).IsPrincipal :=
+instance bot_isPrincipal : (⊥ : Submodule R M).IsPrincipal := fast_instance%
   ⟨⟨0, by simp⟩⟩
 #align bot_is_principal bot_isPrincipal
 
-instance top_isPrincipal : (⊤ : Submodule R R).IsPrincipal :=
+instance top_isPrincipal : (⊤ : Submodule R R).IsPrincipal := fast_instance%
   ⟨⟨1, Ideal.span_singleton_one.symm⟩⟩
 #align top_is_principal top_isPrincipal
 
@@ -161,7 +161,7 @@ section
 
 variable [Ring R]
 
-instance span_pair_isPrincipal [IsBezout R] (x y : R) : (Ideal.span {x, y}).IsPrincipal :=
+instance span_pair_isPrincipal [IsBezout R] (x y : R) : (Ideal.span {x, y}).IsPrincipal := fast_instance%
   by classical exact isPrincipal_of_FG (Ideal.span {x, y}) ⟨{x, y}, by simp⟩
 #align is_bezout.span_pair_is_principal IsBezout.span_pair_isPrincipal
 
@@ -218,7 +218,7 @@ noncomputable def toGCDDomain [IsBezout R] [IsDomain R] [DecidableEq R] : GCDMon
   gcdMonoidOfGCD (gcd · ·) (gcd_dvd_left · ·) (gcd_dvd_right · ·) dvd_gcd
 #align is_bezout.to_gcd_domain IsBezout.toGCDDomain
 
-instance nonemptyGCDMonoid [IsBezout R] [IsDomain R] : Nonempty (GCDMonoid R) := by
+instance nonemptyGCDMonoid [IsBezout R] [IsDomain R] : Nonempty (GCDMonoid R) := fast_instance% by
   classical exact ⟨toGCDDomain R⟩
 
 end IsBezout

@@ -78,11 +78,11 @@ over a field of characteristic zero and wishes to make use of the `ℚ`-algebra 
 def RestrictScalars (_R _S M : Type*) : Type _ := M
 #align restrict_scalars RestrictScalars
 
-instance [I : Inhabited M] : Inhabited (RestrictScalars R S M) := I
+instance [I : Inhabited M] : Inhabited (RestrictScalars R S M) := fast_instance% I
 
-instance [I : AddCommMonoid M] : AddCommMonoid (RestrictScalars R S M) := I
+instance [I : AddCommMonoid M] : AddCommMonoid (RestrictScalars R S M) := fast_instance% I
 
-instance [I : AddCommGroup M] : AddCommGroup (RestrictScalars R S M) := I
+instance [I : AddCommGroup M] : AddCommGroup (RestrictScalars R S M) := fast_instance% I
 
 section Module
 
@@ -105,12 +105,12 @@ module structure over `R`.
 
 The preferred way of setting this up is `[Module R M] [Module S M] [IsScalarTower R S M]`.
 -/
-instance RestrictScalars.module [Module S M] : Module R (RestrictScalars R S M) :=
+instance RestrictScalars.module [Module S M] : Module R (RestrictScalars R S M) := fast_instance%
   Module.compHom M (algebraMap R S)
 
 /-- This instance is only relevant when `RestrictScalars.moduleOrig` is available as an instance.
 -/
-instance RestrictScalars.isScalarTower [Module S M] : IsScalarTower R S (RestrictScalars R S M) :=
+instance RestrictScalars.isScalarTower [Module S M] : IsScalarTower R S (RestrictScalars R S M) := fast_instance%
   ⟨fun r S M ↦ by
     rw [Algebra.smul_def, mul_smul]
     rfl⟩
@@ -123,7 +123,7 @@ right-module structure over `R`.
 The preferred way of setting this up is
 `[Module Rᵐᵒᵖ M] [Module Sᵐᵒᵖ M] [IsScalarTower Rᵐᵒᵖ Sᵐᵒᵖ M]`.
 -/
-instance RestrictScalars.opModule [Module Sᵐᵒᵖ M] : Module Rᵐᵒᵖ (RestrictScalars R S M) :=
+instance RestrictScalars.opModule [Module Sᵐᵒᵖ M] : Module Rᵐᵒᵖ (RestrictScalars R S M) := fast_instance%
   letI : Module Sᵐᵒᵖ (RestrictScalars R S M) := ‹Module Sᵐᵒᵖ M›
   Module.compHom M (RingHom.op <| algebraMap R S)
 #align restrict_scalars.op_module RestrictScalars.opModule
@@ -189,13 +189,13 @@ end Module
 
 section Algebra
 
-instance [I : Semiring A] : Semiring (RestrictScalars R S A) := I
+instance [I : Semiring A] : Semiring (RestrictScalars R S A) := fast_instance% I
 
-instance [I : Ring A] : Ring (RestrictScalars R S A) := I
+instance [I : Ring A] : Ring (RestrictScalars R S A) := fast_instance% I
 
-instance [I : CommSemiring A] : CommSemiring (RestrictScalars R S A) := I
+instance [I : CommSemiring A] : CommSemiring (RestrictScalars R S A) := fast_instance% I
 
-instance [I : CommRing A] : CommRing (RestrictScalars R S A) := I
+instance [I : CommRing A] : CommRing (RestrictScalars R S A) := fast_instance% I
 
 variable [Semiring A]
 
@@ -214,7 +214,7 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
 #align restrict_scalars.ring_equiv_map_smul RestrictScalars.ringEquiv_map_smul
 
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
-instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) :=
+instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) := fast_instance%
   { (algebraMap S A).comp (algebraMap R S) with
     smul := (· • ·)
     commutes' := fun _ _ ↦ Algebra.commutes' (A := A) _ _

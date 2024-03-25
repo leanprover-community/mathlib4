@@ -28,9 +28,9 @@ Note: This is a structure to make it so one can be precise about how dot notatio
 protected structure Preconnected (H : G.Subgraph) : Prop where
   protected coe : H.coe.Preconnected
 
-instance {H : G.Subgraph} : Coe H.Preconnected H.coe.Preconnected := ⟨Preconnected.coe⟩
+instance {H : G.Subgraph} : Coe H.Preconnected H.coe.Preconnected := fast_instance% ⟨Preconnected.coe⟩
 
-instance {H : G.Subgraph} : CoeFun H.Preconnected (fun _ => ∀ u v : H.verts, H.coe.Reachable u v) :=
+instance {H : G.Subgraph} : CoeFun H.Preconnected (fun _ => ∀ u v : H.verts, H.coe.Reachable u v) := fast_instance%
   ⟨fun h => h.coe⟩
 
 protected lemma preconnected_iff {H : G.Subgraph} :
@@ -43,9 +43,9 @@ protected structure Connected (H : G.Subgraph) : Prop where
   protected coe : H.coe.Connected
 #align simple_graph.subgraph.connected SimpleGraph.Subgraph.Connected
 
-instance {H : G.Subgraph} : Coe H.Connected H.coe.Connected := ⟨Connected.coe⟩
+instance {H : G.Subgraph} : Coe H.Connected H.coe.Connected := fast_instance% ⟨Connected.coe⟩
 
-instance {H : G.Subgraph} : CoeFun H.Connected (fun _ => ∀ u v : H.verts, H.coe.Reachable u v) :=
+instance {H : G.Subgraph} : CoeFun H.Connected (fun _ => ∀ u v : H.verts, H.coe.Reachable u v) := fast_instance%
   ⟨fun h => h.coe⟩
 
 protected lemma connected_iff' {H : G.Subgraph} :

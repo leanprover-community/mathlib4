@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Mathport.Rename
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Basic facts about `Thunk`.
@@ -38,7 +39,7 @@ def prod (a : Thunk α) (b : Thunk β) : Thunk (α × β) := Thunk.mk fun _ => (
 /-- The sum of two thunks. -/
 def add [Add α] (a b : Thunk α) : Thunk α := Thunk.mk fun _ => a.get + b.get
 
-instance [Add α] : Add (Thunk α) := ⟨add⟩
+instance [Add α] : Add (Thunk α) := fast_instance% ⟨add⟩
 
 @[simp] theorem add_get [Add α] {a b : Thunk α} : (a + b).get = a.get + b.get := rfl
 

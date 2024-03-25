@@ -608,7 +608,7 @@ theorem IsSeparable.isAlgebraic [Nontrivial F] [IsSeparable F K] : Algebra.IsAlg
 
 end CommRing
 
-instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F :=
+instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F := fast_instance%
   ⟨fun x => by
     rw [minpoly.eq_X_sub_C']
     exact separable_X_sub_C⟩

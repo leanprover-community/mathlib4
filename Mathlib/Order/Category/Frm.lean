@@ -34,10 +34,10 @@ def Frm :=
 
 namespace Frm
 
-instance : CoeSort Frm (Type*) :=
+instance : CoeSort Frm (Type*) := fast_instance%
   Bundled.coeSort
 
-instance (X : Frm) : Frame X :=
+instance (X : Frm) : Frame X := fast_instance%
   X.str
 
 /-- Construct a bundled `Frm` from a `Frame`. -/
@@ -49,7 +49,7 @@ def of (α : Type*) [Frame α] : Frm :=
 theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α := rfl
 #align Frm.coe_of Frm.coe_of
 
-instance : Inhabited Frm :=
+instance : Inhabited Frm := fast_instance%
   ⟨of PUnit⟩
 
 /-- An abbreviation of `FrameHom` that assumes `Frame` instead of the weaker `CompleteLattice`.
@@ -69,7 +69,7 @@ instance bundledHom : BundledHom Hom where
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory, Category for Frm
 
-instance : ConcreteCategory Frm := by
+instance : ConcreteCategory Frm := fast_instance% by
   unfold Frm
   infer_instance
 
@@ -103,6 +103,6 @@ def topCatOpToFrm : TopCatᵒᵖ ⥤ Frm where
 #align Top_op_to_Frame topCatOpToFrm
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
-instance CompHausOpToFrame.faithful : Faithful (compHausToTop.op ⋙ topCatOpToFrm.{u}) :=
+instance CompHausOpToFrame.faithful : Faithful (compHausToTop.op ⋙ topCatOpToFrm.{u}) := fast_instance%
   ⟨fun h => Quiver.Hom.unop_inj <| Opens.comap_injective h⟩
 #align CompHaus_op_to_Frame.faithful CompHausOpToFrame.faithful

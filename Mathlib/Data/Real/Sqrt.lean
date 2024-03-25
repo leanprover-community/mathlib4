@@ -484,7 +484,7 @@ theorem sqrt_one_add_le (h : -1 ≤ x) : sqrt (1 + x) ≤ 1 + x / 2 := by
 want `StarOrderedRing ℝ` to be available globally, so we include this instance separately.
 In addition, providing this instance here makes it available earlier in the import
 hierarchy; otherwise in order to access it we would need to import `Data.IsROrC.Basic` -/
-instance : StarOrderedRing ℝ :=
+instance : StarOrderedRing ℝ := fast_instance%
   StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
     refine ⟨fun hr => ⟨sqrt r, (mul_self_sqrt hr).symm⟩, ?_⟩
     rintro ⟨s, rfl⟩
@@ -492,7 +492,7 @@ instance : StarOrderedRing ℝ :=
 
 end Real
 
-instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 := by
+instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 := fast_instance% by
   refine .ofLEIff fun x y ↦ ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨d, rfl⟩ := exists_add_of_le h
     refine ⟨sqrt d, ?_⟩

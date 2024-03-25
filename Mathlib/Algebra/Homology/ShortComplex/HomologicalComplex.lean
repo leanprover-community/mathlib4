@@ -138,11 +138,11 @@ lemma toCycles_i [K.HasHomology j] :
     K.toCycles i j ≫ K.iCycles j = K.d i j :=
   liftCycles_i _ _ _ _ _
 
-instance : Mono (K.iCycles i) := by
+instance : Mono (K.iCycles i) := fast_instance% by
   dsimp only [iCycles]
   infer_instance
 
-instance : Epi (K.homologyπ i) := by
+instance : Epi (K.homologyπ i) := fast_instance% by
   dsimp only [homologyπ]
   infer_instance
 
@@ -240,11 +240,11 @@ lemma p_fromOpcycles :
     K.pOpcycles i ≫ K.fromOpcycles i j = K.d i j :=
   p_descOpcycles _ _ _ _ _
 
-instance : Epi (K.pOpcycles i) := by
+instance : Epi (K.pOpcycles i) := fast_instance% by
   dsimp only [pOpcycles]
   infer_instance
 
-instance : Mono (K.homologyι i) := by
+instance : Mono (K.homologyι i) := fast_instance% by
   dsimp only [homologyι]
   infer_instance
 
@@ -311,11 +311,11 @@ lemma cyclesMap_i : cyclesMap φ i ≫ L.iCycles i = K.iCycles i ≫ φ.f i :=
 lemma p_opcyclesMap : K.pOpcycles i ≫ opcyclesMap φ i = φ.f i ≫ L.pOpcycles i :=
   ShortComplex.p_opcyclesMap _
 
-instance [Mono (φ.f i)] : Mono (cyclesMap φ i) := mono_of_mono_fac (cyclesMap_i φ i)
+instance [Mono (φ.f i)] : Mono (cyclesMap φ i) := fast_instance% mono_of_mono_fac (cyclesMap_i φ i)
 
 attribute [local instance] epi_comp
 
-instance [Epi (φ.f i)] : Epi (opcyclesMap φ i) := epi_of_epi_fac (p_opcyclesMap φ i)
+instance [Epi (φ.f i)] : Epi (opcyclesMap φ i) := fast_instance% epi_of_epi_fac (p_opcyclesMap φ i)
 
 variable (K)
 

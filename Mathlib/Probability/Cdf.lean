@@ -78,7 +78,7 @@ lemma ofReal_cdf [IsProbabilityMeasure μ] (x : ℝ) : ENNReal.ofReal (cdf μ x)
 lemma cdf_eq_toReal [IsProbabilityMeasure μ] (x : ℝ) : cdf μ x = (μ (Iic x)).toReal := by
   rw [← ofReal_cdf μ x, ENNReal.toReal_ofReal (cdf_nonneg μ x)]
 
-instance instIsProbabilityMeasurecdf : IsProbabilityMeasure (cdf μ).measure := by
+instance instIsProbabilityMeasurecdf : IsProbabilityMeasure (cdf μ).measure := fast_instance% by
   constructor
   simp only [StieltjesFunction.measure_univ _ (tendsto_cdf_atBot μ) (tendsto_cdf_atTop μ), sub_zero,
     ENNReal.ofReal_one]

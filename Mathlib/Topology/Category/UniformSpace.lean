@@ -35,18 +35,18 @@ def UniformSpaceCat : Type (u + 1) :=
 namespace UniformSpaceCat
 
 /-- The information required to build morphisms for `UniformSpace`. -/
-instance : UnbundledHom @UniformContinuous :=
+instance : UnbundledHom @UniformContinuous := fast_instance%
   ⟨@uniformContinuous_id, @UniformContinuous.comp⟩
 
 deriving instance LargeCategory for UniformSpaceCat
 
-instance : ConcreteCategory UniformSpaceCat :=
+instance : ConcreteCategory UniformSpaceCat := fast_instance%
   inferInstanceAs <| ConcreteCategory <| Bundled UniformSpace
 
-instance : CoeSort UniformSpaceCat (Type*) :=
+instance : CoeSort UniformSpaceCat (Type*) := fast_instance%
   Bundled.coeSort
 
-instance (x : UniformSpaceCat) : UniformSpace x :=
+instance (x : UniformSpaceCat) : UniformSpace x := fast_instance%
   x.str
 
 /-- Construct a bundled `UniformSpace` from the underlying type and the typeclass. -/
@@ -54,7 +54,7 @@ def of (α : Type u) [UniformSpace α] : UniformSpaceCat :=
   ⟨α, ‹_›⟩
 #align UniformSpace.of UniformSpaceCat.of
 
-instance : Inhabited UniformSpaceCat :=
+instance : Inhabited UniformSpaceCat := fast_instance%
   ⟨UniformSpaceCat.of Empty⟩
 
 @[simp]
@@ -62,7 +62,7 @@ theorem coe_of (X : Type u) [UniformSpace X] : (of X : Type u) = X :=
   rfl
 #align UniformSpace.coe_of UniformSpaceCat.coe_of
 
-instance (X Y : UniformSpaceCat) : CoeFun (X ⟶ Y) fun _ => X → Y :=
+instance (X Y : UniformSpaceCat) : CoeFun (X ⟶ Y) fun _ => X → Y := fast_instance%
   ⟨(forget UniformSpaceCat).map⟩
 
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
@@ -112,7 +112,7 @@ structure CpltSepUniformSpace where
 
 namespace CpltSepUniformSpace
 
-instance : CoeSort CpltSepUniformSpace (Type u) :=
+instance : CoeSort CpltSepUniformSpace (Type u) := fast_instance%
   ⟨CpltSepUniformSpace.α⟩
 
 attribute [instance] isUniformSpace isCompleteSpace isT0
@@ -122,11 +122,11 @@ def toUniformSpace (X : CpltSepUniformSpace) : UniformSpaceCat :=
   UniformSpaceCat.of X
 #align CpltSepUniformSpace.to_UniformSpace CpltSepUniformSpace.toUniformSpace
 
-instance completeSpace (X : CpltSepUniformSpace) : CompleteSpace (toUniformSpace X).α :=
+instance completeSpace (X : CpltSepUniformSpace) : CompleteSpace (toUniformSpace X).α := fast_instance%
   CpltSepUniformSpace.isCompleteSpace X
 #align CpltSepUniformSpace.complete_space CpltSepUniformSpace.completeSpace
 
-instance t0Space (X : CpltSepUniformSpace) : T0Space (toUniformSpace X).α :=
+instance t0Space (X : CpltSepUniformSpace) : T0Space (toUniformSpace X).α := fast_instance%
   CpltSepUniformSpace.isT0 X
 #align CpltSepUniformSpace.separated_space CpltSepUniformSpace.t0Space
 
@@ -141,20 +141,20 @@ theorem coe_of (X : Type u) [UniformSpace X] [CompleteSpace X] [T0Space X] :
   rfl
 #align CpltSepUniformSpace.coe_of CpltSepUniformSpace.coe_of
 
-instance : Inhabited CpltSepUniformSpace :=
+instance : Inhabited CpltSepUniformSpace := fast_instance%
   ⟨CpltSepUniformSpace.of Empty⟩
 
 /-- The category instance on `CpltSepUniformSpace`. -/
-instance category : LargeCategory CpltSepUniformSpace :=
+instance category : LargeCategory CpltSepUniformSpace := fast_instance%
   InducedCategory.category toUniformSpace
 #align CpltSepUniformSpace.category CpltSepUniformSpace.category
 
 /-- The concrete category instance on `CpltSepUniformSpace`. -/
-instance concreteCategory : ConcreteCategory CpltSepUniformSpace :=
+instance concreteCategory : ConcreteCategory CpltSepUniformSpace := fast_instance%
   InducedCategory.concreteCategory toUniformSpace
 #align CpltSepUniformSpace.concrete_category CpltSepUniformSpace.concreteCategory
 
-instance hasForgetToUniformSpace : HasForget₂ CpltSepUniformSpace UniformSpaceCat :=
+instance hasForgetToUniformSpace : HasForget₂ CpltSepUniformSpace UniformSpaceCat := fast_instance%
   InducedCategory.hasForget₂ toUniformSpace
 #align CpltSepUniformSpace.has_forget_to_UniformSpace CpltSepUniformSpace.hasForgetToUniformSpace
 
@@ -195,7 +195,7 @@ noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
 #align UniformSpace.extension_hom UniformSpaceCat.extensionHom
 
 -- Porting note (#10754): added this instance to make things compile
-instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
+instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) := fast_instance%
   show UniformSpace X from inferInstance
 
 @[simp]
@@ -234,7 +234,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
         rfl }
 #align UniformSpace.adj UniformSpaceCat.adj
 
-noncomputable instance : IsRightAdjoint (forget₂ CpltSepUniformSpace UniformSpaceCat) :=
+noncomputable instance : IsRightAdjoint (forget₂ CpltSepUniformSpace UniformSpaceCat) := fast_instance%
   ⟨completionFunctor, adj⟩
 
 noncomputable instance : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where

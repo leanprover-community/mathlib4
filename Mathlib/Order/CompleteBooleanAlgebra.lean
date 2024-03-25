@@ -505,7 +505,7 @@ instance Prop.instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Pr
   __ := Prop.instBooleanAlgebra
   iInf_iSup_eq f := by simp [Classical.skolem]
 
-instance Prop.instCompleteBooleanAlgebra : CompleteBooleanAlgebra Prop := inferInstance
+instance Prop.instCompleteBooleanAlgebra : CompleteBooleanAlgebra Prop := fast_instance% inferInstance
 #align Prop.complete_boolean_algebra Prop.instCompleteBooleanAlgebra
 
 section lift
@@ -600,7 +600,7 @@ namespace PUnit
 
 variable (s : Set PUnit.{u + 1}) (x y : PUnit.{u + 1})
 
-instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
+instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := fast_instance% by
   refine'
     { PUnit.instBooleanAlgebra with
       sSup := fun _ => unit
@@ -608,9 +608,9 @@ instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit :
       .. } <;>
   (intros; trivial)
 
-instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
+instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit := fast_instance% inferInstance
 
-instance instCompleteLinearOrder : CompleteLinearOrder PUnit :=
+instance instCompleteLinearOrder : CompleteLinearOrder PUnit := fast_instance%
   { PUnit.instCompleteBooleanAlgebra, PUnit.instLinearOrder with }
 
 @[simp]

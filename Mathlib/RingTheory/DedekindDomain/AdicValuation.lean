@@ -337,14 +337,14 @@ def adicCompletion :=
   @UniformSpace.Completion K v.adicValued.toUniformSpace
 #align is_dedekind_domain.height_one_spectrum.adic_completion IsDedekindDomain.HeightOneSpectrum.adicCompletion
 
-instance : Field (v.adicCompletion K) :=
+instance : Field (v.adicCompletion K) := fast_instance%
   @UniformSpace.Completion.instField K _ v.adicValued.toUniformSpace _ _
     v.adicValued.toUniformAddGroup
 
-instance : Inhabited (v.adicCompletion K) :=
+instance : Inhabited (v.adicCompletion K) := fast_instance%
   ⟨0⟩
 
-instance valuedAdicCompletion : Valued (v.adicCompletion K) ℤₘ₀ :=
+instance valuedAdicCompletion : Valued (v.adicCompletion K) ℤₘ₀ := fast_instance%
   @Valued.valuedCompletion _ _ _ _ v.adicValued
 #align is_dedekind_domain.height_one_spectrum.valued_adic_completion IsDedekindDomain.HeightOneSpectrum.valuedAdicCompletion
 
@@ -353,16 +353,16 @@ theorem valuedAdicCompletion_def {x : v.adicCompletion K} :
   rfl
 #align is_dedekind_domain.height_one_spectrum.valued_adic_completion_def IsDedekindDomain.HeightOneSpectrum.valuedAdicCompletion_def
 
-instance adicCompletion_completeSpace : CompleteSpace (v.adicCompletion K) :=
+instance adicCompletion_completeSpace : CompleteSpace (v.adicCompletion K) := fast_instance%
   @UniformSpace.Completion.completeSpace K v.adicValued.toUniformSpace
 #align is_dedekind_domain.height_one_spectrum.adic_completion_complete_space IsDedekindDomain.HeightOneSpectrum.adicCompletion_completeSpace
 
 -- Porting note: replaced by `Coe`
--- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=
+-- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) := fast_instance%
 --   (inferInstance : HasLiftT K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
 #noalign is_dedekind_domain.height_one_spectrum.adic_completion.has_lift_t
 
-instance AdicCompletion.instCoe : Coe K (v.adicCompletion K) :=
+instance AdicCompletion.instCoe : Coe K (v.adicCompletion K) := fast_instance%
   (inferInstance : Coe K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
 
 /-- The ring of integers of `adicCompletion`. -/
@@ -370,7 +370,7 @@ def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
   Valued.v.valuationSubring
 #align is_dedekind_domain.height_one_spectrum.adic_completion_integers IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers
 
-instance : Inhabited (adicCompletionIntegers K v) :=
+instance : Inhabited (adicCompletionIntegers K v) := fast_instance%
   ⟨0⟩
 
 variable (R)
@@ -392,7 +392,7 @@ instance adicValued.uniformContinuousConstSMul :
   @Ring.uniformContinuousConstSMul K _ v.adicValued.toUniformSpace _ _
 #align is_dedekind_domain.height_one_spectrum.adic_valued.has_uniform_continuous_const_smul IsDedekindDomain.HeightOneSpectrum.adicValued.uniformContinuousConstSMul
 
-instance AdicCompletion.algebra' : Algebra R (v.adicCompletion K) :=
+instance AdicCompletion.algebra' : Algebra R (v.adicCompletion K) := fast_instance%
   @UniformSpace.Completion.algebra K _ v.adicValued.toUniformSpace _ _ R _ _
     (adicValued.has_uniform_continuous_const_smul' R K v)
 #align is_dedekind_domain.height_one_spectrum.adic_completion.algebra' IsDedekindDomain.HeightOneSpectrum.AdicCompletion.algebra'
@@ -402,7 +402,7 @@ theorem coe_smul_adicCompletion (r : R) (x : K) :
   @UniformSpace.Completion.coe_smul R K v.adicValued.toUniformSpace _ _ r x
 #align is_dedekind_domain.height_one_spectrum.coe_smul_adic_completion IsDedekindDomain.HeightOneSpectrum.coe_smul_adicCompletion
 
-instance : Algebra K (v.adicCompletion K) :=
+instance : Algebra K (v.adicCompletion K) := fast_instance%
   @UniformSpace.Completion.algebra' K _ v.adicValued.toUniformSpace _ _
 
 theorem algebraMap_adicCompletion' :
@@ -415,7 +415,7 @@ theorem algebraMap_adicCompletion :
   rfl
 #align is_dedekind_domain.height_one_spectrum.algebra_map_adic_completion IsDedekindDomain.HeightOneSpectrum.algebraMap_adicCompletion
 
-instance : IsScalarTower R K (v.adicCompletion K) :=
+instance : IsScalarTower R K (v.adicCompletion K) := fast_instance%
   @UniformSpace.Completion.instIsScalarTower R K K v.adicValued.toUniformSpace _ _ _
     (adicValued.has_uniform_continuous_const_smul' R K v) _ _
 

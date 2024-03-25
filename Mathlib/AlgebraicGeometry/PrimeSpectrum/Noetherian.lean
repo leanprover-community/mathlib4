@@ -99,7 +99,7 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
 
 open TopologicalSpace
 
-instance : NoetherianSpace (PrimeSpectrum R) := by
+instance : NoetherianSpace (PrimeSpectrum R) := fast_instance% by
   apply ((noetherianSpace_TFAE <| PrimeSpectrum R).out 0 1).mpr
   have H := ‹IsNoetherianRing R›
   rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at H

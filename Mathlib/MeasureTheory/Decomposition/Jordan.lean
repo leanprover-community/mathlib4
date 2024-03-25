@@ -75,10 +75,10 @@ open Measure VectorMeasure
 
 variable (j : JordanDecomposition α)
 
-instance instZero : Zero (JordanDecomposition α) where zero := ⟨0, 0, MutuallySingular.zero_right⟩
+instance instZero : Zero (JordanDecomposition α) where zero := fast_instance% ⟨0, 0, MutuallySingular.zero_right⟩
 #align measure_theory.jordan_decomposition.has_zero MeasureTheory.JordanDecomposition.instZero
 
-instance instInhabited : Inhabited (JordanDecomposition α) where default := 0
+instance instInhabited : Inhabited (JordanDecomposition α) where default := fast_instance% 0
 #align measure_theory.jordan_decomposition.inhabited MeasureTheory.JordanDecomposition.instInhabited
 
 instance instInvolutiveNeg : InvolutiveNeg (JordanDecomposition α) where

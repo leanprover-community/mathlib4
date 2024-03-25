@@ -129,7 +129,7 @@ def isLimitKernelFork : IsLimit (I.kernelFork) := by
     ← cancel_epi (singleObjCyclesSelfIso (ComplexShape.up ℕ) _ _).inv]
   simp
 
-instance (n : ℕ) : Mono (I.ι.f n) := by
+instance (n : ℕ) : Mono (I.ι.f n) := fast_instance% by
   cases n
   · exact mono_of_isLimit_fork I.isLimitKernelFork
   · rw [ι_f_succ]; infer_instance

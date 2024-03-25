@@ -34,9 +34,9 @@ open UnitDisc
 
 namespace UnitDisc
 
-instance instCommSemigroup : CommSemigroup UnitDisc := by unfold UnitDisc; infer_instance
-instance instHasDistribNeg : HasDistribNeg UnitDisc := by unfold UnitDisc; infer_instance
-instance instCoe : Coe UnitDisc ℂ := ⟨Subtype.val⟩
+instance instCommSemigroup : CommSemigroup UnitDisc := fast_instance% by unfold UnitDisc; infer_instance
+instance instHasDistribNeg : HasDistribNeg UnitDisc := fast_instance% by unfold UnitDisc; infer_instance
+instance instCoe : Coe UnitDisc ℂ := fast_instance% ⟨Subtype.val⟩
 
 theorem coe_injective : Injective ((↑) : 𝔻 → ℂ) :=
   Subtype.coe_injective
@@ -95,7 +95,7 @@ theorem mk_neg (z : ℂ) (hz : abs (-z) < 1) : mk (-z) hz = -mk z (abs.map_neg z
   rfl
 #align complex.unit_disc.mk_neg Complex.UnitDisc.mk_neg
 
-instance : SemigroupWithZero 𝔻 :=
+instance : SemigroupWithZero 𝔻 := fast_instance%
   { instCommSemigroup with
     zero := mk 0 <| (map_zero _).trans_lt one_pos
     zero_mul := fun _ => coe_injective <| zero_mul _
@@ -111,26 +111,26 @@ theorem coe_eq_zero {z : 𝔻} : (z : ℂ) = 0 ↔ z = 0 :=
   coe_injective.eq_iff' coe_zero
 #align complex.unit_disc.coe_eq_zero Complex.UnitDisc.coe_eq_zero
 
-instance : Inhabited 𝔻 :=
+instance : Inhabited 𝔻 := fast_instance%
   ⟨0⟩
 
-instance circleAction : MulAction circle 𝔻 :=
+instance circleAction : MulAction circle 𝔻 := fast_instance%
   mulActionSphereBall
 #align complex.unit_disc.circle_action Complex.UnitDisc.circleAction
 
-instance isScalarTower_circle_circle : IsScalarTower circle circle 𝔻 :=
+instance isScalarTower_circle_circle : IsScalarTower circle circle 𝔻 := fast_instance%
   isScalarTower_sphere_sphere_ball
 #align complex.unit_disc.is_scalar_tower_circle_circle Complex.UnitDisc.isScalarTower_circle_circle
 
-instance isScalarTower_circle : IsScalarTower circle 𝔻 𝔻 :=
+instance isScalarTower_circle : IsScalarTower circle 𝔻 𝔻 := fast_instance%
   isScalarTower_sphere_ball_ball
 #align complex.unit_disc.is_scalar_tower_circle Complex.UnitDisc.isScalarTower_circle
 
-instance instSMulCommClass_circle : SMulCommClass circle 𝔻 𝔻 :=
+instance instSMulCommClass_circle : SMulCommClass circle 𝔻 𝔻 := fast_instance%
   instSMulCommClass_sphere_ball_ball
 #align complex.unit_disc.smul_comm_class_circle Complex.UnitDisc.instSMulCommClass_circle
 
-instance instSMulCommClass_circle' : SMulCommClass 𝔻 circle 𝔻 :=
+instance instSMulCommClass_circle' : SMulCommClass 𝔻 circle 𝔻 := fast_instance%
   SMulCommClass.symm _ _ _
 #align complex.unit_disc.smul_comm_class_circle' Complex.UnitDisc.instSMulCommClass_circle'
 
@@ -139,7 +139,7 @@ theorem coe_smul_circle (z : circle) (w : 𝔻) : ↑(z • w) = (z * w : ℂ) :
   rfl
 #align complex.unit_disc.coe_smul_circle Complex.UnitDisc.coe_smul_circle
 
-instance closedBallAction : MulAction (closedBall (0 : ℂ) 1) 𝔻 :=
+instance closedBallAction : MulAction (closedBall (0 : ℂ) 1) 𝔻 := fast_instance%
   mulActionClosedBallBall
 #align complex.unit_disc.closed_ball_action Complex.UnitDisc.closedBallAction
 
@@ -148,23 +148,23 @@ instance isScalarTower_closedBall_closedBall :
   isScalarTower_closedBall_closedBall_ball
 #align complex.unit_disc.is_scalar_tower_closed_ball_closed_ball Complex.UnitDisc.isScalarTower_closedBall_closedBall
 
-instance isScalarTower_closedBall : IsScalarTower (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
+instance isScalarTower_closedBall : IsScalarTower (closedBall (0 : ℂ) 1) 𝔻 𝔻 := fast_instance%
   isScalarTower_closedBall_ball_ball
 #align complex.unit_disc.is_scalar_tower_closed_ball Complex.UnitDisc.isScalarTower_closedBall
 
-instance instSMulCommClass_closedBall : SMulCommClass (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
+instance instSMulCommClass_closedBall : SMulCommClass (closedBall (0 : ℂ) 1) 𝔻 𝔻 := fast_instance%
   ⟨fun _ _ _ => Subtype.ext <| mul_left_comm _ _ _⟩
 #align complex.unit_disc.smul_comm_class_closed_ball Complex.UnitDisc.instSMulCommClass_closedBall
 
-instance instSMulCommClass_closedBall' : SMulCommClass 𝔻 (closedBall (0 : ℂ) 1) 𝔻 :=
+instance instSMulCommClass_closedBall' : SMulCommClass 𝔻 (closedBall (0 : ℂ) 1) 𝔻 := fast_instance%
   SMulCommClass.symm _ _ _
 #align complex.unit_disc.smul_comm_class_closed_ball' Complex.UnitDisc.instSMulCommClass_closedBall'
 
-instance instSMulCommClass_circle_closedBall : SMulCommClass circle (closedBall (0 : ℂ) 1) 𝔻 :=
+instance instSMulCommClass_circle_closedBall : SMulCommClass circle (closedBall (0 : ℂ) 1) 𝔻 := fast_instance%
   instSMulCommClass_sphere_closedBall_ball
 #align complex.unit_disc.smul_comm_class_circle_closed_ball Complex.UnitDisc.instSMulCommClass_circle_closedBall
 
-instance instSMulCommClass_closedBall_circle : SMulCommClass (closedBall (0 : ℂ) 1) circle 𝔻 :=
+instance instSMulCommClass_closedBall_circle : SMulCommClass (closedBall (0 : ℂ) 1) circle 𝔻 := fast_instance%
   SMulCommClass.symm _ _ _
 #align complex.unit_disc.smul_comm_class_closed_ball_circle Complex.UnitDisc.instSMulCommClass_closedBall_circle
 

@@ -76,7 +76,7 @@ def effectiveEpiFamilyStructCompIso : EffectiveEpiFamilyStruct X (fun a ↦ π a
     simp [← EffectiveEpiFamily.uniq X π e
       (effectiveEpiFamilyStructCompIso_aux X π i e h) (i ≫ m) hm]
 
-instance : EffectiveEpiFamily X (fun a ↦ π a ≫ i) := ⟨⟨effectiveEpiFamilyStructCompIso X π i⟩⟩
+instance : EffectiveEpiFamily X (fun a ↦ π a ≫ i) := fast_instance% ⟨⟨effectiveEpiFamilyStructCompIso X π i⟩⟩
 
 end CompIso
 
@@ -105,7 +105,7 @@ def effectiveEpiFamilyStructIsoComp : EffectiveEpiFamilyStruct Y (fun a ↦ i a 
     simp [← EffectiveEpiFamily.uniq X π (fun a ↦ inv (i a) ≫ e a)
       (effectiveEpiFamilyStructIsoComp_aux X Y π i e h) m fun a ↦ by simpa using hm a]
 
-instance effectiveEpiFamilyIsoComp : EffectiveEpiFamily Y (fun a ↦ i a ≫ π a) :=
+instance effectiveEpiFamilyIsoComp : EffectiveEpiFamily Y (fun a ↦ i a ≫ π a) := fast_instance%
   ⟨⟨effectiveEpiFamilyStructIsoComp X Y π i⟩⟩
 
 end IsoComp

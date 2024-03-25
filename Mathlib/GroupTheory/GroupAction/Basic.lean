@@ -199,7 +199,7 @@ def stabilizerSubmonoid (a : α) : Submonoid M where
 variable {M}
 
 @[to_additive]
-instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizerSubmonoid M a) :=
+instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizerSubmonoid M a) := fast_instance%
   fun _ => inferInstanceAs <| Decidable (_ = _)
 
 @[to_additive (attr := simp)]
@@ -330,7 +330,7 @@ theorem orbit_smul (g : G) (a : α) : orbit G (g • a) = orbit G a :=
 
 /-- The action of a group on an orbit is transitive. -/
 @[to_additive "The action of an additive group on an orbit is transitive."]
-instance (a : α) : IsPretransitive G (orbit G a) :=
+instance (a : α) : IsPretransitive G (orbit G a) := fast_instance%
   ⟨by
     rintro ⟨_, g, rfl⟩ ⟨_, h, rfl⟩
     use h * g⁻¹
@@ -547,7 +547,7 @@ def stabilizer (a : α) : Subgroup G :=
 variable {G}
 
 @[to_additive]
-instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=
+instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) := fast_instance%
   fun _ => inferInstanceAs <| Decidable (_ = _)
 
 @[to_additive (attr := simp)]

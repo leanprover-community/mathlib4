@@ -178,11 +178,11 @@ def ListBlank (Γ) [Inhabited Γ] :=
   Quotient (BlankRel.setoid Γ)
 #align turing.list_blank Turing.ListBlank
 
-instance ListBlank.inhabited {Γ} [Inhabited Γ] : Inhabited (ListBlank Γ) :=
+instance ListBlank.inhabited {Γ} [Inhabited Γ] : Inhabited (ListBlank Γ) := fast_instance%
   ⟨Quotient.mk'' []⟩
 #align turing.list_blank.inhabited Turing.ListBlank.inhabited
 
-instance ListBlank.hasEmptyc {Γ} [Inhabited Γ] : EmptyCollection (ListBlank Γ) :=
+instance ListBlank.hasEmptyc {Γ} [Inhabited Γ] : EmptyCollection (ListBlank Γ) := fast_instance%
   ⟨Quotient.mk'' []⟩
 #align turing.list_blank.has_emptyc Turing.ListBlank.hasEmptyc
 
@@ -352,10 +352,10 @@ structure PointedMap.{u, v} (Γ : Type u) (Γ' : Type v) [Inhabited Γ] [Inhabit
   map_pt' : f default = default
 #align turing.pointed_map Turing.PointedMap
 
-instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : Inhabited (PointedMap Γ Γ') :=
+instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : Inhabited (PointedMap Γ Γ') := fast_instance%
   ⟨⟨default, rfl⟩⟩
 
-instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : CoeFun (PointedMap Γ Γ') fun _ ↦ Γ → Γ' :=
+instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : CoeFun (PointedMap Γ Γ') fun _ ↦ Γ → Γ' := fast_instance%
   ⟨PointedMap.f⟩
 
 -- @[simp] -- Porting note (#10685): dsimp can prove this
@@ -500,7 +500,7 @@ structure Tape (Γ : Type*) [Inhabited Γ] where
   right : ListBlank Γ
 #align turing.tape Turing.Tape
 
-instance Tape.inhabited {Γ} [Inhabited Γ] : Inhabited (Tape Γ) :=
+instance Tape.inhabited {Γ} [Inhabited Γ] : Inhabited (Tape Γ) := fast_instance%
   ⟨by constructor <;> apply default⟩
 #align turing.tape.inhabited Turing.Tape.inhabited
 
@@ -1030,7 +1030,7 @@ inductive Stmt
 
 local notation "Stmt₀" => Stmt Γ  -- Porting note (#10750): added this to clean up types.
 
-instance Stmt.inhabited : Inhabited Stmt₀ :=
+instance Stmt.inhabited : Inhabited Stmt₀ := fast_instance%
   ⟨Stmt.write default⟩
 #align turing.TM0.stmt.inhabited Turing.TM0.Stmt.inhabited
 
@@ -1050,7 +1050,7 @@ def Machine [Inhabited Λ] :=
 
 local notation "Machine₀" => Machine Γ Λ  -- Porting note (#10750): added this to clean up types.
 
-instance Machine.inhabited : Inhabited Machine₀ := by
+instance Machine.inhabited : Inhabited Machine₀ := fast_instance% by
   unfold Machine; infer_instance
 #align turing.TM0.machine.inhabited Turing.TM0.Machine.inhabited
 
@@ -1066,7 +1066,7 @@ structure Cfg where
 
 local notation "Cfg₀" => Cfg Γ Λ  -- Porting note (#10750): added this to clean up types.
 
-instance Cfg.inhabited : Inhabited Cfg₀ :=
+instance Cfg.inhabited : Inhabited Cfg₀ := fast_instance%
   ⟨⟨default, default⟩⟩
 #align turing.TM0.cfg.inhabited Turing.TM0.Cfg.inhabited
 
@@ -1254,7 +1254,7 @@ local notation "Stmt₁" => Stmt Γ Λ σ  -- Porting note (#10750): added this 
 
 open Stmt
 
-instance Stmt.inhabited : Inhabited Stmt₁ :=
+instance Stmt.inhabited : Inhabited Stmt₁ := fast_instance%
   ⟨halt⟩
 #align turing.TM1.stmt.inhabited Turing.TM1.Stmt.inhabited
 
@@ -1268,7 +1268,7 @@ structure Cfg where
 
 local notation "Cfg₁" => Cfg Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
-instance Cfg.inhabited [Inhabited σ] : Inhabited Cfg₁ :=
+instance Cfg.inhabited [Inhabited σ] : Inhabited Cfg₁ := fast_instance%
   ⟨⟨default, default, default⟩⟩
 #align turing.TM1.cfg.inhabited Turing.TM1.Cfg.inhabited
 
@@ -1460,7 +1460,7 @@ def Λ' (M : Λ → TM1.Stmt Γ Λ σ) :=
 
 local notation "Λ'₁₀" => Λ' M -- Porting note (#10750): added this to clean up types.
 
-instance : Inhabited Λ'₁₀ :=
+instance : Inhabited Λ'₁₀ := fast_instance%
   ⟨(some (M default), default)⟩
 
 open TM0.Stmt
@@ -1638,7 +1638,7 @@ inductive Λ'
 
 local notation "Λ'₁" => @Λ' Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
-instance : Inhabited Λ'₁ :=
+instance : Inhabited Λ'₁ := fast_instance%
   ⟨Λ'.normal default⟩
 
 local notation "Stmt'₁" => Stmt Bool Λ'₁ σ
@@ -1983,7 +1983,7 @@ inductive Λ'
 
 local notation "Λ'₁" => @Λ' Γ Λ  -- Porting note (#10750): added this to clean up types.
 
-instance : Inhabited Λ'₁ :=
+instance : Inhabited Λ'₁ := fast_instance%
   ⟨Λ'.normal default⟩
 
 local notation "Cfg₀" => TM0.Cfg Γ Λ
@@ -2107,7 +2107,7 @@ local notation "Stmt₂" => Stmt Γ Λ σ  -- Porting note (#10750): added this 
 
 open Stmt
 
-instance Stmt.inhabited : Inhabited Stmt₂ :=
+instance Stmt.inhabited : Inhabited Stmt₂ := fast_instance%
   ⟨halt⟩
 #align turing.TM2.stmt.inhabited Turing.TM2.Stmt.inhabited
 
@@ -2122,7 +2122,7 @@ structure Cfg where
 
 local notation "Cfg₂" => Cfg Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
-instance Cfg.inhabited [Inhabited σ] : Inhabited Cfg₂ :=
+instance Cfg.inhabited [Inhabited σ] : Inhabited Cfg₂ := fast_instance%
   ⟨⟨default, default, default⟩⟩
 #align turing.TM2.cfg.inhabited Turing.TM2.Cfg.inhabited
 
@@ -2342,11 +2342,11 @@ def Γ' :=
 
 local notation "Γ'₂₁" => @Γ' K Γ  -- Porting note (#10750): added this to clean up types.
 
-instance Γ'.inhabited : Inhabited Γ'₂₁ :=
+instance Γ'.inhabited : Inhabited Γ'₂₁ := fast_instance%
   ⟨⟨false, fun _ ↦ none⟩⟩
 #align turing.TM2to1.Γ'.inhabited Turing.TM2to1.Γ'.inhabited
 
-instance Γ'.fintype [Fintype K] [∀ k, Fintype (Γ k)] : Fintype Γ'₂₁ :=
+instance Γ'.fintype [Fintype K] [∀ k, Fintype (Γ k)] : Fintype Γ'₂₁ := fast_instance%
   instFintypeProd _ _
 #align turing.TM2to1.Γ'.fintype Turing.TM2to1.Γ'.fintype
 
@@ -2397,7 +2397,7 @@ inductive StAct (k : K)
 
 local notation "StAct₂" => @StAct K Γ σ  -- Porting note (#10750): added this to clean up types.
 
-instance StAct.inhabited {k : K} : Inhabited (StAct₂ k) :=
+instance StAct.inhabited {k : K} : Inhabited (StAct₂ k) := fast_instance%
   ⟨StAct.peek fun s _ ↦ s⟩
 #align turing.TM2to1.st_act.inhabited Turing.TM2to1.StAct.inhabited
 
@@ -2464,7 +2464,7 @@ local notation "Λ'₂₁" => @Λ' K Γ Λ σ  -- Porting note (#10750): added t
 
 open Λ'
 
-instance Λ'.inhabited : Inhabited Λ'₂₁ :=
+instance Λ'.inhabited : Inhabited Λ'₂₁ := fast_instance%
   ⟨normal default⟩
 #align turing.TM2to1.Λ'.inhabited Turing.TM2to1.Λ'.inhabited
 

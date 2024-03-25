@@ -78,43 +78,43 @@ def row {α : n → Type v} (v : ∀ j, α j) : DMatrix Unit n fun _i j => α j
 #align dmatrix.row DMatrix.row
 
 -- Porting note: Old proof is Pi.inhabited.
-instance [inst : ∀ i j, Inhabited (α i j)] : Inhabited (DMatrix m n α) :=
+instance [inst : ∀ i j, Inhabited (α i j)] : Inhabited (DMatrix m n α) := fast_instance%
   ⟨fun i j => (inst i j).default⟩
 
-instance [∀ i j, Add (α i j)] : Add (DMatrix m n α) :=
+instance [∀ i j, Add (α i j)] : Add (DMatrix m n α) := fast_instance%
   Pi.instAdd
 
-instance [∀ i j, AddSemigroup (α i j)] : AddSemigroup (DMatrix m n α) :=
+instance [∀ i j, AddSemigroup (α i j)] : AddSemigroup (DMatrix m n α) := fast_instance%
   Pi.addSemigroup
 
-instance [∀ i j, AddCommSemigroup (α i j)] : AddCommSemigroup (DMatrix m n α) :=
+instance [∀ i j, AddCommSemigroup (α i j)] : AddCommSemigroup (DMatrix m n α) := fast_instance%
   Pi.addCommSemigroup
 
-instance [∀ i j, Zero (α i j)] : Zero (DMatrix m n α) :=
+instance [∀ i j, Zero (α i j)] : Zero (DMatrix m n α) := fast_instance%
   Pi.instZero
 
-instance [∀ i j, AddMonoid (α i j)] : AddMonoid (DMatrix m n α) :=
+instance [∀ i j, AddMonoid (α i j)] : AddMonoid (DMatrix m n α) := fast_instance%
   Pi.addMonoid
 
-instance [∀ i j, AddCommMonoid (α i j)] : AddCommMonoid (DMatrix m n α) :=
+instance [∀ i j, AddCommMonoid (α i j)] : AddCommMonoid (DMatrix m n α) := fast_instance%
   Pi.addCommMonoid
 
-instance [∀ i j, Neg (α i j)] : Neg (DMatrix m n α) :=
+instance [∀ i j, Neg (α i j)] : Neg (DMatrix m n α) := fast_instance%
   Pi.instNeg
 
-instance [∀ i j, Sub (α i j)] : Sub (DMatrix m n α) :=
+instance [∀ i j, Sub (α i j)] : Sub (DMatrix m n α) := fast_instance%
   Pi.instSub
 
-instance [∀ i j, AddGroup (α i j)] : AddGroup (DMatrix m n α) :=
+instance [∀ i j, AddGroup (α i j)] : AddGroup (DMatrix m n α) := fast_instance%
   Pi.addGroup
 
-instance [∀ i j, AddCommGroup (α i j)] : AddCommGroup (DMatrix m n α) :=
+instance [∀ i j, AddCommGroup (α i j)] : AddCommGroup (DMatrix m n α) := fast_instance%
   Pi.addCommGroup
 
-instance [∀ i j, Unique (α i j)] : Unique (DMatrix m n α) :=
+instance [∀ i j, Unique (α i j)] : Unique (DMatrix m n α) := fast_instance%
   Pi.unique
 
-instance [∀ i j, Subsingleton (α i j)] : Subsingleton (DMatrix m n α) :=
+instance [∀ i j, Subsingleton (α i j)] : Subsingleton (DMatrix m n α) := fast_instance%
   instSubsingletonForAll
 
 @[simp]
@@ -153,13 +153,13 @@ theorem map_sub [∀ i j, AddGroup (α i j)] {β : m → n → Type w} [∀ i j,
   ext; simp
 #align dmatrix.map_sub DMatrix.map_sub
 
-instance subsingleton_of_empty_left [IsEmpty m] : Subsingleton (DMatrix m n α) :=
+instance subsingleton_of_empty_left [IsEmpty m] : Subsingleton (DMatrix m n α) := fast_instance%
   ⟨fun M N => by
     ext i
     exact isEmptyElim i⟩
 #align dmatrix.subsingleton_of_empty_left DMatrix.subsingleton_of_empty_left
 
-instance subsingleton_of_empty_right [IsEmpty n] : Subsingleton (DMatrix m n α) :=
+instance subsingleton_of_empty_right [IsEmpty n] : Subsingleton (DMatrix m n α) := fast_instance%
   ⟨fun M N => by ext i j; exact isEmptyElim j⟩
 #align dmatrix.subsingleton_of_empty_right DMatrix.subsingleton_of_empty_right
 

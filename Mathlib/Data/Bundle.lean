@@ -56,7 +56,7 @@ structure TotalSpace (F : Type*) (E : B → Type*) where
   snd : E proj
 #align bundle.total_space Bundle.TotalSpace
 
-instance [Inhabited B] [Inhabited (E default)] : Inhabited (TotalSpace F E) :=
+instance [Inhabited B] [Inhabited (E default)] : Inhabited (TotalSpace F E) := fast_instance%
   ⟨⟨default, default⟩⟩
 
 variable {E}
@@ -77,7 +77,7 @@ theorem TotalSpace.mk_inj {b : B} {y y' : E b} : mk' F b y = mk' F b y' ↔ y = 
 theorem TotalSpace.mk_injective (b : B) : Injective (mk b : E b → TotalSpace F E) := fun _ _ ↦
   mk_inj.1
 
-instance {x : B} : CoeTC (E x) (TotalSpace F E) :=
+instance {x : B} : CoeTC (E x) (TotalSpace F E) := fast_instance%
   ⟨TotalSpace.mk x⟩
 
 #noalign bundle.total_space.coe_proj
@@ -133,7 +133,7 @@ def Pullback (f : B' → B) (E : B → Type*) : B' → Type _ := fun x => E (f x
 @[inherit_doc]
 notation f " *ᵖ " E:arg => Pullback f E
 
-instance {f : B' → B} {x : B'} [Nonempty (E (f x))] : Nonempty ((f *ᵖ E) x) :=
+instance {f : B' → B} {x : B'} [Nonempty (E (f x))] : Nonempty ((f *ᵖ E) x) := fast_instance%
   ‹Nonempty (E (f x))›
 
 /-- Natural embedding of the total space of `f *ᵖ E` into `B' × TotalSpace F E`. -/

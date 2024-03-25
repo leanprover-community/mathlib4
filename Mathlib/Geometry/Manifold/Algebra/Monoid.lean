@@ -277,12 +277,12 @@ structure SmoothMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWithCo
 #align smooth_monoid_morphism SmoothMonoidMorphism
 
 @[to_additive]
-instance : One (SmoothMonoidMorphism I I' G G') :=
+instance : One (SmoothMonoidMorphism I I' G G') := fast_instance%
   ⟨{  smooth_toFun := smooth_const
       toMonoidHom := 1 }⟩
 
 @[to_additive]
-instance : Inhabited (SmoothMonoidMorphism I I' G G') :=
+instance : Inhabited (SmoothMonoidMorphism I I' G G') := fast_instance%
   ⟨1⟩
 
 @[to_additive]
@@ -514,7 +514,7 @@ section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E]
 
-instance hasSmoothAddSelf : SmoothAdd 𝓘(𝕜, E) E :=
+instance hasSmoothAddSelf : SmoothAdd 𝓘(𝕜, E) E := fast_instance%
   ⟨by rw [← modelWithCornersSelf_prod]; exact contDiff_add.contMDiff⟩
 #align has_smooth_add_self hasSmoothAddSelf
 

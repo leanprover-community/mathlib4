@@ -102,20 +102,20 @@ structure FilterBasis (α : Type*) where
   inter_sets {x y} : x ∈ sets → y ∈ sets → ∃ z ∈ sets, z ⊆ x ∩ y
 #align filter_basis FilterBasis
 
-instance FilterBasis.nonempty_sets (B : FilterBasis α) : Nonempty B.sets :=
+instance FilterBasis.nonempty_sets (B : FilterBasis α) : Nonempty B.sets := fast_instance%
   B.nonempty.to_subtype
 #align filter_basis.nonempty_sets FilterBasis.nonempty_sets
 
 -- Porting note: this instance was reducible but it doesn't work the same way in Lean 4
 /-- If `B` is a filter basis on `α`, and `U` a subset of `α` then we can write `U ∈ B` as
 on paper. -/
-instance {α : Type*} : Membership (Set α) (FilterBasis α) :=
+instance {α : Type*} : Membership (Set α) (FilterBasis α) := fast_instance%
   ⟨fun U B => U ∈ B.sets⟩
 
 @[simp] theorem FilterBasis.mem_sets {s : Set α} {B : FilterBasis α} : s ∈ B.sets ↔ s ∈ B := Iff.rfl
 
 -- For illustration purposes, the filter basis defining `(atTop : Filter ℕ)`
-instance : Inhabited (FilterBasis ℕ) :=
+instance : Inhabited (FilterBasis ℕ) := fast_instance%
   ⟨{  sets := range Ici
       nonempty := ⟨Ici 0, mem_range_self 0⟩
       inter_sets := by
@@ -1028,7 +1028,7 @@ structure CountableFilterBasis (α : Type*) extends FilterBasis α where
 #align filter.countable_filter_basis Filter.CountableFilterBasis
 
 -- For illustration purposes, the countable filter basis defining `(atTop : Filter ℕ)`
-instance Nat.inhabitedCountableFilterBasis : Inhabited (CountableFilterBasis ℕ) :=
+instance Nat.inhabitedCountableFilterBasis : Inhabited (CountableFilterBasis ℕ) := fast_instance%
   ⟨⟨default, countable_range fun n => Ici n⟩⟩
 #align filter.nat.inhabited_countable_filter_basis Filter.Nat.inhabitedCountableFilterBasis
 

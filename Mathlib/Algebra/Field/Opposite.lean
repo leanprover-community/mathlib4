@@ -18,7 +18,7 @@ namespace MulOpposite
 variable (α : Type*)
 
 @[to_additive]
-instance ratCast [RatCast α] : RatCast αᵐᵒᵖ :=
+instance ratCast [RatCast α] : RatCast αᵐᵒᵖ := fast_instance%
   ⟨fun n => op n⟩
 
 variable {α}
@@ -37,20 +37,20 @@ theorem unop_ratCast [RatCast α] (q : ℚ) : unop (q : αᵐᵒᵖ) = q :=
 
 variable (α)
 
-instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ :=
+instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ := fast_instance%
   { MulOpposite.instGroupWithZero α, MulOpposite.instSemiring α with }
 
-instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ :=
+instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ := fast_instance%
   { MulOpposite.instDivisionSemiring α, MulOpposite.instRing α, MulOpposite.ratCast α with
     ratCast_mk := fun a b hb h => unop_injective <| by
       rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv, unop_natCast, unop_intCast,
         Int.commute_cast, div_eq_mul_inv]
     qsmul := qsmulRec _ }
 
-instance instSemifield [Semifield α] : Semifield αᵐᵒᵖ :=
+instance instSemifield [Semifield α] : Semifield αᵐᵒᵖ := fast_instance%
   { MulOpposite.instDivisionSemiring α, MulOpposite.instCommSemiring α with }
 
-instance instField [Field α] : Field αᵐᵒᵖ :=
+instance instField [Field α] : Field αᵐᵒᵖ := fast_instance%
   { MulOpposite.instDivisionRing α, MulOpposite.instCommRing α with }
 
 end MulOpposite
@@ -59,20 +59,20 @@ namespace AddOpposite
 
 variable {α : Type*}
 
-instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ :=
+instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ := fast_instance%
   { AddOpposite.instGroupWithZero α, AddOpposite.instSemiring α with }
 
-instance instDivisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ :=
+instance instDivisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ := fast_instance%
   { AddOpposite.instRing α, AddOpposite.instGroupWithZero α, AddOpposite.ratCast α with
     ratCast_mk := fun a b hb h => unop_injective <| by
       rw [unop_ratCast, Rat.cast_def, unop_mul, unop_inv, unop_natCast, unop_intCast,
         div_eq_mul_inv]
     qsmul := qsmulRec _ }
 
-instance instSemifield [Semifield α] : Semifield αᵃᵒᵖ :=
+instance instSemifield [Semifield α] : Semifield αᵃᵒᵖ := fast_instance%
   { AddOpposite.instDivisionSemiring, AddOpposite.instCommSemiring α with }
 
-instance instField [Field α] : Field αᵃᵒᵖ :=
+instance instField [Field α] : Field αᵃᵒᵖ := fast_instance%
   { AddOpposite.instDivisionRing, AddOpposite.instCommRing α with }
 
 end AddOpposite

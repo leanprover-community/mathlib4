@@ -131,7 +131,7 @@ instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v} TopCatMax.{v, u} where
             isLimit := limitConeIsLimit F } }
 #align Top.Top_has_limits_of_size TopCat.topCat_hasLimitsOfSize
 
-instance topCat_hasLimits : HasLimits TopCat.{u} :=
+instance topCat_hasLimits : HasLimits TopCat.{u} := fast_instance%
   TopCat.topCat_hasLimitsOfSize.{u, u}
 #align Top.Top_has_limits TopCat.topCat_hasLimits
 
@@ -142,7 +142,7 @@ instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize forget where
           (Types.limitConeIsLimit.{v,u} (F ⋙ forget)) }
 #align Top.forget_preserves_limits_of_size TopCat.forgetPreservesLimitsOfSize
 
-instance forgetPreservesLimits : PreservesLimits forget :=
+instance forgetPreservesLimits : PreservesLimits forget := fast_instance%
   TopCat.forgetPreservesLimitsOfSize.{u,u}
 #align Top.forget_preserves_limits TopCat.forgetPreservesLimits
 
@@ -195,7 +195,7 @@ instance topCat_hasColimitsOfSize : HasColimitsOfSize.{v,v} TopCatMax.{v, u} whe
             isColimit := colimitCoconeIsColimit F } }
 #align Top.Top_has_colimits_of_size TopCat.topCat_hasColimitsOfSize
 
-instance topCat_hasColimits : HasColimits TopCat.{u} :=
+instance topCat_hasColimits : HasColimits TopCat.{u} := fast_instance%
   TopCat.topCat_hasColimitsOfSize.{u, u}
 #align Top.Top_has_colimits TopCat.topCat_hasColimits
 
@@ -207,7 +207,7 @@ instance forgetPreservesColimitsOfSize :
           (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget)) }
 #align Top.forget_preserves_colimits_of_size TopCat.forgetPreservesColimitsOfSize
 
-instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) :=
+instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) := fast_instance%
   TopCat.forgetPreservesColimitsOfSize.{u, u}
 #align Top.forget_preserves_colimits TopCat.forgetPreservesColimits
 

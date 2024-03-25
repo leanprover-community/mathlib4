@@ -115,7 +115,7 @@ theorem span_coe (W : Subspace K V) : span ↑W = W :=
 #align projectivization.subspace.span_coe Projectivization.Subspace.span_coe
 
 /-- The infimum of two subspaces exists. -/
-instance instInf : Inf (Subspace K V) :=
+instance instInf : Inf (Subspace K V) := fast_instance%
   ⟨fun A B =>
     ⟨A ⊓ B, fun _v _w hv hw _hvw h1 h2 =>
       ⟨A.mem_add _ _ hv hw _ h1.1 h2.1, B.mem_add _ _ hv hw _ h1.2 h2.2⟩⟩⟩
@@ -124,7 +124,7 @@ instance instInf : Inf (Subspace K V) :=
 -- Porting note: delete the name of this instance since it causes problem since hasInf is already
 -- defined above
 /-- Infimums of arbitrary collections of subspaces exist. -/
-instance instInfSet : InfSet (Subspace K V) :=
+instance instInfSet : InfSet (Subspace K V) := fast_instance%
   ⟨fun A =>
     ⟨sInf (SetLike.coe '' A), fun v w hv hw hvw h1 h2 t => by
       rintro ⟨s, hs, rfl⟩
@@ -132,7 +132,7 @@ instance instInfSet : InfSet (Subspace K V) :=
 #align projectivization.subspace.has_Inf Projectivization.Subspace.instInfSet
 
 /-- The subspaces of a projective space form a complete lattice. -/
-instance : CompleteLattice (Subspace K V) :=
+instance : CompleteLattice (Subspace K V) := fast_instance%
   { __ := completeLatticeOfInf (Subspace K V)
       (by
         refine fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
@@ -142,7 +142,7 @@ instance : CompleteLattice (Subspace K V) :=
     inf_le_right := fun A B _ hx => (@inf_le_right _ _ A B) hx
     le_inf := fun A B _ h1 h2 _ hx => (le_inf h1 h2) hx }
 
-instance subspaceInhabited : Inhabited (Subspace K V) where default := ⊤
+instance subspaceInhabited : Inhabited (Subspace K V) where default := fast_instance% ⊤
 #align projectivization.subspace.subspace_inhabited Projectivization.Subspace.subspaceInhabited
 
 /-- The span of the empty set is the bottom of the lattice of subspaces. -/

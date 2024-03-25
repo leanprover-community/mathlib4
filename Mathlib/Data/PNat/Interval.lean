@@ -22,7 +22,7 @@ namespace PNat
 
 variable (a b : ℕ+)
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ+ := Subtype.instLocallyFiniteOrder _
+instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ+ := fast_instance% Subtype.instLocallyFiniteOrder _
 
 theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).subtype fun n : ℕ => 0 < n :=
   rfl

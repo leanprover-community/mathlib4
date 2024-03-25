@@ -83,7 +83,7 @@ protected theorem nonneg_total : Rat.Nonneg a ∨ Rat.Nonneg (-a) := by
   cases' a with n; exact Or.imp_right neg_nonneg_of_nonpos (le_total 0 n)
 #align rat.nonneg_total Rat.nonneg_total
 
-instance decidableNonneg : Decidable (Rat.Nonneg a) := by
+instance decidableNonneg : Decidable (Rat.Nonneg a) := fast_instance% by
   cases a; unfold Rat.Nonneg; infer_instance
 #align rat.decidable_nonneg Rat.decidableNonneg
 
@@ -199,23 +199,23 @@ instance linearOrder : LinearOrder ℚ where
     rw [← Rat.not_le, and_iff_right_of_imp (Rat.le_total _ _).resolve_left]
 
 -- Extra instances to short-circuit type class resolution
-instance : LT ℚ := by infer_instance
+instance : LT ℚ := fast_instance% by infer_instance
 
-instance : DistribLattice ℚ := by infer_instance
+instance : DistribLattice ℚ := fast_instance% by infer_instance
 
-instance : Lattice ℚ := by infer_instance
+instance : Lattice ℚ := fast_instance% by infer_instance
 
-instance : SemilatticeInf ℚ := by infer_instance
+instance : SemilatticeInf ℚ := fast_instance% by infer_instance
 
-instance : SemilatticeSup ℚ := by infer_instance
+instance : SemilatticeSup ℚ := fast_instance% by infer_instance
 
-instance : Inf ℚ := by infer_instance
+instance : Inf ℚ := fast_instance% by infer_instance
 
-instance : Sup ℚ := by infer_instance
+instance : Sup ℚ := fast_instance% by infer_instance
 
-instance : PartialOrder ℚ := by infer_instance
+instance : PartialOrder ℚ := fast_instance% by infer_instance
 
-instance : Preorder ℚ := by infer_instance
+instance : Preorder ℚ := fast_instance% by infer_instance
 
 protected theorem le_def' {p q : ℚ} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
   rw [← @num_den q, ← @num_den p]
@@ -259,21 +259,21 @@ instance instLinearOrderedCommRing : LinearOrderedCommRing ℚ where
   mul_pos a b ha hb := (Rat.mul_nonneg ha.le hb.le).lt_of_ne' (mul_ne_zero ha.ne' hb.ne')
 
 -- Extra instances to short-circuit type class resolution
-instance : LinearOrderedRing ℚ := by infer_instance
+instance : LinearOrderedRing ℚ := fast_instance% by infer_instance
 
-instance : OrderedRing ℚ := by infer_instance
+instance : OrderedRing ℚ := fast_instance% by infer_instance
 
-instance : LinearOrderedSemiring ℚ := by infer_instance
+instance : LinearOrderedSemiring ℚ := fast_instance% by infer_instance
 
-instance : OrderedSemiring ℚ := by infer_instance
+instance : OrderedSemiring ℚ := fast_instance% by infer_instance
 
-instance : LinearOrderedAddCommGroup ℚ := by infer_instance
+instance : LinearOrderedAddCommGroup ℚ := fast_instance% by infer_instance
 
-instance : OrderedAddCommGroup ℚ := by infer_instance
+instance : OrderedAddCommGroup ℚ := fast_instance% by infer_instance
 
-instance : OrderedCancelAddCommMonoid ℚ := by infer_instance
+instance : OrderedCancelAddCommMonoid ℚ := fast_instance% by infer_instance
 
-instance : OrderedAddCommMonoid ℚ := by infer_instance
+instance : OrderedAddCommMonoid ℚ := fast_instance% by infer_instance
 
 @[simp] lemma num_nonpos {a : ℚ} : a.num ≤ 0 ↔ a ≤ 0 := by simpa using @num_nonneg (-a)
 @[simp] lemma num_pos {a : ℚ} : 0 < a.num ↔ 0 < a := lt_iff_lt_of_le_iff_le num_nonpos

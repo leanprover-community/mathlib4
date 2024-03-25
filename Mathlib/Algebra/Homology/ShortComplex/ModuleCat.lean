@@ -139,7 +139,7 @@ def moduleCatLeftHomologyData : S.LeftHomologyData where
 lemma moduleCatLeftHomologyData_f' :
     S.moduleCatLeftHomologyData.f' = S.moduleCatToCycles := rfl
 
-instance : Epi S.moduleCatHomologyπ :=
+instance : Epi S.moduleCatHomologyπ := fast_instance%
   (inferInstance : Epi S.moduleCatLeftHomologyData.π)
 
 /-- Given a short complex `S` of modules, this is the isomorphism between

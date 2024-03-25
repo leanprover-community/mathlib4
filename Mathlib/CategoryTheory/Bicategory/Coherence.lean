@@ -64,7 +64,7 @@ def inclusionPathAux {a : B} : ∀ {b : B}, Path a b → Hom a b
 (precisely, `FreeBicategory.Hom a b`) instead of the definitionally equal expression
 `a ⟶ b` for `a b : FreeBicategory B`. The main reason is that we have to annoyingly write
 `@Quiver.Hom (FreeBicategory B) _ a b` to get the latter expression when given `a b : B`. -/
-local instance homCategory' (a b : B) : Category (Hom a b) :=
+local instance homCategory' (a b : B) : Category (Hom a b) := fast_instance%
   homCategory a b
 
 /-- The discrete category on the paths includes into the category of 1-morphisms in the free
@@ -230,7 +230,7 @@ def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v + 1} a b) :=
 #align category_theory.free_bicategory.normalize_equiv CategoryTheory.FreeBicategory.normalizeEquiv
 
 /-- The coherence theorem for bicategories. -/
-instance locally_thin {a b : FreeBicategory B} : Quiver.IsThin (a ⟶ b) := fun _ _ =>
+instance locally_thin {a b : FreeBicategory B} : Quiver.IsThin (a ⟶ b) := fast_instance% fun _ _ =>
   ⟨fun _ _ =>
     (@normalizeEquiv B _ a b).functor.map_injective (Subsingleton.elim _ _)⟩
 #align category_theory.free_bicategory.locally_thin CategoryTheory.FreeBicategory.locally_thin

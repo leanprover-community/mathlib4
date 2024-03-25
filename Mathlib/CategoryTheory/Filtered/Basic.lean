@@ -952,22 +952,22 @@ end Opposite
 
 section ULift
 
-instance [IsFiltered C] : IsFiltered (ULift.{u₂} C) :=
+instance [IsFiltered C] : IsFiltered (ULift.{u₂} C) := fast_instance%
   IsFiltered.of_equivalence ULift.equivalence
 
-instance [IsCofiltered C] : IsCofiltered (ULift.{u₂} C) :=
+instance [IsCofiltered C] : IsCofiltered (ULift.{u₂} C) := fast_instance%
   IsCofiltered.of_equivalence ULift.equivalence
 
-instance [IsFiltered C] : IsFiltered (ULiftHom C) :=
+instance [IsFiltered C] : IsFiltered (ULiftHom C) := fast_instance%
   IsFiltered.of_equivalence ULiftHom.equiv
 
-instance [IsCofiltered C] : IsCofiltered (ULiftHom C) :=
+instance [IsCofiltered C] : IsCofiltered (ULiftHom C) := fast_instance%
   IsCofiltered.of_equivalence ULiftHom.equiv
 
-instance [IsFiltered C] : IsFiltered (AsSmall C) :=
+instance [IsFiltered C] : IsFiltered (AsSmall C) := fast_instance%
   IsFiltered.of_equivalence AsSmall.equiv
 
-instance [IsCofiltered C] : IsCofiltered (AsSmall C) :=
+instance [IsCofiltered C] : IsCofiltered (AsSmall C) := fast_instance%
   IsCofiltered.of_equivalence AsSmall.equiv
 
 end ULift

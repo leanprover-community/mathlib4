@@ -73,7 +73,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         · exact (Submodule.range_subtype _).symm }
 #align Module.subobject_Module ModuleCat.subobjectModule
 
-instance wellPowered_moduleCat : WellPowered (ModuleCat.{v} R) :=
+instance wellPowered_moduleCat : WellPowered (ModuleCat.{v} R) := fast_instance%
   ⟨fun M => ⟨⟨_, ⟨(subobjectModule M).toEquiv⟩⟩⟩⟩
 #align Module.well_powered_Module ModuleCat.wellPowered_moduleCat
 

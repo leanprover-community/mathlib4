@@ -66,7 +66,7 @@ instance : Traversable LazyList where
   map := @LazyList.traverse Id _
   traverse := @LazyList.traverse
 
-instance : LawfulTraversable LazyList := by
+instance : LawfulTraversable LazyList := fast_instance% by
   apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f xs
   · induction' xs using LazyList.rec with _ _ _ _ ih
     · rfl
@@ -167,7 +167,7 @@ theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : �
     rw [this, append_assoc]
 #align lazy_list.append_bind LazyList.append_bind
 
-instance : LawfulMonad LazyList := LawfulMonad.mk'
+instance : LawfulMonad LazyList := fast_instance% LawfulMonad.mk'
   (bind_pure_comp := by
     intro _ _ f xs
     simp only [bind, Functor.map, pure, singleton]
@@ -206,7 +206,7 @@ protected def Mem {α} (x : α) : LazyList α → Prop
   | cons y ys => x = y ∨ ys.get.Mem x
 #align lazy_list.mem LazyList.Mem
 
-instance {α} : Membership α (LazyList α) :=
+instance {α} : Membership α (LazyList α) := fast_instance%
   ⟨LazyList.Mem⟩
 
 instance Mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, Decidable (x ∈ xs)
@@ -260,7 +260,7 @@ def attach {α} (l : LazyList α) : LazyList { x // x ∈ l } :=
   pmap Subtype.mk l fun _ ↦ id
 #align lazy_list.attach LazyList.attach
 
-instance {α} [Repr α] : Repr (LazyList α) :=
+instance {α} [Repr α] : Repr (LazyList α) := fast_instance%
   ⟨fun xs _ ↦ repr xs.toList⟩
 
 end LazyList

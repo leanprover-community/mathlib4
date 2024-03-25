@@ -58,7 +58,7 @@ class Decomposition where
 #align direct_sum.decomposition DirectSum.Decomposition
 
 /-- `DirectSum.Decomposition` instances, while carrying data, are always equal. -/
-instance : Subsingleton (Decomposition ℳ) :=
+instance : Subsingleton (Decomposition ℳ) := fast_instance%
   ⟨fun x y ↦ by
     cases' x with x xl xr
     cases' y with y yl yr

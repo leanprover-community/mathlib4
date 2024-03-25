@@ -187,7 +187,7 @@ instance : Monoid CircleDeg1Lift where
   one_mul f := rfl
   mul_assoc f₁ f₂ f₃ := DFunLike.coe_injective rfl
 
-instance : Inhabited CircleDeg1Lift := ⟨1⟩
+instance : Inhabited CircleDeg1Lift := fast_instance% ⟨1⟩
 
 @[simp]
 theorem coe_mul : ⇑(f * g) = f ∘ g :=
@@ -203,7 +203,7 @@ theorem coe_one : ⇑(1 : CircleDeg1Lift) = id :=
   rfl
 #align circle_deg1_lift.coe_one CircleDeg1Lift.coe_one
 
-instance unitsHasCoeToFun : CoeFun CircleDeg1Liftˣ fun _ => ℝ → ℝ :=
+instance unitsHasCoeToFun : CoeFun CircleDeg1Liftˣ fun _ => ℝ → ℝ := fast_instance%
   ⟨fun f => ⇑(f : CircleDeg1Lift)⟩
 #align circle_deg1_lift.units_has_coe_to_fun CircleDeg1Lift.unitsHasCoeToFun
 

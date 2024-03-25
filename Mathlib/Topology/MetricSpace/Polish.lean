@@ -274,8 +274,8 @@ theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
   (le_add_iff_nonneg_right _).2 (abs_nonneg _)
 #align polish_space.dist_le_dist_complete_copy TopologicalSpace.Opens.CompleteCopy.dist_val_le_distₓ
 
-instance : TopologicalSpace (CompleteCopy s) := inferInstanceAs (TopologicalSpace s)
-instance : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
+instance : TopologicalSpace (CompleteCopy s) := fast_instance% inferInstanceAs (TopologicalSpace s)
+instance : T0Space (CompleteCopy s) := fast_instance% inferInstanceAs (T0Space s)
 
 /-- A metric space structure on a subset `s` of a metric space, designed to make it complete
 if `s` is open. It is given by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the
@@ -285,7 +285,7 @@ inside `s`.
 Porting note: the definition changed to ensure that the `TopologicalSpace` structure on
 `TopologicalSpace.Opens.CompleteCopy s` is definitionally equal to the original one. -/
 -- Porting note: in mathlib3 this was only a local instance.
-instance instMetricSpace : MetricSpace (CompleteCopy s) := by
+instance instMetricSpace : MetricSpace (CompleteCopy s) := fast_instance% by
   refine @MetricSpace.ofT0PseudoMetricSpace (CompleteCopy s)
     (.ofDistTopology dist (fun _ ↦ ?_) (fun _ _ ↦ ?_) (fun x y z ↦ ?_) fun t ↦ ?_) _
   · simp only [dist_eq, dist_self, one_div, sub_self, abs_zero, add_zero]
@@ -315,7 +315,7 @@ instance instMetricSpace : MetricSpace (CompleteCopy s) := by
 -- Porting note: no longer needed because the topologies are defeq
 #noalign polish_space.complete_copy_id_homeo
 
-instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) := by
+instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) := fast_instance% by
   refine Metric.complete_of_convergent_controlled_sequences ((1 / 2) ^ ·) (by simp) fun u hu ↦ ?_
   have A : CauchySeq fun n => (u n).1 := by
     refine cauchySeq_of_le_tendsto_0 (fun n : ℕ => (1 / 2) ^ n) (fun n m N hNn hNm => ?_) ?_

@@ -13,7 +13,7 @@ import Mathlib.Data.Bracket
 -/
 
 /-- The commutator of two elements `g₁` and `g₂`. -/
-instance commutatorElement {G : Type*} [Group G] : Bracket G G :=
+instance commutatorElement {G : Type*} [Group G] : Bracket G G := fast_instance%
   ⟨fun g₁ g₂ ↦ g₁ * g₂ * g₁⁻¹ * g₂⁻¹⟩
 #align commutator_element commutatorElement
 

@@ -101,21 +101,21 @@ theorem iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 :
 
 section Instances
 
-instance : Zero { p : M₀ // IsIdempotentElem p } where zero := ⟨0, zero⟩
+instance : Zero { p : M₀ // IsIdempotentElem p } where zero := fast_instance% ⟨0, zero⟩
 
 @[simp]
 theorem coe_zero : ↑(0 : { p : M₀ // IsIdempotentElem p }) = (0 : M₀) :=
   rfl
 #align is_idempotent_elem.coe_zero IsIdempotentElem.coe_zero
 
-instance : One { p : M₁ // IsIdempotentElem p } where one := ⟨1, one⟩
+instance : One { p : M₁ // IsIdempotentElem p } where one := fast_instance% ⟨1, one⟩
 
 @[simp]
 theorem coe_one : ↑(1 : { p : M₁ // IsIdempotentElem p }) = (1 : M₁) :=
   rfl
 #align is_idempotent_elem.coe_one IsIdempotentElem.coe_one
 
-instance : HasCompl { p : R // IsIdempotentElem p } :=
+instance : HasCompl { p : R // IsIdempotentElem p } := fast_instance%
   ⟨fun p => ⟨1 - p, p.prop.one_sub⟩⟩
 
 @[simp]

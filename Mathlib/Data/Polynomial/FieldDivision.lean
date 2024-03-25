@@ -298,10 +298,10 @@ private theorem remainder_lt_aux (p : R[X]) (hq : q ≠ 0) : degree (mod p q) < 
   rw [← degree_mul_leadingCoeff_inv q hq]
   exact degree_modByMonic_lt p (monic_mul_leadingCoeff_inv hq)
 
-instance : Div R[X] :=
+instance : Div R[X] := fast_instance%
   ⟨div⟩
 
-instance : Mod R[X] :=
+instance : Mod R[X] := fast_instance%
   ⟨mod⟩
 
 theorem div_def : p / q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹)) :=
@@ -329,7 +329,7 @@ theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :
   divByMonic_eq_div p (monic_X_sub_C a) ▸ mul_divByMonic_eq_iff_isRoot
 #align polynomial.mul_div_eq_iff_is_root Polynomial.mul_div_eq_iff_isRoot
 
-instance : EuclideanDomain R[X] :=
+instance : EuclideanDomain R[X] := fast_instance%
   { Polynomial.commRing,
     Polynomial.nontrivial with
     quotient := (· / ·)

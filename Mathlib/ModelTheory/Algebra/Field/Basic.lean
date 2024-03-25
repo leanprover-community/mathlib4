@@ -142,7 +142,7 @@ noncomputable def compatibleRingOfModelField (K : Type*) [Language.ring.Structur
 
 end
 
-instance [Field K] [CompatibleRing K] : Theory.field.Model K :=
+instance [Field K] [CompatibleRing K] : Theory.field.Model K := fast_instance%
   { realize_of_mem := by
       simp only [Theory.field, Set.mem_range, exists_imp]
       rintro φ a rfl

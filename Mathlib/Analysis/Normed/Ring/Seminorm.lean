@@ -104,7 +104,7 @@ theorem ext {p q : RingSeminorm R} : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
 #align ring_seminorm.ext RingSeminorm.ext
 
-instance : Zero (RingSeminorm R) :=
+instance : Zero (RingSeminorm R) := fast_instance%
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with mul_le' :=
     fun _ _ => (zero_mul _).ge }⟩
 
@@ -115,12 +115,12 @@ theorem eq_zero_iff {p : RingSeminorm R} : p = 0 ↔ ∀ x, p x = 0 :=
 theorem ne_zero_iff {p : RingSeminorm R} : p ≠ 0 ↔ ∃ x, p x ≠ 0 := by simp [eq_zero_iff]
 #align ring_seminorm.ne_zero_iff RingSeminorm.ne_zero_iff
 
-instance : Inhabited (RingSeminorm R) :=
+instance : Inhabited (RingSeminorm R) := fast_instance%
   ⟨0⟩
 
 /-- The trivial seminorm on a ring `R` is the `RingSeminorm` taking value `0` at `0` and `1` at
 every other element. -/
-instance [DecidableEq R] : One (RingSeminorm R) :=
+instance [DecidableEq R] : One (RingSeminorm R) := fast_instance%
   ⟨{ (1 : AddGroupSeminorm R) with
       mul_le' := fun x y => by
         by_cases h : x * y = 0
@@ -204,7 +204,7 @@ variable (R)
 
 /-- The trivial norm on a ring `R` is the `RingNorm` taking value `0` at `0` and `1` at every
   other element. -/
-instance [DecidableEq R] : One (RingNorm R) :=
+instance [DecidableEq R] : One (RingNorm R) := fast_instance%
   ⟨{ (1 : RingSeminorm R), (1 : AddGroupNorm R) with }⟩
 
 @[simp]
@@ -212,7 +212,7 @@ theorem apply_one [DecidableEq R] (x : R) : (1 : RingNorm R) x = if x = 0 then 0
   rfl
 #align ring_norm.apply_one RingNorm.apply_one
 
-instance [DecidableEq R] : Inhabited (RingNorm R) :=
+instance [DecidableEq R] : Inhabited (RingNorm R) := fast_instance%
   ⟨1⟩
 
 end RingNorm
@@ -252,7 +252,7 @@ variable [DecidableEq R] [NoZeroDivisors R] [Nontrivial R]
 
 /-- The trivial seminorm on a ring `R` is the `MulRingSeminorm` taking value `0` at `0` and `1` at
 every other element. -/
-instance : One (MulRingSeminorm R) :=
+instance : One (MulRingSeminorm R) := fast_instance%
   ⟨{ (1 : AddGroupSeminorm R) with
       map_one' := if_neg one_ne_zero
       map_mul' := fun x y => by
@@ -267,7 +267,7 @@ theorem apply_one (x : R) : (1 : MulRingSeminorm R) x = if x = 0 then 0 else 1 :
   rfl
 #align mul_ring_seminorm.apply_one MulRingSeminorm.apply_one
 
-instance : Inhabited (MulRingSeminorm R) :=
+instance : Inhabited (MulRingSeminorm R) := fast_instance%
   ⟨1⟩
 
 end MulRingSeminorm
@@ -308,7 +308,7 @@ variable [DecidableEq R] [NoZeroDivisors R] [Nontrivial R]
 
 /-- The trivial norm on a ring `R` is the `MulRingNorm` taking value `0` at `0` and `1` at every
 other element. -/
-instance : One (MulRingNorm R) :=
+instance : One (MulRingNorm R) := fast_instance%
   ⟨{ (1 : MulRingSeminorm R), (1 : AddGroupNorm R) with }⟩
 
 @[simp]
@@ -316,7 +316,7 @@ theorem apply_one (x : R) : (1 : MulRingNorm R) x = if x = 0 then 0 else 1 :=
   rfl
 #align mul_ring_norm.apply_one MulRingNorm.apply_one
 
-instance : Inhabited (MulRingNorm R) :=
+instance : Inhabited (MulRingNorm R) := fast_instance%
   ⟨1⟩
 
 end MulRingNorm

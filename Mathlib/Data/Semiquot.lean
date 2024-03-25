@@ -36,7 +36,7 @@ namespace Semiquot
 
 variable {α : Type*} {β : Type*}
 
-instance : Membership α (Semiquot α) :=
+instance : Membership α (Semiquot α) := fast_instance%
   ⟨fun a q => a ∈ q.s⟩
 
 /-- Construct a `Semiquot α` from `h : a ∈ s` where `s : Set α`. -/
@@ -170,7 +170,7 @@ theorem pure_inj {a b : α} : (pure a : Semiquot α) = pure b ↔ a = b :=
   ext_s.trans Set.singleton_eq_singleton_iff
 #align semiquot.pure_inj Semiquot.pure_inj
 
-instance : LawfulMonad Semiquot := LawfulMonad.mk'
+instance : LawfulMonad Semiquot := fast_instance% LawfulMonad.mk'
   (pure_bind := fun {α β} x f => ext.2 <| by simp)
   (bind_assoc := fun {α β} γ s f g =>
     ext.2 <| by
@@ -180,7 +180,7 @@ instance : LawfulMonad Semiquot := LawfulMonad.mk'
   (id_map := fun {α} q => ext.2 <| by simp)
   (bind_pure_comp := fun {α β} f s => ext.2 <| by simp [eq_comm])
 
-instance : LE (Semiquot α) :=
+instance : LE (Semiquot α) := fast_instance%
   ⟨fun s t => s.s ⊆ t.s⟩
 
 instance partialOrder : PartialOrder (Semiquot α) where
@@ -189,7 +189,7 @@ instance partialOrder : PartialOrder (Semiquot α) where
   le_trans s t u := Set.Subset.trans
   le_antisymm s t h₁ h₂ := ext_s.2 (Set.Subset.antisymm h₁ h₂)
 
-instance : SemilatticeSup (Semiquot α) :=
+instance : SemilatticeSup (Semiquot α) := fast_instance%
   { Semiquot.partialOrder with
     sup := fun s => blur s.s
     le_sup_left := fun _ _ => Set.subset_union_left _ _
@@ -253,7 +253,7 @@ def univ [Inhabited α] : Semiquot α :=
   mk <| Set.mem_univ default
 #align semiquot.univ Semiquot.univ
 
-instance [Inhabited α] : Inhabited (Semiquot α) :=
+instance [Inhabited α] : Inhabited (Semiquot α) := fast_instance%
   ⟨univ⟩
 
 @[simp]

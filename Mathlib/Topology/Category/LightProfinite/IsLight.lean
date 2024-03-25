@@ -80,7 +80,7 @@ instance (S : LightProfinite.{u}) : S.toProfinite.IsLight where
       obtain ⟨n, g, h⟩ := Profinite.exists_locallyConstant S.cone S.isLimit a
       exact ⟨⟨unop n, g⟩, h.symm⟩
 
-instance (S : LightProfinite.{u}) : (lightToProfinite.obj S).IsLight :=
+instance (S : LightProfinite.{u}) : (lightToProfinite.obj S).IsLight := fast_instance%
   (inferInstance : S.toProfinite.IsLight)
 
 end LightProfinite

@@ -51,7 +51,7 @@ class SMulInvariantMeasure (M α : Type*) [SMul M α] {_ : MeasurableSpace α} (
 namespace SMulInvariantMeasure
 
 @[to_additive]
-instance zero [MeasurableSpace α] [SMul M α] : SMulInvariantMeasure M α (0 : Measure α) :=
+instance zero [MeasurableSpace α] [SMul M α] : SMulInvariantMeasure M α (0 : Measure α) := fast_instance%
   ⟨fun _ _ _ => rfl⟩
 #align measure_theory.smul_invariant_measure.zero MeasureTheory.SMulInvariantMeasure.zero
 #align measure_theory.vadd_invariant_measure.zero MeasureTheory.VAddInvariantMeasure.zero
@@ -68,13 +68,13 @@ instance add [SMulInvariantMeasure M α μ] [SMulInvariantMeasure M α ν] :
 #align measure_theory.vadd_invariant_measure.add MeasureTheory.VAddInvariantMeasure.add
 
 @[to_additive]
-instance smul [SMulInvariantMeasure M α μ] (c : ℝ≥0∞) : SMulInvariantMeasure M α (c • μ) :=
+instance smul [SMulInvariantMeasure M α μ] (c : ℝ≥0∞) : SMulInvariantMeasure M α (c • μ) := fast_instance%
   ⟨fun a _s hs => show c • _ = c • _ from congr_arg (c • ·) (measure_preimage_smul a hs)⟩
 #align measure_theory.smul_invariant_measure.smul MeasureTheory.SMulInvariantMeasure.smul
 #align measure_theory.vadd_invariant_measure.vadd MeasureTheory.VAddInvariantMeasure.vadd
 
 @[to_additive]
-instance smul_nnreal [SMulInvariantMeasure M α μ] (c : ℝ≥0) : SMulInvariantMeasure M α (c • μ) :=
+instance smul_nnreal [SMulInvariantMeasure M α μ] (c : ℝ≥0) : SMulInvariantMeasure M α (c • μ) := fast_instance%
   SMulInvariantMeasure.smul c
 #align measure_theory.smul_invariant_measure.smul_nnreal MeasureTheory.SMulInvariantMeasure.smul_nnreal
 #align measure_theory.vadd_invariant_measure.vadd_nnreal MeasureTheory.VAddInvariantMeasure.vadd_nnreal

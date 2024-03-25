@@ -174,13 +174,13 @@ def R [CommRing K] : Type u :=
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.R MvPolynomial.R
 
-noncomputable instance [CommRing K] : AddCommGroup (R σ K) :=
+noncomputable instance [CommRing K] : AddCommGroup (R σ K) := fast_instance%
   inferInstanceAs (AddCommGroup (restrictDegree σ K (Fintype.card K - 1)))
 
-noncomputable instance [CommRing K] : Module K (R σ K) :=
+noncomputable instance [CommRing K] : Module K (R σ K) := fast_instance%
   inferInstanceAs (Module K (restrictDegree σ K (Fintype.card K - 1)))
 
-noncomputable instance [CommRing K] : Inhabited (R σ K) :=
+noncomputable instance [CommRing K] : Inhabited (R σ K) := fast_instance%
   inferInstanceAs (Inhabited (restrictDegree σ K (Fintype.card K - 1)))
 
 /-- Evaluation in the `mv_polynomial.R` subtype. -/
@@ -221,7 +221,7 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.rank_R MvPolynomial.rank_R
 
-instance [Finite σ] : FiniteDimensional K (R σ K) := by
+instance [Finite σ] : FiniteDimensional K (R σ K) := fast_instance% by
   cases nonempty_fintype σ
   exact
     IsNoetherian.iff_fg.1

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Std.Data.Fin.Basic
+import Mathlib.Tactic.FastInstance
 
 set_option autoImplicit true
 
@@ -75,8 +76,8 @@ if i0 : i.1 = 0 then ⟨a, rfl⟩ else
 /-- `O(1)`. Build a new empty heap. -/
 def empty (lt) : BinaryHeap α lt := ⟨#[]⟩
 
-instance (lt) : Inhabited (BinaryHeap α lt) := ⟨empty _⟩
-instance (lt) : EmptyCollection (BinaryHeap α lt) := ⟨empty _⟩
+instance (lt) : Inhabited (BinaryHeap α lt) := fast_instance% ⟨empty _⟩
+instance (lt) : EmptyCollection (BinaryHeap α lt) := fast_instance% ⟨empty _⟩
 
 /-- `O(1)`. Build a one-element heap. -/
 def singleton (lt) (x : α) : BinaryHeap α lt := ⟨#[x]⟩

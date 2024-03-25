@@ -62,13 +62,13 @@ variable [HasLocalization.{w} W]
 that is fixed by the `[HasLocalization W]` instance. -/
 def Localization' := HasLocalization.D W
 
-instance : Category W.Localization' := HasLocalization.hD
+instance : Category W.Localization' := fast_instance% HasLocalization.hD
 
 /-- The localization functor `C ⥤ W.Localization'`
 that is fixed by the `[HasLocalization W]` instance. -/
 def Q' : C ⥤ W.Localization' := HasLocalization.L
 
-instance : W.Q'.IsLocalization W := HasLocalization.hL
+instance : W.Q'.IsLocalization W := fast_instance% HasLocalization.hL
 
 /-- The constructed localized category. -/
 def HasLocalization.standard : HasLocalization.{max u v} W where

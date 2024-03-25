@@ -254,7 +254,7 @@ def Subsequent : PGame → PGame → Prop :=
   TransGen IsOption
 #align pgame.subsequent SetTheory.PGame.Subsequent
 
-instance : IsTrans _ Subsequent :=
+instance : IsTrans _ Subsequent := fast_instance%
   inferInstanceAs <| IsTrans _ (TransGen _)
 
 @[trans]
@@ -266,7 +266,7 @@ theorem wf_subsequent : WellFounded Subsequent :=
   wf_isOption.transGen
 #align pgame.wf_subsequent SetTheory.PGame.wf_subsequent
 
-instance : WellFoundedRelation PGame :=
+instance : WellFoundedRelation PGame := fast_instance%
   ⟨_, wf_subsequent⟩
 
 @[simp]
@@ -335,7 +335,7 @@ open Subsequent in attribute [nolint simpNF] mk_left mk_right mk_right'
 
 
 /-- The pre-game `Zero` is defined by `0 = { | }`. -/
-instance : Zero PGame :=
+instance : Zero PGame := fast_instance%
   ⟨⟨PEmpty, PEmpty, PEmpty.elim, PEmpty.elim⟩⟩
 
 @[simp]
@@ -348,19 +348,19 @@ theorem zero_rightMoves : RightMoves 0 = PEmpty :=
   rfl
 #align pgame.zero_right_moves SetTheory.PGame.zero_rightMoves
 
-instance isEmpty_zero_leftMoves : IsEmpty (LeftMoves 0) :=
+instance isEmpty_zero_leftMoves : IsEmpty (LeftMoves 0) := fast_instance%
   instIsEmptyPEmpty
 #align pgame.is_empty_zero_left_moves SetTheory.PGame.isEmpty_zero_leftMoves
 
-instance isEmpty_zero_rightMoves : IsEmpty (RightMoves 0) :=
+instance isEmpty_zero_rightMoves : IsEmpty (RightMoves 0) := fast_instance%
   instIsEmptyPEmpty
 #align pgame.is_empty_zero_right_moves SetTheory.PGame.isEmpty_zero_rightMoves
 
-instance : Inhabited PGame :=
+instance : Inhabited PGame := fast_instance%
   ⟨0⟩
 
 /-- The pre-game `One` is defined by `1 = { 0 | }`. -/
-instance instOnePGame : One PGame :=
+instance instOnePGame : One PGame := fast_instance%
   ⟨⟨PUnit, PEmpty, fun _ => 0, PEmpty.elim⟩⟩
 
 @[simp]
@@ -378,11 +378,11 @@ theorem one_rightMoves : RightMoves 1 = PEmpty :=
   rfl
 #align pgame.one_right_moves SetTheory.PGame.one_rightMoves
 
-instance uniqueOneLeftMoves : Unique (LeftMoves 1) :=
+instance uniqueOneLeftMoves : Unique (LeftMoves 1) := fast_instance%
   PUnit.unique
 #align pgame.unique_one_left_moves SetTheory.PGame.uniqueOneLeftMoves
 
-instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
+instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) := fast_instance%
   instIsEmptyPEmpty
 #align pgame.is_empty_one_right_moves SetTheory.PGame.isEmpty_one_rightMoves
 
@@ -392,7 +392,7 @@ instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
 /-- The less or equal relation on pre-games.
 
 If `0 ≤ x`, then Left can win `x` as the second player. -/
-instance le : LE PGame :=
+instance le : LE PGame := fast_instance%
   ⟨Sym2.GameAdd.fix wf_isOption fun x y le =>
       (∀ i, ¬le y (x.moveLeft i) (Sym2.GameAdd.snd_fst <| IsOption.moveLeft i)) ∧
         ∀ j, ¬le (y.moveRight j) x (Sym2.GameAdd.fst_snd <| IsOption.moveRight j)⟩
@@ -518,7 +518,7 @@ private theorem le_trans_aux {x y z : PGame}
   le_of_forall_lf (fun i => PGame.not_le.1 fun h => (h₁ hyz h).not_gf <| hxy.moveLeft_lf i)
     fun j => PGame.not_le.1 fun h => (h₂ h hxy).not_gf <| hyz.lf_moveRight j
 
-instance : Preorder PGame :=
+instance : Preorder PGame := fast_instance%
   { PGame.le with
     le_refl := fun x => by
       induction' x with _ _ _ _ IHl IHr
@@ -558,7 +558,7 @@ theorem lf_irrefl (x : PGame) : ¬x ⧏ x :=
   le_rfl.not_gf
 #align pgame.lf_irrefl SetTheory.PGame.lf_irrefl
 
-instance : IsIrrefl _ (· ⧏ ·) :=
+instance : IsIrrefl _ (· ⧏ ·) := fast_instance%
   ⟨lf_irrefl⟩
 
 @[trans]
@@ -568,7 +568,7 @@ theorem lf_of_le_of_lf {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ⧏ z) : x ⧏
 #align pgame.lf_of_le_of_lf SetTheory.PGame.lf_of_le_of_lf
 
 -- Porting note (#10754): added instance
-instance : Trans (· ≤ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_le_of_lf⟩
+instance : Trans (· ≤ ·) (· ⧏ ·) (· ⧏ ·) := fast_instance% ⟨lf_of_le_of_lf⟩
 
 @[trans]
 theorem lf_of_lf_of_le {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≤ z) : x ⧏ z := by
@@ -577,7 +577,7 @@ theorem lf_of_lf_of_le {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≤ z) : x ⧏
 #align pgame.lf_of_lf_of_le SetTheory.PGame.lf_of_lf_of_le
 
 -- Porting note (#10754): added instance
-instance : Trans (· ⧏ ·) (· ≤ ·) (· ⧏ ·) := ⟨lf_of_lf_of_le⟩
+instance : Trans (· ⧏ ·) (· ≤ ·) (· ⧏ ·) := fast_instance% ⟨lf_of_lf_of_le⟩
 
 alias _root_.LE.le.trans_lf := lf_of_le_of_lf
 #align has_le.le.trans_lf LE.le.trans_lf
@@ -786,7 +786,7 @@ instance : IsEquiv _ PGame.Equiv where
 
 -- Porting note: moved the setoid instance from Basic.lean to here
 
-instance setoid : Setoid PGame :=
+instance setoid : Setoid PGame := fast_instance%
   ⟨Equiv, refl, symm, Trans.trans⟩
 #align pgame.setoid SetTheory.PGame.setoid
 
@@ -975,7 +975,7 @@ theorem Fuzzy.swap {x y : PGame} : x ‖ y → y ‖ x :=
   And.symm
 #align pgame.fuzzy.swap SetTheory.PGame.Fuzzy.swap
 
-instance : IsSymm _ (· ‖ ·) :=
+instance : IsSymm _ (· ‖ ·) := fast_instance%
   ⟨fun _ _ => Fuzzy.swap⟩
 
 theorem Fuzzy.swap_iff {x y : PGame} : x ‖ y ↔ y ‖ x :=
@@ -985,7 +985,7 @@ theorem Fuzzy.swap_iff {x y : PGame} : x ‖ y ↔ y ‖ x :=
 theorem fuzzy_irrefl (x : PGame) : ¬x ‖ x := fun h => lf_irrefl x h.1
 #align pgame.fuzzy_irrefl SetTheory.PGame.fuzzy_irrefl
 
-instance : IsIrrefl _ (· ‖ ·) :=
+instance : IsIrrefl _ (· ‖ ·) := fast_instance%
   ⟨fuzzy_irrefl⟩
 
 theorem lf_iff_lt_or_fuzzy {x y : PGame} : x ⧏ y ↔ x < y ∨ x ‖ y := by
@@ -1164,7 +1164,7 @@ def refl (x : PGame) : x ≡r x :=
 termination_by x
 #align pgame.relabelling.refl SetTheory.PGame.Relabelling.refl
 
-instance (x : PGame) : Inhabited (x ≡r x) :=
+instance (x : PGame) : Inhabited (x ≡r x) := fast_instance%
   ⟨refl _⟩
 
 /-- Flip a relabelling. -/
@@ -1207,7 +1207,7 @@ theorem Equiv.isEmpty (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] :
   (Relabelling.isEmpty x).equiv
 #align pgame.equiv.is_empty SetTheory.PGame.Equiv.isEmpty
 
-instance {x y : PGame} : Coe (x ≡r y) (x ≈ y) :=
+instance {x y : PGame} : Coe (x ≡r y) (x ≈ y) := fast_instance%
   ⟨Relabelling.equiv⟩
 
 /-- Replace the types indexing the next moves for Left and Right by equivalent types. -/
@@ -1250,7 +1250,7 @@ def neg : PGame → PGame
   | ⟨l, r, L, R⟩ => ⟨r, l, fun i => neg (R i), fun i => neg (L i)⟩
 #align pgame.neg SetTheory.PGame.neg
 
-instance : Neg PGame :=
+instance : Neg PGame := fast_instance%
   ⟨neg⟩
 
 @[simp]
@@ -1258,13 +1258,13 @@ theorem neg_def {xl xr xL xR} : -mk xl xr xL xR = mk xr xl (fun j => -xR j) fun 
   rfl
 #align pgame.neg_def SetTheory.PGame.neg_def
 
-instance : InvolutiveNeg PGame :=
+instance : InvolutiveNeg PGame := fast_instance%
   { inferInstanceAs (Neg PGame) with
     neg_neg := fun x => by
       induction' x with xl xr xL xR ihL ihR
       simp_rw [neg_def, ihL, ihR] }
 
-instance : NegZeroClass PGame :=
+instance : NegZeroClass PGame := fast_instance%
   { inferInstanceAs (Zero PGame), inferInstanceAs (Neg PGame) with
     neg_zero := by
       dsimp [Zero.zero, Neg.neg, neg]
@@ -1481,7 +1481,7 @@ theorem zero_fuzzy_neg_iff {x : PGame} : 0 ‖ -x ↔ 0 ‖ x := by rw [← neg_
 /-! ### Addition and subtraction -/
 
 /-- The sum of `x = {xL | xR}` and `y = {yL | yR}` is `{xL + y, x + yL | xR + y, x + yR}`. -/
-instance : Add PGame.{u} :=
+instance : Add PGame.{u} := fast_instance%
   ⟨fun x y => by
     induction' x with xl xr _ _ IHxl IHxr generalizing y
     induction' y with yl yr yL yR IHyl IHyr
@@ -1493,7 +1493,7 @@ instance : Add PGame.{u} :=
     · exact IHyr⟩
 
 /-- The pre-game `((0+1)+⋯)+1`. -/
-instance : NatCast PGame :=
+instance : NatCast PGame := fast_instance%
   ⟨Nat.unaryCast⟩
 
 @[simp]
@@ -1667,7 +1667,7 @@ def Relabelling.addCongr : ∀ {w x y z : PGame.{u}}, w ≡r x → y ≡r z → 
 termination_by _ x _ z => (x, z)
 #align pgame.relabelling.add_congr SetTheory.PGame.Relabelling.addCongr
 
-instance : Sub PGame :=
+instance : Sub PGame := fast_instance%
   ⟨fun x y => x + -y⟩
 
 @[simp]
@@ -1793,11 +1793,11 @@ private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y
         Or.inr ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩
 termination_by x y z => (x, y, z)
 
-instance covariantClass_swap_add_le : CovariantClass PGame PGame (swap (· + ·)) (· ≤ ·) :=
+instance covariantClass_swap_add_le : CovariantClass PGame PGame (swap (· + ·)) (· ≤ ·) := fast_instance%
   ⟨fun _ _ _ => add_le_add_right'⟩
 #align pgame.covariant_class_swap_add_le SetTheory.PGame.covariantClass_swap_add_le
 
-instance covariantClass_add_le : CovariantClass PGame PGame (· + ·) (· ≤ ·) :=
+instance covariantClass_add_le : CovariantClass PGame PGame (· + ·) (· ≤ ·) := fast_instance%
   ⟨fun x _ _ h => (add_comm_le.trans (add_le_add_right h x)).trans add_comm_le⟩
 #align pgame.covariant_class_add_le SetTheory.PGame.covariantClass_add_le
 
@@ -1822,11 +1822,11 @@ theorem add_lf_add_left {y z : PGame} (h : y ⧏ z) (x) : x + y ⧏ x + z := by
   apply add_lf_add_right h
 #align pgame.add_lf_add_left SetTheory.PGame.add_lf_add_left
 
-instance covariantClass_swap_add_lt : CovariantClass PGame PGame (swap (· + ·)) (· < ·) :=
+instance covariantClass_swap_add_lt : CovariantClass PGame PGame (swap (· + ·)) (· < ·) := fast_instance%
   ⟨fun x _ _ h => ⟨add_le_add_right h.1 x, add_lf_add_right h.2 x⟩⟩
 #align pgame.covariant_class_swap_add_lt SetTheory.PGame.covariantClass_swap_add_lt
 
-instance covariantClass_add_lt : CovariantClass PGame PGame (· + ·) (· < ·) :=
+instance covariantClass_add_lt : CovariantClass PGame PGame (· + ·) (· < ·) := fast_instance%
   ⟨fun x _ _ h => ⟨add_le_add_left h.1 x, add_lf_add_left h.2 x⟩⟩
 #align pgame.covariant_class_add_lt SetTheory.PGame.covariantClass_add_lt
 
@@ -1924,11 +1924,11 @@ theorem star_moveRight (x) : star.moveRight x = 0 :=
   rfl
 #align pgame.star_move_right SetTheory.PGame.star_moveRight
 
-instance uniqueStarLeftMoves : Unique star.LeftMoves :=
+instance uniqueStarLeftMoves : Unique star.LeftMoves := fast_instance%
   PUnit.unique
 #align pgame.unique_star_left_moves SetTheory.PGame.uniqueStarLeftMoves
 
-instance uniqueStarRightMoves : Unique star.RightMoves :=
+instance uniqueStarRightMoves : Unique star.RightMoves := fast_instance%
   PUnit.unique
 #align pgame.unique_star_right_moves SetTheory.PGame.uniqueStarRightMoves
 
@@ -1952,7 +1952,7 @@ protected theorem zero_lt_one : (0 : PGame) < 1 :=
   lt_of_le_of_lf (zero_le_of_isEmpty_rightMoves 1) (zero_lf_le.2 ⟨default, le_rfl⟩)
 #align pgame.zero_lt_one SetTheory.PGame.zero_lt_one
 
-instance : ZeroLEOneClass PGame :=
+instance : ZeroLEOneClass PGame := fast_instance%
   ⟨PGame.zero_lt_one.le⟩
 
 @[simp]

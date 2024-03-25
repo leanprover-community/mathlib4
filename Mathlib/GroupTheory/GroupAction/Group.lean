@@ -24,7 +24,7 @@ section MulAction
 
 /-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
 @[to_additive " `AddMonoid.toAddAction` is faithful on additive cancellative monoids. "]
-instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
+instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α := fast_instance%
   ⟨fun h => mul_right_cancel (h 1)⟩
 #align right_cancel_monoid.to_has_faithful_smul RightCancelMonoid.faithfulSMul
 #align add_right_cancel_monoid.to_has_faithful_vadd AddRightCancelMonoid.faithfulVAdd
@@ -100,7 +100,7 @@ protected theorem Equiv.Perm.smul_def {α : Type*} (f : Equiv.Perm α) (a : α) 
 #align equiv.perm.smul_def Equiv.Perm.smul_def
 
 /-- `Equiv.Perm.applyMulAction` is faithful. -/
-instance Equiv.Perm.applyFaithfulSMul (α : Type*) : FaithfulSMul (Equiv.Perm α) α :=
+instance Equiv.Perm.applyFaithfulSMul (α : Type*) : FaithfulSMul (Equiv.Perm α) α := fast_instance%
   ⟨Equiv.ext⟩
 #align equiv.perm.apply_has_faithful_smul Equiv.Perm.applyFaithfulSMul
 

@@ -158,7 +158,7 @@ protected def id : PseudoEpimorphism α α :=
   ⟨OrderHom.id, fun _ b h => ⟨b, h, rfl⟩⟩
 #align pseudo_epimorphism.id PseudoEpimorphism.id
 
-instance : Inhabited (PseudoEpimorphism α α) :=
+instance : Inhabited (PseudoEpimorphism α α) := fast_instance%
   ⟨PseudoEpimorphism.id α⟩
 
 @[simp]
@@ -287,7 +287,7 @@ protected def id : EsakiaHom α α :=
   ⟨ContinuousOrderHom.id α, fun _ b h => ⟨b, h, rfl⟩⟩
 #align esakia_hom.id EsakiaHom.id
 
-instance : Inhabited (EsakiaHom α α) :=
+instance : Inhabited (EsakiaHom α α) := fast_instance%
   ⟨EsakiaHom.id α⟩
 
 @[simp]

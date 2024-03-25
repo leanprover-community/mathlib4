@@ -35,7 +35,7 @@ variable {z w : ℍ} {r R : ℝ}
 
 namespace UpperHalfPlane
 
-instance : Dist ℍ :=
+instance : Dist ℍ := fast_instance%
   ⟨fun z w => 2 * arsinh (dist (z : ℂ) w / (2 * sqrt (z.im * w.im)))⟩
 
 theorem dist_eq (z w : ℍ) : dist z w = 2 * arsinh (dist (z : ℂ) w / (2 * sqrt (z.im * w.im))) :=
@@ -283,7 +283,7 @@ theorem le_dist_coe (z w : ℍ) : w.im * (1 - Real.exp (-dist z w)) ≤ dist (z 
 
 /-- The hyperbolic metric on the upper half plane. We ensure that the projection to
 `TopologicalSpace` is definitionally equal to the subtype topology. -/
-instance : MetricSpace ℍ :=
+instance : MetricSpace ℍ := fast_instance%
   metricSpaceAux.replaceTopology <| by
     refine' le_antisymm (continuous_id_iff_le.1 _) _
     · refine' (@continuous_iff_continuous_dist ℍ ℍ metricSpaceAux.toPseudoMetricSpace _ _).2 _
@@ -341,7 +341,7 @@ theorem image_coe_sphere (z : ℍ) (r : ℝ) :
     exact mem_image_of_mem _ (dist_eq_iff_dist_coe_center_eq.2 hw)
 #align upper_half_plane.image_coe_sphere UpperHalfPlane.image_coe_sphere
 
-instance : ProperSpace ℍ := by
+instance : ProperSpace ℍ := fast_instance% by
   refine' ⟨fun z r => _⟩
   rw [inducing_subtype_val.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
   apply isCompact_closedBall
@@ -365,7 +365,7 @@ theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ �
 #align upper_half_plane.isometry_pos_mul UpperHalfPlane.isometry_pos_mul
 
 /-- `SL(2, ℝ)` acts on the upper half plane as an isometry.-/
-instance : IsometricSMul SL(2, ℝ) ℍ :=
+instance : IsometricSMul SL(2, ℝ) ℍ := fast_instance%
   ⟨fun g => by
     have h₀ : Isometry (fun z => ModularGroup.S • z : ℍ → ℍ) :=
       Isometry.of_dist_eq fun y₁ y₂ => by

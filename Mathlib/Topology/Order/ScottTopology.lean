@@ -151,7 +151,7 @@ A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound
 class IsScottHausdorff : Prop where
   topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff α
 
-instance : @IsScottHausdorff α _ (scottHausdorff α) :=
+instance : @IsScottHausdorff α _ (scottHausdorff α) := fast_instance%
   @IsScottHausdorff.mk _ _ (scottHausdorff α) rfl
 
 namespace IsScottHausdorff
@@ -321,14 +321,14 @@ lemma ofScott_inj {a b : WithScott α} : ofScott a = ofScott b ↔ a = b := Iff.
 protected def rec {β : WithScott α → Sort _}
     (h : ∀ a, β (toScott a)) : ∀ a, β a := fun a ↦ h (ofScott a)
 
-instance [Nonempty α] : Nonempty (WithScott α) := ‹Nonempty α›
-instance [Inhabited α] : Inhabited (WithScott α) := ‹Inhabited α›
+instance [Nonempty α] : Nonempty (WithScott α) := fast_instance% ‹Nonempty α›
+instance [Inhabited α] : Inhabited (WithScott α) := fast_instance% ‹Inhabited α›
 
 variable [Preorder α]
 
-instance : Preorder (WithScott α) := ‹Preorder α›
-instance : TopologicalSpace (WithScott α) := scott α
-instance : IsScott (WithScott α) := ⟨rfl⟩
+instance : Preorder (WithScott α) := fast_instance% ‹Preorder α›
+instance : TopologicalSpace (WithScott α) := fast_instance% scott α
+instance : IsScott (WithScott α) := fast_instance% ⟨rfl⟩
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
     IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ (scottHausdorff α).IsOpen u := Iff.rfl

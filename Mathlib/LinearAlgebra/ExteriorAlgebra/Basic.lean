@@ -383,7 +383,7 @@ abbrev ιMulti_family (n : ℕ) {I : Type*} [LinearOrder I] (v : I → M)
 variable {R}
 
 /-- An `ExteriorAlgebra` over a nontrivial ring is nontrivial. -/
-instance [Nontrivial R] : Nontrivial (ExteriorAlgebra R M) :=
+instance [Nontrivial R] : Nontrivial (ExteriorAlgebra R M) := fast_instance%
   (algebraMap_leftInverse M).injective.nontrivial
 
 /-! Functoriality of the exterior algebra. -/

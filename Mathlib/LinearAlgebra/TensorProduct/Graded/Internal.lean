@@ -79,9 +79,9 @@ open TensorProduct
 @[inherit_doc GradedTensorProduct]
 scoped[TensorProduct] notation:100 𝒜 " ᵍ⊗[" R "] " ℬ:100 => GradedTensorProduct R 𝒜 ℬ
 
-instance instAddCommGroupWithOne : AddCommGroupWithOne (𝒜 ᵍ⊗[R] ℬ) :=
+instance instAddCommGroupWithOne : AddCommGroupWithOne (𝒜 ᵍ⊗[R] ℬ) := fast_instance%
   Algebra.TensorProduct.instAddCommGroupWithOne
-instance : Module R (𝒜 ᵍ⊗[R] ℬ) := TensorProduct.leftModule
+instance : Module R (𝒜 ᵍ⊗[R] ℬ) := fast_instance% TensorProduct.leftModule
 
 variable (R) in
 /-- The casting equivalence to move between regular and graded tensor products. -/
@@ -153,7 +153,7 @@ theorem mulHom_apply (x y : 𝒜 ᵍ⊗[R] ℬ) :
 /-- The multipication on the graded tensor product.
 
 See `GradedTensorProduct.coe_mul_coe` for a characterization on pure tensors. -/
-instance : Mul (𝒜 ᵍ⊗[R] ℬ) where mul x y := mulHom 𝒜 ℬ x y
+instance : Mul (𝒜 ᵍ⊗[R] ℬ) where mul x y := fast_instance% mulHom 𝒜 ℬ x y
 
 theorem mul_def (x y : 𝒜 ᵍ⊗[R] ℬ) : x * y = mulHom 𝒜 ℬ x y := rfl
 

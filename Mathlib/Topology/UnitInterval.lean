@@ -65,17 +65,17 @@ theorem mem_iff_one_sub_mem {t : ℝ} : t ∈ I ↔ 1 - t ∈ I := by
   constructor <;> intro <;> constructor <;> linarith
 #align unit_interval.mem_iff_one_sub_mem unitInterval.mem_iff_one_sub_mem
 
-instance hasZero : Zero I :=
+instance hasZero : Zero I := fast_instance%
   ⟨⟨0, zero_mem⟩⟩
 #align unit_interval.has_zero unitInterval.hasZero
 
-instance hasOne : One I :=
+instance hasOne : One I := fast_instance%
   ⟨⟨1, by constructor <;> norm_num⟩⟩
 #align unit_interval.has_one unitInterval.hasOne
 
-instance : ZeroLEOneClass I := ⟨zero_le_one (α := ℝ)⟩
+instance : ZeroLEOneClass I := fast_instance% ⟨zero_le_one (α := ℝ)⟩
 
-instance : BoundedOrder I := Set.Icc.boundedOrder zero_le_one
+instance : BoundedOrder I := fast_instance% Set.Icc.boundedOrder zero_le_one
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
@@ -87,10 +87,10 @@ theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 :=
   not_iff_not.mpr coe_eq_one
 #align unit_interval.coe_ne_one unitInterval.coe_ne_one
 
-instance : Nonempty I :=
+instance : Nonempty I := fast_instance%
   ⟨0⟩
 
-instance : Mul I :=
+instance : Mul I := fast_instance%
   ⟨fun x y => ⟨x * y, mul_mem x.2 y.2⟩⟩
 
 -- todo: we could set up a `LinearOrderedCommMonoidWithZero I` instance
@@ -158,7 +158,7 @@ theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := 
 theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]
 
-instance : ConnectedSpace I :=
+instance : ConnectedSpace I := fast_instance%
   Subtype.connectedSpace ⟨nonempty_Icc.mpr zero_le_one, isPreconnected_Icc⟩
 
 /-- Verify there is an instance for `CompactSpace I`. -/
@@ -192,7 +192,7 @@ theorem le_one' {t : I} : t ≤ 1 :=
   t.2.2
 #align unit_interval.le_one' unitInterval.le_one'
 
-instance : Nontrivial I := ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)⟩⟩
+instance : Nontrivial I := fast_instance% ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)⟩⟩
 
 theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor

@@ -56,7 +56,7 @@ def Hom (X Y : Scheme) : Type* :=
 
 /-- Schemes are a full subcategory of locally ringed spaces.
 -/
-instance : Category Scheme :=
+instance : Category Scheme := fast_instance%
   { InducedCategory.category Scheme.toLocallyRingedSpace with Hom := Hom }
 
 -- porting note (#10688): added to ease automation
@@ -78,10 +78,10 @@ def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace :=
 -- deriving Full, Faithful -- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
 #align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace
 
-instance : Full forgetToLocallyRingedSpace :=
+instance : Full forgetToLocallyRingedSpace := fast_instance%
   InducedCategory.full _
 
-instance : Faithful forgetToLocallyRingedSpace :=
+instance : Faithful forgetToLocallyRingedSpace := fast_instance%
   InducedCategory.faithful _
 
 @[simp]
@@ -173,7 +173,7 @@ instance is_locallyRingedSpace_iso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
 #align algebraic_geometry.Scheme.is_LocallyRingedSpace_iso AlgebraicGeometry.Scheme.is_locallyRingedSpace_iso
 
 -- Porting note: need an extra instance here.
-instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.val.c.app U) :=
+instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.val.c.app U) := fast_instance%
   haveI := PresheafedSpace.c_isIso_of_iso f.val
   NatIso.isIso_app_of_isIso _ _
 
@@ -253,10 +253,10 @@ def empty.{u} : Scheme.{u} where
   local_affine x := PEmpty.elim x
 #align algebraic_geometry.Scheme.empty AlgebraicGeometry.Scheme.empty
 
-instance : EmptyCollection Scheme :=
+instance : EmptyCollection Scheme := fast_instance%
   ⟨empty⟩
 
-instance : Inhabited Scheme :=
+instance : Inhabited Scheme := fast_instance%
   ⟨∅⟩
 
 /-- The global sections, notated Gamma.

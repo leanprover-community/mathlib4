@@ -84,10 +84,10 @@ def ArithmeticFunction [Zero R] :=
   ZeroHom ℕ R
 #align nat.arithmetic_function ArithmeticFunction
 
-instance ArithmeticFunction.zero [Zero R] : Zero (ArithmeticFunction R) :=
+instance ArithmeticFunction.zero [Zero R] : Zero (ArithmeticFunction R) := fast_instance%
   inferInstanceAs (Zero (ZeroHom ℕ R))
 
-instance [Zero R] : Inhabited (ArithmeticFunction R) := inferInstanceAs (Inhabited (ZeroHom ℕ R))
+instance [Zero R] : Inhabited (ArithmeticFunction R) := fast_instance% inferInstanceAs (Inhabited (ZeroHom ℕ R))
 
 variable {R}
 
@@ -98,7 +98,7 @@ section Zero
 variable [Zero R]
 
 --  porting note: used to be `CoeFun`
-instance : FunLike (ArithmeticFunction R) ℕ R :=
+instance : FunLike (ArithmeticFunction R) ℕ R := fast_instance%
   inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ R)
 
 @[simp]
@@ -136,7 +136,7 @@ section One
 
 variable [One R]
 
-instance one : One (ArithmeticFunction R) :=
+instance one : One (ArithmeticFunction R) := fast_instance%
   ⟨⟨fun x => ite (x = 1) 1 0, rfl⟩⟩
 
 theorem one_apply {x : ℕ} : (1 : ArithmeticFunction R) x = ite (x = 1) 1 0 :=
@@ -164,7 +164,7 @@ def natToArithmeticFunction [AddMonoidWithOne R] :
     (ArithmeticFunction ℕ) → (ArithmeticFunction R) :=
   fun f => ⟨fun n => ↑(f n), by simp⟩
 
-instance natCoe [AddMonoidWithOne R] : Coe (ArithmeticFunction ℕ) (ArithmeticFunction R) :=
+instance natCoe [AddMonoidWithOne R] : Coe (ArithmeticFunction ℕ) (ArithmeticFunction R) := fast_instance%
   ⟨natToArithmeticFunction⟩
 #align nat.arithmetic_function.nat_coe ArithmeticFunction.natCoe
 
@@ -186,7 +186,7 @@ def ofInt [AddGroupWithOne R] :
     (ArithmeticFunction ℤ) → (ArithmeticFunction R) :=
   fun f => ⟨fun n => ↑(f n), by simp⟩
 
-instance intCoe [AddGroupWithOne R] : Coe (ArithmeticFunction ℤ) (ArithmeticFunction R) :=
+instance intCoe [AddGroupWithOne R] : Coe (ArithmeticFunction ℤ) (ArithmeticFunction R) := fast_instance%
   ⟨ofInt⟩
 #align nat.arithmetic_function.int_coe ArithmeticFunction.intCoe
 
@@ -225,7 +225,7 @@ section AddMonoid
 
 variable [AddMonoid R]
 
-instance add : Add (ArithmeticFunction R) :=
+instance add : Add (ArithmeticFunction R) := fast_instance%
   ⟨fun f g => ⟨fun n => f n + g n, by simp⟩⟩
 
 @[simp]
@@ -233,7 +233,7 @@ theorem add_apply {f g : ArithmeticFunction R} {n : ℕ} : (f + g) n = f n + g n
   rfl
 #align nat.arithmetic_function.add_apply ArithmeticFunction.add_apply
 
-instance instAddMonoid : AddMonoid (ArithmeticFunction R) :=
+instance instAddMonoid : AddMonoid (ArithmeticFunction R) := fast_instance%
   { ArithmeticFunction.zero R,
     ArithmeticFunction.add with
     add_assoc := fun _ _ _ => ext fun _ => add_assoc _ _ _
@@ -244,7 +244,7 @@ instance instAddMonoid : AddMonoid (ArithmeticFunction R) :=
 
 end AddMonoid
 
-instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) :=
+instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) := fast_instance%
   { ArithmeticFunction.instAddMonoid,
     ArithmeticFunction.one with
     natCast := fun n => ⟨fun x => if x = 1 then (n : R) else 0, by simp⟩
@@ -252,18 +252,18 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (Arithmeti
     natCast_succ := fun n => by ext x; by_cases h : x = 1 <;> simp [h] }
 #align nat.arithmetic_function.add_monoid_with_one ArithmeticFunction.instAddMonoidWithOne
 
-instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) :=
+instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) := fast_instance%
   { ArithmeticFunction.instAddMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _ }
 
 instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
   neg f := ⟨fun n => -f n, by simp⟩
 
-instance [AddGroup R] : AddGroup (ArithmeticFunction R) :=
+instance [AddGroup R] : AddGroup (ArithmeticFunction R) := fast_instance%
   { ArithmeticFunction.instAddMonoid with
     add_left_neg := fun _ => ext fun _ => add_left_neg _
     zsmul := zsmulRec }
 
-instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) :=
+instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) := fast_instance%
   { show AddGroup (ArithmeticFunction R) by infer_instance with
     add_comm := fun _ _ ↦ add_comm _ _ }
 
@@ -273,7 +273,7 @@ variable {M : Type*} [Zero R] [AddCommMonoid M] [SMul R M]
 
 /-- The Dirichlet convolution of two arithmetic functions `f` and `g` is another arithmetic function
   such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
-instance : SMul (ArithmeticFunction R) (ArithmeticFunction M) :=
+instance : SMul (ArithmeticFunction R) (ArithmeticFunction M) := fast_instance%
   ⟨fun f g => ⟨fun n => ∑ x in divisorsAntidiagonal n, f x.fst • g x.snd, by simp⟩⟩
 
 @[simp]
@@ -286,7 +286,7 @@ end SMul
 
 /-- The Dirichlet convolution of two arithmetic functions `f` and `g` is another arithmetic function
   such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
-instance [Semiring R] : Mul (ArithmeticFunction R) :=
+instance [Semiring R] : Mul (ArithmeticFunction R) := fast_instance%
   ⟨(· • ·)⟩
 
 @[simp]
@@ -352,7 +352,7 @@ section Semiring
 
 variable [Semiring R]
 
-instance instMonoid : Monoid (ArithmeticFunction R) :=
+instance instMonoid : Monoid (ArithmeticFunction R) := fast_instance%
   { one := One.one
     mul := Mul.mul
     one_mul := one_smul'
@@ -375,7 +375,7 @@ instance instMonoid : Monoid (ArithmeticFunction R) :=
     mul_assoc := mul_smul' }
 #align nat.arithmetic_function.monoid ArithmeticFunction.instMonoid
 
-instance instSemiring : Semiring (ArithmeticFunction R) :=
+instance instSemiring : Semiring (ArithmeticFunction R) := fast_instance%
   -- Porting note: I reorganized this instance
   { ArithmeticFunction.instAddMonoidWithOne,
     ArithmeticFunction.instMonoid,
@@ -396,14 +396,14 @@ instance instSemiring : Semiring (ArithmeticFunction R) :=
 
 end Semiring
 
-instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) :=
+instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) := fast_instance%
   { ArithmeticFunction.instSemiring with
     mul_comm := fun f g => by
       ext
       rw [mul_apply, ← map_swap_divisorsAntidiagonal, sum_map]
       simp [mul_comm] }
 
-instance [CommRing R] : CommRing (ArithmeticFunction R) :=
+instance [CommRing R] : CommRing (ArithmeticFunction R) := fast_instance%
   { ArithmeticFunction.instSemiring with
     add_left_neg := add_left_neg
     mul_comm := mul_comm

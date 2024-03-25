@@ -79,7 +79,7 @@ inductive Prequotient
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.prequotient MonCat.Colimits.Prequotient
 
-instance : Inhabited (Prequotient F) :=
+instance : Inhabited (Prequotient F) := fast_instance%
   ⟨Prequotient.one⟩
 
 open Prequotient
@@ -126,7 +126,7 @@ def ColimitType : Type v :=
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.colimit_type MonCat.Colimits.ColimitType
 
-instance : Inhabited (ColimitType F) := by
+instance : Inhabited (ColimitType F) := fast_instance% by
   dsimp [ColimitType]
   infer_instance
 

@@ -51,7 +51,7 @@ structure LinearRecurrence (α : Type*) [CommSemiring α] where
   coeffs : Fin order → α
 #align linear_recurrence LinearRecurrence
 
-instance (α : Type*) [CommSemiring α] : Inhabited (LinearRecurrence α) :=
+instance (α : Type*) [CommSemiring α] : Inhabited (LinearRecurrence α) := fast_instance%
   ⟨⟨0, default⟩⟩
 
 namespace LinearRecurrence

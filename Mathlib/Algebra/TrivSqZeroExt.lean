@@ -185,43 +185,43 @@ section Additive
 
 variable {T : Type*} {S : Type*} {R : Type u} {M : Type v}
 
-instance inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
+instance inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) := fast_instance%
   instInhabitedProd
 
-instance zero [Zero R] [Zero M] : Zero (tsze R M) :=
+instance zero [Zero R] [Zero M] : Zero (tsze R M) := fast_instance%
   Prod.instZero
 
-instance add [Add R] [Add M] : Add (tsze R M) :=
+instance add [Add R] [Add M] : Add (tsze R M) := fast_instance%
   Prod.instAdd
 
-instance sub [Sub R] [Sub M] : Sub (tsze R M) :=
+instance sub [Sub R] [Sub M] : Sub (tsze R M) := fast_instance%
   Prod.instSub
 
-instance neg [Neg R] [Neg M] : Neg (tsze R M) :=
+instance neg [Neg R] [Neg M] : Neg (tsze R M) := fast_instance%
   Prod.instNeg
 
-instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M) :=
+instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M) := fast_instance%
   Prod.instAddSemigroup
 
-instance addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
+instance addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) := fast_instance%
   Prod.instAddZeroClass
 
-instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) :=
+instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) := fast_instance%
   Prod.instAddMonoid
 
-instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) :=
+instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) := fast_instance%
   Prod.instAddGroup
 
-instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) :=
+instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) := fast_instance%
   Prod.instAddCommSemigroup
 
-instance addCommMonoid [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze R M) :=
+instance addCommMonoid [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze R M) := fast_instance%
   Prod.instAddCommMonoid
 
-instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) :=
+instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) := fast_instance%
   Prod.instAddCommGroup
 
-instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
+instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) := fast_instance%
   Prod.smul
 
 instance isScalarTower [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S]
@@ -236,7 +236,7 @@ instance isCentralScalar [SMul S R] [SMul S M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒ
     [IsCentralScalar S M] : IsCentralScalar S (tsze R M) :=
   Prod.isCentralScalar
 
-instance mulAction [Monoid S] [MulAction S R] [MulAction S M] : MulAction S (tsze R M) :=
+instance mulAction [Monoid S] [MulAction S R] [MulAction S M] : MulAction S (tsze R M) := fast_instance%
   Prod.mulAction
 
 instance distribMulAction [Monoid S] [AddMonoid R] [AddMonoid M]
@@ -430,10 +430,10 @@ section Mul
 
 variable {R : Type u} {M : Type v}
 
-instance one [One R] [Zero M] : One (tsze R M) :=
+instance one [One R] [Zero M] : One (tsze R M) := fast_instance%
   ⟨(1, 0)⟩
 
-instance mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] : Mul (tsze R M) :=
+instance mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] : Mul (tsze R M) := fast_instance%
   ⟨fun x y => (x.1 * y.1, x.1 •> y.2 + x.2 <• y.1)⟩
 
 @[simp]
@@ -525,7 +525,7 @@ instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMul
       ext (mul_one x.1) <|
         show x.1 • (0 : M) + x.2 <• (1 : R) = x.2 by rw [smul_zero, zero_add, op_one, one_smul] }
 
-instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne (tsze R M) :=
+instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne (tsze R M) := fast_instance%
   { TrivSqZeroExt.addMonoid, TrivSqZeroExt.one with
     natCast := fun n => inl n
     natCast_zero := by simp [Nat.cast]
@@ -546,7 +546,7 @@ theorem inl_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsz
   rfl
 #align triv_sq_zero_ext.inl_nat_cast TrivSqZeroExt.inl_nat_cast
 
-instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
+instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) := fast_instance%
   { TrivSqZeroExt.addGroup, TrivSqZeroExt.addMonoidWithOne with
     intCast := fun z => inl z
     intCast_ofNat := fun _n => ext (Int.cast_ofNat _) rfl
@@ -754,7 +754,7 @@ variable [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
 variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M] [IsScalarTower S R' M]
 
-instance algebra' : Algebra S (tsze R M) :=
+instance algebra' : Algebra S (tsze R M) := fast_instance%
   { (TrivSqZeroExt.inlHom R M).comp (algebraMap S R) with
     smul := (· • ·)
     commutes' := fun s x =>
@@ -771,7 +771,7 @@ instance algebra' : Algebra S (tsze R M) :=
 #align triv_sq_zero_ext.algebra' TrivSqZeroExt.algebra'
 
 -- shortcut instance for the common case
-instance : Algebra R' (tsze R' M) :=
+instance : Algebra R' (tsze R' M) := fast_instance%
   TrivSqZeroExt.algebra' _ _ _
 
 theorem algebraMap_eq_inl : ⇑(algebraMap R' (tsze R' M)) = inl :=

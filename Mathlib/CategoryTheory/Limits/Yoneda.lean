@@ -53,7 +53,7 @@ def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X)
     simp
 #align category_theory.coyoneda.colimit_cocone_is_colimit CategoryTheory.Coyoneda.colimitCoconeIsColimit
 
-instance (X : Cᵒᵖ) : HasColimit (coyoneda.obj X) :=
+instance (X : Cᵒᵖ) : HasColimit (coyoneda.obj X) := fast_instance%
   HasColimit.mk
     { cocone := _
       isColimit := colimitCoconeIsColimit X }
@@ -140,24 +140,24 @@ def coyonedaJointlyReflectsLimits (J : Type w) [SmallCategory J] (K : J ⥤ C) (
 
 variable {D : Type u} [SmallCategory D]
 
-instance yonedaFunctorPreservesLimits : PreservesLimits (@yoneda D _) := by
+instance yonedaFunctorPreservesLimits : PreservesLimits (@yoneda D _) := fast_instance% by
   apply preservesLimitsOfEvaluation
   intro K
   change PreservesLimits (coyoneda.obj K)
   infer_instance
 #align category_theory.yoneda_functor_preserves_limits CategoryTheory.yonedaFunctorPreservesLimits
 
-instance coyonedaFunctorPreservesLimits : PreservesLimits (@coyoneda D _) := by
+instance coyonedaFunctorPreservesLimits : PreservesLimits (@coyoneda D _) := fast_instance% by
   apply preservesLimitsOfEvaluation
   intro K
   change PreservesLimits (yoneda.obj K)
   infer_instance
 #align category_theory.coyoneda_functor_preserves_limits CategoryTheory.coyonedaFunctorPreservesLimits
 
-instance yonedaFunctorReflectsLimits : ReflectsLimits (@yoneda D _) := inferInstance
+instance yonedaFunctorReflectsLimits : ReflectsLimits (@yoneda D _) := fast_instance% inferInstance
 #align category_theory.yoneda_functor_reflects_limits CategoryTheory.yonedaFunctorReflectsLimits
 
-instance coyonedaFunctorReflectsLimits : ReflectsLimits (@coyoneda D _) := inferInstance
+instance coyonedaFunctorReflectsLimits : ReflectsLimits (@coyoneda D _) := fast_instance% inferInstance
 #align category_theory.coyoneda_functor_reflects_limits CategoryTheory.coyonedaFunctorReflectsLimits
 
 end CategoryTheory

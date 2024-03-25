@@ -128,7 +128,7 @@ theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.color
 #align simple_graph.coloring.color_classes_independent SimpleGraph.Coloring.color_classes_independent
 
 -- TODO make this computable
-noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
+noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := fast_instance% by
   classical
   change Fintype (RelHom G.Adj (⊤ : SimpleGraph α).Adj)
   apply Fintype.ofInjective _ RelHom.coe_fn_injective

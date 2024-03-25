@@ -17,7 +17,7 @@ variable {α : Type*}
 
 open Finset
 
-instance Finset.fintype [Fintype α] : Fintype (Finset α) :=
+instance Finset.fintype [Fintype α] : Fintype (Finset α) := fast_instance%
   ⟨univ.powerset, fun _ => Finset.mem_powerset.2 (Finset.subset_univ _)⟩
 #align finset.fintype Finset.fintype
 
@@ -58,7 +58,7 @@ theorem Fintype.card_finset_len [Fintype α] (k : ℕ) :
   simp [Fintype.subtype_card, Finset.card_univ]
 #align fintype.card_finset_len Fintype.card_finset_len
 
-instance Set.fintype [Fintype α] : Fintype (Set α) :=
+instance Set.fintype [Fintype α] : Fintype (Set α) := fast_instance%
   ⟨(@Finset.univ α _).powerset.map ⟨(↑), coe_injective⟩, fun s => by
     classical
       refine' mem_map.2 ⟨Finset.univ.filter s, Finset.mem_powerset.2 (Finset.subset_univ _), _⟩
@@ -68,7 +68,7 @@ instance Set.fintype [Fintype α] : Fintype (Set α) :=
 #align set.fintype Set.fintype
 
 -- Not to be confused with `Set.Finite`, the predicate
-instance Set.finite' [Finite α] : Finite (Set α) := by
+instance Set.finite' [Finite α] : Finite (Set α) := fast_instance% by
   cases nonempty_fintype α
   infer_instance
 #align set.finite' Set.finite'

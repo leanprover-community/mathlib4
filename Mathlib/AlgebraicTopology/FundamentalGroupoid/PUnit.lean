@@ -23,14 +23,14 @@ universe u v
 
 namespace Path
 
-instance : Subsingleton (Path PUnit.unit PUnit.unit) :=
+instance : Subsingleton (Path PUnit.unit PUnit.unit) := fast_instance%
   ⟨fun x y => by ext⟩
 
 end Path
 
 namespace FundamentalGroupoid
 
-instance {x y : FundamentalGroupoid PUnit} : Subsingleton (x ⟶ y) := by
+instance {x y : FundamentalGroupoid PUnit} : Subsingleton (x ⟶ y) := fast_instance% by
   convert_to Subsingleton (Path.Homotopic.Quotient PUnit.unit PUnit.unit)
   apply Quotient.instSubsingletonQuotient
 

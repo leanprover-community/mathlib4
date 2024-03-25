@@ -136,7 +136,7 @@ def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.Partition
 
 /-- The partition where every vertex is in its own part. -/
 @[simps]
-instance : Inhabited (Partition G) := ⟨G.selfColoring.toPartition⟩
+instance : Inhabited (Partition G) := fast_instance% ⟨G.selfColoring.toPartition⟩
 
 theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorable n := by
   constructor

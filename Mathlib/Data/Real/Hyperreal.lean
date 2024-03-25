@@ -25,13 +25,13 @@ namespace Hyperreal
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
 
-noncomputable instance : LinearOrderedField ℝ* :=
+noncomputable instance : LinearOrderedField ℝ* := fast_instance%
   inferInstanceAs (LinearOrderedField (Germ _ _))
 
 /-- Natural embedding `ℝ → ℝ*`. -/
 @[coe] def ofReal : ℝ → ℝ* := const
 
-noncomputable instance : CoeTC ℝ ℝ* := ⟨ofReal⟩
+noncomputable instance : CoeTC ℝ ℝ* := fast_instance% ⟨ofReal⟩
 
 @[simp, norm_cast]
 theorem coe_eq_coe {x y : ℝ} : (x : ℝ*) = y ↔ x = y :=

@@ -41,16 +41,16 @@ set_option linter.uppercaseLean3 false in
 
 namespace Grpd
 
-instance : Inhabited Grpd :=
+instance : Inhabited Grpd := fast_instance%
   ⟨Bundled.of (SingleObj PUnit)⟩
 
 
-instance str' (C : Grpd.{v, u}) : Groupoid.{v, u} C.α :=
+instance str' (C : Grpd.{v, u}) : Groupoid.{v, u} C.α := fast_instance%
   C.str
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.str CategoryTheory.Grpd.str'
 
-instance : CoeSort Grpd (Type*) :=
+instance : CoeSort Grpd (Type*) := fast_instance%
   Bundled.coeSort
 
 /-- Construct a bundled `Grpd` from the underlying type and the typeclass `Groupoid`. -/
@@ -91,7 +91,7 @@ def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.forget_to_Cat CategoryTheory.Grpd.forgetToCat
 
-instance forgetToCatFull : Full forgetToCat where preimage := id
+instance forgetToCatFull : Full forgetToCat where preimage := fast_instance% id
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.forget_to_Cat_full CategoryTheory.Grpd.forgetToCatFull
 
@@ -135,7 +135,7 @@ def piLimitFanIsLimit ⦃J : Type u⦄ (F : J → Grpd.{u, u}) : Limits.IsLimit 
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.pi_limit_fan_is_limit CategoryTheory.Grpd.piLimitFanIsLimit
 
-instance has_pi : Limits.HasProducts Grpd.{u, u} :=
+instance has_pi : Limits.HasProducts Grpd.{u, u} := fast_instance%
   Limits.hasProducts_of_limit_fans (by apply piLimitFan) (by apply piLimitFanIsLimit)
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.has_pi CategoryTheory.Grpd.has_pi

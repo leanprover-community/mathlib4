@@ -364,7 +364,7 @@ protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
 theorem coe_single (i : ι) (s : Set X) : ⇑(BumpCovering.single i s) = Pi.single i 1 := rfl
 #align bump_covering.coe_single BumpCovering.coe_single
 
-instance [Inhabited ι] : Inhabited (BumpCovering ι X s) :=
+instance [Inhabited ι] : Inhabited (BumpCovering ι X s) := fast_instance%
   ⟨BumpCovering.single default s⟩
 
 /-- A collection of bump functions `f i` is subordinate to a family of sets `U i` indexed by the
@@ -588,7 +588,7 @@ namespace PartitionOfUnity
 
 variable {s : Set X}
 
-instance [Inhabited ι] : Inhabited (PartitionOfUnity ι X s) :=
+instance [Inhabited ι] : Inhabited (PartitionOfUnity ι X s) := fast_instance%
   ⟨BumpCovering.toPartitionOfUnity default⟩
 
 /-- If `X` is a normal topological space and `U` is a locally finite open covering of a closed set

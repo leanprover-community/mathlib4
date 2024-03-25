@@ -117,7 +117,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.sheaf TopCat.Sheaf
 
 -- Porting note: `deriving Cat` failed
-instance SheafCat : Category (Sheaf C X) :=
+instance SheafCat : Category (Sheaf C X) := fast_instance%
   show Category (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C) from inferInstance
 
 variable {C X}
@@ -131,7 +131,7 @@ set_option linter.uppercaseLean3 false in
 variable (C X)
 
 -- Let's construct a trivial example, to keep the inhabited linter happy.
-instance sheafInhabited : Inhabited (Sheaf (CategoryTheory.Discrete PUnit) X) :=
+instance sheafInhabited : Inhabited (Sheaf (CategoryTheory.Discrete PUnit) X) := fast_instance%
   ⟨⟨Functor.star _, Presheaf.isSheaf_unit _⟩⟩
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf_inhabited TopCat.sheafInhabited

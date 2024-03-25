@@ -36,7 +36,7 @@ open Function
 namespace Nat
 variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
 
-instance nontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
+instance nontrivial : Nontrivial ℕ :=  ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
 attribute [gcongr] Nat.succ_le_succ
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero

@@ -133,7 +133,7 @@ theorem ext {p q : Seminorm 𝕜 E} (h : ∀ x, (p : E → ℝ) x = q x) : p = q
   DFunLike.ext p q h
 #align seminorm.ext Seminorm.ext
 
-instance instZero : Zero (Seminorm 𝕜 E) :=
+instance instZero : Zero (Seminorm 𝕜 E) := fast_instance%
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with
     smul' := fun _ _ => (mul_zero _).symm }⟩
 
@@ -147,7 +147,7 @@ theorem zero_apply (x : E) : (0 : Seminorm 𝕜 E) x = 0 :=
   rfl
 #align seminorm.zero_apply Seminorm.zero_apply
 
-instance : Inhabited (Seminorm 𝕜 E) :=
+instance : Inhabited (Seminorm 𝕜 E) := fast_instance%
   ⟨0⟩
 
 variable (p : Seminorm 𝕜 E) (c : 𝕜) (x y : E) (r : ℝ)
@@ -192,10 +192,10 @@ theorem add_apply (p q : Seminorm 𝕜 E) (x : E) : (p + q) x = p x + q x :=
   rfl
 #align seminorm.add_apply Seminorm.add_apply
 
-instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) :=
+instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) := fast_instance%
   DFunLike.coe_injective.addMonoid _ rfl coe_add fun _ _ => by rfl
 
-instance instOrderedCancelAddCommMonoid : OrderedCancelAddCommMonoid (Seminorm 𝕜 E) :=
+instance instOrderedCancelAddCommMonoid : OrderedCancelAddCommMonoid (Seminorm 𝕜 E) := fast_instance%
   DFunLike.coe_injective.orderedCancelAddCommMonoid _ rfl coe_add fun _ _ => rfl
 
 instance instMulAction [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
@@ -251,7 +251,7 @@ theorem smul_sup [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r 
   ext fun x => real.smul_max _ _
 #align seminorm.smul_sup Seminorm.smul_sup
 
-instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
+instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) := fast_instance%
   PartialOrder.lift _ DFunLike.coe_injective
 
 @[simp, norm_cast]
@@ -272,7 +272,7 @@ theorem lt_def {p q : Seminorm 𝕜 E} : p < q ↔ p ≤ q ∧ ∃ x, p x < q x 
   @Pi.lt_def _ _ _ p q
 #align seminorm.lt_def Seminorm.lt_def
 
-instance instSemilatticeSup : SemilatticeSup (Seminorm 𝕜 E) :=
+instance instSemilatticeSup : SemilatticeSup (Seminorm 𝕜 E) := fast_instance%
   Function.Injective.semilatticeSup _ DFunLike.coe_injective coe_sup
 
 end SMul
@@ -291,7 +291,7 @@ variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module �
 
 -- Porting note: even though this instance is found immediately by typeclass search,
 -- it seems to be needed below!?
-noncomputable instance smul_nnreal_real : SMul ℝ≥0 ℝ := inferInstance
+noncomputable instance smul_nnreal_real : SMul ℝ≥0 ℝ := fast_instance% inferInstance
 
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
@@ -499,7 +499,7 @@ theorem inf_apply (p q : Seminorm 𝕜 E) (x : E) : (p ⊓ q) x = ⨅ u : E, p u
   rfl
 #align seminorm.inf_apply Seminorm.inf_apply
 
-noncomputable instance instLattice : Lattice (Seminorm 𝕜 E) :=
+noncomputable instance instLattice : Lattice (Seminorm 𝕜 E) := fast_instance%
   { Seminorm.instSemilatticeSup with
     inf := (· ⊓ ·)
     inf_le_left := fun p q x =>

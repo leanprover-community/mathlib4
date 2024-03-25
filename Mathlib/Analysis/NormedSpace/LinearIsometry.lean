@@ -394,7 +394,7 @@ theorem id_toContinuousLinearMap : id.toContinuousLinearMap = ContinuousLinearMa
   rfl
 #align linear_isometry.id_to_continuous_linear_map LinearIsometry.id_toContinuousLinearMap
 
-instance instInhabited : Inhabited (E →ₗᵢ[R] E) := ⟨id⟩
+instance instInhabited : Inhabited (E →ₗᵢ[R] E) := fast_instance% ⟨id⟩
 
 /-- Composition of linear isometries. -/
 def comp (g : E₂ →ₛₗᵢ[σ₂₃] E₃) (f : E →ₛₗᵢ[σ₁₂] E₂) : E →ₛₗᵢ[σ₁₃] E₃ :=
@@ -574,7 +574,7 @@ instance instSemilinearIsometryEquivClass :
 -- TODO: Shouldn't these `CoeFun` instances be scrapped?
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
-instance instCoeFun : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ ↦ E → E₂ := ⟨DFunLike.coe⟩
+instance instCoeFun : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ ↦ E → E₂ := fast_instance% ⟨DFunLike.coe⟩
 
 theorem coe_injective : @Function.Injective (E ≃ₛₗᵢ[σ₁₂] E₂) (E → E₂) (↑) :=
   DFunLike.coe_injective
@@ -735,7 +735,7 @@ def ulift : ULift E ≃ₗᵢ[R] E :=
 
 variable {R E}
 
-instance instInhabited : Inhabited (E ≃ₗᵢ[R] E) := ⟨refl R E⟩
+instance instInhabited : Inhabited (E ≃ₗᵢ[R] E) := fast_instance% ⟨refl R E⟩
 
 @[simp]
 theorem coe_refl : ⇑(refl R E) = id :=
@@ -935,10 +935,10 @@ theorem mul_refl (e : E ≃ₗᵢ[R] E) : e * refl _ _ = e :=
 #align linear_isometry_equiv.mul_refl LinearIsometryEquiv.mul_refl
 
 /-- Reinterpret a `LinearIsometryEquiv` as a `ContinuousLinearEquiv`. -/
-instance instCoeTCContinuousLinearEquiv : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E ≃SL[σ₁₂] E₂) :=
+instance instCoeTCContinuousLinearEquiv : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E ≃SL[σ₁₂] E₂) := fast_instance%
   ⟨fun e => ⟨e.toLinearEquiv, e.continuous, e.toIsometryEquiv.symm.continuous⟩⟩
 
-instance instCoeTCContinuousLinearMap : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E →SL[σ₁₂] E₂) :=
+instance instCoeTCContinuousLinearMap : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E →SL[σ₁₂] E₂) := fast_instance%
   ⟨fun e => ↑(e : E ≃SL[σ₁₂] E₂)⟩
 
 @[simp]

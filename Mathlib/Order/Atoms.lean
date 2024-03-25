@@ -298,11 +298,11 @@ namespace IsAtomic
 
 variable [OrderBot α] [IsAtomic α]
 
-instance isCoatomic_dual : IsCoatomic αᵒᵈ :=
+instance isCoatomic_dual : IsCoatomic αᵒᵈ := fast_instance%
   isCoatomic_dual_iff_isAtomic.2 ‹IsAtomic α›
 #align is_atomic.is_coatomic_dual IsAtomic.isCoatomic_dual
 
-instance Set.Iic.isAtomic {x : α} : IsAtomic (Set.Iic x) :=
+instance Set.Iic.isAtomic {x : α} : IsAtomic (Set.Iic x) := fast_instance%
   ⟨fun ⟨y, hy⟩ =>
     (eq_bot_or_exists_atom_le y).imp Subtype.mk_eq_mk.2 fun ⟨a, ha, hay⟩ =>
       ⟨⟨a, hay.trans hy⟩, ha.Iic (hay.trans hy), hay⟩⟩
@@ -314,11 +314,11 @@ namespace IsCoatomic
 
 variable [OrderTop α] [IsCoatomic α]
 
-instance isCoatomic : IsAtomic αᵒᵈ :=
+instance isCoatomic : IsAtomic αᵒᵈ := fast_instance%
   isAtomic_dual_iff_isCoatomic.2 ‹IsCoatomic α›
 #align is_coatomic.is_coatomic IsCoatomic.isCoatomic
 
-instance Set.Ici.isCoatomic {x : α} : IsCoatomic (Set.Ici x) :=
+instance Set.Ici.isCoatomic {x : α} : IsCoatomic (Set.Ici x) := fast_instance%
   ⟨fun ⟨y, hy⟩ =>
     (eq_top_or_exists_le_coatom y).imp Subtype.mk_eq_mk.2 fun ⟨a, ha, hay⟩ =>
       ⟨⟨a, le_trans hy hay⟩, ha.Ici (le_trans hy hay), hay⟩⟩
@@ -429,7 +429,7 @@ theorem isAtomistic_dual_iff_isCoatomistic : IsAtomistic αᵒᵈ ↔ IsCoatomis
 
 namespace IsAtomistic
 
-instance isCoatomistic_dual [h : IsAtomistic α] : IsCoatomistic αᵒᵈ :=
+instance isCoatomistic_dual [h : IsAtomistic α] : IsCoatomistic αᵒᵈ := fast_instance%
   isCoatomistic_dual_iff_isAtomistic.2 h
 #align is_atomistic.is_coatomistic_dual IsAtomistic.isCoatomistic_dual
 
@@ -475,7 +475,7 @@ end IsAtomistic
 
 namespace IsCoatomistic
 
-instance isAtomistic_dual [h : IsCoatomistic α] : IsAtomistic αᵒᵈ :=
+instance isAtomistic_dual [h : IsCoatomistic α] : IsAtomistic αᵒᵈ := fast_instance%
   isAtomistic_dual_iff_isCoatomistic.2 h
 #align is_coatomistic.is_atomistic_dual IsCoatomistic.isAtomistic_dual
 
@@ -507,7 +507,7 @@ instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α where
     nontriviality α
     cases g c <;> simp
 
-instance {α} [CompleteAtomicBooleanAlgebra α] : IsCoatomistic α :=
+instance {α} [CompleteAtomicBooleanAlgebra α] : IsCoatomistic α := fast_instance%
   isAtomistic_dual_iff_isCoatomistic.1 inferInstance
 
 end CompleteAtomicBooleanAlgebra
@@ -543,7 +543,7 @@ section IsSimpleOrder
 
 variable [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α]
 
-instance {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] : IsSimpleOrder αᵒᵈ :=
+instance {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] : IsSimpleOrder αᵒᵈ := fast_instance%
   isSimpleOrder_iff_isSimpleOrder_orderDual.1 (by infer_instance)
 
 /-- A simple `BoundedOrder` induces a preorder. This is not an instance to prevent loops. -/
@@ -730,7 +730,7 @@ protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :
         exact le_rfl }
 #align is_simple_order.complete_boolean_algebra IsSimpleOrder.completeBooleanAlgebra
 
-instance : ComplementedLattice α :=
+instance : ComplementedLattice α := fast_instance%
   letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
 
 end IsSimpleOrder
@@ -750,7 +750,7 @@ instance (priority := 100) : IsAtomistic α :=
       ⟨{⊤}, h.trans sSup_singleton.symm, fun _ ha =>
         (Set.mem_singleton_iff.1 ha).symm ▸ isAtom_top⟩⟩
 
-instance : IsCoatomistic α :=
+instance : IsCoatomistic α := fast_instance%
   isAtomistic_dual_iff_isCoatomistic.1 (by infer_instance)
 
 end IsSimpleOrder

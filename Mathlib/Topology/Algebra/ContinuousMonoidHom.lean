@@ -171,7 +171,7 @@ def one : ContinuousMonoidHom A B :=
 #align continuous_add_monoid_hom.zero ContinuousAddMonoidHom.zero
 
 @[to_additive]
-instance : Inhabited (ContinuousMonoidHom A B) :=
+instance : Inhabited (ContinuousMonoidHom A B) := fast_instance%
   ⟨one A B⟩
 
 /-- The identity continuous homomorphism. -/
@@ -263,7 +263,7 @@ instance : CommGroup (ContinuousMonoidHom A E) where
   mul_left_inv f := ext fun x => mul_left_inv (f x)
 
 @[to_additive]
-instance : TopologicalSpace (ContinuousMonoidHom A B) :=
+instance : TopologicalSpace (ContinuousMonoidHom A B) := fast_instance%
   TopologicalSpace.induced toContinuousMap ContinuousMap.compactOpen
 
 variable (A B C D E)
@@ -305,11 +305,11 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
 variable {A B C D E}
 
 @[to_additive]
-instance [T2Space B] : T2Space (ContinuousMonoidHom A B) :=
+instance [T2Space B] : T2Space (ContinuousMonoidHom A B) := fast_instance%
   (embedding_toContinuousMap A B).t2Space
 
 @[to_additive]
-instance : TopologicalGroup (ContinuousMonoidHom A E) :=
+instance : TopologicalGroup (ContinuousMonoidHom A E) := fast_instance%
   let hi := inducing_toContinuousMap A E
   let hc := hi.continuous
   { continuous_mul := hi.continuous_iff.mpr (continuous_mul.comp (Continuous.prod_map hc hc))

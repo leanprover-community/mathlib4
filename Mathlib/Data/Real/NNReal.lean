@@ -67,20 +67,20 @@ namespace NNReal
 -- mathport name: nnreal
 scoped notation "ℝ≥0" => NNReal
 
-noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
-instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
-instance : OrderBot ℝ≥0 := inferInstance
-instance : Archimedean ℝ≥0 := Nonneg.archimedean
-noncomputable instance : Sub ℝ≥0 := Nonneg.sub
-noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
+noncomputable instance : FloorSemiring ℝ≥0 := fast_instance% Nonneg.floorSemiring
+instance instDenselyOrdered : DenselyOrdered ℝ≥0 := fast_instance% Nonneg.instDenselyOrdered
+instance : OrderBot ℝ≥0 := fast_instance% inferInstance
+instance : Archimedean ℝ≥0 := fast_instance% Nonneg.archimedean
+noncomputable instance : Sub ℝ≥0 := fast_instance% Nonneg.sub
+noncomputable instance : OrderedSub ℝ≥0 := fast_instance% Nonneg.orderedSub
 
-noncomputable instance : CanonicallyLinearOrderedSemifield ℝ≥0 :=
+noncomputable instance : CanonicallyLinearOrderedSemifield ℝ≥0 := fast_instance%
   Nonneg.canonicallyLinearOrderedSemifield
 
 /-- Coercion `ℝ≥0 → ℝ`. -/
 @[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
 
-instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
+instance : Coe ℝ≥0 ℝ := fast_instance% ⟨toReal⟩
 
 -- Simp lemma to put back `n.val` into the normal form given by the coercion.
 @[simp]
@@ -88,7 +88,7 @@ theorem val_eq_coe (n : ℝ≥0) : n.val = n :=
   rfl
 #align nnreal.val_eq_coe NNReal.val_eq_coe
 
-instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
+instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r := fast_instance%
   Subtype.canLift _
 #align nnreal.can_lift NNReal.canLift
 
@@ -238,7 +238,7 @@ def toRealHom : ℝ≥0 →+* ℝ where
 section Actions
 
 /-- A `MulAction` over `ℝ` restricts to a `MulAction` over `ℝ≥0`. -/
-instance {M : Type*} [MulAction ℝ M] : MulAction ℝ≥0 M :=
+instance {M : Type*} [MulAction ℝ M] : MulAction ℝ≥0 M := fast_instance%
   MulAction.compHom M toRealHom.toMonoidHom
 
 theorem smul_def {M : Type*} [MulAction ℝ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ) • x :=
@@ -257,11 +257,11 @@ instance smulCommClass_right {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCom
 #align nnreal.smul_comm_class_right NNReal.smulCommClass_right
 
 /-- A `DistribMulAction` over `ℝ` restricts to a `DistribMulAction` over `ℝ≥0`. -/
-instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction ℝ≥0 M :=
+instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction ℝ≥0 M := fast_instance%
   DistribMulAction.compHom M toRealHom.toMonoidHom
 
 /-- A `Module` over `ℝ` restricts to a `Module` over `ℝ≥0`. -/
-instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
+instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M := fast_instance%
   Module.compHom M toRealHom
 
 -- Porting note (#11215): TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
@@ -272,7 +272,7 @@ instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
   toRingHom := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
 
-instance : StarRing ℝ≥0 := starRingOfComm
+instance : StarRing ℝ≥0 := fast_instance% starRingOfComm
 
 instance : TrivialStar ℝ≥0 where
   star_trivial _ := rfl
@@ -497,7 +497,7 @@ theorem bddBelow_coe (s : Set ℝ≥0) : BddBelow (((↑) : ℝ≥0 → ℝ) '' 
   ⟨0, fun _ ⟨q, _, eq⟩ => eq ▸ q.2⟩
 #align nnreal.bdd_below_coe NNReal.bddBelow_coe
 
-noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
+noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 := fast_instance%
   Nonneg.conditionallyCompleteLinearOrderBot 0
 
 @[norm_cast]
@@ -552,13 +552,13 @@ theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι �
 example : Archimedean ℝ≥0 := by infer_instance
 
 -- Porting note (#11215): TODO: remove?
-instance covariant_add : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := inferInstance
+instance covariant_add : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := fast_instance% inferInstance
 #align nnreal.covariant_add NNReal.covariant_add
 
-instance contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < ·) := inferInstance
+instance contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < ·) := fast_instance% inferInstance
 #align nnreal.contravariant_add NNReal.contravariant_add
 
-instance covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
+instance covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := fast_instance% inferInstance
 #align nnreal.covariant_mul NNReal.covariant_mul
 
 -- Porting note (#11215): TODO: delete?

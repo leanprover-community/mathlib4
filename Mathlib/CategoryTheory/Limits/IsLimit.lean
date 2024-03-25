@@ -71,7 +71,7 @@ attribute [reassoc (attr := simp)] IsLimit.fac
 
 namespace IsLimit
 
-instance subsingleton {t : Cone F} : Subsingleton (IsLimit t) :=
+instance subsingleton {t : Cone F} : Subsingleton (IsLimit t) := fast_instance%
   ⟨by intro P Q; cases P; cases Q; congr; aesop_cat⟩
 #align category_theory.limits.is_limit.subsingleton CategoryTheory.Limits.IsLimit.subsingleton
 
@@ -571,7 +571,7 @@ attribute [-simp, nolint simpNF] IsColimit.mk.injEq
 
 namespace IsColimit
 
-instance subsingleton {t : Cocone F} : Subsingleton (IsColimit t) :=
+instance subsingleton {t : Cocone F} : Subsingleton (IsColimit t) := fast_instance%
   ⟨by intro P Q; cases P; cases Q; congr; aesop_cat⟩
 #align category_theory.limits.is_colimit.subsingleton CategoryTheory.Limits.IsColimit.subsingleton
 

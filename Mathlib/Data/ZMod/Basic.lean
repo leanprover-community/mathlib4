@@ -36,7 +36,7 @@ open Function
 
 namespace ZMod
 
-instance charZero : CharZero (ZMod 0) := inferInstanceAs (CharZero ℤ)
+instance charZero : CharZero (ZMod 0) := fast_instance% inferInstanceAs (CharZero ℤ)
 
 /-- `val a` is a natural number defined as:
   - for `a : ZMod 0` it is the absolute value of `a`
@@ -690,7 +690,7 @@ theorem val_mul_of_lt {n : ℕ} {a b : ZMod n} (h : a.val * b.val < n) :
   rw [val_mul]
   apply Nat.mod_eq_of_lt h
 
-instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
+instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) := fast_instance%
   ⟨⟨0, 1, fun h =>
       zero_ne_one <|
         calc
@@ -700,7 +700,7 @@ instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
           ⟩⟩
 #align zmod.nontrivial ZMod.nontrivial
 
-instance nontrivial' : Nontrivial (ZMod 0) :=
+instance nontrivial' : Nontrivial (ZMod 0) := fast_instance%
   by delta ZMod; infer_instance
 #align zmod.nontrivial' ZMod.nontrivial'
 
@@ -712,7 +712,7 @@ def inv : ∀ n : ℕ, ZMod n → ZMod n
   | n + 1, i => Nat.gcdA i.val (n + 1)
 #align zmod.inv ZMod.inv
 
-instance (n : ℕ) : Inv (ZMod n) :=
+instance (n : ℕ) : Inv (ZMod n) := fast_instance%
   ⟨inv n⟩
 
 @[nolint unusedHavesSuffices]
@@ -899,7 +899,7 @@ lemma nontrivial_iff {n : ℕ} : Nontrivial (ZMod n) ↔ n ≠ 1 := by
   rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
 -- todo: this can be made a `Unique` instance.
-instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
+instance subsingleton_units : Subsingleton (ZMod 2)ˣ := fast_instance%
   ⟨by decide⟩
 #align zmod.subsingleton_units ZMod.subsingleton_units
 
@@ -1244,7 +1244,7 @@ private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 :
   rwa [Nat.Prime.coprime_iff_not_dvd Fact.out, ← CharP.cast_eq_zero_iff (ZMod p)]
 
 /-- Field structure on `ZMod p` if `p` is prime. -/
-instance : Field (ZMod p) :=
+instance : Field (ZMod p) := fast_instance%
   { inferInstanceAs (CommRing (ZMod p)), inferInstanceAs (Inv (ZMod p)),
     ZMod.nontrivial p with
     mul_inv_cancel := mul_inv_cancel_aux p
@@ -1252,7 +1252,7 @@ instance : Field (ZMod p) :=
     qsmul := qsmulRec _ }
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
-instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
+instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := fast_instance% by
   -- We need `cases p` here in order to resolve which `CommRing` instance is being used.
   cases p
   · exact (Nat.not_prime_zero hp.out).elim
@@ -1273,11 +1273,11 @@ namespace ZMod
 
 variable {n : ℕ} {R : Type*}
 
-instance subsingleton_ringHom [Semiring R] : Subsingleton (ZMod n →+* R) :=
+instance subsingleton_ringHom [Semiring R] : Subsingleton (ZMod n →+* R) := fast_instance%
   ⟨RingHom.ext_zmod⟩
 #align zmod.subsingleton_ring_hom ZMod.subsingleton_ringHom
 
-instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
+instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) := fast_instance%
   ⟨fun f g => by
     rw [RingEquiv.coe_ringHom_inj_iff]
     apply RingHom.ext_zmod _ _⟩

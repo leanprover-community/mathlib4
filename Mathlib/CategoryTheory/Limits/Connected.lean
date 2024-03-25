@@ -32,7 +32,7 @@ namespace CategoryTheory
 
 section Examples
 
-instance widePullbackShape_connected (J : Type v₁) : IsConnected (WidePullbackShape J) := by
+instance widePullbackShape_connected (J : Type v₁) : IsConnected (WidePullbackShape J) := fast_instance% by
   apply IsConnected.of_induct
   introv hp t
   cases j
@@ -40,7 +40,7 @@ instance widePullbackShape_connected (J : Type v₁) : IsConnected (WidePullback
   · rwa [t (WidePullbackShape.Hom.term _)]
 #align category_theory.wide_pullback_shape_connected CategoryTheory.widePullbackShape_connected
 
-instance widePushoutShape_connected (J : Type v₁) : IsConnected (WidePushoutShape J) := by
+instance widePushoutShape_connected (J : Type v₁) : IsConnected (WidePushoutShape J) := fast_instance% by
   apply IsConnected.of_induct
   introv hp t
   cases j
@@ -48,11 +48,11 @@ instance widePushoutShape_connected (J : Type v₁) : IsConnected (WidePushoutSh
   · rwa [← t (WidePushoutShape.Hom.init _)]
 #align category_theory.wide_pushout_shape_connected CategoryTheory.widePushoutShape_connected
 
-instance parallelPairInhabited : Inhabited WalkingParallelPair :=
+instance parallelPairInhabited : Inhabited WalkingParallelPair := fast_instance%
   ⟨WalkingParallelPair.one⟩
 #align category_theory.parallel_pair_inhabited CategoryTheory.parallelPairInhabited
 
-instance parallel_pair_connected : IsConnected WalkingParallelPair := by
+instance parallel_pair_connected : IsConnected WalkingParallelPair := fast_instance% by
   apply IsConnected.of_induct
   introv _ t
   cases j

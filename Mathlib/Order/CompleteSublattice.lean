@@ -89,7 +89,7 @@ theorem coe_sSup' (S : Set L) : (↑(sSup S) : α) = ⨆ N ∈ S, (N : α) := by
 theorem coe_sInf' (S : Set L) : (↑(sInf S) : α) = ⨅ N ∈ S, (N : α) := by
   rw [coe_sInf, ← Set.image, sInf_image]
 
-instance instCompleteLattice : CompleteLattice L :=
+instance instCompleteLattice : CompleteLattice L := fast_instance%
   Subtype.coe_injective.completeLattice _
     Sublattice.coe_sup Sublattice.coe_inf coe_sSup' coe_sInf' coe_top coe_bot
 
@@ -143,7 +143,7 @@ lemma isComplemented_iff : ComplementedLattice L ↔ ∀ a ∈ L, ∃ b ∈ L, I
   · obtain ⟨b, hb, hb'⟩ := h a ha
     exact ⟨⟨b, hb⟩, CompleteSublattice.isCompl_iff.mpr hb'⟩
 
-instance : Top (CompleteSublattice α) := ⟨mk' univ (fun _ _ ↦ mem_univ _) (fun _ _ ↦ mem_univ _)⟩
+instance : Top (CompleteSublattice α) := fast_instance% ⟨mk' univ (fun _ _ ↦ mem_univ _) (fun _ _ ↦ mem_univ _)⟩
 
 variable (L)
 

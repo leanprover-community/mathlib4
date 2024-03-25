@@ -350,7 +350,7 @@ def preservesLimitsOfEvaluation (F : D ⥤ K ⥤ C)
 #align category_theory.limits.preserves_limits_of_evaluation CategoryTheory.Limits.preservesLimitsOfEvaluation
 
 /-- The constant functor `C ⥤ (D ⥤ C)` preserves limits. -/
-instance preservesLimitsConst : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _) :=
+instance preservesLimitsConst : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _) := fast_instance%
   preservesLimitsOfEvaluation _ fun _ =>
     preservesLimitsOfNatIso <| Iso.symm <| constCompEvaluationObj _ _
 #align category_theory.limits.preserves_limits_const CategoryTheory.Limits.preservesLimitsConst
@@ -388,7 +388,7 @@ def preservesColimitsOfEvaluation (F : D ⥤ K ⥤ C)
 #align category_theory.limits.preserves_colimits_of_evaluation CategoryTheory.Limits.preservesColimitsOfEvaluation
 
 /-- The constant functor `C ⥤ (D ⥤ C)` preserves colimits. -/
-instance preservesColimitsConst : PreservesColimitsOfSize.{w', w} (const D : C ⥤ _) :=
+instance preservesColimitsConst : PreservesColimitsOfSize.{w', w} (const D : C ⥤ _) := fast_instance%
   preservesColimitsOfEvaluation _ fun _ =>
     preservesColimitsOfNatIso <| Iso.symm <| constCompEvaluationObj _ _
 #align category_theory.limits.preserves_colimits_const CategoryTheory.Limits.preservesColimitsConst

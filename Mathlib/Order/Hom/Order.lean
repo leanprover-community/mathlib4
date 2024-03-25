@@ -41,7 +41,7 @@ instance [SemilatticeSup β] : Sup (α →o β) where
 @[simp] lemma coe_sup [SemilatticeSup β] (f g : α →o β) :
   ((f ⊔ g : α →o β) : α → β) = (f : α → β) ⊔ g := rfl
 
-instance [SemilatticeSup β] : SemilatticeSup (α →o β) :=
+instance [SemilatticeSup β] : SemilatticeSup (α →o β) := fast_instance%
   { (_ : PartialOrder (α →o β)) with
     sup := Sup.sup
     le_sup_left := fun _ _ _ => le_sup_left
@@ -56,11 +56,11 @@ instance [SemilatticeInf β] : Inf (α →o β) where
 @[simp] lemma coe_inf [SemilatticeInf β] (f g : α →o β) :
   ((f ⊓ g : α →o β) : α → β) = (f : α → β) ⊓ g := rfl
 
-instance [SemilatticeInf β] : SemilatticeInf (α →o β) :=
+instance [SemilatticeInf β] : SemilatticeInf (α →o β) := fast_instance%
   { (_ : PartialOrder (α →o β)), (dualIso α β).symm.toGaloisInsertion.liftSemilatticeInf with
     inf := (· ⊓ ·) }
 
-instance lattice [Lattice β] : Lattice (α →o β) :=
+instance lattice [Lattice β] : Lattice (α →o β) := fast_instance%
   { (_ : SemilatticeSup (α →o β)), (_ : SemilatticeInf (α →o β)) with }
 
 @[simps]
@@ -119,7 +119,7 @@ theorem coe_iSup {ι : Sort*} [CompleteLattice β] (f : ι → α →o β) :
   funext x; simp [iSup_apply]
 #align order_hom.coe_supr OrderHom.coe_iSup
 
-instance [CompleteLattice β] : CompleteLattice (α →o β) :=
+instance [CompleteLattice β] : CompleteLattice (α →o β) := fast_instance%
   { (_ : Lattice (α →o β)), OrderHom.orderTop, OrderHom.orderBot with
     -- sSup := SupSet.sSup   -- Porting note: removed, unnecessary?
     -- Porting note: Added `by apply`, was `fun s f hf x => le_iSup_of_le f (le_iSup _ hf)`

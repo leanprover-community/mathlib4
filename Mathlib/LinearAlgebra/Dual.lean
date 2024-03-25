@@ -122,7 +122,7 @@ theorem dualPairing_apply (v x) : dualPairing R M v x = v x :=
 
 namespace Dual
 
-instance : Inhabited (Dual R M) := ⟨0⟩
+instance : Inhabited (Dual R M) := fast_instance% ⟨0⟩
 
 /-- Maps a module M to the dual of the dual of M. See `Module.erange_coe` and
 `Module.evalEquiv`. -/
@@ -498,11 +498,11 @@ section
 
 variable [Finite R M] [Free R M]
 
-instance dual_free : Free R (Dual R M) :=
+instance dual_free : Free R (Dual R M) := fast_instance%
   Free.of_basis (Free.chooseBasis R M).dualBasis
 #align basis.dual_free Basis.dual_free
 
-instance dual_finite : Finite R (Dual R M) :=
+instance dual_finite : Finite R (Dual R M) := fast_instance%
   Finite.of_basis (Free.chooseBasis R M).dualBasis
 #align basis.dual_finite Basis.dual_finite
 
@@ -583,7 +583,7 @@ theorem subsingleton_dual_iff :
   · ext v
     simp [Subsingleton.elim v 0]
 
-instance instSubsingletonDual [Subsingleton V] : Subsingleton (Dual K V) :=
+instance instSubsingletonDual [Subsingleton V] : Subsingleton (Dual K V) := fast_instance%
   (subsingleton_dual_iff K).mp inferInstance
 
 @[simp]
@@ -592,7 +592,7 @@ theorem nontrivial_dual_iff :
   rw [← not_iff_not, not_nontrivial_iff_subsingleton, not_nontrivial_iff_subsingleton,
     subsingleton_dual_iff]
 
-instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) :=
+instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) := fast_instance%
   (nontrivial_dual_iff K).mpr inferInstance
 
 theorem finite_dual_iff : Finite K (Dual K V) ↔ Finite K V := by
@@ -661,7 +661,7 @@ def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
   ext; simp
 
 /-- The dual of a reflexive module is reflexive. -/
-instance Dual.instIsReflecive : IsReflexive R (Dual R M) :=
+instance Dual.instIsReflecive : IsReflexive R (Dual R M) := fast_instance%
 ⟨by simpa only [← symm_dualMap_evalEquiv] using (evalEquiv R M).dualMap.symm.bijective⟩
 
 /-- The isomorphism `Module.evalEquiv` induces an order isomorphism on subspaces. -/
@@ -704,10 +704,10 @@ lemma equiv [IsReflexive R M] (e : M ≃ₗ[R] N) : IsReflexive R N where
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
 
-instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) :=
+instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) := fast_instance%
   equiv <| MulOpposite.opLinearEquiv _
 
-instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
+instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) := fast_instance%
   equiv ULift.moduleEquiv.symm
 
 end IsReflexive
@@ -1297,7 +1297,7 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
 #align submodule.dual_copairing Submodule.dualCopairing
 
 -- Porting note: helper instance
-instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R :=
+instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R := fast_instance%
   { coe := fun φ => φ.val,
     coe_injective' := fun φ ψ h => by
       ext

@@ -625,11 +625,11 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 -- Bug #660
 attribute [to_additive existing] Monoid.toMulOneClass
 
-@[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
+@[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ := fast_instance%
   ⟨fun x n ↦ Monoid.npow n x⟩
 #align monoid.has_pow Monoid.toNatPow
 
-instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
+instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M := fast_instance%
   ⟨AddMonoid.nsmul⟩
 #align add_monoid.has_smul_nat AddMonoid.toNatSMul
 
@@ -933,11 +933,11 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
 
-instance DivInvMonoid.Pow {M} [DivInvMonoid M] : Pow M ℤ :=
+instance DivInvMonoid.Pow {M} [DivInvMonoid M] : Pow M ℤ := fast_instance%
   ⟨fun x n ↦ DivInvMonoid.zpow n x⟩
 #align div_inv_monoid.has_pow DivInvMonoid.Pow
 
-instance SubNegMonoid.SMulInt {M} [SubNegMonoid M] : SMul ℤ M :=
+instance SubNegMonoid.SMulInt {M} [SubNegMonoid M] : SMul ℤ M := fast_instance%
   ⟨SubNegMonoid.zsmul⟩
 #align sub_neg_monoid.has_smul_int SubNegMonoid.SMulInt
 

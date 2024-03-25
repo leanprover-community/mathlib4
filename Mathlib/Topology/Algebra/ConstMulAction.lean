@@ -122,16 +122,16 @@ instance ContinuousConstSMul.op [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] :
 #align has_continuous_const_vadd.op ContinuousConstVAdd.op
 
 @[to_additive]
-instance MulOpposite.continuousConstSMul : ContinuousConstSMul M αᵐᵒᵖ :=
+instance MulOpposite.continuousConstSMul : ContinuousConstSMul M αᵐᵒᵖ := fast_instance%
   ⟨fun c => MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.const_smul c⟩
 #align mul_opposite.has_continuous_const_smul MulOpposite.continuousConstSMul
 #align add_opposite.has_continuous_const_vadd AddOpposite.continuousConstVAdd
 
 @[to_additive]
-instance : ContinuousConstSMul M αᵒᵈ := ‹ContinuousConstSMul M α›
+instance : ContinuousConstSMul M αᵒᵈ := fast_instance% ‹ContinuousConstSMul M α›
 
 @[to_additive]
-instance OrderDual.continuousConstSMul' : ContinuousConstSMul Mᵒᵈ α :=
+instance OrderDual.continuousConstSMul' : ContinuousConstSMul Mᵒᵈ α := fast_instance%
   ‹ContinuousConstSMul M α›
 #align order_dual.has_continuous_const_smul' OrderDual.continuousConstSMul'
 #align order_dual.has_continuous_const_vadd' OrderDual.continuousConstVAdd'

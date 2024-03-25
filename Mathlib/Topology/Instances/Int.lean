@@ -25,7 +25,7 @@ open Metric Set Filter
 
 namespace Int
 
-instance : Dist ℤ :=
+instance : Dist ℤ := fast_instance%
   ⟨fun x y => dist (x : ℝ) y⟩
 
 theorem dist_eq (x y : ℤ) : dist x y = |(x : ℝ) - y| := rfl
@@ -51,7 +51,7 @@ theorem closedEmbedding_coe_real : ClosedEmbedding ((↑) : ℤ → ℝ) :=
   closedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 #align int.closed_embedding_coe_real Int.closedEmbedding_coe_real
 
-instance : MetricSpace ℤ := Int.uniformEmbedding_coe_real.comapMetricSpace _
+instance : MetricSpace ℤ := fast_instance% Int.uniformEmbedding_coe_real.comapMetricSpace _
 
 theorem preimage_ball (x : ℤ) (r : ℝ) : (↑) ⁻¹' ball (x : ℝ) r = ball x r := rfl
 #align int.preimage_ball Int.preimage_ball
@@ -67,7 +67,7 @@ theorem closedBall_eq_Icc (x : ℤ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r
   rw [← preimage_closedBall, Real.closedBall_eq_Icc, preimage_Icc]
 #align int.closed_ball_eq_Icc Int.closedBall_eq_Icc
 
-instance : ProperSpace ℤ :=
+instance : ProperSpace ℤ := fast_instance%
   ⟨fun x r => by
     rw [closedBall_eq_Icc]
     exact (Set.finite_Icc _ _).isCompact⟩

@@ -83,12 +83,12 @@ def monad (empty : ω) (append : ω → ω → ω) : Monad (WriterT ω M) where
 protected def liftTell (empty : ω) : MonadLift M (WriterT ω M) where
   monadLift := fun cmd ↦ WriterT.mk <| (fun a ↦ (a, empty)) <$> cmd
 
-instance [EmptyCollection ω] [Append ω] : Monad (WriterT ω M) := monad ∅ (· ++ ·)
-instance [EmptyCollection ω] : MonadLift M (WriterT ω M) := WriterT.liftTell ∅
-instance [Monoid ω] : Monad (WriterT ω M) := monad 1 (· * ·)
-instance [Monoid ω] : MonadLift M (WriterT ω M) := WriterT.liftTell 1
+instance [EmptyCollection ω] [Append ω] : Monad (WriterT ω M) := fast_instance% monad ∅ (· ++ ·)
+instance [EmptyCollection ω] : MonadLift M (WriterT ω M) := fast_instance% WriterT.liftTell ∅
+instance [Monoid ω] : Monad (WriterT ω M) := fast_instance% monad 1 (· * ·)
+instance [Monoid ω] : MonadLift M (WriterT ω M) := fast_instance% WriterT.liftTell 1
 
-instance [Monoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad.mk'
+instance [Monoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := fast_instance% LawfulMonad.mk'
   (bind_pure_comp := by
     intros; simp [Bind.bind, Functor.map, Pure.pure, WriterT.mk, bind_pure_comp])
   (id_map := by intros; simp [Functor.map, WriterT.mk])

@@ -583,10 +583,10 @@ instance left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g
   exact this
 #align algebraic_geometry.Scheme.pullback.left_affine_comp_pullback_HasPullback AlgebraicGeometry.Scheme.Pullback.left_affine_comp_pullback_hasPullback
 
-instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) : HasPullback f g :=
+instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) : HasPullback f g := fast_instance%
   hasPullback_of_cover (Z.affineCover.pullbackCover f) f g
 
-instance : HasPullbacks Scheme :=
+instance : HasPullbacks Scheme := fast_instance%
   hasPullbacks_of_hasLimit_cospan _
 
 instance isAffine_of_isAffine_isAffine_isAffine {X Y Z : Scheme}

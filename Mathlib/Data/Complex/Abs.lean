@@ -207,7 +207,7 @@ theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| :
 
 -- Porting note: added so `two_pos` in the next proof works
 -- TODO: move somewhere else
-instance : NeZero (1 : ℝ) :=
+instance : NeZero (1 : ℝ) := fast_instance%
  ⟨by apply one_ne_zero⟩
 
 theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max |z.re| |z.im| := by
@@ -305,7 +305,7 @@ theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
     rwa [add_halves] at this
 #align complex.equiv_lim_aux Complex.equiv_limAux
 
-instance instIsComplete : CauSeq.IsComplete ℂ Complex.abs :=
+instance instIsComplete : CauSeq.IsComplete ℂ Complex.abs := fast_instance%
   ⟨fun f => ⟨limAux f, equiv_limAux f⟩⟩
 
 open CauSeq

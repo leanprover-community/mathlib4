@@ -191,7 +191,7 @@ theorem TopCat.Presheaf.isSheaf_of_openEmbedding (h : OpenEmbedding f) (hF : F.I
 
 variable (f)
 
-instance : RepresentablyFlat (Opens.map f) := by
+instance : RepresentablyFlat (Opens.map f) := fast_instance% by
   constructor
   intro U
   refine @IsCofiltered.mk _ _ ?_ ?_

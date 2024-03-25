@@ -75,7 +75,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedea
 #align conditionally_complete_linear_ordered_field.to_archimedean ConditionallyCompleteLinearOrderedField.to_archimedean
 
 /-- The reals are a conditionally complete linearly ordered field. -/
-instance : ConditionallyCompleteLinearOrderedField ℝ :=
+instance : ConditionallyCompleteLinearOrderedField ℝ := fast_instance%
   { (inferInstance : LinearOrderedField ℝ),
     (inferInstance : ConditionallyCompleteLinearOrder ℝ) with }
 
@@ -344,12 +344,12 @@ open OrderRingIso
 
 /-- There is a unique ordered ring homomorphism from an archimedean linear ordered field to a
 conditionally complete linear ordered field. -/
-instance uniqueOrderRingHom : Unique (α →+*o β) :=
+instance uniqueOrderRingHom : Unique (α →+*o β) := fast_instance%
   uniqueOfSubsingleton <| inducedOrderRingHom α β
 
 /-- There is a unique ordered ring isomorphism between two conditionally complete linear ordered
 fields. -/
-instance uniqueOrderRingIso : Unique (β ≃+*o γ) :=
+instance uniqueOrderRingIso : Unique (β ≃+*o γ) := fast_instance%
   uniqueOfSubsingleton <| inducedOrderRingIso β γ
 
 end InducedMap

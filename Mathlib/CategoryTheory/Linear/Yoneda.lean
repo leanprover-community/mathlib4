@@ -92,25 +92,25 @@ theorem whiskering_linearCoyoneda₂ :
   rfl
 #align category_theory.whiskering_linear_coyoneda₂ CategoryTheory.whiskering_linearCoyoneda₂
 
-instance full_linearYoneda : Full (linearYoneda R C) :=
+instance full_linearYoneda : Full (linearYoneda R C) := fast_instance%
   let _ :  Full (linearYoneda R C ⋙ (whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R))) :=
     Yoneda.yonedaFull
   Full.ofCompFaithful (linearYoneda R C)
     ((whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R)))
 #align category_theory.linear_yoneda_full CategoryTheory.full_linearYoneda
 
-instance full_linearCoyoneda : Full (linearCoyoneda R C) :=
+instance full_linearCoyoneda : Full (linearCoyoneda R C) := fast_instance%
   let _ : Full (linearCoyoneda R C ⋙ (whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R))) :=
     Coyoneda.coyonedaFull
   Full.ofCompFaithful (linearCoyoneda R C)
     ((whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R)))
 #align category_theory.linear_coyoneda_full CategoryTheory.full_linearCoyoneda
 
-instance faithful_linearYoneda : Faithful (linearYoneda R C) :=
+instance faithful_linearYoneda : Faithful (linearYoneda R C) := fast_instance%
   Faithful.of_comp_eq (whiskering_linearYoneda R C)
 #align category_theory.linear_yoneda_faithful CategoryTheory.faithful_linearYoneda
 
-instance faithful_linearCoyoneda : Faithful (linearCoyoneda R C) :=
+instance faithful_linearCoyoneda : Faithful (linearCoyoneda R C) := fast_instance%
   Faithful.of_comp_eq (whiskering_linearCoyoneda R C)
 #align category_theory.linear_coyoneda_faithful CategoryTheory.faithful_linearCoyoneda
 

@@ -48,7 +48,7 @@ def Presheaf (X : TopCat.{w}) : Type max u v w :=
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf TopCat.Presheaf
 
-instance (X : TopCat.{w}) : Category (Presheaf.{w, v, u} C X) :=
+instance (X : TopCat.{w}) : Category (Presheaf.{w, v, u} C X) := fast_instance%
   inferInstanceAs (Category ((Opens X)ᵒᵖ ⥤ C : Type max u v w))
 
 variable {C}

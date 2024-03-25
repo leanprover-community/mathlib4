@@ -639,10 +639,10 @@ variable (K)
 variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [LieAlgebra.IsNilpotent K L]
   [FiniteDimensional K M]
 
-instance instIsTriangularizableOfIsAlgClosed [IsAlgClosed K] : IsTriangularizable K L M :=
+instance instIsTriangularizableOfIsAlgClosed [IsAlgClosed K] : IsTriangularizable K L M := fast_instance%
   ⟨fun _ ↦ Module.End.iSup_generalizedEigenspace_eq_top _⟩
 
-instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizable K L N := by
+instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizable K L N := fast_instance% by
   refine ⟨fun y ↦ ?_⟩
   rw [← N.toEndomorphism_restrict_eq_toEndomorphism y]
   exact Module.End.iSup_generalizedEigenspace_restrict_eq_top _ (IsTriangularizable.iSup_eq_top y)

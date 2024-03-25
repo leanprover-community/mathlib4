@@ -32,7 +32,7 @@ section
 def Paths (V : Type u₁) : Type u₁ := V
 #align category_theory.paths CategoryTheory.Paths
 
-instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)⟩
+instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := fast_instance% ⟨(default : V)⟩
 
 variable (V : Type u₁) [Quiver.{v₁ + 1} V]
 

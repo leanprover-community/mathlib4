@@ -298,7 +298,7 @@ theorem morphismRestrict_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U : 
     pullbackRestrictIsoRestrict_inv_fst_assoc]
 #align algebraic_geometry.morphism_restrict_comp AlgebraicGeometry.morphismRestrict_comp
 
-instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens Y) : IsIso (f ∣_ U) := by
+instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens Y) : IsIso (f ∣_ U) := fast_instance% by
   delta morphismRestrict; infer_instance
 
 theorem morphismRestrict_base_coe {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (x) :

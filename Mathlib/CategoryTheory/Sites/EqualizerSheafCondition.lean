@@ -73,11 +73,11 @@ def firstObjEqFamily : FirstObj P R ≅ R.FamilyOfElements P where
   inv := Pi.lift fun f x => x _ f.2.2
 #align category_theory.equalizer.first_obj_eq_family CategoryTheory.Equalizer.firstObjEqFamily
 
-instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
+instance : Inhabited (FirstObj P (⊥ : Presieve X)) := fast_instance%
   (firstObjEqFamily P _).toEquiv.inhabited
 
 -- Porting note: was not needed in mathlib
-instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) :=
+instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) := fast_instance%
   (inferInstance : Inhabited (FirstObj P (⊥ : Presieve X)))
 
 /--
@@ -122,7 +122,7 @@ def firstMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
     Pi.π _ (⟨_, _, S.downward_closed fg.2.2.2.2 fg.2.2.1⟩ : ΣY, { f : Y ⟶ X // S f })
 #align category_theory.equalizer.sieve.first_map CategoryTheory.Equalizer.Sieve.firstMap
 
-instance : Inhabited (SecondObj P (⊥ : Sieve X)) :=
+instance : Inhabited (SecondObj P (⊥ : Sieve X)) := fast_instance%
   ⟨firstMap _ _ default⟩
 
 /-- The map `a` of Equations (3,4) [MM92]. -/
@@ -203,7 +203,7 @@ def firstMap : FirstObj P R ⟶ SecondObj P R :=
     Pi.π _ _ ≫ P.map pullback.fst.op
 #align category_theory.equalizer.presieve.first_map CategoryTheory.Equalizer.Presieve.firstMap
 
-instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
+instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) := fast_instance%
   ⟨firstMap _ _ default⟩
 
 /-- The map `pr₁*` of <https://stacks.math.columbia.edu/tag/00VL>. -/

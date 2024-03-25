@@ -43,7 +43,7 @@ namespace ContinuousFunctions
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 variable {f g : { f : α → β | Continuous f }}
 
-instance : CoeFun { f : α → β | Continuous f } fun _ => α → β :=
+instance : CoeFun { f : α → β | Continuous f } fun _ => α → β := fast_instance%
   ⟨Subtype.val⟩
 
 end ContinuousFunctions
@@ -56,7 +56,7 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 /-! ### `mul` and `add` -/
 
 @[to_additive]
-instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
+instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) := fast_instance%
   ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous : _)⟩⟩
 #align continuous_map.has_mul ContinuousMap.instMul
 #align continuous_map.has_add ContinuousMap.instAdd
@@ -83,7 +83,7 @@ theorem mul_comp [Mul γ] [ContinuousMul γ] (f₁ f₂ : C(β, γ)) (g : C(α, 
 /-! ### `one` -/
 
 @[to_additive]
-instance [One β] : One C(α, β) :=
+instance [One β] : One C(α, β) := fast_instance%
   ⟨const α 1⟩
 
 @[to_additive (attr := norm_cast, simp)]
@@ -106,7 +106,7 @@ theorem one_comp [One γ] (g : C(α, β)) : (1 : C(β, γ)).comp g = 1 :=
 
 /-! ### `Nat.cast` -/
 
-instance [NatCast β] : NatCast C(α, β) :=
+instance [NatCast β] : NatCast C(α, β) := fast_instance%
   ⟨fun n => ContinuousMap.const _ n⟩
 
 @[simp, norm_cast]
@@ -121,7 +121,7 @@ theorem nat_cast_apply [NatCast β] (n : ℕ) (x : α) : (n : C(α, β)) x = n :
 
 /-! ### `Int.cast` -/
 
-instance [IntCast β] : IntCast C(α, β) :=
+instance [IntCast β] : IntCast C(α, β) := fast_instance%
   ⟨fun n => ContinuousMap.const _ n⟩
 
 @[simp, norm_cast]
@@ -136,12 +136,12 @@ theorem int_cast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :
 
 /-! ### `nsmul` and `pow` -/
 
-instance instNSMul [AddMonoid β] [ContinuousAdd β] : SMul ℕ C(α, β) :=
+instance instNSMul [AddMonoid β] [ContinuousAdd β] : SMul ℕ C(α, β) := fast_instance%
   ⟨fun n f => ⟨n • ⇑f, f.continuous.nsmul n⟩⟩
 #align continuous_map.has_nsmul ContinuousMap.instNSMul
 
 @[to_additive existing]
-instance instPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ :=
+instance instPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ := fast_instance%
   ⟨fun f n => ⟨(⇑f) ^ n, f.continuous.pow n⟩⟩
 #align continuous_map.has_pow ContinuousMap.instPow
 
@@ -175,7 +175,7 @@ attribute [simp] pow_comp
 /-! ### `inv` and `neg` -/
 
 @[to_additive]
-instance [Inv β] [ContinuousInv β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
+instance [Inv β] [ContinuousInv β] : Inv C(α, β) where inv f := fast_instance% ⟨f⁻¹, f.continuous.inv⟩
 
 @[to_additive (attr := simp)]
 theorem coe_inv [Inv β] [ContinuousInv β] (f : C(α, β)) : ⇑f⁻¹ = (⇑f)⁻¹ :=
@@ -298,39 +298,39 @@ namespace ContinuousMap
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 @[to_additive]
-instance [Semigroup β] [ContinuousMul β] : Semigroup C(α, β) :=
+instance [Semigroup β] [ContinuousMul β] : Semigroup C(α, β) := fast_instance%
   coe_injective.semigroup _ coe_mul
 
 @[to_additive]
-instance [CommSemigroup β] [ContinuousMul β] : CommSemigroup C(α, β) :=
+instance [CommSemigroup β] [ContinuousMul β] : CommSemigroup C(α, β) := fast_instance%
   coe_injective.commSemigroup _ coe_mul
 
 @[to_additive]
-instance [MulOneClass β] [ContinuousMul β] : MulOneClass C(α, β) :=
+instance [MulOneClass β] [ContinuousMul β] : MulOneClass C(α, β) := fast_instance%
   coe_injective.mulOneClass _ coe_one coe_mul
 
-instance [MulZeroClass β] [ContinuousMul β] : MulZeroClass C(α, β) :=
+instance [MulZeroClass β] [ContinuousMul β] : MulZeroClass C(α, β) := fast_instance%
   coe_injective.mulZeroClass _ coe_zero coe_mul
 
-instance [SemigroupWithZero β] [ContinuousMul β] : SemigroupWithZero C(α, β) :=
+instance [SemigroupWithZero β] [ContinuousMul β] : SemigroupWithZero C(α, β) := fast_instance%
   coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 @[to_additive]
-instance [Monoid β] [ContinuousMul β] : Monoid C(α, β) :=
+instance [Monoid β] [ContinuousMul β] : Monoid C(α, β) := fast_instance%
   coe_injective.monoid _ coe_one coe_mul coe_pow
 
-instance [MonoidWithZero β] [ContinuousMul β] : MonoidWithZero C(α, β) :=
+instance [MonoidWithZero β] [ContinuousMul β] : MonoidWithZero C(α, β) := fast_instance%
   coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 @[to_additive]
-instance [CommMonoid β] [ContinuousMul β] : CommMonoid C(α, β) :=
+instance [CommMonoid β] [ContinuousMul β] : CommMonoid C(α, β) := fast_instance%
   coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
-instance [CommMonoidWithZero β] [ContinuousMul β] : CommMonoidWithZero C(α, β) :=
+instance [CommMonoidWithZero β] [ContinuousMul β] : CommMonoidWithZero C(α, β) := fast_instance%
   coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 @[to_additive]
-instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(α, β) :=
+instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(α, β) := fast_instance%
   ⟨by
     refine' continuous_of_continuous_uncurry _ _
     have h1 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.fst x.snd :=
@@ -394,11 +394,11 @@ theorem prod_apply [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset �
 #align continuous_map.sum_apply ContinuousMap.sum_apply
 
 @[to_additive]
-instance [Group β] [TopologicalGroup β] : Group C(α, β) :=
+instance [Group β] [TopologicalGroup β] : Group C(α, β) := fast_instance%
   coe_injective.group _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
-instance instCommGroupContinuousMap [CommGroup β] [TopologicalGroup β] : CommGroup C(α, β) :=
+instance instCommGroupContinuousMap [CommGroup β] [TopologicalGroup β] : CommGroup C(α, β) := fast_instance%
   coe_injective.commGroup _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 @[to_additive]
@@ -589,7 +589,7 @@ variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {R R₁ : T
   [TopologicalSpace M] {M₂ : Type*} [TopologicalSpace M₂]
 
 @[to_additive]
-instance instSMul [SMul R M] [ContinuousConstSMul R M] : SMul R C(α, M) :=
+instance instSMul [SMul R M] [ContinuousConstSMul R M] : SMul R C(α, M) := fast_instance%
   ⟨fun r f => ⟨r • ⇑f, f.continuous.const_smul r⟩⟩
 #align continuous_map.has_smul ContinuousMap.instSMul
 #align continuous_map.has_vadd ContinuousMap.instVAdd
@@ -640,7 +640,7 @@ instance [SMul R M] [ContinuousConstSMul R M] [SMul R₁ M] [ContinuousConstSMul
 instance [SMul R M] [SMul Rᵐᵒᵖ M] [ContinuousConstSMul R M] [IsCentralScalar R M] :
     IsCentralScalar R C(α, M) where op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
-instance [Monoid R] [MulAction R M] [ContinuousConstSMul R M] : MulAction R C(α, M) :=
+instance [Monoid R] [MulAction R M] [ContinuousConstSMul R M] : MulAction R C(α, M) := fast_instance%
   Function.Injective.mulAction _ coe_injective coe_smul
 
 instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [ContinuousAdd M]
@@ -651,7 +651,7 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [ContinuousAdd M] [Module R M] [ContinuousConstSMul R M]
 variable [ContinuousAdd M₂] [Module R M₂] [ContinuousConstSMul R M₂]
 
-instance module : Module R C(α, M) :=
+instance module : Module R C(α, M) := fast_instance%
   Function.Injective.module R coeFnAddMonoidHom coe_injective coe_smul
 #align continuous_map.module ContinuousMap.module
 
@@ -944,7 +944,7 @@ section Star
 
 variable [Star β] [ContinuousStar β]
 
-instance : Star C(α, β) where star f := starContinuousMap.comp f
+instance : Star C(α, β) where star f := fast_instance% starContinuousMap.comp f
 
 @[simp]
 theorem coe_star (f : C(α, β)) : ⇑(star f) = star (⇑f) :=

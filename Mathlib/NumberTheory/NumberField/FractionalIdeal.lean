@@ -35,11 +35,11 @@ open Module
 -- This is necessary to avoid several timeouts
 attribute [local instance 2000] Submodule.module
 
-instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Free ℤ I := by
+instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Free ℤ I := fast_instance% by
   refine Free.of_equiv (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm
   exact nonZeroDivisors.coe_ne_zero I.den
 
-instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Finite ℤ I := by
+instance (I : FractionalIdeal (𝓞 K)⁰ K) : Module.Finite ℤ I := fast_instance% by
   refine Module.Finite.of_surjective
     (LinearEquiv.restrictScalars ℤ (I.equivNum ?_)).symm.toLinearMap (LinearEquiv.surjective _)
   exact nonZeroDivisors.coe_ne_zero I.den

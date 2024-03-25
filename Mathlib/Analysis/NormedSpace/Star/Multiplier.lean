@@ -176,7 +176,7 @@ instance instIsCentralScalar {R : Type*} [Semiring R] [Module R A] [SMulCommClas
 
 end Scalars
 
-instance instOne : One 𝓜(𝕜, A) :=
+instance instOne : One 𝓜(𝕜, A) := fast_instance%
   ⟨⟨1, fun _x _y => rfl⟩⟩
 
 instance instMul : Mul 𝓜(𝕜, A) where
@@ -204,7 +204,7 @@ instance instPow : Pow 𝓜(𝕜, A) ℕ where
       · rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
         rw [pow_succ a.snd, mul_apply, a.central, hk, pow_succ' a.fst, mul_apply]⟩
 
-instance instInhabited : Inhabited 𝓜(𝕜, A) :=
+instance instInhabited : Inhabited 𝓜(𝕜, A) := fast_instance%
   ⟨0⟩
 
 @[simp]
@@ -345,7 +345,7 @@ theorem range_toProdMulOpposite :
 
 /-- The ring structure is inherited as the pullback under the injective map
 `DoubleCentralizer.toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` -/
-instance instRing : Ring 𝓜(𝕜, A) :=
+instance instRing : Ring 𝓜(𝕜, A) := fast_instance%
   toProdMulOpposite_injective.ring _ rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
@@ -440,21 +440,21 @@ theorem star_snd (a : 𝓜(𝕜, A)) (b : A) : (star a).snd b = star (a.fst (sta
   rfl
 #align double_centralizer.star_snd DoubleCentralizer.star_snd
 
-instance instStarAddMonoid : StarAddMonoid 𝓜(𝕜, A) :=
+instance instStarAddMonoid : StarAddMonoid 𝓜(𝕜, A) := fast_instance%
   { DoubleCentralizer.instStar with
     star_involutive := fun x => by ext <;> simp only [star_fst, star_snd, star_star]
     star_add := fun x y => by
       ext <;>
         simp only [star_fst, star_snd, add_fst, add_snd, ContinuousLinearMap.add_apply, star_add] }
 
-instance instStarRing : StarRing 𝓜(𝕜, A) :=
+instance instStarRing : StarRing 𝓜(𝕜, A) := fast_instance%
   { DoubleCentralizer.instStarAddMonoid with
     star_mul := fun a b => by
       ext <;>
         simp only [star_fst, star_snd, mul_fst, mul_snd, star_star, ContinuousLinearMap.coe_mul,
           Function.comp_apply] }
 
-instance instStarModule : StarModule 𝕜 𝓜(𝕜, A) :=
+instance instStarModule : StarModule 𝕜 𝓜(𝕜, A) := fast_instance%
   { DoubleCentralizer.instStarAddMonoid (𝕜 := 𝕜) (A := A) with
     star_smul := fun k a => by ext <;> exact star_smul _ _ }
 
@@ -538,7 +538,7 @@ that `𝓜(𝕜, A)` is also a C⋆-algebra. Moreover, in this case, for `a : �
 
 /-- The normed group structure is inherited as the pullback under the ring monomorphism
 `DoubleCentralizer.toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`. -/
-noncomputable instance : NormedRing 𝓜(𝕜, A) :=
+noncomputable instance : NormedRing 𝓜(𝕜, A) := fast_instance%
   NormedRing.induced _ _ (toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ)
     (by simpa using toProdMulOpposite_injective)
 
@@ -560,18 +560,18 @@ theorem nnnorm_def' (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdMulOppositeHom a
   rfl
 #align double_centralizer.nnnorm_def' DoubleCentralizer.nnnorm_def'
 
-instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) :=
+instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) := fast_instance%
   { DoubleCentralizer.instModule with
     norm_smul_le := fun k a => (norm_smul_le k a.toProdMulOpposite : _) }
 
-instance instNormedAlgebra : NormedAlgebra 𝕜 𝓜(𝕜, A) :=
+instance instNormedAlgebra : NormedAlgebra 𝕜 𝓜(𝕜, A) := fast_instance%
   { DoubleCentralizer.instAlgebra, DoubleCentralizer.instNormedSpace with }
 
 theorem uniformEmbedding_toProdMulOpposite : UniformEmbedding (@toProdMulOpposite 𝕜 A _ _ _ _ _) :=
   uniformEmbedding_comap toProdMulOpposite_injective
 #align double_centralizer.uniform_embedding_to_prod_mul_opposite DoubleCentralizer.uniformEmbedding_toProdMulOpposite
 
-instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
+instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := fast_instance% by
   rw [completeSpace_iff_isComplete_range uniformEmbedding_toProdMulOpposite.toUniformInducing]
   apply IsClosed.isComplete
   simp only [range_toProdMulOpposite, Set.setOf_forall]

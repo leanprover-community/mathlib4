@@ -123,7 +123,7 @@ noncomputable def isColimitCokernelCofork : IsColimit (P.cokernelCofork) := by
     Iso.hom_inv_id, comp_id, isoHomologyι_inv_hom_id, singleObjHomologySelfIso_inv_homologyι,
     singleObjOpcyclesSelfIso_hom, single₀ObjXSelf, Iso.refl_inv, id_comp]
 
-instance (n : ℕ) : Epi (P.π.f n) := by
+instance (n : ℕ) : Epi (P.π.f n) := fast_instance% by
   cases n
   · exact epi_of_isColimit_cofork P.isColimitCokernelCofork
   · rw [π_f_succ]; infer_instance

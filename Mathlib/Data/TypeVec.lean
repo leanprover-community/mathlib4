@@ -40,7 +40,7 @@ def TypeVec (n : ℕ) :=
   Fin2 n → Type*
 #align typevec TypeVec
 
-instance {n} : Inhabited (TypeVec.{u} n) :=
+instance {n} : Inhabited (TypeVec.{u} n) := fast_instance%
   ⟨fun _ => PUnit⟩
 
 namespace TypeVec
@@ -61,7 +61,7 @@ theorem Arrow.ext {α β : TypeVec n} (f g : α ⟹ β) :
     (∀ i, f i = g i) → f = g := by
   intro h; funext i; apply h
 
-instance Arrow.inhabited (α β : TypeVec n) [∀ i, Inhabited (β i)] : Inhabited (α ⟹ β) :=
+instance Arrow.inhabited (α β : TypeVec n) [∀ i, Inhabited (β i)] : Inhabited (α ⟹ β) := fast_instance%
   ⟨fun _ _ => default⟩
 #align typevec.arrow.inhabited TypeVec.Arrow.inhabited
 
@@ -107,7 +107,7 @@ def last (α : TypeVec.{u} (n + 1)) : Type _ :=
   α Fin2.fz
 #align typevec.last TypeVec.last
 
-instance last.inhabited (α : TypeVec (n + 1)) [Inhabited (α Fin2.fz)] : Inhabited (last α) :=
+instance last.inhabited (α : TypeVec (n + 1)) [Inhabited (α Fin2.fz)] : Inhabited (last α) := fast_instance%
   ⟨show α Fin2.fz from default⟩
 #align typevec.last.inhabited TypeVec.last.inhabited
 
@@ -294,7 +294,7 @@ theorem appendFun_id_id {α : TypeVec n} {β : Type*} :
   eq_of_drop_last_eq rfl rfl
 #align typevec.append_fun_id_id TypeVec.appendFun_id_id
 
-instance subsingleton0 : Subsingleton (TypeVec 0) :=
+instance subsingleton0 : Subsingleton (TypeVec 0) := fast_instance%
   ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- Porting note: `by apply` necessary?
 #align typevec.subsingleton0 TypeVec.subsingleton0
 

@@ -38,7 +38,7 @@ structure TwoP : Type (u + 1) where
 
 namespace TwoP
 
-instance : CoeSort TwoP (Type*) :=
+instance : CoeSort TwoP (Type*) := fast_instance%
   ⟨TwoP.X⟩
 
 /-- Turns a two-pointing into a two-pointed type. -/
@@ -54,7 +54,7 @@ theorem coe_of {X : Type*} (toTwoPointing : TwoPointing X) : ↥(of toTwoPointin
 alias _root_.TwoPointing.TwoP := of
 #align two_pointing.Twop TwoPointing.TwoP
 
-instance : Inhabited TwoP :=
+instance : Inhabited TwoP := fast_instance%
   ⟨of TwoPointing.bool⟩
 
 /-- Turns a two-pointed type into a bipointed type, by forgetting that the pointed elements are
@@ -68,15 +68,15 @@ theorem coe_toBipointed (X : TwoP) : ↥X.toBipointed = ↥X :=
   rfl
 #align Twop.coe_to_Bipointed TwoP.coe_toBipointed
 
-noncomputable instance largeCategory : LargeCategory TwoP :=
+noncomputable instance largeCategory : LargeCategory TwoP := fast_instance%
   InducedCategory.category toBipointed
 #align Twop.large_category TwoP.largeCategory
 
-noncomputable instance concreteCategory : ConcreteCategory TwoP :=
+noncomputable instance concreteCategory : ConcreteCategory TwoP := fast_instance%
   InducedCategory.concreteCategory toBipointed
 #align Twop.concrete_category TwoP.concreteCategory
 
-noncomputable instance hasForgetToBipointed : HasForget₂ TwoP Bipointed :=
+noncomputable instance hasForgetToBipointed : HasForget₂ TwoP Bipointed := fast_instance%
   InducedCategory.hasForget₂ toBipointed
 #align Twop.has_forget_to_Bipointed TwoP.hasForgetToBipointed
 

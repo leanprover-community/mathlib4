@@ -57,7 +57,7 @@ structure AddContent (C : Set (Set α)) where
       (_h_dis : PairwiseDisjoint (I : Set (Set α)) id) (_h_mem : ⋃₀ ↑I ∈ C) :
     toFun (⋃₀ I) = ∑ u in I, toFun u
 
-instance : Inhabited (AddContent C) :=
+instance : Inhabited (AddContent C) := fast_instance%
   ⟨{toFun := fun _ => 0
     empty' := by simp
     sUnion' := by simp }⟩

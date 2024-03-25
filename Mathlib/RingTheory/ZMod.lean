@@ -28,5 +28,5 @@ theorem isReduced_zmod {n : ℕ} : IsReduced (ZMod n) ↔ Squarefree n ∨ n = 0
       Int.squarefree_coe_nat, Nat.cast_eq_zero]
 #align is_reduced_zmod isReduced_zmod
 
-instance {n : ℕ} [Fact <| Squarefree n] : IsReduced (ZMod n) :=
+instance {n : ℕ} [Fact <| Squarefree n] : IsReduced (ZMod n) := fast_instance%
   isReduced_zmod.2 <| Or.inl <| Fact.out

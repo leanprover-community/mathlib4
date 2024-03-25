@@ -47,10 +47,10 @@ instance hasColimit_of_hasColimit_comp_forget (F : J ⥤ Over X) [i : HasColimit
 
 instance [HasColimitsOfShape J C] : HasColimitsOfShape J (Over X) where
 
-instance [HasColimits C] : HasColimits (Over X) :=
+instance [HasColimits C] : HasColimits (Over X) := fast_instance%
   ⟨inferInstance⟩
 
-instance createsColimitsOfSize : CreatesColimitsOfSize.{w, w'} (forget X) :=
+instance createsColimitsOfSize : CreatesColimitsOfSize.{w, w'} (forget X) := fast_instance%
   CostructuredArrow.createsColimitsOfSize
 #align category_theory.over.creates_colimits CategoryTheory.Over.createsColimitsOfSize
 
@@ -142,7 +142,7 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pullback (f ≫ g) �
     (((mapPullbackAdj _).comp (mapPullbackAdj _)).ofNatIsoLeft (Over.mapComp _ _).symm)
 #align category_theory.over.pullback_comp CategoryTheory.Over.pullbackComp
 
-instance pullbackIsRightAdjoint {A B : C} (f : A ⟶ B) : IsRightAdjoint (pullback f) :=
+instance pullbackIsRightAdjoint {A B : C} (f : A ⟶ B) : IsRightAdjoint (pullback f) := fast_instance%
   ⟨_, mapPullbackAdj f⟩
 #align category_theory.over.pullback_is_right_adjoint CategoryTheory.Over.pullbackIsRightAdjoint
 
@@ -159,7 +159,7 @@ instance hasLimit_of_hasLimit_comp_forget (F : J ⥤ Under X) [i : HasLimit (F �
 
 instance [HasLimitsOfShape J C] : HasLimitsOfShape J (Under X) where
 
-instance [HasLimits C] : HasLimits (Under X) :=
+instance [HasLimits C] : HasLimits (Under X) := fast_instance%
   ⟨inferInstance⟩
 
 theorem mono_right_of_mono [HasPullbacks C] {f g : Under X} (h : f ⟶ g) [Mono h] : Mono h.right :=
@@ -170,7 +170,7 @@ theorem mono_iff_mono_right [HasPullbacks C] {f g : Under X} (h : f ⟶ g) : Mon
   StructuredArrow.mono_iff_mono_right _
 #align category_theory.under.mono_iff_mono_right CategoryTheory.Under.mono_iff_mono_right
 
-instance createsLimitsOfSize : CreatesLimitsOfSize.{w, w'} (forget X) :=
+instance createsLimitsOfSize : CreatesLimitsOfSize.{w, w'} (forget X) := fast_instance%
   StructuredArrow.createsLimitsOfSize
 #align category_theory.under.creates_limits CategoryTheory.Under.createsLimitsOfSize
 

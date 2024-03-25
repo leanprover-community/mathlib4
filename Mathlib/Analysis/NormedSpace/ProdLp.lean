@@ -455,7 +455,7 @@ section TopologicalSpace
 
 variable [TopologicalSpace α] [TopologicalSpace β]
 
-instance instProdTopologicalSpace : TopologicalSpace (WithLp p (α × β)) :=
+instance instProdTopologicalSpace : TopologicalSpace (WithLp p (α × β)) := fast_instance%
   instTopologicalSpaceProd
 
 @[continuity]
@@ -468,7 +468,7 @@ theorem prod_continuous_equiv_symm : Continuous (WithLp.equiv p (α × β)).symm
 
 variable [T0Space α] [T0Space β]
 
-instance instProdT0Space : T0Space (WithLp p (α × β)) :=
+instance instProdT0Space : T0Space (WithLp p (α × β)) := fast_instance%
   Prod.instT0Space
 
 end TopologicalSpace
@@ -477,7 +477,7 @@ section UniformSpace
 
 variable [UniformSpace α] [UniformSpace β]
 
-instance instProdUniformSpace : UniformSpace (WithLp p (α × β)) :=
+instance instProdUniformSpace : UniformSpace (WithLp p (α × β)) := fast_instance%
   instUniformSpaceProd
 
 theorem prod_uniformContinuous_equiv : UniformContinuous (WithLp.equiv p (α × β)) :=
@@ -488,12 +488,12 @@ theorem prod_uniformContinuous_equiv_symm : UniformContinuous (WithLp.equiv p (�
 
 variable [CompleteSpace α] [CompleteSpace β]
 
-instance instProdCompleteSpace : CompleteSpace (WithLp p (α × β)) :=
+instance instProdCompleteSpace : CompleteSpace (WithLp p (α × β)) := fast_instance%
   CompleteSpace.prod
 
 end UniformSpace
 
-instance instProdBornology [Bornology α] [Bornology β] : Bornology (WithLp p (α × β)) :=
+instance instProdBornology [Bornology α] [Bornology β] : Bornology (WithLp p (α × β)) := fast_instance%
   Prod.instBornology
 
 section ContinuousLinearEquiv
@@ -522,7 +522,7 @@ instance instProdPseudoEMetricSpace [PseudoEMetricSpace α] [PseudoEMetricSpace 
 
 /-- `EMetricSpace` instance on the product of two emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/
-instance instProdEMetricSpace [EMetricSpace α] [EMetricSpace β] : EMetricSpace (WithLp p (α × β)) :=
+instance instProdEMetricSpace [EMetricSpace α] [EMetricSpace β] : EMetricSpace (WithLp p (α × β)) := fast_instance%
   EMetricSpace.ofT0PseudoEMetricSpace (WithLp p (α × β))
 
 /-- `PseudoMetricSpace` instance on the product of two pseudometric spaces, using the
@@ -535,7 +535,7 @@ instance instProdPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β]
 
 /-- `MetricSpace` instance on the product of two metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/
-instance instProdMetricSpace [MetricSpace α] [MetricSpace β] : MetricSpace (WithLp p (α × β)) :=
+instance instProdMetricSpace [MetricSpace α] [MetricSpace β] : MetricSpace (WithLp p (α × β)) := fast_instance%
   MetricSpace.ofT0PseudoMetricSpace _
 
 variable {p α β}
@@ -743,7 +743,7 @@ end Single
 section BoundedSMul
 variable [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β] [BoundedSMul 𝕜 α] [BoundedSMul 𝕜 β]
 
-instance instProdBoundedSMul : BoundedSMul 𝕜 (WithLp p (α × β)) :=
+instance instProdBoundedSMul : BoundedSMul 𝕜 (WithLp p (α × β)) := fast_instance%
   .of_nnnorm_smul_le fun c f => by
     rcases p.dichotomy with (rfl | hp)
     · simp only [← prod_nnnorm_equiv, WithLp.equiv_smul]

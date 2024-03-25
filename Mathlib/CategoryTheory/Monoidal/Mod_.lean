@@ -56,7 +56,7 @@ def id (M : Mod_ A) : Hom M M where hom := 𝟙 M.X
 set_option linter.uppercaseLean3 false in
 #align Mod_.id Mod_.id
 
-instance homInhabited (M : Mod_ A) : Inhabited (Hom M M) :=
+instance homInhabited (M : Mod_ A) : Inhabited (Hom M M) := fast_instance%
   ⟨id M⟩
 set_option linter.uppercaseLean3 false in
 #align Mod_.hom_inhabited Mod_.homInhabited
@@ -101,7 +101,7 @@ def regular : Mod_ A where
 set_option linter.uppercaseLean3 false in
 #align Mod_.regular Mod_.regular
 
-instance : Inhabited (Mod_ A) :=
+instance : Inhabited (Mod_ A) := fast_instance%
   ⟨regular A⟩
 
 /-- The forgetful functor from module objects to the ambient category. -/

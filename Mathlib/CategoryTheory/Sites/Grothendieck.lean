@@ -90,7 +90,7 @@ structure GrothendieckTopology where
 
 namespace GrothendieckTopology
 
-instance : CoeFun (GrothendieckTopology C) fun _ => ∀ X : C, Set (Sieve X) :=
+instance : CoeFun (GrothendieckTopology C) fun _ => ∀ X : C, Set (Sieve X) := fast_instance%
   ⟨sieves⟩
 
 variable {C}
@@ -262,7 +262,7 @@ theorem le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : 
 #align category_theory.grothendieck_topology.le_def CategoryTheory.GrothendieckTopology.le_def
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z6> -/
-instance : PartialOrder (GrothendieckTopology C) :=
+instance : PartialOrder (GrothendieckTopology C) := fast_instance%
   { instLEGrothendieckTopology with
     le_refl := fun J₁ => le_def.mpr le_rfl
     le_trans := fun J₁ J₂ J₃ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
@@ -294,7 +294,7 @@ theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
 /-- Construct a complete lattice from the `Inf`, but make the trivial and discrete topologies
 definitionally equal to the bottom and top respectively.
 -/
-instance : CompleteLattice (GrothendieckTopology C) :=
+instance : CompleteLattice (GrothendieckTopology C) := fast_instance%
   CompleteLattice.copy (completeLatticeOfInf _ isGLB_sInf) _ rfl (discrete C)
     (by
       apply le_antisymm
@@ -310,7 +310,7 @@ instance : CompleteLattice (GrothendieckTopology C) :=
       · exact @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_sInf) (trivial C))
     _ rfl _ rfl _ rfl sInf rfl
 
-instance : Inhabited (GrothendieckTopology C) :=
+instance : Inhabited (GrothendieckTopology C) := fast_instance%
   ⟨⊤⟩
 
 @[simp]
@@ -407,7 +407,7 @@ def Cover (X : C) : Type max u v :=
 #align category_theory.grothendieck_topology.cover CategoryTheory.GrothendieckTopology.Cover
 
 -- Porting note: `deriving` didn't work above, so we add the preorder instance manually.
-instance (X : C) : Preorder (J.Cover X) :=
+instance (X : C) : Preorder (J.Cover X) := fast_instance%
   show Preorder {S : Sieve X // S ∈ J X} from inferInstance
 
 namespace Cover
@@ -419,7 +419,7 @@ Porting note: Lean complains that this is a dangerous instance.
 I'm commenting this out since the `CoeFun` instance below is what we
 use 99% of the time anyway.
 
-instance : Coe (J.Cover X) (Sieve X) :=
+instance : Coe (J.Cover X) (Sieve X) := fast_instance%
   ⟨fun S => S.1⟩
 -/
 
@@ -435,11 +435,11 @@ Porting note: This somehow yields different behavior than the better instance be
 With this instance, we have to write `S _ f` but with the uncommented one, we can write `S f`
 as expected.
 
-instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
+instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop := fast_instance%
   ⟨fun S _ f => (S : Sieve X) f⟩
 -/
 
-instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
+instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop := fast_instance%
   ⟨fun S => S.sieve⟩
 
 /-
@@ -460,12 +460,12 @@ theorem ext (S T : J.Cover X) (h : ∀ ⦃Y⦄ (f : Y ⟶ X), S f ↔ T f) : S =
   Subtype.ext <| Sieve.ext h
 #align category_theory.grothendieck_topology.cover.ext CategoryTheory.GrothendieckTopology.Cover.ext
 
-instance : OrderTop (J.Cover X) :=
+instance : OrderTop (J.Cover X) := fast_instance%
   { (inferInstance : Preorder (J.Cover X)) with
     top := ⟨⊤, J.top_mem _⟩
     le_top := fun S Y f _ => by tauto }
 
-instance : SemilatticeInf (J.Cover X) :=
+instance : SemilatticeInf (J.Cover X) := fast_instance%
   { (inferInstance : Preorder _) with
     inf := fun S T => ⟨S.sieve ⊓ T.sieve,
       J.intersection_covering S.condition T.condition⟩
@@ -474,7 +474,7 @@ instance : SemilatticeInf (J.Cover X) :=
     inf_le_right := fun S T Y f hf => hf.2
     le_inf := fun S T W h1 h2 Y f h => ⟨h1 _ h, h2 _ h⟩ }
 
-instance : Inhabited (J.Cover X) :=
+instance : Inhabited (J.Cover X) := fast_instance%
   ⟨⊤⟩
 
 /-- An auxiliary structure, used to define `S.index`. -/

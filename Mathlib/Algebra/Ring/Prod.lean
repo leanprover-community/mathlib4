@@ -32,7 +32,7 @@ variable {α β R R' S S' T T' : Type*}
 namespace Prod
 
 /-- Product of two distributive types is distributive. -/
-instance instDistrib [Distrib R] [Distrib S] : Distrib (R × S) :=
+instance instDistrib [Distrib R] [Distrib S] : Distrib (R × S) := fast_instance%
   { left_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨left_distrib _ _ _, left_distrib _ _ _⟩
     right_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨right_distrib _ _ _, right_distrib _ _ _⟩ }
 
@@ -57,7 +57,7 @@ instance instNonAssocSemiring [NonAssocSemiring R] [NonAssocSemiring S] :
     inferInstanceAs (AddMonoidWithOne (R × S)) with }
 
 /-- Product of two semirings is a semiring. -/
-instance instSemiring [Semiring R] [Semiring S] : Semiring (R × S) :=
+instance instSemiring [Semiring R] [Semiring S] : Semiring (R × S) := fast_instance%
   { inferInstanceAs (NonUnitalSemiring (R × S)),
     inferInstanceAs (NonAssocSemiring (R × S)),
     inferInstanceAs (MonoidWithZero (R × S)) with }
@@ -68,7 +68,7 @@ instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] [NonUnitalCommSemir
   { inferInstanceAs (NonUnitalSemiring (R × S)), inferInstanceAs (CommSemigroup (R × S)) with }
 
 /-- Product of two commutative semirings is a commutative semiring. -/
-instance instCommSemiring [CommSemiring R] [CommSemiring S] : CommSemiring (R × S) :=
+instance instCommSemiring [CommSemiring R] [CommSemiring S] : CommSemiring (R × S) := fast_instance%
   { inferInstanceAs (Semiring (R × S)), inferInstanceAs (CommMonoid (R × S)) with }
 
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] :
@@ -76,17 +76,17 @@ instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] [NonUnitalNonAssocR
   { inferInstanceAs (AddCommGroup (R × S)),
     inferInstanceAs (NonUnitalNonAssocSemiring (R × S)) with }
 
-instance instNonUnitalRing [NonUnitalRing R] [NonUnitalRing S] : NonUnitalRing (R × S) :=
+instance instNonUnitalRing [NonUnitalRing R] [NonUnitalRing S] : NonUnitalRing (R × S) := fast_instance%
   { inferInstanceAs (NonUnitalNonAssocRing (R × S)),
     inferInstanceAs (NonUnitalSemiring (R × S)) with }
 
-instance instNonAssocRing [NonAssocRing R] [NonAssocRing S] : NonAssocRing (R × S) :=
+instance instNonAssocRing [NonAssocRing R] [NonAssocRing S] : NonAssocRing (R × S) := fast_instance%
   { inferInstanceAs (NonUnitalNonAssocRing (R × S)),
     inferInstanceAs (NonAssocSemiring (R × S)),
     inferInstanceAs (AddGroupWithOne (R × S)) with }
 
 /-- Product of two rings is a ring. -/
-instance instRing [Ring R] [Ring S] : Ring (R × S) :=
+instance instRing [Ring R] [Ring S] : Ring (R × S) := fast_instance%
   { inferInstanceAs (Semiring (R × S)),
     inferInstanceAs (AddCommGroup (R × S)),
     inferInstanceAs (AddGroupWithOne (R × S)) with }
@@ -97,7 +97,7 @@ instance instNonUnitalCommRing [NonUnitalCommRing R] [NonUnitalCommRing S] :
   { inferInstanceAs (NonUnitalRing (R × S)), inferInstanceAs (CommSemigroup (R × S)) with }
 
 /-- Product of two commutative rings is a commutative ring. -/
-instance instCommRing [CommRing R] [CommRing S] : CommRing (R × S) :=
+instance instCommRing [CommRing R] [CommRing S] : CommRing (R × S) := fast_instance%
   { inferInstanceAs (Ring (R × S)), inferInstanceAs (CommMonoid (R × S)) with }
 
 end Prod
@@ -202,8 +202,8 @@ def snd : R × S →+* S :=
   { MonoidHom.snd R S, AddMonoidHom.snd R S with toFun := Prod.snd }
 #align ring_hom.snd RingHom.snd
 
-instance (R S) [Semiring R] [Semiring S] : RingHomSurjective (fst R S) := ⟨(⟨⟨·, 0⟩, rfl⟩)⟩
-instance (R S) [Semiring R] [Semiring S] : RingHomSurjective (snd R S) := ⟨(⟨⟨0, ·⟩, rfl⟩)⟩
+instance (R S) [Semiring R] [Semiring S] : RingHomSurjective (fst R S) := fast_instance% ⟨(⟨⟨·, 0⟩, rfl⟩)⟩
+instance (R S) [Semiring R] [Semiring S] : RingHomSurjective (snd R S) := fast_instance% ⟨(⟨⟨0, ·⟩, rfl⟩)⟩
 
 variable {R S}
 
@@ -389,7 +389,7 @@ theorem false_of_nontrivial_of_product_domain (R S : Type*) [Ring R] [Ring S] [I
 /-! ### Order -/
 
 
-instance [OrderedSemiring α] [OrderedSemiring β] : OrderedSemiring (α × β) :=
+instance [OrderedSemiring α] [OrderedSemiring β] : OrderedSemiring (α × β) := fast_instance%
   { inferInstanceAs (Semiring (α × β)), inferInstanceAs (OrderedAddCommMonoid (α × β)) with
     zero_le_one := ⟨zero_le_one, zero_le_one⟩
     mul_le_mul_of_nonneg_left := fun _ _ _ hab hc =>
@@ -397,14 +397,14 @@ instance [OrderedSemiring α] [OrderedSemiring β] : OrderedSemiring (α × β) 
     mul_le_mul_of_nonneg_right := fun _ _ _ hab hc =>
       ⟨mul_le_mul_of_nonneg_right hab.1 hc.1, mul_le_mul_of_nonneg_right hab.2 hc.2⟩ }
 
-instance [OrderedCommSemiring α] [OrderedCommSemiring β] : OrderedCommSemiring (α × β) :=
+instance [OrderedCommSemiring α] [OrderedCommSemiring β] : OrderedCommSemiring (α × β) := fast_instance%
   { inferInstanceAs (OrderedSemiring (α × β)), inferInstanceAs (CommSemiring (α × β)) with }
 
 -- Porting note: compile fails with `inferInstanceAs (OrderedSemiring (α × β))`
-instance [OrderedRing α] [OrderedRing β] : OrderedRing (α × β) :=
+instance [OrderedRing α] [OrderedRing β] : OrderedRing (α × β) := fast_instance%
   { inferInstanceAs (Ring (α × β)), inferInstanceAs (OrderedAddCommGroup (α × β)) with
     zero_le_one := ⟨zero_le_one, zero_le_one⟩
     mul_nonneg := fun _ _ ha hb => ⟨mul_nonneg ha.1 hb.1, mul_nonneg ha.2 hb.2⟩ }
 
-instance [OrderedCommRing α] [OrderedCommRing β] : OrderedCommRing (α × β) :=
+instance [OrderedCommRing α] [OrderedCommRing β] : OrderedCommRing (α × β) := fast_instance%
   { inferInstanceAs (OrderedRing (α × β)), inferInstanceAs (CommRing (α × β)) with }

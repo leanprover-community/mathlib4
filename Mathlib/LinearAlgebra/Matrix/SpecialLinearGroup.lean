@@ -78,7 +78,7 @@ namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
-instance hasCoeToMatrix : Coe (SpecialLinearGroup n R) (Matrix n n R) :=
+instance hasCoeToMatrix : Coe (SpecialLinearGroup n R) (Matrix n n R) := fast_instance%
   ⟨fun A => A.val⟩
 #align matrix.special_linear_group.has_coe_to_matrix Matrix.SpecialLinearGroup.hasCoeToMatrix
 
@@ -95,7 +95,7 @@ section CoeFnInstance
 
 /-- This instance is here for convenience, but is literally the same as the coercion from
 `hasCoeToMatrix`. -/
-instance instCoeFun : CoeFun (SpecialLinearGroup n R) fun _ => n → n → R where coe A := ↑ₘA
+instance instCoeFun : CoeFun (SpecialLinearGroup n R) fun _ => n → n → R where coe A := fast_instance% ↑ₘA
 
 end CoeFnInstance
 
@@ -108,29 +108,29 @@ theorem ext (A B : SpecialLinearGroup n R) : (∀ i j, ↑ₘA i j = ↑ₘB i j
   (SpecialLinearGroup.ext_iff A B).mpr
 #align matrix.special_linear_group.ext Matrix.SpecialLinearGroup.ext
 
-instance subsingleton_of_subsingleton [Subsingleton n] : Subsingleton (SpecialLinearGroup n R) := by
+instance subsingleton_of_subsingleton [Subsingleton n] : Subsingleton (SpecialLinearGroup n R) := fast_instance% by
   refine ⟨fun ⟨A, hA⟩ ⟨B, hB⟩ ↦ ?_⟩
   ext i j
   rcases isEmpty_or_nonempty n with hn | hn; · exfalso; exact IsEmpty.false i
   rw [det_eq_elem_of_subsingleton _ i] at hA hB
   simp only [Subsingleton.elim j i, hA, hB]
 
-instance hasInv : Inv (SpecialLinearGroup n R) :=
+instance hasInv : Inv (SpecialLinearGroup n R) := fast_instance%
   ⟨fun A => ⟨adjugate A, by rw [det_adjugate, A.prop, one_pow]⟩⟩
 #align matrix.special_linear_group.has_inv Matrix.SpecialLinearGroup.hasInv
 
-instance hasMul : Mul (SpecialLinearGroup n R) :=
+instance hasMul : Mul (SpecialLinearGroup n R) := fast_instance%
   ⟨fun A B => ⟨↑ₘA * ↑ₘB, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
 #align matrix.special_linear_group.has_mul Matrix.SpecialLinearGroup.hasMul
 
-instance hasOne : One (SpecialLinearGroup n R) :=
+instance hasOne : One (SpecialLinearGroup n R) := fast_instance%
   ⟨⟨1, det_one⟩⟩
 #align matrix.special_linear_group.has_one Matrix.SpecialLinearGroup.hasOne
 
 instance : Pow (SpecialLinearGroup n R) ℕ where
   pow x n := ⟨↑ₘx ^ n, (det_pow _ _).trans <| x.prop.symm ▸ one_pow _⟩
 
-instance : Inhabited (SpecialLinearGroup n R) :=
+instance : Inhabited (SpecialLinearGroup n R) := fast_instance%
   ⟨1⟩
 
 /-- The transpose of a matrix in `SL(n, R)` -/
@@ -189,10 +189,10 @@ theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : ↑ₘ
 
 end CoeLemmas
 
-instance monoid : Monoid (SpecialLinearGroup n R) :=
+instance monoid : Monoid (SpecialLinearGroup n R) := fast_instance%
   Function.Injective.monoid (↑) Subtype.coe_injective coe_one coe_mul coe_pow
 
-instance : Group (SpecialLinearGroup n R) :=
+instance : Group (SpecialLinearGroup n R) := fast_instance%
   { SpecialLinearGroup.monoid, SpecialLinearGroup.hasInv with
     mul_left_inv := fun A => by
       ext1
@@ -334,7 +334,7 @@ end center
 section cast
 
 /-- Coercion of SL `n` `ℤ` to SL `n` `R` for a commutative ring `R`. -/
-instance : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) :=
+instance : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) := fast_instance%
   ⟨fun x => map (Int.castRingHom R) x⟩
 
 @[simp]
@@ -351,7 +351,7 @@ variable [Fact (Even (Fintype.card n))]
 
 /-- Formal operation of negation on special linear group on even cardinality `n` given by negating
 each element. -/
-instance instNeg : Neg (SpecialLinearGroup n R) :=
+instance instNeg : Neg (SpecialLinearGroup n R) := fast_instance%
   ⟨fun g => ⟨-g, by
     simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
 
@@ -360,7 +360,7 @@ theorem coe_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(g : Matrix n n R) :=
   rfl
 #align matrix.special_linear_group.coe_neg Matrix.SpecialLinearGroup.coe_neg
 
-instance : HasDistribNeg (SpecialLinearGroup n R) :=
+instance : HasDistribNeg (SpecialLinearGroup n R) := fast_instance%
   Function.Injective.hasDistribNeg _ Subtype.coe_injective coe_neg coe_mul
 
 @[simp]

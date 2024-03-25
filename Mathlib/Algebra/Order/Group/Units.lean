@@ -20,7 +20,7 @@ variable {α : Type*}
 @[to_additive
       "The units of an ordered commutative additive monoid form an ordered commutative
       additive group."]
-instance Units.orderedCommGroup [OrderedCommMonoid α] : OrderedCommGroup αˣ :=
+instance Units.orderedCommGroup [OrderedCommMonoid α] : OrderedCommGroup αˣ := fast_instance%
   { Units.instPartialOrderUnits, Units.instCommGroupUnits with
     mul_le_mul_left := fun _ _ h _ => (@mul_le_mul_left' α _ _ _ _ _ h _) }
 #align units.ordered_comm_group Units.orderedCommGroup

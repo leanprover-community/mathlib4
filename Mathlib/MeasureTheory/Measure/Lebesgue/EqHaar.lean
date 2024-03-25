@@ -608,10 +608,10 @@ theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [⋀^Fin n]→ₗ[�
     Real.ennnorm_eq_ofReal_abs]
 #align alternating_map.measure_parallelepiped AlternatingMap.measure_parallelepiped
 
-instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
+instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := fast_instance% by
   rw [AlternatingMap.measure]; infer_instance
 
-instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsLocallyFiniteMeasure ω.measure := by
+instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsLocallyFiniteMeasure ω.measure := fast_instance% by
   rw [AlternatingMap.measure]; infer_instance
 
 end

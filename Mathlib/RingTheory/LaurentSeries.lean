@@ -42,7 +42,7 @@ section Semiring
 
 variable [Semiring R]
 
-instance : Coe (PowerSeries R) (LaurentSeries R) :=
+instance : Coe (PowerSeries R) (LaurentSeries R) := fast_instance%
   ⟨HahnSeries.ofPowerSeries ℤ R⟩
 
 /- Porting note: now a syntactic tautology and not needed elsewhere
@@ -116,7 +116,7 @@ theorem ofPowerSeries_powerSeriesPart (x : LaurentSeries R) :
 
 end Semiring
 
-instance [CommSemiring R] : Algebra (PowerSeries R) (LaurentSeries R) :=
+instance [CommSemiring R] : Algebra (PowerSeries R) (LaurentSeries R) := fast_instance%
   (HahnSeries.ofPowerSeries ℤ R).toAlgebra
 
 @[simp]
@@ -156,8 +156,8 @@ instance of_powerSeries_localization [CommRing R] :
 #align laurent_series.of_power_series_localization LaurentSeries.of_powerSeries_localization
 
 -- Porting note: this instance is needed
-local instance {K : Type u} [Field K] : MonoidWithZero (HahnSeries ℤ K) := inferInstance in
-instance {K : Type u} [Field K] : IsFractionRing (PowerSeries K) (LaurentSeries K) :=
+local instance {K : Type u} [Field K] : MonoidWithZero (HahnSeries ℤ K) := fast_instance% inferInstance in
+instance {K : Type u} [Field K] : IsFractionRing (PowerSeries K) (LaurentSeries K) := fast_instance%
   IsLocalization.of_le (Submonoid.powers (PowerSeries.X : PowerSeries K)) _
     (powers_le_nonZeroDivisors_of_noZeroDivisors PowerSeries.X_ne_zero) fun _ hf =>
     isUnit_of_mem_nonZeroDivisors <| map_mem_nonZeroDivisors _ HahnSeries.ofPowerSeries_injective hf

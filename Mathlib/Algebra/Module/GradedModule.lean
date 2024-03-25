@@ -194,7 +194,7 @@ variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
 
 /-- `[SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜]` is the internal version of graded
   module, the internal version can be translated into the external version `gmodule`. -/
-instance gmodule : DirectSum.Gmodule (fun i => 𝓐 i) fun i => 𝓜 i :=
+instance gmodule : DirectSum.Gmodule (fun i => 𝓐 i) fun i => 𝓜 i := fast_instance%
   { SetLike.gdistribMulAction 𝓐 𝓜 with
     smul := fun x y => ⟨(x : A) • (y : M), SetLike.GradedSMul.smul_mem x.2 y.2⟩
     add_smul := fun _a _a' _b => Subtype.ext <| add_smul _ _ _
@@ -221,7 +221,7 @@ def isModule [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐] : Module A (�
 -/
 def linearEquiv [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐] [DirectSum.Decomposition 𝓜] :
     @LinearEquiv A A _ _ (RingHom.id A) (RingHom.id A) _ _ M (⨁ i, 𝓜 i) _
-    _ _ (by letI := isModule 𝓐 𝓜; infer_instance) := by
+    _ _ (by letI := isModule 𝓐 𝓜; infer_instance) := fast_instance% by
   letI h := isModule 𝓐 𝓜
   refine ⟨⟨(DirectSum.decomposeAddEquiv 𝓜).toAddHom, ?_⟩,
     (DirectSum.decomposeAddEquiv 𝓜).symm.toFun, (DirectSum.decomposeAddEquiv 𝓜).left_inv,

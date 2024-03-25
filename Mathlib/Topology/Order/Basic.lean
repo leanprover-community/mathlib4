@@ -84,7 +84,7 @@ section Preorder
 
 variable [TopologicalSpace α] [Preorder α] [t : OrderTopology α]
 
-instance : OrderTopology αᵒᵈ :=
+instance : OrderTopology αᵒᵈ := fast_instance%
   ⟨by
     convert OrderTopology.topology_eq_generate_intervals (α := α) using 6
     apply or_comm⟩
@@ -129,7 +129,7 @@ theorem tendsto_order {f : β → α} {a : α} {x : Filter β} :
   simp only [nhds_eq_order a, tendsto_inf, tendsto_iInf, tendsto_principal]; rfl
 #align tendsto_order tendsto_order
 
-instance tendstoIccClassNhds (a : α) : TendstoIxxClass Icc (𝓝 a) (𝓝 a) := by
+instance tendstoIccClassNhds (a : α) : TendstoIxxClass Icc (𝓝 a) (𝓝 a) := fast_instance% by
   simp only [nhds_eq_order, iInf_subtype']
   refine
     ((hasBasis_iInf_principal_finite _).inf (hasBasis_iInf_principal_finite _)).tendstoIxxClass
@@ -138,15 +138,15 @@ instance tendstoIccClassNhds (a : α) : TendstoIxxClass Icc (𝓝 a) (𝓝 a) :=
   exacts [ordConnected_Ioi, ordConnected_Iio]
 #align tendsto_Icc_class_nhds tendstoIccClassNhds
 
-instance tendstoIcoClassNhds (a : α) : TendstoIxxClass Ico (𝓝 a) (𝓝 a) :=
+instance tendstoIcoClassNhds (a : α) : TendstoIxxClass Ico (𝓝 a) (𝓝 a) := fast_instance%
   tendstoIxxClass_of_subset fun _ _ => Ico_subset_Icc_self
 #align tendsto_Ico_class_nhds tendstoIcoClassNhds
 
-instance tendstoIocClassNhds (a : α) : TendstoIxxClass Ioc (𝓝 a) (𝓝 a) :=
+instance tendstoIocClassNhds (a : α) : TendstoIxxClass Ioc (𝓝 a) (𝓝 a) := fast_instance%
   tendstoIxxClass_of_subset fun _ _ => Ioc_subset_Icc_self
 #align tendsto_Ioc_class_nhds tendstoIocClassNhds
 
-instance tendstoIooClassNhds (a : α) : TendstoIxxClass Ioo (𝓝 a) (𝓝 a) :=
+instance tendstoIooClassNhds (a : α) : TendstoIxxClass Ioo (𝓝 a) (𝓝 a) := fast_instance%
   tendstoIxxClass_of_subset fun _ _ => Ioo_subset_Icc_self
 #align tendsto_Ioo_class_nhds tendstoIooClassNhds
 
@@ -1655,7 +1655,7 @@ theorem nhdsWithin_Ioi_self_neBot' {a : α} (H : (Ioi a).Nonempty) : NeBot (𝓝
   nhdsWithin_Ioi_neBot' H (le_refl a)
 #align nhds_within_Ioi_self_ne_bot' nhdsWithin_Ioi_self_neBot'
 
-instance nhdsWithin_Ioi_self_neBot [NoMaxOrder α] (a : α) : NeBot (𝓝[>] a) :=
+instance nhdsWithin_Ioi_self_neBot [NoMaxOrder α] (a : α) : NeBot (𝓝[>] a) := fast_instance%
   nhdsWithin_Ioi_neBot (le_refl a)
 #align nhds_within_Ioi_self_ne_bot nhdsWithin_Ioi_self_neBot
 
@@ -1672,7 +1672,7 @@ theorem nhdsWithin_Iio_self_neBot' {b : α} (H : (Iio b).Nonempty) : NeBot (𝓝
   nhdsWithin_Iio_neBot' H (le_refl b)
 #align nhds_within_Iio_self_ne_bot' nhdsWithin_Iio_self_neBot'
 
-instance nhdsWithin_Iio_self_neBot [NoMinOrder α] (a : α) : NeBot (𝓝[<] a) :=
+instance nhdsWithin_Iio_self_neBot [NoMinOrder α] (a : α) : NeBot (𝓝[<] a) := fast_instance%
   nhdsWithin_Iio_neBot (le_refl a)
 #align nhds_within_Iio_self_ne_bot nhdsWithin_Iio_self_neBot
 
@@ -1830,7 +1830,7 @@ theorem tendsto_Iio_atTop {f : β → Iio a} :
   rw [← comap_coe_Iio_nhdsWithin_Iio, tendsto_comap_iff]; rfl
 #align tendsto_Iio_at_top tendsto_Iio_atTop
 
-instance (x : α) [Nontrivial α] : NeBot (𝓝[≠] x) := by
+instance (x : α) [Nontrivial α] : NeBot (𝓝[≠] x) := fast_instance% by
   refine forall_mem_nonempty_iff_neBot.1 fun s hs => ?_
   obtain ⟨u, u_open, xu, us⟩ : ∃ u : Set α, IsOpen u ∧ x ∈ u ∧ u ∩ {x}ᶜ ⊆ s := mem_nhdsWithin.1 hs
   obtain ⟨a, b, a_lt_b, hab⟩ : ∃ a b : α, a < b ∧ Ioo a b ⊆ u := u_open.exists_Ioo_subset ⟨x, xu⟩

@@ -43,7 +43,7 @@ variable {J : GrothendieckTopology C}
 -- maybe because I have made `C` more universe polymorphic
 --
 -- This needs to be specified manually because of universe level.
---instance : Abelian (Cᵒᵖ ⥤ D) :=
+--instance : Abelian (Cᵒᵖ ⥤ D) := fast_instance%
 --  @Abelian.functorCategoryAbelian Cᵒᵖ _ D _ _
 
 -- This also needs to be specified manually, but I don't know why.
@@ -57,7 +57,7 @@ variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 variable [ReflectsIsomorphisms (forget D)]
 
-instance sheafIsAbelian [HasFiniteLimits D] : Abelian (Sheaf J D) :=
+instance sheafIsAbelian [HasFiniteLimits D] : Abelian (Sheaf J D) := fast_instance%
   let adj := sheafificationAdjunction J D
   abelianOfAdjunction _ _ (asIso adj.counit) adj
 set_option linter.uppercaseLean3 false in
@@ -65,7 +65,7 @@ set_option linter.uppercaseLean3 false in
 
 attribute [local instance] preservesBinaryBiproductsOfPreservesBinaryProducts
 
-instance presheafToSheaf_additive : (presheafToSheaf J D).Additive :=
+instance presheafToSheaf_additive : (presheafToSheaf J D).Additive := fast_instance%
   (presheafToSheaf J D).additive_of_preservesBinaryBiproducts
 set_option linter.uppercaseLean3 false in
 #align category_theory.presheaf_to_Sheaf_additive CategoryTheory.presheafToSheaf_additive

@@ -91,7 +91,7 @@ def id (X : Grothendieck F) : Hom X X where
   fiber := eqToHom (by erw [CategoryTheory.Functor.map_id, Functor.id_obj X.fiber])
 #align category_theory.grothendieck.id CategoryTheory.Grothendieck.id
 
-instance (X : Grothendieck F) : Inhabited (Hom X X) :=
+instance (X : Grothendieck F) : Inhabited (Hom X X) := fast_instance%
   ⟨id X⟩
 
 /-- Composition of morphisms in the Grothendieck category.

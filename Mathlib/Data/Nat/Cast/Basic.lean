@@ -311,7 +311,7 @@ variable {π : α → Type*} [∀ a, NatCast (π a)]
 
 /- Porting note: manually wrote this instance.
 Was `by refine_struct { .. } <;> pi_instance_derive_field` -/
-instance natCast : NatCast (∀ a, π a) := { natCast := fun n _ ↦ n }
+instance natCast : NatCast (∀ a, π a) := fast_instance% { natCast := fun n _ ↦ n }
 
 theorem nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl

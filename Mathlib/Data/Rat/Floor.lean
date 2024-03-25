@@ -48,7 +48,7 @@ protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z :
     exact Int.le_ediv_iff_mul_le h'
 #align rat.le_floor Rat.le_floor
 
-instance : FloorRing ℚ :=
+instance : FloorRing ℚ := fast_instance%
   (FloorRing.ofFloor ℚ Rat.floor) fun _ _ => Rat.le_floor.symm
 
 protected theorem floor_def {q : ℚ} : ⌊q⌋ = q.num / q.den := Rat.floor_def' q

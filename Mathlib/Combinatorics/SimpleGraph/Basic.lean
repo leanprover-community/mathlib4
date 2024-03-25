@@ -219,7 +219,7 @@ def IsSubgraph (x y : SimpleGraph V) : Prop :=
   ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
 #align simple_graph.is_subgraph SimpleGraph.IsSubgraph
 
-instance : LE (SimpleGraph V) :=
+instance : LE (SimpleGraph V) := fast_instance%
   ⟨IsSubgraph⟩
 
 @[simp]
@@ -321,12 +321,12 @@ theorem iInf_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
 #align simple_graph.infi_adj_of_nonempty SimpleGraph.iInf_adj_of_nonempty
 
 /-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
-instance distribLattice : DistribLattice (SimpleGraph V) :=
+instance distribLattice : DistribLattice (SimpleGraph V) := fast_instance%
   { show DistribLattice (SimpleGraph V) from
       adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
     le := fun G H => ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
 
-instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGraph V) :=
+instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGraph V) := fast_instance%
   { SimpleGraph.distribLattice with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
@@ -378,14 +378,14 @@ theorem emptyGraph_eq_bot (V : Type u) : emptyGraph V = ⊥ :=
 #align simple_graph.empty_graph_eq_bot SimpleGraph.emptyGraph_eq_bot
 
 @[simps]
-instance (V : Type u) : Inhabited (SimpleGraph V) :=
+instance (V : Type u) : Inhabited (SimpleGraph V) := fast_instance%
   ⟨⊥⟩
 
 instance [Subsingleton V] : Unique (SimpleGraph V) where
   default := ⊥
   uniq G := by ext a b; have := Subsingleton.elim a b; simp [this]
 
-instance [Nontrivial V] : Nontrivial (SimpleGraph V) :=
+instance [Nontrivial V] : Nontrivial (SimpleGraph V) := fast_instance%
   ⟨⟨⊥, ⊤, fun h ↦ not_subsingleton V ⟨by simpa only [← adj_inj, Function.funext_iff, bot_adj,
     top_adj, ne_eq, eq_iff_iff, false_iff, not_not] using h⟩⟩⟩
 
@@ -393,29 +393,29 @@ section Decidable
 
 variable (V) (H : SimpleGraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
 
-instance Bot.adjDecidable : DecidableRel (⊥ : SimpleGraph V).Adj :=
+instance Bot.adjDecidable : DecidableRel (⊥ : SimpleGraph V).Adj := fast_instance%
   inferInstanceAs <| DecidableRel fun _ _ => False
 #align simple_graph.bot.adj_decidable SimpleGraph.Bot.adjDecidable
 
-instance Sup.adjDecidable : DecidableRel (G ⊔ H).Adj :=
+instance Sup.adjDecidable : DecidableRel (G ⊔ H).Adj := fast_instance%
   inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∨ H.Adj v w
 #align simple_graph.sup.adj_decidable SimpleGraph.Sup.adjDecidable
 
-instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj :=
+instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj := fast_instance%
   inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∧ H.Adj v w
 #align simple_graph.inf.adj_decidable SimpleGraph.Inf.adjDecidable
 
-instance Sdiff.adjDecidable : DecidableRel (G \ H).Adj :=
+instance Sdiff.adjDecidable : DecidableRel (G \ H).Adj := fast_instance%
   inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∧ ¬H.Adj v w
 #align simple_graph.sdiff.adj_decidable SimpleGraph.Sdiff.adjDecidable
 
 variable [DecidableEq V]
 
-instance Top.adjDecidable : DecidableRel (⊤ : SimpleGraph V).Adj :=
+instance Top.adjDecidable : DecidableRel (⊤ : SimpleGraph V).Adj := fast_instance%
   inferInstanceAs <| DecidableRel fun v w => v ≠ w
 #align simple_graph.top.adj_decidable SimpleGraph.Top.adjDecidable
 
-instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
+instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) := fast_instance%
   inferInstanceAs <| DecidableRel fun v w => v ≠ w ∧ ¬G.Adj v w
 #align simple_graph.compl.adj_decidable SimpleGraph.Compl.adjDecidable
 
@@ -584,15 +584,15 @@ theorem edge_other_ne {e : Sym2 V} (he : e ∈ G.edgeSet) {v : V} (h : v ∈ e) 
   exact G.ne_of_adj he
 #align simple_graph.edge_other_ne SimpleGraph.edge_other_ne
 
-instance decidableMemEdgeSet [DecidableRel G.Adj] : DecidablePred (· ∈ G.edgeSet) :=
+instance decidableMemEdgeSet [DecidableRel G.Adj] : DecidablePred (· ∈ G.edgeSet) := fast_instance%
   Sym2.fromRel.decidablePred G.symm
 #align simple_graph.decidable_mem_edge_set SimpleGraph.decidableMemEdgeSet
 
-instance fintypeEdgeSet [Fintype (Sym2 V)] [DecidableRel G.Adj] : Fintype G.edgeSet :=
+instance fintypeEdgeSet [Fintype (Sym2 V)] [DecidableRel G.Adj] : Fintype G.edgeSet := fast_instance%
   Subtype.fintype _
 #align simple_graph.fintype_edge_set SimpleGraph.fintypeEdgeSet
 
-instance fintypeEdgeSetBot : Fintype (⊥ : SimpleGraph V).edgeSet := by
+instance fintypeEdgeSetBot : Fintype (⊥ : SimpleGraph V).edgeSet := fast_instance% by
   rw [edgeSet_bot]
   infer_instance
 #align simple_graph.fintype_edge_set_bot SimpleGraph.fintypeEdgeSetBot
@@ -698,7 +698,7 @@ theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ 
   rw [disjoint_comm, disjoint_fromEdgeSet, disjoint_comm]
 #align simple_graph.from_edge_set_disjoint SimpleGraph.fromEdgeSet_disjoint
 
-instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
+instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := fast_instance% by
   rw [edgeSet_fromEdgeSet s]
   infer_instance
 

@@ -564,7 +564,7 @@ end OrderBot
 end PartialOrder
 
 /-- There is at most one way to define the successors in a `PartialOrder`. -/
-instance [PartialOrder α] : Subsingleton (SuccOrder α) :=
+instance [PartialOrder α] : Subsingleton (SuccOrder α) := fast_instance%
   ⟨by
     intro h₀ h₁
     ext a
@@ -915,7 +915,7 @@ end OrderTop
 end PartialOrder
 
 /-- There is at most one way to define the predecessors in a `PartialOrder`. -/
-instance [PartialOrder α] : Subsingleton (PredOrder α) :=
+instance [PartialOrder α] : Subsingleton (PredOrder α) := fast_instance%
   ⟨by
     intro h₀ h₁
     ext a
@@ -1164,7 +1164,7 @@ section Pred
 
 variable [Preorder α] [NoMaxOrder α]
 
-instance [hα : Nonempty α] : IsEmpty (PredOrder (WithTop α)) :=
+instance [hα : Nonempty α] : IsEmpty (PredOrder (WithTop α)) := fast_instance%
   ⟨by
     intro
     cases' h : pred (⊤ : WithTop α) with a ha
@@ -1295,7 +1295,7 @@ section Succ
 
 variable [Preorder α] [NoMinOrder α]
 
-instance [hα : Nonempty α] : IsEmpty (SuccOrder (WithBot α)) :=
+instance [hα : Nonempty α] : IsEmpty (SuccOrder (WithBot α)) := fast_instance%
   ⟨by
     intro
     cases' h : succ (⊥ : WithBot α) with a ha
@@ -1374,7 +1374,7 @@ section SuccOrder
 
 variable [SuccOrder α] [IsSuccArchimedean α] {a b : α}
 
-instance : IsPredArchimedean αᵒᵈ :=
+instance : IsPredArchimedean αᵒᵈ := fast_instance%
   ⟨fun {a b} h => by convert exists_succ_iterate_of_le h.ofDual⟩
 
 theorem LE.le.exists_succ_iterate (h : a ≤ b) : ∃ n, succ^[n] a = b :=
@@ -1410,7 +1410,7 @@ section PredOrder
 
 variable [PredOrder α] [IsPredArchimedean α] {a b : α}
 
-instance : IsSuccArchimedean αᵒᵈ :=
+instance : IsSuccArchimedean αᵒᵈ := fast_instance%
   ⟨fun {a b} h => by convert exists_pred_iterate_of_le h.ofDual⟩
 
 theorem LE.le.exists_pred_iterate (h : a ≤ b) : ∃ n, pred^[n] b = a :=

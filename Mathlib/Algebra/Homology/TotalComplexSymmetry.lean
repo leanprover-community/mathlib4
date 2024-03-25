@@ -118,7 +118,7 @@ lemma ιTotal_totalFlipIso_f_inv
         (by rw [ComplexShape.π_symm c₁ c₂ c i₁ i₂, h]) := by
   simp [totalFlipIso, totalFlipIsoX]
 
-instance : K.flip.flip.HasTotal c := (inferInstance : K.HasTotal c)
+instance : K.flip.flip.HasTotal c := fast_instance% (inferInstance : K.HasTotal c)
 
 section
 

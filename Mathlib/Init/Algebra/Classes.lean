@@ -198,7 +198,7 @@ class IsTrans (α : Sort u) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
 #align is_trans IsTrans
 
-instance {α : Sort u} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
+instance {α : Sort u} {r : α → α → Prop} [IsTrans α r] : Trans r r r := fast_instance%
   ⟨IsTrans.trans _ _ _⟩
 
 instance (priority := 100) {α : Sort u} {r : α → α → Prop} [Trans r r r] : IsTrans α r :=

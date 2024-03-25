@@ -56,7 +56,7 @@ variable {C}
 namespace PresheafedSpace
 
 -- Porting note: using `Coe` here triggers an error, `CoeOut` seems an acceptable alternative
-instance coeCarrier : CoeOut (PresheafedSpace C) TopCat where coe X := X.carrier
+instance coeCarrier : CoeOut (PresheafedSpace C) TopCat where coe X := fast_instance% X.carrier
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.coe_carrier AlgebraicGeometry.PresheafedSpace.coeCarrier
 
@@ -64,7 +64,7 @@ attribute [coe] PresheafedSpace.carrier
 
 -- Porting note: we add this instance, as Lean does not reliably use the `CoeOut` instance above
 -- in downstream files.
-instance : CoeSort (PresheafedSpace C) (Type*) where coe := fun X => X.carrier
+instance : CoeSort (PresheafedSpace C) (Type*) where coe := fast_instance% fun X => X.carrier
 
 -- Porting note: the following lemma is removed because it is a syntactic tauto
 /-@[simp]
@@ -82,7 +82,7 @@ theorem mk_coe (carrier) (presheaf) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.mk_coe AlgebraicGeometry.PresheafedSpace.mk_coe
 
-instance (X : PresheafedSpace C) : TopologicalSpace X :=
+instance (X : PresheafedSpace C) : TopologicalSpace X := fast_instance%
   X.carrier.str
 
 /-- The constant presheaf on `X` with value `Z`. -/
@@ -92,7 +92,7 @@ def const (X : TopCat) (Z : C) : PresheafedSpace C where
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.const AlgebraicGeometry.PresheafedSpace.const
 
-instance [Inhabited C] : Inhabited (PresheafedSpace C) :=
+instance [Inhabited C] : Inhabited (PresheafedSpace C) := fast_instance%
   ⟨const (TopCat.of PEmpty) default⟩
 
 /-- A morphism between presheafed spaces `X` and `Y` consists of a continuous map
@@ -139,7 +139,7 @@ def id (X : PresheafedSpace C) : Hom X X where
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.id AlgebraicGeometry.PresheafedSpace.id
 
-instance homInhabited (X : PresheafedSpace C) : Inhabited (Hom X X) :=
+instance homInhabited (X : PresheafedSpace C) : Inhabited (Hom X X) := fast_instance%
   ⟨id X⟩
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.hom_inhabited AlgebraicGeometry.PresheafedSpace.homInhabited
@@ -226,7 +226,7 @@ theorem comp_base {X Y Z : PresheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.comp_base AlgebraicGeometry.PresheafedSpace.comp_base
 
-instance (X Y : PresheafedSpace C) : CoeFun (X ⟶ Y) fun _ => (↑X → ↑Y) :=
+instance (X Y : PresheafedSpace C) : CoeFun (X ⟶ Y) fun _ => (↑X → ↑Y) := fast_instance%
   ⟨fun f => f.base⟩
 
 -- Porting note: removed as this is a syntactic tauto
@@ -332,12 +332,12 @@ def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.sheaf_iso_of_iso AlgebraicGeometry.PresheafedSpace.sheafIsoOfIso
 
-instance base_isIso_of_iso (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
+instance base_isIso_of_iso (f : X ⟶ Y) [IsIso f] : IsIso f.base := fast_instance%
   IsIso.of_iso ((forget _).mapIso (asIso f))
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.base_is_iso_of_iso AlgebraicGeometry.PresheafedSpace.base_isIso_of_iso
 
-instance c_isIso_of_iso (f : X ⟶ Y) [IsIso f] : IsIso f.c :=
+instance c_isIso_of_iso (f : X ⟶ Y) [IsIso f] : IsIso f.c := fast_instance%
   IsIso.of_iso (sheafIsoOfIso (asIso f))
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.c_is_iso_of_iso AlgebraicGeometry.PresheafedSpace.c_isIso_of_iso

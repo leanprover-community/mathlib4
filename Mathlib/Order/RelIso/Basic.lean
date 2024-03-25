@@ -225,12 +225,12 @@ def toRelHom (f : r ↪r s) : r →r s where
   map_rel' := (map_rel_iff' f).mpr
 #align rel_embedding.to_rel_hom RelEmbedding.toRelHom
 
-instance : Coe (r ↪r s) (r →r s) :=
+instance : Coe (r ↪r s) (r →r s) := fast_instance%
   ⟨toRelHom⟩
 
 -- Porting note: removed
 -- see Note [function coercion]
--- instance : CoeFun (r ↪r s) fun _ => α → β :=
+-- instance : CoeFun (r ↪r s) fun _ => α → β := fast_instance%
 --   ⟨fun o => o.toEmbedding⟩
 
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
@@ -301,7 +301,7 @@ protected def trans (f : r ↪r s) (g : s ↪r t) : r ↪r t :=
   ⟨f.1.trans g.1, by simp [f.map_rel_iff, g.map_rel_iff]⟩
 #align rel_embedding.trans RelEmbedding.trans
 
-instance (r : α → α → Prop) : Inhabited (r ↪r r) :=
+instance (r : α → α → Prop) : Inhabited (r ↪r r) := fast_instance%
   ⟨RelEmbedding.refl _⟩
 
 theorem trans_apply (f : r ↪r s) (g : s ↪r t) (a : α) : (f.trans g) a = g (f a) :=
@@ -633,11 +633,11 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
   | ⟨e₁, o₁⟩, ⟨e₂, _⟩, h => by congr
 #align rel_iso.to_equiv_injective RelIso.toEquiv_injective
 
-instance : CoeOut (r ≃r s) (r ↪r s) :=
+instance : CoeOut (r ≃r s) (r ↪r s) := fast_instance%
   ⟨toRelEmbedding⟩
 
 -- Porting note: moved to after `RelHomClass` instance and redefined as `DFunLike.coe`
--- instance : CoeFun (r ≃r s) fun _ => α → β :=
+-- instance : CoeFun (r ≃r s) fun _ => α → β := fast_instance%
 --   ⟨fun f => f⟩
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
@@ -658,7 +658,7 @@ instance : EquivLike (r ≃r s) α β where
 
 -- Porting note: helper instance
 -- see Note [function coercion]
-instance : CoeFun (r ≃r s) fun _ => α → β :=
+instance : CoeFun (r ≃r s) fun _ => α → β := fast_instance%
   ⟨DFunLike.coe⟩
 
 @[simp]
@@ -731,7 +731,7 @@ protected def trans (f₁ : r ≃r s) (f₂ : s ≃r t) : r ≃r t :=
 #align rel_iso.trans RelIso.trans
 #align rel_iso.trans_apply RelIso.trans_apply
 
-instance (r : α → α → Prop) : Inhabited (r ≃r r) :=
+instance (r : α → α → Prop) : Inhabited (r ≃r r) := fast_instance%
   ⟨RelIso.refl _⟩
 
 @[simp]

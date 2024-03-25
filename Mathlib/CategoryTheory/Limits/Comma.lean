@@ -182,7 +182,7 @@ instance hasLimit (F : J ⥤ Arrow T) [i₁ : HasLimit (F ⋙ leftFunc)] [i₂ :
 instance hasLimitsOfShape [HasLimitsOfShape J T] : HasLimitsOfShape J (Arrow T) where
 #align category_theory.arrow.has_limits_of_shape CategoryTheory.Arrow.hasLimitsOfShape
 
-instance hasLimits [HasLimits T] : HasLimits (Arrow T) :=
+instance hasLimits [HasLimits T] : HasLimits (Arrow T) := fast_instance%
   ⟨fun _ _ => inferInstance⟩
 #align category_theory.arrow.has_limits CategoryTheory.Arrow.hasLimits
 
@@ -196,7 +196,7 @@ instance hasColimit (F : J ⥤ Arrow T) [i₁ : HasColimit (F ⋙ leftFunc)]
 instance hasColimitsOfShape [HasColimitsOfShape J T] : HasColimitsOfShape J (Arrow T) where
 #align category_theory.arrow.has_colimits_of_shape CategoryTheory.Arrow.hasColimitsOfShape
 
-instance hasColimits [HasColimits T] : HasColimits (Arrow T) :=
+instance hasColimits [HasColimits T] : HasColimits (Arrow T) := fast_instance%
   ⟨fun _ _ => inferInstance⟩
 #align category_theory.arrow.has_colimits CategoryTheory.Arrow.hasColimits
 

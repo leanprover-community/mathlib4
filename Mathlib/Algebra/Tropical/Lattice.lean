@@ -37,26 +37,26 @@ instance instSupTropical [Sup R] : Sup (Tropical R) where
 instance instInfTropical [Inf R] : Inf (Tropical R) where
   inf x y := trop (untrop x ⊓ untrop y)
 
-instance instSemilatticeInfTropical [SemilatticeInf R] : SemilatticeInf (Tropical R) :=
+instance instSemilatticeInfTropical [SemilatticeInf R] : SemilatticeInf (Tropical R) := fast_instance%
   { instInfTropical,
     Tropical.instPartialOrderTropical with
     le_inf := fun _ _ _ ↦ @SemilatticeInf.le_inf R _ _ _ _
     inf_le_left := fun _ _ ↦ inf_le_left
     inf_le_right := fun _ _ ↦ inf_le_right }
 
-instance instSemilatticeSupTropical [SemilatticeSup R] : SemilatticeSup (Tropical R) :=
+instance instSemilatticeSupTropical [SemilatticeSup R] : SemilatticeSup (Tropical R) := fast_instance%
   { instSupTropical,
     Tropical.instPartialOrderTropical with
     sup_le := fun _ _ _ ↦ @SemilatticeSup.sup_le R _ _ _ _
     le_sup_left := fun _ _ ↦ le_sup_left
     le_sup_right := fun _ _ ↦ le_sup_right }
 
-instance instLatticeTropical [Lattice R] : Lattice (Tropical R) :=
+instance instLatticeTropical [Lattice R] : Lattice (Tropical R) := fast_instance%
   { instSemilatticeInfTropical, instSemilatticeSupTropical with }
 
-instance [SupSet R] : SupSet (Tropical R) where sSup s := trop (sSup (untrop '' s))
+instance [SupSet R] : SupSet (Tropical R) where sSup s := fast_instance% trop (sSup (untrop '' s))
 
-instance [InfSet R] : InfSet (Tropical R) where sInf s := trop (sInf (untrop '' s))
+instance [InfSet R] : InfSet (Tropical R) where sInf s := fast_instance% trop (sInf (untrop '' s))
 
 instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice R] :
     ConditionallyCompleteLattice (Tropical R) :=
@@ -71,7 +71,7 @@ instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice 
     csInf_le := fun _s _x hs hx ↦
       csInf_le (untrop_monotone.map_bddBelow hs) (Set.mem_image_of_mem untrop hx) }
 
-instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (Tropical R) :=
+instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (Tropical R) := fast_instance%
   { instConditionallyCompleteLatticeTropical, Tropical.instLinearOrderTropical with
     csSup_of_not_bddAbove := by
       intro s hs

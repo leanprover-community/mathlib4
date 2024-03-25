@@ -233,7 +233,7 @@ theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, Is
   ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| LinearMap.ext_iff.1 hf⟩
 #align submodule.exists_is_compl Submodule.exists_isCompl
 
-instance Module.Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
+instance Module.Submodule.complementedLattice : ComplementedLattice (Submodule K V) := fast_instance%
   ⟨Submodule.exists_isCompl⟩
 #align module.submodule.complemented_lattice Module.Submodule.complementedLattice
 

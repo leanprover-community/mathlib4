@@ -69,10 +69,10 @@ theorem binaryCofan_inr {A B : C} [MonoCoprod C] (c : BinaryCofan A B) (hc : IsC
   exact binaryCofan_inl _ hc'
 #align category_theory.limits.mono_coprod.binary_cofan_inr CategoryTheory.Limits.MonoCoprod.binaryCofan_inr
 
-instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inl : A ⟶ A ⨿ B) :=
+instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inl : A ⟶ A ⨿ B) := fast_instance%
   binaryCofan_inl _ (colimit.isColimit _)
 
-instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inr : B ⟶ A ⨿ B) :=
+instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inr : B ⟶ A ⨿ B) := fast_instance%
   binaryCofan_inr _ (colimit.isColimit _)
 
 theorem mono_inl_iff {A B : C} {c₁ c₂ : BinaryCofan A B} (hc₁ : IsColimit c₁) (hc₂ : IsColimit c₂) :
@@ -93,7 +93,7 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
     simpa only [mono_inl_iff hc' hc₁] using hc₂⟩
 #align category_theory.limits.mono_coprod.mk' CategoryTheory.Limits.MonoCoprod.mk'
 
-instance monoCoprodType : MonoCoprod (Type u) :=
+instance monoCoprodType : MonoCoprod (Type u) := fast_instance%
   MonoCoprod.mk' fun A B => by
     refine' ⟨BinaryCofan.mk (Sum.inl : A ⟶ Sum A B) Sum.inr, _, _⟩
     · exact BinaryCofan.IsColimit.mk _

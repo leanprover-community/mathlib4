@@ -159,41 +159,41 @@ variable {T : Type*} {S : Type*} {R : Type*} {A : Type*}
 instance instCanLift [Zero R] : CanLift (Unitization R A) A inr (fun x ↦ x.fst = 0) where
   prf x hx := ⟨x.snd, ext (hx ▸ fst_inr R (snd x)) rfl⟩
 
-instance instInhabited [Inhabited R] [Inhabited A] : Inhabited (Unitization R A) :=
+instance instInhabited [Inhabited R] [Inhabited A] : Inhabited (Unitization R A) := fast_instance%
   instInhabitedProd
 
-instance instZero [Zero R] [Zero A] : Zero (Unitization R A) :=
+instance instZero [Zero R] [Zero A] : Zero (Unitization R A) := fast_instance%
   Prod.instZero
 
-instance instAdd [Add R] [Add A] : Add (Unitization R A) :=
+instance instAdd [Add R] [Add A] : Add (Unitization R A) := fast_instance%
   Prod.instAdd
 
-instance instNeg [Neg R] [Neg A] : Neg (Unitization R A) :=
+instance instNeg [Neg R] [Neg A] : Neg (Unitization R A) := fast_instance%
   Prod.instNeg
 
-instance instAddSemigroup [AddSemigroup R] [AddSemigroup A] : AddSemigroup (Unitization R A) :=
+instance instAddSemigroup [AddSemigroup R] [AddSemigroup A] : AddSemigroup (Unitization R A) := fast_instance%
   Prod.instAddSemigroup
 
-instance instAddZeroClass [AddZeroClass R] [AddZeroClass A] : AddZeroClass (Unitization R A) :=
+instance instAddZeroClass [AddZeroClass R] [AddZeroClass A] : AddZeroClass (Unitization R A) := fast_instance%
   Prod.instAddZeroClass
 
-instance instAddMonoid [AddMonoid R] [AddMonoid A] : AddMonoid (Unitization R A) :=
+instance instAddMonoid [AddMonoid R] [AddMonoid A] : AddMonoid (Unitization R A) := fast_instance%
   Prod.instAddMonoid
 
-instance instAddGroup [AddGroup R] [AddGroup A] : AddGroup (Unitization R A) :=
+instance instAddGroup [AddGroup R] [AddGroup A] : AddGroup (Unitization R A) := fast_instance%
   Prod.instAddGroup
 
 instance instAddCommSemigroup [AddCommSemigroup R] [AddCommSemigroup A] :
     AddCommSemigroup (Unitization R A) :=
   Prod.instAddCommSemigroup
 
-instance instAddCommMonoid [AddCommMonoid R] [AddCommMonoid A] : AddCommMonoid (Unitization R A) :=
+instance instAddCommMonoid [AddCommMonoid R] [AddCommMonoid A] : AddCommMonoid (Unitization R A) := fast_instance%
   Prod.instAddCommMonoid
 
-instance instAddCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unitization R A) :=
+instance instAddCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unitization R A) := fast_instance%
   Prod.instAddCommGroup
 
-instance instSMul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
+instance instSMul [SMul S R] [SMul S A] : SMul S (Unitization R A) := fast_instance%
   Prod.smul
 
 instance instIsScalarTower [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMul T S]
@@ -208,7 +208,7 @@ instance instIsCentralScalar [SMul S R] [SMul S A] [SMul Sᵐᵒᵖ R] [SMul S�
     [IsCentralScalar S A] : IsCentralScalar S (Unitization R A) :=
   Prod.isCentralScalar
 
-instance instMulAction [Monoid S] [MulAction S R] [MulAction S A] : MulAction S (Unitization R A) :=
+instance instMulAction [Monoid S] [MulAction S R] [MulAction S A] : MulAction S (Unitization R A) := fast_instance%
   Prod.mulAction
 
 instance instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMulAction S R]
@@ -364,10 +364,10 @@ section Mul
 
 variable {R A : Type*}
 
-instance instOne [One R] [Zero A] : One (Unitization R A) :=
+instance instOne [One R] [Zero A] : One (Unitization R A) := fast_instance%
   ⟨(1, 0)⟩
 
-instance instMul [Mul R] [Add A] [Mul A] [SMul R A] : Mul (Unitization R A) :=
+instance instMul [Mul R] [Add A] [Mul A] [SMul R A] : Mul (Unitization R A) := fast_instance%
   ⟨fun x y => (x.1 * y.1, x.1 • y.2 + y.1 • x.2 + x.2 * y.2)⟩
 
 @[simp]
@@ -546,7 +546,7 @@ section Star
 
 variable {R A : Type*}
 
-instance instStar [Star R] [Star A] : Star (Unitization R A) :=
+instance instStar [Star R] [Star A] : Star (Unitization R A) := fast_instance%
   ⟨fun ra => (star ra.fst, star ra.snd)⟩
 
 @[simp]
@@ -599,7 +599,7 @@ variable (S R A : Type*) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
   [IsScalarTower R A A] [SMulCommClass R A A] [Algebra S R] [DistribMulAction S A]
   [IsScalarTower S R A]
 
-instance instAlgebra : Algebra S (Unitization R A) :=
+instance instAlgebra : Algebra S (Unitization R A) := fast_instance%
   { (Unitization.inlRingHom R A).comp (algebraMap S R) with
     commutes' := fun s x => by
       induction' x using Unitization.ind with r a

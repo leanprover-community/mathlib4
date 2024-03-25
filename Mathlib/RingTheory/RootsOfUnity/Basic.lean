@@ -230,11 +230,11 @@ theorem rootsOfUnityEquivNthRoots_symm_apply (x : { x // x ∈ nthRoots k (1 : R
 
 variable (k R)
 
-instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) :=
+instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) := fast_instance%
   Fintype.ofEquiv { x // x ∈ nthRoots k (1 : R) } <| (rootsOfUnityEquivNthRoots R k).symm
 #align roots_of_unity.fintype rootsOfUnity.fintype
 
-instance rootsOfUnity.isCyclic : IsCyclic (rootsOfUnity k R) :=
+instance rootsOfUnity.isCyclic : IsCyclic (rootsOfUnity k R) := fast_instance%
   isCyclic_of_subgroup_isDomain ((Units.coeHom R).comp (rootsOfUnity k R).subtype)
     (Units.ext.comp Subtype.val_injective)
 #align roots_of_unity.is_cyclic rootsOfUnity.isCyclic

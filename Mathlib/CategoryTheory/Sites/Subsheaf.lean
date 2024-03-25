@@ -56,13 +56,13 @@ structure Subpresheaf (F : Cᵒᵖ ⥤ Type w) where
 
 variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
 
-instance : PartialOrder (Subpresheaf F) :=
+instance : PartialOrder (Subpresheaf F) := fast_instance%
   PartialOrder.lift Subpresheaf.obj Subpresheaf.ext
 
-instance : Top (Subpresheaf F) :=
+instance : Top (Subpresheaf F) := fast_instance%
   ⟨⟨fun U => ⊤, @fun U V _ x _ => by aesop_cat⟩⟩
 
-instance : Nonempty (Subpresheaf F) :=
+instance : Nonempty (Subpresheaf F) := fast_instance%
   inferInstance
 
 /-- The subpresheaf as a presheaf. -/
@@ -88,7 +88,7 @@ instance {U} : CoeHead (G.toPresheaf.obj U) (F.obj U) where
 def Subpresheaf.ι : G.toPresheaf ⟶ F where app U x := x
 #align category_theory.grothendieck_topology.subpresheaf.ι CategoryTheory.GrothendieckTopology.Subpresheaf.ι
 
-instance : Mono G.ι :=
+instance : Mono G.ι := fast_instance%
   ⟨@fun _ f₁ f₂ e =>
     NatTrans.ext f₁ f₂ <|
       funext fun U => funext fun x => Subtype.ext <| congr_fun (congr_app e U) x⟩
@@ -99,7 +99,7 @@ def Subpresheaf.homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶
   app U x := ⟨x, h U x.prop⟩
 #align category_theory.grothendieck_topology.subpresheaf.hom_of_le CategoryTheory.GrothendieckTopology.Subpresheaf.homOfLe
 
-instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=
+instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) := fast_instance%
   ⟨fun f₁ f₂ e =>
     NatTrans.ext f₁ f₂ <|
       funext fun U =>
@@ -113,7 +113,7 @@ theorem Subpresheaf.homOfLe_ι {G G' : Subpresheaf F} (h : G ≤ G') :
   rfl
 #align category_theory.grothendieck_topology.subpresheaf.hom_of_le_ι CategoryTheory.GrothendieckTopology.Subpresheaf.homOfLe_ι
 
-instance : IsIso (Subpresheaf.ι (⊤ : Subpresheaf F)) := by
+instance : IsIso (Subpresheaf.ι (⊤ : Subpresheaf F)) := fast_instance% by
   refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ ?_
   · intro X
     rw [isIso_iff_bijective]
@@ -427,13 +427,13 @@ theorem toImageSheaf_ι {F F' : Sheaf J (Type w)} (f : F ⟶ F') :
   simp [toImagePresheafSheafify]
 #align category_theory.grothendieck_topology.to_image_sheaf_ι CategoryTheory.GrothendieckTopology.toImageSheaf_ι
 
-instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Mono (imageSheafι f) :=
+instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Mono (imageSheafι f) := fast_instance%
   (sheafToPresheaf J _).mono_of_mono_map
     (by
       dsimp
       infer_instance)
 
-instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (toImageSheaf f) := by
+instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (toImageSheaf f) := fast_instance% by
   refine' ⟨@fun G' g₁ g₂ e => _⟩
   ext U ⟨s, hx⟩
   apply ((isSheaf_iff_isSheaf_of_type J _).mp G'.2 _ hx).isSeparatedFor.ext
@@ -480,7 +480,7 @@ noncomputable def imageFactorization {F F' : Sheaf J TypeMax.{v, u}} (f : F ⟶ 
         rw [IsIso.inv_comp_eq, toImagePresheaf_ι] }
 #align category_theory.grothendieck_topology.image_factorization CategoryTheory.GrothendieckTopology.imageFactorization
 
-instance : Limits.HasImages (Sheaf J (Type max v u)) :=
+instance : Limits.HasImages (Sheaf J (Type max v u)) := fast_instance%
   ⟨@fun _ _ f => ⟨⟨imageFactorization f⟩⟩⟩
 
 end Image

@@ -97,7 +97,7 @@ def id : OplaxNatTrans F F where
   naturality {a b} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
 #align category_theory.oplax_nat_trans.id CategoryTheory.OplaxNatTrans.id
 
-instance : Inhabited (OplaxNatTrans F F) :=
+instance : Inhabited (OplaxNatTrans F F) := fast_instance%
   ⟨id F⟩
 
 variable {F} {G H : OplaxFunctor B C} (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H)
@@ -241,7 +241,7 @@ variable (η)
 def id : Modification η η where app a := 𝟙 (η.app a)
 #align category_theory.oplax_nat_trans.modification.id CategoryTheory.OplaxNatTrans.Modification.id
 
-instance : Inhabited (Modification η η) :=
+instance : Inhabited (Modification η η) := fast_instance%
   ⟨Modification.id η⟩
 
 variable {η}

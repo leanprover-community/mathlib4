@@ -105,7 +105,7 @@ This coercion is typically called `coeToSubmodule` in lemma names
 not to be confused with `IsLocalization.coeSubmodule : Ideal R → Submodule R P`
 (which we use to define `coe : Ideal R → FractionalIdeal S P`).
 -/
-instance : CoeOut (FractionalIdeal S P) (Submodule R P) :=
+instance : CoeOut (FractionalIdeal S P) (Submodule R P) := fast_instance%
   ⟨coeToSubmodule⟩
 
 protected theorem isFractional (I : FractionalIdeal S P) : IsFractional S (I : Submodule R P) :=
@@ -212,7 +212,7 @@ theorem coeToSet_coeToSubmodule (I : FractionalIdeal S P) :
 
 /-! Transfer instances from `Submodule R P` to `FractionalIdeal S P`. -/
 
-instance (I : FractionalIdeal S P) : Module R I :=
+instance (I : FractionalIdeal S P) : Module R I := fast_instance%
   Submodule.module (I : Submodule R P)
 
 theorem coeToSubmodule_injective :
@@ -257,7 +257,7 @@ also called `coeToSubmodule` in theorem names.
 
 This map is available as a ring hom, called `FractionalIdeal.coeIdealHom`.
 -/
-instance : CoeTC (Ideal R) (FractionalIdeal S P) :=
+instance : CoeTC (Ideal R) (FractionalIdeal S P) := fast_instance%
   ⟨fun I => coeIdeal I⟩
 
 @[simp, norm_cast]
@@ -290,7 +290,7 @@ theorem coeIdeal_le_coeIdeal (K : Type*) [CommRing K] [Algebra R K] [IsFractionR
   IsFractionRing.coeSubmodule_le_coeSubmodule
 #align fractional_ideal.coe_ideal_le_coe_ideal FractionalIdeal.coeIdeal_le_coeIdeal
 
-instance : Zero (FractionalIdeal S P) :=
+instance : Zero (FractionalIdeal S P) := fast_instance%
   ⟨(0 : Ideal R)⟩
 
 @[simp]
@@ -352,10 +352,10 @@ theorem coeToSubmodule_ne_bot {I : FractionalIdeal S P} : ↑I ≠ (⊥ : Submod
   not_iff_not.mpr coeToSubmodule_eq_bot
 #align fractional_ideal.coe_to_submodule_ne_bot FractionalIdeal.coeToSubmodule_ne_bot
 
-instance : Inhabited (FractionalIdeal S P) :=
+instance : Inhabited (FractionalIdeal S P) := fast_instance%
   ⟨0⟩
 
-instance : One (FractionalIdeal S P) :=
+instance : One (FractionalIdeal S P) := fast_instance%
   ⟨(⊤ : Ideal R)⟩
 
 theorem zero_of_num_eq_bot [NoZeroSMulDivisors R P] (hS : 0 ∉ S) {I : FractionalIdeal S P}
@@ -469,7 +469,7 @@ theorem _root_.IsFractional.inf_right {I : Submodule R P} :
       exact hI b hbI⟩
 #align is_fractional.inf_right IsFractional.inf_right
 
-instance : Inf (FractionalIdeal S P) :=
+instance : Inf (FractionalIdeal S P) := fast_instance%
   ⟨fun I J => ⟨I ⊓ J, I.isFractional.inf_right J⟩⟩
 
 @[simp, norm_cast]
@@ -477,7 +477,7 @@ theorem coe_inf (I J : FractionalIdeal S P) : ↑(I ⊓ J) = (I ⊓ J : Submodul
   rfl
 #align fractional_ideal.coe_inf FractionalIdeal.coe_inf
 
-instance : Sup (FractionalIdeal S P) :=
+instance : Sup (FractionalIdeal S P) := fast_instance%
   ⟨fun I J => ⟨I ⊔ J, I.isFractional.sup J.isFractional⟩⟩
 
 @[norm_cast]
@@ -485,18 +485,18 @@ theorem coe_sup (I J : FractionalIdeal S P) : ↑(I ⊔ J) = (I ⊔ J : Submodul
   rfl
 #align fractional_ideal.coe_sup FractionalIdeal.coe_sup
 
-instance lattice : Lattice (FractionalIdeal S P) :=
+instance lattice : Lattice (FractionalIdeal S P) := fast_instance%
   Function.Injective.lattice _ Subtype.coe_injective coe_sup coe_inf
 #align fractional_ideal.lattice FractionalIdeal.lattice
 
-instance : SemilatticeSup (FractionalIdeal S P) :=
+instance : SemilatticeSup (FractionalIdeal S P) := fast_instance%
   { FractionalIdeal.lattice with }
 
 end Lattice
 
 section Semiring
 
-instance : Add (FractionalIdeal S P) :=
+instance : Add (FractionalIdeal S P) := fast_instance%
   ⟨(· ⊔ ·)⟩
 
 @[simp]
@@ -525,7 +525,7 @@ theorem _root_.IsFractional.nsmul {I : Submodule R P} :
     exact h.sup (IsFractional.nsmul n h)
 #align is_fractional.nsmul IsFractional.nsmul
 
-instance : SMul ℕ (FractionalIdeal S P) where smul n I := ⟨n • ↑I, I.isFractional.nsmul n⟩
+instance : SMul ℕ (FractionalIdeal S P) where smul n I := fast_instance% ⟨n • ↑I, I.isFractional.nsmul n⟩
 
 @[norm_cast]
 theorem coe_nsmul (n : ℕ) (I : FractionalIdeal S P) :
@@ -567,7 +567,7 @@ irreducible_def mul (lemma := mul_def') (I J : FractionalIdeal S P) : Fractional
 #align fractional_ideal.mul FractionalIdeal.mul
 
 -- local attribute [semireducible] mul
-instance : Mul (FractionalIdeal S P) :=
+instance : Mul (FractionalIdeal S P) := fast_instance%
   ⟨fun I J => mul I J⟩
 
 @[simp]
@@ -613,7 +613,7 @@ theorem mul_le {I J K : FractionalIdeal S P} : I * J ≤ K ↔ ∀ i ∈ I, ∀ 
   exact Submodule.mul_le
 #align fractional_ideal.mul_le FractionalIdeal.mul_le
 
-instance : Pow (FractionalIdeal S P) ℕ :=
+instance : Pow (FractionalIdeal S P) ℕ := fast_instance%
   ⟨fun I n => ⟨(I : Submodule R P) ^ n, I.isFractional.pow n⟩⟩
 
 @[simp, norm_cast]
@@ -629,7 +629,7 @@ protected theorem mul_induction_on {I J : FractionalIdeal S P} {C : P → Prop} 
   exact Submodule.mul_induction_on hr hm ha
 #align fractional_ideal.mul_induction_on FractionalIdeal.mul_induction_on
 
-instance : NatCast (FractionalIdeal S P) :=
+instance : NatCast (FractionalIdeal S P) := fast_instance%
   ⟨Nat.unaryCast⟩
 
 theorem coe_nat_cast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n :=
@@ -637,7 +637,7 @@ theorem coe_nat_cast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n
   by induction n <;> simp [*, Nat.unaryCast]
 #align fractional_ideal.coe_nat_cast FractionalIdeal.coe_nat_cast
 
-instance commSemiring : CommSemiring (FractionalIdeal S P) :=
+instance commSemiring : CommSemiring (FractionalIdeal S P) := fast_instance%
   Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
     (fun _ _ => coe_nsmul _ _) coe_pow coe_nat_cast
 

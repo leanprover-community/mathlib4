@@ -36,7 +36,7 @@ structure Bipointed : Type (u + 1) where
 
 namespace Bipointed
 
-instance : CoeSort Bipointed Type* := ⟨Bipointed.X⟩
+instance : CoeSort Bipointed Type* := fast_instance% ⟨Bipointed.X⟩
 
 /-- Turns a bipointing into a bipointed type. -/
 def of {X : Type*} (to_prod : X × X) : Bipointed :=
@@ -51,7 +51,7 @@ theorem coe_of {X : Type*} (to_prod : X × X) : ↥(of to_prod) = X :=
 alias _root_.Prod.Bipointed := of
 #align prod.Bipointed Prod.Bipointed
 
-instance : Inhabited Bipointed :=
+instance : Inhabited Bipointed := fast_instance%
   ⟨of ((), ())⟩
 
 /-- Morphisms in `Bipointed`. -/
@@ -71,7 +71,7 @@ nonrec def id (X : Bipointed) : Bipointed.Hom X X :=
   ⟨id, rfl, rfl⟩
 #align Bipointed.hom.id Bipointed.Hom.id
 
-instance (X : Bipointed) : Inhabited (Bipointed.Hom X X) :=
+instance (X : Bipointed) : Inhabited (Bipointed.Hom X X) := fast_instance%
   ⟨id X⟩
 
 /-- Composition of morphisms of `Bipointed`. -/

@@ -34,11 +34,11 @@ def Pi (v : TypeVec.{u} n) : Type u :=
   ∀ α : A, F α v
 #align mvqpf.pi MvQPF.Pi
 
-instance Sigma.inhabited {α} [Inhabited A] [Inhabited (F default α)] : Inhabited (Sigma F α) :=
+instance Sigma.inhabited {α} [Inhabited A] [Inhabited (F default α)] : Inhabited (Sigma F α) := fast_instance%
   ⟨⟨default, default⟩⟩
 #align mvqpf.sigma.inhabited MvQPF.Sigma.inhabited
 
-instance Pi.inhabited {α} [∀ a, Inhabited (F a α)] : Inhabited (Pi F α) :=
+instance Pi.inhabited {α} [∀ a, Inhabited (F a α)] : Inhabited (Pi F α) := fast_instance%
   ⟨fun _a => default⟩
 #align mvqpf.pi.inhabited MvQPF.Pi.inhabited
 
@@ -46,7 +46,7 @@ variable [∀ α, MvFunctor <| F α]
 
 namespace Sigma
 
-instance : MvFunctor (Sigma F) where map := fun f ⟨a, x⟩ => ⟨a, f <$$> x⟩
+instance : MvFunctor (Sigma F) where map := fast_instance% fun f ⟨a, x⟩ => ⟨a, f <$$> x⟩
 
 variable [∀ α, MvQPF <| F α]
 
@@ -80,7 +80,7 @@ end Sigma
 
 namespace Pi
 
-instance : MvFunctor (Pi F) where map f x a := f <$$> x a
+instance : MvFunctor (Pi F) where map f x a := fast_instance% f <$$> x a
 
 variable [∀ α, MvQPF <| F α]
 

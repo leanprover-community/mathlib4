@@ -20,7 +20,7 @@ open Metric Set Filter
 
 namespace Rat
 
-instance : MetricSpace ℚ :=
+instance : MetricSpace ℚ := fast_instance%
   MetricSpace.induced (↑) Rat.cast_injective Real.metricSpace
 
 theorem dist_eq (x y : ℚ) : dist x y = |(x : ℝ) - y| := rfl
@@ -81,7 +81,7 @@ theorem Int.closedEmbedding_coe_rat : ClosedEmbedding ((↑) : ℤ → ℚ) :=
 
 namespace Rat
 
-instance : NoncompactSpace ℚ := Int.closedEmbedding_coe_rat.noncompactSpace
+instance : NoncompactSpace ℚ := fast_instance% Int.closedEmbedding_coe_rat.noncompactSpace
 
 theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ => p.1 + p.2 :=
   Rat.uniformEmbedding_coe_real.toUniformInducing.uniformContinuous_iff.2 <| by
@@ -95,12 +95,12 @@ theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
     ⟨_, ε0, fun h => by rw [dist_comm] at h; simpa only [dist_eq, cast_neg, neg_sub_neg] using h⟩
 #align rat.uniform_continuous_neg Rat.uniformContinuous_neg
 
-instance : UniformAddGroup ℚ :=
+instance : UniformAddGroup ℚ := fast_instance%
   UniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
 
-instance : TopologicalAddGroup ℚ := inferInstance
+instance : TopologicalAddGroup ℚ := fast_instance% inferInstance
 
-instance : OrderTopology ℚ := induced_orderTopology _ Rat.cast_lt exists_rat_btwn
+instance : OrderTopology ℚ := fast_instance% induced_orderTopology _ Rat.cast_lt exists_rat_btwn
 
 theorem uniformContinuous_abs : UniformContinuous (abs : ℚ → ℚ) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
@@ -108,7 +108,7 @@ theorem uniformContinuous_abs : UniformContinuous (abs : ℚ → ℚ) :=
       lt_of_le_of_lt (by simpa [Rat.dist_eq] using abs_abs_sub_abs_le_abs_sub _ _) h⟩
 #align rat.uniform_continuous_abs Rat.uniformContinuous_abs
 
-instance : TopologicalRing ℚ := inferInstance
+instance : TopologicalRing ℚ := fast_instance% inferInstance
 
 @[deprecated continuous_mul]
 protected theorem continuous_mul : Continuous fun p : ℚ × ℚ => p.1 * p.2 := continuous_mul

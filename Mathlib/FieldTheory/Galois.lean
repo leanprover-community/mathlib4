@@ -65,7 +65,7 @@ variable (F E)
 
 namespace IsGalois
 
-instance self : IsGalois F F :=
+instance self : IsGalois F F := fast_instance%
   ⟨⟩
 #align is_galois.self IsGalois.self
 
@@ -167,7 +167,7 @@ theorem isGalois_iff_isGalois_top : IsGalois F (⊤ : IntermediateField F E) ↔
   (IntermediateField.topEquiv : (⊤ : IntermediateField F E) ≃ₐ[F] E).transfer_galois
 #align is_galois_iff_is_galois_top isGalois_iff_isGalois_top
 
-instance isGalois_bot : IsGalois F (⊥ : IntermediateField F E) :=
+instance isGalois_bot : IsGalois F (⊥ : IntermediateField F E) := fast_instance%
   (IntermediateField.botEquiv F E).transfer_galois.mpr (IsGalois.self F)
 #align is_galois_bot isGalois_bot
 
@@ -245,7 +245,7 @@ instance fixedField.algebra : Algebra K (fixedField (fixingSubgroup K)) where
   smul_def' _ _ := rfl
 #align intermediate_field.fixed_field.algebra IntermediateField.fixedField.algebra
 
-instance fixedField.isScalarTower : IsScalarTower K (fixedField (fixingSubgroup K)) E :=
+instance fixedField.isScalarTower : IsScalarTower K (fixedField (fixingSubgroup K)) E := fast_instance%
   ⟨fun _ _ _ => mul_assoc _ _ _⟩
 #align intermediate_field.fixed_field.is_scalar_tower IntermediateField.fixedField.isScalarTower
 

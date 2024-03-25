@@ -71,12 +71,12 @@ variable [Preorder α]
 /-- A trivial estimator, containing the actual value. -/
 abbrev Estimator.trivial (a : α) : Type* := { b : α // b = a }
 
-instance : Bot (Estimator.trivial a) := ⟨⟨a, rfl⟩⟩
+instance : Bot (Estimator.trivial a) := fast_instance% ⟨⟨a, rfl⟩⟩
 
 instance : WellFoundedGT Unit where
   wf := ⟨fun .unit => ⟨.unit, nofun⟩⟩
 
-instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
+instance (a : α) : WellFoundedGT (Estimator.trivial a) := fast_instance%
   let f : Estimator.trivial a ≃o Unit := RelIso.relIsoOfUniqueOfRefl _ _
   let f' : Estimator.trivial a ↪o Unit := f.toOrderEmbedding
   f'.wellFoundedGT
@@ -203,7 +203,7 @@ structure Estimator.fst
 
 variable [∀ a : α, WellFoundedGT { x // x ≤ a }]
 
-instance [Estimator a ε] : WellFoundedGT (range (bound a : ε → α)) :=
+instance [Estimator a ε] : WellFoundedGT (range (bound a : ε → α)) := fast_instance%
   let f : range (bound a : ε → α) ↪o { x // x ≤ a.get } :=
     Subtype.orderEmbedding (by rintro _ ⟨e, rfl⟩; exact Estimator.bound_le e)
   f.wellFoundedGT

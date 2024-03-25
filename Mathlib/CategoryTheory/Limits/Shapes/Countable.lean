@@ -48,7 +48,7 @@ instance (priority := 100) hasCountableLimits_of_hasLimits [HasLimits C] :
   out := inferInstance
 
 universe v in
-instance [Category.{v} J] [CountableCategory J] [HasCountableLimits C] : HasLimitsOfShape J C :=
+instance [Category.{v} J] [CountableCategory J] [HasCountableLimits C] : HasLimitsOfShape J C := fast_instance%
   have : HasLimitsOfShape (HomAsType J) C := HasCountableLimits.out (HomAsType J)
   hasLimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
@@ -70,7 +70,7 @@ instance (priority := 100) hasCountableColimits_of_hasColimits [HasColimits C] :
   out := inferInstance
 
 universe v in
-instance [Category.{v} J] [CountableCategory J] [HasCountableColimits C] : HasColimitsOfShape J C :=
+instance [Category.{v} J] [CountableCategory J] [HasCountableColimits C] : HasColimitsOfShape J C := fast_instance%
   have : HasColimitsOfShape (HomAsType J) C := HasCountableColimits.out (HomAsType J)
   hasColimitsOfShape_of_equivalence (homAsTypeEquiv J)
 

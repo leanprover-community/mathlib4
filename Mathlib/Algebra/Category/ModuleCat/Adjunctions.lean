@@ -57,7 +57,7 @@ def adj : free R ⊣ forget (ModuleCat.{u} R) :=
             (Finsupp.sum_mapDomain_index_addMonoidHom fun y => (smulAddHom R M).flip (g y)).symm }
 #align Module.adj ModuleCat.adj
 
-instance : IsRightAdjoint (forget (ModuleCat.{u} R)) :=
+instance : IsRightAdjoint (forget (ModuleCat.{u} R)) := fast_instance%
   ⟨_, adj R⟩
 
 end
@@ -182,7 +182,7 @@ theorem associativity (X Y Z : Type u) :
 -- In fact, it's strong monoidal, but we don't yet have a typeclass for that.
 /-- The free R-module functor is lax monoidal. -/
 @[simps]
-instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
+instance : LaxMonoidal.{u} (free R).obj := fast_instance% .ofTensorHom
   -- Send `R` to `PUnit →₀ R`
   (ε := ε R)
   -- Send `(α →₀ R) ⊗ (β →₀ R)` to `α × β →₀ R`
@@ -192,7 +192,7 @@ instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
   (right_unitality := right_unitality R)
   (associativity := associativity R)
 
-instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
+instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := fast_instance% by
   refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩
   · -- Porting note (#11041): broken ext
     apply LinearMap.ext_ring

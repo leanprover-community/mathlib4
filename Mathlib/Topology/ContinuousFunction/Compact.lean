@@ -95,7 +95,7 @@ theorem addEquivBoundedOfCompact_apply [AddMonoid β] [LipschitzAdd β] :
     ⇑(addEquivBoundedOfCompact α β) = mkOfCompact :=
   rfl
 
-instance metricSpace : MetricSpace C(α, β) :=
+instance metricSpace : MetricSpace C(α, β) := fast_instance%
   (uniformEmbedding_equivBoundedOfCompact α β).comapMetricSpace _
 #align continuous_map.metric_space ContinuousMap.metricSpace
 
@@ -158,12 +158,12 @@ theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f 
 
 end
 
-instance [CompleteSpace β] : CompleteSpace C(α, β) :=
+instance [CompleteSpace β] : CompleteSpace C(α, β) := fast_instance%
   (isometryEquivBoundedOfCompact α β).completeSpace
 
 -- TODO at some point we will need lemmas characterising this norm!
 -- At the moment the only way to reason about it is to transfer `f : C(α,E)` back to `α →ᵇ E`.
-instance : Norm C(α, E) where norm x := dist x 0
+instance : Norm C(α, E) where norm x := fast_instance% dist x 0
 
 @[simp]
 theorem _root_.BoundedContinuousFunction.norm_mkOfCompact (f : C(α, E)) : ‖mkOfCompact f‖ = ‖f‖ :=
@@ -178,7 +178,7 @@ theorem _root_.BoundedContinuousFunction.norm_toContinuousMap_eq (f : α →ᵇ 
 
 open BoundedContinuousFunction
 
-instance : NormedAddCommGroup C(α, E) :=
+instance : NormedAddCommGroup C(α, E) := fast_instance%
   { ContinuousMap.metricSpace _ _,
     ContinuousMap.instAddCommGroupContinuousMap with
     dist_eq := fun x y => by
@@ -252,7 +252,7 @@ section
 
 variable {R : Type*} [NormedRing R]
 
-instance : NormedRing C(α, R) :=
+instance : NormedRing C(α, R) := fast_instance%
   { (inferInstance : NormedAddCommGroup C(α, R)), ContinuousMap.instRingContinuousMap with
     norm_mul := fun f g => norm_mul_le (mkOfCompact f) (mkOfCompact g) }
 
@@ -332,7 +332,7 @@ section
 
 variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [NormedRing γ] [NormedAlgebra 𝕜 γ]
 
-instance : NormedAlgebra 𝕜 C(α, γ) :=
+instance : NormedAlgebra 𝕜 C(α, γ) := fast_instance%
   { ContinuousMap.normedSpace, ContinuousMap.algebra with }
 
 end

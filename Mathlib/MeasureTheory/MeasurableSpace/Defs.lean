@@ -57,7 +57,7 @@ variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
   measurableSet_iUnion : ∀ f : ℕ → Set α, (∀ i, MeasurableSet' (f i)) → MeasurableSet' (⋃ i, f i)
 #align measurable_space MeasurableSpace
 
-instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
+instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := fast_instance% h
 
 /-- `MeasurableSet s` means that `s` is measurable (in the ambient measure space on `α`) -/
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
@@ -348,13 +348,13 @@ lemma copy_eq {m : MeasurableSpace α} {p : Set α → Prop} (h : ∀ s, p s ↔
 
 section CompleteLattice
 
-instance : LE (MeasurableSpace α) where le m₁ m₂ := ∀ s, MeasurableSet[m₁] s → MeasurableSet[m₂] s
+instance : LE (MeasurableSpace α) where le m₁ m₂ := fast_instance% ∀ s, MeasurableSet[m₁] s → MeasurableSet[m₂] s
 
 theorem le_def {α} {a b : MeasurableSpace α} : a ≤ b ↔ a.MeasurableSet' ≤ b.MeasurableSet' :=
   Iff.rfl
 #align measurable_space.le_def MeasurableSpace.le_def
 
-instance : PartialOrder (MeasurableSpace α) :=
+instance : PartialOrder (MeasurableSpace α) := fast_instance%
   { PartialOrder.lift (@MeasurableSet α) measurableSet_injective with
     le := LE.le
     lt := fun m₁ m₂ => m₁ ≤ m₂ ∧ ¬m₂ ≤ m₁ }
@@ -438,10 +438,10 @@ def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m => { t | Measurabl
   choice_eq _ _ := mkOfClosure_sets
 #align measurable_space.gi_generate_from MeasurableSpace.giGenerateFrom
 
-instance : CompleteLattice (MeasurableSpace α) :=
+instance : CompleteLattice (MeasurableSpace α) := fast_instance%
   giGenerateFrom.liftCompleteLattice
 
-instance : Inhabited (MeasurableSpace α) := ⟨⊤⟩
+instance : Inhabited (MeasurableSpace α) := fast_instance% ⟨⊤⟩
 
 @[mono]
 theorem generateFrom_mono {s t : Set (Set α)} (h : s ⊆ t) : generateFrom s ≤ generateFrom t :=
@@ -600,7 +600,7 @@ class DiscreteMeasurableSpace (α : Type*) [MeasurableSpace α] : Prop where
   /-- Do not use this. Use `measurableSet_discrete` instead. -/
   forall_measurableSet : ∀ s : Set α, MeasurableSet s
 
-instance : @DiscreteMeasurableSpace α ⊤ :=
+instance : @DiscreteMeasurableSpace α ⊤ := fast_instance%
   @DiscreteMeasurableSpace.mk _ (_) fun _ ↦ MeasurableSpace.measurableSet_top
 
 -- See note [lower instance priority]

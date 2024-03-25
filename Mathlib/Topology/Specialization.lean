@@ -44,8 +44,8 @@ h (ofEquiv a)
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
-instance instPreorder : Preorder (Specialization α) := specializationPreorder α
-instance instPartialOrder [T0Space α] : PartialOrder (Specialization α) := specializationOrder α
+instance instPreorder : Preorder (Specialization α) := fast_instance% specializationPreorder α
+instance instPartialOrder [T0Space α] : PartialOrder (Specialization α) := fast_instance% specializationOrder α
 
 @[simp] lemma toEquiv_le_toEquiv {a b : α} : toEquiv a ≤ toEquiv b ↔ b ⤳ a := Iff.rfl
 @[simp] lemma ofEquiv_specializes_ofEquiv {a b : Specialization α} :

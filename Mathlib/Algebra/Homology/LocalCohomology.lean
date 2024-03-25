@@ -75,7 +75,7 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
 #align local_cohomology.ring_mod_ideals localCohomology.ringModIdeals
 
 -- Porting note (#11215): TODO:  Once this file is ported, move this instance to the right location.
-instance moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) :=
+instance moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) := fast_instance%
   ModuleCat.moduleCat_enoughProjectives.{u}
 set_option linter.uppercaseLean3 false in
 #align local_cohomology.Module_enough_projectives' localCohomology.moduleCat_enoughProjectives'
@@ -154,7 +154,7 @@ def SelfLERadical (J : Ideal R) : Type u :=
 
 -- Porting note: `deriving Category` is not able to derive this instance
 -- https://github.com/leanprover-community/mathlib4/issues/5020
-instance (J : Ideal R) : Category (SelfLERadical J) :=
+instance (J : Ideal R) : Category (SelfLERadical J) := fast_instance%
   (FullSubcategory.category _)
 
 instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J) where

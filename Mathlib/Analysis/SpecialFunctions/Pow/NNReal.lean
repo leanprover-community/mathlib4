@@ -35,7 +35,7 @@ noncomputable def rpow (x : ℝ≥0) (y : ℝ) : ℝ≥0 :=
   ⟨(x : ℝ) ^ y, Real.rpow_nonneg x.2 y⟩
 #align nnreal.rpow NNReal.rpow
 
-noncomputable instance : Pow ℝ≥0 ℝ :=
+noncomputable instance : Pow ℝ≥0 ℝ := fast_instance%
   ⟨rpow⟩
 
 @[simp]
@@ -381,7 +381,7 @@ noncomputable def rpow : ℝ≥0∞ → ℝ → ℝ≥0∞
   | none, y => if 0 < y then ⊤ else if y = 0 then 1 else 0
 #align ennreal.rpow ENNReal.rpow
 
-noncomputable instance : Pow ℝ≥0∞ ℝ :=
+noncomputable instance : Pow ℝ≥0∞ ℝ := fast_instance%
   ⟨rpow⟩
 
 @[simp]

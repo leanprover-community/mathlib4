@@ -339,11 +339,11 @@ theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
       exact SublistForall₂.cons hr (ih hl)
 #align list.sublist_forall₂_iff List.sublistForall₂_iff
 
-instance SublistForall₂.is_refl [IsRefl α Rₐ] : IsRefl (List α) (SublistForall₂ Rₐ) :=
+instance SublistForall₂.is_refl [IsRefl α Rₐ] : IsRefl (List α) (SublistForall₂ Rₐ) := fast_instance%
   ⟨fun l => sublistForall₂_iff.2 ⟨l, forall₂_refl l, Sublist.refl l⟩⟩
 #align list.sublist_forall₂.is_refl List.SublistForall₂.is_refl
 
-instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (SublistForall₂ Rₐ) :=
+instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (SublistForall₂ Rₐ) := fast_instance%
   ⟨fun a b c => by
     revert a b
     induction' c with _ _ ih

@@ -113,7 +113,7 @@ theorem ext (I J : HasZeroMorphisms C) : I = J := by
   rw[← this, ← that]
 #align category_theory.limits.has_zero_morphisms.ext CategoryTheory.Limits.HasZeroMorphisms.ext
 
-instance : Subsingleton (HasZeroMorphisms C) :=
+instance : Subsingleton (HasZeroMorphisms C) := fast_instance%
   ⟨ext⟩
 
 end HasZeroMorphisms
@@ -336,7 +336,7 @@ end HasZeroMorphisms
 
 open ZeroObject
 
-instance {B : Type*} [Category B] : HasZeroObject (B ⥤ C) :=
+instance {B : Type*} [Category B] : HasZeroObject (B ⥤ C) := fast_instance%
   (((CategoryTheory.Functor.const B).obj (0 : C)).isZero fun _ => isZero_zero _).hasZeroObject
 
 end HasZeroObject
@@ -596,7 +596,7 @@ def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y) where
   isImage := { lift := fun F' => 0 }
 #align category_theory.limits.image_factorisation_zero CategoryTheory.Limits.imageFactorisationZero
 
-instance hasImage_zero {X Y : C} : HasImage (0 : X ⟶ Y) :=
+instance hasImage_zero {X Y : C} : HasImage (0 : X ⟶ Y) := fast_instance%
   HasImage.mk <| imageFactorisationZero _ _
 #align category_theory.limits.has_image_zero CategoryTheory.Limits.hasImage_zero
 

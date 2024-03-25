@@ -133,7 +133,7 @@ theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
 #align submodule.is_closed_orthogonal Submodule.isClosed_orthogonal
 
 /-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
-instance instOrthogonalCompleteSpace [CompleteSpace E] : CompleteSpace Kᗮ :=
+instance instOrthogonalCompleteSpace [CompleteSpace E] : CompleteSpace Kᗮ := fast_instance%
   K.isClosed_orthogonal.completeSpace_coe
 
 variable (𝕜 E)

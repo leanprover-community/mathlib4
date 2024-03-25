@@ -333,7 +333,7 @@ lemma ofCocomplex_exactAt_succ (n : ℕ) :
   | n+1 => apply exact_f_d ((CochainComplex.mkAux _ _ _
       (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ (n+1)).f)
 
-instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := by
+instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := fast_instance% by
   obtain (_ | _ | _ | n) := n <;> apply Injective.injective_under
 
 /-- In any abelian category with enough injectives,

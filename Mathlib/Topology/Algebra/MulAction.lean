@@ -125,7 +125,7 @@ theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun
 /-- If a scalar action is central, then its right action is continuous when its left action is. -/
 @[to_additive "If an additive action is central, then its right action is continuous when its left
 action is."]
-instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : ContinuousSMul Mᵐᵒᵖ X :=
+instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : ContinuousSMul Mᵐᵒᵖ X := fast_instance%
   ⟨by
     suffices Continuous fun p : M × X => MulOpposite.op p.fst • p.snd from
       this.comp (MulOpposite.continuous_unop.prod_map continuous_id)
@@ -134,7 +134,7 @@ instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : Continuou
 #align has_continuous_vadd.op ContinuousVAdd.op
 
 @[to_additive]
-instance MulOpposite.continuousSMul : ContinuousSMul M Xᵐᵒᵖ :=
+instance MulOpposite.continuousSMul : ContinuousSMul M Xᵐᵒᵖ := fast_instance%
   ⟨MulOpposite.continuous_op.comp <|
       continuous_smul.comp <| continuous_id.prod_map MulOpposite.continuous_unop⟩
 #align mul_opposite.has_continuous_smul MulOpposite.continuousSMul
@@ -186,7 +186,7 @@ section Monoid
 variable [Monoid M] [MulAction M X] [ContinuousSMul M X]
 
 @[to_additive]
-instance Units.continuousSMul : ContinuousSMul Mˣ X :=
+instance Units.continuousSMul : ContinuousSMul Mˣ X := fast_instance%
   inducing_id.continuousSMul Units.continuous_val rfl
 #align units.has_continuous_smul Units.continuousSMul
 #align add_units.has_continuous_vadd AddUnits.continuousVAdd
@@ -202,7 +202,7 @@ theorem MulAction.continuousSMul_compHom
   exact ⟨(hf.comp continuous_fst).smul continuous_snd⟩
 
 @[to_additive]
-instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X :=
+instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X := fast_instance%
   inducing_id.continuousSMul continuous_subtype_val rfl
 
 end Monoid
@@ -212,7 +212,7 @@ section Group
 variable [Group M] [MulAction M X] [ContinuousSMul M X]
 
 @[to_additive]
-instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
+instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X := fast_instance%
   S.toSubmonoid.continuousSMul
 
 end Group

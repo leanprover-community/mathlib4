@@ -59,11 +59,11 @@ section
 
 variable (tm : FinTM2)
 
-instance decidableEqK : DecidableEq tm.K :=
+instance decidableEqK : DecidableEq tm.K := fast_instance%
   tm.kDecidableEq
 #align turing.fin_tm2.K.decidable_eq Turing.FinTM2.decidableEqK
 
-instance inhabitedσ : Inhabited tm.σ :=
+instance inhabitedσ : Inhabited tm.σ := fast_instance%
   ⟨tm.initialState⟩
 #align turing.fin_tm2.σ.inhabited Turing.FinTM2.inhabitedσ
 
@@ -73,7 +73,7 @@ def Stmt : Type :=
 #align turing.fin_tm2.stmt Turing.FinTM2.Stmt
 
 -- Porting note: The `deriving Inhabited` handler couldn't derive this.
-instance inhabitedStmt : Inhabited (Stmt tm) :=
+instance inhabitedStmt : Inhabited (Stmt tm) := fast_instance%
   inferInstanceAs (Inhabited (Turing.TM2.Stmt tm.Γ tm.Λ tm.σ))
 #align turing.fin_tm2.stmt.inhabited Turing.FinTM2.inhabitedStmt
 
@@ -82,7 +82,7 @@ def Cfg : Type :=
   Turing.TM2.Cfg tm.Γ tm.Λ tm.σ
 #align turing.fin_tm2.cfg Turing.FinTM2.Cfg
 
-instance inhabitedCfg : Inhabited (Cfg tm) :=
+instance inhabitedCfg : Inhabited (Cfg tm) := fast_instance%
   Turing.TM2.Cfg.inhabited _ _ _
 #align turing.fin_tm2.inhabited_cfg Turing.FinTM2.inhabitedCfg
 
@@ -244,7 +244,7 @@ def idComputer {α : Type} (ea : FinEncoding α) : FinTM2 where
   m _ := halt
 #align turing.id_computer Turing.idComputer
 
-instance inhabitedFinTM2 : Inhabited FinTM2 :=
+instance inhabitedFinTM2 : Inhabited FinTM2 := fast_instance%
   ⟨idComputer Computability.inhabitedFinEncoding.default⟩
 #align turing.inhabited_fin_tm2 Turing.inhabitedFinTM2
 
@@ -287,7 +287,7 @@ instance inhabitedEvalsToInTime :
   ⟨EvalsToInTime.refl _ _⟩
 #align turing.inhabited_evals_to_in_time Turing.inhabitedEvalsToInTime
 
-instance inhabitedTM2EvalsTo : Inhabited (EvalsTo (fun _ : Unit => some ⟨⟩) ⟨⟩ (some ⟨⟩)) :=
+instance inhabitedTM2EvalsTo : Inhabited (EvalsTo (fun _ : Unit => some ⟨⟩) ⟨⟩ (some ⟨⟩)) := fast_instance%
   ⟨EvalsTo.refl _ _⟩
 #align turing.inhabited_tm2_evals_to Turing.inhabitedTM2EvalsTo
 
@@ -311,7 +311,7 @@ instance inhabitedTM2Computable :
   ⟨idComputable Computability.inhabitedFinEncoding.default⟩
 #align turing.inhabited_tm2_computable Turing.inhabitedTM2Computable
 
-instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
+instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) := fast_instance%
   ⟨(default : TM2Computable finEncodingBoolBool finEncodingBoolBool id).toTM2ComputableAux⟩
 #align turing.inhabited_tm2_computable_aux Turing.inhabitedTM2ComputableAux
 

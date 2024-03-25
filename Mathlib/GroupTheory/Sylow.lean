@@ -63,7 +63,7 @@ namespace Sylow
 attribute [coe] Sylow.toSubgroup
 
 -- Porting note: Changed to `CoeOut`
-instance : CoeOut (Sylow p G) (Subgroup G) :=
+instance : CoeOut (Sylow p G) (Subgroup G) := fast_instance%
   ⟨Sylow.toSubgroup⟩
 
 -- Porting note: syntactic tautology
@@ -92,7 +92,7 @@ instance : SubgroupClass (Sylow p G) G where
 variable (P : Sylow p G)
 
 /-- The action by a Sylow subgroup is the action by the underlying group. -/
-instance mulActionLeft {α : Type*} [MulAction G α] : MulAction P α :=
+instance mulActionLeft {α : Type*} [MulAction G α] : MulAction P α := fast_instance%
   inferInstanceAs (MulAction (P : Subgroup G) α)
 #align sylow.mul_action_left Sylow.mulActionLeft
 
@@ -162,11 +162,11 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
     fun {Q} ⟨hQ1, hQ2, hQ3⟩ => ⟨⟨Q, hQ1, hQ3 _⟩, hQ2⟩
 #align is_p_group.exists_le_sylow IsPGroup.exists_le_sylow
 
-instance Sylow.nonempty : Nonempty (Sylow p G) :=
+instance Sylow.nonempty : Nonempty (Sylow p G) := fast_instance%
   nonempty_of_exists IsPGroup.of_bot.exists_le_sylow
 #align sylow.nonempty Sylow.nonempty
 
-noncomputable instance Sylow.inhabited : Inhabited (Sylow p G) :=
+noncomputable instance Sylow.inhabited : Inhabited (Sylow p G) := fast_instance%
   Classical.inhabited_of_nonempty Sylow.nonempty
 #align sylow.inhabited Sylow.inhabited
 
@@ -203,11 +203,11 @@ noncomputable def Sylow.fintypeOfInjective {H : Type*} [Group H] {f : H →* G}
 #align sylow.fintype_of_injective Sylow.fintypeOfInjective
 
 /-- If `H` is a subgroup of `G`, then `Fintype (Sylow p G)` implies `Fintype (Sylow p H)`. -/
-noncomputable instance (H : Subgroup G) [Fintype (Sylow p G)] : Fintype (Sylow p H) :=
+noncomputable instance (H : Subgroup G) [Fintype (Sylow p G)] : Fintype (Sylow p H) := fast_instance%
   Sylow.fintypeOfInjective H.subtype_injective
 
 /-- If `H` is a subgroup of `G`, then `Finite (Sylow p G)` implies `Finite (Sylow p H)`. -/
-instance (H : Subgroup G) [Finite (Sylow p G)] : Finite (Sylow p H) := by
+instance (H : Subgroup G) [Finite (Sylow p G)] : Finite (Sylow p H) := fast_instance% by
   cases nonempty_fintype (Sylow p G)
   infer_instance
 
@@ -231,7 +231,7 @@ theorem Sylow.pointwise_smul_def {α : Type*} [Group α] [MulDistribMulAction α
   rfl
 #align sylow.pointwise_smul_def Sylow.pointwise_smul_def
 
-instance Sylow.mulAction : MulAction G (Sylow p G) :=
+instance Sylow.mulAction : MulAction G (Sylow p G) := fast_instance%
   compHom _ MulAut.conj
 #align sylow.mul_action Sylow.mulAction
 
@@ -293,7 +293,7 @@ theorem IsPGroup.sylow_mem_fixedPoints_iff {P : Subgroup G} (hP : IsPGroup p P) 
 
 /-- A generalization of **Sylow's second theorem**.
   If the number of Sylow `p`-subgroups is finite, then all Sylow `p`-subgroups are conjugate. -/
-instance [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G) :=
+instance [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G) := fast_instance%
   ⟨fun P Q => by
     classical
       cases nonempty_fintype (Sylow p G)

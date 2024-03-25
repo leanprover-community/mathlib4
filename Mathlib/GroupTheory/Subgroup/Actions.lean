@@ -26,7 +26,7 @@ variable [MulAction G α] {S : Subgroup G}
 
 /-- The action by a subgroup is the action by the underlying group. -/
 @[to_additive "The additive action by an add_subgroup is the action by the underlying `AddGroup`. "]
-instance instMulAction : MulAction S α := inferInstanceAs (MulAction S.toSubmonoid α)
+instance instMulAction : MulAction S α := fast_instance% inferInstanceAs (MulAction S.toSubmonoid α)
 
 @[to_additive] lemma smul_def (g : S) (m : α) : g • m = (g : G) • m := rfl
 #align subgroup.smul_def Subgroup.smul_def
@@ -56,24 +56,24 @@ instance [SMul α β] [MulAction G α] [MulAction G β] [IsScalarTower G α β] 
     IsScalarTower S α β :=
   inferInstanceAs (IsScalarTower S.toSubmonoid α β)
 
-instance [MulAction G α] [FaithfulSMul G α] (S : Subgroup G) : FaithfulSMul S α :=
+instance [MulAction G α] [FaithfulSMul G α] (S : Subgroup G) : FaithfulSMul S α := fast_instance%
   inferInstanceAs (FaithfulSMul S.toSubmonoid α)
 
 /-- The action by a subgroup is the action by the underlying group. -/
-instance [AddMonoid α] [DistribMulAction G α] (S : Subgroup G) : DistribMulAction S α :=
+instance [AddMonoid α] [DistribMulAction G α] (S : Subgroup G) : DistribMulAction S α := fast_instance%
   inferInstanceAs (DistribMulAction S.toSubmonoid α)
 
 /-- The action by a subgroup is the action by the underlying group. -/
-instance [Monoid α] [MulDistribMulAction G α] (S : Subgroup G) : MulDistribMulAction S α :=
+instance [Monoid α] [MulDistribMulAction G α] (S : Subgroup G) : MulDistribMulAction S α := fast_instance%
   inferInstanceAs (MulDistribMulAction S.toSubmonoid α)
 
 /-- The center of a group acts commutatively on that group. -/
-instance center.smulCommClass_left : SMulCommClass (center G) G G :=
+instance center.smulCommClass_left : SMulCommClass (center G) G G := fast_instance%
   Submonoid.center.smulCommClass_left
 #align subgroup.center.smul_comm_class_left Subgroup.center.smulCommClass_left
 
 /-- The center of a group acts commutatively on that group. -/
-instance center.smulCommClass_right : SMulCommClass G (center G) G :=
+instance center.smulCommClass_right : SMulCommClass G (center G) G := fast_instance%
   Submonoid.center.smulCommClass_right
 #align subgroup.center.smul_comm_class_right Subgroup.center.smulCommClass_right
 

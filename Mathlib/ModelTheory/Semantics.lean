@@ -827,7 +827,7 @@ set_option linter.uppercaseLean3 false in
 
 variable {T}
 
-instance model_empty : M ⊨ (∅ : L.Theory) :=
+instance model_empty : M ⊨ (∅ : L.Theory) := fast_instance%
   ⟨fun φ hφ => (Set.not_mem_empty φ hφ).elim⟩
 #align first_order.language.model_empty FirstOrder.Language.model_empty
 
@@ -867,7 +867,7 @@ set_option linter.uppercaseLean3 false in
 
 end Theory
 
-instance model_completeTheory : M ⊨ L.completeTheory M :=
+instance model_completeTheory : M ⊨ L.completeTheory M := fast_instance%
   Theory.model_iff_subset_completeTheory.2 (subset_refl _)
 #align first_order.language.model_complete_theory FirstOrder.Language.model_completeTheory
 
@@ -1121,7 +1121,7 @@ theorem model_infiniteTheory_iff : M ⊨ L.infiniteTheory ↔ Infinite M := by
   simp [infiniteTheory, infinite_iff, aleph0_le]
 #align first_order.language.model_infinite_theory_iff FirstOrder.Language.model_infiniteTheory_iff
 
-instance model_infiniteTheory [h : Infinite M] : M ⊨ L.infiniteTheory :=
+instance model_infiniteTheory [h : Infinite M] : M ⊨ L.infiniteTheory := fast_instance%
   L.model_infiniteTheory_iff.2 h
 #align first_order.language.model_infinite_theory FirstOrder.Language.model_infiniteTheory
 
@@ -1131,7 +1131,7 @@ theorem model_nonemptyTheory_iff : M ⊨ L.nonemptyTheory ↔ Nonempty M := by
     Sentence.realize_cardGe, Nat.cast_one, one_le_iff_ne_zero, mk_ne_zero_iff]
 #align first_order.language.model_nonempty_theory_iff FirstOrder.Language.model_nonemptyTheory_iff
 
-instance model_nonempty [h : Nonempty M] : M ⊨ L.nonemptyTheory :=
+instance model_nonempty [h : Nonempty M] : M ⊨ L.nonemptyTheory := fast_instance%
   L.model_nonemptyTheory_iff.2 h
 #align first_order.language.model_nonempty FirstOrder.Language.model_nonempty
 

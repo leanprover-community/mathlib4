@@ -144,7 +144,7 @@ theorem isLocalization_isLocalization_atPrime_isLocalization (p : Ideal S) [Hp :
   exact (Hp.1 : ¬_) (p.eq_top_of_isUnit_mem hx' hx)
 #align is_localization.is_localization_is_localization_at_prime_is_localization IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
 
-instance (p : Ideal (Localization M)) [p.IsPrime] : Algebra R (Localization.AtPrime p) :=
+instance (p : Ideal (Localization M)) [p.IsPrime] : Algebra R (Localization.AtPrime p) := fast_instance%
   inferInstance
 
 instance (p : Ideal (Localization M)) [p.IsPrime] :

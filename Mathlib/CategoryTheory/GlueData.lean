@@ -111,11 +111,11 @@ theorem t'_inv (i j k : D.J) :
   simp [t_fac, t_fac_assoc]
 #align category_theory.glue_data.t'_inv CategoryTheory.GlueData.t'_inv
 
-instance t_isIso (i j : D.J) : IsIso (D.t i j) :=
+instance t_isIso (i j : D.J) : IsIso (D.t i j) := fast_instance%
   ⟨⟨D.t j i, D.t_inv _ _, D.t_inv _ _⟩⟩
 #align category_theory.glue_data.t_is_iso CategoryTheory.GlueData.t_isIso
 
-instance t'_isIso (i j k : D.J) : IsIso (D.t' i j k) :=
+instance t'_isIso (i j k : D.J) : IsIso (D.t' i j k) := fast_instance%
   ⟨⟨D.t' j k i ≫ D.t' k i j, D.cocycle _ _ _, by simpa using D.cocycle _ _ _⟩⟩
 #align category_theory.glue_data.t'_is_iso CategoryTheory.GlueData.t'_isIso
 
@@ -221,7 +221,7 @@ def π : D.sigmaOpens ⟶ D.glued :=
   Multicoequalizer.sigmaπ D.diagram
 #align category_theory.glue_data.π CategoryTheory.GlueData.π
 
-instance π_epi : Epi D.π := by
+instance π_epi : Epi D.π := fast_instance% by
   unfold π
   infer_instance
 #align category_theory.glue_data.π_epi CategoryTheory.GlueData.π_epi
@@ -249,7 +249,7 @@ theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
 
 variable (F : C ⥤ C') [H : ∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
 
-instance (i j k : D.J) : HasPullback (F.map (D.f i j)) (F.map (D.f i k)) :=
+instance (i j k : D.J) : HasPullback (F.map (D.f i j)) (F.map (D.f i k)) := fast_instance%
   ⟨⟨⟨_, isLimitOfHasPullbackOfPreservesLimit F (D.f i j) (D.f i k)⟩⟩⟩
 
 /-- A functor that preserves the pullbacks of `f i j` and `f i k` can map a family of glue data. -/

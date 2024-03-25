@@ -87,11 +87,11 @@ theorem mem_Spec_essImage (X : Scheme) : X ∈ Scheme.Spec.essImage ↔ IsAffine
   ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩, fun h => @mem_essImage_of_unit_isIso _ _ _ _ _ _ X h.1⟩
 #align algebraic_geometry.mem_Spec_ess_image AlgebraicGeometry.mem_Spec_essImage
 
-instance isAffineAffineScheme (X : AffineScheme.{u}) : IsAffine X.obj :=
+instance isAffineAffineScheme (X : AffineScheme.{u}) : IsAffine X.obj := fast_instance%
   ⟨Functor.essImage.unit_isIso X.property⟩
 #align algebraic_geometry.is_affine_AffineScheme AlgebraicGeometry.isAffineAffineScheme
 
-instance SpecIsAffine (R : CommRingCatᵒᵖ) : IsAffine (Scheme.Spec.obj R) :=
+instance SpecIsAffine (R : CommRingCatᵒᵖ) : IsAffine (Scheme.Spec.obj R) := fast_instance%
   AlgebraicGeometry.isAffineAffineScheme ⟨_, Scheme.Spec.obj_mem_essImage R⟩
 #align algebraic_geometry.Spec_is_affine AlgebraicGeometry.SpecIsAffine
 
@@ -107,13 +107,13 @@ def Spec : CommRingCatᵒᵖ ⥤ AffineScheme :=
 #align algebraic_geometry.AffineScheme.Spec AlgebraicGeometry.AffineScheme.Spec
 
 -- Porting note (#11081): cannot automatically derive
-instance Spec_full : Full Spec := Full.toEssImage _
+instance Spec_full : Full Spec := fast_instance% Full.toEssImage _
 
 -- Porting note (#11081): cannot automatically derive
-instance Spec_faithful : Faithful Spec := Faithful.toEssImage _
+instance Spec_faithful : Faithful Spec := fast_instance% Faithful.toEssImage _
 
 -- Porting note (#11081): cannot automatically derive
-instance Spec_essSurj : EssSurj Spec := EssSurj.toEssImage (F := _)
+instance Spec_essSurj : EssSurj Spec := fast_instance% EssSurj.toEssImage (F := _)
 
 /-- The forgetful functor `AffineScheme ⥤ Scheme`. -/
 @[simps!]
@@ -122,11 +122,11 @@ def forgetToScheme : AffineScheme ⥤ Scheme :=
 #align algebraic_geometry.AffineScheme.forget_to_Scheme AlgebraicGeometry.AffineScheme.forgetToScheme
 
 -- Porting note (#11081): cannot automatically derive
-instance forgetToScheme_full : Full forgetToScheme :=
+instance forgetToScheme_full : Full forgetToScheme := fast_instance%
 show Full (Scheme.Spec.essImageInclusion) from inferInstance
 
 -- Porting note (#11081): cannot automatically derive
-instance forgetToScheme_faithful : Faithful forgetToScheme :=
+instance forgetToScheme_faithful : Faithful forgetToScheme := fast_instance%
 show Faithful (Scheme.Spec.essImageInclusion) from inferInstance
 
 /-- The global section functor of an affine scheme. -/
@@ -139,25 +139,25 @@ def equivCommRingCat : AffineScheme ≌ CommRingCatᵒᵖ :=
   equivEssImageOfReflective.symm
 #align algebraic_geometry.AffineScheme.equiv_CommRing AlgebraicGeometry.AffineScheme.equivCommRingCat
 
-instance ΓIsEquiv : IsEquivalence Γ.{u} :=
+instance ΓIsEquiv : IsEquivalence Γ.{u} := fast_instance%
   haveI : IsEquivalence Γ.{u}.rightOp.op := IsEquivalence.ofEquivalence equivCommRingCat.op
   Functor.isEquivalenceTrans Γ.{u}.rightOp.op (opOpEquivalence _).functor
 #align algebraic_geometry.AffineScheme.Γ_is_equiv AlgebraicGeometry.AffineScheme.ΓIsEquiv
 
-instance hasColimits : HasColimits AffineScheme.{u} :=
+instance hasColimits : HasColimits AffineScheme.{u} := fast_instance%
   haveI := Adjunction.has_limits_of_equivalence.{u} Γ.{u}
   Adjunction.has_colimits_of_equivalence.{u} (opOpEquivalence AffineScheme.{u}).inverse
 
-instance hasLimits : HasLimits AffineScheme.{u} := by
+instance hasLimits : HasLimits AffineScheme.{u} := fast_instance% by
   haveI := Adjunction.has_colimits_of_equivalence Γ.{u}
   haveI : HasLimits AffineScheme.{u}ᵒᵖᵒᵖ := Limits.hasLimits_op_of_hasColimits
   exact Adjunction.has_limits_of_equivalence (opOpEquivalence AffineScheme.{u}).inverse
 
-noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp :=
+noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp := fast_instance%
   @Adjunction.isEquivalencePreservesLimits _ _ _ _ Γ.rightOp
     (IsEquivalence.ofEquivalence equivCommRingCat)
 
-noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
+noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := fast_instance% by
   apply (config := { allowSynthFailures := true })
     @preservesLimitsOfNatIso _ _ _ _ _ _
       (isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm

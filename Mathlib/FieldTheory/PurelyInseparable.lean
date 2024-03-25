@@ -215,7 +215,7 @@ theorem separableClosure.eq_bot_iff (halg : Algebra.IsAlgebraic F E) :
   ⟨fun h ↦ isPurelyInseparable_iff.2 fun x ↦ ⟨(halg x).isIntegral, fun hs ↦ by
     simpa only [h] using mem_separableClosure_iff.2 hs⟩, fun _ ↦ eq_bot_of_isPurelyInseparable F E⟩
 
-instance isPurelyInseparable_self : IsPurelyInseparable F F :=
+instance isPurelyInseparable_self : IsPurelyInseparable F F := fast_instance%
   ⟨fun _ ↦ isIntegral_algebraMap, fun x _ ↦ ⟨x, rfl⟩⟩
 
 variable {E}
@@ -294,7 +294,7 @@ theorem isPurelyInseparable_iff_perfectClosure_eq_top :
 variable (F E)
 
 /-- The relative perfect closure of `F` in `E` is purely inseparable over `F`. -/
-instance perfectClosure.isPurelyInseparable : IsPurelyInseparable F (perfectClosure F E) := by
+instance perfectClosure.isPurelyInseparable : IsPurelyInseparable F (perfectClosure F E) := fast_instance% by
   rw [isPurelyInseparable_iff_pow_mem F (ringExpChar F)]
   exact fun ⟨_, n, y, h⟩ ↦ ⟨n, y, (algebraMap _ E).injective h⟩
 
@@ -390,7 +390,7 @@ instance perfectClosure.perfectRing (p : ℕ) [ExpChar E p]
 
 /-- If `E` is a perfect field, then the (relative) perfect closure
 `perfectClosure F E` is perfect. -/
-instance perfectClosure.perfectField [PerfectField E] : PerfectField (perfectClosure F E) :=
+instance perfectClosure.perfectField [PerfectField E] : PerfectField (perfectClosure F E) := fast_instance%
   PerfectRing.toPerfectField _ (ringExpChar E)
 
 end perfectClosure
@@ -553,7 +553,7 @@ theorem isPurelyInseparable_iff_fd_isPurelyInseparable (halg : Algebra.IsAlgebra
   exact ⟨y, congr_arg (algebraMap _ E) h⟩
 
 /-- A purely inseparable extension is normal. -/
-instance IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E := by
+instance IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E := fast_instance% by
   refine ⟨isAlgebraic F E, fun x ↦ ?_⟩
   obtain ⟨n, h⟩ := IsPurelyInseparable.minpoly_eq_X_sub_C_pow F (ringExpChar F) x
   rw [← splits_id_iff_splits, h]
@@ -616,7 +616,7 @@ end IsPurelyInseparable
 
 namespace IntermediateField
 
-instance isPurelyInseparable_bot : IsPurelyInseparable F (⊥ : IntermediateField F E) :=
+instance isPurelyInseparable_bot : IsPurelyInseparable F (⊥ : IntermediateField F E) := fast_instance%
   (botEquiv F E).symm.isPurelyInseparable
 
 /-- `F⟮x⟯ / F` is a purely inseparable extension if and only if the mininal polynomial of `x`

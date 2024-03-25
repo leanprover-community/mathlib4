@@ -279,7 +279,7 @@ theorem pd_inv [Fintype l] [Invertible (2 : R)] : PD l R * ⅟ (2 : R) • (PD l
   simp
 #align lie_algebra.orthogonal.PD_inv LieAlgebra.Orthogonal.pd_inv
 
-instance invertiblePD [Fintype l] [Invertible (2 : R)] : Invertible (PD l R) :=
+instance invertiblePD [Fintype l] [Invertible (2 : R)] : Invertible (PD l R) := fast_instance%
   invertibleOfRightInverse _ _ (pd_inv l R)
 #align lie_algebra.orthogonal.invertible_PD LieAlgebra.Orthogonal.invertiblePD
 
@@ -344,7 +344,7 @@ theorem pb_inv [Invertible (2 : R)] : PB l R * Matrix.fromBlocks 1 0 0 (⅟ (PD 
     Matrix.fromBlocks_one]
 #align lie_algebra.orthogonal.PB_inv LieAlgebra.Orthogonal.pb_inv
 
-instance invertiblePB [Invertible (2 : R)] : Invertible (PB l R) :=
+instance invertiblePB [Invertible (2 : R)] : Invertible (PB l R) := fast_instance%
   invertibleOfRightInverse _ _ (pb_inv l R)
 #align lie_algebra.orthogonal.invertible_PB LieAlgebra.Orthogonal.invertiblePB
 

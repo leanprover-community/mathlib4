@@ -117,7 +117,7 @@ def _root_.SMulHomClass.toMulActionHom [SMul M X] [SMul M Y] [FunLike F X Y]
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
-instance [SMul M X] [SMul M Y] [FunLike F X Y] [SMulHomClass F M X Y] : CoeTC F (X →[M] Y) :=
+instance [SMul M X] [SMul M Y] [FunLike F X Y] [SMulHomClass F M X Y] : CoeTC F (X →[M] Y) := fast_instance%
   ⟨SMulHomClass.toMulActionHom⟩
 
 variable (M' X Y F) in
@@ -237,11 +237,11 @@ namespace DistribMulActionHom
 
 /- Porting note (#11215): TODO decide whether the next two instances should be removed
 Coercion is already handled by all the HomClass constructions I believe -/
--- instance coe : Coe (A →+[M] B) (A →+ B) :=
+-- instance coe : Coe (A →+[M] B) (A →+ B) := fast_instance%
 --   ⟨toAddMonoidHom⟩
 -- #align distrib_mul_action_hom.has_coe DistribMulActionHom.coe
 
--- instance coe' : Coe (A →+[M] B) (A →[M] B) :=
+-- instance coe' : Coe (A →+[M] B) (A →[M] B) := fast_instance%
 --   ⟨toMulActionHom⟩
 -- #align distrib_mul_action_hom.has_coe' DistribMulActionHom.coe'
 
@@ -351,10 +351,10 @@ theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
 variable {M C}
 
 -- Porting note:  `simp` used to prove this, but now `change` is needed to push past the coercions
-instance : Zero (A →+[M] B) :=
+instance : Zero (A →+[M] B) := fast_instance%
   ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by change (0 : B) = m • (0 : B); rw [smul_zero]}⟩
 
-instance : One (A →+[M] A) :=
+instance : One (A →+[M] A) := fast_instance%
   ⟨DistribMulActionHom.id M⟩
 
 @[simp]
@@ -375,7 +375,7 @@ theorem one_apply (a : A) : (1 : A →+[M] A) a = a :=
   rfl
 #align distrib_mul_action_hom.one_apply DistribMulActionHom.one_apply
 
-instance : Inhabited (A →+[M] B) :=
+instance : Inhabited (A →+[M] B) := fast_instance%
   ⟨0⟩
 
 /-- Composition of two equivariant additive monoid homomorphisms. -/
@@ -470,12 +470,12 @@ namespace MulSemiringActionHom
 /- Porting note (#11215): TODO decide whether the next two instances should be removed
 Coercion is already handled by all the HomClass constructions I believe -/
 -- @[coe]
--- instance coe : Coe (R →+*[M] S) (R →+* S) :=
+-- instance coe : Coe (R →+*[M] S) (R →+* S) := fast_instance%
 --   ⟨toRingHom⟩
 -- #align mul_semiring_action_hom.has_coe MulSemiringActionHom.coe
 
 -- @[coe]
--- instance coe' : Coe (R →+*[M] S) (R →+[M] S) :=
+-- instance coe' : Coe (R →+*[M] S) (R →+[M] S) := fast_instance%
 --   ⟨toDistribMulActionHom⟩
 -- #align mul_semiring_action_hom.has_coe' MulSemiringActionHom.coe'
 

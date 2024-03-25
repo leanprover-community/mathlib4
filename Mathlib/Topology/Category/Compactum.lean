@@ -95,10 +95,10 @@ def forget : Compactum ⥤ Type* :=
   -- Porting note: deriving fails, adding manually. Note `CreatesLimits` now noncomputable
 #align Compactum.forget Compactum.forget
 
-instance : Faithful forget :=
+instance : Faithful forget := fast_instance%
   show Faithful <| Monad.forget _ from inferInstance
 
-noncomputable instance : CreatesLimits forget :=
+noncomputable instance : CreatesLimits forget := fast_instance%
   show CreatesLimits <| Monad.forget _ from inferInstance
 
 /-- The "free" Compactum functor. -/
@@ -112,16 +112,16 @@ def adj : free ⊣ forget :=
 #align Compactum.adj Compactum.adj
 
 -- Basic instances
-instance : ConcreteCategory Compactum where forget := forget
+instance : ConcreteCategory Compactum where forget := fast_instance% forget
 
 -- Porting note: changed from forget to X.A
-instance : CoeSort Compactum (Type*) :=
+instance : CoeSort Compactum (Type*) := fast_instance%
   ⟨fun X => X.A⟩
 
-instance {X Y : Compactum} : CoeFun (X ⟶ Y) fun _ => X → Y :=
+instance {X Y : Compactum} : CoeFun (X ⟶ Y) fun _ => X → Y := fast_instance%
   ⟨fun f => f.f⟩
 
-instance : HasLimits Compactum :=
+instance : HasLimits Compactum := fast_instance%
   hasLimits_of_hasLimits_createsLimits forget
 
 /-- The structure map for a compactum, essentially sending an ultrafilter to its limit. -/
@@ -185,7 +185,7 @@ theorem isClosed_iff {X : Compactum} (S : Set X) :
     exacts [absurd (h1 h) h2, h]
 #align Compactum.is_closed_iff Compactum.isClosed_iff
 
-instance {X : Compactum} : CompactSpace X := by
+instance {X : Compactum} : CompactSpace X := fast_instance% by
   constructor
   rw [isCompact_iff_ultrafilter_le_nhds]
   intro F _
@@ -355,7 +355,7 @@ theorem le_nhds_of_str_eq {X : Compactum} (F : Ultrafilter X) (x : X) : X.str F 
 #align Compactum.le_nhds_of_str_eq Compactum.le_nhds_of_str_eq
 
 -- All the hard work above boils down to this `T2Space` instance.
-instance {X : Compactum} : T2Space X := by
+instance {X : Compactum} : T2Space X := fast_instance% by
   rw [t2_iff_ultrafilter]
   intro _ _ F hx hy
   rw [← str_eq_of_le_nhds _ _ hx, ← str_eq_of_le_nhds _ _ hy]
@@ -478,7 +478,7 @@ theorem essSurj : EssSurj compactumToCompHaus :=
 #align Compactum_to_CompHaus.ess_surj compactumToCompHaus.essSurj
 
 /-- The functor `compactumToCompHaus` is an equivalence of categories. -/
-noncomputable instance isEquivalence : IsEquivalence compactumToCompHaus := by
+noncomputable instance isEquivalence : IsEquivalence compactumToCompHaus := fast_instance% by
   have := compactumToCompHaus.full
   have := compactumToCompHaus.faithful
   have := compactumToCompHaus.essSurj
@@ -501,7 +501,7 @@ Once we have the API to transfer monadicity of functors along such isomorphisms,
 the instance `CreatesLimits (forget CompHaus)` can be deduced from this
 monadicity.
 -/
-noncomputable instance CompHaus.forgetCreatesLimits : CreatesLimits (forget CompHaus) := by
+noncomputable instance CompHaus.forgetCreatesLimits : CreatesLimits (forget CompHaus) := fast_instance% by
   let e : forget CompHaus ≅ compactumToCompHaus.inv ⋙ Compactum.forget :=
     (((forget CompHaus).leftUnitor.symm ≪≫
     isoWhiskerRight compactumToCompHaus.asEquivalence.symm.unitIso (forget CompHaus)) ≪≫
@@ -511,7 +511,7 @@ noncomputable instance CompHaus.forgetCreatesLimits : CreatesLimits (forget Comp
 
 #align CompHaus.forget_creates_limits CompHaus.forgetCreatesLimits
 
-noncomputable instance Profinite.forgetCreatesLimits : CreatesLimits (forget Profinite) := by
+noncomputable instance Profinite.forgetCreatesLimits : CreatesLimits (forget Profinite) := fast_instance% by
   change CreatesLimits (profiniteToCompHaus ⋙ forget _)
   infer_instance
 #align Profinite.forget_creates_limits Profinite.forgetCreatesLimits

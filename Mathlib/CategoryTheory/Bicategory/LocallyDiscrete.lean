@@ -39,7 +39,7 @@ def LocallyDiscrete (C : Type u) :=
 
 namespace LocallyDiscrete
 
-instance [Inhabited C] : Inhabited (LocallyDiscrete C) := ⟨(default : C)⟩
+instance [Inhabited C] : Inhabited (LocallyDiscrete C) := fast_instance% ⟨(default : C)⟩
 
 instance [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C)
     where
@@ -56,7 +56,7 @@ instance (priority := 900) homSmallCategory (X Y : LocallyDiscrete C) : SmallCat
 #align category_theory.locally_discrete.hom_small_category CategoryTheory.LocallyDiscrete.homSmallCategory
 
 -- Porting note: Manually adding this instance (inferInstance doesn't work)
-instance subsingleton2Hom {X Y : LocallyDiscrete C} (f g : X ⟶ Y) : Subsingleton (f ⟶ g) :=
+instance subsingleton2Hom {X Y : LocallyDiscrete C} (f g : X ⟶ Y) : Subsingleton (f ⟶ g) := fast_instance%
   let X' : C := X
   let Y' : C := Y
   let f' : Discrete (X' ⟶ Y') := f

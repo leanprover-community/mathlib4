@@ -59,10 +59,10 @@ def toTopCat : TopCat :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Top AlgebraicGeometry.LocallyRingedSpace.toTopCat
 
-instance : CoeSort LocallyRingedSpace (Type*) :=
+instance : CoeSort LocallyRingedSpace (Type*) := fast_instance%
   ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type _)⟩
 
-instance (x : X) : LocalRing (X.stalk x) :=
+instance (x : X) : LocalRing (X.stalk x) := fast_instance%
   X.localRing x
 
 -- PROJECT: how about a typeclass "has_structure_sheaf" to mediate the 𝒪 notation, rather
@@ -84,7 +84,7 @@ structure Hom (X Y : LocallyRingedSpace) : Type _ where
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.hom AlgebraicGeometry.LocallyRingedSpace.Hom
 
-instance : Quiver LocallyRingedSpace :=
+instance : Quiver LocallyRingedSpace := fast_instance%
   ⟨Hom⟩
 
 @[ext] lemma Hom.ext' (X Y : LocallyRingedSpace) {f g : X ⟶ Y} (h : f.val = g.val) : f = g :=
@@ -101,7 +101,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note (#10754): added this instance to help Lean realize stalks are local
 -- (so that `0 ≠ 1` works below)
-instance stalkLocal (x : X) : LocalRing <| X.stalk x := X.localRing x
+instance stalkLocal (x : X) : LocalRing <| X.stalk x := fast_instance% X.localRing x
 
 /-- A morphism of locally ringed spaces `f : X ⟶ Y` induces
 a local ring homomorphism from `Y.stalk (f x)` to `X.stalk x` for any `x : X`.
@@ -112,7 +112,7 @@ noncomputable def stalkMap {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.stalk_map AlgebraicGeometry.LocallyRingedSpace.stalkMap
 
-instance {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) : IsLocalRingHom (stalkMap f x) :=
+instance {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) : IsLocalRingHom (stalkMap f x) := fast_instance%
   f.2 x
 
 instance {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) :
@@ -126,7 +126,7 @@ def id (X : LocallyRingedSpace) : Hom X X :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.id AlgebraicGeometry.LocallyRingedSpace.id
 
-instance (X : LocallyRingedSpace) : Inhabited (Hom X X) :=
+instance (X : LocallyRingedSpace) : Inhabited (Hom X X) := fast_instance%
   ⟨id X⟩
 
 /-- Composition of morphisms of locally ringed spaces. -/
@@ -219,12 +219,12 @@ def isoOfSheafedSpaceIso {X Y : LocallyRingedSpace} (f : X.toSheafedSpace ≅ Y.
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.iso_of_SheafedSpace_iso AlgebraicGeometry.LocallyRingedSpace.isoOfSheafedSpaceIso
 
-instance : ReflectsIsomorphisms forgetToSheafedSpace where reflects {_ _} f i :=
+instance : ReflectsIsomorphisms forgetToSheafedSpace where reflects {_ _} f i := fast_instance%
   { out :=
       ⟨homOfSheafedSpaceHomOfIsIso (CategoryTheory.inv (forgetToSheafedSpace.map f)),
         Hom.ext _ _ (IsIso.hom_inv_id (I := i)), Hom.ext _ _ (IsIso.inv_hom_id (I := i))⟩ }
 
-instance is_sheafedSpace_iso {X Y : LocallyRingedSpace} (f : X ⟶ Y) [IsIso f] : IsIso f.1 :=
+instance is_sheafedSpace_iso {X Y : LocallyRingedSpace} (f : X ⟶ Y) [IsIso f] : IsIso f.1 := fast_instance%
   LocallyRingedSpace.forgetToSheafedSpace.map_isIso f
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.is_SheafedSpace_iso AlgebraicGeometry.LocallyRingedSpace.is_sheafedSpace_iso

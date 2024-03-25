@@ -40,7 +40,7 @@ See also `Cardinal.ofENatHom` for a bundled homomorphism version. -/
   | (n : ℕ) => n
   | ⊤ => ℵ₀
 
-instance : Coe ENat Cardinal := ⟨Cardinal.ofENat⟩
+instance : Coe ENat Cardinal := fast_instance% ⟨Cardinal.ofENat⟩
 
 @[simp, norm_cast] lemma ofENat_top : ofENat ⊤ = ℵ₀ := rfl
 @[simp, norm_cast] lemma ofENat_nat (n : ℕ) : ofENat n = n := rfl

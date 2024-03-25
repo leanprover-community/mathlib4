@@ -43,7 +43,7 @@ def QuotientDiff :=
         fun h h' => by rw [← diff_mul_diff, h, h', one_mul]⟩)
 #align subgroup.quotient_diff Subgroup.QuotientDiff
 
-instance : Inhabited H.QuotientDiff := by
+instance : Inhabited H.QuotientDiff := fast_instance% by
   dsimp [QuotientDiff] -- Porting note: Added `dsimp`
   infer_instance
 

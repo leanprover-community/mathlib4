@@ -84,7 +84,7 @@ protected theorem RingHom.smul_def (f : R →+* R) (a : R) : f • a = f a :=
 #align ring_hom.smul_def RingHom.smul_def
 
 /-- `RingHom.applyMulSemiringAction` is faithful. -/
-instance RingHom.applyFaithfulSMul : FaithfulSMul (R →+* R) R :=
+instance RingHom.applyFaithfulSMul : FaithfulSMul (R →+* R) R := fast_instance%
   ⟨fun {_ _} h => RingHom.ext h⟩
 #align ring_hom.apply_has_faithful_smul RingHom.applyFaithfulSMul
 

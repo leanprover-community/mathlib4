@@ -38,7 +38,7 @@ inductive WType {α : Type*} (β : α → Type*)
   | mk (a : α) (f : β a → WType β) : WType β
 #align W_type WType
 
-instance : Inhabited (WType fun _ : Unit => Empty) :=
+instance : Inhabited (WType fun _ : Unit => Empty) := fast_instance%
   ⟨WType.mk Unit.unit Empty.elim⟩
 
 namespace WType
@@ -98,7 +98,7 @@ theorem elim_injective (γ : Type*) (fγ : (Σa : α, β a → γ) → γ)
     exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x : _)
 #align W_type.elim_injective WType.elim_injective
 
-instance [hα : IsEmpty α] : IsEmpty (WType β) :=
+instance [hα : IsEmpty α] : IsEmpty (WType β) := fast_instance%
   ⟨fun w => WType.recOn w (IsEmpty.elim hα)⟩
 
 theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : IsEmpty (β b)] :
@@ -182,7 +182,7 @@ private def encodable_succ (n : Nat) (h : Encodable (WType' β n)) : Encodable (
 
 /-- `WType` is encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable. -/
-instance : Encodable (WType β) := by
+instance : Encodable (WType β) := fast_instance% by
   haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.rec encodable_zero encodable_succ n
   let f : WType β → Σn, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
   let finv : (Σn, WType' β n) → WType β := fun p => p.2.1

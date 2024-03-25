@@ -32,7 +32,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
-instance preservesLimitsPreadditiveYonedaObj (X : C) : PreservesLimits (preadditiveYonedaObj X) :=
+instance preservesLimitsPreadditiveYonedaObj (X : C) : PreservesLimits (preadditiveYonedaObj X) := fast_instance%
   have : PreservesLimits (preadditiveYonedaObj X ⋙ forget _) :=
     (inferInstance : PreservesLimits (yoneda.obj X))
   preservesLimitsOfReflectsOfPreserves _ (forget _)
@@ -45,7 +45,7 @@ instance preservesLimitsPreadditiveCoyonedaObj (X : Cᵒᵖ) :
   preservesLimitsOfReflectsOfPreserves _ (forget _)
 #align category_theory.preserves_limits_preadditive_coyoneda_obj CategoryTheory.preservesLimitsPreadditiveCoyonedaObj
 
-instance PreservesLimitsPreadditiveYoneda.obj (X : C) : PreservesLimits (preadditiveYoneda.obj X) :=
+instance PreservesLimitsPreadditiveYoneda.obj (X : C) : PreservesLimits (preadditiveYoneda.obj X) := fast_instance%
   show PreservesLimits (preadditiveYonedaObj X ⋙ forget₂ _ _) from inferInstance
 #align category_theory.preserves_limits_preadditive_yoneda.obj CategoryTheory.PreservesLimitsPreadditiveYoneda.obj
 

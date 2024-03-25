@@ -45,10 +45,10 @@ namespace Fin
 
 variable (n : ℕ)
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder (Fin n) :=
+instance instLocallyFiniteOrder : LocallyFiniteOrder (Fin n) := fast_instance%
   OrderIso.locallyFiniteOrder Fin.orderIsoSubtype
 
-instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (Fin n) :=
+instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (Fin n) := fast_instance%
   OrderIso.locallyFiniteOrderBot Fin.orderIsoSubtype
 
 instance instLocallyFiniteOrderTop : ∀ n, LocallyFiniteOrderTop (Fin n)

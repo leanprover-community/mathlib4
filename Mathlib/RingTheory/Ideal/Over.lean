@@ -155,7 +155,7 @@ def Quotient.algebraQuotientOfLEComap (h : p ≤ comap f P) : Algebra (R ⧸ p) 
 #align ideal.quotient.algebra_quotient_of_le_comap Ideal.Quotient.algebraQuotientOfLEComap
 
 /-- `R / p` has a canonical map to `S / pS`. -/
-instance Quotient.algebraQuotientMapQuotient : Algebra (R ⧸ p) (S ⧸ map f p) :=
+instance Quotient.algebraQuotientMapQuotient : Algebra (R ⧸ p) (S ⧸ map f p) := fast_instance%
   Ideal.Quotient.algebraQuotientOfLEComap le_comap_map
 #align ideal.quotient.algebra_quotient_map_quotient Ideal.Quotient.algebraQuotientMapQuotient
 

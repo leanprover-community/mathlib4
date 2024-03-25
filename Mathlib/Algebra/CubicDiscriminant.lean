@@ -49,10 +49,10 @@ open Polynomial
 
 variable {R S F K : Type*}
 
-instance [Inhabited R] : Inhabited (Cubic R) :=
+instance [Inhabited R] : Inhabited (Cubic R) := fast_instance%
   ⟨⟨default, default, default, default⟩⟩
 
-instance [Zero R] : Zero (Cubic R) :=
+instance [Zero R] : Zero (Cubic R) := fast_instance%
   ⟨⟨0, 0, 0, 0⟩⟩
 
 section Basic

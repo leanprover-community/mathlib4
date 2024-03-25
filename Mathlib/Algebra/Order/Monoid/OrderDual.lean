@@ -80,7 +80,7 @@ instance covariantClass_swap_mul_lt [LT α] [Mul α]
 #align order_dual.covariant_class_swap_mul_lt OrderDual.covariantClass_swap_mul_lt
 
 @[to_additive]
-instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
+instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ := fast_instance%
   { mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
 #align order_dual.ordered_comm_monoid OrderDual.orderedCommMonoid
 #align order_dual.ordered_add_comm_monoid OrderDual.orderedAddCommMonoid
@@ -97,7 +97,7 @@ instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid 
 #align order_dual.ordered_cancel_comm_monoid.to_contravariant_class OrderDual.OrderedCancelCommMonoid.to_contravariantClass
 
 @[to_additive]
-instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=
+instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ := fast_instance%
   { le_of_mul_le_mul_left := fun _ _ _ : α => le_of_mul_le_mul_left' }
 
 @[to_additive]
@@ -106,7 +106,7 @@ instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α] :
   { OrderDual.instLinearOrder α, OrderDual.orderedCancelCommMonoid with }
 
 @[to_additive]
-instance linearOrderedCommMonoid [LinearOrderedCommMonoid α] : LinearOrderedCommMonoid αᵒᵈ :=
+instance linearOrderedCommMonoid [LinearOrderedCommMonoid α] : LinearOrderedCommMonoid αᵒᵈ := fast_instance%
   { OrderDual.instLinearOrder α, OrderDual.orderedCommMonoid with }
 
 end OrderDual

@@ -68,7 +68,7 @@ def mk' (v : { v : V // v ≠ 0 }) : ℙ K V :=
 theorem mk'_eq_mk (v : { v : V // v ≠ 0 }) : mk' K v = mk K ↑v v.2 := rfl
 #align projectivization.mk'_eq_mk Projectivization.mk'_eq_mk
 
-instance [Nontrivial V] : Nonempty (ℙ K V) :=
+instance [Nontrivial V] : Nonempty (ℙ K V) := fast_instance%
   let ⟨v, hv⟩ := exists_ne (0 : V)
   ⟨mk K v hv⟩
 
@@ -143,7 +143,7 @@ theorem finrank_submodule (v : ℙ K V) : finrank K v.submodule = 1 := by
   exact finrank_span_singleton v.rep_nonzero
 #align projectivization.finrank_submodule Projectivization.finrank_submodule
 
-instance (v : ℙ K V) : FiniteDimensional K v.submodule := by
+instance (v : ℙ K V) : FiniteDimensional K v.submodule := fast_instance% by
   rw [← v.mk_rep]
   change FiniteDimensional K (K ∙ v.rep)
   infer_instance

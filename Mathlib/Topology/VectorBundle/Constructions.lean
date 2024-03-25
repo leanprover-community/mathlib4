@@ -169,7 +169,7 @@ section
 
 variable (R 𝕜 : Type*) {B : Type*} (F : Type*) (E : B → Type*) {B' : Type*} (f : B' → B)
 
-instance [i : ∀ x : B, AddCommMonoid (E x)] (x : B') : AddCommMonoid ((f *ᵖ E) x) := i _
+instance [i : ∀ x : B, AddCommMonoid (E x)] (x : B') : AddCommMonoid ((f *ᵖ E) x) := fast_instance% i _
 
 instance [Semiring R] [∀ x : B, AddCommMonoid (E x)] [i : ∀ x, Module R (E x)] (x : B') :
     Module R ((f *ᵖ E) x) := i _

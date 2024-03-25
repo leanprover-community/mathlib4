@@ -96,7 +96,7 @@ class LocallySmall (C : Type u) [Category.{v} C] : Prop where
   hom_small : ∀ X Y : C, Small.{w} (X ⟶ Y) := by infer_instance
 #align category_theory.locally_small CategoryTheory.LocallySmall
 
-instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small (X ⟶ Y) :=
+instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small (X ⟶ Y) := fast_instance%
   LocallySmall.hom_small X Y
 
 theorem locallySmall_of_faithful {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
@@ -200,7 +200,7 @@ end ShrinkHoms
 
 namespace Shrink
 
-noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
+noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) := fast_instance%
   InducedCategory.category (equivShrink C).symm
 
 /-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/
@@ -263,6 +263,6 @@ theorem essentiallySmall_iff_of_thin {C : Type u} [Category.{v} C] [Quiver.IsThi
   simp [essentiallySmall_iff, CategoryTheory.locallySmall_of_thin]
 #align category_theory.essentially_small_iff_of_thin CategoryTheory.essentiallySmall_iff_of_thin
 
-instance [Small.{w} C] : Small.{w} (Discrete C) := small_map discreteEquiv
+instance [Small.{w} C] : Small.{w} (Discrete C) := fast_instance% small_map discreteEquiv
 
 end CategoryTheory

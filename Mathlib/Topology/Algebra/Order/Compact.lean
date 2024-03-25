@@ -158,7 +158,7 @@ section
 
 variable {α : Type*} [Preorder α] [TopologicalSpace α] [CompactIccSpace α]
 
-instance compactSpace_Icc (a b : α) : CompactSpace (Icc a b) :=
+instance compactSpace_Icc (a b : α) : CompactSpace (Icc a b) := fast_instance%
   isCompact_iff_compactSpace.mp isCompact_Icc
 #align compact_space_Icc compactSpace_Icc
 

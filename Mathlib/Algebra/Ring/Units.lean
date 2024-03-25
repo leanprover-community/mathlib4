@@ -28,7 +28,7 @@ section HasDistribNeg
 variable [Monoid α] [HasDistribNeg α] {a b : α}
 
 /-- Each element of the group of units of a ring has an additive inverse. -/
-instance : Neg αˣ :=
+instance : Neg αˣ := fast_instance%
   ⟨fun u => ⟨-↑u, -↑u⁻¹, by simp, by simp⟩⟩
 
 /-- Representing an element of a ring's unit group as an element of the ring commutes with
@@ -43,7 +43,7 @@ protected theorem coe_neg_one : ((-1 : αˣ) : α) = -1 :=
   rfl
 #align units.coe_neg_one Units.coe_neg_one
 
-instance : HasDistribNeg αˣ :=
+instance : HasDistribNeg αˣ := fast_instance%
   Units.ext.hasDistribNeg _ Units.val_neg Units.val_mul
 
 @[field_simps]

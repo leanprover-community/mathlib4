@@ -265,7 +265,7 @@ class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFu
 instance : Traversable Id :=
   ⟨id⟩
 
-instance : LawfulTraversable Id := by refine' { .. } <;> intros <;> rfl
+instance : LawfulTraversable Id :=  by refine' { .. } <;> intros <;> rfl
 
 section
 

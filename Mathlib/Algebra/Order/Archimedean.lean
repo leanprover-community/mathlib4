@@ -42,7 +42,7 @@ class Archimedean (α) [OrderedAddCommMonoid α] : Prop where
   arch : ∀ (x : α) {y : α}, 0 < y → ∃ n : ℕ, x ≤ n • y
 #align archimedean Archimedean
 
-instance OrderDual.archimedean [OrderedAddCommGroup α] [Archimedean α] : Archimedean αᵒᵈ :=
+instance OrderDual.archimedean [OrderedAddCommGroup α] [Archimedean α] : Archimedean αᵒᵈ := fast_instance%
   ⟨fun x y hy =>
     let ⟨n, hn⟩ := Archimedean.arch (-ofDual x) (neg_pos.2 hy)
     ⟨n, by rwa [neg_nsmul, neg_le_neg_iff] at hn⟩⟩
@@ -397,19 +397,19 @@ theorem archimedean_iff_rat_le : Archimedean α ↔ ∀ x : α, ∃ q : ℚ, x �
 
 end LinearOrderedField
 
-instance : Archimedean ℕ :=
+instance : Archimedean ℕ := fast_instance%
   ⟨fun n m m0 => ⟨n, by
     rw [← mul_one n, smul_eq_mul, mul_assoc, one_mul m]
     exact Nat.mul_le_mul_left n (by omega)⟩⟩
 
-instance : Archimedean ℤ :=
+instance : Archimedean ℤ := fast_instance%
   ⟨fun n m m0 =>
     ⟨n.toNat,
       le_trans (Int.self_le_toNat _) <| by
         simpa only [nsmul_eq_mul, zero_add, mul_one] using
           mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.ofNat_zero_le n.toNat)⟩⟩
 
-instance : Archimedean ℚ :=
+instance : Archimedean ℚ := fast_instance%
   archimedean_iff_rat_le.2 fun q => ⟨q, by rw [Rat.cast_id]⟩
 
 instance Nonneg.archimedean [OrderedAddCommMonoid α] [Archimedean α] :
@@ -419,7 +419,7 @@ instance Nonneg.archimedean [OrderedAddCommMonoid α] [Archimedean α] :
     ⟨n, show (x : α) ≤ (n • y : { x : α // 0 ≤ x }) by simp [*, -nsmul_eq_mul, nsmul_coe]⟩⟩
 #align nonneg.archimedean Nonneg.archimedean
 
-instance : Archimedean NNRat := Nonneg.archimedean
+instance : Archimedean NNRat := fast_instance% Nonneg.archimedean
 
 /-- A linear ordered archimedean ring is a floor ring. This is not an `instance` because in some
 cases we have a computable `floor` function. -/

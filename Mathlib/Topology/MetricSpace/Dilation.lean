@@ -94,7 +94,7 @@ instance toDilationClass : DilationClass (α →ᵈ β) α β where
   edist_eq' f := edist_eq' f
 #align dilation.to_dilation_class Dilation.toDilationClass
 
-instance : CoeFun (α →ᵈ β) fun _ => α → β :=
+instance : CoeFun (α →ᵈ β) fun _ => α → β := fast_instance%
   DFunLike.hasCoeToFun
 
 @[simp]
@@ -304,7 +304,7 @@ protected def id (α) [PseudoEMetricSpace α] : α →ᵈ α where
   edist_eq' := ⟨1, one_ne_zero, fun x y => by simp only [id.def, ENNReal.coe_one, one_mul]⟩
 #align dilation.id Dilation.id
 
-instance : Inhabited (α →ᵈ α) :=
+instance : Inhabited (α →ᵈ α) := fast_instance%
   ⟨Dilation.id α⟩
 
 @[simp] -- Porting note: Removed `@[protected]`

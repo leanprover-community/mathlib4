@@ -114,7 +114,7 @@ def piTopToPiCone :
   hom := CategoryTheory.Functor.pi' (proj X)
 #align fundamental_groupoid_functor.pi_Top_to_pi_cone FundamentalGroupoidFunctor.piTopToPiCone
 
-instance : IsIso (piTopToPiCone X) :=
+instance : IsIso (piTopToPiCone X) := fast_instance%
   haveI : IsIso (piTopToPiCone X).hom := (inferInstance : IsIso (piIso X).inv)
   Limits.Cones.cone_iso_of_hom_iso (piTopToPiCone X)
 

@@ -131,7 +131,7 @@ protected def empty : Finpartition (⊥ : α)
   not_bot_mem := not_mem_empty ⊥
 #align finpartition.empty Finpartition.empty
 
-instance : Inhabited (Finpartition (⊥ : α)) :=
+instance : Inhabited (Finpartition (⊥ : α)) := fast_instance%
   ⟨Finpartition.empty α⟩
 
 @[simp]
@@ -186,7 +186,7 @@ theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty 
   parts_nonempty_iff.2 ha
 #align finpartition.parts_nonempty Finpartition.parts_nonempty
 
-instance : Unique (Finpartition (⊥ : α)) :=
+instance : Unique (Finpartition (⊥ : α)) := fast_instance%
   { (inferInstance : Inhabited (Finpartition (⊥ : α))) with
     uniq := fun P ↦ by
       ext a
@@ -209,7 +209,7 @@ def _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a)
     exact hc
 #align is_atom.unique_finpartition IsAtom.uniqueFinpartition
 
-instance [Fintype α] [DecidableEq α] (a : α) : Fintype (Finpartition a) :=
+instance [Fintype α] [DecidableEq α] (a : α) : Fintype (Finpartition a) := fast_instance%
   @Fintype.ofSurjective { p : Finset α // p.SupIndep id ∧ p.sup id = a ∧ ⊥ ∉ p } (Finpartition a) _
     (Subtype.fintype _) (fun i ↦ ⟨i.1, i.2.1, i.2.2.1, i.2.2.2⟩) fun ⟨_, y, z, w⟩ ↦
     ⟨⟨_, y, z, w⟩, rfl⟩
@@ -220,10 +220,10 @@ instance [Fintype α] [DecidableEq α] (a : α) : Fintype (Finpartition a) :=
 section Order
 
 /-- We say that `P ≤ Q` if `P` refines `Q`: each part of `P` is less than some part of `Q`. -/
-instance : LE (Finpartition a) :=
+instance : LE (Finpartition a) := fast_instance%
   ⟨fun P Q ↦ ∀ ⦃b⦄, b ∈ P.parts → ∃ c ∈ Q.parts, b ≤ c⟩
 
-instance : PartialOrder (Finpartition a) :=
+instance : PartialOrder (Finpartition a) := fast_instance%
   { (inferInstance : LE (Finpartition a)) with
     le_refl := fun P b hb ↦ ⟨b, hb, le_rfl⟩
     le_trans := fun P Q R hPQ hQR b hb ↦ by
@@ -276,7 +276,7 @@ section Inf
 
 variable [DecidableEq α] {a b c : α}
 
-instance : Inf (Finpartition a) :=
+instance : Inf (Finpartition a) := fast_instance%
   ⟨fun P Q ↦
     ofErase ((P.parts ×ˢ Q.parts).image fun bc ↦ bc.1 ⊓ bc.2)
       (by
@@ -302,7 +302,7 @@ theorem parts_inf (P Q : Finpartition a) :
   rfl
 #align finpartition.parts_inf Finpartition.parts_inf
 
-instance : SemilatticeInf (Finpartition a) :=
+instance : SemilatticeInf (Finpartition a) := fast_instance%
   { (inferInstance : PartialOrder (Finpartition a)),
     (inferInstance : Inf (Finpartition a)) with
     inf_le_left := fun P Q b hb ↦ by
@@ -482,7 +482,7 @@ theorem sum_card_parts : ∑ i in P.parts, i.card = s.card := by
 #align finpartition.sum_card_parts Finpartition.sum_card_parts
 
 /-- `⊥` is the partition in singletons, aka discrete partition. -/
-instance (s : Finset α) : Bot (Finpartition s) :=
+instance (s : Finset α) : Bot (Finpartition s) := fast_instance%
   ⟨{  parts := s.map ⟨singleton, singleton_injective⟩
       supIndep :=
         Set.PairwiseDisjoint.supIndep
@@ -506,7 +506,7 @@ theorem mem_bot_iff : t ∈ (⊥ : Finpartition s).parts ↔ ∃ a ∈ s, {a} = 
   mem_map
 #align finpartition.mem_bot_iff Finpartition.mem_bot_iff
 
-instance (s : Finset α) : OrderBot (Finpartition s) :=
+instance (s : Finset α) : OrderBot (Finpartition s) := fast_instance%
   { (inferInstance : Bot (Finpartition s)) with
     bot_le := fun P t ht ↦ by
       rw [mem_bot_iff] at ht

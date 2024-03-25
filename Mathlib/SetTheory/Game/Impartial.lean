@@ -54,10 +54,10 @@ theorem impartial_def {G : PGame} :
 
 namespace Impartial
 
-instance impartial_zero : Impartial 0 := by rw [impartial_def]; dsimp; simp
+instance impartial_zero : Impartial 0 := fast_instance% by rw [impartial_def]; dsimp; simp
 #align pgame.impartial.impartial_zero SetTheory.PGame.Impartial.impartial_zero
 
-instance impartial_star : Impartial star := by
+instance impartial_star : Impartial star := fast_instance% by
   rw [impartial_def]; simpa using Impartial.impartial_zero
 #align pgame.impartial.impartial_star SetTheory.PGame.Impartial.impartial_star
 

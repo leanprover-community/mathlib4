@@ -72,20 +72,20 @@ instance distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ where
   smul_add r x y := by ext <;> simp [smul_re, smul_im, smul_add]
   smul_zero r := by ext <;> simp [smul_re, smul_im, smul_zero]
 
-instance [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
+instance [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ := fast_instance%
   { Complex.distribSMul, Complex.mulAction with }
 
 instance instModule [Semiring R] [Module R ℝ] : Module R ℂ where
   add_smul r s x := by ext <;> simp [smul_re, smul_im, add_smul]
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
-instance [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
+instance [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ := fast_instance%
   { Complex.ofReal.comp (algebraMap R ℝ) with
     smul := (· • ·)
     smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
     commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes] }
 
-instance : StarModule ℝ ℂ :=
+instance : StarModule ℝ ℂ := fast_instance%
   ⟨fun r x => by simp only [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩
 
 @[simp]
@@ -148,7 +148,7 @@ theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
 set_option linter.uppercaseLean3 false in
 #align complex.coe_basis_one_I Complex.coe_basisOneI
 
-instance : FiniteDimensional ℝ ℂ :=
+instance : FiniteDimensional ℝ ℂ := fast_instance%
   of_fintype_basis basisOneI
 
 @[simp]

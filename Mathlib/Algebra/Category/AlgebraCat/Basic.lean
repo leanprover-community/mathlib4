@@ -47,7 +47,7 @@ initialize_simps_projections AlgebraCat (-isRing, -isAlgebra)
 
 namespace AlgebraCat
 
-instance : CoeSort (AlgebraCat R) (Type v) :=
+instance : CoeSort (AlgebraCat R) (Type v) := fast_instance%
   ⟨AlgebraCat.carrier⟩
 
 attribute [coe] AlgebraCat.carrier
@@ -57,10 +57,10 @@ instance : Category (AlgebraCat.{v} R) where
   id A := AlgHom.id R A
   comp f g := g.comp f
 
-instance {M N : AlgebraCat.{v} R} : FunLike (M ⟶ N) M N :=
+instance {M N : AlgebraCat.{v} R} : FunLike (M ⟶ N) M N := fast_instance%
   AlgHom.funLike
 
-instance {M N : AlgebraCat.{v} R} : AlgHomClass (M ⟶ N) R M N :=
+instance {M N : AlgebraCat.{v} R} : AlgHomClass (M ⟶ N) R M N := fast_instance%
   AlgHom.algHomClass
 
 instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
@@ -69,10 +69,10 @@ instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
       map := fun f => f.toFun }
   forget_faithful := ⟨fun h => AlgHom.ext (by intros x; dsimp at h; rw [h])⟩
 
-instance {S : AlgebraCat.{v} R} : Ring ((forget (AlgebraCat R)).obj S) :=
+instance {S : AlgebraCat.{v} R} : Ring ((forget (AlgebraCat R)).obj S) := fast_instance%
   (inferInstance : Ring S.carrier)
 
-instance {S : AlgebraCat.{v} R} : Algebra R ((forget (AlgebraCat R)).obj S) :=
+instance {S : AlgebraCat.{v} R} : Algebra R ((forget (AlgebraCat R)).obj S) := fast_instance%
   (inferInstance : Algebra R S.carrier)
 
 instance hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v} where
@@ -115,7 +115,7 @@ theorem ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R
   rfl
 #align Algebra.of_hom_apply AlgebraCat.ofHom_apply
 
-instance : Inhabited (AlgebraCat R) :=
+instance : Inhabited (AlgebraCat R) := fast_instance%
   ⟨of R R⟩
 
 @[simp]
@@ -190,7 +190,7 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
         rfl }
 #align Algebra.adj AlgebraCat.adj
 
-instance : IsRightAdjoint (forget (AlgebraCat.{u} R)) :=
+instance : IsRightAdjoint (forget (AlgebraCat.{u} R)) := fast_instance%
   ⟨_, adj R⟩
 
 end AlgebraCat
@@ -244,7 +244,7 @@ def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebr
 #align alg_equiv_iso_Algebra_iso algEquivIsoAlgebraIso
 
 -- Porting note: changed to `CoeOut`
-instance (X : Type u) [Ring X] [Algebra R X] : CoeOut (Subalgebra R X) (AlgebraCat R) :=
+instance (X : Type u) [Ring X] [Algebra R X] : CoeOut (Subalgebra R X) (AlgebraCat R) := fast_instance%
   ⟨fun N => AlgebraCat.of R N⟩
 
 instance AlgebraCat.forget_reflects_isos : ReflectsIsomorphisms (forget (AlgebraCat.{u} R)) where

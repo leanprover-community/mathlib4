@@ -77,7 +77,7 @@ inductive Prequotient -- There's always `of`
 set_option linter.uppercaseLean3 false
 #align CommRing.colimits.prequotient CommRingCat.Colimits.Prequotient
 
-instance : Inhabited (Prequotient F) :=
+instance : Inhabited (Prequotient F) := fast_instance%
   ⟨Prequotient.zero⟩
 
 open Prequotient
@@ -140,7 +140,7 @@ def ColimitType : Type v :=
   Quotient (colimitSetoid F)
 #align CommRing.colimits.colimit_type CommRingCat.Colimits.ColimitType
 
-instance ColimitType.instZero : Zero (ColimitType F) where zero := Quotient.mk _ zero
+instance ColimitType.instZero : Zero (ColimitType F) where zero := fast_instance% Quotient.mk _ zero
 
 instance ColimitType.instAdd : Add (ColimitType F) where
   add := Quotient.map₂ add <| fun _x x' rx y _y' ry =>
@@ -163,10 +163,10 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
 instance InhabitedColimitType : Inhabited <| ColimitType F where
   default := 0
 
-instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
+instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) := fast_instance%
   { ColimitType.AddGroup F with one := Quotient.mk _ one }
 
-instance : CommRing (ColimitType.{v} F) :=
+instance : CommRing (ColimitType.{v} F) := fast_instance%
   { ColimitType.AddGroupWithOne F with
     mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
     one_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.one_mul _

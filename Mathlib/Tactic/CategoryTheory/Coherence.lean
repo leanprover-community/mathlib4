@@ -48,7 +48,7 @@ It must be the case that `projectObj id (LiftObj.lift x) = x` by defeq. -/
 class LiftObj (X : C) where
   protected lift : FreeMonoidalCategory C
 
-instance LiftObj_unit : LiftObj (𝟙_ C) := ⟨unit⟩
+instance LiftObj_unit : LiftObj (𝟙_ C) := fast_instance% ⟨unit⟩
 
 instance LiftObj_tensor (X Y : C) [LiftObj X] [LiftObj Y] : LiftObj (X ⊗ Y) where
   lift := LiftObj.lift X ⊗ LiftObj.lift Y
@@ -60,7 +60,7 @@ It must be the case that `projectMap id _ _ (LiftHom.lift f) = f` by defeq. -/
 class LiftHom {X Y : C} [LiftObj X] [LiftObj Y] (f : X ⟶ Y) where
   protected lift : LiftObj.lift X ⟶ LiftObj.lift Y
 
-instance LiftHom_id (X : C) [LiftObj X] : LiftHom (𝟙 X) := ⟨𝟙 _⟩
+instance LiftHom_id (X : C) [LiftObj X] : LiftHom (𝟙 X) := fast_instance% ⟨𝟙 _⟩
 
 instance LiftHom_left_unitor_hom (X : C) [LiftObj X] : LiftHom (λ_ X).hom where
   lift := (λ_ (LiftObj.lift X)).hom

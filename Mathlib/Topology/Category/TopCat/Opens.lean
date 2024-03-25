@@ -46,7 +46,7 @@ the morphisms `U ⟶ V` are not just proofs `U ≤ V`, but rather
 -/
 
 
-instance opensHomHasCoeToFun {U V : Opens X} : CoeFun (U ⟶ V) fun _ => U → V :=
+instance opensHomHasCoeToFun {U V : Opens X} : CoeFun (U ⟶ V) fun _ => U → V := fast_instance%
   ⟨fun f x => ⟨x, f.le x.2⟩⟩
 #align topological_space.opens.opens_hom_has_coe_to_fun TopologicalSpace.Opens.opensHomHasCoeToFun
 

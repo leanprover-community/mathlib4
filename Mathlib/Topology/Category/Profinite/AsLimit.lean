@@ -64,7 +64,7 @@ def asLimitCone : CategoryTheory.Limits.Cone X.diagram :=
 set_option linter.uppercaseLean3 false in
 #align Profinite.as_limit_cone Profinite.asLimitCone
 
-instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lift X.asLimitCone) :=
+instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lift X.asLimitCone) := fast_instance%
   isIso_of_bijective _
     (by
       refine' ⟨fun a b h => _, fun a => _⟩

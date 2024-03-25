@@ -113,10 +113,10 @@ theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
   exact ⟨n, hn, by ext; rw [coe_pow, hx, coe_one]⟩
 
 /-- Shortcut instance because Lean tends to time out before finding the general instance. -/
-instance : Nonempty (torsion K) := One.instNonempty
+instance : Nonempty (torsion K) := fast_instance% One.instNonempty
 
 /-- The torsion subgroup is finite. -/
-instance [NumberField K] : Fintype (torsion K) := by
+instance [NumberField K] : Fintype (torsion K) := fast_instance% by
   refine @Fintype.ofFinite _ (Set.finite_coe_iff.mpr ?_)
   refine Set.Finite.of_finite_image ?_ ((coe_injective K).injOn _)
   refine (Embeddings.finite_of_norm_le K ℂ 1).subset
@@ -127,10 +127,10 @@ instance [NumberField K] : Fintype (torsion K) := by
     exact le_of_eq ((eq_iff_eq _ 1).mp ((mem_torsion K).mp h_tors) φ)
 
 -- a shortcut instance to stop the next instance from timing out
-instance [NumberField K] : Finite (torsion K) := inferInstance
+instance [NumberField K] : Finite (torsion K) := fast_instance% inferInstance
 
 /-- The torsion subgroup is cylic. -/
-instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
+instance [NumberField K] : IsCyclic (torsion K) := fast_instance% subgroup_units_cyclic _
 
 /-- The order of the torsion subgroup as a positive integer. -/
 def torsionOrder [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype.card_pos⟩
@@ -466,7 +466,7 @@ open dirichletUnitTheorem FiniteDimensional
 /-- The unit rank of the number field `K`, it is equal to `card (InfinitePlace K) - 1`. -/
 def rank : ℕ := Fintype.card (InfinitePlace K) - 1
 
-instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
+instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := fast_instance% by
   refine discreteTopology_of_isOpen_singleton_zero ?_
   refine isOpen_singleton_of_finite_mem_nhds 0 (s := Metric.closedBall 0 1) ?_ ?_
   · exact Metric.closedBall_mem_nhds _ (by norm_num)
@@ -508,16 +508,16 @@ def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (tor
       QuotientGroup.out_eq']
     rfl
 
-instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
+instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) := fast_instance%
   Module.Free.of_equiv (unitLatticeEquiv K)
 
-instance : Module.Finite ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
+instance : Module.Finite ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) := fast_instance%
   Module.Finite.equiv (unitLatticeEquiv K)
 
 -- Note that we prove this instance first and then deduce from it the instance
 -- `Monoid.FG (𝓞 K)ˣ`, and not the other way around, due to no `Subgroup` version
 -- of `Submodule.fg_of_fg_map_of_fg_inf_ker` existing.
-instance : Module.Finite ℤ (Additive (𝓞 K)ˣ) := by
+instance : Module.Finite ℤ (Additive (𝓞 K)ˣ) := fast_instance% by
   rw [Module.finite_def]
   refine Submodule.fg_of_fg_map_of_fg_inf_ker
     (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))).toIntLinearMap ?_ ?_
@@ -530,7 +530,7 @@ instance : Module.Finite ℤ (Additive (𝓞 K)ˣ) := by
     have : Finite (Subgroup.toAddSubgroup (torsion K)) := (inferInstance : Finite (torsion K))
     exact AddGroup.fg_of_finite
 
-instance : Monoid.FG (𝓞 K)ˣ := by
+instance : Monoid.FG (𝓞 K)ˣ := fast_instance% by
   rw [Monoid.fg_iff_add_fg, ← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]
   infer_instance
 

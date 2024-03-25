@@ -73,7 +73,7 @@ protected def self : Basis ℍ[R,c₁,c₂] c₁ c₂ where
 
 variable {R}
 
-instance : Inhabited (Basis ℍ[R,c₁,c₂] c₁ c₂) :=
+instance : Inhabited (Basis ℍ[R,c₁,c₂] c₁ c₂) := fast_instance%
   ⟨Basis.self R⟩
 
 variable (q : Basis A c₁ c₂)

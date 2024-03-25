@@ -133,12 +133,12 @@ def rightMovesNimRecOn {o : Ordinal} {P : (nim o).RightMoves → Sort*} (i : (ni
   rw [← toRightMovesNim.apply_symm_apply i]; apply H
 #align pgame.right_moves_nim_rec_on SetTheory.PGame.rightMovesNimRecOn
 
-instance isEmpty_nim_zero_leftMoves : IsEmpty (nim 0).LeftMoves := by
+instance isEmpty_nim_zero_leftMoves : IsEmpty (nim 0).LeftMoves := fast_instance% by
   rw [nim_def]
   exact Ordinal.isEmpty_out_zero
 #align pgame.is_empty_nim_zero_left_moves SetTheory.PGame.isEmpty_nim_zero_leftMoves
 
-instance isEmpty_nim_zero_rightMoves : IsEmpty (nim 0).RightMoves := by
+instance isEmpty_nim_zero_rightMoves : IsEmpty (nim 0).RightMoves := fast_instance% by
   rw [nim_def]
   exact Ordinal.isEmpty_out_zero
 #align pgame.is_empty_nim_zero_right_moves SetTheory.PGame.isEmpty_nim_zero_rightMoves
@@ -152,11 +152,11 @@ theorem nim_zero_equiv : nim 0 ≈ 0 :=
   Equiv.isEmpty _
 #align pgame.nim_zero_equiv SetTheory.PGame.nim_zero_equiv
 
-noncomputable instance uniqueNimOneLeftMoves : Unique (nim 1).LeftMoves :=
+noncomputable instance uniqueNimOneLeftMoves : Unique (nim 1).LeftMoves := fast_instance%
   (Equiv.cast <| leftMoves_nim 1).unique
 #align pgame.unique_nim_one_left_moves SetTheory.PGame.uniqueNimOneLeftMoves
 
-noncomputable instance uniqueNimOneRightMoves : Unique (nim 1).RightMoves :=
+noncomputable instance uniqueNimOneRightMoves : Unique (nim 1).RightMoves := fast_instance%
   (Equiv.cast <| rightMoves_nim 1).unique
 #align pgame.unique_nim_one_right_moves SetTheory.PGame.uniqueNimOneRightMoves
 
@@ -218,7 +218,7 @@ theorem neg_nim (o : Ordinal) : -nim o = nim o := by
   rw [nim_def]; dsimp; congr <;> funext i <;> exact IH _ (Ordinal.typein_lt_self i)
 #align pgame.neg_nim SetTheory.PGame.neg_nim
 
-instance nim_impartial (o : Ordinal) : Impartial (nim o) := by
+instance nim_impartial (o : Ordinal) : Impartial (nim o) := fast_instance% by
   induction' o using Ordinal.induction with o IH
   rw [impartial_def, neg_nim]
   refine' ⟨equiv_rfl, fun i => _, fun i => _⟩ <;> simpa using IH _ (typein_lt_self _)

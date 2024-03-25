@@ -34,7 +34,7 @@ namespace UniformSpace.Completion
 
 /-- The distance on the completion is obtained by extending the distance on the original space,
 by uniform continuity. -/
-instance : Dist (Completion α) :=
+instance : Dist (Completion α) := fast_instance%
   ⟨Completion.extension₂ dist⟩
 
 /-- The new distance is uniformly continuous. -/
@@ -158,7 +158,7 @@ protected theorem uniformity_dist : 𝓤 (Completion α) = ⨅ ε > 0, 𝓟 { p 
 #align uniform_space.completion.uniformity_dist UniformSpace.Completion.uniformity_dist
 
 /-- Metric space structure on the completion of a pseudo_metric space. -/
-instance instMetricSpace : MetricSpace (Completion α) :=
+instance instMetricSpace : MetricSpace (Completion α) := fast_instance%
   @MetricSpace.ofT0PseudoMetricSpace _
     { dist_self := Completion.dist_self
       dist_comm := Completion.dist_comm

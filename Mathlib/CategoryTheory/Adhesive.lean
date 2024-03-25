@@ -248,7 +248,7 @@ theorem Adhesive.mono_of_isPushout_of_mono_right [Adhesive C] (H : IsPushout f g
   (Adhesive.van_kampen' H).mono_of_mono_right
 #align category_theory.adhesive.mono_of_is_pushout_of_mono_right CategoryTheory.Adhesive.mono_of_isPushout_of_mono_right
 
-instance Type.adhesive : Adhesive (Type u) :=
+instance Type.adhesive : Adhesive (Type u) := fast_instance%
   ⟨fun {_ _ _ _ f _ _ _ _} H =>
     (IsPushout.isVanKampen_inl _ (Types.isCoprodOfMono f) _ _ _ H.flip).flip⟩
 #align category_theory.type.adhesive CategoryTheory.Type.adhesive

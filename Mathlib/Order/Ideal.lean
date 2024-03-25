@@ -144,7 +144,7 @@ theorem mem_compl_of_ge {x y : P} : x ≤ y → x ∈ (I : Set P)ᶜ → y ∈ (
 #align order.ideal.mem_compl_of_ge Order.Ideal.mem_compl_of_ge
 
 /-- The partial ordering by subset inclusion, inherited from `Set P`. -/
-instance instPartialOrderIdeal : PartialOrder (Ideal P) :=
+instance instPartialOrderIdeal : PartialOrder (Ideal P) := fast_instance%
   PartialOrder.lift SetLike.coe SetLike.coe_injective
 
 -- @[simp] -- Porting note (#10618): simp can prove this
@@ -292,7 +292,7 @@ def principal (p : P) : Ideal P where
   directed' _ hx _ hy := ⟨p, le_rfl, hx, hy⟩
 #align order.ideal.principal Order.Ideal.principal
 
-instance [Inhabited P] : Inhabited (Ideal P) :=
+instance [Inhabited P] : Inhabited (Ideal P) := fast_instance%
   ⟨Ideal.principal default⟩
 
 @[simp]
@@ -358,7 +358,7 @@ section SemilatticeSupDirected
 variable [SemilatticeSup P] [IsDirected P (· ≥ ·)] {x : P} {I J K s t : Ideal P}
 
 /-- The infimum of two ideals of a co-directed order is their intersection. -/
-instance : Inf (Ideal P) :=
+instance : Inf (Ideal P) := fast_instance%
   ⟨fun I J ↦
     { toLowerSet := I.toLowerSet ⊓ J.toLowerSet
       nonempty' := inter_nonempty I J
@@ -366,7 +366,7 @@ instance : Inf (Ideal P) :=
 
 /-- The supremum of two ideals of a co-directed order is the union of the down sets of the pointwise
 supremum of `I` and `J`. -/
-instance : Sup (Ideal P) :=
+instance : Sup (Ideal P) := fast_instance%
   ⟨fun I J ↦
     { carrier := { x | ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j }
       nonempty' := by
@@ -384,7 +384,7 @@ instance : Sup (Ideal P) :=
           le_sup_left, le_sup_right⟩
       lower' := fun x y h ⟨yi, hi, yj, hj, hxy⟩ ↦ ⟨yi, hi, yj, hj, h.trans hxy⟩ }⟩
 
-instance : Lattice (Ideal P) :=
+instance : Lattice (Ideal P) := fast_instance%
   { Ideal.instPartialOrderIdeal with
     sup := (· ⊔ ·)
     le_sup_left := fun _ J i hi ↦
@@ -431,7 +431,7 @@ section SemilatticeSupOrderBot
 
 variable [SemilatticeSup P] [OrderBot P] {x : P} {I J K : Ideal P}
 
-instance : InfSet (Ideal P) :=
+instance : InfSet (Ideal P) := fast_instance%
   ⟨fun S ↦
     { toLowerSet := ⨅ s ∈ S, toLowerSet s
       nonempty' :=
@@ -456,7 +456,7 @@ theorem mem_sInf : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := by
   simp_rw [← SetLike.mem_coe, coe_sInf, mem_iInter₂]
 #align order.ideal.mem_Inf Order.Ideal.mem_sInf
 
-instance : CompleteLattice (Ideal P) :=
+instance : CompleteLattice (Ideal P) := fast_instance%
   { (inferInstance : Lattice (Ideal P)),
     completeLatticeOfInf (Ideal P) fun S ↦ by
       refine' ⟨fun s hs ↦ _, fun s hs ↦ by rwa [← coe_subset_coe, coe_sInf, subset_iInter₂_iff]⟩
@@ -520,11 +520,11 @@ namespace Cofinal
 
 variable [Preorder P]
 
-instance : Inhabited (Cofinal P) :=
+instance : Inhabited (Cofinal P) := fast_instance%
   ⟨{  carrier := univ
       mem_gt := fun x ↦ ⟨x, trivial, le_rfl⟩ }⟩
 
-instance : Membership P (Cofinal P) :=
+instance : Membership P (Cofinal P) := fast_instance%
   ⟨fun x D ↦ x ∈ D.carrier⟩
 
 variable (D : Cofinal P) (x : P)

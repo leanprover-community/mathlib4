@@ -21,7 +21,7 @@ open Set
 
 -- Porting note: was `deriving instance` but "default handlers have not been implemented yet"
 -- Porting note: `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
-noncomputable instance : CompleteLinearOrder ENat :=
+noncomputable instance : CompleteLinearOrder ENat := fast_instance%
   inferInstanceAs (CompleteLinearOrder (WithTop ℕ))
 
 namespace ENat

@@ -76,7 +76,7 @@ theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).inv =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 
-noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
+noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) := fast_instance%
   Monoidal.induced
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))
     { μIso := fun X Y => Iso.refl _
@@ -104,7 +104,7 @@ def toModuleCatMonoidalFunctor : MonoidalFunctor (QuadraticModuleCat.{u} R) (Mod
   unfold instMonoidalCategory
   exact Monoidal.fromInduced (forget₂ (QuadraticModuleCat R) (ModuleCat R)) _
 
-instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
+instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor := fast_instance%
   forget₂_faithful _ _
 
 end QuadraticModuleCat

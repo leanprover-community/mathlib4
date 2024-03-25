@@ -875,10 +875,10 @@ class HasUncurry (α : Type*) (β : outParam (Type*)) (γ : outParam (Type*)) wh
 
 @[inherit_doc] notation:arg "↿" x:arg => HasUncurry.uncurry x
 
-instance hasUncurryBase : HasUncurry (α → β) α β :=
+instance hasUncurryBase : HasUncurry (α → β) α β := fast_instance%
   ⟨id⟩
 
-instance hasUncurryInduction [HasUncurry β γ δ] : HasUncurry (α → β) (α × γ) δ :=
+instance hasUncurryInduction [HasUncurry β γ δ] : HasUncurry (α → β) (α × γ) δ := fast_instance%
   ⟨fun f p ↦ (↿(f p.1)) p.2⟩
 
 end Uncurry

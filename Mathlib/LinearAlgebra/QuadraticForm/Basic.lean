@@ -160,7 +160,7 @@ instance instFunLike : FunLike (QuadraticForm R M) M R where
 
 /-- Helper instance for when there's too many metavariables to apply
 `DFunLike.hasCoeToFun` directly. -/
-instance : CoeFun (QuadraticForm R M) fun _ => M → R :=
+instance : CoeFun (QuadraticForm R M) fun _ => M → R := fast_instance%
   ⟨DFunLike.coe⟩
 
 variable (Q)
@@ -376,7 +376,7 @@ variable [SMulCommClass S R R] [SMulCommClass T R R]
 /-- `QuadraticForm R M` inherits the scalar action from any algebra over `R`.
 
 This provides an `R`-action via `Algebra.id`. -/
-instance : SMul S (QuadraticForm R M) :=
+instance : SMul S (QuadraticForm R M) := fast_instance%
   ⟨fun a Q =>
     { toFun := a • ⇑Q
       toFun_smul := fun b x => by rw [Pi.smul_apply, map_smul, Pi.smul_apply, mul_smul_comm]
@@ -403,7 +403,7 @@ instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T (QuadraticForm R M
 
 end SMul
 
-instance : Zero (QuadraticForm R M) :=
+instance : Zero (QuadraticForm R M) := fast_instance%
   ⟨{  toFun := fun _ => 0
       toFun_smul := fun a _ => by simp only [mul_zero]
       exists_companion' := ⟨0, fun _ _ => by simp only [add_zero, LinearMap.zero_apply]⟩ }⟩
@@ -418,10 +418,10 @@ theorem zero_apply (x : M) : (0 : QuadraticForm R M) x = 0 :=
   rfl
 #align quadratic_form.zero_apply QuadraticForm.zero_apply
 
-instance : Inhabited (QuadraticForm R M) :=
+instance : Inhabited (QuadraticForm R M) := fast_instance%
   ⟨0⟩
 
-instance : Add (QuadraticForm R M) :=
+instance : Add (QuadraticForm R M) := fast_instance%
   ⟨fun Q Q' =>
     { toFun := Q + Q'
       toFun_smul := fun a x => by simp only [Pi.add_apply, map_smul, mul_add]
@@ -441,7 +441,7 @@ theorem add_apply (Q Q' : QuadraticForm R M) (x : M) : (Q + Q') x = Q x + Q' x :
   rfl
 #align quadratic_form.add_apply QuadraticForm.add_apply
 
-instance : AddCommMonoid (QuadraticForm R M) :=
+instance : AddCommMonoid (QuadraticForm R M) := fast_instance%
   DFunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add fun _ _ => coeFn_smul _ _
 
 /-- `@CoeFn (QuadraticForm R M)` as an `AddMonoidHom`.
@@ -502,7 +502,7 @@ section RingOperators
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
-instance : Neg (QuadraticForm R M) :=
+instance : Neg (QuadraticForm R M) := fast_instance%
   ⟨fun Q =>
     { toFun := -Q
       toFun_smul := fun a x => by simp only [Pi.neg_apply, map_smul, mul_neg]
@@ -520,7 +520,7 @@ theorem neg_apply (Q : QuadraticForm R M) (x : M) : (-Q) x = -Q x :=
   rfl
 #align quadratic_form.neg_apply QuadraticForm.neg_apply
 
-instance : Sub (QuadraticForm R M) :=
+instance : Sub (QuadraticForm R M) := fast_instance%
   ⟨fun Q Q' => (Q + -Q').copy (Q - Q') (sub_eq_add_neg _ _)⟩
 
 @[simp]
@@ -533,7 +533,7 @@ theorem sub_apply (Q Q' : QuadraticForm R M) (x : M) : (Q - Q') x = Q x - Q' x :
   rfl
 #align quadratic_form.sub_apply QuadraticForm.sub_apply
 
-instance : AddCommGroup (QuadraticForm R M) :=
+instance : AddCommGroup (QuadraticForm R M) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ coeFn_zero coeFn_add coeFn_neg coeFn_sub
     (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
 

@@ -406,12 +406,12 @@ theorem one_eq : vectorsProdEqOne G 1 = {Vector.nil.cons 1} := by
   exact fun v hv => v.cons_head_tail.symm.trans (congr_arg₂ Vector.cons hv v.tail.eq_nil)
 #align equiv.perm.vectors_prod_eq_one.one_eq Equiv.Perm.VectorsProdEqOne.one_eq
 
-instance zeroUnique : Unique (vectorsProdEqOne G 0) := by
+instance zeroUnique : Unique (vectorsProdEqOne G 0) := fast_instance% by
   rw [zero_eq]
   exact Set.uniqueSingleton Vector.nil
 #align equiv.perm.vectors_prod_eq_one.zero_unique Equiv.Perm.VectorsProdEqOne.zeroUnique
 
-instance oneUnique : Unique (vectorsProdEqOne G 1) := by
+instance oneUnique : Unique (vectorsProdEqOne G 1) := fast_instance% by
   rw [one_eq]
   exact Set.uniqueSingleton (Vector.nil.cons 1)
 #align equiv.perm.vectors_prod_eq_one.one_unique Equiv.Perm.VectorsProdEqOne.oneUnique
@@ -440,7 +440,7 @@ def equivVector : ∀ n, vectorsProdEqOne G n ≃ Vector G (n - 1)
   | (n + 1) => (vectorEquiv G n).symm
 #align equiv.perm.vectors_prod_eq_one.equiv_vector Equiv.Perm.VectorsProdEqOne.equivVector
 
-instance [Fintype G] : Fintype (vectorsProdEqOne G n) :=
+instance [Fintype G] : Fintype (vectorsProdEqOne G n) := fast_instance%
   Fintype.ofEquiv (Vector G (n - 1)) (equivVector G n).symm
 
 theorem card [Fintype G] : Fintype.card (vectorsProdEqOne G n) = Fintype.card G ^ (n - 1) :=

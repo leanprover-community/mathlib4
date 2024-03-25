@@ -78,7 +78,7 @@ structure Hom (P Q : Karoubi C) where
   comm : f = P.p ≫ f ≫ Q.p := by aesop_cat
 #align category_theory.idempotents.karoubi.hom CategoryTheory.Idempotents.Karoubi.Hom
 
-instance [Preadditive C] (P Q : Karoubi C) : Inhabited (Hom P Q) :=
+instance [Preadditive C] (P Q : Karoubi C) : Inhabited (Hom P Q) := fast_instance%
   ⟨⟨0, by rw [zero_comp, comp_zero]⟩⟩
 
 @[reassoc (attr := simp)]
@@ -127,7 +127,7 @@ theorem id_eq {P : Karoubi C} : 𝟙 P = ⟨P.p, by repeat' rw [P.idem]⟩ := rf
 
 /-- It is possible to coerce an object of `C` into an object of `Karoubi C`.
 See also the functor `toKaroubi`. -/
-instance coe : CoeTC C (Karoubi C) :=
+instance coe : CoeTC C (Karoubi C) := fast_instance%
   ⟨fun X => ⟨X, 𝟙 X, by rw [comp_id]⟩⟩
 #align category_theory.idempotents.karoubi.coe CategoryTheory.Idempotents.Karoubi.coe
 
@@ -157,7 +157,7 @@ def toKaroubi : C ⥤ Karoubi C where
   map f := ⟨f, by simp only [comp_id, id_comp]⟩
 #align category_theory.idempotents.to_karoubi CategoryTheory.Idempotents.toKaroubi
 
-instance : Full (toKaroubi C) where preimage f := f.f
+instance : Full (toKaroubi C) where preimage f := fast_instance% f.f
 
 instance : Faithful (toKaroubi C) where
   map_injective := fun h => congr_arg Karoubi.Hom.f h
@@ -227,7 +227,7 @@ open Karoubi
 
 variable (C)
 
-instance : IsIdempotentComplete (Karoubi C) := by
+instance : IsIdempotentComplete (Karoubi C) := fast_instance% by
   refine' ⟨_⟩
   intro P p hp
   simp only [hom_ext_iff, comp_f] at hp
@@ -236,7 +236,7 @@ instance : IsIdempotentComplete (Karoubi C) := by
   use ⟨p.f, by rw [hp, p_comp p]⟩
   simp [hp]
 
-instance [IsIdempotentComplete C] : EssSurj (toKaroubi C) :=
+instance [IsIdempotentComplete C] : EssSurj (toKaroubi C) := fast_instance%
   ⟨fun P => by
     rcases IsIdempotentComplete.idempotents_split P.X P.p P.idem with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
     use Y

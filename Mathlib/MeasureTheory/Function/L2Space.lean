@@ -144,7 +144,7 @@ section InnerProductSpace
 
 open scoped ComplexConjugate
 
-instance : Inner 𝕜 (α →₂[μ] E) :=
+instance : Inner 𝕜 (α →₂[μ] E) := fast_instance%
   ⟨fun f g => ∫ a, ⟪f a, g a⟫ ∂μ⟩
 
 theorem inner_def (f g : α →₂[μ] E) : ⟪f, g⟫ = ∫ a : α, ⟪f a, g a⟫ ∂μ :=

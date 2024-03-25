@@ -108,7 +108,7 @@ protected def id : α →CO α :=
   ⟨ContinuousMap.id _, IsOpenMap.id⟩
 #align continuous_open_map.id ContinuousOpenMap.id
 
-instance : Inhabited (α →CO α) :=
+instance : Inhabited (α →CO α) := fast_instance%
   ⟨ContinuousOpenMap.id _⟩
 
 @[simp]

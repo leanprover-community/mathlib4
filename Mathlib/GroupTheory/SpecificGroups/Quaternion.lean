@@ -73,7 +73,7 @@ private def mul : QuaternionGroup n → QuaternionGroup n → QuaternionGroup n
 private def one : QuaternionGroup n :=
   a 0
 
-instance : Inhabited (QuaternionGroup n) :=
+instance : Inhabited (QuaternionGroup n) := fast_instance%
   ⟨one⟩
 
 /-- The inverse of an element of the quaternion group.
@@ -163,10 +163,10 @@ def quaternionGroupZeroEquivDihedralGroupZero : QuaternionGroup 0 ≃* DihedralG
 
 /-- If `0 < n`, then `QuaternionGroup n` is a finite group.
 -/
-instance [NeZero n] : Fintype (QuaternionGroup n) :=
+instance [NeZero n] : Fintype (QuaternionGroup n) := fast_instance%
   Fintype.ofEquiv _ fintypeHelper
 
-instance : Nontrivial (QuaternionGroup n) :=
+instance : Nontrivial (QuaternionGroup n) := fast_instance%
   ⟨⟨a 0, xa 0, by revert n; simp⟩⟩ -- Porting note: `revert n; simp` was `decide`
 
 /-- If `0 < n`, then `QuaternionGroup n` has `4n` elements.

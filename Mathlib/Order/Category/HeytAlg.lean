@@ -27,10 +27,10 @@ def HeytAlg :=
 
 namespace HeytAlg
 
-instance : CoeSort HeytAlg (Type*) :=
+instance : CoeSort HeytAlg (Type*) := fast_instance%
   Bundled.coeSort
 
-instance (X : HeytAlg) : HeytingAlgebra X :=
+instance (X : HeytAlg) : HeytingAlgebra X := fast_instance%
   X.str
 
 /-- Construct a bundled `HeytAlg` from a `HeytingAlgebra`. -/
@@ -43,7 +43,7 @@ theorem coe_of (α : Type*) [HeytingAlgebra α] : ↥(of α) = α :=
   rfl
 #align HeytAlg.coe_of HeytAlg.coe_of
 
-instance : Inhabited HeytAlg :=
+instance : Inhabited HeytAlg := fast_instance%
   ⟨of PUnit⟩
 
 instance bundledHom : BundledHom HeytingHom where
@@ -57,16 +57,16 @@ deriving instance LargeCategory for HeytAlg
 
 -- Porting note: deriving failed.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory HeytAlg := by
+instance : ConcreteCategory HeytAlg := fast_instance% by
   dsimp [HeytAlg]
   infer_instance
 
 -- Porting note: No idea why it does not find this instance...
-instance {X Y : HeytAlg.{u}} : FunLike (X ⟶ Y) ↑X ↑Y :=
+instance {X Y : HeytAlg.{u}} : FunLike (X ⟶ Y) ↑X ↑Y := fast_instance%
   HeytingHom.instFunLike
 
 -- Porting note: No idea why it does not find this instance...
-instance {X Y : HeytAlg.{u}} : HeytingHomClass (X ⟶ Y) ↑X ↑Y :=
+instance {X Y : HeytAlg.{u}} : HeytingHomClass (X ⟶ Y) ↑X ↑Y := fast_instance%
   HeytingHom.instHeytingHomClass
 
 @[simps]

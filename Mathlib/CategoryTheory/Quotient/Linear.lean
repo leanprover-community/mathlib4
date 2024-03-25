@@ -101,7 +101,7 @@ def linear : Linear R (Quotient r) := by
         rw [Linear.smul_eq, ← Functor.map_comp, ← Functor.map_comp,
           Linear.smul_eq, Linear.comp_smul] }
 
-instance linear_functor : letI := linear R r hr; Functor.Linear R (functor r) := by
+instance linear_functor : letI := fast_instance% linear R r hr; Functor.Linear R (functor r) := by
   letI := linear R r hr; exact { }
 
 end Quotient

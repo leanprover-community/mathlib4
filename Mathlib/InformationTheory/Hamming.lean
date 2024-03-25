@@ -253,43 +253,43 @@ variable {α ι : Type*} {β : ι → Type*}
 
 /-! Instances inherited from normal Pi types. -/
 
-instance [∀ i, Inhabited (β i)] : Inhabited (Hamming β) :=
+instance [∀ i, Inhabited (β i)] : Inhabited (Hamming β) := fast_instance%
   ⟨fun _ => default⟩
 
-instance [DecidableEq ι] [Fintype ι] [∀ i, Fintype (β i)] : Fintype (Hamming β) :=
+instance [DecidableEq ι] [Fintype ι] [∀ i, Fintype (β i)] : Fintype (Hamming β) := fast_instance%
   Pi.fintype
 
-instance [Inhabited ι] [∀ i, Nonempty (β i)] [Nontrivial (β default)] : Nontrivial (Hamming β) :=
+instance [Inhabited ι] [∀ i, Nonempty (β i)] [Nontrivial (β default)] : Nontrivial (Hamming β) := fast_instance%
   Pi.nontrivial
 
-instance [Fintype ι] [∀ i, DecidableEq (β i)] : DecidableEq (Hamming β) :=
+instance [Fintype ι] [∀ i, DecidableEq (β i)] : DecidableEq (Hamming β) := fast_instance%
   Fintype.decidablePiFintype
 
-instance [∀ i, Zero (β i)] : Zero (Hamming β) :=
+instance [∀ i, Zero (β i)] : Zero (Hamming β) := fast_instance%
   Pi.instZero
 
-instance [∀ i, Neg (β i)] : Neg (Hamming β) :=
+instance [∀ i, Neg (β i)] : Neg (Hamming β) := fast_instance%
   Pi.instNeg
 
-instance [∀ i, Add (β i)] : Add (Hamming β) :=
+instance [∀ i, Add (β i)] : Add (Hamming β) := fast_instance%
   Pi.instAdd
 
-instance [∀ i, Sub (β i)] : Sub (Hamming β) :=
+instance [∀ i, Sub (β i)] : Sub (Hamming β) := fast_instance%
   Pi.instSub
 
-instance [∀ i, SMul α (β i)] : SMul α (Hamming β) :=
+instance [∀ i, SMul α (β i)] : SMul α (Hamming β) := fast_instance%
   Pi.instSMul
 
-instance [Zero α] [∀ i, Zero (β i)] [∀ i, SMulWithZero α (β i)] : SMulWithZero α (Hamming β) :=
+instance [Zero α] [∀ i, Zero (β i)] [∀ i, SMulWithZero α (β i)] : SMulWithZero α (Hamming β) := fast_instance%
   Pi.smulWithZero _
 
-instance [∀ i, AddMonoid (β i)] : AddMonoid (Hamming β) :=
+instance [∀ i, AddMonoid (β i)] : AddMonoid (Hamming β) := fast_instance%
   Pi.addMonoid
 
-instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Hamming β) :=
+instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Hamming β) := fast_instance%
   Pi.addCommMonoid
 
-instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Hamming β) :=
+instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Hamming β) := fast_instance%
   Pi.addCommGroup
 
 instance (α) [Semiring α] (β : ι → Type*) [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
@@ -403,7 +403,7 @@ section
 
 variable [Fintype ι] [∀ i, DecidableEq (β i)]
 
-instance : Dist (Hamming β) :=
+instance : Dist (Hamming β) := fast_instance%
   ⟨fun x y => hammingDist (ofHamming x) (ofHamming y)⟩
 
 @[simp, push_cast]
@@ -450,11 +450,11 @@ theorem nndist_eq_hammingDist (x y : Hamming β) :
 #align hamming.nndist_eq_hamming_dist Hamming.nndist_eq_hammingDist
 
 -- Porting note (#10754): new instance
-instance : DiscreteTopology (Hamming β) := ⟨rfl⟩
+instance : DiscreteTopology (Hamming β) := fast_instance% ⟨rfl⟩
 
-instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _
+instance : MetricSpace (Hamming β) := fast_instance% .ofT0PseudoMetricSpace _
 
-instance [∀ i, Zero (β i)] : Norm (Hamming β) :=
+instance [∀ i, Zero (β i)] : Norm (Hamming β) := fast_instance%
   ⟨fun x => hammingNorm (ofHamming x)⟩
 
 @[simp, push_cast]

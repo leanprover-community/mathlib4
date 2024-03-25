@@ -93,7 +93,7 @@ variable [TopologicalSpace α] [Semiring α] [TopologicalSemiring α]
 namespace Subsemiring
 
 -- Porting note: named instance because generated name was huge
-instance topologicalSemiring (S : Subsemiring α) : TopologicalSemiring S :=
+instance topologicalSemiring (S : Subsemiring α) : TopologicalSemiring S := fast_instance%
   { S.toSubmonoid.continuousMul, S.toAddSubmonoid.continuousAdd with }
 
 end Subsemiring
@@ -170,7 +170,7 @@ instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [ContinuousAdd α]
 instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] :
     TopologicalSemiring αᵐᵒᵖ := ⟨⟩
 
-instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [ContinuousNeg α] : ContinuousNeg αᵐᵒᵖ :=
+instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [ContinuousNeg α] : ContinuousNeg αᵐᵒᵖ := fast_instance%
   opHomeomorph.symm.inducing.continuousNeg fun _ => rfl
 
 instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [TopologicalRing α] :
@@ -240,7 +240,7 @@ end
 
 variable [Ring α] [TopologicalRing α]
 
-instance Subring.instTopologicalRing (S : Subring α) : TopologicalRing S :=
+instance Subring.instTopologicalRing (S : Subring α) : TopologicalRing S := fast_instance%
   { S.toSubmonoid.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
 
 /-- The (topological-space) closure of a subring of a topological ring is
@@ -293,7 +293,7 @@ namespace RingTopology
 
 variable {α : Type*} [Ring α]
 
-instance inhabited {α : Type u} [Ring α] : Inhabited (RingTopology α) :=
+instance inhabited {α : Type u} [Ring α] : Inhabited (RingTopology α) := fast_instance%
   ⟨let _ : TopologicalSpace α := ⊤;
     { continuous_add := continuous_top
       continuous_mul := continuous_top
@@ -311,7 +311,7 @@ theorem ext {f g : RingTopology α} (h : f.IsOpen = g.IsOpen) : f = g :=
 
 /-- The ordering on ring topologies on the ring `α`.
   `t ≤ s` if every set open in `s` is also open in `t` (`t` is finer than `s`). -/
-instance : PartialOrder (RingTopology α) :=
+instance : PartialOrder (RingTopology α) := fast_instance%
   PartialOrder.lift RingTopology.toTopologicalSpace toTopologicalSpace_injective
 
 private def def_sInf (S : Set (RingTopology α)) : RingTopology α :=
@@ -336,7 +336,7 @@ instance : CompleteSemilatticeInf (RingTopology α) where
   sInf_le := fun _ a haS => sInf_le (α := TopologicalSpace α) ⟨a, ⟨haS, rfl⟩⟩
   le_sInf := fun _ _ h => le_sInf (α := TopologicalSpace α) <| forall_mem_image.2 h
 
-instance : CompleteLattice (RingTopology α) :=
+instance : CompleteLattice (RingTopology α) := fast_instance%
   completeLatticeOfCompleteSemilatticeInf _
 
 /-- Given `f : α → β` and a topology on `α`, the coinduced ring topology on `β` is the finest

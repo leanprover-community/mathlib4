@@ -763,7 +763,7 @@ theorem LieAlgebra.isNilpotent_range_ad_iff : IsNilpotent R (ad R L).range ↔ I
     exact (ad R L).isNilpotent_range
 #align lie_algebra.is_nilpotent_range_ad_iff LieAlgebra.isNilpotent_range_ad_iff
 
-instance [h : LieAlgebra.IsNilpotent R L] : LieAlgebra.IsNilpotent R (⊤ : LieSubalgebra R L) :=
+instance [h : LieAlgebra.IsNilpotent R L] : LieAlgebra.IsNilpotent R (⊤ : LieSubalgebra R L) := fast_instance%
   LieSubalgebra.topEquiv.nilpotent_iff_equiv_nilpotent.mpr h
 
 end NilpotentAlgebras

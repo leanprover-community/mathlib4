@@ -71,7 +71,7 @@ structure Pretopology where
 
 namespace Pretopology
 
-instance : CoeFun (Pretopology C) fun _ => ∀ X : C, Set (Presieve X) :=
+instance : CoeFun (Pretopology C) fun _ => ∀ X : C, Set (Presieve X) := fast_instance%
   ⟨coverings⟩
 
 variable {C}
@@ -85,7 +85,7 @@ theorem le_def {K₁ K₂ : Pretopology C} : K₁ ≤ K₂ ↔ (K₁ : ∀ X : C
 
 variable (C)
 
-instance : PartialOrder (Pretopology C) :=
+instance : PartialOrder (Pretopology C) := fast_instance%
   { Pretopology.LE with
     le_refl := fun K => le_def.mpr le_rfl
     le_trans := fun K₁ K₂ K₃ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
@@ -99,7 +99,7 @@ instance : OrderTop (Pretopology C) where
       transitive := fun _ _ _ _ _ => Set.mem_univ _ }
   le_top _ _ _ _ := Set.mem_univ _
 
-instance : Inhabited (Pretopology C) :=
+instance : Inhabited (Pretopology C) := fast_instance%
   ⟨⊤⟩
 
 /-- A pretopology `K` can be completed to a Grothendieck topology `J` by declaring a sieve to be

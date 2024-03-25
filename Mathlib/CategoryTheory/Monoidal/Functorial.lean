@@ -129,7 +129,7 @@ def of (F : C → D) [I₁ : Functorial.{v₁, v₂} F] [I₂ : LaxMonoidal.{v�
 
 end LaxMonoidalFunctor
 
-instance (F : LaxMonoidalFunctor.{v₁, v₂} C D) : LaxMonoidal.{v₁, v₂} F.obj :=
+instance (F : LaxMonoidalFunctor.{v₁, v₂} C D) : LaxMonoidal.{v₁, v₂} F.obj := fast_instance%
   { F with }
 
 section

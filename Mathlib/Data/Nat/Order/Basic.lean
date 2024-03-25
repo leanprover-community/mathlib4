@@ -33,7 +33,7 @@ instance orderBot : OrderBot ℕ where
   bot_le := Nat.zero_le
 #align nat.order_bot Nat.orderBot
 
-instance linearOrderedCommSemiring : LinearOrderedCommSemiring ℕ :=
+instance linearOrderedCommSemiring : LinearOrderedCommSemiring ℕ := fast_instance%
   { Nat.commSemiring, Nat.linearOrder with
     lt := Nat.lt, add_le_add_left := @Nat.add_le_add_left,
     le_of_add_le_add_left := @Nat.le_of_add_le_add_left,
@@ -42,7 +42,7 @@ instance linearOrderedCommSemiring : LinearOrderedCommSemiring ℕ :=
     mul_lt_mul_of_pos_right := @Nat.mul_lt_mul_of_pos_right,
     exists_pair_ne := ⟨0, 1, ne_of_lt Nat.zero_lt_one⟩ }
 
-instance linearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ :=
+instance linearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ := fast_instance%
   { Nat.linearOrderedCommSemiring, (inferInstance : CommMonoidWithZero ℕ) with
     mul_le_mul_left := fun _ _ h c => Nat.mul_le_mul_left c h }
 
@@ -50,32 +50,32 @@ instance linearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ :
 
 
 -- Not using `inferInstance` avoids `Classical.choice` in the following two
-instance linearOrderedSemiring : LinearOrderedSemiring ℕ :=
+instance linearOrderedSemiring : LinearOrderedSemiring ℕ := fast_instance%
   inferInstance
 
-instance strictOrderedSemiring : StrictOrderedSemiring ℕ :=
+instance strictOrderedSemiring : StrictOrderedSemiring ℕ := fast_instance%
   inferInstance
 
-instance strictOrderedCommSemiring : StrictOrderedCommSemiring ℕ :=
+instance strictOrderedCommSemiring : StrictOrderedCommSemiring ℕ := fast_instance%
   inferInstance
 
-instance orderedSemiring : OrderedSemiring ℕ :=
+instance orderedSemiring : OrderedSemiring ℕ := fast_instance%
   StrictOrderedSemiring.toOrderedSemiring'
 
-instance orderedCommSemiring : OrderedCommSemiring ℕ :=
+instance orderedCommSemiring : OrderedCommSemiring ℕ := fast_instance%
   StrictOrderedCommSemiring.toOrderedCommSemiring'
 
-instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid ℕ :=
+instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid ℕ := fast_instance%
   inferInstance
 
-instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ :=
+instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ := fast_instance%
   { Nat.nontrivial, Nat.orderBot, (inferInstance : OrderedAddCommMonoid ℕ),
     (inferInstance : LinearOrderedSemiring ℕ), (inferInstance : CommSemiring ℕ) with
     exists_add_of_le := fun {_ _} h => (Nat.le.dest h).imp fun _ => Eq.symm,
     le_self_add := Nat.le_add_right,
     eq_zero_or_eq_zero_of_mul_eq_zero := Nat.eq_zero_of_mul_eq_zero }
 
-instance canonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddCommMonoid ℕ :=
+instance canonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddCommMonoid ℕ := fast_instance%
   { (inferInstance : CanonicallyOrderedAddCommMonoid ℕ), Nat.linearOrder with }
 
 variable {m n k l : ℕ}
@@ -209,7 +209,7 @@ theorem pred_le_iff : pred m ≤ n ↔ m ≤ succ n :=
 Most lemmas come from the `OrderedSub` instance on `ℕ`. -/
 
 
-instance : OrderedSub ℕ := by
+instance : OrderedSub ℕ := fast_instance% by
   constructor
   intro m n k
   induction' n with n ih generalizing k

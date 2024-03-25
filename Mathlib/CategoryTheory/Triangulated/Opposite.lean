@@ -62,7 +62,7 @@ private abbrev OppositeShiftAux :=
 
 /-- The category `Cᵒᵖ` is equipped with the shift such that the shift by `n` on `Cᵒᵖ`
 corresponds to the shift by `-n` on `C`. -/
-noncomputable scoped instance : HasShift Cᵒᵖ ℤ :=
+noncomputable scoped instance : HasShift Cᵒᵖ ℤ := fast_instance%
   (inferInstance : HasShift (OppositeShiftAux C) ℤ)
 
 instance [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] (n : ℤ) :

@@ -83,7 +83,7 @@ protected def Scheme.isIso : MorphismProperty Scheme :=
 protected def Scheme.affineTargetIsIso : AffineTargetMorphismProperty := fun _ _ f _ => IsIso f
 #align algebraic_geometry.Scheme.affine_target_is_iso AlgebraicGeometry.Scheme.affineTargetIsIso
 
-instance : Inhabited AffineTargetMorphismProperty := ⟨Scheme.affineTargetIsIso⟩
+instance : Inhabited AffineTargetMorphismProperty := fast_instance% ⟨Scheme.affineTargetIsIso⟩
 
 /-- An `AffineTargetMorphismProperty` can be extended to a `MorphismProperty` such that it
 *never* holds when the target is not affine -/

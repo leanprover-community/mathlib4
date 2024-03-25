@@ -153,12 +153,12 @@ def toAddMonoidHomEquiv : AddChar A M ≃ (A →+ Additive M) where
   right_inv _ := rfl
 
 /-- The trivial additive character (sending everything to `1`) is `(1 : AddChar A M).` -/
-instance instOne : One (AddChar A M) := (toMonoidHomEquiv A M).one
+instance instOne : One (AddChar A M) := fast_instance% (toMonoidHomEquiv A M).one
 
 -- Porting note: added
 @[simp] lemma one_apply (a : A) : (1 : AddChar A M) a = 1 := rfl
 
-instance instInhabited : Inhabited (AddChar A M) := ⟨1⟩
+instance instInhabited : Inhabited (AddChar A M) := fast_instance% ⟨1⟩
 
 /-- Composing a `MonoidHom` with an `AddChar` yields another `AddChar`. -/
 def _root_.MonoidHom.compAddChar {N : Type*} [Monoid N] (f : M →* N) (φ : AddChar A M) :
@@ -194,7 +194,7 @@ section toCommMonoid
 variable {A M : Type*} [AddMonoid A] [CommMonoid M]
 
 /-- When `M` is commutative, `AddChar A M` is a commutative monoid. -/
-instance instCommMonoid : CommMonoid (AddChar A M) := (toMonoidHomEquiv A M).commMonoid
+instance instCommMonoid : CommMonoid (AddChar A M) := fast_instance% (toMonoidHomEquiv A M).commMonoid
 
 -- Porting note: added
 @[simp] lemma mul_apply (ψ φ : AddChar A M) (a : A) : (ψ * φ) a = ψ a * φ a := rfl
@@ -225,7 +225,7 @@ variable {A M : Type*} [AddCommGroup A] [CommMonoid M]
 
 Note that the inverse is defined using negation on the domain; we do not assume `M` has an
 inversion operation for the definition (but see `AddChar.map_neg_inv` below). -/
-instance instCommGroup : CommGroup (AddChar A M) :=
+instance instCommGroup : CommGroup (AddChar A M) := fast_instance%
   { instCommMonoid with
     inv := fun ψ ↦ ψ.compAddMonoidHom negAddMonoidHom
     mul_left_inv := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_mul]}

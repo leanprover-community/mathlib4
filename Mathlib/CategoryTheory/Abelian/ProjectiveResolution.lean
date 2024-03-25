@@ -320,7 +320,7 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
     apply exact_d_f ((ChainComplex.mkAux _ _ _ (d (Projective.π Z)) (d (d (Projective.π Z))) _ _
       (n+1)).g)
 
-instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
+instance (n : ℕ) : Projective ((ofComplex Z).X n) := fast_instance% by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over
 
 /-- In any abelian category with enough projectives,

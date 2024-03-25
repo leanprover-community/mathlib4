@@ -75,7 +75,7 @@ def _root_.CategoryTheory.FreeGroupoid (V) [Q : Quiver V] :=
   Quotient (@redStep V Q)
 #align category_theory.free_groupoid CategoryTheory.FreeGroupoid
 
-instance {V} [Quiver V] [Nonempty V] : Nonempty (FreeGroupoid V) := by
+instance {V} [Quiver V] [Nonempty V] : Nonempty (FreeGroupoid V) := fast_instance% by
   inhabit V; exact ⟨⟨@default V _⟩⟩
 
 theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
@@ -124,7 +124,7 @@ theorem congr_reverse_comp {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
   apply congr_comp_reverse
 #align category_theory.groupoid.free.congr_reverse_comp CategoryTheory.Groupoid.Free.congr_reverse_comp
 
-instance : Category (FreeGroupoid V) :=
+instance : Category (FreeGroupoid V) := fast_instance%
   Quotient.category redStep
 
 /-- The inverse of an arrow in the free groupoid -/

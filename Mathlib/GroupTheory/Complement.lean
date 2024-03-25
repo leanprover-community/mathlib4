@@ -669,11 +669,11 @@ theorem smul_apply_eq_smul_apply_inv_smul (f : F) (T : leftTransversals (H : Set
 end Action
 
 @[to_additive]
-instance : Inhabited (leftTransversals (H : Set G)) :=
+instance : Inhabited (leftTransversals (H : Set G)) := fast_instance%
   ⟨⟨Set.range Quotient.out', range_mem_leftTransversals Quotient.out_eq'⟩⟩
 
 @[to_additive]
-instance : Inhabited (rightTransversals (H : Set G)) :=
+instance : Inhabited (rightTransversals (H : Set G)) := fast_instance%
   ⟨⟨Set.range Quotient.out', range_mem_rightTransversals Quotient.out_eq'⟩⟩
 
 theorem IsComplement'.isCompl (h : IsComplement' H K) : IsCompl H K := by

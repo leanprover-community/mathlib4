@@ -54,13 +54,13 @@ section Semiring
 variable [CommSemiring R] [CommSemiring S] [Semiring A]
 variable [Algebra R S] [Algebra S A]
 
-instance subalgebra (S₀ : Subalgebra R S) : IsScalarTower S₀ S A :=
+instance subalgebra (S₀ : Subalgebra R S) : IsScalarTower S₀ S A := fast_instance%
   of_algebraMap_eq fun _ ↦ rfl
 #align is_scalar_tower.subalgebra IsScalarTower.subalgebra
 
 variable [Algebra R A] [IsScalarTower R S A]
 
-instance subalgebra' (S₀ : Subalgebra R S) : IsScalarTower R S₀ A :=
+instance subalgebra' (S₀ : Subalgebra R S) : IsScalarTower R S₀ A := fast_instance%
   @IsScalarTower.of_algebraMap_eq R S₀ A _ _ _ _ _ _ fun _ ↦
     (IsScalarTower.algebraMap_apply R S A _ : _)
 #align is_scalar_tower.subalgebra' IsScalarTower.subalgebra'

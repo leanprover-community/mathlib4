@@ -385,7 +385,7 @@ theorem _root_.QuotientMap.separableSpace [SeparableSpace α] [TopologicalSpace 
   hf.surjective.denseRange.separableSpace hf.continuous
 
 /-- The product of two separable spaces is a separable space. -/
-instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α × β) := by
+instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α × β) := fast_instance% by
   rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
   rcases exists_countable_dense β with ⟨t, htc, htd⟩
   exact ⟨⟨s ×ˢ t, hsc.prod htc, hsd.prod htd⟩⟩
@@ -409,10 +409,10 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
     simp only [f, dif_pos hi]
     exact hyu _
 
-instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) :=
+instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) := fast_instance%
   quotientMap_quot_mk.separableSpace
 
-instance [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) :=
+instance [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) := fast_instance%
   quotientMap_quot_mk.separableSpace
 
 /-- A topological space with discrete topology is separable iff it is countable. -/
@@ -744,7 +744,7 @@ theorem countable_countableBasis [SecondCountableTopology α] : (countableBasis 
   (exists_countable_basis α).choose_spec.1
 #align topological_space.countable_countable_basis TopologicalSpace.countable_countableBasis
 
-instance encodableCountableBasis [SecondCountableTopology α] : Encodable (countableBasis α) :=
+instance encodableCountableBasis [SecondCountableTopology α] : Encodable (countableBasis α) := fast_instance%
   (countable_countableBasis α).toEncodable
 #align topological_space.encodable_countable_basis TopologicalSpace.encodableCountableBasis
 

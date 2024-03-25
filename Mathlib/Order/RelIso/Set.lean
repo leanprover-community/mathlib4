@@ -72,19 +72,19 @@ theorem relEmbedding_apply (r : α → α → Prop) (p a) : Subrel.relEmbedding 
   rfl
 #align subrel.rel_embedding_apply Subrel.relEmbedding_apply
 
-instance (r : α → α → Prop) [IsWellOrder α r] (p : Set α) : IsWellOrder p (Subrel r p) :=
+instance (r : α → α → Prop) [IsWellOrder α r] (p : Set α) : IsWellOrder p (Subrel r p) := fast_instance%
   RelEmbedding.isWellOrder (Subrel.relEmbedding r p)
 
-instance (r : α → α → Prop) [IsRefl α r] (p : Set α) : IsRefl p (Subrel r p) :=
+instance (r : α → α → Prop) [IsRefl α r] (p : Set α) : IsRefl p (Subrel r p) := fast_instance%
   ⟨fun x => @IsRefl.refl α r _ x⟩
 
-instance (r : α → α → Prop) [IsSymm α r] (p : Set α) : IsSymm p (Subrel r p) :=
+instance (r : α → α → Prop) [IsSymm α r] (p : Set α) : IsSymm p (Subrel r p) := fast_instance%
   ⟨fun x y => @IsSymm.symm α r _ x y⟩
 
-instance (r : α → α → Prop) [IsTrans α r] (p : Set α) : IsTrans p (Subrel r p) :=
+instance (r : α → α → Prop) [IsTrans α r] (p : Set α) : IsTrans p (Subrel r p) := fast_instance%
   ⟨fun x y z => @IsTrans.trans α r _ x y z⟩
 
-instance (r : α → α → Prop) [IsIrrefl α r] (p : Set α) : IsIrrefl p (Subrel r p) :=
+instance (r : α → α → Prop) [IsIrrefl α r] (p : Set α) : IsIrrefl p (Subrel r p) := fast_instance%
   ⟨fun x => @IsIrrefl.irrefl α r _ x⟩
 
 end Subrel

@@ -97,7 +97,7 @@ section
 
 variable {m : MeasurableSpace α} {μ μ₁ μ₂ : Measure α} {s s₁ s₂ t : Set α}
 
-instance ae_isMeasurablyGenerated : IsMeasurablyGenerated μ.ae :=
+instance ae_isMeasurablyGenerated : IsMeasurablyGenerated μ.ae := fast_instance%
   ⟨fun _s hs =>
     let ⟨t, hst, htm, htμ⟩ := exists_measurable_superset_of_null hs
     ⟨tᶜ, compl_mem_ae_iff.2 htμ, htm.compl, compl_subset_comm.1 hst⟩⟩
@@ -749,7 +749,7 @@ theorem measure_toMeasurable_inter {s t : Set α} (hs : MeasurableSet s) (ht : �
 
 /-! ### The `ℝ≥0∞`-module of measures -/
 
-instance instZero [MeasurableSpace α] : Zero (Measure α) :=
+instance instZero [MeasurableSpace α] : Zero (Measure α) := fast_instance%
   ⟨{  toOuterMeasure := 0
       m_iUnion := fun _f _hf _hd => tsum_zero.symm
       trimmed := OuterMeasure.trim_zero }⟩
@@ -770,7 +770,7 @@ lemma apply_eq_zero_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} (μ : Measu
     μ s = 0 := by
   rw [eq_empty_of_isEmpty s, measure_empty]
 
-instance instSubsingleton [IsEmpty α] {m : MeasurableSpace α} : Subsingleton (Measure α) :=
+instance instSubsingleton [IsEmpty α] {m : MeasurableSpace α} : Subsingleton (Measure α) := fast_instance%
   ⟨fun μ ν => by ext1 s _; rw [apply_eq_zero_of_isEmpty, apply_eq_zero_of_isEmpty]⟩
 #align measure_theory.measure.subsingleton MeasureTheory.Measure.instSubsingleton
 
@@ -778,11 +778,11 @@ theorem eq_zero_of_isEmpty [IsEmpty α] {_m : MeasurableSpace α} (μ : Measure 
   Subsingleton.elim μ 0
 #align measure_theory.measure.eq_zero_of_is_empty MeasureTheory.Measure.eq_zero_of_isEmpty
 
-instance instInhabited [MeasurableSpace α] : Inhabited (Measure α) :=
+instance instInhabited [MeasurableSpace α] : Inhabited (Measure α) := fast_instance%
   ⟨0⟩
 #align measure_theory.measure.inhabited MeasureTheory.Measure.instInhabited
 
-instance instAdd [MeasurableSpace α] : Add (Measure α) :=
+instance instAdd [MeasurableSpace α] : Add (Measure α) := fast_instance%
   ⟨fun μ₁ μ₂ =>
     { toOuterMeasure := μ₁.toOuterMeasure + μ₂.toOuterMeasure
       m_iUnion := fun s hs hd =>
@@ -813,7 +813,7 @@ variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
 variable [SMul R' ℝ≥0∞] [IsScalarTower R' ℝ≥0∞ ℝ≥0∞]
 
 -- TODO: refactor
-instance instSMul [MeasurableSpace α] : SMul R (Measure α) :=
+instance instSMul [MeasurableSpace α] : SMul R (Measure α) := fast_instance%
   ⟨fun c μ =>
     { toOuterMeasure := c • μ.toOuterMeasure
       m_iUnion := fun s hs hd => by
@@ -875,7 +875,7 @@ instance instMulAction [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ�
   Injective.mulAction _ toOuterMeasure_injective smul_toOuterMeasure
 #align measure_theory.measure.mul_action MeasureTheory.Measure.instMulAction
 
-instance instAddCommMonoid [MeasurableSpace α] : AddCommMonoid (Measure α) :=
+instance instAddCommMonoid [MeasurableSpace α] : AddCommMonoid (Measure α) := fast_instance%
   toOuterMeasure_injective.addCommMonoid toOuterMeasure zero_toOuterMeasure add_toOuterMeasure
     fun _ _ => smul_toOuterMeasure _ _
 #align measure_theory.measure.add_comm_monoid MeasureTheory.Measure.instAddCommMonoid
@@ -1027,7 +1027,7 @@ theorem sInf_caratheodory (s : Set α) (hs : MeasurableSet s) :
   exact add_le_add (hm <| inter_subset_inter_left _ htu) (hm <| diff_subset_diff_left htu)
 #align measure_theory.measure.Inf_caratheodory MeasureTheory.Measure.sInf_caratheodory
 
-instance [MeasurableSpace α] : InfSet (Measure α) :=
+instance [MeasurableSpace α] : InfSet (Measure α) := fast_instance%
   ⟨fun m => (sInf (toOuterMeasure '' m)).toMeasure <| sInf_caratheodory⟩
 
 theorem sInf_apply (hs : MeasurableSet s) : sInf m s = sInf (toOuterMeasure '' m) s :=
@@ -1043,14 +1043,14 @@ private theorem measure_le_sInf (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ sInf m 
     le_sInf <| forall_mem_image.2 fun μ hμ ↦ toOuterMeasure_le.2 <| h _ hμ
   le_iff.2 fun s hs => by rw [sInf_apply hs]; exact this s
 
-instance instCompleteSemilatticeInf [MeasurableSpace α] : CompleteSemilatticeInf (Measure α) :=
+instance instCompleteSemilatticeInf [MeasurableSpace α] : CompleteSemilatticeInf (Measure α) := fast_instance%
   { (by infer_instance : PartialOrder (Measure α)),
     (by infer_instance : InfSet (Measure α)) with
     sInf_le := fun _s _a => measure_sInf_le
     le_sInf := fun _s _a => measure_le_sInf }
 #align measure_theory.measure.complete_semilattice_Inf MeasureTheory.Measure.instCompleteSemilatticeInf
 
-instance instCompleteLattice [MeasurableSpace α] : CompleteLattice (Measure α) :=
+instance instCompleteLattice [MeasurableSpace α] : CompleteLattice (Measure α) := fast_instance%
   { /- Porting note:
     Adding an explicit `top` made `leanchecker` fail in Lean3 because of lean#364,
     but in Lean4 it's all right.
@@ -1110,7 +1110,7 @@ theorem measure_univ_ne_zero : μ univ ≠ 0 ↔ μ ≠ 0 :=
   measure_univ_eq_zero.not
 #align measure_theory.measure.measure_univ_ne_zero MeasureTheory.Measure.measure_univ_ne_zero
 
-instance [NeZero μ] : NeZero (μ univ) := ⟨measure_univ_ne_zero.2 <| NeZero.ne μ⟩
+instance [NeZero μ] : NeZero (μ univ) := fast_instance% ⟨measure_univ_ne_zero.2 <| NeZero.ne μ⟩
 
 @[simp]
 theorem measure_univ_pos : 0 < μ univ ↔ μ ≠ 0 :=
@@ -1605,7 +1605,7 @@ protected theorem refl {_m0 : MeasurableSpace α} (μ : Measure α) : μ ≪ μ 
 protected theorem rfl : μ ≪ μ := fun _s hs => hs
 #align measure_theory.measure.absolutely_continuous.rfl MeasureTheory.Measure.AbsolutelyContinuous.rfl
 
-instance instIsRefl [MeasurableSpace α] : IsRefl (Measure α) (· ≪ ·) :=
+instance instIsRefl [MeasurableSpace α] : IsRefl (Measure α) (· ≪ ·) := fast_instance%
   ⟨fun _ => AbsolutelyContinuous.rfl⟩
 #align measure_theory.measure.absolutely_continuous.is_refl MeasureTheory.Measure.AbsolutelyContinuous.instIsRefl
 
@@ -1936,7 +1936,7 @@ theorem ae_neBot : μ.ae.NeBot ↔ μ ≠ 0 :=
   neBot_iff.trans (not_congr ae_eq_bot)
 #align measure_theory.ae_ne_bot MeasureTheory.ae_neBot
 
-instance Measure.ae.neBot [NeZero μ] : μ.ae.NeBot := ae_neBot.2 <| NeZero.ne μ
+instance Measure.ae.neBot [NeZero μ] : μ.ae.NeBot := fast_instance% ae_neBot.2 <| NeZero.ne μ
 
 @[simp]
 theorem ae_zero {_m0 : MeasurableSpace α} : (0 : Measure α).ae = ⊥ :=

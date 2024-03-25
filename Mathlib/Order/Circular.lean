@@ -474,13 +474,13 @@ def LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder α
 
 namespace OrderDual
 
-instance btw (α : Type*) [Btw α] : Btw αᵒᵈ :=
+instance btw (α : Type*) [Btw α] : Btw αᵒᵈ := fast_instance%
   ⟨fun a b c : α => Btw.btw c b a⟩
 
-instance sbtw (α : Type*) [SBtw α] : SBtw αᵒᵈ :=
+instance sbtw (α : Type*) [SBtw α] : SBtw αᵒᵈ := fast_instance%
   ⟨fun a b c : α => SBtw.sbtw c b a⟩
 
-instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder αᵒᵈ :=
+instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder αᵒᵈ := fast_instance%
   { OrderDual.btw α,
     OrderDual.sbtw α with
     btw_refl := fun _ => @btw_refl α _ _
@@ -488,11 +488,11 @@ instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder 
     sbtw_trans_left := fun {_ _ _ _} habc hbdc => hbdc.trans_right habc
     sbtw_iff_btw_not_btw := fun {a b c} => @sbtw_iff_btw_not_btw α _ c b a }
 
-instance circularPartialOrder (α : Type*) [CircularPartialOrder α] : CircularPartialOrder αᵒᵈ :=
+instance circularPartialOrder (α : Type*) [CircularPartialOrder α] : CircularPartialOrder αᵒᵈ := fast_instance%
   { OrderDual.circularPreorder α with
     btw_antisymm := fun {_ _ _} habc hcba => @btw_antisymm α _ _ _ _ hcba habc }
 
-instance (α : Type*) [CircularOrder α] : CircularOrder αᵒᵈ :=
+instance (α : Type*) [CircularOrder α] : CircularOrder αᵒᵈ := fast_instance%
   { OrderDual.circularPartialOrder α with
     btw_total := fun {a b c} => @btw_total α _ c b a }
 

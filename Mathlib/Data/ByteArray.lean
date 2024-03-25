@@ -60,7 +60,7 @@ def forIn.loop [Monad m] (f : UInt8 → β → m (ForInStep β))
   else pure b
 termination_by _end - i
 
-instance : ForIn m ByteSlice UInt8 :=
+instance : ForIn m ByteSlice UInt8 := fast_instance%
   ⟨fun ⟨arr, off, len⟩ b f ↦ forIn.loop f arr off (off + len) off b⟩
 
 end ByteSlice

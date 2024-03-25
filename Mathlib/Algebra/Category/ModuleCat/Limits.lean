@@ -129,7 +129,7 @@ lemma hasLimitsOfSize : HasLimitsOfSize.{v, v} (ModuleCatMax.{v, w, u} R) where
           isLimit := limitConeIsLimit F } }
 #align Module.has_limits_of_size ModuleCat.hasLimitsOfSize
 
-instance hasLimits : HasLimits (ModuleCat.{w} R) :=
+instance hasLimits : HasLimits (ModuleCat.{w} R) := fast_instance%
   ModuleCat.hasLimitsOfSize.{w, w, u}
 #align Module.has_limits ModuleCat.hasLimits
 
@@ -168,7 +168,7 @@ instance forgetPreservesLimitsOfSize :
         (Types.limitConeIsLimit (_ ⋙ forget _)) }
 #align Module.forget_preserves_limits_of_size ModuleCat.forgetPreservesLimitsOfSize
 
-instance forgetPreservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) :=
+instance forgetPreservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) := fast_instance%
   ModuleCat.forgetPreservesLimitsOfSize.{w, w}
 #align Module.forget_preserves_limits ModuleCat.forgetPreservesLimits
 

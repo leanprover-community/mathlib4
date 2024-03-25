@@ -66,15 +66,15 @@ namespace UniversalEnvelopingAlgebra
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): the next three
 -- instances were derived automatically in mathlib3.
 
-instance instInhabited : Inhabited (UniversalEnvelopingAlgebra R L) :=
+instance instInhabited : Inhabited (UniversalEnvelopingAlgebra R L) := fast_instance%
   inferInstanceAs (Inhabited (RingQuot (UniversalEnvelopingAlgebra.Rel R L)))
 #align universal_enveloping_algebra.inhabited UniversalEnvelopingAlgebra.instInhabited
 
-instance instRing : Ring (UniversalEnvelopingAlgebra R L) :=
+instance instRing : Ring (UniversalEnvelopingAlgebra R L) := fast_instance%
   inferInstanceAs (Ring (RingQuot (UniversalEnvelopingAlgebra.Rel R L)))
 #align universal_enveloping_algebra.ring UniversalEnvelopingAlgebra.instRing
 
-instance instAlgebra : Algebra R (UniversalEnvelopingAlgebra R L) :=
+instance instAlgebra : Algebra R (UniversalEnvelopingAlgebra R L) := fast_instance%
   inferInstanceAs (Algebra R (RingQuot (UniversalEnvelopingAlgebra.Rel R L)))
 #align universal_enveloping_algebra.algebra UniversalEnvelopingAlgebra.instAlgebra
 

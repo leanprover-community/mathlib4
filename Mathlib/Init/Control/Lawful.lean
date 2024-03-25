@@ -255,9 +255,9 @@ which would remove the need for these proofs anyway.
 These are not in Std because Std does not want to deal with the churn from such a core refactor.
 -/
 
-instance : LawfulMonad (EIO ε) := inferInstanceAs <| LawfulMonad (EStateM _ _)
-instance : LawfulMonad BaseIO := inferInstanceAs <| LawfulMonad (EIO _)
-instance : LawfulMonad IO := inferInstance
+instance : LawfulMonad (EIO ε) :=  inferInstanceAs <| LawfulMonad (EStateM _ _)
+instance : LawfulMonad BaseIO :=  inferInstanceAs <| LawfulMonad (EIO _)
+instance : LawfulMonad IO :=  inferInstance
 
-instance : LawfulMonad (EST ε σ) := inferInstanceAs <| LawfulMonad (EStateM _ _)
-instance : LawfulMonad (ST ε) := inferInstance
+instance : LawfulMonad (EST ε σ) :=  inferInstanceAs <| LawfulMonad (EStateM _ _)
+instance : LawfulMonad (ST ε) :=  inferInstance

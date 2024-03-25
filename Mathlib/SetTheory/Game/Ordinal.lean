@@ -59,11 +59,11 @@ theorem toPGame_rightMoves (o : Ordinal) : o.toPGame.RightMoves = PEmpty := by
   rw [toPGame, RightMoves]
 #align ordinal.to_pgame_right_moves Ordinal.toPGame_rightMoves
 
-instance isEmpty_zero_toPGame_leftMoves : IsEmpty (toPGame 0).LeftMoves := by
+instance isEmpty_zero_toPGame_leftMoves : IsEmpty (toPGame 0).LeftMoves := fast_instance% by
   rw [toPGame_leftMoves]; infer_instance
 #align ordinal.is_empty_zero_to_pgame_left_moves Ordinal.isEmpty_zero_toPGame_leftMoves
 
-instance isEmpty_toPGame_rightMoves (o : Ordinal) : IsEmpty o.toPGame.RightMoves := by
+instance isEmpty_toPGame_rightMoves (o : Ordinal) : IsEmpty o.toPGame.RightMoves := fast_instance% by
   rw [toPGame_rightMoves]; infer_instance
 #align ordinal.is_empty_to_pgame_right_moves Ordinal.isEmpty_toPGame_rightMoves
 
@@ -102,7 +102,7 @@ noncomputable def zeroToPGameRelabelling : toPGame 0 ≡r 0 :=
   Relabelling.isEmpty _
 #align ordinal.zero_to_pgame_relabelling Ordinal.zeroToPGameRelabelling
 
-noncomputable instance uniqueOneToPGameLeftMoves : Unique (toPGame 1).LeftMoves :=
+noncomputable instance uniqueOneToPGameLeftMoves : Unique (toPGame 1).LeftMoves := fast_instance%
   (Equiv.cast <| toPGame_leftMoves 1).unique
 #align ordinal.unique_one_to_pgame_left_moves Ordinal.uniqueOneToPGameLeftMoves
 

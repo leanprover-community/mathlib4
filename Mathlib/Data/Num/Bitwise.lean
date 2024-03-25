@@ -34,7 +34,7 @@ def lor : PosNum → PosNum → PosNum
   | bit1 p, bit1 q => bit1 (lor p q)
 #align pos_num.lor PosNum.lor
 
-instance : OrOp PosNum where or := PosNum.lor
+instance : OrOp PosNum where or := fast_instance% PosNum.lor
 
 @[simp] lemma lor_eq_or (p q : PosNum) : p.lor q = p ||| q := rfl
 
@@ -50,7 +50,7 @@ def land : PosNum → PosNum → Num
   | bit1 p, bit1 q => Num.bit1 (land p q)
 #align pos_num.land PosNum.land
 
-instance : HAnd PosNum PosNum Num where hAnd := PosNum.land
+instance : HAnd PosNum PosNum Num where hAnd := fast_instance% PosNum.land
 
 @[simp] lemma land_eq_and (p q : PosNum) : p.land q = p &&& q := rfl
 
@@ -86,7 +86,7 @@ def lxor : PosNum → PosNum → Num
   | bit1 p, bit1 q => Num.bit0 (lxor p q)
 #align pos_num.lxor PosNum.lxor
 
-instance : HXor PosNum PosNum Num where hXor := PosNum.lxor
+instance : HXor PosNum PosNum Num where hXor := fast_instance% PosNum.lxor
 
 @[simp] lemma lxor_eq_xor (p q : PosNum) : p.lxor q = p ^^^ q := rfl
 
@@ -114,7 +114,7 @@ def shiftl : PosNum → Nat → PosNum
   | p, n + 1 => shiftl p.bit0 n
 #align pos_num.shiftl PosNum.shiftl
 
-instance : HShiftLeft PosNum Nat PosNum where hShiftLeft := PosNum.shiftl
+instance : HShiftLeft PosNum Nat PosNum where hShiftLeft := fast_instance% PosNum.shiftl
 
 @[simp] lemma shiftl_eq_shiftLeft (p : PosNum) (n : Nat) : p.shiftl n = p <<< n := rfl
 
@@ -133,7 +133,7 @@ def shiftr : PosNum → Nat → Num
   | bit1 p, n + 1 => shiftr p n
 #align pos_num.shiftr PosNum.shiftr
 
-instance : HShiftRight PosNum Nat Num where hShiftRight := PosNum.shiftr
+instance : HShiftRight PosNum Nat Num where hShiftRight := fast_instance% PosNum.shiftr
 
 @[simp] lemma shiftr_eq_shiftRight (p : PosNum) (n : Nat) : p.shiftr n = p >>> n := rfl
 
@@ -148,7 +148,7 @@ protected def lor : Num → Num → Num
   | pos p, pos q => pos (p ||| q)
 #align num.lor OrOp.or
 
-instance : OrOp Num where or := Num.lor
+instance : OrOp Num where or := fast_instance% Num.lor
 
 @[simp] lemma lor_eq_or (p q : Num) : p.lor q = p ||| q := rfl
 
@@ -159,7 +159,7 @@ def land : Num → Num → Num
   | pos p, pos q => p &&& q
 #align num.land Num.land
 
-instance : AndOp Num where and := Num.land
+instance : AndOp Num where and := fast_instance% Num.land
 
 @[simp] lemma land_eq_and (p q : Num) : p.land q = p &&& q := rfl
 
@@ -184,7 +184,7 @@ def lxor : Num → Num → Num
   | pos p, pos q => p ^^^ q
 #align num.lxor Num.lxor
 
-instance : Xor Num where xor := Num.lxor
+instance : Xor Num where xor := fast_instance% Num.lxor
 
 @[simp] lemma lxor_eq_xor (p q : Num) : p.lxor q = p ^^^ q := rfl
 
@@ -194,7 +194,7 @@ def shiftl : Num → Nat → Num
   | pos p, n => pos (p <<< n)
 #align num.shiftl Num.shiftl
 
-instance : HShiftLeft Num Nat Num where hShiftLeft := Num.shiftl
+instance : HShiftLeft Num Nat Num where hShiftLeft := fast_instance% Num.shiftl
 
 @[simp] lemma shiftl_eq_shiftLeft (p : Num) (n : Nat) : p.shiftl n = p <<< n := rfl
 
@@ -204,7 +204,7 @@ def shiftr : Num → Nat → Num
   | pos p, n => p >>> n
 #align num.shiftr Num.shiftr
 
-instance : HShiftRight Num Nat Num where hShiftRight := Num.shiftr
+instance : HShiftRight Num Nat Num where hShiftRight := fast_instance% Num.shiftr
 
 @[simp] lemma shiftr_eq_shiftRight (p : Num) (n : Nat) : p.shiftr n = p >>> n := rfl
 
@@ -252,22 +252,22 @@ inductive SNum : Type
   deriving DecidableEq  -- Porting note: Removed `deriving has_reflect`.
 #align snum SNum
 
-instance : Coe NzsNum SNum :=
+instance : Coe NzsNum SNum := fast_instance%
   ⟨SNum.nz⟩
 
-instance : Zero SNum :=
+instance : Zero SNum := fast_instance%
   ⟨SNum.zero false⟩
 
-instance : One NzsNum :=
+instance : One NzsNum := fast_instance%
   ⟨NzsNum.msb true⟩
 
-instance : One SNum :=
+instance : One SNum := fast_instance%
   ⟨SNum.nz 1⟩
 
-instance : Inhabited NzsNum :=
+instance : Inhabited NzsNum := fast_instance%
   ⟨1⟩
 
-instance : Inhabited SNum :=
+instance : Inhabited SNum := fast_instance%
   ⟨0⟩
 
 /-!
@@ -439,7 +439,7 @@ protected def neg (n : SNum) : SNum :=
   succ (~n)
 #align snum.neg SNum.neg
 
-instance : Neg SNum :=
+instance : Neg SNum := fast_instance%
   ⟨SNum.neg⟩
 
 /-- `SNum.czAdd a b n` is `n + a - b` (where `a` and `b` should be read as either 0 or 1).
@@ -473,7 +473,7 @@ protected def add (a b : SNum) : SNum :=
   cAdd a b false
 #align snum.add SNum.add
 
-instance : Add SNum :=
+instance : Add SNum := fast_instance%
   ⟨SNum.add⟩
 
 /-- Subtract two `SNum`s. -/
@@ -481,7 +481,7 @@ protected def sub (a b : SNum) : SNum :=
   a + -b
 #align snum.sub SNum.sub
 
-instance : Sub SNum :=
+instance : Sub SNum := fast_instance%
   ⟨SNum.sub⟩
 
 /-- Multiply two `SNum`s. -/
@@ -489,7 +489,7 @@ protected def mul (a : SNum) : SNum → SNum :=
   rec' (fun b ↦ cond b (-a) 0) fun b _ IH ↦ cond b (bit0 IH + a) (bit0 IH)
 #align snum.mul SNum.mul
 
-instance : Mul SNum :=
+instance : Mul SNum := fast_instance%
   ⟨SNum.mul⟩
 
 end SNum

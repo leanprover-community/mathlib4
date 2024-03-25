@@ -34,10 +34,10 @@ protected theorem isAsymm (h : WellFounded r) : IsAsymm α r := ⟨h.asymmetric�
 protected theorem isIrrefl (h : WellFounded r) : IsIrrefl α r := @IsAsymm.isIrrefl α r h.isAsymm
 #align well_founded.is_irrefl WellFounded.isIrrefl
 
-instance [WellFoundedRelation α] : IsAsymm α WellFoundedRelation.rel :=
+instance [WellFoundedRelation α] : IsAsymm α WellFoundedRelation.rel := fast_instance%
   WellFoundedRelation.wf.isAsymm
 
-instance : IsIrrefl α WellFoundedRelation.rel := IsAsymm.isIrrefl
+instance : IsIrrefl α WellFoundedRelation.rel := fast_instance% IsAsymm.isIrrefl
 
 theorem mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded r' :=
   Subrelation.wf (h _ _) hr

@@ -455,7 +455,7 @@ theorem Finite.of_injective {α β : Sort*} [Finite β] (f : α → β) (H : Inj
 #align finite.of_injective Finite.of_injective
 
 /-- This instance also provides `[Finite s]` for `s : Set α`. -/
-instance Subtype.finite {α : Sort*} [Finite α] {p : α → Prop} : Finite { x // p x } :=
+instance Subtype.finite {α : Sort*} [Finite α] {p : α → Prop} : Finite { x // p x } := fast_instance%
   Finite.of_injective (↑) Subtype.coe_injective
 #align subtype.finite Subtype.finite
 
@@ -569,7 +569,7 @@ theorem card_ne_zero [Nonempty α] : card α ≠ 0 :=
   _root_.ne_of_gt card_pos
 #align fintype.card_ne_zero Fintype.card_ne_zero
 
-instance [Nonempty α] : NeZero (card α) := ⟨card_ne_zero⟩
+instance [Nonempty α] : NeZero (card α) := fast_instance% ⟨card_ne_zero⟩
 
 theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
   let n := card α
@@ -1053,50 +1053,50 @@ theorem of_surjective {α β} [Infinite β] (f : α → β) (hf : Surjective f) 
 
 end Infinite
 
-instance : Infinite ℕ :=
+instance : Infinite ℕ := fast_instance%
   Infinite.of_not_fintype <| by
     intro h
     exact (Finset.range _).card_le_univ.not_lt ((Nat.lt_succ_self _).trans_eq (card_range _).symm)
 
-instance Int.infinite : Infinite ℤ :=
+instance Int.infinite : Infinite ℤ := fast_instance%
   Infinite.of_injective Int.ofNat fun _ _ => Int.ofNat.inj
 
-instance [Nonempty α] : Infinite (Multiset α) :=
+instance [Nonempty α] : Infinite (Multiset α) := fast_instance%
   let ⟨x⟩ := ‹Nonempty α›
   Infinite.of_injective (fun n => Multiset.replicate n x) (Multiset.replicate_left_injective _)
 
-instance [Nonempty α] : Infinite (List α) :=
+instance [Nonempty α] : Infinite (List α) := fast_instance%
   Infinite.of_surjective ((↑) : List α → Multiset α) (surjective_quot_mk _)
 
-instance String.infinite : Infinite String :=
+instance String.infinite : Infinite String := fast_instance%
   Infinite.of_injective (String.mk) <| by
     intro _ _ h
     cases h with
     | refl => rfl
 
-instance Infinite.set [Infinite α] : Infinite (Set α) :=
+instance Infinite.set [Infinite α] : Infinite (Set α) := fast_instance%
   Infinite.of_injective singleton Set.singleton_injective
 #align infinite.set Infinite.set
 
-instance [Infinite α] : Infinite (Finset α) :=
+instance [Infinite α] : Infinite (Finset α) := fast_instance%
   Infinite.of_injective singleton Finset.singleton_injective
 
-instance [Infinite α] : Infinite (Option α) :=
+instance [Infinite α] : Infinite (Option α) := fast_instance%
   Infinite.of_injective some (Option.some_injective α)
 
-instance Sum.infinite_of_left [Infinite α] : Infinite (Sum α β) :=
+instance Sum.infinite_of_left [Infinite α] : Infinite (Sum α β) := fast_instance%
   Infinite.of_injective Sum.inl Sum.inl_injective
 #align sum.infinite_of_left Sum.infinite_of_left
 
-instance Sum.infinite_of_right [Infinite β] : Infinite (Sum α β) :=
+instance Sum.infinite_of_right [Infinite β] : Infinite (Sum α β) := fast_instance%
   Infinite.of_injective Sum.inr Sum.inr_injective
 #align sum.infinite_of_right Sum.infinite_of_right
 
-instance Prod.infinite_of_right [Nonempty α] [Infinite β] : Infinite (α × β) :=
+instance Prod.infinite_of_right [Nonempty α] [Infinite β] : Infinite (α × β) := fast_instance%
   Infinite.of_surjective Prod.snd Prod.snd_surjective
 #align prod.infinite_of_right Prod.infinite_of_right
 
-instance Prod.infinite_of_left [Infinite α] [Nonempty β] : Infinite (α × β) :=
+instance Prod.infinite_of_left [Infinite α] [Nonempty β] : Infinite (α × β) := fast_instance%
   Infinite.of_surjective Prod.fst Prod.fst_surjective
 #align prod.infinite_of_left Prod.infinite_of_left
 
@@ -1181,7 +1181,7 @@ theorem Finite.exists_ne_map_eq_of_infinite {α β} [Infinite α] [Finite β] (f
   simpa only [Injective, not_forall, not_imp, and_comm] using not_injective_infinite_finite f
 #align finite.exists_ne_map_eq_of_infinite Finite.exists_ne_map_eq_of_infinite
 
-instance Function.Embedding.is_empty {α β} [Infinite α] [Finite β] : IsEmpty (α ↪ β) :=
+instance Function.Embedding.is_empty {α β} [Infinite α] [Finite β] : IsEmpty (α ↪ β) := fast_instance%
   ⟨fun f => not_injective_infinite_finite f f.2⟩
 #align function.embedding.is_empty Function.Embedding.is_empty
 

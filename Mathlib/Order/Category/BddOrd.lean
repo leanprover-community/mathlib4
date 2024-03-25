@@ -30,10 +30,10 @@ structure BddOrd where
 
 namespace BddOrd
 
-instance : CoeSort BddOrd (Type*) :=
+instance : CoeSort BddOrd (Type*) := fast_instance%
   InducedCategory.hasCoeToSort toPartOrd
 
-instance (X : BddOrd) : PartialOrder X :=
+instance (X : BddOrd) : PartialOrder X := fast_instance%
   X.toPartOrd.str
 
 attribute [instance] BddOrd.isBoundedOrder
@@ -49,7 +49,7 @@ theorem coe_of (α : Type*) [PartialOrder α] [BoundedOrder α] : ↥(of α) = �
   rfl
 #align BddOrd.coe_of BddOrd.coe_of
 
-instance : Inhabited BddOrd :=
+instance : Inhabited BddOrd := fast_instance%
   ⟨of PUnit⟩
 
 instance largeCategory : LargeCategory.{u} BddOrd where
@@ -63,7 +63,7 @@ instance largeCategory : LargeCategory.{u} BddOrd where
 
 -- Porting note: added.
 -- see https://github.com/leanprover-community/mathlib4/issues/5017
-instance instFunLike (X Y : BddOrd) : FunLike (X ⟶ Y) X Y :=
+instance instFunLike (X Y : BddOrd) : FunLike (X ⟶ Y) X Y := fast_instance%
   show FunLike (BoundedOrderHom X Y) X Y from inferInstance
 
 instance concreteCategory : ConcreteCategory BddOrd where

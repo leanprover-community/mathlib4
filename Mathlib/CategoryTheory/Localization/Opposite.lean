@@ -43,7 +43,7 @@ def StrictUniversalPropertyFixedTarget.op {E : Type*} [Category E]
     exact h.uniq _ _ eq'
 #align category_theory.localization.strict_universal_property_fixed_target.op CategoryTheory.Localization.StrictUniversalPropertyFixedTarget.op
 
-instance isLocalization_op : W.Q.op.IsLocalization W.op :=
+instance isLocalization_op : W.Q.op.IsLocalization W.op := fast_instance%
   Functor.IsLocalization.mk' W.Q.op W.op (strictUniversalPropertyFixedTargetQ W _).op
     (strictUniversalPropertyFixedTargetQ W _).op
 #align category_theory.localization.is_localization_op CategoryTheory.Localization.isLocalization_op
@@ -52,7 +52,7 @@ end Localization
 
 namespace Functor
 
-instance IsLocalization.op [L.IsLocalization W] : L.op.IsLocalization W.op :=
+instance IsLocalization.op [L.IsLocalization W] : L.op.IsLocalization W.op := fast_instance%
   IsLocalization.of_equivalence_target W.Q.op W.op L.op (Localization.equivalenceFromModel L W).op
     (NatIso.op (Localization.qCompEquivalenceFromModelFunctorIso L W).symm)
 #align category_theory.functor.is_localization.op CategoryTheory.Functor.IsLocalization.op

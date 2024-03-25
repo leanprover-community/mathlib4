@@ -35,7 +35,7 @@ instance (priority := 100) NormedSpace.to_uniformContinuousConstSMul :
   ⟨fun c => (lipschitzWith_smul c).uniformContinuous⟩
 #align uniform_space.completion.normed_space.to_has_uniform_continuous_const_smul UniformSpace.Completion.NormedSpace.to_uniformContinuousConstSMul
 
-instance : NormedSpace 𝕜 (Completion E) :=
+instance : NormedSpace 𝕜 (Completion E) := fast_instance%
   { Completion.instModule with
     norm_smul_le := fun c x =>
       induction_on x
@@ -80,7 +80,7 @@ section Algebra
 
 variable (𝕜) (A : Type*)
 
-instance [SeminormedRing A] : NormedRing (Completion A) :=
+instance [SeminormedRing A] : NormedRing (Completion A) := fast_instance%
   { Completion.ring,
     Completion.instMetricSpace with
     dist_eq := fun x y => by

@@ -494,7 +494,7 @@ def completion {_ : MeasurableSpace α} (μ : Measure α) :
     exact fun t _ht => iInf_mono' fun h => ⟨MeasurableSet.nullMeasurableSet h, le_rfl⟩
 #align measure_theory.measure.completion MeasureTheory.Measure.completion
 
-instance completion.isComplete {_m : MeasurableSpace α} (μ : Measure α) : μ.completion.IsComplete :=
+instance completion.isComplete {_m : MeasurableSpace α} (μ : Measure α) : μ.completion.IsComplete := fast_instance%
   ⟨fun _z hz => NullMeasurableSet.of_null hz⟩
 #align measure_theory.measure.completion.is_complete MeasureTheory.Measure.completion.isComplete
 

@@ -106,7 +106,7 @@ instance (priority := 100) t2Space_of_metrizableSpace [MetrizableSpace X] : T2Sp
   inferInstance
 #align topological_space.t2_space_of_metrizable_space TopologicalSpace.t2Space_of_metrizableSpace
 
-instance metrizableSpace_prod [MetrizableSpace X] [MetrizableSpace Y] : MetrizableSpace (X × Y) :=
+instance metrizableSpace_prod [MetrizableSpace X] [MetrizableSpace Y] : MetrizableSpace (X × Y) := fast_instance%
   letI : MetricSpace X := metrizableSpaceMetric X
   letI : MetricSpace Y := metrizableSpaceMetric Y
   inferInstance
@@ -120,11 +120,11 @@ theorem _root_.Embedding.metrizableSpace [MetrizableSpace Y] {f : X → Y} (hf :
   ⟨⟨hf.comapMetricSpace f, rfl⟩⟩
 #align embedding.metrizable_space Embedding.metrizableSpace
 
-instance MetrizableSpace.subtype [MetrizableSpace X] (s : Set X) : MetrizableSpace s :=
+instance MetrizableSpace.subtype [MetrizableSpace X] (s : Set X) : MetrizableSpace s := fast_instance%
   embedding_subtype_val.metrizableSpace
 #align topological_space.metrizable_space.subtype TopologicalSpace.MetrizableSpace.subtype
 
-instance metrizableSpace_pi [∀ i, MetrizableSpace (π i)] : MetrizableSpace (∀ i, π i) := by
+instance metrizableSpace_pi [∀ i, MetrizableSpace (π i)] : MetrizableSpace (∀ i, π i) := fast_instance% by
   cases nonempty_fintype ι
   letI := fun i => metrizableSpaceMetric (π i)
   infer_instance

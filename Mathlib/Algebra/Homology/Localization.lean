@@ -194,7 +194,7 @@ variable [(HomotopyCategory.quotient C c).IsLocalization
 /-- The category `HomologicalComplexUpToQuasiIso C c` which was defined as a localization of
 `HomologicalComplex C c` with respect to quasi-isomorphisms also identify to a localization
 of the homotopy category with respect ot quasi-isomorphisms. -/
-instance : HomologicalComplexUpToQuasiIso.Qh.IsLocalization (HomotopyCategory.quasiIso C c) :=
+instance : HomologicalComplexUpToQuasiIso.Qh.IsLocalization (HomotopyCategory.quasiIso C c) := fast_instance%
   Functor.IsLocalization.of_comp (HomotopyCategory.quotient C c)
     Qh (HomologicalComplex.homotopyEquivalences C c)
     (HomotopyCategory.quasiIso C c) (HomologicalComplex.quasiIso C c)
@@ -253,7 +253,7 @@ instance : (HomotopyCategory.quotient C (ComplexShape.down ι)).IsLocalization
 
 variable [CategoryWithHomology C]
 
-instance : (ComplexShape.down ι).QFactorsThroughHomotopy C :=
+instance : (ComplexShape.down ι).QFactorsThroughHomotopy C := fast_instance%
   (ComplexShape.down ι).QFactorsThroughHomotopy_of_exists_prev (fun _ => ⟨_, rfl⟩) C
 
 example [(HomologicalComplex.quasiIso C (ComplexShape.down ι)).HasLocalization] :
@@ -278,7 +278,7 @@ instance : (HomotopyCategory.quotient C (ComplexShape.up ℤ)).IsLocalization
 
 variable [CategoryWithHomology C]
 
-instance : (ComplexShape.up ℤ).QFactorsThroughHomotopy C :=
+instance : (ComplexShape.up ℤ).QFactorsThroughHomotopy C := fast_instance%
   (ComplexShape.up ℤ).QFactorsThroughHomotopy_of_exists_prev (fun n => ⟨n - 1, by simp⟩) C
 
 /-- When we define the derived category as `HomologicalComplexUpToQuasiIso C (ComplexShape.up ℤ)`,

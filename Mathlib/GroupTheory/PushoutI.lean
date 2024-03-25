@@ -65,13 +65,13 @@ section Monoid
 
 variable [∀ i, Monoid (G i)] [Monoid H] {φ : ∀ i, H →* G i}
 
-protected instance mul : Mul (PushoutI φ) := by
+protected instance mul : Mul (PushoutI φ) := fast_instance% by
   delta PushoutI; infer_instance
 
-protected instance one : One (PushoutI φ) := by
+protected instance one : One (PushoutI φ) := fast_instance% by
   delta PushoutI; infer_instance
 
-instance monoid : Monoid (PushoutI φ) :=
+instance monoid : Monoid (PushoutI φ) := fast_instance%
   { Con.monoid _ with
     toMul := PushoutI.mul
     toOne := PushoutI.one }
@@ -187,7 +187,7 @@ end Monoid
 
 variable [∀ i, Group (G i)] [Group H] {φ : ∀ i, H →* G i}
 
-instance : Group (PushoutI φ) :=
+instance : Group (PushoutI φ) := fast_instance%
   { Con.group (PushoutI.con φ) with
     toMonoid := PushoutI.monoid }
 
@@ -264,9 +264,9 @@ variable {d : Transversal φ}
 @[simps!]
 def empty : NormalWord d := ⟨CoprodI.Word.empty, 1, fun i g => by simp [CoprodI.Word.empty]⟩
 
-instance : Inhabited (NormalWord d) := ⟨NormalWord.empty⟩
+instance : Inhabited (NormalWord d) := fast_instance% ⟨NormalWord.empty⟩
 
-instance (i : ι) : Inhabited (Pair d i) :=
+instance (i : ι) : Inhabited (Pair d i) := fast_instance%
   ⟨{ (empty : NormalWord d) with
       head := 1,
       fstIdx_ne := fun h => by cases h }⟩
@@ -410,7 +410,7 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
     left_inv := leftInv
     right_inv := fun _ => rcons_injective (leftInv _) }
 
-noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :=
+noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) := fast_instance%
   { smul := fun g w => (equivPair i).symm
       { equivPair i w with
         head := g * (equivPair i w).head }
@@ -422,7 +422,7 @@ noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :
       dsimp [instHSMul]
       simp [mul_assoc, Equiv.apply_symm_apply, Function.End.mul_def] }
 
-instance baseAction : MulAction H (NormalWord d) :=
+instance baseAction : MulAction H (NormalWord d) := fast_instance%
   { smul := fun h w => { w with head := h * w.head },
     one_smul := by simp [instHSMul]
     mul_smul := by simp [instHSMul, mul_assoc] }
@@ -574,13 +574,13 @@ theorem prod_injective : Function.Injective (prod : NormalWord d → PushoutI φ
   letI := fun i => Classical.decEq (G i)
   classical exact equiv.symm.injective
 
-instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=
+instance : FaithfulSMul (PushoutI φ) (NormalWord d) := fast_instance%
   ⟨fun h => by simpa using congr_arg prod (h empty)⟩
 
-instance (i : ι) : FaithfulSMul (G i) (NormalWord d) :=
+instance (i : ι) : FaithfulSMul (G i) (NormalWord d) := fast_instance%
   ⟨by simp [summand_smul_def']⟩
 
-instance : FaithfulSMul H (NormalWord d) :=
+instance : FaithfulSMul H (NormalWord d) := fast_instance%
   ⟨by simp [base_smul_def']⟩
 
 end NormalWord

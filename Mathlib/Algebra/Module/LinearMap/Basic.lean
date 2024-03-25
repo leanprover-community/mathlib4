@@ -442,7 +442,7 @@ See also `LinearMap.map_smul_of_tower`. -/
 #align linear_map.restrict_scalars LinearMap.restrictScalars
 
 -- Porting note: generalized from `Algebra` to `CompatibleSMul`
-instance coeIsScalarTower : CoeHTCT (M →ₗ[S] M₂) (M →ₗ[R] M₂) :=
+instance coeIsScalarTower : CoeHTCT (M →ₗ[S] M₂) (M →ₗ[R] M₂) := fast_instance%
   ⟨restrictScalars R⟩
 #align linear_map.coe_is_scalar_tower LinearMap.coeIsScalarTower
 
@@ -655,7 +655,7 @@ def toLinearMap (fₗ : M →+[R] M₂) : M →ₗ[R] M₂ :=
   { fₗ with }
 #align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
 
-instance : CoeTC (M →+[R] M₂) (M →ₗ[R] M₂) :=
+instance : CoeTC (M →+[R] M₂) (M →ₗ[R] M₂) := fast_instance%
   ⟨toLinearMap⟩
 
 -- Porting note: because coercions get unfolded, there is no need for this rewrite
@@ -805,7 +805,7 @@ variable [Monoid S] [DistribMulAction S M₂] [SMulCommClass R₂ S M₂]
 variable [Monoid S₃] [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃]
 variable [Monoid T] [DistribMulAction T M₂] [SMulCommClass R₂ T M₂]
 
-instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
+instance : SMul S (M →ₛₗ[σ₁₂] M₂) := fast_instance%
   ⟨fun a f ↦
     { toFun := a • (f : M → M₂)
       map_add' := fun x y ↦ by simp only [Pi.smul_apply, f.map_add, smul_add]
@@ -820,7 +820,7 @@ theorem coe_smul (a : S) (f : M →ₛₗ[σ₁₂] M₂) : (a • f : M →ₛ�
   rfl
 #align linear_map.coe_smul LinearMap.coe_smul
 
-instance [SMulCommClass S T M₂] : SMulCommClass S T (M →ₛₗ[σ₁₂] M₂) :=
+instance [SMulCommClass S T M₂] : SMulCommClass S T (M →ₛₗ[σ₁₂] M₂) := fast_instance%
   ⟨fun _ _ _ ↦ ext fun _ ↦ smul_comm _ _ _⟩
 
 -- example application of this instance: if S -> T -> R are homomorphisms of commutative rings and
@@ -855,7 +855,7 @@ theorem  _root_.DomMulAct.coe_smul_linearMap (a : S'ᵈᵐᵃ) (f : M →ₛₗ[
     (a • f : M →ₛₗ[σ₁₂] M₂) = a • (f : M → M₂) :=
   rfl
 
-instance [SMulCommClass S' T' M] : SMulCommClass S'ᵈᵐᵃ T'ᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) :=
+instance [SMulCommClass S' T' M] : SMulCommClass S'ᵈᵐᵃ T'ᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) := fast_instance%
   ⟨fun s t f ↦ ext fun m ↦ by simp_rw [DomMulAct.smul_linearMap_apply, smul_comm]⟩
 
 end SMul
@@ -872,7 +872,7 @@ variable [Module R₁ N₁] [Module R₂ N₂] [Module R₃ N₃]
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 /-- The constant 0 map is linear. -/
-instance : Zero (M →ₛₗ[σ₁₂] M₂) :=
+instance : Zero (M →ₛₗ[σ₁₂] M₂) := fast_instance%
   ⟨{  toFun := 0
       map_add' := by simp
       map_smul' := by simp }⟩
@@ -892,7 +892,7 @@ theorem zero_comp (f : M →ₛₗ[σ₁₂] M₂) : ((0 : M₂ →ₛₗ[σ₂�
   rfl
 #align linear_map.zero_comp LinearMap.zero_comp
 
-instance : Inhabited (M →ₛₗ[σ₁₂] M₂) :=
+instance : Inhabited (M →ₛₗ[σ₁₂] M₂) := fast_instance%
   ⟨0⟩
 
 @[simp]
@@ -901,7 +901,7 @@ theorem default_def : (default : M →ₛₗ[σ₁₂] M₂) = 0 :=
 #align linear_map.default_def LinearMap.default_def
 
 /-- The sum of two linear maps is linear. -/
-instance : Add (M →ₛₗ[σ₁₂] M₂) :=
+instance : Add (M →ₛₗ[σ₁₂] M₂) := fast_instance%
   ⟨fun f g ↦
     { toFun := f + g
       map_add' := by simp [add_comm, add_left_comm]
@@ -923,11 +923,11 @@ theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃
 #align linear_map.comp_add LinearMap.comp_add
 
 /-- The type of linear maps is an additive monoid. -/
-instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
+instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) := fast_instance%
   DFunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- The negation of a linear map is linear. -/
-instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
+instance : Neg (M →ₛₗ[σ₁₂] N₂) := fast_instance%
   ⟨fun f ↦
     { toFun := -f
       map_add' := by simp [add_comm]
@@ -949,7 +949,7 @@ theorem comp_neg (f : M →ₛₗ[σ₁₂] N₂) (g : N₂ →ₛₗ[σ₂₃] 
 #align linear_map.comp_neg LinearMap.comp_neg
 
 /-- The subtraction of two linear maps is linear. -/
-instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
+instance : Sub (M →ₛₗ[σ₁₂] N₂) := fast_instance%
   ⟨fun f g ↦
     { toFun := f - g
       map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
@@ -971,7 +971,7 @@ theorem comp_sub (f g : M →ₛₗ[σ₁₂] N₂) (h : N₂ →ₛₗ[σ₂₃
 #align linear_map.comp_sub LinearMap.comp_sub
 
 /-- The type of linear maps is an additive group. -/
-instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) :=
+instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
@@ -1026,7 +1026,7 @@ instance module : Module S (M →ₛₗ[σ₁₂] M₂) where
   add_smul _ _ _ := ext fun _ ↦ add_smul _ _ _
   zero_smul _ := ext fun _ ↦ zero_smul _ _
 
-instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M₂) :=
+instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M₂) := fast_instance%
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
 
 instance [SMulCommClass R S M] : Module Sᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) where

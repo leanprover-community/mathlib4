@@ -82,7 +82,7 @@ def EssImageSubcategory (F : C ⥤ D) :=
 #align category_theory.functor.ess_image_subcategory CategoryTheory.Functor.EssImageSubcategory
 
 -- Porting note: `deriving Category` is not able to derive this instance
-instance : Category (EssImageSubcategory F) :=
+instance : Category (EssImageSubcategory F) := fast_instance%
   (inferInstance : Category.{v₂} (FullSubcategory _))
 
 /-- The essential image as a subcategory has a fully faithful inclusion into the target category. -/
@@ -94,11 +94,11 @@ def essImageInclusion (F : C ⥤ D) : F.EssImageSubcategory ⥤ D :=
 #align category_theory.functor.ess_image_inclusion_map CategoryTheory.Functor.essImageInclusion_map
 
 -- Porting note: `deriving Full` is not able to derive this instance
-instance : Full (essImageInclusion F) :=
+instance : Full (essImageInclusion F) := fast_instance%
   (inferInstance : Full (fullSubcategoryInclusion _))
 
 -- Porting note: `deriving Faithful` is not able to derive this instance
-instance : Faithful (essImageInclusion F) :=
+instance : Faithful (essImageInclusion F) := fast_instance%
   (inferInstance : Faithful (fullSubcategoryInclusion _))
 
 /--
@@ -154,12 +154,12 @@ def Functor.objObjPreimageIso (Y : D) : F.obj (F.objPreimage Y) ≅ Y :=
 #align category_theory.functor.obj_obj_preimage_iso CategoryTheory.Functor.objObjPreimageIso
 
 /-- The induced functor of a faithful functor is faithful. -/
-instance Faithful.toEssImage (F : C ⥤ D) [Faithful F] : Faithful F.toEssImage :=
+instance Faithful.toEssImage (F : C ⥤ D) [Faithful F] : Faithful F.toEssImage := fast_instance%
   Faithful.of_comp_iso F.toEssImageCompEssentialImageInclusion
 #align category_theory.faithful.to_ess_image CategoryTheory.Faithful.toEssImage
 
 /-- The induced functor of a full functor is full. -/
-instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage :=
+instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage := fast_instance%
   haveI := Full.ofIso F.toEssImageCompEssentialImageInclusion.symm
   Full.ofCompFaithful F.toEssImage F.essImageInclusion
 #align category_theory.full.to_ess_image CategoryTheory.Full.toEssImage

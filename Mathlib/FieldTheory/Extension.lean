@@ -50,7 +50,7 @@ noncomputable instance : OrderBot (Lifts F E K) where
     simp_rw [AlgHom.comp_apply, AlgHom.coe_coe, AlgEquiv.apply_symm_apply]
     exact L.emb.commutes x⟩
 
-noncomputable instance : Inhabited (Lifts F E K) :=
+noncomputable instance : Inhabited (Lifts F E K) := fast_instance%
   ⟨⊥⟩
 
 /-- A chain of lifts has an upper bound. -/

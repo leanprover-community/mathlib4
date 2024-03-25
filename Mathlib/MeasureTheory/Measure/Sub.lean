@@ -30,7 +30,7 @@ Compare with `ENNReal.instSub`.
 Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`, and
 `ν {2} = 2`, `ν {1} = 0`, then `(μ - ν) {1, 2} = 2`. However, if `μ ≤ ν`, and
 `ν univ ≠ ∞`, then `(μ - ν) + ν = μ`. -/
-noncomputable instance instSub {α : Type*} [MeasurableSpace α] : Sub (Measure α) :=
+noncomputable instance instSub {α : Type*} [MeasurableSpace α] : Sub (Measure α) := fast_instance%
   ⟨fun μ ν => sInf { τ | μ ≤ τ + ν }⟩
 #align measure_theory.measure.has_sub MeasureTheory.Measure.instSub
 
@@ -139,7 +139,7 @@ theorem sub_apply_eq_zero_of_restrict_le_restrict (h_le : μ.restrict s ≤ ν.r
   rw [← restrict_apply_self, restrict_sub_eq_restrict_sub_restrict, sub_eq_zero_of_le] <;> simp [*]
 #align measure_theory.measure.sub_apply_eq_zero_of_restrict_le_restrict MeasureTheory.Measure.sub_apply_eq_zero_of_restrict_le_restrict
 
-instance isFiniteMeasure_sub [IsFiniteMeasure μ] : IsFiniteMeasure (μ - ν) :=
+instance isFiniteMeasure_sub [IsFiniteMeasure μ] : IsFiniteMeasure (μ - ν) := fast_instance%
   isFiniteMeasure_of_le μ sub_le
 #align measure_theory.measure.is_finite_measure_sub MeasureTheory.Measure.isFiniteMeasure_sub
 

@@ -47,7 +47,7 @@ variable {ι : Type v}
 
 namespace Pairwise
 
-instance pairwiseInhabited [Inhabited ι] : Inhabited (Pairwise ι) :=
+instance pairwiseInhabited [Inhabited ι] : Inhabited (Pairwise ι) := fast_instance%
   ⟨single default⟩
 #align category_theory.pairwise.pairwise_inhabited CategoryTheory.Pairwise.pairwiseInhabited
 
@@ -63,7 +63,7 @@ inductive Hom : Pairwise ι → Pairwise ι → Type v
 
 open Hom
 
-instance homInhabited [Inhabited ι] : Inhabited (Hom (single (default : ι)) (single default)) :=
+instance homInhabited [Inhabited ι] : Inhabited (Hom (single (default : ι)) (single default)) := fast_instance%
   ⟨id_single default⟩
 #align category_theory.pairwise.hom_inhabited CategoryTheory.Pairwise.homInhabited
 

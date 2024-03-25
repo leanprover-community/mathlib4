@@ -152,7 +152,7 @@ theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → 
 #align alg_equiv.coe_fun_injective AlgEquiv.coe_fun_injective
 
 -- Porting note: Made to CoeOut instance from Coe, not dangerous anymore
-instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
+instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) := fast_instance%
   ⟨AlgEquiv.toRingEquiv⟩
 #align alg_equiv.has_coe_to_ring_equiv AlgEquiv.hasCoeToRingEquiv
 
@@ -292,7 +292,7 @@ def refl : A₁ ≃ₐ[R] A₁ :=
   { (1 : A₁ ≃+* A₁) with commutes' := fun _ => rfl }
 #align alg_equiv.refl AlgEquiv.refl
 
-instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
+instance : Inhabited (A₁ ≃ₐ[R] A₁) := fast_instance%
   ⟨refl⟩
 
 @[simp]
@@ -750,7 +750,7 @@ protected theorem smul_def (f : A₁ ≃ₐ[R] A₁) (a : A₁) : f • a = f a 
   rfl
 #align alg_equiv.smul_def AlgEquiv.smul_def
 
-instance apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ :=
+instance apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ := fast_instance%
   ⟨AlgEquiv.ext⟩
 #align alg_equiv.apply_has_faithful_smul AlgEquiv.apply_faithfulSMul
 

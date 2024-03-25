@@ -21,10 +21,10 @@ instance (priority := 900) IsROrC.borelSpace {𝕜 : Type*} [IsROrC 𝕜] : Bore
   ⟨rfl⟩
 #align is_R_or_C.borel_space IsROrC.borelSpace
 
-instance Complex.measurableSpace : MeasurableSpace ℂ :=
+instance Complex.measurableSpace : MeasurableSpace ℂ := fast_instance%
   borel ℂ
 #align complex.measurable_space Complex.measurableSpace
 
-instance Complex.borelSpace : BorelSpace ℂ :=
+instance Complex.borelSpace : BorelSpace ℂ := fast_instance%
   ⟨rfl⟩
 #align complex.borel_space Complex.borelSpace

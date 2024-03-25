@@ -78,7 +78,7 @@ def ChooseBasisIndex : Type _ :=
 
 /-- There is no hope of computing this, but we add the instance anyway to avoid fumbling with
 `open scoped Classical`. -/
-noncomputable instance : DecidableEq (ChooseBasisIndex R M) := Classical.decEq _
+noncomputable instance : DecidableEq (ChooseBasisIndex R M) := fast_instance% Classical.decEq _
 
 /-- If `Module.Free R M` then `chooseBasis : ι → M` is the basis.
 Here `ι = ChooseBasisIndex R M`. -/
@@ -109,7 +109,7 @@ instance (priority := 100) noZeroSMulDivisors [NoZeroDivisors R] : NoZeroSMulDiv
   b.noZeroSMulDivisors
 #align module.free.no_zero_smul_divisors Module.Free.noZeroSMulDivisors
 
-instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
+instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) := fast_instance%
   (Module.Free.chooseBasis R M).index_nonempty
 
 theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
@@ -131,11 +131,11 @@ theorem of_equiv' {P : Type v} [AddCommMonoid P] [Module R P] (_ : Module.Free R
 variable (R M N)
 
 /-- The module structure provided by `Semiring.toModule` is free. -/
-instance self : Module.Free R R :=
+instance self : Module.Free R R := fast_instance%
   of_basis (Basis.singleton Unit R)
 #align module.free.self Module.Free.self
 
-instance prod [Module.Free R N] : Module.Free R (M × N) :=
+instance prod [Module.Free R N] : Module.Free R (M × N) := fast_instance%
   of_basis <| (chooseBasis R M).prod (chooseBasis R N)
 #align module.free.prod Module.Free.prod
 
@@ -147,21 +147,21 @@ instance pi (M : ι → Type*) [Finite ι] [∀ i : ι, AddCommMonoid (M i)] [�
 #align module.free.pi Module.Free.pi
 
 /-- The module of finite matrices is free. -/
-instance matrix {m n : Type*} [Finite m] [Finite n] : Module.Free R (Matrix m n M) :=
+instance matrix {m n : Type*} [Finite m] [Finite n] : Module.Free R (Matrix m n M) := fast_instance%
   Module.Free.pi R _
 #align module.free.matrix Module.Free.matrix
 
-instance ulift [Free R M] : Free R (ULift M) := of_equiv ULift.moduleEquiv.symm
+instance ulift [Free R M] : Free R (ULift M) := fast_instance% of_equiv ULift.moduleEquiv.symm
 
 variable (ι)
 
 /-- The product of finitely many free modules is free (non-dependent version to help with typeclass
 search). -/
-instance function [Finite ι] : Module.Free R (ι → M) :=
+instance function [Finite ι] : Module.Free R (ι → M) := fast_instance%
   Free.pi _ _
 #align module.free.function Module.Free.function
 
-instance finsupp : Module.Free R (ι →₀ M) :=
+instance finsupp : Module.Free R (ι →₀ M) := fast_instance%
   of_basis (Finsupp.basis fun _ => chooseBasis R M)
 #align module.free.finsupp Module.Free.finsupp
 
@@ -193,7 +193,7 @@ section CommSemiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
   [AddCommMonoid N] [Module R N] [Module.Free R N]
 
-instance tensor : Module.Free R (M ⊗[R] N) :=
+instance tensor : Module.Free R (M ⊗[R] N) := fast_instance%
   let ⟨bM⟩ := exists_basis (R := R) (M := M)
   let ⟨bN⟩ := exists_basis (R := R) (M := N)
   of_basis (bM.2.tensorProduct bN.2)

@@ -44,15 +44,15 @@ structure LieSubalgebra extends Submodule R L where
 #align lie_subalgebra LieSubalgebra
 
 /-- The zero algebra is a subalgebra of any Lie algebra. -/
-instance : Zero (LieSubalgebra R L) :=
+instance : Zero (LieSubalgebra R L) := fast_instance%
   ⟨⟨0, @fun x y hx _hy ↦ by
     rw [(Submodule.mem_bot R).1 hx, zero_lie]
     exact Submodule.zero_mem 0⟩⟩
 
-instance : Inhabited (LieSubalgebra R L) :=
+instance : Inhabited (LieSubalgebra R L) := fast_instance%
   ⟨0⟩
 
-instance : Coe (LieSubalgebra R L) (Submodule R L) :=
+instance : Coe (LieSubalgebra R L) (Submodule R L) := fast_instance%
   ⟨LieSubalgebra.toSubmodule⟩
 
 namespace LieSubalgebra
@@ -98,7 +98,7 @@ section
 variable {R₁ : Type*} [Semiring R₁]
 
 /-- A Lie subalgebra inherits module structures from `L`. -/
-instance [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalgebra R L) : Module R₁ L' :=
+instance [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalgebra R L) : Module R₁ L' := fast_instance%
   L'.toSubmodule.module'
 
 instance [SMul R₁ R] [SMul R₁ᵐᵒᵖ R] [Module R₁ L] [Module R₁ᵐᵒᵖ L] [IsScalarTower R₁ R L]
@@ -110,7 +110,7 @@ instance [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalge
     IsScalarTower R₁ R L' :=
   L'.toSubmodule.isScalarTower
 
-instance (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' :=
+instance (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' := fast_instance%
   isNoetherian_submodule' _
 
 end
@@ -411,7 +411,7 @@ section LatticeStructure
 
 open Set
 
-instance : PartialOrder (LieSubalgebra R L) :=
+instance : PartialOrder (LieSubalgebra R L) := fast_instance%
   { PartialOrder.lift ((↑) : LieSubalgebra R L → Set L) coe_injective with
     le := fun N N' ↦ ∀ ⦃x⦄, x ∈ N → x ∈ N' }
 
@@ -424,7 +424,7 @@ theorem coe_submodule_le_coe_submodule : (K : Submodule R L) ≤ K' ↔ K ≤ K'
   Iff.rfl
 #align lie_subalgebra.coe_submodule_le_coe_submodule LieSubalgebra.coe_submodule_le_coe_submodule
 
-instance : Bot (LieSubalgebra R L) :=
+instance : Bot (LieSubalgebra R L) := fast_instance%
   ⟨0⟩
 
 @[simp]
@@ -442,7 +442,7 @@ theorem mem_bot (x : L) : x ∈ (⊥ : LieSubalgebra R L) ↔ x = 0 :=
   mem_singleton_iff
 #align lie_subalgebra.mem_bot LieSubalgebra.mem_bot
 
-instance : Top (LieSubalgebra R L) :=
+instance : Top (LieSubalgebra R L) := fast_instance%
   ⟨{ (⊤ : Submodule R L) with lie_mem' := @fun x y _ _ ↦ mem_univ ⁅x, y⁆ }⟩
 
 @[simp]
@@ -465,12 +465,12 @@ theorem _root_.LieHom.range_eq_map : f.range = map f ⊤ := by
   simp
 #align lie_hom.range_eq_map LieHom.range_eq_map
 
-instance : Inf (LieSubalgebra R L) :=
+instance : Inf (LieSubalgebra R L) := fast_instance%
   ⟨fun K K' ↦
     { (K ⊓ K' : Submodule R L) with
       lie_mem' := fun hx hy ↦ mem_inter (K.lie_mem hx.1 hy.1) (K'.lie_mem hx.2 hy.2) }⟩
 
-instance : InfSet (LieSubalgebra R L) :=
+instance : InfSet (LieSubalgebra R L) := fast_instance%
   ⟨fun S ↦
     { sInf {(s : Submodule R L) | s ∈ S} with
       lie_mem' := @fun x y hx hy ↦ by
@@ -510,7 +510,7 @@ theorem sInf_glb (S : Set (LieSubalgebra R L)) : IsGLB S (sInf S) := by
 
 We provide explicit values for the fields `bot`, `top`, `inf` to get more convenient definitions
 than we would otherwise obtain from `completeLatticeOfInf`. -/
-instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
+instance completeLattice : CompleteLattice (LieSubalgebra R L) := fast_instance%
   { completeLatticeOfInf _ sInf_glb with
     bot := ⊥
     bot_le := fun N _ h ↦ by
@@ -524,9 +524,9 @@ instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
-instance : Add (LieSubalgebra R L) where add := Sup.sup
+instance : Add (LieSubalgebra R L) where add := fast_instance% Sup.sup
 
-instance : Zero (LieSubalgebra R L) where zero := ⊥
+instance : Zero (LieSubalgebra R L) where zero := fast_instance% ⊥
 
 instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
   add_assoc := sup_assoc
@@ -535,7 +535,7 @@ instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
   add_comm := sup_comm
   nsmul := nsmulRec
 
-instance : CanonicallyOrderedAddCommMonoid (LieSubalgebra R L) :=
+instance : CanonicallyOrderedAddCommMonoid (LieSubalgebra R L) := fast_instance%
   { LieSubalgebra.addCommMonoid,
     LieSubalgebra.completeLattice with
     add_le_add_left := fun _a _b ↦ sup_le_sup_left
@@ -564,7 +564,7 @@ theorem eq_bot_iff : K = ⊥ ↔ ∀ x : L, x ∈ K → x = 0 := by
   exact Iff.rfl
 #align lie_subalgebra.eq_bot_iff LieSubalgebra.eq_bot_iff
 
-instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebra R L)) := by
+instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebra R L)) := fast_instance% by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [LieSubalgebra.mem_bot] at hx; subst hx
   simp only [true_iff_iff, eq_self_iff_true, Submodule.mk_eq_zero, mem_bot, mem_top]

@@ -202,14 +202,14 @@ class ComonadicLeftAdjoint (L : C ⥤ D) extends IsLeftAdjoint L where
   eqv : IsEquivalence (Comonad.comparison (Adjunction.ofLeftAdjoint L))
 #align category_theory.comonadic_left_adjoint CategoryTheory.ComonadicLeftAdjoint
 
-noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget :=
+noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget := fast_instance%
   ⟨(Equivalence.ofFullyFaithfullyEssSurj _ : IsEquivalence (Monad.comparison T.adj))⟩
 
-noncomputable instance (G : Comonad C) : ComonadicLeftAdjoint G.forget :=
+noncomputable instance (G : Comonad C) : ComonadicLeftAdjoint G.forget := fast_instance%
   ⟨(Equivalence.ofFullyFaithfullyEssSurj _ : IsEquivalence (Comonad.comparison G.adj))⟩
 
 -- TODO: This holds more generally for idempotent adjunctions, not just reflective adjunctions.
-instance μ_iso_of_reflective [Reflective R] : IsIso (Adjunction.ofRightAdjoint R).toMonad.μ := by
+instance μ_iso_of_reflective [Reflective R] : IsIso (Adjunction.ofRightAdjoint R).toMonad.μ := fast_instance% by
   dsimp
   infer_instance
 #align category_theory.μ_iso_of_reflective CategoryTheory.μ_iso_of_reflective

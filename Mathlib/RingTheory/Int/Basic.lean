@@ -33,7 +33,7 @@ unique factors
 
 namespace Nat
 
-instance : WfDvdMonoid ℕ :=
+instance : WfDvdMonoid ℕ := fast_instance%
   ⟨by
     refine'
       RelHomClass.wellFounded
@@ -50,7 +50,7 @@ instance : WfDvdMonoid ℕ :=
     refine lt_of_le_of_ne (Nat.le_of_dvd (Nat.succ_pos _) h1) fun con => h2 ?_
     rw [con]⟩
 
-instance : UniqueFactorizationMonoid ℕ :=
+instance : UniqueFactorizationMonoid ℕ := fast_instance%
   ⟨fun {_} => Nat.irreducible_iff_prime⟩
 
 end Nat
@@ -66,7 +66,7 @@ instance : GCDMonoid ℕ where
   lcm_zero_left := Nat.lcm_zero_left
   lcm_zero_right := Nat.lcm_zero_right
 
-instance : NormalizedGCDMonoid ℕ :=
+instance : NormalizedGCDMonoid ℕ := fast_instance%
   { (inferInstance : GCDMonoid ℕ),
     (inferInstance : NormalizationMonoid ℕ) with
     normalize_gcd := fun _ _ => normalize_eq _
@@ -145,7 +145,7 @@ instance : GCDMonoid ℤ where
   lcm_zero_left a := coe_nat_eq_zero.2 <| Nat.lcm_zero_left _
   lcm_zero_right a := coe_nat_eq_zero.2 <| Nat.lcm_zero_right _
 
-instance : NormalizedGCDMonoid ℤ :=
+instance : NormalizedGCDMonoid ℤ := fast_instance%
   { Int.normalizationMonoid,
     (inferInstance : GCDMonoid ℤ) with
     normalize_gcd := fun _ _ => normalize_coe_nat _
@@ -337,11 +337,11 @@ theorem finite_int_iff {a b : ℤ} : Finite a b ↔ a.natAbs ≠ 1 ∧ b ≠ 0 :
   rw [finite_int_iff_natAbs_finite, finite_nat_iff, pos_iff_ne_zero, Int.natAbs_ne_zero]
 #align multiplicity.finite_int_iff multiplicity.finite_int_iff
 
-instance decidableNat : DecidableRel fun a b : ℕ => (multiplicity a b).Dom := fun _ _ =>
+instance decidableNat : DecidableRel fun a b : ℕ => (multiplicity a b).Dom := fast_instance% fun _ _ =>
   decidable_of_iff _ finite_nat_iff.symm
 #align multiplicity.decidable_nat multiplicity.decidableNat
 
-instance decidableInt : DecidableRel fun a b : ℤ => (multiplicity a b).Dom := fun _ _ =>
+instance decidableInt : DecidableRel fun a b : ℤ => (multiplicity a b).Dom := fast_instance% fun _ _ =>
   decidable_of_iff _ finite_int_iff.symm
 #align multiplicity.decidable_int multiplicity.decidableInt
 

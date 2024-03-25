@@ -71,7 +71,7 @@ set_option linter.uppercaseLean3 false
 
 -- Porting note: already have Group G but Lean can't use that
 @[to_additive]
-instance (G : GroupCat) : Group G.α :=
+instance (G : GroupCat) : Group G.α := fast_instance%
   G.str
 
 variable {A B : GroupCat.{u}} (f : A ⟶ B)
@@ -166,7 +166,7 @@ theorem fromCoset_ne_of_nin_range {b : B} (hb : b ∉ f.range) :
   exact hb (inv_inv b ▸ Subgroup.inv_mem _ r)
 #align Group.surjective_of_epi_auxs.from_coset_ne_of_nin_range GroupCat.SurjectiveOfEpiAuxs.fromCoset_ne_of_nin_range
 
-instance : DecidableEq X' :=
+instance : DecidableEq X' := fast_instance%
   Classical.decEq _
 
 /-- Let `τ` be the permutation on `X'` exchanging `f.range` and the point at infinity.
@@ -398,8 +398,8 @@ set_option linter.uppercaseLean3 false
 variable {A B : CommGroupCat.{u}} (f : A ⟶ B)
 
 -- Porting note: again to help with non-transparency
-private instance (A : CommGroupCat) : CommGroup A.α := A.str
-private instance (A : CommGroupCat) : Group A.α := A.str.toGroup
+private instance (A : CommGroupCat) : CommGroup A.α := fast_instance% A.str
+private instance (A : CommGroupCat) : Group A.α := fast_instance% A.str.toGroup
 
 @[to_additive]
 theorem ker_eq_bot_of_mono [Mono f] : f.ker = ⊥ :=
@@ -430,7 +430,7 @@ theorem range_eq_top_of_epi [Epi f] : f.range = ⊤ :=
 
 -- Porting note: again lack of transparency
 @[to_additive]
-instance (G : CommGroupCat) : CommGroup <| (forget CommGroupCat).obj G :=
+instance (G : CommGroupCat) : CommGroup <| (forget CommGroupCat).obj G := fast_instance%
   G.str
 
 @[to_additive]

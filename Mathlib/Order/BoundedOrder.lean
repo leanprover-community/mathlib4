@@ -235,10 +235,10 @@ namespace OrderDual
 
 variable (α)
 
-instance instTop [Bot α] : Top αᵒᵈ :=
+instance instTop [Bot α] : Top αᵒᵈ := fast_instance%
   ⟨(⊥ : α)⟩
 
-instance instBot [Top α] : Bot αᵒᵈ :=
+instance instBot [Top α] : Bot αᵒᵈ := fast_instance%
   ⟨(⊤ : α)⟩
 
 instance instOrderTop [LE α] [OrderBot α] : OrderTop αᵒᵈ where
@@ -594,7 +594,7 @@ namespace Pi
 
 variable {ι : Type*} {α' : ι → Type*}
 
-instance [∀ i, Bot (α' i)] : Bot (∀ i, α' i) :=
+instance [∀ i, Bot (α' i)] : Bot (∀ i, α' i) := fast_instance%
   ⟨fun _ => ⊥⟩
 
 @[simp]
@@ -606,7 +606,7 @@ theorem bot_def [∀ i, Bot (α' i)] : (⊥ : ∀ i, α' i) = fun _ => ⊥ :=
   rfl
 #align pi.bot_def Pi.bot_def
 
-instance [∀ i, Top (α' i)] : Top (∀ i, α' i) :=
+instance [∀ i, Top (α' i)] : Top (∀ i, α' i) := fast_instance%
   ⟨fun _ => ⊤⟩
 
 @[simp]
@@ -778,10 +778,10 @@ namespace Prod
 
 variable (α β)
 
-instance instTop [Top α] [Top β] : Top (α × β) :=
+instance instTop [Top α] [Top β] : Top (α × β) := fast_instance%
   ⟨⟨⊤, ⊤⟩⟩
 
-instance instBot [Bot α] [Bot β] : Bot (α × β) :=
+instance instBot [Bot α] [Bot β] : Bot (α × β) := fast_instance%
   ⟨⟨⊥, ⊥⟩⟩
 
 theorem fst_top [Top α] [Top β] : (⊤ : α × β).fst = ⊤ := rfl
@@ -806,20 +806,20 @@ end Prod
 
 namespace ULift
 
-instance [Top α] : Top (ULift.{v} α) where top := up ⊤
+instance [Top α] : Top (ULift.{v} α) where top := fast_instance% up ⊤
 
 @[simp] theorem up_top [Top α] : up (⊤ : α) = ⊤ := rfl
 @[simp] theorem down_top [Top α] : down (⊤ : ULift α) = ⊤ := rfl
 
-instance [Bot α] : Bot (ULift.{v} α) where bot := up ⊥
+instance [Bot α] : Bot (ULift.{v} α) where bot := fast_instance% up ⊥
 
 @[simp] theorem up_bot [Bot α] : up (⊥ : α) = ⊥ := rfl
 @[simp] theorem down_bot [Bot α] : down (⊥ : ULift α) = ⊥ := rfl
 
-instance [LE α] [OrderBot α] : OrderBot (ULift.{v} α) :=
+instance [LE α] [OrderBot α] : OrderBot (ULift.{v} α) := fast_instance%
   OrderBot.lift ULift.down (fun _ _ => down_le.mp) down_bot
 
-instance [LE α] [OrderTop α] : OrderTop (ULift.{v} α) :=
+instance [LE α] [OrderTop α] : OrderTop (ULift.{v} α) := fast_instance%
   OrderTop.lift ULift.down (fun _ _ => down_le.mp) down_top
 
 instance [LE α] [BoundedOrder α] : BoundedOrder (ULift.{v} α) where

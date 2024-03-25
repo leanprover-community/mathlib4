@@ -95,7 +95,7 @@ inductive Walk : V → V → Type u
 attribute [refl] Walk.nil
 
 @[simps]
-instance Walk.instInhabited (v : V) : Inhabited (G.Walk v v) := ⟨Walk.nil⟩
+instance Walk.instInhabited (v : V) : Inhabited (G.Walk v v) := fast_instance% ⟨Walk.nil⟩
 #align simple_graph.walk.inhabited SimpleGraph.Walk.instInhabited
 
 /-- The one-edge walk associated to a pair of adjacent vertices. -/
@@ -834,7 +834,7 @@ inductive Nil : {v w : V} → G.Walk v w → Prop
 
 @[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := nofun
 
-instance (p : G.Walk v w) : Decidable p.Nil :=
+instance (p : G.Walk v w) : Decidable p.Nil := fast_instance%
   match p with
   | nil => isTrue .nil
   | cons _ _ => isFalse nofun
@@ -1095,7 +1095,7 @@ lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) (hp' : ¬ p.Nil) : (p.tail hp
 
 /-! ### About paths -/
 
-instance [DecidableEq V] {u v : V} (p : G.Walk u v) : Decidable p.IsPath := by
+instance [DecidableEq V] {u v : V} (p : G.Walk u v) : Decidable p.IsPath := fast_instance% by
   rw [isPath_def]
   infer_instance
 
@@ -2049,7 +2049,7 @@ lemma connected_iff_exists_forall_reachable : G.Connected ↔ ∃ v, ∀ w, G.Re
   · rintro ⟨v, h⟩
     exact ⟨fun u w => (h u).symm.trans (h w), ⟨v⟩⟩
 
-instance : CoeFun G.Connected fun _ => ∀ u v : V, G.Reachable u v := ⟨fun h => h.preconnected⟩
+instance : CoeFun G.Connected fun _ => ∀ u v : V, G.Reachable u v := fast_instance% ⟨fun h => h.preconnected⟩
 
 theorem Connected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H) (hf : Surjective f)
     (hG : G.Connected) : H.Connected :=
@@ -2085,7 +2085,7 @@ variable {G G' G''}
 namespace ConnectedComponent
 
 @[simps]
-instance inhabited [Inhabited V] : Inhabited G.ConnectedComponent :=
+instance inhabited [Inhabited V] : Inhabited G.ConnectedComponent := fast_instance%
   ⟨G.connectedComponentMk default⟩
 #align simple_graph.connected_component.inhabited SimpleGraph.ConnectedComponent.inhabited
 
@@ -2479,12 +2479,12 @@ theorem Walk.mem_finsetWalkLength_iff_length_eq {n : ℕ} {u v : V} (p : G.Walk 
 
 variable (G)
 
-instance fintypeSetWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length = n} :=
+instance fintypeSetWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length = n} := fast_instance%
   Fintype.ofFinset (G.finsetWalkLength n u v) fun p => by
     rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
 #align simple_graph.fintype_set_walk_length SimpleGraph.fintypeSetWalkLength
 
-instance fintypeSubtypeWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length = n} :=
+instance fintypeSubtypeWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length = n} := fast_instance%
   fintypeSetWalkLength G u v n
 
 theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
@@ -2524,16 +2524,16 @@ theorem reachable_iff_exists_finsetWalkLength_nonempty (u v : V) :
     exact ⟨p⟩
 #align simple_graph.reachable_iff_exists_finset_walk_length_nonempty SimpleGraph.reachable_iff_exists_finsetWalkLength_nonempty
 
-instance : DecidableRel G.Reachable := fun u v =>
+instance : DecidableRel G.Reachable := fast_instance% fun u v =>
   decidable_of_iff' _ (reachable_iff_exists_finsetWalkLength_nonempty G u v)
 
-instance : Fintype G.ConnectedComponent :=
+instance : Fintype G.ConnectedComponent := fast_instance%
   @Quotient.fintype _ _ G.reachableSetoid (inferInstance : DecidableRel G.Reachable)
 
-instance : Decidable G.Preconnected :=
+instance : Decidable G.Preconnected := fast_instance%
   inferInstanceAs <| Decidable (∀ u v, G.Reachable u v)
 
-instance : Decidable G.Connected := by
+instance : Decidable G.Connected := fast_instance% by
   rw [connected_iff, ← Finset.univ_nonempty_iff]
   infer_instance
 

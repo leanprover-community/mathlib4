@@ -149,7 +149,7 @@ theorem ext {s t : SummableFamily Γ R α} (h : ∀ a : α, s a = t a) : s = t :
   DFunLike.ext s t h
 #align hahn_series.summable_family.ext HahnSeries.SummableFamily.ext
 
-instance : Add (SummableFamily Γ R α) :=
+instance : Add (SummableFamily Γ R α) := fast_instance%
   ⟨fun x y =>
     { toFun := x + y
       isPWO_iUnion_support' :=
@@ -166,10 +166,10 @@ instance : Add (SummableFamily Γ R α) :=
             contrapose! ha
             rw [ha.1, ha.2, add_zero]) }⟩
 
-instance : Zero (SummableFamily Γ R α) :=
+instance : Zero (SummableFamily Γ R α) := fast_instance%
   ⟨⟨0, by simp, by simp⟩⟩
 
-instance : Inhabited (SummableFamily Γ R α) :=
+instance : Inhabited (SummableFamily Γ R α) := fast_instance%
   ⟨0⟩
 
 @[simp]
@@ -244,7 +244,7 @@ section AddCommGroup
 
 variable [PartialOrder Γ] [AddCommGroup R] {α : Type*} {s t : SummableFamily Γ R α} {a : α}
 
-instance : Neg (SummableFamily Γ R α) :=
+instance : Neg (SummableFamily Γ R α) := fast_instance%
   ⟨fun s =>
     { toFun := fun a => -s a
       isPWO_iUnion_support' := by
@@ -254,7 +254,7 @@ instance : Neg (SummableFamily Γ R α) :=
         simp only [neg_coeff', Pi.neg_apply, Ne.def, neg_eq_zero]
         exact s.finite_co_support g }⟩
 
-instance : AddCommGroup (SummableFamily Γ R α) :=
+instance : AddCommGroup (SummableFamily Γ R α) := fast_instance%
   { inferInstanceAs (AddCommMonoid (SummableFamily Γ R α)) with
     zsmul := zsmulRec
     add_left_neg := fun a => by
@@ -576,7 +576,7 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.coeff x.order)
 
 end IsDomain
 
-instance [Field R] : Field (HahnSeries Γ R) :=
+instance [Field R] : Field (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (IsDomain (HahnSeries Γ R)),
     inferInstanceAs (CommRing (HahnSeries Γ R)) with
     inv := fun x =>

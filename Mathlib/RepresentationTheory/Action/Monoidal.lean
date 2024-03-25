@@ -35,7 +35,7 @@ open MonoidalCategory
 
 variable [MonoidalCategory V]
 
-instance instMonoidalCategory : MonoidalCategory (Action V G) :=
+instance instMonoidalCategory : MonoidalCategory (Action V G) := fast_instance%
   Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
 @[simp]
@@ -142,7 +142,7 @@ def forgetMonoidal : MonoidalFunctor (Action V G) V :=
 set_option linter.uppercaseLean3 false in
 #align Action.forget_monoidal Action.forgetMonoidal
 
-instance forgetMonoidal_faithful : Faithful (forgetMonoidal V G).toFunctor := by
+instance forgetMonoidal_faithful : Faithful (forgetMonoidal V G).toFunctor := fast_instance% by
   change Faithful (forget V G); infer_instance
 set_option linter.uppercaseLean3 false in
 #align Action.forget_monoidal_faithful Action.forgetMonoidal_faithful
@@ -151,7 +151,7 @@ section
 
 variable [BraidedCategory V]
 
-instance : BraidedCategory (Action V G) :=
+instance : BraidedCategory (Action V G) := fast_instance%
   braidedCategoryOfFaithful (forgetMonoidal V G) (fun X Y => mkIso (β_ _ _)
     (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by aesop_cat)
 
@@ -162,14 +162,14 @@ def forgetBraided : BraidedFunctor (Action V G) V :=
 set_option linter.uppercaseLean3 false in
 #align Action.forget_braided Action.forgetBraided
 
-instance forgetBraided_faithful : Faithful (forgetBraided V G).toFunctor := by
+instance forgetBraided_faithful : Faithful (forgetBraided V G).toFunctor := fast_instance% by
   change Faithful (forget V G); infer_instance
 set_option linter.uppercaseLean3 false in
 #align Action.forget_braided_faithful Action.forgetBraided_faithful
 
 end
 
-instance [SymmetricCategory V] : SymmetricCategory (Action V G) :=
+instance [SymmetricCategory V] : SymmetricCategory (Action V G) := fast_instance%
   symmetricCategoryOfFaithful (forgetBraided V G)
 
 section
@@ -194,7 +194,7 @@ def functorCategoryMonoidalEquivalence : MonoidalFunctor (Action V G) (SingleObj
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence Action.functorCategoryMonoidalEquivalence
 
-instance : IsEquivalence (functorCategoryMonoidalEquivalence V G).toFunctor := by
+instance : IsEquivalence (functorCategoryMonoidalEquivalence V G).toFunctor := fast_instance% by
   change IsEquivalence (Action.functorCategoryEquivalence _ _).functor; infer_instance
 
 @[simp]
@@ -272,25 +272,25 @@ set_option linter.uppercaseLean3 false in
 
 variable (H : GroupCat.{u})
 
-instance [RightRigidCategory V] : RightRigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
+instance [RightRigidCategory V] : RightRigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := fast_instance% by
   change RightRigidCategory (SingleObj H ⥤ V); infer_instance
 
 /-- If `V` is right rigid, so is `Action V G`. -/
-instance [RightRigidCategory V] : RightRigidCategory (Action V H) :=
+instance [RightRigidCategory V] : RightRigidCategory (Action V H) := fast_instance%
   rightRigidCategoryOfEquivalence (functorCategoryMonoidalEquivalence V _)
 
-instance [LeftRigidCategory V] : LeftRigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
+instance [LeftRigidCategory V] : LeftRigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := fast_instance% by
   change LeftRigidCategory (SingleObj H ⥤ V); infer_instance
 
 /-- If `V` is left rigid, so is `Action V G`. -/
-instance [LeftRigidCategory V] : LeftRigidCategory (Action V H) :=
+instance [LeftRigidCategory V] : LeftRigidCategory (Action V H) := fast_instance%
   leftRigidCategoryOfEquivalence (functorCategoryMonoidalEquivalence V _)
 
-instance [RigidCategory V] : RigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
+instance [RigidCategory V] : RigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := fast_instance% by
   change RigidCategory (SingleObj H ⥤ V); infer_instance
 
 /-- If `V` is rigid, so is `Action V G`. -/
-instance [RigidCategory V] : RigidCategory (Action V H) :=
+instance [RigidCategory V] : RigidCategory (Action V H) := fast_instance%
   rigidCategoryOfEquivalence (functorCategoryMonoidalEquivalence V _)
 
 variable {V H}

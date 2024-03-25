@@ -127,7 +127,7 @@ theorem ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
   ext X x
   exact LinearMap.congr_fun (w X) x
 
-instance : Zero (P ⟶ Q) := ⟨mk 0 (by
+instance : Zero (P ⟶ Q) := fast_instance% ⟨mk 0 (by
   intros
   simp only [Limits.zero_app, AddMonoidHom.zero_apply, smul_zero])⟩
 
@@ -138,14 +138,14 @@ lemma zero_app (X : Cᵒᵖ) : (0 : P ⟶ Q).app X = 0 := rfl
 
 variable {P Q}
 
-instance : Add (P ⟶ Q) := ⟨fun f g => mk (f.hom + g.hom) (by
+instance : Add (P ⟶ Q) := fast_instance% ⟨fun f g => mk (f.hom + g.hom) (by
   intros
   simp only [NatTrans.app_add, AddCommGroupCat.hom_add_apply, map_smul, smul_add])⟩
 
 @[simp]
 lemma add_app (f g : P ⟶ Q) (X : Cᵒᵖ) : (f + g).app X = f.app X + g.app X := rfl
 
-instance : Sub (P ⟶ Q) := ⟨fun f g => mk (f.hom - g.hom) (by
+instance : Sub (P ⟶ Q) := fast_instance% ⟨fun f g => mk (f.hom - g.hom) (by
   intros
   rw [NatTrans.app_sub, AddMonoidHom.sub_apply, AddMonoidHom.sub_apply,
     smul_sub, map_smul, map_smul])⟩
@@ -153,7 +153,7 @@ instance : Sub (P ⟶ Q) := ⟨fun f g => mk (f.hom - g.hom) (by
 @[simp]
 lemma sub_app (f g : P ⟶ Q) (X : Cᵒᵖ) : (f - g).app X = f.app X - g.app X := rfl
 
-instance : Neg (P ⟶ Q) := ⟨fun f => mk (-f.hom) (by
+instance : Neg (P ⟶ Q) := fast_instance% ⟨fun f => mk (-f.hom) (by
   intros
   rw [NatTrans.app_neg, AddMonoidHom.neg_apply, AddMonoidHom.neg_apply,
     map_smul, smul_neg])⟩

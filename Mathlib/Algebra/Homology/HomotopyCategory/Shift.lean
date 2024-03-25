@@ -94,7 +94,7 @@ def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂) :
 
 attribute [local simp] XIsoOfEq
 
-instance : HasShift (CochainComplex C ℤ) ℤ := hasShiftMk _ _
+instance : HasShift (CochainComplex C ℤ) ℤ := fast_instance% hasShiftMk _ _
   { F := shiftFunctor C
     zero := shiftFunctorZero' C _ rfl
     add := fun n₁ n₂ => shiftFunctorAdd' C n₁ n₂ _ rfl }
@@ -275,7 +275,7 @@ end Homotopy
 
 namespace HomotopyCategory
 
-instance : (homotopic C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ :=
+instance : (homotopic C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ := fast_instance%
   ⟨fun n _ _ _ _ ⟨h⟩ => ⟨h.shift n⟩⟩
 
 noncomputable instance hasShift :
@@ -287,7 +287,7 @@ noncomputable instance commShiftQuotient :
     (HomotopyCategory.quotient C (ComplexShape.up ℤ)).CommShift ℤ :=
   Quotient.functor_commShift (homotopic C (ComplexShape.up ℤ)) ℤ
 
-instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Additive := by
+instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Additive := fast_instance% by
   have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive :=
     Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
   apply Functor.additive_of_full_essSurj_comp (quotient _ _ )

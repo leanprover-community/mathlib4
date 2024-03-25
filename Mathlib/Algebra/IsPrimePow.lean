@@ -91,7 +91,7 @@ theorem isPrimePow_nat_iff_bounded (n : ℕ) :
   exact pow_le_pow_right hp.one_lt.le hk
 #align is_prime_pow_nat_iff_bounded isPrimePow_nat_iff_bounded
 
-instance {n : ℕ} : Decidable (IsPrimePow n) :=
+instance {n : ℕ} : Decidable (IsPrimePow n) := fast_instance%
   decidable_of_iff' _ (isPrimePow_nat_iff_bounded n)
 
 theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m ≠ 1) : IsPrimePow m := by

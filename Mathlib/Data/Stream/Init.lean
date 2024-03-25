@@ -25,7 +25,7 @@ namespace Stream'
 
 variable {α : Type u} {β : Type v} {δ : Type w}
 
-instance [Inhabited α] : Inhabited (Stream' α) :=
+instance [Inhabited α] : Inhabited (Stream' α) := fast_instance%
   ⟨Stream'.const default⟩
 
 protected theorem eta (s : Stream' α) : (head s::tail s) = s :=

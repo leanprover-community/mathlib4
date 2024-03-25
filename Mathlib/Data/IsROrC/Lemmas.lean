@@ -36,7 +36,7 @@ This instance generates a type-class problem with a metavariable `?m` that shoul
 
 /-- An `IsROrC` field is finite-dimensional over `ℝ`, since it is spanned by `{1, I}`. -/
 -- Porting note: was @[nolint dangerous_instance]
-instance isROrC_to_real : FiniteDimensional ℝ K :=
+instance isROrC_to_real : FiniteDimensional ℝ K := fast_instance%
   ⟨{1, I}, by
     suffices ∀ x : K, ∃ a b : ℝ, a • 1 + b • I = x by
       simpa [Submodule.eq_top_iff', Submodule.mem_span_pair]

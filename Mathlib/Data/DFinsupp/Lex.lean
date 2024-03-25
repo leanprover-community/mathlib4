@@ -44,7 +44,7 @@ theorem lex_def {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop} {a 
   Iff.rfl
 #align dfinsupp.lex_def DFinsupp.lex_def
 
-instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
+instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) := fast_instance%
   ⟨fun f g ↦ DFinsupp.Lex (· < ·) (fun _ ↦ (· < ·)) (ofLex f) (ofLex g)⟩
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
@@ -112,7 +112,7 @@ irreducible_def Lex.decidableLT : @DecidableRel (Lex (Π₀ i, α i)) (· < ·) 
 #align dfinsupp.lex.decidable_lt DFinsupp.Lex.decidableLT
 
 -- Porting note: Added `DecidableEq` for `LinearOrder`.
-instance : DecidableEq (Lex (Π₀ i, α i)) :=
+instance : DecidableEq (Lex (Π₀ i, α i)) := fast_instance%
   lt_trichotomy_rec (fun h ↦ isFalse fun h' ↦ h'.not_lt h) isTrue
     fun h ↦ isFalse fun h' ↦ h'.symm.not_lt h
 

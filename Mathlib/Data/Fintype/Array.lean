@@ -24,6 +24,6 @@ variable {α : Type*}
 
 -- Porting note: The closest thing to `Array' n α` is `Vector n α`, for which we already have this
 -- intance elsewhere.
--- instance Array'.fintype {n : ℕ} {α : Type*} [Fintype α] : Fintype (Array' n α) :=
+-- instance Array'.fintype {n : ℕ} {α : Type*} [Fintype α] : Fintype (Array' n α) := fast_instance%
 --   DArray.fintype
 #align array.fintype Vector.fintypeₓ

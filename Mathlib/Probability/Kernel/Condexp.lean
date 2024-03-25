@@ -78,7 +78,7 @@ lemma condexpKernel_apply_eq_condDistrib {ω : Ω} :
     condexpKernel μ m ω = @condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _ (id ω) := by
   simp_rw [condexpKernel, kernel.comap_apply]
 
-instance : IsMarkovKernel (condexpKernel μ m) := by simp only [condexpKernel]; infer_instance
+instance : IsMarkovKernel (condexpKernel μ m) := fast_instance% by simp only [condexpKernel]; infer_instance
 
 section Measurability
 

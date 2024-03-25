@@ -64,13 +64,13 @@ instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Alg
   neg_mem {s a} ha := show -a ∈ s.toSubalgebra from neg_mem ha
 
 -- this uses the `Star` instance `s` inherits from `StarMemClass (StarSubalgebra R A) A`
-instance starRing (s : StarSubalgebra R A) : StarRing s :=
+instance starRing (s : StarSubalgebra R A) : StarRing s := fast_instance%
   { StarMemClass.instStar s with
     star_involutive := fun r => Subtype.ext (star_star (r : A))
     star_mul := fun r₁ r₂ => Subtype.ext (star_mul (r₁ : A) (r₂ : A))
     star_add := fun r₁ r₂ => Subtype.ext (star_add (r₁ : A) (r₂ : A)) }
 
-instance algebra (s : StarSubalgebra R A) : Algebra R s :=
+instance algebra (s : StarSubalgebra R A) : Algebra R s := fast_instance%
   s.toSubalgebra.algebra'
 
 instance starModule (s : StarSubalgebra R A) : StarModule R s where
@@ -612,7 +612,7 @@ instance completeLattice : CompleteLattice (StarSubalgebra R A) where
   bot := { toSubalgebra := ⊥, star_mem' := fun ⟨r, hr⟩ => ⟨star r, hr ▸ algebraMap_star_comm _⟩ }
   bot_le S := (bot_le : ⊥ ≤ S.toSubalgebra)
 
-instance inhabited : Inhabited (StarSubalgebra R A) :=
+instance inhabited : Inhabited (StarSubalgebra R A) := fast_instance%
   ⟨⊤⟩
 
 @[simp]

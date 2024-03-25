@@ -204,7 +204,7 @@ theorem annihilator_isRadical {R} [CommRing R] [Module R M] [IsSemisimpleModule 
   rw [← Submodule.annihilator_top, ← sSup_simples_eq_top, sSup_eq_iSup', Submodule.annihilator_iSup]
   exact Ideal.isRadical_iInf _ fun i ↦ (i.2.annihilator_isMaximal).isPrime.isRadical
 
-instance submodule {m : Submodule R M} : IsSemisimpleModule R m :=
+instance submodule {m : Submodule R M} : IsSemisimpleModule R m := fast_instance%
   haveI f : Submodule R m ≃o Set.Iic m := Submodule.MapSubtype.relIso m
   f.complementedLattice_iff.2 IsModularLattice.complementedLattice_Iic
 #align is_semisimple_module.is_semisimple_submodule IsSemisimpleModule.submodule
@@ -214,7 +214,7 @@ open LinearMap
 theorem congr [IsSemisimpleModule R N] (e : M ≃ₗ[R] N) : IsSemisimpleModule R M :=
   (Submodule.orderIsoMapComap e.symm).complementedLattice
 
-instance quotient : IsSemisimpleModule R (M ⧸ m) :=
+instance quotient : IsSemisimpleModule R (M ⧸ m) := fast_instance%
   have ⟨P, compl⟩ := exists_isCompl m
   .congr (m.quotientEquivOfIsCompl P compl)
 
@@ -286,7 +286,7 @@ theorem IsSemisimpleModule.sup {p q : Submodule R M}
   rw [show p ⊔ q = ⨆ i ∈ Set.univ, f i by rw [iSup_univ, iSup_bool_eq]]
   exact isSemisimpleModule_biSup_of_isSemisimpleModule_submodule (by rintro (_|_) _ <;> assumption)
 
-instance IsSemisimpleRing.isSemisimpleModule [IsSemisimpleRing R] : IsSemisimpleModule R M :=
+instance IsSemisimpleRing.isSemisimpleModule [IsSemisimpleRing R] : IsSemisimpleModule R M := fast_instance%
   have : IsSemisimpleModule R (M →₀ R) := isSemisimpleModule_of_isSemisimpleModule_submodule'
     (fun _ ↦ .congr (LinearMap.quotKerEquivRange _).symm) Finsupp.iSup_lsingle_range
   .congr (LinearMap.quotKerEquivOfSurjective _ <| Finsupp.total_id_surjective R M).symm
@@ -305,7 +305,7 @@ instance {ι} [Finite ι] (R : ι → Type*) [∀ i, Ring (R i)] [∀ i, IsSemis
     (fun i ↦ .range _) (by simp_rw [range_eq_map, Submodule.iSup_map_single, Submodule.pi_top])
 
 /-- A binary product of semisimple rings is semisimple. -/
-instance [hR : IsSemisimpleRing R] [hS : IsSemisimpleRing S] : IsSemisimpleRing (R × S) := by
+instance [hR : IsSemisimpleRing R] [hS : IsSemisimpleRing S] : IsSemisimpleRing (R × S) := fast_instance% by
   letI : Module (R × S) R := Module.compHom _ (.fst R S)
   letI : Module (R × S) S := Module.compHom _ (.snd R S)
   -- e₁, e₂ got falsely flagged by the unused argument linter

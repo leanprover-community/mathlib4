@@ -64,8 +64,8 @@ def TensorAlgebra :=
 #align tensor_algebra TensorAlgebra
 
 -- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
-instance : Inhabited (TensorAlgebra R M) := RingQuot.instInhabited _
-instance : Semiring (TensorAlgebra R M) := RingQuot.instSemiring _
+instance : Inhabited (TensorAlgebra R M) := fast_instance% RingQuot.instInhabited _
+instance : Semiring (TensorAlgebra R M) := fast_instance% RingQuot.instSemiring _
 
 -- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
 @[nolint unusedArguments]
@@ -93,7 +93,7 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemi
 
 namespace TensorAlgebra
 
-instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
+instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) := fast_instance%
   RingQuot.instRing (Rel S M)
 
 -- verify there is no diamond
@@ -245,7 +245,7 @@ theorem algebraMap_eq_one_iff (x : R) : algebraMap R (TensorAlgebra R M) x = 1 â
 #align tensor_algebra.algebra_map_eq_one_iff TensorAlgebra.algebraMap_eq_one_iff
 
 /-- A `TensorAlgebra` over a nontrivial semiring is nontrivial. -/
-instance [Nontrivial R] : Nontrivial (TensorAlgebra R M) :=
+instance [Nontrivial R] : Nontrivial (TensorAlgebra R M) := fast_instance%
   (algebraMap_leftInverse M).injective.nontrivial
 
 variable {M}

@@ -219,7 +219,7 @@ theorem ForgetEnrichment.of_to (X : ForgetEnrichment W C) :
   rfl
 #align category_theory.forget_enrichment.of_to CategoryTheory.ForgetEnrichment.of_to
 
-instance categoryForgetEnrichment : Category (ForgetEnrichment W C) := by
+instance categoryForgetEnrichment : Category (ForgetEnrichment W C) := fast_instance% by
   let I : EnrichedCategory (Type v) (TransportEnrichment (coyonedaTensorUnit W) C) :=
     inferInstance
   exact enrichedCategoryTypeEquivCategory C I
@@ -305,7 +305,7 @@ def EnrichedFunctor.id (C : Type u₁) [EnrichedCategory V C] : EnrichedFunctor 
   map X Y := 𝟙 _
 #align category_theory.enriched_functor.id CategoryTheory.EnrichedFunctor.id
 
-instance : Inhabited (EnrichedFunctor V C C) :=
+instance : Inhabited (EnrichedFunctor V C C) := fast_instance%
   ⟨EnrichedFunctor.id V C⟩
 
 /-- Composition of enriched functors. -/

@@ -37,7 +37,7 @@ open Ultrafilter
 
 local notation "β*" => Germ (φ : Filter α) β
 
-instance groupWithZero [GroupWithZero β] : GroupWithZero β* :=
+instance groupWithZero [GroupWithZero β] : GroupWithZero β* := fast_instance%
   { Germ.divInvMonoid, Germ.monoidWithZero with
     mul_inv_cancel := fun f => inductionOn f fun f hf => coe_eq.2 <|
       (φ.em fun y => f y = 0).elim (fun H => (hf <| coe_eq.2 H).elim) fun H =>
@@ -50,13 +50,13 @@ instance divisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
   toSemiring := Germ.semiring
   __ := Germ.groupWithZero
 
-instance divisionRing [DivisionRing β] : DivisionRing β* :=
+instance divisionRing [DivisionRing β] : DivisionRing β* := fast_instance%
   { Germ.ring, Germ.divisionSemiring with qsmul := qsmulRec _ }
 
-instance semifield [Semifield β] : Semifield β* :=
+instance semifield [Semifield β] : Semifield β* := fast_instance%
   { Germ.commSemiring, Germ.divisionSemiring with }
 
-instance field [Field β] : Field β* :=
+instance field [Field β] : Field β* := fast_instance%
   { Germ.commRing, Germ.divisionRing with }
 
 theorem coe_lt [Preorder β] {f g : α → β} : (f : β*) < g ↔ ∀* x, f x < g x := by
@@ -81,12 +81,12 @@ theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· 
   exact coe_lt
 #align filter.germ.lt_def Filter.Germ.lt_def
 
-instance isTotal [LE β] [IsTotal β (· ≤ ·)] : IsTotal β* (· ≤ ·) :=
+instance isTotal [LE β] [IsTotal β (· ≤ ·)] : IsTotal β* (· ≤ ·) := fast_instance%
   ⟨fun f g =>
     inductionOn₂ f g fun _f _g => eventually_or.1 <| eventually_of_forall fun _x => total_of _ _ _⟩
 
 /-- If `φ` is an ultrafilter then the ultraproduct is a linear order. -/
-noncomputable instance linearOrder [LinearOrder β] : LinearOrder β* :=
+noncomputable instance linearOrder [LinearOrder β] : LinearOrder β* := fast_instance%
   Lattice.toLinearOrder _
 
 @[to_additive]
@@ -94,7 +94,7 @@ noncomputable instance linearOrderedCommGroup [LinearOrderedCommGroup β] :
     LinearOrderedCommGroup β* :=
   { Germ.orderedCommGroup, Germ.linearOrder with }
 
-instance strictOrderedSemiring [StrictOrderedSemiring β] : StrictOrderedSemiring β* :=
+instance strictOrderedSemiring [StrictOrderedSemiring β] : StrictOrderedSemiring β* := fast_instance%
   { Germ.orderedSemiring, Germ.orderedAddCancelCommMonoid,
     Germ.nontrivial with
     mul_lt_mul_of_pos_left := fun x y z =>
@@ -104,10 +104,10 @@ instance strictOrderedSemiring [StrictOrderedSemiring β] : StrictOrderedSemirin
       inductionOn₃ x y z fun _f _g _h hfg hh =>
         coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun _a => mul_lt_mul_of_pos_right }
 
-instance strictOrderedCommSemiring [StrictOrderedCommSemiring β] : StrictOrderedCommSemiring β* :=
+instance strictOrderedCommSemiring [StrictOrderedCommSemiring β] : StrictOrderedCommSemiring β* := fast_instance%
   { Germ.strictOrderedSemiring, Germ.orderedCommSemiring with }
 
-instance strictOrderedRing [StrictOrderedRing β] : StrictOrderedRing β* :=
+instance strictOrderedRing [StrictOrderedRing β] : StrictOrderedRing β* := fast_instance%
   { Germ.ring,
     Germ.strictOrderedSemiring with
     zero_le_one := const_le zero_le_one
@@ -115,16 +115,16 @@ instance strictOrderedRing [StrictOrderedRing β] : StrictOrderedRing β* :=
       inductionOn₂ x y fun _f _g hf hg =>
         coe_pos.2 <| (coe_pos.1 hg).mp <| (coe_pos.1 hf).mono fun _x => mul_pos }
 
-instance strictOrderedCommRing [StrictOrderedCommRing β] : StrictOrderedCommRing β* :=
+instance strictOrderedCommRing [StrictOrderedCommRing β] : StrictOrderedCommRing β* := fast_instance%
   { Germ.strictOrderedRing, Germ.orderedCommRing with }
 
-noncomputable instance linearOrderedRing [LinearOrderedRing β] : LinearOrderedRing β* :=
+noncomputable instance linearOrderedRing [LinearOrderedRing β] : LinearOrderedRing β* := fast_instance%
   { Germ.strictOrderedRing, Germ.linearOrder with }
 
-noncomputable instance linearOrderedField [LinearOrderedField β] : LinearOrderedField β* :=
+noncomputable instance linearOrderedField [LinearOrderedField β] : LinearOrderedField β* := fast_instance%
   { Germ.linearOrderedRing, Germ.field with }
 
-noncomputable instance linearOrderedCommRing [LinearOrderedCommRing β] : LinearOrderedCommRing β* :=
+noncomputable instance linearOrderedCommRing [LinearOrderedCommRing β] : LinearOrderedCommRing β* := fast_instance%
   { Germ.linearOrderedRing, Germ.commMonoid with }
 
 theorem max_def [LinearOrder β] (x y : β*) : max x y = map₂ max x y :=

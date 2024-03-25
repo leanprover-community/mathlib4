@@ -44,10 +44,10 @@ theorem LiftRel.refl [IsRefl α r] [IsRefl β s] : ∀ x, LiftRel r s x x
   | inr a => LiftRel.inr (_root_.refl a)
 #align sum.lift_rel.refl Sum.LiftRel.refl
 
-instance [IsRefl α r] [IsRefl β s] : IsRefl (Sum α β) (LiftRel r s) :=
+instance [IsRefl α r] [IsRefl β s] : IsRefl (Sum α β) (LiftRel r s) := fast_instance%
   ⟨LiftRel.refl _ _⟩
 
-instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (Sum α β) (LiftRel r s) :=
+instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (Sum α β) (LiftRel r s) := fast_instance%
   ⟨by rintro _ (⟨h⟩ | ⟨h⟩) <;> exact irrefl _ h⟩
 
 @[trans]
@@ -57,10 +57,10 @@ theorem LiftRel.trans [IsTrans α r] [IsTrans β s] :
   | _, _, _, LiftRel.inr hab, LiftRel.inr hbc => LiftRel.inr <| _root_.trans hab hbc
 #align sum.lift_rel.trans Sum.LiftRel.trans
 
-instance [IsTrans α r] [IsTrans β s] : IsTrans (Sum α β) (LiftRel r s) :=
+instance [IsTrans α r] [IsTrans β s] : IsTrans (Sum α β) (LiftRel r s) := fast_instance%
   ⟨fun _ _ _ => LiftRel.trans _ _⟩
 
-instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (Sum α β) (LiftRel r s) :=
+instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (Sum α β) (LiftRel r s) := fast_instance%
   ⟨by rintro _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hba⟩ | ⟨hba⟩) <;> rw [antisymm hab hba]⟩
 
 end LiftRel
@@ -69,23 +69,23 @@ section Lex
 
 variable (r : α → α → Prop) (s : β → β → Prop)
 
-instance [IsRefl α r] [IsRefl β s] : IsRefl (Sum α β) (Lex r s) :=
+instance [IsRefl α r] [IsRefl β s] : IsRefl (Sum α β) (Lex r s) := fast_instance%
   ⟨by
     rintro (a | a)
     exacts [Lex.inl (refl _), Lex.inr (refl _)]⟩
 
-instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (Sum α β) (Lex r s) :=
+instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (Sum α β) (Lex r s) := fast_instance%
   ⟨by rintro _ (⟨h⟩ | ⟨h⟩) <;> exact irrefl _ h⟩
 
-instance [IsTrans α r] [IsTrans β s] : IsTrans (Sum α β) (Lex r s) :=
+instance [IsTrans α r] [IsTrans β s] : IsTrans (Sum α β) (Lex r s) := fast_instance%
   ⟨by
     rintro _ _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hbc⟩ | ⟨hbc⟩)
     exacts [.inl (_root_.trans hab hbc), .sep _ _, .inr (_root_.trans hab hbc), .sep _ _]⟩
 
-instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (Sum α β) (Lex r s) :=
+instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (Sum α β) (Lex r s) := fast_instance%
   ⟨by rintro _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hba⟩ | ⟨hba⟩) <;> rw [antisymm hab hba]⟩
 
-instance [IsTotal α r] [IsTotal β s] : IsTotal (Sum α β) (Lex r s) :=
+instance [IsTotal α r] [IsTotal β s] : IsTotal (Sum α β) (Lex r s) := fast_instance%
   ⟨fun a b =>
     match a, b with
     | inl a, inl b => (total_of r a b).imp Lex.inl Lex.inl
@@ -93,7 +93,7 @@ instance [IsTotal α r] [IsTotal β s] : IsTotal (Sum α β) (Lex r s) :=
     | inr _, inl _ => Or.inr (Lex.sep _ _)
     | inr a, inr b => (total_of s a b).imp Lex.inr Lex.inr⟩
 
-instance [IsTrichotomous α r] [IsTrichotomous β s] : IsTrichotomous (Sum α β) (Lex r s) :=
+instance [IsTrichotomous α r] [IsTrichotomous β s] : IsTrichotomous (Sum α β) (Lex r s) := fast_instance%
   ⟨fun a b =>
     match a, b with
     | inl a, inl b => (trichotomous_of r a b).imp3 Lex.inl (congr_arg _) Lex.inl
@@ -111,10 +111,10 @@ end Lex
 
 section Disjoint
 
-instance instLESum [LE α] [LE β] : LE (Sum α β) :=
+instance instLESum [LE α] [LE β] : LE (Sum α β) := fast_instance%
   ⟨LiftRel (· ≤ ·) (· ≤ ·)⟩
 
-instance instLTSum [LT α] [LT β] : LT (Sum α β) :=
+instance instLTSum [LT α] [LT β] : LT (Sum α β) := fast_instance%
   ⟨LiftRel (· < ·) (· < ·)⟩
 
 theorem le_def [LE α] [LE β] {a b : Sum α β} : a ≤ b ↔ LiftRel (· ≤ ·) (· ≤ ·) a b :=
@@ -169,7 +169,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β]
 
-instance instPreorderSum : Preorder (Sum α β) :=
+instance instPreorderSum : Preorder (Sum α β) := fast_instance%
   { instLESum, instLTSum with
     le_refl := fun x => LiftRel.refl _ _ _,
     le_trans := fun _ _ _ => LiftRel.trans _ _,
@@ -196,11 +196,11 @@ theorem inr_strictMono : StrictMono (inr : β → Sum α β) := fun _ _ => LiftR
 
 end Preorder
 
-instance [PartialOrder α] [PartialOrder β] : PartialOrder (Sum α β) :=
+instance [PartialOrder α] [PartialOrder β] : PartialOrder (Sum α β) := fast_instance%
   { instPreorderSum with
     le_antisymm := fun _ _ => show LiftRel _ _ _ _ → _ from antisymm }
 
-instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder (Sum α β) :=
+instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder (Sum α β) := fast_instance%
   ⟨fun a =>
     match a with
     | inl a =>
@@ -211,7 +211,7 @@ instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder
       ⟨inr b, inr_lt_inr_iff.2 h⟩⟩
 #align sum.no_min_order Sum.noMinOrder
 
-instance noMaxOrder [LT α] [LT β] [NoMaxOrder α] [NoMaxOrder β] : NoMaxOrder (Sum α β) :=
+instance noMaxOrder [LT α] [LT β] [NoMaxOrder α] [NoMaxOrder β] : NoMaxOrder (Sum α β) := fast_instance%
   ⟨fun a =>
     match a with
     | inl a =>
@@ -312,12 +312,12 @@ abbrev _root_.Sum.inrₗ (x : β) : α ⊕ₗ β :=
 #align sum.inrₗ Sum.inrₗ
 
 /-- The linear/lexicographical `≤` on a sum. -/
-protected instance LE [LE α] [LE β] : LE (α ⊕ₗ β) :=
+protected instance LE [LE α] [LE β] : LE (α ⊕ₗ β) := fast_instance%
   ⟨Lex (· ≤ ·) (· ≤ ·)⟩
 #align sum.lex.has_le Sum.Lex.LE
 
 /-- The linear/lexicographical `<` on a sum. -/
-protected instance LT [LT α] [LT β] : LT (α ⊕ₗ β) :=
+protected instance LT [LT α] [LT β] : LT (α ⊕ₗ β) := fast_instance%
   ⟨Lex (· < ·) (· < ·)⟩
 #align sum.lex.has_lt Sum.Lex.LT
 
@@ -377,7 +377,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β]
 
-instance preorder : Preorder (α ⊕ₗ β) :=
+instance preorder : Preorder (α ⊕ₗ β) := fast_instance%
   { Lex.LE, Lex.LT with
     le_refl := refl_of (Lex (· ≤ ·) (· ≤ ·)),
     le_trans := fun _ _ _ => trans_of (Lex (· ≤ ·) (· ≤ ·)),
@@ -417,11 +417,11 @@ theorem inr_strictMono : StrictMono (toLex ∘ inr : β → α ⊕ₗ β) :=
 
 end Preorder
 
-instance partialOrder [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕ₗ β) :=
+instance partialOrder [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕ₗ β) := fast_instance%
   { Lex.preorder with le_antisymm := fun _ _ => antisymm_of (Lex (· ≤ ·) (· ≤ ·)) }
 #align sum.lex.partial_order Sum.Lex.partialOrder
 
-instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) :=
+instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) := fast_instance%
   { Lex.partialOrder with
     le_total := total_of (Lex (· ≤ ·) (· ≤ ·)),
     decidableLE := instDecidableRelSumLex,
@@ -458,11 +458,11 @@ theorem inr_top [LE α] [LE β] [OrderTop β] : toLex (inr ⊤ : Sum α β) = �
   rfl
 #align sum.lex.inr_top Sum.Lex.inr_top
 
-instance boundedOrder [LE α] [LE β] [OrderBot α] [OrderTop β] : BoundedOrder (α ⊕ₗ β) :=
+instance boundedOrder [LE α] [LE β] [OrderBot α] [OrderTop β] : BoundedOrder (α ⊕ₗ β) := fast_instance%
   { Lex.orderBot, Lex.orderTop with }
 #align sum.lex.bounded_order Sum.Lex.boundedOrder
 
-instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder (α ⊕ₗ β) :=
+instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder (α ⊕ₗ β) := fast_instance%
   ⟨fun a =>
     match a with
     | inl a =>
@@ -473,7 +473,7 @@ instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder
       ⟨toLex (inr b), inr_lt_inr_iff.2 h⟩⟩
 #align sum.lex.no_min_order Sum.Lex.noMinOrder
 
-instance noMaxOrder [LT α] [LT β] [NoMaxOrder α] [NoMaxOrder β] : NoMaxOrder (α ⊕ₗ β) :=
+instance noMaxOrder [LT α] [LT β] [NoMaxOrder α] [NoMaxOrder β] : NoMaxOrder (α ⊕ₗ β) := fast_instance%
   ⟨fun a =>
     match a with
     | inl a =>
@@ -484,7 +484,7 @@ instance noMaxOrder [LT α] [LT β] [NoMaxOrder α] [NoMaxOrder β] : NoMaxOrder
       ⟨toLex (inr b), inr_lt_inr_iff.2 h⟩⟩
 #align sum.lex.no_max_order Sum.Lex.noMaxOrder
 
-instance noMinOrder_of_nonempty [LT α] [LT β] [NoMinOrder α] [Nonempty α] : NoMinOrder (α ⊕ₗ β) :=
+instance noMinOrder_of_nonempty [LT α] [LT β] [NoMinOrder α] [Nonempty α] : NoMinOrder (α ⊕ₗ β) := fast_instance%
   ⟨fun a =>
     match a with
     | inl a =>
@@ -493,7 +493,7 @@ instance noMinOrder_of_nonempty [LT α] [LT β] [NoMinOrder α] [Nonempty α] : 
     | inr _ => ⟨toLex (inl <| Classical.arbitrary α), inl_lt_inr _ _⟩⟩
 #align sum.lex.no_min_order_of_nonempty Sum.Lex.noMinOrder_of_nonempty
 
-instance noMaxOrder_of_nonempty [LT α] [LT β] [NoMaxOrder β] [Nonempty β] : NoMaxOrder (α ⊕ₗ β) :=
+instance noMaxOrder_of_nonempty [LT α] [LT β] [NoMaxOrder β] [Nonempty β] : NoMaxOrder (α ⊕ₗ β) := fast_instance%
   ⟨fun a =>
     match a with
     | inl _ => ⟨toLex (inr <| Classical.arbitrary β), inl_lt_inr _ _⟩

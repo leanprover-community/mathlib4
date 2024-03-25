@@ -47,7 +47,7 @@ def Multiset.ToType (m : Multiset α) : Type _ := (x : α) × Fin (m.count x)
 /-- Create a type that has the same number of elements as the multiset.
 Terms of this type are triples `⟨x, ⟨i, h⟩⟩` where `x : α`, `i : ℕ`, and `h : i < m.count x`.
 This way repeated elements of a multiset appear multiple times from different values of `i`. -/
-instance : CoeSort (Multiset α) (Type _) := ⟨Multiset.ToType⟩
+instance : CoeSort (Multiset α) (Type _) := fast_instance% ⟨Multiset.ToType⟩
 
 example : DecidableEq m := inferInstanceAs <| DecidableEq ((x : α) × Fin (m.count x))
 
@@ -63,7 +63,7 @@ def Multiset.mkToType (m : Multiset α) (x : α) (i : Fin (m.count x)) : m :=
 
 /-- As a convenience, there is a coercion from `m : Type*` to `α` by projecting onto the first
 component. -/
-instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
+instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α := fast_instance%
   ⟨fun x ↦ x.1⟩
 #align multiset.has_coe_to_sort.has_coe instCoeSortMultisetType.instCoeOutToTypeₓ
 
@@ -95,7 +95,7 @@ protected theorem Multiset.exists_coe (p : m → Prop) :
   Sigma.exists
 #align multiset.exists_coe Multiset.exists_coe
 
-instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
+instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } := fast_instance%
   Fintype.ofFinset
     (m.toFinset.biUnion fun x ↦ (Finset.range (m.count x)).map ⟨Prod.mk x, Prod.mk.inj_left x⟩)
     (by
@@ -184,7 +184,7 @@ theorem Multiset.toEmbedding_coeEquiv_trans (m : Multiset α) :
 #align multiset.to_embedding_coe_equiv_trans Multiset.toEmbedding_coeEquiv_trans
 
 @[irreducible]
-instance Multiset.fintypeCoe : Fintype m :=
+instance Multiset.fintypeCoe : Fintype m := fast_instance%
   Fintype.ofEquiv m.toEnumFinset m.coeEquiv.symm
 #align multiset.fintype_coe Multiset.fintypeCoe
 

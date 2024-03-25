@@ -185,7 +185,7 @@ variable [Inv α] {f g : Filter α} {s : Set α} {a : α}
 
 /-- The inverse of a filter is the pointwise preimage under `⁻¹` of its sets. -/
 @[to_additive "The negation of a filter is the pointwise preimage under `-` of its sets."]
-instance instInv : Inv (Filter α) :=
+instance instInv : Inv (Filter α) := fast_instance%
   ⟨map Inv.inv⟩
 
 @[to_additive (attr := simp)]
@@ -390,13 +390,13 @@ theorem le_mul_iff : h ≤ f * g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t ∈
 #align filter.le_add_iff Filter.le_add_iff
 
 @[to_additive]
-instance covariant_mul : CovariantClass (Filter α) (Filter α) (· * ·) (· ≤ ·) :=
+instance covariant_mul : CovariantClass (Filter α) (Filter α) (· * ·) (· ≤ ·) := fast_instance%
   ⟨fun _ _ _ => map₂_mono_left⟩
 #align filter.covariant_mul Filter.covariant_mul
 #align filter.covariant_add Filter.covariant_add
 
 @[to_additive]
-instance covariant_swap_mul : CovariantClass (Filter α) (Filter α) (swap (· * ·)) (· ≤ ·) :=
+instance covariant_swap_mul : CovariantClass (Filter α) (Filter α) (swap (· * ·)) (· ≤ ·) := fast_instance%
   ⟨fun _ _ _ => map₂_mono_right⟩
 #align filter.covariant_swap_mul Filter.covariant_swap_mul
 #align filter.covariant_swap_add Filter.covariant_swap_add
@@ -555,13 +555,13 @@ protected theorem le_div_iff : h ≤ f / g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t
 #align filter.le_sub_iff Filter.le_sub_iff
 
 @[to_additive]
-instance covariant_div : CovariantClass (Filter α) (Filter α) (· / ·) (· ≤ ·) :=
+instance covariant_div : CovariantClass (Filter α) (Filter α) (· / ·) (· ≤ ·) := fast_instance%
   ⟨fun _ _ _ => map₂_mono_left⟩
 #align filter.covariant_div Filter.covariant_div
 #align filter.covariant_sub Filter.covariant_sub
 
 @[to_additive]
-instance covariant_swap_div : CovariantClass (Filter α) (Filter α) (swap (· / ·)) (· ≤ ·) :=
+instance covariant_swap_div : CovariantClass (Filter α) (Filter α) (swap (· / ·)) (· ≤ ·) := fast_instance%
   ⟨fun _ _ _ => map₂_mono_right⟩
 #align filter.covariant_swap_div Filter.covariant_swap_div
 #align filter.covariant_swap_sub Filter.covariant_swap_sub
@@ -1086,7 +1086,7 @@ theorem le_smul_iff : h ≤ f • g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t 
 #align filter.le_vadd_iff Filter.le_vadd_iff
 
 @[to_additive]
-instance covariant_smul : CovariantClass (Filter α) (Filter β) (· • ·) (· ≤ ·) :=
+instance covariant_smul : CovariantClass (Filter α) (Filter β) (· • ·) (· ≤ ·) := fast_instance%
   ⟨fun _ _ _ => map₂_mono_left⟩
 #align filter.covariant_smul Filter.covariant_smul
 #align filter.covariant_vadd Filter.covariant_vadd
@@ -1266,7 +1266,7 @@ theorem smul_filter_le_smul_filter (hf : f₁ ≤ f₂) : a • f₁ ≤ a • f
 #align filter.vadd_filter_le_vadd_filter Filter.vadd_filter_le_vadd_filter
 
 @[to_additive]
-instance covariant_smul_filter : CovariantClass α (Filter β) (· • ·) (· ≤ ·) :=
+instance covariant_smul_filter : CovariantClass α (Filter β) (· • ·) (· ≤ ·) := fast_instance%
   ⟨fun _ => @map_mono β β _⟩
 #align filter.covariant_smul_filter Filter.covariant_smul_filter
 #align filter.covariant_vadd_filter Filter.covariant_vadd_filter

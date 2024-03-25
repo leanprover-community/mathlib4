@@ -43,9 +43,9 @@ section Endomorphisms
 
 variable [Semiring R] [AddCommMonoid M] [AddCommGroup N₁] [Module R M] [Module R N₁]
 
-instance : One (Module.End R M) := ⟨LinearMap.id⟩
+instance : One (Module.End R M) := fast_instance% ⟨LinearMap.id⟩
 
-instance : Mul (Module.End R M) := ⟨LinearMap.comp⟩
+instance : Mul (Module.End R M) := fast_instance% ⟨LinearMap.comp⟩
 
 theorem one_eq_id : (1 : Module.End R M) = id := rfl
 #align linear_map.one_eq_id LinearMap.one_eq_id
@@ -75,7 +75,7 @@ instance _root_.Module.End.monoid : Monoid (Module.End R M) where
   one_mul := id_comp
 #align module.End.monoid Module.End.monoid
 
-instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
+instance _root_.Module.End.semiring : Semiring (Module.End R M) := fast_instance%
   { AddMonoidWithOne.unary, Module.End.monoid, LinearMap.addCommMonoid with
     mul_zero := comp_zero
     zero_mul := zero_comp
@@ -95,7 +95,7 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
 theorem _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
     (no_index (OfNat.ofNat n) : Module.End R M) m = OfNat.ofNat n • m := rfl
 
-instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
+instance _root_.Module.End.ring : Ring (Module.End R N₁) := fast_instance%
   { Module.End.semiring, LinearMap.addCommGroup with
     intCast := fun z ↦ z • (1 : N₁ →ₗ[R] N₁)
     intCast_ofNat := coe_nat_zsmul _
@@ -227,7 +227,7 @@ protected theorem smul_def (f : Module.End R M) (a : M) : f • a = f a :=
 #align linear_map.smul_def LinearMap.smul_def
 
 /-- `LinearMap.applyModule` is faithful. -/
-instance apply_faithfulSMul : FaithfulSMul (Module.End R M) M :=
+instance apply_faithfulSMul : FaithfulSMul (Module.End R M) M := fast_instance%
   ⟨LinearMap.ext⟩
 #align linear_map.apply_has_faithful_smul LinearMap.apply_faithfulSMul
 

@@ -65,7 +65,7 @@ class IsSepClosed : Prop where
   splits_of_separable : ∀ p : k[X], p.Separable → (p.Splits <| RingHom.id k)
 
 /-- An algebraically closed field is also separably closed. -/
-instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
+instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k := fast_instance%
   ⟨fun p _ ↦ IsAlgClosed.splits p⟩
 
 variable {k} {K}
@@ -195,7 +195,7 @@ class IsSepClosure [Algebra k K] : Prop where
   separable : IsSeparable k K
 
 /-- A separably closed field is its separable closure. -/
-instance IsSepClosure.self_of_isSepClosed [IsSepClosed k] : IsSepClosure k k :=
+instance IsSepClosure.self_of_isSepClosed [IsSepClosed k] : IsSepClosure k k := fast_instance%
   ⟨by assumption, isSeparable_self k⟩
 
 /-- If `K` is perfect and is a separable closure of `k`,
@@ -227,7 +227,7 @@ theorem isSepClosure_iff [Algebra k K] :
 
 namespace IsSepClosure
 
-instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K :=
+instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K := fast_instance%
   IsSepClosure.separable
 
 instance (priority := 100) isGalois [Algebra k K] [IsSepClosure k K] : IsGalois k K where

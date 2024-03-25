@@ -40,15 +40,15 @@ instance instMulAction' [Monoid α] [MulAction α β] : MulAction α βᵒᵈ wh
   mul_smul := mul_smul (β := β)
 
 @[to_additive]
-instance instSMulCommClass [SMul β γ] [SMul α γ] [SMulCommClass α β γ] : SMulCommClass αᵒᵈ β γ :=
+instance instSMulCommClass [SMul β γ] [SMul α γ] [SMulCommClass α β γ] : SMulCommClass αᵒᵈ β γ := fast_instance%
    ‹SMulCommClass α β γ›
 
 @[to_additive]
-instance instSMulCommClass' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] : SMulCommClass α βᵒᵈ γ :=
+instance instSMulCommClass' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] : SMulCommClass α βᵒᵈ γ := fast_instance%
   ‹SMulCommClass α β γ›
 
 @[to_additive]
-instance instSMulCommClass'' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] : SMulCommClass α β γᵒᵈ :=
+instance instSMulCommClass'' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] : SMulCommClass α β γᵒᵈ := fast_instance%
   ‹SMulCommClass α β γ›
 
 @[to_additive instVAddAssocClass]

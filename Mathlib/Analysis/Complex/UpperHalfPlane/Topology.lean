@@ -28,7 +28,7 @@ open scoped Filter Topology UpperHalfPlane
 
 namespace UpperHalfPlane
 
-instance : TopologicalSpace ℍ :=
+instance : TopologicalSpace ℍ := fast_instance%
   instTopologicalSpaceSubtype
 
 theorem openEmbedding_coe : OpenEmbedding ((↑) : ℍ → ℂ) :=
@@ -51,27 +51,27 @@ theorem continuous_im : Continuous im :=
   Complex.continuous_im.comp continuous_coe
 #align upper_half_plane.continuous_im UpperHalfPlane.continuous_im
 
-instance : SecondCountableTopology ℍ :=
+instance : SecondCountableTopology ℍ := fast_instance%
   TopologicalSpace.Subtype.secondCountableTopology _
 
-instance : T3Space ℍ := Subtype.t3Space
+instance : T3Space ℍ := fast_instance% Subtype.t3Space
 
-instance : T4Space ℍ := inferInstance
+instance : T4Space ℍ := fast_instance% inferInstance
 
-instance : ContractibleSpace ℍ :=
+instance : ContractibleSpace ℍ := fast_instance%
   (convex_halfspace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
 
-instance : LocPathConnectedSpace ℍ :=
+instance : LocPathConnectedSpace ℍ := fast_instance%
   locPathConnected_of_isOpen <| isOpen_lt continuous_const Complex.continuous_im
 
-instance : NoncompactSpace ℍ := by
+instance : NoncompactSpace ℍ := fast_instance% by
   refine' ⟨fun h => _⟩
   have : IsCompact (Complex.im ⁻¹' Ioi 0) := isCompact_iff_isCompact_univ.2 h
   replace := this.isClosed.closure_eq
   rw [closure_preimage_im, closure_Ioi, Set.ext_iff] at this
   exact absurd ((this 0).1 (@left_mem_Ici ℝ _ 0)) (@lt_irrefl ℝ _ 0)
 
-instance : LocallyCompactSpace ℍ :=
+instance : LocallyCompactSpace ℍ := fast_instance%
   openEmbedding_coe.locallyCompactSpace
 
 end UpperHalfPlane

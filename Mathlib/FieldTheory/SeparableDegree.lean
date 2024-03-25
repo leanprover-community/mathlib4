@@ -140,9 +140,9 @@ as a natural number. It is defined to be zero if there are infinitely many of th
 Note that if `E / F` is not algebraic, then this definition makes no mathematical sense. -/
 def finSepDegree : ℕ := Nat.card (Emb F E)
 
-instance instInhabitedEmb : Inhabited (Emb F E) := ⟨IsScalarTower.toAlgHom F E _⟩
+instance instInhabitedEmb : Inhabited (Emb F E) := fast_instance% ⟨IsScalarTower.toAlgHom F E _⟩
 
-instance instNeZeroFinSepDegree [FiniteDimensional F E] : NeZero (finSepDegree F E) :=
+instance instNeZeroFinSepDegree [FiniteDimensional F E] : NeZero (finSepDegree F E) := fast_instance%
   ⟨Nat.card_ne_zero.2 ⟨inferInstance, Fintype.finite <| minpoly.AlgHom.fintype _ _ _⟩⟩
 
 /-- A random bijection between `Field.Emb F E` and `Field.Emb F K` when `E` and `K` are isomorphic

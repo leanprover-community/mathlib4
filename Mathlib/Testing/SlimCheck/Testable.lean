@@ -51,7 +51,7 @@ instance : Shrinkable MyType where
     let proxy := Shrinkable.shrink (x, y - x)
     proxy.map (fun ⟨⟨fst, snd⟩, ha⟩ ↦ ⟨⟨fst, fst + snd, sorry⟩, sorry⟩)
 
-instance : SampleableExt MyType :=
+instance : SampleableExt MyType := fast_instance%
   SampleableExt.mkSelfContained do
     let x ← SampleableExt.interpSample Nat
     let xyDiff ← SampleableExt.interpSample Nat
@@ -162,7 +162,7 @@ def toString : TestResult p → String
   | gaveUp n => s!"gave {n} times"
   | failure _ counters _ => s!"failed {counters}"
 
-instance : ToString (TestResult p) := ⟨toString⟩
+instance : ToString (TestResult p) := fast_instance% ⟨toString⟩
 
 /-- Applicative combinator proof carrying test results. -/
 def combine {p q : Prop} : PSum Unit (p → q) → PSum Unit p → PSum Unit q
@@ -312,7 +312,7 @@ def addShrinks (n : Nat) : TestResult p → TestResult p
   | TestResult.failure p xs m => TestResult.failure p xs (m + n)
   | p => p
 
-instance [Pure m] : Inhabited (OptionT m α) := ⟨(pure none : m (Option α))⟩
+instance [Pure m] : Inhabited (OptionT m α) := fast_instance% ⟨(pure none : m (Option α))⟩
 
 /-- Shrink a counter-example `x` by using `Shrinkable.shrink x`, picking the first
 candidate that falsifies a property and recursively shrinking that one.

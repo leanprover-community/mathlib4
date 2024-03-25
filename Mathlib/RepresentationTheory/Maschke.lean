@@ -171,11 +171,11 @@ theorem exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
 
 /-- This also implies instances `IsSemisimpleModule (MonoidAlgebra k G) V` and
 `IsSemisimpleRing (MonoidAlgebra k G)`. -/
-instance complementedLattice : ComplementedLattice (Submodule (MonoidAlgebra k G) V) :=
+instance complementedLattice : ComplementedLattice (Submodule (MonoidAlgebra k G) V) := fast_instance%
   ⟨exists_isCompl⟩
 #align monoid_algebra.submodule.complemented_lattice MonoidAlgebra.Submodule.complementedLattice
 
-instance [AddGroup G] : IsSemisimpleRing (AddMonoidAlgebra k G) :=
+instance [AddGroup G] : IsSemisimpleRing (AddMonoidAlgebra k G) := fast_instance%
   letI : Invertible (Fintype.card (Multiplicative G) : k) := by
     rwa [Fintype.card_congr Multiplicative.toAdd]
   (AddMonoidAlgebra.toMultiplicativeAlgEquiv k G (R := ℕ)).toRingEquiv.symm.isSemisimpleRing

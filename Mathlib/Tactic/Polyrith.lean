@@ -103,10 +103,10 @@ def Poly.format : Poly → Lean.Format
   | .pow p q => s!"({p.format} ^ {q.format})"
   | .neg p => s!"-{p.format}"
 
-instance : Lean.ToFormat Poly := ⟨Poly.format⟩
-instance : ToString Poly := ⟨(toString ·.format)⟩
-instance : Repr Poly := ⟨fun p _ => p.format⟩
-instance : Inhabited Poly := ⟨Poly.const 0⟩
+instance : Lean.ToFormat Poly := fast_instance% ⟨Poly.format⟩
+instance : ToString Poly := fast_instance% ⟨(toString ·.format)⟩
+instance : Repr Poly := fast_instance% ⟨fun p _ => p.format⟩
+instance : Inhabited Poly := fast_instance% ⟨Poly.const 0⟩
 
 instance : Quote ℤ where quote
   | .ofNat n => quote n
@@ -286,7 +286,7 @@ structure SageError where
 /-- The result of a sage call. -/
 def SageResult := Except SageError SageSuccess
 
-instance : FromJson SageResult where fromJson? j := do
+instance : FromJson SageResult where fromJson? j := fast_instance% do
   if let .ok true := fromJson? <| j.getObjValD "success" then
     return .ok (← fromJson? j)
   else

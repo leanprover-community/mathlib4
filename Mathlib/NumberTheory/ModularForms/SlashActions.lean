@@ -156,7 +156,7 @@ theorem slash_def (A : GL(2, ℝ)⁺) : f ∣[k] A = slash k A f :=
   rfl
 #align modular_form.slash_def ModularForm.slash_def
 
-instance subgroupAction (Γ : Subgroup SL(2, ℤ)) : SlashAction ℤ Γ (ℍ → ℂ) ℂ :=
+instance subgroupAction (Γ : Subgroup SL(2, ℤ)) : SlashAction ℤ Γ (ℍ → ℂ) ℂ := fast_instance%
   monoidHomSlashAction
     (MonoidHom.comp Matrix.SpecialLinearGroup.toGLPos
       (MonoidHom.comp (Matrix.SpecialLinearGroup.map (Int.castRingHom ℝ)) (Subgroup.subtype Γ)))
@@ -167,7 +167,7 @@ theorem subgroup_slash (Γ : Subgroup SL(2, ℤ)) (γ : Γ) : f ∣[k] γ = f �
   rfl
 #align modular_form.subgroup_slash ModularForm.subgroup_slash
 
-instance SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) ℂ :=
+instance SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) ℂ := fast_instance%
   monoidHomSlashAction
     (MonoidHom.comp Matrix.SpecialLinearGroup.toGLPos
       (Matrix.SpecialLinearGroup.map (Int.castRingHom ℝ)))

@@ -195,7 +195,7 @@ def LevyProkhorov (α : Type*) := α
 variable [OpensMeasurableSpace Ω]
 
 /-- The Lévy-Prokhorov distance `levyProkhorovEDist` makes `Measure Ω` a pseudoemetric
-space. The instance is recorded on the type synonym `LevyProkhorov (Measure Ω) := Measure Ω`. -/
+space. The instance is recorded on the type synonym `LevyProkhorov (Measure Ω) := fast_instance% Measure Ω`. -/
 noncomputable instance : PseudoEMetricSpace (LevyProkhorov (Measure Ω)) where
   edist := levyProkhorovEDist
   edist_self := levyProkhorovEDist_self

@@ -92,7 +92,7 @@ lemma fin3_def (P : Fin 3 → R) : P = ![P x, P y, P z] := by
   ext n; fin_cases n <;> rfl
 
 /-- The scalar multiplication on a point representative. -/
-scoped instance instSMulPoint : SMul Rˣ <| Fin 3 → R :=
+scoped instance instSMulPoint : SMul Rˣ <| Fin 3 → R := fast_instance%
   ⟨fun u P => ![u ^ 2 * P x, u ^ 3 * P y, u * P z]⟩
 
 lemma smul_fin3 (P : Fin 3 → R) (u : Rˣ) :
@@ -109,7 +109,7 @@ scoped instance instMulActionPoint : MulAction Rˣ <| Fin 3 → R where
   mul_smul _ _ _ := by simp only [smul_fin3, Units.val_mul, mul_pow, mul_assoc]; matrix_simp
 
 /-- The equivalence setoid for a point representative. -/
-scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
+scoped instance instSetoidPoint : Setoid <| Fin 3 → R := fast_instance%
   MulAction.orbitRel Rˣ <| Fin 3 → R
 
 /-- The equivalence class of a point representative. -/

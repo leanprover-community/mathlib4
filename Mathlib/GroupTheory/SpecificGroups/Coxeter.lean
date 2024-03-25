@@ -117,7 +117,7 @@ end CoxeterGroup
 /-- The group presentation corresponding to a Coxeter matrix. -/
 def Matrix.CoxeterGroup := PresentedGroup <| CoxeterGroup.Relations.toSet M
 
-instance : Group (Matrix.CoxeterGroup M) :=
+instance : Group (Matrix.CoxeterGroup M) := fast_instance%
   QuotientGroup.Quotient.group _
 
 namespace CoxeterGroup

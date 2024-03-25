@@ -51,7 +51,7 @@ private def bracket' : A ⊗[R] L →ₗ[A] A ⊗[R] M →ₗ[A] A ⊗[R] M :=
 private theorem bracket'_tmul (s t : A) (x : L) (m : M) :
     bracket' R A L M (s ⊗ₜ[R] x) (t ⊗ₜ[R] m) = (s * t) ⊗ₜ ⁅x, m⁆ := rfl
 
-instance : Bracket (A ⊗[R] L) (A ⊗[R] M) where bracket x m := bracket' R A L M x m
+instance : Bracket (A ⊗[R] L) (A ⊗[R] M) where bracket x m := fast_instance% bracket' R A L M x m
 
 private theorem bracket_def (x : A ⊗[R] L) (m : A ⊗[R] M) : ⁅x, m⁆ = bracket' R A L M x m :=
   rfl
@@ -112,7 +112,7 @@ instance instLieRing : LieRing (A ⊗[R] L) where
   lie_self := bracket_lie_self R A L
   leibniz_lie := bracket_leibniz_lie R A L L
 
-instance instLieAlgebra : LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := map_smul _ _ _
+instance instLieAlgebra : LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := fast_instance% map_smul _ _ _
 #align lie_algebra.extend_scalars.lie_algebra LieAlgebra.ExtendScalars.instLieAlgebra
 
 instance instLieRingModule : LieRingModule (A ⊗[R] L) (A ⊗[R] M) where
@@ -132,7 +132,7 @@ open RestrictScalars
 
 variable [h : LieRing L]
 
-instance : LieRing (RestrictScalars R A L) :=
+instance : LieRing (RestrictScalars R A L) := fast_instance%
   h
 
 variable [CommRing A] [LieAlgebra A L]

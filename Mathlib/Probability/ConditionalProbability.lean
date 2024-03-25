@@ -102,7 +102,7 @@ theorem cond_isProbabilityMeasure [IsFiniteMeasure μ] (hcs : μ s ≠ 0) :
     IsProbabilityMeasure μ[|s] := cond_isProbabilityMeasure_of_finite μ hcs (measure_ne_top μ s)
 #align probability_theory.cond_is_probability_measure ProbabilityTheory.cond_isProbabilityMeasure
 
-instance cond_isFiniteMeasure : IsFiniteMeasure μ[|s] := by
+instance cond_isFiniteMeasure : IsFiniteMeasure μ[|s] := fast_instance% by
   constructor
   simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, MeasurableSet.univ,
     Measure.restrict_apply, Set.univ_inter, smul_eq_mul, ProbabilityTheory.cond,

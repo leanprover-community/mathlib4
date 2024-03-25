@@ -43,7 +43,7 @@ structure SemilatInfCat : Type (u + 1) where
 
 namespace SemilatSupCat
 
-instance : CoeSort SemilatSupCat (Type*) :=
+instance : CoeSort SemilatSupCat (Type*) := fast_instance%
   ⟨SemilatSupCat.X⟩
 
 attribute [instance] isSemilatticeSup isOrderBot
@@ -58,7 +58,7 @@ theorem coe_of (α : Type*) [SemilatticeSup α] [OrderBot α] : ↥(of α) = α 
   rfl
 #align SemilatSup.coe_of SemilatSupCat.coe_of
 
-instance : Inhabited SemilatSupCat :=
+instance : Inhabited SemilatSupCat := fast_instance%
   ⟨of PUnit⟩
 
 instance : LargeCategory.{u} SemilatSupCat where
@@ -71,7 +71,7 @@ instance : LargeCategory.{u} SemilatSupCat where
 
 -- Porting note: added
 -- see https://github.com/leanprover-community/mathlib4/issues/5017
-instance instFunLike (X Y : SemilatSupCat) : FunLike (X ⟶ Y) X Y :=
+instance instFunLike (X Y : SemilatSupCat) : FunLike (X ⟶ Y) X Y := fast_instance%
   show FunLike (SupBotHom X Y) X Y from inferInstance
 
 instance : ConcreteCategory SemilatSupCat where
@@ -98,7 +98,7 @@ end SemilatSupCat
 
 namespace SemilatInfCat
 
-instance : CoeSort SemilatInfCat (Type*) :=
+instance : CoeSort SemilatInfCat (Type*) := fast_instance%
   ⟨SemilatInfCat.X⟩
 
 attribute [instance] isSemilatticeInf isOrderTop
@@ -113,7 +113,7 @@ theorem coe_of (α : Type*) [SemilatticeInf α] [OrderTop α] : ↥(of α) = α 
   rfl
 #align SemilatInf.coe_of SemilatInfCat.coe_of
 
-instance : Inhabited SemilatInfCat :=
+instance : Inhabited SemilatInfCat := fast_instance%
   ⟨of PUnit⟩
 
 instance : LargeCategory.{u} SemilatInfCat where
@@ -125,7 +125,7 @@ instance : LargeCategory.{u} SemilatInfCat where
   assoc _ _ _ := InfTopHom.comp_assoc _ _ _
 
 -- Porting note (#10754): added instance
-instance instFunLike (X Y : SemilatInfCat) : FunLike (X ⟶ Y) X Y :=
+instance instFunLike (X Y : SemilatInfCat) : FunLike (X ⟶ Y) X Y := fast_instance%
   show FunLike (InfTopHom X Y) X Y from inferInstance
 
 instance : ConcreteCategory SemilatInfCat where

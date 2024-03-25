@@ -45,51 +45,51 @@ def WithOne (α) :=
 
 namespace WithOne
 
-instance [Repr α] : Repr (WithZero α) :=
+instance [Repr α] : Repr (WithZero α) := fast_instance%
   ⟨fun o _ =>
     match o with
     | none => "0"
     | some a => "↑" ++ repr a⟩
 
 @[to_additive]
-instance [Repr α] : Repr (WithOne α) :=
+instance [Repr α] : Repr (WithOne α) := fast_instance%
   ⟨fun o _ =>
     match o with
     | none => "1"
     | some a => "↑" ++ repr a⟩
 
 @[to_additive]
-instance monad : Monad WithOne :=
+instance monad : Monad WithOne := fast_instance%
   instMonadOption
 
 @[to_additive]
-instance one : One (WithOne α) :=
+instance one : One (WithOne α) := fast_instance%
   ⟨none⟩
 #align with_one.has_one WithOne.one
 #align with_zero.has_zero WithZero.zero
 
 @[to_additive]
-instance mul [Mul α] : Mul (WithOne α) :=
+instance mul [Mul α] : Mul (WithOne α) := fast_instance%
   ⟨Option.liftOrGet (· * ·)⟩
 #align with_one.has_mul WithOne.mul
 #align with_zero.has_add WithZero.add
 
 @[to_additive]
-instance inv [Inv α] : Inv (WithOne α) :=
+instance inv [Inv α] : Inv (WithOne α) := fast_instance%
   ⟨fun a => Option.map Inv.inv a⟩
 #align with_one.has_inv WithOne.inv
 #align with_zero.has_neg WithZero.neg
 
 @[to_additive]
-instance invOneClass [Inv α] : InvOneClass (WithOne α) :=
+instance invOneClass [Inv α] : InvOneClass (WithOne α) := fast_instance%
   { WithOne.one, WithOne.inv with inv_one := rfl }
 
 @[to_additive]
-instance inhabited : Inhabited (WithOne α) :=
+instance inhabited : Inhabited (WithOne α) := fast_instance%
   ⟨1⟩
 
 @[to_additive]
-instance nontrivial [Nonempty α] : Nontrivial (WithOne α) :=
+instance nontrivial [Nonempty α] : Nontrivial (WithOne α) := fast_instance%
   Option.nontrivial
 
 -- Porting note: this new declaration is here to make `((a : α): WithOne α)` have type `WithOne α`;
@@ -101,7 +101,7 @@ def coe : α → WithOne α :=
   Option.some
 
 @[to_additive]
-instance coeTC : CoeTC α (WithOne α) :=
+instance coeTC : CoeTC α (WithOne α) := fast_instance%
   ⟨coe⟩
 
 /-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
@@ -222,7 +222,7 @@ end WithOne
 
 namespace WithZero
 
-instance one [one : One α] : One (WithZero α) :=
+instance one [one : One α] : One (WithZero α) := fast_instance%
   { one with }
 
 @[simp, norm_cast]
@@ -230,7 +230,7 @@ theorem coe_one [One α] : ((1 : α) : WithZero α) = 1 :=
   rfl
 #align with_zero.coe_one WithZero.coe_one
 
-instance mulZeroClass [Mul α] : MulZeroClass (WithZero α) :=
+instance mulZeroClass [Mul α] : MulZeroClass (WithZero α) := fast_instance%
   { WithZero.zero with
     mul := Option.map₂ (· * ·),
     zero_mul := Option.map₂_none_left (· * ·),
@@ -241,23 +241,23 @@ theorem coe_mul {α : Type u} [Mul α] {a b : α} : ((a * b : α) : WithZero α)
   rfl
 #align with_zero.coe_mul WithZero.coe_mul
 
-instance noZeroDivisors [Mul α] : NoZeroDivisors (WithZero α) :=
+instance noZeroDivisors [Mul α] : NoZeroDivisors (WithZero α) := fast_instance%
   ⟨Option.map₂_eq_none_iff.1⟩
 
-instance semigroupWithZero [Semigroup α] : SemigroupWithZero (WithZero α) :=
+instance semigroupWithZero [Semigroup α] : SemigroupWithZero (WithZero α) := fast_instance%
   { WithZero.mulZeroClass with
     mul_assoc := fun _ _ _ => Option.map₂_assoc mul_assoc }
 
-instance commSemigroup [CommSemigroup α] : CommSemigroup (WithZero α) :=
+instance commSemigroup [CommSemigroup α] : CommSemigroup (WithZero α) := fast_instance%
   { WithZero.semigroupWithZero with
     mul_comm := fun _ _ => Option.map₂_comm mul_comm }
 
-instance mulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) :=
+instance mulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) := fast_instance%
   { WithZero.mulZeroClass, WithZero.one with
     one_mul := Option.map₂_left_identity one_mul,
     mul_one := Option.map₂_right_identity mul_one }
 
-instance pow [One α] [Pow α ℕ] : Pow (WithZero α) ℕ :=
+instance pow [One α] [Pow α ℕ] : Pow (WithZero α) ℕ := fast_instance%
   ⟨fun x n =>
     match x, n with
     | none, 0 => 1
@@ -270,7 +270,7 @@ theorem coe_pow [One α] [Pow α ℕ] {a : α} (n : ℕ) :
   rfl
 #align with_zero.coe_pow WithZero.coe_pow
 
-instance monoidWithZero [Monoid α] : MonoidWithZero (WithZero α) :=
+instance monoidWithZero [Monoid α] : MonoidWithZero (WithZero α) := fast_instance%
   { WithZero.mulZeroOneClass, WithZero.semigroupWithZero with
     npow := fun n x => x ^ n,
     npow_zero := fun x =>
@@ -282,12 +282,12 @@ instance monoidWithZero [Monoid α] : MonoidWithZero (WithZero α) :=
       | none => rfl
       | some x => congr_arg some <| pow_succ x n }
 
-instance commMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :=
+instance commMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) := fast_instance%
   { WithZero.monoidWithZero, WithZero.commSemigroup with }
 
 /-- Given an inverse operation on `α` there is an inverse operation
   on `WithZero α` sending `0` to `0`. -/
-instance inv [Inv α] : Inv (WithZero α) :=
+instance inv [Inv α] : Inv (WithZero α) := fast_instance%
   ⟨fun a => Option.map Inv.inv a⟩
 
 @[simp, norm_cast]
@@ -300,10 +300,10 @@ theorem inv_zero [Inv α] : (0 : WithZero α)⁻¹ = 0 :=
   rfl
 #align with_zero.inv_zero WithZero.inv_zero
 
-instance invOneClass [InvOneClass α] : InvOneClass (WithZero α) :=
+instance invOneClass [InvOneClass α] : InvOneClass (WithZero α) := fast_instance%
   { WithZero.one, WithZero.inv with inv_one := show ((1⁻¹ : α) : WithZero α) = 1 by simp }
 
-instance div [Div α] : Div (WithZero α) :=
+instance div [Div α] : Div (WithZero α) := fast_instance%
   ⟨Option.map₂ (· / ·)⟩
 
 @[norm_cast]
@@ -311,7 +311,7 @@ theorem coe_div [Div α] (a b : α) : ↑(a / b : α) = (a / b : WithZero α) :=
   rfl
 #align with_zero.coe_div WithZero.coe_div
 
-instance [One α] [Pow α ℤ] : Pow (WithZero α) ℤ :=
+instance [One α] [Pow α ℤ] : Pow (WithZero α) ℤ := fast_instance%
   ⟨fun x n =>
     match x, n with
     | none, Int.ofNat 0 => 1
@@ -324,7 +324,7 @@ theorem coe_zpow [DivInvMonoid α] {a : α} (n : ℤ) : ↑(a ^ n) = (↑a : Wit
   rfl
 #align with_zero.coe_zpow WithZero.coe_zpow
 
-instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) :=
+instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) := fast_instance%
   { WithZero.div, WithZero.inv, WithZero.monoidWithZero with
     div_eq_mul_inv := fun a b =>
       match a, b with
@@ -345,7 +345,7 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) :=
       | none => rfl
       | some x => congr_arg some <| DivInvMonoid.zpow_neg' n x }
 
-instance divInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) :=
+instance divInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) := fast_instance%
   { WithZero.divInvMonoid, WithZero.invOneClass with }
 
 section Group
@@ -353,7 +353,7 @@ section Group
 variable [Group α]
 
 /-- if `G` is a group then `WithZero G` is a group with zero. -/
-instance groupWithZero : GroupWithZero (WithZero α) :=
+instance groupWithZero : GroupWithZero (WithZero α) := fast_instance%
   { WithZero.monoidWithZero, WithZero.divInvMonoid, WithZero.nontrivial with
     inv_zero := inv_zero,
     mul_inv_cancel := fun a ha ↦ by
@@ -363,10 +363,10 @@ instance groupWithZero : GroupWithZero (WithZero α) :=
 
 end Group
 
-instance commGroupWithZero [CommGroup α] : CommGroupWithZero (WithZero α) :=
+instance commGroupWithZero [CommGroup α] : CommGroupWithZero (WithZero α) := fast_instance%
   { WithZero.groupWithZero, WithZero.commMonoidWithZero with }
 
-instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α) :=
+instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α) := fast_instance%
   { WithZero.addMonoid, WithZero.one with
     natCast := fun n => if n = 0 then 0 else (n.cast : α),
     natCast_zero := rfl,

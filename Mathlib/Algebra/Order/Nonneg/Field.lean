@@ -34,7 +34,7 @@ section LinearOrderedSemifield
 
 variable [LinearOrderedSemifield α] {x y : α}
 
-instance inv : Inv { x : α // 0 ≤ x } :=
+instance inv : Inv { x : α // 0 ≤ x } := fast_instance%
   ⟨fun x => ⟨x⁻¹, inv_nonneg.2 x.2⟩⟩
 #align nonneg.has_inv Nonneg.inv
 
@@ -48,7 +48,7 @@ theorem inv_mk (hx : 0 ≤ x) : (⟨x, hx⟩ : { x : α // 0 ≤ x })⁻¹ = ⟨
   rfl
 #align nonneg.inv_mk Nonneg.inv_mk
 
-instance div : Div { x : α // 0 ≤ x } :=
+instance div : Div { x : α // 0 ≤ x } := fast_instance%
   ⟨fun x y => ⟨x / y, div_nonneg x.2 y.2⟩⟩
 #align nonneg.has_div Nonneg.div
 
@@ -63,7 +63,7 @@ theorem mk_div_mk (hx : 0 ≤ x) (hy : 0 ≤ y) :
   rfl
 #align nonneg.mk_div_mk Nonneg.mk_div_mk
 
-instance zpow : Pow { x : α // 0 ≤ x } ℤ :=
+instance zpow : Pow { x : α // 0 ≤ x } ℤ := fast_instance%
   ⟨fun a n => ⟨(a : α) ^ n, zpow_nonneg a.2 _⟩⟩
 #align nonneg.has_zpow Nonneg.zpow
 
@@ -79,7 +79,7 @@ theorem mk_zpow (hx : 0 ≤ x) (n : ℤ) :
   rfl
 #align nonneg.mk_zpow Nonneg.mk_zpow
 
-instance linearOrderedSemifield : LinearOrderedSemifield { x : α // 0 ≤ x } :=
+instance linearOrderedSemifield : LinearOrderedSemifield { x : α // 0 ≤ x } := fast_instance%
   fast_instance%
   Subtype.coe_injective.linearOrderedSemifield _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
     Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) Nonneg.coe_pow Nonneg.coe_zpow

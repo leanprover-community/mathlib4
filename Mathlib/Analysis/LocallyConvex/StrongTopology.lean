@@ -64,7 +64,7 @@ variable [OrderedSemiring R]
 variable [NormedField 𝕜₁] [NormedField 𝕜₂] [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂}
 variable [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCommClass 𝕜₂ R F]
 
-instance : LocallyConvexSpace R (E →SL[σ] F) :=
+instance : LocallyConvexSpace R (E →SL[σ] F) := fast_instance%
   strongTopology.locallyConvexSpace R _ ⟨∅, Bornology.isVonNBounded_empty 𝕜₁ E⟩
     (directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union)
 

@@ -109,7 +109,7 @@ variable [TopologicalSpace (TotalSpace F₁ E₁)] [TopologicalSpace (TotalSpace
 
 /-- Equip the total space of the fiberwise product of two fiber bundles `E₁`, `E₂` with
 the induced topology from the diagonal embedding into `TotalSpace F₁ E₁ × TotalSpace F₂ E₂`. -/
-instance FiberBundle.Prod.topologicalSpace : TopologicalSpace (TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) :=
+instance FiberBundle.Prod.topologicalSpace : TopologicalSpace (TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) := fast_instance%
   TopologicalSpace.induced
     (fun p ↦ ((⟨p.1, p.2.1⟩ : TotalSpace F₁ E₁), (⟨p.1, p.2.2⟩ : TotalSpace F₂ E₂)))
     inferInstance
@@ -277,7 +277,7 @@ universe u v w₁ w₂ U
 
 variable {B : Type u} (F : Type v) (E : B → Type w₁) {B' : Type w₂} (f : B' → B)
 
-instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f *ᵖ E) x) := by
+instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f *ᵖ E) x) := fast_instance% by
   -- Porting note: Original proof was `delta_instance bundle.pullback`
   intro x
   rw [Bundle.Pullback]
@@ -293,7 +293,7 @@ irreducible_def pullbackTopology : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
 
 /-- The topology on the total space of a pullback bundle is the coarsest topology for which both
 the projections to the base and the map to the original bundle are continuous. -/
-instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
+instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (f *ᵖ E)) := fast_instance%
   pullbackTopology F E f
 #align pullback.total_space.topological_space Pullback.TotalSpace.topologicalSpace
 

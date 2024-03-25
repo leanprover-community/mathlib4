@@ -121,13 +121,13 @@ lemma level_one' (hn : n = 1) : χ = 1 := by
   subst hn
   exact level_one _
 
-instance : Subsingleton (DirichletCharacter R 1) := by
+instance : Subsingleton (DirichletCharacter R 1) := fast_instance% by
   refine subsingleton_iff.mpr (fun χ χ' ↦ ?_)
   simp [level_one]
 
-noncomputable instance : Inhabited (DirichletCharacter R n) := ⟨1⟩
+noncomputable instance : Inhabited (DirichletCharacter R n) := fast_instance% ⟨1⟩
 
-noncomputable instance : Unique (DirichletCharacter R 1) := Unique.mk' (DirichletCharacter R 1)
+noncomputable instance : Unique (DirichletCharacter R 1) := fast_instance% Unique.mk' (DirichletCharacter R 1)
 
 lemma changeLevel_one {d : ℕ} (h : d ∣ n) :
     changeLevel h (1 : DirichletCharacter R d) = 1 := by

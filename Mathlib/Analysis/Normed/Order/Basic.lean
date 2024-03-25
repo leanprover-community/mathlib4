@@ -88,14 +88,14 @@ instance (priority := 100) NormedLinearOrderedField.toNormedField (α : Type*)
   norm_mul' := NormedLinearOrderedField.norm_mul'
 #align normed_linear_ordered_field.to_normed_field NormedLinearOrderedField.toNormedField
 
-instance Rat.normedLinearOrderedField : NormedLinearOrderedField ℚ :=
+instance Rat.normedLinearOrderedField : NormedLinearOrderedField ℚ := fast_instance%
   ⟨dist_eq_norm, norm_mul⟩
 
-noncomputable instance Real.normedLinearOrderedField : NormedLinearOrderedField ℝ :=
+noncomputable instance Real.normedLinearOrderedField : NormedLinearOrderedField ℝ := fast_instance%
   ⟨dist_eq_norm, norm_mul⟩
 
 @[to_additive]
-instance OrderDual.normedOrderedGroup [NormedOrderedGroup α] : NormedOrderedGroup αᵒᵈ :=
+instance OrderDual.normedOrderedGroup [NormedOrderedGroup α] : NormedOrderedGroup αᵒᵈ := fast_instance%
   { @NormedOrderedGroup.toNormedCommGroup α _, OrderDual.orderedCommGroup with }
 
 @[to_additive]

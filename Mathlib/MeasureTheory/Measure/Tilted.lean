@@ -126,7 +126,7 @@ lemma tilted_apply_eq_ofReal_integral [SFinite μ] (f : α → ℝ) (s : Set α)
       OuterMeasure.coe_zero, Pi.zero_apply, integral_undef hf, div_zero, integral_zero,
       ENNReal.ofReal_zero]
 
-instance isFiniteMeasure_tilted : IsFiniteMeasure (μ.tilted f) := by
+instance isFiniteMeasure_tilted : IsFiniteMeasure (μ.tilted f) := fast_instance% by
   by_cases hf : Integrable (fun x ↦ exp (f x)) μ
   · refine isFiniteMeasure_withDensity_ofReal ?_
     suffices Integrable (fun x ↦ exp (f x) / ∫ x, exp (f x) ∂μ) μ by exact this.2

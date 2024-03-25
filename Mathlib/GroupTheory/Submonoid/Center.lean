@@ -68,7 +68,7 @@ variable {M} [Monoid M]
 
 /-- The center of a monoid is commutative. -/
 @[to_additive]
-instance center.commMonoid : CommMonoid (center M) :=
+instance center.commMonoid : CommMonoid (center M) := fast_instance%
   { (center M).toMonoid, Subsemigroup.center.commSemigroup with }
 
 -- no instance diamond, unlike the primed version
@@ -83,7 +83,7 @@ theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
 #align add_submonoid.mem_center_iff AddSubmonoid.mem_center_iff
 
 @[to_additive]
-instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) :=
+instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) := fast_instance%
   decidable_of_iff' _ mem_center_iff
 #align submonoid.decidable_mem_center Submonoid.decidableMemCenter
 #align add_submonoid.decidable_mem_center AddSubmonoid.decidableMemCenter
@@ -96,7 +96,7 @@ instance center.smulCommClass_left : SMulCommClass (center M) M M where
 #align submonoid.center.smul_comm_class_left Submonoid.center.smulCommClass_left
 
 /-- The center of a monoid acts commutatively on that monoid. -/
-instance center.smulCommClass_right : SMulCommClass M (center M) M :=
+instance center.smulCommClass_right : SMulCommClass M (center M) M := fast_instance%
   SMulCommClass.symm _ _ _
 #align submonoid.center.smul_comm_class_right Submonoid.center.smulCommClass_right
 

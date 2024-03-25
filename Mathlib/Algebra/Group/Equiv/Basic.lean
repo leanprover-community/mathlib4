@@ -179,7 +179,7 @@ def MulEquivClass.toMulEquiv [Mul α] [Mul β] [MulEquivClass F α β] (f : F) :
 `MulEquivClass.toMulEquiv`. -/
 @[to_additive "Any type satisfying `AddEquivClass` can be cast into `AddEquiv` via
 `AddEquivClass.toAddEquiv`. "]
-instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
+instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) := fast_instance%
   ⟨MulEquivClass.toMulEquiv⟩
 
 @[to_additive]
@@ -277,7 +277,7 @@ def refl (M : Type*) [Mul M] : M ≃* M :=
 #align add_equiv.refl AddEquiv.refl
 
 @[to_additive]
-instance : Inhabited (M ≃* M) := ⟨refl M⟩
+instance : Inhabited (M ≃* M) := fast_instance% ⟨refl M⟩
 
 /-- An alias for `h.symm.map_mul`. Introduced to fix the issue in
 https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234183.20.60simps.60.20maximum.20recursion.20depth

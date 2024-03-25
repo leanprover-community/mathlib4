@@ -56,7 +56,7 @@ theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X)
   cases nonempty_fintype α
   exact isSheafFor_of_preservesProduct _ _ hc
 
-instance {α : Type} [Finite α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.ι Z i)).Extensive :=
+instance {α : Type} [Finite α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.ι Z i)).Extensive := fast_instance%
   ⟨⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ⟨coproductIsCoproduct _⟩⟩⟩
 
 /--

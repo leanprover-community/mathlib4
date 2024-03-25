@@ -122,7 +122,7 @@ def isoMk {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : X ≅ Y where
       ← MonoidalCategory.whiskerLeft_comp] ⟩
 #align category_theory.center.iso_mk CategoryTheory.Center.isoMk
 
-instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f := by
+instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f := fast_instance% by
   change IsIso (isoMk f).hom
   infer_instance
 #align category_theory.center.is_iso_of_f_is_iso CategoryTheory.Center.isIso_of_f_isIso

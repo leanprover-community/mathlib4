@@ -158,11 +158,11 @@ section
 -- Porting note: no longer supported
 -- attribute [local reducible] PiLp
 
-instance EuclideanSpace.instFiniteDimensional : FiniteDimensional 𝕜 (EuclideanSpace 𝕜 ι) := by
+instance EuclideanSpace.instFiniteDimensional : FiniteDimensional 𝕜 (EuclideanSpace 𝕜 ι) := fast_instance% by
   infer_instance
 #align euclidean_space.finite_dimensional EuclideanSpace.instFiniteDimensional
 
-instance EuclideanSpace.instInnerProductSpace : InnerProductSpace 𝕜 (EuclideanSpace 𝕜 ι) := by
+instance EuclideanSpace.instInnerProductSpace : InnerProductSpace 𝕜 (EuclideanSpace 𝕜 ι) := fast_instance% by
   infer_instance
 #align euclidean_space.inner_product_space EuclideanSpace.instInnerProductSpace
 
@@ -640,7 +640,7 @@ theorem basisFun_toBasis : (basisFun ι 𝕜).toBasis = PiLp.basisFun _ 𝕜 ι 
 
 end EuclideanSpace
 
-instance OrthonormalBasis.instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
+instance OrthonormalBasis.instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) := fast_instance%
   ⟨EuclideanSpace.basisFun ι 𝕜⟩
 #align orthonormal_basis.inhabited OrthonormalBasis.instInhabited
 

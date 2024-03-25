@@ -51,7 +51,7 @@ class IsCartanSubalgebra : Prop where
   self_normalizing : H.normalizer = H
 #align lie_subalgebra.is_cartan_subalgebra LieSubalgebra.IsCartanSubalgebra
 
-instance [H.IsCartanSubalgebra] : LieAlgebra.IsNilpotent R H :=
+instance [H.IsCartanSubalgebra] : LieAlgebra.IsNilpotent R H := fast_instance%
   IsCartanSubalgebra.nilpotent
 
 @[simp]

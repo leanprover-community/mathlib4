@@ -57,11 +57,11 @@ abbrev Dual : Type _ := E →L[𝕜] 𝕜
 
 -- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_eq until
 -- leanprover/lean4#2522 is resolved; remove once fixed
-instance : NormedSpace 𝕜 (Dual 𝕜 E) := inferInstance
+instance : NormedSpace 𝕜 (Dual 𝕜 E) := fast_instance% inferInstance
 
 -- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_le until
 -- leanprover/lean4#2522 is resolved; remove once fixed
-instance : SeminormedAddCommGroup (Dual 𝕜 E) := inferInstance
+instance : SeminormedAddCommGroup (Dual 𝕜 E) := fast_instance% inferInstance
 
 /-- The inclusion of a normed space in its double (topological) dual, considered
    as a bounded linear map. -/

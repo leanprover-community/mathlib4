@@ -164,7 +164,7 @@ class Representable (F : Cᵒᵖ ⥤ Type v₁) : Prop where
   has_representation : ∃ (X : _) (f : yoneda.obj X ⟶ F), IsIso f
 #align category_theory.functor.representable CategoryTheory.Functor.Representable
 
-instance {X : C} : Representable (yoneda.obj X) where has_representation := ⟨X, 𝟙 _, inferInstance⟩
+instance {X : C} : Representable (yoneda.obj X) where has_representation := fast_instance% ⟨X, 𝟙 _, inferInstance⟩
 
 /-- A functor `F : C ⥤ Type v₁` is corepresentable if there is object `X` so `F ≅ coyoneda.obj X`.
 
@@ -178,7 +178,7 @@ class Corepresentable (F : C ⥤ Type v₁) : Prop where
 instance {X : Cᵒᵖ} : Corepresentable (coyoneda.obj X) where
   has_corepresentation := ⟨X, 𝟙 _, inferInstance⟩
 
--- instance : corepresentable (𝟭 (Type v₁)) :=
+-- instance : corepresentable (𝟭 (Type v₁)) := fast_instance%
 -- corepresentable_of_nat_iso (op punit) coyoneda.punit_iso
 section Representable
 
@@ -203,7 +203,7 @@ noncomputable def reprx : F.obj (op F.reprX) :=
   F.reprF.app (op F.reprX) (𝟙 F.reprX)
 #align category_theory.functor.repr_x CategoryTheory.Functor.reprx
 
-instance : IsIso F.reprF :=
+instance : IsIso F.reprF := fast_instance%
   Representable.has_representation.choose_spec.choose_spec
 
 /-- An isomorphism between `F` and a functor of the form `C(-, F.repr_X)`.  Note the components
@@ -251,7 +251,7 @@ noncomputable def coreprx : F.obj F.coreprX :=
   F.coreprF.app F.coreprX (𝟙 F.coreprX)
 #align category_theory.functor.corepr_x CategoryTheory.Functor.coreprx
 
-instance : IsIso F.coreprF :=
+instance : IsIso F.coreprF := fast_instance%
   Corepresentable.has_corepresentation.choose_spec.choose_spec
 
 /-- An isomorphism between `F` and a functor of the form `C(F.corepr X, -)`. Note the components
@@ -283,7 +283,7 @@ theorem corepresentable_of_nat_iso (F : C ⥤ Type v₁) {G} (i : F ≅ G) [F.Co
   { has_corepresentation := ⟨op F.coreprX, F.coreprF ≫ i.hom, inferInstance⟩ }
 #align category_theory.corepresentable_of_nat_iso CategoryTheory.corepresentable_of_nat_iso
 
-instance : Functor.Corepresentable (𝟭 (Type v₁)) :=
+instance : Functor.Corepresentable (𝟭 (Type v₁)) := fast_instance%
   corepresentable_of_nat_iso (coyoneda.obj (op PUnit)) Coyoneda.punitIso
 
 open Opposite
@@ -291,11 +291,11 @@ open Opposite
 variable (C)
 
 -- We need to help typeclass inference with some awkward universe levels here.
-instance prodCategoryInstance1 : Category ((Cᵒᵖ ⥤ Type v₁) × Cᵒᵖ) :=
+instance prodCategoryInstance1 : Category ((Cᵒᵖ ⥤ Type v₁) × Cᵒᵖ) := fast_instance%
   CategoryTheory.prod.{max u₁ v₁, v₁} (Cᵒᵖ ⥤ Type v₁) Cᵒᵖ
 #align category_theory.prod_category_instance_1 CategoryTheory.prodCategoryInstance1
 
-instance prodCategoryInstance2 : Category (Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) :=
+instance prodCategoryInstance2 : Category (Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) := fast_instance%
   CategoryTheory.prod.{v₁, max u₁ v₁} Cᵒᵖ (Cᵒᵖ ⥤ Type v₁)
 #align category_theory.prod_category_instance_2 CategoryTheory.prodCategoryInstance2
 

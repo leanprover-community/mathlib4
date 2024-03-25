@@ -72,7 +72,7 @@ theorem forget₂_map_associator_inv (X Y Z : AlgebraCat.{u} R) :
   rfl
 
 set_option maxHeartbeats 800000 in
-noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R) :=
+noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R) := fast_instance%
   Monoidal.induced
     (forget₂ (AlgebraCat R) (ModuleCat R))
     { μIso := fun X Y => Iso.refl _
@@ -99,7 +99,7 @@ def toModuleCatMonoidalFunctor : MonoidalFunctor (AlgebraCat.{u} R) (ModuleCat.{
   unfold instMonoidalCategory
   exact Monoidal.fromInduced (forget₂ (AlgebraCat R) (ModuleCat R)) _
 
-instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
+instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor := fast_instance%
   forget₂_faithful _ _
 
 end

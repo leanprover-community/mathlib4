@@ -111,7 +111,7 @@ alias CovBy.sup_of_inf_of_inf_left := covBy_sup_of_inf_covBy_of_inf_covBy_left
 alias CovBy.sup_of_inf_of_inf_right := covBy_sup_of_inf_covBy_of_inf_covBy_right
 #align covby.sup_of_inf_of_inf_right CovBy.sup_of_inf_of_inf_right
 
-instance : IsWeakLowerModularLattice (OrderDual α) :=
+instance : IsWeakLowerModularLattice (OrderDual α) := fast_instance%
   ⟨fun ha hb => (ha.ofDual.sup_of_inf_of_inf_left hb.ofDual).toDual⟩
 
 end WeakUpperModular
@@ -135,7 +135,7 @@ alias CovBy.inf_of_sup_of_sup_left := inf_covBy_of_covBy_sup_of_covBy_sup_left
 alias CovBy.inf_of_sup_of_sup_right := inf_covBy_of_covBy_sup_of_covBy_sup_right
 #align covby.inf_of_sup_of_sup_right CovBy.inf_of_sup_of_sup_right
 
-instance : IsWeakUpperModularLattice (OrderDual α) :=
+instance : IsWeakUpperModularLattice (OrderDual α) := fast_instance%
   ⟨fun ha hb => (ha.ofDual.inf_of_sup_of_sup_left hb.ofDual).toDual⟩
 
 end WeakLowerModular
@@ -165,7 +165,7 @@ instance (priority := 100) IsUpperModularLattice.to_isWeakUpperModularLattice :
   ⟨fun _ => CovBy.sup_of_inf_right⟩
 #align is_upper_modular_lattice.to_is_weak_upper_modular_lattice IsUpperModularLattice.to_isWeakUpperModularLattice
 
-instance : IsLowerModularLattice (OrderDual α) :=
+instance : IsLowerModularLattice (OrderDual α) := fast_instance%
   ⟨fun h => h.ofDual.sup_of_inf_left.toDual⟩
 
 end UpperModular
@@ -195,7 +195,7 @@ instance (priority := 100) IsLowerModularLattice.to_isWeakLowerModularLattice :
   ⟨fun _ => CovBy.inf_of_sup_right⟩
 #align is_lower_modular_lattice.to_is_weak_lower_modular_lattice IsLowerModularLattice.to_isWeakLowerModularLattice
 
-instance : IsUpperModularLattice (OrderDual α) :=
+instance : IsUpperModularLattice (OrderDual α) := fast_instance%
   ⟨fun h => h.ofDual.inf_of_sup_left.toDual⟩
 
 end LowerModular
@@ -217,7 +217,7 @@ theorem inf_sup_assoc_of_le {x : α} (y : α) {z : α} (h : z ≤ x) : x ⊓ y �
   rw [inf_comm, sup_comm, ← sup_inf_assoc_of_le y h, inf_comm, sup_comm]
 #align inf_sup_assoc_of_le inf_sup_assoc_of_le
 
-instance : IsModularLattice αᵒᵈ :=
+instance : IsModularLattice αᵒᵈ := fast_instance%
   ⟨fun y z xz =>
     le_of_eq
       (by
@@ -426,11 +426,11 @@ namespace IsModularLattice
 
 variable [Lattice α] [IsModularLattice α] {a : α}
 
-instance isModularLattice_Iic : IsModularLattice (Set.Iic a) :=
+instance isModularLattice_Iic : IsModularLattice (Set.Iic a) := fast_instance%
   ⟨@fun x y z xz => (sup_inf_le_assoc_of_le (y : α) xz : (↑x ⊔ ↑y) ⊓ ↑z ≤ ↑x ⊔ ↑y ⊓ ↑z)⟩
 #align is_modular_lattice.is_modular_lattice_Iic IsModularLattice.isModularLattice_Iic
 
-instance isModularLattice_Ici : IsModularLattice (Set.Ici a) :=
+instance isModularLattice_Ici : IsModularLattice (Set.Ici a) := fast_instance%
   ⟨@fun x y z xz => (sup_inf_le_assoc_of_le (y : α) xz : (↑x ⊔ ↑y) ⊓ ↑z ≤ ↑x ⊔ ↑y ⊓ ↑z)⟩
 #align is_modular_lattice.is_modular_lattice_Ici IsModularLattice.isModularLattice_Ici
 
@@ -438,7 +438,7 @@ section ComplementedLattice
 
 variable [BoundedOrder α] [ComplementedLattice α]
 
-instance complementedLattice_Iic : ComplementedLattice (Set.Iic a) :=
+instance complementedLattice_Iic : ComplementedLattice (Set.Iic a) := fast_instance%
   ⟨fun ⟨x, hx⟩ =>
     let ⟨y, hy⟩ := exists_isCompl x
     ⟨⟨y ⊓ a, Set.mem_Iic.2 inf_le_right⟩, by
@@ -454,7 +454,7 @@ instance complementedLattice_Iic : ComplementedLattice (Set.Iic a) :=
         rw [← sup_inf_assoc_of_le _ (Set.mem_Iic.1 hx), hy.2.eq_top, top_inf_eq]⟩⟩
 #align is_modular_lattice.complemented_lattice_Iic IsModularLattice.complementedLattice_Iic
 
-instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) :=
+instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) := fast_instance%
   ⟨fun ⟨x, hx⟩ =>
     let ⟨y, hy⟩ := exists_isCompl x
     ⟨⟨y ⊔ a, Set.mem_Ici.2 le_sup_right⟩, by

@@ -93,7 +93,7 @@ def NonUnitalRingHomClass.toNonUnitalRingHom (f : F) : α →ₙ+* β :=
 
 /-- Any type satisfying `NonUnitalRingHomClass` can be cast into `NonUnitalRingHom` via
 `NonUnitalRingHomClass.toNonUnitalRingHom`. -/
-instance : CoeTC F (α →ₙ+* β) :=
+instance : CoeTC F (α →ₙ+* β) := fast_instance%
   ⟨NonUnitalRingHomClass.toNonUnitalRingHom⟩
 
 end NonUnitalRingHomClass
@@ -199,11 +199,11 @@ protected def id (α : Type*) [NonUnitalNonAssocSemiring α] : α →ₙ+* α :=
   refine' { toFun := id.. } <;> intros <;> rfl
 #align non_unital_ring_hom.id NonUnitalRingHom.id
 
-instance : Zero (α →ₙ+* β) :=
+instance : Zero (α →ₙ+* β) := fast_instance%
   ⟨{ toFun := 0, map_mul' := fun _ _ => (mul_zero (0 : β)).symm, map_zero' := rfl,
       map_add' := fun _ _ => (add_zero (0 : β)).symm }⟩
 
-instance : Inhabited (α →ₙ+* β) :=
+instance : Inhabited (α →ₙ+* β) := fast_instance%
   ⟨0⟩
 
 @[simp]
@@ -393,7 +393,7 @@ def RingHomClass.toRingHom (f : F) : α →+* β :=
   { (f : α →* β), (f : α →+ β) with }
 
 /-- Any type satisfying `RingHomClass` can be cast into `RingHom` via `RingHomClass.toRingHom`. -/
-instance : CoeTC F (α →+* β) :=
+instance : CoeTC F (α →+* β) := fast_instance%
   ⟨RingHomClass.toRingHom⟩
 
 instance (priority := 100) RingHomClass.toNonUnitalRingHomClass : NonUnitalRingHomClass F α β :=
@@ -452,7 +452,7 @@ theorem coe_coe {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F) :
 
 attribute [coe] RingHom.toMonoidHom
 
-instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
+instance coeToMonoidHom : Coe (α →+* β) (α →* β) := fast_instance%
   ⟨RingHom.toMonoidHom⟩
 #align ring_hom.has_coe_monoid_hom RingHom.coeToMonoidHom
 
@@ -630,7 +630,7 @@ def id (α : Type*) [NonAssocSemiring α] : α →+* α := by
   refine' { toFun := _root_.id.. } <;> intros <;> rfl
 #align ring_hom.id RingHom.id
 
-instance : Inhabited (α →+* α) :=
+instance : Inhabited (α →+* α) := fast_instance%
   ⟨id α⟩
 
 @[simp]

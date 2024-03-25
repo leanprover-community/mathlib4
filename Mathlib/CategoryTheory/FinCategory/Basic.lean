@@ -31,11 +31,11 @@ noncomputable section
 
 namespace CategoryTheory
 
-instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
+instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) := fast_instance%
   Fintype.ofEquiv α discreteEquiv.symm
 #align category_theory.discrete_fintype CategoryTheory.discreteFintype
 
-instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
+instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := fast_instance% by
   apply ULift.fintype
 #align category_theory.discrete_hom_fintype CategoryTheory.discreteHomFintype
 

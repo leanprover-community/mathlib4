@@ -73,7 +73,7 @@ instead. -/
   indicator (chartAt H c).source (f.toContDiffBump ∘ extChartAt I c)
 #align smooth_bump_function.to_fun SmoothBumpFunction.toFun
 
-instance : CoeFun (SmoothBumpFunction I c) fun _ => M → ℝ :=
+instance : CoeFun (SmoothBumpFunction I c) fun _ => M → ℝ := fast_instance%
   ⟨toFun⟩
 
 theorem coe_def : ⇑f = indicator (chartAt H c).source (f.toContDiffBump ∘ extChartAt I c) :=
@@ -249,7 +249,7 @@ theorem support_updateRIn {r : ℝ} (hr : r ∈ Ioo 0 f.rOut) :
 #align smooth_bump_function.support_update_r SmoothBumpFunction.support_updateRIn
 
 -- Porting note: was an `Inhabited` instance
-instance : Nonempty (SmoothBumpFunction I c) := nhdsWithin_range_basis.nonempty
+instance : Nonempty (SmoothBumpFunction I c) := fast_instance% nhdsWithin_range_basis.nonempty
 
 variable [T2Space M]
 

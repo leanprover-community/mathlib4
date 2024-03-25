@@ -65,7 +65,7 @@ noncomputable def condKernelReal (ρ : Measure (α × ℝ)) : kernel α ℝ wher
   property := measurable_measure_condCDF ρ
 #align probability_theory.cond_kernel_real ProbabilityTheory.condKernelReal
 
-instance (ρ : Measure (α × ℝ)) : IsMarkovKernel (condKernelReal ρ) :=
+instance (ρ : Measure (α × ℝ)) : IsMarkovKernel (condKernelReal ρ) := fast_instance%
   ⟨fun a => by rw [condKernelReal]; exact instIsProbabilityMeasure ρ a⟩
 
 theorem condKernelReal_Iic (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) :
@@ -341,7 +341,7 @@ theorem condKernel_def : ρ.condKernel = (exists_cond_kernel ρ Unit).choose := 
   rw [MeasureTheory.Measure.condKernel]
 #align probability_theory.cond_kernel_def ProbabilityTheory.condKernel_def
 
-instance : IsMarkovKernel ρ.condKernel := by
+instance : IsMarkovKernel ρ.condKernel := fast_instance% by
   rw [condKernel_def]; exact (exists_cond_kernel ρ Unit).choose_spec.choose
 
 theorem kernel.const_unit_eq_compProd :

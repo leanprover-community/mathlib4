@@ -28,7 +28,7 @@ def Push (_ : V → W) :=
   W
 #align quiver.push Quiver.Push
 
-instance [h : Nonempty W] : Nonempty (Push σ) :=
+instance [h : Nonempty W] : Nonempty (Push σ) := fast_instance%
   h
 
 /-- The quiver structure obtained by pushing arrows of `V` along the map `σ : V → W` -/
@@ -36,7 +36,7 @@ inductive PushQuiver {V : Type u} [Quiver.{v} V] {W : Type u₂} (σ : V → W) 
   | arrow {X Y : V} (f : X ⟶ Y) : PushQuiver σ (σ X) (σ Y)
 #align quiver.push_quiver Quiver.PushQuiver
 
-instance : Quiver (Push σ) :=
+instance : Quiver (Push σ) := fast_instance%
   ⟨PushQuiver σ⟩
 
 namespace Push

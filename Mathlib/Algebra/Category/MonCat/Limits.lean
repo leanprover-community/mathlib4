@@ -40,7 +40,7 @@ namespace MonCat
 variable {J : Type v} [SmallCategory J]
 
 @[to_additive]
-instance monoidObj (F : J ⥤ MonCatMax.{u,v} ) (j) : Monoid ((F ⋙ forget MonCat).obj j) := by
+instance monoidObj (F : J ⥤ MonCatMax.{u,v} ) (j) : Monoid ((F ⋙ forget MonCat).obj j) := fast_instance% by
   change Monoid (F.obj j)
   infer_instance
 #align Mon.monoid_obj MonCat.monoidObj
@@ -124,7 +124,7 @@ instance hasLimitsOfSize : HasLimitsOfSize.{v} MonCatMax.{u,v} where
 #align AddMon.has_limits_of_size AddMonCat.hasLimitsOfSize
 
 @[to_additive]
-instance hasLimits : HasLimits MonCat.{u} :=
+instance hasLimits : HasLimits MonCat.{u} := fast_instance%
   MonCat.hasLimitsOfSize.{u, u}
 #align Mon.has_limits MonCat.hasLimits
 #align AddMon.has_limits AddMonCat.hasLimits
@@ -144,7 +144,7 @@ noncomputable instance forgetPreservesLimitsOfSize :
 #align AddMon.forget_preserves_limits_of_size AddMonCat.forgetPreservesLimitsOfSize
 
 @[to_additive]
-noncomputable instance forgetPreservesLimits : PreservesLimits (forget MonCat.{u}) :=
+noncomputable instance forgetPreservesLimits : PreservesLimits (forget MonCat.{u}) := fast_instance%
   MonCat.forgetPreservesLimitsOfSize.{u, u}
 #align Mon.forget_preserves_limits MonCat.forgetPreservesLimits
 #align AddMon.forget_preserves_limits AddMonCat.forgetPreservesLimits
@@ -231,7 +231,7 @@ instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommMonCatMax.{u,v} where
 #align AddCommMon.has_limits_of_size AddCommMonCat.hasLimitsOfSize
 
 @[to_additive]
-instance hasLimits : HasLimits CommMonCat.{u} :=
+instance hasLimits : HasLimits CommMonCat.{u} := fast_instance%
   CommMonCat.hasLimitsOfSize.{u, u}
 #align CommMon.has_limits CommMonCat.hasLimits
 #align AddCommMon.has_limits AddCommMonCat.hasLimits
@@ -273,7 +273,7 @@ noncomputable instance forgetPreservesLimitsOfSize :
 #align AddCommMon.forget_preserves_limits_of_size AddCommMonCat.forgetPreservesLimitsOfSize
 
 @[to_additive]
-noncomputable instance forgetPreservesLimits : PreservesLimits (forget CommMonCat.{u}) :=
+noncomputable instance forgetPreservesLimits : PreservesLimits (forget CommMonCat.{u}) := fast_instance%
   CommMonCat.forgetPreservesLimitsOfSize.{u, u}
 #align CommMon.forget_preserves_limits CommMonCat.forgetPreservesLimits
 #align AddCommMon.forget_preserves_limits AddCommMonCat.forgetPreservesLimits

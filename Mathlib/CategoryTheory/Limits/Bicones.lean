@@ -45,7 +45,7 @@ inductive Bicone (J : Type u₁)
 
 variable (J : Type u₁)
 
-instance : Inhabited (Bicone J) :=
+instance : Inhabited (Bicone J) := fast_instance%
   ⟨Bicone.left⟩
 
 instance finBicone [Fintype J] : Fintype (Bicone J)
@@ -67,10 +67,10 @@ inductive BiconeHom : Bicone J → Bicone J → Type max u₁ v₁
   | diagram {j k : J} (f : j ⟶ k) : BiconeHom (Bicone.diagram j) (Bicone.diagram k)
 #align category_theory.bicone_hom CategoryTheory.BiconeHom
 
-instance : Inhabited (BiconeHom J Bicone.left Bicone.left) :=
+instance : Inhabited (BiconeHom J Bicone.left Bicone.left) := fast_instance%
   ⟨BiconeHom.left_id⟩
 
-instance BiconeHom.decidableEq {j k : Bicone J} : DecidableEq (BiconeHom J j k) := fun f g => by
+instance BiconeHom.decidableEq {j k : Bicone J} : DecidableEq (BiconeHom J j k) := fast_instance% fun f g => by
   cases f <;> cases g <;> simp <;> infer_instance
 #align category_theory.bicone_hom.decidable_eq CategoryTheory.BiconeHom.decidableEq
 
@@ -130,7 +130,7 @@ def biconeMk {C : Type u₁} [Category.{v₁} C] {F : J ⥤ C} (c₁ c₂ : Cone
       apply F.map_comp
 #align category_theory.bicone_mk CategoryTheory.biconeMk
 
-instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := by
+instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := fast_instance% by
   cases j <;> cases k
   · exact
       { elems := {BiconeHom.left_id}
@@ -165,7 +165,7 @@ instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := by
         simpa using Fintype.complete _ }
 #align category_theory.fin_bicone_hom CategoryTheory.finBiconeHom
 
-instance biconeSmallCategory : SmallCategory (Bicone J) :=
+instance biconeSmallCategory : SmallCategory (Bicone J) := fast_instance%
   CategoryTheory.biconeCategory J
 #align category_theory.bicone_small_category CategoryTheory.biconeSmallCategory
 

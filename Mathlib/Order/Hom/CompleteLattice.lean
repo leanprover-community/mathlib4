@@ -237,13 +237,13 @@ variable [FunLike F α β]
   map_sInf' := sInfHomClass.map_sInf f
   map_sSup' := sSupHomClass.map_sSup f
 
-instance [SupSet α] [SupSet β] [sSupHomClass F α β] : CoeTC F (sSupHom α β) :=
+instance [SupSet α] [SupSet β] [sSupHomClass F α β] : CoeTC F (sSupHom α β) := fast_instance%
   ⟨fun f => ⟨f, map_sSup f⟩⟩
 
-instance [InfSet α] [InfSet β] [sInfHomClass F α β] : CoeTC F (sInfHom α β) :=
+instance [InfSet α] [InfSet β] [sInfHomClass F α β] : CoeTC F (sInfHom α β) := fast_instance%
   ⟨fun f => ⟨f, map_sInf f⟩⟩
 
-instance [CompleteLattice α] [CompleteLattice β] [FrameHomClass F α β] : CoeTC F (FrameHom α β) :=
+instance [CompleteLattice α] [CompleteLattice β] [FrameHomClass F α β] : CoeTC F (FrameHom α β) := fast_instance%
   ⟨fun f => ⟨f, map_sSup f⟩⟩
 
 instance [CompleteLattice α] [CompleteLattice β] [CompleteLatticeHomClass F α β] :
@@ -302,7 +302,7 @@ protected def id : sSupHom α α :=
   ⟨id, fun s => by rw [id, Set.image_id]⟩
 #align Sup_hom.id sSupHom.id
 
-instance : Inhabited (sSupHom α α) :=
+instance : Inhabited (sSupHom α α) := fast_instance%
   ⟨sSupHom.id α⟩
 
 @[simp]
@@ -366,10 +366,10 @@ end SupSet
 
 variable { _ : CompleteLattice β}
 
-instance : PartialOrder (sSupHom α β) :=
+instance : PartialOrder (sSupHom α β) := fast_instance%
   PartialOrder.lift _ DFunLike.coe_injective
 
-instance : Bot (sSupHom α β) :=
+instance : Bot (sSupHom α β) := fast_instance%
   ⟨⟨fun _ => ⊥, fun s => by
       obtain rfl | hs := s.eq_empty_or_nonempty
       · rw [Set.image_empty, sSup_empty]
@@ -443,7 +443,7 @@ protected def id : sInfHom α α :=
   ⟨id, fun s => by rw [id, Set.image_id]⟩
 #align Inf_hom.id sInfHom.id
 
-instance : Inhabited (sInfHom α α) :=
+instance : Inhabited (sInfHom α α) := fast_instance%
   ⟨sInfHom.id α⟩
 
 @[simp]
@@ -507,10 +507,10 @@ end InfSet
 
 variable [CompleteLattice β]
 
-instance : PartialOrder (sInfHom α β) :=
+instance : PartialOrder (sInfHom α β) := fast_instance%
   PartialOrder.lift _ DFunLike.coe_injective
 
-instance : Top (sInfHom α β) :=
+instance : Top (sInfHom α β) := fast_instance%
   ⟨⟨fun _ => ⊤, fun s => by
       obtain rfl | hs := s.eq_empty_or_nonempty
       · rw [Set.image_empty, sInf_empty]
@@ -592,7 +592,7 @@ protected def id : FrameHom α α :=
   { sSupHom.id α with toInfTopHom := InfTopHom.id α }
 #align frame_hom.id FrameHom.id
 
-instance : Inhabited (FrameHom α α) :=
+instance : Inhabited (FrameHom α α) := fast_instance%
   ⟨FrameHom.id α⟩
 
 @[simp]
@@ -651,7 +651,7 @@ theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Inje
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align frame_hom.cancel_left FrameHom.cancel_left
 
-instance : PartialOrder (FrameHom α β) :=
+instance : PartialOrder (FrameHom α β) := fast_instance%
   PartialOrder.lift _ DFunLike.coe_injective
 
 end FrameHom
@@ -683,7 +683,7 @@ def toBoundedLatticeHom (f : CompleteLatticeHom α β) : BoundedLatticeHom α β
 -- Porting note: We do not want CoeFun for this in lean 4
 -- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
 -- directly. -/
--- instance : CoeFun (CompleteLatticeHom α β) fun _ => α → β :=
+-- instance : CoeFun (CompleteLatticeHom α β) fun _ => α → β := fast_instance%
 --   DFunLike.hasCoeToFun
 
 lemma toFun_eq_coe (f : CompleteLatticeHom α β) : f.toFun = f := rfl
@@ -723,7 +723,7 @@ protected def id : CompleteLatticeHom α α :=
   { sSupHom.id α, sInfHom.id α with toFun := id }
 #align complete_lattice_hom.id CompleteLatticeHom.id
 
-instance : Inhabited (CompleteLatticeHom α α) :=
+instance : Inhabited (CompleteLatticeHom α α) := fast_instance%
   ⟨CompleteLatticeHom.id α⟩
 
 @[simp]

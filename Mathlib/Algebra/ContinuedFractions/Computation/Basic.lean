@@ -83,10 +83,10 @@ variable {K}
 namespace IntFractPair
 
 /-- Make an `IntFractPair` printable. -/
-instance [Repr K] : Repr (IntFractPair K) :=
+instance [Repr K] : Repr (IntFractPair K) := fast_instance%
   ⟨fun p _ => "(b : " ++ repr p.b ++ ", fract : " ++ repr p.fr ++ ")"⟩
 
-instance inhabited [Inhabited K] : Inhabited (IntFractPair K) :=
+instance inhabited [Inhabited K] : Inhabited (IntFractPair K) := fast_instance%
   ⟨⟨0, default⟩⟩
 #align generalized_continued_fraction.int_fract_pair.inhabited GeneralizedContinuedFraction.IntFractPair.inhabited
 

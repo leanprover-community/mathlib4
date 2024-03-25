@@ -55,7 +55,7 @@ end Nat
 section AddMonoidWithOne
 variable {α M : Type*} [AddMonoidWithOne M] [CharZero M] {n : ℕ}
 
-instance CharZero.NeZero.two : NeZero (2 : M) :=
+instance CharZero.NeZero.two : NeZero (2 : M) := fast_instance%
   ⟨by
     have : ((2 : ℕ) : M) ≠ 0 := Nat.cast_ne_zero.2 (by decide)
     rwa [Nat.cast_two] at this⟩

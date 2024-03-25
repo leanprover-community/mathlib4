@@ -47,7 +47,7 @@ variable {R}
 
 namespace MaximalSpectrum
 
-instance [Nontrivial R] : Nonempty <| MaximalSpectrum R :=
+instance [Nontrivial R] : Nonempty <| MaximalSpectrum R := fast_instance%
   let ⟨I, hI⟩ := Ideal.exists_maximal R
   ⟨⟨I, hI⟩⟩
 
@@ -71,11 +71,11 @@ theorem toPrimeSpectrum_range :
 
 /-- The Zariski topology on the maximal spectrum of a commutative ring is defined as the subspace
 topology induced by the natural inclusion into the prime spectrum. -/
-instance zariskiTopology : TopologicalSpace <| MaximalSpectrum R :=
+instance zariskiTopology : TopologicalSpace <| MaximalSpectrum R := fast_instance%
   PrimeSpectrum.zariskiTopology.induced toPrimeSpectrum
 #align maximal_spectrum.zariski_topology MaximalSpectrum.zariskiTopology
 
-instance : T1Space <| MaximalSpectrum R :=
+instance : T1Space <| MaximalSpectrum R := fast_instance%
   ⟨fun x => isClosed_induced_iff.mpr
     ⟨{toPrimeSpectrum x}, (isClosed_singleton_iff_isMaximal _).mpr x.IsMaximal, by
       simpa only [← image_singleton] using preimage_image_eq {x} toPrimeSpectrum_injective⟩⟩

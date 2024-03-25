@@ -31,7 +31,7 @@ abbrev ObjAsType : Type :=
   InducedCategory α (Fintype.equivFin α).symm
 #align category_theory.fin_category.obj_as_type CategoryTheory.FinCategory.ObjAsType
 
-instance {i j : ObjAsType α} : Fintype (i ⟶ j) :=
+instance {i j : ObjAsType α} : Fintype (i ⟶ j) := fast_instance%
   FinCategory.fintypeHom ((Fintype.equivFin α).symm i) _
 
 /-- The constructed category is indeed equivalent to `α`. -/

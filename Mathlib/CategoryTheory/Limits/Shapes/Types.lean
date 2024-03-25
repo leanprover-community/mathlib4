@@ -51,7 +51,7 @@ example [UnivLE.{v, u}] : HasProducts.{v} (Type u) := inferInstance
 
 -- This shortcut instance is required in `Mathlib.CategoryTheory.Closed.Types`,
 -- although I don't understand why, and wish it wasn't.
-instance : HasProducts.{v} (Type v) := inferInstance
+instance : HasProducts.{v} (Type v) := fast_instance% inferInstance
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
@@ -110,14 +110,14 @@ noncomputable def isTerminalPunit : IsTerminal (PUnit : Type u) :=
 
 -- Porting note: the following three instances have been added to ease
 -- the automation in a definition in `AlgebraicTopology.SimplicialSet`
-noncomputable instance : Inhabited (⊤_ (Type u)) :=
+noncomputable instance : Inhabited (⊤_ (Type u)) := fast_instance%
   ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
 
-instance : Subsingleton (⊤_ (Type u)) := ⟨fun a b =>
+instance : Subsingleton (⊤_ (Type u)) := fast_instance% ⟨fun a b =>
   congr_fun (@Subsingleton.elim (_ ⟶ ⊤_ (Type u)) _
     (fun _ => a) (fun _ => b)) (ULift.up (0 : Fin 1))⟩
 
-noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
+noncomputable instance : Unique (⊤_ (Type u)) := fast_instance% Unique.mk' _
 
 /-- A type is terminal if and only if it contains exactly one element. -/
 noncomputable def isTerminalEquivUnique (X : Type u) : IsTerminal X ≃ Unique X :=
@@ -635,13 +635,13 @@ open CategoryTheory.Limits.WalkingCospan
 open CategoryTheory.Limits.WalkingCospan.Hom
 
 -- #synth HasPullbacks.{u} (Type u)
-instance : HasPullbacks.{u} (Type u) :=
+instance : HasPullbacks.{u} (Type u) := fast_instance%
   -- FIXME does not work via `inferInstance` despite `#synth HasPullbacks.{u} (Type u)` succeeding.
   -- https://github.com/leanprover-community/mathlib4/issues/5752
   -- inferInstance
   hasPullbacks_of_hasWidePullbacks.{u} (Type u)
 
-instance : HasPushouts.{u} (Type u) :=
+instance : HasPushouts.{u} (Type u) := fast_instance%
   hasPushouts_of_hasWidePushouts.{u} (Type u)
 
 variable {W X Y Z : Type u}

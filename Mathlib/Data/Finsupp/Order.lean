@@ -45,7 +45,7 @@ variable [Zero α]
 section LE
 variable [LE α] {f g : ι →₀ α}
 
-instance instLEFinsupp : LE (ι →₀ α) :=
+instance instLEFinsupp : LE (ι →₀ α) := fast_instance%
   ⟨fun f g => ∀ i, f i ≤ g i⟩
 
 lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
@@ -73,7 +73,7 @@ end LE
 section Preorder
 variable [Preorder α] {f g : ι →₀ α}
 
-instance preorder : Preorder (ι →₀ α) :=
+instance preorder : Preorder (ι →₀ α) := fast_instance%
   { Finsupp.instLEFinsupp with
     le_refl := fun f i => le_rfl
     le_trans := fun f g h hfg hgh i => (hfg i).trans (hgh i) }
@@ -88,11 +88,11 @@ lemma coe_strictMono : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) :
 
 end Preorder
 
-instance partialorder [PartialOrder α] : PartialOrder (ι →₀ α) :=
+instance partialorder [PartialOrder α] : PartialOrder (ι →₀ α) := fast_instance%
   { Finsupp.preorder with le_antisymm :=
       fun _f _g hfg hgf => ext fun i => (hfg i).antisymm (hgf i) }
 
-instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (ι →₀ α) :=
+instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (ι →₀ α) := fast_instance%
   { Finsupp.partialorder with
     inf := zipWith (· ⊓ ·) (inf_idem _)
     inf_le_left := fun _f _g _i => inf_le_left
@@ -104,7 +104,7 @@ theorem inf_apply [SemilatticeInf α] {i : ι} {f g : ι →₀ α} : (f ⊓ g) 
   rfl
 #align finsupp.inf_apply Finsupp.inf_apply
 
-instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (ι →₀ α) :=
+instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (ι →₀ α) := fast_instance%
   { Finsupp.partialorder with
     sup := zipWith (· ⊔ ·) (sup_idem _)
     le_sup_left := fun _f _g _i => le_sup_left
@@ -116,7 +116,7 @@ theorem sup_apply [SemilatticeSup α] {i : ι} {f g : ι →₀ α} : (f ⊔ g) 
   rfl
 #align finsupp.sup_apply Finsupp.sup_apply
 
-instance lattice [Lattice α] : Lattice (ι →₀ α) :=
+instance lattice [Lattice α] : Lattice (ι →₀ α) := fast_instance%
   { Finsupp.semilatticeInf, Finsupp.semilatticeSup with }
 #align finsupp.lattice Finsupp.lattice
 
@@ -137,7 +137,7 @@ end Zero
 /-! ### Algebraic order structures -/
 
 
-instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (ι →₀ α) :=
+instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (ι →₀ α) := fast_instance%
   { Finsupp.instAddCommMonoid, Finsupp.partialorder with
     add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
 
@@ -153,16 +153,16 @@ instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α 
 section SMulZeroClass
 variable [Zero α] [Preorder α] [Zero β] [Preorder β] [SMulZeroClass α β]
 
-instance instPosSMulMono [PosSMulMono α β] : PosSMulMono α (ι →₀ β) :=
+instance instPosSMulMono [PosSMulMono α β] : PosSMulMono α (ι →₀ β) := fast_instance%
   PosSMulMono.lift _ coe_le_coe coe_smul
 
-instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α (ι →₀ β) :=
+instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α (ι →₀ β) := fast_instance%
   SMulPosMono.lift _ coe_le_coe coe_smul coe_zero
 
-instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α (ι →₀ β) :=
+instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α (ι →₀ β) := fast_instance%
   PosSMulReflectLE.lift _ coe_le_coe coe_smul
 
-instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α (ι →₀ β) :=
+instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α (ι →₀ β) := fast_instance%
   SMulPosReflectLE.lift _ coe_le_coe coe_smul coe_zero
 
 end SMulZeroClass
@@ -170,15 +170,15 @@ end SMulZeroClass
 section SMulWithZero
 variable [Zero α] [PartialOrder α] [Zero β] [PartialOrder β] [SMulWithZero α β]
 
-instance instPosSMulStrictMono [PosSMulStrictMono α β] : PosSMulStrictMono α (ι →₀ β) :=
+instance instPosSMulStrictMono [PosSMulStrictMono α β] : PosSMulStrictMono α (ι →₀ β) := fast_instance%
   PosSMulStrictMono.lift _ coe_le_coe coe_smul
 
-instance instSMulPosStrictMono [SMulPosStrictMono α β] : SMulPosStrictMono α (ι →₀ β) :=
+instance instSMulPosStrictMono [SMulPosStrictMono α β] : SMulPosStrictMono α (ι →₀ β) := fast_instance%
   SMulPosStrictMono.lift _ coe_le_coe coe_smul coe_zero
 
 -- `PosSMulReflectLT α (ι →₀ β)` already follows from the other instances
 
-instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι →₀ β) :=
+instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι →₀ β) := fast_instance%
   SMulPosReflectLT.lift _ coe_le_coe coe_smul coe_zero
 
 end SMulWithZero
@@ -215,11 +215,11 @@ lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
 
 lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
 
-instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →₀ α) _) := fun f g =>
+instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →₀ α) _) := fast_instance% fun f g =>
   decidable_of_iff _ (le_iff f g).symm
 #align finsupp.decidable_le Finsupp.decidableLE
 
-instance decidableLT [DecidableRel (@LE.le α _)] : DecidableRel (@LT.lt (ι →₀ α) _) :=
+instance decidableLT [DecidableRel (@LE.le α _)] : DecidableRel (@LT.lt (ι →₀ α) _) := fast_instance%
   decidableLTOfDecidableLE
 
 @[simp]
@@ -231,14 +231,14 @@ variable [Sub α] [OrderedSub α] {f g : ι →₀ α} {i : ι} {a b : α}
 
 /-- This is called `tsub` for truncated subtraction, to distinguish it with subtraction in an
 additive group. -/
-instance tsub : Sub (ι →₀ α) :=
+instance tsub : Sub (ι →₀ α) := fast_instance%
   ⟨zipWith (fun m n => m - n) (tsub_self 0)⟩
 #align finsupp.tsub Finsupp.tsub
 
-instance orderedSub : OrderedSub (ι →₀ α) :=
+instance orderedSub : OrderedSub (ι →₀ α) := fast_instance%
   ⟨fun _n _m _k => forall_congr' fun _x => tsub_le_iff_right⟩
 
-instance : CanonicallyOrderedAddCommMonoid (ι →₀ α) :=
+instance : CanonicallyOrderedAddCommMonoid (ι →₀ α) := fast_instance%
   { Finsupp.orderBot,
     Finsupp.orderedAddCommMonoid with
     exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩

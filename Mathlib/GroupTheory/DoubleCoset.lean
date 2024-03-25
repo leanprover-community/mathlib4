@@ -125,7 +125,7 @@ abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
   Quotient.mk'' a
 #align doset.mk Doset.mk
 
-instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
+instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) := fast_instance%
   ⟨mk H K (1 : G)⟩
 
 theorem eq (H K : Subgroup G) (a b : G) :

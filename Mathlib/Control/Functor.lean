@@ -106,9 +106,9 @@ protected def map {γ α β} (_f : α → β) (x : Const γ β) : Const γ α :=
   x
 #align functor.const.map Functor.Const.map
 
-instance functor {γ} : Functor (Const γ) where map := @Const.map γ
+instance functor {γ} : Functor (Const γ) where map :=  @Const.map γ
 
-instance lawfulFunctor {γ} : LawfulFunctor (Const γ) := by constructor <;> intros <;> rfl
+instance lawfulFunctor {γ} : LawfulFunctor (Const γ) :=  by constructor <;> intros <;> rfl
 
 instance {α β} [Inhabited α] : Inhabited (Const α β) :=
   ⟨(default : α)⟩
@@ -183,7 +183,7 @@ protected def map {α β : Type v} (h : α → β) : Comp F G α → Comp F G β
   | Comp.mk x => Comp.mk ((h <$> ·) <$> x)
 #align functor.comp.map Functor.Comp.map
 
-instance functor : Functor (Comp F G) where map := @Comp.map F G _ _
+instance functor : Functor (Comp F G) where map :=  @Comp.map F G _ _
 
 @[functor_norm]
 theorem map_mk {α β} (h : α → β) (x : F (G α)) : h <$> Comp.mk x = Comp.mk ((h <$> ·) <$> x) :=

@@ -142,7 +142,7 @@ theorem separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F
   fun x ↦ isAlgebraic_iff.2 x.2.isIntegral.isAlgebraic
 
 /-- The separable closure of `F` in `E` is separable over `F`. -/
-instance separableClosure.isSeparable : IsSeparable F (separableClosure F E) :=
+instance separableClosure.isSeparable : IsSeparable F (separableClosure F E) := fast_instance%
   ⟨fun x ↦ by simpa only [minpoly_eq] using x.2⟩
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
@@ -193,7 +193,7 @@ theorem IsSepClosed.separableClosure_eq_bot_iff [IsSepClosed E] :
 
 /-- If `E` is separably closed, then the separable closure of `F` in `E` is an absolute
 separable closure of `F`. -/
-instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separableClosure F E) :=
+instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separableClosure F E) := fast_instance%
   ⟨(IsSepClosed.separableClosure_eq_bot_iff _ E).mp (separableClosure.separableClosure_eq_bot F E),
     isSeparable F E⟩
 
@@ -264,9 +264,9 @@ def finInsepDegree : ℕ := finrank (separableClosure F E) E
 
 theorem finInsepDegree_def' : finInsepDegree F E = Cardinal.toNat (insepDegree F E) := rfl
 
-instance instNeZeroSepDegree : NeZero (sepDegree F E) := ⟨rank_pos.ne'⟩
+instance instNeZeroSepDegree : NeZero (sepDegree F E) := fast_instance% ⟨rank_pos.ne'⟩
 
-instance instNeZeroInsepDegree : NeZero (insepDegree F E) := ⟨rank_pos.ne'⟩
+instance instNeZeroInsepDegree : NeZero (insepDegree F E) := fast_instance% ⟨rank_pos.ne'⟩
 
 instance instNeZeroFinInsepDegree [FiniteDimensional F E] :
     NeZero (finInsepDegree F E) := ⟨finrank_pos.ne'⟩

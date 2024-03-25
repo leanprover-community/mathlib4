@@ -182,7 +182,7 @@ instance : (pointwiseLeftKanExtension L F).IsLeftKanExtension
     (pointwiseLeftKanExtensionUnit L F) where
   nonempty_isUniversal := ⟨pointwiseLeftKanExtensionIsUniversal L F⟩
 
-instance : HasLeftKanExtension L F :=
+instance : HasLeftKanExtension L F := fast_instance%
   HasLeftKanExtension.mk _ (pointwiseLeftKanExtensionUnit L F)
 
 end

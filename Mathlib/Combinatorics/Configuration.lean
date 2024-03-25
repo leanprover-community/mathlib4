@@ -48,19 +48,19 @@ def Dual :=
 #align configuration.dual Configuration.Dual
 
 -- Porting note: was `this` instead of `h`
-instance [h : Inhabited P] : Inhabited (Dual P) :=
+instance [h : Inhabited P] : Inhabited (Dual P) := fast_instance%
   h
 
-instance [Finite P] : Finite (Dual P) :=
+instance [Finite P] : Finite (Dual P) := fast_instance%
   ‹Finite P›
 
 -- Porting note: was `this` instead of `h`
-instance [h : Fintype P] : Fintype (Dual P) :=
+instance [h : Fintype P] : Fintype (Dual P) := fast_instance%
   h
 
 -- Porting note (#11215): TODO: figure out if this is needed.
 set_option synthInstance.checkSynthOrder false in
-instance : Membership (Dual L) (Dual P) :=
+instance : Membership (Dual L) (Dual P) := fast_instance%
   ⟨Function.swap (Membership.mem : P → L → Prop)⟩
 
 /-- A configuration is nondegenerate if:
@@ -98,12 +98,12 @@ instance Dual.Nondegenerate [Nondegenerate P L] : Nondegenerate (Dual L) (Dual P
   exists_line := @exists_point P L _ _
   eq_or_eq := @fun l₁ l₂ p₁ p₂ h₁ h₂ h₃ h₄ => (@eq_or_eq P L _ _ p₁ p₂ l₁ l₂ h₁ h₃ h₂ h₄).symm
 
-instance Dual.hasLines [HasPoints P L] : HasLines (Dual L) (Dual P) :=
+instance Dual.hasLines [HasPoints P L] : HasLines (Dual L) (Dual P) := fast_instance%
   { Dual.Nondegenerate _ _ with
     mkLine := @mkPoint P L _ _
     mkLine_ax := @mkPoint_ax P L _ _ }
 
-instance Dual.hasPoints [HasLines P L] : HasPoints (Dual L) (Dual P) :=
+instance Dual.hasPoints [HasLines P L] : HasPoints (Dual L) (Dual P) := fast_instance%
   { Dual.Nondegenerate _ _ with
     mkPoint := @mkLine P L _ _
     mkPoint_ax := @mkLine_ax P L _ _ }
@@ -359,7 +359,7 @@ namespace ProjectivePlane
 
 variable [ProjectivePlane P L]
 
-instance : ProjectivePlane (Dual L) (Dual P) :=
+instance : ProjectivePlane (Dual L) (Dual P) := fast_instance%
   { Dual.hasPoints _ _, Dual.hasLines _ _ with
     exists_config :=
       let ⟨p₁, p₂, p₃, l₁, l₂, l₃, h₁₂, h₁₃, h₂₁, h₂₂, h₂₃, h₃₁, h₃₂, h₃₃⟩ := @exists_config P L _ _

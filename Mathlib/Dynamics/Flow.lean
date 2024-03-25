@@ -98,13 +98,13 @@ namespace Flow
 variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ] {α : Type*}
   [TopologicalSpace α] (ϕ : Flow τ α)
 
-instance : Inhabited (Flow τ α) :=
+instance : Inhabited (Flow τ α) := fast_instance%
   ⟨{  toFun := fun _ x => x
       cont' := continuous_snd
       map_add' := fun _ _ _ => rfl
       map_zero' := fun _ => rfl }⟩
 
-instance : CoeFun (Flow τ α) fun _ => τ → α → α := ⟨Flow.toFun⟩
+instance : CoeFun (Flow τ α) fun _ => τ → α → α := fast_instance% ⟨Flow.toFun⟩
 
 @[ext]
 theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) → ϕ₁ = ϕ₂

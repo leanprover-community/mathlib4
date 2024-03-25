@@ -66,7 +66,7 @@ inductive Pre
 
 namespace Pre
 
-instance : Inhabited (Pre R X) := ⟨ofScalar 0⟩
+instance : Inhabited (Pre R X) := fast_instance% ⟨ofScalar 0⟩
 
 -- Note: These instances are only used to simplify the notation.
 /-- Coercion from `X` to `Pre R X`. Note: Used for notation only. -/
@@ -169,9 +169,9 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
 instance instSMul {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
   smul r := Quot.map (HMul.hMul (algebraMap R A r : Pre A X)) fun _ _ ↦ Rel.mul_compat_right
 
-instance instZero : Zero (FreeAlgebra R X) where zero := Quot.mk _ 0
+instance instZero : Zero (FreeAlgebra R X) where zero := fast_instance% Quot.mk _ 0
 
-instance instOne : One (FreeAlgebra R X) where one := Quot.mk _ 1
+instance instOne : One (FreeAlgebra R X) where one := fast_instance% Quot.mk _ 1
 
 instance instAdd : Add (FreeAlgebra R X) where
   add := Quot.map₂ HAdd.hAdd (fun _ _ _ ↦ Rel.add_compat_right) fun _ _ _ ↦ Rel.add_compat_left
@@ -249,7 +249,7 @@ instance : Semiring (FreeAlgebra R X) where
   natCast_zero := by simp; rfl
   natCast_succ n := by simp; exact Quot.sound Rel.add_scalar
 
-instance : Inhabited (FreeAlgebra R X) :=
+instance : Inhabited (FreeAlgebra R X) := fast_instance%
   ⟨0⟩
 
 instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
@@ -284,7 +284,7 @@ instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A] [Algebra R A
     SMulCommClass R S (FreeAlgebra A X) where
   smul_comm r s x := smul_comm (algebraMap R A r) (algebraMap S A s) x
 
-instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
+instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) := fast_instance%
   Algebra.semiringToRing S
 
 -- verify there is no diamond but we will need
@@ -473,15 +473,15 @@ noncomputable def equivMonoidAlgebraFreeMonoid :
 #align free_algebra.equiv_monoid_algebra_free_monoid FreeAlgebra.equivMonoidAlgebraFreeMonoid
 
 /-- `FreeAlgebra R X` is nontrivial when `R` is. -/
-instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
+instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) := fast_instance%
   equivMonoidAlgebraFreeMonoid.surjective.nontrivial
 
 /-- `FreeAlgebra R X` has no zero-divisors when `R` has no zero-divisors. -/
-instance instNoZeroDivisors [NoZeroDivisors R] : NoZeroDivisors (FreeAlgebra R X) :=
+instance instNoZeroDivisors [NoZeroDivisors R] : NoZeroDivisors (FreeAlgebra R X) := fast_instance%
   equivMonoidAlgebraFreeMonoid.toMulEquiv.noZeroDivisors
 
 /-- `FreeAlgebra R X` is a domain when `R` is an integral domain. -/
-instance instIsDomain {R X} [CommRing R] [IsDomain R] : IsDomain (FreeAlgebra R X) :=
+instance instIsDomain {R X} [CommRing R] [IsDomain R] : IsDomain (FreeAlgebra R X) := fast_instance%
   NoZeroDivisors.to_isDomain _
 
 section

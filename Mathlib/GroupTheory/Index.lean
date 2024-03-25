@@ -548,7 +548,7 @@ noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ 
 #align add_subgroup.fintype_quotient_of_finite_index AddSubgroup.fintypeQuotientOfFiniteIndex
 
 @[to_additive]
-instance finite_quotient_of_finiteIndex [FiniteIndex H] : Finite (G ⧸ H) :=
+instance finite_quotient_of_finiteIndex [FiniteIndex H] : Finite (G ⧸ H) := fast_instance%
   H.fintypeQuotientOfFiniteIndex.finite
 #align subgroup.finite_quotient_of_finite_index Subgroup.finite_quotient_of_finiteIndex
 #align add_subgroup.finite_quotient_of_finite_index AddSubgroup.finite_quotient_of_finiteIndex
@@ -567,11 +567,11 @@ instance (priority := 100) finiteIndex_of_finite [Finite G] : FiniteIndex H :=
 #align add_subgroup.finite_index_of_finite AddSubgroup.finiteIndex_of_finite
 
 @[to_additive]
-instance : FiniteIndex (⊤ : Subgroup G) :=
+instance : FiniteIndex (⊤ : Subgroup G) := fast_instance%
   ⟨ne_of_eq_of_ne index_top one_ne_zero⟩
 
 @[to_additive]
-instance [FiniteIndex H] [FiniteIndex K] : FiniteIndex (H ⊓ K) :=
+instance [FiniteIndex H] [FiniteIndex K] : FiniteIndex (H ⊓ K) := fast_instance%
   ⟨index_inf_ne_zero FiniteIndex.finiteIndex FiniteIndex.finiteIndex⟩
 
 variable {H K}
@@ -592,14 +592,14 @@ instance finiteIndex_ker {G' : Type*} [Group G'] (f : G →* G') [Finite f.range
 #align subgroup.finite_index_ker Subgroup.finiteIndex_ker
 #align add_subgroup.finite_index_ker AddSubgroup.finiteIndex_ker
 
-instance finiteIndex_normalCore [H.FiniteIndex] : H.normalCore.FiniteIndex := by
+instance finiteIndex_normalCore [H.FiniteIndex] : H.normalCore.FiniteIndex := fast_instance% by
   rw [normalCore_eq_ker]
   infer_instance
 #align subgroup.finite_index_normal_core Subgroup.finiteIndex_normalCore
 
 variable (G)
 
-instance finiteIndex_center [Finite (commutatorSet G)] [Group.FG G] : FiniteIndex (center G) := by
+instance finiteIndex_center [Finite (commutatorSet G)] [Group.FG G] : FiniteIndex (center G) := fast_instance% by
   obtain ⟨S, -, hS⟩ := Group.rank_spec G
   exact ⟨mt (Finite.card_eq_zero_of_embedding (quotientCenterEmbedding hS)) Finite.card_pos.ne'⟩
 #align subgroup.finite_index_center Subgroup.finiteIndex_center

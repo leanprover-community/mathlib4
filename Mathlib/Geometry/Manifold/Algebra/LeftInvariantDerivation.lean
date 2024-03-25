@@ -50,7 +50,7 @@ variable {I G}
 
 namespace LeftInvariantDerivation
 
-instance : Coe (LeftInvariantDerivation I G) (Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯) :=
+instance : Coe (LeftInvariantDerivation I G) (Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯) := fast_instance%
   ⟨toDerivation⟩
 
 attribute [coe] toDerivation
@@ -127,10 +127,10 @@ theorem leibniz : X (f * f') = f • X f' + f' • X f :=
   X.leibniz' _ _
 #align left_invariant_derivation.leibniz LeftInvariantDerivation.leibniz
 
-instance : Zero (LeftInvariantDerivation I G) :=
+instance : Zero (LeftInvariantDerivation I G) := fast_instance%
   ⟨⟨0, fun g => by simp only [_root_.map_zero]⟩⟩
 
-instance : Inhabited (LeftInvariantDerivation I G) :=
+instance : Inhabited (LeftInvariantDerivation I G) := fast_instance%
   ⟨0⟩
 
 instance : Add (LeftInvariantDerivation I G) where
@@ -183,7 +183,7 @@ instance hasIntScalar : SMul ℤ (LeftInvariantDerivation I G) where
   smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
 #align left_invariant_derivation.has_int_scalar LeftInvariantDerivation.hasIntScalar
 
-instance : AddCommGroup (LeftInvariantDerivation I G) :=
+instance : AddCommGroup (LeftInvariantDerivation I G) := fast_instance%
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
 instance : SMul 𝕜 (LeftInvariantDerivation I G) where
@@ -211,7 +211,7 @@ def coeFnAddMonoidHom : LeftInvariantDerivation I G →+ C^∞⟮I, G; 𝕜⟯ �
 
 variable {I G}
 
-instance : Module 𝕜 (LeftInvariantDerivation I G) :=
+instance : Module 𝕜 (LeftInvariantDerivation I G) := fast_instance%
   coe_injective.module _ (coeFnAddMonoidHom I G) coe_smul
 
 /-- Evaluation at a point for left invariant derivation. Same thing as for generic global

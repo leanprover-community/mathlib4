@@ -56,7 +56,7 @@ instance (priority := 75) toNonUnitalNonAssocSemiring : NonUnitalNonAssocSemirin
   Subtype.coe_injective.nonUnitalNonAssocSemiring (↑) rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
 #align non_unital_subsemiring_class.to_non_unital_non_assoc_semiring NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring
 
-instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
+instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s := fast_instance%
   Subtype.coe_injective.noZeroDivisors (↑) rfl fun _ _ => rfl
 #align non_unital_subsemiring_class.no_zero_divisors NonUnitalSubsemiringClass.noZeroDivisors
 
@@ -253,7 +253,7 @@ theorem coe_toAddSubmonoid (s : NonUnitalSubsemiring R) : (s.toAddSubmonoid : Se
 #align non_unital_subsemiring.coe_to_add_submonoid NonUnitalSubsemiring.coe_toAddSubmonoid
 
 /-- The non-unital subsemiring `R` of the non-unital semiring `R`. -/
-instance : Top (NonUnitalSubsemiring R) :=
+instance : Top (NonUnitalSubsemiring R) := fast_instance%
   ⟨{ (⊤ : Subsemigroup R), (⊤ : AddSubmonoid R) with }⟩
 
 @[simp]
@@ -385,7 +385,7 @@ theorem map_srange (g : S →ₙ+* T) (f : R →ₙ+* S) : map g (srange f) = sr
 #align non_unital_ring_hom.map_srange NonUnitalRingHom.map_srange
 
 /-- The range of a morphism of non-unital semirings is finite if the domain is a finite. -/
-instance finite_srange [Finite R] (f : F) : Finite (srange f : NonUnitalSubsemiring S) :=
+instance finite_srange [Finite R] (f : F) : Finite (srange f : NonUnitalSubsemiring S) := fast_instance%
   (Set.finite_range f).to_subtype
 #align non_unital_ring_hom.finite_srange NonUnitalRingHom.finite_srange
 
@@ -394,13 +394,13 @@ end NonUnitalRingHom
 namespace NonUnitalSubsemiring
 
 -- should we define this as the range of the zero homomorphism?
-instance : Bot (NonUnitalSubsemiring R) :=
+instance : Bot (NonUnitalSubsemiring R) := fast_instance%
   ⟨{  carrier := {0}
       add_mem' := fun _ _ => by simp_all
       zero_mem' := Set.mem_singleton 0
       mul_mem' := fun _ _ => by simp_all }⟩
 
-instance : Inhabited (NonUnitalSubsemiring R) :=
+instance : Inhabited (NonUnitalSubsemiring R) := fast_instance%
   ⟨⊥⟩
 
 theorem coe_bot : ((⊥ : NonUnitalSubsemiring R) : Set R) = {0} :=
@@ -412,7 +412,7 @@ theorem mem_bot {x : R} : x ∈ (⊥ : NonUnitalSubsemiring R) ↔ x = 0 :=
 #align non_unital_subsemiring.mem_bot NonUnitalSubsemiring.mem_bot
 
 /-- The inf of two non-unital subsemirings is their intersection. -/
-instance : Inf (NonUnitalSubsemiring R) :=
+instance : Inf (NonUnitalSubsemiring R) := fast_instance%
   ⟨fun s t =>
     { s.toSubsemigroup ⊓ t.toSubsemigroup, s.toAddSubmonoid ⊓ t.toAddSubmonoid with
       carrier := s ∩ t }⟩
@@ -428,7 +428,7 @@ theorem mem_inf {p p' : NonUnitalSubsemiring R} {x : R} : x ∈ p ⊓ p' ↔ x �
   Iff.rfl
 #align non_unital_subsemiring.mem_inf NonUnitalSubsemiring.mem_inf
 
-instance : InfSet (NonUnitalSubsemiring R) :=
+instance : InfSet (NonUnitalSubsemiring R) := fast_instance%
   ⟨fun s =>
     NonUnitalSubsemiring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, NonUnitalSubsemiring.toSubsemigroup t)
       (by simp) (⨅ t ∈ s, NonUnitalSubsemiring.toAddSubmonoid t) (by simp)⟩
@@ -456,7 +456,7 @@ theorem sInf_toAddSubmonoid (s : Set (NonUnitalSubsemiring R)) :
 #align non_unital_subsemiring.Inf_to_add_submonoid NonUnitalSubsemiring.sInf_toAddSubmonoid
 
 /-- Non-unital subsemirings of a non-unital semiring form a complete lattice. -/
-instance : CompleteLattice (NonUnitalSubsemiring R) :=
+instance : CompleteLattice (NonUnitalSubsemiring R) := fast_instance%
   { completeLatticeOfInf (NonUnitalSubsemiring R)
       fun _ => IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
@@ -495,7 +495,7 @@ theorem center_toSubsemigroup :
 #align non_unital_subsemiring.center_to_subsemigroup NonUnitalSubsemiring.center_toSubsemigroup
 
 /-- The center is commutative and associative. -/
-instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
+instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) := fast_instance%
   { Subsemigroup.center.commSemigroup,
     NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
 

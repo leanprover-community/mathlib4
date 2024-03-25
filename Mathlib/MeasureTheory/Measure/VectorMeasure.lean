@@ -87,7 +87,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 
 attribute [coe] VectorMeasure.measureOf'
 
-instance instCoeFun : CoeFun (VectorMeasure α M) fun _ => Set α → M :=
+instance instCoeFun : CoeFun (VectorMeasure α M) fun _ => Set α → M := fast_instance%
   ⟨VectorMeasure.measureOf'⟩
 #align measure_theory.vector_measure.has_coe_to_fun MeasureTheory.VectorMeasure.instCoeFun
 
@@ -261,7 +261,7 @@ def smul (r : R) (v : VectorMeasure α M) : VectorMeasure α M where
   m_iUnion' _ hf₁ hf₂ := by exact HasSum.const_smul _ (v.m_iUnion hf₁ hf₂)
 #align measure_theory.vector_measure.smul MeasureTheory.VectorMeasure.smul
 
-instance instSMul : SMul R (VectorMeasure α M) :=
+instance instSMul : SMul R (VectorMeasure α M) := fast_instance%
   ⟨smul⟩
 #align measure_theory.vector_measure.has_smul MeasureTheory.VectorMeasure.instSMul
 
@@ -278,11 +278,11 @@ section AddCommMonoid
 
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 
-instance instZero : Zero (VectorMeasure α M) :=
+instance instZero : Zero (VectorMeasure α M) := fast_instance%
   ⟨⟨0, rfl, fun _ _ => rfl, fun _ _ _ => hasSum_zero⟩⟩
 #align measure_theory.vector_measure.has_zero MeasureTheory.VectorMeasure.instZero
 
-instance instInhabited : Inhabited (VectorMeasure α M) :=
+instance instInhabited : Inhabited (VectorMeasure α M) := fast_instance%
   ⟨0⟩
 #align measure_theory.vector_measure.inhabited MeasureTheory.VectorMeasure.instInhabited
 
@@ -303,7 +303,7 @@ def add (v w : VectorMeasure α M) : VectorMeasure α M where
   m_iUnion' f hf₁ hf₂ := HasSum.add (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
 #align measure_theory.vector_measure.add MeasureTheory.VectorMeasure.add
 
-instance instAdd : Add (VectorMeasure α M) :=
+instance instAdd : Add (VectorMeasure α M) := fast_instance%
   ⟨add⟩
 #align measure_theory.vector_measure.has_add MeasureTheory.VectorMeasure.instAdd
 
@@ -314,7 +314,7 @@ theorem coe_add (v w : VectorMeasure α M) : ⇑(v + w) = v + w := rfl
 theorem add_apply (v w : VectorMeasure α M) (i : Set α) : (v + w) i = v i + w i := rfl
 #align measure_theory.vector_measure.add_apply MeasureTheory.VectorMeasure.add_apply
 
-instance instAddCommMonoid : AddCommMonoid (VectorMeasure α M) :=
+instance instAddCommMonoid : AddCommMonoid (VectorMeasure α M) := fast_instance%
   Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 #align measure_theory.vector_measure.add_comm_monoid MeasureTheory.VectorMeasure.instAddCommMonoid
 
@@ -340,7 +340,7 @@ def neg (v : VectorMeasure α M) : VectorMeasure α M where
   m_iUnion' f hf₁ hf₂ := HasSum.neg <| v.m_iUnion hf₁ hf₂
 #align measure_theory.vector_measure.neg MeasureTheory.VectorMeasure.neg
 
-instance instNeg : Neg (VectorMeasure α M) :=
+instance instNeg : Neg (VectorMeasure α M) := fast_instance%
   ⟨neg⟩
 #align measure_theory.vector_measure.has_neg MeasureTheory.VectorMeasure.instNeg
 
@@ -359,7 +359,7 @@ def sub (v w : VectorMeasure α M) : VectorMeasure α M where
   m_iUnion' f hf₁ hf₂ := HasSum.sub (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
 #align measure_theory.vector_measure.sub MeasureTheory.VectorMeasure.sub
 
-instance instSub : Sub (VectorMeasure α M) :=
+instance instSub : Sub (VectorMeasure α M) := fast_instance%
   ⟨sub⟩
 #align measure_theory.vector_measure.has_sub MeasureTheory.VectorMeasure.instSub
 
@@ -370,7 +370,7 @@ theorem coe_sub (v w : VectorMeasure α M) : ⇑(v - w) = v - w := rfl
 theorem sub_apply (v w : VectorMeasure α M) (i : Set α) : (v - w) i = v i - w i := rfl
 #align measure_theory.vector_measure.sub_apply MeasureTheory.VectorMeasure.sub_apply
 
-instance instAddCommGroup : AddCommGroup (VectorMeasure α M) :=
+instance instAddCommGroup : AddCommGroup (VectorMeasure α M) := fast_instance%
   Function.Injective.addCommGroup _ coe_injective coe_zero coe_add coe_neg coe_sub
     (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 #align measure_theory.vector_measure.add_comm_group MeasureTheory.VectorMeasure.instAddCommGroup
@@ -382,7 +382,7 @@ section DistribMulAction
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 variable {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M]
 
-instance instDistribMulAction [ContinuousAdd M] : DistribMulAction R (VectorMeasure α M) :=
+instance instDistribMulAction [ContinuousAdd M] : DistribMulAction R (VectorMeasure α M) := fast_instance%
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 #align measure_theory.vector_measure.distrib_mul_action MeasureTheory.VectorMeasure.instDistribMulAction
 
@@ -393,7 +393,7 @@ section Module
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 variable {R : Type*} [Semiring R] [Module R M] [ContinuousConstSMul R M]
 
-instance instModule [ContinuousAdd M] : Module R (VectorMeasure α M) :=
+instance instModule [ContinuousAdd M] : Module R (VectorMeasure α M) := fast_instance%
   Function.Injective.module R coeFnAddMonoidHom coe_injective coe_smul
 #align measure_theory.vector_measure.module MeasureTheory.VectorMeasure.instModule
 

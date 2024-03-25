@@ -302,7 +302,7 @@ theorem discreteTopology_pi_basisFun [Finite ι] :
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] (b : Basis ι ℝ E)
 
-instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
+instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := fast_instance% by
   have h : Set.MapsTo b.equivFun (span ℤ (Set.range b)) (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
     intro _ hx
     rwa [SetLike.mem_coe, Basis.mem_span_iff_repr_mem] at hx ⊢
@@ -310,7 +310,7 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   · exact discreteTopology_pi_basisFun
   · refine Subtype.map_injective _ (Basis.equivFun b).injective
 
-instance [Fintype ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup := by
+instance [Fintype ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup := fast_instance% by
   change DiscreteTopology (span ℤ (Set.range b))
   infer_instance
 

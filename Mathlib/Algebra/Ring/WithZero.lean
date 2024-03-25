@@ -33,7 +33,7 @@ instance instDistrib [Distrib α] : Distrib (WithZero α) where
   left_distrib := left_distrib
   right_distrib := right_distrib
 
-instance instSemiring [Semiring α] : Semiring (WithZero α) :=
+instance instSemiring [Semiring α] : Semiring (WithZero α) := fast_instance%
   { addMonoidWithOne, addCommMonoid, mulZeroClass, monoidWithZero, instDistrib with }
 
 end WithZero

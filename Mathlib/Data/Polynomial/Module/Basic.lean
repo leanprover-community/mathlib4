@@ -48,13 +48,13 @@ variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMon
 
 namespace AEval
 
-instance instAddCommMonoid : AddCommMonoid <| AEval R M a := inferInstanceAs (AddCommMonoid M)
+instance instAddCommMonoid : AddCommMonoid <| AEval R M a := fast_instance% inferInstanceAs (AddCommMonoid M)
 
-instance instModuleOrig : Module R <| AEval R M a := inferInstanceAs (Module R M)
+instance instModuleOrig : Module R <| AEval R M a := fast_instance% inferInstanceAs (Module R M)
 
-instance instFiniteOrig [Finite R M] : Finite R <| AEval R M a := inferInstanceAs (Finite R M)
+instance instFiniteOrig [Finite R M] : Finite R <| AEval R M a := fast_instance% inferInstanceAs (Finite R M)
 
-instance instModulePolynomial : Module R[X] <| AEval R M a := compHom M (aeval a).toRingHom
+instance instModulePolynomial : Module R[X] <| AEval R M a := fast_instance% compHom M (aeval a).toRingHom
 
 variable (R M)
 /--
@@ -85,7 +85,7 @@ instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a w
     apply (of R M a).symm.injective
     rw [of_symm_smul, map_smul, smul_assoc, map_smul, of_symm_smul]
 
-instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
+instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a := fast_instance%
   Finite.of_restrictScalars_finite R _ _
 
 /-- Construct an `R[X]`-linear map out of `AEval R M a` from a `R`-linear map out of `M`. -/
@@ -198,7 +198,7 @@ lemma AEval'.X_smul_of (m : M) : (X : R[X]) • AEval'.of φ m = AEval'.of φ (�
 lemma AEval'.of_symm_X_smul (m : AEval' φ) :
     (AEval'.of φ).symm ((X : R[X]) • m) = φ ((AEval'.of φ).symm m) := AEval.of_symm_X_smul _ _
 
-instance [Finite R M] : Finite R[X] <| AEval' φ := inferInstance
+instance [Finite R M] : Finite R[X] <| AEval' φ := fast_instance% inferInstance
 
 end Module
 
@@ -227,8 +227,8 @@ def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] :=
 variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
 -- Porting note: stated instead of deriving
-noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.instInhabited
-noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.instAddCommGroup
+noncomputable instance : Inhabited (PolynomialModule R M) := fast_instance% Finsupp.instInhabited
+noncomputable instance : AddCommGroup (PolynomialModule R M) := fast_instance% Finsupp.instAddCommGroup
 
 variable {M}
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
@@ -237,13 +237,13 @@ namespace PolynomialModule
 
 /-- This is required to have the `IsScalarTower S R M` instance to avoid diamonds. -/
 @[nolint unusedArguments]
-noncomputable instance : Module S (PolynomialModule R M) :=
+noncomputable instance : Module S (PolynomialModule R M) := fast_instance%
   Finsupp.module ℕ M
 
-instance instFunLike : FunLike (PolynomialModule R M) ℕ M :=
+instance instFunLike : FunLike (PolynomialModule R M) ℕ M := fast_instance%
   Finsupp.instFunLike
 
-instance : CoeFun (PolynomialModule R M) fun _ => ℕ → M :=
+instance : CoeFun (PolynomialModule R M) fun _ => ℕ → M := fast_instance%
   Finsupp.instCoeFun
 
 theorem zero_apply (i : ℕ) : (0 : PolynomialModule R M) i = 0 :=
@@ -283,7 +283,7 @@ theorem induction_linear {P : PolynomialModule R M → Prop} (f : PolynomialModu
 #align polynomial_module.induction_linear PolynomialModule.induction_linear
 
 @[semireducible]
-noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) :=
+noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) := fast_instance%
   inferInstanceAs (Module R[X] (Module.AEval' (Finsupp.lmapDomain M R Nat.succ)))
 #align polynomial_module.polynomial_module PolynomialModule.polynomialModule
 

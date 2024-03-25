@@ -71,14 +71,14 @@ section CommRing
 
 variable [CommRing R] (f : R[X])
 
-instance instCommRing : CommRing (AdjoinRoot f) :=
+instance instCommRing : CommRing (AdjoinRoot f) := fast_instance%
   Ideal.Quotient.commRing _
 #align adjoin_root.comm_ring AdjoinRoot.instCommRing
 
-instance : Inhabited (AdjoinRoot f) :=
+instance : Inhabited (AdjoinRoot f) := fast_instance%
   ⟨0⟩
 
-instance : DecidableEq (AdjoinRoot f) :=
+instance : DecidableEq (AdjoinRoot f) := fast_instance%
   Classical.decEq _
 
 protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (AdjoinRoot f) :=
@@ -105,10 +105,10 @@ def of : R →+* AdjoinRoot f :=
   (mk f).comp C
 #align adjoin_root.of AdjoinRoot.of
 
-instance instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
+instance instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) := fast_instance%
   Submodule.Quotient.instSMul' _
 
-instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
+instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) := fast_instance%
   Submodule.Quotient.distribSMul' _
 
 @[simp]
@@ -140,7 +140,7 @@ instance [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (f : R[X]) :
     DistribMulAction S (AdjoinRoot f) :=
   Submodule.Quotient.distribMulAction' _
 
-instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
+instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) := fast_instance%
   Ideal.Quotient.algebra S
 
 @[simp]
@@ -172,7 +172,7 @@ def root : AdjoinRoot f :=
 
 variable {f}
 
-instance hasCoeT : CoeTC R (AdjoinRoot f) :=
+instance hasCoeT : CoeTC R (AdjoinRoot f) := fast_instance%
   ⟨of f⟩
 #align adjoin_root.has_coe_t AdjoinRoot.hasCoeT
 
@@ -386,11 +386,11 @@ section Irreducible
 
 variable [Field K] {f : K[X]}
 
-instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaximal :=
+instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaximal := fast_instance%
   PrincipalIdealRing.isMaximal_of_irreducible <| Fact.out
 #align adjoin_root.span_maximal_of_irreducible AdjoinRoot.span_maximal_of_irreducible
 
-noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
+noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) := fast_instance%
   { Quotient.groupWithZero (span {f} : Ideal K[X]) with
     toCommRing := AdjoinRoot.instCommRing f
     ratCast := fun a => of f (a : K)
@@ -429,7 +429,7 @@ end Irreducible
 
 section IsNoetherianRing
 
-instance [CommRing R] [IsNoetherianRing R] {f : R[X]} : IsNoetherianRing (AdjoinRoot f) :=
+instance [CommRing R] [IsNoetherianRing R] {f : R[X]} : IsNoetherianRing (AdjoinRoot f) := fast_instance%
   Ideal.Quotient.isNoetherianRing _
 
 end IsNoetherianRing

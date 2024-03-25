@@ -70,6 +70,6 @@ def projectivePresentation (X : CompHaus) : ProjectivePresentation X where
 set_option linter.uppercaseLean3 false in
 #align CompHaus.projective_presentation CompHaus.projectivePresentation
 
-instance : EnoughProjectives CompHaus where presentation X := ⟨projectivePresentation X⟩
+instance : EnoughProjectives CompHaus where presentation X := fast_instance% ⟨projectivePresentation X⟩
 
 end CompHaus

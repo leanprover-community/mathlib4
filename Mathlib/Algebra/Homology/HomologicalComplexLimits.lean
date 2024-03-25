@@ -75,19 +75,19 @@ noncomputable def coneOfHasLimitEval : Cone F where
 noncomputable def isLimitConeOfHasLimitEval : IsLimit (coneOfHasLimitEval F) :=
   isLimitOfEval _ _ (fun _ => limit.isLimit _)
 
-instance : HasLimit F := ⟨⟨⟨_, isLimitConeOfHasLimitEval F⟩⟩⟩
+instance : HasLimit F := fast_instance% ⟨⟨⟨_, isLimitConeOfHasLimitEval F⟩⟩⟩
 
-noncomputable instance (n : ι) : PreservesLimit F (eval C c n) :=
+noncomputable instance (n : ι) : PreservesLimit F (eval C c n) := fast_instance%
   preservesLimitOfPreservesLimitCone (isLimitConeOfHasLimitEval F) (limit.isLimit _)
 
 end
 
-instance [HasLimitsOfShape J C] : HasLimitsOfShape J (HomologicalComplex C c) := ⟨inferInstance⟩
+instance [HasLimitsOfShape J C] : HasLimitsOfShape J (HomologicalComplex C c) := fast_instance% ⟨inferInstance⟩
 
 noncomputable instance [HasLimitsOfShape J C] (n : ι) :
   PreservesLimitsOfShape J (eval C c n) := ⟨inferInstance⟩
 
-instance [HasFiniteLimits C] : HasFiniteLimits (HomologicalComplex C c) :=
+instance [HasFiniteLimits C] : HasFiniteLimits (HomologicalComplex C c) := fast_instance%
   ⟨fun _ _ => inferInstance⟩
 
 noncomputable instance [HasFiniteLimits C] (n : ι) :
@@ -151,20 +151,20 @@ noncomputable def coconeOfHasColimitEval : Cocone F where
 noncomputable def isColimitCoconeOfHasColimitEval : IsColimit (coconeOfHasColimitEval F) :=
   isColimitOfEval _ _ (fun _ => colimit.isColimit _)
 
-instance : HasColimit F := ⟨⟨⟨_, isColimitCoconeOfHasColimitEval F⟩⟩⟩
+instance : HasColimit F := fast_instance% ⟨⟨⟨_, isColimitCoconeOfHasColimitEval F⟩⟩⟩
 
-noncomputable instance (n : ι) : PreservesColimit F (eval C c n) :=
+noncomputable instance (n : ι) : PreservesColimit F (eval C c n) := fast_instance%
   preservesColimitOfPreservesColimitCocone (isColimitCoconeOfHasColimitEval F)
     (colimit.isColimit _)
 
 end
 
-instance [HasColimitsOfShape J C] : HasColimitsOfShape J (HomologicalComplex C c) := ⟨inferInstance⟩
+instance [HasColimitsOfShape J C] : HasColimitsOfShape J (HomologicalComplex C c) := fast_instance% ⟨inferInstance⟩
 
 noncomputable instance [HasColimitsOfShape J C] (n : ι) :
   PreservesColimitsOfShape J (eval C c n) := ⟨inferInstance⟩
 
-instance [HasFiniteColimits C] : HasFiniteColimits (HomologicalComplex C c) :=
+instance [HasFiniteColimits C] : HasFiniteColimits (HomologicalComplex C c) := fast_instance%
   ⟨fun _ _ => inferInstance⟩
 
 noncomputable instance [HasFiniteColimits C] (n : ι) :

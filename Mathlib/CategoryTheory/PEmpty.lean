@@ -19,7 +19,7 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C] (D : Type u') [Category.{v'} D]
 
-instance (α : Type*) [IsEmpty α] : IsEmpty (Discrete α) := Function.isEmpty Discrete.as
+instance (α : Type*) [IsEmpty α] : IsEmpty (Discrete α) := fast_instance% Function.isEmpty Discrete.as
 
 /-- The (unique) functor from an empty category. -/
 def functorOfIsEmpty [IsEmpty C] : C ⥤ D where

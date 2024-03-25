@@ -65,7 +65,7 @@ instance : MonoidalCategoryStruct (FullSubcategory P) where
 When `P` is a monoidal predicate, the full subcategory for `P` inherits the monoidal structure of
   `C`.
 -/
-instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
+instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) := fast_instance%
   Monoidal.induced (fullSubcategoryInclusion P)
     { μIso := fun X Y => eqToIso rfl
       εIso := eqToIso rfl }
@@ -81,7 +81,7 @@ def fullMonoidalSubcategoryInclusion : MonoidalFunctor (FullSubcategory P) C whe
   μ X Y := 𝟙 _
 #align category_theory.monoidal_category.full_monoidal_subcategory_inclusion CategoryTheory.MonoidalCategory.fullMonoidalSubcategoryInclusion
 
-instance fullMonoidalSubcategory.full : Full (fullMonoidalSubcategoryInclusion P).toFunctor :=
+instance fullMonoidalSubcategory.full : Full (fullMonoidalSubcategoryInclusion P).toFunctor := fast_instance%
   FullSubcategory.full P
 #align category_theory.monoidal_category.full_monoidal_subcategory.full CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.full
 
@@ -99,7 +99,7 @@ instance fullMonoidalSubcategoryInclusion_additive :
   Functor.fullSubcategoryInclusion_additive _
 #align category_theory.monoidal_category.full_monoidal_subcategory_inclusion_additive CategoryTheory.MonoidalCategory.fullMonoidalSubcategoryInclusion_additive
 
-instance [MonoidalPreadditive C] : MonoidalPreadditive (FullSubcategory P) :=
+instance [MonoidalPreadditive C] : MonoidalPreadditive (FullSubcategory P) := fast_instance%
   monoidalPreadditive_of_faithful (fullMonoidalSubcategoryInclusion P)
 
 variable (R : Type*) [Ring R] [Linear R C]
@@ -109,7 +109,7 @@ instance fullMonoidalSubcategoryInclusion_linear :
   Functor.fullSubcategoryInclusionLinear R _
 #align category_theory.monoidal_category.full_monoidal_subcategory_inclusion_linear CategoryTheory.MonoidalCategory.fullMonoidalSubcategoryInclusion_linear
 
-instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R (FullSubcategory P) :=
+instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R (FullSubcategory P) := fast_instance%
   monoidalLinearOfFaithful R (fullMonoidalSubcategoryInclusion P)
 
 end
@@ -144,7 +144,7 @@ variable (P) [BraidedCategory C]
 
 /-- The braided structure on a full subcategory inherited by the braided structure on `C`.
 -/
-instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
+instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) := fast_instance%
   braidedCategoryOfFaithful (fullMonoidalSubcategoryInclusion P)
     (fun X Y =>
       ⟨(β_ X.1 Y.1).hom, (β_ X.1 Y.1).inv, (β_ X.1 Y.1).hom_inv_id, (β_ X.1 Y.1).inv_hom_id⟩)
@@ -160,11 +160,11 @@ def fullBraidedSubcategoryInclusion : BraidedFunctor (FullSubcategory P) C where
   braided X Y := by rw [IsIso.eq_inv_comp]; aesop_cat
 #align category_theory.monoidal_category.full_braided_subcategory_inclusion CategoryTheory.MonoidalCategory.fullBraidedSubcategoryInclusion
 
-instance fullBraidedSubcategory.full : Full (fullBraidedSubcategoryInclusion P).toFunctor :=
+instance fullBraidedSubcategory.full : Full (fullBraidedSubcategoryInclusion P).toFunctor := fast_instance%
   fullMonoidalSubcategory.full P
 #align category_theory.monoidal_category.full_braided_subcategory.full CategoryTheory.MonoidalCategory.fullBraidedSubcategory.full
 
-instance fullBraidedSubcategory.faithful : Faithful (fullBraidedSubcategoryInclusion P).toFunctor :=
+instance fullBraidedSubcategory.faithful : Faithful (fullBraidedSubcategoryInclusion P).toFunctor := fast_instance%
   fullMonoidalSubcategory.faithful P
 #align category_theory.monoidal_category.full_braided_subcategory.faithful CategoryTheory.MonoidalCategory.fullBraidedSubcategory.faithful
 
@@ -195,7 +195,7 @@ section Symmetric
 
 variable (P) [SymmetricCategory C]
 
-instance fullSymmetricSubcategory : SymmetricCategory (FullSubcategory P) :=
+instance fullSymmetricSubcategory : SymmetricCategory (FullSubcategory P) := fast_instance%
   symmetricCategoryOfFaithful (fullBraidedSubcategoryInclusion P)
 #align category_theory.monoidal_category.full_symmetric_subcategory CategoryTheory.MonoidalCategory.fullSymmetricSubcategory
 

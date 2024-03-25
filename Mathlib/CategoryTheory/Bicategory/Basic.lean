@@ -220,7 +220,7 @@ def whiskerLeftIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) : f ≫ g ≅ f 
   inv := f ◁ η.inv
 #align category_theory.bicategory.whisker_left_iso CategoryTheory.Bicategory.whiskerLeftIso
 
-instance whiskerLeft_isIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] : IsIso (f ◁ η) :=
+instance whiskerLeft_isIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] : IsIso (f ◁ η) := fast_instance%
   IsIso.of_iso (whiskerLeftIso f (asIso η))
 #align category_theory.bicategory.whisker_left_is_iso CategoryTheory.Bicategory.whiskerLeft_isIso
 
@@ -239,7 +239,7 @@ def whiskerRightIso {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) : f ≫ h ≅ g
   inv := η.inv ▷ h
 #align category_theory.bicategory.whisker_right_iso CategoryTheory.Bicategory.whiskerRightIso
 
-instance whiskerRight_isIso {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] : IsIso (η ▷ h) :=
+instance whiskerRight_isIso {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] : IsIso (η ▷ h) := fast_instance%
   IsIso.of_iso (whiskerRightIso (asIso η) h)
 #align category_theory.bicategory.whisker_right_is_iso CategoryTheory.Bicategory.whiskerRight_isIso
 

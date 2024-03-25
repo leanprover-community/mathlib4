@@ -45,14 +45,14 @@ This definition is marked `reducible` so that typeclass instances can be shared 
 `Ideal.Quotient I` and `Submodule.Quotient I`.
 -/
 @[reducible]
-instance : HasQuotient R (Ideal R) :=
+instance : HasQuotient R (Ideal R) := fast_instance%
   Submodule.hasQuotient
 
 namespace Quotient
 
 variable {I} {x y : R}
 
-instance one (I : Ideal R) : One (R ⧸ I) :=
+instance one (I : Ideal R) : One (R ⧸ I) := fast_instance%
   ⟨Submodule.Quotient.mk 1⟩
 #align ideal.quotient.has_one Ideal.Quotient.one
 
@@ -67,7 +67,7 @@ protected def ringCon (I : Ideal R) : RingCon R :=
       rwa [← this] at F }
 #align ideal.quotient.ring_con Ideal.Quotient.ringCon
 
-instance commRing (I : Ideal R) : CommRing (R ⧸ I) :=
+instance commRing (I : Ideal R) : CommRing (R ⧸ I) := fast_instance%
     inferInstanceAs (CommRing (Quotient.ringCon I).Quotient)
 #align ideal.quotient.comm_ring Ideal.Quotient.commRing
 
@@ -99,7 +99,7 @@ def mk (I : Ideal R) : R →+* R ⧸ I where
   map_add' _ _ := rfl
 #align ideal.quotient.mk Ideal.Quotient.mk
 
-instance {I : Ideal R} : Coe R (R ⧸ I) :=
+instance {I : Ideal R} : Coe R (R ⧸ I) := fast_instance%
   ⟨Ideal.Quotient.mk I⟩
 
 /-- Two `RingHom`s from the quotient by an ideal are equal if their
@@ -112,7 +112,7 @@ theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp
   RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h : _)
 #align ideal.quotient.ring_hom_ext Ideal.Quotient.ringHom_ext
 
-instance inhabited : Inhabited (R ⧸ I) :=
+instance inhabited : Inhabited (R ⧸ I) := fast_instance%
   ⟨mk I 37⟩
 #align ideal.quotient.inhabited Ideal.Quotient.inhabited
 
@@ -152,14 +152,14 @@ theorem subsingleton_iff {I : Ideal R} : Subsingleton (R ⧸ I) ↔ I = ⊤ := b
     Quotient.eq_zero_iff_mem]
 #align ideal.quotient.subsingleton_iff Ideal.Quotient.subsingleton_iff
 
-instance : Unique (R ⧸ (⊤ : Ideal R)) :=
+instance : Unique (R ⧸ (⊤ : Ideal R)) := fast_instance%
   ⟨⟨0⟩, by rintro ⟨x⟩; exact Quotient.eq_zero_iff_mem.mpr Submodule.mem_top⟩
 
 theorem mk_surjective : Function.Surjective (mk I) := fun y =>
   Quotient.inductionOn' y fun x => Exists.intro x rfl
 #align ideal.quotient.mk_surjective Ideal.Quotient.mk_surjective
 
-instance : RingHomSurjective (mk I) :=
+instance : RingHomSurjective (mk I) := fast_instance%
   ⟨mk_surjective⟩
 
 /-- If `I` is an ideal of a commutative ring `R`, if `q : R → R/I` is the quotient map, and if
@@ -179,7 +179,7 @@ instance noZeroDivisors (I : Ideal R) [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I
         (Or.inr ∘ eq_zero_iff_mem.2)
 #align ideal.quotient.no_zero_divisors Ideal.Quotient.noZeroDivisors
 
-instance isDomain (I : Ideal R) [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
+instance isDomain (I : Ideal R) [hI : I.IsPrime] : IsDomain (R ⧸ I) := fast_instance%
   let _ := Quotient.nontrivial hI.1
   NoZeroDivisors.to_isDomain _
 #align ideal.quotient.is_domain Ideal.Quotient.isDomain

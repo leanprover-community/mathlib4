@@ -38,7 +38,7 @@ namespace Complex
 
 open ComplexConjugate
 
-noncomputable instance : DecidableEq ℂ :=
+noncomputable instance : DecidableEq ℂ := fast_instance%
   Classical.decEq _
 
 /-- The equivalence between the complex numbers and `ℝ × ℝ`. -/
@@ -88,7 +88,7 @@ The name `Complex.ofReal` is reserved for the bundled homomorphism. -/
 @[coe]
 def ofReal' (r : ℝ) : ℂ :=
   ⟨r, 0⟩
-instance : Coe ℝ ℂ :=
+instance : Coe ℝ ℂ := fast_instance%
   ⟨ofReal'⟩
 
 @[simp, norm_cast]
@@ -131,10 +131,10 @@ theorem mem_reProdIm {z : ℂ} {s t : Set ℝ} : z ∈ s ×ℂ t ↔ z.re ∈ s 
   Iff.rfl
 #align complex.mem_re_prod_im Complex.mem_reProdIm
 
-instance : Zero ℂ :=
+instance : Zero ℂ := fast_instance%
   ⟨(0 : ℝ)⟩
 
-instance : Inhabited ℂ :=
+instance : Inhabited ℂ := fast_instance%
   ⟨0⟩
 
 @[simp]
@@ -161,7 +161,7 @@ theorem ofReal_ne_zero {z : ℝ} : (z : ℂ) ≠ 0 ↔ z ≠ 0 :=
   not_congr ofReal_eq_zero
 #align complex.of_real_ne_zero Complex.ofReal_ne_zero
 
-instance : One ℂ :=
+instance : One ℂ := fast_instance%
   ⟨(1 : ℝ)⟩
 
 @[simp]
@@ -188,7 +188,7 @@ theorem ofReal_ne_one {z : ℝ} : (z : ℂ) ≠ 1 ↔ z ≠ 1 :=
   not_congr ofReal_eq_one
 #align complex.of_real_ne_one Complex.ofReal_ne_one
 
-instance : Add ℂ :=
+instance : Add ℂ := fast_instance%
   ⟨fun z w => ⟨z.re + w.re, z.im + w.im⟩⟩
 
 @[simp]
@@ -240,7 +240,7 @@ theorem ofReal_bit1 (r : ℝ) : ((bit1 r : ℝ) : ℂ) = bit1 (r : ℂ) :=
 
 end
 
-instance : Neg ℂ :=
+instance : Neg ℂ := fast_instance%
   ⟨fun z => ⟨-z.re, -z.im⟩⟩
 
 @[simp]
@@ -258,10 +258,10 @@ theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : ℂ) = -r :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_neg Complex.ofReal_neg
 
-instance : Sub ℂ :=
+instance : Sub ℂ := fast_instance%
   ⟨fun z w => ⟨z.re - w.re, z.im - w.im⟩⟩
 
-instance : Mul ℂ :=
+instance : Mul ℂ := fast_instance%
   ⟨fun z w => ⟨z.re * w.re - z.im * w.im, z.re * w.im + z.im * w.re⟩⟩
 
 @[simp]
@@ -365,7 +365,7 @@ theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 +
 /- We use a nonstandard formula for the `ℕ` and `ℤ` actions to make sure there is no
 diamond from the other actions they inherit through the `ℝ`-action on `ℂ` and action transitivity
 defined in `Data.Complex.Module`. -/
-instance : Nontrivial ℂ :=
+instance : Nontrivial ℂ := fast_instance%
   pullback_nonzero re rfl rfl
 
 -- Porting note: moved from `Module/Data/Complex/Basic.lean`
@@ -392,7 +392,7 @@ theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
 end SMul
 
 -- Porting note: proof needed modifications and rewritten fields
-instance addCommGroup : AddCommGroup ℂ :=
+instance addCommGroup : AddCommGroup ℂ := fast_instance%
   { zero := (0 : ℂ)
     add := (· + ·)
     neg := Neg.neg
@@ -416,7 +416,7 @@ instance addCommGroup : AddCommGroup ℂ :=
     add_left_neg := by intros; ext <;> simp }
 
 
-instance addGroupWithOne : AddGroupWithOne ℂ :=
+instance addGroupWithOne : AddGroupWithOne ℂ := fast_instance%
   { Complex.addCommGroup with
     natCast := fun n => ⟨n, 0⟩
     natCast_zero := by
@@ -435,7 +435,7 @@ instance addGroupWithOne : AddGroupWithOne ℂ :=
     one := 1 }
 
 -- Porting note: proof needed modifications and rewritten fields
-instance commRing : CommRing ℂ :=
+instance commRing : CommRing ℂ := fast_instance%
   { addGroupWithOne with
     mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
@@ -453,17 +453,17 @@ instance commRing : CommRing ℂ :=
 
 /-- This shortcut instance ensures we do not find `Ring` via the noncomputable `Complex.field`
 instance. -/
-instance : Ring ℂ := by infer_instance
+instance : Ring ℂ := fast_instance% by infer_instance
 
 /-- This shortcut instance ensures we do not find `CommSemiring` via the noncomputable
 `Complex.field` instance. -/
-instance : CommSemiring ℂ :=
+instance : CommSemiring ℂ := fast_instance%
   inferInstance
 
 -- Porting note: added due to changes in typeclass search order
 /-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
 `Complex.field` instance. -/
-instance : Semiring ℂ :=
+instance : Semiring ℂ := fast_instance%
   inferInstance
 
 /-- The "real part" map, considered as an additive group homomorphism. -/
@@ -773,7 +773,7 @@ theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z *
 /-! ### Inversion -/
 
 
-noncomputable instance : Inv ℂ :=
+noncomputable instance : Inv ℂ := fast_instance%
   ⟨fun z => conj z * ((normSq z)⁻¹ : ℝ)⟩
 
 theorem inv_def (z : ℂ) : z⁻¹ = conj z * ((normSq z)⁻¹ : ℝ) :=
@@ -845,7 +845,7 @@ theorem rat_cast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
 
 /-! ### Field instance and lemmas -/
 
-noncomputable instance instField : Field ℂ :=
+noncomputable instance instField : Field ℂ := fast_instance%
 { qsmul := fun n z => n • z
   qsmul_eq_mul' := fun n z => ext_iff.2 <| by simp [Rat.smul_def, smul_re, smul_im]
   ratCast_mk := fun n d hd h2 => by ext <;> simp [Field.ratCast_mk]
@@ -952,7 +952,7 @@ lemma div_ofNat_im (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
 /-! ### Characteristic zero -/
 
 
-instance charZero : CharZero ℂ :=
+instance charZero : CharZero ℂ := fast_instance%
   charZero_of_inj_zero fun n h => by
     rwa [← ofReal_nat_cast, ofReal_eq_zero, Nat.cast_eq_zero] at h
 #align complex.char_zero_complex Complex.charZero

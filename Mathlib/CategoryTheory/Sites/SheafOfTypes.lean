@@ -250,7 +250,7 @@ theorem Hom.ext' {X Y : SheafOfTypes J} (f g : X ⟶ Y) (w : f.val = g.val) : f 
   Hom.ext f g w
 
 -- Let's make the inhabited linter happy...
-instance (X : SheafOfTypes J) : Inhabited (Hom X X) :=
+instance (X : SheafOfTypes J) : Inhabited (Hom X X) := fast_instance%
   ⟨𝟙 X⟩
 
 end SheafOfTypes
@@ -265,7 +265,7 @@ def sheafOfTypesToPresheaf : SheafOfTypes J ⥤ Cᵒᵖ ⥤ Type w where
 set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes_to_presheaf CategoryTheory.sheafOfTypesToPresheaf
 
-instance : Full (sheafOfTypesToPresheaf J) where preimage f := ⟨f⟩
+instance : Full (sheafOfTypesToPresheaf J) where preimage f := fast_instance% ⟨f⟩
 
 instance : Faithful (sheafOfTypesToPresheaf J) where
 
@@ -286,7 +286,7 @@ def sheafOfTypesBotEquiv : SheafOfTypes (⊥ : GrothendieckTopology C) ≌ Cᵒ�
 set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes_bot_equiv CategoryTheory.sheafOfTypesBotEquiv
 
-instance : Inhabited (SheafOfTypes (⊥ : GrothendieckTopology C)) :=
+instance : Inhabited (SheafOfTypes (⊥ : GrothendieckTopology C)) := fast_instance%
   ⟨sheafOfTypesBotEquiv.inverse.obj ((Functor.const _).obj PUnit)⟩
 
 end CategoryTheory

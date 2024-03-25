@@ -221,13 +221,13 @@ end NFA
 
 namespace εNFA
 
-instance : Zero (εNFA α σ) :=
+instance : Zero (εNFA α σ) := fast_instance%
   ⟨⟨fun _ _ ↦ ∅, ∅, ∅⟩⟩
 
-instance : One (εNFA α σ) :=
+instance : One (εNFA α σ) := fast_instance%
   ⟨⟨fun _ _ ↦ ∅, univ, univ⟩⟩
 
-instance : Inhabited (εNFA α σ) :=
+instance : Inhabited (εNFA α σ) := fast_instance%
   ⟨0⟩
 
 variable (P : εNFA α σ) (Q : εNFA α σ')

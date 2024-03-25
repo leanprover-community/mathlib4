@@ -287,16 +287,16 @@ end KleeneAlgebra
 
 namespace Prod
 
-instance instIdemSemiring [IdemSemiring α] [IdemSemiring β] : IdemSemiring (α × β) :=
+instance instIdemSemiring [IdemSemiring α] [IdemSemiring β] : IdemSemiring (α × β) := fast_instance%
   { Prod.instSemiring, Prod.instSemilatticeSup _ _, Prod.instOrderBot _ _ with
     add_eq_sup := fun _ _ ↦ ext (add_eq_sup _ _) (add_eq_sup _ _) }
 
-instance [IdemCommSemiring α] [IdemCommSemiring β] : IdemCommSemiring (α × β) :=
+instance [IdemCommSemiring α] [IdemCommSemiring β] : IdemCommSemiring (α × β) := fast_instance%
   { Prod.instCommSemiring, Prod.instIdemSemiring with }
 
 variable [KleeneAlgebra α] [KleeneAlgebra β]
 
-instance : KleeneAlgebra (α × β) :=
+instance : KleeneAlgebra (α × β) := fast_instance%
   { Prod.instIdemSemiring with
     kstar := fun a ↦ (a.1∗, a.2∗)
     one_le_kstar := fun _ ↦ ⟨one_le_kstar, one_le_kstar⟩
@@ -323,16 +323,16 @@ end Prod
 
 namespace Pi
 
-instance instIdemSemiring [∀ i, IdemSemiring (π i)] : IdemSemiring (∀ i, π i) :=
+instance instIdemSemiring [∀ i, IdemSemiring (π i)] : IdemSemiring (∀ i, π i) := fast_instance%
   { Pi.semiring, Pi.instSemilatticeSup, Pi.instOrderBot with
     add_eq_sup := fun _ _ ↦ funext fun _ ↦ add_eq_sup _ _ }
 
-instance [∀ i, IdemCommSemiring (π i)] : IdemCommSemiring (∀ i, π i) :=
+instance [∀ i, IdemCommSemiring (π i)] : IdemCommSemiring (∀ i, π i) := fast_instance%
   { Pi.commSemiring, Pi.instIdemSemiring with }
 
 variable [∀ i, KleeneAlgebra (π i)]
 
-instance : KleeneAlgebra (∀ i, π i) :=
+instance : KleeneAlgebra (∀ i, π i) := fast_instance%
   { Pi.instIdemSemiring with
     kstar := fun a i ↦ (a i)∗
     one_le_kstar := fun _ _ ↦ one_le_kstar

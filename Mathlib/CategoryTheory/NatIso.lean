@@ -96,12 +96,12 @@ theorem app_inv {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).inv = α.inv
 
 variable {F G : C ⥤ D}
 
-instance hom_app_isIso (α : F ≅ G) (X : C) : IsIso (α.hom.app X) :=
+instance hom_app_isIso (α : F ≅ G) (X : C) : IsIso (α.hom.app X) := fast_instance%
   ⟨⟨α.inv.app X,
     ⟨by rw [← comp_app, Iso.hom_inv_id, ← id_app], by rw [← comp_app, Iso.inv_hom_id, ← id_app]⟩⟩⟩
 #align category_theory.nat_iso.hom_app_is_iso CategoryTheory.NatIso.hom_app_isIso
 
-instance inv_app_isIso (α : F ≅ G) (X : C) : IsIso (α.inv.app X) :=
+instance inv_app_isIso (α : F ≅ G) (X : C) : IsIso (α.inv.app X) := fast_instance%
   ⟨⟨α.hom.app X,
     ⟨by rw [← comp_app, Iso.inv_hom_id, ← id_app], by rw [← comp_app, Iso.hom_inv_id, ← id_app]⟩⟩⟩
 #align category_theory.nat_iso.inv_app_is_iso CategoryTheory.NatIso.inv_app_isIso
@@ -186,7 +186,7 @@ theorem naturality_2' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app Y)} :
 
 /-- The components of a natural isomorphism are isomorphisms.
 -/
-instance isIso_app_of_isIso (α : F ⟶ G) [IsIso α] (X) : IsIso (α.app X) :=
+instance isIso_app_of_isIso (α : F ⟶ G) [IsIso α] (X) : IsIso (α.app X) := fast_instance%
   ⟨⟨(inv α).app X,
       ⟨congr_fun (congr_arg NatTrans.app (IsIso.hom_inv_id α)) X,
         congr_fun (congr_arg NatTrans.app (IsIso.inv_hom_id α)) X⟩⟩⟩

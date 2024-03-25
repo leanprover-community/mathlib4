@@ -71,7 +71,7 @@ structure MulChar extends MonoidHom R R' where
   map_nonunit' : ∀ a : R, ¬IsUnit a → toFun a = 0
 #align mul_char MulChar
 
-instance MulChar.instFunLike : FunLike (MulChar R R') R R' :=
+instance MulChar.instFunLike : FunLike (MulChar R R') R R' := fast_instance%
   ⟨fun χ => χ.toFun,
     fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr_fun h _)⟩
 
@@ -270,11 +270,11 @@ theorem map_ringChar {R : Type u} [CommRing R] [Nontrivial R] (χ : MulChar R R'
     χ (ringChar R) = 0 := by rw [ringChar.Nat.cast_ringChar, χ.map_zero]
 #align mul_char.map_ring_char MulChar.map_ringChar
 
-noncomputable instance hasOne : One (MulChar R R') :=
+noncomputable instance hasOne : One (MulChar R R') := fast_instance%
   ⟨trivial R R'⟩
 #align mul_char.has_one MulChar.hasOne
 
-noncomputable instance inhabited : Inhabited (MulChar R R') :=
+noncomputable instance inhabited : Inhabited (MulChar R R') := fast_instance%
   ⟨1⟩
 #align mul_char.inhabited MulChar.inhabited
 
@@ -293,7 +293,7 @@ def mul (χ χ' : MulChar R R') : MulChar R R' :=
     map_nonunit' := fun a ha => by simp only [map_nonunit χ ha, zero_mul, Pi.mul_apply] }
 #align mul_char.mul MulChar.mul
 
-instance hasMul : Mul (MulChar R R') :=
+instance hasMul : Mul (MulChar R R') := fast_instance%
   ⟨mul⟩
 #align mul_char.has_mul MulChar.hasMul
 
@@ -323,7 +323,7 @@ noncomputable def inv (χ : MulChar R R') : MulChar R R' :=
     map_nonunit' := fun a ha => by simp [map_nonunit _ ha] }
 #align mul_char.inv MulChar.inv
 
-noncomputable instance hasInv : Inv (MulChar R R') :=
+noncomputable instance hasInv : Inv (MulChar R R') := fast_instance%
   ⟨inv⟩
 #align mul_char.has_inv MulChar.hasInv
 
@@ -376,7 +376,7 @@ theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
 #align mul_char.inv_mul MulChar.inv_mul
 
 /-- The commutative group structure on `MulChar R R'`. -/
-noncomputable instance commGroup : CommGroup (MulChar R R') :=
+noncomputable instance commGroup : CommGroup (MulChar R R') := fast_instance%
   { one := 1
     mul := (· * ·)
     inv := Inv.inv

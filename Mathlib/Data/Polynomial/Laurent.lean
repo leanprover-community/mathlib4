@@ -573,7 +573,7 @@ end DegreeBounds
 
 end Degrees
 
-instance : Module R[X] R[T;T⁻¹] :=
+instance : Module R[X] R[T;T⁻¹] := fast_instance%
   Module.compHom _ Polynomial.toLaurent
 
 instance (R : Type*) [Semiring R] : IsScalarTower R[X] R[X] R[T;T⁻¹] where
@@ -585,7 +585,7 @@ section CommSemiring
 
 variable [CommSemiring R]
 
-instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] :=
+instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] := fast_instance%
   { Polynomial.toLaurent with
     commutes' := fun f l => by simp [mul_comm]
     smul_def' := fun f l => rfl }

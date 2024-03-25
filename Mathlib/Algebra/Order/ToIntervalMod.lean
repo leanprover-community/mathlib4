@@ -958,7 +958,7 @@ instance circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) w
       apply toIxxMod_trans _ h₁₂₃ h₂₃₄
 #align quotient_add_group.circular_preorder QuotientAddGroup.circularPreorder
 
-instance circularOrder : CircularOrder (α ⧸ AddSubgroup.zmultiples p) :=
+instance circularOrder : CircularOrder (α ⧸ AddSubgroup.zmultiples p) := fast_instance%
   { QuotientAddGroup.circularPreorder with
     btw_antisymm := fun {x₁ x₂ x₃} h₁₂₃ h₃₂₁ => by
       induction x₁ using QuotientAddGroup.induction_on'

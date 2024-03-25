@@ -63,8 +63,8 @@ namespace IndObjectPresentation
 
 variable {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A)
 
-instance : SmallCategory P.I := P.ℐ
-instance : IsFiltered P.I := P.hI
+instance : SmallCategory P.I := fast_instance% P.ℐ
+instance : IsFiltered P.I := fast_instance% P.hI
 
 /-- The (colimit) cocone with cocone point `A`. -/
 @[simps pt]
@@ -82,7 +82,7 @@ def coconeIsColimit : IsColimit P.cocone :=
 def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
   P.cocone.toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _
 
-instance : P.toCostructuredArrow.Final :=
+instance : P.toCostructuredArrow.Final := fast_instance%
   final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
 
 /-- Representable presheaves are (trivially) ind-objects. -/

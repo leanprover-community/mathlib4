@@ -162,7 +162,7 @@ theorem surjective_smul (x : α) : Surjective fun c : M => c • x :=
 
 /-- The regular action of a group on itself is transitive. -/
 @[to_additive "The regular action of a group on itself is transitive."]
-instance Regular.isPretransitive [Group G] : IsPretransitive G G :=
+instance Regular.isPretransitive [Group G] : IsPretransitive G G := fast_instance%
   ⟨fun x y => ⟨y * x⁻¹, inv_mul_cancel_right _ _⟩⟩
 #align mul_action.regular.is_pretransitive MulAction.Regular.isPretransitive
 #align add_action.regular.is_pretransitive AddAction.Regular.isPretransitive
@@ -239,7 +239,7 @@ theorem Function.Surjective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [S
   smul_comm c₁ c₂ := hf.forall.2 fun x ↦ by simp only [← h₁, ← h₂, smul_comm c₁ c₂ x]
 
 @[to_additive]
-instance smulCommClass_self (M α : Type*) [CommMonoid M] [MulAction M α] : SMulCommClass M M α :=
+instance smulCommClass_self (M α : Type*) [CommMonoid M] [MulAction M α] : SMulCommClass M M α := fast_instance%
   ⟨fun a a' b => by rw [← mul_smul, mul_comm, mul_smul]⟩
 #align smul_comm_class_self smulCommClass_self
 #align vadd_comm_class_self vaddCommClass_self
@@ -268,7 +268,7 @@ theorem smul_assoc {M N} [SMul M N] [SMul N α] [SMul M α] [IsScalarTower M N �
 #align vadd_assoc vadd_assoc
 
 @[to_additive]
-instance Semigroup.isScalarTower [Semigroup α] : IsScalarTower α α α :=
+instance Semigroup.isScalarTower [Semigroup α] : IsScalarTower α α α := fast_instance%
   ⟨mul_assoc⟩
 #align semigroup.is_scalar_tower Semigroup.isScalarTower
 #align add_semigroup.vadd_assoc_class AddSemigroup.isScalarTower
@@ -567,7 +567,7 @@ This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/
 add_decl_doc AddMonoid.toAddAction
 
 @[to_additive]
-instance IsScalarTower.left : IsScalarTower M M α :=
+instance IsScalarTower.left : IsScalarTower M M α := fast_instance%
   ⟨fun x y z => mul_smul x y z⟩
 #align is_scalar_tower.left IsScalarTower.left
 #align vadd_assoc_class.left VAddAssocClass.left
@@ -997,7 +997,7 @@ instance AddMonoid.nat_smulCommClass :
 #align add_monoid.nat_smul_comm_class AddMonoid.nat_smulCommClass
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
-instance AddMonoid.nat_smulCommClass' : SMulCommClass M ℕ A :=
+instance AddMonoid.nat_smulCommClass' : SMulCommClass M ℕ A := fast_instance%
   SMulCommClass.symm _ _ _
 #align add_monoid.nat_smul_comm_class' AddMonoid.nat_smulCommClass'
 
@@ -1012,7 +1012,7 @@ instance AddGroup.int_smulCommClass : SMulCommClass ℤ M A where
 #align add_group.int_smul_comm_class AddGroup.int_smulCommClass
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
-instance AddGroup.int_smulCommClass' : SMulCommClass M ℤ A :=
+instance AddGroup.int_smulCommClass' : SMulCommClass M ℤ A := fast_instance%
   SMulCommClass.symm _ _ _
 #align add_group.int_smul_comm_class' AddGroup.int_smulCommClass'
 
@@ -1151,7 +1151,7 @@ instance : Monoid (Function.End α) where
   mul_one f := rfl
   one_mul f := rfl
 
-instance : Inhabited (Function.End α) :=
+instance : Inhabited (Function.End α) := fast_instance%
   ⟨1⟩
 
 variable {α}
@@ -1191,7 +1191,7 @@ theorem Function.End.one_def : (1 : Function.End α) = id :=
   rfl
 
 /-- `Function.End.applyMulAction` is faithful. -/
-instance Function.End.apply_FaithfulSMul : FaithfulSMul (Function.End α) α :=
+instance Function.End.apply_FaithfulSMul : FaithfulSMul (Function.End α) α := fast_instance%
   ⟨fun {_ _} => funext⟩
 #align function.End.apply_has_faithful_smul Function.End.apply_FaithfulSMul
 
@@ -1241,11 +1241,11 @@ section
 
 open Additive Multiplicative
 
-instance Additive.vadd [SMul α β] : VAdd (Additive α) β :=
+instance Additive.vadd [SMul α β] : VAdd (Additive α) β := fast_instance%
   ⟨fun a => (toMul a • ·)⟩
 #align additive.has_vadd Additive.vadd
 
-instance Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β :=
+instance Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β := fast_instance%
   ⟨fun a => (toAdd a +ᵥ ·)⟩
 #align multiplicative.has_smul Multiplicative.smul
 
@@ -1306,7 +1306,7 @@ instance Multiplicative.smulCommClass [VAdd α γ] [VAdd β γ] [VAddCommClass �
 end
 
 /-- The tautological additive action by `Additive (Function.End α)` on `α`. -/
-instance AddAction.functionEnd : AddAction (Additive (Function.End α)) α :=
+instance AddAction.functionEnd : AddAction (Additive (Function.End α)) α := fast_instance%
   inferInstance
 #align add_action.function_End AddAction.functionEnd
 

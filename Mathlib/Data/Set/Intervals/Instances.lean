@@ -50,10 +50,10 @@ variable [OrderedSemiring α]
 
 namespace Set.Icc
 
-instance zero : Zero (Icc (0 : α) 1) where zero := ⟨0, left_mem_Icc.2 zero_le_one⟩
+instance zero : Zero (Icc (0 : α) 1) where zero := fast_instance% ⟨0, left_mem_Icc.2 zero_le_one⟩
 #align set.Icc.has_zero Set.Icc.zero
 
-instance one : One (Icc (0 : α) 1) where one := ⟨1, right_mem_Icc.2 zero_le_one⟩
+instance one : One (Icc (0 : α) 1) where one := fast_instance% ⟨1, right_mem_Icc.2 zero_le_one⟩
 #align set.Icc.has_one Set.Icc.one
 
 @[simp, norm_cast]
@@ -140,7 +140,7 @@ theorem mul_le_right {x y : Icc (0 : α) 1} : x * y ≤ y :=
   (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq (one_mul _)
 #align set.Icc.mul_le_right Set.Icc.mul_le_right
 
-instance monoidWithZero : MonoidWithZero (Icc (0 : α) 1) :=
+instance monoidWithZero : MonoidWithZero (Icc (0 : α) 1) := fast_instance%
   fast_instance%
   Subtype.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 #align set.Icc.monoid_with_zero Set.Icc.monoidWithZero
@@ -187,7 +187,7 @@ end Set.Icc
 
 namespace Set.Ico
 
-instance zero [Nontrivial α] : Zero (Ico (0 : α) 1) where zero := ⟨0, left_mem_Ico.2 zero_lt_one⟩
+instance zero [Nontrivial α] : Zero (Ico (0 : α) 1) where zero := fast_instance% ⟨0, left_mem_Ico.2 zero_lt_one⟩
 #align set.Ico.has_zero Set.Ico.zero
 
 @[simp, norm_cast]
@@ -233,12 +233,12 @@ theorem coe_mul (x y : Ico (0 : α) 1) : ↑(x * y) = (x * y : α) :=
   rfl
 #align set.Ico.coe_mul Set.Ico.coe_mul
 
-instance semigroup : Semigroup (Ico (0 : α) 1) :=
+instance semigroup : Semigroup (Ico (0 : α) 1) := fast_instance%
   fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ico.semigroup Set.Ico.semigroup
 
-instance commSemigroup {α : Type*} [OrderedCommSemiring α] : CommSemigroup (Ico (0 : α) 1) :=
+instance commSemigroup {α : Type*} [OrderedCommSemiring α] : CommSemigroup (Ico (0 : α) 1) := fast_instance%
   fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ico.comm_semigroup Set.Ico.commSemigroup
@@ -254,7 +254,7 @@ variable [StrictOrderedSemiring α]
 
 namespace Set.Ioc
 
-instance one [Nontrivial α] : One (Ioc (0 : α) 1) where one := ⟨1, ⟨zero_lt_one, le_refl 1⟩⟩
+instance one [Nontrivial α] : One (Ioc (0 : α) 1) where one := fast_instance% ⟨1, ⟨zero_lt_one, le_refl 1⟩⟩
 #align set.Ioc.has_one Set.Ioc.one
 
 @[simp, norm_cast]
@@ -308,17 +308,17 @@ theorem coe_pow (x : Ioc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = ((x : α) ^ n) :=
   rfl
 #align set.Ioc.coe_pow Set.Ioc.coe_pow
 
-instance semigroup : Semigroup (Ioc (0 : α) 1) :=
+instance semigroup : Semigroup (Ioc (0 : α) 1) := fast_instance%
   fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ioc.semigroup Set.Ioc.semigroup
 
-instance monoid [Nontrivial α] : Monoid (Ioc (0 : α) 1) :=
+instance monoid [Nontrivial α] : Monoid (Ioc (0 : α) 1) := fast_instance%
   fast_instance%
   Subtype.coe_injective.monoid _ coe_one coe_mul coe_pow
 #align set.Ioc.monoid Set.Ioc.monoid
 
-instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioc (0 : α) 1) :=
+instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioc (0 : α) 1) := fast_instance%
   fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ioc.comm_semigroup Set.Ioc.commSemigroup
@@ -368,12 +368,12 @@ theorem coe_mul (x y : Ioo (0 : α) 1) : ↑(x * y) = (x * y : α) :=
   rfl
 #align set.Ioo.coe_mul Set.Ioo.coe_mul
 
-instance semigroup : Semigroup (Ioo (0 : α) 1) :=
+instance semigroup : Semigroup (Ioo (0 : α) 1) := fast_instance%
   fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ioo.semigroup Set.Ioo.semigroup
 
-instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioo (0 : α) 1) :=
+instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioo (0 : α) 1) := fast_instance%
   fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ioo.comm_semigroup Set.Ioo.commSemigroup

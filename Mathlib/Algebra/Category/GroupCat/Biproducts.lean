@@ -28,10 +28,10 @@ namespace AddCommGroupCat
 set_option linter.uppercaseLean3 false -- `AddCommGroup`
 
 -- As `AddCommGroupCat` is preadditive, and has all limits, it automatically has biproducts.
-instance : HasBinaryBiproducts AddCommGroupCat :=
+instance : HasBinaryBiproducts AddCommGroupCat := fast_instance%
   HasBinaryBiproducts.of_hasBinaryProducts
 
-instance : HasFiniteBiproducts AddCommGroupCat :=
+instance : HasFiniteBiproducts AddCommGroupCat := fast_instance%
   HasFiniteBiproducts.of_hasFiniteProducts
 
 -- We now construct explicit limit data,

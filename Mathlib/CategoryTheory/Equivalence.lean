@@ -280,7 +280,7 @@ def refl : C ≌ C :=
   ⟨𝟭 C, 𝟭 C, Iso.refl _, Iso.refl _, fun _ => Category.id_comp _⟩
 #align category_theory.equivalence.refl CategoryTheory.Equivalence.refl
 
-instance : Inhabited (C ≌ C) :=
+instance : Inhabited (C ≌ C) := fast_instance%
   ⟨refl⟩
 
 /-- Equivalence of categories is symmetric. -/
@@ -446,7 +446,7 @@ def pow (e : C ≌ C) : ℤ → (C ≌ C)
   | Int.negSucc n => e.symm.powNat (n + 1)
 #align category_theory.equivalence.pow CategoryTheory.Equivalence.pow
 
-instance : Pow (C ≌ C) ℤ :=
+instance : Pow (C ≌ C) ℤ := fast_instance%
   ⟨pow⟩
 
 @[simp]
@@ -493,11 +493,11 @@ attribute [reassoc (attr := simp)] IsEquivalence.functor_unitIso_comp
 
 namespace IsEquivalence
 
-instance ofEquivalence (F : C ≌ D) : IsEquivalence F.functor :=
+instance ofEquivalence (F : C ≌ D) : IsEquivalence F.functor := fast_instance%
   { F with }
 #align category_theory.is_equivalence.of_equivalence CategoryTheory.IsEquivalence.ofEquivalence
 
-instance ofEquivalenceInverse (F : C ≌ D) : IsEquivalence F.inverse :=
+instance ofEquivalenceInverse (F : C ≌ D) : IsEquivalence F.inverse := fast_instance%
   IsEquivalence.ofEquivalence F.symm
 #align category_theory.is_equivalence.of_equivalence_inverse CategoryTheory.IsEquivalence.ofEquivalenceInverse
 
@@ -519,7 +519,7 @@ def asEquivalence (F : C ⥤ D) [IsEquivalence F] : C ≌ D :=
     IsEquivalence.functor_unitIso_comp⟩
 #align category_theory.functor.as_equivalence CategoryTheory.Functor.asEquivalence
 
-instance isEquivalenceRefl : IsEquivalence (𝟭 C) :=
+instance isEquivalenceRefl : IsEquivalence (𝟭 C) := fast_instance%
   IsEquivalence.ofEquivalence Equivalence.refl
 #align category_theory.functor.is_equivalence_refl CategoryTheory.Functor.isEquivalenceRefl
 
@@ -528,7 +528,7 @@ def inv (F : C ⥤ D) [IsEquivalence F] : D ⥤ C :=
   IsEquivalence.inverse F
 #align category_theory.functor.inv CategoryTheory.Functor.inv
 
-instance isEquivalenceInv (F : C ⥤ D) [IsEquivalence F] : IsEquivalence F.inv :=
+instance isEquivalenceInv (F : C ⥤ D) [IsEquivalence F] : IsEquivalence F.inv := fast_instance%
   IsEquivalence.ofEquivalence F.asEquivalence.symm
 #align category_theory.functor.is_equivalence_inv CategoryTheory.Functor.isEquivalenceInv
 
@@ -566,10 +566,10 @@ instance isEquivalenceTrans (F : C ⥤ D) (G : D ⥤ E) [IsEquivalence F] [IsEqu
   IsEquivalence.ofEquivalence (Equivalence.trans (asEquivalence F) (asEquivalence G))
 #align category_theory.functor.is_equivalence_trans CategoryTheory.Functor.isEquivalenceTrans
 
-instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringLeft C D E).obj F) :=
+instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringLeft C D E).obj F) := fast_instance%
   (inferInstance : IsEquivalence (Equivalence.congrLeft F.asEquivalence).inverse)
 
-instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringRight E C D).obj F) :=
+instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringRight E C D).obj F) := fast_instance%
   (inferInstance : IsEquivalence (Equivalence.congrRight F.asEquivalence).functor)
 
 end Functor

@@ -33,7 +33,7 @@ open Filter
 
 /-- `Filter α` is an atomic type: for every filter there exists an ultrafilter that is less than or
 equal to this filter. -/
-instance : IsAtomic (Filter α) :=
+instance : IsAtomic (Filter α) := fast_instance%
   IsAtomic.of_isChain_bounded fun c hc hne hb =>
     ⟨sInf c, (sInf_neBot_of_directed' hne (show IsChain (· ≥ ·) c from hc.symm).directedOn hb).ne,
       fun _ hx => sInf_le hx⟩
@@ -53,10 +53,10 @@ variable {f g : Ultrafilter α} {s t : Set α} {p q : α → Prop}
 
 attribute [coe] Ultrafilter.toFilter
 
-instance : CoeTC (Ultrafilter α) (Filter α) :=
+instance : CoeTC (Ultrafilter α) (Filter α) := fast_instance%
   ⟨Ultrafilter.toFilter⟩
 
-instance : Membership (Set α) (Ultrafilter α) :=
+instance : Membership (Set α) (Ultrafilter α) := fast_instance%
   ⟨fun s f => s ∈ (f : Filter α)⟩
 
 theorem unique (f : Ultrafilter α) {g : Filter α} (h : g ≤ f) (hne : NeBot g := by infer_instance) :
@@ -64,7 +64,7 @@ theorem unique (f : Ultrafilter α) {g : Filter α} (h : g ≤ f) (hne : NeBot g
   le_antisymm h <| f.le_of_le g hne h
 #align ultrafilter.unique Ultrafilter.unique
 
-instance neBot (f : Ultrafilter α) : NeBot (f : Filter α) :=
+instance neBot (f : Ultrafilter α) : NeBot (f : Filter α) := fast_instance%
   f.neBot'
 #align ultrafilter.ne_bot Ultrafilter.neBot
 
@@ -278,7 +278,7 @@ nonrec theorem comap_comap (f : Ultrafilter γ) {m : α → β} {n : β → γ} 
 #align ultrafilter.comap_comap Ultrafilter.comap_comap
 
 /-- The principal ultrafilter associated to a point `x`. -/
-instance : Pure Ultrafilter :=
+instance : Pure Ultrafilter := fast_instance%
   ⟨fun a => ofComplNotMemIff (pure a) fun s => by simp⟩
 
 @[simp]
@@ -308,10 +308,10 @@ theorem pure_injective : Injective (pure : α → Ultrafilter α) := fun _ _ h =
   Filter.pure_injective (congr_arg Ultrafilter.toFilter h : _)
 #align ultrafilter.pure_injective Ultrafilter.pure_injective
 
-instance [Inhabited α] : Inhabited (Ultrafilter α) :=
+instance [Inhabited α] : Inhabited (Ultrafilter α) := fast_instance%
   ⟨pure default⟩
 
-instance [Nonempty α] : Nonempty (Ultrafilter α) :=
+instance [Nonempty α] : Nonempty (Ultrafilter α) := fast_instance%
   Nonempty.map pure inferInstance
 
 theorem eq_pure_of_finite_mem (h : s.Finite) (h' : s ∈ f) : ∃ x ∈ s, f = pure x := by
@@ -338,14 +338,14 @@ def bind (f : Ultrafilter α) (m : α → Ultrafilter β) : Ultrafilter β :=
     simp only [mem_bind', mem_coe, ← compl_mem_iff_not_mem, compl_setOf, compl_compl]
 #align ultrafilter.bind Ultrafilter.bind
 
-instance instBind : Bind Ultrafilter :=
+instance instBind : Bind Ultrafilter := fast_instance%
   ⟨@Ultrafilter.bind⟩
 #align ultrafilter.has_bind Ultrafilter.instBind
 
-instance functor : Functor Ultrafilter where map := @Ultrafilter.map
+instance functor : Functor Ultrafilter where map := fast_instance% @Ultrafilter.map
 #align ultrafilter.functor Ultrafilter.functor
 
-instance monad : Monad Ultrafilter where map := @Ultrafilter.map
+instance monad : Monad Ultrafilter where map := fast_instance% @Ultrafilter.map
 #align ultrafilter.monad Ultrafilter.monad
 
 section

@@ -261,7 +261,7 @@ theorem Sigma.ι_desc {β : Type w} {f : β → C} [HasCoproduct f] {P : C} (p :
     Sigma.ι f b ≫ Sigma.desc p = p b := by
   simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
 
-instance {f : β → C} [HasCoproduct f] : IsIso (Sigma.desc (fun a ↦ Sigma.ι f a)) := by
+instance {f : β → C} [HasCoproduct f] : IsIso (Sigma.desc (fun a ↦ Sigma.ι f a)) := fast_instance% by
   convert IsIso.id _
   ext
   simp

@@ -48,7 +48,7 @@ def ActionCategory :=
   (actionAsFunctor M X).Elements
 #align category_theory.action_category CategoryTheory.ActionCategory
 
-instance : Category (ActionCategory M X) := by
+instance : Category (ActionCategory M X) := fast_instance% by
   dsimp only [ActionCategory]
   infer_instance
 
@@ -77,7 +77,7 @@ variable {M X}
 protected def back : ActionCategory M X → X := fun x => x.snd
 #align category_theory.action_category.back CategoryTheory.ActionCategory.back
 
-instance : CoeTC X (ActionCategory M X) :=
+instance : CoeTC X (ActionCategory M X) := fast_instance%
   ⟨fun x => ⟨(), x⟩⟩
 
 @[simp]
@@ -103,10 +103,10 @@ theorem hom_as_subtype (p q : ActionCategory M X) : (p ⟶ q) = { m : M // m •
   rfl
 #align category_theory.action_category.hom_as_subtype CategoryTheory.ActionCategory.hom_as_subtype
 
-instance [Inhabited X] : Inhabited (ActionCategory M X) :=
+instance [Inhabited X] : Inhabited (ActionCategory M X) := fast_instance%
   ⟨show X from default⟩
 
-instance [Nonempty X] : Nonempty (ActionCategory M X) :=
+instance [Nonempty X] : Nonempty (ActionCategory M X) := fast_instance%
   Nonempty.map (objEquiv M X) inferInstance
 
 variable {X} (x : X)
@@ -141,7 +141,7 @@ protected theorem comp_val {x y z : ActionCategory M X} (f : x ⟶ y) (g : y ⟶
   rfl
 #align category_theory.action_category.comp_val CategoryTheory.ActionCategory.comp_val
 
-instance [IsPretransitive M X] [Nonempty X] : IsConnected (ActionCategory M X) :=
+instance [IsPretransitive M X] [Nonempty X] : IsConnected (ActionCategory M X) := fast_instance%
   zigzag_isConnected fun x y =>
     Relation.ReflTransGen.single <|
       Or.inl <| nonempty_subtype.mpr (show _ from exists_smul_eq M x.back y.back)
@@ -150,7 +150,7 @@ section Group
 
 variable {G : Type*} [Group G] [MulAction G X]
 
-instance : Groupoid (ActionCategory G X) :=
+instance : Groupoid (ActionCategory G X) := fast_instance%
   CategoryTheory.groupoidOfElements _
 
 /-- Any subgroup of `G` is a vertex group in its action groupoid. -/

@@ -37,7 +37,7 @@ namespace RingOfIntegers
 
 open FunctionField
 
-noncomputable instance : Fintype (ClassGroup (ringOfIntegers Fq F)) :=
+noncomputable instance : Fintype (ClassGroup (ringOfIntegers Fq F)) := fast_instance%
   ClassGroup.fintypeOfAdmissibleOfFinite (RatFunc Fq) F
     (Polynomial.cardPowDegreeIsAdmissible :
       AbsoluteValue.IsAdmissible (Polynomial.cardPowDegree : AbsoluteValue Fq[X] ℤ))

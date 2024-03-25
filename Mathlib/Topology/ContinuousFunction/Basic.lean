@@ -70,7 +70,7 @@ theorem map_continuousWithinAt (f : F) (s : Set α) (a : α) : ContinuousWithinA
 /-- Coerce a bundled morphism with a `ContinuousMapClass` instance to a `ContinuousMap`. -/
 @[coe] def toContinuousMap (f : F) : C(α, β) := ⟨f, map_continuous f⟩
 
-instance : CoeTC F C(α, β) := ⟨toContinuousMap⟩
+instance : CoeTC F C(α, β) := fast_instance% ⟨toContinuousMap⟩
 
 end ContinuousMapClass
 
@@ -94,7 +94,7 @@ theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_map.to_fun_eq_coe ContinuousMap.toFun_eq_coe
 
-instance : CanLift (α → β) C(α, β) DFunLike.coe Continuous := ⟨fun f hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
+instance : CanLift (α → β) C(α, β) DFunLike.coe Continuous := fast_instance% ⟨fun f hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
 
 /-- See note [custom simps projection]. -/
 def Simps.apply (f : C(α, β)) : α → β := f
@@ -213,7 +213,7 @@ theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
 def constPi : C(β, α → β) where
   toFun b := Function.const α b
 
-instance [Inhabited β] : Inhabited C(α, β) :=
+instance [Inhabited β] : Inhabited C(α, β) := fast_instance%
   ⟨const α default⟩
 
 variable {α}
@@ -281,7 +281,7 @@ theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
   ⟨fun h => ext fun a => hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align continuous_map.cancel_left ContinuousMap.cancel_left
 
-instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
+instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) := fast_instance%
   ⟨let ⟨b₁, b₂, hb⟩ := exists_pair_ne β
   ⟨const _ b₁, const _ b₂, fun h => hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
 
@@ -590,7 +590,7 @@ def toContinuousMap (e : α ≃ₜ β) : C(α, β) :=
 #align homeomorph.to_continuous_map_apply Homeomorph.toContinuousMap_apply
 
 /-- `Homeomorph.toContinuousMap` as a coercion. -/
-instance : Coe (α ≃ₜ β) C(α, β) :=
+instance : Coe (α ≃ₜ β) C(α, β) := fast_instance%
   ⟨Homeomorph.toContinuousMap⟩
 
 -- Porting note: Syntactic tautology

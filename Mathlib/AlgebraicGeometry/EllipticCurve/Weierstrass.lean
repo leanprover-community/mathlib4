@@ -820,7 +820,7 @@ lemma ofJ_j : (ofJ j).j = j := by
     · rw [ofJ_ne_0_ne_1728 j h0 h1728,
         @ofJ'_j _ _ _ (invertibleOfNonzero h0) (invertibleOfNonzero <| sub_ne_zero_of_ne h1728)]
 
-instance instInhabitedEllipticCurve : Inhabited <| EllipticCurve F :=
+instance instInhabitedEllipticCurve : Inhabited <| EllipticCurve F := fast_instance%
   ⟨ofJ 37⟩
 #align elliptic_curve.inhabited EllipticCurve.instInhabitedEllipticCurve
 

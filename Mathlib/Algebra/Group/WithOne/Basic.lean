@@ -29,7 +29,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 namespace WithOne
 
 @[to_additive]
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) :=
+instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) := fast_instance%
   { WithOne.inv with
     inv_inv := fun a =>
       (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
@@ -174,12 +174,12 @@ end WithOne
 
 namespace WithZero
 
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) :=
+instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) := fast_instance%
   { WithZero.inv with
     inv_inv := fun a =>
       (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
 
-instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) :=
+instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) := fast_instance%
   { WithZero.divInvMonoid, WithZero.involutiveInv with
     mul_inv_rev := fun a b =>
       match a, b with
@@ -195,7 +195,7 @@ instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) :=
       | some a, some b => fun h ↦
         congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h }
 
-instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) :=
+instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) := fast_instance%
   { WithZero.divisionMonoid, WithZero.commSemigroup with }
 
 end WithZero

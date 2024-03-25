@@ -78,7 +78,7 @@ private theorem equivalence_isometryRel : Equivalence IsometryRel :=
   ⟨fun _ => Nonempty.intro (IsometryEquiv.refl _), fun ⟨e⟩ => ⟨e.symm⟩, fun ⟨e⟩ ⟨f⟩ => ⟨e.trans f⟩⟩
 
 /-- setoid instance identifying two isometric nonempty compact subspaces of ℓ^∞(ℝ) -/
-instance IsometryRel.setoid : Setoid (NonemptyCompacts ℓ_infty_ℝ) :=
+instance IsometryRel.setoid : Setoid (NonemptyCompacts ℓ_infty_ℝ) := fast_instance%
   Setoid.mk IsometryRel equivalence_isometryRel
 #align Gromov_Hausdorff.isometry_rel.setoid GromovHausdorff.IsometryRel.setoid
 
@@ -92,7 +92,7 @@ def toGHSpace (X : Type u) [MetricSpace X] [CompactSpace X] [Nonempty X] : GHSpa
   ⟦NonemptyCompacts.kuratowskiEmbedding X⟧
 #align Gromov_Hausdorff.to_GH_space GromovHausdorff.toGHSpace
 
-instance : Inhabited GHSpace :=
+instance : Inhabited GHSpace := fast_instance%
   ⟨Quot.mk _ ⟨⟨{0}, isCompact_singleton⟩, singleton_nonempty _⟩⟩
 
 /-- A metric space representative of any abstract point in `GHSpace` -/
@@ -126,15 +126,15 @@ theorem eq_toGHSpace {p : NonemptyCompacts ℓ_infty_ℝ} : ⟦p⟧ = toGHSpace 
 
 section
 
-instance repGHSpaceMetricSpace {p : GHSpace} : MetricSpace p.Rep :=
+instance repGHSpaceMetricSpace {p : GHSpace} : MetricSpace p.Rep := fast_instance%
   inferInstanceAs <| MetricSpace p.out
 #align Gromov_Hausdorff.rep_GH_space_metric_space GromovHausdorff.repGHSpaceMetricSpace
 
-instance rep_gHSpace_compactSpace {p : GHSpace} : CompactSpace p.Rep :=
+instance rep_gHSpace_compactSpace {p : GHSpace} : CompactSpace p.Rep := fast_instance%
   inferInstanceAs <| CompactSpace p.out
 #align Gromov_Hausdorff.rep_GH_space_compact_space GromovHausdorff.rep_gHSpace_compactSpace
 
-instance rep_gHSpace_nonempty {p : GHSpace} : Nonempty p.Rep :=
+instance rep_gHSpace_nonempty {p : GHSpace} : Nonempty p.Rep := fast_instance%
   inferInstanceAs <| Nonempty p.out
 #align Gromov_Hausdorff.rep_GH_space_nonempty GromovHausdorff.rep_gHSpace_nonempty
 
@@ -654,7 +654,7 @@ end
 
 --section
 /-- The Gromov-Hausdorff space is second countable. -/
-instance : SecondCountableTopology GHSpace := by
+instance : SecondCountableTopology GHSpace := fast_instance% by
   refine' secondCountable_of_countable_discretization fun δ δpos => _
   let ε := 2 / 5 * δ
   have εpos : 0 < ε := mul_pos (by norm_num) δpos
@@ -986,7 +986,7 @@ structure AuxGluingStruct (A : Type) [MetricSpace A] : Type 1 where
 
 attribute [local instance] AuxGluingStruct.metric
 
-instance (A : Type) [MetricSpace A] : Inhabited (AuxGluingStruct A) :=
+instance (A : Type) [MetricSpace A] : Inhabited (AuxGluingStruct A) := fast_instance%
   ⟨{  Space := A
       metric := by infer_instance
       embed := id
@@ -1006,7 +1006,7 @@ def auxGluing (n : ℕ) : AuxGluingStruct (X n) :=
 #align Gromov_Hausdorff.aux_gluing GromovHausdorff.auxGluing
 
 /-- The Gromov-Hausdorff space is complete. -/
-instance : CompleteSpace GHSpace := by
+instance : CompleteSpace GHSpace := fast_instance% by
   set d := fun n : ℕ ↦ ((1 : ℝ) / 2) ^ n
   have : ∀ n : ℕ, 0 < d n := fun _ ↦ by positivity
   -- start from a sequence of nonempty compact metric spaces within distance `1/2^n` of each other

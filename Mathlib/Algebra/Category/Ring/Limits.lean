@@ -115,13 +115,13 @@ open HasLimits
 
 /- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
-instance hasLimitsOfSize : HasLimitsOfSize.{v} SemiRingCatMax.{v, u} :=
+instance hasLimitsOfSize : HasLimitsOfSize.{v} SemiRingCatMax.{v, u} := fast_instance%
   { has_limits_of_shape := fun _ _ =>
       { has_limit := fun F => ⟨limitCone.{v, u} F, limitConeIsLimit.{v, u} F⟩ } }
 set_option linter.uppercaseLean3 false in
 #align SemiRing.has_limits_of_size SemiRingCat.hasLimitsOfSize
 
-instance hasLimits : HasLimits SemiRingCat.{u} :=
+instance hasLimits : HasLimits SemiRingCat.{u} := fast_instance%
   SemiRingCat.hasLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align SemiRing.has_limits SemiRingCat.hasLimits
@@ -171,7 +171,7 @@ instance forget₂MonPreservesLimitsOfSize :
 set_option linter.uppercaseLean3 false in
 #align SemiRing.forget₂_Mon_preserves_limits_of_size SemiRingCat.forget₂MonPreservesLimitsOfSize
 
-instance forget₂MonPreservesLimits : PreservesLimits (forget₂ SemiRingCat MonCat.{u}) :=
+instance forget₂MonPreservesLimits : PreservesLimits (forget₂ SemiRingCat MonCat.{u}) := fast_instance%
   SemiRingCat.forget₂MonPreservesLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align SemiRing.forget₂_Mon_preserves_limits SemiRingCat.forget₂MonPreservesLimits
@@ -187,7 +187,7 @@ instance forgetPreservesLimitsOfSize :
 set_option linter.uppercaseLean3 false in
 #align SemiRing.forget_preserves_limits_of_size SemiRingCat.forgetPreservesLimitsOfSize
 
-instance forgetPreservesLimits : PreservesLimits (forget SemiRingCat.{u}) :=
+instance forgetPreservesLimits : PreservesLimits (forget SemiRingCat.{u}) := fast_instance%
   SemiRingCat.forgetPreservesLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align SemiRing.forget_preserves_limits SemiRingCat.forgetPreservesLimits
@@ -273,14 +273,14 @@ set_option linter.uppercaseLean3 false in
 
 /- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
-instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommSemiRingCatMax.{v, u} :=
+instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommSemiRingCatMax.{v, u} := fast_instance%
   { has_limits_of_shape := fun _ _ =>
       { has_limit := fun F =>
           hasLimit_of_created F (forget₂ CommSemiRingCat SemiRingCatMax.{v, u}) } }
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.has_limits_of_size CommSemiRingCat.hasLimitsOfSize
 
-instance hasLimits : HasLimits CommSemiRingCat.{u} :=
+instance hasLimits : HasLimits CommSemiRingCat.{u} := fast_instance%
   CommSemiRingCat.hasLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.has_limits CommSemiRingCat.hasLimits
@@ -314,7 +314,7 @@ instance forgetPreservesLimitsOfSize :
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.forget_preserves_limits_of_size CommSemiRingCat.forgetPreservesLimitsOfSize
 
-instance forgetPreservesLimits : PreservesLimits (forget CommSemiRingCat.{u}) :=
+instance forgetPreservesLimits : PreservesLimits (forget CommSemiRingCat.{u}) := fast_instance%
   CommSemiRingCat.forgetPreservesLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.forget_preserves_limits CommSemiRingCat.forgetPreservesLimits
@@ -330,7 +330,7 @@ namespace RingCat
 
 variable {J : Type v} [SmallCategory J]
 
-instance ringObj (F : J ⥤ RingCatMax.{v, u}) (j) : Ring ((F ⋙ forget RingCat).obj j) := by
+instance ringObj (F : J ⥤ RingCatMax.{v, u}) (j) : Ring ((F ⋙ forget RingCat).obj j) := fast_instance% by
   change Ring (F.obj j)
   infer_instance
 set_option linter.uppercaseLean3 false in
@@ -395,14 +395,14 @@ set_option linter.uppercaseLean3 false in
 
 /- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
-instance hasLimitsOfSize : HasLimitsOfSize.{v, v} RingCat.{max v u} :=
+instance hasLimitsOfSize : HasLimitsOfSize.{v, v} RingCat.{max v u} := fast_instance%
   { has_limits_of_shape := fun {_ _} =>
       { has_limit := fun {F} => hasLimit_of_created F
           (forget₂ RingCatMax.{v, u} SemiRingCatMax.{v, u}) } }
 set_option linter.uppercaseLean3 false in
 #align Ring.has_limits_of_size RingCat.hasLimitsOfSize
 
-instance hasLimits : HasLimits RingCat.{u} :=
+instance hasLimits : HasLimits RingCat.{u} := fast_instance%
   RingCat.hasLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align Ring.has_limits RingCat.hasLimits
@@ -418,7 +418,7 @@ instance forget₂SemiRingPreservesLimitsOfSize :
 set_option linter.uppercaseLean3 false in
 #align Ring.forget₂_SemiRing_preserves_limits_of_size RingCat.forget₂SemiRingPreservesLimitsOfSize
 
-instance forget₂SemiRingPreservesLimits : PreservesLimits (forget₂ RingCat SemiRingCat.{u}) :=
+instance forget₂SemiRingPreservesLimits : PreservesLimits (forget₂ RingCat SemiRingCat.{u}) := fast_instance%
   RingCat.forget₂SemiRingPreservesLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align Ring.forget₂_SemiRing_preserves_limits RingCat.forget₂SemiRingPreservesLimits
@@ -461,7 +461,7 @@ instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize.{v, v} (forget Ring
 set_option linter.uppercaseLean3 false in
 #align Ring.forget_preserves_limits_of_size RingCat.forgetPreservesLimitsOfSize
 
-instance forgetPreservesLimits : PreservesLimits (forget RingCat.{u}) :=
+instance forgetPreservesLimits : PreservesLimits (forget RingCat.{u}) := fast_instance%
   RingCat.forgetPreservesLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align Ring.forget_preserves_limits RingCat.forgetPreservesLimits
@@ -552,7 +552,7 @@ set_option linter.uppercaseLean3 false in
 
 /- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of commutative rings has all limits. -/
-instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommRingCatMax.{v, u} :=
+instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommRingCatMax.{v, u} := fast_instance%
   -- Porting note: add this manually to get `liftLimit`
   letI : HasLimitsOfSize RingCatMax.{v, u} := RingCat.hasLimitsOfSize.{v, u}
   { has_limits_of_shape := fun {_ _} =>
@@ -561,7 +561,7 @@ instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommRingCatMax.{v, u} :=
 set_option linter.uppercaseLean3 false in
 #align CommRing.has_limits_of_size CommRingCat.hasLimitsOfSize
 
-instance hasLimits : HasLimits CommRingCat.{u} :=
+instance hasLimits : HasLimits CommRingCat.{u} := fast_instance%
   CommRingCat.hasLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align CommRing.has_limits CommRingCat.hasLimits
@@ -578,7 +578,7 @@ instance forget₂RingPreservesLimitsOfSize :
 set_option linter.uppercaseLean3 false in
 #align CommRing.forget₂_Ring_preserves_limits_of_size CommRingCat.forget₂RingPreservesLimitsOfSize
 
-instance forget₂RingPreservesLimits : PreservesLimits (forget₂ CommRingCat RingCat.{u}) :=
+instance forget₂RingPreservesLimits : PreservesLimits (forget₂ CommRingCat RingCat.{u}) := fast_instance%
   CommRingCat.forget₂RingPreservesLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align CommRing.forget₂_Ring_preserves_limits CommRingCat.forget₂RingPreservesLimits
@@ -622,7 +622,7 @@ instance forgetPreservesLimitsOfSize :
 set_option linter.uppercaseLean3 false in
 #align CommRing.forget_preserves_limits_of_size CommRingCat.forgetPreservesLimitsOfSize
 
-instance forgetPreservesLimits : PreservesLimits (forget CommRingCat.{u}) :=
+instance forgetPreservesLimits : PreservesLimits (forget CommRingCat.{u}) := fast_instance%
   CommRingCat.forgetPreservesLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align CommRing.forget_preserves_limits CommRingCat.forgetPreservesLimits

@@ -95,10 +95,10 @@ namespace Product
 
 variable {ε : α → Type*}
 
-instance coeTC : CoeTC ((a : _) → ε a) (l.Product ε) :=
+instance coeTC : CoeTC ((a : _) → ε a) (l.Product ε) := fast_instance%
   ⟨@Quotient.mk' _ (productSetoid _ ε)⟩
 
-instance inhabited [(a : _) → Inhabited (ε a)] : Inhabited (l.Product ε) :=
+instance inhabited [(a : _) → Inhabited (ε a)] : Inhabited (l.Product ε) := fast_instance%
   ⟨(↑fun a => (default : ε a) : l.Product ε)⟩
 
 end Product
@@ -109,13 +109,13 @@ namespace Germ
 @[coe]
 def ofFun : (α → β) → (Germ l β) := @Quotient.mk' _ (germSetoid _ _)
 
-instance : CoeTC (α → β) (Germ l β) :=
+instance : CoeTC (α → β) (Germ l β) := fast_instance%
   ⟨ofFun⟩
 
 @[coe] -- Porting note: removed `HasLiftT` instance
 def const {l : Filter α} (b : β) : (Germ l β) := ofFun fun _ => b
 
-instance coeTC : CoeTC β (Germ l β) :=
+instance coeTC : CoeTC β (Germ l β) := fast_instance%
   ⟨const⟩
 
 /-- A germ `P` of functions `α → β` is constant w.r.t. `l`. -/
@@ -361,7 +361,7 @@ theorem liftRel_const_iff [NeBot l] {r : β → γ → Prop} {x : β} {y : γ} :
   @eventually_const _ _ _ (r x y)
 #align filter.germ.lift_rel_const_iff Filter.Germ.liftRel_const_iff
 
-instance inhabited [Inhabited β] : Inhabited (Germ l β) :=
+instance inhabited [Inhabited β] : Inhabited (Germ l β) := fast_instance%
   ⟨↑(default : β)⟩
 
 section Monoid
@@ -369,7 +369,7 @@ section Monoid
 variable {M : Type*} {G : Type*}
 
 @[to_additive]
-instance mul [Mul M] : Mul (Germ l M) :=
+instance mul [Mul M] : Mul (Germ l M) := fast_instance%
   ⟨map₂ (· * ·)⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -379,7 +379,7 @@ theorem coe_mul [Mul M] (f g : α → M) : ↑(f * g) = (f * g : Germ l M) :=
 #align filter.germ.coe_add Filter.Germ.coe_add
 
 @[to_additive]
-instance one [One M] : One (Germ l M) :=
+instance one [One M] : One (Germ l M) := fast_instance%
   ⟨↑(1 : M)⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -389,12 +389,12 @@ theorem coe_one [One M] : ↑(1 : α → M) = (1 : Germ l M) :=
 #align filter.germ.coe_zero Filter.Germ.coe_zero
 
 @[to_additive]
-instance semigroup [Semigroup M] : Semigroup (Germ l M) :=
+instance semigroup [Semigroup M] : Semigroup (Germ l M) := fast_instance%
   { mul_assoc := fun a b c => Quotient.inductionOn₃' a b c
       fun _ _ _ => congrArg ofFun <| mul_assoc .. }
 
 @[to_additive]
-instance commSemigroup [CommSemigroup M] : CommSemigroup (Germ l M) :=
+instance commSemigroup [CommSemigroup M] : CommSemigroup (Germ l M) := fast_instance%
   { mul_comm := Quotient.ind₂' fun _ _ => congrArg ofFun <| mul_comm .. }
 
 @[to_additive]
@@ -413,24 +413,24 @@ instance instIsRightCancelMul [Mul M] [IsRightCancelMul M] : IsRightCancelMul (G
 instance instIsCancelMul [Mul M] [IsCancelMul M] : IsCancelMul (Germ l M) where
 
 @[to_additive]
-instance leftCancelSemigroup [LeftCancelSemigroup M] : LeftCancelSemigroup (Germ l M) :=
+instance leftCancelSemigroup [LeftCancelSemigroup M] : LeftCancelSemigroup (Germ l M) := fast_instance%
   { Germ.semigroup with mul_left_cancel := fun _ _ _ => mul_left_cancel }
 
 @[to_additive]
-instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (Germ l M) :=
+instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (Germ l M) := fast_instance%
   { Germ.semigroup with mul_right_cancel := fun _ _ _ => mul_right_cancel }
 
 @[to_additive]
-instance mulOneClass [MulOneClass M] : MulOneClass (Germ l M) :=
+instance mulOneClass [MulOneClass M] : MulOneClass (Germ l M) := fast_instance%
   { one_mul := Quotient.ind' fun _ => congrArg ofFun <| one_mul _
     mul_one := Quotient.ind' fun _ => congrArg ofFun <| mul_one _ }
 
 @[to_additive]
-instance smul [SMul M G] : SMul M (Germ l G) :=
+instance smul [SMul M G] : SMul M (Germ l G) := fast_instance%
   ⟨fun n => map (n • ·)⟩
 
 @[to_additive existing smul]
-instance pow [Pow G M] : Pow (Germ l G) M :=
+instance pow [Pow G M] : Pow (Germ l G) M := fast_instance%
   ⟨fun f n => map (· ^ n) f⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -457,7 +457,7 @@ theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : 
 
 -- TODO: #7432
 @[to_additive]
-instance monoid [Monoid M] : Monoid (Germ l M) :=
+instance monoid [Monoid M] : Monoid (Germ l M) := fast_instance%
   { Function.Surjective.monoid ofFun (surjective_quot_mk _) (by rfl)
       (fun _ _ => by rfl) fun _ _ => by rfl with
     toSemigroup := semigroup
@@ -478,7 +478,7 @@ theorem coe_coeMulHom [Monoid M] : (coeMulHom l : (α → M) → Germ l M) = ofF
 #align filter.germ.coe_coe_add_hom Filter.Germ.coe_coeAddHom
 
 @[to_additive]
-instance commMonoid [CommMonoid M] : CommMonoid (Germ l M) :=
+instance commMonoid [CommMonoid M] : CommMonoid (Germ l M) := fast_instance%
   { mul_comm := mul_comm }
 
 instance natCast [NatCast M] : NatCast (Germ l M) where
@@ -508,16 +508,16 @@ instance intCast [IntCast M] : IntCast (Germ l M) where
 @[simp]
 theorem coe_int [IntCast M] (n : ℤ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
 
-instance addMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M) :=
+instance addMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M) := fast_instance%
   { natCast, addMonoid, one with
     natCast_zero := congrArg ofFun <| by simp; rfl
     natCast_succ := fun _ => congrArg ofFun <| by simp [Function.comp]; rfl }
 
-instance addCommMonoidWithOne [AddCommMonoidWithOne M] : AddCommMonoidWithOne (Germ l M) :=
+instance addCommMonoidWithOne [AddCommMonoidWithOne M] : AddCommMonoidWithOne (Germ l M) := fast_instance%
   { add_comm := add_comm }
 
 @[to_additive]
-instance inv [Inv G] : Inv (Germ l G) :=
+instance inv [Inv G] : Inv (Germ l G) := fast_instance%
   ⟨map Inv.inv⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -533,7 +533,7 @@ theorem const_inv [Inv G] (a : G) : (↑(a⁻¹) : Germ l G) = (↑a)⁻¹ :=
 #align filter.germ.const_neg Filter.Germ.const_neg
 
 @[to_additive]
-instance div [Div M] : Div (Germ l M) :=
+instance div [Div M] : Div (Germ l M) := fast_instance%
   ⟨map₂ (· / ·)⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -549,19 +549,19 @@ theorem const_div [Div M] (a b : M) : (↑(a / b) : Germ l M) = ↑a / ↑b :=
 #align filter.germ.const_sub Filter.Germ.const_sub
 
 @[to_additive]
-instance involutiveInv [InvolutiveInv G] : InvolutiveInv (Germ l G) :=
+instance involutiveInv [InvolutiveInv G] : InvolutiveInv (Germ l G) := fast_instance%
   { inv_inv := Quotient.ind' fun _ => congrArg ofFun<| inv_inv _ }
 
-instance hasDistribNeg [Mul G] [HasDistribNeg G] : HasDistribNeg (Germ l G) :=
+instance hasDistribNeg [Mul G] [HasDistribNeg G] : HasDistribNeg (Germ l G) := fast_instance%
   { neg_mul := Quotient.ind₂' fun _ _ => congrArg ofFun <| neg_mul ..
     mul_neg := Quotient.ind₂' fun _ _ => congrArg ofFun <| mul_neg .. }
 
 @[to_additive]
-instance invOneClass [InvOneClass G] : InvOneClass (Germ l G) :=
+instance invOneClass [InvOneClass G] : InvOneClass (Germ l G) := fast_instance%
   ⟨congr_arg ofFun inv_one⟩
 
 @[to_additive subNegMonoid]
-instance divInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) :=
+instance divInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) := fast_instance%
   { monoid, inv, div with
     zpow := fun z f => f ^ z
     zpow_zero' := Quotient.ind' fun _ => congrArg ofFun <|
@@ -581,14 +581,14 @@ instance divisionMonoid [DivisionMonoid G] : DivisionMonoid (Germ l G) where
     DivisionMonoid.inv_eq_of_mul _ _
 
 @[to_additive]
-instance group [Group G] : Group (Germ l G) :=
+instance group [Group G] : Group (Germ l G) := fast_instance%
   { mul_left_inv := Quotient.ind' fun _ => congrArg ofFun <| mul_left_inv _ }
 
 @[to_additive]
-instance commGroup [CommGroup G] : CommGroup (Germ l G) :=
+instance commGroup [CommGroup G] : CommGroup (Germ l G) := fast_instance%
   { mul_comm := mul_comm }
 
-instance addGroupWithOne [AddGroupWithOne G] : AddGroupWithOne (Germ l G) :=
+instance addGroupWithOne [AddGroupWithOne G] : AddGroupWithOne (Germ l G) := fast_instance%
   { intCast, addMonoidWithOne, addGroup with
     intCast_ofNat := fun _ => congrArg ofFun <| by simp
     intCast_negSucc := fun _ => congrArg ofFun <| by simp [Function.comp]; rfl }
@@ -599,22 +599,22 @@ section Ring
 
 variable {R : Type*}
 
-instance nontrivial [Nontrivial R] [NeBot l] : Nontrivial (Germ l R) :=
+instance nontrivial [Nontrivial R] [NeBot l] : Nontrivial (Germ l R) := fast_instance%
   let ⟨x, y, h⟩ := exists_pair_ne R
   ⟨⟨↑x, ↑y, mt const_inj.1 h⟩⟩
 #align filter.germ.nontrivial Filter.Germ.nontrivial
 
-instance mulZeroClass [MulZeroClass R] : MulZeroClass (Germ l R) :=
+instance mulZeroClass [MulZeroClass R] : MulZeroClass (Germ l R) := fast_instance%
   { zero_mul := Quotient.ind' fun _ => congrArg ofFun <| zero_mul _
     mul_zero := Quotient.ind' fun _ => congrArg ofFun <| mul_zero _ }
 
-instance mulZeroOneClass [MulZeroOneClass R] : MulZeroOneClass (Germ l R) :=
+instance mulZeroOneClass [MulZeroOneClass R] : MulZeroOneClass (Germ l R) := fast_instance%
   { mulZeroClass, mulOneClass with }
 
-instance monoidWithZero [MonoidWithZero R] : MonoidWithZero (Germ l R) :=
+instance monoidWithZero [MonoidWithZero R] : MonoidWithZero (Germ l R) := fast_instance%
   { monoid, mulZeroClass with }
 
-instance distrib [Distrib R] : Distrib (Germ l R) :=
+instance distrib [Distrib R] : Distrib (Germ l R) := fast_instance%
   { left_distrib := fun a b c => Quotient.inductionOn₃' a b c
       fun _ _ _ => congrArg ofFun <| left_distrib ..
     right_distrib := fun a b c => Quotient.inductionOn₃' a b c
@@ -624,38 +624,38 @@ instance nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] :
     NonUnitalNonAssocSemiring (Germ l R) :=
   { addCommMonoid, distrib, mulZeroClass with }
 
-instance nonUnitalSemiring [NonUnitalSemiring R] : NonUnitalSemiring (Germ l R) :=
+instance nonUnitalSemiring [NonUnitalSemiring R] : NonUnitalSemiring (Germ l R) := fast_instance%
   { mul_assoc := mul_assoc }
 
-instance nonAssocSemiring [NonAssocSemiring R] : NonAssocSemiring (Germ l R) :=
+instance nonAssocSemiring [NonAssocSemiring R] : NonAssocSemiring (Germ l R) := fast_instance%
   { nonUnitalNonAssocSemiring, mulZeroOneClass, addMonoidWithOne with }
 
 instance nonUnitalNonAssocRing [NonUnitalNonAssocRing R] :
     NonUnitalNonAssocRing (Germ l R) :=
   { addCommGroup, nonUnitalNonAssocSemiring with }
 
-instance nonUnitalRing [NonUnitalRing R] : NonUnitalRing (Germ l R) :=
+instance nonUnitalRing [NonUnitalRing R] : NonUnitalRing (Germ l R) := fast_instance%
   { mul_assoc := mul_assoc }
 
-instance nonAssocRing [NonAssocRing R] : NonAssocRing (Germ l R) :=
+instance nonAssocRing [NonAssocRing R] : NonAssocRing (Germ l R) := fast_instance%
   { nonUnitalNonAssocRing, nonAssocSemiring, addGroupWithOne with }
 
-instance semiring [Semiring R] : Semiring (Germ l R) :=
+instance semiring [Semiring R] : Semiring (Germ l R) := fast_instance%
   { nonUnitalSemiring, nonAssocSemiring, monoidWithZero with }
 
-instance ring [Ring R] : Ring (Germ l R) :=
+instance ring [Ring R] : Ring (Germ l R) := fast_instance%
   { semiring, addCommGroup, nonAssocRing with }
 
-instance nonUnitalCommSemiring [NonUnitalCommSemiring R] : NonUnitalCommSemiring (Germ l R) :=
+instance nonUnitalCommSemiring [NonUnitalCommSemiring R] : NonUnitalCommSemiring (Germ l R) := fast_instance%
   { mul_comm := mul_comm }
 
-instance commSemiring [CommSemiring R] : CommSemiring (Germ l R) :=
+instance commSemiring [CommSemiring R] : CommSemiring (Germ l R) := fast_instance%
   { mul_comm := mul_comm }
 
-instance nonUnitalCommRing [NonUnitalCommRing R] : NonUnitalCommRing (Germ l R) :=
+instance nonUnitalCommRing [NonUnitalCommRing R] : NonUnitalCommRing (Germ l R) := fast_instance%
   { nonUnitalRing, commSemigroup with }
 
-instance commRing [CommRing R] : CommRing (Germ l R) :=
+instance commRing [CommRing R] : CommRing (Germ l R) := fast_instance%
   { mul_comm := mul_comm }
 
 /-- Coercion `(α → R) → Germ l R` as a `RingHom`. -/
@@ -675,7 +675,7 @@ section Module
 variable {M N R : Type*}
 
 @[to_additive]
-instance instSMul' [SMul M β] : SMul (Germ l M) (Germ l β) :=
+instance instSMul' [SMul M β] : SMul (Germ l M) (Germ l β) := fast_instance%
   ⟨map₂ (· • ·)⟩
 #align filter.germ.has_smul' Filter.Germ.instSMul'
 #align filter.germ.has_vadd' Filter.Germ.instVAdd'
@@ -758,7 +758,7 @@ instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module (Germ l R)
 
 end Module
 
-instance le [LE β] : LE (Germ l β) :=
+instance le [LE β] : LE (Germ l β) := fast_instance%
   ⟨LiftRel (· ≤ ·)⟩
 
 theorem le_def [LE β] : ((· ≤ ·) : Germ l β → Germ l β → Prop) = LiftRel (· ≤ ·) :=
@@ -788,16 +788,16 @@ instance preorder [Preorder β] : Preorder (Germ l β) where
   le_refl f := inductionOn f <| EventuallyLE.refl l
   le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun f₁ f₂ f₃ => EventuallyLE.trans
 
-instance partialOrder [PartialOrder β] : PartialOrder (Germ l β) :=
+instance partialOrder [PartialOrder β] : PartialOrder (Germ l β) := fast_instance%
   { Filter.Germ.preorder with
     le := (· ≤ ·)
     le_antisymm := fun f g =>
       inductionOn₂ f g fun _ _ h₁ h₂ => (EventuallyLE.antisymm h₁ h₂).germ_eq }
 
-instance bot [Bot β] : Bot (Germ l β) :=
+instance bot [Bot β] : Bot (Germ l β) := fast_instance%
   ⟨↑(⊥ : β)⟩
 
-instance top [Top β] : Top (Germ l β) :=
+instance top [Top β] : Top (Germ l β) := fast_instance%
   ⟨↑(⊤ : β)⟩
 
 @[simp, norm_cast]
@@ -818,13 +818,13 @@ instance orderTop [LE β] [OrderTop β] : OrderTop (Germ l β) where
   top := ⊤
   le_top f := inductionOn f fun _ => eventually_of_forall fun _ => le_top
 
-instance [LE β] [BoundedOrder β] : BoundedOrder (Germ l β) :=
+instance [LE β] [BoundedOrder β] : BoundedOrder (Germ l β) := fast_instance%
   { Filter.Germ.orderBot, Filter.Germ.orderTop with }
 
-instance sup [Sup β] : Sup (Germ l β) :=
+instance sup [Sup β] : Sup (Germ l β) := fast_instance%
   ⟨map₂ (· ⊔ ·)⟩
 
-instance inf [Inf β] : Inf (Germ l β) :=
+instance inf [Inf β] : Inf (Germ l β) := fast_instance%
   ⟨map₂ (· ⊓ ·)⟩
 
 @[simp, norm_cast]
@@ -837,7 +837,7 @@ theorem const_inf [Inf β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : Germ l �
   rfl
 #align filter.germ.const_inf Filter.Germ.const_inf
 
-instance semilatticeSup [SemilatticeSup β] : SemilatticeSup (Germ l β) :=
+instance semilatticeSup [SemilatticeSup β] : SemilatticeSup (Germ l β) := fast_instance%
   { Germ.partialOrder with
     sup := (· ⊔ ·)
     le_sup_left := fun f g =>
@@ -847,7 +847,7 @@ instance semilatticeSup [SemilatticeSup β] : SemilatticeSup (Germ l β) :=
     sup_le := fun f₁ f₂ g =>
       inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ => h₂.mp <| h₁.mono fun _x => sup_le }
 
-instance semilatticeInf [SemilatticeInf β] : SemilatticeInf (Germ l β) :=
+instance semilatticeInf [SemilatticeInf β] : SemilatticeInf (Germ l β) := fast_instance%
   { Germ.partialOrder with
     inf := (· ⊓ ·)
     inf_le_left := fun f g =>
@@ -857,16 +857,16 @@ instance semilatticeInf [SemilatticeInf β] : SemilatticeInf (Germ l β) :=
     le_inf := fun f₁ f₂ g =>
       inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ => h₂.mp <| h₁.mono fun _x => le_inf }
 
-instance lattice [Lattice β] : Lattice (Germ l β) :=
+instance lattice [Lattice β] : Lattice (Germ l β) := fast_instance%
   { Germ.semilatticeSup, Germ.semilatticeInf with }
 
-instance distribLattice [DistribLattice β] : DistribLattice (Germ l β) :=
+instance distribLattice [DistribLattice β] : DistribLattice (Germ l β) := fast_instance%
   { Germ.semilatticeSup, Germ.semilatticeInf with
     le_sup_inf := fun f g h =>
       inductionOn₃ f g h fun _f _g _h => eventually_of_forall fun _ => le_sup_inf }
 
 @[to_additive]
-instance orderedCommMonoid [OrderedCommMonoid β] : OrderedCommMonoid (Germ l β) :=
+instance orderedCommMonoid [OrderedCommMonoid β] : OrderedCommMonoid (Germ l β) := fast_instance%
   { Germ.partialOrder, Germ.commMonoid with
     mul_le_mul_left := fun f g =>
       inductionOn₂ f g fun _f _g H h =>
@@ -880,7 +880,7 @@ instance orderedCancelCommMonoid [OrderedCancelCommMonoid β] :
       inductionOn₃ f g h fun _f _g _h H => H.mono fun _x => le_of_mul_le_mul_left' }
 
 @[to_additive]
-instance orderedCommGroup [OrderedCommGroup β] : OrderedCommGroup (Germ l β) :=
+instance orderedCommGroup [OrderedCommGroup β] : OrderedCommGroup (Germ l β) := fast_instance%
   { Germ.orderedCancelCommMonoid, Germ.commGroup with }
 
 @[to_additive]
@@ -898,7 +898,7 @@ instance CanonicallyOrderedCommMonoid [CanonicallyOrderedCommMonoid β] :
   { orderedCommMonoid, orderBot, existsMulOfLE with
     le_self_mul := fun x y ↦ inductionOn₂ x y fun _ _ ↦ eventually_of_forall fun _ ↦ le_self_mul }
 
-instance orderedSemiring [OrderedSemiring β] : OrderedSemiring (Germ l β) :=
+instance orderedSemiring [OrderedSemiring β] : OrderedSemiring (Germ l β) := fast_instance%
   { Germ.semiring,
     Germ.orderedAddCommMonoid with
     zero_le_one := const_le zero_le_one
@@ -909,17 +909,17 @@ instance orderedSemiring [OrderedSemiring β] : OrderedSemiring (Germ l β) :=
       inductionOn₃ x y z fun _f _g _h hfg hh =>
           hh.mp <| hfg.mono fun _a => mul_le_mul_of_nonneg_right }
 
-instance orderedCommSemiring [OrderedCommSemiring β] : OrderedCommSemiring (Germ l β) :=
+instance orderedCommSemiring [OrderedCommSemiring β] : OrderedCommSemiring (Germ l β) := fast_instance%
   { Germ.orderedSemiring, Germ.commSemiring with }
 
-instance orderedRing [OrderedRing β] : OrderedRing (Germ l β) :=
+instance orderedRing [OrderedRing β] : OrderedRing (Germ l β) := fast_instance%
   { Germ.ring,
     Germ.orderedAddCommGroup with
     zero_le_one := const_le zero_le_one
     mul_nonneg := fun x y =>
       inductionOn₂ x y fun _f _g hf hg => hg.mp <| hf.mono fun _a => mul_nonneg }
 
-instance orderedCommRing [OrderedCommRing β] : OrderedCommRing (Germ l β) :=
+instance orderedCommRing [OrderedCommRing β] : OrderedCommRing (Germ l β) := fast_instance%
   { Germ.orderedRing, Germ.orderedCommSemiring with }
 
 end Germ

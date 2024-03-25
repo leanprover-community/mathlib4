@@ -45,7 +45,7 @@ section IsScalarTower
 
 variable [SMul 𝕜 𝕜'] [SMul 𝕜 E] [SMul 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 
-instance instIsScalarTower : IsScalarTower 𝕜≥0 𝕜' E :=
+instance instIsScalarTower : IsScalarTower 𝕜≥0 𝕜' E := fast_instance%
   SMul.comp.isScalarTower ↑Nonneg.coeRingHom
 
 end IsScalarTower
@@ -64,7 +64,7 @@ section OrderedSMul
 
 variable [OrderedAddCommMonoid E] [SMulWithZero 𝕜 E] [hE : OrderedSMul 𝕜 E]
 
-instance instOrderedSMul : OrderedSMul 𝕜≥0 E :=
+instance instOrderedSMul : OrderedSMul 𝕜≥0 E := fast_instance%
   ⟨hE.1, hE.2⟩
 
 end OrderedSMul
@@ -74,7 +74,7 @@ section Module
 variable [AddCommMonoid E] [Module 𝕜 E]
 
 /-- A module over an ordered semiring is also a module over just the non-negative scalars. -/
-instance instModule : Module 𝕜≥0 E :=
+instance instModule : Module 𝕜≥0 E := fast_instance%
   Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
 
 end Module

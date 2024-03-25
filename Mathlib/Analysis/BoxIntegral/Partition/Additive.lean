@@ -89,23 +89,23 @@ theorem sum_partition_boxes (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π 
 #align box_integral.box_additive_map.sum_partition_boxes BoxIntegral.BoxAdditiveMap.sum_partition_boxes
 
 @[simps (config := .asFn)]
-instance : Zero (ι →ᵇᵃ[I₀] M) :=
+instance : Zero (ι →ᵇᵃ[I₀] M) := fast_instance%
   ⟨⟨0, fun _ _ _ _ => sum_const_zero⟩⟩
 
-instance : Inhabited (ι →ᵇᵃ[I₀] M) :=
+instance : Inhabited (ι →ᵇᵃ[I₀] M) := fast_instance%
   ⟨0⟩
 
-instance : Add (ι →ᵇᵃ[I₀] M) :=
+instance : Add (ι →ᵇᵃ[I₀] M) := fast_instance%
   ⟨fun f g =>
     ⟨f + g, fun I hI π hπ => by
       simp only [Pi.add_apply, sum_add_distrib, sum_partition_boxes _ hI hπ]⟩⟩
 
-instance {R} [Monoid R] [DistribMulAction R M] : SMul R (ι →ᵇᵃ[I₀] M) :=
+instance {R} [Monoid R] [DistribMulAction R M] : SMul R (ι →ᵇᵃ[I₀] M) := fast_instance%
   ⟨fun r f =>
     ⟨r • (f : Box ι → M), fun I hI π hπ => by
       simp only [Pi.smul_apply, ← smul_sum, sum_partition_boxes _ hI hπ]⟩⟩
 
-instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
+instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) := fast_instance%
   Function.Injective.addCommMonoid _ coe_injective rfl (fun _ _ => rfl) fun _ _ => rfl
 
 @[simp]

@@ -546,29 +546,29 @@ namespace UpperSet
 
 variable {S : Set (UpperSet α)} {s t : UpperSet α} {a : α}
 
-instance : Sup (UpperSet α) :=
+instance : Sup (UpperSet α) := fast_instance%
   ⟨fun s t => ⟨s ∩ t, s.upper.inter t.upper⟩⟩
 
-instance : Inf (UpperSet α) :=
+instance : Inf (UpperSet α) := fast_instance%
   ⟨fun s t => ⟨s ∪ t, s.upper.union t.upper⟩⟩
 
-instance : Top (UpperSet α) :=
+instance : Top (UpperSet α) := fast_instance%
   ⟨⟨∅, isUpperSet_empty⟩⟩
 
-instance : Bot (UpperSet α) :=
+instance : Bot (UpperSet α) := fast_instance%
   ⟨⟨univ, isUpperSet_univ⟩⟩
 
-instance : SupSet (UpperSet α) :=
+instance : SupSet (UpperSet α) := fast_instance%
   ⟨fun S => ⟨⋂ s ∈ S, ↑s, isUpperSet_iInter₂ fun s _ => s.upper⟩⟩
 
-instance : InfSet (UpperSet α) :=
+instance : InfSet (UpperSet α) := fast_instance%
   ⟨fun S => ⟨⋃ s ∈ S, ↑s, isUpperSet_iUnion₂ fun s _ => s.upper⟩⟩
 
-instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
+instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) := fast_instance%
   (toDual.injective.comp SetLike.coe_injective).completelyDistribLattice _ (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
 
-instance : Inhabited (UpperSet α) :=
+instance : Inhabited (UpperSet α) := fast_instance%
   ⟨⊥⟩
 
 @[simp 1100, norm_cast]
@@ -700,29 +700,29 @@ namespace LowerSet
 
 variable {S : Set (LowerSet α)} {s t : LowerSet α} {a : α}
 
-instance : Sup (LowerSet α) :=
+instance : Sup (LowerSet α) := fast_instance%
   ⟨fun s t => ⟨s ∪ t, fun _ _ h => Or.imp (s.lower h) (t.lower h)⟩⟩
 
-instance : Inf (LowerSet α) :=
+instance : Inf (LowerSet α) := fast_instance%
   ⟨fun s t => ⟨s ∩ t, fun _ _ h => And.imp (s.lower h) (t.lower h)⟩⟩
 
-instance : Top (LowerSet α) :=
+instance : Top (LowerSet α) := fast_instance%
   ⟨⟨univ, fun _ _ _ => id⟩⟩
 
-instance : Bot (LowerSet α) :=
+instance : Bot (LowerSet α) := fast_instance%
   ⟨⟨∅, fun _ _ _ => id⟩⟩
 
-instance : SupSet (LowerSet α) :=
+instance : SupSet (LowerSet α) := fast_instance%
   ⟨fun S => ⟨⋃ s ∈ S, ↑s, isLowerSet_iUnion₂ fun s _ => s.lower⟩⟩
 
-instance : InfSet (LowerSet α) :=
+instance : InfSet (LowerSet α) := fast_instance%
   ⟨fun S => ⟨⋂ s ∈ S, ↑s, isLowerSet_iInter₂ fun s _ => s.lower⟩⟩
 
-instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
+instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) := fast_instance%
   SetLike.coe_injective.completelyDistribLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ => rfl) rfl rfl
 
-instance : Inhabited (LowerSet α) :=
+instance : Inhabited (LowerSet α) := fast_instance%
   ⟨⊥⟩
 
 @[norm_cast] lemma coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t := Iff.rfl
@@ -1022,20 +1022,20 @@ end LE
 section LinearOrder
 variable [LinearOrder α]
 
-instance UpperSet.isTotal_le : IsTotal (UpperSet α) (· ≤ ·) := ⟨fun s t => t.upper.total s.upper⟩
+instance UpperSet.isTotal_le : IsTotal (UpperSet α) (· ≤ ·) := fast_instance% ⟨fun s t => t.upper.total s.upper⟩
 #align upper_set.is_total_le UpperSet.isTotal_le
 
-instance LowerSet.isTotal_le : IsTotal (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
+instance LowerSet.isTotal_le : IsTotal (LowerSet α) (· ≤ ·) := fast_instance% ⟨fun s t => s.lower.total t.lower⟩
 #align lower_set.is_total_le LowerSet.isTotal_le
 
-noncomputable instance : CompleteLinearOrder (UpperSet α) :=
+noncomputable instance : CompleteLinearOrder (UpperSet α) := fast_instance%
   { UpperSet.completelyDistribLattice with
     le_total := IsTotal.total
     decidableLE := Classical.decRel _
     decidableEq := Classical.decRel _
     decidableLT := Classical.decRel _ }
 
-noncomputable instance : CompleteLinearOrder (LowerSet α) :=
+noncomputable instance : CompleteLinearOrder (LowerSet α) := fast_instance%
   { LowerSet.completelyDistribLattice with
     le_total := IsTotal.total
     decidableLE := Classical.decRel _

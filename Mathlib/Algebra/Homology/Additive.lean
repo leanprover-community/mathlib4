@@ -29,25 +29,25 @@ variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
 
 namespace HomologicalComplex
 
-instance : Zero (C ⟶ D) :=
+instance : Zero (C ⟶ D) := fast_instance%
   ⟨{ f := fun i => 0 }⟩
 
-instance : Add (C ⟶ D) :=
+instance : Add (C ⟶ D) := fast_instance%
   ⟨fun f g => { f := fun i => f.f i + g.f i }⟩
 
-instance : Neg (C ⟶ D) :=
+instance : Neg (C ⟶ D) := fast_instance%
   ⟨fun f => { f := fun i => -f.f i }⟩
 
-instance : Sub (C ⟶ D) :=
+instance : Sub (C ⟶ D) := fast_instance%
   ⟨fun f g => { f := fun i => f.f i - g.f i }⟩
 
-instance hasNatScalar : SMul ℕ (C ⟶ D) :=
+instance hasNatScalar : SMul ℕ (C ⟶ D) := fast_instance%
   ⟨fun n f =>
     { f := fun i => n • f.f i
       comm' := fun i j _ => by simp [Preadditive.nsmul_comp, Preadditive.comp_nsmul] }⟩
 #align homological_complex.has_nat_scalar HomologicalComplex.hasNatScalar
 
-instance hasIntScalar : SMul ℤ (C ⟶ D) :=
+instance hasIntScalar : SMul ℤ (C ⟶ D) := fast_instance%
   ⟨fun n f =>
     { f := fun i => n • f.f i
       comm' := fun i j _ => by simp [Preadditive.zsmul_comp, Preadditive.comp_zsmul] }⟩
@@ -83,7 +83,7 @@ theorem zsmul_f_apply (n : ℤ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f
   rfl
 #align homological_complex.zsmul_f_apply HomologicalComplex.zsmul_f_apply
 
-instance : AddCommGroup (C ⟶ D) :=
+instance : AddCommGroup (C ⟶ D) := fast_instance%
   Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
     (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat)
 

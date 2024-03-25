@@ -76,11 +76,11 @@ its category structure.
 def Skeleton : Type u₁ := InducedCategory C Quotient.out
 #align category_theory.skeleton CategoryTheory.Skeleton
 
-instance [Inhabited C] : Inhabited (Skeleton C) :=
+instance [Inhabited C] : Inhabited (Skeleton C) := fast_instance%
   ⟨⟦default⟧⟩
 
 -- Porting note: previously `Skeleton` used `deriving Category`
-noncomputable instance : Category (Skeleton C) := by
+noncomputable instance : Category (Skeleton C) := fast_instance% by
   apply InducedCategory.category
 
 /-- The functor from the skeleton of `C` to `C`. -/
@@ -90,15 +90,15 @@ noncomputable def fromSkeleton : Skeleton C ⥤ C :=
 #align category_theory.from_skeleton CategoryTheory.fromSkeleton
 
 -- Porting note: previously `fromSkeleton` used `deriving Faithful, Full`
-noncomputable instance : Full <| fromSkeleton C := by
+noncomputable instance : Full <| fromSkeleton C := fast_instance% by
   apply InducedCategory.full
-noncomputable instance : Faithful <| fromSkeleton C := by
+noncomputable instance : Faithful <| fromSkeleton C := fast_instance% by
   apply InducedCategory.faithful
 
-instance : EssSurj (fromSkeleton C) where mem_essImage X := ⟨Quotient.mk' X, Quotient.mk_out X⟩
+instance : EssSurj (fromSkeleton C) where mem_essImage X := fast_instance% ⟨Quotient.mk' X, Quotient.mk_out X⟩
 
 -- Porting note: named this instance
-noncomputable instance fromSkeleton.isEquivalence : IsEquivalence (fromSkeleton C) :=
+noncomputable instance fromSkeleton.isEquivalence : IsEquivalence (fromSkeleton C) := fast_instance%
   Equivalence.ofFullyFaithfullyEssSurj (fromSkeleton C)
 
 /-- The equivalence between the skeleton and the category itself. -/
@@ -142,7 +142,7 @@ def ThinSkeleton : Type u₁ :=
   Quotient (isIsomorphicSetoid C)
 #align category_theory.thin_skeleton CategoryTheory.ThinSkeleton
 
-instance inhabitedThinSkeleton [Inhabited C] : Inhabited (ThinSkeleton C) :=
+instance inhabitedThinSkeleton [Inhabited C] : Inhabited (ThinSkeleton C) := fast_instance%
   ⟨@Quotient.mk' C (isIsomorphicSetoid C) default⟩
 #align category_theory.inhabited_thin_skeleton CategoryTheory.inhabitedThinSkeleton
 
@@ -179,7 +179,7 @@ some of the statements can be shown without this assumption.
 namespace ThinSkeleton
 
 /-- The thin skeleton is thin. -/
-instance thin : Quiver.IsThin (ThinSkeleton C) := fun _ _ =>
+instance thin : Quiver.IsThin (ThinSkeleton C) := fast_instance% fun _ _ =>
   ⟨by
     rintro ⟨⟨f₁⟩⟩ ⟨⟨_⟩⟩
     rfl⟩
@@ -284,7 +284,7 @@ theorem equiv_of_both_ways {X Y : C} (f : X ⟶ Y) (g : Y ⟶ X) : X ≈ Y :=
   ⟨iso_of_both_ways f g⟩
 #align category_theory.thin_skeleton.equiv_of_both_ways CategoryTheory.ThinSkeleton.equiv_of_both_ways
 
-instance thinSkeletonPartialOrder : PartialOrder (ThinSkeleton C) :=
+instance thinSkeletonPartialOrder : PartialOrder (ThinSkeleton C) := fast_instance%
   { CategoryTheory.ThinSkeleton.preorder C with
     le_antisymm :=
       Quotient.ind₂

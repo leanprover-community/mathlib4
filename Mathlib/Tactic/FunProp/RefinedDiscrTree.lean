@@ -147,7 +147,7 @@ private nonrec def Key.hash : Key → UInt64
   | .«forall»   => 9752
   | .proj s i a => mixHash (hash a) $ mixHash (hash s) (hash i)
 
-instance : Hashable Key := ⟨Key.hash⟩
+instance : Hashable Key := fast_instance% ⟨Key.hash⟩
 
 /-- Constructor index used for ordering `Key`.
 Note that the index of the star pattern is 0, so that when looking up in a `Trie`,
@@ -175,8 +175,8 @@ private def Key.lt : Key → Key → Bool
     (s₁ == s₂ && (i₁ < i₂ || (i₁ == i₂ && a₁ < a₂)))
   | k₁,             k₂             => k₁.ctorIdx < k₂.ctorIdx
 
-instance : LT Key := ⟨fun a b => Key.lt a b⟩
-instance (a b : Key) : Decidable (a < b) := inferInstanceAs (Decidable (Key.lt a b))
+instance : LT Key := fast_instance% ⟨fun a b => Key.lt a b⟩
+instance (a b : Key) : Decidable (a < b) := fast_instance% inferInstanceAs (Decidable (Key.lt a b))
 
 private def Key.format : Key → Format
   | .star i                 => "*" ++ Std.format i
@@ -191,7 +191,7 @@ private def Key.format : Key → Format
   | .forall                 => "∀"
   | .proj s i a             => "⟨" ++ Std.format s ++"."++ Std.format i ++", "++ Std.format a ++ "⟩"
 
-instance : ToFormat Key := ⟨Key.format⟩
+instance : ToFormat Key := fast_instance% ⟨Key.format⟩
 
 /-- Return the number of arguments that the `Key` takes. -/
 def Key.arity : Key → Nat
@@ -213,7 +213,7 @@ inductive Trie (α : Type) where
   | path (keys : Array Key) (child : Trie α)
   /-- Leaf of the Trie. `values` is an `Array` of size at least 1. -/
   | values (vs : Array α)
-instance : Inhabited (Trie α) := ⟨.node #[]⟩
+instance : Inhabited (Trie α) := fast_instance% ⟨.node #[]⟩
 
 /-- `Trie.path` constructor that only inserts the path if it is non-empty. -/
 def Trie.mkPath (keys : Array Key) (child : Trie α) :=
@@ -253,14 +253,14 @@ where
   prepend (k : Key) (t : Trie α) : Trie α := match t with
     | .path ks c => .path (#[k] ++ ks) c
     | t => .path #[k] t
-instance [ToFormat α] : ToFormat (Trie α) := ⟨Trie.format⟩
+instance [ToFormat α] : ToFormat (Trie α) := fast_instance% ⟨Trie.format⟩
 
 
 /-- Discrimination tree. It is an index from expressions to values of type `α`. -/
 structure _root_.Mathlib.Meta.FunProp.RefinedDiscrTree (α : Type) where
   /-- The underlying `PersistentHashMap` of a `RefinedDiscrTree`. -/
   root : PersistentHashMap Key (Trie α) := {}
-instance : Inhabited (RefinedDiscrTree α) := ⟨{}⟩
+instance : Inhabited (RefinedDiscrTree α) := fast_instance% ⟨{}⟩
 
 private partial def format [ToFormat α] (d : RefinedDiscrTree α) : Format :=
   let (_, r) := d.root.foldl
@@ -271,7 +271,7 @@ private partial def format [ToFormat α] (d : RefinedDiscrTree α) : Format :=
     (true, Format.nil)
   Format.group r
 
-instance [ToFormat α] : ToFormat (RefinedDiscrTree α) := ⟨format⟩
+instance [ToFormat α] : ToFormat (RefinedDiscrTree α) := fast_instance% ⟨format⟩
 
 
 /-- `DTExpr` is a simplified form of `Expr`.
@@ -317,7 +317,7 @@ where
       then .nil
       else " " ++ Format.paren (@Format.joinSep _ ⟨DTExpr.format⟩ as.toList ", ")
 
-instance : ToFormat DTExpr := ⟨DTExpr.format⟩
+instance : ToFormat DTExpr := fast_instance% ⟨DTExpr.format⟩
 
 /-- Return the size of the `DTExpr`. This is used for calculating the matching score when two
 expressions are equal.

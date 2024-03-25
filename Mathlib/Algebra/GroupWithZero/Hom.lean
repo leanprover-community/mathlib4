@@ -84,7 +84,7 @@ def MonoidWithZeroHomClass.toMonoidWithZeroHom [FunLike F α β] [MonoidWithZero
 
 /-- Any type satisfying `MonoidWithZeroHomClass` can be cast into `MonoidWithZeroHom` via
 `MonoidWithZeroHomClass.toMonoidWithZeroHom`. -/
-instance [FunLike F α β] [MonoidWithZeroHomClass F α β] : CoeTC F (α →*₀ β) :=
+instance [FunLike F α β] [MonoidWithZeroHomClass F α β] : CoeTC F (α →*₀ β) := fast_instance%
   ⟨MonoidWithZeroHomClass.toMonoidWithZeroHom⟩
 
 namespace MonoidWithZeroHom
@@ -102,7 +102,7 @@ instance monoidWithZeroHomClass : MonoidWithZeroHomClass (α →*₀ β) α β w
   map_zero f := f.map_zero'
 #align monoid_with_zero_hom.monoid_with_zero_hom_class MonoidWithZeroHom.monoidWithZeroHomClass
 
-instance [Subsingleton α] : Subsingleton (α →*₀ β) := .of_oneHomClass
+instance [Subsingleton α] : Subsingleton (α →*₀ β) := fast_instance% .of_oneHomClass
 
 variable [FunLike F α β]
 
@@ -117,7 +117,7 @@ section Coes
 attribute [coe] toMonoidHom
 
 /-- `MonoidWithZeroHom` down-cast to a `MonoidHom`, forgetting the 0-preserving property. -/
-instance coeToMonoidHom : Coe (α →*₀ β) (α →* β) :=
+instance coeToMonoidHom : Coe (α →*₀ β) (α →* β) := fast_instance%
   ⟨toMonoidHom⟩
 #align monoid_with_zero_hom.has_coe_to_monoid_hom MonoidWithZeroHom.coeToMonoidHom
 
@@ -247,7 +247,7 @@ lemma toZeroHom_injective : Injective (toZeroHom : (α →*₀ β) → ZeroHom �
 #align monoid_with_zero_hom.id_comp MonoidWithZeroHom.id_comp
 
 -- Unlike the other homs, `MonoidWithZeroHom` does not have a `1` or `0`
-instance : Inhabited (α →*₀ α) := ⟨id α⟩
+instance : Inhabited (α →*₀ α) := fast_instance% ⟨id α⟩
 
 /-- Given two monoid with zero morphisms `f`, `g` to a commutative monoid with zero, `f * g` is the
 monoid with zero morphism sending `x` to `f x * g x`. -/

@@ -47,10 +47,10 @@ def punitCoconeIsColimit {c : Cocone F} : IsColimit c where
   desc := fun s => eqToHom (by simp [eq_iff_true_of_subsingleton])
 #align category_theory.limits.punit_cocone_is_colimit CategoryTheory.Limits.punitCoconeIsColimit
 
-instance : HasLimitsOfSize.{v', v} (Discrete PUnit) :=
+instance : HasLimitsOfSize.{v', v} (Discrete PUnit) := fast_instance%
   ⟨fun _ _ => ⟨fun _ => ⟨punitCone, punitConeIsLimit⟩⟩⟩
 
-instance : HasColimitsOfSize.{v', v} (Discrete PUnit) :=
+instance : HasColimitsOfSize.{v', v} (Discrete PUnit) := fast_instance%
   ⟨fun _ _ => ⟨fun _ => ⟨punitCocone, punitCoconeIsColimit⟩⟩⟩
 
 end CategoryTheory.Limits

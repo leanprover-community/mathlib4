@@ -83,17 +83,17 @@ theorem lex_swap : Lex (Function.swap r) s a b ↔ Lex r (fun i => Function.swap
       exacts [Lex.left _ _ h, Lex.right _ _ h]
 #align sigma.lex_swap Sigma.lex_swap
 
-instance [∀ i, IsRefl (α i) (s i)] : IsRefl _ (Lex r s) :=
+instance [∀ i, IsRefl (α i) (s i)] : IsRefl _ (Lex r s) := fast_instance%
   ⟨fun ⟨_, _⟩ => Lex.right _ _ <| refl _⟩
 
-instance [IsIrrefl ι r] [∀ i, IsIrrefl (α i) (s i)] : IsIrrefl _ (Lex r s) :=
+instance [IsIrrefl ι r] [∀ i, IsIrrefl (α i) (s i)] : IsIrrefl _ (Lex r s) := fast_instance%
   ⟨by
     rintro _ (⟨a, b, hi⟩ | ⟨a, b, ha⟩)
     · exact irrefl _ hi
     · exact irrefl _ ha
       ⟩
 
-instance [IsTrans ι r] [∀ i, IsTrans (α i) (s i)] : IsTrans _ (Lex r s) :=
+instance [IsTrans ι r] [∀ i, IsTrans (α i) (s i)] : IsTrans _ (Lex r s) := fast_instance%
   ⟨by
     rintro _ _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩) (⟨_, c, hk⟩ | ⟨_, c, hc⟩)
     · exact Lex.left _ _ (_root_.trans hij hk)
@@ -101,7 +101,7 @@ instance [IsTrans ι r] [∀ i, IsTrans (α i) (s i)] : IsTrans _ (Lex r s) :=
     · exact Lex.left _ _ hk
     · exact Lex.right _ _ (_root_.trans hab hc)⟩
 
-instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
+instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) := fast_instance%
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩)
     · exact Lex.left _ _ (symm hij)
@@ -110,7 +110,7 @@ instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
 
 attribute [local instance] IsAsymm.isIrrefl
 
-instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s) :=
+instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s) := fast_instance%
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩) (⟨_, _, hji⟩ | ⟨_, _, hba⟩)
     · exact (asymm hij hji).elim
@@ -118,7 +118,7 @@ instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s
     · exact (irrefl _ hji).elim
     · exact ext rfl (heq_of_eq <| antisymm hab hba)⟩
 
-instance [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r s) :=
+instance [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r s) := fast_instance%
   ⟨by
     rintro ⟨i, a⟩ ⟨j, b⟩
     obtain hij | rfl | hji := trichotomous_of r i j
@@ -128,7 +128,7 @@ instance [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r 
       · exact Or.inr (Lex.right _ _ hba)
     · exact Or.inr (Lex.left _ _ hji)⟩
 
-instance [IsTrichotomous ι r] [∀ i, IsTrichotomous (α i) (s i)] : IsTrichotomous _ (Lex r s) :=
+instance [IsTrichotomous ι r] [∀ i, IsTrichotomous (α i) (s i)] : IsTrichotomous _ (Lex r s) := fast_instance%
   ⟨by
     rintro ⟨i, a⟩ ⟨j, b⟩
     obtain hij | rfl | hji := trichotomous_of r i j

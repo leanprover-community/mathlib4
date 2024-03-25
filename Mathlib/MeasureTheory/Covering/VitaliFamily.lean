@@ -235,7 +235,7 @@ theorem mem_filterAt_iff {x : α} {s : Set (Set α)} :
   simp only [(v.filterAt_basis_closedBall x).mem_iff, ← and_imp, subset_def, mem_setOf]
 #align vitali_family.mem_filter_at_iff VitaliFamily.mem_filterAt_iff
 
-instance filterAt_neBot (x : α) : (v.filterAt x).NeBot :=
+instance filterAt_neBot (x : α) : (v.filterAt x).NeBot := fast_instance%
   (v.filterAt_basis_closedBall x).neBot_iff.2 <| v.nontrivial _ _
 #align vitali_family.filter_at_ne_bot VitaliFamily.filterAt_neBot
 

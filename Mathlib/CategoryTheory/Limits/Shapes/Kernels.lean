@@ -294,7 +294,7 @@ theorem kernel.lift_zero {W : C} {h} : kernel.lift f (0 : W ⟶ X) h = 0 := by
   ext; simp
 #align category_theory.limits.kernel.lift_zero CategoryTheory.Limits.kernel.lift_zero
 
-instance kernel.lift_mono {W : C} (k : W ⟶ X) (h : k ≫ f = 0) [Mono k] : Mono (kernel.lift f k h) :=
+instance kernel.lift_mono {W : C} (k : W ⟶ X) (h : k ≫ f = 0) [Mono k] : Mono (kernel.lift f k h) := fast_instance%
   ⟨fun {Z} g g' w => by
     replace w := w =≫ kernel.ι f
     simp only [Category.assoc, kernel.lift_ι] at w
@@ -348,7 +348,7 @@ def kernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ≅ X') (q 
 #align category_theory.limits.kernel.map_iso CategoryTheory.Limits.kernel.mapIso
 
 /-- Every kernel of the zero morphism is an isomorphism -/
-instance kernel.ι_zero_isIso : IsIso (kernel.ι (0 : X ⟶ Y)) :=
+instance kernel.ι_zero_isIso : IsIso (kernel.ι (0 : X ⟶ Y)) := fast_instance%
   equalizer.ι_of_self _
 #align category_theory.limits.kernel.ι_zero_is_iso CategoryTheory.Limits.kernel.ι_zero_isIso
 
@@ -849,7 +849,7 @@ def cokernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ≅ X')
 #align category_theory.limits.cokernel.map_iso CategoryTheory.Limits.cokernel.mapIso
 
 /-- The cokernel of the zero morphism is an isomorphism -/
-instance cokernel.π_zero_isIso : IsIso (cokernel.π (0 : X ⟶ Y)) :=
+instance cokernel.π_zero_isIso : IsIso (cokernel.π (0 : X ⟶ Y)) := fast_instance%
   coequalizer.π_of_self _
 #align category_theory.limits.cokernel.π_zero_is_iso CategoryTheory.Limits.cokernel.π_zero_isIso
 

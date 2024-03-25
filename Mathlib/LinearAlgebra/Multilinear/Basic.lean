@@ -184,7 +184,7 @@ theorem map_zero [Nonempty ι] : f 0 = 0 := by
   exact map_coord_zero f i rfl
 #align multilinear_map.map_zero MultilinearMap.map_zero
 
-instance : Add (MultilinearMap R M₁ M₂) :=
+instance : Add (MultilinearMap R M₁ M₂) := fast_instance%
   ⟨fun f f' =>
     ⟨fun x => f x + f' x, fun m i x y => by simp [add_left_comm, add_assoc], fun m i c x => by
       simp [smul_add]⟩⟩
@@ -194,10 +194,10 @@ theorem add_apply (m : ∀ i, M₁ i) : (f + f') m = f m + f' m :=
   rfl
 #align multilinear_map.add_apply MultilinearMap.add_apply
 
-instance : Zero (MultilinearMap R M₁ M₂) :=
+instance : Zero (MultilinearMap R M₁ M₂) := fast_instance%
   ⟨⟨fun _ => 0, fun _ i _ _ => by simp, fun _ i c _ => by simp⟩⟩
 
-instance : Inhabited (MultilinearMap R M₁ M₂) :=
+instance : Inhabited (MultilinearMap R M₁ M₂) := fast_instance%
   ⟨0⟩
 
 @[simp]
@@ -210,7 +210,7 @@ section SMul
 variable {R' A : Type*} [Monoid R'] [Semiring A] [∀ i, Module A (M₁ i)] [DistribMulAction R' M₂]
   [Module A M₂] [SMulCommClass A R' M₂]
 
-instance : SMul R' (MultilinearMap A M₁ M₂) :=
+instance : SMul R' (MultilinearMap A M₁ M₂) := fast_instance%
   ⟨fun c f =>
     ⟨fun m => c • f m, fun m i x y => by simp [smul_add], fun l i x d => by
       simp [← smul_comm x c (_ : M₂)]⟩⟩
@@ -226,7 +226,7 @@ theorem coe_smul (c : R') (f : MultilinearMap A M₁ M₂) : ⇑(c • f) = c �
 
 end SMul
 
-instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) :=
+instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align multilinear_map.add_comm_monoid MultilinearMap.addCommMonoid
 
@@ -896,10 +896,10 @@ variable [Semiring S] [Module S M₂] [SMulCommClass R S M₂]
 
 /-- The space of multilinear maps over an algebra over `R` is a module over `R`, for the pointwise
 addition and scalar multiplication. -/
-instance : Module S (MultilinearMap R M₁ M₂) :=
+instance : Module S (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.module _ coeAddMonoidHom fun _ _ ↦ rfl
 
-instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (MultilinearMap R M₁ M₂) :=
+instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
 
 variable (R S M₁ M₂ M₃)
@@ -1217,7 +1217,7 @@ section RangeAddCommGroup
 variable [Semiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommGroup M₂] [∀ i, Module R (M₁ i)]
   [Module R M₂] (f g : MultilinearMap R M₁ M₂)
 
-instance : Neg (MultilinearMap R M₁ M₂) :=
+instance : Neg (MultilinearMap R M₁ M₂) := fast_instance%
   ⟨fun f => ⟨fun m => -f m, fun m i x y => by simp [add_comm], fun m i c x => by simp⟩⟩
 
 @[simp]
@@ -1225,7 +1225,7 @@ theorem neg_apply (m : ∀ i, M₁ i) : (-f) m = -f m :=
   rfl
 #align multilinear_map.neg_apply MultilinearMap.neg_apply
 
-instance : Sub (MultilinearMap R M₁ M₂) :=
+instance : Sub (MultilinearMap R M₁ M₂) := fast_instance%
   ⟨fun f g =>
     ⟨fun m => f m - g m, fun m i x y => by
       simp only [MultilinearMap.map_add, sub_eq_add_neg, neg_add]
@@ -1238,7 +1238,7 @@ theorem sub_apply (m : ∀ i, M₁ i) : (f - g) m = f m - g m :=
   rfl
 #align multilinear_map.sub_apply MultilinearMap.sub_apply
 
-instance : AddCommGroup (MultilinearMap R M₁ M₂) :=
+instance : AddCommGroup (MultilinearMap R M₁ M₂) := fast_instance%
   { MultilinearMap.addCommMonoid with
     add_left_neg := fun a => MultilinearMap.ext fun v => add_left_neg _
     sub_eq_add_neg := fun a b => MultilinearMap.ext fun v => sub_eq_add_neg _ _

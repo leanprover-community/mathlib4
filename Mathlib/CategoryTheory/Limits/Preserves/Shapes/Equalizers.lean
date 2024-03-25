@@ -100,7 +100,7 @@ theorem PreservesEqualizer.iso_hom :
   rfl
 #align category_theory.limits.preserves_equalizer.iso_hom CategoryTheory.Limits.PreservesEqualizer.iso_hom
 
-instance : IsIso (equalizerComparison f g G) := by
+instance : IsIso (equalizerComparison f g G) := fast_instance% by
   rw [← PreservesEqualizer.iso_hom]
   infer_instance
 
@@ -184,11 +184,11 @@ theorem PreservesCoequalizer.iso_hom :
   rfl
 #align category_theory.limits.preserves_coequalizer.iso_hom CategoryTheory.Limits.PreservesCoequalizer.iso_hom
 
-instance : IsIso (coequalizerComparison f g G) := by
+instance : IsIso (coequalizerComparison f g G) := fast_instance% by
   rw [← PreservesCoequalizer.iso_hom]
   infer_instance
 
-instance map_π_epi : Epi (G.map (coequalizer.π f g)) :=
+instance map_π_epi : Epi (G.map (coequalizer.π f g)) := fast_instance%
   ⟨fun {W} h k => by
     rw [← ι_comp_coequalizerComparison]
     haveI : Epi (coequalizer.π (G.map f) (G.map g) ≫ coequalizerComparison f g G) := by

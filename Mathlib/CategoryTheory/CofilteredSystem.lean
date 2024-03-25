@@ -193,7 +193,7 @@ def toPreimages : J ⥤ Type v where
     rfl
 #align category_theory.functor.to_preimages CategoryTheory.Functor.toPreimages
 
-instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) :=
+instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) := fast_instance%
   fun _ => Subtype.finite
 #align category_theory.functor.to_preimages_finite CategoryTheory.Functor.toPreimages_finite
 
@@ -280,7 +280,7 @@ def toEventualRanges : J ⥤ Type v where
     rfl
 #align category_theory.functor.to_eventual_ranges CategoryTheory.Functor.toEventualRanges
 
-instance toEventualRanges_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite (F.toEventualRanges.obj j) :=
+instance toEventualRanges_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite (F.toEventualRanges.obj j) := fast_instance%
   fun _ => Subtype.finite
 #align category_theory.functor.to_eventual_ranges_finite CategoryTheory.Functor.toEventualRanges_finite
 

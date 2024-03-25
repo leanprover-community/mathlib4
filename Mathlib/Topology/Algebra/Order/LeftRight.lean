@@ -51,7 +51,7 @@ theorem nhdsWithin_Ici_neBot {a b : α} (H₂ : a ≤ b) : NeBot (𝓝[Ici a] b)
   nhdsWithin_neBot_of_mem H₂
 #align nhds_within_Ici_ne_bot nhdsWithin_Ici_neBot
 
-instance nhdsWithin_Ici_self_neBot (a : α) : NeBot (𝓝[≥] a) :=
+instance nhdsWithin_Ici_self_neBot (a : α) : NeBot (𝓝[≥] a) := fast_instance%
   nhdsWithin_Ici_neBot (le_refl a)
 #align nhds_within_Ici_self_ne_bot nhdsWithin_Ici_self_neBot
 
@@ -59,7 +59,7 @@ theorem nhdsWithin_Iic_neBot {a b : α} (H : a ≤ b) : NeBot (𝓝[Iic b] a) :=
   nhdsWithin_neBot_of_mem H
 #align nhds_within_Iic_ne_bot nhdsWithin_Iic_neBot
 
-instance nhdsWithin_Iic_self_neBot (a : α) : NeBot (𝓝[≤] a) :=
+instance nhdsWithin_Iic_self_neBot (a : α) : NeBot (𝓝[≤] a) := fast_instance%
   nhdsWithin_Iic_neBot (le_refl a)
 #align nhds_within_Iic_self_ne_bot nhdsWithin_Iic_self_neBot
 

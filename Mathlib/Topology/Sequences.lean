@@ -200,7 +200,7 @@ theorem QuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y} (hf : Quot
 #align quotient_map.sequential_space QuotientMap.sequentialSpace
 
 /-- The quotient of a sequential space is a sequential space. -/
-instance [SequentialSpace X] {s : Setoid X} : SequentialSpace (Quotient s) :=
+instance [SequentialSpace X] {s : Setoid X} : SequentialSpace (Quotient s) := fast_instance%
   quotientMap_quot_mk.sequentialSpace
 
 end TopologicalSpace

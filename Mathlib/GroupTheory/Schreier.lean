@@ -126,7 +126,7 @@ theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (
 
 /-- **Schreier's Lemma**: A finite index subgroup of a finitely generated
   group is finitely generated. -/
-instance fg_of_index_ne_zero [hG : Group.FG G] [FiniteIndex H] : Group.FG H := by
+instance fg_of_index_ne_zero [hG : Group.FG G] [FiniteIndex H] : Group.FG H := fast_instance% by
   obtain ⟨S, hS⟩ := hG.1
   obtain ⟨T, -, hT⟩ := exists_finset_card_le_mul H hS
   exact ⟨⟨T, hT⟩⟩
@@ -201,7 +201,7 @@ theorem card_commutator_le_of_finite_commutatorSet [Finite (commutatorSet G)] :
 #align subgroup.card_commutator_le_of_finite_commutator_set Subgroup.card_commutator_le_of_finite_commutatorSet
 
 /-- A theorem of Schur: A group with finitely many commutators has finite commutator subgroup. -/
-instance [Finite (commutatorSet G)] : Finite (_root_.commutator G) := by
+instance [Finite (commutatorSet G)] : Finite (_root_.commutator G) := fast_instance% by
   have h2 := card_commutator_dvd_index_center_pow (closureCommutatorRepresentatives G)
   refine' Nat.finite_of_card_ne_zero fun h => _
   rw [card_commutator_closureCommutatorRepresentatives, h, zero_dvd_iff] at h2

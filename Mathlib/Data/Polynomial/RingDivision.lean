@@ -375,7 +375,7 @@ section Ring
 
 variable [Ring R] [IsDomain R] {p q : R[X]}
 
-instance : IsDomain R[X] :=
+instance : IsDomain R[X] := fast_instance%
   NoZeroDivisors.to_isDomain _
 
 end Ring

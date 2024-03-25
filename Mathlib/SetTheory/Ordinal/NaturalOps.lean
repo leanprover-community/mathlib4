@@ -58,9 +58,9 @@ def NatOrdinal : Type _ :=
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 #align nat_ordinal NatOrdinal
 
-instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
+instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := fast_instance% {Ordinal.linearOrder with}
 
-instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
+instance NatOrdinal.succOrder : SuccOrder NatOrdinal := fast_instance% {Ordinal.succOrder with}
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
@@ -93,10 +93,10 @@ theorem lt_wf : @WellFounded NatOrdinal (· < ·) :=
   Ordinal.lt_wf
 #align nat_ordinal.lt_wf NatOrdinal.lt_wf
 
-instance : WellFoundedLT NatOrdinal :=
+instance : WellFoundedLT NatOrdinal := fast_instance%
   Ordinal.wellFoundedLT
 
-instance : IsWellOrder NatOrdinal (· < ·) :=
+instance : IsWellOrder NatOrdinal (· < ·) := fast_instance%
   Ordinal.isWellOrder
 
 @[simp]
@@ -356,14 +356,14 @@ namespace NatOrdinal
 
 open Ordinal NaturalOps
 
-instance : Add NatOrdinal :=
+instance : Add NatOrdinal := fast_instance%
   ⟨nadd⟩
 
-instance add_covariantClass_lt : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· < ·) :=
+instance add_covariantClass_lt : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· < ·) := fast_instance%
   ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩
 #align nat_ordinal.add_covariant_class_lt NatOrdinal.add_covariantClass_lt
 
-instance add_covariantClass_le : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· ≤ ·) :=
+instance add_covariantClass_le : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· ≤ ·) := fast_instance%
   ⟨fun a _ _ h => nadd_le_nadd_left h a⟩
 #align nat_ordinal.add_covariant_class_le NatOrdinal.add_covariantClass_le
 
@@ -374,7 +374,7 @@ instance add_contravariantClass_le :
     exact h.not_lt (add_lt_add_left h' a)⟩
 #align nat_ordinal.add_contravariant_class_le NatOrdinal.add_contravariantClass_le
 
-instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
+instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal := fast_instance%
   { NatOrdinal.linearOrder with
     add := (· + ·)
     add_assoc := nadd_assoc
@@ -386,7 +386,7 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
     add_comm := nadd_comm
     nsmul := nsmulRec }
 
-instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
+instance addMonoidWithOne : AddMonoidWithOne NatOrdinal := fast_instance%
   AddMonoidWithOne.unary
 
 @[simp]
@@ -762,12 +762,12 @@ end Ordinal
 
 open Ordinal
 
-instance : Mul NatOrdinal :=
+instance : Mul NatOrdinal := fast_instance%
   ⟨nmul⟩
 
 -- Porting note: had to add universe annotations to ensure that the
 -- two sources lived in the same universe.
-instance : OrderedCommSemiring NatOrdinal.{u} :=
+instance : OrderedCommSemiring NatOrdinal.{u} := fast_instance%
   { NatOrdinal.orderedCancelAddCommMonoid.{u},
     NatOrdinal.linearOrder.{u} with
     mul := (· * ·)

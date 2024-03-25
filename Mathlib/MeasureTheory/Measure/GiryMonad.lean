@@ -47,7 +47,7 @@ namespace Measure
 variable [MeasurableSpace α] [MeasurableSpace β]
 
 /-- Measurability structure on `Measure`: Measures are measurable w.r.t. all projections -/
-instance instMeasurableSpace : MeasurableSpace (Measure α) :=
+instance instMeasurableSpace : MeasurableSpace (Measure α) := fast_instance%
   ⨆ (s : Set α) (_ : MeasurableSet s), (borel ℝ≥0∞).comap fun μ => μ s
 #align measure_theory.measure.measurable_space MeasureTheory.Measure.instMeasurableSpace
 
@@ -62,7 +62,7 @@ theorem measurable_of_measurable_coe (f : β → Measure α)
       MeasurableSpace.comap_le_iff_le_map.2 <| by rw [MeasurableSpace.map_comp]; exact h s hs
 #align measure_theory.measure.measurable_of_measurable_coe MeasureTheory.Measure.measurable_of_measurable_coe
 
-instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : MeasurableAdd₂ (Measure α) := by
+instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : MeasurableAdd₂ (Measure α) := fast_instance% by
   refine' ⟨Measure.measurable_of_measurable_coe _ fun s hs => _⟩
   simp_rw [Measure.coe_add, Pi.add_apply]
   refine' Measurable.add _ _

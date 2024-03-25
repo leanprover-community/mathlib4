@@ -30,7 +30,7 @@ namespace QuadraticModuleCat
 
 open QuadraticForm
 
-instance : BraidedCategory (QuadraticModuleCat.{u} R) :=
+instance : BraidedCategory (QuadraticModuleCat.{u} R) := fast_instance%
   braidedCategoryOfFaithful (toModuleCatMonoidalFunctor R)
     (fun X Y => ofIso <| tensorComm X.form Y.form)
     (by aesop_cat)
@@ -41,10 +41,10 @@ variable (R) in
 def toModuleCatBraidedFunctor : BraidedFunctor (QuadraticModuleCat.{u} R) (ModuleCat.{u} R) where
   toMonoidalFunctor := toModuleCatMonoidalFunctor R
 
-instance : Faithful (toModuleCatBraidedFunctor R).toFunctor :=
+instance : Faithful (toModuleCatBraidedFunctor R).toFunctor := fast_instance%
   forget₂_faithful _ _
 
-instance instSymmetricCategory : SymmetricCategory (QuadraticModuleCat.{u} R) :=
+instance instSymmetricCategory : SymmetricCategory (QuadraticModuleCat.{u} R) := fast_instance%
   symmetricCategoryOfFaithful (toModuleCatBraidedFunctor R)
 
 end QuadraticModuleCat

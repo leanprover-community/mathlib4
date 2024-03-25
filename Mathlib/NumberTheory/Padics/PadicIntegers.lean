@@ -69,7 +69,7 @@ namespace PadicInt
 
 variable {p : ℕ} [Fact p.Prime]
 
-instance : Coe ℤ_[p] ℚ_[p] :=
+instance : Coe ℤ_[p] ℚ_[p] := fast_instance%
   ⟨Subtype.val⟩
 
 theorem ext {x y : ℤ_[p]} : (x : ℚ_[p]) = y → x = y :=
@@ -95,24 +95,24 @@ theorem mem_subring_iff {x : ℚ_[p]} : x ∈ subring p ↔ ‖x‖ ≤ 1 := Iff
 variable {p}
 
 /-- Addition on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Add ℤ_[p] := (by infer_instance : Add (subring p))
+instance : Add ℤ_[p] := fast_instance% (by infer_instance : Add (subring p))
 
 /-- Multiplication on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Mul ℤ_[p] := (by infer_instance : Mul (subring p))
+instance : Mul ℤ_[p] := fast_instance% (by infer_instance : Mul (subring p))
 
 /-- Negation on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Neg ℤ_[p] := (by infer_instance : Neg (subring p))
+instance : Neg ℤ_[p] := fast_instance% (by infer_instance : Neg (subring p))
 
 /-- Subtraction on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Sub ℤ_[p] := (by infer_instance : Sub (subring p))
+instance : Sub ℤ_[p] := fast_instance% (by infer_instance : Sub (subring p))
 
 /-- Zero on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Zero ℤ_[p] := (by infer_instance : Zero (subring p))
+instance : Zero ℤ_[p] := fast_instance% (by infer_instance : Zero (subring p))
 
-instance : Inhabited ℤ_[p] := ⟨0⟩
+instance : Inhabited ℤ_[p] := fast_instance% ⟨0⟩
 
 /-- One on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : One ℤ_[p] := ⟨⟨1, by norm_num⟩⟩
+instance : One ℤ_[p] := fast_instance% ⟨⟨1, by norm_num⟩⟩
 
 @[simp]
 theorem mk_zero {h} : (⟨0, h⟩ : ℤ_[p]) = (0 : ℤ_[p]) := rfl
@@ -148,9 +148,9 @@ theorem coe_eq_zero (z : ℤ_[p]) : (z : ℚ_[p]) = 0 ↔ z = 0 := by rw [← co
 theorem coe_ne_zero (z : ℤ_[p]) : (z : ℚ_[p]) ≠ 0 ↔ z ≠ 0 := z.coe_eq_zero.not
 #align padic_int.coe_ne_zero PadicInt.coe_ne_zero
 
-instance : AddCommGroup ℤ_[p] := (by infer_instance : AddCommGroup (subring p))
+instance : AddCommGroup ℤ_[p] := fast_instance% (by infer_instance : AddCommGroup (subring p))
 
-instance instCommRing : CommRing ℤ_[p] := (by infer_instance : CommRing (subring p))
+instance instCommRing : CommRing ℤ_[p] := fast_instance% (by infer_instance : CommRing (subring p))
 
 @[simp, norm_cast]
 theorem coe_nat_cast (n : ℕ) : ((n : ℤ_[p]) : ℚ_[p]) = n := rfl
@@ -212,14 +212,14 @@ We now show that `ℤ_[p]` is a
 
 variable (p : ℕ) [Fact p.Prime]
 
-instance : MetricSpace ℤ_[p] := Subtype.metricSpace
+instance : MetricSpace ℤ_[p] := fast_instance% Subtype.metricSpace
 
-instance completeSpace : CompleteSpace ℤ_[p] :=
+instance completeSpace : CompleteSpace ℤ_[p] := fast_instance%
   have : IsClosed { x : ℚ_[p] | ‖x‖ ≤ 1 } := isClosed_le continuous_norm continuous_const
   this.completeSpace_coe
 #align padic_int.complete_space PadicInt.completeSpace
 
-instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
+instance : Norm ℤ_[p] := fast_instance% ⟨fun z => ‖(z : ℚ_[p])‖⟩
 
 variable {p}
 
@@ -228,13 +228,13 @@ theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
 variable (p)
 
-instance : NormedCommRing ℤ_[p] :=
+instance : NormedCommRing ℤ_[p] := fast_instance%
   { PadicInt.instCommRing with
     dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ => rfl
     norm_mul := by simp [norm_def]
     norm := norm }
 
-instance : NormOneClass ℤ_[p] :=
+instance : NormOneClass ℤ_[p] := fast_instance%
   ⟨norm_def.trans norm_one⟩
 
 instance isAbsoluteValue : IsAbsoluteValue fun z : ℤ_[p] => ‖z‖ where
@@ -246,7 +246,7 @@ instance isAbsoluteValue : IsAbsoluteValue fun z : ℤ_[p] => ‖z‖ where
 
 variable {p}
 
-instance : IsDomain ℤ_[p] := Function.Injective.isDomain (subring p).subtype Subtype.coe_injective
+instance : IsDomain ℤ_[p] := fast_instance% Function.Injective.isDomain (subring p).subtype Subtype.coe_injective
 
 end PadicInt
 
@@ -314,7 +314,7 @@ private def cauSeq_to_rat_cauSeq (f : CauSeq ℤ_[p] norm) : CauSeq ℚ_[p] fun 
 
 variable (p)
 
-instance complete : CauSeq.IsComplete ℤ_[p] norm :=
+instance complete : CauSeq.IsComplete ℤ_[p] norm := fast_instance%
   ⟨fun f =>
     have hqn : ‖CauSeq.lim (cauSeq_to_rat_cauSeq f)‖ ≤ 1 :=
       padicNormE_lim_le zero_lt_one fun _ => norm_le_one _
@@ -582,7 +582,7 @@ section Dvr
 /-! ### Discrete valuation ring -/
 
 
-instance : LocalRing ℤ_[p] :=
+instance : LocalRing ℤ_[p] := fast_instance%
   LocalRing.of_nonunits_add <| by simp only [mem_nonunits]; exact fun x y => norm_lt_one_add
 
 theorem p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
@@ -608,7 +608,7 @@ theorem prime_p : Prime (p : ℤ_[p]) := by
 theorem irreducible_p : Irreducible (p : ℤ_[p]) := Prime.irreducible prime_p
 #align padic_int.irreducible_p PadicInt.irreducible_p
 
-instance : DiscreteValuationRing ℤ_[p] :=
+instance : DiscreteValuationRing ℤ_[p] := fast_instance%
   DiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization
     ⟨p, irreducible_p, fun {x hx} =>
       ⟨x.valuation.natAbs, unitCoeff hx, by rw [mul_comm, ← unitCoeff_spec hx]⟩⟩
@@ -648,7 +648,7 @@ end Dvr
 
 section FractionRing
 
-instance algebra : Algebra ℤ_[p] ℚ_[p] :=
+instance algebra : Algebra ℤ_[p] ℚ_[p] := fast_instance%
   Algebra.ofSubring (subring p)
 #align padic_int.algebra PadicInt.algebra
 

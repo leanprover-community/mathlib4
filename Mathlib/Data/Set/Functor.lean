@@ -70,17 +70,17 @@ theorem image2_def {α β γ : Type u} (f : α → β → γ) (s : Set α) (t : 
   simp
 #align set.image2_def Set.image2_def
 
-instance : LawfulMonad Set := LawfulMonad.mk'
+instance : LawfulMonad Set := fast_instance% LawfulMonad.mk'
   (id_map := image_id)
   (pure_bind := biUnion_singleton)
   (bind_assoc := fun _ _ _ => by simp only [bind_def, biUnion_iUnion])
   (bind_pure_comp := fun _ _ => (image_eq_iUnion _ _).symm)
   (bind_map := fun _ _ => seq_def.symm)
 
-instance : CommApplicative (Set : Type u → Type u) :=
+instance : CommApplicative (Set : Type u → Type u) := fast_instance%
   ⟨fun s t => prod_image_seq_comm s t⟩
 
-instance : Alternative Set :=
+instance : Alternative Set := fast_instance%
   { Set.monad with
     orElse := fun s t => s ∪ (t ())
     failure := ∅ }
@@ -114,7 +114,7 @@ In practice this is only used for applying the `Set` functor to `Subtype.val`.
 We define this coercion here.  -/
 
 /-- Coercion using `(Subtype.val '' ·)` -/
-instance : CoeHead (Set s) (Set α) := ⟨fun t => (Subtype.val '' t)⟩
+instance : CoeHead (Set s) (Set α) := fast_instance% ⟨fun t => (Subtype.val '' t)⟩
 
 namespace Notation
 
@@ -164,7 +164,7 @@ end Set
 /-- This is `Set` but with a `Monad` instance. -/
 def SetM (α : Type u) := Set α
 
-instance : Monad SetM := Set.monad
+instance : Monad SetM := fast_instance% Set.monad
 
 /-- Evaluates the `SetM` monad, yielding a `Set`.
 Implementation note: this is the identity function. -/

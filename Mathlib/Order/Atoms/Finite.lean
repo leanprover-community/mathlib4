@@ -59,7 +59,7 @@ end Fintype
 
 namespace Bool
 
-instance : IsSimpleOrder Bool :=
+instance : IsSimpleOrder Bool := fast_instance%
   ⟨fun a => by
     rw [← Finset.mem_singleton, Or.comm, ← Finset.mem_insert, top_eq_true, bot_eq_false, ←
       Fintype.univ_bool]

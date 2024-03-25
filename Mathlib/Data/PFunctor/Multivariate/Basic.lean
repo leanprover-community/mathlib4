@@ -51,7 +51,7 @@ instance : CoeFun (MvPFunctor.{u} n) (fun _ => TypeVec.{u} n → Type u) where
 def map {α β : TypeVec n} (f : α ⟹ β) : P α → P β := fun ⟨a, g⟩ => ⟨a, TypeVec.comp f g⟩
 #align mvpfunctor.map MvPFunctor.map
 
-instance : Inhabited (MvPFunctor n) :=
+instance : Inhabited (MvPFunctor n) := fast_instance%
   ⟨⟨default, default⟩⟩
 
 instance Obj.inhabited {α : TypeVec n} [Inhabited P.A] [∀ i, Inhabited (α i)] :
@@ -59,7 +59,7 @@ instance Obj.inhabited {α : TypeVec n} [Inhabited P.A] [∀ i, Inhabited (α i)
   ⟨⟨default, fun _ _ => default⟩⟩
 #align mvpfunctor.obj.inhabited MvPFunctor.Obj.inhabited
 
-instance : MvFunctor.{u} P.Obj :=
+instance : MvFunctor.{u} P.Obj := fast_instance%
   ⟨@MvPFunctor.map n P⟩
 
 theorem map_eq {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f : P.B a ⟹ α) :

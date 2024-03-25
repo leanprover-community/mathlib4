@@ -161,7 +161,7 @@ def coeToGL (A : SpecialLinearGroup n R) : GL n R :=
     congr_arg ((↑) : _ → Matrix n n R) (mul_right_inv A),
     congr_arg ((↑) : _ → Matrix n n R) (mul_left_inv A)⟩
 
-instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
+instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) := fast_instance%
   ⟨coeToGL⟩
 #align matrix.special_linear_group.has_coe_to_general_linear_group Matrix.SpecialLinearGroup.hasCoeToGeneralLinearGroup
 
@@ -211,7 +211,7 @@ variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n] [LinearOrderedCom
 
 /-- Formal operation of negation on general linear group on even cardinality `n` given by negating
 each element. -/
-instance : Neg (GLPos n R) :=
+instance : Neg (GLPos n R) := fast_instance%
   ⟨fun g =>
     ⟨-g, by
       rw [mem_glpos, GeneralLinearGroup.val_det_apply, Units.val_neg, det_neg,
@@ -237,7 +237,7 @@ theorem GLPos.coe_neg_apply (g : GLPos n R) (i j : n) :
 set_option linter.uppercaseLean3 false in
 #align matrix.GL_pos.coe_neg_apply Matrix.GLPos.coe_neg_apply
 
-instance : HasDistribNeg (GLPos n R) :=
+instance : HasDistribNeg (GLPos n R) := fast_instance%
   Subtype.coe_injective.hasDistribNeg _ GLPos.coe_neg_GL (GLPos n R).coe_mul
 
 end Neg
@@ -254,7 +254,7 @@ def toGLPos : SpecialLinearGroup n R →* GLPos n R where
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.to_GL_pos Matrix.SpecialLinearGroup.toGLPos
 
-instance : Coe (SpecialLinearGroup n R) (GLPos n R) :=
+instance : Coe (SpecialLinearGroup n R) (GLPos n R) := fast_instance%
   ⟨toGLPos⟩
 
 #noalign matrix.special_linear_group.coe_eq_to_GL_pos

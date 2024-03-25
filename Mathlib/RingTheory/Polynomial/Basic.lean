@@ -43,11 +43,11 @@ section Semiring
 
 variable [Semiring R]
 
-instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
+instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p := fast_instance%
   let ⟨h⟩ := h
   ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
 
-instance instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := by
+instance instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := fast_instance% by
   cases h; exacts [ExpChar.zero, ExpChar.prime ‹_›]
 
 variable (R)

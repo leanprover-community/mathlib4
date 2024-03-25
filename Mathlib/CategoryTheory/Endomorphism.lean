@@ -37,15 +37,15 @@ section Struct
 
 variable {C : Type u} [CategoryStruct.{v} C] (X : C)
 
-protected instance one : One (End X) := ⟨𝟙 X⟩
+protected instance one : One (End X) := fast_instance% ⟨𝟙 X⟩
 #align category_theory.End.has_one CategoryTheory.End.one
 
-protected instance inhabited : Inhabited (End X) := ⟨𝟙 X⟩
+protected instance inhabited : Inhabited (End X) := fast_instance% ⟨𝟙 X⟩
 #align category_theory.End.inhabited CategoryTheory.End.inhabited
 
 /-- Multiplication of endomorphisms agrees with `Function.comp`, not with
 `CategoryTheory.CategoryStruct.comp`. -/
-protected instance mul : Mul (End X) := ⟨fun x y => y ≫ x⟩
+protected instance mul : Mul (End X) := fast_instance% ⟨fun x y => y ≫ x⟩
 #align category_theory.End.has_mul CategoryTheory.End.mul
 
 variable {X}
@@ -136,7 +136,7 @@ namespace Aut
 lemma ext {X : C} {φ₁ φ₂ : Aut X} (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Iso.ext h
 
-protected instance inhabited : Inhabited (Aut X) := ⟨Iso.refl X⟩
+protected instance inhabited : Inhabited (Aut X) := fast_instance% ⟨Iso.refl X⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.inhabited CategoryTheory.Aut.inhabited
 

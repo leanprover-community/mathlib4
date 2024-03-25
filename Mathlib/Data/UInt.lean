@@ -20,15 +20,15 @@ lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size → ((ofNat a).val : Nat) 
 lemma USize.val_eq_of_lt {a : Nat} : a < USize.size → ((ofNat a).val : Nat) = a :=
   Nat.mod_eq_of_lt
 
-instance UInt8.neZero : NeZero UInt8.size := ⟨by decide⟩
+instance UInt8.neZero : NeZero UInt8.size := fast_instance% ⟨by decide⟩
 
-instance UInt16.neZero : NeZero UInt16.size := ⟨by decide⟩
+instance UInt16.neZero : NeZero UInt16.size := fast_instance% ⟨by decide⟩
 
-instance UInt32.neZero : NeZero UInt32.size := ⟨by decide⟩
+instance UInt32.neZero : NeZero UInt32.size := fast_instance% ⟨by decide⟩
 
-instance UInt64.neZero : NeZero UInt64.size := ⟨by decide⟩
+instance UInt64.neZero : NeZero UInt64.size := fast_instance% ⟨by decide⟩
 
-instance USize.neZero : NeZero USize.size := NeZero.of_pos usize_size_gt_zero
+instance USize.neZero : NeZero USize.size := fast_instance% NeZero.of_pos usize_size_gt_zero
 
 example : (0 : UInt8) = ⟨0⟩ := rfl
 
@@ -93,7 +93,7 @@ run_cmd
       @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
       | ⟨_, _⟩ => rfl
 
-      instance : CommRing $typeName :=
+      instance : CommRing $typeName := fast_instance%
         Function.Injective.commRing val val_injective
           rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
           (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)

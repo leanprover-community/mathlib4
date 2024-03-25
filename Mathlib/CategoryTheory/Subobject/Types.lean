@@ -56,7 +56,7 @@ noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ S
   counitIso := NatIso.ofComponents fun s => eqToIso Subtype.range_val
 #align types.mono_over_equivalence_set Types.monoOverEquivalenceSet
 
-instance : WellPowered (Type u) :=
+instance : WellPowered (Type u) := fast_instance%
   wellPowered_of_essentiallySmall_monoOver fun α =>
     EssentiallySmall.mk' (Types.monoOverEquivalenceSet α)
 

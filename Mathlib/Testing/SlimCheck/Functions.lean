@@ -73,7 +73,7 @@ inductive TotalFunction (α : Type u) (β : Type v) : Type max u v
 #align slim_check.total_function SlimCheck.TotalFunction
 #align slim_check.total_function.with_default SlimCheck.TotalFunction.withDefault
 
-instance TotalFunction.inhabited [Inhabited β] : Inhabited (TotalFunction α β) :=
+instance TotalFunction.inhabited [Inhabited β] : Inhabited (TotalFunction α β) := fast_instance%
   ⟨TotalFunction.withDefault ∅ default⟩
 #align slim_check.total_function.inhabited SlimCheck.TotalFunction.inhabited
 
@@ -272,7 +272,7 @@ inductive InjectiveFunction (α : Type u) : Type u
 #align slim_check.injective_function SlimCheck.InjectiveFunction
 #align slim_check.injective_function.map_to_self SlimCheck.InjectiveFunction.mapToSelf
 
-instance : Inhabited (InjectiveFunction α) :=
+instance : Inhabited (InjectiveFunction α) := fast_instance%
   ⟨⟨[], List.Perm.nil, List.nodup_nil⟩⟩
 
 namespace InjectiveFunction
@@ -450,7 +450,7 @@ protected def shrinkPerm {α : Type} [DecidableEq α] :
 
 
 -- Porting note: removed, there is no `sizeof` in the new `Sampleable`
--- instance [SizeOf α] : SizeOf (InjectiveFunction α) :=
+-- instance [SizeOf α] : SizeOf (InjectiveFunction α) := fast_instance%
 --   ⟨fun ⟨xs, _, _⟩ => SizeOf.sizeOf (xs.map Sigma.fst)⟩
 #noalign slim_check.injective_function.has_sizeof
 

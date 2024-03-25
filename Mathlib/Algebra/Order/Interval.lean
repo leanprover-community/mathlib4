@@ -38,7 +38,7 @@ section Preorder
 variable [Preorder α] [One α]
 
 @[to_additive]
-instance : One (NonemptyInterval α) :=
+instance : One (NonemptyInterval α) := fast_instance%
   ⟨NonemptyInterval.pure 1⟩
 
 namespace NonemptyInterval
@@ -149,11 +149,11 @@ variable [Preorder α] [Mul α] [CovariantClass α α (· * ·) (· ≤ ·)]
   [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 
 @[to_additive]
-instance : Mul (NonemptyInterval α) :=
+instance : Mul (NonemptyInterval α) := fast_instance%
   ⟨fun s t => ⟨s.toProd * t.toProd, mul_le_mul' s.fst_le_snd t.fst_le_snd⟩⟩
 
 @[to_additive]
-instance : Mul (Interval α) :=
+instance : Mul (Interval α) := fast_instance%
   ⟨Option.map₂ (· * ·)⟩
 
 namespace NonemptyInterval
@@ -230,7 +230,7 @@ variable [Monoid α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
   [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 
 @[to_additive existing]
-instance NonemptyInterval.hasPow : Pow (NonemptyInterval α) ℕ :=
+instance NonemptyInterval.hasPow : Pow (NonemptyInterval α) ℕ := fast_instance%
   ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 #align nonempty_interval.has_pow NonemptyInterval.hasPow
 
@@ -269,7 +269,7 @@ end Pow
 namespace NonemptyInterval
 
 @[to_additive]
-instance commMonoid [OrderedCommMonoid α] : CommMonoid (NonemptyInterval α) :=
+instance commMonoid [OrderedCommMonoid α] : CommMonoid (NonemptyInterval α) := fast_instance%
   NonemptyInterval.toProd_injective.commMonoid _ toProd_one toProd_mul toProd_pow
 
 end NonemptyInterval
@@ -284,7 +284,7 @@ instance Interval.mulOneClass [OrderedCommMonoid α] : MulOneClass (Interval α)
     (Option.map₂_coe_right _ _ _).trans <| by simp_rw [mul_one, ← id_def, Option.map_id, id]
 
 @[to_additive]
-instance Interval.commMonoid [OrderedCommMonoid α] : CommMonoid (Interval α) :=
+instance Interval.commMonoid [OrderedCommMonoid α] : CommMonoid (Interval α) := fast_instance%
   { Interval.mulOneClass with
     mul_comm := fun _ _ => Option.map₂_comm mul_comm
     mul_assoc := fun _ _ _ => Option.map₂_assoc mul_assoc }
@@ -329,10 +329,10 @@ section Sub
 variable [Preorder α] [AddCommSemigroup α] [Sub α] [OrderedSub α]
   [CovariantClass α α (· + ·) (· ≤ ·)]
 
-instance : Sub (NonemptyInterval α) :=
+instance : Sub (NonemptyInterval α) := fast_instance%
   ⟨fun s t => ⟨(s.fst - t.snd, s.snd - t.fst), tsub_le_tsub s.fst_le_snd t.fst_le_snd⟩⟩
 
-instance : Sub (Interval α) :=
+instance : Sub (Interval α) := fast_instance%
   ⟨Option.map₂ Sub.sub⟩
 
 namespace NonemptyInterval
@@ -395,11 +395,11 @@ section Div
 variable [Preorder α] [CommGroup α] [CovariantClass α α (· * ·) (· ≤ ·)]
 
 @[to_additive existing]
-instance : Div (NonemptyInterval α) :=
+instance : Div (NonemptyInterval α) := fast_instance%
   ⟨fun s t => ⟨(s.fst / t.snd, s.snd / t.fst), div_le_div'' s.fst_le_snd t.fst_le_snd⟩⟩
 
 @[to_additive existing]
-instance : Div (Interval α) :=
+instance : Div (Interval α) := fast_instance%
   ⟨Option.map₂ (· / ·)⟩
 
 namespace NonemptyInterval
@@ -459,11 +459,11 @@ section Inv
 variable [OrderedCommGroup α]
 
 @[to_additive]
-instance : Inv (NonemptyInterval α) :=
+instance : Inv (NonemptyInterval α) := fast_instance%
   ⟨fun s => ⟨(s.snd⁻¹, s.fst⁻¹), inv_le_inv' s.fst_le_snd⟩⟩
 
 @[to_additive]
-instance : Inv (Interval α) :=
+instance : Inv (Interval α) := fast_instance%
   ⟨Option.map Inv.inv⟩
 
 namespace NonemptyInterval
@@ -546,7 +546,7 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
     zsmul := zsmulRec }
 
 @[to_additive existing NonemptyInterval.subtractionCommMonoid]
-instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
+instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) := fast_instance%
   { NonemptyInterval.commMonoid with
     inv := Inv.inv
     div := (· / ·)
@@ -597,7 +597,7 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
     zsmul := zsmulRec }
 
 @[to_additive existing Interval.subtractionCommMonoid]
-instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
+instance divisionCommMonoid : DivisionCommMonoid (Interval α) := fast_instance%
   { Interval.commMonoid with
     inv := Inv.inv
     div := (· / ·)

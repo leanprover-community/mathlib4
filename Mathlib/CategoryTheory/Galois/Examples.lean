@@ -73,11 +73,11 @@ instance {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
   exact Subtype.val_injective
 
 /-- The category of finite sets has quotients by finite groups in arbitrary universes. -/
-instance [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
+instance [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := fast_instance% by
   obtain ⟨G', hg, hf, ⟨e⟩⟩ := Finite.exists_type_zero_nonempty_mulEquiv G
   exact Limits.hasColimitsOfShape_of_equivalence e.toSingleObjEquiv.symm
 
-noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat (MonCat.of G))) := by
+noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat (MonCat.of G))) := fast_instance% by
   show PreservesFiniteLimits (Action.forget FintypeCat _ ⋙ FintypeCat.incl)
   apply compPreservesFiniteLimits
 

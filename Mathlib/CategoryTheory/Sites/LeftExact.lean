@@ -261,7 +261,7 @@ instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
   intros
   infer_instance
 
-instance : HasWeakSheafify J D := ⟨sheafToPresheafIsRightAdjoint J D⟩
+instance : HasWeakSheafify J D := fast_instance% ⟨sheafToPresheafIsRightAdjoint J D⟩
 
 variable (J D)
 
@@ -277,7 +277,7 @@ def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D
 def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
   (sheafToPresheaf J D).mapIso  ((plusPlusSheafIsoPresheafToSheaf J D).app P)
 
-instance [HasFiniteLimits D] : HasSheafify J D := HasSheafify.mk' J D (plusPlusAdjunction J D)
+instance [HasFiniteLimits D] : HasSheafify J D := fast_instance% HasSheafify.mk' J D (plusPlusAdjunction J D)
 
 variable {J D}
 
@@ -285,7 +285,7 @@ instance [FinitaryExtensive D] [HasFiniteCoproducts D] [HasPullbacks D] :
     FinitaryExtensive (Sheaf J D) :=
   finitaryExtensive_of_reflective (plusPlusAdjunction _ _)
 
-instance [Adhesive D] [HasPullbacks D] [HasPushouts D] : Adhesive (Sheaf J D) :=
+instance [Adhesive D] [HasPullbacks D] [HasPushouts D] : Adhesive (Sheaf J D) := fast_instance%
   adhesive_of_reflective (plusPlusAdjunction _ _)
 
 instance SheafOfTypes.finitary_extensive {C : Type u} [SmallCategory C]

@@ -73,7 +73,7 @@ theorem lift_comp_preservesLimitsIso_hom (t : Cone F) :
   simp [← G.map_comp]
 #align category_theory.lift_comp_preserves_limits_iso_hom CategoryTheory.lift_comp_preservesLimitsIso_hom
 
-instance : IsIso (limit.post F G) :=
+instance : IsIso (limit.post F G) := fast_instance%
   show IsIso (preservesLimitIso G F).hom from inferInstance
 
 variable [PreservesLimitsOfShape J G] [HasLimitsOfShape J D] [HasLimitsOfShape J C]
@@ -146,7 +146,7 @@ theorem preservesColimitsIso_inv_comp_desc (t : Cocone F) :
   simp [← G.map_comp]
 #align category_theory.preserves_colimits_iso_inv_comp_desc CategoryTheory.preservesColimitsIso_inv_comp_desc
 
-instance : IsIso (colimit.post F G) :=
+instance : IsIso (colimit.post F G) := fast_instance%
   show IsIso (preservesColimitIso G F).inv from inferInstance
 
 variable [PreservesColimitsOfShape J G] [HasColimitsOfShape J D] [HasColimitsOfShape J C]

@@ -25,7 +25,7 @@ variable {G G' α β : Type*}
 namespace Function.Embedding
 
 @[to_additive]
-instance smul [Group G] [MulAction G β] : SMul G (α ↪ β) :=
+instance smul [Group G] [MulAction G β] : SMul G (α ↪ β) := fast_instance%
   ⟨fun g f => f.trans (MulAction.toPerm g).toEmbedding⟩
 
 @[to_additive]
@@ -61,7 +61,7 @@ instance [Group G] [MulAction G β] [MulAction Gᵐᵒᵖ β] [IsCentralScalar G
   ⟨fun _ _ => Function.Embedding.ext fun _ => op_smul_eq_smul _ _⟩
 
 @[to_additive]
-instance [Group G] [MulAction G β] : MulAction G (α ↪ β) :=
+instance [Group G] [MulAction G β] : MulAction G (α ↪ β) := fast_instance%
   DFunLike.coe_injective.mulAction _ coe_smul
 
 end Function.Embedding

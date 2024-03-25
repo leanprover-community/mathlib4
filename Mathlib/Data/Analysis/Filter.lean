@@ -36,7 +36,7 @@ structure CFilter (α σ : Type*) [PartialOrder α] where
 
 variable {α : Type*} {β : Type*} {σ : Type*} {τ : Type*}
 
-instance [Inhabited α] [SemilatticeInf α] : Inhabited (CFilter α α) :=
+instance [Inhabited α] [SemilatticeInf α] : Inhabited (CFilter α α) := fast_instance%
   ⟨{  f := id
       pt := default
       inf := (· ⊓ ·)
@@ -49,7 +49,7 @@ section
 
 variable [PartialOrder α] (F : CFilter α σ)
 
-instance : CoeFun (CFilter α σ) fun _ ↦ σ → α :=
+instance : CoeFun (CFilter α σ) fun _ ↦ σ → α := fast_instance%
   ⟨CFilter.f⟩
 
 /- Porting note: Due to the CoeFun instance, the lhs of this lemma has a variable (f) as its head
@@ -171,7 +171,7 @@ theorem principal_F (s : Set α) (u : Unit) : (Realizer.principal s).F u = s :=
 set_option linter.uppercaseLean3 false in
 #align filter.realizer.principal_F Filter.Realizer.principal_F
 
-instance (s : Set α) : Inhabited (principal s).Realizer :=
+instance (s : Set α) : Inhabited (principal s).Realizer := fast_instance%
   ⟨Realizer.principal s⟩
 
 /-- `Unit` is a realizer for the top filter -/

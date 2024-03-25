@@ -104,7 +104,7 @@ lemma smul_fin3_ext {R : Type u} [CommRing R] (P : Fin 3 → R) (u : Rˣ) :
   refine ⟨?_, ?_, ?_⟩ <;> simp only [Units.smul_def, Pi.smul_apply, smul_eq_mul]
 
 /-- The equivalence setoid for a point representative. -/
-scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
+scoped instance instSetoidPoint : Setoid <| Fin 3 → R := fast_instance%
   MulAction.orbitRel Rˣ <| Fin 3 → R
 
 /-- The equivalence class of a point representative. -/

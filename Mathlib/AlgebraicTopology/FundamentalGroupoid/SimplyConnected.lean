@@ -52,7 +52,7 @@ namespace SimplyConnectedSpace
 
 variable {X : Type*} [TopologicalSpace X] [SimplyConnectedSpace X]
 
-instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
+instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) := fast_instance%
   @Unique.instSubsingleton _ (Nonempty.some (by
     rw [simply_connected_iff_unique_homotopic] at *; tauto))
 

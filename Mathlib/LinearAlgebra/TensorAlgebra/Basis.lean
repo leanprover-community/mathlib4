@@ -59,7 +59,7 @@ noncomputable def _root_.Basis.tensorAlgebra (b : Basis κ R M) :
   (FreeAlgebra.basisFreeMonoid R κ).map <| (equivFreeAlgebra b).symm.toLinearEquiv
 
 /-- `TensorAlgebra R M` is free when `M` is. -/
-instance instModuleFree [Module.Free R M] : Module.Free R (TensorAlgebra R M) :=
+instance instModuleFree [Module.Free R M] : Module.Free R (TensorAlgebra R M) := fast_instance%
   let ⟨⟨_κ, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   .of_basis b.tensorAlgebra
 
@@ -76,7 +76,7 @@ section CommRing
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
 /-- The `TensorAlgebra` of a free module over an integral domain is a domain. -/
-instance instIsDomain [IsDomain R] [Module.Free R M] : IsDomain (TensorAlgebra R M) :=
+instance instIsDomain [IsDomain R] [Module.Free R M] : IsDomain (TensorAlgebra R M) := fast_instance%
   NoZeroDivisors.to_isDomain _
 
 attribute [pp_with_univ] Cardinal.lift

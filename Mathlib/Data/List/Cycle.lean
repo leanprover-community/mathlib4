@@ -458,7 +458,7 @@ variable {α : Type*}
 @[coe] def ofList : List α → Cycle α :=
   Quot.mk _
 
-instance : Coe (List α) (Cycle α) :=
+instance : Coe (List α) (Cycle α) := fast_instance%
   ⟨ofList⟩
 
 @[simp]
@@ -497,7 +497,7 @@ theorem coe_eq_nil (l : List α) : (l : Cycle α) = nil ↔ l = [] :=
 #align cycle.coe_eq_nil Cycle.coe_eq_nil
 
 /-- For consistency with `EmptyCollection (List α)`. -/
-instance : EmptyCollection (Cycle α) :=
+instance : EmptyCollection (Cycle α) := fast_instance%
   ⟨nil⟩
 
 @[simp]
@@ -505,7 +505,7 @@ theorem empty_eq : ∅ = @nil α :=
   rfl
 #align cycle.empty_eq Cycle.empty_eq
 
-instance : Inhabited (Cycle α) :=
+instance : Inhabited (Cycle α) := fast_instance%
   ⟨nil⟩
 
 /-- An induction principle for `Cycle`. Use as `induction s using Cycle.induction_on`. -/
@@ -522,7 +522,7 @@ def Mem (a : α) (s : Cycle α) : Prop :=
   Quot.liftOn s (fun l => a ∈ l) fun _ _ e => propext <| e.mem_iff
 #align cycle.mem Cycle.Mem
 
-instance : Membership α (Cycle α) :=
+instance : Membership α (Cycle α) := fast_instance%
   ⟨Mem⟩
 
 @[simp]
@@ -535,10 +535,10 @@ theorem not_mem_nil : ∀ a, a ∉ @nil α :=
   List.not_mem_nil
 #align cycle.not_mem_nil Cycle.not_mem_nil
 
-instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
+instance [DecidableEq α] : DecidableEq (Cycle α) := fast_instance% fun s₁ s₂ =>
   Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''
 
-instance [DecidableEq α] (x : α) (s : Cycle α) : Decidable (x ∈ s) :=
+instance [DecidableEq α] (x : α) (s : Cycle α) : Decidable (x ∈ s) := fast_instance%
   Quotient.recOnSubsingleton' s fun l => show Decidable (x ∈ l) from inferInstance
 
 /-- Reverse a `s : Cycle α` by reversing the underlying `List`. -/
@@ -772,13 +772,13 @@ def decidableNontrivialCoe : ∀ l : List α, Decidable (Nontrivial (l : Cycle �
     else isTrue ⟨x, y, h, by simp, by simp⟩
 #align cycle.decidable_nontrivial_coe Cycle.decidableNontrivialCoe
 
-instance {s : Cycle α} : Decidable (Nontrivial s) :=
+instance {s : Cycle α} : Decidable (Nontrivial s) := fast_instance%
   Quot.recOnSubsingleton' s decidableNontrivialCoe
 
-instance {s : Cycle α} : Decidable (Nodup s) :=
+instance {s : Cycle α} : Decidable (Nodup s) := fast_instance%
   Quot.recOnSubsingleton' s List.nodupDecidable
 
-instance fintypeNodupCycle [Fintype α] : Fintype { s : Cycle α // s.Nodup } :=
+instance fintypeNodupCycle [Fintype α] : Fintype { s : Cycle α // s.Nodup } := fast_instance%
   Fintype.ofSurjective (fun l : { l : List α // l.Nodup } => ⟨l.val, by simpa using l.prop⟩)
     fun ⟨s, hs⟩ => by
     induction' s using Quotient.inductionOn' with s hs
@@ -895,7 +895,7 @@ via `#eval`, when over representable types. For example, the cycle `(2 1 4 3)` w
 as `c[2, 1, 4, 3]`. Two equal cycles may be printed differently if their internal representation
 is different.
 -/
-unsafe instance [Repr α] : Repr (Cycle α) :=
+unsafe instance [Repr α] : Repr (Cycle α) := fast_instance%
   ⟨fun s _ => "c[" ++ Std.Format.joinSep (s.map repr).lists.unquot.head! ", " ++ "]"⟩
 
 /-- `chain R s` means that `R` holds between adjacent elements of `s`.

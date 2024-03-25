@@ -33,11 +33,11 @@ def Angle : Type :=
 namespace Angle
 
 -- Porting note (#10754): added due to missing instances due to no deriving
-instance : NormedAddCommGroup Angle :=
+instance : NormedAddCommGroup Angle := fast_instance%
   inferInstanceAs (NormedAddCommGroup (AddCircle (2 * π)))
 
 -- Porting note (#10754): added due to missing instances due to no deriving
-instance : Inhabited Angle :=
+instance : Inhabited Angle := fast_instance%
   inferInstanceAs (Inhabited (AddCircle (2 * π)))
 
 -- Porting note (#10754): added due to missing instances due to no deriving
@@ -47,9 +47,9 @@ instance : Inhabited Angle :=
 @[coe]
 protected def coe (r : ℝ) : Angle := QuotientAddGroup.mk r
 
-instance : Coe ℝ Angle := ⟨Angle.coe⟩
+instance : Coe ℝ Angle := fast_instance% ⟨Angle.coe⟩
 
-instance : CircularOrder Real.Angle :=
+instance : CircularOrder Real.Angle := fast_instance%
   QuotientAddGroup.circularOrder (hp' := ⟨by norm_num [pi_pos]⟩)
 
 

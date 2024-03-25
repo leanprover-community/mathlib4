@@ -172,7 +172,7 @@ noncomputable def _root_.NumberField.mixedEmbedding : K →+* (E K) :=
   RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
     (Pi.ringHom fun w => w.val.embedding)
 
-instance [NumberField K] : Nontrivial (E K) := by
+instance [NumberField K] : Nontrivial (E K) := fast_instance% by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   obtain hw | hw := w.isReal_or_isComplex
   · have : Nonempty {w : InfinitePlace K // IsReal w} := ⟨⟨w, hw⟩⟩
@@ -549,9 +549,9 @@ open scoped Classical BigOperators
 
 variable [NumberField K]
 
-instance : IsAddHaarMeasure (volume : Measure (E K)) := prod.instIsAddHaarMeasure volume volume
+instance : IsAddHaarMeasure (volume : Measure (E K)) := fast_instance% prod.instIsAddHaarMeasure volume volume
 
-instance : NoAtoms (volume : Measure (E K)) := by
+instance : NoAtoms (volume : Measure (E K)) := fast_instance% by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw : IsReal w
   exact @prod.instNoAtoms_fst _ _ _ _ volume volume _ (pi_noAtoms ⟨w, hw⟩)

@@ -47,7 +47,7 @@ def pure (a : α) : Computation α :=
   ⟨Stream'.const (some a), fun _ _ => id⟩
 #align computation.return Computation.pure
 
-instance : CoeTC α (Computation α) :=
+instance : CoeTC α (Computation α) := fast_instance%
   ⟨pure⟩
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -89,7 +89,7 @@ def empty (α) : Computation α :=
   ⟨Stream'.const none, fun _ _ => id⟩
 #align computation.empty Computation.empty
 
-instance : Inhabited (Computation α) :=
+instance : Inhabited (Computation α) := fast_instance%
   ⟨empty _⟩
 
 /-- `runFor c n` evaluates `c` for `n` steps and returns the result, or `none`
@@ -323,7 +323,7 @@ protected def Mem (a : α) (s : Computation α) :=
   some a ∈ s.1
 #align computation.mem Computation.Mem
 
-instance : Membership α (Computation α) :=
+instance : Membership α (Computation α) := fast_instance%
   ⟨Computation.Mem⟩
 
 theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) : s.1 m = some a → s.1 n = some a := by
@@ -373,7 +373,7 @@ theorem eq_of_pure_mem {a a' : α} (h : a' ∈ pure a) : a' = a :=
   mem_unique h (ret_mem _)
 #align computation.eq_of_ret_mem Computation.eq_of_pure_mem
 
-instance ret_terminates (a : α) : Terminates (pure a) :=
+instance ret_terminates (a : α) : Terminates (pure a) := fast_instance%
   terminates_of_mem (ret_mem _)
 #align computation.ret_terminates Computation.ret_terminates
 
@@ -674,7 +674,7 @@ def bind (c : Computation α) (f : α → Computation β) : Computation β :=
   corec (Bind.f f) (Sum.inl c)
 #align computation.bind Computation.bind
 
-instance : Bind Computation :=
+instance : Bind Computation := fast_instance%
   ⟨@bind⟩
 
 theorem has_bind_eq_bind {β} (c : Computation α) (f : α → Computation β) : c >>= f = bind c f :=
@@ -853,7 +853,7 @@ instance monad : Monad Computation where
   pure := @pure
   bind := @bind
 
-instance : LawfulMonad Computation := LawfulMonad.mk'
+instance : LawfulMonad Computation := fast_instance% LawfulMonad.mk'
   (id_map := @map_id)
   (bind_pure_comp := @bind_pure)
   (pure_bind := @ret_bind)
@@ -889,7 +889,7 @@ theorem exists_of_mem_map {f : α → β} {b : β} {s : Computation α} (h : b �
   exact ⟨a, as, mem_unique (ret_mem _) fb⟩
 #align computation.exists_of_mem_map Computation.exists_of_mem_map
 
-instance terminates_map (f : α → β) (s : Computation α) [Terminates s] : Terminates (map f s) := by
+instance terminates_map (f : α → β) (s : Computation α) [Terminates s] : Terminates (map f s) := fast_instance% by
   rw [← bind_pure]; exact terminates_of_mem (mem_bind (get_mem s) (get_mem (f (get s))))
 #align computation.terminates_map Computation.terminates_map
 
@@ -915,7 +915,7 @@ def orElse (c₁ : Computation α) (c₂ : Unit → Computation α) : Computatio
     (c₁, c₂ ())
 #align computation.orelse Computation.orElse
 
-instance instAlternativeComputation : Alternative Computation :=
+instance instAlternativeComputation : Alternative Computation := fast_instance%
   { Computation.monad with
     orElse := @orElse
     failure := @empty }

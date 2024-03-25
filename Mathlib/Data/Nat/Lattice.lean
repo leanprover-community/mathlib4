@@ -24,10 +24,10 @@ namespace Nat
 
 open scoped Classical
 
-noncomputable instance : InfSet ℕ :=
+noncomputable instance : InfSet ℕ := fast_instance%
   ⟨fun s ↦ if h : ∃ n, n ∈ s then @Nat.find (fun n ↦ n ∈ s) _ h else 0⟩
 
-noncomputable instance : SupSet ℕ :=
+noncomputable instance : SupSet ℕ := fast_instance%
   ⟨fun s ↦ if h : ∃ n, ∀ a ∈ s, a ≤ n then @Nat.find (fun n ↦ ∀ a ∈ s, a ≤ n) _ h else 0⟩
 
 theorem sInf_def {s : Set ℕ} (h : s.Nonempty) : sInf s = @Nat.find (fun n ↦ n ∈ s) _ h :=
@@ -120,10 +120,10 @@ theorem sInf_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, 
 
 /-- This instance is necessary, otherwise the lattice operations would be derived via
 `ConditionallyCompleteLinearOrderBot` and marked as noncomputable. -/
-instance : Lattice ℕ :=
+instance : Lattice ℕ := fast_instance%
   LinearOrder.toLattice
 
-noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
+noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ := fast_instance%
   { (inferInstance : OrderBot ℕ), (LinearOrder.toLattice : Lattice ℕ),
     (inferInstance : LinearOrder ℕ) with
     -- sup := sSup -- Porting note: removed, unnecessary?

@@ -90,7 +90,7 @@ section PartialOrder
 
 variable [PartialOrder α] [Zero α] [LocallyFiniteOrder α] (f g : ι →₀ α)
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) :=
+instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) := fast_instance%
   -- Porting note: Not needed (due to open scoped Classical), in mathlib3 too
   -- haveI := Classical.decEq ι
   -- haveI := Classical.decEq α

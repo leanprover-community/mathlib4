@@ -69,7 +69,7 @@ theorem ext_iff {s t : AList β} : s = t ↔ s.entries = t.entries :=
   ⟨congr_arg _, ext⟩
 #align alist.ext_iff AList.ext_iff
 
-instance [DecidableEq α] [∀ a, DecidableEq (β a)] : DecidableEq (AList β) := fun xs ys => by
+instance [DecidableEq α] [∀ a, DecidableEq (β a)] : DecidableEq (AList β) := fast_instance% fun xs ys => by
   rw [ext_iff]; infer_instance
 
 /-! ### keys -/
@@ -88,7 +88,7 @@ theorem keys_nodup (s : AList β) : s.keys.Nodup :=
 
 
 /-- The predicate `a ∈ s` means that `s` has a value associated to the key `a`. -/
-instance : Membership α (AList β) :=
+instance : Membership α (AList β) := fast_instance%
   ⟨fun a s => a ∈ s.keys⟩
 
 theorem mem_keys {a : α} {s : AList β} : a ∈ s ↔ a ∈ s.keys :=
@@ -103,10 +103,10 @@ theorem mem_of_perm {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.ent
 
 
 /-- The empty association list. -/
-instance : EmptyCollection (AList β) :=
+instance : EmptyCollection (AList β) := fast_instance%
   ⟨⟨[], nodupKeys_nil⟩⟩
 
-instance : Inhabited (AList β) :=
+instance : Inhabited (AList β) := fast_instance%
   ⟨∅⟩
 
 @[simp]
@@ -177,7 +177,7 @@ theorem perm_lookup {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.ent
   perm_dlookup _ s₁.nodupKeys s₂.nodupKeys p
 #align alist.perm_lookup AList.perm_lookup
 
-instance (a : α) (s : AList β) : Decidable (a ∈ s) :=
+instance (a : α) (s : AList β) : Decidable (a ∈ s) := fast_instance%
   decidable_of_iff _ lookup_isSome
 
 theorem keys_subset_keys_of_entries_subset_entries
@@ -432,7 +432,7 @@ def union (s₁ s₂ : AList β) : AList β :=
   ⟨s₁.entries.kunion s₂.entries, s₁.nodupKeys.kunion s₂.nodupKeys⟩
 #align alist.union AList.union
 
-instance : Union (AList β) :=
+instance : Union (AList β) := fast_instance%
   ⟨union⟩
 
 @[simp]

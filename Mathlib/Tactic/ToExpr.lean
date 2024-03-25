@@ -31,7 +31,7 @@ deriving instance ToExpr for List
 
 attribute [-instance] Lean.instToExprArray
 
-instance {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (Array α) :=
+instance {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (Array α) := fast_instance%
   let type := toTypeExpr α
   { toExpr     := fun as => mkApp2 (mkConst ``List.toArray [toLevel.{u}]) type (toExpr as.toList)
     toTypeExpr := mkApp (mkConst ``Array [toLevel.{u}]) type }

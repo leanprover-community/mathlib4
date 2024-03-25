@@ -58,20 +58,20 @@ namespace NNReal
 
 open NNReal BigOperators Filter
 
-instance : TopologicalSpace ℝ≥0 := inferInstance
+instance : TopologicalSpace ℝ≥0 := fast_instance% inferInstance
 
 -- short-circuit type class inference
 instance : TopologicalSemiring ℝ≥0 where
   toContinuousAdd := continuousAdd_induced toRealHom
   toContinuousMul := continuousMul_induced toRealHom
 
-instance : SecondCountableTopology ℝ≥0 :=
+instance : SecondCountableTopology ℝ≥0 := fast_instance%
   inferInstanceAs (SecondCountableTopology { x : ℝ | 0 ≤ x })
 
-instance : OrderTopology ℝ≥0 :=
+instance : OrderTopology ℝ≥0 := fast_instance%
   orderTopology_of_ordConnected (t := Ici 0)
 
-instance : CompleteSpace ℝ≥0 :=
+instance : CompleteSpace ℝ≥0 := fast_instance%
   isClosed_Ici.completeSpace_coe
 
 instance : ContinuousStar ℝ≥0 where
@@ -148,10 +148,10 @@ theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0)).HasBasis (fun a : ℝ≥0 => 0 < 
   nhds_bot_basis
 #align nnreal.nhds_zero_basis NNReal.nhds_zero_basis
 
-instance : ContinuousSub ℝ≥0 :=
+instance : ContinuousSub ℝ≥0 := fast_instance%
   ⟨((continuous_coe.fst'.sub continuous_coe.snd').max continuous_const).subtype_mk _⟩
 
-instance : HasContinuousInv₀ ℝ≥0 := inferInstance
+instance : HasContinuousInv₀ ℝ≥0 := fast_instance% inferInstance
 
 instance [TopologicalSpace α] [MulAction ℝ α] [ContinuousSMul ℝ α] :
     ContinuousSMul ℝ≥0 α where

@@ -39,11 +39,11 @@ private noncomputable def linearMapEquivFun : (M →ₗ[R] N) ≃ₗ[S] ChooseBa
   (chooseBasis R M).repr.congrLeft N S ≪≫ₗ (Finsupp.lsum S).symm ≪≫ₗ
     LinearEquiv.piCongrRight fun _ ↦ LinearMap.ringLmapEquivSelf R S N
 
-instance Module.Free.linearMap [Module.Free S N] : Module.Free S (M →ₗ[R] N) :=
+instance Module.Free.linearMap [Module.Free S N] : Module.Free S (M →ₗ[R] N) := fast_instance%
   Module.Free.of_equiv (linearMapEquivFun R S M N).symm
 #align module.free.linear_map Module.Free.linearMap
 
-instance Module.Finite.linearMap [Module.Finite S N] : Module.Finite S (M →ₗ[R] N) :=
+instance Module.Finite.linearMap [Module.Finite S N] : Module.Finite S (M →ₗ[R] N) := fast_instance%
   Module.Finite.equiv (linearMapEquivFun R S M N).symm
 #align module.finite.linear_map Module.Finite.linearMap
 
@@ -77,7 +77,7 @@ section AlgHom
 variable (K M : Type*) (L : Type v) [CommRing K] [Ring M] [Algebra K M]
   [Module.Free K M] [Module.Finite K M] [CommRing L] [IsDomain L] [Algebra K L]
 
-instance Finite.algHom : Finite (M →ₐ[K] L) :=
+instance Finite.algHom : Finite (M →ₐ[K] L) := fast_instance%
   (linearIndependent_algHom_toLinearMap K M L).finite
 
 open Cardinal
@@ -99,11 +99,11 @@ section Integer
 
 variable [AddCommGroup M] [Module.Finite ℤ M] [Module.Free ℤ M] [AddCommGroup N]
 
-instance Module.Finite.addMonoidHom [Module.Finite ℤ N] : Module.Finite ℤ (M →+ N) :=
+instance Module.Finite.addMonoidHom [Module.Finite ℤ N] : Module.Finite ℤ (M →+ N) := fast_instance%
   Module.Finite.equiv (addMonoidHomLequivInt ℤ).symm
 #align module.finite.add_monoid_hom Module.Finite.addMonoidHom
 
-instance Module.Free.addMonoidHom [Module.Free ℤ N] : Module.Free ℤ (M →+ N) :=
+instance Module.Free.addMonoidHom [Module.Free ℤ N] : Module.Free ℤ (M →+ N) := fast_instance%
   letI : Module.Free ℤ (M →ₗ[ℤ] N) := Module.Free.linearMap _ _ _ _
   Module.Free.of_equiv (addMonoidHomLequivInt ℤ).symm
 #align module.free.add_monoid_hom Module.Free.addMonoidHom

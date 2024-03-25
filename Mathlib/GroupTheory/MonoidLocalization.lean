@@ -219,7 +219,7 @@ def Localization := (Localization.r S).Quotient
 namespace Localization
 
 @[to_additive]
-instance inhabited : Inhabited (Localization S) := Con.Quotient.inhabited
+instance inhabited : Inhabited (Localization S) := fast_instance% Con.Quotient.inhabited
 #align localization.inhabited Localization.inhabited
 #align add_localization.inhabited AddLocalization.inhabited
 
@@ -233,7 +233,7 @@ protected irreducible_def mul : Localization S → Localization S → Localizati
 #align add_localization.add AddLocalization.add
 
 @[to_additive]
-instance : Mul (Localization S) := ⟨Localization.mul S⟩
+instance : Mul (Localization S) := fast_instance% ⟨Localization.mul S⟩
 
 /-- The identity element of a `Localization` is defined as `⟨1, 1⟩`. -/
 @[to_additive "The identity element of an `AddLocalization` is defined as `⟨0, 0⟩`.
@@ -245,7 +245,7 @@ protected irreducible_def one : Localization S := (r S).commMonoid.one
 #align add_localization.zero AddLocalization.zero
 
 @[to_additive]
-instance : One (Localization S) := ⟨Localization.one S⟩
+instance : One (Localization S) := fast_instance% ⟨Localization.one S⟩
 
 /-- Exponentiation in a `Localization` is defined as `⟨a, b⟩ ^ n = ⟨a ^ n, b ^ n⟩`.
 
@@ -1904,7 +1904,7 @@ protected irreducible_def zero : Localization S :=
   mk 0 1
 #align localization.zero Localization.zero
 
-instance : Zero (Localization S) := ⟨Localization.zero S⟩
+instance : Zero (Localization S) := fast_instance% ⟨Localization.zero S⟩
 
 variable {S}
 
@@ -2028,7 +2028,7 @@ theorem mk_eq_mk_iff' : mk a₁ a₂ = mk b₁ b₂ ↔ ↑b₂ * a₁ = a₂ * 
 #align add_localization.mk_eq_mk_iff' AddLocalization.mk_eq_mk_iff'
 
 @[to_additive]
-instance decidableEq [DecidableEq α] : DecidableEq (Localization s) := fun a b =>
+instance decidableEq [DecidableEq α] : DecidableEq (Localization s) := fast_instance% fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_eq_mk_iff'
 #align localization.decidable_eq Localization.decidableEq
 #align add_localization.decidable_eq AddLocalization.decidableEq
@@ -2046,7 +2046,7 @@ section OrderedCancelCommMonoid
 variable [OrderedCancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
 
 @[to_additive]
-instance le : LE (Localization s) :=
+instance le : LE (Localization s) := fast_instance%
   ⟨fun a b =>
     Localization.liftOn₂ a b (fun a₁ a₂ b₁ b₂ => ↑b₂ * a₁ ≤ a₂ * b₁)
       @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext <| by
@@ -2059,7 +2059,7 @@ instance le : LE (Localization s) :=
           mul_left_comm (b₂ : α), mul_le_mul_iff_left]⟩
 
 @[to_additive]
-instance lt : LT (Localization s) :=
+instance lt : LT (Localization s) := fast_instance%
   ⟨fun a b =>
     Localization.liftOn₂ a b (fun a₁ a₂ b₁ b₂ => ↑b₂ * a₁ < a₂ * b₁)
       @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext <| by
@@ -2106,7 +2106,7 @@ instance partialOrder : PartialOrder (Localization s) where
   lt_iff_le_not_le a b := Localization.induction_on₂ a b fun a b => lt_iff_le_not_le
 
 @[to_additive]
-instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) :=
+instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) := fast_instance%
   { Localization.commMonoid s,
     Localization.partialOrder with
     mul_le_mul_left := fun a b =>

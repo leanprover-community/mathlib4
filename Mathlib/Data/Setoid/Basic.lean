@@ -41,7 +41,7 @@ def Setoid.Rel (r : Setoid α) : α → α → Prop :=
   @Setoid.r _ r
 #align setoid.rel Setoid.Rel
 
-instance Setoid.decidableRel (r : Setoid α) [h : DecidableRel r.r] : DecidableRel r.Rel :=
+instance Setoid.decidableRel (r : Setoid α) [h : DecidableRel r.r] : DecidableRel r.Rel := fast_instance%
   h
 #align setoid.decidable_rel Setoid.decidableRel
 
@@ -68,7 +68,7 @@ theorem eq_iff_rel_eq {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ r₁.Rel = r₂.
 #align setoid.eq_iff_rel_eq Setoid.eq_iff_rel_eq
 
 /-- Defining `≤` for equivalence relations. -/
-instance : LE (Setoid α) :=
+instance : LE (Setoid α) := fast_instance%
   ⟨fun r s => ∀ ⦃x y⦄, r.Rel x y → s.Rel x y⟩
 
 theorem le_def {r s : Setoid α} : r ≤ s ↔ ∀ {x y}, r.Rel x y → s.Rel x y :=
@@ -127,7 +127,7 @@ protected def prod (r : Setoid α) (s : Setoid β) :
 #align setoid.prod Setoid.prod
 
 /-- The infimum of two equivalence relations. -/
-instance : Inf (Setoid α) :=
+instance : Inf (Setoid α) := fast_instance%
   ⟨fun r s =>
     ⟨fun x y => r.Rel x y ∧ s.Rel x y,
       ⟨fun x => ⟨r.refl' x, s.refl' x⟩, fun h => ⟨r.symm' h.1, s.symm' h.2⟩, fun h1 h2 =>
@@ -144,7 +144,7 @@ theorem inf_iff_and {r s : Setoid α} {x y} : (r ⊓ s).Rel x y ↔ r.Rel x y �
 #align setoid.inf_iff_and Setoid.inf_iff_and
 
 /-- The infimum of a set of equivalence relations. -/
-instance : InfSet (Setoid α) :=
+instance : InfSet (Setoid α) := fast_instance%
   ⟨fun S =>
     { r := fun x y => ∀ r ∈ S, r.Rel x y
       iseqv := ⟨fun x r _ => r.refl' x, fun h r hr => r.symm' <| h r hr, fun h1 h2 r hr =>
@@ -168,7 +168,7 @@ instance : PartialOrder (Setoid α) where
 
 /-- The complete lattice of equivalence relations on a type, with bottom element `=`
     and top element the trivial equivalence relation. -/
-instance completeLattice : CompleteLattice (Setoid α) :=
+instance completeLattice : CompleteLattice (Setoid α) := fast_instance%
   { (completeLatticeOfInf (Setoid α)) fun _ =>
       ⟨fun _ hr _ _ h => h _ hr, fun _ hr _ _ h _ hr' => hr hr' h⟩ with
     inf := Inf.inf

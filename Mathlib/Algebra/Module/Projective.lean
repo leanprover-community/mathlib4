@@ -127,7 +127,7 @@ theorem Projective.of_lifting_property'' {R : Type u} [Semiring R] {P : Type v} 
 
 variable {Q : Type*} [AddCommMonoid Q] [Module R Q]
 
-instance [Projective R P] [Projective R Q] : Projective R (P × Q) := by
+instance [Projective R P] [Projective R Q] : Projective R (P × Q) := fast_instance% by
   refine .of_lifting_property'' fun f hf ↦ ?_
   rcases projective_lifting_property f (.inl _ _ _) hf with ⟨g₁, hg₁⟩
   rcases projective_lifting_property f (.inr _ _ _) hf with ⟨g₂, hg₂⟩
@@ -136,7 +136,7 @@ instance [Projective R P] [Projective R Q] : Projective R (P × Q) := by
 
 variable {ι : Type*} (A : ι → Type*) [∀ i : ι, AddCommMonoid (A i)] [∀ i : ι, Module R (A i)]
 
-instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) :=
+instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) := fast_instance%
   .of_lifting_property'' fun f hf ↦ by
     classical
       choose g hg using fun i ↦ projective_lifting_property f (DFinsupp.lsingle i) hf

@@ -135,7 +135,7 @@ theorem liftOn₂_mk {α : Type*} (f : M × S → M × S → α)
   convert Quotient.liftOn₂_mk f wd _ _
 #align localized_module.lift_on₂_mk LocalizedModule.liftOn₂_mk
 
-instance : Zero (LocalizedModule S M) :=
+instance : Zero (LocalizedModule S M) := fast_instance%
   ⟨mk 0 1⟩
 
 /-- If `S` contains `0` then the localization at `S` is trivial. -/
@@ -198,7 +198,7 @@ private theorem add_zero' (x : LocalizedModule S M) : x + 0 = x :=
         exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
     x
 
-instance hasNatSMul : SMul ℕ (LocalizedModule S M) where smul n := nsmulRec n
+instance hasNatSMul : SMul ℕ (LocalizedModule S M) where smul n := fast_instance% nsmulRec n
 #align localized_module.has_nat_smul LocalizedModule.hasNatSMul
 
 private theorem nsmul_zero' (x : LocalizedModule S M) : (0 : ℕ) • x = 0 :=
@@ -224,7 +224,7 @@ instance {M : Type*} [AddCommGroup M] [Module R M] : Neg (LocalizedModule S M) w
       rw [mk_eq]
       exact ⟨u, by simpa⟩
 
-instance {M : Type*} [AddCommGroup M] [Module R M] : AddCommGroup (LocalizedModule S M) :=
+instance {M : Type*} [AddCommGroup M] [Module R M] : AddCommGroup (LocalizedModule S M) := fast_instance%
   { show AddCommMonoid (LocalizedModule S M) by infer_instance with
     add_left_neg := by
       rintro ⟨m, s⟩
@@ -419,7 +419,7 @@ theorem mk_cancel_common_right (s s' : S) (m : M) : mk (s' • m) (s * s') = mk 
   mk_eq.mpr ⟨1, by simp [mul_smul]⟩
 #align localized_module.mk_cancel_common_right LocalizedModule.mk_cancel_common_right
 
-noncomputable instance isModule' : Module R (LocalizedModule S M) :=
+noncomputable instance isModule' : Module R (LocalizedModule S M) := fast_instance%
   { Module.compHom (LocalizedModule S M) <| algebraMap R (Localization S) with }
 #align localized_module.is_module' LocalizedModule.isModule'
 
@@ -441,7 +441,7 @@ theorem mul_smul' {A : Type*} [Semiring A] [Algebra R A] (x : T) (p₁ p₂ : Lo
 
 variable (T)
 
-noncomputable instance {A : Type*} [Semiring A] [Algebra R A] : Algebra T (LocalizedModule S A) :=
+noncomputable instance {A : Type*} [Semiring A] [Algebra R A] : Algebra T (LocalizedModule S A) := fast_instance%
   Algebra.ofModule smul'_mul mul_smul'
 
 theorem algebraMap_mk' {A : Type*} [Semiring A] [Algebra R A] (a : R) (s : S) :

@@ -93,7 +93,7 @@ instance functor_category_isIso_coimageImageComparison :
 
 end FunctorCategory
 
-noncomputable instance functorCategoryAbelian : Abelian (C ⥤ D) :=
+noncomputable instance functorCategoryAbelian : Abelian (C ⥤ D) := fast_instance%
   let _ : HasKernels (C ⥤ D) := inferInstance
   let _ : HasCokernels (C ⥤ D) := inferInstance
   Abelian.ofCoimageImageComparisonIsIso
@@ -113,7 +113,7 @@ end
 --variable {D : Type (u + 1)} [LargeCategory D] [Abelian D]
 --
 --/-- A variant with specialized universes for a common case. -/
---noncomputable instance functorCategoryAbelian' : Abelian (C ⥤ D) :=
+--noncomputable instance functorCategoryAbelian' : Abelian (C ⥤ D) := fast_instance%
 --  Abelian.functorCategoryAbelian.{u, u + 1, u, u}
 --#align category_theory.abelian.functor_category_abelian' CategoryTheory.Abelian.functorCategoryAbelian'
 --

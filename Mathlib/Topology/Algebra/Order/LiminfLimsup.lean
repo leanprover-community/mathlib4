@@ -81,9 +81,9 @@ theorem Filter.Tendsto.isCoboundedUnder_ge [NeBot f] (h : Tendsto u f (𝓝 a)) 
   h.isBoundedUnder_le.isCobounded_flip
 #align filter.tendsto.is_cobounded_under_ge Filter.Tendsto.isCoboundedUnder_ge
 
-instance : BoundedGENhdsClass αᵒᵈ := ⟨@isBounded_le_nhds α _ _ _⟩
+instance : BoundedGENhdsClass αᵒᵈ := fast_instance% ⟨@isBounded_le_nhds α _ _ _⟩
 
-instance Prod.instBoundedLENhdsClass : BoundedLENhdsClass (α × β) := by
+instance Prod.instBoundedLENhdsClass : BoundedLENhdsClass (α × β) := fast_instance% by
   refine ⟨fun x ↦ ?_⟩
   obtain ⟨a, ha⟩ := isBounded_le_nhds x.1
   obtain ⟨b, hb⟩ := isBounded_le_nhds x.2
@@ -129,9 +129,9 @@ theorem Filter.Tendsto.isCoboundedUnder_le [NeBot f] (h : Tendsto u f (𝓝 a)) 
   h.isBoundedUnder_ge.isCobounded_flip
 #align filter.tendsto.is_cobounded_under_le Filter.Tendsto.isCoboundedUnder_le
 
-instance : BoundedLENhdsClass αᵒᵈ := ⟨@isBounded_ge_nhds α _ _ _⟩
+instance : BoundedLENhdsClass αᵒᵈ := fast_instance% ⟨@isBounded_ge_nhds α _ _ _⟩
 
-instance Prod.instBoundedGENhdsClass : BoundedGENhdsClass (α × β) :=
+instance Prod.instBoundedGENhdsClass : BoundedGENhdsClass (α × β) := fast_instance%
   ⟨(Prod.instBoundedLENhdsClass (α := αᵒᵈ) (β := βᵒᵈ)).isBounded_le_nhds⟩
 
 instance Pi.instBoundedGENhdsClass [Finite ι] [∀ i, Preorder (π i)] [∀ i, TopologicalSpace (π i)]

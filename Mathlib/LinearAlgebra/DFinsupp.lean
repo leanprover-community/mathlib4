@@ -104,7 +104,7 @@ section Lsum
 /-- Typeclass inference can't find `DFinsupp.addCommMonoid` without help for this case.
 This instance allows it to be found where it is needed on the LHS of the colon in
 `DFinsupp.moduleOfLinearMap`. -/
-instance addCommMonoidOfLinearMap : AddCommMonoid (Π₀ i : ι, M i →ₗ[R] N) :=
+instance addCommMonoidOfLinearMap : AddCommMonoid (Π₀ i : ι, M i →ₗ[R] N) := fast_instance%
   inferInstance
 #align dfinsupp.add_comm_monoid_of_linear_map DFinsupp.addCommMonoidOfLinearMap
 

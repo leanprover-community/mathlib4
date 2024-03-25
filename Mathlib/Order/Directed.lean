@@ -189,11 +189,11 @@ theorem exists_le_le [LE α] [IsDirected α (· ≥ ·)] (a b : α) : ∃ c, c �
   directed_of (· ≥ ·) a b
 #align exists_le_le exists_le_le
 
-instance OrderDual.isDirected_ge [LE α] [IsDirected α (· ≤ ·)] : IsDirected αᵒᵈ (· ≥ ·) := by
+instance OrderDual.isDirected_ge [LE α] [IsDirected α (· ≤ ·)] : IsDirected αᵒᵈ (· ≥ ·) := fast_instance% by
   assumption
 #align order_dual.is_directed_ge OrderDual.isDirected_ge
 
-instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirected αᵒᵈ (· ≤ ·) := by
+instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirected αᵒᵈ (· ≤ ·) := fast_instance% by
   assumption
 #align order_dual.is_directed_le OrderDual.isDirected_le
 

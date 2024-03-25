@@ -64,11 +64,11 @@ protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf 
 #align Top.presheaf.submonoid_presheaf.localization_presheaf TopCat.Presheaf.SubmonoidPresheaf.localizationPresheaf
 
 -- Porting note: this instance can't be synthesized
-instance (U) : Algebra ((forget CommRingCat).obj (F.obj U)) (G.localizationPresheaf.obj U) :=
+instance (U) : Algebra ((forget CommRingCat).obj (F.obj U)) (G.localizationPresheaf.obj U) := fast_instance%
   show Algebra _ (Localization (G.obj U)) from inferInstance
 
 -- Porting note: this instance can't be synthesized
-instance (U) : IsLocalization (G.obj U) (G.localizationPresheaf.obj U) :=
+instance (U) : IsLocalization (G.obj U) (G.localizationPresheaf.obj U) := fast_instance%
   show IsLocalization (G.obj U) (Localization (G.obj U)) from inferInstance
 
 /-- The map into the localization presheaf. -/
@@ -78,7 +78,7 @@ def SubmonoidPresheaf.toLocalizationPresheaf : F ⟶ G.localizationPresheaf wher
   naturality {_ _} i := (IsLocalization.map_comp (G.map i)).symm
 #align Top.presheaf.submonoid_presheaf.to_localization_presheaf TopCat.Presheaf.SubmonoidPresheaf.toLocalizationPresheaf
 
-instance epi_toLocalizationPresheaf : Epi G.toLocalizationPresheaf :=
+instance epi_toLocalizationPresheaf : Epi G.toLocalizationPresheaf := fast_instance%
   @NatTrans.epi_of_epi_app _ _ _ _ _ _ G.toLocalizationPresheaf fun U => Localization.epi' (G.obj U)
 
 variable (F)
@@ -98,7 +98,7 @@ noncomputable def submonoidPresheafOfStalk (S : ∀ x : X, Submonoid (F.stalk x)
     exact hs _
 #align Top.presheaf.submonoid_presheaf_of_stalk TopCat.Presheaf.submonoidPresheafOfStalk
 
-noncomputable instance : Inhabited F.SubmonoidPresheaf :=
+noncomputable instance : Inhabited F.SubmonoidPresheaf := fast_instance%
   ⟨F.submonoidPresheafOfStalk fun _ => ⊥⟩
 
 /-- The localization of a presheaf of `CommRing`s at locally non-zero-divisor sections. -/
@@ -112,10 +112,10 @@ noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
 #align Top.presheaf.to_total_quotient_presheaf TopCat.Presheaf.toTotalQuotientPresheaf
 
 -- Porting note: deriving `Epi` failed
-instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _
+instance : Epi (toTotalQuotientPresheaf F) := fast_instance% epi_toLocalizationPresheaf _
 
-instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by
-  -- Porting note: was an `apply (config := { instances := false })`
+instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := fast_instance% by
+  -- Porting note: was an `apply (config := { instances := fast_instance% false })`
   -- See https://github.com/leanprover/lean4/issues/2273
   suffices ∀ (U : (Opens ↑X)ᵒᵖ), Mono (F.presheaf.toTotalQuotientPresheaf.app U) from
     NatTrans.mono_of_mono_app _

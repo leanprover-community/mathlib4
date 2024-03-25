@@ -101,7 +101,7 @@ inductive Generators
   | F : B → Generators
 #align cartan_matrix.generators CartanMatrix.Generators
 
-instance [Inhabited B] : Inhabited (Generators B) :=
+instance [Inhabited B] : Inhabited (Generators B) := fast_instance%
   ⟨Generators.H default⟩
 
 variable {B}
@@ -184,15 +184,15 @@ def Matrix.ToLieAlgebra :=
 #align matrix.to_lie_algebra Matrix.ToLieAlgebra
 
 -- Porting note: the following were derived automatically in mathlib3.
-instance Matrix.ToLieAlgebra.instLieRing : LieRing (Matrix.ToLieAlgebra R A) :=
+instance Matrix.ToLieAlgebra.instLieRing : LieRing (Matrix.ToLieAlgebra R A) := fast_instance%
   inferInstanceAs (LieRing (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
 #align matrix.to_lie_algebra.lie_ring Matrix.ToLieAlgebra.instLieRing
 
-instance Matrix.ToLieAlgebra.instInhabited : Inhabited (Matrix.ToLieAlgebra R A) :=
+instance Matrix.ToLieAlgebra.instInhabited : Inhabited (Matrix.ToLieAlgebra R A) := fast_instance%
   inferInstanceAs (Inhabited (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
 #align matrix.to_lie_algebra.inhabited Matrix.ToLieAlgebra.instInhabited
 
-instance Matrix.ToLieAlgebra.instLieAlgebra : LieAlgebra R (Matrix.ToLieAlgebra R A) :=
+instance Matrix.ToLieAlgebra.instLieAlgebra : LieAlgebra R (Matrix.ToLieAlgebra R A) := fast_instance%
   inferInstanceAs (LieAlgebra R (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
 #align matrix.to_lie_algebra.lie_algebra Matrix.ToLieAlgebra.instLieAlgebra
 

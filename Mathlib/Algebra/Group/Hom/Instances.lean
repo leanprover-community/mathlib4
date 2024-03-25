@@ -50,7 +50,7 @@ instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
 /-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
 @[to_additive "If `G` is an additive commutative group, then `M →+ G` is an additive commutative
       group too."]
-instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
+instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) := fast_instance%
   { MonoidHom.commMonoid with
     inv := Inv.inv,
     div := Div.div,
@@ -73,10 +73,10 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       ext x
       simp [Nat.succ_eq_add_one, zpow_coe_nat, -Int.natCast_add] }
 
-instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
+instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) := fast_instance%
   AddMonoidHom.addCommMonoid
 
-instance AddMonoid.End.instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
+instance AddMonoid.End.instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) := fast_instance%
   { AddMonoid.End.monoid M, AddMonoidHom.addCommMonoid with
     zero_mul := fun _ => AddMonoidHom.ext fun _ => rfl,
     mul_zero := fun _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_zero _,
@@ -107,10 +107,10 @@ theorem AddMonoid.End.ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m 
     (no_index (OfNat.ofNat n : AddMonoid.End M)) m = n • m :=
   rfl
 
-instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
+instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) := fast_instance%
   AddMonoidHom.addCommGroup
 
-instance AddMonoid.End.instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
+instance AddMonoid.End.instRing [AddCommGroup M] : Ring (AddMonoid.End M) := fast_instance%
   { AddMonoid.End.instSemiring, AddMonoid.End.instAddCommGroup with
     intCast := fun z => z • (1 : AddMonoid.End M),
     intCast_ofNat := coe_nat_zsmul _,

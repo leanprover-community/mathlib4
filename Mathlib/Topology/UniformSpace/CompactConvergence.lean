@@ -161,7 +161,7 @@ We use `ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn`
 to show that the induced topology agrees with the compact-open topology
 and replace the topology with `compactOpen` to avoid non-defeq diamonds,
 see Note [forgetful inheritance].  -/
-instance compactConvergenceUniformSpace : UniformSpace C(α, β) :=
+instance compactConvergenceUniformSpace : UniformSpace C(α, β) := fast_instance%
   .replaceTopology (.comap toUniformOnFunIsCompact inferInstance) <| by
     refine TopologicalSpace.ext_nhds fun f ↦ eq_of_forall_le_iff fun l ↦ ?_
     simp_rw [← tendsto_id', tendsto_iff_forall_compact_tendstoUniformlyOn,

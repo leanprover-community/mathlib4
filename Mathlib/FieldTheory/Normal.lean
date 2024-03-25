@@ -64,7 +64,7 @@ theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebr
 
 variable (F K)
 
-instance normal_self : Normal F F :=
+instance normal_self : Normal F F := fast_instance%
   ⟨fun _ => isIntegral_algebraMap.isAlgebraic, fun x =>
     (minpoly.eq_X_sub_C' x).symm ▸ splits_X_sub_C _⟩
 #align normal_self normal_self
@@ -148,7 +148,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
     exact ⟨hp, minpoly.ne_zero hx⟩
 #align normal.of_is_splitting_field Normal.of_isSplittingField
 
-instance Polynomial.SplittingField.instNormal [Field F] (p : F[X]) : Normal F p.SplittingField :=
+instance Polynomial.SplittingField.instNormal [Field F] (p : F[X]) : Normal F p.SplittingField := fast_instance%
   Normal.of_isSplittingField p
 #align polynomial.splitting_field.normal Polynomial.SplittingField.instNormal
 

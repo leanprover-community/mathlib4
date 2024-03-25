@@ -529,6 +529,6 @@ instance Real.instTietzeExtension : TietzeExtension ℝ where
 open NNReal in
 /-- **Tietze extension theorem** for nonnegative real-valued continuous maps.
 `ℝ≥0` is a `TietzeExtension` space. -/
-instance NNReal.instTietzeExtension : TietzeExtension ℝ≥0 :=
+instance NNReal.instTietzeExtension : TietzeExtension ℝ≥0 := fast_instance%
   .of_retract ⟨((↑) : ℝ≥0 → ℝ), by continuity⟩ ⟨Real.toNNReal, continuous_real_toNNReal⟩ <| by
     ext; simp

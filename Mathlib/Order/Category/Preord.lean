@@ -38,10 +38,10 @@ instance : BundledHom @OrderHom where
 deriving instance LargeCategory for Preord
 
 -- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory Preord :=
+instance : ConcreteCategory Preord := fast_instance%
   BundledHom.concreteCategory _
 
-instance : CoeSort Preord Type* :=
+instance : CoeSort Preord Type* := fast_instance%
   Bundled.coeSort
 
 /-- Construct a bundled Preord from the underlying type and typeclass. -/
@@ -56,10 +56,10 @@ theorem coe_of (α : Type*) [Preorder α] : ↥(of α) = α :=
 set_option linter.uppercaseLean3 false in
 #align Preord.coe_of Preord.coe_of
 
-instance : Inhabited Preord :=
+instance : Inhabited Preord := fast_instance%
   ⟨of PUnit⟩
 
-instance (α : Preord) : Preorder α :=
+instance (α : Preord) : Preorder α := fast_instance%
   α.str
 
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/

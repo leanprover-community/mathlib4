@@ -103,7 +103,7 @@ instance mono_simpleSubobjectArrow {X : C} [ArtinianObject X] (h : ¬IsZero X) :
   dsimp only [simpleSubobjectArrow]
   infer_instance
 
-instance {X : C} [ArtinianObject X] (h : ¬IsZero X) : Simple (simpleSubobject h) :=
+instance {X : C} [ArtinianObject X] (h : ¬IsZero X) : Simple (simpleSubobject h) := fast_instance%
   (exists_simple_subobject h).choose_spec
 
 end CategoryTheory

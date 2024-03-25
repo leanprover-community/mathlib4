@@ -56,7 +56,7 @@ theorem Subgroup.Normal.eq_bot_or_eq_top [IsSimpleGroup G] {H : Subgroup G} (Hn 
 namespace IsSimpleGroup
 
 @[to_additive]
-instance {C : Type*} [CommGroup C] [IsSimpleGroup C] : IsSimpleOrder (Subgroup C) :=
+instance {C : Type*} [CommGroup C] [IsSimpleGroup C] : IsSimpleOrder (Subgroup C) := fast_instance%
   ⟨fun H => H.normal_of_comm.eq_bot_or_eq_top⟩
 
 open Subgroup

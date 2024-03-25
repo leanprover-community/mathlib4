@@ -404,7 +404,7 @@ theorem pi_closedBall [∀ i, MetricSpace (α i)] (x : ∀ i, α i) {r : ℝ} (h
   rw [closedBall_pi _ hr, pi_pi]
 #align measure_theory.measure.pi_closed_ball MeasureTheory.Measure.pi_closedBall
 
-instance pi.sigmaFinite : SigmaFinite (Measure.pi μ) :=
+instance pi.sigmaFinite : SigmaFinite (Measure.pi μ) := fast_instance%
   (FiniteSpanningSetsIn.pi fun i => (μ i).toFiniteSpanningSetsIn).sigmaFinite
 #align measure_theory.measure.pi.sigma_finite MeasureTheory.Measure.pi.sigmaFinite
 
@@ -551,7 +551,7 @@ theorem pi_noAtoms (i : ι) [NoAtoms (μ i)] : NoAtoms (Measure.pi μ) :=
   ⟨fun x => flip measure_mono_null (pi_hyperplane μ i (x i)) (singleton_subset_iff.2 rfl)⟩
 #align measure_theory.measure.pi_has_no_atoms MeasureTheory.Measure.pi_noAtoms
 
-instance pi_noAtoms' [h : Nonempty ι] [∀ i, NoAtoms (μ i)] : NoAtoms (Measure.pi μ) :=
+instance pi_noAtoms' [h : Nonempty ι] [∀ i, NoAtoms (μ i)] : NoAtoms (Measure.pi μ) := fast_instance%
   h.elim fun i => pi_noAtoms i
 
 instance {α : ι → Type*} [Nonempty ι] [∀ i, MeasureSpace (α i)]

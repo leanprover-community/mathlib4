@@ -46,7 +46,7 @@ class LiftHom {a b : B} (f : a ⟶ b) where
   lift : of.obj a ⟶ of.obj b
 #align category_theory.bicategory.lift_hom Mathlib.Tactic.BicategoryCoherence.LiftHom
 
-instance liftHomId : LiftHom (𝟙 a) where lift := 𝟙 (of.obj a)
+instance liftHomId : LiftHom (𝟙 a) where lift := fast_instance% 𝟙 (of.obj a)
 #align category_theory.bicategory.lift_hom_id Mathlib.Tactic.BicategoryCoherence.liftHomId
 
 instance liftHomComp (f : a ⟶ b) (g : b ⟶ c) [LiftHom f] [LiftHom g] : LiftHom (f ≫ g) where
@@ -131,7 +131,7 @@ def hom (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] : f
 attribute [simp] hom hom'
 
 @[simps]
-instance refl (f : a ⟶ b) [LiftHom f] : BicategoricalCoherence f f :=
+instance refl (f : a ⟶ b) [LiftHom f] : BicategoricalCoherence f f := fast_instance%
   ⟨𝟙 _⟩
 #align category_theory.bicategory.bicategorical_coherence.refl Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.refl
 

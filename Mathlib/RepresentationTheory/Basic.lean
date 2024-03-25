@@ -73,7 +73,7 @@ variable {k}
 class IsTrivial (ρ : Representation k G V) : Prop where
   out : ∀ g x, ρ g x = x := by aesop
 
-instance : IsTrivial (trivial k (G := G) (V := V)) where
+instance : IsTrivial (trivial k (G := fast_instance% G) (V := V)) where
 
 @[simp] theorem apply_eq_self
     (ρ : Representation k G V) (g : G) (x : V) [h : IsTrivial ρ] :
@@ -120,7 +120,7 @@ def asModule (_ : Representation k G V) :=
 #align representation.as_module Representation.asModule
 
 -- Porting note: no derive handler
-instance : AddCommMonoid (ρ.asModule) := inferInstanceAs <| AddCommMonoid V
+instance : AddCommMonoid (ρ.asModule) := fast_instance% inferInstanceAs <| AddCommMonoid V
 
 instance : Inhabited ρ.asModule where
   default := 0
@@ -128,12 +128,12 @@ instance : Inhabited ρ.asModule where
 /-- A `k`-linear representation of `G` on `V` can be thought of as
 a module over `MonoidAlgebra k G`.
 -/
-noncomputable instance asModuleModule : Module (MonoidAlgebra k G) ρ.asModule :=
+noncomputable instance asModuleModule : Module (MonoidAlgebra k G) ρ.asModule := fast_instance%
   Module.compHom V (asAlgebraHom ρ).toRingHom
 #align representation.as_module_module Representation.asModuleModule
 
 -- Porting note: ρ.asModule doesn't unfold now
-instance : Module k ρ.asModule := inferInstanceAs <| Module k V
+instance : Module k ρ.asModule := fast_instance% inferInstanceAs <| Module k V
 
 /-- The additive equivalence from the `Module (MonoidAlgebra k G)` to the original vector space
 of the representative.
@@ -256,7 +256,7 @@ section AddCommGroup
 variable {k G V : Type*} [CommRing k] [Monoid G] [I : AddCommGroup V] [Module k V]
 variable (ρ : Representation k G V)
 
-instance : AddCommGroup ρ.asModule :=
+instance : AddCommGroup ρ.asModule := fast_instance%
   I
 
 end AddCommGroup

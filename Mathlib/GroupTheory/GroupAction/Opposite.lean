@@ -40,7 +40,7 @@ Actions on the opposite type just act on the underlying type.
 namespace MulOpposite
 
 @[to_additive]
-instance mulAction (R : Type*) [Monoid R] [MulAction R α] : MulAction R αᵐᵒᵖ :=
+instance mulAction (R : Type*) [Monoid R] [MulAction R α] : MulAction R αᵐᵒᵖ := fast_instance%
   { one_smul := fun x => unop_injective <| one_smul R (unop x)
     mul_smul := fun r₁ r₂ x => unop_injective <| mul_smul r₁ r₂ (unop x) }
 
@@ -60,7 +60,7 @@ instance isScalarTower {M N} [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M
   ⟨fun _ _ _ => unop_injective <| smul_assoc _ _ _⟩
 
 @[to_additive]
-instance smulCommClass {M N} [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵐᵒᵖ :=
+instance smulCommClass {M N} [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵐᵒᵖ := fast_instance%
   ⟨fun _ _ _ => unop_injective <| smul_comm _ _ _⟩
 
 @[to_additive]
@@ -166,7 +166,7 @@ See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWit
 @[to_additive "Like `Add.toVAdd`, but adds on the right.
 
   See also `AddMonoid.to_OppositeAddAction`."]
-instance Mul.toHasOppositeSMul [Mul α] : SMul αᵐᵒᵖ α :=
+instance Mul.toHasOppositeSMul [Mul α] : SMul αᵐᵒᵖ α := fast_instance%
   ⟨fun c x => x * c.unop⟩
 #align has_mul.to_has_opposite_smul Mul.toHasOppositeSMul
 #align has_add.to_has_opposite_vadd Add.toHasOppositeVAdd
@@ -198,13 +198,13 @@ instance Semigroup.opposite_smulCommClass [Semigroup α] :
 #align add_semigroup.opposite_vadd_comm_class AddSemigroup.opposite_vaddCommClass
 
 @[to_additive]
-instance Semigroup.opposite_smulCommClass' [Semigroup α] : SMulCommClass α αᵐᵒᵖ α :=
+instance Semigroup.opposite_smulCommClass' [Semigroup α] : SMulCommClass α αᵐᵒᵖ α := fast_instance%
   SMulCommClass.symm _ _ _
 #align semigroup.opposite_smul_comm_class' Semigroup.opposite_smulCommClass'
 #align add_semigroup.opposite_vadd_comm_class' AddSemigroup.opposite_vaddCommClass'
 
 @[to_additive]
-instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α α :=
+instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α α := fast_instance%
   ⟨fun _ _ => mul_comm _ _⟩
 #align comm_semigroup.is_central_scalar CommSemigroup.isCentralScalar
 #align add_comm_semigroup.is_central_scalar AddCommSemigroup.isCentralVAdd

@@ -85,7 +85,7 @@ instance : CancelMonoid (FreeMonoid α)
   mul_right_cancel _ _ _ := List.append_cancel_right
 
 @[to_additive]
-instance : Inhabited (FreeMonoid α) := ⟨1⟩
+instance : Inhabited (FreeMonoid α) := fast_instance% ⟨1⟩
 
 @[to_additive (attr := simp)]
 theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl

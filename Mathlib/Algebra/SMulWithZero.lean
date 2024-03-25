@@ -148,13 +148,13 @@ instance (priority := 100) MulActionWithZero.toSMulWithZero [m : MulActionWithZe
 #align mul_action_with_zero.to_smul_with_zero MulActionWithZero.toSMulWithZero
 
 /-- See also `Semiring.toModule` -/
-instance MonoidWithZero.toMulActionWithZero : MulActionWithZero R R :=
+instance MonoidWithZero.toMulActionWithZero : MulActionWithZero R R := fast_instance%
   { MulZeroClass.toSMulWithZero R, Monoid.toMulAction R with }
 #align monoid_with_zero.to_mul_action_with_zero MonoidWithZero.toMulActionWithZero
 
 /-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
 `Semiring.toOppositeModule` -/
-instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒᵖ R :=
+instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒᵖ R := fast_instance%
   { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction R with }
 #align monoid_with_zero.to_opposite_mul_action_with_zero MonoidWithZero.toOppositeMulActionWithZero
 

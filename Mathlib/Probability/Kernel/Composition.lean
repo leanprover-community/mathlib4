@@ -894,15 +894,15 @@ theorem lintegral_fst (κ : kernel α (β × γ)) (a : α) {g : β → ℝ≥0�
   rw [fst, lintegral_map _ measurable_fst a hg]
 #align probability_theory.kernel.lintegral_fst ProbabilityTheory.kernel.lintegral_fst
 
-instance IsMarkovKernel.fst (κ : kernel α (β × γ)) [IsMarkovKernel κ] : IsMarkovKernel (fst κ) := by
+instance IsMarkovKernel.fst (κ : kernel α (β × γ)) [IsMarkovKernel κ] : IsMarkovKernel (fst κ) := fast_instance% by
   rw [kernel.fst]; infer_instance
 #align probability_theory.kernel.is_markov_kernel.fst ProbabilityTheory.kernel.IsMarkovKernel.fst
 
-instance IsFiniteKernel.fst (κ : kernel α (β × γ)) [IsFiniteKernel κ] : IsFiniteKernel (fst κ) := by
+instance IsFiniteKernel.fst (κ : kernel α (β × γ)) [IsFiniteKernel κ] : IsFiniteKernel (fst κ) := fast_instance% by
   rw [kernel.fst]; infer_instance
 #align probability_theory.kernel.is_finite_kernel.fst ProbabilityTheory.kernel.IsFiniteKernel.fst
 
-instance IsSFiniteKernel.fst (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : IsSFiniteKernel (fst κ) :=
+instance IsSFiniteKernel.fst (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : IsSFiniteKernel (fst κ) := fast_instance%
   by rw [kernel.fst]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.fst ProbabilityTheory.kernel.IsSFiniteKernel.fst
 
@@ -955,15 +955,15 @@ theorem lintegral_snd (κ : kernel α (β × γ)) (a : α) {g : γ → ℝ≥0�
   rw [snd, lintegral_map _ measurable_snd a hg]
 #align probability_theory.kernel.lintegral_snd ProbabilityTheory.kernel.lintegral_snd
 
-instance IsMarkovKernel.snd (κ : kernel α (β × γ)) [IsMarkovKernel κ] : IsMarkovKernel (snd κ) := by
+instance IsMarkovKernel.snd (κ : kernel α (β × γ)) [IsMarkovKernel κ] : IsMarkovKernel (snd κ) := fast_instance% by
   rw [kernel.snd]; infer_instance
 #align probability_theory.kernel.is_markov_kernel.snd ProbabilityTheory.kernel.IsMarkovKernel.snd
 
-instance IsFiniteKernel.snd (κ : kernel α (β × γ)) [IsFiniteKernel κ] : IsFiniteKernel (snd κ) := by
+instance IsFiniteKernel.snd (κ : kernel α (β × γ)) [IsFiniteKernel κ] : IsFiniteKernel (snd κ) := fast_instance% by
   rw [kernel.snd]; infer_instance
 #align probability_theory.kernel.is_finite_kernel.snd ProbabilityTheory.kernel.IsFiniteKernel.snd
 
-instance IsSFiniteKernel.snd (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : IsSFiniteKernel (snd κ) :=
+instance IsSFiniteKernel.snd (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : IsSFiniteKernel (snd κ) := fast_instance%
   by rw [kernel.snd]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.snd ProbabilityTheory.kernel.IsSFiniteKernel.snd
 

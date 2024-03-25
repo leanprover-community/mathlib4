@@ -50,7 +50,7 @@ theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   · rwa [← h2]
 #align measure_theory.Lp.coe_fn_nonneg MeasureTheory.Lp.coeFn_nonneg
 
-instance instCovariantClassLE : CovariantClass (Lp E p μ) (Lp E p μ) (· + ·) (· ≤ ·) := by
+instance instCovariantClassLE : CovariantClass (Lp E p μ) (Lp E p μ) (· + ·) (· ≤ ·) := fast_instance% by
   refine' ⟨fun f g₁ g₂ hg₁₂ => _⟩
   rw [← coeFn_le] at hg₁₂ ⊢
   filter_upwards [coeFn_add f g₁, coeFn_add f g₂, hg₁₂] with _ h1 h2 h3
@@ -58,7 +58,7 @@ instance instCovariantClassLE : CovariantClass (Lp E p μ) (Lp E p μ) (· + ·)
   exact add_le_add le_rfl h3
 #align measure_theory.Lp.has_le.le.covariant_class MeasureTheory.Lp.instCovariantClassLE
 
-instance instOrderedAddCommGroup : OrderedAddCommGroup (Lp E p μ) :=
+instance instOrderedAddCommGroup : OrderedAddCommGroup (Lp E p μ) := fast_instance%
   { Subtype.partialOrder _, AddSubgroup.toAddCommGroup _ with
     add_le_add_left := fun _ _ => add_le_add_left }
 #align measure_theory.Lp.ordered_add_comm_group MeasureTheory.Lp.instOrderedAddCommGroup
@@ -79,7 +79,7 @@ theorem _root_.MeasureTheory.Memℒp.abs {f : α → E} (hf : Memℒp f p μ) : 
   hf.sup hf.neg
 #align measure_theory.mem_ℒp.abs MeasureTheory.Memℒp.abs
 
-instance instLattice : Lattice (Lp E p μ) :=
+instance instLattice : Lattice (Lp E p μ) := fast_instance%
   Subtype.lattice
     (fun f g hf hg => by
       rw [mem_Lp_iff_memℒp] at *

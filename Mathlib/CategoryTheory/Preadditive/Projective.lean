@@ -93,7 +93,7 @@ section
 
 open ZeroObject
 
-instance zero_projective [HasZeroObject C] : Projective (0 : C) :=
+instance zero_projective [HasZeroObject C] : Projective (0 : C) := fast_instance%
   (isZero_zero C).projective
 #align category_theory.projective.zero_projective CategoryTheory.Projective.zero_projective
 
@@ -158,7 +158,7 @@ def over (X : C) : C :=
   (EnoughProjectives.presentation X).some.p
 #align category_theory.projective.over CategoryTheory.Projective.over
 
-instance projective_over (X : C) : Projective (over X) :=
+instance projective_over (X : C) : Projective (over X) := fast_instance%
   (EnoughProjectives.presentation X).some.projective
 #align category_theory.projective.projective_over CategoryTheory.Projective.projective_over
 
@@ -169,7 +169,7 @@ def π (X : C) : over X ⟶ X :=
   (EnoughProjectives.presentation X).some.f
 #align category_theory.projective.π CategoryTheory.Projective.π
 
-instance π_epi (X : C) : Epi (π X) :=
+instance π_epi (X : C) : Epi (π X) := fast_instance%
   (EnoughProjectives.presentation X).some.epi
 #align category_theory.projective.π_epi CategoryTheory.Projective.π_epi
 
@@ -183,7 +183,7 @@ an arbitrarily chosen projective object over `kernel f`.
 def syzygies : C := over (kernel f)
 #align category_theory.projective.syzygies CategoryTheory.Projective.syzygies
 
-instance : Projective (syzygies f) := inferInstanceAs (Projective (over _))
+instance : Projective (syzygies f) := fast_instance% inferInstanceAs (Projective (over _))
 
 /-- When `C` has enough projectives,
 `Projective.d f : Projective.syzygies f ⟶ X` is the composition

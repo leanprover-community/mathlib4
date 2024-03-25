@@ -37,7 +37,7 @@ namespace AddCircle
 
 variable (p : ℝ)
 
-instance : NormedAddCommGroup (AddCircle p) :=
+instance : NormedAddCommGroup (AddCircle p) := fast_instance%
   AddSubgroup.normedAddCommGroupQuotient _
 
 @[simp]

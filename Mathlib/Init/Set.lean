@@ -58,7 +58,7 @@ namespace Set
 protected def Mem (a : α) (s : Set α) : Prop :=
   s a
 
-instance : Membership α (Set α) :=
+instance : Membership α (Set α) := fast_instance%
   ⟨Set.Mem⟩
 
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
@@ -73,13 +73,13 @@ protected def Subset (s₁ s₂ : Set α) :=
 
 /-- Porting note: we introduce `≤` before `⊆` to help the unifier when applying lattice theorems
 to subset hypotheses. -/
-instance : LE (Set α) :=
+instance : LE (Set α) := fast_instance%
   ⟨Set.Subset⟩
 
-instance : HasSubset (Set α) :=
+instance : HasSubset (Set α) := fast_instance%
   ⟨(· ≤ ·)⟩
 
-instance : EmptyCollection (Set α) :=
+instance : EmptyCollection (Set α) := fast_instance%
   ⟨fun _ ↦ False⟩
 
 syntax "{" extBinder " | " term "}" : term
@@ -159,28 +159,28 @@ Note that you should **not** use this definition directly, but instead write `in
 mediated by the `Insert` typeclass). -/
 protected def insert (a : α) (s : Set α) : Set α := {b | b = a ∨ b ∈ s}
 
-instance : Insert α (Set α) := ⟨Set.insert⟩
+instance : Insert α (Set α) := fast_instance% ⟨Set.insert⟩
 
 /-- The singleton of an element `a` is the set with `a` as a single element.
 
 Note that you should **not** use this definition directly, but instead write `{a}`. -/
 protected def singleton (a : α) : Set α := {b | b = a}
 
-instance instSingletonSet : Singleton α (Set α) := ⟨Set.singleton⟩
+instance instSingletonSet : Singleton α (Set α) := fast_instance% ⟨Set.singleton⟩
 
 /-- The union of two sets `s` and `t` is the set of elements contained in either `s` or `t`.
 
 Note that you should **not** use this definition directly, but instead write `s ∪ t`. -/
 protected def union (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∨ a ∈ s₂}
 
-instance : Union (Set α) := ⟨Set.union⟩
+instance : Union (Set α) := fast_instance% ⟨Set.union⟩
 
 /-- The intersection of two sets `s` and `t` is the set of elements contained in both `s` and `t`.
 
 Note that you should **not** use this definition directly, but instead write `s ∩ t`. -/
 protected def inter (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∧ a ∈ s₂}
 
-instance : Inter (Set α) := ⟨Set.inter⟩
+instance : Inter (Set α) := fast_instance% ⟨Set.inter⟩
 
 /-- The complement of a set `s` is the set of elements not contained in `s`.
 
@@ -192,7 +192,7 @@ protected def compl (s : Set α) : Set α := {a | a ∉ s}
 Note that you should **not** use this definition directly, but instead write `s \ t`. -/
 protected def diff (s t : Set α) : Set α := {a ∈ s | a ∉ t}
 
-instance : SDiff (Set α) := ⟨Set.diff⟩
+instance : SDiff (Set α) := fast_instance% ⟨Set.diff⟩
 
 /-- `𝒫 s` is the set of all subsets of `s`. -/
 def powerset (s : Set α) : Set (Set α) := {t | t ⊆ s}

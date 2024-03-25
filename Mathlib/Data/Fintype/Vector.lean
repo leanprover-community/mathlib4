@@ -14,15 +14,15 @@ import Mathlib.Data.Sym.Basic
 
 variable {α : Type*}
 
-instance Vector.fintype [Fintype α] {n : ℕ} : Fintype (Vector α n) :=
+instance Vector.fintype [Fintype α] {n : ℕ} : Fintype (Vector α n) := fast_instance%
   Fintype.ofEquiv _ (Equiv.vectorEquivFin _ _).symm
 #align vector.fintype Vector.fintype
 
-instance [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym.Sym' α n) := by
+instance [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym.Sym' α n) := fast_instance% by
   refine @Quotient.fintype _ _ _ ?_
   -- Porting note: had to build the instance manually
   intros x y
   apply List.decidablePerm
 
-instance [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym α n) :=
+instance [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym α n) := fast_instance%
   Fintype.ofEquiv _ Sym.symEquivSym'.symm

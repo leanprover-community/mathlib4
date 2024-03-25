@@ -18,7 +18,7 @@ universe u
 
 namespace CategoryTheory
 
-instance : ReflectsIsomorphisms (forget (Type u)) where reflects _ _ _ {i} := i
+instance : ReflectsIsomorphisms (forget (Type u)) where reflects _ _ _ {i} := fast_instance% i
 
 variable (C : Type (u + 1)) [Category C] [ConcreteCategory.{u} C]
 variable (D : Type (u + 1)) [Category D] [ConcreteCategory.{u} D]

@@ -204,7 +204,7 @@ variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [BoundedSMul S R] [BoundedSMul S M] [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M]
 variable [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
 
-instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
+instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) := fast_instance%
   inferInstanceAs <| SeminormedAddCommGroup (WithLp 1 <| R × M)
 
 example :
@@ -243,7 +243,7 @@ instance instL1SeminormedRing : SeminormedRing (tsze R M) where
   __ : SeminormedAddCommGroup (tsze R M) := inferInstance
   __ : Ring (tsze R M) := inferInstance
 
-instance instL1BoundedSMul : BoundedSMul S (tsze R M) :=
+instance instL1BoundedSMul : BoundedSMul S (tsze R M) := fast_instance%
   inferInstanceAs <| BoundedSMul S (WithLp 1 <| R × M)
 
 instance [NormOneClass R] : NormOneClass (tsze R M) where
@@ -275,7 +275,7 @@ variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [BoundedSMul S R] [BoundedSMul S M] [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M]
 variable [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
 
-instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
+instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) := fast_instance%
   inferInstanceAs <| NormedAddCommGroup (WithLp 1 <| R × M)
 
 instance instL1NormedRing : NormedRing (tsze R M) where
@@ -303,7 +303,7 @@ variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐ�
 variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
 
-instance instL1NormedSpace : NormedSpace 𝕜 (tsze R M) :=
+instance instL1NormedSpace : NormedSpace 𝕜 (tsze R M) := fast_instance%
   inferInstanceAs <| NormedSpace 𝕜 (WithLp 1 <| R × M)
 
 instance instL1NormedAlgebra : NormedAlgebra 𝕜 (tsze R M) where

@@ -34,7 +34,7 @@ of `s` and some element of the set family, and we denote this `𝒜.Shatters s`.
 is *traced* by `𝒜`. -/
 def Shatters (𝒜 : Finset (Finset α)) (s : Finset α) : Prop := ∀ ⦃t⦄, t ⊆ s → ∃ u ∈ 𝒜, s ∩ u = t
 
-instance : DecidablePred 𝒜.Shatters := fun _s ↦ decidableForallOfDecidableSubsets
+instance : DecidablePred 𝒜.Shatters := fast_instance% fun _s ↦ decidableForallOfDecidableSubsets
 
 lemma Shatters.exists_inter_eq_singleton (hs : Shatters 𝒜 s) (ha : a ∈ s) : ∃ t ∈ 𝒜, s ∩ t = {a} :=
   hs <| singleton_subset_iff.2 ha

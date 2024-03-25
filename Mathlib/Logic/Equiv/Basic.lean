@@ -1493,7 +1493,7 @@ theorem subtypeEquivCodomain_symm_apply_ne
 
 end subtypeEquivCodomain
 
-instance : CanLift (α → β) (α ≃ β) (↑) Bijective where prf f hf := ⟨ofBijective f hf, rfl⟩
+instance : CanLift (α → β) (α ≃ β) (↑) Bijective where prf f hf := fast_instance% ⟨ofBijective f hf, rfl⟩
 
 section
 
@@ -1975,16 +1975,16 @@ theorem semiconj_conj (f : α₁ → α₁) : Semiconj e f (e.conj f) := fun x =
 theorem semiconj₂_conj : Semiconj₂ e f (e.arrowCongr e.conj f) := fun x y => by simp [arrowCongr]
 #align equiv.semiconj₂_conj Equiv.semiconj₂_conj
 
-instance [Std.Associative f] : Std.Associative (e.arrowCongr (e.arrowCongr e) f) :=
+instance [Std.Associative f] : Std.Associative (e.arrowCongr (e.arrowCongr e) f) := fast_instance%
   (e.semiconj₂_conj f).isAssociative_right e.surjective
 
-instance [Std.IdempotentOp f] : Std.IdempotentOp (e.arrowCongr (e.arrowCongr e) f) :=
+instance [Std.IdempotentOp f] : Std.IdempotentOp (e.arrowCongr (e.arrowCongr e) f) := fast_instance%
   (e.semiconj₂_conj f).isIdempotent_right e.surjective
 
-instance [IsLeftCancel α₁ f] : IsLeftCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
+instance [IsLeftCancel α₁ f] : IsLeftCancel β₁ (e.arrowCongr (e.arrowCongr e) f) := fast_instance%
   ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsLeftCancel.left_cancel _ f _ x y z⟩
 
-instance [IsRightCancel α₁ f] : IsRightCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
+instance [IsRightCancel α₁ f] : IsRightCancel β₁ (e.arrowCongr (e.arrowCongr e) f) := fast_instance%
   ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsRightCancel.right_cancel _ f _ x y z⟩
 
 end BinaryOp

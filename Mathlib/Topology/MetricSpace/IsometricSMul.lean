@@ -512,7 +512,7 @@ variable {Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [SMul M X]
   [IsometricSMul M X]
 
 @[to_additive]
-instance [SMul M Y] [IsometricSMul M Y] : IsometricSMul M (X × Y) :=
+instance [SMul M Y] [IsometricSMul M Y] : IsometricSMul M (X × Y) := fast_instance%
   ⟨fun c => (isometry_smul X c).prod_map (isometry_smul Y c)⟩
 
 @[to_additive]
@@ -531,23 +531,23 @@ instance Prod.isometricSMul'' {N} [Mul M] [PseudoEMetricSpace M] [IsometricSMul 
 #align prod.has_isometric_vadd'' Prod.isometricVAdd''
 
 @[to_additive]
-instance Units.isometricSMul [Monoid M] : IsometricSMul Mˣ X :=
+instance Units.isometricSMul [Monoid M] : IsometricSMul Mˣ X := fast_instance%
   ⟨fun c => isometry_smul X (c : M)⟩
 #align units.has_isometric_smul Units.isometricSMul
 #align add_units.has_isometric_vadd AddUnits.isometricVAdd
 
 @[to_additive]
-instance : IsometricSMul M Xᵐᵒᵖ :=
+instance : IsometricSMul M Xᵐᵒᵖ := fast_instance%
   ⟨fun c x y => by simpa only using edist_smul_left c x.unop y.unop⟩
 
 @[to_additive]
-instance ULift.isometricSMul : IsometricSMul (ULift M) X :=
+instance ULift.isometricSMul : IsometricSMul (ULift M) X := fast_instance%
   ⟨fun c => by simpa only using isometry_smul X c.down⟩
 #align ulift.has_isometric_smul ULift.isometricSMul
 #align ulift.has_isometric_vadd ULift.isometricVAdd
 
 @[to_additive]
-instance ULift.isometricSMul' : IsometricSMul M (ULift X) :=
+instance ULift.isometricSMul' : IsometricSMul M (ULift X) := fast_instance%
   ⟨fun c x y => by simpa only using edist_smul_left c x.1 y.1⟩
 #align ulift.has_isometric_smul' ULift.isometricSMul'
 #align ulift.has_isometric_vadd' ULift.isometricVAdd'
@@ -573,7 +573,7 @@ instance Pi.isometricSMul'' {ι} {M : ι → Type*} [Fintype ι] [∀ i, Mul (M 
 #align pi.has_isometric_smul'' Pi.isometricSMul''
 #align pi.has_isometric_vadd'' Pi.isometricVAdd''
 
-instance Additive.isometricVAdd : IsometricVAdd (Additive M) X :=
+instance Additive.isometricVAdd : IsometricVAdd (Additive M) X := fast_instance%
   ⟨fun c => isometry_smul X (toMul c)⟩
 #align additive.has_isometric_vadd Additive.isometricVAdd
 

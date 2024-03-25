@@ -329,7 +329,7 @@ instance (priority := 100) Regular.weaklyRegular [R1Space α] [Regular μ] :
 
 namespace OuterRegular
 
-instance zero : OuterRegular (0 : Measure α) :=
+instance zero : OuterRegular (0 : Measure α) := fast_instance%
   ⟨fun A _ _r hr => ⟨univ, subset_univ A, isOpen_univ, hr⟩⟩
 #align measure_theory.measure.outer_regular.zero MeasureTheory.Measure.OuterRegular.zero
 
@@ -661,13 +661,13 @@ theorem _root_.MeasurableSet.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : Me
     μ U = ⨆ (K : Set α) (_ : K ⊆ U) (_ : IsCompact K), μ K :=
   InnerRegular.innerRegular.measure_eq_iSup hU
 
-instance zero : InnerRegular (0 : Measure α) :=
+instance zero : InnerRegular (0 : Measure α) := fast_instance%
   ⟨fun _ _ _r hr => ⟨∅, empty_subset _, isCompact_empty, hr⟩⟩
 
-instance smul [h : InnerRegular μ] (c : ℝ≥0∞) : InnerRegular (c • μ) :=
+instance smul [h : InnerRegular μ] (c : ℝ≥0∞) : InnerRegular (c • μ) := fast_instance%
   ⟨InnerRegularWRT.smul h.innerRegular c⟩
 
-instance smul_nnreal [InnerRegular μ] (c : ℝ≥0) : InnerRegular (c • μ) := smul (c : ℝ≥0∞)
+instance smul_nnreal [InnerRegular μ] (c : ℝ≥0) : InnerRegular (c • μ) := fast_instance% smul (c : ℝ≥0∞)
 
 instance (priority := 100) [InnerRegular μ] : InnerRegularCompactLTTop μ :=
   ⟨fun _s hs r hr ↦ InnerRegular.innerRegular hs.1 r hr⟩
@@ -807,7 +807,7 @@ protected theorem _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTo
     ∃ U, K ⊆ U ∧ IsOpen U ∧ μ U < μ K + ε :=
   hK.exists_isOpen_lt_of_lt _ (ENNReal.lt_add_right hK.measure_lt_top.ne hε)
 
-instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularCompactLTTop (c • μ) := by
+instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularCompactLTTop (c • μ) := fast_instance% by
   by_cases hc : c = 0
   · simp only [hc, zero_smul]
     infer_instance
@@ -847,7 +847,7 @@ end InnerRegularCompactLTTop
 
 namespace WeaklyRegular
 
-instance zero : WeaklyRegular (0 : Measure α) :=
+instance zero : WeaklyRegular (0 : Measure α) := fast_instance%
   ⟨fun _ _ _r hr => ⟨∅, empty_subset _, isClosed_empty, hr⟩⟩
 
 /-- If `μ` is a weakly regular measure, then any open set can be approximated by a closed subset. -/
@@ -938,14 +938,14 @@ protected theorem smul [WeaklyRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x
   haveI := OuterRegular.smul μ hx
   exact ⟨WeaklyRegular.innerRegular.smul x⟩
 
-instance smul_nnreal [WeaklyRegular μ] (c : ℝ≥0) : WeaklyRegular (c • μ) :=
+instance smul_nnreal [WeaklyRegular μ] (c : ℝ≥0) : WeaklyRegular (c • μ) := fast_instance%
   WeaklyRegular.smul coe_ne_top
 
 end WeaklyRegular
 
 namespace Regular
 
-instance zero : Regular (0 : Measure α) :=
+instance zero : Regular (0 : Measure α) := fast_instance%
   ⟨fun _ _ _r hr => ⟨∅, empty_subset _, isCompact_empty, hr⟩⟩
 #align measure_theory.measure.regular.zero MeasureTheory.Measure.Regular.zero
 
@@ -997,7 +997,7 @@ protected theorem smul [Regular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • �
   exact ⟨Regular.innerRegular.smul x⟩
 #align measure_theory.measure.regular.smul MeasureTheory.Measure.Regular.smul
 
-instance smul_nnreal [Regular μ] (c : ℝ≥0) : Regular (c • μ) := Regular.smul coe_ne_top
+instance smul_nnreal [Regular μ] (c : ℝ≥0) : Regular (c • μ) := fast_instance% Regular.smul coe_ne_top
 
 /-- The restriction of a regular measure to a set of finite measure is regular. -/
 theorem restrict_of_measure_ne_top [R1Space α] [BorelSpace α] [Regular μ]

@@ -226,7 +226,7 @@ instance shortOfStateAux : ∀ (n : ℕ) {s : S} (h : turnBound s ≤ n), Short 
       shortOfRelabelling (relabellingMoveRightAux (n + 1) h j).symm (shortOfStateAux n _)
 #align pgame.short_of_state_aux SetTheory.PGame.shortOfStateAux
 
-instance shortOfState (s : S) : Short (ofState s) := by
+instance shortOfState (s : S) : Short (ofState s) := fast_instance% by
   dsimp [PGame.ofState]
   infer_instance
 #align pgame.short_of_state SetTheory.PGame.shortOfState

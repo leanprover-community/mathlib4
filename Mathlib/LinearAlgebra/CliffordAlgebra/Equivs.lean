@@ -77,7 +77,7 @@ theorem ι_eq_zero : ι (0 : QuadraticForm R Unit) = 0 :=
 #align clifford_algebra_ring.ι_eq_zero CliffordAlgebraRing.ι_eq_zero
 
 /-- Since the vector space is empty the ring is commutative. -/
-instance : CommRing (CliffordAlgebra (0 : QuadraticForm R Unit)) :=
+instance : CommRing (CliffordAlgebra (0 : QuadraticForm R Unit)) := fast_instance%
   { CliffordAlgebra.instRing _ with
     mul_comm := fun x y => by
       induction x using CliffordAlgebra.induction with
@@ -212,7 +212,7 @@ protected def equiv : CliffordAlgebra Q ≃ₐ[ℝ] ℂ :=
 /-- The clifford algebra is commutative since it is isomorphic to the complex numbers.
 
 TODO: prove this is true for all `CliffordAlgebra`s over a 1-dimensional vector space. -/
-instance : CommRing (CliffordAlgebra Q) :=
+instance : CommRing (CliffordAlgebra Q) := fast_instance%
   { CliffordAlgebra.instRing _ with
     mul_comm := fun x y =>
       CliffordAlgebraComplex.equiv.injective <| by

@@ -101,7 +101,7 @@ gives the same instance.
 
 /-- Let `B` be a charted space modelled on `HB`.  Then a fiber bundle `E` over a base `B` with model
 fiber `F` is naturally a charted space modelled on `HB.prod F`. -/
-instance FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace F E) :=
+instance FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace F E) := fast_instance%
   ChartedSpace.comp _ (B × F) _
 #align fiber_bundle.charted_space' FiberBundle.chartedSpace
 

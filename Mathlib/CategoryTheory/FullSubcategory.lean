@@ -79,7 +79,7 @@ def inducedFunctor : InducedCategory D F ⥤ D where
 #align category_theory.induced_functor_map CategoryTheory.inducedFunctor_map
 #align category_theory.induced_functor_obj CategoryTheory.inducedFunctor_obj
 
-instance InducedCategory.full : Full (inducedFunctor F) where preimage f := f
+instance InducedCategory.full : Full (inducedFunctor F) where preimage f := fast_instance% f
 #align category_theory.induced_category.full CategoryTheory.InducedCategory.full
 
 instance InducedCategory.faithful : Faithful (inducedFunctor F) where
@@ -109,7 +109,7 @@ structure FullSubcategory where
 #align category_theory.full_subcategory.ext CategoryTheory.FullSubcategory.ext
 #align category_theory.full_subcategory.ext_iff CategoryTheory.FullSubcategory.ext_iff
 
-instance FullSubcategory.category : Category.{v} (FullSubcategory Z) :=
+instance FullSubcategory.category : Category.{v} (FullSubcategory Z) := fast_instance%
   InducedCategory.category FullSubcategory.obj
 #align category_theory.full_subcategory.category CategoryTheory.FullSubcategory.category
 
@@ -137,11 +137,11 @@ theorem fullSubcategoryInclusion.map {X Y} {f : X ⟶ Y} : (fullSubcategoryInclu
   rfl
 #align category_theory.full_subcategory_inclusion.map CategoryTheory.fullSubcategoryInclusion.map
 
-instance FullSubcategory.full : Full (fullSubcategoryInclusion Z) :=
+instance FullSubcategory.full : Full (fullSubcategoryInclusion Z) := fast_instance%
   InducedCategory.full _
 #align category_theory.full_subcategory.full CategoryTheory.FullSubcategory.full
 
-instance FullSubcategory.faithful : Faithful (fullSubcategoryInclusion Z) :=
+instance FullSubcategory.faithful : Faithful (fullSubcategoryInclusion Z) := fast_instance%
   InducedCategory.faithful _
 #align category_theory.full_subcategory.faithful CategoryTheory.FullSubcategory.faithful
 
@@ -211,7 +211,7 @@ instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Faithful F] :
     Faithful (FullSubcategory.lift P F hF) :=
   Faithful.of_comp_iso (FullSubcategory.lift_comp_inclusion P F hF)
 
-instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Full F] : Full (FullSubcategory.lift P F hF) :=
+instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Full F] : Full (FullSubcategory.lift P F hF) := fast_instance%
   Full.ofCompFaithfulIso (FullSubcategory.lift_comp_inclusion P F hF)
 
 @[simp]

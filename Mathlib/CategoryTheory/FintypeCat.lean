@@ -36,7 +36,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace FintypeCat
 
-instance : CoeSort FintypeCat (Type*) :=
+instance : CoeSort FintypeCat (Type*) := fast_instance%
   Bundled.coeSort
 
 /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
@@ -45,13 +45,13 @@ def of (X : Type*) [Fintype X] : FintypeCat :=
 set_option linter.uppercaseLean3 false in
 #align Fintype.of FintypeCat.of
 
-instance : Inhabited FintypeCat :=
+instance : Inhabited FintypeCat := fast_instance%
   ⟨of PEmpty⟩
 
-instance {X : FintypeCat} : Fintype X :=
+instance {X : FintypeCat} : Fintype X := fast_instance%
   X.2
 
-instance : Category FintypeCat :=
+instance : Category FintypeCat := fast_instance%
   InducedCategory.category Bundled.α
 
 /-- The fully faithful embedding of `FintypeCat` into the category of types. -/
@@ -61,16 +61,16 @@ def incl : FintypeCat ⥤ Type* :=
 set_option linter.uppercaseLean3 false in
 #align Fintype.incl FintypeCat.incl
 
-instance : Full incl := InducedCategory.full _
-instance : Faithful incl := InducedCategory.faithful _
+instance : Full incl := fast_instance% InducedCategory.full _
+instance : Faithful incl := fast_instance% InducedCategory.faithful _
 
-instance concreteCategoryFintype : ConcreteCategory FintypeCat :=
+instance concreteCategoryFintype : ConcreteCategory FintypeCat := fast_instance%
   ⟨incl⟩
 set_option linter.uppercaseLean3 false in
 #align Fintype.concrete_category_Fintype FintypeCat.concreteCategoryFintype
 
 /- Help typeclass inference infer fullness of forgetful functor. -/
-instance : Full (forget FintypeCat) := inferInstanceAs <| Full FintypeCat.incl
+instance : Full (forget FintypeCat) := fast_instance% inferInstanceAs <| Full FintypeCat.incl
 
 @[simp]
 theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
@@ -137,7 +137,7 @@ def mk : ℕ → Skeleton :=
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.mk FintypeCat.Skeleton.mk
 
-instance : Inhabited Skeleton :=
+instance : Inhabited Skeleton := fast_instance%
   ⟨mk 0⟩
 
 /-- Given any object of `Fintype.Skeleton`, this returns the associated natural number. -/
@@ -187,11 +187,11 @@ def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.incl FintypeCat.Skeleton.incl
 
-instance : Full incl where preimage f := f
+instance : Full incl where preimage f := fast_instance% f
 
 instance : Faithful incl where
 
-instance : EssSurj incl :=
+instance : EssSurj incl := fast_instance%
   EssSurj.mk fun X =>
     let F := Fintype.equivFin X
     ⟨mk (Fintype.card X),
@@ -199,7 +199,7 @@ instance : EssSurj incl :=
         { hom := F.symm ∘ ULift.down
           inv := ULift.up ∘ F }⟩
 
-noncomputable instance : IsEquivalence incl :=
+noncomputable instance : IsEquivalence incl := fast_instance%
   Equivalence.ofFullyFaithfullyEssSurj _
 
 /-- The equivalence between `Fintype.Skeleton` and `Fintype`. -/

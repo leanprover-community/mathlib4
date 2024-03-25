@@ -84,10 +84,10 @@ namespace Ordnode
 
 variable {α : Type*}
 
-instance : EmptyCollection (Ordnode α) :=
+instance : EmptyCollection (Ordnode α) := fast_instance%
   ⟨nil⟩
 
-instance : Inhabited (Ordnode α) :=
+instance : Inhabited (Ordnode α) := fast_instance%
   ⟨nil⟩
 
 /-- **Internal use only**
@@ -126,7 +126,7 @@ protected def singleton (a : α) : Ordnode α :=
 -- mathport name: «exprι »
 local prefix:arg "ι" => Ordnode.singleton
 
-instance : Singleton α (Ordnode α) :=
+instance : Singleton α (Ordnode α) := fast_instance%
   ⟨Ordnode.singleton⟩
 
 /-- O(1). Get the size of the set.
@@ -188,7 +188,7 @@ def repr {α} [Repr α] (o : Ordnode α) (n : ℕ) : Std.Format :=
       Std.Format.paren fmt
 #align ordnode.repr Ordnode.repr
 
-instance {α} [Repr α] : Repr (Ordnode α) :=
+instance {α} [Repr α] : Repr (Ordnode α) := fast_instance%
   ⟨repr⟩
 
 -- Note: The function has been written with tactics to avoid extra junk
@@ -366,7 +366,7 @@ def Emem (x : α) : Ordnode α → Prop :=
   Any (Eq x)
 #align ordnode.emem Ordnode.Emem
 
-instance Emem.decidable (x : α) [DecidableEq α] : ∀ t, Decidable (Emem x t) := by
+instance Emem.decidable (x : α) [DecidableEq α] : ∀ t, Decidable (Emem x t) := fast_instance% by
   dsimp [Emem]; infer_instance
 #align ordnode.emem.decidable Ordnode.Emem.decidable
 
@@ -663,7 +663,7 @@ def toRevList (t : Ordnode α) : List α :=
   foldl (flip List.cons) [] t
 #align ordnode.to_rev_list Ordnode.toRevList
 
-instance [ToString α] : ToString (Ordnode α) :=
+instance [ToString α] : ToString (Ordnode α) := fast_instance%
   ⟨fun t => "{" ++ String.intercalate ", " (t.toList.map toString) ++ "}"⟩
 
 -- Porting note removed unsafe
@@ -678,7 +678,7 @@ def Equiv (t₁ t₂ : Ordnode α) : Prop :=
   t₁.size = t₂.size ∧ t₁.toList = t₂.toList
 #align ordnode.equiv Ordnode.Equiv
 
-instance [DecidableEq α] : DecidableRel (@Equiv α) := fun _ _ => And.decidable
+instance [DecidableEq α] : DecidableRel (@Equiv α) := fast_instance% fun _ _ => And.decidable
 
 /-- O(2^n). Constructs the powerset of a given set, that is, the set of all subsets.
 
@@ -947,10 +947,10 @@ def find (x : α) : Ordnode α → Option α
     | Ordering.gt => find x r
 #align ordnode.find Ordnode.find
 
-instance : Membership α (Ordnode α) :=
+instance : Membership α (Ordnode α) := fast_instance%
   ⟨fun x t => t.mem x⟩
 
-instance mem.decidable (x : α) (t : Ordnode α) : Decidable (x ∈ t) :=
+instance mem.decidable (x : α) (t : Ordnode α) : Decidable (x ∈ t) := fast_instance%
   Bool.decEq _ _
 #align ordnode.mem.decidable Ordnode.mem.decidable
 
@@ -1052,7 +1052,7 @@ protected def insert (x : α) : Ordnode α → Ordnode α
     | Ordering.gt => balanceR l y (Ordnode.insert x r)
 #align ordnode.insert Ordnode.insert
 
-instance : Insert α (Ordnode α) :=
+instance : Insert α (Ordnode α) := fast_instance%
   ⟨Ordnode.insert⟩
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.

@@ -128,7 +128,7 @@ end OfNat
 
 namespace NeZero
 
-instance charZero {M} {n : ℕ} [NeZero n] [AddMonoidWithOne M] [CharZero M] : NeZero (n : M) :=
+instance charZero {M} {n : ℕ} [NeZero n] [AddMonoidWithOne M] [CharZero M] : NeZero (n : M) := fast_instance%
   ⟨Nat.cast_ne_zero.mpr out⟩
 #align ne_zero.char_zero NeZero.charZero
 

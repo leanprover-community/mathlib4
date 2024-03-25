@@ -81,7 +81,7 @@ namespace Box
 
 variable (I J : Box ι) {x y : ι → ℝ}
 
-instance : Inhabited (Box ι) :=
+instance : Inhabited (Box ι) := fast_instance%
   ⟨⟨0, 1, fun _ ↦ zero_lt_one⟩⟩
 
 theorem lower_le_upper : I.lower ≤ I.upper :=
@@ -92,14 +92,14 @@ theorem lower_ne_upper (i) : I.lower i ≠ I.upper i :=
   (I.lower_lt_upper i).ne
 #align box_integral.box.lower_ne_upper BoxIntegral.Box.lower_ne_upper
 
-instance : Membership (ι → ℝ) (Box ι) :=
+instance : Membership (ι → ℝ) (Box ι) := fast_instance%
   ⟨fun x I ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
 
 -- Porting note: added
 @[coe]
 def toSet (I : Box ι) : Set (ι → ℝ) := { x | x ∈ I }
 
-instance : CoeTC (Box ι) (Set <| ι → ℝ) :=
+instance : CoeTC (Box ι) (Set <| ι → ℝ) := fast_instance%
   ⟨toSet⟩
 
 @[simp]
@@ -144,7 +144,7 @@ theorem empty_ne_coe : ∅ ≠ (I : Set (ι → ℝ)) :=
   I.coe_ne_empty.symm
 #align box_integral.box.empty_ne_coe BoxIntegral.Box.empty_ne_coe
 
-instance : LE (Box ι) :=
+instance : LE (Box ι) := fast_instance%
   ⟨fun I J ↦ ∀ ⦃x⦄, x ∈ I → x ∈ J⟩
 
 theorem le_def : I ≤ J ↔ ∀ x ∈ I, x ∈ J := Iff.rfl
@@ -192,7 +192,7 @@ theorem ne_of_disjoint_coe (h : Disjoint (I : Set (ι → ℝ)) J) : I ≠ J :=
   mt coe_inj.2 <| h.ne I.coe_ne_empty
 #align box_integral.box.ne_of_disjoint_coe BoxIntegral.Box.ne_of_disjoint_coe
 
-instance : PartialOrder (Box ι) :=
+instance : PartialOrder (Box ι) := fast_instance%
   { PartialOrder.lift ((↑) : Box ι → Set (ι → ℝ)) injective_coe with le := (· ≤ ·) }
 
 /-- Closed box corresponding to `I : BoxIntegral.Box ι`. -/
@@ -244,11 +244,11 @@ theorem coe_subset_Icc : ↑I ⊆ Box.Icc I :=
 
 /-- `I ⊔ J` is the least box that includes both `I` and `J`. Since `↑I ∪ ↑J` is usually not a box,
 `↑(I ⊔ J)` is larger than `↑I ∪ ↑J`. -/
-instance : Sup (Box ι) :=
+instance : Sup (Box ι) := fast_instance%
   ⟨fun I J ↦ ⟨I.lower ⊓ J.lower, I.upper ⊔ J.upper,
     fun i ↦ (min_le_left _ _).trans_lt <| (I.lower_lt_upper i).trans_le (le_max_left _ _)⟩⟩
 
-instance : SemilatticeSup (Box ι) :=
+instance : SemilatticeSup (Box ι) := fast_instance%
   { (inferInstance : PartialOrder (Box ι)),
     (inferInstance : Sup (Box ι)) with
     le_sup_left := fun _ _ ↦ le_iff_bounds.2 ⟨inf_le_left, le_sup_left⟩
@@ -267,7 +267,7 @@ In this section we define coercion from `WithBot (Box ι)` to `Set (ι → ℝ)`
 @[coe]
 def withBotToSet (o : WithBot (Box ι)) : Set (ι → ℝ) := o.elim ∅ (↑)
 
-instance withBotCoe : CoeTC (WithBot (Box ι)) (Set (ι → ℝ)) :=
+instance withBotCoe : CoeTC (WithBot (Box ι)) (Set (ι → ℝ)) := fast_instance%
   ⟨withBotToSet⟩
 #align box_integral.box.with_bot_coe BoxIntegral.Box.withBotCoe
 
@@ -336,7 +336,7 @@ theorem coe_mk' (l u : ι → ℝ) : (mk' l u : Set (ι → ℝ)) = pi univ fun 
     exact Ioc_eq_empty hi
 #align box_integral.box.coe_mk' BoxIntegral.Box.coe_mk'
 
-instance WithBot.inf : Inf (WithBot (Box ι)) :=
+instance WithBot.inf : Inf (WithBot (Box ι)) := fast_instance%
   ⟨fun I ↦
     WithBot.recBotCoe (fun _ ↦ ⊥)
       (fun I J ↦ WithBot.recBotCoe ⊥ (fun J ↦ mk' (I.lower ⊔ J.lower) (I.upper ⊓ J.upper)) J) I⟩
@@ -354,7 +354,7 @@ theorem coe_inf (I J : WithBot (Box ι)) : (↑(I ⊓ J) : Set (ι → ℝ)) = (
     coe_coe]
 #align box_integral.box.coe_inf BoxIntegral.Box.coe_inf
 
-instance : Lattice (WithBot (Box ι)) :=
+instance : Lattice (WithBot (Box ι)) := fast_instance%
   { WithBot.semilatticeSup,
     Box.WithBot.inf with
     inf_le_left := fun I J ↦ by

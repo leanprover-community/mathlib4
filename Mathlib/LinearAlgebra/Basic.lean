@@ -597,7 +597,7 @@ section Module
 variable [Subsingleton M] [Subsingleton M₂]
 
 /-- Between two zero modules, the zero map is an equivalence. -/
-instance : Zero (M ≃ₛₗ[σ₁₂] M₂) :=
+instance : Zero (M ≃ₛₗ[σ₁₂] M₂) := fast_instance%
   ⟨{ (0 : M →ₛₗ[σ₁₂] M₂) with
       toFun := 0
       invFun := 0
@@ -628,7 +628,7 @@ instance : Unique (M ≃ₛₗ[σ₁₂] M₂) where
 
 end Module
 
-instance uniqueOfSubsingleton [Subsingleton R] [Subsingleton R₂] : Unique (M ≃ₛₗ[σ₁₂] M₂) := by
+instance uniqueOfSubsingleton [Subsingleton R] [Subsingleton R₂] : Unique (M ≃ₛₗ[σ₁₂] M₂) := fast_instance% by
   haveI := Module.subsingleton R M
   haveI := Module.subsingleton R₂ M₂
   infer_instance

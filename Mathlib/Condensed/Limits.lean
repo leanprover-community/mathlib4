@@ -16,14 +16,14 @@ universe u
 
 open CategoryTheory Limits
 
-instance : HasLimits CondensedSet.{u} := by
+instance : HasLimits CondensedSet.{u} := fast_instance% by
   change HasLimits (Sheaf _ _)
   infer_instance
 
-instance : HasLimitsOfSize.{u} CondensedSet.{u} := hasLimitsOfSizeShrink.{u, u+1, u+1, u} _
+instance : HasLimitsOfSize.{u} CondensedSet.{u} := fast_instance% hasLimitsOfSizeShrink.{u, u+1, u+1, u} _
 
-instance : HasLimits CondensedAb.{u} := by
+instance : HasLimits CondensedAb.{u} := fast_instance% by
   change HasLimits (Sheaf _ _)
   infer_instance
 
-instance : HasLimitsOfSize.{u} CondensedAb.{u} := hasLimitsOfSizeShrink.{u, u+1, u+1, u} _
+instance : HasLimitsOfSize.{u} CondensedAb.{u} := fast_instance% hasLimitsOfSizeShrink.{u, u+1, u+1, u} _

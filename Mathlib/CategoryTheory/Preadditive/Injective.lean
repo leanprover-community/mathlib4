@@ -88,7 +88,7 @@ section
 
 open ZeroObject
 
-instance zero_injective [HasZeroObject C] : Injective (0 : C) :=
+instance zero_injective [HasZeroObject C] : Injective (0 : C) := fast_instance%
   (isZero_zero C).injective
 #align category_theory.injective.zero_injective CategoryTheory.Injective.zero_injective
 
@@ -217,7 +217,7 @@ def under (X : C) : C :=
   (EnoughInjectives.presentation X).some.J
 #align category_theory.injective.under CategoryTheory.Injective.under
 
-instance injective_under (X : C) : Injective (under X) :=
+instance injective_under (X : C) : Injective (under X) := fast_instance%
   (EnoughInjectives.presentation X).some.injective
 #align category_theory.injective.injective_under CategoryTheory.Injective.injective_under
 
@@ -228,7 +228,7 @@ def ι (X : C) : X ⟶ under X :=
   (EnoughInjectives.presentation X).some.f
 #align category_theory.injective.ι CategoryTheory.Injective.ι
 
-instance ι_mono (X : C) : Mono (ι X) :=
+instance ι_mono (X : C) : Mono (ι X) := fast_instance%
   (EnoughInjectives.presentation X).some.mono
 #align category_theory.injective.ι_mono CategoryTheory.Injective.ι_mono
 
@@ -243,7 +243,7 @@ def syzygies : C :=
   under (cokernel f) -- Porting note: no deriving Injective
 #align category_theory.injective.syzygies CategoryTheory.Injective.syzygies
 
-instance : Injective <| syzygies f := injective_under (cokernel f)
+instance : Injective <| syzygies f := fast_instance% injective_under (cokernel f)
 
 /-- When `C` has enough injective,
 `Injective.d f : Y ⟶ syzygies f` is the composition
@@ -259,10 +259,10 @@ end
 
 end EnoughInjectives
 
-instance [EnoughInjectives C] : EnoughProjectives Cᵒᵖ :=
+instance [EnoughInjectives C] : EnoughProjectives Cᵒᵖ := fast_instance%
   ⟨fun X => ⟨{ p := _, f := (Injective.ι (unop X)).op}⟩⟩
 
-instance [EnoughProjectives C] : EnoughInjectives Cᵒᵖ :=
+instance [EnoughProjectives C] : EnoughInjectives Cᵒᵖ := fast_instance%
   ⟨fun X => ⟨⟨_, inferInstance, (Projective.π (unop X)).op, inferInstance⟩⟩⟩
 
 theorem enoughProjectives_of_enoughInjectives_op [EnoughInjectives Cᵒᵖ] : EnoughProjectives C :=

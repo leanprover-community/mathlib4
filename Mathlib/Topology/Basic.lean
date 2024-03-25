@@ -999,7 +999,7 @@ theorem OrderTop.tendsto_atTop_nhds [PartialOrder α] [OrderTop α] (f : α → 
 #align order_top.tendsto_at_top_nhds OrderTop.tendsto_atTop_nhds
 
 @[simp]
-instance nhds_neBot : NeBot (𝓝 x) :=
+instance nhds_neBot : NeBot (𝓝 x) := fast_instance%
   neBot_of_le (pure_le_nhds x)
 #align nhds_ne_bot nhds_neBot
 

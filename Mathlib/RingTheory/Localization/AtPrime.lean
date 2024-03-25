@@ -108,7 +108,7 @@ end IsLocalization
 namespace Localization
 
 /-- The localization of `R` at the complement of a prime ideal is a local ring. -/
-instance AtPrime.localRing : LocalRing (Localization P.primeCompl) :=
+instance AtPrime.localRing : LocalRing (Localization P.primeCompl) := fast_instance%
   IsLocalization.AtPrime.localRing (Localization P.primeCompl) P
 #align localization.at_prime.local_ring Localization.AtPrime.localRing
 

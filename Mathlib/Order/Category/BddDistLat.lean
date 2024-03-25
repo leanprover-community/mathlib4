@@ -32,10 +32,10 @@ structure BddDistLat where
 
 namespace BddDistLat
 
-instance : CoeSort BddDistLat (Type*) :=
+instance : CoeSort BddDistLat (Type*) := fast_instance%
   ⟨fun X => X.toDistLat⟩
 
-instance (X : BddDistLat) : DistribLattice X :=
+instance (X : BddDistLat) : DistribLattice X := fast_instance%
   X.toDistLat.str
 
 attribute [instance] BddDistLat.isBoundedOrder
@@ -52,7 +52,7 @@ theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) =
   rfl
 #align BddDistLat.coe_of BddDistLat.coe_of
 
-instance : Inhabited BddDistLat :=
+instance : Inhabited BddDistLat := fast_instance%
   ⟨of PUnit⟩
 
 /-- Turn a `BddDistLat` into a `BddLat` by forgetting it is distributive. -/
@@ -65,10 +65,10 @@ theorem coe_toBddLat (X : BddDistLat) : ↥X.toBddLat = ↥X :=
   rfl
 #align BddDistLat.coe_to_BddLat BddDistLat.coe_toBddLat
 
-instance : LargeCategory.{u} BddDistLat :=
+instance : LargeCategory.{u} BddDistLat := fast_instance%
   InducedCategory.category toBddLat
 
-instance : ConcreteCategory BddDistLat :=
+instance : ConcreteCategory BddDistLat := fast_instance%
   InducedCategory.concreteCategory toBddLat
 
 instance hasForgetToDistLat : HasForget₂ BddDistLat DistLat where
@@ -79,7 +79,7 @@ instance hasForgetToDistLat : HasForget₂ BddDistLat DistLat where
       map := fun {X Y} => BoundedLatticeHom.toLatticeHom }
 #align BddDistLat.has_forget_to_DistLat BddDistLat.hasForgetToDistLat
 
-instance hasForgetToBddLat : HasForget₂ BddDistLat BddLat :=
+instance hasForgetToBddLat : HasForget₂ BddDistLat BddLat := fast_instance%
   InducedCategory.hasForget₂ toBddLat
 #align BddDistLat.has_forget_to_BddLat BddDistLat.hasForgetToBddLat
 

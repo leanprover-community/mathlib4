@@ -21,7 +21,7 @@ variable {α : Type*} {β : α → Type*}
 namespace DFinsupp
 
 /-- Non-dependent special case of `DFinsupp.addZeroClass` to help typeclass search. -/
-instance addZeroClass' {β} [AddZeroClass β] : AddZeroClass (Π₀ _ : α, β) :=
+instance addZeroClass' {β} [AddZeroClass β] : AddZeroClass (Π₀ _ : α, β) := fast_instance%
   @DFinsupp.addZeroClass α (fun _ ↦ β) _
 #align dfinsupp.add_zero_class' DFinsupp.addZeroClass'
 

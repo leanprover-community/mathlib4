@@ -67,7 +67,7 @@ attribute [to_additive instAddMonCatLargeCategory] instMonCatLargeCategory
 
 -- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
 @[to_additive]
-instance concreteCategory : ConcreteCategory MonCat :=
+instance concreteCategory : ConcreteCategory MonCat := fast_instance%
   BundledHom.concreteCategory _
 
 @[to_additive]
@@ -75,7 +75,7 @@ instance : CoeSort MonCat (Type*) where
   coe X := X.α
 
 @[to_additive]
-instance (X : MonCat) : Monoid X := X.str
+instance (X : MonCat) : Monoid X := fast_instance% X.str
 
 -- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
@@ -83,11 +83,11 @@ instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance instFunLike (X Y : MonCat) : FunLike (X ⟶ Y) X Y :=
+instance instFunLike (X Y : MonCat) : FunLike (X ⟶ Y) X Y := fast_instance%
   inferInstanceAs <| FunLike (X →* Y) X Y
 
 @[to_additive]
-instance instMonoidHomClass (X Y : MonCat) : MonoidHomClass (X ⟶ Y) X Y :=
+instance instMonoidHomClass (X Y : MonCat) : MonoidHomClass (X ⟶ Y) X Y := fast_instance%
   inferInstanceAs <| MonoidHomClass (X →* Y) X Y
 
 -- porting note (#10756): added lemma
@@ -129,7 +129,7 @@ set_option linter.uppercaseLean3 false in
 #align AddMon.coe_of AddMonCat.coe_of
 
 @[to_additive]
-instance : Inhabited MonCat :=
+instance : Inhabited MonCat := fast_instance%
   -- The default instance for `Monoid PUnit` is derived via `CommRing` which breaks to_additive
   ⟨@of PUnit (@DivInvMonoid.toMonoid _ (@Group.toDivInvMonoid _
     (@CommGroup.toGroup _ PUnit.commGroup)))⟩
@@ -153,7 +153,7 @@ set_option linter.uppercaseLean3 false in
 
 ---- Porting note: added to ease the port of `RepresentationTheory.Action.Basic`
 @[to_additive]
-instance (X Y : MonCat.{u}) : One (X ⟶ Y) := ⟨ofHom 1⟩
+instance (X Y : MonCat.{u}) : One (X ⟶ Y) := fast_instance% ⟨ofHom 1⟩
 
 @[to_additive (attr := simp)]
 lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y) x = 1 := rfl
@@ -167,7 +167,7 @@ lemma mul_of {A : Type*} [Monoid A] (a b : A) :
     @HMul.hMul (MonCat.of A) (MonCat.of A) (MonCat.of A) _ a b = a * b := rfl
 
 @[to_additive]
-instance {G : Type*} [Group G] : Group (MonCat.of G) := by assumption
+instance {G : Type*} [Group G] : Group (MonCat.of G) := fast_instance% by assumption
 
 end MonCat
 
@@ -186,14 +186,14 @@ add_decl_doc AddCommMonCat
 namespace CommMonCat
 
 @[to_additive]
-instance : BundledHom.ParentProjection @CommMonoid.toMonoid := ⟨⟩
+instance : BundledHom.ParentProjection @CommMonoid.toMonoid := fast_instance% ⟨⟩
 
 deriving instance LargeCategory for CommMonCat
 attribute [to_additive instAddCommMonCatLargeCategory] instCommMonCatLargeCategory
 
 -- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
 @[to_additive]
-instance concreteCategory : ConcreteCategory CommMonCat := by
+instance concreteCategory : ConcreteCategory CommMonCat := fast_instance% by
   dsimp only [CommMonCat]
   infer_instance
 
@@ -202,7 +202,7 @@ instance : CoeSort CommMonCat (Type*) where
   coe X := X.α
 
 @[to_additive]
-instance (X : CommMonCat) : CommMonoid X := X.str
+instance (X : CommMonCat) : CommMonoid X := fast_instance% X.str
 
 -- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
@@ -210,7 +210,7 @@ instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance instFunLike (X Y : CommMonCat) : FunLike (X ⟶ Y) X Y :=
+instance instFunLike (X Y : CommMonCat) : FunLike (X ⟶ Y) X Y := fast_instance%
   show FunLike (X →* Y) X Y by infer_instance
 
 -- porting note (#10756): added lemma
@@ -244,7 +244,7 @@ set_option linter.uppercaseLean3 false in
 add_decl_doc AddCommMonCat.of
 
 @[to_additive]
-instance : Inhabited CommMonCat :=
+instance : Inhabited CommMonCat := fast_instance%
   -- The default instance for `CommMonoid PUnit` is derived via `CommRing` which breaks to_additive
   ⟨@of PUnit (@CommGroup.toCommMonoid _ PUnit.commGroup)⟩
 
@@ -260,7 +260,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommMon.coe_of AddCommMonCat.coe_of
 
 @[to_additive hasForgetToAddMonCat]
-instance hasForgetToMonCat : HasForget₂ CommMonCat MonCat :=
+instance hasForgetToMonCat : HasForget₂ CommMonCat MonCat := fast_instance%
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
 #align CommMon.has_forget_to_Mon CommMonCat.hasForgetToMonCat
@@ -268,7 +268,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommMon.has_forget_to_AddMon AddCommMonCat.hasForgetToAddMonCat
 
 @[to_additive]
-instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonCat).obj
+instance : Coe CommMonCat.{u} MonCat.{u} where coe := fast_instance% (forget₂ CommMonCat MonCat).obj
 
 -- Porting note: this was added to make automation work (it already exists for MonCat)
 /-- Typecheck a `MonoidHom` as a morphism in `CommMonCat`. -/
@@ -431,6 +431,6 @@ set_option linter.uppercaseLean3 false in
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]
-instance CommMonCat.forget₂Full : Full (forget₂ CommMonCat MonCat) where preimage f := f
+instance CommMonCat.forget₂Full : Full (forget₂ CommMonCat MonCat) where preimage f := fast_instance% f
 
 example : ReflectsIsomorphisms (forget₂ CommMonCat MonCat) := inferInstance

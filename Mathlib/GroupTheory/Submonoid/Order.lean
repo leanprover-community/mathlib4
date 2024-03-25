@@ -71,7 +71,7 @@ variable {M : Type*}
 
 /-- A submonoid of an `OrderedCommMonoid` is an `OrderedCommMonoid`. -/
 @[to_additive "An `AddSubmonoid` of an `OrderedAddCommMonoid` is an `OrderedAddCommMonoid`."]
-instance toOrderedCommMonoid [OrderedCommMonoid M] (S : Submonoid M) : OrderedCommMonoid S :=
+instance toOrderedCommMonoid [OrderedCommMonoid M] (S : Submonoid M) : OrderedCommMonoid S := fast_instance%
   fast_instance%
   Subtype.coe_injective.orderedCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid.to_ordered_comm_monoid Submonoid.toOrderedCommMonoid

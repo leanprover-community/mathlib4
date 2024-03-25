@@ -27,7 +27,7 @@ group, topological abelianization
 
 variable (G : Type*) [Group G] [TopologicalSpace G] [TopologicalGroup G]
 
-instance instNormalCommutatorClosure : (commutator G).topologicalClosure.Normal :=
+instance instNormalCommutatorClosure : (commutator G).topologicalClosure.Normal := fast_instance%
   Subgroup.is_normal_topologicalClosure (commutator G)
 
 /-- The topological abelianization of `absoluteGaloisGroup`, that is, the quotient of

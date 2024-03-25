@@ -121,7 +121,7 @@ instance forget_faithful : Faithful (forget S C) where
 
 variable [(shiftFunctor C (1 : S)).PreservesZeroMorphisms]
 
-instance {X Y : DifferentialObject S C} : Zero (X ⟶ Y) := ⟨{f := 0}⟩
+instance {X Y : DifferentialObject S C} : Zero (X ⟶ Y) := fast_instance% ⟨{f := 0}⟩
 
 variable {S C}
 
@@ -300,7 +300,7 @@ def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by
 
 end
 
-instance : HasShift (DifferentialObject S C) S :=
+instance : HasShift (DifferentialObject S C) S := fast_instance%
   hasShiftMk _ _
     { F := shiftFunctor C
       zero := shiftZero C

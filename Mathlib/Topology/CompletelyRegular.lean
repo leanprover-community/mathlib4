@@ -62,7 +62,7 @@ class CompletelyRegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   completely_regular : ∀ (x : X), ∀ K : Set X, IsClosed K → x ∉ K →
     ∃ f : X → I, Continuous f ∧ f x = 0 ∧ EqOn f 1 K
 
-instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] : RegularSpace X := by
+instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] : RegularSpace X := fast_instance% by
   rw [regularSpace_iff]
   intro s a hs ha
   obtain ⟨f, cf, hf, hhf⟩ := CompletelyRegularSpace.completely_regular a s hs ha
@@ -70,7 +70,7 @@ instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] : Re
   apply Disjoint.mono (cf.tendsto_nhdsSet_nhds hhf) cf.continuousAt
   exact disjoint_nhds_nhds.mpr (hf.symm ▸ zero_ne_one).symm
 
-instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] : CompletelyRegularSpace X := by
+instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] : CompletelyRegularSpace X := fast_instance% by
   rw [completelyRegularSpace_iff]
   intro x K hK hx
   have cx : IsClosed {x} := T1Space.t1 x
@@ -86,12 +86,12 @@ instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] : CompletelyRegu
 @[mk_iff]
 class T35Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyRegularSpace X : Prop
 
-instance T35Space.instT3space [T35Space X] : T3Space X := by
+instance T35Space.instT3space [T35Space X] : T3Space X := fast_instance% by
   have : T0Space X := T1Space.t0Space
   have : RegularSpace X := CompletelyRegularSpace.instRegularSpace
   exact {}
 
-instance T4Space.instT35Space [T4Space X] : T35Space X := by
+instance T4Space.instT35Space [T4Space X] : T35Space X := fast_instance% by
   have : T1Space X := T2Space.t1Space
   have : CompletelyRegularSpace X := NormalSpace.instCompletelyRegularSpace
   exact {}

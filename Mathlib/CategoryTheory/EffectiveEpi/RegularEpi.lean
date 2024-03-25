@@ -27,7 +27,7 @@ def effectiveEpiStructOfRegularEpi {B X : C} (f : X ⟶ B) [RegularEpi f] :
   uniq _ _ _ hg := Cofork.IsColimit.hom_ext isColimit (hg.trans
     (Cofork.IsColimit.π_desc' _ _ _).symm)
 
-instance {B X : C} (f : X ⟶ B) [RegularEpi f] : EffectiveEpi f :=
+instance {B X : C} (f : X ⟶ B) [RegularEpi f] : EffectiveEpi f := fast_instance%
   ⟨⟨effectiveEpiStructOfRegularEpi f⟩⟩
 
 /-- A morphism which is a coequalizer for its kernel pair is an effective epi. -/

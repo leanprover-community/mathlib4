@@ -113,7 +113,7 @@ instance fullSubcategory (Z : C → Prop) : Preadditive.{v} (FullSubcategory Z) 
   comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
 #align category_theory.preadditive.full_subcategory CategoryTheory.Preadditive.fullSubcategory
 
-instance (X : C) : AddCommGroup (End X) := by
+instance (X : C) : AddCommGroup (End X) := fast_instance% by
   dsimp [End]
   infer_instance
 
@@ -191,10 +191,10 @@ theorem sum_comp {P Q R : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g
   map_sum (rightComp P g) _ _
 #align category_theory.preadditive.sum_comp CategoryTheory.Preadditive.sum_comp
 
-instance {P Q : C} {f : P ⟶ Q} [Epi f] : Epi (-f) :=
+instance {P Q : C} {f : P ⟶ Q} [Epi f] : Epi (-f) := fast_instance%
   ⟨fun g g' H => by rwa [neg_comp, neg_comp, ← comp_neg, ← comp_neg, cancel_epi, neg_inj] at H⟩
 
-instance {P Q : C} {f : P ⟶ Q} [Mono f] : Mono (-f) :=
+instance {P Q : C} {f : P ⟶ Q} [Mono f] : Mono (-f) := fast_instance%
   ⟨fun g g' H => by rwa [comp_neg, comp_neg, ← neg_comp, ← neg_comp, cancel_mono, neg_inj] at H⟩
 
 instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C where
@@ -206,7 +206,7 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
 /-- Porting note: adding this before the ring instance allowed moduleEndRight to find
 the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms
 to make use of them -/
-instance {X : C} : Semiring (End X) :=
+instance {X : C} : Semiring (End X) := fast_instance%
   { End.monoid with
     zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
     mul_zero := fun f => by dsimp [mul]; exact HasZeroMorphisms.zero_comp _ f
@@ -215,7 +215,7 @@ instance {X : C} : Semiring (End X) :=
 
 /-- Porting note: It looks like Ring's parent classes changed in
 Lean 4 so the previous instance needed modification. Was following my nose here. -/
-instance {X : C} : Ring (End X) :=
+instance {X : C} : Ring (End X) := fast_instance%
   { (inferInstance : Semiring (End X)),
     (inferInstance : AddCommGroup (End X)) with
     add_left_neg := add_left_neg }

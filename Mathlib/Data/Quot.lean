@@ -49,14 +49,14 @@ protected theorem induction_on {α : Sort u} {r : α → α → Prop} {β : Quot
     (h : ∀ a, β (Quot.mk r a)) : β q :=
   ind h q
 
-instance (r : α → α → Prop) [Inhabited α] : Inhabited (Quot r) :=
+instance (r : α → α → Prop) [Inhabited α] : Inhabited (Quot r) := fast_instance%
   ⟨⟦default⟧⟩
 
-protected instance Subsingleton [Subsingleton α] : Subsingleton (Quot ra) :=
+protected instance Subsingleton [Subsingleton α] : Subsingleton (Quot ra) := fast_instance%
   ⟨fun x ↦ Quot.induction_on x fun _ ↦ Quot.ind fun _ ↦ congr_arg _ (Subsingleton.elim _ _)⟩
 #align quot.subsingleton Quot.Subsingleton
 
-instance [Unique α] : Unique (Quot ra) := Unique.mk' _
+instance [Unique α] : Unique (Quot ra) := fast_instance% Unique.mk' _
 
 /-- Recursion on two `Quotient` arguments `a` and `b`, result type depends on `⟦a⟧` and `⟦b⟧`. -/
 protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ ⟦b⟧)
@@ -226,13 +226,13 @@ variable {φ : Quotient sa → Quotient sb → Sort*}
 @[inherit_doc Quotient.mk]
 notation3:arg "⟦" a "⟧" => Quotient.mk _ a
 
-instance instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
+instance instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) := fast_instance%
   ⟨⟦default⟧⟩
 
-instance instSubsingletonQuotient (s : Setoid α) [Subsingleton α] : Subsingleton (Quotient s) :=
+instance instSubsingletonQuotient (s : Setoid α) [Subsingleton α] : Subsingleton (Quotient s) := fast_instance%
   Quot.Subsingleton
 
-instance instUniqueQuotient (s : Setoid α) [Unique α] : Unique (Quotient s) := Unique.mk' _
+instance instUniqueQuotient (s : Setoid α) [Unique α] : Unique (Quotient s) := fast_instance% Unique.mk' _
 
 instance {α : Type*} [Setoid α] : IsEquiv α (· ≈ ·) where
   refl := Setoid.refl
@@ -426,7 +426,7 @@ instance piSetoid {ι : Sort*} {α : ι → Sort*} [∀ i, Setoid (α i)] : Seto
 each `i` to an element of the class `f i`. -/
 noncomputable def Quotient.choice {ι : Type*} {α : ι → Type*} [S : ∀ i, Setoid (α i)]
     (f : ∀ i, Quotient (S i)) :
-    @Quotient (∀ i, α i) (by infer_instance) :=
+    @Quotient (∀ i, α i) (by infer_instance) := fast_instance%
   ⟦fun i ↦ (f i).out⟧
 #align quotient.choice Quotient.choice
 
@@ -480,7 +480,7 @@ def mk (a : α) : Trunc α :=
   Quot.mk _ a
 #align trunc.mk Trunc.mk
 
-instance [Inhabited α] : Inhabited (Trunc α) :=
+instance [Inhabited α] : Inhabited (Trunc α) := fast_instance%
   ⟨mk default⟩
 
 /-- Any constant function lifts to a function out of the truncation -/
@@ -522,7 +522,7 @@ protected theorem eq (a b : Trunc α) : a = b :=
   Trunc.induction_on₂ a b fun _ _ ↦ Quot.sound trivial
 #align trunc.eq Trunc.eq
 
-instance instSubsingletonTrunc : Subsingleton (Trunc α) :=
+instance instSubsingletonTrunc : Subsingleton (Trunc α) := fast_instance%
   ⟨Trunc.eq⟩
 
 /-- The `bind` operator for the `Trunc` monad. -/

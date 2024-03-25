@@ -74,7 +74,7 @@ protected def id (F : C ⥤ D) : NatTrans F F where app X := 𝟙 (F.obj X)
 theorem id_app' (F : C ⥤ D) (X : C) : (NatTrans.id F).app X = 𝟙 (F.obj X) := rfl
 #align category_theory.nat_trans.id_app' CategoryTheory.NatTrans.id_app'
 
-instance (F : C ⥤ D) : Inhabited (NatTrans F F) := ⟨NatTrans.id F⟩
+instance (F : C ⥤ D) : Inhabited (NatTrans F F) := fast_instance% ⟨NatTrans.id F⟩
 
 open Category
 

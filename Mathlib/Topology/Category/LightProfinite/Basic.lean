@@ -66,31 +66,31 @@ noncomputable def of (F : ℕᵒᵖ ⥤ FintypeCat) : LightProfinite where
 def toProfinite (S : LightProfinite) : Profinite := S.cone.pt
 
 @[simps!]
-instance : Category LightProfinite := InducedCategory.category toProfinite
+instance : Category LightProfinite := fast_instance% InducedCategory.category toProfinite
 
 @[simps!]
-instance concreteCategory : ConcreteCategory LightProfinite := InducedCategory.concreteCategory _
+instance concreteCategory : ConcreteCategory LightProfinite := fast_instance% InducedCategory.concreteCategory _
 
 /-- The fully faithful embedding `LightProfinite ⥤ Profinite` -/
 @[simps!]
 def lightToProfinite : LightProfinite ⥤ Profinite := inducedFunctor _
 
-instance : Faithful lightToProfinite := show Faithful <| inducedFunctor _ from inferInstance
+instance : Faithful lightToProfinite := fast_instance% show Faithful <| inducedFunctor _ from inferInstance
 
-instance : Full lightToProfinite := show Full <| inducedFunctor _ from inferInstance
+instance : Full lightToProfinite := fast_instance% show Full <| inducedFunctor _ from inferInstance
 
-instance : lightToProfinite.ReflectsEpimorphisms := inferInstance
+instance : lightToProfinite.ReflectsEpimorphisms := fast_instance% inferInstance
 
-instance {X : LightProfinite} : TopologicalSpace ((forget LightProfinite).obj X) :=
+instance {X : LightProfinite} : TopologicalSpace ((forget LightProfinite).obj X) := fast_instance%
   (inferInstance : TopologicalSpace X.cone.pt)
 
-instance {X : LightProfinite} : TotallyDisconnectedSpace ((forget LightProfinite).obj X) :=
+instance {X : LightProfinite} : TotallyDisconnectedSpace ((forget LightProfinite).obj X) := fast_instance%
   (inferInstance : TotallyDisconnectedSpace X.cone.pt)
 
-instance {X : LightProfinite} : CompactSpace ((forget LightProfinite).obj X) :=
+instance {X : LightProfinite} : CompactSpace ((forget LightProfinite).obj X) := fast_instance%
   (inferInstance : CompactSpace X.cone.pt )
 
-instance {X : LightProfinite} : T2Space ((forget LightProfinite).obj X) :=
+instance {X : LightProfinite} : T2Space ((forget LightProfinite).obj X) := fast_instance%
   (inferInstance : T2Space X.cone.pt )
 
 /-- The explicit functor `FintypeCat ⥤ LightProfinite`.  -/
@@ -111,16 +111,16 @@ structure LightProfinite' : Type u where
 def LightProfinite'.toProfinite (S : LightProfinite') : Profinite :=
   limit (S.diagram  ⋙ FintypeCat.Skeleton.equivalence.functor ⋙ FintypeCat.toProfinite.{u})
 
-instance : Category LightProfinite' := InducedCategory.category LightProfinite'.toProfinite
+instance : Category LightProfinite' := fast_instance% InducedCategory.category LightProfinite'.toProfinite
 
 /-- The functor part of the equivalence of categories `LightProfinite' ≌ LightProfinite`. -/
 def LightProfinite'.toLightFunctor : LightProfinite'.{u} ⥤ LightProfinite.{u} where
   obj X := ⟨X.diagram ⋙ Skeleton.equivalence.functor, _, limit.isLimit _⟩
   map f := f
 
-instance : Faithful LightProfinite'.toLightFunctor.{u} := ⟨id⟩
+instance : Faithful LightProfinite'.toLightFunctor.{u} := fast_instance% ⟨id⟩
 
-instance : Full LightProfinite'.toLightFunctor.{u} := ⟨id, fun _ ↦ rfl⟩
+instance : Full LightProfinite'.toLightFunctor.{u} := fast_instance% ⟨id, fun _ ↦ rfl⟩
 
 instance : EssSurj LightProfinite'.toLightFunctor.{u} where
   mem_essImage Y := by
@@ -131,7 +131,7 @@ instance : EssSurj LightProfinite'.toLightFunctor.{u} where
     exact ⟨⟨Y.diagram ⋙ Skeleton.equivalence.inverse⟩, ⟨⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩⟩⟩
     -- why can't I just write `i` instead of `⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩`?
 
-instance : IsEquivalence LightProfinite'.toLightFunctor := Equivalence.ofFullyFaithfullyEssSurj _
+instance : IsEquivalence LightProfinite'.toLightFunctor := fast_instance% Equivalence.ofFullyFaithfullyEssSurj _
 
 /-- The equivalence beween `LightProfinite` and a small category. -/
 def LightProfinite.equivSmall : LightProfinite.{u} ≌ LightProfinite'.{u} :=

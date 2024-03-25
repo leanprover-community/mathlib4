@@ -107,7 +107,7 @@ protected theorem NeBot.map₂ (hf : f.NeBot) (hg : g.NeBot) : (map₂ m f g).Ne
   map₂_neBot_iff.2 ⟨hf, hg⟩
 #align filter.ne_bot.map₂ Filter.NeBot.map₂
 
-instance map₂.neBot [NeBot f] [NeBot g] : NeBot (map₂ m f g) := .map₂ ‹_› ‹_›
+instance map₂.neBot [NeBot f] [NeBot g] : NeBot (map₂ m f g) := fast_instance% .map₂ ‹_› ‹_›
 
 theorem NeBot.of_map₂_left (h : (map₂ m f g).NeBot) : f.NeBot :=
   (map₂_neBot_iff.1 h).1

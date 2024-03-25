@@ -90,25 +90,25 @@ private irreducible_def mul : ℝ → ℝ → ℝ
 private noncomputable irreducible_def inv' : ℝ → ℝ
   | ⟨a⟩ => ⟨a⁻¹⟩
 
-instance : Zero ℝ :=
+instance : Zero ℝ := fast_instance%
   ⟨zero⟩
 
-instance : One ℝ :=
+instance : One ℝ := fast_instance%
   ⟨one⟩
 
-instance : Add ℝ :=
+instance : Add ℝ := fast_instance%
   ⟨add⟩
 
-instance : Neg ℝ :=
+instance : Neg ℝ := fast_instance%
   ⟨neg⟩
 
-instance : Mul ℝ :=
+instance : Mul ℝ := fast_instance%
   ⟨mul⟩
 
-instance : Sub ℝ :=
+instance : Sub ℝ := fast_instance%
   ⟨fun a b => a + -b⟩
 
-noncomputable instance : Inv ℝ :=
+noncomputable instance : Inv ℝ := fast_instance%
   ⟨inv'⟩
 
 theorem ofCauchy_zero : (⟨0⟩ : ℝ) = 0 :=
@@ -170,11 +170,11 @@ theorem cauchy_inv : ∀ f, (f⁻¹ : ℝ).cauchy = f.cauchy⁻¹
   | ⟨f⟩ => show (inv' _).cauchy = _ by rw [inv']
 #align real.cauchy_inv Real.cauchy_inv
 
-instance natCast : NatCast ℝ where natCast n := ⟨n⟩
+instance natCast : NatCast ℝ where natCast n := fast_instance% ⟨n⟩
 
-instance intCast : IntCast ℝ where intCast z := ⟨z⟩
+instance intCast : IntCast ℝ where intCast z := fast_instance% ⟨z⟩
 
-instance ratCast : RatCast ℝ where ratCast q := ⟨q⟩
+instance ratCast : RatCast ℝ where ratCast q := fast_instance% ⟨q⟩
 
 theorem ofCauchy_natCast (n : ℕ) : (⟨n⟩ : ℝ) = n :=
   rfl
@@ -202,7 +202,7 @@ theorem cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q :=
 
 -- TODO: variables `x y` should be not included in this definition;
 -- not sure how to exclude them
-instance commRing : CommRing ℝ := by
+instance commRing : CommRing ℝ := fast_instance% by
   refine' { natCast := fun n => ⟨n⟩
             intCast := fun z => ⟨z⟩
             zero := (0 : ℝ)
@@ -252,48 +252,48 @@ set_option linter.uppercaseLean3 false in
  `Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
  version of them. -/
 
-instance : Ring ℝ := by infer_instance
+instance : Ring ℝ := fast_instance% by infer_instance
 
-instance : CommSemiring ℝ := by infer_instance
+instance : CommSemiring ℝ := fast_instance% by infer_instance
 
-instance semiring : Semiring ℝ := by infer_instance
+instance semiring : Semiring ℝ := fast_instance% by infer_instance
 
-instance : CommMonoidWithZero ℝ := by infer_instance
+instance : CommMonoidWithZero ℝ := fast_instance% by infer_instance
 
-instance : MonoidWithZero ℝ := by infer_instance
+instance : MonoidWithZero ℝ := fast_instance% by infer_instance
 
-instance : AddCommGroup ℝ := by infer_instance
+instance : AddCommGroup ℝ := fast_instance% by infer_instance
 
-instance : AddGroup ℝ := by infer_instance
+instance : AddGroup ℝ := fast_instance% by infer_instance
 
-instance : AddCommMonoid ℝ := by infer_instance
+instance : AddCommMonoid ℝ := fast_instance% by infer_instance
 
-instance : AddMonoid ℝ := by infer_instance
+instance : AddMonoid ℝ := fast_instance% by infer_instance
 
-instance : AddLeftCancelSemigroup ℝ := by infer_instance
+instance : AddLeftCancelSemigroup ℝ := fast_instance% by infer_instance
 
-instance : AddRightCancelSemigroup ℝ := by infer_instance
+instance : AddRightCancelSemigroup ℝ := fast_instance% by infer_instance
 
-instance : AddCommSemigroup ℝ := by infer_instance
+instance : AddCommSemigroup ℝ := fast_instance% by infer_instance
 
-instance : AddSemigroup ℝ := by infer_instance
+instance : AddSemigroup ℝ := fast_instance% by infer_instance
 
-instance : CommMonoid ℝ := by infer_instance
+instance : CommMonoid ℝ := fast_instance% by infer_instance
 
-instance : Monoid ℝ := by infer_instance
+instance : Monoid ℝ := fast_instance% by infer_instance
 
-instance : CommSemigroup ℝ := by infer_instance
+instance : CommSemigroup ℝ := fast_instance% by infer_instance
 
-instance : Semigroup ℝ := by infer_instance
+instance : Semigroup ℝ := fast_instance% by infer_instance
 
-instance : Inhabited ℝ :=
+instance : Inhabited ℝ := fast_instance%
   ⟨0⟩
 
 /-- The real numbers are a `*`-ring, with the trivial `*`-structure. -/
-instance : StarRing ℝ :=
+instance : StarRing ℝ := fast_instance%
   starRingOfComm
 
-instance : TrivialStar ℝ :=
+instance : TrivialStar ℝ := fast_instance%
   ⟨fun _ => rfl⟩
 
 /-- Make a real number from a Cauchy sequence of rationals (by taking the equivalence class). -/
@@ -312,7 +312,7 @@ private irreducible_def lt : ℝ → ℝ → Prop
         ⟨fun h => lt_of_eq_of_lt (Setoid.symm hf) (lt_of_lt_of_eq h hg), fun h =>
           lt_of_eq_of_lt hf (lt_of_lt_of_eq h (Setoid.symm hg))⟩
 
-instance : LT ℝ :=
+instance : LT ℝ := fast_instance%
   ⟨lt⟩
 
 theorem lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g :=
@@ -348,7 +348,7 @@ theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
 private irreducible_def le (x y : ℝ) : Prop :=
   x < y ∨ x = y
 
-instance : LE ℝ :=
+instance : LE ℝ := fast_instance%
   ⟨le⟩
 
 private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
@@ -394,7 +394,7 @@ instance partialOrder : PartialOrder ℝ where
     induction' b using Real.ind_mk with b
     simpa [mk_eq] using @CauSeq.le_antisymm _ _ a b
 
-instance : Preorder ℝ := by infer_instance
+instance : Preorder ℝ := fast_instance% by infer_instance
 
 theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
   erw [mk_lt]
@@ -415,7 +415,7 @@ protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
   simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 #align real.mul_pos Real.mul_pos
 
-instance : StrictOrderedCommRing ℝ :=
+instance : StrictOrderedCommRing ℝ := fast_instance%
   { Real.commRing, Real.partialOrder,
     Real.semiring with
     exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
@@ -427,37 +427,37 @@ instance : StrictOrderedCommRing ℝ :=
     zero_le_one := le_of_lt Real.zero_lt_one
     mul_pos := @Real.mul_pos }
 
-instance strictOrderedRing : StrictOrderedRing ℝ :=
+instance strictOrderedRing : StrictOrderedRing ℝ := fast_instance%
   inferInstance
 
-instance strictOrderedCommSemiring : StrictOrderedCommSemiring ℝ :=
+instance strictOrderedCommSemiring : StrictOrderedCommSemiring ℝ := fast_instance%
   inferInstance
 
-instance strictOrderedSemiring : StrictOrderedSemiring ℝ :=
+instance strictOrderedSemiring : StrictOrderedSemiring ℝ := fast_instance%
   inferInstance
 
-instance orderedRing : OrderedRing ℝ :=
+instance orderedRing : OrderedRing ℝ := fast_instance%
   inferInstance
 
-instance orderedSemiring : OrderedSemiring ℝ :=
+instance orderedSemiring : OrderedSemiring ℝ := fast_instance%
   inferInstance
 
-instance orderedAddCommGroup : OrderedAddCommGroup ℝ :=
+instance orderedAddCommGroup : OrderedAddCommGroup ℝ := fast_instance%
   inferInstance
 
-instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid ℝ :=
+instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid ℝ := fast_instance%
   inferInstance
 
-instance orderedAddCommMonoid : OrderedAddCommMonoid ℝ :=
+instance orderedAddCommMonoid : OrderedAddCommMonoid ℝ := fast_instance%
   inferInstance
 
-instance nontrivial : Nontrivial ℝ :=
+instance nontrivial : Nontrivial ℝ := fast_instance%
   inferInstance
 
 private irreducible_def sup : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy => sup_equiv_sup hx hy) x y⟩
 
-instance : Sup ℝ :=
+instance : Sup ℝ := fast_instance%
   ⟨sup⟩
 
 theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ :=
@@ -474,7 +474,7 @@ theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
 private irreducible_def inf : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy => inf_equiv_inf hx hy) x y⟩
 
-instance : Inf ℝ :=
+instance : Inf ℝ := fast_instance%
   ⟨inf⟩
 
 theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ :=
@@ -488,7 +488,7 @@ theorem mk_inf (a b) : (mk (a ⊓ b) : ℝ) = mk a ⊓ mk b :=
   ofCauchy_inf _ _
 #align real.mk_inf Real.mk_inf
 
-instance : DistribLattice ℝ :=
+instance : DistribLattice ℝ := fast_instance%
   { Real.partialOrder with
     sup := (· ⊔ ·)
     le := (· ≤ ·)
@@ -541,39 +541,39 @@ instance : DistribLattice ℝ :=
       exact congr_arg mk (CauSeq.sup_inf_distrib_left _ _ _).symm }
 
 -- Extra instances to short-circuit type class resolution
-instance lattice : Lattice ℝ :=
+instance lattice : Lattice ℝ := fast_instance%
   inferInstance
 
-instance : SemilatticeInf ℝ :=
+instance : SemilatticeInf ℝ := fast_instance%
   inferInstance
 
-instance : SemilatticeSup ℝ :=
+instance : SemilatticeSup ℝ := fast_instance%
   inferInstance
 
 open scoped Classical
 
-instance : IsTotal ℝ (· ≤ ·) :=
+instance : IsTotal ℝ (· ≤ ·) := fast_instance%
   ⟨by
     intros a b
     induction' a using Real.ind_mk with a
     induction' b using Real.ind_mk with b
     simpa using le_total a b⟩
 
-noncomputable instance linearOrder : LinearOrder ℝ :=
+noncomputable instance linearOrder : LinearOrder ℝ := fast_instance%
   Lattice.toLinearOrder _
 
-noncomputable instance linearOrderedCommRing : LinearOrderedCommRing ℝ :=
+noncomputable instance linearOrderedCommRing : LinearOrderedCommRing ℝ := fast_instance%
   { Real.nontrivial, Real.strictOrderedRing, Real.commRing, Real.linearOrder with }
 
 -- Extra instances to short-circuit type class resolution
-noncomputable instance : LinearOrderedRing ℝ := by infer_instance
+noncomputable instance : LinearOrderedRing ℝ := fast_instance% by infer_instance
 
-noncomputable instance : LinearOrderedSemiring ℝ := by infer_instance
+noncomputable instance : LinearOrderedSemiring ℝ := fast_instance% by infer_instance
 
-instance : IsDomain ℝ :=
+instance : IsDomain ℝ := fast_instance%
   { Real.nontrivial, Real.commRing, LinearOrderedRing.isDomain with }
 
-noncomputable instance : LinearOrderedField ℝ :=
+noncomputable instance : LinearOrderedField ℝ := fast_instance%
   { Real.linearOrderedCommRing with
     inv := Inv.inv
     mul_inv_cancel := by
@@ -590,20 +590,20 @@ noncomputable instance : LinearOrderedField ℝ :=
     qsmul := qsmulRec _ }
 
 -- Extra instances to short-circuit type class resolution
-noncomputable instance : LinearOrderedAddCommGroup ℝ := by infer_instance
+noncomputable instance : LinearOrderedAddCommGroup ℝ := fast_instance% by infer_instance
 
-noncomputable instance field : Field ℝ := by infer_instance
+noncomputable instance field : Field ℝ := fast_instance% by infer_instance
 #align real.field Real.field
 
-noncomputable instance : DivisionRing ℝ := by infer_instance
+noncomputable instance : DivisionRing ℝ := fast_instance% by infer_instance
 
-noncomputable instance decidableLT (a b : ℝ) : Decidable (a < b) := by infer_instance
+noncomputable instance decidableLT (a b : ℝ) : Decidable (a < b) := fast_instance% by infer_instance
 #align real.decidable_lt Real.decidableLT
 
-noncomputable instance decidableLE (a b : ℝ) : Decidable (a ≤ b) := by infer_instance
+noncomputable instance decidableLE (a b : ℝ) : Decidable (a ≤ b) := fast_instance% by infer_instance
 #align real.decidable_le Real.decidableLE
 
-noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_instance
+noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := fast_instance% by infer_instance
 #align real.decidable_eq Real.decidableEq
 
 /-- Show an underlying cauchy sequence for real numbers.
@@ -611,7 +611,7 @@ noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_i
 The representative chosen is the one passed in the VM to `Quot.mk`, so two cauchy sequences
 converging to the same number may be printed differently.
 -/
-unsafe instance : Repr ℝ where reprPrec r _ := "Real.ofCauchy " ++ repr r.cauchy
+unsafe instance : Repr ℝ where reprPrec r _ := fast_instance% "Real.ofCauchy " ++ repr r.cauchy
 
 theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
   intro h

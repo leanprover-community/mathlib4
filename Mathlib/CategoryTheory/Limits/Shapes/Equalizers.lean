@@ -79,7 +79,7 @@ simpNF still complains of striking this from the simp list -/
 attribute [-simp, nolint simpNF] WalkingParallelPairHom.id.sizeOf_spec
 
 /-- Satisfying the inhabited linter -/
-instance : Inhabited (WalkingParallelPairHom zero one) where default := WalkingParallelPairHom.left
+instance : Inhabited (WalkingParallelPairHom zero one) where default := fast_instance% WalkingParallelPairHom.left
 
 open WalkingParallelPairHom
 
@@ -886,14 +886,14 @@ theorem eq_of_epi_equalizer [HasEqualizer f g] [Epi (equalizer.ι f g)] : f = g 
 
 end
 
-instance hasEqualizer_of_self : HasEqualizer f f :=
+instance hasEqualizer_of_self : HasEqualizer f f := fast_instance%
   HasLimit.mk
     { cone := idFork rfl
       isLimit := isLimitIdFork rfl }
 #align category_theory.limits.has_equalizer_of_self CategoryTheory.Limits.hasEqualizer_of_self
 
 /-- The equalizer inclusion for `(f, f)` is an isomorphism. -/
-instance equalizer.ι_of_self : IsIso (equalizer.ι f f) :=
+instance equalizer.ι_of_self : IsIso (equalizer.ι f f) := fast_instance%
   equalizer.ι_of_eq rfl
 #align category_theory.limits.equalizer.ι_of_self CategoryTheory.Limits.equalizer.ι_of_self
 
@@ -1076,14 +1076,14 @@ theorem eq_of_mono_coequalizer [HasCoequalizer f g] [Mono (coequalizer.π f g)] 
 
 end
 
-instance hasCoequalizer_of_self : HasCoequalizer f f :=
+instance hasCoequalizer_of_self : HasCoequalizer f f := fast_instance%
   HasColimit.mk
     { cocone := idCofork rfl
       isColimit := isColimitIdCofork rfl }
 #align category_theory.limits.has_coequalizer_of_self CategoryTheory.Limits.hasCoequalizer_of_self
 
 /-- The coequalizer projection for `(f, f)` is an isomorphism. -/
-instance coequalizer.π_of_self : IsIso (coequalizer.π f f) :=
+instance coequalizer.π_of_self : IsIso (coequalizer.π f f) := fast_instance%
   coequalizer.π_of_eq rfl
 #align category_theory.limits.coequalizer.π_of_self CategoryTheory.Limits.coequalizer.π_of_self
 

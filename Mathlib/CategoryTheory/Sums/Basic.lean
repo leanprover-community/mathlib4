@@ -151,7 +151,7 @@ def equivalence : Sum C D ≌ Sum D C :=
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)))
 #align category_theory.sum.swap.equivalence CategoryTheory.Sum.Swap.equivalence
 
-instance isEquivalence : IsEquivalence (swap C D) :=
+instance isEquivalence : IsEquivalence (swap C D) := fast_instance%
   (by infer_instance : IsEquivalence (equivalence C D).functor)
 #align category_theory.sum.swap.is_equivalence CategoryTheory.Sum.Swap.isEquivalence
 

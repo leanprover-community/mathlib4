@@ -35,10 +35,10 @@ instance commGroup : CommGroup PUnit where
   mul_comm := by intros; rfl
 
 -- shortcut instances
-@[to_additive] instance : One PUnit where one := ()
-@[to_additive] instance : Mul PUnit where mul _ _ := ()
-@[to_additive] instance : Div PUnit where div _ _ := ()
-@[to_additive] instance : Inv PUnit where inv _ := ()
+@[to_additive] instance : One PUnit where one := fast_instance% ()
+@[to_additive] instance : Mul PUnit where mul _ _ := fast_instance% ()
+@[to_additive] instance : Div PUnit where div _ _ := fast_instance% ()
+@[to_additive] instance : Inv PUnit where inv _ := fast_instance% ()
 
 @[to_additive (attr := simp)]
 theorem one_eq : (1 : PUnit) = unit :=
@@ -76,7 +76,7 @@ instance commRing : CommRing PUnit where
   mul_zero := by intros; rfl
   natCast _ := unit
 
-instance cancelCommMonoidWithZero : CancelCommMonoidWithZero PUnit := by
+instance cancelCommMonoidWithZero : CancelCommMonoidWithZero PUnit := fast_instance% by
   refine' { PUnit.commRing with .. }; intros; exact Subsingleton.elim _ _
 
 instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
@@ -110,7 +110,7 @@ theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
-instance canonicallyOrderedAddCommMonoid : CanonicallyOrderedAddCommMonoid PUnit := by
+instance canonicallyOrderedAddCommMonoid : CanonicallyOrderedAddCommMonoid PUnit := fast_instance% by
   refine'
     { PUnit.commRing, PUnit.instCompleteBooleanAlgebra with
       exists_add_of_le := fun {_ _} _ => ⟨unit, Subsingleton.elim _ _⟩.. } <;>
@@ -123,14 +123,14 @@ instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUn
   le_of_add_le_add_left _ _ _ _ := trivial
   add_le_add_left := by intros; rfl
 
-instance : LinearOrderedAddCommMonoidWithTop PUnit :=
+instance : LinearOrderedAddCommMonoidWithTop PUnit := fast_instance%
   { PUnit.instCompleteBooleanAlgebra, PUnit.linearOrderedCancelAddCommMonoid with
     top_add' := fun _ => rfl }
 
 variable {R S : Type*}
 
 @[to_additive]
-instance smul : SMul R PUnit :=
+instance smul : SMul R PUnit := fast_instance%
   ⟨fun _ _ => unit⟩
 
 @[to_additive (attr := simp)]
@@ -140,36 +140,36 @@ theorem smul_eq {R : Type*} (y : PUnit) (r : R) : r • y = unit :=
 #align punit.vadd_eq PUnit.vadd_eq
 
 @[to_additive]
-instance : IsCentralScalar R PUnit :=
+instance : IsCentralScalar R PUnit := fast_instance%
   ⟨fun _ _ => rfl⟩
 
 @[to_additive]
-instance : SMulCommClass R S PUnit :=
+instance : SMulCommClass R S PUnit := fast_instance%
   ⟨fun _ _ _ => rfl⟩
 
 @[to_additive]
-instance [SMul R S] : IsScalarTower R S PUnit :=
+instance [SMul R S] : IsScalarTower R S PUnit := fast_instance%
   ⟨fun _ _ _ => rfl⟩
 
-instance smulWithZero [Zero R] : SMulWithZero R PUnit := by
+instance smulWithZero [Zero R] : SMulWithZero R PUnit := fast_instance% by
   refine' { PUnit.smul with .. } <;> intros <;> exact Subsingleton.elim _ _
 
-instance mulAction [Monoid R] : MulAction R PUnit := by
+instance mulAction [Monoid R] : MulAction R PUnit := fast_instance% by
   refine' { PUnit.smul with .. } <;> intros <;> exact Subsingleton.elim _ _
 
-instance distribMulAction [Monoid R] : DistribMulAction R PUnit := by
+instance distribMulAction [Monoid R] : DistribMulAction R PUnit := fast_instance% by
   refine' { PUnit.mulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
 
-instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit := by
+instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit := fast_instance% by
   refine' { PUnit.mulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
 
-instance mulSemiringAction [Semiring R] : MulSemiringAction R PUnit :=
+instance mulSemiringAction [Semiring R] : MulSemiringAction R PUnit := fast_instance%
   { PUnit.distribMulAction, PUnit.mulDistribMulAction with }
 
-instance mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit :=
+instance mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit := fast_instance%
   { PUnit.mulAction, PUnit.smulWithZero with }
 
-instance module [Semiring R] : Module R PUnit := by
+instance module [Semiring R] : Module R PUnit := fast_instance% by
   refine' { PUnit.distribMulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
 
 end PUnit

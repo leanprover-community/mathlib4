@@ -129,7 +129,7 @@ def opOpEquivalence : Cᵒᵖᵒᵖ ≌ C where
 end
 
 /-- If `f` is an isomorphism, so is `f.op` -/
-instance isIso_op {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.op :=
+instance isIso_op {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.op := fast_instance%
   ⟨⟨(inv f).op, ⟨Quiver.Hom.unop_inj (by aesop_cat), Quiver.Hom.unop_inj (by aesop_cat)⟩⟩⟩
 #align category_theory.is_iso_op CategoryTheory.isIso_op
 
@@ -148,7 +148,7 @@ theorem isIso_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) : IsIso f.unop ↔ IsIso f 
   rw [← isIso_op_iff f.unop, Quiver.Hom.op_unop]
 #align category_theory.is_iso_unop_iff CategoryTheory.isIso_unop_iff
 
-instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
+instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop := fast_instance%
   (isIso_unop_iff _).2 inferInstance
 #align category_theory.is_iso_unop CategoryTheory.isIso_unop
 
@@ -244,7 +244,7 @@ protected def rightOp (F : Cᵒᵖ ⥤ D) : C ⥤ Dᵒᵖ where
   map f := (F.map f.op).op
 #align category_theory.functor.right_op CategoryTheory.Functor.rightOp
 
-instance {F : C ⥤ D} [Full F] : Full F.op where preimage := @fun X Y f => (F.preimage f.unop).op
+instance {F : C ⥤ D} [Full F] : Full F.op where preimage := fast_instance% @fun X Y f => (F.preimage f.unop).op
 
 instance {F : C ⥤ D} [Faithful F] : Faithful F.op where
   map_injective h := Quiver.Hom.unop_inj <| by simpa using map_injective F (Quiver.Hom.op_inj h)
@@ -565,11 +565,11 @@ def opEquiv (A B : Cᵒᵖ) : (A ⟶ B) ≃ (B.unop ⟶ A.unop) where
   right_inv _ := rfl
 #align category_theory.op_equiv CategoryTheory.opEquiv
 
-instance subsingleton_of_unop (A B : Cᵒᵖ) [Subsingleton (unop B ⟶ unop A)] : Subsingleton (A ⟶ B) :=
+instance subsingleton_of_unop (A B : Cᵒᵖ) [Subsingleton (unop B ⟶ unop A)] : Subsingleton (A ⟶ B) := fast_instance%
   (opEquiv A B).subsingleton
 #align category_theory.subsingleton_of_unop CategoryTheory.subsingleton_of_unop
 
-instance decidableEqOfUnop (A B : Cᵒᵖ) [DecidableEq (unop B ⟶ unop A)] : DecidableEq (A ⟶ B) :=
+instance decidableEqOfUnop (A B : Cᵒᵖ) [DecidableEq (unop B ⟶ unop A)] : DecidableEq (A ⟶ B) := fast_instance%
   (opEquiv A B).decidableEq
 #align category_theory.decidable_eq_of_unop CategoryTheory.decidableEqOfUnop
 

@@ -99,7 +99,7 @@ theorem Subalgebra.topologicalClosure_coe (s : Subalgebra R A) :
   rfl
 #align subalgebra.topological_closure_coe Subalgebra.topologicalClosure_coe
 
-instance Subalgebra.topologicalSemiring (s : Subalgebra R A) : TopologicalSemiring s :=
+instance Subalgebra.topologicalSemiring (s : Subalgebra R A) : TopologicalSemiring s := fast_instance%
   s.toSubsemiring.topologicalSemiring
 #align subalgebra.topological_semiring Subalgebra.topologicalSemiring
 
@@ -169,7 +169,7 @@ theorem Algebra.self_mem_elementalAlgebra (x : A) : x ∈ Algebra.elementalAlgeb
 
 variable {R}
 
-instance [T2Space A] {x : A} : CommRing (Algebra.elementalAlgebra R x) :=
+instance [T2Space A] {x : A} : CommRing (Algebra.elementalAlgebra R x) := fast_instance%
   Subalgebra.commRingTopologicalClosure _
     letI : CommRing (Algebra.adjoin R ({x} : Set A)) :=
       Algebra.adjoinCommRingOfComm R fun y hy z hz => by

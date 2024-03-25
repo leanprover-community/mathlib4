@@ -38,7 +38,7 @@ variable {R : Type u} [Semiring R]
 variable {ι : Type v} [dec_ι : DecidableEq ι]
 variable {M : ι → Type w} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
-instance : Module R (⨁ i, M i) :=
+instance : Module R (⨁ i, M i) := fast_instance%
   DFinsupp.module
 
 instance {S : Type*} [Semiring S] [∀ i, Module S (M i)] [∀ i, SMulCommClass R S (M i)] :
@@ -49,7 +49,7 @@ instance {S : Type*} [Semiring S] [SMul R S] [∀ i, Module S (M i)] [∀ i, IsS
     IsScalarTower R S (⨁ i, M i) :=
   DFinsupp.isScalarTower
 
-instance [∀ i, Module Rᵐᵒᵖ (M i)] [∀ i, IsCentralScalar R (M i)] : IsCentralScalar R (⨁ i, M i) :=
+instance [∀ i, Module Rᵐᵒᵖ (M i)] [∀ i, IsCentralScalar R (M i)] : IsCentralScalar R (⨁ i, M i) := fast_instance%
   DFinsupp.isCentralScalar
 
 theorem smul_apply (b : R) (v : ⨁ i, M i) (i : ι) : (b • v) i = b • v i :=

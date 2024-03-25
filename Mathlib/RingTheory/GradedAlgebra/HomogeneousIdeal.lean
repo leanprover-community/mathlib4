@@ -309,25 +309,25 @@ variable {𝒜}
 
 namespace HomogeneousIdeal
 
-instance : PartialOrder (HomogeneousIdeal 𝒜) :=
+instance : PartialOrder (HomogeneousIdeal 𝒜) := fast_instance%
   SetLike.instPartialOrder
 
-instance : Top (HomogeneousIdeal 𝒜) :=
+instance : Top (HomogeneousIdeal 𝒜) := fast_instance%
   ⟨⟨⊤, Ideal.IsHomogeneous.top 𝒜⟩⟩
 
-instance : Bot (HomogeneousIdeal 𝒜) :=
+instance : Bot (HomogeneousIdeal 𝒜) := fast_instance%
   ⟨⟨⊥, Ideal.IsHomogeneous.bot 𝒜⟩⟩
 
-instance : Sup (HomogeneousIdeal 𝒜) :=
+instance : Sup (HomogeneousIdeal 𝒜) := fast_instance%
   ⟨fun I J => ⟨_, I.isHomogeneous.sup J.isHomogeneous⟩⟩
 
-instance : Inf (HomogeneousIdeal 𝒜) :=
+instance : Inf (HomogeneousIdeal 𝒜) := fast_instance%
   ⟨fun I J => ⟨_, I.isHomogeneous.inf J.isHomogeneous⟩⟩
 
-instance : SupSet (HomogeneousIdeal 𝒜) :=
+instance : SupSet (HomogeneousIdeal 𝒜) := fast_instance%
   ⟨fun S => ⟨⨆ s ∈ S, toIdeal s, Ideal.IsHomogeneous.iSup₂ fun s _ => s.isHomogeneous⟩⟩
 
-instance : InfSet (HomogeneousIdeal 𝒜) :=
+instance : InfSet (HomogeneousIdeal 𝒜) := fast_instance%
   ⟨fun S => ⟨⨅ s ∈ S, toIdeal s, Ideal.IsHomogeneous.iInf₂ fun s _ => s.isHomogeneous⟩⟩
 
 @[simp]
@@ -414,11 +414,11 @@ theorem eq_bot_iff (I : HomogeneousIdeal 𝒜) : I = ⊥ ↔ I.toIdeal = ⊥ :=
   toIdeal_injective.eq_iff.symm
 #align homogeneous_ideal.eq_bot_iff HomogeneousIdeal.eq_bot_iff
 
-instance completeLattice : CompleteLattice (HomogeneousIdeal 𝒜) :=
+instance completeLattice : CompleteLattice (HomogeneousIdeal 𝒜) := fast_instance%
   toIdeal_injective.completeLattice _ toIdeal_sup toIdeal_inf toIdeal_sSup toIdeal_sInf toIdeal_top
     toIdeal_bot
 
-instance : Add (HomogeneousIdeal 𝒜) :=
+instance : Add (HomogeneousIdeal 𝒜) := fast_instance%
   ⟨(· ⊔ ·)⟩
 
 @[simp]
@@ -426,7 +426,7 @@ theorem toIdeal_add (I J : HomogeneousIdeal 𝒜) : (I + J).toIdeal = I.toIdeal 
   rfl
 #align homogeneous_ideal.to_ideal_add HomogeneousIdeal.toIdeal_add
 
-instance : Inhabited (HomogeneousIdeal 𝒜) where default := ⊥
+instance : Inhabited (HomogeneousIdeal 𝒜) where default := fast_instance% ⊥
 
 end HomogeneousIdeal
 

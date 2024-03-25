@@ -41,7 +41,7 @@ def SimplicialObject :=
 #align category_theory.simplicial_object CategoryTheory.SimplicialObject
 
 @[simps!]
-instance : Category (SimplicialObject C) := by
+instance : Category (SimplicialObject C) := fast_instance% by
   dsimp only [SimplicialObject]
   infer_instance
 
@@ -60,7 +60,7 @@ instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
   dsimp [SimplicialObject]
   infer_instance
 
-instance [HasLimits C] : HasLimits (SimplicialObject C) :=
+instance [HasLimits C] : HasLimits (SimplicialObject C) := fast_instance%
   ⟨inferInstance⟩
 
 instance {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
@@ -68,7 +68,7 @@ instance {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
   dsimp [SimplicialObject]
   infer_instance
 
-instance [HasColimits C] : HasColimits (SimplicialObject C) :=
+instance [HasColimits C] : HasColimits (SimplicialObject C) := fast_instance%
   ⟨inferInstance⟩
 
 variable {C}
@@ -230,7 +230,7 @@ def Truncated (n : ℕ) :=
   (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
 #align category_theory.simplicial_object.truncated CategoryTheory.SimplicialObject.Truncated
 
-instance {n : ℕ} : Category (Truncated C n) := by
+instance {n : ℕ} : Category (Truncated C n) := fast_instance% by
   dsimp [Truncated]
   infer_instance
 
@@ -243,7 +243,7 @@ instance {n} {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
   dsimp [Truncated]
   infer_instance
 
-instance {n} [HasLimits C] : HasLimits (SimplicialObject.Truncated C n) :=
+instance {n} [HasLimits C] : HasLimits (SimplicialObject.Truncated C n) := fast_instance%
   ⟨inferInstance⟩
 
 instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
@@ -251,7 +251,7 @@ instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
   dsimp [Truncated]
   infer_instance
 
-instance {n} [HasColimits C] : HasColimits (SimplicialObject.Truncated C n) :=
+instance {n} [HasColimits C] : HasColimits (SimplicialObject.Truncated C n) := fast_instance%
   ⟨inferInstance⟩
 
 variable (C)
@@ -289,7 +289,7 @@ def Augmented :=
 #align category_theory.simplicial_object.augmented CategoryTheory.SimplicialObject.Augmented
 
 @[simps!]
-instance : Category (Augmented C) := by
+instance : Category (Augmented C) := fast_instance% by
   dsimp only [Augmented]
   infer_instance
 
@@ -410,7 +410,7 @@ def CosimplicialObject :=
 #align category_theory.cosimplicial_object CategoryTheory.CosimplicialObject
 
 @[simps!]
-instance : Category (CosimplicialObject C) := by
+instance : Category (CosimplicialObject C) := fast_instance% by
   dsimp only [CosimplicialObject]
   infer_instance
 
@@ -428,7 +428,7 @@ instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
   dsimp [CosimplicialObject]
   infer_instance
 
-instance [HasLimits C] : HasLimits (CosimplicialObject C) :=
+instance [HasLimits C] : HasLimits (CosimplicialObject C) := fast_instance%
   ⟨inferInstance⟩
 
 instance {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
@@ -436,7 +436,7 @@ instance {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
   dsimp [CosimplicialObject]
   infer_instance
 
-instance [HasColimits C] : HasColimits (CosimplicialObject C) :=
+instance [HasColimits C] : HasColimits (CosimplicialObject C) := fast_instance%
   ⟨inferInstance⟩
 
 variable {C}
@@ -600,7 +600,7 @@ def Truncated (n : ℕ) :=
   SimplexCategory.Truncated n ⥤ C
 #align category_theory.cosimplicial_object.truncated CategoryTheory.CosimplicialObject.Truncated
 
-instance {n : ℕ} : Category (Truncated C n) := by
+instance {n : ℕ} : Category (Truncated C n) := fast_instance% by
   dsimp [Truncated]
   infer_instance
 
@@ -613,7 +613,7 @@ instance {n} {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
   dsimp [Truncated]
   infer_instance
 
-instance {n} [HasLimits C] : HasLimits (CosimplicialObject.Truncated C n) :=
+instance {n} [HasLimits C] : HasLimits (CosimplicialObject.Truncated C n) := fast_instance%
   ⟨inferInstance⟩
 
 instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
@@ -621,7 +621,7 @@ instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
   dsimp [Truncated]
   infer_instance
 
-instance {n} [HasColimits C] : HasColimits (CosimplicialObject.Truncated C n) :=
+instance {n} [HasColimits C] : HasColimits (CosimplicialObject.Truncated C n) := fast_instance%
   ⟨inferInstance⟩
 
 variable (C)
@@ -659,7 +659,7 @@ def Augmented :=
 #align category_theory.cosimplicial_object.augmented CategoryTheory.CosimplicialObject.Augmented
 
 @[simps!]
-instance : Category (Augmented C) := by
+instance : Category (Augmented C) := fast_instance% by
   dsimp only [Augmented]
   infer_instance
 

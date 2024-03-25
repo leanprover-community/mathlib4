@@ -31,13 +31,13 @@ variable {α β : Type*}
 
 open OrderDual
 
-instance [h : NatCast α] : NatCast αᵒᵈ :=
+instance [h : NatCast α] : NatCast αᵒᵈ := fast_instance%
   h
 
-instance [h : AddMonoidWithOne α] : AddMonoidWithOne αᵒᵈ :=
+instance [h : AddMonoidWithOne α] : AddMonoidWithOne αᵒᵈ := fast_instance%
   h
 
-instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵒᵈ :=
+instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵒᵈ := fast_instance%
   h
 
 @[simp]
@@ -65,13 +65,13 @@ theorem ofDual_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
 /-! ### Lexicographic order -/
 
 
-instance [h : NatCast α] : NatCast (Lex α) :=
+instance [h : NatCast α] : NatCast (Lex α) := fast_instance%
   h
 
-instance [h : AddMonoidWithOne α] : AddMonoidWithOne (Lex α) :=
+instance [h : AddMonoidWithOne α] : AddMonoidWithOne (Lex α) := fast_instance%
   h
 
-instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne (Lex α) :=
+instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne (Lex α) := fast_instance%
   h
 
 @[simp]

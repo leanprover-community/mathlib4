@@ -108,7 +108,7 @@ theorem comp_apply_eq₂ {x : R₂} : σ (σ' x) = x := by
   simp
 #align ring_hom_inv_pair.comp_apply_eq₂ RingHomInvPair.comp_apply_eq₂
 
-instance ids : RingHomInvPair (RingHom.id R₁) (RingHom.id R₁) :=
+instance ids : RingHomInvPair (RingHom.id R₁) (RingHom.id R₁) := fast_instance%
   ⟨rfl, rfl⟩
 #align ring_hom_inv_pair.ids RingHomInvPair.ids
 
@@ -151,13 +151,13 @@ end RingHomInvPair
 
 namespace RingHomCompTriple
 
-instance ids : RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂ :=
+instance ids : RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂ := fast_instance%
   ⟨by
     ext
     simp⟩
 #align ring_hom_comp_triple.ids RingHomCompTriple.ids
 
-instance right_ids : RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂ :=
+instance right_ids : RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂ := fast_instance%
   ⟨by
     ext
     simp⟩
@@ -185,7 +185,7 @@ instance (priority := 100) invPair {σ₁ : R₁ →+* R₂} {σ₂ : R₂ →+*
   ⟨fun x => ⟨σ₂ x, RingHomInvPair.comp_apply_eq₂⟩⟩
 #align ring_hom_surjective.inv_pair RingHomSurjective.invPair
 
-instance ids : RingHomSurjective (RingHom.id R₁) :=
+instance ids : RingHomSurjective (RingHom.id R₁) := fast_instance%
   ⟨is_surjective⟩
 #align ring_hom_surjective.ids RingHomSurjective.ids
 
@@ -197,6 +197,6 @@ theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective �
       rwa [← RingHom.coe_comp, RingHomCompTriple.comp_eq] at this }
 #align ring_hom_surjective.comp RingHomSurjective.comp
 
-instance (σ : R₁ ≃+* R₂) : RingHomSurjective (σ : R₁ →+* R₂) := ⟨σ.surjective⟩
+instance (σ : R₁ ≃+* R₂) : RingHomSurjective (σ : R₁ →+* R₂) := fast_instance% ⟨σ.surjective⟩
 
 end RingHomSurjective

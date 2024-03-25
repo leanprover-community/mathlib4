@@ -42,7 +42,7 @@ def StructuredArrow (S : D) (T : C ⥤ D) :=
 #align category_theory.structured_arrow CategoryTheory.StructuredArrow
 
 -- Porting note: not found by inferInstance
-instance (S : D) (T : C ⥤ D) : Category (StructuredArrow S T) := commaCategory
+instance (S : D) (T : C ⥤ D) : Category (StructuredArrow S T) := fast_instance% commaCategory
 
 namespace StructuredArrow
 
@@ -291,13 +291,13 @@ def pre (S : D) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S (F ⋙ G) ⥤ St
   Comma.preRight _ F G
 #align category_theory.structured_arrow.pre CategoryTheory.StructuredArrow.pre
 
-instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [Faithful F] : Faithful (pre S F G) :=
+instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [Faithful F] : Faithful (pre S F G) := fast_instance%
   show Faithful (Comma.preRight _ _ _) from inferInstance
 
-instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [Full F] : Full (pre S F G) :=
+instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [Full F] : Full (pre S F G) := fast_instance%
   show Full (Comma.preRight _ _ _) from inferInstance
 
-instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [EssSurj F] : EssSurj (pre S F G) :=
+instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [EssSurj F] : EssSurj (pre S F G) := fast_instance%
   show EssSurj (Comma.preRight _ _ _) from inferInstance
 
 /-- If `F` is an equivalence, then so is the functor `(S, F ⋙ G) ⥤ (S, G)`. -/
@@ -385,7 +385,7 @@ def CostructuredArrow (S : C ⥤ D) (T : D) :=
   Comma S (Functor.fromPUnit.{0} T)
 #align category_theory.costructured_arrow CategoryTheory.CostructuredArrow
 
-instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
+instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := fast_instance% commaCategory
 
 namespace CostructuredArrow
 
@@ -520,7 +520,7 @@ theorem ext_iff {A B : CostructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.left
   ⟨fun h => h ▸ rfl, ext f g⟩
 #align category_theory.costructured_arrow.ext_iff CategoryTheory.CostructuredArrow.ext_iff
 
-instance proj_faithful : Faithful (proj S T) where map_injective {_ _} := ext
+instance proj_faithful : Faithful (proj S T) where map_injective {_ _} := fast_instance% ext
 #align category_theory.costructured_arrow.proj_faithful CategoryTheory.CostructuredArrow.proj_faithful
 
 theorem mono_of_mono_left {A B : CostructuredArrow S T} (f : A ⟶ B) [h : Mono f.left] : Mono f :=
@@ -629,13 +629,13 @@ def pre (F : B ⥤ C) (G : C ⥤ D) (S : D) : CostructuredArrow (F ⋙ G) S ⥤ 
   Comma.preLeft F G _
 #align category_theory.costructured_arrow.pre CategoryTheory.CostructuredArrow.pre
 
-instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [Faithful F] : Faithful (pre F G S) :=
+instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [Faithful F] : Faithful (pre F G S) := fast_instance%
   show Faithful (Comma.preLeft _ _ _) from inferInstance
 
-instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [Full F] : Full (pre F G S) :=
+instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [Full F] : Full (pre F G S) := fast_instance%
   show Full (Comma.preLeft _ _ _) from inferInstance
 
-instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [EssSurj F] : EssSurj (pre F G S) :=
+instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [EssSurj F] : EssSurj (pre F G S) := fast_instance%
   show EssSurj (Comma.preLeft _ _ _) from inferInstance
 
 /-- If `F` is an equivalence, then so is the functor `(F ⋙ G, S) ⥤ (G, S)`. -/

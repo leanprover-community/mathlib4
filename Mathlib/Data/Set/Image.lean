@@ -472,7 +472,7 @@ theorem Nonempty.preimage {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : S
   ⟨x, mem_preimage.2 <| hx.symm ▸ hy⟩
 #align set.nonempty.preimage Set.Nonempty.preimage
 
-instance (f : α → β) (s : Set α) [Nonempty s] : Nonempty (f '' s) :=
+instance (f : α → β) (s : Set α) [Nonempty s] : Nonempty (f '' s) := fast_instance%
   (Set.Nonempty.image f nonempty_of_nonempty_subtype).to_subtype
 
 /-- image and preimage are a Galois connection -/
@@ -757,7 +757,7 @@ theorem range_eq_empty [IsEmpty ι] (f : ι → α) : range f = ∅ :=
   range_eq_empty_iff.2 ‹_›
 #align set.range_eq_empty Set.range_eq_empty
 
-instance instNonemptyRange [Nonempty ι] (f : ι → α) : Nonempty (range f) :=
+instance instNonemptyRange [Nonempty ι] (f : ι → α) : Nonempty (range f) := fast_instance%
   (range_nonempty f).to_subtype
 
 @[simp]

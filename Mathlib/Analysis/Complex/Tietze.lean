@@ -30,7 +30,7 @@ theorem TietzeExtension.of_tvs (𝕜 : Type v) [NontriviallyNormedField 𝕜] {E
     TietzeExtension.{u, w} E :=
   Basis.ofVectorSpace 𝕜 E |>.equivFun.toContinuousLinearEquiv.toHomeomorph |> .of_homeo
 
-instance Complex.instTietzeExtension : TietzeExtension ℂ :=
+instance Complex.instTietzeExtension : TietzeExtension ℂ := fast_instance%
   TietzeExtension.of_tvs ℝ
 
 instance (priority := 900) IsROrC.instTietzeExtension {𝕜 : Type*} [IsROrC 𝕜] : TietzeExtension 𝕜 :=

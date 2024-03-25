@@ -120,7 +120,7 @@ def id' (M : Bimod A B) : Hom M M where hom := 𝟙 M.X
 set_option linter.uppercaseLean3 false in
 #align Bimod.id' Bimod.id'
 
-instance homInhabited (M : Bimod A B) : Inhabited (Hom M M) :=
+instance homInhabited (M : Bimod A B) : Inhabited (Hom M M) := fast_instance%
   ⟨id' M⟩
 set_option linter.uppercaseLean3 false in
 #align Bimod.hom_inhabited Bimod.homInhabited
@@ -189,7 +189,7 @@ def regular : Bimod A A where
 set_option linter.uppercaseLean3 false in
 #align Bimod.regular Bimod.regular
 
-instance : Inhabited (Bimod A A) :=
+instance : Inhabited (Bimod A A) := fast_instance%
   ⟨regular A⟩
 
 /-- The forgetful functor from bimodule objects to the ambient category. -/

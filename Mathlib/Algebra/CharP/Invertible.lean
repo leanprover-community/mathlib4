@@ -42,7 +42,7 @@ def invertibleOfCharPNotDvd {p : ℕ} [CharP K p] {t : ℕ} (not_dvd : ¬p ∣ t
 
 -- warning: this could potentially loop with `Invertible.ne_zero` - if there is weird type-class
 -- loops, watch out for that.
-instance invertibleOfPos [CharZero K] (n : ℕ) [NeZero n] : Invertible (n : K) :=
+instance invertibleOfPos [CharZero K] (n : ℕ) [NeZero n] : Invertible (n : K) := fast_instance%
   invertibleOfNonzero <| NeZero.out
 #align invertible_of_pos invertibleOfPos
 
@@ -52,7 +52,7 @@ section DivisionRing
 
 variable [DivisionRing K] [CharZero K]
 
-instance invertibleSucc (n : ℕ) : Invertible (n.succ : K) :=
+instance invertibleSucc (n : ℕ) : Invertible (n.succ : K) := fast_instance%
   invertibleOfNonzero (Nat.cast_ne_zero.mpr (Nat.succ_ne_zero _))
 #align invertible_succ invertibleSucc
 
@@ -62,11 +62,11 @@ number when you need its inverse.
 -/
 
 
-instance invertibleTwo : Invertible (2 : K) :=
+instance invertibleTwo : Invertible (2 : K) := fast_instance%
   invertibleOfNonzero (mod_cast (by decide : 2 ≠ 0))
 #align invertible_two invertibleTwo
 
-instance invertibleThree : Invertible (3 : K) :=
+instance invertibleThree : Invertible (3 : K) := fast_instance%
   invertibleOfNonzero (mod_cast (by decide : 3 ≠ 0))
 #align invertible_three invertibleThree
 

@@ -91,7 +91,7 @@ lemma EffectiveEpi.uniq {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
     m = EffectiveEpi.desc f e h :=
   (EffectiveEpi.getStruct f).uniq e h _ hm
 
-instance epiOfEffectiveEpi {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : Epi f := by
+instance epiOfEffectiveEpi {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : Epi f := fast_instance% by
   constructor
   intro W m₁ m₂ h
   have : m₂ = EffectiveEpi.desc f (f ≫ m₂)
@@ -205,7 +205,7 @@ def effectiveEpiFamilyStructSingletonOfEffectiveEpi {B X : C} (f : X ⟶ B) [Eff
   fac e h := fun _ ↦ EffectiveEpi.fac f (e ()) (fun g₁ g₂ hg ↦ h () () g₁ g₂ hg)
   uniq e h m hm := by apply EffectiveEpi.uniq f (e ()) (h () ()); exact hm ()
 
-instance {B X : C} (f : X ⟶ B) [EffectiveEpi f] : EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
+instance {B X : C} (f : X ⟶ B) [EffectiveEpi f] : EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) := fast_instance%
   ⟨⟨effectiveEpiFamilyStructSingletonOfEffectiveEpi f⟩⟩
 
 /--
@@ -264,6 +264,6 @@ def effectiveEpiStructOfIsIso {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpiSt
   fac _ _ := by simp
   uniq _ _ _ h := by simpa using h
 
-instance {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpi f := ⟨⟨effectiveEpiStructOfIsIso f⟩⟩
+instance {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpi f := fast_instance% ⟨⟨effectiveEpiStructOfIsIso f⟩⟩
 
 example {X : C} : EffectiveEpiFamily (fun _ => X : Unit → C) (fun _ => 𝟙 X) := inferInstance

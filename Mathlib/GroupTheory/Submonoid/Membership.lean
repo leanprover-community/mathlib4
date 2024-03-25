@@ -479,13 +479,13 @@ theorem mem_powers_iff (x z : M) : x ∈ powers z ↔ ∃ n : ℕ, z ^ n = x :=
   Iff.rfl
 #align submonoid.mem_powers_iff Submonoid.mem_powers_iff
 
-noncomputable instance decidableMemPowers : DecidablePred (· ∈ Submonoid.powers a) :=
+noncomputable instance decidableMemPowers : DecidablePred (· ∈ Submonoid.powers a) := fast_instance%
   Classical.decPred _
 #align decidable_powers Submonoid.decidableMemPowers
 
 -- Porting note (#11215): TODO the following instance should follow from a more general principle
 -- See also mathlib4#2417
-noncomputable instance fintypePowers [Fintype M] : Fintype (powers a) :=
+noncomputable instance fintypePowers [Fintype M] : Fintype (powers a) := fast_instance%
   inferInstanceAs <| Fintype {y // y ∈ powers a}
 
 theorem powers_eq_closure (n : M) : powers n = closure {n} := by

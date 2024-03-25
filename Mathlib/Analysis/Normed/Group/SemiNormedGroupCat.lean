@@ -43,7 +43,7 @@ deriving instance LargeCategory for SemiNormedGroupCat
 -- Porting note: deriving fails for ConcreteCategory, adding instance manually.
 -- See https://github.com/leanprover-community/mathlib4/issues/5020
 -- deriving instance LargeCategory, ConcreteCategory for SemiRingCat
-instance : ConcreteCategory SemiNormedGroupCat := by
+instance : ConcreteCategory SemiNormedGroupCat := fast_instance% by
   dsimp [SemiNormedGroupCat]
   infer_instance
 
@@ -55,7 +55,7 @@ def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGroupCat :=
   Bundled.of M
 #align SemiNormedGroupCat.of SemiNormedGroupCat.of
 
-instance (M : SemiNormedGroupCat) : SeminormedAddCommGroup M :=
+instance (M : SemiNormedGroupCat) : SeminormedAddCommGroup M := fast_instance%
   M.str
 
 -- Porting note (#10754): added instance
@@ -90,7 +90,7 @@ theorem coe_comp {M N K : SemiNormedGroupCat} (f : M ⟶ N) (g : N ⟶ K) :
   rfl
 #align SemiNormedGroup.coe_comp SemiNormedGroupCat.coe_comp
 
-instance : Inhabited SemiNormedGroupCat :=
+instance : Inhabited SemiNormedGroupCat := fast_instance%
   ⟨of PUnit⟩
 
 instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
@@ -98,7 +98,7 @@ instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
   i
 #align SemiNormedGroup.of_unique SemiNormedGroupCat.ofUnique
 
-instance {M N : SemiNormedGroupCat} : Zero (M ⟶ N) :=
+instance {M N : SemiNormedGroupCat} : Zero (M ⟶ N) := fast_instance%
   NormedAddGroupHom.zero
 
 @[simp]
@@ -114,7 +114,7 @@ theorem isZero_of_subsingleton (V : SemiNormedGroupCat) [Subsingleton V] : Limit
   · ext; apply Subsingleton.elim
 #align SemiNormedGroup.is_zero_of_subsingleton SemiNormedGroupCat.isZero_of_subsingleton
 
-instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat.{u} :=
+instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat.{u} := fast_instance%
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 #align SemiNormedGroup.has_zero_object SemiNormedGroupCat.hasZeroObject
 
@@ -175,7 +175,7 @@ def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGroupCat₁ :=
   Bundled.of M
 #align SemiNormedGroup₁.of SemiNormedGroupCat₁.of
 
-instance (M : SemiNormedGroupCat₁) : SeminormedAddCommGroup M :=
+instance (M : SemiNormedGroupCat₁) : SeminormedAddCommGroup M := fast_instance%
   M.str
 
 /-- Promote a morphism in `SemiNormedGroupCat` to a morphism in `SemiNormedGroupCat₁`. -/
@@ -226,7 +226,7 @@ theorem coe_comp {M N K : SemiNormedGroupCat₁} (f : M ⟶ N) (g : N ⟶ K) :
 -- Porting note: deleted `coe_comp'`, as we no longer have the relevant coercion.
 #noalign SemiNormedGroup₁.coe_comp'
 
-instance : Inhabited SemiNormedGroupCat₁ :=
+instance : Inhabited SemiNormedGroupCat₁ := fast_instance%
   ⟨of PUnit⟩
 
 instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
@@ -251,7 +251,7 @@ theorem isZero_of_subsingleton (V : SemiNormedGroupCat₁) [Subsingleton V] : Li
   · ext; apply Subsingleton.elim
 #align SemiNormedGroup₁.is_zero_of_subsingleton SemiNormedGroupCat₁.isZero_of_subsingleton
 
-instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat₁.{u} :=
+instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat₁.{u} := fast_instance%
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 #align SemiNormedGroup₁.has_zero_object SemiNormedGroupCat₁.hasZeroObject
 

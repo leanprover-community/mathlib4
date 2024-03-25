@@ -81,7 +81,7 @@ because it is actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas abo
 lot of proofs.  -/
 @[coe] def toFun' : Z → (B × F) := e.toFun
 
-instance : CoeFun (Pretrivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
+instance : CoeFun (Pretrivialization F proj) fun _ => Z → B × F := fast_instance% ⟨toFun'⟩
 
 @[ext]
 lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPartialEquiv)
@@ -331,9 +331,9 @@ def toPretrivialization : Pretrivialization F proj :=
   { e with }
 #align trivialization.to_pretrivialization Trivialization.toPretrivialization
 
-instance : CoeFun (Trivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
+instance : CoeFun (Trivialization F proj) fun _ => Z → B × F := fast_instance% ⟨toFun'⟩
 
-instance : Coe (Trivialization F proj) (Pretrivialization F proj) :=
+instance : Coe (Trivialization F proj) (Pretrivialization F proj) := fast_instance%
   ⟨toPretrivialization⟩
 
 theorem toPretrivialization_injective :

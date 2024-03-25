@@ -47,7 +47,7 @@ noncomputable instance [IrreducibleSpace X.carrier] (U : Opens X.carrier) [Nonem
     Algebra (X.presheaf.obj (op U)) X.functionField :=
   (X.germToFunctionField U).toAlgebra
 
-noncomputable instance [IsIntegral X] : Field X.functionField := by
+noncomputable instance [IsIntegral X] : Field X.functionField := fast_instance% by
   apply fieldOfIsUnitOrEqZero
   intro a
   obtain ⟨U, m, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ a
@@ -169,7 +169,7 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
   ext; exact mem_nonZeroDivisors_iff_ne_zero
 #align algebraic_geometry.function_field_is_fraction_ring_of_is_affine_open AlgebraicGeometry.functionField_isFractionRing_of_isAffineOpen
 
-instance (x : X.carrier) : IsAffine (X.affineCover.obj x) :=
+instance (x : X.carrier) : IsAffine (X.affineCover.obj x) := fast_instance%
   AlgebraicGeometry.SpecIsAffine _
 
 instance [IsIntegral X] (x : X.carrier) :

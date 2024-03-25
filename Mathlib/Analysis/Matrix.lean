@@ -139,7 +139,7 @@ theorem norm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A : Matrix m
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_conjTranspose A
 #align matrix.norm_conj_transpose Matrix.norm_conjTranspose
 
-instance [StarAddMonoid α] [NormedStarGroup α] : NormedStarGroup (Matrix m m α) :=
+instance [StarAddMonoid α] [NormedStarGroup α] : NormedStarGroup (Matrix m m α) := fast_instance%
   ⟨norm_conjTranspose⟩
 
 @[simp]
@@ -182,7 +182,7 @@ theorem norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ = ‖v�
 
 /-- Note this is safe as an instance as it carries no data. -/
 -- Porting note: not yet implemented: `@[nolint fails_quickly]`
-instance [Nonempty n] [DecidableEq n] [One α] [NormOneClass α] : NormOneClass (Matrix n n α) :=
+instance [Nonempty n] [DecidableEq n] [One α] [NormOneClass α] : NormOneClass (Matrix n n α) := fast_instance%
   ⟨(norm_diagonal _).trans <| norm_one⟩
 
 end SeminormedAddCommGroup

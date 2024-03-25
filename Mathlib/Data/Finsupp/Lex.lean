@@ -49,7 +49,7 @@ theorem lex_eq_invImage_dfinsupp_lex (r : α → α → Prop) (s : N → N → P
   rfl
 #align finsupp.lex_eq_inv_image_dfinsupp_lex Finsupp.lex_eq_invImage_dfinsupp_lex
 
-instance [LT α] [LT N] : LT (Lex (α →₀ N)) :=
+instance [LT α] [LT N] : LT (Lex (α →₀ N)) := fast_instance%
   ⟨fun f g ↦ Finsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
 
 theorem lex_lt_of_lt_of_preorder [Preorder N] (r) [IsStrictOrder α r] {x y : α →₀ N} (hlt : x < y) :

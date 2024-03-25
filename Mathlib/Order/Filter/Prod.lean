@@ -436,7 +436,7 @@ theorem prod_neBot : NeBot (f ×ˢ g) ↔ NeBot f ∧ NeBot g := by
 protected theorem NeBot.prod (hf : NeBot f) (hg : NeBot g) : NeBot (f ×ˢ g) := prod_neBot.2 ⟨hf, hg⟩
 #align filter.ne_bot.prod Filter.NeBot.prod
 
-instance prod.instNeBot [hf : NeBot f] [hg : NeBot g] : NeBot (f ×ˢ g) := hf.prod hg
+instance prod.instNeBot [hf : NeBot f] [hg : NeBot g] : NeBot (f ×ˢ g) := fast_instance% hf.prod hg
 #align filter.prod_ne_bot' Filter.prod.instNeBot
 
 @[simp]

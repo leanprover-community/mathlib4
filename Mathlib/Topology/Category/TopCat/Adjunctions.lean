@@ -45,10 +45,10 @@ def adj₂ : forget TopCat.{u} ⊣ trivial :=
 set_option linter.uppercaseLean3 false in
 #align Top.adj₂ TopCat.adj₂
 
-instance : IsRightAdjoint (forget TopCat.{u}) :=
+instance : IsRightAdjoint (forget TopCat.{u}) := fast_instance%
   ⟨_, adj₁⟩
 
-instance : IsLeftAdjoint (forget TopCat.{u}) :=
+instance : IsLeftAdjoint (forget TopCat.{u}) := fast_instance%
   ⟨_, adj₂⟩
 
 end TopCat

@@ -283,7 +283,7 @@ variable (α : Type*) {A : Type*} [CommGroup A] (B : Subgroup A)
 
 /-- Any quotient group of a rootable group is rootable. -/
 @[to_additive "Any quotient group of a divisible group is divisible"]
-noncomputable instance QuotientGroup.rootableBy [RootableBy A ℕ] : RootableBy (A ⧸ B) ℕ :=
+noncomputable instance QuotientGroup.rootableBy [RootableBy A ℕ] : RootableBy (A ⧸ B) ℕ := fast_instance%
   QuotientGroup.mk_surjective.rootableBy _ fun _ _ => rfl
 #align quotient_group.rootable_by QuotientGroup.rootableBy
 #align quotient_add_group.divisible_by QuotientAddGroup.divisibleBy

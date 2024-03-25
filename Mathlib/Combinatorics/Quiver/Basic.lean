@@ -97,7 +97,7 @@ def id (V : Type*) [Quiver V] : Prefunctor V V where
 #align prefunctor.id_obj Prefunctor.id_obj
 #align prefunctor.id_map Prefunctor.id_map
 
-instance (V : Type*) [Quiver V] : Inhabited (Prefunctor V V) :=
+instance (V : Type*) [Quiver V] : Inhabited (Prefunctor V V) := fast_instance%
   ⟨id V⟩
 
 /-- Composition of morphisms between quivers. -/
@@ -141,7 +141,7 @@ end Prefunctor
 namespace Quiver
 
 /-- `Vᵒᵖ` reverses the direction of all arrows of `V`. -/
-instance opposite {V} [Quiver V] : Quiver Vᵒᵖ :=
+instance opposite {V} [Quiver V] : Quiver Vᵒᵖ := fast_instance%
   ⟨fun a b => (unop b ⟶ unop a)ᵒᵖ⟩
 #align quiver.opposite Quiver.opposite
 
@@ -161,7 +161,7 @@ def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X :=
 def Empty (V : Type u) : Type u := V
 #align quiver.empty Quiver.Empty
 
-instance emptyQuiver (V : Type u) : Quiver.{u} (Empty V) := ⟨fun _ _ => PEmpty⟩
+instance emptyQuiver (V : Type u) : Quiver.{u} (Empty V) := fast_instance% ⟨fun _ _ => PEmpty⟩
 #align quiver.empty_quiver Quiver.emptyQuiver
 
 @[simp]

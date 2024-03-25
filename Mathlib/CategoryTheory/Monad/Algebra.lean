@@ -92,7 +92,7 @@ namespace Hom
 def id (A : Algebra T) : Hom A A where f := 𝟙 A.A
 #align category_theory.monad.algebra.hom.id CategoryTheory.Monad.Algebra.Hom.id
 
-instance (A : Algebra T) : Inhabited (Hom A A) :=
+instance (A : Algebra T) : Inhabited (Hom A A) := fast_instance%
   ⟨{ f := 𝟙 _ }⟩
 
 /-- Composition of Eilenberg–Moore algebra homomorphisms. -/
@@ -175,7 +175,7 @@ def free : C ⥤ Algebra T where
       h := T.μ.naturality _ }
 #align category_theory.monad.free CategoryTheory.Monad.free
 
-instance [Inhabited C] : Inhabited (Algebra T) :=
+instance [Inhabited C] : Inhabited (Algebra T) := fast_instance%
   ⟨(free T).obj default⟩
 
 -- The other two `simps` projection lemmas can be derived from these two, so `simp_nf` complains if
@@ -239,7 +239,7 @@ theorem algebra_mono_of_mono {X Y : Algebra T} (f : X ⟶ Y) [h : Mono f.f] : Mo
   (forget T).mono_of_mono_map h
 #align category_theory.monad.algebra_mono_of_mono CategoryTheory.Monad.algebra_mono_of_mono
 
-instance : IsRightAdjoint T.forget :=
+instance : IsRightAdjoint T.forget := fast_instance%
   ⟨T.free, T.adj⟩
 
 @[simp]
@@ -519,7 +519,7 @@ theorem algebra_mono_of_mono {X Y : Coalgebra G} (f : X ⟶ Y) [h : Mono f.f] : 
   (forget G).mono_of_mono_map h
 #align category_theory.comonad.algebra_mono_of_mono CategoryTheory.Comonad.algebra_mono_of_mono
 
-instance : IsLeftAdjoint G.forget :=
+instance : IsLeftAdjoint G.forget := fast_instance%
   ⟨_, G.adj⟩
 
 @[simp]

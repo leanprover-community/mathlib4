@@ -380,7 +380,7 @@ open scoped Classical
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
 variable [Algebra R₁ K] [frac : IsFractionRing R₁ K]
 
-instance : Nontrivial (FractionalIdeal R₁⁰ K) :=
+instance : Nontrivial (FractionalIdeal R₁⁰ K) := fast_instance%
   ⟨⟨0, 1, fun h =>
       have this : (1 : K) ∈ (0 : FractionalIdeal R₁⁰ K) := by
         rw [← (algebraMap R₁ K).map_one]
@@ -425,7 +425,7 @@ theorem fractional_div_of_nonzero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0
     h <| coeToSubmodule_injective <| H.trans coe_zero.symm
 #align fractional_ideal.fractional_div_of_nonzero FractionalIdeal.fractional_div_of_nonzero
 
-noncomputable instance : Div (FractionalIdeal R₁⁰ K) :=
+noncomputable instance : Div (FractionalIdeal R₁⁰ K) := fast_instance%
   ⟨fun I J => if h : J = 0 then 0 else ⟨I / J, fractional_div_of_nonzero h⟩⟩
 
 variable {I J : FractionalIdeal R₁⁰ K}

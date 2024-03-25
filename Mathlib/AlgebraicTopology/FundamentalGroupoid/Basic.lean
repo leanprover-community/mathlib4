@@ -317,7 +317,7 @@ instance (X : Type*) [Subsingleton X] :
 -- TODO: It seems that `Equiv.nontrivial_congr` doesn't exist.
 -- Once it is added, please add the corresponding lemma and instance.
 
-instance {X : Type u} [Inhabited X] : Inhabited (FundamentalGroupoid X) :=
+instance {X : Type u} [Inhabited X] : Inhabited (FundamentalGroupoid X) := fast_instance%
   ⟨⟨default⟩⟩
 
 attribute [local instance] Path.Homotopic.setoid

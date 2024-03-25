@@ -305,7 +305,7 @@ Some common uses:
   `initialize_simps_projections` after defining the `DFunLike` instance (or instance that implies
   a `DFunLike` instance).
   ```
-    instance {mM : Mul M} {mN : Mul N} : DFunLike (MulHom M N) M N := ...
+    instance {mM : Mul M} {mN : Mul N} : DFunLike (MulHom M N) M N := fast_instance% ...
     initialize_simps_projections MulHom (toFun → apply)
   ```
   This will generate `foo_apply` lemmas for each declaration `foo`.

@@ -51,7 +51,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {K : Set
 #noalign continuous_map.gen_empty_right
 
 /-- The compact-open topology on the space of continuous maps `C(X, Y)`. -/
-instance compactOpen : TopologicalSpace C(X, Y) :=
+instance compactOpen : TopologicalSpace C(X, Y) := fast_instance%
  .generateFrom <| image2 (fun K U ↦ {f | MapsTo f K U}) {K | IsCompact K} {U | IsOpen U}
 #align continuous_map.compact_open ContinuousMap.compactOpen
 
@@ -200,13 +200,13 @@ lemma isClopen_setOf_mapsTo (hK : IsCompact K) (hU : IsClopen U) :
     IsClopen {f : C(X, Y) | MapsTo f K U} :=
   ⟨isClosed_setOf_mapsTo hU.isClosed K, isOpen_setOf_mapsTo hK hU.isOpen⟩
 
-instance [T0Space Y] : T0Space C(X, Y) :=
+instance [T0Space Y] : T0Space C(X, Y) := fast_instance%
   t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
 
-instance [T1Space Y] : T1Space C(X, Y) :=
+instance [T1Space Y] : T1Space C(X, Y) := fast_instance%
   t1Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
 
-instance [T2Space Y] : T2Space C(X, Y) :=
+instance [T2Space Y] : T2Space C(X, Y) := fast_instance%
   .of_injective_continuous DFunLike.coe_injective continuous_coe
 
 end Ev

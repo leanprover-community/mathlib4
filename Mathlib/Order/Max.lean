@@ -69,28 +69,28 @@ export NoMinOrder (exists_lt)
 
 export NoMaxOrder (exists_gt)
 
-instance nonempty_lt [LT α] [NoMinOrder α] (a : α) : Nonempty { x // x < a } :=
+instance nonempty_lt [LT α] [NoMinOrder α] (a : α) : Nonempty { x // x < a } := fast_instance%
   nonempty_subtype.2 (exists_lt a)
 
-instance nonempty_gt [LT α] [NoMaxOrder α] (a : α) : Nonempty { x // a < x } :=
+instance nonempty_gt [LT α] [NoMaxOrder α] (a : α) : Nonempty { x // a < x } := fast_instance%
   nonempty_subtype.2 (exists_gt a)
 
-instance IsEmpty.toNoMaxOrder [LT α] [IsEmpty α] : NoMaxOrder α := ⟨isEmptyElim⟩
-instance IsEmpty.toNoMinOrder [LT α] [IsEmpty α] : NoMinOrder α := ⟨isEmptyElim⟩
+instance IsEmpty.toNoMaxOrder [LT α] [IsEmpty α] : NoMaxOrder α := fast_instance% ⟨isEmptyElim⟩
+instance IsEmpty.toNoMinOrder [LT α] [IsEmpty α] : NoMinOrder α := fast_instance% ⟨isEmptyElim⟩
 
-instance OrderDual.noBotOrder [LE α] [NoTopOrder α] : NoBotOrder αᵒᵈ :=
+instance OrderDual.noBotOrder [LE α] [NoTopOrder α] : NoBotOrder αᵒᵈ := fast_instance%
   ⟨fun a => exists_not_le (α := α) a⟩
 #align order_dual.no_bot_order OrderDual.noBotOrder
 
-instance OrderDual.noTopOrder [LE α] [NoBotOrder α] : NoTopOrder αᵒᵈ :=
+instance OrderDual.noTopOrder [LE α] [NoBotOrder α] : NoTopOrder αᵒᵈ := fast_instance%
   ⟨fun a => exists_not_ge (α := α) a⟩
 #align order_dual.no_top_order OrderDual.noTopOrder
 
-instance OrderDual.noMinOrder [LT α] [NoMaxOrder α] : NoMinOrder αᵒᵈ :=
+instance OrderDual.noMinOrder [LT α] [NoMaxOrder α] : NoMinOrder αᵒᵈ := fast_instance%
   ⟨fun a => exists_gt (α := α) a⟩
 #align order_dual.no_min_order OrderDual.noMinOrder
 
-instance OrderDual.noMaxOrder [LT α] [NoMinOrder α] : NoMaxOrder αᵒᵈ :=
+instance OrderDual.noMaxOrder [LT α] [NoMinOrder α] : NoMaxOrder αᵒᵈ := fast_instance%
   ⟨fun a => exists_lt (α := α) a⟩
 #align order_dual.no_max_order OrderDual.noMaxOrder
 
@@ -102,25 +102,25 @@ instance (priority := 100) [Preorder α] [NoMinOrder α] : NoBotOrder α :=
 instance (priority := 100) [Preorder α] [NoMaxOrder α] : NoTopOrder α :=
   ⟨fun a => (exists_gt a).imp fun _ => not_le_of_lt⟩
 
-instance noMaxOrder_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α × β) :=
+instance noMaxOrder_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α × β) := fast_instance%
   ⟨fun ⟨a, b⟩ => by
     obtain ⟨c, h⟩ := exists_gt a
     exact ⟨(c, b), Prod.mk_lt_mk_iff_left.2 h⟩⟩
 #align no_max_order_of_left noMaxOrder_of_left
 
-instance noMaxOrder_of_right [Preorder α] [Preorder β] [NoMaxOrder β] : NoMaxOrder (α × β) :=
+instance noMaxOrder_of_right [Preorder α] [Preorder β] [NoMaxOrder β] : NoMaxOrder (α × β) := fast_instance%
   ⟨fun ⟨a, b⟩ => by
     obtain ⟨c, h⟩ := exists_gt b
     exact ⟨(a, c), Prod.mk_lt_mk_iff_right.2 h⟩⟩
 #align no_max_order_of_right noMaxOrder_of_right
 
-instance noMinOrder_of_left [Preorder α] [Preorder β] [NoMinOrder α] : NoMinOrder (α × β) :=
+instance noMinOrder_of_left [Preorder α] [Preorder β] [NoMinOrder α] : NoMinOrder (α × β) := fast_instance%
   ⟨fun ⟨a, b⟩ => by
     obtain ⟨c, h⟩ := exists_lt a
     exact ⟨(c, b), Prod.mk_lt_mk_iff_left.2 h⟩⟩
 #align no_min_order_of_left noMinOrder_of_left
 
-instance noMinOrder_of_right [Preorder α] [Preorder β] [NoMinOrder β] : NoMinOrder (α × β) :=
+instance noMinOrder_of_right [Preorder α] [Preorder β] [NoMinOrder β] : NoMinOrder (α × β) := fast_instance%
   ⟨fun ⟨a, b⟩ => by
     obtain ⟨c, h⟩ := exists_lt b
     exact ⟨(a, c), Prod.mk_lt_mk_iff_right.2 h⟩⟩

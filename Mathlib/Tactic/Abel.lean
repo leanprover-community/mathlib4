@@ -113,7 +113,7 @@ def NormalExpr.e : NormalExpr → Expr
   | .zero e => e
   | .nterm e .. => e
 
-instance : Coe NormalExpr Expr where coe := NormalExpr.e
+instance : Coe NormalExpr Expr where coe := fast_instance% NormalExpr.e
 
 /-- Construct the normal form representing a single term. -/
 def NormalExpr.term' (n : Expr × ℤ) (x : ℕ × Expr) (a : NormalExpr) : M NormalExpr :=

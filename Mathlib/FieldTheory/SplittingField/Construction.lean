@@ -134,7 +134,7 @@ instance SplittingFieldAux.field (n : ℕ) {K : Type u} [Field K] (f : K[X]) :
   (SplittingFieldAuxAux n f).2.1
 #align polynomial.splitting_field_aux.field Polynomial.SplittingFieldAux.field
 
-instance (n : ℕ) {K : Type u} [Field K] (f : K[X]) : Inhabited (SplittingFieldAux n f) :=
+instance (n : ℕ) {K : Type u} [Field K] (f : K[X]) : Inhabited (SplittingFieldAux n f) := fast_instance%
   ⟨0⟩
 
 instance SplittingFieldAux.algebra (n : ℕ) {K : Type u} [Field K] (f : K[X]) :
@@ -154,11 +154,11 @@ instance algebra''' {n : ℕ} {f : K[X]} :
   SplittingFieldAux.algebra n _
 #align polynomial.splitting_field_aux.algebra''' Polynomial.SplittingFieldAux.algebra'''
 
-instance algebra' {n : ℕ} {f : K[X]} : Algebra (AdjoinRoot f.factor) (SplittingFieldAux n.succ f) :=
+instance algebra' {n : ℕ} {f : K[X]} : Algebra (AdjoinRoot f.factor) (SplittingFieldAux n.succ f) := fast_instance%
   SplittingFieldAux.algebra'''
 #align polynomial.splitting_field_aux.algebra' Polynomial.SplittingFieldAux.algebra'
 
-instance algebra'' {n : ℕ} {f : K[X]} : Algebra K (SplittingFieldAux n f.removeFactor) :=
+instance algebra'' {n : ℕ} {f : K[X]} : Algebra K (SplittingFieldAux n f.removeFactor) := fast_instance%
   RingHom.toAlgebra (RingHom.comp (algebraMap _ _) (AdjoinRoot.of f.factor))
 #align polynomial.splitting_field_aux.algebra'' Polynomial.SplittingFieldAux.algebra''
 
@@ -218,7 +218,7 @@ theorem adjoin_rootSet (n : ℕ) :
     rw [ih _ (natDegree_removeFactor' hfn), Subalgebra.restrictScalars_top]
 #align polynomial.splitting_field_aux.adjoin_root_set Polynomial.SplittingFieldAux.adjoin_rootSet
 
-instance (f : K[X]) : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
+instance (f : K[X]) : IsSplittingField K (SplittingFieldAux f.natDegree f) f := fast_instance%
   ⟨SplittingFieldAux.splits _ _ rfl, SplittingFieldAux.adjoin_rootSet _ _ rfl⟩
 
 #noalign polynomial.splitting_field_aux.of_mv_polynomial
@@ -237,22 +237,22 @@ namespace SplittingField
 
 variable (f : K[X])
 
-instance commRing : CommRing (SplittingField f) :=
+instance commRing : CommRing (SplittingField f) := fast_instance%
   Ideal.Quotient.commRing _
 #align polynomial.splitting_field.comm_ring Polynomial.SplittingField.commRing
 
-instance inhabited : Inhabited (SplittingField f) :=
+instance inhabited : Inhabited (SplittingField f) := fast_instance%
   ⟨37⟩
 #align polynomial.splitting_field.inhabited Polynomial.SplittingField.inhabited
 
-instance {S : Type*} [DistribSMul S K] [IsScalarTower S K K] : SMul S (SplittingField f) :=
+instance {S : Type*} [DistribSMul S K] [IsScalarTower S K K] : SMul S (SplittingField f) := fast_instance%
   Submodule.Quotient.instSMul' _
 
-instance algebra : Algebra K (SplittingField f) :=
+instance algebra : Algebra K (SplittingField f) := fast_instance%
   Ideal.Quotient.algebra _
 #align polynomial.splitting_field.algebra Polynomial.SplittingField.algebra
 
-instance algebra' {R : Type*} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) :=
+instance algebra' {R : Type*} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) := fast_instance%
   Ideal.Quotient.algebra _
 #align polynomial.splitting_field.algebra' Polynomial.SplittingField.algebra'
 
@@ -267,7 +267,7 @@ def algEquivSplittingFieldAux (f : K[X]) : SplittingField f ≃ₐ[K] SplittingF
   Ideal.quotientKerAlgEquivOfSurjective fun x => ⟨MvPolynomial.X x, by simp⟩
 #align polynomial.splitting_field.alg_equiv_splitting_field_aux Polynomial.SplittingField.algEquivSplittingFieldAux
 
-instance : Field (SplittingField f) :=
+instance : Field (SplittingField f) := fast_instance%
   let e := algEquivSplittingFieldAux f
   { toCommRing := SplittingField.commRing f
     ratCast := fun a => algebraMap K _ (a : K)
@@ -296,13 +296,13 @@ instance : Field (SplittingField f) :=
       assumption
     inv_zero := by simp }
 
-instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
+instance instCharZero [CharZero K] : CharZero (SplittingField f) := fast_instance%
   charZero_of_injective_algebraMap (algebraMap K _).injective
 
-instance instCharP (p : ℕ) [CharP K p] : CharP (SplittingField f) p :=
+instance instCharP (p : ℕ) [CharP K p] : CharP (SplittingField f) p := fast_instance%
   charP_of_injective_algebraMap (algebraMap K _).injective p
 
-instance instExpChar (p : ℕ) [ExpChar K p] : ExpChar (SplittingField f) p :=
+instance instExpChar (p : ℕ) [ExpChar K p] : ExpChar (SplittingField f) p := fast_instance%
   expChar_of_injective_algebraMap (algebraMap K _).injective p
 
 -- The algebra instance deriving from `K` should be definitionally equal to that
@@ -353,13 +353,13 @@ variable (K L)
 variable [Algebra K L]
 variable {K}
 
-instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
+instance (f : K[X]) : FiniteDimensional K f.SplittingField := fast_instance%
   finiteDimensional f.SplittingField f
 
-instance [Fintype K] (f : K[X]) : Fintype f.SplittingField :=
+instance [Fintype K] (f : K[X]) : Fintype f.SplittingField := fast_instance%
   FiniteDimensional.fintypeOfFintype K _
 
-instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField :=
+instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField := fast_instance%
   inferInstance
 
 /-- Any splitting field is isomorphic to `SplittingFieldAux f`. -/

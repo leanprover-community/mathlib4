@@ -131,11 +131,11 @@ def toMeasure : FiniteMeasure Ω → Measure Ω := Subtype.val
 instance instCoe : Coe (FiniteMeasure Ω) (MeasureTheory.Measure Ω) where
   coe := toMeasure
 
-instance isFiniteMeasure (μ : FiniteMeasure Ω) : IsFiniteMeasure (μ : Measure Ω) :=
+instance isFiniteMeasure (μ : FiniteMeasure Ω) : IsFiniteMeasure (μ : Measure Ω) := fast_instance%
   μ.prop
 #align measure_theory.finite_measure.is_finite_measure MeasureTheory.FiniteMeasure.isFiniteMeasure
 
-instance instCoeFun : CoeFun (FiniteMeasure Ω) fun _ => Set Ω → ℝ≥0 :=
+instance instCoeFun : CoeFun (FiniteMeasure Ω) fun _ => Set Ω → ℝ≥0 := fast_instance%
   ⟨fun μ s => ((μ : Measure Ω) s).toNNReal⟩
 
 -- Porting note: now a syntactic tautology because of the way coercions work in Lean 4
@@ -176,7 +176,7 @@ theorem ennreal_mass {μ : FiniteMeasure Ω} : (μ.mass : ℝ≥0∞) = (μ : Me
   ennreal_coeFn_eq_coeFn_toMeasure μ Set.univ
 #align measure_theory.finite_measure.ennreal_mass MeasureTheory.FiniteMeasure.ennreal_mass
 
-instance instZero : Zero (FiniteMeasure Ω) where zero := ⟨0, MeasureTheory.isFiniteMeasureZero⟩
+instance instZero : Zero (FiniteMeasure Ω) where zero := fast_instance% ⟨0, MeasureTheory.isFiniteMeasureZero⟩
 #align measure_theory.finite_measure.has_zero MeasureTheory.FiniteMeasure.instZero
 
 @[simp]
@@ -211,10 +211,10 @@ theorem eq_of_forall_apply_eq (μ ν : FiniteMeasure Ω)
   simpa [ennreal_coeFn_eq_coeFn_toMeasure] using congr_arg ((↑) : ℝ≥0 → ℝ≥0∞) (h s s_mble)
 #align measure_theory.finite_measure.eq_of_forall_apply_eq MeasureTheory.FiniteMeasure.eq_of_forall_apply_eq
 
-instance instInhabited : Inhabited (FiniteMeasure Ω) :=
+instance instInhabited : Inhabited (FiniteMeasure Ω) := fast_instance%
   ⟨0⟩
 
-instance instAdd : Add (FiniteMeasure Ω) where add μ ν := ⟨μ + ν, MeasureTheory.isFiniteMeasureAdd⟩
+instance instAdd : Add (FiniteMeasure Ω) where add μ ν := fast_instance% ⟨μ + ν, MeasureTheory.isFiniteMeasureAdd⟩
 
 variable {R : Type*} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
   [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
@@ -262,7 +262,7 @@ theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure
   norm_cast
 #align measure_theory.finite_measure.coe_fn_smul MeasureTheory.FiniteMeasure.coeFn_smul
 
-instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) :=
+instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) := fast_instance%
   toMeasure_injective.addCommMonoid (↑) toMeasure_zero toMeasure_add fun _ _ => toMeasure_smul _ _
 
 /-- Coercion is an `AddMonoidHom`. -/
@@ -273,7 +273,7 @@ def toMeasureAddMonoidHom : FiniteMeasure Ω →+ Measure Ω where
   map_add' := toMeasure_add
 #align measure_theory.finite_measure.coe_add_monoid_hom MeasureTheory.FiniteMeasure.toMeasureAddMonoidHom
 
-instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
+instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) := fast_instance%
   Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
 
 -- Porting note: `@[simp]` breaks the LHS of `coeFn_smul`
@@ -464,7 +464,7 @@ theorem toWeakDualBCNN_apply (μ : FiniteMeasure Ω) (f : Ω →ᵇ ℝ≥0) :
 /-- The topology of weak convergence on `MeasureTheory.FiniteMeasure Ω` is inherited (induced)
 from the weak-* topology on `WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)` via the function
 `MeasureTheory.FiniteMeasure.toWeakDualBCNN`. -/
-instance instTopologicalSpace : TopologicalSpace (FiniteMeasure Ω) :=
+instance instTopologicalSpace : TopologicalSpace (FiniteMeasure Ω) := fast_instance%
   TopologicalSpace.induced toWeakDualBCNN inferInstance
 
 theorem toWeakDualBCNN_continuous : Continuous (@toWeakDualBCNN Ω _ _ _) :=
@@ -586,7 +586,7 @@ lemma embedding_toWeakDualBCNN :
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
 continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of finite Borel
 measures is Hausdorff (`T2Space`). -/
-instance t2Space : T2Space (FiniteMeasure Ω) :=
+instance t2Space : T2Space (FiniteMeasure Ω) := fast_instance%
   Embedding.t2Space (embedding_toWeakDualBCNN Ω)
 
 end Hausdorff -- section

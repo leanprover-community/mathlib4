@@ -80,7 +80,7 @@ as it could potentially apply to every type, and so is too expensive in typeclas
 
 You can use it on particular examples as:
 ```
-instance : HasCoeToSort X := ConcreteCategory.hasCoeToSort X
+instance : HasCoeToSort X := fast_instance% ConcreteCategory.hasCoeToSort X
 ```
 -/
 def ConcreteCategory.hasCoeToSort (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] :

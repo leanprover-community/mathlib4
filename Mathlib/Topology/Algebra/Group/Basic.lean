@@ -278,7 +278,7 @@ Lean fails to use `Pi.continuousInv` for non-dependent functions. -/
 @[to_additive
   "A version of `Pi.continuousNeg` for non-dependent functions. It is needed
   because sometimes Lean fails to use `Pi.continuousNeg` for non-dependent functions."]
-instance Pi.has_continuous_inv' : ContinuousInv (ι → G) :=
+instance Pi.has_continuous_inv' : ContinuousInv (ι → G) := fast_instance%
   Pi.continuousInv
 #align pi.has_continuous_inv' Pi.has_continuous_inv'
 #align pi.has_continuous_neg' Pi.has_continuous_neg'
@@ -621,7 +621,7 @@ instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] 
 open MulOpposite
 
 @[to_additive]
-instance [Inv α] [ContinuousInv α] : ContinuousInv αᵐᵒᵖ :=
+instance [Inv α] [ContinuousInv α] : ContinuousInv αᵐᵒᵖ := fast_instance%
   opHomeomorph.symm.inducing.continuousInv unop_inv
 
 /-- If multiplication is continuous in `α`, then it also is in `αᵐᵒᵖ`. -/
@@ -694,7 +694,7 @@ theorem topologicalGroup_induced {F : Type*} [Group H] [FunLike F H G] [MonoidHo
 namespace Subgroup
 
 @[to_additive]
-instance (S : Subgroup G) : TopologicalGroup S :=
+instance (S : Subgroup G) : TopologicalGroup S := fast_instance%
   Inducing.topologicalGroup S.subtype inducing_subtype_val
 
 end Subgroup
@@ -1049,7 +1049,7 @@ countable neighborhood basis. -/
 @[to_additive
   "In a first countable topological additive group `G` with normal additive subgroup
   `N`, `0 : G ⧸ N` has a countable neighborhood basis."]
-instance QuotientGroup.nhds_one_isCountablyGenerated : (𝓝 (1 : G ⧸ N)).IsCountablyGenerated :=
+instance QuotientGroup.nhds_one_isCountablyGenerated : (𝓝 (1 : G ⧸ N)).IsCountablyGenerated := fast_instance%
   (QuotientGroup.nhds_eq N 1).symm ▸ map.isCountablyGenerated _ _
 #align quotient_group.nhds_one_is_countably_generated QuotientGroup.nhds_one_isCountablyGenerated
 #align quotient_add_group.nhds_zero_is_countably_generated QuotientAddGroup.nhds_zero_isCountablyGenerated
@@ -1880,7 +1880,7 @@ theorem exists_isCompact_isClosed_nhds_one [WeaklyLocallyCompactSpace G] :
 
 /-- A quotient of a locally compact group is locally compact. -/
 @[to_additive]
-instance [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N) := by
+instance [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N) := fast_instance% by
   refine ⟨fun x n hn ↦ ?_⟩
   let π := ((↑) : G → G ⧸ N)
   have C : Continuous π := continuous_quotient_mk'
@@ -2113,7 +2113,7 @@ in `t` (`t` is finer than `s`). -/
 @[to_additive
   "The ordering on group topologies on the group `γ`. `t ≤ s` if every set open in `s`
   is also open in `t` (`t` is finer than `s`)."]
-instance : PartialOrder (GroupTopology α) :=
+instance : PartialOrder (GroupTopology α) := fast_instance%
   PartialOrder.lift toTopologicalSpace toTopologicalSpace_injective
 
 @[to_additive (attr := simp)]
@@ -2124,7 +2124,7 @@ theorem toTopologicalSpace_le {x y : GroupTopology α} :
 #align add_group_topology.to_topological_space_le AddGroupTopology.toTopologicalSpace_le
 
 @[to_additive]
-instance : Top (GroupTopology α) :=
+instance : Top (GroupTopology α) := fast_instance%
   let _t : TopologicalSpace α := ⊤
   ⟨{  continuous_mul := continuous_top
       continuous_inv := continuous_top }⟩
@@ -2136,7 +2136,7 @@ theorem toTopologicalSpace_top : (⊤ : GroupTopology α).toTopologicalSpace = �
 #align add_group_topology.to_topological_space_top AddGroupTopology.toTopologicalSpace_top
 
 @[to_additive]
-instance : Bot (GroupTopology α) :=
+instance : Bot (GroupTopology α) := fast_instance%
   let _t : TopologicalSpace α := ⊥
   ⟨{  continuous_mul := by
         haveI := discreteTopology_bot α
@@ -2157,7 +2157,7 @@ instance : BoundedOrder (GroupTopology α) where
   bot_le x := show ⊥ ≤ x.toTopologicalSpace from bot_le
 
 @[to_additive]
-instance : Inf (GroupTopology α) where inf x y := ⟨x.1 ⊓ y.1, topologicalGroup_inf x.2 y.2⟩
+instance : Inf (GroupTopology α) where inf x y := fast_instance% ⟨x.1 ⊓ y.1, topologicalGroup_inf x.2 y.2⟩
 
 @[to_additive (attr := simp)]
 theorem toTopologicalSpace_inf (x y : GroupTopology α) :
@@ -2167,11 +2167,11 @@ theorem toTopologicalSpace_inf (x y : GroupTopology α) :
 #align add_group_topology.to_topological_space_inf AddGroupTopology.toTopologicalSpace_inf
 
 @[to_additive]
-instance : SemilatticeInf (GroupTopology α) :=
+instance : SemilatticeInf (GroupTopology α) := fast_instance%
   toTopologicalSpace_injective.semilatticeInf _ toTopologicalSpace_inf
 
 @[to_additive]
-instance : Inhabited (GroupTopology α) :=
+instance : Inhabited (GroupTopology α) := fast_instance%
   ⟨⊤⟩
 
 local notation "cont" => @Continuous _ _
@@ -2212,7 +2212,7 @@ topologies contained in the intersection of `s` and `t`. -/
 
   The supremum of two group topologies `s` and `t` is the infimum of the family of all group
   topologies contained in the intersection of `s` and `t`."]
-instance : CompleteSemilatticeInf (GroupTopology α) :=
+instance : CompleteSemilatticeInf (GroupTopology α) := fast_instance%
   { inferInstanceAs (InfSet (GroupTopology α)),
     inferInstanceAs (PartialOrder (GroupTopology α)) with
     sInf_le := fun S a haS => toTopologicalSpace_le.1 <| sInf_le ⟨a, haS, rfl⟩
@@ -2223,7 +2223,7 @@ instance : CompleteSemilatticeInf (GroupTopology α) :=
       exact hab b hbS }
 
 @[to_additive]
-instance : CompleteLattice (GroupTopology α) :=
+instance : CompleteLattice (GroupTopology α) := fast_instance%
   { inferInstanceAs (BoundedOrder (GroupTopology α)),
     inferInstanceAs (SemilatticeInf (GroupTopology α)),
     completeLatticeOfCompleteSemilatticeInf _ with

@@ -46,10 +46,10 @@ class inductive ExpChar (R : Type u) [Semiring R] : ℕ → Prop
 #align exp_char ExpChar
 #align exp_char.prime ExpChar.prime
 
-instance expChar_prime (p) [CharP R p] [Fact p.Prime] : ExpChar R p := ExpChar.prime Fact.out
-instance expChar_zero [CharZero R] : ExpChar R 1 := ExpChar.zero
+instance expChar_prime (p) [CharP R p] [Fact p.Prime] : ExpChar R p := fast_instance% ExpChar.prime Fact.out
+instance expChar_zero [CharZero R] : ExpChar R 1 := fast_instance% ExpChar.zero
 
-instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R × S) p := by
+instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R × S) p := fast_instance% by
   obtain hp | ⟨hp⟩ := ‹ExpChar R p›
   · have := Prod.charZero_of_left R S; exact .zero
   obtain _ | _ := ‹ExpChar S p›
@@ -167,7 +167,7 @@ theorem ExpChar.exists_unique [Ring R] [IsDomain R] : ∃! q, ExpChar R q :=
   let ⟨q, H⟩ := ExpChar.exists R
   ⟨q, H, fun _ H2 ↦ ExpChar.eq H2 H⟩
 
-instance ringExpChar.expChar [Ring R] [IsDomain R] : ExpChar R (ringExpChar R) := by
+instance ringExpChar.expChar [Ring R] [IsDomain R] : ExpChar R (ringExpChar R) := fast_instance% by
   obtain ⟨q, _⟩ := ExpChar.exists R
   rwa [ringExpChar.eq R q]
 

@@ -136,7 +136,7 @@ protected def id : LocallyBoundedMap α α :=
   ⟨id, comap_id.le⟩
 #align locally_bounded_map.id LocallyBoundedMap.id
 
-instance : Inhabited (LocallyBoundedMap α α) :=
+instance : Inhabited (LocallyBoundedMap α α) := fast_instance%
   ⟨LocallyBoundedMap.id α⟩
 
 @[simp]

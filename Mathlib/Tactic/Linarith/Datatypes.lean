@@ -152,9 +152,9 @@ def toConstMulName : Ineq → Name
   | le => ``mul_nonpos
   | eq => ``mul_eq
 
-instance : ToString Ineq := ⟨toString⟩
+instance : ToString Ineq := fast_instance% ⟨toString⟩
 
-instance : ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
+instance : ToFormat Ineq := fast_instance% ⟨fun i => Ineq.toString i⟩
 
 end Ineq
 
@@ -208,7 +208,7 @@ that is, it represents the fact `0 < 0`.
  -/
 def Comp.isContr (c : Comp) : Bool := c.coeffs.isEmpty && c.str = Ineq.lt
 
-instance Comp.ToFormat : ToFormat Comp :=
+instance Comp.ToFormat : ToFormat Comp := fast_instance%
   ⟨fun p => format p.coeffs ++ toString p.str ++ "0"⟩
 
 /-! ### Parsing into linear form -/

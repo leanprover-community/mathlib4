@@ -146,12 +146,12 @@ add_decl_doc Lists'.Subset
 
 namespace Lists'
 
-instance : HasSubset (Lists' α true) :=
+instance : HasSubset (Lists' α true) := fast_instance%
   ⟨Lists'.Subset⟩
 
 /-- ZFA prelist membership. A ZFA list is in a ZFA prelist if some element of this ZFA prelist is
 equivalent as a ZFA list to this ZFA list. -/
-instance {b} : Membership (Lists α) (Lists' α b) :=
+instance {b} : Membership (Lists α) (Lists' α b) := fast_instance%
   ⟨fun a l => ∃ a' ∈ l.toList, a ~ a'⟩
 
 theorem mem_def {b a} {l : Lists' α b} : a ∈ l ↔ ∃ a' ∈ l.toList, a ~ a' :=
@@ -253,12 +253,12 @@ theorem of_toList : ∀ {l : Lists α}, IsList l → ofList (toList l) = l
   | ⟨true, l⟩, _ => by simp_all [ofList, of']
 #align lists.of_to_list Lists.of_toList
 
-instance : Inhabited (Lists α) :=
+instance : Inhabited (Lists α) := fast_instance%
   ⟨of' Lists'.nil⟩
 
-instance [DecidableEq α] : DecidableEq (Lists α) := by unfold Lists; infer_instance
+instance [DecidableEq α] : DecidableEq (Lists α) := fast_instance% by unfold Lists; infer_instance
 
-instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
+instance [SizeOf α] : SizeOf (Lists α) := fast_instance% by unfold Lists; infer_instance
 
 /-- A recursion principle for pairs of ZFA lists and proper ZFA prelists. -/
 def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
@@ -287,7 +287,7 @@ def mem (a : Lists α) : Lists α → Prop
   | ⟨_, l⟩ => a ∈ l
 #align lists.mem Lists.mem
 
-instance : Membership (Lists α) (Lists α) :=
+instance : Membership (Lists α) (Lists α) := fast_instance%
   ⟨mem⟩
 
 theorem isList_of_mem {a : Lists α} : ∀ {l : Lists α}, a ∈ l → IsList l
@@ -352,7 +352,7 @@ theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l�
       exact IH _ h₁ h₂ h₃
 #align lists.equiv.trans Lists.Equiv.trans
 
-instance instSetoidLists : Setoid (Lists α) :=
+instance instSetoidLists : Setoid (Lists α) := fast_instance%
   ⟨(· ~ ·), Equiv.refl, @Equiv.symm _, @Equiv.trans _⟩
 
 section Decidable
@@ -468,13 +468,13 @@ def Finsets (α : Type*) :=
 
 namespace Finsets
 
-instance : EmptyCollection (Finsets α) :=
+instance : EmptyCollection (Finsets α) := fast_instance%
   ⟨⟦Lists.of' Lists'.nil⟧⟩
 
-instance : Inhabited (Finsets α) :=
+instance : Inhabited (Finsets α) := fast_instance%
   ⟨∅⟩
 
-instance [DecidableEq α] : DecidableEq (Finsets α) := by
+instance [DecidableEq α] : DecidableEq (Finsets α) := fast_instance% by
   unfold Finsets
   -- Porting note: infer_instance does not work for some reason
   exact (Quotient.decidableEq (d := fun _ _ => Lists.Equiv.decidable _ _))

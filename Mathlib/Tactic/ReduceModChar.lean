@@ -127,7 +127,7 @@ inductive TypeToCharPResult (α : Q(Type u))
   | intLike (n : Q(ℕ)) (instRing : Q(Ring $α)) (instCharP : Q(CharP $α $n))
   | failure
 
-instance : Inhabited (TypeToCharPResult α) := ⟨.failure⟩
+instance : Inhabited (TypeToCharPResult α) := fast_instance% ⟨.failure⟩
 
 /-- Determine the characteristic of a ring from the type.
 This should be fast, so this pattern-matches on the type, rather than searching for a

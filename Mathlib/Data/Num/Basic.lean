@@ -32,10 +32,10 @@ inductive PosNum : Type
   deriving DecidableEq
 #align pos_num PosNum
 
-instance : One PosNum :=
+instance : One PosNum := fast_instance%
   ⟨PosNum.one⟩
 
-instance : Inhabited PosNum :=
+instance : Inhabited PosNum := fast_instance%
   ⟨1⟩
 
 /-- The type of nonnegative binary numbers, using `PosNum`.
@@ -48,13 +48,13 @@ inductive Num : Type
 #align num Num
 #align num.pos Num.pos
 
-instance : Zero Num :=
+instance : Zero Num := fast_instance%
   ⟨Num.zero⟩
 
-instance : One Num :=
+instance : One Num := fast_instance%
   ⟨Num.pos 1⟩
 
-instance : Inhabited Num :=
+instance : Inhabited Num := fast_instance%
   ⟨0⟩
 
 /-- Representation of integers using trichotomy around zero.
@@ -69,13 +69,13 @@ inductive ZNum : Type
 #align znum ZNum
 #align znum.pos ZNum.pos
 
-instance : Zero ZNum :=
+instance : Zero ZNum := fast_instance%
   ⟨ZNum.zero⟩
 
-instance : One ZNum :=
+instance : One ZNum := fast_instance%
   ⟨ZNum.pos 1⟩
 
-instance : Inhabited ZNum :=
+instance : Inhabited ZNum := fast_instance%
   ⟨0⟩
 
 namespace PosNum
@@ -108,7 +108,7 @@ protected def add : PosNum → PosNum → PosNum
   | bit1 a, bit0 b => bit1 (PosNum.add a b)
 #align pos_num.add PosNum.add
 
-instance : Add PosNum :=
+instance : Add PosNum := fast_instance%
   ⟨PosNum.add⟩
 
 /-- The predecessor of a `PosNum` as a `Num`. -/
@@ -144,7 +144,7 @@ protected def mul (a : PosNum) : PosNum → PosNum
   | bit1 b => bit0 (PosNum.mul a b) + a
 #align pos_num.mul PosNum.mul
 
-instance : Mul PosNum :=
+instance : Mul PosNum := fast_instance%
   ⟨PosNum.mul⟩
 
 /-- `ofNatSucc n` is the `PosNum` corresponding to `n + 1`. -/
@@ -174,10 +174,10 @@ def cmp : PosNum → PosNum → Ordering
   | bit1 a, bit1 b => cmp a b
 #align pos_num.cmp PosNum.cmp
 
-instance : LT PosNum :=
+instance : LT PosNum := fast_instance%
   ⟨fun a b => cmp a b = Ordering.lt⟩
 
-instance : LE PosNum :=
+instance : LE PosNum := fast_instance%
   ⟨fun a b => ¬b < a⟩
 
 instance decidableLT : @DecidableRel PosNum (· < ·)
@@ -222,10 +222,10 @@ set_option linter.deprecated false
 
 end deprecated
 
-instance : Repr PosNum :=
+instance : Repr PosNum := fast_instance%
   ⟨fun n _ => repr (n : ℕ)⟩
 
-instance : Repr Num :=
+instance : Repr Num := fast_instance%
   ⟨fun n _ => repr (n : ℕ)⟩
 
 end
@@ -252,7 +252,7 @@ protected def add : Num → Num → Num
   | pos a, pos b => pos (a + b)
 #align num.add Num.add
 
-instance : Add Num :=
+instance : Add Num := fast_instance%
   ⟨Num.add⟩
 
 /-- `bit0 n` appends a `0` to the end of `n`, where `bit0 n = n0`. -/
@@ -291,7 +291,7 @@ protected def mul : Num → Num → Num
   | pos a, pos b => pos (a * b)
 #align num.mul Num.mul
 
-instance : Mul Num :=
+instance : Mul Num := fast_instance%
   ⟨Num.mul⟩
 
 open Ordering
@@ -304,10 +304,10 @@ def cmp : Num → Num → Ordering
   | pos a, pos b => PosNum.cmp a b
 #align num.cmp Num.cmp
 
-instance : LT Num :=
+instance : LT Num := fast_instance%
   ⟨fun a b => cmp a b = Ordering.lt⟩
 
-instance : LE Num :=
+instance : LE Num := fast_instance%
   ⟨fun a b => ¬b < a⟩
 
 instance decidableLT : @DecidableRel Num (· < ·)
@@ -348,7 +348,7 @@ def zNeg : ZNum → ZNum
   | neg a => pos a
 #align znum.zneg ZNum.zNeg
 
-instance : Neg ZNum :=
+instance : Neg ZNum := fast_instance%
   ⟨zNeg⟩
 
 /-- The absolute value of a `ZNum` as a `Num`. -/
@@ -435,7 +435,7 @@ protected def sub (a b : PosNum) : PosNum :=
   | _ => 1
 #align pos_num.sub PosNum.sub
 
-instance : Sub PosNum :=
+instance : Sub PosNum := fast_instance%
   ⟨PosNum.sub⟩
 
 end PosNum
@@ -493,7 +493,7 @@ protected def sub (a b : Num) : Num :=
   ofZNum (sub' a b)
 #align num.sub Num.sub
 
-instance : Sub Num :=
+instance : Sub Num := fast_instance%
   ⟨Num.sub⟩
 
 end Num
@@ -512,7 +512,7 @@ protected def add : ZNum → ZNum → ZNum
   | neg a, neg b => neg (a + b)
 #align znum.add ZNum.add
 
-instance : Add ZNum :=
+instance : Add ZNum := fast_instance%
   ⟨ZNum.add⟩
 
 /-- Multiplication of `ZNum`s. -/
@@ -525,7 +525,7 @@ protected def mul : ZNum → ZNum → ZNum
   | neg a, neg b => pos (a * b)
 #align znum.mul ZNum.mul
 
-instance : Mul ZNum :=
+instance : Mul ZNum := fast_instance%
   ⟨ZNum.mul⟩
 
 open Ordering
@@ -541,10 +541,10 @@ def cmp : ZNum → ZNum → Ordering
   | _, neg _ => gt
 #align znum.cmp ZNum.cmp
 
-instance : LT ZNum :=
+instance : LT ZNum := fast_instance%
   ⟨fun a b => cmp a b = Ordering.lt⟩
 
-instance : LE ZNum :=
+instance : LE ZNum := fast_instance%
   ⟨fun a b => ¬b < a⟩
 
 instance decidableLT : @DecidableRel ZNum (· < ·)
@@ -617,10 +617,10 @@ def mod : Num → Num → Num
   | pos n, pos d => PosNum.mod' n d
 #align num.mod Num.mod
 
-instance : Div Num :=
+instance : Div Num := fast_instance%
   ⟨Num.div⟩
 
-instance : Mod Num :=
+instance : Mod Num := fast_instance%
   ⟨Num.mod⟩
 
 /-- Auxiliary definition for `Num.gcd`. -/
@@ -656,10 +656,10 @@ def mod : ZNum → ZNum → ZNum
   | neg n, d => d.abs.sub' (PosNum.pred' n % d.abs).succ
 #align znum.mod ZNum.mod
 
-instance : Div ZNum :=
+instance : Div ZNum := fast_instance%
   ⟨ZNum.div⟩
 
-instance : Mod ZNum :=
+instance : Mod ZNum := fast_instance%
   ⟨ZNum.mod⟩
 
 /-- Greatest Common Divisor (GCD) of two `ZNum`s. -/
@@ -686,7 +686,7 @@ variable {α : Type*} [Zero α] [One α] [Add α] [Neg α]
   ⟨castZNum⟩
 #align znum_coe znumCoe
 
-instance : Repr ZNum :=
+instance : Repr ZNum := fast_instance%
   ⟨fun n _ => repr (n : ℤ)⟩
 
 end

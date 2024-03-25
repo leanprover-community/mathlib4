@@ -23,7 +23,7 @@ section
 
 open scoped Classical
 
-instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w} { x // P x } :=
+instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w} { x // P x } := fast_instance%
   small_map (equivShrink α).subtypeEquivOfSubtype'
 #align small_subtype small_subtype
 
@@ -67,15 +67,15 @@ instance small_Pi {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β 
       ⟨Equiv.piCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩
 #align small_Pi small_Pi
 
-instance small_prod {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (α × β) :=
+instance small_prod {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (α × β) := fast_instance%
   ⟨⟨Shrink α × Shrink β, ⟨Equiv.prodCongr (equivShrink α) (equivShrink β)⟩⟩⟩
 #align small_prod small_prod
 
-instance small_sum {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (Sum α β) :=
+instance small_sum {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (Sum α β) := fast_instance%
   ⟨⟨Sum (Shrink α) (Shrink β), ⟨Equiv.sumCongr (equivShrink α) (equivShrink β)⟩⟩⟩
 #align small_sum small_sum
 
-instance small_set {α} [Small.{w} α] : Small.{w} (Set α) :=
+instance small_set {α} [Small.{w} α] : Small.{w} (Set α) := fast_instance%
   ⟨⟨Set (Shrink α), ⟨Equiv.Set.congr (equivShrink α)⟩⟩⟩
 #align small_set small_set
 

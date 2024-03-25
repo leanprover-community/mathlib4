@@ -370,7 +370,7 @@ In this section we define the quotient of a topological space by the `Inseparabl
 
 variable (X)
 
-instance : TopologicalSpace (SeparationQuotient X) := instTopologicalSpaceQuotient
+instance : TopologicalSpace (SeparationQuotient X) := fast_instance% instTopologicalSpaceQuotient
 
 variable {X}
 variable {t : Set (SeparationQuotient X)}
@@ -403,13 +403,13 @@ theorem range_mk : range (mk : X → SeparationQuotient X) = univ :=
   surjective_mk.range_eq
 #align separation_quotient.range_mk SeparationQuotient.range_mk
 
-instance [Nonempty X] : Nonempty (SeparationQuotient X) :=
+instance [Nonempty X] : Nonempty (SeparationQuotient X) := fast_instance%
   Nonempty.map mk ‹_›
 
-instance [Inhabited X] : Inhabited (SeparationQuotient X) :=
+instance [Inhabited X] : Inhabited (SeparationQuotient X) := fast_instance%
   ⟨mk default⟩
 
-instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
+instance [Subsingleton X] : Subsingleton (SeparationQuotient X) := fast_instance%
   surjective_mk.subsingleton
 
 theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by

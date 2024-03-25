@@ -447,7 +447,7 @@ theorem SemanticallyEquivalent.refl (φ : L.BoundedFormula α n) : T.Semanticall
   fun M v xs => by rw [BoundedFormula.realize_iff]
 #align first_order.language.Theory.semantically_equivalent.refl FirstOrder.Language.Theory.SemanticallyEquivalent.refl
 
-instance : IsRefl (L.BoundedFormula α n) T.SemanticallyEquivalent :=
+instance : IsRefl (L.BoundedFormula α n) T.SemanticallyEquivalent := fast_instance%
   ⟨SemanticallyEquivalent.refl⟩
 
 @[symm]

@@ -197,7 +197,7 @@ theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
     exact const_linear k P1 q
 #align affine_map.linear_eq_zero_iff_exists_const AffineMap.linear_eq_zero_iff_exists_const
 
-instance nonempty : Nonempty (P1 →ᵃ[k] P2) :=
+instance nonempty : Nonempty (P1 →ᵃ[k] P2) := fast_instance%
   (AddTorsor.nonempty : Nonempty P2).map <| const k P1
 #align affine_map.nonempty AffineMap.nonempty
 
@@ -247,7 +247,7 @@ instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2]
 
 end SMul
 
-instance : Zero (P1 →ᵃ[k] V2) where zero := ⟨0, 0, fun _ _ => (zero_vadd _ _).symm⟩
+instance : Zero (P1 →ᵃ[k] V2) where zero := fast_instance% ⟨0, 0, fun _ _ => (zero_vadd _ _).symm⟩
 
 instance : Add (P1 →ᵃ[k] V2) where
   add f g := ⟨f + g, f.linear + g.linear, fun p v => by simp [add_add_add_comm]⟩
@@ -299,7 +299,7 @@ theorem neg_linear (f : P1 →ᵃ[k] V2) : (-f).linear = -f.linear :=
 #align affine_map.neg_linear AffineMap.neg_linear
 
 /-- The set of affine maps to a vector space is an additive commutative group. -/
-instance : AddCommGroup (P1 →ᵃ[k] V2) :=
+instance : AddCommGroup (P1 →ᵃ[k] V2) := fast_instance%
   coeFn_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_smul _ _)
     fun _ _ => coe_smul _ _
 
@@ -389,7 +389,7 @@ theorem id_apply (p : P1) : id k P1 p = p :=
 
 variable {k}
 
-instance : Inhabited (P1 →ᵃ[k] P1) :=
+instance : Inhabited (P1 →ᵃ[k] P1) := fast_instance%
   ⟨id k P1⟩
 
 /-- Composition of affine maps. -/
@@ -727,7 +727,7 @@ section Module
 variable [Semiring R] [Module R V2] [SMulCommClass k R V2]
 
 /-- The space of affine maps taking values in an `R`-module is an `R`-module. -/
-instance : Module R (P1 →ᵃ[k] V2) :=
+instance : Module R (P1 →ᵃ[k] V2) := fast_instance%
   { AffineMap.distribMulAction with
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _
     zero_smul := fun _ => ext fun _ => zero_smul _ _ }

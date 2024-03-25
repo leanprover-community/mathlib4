@@ -493,7 +493,7 @@ instance : QuasiIso e.hom where
     rw [quasiIsoAt_iff_isIso_homologyMap]
     exact IsIso.of_iso (e.toHomologyIso n)
 
-instance : QuasiIso e.inv := (inferInstance : QuasiIso e.symm.hom)
+instance : QuasiIso e.inv := fast_instance% (inferInstance : QuasiIso e.symm.hom)
 
 variable (C c)
 

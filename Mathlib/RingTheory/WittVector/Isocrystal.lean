@@ -87,7 +87,7 @@ def FractionRing.frobeniusRingHom : K(p, k) →+* K(p, k) :=
 
 scoped[Isocrystal] notation "φ(" p ", " k ")" => WittVector.FractionRing.frobeniusRingHom p k
 
-instance inv_pair₁ : RingHomInvPair φ(p, k) (FractionRing.frobenius p k).symm :=
+instance inv_pair₁ : RingHomInvPair φ(p, k) (FractionRing.frobenius p k).symm := fast_instance%
   RingHomInvPair.of_ringEquiv (FractionRing.frobenius p k)
 #align witt_vector.inv_pair₁ WittVector.inv_pair₁
 
@@ -175,9 +175,9 @@ def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section Deriving
 
-instance : AddCommGroup (StandardOneDimIsocrystal p k m) :=
+instance : AddCommGroup (StandardOneDimIsocrystal p k m) := fast_instance%
   inferInstanceAs (AddCommGroup K(p, k))
-instance : Module K(p, k) (StandardOneDimIsocrystal p k m) :=
+instance : Module K(p, k) (StandardOneDimIsocrystal p k m) := fast_instance%
   inferInstanceAs (Module K(p, k) K(p, k))
 
 end Deriving

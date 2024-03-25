@@ -827,14 +827,14 @@ instance [TopologicalSpace β] [PreconnectedSpace α] [PreconnectedSpace β] :
     rw [← univ_prod_univ]
     exact isPreconnected_univ.prod isPreconnected_univ⟩
 
-instance [TopologicalSpace β] [ConnectedSpace α] [ConnectedSpace β] : ConnectedSpace (α × β) :=
+instance [TopologicalSpace β] [ConnectedSpace α] [ConnectedSpace β] : ConnectedSpace (α × β) := fast_instance%
   ⟨inferInstance⟩
 
 instance [∀ i, TopologicalSpace (π i)] [∀ i, PreconnectedSpace (π i)] :
     PreconnectedSpace (∀ i, π i) :=
   ⟨by rw [← pi_univ univ]; exact isPreconnected_univ_pi fun i => isPreconnected_univ⟩
 
-instance [∀ i, TopologicalSpace (π i)] [∀ i, ConnectedSpace (π i)] : ConnectedSpace (∀ i, π i) :=
+instance [∀ i, TopologicalSpace (π i)] [∀ i, ConnectedSpace (π i)] : ConnectedSpace (∀ i, π i) := fast_instance%
   ⟨inferInstance⟩
 
 -- see Note [lower instance priority]
@@ -1257,7 +1257,7 @@ namespace ConnectedComponents
 /-- Coercion from a topological space to the set of connected components of this space. -/
 def mk : α → ConnectedComponents α := Quotient.mk''
 
-instance : CoeTC α (ConnectedComponents α) := ⟨mk⟩
+instance : CoeTC α (ConnectedComponents α) := fast_instance% ⟨mk⟩
 
 @[simp]
 theorem coe_eq_coe {x y : α} :
@@ -1274,10 +1274,10 @@ theorem coe_eq_coe' {x y : α} : (x : ConnectedComponents α) = y ↔ x ∈ conn
   coe_eq_coe.trans connectedComponent_eq_iff_mem
 #align connected_components.coe_eq_coe' ConnectedComponents.coe_eq_coe'
 
-instance [Inhabited α] : Inhabited (ConnectedComponents α) :=
+instance [Inhabited α] : Inhabited (ConnectedComponents α) := fast_instance%
   ⟨mk default⟩
 
-instance : TopologicalSpace (ConnectedComponents α) :=
+instance : TopologicalSpace (ConnectedComponents α) := fast_instance%
   inferInstanceAs (TopologicalSpace (Quotient _))
 
 theorem surjective_coe : Surjective (mk : α → ConnectedComponents α) :=

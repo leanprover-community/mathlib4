@@ -77,7 +77,7 @@ theorem precoherent_eq : haveI := precoherent e
       infer_instance
     · exact fun a ↦ ⟨Y a, π a, e.unitInv.app _, h a, rfl⟩
 
-instance : haveI := precoherent e
+instance : haveI := fast_instance% precoherent e
     e.TransportsGrothendieckTopology (coherentTopology C) (coherentTopology D) where
   eq_inducedTopology := e.precoherent_eq.symm
 
@@ -149,7 +149,7 @@ theorem preregular_eq : haveI := preregular e
   · intro ⟨Y, π, _, h⟩
     exact ⟨_, e.unitInv.app _ ≫ e.inverse.map π, inferInstance, Y, π, e.unitInv.app _, h, rfl⟩
 
-instance : haveI := preregular e
+instance : haveI := fast_instance% preregular e
     e.TransportsGrothendieckTopology (regularTopology C) (regularTopology D) where
   eq_inducedTopology := e.preregular_eq.symm
 

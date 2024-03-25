@@ -25,9 +25,9 @@ theorem infinite_setOf_prime : { p | Prime p }.Infinite :=
   Set.infinite_of_not_bddAbove not_bddAbove_setOf_prime
 #align nat.infinite_set_of_prime Nat.infinite_setOf_prime
 
-instance Primes.infinite : Infinite Primes := infinite_setOf_prime.to_subtype
+instance Primes.infinite : Infinite Primes := fast_instance% infinite_setOf_prime.to_subtype
 
-instance Primes.countable : Countable Primes := ⟨⟨coeNat.coe, coe_nat_injective⟩⟩
+instance Primes.countable : Countable Primes := fast_instance% ⟨⟨coeNat.coe, coe_nat_injective⟩⟩
 
 /-- The prime factors of a natural number as a finset. -/
 @[pp_dot] def primeFactors (n : ℕ) : Finset ℕ := n.factors.toFinset

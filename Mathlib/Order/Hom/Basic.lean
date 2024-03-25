@@ -135,7 +135,7 @@ def OrderIsoClass.toOrderIso [LE α] [LE β] [EquivLike F α β] [OrderIsoClass 
 
 /-- Any type satisfying `OrderIsoClass` can be cast into `OrderIso` via
 `OrderIsoClass.toOrderIso`. -/
-instance [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
+instance [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) := fast_instance%
   ⟨OrderIsoClass.toOrderIso⟩
 
 -- See note [lower instance priority]
@@ -164,7 +164,7 @@ def toOrderHom (f : F) : α →o β where
 
 /-- Any type satisfying `OrderHomClass` can be cast into `OrderHom` via
 `OrderHomClass.toOrderHom`. -/
-instance : CoeTC F (α →o β) :=
+instance : CoeTC F (α →o β) := fast_instance%
   ⟨toOrderHom⟩
 
 end OrderHomClass
@@ -283,14 +283,14 @@ def id : α →o α :=
 #align order_hom.id OrderHom.id
 #align order_hom.id_coe OrderHom.id_coe
 
-instance : Inhabited (α →o α) :=
+instance : Inhabited (α →o α) := fast_instance%
   ⟨id⟩
 
 /-- The preorder structure of `α →o β` is pointwise inequality: `f ≤ g ↔ ∀ a, f a ≤ g a`. -/
-instance : Preorder (α →o β) :=
+instance : Preorder (α →o β) := fast_instance%
   @Preorder.lift (α →o β) (α → β) _ toFun
 
-instance {β : Type*} [PartialOrder β] : PartialOrder (α →o β) :=
+instance {β : Type*} [PartialOrder β] : PartialOrder (α →o β) := fast_instance%
   @PartialOrder.lift (α →o β) (α → β) _ toFun ext
 
 theorem le_def {f g : α →o β} : f ≤ g ↔ ∀ x, f x ≤ g x :=

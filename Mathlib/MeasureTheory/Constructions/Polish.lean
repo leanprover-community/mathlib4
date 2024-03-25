@@ -116,7 +116,7 @@ instance countablyGenerated_of_standardBorel [StandardBorelSpace α] :
   letI := upgradeStandardBorel α
   inferInstance
 
-instance measurableSingleton_of_standardBorel [StandardBorelSpace α] : MeasurableSingletonClass α :=
+instance measurableSingleton_of_standardBorel [StandardBorelSpace α] : MeasurableSingletonClass α := fast_instance%
   letI := upgradeStandardBorel α
   inferInstance
 
@@ -127,7 +127,7 @@ variable {β : Type*} [MeasurableSpace β]
 section instances
 
 /-- A product of two standard Borel spaces is standard Borel. -/
-instance prod [StandardBorelSpace α] [StandardBorelSpace β] : StandardBorelSpace (α × β) :=
+instance prod [StandardBorelSpace α] [StandardBorelSpace β] : StandardBorelSpace (α × β) := fast_instance%
   letI := upgradeStandardBorel α
   letI := upgradeStandardBorel β
   inferInstance

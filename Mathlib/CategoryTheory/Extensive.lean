@@ -180,10 +180,10 @@ theorem FinitaryExtensive.mono_inl_of_isColimit [FinitaryExtensive C] {c : Binar
   FinitaryExtensive.mono_inr_of_isColimit (BinaryCofan.isColimitFlip hc)
 #align category_theory.finitary_extensive.mono_inl_of_is_colimit CategoryTheory.FinitaryExtensive.mono_inl_of_isColimit
 
-instance [FinitaryExtensive C] (X Y : C) : Mono (coprod.inl : X ⟶ X ⨿ Y) :=
+instance [FinitaryExtensive C] (X Y : C) : Mono (coprod.inl : X ⟶ X ⨿ Y) := fast_instance%
   (FinitaryExtensive.mono_inl_of_isColimit (coprodIsCoprod X Y) : _)
 
-instance [FinitaryExtensive C] (X Y : C) : Mono (coprod.inr : Y ⟶ X ⨿ Y) :=
+instance [FinitaryExtensive C] (X Y : C) : Mono (coprod.inr : Y ⟶ X ⨿ Y) := fast_instance%
   (FinitaryExtensive.mono_inr_of_isColimit (coprodIsCoprod X Y) : _)
 
 theorem FinitaryExtensive.isPullback_initial_to_binaryCofan [FinitaryExtensive C]
@@ -216,7 +216,7 @@ theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFi
   rw [hl.paste_vert_iff hX.symm, hr.paste_vert_iff hY.symm]
 #align category_theory.finitary_extensive_iff_of_is_terminal CategoryTheory.finitaryExtensive_iff_of_isTerminal
 
-instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
+instance types.finitaryExtensive : FinitaryExtensive (Type u) := fast_instance% by
   classical
   rw [finitaryExtensive_iff_of_isTerminal (Type u) PUnit Types.isTerminalPunit _
       (Types.binaryCoproductColimit _ _)]
@@ -366,7 +366,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
 set_option linter.uppercaseLean3 false in
 #align category_theory.finitary_extensive_Top_aux CategoryTheory.finitaryExtensiveTopCatAux
 
-instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
+instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := fast_instance% by
   rw [finitaryExtensive_iff_of_isTerminal TopCat.{u} _ TopCat.isTerminalPUnit _
       (TopCat.binaryCofanIsColimit _ _)]
   apply BinaryCofan.isVanKampen_mk _ _ (fun X Y => TopCat.binaryCofanIsColimit X Y) _

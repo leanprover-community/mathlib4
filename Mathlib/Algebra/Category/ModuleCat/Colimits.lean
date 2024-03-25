@@ -96,9 +96,9 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) where
     rw [← hm]
     rfl
 
-instance : HasColimit F := ⟨_, isColimitColimitCocone F⟩
+instance : HasColimit F := fast_instance% ⟨_, isColimitColimitCocone F⟩
 
-noncomputable instance : PreservesColimit F (forget₂ _ AddCommGroupCat) :=
+noncomputable instance : PreservesColimit F (forget₂ _ AddCommGroupCat) := fast_instance%
   preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F) (colimit.isColimit _)
 
 end HasColimit
@@ -123,7 +123,7 @@ noncomputable instance
     [HasColimitsOfSize.{u, v} AddCommGroupCatMax.{w, w'}] :
     PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCatMax.{w, w'} R) AddCommGroupCat) where
 
-instance : HasFiniteColimits (ModuleCat.{w'} R) := inferInstance
+instance : HasFiniteColimits (ModuleCat.{w'} R) := fast_instance% inferInstance
 
 -- Sanity checks, just to make sure typeclass search can find the instances we want.
 example (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{v, u} R) :=

@@ -43,7 +43,7 @@ theorem quotientRel_r_def {x y : M} : @Setoid.r _ p.quotientRel x y ↔ x - y �
 #align submodule.quotient_rel_r_def Submodule.quotientRel_r_def
 
 /-- The quotient of a module `M` by a submodule `p ⊆ M`. -/
-instance hasQuotient : HasQuotient M (Submodule R M) :=
+instance hasQuotient : HasQuotient M (Submodule R M) := fast_instance%
   ⟨fun p => Quotient (quotientRel p)⟩
 #align submodule.has_quotient Submodule.hasQuotient
 
@@ -88,7 +88,7 @@ instance : Zero (M ⧸ p) where
   -- See also the same comment at the One instance for Con.
   zero := Quotient.mk'' 0
 
-instance : Inhabited (M ⧸ p) :=
+instance : Inhabited (M ⧸ p) := fast_instance%
   ⟨0⟩
 
 @[simp]
@@ -100,7 +100,7 @@ theorem mk_zero : mk 0 = (0 : M ⧸ p) :=
 theorem mk_eq_zero : (mk x : M ⧸ p) = 0 ↔ x ∈ p := by simpa using (Quotient.eq' p : mk x = 0 ↔ _)
 #align submodule.quotient.mk_eq_zero Submodule.Quotient.mk_eq_zero
 
-instance addCommGroup : AddCommGroup (M ⧸ p) :=
+instance addCommGroup : AddCommGroup (M ⧸ p) := fast_instance%
   QuotientAddGroup.Quotient.addCommGroup p.toAddSubgroup
 #align submodule.quotient.add_comm_group Submodule.Quotient.addCommGroup
 
@@ -123,7 +123,7 @@ section SMul
 
 variable {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] (P : Submodule R M)
 
-instance instSMul' : SMul S (M ⧸ P) :=
+instance instSMul' : SMul S (M ⧸ P) := fast_instance%
   ⟨fun a =>
     Quotient.map' (a • ·) fun x y h =>
       leftRel_apply.mpr <| by simpa using Submodule.smul_mem P (a • (1 : R)) (leftRel_apply.mp h)⟩
@@ -131,7 +131,7 @@ instance instSMul' : SMul S (M ⧸ P) :=
 
 -- Porting note: should this be marked as a `@[default_instance]`?
 /-- Shortcut to help the elaborator in the common case. -/
-instance instSMul : SMul R (M ⧸ P) :=
+instance instSMul : SMul R (M ⧸ P) := fast_instance%
   Quotient.instSMul' P
 #align submodule.quotient.has_smul Submodule.Quotient.instSMul
 
@@ -168,7 +168,7 @@ instance mulAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
 #align submodule.quotient.mul_action' Submodule.Quotient.mulAction'
 
 -- Porting note: should this be marked as a `@[default_instance]`?
-instance mulAction (P : Submodule R M) : MulAction R (M ⧸ P) :=
+instance mulAction (P : Submodule R M) : MulAction R (M ⧸ P) := fast_instance%
   Quotient.mulAction' P
 #align submodule.quotient.mul_action Submodule.Quotient.mulAction
 
@@ -178,7 +178,7 @@ instance smulZeroClass' [SMul S R] [SMulZeroClass S M] [IsScalarTower S R M] (P 
 #align submodule.quotient.smul_zero_class' Submodule.Quotient.smulZeroClass'
 
 -- Porting note: should this be marked as a `@[default_instance]`?
-instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
+instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) := fast_instance%
   Quotient.smulZeroClass' P
 #align submodule.quotient.smul_zero_class Submodule.Quotient.smulZeroClass
 
@@ -190,7 +190,7 @@ instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Su
 #align submodule.quotient.distrib_smul' Submodule.Quotient.distribSMul'
 
 -- Porting note: should this be marked as a `@[default_instance]`?
-instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
+instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) := fast_instance%
   Quotient.distribSMul' P
 #align submodule.quotient.distrib_smul Submodule.Quotient.distribSMul
 
@@ -202,7 +202,7 @@ instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScala
 #align submodule.quotient.distrib_mul_action' Submodule.Quotient.distribMulAction'
 
 -- Porting note: should this be marked as a `@[default_instance]`?
-instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
+instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) := fast_instance%
   Quotient.distribMulAction' P
 #align submodule.quotient.distrib_mul_action Submodule.Quotient.distribMulAction
 
@@ -214,7 +214,7 @@ instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P :
 #align submodule.quotient.module' Submodule.Quotient.module'
 
 -- Porting note: should this be marked as a `@[default_instance]`?
-instance module (P : Submodule R M) : Module R (M ⧸ P) :=
+instance module (P : Submodule R M) : Module R (M ⧸ P) := fast_instance%
   Quotient.module' P
 #align submodule.quotient.module Submodule.Quotient.module
 
@@ -259,7 +259,7 @@ theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
 
 end Quotient
 
-instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=
+instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) := fast_instance%
   Infinite.of_injective Submodule.Quotient.mk fun _x _y h =>
     sub_eq_zero.mp <| (Submodule.Quotient.eq ⊥).mp h
 #align submodule.quotient_bot.infinite Submodule.QuotientBot.infinite
@@ -269,7 +269,7 @@ instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M)) where
   uniq x := Quotient.inductionOn' x fun _x => (Submodule.Quotient.eq ⊤).mpr Submodule.mem_top
 #align submodule.quotient_top.unique Submodule.QuotientTop.unique
 
-instance QuotientTop.fintype : Fintype (M ⧸ (⊤ : Submodule R M)) :=
+instance QuotientTop.fintype : Fintype (M ⧸ (⊤ : Submodule R M)) := fast_instance%
   Fintype.ofSubsingleton 0
 #align submodule.quotient_top.fintype Submodule.QuotientTop.fintype
 
@@ -292,7 +292,7 @@ theorem unique_quotient_iff_eq_top : Nonempty (Unique (M ⧸ p)) ↔ p = ⊤ :=
 
 variable (p)
 
-noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintype (M ⧸ S) :=
+noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintype (M ⧸ S) := fast_instance%
   @_root_.Quotient.fintype _ _ _ fun _ _ => Classical.dec _
 #align submodule.quotient.fintype Submodule.Quotient.fintype
 

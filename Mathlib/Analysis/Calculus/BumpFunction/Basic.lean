@@ -119,7 +119,7 @@ theorem one_lt_rOut_div_rIn {c : E} (f : ContDiffBump c) : 1 < f.rOut / f.rIn :=
 set_option linter.uppercaseLean3 false in
 #align cont_diff_bump.one_lt_R_div_r ContDiffBump.one_lt_rOut_div_rIn
 
-instance (c : E) : Inhabited (ContDiffBump c) :=
+instance (c : E) : Inhabited (ContDiffBump c) := fast_instance%
   ⟨⟨1, 2, zero_lt_one, one_lt_two⟩⟩
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup X] [NormedSpace ℝ X]
@@ -131,7 +131,7 @@ function instead. -/
   (someContDiffBumpBase E).toFun (f.rOut / f.rIn) ∘ fun x ↦ (f.rIn⁻¹ • (x - c))
 #align cont_diff_bump.to_fun ContDiffBump.toFun
 
-instance : CoeFun (ContDiffBump c) fun _ => E → ℝ :=
+instance : CoeFun (ContDiffBump c) fun _ => E → ℝ := fast_instance%
   ⟨toFun⟩
 
 protected theorem apply (x : E) :

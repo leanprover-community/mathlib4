@@ -70,7 +70,7 @@ theorem ne_zero_of_mem_circle (z : circle) : (z : ℂ) ≠ 0 :=
   ne_zero_of_mem_unit_sphere z
 #align ne_zero_of_mem_circle ne_zero_of_mem_circle
 
-instance commGroup : CommGroup circle :=
+instance commGroup : CommGroup circle := fast_instance%
   Metric.sphere.commGroup
 
 @[simp]
@@ -99,13 +99,13 @@ theorem circle.toUnits_apply (z : circle) :
   rfl
 #align circle.to_units_apply circle.toUnits_apply
 
-instance : CompactSpace circle :=
+instance : CompactSpace circle := fast_instance%
   Metric.sphere.compactSpace _ _
 
-instance : TopologicalGroup circle :=
+instance : TopologicalGroup circle := fast_instance%
   Metric.sphere.topologicalGroup
 
-instance : UniformGroup circle := by
+instance : UniformGroup circle := fast_instance% by
   convert topologicalGroup_is_uniform_of_compactSpace circle
   exact unique_uniformity_of_compact rfl rfl
 

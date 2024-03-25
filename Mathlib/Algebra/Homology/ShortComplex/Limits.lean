@@ -91,15 +91,15 @@ noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
   isLimitOfIsLimitπ _ (isLimitπ₁MapConeLimitCone F)
     (isLimitπ₂MapConeLimitCone F) (isLimitπ₃MapConeLimitCone F)
 
-instance hasLimit_of_hasLimitπ : HasLimit F := ⟨⟨⟨_, isLimitLimitCone _⟩⟩⟩
+instance hasLimit_of_hasLimitπ : HasLimit F := fast_instance% ⟨⟨⟨_, isLimitLimitCone _⟩⟩⟩
 
-noncomputable instance : PreservesLimit F π₁ :=
+noncomputable instance : PreservesLimit F π₁ := fast_instance%
   preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (isLimitπ₁MapConeLimitCone F)
 
-noncomputable instance : PreservesLimit F π₂ :=
+noncomputable instance : PreservesLimit F π₂ := fast_instance%
   preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (isLimitπ₂MapConeLimitCone F)
 
-noncomputable instance : PreservesLimit F π₃ :=
+noncomputable instance : PreservesLimit F π₃ := fast_instance%
   preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (isLimitπ₃MapConeLimitCone F)
 
 end
@@ -123,16 +123,16 @@ section
 
 variable [HasFiniteLimits C]
 
-instance hasFiniteLimits : HasFiniteLimits (ShortComplex C) :=
+instance hasFiniteLimits : HasFiniteLimits (ShortComplex C) := fast_instance%
   ⟨fun _ _ _ => inferInstance⟩
 
-noncomputable instance : PreservesFiniteLimits (π₁ : _ ⥤ C) :=
+noncomputable instance : PreservesFiniteLimits (π₁ : _ ⥤ C) := fast_instance%
   ⟨fun _ _ _ => inferInstance⟩
 
-noncomputable instance : PreservesFiniteLimits (π₂ : _ ⥤ C) :=
+noncomputable instance : PreservesFiniteLimits (π₂ : _ ⥤ C) := fast_instance%
   ⟨fun _ _ _ => inferInstance⟩
 
-noncomputable instance : PreservesFiniteLimits (π₃ : _ ⥤ C) :=
+noncomputable instance : PreservesFiniteLimits (π₃ : _ ⥤ C) := fast_instance%
   ⟨fun _ _ _ => inferInstance⟩
 
 end
@@ -226,17 +226,17 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) :=
   isColimitOfIsColimitπ _ (isColimitπ₁MapCoconeColimitCocone F)
     (isColimitπ₂MapCoconeColimitCocone F) (isColimitπ₃MapCoconeColimitCocone F)
 
-instance hasColimit_of_hasColimitπ : HasColimit F := ⟨⟨⟨_, isColimitColimitCocone _⟩⟩⟩
+instance hasColimit_of_hasColimitπ : HasColimit F := fast_instance% ⟨⟨⟨_, isColimitColimitCocone _⟩⟩⟩
 
-noncomputable instance : PreservesColimit F π₁ :=
+noncomputable instance : PreservesColimit F π₁ := fast_instance%
   preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
     (isColimitπ₁MapCoconeColimitCocone F)
 
-noncomputable instance : PreservesColimit F π₂ :=
+noncomputable instance : PreservesColimit F π₂ := fast_instance%
   preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
     (isColimitπ₂MapCoconeColimitCocone F)
 
-noncomputable instance : PreservesColimit F π₃ :=
+noncomputable instance : PreservesColimit F π₃ := fast_instance%
   preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
     (isColimitπ₃MapCoconeColimitCocone F)
 
@@ -261,16 +261,16 @@ section
 
 variable [HasFiniteColimits C]
 
-instance hasFiniteColimits : HasFiniteColimits (ShortComplex C) :=
+instance hasFiniteColimits : HasFiniteColimits (ShortComplex C) := fast_instance%
   ⟨fun _ _ _ => inferInstance⟩
 
-noncomputable instance : PreservesFiniteColimits (π₁ : _ ⥤ C) :=
+noncomputable instance : PreservesFiniteColimits (π₁ : _ ⥤ C) := fast_instance%
   ⟨fun _ _ _ => inferInstance⟩
 
-noncomputable instance : PreservesFiniteColimits (π₂ : _ ⥤ C) :=
+noncomputable instance : PreservesFiniteColimits (π₂ : _ ⥤ C) := fast_instance%
   ⟨fun _ _ _ => inferInstance⟩
 
-noncomputable instance : PreservesFiniteColimits (π₃ : _ ⥤ C) :=
+noncomputable instance : PreservesFiniteColimits (π₃ : _ ⥤ C) := fast_instance%
   ⟨fun _ _ _ => inferInstance⟩
 
 end

@@ -41,7 +41,7 @@ theorem toFinset_off_diag {s : Set α} [DecidableEq α] [Fintype s] [Fintype s.o
 
 end Set
 
-instance instFintypeProd (α β : Type*) [Fintype α] [Fintype β] : Fintype (α × β) :=
+instance instFintypeProd (α β : Type*) [Fintype α] [Fintype β] : Fintype (α × β) := fast_instance%
   ⟨univ ×ˢ univ, fun ⟨a, b⟩ => by simp⟩
 
 namespace Finset
@@ -98,12 +98,12 @@ instance Pi.infinite_of_right {ι : Sort _} {π : ι → Sort _} [∀ i, Infinit
 #align pi.infinite_of_right Pi.infinite_of_right
 
 /-- Non-dependent version of `Pi.infinite_of_left`. -/
-instance Function.infinite_of_left {ι π : Sort _} [Nontrivial π] [Infinite ι] : Infinite (ι → π) :=
+instance Function.infinite_of_left {ι π : Sort _} [Nontrivial π] [Infinite ι] : Infinite (ι → π) := fast_instance%
   Pi.infinite_of_left
 #align function.infinite_of_left Function.infinite_of_left
 
 /-- Non-dependent version of `Pi.infinite_of_exists_right` and `Pi.infinite_of_right`. -/
-instance Function.infinite_of_right {ι π : Sort _} [Infinite π] [Nonempty ι] : Infinite (ι → π) :=
+instance Function.infinite_of_right {ι π : Sort _} [Infinite π] [Nonempty ι] : Infinite (ι → π) := fast_instance%
   Pi.infinite_of_right
 #align function.infinite_of_right Function.infinite_of_right
 

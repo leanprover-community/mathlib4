@@ -153,7 +153,7 @@ def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
 set_option linter.uppercaseLean3 false in
 #align CommRing.punit_is_terminal CommRingCat.punitIsTerminal
 
-instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := by
+instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := fast_instance% by
   apply hasStrictTerminalObjects_of_terminal_is_strict (CommRingCat.of PUnit)
   intro X f
   refine ⟨⟨⟨1, rfl, fun _ _ => rfl⟩, by ext; rfl, ?_⟩⟩
@@ -277,7 +277,7 @@ def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
 set_option linter.uppercaseLean3 false in
 #align CommRing.equalizer_fork_is_limit CommRingCat.equalizerForkIsLimit
 
-instance : IsLocalRingHom (equalizerFork f g).ι := by
+instance : IsLocalRingHom (equalizerFork f g).ι := fast_instance% by
   constructor
   rintro ⟨a, h₁ : _ = _⟩ (⟨⟨x, y, h₃, h₄⟩, rfl : x = _⟩ : IsUnit a)
   have : y ∈ RingHom.eqLocus f g := by

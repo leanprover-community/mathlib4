@@ -56,7 +56,7 @@ def Quot1 (α : TypeVec n) :=
   Quot (@R α)
 #align mvqpf.quot1 MvQPF.Quot1
 
-instance Quot1.inhabited {α : TypeVec n} [Inhabited <| F α] : Inhabited (Quot1 R α) :=
+instance Quot1.inhabited {α : TypeVec n} [Inhabited <| F α] : Inhabited (Quot1 R α) := fast_instance%
   ⟨Quot.mk _ default⟩
 #align mvqpf.quot1.inhabited MvQPF.Quot1.inhabited
 

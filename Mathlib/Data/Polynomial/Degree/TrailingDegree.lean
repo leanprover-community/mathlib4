@@ -71,7 +71,7 @@ theorem TrailingMonic.def : TrailingMonic p ↔ trailingCoeff p = 1 :=
   Iff.rfl
 #align polynomial.trailing_monic.def Polynomial.TrailingMonic.def
 
-instance TrailingMonic.decidable [DecidableEq R] : Decidable (TrailingMonic p) :=
+instance TrailingMonic.decidable [DecidableEq R] : Decidable (TrailingMonic p) := fast_instance%
   inferInstanceAs <| Decidable (trailingCoeff p = (1 : R))
 #align polynomial.trailing_monic.decidable Polynomial.TrailingMonic.decidable
 

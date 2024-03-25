@@ -25,7 +25,7 @@ def RelCat :=
   Type u
 #align category_theory.Rel CategoryTheory.RelCat
 
-instance RelCat.inhabited : Inhabited RelCat := by unfold RelCat; infer_instance
+instance RelCat.inhabited : Inhabited RelCat := fast_instance% by unfold RelCat; infer_instance
 #align category_theory.Rel.inhabited CategoryTheory.RelCat.inhabited
 
 /-- The category of types with binary relations as morphisms. -/

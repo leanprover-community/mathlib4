@@ -81,7 +81,7 @@ def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   choice_eq _s hs := SetLike.coe_injective <| subset_closure.antisymm hs
 #align topological_space.closeds.gi TopologicalSpace.Closeds.gi
 
-instance completeLattice : CompleteLattice (Closeds α) :=
+instance completeLattice : CompleteLattice (Closeds α) := fast_instance%
   CompleteLattice.copy
     (GaloisInsertion.liftCompleteLattice gi)
     -- le
@@ -102,7 +102,7 @@ instance completeLattice : CompleteLattice (Closeds α) :=
     (funext fun _ => SetLike.coe_injective sInf_image.symm)
 
 /-- The type of closed sets is inhabited, with default element the empty set. -/
-instance : Inhabited (Closeds α) :=
+instance : Inhabited (Closeds α) := fast_instance%
   ⟨⊥⟩
 
 @[simp, norm_cast]
@@ -182,7 +182,7 @@ theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
   iInf_def _
 #align topological_space.closeds.infi_mk TopologicalSpace.Closeds.iInf_mk
 
-instance : Coframe (Closeds α) :=
+instance : Coframe (Closeds α) := fast_instance%
   { inferInstanceAs (CompleteLattice (Closeds α)) with
     sInf := sInf
     iInf_sup_le_sup_sInf := fun a s =>
@@ -322,14 +322,14 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
 
 @[simp] lemma mem_mk {s : Set α} {x h} : x ∈ mk s h ↔ x ∈ s := .rfl
 
-instance : Sup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
-instance : Inf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
-instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
-instance : Bot (Clopens α) := ⟨⟨⊥, isClopen_empty⟩⟩
-instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.isClopen.diff t.isClopen⟩⟩
-instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
+instance : Sup (Clopens α) := fast_instance% ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
+instance : Inf (Clopens α) := fast_instance% ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
+instance : Top (Clopens α) := fast_instance% ⟨⟨⊤, isClopen_univ⟩⟩
+instance : Bot (Clopens α) := fast_instance% ⟨⟨⊥, isClopen_empty⟩⟩
+instance : SDiff (Clopens α) := fast_instance% ⟨fun s t => ⟨s \ t, s.isClopen.diff t.isClopen⟩⟩
+instance : HasCompl (Clopens α) := fast_instance% ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 
-instance : BooleanAlgebra (Clopens α) :=
+instance : BooleanAlgebra (Clopens α) := fast_instance%
   SetLike.coe_injective.booleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl rfl (fun _ => rfl)
     fun _ _ => rfl
 
@@ -351,7 +351,7 @@ instance : BooleanAlgebra (Clopens α) :=
 @[simp] theorem coe_compl (s : Clopens α) : (↑sᶜ : Set α) = (↑s)ᶜ := rfl
 #align topological_space.clopens.coe_compl TopologicalSpace.Clopens.coe_compl
 
-instance : Inhabited (Clopens α) := ⟨⊥⟩
+instance : Inhabited (Clopens α) := fast_instance% ⟨⊥⟩
 
 variable [TopologicalSpace β]
 

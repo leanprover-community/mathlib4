@@ -589,7 +589,7 @@ instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivi
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul_set ht).elim ha hb⟩
 #align set.no_zero_smul_divisors_set Set.noZeroSMulDivisors_set
 
-instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) :=
+instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) := fast_instance%
   ⟨fun h ↦ eq_zero_or_eq_zero_of_smul_eq_zero h⟩
 
 end SMul
@@ -599,7 +599,7 @@ section VSub
 variable {ι : Sort*} {κ : ι → Sort*} [VSub α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
   {b c : β}
 
-instance vsub : VSub (Set α) (Set β) :=
+instance vsub : VSub (Set α) (Set β) := fast_instance%
   ⟨image2 (· -ᵥ ·)⟩
 #align set.has_vsub Set.vsub
 

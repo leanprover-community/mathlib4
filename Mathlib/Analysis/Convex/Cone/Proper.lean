@@ -54,7 +54,7 @@ abbrev toPointedCone (C : ProperCone 𝕜 E) := C.toSubmodule
 
 attribute [coe] toPointedCone
 
-instance : Coe (ProperCone 𝕜 E) (PointedCone 𝕜 E) :=
+instance : Coe (ProperCone 𝕜 E) (PointedCone 𝕜 E) := fast_instance%
   ⟨toPointedCone⟩
 
 -- Porting note: now a syntactic tautology
@@ -82,7 +82,7 @@ theorem mem_coe {x : E} {K : ProperCone 𝕜 E} : x ∈ (K : PointedCone 𝕜 E)
   Iff.rfl
 #align proper_cone.mem_coe ProperCone.mem_coe
 
-instance instZero (K : ProperCone 𝕜 E) : Zero K := PointedCone.instZero (K.toSubmodule)
+instance instZero (K : ProperCone 𝕜 E) : Zero K := fast_instance% PointedCone.instZero (K.toSubmodule)
 
 protected theorem nonempty (K : ProperCone 𝕜 E) : (K : Set E).Nonempty :=
   ⟨0, by { simp_rw [SetLike.mem_coe, ← ProperCone.mem_coe, Submodule.zero_mem] }⟩
@@ -121,11 +121,11 @@ section Module
 variable {𝕜 : Type*} [OrderedSemiring 𝕜]
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [T1Space E] [Module 𝕜 E]
 
-instance : Zero (ProperCone 𝕜 E) :=
+instance : Zero (ProperCone 𝕜 E) := fast_instance%
   ⟨{ toSubmodule := 0
      isClosed' := isClosed_singleton }⟩
 
-instance : Inhabited (ProperCone 𝕜 E) :=
+instance : Inhabited (ProperCone 𝕜 E) := fast_instance%
   ⟨0⟩
 
 @[simp]

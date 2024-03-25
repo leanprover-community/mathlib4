@@ -59,7 +59,7 @@ def ValidFinite (e : ℤ) (m : ℕ) : Prop :=
   emin ≤ e + prec - 1 ∧ e + prec - 1 ≤ emax ∧ e = max (e + m.size - prec) emin
 #align fp.valid_finite FP.ValidFinite
 
-instance decValidFinite (e m) : Decidable (ValidFinite e m) := by
+instance decValidFinite (e m) : Decidable (ValidFinite e m) := fast_instance% by
   (unfold ValidFinite; infer_instance)
 #align fp.dec_valid_finite FP.decValidFinite
 
@@ -107,7 +107,7 @@ def Float.zero (s : Bool) : Float :=
   Float.finite s emin 0 Float.Zero.valid
 #align fp.float.zero FP.Float.zero
 
-instance : Inhabited Float :=
+instance : Inhabited Float := fast_instance%
   ⟨Float.zero true⟩
 
 @[nolint docBlame]
@@ -233,7 +233,7 @@ unsafe def ofRat : RMode → ℚ → Float
 
 namespace Float
 
-instance : Neg Float :=
+instance : Neg Float := fast_instance%
   ⟨Float.neg⟩
 
 @[nolint docBlame]
@@ -250,7 +250,7 @@ unsafe def add (mode : RMode) : Float → Float → Float
     ofRat mode (toRat f₁ rfl + toRat f₂ rfl)
 #align fp.float.add FP.Float.add
 
-unsafe instance : Add Float :=
+unsafe instance : Add Float := fast_instance%
   ⟨Float.add RMode.NE⟩
 
 @[nolint docBlame]
@@ -258,7 +258,7 @@ unsafe def sub (mode : RMode) (f1 f2 : Float) : Float :=
   add mode f1 (-f2)
 #align fp.float.sub FP.Float.sub
 
-unsafe instance : Sub Float :=
+unsafe instance : Sub Float := fast_instance%
   ⟨Float.sub RMode.NE⟩
 
 @[nolint docBlame]

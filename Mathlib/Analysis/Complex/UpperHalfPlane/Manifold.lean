@@ -19,10 +19,10 @@ open scoped UpperHalfPlane Manifold
 
 namespace UpperHalfPlane
 
-noncomputable instance : ChartedSpace ℂ ℍ :=
+noncomputable instance : ChartedSpace ℂ ℍ := fast_instance%
   UpperHalfPlane.openEmbedding_coe.singletonChartedSpace
 
-instance : SmoothManifoldWithCorners 𝓘(ℂ) ℍ :=
+instance : SmoothManifoldWithCorners 𝓘(ℂ) ℍ := fast_instance%
   UpperHalfPlane.openEmbedding_coe.singleton_smoothManifoldWithCorners 𝓘(ℂ)
 
 /-- The inclusion map `ℍ → ℂ` is a smooth map of manifolds. -/

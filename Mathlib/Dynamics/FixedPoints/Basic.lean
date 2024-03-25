@@ -47,7 +47,7 @@ theorem isFixedPt_id (x : α) : IsFixedPt id x :=
 
 namespace IsFixedPt
 
-instance decidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
+instance decidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) := fast_instance%
   h (f x) x
 
 /-- If `x` is a fixed point of `f`, then `f x = x`. This is useful, e.g., for `rw` or `simp`.-/

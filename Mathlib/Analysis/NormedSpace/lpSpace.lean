@@ -306,9 +306,9 @@ def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
   ∀ i, E i --deriving AddCommGroup
 #align pre_lp PreLp
 
-instance : AddCommGroup (PreLp E) := by unfold PreLp; infer_instance
+instance : AddCommGroup (PreLp E) := fast_instance% by unfold PreLp; infer_instance
 
-instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
+instance PreLp.unique [IsEmpty α] : Unique (PreLp E) := fast_instance%
   Pi.uniqueOfIsEmpty E
 #align pre_lp.unique PreLp.unique
 
@@ -326,10 +326,10 @@ def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : A
 namespace lp
 
 -- Porting note: was `Coe`
-instance : CoeOut (lp E p) (∀ i, E i) :=
+instance : CoeOut (lp E p) (∀ i, E i) := fast_instance%
   ⟨Subtype.val (α := ∀ i, E i)⟩ -- Porting note: Originally `coeSubtype`
 
-instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
+instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i := fast_instance%
   ⟨fun f => (f : ∀ i, E i)⟩
 
 @[ext]
@@ -494,7 +494,7 @@ theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
     simpa only [coeFn_neg, Pi.neg_apply, _root_.norm_neg] using lp.hasSum_norm hp f
 #align lp.norm_neg lp.norm_neg
 
-instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
+instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) := fast_instance%
   AddGroupNorm.toNormedAddCommGroup
     { toFun := norm
       map_zero' := norm_zero
@@ -605,16 +605,16 @@ variable {𝕜 : Type*} {𝕜' : Type*}
 variable [NormedRing 𝕜] [NormedRing 𝕜']
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
 
-instance : Module 𝕜 (PreLp E) :=
+instance : Module 𝕜 (PreLp E) := fast_instance%
   Pi.module α E 𝕜
 
-instance [∀ i, SMulCommClass 𝕜' 𝕜 (E i)] : SMulCommClass 𝕜' 𝕜 (PreLp E) :=
+instance [∀ i, SMulCommClass 𝕜' 𝕜 (E i)] : SMulCommClass 𝕜' 𝕜 (PreLp E) := fast_instance%
   Pi.smulCommClass
 
-instance [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTower 𝕜' 𝕜 (PreLp E) :=
+instance [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTower 𝕜' 𝕜 (PreLp E) := fast_instance%
   Pi.isScalarTower
 
-instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (PreLp E) :=
+instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (PreLp E) := fast_instance%
   Pi.isCentralScalar
 
 variable [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, BoundedSMul 𝕜' (E i)]
@@ -637,7 +637,7 @@ theorem coe_lpSubmodule : (lpSubmodule E p 𝕜).toAddSubgroup = lp E p :=
   rfl
 #align lp.coe_lp_submodule lp.coe_lpSubmodule
 
-instance : Module 𝕜 (lp E p) :=
+instance : Module 𝕜 (lp E p) := fast_instance%
   { (lpSubmodule E p 𝕜).module with }
 
 @[simp]
@@ -645,13 +645,13 @@ theorem coeFn_smul (c : 𝕜) (f : lp E p) : ⇑(c • f) = c • ⇑f :=
   rfl
 #align lp.coe_fn_smul lp.coeFn_smul
 
-instance [∀ i, SMulCommClass 𝕜' 𝕜 (E i)] : SMulCommClass 𝕜' 𝕜 (lp E p) :=
+instance [∀ i, SMulCommClass 𝕜' 𝕜 (E i)] : SMulCommClass 𝕜' 𝕜 (lp E p) := fast_instance%
   ⟨fun _ _ _ => Subtype.ext <| smul_comm _ _ _⟩
 
-instance [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTower 𝕜' 𝕜 (lp E p) :=
+instance [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTower 𝕜' 𝕜 (lp E p) := fast_instance%
   ⟨fun _ _ _ => Subtype.ext <| smul_assoc _ _ _⟩
 
-instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (lp E p) :=
+instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (lp E p) := fast_instance%
   ⟨fun _ _ => Subtype.ext <| op_smul_eq_smul _ _⟩
 
 theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ := by
@@ -688,7 +688,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     apply nnnorm_smul_le
 #align lp.norm_const_smul_le lp.norm_const_smul_le
 
-instance [Fact (1 ≤ p)] : BoundedSMul 𝕜 (lp E p) :=
+instance [Fact (1 ≤ p)] : BoundedSMul 𝕜 (lp E p) := fast_instance%
   BoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le <| Fact.out).ne'
 
 end BoundedSMul
@@ -797,11 +797,11 @@ theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
   rfl
 #align lp.infty_coe_fn_mul lp.infty_coeFn_mul
 
-instance nonUnitalRing : NonUnitalRing (lp B ∞) :=
+instance nonUnitalRing : NonUnitalRing (lp B ∞) := fast_instance%
   Function.Injective.nonUnitalRing lp.coeFun.coe Subtype.coe_injective (lp.coeFn_zero B ∞)
     lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
 
-instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
+instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) := fast_instance%
   { lp.normedAddCommGroup, lp.nonUnitalRing with
     norm_mul := fun f g =>
       lp.norm_le_of_forall_le (mul_nonneg (norm_nonneg f) (norm_nonneg g)) fun i =>
@@ -826,7 +826,7 @@ section StarRing
 
 variable [∀ i, StarRing (B i)] [∀ i, NormedStarGroup (B i)]
 
-instance inftyStarRing : StarRing (lp B ∞) :=
+instance inftyStarRing : StarRing (lp B ∞) := fast_instance%
   { lp.instStarAddMonoid with
     star_mul := fun _f _g => ext <| star_mul (R := ∀ i, B i) _ _ }
 #align lp.infty_star_ring lp.inftyStarRing
@@ -854,7 +854,7 @@ section NormedRing
 
 variable {I : Type*} {B : I → Type*} [∀ i, NormedRing (B i)]
 
-instance _root_.PreLp.ring : Ring (PreLp B) :=
+instance _root_.PreLp.ring : Ring (PreLp B) := fast_instance%
   Pi.ring
 #align pre_lp.ring PreLp.ring
 
@@ -877,7 +877,7 @@ def _root_.lpInftySubring : Subring (PreLp B) :=
 
 variable {B}
 
-instance inftyRing : Ring (lp B ∞) :=
+instance inftyRing : Ring (lp B ∞) := fast_instance%
   (lpInftySubring B).toRing
 #align lp.infty_ring lp.inftyRing
 
@@ -916,7 +916,7 @@ theorem infty_coeFn_int_cast (z : ℤ) : ⇑(z : lp B ∞) = z :=
 instance [Nonempty I] : NormOneClass (lp B ∞) where
   norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
 
-instance inftyNormedRing : NormedRing (lp B ∞) :=
+instance inftyNormedRing : NormedRing (lp B ∞) := fast_instance%
   { lp.inftyRing, lp.nonUnitalNormedRing with }
 #align lp.infty_normed_ring lp.inftyNormedRing
 
@@ -926,12 +926,12 @@ section NormedCommRing
 
 variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, NormOneClass (B i)]
 
-instance inftyCommRing : CommRing (lp B ∞) :=
+instance inftyCommRing : CommRing (lp B ∞) := fast_instance%
   { lp.inftyRing with
     mul_comm := fun f g => by ext; simp only [lp.infty_coeFn_mul, Pi.mul_apply, mul_comm] }
 #align lp.infty_comm_ring lp.inftyCommRing
 
-instance inftyNormedCommRing : NormedCommRing (lp B ∞) :=
+instance inftyNormedCommRing : NormedCommRing (lp B ∞) := fast_instance%
   { lp.inftyCommRing, lp.inftyNormedRing with }
 #align lp.infty_normed_comm_ring lp.inftyNormedCommRing
 
@@ -943,11 +943,11 @@ variable {I : Type*} {𝕜 : Type*} {B : I → Type*}
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
 /-- A variant of `Pi.algebra` that lean can't find otherwise. -/
-instance _root_.Pi.algebraOfNormedAlgebra : Algebra 𝕜 (∀ i, B i) :=
+instance _root_.Pi.algebraOfNormedAlgebra : Algebra 𝕜 (∀ i, B i) := fast_instance%
   @Pi.algebra I 𝕜 B _ _ fun _ => NormedAlgebra.toAlgebra
 #align pi.algebra_of_normed_algebra Pi.algebraOfNormedAlgebra
 
-instance _root_.PreLp.algebra : Algebra 𝕜 (PreLp B) :=
+instance _root_.PreLp.algebra : Algebra 𝕜 (PreLp B) := fast_instance%
   Pi.algebraOfNormedAlgebra
 #align pre_lp.algebra PreLp.algebra
 
@@ -970,7 +970,7 @@ def _root_.lpInftySubalgebra : Subalgebra 𝕜 (PreLp B) :=
 
 variable {𝕜 B}
 
-instance inftyNormedAlgebra : NormedAlgebra 𝕜 (lp B ∞) :=
+instance inftyNormedAlgebra : NormedAlgebra 𝕜 (lp B ∞) := fast_instance%
   { (lpInftySubalgebra 𝕜 B).algebra, (lp.instNormedSpace : NormedSpace 𝕜 (lp B ∞)) with }
 #align lp.infty_normed_algebra lp.inftyNormedAlgebra
 
@@ -1196,7 +1196,7 @@ theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp
 
 variable [∀ a, CompleteSpace (E a)]
 
-instance completeSpace : CompleteSpace (lp E p) :=
+instance completeSpace : CompleteSpace (lp E p) := fast_instance%
   Metric.complete_of_cauchySeq_tendsto (by
     intro F hF
     -- A Cauchy sequence in `lp E p` is pointwise convergent; let `f` be the pointwise limit.

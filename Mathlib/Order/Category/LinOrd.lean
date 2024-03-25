@@ -26,16 +26,16 @@ set_option linter.uppercaseLean3 false in
 
 namespace LinOrd
 
-instance : BundledHom.ParentProjection @LinearOrder.toPartialOrder :=
+instance : BundledHom.ParentProjection @LinearOrder.toPartialOrder := fast_instance%
   ⟨⟩
 
 deriving instance LargeCategory for LinOrd
 
 -- Porting note: Probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory LinOrd :=
+instance : ConcreteCategory LinOrd := fast_instance%
   BundledHom.concreteCategory _
 
-instance : CoeSort LinOrd Type* :=
+instance : CoeSort LinOrd Type* := fast_instance%
   Bundled.coeSort
 
 /-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
@@ -50,10 +50,10 @@ theorem coe_of (α : Type*) [LinearOrder α] : ↥(of α) = α :=
 set_option linter.uppercaseLean3 false in
 #align LinOrd.coe_of LinOrd.coe_of
 
-instance : Inhabited LinOrd :=
+instance : Inhabited LinOrd := fast_instance%
   ⟨of PUnit⟩
 
-instance (α : LinOrd) : LinearOrder α :=
+instance (α : LinOrd) : LinearOrder α := fast_instance%
   α.str
 
 instance hasForgetToLat : HasForget₂ LinOrd Lat where

@@ -69,27 +69,27 @@ def GaloisField := SplittingField (X ^ p ^ n - X : (ZMod p)[X])
 -- deriving Field -- Porting note: see https://github.com/leanprover-community/mathlib4/issues/5020
 #align galois_field GaloisField
 
-instance : Field (GaloisField p n) :=
+instance : Field (GaloisField p n) := fast_instance%
   inferInstanceAs (Field (SplittingField _))
 
-instance : Inhabited (@GaloisField 2 (Fact.mk Nat.prime_two) 1) := ⟨37⟩
+instance : Inhabited (@GaloisField 2 (Fact.mk Nat.prime_two) 1) := fast_instance% ⟨37⟩
 
 namespace GaloisField
 
 variable (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ)
 
-instance : Algebra (ZMod p) (GaloisField p n) := SplittingField.algebra _
+instance : Algebra (ZMod p) (GaloisField p n) := fast_instance% SplittingField.algebra _
 
-instance : IsSplittingField (ZMod p) (GaloisField p n) (X ^ p ^ n - X) :=
+instance : IsSplittingField (ZMod p) (GaloisField p n) (X ^ p ^ n - X) := fast_instance%
   Polynomial.IsSplittingField.splittingField _
 
-instance : CharP (GaloisField p n) p :=
+instance : CharP (GaloisField p n) p := fast_instance%
   (Algebra.charP_iff (ZMod p) (GaloisField p n) p).mp (by infer_instance)
 
-instance : FiniteDimensional (ZMod p) (GaloisField p n) := by
+instance : FiniteDimensional (ZMod p) (GaloisField p n) := fast_instance% by
   dsimp only [GaloisField]; infer_instance
 
-instance : Fintype (GaloisField p n) := by
+instance : Fintype (GaloisField p n) := fast_instance% by
   dsimp only [GaloisField]
   exact FiniteDimensional.fintypeOfFintype (ZMod p) (GaloisField p n)
 

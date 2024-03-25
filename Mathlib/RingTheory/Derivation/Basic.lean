@@ -82,7 +82,7 @@ initialize_simps_projections Derivation (toFun → apply)
 
 attribute [coe] toLinearMap
 
-instance hasCoeToLinearMap : Coe (Derivation R A M) (A →ₗ[R] M) :=
+instance hasCoeToLinearMap : Coe (Derivation R A M) (A →ₗ[R] M) := fast_instance%
   ⟨fun D => D.toLinearMap⟩
 #align derivation.has_coe_to_linear_map Derivation.hasCoeToLinearMap
 
@@ -179,7 +179,7 @@ theorem ext_of_adjoin_eq_top (s : Set A) (hs : adjoin R s = ⊤) (h : Set.EqOn D
 #align derivation.ext_of_adjoin_eq_top Derivation.ext_of_adjoin_eq_top
 
 -- Data typeclasses
-instance : Zero (Derivation R A M) :=
+instance : Zero (Derivation R A M) := fast_instance%
   ⟨{  toLinearMap := 0
       map_one_eq_zero' := rfl
       leibniz' := fun a b => by simp only [add_zero, LinearMap.zero_apply, smul_zero] }⟩
@@ -198,7 +198,7 @@ theorem zero_apply (a : A) : (0 : Derivation R A M) a = 0 :=
   rfl
 #align derivation.zero_apply Derivation.zero_apply
 
-instance : Add (Derivation R A M) :=
+instance : Add (Derivation R A M) := fast_instance%
   ⟨fun D1 D2 =>
     { toLinearMap := D1 + D2
       map_one_eq_zero' := by simp
@@ -219,7 +219,7 @@ theorem add_apply : (D1 + D2) a = D1 a + D2 a :=
   rfl
 #align derivation.add_apply Derivation.add_apply
 
-instance : Inhabited (Derivation R A M) :=
+instance : Inhabited (Derivation R A M) := fast_instance%
   ⟨0⟩
 
 section Scalar
@@ -228,7 +228,7 @@ variable {S T : Type*}
 variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M] [SMulCommClass S A M]
 variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulCommClass T A M]
 
-instance : SMul S (Derivation R A M) :=
+instance : SMul S (Derivation R A M) := fast_instance%
   ⟨fun r D =>
     { toLinearMap := r • D.1
       map_one_eq_zero' := by rw [LinearMap.smul_apply, coeFn_coe, D.map_one_eq_zero, smul_zero]
@@ -249,7 +249,7 @@ theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
   rfl
 #align derivation.smul_apply Derivation.smul_apply
 
-instance : AddCommMonoid (Derivation R A M) :=
+instance : AddCommMonoid (Derivation R A M) := fast_instance%
   coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
 /-- `coe_fn` as an `AddMonoidHom`. -/
@@ -259,17 +259,17 @@ def coeFnAddMonoidHom : Derivation R A M →+ A → M where
   map_add' := coe_add
 #align derivation.coe_fn_add_monoid_hom Derivation.coeFnAddMonoidHom
 
-instance : DistribMulAction S (Derivation R A M) :=
+instance : DistribMulAction S (Derivation R A M) := fast_instance%
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
 instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] :
     IsCentralScalar S (Derivation R A M) where
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
-instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (Derivation R A M) :=
+instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (Derivation R A M) := fast_instance%
   ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
 
-instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) :=
+instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) := fast_instance%
   ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
 
 end Scalar
@@ -424,7 +424,7 @@ theorem leibniz_inv {K : Type*} [Field K] [Module K M] [Algebra R K] (D : Deriva
   · exact D.leibniz_of_mul_eq_one (inv_mul_cancel ha)
 #align derivation.leibniz_inv Derivation.leibniz_inv
 
-instance : Neg (Derivation R A M) :=
+instance : Neg (Derivation R A M) := fast_instance%
   ⟨fun D =>
     mk' (-D) fun a b => by
       simp only [LinearMap.neg_apply, smul_neg, neg_add_rev, leibniz, coeFn_coe, add_comm]⟩
@@ -443,7 +443,7 @@ theorem neg_apply : (-D) a = -D a :=
   rfl
 #align derivation.neg_apply Derivation.neg_apply
 
-instance : Sub (Derivation R A M) :=
+instance : Sub (Derivation R A M) := fast_instance%
   ⟨fun D1 D2 =>
     mk' (D1 - D2 : A →ₗ[R] M) fun a b => by
       simp only [LinearMap.sub_apply, leibniz, coeFn_coe, smul_sub, add_sub_add_comm]⟩
@@ -462,7 +462,7 @@ theorem sub_apply : (D1 - D2) a = D1 a - D2 a :=
   rfl
 #align derivation.sub_apply Derivation.sub_apply
 
-instance : AddCommGroup (Derivation R A M) :=
+instance : AddCommGroup (Derivation R A M) := fast_instance%
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
 end

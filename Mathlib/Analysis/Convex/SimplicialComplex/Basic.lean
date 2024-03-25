@@ -70,7 +70,7 @@ variable {𝕜 E}
 variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
 
 /-- A `Finset` belongs to a `SimplicialComplex` if it's a face of it. -/
-instance : Membership (Finset E) (SimplicialComplex 𝕜 E) :=
+instance : Membership (Finset E) (SimplicialComplex 𝕜 E) := fast_instance%
   ⟨fun s K => s ∈ K.faces⟩
 
 /-- The underlying space of a simplicial complex is the union of its faces. -/
@@ -219,7 +219,7 @@ theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t
 variable (𝕜 E)
 
 /-- The complex consisting of only the faces present in both of its arguments. -/
-instance : Inf (SimplicialComplex 𝕜 E) :=
+instance : Inf (SimplicialComplex 𝕜 E) := fast_instance%
   ⟨fun K L =>
     { faces := K.faces ∩ L.faces
       not_empty_mem := fun h => K.not_empty_mem (Set.inter_subset_left _ _ h)
@@ -227,24 +227,24 @@ instance : Inf (SimplicialComplex 𝕜 E) :=
       down_closed := fun hs hst ht => ⟨K.down_closed hs.1 hst ht, L.down_closed hs.2 hst ht⟩
       inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull hs.1 ht.1 }⟩
 
-instance : SemilatticeInf (SimplicialComplex 𝕜 E) :=
+instance : SemilatticeInf (SimplicialComplex 𝕜 E) := fast_instance%
   { PartialOrder.lift faces SimplicialComplex.ext with
     inf := (· ⊓ ·)
     inf_le_left := fun _ _ _ hs => hs.1
     inf_le_right := fun _ _ _ hs => hs.2
     le_inf := fun _ _ _ hKL hKM _ hs => ⟨hKL hs, hKM hs⟩ }
 
-instance hasBot : Bot (SimplicialComplex 𝕜 E) :=
+instance hasBot : Bot (SimplicialComplex 𝕜 E) := fast_instance%
   ⟨{  faces := ∅
       not_empty_mem := Set.not_mem_empty ∅
       indep := fun hs => (Set.not_mem_empty _ hs).elim
       down_closed := fun hs => (Set.not_mem_empty _ hs).elim
       inter_subset_convexHull := fun hs => (Set.not_mem_empty _ hs).elim }⟩
 
-instance : OrderBot (SimplicialComplex 𝕜 E) :=
+instance : OrderBot (SimplicialComplex 𝕜 E) := fast_instance%
   { SimplicialComplex.hasBot 𝕜 E with bot_le := fun _ => Set.empty_subset _ }
 
-instance : Inhabited (SimplicialComplex 𝕜 E) :=
+instance : Inhabited (SimplicialComplex 𝕜 E) := fast_instance%
   ⟨⊥⟩
 
 variable {𝕜 E}

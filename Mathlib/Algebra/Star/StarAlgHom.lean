@@ -86,7 +86,7 @@ def toNonUnitalStarAlgHom [NonUnitalStarAlgHomClass F R A B] (f : F) : A →⋆�
   { (f : A →ₙₐ[R] B) with
     map_star' := map_star f }
 
-instance [NonUnitalStarAlgHomClass F R A B] : CoeTC F (A →⋆ₙₐ[R] B) :=
+instance [NonUnitalStarAlgHomClass F R A B] : CoeTC F (A →⋆ₙₐ[R] B) := fast_instance%
   ⟨toNonUnitalStarAlgHom⟩
 
 end NonUnitalStarAlgHomClass
@@ -258,13 +258,13 @@ variable {R A B C D : Type*} [Monoid R]
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [StarAddMonoid A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [StarAddMonoid B]
 
-instance : Zero (A →⋆ₙₐ[R] B) :=
+instance : Zero (A →⋆ₙₐ[R] B) := fast_instance%
   ⟨{ (0 : NonUnitalAlgHom R A B) with map_star' := by simp }⟩
 
-instance : Inhabited (A →⋆ₙₐ[R] B) :=
+instance : Inhabited (A →⋆ₙₐ[R] B) := fast_instance%
   ⟨0⟩
 
-instance : MonoidWithZero (A →⋆ₙₐ[R] A) :=
+instance : MonoidWithZero (A →⋆ₙₐ[R] A) := fast_instance%
   { inferInstanceAs (Monoid (A →⋆ₙₐ[R] A)),
     inferInstanceAs (Zero (A →⋆ₙₐ[R] A)) with
     zero_mul := fun _ => ext fun _ => rfl
@@ -340,7 +340,7 @@ def toStarAlgHom (f : F) : A →⋆ₐ[R] B :=
   { (f : A →ₐ[R] B) with
     map_star' := map_star f }
 
-instance : CoeTC F (A →⋆ₐ[R] B) :=
+instance : CoeTC F (A →⋆ₐ[R] B) := fast_instance%
   ⟨toStarAlgHom⟩
 
 end StarAlgHomClass
@@ -457,7 +457,7 @@ def ofId (R A : Type*) [CommSemiring R] [StarRing R] [Semiring A] [StarMul A]
 
 end
 
-instance : Inhabited (A →⋆ₐ[R] A) :=
+instance : Inhabited (A →⋆ₐ[R] A) := fast_instance%
   ⟨StarAlgHom.id R A⟩
 
 /-- The composition of ⋆-algebra homomorphisms, as a ⋆-algebra homomorphism. -/
@@ -839,7 +839,7 @@ def refl : A ≃⋆ₐ[R] A :=
     map_star' := fun _ => rfl }
 #align star_alg_equiv.refl StarAlgEquiv.refl
 
-instance : Inhabited (A ≃⋆ₐ[R] A) :=
+instance : Inhabited (A ≃⋆ₐ[R] A) := fast_instance%
   ⟨refl⟩
 
 @[simp]

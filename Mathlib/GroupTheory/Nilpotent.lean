@@ -119,7 +119,7 @@ theorem upperCentralSeriesStep_eq_comap_center :
     div_eq_mul_inv, mul_inv_rev, mul_assoc]
 #align upper_central_series_step_eq_comap_center upperCentralSeriesStep_eq_comap_center
 
-instance : Normal (upperCentralSeriesStep H) := by
+instance : Normal (upperCentralSeriesStep H) := fast_instance% by
   rw [upperCentralSeriesStep_eq_comap_center]
   infer_instance
 
@@ -140,7 +140,7 @@ def upperCentralSeries (n : ℕ) : Subgroup G :=
   (upperCentralSeriesAux G n).1
 #align upper_central_series upperCentralSeries
 
-instance upperCentralSeries_normal (n : ℕ) : Normal (upperCentralSeries G n) :=
+instance upperCentralSeries_normal (n : ℕ) : Normal (upperCentralSeries G n) := fast_instance%
   (upperCentralSeriesAux G n).2
 
 @[simp]
@@ -304,7 +304,7 @@ theorem lowerCentralSeries_succ (n : ℕ) :
   rfl
 #align lower_central_series_succ lowerCentralSeries_succ
 
-instance lowerCentralSeries_normal (n : ℕ) : Normal (lowerCentralSeries G n) := by
+instance lowerCentralSeries_normal (n : ℕ) : Normal (lowerCentralSeries G n) := fast_instance% by
   induction' n with d hd
   · exact (⊤ : Subgroup G).normal_of_characteristic
   · exact @Subgroup.commutator_normal _ _ (lowerCentralSeries G d) ⊤ hd _
@@ -455,7 +455,7 @@ theorem lowerCentralSeries_map_subtype_le (H : Subgroup G) (n : ℕ) :
 #align lower_central_series_map_subtype_le lowerCentralSeries_map_subtype_le
 
 /-- A subgroup of a nilpotent group is nilpotent -/
-instance Subgroup.isNilpotent (H : Subgroup G) [hG : IsNilpotent G] : IsNilpotent H := by
+instance Subgroup.isNilpotent (H : Subgroup G) [hG : IsNilpotent G] : IsNilpotent H := fast_instance% by
   rw [nilpotent_iff_lowerCentralSeries] at *
   rcases hG with ⟨n, hG⟩
   use n
@@ -720,7 +720,7 @@ theorem lowerCentralSeries_prod (n : ℕ) :
 #align lower_central_series_prod lowerCentralSeries_prod
 
 /-- Products of nilpotent groups are nilpotent -/
-instance isNilpotent_prod [IsNilpotent G₁] [IsNilpotent G₂] : IsNilpotent (G₁ × G₂) := by
+instance isNilpotent_prod [IsNilpotent G₁] [IsNilpotent G₂] : IsNilpotent (G₁ × G₂) := fast_instance% by
   rw [nilpotent_iff_lowerCentralSeries]
   refine' ⟨max (Group.nilpotencyClass G₁) (Group.nilpotencyClass G₂), _⟩
   rw [lowerCentralSeries_prod,
@@ -794,7 +794,7 @@ theorem lowerCentralSeries_pi_of_finite [Finite η] (n : ℕ) :
 #align lower_central_series_pi_of_finite lowerCentralSeries_pi_of_finite
 
 /-- n-ary products of nilpotent groups are nilpotent -/
-instance isNilpotent_pi [Finite η] [∀ i, IsNilpotent (Gs i)] : IsNilpotent (∀ i, Gs i) := by
+instance isNilpotent_pi [Finite η] [∀ i, IsNilpotent (Gs i)] : IsNilpotent (∀ i, Gs i) := fast_instance% by
   cases nonempty_fintype η
   rw [nilpotent_iff_lowerCentralSeries]
   refine' ⟨Finset.univ.sup fun i => Group.nilpotencyClass (Gs i), _⟩

@@ -55,15 +55,15 @@ namespace WithLp
 back and forth between the representations. -/
 protected def equiv : WithLp p V ≃ V := Equiv.refl _
 
-instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivial V›
-instance instUnique [Unique V] : Unique (WithLp p V) := ‹Unique V›
+instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := fast_instance% ‹Nontrivial V›
+instance instUnique [Unique V] : Unique (WithLp p V) := fast_instance% ‹Unique V›
 
 variable [Semiring K] [Semiring K'] [AddCommGroup V]
 
 /-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
 
-instance instAddCommGroup : AddCommGroup (WithLp p V) := ‹AddCommGroup V›
-instance instModule [Module K V] : Module K (WithLp p V) := ‹Module K V›
+instance instAddCommGroup : AddCommGroup (WithLp p V) := fast_instance% ‹AddCommGroup V›
+instance instModule [Module K V] : Module K (WithLp p V) := fast_instance% ‹Module K V›
 
 instance instIsScalarTower [SMul K K'] [Module K V] [Module K' V] [IsScalarTower K K' V] :
     IsScalarTower K K' (WithLp p V) :=
@@ -73,7 +73,7 @@ instance instSMulCommClass [Module K V] [Module K' V] [SMulCommClass K K' V] :
     SMulCommClass K K' (WithLp p V) :=
   ‹SMulCommClass K K' V›
 
-instance instModuleFinite [Module K V] [Module.Finite K V] : Module.Finite K (WithLp p V) :=
+instance instModuleFinite [Module K V] [Module.Finite K V] : Module.Finite K (WithLp p V) := fast_instance%
   ‹Module.Finite K V›
 
 variable {K V}

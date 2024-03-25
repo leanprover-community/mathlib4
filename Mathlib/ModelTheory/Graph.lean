@@ -56,11 +56,11 @@ def _root_.SimpleGraph.structure (G : SimpleGraph V) : Language.graph.Structure 
 
 namespace graph
 
-instance instIsRelational : IsRelational Language.graph :=
+instance instIsRelational : IsRelational Language.graph := fast_instance%
   Language.isRelational_mk₂
 #align first_order.language.graph.first_order.language.is_relational FirstOrder.Language.graph.instIsRelational
 
-instance instSubsingleton : Subsingleton (Language.graph.Relations n) :=
+instance instSubsingleton : Subsingleton (Language.graph.Relations n) := fast_instance%
   Language.subsingleton_mk₂_relations
 #align first_order.language.graph.relations.subsingleton FirstOrder.Language.graph.instSubsingleton
 

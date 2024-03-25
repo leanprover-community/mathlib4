@@ -64,7 +64,7 @@ protected theorem smooth (f : C^∞⟮I, M; I', M'⟯) : Smooth I I' f :=
 #align cont_mdiff_map.smooth ContMDiffMap.smooth
 
 -- Porting note: use generic instance instead
--- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
+-- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') := fast_instance%
 --   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
 
 attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instFunLike
@@ -105,7 +105,7 @@ theorem comp_apply (f : C^n⟮I', M'; I'', M''⟯) (g : C^n⟮I, M; I', M'⟯) (
   rfl
 #align cont_mdiff_map.comp_apply ContMDiffMap.comp_apply
 
-instance [Inhabited M'] : Inhabited C^n⟮I, M; I', M'⟯ :=
+instance [Inhabited M'] : Inhabited C^n⟮I, M; I', M'⟯ := fast_instance%
   ⟨⟨fun _ => default, contMDiff_const⟩⟩
 
 /-- Constant map as a smooth map -/

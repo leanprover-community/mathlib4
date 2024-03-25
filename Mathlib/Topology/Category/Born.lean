@@ -27,10 +27,10 @@ set_option linter.uppercaseLean3 false in
 
 namespace Born
 
-instance : CoeSort Born (Type*) :=
+instance : CoeSort Born (Type*) := fast_instance%
   Bundled.coeSort
 
-instance (X : Born) : Bornology X :=
+instance (X : Born) : Bornology X := fast_instance%
   X.str
 
 /-- Construct a bundled `Born` from a `Bornology`. -/
@@ -39,7 +39,7 @@ def of (α : Type*) [Bornology α] : Born :=
 set_option linter.uppercaseLean3 false in
 #align Born.of Born.of
 
-instance : Inhabited Born :=
+instance : Inhabited Born := fast_instance%
   ⟨of PUnit⟩
 
 instance : BundledHom @LocallyBoundedMap where
@@ -47,10 +47,10 @@ instance : BundledHom @LocallyBoundedMap where
   comp := @LocallyBoundedMap.comp
   hom_ext _ _ := DFunLike.coe_injective
 
-instance : LargeCategory.{u} Born :=
+instance : LargeCategory.{u} Born := fast_instance%
   BundledHom.category LocallyBoundedMap
 
-instance : ConcreteCategory Born :=
+instance : ConcreteCategory Born := fast_instance%
   BundledHom.concreteCategory LocallyBoundedMap
 
 end Born

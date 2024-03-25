@@ -27,7 +27,7 @@ universe u v w
 namespace Ordinal
 
 /-- The ordinal exponential, defined by transfinite recursion. -/
-instance pow : Pow Ordinal Ordinal :=
+instance pow : Pow Ordinal Ordinal := fast_instance%
   ⟨fun a b => if a = 0 then 1 - b else limitRecOn b 1 (fun _ IH => IH * a) fun b _ => bsup.{u, u} b⟩
 
 -- Porting note: Ambiguous notations.

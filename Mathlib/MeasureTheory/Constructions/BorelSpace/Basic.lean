@@ -403,7 +403,7 @@ theorem measurable_of_isClosed' {f : δ → γ}
   exact hf s hs h1 h2
 #align measurable_of_is_closed' measurable_of_isClosed'
 
-instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
+instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := fast_instance% by
   rw [nhds, iInf_subtype']
   refine' @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => _
   exact i.2.2.measurableSet.principal_isMeasurablyGenerated
@@ -555,25 +555,25 @@ theorem measurableSet_Icc : MeasurableSet (Icc a b) :=
   isClosed_Icc.measurableSet
 #align measurable_set_Icc measurableSet_Icc
 
-instance nhdsWithin_Ici_isMeasurablyGenerated : (𝓝[Ici b] a).IsMeasurablyGenerated :=
+instance nhdsWithin_Ici_isMeasurablyGenerated : (𝓝[Ici b] a).IsMeasurablyGenerated := fast_instance%
   measurableSet_Ici.nhdsWithin_isMeasurablyGenerated _
 #align nhds_within_Ici_is_measurably_generated nhdsWithin_Ici_isMeasurablyGenerated
 
-instance nhdsWithin_Iic_isMeasurablyGenerated : (𝓝[Iic b] a).IsMeasurablyGenerated :=
+instance nhdsWithin_Iic_isMeasurablyGenerated : (𝓝[Iic b] a).IsMeasurablyGenerated := fast_instance%
   measurableSet_Iic.nhdsWithin_isMeasurablyGenerated _
 #align nhds_within_Iic_is_measurably_generated nhdsWithin_Iic_isMeasurablyGenerated
 
-instance nhdsWithin_Icc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[Icc a b] x) := by
+instance nhdsWithin_Icc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[Icc a b] x) := fast_instance% by
   rw [← Ici_inter_Iic, nhdsWithin_inter]
   infer_instance
 #align nhds_within_Icc_is_measurably_generated nhdsWithin_Icc_isMeasurablyGenerated
 
-instance atTop_isMeasurablyGenerated : (Filter.atTop : Filter α).IsMeasurablyGenerated :=
+instance atTop_isMeasurablyGenerated : (Filter.atTop : Filter α).IsMeasurablyGenerated := fast_instance%
   @Filter.iInf_isMeasurablyGenerated _ _ _ _ fun a =>
     (measurableSet_Ici : MeasurableSet (Ici a)).principal_isMeasurablyGenerated
 #align at_top_is_measurably_generated atTop_isMeasurablyGenerated
 
-instance atBot_isMeasurablyGenerated : (Filter.atBot : Filter α).IsMeasurablyGenerated :=
+instance atBot_isMeasurablyGenerated : (Filter.atBot : Filter α).IsMeasurablyGenerated := fast_instance%
   @Filter.iInf_isMeasurablyGenerated _ _ _ _ fun a =>
     (measurableSet_Iic : MeasurableSet (Iic a)).principal_isMeasurablyGenerated
 #align at_bot_is_measurably_generated atBot_isMeasurablyGenerated
@@ -636,15 +636,15 @@ theorem measurableSet_Ico : MeasurableSet (Ico a b) :=
   measurableSet_Ici.inter measurableSet_Iio
 #align measurable_set_Ico measurableSet_Ico
 
-instance nhdsWithin_Ioi_isMeasurablyGenerated : (𝓝[Ioi b] a).IsMeasurablyGenerated :=
+instance nhdsWithin_Ioi_isMeasurablyGenerated : (𝓝[Ioi b] a).IsMeasurablyGenerated := fast_instance%
   measurableSet_Ioi.nhdsWithin_isMeasurablyGenerated _
 #align nhds_within_Ioi_is_measurably_generated nhdsWithin_Ioi_isMeasurablyGenerated
 
-instance nhdsWithin_Iio_isMeasurablyGenerated : (𝓝[Iio b] a).IsMeasurablyGenerated :=
+instance nhdsWithin_Iio_isMeasurablyGenerated : (𝓝[Iio b] a).IsMeasurablyGenerated := fast_instance%
   measurableSet_Iio.nhdsWithin_isMeasurablyGenerated _
 #align nhds_within_Iio_is_measurably_generated nhdsWithin_Iio_isMeasurablyGenerated
 
-instance nhdsWithin_uIcc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[[[a, b]]] x) :=
+instance nhdsWithin_uIcc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[[[a, b]]] x) := fast_instance%
   nhdsWithin_Icc_isMeasurablyGenerated
 #align nhds_within_uIcc_is_measurably_generated nhdsWithin_uIcc_isMeasurablyGenerated
 
@@ -1145,7 +1145,7 @@ lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [Topol
   have : MeasurableSpace.comap e (borel β) = ‹_› := by simpa [hβ.measurable_eq] using h'e.comap_eq
   rw [← this, ← borel_comap, h''e.induced]
 
-instance _root_.ULift.instBorelSpace [BorelSpace α] : BorelSpace (ULift α) :=
+instance _root_.ULift.instBorelSpace [BorelSpace α] : BorelSpace (ULift α) := fast_instance%
   MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.inducing
 
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
@@ -1612,61 +1612,61 @@ protected theorem IsFiniteMeasureOnCompacts.map (μ : Measure α) [IsFiniteMeasu
 
 end BorelSpace
 
-instance Empty.borelSpace : BorelSpace Empty :=
+instance Empty.borelSpace : BorelSpace Empty := fast_instance%
   ⟨borel_eq_top_of_discrete.symm⟩
 #align empty.borel_space Empty.borelSpace
 
-instance Unit.borelSpace : BorelSpace Unit :=
+instance Unit.borelSpace : BorelSpace Unit := fast_instance%
   ⟨borel_eq_top_of_discrete.symm⟩
 #align unit.borel_space Unit.borelSpace
 
-instance Bool.borelSpace : BorelSpace Bool :=
+instance Bool.borelSpace : BorelSpace Bool := fast_instance%
   ⟨borel_eq_top_of_discrete.symm⟩
 #align bool.borel_space Bool.borelSpace
 
-instance Nat.borelSpace : BorelSpace ℕ :=
+instance Nat.borelSpace : BorelSpace ℕ := fast_instance%
   ⟨borel_eq_top_of_discrete.symm⟩
 #align nat.borel_space Nat.borelSpace
 
-instance Int.borelSpace : BorelSpace ℤ :=
+instance Int.borelSpace : BorelSpace ℤ := fast_instance%
   ⟨borel_eq_top_of_discrete.symm⟩
 #align int.borel_space Int.borelSpace
 
-instance Rat.borelSpace : BorelSpace ℚ :=
+instance Rat.borelSpace : BorelSpace ℚ := fast_instance%
   ⟨borel_eq_top_of_countable.symm⟩
 #align rat.borel_space Rat.borelSpace
 
 /- Instances on `Real` and `Complex` are special cases of `IsROrC` but without these instances,
 Lean fails to prove `BorelSpace (ι → ℝ)`, so we leave them here. -/
-instance Real.measurableSpace : MeasurableSpace ℝ :=
+instance Real.measurableSpace : MeasurableSpace ℝ := fast_instance%
   borel ℝ
 #align real.measurable_space Real.measurableSpace
 
-instance Real.borelSpace : BorelSpace ℝ :=
+instance Real.borelSpace : BorelSpace ℝ := fast_instance%
   ⟨rfl⟩
 #align real.borel_space Real.borelSpace
 
-instance NNReal.measurableSpace : MeasurableSpace ℝ≥0 :=
+instance NNReal.measurableSpace : MeasurableSpace ℝ≥0 := fast_instance%
   Subtype.instMeasurableSpace
 #align nnreal.measurable_space NNReal.measurableSpace
 
-instance NNReal.borelSpace : BorelSpace ℝ≥0 :=
+instance NNReal.borelSpace : BorelSpace ℝ≥0 := fast_instance%
   Subtype.borelSpace _
 #align nnreal.borel_space NNReal.borelSpace
 
-instance ENNReal.measurableSpace : MeasurableSpace ℝ≥0∞ :=
+instance ENNReal.measurableSpace : MeasurableSpace ℝ≥0∞ := fast_instance%
   borel ℝ≥0∞
 #align ennreal.measurable_space ENNReal.measurableSpace
 
-instance ENNReal.borelSpace : BorelSpace ℝ≥0∞ :=
+instance ENNReal.borelSpace : BorelSpace ℝ≥0∞ := fast_instance%
   ⟨rfl⟩
 #align ennreal.borel_space ENNReal.borelSpace
 
-instance EReal.measurableSpace : MeasurableSpace EReal :=
+instance EReal.measurableSpace : MeasurableSpace EReal := fast_instance%
   borel EReal
 #align ereal.measurable_space EReal.measurableSpace
 
-instance EReal.borelSpace : BorelSpace EReal :=
+instance EReal.borelSpace : BorelSpace EReal := fast_instance%
   ⟨rfl⟩
 #align ereal.borel_space EReal.borelSpace
 
@@ -2132,7 +2132,7 @@ theorem measurable_toNNReal : Measurable ENNReal.toNNReal :=
   ENNReal.measurable_of_measurable_nnreal measurable_id
 #align ennreal.measurable_to_nnreal ENNReal.measurable_toNNReal
 
-instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
+instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := fast_instance% by
   refine' ⟨measurable_of_measurable_nnreal_nnreal _ _ _⟩
   · simp only [← ENNReal.coe_mul, measurable_mul.coe_nnreal_ennreal]
   · simp only [ENNReal.top_mul', ENNReal.coe_eq_zero]
@@ -2141,13 +2141,13 @@ instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
     exact measurable_const.piecewise (measurableSet_singleton _) measurable_const
 #align ennreal.has_measurable_mul₂ ENNReal.instMeasurableMul₂
 
-instance instMeasurableSub₂ : MeasurableSub₂ ℝ≥0∞ :=
+instance instMeasurableSub₂ : MeasurableSub₂ ℝ≥0∞ := fast_instance%
   ⟨by
     apply measurable_of_measurable_nnreal_nnreal <;>
       simp [← WithTop.coe_sub]; exact continuous_sub.measurable.coe_nnreal_ennreal⟩
 #align ennreal.has_measurable_sub₂ ENNReal.instMeasurableSub₂
 
-instance instMeasurableInv : MeasurableInv ℝ≥0∞ :=
+instance instMeasurableInv : MeasurableInv ℝ≥0∞ := fast_instance%
   ⟨continuous_inv.measurable⟩
 #align ennreal.has_measurable_inv ENNReal.instMeasurableInv
 

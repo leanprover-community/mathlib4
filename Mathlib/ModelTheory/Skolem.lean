@@ -75,7 +75,7 @@ theorem card_functions_sum_skolem₁_le : #(Σ n, (L.sum L.skolem₁).Functions 
 
 /-- The structure assigning each function symbol of `L.skolem₁` to a skolem function generated with
 choice. -/
-noncomputable instance skolem₁Structure : L.skolem₁.Structure M :=
+noncomputable instance skolem₁Structure : L.skolem₁.Structure M := fast_instance%
   ⟨fun {_} φ x => Classical.epsilon fun a => φ.Realize default (Fin.snoc x a : _ → M), fun {_} r =>
     Empty.elim r⟩
 set_option linter.uppercaseLean3 false in

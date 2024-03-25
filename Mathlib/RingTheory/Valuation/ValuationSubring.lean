@@ -88,13 +88,13 @@ theorem toSubring_injective : Function.Injective (toSubring : ValuationSubring K
   fun x y h => by cases x; cases y; congr
 #align valuation_subring.to_subring_injective ValuationSubring.toSubring_injective
 
-instance : CommRing A :=
+instance : CommRing A := fast_instance%
   show CommRing A.toSubring by infer_instance
 
-instance : IsDomain A :=
+instance : IsDomain A := fast_instance%
   show IsDomain A.toSubring by infer_instance
 
-instance : Top (ValuationSubring K) :=
+instance : Top (ValuationSubring K) := fast_instance%
   Top.mk <| { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
 
 theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
@@ -108,7 +108,7 @@ instance : OrderTop (ValuationSubring K) where
   top := ⊤
   le_top := le_top
 
-instance : Inhabited (ValuationSubring K) :=
+instance : Inhabited (ValuationSubring K) := fast_instance%
   ⟨⊤⟩
 
 instance : ValuationRing A where
@@ -135,11 +135,11 @@ instance : ValuationRing A where
       field_simp
       ring
 
-instance : Algebra A K :=
+instance : Algebra A K := fast_instance%
   show Algebra A.toSubring K by infer_instance
 
 -- Porting note: Somehow it cannot find this instance and I'm too lazy to debug. wrong prio?
-instance localRing : LocalRing A := ValuationRing.localRing A
+instance localRing : LocalRing A := fast_instance% ValuationRing.localRing A
 
 @[simp]
 theorem algebraMap_apply (a : A) : algebraMap A K a = a := rfl
@@ -163,7 +163,7 @@ def ValueGroup :=
 #align valuation_subring.value_group ValuationSubring.ValueGroup
 
 -- Porting note: see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : LinearOrderedCommGroupWithZero (ValueGroup A) := by
+instance : LinearOrderedCommGroupWithZero (ValueGroup A) := fast_instance% by
   unfold ValueGroup
   infer_instance
 
@@ -172,7 +172,7 @@ def valuation : Valuation K A.ValueGroup :=
   ValuationRing.valuation A K
 #align valuation_subring.valuation ValuationSubring.valuation
 
-instance inhabitedValueGroup : Inhabited A.ValueGroup := ⟨A.valuation 0⟩
+instance inhabitedValueGroup : Inhabited A.ValueGroup := fast_instance% ⟨A.valuation 0⟩
 #align valuation_subring.inhabited_value_group ValuationSubring.inhabitedValueGroup
 
 theorem valuation_le_one (a : A) : A.valuation a ≤ 1 :=
@@ -242,7 +242,7 @@ def ofLE (R : ValuationSubring K) (S : Subring K) (h : R.toSubring ≤ S) : Valu
 
 section Order
 
-instance : SemilatticeSup (ValuationSubring K) :=
+instance : SemilatticeSup (ValuationSubring K) := fast_instance%
   { (inferInstance : PartialOrder (ValuationSubring K)) with
     sup := fun R S => ofLE R (R.toSubring ⊔ S.toSubring) <| le_sup_left
     le_sup_left := fun R S _ hx => (le_sup_left : R.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
@@ -287,7 +287,7 @@ def idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : Ideal R :=
   (LocalRing.maximalIdeal S).comap (R.inclusion S h)
 #align valuation_subring.ideal_of_le ValuationSubring.idealOfLE
 
-instance prime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : (idealOfLE R S h).IsPrime :=
+instance prime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : (idealOfLE R S h).IsPrime := fast_instance%
   (LocalRing.maximalIdeal S).comap_isPrime _
 #align valuation_subring.prime_ideal_of_le ValuationSubring.prime_idealOfLE
 
@@ -398,7 +398,7 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 #align valuation_subring.prime_spectrum_order_equiv ValuationSubring.primeSpectrumOrderEquiv
 
-instance linearOrderOverring : LinearOrder {S // A ≤ S} :=
+instance linearOrderOverring : LinearOrder {S // A ≤ S} := fast_instance%
   { (inferInstance : PartialOrder _) with
     le_total :=
       let i : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩

@@ -47,13 +47,13 @@ open MulAction Subgroup
 
 variable {M G G₀ R K}
 
-instance [Group G] : Group (ConjAct G) := ‹Group G›
+instance [Group G] : Group (ConjAct G) := fast_instance% ‹Group G›
 
-instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := ‹DivInvMonoid G›
+instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := fast_instance% ‹DivInvMonoid G›
 
-instance [GroupWithZero G] : GroupWithZero (ConjAct G) := ‹GroupWithZero G›
+instance [GroupWithZero G] : GroupWithZero (ConjAct G) := fast_instance% ‹GroupWithZero G›
 
-instance [Fintype G] : Fintype (ConjAct G) := ‹Fintype G›
+instance [Fintype G] : Fintype (ConjAct G) := fast_instance% ‹Fintype G›
 
 @[simp]
 theorem card [Fintype G] : Fintype.card (ConjAct G) = Fintype.card G :=
@@ -64,7 +64,7 @@ section DivInvMonoid
 
 variable [DivInvMonoid G]
 
-instance : Inhabited (ConjAct G) :=
+instance : Inhabited (ConjAct G) := fast_instance%
   ⟨1⟩
 
 /-- Reinterpret `g : ConjAct G` as an element of `G`. -/
@@ -141,7 +141,7 @@ theorem toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y 
   rfl
 #align conj_act.to_conj_act_mul ConjAct.toConjAct_mul
 
-instance : SMul (ConjAct G) G where smul g h := ofConjAct g * h * (ofConjAct g)⁻¹
+instance : SMul (ConjAct G) G where smul g h := fast_instance% ofConjAct g * h * (ofConjAct g)⁻¹
 
 theorem smul_def (g : ConjAct G) (h : G) : g • h = ofConjAct g * h * (ofConjAct g)⁻¹ :=
   rfl
@@ -155,7 +155,7 @@ section Monoid
 
 variable [Monoid M]
 
-instance unitsScalar : SMul (ConjAct Mˣ) M where smul g h := ofConjAct g * h * ↑(ofConjAct g)⁻¹
+instance unitsScalar : SMul (ConjAct Mˣ) M where smul g h := fast_instance% ofConjAct g * h * ↑(ofConjAct g)⁻¹
 #align conj_act.has_units_scalar ConjAct.unitsScalar
 
 theorem units_smul_def (g : ConjAct Mˣ) (h : M) : g • h = ofConjAct g * h * ↑(ofConjAct g)⁻¹ :=
@@ -196,7 +196,7 @@ variable [Semiring R]
 
 -- porting note (#11083): very slow without `simp only` and need to separate `units_smul_def`
 -- so that things trigger appropriately
-instance unitsMulSemiringAction : MulSemiringAction (ConjAct Rˣ) R :=
+instance unitsMulSemiringAction : MulSemiringAction (ConjAct Rˣ) R := fast_instance%
   { ConjAct.unitsMulDistribMulAction with
     smul_zero := by
       simp only [units_smul_def, mul_zero, zero_mul, «forall», forall_const]
@@ -253,7 +253,7 @@ variable [DivisionRing K]
 
 -- porting note (#11083): very slow without `simp only` and need to separate `smul_def`
 -- so that things trigger appropriately
-instance distribMulAction₀ : DistribMulAction (ConjAct K) K :=
+instance distribMulAction₀ : DistribMulAction (ConjAct K) K := fast_instance%
   { ConjAct.mulAction₀ with
     smul_zero := by
       simp only [smul_def]
@@ -324,7 +324,7 @@ theorem stabilizer_eq_centralizer (g : G) :
 
 /-- As normal subgroups are closed under conjugation, they inherit the conjugation action
   of the underlying group. -/
-instance Subgroup.conjAction {H : Subgroup G} [hH : H.Normal] : SMul (ConjAct G) H :=
+instance Subgroup.conjAction {H : Subgroup G} [hH : H.Normal] : SMul (ConjAct G) H := fast_instance%
   ⟨fun g h => ⟨g • (h : G), hH.conj_mem h.1 h.2 (ofConjAct g)⟩⟩
 #align conj_act.subgroup.conj_action ConjAct.Subgroup.conjAction
 

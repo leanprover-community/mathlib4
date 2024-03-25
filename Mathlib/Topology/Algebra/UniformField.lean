@@ -98,7 +98,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
 The value of `hat_inv` at zero is not really specified, although it's probably zero.
 Here we explicitly enforce the `inv_zero` axiom.
 -/
-instance instInvCompletion : Inv (hat K) :=
+instance instInvCompletion : Inv (hat K) := fast_instance%
   ⟨fun x => if x = 0 then 0 else hatInv x⟩
 
 variable [TopologicalDivisionRing K]
@@ -154,7 +154,7 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   rwa [closure_singleton, mem_singleton_iff] at fxclo
 #align uniform_space.completion.mul_hat_inv_cancel UniformSpace.Completion.mul_hatInv_cancel
 
-instance instField : Field (hat K) :=
+instance instField : Field (hat K) := fast_instance%
   { Completion.instInvCompletion,
     (by infer_instance : CommRing (hat K)) with
     exists_pair_ne := ⟨0, 1, fun h => zero_ne_one ((uniformEmbedding_coe K).inj h)⟩
@@ -164,7 +164,7 @@ instance instField : Field (hat K) :=
     qsmul := qsmulRec _ }
 #align uniform_space.completion.field UniformSpace.Completion.instField
 
-instance : TopologicalDivisionRing (hat K) :=
+instance : TopologicalDivisionRing (hat K) := fast_instance%
   { Completion.topologicalRing with
     continuousAt_inv₀ := by
       intro x x_ne

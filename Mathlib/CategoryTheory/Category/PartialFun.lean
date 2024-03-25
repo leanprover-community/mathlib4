@@ -42,7 +42,7 @@ set_option linter.uppercaseLean3 false
 
 namespace PartialFun
 
-instance : CoeSort PartialFun (Type*) :=
+instance : CoeSort PartialFun (Type*) := fast_instance%
   ⟨id⟩
 
 -- Porting note: removed `@[nolint has_nonempty_instance]`
@@ -54,7 +54,7 @@ def of : Type* → PartialFun :=
 -- Porting note: removed this lemma which is useless because of the expansion of coercions
 #noalign PartialFun.coe_of
 
-instance : Inhabited PartialFun :=
+instance : Inhabited PartialFun := fast_instance%
   ⟨Type*⟩
 
 instance largeCategory : LargeCategory.{u} PartialFun where

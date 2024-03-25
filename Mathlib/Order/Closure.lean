@@ -96,7 +96,7 @@ def id : ClosureOperator α where
 #align closure_operator.closed ClosureOperator.IsClosed
 #align closure_operator.mem_closed_iff ClosureOperator.isClosed_iff
 
-instance : Inhabited (ClosureOperator α) :=
+instance : Inhabited (ClosureOperator α) := fast_instance%
   ⟨id α⟩
 
 variable {α} [PartialOrder α] (c : ClosureOperator α)
@@ -308,14 +308,14 @@ protected def id [Preorder α] : LowerAdjoint (id : α → α) where
 
 variable {α}
 
-instance [Preorder α] : Inhabited (LowerAdjoint (id : α → α)) :=
+instance [Preorder α] : Inhabited (LowerAdjoint (id : α → α)) := fast_instance%
   ⟨LowerAdjoint.id α⟩
 
 section Preorder
 
 variable [Preorder α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
-instance : CoeFun (LowerAdjoint u) fun _ => α → β where coe := toFun
+instance : CoeFun (LowerAdjoint u) fun _ => α → β where coe := fast_instance% toFun
 
 theorem gc : GaloisConnection l u :=
   l.gc'

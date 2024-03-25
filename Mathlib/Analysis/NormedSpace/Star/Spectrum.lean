@@ -207,7 +207,7 @@ lemma _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
 
 namespace CharacterSpace
 
-noncomputable instance instStarAlgHomClass : StarAlgHomClass (characterSpace ℂ A) ℂ A ℂ :=
+noncomputable instance instStarAlgHomClass : StarAlgHomClass (characterSpace ℂ A) ℂ A ℂ := fast_instance%
   { AlgHomClass.instStarAlgHomClass with }
 
 end CharacterSpace

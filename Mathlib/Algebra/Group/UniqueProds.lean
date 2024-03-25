@@ -309,8 +309,8 @@ universe u v
 variable (G : Type u) (H : Type v) [Mul G] [Mul H]
 
 private abbrev I : Bool → Type max u v := Bool.rec (ULift.{v} G) (ULift.{u} H)
-@[to_additive] private instance : ∀ b, Mul (I G H b) := Bool.rec ULift.mul ULift.mul
-@[to_additive] private instance : Mul (∀ b, I G H b) := inferInstance
+@[to_additive] private instance : ∀ b, Mul (I G H b) := fast_instance% Bool.rec ULift.mul ULift.mul
+@[to_additive] private instance : Mul (∀ b, I G H b) := fast_instance% inferInstance
 @[to_additive] private def Prod.upMulHom : G × H →ₙ* ∀ b, I G H b :=
   ⟨fun x ↦ Bool.rec ⟨x.1⟩ ⟨x.2⟩, fun x y ↦ by ext (_|_) <;> rfl⟩
 @[to_additive] private def downMulHom : ULift G →ₙ* G := ⟨ULift.down, fun _ _ ↦ rfl⟩
@@ -348,7 +348,7 @@ theorem of_mulOpposite (h : UniqueProds Gᵐᵒᵖ) : UniqueProds G where
     let ⟨y, yB, x, xA, hxy⟩ := h.uniqueMul_of_nonempty (hB.map (f := f)) (hA.map (f := f))
     ⟨unop x, (mem_map' _).mp xA, unop y, (mem_map' _).mp yB, hxy.of_mulOpposite⟩
 
-@[to_additive] instance [h : UniqueProds G] : UniqueProds Gᵐᵒᵖ :=
+@[to_additive] instance [h : UniqueProds G] : UniqueProds Gᵐᵒᵖ := fast_instance%
   of_mulOpposite <| (MulEquiv.opOp G).uniqueProds_iff.mp h
 
 @[to_additive] private theorem toIsLeftCancelMul [UniqueProds G] : IsLeftCancelMul G where
@@ -465,7 +465,7 @@ open UniqueMul in
     exact ⟨a0, ha0.1, b0, hb0.1, of_image_filter (Pi.evalMulHom G i) ha0.2 hb0.2 hi hu⟩
 
 open ULift in
-@[to_additive] instance [UniqueProds G] [UniqueProds H] : UniqueProds (G × H) := by
+@[to_additive] instance [UniqueProds G] [UniqueProds H] : UniqueProds (G × H) := fast_instance% by
   have : ∀ b, UniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
@@ -480,7 +480,7 @@ instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, UniqueSums 
   UniqueSums.of_injective_addHom
     DFinsupp.coeFnAddMonoidHom.toAddHom DFunLike.coe_injective inferInstance
 
-instance {ι G} [AddZeroClass G] [UniqueSums G] : UniqueSums (ι →₀ G) :=
+instance {ι G} [AddZeroClass G] [UniqueSums G] : UniqueSums (ι →₀ G) := fast_instance%
   UniqueSums.of_injective_addHom
     Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
 
@@ -550,7 +550,7 @@ theorem _root_.MulEquiv.twoUniqueProds_iff (f : G ≃* H) : TwoUniqueProds G ↔
       exacts [ihB _ (hc.2 _), ihA _ ((A.filter_subset _).ssubset_of_ne hA)]
 
 open ULift in
-@[to_additive] instance [TwoUniqueProds G] [TwoUniqueProds H] : TwoUniqueProds (G × H) := by
+@[to_additive] instance [TwoUniqueProds G] [TwoUniqueProds H] : TwoUniqueProds (G × H) := fast_instance% by
   have : ∀ b, TwoUniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)
@@ -573,7 +573,7 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
     all_goals apply (mem_map' f).mp
     exacts [h1.2, h1.1, h2.2, h2.1]
 
-@[to_additive] instance [h : TwoUniqueProds G] : TwoUniqueProds Gᵐᵒᵖ :=
+@[to_additive] instance [h : TwoUniqueProds G] : TwoUniqueProds Gᵐᵒᵖ := fast_instance%
   of_mulOpposite <| (MulEquiv.opOp G).twoUniqueProds_iff.mp h
 
 -- see Note [lower instance priority]
@@ -641,21 +641,21 @@ instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSu
   TwoUniqueSums.of_injective_addHom
     DFinsupp.coeFnAddMonoidHom.toAddHom DFunLike.coe_injective inferInstance
 
-instance {ι G} [AddZeroClass G] [TwoUniqueSums G] : TwoUniqueSums (ι →₀ G) :=
+instance {ι G} [AddZeroClass G] [TwoUniqueSums G] : TwoUniqueSums (ι →₀ G) := fast_instance%
   TwoUniqueSums.of_injective_addHom
     Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
 
 /-- Any `ℚ`-vector space has `TwoUniqueSums`, because it is isomorphic to some
   `(Basis.ofVectorSpaceIndex ℚ G) →₀ ℚ` by choosing a basis, and `ℚ` already has
   `TwoUniqueSums` because it's ordered. -/
-instance [AddCommGroup G] [Module ℚ G] : TwoUniqueSums G :=
+instance [AddCommGroup G] [Module ℚ G] : TwoUniqueSums G := fast_instance%
   TwoUniqueSums.of_injective_addHom _ (Basis.ofVectorSpace ℚ G).repr.injective inferInstance
 
 /-- Any `FreeMonoid` has the `TwoUniqueProds` property. -/
-instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) :=
+instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) := fast_instance%
   .of_mulHom ⟨Multiplicative.ofAdd ∘ List.length, fun _ _ ↦ congr_arg _ (List.length_append _ _)⟩
     (fun _ _ _ _ h h' ↦ List.append_inj h <| Equiv.injective Multiplicative.ofAdd h'.1)
 
 /-- Any `FreeAddMonoid` has the `TwoUniqueSums` property. -/
-instance FreeAddMonoid.instTwoUniqueSums {κ : Type*} : TwoUniqueSums (FreeAddMonoid κ) :=
+instance FreeAddMonoid.instTwoUniqueSums {κ : Type*} : TwoUniqueSums (FreeAddMonoid κ) := fast_instance%
   .of_addHom ⟨_, List.length_append⟩ (fun _ _ _ _ h h' ↦ List.append_inj h h'.1)

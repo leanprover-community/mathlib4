@@ -44,7 +44,7 @@ variable {α : Type u}
 -- Porting note: replaced with `deriving Repr` which builds a better instance anyway
 #noalign tree.repr
 
-instance : Inhabited (Tree α) :=
+instance : Inhabited (Tree α) := fast_instance%
   ⟨nil⟩
 
 open Std (RBNode)

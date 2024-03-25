@@ -97,7 +97,7 @@ section AddAction
 variable {α β : Type*}
 
 /-- The action by a submodule is the action by the underlying module. -/
-instance [AddAction M α] : AddAction p α :=
+instance [AddAction M α] : AddAction p α := fast_instance%
   AddAction.compHom _ p.subtype.toAddMonoidHom
 
 end AddAction
@@ -211,12 +211,12 @@ theorem restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodul
   rfl
 #align linear_map.restrict_eq_dom_restrict_cod_restrict LinearMap.restrict_eq_domRestrict_codRestrict
 
-instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
+instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) := fast_instance%
   { inferInstanceAs (Inhabited (M →ₛₗ[σ₁₂] M₂)) with
     uniq := fun f => ext fun x => by rw [Subsingleton.elim x 0, map_zero, map_zero] }
 #align linear_map.unique_of_left LinearMap.uniqueOfLeft
 
-instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂) :=
+instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂) := fast_instance%
   coe_injective.unique
 #align linear_map.unique_of_right LinearMap.uniqueOfRight
 
@@ -241,7 +241,7 @@ theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M
   _root_.map_sum ((AddMonoidHom.eval b).comp toAddMonoidHom') f _
 #align linear_map.sum_apply LinearMap.sum_apply
 
-instance [Nontrivial M] : Nontrivial (Module.End R M) := by
+instance [Nontrivial M] : Nontrivial (Module.End R M) := fast_instance% by
   obtain ⟨m, ne⟩ := exists_ne (0 : M)
   exact nontrivial_of_ne 1 0 fun p => ne (LinearMap.congr_fun p m)
 

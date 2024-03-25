@@ -30,7 +30,7 @@ theorem coe_neg_sphere {r : ℝ} (v : sphere (0 : E) r) : ↑(-v) = (-v : E) :=
   rfl
 #align coe_neg_sphere coe_neg_sphere
 
-instance : ContinuousNeg (sphere (0 : E) r) :=
+instance : ContinuousNeg (sphere (0 : E) r) := fast_instance%
   Inducing.continuousNeg inducing_subtype_val fun _ => rfl
 
 /-- We equip the ball, in a seminormed group, with a formal operation of negation, namely the
@@ -42,7 +42,7 @@ instance {r : ℝ} : InvolutiveNeg (ball (0 : E) r) where
 @[simp] theorem coe_neg_ball {r : ℝ} (v : ball (0 : E) r) : ↑(-v) = (-v : E) := rfl
 #align coe_neg_ball coe_neg_ball
 
-instance : ContinuousNeg (ball (0 : E) r) :=
+instance : ContinuousNeg (ball (0 : E) r) := fast_instance%
   Inducing.continuousNeg inducing_subtype_val fun _ => rfl
 
 /-- We equip the closed ball, in a seminormed group, with a formal operation of negation, namely the
@@ -54,5 +54,5 @@ instance {r : ℝ} : InvolutiveNeg (closedBall (0 : E) r) where
 @[simp] theorem coe_neg_closedBall {r : ℝ} (v : closedBall (0 : E) r) : ↑(-v) = (-v : E) := rfl
 #align coe_neg_closed_ball coe_neg_closedBall
 
-instance : ContinuousNeg (closedBall (0 : E) r) :=
+instance : ContinuousNeg (closedBall (0 : E) r) := fast_instance%
   Inducing.continuousNeg inducing_subtype_val fun _ => rfl

@@ -32,7 +32,7 @@ variable (n : ℕ)
 def Const (A : Type*) (_v : TypeVec.{u} n) : Type _ := A
 #align mvqpf.const MvQPF.Const
 
-instance Const.inhabited {A α} [Inhabited A] : Inhabited (Const n A α) := ⟨(default : A)⟩
+instance Const.inhabited {A α} [Inhabited A] : Inhabited (Const n A α) := fast_instance% ⟨(default : A)⟩
 #align mvqpf.const.inhabited MvQPF.Const.inhabited
 
 namespace Const
@@ -61,7 +61,7 @@ protected theorem get_mk (x : A) : Const.get (Const.mk x : Const n A α) = x := 
 protected def map : Const n A α → Const n A β := fun x => x
 #align mvqpf.const.map MvQPF.Const.map
 
-instance MvFunctor : MvFunctor (Const n A) where map _f := Const.map
+instance MvFunctor : MvFunctor (Const n A) where map _f := fast_instance% Const.map
 
 theorem map_mk (x : A) : f <$$> Const.mk x = Const.mk x := rfl
 #align mvqpf.const.map_mk MvQPF.Const.map_mk

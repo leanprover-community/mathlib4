@@ -60,7 +60,7 @@ def adj : free ⊣ forget CommRingCat.{u} :=
         RingHom.ext fun x => eval₂_cast_comp f (Int.castRingHom Y) g x }
 #align CommRing.adj CommRingCat.adj
 
-instance : IsRightAdjoint (forget CommRingCat.{u}) :=
+instance : IsRightAdjoint (forget CommRingCat.{u}) := fast_instance%
   ⟨_, adj⟩
 
 end CommRingCat

@@ -820,10 +820,10 @@ theorem mkOfPoint_points (p : P) (i : Fin 1) : (mkOfPoint k p).points i = p :=
   rfl
 #align affine.simplex.mk_of_point_points Affine.Simplex.mkOfPoint_points
 
-instance [Inhabited P] : Inhabited (Simplex k P 0) :=
+instance [Inhabited P] : Inhabited (Simplex k P 0) := fast_instance%
   ⟨mkOfPoint k default⟩
 
-instance nonempty : Nonempty (Simplex k P 0) :=
+instance nonempty : Nonempty (Simplex k P 0) := fast_instance%
   ⟨mkOfPoint k <| AddTorsor.nonempty.some⟩
 #align affine.simplex.nonempty Affine.Simplex.nonempty
 

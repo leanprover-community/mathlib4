@@ -314,13 +314,13 @@ def opNorm :=
   sInf { c | 0 ≤ (c : ℝ) ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖ }
 #align continuous_multilinear_map.op_norm ContinuousMultilinearMap.opNorm
 
-instance hasOpNorm : Norm (ContinuousMultilinearMap 𝕜 E G) :=
+instance hasOpNorm : Norm (ContinuousMultilinearMap 𝕜 E G) := fast_instance%
   ⟨opNorm⟩
 #align continuous_multilinear_map.has_op_norm ContinuousMultilinearMap.hasOpNorm
 
 /-- An alias of `ContinuousMultilinearMap.hasOpNorm` with non-dependent types to help typeclass
 search. -/
-instance hasOpNorm' : Norm (ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :=
+instance hasOpNorm' : Norm (ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') := fast_instance%
   ContinuousMultilinearMap.hasOpNorm
 #align continuous_multilinear_map.has_op_norm' ContinuousMultilinearMap.hasOpNorm'
 
@@ -514,13 +514,13 @@ instance seminormedAddCommGroup' :
     SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :=
   ContinuousMultilinearMap.seminormedAddCommGroup
 
-instance normedSpace : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) :=
+instance normedSpace : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) := fast_instance%
   ⟨fun c f => f.opNorm_smul_le c⟩
 #align continuous_multilinear_map.normed_space ContinuousMultilinearMap.normedSpace
 
 /-- An alias of `ContinuousMultilinearMap.normedSpace` with non-dependent types to help typeclass
 search. -/
-instance normedSpace' : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
+instance normedSpace' : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) := fast_instance%
   ContinuousMultilinearMap.normedSpace
 #align continuous_multilinear_map.normed_space' ContinuousMultilinearMap.normedSpace'
 
@@ -1291,7 +1291,7 @@ section SMul
 
 variable {R : Type*} [Semiring R] [Module R G] [SMulCommClass 𝕜 R G] [ContinuousConstSMul R G]
 
-instance continuousConstSMul : ContinuousConstSMul R (ContinuousMultilinearMap 𝕜 E G) :=
+instance continuousConstSMul : ContinuousConstSMul R (ContinuousMultilinearMap 𝕜 E G) := fast_instance%
   ⟨fun c =>
     (ContinuousLinearMap.compContinuousMultilinearMapL 𝕜 _ G G (c • ContinuousLinearMap.id 𝕜 G)).2⟩
 
@@ -1323,7 +1323,7 @@ alias op_norm_zero_iff :=
 
 /-- Continuous multilinear maps themselves form a normed group with respect to
     the operator norm. -/
-instance normedAddCommGroup : NormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) :=
+instance normedAddCommGroup : NormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) := fast_instance%
   NormedAddCommGroup.ofSeparation (fun f ↦ (opNorm_zero_iff f).mp)
 #align continuous_multilinear_map.normed_add_comm_group ContinuousMultilinearMap.normedAddCommGroup
 
@@ -1359,7 +1359,7 @@ complete. The proof is essentially the same as for the space of continuous linea
 addition of `Finset.prod` where needed. The duplication could be avoided by deducing the linear
 case from the multilinear case via a currying isomorphism. However, this would mess up imports,
 and it is more satisfactory to have the simplest case as a standalone proof. -/
-instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearMap 𝕜 E G) := by
+instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearMap 𝕜 E G) := fast_instance% by
   have nonneg : ∀ v : ∀ i, E i, 0 ≤ ∏ i, ‖v i‖ := fun v =>
     Finset.prod_nonneg fun i _ => norm_nonneg _
   -- We show that every Cauchy sequence converges.

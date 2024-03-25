@@ -111,7 +111,7 @@ theorem small_fullSubcategory_filteredClosure :
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 
-instance : EssentiallySmall.{max v w} (FullSubcategory (FilteredClosure f)) :=
+instance : EssentiallySmall.{max v w} (FullSubcategory (FilteredClosure f)) := fast_instance%
   have : LocallySmall.{max v w} (FullSubcategory (FilteredClosure f)) := locallySmall_max.{w, v, u}
   have := small_fullSubcategory_filteredClosure f
   essentiallySmall_of_small_of_locallySmall _
@@ -127,7 +127,7 @@ variable [IsFilteredOrEmpty C] {D : Type u₁} [Category.{v₁} D] (F : D ⥤ C)
 def SmallFilteredIntermediate : Type (max u₁ v) :=
   SmallModel.{max u₁ v} (FullSubcategory (FilteredClosure F.obj))
 
-noncomputable instance : SmallCategory (SmallFilteredIntermediate F) :=
+noncomputable instance : SmallCategory (SmallFilteredIntermediate F) := fast_instance%
   show SmallCategory (SmallModel (FullSubcategory (FilteredClosure F.obj))) from inferInstance
 
 namespace SmallFilteredIntermediate
@@ -142,10 +142,10 @@ noncomputable def factoring : D ⥤ SmallFilteredIntermediate F :=
 noncomputable def inclusion : SmallFilteredIntermediate F ⥤ C :=
   (equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _
 
-instance : Faithful (inclusion F) :=
+instance : Faithful (inclusion F) := fast_instance%
   show Faithful ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Faithful.comp _ _
 
-noncomputable instance : Full (inclusion F) :=
+noncomputable instance : Full (inclusion F) := fast_instance%
   show Full ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Full.comp _ _
 
 /-- The factorization through a small filtered category is in fact a factorization, up to natural
@@ -153,10 +153,10 @@ noncomputable instance : Full (inclusion F) :=
 noncomputable def factoringCompInclusion : factoring F ⋙ inclusion F ≅ F :=
   isoWhiskerLeft _ (isoWhiskerRight (Equivalence.unitIso _).symm _)
 
-instance : IsFilteredOrEmpty (SmallFilteredIntermediate F) :=
+instance : IsFilteredOrEmpty (SmallFilteredIntermediate F) := fast_instance%
   IsFilteredOrEmpty.of_equivalence (equivSmallModel _)
 
-instance [Nonempty D] : IsFiltered (SmallFilteredIntermediate F) :=
+instance [Nonempty D] : IsFiltered (SmallFilteredIntermediate F) := fast_instance%
   { (inferInstance : IsFilteredOrEmpty _) with
     nonempty := Nonempty.map (factoring F).obj inferInstance }
 
@@ -243,7 +243,7 @@ theorem small_fullSubcategory_cofilteredClosure :
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 
-instance : EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f)) :=
+instance : EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f)) := fast_instance%
   have : LocallySmall.{max v w} (FullSubcategory (CofilteredClosure f)) :=
     locallySmall_max.{w, v, u}
   have := small_fullSubcategory_cofilteredClosure f
@@ -260,7 +260,7 @@ variable [IsCofilteredOrEmpty C] {D : Type u₁} [Category.{v₁} D] (F : D ⥤ 
 def SmallCofilteredIntermediate : Type (max u₁ v) :=
   SmallModel.{max u₁ v} (FullSubcategory (CofilteredClosure F.obj))
 
-noncomputable instance : SmallCategory (SmallCofilteredIntermediate F) :=
+noncomputable instance : SmallCategory (SmallCofilteredIntermediate F) := fast_instance%
   show SmallCategory (SmallModel (FullSubcategory (CofilteredClosure F.obj))) from inferInstance
 
 namespace SmallCofilteredIntermediate
@@ -275,10 +275,10 @@ noncomputable def factoring : D ⥤ SmallCofilteredIntermediate F :=
 noncomputable def inclusion : SmallCofilteredIntermediate F ⥤ C :=
   (equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _
 
-instance : Faithful (inclusion F) :=
+instance : Faithful (inclusion F) := fast_instance%
   show Faithful ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Faithful.comp _ _
 
-noncomputable instance : Full (inclusion F) :=
+noncomputable instance : Full (inclusion F) := fast_instance%
   show Full ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Full.comp _ _
 
 /-- The factorization through a small filtered category is in fact a factorization, up to natural
@@ -286,10 +286,10 @@ noncomputable instance : Full (inclusion F) :=
 noncomputable def factoringCompInclusion : factoring F ⋙ inclusion F ≅ F :=
   isoWhiskerLeft _ (isoWhiskerRight (Equivalence.unitIso _).symm _)
 
-instance : IsCofilteredOrEmpty (SmallCofilteredIntermediate F) :=
+instance : IsCofilteredOrEmpty (SmallCofilteredIntermediate F) := fast_instance%
   IsCofilteredOrEmpty.of_equivalence (equivSmallModel _)
 
-instance [Nonempty D] : IsCofiltered (SmallCofilteredIntermediate F) :=
+instance [Nonempty D] : IsCofiltered (SmallCofilteredIntermediate F) := fast_instance%
   { (inferInstance : IsCofilteredOrEmpty _) with
     nonempty := Nonempty.map (factoring F).obj inferInstance }
 

@@ -71,7 +71,7 @@ variable (G : MonCat.{u})
 
 section
 
-instance inhabited' : Inhabited (Action (Type u) G) :=
+instance inhabited' : Inhabited (Action (Type u) G) := fast_instance%
   ⟨⟨PUnit, 1⟩⟩
 set_option linter.uppercaseLean3 false in
 #align Action.inhabited' Action.inhabited'
@@ -83,7 +83,7 @@ def trivial : Action AddCommGroupCat G where
 set_option linter.uppercaseLean3 false in
 #align Action.trivial Action.trivial
 
-instance : Inhabited (Action AddCommGroupCat G) :=
+instance : Inhabited (Action AddCommGroupCat G) := fast_instance%
   ⟨trivial G⟩
 
 end
@@ -111,7 +111,7 @@ def id (M : Action V G) : Action.Hom M M where hom := 𝟙 M.V
 set_option linter.uppercaseLean3 false in
 #align Action.hom.id Action.Hom.id
 
-instance (M : Action V G) : Inhabited (Action.Hom M M) :=
+instance (M : Action V G) : Inhabited (Action.Hom M M) := fast_instance%
   ⟨id M⟩
 
 /-- The composition of two `Action V G` homomorphisms is the composition of the underlying maps.
@@ -273,12 +273,12 @@ def forget : Action V G ⥤ V where
 set_option linter.uppercaseLean3 false in
 #align Action.forget Action.forget
 
-instance : Faithful (forget V G) where map_injective w := Hom.ext _ _ w
+instance : Faithful (forget V G) where map_injective w := fast_instance% Hom.ext _ _ w
 
 instance [ConcreteCategory V] : ConcreteCategory (Action V G) where
   forget := forget V G ⋙ ConcreteCategory.forget
 
-instance hasForgetToV [ConcreteCategory V] : HasForget₂ (Action V G) V where forget₂ := forget V G
+instance hasForgetToV [ConcreteCategory V] : HasForget₂ (Action V G) V where forget₂ := fast_instance% forget V G
 set_option linter.uppercaseLean3 false in
 #align Action.has_forget_to_V Action.hasForgetToV
 

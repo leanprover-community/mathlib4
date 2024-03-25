@@ -91,7 +91,7 @@ def FamilyOfElements (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) :=
   ∀ ⦃Y : C⦄ (f : Y ⟶ X), R f → P.obj (op Y)
 #align category_theory.presieve.family_of_elements CategoryTheory.Presieve.FamilyOfElements
 
-instance : Inhabited (FamilyOfElements P (⊥ : Presieve X)) :=
+instance : Inhabited (FamilyOfElements P (⊥ : Presieve X)) := fast_instance%
   ⟨fun _ _ => False.elim⟩
 
 /-- A family of elements for a presheaf on the presieve `R₂` can be restricted to a smaller presieve

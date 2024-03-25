@@ -139,7 +139,7 @@ protected theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (σ a) :=
   Metric.isCompact_of_isClosed_isBounded (spectrum.isClosed a) (isBounded a)
 #align spectrum.is_compact spectrum.isCompact
 
-instance instCompactSpace [ProperSpace 𝕜] (a : A) : CompactSpace (spectrum 𝕜 a) :=
+instance instCompactSpace [ProperSpace 𝕜] (a : A) : CompactSpace (spectrum 𝕜 a) := fast_instance%
   isCompact_iff_compactSpace.mp <| spectrum.isCompact a
 
 instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]

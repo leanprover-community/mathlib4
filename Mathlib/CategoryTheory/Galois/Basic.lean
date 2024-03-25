@@ -110,11 +110,11 @@ variable {C : Type u₁} [Category.{u₂, u₁} C] [PreGaloisCategory C]
 
 attribute [instance] hasTerminal hasPullbacks hasFiniteCoproducts hasQuotientsByFiniteGroups
 
-instance : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
+instance : HasFiniteLimits C := fast_instance% hasFiniteLimits_of_hasTerminal_and_pullbacks
 
-instance : HasBinaryProducts C := hasBinaryProducts_of_hasTerminal_and_pullbacks C
+instance : HasBinaryProducts C := fast_instance% hasBinaryProducts_of_hasTerminal_and_pullbacks C
 
-instance : HasEqualizers C := hasEqualizers_of_hasPullbacks_and_binary_products
+instance : HasEqualizers C := fast_instance% hasEqualizers_of_hasPullbacks_and_binary_products
 
 namespace FiberFunctor
 
@@ -124,17 +124,17 @@ variable {C : Type u₁} [Category.{u₂, u₁} C] {F : C ⥤ FintypeCat.{w}} [P
 attribute [instance] preservesTerminalObjects preservesPullbacks preservesEpis
   preservesFiniteCoproducts reflectsIsos preservesQuotientsByFiniteGroups
 
-noncomputable instance : ReflectsLimitsOfShape (Discrete PEmpty.{1}) F :=
+noncomputable instance : ReflectsLimitsOfShape (Discrete PEmpty.{1}) F := fast_instance%
   reflectsLimitsOfShapeOfReflectsIsomorphisms
 
-noncomputable instance : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
+noncomputable instance : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F := fast_instance%
   reflectsColimitsOfShapeOfReflectsIsomorphisms
 
-noncomputable instance : PreservesFiniteLimits F :=
+noncomputable instance : PreservesFiniteLimits F := fast_instance%
   preservesFiniteLimitsOfPreservesTerminalAndPullbacks F
 
 /-- Fiber functors reflect monomorphisms. -/
-instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
+instance : ReflectsMonomorphisms F := fast_instance% ReflectsMonomorphisms.mk <| by
   intro X Y f _
   haveI : IsIso (pullback.fst : pullback (F.map f) (F.map f) ⟶ F.obj X) :=
     fst_iso_of_mono_eq (F.map f)
@@ -187,7 +187,7 @@ lemma has_non_trivial_subobject_of_not_isConnected_of_not_initial (X : C) (hc : 
   exact ⟨hi, fun Y i hm hni ↦ hc Y i hni hm⟩
 
 /-- The fiber of a connected object is nonempty. -/
-instance nonempty_fiber_of_isConnected (X : C) [IsConnected X] : Nonempty (F.obj X) := by
+instance nonempty_fiber_of_isConnected (X : C) [IsConnected X] : Nonempty (F.obj X) := fast_instance% by
   by_contra h
   have ⟨hin⟩ : Nonempty (IsInitial X) := (initial_iff_fiber_empty F X).mpr (not_nonempty_iff.mp h)
   exact IsConnected.notInitial hin
@@ -291,27 +291,27 @@ noncomputable def GaloisCategory.getFiberFunctor : C ⥤ FintypeCat.{u₂} :=
   Classical.choose <| @GaloisCategory.hasFiberFunctor C _ _
 
 /-- The arbitrarily chosen fiber functor `GaloisCategory.getFiberFunctor` is a fiber functor. -/
-noncomputable instance : FiberFunctor (GaloisCategory.getFiberFunctor C) :=
+noncomputable instance : FiberFunctor (GaloisCategory.getFiberFunctor C) := fast_instance%
   Classical.choice <| Classical.choose_spec (@GaloisCategory.hasFiberFunctor C _ _)
 
 variable {C}
 
 /-- In a `GaloisCategory` the set of morphisms out of a connected object is finite. -/
-instance (A X : C) [IsConnected A] : Finite (A ⟶ X) := by
+instance (A X : C) [IsConnected A] : Finite (A ⟶ X) := fast_instance% by
   let F := GaloisCategory.getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f a)
   exact evaluationInjective_of_isConnected F A X a
 
 /-- In a `GaloisCategory` the set of automorphism of a connected object is finite. -/
-instance (A : C) [IsConnected A] : Finite (Aut A) := by
+instance (A : C) [IsConnected A] : Finite (Aut A) := fast_instance% by
   let F := GaloisCategory.getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f.hom a)
   exact evaluation_aut_injective_of_isConnected F A a
 
 /-- Coproduct inclusions are monic in Galois categories. -/
-instance : MonoCoprod C := by
+instance : MonoCoprod C := fast_instance% by
   let F := GaloisCategory.getFiberFunctor C
   exact MonoCoprod.monoCoprod_of_preservesCoprod_of_reflectsMono F
 

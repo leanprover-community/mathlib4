@@ -140,9 +140,9 @@ noncomputable def h₀τ₂ : IsLimit (KernelFork.ofι S.v₀₁.τ₂ S.w₀₂
 noncomputable def h₀τ₃ : IsLimit (KernelFork.ofι S.v₀₁.τ₃ S.w₀₂_τ₃) :=
   isLimitForkMapOfIsLimit' π₃ S.w₀₂ S.h₀
 
-instance mono_v₀₁_τ₁ : Mono S.v₀₁.τ₁ := mono_of_isLimit_fork S.h₀τ₁
-instance mono_v₀₁_τ₂ : Mono S.v₀₁.τ₂ := mono_of_isLimit_fork S.h₀τ₂
-instance mono_v₀₁_τ₃ : Mono S.v₀₁.τ₃ := mono_of_isLimit_fork S.h₀τ₃
+instance mono_v₀₁_τ₁ : Mono S.v₀₁.τ₁ := fast_instance% mono_of_isLimit_fork S.h₀τ₁
+instance mono_v₀₁_τ₂ : Mono S.v₀₁.τ₂ := fast_instance% mono_of_isLimit_fork S.h₀τ₂
+instance mono_v₀₁_τ₃ : Mono S.v₀₁.τ₃ := fast_instance% mono_of_isLimit_fork S.h₀τ₃
 
 /-- The upper part of the first column of the snake diagram is exact. -/
 lemma exact_C₁_up : (ShortComplex.mk S.v₀₁.τ₁ S.v₁₂.τ₁
@@ -159,7 +159,7 @@ lemma exact_C₃_up : (ShortComplex.mk S.v₀₁.τ₃ S.v₁₂.τ₃
     (by rw [← comp_τ₃, S.w₀₂, zero_τ₃])).Exact :=
   exact_of_f_is_kernel _ S.h₀τ₃
 
-instance mono_L₀_f [Mono S.L₁.f] : Mono S.L₀.f := by
+instance mono_L₀_f [Mono S.L₁.f] : Mono S.L₀.f := fast_instance% by
   have : Mono (S.L₀.f ≫ S.v₀₁.τ₂) := by
     rw [← S.v₀₁.comm₁₂]
     apply mono_comp
@@ -177,9 +177,9 @@ noncomputable def h₃τ₂ : IsColimit (CokernelCofork.ofπ S.v₂₃.τ₂ S.w
 noncomputable def h₃τ₃ : IsColimit (CokernelCofork.ofπ S.v₂₃.τ₃ S.w₁₃_τ₃) :=
   isColimitCoforkMapOfIsColimit' π₃ S.w₁₃ S.h₃
 
-instance epi_v₂₃_τ₁ : Epi S.v₂₃.τ₁ := epi_of_isColimit_cofork S.h₃τ₁
-instance epi_v₂₃_τ₂ : Epi S.v₂₃.τ₂ := epi_of_isColimit_cofork S.h₃τ₂
-instance epi_v₂₃_τ₃ : Epi S.v₂₃.τ₃ := epi_of_isColimit_cofork S.h₃τ₃
+instance epi_v₂₃_τ₁ : Epi S.v₂₃.τ₁ := fast_instance% epi_of_isColimit_cofork S.h₃τ₁
+instance epi_v₂₃_τ₂ : Epi S.v₂₃.τ₂ := fast_instance% epi_of_isColimit_cofork S.h₃τ₂
+instance epi_v₂₃_τ₃ : Epi S.v₂₃.τ₃ := fast_instance% epi_of_isColimit_cofork S.h₃τ₃
 
 /-- The lower part of the first column of the snake diagram is exact. -/
 lemma exact_C₁_down: (ShortComplex.mk S.v₁₂.τ₁ S.v₂₃.τ₁
@@ -196,7 +196,7 @@ lemma exact_C₃_down : (ShortComplex.mk S.v₁₂.τ₃ S.v₂₃.τ₃
     (by rw [← comp_τ₃, S.w₁₃, zero_τ₃])).Exact :=
   exact_of_g_is_cokernel _ S.h₃τ₃
 
-instance epi_L₃_g [Epi S.L₂.g] : Epi S.L₃.g := by
+instance epi_L₃_g [Epi S.L₂.g] : Epi S.L₃.g := fast_instance% by
   have : Epi (S.v₂₃.τ₂ ≫ S.L₃.g) := by
     rw [S.v₂₃.comm₂₃]
     apply epi_comp
@@ -249,9 +249,9 @@ noncomputable def L₀' : ShortComplex C where
   simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, φ₂, pullback.lift_fst_assoc,
     S.v₁₂.comm₁₂]
 
-instance : Epi S.L₀'.g := by dsimp only [L₀']; infer_instance
+instance : Epi S.L₀'.g := fast_instance% by dsimp only [L₀']; infer_instance
 
-instance [Mono S.L₁.f] : Mono S.L₀'.f :=
+instance [Mono S.L₁.f] : Mono S.L₀'.f := fast_instance%
   mono_of_mono_fac (show S.L₀'.f ≫ pullback.fst = S.L₁.f by simp [L₀'])
 
 lemma L₀'_exact : S.L₀'.Exact := by

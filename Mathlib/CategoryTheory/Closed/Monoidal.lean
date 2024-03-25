@@ -145,7 +145,7 @@ end ihom
 
 open CategoryTheory.Limits
 
-instance : PreservesColimits (tensorLeft A) :=
+instance : PreservesColimits (tensorLeft A) := fast_instance%
   (ihom.adjunction A).leftAdjointPreservesColimits
 
 variable {A}

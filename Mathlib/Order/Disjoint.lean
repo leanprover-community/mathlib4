@@ -714,7 +714,7 @@ namespace ComplementedLattice
 
 variable [Lattice α] [BoundedOrder α] [ComplementedLattice α]
 
-instance : ComplementedLattice αᵒᵈ :=
+instance : ComplementedLattice αᵒᵈ := fast_instance%
   ⟨fun a ↦
     let ⟨b, hb⟩ := exists_isCompl (show α from a)
     ⟨b, hb.dual⟩⟩
@@ -733,7 +733,7 @@ section Lattice
 
 variable [Lattice α] [BoundedOrder α] {a b : Complementeds α}
 
-instance hasCoeT : CoeTC (Complementeds α) α := ⟨Subtype.val⟩
+instance hasCoeT : CoeTC (Complementeds α) α := fast_instance% ⟨Subtype.val⟩
 #align complementeds.has_coe_t Complementeds.hasCoeT
 
 theorem coe_injective : Injective ((↑) : Complementeds α → α) := Subtype.coe_injective
@@ -753,7 +753,7 @@ theorem coe_le_coe : (a : α) ≤ b ↔ a ≤ b := by simp
 theorem coe_lt_coe : (a : α) < b ↔ a < b := Iff.rfl
 #align complementeds.coe_lt_coe Complementeds.coe_lt_coe
 
-instance : BoundedOrder (Complementeds α) :=
+instance : BoundedOrder (Complementeds α) := fast_instance%
   Subtype.boundedOrder isComplemented_bot isComplemented_top
 
 @[simp, norm_cast]
@@ -772,16 +772,16 @@ theorem mk_bot : (⟨⊥, isComplemented_bot⟩ : Complementeds α) = ⊥ := rfl
 theorem mk_top : (⟨⊤, isComplemented_top⟩ : Complementeds α) = ⊤ := rfl
 #align complementeds.mk_top Complementeds.mk_top
 
-instance : Inhabited (Complementeds α) := ⟨⊥⟩
+instance : Inhabited (Complementeds α) := fast_instance% ⟨⊥⟩
 
 end Lattice
 
 variable [DistribLattice α] [BoundedOrder α] {a b : Complementeds α}
 
-instance : Sup (Complementeds α) :=
+instance : Sup (Complementeds α) := fast_instance%
   ⟨fun a b => ⟨a ⊔ b, a.2.sup b.2⟩⟩
 
-instance : Inf (Complementeds α) :=
+instance : Inf (Complementeds α) := fast_instance%
   ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
 
 @[simp, norm_cast]
@@ -802,7 +802,7 @@ theorem mk_inf_mk {a b : α} (ha : IsComplemented a) (hb : IsComplemented b) :
     (⟨a, ha⟩ ⊓ ⟨b, hb⟩ : Complementeds α) = ⟨a ⊓ b, ha.inf hb⟩ := rfl
 #align complementeds.mk_inf_mk Complementeds.mk_inf_mk
 
-instance : DistribLattice (Complementeds α) :=
+instance : DistribLattice (Complementeds α) := fast_instance%
   Complementeds.coe_injective.distribLattice _ coe_sup coe_inf
 
 @[simp, norm_cast]
@@ -820,7 +820,7 @@ theorem isCompl_coe : IsCompl (a : α) b ↔ IsCompl a b := by
   simp_rw [isCompl_iff, disjoint_coe, codisjoint_coe]
 #align complementeds.is_compl_coe Complementeds.isCompl_coe
 
-instance : ComplementedLattice (Complementeds α) :=
+instance : ComplementedLattice (Complementeds α) := fast_instance%
   ⟨fun ⟨a, b, h⟩ => ⟨⟨b, a, h.symm⟩, isCompl_coe.1 h⟩⟩
 
 end Complementeds

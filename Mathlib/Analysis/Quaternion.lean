@@ -40,7 +40,7 @@ open scoped RealInnerProductSpace
 
 namespace Quaternion
 
-instance : Inner ℝ ℍ :=
+instance : Inner ℝ ℍ := fast_instance%
   ⟨fun a b => (a * star b).re⟩
 
 theorem inner_self (a : ℍ) : ⟪a, a⟫ = normSq a :=
@@ -51,7 +51,7 @@ theorem inner_def (a b : ℍ) : ⟪a, b⟫ = (a * star b).re :=
   rfl
 #align quaternion.inner_def Quaternion.inner_def
 
-noncomputable instance : NormedAddCommGroup ℍ :=
+noncomputable instance : NormedAddCommGroup ℍ := fast_instance%
   @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
     { toInner := inferInstance
       conj_symm := fun x y => by simp [inner_def, mul_comm]
@@ -60,14 +60,14 @@ noncomputable instance : NormedAddCommGroup ℍ :=
       add_left := fun x y z => by simp only [inner_def, add_mul, add_re]
       smul_left := fun x y r => by simp [inner_def] }
 
-noncomputable instance : InnerProductSpace ℝ ℍ :=
+noncomputable instance : InnerProductSpace ℝ ℍ := fast_instance%
   InnerProductSpace.ofCore _
 
 theorem normSq_eq_norm_mul_self (a : ℍ) : normSq a = ‖a‖ * ‖a‖ := by
   rw [← inner_self, real_inner_self_eq_norm_mul_norm]
 #align quaternion.norm_sq_eq_norm_sq Quaternion.normSq_eq_norm_mul_self
 
-instance : NormOneClass ℍ :=
+instance : NormOneClass ℍ := fast_instance%
   ⟨by rw [norm_eq_sqrt_real_inner, inner_self, normSq.map_one, Real.sqrt_one]⟩
 
 @[simp, norm_cast]
@@ -107,7 +107,7 @@ instance : CstarRing ℍ where
 /-- Coercion from `ℂ` to `ℍ`. -/
 @[coe] def coeComplex (z : ℂ) : ℍ := ⟨z.re, z.im, 0, 0⟩
 
-instance : Coe ℂ ℍ := ⟨coeComplex⟩
+instance : Coe ℂ ℍ := fast_instance% ⟨coeComplex⟩
 
 @[simp, norm_cast]
 theorem coeComplex_re (z : ℂ) : (z : ℍ).re = z.re :=
@@ -226,7 +226,7 @@ theorem continuous_im : Continuous fun q : ℍ => q.im := by
   simpa only [← sub_self_re] using continuous_id.sub (continuous_coe.comp continuous_re)
 #align quaternion.continuous_im Quaternion.continuous_im
 
-instance : CompleteSpace ℍ :=
+instance : CompleteSpace ℍ := fast_instance%
   haveI : UniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
     linearIsometryEquivTuple.toContinuousLinearEquiv.symm.uniformEmbedding
   (completeSpace_congr this).1 (by infer_instance)

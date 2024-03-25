@@ -67,7 +67,7 @@ theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
     exact h2.1 hne
 #align simple_graph.is_clique_iff_induce_eq SimpleGraph.isClique_iff_induce_eq
 
-instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsClique s) :=
+instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsClique s) := fast_instance%
   decidable_of_iff' _ G.isClique_iff
 
 variable {G H} {a b : α}

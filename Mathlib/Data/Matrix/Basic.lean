@@ -192,59 +192,59 @@ def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
 @[inherit_doc]
 scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
 
-instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
+instance inhabited [Inhabited α] : Inhabited (Matrix m n α) := fast_instance%
   -- Porting note: this instance was called `Pi.inhabited` in lean3-core, which is much
   -- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
   instInhabitedForAll_1 _
 
 -- Porting note: new, Lean3 found this automatically
-instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
+instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) := fast_instance%
   Fintype.decidablePiFintype
 
-instance add [Add α] : Add (Matrix m n α) :=
+instance add [Add α] : Add (Matrix m n α) := fast_instance%
   Pi.instAdd
 
-instance addSemigroup [AddSemigroup α] : AddSemigroup (Matrix m n α) :=
+instance addSemigroup [AddSemigroup α] : AddSemigroup (Matrix m n α) := fast_instance%
   Pi.addSemigroup
 
-instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (Matrix m n α) :=
+instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (Matrix m n α) := fast_instance%
   Pi.addCommSemigroup
 
-instance zero [Zero α] : Zero (Matrix m n α) :=
+instance zero [Zero α] : Zero (Matrix m n α) := fast_instance%
   Pi.instZero
 
-instance addZeroClass [AddZeroClass α] : AddZeroClass (Matrix m n α) :=
+instance addZeroClass [AddZeroClass α] : AddZeroClass (Matrix m n α) := fast_instance%
   Pi.addZeroClass
 
-instance addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) :=
+instance addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) := fast_instance%
   Pi.addMonoid
 
-instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (Matrix m n α) :=
+instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (Matrix m n α) := fast_instance%
   Pi.addCommMonoid
 
-instance neg [Neg α] : Neg (Matrix m n α) :=
+instance neg [Neg α] : Neg (Matrix m n α) := fast_instance%
   Pi.instNeg
 
-instance sub [Sub α] : Sub (Matrix m n α) :=
+instance sub [Sub α] : Sub (Matrix m n α) := fast_instance%
   Pi.instSub
 
-instance addGroup [AddGroup α] : AddGroup (Matrix m n α) :=
+instance addGroup [AddGroup α] : AddGroup (Matrix m n α) := fast_instance%
   Pi.addGroup
 
-instance addCommGroup [AddCommGroup α] : AddCommGroup (Matrix m n α) :=
+instance addCommGroup [AddCommGroup α] : AddCommGroup (Matrix m n α) := fast_instance%
   Pi.addCommGroup
 
-instance unique [Unique α] : Unique (Matrix m n α) :=
+instance unique [Unique α] : Unique (Matrix m n α) := fast_instance%
   Pi.unique
 
-instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
+instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) := fast_instance%
   instSubsingletonForAll
 -- Porting note: this instance was `Pi.subsingleton` in lean3-core
 
-instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
+instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) := fast_instance%
   Function.nontrivial
 
-instance smul [SMul R α] : SMul R (Matrix m n α) :=
+instance smul [SMul R α] : SMul R (Matrix m n α) := fast_instance%
   Pi.instSMul
 
 instance smulCommClass [SMul R α] [SMul S α] [SMulCommClass R S α] :
@@ -259,14 +259,14 @@ instance isCentralScalar [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
     IsCentralScalar R (Matrix m n α) :=
   Pi.isCentralScalar
 
-instance mulAction [Monoid R] [MulAction R α] : MulAction R (Matrix m n α) :=
+instance mulAction [Monoid R] [MulAction R α] : MulAction R (Matrix m n α) := fast_instance%
   Pi.mulAction _
 
 instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
     DistribMulAction R (Matrix m n α) :=
   Pi.distribMulAction _
 
-instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
+instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) := fast_instance%
   Pi.module _ _ _
 
 -- Porting note (#10756): added the following section with simp lemmas because `simp` fails
@@ -369,13 +369,13 @@ theorem _root_.IsLeftRegular.matrix [Mul α] {k : α} (hk : IsLeftRegular k) :
   hk.isSMulRegular.matrix
 #align is_left_regular.matrix IsLeftRegular.matrix
 
-instance subsingleton_of_empty_left [IsEmpty m] : Subsingleton (Matrix m n α) :=
+instance subsingleton_of_empty_left [IsEmpty m] : Subsingleton (Matrix m n α) := fast_instance%
   ⟨fun M N => by
     ext i
     exact isEmptyElim i⟩
 #align matrix.subsingleton_of_empty_left Matrix.subsingleton_of_empty_left
 
-instance subsingleton_of_empty_right [IsEmpty n] : Subsingleton (Matrix m n α) :=
+instance subsingleton_of_empty_right [IsEmpty n] : Subsingleton (Matrix m n α) := fast_instance%
   ⟨fun M N => by
     ext i j
     exact isEmptyElim j⟩
@@ -543,7 +543,7 @@ section One
 
 variable [Zero α] [One α]
 
-instance one : One (Matrix n n α) :=
+instance one : One (Matrix n n α) := fast_instance%
   ⟨diagonal fun _ => 1⟩
 
 @[simp]
@@ -970,7 +970,7 @@ theorem mul_apply [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N
   rfl
 #align matrix.mul_apply Matrix.mul_apply
 
-instance [Fintype n] [Mul α] [AddCommMonoid α] : Mul (Matrix n n α) where mul M N := M * N
+instance [Fintype n] [Mul α] [AddCommMonoid α] : Mul (Matrix n n α) where mul M N := fast_instance% M * N
 
 #noalign matrix.mul_eq_mul
 
@@ -1042,7 +1042,7 @@ protected theorem add_mul [Fintype m] (L M : Matrix l m α) (N : Matrix m n α) 
   apply add_dotProduct
 #align matrix.add_mul Matrix.add_mul
 
-instance nonUnitalNonAssocSemiring [Fintype n] : NonUnitalNonAssocSemiring (Matrix n n α) :=
+instance nonUnitalNonAssocSemiring [Fintype n] : NonUnitalNonAssocSemiring (Matrix n n α) := fast_instance%
   { Matrix.addCommMonoid with
     mul_zero := Matrix.mul_zero
     zero_mul := Matrix.zero_mul
@@ -1144,7 +1144,7 @@ protected theorem mul_one [Fintype n] [DecidableEq n] (M : Matrix m n α) :
   rw [← diagonal_one, mul_diagonal, mul_one]
 #align matrix.mul_one Matrix.mul_one
 
-instance nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix n n α) :=
+instance nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix n n α) := fast_instance%
   { Matrix.nonUnitalNonAssocSemiring, Matrix.instAddCommMonoidWithOne with
     one := 1
     one_mul := Matrix.one_mul
@@ -1188,7 +1188,7 @@ protected theorem mul_assoc (L : Matrix l m α) (M : Matrix m n α) (N : Matrix 
   apply dotProduct_assoc
 #align matrix.mul_assoc Matrix.mul_assoc
 
-instance nonUnitalSemiring : NonUnitalSemiring (Matrix n n α) :=
+instance nonUnitalSemiring : NonUnitalSemiring (Matrix n n α) := fast_instance%
   { Matrix.nonUnitalNonAssocSemiring with mul_assoc := Matrix.mul_assoc }
 
 end NonUnitalSemiring
@@ -1197,7 +1197,7 @@ section Semiring
 
 variable [Semiring α]
 
-instance semiring [Fintype n] [DecidableEq n] : Semiring (Matrix n n α) :=
+instance semiring [Fintype n] [DecidableEq n] : Semiring (Matrix n n α) := fast_instance%
   { Matrix.nonUnitalSemiring, Matrix.nonAssocSemiring with }
 
 end Semiring
@@ -1228,12 +1228,12 @@ protected theorem mul_sub (M : Matrix m n α) (N N' : Matrix n o α) :
   rw [sub_eq_add_neg, Matrix.mul_add, Matrix.mul_neg, sub_eq_add_neg]
 #align matrix.mul_sub Matrix.mul_sub
 
-instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (Matrix n n α) :=
+instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (Matrix n n α) := fast_instance%
   { Matrix.nonUnitalNonAssocSemiring, Matrix.addCommGroup with }
 
 end NonUnitalNonAssocRing
 
-instance instNonUnitalRing [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matrix n n α) :=
+instance instNonUnitalRing [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matrix n n α) := fast_instance%
   { Matrix.nonUnitalSemiring, Matrix.addCommGroup with }
 #align matrix.non_unital_ring Matrix.instNonUnitalRing
 
@@ -1242,7 +1242,7 @@ instance instNonAssocRing [Fintype n] [DecidableEq n] [NonAssocRing α] :
   { Matrix.nonAssocSemiring, Matrix.instAddCommGroupWithOne with }
 #align matrix.non_assoc_ring Matrix.instNonAssocRing
 
-instance instRing [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) :=
+instance instRing [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) := fast_instance%
   { Matrix.semiring, Matrix.instAddCommGroupWithOne with }
 #align matrix.ring Matrix.instRing
 
@@ -2413,7 +2413,7 @@ section Star
 
 /-- When `α` has a star operation, square matrices `Matrix n n α` have a star
 operation equal to `Matrix.conjTranspose`. -/
-instance [Star α] : Star (Matrix n n α) where star := conjTranspose
+instance [Star α] : Star (Matrix n n α) where star := fast_instance% conjTranspose
 
 theorem star_eq_conjTranspose [Star α] (M : Matrix m m α) : star M = Mᴴ :=
   rfl

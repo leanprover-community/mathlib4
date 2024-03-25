@@ -247,7 +247,7 @@ theorem pell_eq (n : ℕ) : xn a1 n * xn a1 n - d a1 * yn a1 n * yn a1 n = 1 :=
   Nat.cast_inj.1 (by rw [Int.ofNat_sub hl]; exact h)
 #align pell.pell_eq Pell.pell_eq
 
-instance dnsq : Zsqrtd.Nonsquare (d a1) :=
+instance dnsq : Zsqrtd.Nonsquare (d a1) := fast_instance%
   ⟨fun n h =>
     have : n * n + 1 = a * a := by rw [← h]; exact Nat.succ_pred_eq_of_pos (asq_pos a1)
     have na : n < a := Nat.mul_self_lt_mul_self_iff.2 (by rw [← this]; exact Nat.lt_succ_self _)

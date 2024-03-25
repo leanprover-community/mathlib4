@@ -101,7 +101,7 @@ def GradedMonoid (A : ι → Type*) :=
 
 namespace GradedMonoid
 
-instance {A : ι → Type*} [Inhabited ι] [Inhabited (A default)] : Inhabited (GradedMonoid A) :=
+instance {A : ι → Type*} [Inhabited ι] [Inhabited (A default)] : Inhabited (GradedMonoid A) := fast_instance%
   inferInstanceAs <| Inhabited (Sigma _)
 
 /-- Construct an element of a graded monoid. -/
@@ -158,7 +158,7 @@ class GOne [Zero ι] where
 #align graded_monoid.ghas_one GradedMonoid.GOne
 
 /-- `GOne` implies `One (GradedMonoid A)` -/
-instance GOne.toOne [Zero ι] [GOne A] : One (GradedMonoid A) :=
+instance GOne.toOne [Zero ι] [GOne A] : One (GradedMonoid A) := fast_instance%
   ⟨⟨_, GOne.one⟩⟩
 #align graded_monoid.ghas_one.to_has_one GradedMonoid.GOne.toOne
 
@@ -174,7 +174,7 @@ class GMul [Add ι] where
 #align graded_monoid.ghas_mul GradedMonoid.GMul
 
 /-- `GMul` implies `Mul (GradedMonoid A)`. -/
-instance GMul.toMul [Add ι] [GMul A] : Mul (GradedMonoid A) :=
+instance GMul.toMul [Add ι] [GMul A] : Mul (GradedMonoid A) := fast_instance%
   ⟨fun x y : GradedMonoid A => ⟨_, GMul.mul x.snd y.snd⟩⟩
 #align graded_monoid.ghas_mul.to_has_mul GradedMonoid.GMul.toMul
 
@@ -271,7 +271,7 @@ class GCommMonoid [AddCommMonoid ι] extends GMonoid A where
 
 /-- `GCommMonoid` implies a `CommMonoid (GradedMonoid A)`, although this is only used as an
 instance locally to define notation in `gmonoid` and similar typeclasses. -/
-instance GCommMonoid.toCommMonoid [AddCommMonoid ι] [GCommMonoid A] : CommMonoid (GradedMonoid A) :=
+instance GCommMonoid.toCommMonoid [AddCommMonoid ι] [GCommMonoid A] : CommMonoid (GradedMonoid A) := fast_instance%
   { GMonoid.toMonoid A with mul_comm := GCommMonoid.mul_comm }
 #align graded_monoid.gcomm_monoid.to_comm_monoid GradedMonoid.GCommMonoid.toCommMonoid
 
@@ -294,7 +294,7 @@ variable [Zero ι] [GOne A]
 
 /-- `1 : A 0` is the value provided in `GOne.one`. -/
 @[nolint unusedArguments]
-instance GradeZero.one : One (A 0) :=
+instance GradeZero.one : One (A 0) := fast_instance%
   ⟨GOne.one⟩
 #align graded_monoid.grade_zero.has_one GradedMonoid.GradeZero.one
 
@@ -314,7 +314,7 @@ instance GradeZero.smul (i : ι) : SMul (A 0) (A i) where
 /-- `(*) : A 0 → A 0 → A 0` is the value provided in `GradedMonoid.GMul.mul`, composed with
 an `Eq.rec` to turn `A (0 + 0)` into `A 0`.
 -/
-instance GradeZero.mul : Mul (A 0) where mul := (· • ·)
+instance GradeZero.mul : Mul (A 0) where mul := fast_instance% (· • ·)
 #align graded_monoid.grade_zero.has_mul GradedMonoid.GradeZero.mul
 
 variable {A}
@@ -348,7 +348,7 @@ theorem mk_zero_pow (a : A 0) (n : ℕ) : mk _ (a ^ n) = mk _ a ^ n :=
 variable (A)
 
 /-- The `Monoid` structure derived from `GMonoid A`. -/
-instance GradeZero.monoid : Monoid (A 0) :=
+instance GradeZero.monoid : Monoid (A 0) := fast_instance%
   Function.Injective.monoid (mk 0) sigma_mk_injective rfl mk_zero_smul mk_zero_pow
 #align graded_monoid.grade_zero.monoid GradedMonoid.GradeZero.monoid
 
@@ -359,7 +359,7 @@ section Monoid
 variable [AddCommMonoid ι] [GCommMonoid A]
 
 /-- The `CommMonoid` structure derived from `GCommMonoid A`. -/
-instance GradeZero.commMonoid : CommMonoid (A 0) :=
+instance GradeZero.commMonoid : CommMonoid (A 0) := fast_instance%
   Function.Injective.commMonoid (mk 0) sigma_mk_injective rfl mk_zero_smul mk_zero_pow
 #align graded_monoid.grade_zero.comm_monoid GradedMonoid.GradeZero.commMonoid
 
@@ -378,7 +378,7 @@ def mkZeroMonoidHom : A 0 →* GradedMonoid A where
 #align graded_monoid.mk_zero_monoid_hom GradedMonoid.mkZeroMonoidHom
 
 /-- Each grade `A i` derives an `A 0`-action structure from `GMonoid A`. -/
-instance GradeZero.mulAction {i} : MulAction (A 0) (A i) :=
+instance GradeZero.mulAction {i} : MulAction (A 0) (A i) := fast_instance%
   letI := MulAction.compHom (GradedMonoid A) (mkZeroMonoidHom A)
   Function.Injective.mulAction (mk i) sigma_mk_injective mk_zero_smul
 #align graded_monoid.grade_zero.mul_action GradedMonoid.GradeZero.mulAction
@@ -474,17 +474,17 @@ section
 variable (ι) {R : Type*}
 
 @[simps one]
-instance One.gOne [Zero ι] [One R] : GradedMonoid.GOne fun _ : ι => R where one := 1
+instance One.gOne [Zero ι] [One R] : GradedMonoid.GOne fun _ : ι => R where one := fast_instance% 1
 #align has_one.ghas_one One.gOne
 
 @[simps mul]
-instance Mul.gMul [Add ι] [Mul R] : GradedMonoid.GMul fun _ : ι => R where mul x y := x * y
+instance Mul.gMul [Add ι] [Mul R] : GradedMonoid.GMul fun _ : ι => R where mul x y := fast_instance% x * y
 #align has_mul.ghas_mul Mul.gMul
 
 /-- If all grades are the same type and themselves form a monoid, then there is a trivial grading
 structure. -/
 @[simps gnpow]
-instance Monoid.gMonoid [AddMonoid ι] [Monoid R] : GradedMonoid.GMonoid fun _ : ι => R :=
+instance Monoid.gMonoid [AddMonoid ι] [Monoid R] : GradedMonoid.GMonoid fun _ : ι => R := fast_instance%
   -- { Mul.gMul ι, One.gOne ι with
   { One.gOne ι with
     mul := fun x y => x * y

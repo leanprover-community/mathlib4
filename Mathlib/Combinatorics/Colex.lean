@@ -80,7 +80,7 @@ structure Colex (α) :=
 
 open Colex
 
-instance : Inhabited (Colex α) := ⟨⟨∅⟩⟩
+instance : Inhabited (Colex α) := fast_instance% ⟨⟨∅⟩⟩
 
 @[simp] lemma toColex_ofColex (s : Colex α) : toColex (ofColex s) = s := rfl
 lemma ofColex_toColex (s : Finset α) : ofColex (toColex s) = s := rfl
@@ -215,14 +215,14 @@ lemma singleton_lt_singleton : (toColex {a} : Colex α) < toColex {b} ↔ a < b 
 
 variable [DecidableEq α]
 
-instance instDecidableEq : DecidableEq (Colex α) := fun s t ↦
+instance instDecidableEq : DecidableEq (Colex α) := fast_instance% fun s t ↦
   decidable_of_iff' (s.ofColex = t.ofColex) <| Colex.ext_iff _ _
 
-instance instDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· ≤ ·) := fun s t ↦
+instance instDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· ≤ ·) := fast_instance% fun s t ↦
   decidable_of_iff'
     (∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b) Iff.rfl
 
-instance instDecidableLT [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· < ·) :=
+instance instDecidableLT [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· < ·) := fast_instance%
   decidableLTOfDecidableLE
 
 lemma le_iff_sdiff_subset_lowerClosure {s t : Colex α} :

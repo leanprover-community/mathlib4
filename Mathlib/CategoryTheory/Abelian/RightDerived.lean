@@ -330,11 +330,11 @@ instance {X : C} (P : InjectiveResolution X) :
   rw [CochainComplex.isIso_liftCycles_iff, ShortComplex.exact_and_mono_f_iff_f_is_kernel]
   exact ⟨KernelFork.mapIsLimit _ (P.isLimitKernelFork) F⟩
 
-instance (X : C) : IsIso (F.toRightDerivedZero.app X) := by
+instance (X : C) : IsIso (F.toRightDerivedZero.app X) := fast_instance% by
   dsimp [Functor.toRightDerivedZero]
   infer_instance
 
-instance : IsIso F.toRightDerivedZero :=
+instance : IsIso F.toRightDerivedZero := fast_instance%
   NatIso.isIso_of_isIso_app _
 
 namespace Functor

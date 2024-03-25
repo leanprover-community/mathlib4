@@ -123,7 +123,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
 #align clifford_algebra.graded_algebra.lift_ι_eq CliffordAlgebra.GradedAlgebra.lift_ι_eq
 
 /-- The clifford algebra is graded by the even and odd parts. -/
-instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
+instance gradedAlgebra : GradedAlgebra (evenOdd Q) := fast_instance%
   GradedAlgebra.ofAlgHom (evenOdd Q)
     -- while not necessary, the `by apply` makes this elaborate faster
     (lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩)

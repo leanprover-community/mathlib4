@@ -247,7 +247,7 @@ structure LocallyConstant (X Y : Type*) [TopologicalSpace X] where
 
 namespace LocallyConstant
 
-instance [Inhabited Y] : Inhabited (LocallyConstant X Y) :=
+instance [Inhabited Y] : Inhabited (LocallyConstant X Y) := fast_instance%
   ⟨⟨_, IsLocallyConstant.const default⟩⟩
 
 instance : FunLike (LocallyConstant X Y) X Y where
@@ -308,7 +308,7 @@ protected theorem continuous : Continuous f :=
 #align locally_constant.to_continuous_map LocallyConstant.toContinuousMap
 
 /-- As a shorthand, `LocallyConstant.toContinuousMap` is available as a coercion -/
-instance : Coe (LocallyConstant X Y) C(X, Y) := ⟨toContinuousMap⟩
+instance : Coe (LocallyConstant X Y) C(X, Y) := fast_instance% ⟨toContinuousMap⟩
 
 -- Porting note: became a syntactic `rfl`
 #noalign locally_constant.to_continuous_map_eq_coe

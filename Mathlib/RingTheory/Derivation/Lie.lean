@@ -28,7 +28,7 @@ section LieStructures
 
 
 /-- The commutator of derivations is again a derivation. -/
-instance : Bracket (Derivation R A A) (Derivation R A A) :=
+instance : Bracket (Derivation R A A) (Derivation R A A) := fast_instance%
   ⟨fun D1 D2 =>
     mk' ⁅(D1 : Module.End R A), (D2 : Module.End R A)⁆ fun a b => by
       simp only [Ring.lie_def, map_add, Algebra.id.smul_eq_mul, LinearMap.mul_apply, leibniz,
@@ -50,7 +50,7 @@ instance : LieRing (Derivation R A A) where
   lie_self d := by ext a; simp only [commutator_apply, add_apply, map_add]; ring_nf; simp
   leibniz_lie d e f := by ext a; simp only [commutator_apply, add_apply, sub_apply, map_sub]; ring
 
-instance instLieAlgebra : LieAlgebra R (Derivation R A A) :=
+instance instLieAlgebra : LieAlgebra R (Derivation R A A) := fast_instance%
   { Derivation.instModule with
     lie_smul := fun r d e => by
       ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply] }

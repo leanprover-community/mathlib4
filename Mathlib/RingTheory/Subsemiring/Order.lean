@@ -70,7 +70,7 @@ namespace Subsemiring
 variable {R : Type*}
 
 /-- A subsemiring of an `OrderedSemiring` is an `OrderedSemiring`. -/
-instance toOrderedSemiring [OrderedSemiring R] (s : Subsemiring R) : OrderedSemiring s :=
+instance toOrderedSemiring [OrderedSemiring R] (s : Subsemiring R) : OrderedSemiring s := fast_instance%
   fast_instance%
   Subtype.coe_injective.orderedSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl

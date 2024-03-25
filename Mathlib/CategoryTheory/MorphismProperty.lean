@@ -42,11 +42,11 @@ def MorphismProperty :=
   ∀ ⦃X Y : C⦄ (_ : X ⟶ Y), Prop
 #align category_theory.morphism_property CategoryTheory.MorphismProperty
 
-instance : CompleteLattice (MorphismProperty C) := by
+instance : CompleteLattice (MorphismProperty C) := fast_instance% by
   dsimp only [MorphismProperty]
   infer_instance
 
-instance : Inhabited (MorphismProperty C) :=
+instance : Inhabited (MorphismProperty C) := fast_instance%
   ⟨⊤⟩
 
 lemma MorphismProperty.top_eq : (⊤ : MorphismProperty C) = fun _ _ _ => True := rfl
@@ -64,21 +64,21 @@ lemma ext (W W' : MorphismProperty C) (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f 
 lemma top_apply {X Y : C} (f : X ⟶ Y) : (⊤ : MorphismProperty C) f := by
   simp only [top_eq]
 
-instance : HasSubset (MorphismProperty C) :=
+instance : HasSubset (MorphismProperty C) := fast_instance%
   ⟨fun P₁ P₂ => ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : P₁ f), P₂ f⟩
 
-instance : IsTrans (MorphismProperty C) (· ⊆ ·) :=
+instance : IsTrans (MorphismProperty C) (· ⊆ ·) := fast_instance%
   ⟨fun _ _ _ h₁₂ h₂₃ _ _ _ h => h₂₃ _ (h₁₂ _ h)⟩
 
-instance : Inter (MorphismProperty C) :=
+instance : Inter (MorphismProperty C) := fast_instance%
   ⟨fun P₁ P₂ _ _ f => P₁ f ∧ P₂ f⟩
 
 lemma subset_iff_le (P Q : MorphismProperty C) : P ⊆ Q ↔ P ≤ Q := Iff.rfl
 
-instance : IsAntisymm (MorphismProperty C) (· ⊆ ·) :=
+instance : IsAntisymm (MorphismProperty C) (· ⊆ ·) := fast_instance%
   ⟨fun P Q => by simpa only [subset_iff_le] using le_antisymm⟩
 
-instance : IsRefl (MorphismProperty C) (· ⊆ ·) :=
+instance : IsRefl (MorphismProperty C) (· ⊆ ·) := fast_instance%
   ⟨fun P => by simpa only [subset_iff_le] using le_refl P⟩
 
 /-- The morphism property in `Cᵒᵖ` associated to a morphism property in `C` -/
@@ -553,7 +553,7 @@ lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInvert
   subst h
   rfl
 
-instance (W : MorphismProperty C) (D : Type*) [Category D] : Category (FunctorsInverting W D) :=
+instance (W : MorphismProperty C) (D : Type*) [Category D] : Category (FunctorsInverting W D) := fast_instance%
   FullSubcategory.category _
 
 -- Porting note: add another `@[ext]` lemma

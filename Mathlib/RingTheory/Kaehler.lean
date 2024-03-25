@@ -146,18 +146,18 @@ def KaehlerDifferential : Type v :=
   (KaehlerDifferential.ideal R S).Cotangent
 #align kaehler_differential KaehlerDifferential
 
-instance : AddCommGroup (KaehlerDifferential R S) := by
+instance : AddCommGroup (KaehlerDifferential R S) := fast_instance% by
   unfold KaehlerDifferential
   infer_instance
 
-instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R S) :=
+instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R S) := fast_instance%
   Ideal.Cotangent.moduleOfTower _
 #align kaehler_differential.module KaehlerDifferential.module
 
 @[inherit_doc KaehlerDifferential]
 notation:100 "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 
-instance : Nonempty (Ω[S⁄R]) := ⟨0⟩
+instance : Nonempty (Ω[S⁄R]) := fast_instance% ⟨0⟩
 
 instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
   [SMulCommClass R R' S] :
@@ -165,7 +165,7 @@ instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
   Submodule.Quotient.module' _
 #align kaehler_differential.module' KaehlerDifferential.module'
 
-instance : IsScalarTower S (S ⊗[R] S) (Ω[S⁄R]) :=
+instance : IsScalarTower S (S ⊗[R] S) (Ω[S⁄R]) := fast_instance%
   Ideal.Cotangent.isScalarTower _
 
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
@@ -176,7 +176,7 @@ instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRin
 
 #align kaehler_differential.is_scalar_tower_of_tower KaehlerDifferential.isScalarTower_of_tower
 
-instance KaehlerDifferential.isScalarTower' : IsScalarTower R (S ⊗[R] S) (Ω[S⁄R]) :=
+instance KaehlerDifferential.isScalarTower' : IsScalarTower R (S ⊗[R] S) (Ω[S⁄R]) := fast_instance%
   Submodule.Quotient.isScalarTower _ _
 #align kaehler_differential.is_scalar_tower' KaehlerDifferential.isScalarTower'
 
@@ -414,15 +414,15 @@ local instance isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
   Ideal.Quotient.isScalarTower_right
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
+local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal := fast_instance%
   Submodule.module' _
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :=
+local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal := fast_instance%
   Submodule.module' _
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal :=
+local instance instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal := fast_instance%
   Submodule.module' _
 
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations

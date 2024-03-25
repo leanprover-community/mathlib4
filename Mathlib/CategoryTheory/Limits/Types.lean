@@ -197,7 +197,7 @@ section UnivLE
 
 open UnivLE
 
-instance hasLimit [Small.{u} J] (F : J ⥤ Type u) : HasLimit F :=
+instance hasLimit [Small.{u} J] (F : J ⥤ Type u) : HasLimit F := fast_instance%
   (Small.hasLimit_iff_small_sections F).mpr inferInstance
 
 /--
@@ -361,7 +361,7 @@ as pairs `⟨j, x⟩` where `x : F.obj j`, modulo the equivalence relation gener
 def Quot (F : J ⥤ Type u) : Type (max v u) :=
   _root_.Quot (Quot.Rel F)
 
-instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} (Quot F) :=
+instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} (Quot F) := fast_instance%
   small_of_surjective (surjective_quot_mk _)
 
 /-- Inclusion into the quotient type implementing the colimit. -/
@@ -462,7 +462,7 @@ theorem hasColimit_iff_small_quot (F : J ⥤ Type u) : HasColimit F ↔ Small.{u
 theorem small_quot_of_hasColimit (F : J ⥤ Type u) [HasColimit F] : Small.{u} (Quot F) :=
   (hasColimit_iff_small_quot F).mp inferInstance
 
-instance hasColimit [Small.{u} J] (F : J ⥤ Type u) : HasColimit F :=
+instance hasColimit [Small.{u} J] (F : J ⥤ Type u) : HasColimit F := fast_instance%
   (hasColimit_iff_small_quot F).mpr inferInstance
 
 instance hasColimitsOfShape [Small.{u} J] : HasColimitsOfShape J (Type u) where
@@ -749,14 +749,14 @@ def Image : Type u :=
   Set.range f
 #align category_theory.limits.types.image CategoryTheory.Limits.Types.Image
 
-instance [Inhabited α] : Inhabited (Image f) where default := ⟨f default, ⟨_, rfl⟩⟩
+instance [Inhabited α] : Inhabited (Image f) where default := fast_instance% ⟨f default, ⟨_, rfl⟩⟩
 
 /-- the inclusion of `Image f` into the target -/
 def Image.ι : Image f ⟶ β :=
   Subtype.val
 #align category_theory.limits.types.image.ι CategoryTheory.Limits.Types.Image.ι
 
-instance : Mono (Image.ι f) :=
+instance : Mono (Image.ι f) := fast_instance%
   (mono_iff_injective _).2 Subtype.val_injective
 
 variable {f}
@@ -788,7 +788,7 @@ noncomputable def isImage : IsImage (monoFactorisation f) where
   lift_fac := Image.lift_fac
 #align category_theory.limits.types.is_image CategoryTheory.Limits.Types.isImage
 
-instance : HasImage f :=
+instance : HasImage f := fast_instance%
   HasImage.mk ⟨_, isImage f⟩
 
 instance : HasImages (Type u) where

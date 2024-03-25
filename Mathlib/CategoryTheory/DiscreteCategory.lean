@@ -67,7 +67,7 @@ def discreteEquiv {α : Type u₁} : Discrete α ≃ α where
   right_inv := by aesop_cat
 #align category_theory.discrete_equiv CategoryTheory.discreteEquiv
 
-instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
+instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) := fast_instance%
   discreteEquiv.decidableEq
 
 /-- The "Discrete" category on a type, whose morphisms are equalities.
@@ -92,13 +92,13 @@ namespace Discrete
 
 variable {α : Type u₁}
 
-instance [Inhabited α] : Inhabited (Discrete α) :=
+instance [Inhabited α] : Inhabited (Discrete α) := fast_instance%
   ⟨⟨default⟩⟩
 
-instance [Subsingleton α] : Subsingleton (Discrete α) :=
+instance [Subsingleton α] : Subsingleton (Discrete α) := fast_instance%
   ⟨by aesop_cat⟩
 
-instance instSubsingletonDiscreteHom (X Y : Discrete α) : Subsingleton (X ⟶ Y) :=
+instance instSubsingletonDiscreteHom (X Y : Discrete α) : Subsingleton (X ⟶ Y) := fast_instance%
   show Subsingleton (ULift (PLift _)) from inferInstance
 
 /- Porting note: rewrote `discrete_cases` tactic -/
@@ -126,7 +126,7 @@ def discreteCases : TacticM Unit := do
 -- `attribute [aesop safe tactic (rule_sets := [CategoryTheory])] discreteCases`
 -- globally.
 
-instance [Unique α] : Unique (Discrete α) :=
+instance [Unique α] : Unique (Discrete α) := fast_instance%
   Unique.mk' (Discrete α)
 
 /-- Extract the equation from a morphism in a discrete category. -/
@@ -163,7 +163,7 @@ theorem id_def (X : Discrete α) : ULift.up (PLift.up (Eq.refl X.as)) = 𝟙 X :
 
 variable {C : Type u₂} [Category.{v₂} C]
 
-instance {I : Type u₁} {i j : Discrete I} (f : i ⟶ j) : IsIso f :=
+instance {I : Type u₁} {i j : Discrete I} (f : i ⟶ j) : IsIso f := fast_instance%
   ⟨⟨Discrete.eqToHom (eq_of_hom f).symm, by aesop_cat⟩⟩
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]

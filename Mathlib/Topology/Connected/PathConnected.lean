@@ -92,7 +92,7 @@ instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
 
 -- Porting note: not necessary in light of the instance above
 /-
-instance : CoeFun (Path x y) fun _ => I → X :=
+instance : CoeFun (Path x y) fun _ => I → X := fast_instance%
   ⟨fun p => p.toFun⟩
 -/
 
@@ -207,14 +207,14 @@ open ContinuousMap
 
 /- porting note: because of the `DFunLike` instance, we already have a coercion to `C(I, X)`
 so we avoid adding another.
---instance : Coe (Path x y) C(I, X) :=
+--instance : Coe (Path x y) C(I, X) := fast_instance%
   --⟨fun γ => γ.1⟩
 -/
 
 /-- The following instance defines the topology on the path space to be induced from the
 compact-open topology on the space `C(I,X)` of continuous maps from `I` to `X`.
 -/
-instance topologicalSpace : TopologicalSpace (Path x y) :=
+instance topologicalSpace : TopologicalSpace (Path x y) := fast_instance%
   TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
 
 theorem continuous_eval : Continuous fun p : Path x y × I => p.1 p.2 :=
@@ -791,7 +791,7 @@ def ZerothHomotopy :=
   Quotient (pathSetoid X)
 #align zeroth_homotopy ZerothHomotopy
 
-instance ZerothHomotopy.inhabited : Inhabited (ZerothHomotopy ℝ) :=
+instance ZerothHomotopy.inhabited : Inhabited (ZerothHomotopy ℝ) := fast_instance%
   ⟨@Quotient.mk' ℝ (pathSetoid ℝ) 0⟩
 
 variable {X}

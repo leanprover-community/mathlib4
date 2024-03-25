@@ -82,9 +82,9 @@ attribute [reassoc (attr := simp)] wi wπ
 variable {S}
 variable (h : S.LeftHomologyData) {A : C}
 
-instance : Mono h.i := ⟨fun _ _ => Fork.IsLimit.hom_ext h.hi⟩
+instance : Mono h.i := fast_instance% ⟨fun _ _ => Fork.IsLimit.hom_ext h.hi⟩
 
-instance : Epi h.π := ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hπ⟩
+instance : Epi h.π := fast_instance% ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hπ⟩
 
 /-- Any morphism `k : A ⟶ S.X₂` that is a cycle (i.e. `k ≫ S.g = 0`) lifts
 to a morphism `A ⟶ K` -/
@@ -290,7 +290,7 @@ def comp {φ : S₁ ⟶ S₂} {φ' : S₂ ⟶ S₃}
   φK := ψ.φK ≫ ψ'.φK
   φH := ψ.φH ≫ ψ'.φH
 
-instance : Subsingleton (LeftHomologyMapData φ h₁ h₂) :=
+instance : Subsingleton (LeftHomologyMapData φ h₁ h₂) := fast_instance%
   ⟨fun ψ₁ ψ₂ => by
     have hK : ψ₁.φK = ψ₂.φK := by rw [← cancel_mono h₂.i, commi, commi]
     have hH : ψ₁.φH = ψ₂.φH := by rw [← cancel_epi h₁.π, commπ, commπ, hK]
@@ -298,7 +298,7 @@ instance : Subsingleton (LeftHomologyMapData φ h₁ h₂) :=
     cases ψ₂
     congr⟩
 
-instance : Inhabited (LeftHomologyMapData φ h₁ h₂) := ⟨by
+instance : Inhabited (LeftHomologyMapData φ h₁ h₂) := fast_instance% ⟨by
   let φK : h₁.K ⟶ h₂.K := h₂.liftK (h₁.i ≫ φ.τ₂)
     (by rw [assoc, φ.comm₂₃, h₁.wi_assoc, zero_comp])
   have commf' : h₁.f' ≫ φK = φ.τ₁ ≫ h₂.f' := by
@@ -308,7 +308,7 @@ instance : Inhabited (LeftHomologyMapData φ h₁ h₂) := ⟨by
     (by rw [reassoc_of% commf', h₂.f'_π, comp_zero])
   exact ⟨φK, φH, by simp [φK], commf', by simp [φH]⟩⟩
 
-instance : Unique (LeftHomologyMapData φ h₁ h₂) := Unique.mk' _
+instance : Unique (LeftHomologyMapData φ h₁ h₂) := fast_instance% Unique.mk' _
 
 variable {φ h₁ h₂}
 
@@ -411,11 +411,11 @@ lemma iCycles_g : S.iCycles ≫ S.g = 0 := S.leftHomologyData.wi
 @[reassoc (attr := simp)]
 lemma toCycles_i : S.toCycles ≫ S.iCycles = S.f := S.leftHomologyData.f'_i
 
-instance : Mono S.iCycles := by
+instance : Mono S.iCycles := fast_instance% by
   dsimp only [iCycles]
   infer_instance
 
-instance : Epi S.leftHomologyπ := by
+instance : Epi S.leftHomologyπ := fast_instance% by
   dsimp only [leftHomologyπ]
   infer_instance
 

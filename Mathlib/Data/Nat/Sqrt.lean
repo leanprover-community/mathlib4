@@ -177,7 +177,7 @@ theorem exists_mul_self' (x : ℕ) : (∃ n, n ^ 2 = x) ↔ sqrt x ^ 2 = x := by
 #align nat.exists_mul_self' Nat.exists_mul_self'
 
 /-- `IsSquare` can be decided on `ℕ` by checking against the square root. -/
-instance : DecidablePred (IsSquare : ℕ → Prop) :=
+instance : DecidablePred (IsSquare : ℕ → Prop) := fast_instance%
   fun m => decidable_of_iff' (Nat.sqrt m * Nat.sqrt m = m) <| by
     simp_rw [← Nat.exists_mul_self m, IsSquare, eq_comm]
 

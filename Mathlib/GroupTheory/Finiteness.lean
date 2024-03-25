@@ -122,11 +122,11 @@ theorem AddMonoid.fg_iff_mul_fg : AddMonoid.FG N ↔ Monoid.FG (Multiplicative N
     ⟨(AddSubmonoid.fg_iff_mul_fg ⊤).2 h.out⟩⟩
 #align add_monoid.fg_iff_mul_fg AddMonoid.fg_iff_mul_fg
 
-instance AddMonoid.fg_of_monoid_fg [Monoid.FG M] : AddMonoid.FG (Additive M) :=
+instance AddMonoid.fg_of_monoid_fg [Monoid.FG M] : AddMonoid.FG (Additive M) := fast_instance%
   Monoid.fg_iff_add_fg.1 ‹_›
 #align add_monoid.fg_of_monoid_fg AddMonoid.fg_of_monoid_fg
 
-instance Monoid.fg_of_addMonoid_fg [AddMonoid.FG N] : Monoid.FG (Multiplicative N) :=
+instance Monoid.fg_of_addMonoid_fg [AddMonoid.FG N] : Monoid.FG (Multiplicative N) := fast_instance%
   AddMonoid.fg_iff_mul_fg.1 ‹_›
 #align monoid.fg_of_add_monoid_fg Monoid.fg_of_addMonoid_fg
 
@@ -194,20 +194,20 @@ theorem Submonoid.powers_fg (r : M) : (Submonoid.powers r).FG :=
 #align add_submonoid.multiples_fg AddSubmonoid.multiples_fg
 
 @[to_additive]
-instance Monoid.powers_fg (r : M) : Monoid.FG (Submonoid.powers r) :=
+instance Monoid.powers_fg (r : M) : Monoid.FG (Submonoid.powers r) := fast_instance%
   (Monoid.fg_iff_submonoid_fg _).mpr (Submonoid.powers_fg r)
 #align monoid.powers_fg Monoid.powers_fg
 #align add_monoid.multiples_fg AddMonoid.multiples_fg
 
 @[to_additive]
-instance Monoid.closure_finset_fg (s : Finset M) : Monoid.FG (Submonoid.closure (s : Set M)) := by
+instance Monoid.closure_finset_fg (s : Finset M) : Monoid.FG (Submonoid.closure (s : Set M)) := fast_instance% by
   refine' ⟨⟨s.preimage Subtype.val (Subtype.coe_injective.injOn _), _⟩⟩
   rw [Finset.coe_preimage, Submonoid.closure_closure_coe_preimage]
 #align monoid.closure_finset_fg Monoid.closure_finset_fg
 #align add_monoid.closure_finset_fg AddMonoid.closure_finset_fg
 
 @[to_additive]
-instance Monoid.closure_finite_fg (s : Set M) [Finite s] : Monoid.FG (Submonoid.closure s) :=
+instance Monoid.closure_finite_fg (s : Set M) [Finite s] : Monoid.FG (Submonoid.closure s) := fast_instance%
   haveI := Fintype.ofFinite s
   s.coe_toFinset ▸ Monoid.closure_finset_fg s.toFinset
 #align monoid.closure_finite_fg Monoid.closure_finite_fg
@@ -336,11 +336,11 @@ theorem AddGroup.fg_iff_mul_fg : AddGroup.FG H ↔ Group.FG (Multiplicative H) :
     ⟨(AddSubgroup.fg_iff_mul_fg ⊤).2 h.out⟩⟩
 #align add_group.fg_iff_mul_fg AddGroup.fg_iff_mul_fg
 
-instance AddGroup.fg_of_group_fg [Group.FG G] : AddGroup.FG (Additive G) :=
+instance AddGroup.fg_of_group_fg [Group.FG G] : AddGroup.FG (Additive G) := fast_instance%
   GroupFG.iff_add_fg.1 ‹_›
 #align add_group.fg_of_group_fg AddGroup.fg_of_group_fg
 
-instance Group.fg_of_mul_group_fg [AddGroup.FG H] : Group.FG (Multiplicative H) :=
+instance Group.fg_of_mul_group_fg [AddGroup.FG H] : Group.FG (Multiplicative H) := fast_instance%
   AddGroup.fg_iff_mul_fg.1 ‹_›
 #align group.fg_of_mul_group_fg Group.fg_of_mul_group_fg
 
@@ -360,20 +360,20 @@ theorem Group.fg_of_surjective {G' : Type*} [Group G'] [hG : Group.FG G] {f : G 
 #align add_group.fg_of_surjective AddGroup.fg_of_surjective
 
 @[to_additive]
-instance Group.fg_range {G' : Type*} [Group G'] [Group.FG G] (f : G →* G') : Group.FG f.range :=
+instance Group.fg_range {G' : Type*} [Group G'] [Group.FG G] (f : G →* G') : Group.FG f.range := fast_instance%
   Group.fg_of_surjective f.rangeRestrict_surjective
 #align group.fg_range Group.fg_range
 #align add_group.fg_range AddGroup.fg_range
 
 @[to_additive]
-instance Group.closure_finset_fg (s : Finset G) : Group.FG (Subgroup.closure (s : Set G)) := by
+instance Group.closure_finset_fg (s : Finset G) : Group.FG (Subgroup.closure (s : Set G)) := fast_instance% by
   refine' ⟨⟨s.preimage Subtype.val (Subtype.coe_injective.injOn _), _⟩⟩
   rw [Finset.coe_preimage, ← Subgroup.coeSubtype, Subgroup.closure_preimage_eq_top]
 #align group.closure_finset_fg Group.closure_finset_fg
 #align add_group.closure_finset_fg AddGroup.closure_finset_fg
 
 @[to_additive]
-instance Group.closure_finite_fg (s : Set G) [Finite s] : Group.FG (Subgroup.closure s) :=
+instance Group.closure_finite_fg (s : Set G) [Finite s] : Group.FG (Subgroup.closure s) := fast_instance%
   haveI := Fintype.ofFinite s
   s.coe_toFinset ▸ Group.closure_finset_fg s.toFinset
 #align group.closure_finite_fg Group.closure_finite_fg
@@ -468,7 +468,7 @@ end Subgroup
 section QuotientGroup
 
 @[to_additive]
-instance QuotientGroup.fg [Group.FG G] (N : Subgroup G) [Subgroup.Normal N] : Group.FG <| G ⧸ N :=
+instance QuotientGroup.fg [Group.FG G] (N : Subgroup G) [Subgroup.Normal N] : Group.FG <| G ⧸ N := fast_instance%
   Group.fg_of_surjective <| QuotientGroup.mk'_surjective N
 #align quotient_group.fg QuotientGroup.fg
 #align quotient_add_group.fg QuotientAddGroup.fg

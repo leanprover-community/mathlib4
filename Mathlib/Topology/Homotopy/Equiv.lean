@@ -56,7 +56,7 @@ auxiliary definition will make porting of Lean 3 code easier.
 Porting note (#11215): TODO: drop this definition. -/
 @[coe] def toFun' (e : X ≃ₕ Y) : X → Y := e.toFun
 
-instance : CoeFun (X ≃ₕ Y) fun _ => X → Y := ⟨toFun'⟩
+instance : CoeFun (X ≃ₕ Y) fun _ => X → Y := fast_instance% ⟨toFun'⟩
 
 @[simp]
 theorem toFun_eq_coe (h : HomotopyEquiv X Y) : (h.toFun : X → Y) = h :=
@@ -134,7 +134,7 @@ def refl (X : Type u) [TopologicalSpace X] : X ≃ₕ X :=
 #align continuous_map.homotopy_equiv.refl_apply ContinuousMap.HomotopyEquiv.refl_apply
 #align continuous_map.homotopy_equiv.refl_symm_apply ContinuousMap.HomotopyEquiv.refl_symm_apply
 
-instance : Inhabited (HomotopyEquiv Unit Unit) :=
+instance : Inhabited (HomotopyEquiv Unit Unit) := fast_instance%
   ⟨refl Unit⟩
 
 /--

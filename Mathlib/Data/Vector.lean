@@ -27,7 +27,7 @@ namespace Vector
 variable {α : Type u} {β : Type v} {φ : Type w}
 variable {n : ℕ}
 
-instance [DecidableEq α] : DecidableEq (Vector α n) :=
+instance [DecidableEq α] : DecidableEq (Vector α n) := fast_instance%
   inferInstanceAs (DecidableEq {l : List α // l.length = n})
 
 /-- The empty vector with elements of type `α` -/

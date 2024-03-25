@@ -170,7 +170,7 @@ protected theorem add_lt_add_of_lt_of_le : c ≠ ∞ → a < b → c ≤ d → a
   WithTop.add_lt_add_of_lt_of_le
 #align ennreal.add_lt_add_of_lt_of_le ENNReal.add_lt_add_of_lt_of_le
 
-instance contravariantClass_add_lt : ContravariantClass ℝ≥0∞ ℝ≥0∞ (· + ·) (· < ·) :=
+instance contravariantClass_add_lt : ContravariantClass ℝ≥0∞ ℝ≥0∞ (· + ·) (· < ·) := fast_instance%
   WithTop.contravariantClass_add_lt
 #align ennreal.contravariant_class_add_lt ENNReal.contravariantClass_add_lt
 
@@ -568,7 +568,7 @@ end Interval
 section Actions
 
 /-- A `MulAction` over `ℝ≥0∞` restricts to a `MulAction` over `ℝ≥0`. -/
-noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 M :=
+noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 M := fast_instance%
   MulAction.compHom M ofNNRealHom.toMonoidHom
 
 theorem smul_def {M : Type*} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
@@ -592,7 +592,7 @@ noncomputable instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ≥0∞ M]
   DistribMulAction.compHom M ofNNRealHom.toMonoidHom
 
 /-- A `Module` over `ℝ≥0∞` restricts to a `Module` over `ℝ≥0`. -/
-noncomputable instance {M : Type*} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
+noncomputable instance {M : Type*} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M := fast_instance%
   Module.compHom M ofNNRealHom
 
 /-- An `Algebra` over `ℝ≥0∞` restricts to an `Algebra` over `ℝ≥0`. -/

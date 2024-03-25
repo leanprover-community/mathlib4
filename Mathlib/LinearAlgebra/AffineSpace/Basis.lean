@@ -64,7 +64,7 @@ section Ring
 variable [Ring k] [Module k V] (b : AffineBasis ι k P) {s : Finset ι} {i j : ι} (e : ι ≃ ι')
 
 /-- The unique point in a single-point space is the simplest example of an affine basis. -/
-instance : Inhabited (AffineBasis PUnit k PUnit) :=
+instance : Inhabited (AffineBasis PUnit k PUnit) := fast_instance%
   ⟨⟨id, affineIndependent_of_subsingleton k id, by simp⟩⟩
 
 instance instFunLike : FunLike (AffineBasis ι k P) ι P where

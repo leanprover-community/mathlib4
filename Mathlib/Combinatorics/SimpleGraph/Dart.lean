@@ -44,7 +44,7 @@ theorem Dart.toProd_injective : Function.Injective (Dart.toProd : G.Dart → V �
   Dart.ext
 #align simple_graph.dart.to_prod_injective SimpleGraph.Dart.toProd_injective
 
-instance Dart.fintype [Fintype V] [DecidableRel G.Adj] : Fintype G.Dart :=
+instance Dart.fintype [Fintype V] [DecidableRel G.Adj] : Fintype G.Dart := fast_instance%
   Fintype.ofEquiv (Σ v, G.neighborSet v)
     { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
       invFun := fun d => ⟨d.fst, d.snd, d.is_adj⟩
@@ -144,7 +144,7 @@ theorem dartOfNeighborSet_injective (v : V) : Function.Injective (G.dartOfNeighb
     convert congr_arg Prod.snd h'
 #align simple_graph.dart_of_neighbor_set_injective SimpleGraph.dartOfNeighborSet_injective
 
-instance nonempty_dart_top [Nontrivial V] : Nonempty (⊤ : SimpleGraph V).Dart := by
+instance nonempty_dart_top [Nontrivial V] : Nonempty (⊤ : SimpleGraph V).Dart := fast_instance% by
   obtain ⟨v, w, h⟩ := exists_pair_ne V
   exact ⟨⟨(v, w), h⟩⟩
 #align simple_graph.nonempty_dart_top SimpleGraph.nonempty_dart_top

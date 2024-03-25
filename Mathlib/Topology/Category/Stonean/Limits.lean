@@ -141,7 +141,7 @@ lemma Sigma.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a
   simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv,
     finiteCoproduct.explicitCocone_pt, finiteCoproduct.explicitCocone_ι, Discrete.natTrans_app]
 
-instance : PreservesFiniteCoproducts Stonean.toCompHaus := by
+instance : PreservesFiniteCoproducts Stonean.toCompHaus := fast_instance% by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) Stonean.toCompHaus from
     preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
@@ -330,7 +330,7 @@ instance : PreservesPullbacksOfInclusions Stonean.toCompHaus.{u} where
     have := Stonean.createsPullbacksOfOpenEmbedding f this
     exact preservesLimitOfReflectsOfPreserves Stonean.toCompHaus compHausToTop
 
-instance : FinitaryExtensive Stonean.{u} :=
+instance : FinitaryExtensive Stonean.{u} := fast_instance%
   finitaryExtensive_of_preserves_and_reflects Stonean.toCompHaus
 
 end Stonean

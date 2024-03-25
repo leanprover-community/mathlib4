@@ -40,7 +40,7 @@ variable {A : Type*} {B : Type*} {G : Type*} {H : Type*} {M : Type*} {N : Type*}
 namespace Prod
 
 @[to_additive]
-instance instMul [Mul M] [Mul N] : Mul (M × N) :=
+instance instMul [Mul M] [Mul N] : Mul (M × N) := fast_instance%
   ⟨fun p q => ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
 @[to_additive (attr := simp)]
@@ -89,7 +89,7 @@ theorem mk_one_mul_mk_one [Mul M] [Monoid N] (a₁ a₂ : M) :
 #align prod.mk_zero_add_mk_zero Prod.mk_zero_add_mk_zero
 
 @[to_additive]
-instance instOne [One M] [One N] : One (M × N) :=
+instance instOne [One M] [One N] : One (M × N) := fast_instance%
   ⟨(1, 1)⟩
 
 @[to_additive (attr := simp)]
@@ -129,7 +129,7 @@ theorem fst_mul_snd [MulOneClass M] [MulOneClass N] (p : M × N) : (p.fst, 1) * 
 #align prod.fst_add_snd Prod.fst_add_snd
 
 @[to_additive]
-instance instInv [Inv M] [Inv N] : Inv (M × N) :=
+instance instInv [Inv M] [Inv N] : Inv (M × N) := fast_instance%
   ⟨fun p => (p.1⁻¹, p.2⁻¹)⟩
 
 @[to_additive (attr := simp)]
@@ -157,11 +157,11 @@ theorem swap_inv [Inv G] [Inv H] (p : G × H) : p⁻¹.swap = p.swap⁻¹ :=
 #align prod.swap_neg Prod.swap_neg
 
 @[to_additive]
-instance [InvolutiveInv M] [InvolutiveInv N] : InvolutiveInv (M × N) :=
+instance [InvolutiveInv M] [InvolutiveInv N] : InvolutiveInv (M × N) := fast_instance%
   { inv_inv := fun _ => ext (inv_inv _) (inv_inv _) }
 
 @[to_additive]
-instance instDiv [Div M] [Div N] : Div (M × N) :=
+instance instDiv [Div M] [Div N] : Div (M × N) := fast_instance%
   ⟨fun p q => ⟨p.1 / q.1, p.2 / q.2⟩⟩
 
 @[to_additive (attr := simp)]
@@ -189,29 +189,29 @@ theorem swap_div [Div G] [Div H] (a b : G × H) : (a / b).swap = a.swap / b.swap
 #align prod.swap_div Prod.swap_div
 #align prod.swap_sub Prod.swap_sub
 
-instance [MulZeroClass M] [MulZeroClass N] : MulZeroClass (M × N) :=
+instance [MulZeroClass M] [MulZeroClass N] : MulZeroClass (M × N) := fast_instance%
   { zero_mul := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨zero_mul _, zero_mul _⟩,
     mul_zero := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨mul_zero _, mul_zero _⟩ }
 
 @[to_additive]
-instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) :=
+instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) := fast_instance%
   { mul_assoc := fun _ _ _ => mk.inj_iff.mpr ⟨mul_assoc _ _ _, mul_assoc _ _ _⟩ }
 
 @[to_additive]
-instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (G × H) :=
+instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (G × H) := fast_instance%
   { mul_comm := fun _ _ => mk.inj_iff.mpr ⟨mul_comm _ _, mul_comm _ _⟩ }
 
-instance [SemigroupWithZero M] [SemigroupWithZero N] : SemigroupWithZero (M × N) :=
+instance [SemigroupWithZero M] [SemigroupWithZero N] : SemigroupWithZero (M × N) := fast_instance%
   { zero_mul := by simp,
     mul_zero := by simp }
 
 @[to_additive]
-instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) :=
+instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) := fast_instance%
   { one_mul := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨one_mul _, one_mul _⟩,
     mul_one := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨mul_one _, mul_one _⟩ }
 
 @[to_additive]
-instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
+instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) := fast_instance%
   { npow := fun z a => ⟨Monoid.npow z a.1, Monoid.npow z a.2⟩,
     npow_zero := fun z => ext (Monoid.npow_zero _) (Monoid.npow_zero _),
     npow_succ := fun z a => ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
@@ -219,7 +219,7 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
     mul_one := by simp }
 
 @[to_additive Prod.subNegMonoid]
-instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) :=
+instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) := fast_instance%
   { div_eq_mul_inv := fun _ _ => mk.inj_iff.mpr ⟨div_eq_mul_inv _ _, div_eq_mul_inv _ _⟩,
     zpow := fun z a => ⟨DivInvMonoid.zpow z a.1, DivInvMonoid.zpow z a.2⟩,
     zpow_zero' := fun _ => ext (DivInvMonoid.zpow_zero' _) (DivInvMonoid.zpow_zero' _),
@@ -227,7 +227,7 @@ instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) :=
     zpow_neg' := fun _ _ => ext (DivInvMonoid.zpow_neg' _ _) (DivInvMonoid.zpow_neg' _ _) }
 
 @[to_additive]
-instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
+instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) := fast_instance%
   { mul_inv_rev := fun a b => ext (mul_inv_rev _ _) (mul_inv_rev _ _),
     inv_eq_of_mul := fun a b h =>
       ext (inv_eq_of_mul_eq_one_right <| congr_arg fst h)
@@ -235,11 +235,11 @@ instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
     inv_inv := by simp }
 
 @[to_additive SubtractionCommMonoid]
-instance [DivisionCommMonoid G] [DivisionCommMonoid H] : DivisionCommMonoid (G × H) :=
+instance [DivisionCommMonoid G] [DivisionCommMonoid H] : DivisionCommMonoid (G × H) := fast_instance%
   { mul_comm := fun ⟨g₁ , h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mul_comm g₁, mul_comm h₁]; rfl }
 
 @[to_additive]
-instance instGroup [Group G] [Group H] : Group (G × H) :=
+instance instGroup [Group G] [Group H] : Group (G × H) := fast_instance%
   { mul_left_inv := fun _ => mk.inj_iff.mpr ⟨mul_left_inv _, mul_left_inv _⟩ }
 
 @[to_additive]
@@ -256,49 +256,49 @@ instance [Mul G] [Mul H] [IsRightCancelMul G] [IsRightCancelMul H] : IsRightCanc
 instance [Mul G] [Mul H] [IsCancelMul G] [IsCancelMul H] : IsCancelMul (G × H) where
 
 @[to_additive]
-instance [LeftCancelSemigroup G] [LeftCancelSemigroup H] : LeftCancelSemigroup (G × H) :=
+instance [LeftCancelSemigroup G] [LeftCancelSemigroup H] : LeftCancelSemigroup (G × H) := fast_instance%
   { mul_left_cancel := fun _ _ _ => mul_left_cancel }
 
 @[to_additive]
-instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigroup (G × H) :=
+instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigroup (G × H) := fast_instance%
   { mul_right_cancel := fun _ _ _ => mul_right_cancel }
 
 @[to_additive]
-instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
+instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) := fast_instance%
   { mul_one := by simp,
     one_mul := by simp }
 
 @[to_additive]
-instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
+instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) := fast_instance%
   { mul_one := by simp,
     one_mul := by simp }
 
 @[to_additive]
-instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
+instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) := fast_instance%
   { mul_right_cancel := by simp only [mul_left_inj, imp_self, forall_const] }
 
 @[to_additive]
-instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
+instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) := fast_instance%
   { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
 
 @[to_additive]
-instance [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) :=
+instance [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) := fast_instance%
   { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
 
-instance [MulZeroOneClass M] [MulZeroOneClass N] : MulZeroOneClass (M × N) :=
+instance [MulZeroOneClass M] [MulZeroOneClass N] : MulZeroOneClass (M × N) := fast_instance%
   { zero_mul := by simp,
     mul_zero := by simp }
 
-instance [MonoidWithZero M] [MonoidWithZero N] : MonoidWithZero (M × N) :=
+instance [MonoidWithZero M] [MonoidWithZero N] : MonoidWithZero (M × N) := fast_instance%
   { zero_mul := by simp,
     mul_zero := by simp }
 
-instance [CommMonoidWithZero M] [CommMonoidWithZero N] : CommMonoidWithZero (M × N) :=
+instance [CommMonoidWithZero M] [CommMonoidWithZero N] : CommMonoidWithZero (M × N) := fast_instance%
   { zero_mul := by simp,
     mul_zero := by simp }
 
 @[to_additive]
-instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
+instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) := fast_instance%
   { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm g₁, mul_comm h₁] }
 
 end Prod

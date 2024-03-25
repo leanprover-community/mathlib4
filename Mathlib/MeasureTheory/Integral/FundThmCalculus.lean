@@ -210,7 +210,7 @@ instance pure (a : ℝ) : FTCFilter a (pure a) ⊥ where
   le_nhds := bot_le
 #align interval_integral.FTC_filter.pure intervalIntegral.FTCFilter.pure
 
-instance nhdsWithinSingleton (a : ℝ) : FTCFilter a (𝓝[{a}] a) ⊥ := by
+instance nhdsWithinSingleton (a : ℝ) : FTCFilter a (𝓝[{a}] a) ⊥ := fast_instance% by
   rw [nhdsWithin, principal_singleton, inf_eq_right.2 (pure_le_nhds a)]; infer_instance
 #align interval_integral.FTC_filter.nhds_within_singleton intervalIntegral.FTCFilter.nhdsWithinSingleton
 
@@ -224,7 +224,7 @@ instance nhds (a : ℝ) : FTCFilter a (𝓝 a) (𝓝 a) where
   le_nhds := le_rfl
 #align interval_integral.FTC_filter.nhds intervalIntegral.FTCFilter.nhds
 
-instance nhdsUniv (a : ℝ) : FTCFilter a (𝓝[univ] a) (𝓝 a) := by rw [nhdsWithin_univ]; infer_instance
+instance nhdsUniv (a : ℝ) : FTCFilter a (𝓝[univ] a) (𝓝 a) := fast_instance% by rw [nhdsWithin_univ]; infer_instance
 #align interval_integral.FTC_filter.nhds_univ intervalIntegral.FTCFilter.nhdsUniv
 
 instance nhdsLeft (a : ℝ) : FTCFilter a (𝓝[≤] a) (𝓝[≤] a) where

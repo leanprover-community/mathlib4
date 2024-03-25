@@ -130,7 +130,7 @@ theorem mem_maxTrivSubmodule (m : M) : m ∈ maxTrivSubmodule R L M ↔ ∀ x : 
   Iff.rfl
 #align lie_module.mem_max_triv_submodule LieModule.mem_maxTrivSubmodule
 
-instance : IsTrivial L (maxTrivSubmodule R L M) where trivial x m := Subtype.ext (m.property x)
+instance : IsTrivial L (maxTrivSubmodule R L M) where trivial x m := fast_instance% Subtype.ext (m.property x)
 
 @[simp]
 theorem ideal_oper_maxTrivSubmodule_eq_bot (I : LieIdeal R L) :
@@ -257,7 +257,7 @@ abbrev center : LieIdeal R L :=
   LieModule.maxTrivSubmodule R L L
 #align lie_algebra.center LieAlgebra.center
 
-instance : IsLieAbelian (center R L) :=
+instance : IsLieAbelian (center R L) := fast_instance%
   inferInstance
 
 @[simp]

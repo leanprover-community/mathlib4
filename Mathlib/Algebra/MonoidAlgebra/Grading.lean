@@ -177,7 +177,7 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
     congr 2
 #align add_monoid_algebra.decompose_aux_coe AddMonoidAlgebra.decomposeAux_coe
 
-instance gradeBy.gradedAlgebra : GradedAlgebra (gradeBy R f) :=
+instance gradeBy.gradedAlgebra : GradedAlgebra (gradeBy R f) := fast_instance%
   GradedAlgebra.ofAlgHom _ (decomposeAux f)
     (by
       ext : 2
@@ -188,7 +188,7 @@ instance gradeBy.gradedAlgebra : GradedAlgebra (gradeBy R f) :=
 #align add_monoid_algebra.grade_by.graded_algebra AddMonoidAlgebra.gradeBy.gradedAlgebra
 
 -- Lean can't find this later without us repeating it
-instance gradeBy.decomposition : DirectSum.Decomposition (gradeBy R f) := by infer_instance
+instance gradeBy.decomposition : DirectSum.Decomposition (gradeBy R f) := fast_instance% by infer_instance
 #align add_monoid_algebra.grade_by.decomposition AddMonoidAlgebra.gradeBy.decomposition
 
 @[simp]
@@ -205,12 +205,12 @@ theorem GradesBy.decompose_single (m : M) (r : R) :
   decomposeAux_single _ _ _
 #align add_monoid_algebra.grades_by.decompose_single AddMonoidAlgebra.GradesBy.decompose_single
 
-instance grade.gradedAlgebra : GradedAlgebra (grade R : ι → Submodule _ _) :=
+instance grade.gradedAlgebra : GradedAlgebra (grade R : ι → Submodule _ _) := fast_instance%
   AddMonoidAlgebra.gradeBy.gradedAlgebra (AddMonoidHom.id _)
 #align add_monoid_algebra.grade.graded_algebra AddMonoidAlgebra.grade.gradedAlgebra
 
 -- Lean can't find this later without us repeating it
-instance grade.decomposition : DirectSum.Decomposition (grade R : ι → Submodule _ _) := by
+instance grade.decomposition : DirectSum.Decomposition (grade R : ι → Submodule _ _) := fast_instance% by
   infer_instance
 #align add_monoid_algebra.grade.decomposition AddMonoidAlgebra.grade.decomposition
 

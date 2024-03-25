@@ -32,16 +32,16 @@ attribute [nolint simpNF] SignType.pos.sizeOf_spec
 namespace SignType
 
 -- Porting note: Added Fintype SignType manually
-instance : Fintype SignType :=
+instance : Fintype SignType := fast_instance%
    Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> simp)
 
-instance : Zero SignType :=
+instance : Zero SignType := fast_instance%
   ⟨zero⟩
 
-instance : One SignType :=
+instance : One SignType := fast_instance%
   ⟨pos⟩
 
-instance : Neg SignType :=
+instance : Neg SignType := fast_instance%
   ⟨fun s =>
     match s with
     | neg => pos
@@ -63,7 +63,7 @@ theorem pos_eq_one : pos = 1 :=
   rfl
 #align sign_type.pos_eq_one SignType.pos_eq_one
 
-instance : Mul SignType :=
+instance : Mul SignType := fast_instance%
   ⟨fun x y =>
     match x with
     | neg => -y
@@ -77,13 +77,13 @@ protected inductive LE : SignType → SignType → Prop
   | of_pos (a) : SignType.LE a pos
 #align sign_type.le SignType.LE
 
-instance : LE SignType :=
+instance : LE SignType := fast_instance%
   ⟨SignType.LE⟩
 
-instance LE.decidableRel : DecidableRel SignType.LE := fun a b => by
+instance LE.decidableRel : DecidableRel SignType.LE := fast_instance% fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
-instance decidableEq : DecidableEq SignType := fun a b => by
+instance decidableEq : DecidableEq SignType := fast_instance% fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
 private lemma mul_comm : ∀ (a b : SignType), a * b = b * a := by rintro ⟨⟩ ⟨⟩ <;> rfl
@@ -128,7 +128,7 @@ instance : BoundedOrder SignType where
   bot := -1
   bot_le := LE.of_neg
 
-instance : HasDistribNeg SignType :=
+instance : HasDistribNeg SignType := fast_instance%
   { neg_neg := fun x => by cases x <;> rfl
     neg_mul := fun x y => by cases x <;> cases y <;> rfl
     mul_neg := fun x y => by cases x <;> cases y <;> rfl }
@@ -245,7 +245,7 @@ def cast : SignType → α
 #align sign_type.cast SignType.cast
 
 -- Porting note: Translated has_coe_t to CoeTC
-instance : CoeTC SignType α :=
+instance : CoeTC SignType α := fast_instance%
   ⟨cast⟩
 
 -- Porting note: `cast_eq_coe` removed, syntactic equality

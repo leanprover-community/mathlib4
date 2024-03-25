@@ -65,7 +65,7 @@ variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace BilinForm
 
-instance : CoeFun (BilinForm R M) fun _ => M → M → R :=
+instance : CoeFun (BilinForm R M) fun _ => M → M → R := fast_instance%
   ⟨bilin⟩
 
 initialize_simps_projections BilinForm (bilin → apply)
@@ -238,7 +238,7 @@ instance {α} [Monoid α] [DistribMulAction α R] [DistribMulAction αᵐᵒᵖ 
     IsCentralScalar α (BilinForm R M) :=
   ⟨fun a B => ext fun x y => op_smul_eq_smul a (B x y)⟩
 
-instance : AddCommMonoid (BilinForm R M) :=
+instance : AddCommMonoid (BilinForm R M) := fast_instance%
   Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 
 instance : Neg (BilinForm R₁ M₁) where
@@ -277,11 +277,11 @@ theorem sub_apply (x y : M₁) : (B₁ - D₁) x y = B₁ x y - D₁ x y :=
   rfl
 #align bilin_form.sub_apply BilinForm.sub_apply
 
-instance : AddCommGroup (BilinForm R₁ M₁) :=
+instance : AddCommGroup (BilinForm R₁ M₁) := fast_instance%
   Function.Injective.addCommGroup _ coe_injective coe_zero coe_add coe_neg coe_sub
     (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
-instance : Inhabited (BilinForm R M) :=
+instance : Inhabited (BilinForm R M) := fast_instance%
   ⟨0⟩
 
 /-- `coeFn` as an `AddMonoidHom` -/
@@ -295,7 +295,7 @@ instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] :
     DistribMulAction α (BilinForm R M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
-instance {α} [CommSemiring α] [Module α R] [SMulCommClass α R R] : Module α (BilinForm R M) :=
+instance {α} [CommSemiring α] [Module α R] [SMulCommClass α R R] : Module α (BilinForm R M) := fast_instance%
   Function.Injective.module _ coeFnAddMonoidHom coe_injective coe_smul
 
 section flip

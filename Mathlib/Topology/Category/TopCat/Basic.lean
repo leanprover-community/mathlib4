@@ -35,7 +35,7 @@ set_option linter.uppercaseLean3 false in
 namespace TopCat
 
 -- Porting note: had to add in the last two proofs
-instance bundledHom : BundledHom @ContinuousMap :=
+instance bundledHom : BundledHom @ContinuousMap := fast_instance%
   ⟨@ContinuousMap.toFun, @ContinuousMap.id, @ContinuousMap.comp, @ContinuousMap.coe_injective,
     fun _ => rfl, fun _ _ _ _ _ => rfl⟩
 set_option linter.uppercaseLean3 false in
@@ -45,15 +45,15 @@ deriving instance LargeCategory for TopCat
 
 -- Porting note: currently no derive handler for ConcreteCategory
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance concreteCategory : ConcreteCategory TopCat := by
+instance concreteCategory : ConcreteCategory TopCat := fast_instance% by
   dsimp [TopCat]
   infer_instance
 
 @[to_additive existing TopCat.instCoeSortTopCatType]
-instance instCoeSortTopCatType : CoeSort TopCat (Type*) :=
+instance instCoeSortTopCatType : CoeSort TopCat (Type*) := fast_instance%
   Bundled.coeSort
 
-instance topologicalSpaceUnbundled (x : TopCat) : TopologicalSpace x :=
+instance topologicalSpaceUnbundled (x : TopCat) : TopologicalSpace x := fast_instance%
   x.str
 set_option linter.uppercaseLean3 false in
 #align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
@@ -81,12 +81,12 @@ def of (X : Type u) [TopologicalSpace X] : TopCat :=
 set_option linter.uppercaseLean3 false in
 #align Top.of TopCat.of
 
-instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
+instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X := fast_instance%
   X.str
 
 -- Porting note: cannot see through forget; made reducible to get closer to Lean 3 behavior
 @[reducible]
-instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
+instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X := fast_instance%
   X.str
 
 @[simp]
@@ -94,7 +94,7 @@ theorem coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.coe_of TopCat.coe_of
 
-instance inhabited : Inhabited TopCat :=
+instance inhabited : Inhabited TopCat := fast_instance%
   ⟨TopCat.of Empty⟩
 
 -- Porting note: added to ease the port of `AlgebraicTopology.TopologicalSimplex`
@@ -107,7 +107,7 @@ def discrete : Type u ⥤ TopCat.{u} where
 set_option linter.uppercaseLean3 false in
 #align Top.discrete TopCat.discrete
 
-instance {X : Type u} : DiscreteTopology (discrete.obj X) :=
+instance {X : Type u} : DiscreteTopology (discrete.obj X) := fast_instance%
   ⟨rfl⟩
 
 /-- The trivial topology on any type. -/

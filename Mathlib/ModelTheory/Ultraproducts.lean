@@ -43,7 +43,7 @@ variable {L : Language.{u, v}} [∀ a, L.Structure (M a)]
 
 namespace Ultraproduct
 
-instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :=
+instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) := fast_instance%
   { (u : Filter α).productSetoid M with
     toStructure :=
       { funMap := fun {n} f x a => funMap f fun i => x i a
@@ -69,7 +69,7 @@ instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :
 
 variable {M} {u}
 
-instance «structure» : L.Structure ((u : Filter α).Product M) :=
+instance «structure» : L.Structure ((u : Filter α).Product M) := fast_instance%
   Language.quotientStructure
 set_option linter.uppercaseLean3 false in
 #align first_order.language.ultraproduct.Structure FirstOrder.Language.Ultraproduct.structure
@@ -160,7 +160,7 @@ theorem sentence_realize (φ : L.Sentence) :
   exact congr rfl (Subsingleton.elim _ _)
 #align first_order.language.ultraproduct.sentence_realize FirstOrder.Language.Ultraproduct.sentence_realize
 
-nonrec instance Product.instNonempty : Nonempty ((u : Filter α).Product M) :=
+nonrec instance Product.instNonempty : Nonempty ((u : Filter α).Product M) := fast_instance%
   letI : ∀ a, Inhabited (M a) := fun _ => Classical.inhabited_of_nonempty'
   instNonempty
 #align first_order.language.ultraproduct.product.nonempty FirstOrder.Language.Ultraproduct.Product.instNonempty

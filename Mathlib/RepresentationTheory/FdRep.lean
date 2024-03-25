@@ -54,27 +54,27 @@ namespace FdRep
 variable {k G : Type u} [Field k] [Monoid G]
 
 -- Porting note: `@[derive]` didn't work for `FdRep`. Add the 4 instances here.
-instance : LargeCategory (FdRep k G) := inferInstance
-instance : ConcreteCategory (FdRep k G) := inferInstance
-instance : Preadditive (FdRep k G) := inferInstance
-instance : HasFiniteLimits (FdRep k G) := inferInstance
+instance : LargeCategory (FdRep k G) := fast_instance% inferInstance
+instance : ConcreteCategory (FdRep k G) := fast_instance% inferInstance
+instance : Preadditive (FdRep k G) := fast_instance% inferInstance
+instance : HasFiniteLimits (FdRep k G) := fast_instance% inferInstance
 
-instance : Linear k (FdRep k G) := by infer_instance
+instance : Linear k (FdRep k G) := fast_instance% by infer_instance
 
-instance : CoeSort (FdRep k G) (Type u) :=
+instance : CoeSort (FdRep k G) (Type u) := fast_instance%
   ConcreteCategory.hasCoeToSort _
 
-instance (V : FdRep k G) : AddCommGroup V := by
+instance (V : FdRep k G) : AddCommGroup V := fast_instance% by
   change AddCommGroup ((forget₂ (FdRep k G) (FGModuleCat k)).obj V).obj; infer_instance
 
-instance (V : FdRep k G) : Module k V := by
+instance (V : FdRep k G) : Module k V := fast_instance% by
   change Module k ((forget₂ (FdRep k G) (FGModuleCat k)).obj V).obj; infer_instance
 
-instance (V : FdRep k G) : FiniteDimensional k V := by
+instance (V : FdRep k G) : FiniteDimensional k V := fast_instance% by
   change FiniteDimensional k ((forget₂ (FdRep k G) (FGModuleCat k)).obj V); infer_instance
 
 /-- All hom spaces are finite dimensional. -/
-instance (V W : FdRep k G) : FiniteDimensional k (V ⟶ W) :=
+instance (V W : FdRep k G) : FiniteDimensional k (V ⟶ W) := fast_instance%
   FiniteDimensional.of_injective ((forget₂ (FdRep k G) (FGModuleCat k)).mapLinearMap k)
     (Functor.map_injective (forget₂ (FdRep k G) (FGModuleCat k)))
 
@@ -123,7 +123,7 @@ open scoped Classical
 
 -- We need to provide this instance explicitely as otherwise `finrank_hom_simple_simple` gives a
 -- deterministic timeout.
-instance : HasKernels (FdRep k G) := by infer_instance
+instance : HasKernels (FdRep k G) := fast_instance% by infer_instance
 
 -- Verify that Schur's lemma applies out of the box.
 theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FdRep k G) [Simple V] [Simple W] :
@@ -150,7 +150,7 @@ namespace FdRep
 variable {k G : Type u} [Field k] [Group G]
 
 -- Verify that the right rigid structure is available when the monoid is a group.
-noncomputable instance : RightRigidCategory (FdRep k G) := by
+noncomputable instance : RightRigidCategory (FdRep k G) := fast_instance% by
   change RightRigidCategory (Action (FGModuleCat k) (GroupCat.of G)); infer_instance
 
 end FdRep

@@ -39,14 +39,14 @@ variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H] [Nontriviall
   [TopologicalAddGroup G] [TopologicalAddGroup H] [Module 𝕜 G] [Module 𝕜 H] (μ : Measure G)
   [IsAddHaarMeasure μ] [BorelSpace G] [BorelSpace H] [T2Space H]
 
-instance MapContinuousLinearEquiv.isAddHaarMeasure (e : G ≃L[𝕜] H) : IsAddHaarMeasure (μ.map e) :=
+instance MapContinuousLinearEquiv.isAddHaarMeasure (e : G ≃L[𝕜] H) : IsAddHaarMeasure (μ.map e) := fast_instance%
   e.toAddEquiv.isAddHaarMeasure_map _ e.continuous e.symm.continuous
 #align measure_theory.measure.map_continuous_linear_equiv.is_add_haar_measure MeasureTheory.Measure.MapContinuousLinearEquiv.isAddHaarMeasure
 
 variable [CompleteSpace 𝕜] [T2Space G] [FiniteDimensional 𝕜 G] [ContinuousSMul 𝕜 G]
   [ContinuousSMul 𝕜 H]
 
-instance MapLinearEquiv.isAddHaarMeasure (e : G ≃ₗ[𝕜] H) : IsAddHaarMeasure (μ.map e) :=
+instance MapLinearEquiv.isAddHaarMeasure (e : G ≃ₗ[𝕜] H) : IsAddHaarMeasure (μ.map e) := fast_instance%
   MapContinuousLinearEquiv.isAddHaarMeasure _ e.toContinuousLinearEquiv
 #align measure_theory.measure.map_linear_equiv.is_add_haar_measure MeasureTheory.Measure.MapLinearEquiv.isAddHaarMeasure
 

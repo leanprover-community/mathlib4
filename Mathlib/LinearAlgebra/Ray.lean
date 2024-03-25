@@ -223,7 +223,7 @@ def RayVector (R M : Type*) [Zero M] :=
 instance RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
   coe := Subtype.val
 #align ray_vector.has_coe RayVector.coe
-instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
+instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) := fast_instance%
   let ⟨x, hx⟩ := exists_ne (0 : M)
   ⟨⟨x, hx⟩⟩
 variable (R M)
@@ -266,7 +266,7 @@ theorem Module.Ray.ind {C : Module.Ray R M → Prop} (h : ∀ (v) (hv : v ≠ 0)
 
 variable {R}
 
-instance [Nontrivial M] : Nonempty (Module.Ray R M) :=
+instance [Nontrivial M] : Nonempty (Module.Ray R M) := fast_instance%
   Nonempty.map Quotient.mk' inferInstance
 
 /-- The rays given by two nonzero vectors are equal if and only if those vectors
@@ -426,7 +426,7 @@ theorem eq_zero_of_sameRay_self_neg [NoZeroSMulDivisors R M] (h : SameRay R x (-
 namespace RayVector
 
 /-- Negating a nonzero vector. -/
-instance {R : Type*} : Neg (RayVector R M) :=
+instance {R : Type*} : Neg (RayVector R M) := fast_instance%
   ⟨fun v => ⟨-v, neg_ne_zero.2 v.prop⟩⟩
 
 /-- Negating a nonzero vector commutes with coercion to the underlying module. -/
@@ -452,7 +452,7 @@ end RayVector
 variable (R)
 
 /-- Negating a ray. -/
-instance : Neg (Module.Ray R M) :=
+instance : Neg (Module.Ray R M) := fast_instance%
   ⟨Quotient.map (fun v => -v) fun _ _ => RayVector.equiv_neg_iff.2⟩
 
 /-- The ray given by the negation of a nonzero vector. -/

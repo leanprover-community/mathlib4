@@ -183,7 +183,7 @@ protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemir
   prod_mem h
 #align subalgebra.prod_mem Subalgebra.prod_mem
 
-instance {R A : Type*} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A :=
+instance {R A : Type*} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A := fast_instance%
   { Subalgebra.SubsemiringClass with
     neg_mem := fun {S x} hx => neg_one_smul R x ▸ S.smul_mem hx _ }
 
@@ -249,7 +249,7 @@ theorem toSubring_inj {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R
   toSubring_injective.eq_iff
 #align subalgebra.to_subring_inj Subalgebra.toSubring_inj
 
-instance : Inhabited S :=
+instance : Inhabited S := fast_instance%
   ⟨(0 : S.toSubsemiring)⟩
 
 section
@@ -267,7 +267,7 @@ instance toCommSemiring {R A} [CommSemiring R] [CommSemiring A] [Algebra R A] (S
   S.toSubsemiring.toCommSemiring
 #align subalgebra.to_comm_semiring Subalgebra.toCommSemiring
 
-instance toRing {R A} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) : Ring S :=
+instance toRing {R A} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) : Ring S := fast_instance%
   S.toSubring.toRing
 #align subalgebra.to_ring Subalgebra.toRing
 
@@ -313,10 +313,10 @@ instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsSc
   S.toSubmodule.module'
 #align subalgebra.module' Subalgebra.module'
 
-instance : Module R S :=
+instance : Module R S := fast_instance%
   S.module'
 
-instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
+instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S := fast_instance%
   inferInstanceAs (IsScalarTower R' R (toSubmodule S))
 
 /- More general form of `Subalgebra.algebra`.
@@ -337,12 +337,12 @@ instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
     smul_def' := fun c x => Subtype.eq <| Algebra.smul_def _ _ }
 #align subalgebra.algebra' Subalgebra.algebra'
 
-instance algebra : Algebra R S := S.algebra'
+instance algebra : Algebra R S := fast_instance% S.algebra'
 #align subalgebra.algebra Subalgebra.algebra
 
 end
 
-instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
+instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S := fast_instance%
   ⟨fun {c} {x : S} h =>
     have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
     this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
@@ -648,7 +648,7 @@ theorem mem_equalizer (ϕ ψ : A →ₐ[R] B) (x : A) : x ∈ ϕ.equalizer ψ �
 /-- The range of a morphism of algebras is a fintype, if the domain is a fintype.
 
 Note that this instance can cause a diamond with `Subtype.fintype` if `B` is also a fintype. -/
-instance fintypeRange [Fintype A] [DecidableEq B] (φ : A →ₐ[R] B) : Fintype φ.range :=
+instance fintypeRange [Fintype A] [DecidableEq B] (φ : A →ₐ[R] B) : Fintype φ.range := fast_instance%
   Set.fintypeRange φ
 #align alg_hom.fintype_range AlgHom.fintypeRange
 
@@ -856,7 +856,7 @@ theorem iInf_toSubmodule {ι : Sort*} (S : ι → Subalgebra R A) :
   SetLike.coe_injective <| by simp
 #align algebra.infi_to_submodule Algebra.iInf_toSubmodule
 
-instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
+instance : Inhabited (Subalgebra R A) := fast_instance% ⟨⊥⟩
 
 theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl
 #align algebra.mem_bot Algebra.mem_bot
@@ -951,11 +951,11 @@ def topEquiv : (⊤ : Subalgebra R A) ≃ₐ[R] A :=
   AlgEquiv.ofAlgHom (Subalgebra.val ⊤) toTop rfl <| AlgHom.ext fun _ => Subtype.ext rfl
 #align subalgebra.top_equiv Subalgebra.topEquiv
 
-instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (Subalgebra R A) :=
+instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (Subalgebra R A) := fast_instance%
   ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
 #align subalgebra.subsingleton_of_subsingleton Subalgebra.subsingleton_of_subsingleton
 
-instance _root_.AlgHom.subsingleton [Subsingleton (Subalgebra R A)] : Subsingleton (A →ₐ[R] B) :=
+instance _root_.AlgHom.subsingleton [Subsingleton (Subalgebra R A)] : Subsingleton (A →ₐ[R] B) := fast_instance%
   ⟨fun f g =>
     AlgHom.ext fun a =>
       have : a ∈ (⊥ : Subalgebra R A) := Subsingleton.elim (⊤ : Subalgebra R A) ⊥ ▸ mem_top
@@ -977,7 +977,7 @@ theorem range_val : S.val.range = S :=
   ext <| Set.ext_iff.1 <| S.val.coe_range.trans Subtype.range_val
 #align subalgebra.range_val Subalgebra.range_val
 
-instance : Unique (Subalgebra R R) :=
+instance : Unique (Subalgebra R R) := fast_instance%
   { inferInstanceAs (Inhabited (Subalgebra R R)) with
     uniq := by
       intro S
@@ -1205,7 +1205,7 @@ section Actions
 variable {α β : Type*}
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [SMul A α] (S : Subalgebra R A) : SMul S α :=
+instance [SMul A α] (S : Subalgebra R A) : SMul S α := fast_instance%
   inferInstanceAs (SMul S.toSubsemiring α)
 
 theorem smul_def [SMul A α] {S : Subalgebra R A} (g : S) (m : α) : g • m = (g : A) • m := rfl
@@ -1233,27 +1233,27 @@ instance isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCom
   ⟨fun _x y _z => (smul_assoc _ (y : S) _ : _)⟩
 #align subalgebra.is_scalar_tower_mid Subalgebra.isScalarTower_mid
 
-instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
+instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α := fast_instance%
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [MulAction A α] (S : Subalgebra R A) : MulAction S α :=
+instance [MulAction A α] (S : Subalgebra R A) : MulAction S α := fast_instance%
   inferInstanceAs (MulAction S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [AddMonoid α] [DistribMulAction A α] (S : Subalgebra R A) : DistribMulAction S α :=
+instance [AddMonoid α] [DistribMulAction A α] (S : Subalgebra R A) : DistribMulAction S α := fast_instance%
   inferInstanceAs (DistribMulAction S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [Zero α] [SMulWithZero A α] (S : Subalgebra R A) : SMulWithZero S α :=
+instance [Zero α] [SMulWithZero A α] (S : Subalgebra R A) : SMulWithZero S α := fast_instance%
   inferInstanceAs (SMulWithZero S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [Zero α] [MulActionWithZero A α] (S : Subalgebra R A) : MulActionWithZero S α :=
+instance [Zero α] [MulActionWithZero A α] (S : Subalgebra R A) : MulActionWithZero S α := fast_instance%
   inferInstanceAs (MulActionWithZero S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance moduleLeft [AddCommMonoid α] [Module A α] (S : Subalgebra R A) : Module S α :=
+instance moduleLeft [AddCommMonoid α] [Module A α] (S : Subalgebra R A) : Module S α := fast_instance%
   inferInstanceAs (Module S.toSubsemiring α)
 #align subalgebra.module_left Subalgebra.moduleLeft
 
@@ -1282,7 +1282,7 @@ theorem range_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
     Subring.range_subtype]
 #align subalgebra.range_algebra_map Subalgebra.range_algebraMap
 
-instance noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A :=
+instance noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A := fast_instance%
   ⟨fun {c} x h =>
     have : (c : A) = 0 ∨ x = 0 := eq_zero_or_eq_zero_of_mul_eq_zero h
     this.imp_left (@Subtype.ext_iff _ _ c 0).mpr⟩
@@ -1326,10 +1326,10 @@ theorem center_eq_top (A : Type*) [CommSemiring A] [Algebra R A] : center R A = 
 
 variable {R A}
 
-instance : CommSemiring (center R A) :=
+instance : CommSemiring (center R A) := fast_instance%
   inferInstanceAs (CommSemiring (Subsemiring.center A))
 
-instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
+instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) := fast_instance%
   inferInstanceAs (CommRing (Subring.center A))
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=

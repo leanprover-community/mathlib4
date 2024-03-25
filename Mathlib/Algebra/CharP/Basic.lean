@@ -185,7 +185,7 @@ theorem CharP.eq [AddMonoidWithOne R] {p q : ℕ} (_c1 : CharP R p) (_c2 : CharP
     ((CharP.cast_eq_zero_iff R q p).1 (CharP.cast_eq_zero _ _))
 #align char_p.eq CharP.eq
 
-instance CharP.ofCharZero [AddMonoidWithOne R] [CharZero R] : CharP R 0 :=
+instance CharP.ofCharZero [AddMonoidWithOne R] [CharZero R] : CharP R 0 := fast_instance%
   ⟨fun x => by rw [zero_dvd_iff, ← Nat.cast_zero, Nat.cast_inj]⟩
 #align char_p.of_char_zero CharP.ofCharZero
 
@@ -244,7 +244,7 @@ theorem eq (p : ℕ) [C : CharP R p] : ringChar R = p :=
   ((Classical.choose_spec (CharP.exists_unique R)).2 p C).symm
 #align ring_char.eq ringChar.eq
 
-instance charP : CharP R (ringChar R) :=
+instance charP : CharP R (ringChar R) := fast_instance%
   ⟨spec R⟩
 #align ring_char.char_p ringChar.charP
 
@@ -583,7 +583,7 @@ instance Nat.lcm.charP [CharP S q] : CharP (R × S) (Nat.lcm p q) where
 
 /-- The characteristic of the product of two rings of the same characteristic
   is the same as the characteristic of the rings -/
-instance Prod.charP [CharP S p] : CharP (R × S) p := by
+instance Prod.charP [CharP S p] : CharP (R × S) p := fast_instance% by
   convert Nat.lcm.charP R S p p; simp
 #align prod.char_p Prod.charP
 

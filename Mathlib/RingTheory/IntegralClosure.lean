@@ -993,7 +993,7 @@ section IsDomain
 
 variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
 
-instance : IsDomain (integralClosure R S) :=
+instance : IsDomain (integralClosure R S) := fast_instance%
   inferInstance
 
 theorem roots_mem_integralClosure {f : R[X]} (hf : f.Monic) {a : S}

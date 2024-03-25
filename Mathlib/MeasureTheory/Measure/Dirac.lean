@@ -28,7 +28,7 @@ namespace Measure
 def dirac (a : α) : Measure α := (OuterMeasure.dirac a).toMeasure (by simp)
 #align measure_theory.measure.dirac MeasureTheory.Measure.dirac
 
-instance : MeasureSpace PUnit :=
+instance : MeasureSpace PUnit := fast_instance%
   ⟨dirac PUnit.unit⟩
 
 theorem le_dirac_apply {a} : s.indicator 1 a ≤ dirac a s :=
@@ -138,14 +138,14 @@ theorem ae_eq_dirac [MeasurableSingletonClass α] {a : α} (f : α → δ) :
     f =ᵐ[dirac a] const α (f a) := by simp [Filter.EventuallyEq]
 #align measure_theory.ae_eq_dirac MeasureTheory.ae_eq_dirac
 
-instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
+instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) := fast_instance%
   ⟨dirac_apply_of_mem <| mem_univ x⟩
 #align measure_theory.measure.dirac.is_probability_measure MeasureTheory.Measure.dirac.isProbabilityMeasure
 
 /-! Extra instances to short-circuit type class resolution -/
 
-instance Measure.dirac.instIsFiniteMeasure {a : α} : IsFiniteMeasure (dirac a) := inferInstance
-instance Measure.dirac.instSigmaFinite {a : α} : SigmaFinite (dirac a) := inferInstance
+instance Measure.dirac.instIsFiniteMeasure {a : α} : IsFiniteMeasure (dirac a) := fast_instance% inferInstance
+instance Measure.dirac.instSigmaFinite {a : α} : SigmaFinite (dirac a) := fast_instance% inferInstance
 
 theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
     (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by

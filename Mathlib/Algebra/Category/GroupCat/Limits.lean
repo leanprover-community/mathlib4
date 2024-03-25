@@ -31,7 +31,7 @@ variable {J : Type v} [SmallCategory J]
 namespace GroupCat
 
 @[to_additive]
-instance groupObj (F : J ⥤ GroupCatMax.{v, u}) (j) : Group ((F ⋙ forget GroupCat).obj j) := by
+instance groupObj (F : J ⥤ GroupCatMax.{v, u}) (j) : Group ((F ⋙ forget GroupCat).obj j) := fast_instance% by
   change Group (F.obj j)
   infer_instance
 set_option linter.uppercaseLean3 false in
@@ -139,7 +139,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.has_limits_of_size AddGroupCat.hasLimitsOfSize
 
 @[to_additive]
-instance hasLimits : HasLimits GroupCat.{u} :=
+instance hasLimits : HasLimits GroupCat.{u} := fast_instance%
   GroupCat.hasLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align Group.has_limits GroupCat.hasLimits
@@ -201,7 +201,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.forget_preserves_limits_of_size AddGroupCat.forgetPreservesLimitsOfSize
 
 @[to_additive]
-noncomputable instance forgetPreservesLimits : PreservesLimits (forget GroupCat.{u}) :=
+noncomputable instance forgetPreservesLimits : PreservesLimits (forget GroupCat.{u}) := fast_instance%
   GroupCat.forgetPreservesLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align Group.forget_preserves_limits GroupCat.forgetPreservesLimits
@@ -301,7 +301,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.has_limits_of_size AddCommGroupCat.hasLimitsOfSize
 
 @[to_additive]
-instance hasLimits : HasLimits CommGroupCat.{u} :=
+instance hasLimits : HasLimits CommGroupCat.{u} := fast_instance%
   CommGroupCat.hasLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align CommGroup.has_limits CommGroupCat.hasLimits
@@ -387,7 +387,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.forget_preserves_limits AddCommGroupCat.forgetPreservesLimitsOfSize
 
 @[to_additive]
-noncomputable instance forgetPreservesLimits : PreservesLimits (forget CommGroupCat.{u}) :=
+noncomputable instance forgetPreservesLimits : PreservesLimits (forget CommGroupCat.{u}) := fast_instance%
   CommGroupCat.forgetPreservesLimitsOfSize.{u, u}
 
 -- Verify we can form limits indexed over smaller categories.

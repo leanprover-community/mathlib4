@@ -37,7 +37,7 @@ variable [∀ i, Zero (α i)]
 section LE
 variable [∀ i, LE (α i)] {f g : Π₀ i, α i}
 
-instance : LE (Π₀ i, α i) :=
+instance : LE (Π₀ i, α i) := fast_instance%
   ⟨fun f g ↦ ∀ i, f i ≤ g i⟩
 
 lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
@@ -66,7 +66,7 @@ end LE
 section Preorder
 variable [∀ i, Preorder (α i)] {f g : Π₀ i, α i}
 
-instance : Preorder (Π₀ i, α i) :=
+instance : Preorder (Π₀ i, α i) := fast_instance%
   { (inferInstance : LE (DFinsupp α)) with
     le_refl := fun f i ↦ le_rfl
     le_trans := fun f g h hfg hgh i ↦ (hfg i).trans (hgh i) }
@@ -81,11 +81,11 @@ lemma coe_strictMono : Monotone ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun
 
 end Preorder
 
-instance [∀ i, PartialOrder (α i)] : PartialOrder (Π₀ i, α i) :=
+instance [∀ i, PartialOrder (α i)] : PartialOrder (Π₀ i, α i) := fast_instance%
   { (inferInstance : Preorder (DFinsupp α)) with
     le_antisymm := fun _ _ hfg hgf ↦ ext fun i ↦ (hfg i).antisymm (hgf i) }
 
-instance [∀ i, SemilatticeInf (α i)] : SemilatticeInf (Π₀ i, α i) :=
+instance [∀ i, SemilatticeInf (α i)] : SemilatticeInf (Π₀ i, α i) := fast_instance%
   { (inferInstance : PartialOrder (DFinsupp α)) with
     inf := zipWith (fun _ ↦ (· ⊓ ·)) fun _ ↦ inf_idem _
     inf_le_left := fun _ _ _ ↦ inf_le_left
@@ -99,7 +99,7 @@ theorem inf_apply [∀ i, SemilatticeInf (α i)] (f g : Π₀ i, α i) (i : ι) 
   zipWith_apply _ _ _ _ _
 #align dfinsupp.inf_apply DFinsupp.inf_apply
 
-instance [∀ i, SemilatticeSup (α i)] : SemilatticeSup (Π₀ i, α i) :=
+instance [∀ i, SemilatticeSup (α i)] : SemilatticeSup (Π₀ i, α i) := fast_instance%
   { (inferInstance : PartialOrder (DFinsupp α)) with
     sup := zipWith (fun _ ↦ (· ⊔ ·)) fun _ ↦ sup_idem _
     le_sup_left := fun _ _ _ ↦ le_sup_left
@@ -116,7 +116,7 @@ theorem sup_apply [∀ i, SemilatticeSup (α i)] (f g : Π₀ i, α i) (i : ι) 
 section Lattice
 variable [∀ i, Lattice (α i)] (f g : Π₀ i, α i)
 
-instance lattice : Lattice (Π₀ i, α i) :=
+instance lattice : Lattice (Π₀ i, α i) := fast_instance%
   { (inferInstance : SemilatticeInf (DFinsupp α)),
     (inferInstance : SemilatticeSup (DFinsupp α)) with }
 #align dfinsupp.lattice DFinsupp.lattice
@@ -137,7 +137,7 @@ end Zero
 /-! ### Algebraic order structures -/
 
 
-instance (α : ι → Type*) [∀ i, OrderedAddCommMonoid (α i)] : OrderedAddCommMonoid (Π₀ i, α i) :=
+instance (α : ι → Type*) [∀ i, OrderedAddCommMonoid (α i)] : OrderedAddCommMonoid (Π₀ i, α i) := fast_instance%
   { (inferInstance : AddCommMonoid (DFinsupp α)),
     (inferInstance : PartialOrder (DFinsupp α)) with
     add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
@@ -155,16 +155,16 @@ section Module
 variable {α : Type*} {β : ι → Type*} [Semiring α] [Preorder α] [∀ i, AddCommMonoid (β i)]
   [∀ i, Preorder (β i)] [∀ i, Module α (β i)]
 
-instance instPosSMulMono [∀ i, PosSMulMono α (β i)] : PosSMulMono α (Π₀ i, β i) :=
+instance instPosSMulMono [∀ i, PosSMulMono α (β i)] : PosSMulMono α (Π₀ i, β i) := fast_instance%
   PosSMulMono.lift _ coe_le_coe coe_smul
 
-instance instSMulPosMono [∀ i, SMulPosMono α (β i)] : SMulPosMono α (Π₀ i, β i) :=
+instance instSMulPosMono [∀ i, SMulPosMono α (β i)] : SMulPosMono α (Π₀ i, β i) := fast_instance%
   SMulPosMono.lift _ coe_le_coe coe_smul coe_zero
 
-instance instPosSMulReflectLE [∀ i, PosSMulReflectLE α (β i)] : PosSMulReflectLE α (Π₀ i, β i) :=
+instance instPosSMulReflectLE [∀ i, PosSMulReflectLE α (β i)] : PosSMulReflectLE α (Π₀ i, β i) := fast_instance%
   PosSMulReflectLE.lift _ coe_le_coe coe_smul
 
-instance instSMulPosReflectLE [∀ i, SMulPosReflectLE α (β i)] : SMulPosReflectLE α (Π₀ i, β i) :=
+instance instSMulPosReflectLE [∀ i, SMulPosReflectLE α (β i)] : SMulPosReflectLE α (Π₀ i, β i) := fast_instance%
   SMulPosReflectLE.lift _ coe_le_coe coe_smul coe_zero
 
 end Module
@@ -173,16 +173,16 @@ section Module
 variable {α : Type*} {β : ι → Type*} [Semiring α] [PartialOrder α] [∀ i, AddCommMonoid (β i)]
   [∀ i, PartialOrder (β i)] [∀ i, Module α (β i)]
 
-instance instPosSMulStrictMono [∀ i, PosSMulStrictMono α (β i)] : PosSMulStrictMono α (Π₀ i, β i) :=
+instance instPosSMulStrictMono [∀ i, PosSMulStrictMono α (β i)] : PosSMulStrictMono α (Π₀ i, β i) := fast_instance%
   PosSMulStrictMono.lift _ coe_le_coe coe_smul
 
-instance instSMulPosStrictMono [∀ i, SMulPosStrictMono α (β i)] : SMulPosStrictMono α (Π₀ i, β i) :=
+instance instSMulPosStrictMono [∀ i, SMulPosStrictMono α (β i)] : SMulPosStrictMono α (Π₀ i, β i) := fast_instance%
   SMulPosStrictMono.lift _ coe_le_coe coe_smul coe_zero
 
 -- Note: There is no interesting instance for `PosSMulReflectLT α (Π₀ i, β i)` that's not already
 -- implied by the other instances
 
-instance instSMulPosReflectLT [∀ i, SMulPosReflectLT α (β i)] : SMulPosReflectLT α (Π₀ i, β i) :=
+instance instSMulPosReflectLT [∀ i, SMulPosReflectLT α (β i)] : SMulPosReflectLT α (Π₀ i, β i) := fast_instance%
   SMulPosReflectLT.lift _ coe_le_coe coe_smul coe_zero
 
 end Module
@@ -232,7 +232,7 @@ lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone
 
 variable (α)
 
-instance decidableLE [∀ i, DecidableRel (@LE.le (α i) _)] : DecidableRel (@LE.le (Π₀ i, α i) _) :=
+instance decidableLE [∀ i, DecidableRel (@LE.le (α i) _)] : DecidableRel (@LE.le (Π₀ i, α i) _) := fast_instance%
   fun _ _ ↦ decidable_of_iff _ le_iff.symm
 #align dfinsupp.decidable_le DFinsupp.decidableLE
 
@@ -253,7 +253,7 @@ variable [∀ i, Sub (α i)] [∀ i, OrderedSub (α i)] {f g : Π₀ i, α i} {i
 
 /-- This is called `tsub` for truncated subtraction, to distinguish it with subtraction in an
 additive group. -/
-instance tsub : Sub (Π₀ i, α i) :=
+instance tsub : Sub (Π₀ i, α i) := fast_instance%
   ⟨zipWith (fun _ m n ↦ m - n) fun _ ↦ tsub_self 0⟩
 #align dfinsupp.tsub DFinsupp.tsub
 
@@ -271,10 +271,10 @@ theorem coe_tsub (f g : Π₀ i, α i) : ⇑(f - g) = f - g := by
 
 variable (α)
 
-instance : OrderedSub (Π₀ i, α i) :=
+instance : OrderedSub (Π₀ i, α i) := fast_instance%
   ⟨fun _ _ _ ↦ forall_congr' fun _ ↦ tsub_le_iff_right⟩
 
-instance : CanonicallyOrderedAddCommMonoid (Π₀ i, α i) :=
+instance : CanonicallyOrderedAddCommMonoid (Π₀ i, α i) := fast_instance%
   { (inferInstance : OrderBot (DFinsupp α)),
     (inferInstance : OrderedAddCommMonoid (DFinsupp α)) with
     exists_add_of_le := by

@@ -401,7 +401,7 @@ def id : 𝟭 C ⊣ 𝟭 C where
 #align category_theory.adjunction.id CategoryTheory.Adjunction.id
 
 -- Satisfy the inhabited linter.
-instance : Inhabited (Adjunction (𝟭 C) (𝟭 C)) :=
+instance : Inhabited (Adjunction (𝟭 C) (𝟭 C)) := fast_instance%
   ⟨id⟩
 
 /-- If F and G are naturally isomorphic functors, establish an equivalence of hom-sets. -/

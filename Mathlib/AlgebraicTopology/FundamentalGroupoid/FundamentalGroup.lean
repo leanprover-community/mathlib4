@@ -34,11 +34,11 @@ def FundamentalGroup (X : Type u) [TopologicalSpace X] (x : X) :=
   @Aut (FundamentalGroupoid X) _ ⟨x⟩
 #align fundamental_group FundamentalGroup
 
-instance (X : Type u) [TopologicalSpace X] (x : X) : Group (FundamentalGroup X x) := by
+instance (X : Type u) [TopologicalSpace X] (x : X) : Group (FundamentalGroup X x) := fast_instance% by
   dsimp only [FundamentalGroup]
   infer_instance
 
-instance (X : Type u) [TopologicalSpace X] (x : X) : Inhabited (FundamentalGroup X x) := by
+instance (X : Type u) [TopologicalSpace X] (x : X) : Inhabited (FundamentalGroup X x) := fast_instance% by
   dsimp only [FundamentalGroup]
   infer_instance
 

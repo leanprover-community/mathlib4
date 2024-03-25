@@ -48,10 +48,10 @@ protected def mk : V → WeaklyConnectedComponent V :=
   @Quotient.mk' _ (zigzagSetoid V)
 #align quiver.weakly_connected_component.mk Quiver.WeaklyConnectedComponent.mk
 
-instance : CoeTC V (WeaklyConnectedComponent V) :=
+instance : CoeTC V (WeaklyConnectedComponent V) := fast_instance%
   ⟨WeaklyConnectedComponent.mk⟩
 
-instance [Inhabited V] : Inhabited (WeaklyConnectedComponent V) :=
+instance [Inhabited V] : Inhabited (WeaklyConnectedComponent V) := fast_instance%
   ⟨show V from default⟩
 
 protected theorem eq (a b : V) :

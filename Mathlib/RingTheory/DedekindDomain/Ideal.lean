@@ -63,7 +63,7 @@ namespace FractionalIdeal
 variable {R₁ : Type*} [CommRing R₁] [IsDomain R₁] [Algebra R₁ K] [IsFractionRing R₁ K]
 variable {I J : FractionalIdeal R₁⁰ K}
 
-noncomputable instance : Inv (FractionalIdeal R₁⁰ K) := ⟨fun I => 1 / I⟩
+noncomputable instance : Inv (FractionalIdeal R₁⁰ K) := fast_instance% ⟨fun I => 1 / I⟩
 
 theorem inv_eq : I⁻¹ = 1 / I := rfl
 #align fractional_ideal.inv_eq FractionalIdeal.inv_eq
@@ -229,7 +229,7 @@ theorem isPrincipal_inv (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (
   exact (right_inverse_eq _ I (spanSingleton _ (generator (I : Submodule R₁ K))⁻¹) hI).symm
 #align fractional_ideal.is_principal_inv FractionalIdeal.isPrincipal_inv
 
-noncomputable instance : InvOneClass (FractionalIdeal R₁⁰ K) := { inv_one := div_one }
+noncomputable instance : InvOneClass (FractionalIdeal R₁⁰ K) := fast_instance% { inv_one := div_one }
 
 end FractionalIdeal
 
@@ -577,7 +577,7 @@ open FractionalIdeal
 
 open Ideal
 
-noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal A⁰ K) :=
+noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal A⁰ K) := fast_instance%
   { coeIdeal_injective.nontrivial with
     inv := fun I => I⁻¹
     inv_zero := inv_zero' _
@@ -597,13 +597,13 @@ instance FractionalIdeal.cancelCommMonoidWithZero :
   __ : CommSemiring (FractionalIdeal A⁰ K) := inferInstance
 #align fractional_ideal.cancel_comm_monoid_with_zero FractionalIdeal.cancelCommMonoidWithZero
 
-instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) :=
+instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) := fast_instance%
   { Function.Injective.cancelCommMonoidWithZero (coeIdealHom A⁰ (FractionRing A)) coeIdeal_injective
     (RingHom.map_zero _) (RingHom.map_one _) (RingHom.map_mul _) (RingHom.map_pow _) with }
 #align ideal.cancel_comm_monoid_with_zero Ideal.cancelCommMonoidWithZero
 
 -- Porting note: Lean can infer all it needs by itself
-instance Ideal.isDomain : IsDomain (Ideal A) := { }
+instance Ideal.isDomain : IsDomain (Ideal A) := fast_instance% { }
 #align ideal.is_domain Ideal.isDomain
 
 /-- For ideals in a Dedekind domain, to divide is to contain. -/
@@ -643,7 +643,7 @@ instance : WfDvdMonoid (Ideal A) where
     ext
     rw [Ideal.dvdNotUnit_iff_lt]
 
-instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
+instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) := fast_instance%
   { irreducible_iff_prime := by
       intro P
       exact ⟨fun hirr => ⟨hirr.ne_zero, hirr.not_unit, fun I J => by
@@ -661,7 +661,7 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
             mt this.isPrime.mem_or_mem (not_or_of_not x_not_mem y_not_mem)⟩⟩, Prime.irreducible⟩ }
 #align ideal.unique_factorization_monoid Ideal.uniqueFactorizationMonoid
 
-instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) :=
+instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) := fast_instance%
   normalizationMonoidOfUniqueUnits
 #align ideal.normalization_monoid Ideal.normalizationMonoid
 
@@ -855,7 +855,7 @@ theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
 
 /-- Ideals in a Dedekind domain have gcd and lcm operators that (trivially) are compatible with
 the normalization operator. -/
-instance : NormalizedGCDMonoid (Ideal A) :=
+instance : NormalizedGCDMonoid (Ideal A) := fast_instance%
   { Ideal.normalizationMonoid with
     gcd := (· ⊔ ·)
     gcd_dvd_left := fun _ _ => by simpa only [dvd_iff_le] using le_sup_left
@@ -1003,7 +1003,7 @@ variable (v : HeightOneSpectrum R) {R}
 
 namespace HeightOneSpectrum
 
-instance isMaximal : v.asIdeal.IsMaximal := v.isPrime.isMaximal v.ne_bot
+instance isMaximal : v.asIdeal.IsMaximal := fast_instance% v.isPrime.isMaximal v.ne_bot
 #align is_dedekind_domain.height_one_spectrum.is_maximal IsDedekindDomain.HeightOneSpectrum.isMaximal
 
 theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime

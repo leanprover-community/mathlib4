@@ -71,7 +71,7 @@ namespace PartialRefinement
 
 variable {u : ι → Set X} {s : Set X}
 
-instance : CoeFun (PartialRefinement u s) fun _ => ι → Set X := ⟨toFun⟩
+instance : CoeFun (PartialRefinement u s) fun _ => ι → Set X := fast_instance% ⟨toFun⟩
 
 #align shrinking_lemma.partial_refinement.subset_Union ShrinkingLemma.PartialRefinement.subset_iUnion
 #align shrinking_lemma.partial_refinement.closure_subset ShrinkingLemma.PartialRefinement.closure_subset

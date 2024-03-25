@@ -66,7 +66,7 @@ abbrev homologyCToK : homologyC f g w ⟶ homologyK f g w :=
 
 attribute [local instance] Pseudoelement.homToFun Pseudoelement.hasZero
 
-instance : Mono (homologyCToK f g w) := by
+instance : Mono (homologyCToK f g w) := fast_instance% by
   apply Pseudoelement.mono_of_zero_of_map_zero
   intro a ha
   obtain ⟨a, rfl⟩ := Pseudoelement.pseudo_surjective_of_epi (cokernel.π (kernel.lift g f w)) a
@@ -82,7 +82,7 @@ instance : Mono (homologyCToK f g w) := by
   swap; · apply Pseudoelement.pseudo_injective_of_mono
   simpa [← Pseudoelement.comp_apply]
 
-instance : Epi (homologyCToK f g w) := by
+instance : Epi (homologyCToK f g w) := fast_instance% by
   apply Pseudoelement.epi_of_pseudo_surjective
   intro a
   let b := kernel.ι (cokernel.desc f g w) a
@@ -100,7 +100,7 @@ instance : Epi (homologyCToK f g w) := by
   simp only [← Pseudoelement.comp_apply, cokernel.π_desc, kernel.lift_ι]
   simp only [Pseudoelement.comp_apply, hd, hc]
 
-instance (w : f ≫ g = 0) : IsIso (homologyCToK f g w) :=
+instance (w : f ≫ g = 0) : IsIso (homologyCToK f g w) := fast_instance%
   isIso_of_mono_of_epi _
 
 end CategoryTheory.Abelian

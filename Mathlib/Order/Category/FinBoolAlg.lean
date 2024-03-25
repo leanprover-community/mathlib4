@@ -43,10 +43,10 @@ structure FinBoolAlg where
 
 namespace FinBoolAlg
 
-instance : CoeSort FinBoolAlg (Type*) :=
+instance : CoeSort FinBoolAlg (Type*) := fast_instance%
   ⟨fun X => X.toBoolAlg⟩
 
-instance (X : FinBoolAlg) : BooleanAlgebra X :=
+instance (X : FinBoolAlg) : BooleanAlgebra X := fast_instance%
   X.toBoolAlg.str
 
 attribute [instance] FinBoolAlg.isFintype
@@ -68,28 +68,28 @@ theorem coe_of (α : Type*) [BooleanAlgebra α] [Fintype α] : ↥(of α) = α :
   rfl
 #align FinBoolAlg.coe_of FinBoolAlg.coe_of
 
-instance : Inhabited FinBoolAlg :=
+instance : Inhabited FinBoolAlg := fast_instance%
   ⟨of PUnit⟩
 
-instance largeCategory : LargeCategory FinBoolAlg :=
+instance largeCategory : LargeCategory FinBoolAlg := fast_instance%
   InducedCategory.category FinBoolAlg.toBoolAlg
 #align FinBoolAlg.large_category FinBoolAlg.largeCategory
 
-instance concreteCategory : ConcreteCategory FinBoolAlg :=
+instance concreteCategory : ConcreteCategory FinBoolAlg := fast_instance%
   InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
 #align FinBoolAlg.concrete_category FinBoolAlg.concreteCategory
 
-instance instFunLike {X Y : FinBoolAlg} : FunLike (X ⟶ Y) X Y :=
+instance instFunLike {X Y : FinBoolAlg} : FunLike (X ⟶ Y) X Y := fast_instance%
   BoundedLatticeHom.instFunLike
 
 -- Porting note: added
 -- TODO: in all of the earlier bundled order categories,
 -- we should be constructing instances analogous to this,
 -- rather than directly coercions to functions.
-instance instBoundedLatticeHomClass {X Y : FinBoolAlg} : BoundedLatticeHomClass (X ⟶ Y) X Y :=
+instance instBoundedLatticeHomClass {X Y : FinBoolAlg} : BoundedLatticeHomClass (X ⟶ Y) X Y := fast_instance%
   BoundedLatticeHom.instBoundedLatticeHomClass
 
-instance hasForgetToBoolAlg : HasForget₂ FinBoolAlg BoolAlg :=
+instance hasForgetToBoolAlg : HasForget₂ FinBoolAlg BoolAlg := fast_instance%
   InducedCategory.hasForget₂ FinBoolAlg.toBoolAlg
 #align FinBoolAlg.has_forget_to_BoolAlg FinBoolAlg.hasForgetToBoolAlg
 
@@ -99,11 +99,11 @@ instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
   forget_comp := rfl
 #align FinBoolAlg.has_forget_to_FinBddDistLat FinBoolAlg.hasForgetToFinBddDistLat
 
-instance forgetToBoolAlgFull : Full (forget₂ FinBoolAlg BoolAlg) :=
+instance forgetToBoolAlgFull : Full (forget₂ FinBoolAlg BoolAlg) := fast_instance%
   InducedCategory.full _
 #align FinBoolAlg.forget_to_BoolAlg_full FinBoolAlg.forgetToBoolAlgFull
 
-instance forgetToBoolAlgFaithful : Faithful (forget₂ FinBoolAlg BoolAlg) :=
+instance forgetToBoolAlgFaithful : Faithful (forget₂ FinBoolAlg BoolAlg) := fast_instance%
   InducedCategory.faithful _
 #align FinBoolAlg.forget_to_BoolAlg_faithful FinBoolAlg.forgetToBoolAlgFaithful
 
@@ -113,7 +113,7 @@ instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd where
   forget₂.map {X Y} f := show OrderHom X Y from ↑(show BoundedLatticeHom X Y from f)
 #align FinBoolAlg.has_forget_to_FinPartOrd FinBoolAlg.hasForgetToFinPartOrd
 
-instance forgetToFinPartOrdFaithful : Faithful (forget₂ FinBoolAlg FinPartOrd) :=
+instance forgetToFinPartOrdFaithful : Faithful (forget₂ FinBoolAlg FinPartOrd) := fast_instance%
   -- Porting note: original code
   -- ⟨fun {X Y} f g h =>
   --   haveI := congr_arg (coeFn : _ → X → Y) h

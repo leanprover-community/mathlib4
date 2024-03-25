@@ -23,17 +23,17 @@ def AlexDisc := Bundled AlexandrovDiscreteSpace
 
 namespace AlexDisc
 
-instance instCoeSort : CoeSort AlexDisc Type* := Bundled.coeSort
-instance instTopologicalSpace (α : AlexDisc) : TopologicalSpace α := α.2.1
-instance instAlexandrovDiscrete (α : AlexDisc) : AlexandrovDiscrete α := α.2.2
+instance instCoeSort : CoeSort AlexDisc Type* := fast_instance% Bundled.coeSort
+instance instTopologicalSpace (α : AlexDisc) : TopologicalSpace α := fast_instance% α.2.1
+instance instAlexandrovDiscrete (α : AlexDisc) : AlexandrovDiscrete α := fast_instance% α.2.2
 
-instance : BundledHom.ParentProjection @AlexandrovDiscreteSpace.toTopologicalSpace := ⟨⟩
+instance : BundledHom.ParentProjection @AlexandrovDiscreteSpace.toTopologicalSpace := fast_instance% ⟨⟩
 
 deriving instance LargeCategory for AlexDisc
 
-instance instConcreteCategory : ConcreteCategory AlexDisc := BundledHom.concreteCategory _
-instance instHasForgetToTop : HasForget₂ AlexDisc TopCat := BundledHom.forget₂ _ _
-instance ForgetToTop.instFull : Full (forget₂ AlexDisc TopCat) := BundledHom.forget₂Full _ _
+instance instConcreteCategory : ConcreteCategory AlexDisc := fast_instance% BundledHom.concreteCategory _
+instance instHasForgetToTop : HasForget₂ AlexDisc TopCat := fast_instance% BundledHom.forget₂ _ _
+instance ForgetToTop.instFull : Full (forget₂ AlexDisc TopCat) := fast_instance% BundledHom.forget₂Full _ _
 instance ForgetToTop.instFaithful : Faithful (forget₂ AlexDisc TopCat) where
 
 @[simp] lemma coe_forgetToTop (X : AlexDisc) : ↥((forget₂ _ TopCat).obj X) = X := rfl

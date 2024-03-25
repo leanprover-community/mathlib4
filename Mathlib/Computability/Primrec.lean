@@ -176,15 +176,15 @@ def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
         simp [encode_ofEquiv] }
 #align primcodable.of_equiv Primcodable.ofEquiv
 
-instance empty : Primcodable Empty :=
+instance empty : Primcodable Empty := fast_instance%
   ⟨zero⟩
 #align primcodable.empty Primcodable.empty
 
-instance unit : Primcodable PUnit :=
+instance unit : Primcodable PUnit := fast_instance%
   ⟨(casesOn1 1 zero).of_eq fun n => by cases n <;> simp⟩
 #align primcodable.unit Primcodable.unit
 
-instance option {α : Type*} [h : Primcodable α] : Primcodable (Option α) :=
+instance option {α : Type*} [h : Primcodable α] : Primcodable (Option α) := fast_instance%
   ⟨(casesOn1 1 ((casesOn1 0 (.comp .succ .succ)).comp (@Primcodable.prim α _))).of_eq fun n => by
     cases n with
       | zero => rfl
@@ -193,7 +193,7 @@ instance option {α : Type*} [h : Primcodable α] : Primcodable (Option α) :=
         cases H : @decode α _ n <;> simp [H]⟩
 #align primcodable.option Primcodable.option
 
-instance bool : Primcodable Bool :=
+instance bool : Primcodable Bool := fast_instance%
   ⟨(casesOn1 1 (casesOn1 2 zero)).of_eq fun n => match n with
     | 0 => rfl
     | 1 => rfl
@@ -319,7 +319,7 @@ namespace Primcodable
 
 open Nat.Primrec
 
-instance prod {α β} [Primcodable α] [Primcodable β] : Primcodable (α × β) :=
+instance prod {α β} [Primcodable α] [Primcodable β] : Primcodable (α × β) := fast_instance%
   ⟨((casesOn' zero ((casesOn' zero .succ).comp (pair right ((@Primcodable.prim β).comp left)))).comp
           (pair right ((@Primcodable.prim α).comp left))).of_eq
       fun n => by
@@ -932,7 +932,7 @@ variable [Primcodable α] [Primcodable β]
 
 open Primrec
 
-instance sum : Primcodable (Sum α β) :=
+instance sum : Primcodable (Sum α β) := fast_instance%
   ⟨Primrec.nat_iff.1 <|
       (encode_iff.2
             (cond nat_bodd
@@ -948,7 +948,7 @@ instance sum : Primcodable (Sum α β) :=
           · cases @decode β _ n.div2 <;> rfl⟩
 #align primcodable.sum Primcodable.sum
 
-instance list : Primcodable (List α) :=
+instance list : Primcodable (List α) := fast_instance%
   ⟨letI H := @Primcodable.prim (List ℕ) _
     have : Primrec₂ fun (a : α) (o : Option (List ℕ)) => o.map (List.cons (encode a)) :=
       option_map snd <| (list_cons' H).comp ((@Primrec.encode α _).comp (fst.comp fst)) snd
@@ -1167,20 +1167,20 @@ def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodab
       by_cases h : p a <;> simp [h]; rfl⟩
 #align primcodable.subtype Primcodable.subtype
 
-instance fin {n} : Primcodable (Fin n) :=
+instance fin {n} : Primcodable (Fin n) := fast_instance%
   @ofEquiv _ _ (subtype <| nat_lt.comp .id (const n)) Fin.equivSubtype
 #align primcodable.fin Primcodable.fin
 
-instance vector {n} : Primcodable (Vector α n) :=
+instance vector {n} : Primcodable (Vector α n) := fast_instance%
   subtype ((@Primrec.eq ℕ _ _).comp list_length (const _))
 #align primcodable.vector Primcodable.vector
 
-instance finArrow {n} : Primcodable (Fin n → α) :=
+instance finArrow {n} : Primcodable (Fin n → α) := fast_instance%
   ofEquiv _ (Equiv.vectorEquivFin _ _).symm
 #align primcodable.fin_arrow Primcodable.finArrow
 
 -- Porting note: Equiv.arrayEquivFin is not ported yet
--- instance array {n} : Primcodable (Array' n α) :=
+-- instance array {n} : Primcodable (Array' n α) := fast_instance%
 --   ofEquiv _ (Equiv.arrayEquivFin _ _)
 -- #align primcodable.array Primcodable.array
 
@@ -1198,7 +1198,7 @@ theorem mem_range_encode : PrimrecPred (fun n => n ∈ Set.range (encode : α �
         (.const _))
   this.of_eq fun _ => decode₂_ne_none_iff
 
-instance ulower : Primcodable (ULower α) :=
+instance ulower : Primcodable (ULower α) := fast_instance%
   Primcodable.subtype mem_range_encode
 #align primcodable.ulower Primcodable.ulower
 

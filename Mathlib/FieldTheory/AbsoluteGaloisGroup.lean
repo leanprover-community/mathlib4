@@ -40,10 +40,10 @@ def absoluteGaloisGroup := AlgebraicClosure K ≃ₐ[K] AlgebraicClosure K
 
 local notation "G_K" => absoluteGaloisGroup
 
-noncomputable instance : Group (G_K K) := AlgEquiv.aut
+noncomputable instance : Group (G_K K) := fast_instance% AlgEquiv.aut
 
 /-- `absoluteGaloisGroup` is a topological space with the Krull topology. -/
-noncomputable instance : TopologicalSpace (G_K K) := krullTopology K (AlgebraicClosure K)
+noncomputable instance : TopologicalSpace (G_K K) := fast_instance% krullTopology K (AlgebraicClosure K)
 
 /-! ### The topological abelianization of the absolute Galois group -/
 

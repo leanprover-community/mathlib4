@@ -90,28 +90,28 @@ namespace TensorProduct
 
 section Module
 
-protected instance add : Add (M ⊗[R] N) :=
+protected instance add : Add (M ⊗[R] N) := fast_instance%
   (addConGen (TensorProduct.Eqv R M N)).hasAdd
 
-instance addZeroClass : AddZeroClass (M ⊗[R] N) :=
+instance addZeroClass : AddZeroClass (M ⊗[R] N) := fast_instance%
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
     /- The `toAdd` field is given explicitly as `TensorProduct.add` for performance reasons.
     This avoids any need to unfold `Con.addMonoid` when the type checker is checking
     that instance diagrams commute -/
     toAdd := TensorProduct.add _ _ }
 
-instance addSemigroup : AddSemigroup (M ⊗[R] N) :=
+instance addSemigroup : AddSemigroup (M ⊗[R] N) := fast_instance%
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
     toAdd := TensorProduct.add _ _ }
 
-instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) :=
+instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) := fast_instance%
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
     toAddSemigroup := TensorProduct.addSemigroup _ _
     add_comm := fun x y =>
       AddCon.induction_on₂ x y fun _ _ =>
         Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }
 
-instance : Inhabited (M ⊗[R] N) :=
+instance : Inhabited (M ⊗[R] N) := fast_instance%
   ⟨0⟩
 
 variable (R) {M N}
@@ -281,7 +281,7 @@ action. Two natural ways in which this situation arises are:
 Note that in the special case that `R = R'`, since `R` is commutative, we just get the usual scalar
 action on a tensor product of two modules. This special case is important enough that, for
 performance reasons, we define it explicitly below. -/
-instance leftHasSMul : SMul R' (M ⊗[R] N) :=
+instance leftHasSMul : SMul R' (M ⊗[R] N) := fast_instance%
   ⟨fun r =>
     (addConGen (TensorProduct.Eqv R M N)).lift (SMul.aux r : _ →+ M ⊗[R] N) <|
       AddCon.addConGen_le fun x y hxy =>
@@ -300,7 +300,7 @@ instance leftHasSMul : SMul R' (M ⊗[R] N) :=
           (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]⟩
 #align tensor_product.left_has_smul TensorProduct.leftHasSMul
 
-instance : SMul R (M ⊗[R] N) :=
+instance : SMul R (M ⊗[R] N) := fast_instance%
   TensorProduct.leftHasSMul
 
 protected theorem smul_zero (r : R') : r • (0 : M ⊗[R] N) = 0 :=
@@ -333,7 +333,7 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
     rw [ihx, ihy, add_add_add_comm]
 #align tensor_product.add_smul TensorProduct.add_smul
 
-instance addMonoid : AddMonoid (M ⊗[R] N) :=
+instance addMonoid : AddMonoid (M ⊗[R] N) := fast_instance%
 { TensorProduct.addZeroClass _ _ with
   toAddSemigroup := TensorProduct.addSemigroup _ _
   toZero := (TensorProduct.addZeroClass _ _).toZero
@@ -342,11 +342,11 @@ instance addMonoid : AddMonoid (M ⊗[R] N) :=
   nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
     forall_const] }
 
-instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
+instance addCommMonoid : AddCommMonoid (M ⊗[R] N) := fast_instance%
   { TensorProduct.addCommSemigroup _ _ with
     toAddMonoid := TensorProduct.addMonoid }
 
-instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
+instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) := fast_instance%
   have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
   { smul_add := fun r x y => TensorProduct.smul_add r x y
     mul_smul := fun r s x =>
@@ -358,7 +358,7 @@ instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
     smul_zero := TensorProduct.smul_zero }
 #align tensor_product.left_distrib_mul_action TensorProduct.leftDistribMulAction
 
-instance : DistribMulAction R (M ⊗[R] N) :=
+instance : DistribMulAction R (M ⊗[R] N) := fast_instance%
   TensorProduct.leftDistribMulAction
 
 theorem smul_tmul' (r : R') (m : M) (n : N) : r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n :=
@@ -375,12 +375,12 @@ theorem smul_tmul_smul (r s : R) (m : M) (n : N) : (r • m) ⊗ₜ[R] (s • n)
   simp_rw [smul_tmul, tmul_smul, mul_smul]
 #align tensor_product.smul_tmul_smul TensorProduct.smul_tmul_smul
 
-instance leftModule : Module R'' (M ⊗[R] N) :=
+instance leftModule : Module R'' (M ⊗[R] N) := fast_instance%
   { add_smul := TensorProduct.add_smul
     zero_smul := TensorProduct.zero_smul }
 #align tensor_product.left_module TensorProduct.leftModule
 
-instance : Module R (M ⊗[R] N) :=
+instance : Module R (M ⊗[R] N) := fast_instance%
   TensorProduct.leftModule
 
 instance [Module R''ᵐᵒᵖ M] [IsCentralScalar R'' M] : IsCentralScalar R'' (M ⊗[R] N) where
@@ -406,7 +406,7 @@ instance smulCommClass_left [SMulCommClass R' R'₂ M] : SMulCommClass R' R'₂ 
 variable [SMul R'₂ R']
 
 /-- `IsScalarTower R'₂ R' M` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
-instance isScalarTower_left [IsScalarTower R'₂ R' M] : IsScalarTower R'₂ R' (M ⊗[R] N) :=
+instance isScalarTower_left [IsScalarTower R'₂ R' M] : IsScalarTower R'₂ R' (M ⊗[R] N) := fast_instance%
   ⟨fun s r x =>
     x.induction_on (by simp)
       (fun m n => by rw [smul_tmul', smul_tmul', smul_tmul', smul_assoc]) fun x y ihx ihy => by
@@ -417,7 +417,7 @@ variable [DistribMulAction R'₂ N] [DistribMulAction R' N]
 variable [CompatibleSMul R R'₂ M N] [CompatibleSMul R R' M N]
 
 /-- `IsScalarTower R'₂ R' N` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
-instance isScalarTower_right [IsScalarTower R'₂ R' N] : IsScalarTower R'₂ R' (M ⊗[R] N) :=
+instance isScalarTower_right [IsScalarTower R'₂ R' N] : IsScalarTower R'₂ R' (M ⊗[R] N) := fast_instance%
   ⟨fun s r x =>
     x.induction_on (by simp)
       (fun m n => by rw [← tmul_smul, ← tmul_smul, ← tmul_smul, smul_assoc]) fun x y ihx ihy => by
@@ -428,7 +428,7 @@ end
 
 /-- A short-cut instance for the common case, where the requirements for the `compatible_smul`
 instances are sufficient. -/
-instance isScalarTower [SMul R' R] [IsScalarTower R' R M] : IsScalarTower R' R (M ⊗[R] N) :=
+instance isScalarTower [SMul R' R] [IsScalarTower R' R M] : IsScalarTower R' R (M ⊗[R] N) := fast_instance%
   TensorProduct.isScalarTower_left
 #align tensor_product.is_scalar_tower TensorProduct.isScalarTower
 
@@ -1369,7 +1369,7 @@ protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
     rw [hx, hy, add_zero]
 #align tensor_product.add_left_neg TensorProduct.add_left_neg
 
-instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
+instance addCommGroup : AddCommGroup (M ⊗[R] N) := fast_instance%
   { TensorProduct.addCommMonoid with
     neg := Neg.neg
     sub := _
@@ -1408,7 +1408,7 @@ When `R` is a `Ring` we get the required `TensorProduct.compatible_smul` instanc
 `IsScalarTower`, but when it is only a `Semiring` we need to build it from scratch.
 The instance diamond in `compatible_smul` doesn't matter because it's in `Prop`.
 -/
-instance CompatibleSMul.int : CompatibleSMul R ℤ M N :=
+instance CompatibleSMul.int : CompatibleSMul R ℤ M N := fast_instance%
   ⟨fun r m n =>
     Int.induction_on r (by simp) (fun r ih => by simpa [add_smul, tmul_add, add_tmul] using ih)
       fun r ih => by simpa [sub_smul, tmul_sub, sub_tmul] using ih⟩

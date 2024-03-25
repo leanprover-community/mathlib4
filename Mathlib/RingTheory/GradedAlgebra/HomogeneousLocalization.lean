@@ -365,7 +365,7 @@ instance : Add (HomogeneousLocalization 𝒜 x) where
       simp only [num_add, den_add, ← Localization.add_mk]
       convert congr_arg₂ (· + ·) h h' <;> erw [Localization.add_mk] <;> rfl
 
-instance : Sub (HomogeneousLocalization 𝒜 x) where sub z1 z2 := z1 + -z2
+instance : Sub (HomogeneousLocalization 𝒜 x) where sub z1 z2 := fast_instance% z1 + -z2
 
 instance : Mul (HomogeneousLocalization 𝒜 x) where
   mul :=
@@ -376,9 +376,9 @@ instance : Mul (HomogeneousLocalization 𝒜 x) where
       simp only [num_mul, den_mul]
       convert congr_arg₂ (· * ·) h h' <;> erw [Localization.mk_mul] <;> rfl
 
-instance : One (HomogeneousLocalization 𝒜 x) where one := Quotient.mk'' 1
+instance : One (HomogeneousLocalization 𝒜 x) where one := fast_instance% Quotient.mk'' 1
 
-instance : Zero (HomogeneousLocalization 𝒜 x) where zero := Quotient.mk'' 0
+instance : Zero (HomogeneousLocalization 𝒜 x) where zero := fast_instance% Quotient.mk'' 0
 
 theorem zero_eq : (0 : HomogeneousLocalization 𝒜 x) = Quotient.mk'' 0 :=
   rfl
@@ -441,10 +441,10 @@ theorem pow_val (y : HomogeneousLocalization 𝒜 x) (n : ℕ) : (y ^ n).val = y
   congr 1
 #align homogeneous_localization.pow_val HomogeneousLocalization.pow_val
 
-instance : NatCast (HomogeneousLocalization 𝒜 x) :=
+instance : NatCast (HomogeneousLocalization 𝒜 x) := fast_instance%
   ⟨Nat.unaryCast⟩
 
-instance : IntCast (HomogeneousLocalization 𝒜 x) :=
+instance : IntCast (HomogeneousLocalization 𝒜 x) := fast_instance%
   ⟨Int.castDef⟩
 
 @[simp]
@@ -457,7 +457,7 @@ theorem intCast_val (n : ℤ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
   show val (Int.castDef n) = _ by cases n <;> simp [Int.castDef, zero_val, one_val, *]
 #align homogeneous_localization.int_cast_val HomogeneousLocalization.intCast_val
 
-instance homogenousLocalizationCommRing : CommRing (HomogeneousLocalization 𝒜 x) :=
+instance homogenousLocalizationCommRing : CommRing (HomogeneousLocalization 𝒜 x) := fast_instance%
   (HomogeneousLocalization.val_injective x).commRing _ zero_val one_val add_val mul_val neg_val
     sub_val (smul_val x · ·) (smul_val x · ·) pow_val natCast_val intCast_val
 #align homogeneous_localization.homogenous_localization_comm_ring HomogeneousLocalization.homogenousLocalizationCommRing
@@ -570,10 +570,10 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) : 
     exact ⟨⟨f.val, b.val, eq1, eq2⟩, rfl⟩⟩
 #align homogeneous_localization.is_unit_iff_is_unit_val HomogeneousLocalization.isUnit_iff_isUnit_val
 
-instance : Nontrivial (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
+instance : Nontrivial (HomogeneousLocalization.AtPrime 𝒜 𝔭) := fast_instance%
   ⟨⟨0, 1, fun r => by simp [ext_iff_val, zero_val, one_val, zero_ne_one] at r⟩⟩
 
-instance localRing : LocalRing (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
+instance localRing : LocalRing (HomogeneousLocalization.AtPrime 𝒜 𝔭) := fast_instance%
   LocalRing.of_isUnit_or_isUnit_one_sub_self fun a => by
     simp only [← isUnit_iff_isUnit_val, sub_val, one_val]
     induction' a using Quotient.inductionOn' with a

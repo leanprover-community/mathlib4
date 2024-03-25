@@ -261,7 +261,7 @@ theorem identity_N₂ :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.identity_N₂ AlgebraicTopology.DoldKan.identity_N₂
 
-instance : IsIso (Γ₂N₂.natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ _ ⟶ _) := by
+instance : IsIso (Γ₂N₂.natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ _ ⟶ _) := fast_instance% by
   have : ∀ P : Karoubi (SimplicialObject C), IsIso (Γ₂N₂.natTrans.app P) := by
     intro P
     have : IsIso (N₂.map (Γ₂N₂.natTrans.app P)) := by
@@ -272,7 +272,7 @@ instance : IsIso (Γ₂N₂.natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ 
     exact isIso_of_reflects_iso _ N₂
   apply NatIso.isIso_of_isIso_app
 
-instance : IsIso (Γ₂N₁.natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ _ ⟶ _) := by
+instance : IsIso (Γ₂N₁.natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ _ ⟶ _) := fast_instance% by
   have : ∀ X : SimplicialObject C, IsIso (Γ₂N₁.natTrans.app X) := by
     intro X
     rw [compatibility_Γ₂N₁_Γ₂N₂_natTrans]

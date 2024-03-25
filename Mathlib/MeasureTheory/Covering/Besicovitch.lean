@@ -213,7 +213,7 @@ def unitBallPackage (α : Type*) : BallPackage α α where
   r_le _ := le_rfl
 #align besicovitch.unit_ball_package Besicovitch.unitBallPackage
 
-instance BallPackage.instInhabited (α : Type*) : Inhabited (BallPackage α α) :=
+instance BallPackage.instInhabited (α : Type*) : Inhabited (BallPackage α α) := fast_instance%
   ⟨unitBallPackage α⟩
 #align besicovitch.ball_package.inhabited Besicovitch.BallPackage.instInhabited
 
@@ -228,7 +228,7 @@ structure TauPackage (β : Type*) (α : Type*) extends BallPackage β α where
 #align besicovitch.tau_package.τ Besicovitch.TauPackage.τ
 #align besicovitch.tau_package.one_lt_tau Besicovitch.TauPackage.one_lt_tau
 
-instance TauPackage.instInhabited (α : Type*) : Inhabited (TauPackage α α) :=
+instance TauPackage.instInhabited (α : Type*) : Inhabited (TauPackage α α) := fast_instance%
   ⟨{ unitBallPackage α with
       τ := 2
       one_lt_tau := one_lt_two }⟩

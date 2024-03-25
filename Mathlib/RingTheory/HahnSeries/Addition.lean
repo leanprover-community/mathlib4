@@ -122,7 +122,7 @@ end Domain
 
 end AddMonoid
 
-instance [AddCommMonoid R] : AddCommMonoid (HahnSeries Γ R) :=
+instance [AddCommMonoid R] : AddCommMonoid (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     add_comm := fun x y => by
       ext
@@ -139,7 +139,7 @@ instance : Neg (HahnSeries Γ R) where
         rw [Function.support_neg]
         exact x.isPWO_support }
 
-instance : AddGroup (HahnSeries Γ R) :=
+instance : AddGroup (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     zsmul := zsmulRec
     add_left_neg := fun x => by
@@ -180,7 +180,7 @@ theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
 
 end AddGroup
 
-instance [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) :=
+instance [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
     inferInstanceAs (AddGroup (HahnSeries Γ R)) with }
 
@@ -190,7 +190,7 @@ section DistribMulAction
 
 variable [PartialOrder Γ] {V : Type*} [Monoid R] [AddMonoid V] [DistribMulAction R V]
 
-instance : SMul R (HahnSeries Γ V) :=
+instance : SMul R (HahnSeries Γ V) := fast_instance%
   ⟨fun r x =>
     { coeff := r • x.coeff
       isPWO_support' := x.isPWO_support.mono (Function.support_const_smul_subset r x.coeff) }⟩
@@ -226,12 +226,12 @@ theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ
 
 variable {S : Type*} [Monoid S] [DistribMulAction S V]
 
-instance [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) :=
+instance [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) := fast_instance%
   ⟨fun r s a => by
     ext
     simp⟩
 
-instance [SMulCommClass R S V] : SMulCommClass R S (HahnSeries Γ V) :=
+instance [SMulCommClass R S V] : SMulCommClass R S (HahnSeries Γ V) := fast_instance%
   ⟨fun r s a => by
     ext
     simp [smul_comm]⟩
@@ -242,7 +242,7 @@ section Module
 
 variable [PartialOrder Γ] [Semiring R] {V : Type*} [AddCommMonoid V] [Module R V]
 
-instance : Module R (HahnSeries Γ V) :=
+instance : Module R (HahnSeries Γ V) := fast_instance%
   { inferInstanceAs (DistribMulAction R (HahnSeries Γ V)) with
     zero_smul := fun _ => by
       ext

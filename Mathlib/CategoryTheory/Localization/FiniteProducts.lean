@@ -113,9 +113,9 @@ noncomputable def preservesFiniteProducts :
   preserves J _ := preservesProductsOfShape L W J
       (W.isStableUnderProductsOfShape_of_isStableUnderFiniteProducts _)
 
-instance : HasFiniteProducts (W.Localization) := hasFiniteProducts W.Q W
+instance : HasFiniteProducts (W.Localization) := fast_instance% hasFiniteProducts W.Q W
 
-noncomputable instance : PreservesFiniteProducts W.Q := preservesFiniteProducts W.Q W
+noncomputable instance : PreservesFiniteProducts W.Q := fast_instance% preservesFiniteProducts W.Q W
 
 instance [W.HasLocalization] :
     HasFiniteProducts (W.Localization') :=

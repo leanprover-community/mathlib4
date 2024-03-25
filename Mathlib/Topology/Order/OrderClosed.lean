@@ -82,8 +82,8 @@ class OrderClosedTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Pro
   isClosed_le' : IsClosed { p : α × α | p.1 ≤ p.2 }
 #align order_closed_topology OrderClosedTopology
 
-instance [TopologicalSpace α] [h : FirstCountableTopology α] : FirstCountableTopology αᵒᵈ := h
-instance [TopologicalSpace α] [h : SecondCountableTopology α] : SecondCountableTopology αᵒᵈ := h
+instance [TopologicalSpace α] [h : FirstCountableTopology α] : FirstCountableTopology αᵒᵈ := fast_instance% h
+instance [TopologicalSpace α] [h : SecondCountableTopology α] : SecondCountableTopology αᵒᵈ := fast_instance% h
 
 theorem Dense.orderDual [TopologicalSpace α] {s : Set α} (hs : Dense s) :
     Dense (OrderDual.ofDual ⁻¹' s) :=
@@ -631,7 +631,7 @@ variable [TopologicalSpace α] [Preorder α] [t : OrderClosedTopology α]
 namespace Subtype
 
 -- todo: add `OrderEmbedding.orderClosedTopology`
-instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
+instance {p : α → Prop} : OrderClosedTopology (Subtype p) := fast_instance%
   have this : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
     continuous_subtype_val.prod_map continuous_subtype_val
   OrderClosedTopology.mk (t.isClosed_le'.preimage this)
@@ -653,7 +653,7 @@ instance : ClosedIicTopology α where
 instance : ClosedIciTopology α where
   isClosed_Ici _ := isClosed_le continuous_const continuous_id
 
-instance : OrderClosedTopology αᵒᵈ :=
+instance : OrderClosedTopology αᵒᵈ := fast_instance%
   ⟨(OrderClosedTopology.isClosed_le' (α := α)).preimage continuous_swap⟩
 
 theorem isClosed_Icc {a b : α} : IsClosed (Icc a b) :=

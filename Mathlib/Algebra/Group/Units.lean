@@ -107,12 +107,12 @@ variable [Monoid α]
 -- Porting note: unclear whether this should be a `CoeHead` or `CoeTail`
 /-- A unit can be interpreted as a term in the base `Monoid`. -/
 @[to_additive "An additive unit can be interpreted as a term in the base `AddMonoid`."]
-instance : CoeHead αˣ α :=
+instance : CoeHead αˣ α := fast_instance%
   ⟨val⟩
 
 /-- The inverse of a unit in a `Monoid`. -/
 @[to_additive "The additive inverse of an additive unit in an `AddMonoid`."]
-instance instInv : Inv αˣ :=
+instance instInv : Inv αˣ := fast_instance%
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
 attribute [instance] AddUnits.instNeg
 
@@ -162,7 +162,7 @@ theorem ext_iff {a b : αˣ} : a = b ↔ (a : α) = b :=
 /-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive "Additive units have decidable equality
 if the base `AddMonoid` has deciable equality."]
-instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ ext_iff
+instance [DecidableEq α] : DecidableEq αˣ := fast_instance% fun _ _ => decidable_of_iff' _ ext_iff
 
 @[to_additive (attr := simp)]
 theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
@@ -200,14 +200,14 @@ instance instMulOneClass : MulOneClass αˣ where
 
 /-- Units of a monoid are inhabited because `1` is a unit. -/
 @[to_additive "Additive units of an additive monoid are inhabited because `0` is an additive unit."]
-instance : Inhabited αˣ :=
+instance : Inhabited αˣ := fast_instance%
   ⟨1⟩
 
 
 /-- Units of a monoid have a representation of the base value in the `Monoid`. -/
 @[to_additive "Additive units of an additive monoid have a representation of the base value in
 the `AddMonoid`."]
-instance [Repr α] : Repr αˣ :=
+instance [Repr α] : Repr αˣ := fast_instance%
   ⟨reprPrec ∘ val⟩
 
 variable (a b c : αˣ) {u : αˣ}
@@ -367,7 +367,7 @@ protected theorem eq_inv_of_mul_eq_one_right {a : α} (h : a * u = 1) : a = ↑u
 #align add_units.eq_neg_of_add_eq_zero_right AddUnits.eq_neg_of_add_eq_zero_right
 
 @[to_additive]
-instance instMonoid : Monoid αˣ :=
+instance instMonoid : Monoid αˣ := fast_instance%
   { (inferInstance : MulOneClass αˣ) with
     mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
     npow := fun n a ↦
@@ -380,7 +380,7 @@ instance instMonoid : Monoid αˣ :=
 
 /-- Units of a monoid form a group. -/
 @[to_additive "Additive units of an additive monoid form an additive group."]
-instance instGroup : Group αˣ :=
+instance instGroup : Group αˣ := fast_instance%
   { (inferInstance : Monoid αˣ) with
     inv := Inv.inv
     mul_left_inv := fun u => ext u.inv_val
@@ -661,7 +661,7 @@ theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
 #align is_add_unit_of_subsingleton isAddUnit_of_subsingleton
 
 @[to_additive]
-instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
+instance [Monoid M] : CanLift M Mˣ Units.val IsUnit := fast_instance%
   { prf := fun _ ↦ id }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
@@ -835,7 +835,7 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 
 /-- `IsUnit x` is decidable if we can decide if `x` comes from `Mˣ`. -/
 @[to_additive "`IsAddUnit x` is decidable if we can decide if `x` comes from `AddUnits M`."]
-instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
+instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) := fast_instance%
   h
 
 @[to_additive]

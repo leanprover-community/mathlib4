@@ -71,28 +71,28 @@ theorem Icc.infinite : Infinite (Icc a b) :=
 
 end DenselyOrdered
 
-instance [NoMinOrder α] {a : α} : Infinite (Iio a) :=
+instance [NoMinOrder α] {a : α} : Infinite (Iio a) := fast_instance%
   NoMinOrder.infinite
 
 theorem Iio_infinite [NoMinOrder α] (a : α) : (Iio a).Infinite :=
   infinite_coe_iff.1 inferInstance
 #align set.Iio_infinite Set.Iio_infinite
 
-instance [NoMinOrder α] {a : α} : Infinite (Iic a) :=
+instance [NoMinOrder α] {a : α} : Infinite (Iic a) := fast_instance%
   NoMinOrder.infinite
 
 theorem Iic_infinite [NoMinOrder α] (a : α) : (Iic a).Infinite :=
   infinite_coe_iff.1 inferInstance
 #align set.Iic_infinite Set.Iic_infinite
 
-instance [NoMaxOrder α] {a : α} : Infinite (Ioi a) :=
+instance [NoMaxOrder α] {a : α} : Infinite (Ioi a) := fast_instance%
   NoMaxOrder.infinite
 
 theorem Ioi_infinite [NoMaxOrder α] (a : α) : (Ioi a).Infinite :=
   infinite_coe_iff.1 inferInstance
 #align set.Ioi_infinite Set.Ioi_infinite
 
-instance [NoMaxOrder α] {a : α} : Infinite (Ici a) :=
+instance [NoMaxOrder α] {a : α} : Infinite (Ici a) := fast_instance%
   NoMaxOrder.infinite
 
 theorem Ici_infinite [NoMaxOrder α] (a : α) : (Ici a).Infinite :=

@@ -77,7 +77,7 @@ protected theorem _root_.Inducing.noetherianSpace [NoetherianSpace α] {i : β �
 #align topological_space.inducing.noetherian_space Inducing.noetherianSpace
 
 /-- [Stacks: Lemma 0052 (1)](https://stacks.math.columbia.edu/tag/0052)-/
-instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s :=
+instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s := fast_instance%
   inducing_subtype_val.noetherianSpace
 #align topological_space.noetherian_space.set TopologicalSpace.NoetherianSpace.set
 
@@ -110,7 +110,7 @@ theorem NoetherianSpace.wellFounded_closeds [NoetherianSpace α] :
     WellFounded fun s t : Closeds α => s < t :=
   Iff.mp ((noetherianSpace_TFAE α).out 0 1) ‹_›
 
-instance {α} : NoetherianSpace (CofiniteTopology α) := by
+instance {α} : NoetherianSpace (CofiniteTopology α) := fast_instance% by
   simp only [noetherianSpace_iff_isCompact, isCompact_iff_ultrafilter_le_nhds,
     CofiniteTopology.nhds_eq, Ultrafilter.le_sup_iff, Filter.le_principal_iff]
   intro s f hs

@@ -112,7 +112,7 @@ theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : 
   | 0, _ => rfl
   | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) rfl (coe_nsmul n K)
 
-instance : AddMonoid (ConvexBody V) :=
+instance : AddMonoid (ConvexBody V) := fast_instance%
   SetLike.coe_injective.addMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
 @[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
@@ -125,10 +125,10 @@ theorem coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
   rfl
 #align convex_body.coe_zero ConvexBody.coe_zero
 
-instance : Inhabited (ConvexBody V) :=
+instance : Inhabited (ConvexBody V) := fast_instance%
   ⟨0⟩
 
-instance : AddCommMonoid (ConvexBody V) :=
+instance : AddCommMonoid (ConvexBody V) := fast_instance%
   SetLike.coe_injective.addCommMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
 end ContinuousAdd
@@ -145,7 +145,7 @@ theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (
 
 variable [ContinuousAdd V]
 
-instance : DistribMulAction ℝ (ConvexBody V) :=
+instance : DistribMulAction ℝ (ConvexBody V) := fast_instance%
   SetLike.coe_injective.distribMulAction ⟨⟨(↑), coe_zero⟩, coe_add⟩ coe_smul
 
 @[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.

@@ -228,7 +228,7 @@ theorem val_fin_le {n : ℕ} {a b : Fin n} : (a : ℕ) ≤ (b : ℕ) ↔ a ≤ b
   Iff.rfl
 #align fin.coe_fin_le Fin.val_fin_le
 
-instance {n : ℕ} : LinearOrder (Fin n) :=
+instance {n : ℕ} : LinearOrder (Fin n) := fast_instance%
   @LinearOrder.liftWithOrd (Fin n) _ _ ⟨fun x y => ⟨max x y, max_rec' (· < n) x.2 y.2⟩⟩
     ⟨fun x y => ⟨min x y, min_rec' (· < n) x.2 y.2⟩⟩ _ Fin.val Fin.val_injective (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl)
@@ -244,7 +244,7 @@ theorem min_val {a : Fin n} : min (a : ℕ) n = a := by simp
 theorem max_val {a : Fin n} : max (a : ℕ) n = n := by simp
 #align fin.max_coe Fin.max_val
 
-instance {n : ℕ} : PartialOrder (Fin n) := by infer_instance
+instance {n : ℕ} : PartialOrder (Fin n) := fast_instance% by infer_instance
 
 theorem val_strictMono : StrictMono (val : Fin n → ℕ) := fun _ _ => id
 #align fin.coe_strict_mono Fin.val_strictMono
@@ -276,7 +276,7 @@ def valOrderEmbedding (n) : Fin n ↪o ℕ :=
 #align fin.coe_order_embedding Fin.valOrderEmbedding
 
 /-- The ordering on `Fin n` is a well order. -/
-instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) :=
+instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) := fast_instance%
   (valOrderEmbedding n).isWellOrder
 #align fin.fin.lt.is_well_order Fin.Lt.isWellOrder
 
@@ -290,7 +290,7 @@ def factorial {n : ℕ} : Fin n → ℕ
   | ⟨i + 1, hi⟩ := (i + 1) * factorial ⟨i, i.lt_succ_self.trans hi⟩
 ```
 -/
-instance {n : ℕ} : WellFoundedRelation (Fin n) :=
+instance {n : ℕ} : WellFoundedRelation (Fin n) := fast_instance%
   measure (val : Fin n → ℕ)
 
 /-- Given a positive `n`, `Fin.ofNat' i` is `i % n` as an element of `Fin n`. -/
@@ -300,8 +300,8 @@ def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
 -- Porting note: `Fin.ofNat'` conflicts with something in core (there the hypothesis is `n > 0`),
 -- so for now we make this double-prime `''`. This is also the reason for the dubious translation.
 
-instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
-instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
+instance {n : ℕ} [NeZero n] : Zero (Fin n) := fast_instance% ⟨ofNat'' 0⟩
+instance {n : ℕ} [NeZero n] : One (Fin n) := fast_instance% ⟨ofNat'' 1⟩
 
 #align fin.coe_zero Fin.val_zero
 
@@ -431,7 +431,7 @@ instance : BoundedOrder (Fin (n + 1)) where
   bot := 0
   bot_le := zero_le
 
-instance : Lattice (Fin (n + 1)) :=
+instance : Lattice (Fin (n + 1)) := fast_instance%
   LinearOrder.toLattice
 
 #align fin.last_pos Fin.last_pos
@@ -472,18 +472,18 @@ theorem coe_orderIso_apply (e : Fin n ≃o Fin m) (i : Fin n) : (e i : ℕ) = i 
   · rwa [← h j hj (hj.trans hi), ← lt_iff_val_lt_val, e.lt_iff_lt]
 #align fin.coe_order_iso_apply Fin.coe_orderIso_apply
 
-instance orderIso_subsingleton : Subsingleton (Fin n ≃o α) :=
+instance orderIso_subsingleton : Subsingleton (Fin n ≃o α) := fast_instance%
   ⟨fun e e' => by
     ext i
     rw [← e.symm.apply_eq_iff_eq, e.symm_apply_apply, ← e'.trans_apply, ext_iff,
       coe_orderIso_apply]⟩
 #align fin.order_iso_subsingleton Fin.orderIso_subsingleton
 
-instance orderIso_subsingleton' : Subsingleton (α ≃o Fin n) :=
+instance orderIso_subsingleton' : Subsingleton (α ≃o Fin n) := fast_instance%
   OrderIso.symm_injective.subsingleton
 #align fin.order_iso_subsingleton' Fin.orderIso_subsingleton'
 
-instance orderIsoUnique : Unique (Fin n ≃o Fin n) :=
+instance orderIsoUnique : Unique (Fin n ≃o Fin n) := fast_instance%
   Unique.mk' _
 #align fin.order_iso_unique Fin.orderIsoUnique
 
@@ -557,10 +557,10 @@ protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
 instance [NeZero n] : OfNat (Fin n) a where
   ofNat := Fin.ofNat' a (NeZero.pos n)
 
-instance inhabited (n : ℕ) [NeZero n] : Inhabited (Fin n) :=
+instance inhabited (n : ℕ) [NeZero n] : Inhabited (Fin n) := fast_instance%
   ⟨0⟩
 
-instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
+instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) := fast_instance%
   haveI : NeZero (1 + n) := by rw [Nat.add_comm]; infer_instance
   inferInstance
 
@@ -894,7 +894,7 @@ theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by
 
 @[simp]
 theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} : cast h (0 : Fin n) =
-    by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} :=
+    by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} := fast_instance%
   ext rfl
 #align fin.cast_zero Fin.cast_zero
 
@@ -1507,11 +1507,11 @@ section AddGroup
 open Nat Int
 
 /-- Negation on `Fin n` -/
-instance neg (n : ℕ) : Neg (Fin n) :=
+instance neg (n : ℕ) : Neg (Fin n) := fast_instance%
   ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
 
 /-- Abelian group structure on `Fin n`. -/
-instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
+instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) := fast_instance%
   { Fin.addCommMonoid n, Fin.neg n with
     add_left_neg := fun ⟨a, ha⟩ =>
       Fin.ext <| (Nat.mod_add_mod _ _ _).trans <| by
@@ -1535,12 +1535,12 @@ instance instIsCancelAdd (n : ℕ) : IsCancelAdd (Fin n) where
 #align fin.is_cancel_add Fin.instIsCancelAdd
 
 /-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
-instance instAddLeftCancelSemigroup (n : ℕ) : AddLeftCancelSemigroup (Fin n) :=
+instance instAddLeftCancelSemigroup (n : ℕ) : AddLeftCancelSemigroup (Fin n) := fast_instance%
   { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
 #align fin.add_left_cancel_semigroup Fin.instAddLeftCancelSemigroup
 
 /-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
-instance instAddRightCancelSemigroup (n : ℕ) : AddRightCancelSemigroup (Fin n) :=
+instance instAddRightCancelSemigroup (n : ℕ) : AddRightCancelSemigroup (Fin n) := fast_instance%
   { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
 #align fin.add_right_cancel_semigroup Fin.instAddRightCancelSemigroup
 

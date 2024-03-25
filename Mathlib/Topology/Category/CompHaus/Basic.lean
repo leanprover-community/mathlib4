@@ -48,24 +48,24 @@ set_option linter.uppercaseLean3 false in
 
 namespace CompHaus
 
-instance : Inhabited CompHaus :=
+instance : Inhabited CompHaus := fast_instance%
   ⟨{ toTop := { α := PEmpty } }⟩
 
-instance : CoeSort CompHaus (Type*) :=
+instance : CoeSort CompHaus (Type*) := fast_instance%
   ⟨fun X => X.toTop⟩
 
-instance {X : CompHaus} : CompactSpace X :=
+instance {X : CompHaus} : CompactSpace X := fast_instance%
   X.is_compact
 
-instance {X : CompHaus} : T2Space X :=
+instance {X : CompHaus} : T2Space X := fast_instance%
   X.is_hausdorff
 
-instance category : Category CompHaus :=
+instance category : Category CompHaus := fast_instance%
   InducedCategory.category toTop
 set_option linter.uppercaseLean3 false in
 #align CompHaus.category CompHaus.category
 
-instance concreteCategory : ConcreteCategory CompHaus :=
+instance concreteCategory : ConcreteCategory CompHaus := fast_instance%
   InducedCategory.concreteCategory _
 set_option linter.uppercaseLean3 false in
 #align CompHaus.concrete_category CompHaus.concreteCategory
@@ -98,15 +98,15 @@ set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_of CompHaus.coe_of
 
 -- Porting note (#10754): Adding instance
-instance (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
+instance (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) := fast_instance%
   show TopologicalSpace X.toTop from inferInstance
 
 -- Porting note (#10754): Adding instance
-instance (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
+instance (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) := fast_instance%
   show CompactSpace X.toTop from inferInstance
 
 -- Porting note (#10754): Adding instance
-instance (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
+instance (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) := fast_instance%
   show T2Space X.toTop from inferInstance
 
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/
@@ -185,21 +185,21 @@ def compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top compHausToTop
 
-instance : Full compHausToTop :=
+instance : Full compHausToTop := fast_instance%
   show Full <| inducedFunctor _ from inferInstance
 
-instance : Faithful compHausToTop :=
+instance : Faithful compHausToTop := fast_instance%
   show Faithful <| inducedFunctor _ from inferInstance
 
 -- Porting note (#10754): Adding instance
-instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
+instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) := fast_instance%
   show CompactSpace X.toTop from inferInstance
 
 -- Porting note (#10754): Adding instance
-instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
+instance (X : CompHaus) : T2Space (compHausToTop.obj X) := fast_instance%
   show T2Space X.toTop from inferInstance
 
-instance CompHaus.forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget CompHaus.{u}) :=
+instance CompHaus.forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget CompHaus.{u}) := fast_instance%
   ⟨by intro A B f hf; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
 set_option linter.uppercaseLean3 false in
 #align CompHaus.forget_reflects_isomorphisms CompHaus.forget_reflectsIsomorphisms
@@ -262,17 +262,17 @@ noncomputable instance compHausToTop.reflective : Reflective compHausToTop where
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top.reflective compHausToTop.reflective
 
-noncomputable instance compHausToTop.createsLimits : CreatesLimits compHausToTop :=
+noncomputable instance compHausToTop.createsLimits : CreatesLimits compHausToTop := fast_instance%
   monadicCreatesLimits _
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top.creates_limits compHausToTop.createsLimits
 
-instance CompHaus.hasLimits : Limits.HasLimits CompHaus :=
+instance CompHaus.hasLimits : Limits.HasLimits CompHaus := fast_instance%
   hasLimits_of_hasLimits_createsLimits compHausToTop
 set_option linter.uppercaseLean3 false in
 #align CompHaus.has_limits CompHaus.hasLimits
 
-instance CompHaus.hasColimits : Limits.HasColimits CompHaus :=
+instance CompHaus.hasColimits : Limits.HasColimits CompHaus := fast_instance%
   hasColimits_of_reflective compHausToTop
 set_option linter.uppercaseLean3 false in
 #align CompHaus.has_colimits CompHaus.hasColimits

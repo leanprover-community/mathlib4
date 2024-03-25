@@ -28,7 +28,7 @@ open Simplicial NNReal BigOperators Classical CategoryTheory
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 -- Porting note: added, should be moved
-instance (x : SimplexCategory) : Fintype (ConcreteCategory.forget.obj x) :=
+instance (x : SimplexCategory) : Fintype (ConcreteCategory.forget.obj x) := fast_instance%
   inferInstanceAs (Fintype (Fin _))
 
 /-- The topological simplex associated to `x : SimplexCategory`.
@@ -36,7 +36,7 @@ instance (x : SimplexCategory) : Fintype (ConcreteCategory.forget.obj x) :=
 def toTopObj (x : SimplexCategory) := { f : x → ℝ≥0 | ∑ i, f i = 1 }
 #align simplex_category.to_Top_obj SimplexCategory.toTopObj
 
-instance (x : SimplexCategory) : CoeFun x.toTopObj fun _ => x → ℝ≥0 :=
+instance (x : SimplexCategory) : CoeFun x.toTopObj fun _ => x → ℝ≥0 := fast_instance%
   ⟨fun f => (f : x → ℝ≥0)⟩
 
 @[ext]

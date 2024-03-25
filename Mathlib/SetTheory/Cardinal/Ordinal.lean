@@ -312,7 +312,7 @@ theorem aleph_toPartENat (o : Ordinal) : toPartENat (aleph o) = ⊤ :=
   toPartENat_apply_of_aleph0_le <| aleph0_le_aleph o
 #align cardinal.aleph_to_part_enat Cardinal.aleph_toPartENat
 
-instance nonempty_out_aleph (o : Ordinal) : Nonempty (aleph o).ord.out.α := by
+instance nonempty_out_aleph (o : Ordinal) : Nonempty (aleph o).ord.out.α := fast_instance% by
   rw [out_nonempty_iff_ne_zero, ← ord_zero]
   exact fun h => (ord_injective h).not_gt (aleph_pos o)
 #align cardinal.nonempty_out_aleph Cardinal.nonempty_out_aleph
@@ -321,7 +321,7 @@ theorem ord_aleph_isLimit (o : Ordinal) : (aleph o).ord.IsLimit :=
   ord_isLimit <| aleph0_le_aleph _
 #align cardinal.ord_aleph_is_limit Cardinal.ord_aleph_isLimit
 
-instance (o : Ordinal) : NoMaxOrder (aleph o).ord.out.α :=
+instance (o : Ordinal) : NoMaxOrder (aleph o).ord.out.α := fast_instance%
   out_no_max_of_succ_lt (ord_aleph_isLimit o).2
 
 theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = aleph o :=

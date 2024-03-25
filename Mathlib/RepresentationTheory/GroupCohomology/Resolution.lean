@@ -683,7 +683,7 @@ theorem quasiIso_forget₂_εToSingle₀ :
   exact quasiIso_of_comp_right (hφφ' := h)
 #align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ groupCohomology.resolution.quasiIso_forget₂_εToSingle₀
 
-instance : QuasiIso (εToSingle₀ k G) := by
+instance : QuasiIso (εToSingle₀ k G) := fast_instance% by
   rw [← HomologicalComplex.quasiIso_map_iff_of_preservesHomology _ (forget₂ _ (ModuleCat.{u} k))]
   apply quasiIso_forget₂_εToSingle₀
 
@@ -701,7 +701,7 @@ def groupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.ProjectiveResolution groupCohomology.projectiveResolution
 
-instance : EnoughProjectives (Rep k G) :=
+instance : EnoughProjectives (Rep k G) := fast_instance%
   Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2
     ModuleCat.moduleCat_enoughProjectives.{u}
 

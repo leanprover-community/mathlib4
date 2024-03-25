@@ -62,7 +62,7 @@ theorem degree_lt_wf : WellFounded fun p q : R[X] => degree p < degree q :=
   InvImage.wf degree wellFounded_lt
 #align polynomial.degree_lt_wf Polynomial.degree_lt_wf
 
-instance : WellFoundedRelation R[X] :=
+instance : WellFoundedRelation R[X] := fast_instance%
   ⟨_, degree_lt_wf⟩
 
 /-- `natDegree p` forces `degree p` to ℕ, by defining `natDegree 0 = 0`. -/
@@ -89,7 +89,7 @@ theorem Monic.def : Monic p ↔ leadingCoeff p = 1 :=
   Iff.rfl
 #align polynomial.monic.def Polynomial.Monic.def
 
-instance Monic.decidable [DecidableEq R] : Decidable (Monic p) := by unfold Monic; infer_instance
+instance Monic.decidable [DecidableEq R] : Decidable (Monic p) := fast_instance% by unfold Monic; infer_instance
 #align polynomial.monic.decidable Polynomial.Monic.decidable
 
 @[simp]

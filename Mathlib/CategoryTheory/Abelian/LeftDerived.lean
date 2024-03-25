@@ -323,11 +323,11 @@ instance {X : C} (P : ProjectiveResolution X) :
   rw [ChainComplex.isIso_descOpcycles_iff, ShortComplex.exact_and_epi_g_iff_g_is_cokernel]
   exact ⟨CokernelCofork.mapIsColimit _ (P.isColimitCokernelCofork) F⟩
 
-instance (X : C) : IsIso (F.fromLeftDerivedZero.app X) := by
+instance (X : C) : IsIso (F.fromLeftDerivedZero.app X) := fast_instance% by
   dsimp [Functor.fromLeftDerivedZero]
   infer_instance
 
-instance : IsIso F.fromLeftDerivedZero :=
+instance : IsIso F.fromLeftDerivedZero := fast_instance%
   NatIso.isIso_of_isIso_app _
 
 namespace Functor

@@ -96,7 +96,7 @@ theorem lt_def [∀ i, LT (α i)] {a b : Σi, α i} : a < b ↔ ∃ h : a.1 = b.
     exact lt.fiber _ _ _ h
 #align sigma.lt_def Sigma.lt_def
 
-protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σi, α i) :=
+protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σi, α i) := fast_instance%
   { Sigma.LE, Sigma.LT with
     le_refl := fun ⟨i, a⟩ => Sigma.le.fiber i a a le_rfl,
     le_trans := by
@@ -110,7 +110,7 @@ protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σi, α i) :=
         rw [mk_le_mk_iff] at h
         exact mk_lt_mk_iff.2 (hab.lt_of_not_le h) }
 
-instance [∀ i, PartialOrder (α i)] : PartialOrder (Σi, α i) :=
+instance [∀ i, PartialOrder (α i)] : PartialOrder (Σi, α i) := fast_instance%
   { Sigma.preorder with
     le_antisymm := by
       rintro _ _ ⟨i, a, b, hab⟩ ⟨_, _, _, hba⟩
@@ -151,7 +151,7 @@ theorem lt_def [LT ι] [∀ i, LT (α i)] {a b : Σₗ i, α i} :
 #align sigma.lex.lt_def Sigma.Lex.lt_def
 
 /-- The lexicographical preorder on a sigma type. -/
-instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) :=
+instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) := fast_instance%
   { Sigma.Lex.LE, Sigma.Lex.LT with
     le_refl := fun ⟨i, a⟩ => Lex.right a a le_rfl,
     le_trans := fun _ _ _ => trans_of ((Lex (· < ·)) fun _ => (· ≤ ·)),

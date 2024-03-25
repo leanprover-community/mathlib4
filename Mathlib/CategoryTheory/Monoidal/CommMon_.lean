@@ -38,13 +38,13 @@ def trivial : CommMon_ C :=
 set_option linter.uppercaseLean3 false in
 #align CommMon_.trivial CommMon_.trivial
 
-instance : Inhabited (CommMon_ C) :=
+instance : Inhabited (CommMon_ C) := fast_instance%
   ⟨trivial C⟩
 
 variable {C}
 variable {M : CommMon_ C}
 
-instance : Category (CommMon_ C) :=
+instance : Category (CommMon_ C) := fast_instance%
   InducedCategory.category CommMon_.toMon_
 
 @[simp]
@@ -87,8 +87,8 @@ set_option linter.uppercaseLean3 false in
 #align CommMon_.forget₂_Mon_ CommMon_.forget₂Mon_
 
 -- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : Full (forget₂Mon_ C) := InducedCategory.full _
-instance : Faithful (forget₂Mon_ C) := InducedCategory.faithful _
+instance : Full (forget₂Mon_ C) := fast_instance% InducedCategory.full _
+instance : Faithful (forget₂Mon_ C) := fast_instance% InducedCategory.faithful _
 
 @[simp]
 theorem forget₂_Mon_obj_one (A : CommMon_ C) : ((forget₂Mon_ C).obj A).one = A.one :=
@@ -110,14 +110,14 @@ set_option linter.uppercaseLean3 false in
 
 end
 
-instance uniqueHomFromTrivial (A : CommMon_ C) : Unique (trivial C ⟶ A) :=
+instance uniqueHomFromTrivial (A : CommMon_ C) : Unique (trivial C ⟶ A) := fast_instance%
   Mon_.uniqueHomFromTrivial A.toMon_
 set_option linter.uppercaseLean3 false in
 #align CommMon_.unique_hom_from_trivial CommMon_.uniqueHomFromTrivial
 
 open CategoryTheory.Limits
 
-instance : HasInitial (CommMon_ C) :=
+instance : HasInitial (CommMon_ C) := fast_instance%
   hasInitial_of_unique (trivial C)
 
 end CommMon_

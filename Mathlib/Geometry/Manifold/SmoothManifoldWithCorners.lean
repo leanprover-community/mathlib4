@@ -176,7 +176,7 @@ namespace ModelWithCorners
 switch to this behavior later, doing it mid-port will break a lot of proofs. -/
 @[coe] def toFun' (e : ModelWithCorners 𝕜 E H) : H → E := e.toFun
 
-instance : CoeFun (ModelWithCorners 𝕜 E H) fun _ => H → E := ⟨toFun'⟩
+instance : CoeFun (ModelWithCorners 𝕜 E H) fun _ => H → E := fast_instance% ⟨toFun'⟩
 
 /-- The inverse to a model with corners, only registered as a `PartialEquiv`. -/
 protected def symm : PartialEquiv E H :=
@@ -649,7 +649,7 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
 #align cont_diff_groupoid_prod contDiffGroupoid_prod
 
 /-- The `C^n` groupoid is closed under restriction. -/
-instance : ClosedUnderRestriction (contDiffGroupoid n I) :=
+instance : ClosedUnderRestriction (contDiffGroupoid n I) := fast_instance%
   (closedUnderRestriction_iff_id_le _).mpr
     (by
       apply StructureGroupoid.le_iff.mpr
@@ -787,7 +787,7 @@ theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
   StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_analyticGroupoid I e.open_target) this
 
 /-- The analytic groupoid is closed under restriction. -/
-instance : ClosedUnderRestriction (analyticGroupoid I) :=
+instance : ClosedUnderRestriction (analyticGroupoid I) := fast_instance%
   (closedUnderRestriction_iff_id_le _).mpr
     (by
       apply StructureGroupoid.le_iff.mpr
@@ -930,7 +930,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
   [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] (s : Opens M)
 
-instance : SmoothManifoldWithCorners I s :=
+instance : SmoothManifoldWithCorners I s := fast_instance%
   { s.instHasGroupoid (contDiffGroupoid ∞ I) with }
 
 end TopologicalSpace.Opens

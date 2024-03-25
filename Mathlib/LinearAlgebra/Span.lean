@@ -741,7 +741,7 @@ theorem finite_span_isCompactElement (S : Set M) (h : S.Finite) :
   Finite.coe_toFinset h ▸ finset_span_isCompactElement h.toFinset
 #align submodule.finite_span_is_compact_element Submodule.finite_span_isCompactElement
 
-instance : IsCompactlyGenerated (Submodule R M) :=
+instance : IsCompactlyGenerated (Submodule R M) := fast_instance%
   ⟨fun s =>
     ⟨(fun x => span R {x}) '' s,
       ⟨fun t ht => by
@@ -879,7 +879,7 @@ theorem mem_span_insert' {x y} {s : Set M} :
     exact ⟨-a, _, h, by simp [add_comm, add_left_comm]⟩
 #align submodule.mem_span_insert' Submodule.mem_span_insert'
 
-instance : IsModularLattice (Submodule R M) :=
+instance : IsModularLattice (Submodule R M) := fast_instance%
   ⟨fun y z xz a ha => by
     rw [mem_inf, mem_sup] at ha
     rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩

@@ -879,7 +879,7 @@ protected def Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot 
 
 end lift
 
-instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit := by
+instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit := fast_instance% by
   refine'
   { PUnit.instBiheytingAlgebra with
     .. } <;> (intros; trivial)

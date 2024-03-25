@@ -256,7 +256,7 @@ set_option linter.unusedVariables false
 /-- The result of `norm_num` running on an expression `x` of type `α`. -/
 @[nolint unusedArguments] def Result {α : Q(Type u)} (x : Q($α)) := Result'
 
-instance : Inhabited (Result x) := inferInstanceAs (Inhabited Result')
+instance : Inhabited (Result x) := fast_instance% inferInstanceAs (Inhabited Result')
 
 /-- The result is `proof : x`, where `x` is a (true) proposition. -/
 @[match_pattern, inline] def Result.isTrue {x : Q(Prop)} :

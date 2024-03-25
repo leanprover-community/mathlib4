@@ -143,7 +143,7 @@ theorem lie_self : ⁅x, x⁆ = 0 :=
   LieRing.lie_self x
 #align lie_self lie_self
 
-instance lieRingSelfModule : LieRingModule L L :=
+instance lieRingSelfModule : LieRingModule L L := fast_instance%
   { (inferInstance : LieRing L) with }
 #align lie_ring_self_module lieRingSelfModule
 
@@ -217,7 +217,7 @@ theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y�
   abel
 #align lie_jacobi lie_jacobi
 
-instance LieRing.instLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
+instance LieRing.instLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := fast_instance% lie_zsmul x y n
 #align lie_ring.int_lie_algebra LieRing.instLieAlgebra
 
 instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
@@ -296,10 +296,10 @@ variable [LieRing L₃] [LieAlgebra R L₃]
 
 attribute [coe] LieHom.toLinearMap
 
-instance : Coe (L₁ →ₗ⁅R⁆ L₂) (L₁ →ₗ[R] L₂) :=
+instance : Coe (L₁ →ₗ⁅R⁆ L₂) (L₁ →ₗ[R] L₂) := fast_instance%
   ⟨LieHom.toLinearMap⟩
 
-instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ L₂ :=
+instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ L₂ := fast_instance%
   { coe := fun f => f.toFun,
     coe_injective' := fun x y h =>
       by cases x; cases y; simp at h; simp [h] }
@@ -361,7 +361,7 @@ theorem id_apply (x : L₁) : (id : L₁ →ₗ⁅R⁆ L₁) x = x :=
 #align lie_hom.id_apply LieHom.id_apply
 
 /-- The constant 0 map is a Lie algebra morphism. -/
-instance : Zero (L₁ →ₗ⁅R⁆ L₂) :=
+instance : Zero (L₁ →ₗ⁅R⁆ L₂) := fast_instance%
   ⟨{ (0 : L₁ →ₗ[R] L₂) with map_lie' := by simp }⟩
 
 @[norm_cast, simp]
@@ -374,7 +374,7 @@ theorem zero_apply (x : L₁) : (0 : L₁ →ₗ⁅R⁆ L₂) x = 0 :=
 #align lie_hom.zero_apply LieHom.zero_apply
 
 /-- The identity map is a Lie algebra morphism. -/
-instance : One (L₁ →ₗ⁅R⁆ L₁) :=
+instance : One (L₁ →ₗ⁅R⁆ L₁) := fast_instance%
   ⟨id⟩
 
 @[simp]
@@ -386,7 +386,7 @@ theorem one_apply (x : L₁) : (1 : L₁ →ₗ⁅R⁆ L₁) x = x :=
   rfl
 #align lie_hom.one_apply LieHom.one_apply
 
-instance : Inhabited (L₁ →ₗ⁅R⁆ L₂) :=
+instance : Inhabited (L₁ →ₗ⁅R⁆ L₂) := fast_instance%
   ⟨0⟩
 
 theorem coe_injective : @Function.Injective (L₁ →ₗ⁅R⁆ L₂) (L₁ → L₂) (↑) := by
@@ -535,15 +535,15 @@ def toLinearEquiv (f : L₁ ≃ₗ⁅R⁆ L₂) : L₁ ≃ₗ[R] L₂ :=
   { f.toLieHom, f with }
 #align lie_equiv.to_linear_equiv LieEquiv.toLinearEquiv
 
-instance hasCoeToLieHom : Coe (L₁ ≃ₗ⁅R⁆ L₂) (L₁ →ₗ⁅R⁆ L₂) :=
+instance hasCoeToLieHom : Coe (L₁ ≃ₗ⁅R⁆ L₂) (L₁ →ₗ⁅R⁆ L₂) := fast_instance%
   ⟨toLieHom⟩
 #align lie_equiv.has_coe_to_lie_hom LieEquiv.hasCoeToLieHom
 
-instance hasCoeToLinearEquiv : Coe (L₁ ≃ₗ⁅R⁆ L₂) (L₁ ≃ₗ[R] L₂) :=
+instance hasCoeToLinearEquiv : Coe (L₁ ≃ₗ⁅R⁆ L₂) (L₁ ≃ₗ[R] L₂) := fast_instance%
   ⟨toLinearEquiv⟩
 #align lie_equiv.has_coe_to_linear_equiv LieEquiv.hasCoeToLinearEquiv
 
-instance : EquivLike (L₁ ≃ₗ⁅R⁆ L₂) L₁ L₂ :=
+instance : EquivLike (L₁ ≃ₗ⁅R⁆ L₂) L₁ L₂ := fast_instance%
   { coe := fun f => f.toFun,
     inv := fun f => f.invFun,
     left_inv := fun f => f.left_inv,
@@ -587,7 +587,7 @@ theorem ext {f g : L₁ ≃ₗ⁅R⁆ L₂} (h : ∀ x, f x = g x) : f = g :=
   coe_injective <| funext h
 #align lie_equiv.ext LieEquiv.ext
 
-instance : One (L₁ ≃ₗ⁅R⁆ L₁) :=
+instance : One (L₁ ≃ₗ⁅R⁆ L₁) := fast_instance%
   ⟨{ (1 : L₁ ≃ₗ[R] L₁) with map_lie' := rfl }⟩
 
 @[simp]
@@ -595,7 +595,7 @@ theorem one_apply (x : L₁) : (1 : L₁ ≃ₗ⁅R⁆ L₁) x = x :=
   rfl
 #align lie_equiv.one_apply LieEquiv.one_apply
 
-instance : Inhabited (L₁ ≃ₗ⁅R⁆ L₁) :=
+instance : Inhabited (L₁ ≃ₗ⁅R⁆ L₁) := fast_instance%
   ⟨1⟩
 
 /-- Lie algebra equivalences are reflexive. -/
@@ -715,10 +715,10 @@ variable {R L M N P}
 
 attribute [coe] LieModuleHom.toLinearMap
 
-instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
+instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) := fast_instance%
   ⟨LieModuleHom.toLinearMap⟩
 
-instance : FunLike (M →ₗ⁅R, L⁆ N) M N :=
+instance : FunLike (M →ₗ⁅R, L⁆ N) M N := fast_instance%
   { coe := fun f => f.toFun,
     coe_injective' := fun x y h =>
       by cases x; cases y; simp at h; simp [h] }
@@ -779,7 +779,7 @@ theorem id_apply (x : M) : (id : M →ₗ⁅R,L⁆ M) x = x :=
 #align lie_module_hom.id_apply LieModuleHom.id_apply
 
 /-- The constant 0 map is a Lie module morphism. -/
-instance : Zero (M →ₗ⁅R,L⁆ N) :=
+instance : Zero (M →ₗ⁅R,L⁆ N) := fast_instance%
   ⟨{ (0 : M →ₗ[R] N) with map_lie' := by simp }⟩
 
 @[norm_cast, simp]
@@ -792,10 +792,10 @@ theorem zero_apply (m : M) : (0 : M →ₗ⁅R,L⁆ N) m = 0 :=
 #align lie_module_hom.zero_apply LieModuleHom.zero_apply
 
 /-- The identity map is a Lie module morphism. -/
-instance : One (M →ₗ⁅R,L⁆ M) :=
+instance : One (M →ₗ⁅R,L⁆ M) := fast_instance%
   ⟨id⟩
 
-instance : Inhabited (M →ₗ⁅R,L⁆ N) :=
+instance : Inhabited (M →ₗ⁅R,L⁆ N) := fast_instance%
   ⟨0⟩
 
 theorem coe_injective : @Function.Injective (M →ₗ⁅R,L⁆ N) (M → N) (↑) := by
@@ -876,7 +876,7 @@ instance : Add (M →ₗ⁅R,L⁆ N) where
 instance : Sub (M →ₗ⁅R,L⁆ N) where
   sub f g := { (f : M →ₗ[R] N) - (g : M →ₗ[R] N) with map_lie' := by simp }
 
-instance : Neg (M →ₗ⁅R,L⁆ N) where neg f := { -(f : M →ₗ[R] N) with map_lie' := by simp }
+instance : Neg (M →ₗ⁅R,L⁆ N) where neg f := fast_instance% { -(f : M →ₗ[R] N) with map_lie' := by simp }
 
 @[norm_cast, simp]
 theorem coe_add (f g : M →ₗ⁅R,L⁆ N) : ⇑(f + g) = f + g :=
@@ -931,11 +931,11 @@ theorem zsmul_apply (z : ℤ) (f : M →ₗ⁅R,L⁆ N) (m : M) : (z • f) m = 
   rfl
 #align lie_module_hom.zsmul_apply LieModuleHom.zsmul_apply
 
-instance : AddCommGroup (M →ₗ⁅R,L⁆ N) :=
+instance : AddCommGroup (M →ₗ⁅R,L⁆ N) := fast_instance%
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     (fun _ _ => coe_zsmul _ _)
 
-instance : SMul R (M →ₗ⁅R,L⁆ N) where smul t f := { t • (f : M →ₗ[R] N) with map_lie' := by simp }
+instance : SMul R (M →ₗ⁅R,L⁆ N) where smul t f := fast_instance% { t • (f : M →ₗ[R] N) with map_lie' := by simp }
 
 @[norm_cast, simp]
 theorem coe_smul (t : R) (f : M →ₗ⁅R,L⁆ N) : ⇑(t • f) = t • (⇑f) :=
@@ -946,7 +946,7 @@ theorem smul_apply (t : R) (f : M →ₗ⁅R,L⁆ N) (m : M) : (t • f) m = t �
   rfl
 #align lie_module_hom.smul_apply LieModuleHom.smul_apply
 
-instance : Module R (M →ₗ⁅R,L⁆ N) :=
+instance : Module R (M →ₗ⁅R,L⁆ N) := fast_instance%
   Function.Injective.module R
     { toFun := fun f => f.toLinearMap.toFun, map_zero' := rfl, map_add' := coe_add }
     coe_injective coe_smul
@@ -985,19 +985,19 @@ def toEquiv (e : M ≃ₗ⁅R,L⁆ N) : M ≃ N :=
   { e with }
 #align lie_module_equiv.to_equiv LieModuleEquiv.toEquiv
 
-instance hasCoeToEquiv : CoeOut (M ≃ₗ⁅R,L⁆ N) (M ≃ N) :=
+instance hasCoeToEquiv : CoeOut (M ≃ₗ⁅R,L⁆ N) (M ≃ N) := fast_instance%
   ⟨toEquiv⟩
 #align lie_module_equiv.has_coe_to_equiv LieModuleEquiv.hasCoeToEquiv
 
-instance hasCoeToLieModuleHom : Coe (M ≃ₗ⁅R,L⁆ N) (M →ₗ⁅R,L⁆ N) :=
+instance hasCoeToLieModuleHom : Coe (M ≃ₗ⁅R,L⁆ N) (M →ₗ⁅R,L⁆ N) := fast_instance%
   ⟨toLieModuleHom⟩
 #align lie_module_equiv.has_coe_to_lie_module_hom LieModuleEquiv.hasCoeToLieModuleHom
 
-instance hasCoeToLinearEquiv : CoeOut (M ≃ₗ⁅R,L⁆ N) (M ≃ₗ[R] N) :=
+instance hasCoeToLinearEquiv : CoeOut (M ≃ₗ⁅R,L⁆ N) (M ≃ₗ[R] N) := fast_instance%
   ⟨toLinearEquiv⟩
 #align lie_module_equiv.has_coe_to_linear_equiv LieModuleEquiv.hasCoeToLinearEquiv
 
-instance : EquivLike (M ≃ₗ⁅R,L⁆ N) M N :=
+instance : EquivLike (M ≃ₗ⁅R,L⁆ N) M N := fast_instance%
   { coe := fun f => f.toFun,
     inv := fun f => f.invFun,
     left_inv := fun f => f.left_inv,
@@ -1047,7 +1047,7 @@ theorem ext (e₁ e₂ : M ≃ₗ⁅R,L⁆ N) (h : ∀ m, e₁ m = e₂ m) : e�
   toEquiv_injective (Equiv.ext h)
 #align lie_module_equiv.ext LieModuleEquiv.ext
 
-instance : One (M ≃ₗ⁅R,L⁆ M) :=
+instance : One (M ≃ₗ⁅R,L⁆ M) := fast_instance%
   ⟨{ (1 : M ≃ₗ[R] M) with map_lie' := rfl }⟩
 
 @[simp]
@@ -1055,7 +1055,7 @@ theorem one_apply (m : M) : (1 : M ≃ₗ⁅R,L⁆ M) m = m :=
   rfl
 #align lie_module_equiv.one_apply LieModuleEquiv.one_apply
 
-instance : Inhabited (M ≃ₗ⁅R,L⁆ M) :=
+instance : Inhabited (M ≃ₗ⁅R,L⁆ M) := fast_instance%
   ⟨1⟩
 
 /-- Lie module equivalences are reflexive. -/

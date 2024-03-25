@@ -144,7 +144,7 @@ section SMul
 variable [SMul M X]
 
 @[to_additive]
-noncomputable instance : SMul M (Completion X) :=
+noncomputable instance : SMul M (Completion X) := fast_instance%
   ⟨fun c => Completion.map (c • ·)⟩
 
 @[to_additive]
@@ -154,7 +154,7 @@ theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·
 #align uniform_space.completion.vadd_def UniformSpace.Completion.vadd_def
 
 @[to_additive]
-instance : UniformContinuousConstSMul M (Completion X) :=
+instance : UniformContinuousConstSMul M (Completion X) := fast_instance%
   ⟨fun _ => uniformContinuous_map⟩
 
 @[to_additive instVAddAssocClass]
@@ -179,7 +179,7 @@ instance [SMul N X] [SMulCommClass M N X] [UniformContinuousConstSMul M X]
     repeat' exact uniformContinuous_const_smul _⟩
 
 @[to_additive]
-instance [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : IsCentralScalar M (Completion X) :=
+instance [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : IsCentralScalar M (Completion X) := fast_instance%
   ⟨fun c a => (congr_arg fun f => Completion.map f a) <| funext (op_smul_eq_smul c)⟩
 
 variable {M X}

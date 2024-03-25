@@ -257,7 +257,7 @@ theorem coe_mulEquiv_refl : (RingEquiv.refl R : R ≃* R) = MulEquiv.refl R :=
   rfl
 #align ring_equiv.coe_mul_equiv_refl RingEquiv.coe_mulEquiv_refl
 
-instance : Inhabited (R ≃+* R) :=
+instance : Inhabited (R ≃+* R) := fast_instance%
   ⟨RingEquiv.refl R⟩
 
 variable {R}

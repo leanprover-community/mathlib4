@@ -175,7 +175,7 @@ theorem equalizerCondition (X : CondensedSet) : EqualizerCondition X.val :=
   CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) X.val |>.mp X.cond |>.2
 
 /-- A condensed set preserves finite products. -/
-noncomputable instance (X : CondensedSet) : PreservesFiniteProducts X.val :=
+noncomputable instance (X : CondensedSet) : PreservesFiniteProducts X.val := fast_instance%
   CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) X.val |>.mp
     X.cond |>.1.some
 

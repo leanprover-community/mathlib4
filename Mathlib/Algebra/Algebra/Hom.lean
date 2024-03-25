@@ -78,7 +78,7 @@ def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →�
   toFun := f
   commutes' := AlgHomClass.commutes f
 
-instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
+instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) := fast_instance%
   ⟨AlgHomClass.toAlgHom⟩
 #align alg_hom_class.alg_hom.has_coe_t AlgHomClass.coeTC
 
@@ -135,7 +135,7 @@ theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
 @[coe]
 def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
 
-instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
+instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) := fast_instance%
   ⟨AlgHom.toMonoidHom'⟩
 #align alg_hom.coe_monoid_hom AlgHom.coeOutMonoidHom
 
@@ -143,7 +143,7 @@ instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
 @[coe]
 def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
 
-instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
+instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) := fast_instance%
   ⟨AlgHom.toAddMonoidHom'⟩
 #align alg_hom.coe_add_monoid_hom AlgHom.coeOutAddMonoidHom
 
@@ -559,7 +559,7 @@ theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
 #align algebra.of_id_apply Algebra.ofId_apply
 
 /-- This is a special case of a more general instance that we define in a later file. -/
-instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
+instance subsingleton_id : Subsingleton (R →ₐ[R] A) := fast_instance%
   ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
 
 /-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/

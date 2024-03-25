@@ -292,13 +292,13 @@ def mk (x : PGame) (h : x.Numeric) : Surreal :=
   ⟦⟨x, h⟩⟧
 #align surreal.mk Surreal.mk
 
-instance : Zero Surreal :=
+instance : Zero Surreal := fast_instance%
   ⟨mk 0 numeric_zero⟩
 
-instance : One Surreal :=
+instance : One Surreal := fast_instance%
   ⟨mk 1 numeric_one⟩
 
-instance : Inhabited Surreal :=
+instance : Inhabited Surreal := fast_instance%
   ⟨0⟩
 
 /-- Lift an equivalence-respecting function on pre-games to surreals. -/
@@ -317,26 +317,26 @@ def lift₂ {α} (f : ∀ x y, Numeric x → Numeric y → α)
     fun _ _ h => funext <| Quotient.ind fun _ => H _ _ _ _ h equiv_rfl
 #align surreal.lift₂ Surreal.lift₂
 
-instance instLE : LE Surreal :=
+instance instLE : LE Surreal := fast_instance%
   ⟨lift₂ (fun x y _ _ => x ≤ y) fun _ _ _ _ hx hy => propext (le_congr hx hy)⟩
 #align surreal.has_le Surreal.instLE
 
 @[simp]
 lemma mk_le_mk {x y : PGame.{u}} {hx hy} : mk x hx ≤ mk y hy ↔ x ≤ y := Iff.rfl
 
-instance instLT : LT Surreal :=
+instance instLT : LT Surreal := fast_instance%
   ⟨lift₂ (fun x y _ _ => x < y) fun _ _ _ _ hx hy => propext (lt_congr hx hy)⟩
 #align surreal.has_lt Surreal.instLT
 
 /-- Addition on surreals is inherited from pre-game addition:
 the sum of `x = {xL | xR}` and `y = {yL | yR}` is `{xL + y, x + yL | xR + y, x + yR}`. -/
-instance : Add Surreal :=
+instance : Add Surreal := fast_instance%
   ⟨Surreal.lift₂ (fun (x y : PGame) ox oy => ⟦⟨x + y, ox.add oy⟩⟧) fun _ _ _ _ hx hy =>
       Quotient.sound (add_congr hx hy)⟩
 
 /-- Negation for surreal numbers is inherited from pre-game negation:
 the negation of `{L | R}` is `{-R | -L}`. -/
-instance : Neg Surreal :=
+instance : Neg Surreal := fast_instance%
   ⟨Surreal.lift (fun x ox => ⟦⟨-x, ox.neg⟩⟧) fun _ _ a => Quotient.sound (neg_equiv_neg_iff.2 a)⟩
 
 instance orderedAddCommGroup : OrderedAddCommGroup Surreal where
@@ -358,14 +358,14 @@ instance orderedAddCommGroup : OrderedAddCommGroup Surreal where
   nsmul := nsmulRec
   zsmul := zsmulRec
 
-noncomputable instance : LinearOrderedAddCommGroup Surreal :=
+noncomputable instance : LinearOrderedAddCommGroup Surreal := fast_instance%
   { Surreal.orderedAddCommGroup with
     le_total := by
       rintro ⟨⟨x, ox⟩⟩ ⟨⟨y, oy⟩⟩
       exact or_iff_not_imp_left.2 fun h => (PGame.not_le.1 h).le oy ox
     decidableLE := Classical.decRel _ }
 
-instance : AddMonoidWithOne Surreal :=
+instance : AddMonoidWithOne Surreal := fast_instance%
   AddMonoidWithOne.unary
 
 /-- Casts a `Surreal` number into a `Game`. -/

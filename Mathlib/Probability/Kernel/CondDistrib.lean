@@ -64,7 +64,7 @@ noncomputable irreducible_def condDistrib {_ : MeasurableSpace α} [MeasurableSp
   (μ.map fun a => (X a, Y a)).condKernel
 #align probability_theory.cond_distrib ProbabilityTheory.condDistrib
 
-instance [MeasurableSpace β] : IsMarkovKernel (condDistrib Y X μ) := by
+instance [MeasurableSpace β] : IsMarkovKernel (condDistrib Y X μ) := fast_instance% by
   rw [condDistrib]; infer_instance
 
 variable {mβ : MeasurableSpace β} {s : Set Ω} {t : Set β} {f : β × Ω → F}

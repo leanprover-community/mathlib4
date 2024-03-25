@@ -40,13 +40,13 @@ noncomputable def specZIsTerminal : IsTerminal (Scheme.Spec.obj (op <| CommRingC
     (terminalOpOfInitial CommRingCat.zIsInitial)
 #align algebraic_geometry.Spec_Z_is_terminal AlgebraicGeometry.specZIsTerminal
 
-instance : HasTerminal Scheme :=
+instance : HasTerminal Scheme := fast_instance%
   hasTerminal_of_hasTerminal_of_preservesLimit Scheme.Spec
 
-instance : IsAffine (⊤_ Scheme.{u}) :=
+instance : IsAffine (⊤_ Scheme.{u}) := fast_instance%
   isAffineOfIso (PreservesTerminal.iso Scheme.Spec).inv
 
-instance : HasFiniteLimits Scheme :=
+instance : HasFiniteLimits Scheme := fast_instance%
   hasFiniteLimits_of_hasTerminal_and_pullbacks
 
 section Initial
@@ -70,7 +70,7 @@ theorem Scheme.eq_emptyTo {X : Scheme.{u}} (f : ∅ ⟶ X) : f = Scheme.emptyTo 
   Scheme.empty_ext f (Scheme.emptyTo X)
 #align algebraic_geometry.Scheme.eq_empty_to AlgebraicGeometry.Scheme.eq_emptyTo
 
-instance Scheme.hom_unique_of_empty_source (X : Scheme.{u}) : Unique (∅ ⟶ X) :=
+instance Scheme.hom_unique_of_empty_source (X : Scheme.{u}) : Unique (∅ ⟶ X) := fast_instance%
   ⟨⟨Scheme.emptyTo _⟩, fun _ => Scheme.empty_ext _ _⟩
 
 /-- The empty scheme is the initial object in the category of schemes. -/
@@ -83,10 +83,10 @@ theorem emptyIsInitial_to : emptyIsInitial.to = Scheme.emptyTo :=
   rfl
 #align algebraic_geometry.empty_is_initial_to AlgebraicGeometry.emptyIsInitial_to
 
-instance : IsEmpty Scheme.empty.carrier :=
+instance : IsEmpty Scheme.empty.carrier := fast_instance%
   show IsEmpty PEmpty by infer_instance
 
-instance spec_punit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUnit)).carrier :=
+instance spec_punit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUnit)).carrier := fast_instance%
   inferInstanceAs <| IsEmpty (PrimeSpectrum PUnit)
 #align algebraic_geometry.Spec_punit_is_empty AlgebraicGeometry.spec_punit_isEmpty
 
@@ -125,12 +125,12 @@ instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X.carrier] 
     (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Scheme.Spec.obj (op <| CommRingCat.of PUnit)))
 #align algebraic_geometry.is_affine_of_is_empty AlgebraicGeometry.isAffine_of_isEmpty
 
-instance : HasInitial Scheme :=
+instance : HasInitial Scheme := fast_instance%
   -- Porting note: this instance was not needed
   haveI : (Y : Scheme) → Unique (Scheme.empty ⟶ Y) := Scheme.hom_unique_of_empty_source
   hasInitial_of_unique Scheme.empty
 
-instance initial_isEmpty : IsEmpty (⊥_ Scheme).carrier :=
+instance initial_isEmpty : IsEmpty (⊥_ Scheme).carrier := fast_instance%
   ⟨fun x => ((initial.to Scheme.empty : _).1.base x).elim⟩
 #align algebraic_geometry.initial_is_empty AlgebraicGeometry.initial_isEmpty
 
@@ -143,7 +143,7 @@ theorem bot_isAffineOpen (X : Scheme) : IsAffineOpen (⊥ : Opens X.carrier) := 
   exact fun x => isEmptyElim (show (⊥_ Scheme).carrier from x.choose)
 #align algebraic_geometry.bot_is_affine_open AlgebraicGeometry.bot_isAffineOpen
 
-instance : HasStrictInitialObjects Scheme :=
+instance : HasStrictInitialObjects Scheme := fast_instance%
   hasStrictInitialObjects_of_initial_is_strict fun A f => by infer_instance
 
 end Initial

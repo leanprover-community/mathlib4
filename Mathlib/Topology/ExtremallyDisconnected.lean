@@ -51,7 +51,7 @@ class ExtremallyDisconnected : Prop where
 section TotallySeparated
 
 /-- Extremally disconnected spaces are totally separated. -/
-instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
+instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X := fast_instance%
 { isTotallySeparated_univ := by
     intro x _ y _ hxy
     obtain ⟨U, V, hUV⟩ := T2Space.t2 hxy

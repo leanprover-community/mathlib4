@@ -445,7 +445,7 @@ theorem verts_spanningCoe_injective :
 
 /-- For subgraphs `G₁`, `G₂`, `G₁ ≤ G₂` iff `G₁.verts ⊆ G₂.verts` and
 `∀ a b, G₁.adj a b → G₂.adj a b`. -/
-instance distribLattice : DistribLattice G.Subgraph :=
+instance distribLattice : DistribLattice G.Subgraph := fast_instance%
   { show DistribLattice G.Subgraph from
       verts_spanningCoe_injective.distribLattice _
         (fun _ _ => rfl) fun _ _ => rfl with
@@ -458,7 +458,7 @@ instance : BoundedOrder (Subgraph G) where
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
 -- Note that subgraphs do not form a Boolean algebra, because of `verts`.
-instance : CompletelyDistribLattice G.Subgraph :=
+instance : CompletelyDistribLattice G.Subgraph := fast_instance%
   { Subgraph.distribLattice with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
@@ -483,7 +483,7 @@ instance : CompletelyDistribLattice G.Subgraph :=
       (by ext; simp [Classical.skolem]) }
 
 @[simps]
-instance subgraphInhabited : Inhabited (Subgraph G) := ⟨⊥⟩
+instance subgraphInhabited : Inhabited (Subgraph G) := fast_instance% ⟨⊥⟩
 #align simple_graph.subgraph.subgraph_inhabited SimpleGraph.Subgraph.subgraphInhabited
 
 @[simp]
@@ -840,7 +840,7 @@ section MkProperties
 
 variable {G : SimpleGraph V} {G' : SimpleGraph W}
 
-instance nonempty_singletonSubgraph_verts (v : V) : Nonempty (G.singletonSubgraph v).verts :=
+instance nonempty_singletonSubgraph_verts (v : V) : Nonempty (G.singletonSubgraph v).verts := fast_instance%
   ⟨⟨v, Set.mem_singleton v⟩⟩
 #align simple_graph.nonempty_singleton_subgraph_verts SimpleGraph.nonempty_singletonSubgraph_verts
 

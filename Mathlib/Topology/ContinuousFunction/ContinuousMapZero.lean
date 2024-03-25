@@ -85,7 +85,7 @@ lemma toContinuousMap_injective :
     Function.Injective (toContinuousMap (X := X) (R := R)) :=
   fun f g h ↦ by refine congr(.mk $(h) ?_); exacts [f.map_zero', g.map_zero']
 
-instance instNonUnitalCommSemiring : NonUnitalCommSemiring C(X, R)₀ :=
+instance instNonUnitalCommSemiring : NonUnitalCommSemiring C(X, R)₀ := fast_instance%
   (toContinuousMap_injective (X := X) (R := R)).nonUnitalCommSemiring
     _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
@@ -110,7 +110,7 @@ instance instStarRing [StarRing R] [ContinuousStar R] : StarRing C(X, R)₀ wher
   star_mul _ _ := ext fun _ ↦ star_mul ..
   star_add _ _ := ext fun _ ↦ star_add ..
 
-instance instTopologicalSpace : TopologicalSpace C(X, R)₀ :=
+instance instTopologicalSpace : TopologicalSpace C(X, R)₀ := fast_instance%
   TopologicalSpace.induced toContinuousMap inferInstance
 
 end Semiring
@@ -125,7 +125,7 @@ instance instSub : Sub C(X, R)₀ where
 instance instNeg : Neg C(X, R)₀ where
   neg f := ⟨-f, by simp⟩
 
-instance instNonUnitalCommRing : NonUnitalCommRing C(X, R)₀ :=
+instance instNonUnitalCommRing : NonUnitalCommRing C(X, R)₀ := fast_instance%
   (toContinuousMap_injective (X := X) (R := R)).nonUnitalCommRing _ rfl
   (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 

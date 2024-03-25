@@ -21,21 +21,21 @@ namespace HomologicalComplex
 variable {C ι : Type*} [Category C] [Preadditive C] {c : ComplexShape ι}
   (K L : HomologicalComplex C c) [∀ i, HasBinaryBiproduct (K.X i) (L.X i)]
 
-instance (i : ι) : HasBinaryBiproduct ((eval C c i).obj K) ((eval C c i).obj L) := by
+instance (i : ι) : HasBinaryBiproduct ((eval C c i).obj K) ((eval C c i).obj L) := fast_instance% by
   dsimp [eval]
   infer_instance
 
-instance (i : ι) : HasLimit ((pair K L) ⋙ (eval C c i)) := by
+instance (i : ι) : HasLimit ((pair K L) ⋙ (eval C c i)) := fast_instance% by
   have e : _ ≅ pair (K.X i) (L.X i) := diagramIsoPair (pair K L ⋙ eval C c i)
   exact hasLimitOfIso e.symm
 
-instance (i : ι) : HasColimit ((pair K L) ⋙ (eval C c i)) := by
+instance (i : ι) : HasColimit ((pair K L) ⋙ (eval C c i)) := fast_instance% by
   have e : _ ≅ pair (K.X i) (L.X i) := diagramIsoPair (pair K L ⋙ eval C c i)
   exact hasColimitOfIso e
 
-instance : HasBinaryBiproduct K L := HasBinaryBiproduct.of_hasBinaryProduct _ _
+instance : HasBinaryBiproduct K L := fast_instance% HasBinaryBiproduct.of_hasBinaryProduct _ _
 
-instance (i : ι) : PreservesBinaryBiproduct K L (eval C c i) :=
+instance (i : ι) : PreservesBinaryBiproduct K L (eval C c i) := fast_instance%
   preservesBinaryBiproductOfPreservesBinaryProduct _
 
 /-- The canonical isomorphism `(K ⊞ L).X i ≅ (K.X i) ⊞ (L.X i)`. -/

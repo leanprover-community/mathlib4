@@ -53,7 +53,7 @@ namespace WalkingMulticospan
 
 variable {L R : Type w} {fst snd : R → L}
 
-instance [Inhabited L] : Inhabited (WalkingMulticospan fst snd) :=
+instance [Inhabited L] : Inhabited (WalkingMulticospan fst snd) := fast_instance%
   ⟨left default⟩
 
 /-- Morphisms for `WalkingMulticospan`. -/
@@ -67,7 +67,7 @@ inductive Hom : ∀ _ _ : WalkingMulticospan fst snd, Type w
 (which it does, using Hom.id_eq_id) -/
 attribute [-simp, nolint simpNF] WalkingMulticospan.Hom.id.sizeOf_spec
 
-instance {a : WalkingMulticospan fst snd} : Inhabited (Hom a a) :=
+instance {a : WalkingMulticospan fst snd} : Inhabited (Hom a a) := fast_instance%
   ⟨Hom.id _⟩
 
 /-- Composition of morphisms for `WalkingMulticospan`. -/
@@ -102,7 +102,7 @@ namespace WalkingMultispan
 
 variable {L R : Type v} {fst snd : L → R}
 
-instance [Inhabited L] : Inhabited (WalkingMultispan fst snd) :=
+instance [Inhabited L] : Inhabited (WalkingMultispan fst snd) := fast_instance%
   ⟨left default⟩
 
 /-- Morphisms for `WalkingMultispan`. -/
@@ -116,7 +116,7 @@ inductive Hom : ∀ _ _ : WalkingMultispan fst snd, Type v
 (which it does, using Hom.id_eq_id) -/
 attribute [-simp, nolint simpNF] WalkingMultispan.Hom.id.sizeOf_spec
 
-instance {a : WalkingMultispan fst snd} : Inhabited (Hom a a) :=
+instance {a : WalkingMultispan fst snd} : Inhabited (Hom a a) := fast_instance%
   ⟨Hom.id _⟩
 
 /-- Composition of morphisms for `WalkingMultispan`. -/
@@ -806,7 +806,7 @@ theorem hom_ext {W : C} (i j : W ⟶ multiequalizer I)
 
 variable [HasProduct I.left] [HasProduct I.right]
 
-instance : HasEqualizer I.fstPiMap I.sndPiMap :=
+instance : HasEqualizer I.fstPiMap I.sndPiMap := fast_instance%
   ⟨⟨⟨_, IsLimit.ofPreservesConeTerminal I.multiforkEquivPiFork.functor (limit.isLimit _)⟩⟩⟩
 
 /-- The multiequalizer is isomorphic to the equalizer of `∏ I.left ⇉ ∏ I.right`. -/
@@ -826,7 +826,7 @@ theorem ιPi_π (a) : ιPi I ≫ Pi.π I.left a = ι I a := by
   simp
 #align category_theory.limits.multiequalizer.ι_pi_π CategoryTheory.Limits.Multiequalizer.ιPi_π
 
-instance : Mono (ιPi I) := mono_comp _ _
+instance : Mono (ιPi I) := fast_instance% mono_comp _ _
 
 end Multiequalizer
 
@@ -891,7 +891,7 @@ theorem hom_ext {W : C} (i j : multicoequalizer I ⟶ W)
 
 variable [HasCoproduct I.left] [HasCoproduct I.right]
 
-instance : HasCoequalizer I.fstSigmaMap I.sndSigmaMap :=
+instance : HasCoequalizer I.fstSigmaMap I.sndSigmaMap := fast_instance%
   ⟨⟨⟨_,
       IsColimit.ofPreservesCoconeInitial
         I.multicoforkEquivSigmaCofork.functor (colimit.isColimit _)⟩⟩⟩
@@ -918,7 +918,7 @@ theorem ι_sigmaπ (b) : Sigma.ι I.right b ≫ sigmaπ I = π I b := by
   rfl
 #align category_theory.limits.multicoequalizer.ι_sigma_π CategoryTheory.Limits.Multicoequalizer.ι_sigmaπ
 
-instance : Epi (sigmaπ I) := epi_comp _ _
+instance : Epi (sigmaπ I) := fast_instance% epi_comp _ _
 
 end Multicoequalizer
 

@@ -140,11 +140,11 @@ def associativity : Sum (Sum C D) E ≌ Sum C (Sum D E) :=
       (by rintro (_|(_|_)) (_|(_|_)) f <;> first | cases f | aesop_cat))
 #align category_theory.sum.associativity CategoryTheory.sum.associativity
 
-instance associatorIsEquivalence : IsEquivalence (associator C D E) :=
+instance associatorIsEquivalence : IsEquivalence (associator C D E) := fast_instance%
   (by infer_instance : IsEquivalence (associativity C D E).functor)
 #align category_theory.sum.associator_is_equivalence CategoryTheory.sum.associatorIsEquivalence
 
-instance inverseAssociatorIsEquivalence : IsEquivalence (inverseAssociator C D E) :=
+instance inverseAssociatorIsEquivalence : IsEquivalence (inverseAssociator C D E) := fast_instance%
   (by infer_instance : IsEquivalence (associativity C D E).inverse)
 #align category_theory.sum.inverse_associator_is_equivalence CategoryTheory.sum.inverseAssociatorIsEquivalence
 

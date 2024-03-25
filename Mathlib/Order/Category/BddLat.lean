@@ -34,10 +34,10 @@ structure BddLat where
 
 namespace BddLat
 
-instance : CoeSort BddLat (Type*) :=
+instance : CoeSort BddLat (Type*) := fast_instance%
   ⟨fun X => X.toLat⟩
 
-instance (X : BddLat) : Lattice X :=
+instance (X : BddLat) : Lattice X := fast_instance%
   X.toLat.str
 
 attribute [instance] BddLat.isBoundedOrder
@@ -53,7 +53,7 @@ theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 #align BddLat.coe_of BddLat.coe_of
 
-instance : Inhabited BddLat :=
+instance : Inhabited BddLat := fast_instance%
   ⟨of PUnit⟩
 
 instance : LargeCategory.{u} BddLat where
@@ -65,7 +65,7 @@ instance : LargeCategory.{u} BddLat where
   assoc _ _ _ := BoundedLatticeHom.comp_assoc _ _ _
 
 -- Porting note: added.
-instance instFunLike (X Y : BddLat) : FunLike (X ⟶ Y) X Y :=
+instance instFunLike (X Y : BddLat) : FunLike (X ⟶ Y) X Y := fast_instance%
   show FunLike (BoundedLatticeHom X Y) X Y from inferInstance
 
 instance : ConcreteCategory BddLat where

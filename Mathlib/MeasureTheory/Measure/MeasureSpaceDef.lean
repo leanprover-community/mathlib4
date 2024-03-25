@@ -86,7 +86,7 @@ For measurable sets this returns the measure assigned by the `measureOf` field i
 But we can extend this to _all_ sets, but using the outer measure. This gives us monotonicity and
 subadditivity for all sets.
 -/
-instance Measure.instCoeFun [MeasurableSpace α] : CoeFun (Measure α) fun _ => Set α → ℝ≥0∞ :=
+instance Measure.instCoeFun [MeasurableSpace α] : CoeFun (Measure α) fun _ => Set α → ℝ≥0∞ := fast_instance%
   ⟨fun m => m.toOuterMeasure⟩
 #align measure_theory.measure.has_coe_to_fun MeasureTheory.Measure.instCoeFun
 
@@ -408,11 +408,11 @@ theorem ae_of_all {p : α → Prop} (μ : Measure α) : (∀ a, p a) → ∀ᵐ 
   eventually_of_forall
 #align measure_theory.ae_of_all MeasureTheory.ae_of_all
 
--- instance aeIsMeasurablyGenerated : IsMeasurablyGenerated μ.ae :=
+-- instance aeIsMeasurablyGenerated : IsMeasurablyGenerated μ.ae := fast_instance%
 -- ⟨fun s hs => let ⟨t, hst, htm, htμ⟩ := exists_measurable_superset_of_null hs;
 --   ⟨tᶜ, compl_mem_ae_iff.2 htμ, htm.compl, compl_subset_comm.1 hst⟩⟩
 
-instance instCountableInterFilter : CountableInterFilter μ.ae := by
+instance instCountableInterFilter : CountableInterFilter μ.ae := fast_instance% by
   unfold Measure.ae; infer_instance
 #align measure_theory.measure.ae.countable_Inter_filter MeasureTheory.instCountableInterFilter
 

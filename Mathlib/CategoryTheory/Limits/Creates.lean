@@ -633,11 +633,11 @@ instance idCreatesColimits : CreatesColimitsOfSize.{w, w'} (𝟭 C) where
 #align category_theory.id_creates_colimits CategoryTheory.idCreatesColimits
 
 /-- Satisfy the inhabited linter -/
-instance inhabitedLiftableCone (c : Cone (K ⋙ 𝟭 C)) : Inhabited (LiftableCone K (𝟭 C) c) :=
+instance inhabitedLiftableCone (c : Cone (K ⋙ 𝟭 C)) : Inhabited (LiftableCone K (𝟭 C) c) := fast_instance%
   ⟨idLiftsCone c⟩
 #align category_theory.inhabited_liftable_cone CategoryTheory.inhabitedLiftableCone
 
-instance inhabitedLiftableCocone (c : Cocone (K ⋙ 𝟭 C)) : Inhabited (LiftableCocone K (𝟭 C) c) :=
+instance inhabitedLiftableCocone (c : Cocone (K ⋙ 𝟭 C)) : Inhabited (LiftableCocone K (𝟭 C) c) := fast_instance%
   ⟨idLiftsCocone c⟩
 #align category_theory.inhabited_liftable_cocone CategoryTheory.inhabitedLiftableCocone
 

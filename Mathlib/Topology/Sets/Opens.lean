@@ -75,7 +75,7 @@ instance : SetLike (Opens α) α where
   coe := Opens.carrier
   coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
 
-instance : CanLift (Set α) (Opens α) (↑) IsOpen :=
+instance : CanLift (Set α) (Opens α) (↑) IsOpen := fast_instance%
   ⟨fun s h => ⟨⟨s, h⟩, rfl⟩⟩
 
 theorem «forall» {p : Opens α → Prop} : (∀ U, p U) ↔ ∀ (U : Set α) (hU : IsOpen U), p ⟨U, hU⟩ :=
@@ -144,7 +144,7 @@ def gi : GaloisCoinsertion (↑) (@interior α _) where
   choice_eq _s hs := le_antisymm hs interior_subset
 #align topological_space.opens.gi TopologicalSpace.Opens.gi
 
-instance : CompleteLattice (Opens α) :=
+instance : CompleteLattice (Opens α) := fast_instance%
   CompleteLattice.copy (GaloisCoinsertion.liftCompleteLattice gi)
     -- le
     (fun U V => (U : Set α) ⊆ V) rfl
@@ -218,7 +218,7 @@ theorem coe_finset_inf (f : ι → Opens α) (s : Finset ι) : (↑(s.inf f) : S
   map_finset_inf (⟨⟨(↑), coe_inf⟩, coe_top⟩ : InfTopHom (Opens α) (Set α)) _ _
 #align topological_space.opens.coe_finset_inf TopologicalSpace.Opens.coe_finset_inf
 
-instance : Inhabited (Opens α) := ⟨⊥⟩
+instance : Inhabited (Opens α) := fast_instance% ⟨⊥⟩
 
 -- porting note (#10754): new instance
 instance [IsEmpty α] : Unique (Opens α) where
@@ -254,7 +254,7 @@ theorem mem_sSup {Us : Set (Opens α)} {x : α} : x ∈ sSup Us ↔ ∃ u ∈ Us
   simp_rw [sSup_eq_iSup, mem_iSup, exists_prop]
 #align topological_space.opens.mem_Sup TopologicalSpace.Opens.mem_sSup
 
-instance : Frame (Opens α) :=
+instance : Frame (Opens α) := fast_instance%
   { inferInstanceAs (CompleteLattice (Opens α)) with
     sSup := sSup
     inf_sSup_le_iSup_inf := fun a s =>
@@ -416,7 +416,7 @@ theorem _root_.Homeomorph.opensCongr_symm (f : α ≃ₜ β) : f.opensCongr.symm
   rfl
 #align homeomorph.opens_congr_symm Homeomorph.opensCongr_symm
 
-instance [Finite α] : Finite (Opens α) :=
+instance [Finite α] : Finite (Opens α) := fast_instance%
   Finite.of_injective _ SetLike.coe_injective
 
 end Opens
@@ -439,7 +439,7 @@ instance : SetLike (OpenNhdsOf x) α where
   coe U := U.1
   coe_injective' := SetLike.coe_injective.comp toOpens_injective
 
-instance canLiftSet : CanLift (Set α) (OpenNhdsOf x) (↑) fun s => IsOpen s ∧ x ∈ s :=
+instance canLiftSet : CanLift (Set α) (OpenNhdsOf x) (↑) fun s => IsOpen s ∧ x ∈ s := fast_instance%
   ⟨fun s hs => ⟨⟨⟨s, hs.1⟩, hs.2⟩, rfl⟩⟩
 #align topological_space.open_nhds_of.can_lift_set TopologicalSpace.OpenNhdsOf.canLiftSet
 
@@ -455,15 +455,15 @@ instance : OrderTop (OpenNhdsOf x) where
   top := ⟨⊤, Set.mem_univ _⟩
   le_top _ := subset_univ _
 
-instance : Inhabited (OpenNhdsOf x) := ⟨⊤⟩
-instance : Inf (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊓ V.1, U.2, V.2⟩⟩
-instance : Sup (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊔ V.1, Or.inl U.2⟩⟩
+instance : Inhabited (OpenNhdsOf x) := fast_instance% ⟨⊤⟩
+instance : Inf (OpenNhdsOf x) := fast_instance% ⟨fun U V => ⟨U.1 ⊓ V.1, U.2, V.2⟩⟩
+instance : Sup (OpenNhdsOf x) := fast_instance% ⟨fun U V => ⟨U.1 ⊔ V.1, Or.inl U.2⟩⟩
 
 -- porting note (#10754): new instance
 instance [Subsingleton α] : Unique (OpenNhdsOf x) where
   uniq U := SetLike.ext' <| Subsingleton.eq_univ_of_nonempty ⟨x, U.mem⟩
 
-instance : DistribLattice (OpenNhdsOf x) :=
+instance : DistribLattice (OpenNhdsOf x) := fast_instance%
   toOpens_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
 
 theorem basis_nhds : (𝓝 x).HasBasis (fun _ : OpenNhdsOf x => True) (↑) :=

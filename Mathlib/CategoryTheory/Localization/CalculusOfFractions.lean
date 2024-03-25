@@ -538,7 +538,7 @@ lemma Qiso_hom_inv_id {X Y : C} (s : X ⟶ Y) (hs : W s) :
 lemma Qiso_inv_hom_id {X Y : C} (s : X ⟶ Y) (hs : W s) :
     Qinv s hs  ≫ (Q W).map s = 𝟙 _ := (Qiso s hs).inv_hom_id
 
-instance {X Y : C} (s : X ⟶ Y) (hs : W s) : IsIso (Qinv s hs) :=
+instance {X Y : C} (s : X ⟶ Y) (hs : W s) : IsIso (Qinv s hs) := fast_instance%
   (inferInstance : IsIso (Qiso s hs).inv)
 
 section
@@ -636,7 +636,7 @@ noncomputable def strictUniversalPropertyFixedTarget (E : Type*) [Category E] :
   fac := fac
   uniq := uniq
 
-instance : (Q W).IsLocalization W :=
+instance : (Q W).IsLocalization W := fast_instance%
   Functor.IsLocalization.mk' _ _
     (strictUniversalPropertyFixedTarget W _)
     (strictUniversalPropertyFixedTarget W _)

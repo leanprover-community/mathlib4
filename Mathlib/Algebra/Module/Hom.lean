@@ -50,11 +50,11 @@ theorem smul_apply (r : R) (f : A →+ B) (x : A) : (r • f) x = r • f x :=
   rfl
 #align add_monoid_hom.smul_apply AddMonoidHom.smul_apply
 
-instance smulCommClass [SMulCommClass R S B] : SMulCommClass R S (A →+ B) :=
+instance smulCommClass [SMulCommClass R S B] : SMulCommClass R S (A →+ B) := fast_instance%
   ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
 #align add_monoid_hom.smul_comm_class AddMonoidHom.smulCommClass
 
-instance isScalarTower [SMul R S] [IsScalarTower R S B] : IsScalarTower R S (A →+ B) :=
+instance isScalarTower [SMul R S] [IsScalarTower R S B] : IsScalarTower R S (A →+ B) := fast_instance%
   ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
 #align add_monoid_hom.is_scalar_tower AddMonoidHom.isScalarTower
 
@@ -65,7 +65,7 @@ instance isCentralScalar [DistribMulAction Rᵐᵒᵖ B] [IsCentralScalar R B] :
 
 end
 
-instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] : Module R (A →+ B) :=
+instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] : Module R (A →+ B) := fast_instance%
   { add_smul := fun _ _ _=> ext fun _ => add_smul _ _ _
     zero_smul := fun _ => ext fun _ => zero_smul _ _ }
 #align add_monoid_hom.module AddMonoidHom.instModule
@@ -92,12 +92,12 @@ section
 
 variable [Monoid R] [Monoid S] [AddCommMonoid A]
 
-instance instDistribSMul [DistribSMul M A] : DistribSMul M (AddMonoid.End A) :=
+instance instDistribSMul [DistribSMul M A] : DistribSMul M (AddMonoid.End A) := fast_instance%
   AddMonoidHom.instDistribSMul
 
 variable [DistribMulAction R A] [DistribMulAction S A]
 
-instance instDistribMulAction : DistribMulAction R (AddMonoid.End A) :=
+instance instDistribMulAction : DistribMulAction R (AddMonoid.End A) := fast_instance%
   AddMonoidHom.instDistribMulAction
 
 @[simp] theorem coe_smul (r : R) (f : AddMonoid.End A) : ⇑(r • f) = r • ⇑f := rfl
@@ -105,10 +105,10 @@ instance instDistribMulAction : DistribMulAction R (AddMonoid.End A) :=
 theorem smul_apply (r : R) (f : AddMonoid.End A) (x : A) : (r • f) x = r • f x :=
   rfl
 
-instance smulCommClass [SMulCommClass R S A] : SMulCommClass R S (AddMonoid.End A) :=
+instance smulCommClass [SMulCommClass R S A] : SMulCommClass R S (AddMonoid.End A) := fast_instance%
   AddMonoidHom.smulCommClass
 
-instance isScalarTower [SMul R S] [IsScalarTower R S A] : IsScalarTower R S (AddMonoid.End A) :=
+instance isScalarTower [SMul R S] [IsScalarTower R S A] : IsScalarTower R S (AddMonoid.End A) := fast_instance%
   AddMonoidHom.isScalarTower
 
 instance isCentralScalar [DistribMulAction Rᵐᵒᵖ A] [IsCentralScalar R A] :
@@ -117,7 +117,7 @@ instance isCentralScalar [DistribMulAction Rᵐᵒᵖ A] [IsCentralScalar R A] :
 
 end
 
-instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (AddMonoid.End A) :=
+instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (AddMonoid.End A) := fast_instance%
   AddMonoidHom.instModule
 
 /-- The tautological action by `AddMonoid.End α` on `α`.

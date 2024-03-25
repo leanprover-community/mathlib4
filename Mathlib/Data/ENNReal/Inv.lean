@@ -76,7 +76,7 @@ theorem coe_div (hr : r ≠ 0) : (↑(p / r) : ℝ≥0∞) = p / r := by
 theorem div_zero (h : a ≠ 0) : a / 0 = ∞ := by simp [div_eq_mul_inv, h]
 #align ennreal.div_zero ENNReal.div_zero
 
-instance : DivInvOneMonoid ℝ≥0∞ :=
+instance : DivInvOneMonoid ℝ≥0∞ := fast_instance%
   { inferInstanceAs (DivInvMonoid ℝ≥0∞) with
     inv_one := by simpa only [coe_inv one_ne_zero, coe_one] using coe_inj.2 inv_one }
 

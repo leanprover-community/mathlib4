@@ -48,7 +48,7 @@ lemma abelianImageToKernel_comp_kernel_ι :
     S.abelianImageToKernel ≫ kernel.ι S.g = Abelian.image.ι S.f :=
   kernel.lift_ι _ _ _
 
-instance : Mono S.abelianImageToKernel :=
+instance : Mono S.abelianImageToKernel := fast_instance%
   mono_of_mono_fac S.abelianImageToKernel_comp_kernel_ι
 
 @[reassoc (attr := simp 1100)]
@@ -117,7 +117,7 @@ lemma cokernel_π_comp_cokernelToAbelianCoimage :
     cokernel.π S.f ≫ S.cokernelToAbelianCoimage = Abelian.coimage.π S.g :=
   cokernel.π_desc _ _ _
 
-instance : Epi S.cokernelToAbelianCoimage :=
+instance : Epi S.cokernelToAbelianCoimage := fast_instance%
   epi_of_epi_fac S.cokernel_π_comp_cokernelToAbelianCoimage
 
 lemma kernel_ι_comp_cokernel_π_comp_cokernelToAbelianCoimage :

@@ -62,7 +62,7 @@ theorem of_wfDvdMonoid_associates (_ : WfDvdMonoid (Associates α)) : WfDvdMonoi
 
 variable [WfDvdMonoid α]
 
-instance wfDvdMonoid_associates : WfDvdMonoid (Associates α) :=
+instance wfDvdMonoid_associates : WfDvdMonoid (Associates α) := fast_instance%
   ⟨(mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).1 wellFounded_dvdNotUnit⟩
 #align wf_dvd_monoid.wf_dvd_monoid_associates WfDvdMonoid.wfDvdMonoid_associates
 
@@ -1346,7 +1346,7 @@ def FactorSetMem (p : Associates α) (s : FactorSet α) : Prop :=
   if hp : Irreducible p then BfactorSetMem ⟨p, hp⟩ s else False
 #align associates.factor_set_mem Associates.FactorSetMem
 
-instance : Membership (Associates α) (FactorSet α) :=
+instance : Membership (Associates α) (FactorSet α) := fast_instance%
   ⟨FactorSetMem⟩
 
 @[simp]
@@ -1579,15 +1579,15 @@ theorem prod_le [Nontrivial α] {a b : FactorSet α} : a.prod ≤ b.prod ↔ a �
 #align associates.prod_le Associates.prod_le
 
 open Classical in
-noncomputable instance : Sup (Associates α) :=
+noncomputable instance : Sup (Associates α) := fast_instance%
   ⟨fun a b => (a.factors ⊔ b.factors).prod⟩
 
 open Classical in
-noncomputable instance : Inf (Associates α) :=
+noncomputable instance : Inf (Associates α) := fast_instance%
   ⟨fun a b => (a.factors ⊓ b.factors).prod⟩
 
 open Classical in
-noncomputable instance : Lattice (Associates α) :=
+noncomputable instance : Lattice (Associates α) := fast_instance%
   { Associates.instPartialOrder with
     sup := (· ⊔ ·)
     inf := (· ⊓ ·)

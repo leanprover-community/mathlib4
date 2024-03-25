@@ -487,7 +487,7 @@ def binaryBiproductData (T : Triangle C) (hT : T ∈ distTriang C) (hT₀ : T.mo
         inr_snd := inr_snd }
       isBilimit := isBinaryBilimitOfTotal _ total }
 
-instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
+instance : HasBinaryBiproducts C := fast_instance% ⟨fun X₁ X₃ => by
   obtain ⟨X₂, inl, snd, mem⟩ := distinguished_cocone_triangle₂ (0 : X₃ ⟶ X₁⟦(1 : ℤ)⟧)
   obtain ⟨inr : X₃ ⟶ X₂, inr_snd : 𝟙 _ = inr ≫ snd⟩ :=
     Triangle.coyoneda_exact₃ _ mem (𝟙 X₃) (by simp)
@@ -499,9 +499,9 @@ instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
   dsimp
   simp only [← hfst, sub_add_cancel]⟩
 
-instance : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
-instance : HasFiniteCoproducts C := hasFiniteCoproducts_of_has_binary_and_initial
-instance : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
+instance : HasFiniteProducts C := fast_instance% hasFiniteProducts_of_has_binary_and_terminal
+instance : HasFiniteCoproducts C := fast_instance% hasFiniteCoproducts_of_has_binary_and_initial
+instance : HasFiniteBiproducts C := fast_instance% HasFiniteBiproducts.of_hasFiniteProducts
 
 lemma exists_iso_binaryBiproduct_of_distTriang (T : Triangle C) (hT : T ∈ distTriang C)
     (zero : T.mor₃ = 0) :

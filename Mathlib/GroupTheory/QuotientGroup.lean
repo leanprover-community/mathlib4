@@ -66,7 +66,7 @@ protected def con : Con G where
 #align quotient_add_group.con QuotientAddGroup.con
 
 @[to_additive]
-instance Quotient.group : Group (G ⧸ N) :=
+instance Quotient.group : Group (G ⧸ N) := fast_instance%
   (QuotientGroup.con N).group
 #align quotient_group.quotient.group QuotientGroup.Quotient.group
 #align quotient_add_group.quotient.add_group QuotientAddGroup.Quotient.addGroup
@@ -147,7 +147,7 @@ theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
 -- for commutative groups we don't need normality assumption
 
 @[to_additive]
-instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) :=
+instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) := fast_instance%
   { toGroup := @QuotientGroup.Quotient.group _ _ N N.normal_of_comm
     mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b) }
 #align quotient_group.quotient.comm_group QuotientGroup.Quotient.commGroup
@@ -643,7 +643,7 @@ section ThirdIsoThm
 variable (M : Subgroup G) [nM : M.Normal]
 
 @[to_additive]
-instance map_normal : (M.map (QuotientGroup.mk' N)).Normal :=
+instance map_normal : (M.map (QuotientGroup.mk' N)).Normal := fast_instance%
   nM.map _ mk_surjective
 #align quotient_group.map_normal QuotientGroup.map_normal
 #align quotient_add_group.map_normal QuotientAddGroup.map_normal

@@ -52,7 +52,7 @@ open Submodule
 @[coe]
 def toFun' (f : E →ₗ.[R] F) : f.domain → F := f.toFun
 
-instance : CoeFun (E →ₗ.[R] F) fun f : E →ₗ.[R] F => f.domain → F :=
+instance : CoeFun (E →ₗ.[R] F) fun f : E →ₗ.[R] F => f.domain → F := fast_instance%
   ⟨toFun'⟩
 
 @[simp]
@@ -205,7 +205,7 @@ theorem snd_apply (p : Submodule R E) (p' : Submodule R F) (x : p.prod p') :
   rfl
 #align linear_pmap.snd_apply LinearPMap.snd_apply
 
-instance le : LE (E →ₗ.[R] F) :=
+instance le : LE (E →ₗ.[R] F) := fast_instance%
   ⟨fun f g => f.domain ≤ g.domain ∧ ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y⟩
 #align linear_pmap.has_le LinearPMap.le
 
@@ -240,15 +240,15 @@ def eqLocus (f g : E →ₗ.[R] F) : Submodule R E where
         by erw [f.map_smul c ⟨x, hfx⟩, g.map_smul c ⟨x, hgx⟩, hx]⟩
 #align linear_pmap.eq_locus LinearPMap.eqLocus
 
-instance inf : Inf (E →ₗ.[R] F) :=
+instance inf : Inf (E →ₗ.[R] F) := fast_instance%
   ⟨fun f g => ⟨f.eqLocus g, f.toFun.comp <| inclusion fun _x hx => hx.fst⟩⟩
 #align linear_pmap.has_inf LinearPMap.inf
 
-instance bot : Bot (E →ₗ.[R] F) :=
+instance bot : Bot (E →ₗ.[R] F) := fast_instance%
   ⟨⟨⊥, 0⟩⟩
 #align linear_pmap.has_bot LinearPMap.bot
 
-instance inhabited : Inhabited (E →ₗ.[R] F) :=
+instance inhabited : Inhabited (E →ₗ.[R] F) := fast_instance%
   ⟨⊥⟩
 #align linear_pmap.inhabited LinearPMap.inhabited
 
@@ -381,7 +381,7 @@ theorem sup_h_of_disjoint (f g : E →ₗ.[R] F) (h : Disjoint f.domain g.domain
 
 section Zero
 
-instance instZero : Zero (E →ₗ.[R] F) := ⟨⊤, 0⟩
+instance instZero : Zero (E →ₗ.[R] F) := fast_instance% ⟨⊤, 0⟩
 
 @[simp]
 theorem zero_domain : (0 : E →ₗ.[R] F).domain = ⊤ := rfl
@@ -396,7 +396,7 @@ section SMul
 variable {M N : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F]
 variable [Monoid N] [DistribMulAction N F] [SMulCommClass R N F]
 
-instance instSMul : SMul M (E →ₗ.[R] F) :=
+instance instSMul : SMul M (E →ₗ.[R] F) := fast_instance%
   ⟨fun a f =>
     { domain := f.domain
       toFun := a • f.toFun }⟩
@@ -416,11 +416,11 @@ theorem coe_smul (a : M) (f : E →ₗ.[R] F) : ⇑(a • f) = a • ⇑f :=
   rfl
 #align linear_pmap.coe_smul LinearPMap.coe_smul
 
-instance instSMulCommClass [SMulCommClass M N F] : SMulCommClass M N (E →ₗ.[R] F) :=
+instance instSMulCommClass [SMulCommClass M N F] : SMulCommClass M N (E →ₗ.[R] F) := fast_instance%
   ⟨fun a b f => ext' <| smul_comm a b f.toFun⟩
 #align linear_pmap.smul_comm_class LinearPMap.instSMulCommClass
 
-instance instIsScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N (E →ₗ.[R] F) :=
+instance instIsScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N (E →ₗ.[R] F) := fast_instance%
   ⟨fun a b f => ext' <| smul_assoc a b f.toFun⟩
 #align linear_pmap.is_scalar_tower LinearPMap.instIsScalarTower
 
@@ -432,7 +432,7 @@ instance instMulAction : MulAction M (E →ₗ.[R] F) where
 
 end SMul
 
-instance instNeg : Neg (E →ₗ.[R] F) :=
+instance instNeg : Neg (E →ₗ.[R] F) := fast_instance%
   ⟨fun f => ⟨f.domain, -f.toFun⟩⟩
 #align linear_pmap.has_neg LinearPMap.instNeg
 
@@ -444,7 +444,7 @@ theorem neg_apply (f : E →ₗ.[R] F) (x) : (-f) x = -f x :=
   rfl
 #align linear_pmap.neg_apply LinearPMap.neg_apply
 
-instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) :=
+instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) := fast_instance%
   ⟨fun f => by
     ext x y hxy
     · rfl
@@ -454,7 +454,7 @@ instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) :=
 
 section Add
 
-instance instAdd : Add (E →ₗ.[R] F) :=
+instance instAdd : Add (E →ₗ.[R] F) := fast_instance%
   ⟨fun f g =>
     { domain := f.domain ⊓ g.domain
       toFun := f.toFun.comp (inclusion (inf_le_left : f.domain ⊓ g.domain ≤ _))
@@ -465,13 +465,13 @@ theorem add_domain (f g : E →ₗ.[R] F) : (f + g).domain = f.domain ⊓ g.doma
 theorem add_apply (f g : E →ₗ.[R] F) (x : (f.domain ⊓ g.domain : Submodule R E)) :
     (f + g) x = f ⟨x, x.prop.1⟩ + g ⟨x, x.prop.2⟩ := rfl
 
-instance instAddSemigroup : AddSemigroup (E →ₗ.[R] F) :=
+instance instAddSemigroup : AddSemigroup (E →ₗ.[R] F) := fast_instance%
   ⟨fun f g h => by
     ext x y hxy
     · simp only [add_domain, inf_assoc]
     · simp only [add_apply, hxy, add_assoc]⟩
 
-instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
+instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) := fast_instance%
   ⟨fun f => by
     ext x y hxy
     · simp [add_domain]
@@ -488,7 +488,7 @@ instance instAddMonoid : AddMonoid (E →ₗ.[R] F) where
     simp
   nsmul := nsmulRec
 
-instance instAddCommMonoid : AddCommMonoid (E →ₗ.[R] F) :=
+instance instAddCommMonoid : AddCommMonoid (E →ₗ.[R] F) := fast_instance%
   ⟨fun f g => by
     ext x y hxy
     · simp only [add_domain, inf_comm]
@@ -498,7 +498,7 @@ end Add
 
 section VAdd
 
-instance instVAdd : VAdd (E →ₗ[R] F) (E →ₗ.[R] F) :=
+instance instVAdd : VAdd (E →ₗ[R] F) (E →ₗ.[R] F) := fast_instance%
   ⟨fun f g =>
     { domain := g.domain
       toFun := f.comp g.domain.subtype + g.toFun }⟩
@@ -530,7 +530,7 @@ end VAdd
 
 section Sub
 
-instance instSub : Sub (E →ₗ.[R] F) :=
+instance instSub : Sub (E →ₗ.[R] F) := fast_instance%
   ⟨fun f g =>
     { domain := f.domain ⊓ g.domain
       toFun := f.toFun.comp (inclusion (inf_le_left : f.domain ⊓ g.domain ≤ _))

@@ -41,7 +41,7 @@ abbrev Rep (k G : Type u) [Ring k] [Monoid G] :=
 set_option linter.uppercaseLean3 false in
 #align Rep Rep
 
-instance (k G : Type u) [CommRing k] [Monoid G] : Linear k (Rep k G) := by infer_instance
+instance (k G : Type u) [CommRing k] [Monoid G] : Linear k (Rep k G) := fast_instance% by infer_instance
 
 namespace Rep
 
@@ -51,13 +51,13 @@ section
 
 variable [Monoid G]
 
-instance : CoeSort (Rep k G) (Type u) :=
+instance : CoeSort (Rep k G) (Type u) := fast_instance%
   ConcreteCategory.hasCoeToSort _
 
-instance (V : Rep k G) : AddCommGroup V := by
+instance (V : Rep k G) : AddCommGroup V := fast_instance% by
   change AddCommGroup ((forget₂ (Rep k G) (ModuleCat k)).obj V); infer_instance
 
-instance (V : Rep k G) : Module k V := by
+instance (V : Rep k G) : Module k V := fast_instance% by
   change Module k ((forget₂ (Rep k G) (ModuleCat k)).obj V)
   infer_instance
 
@@ -147,10 +147,10 @@ instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) 
     IsTrivial (Rep.of ρ) where
 
 -- Porting note: the two following instances were found automatically in mathlib3
-noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
+noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) := fast_instance%
   Action.instPreservesLimitsForget.{u} _ _
 
-noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
+noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) := fast_instance%
   Action.instPreservesColimitsForget.{u} _ _
 
 /- Porting note: linter complains `simp` unfolds some types in the LHS, so

@@ -46,7 +46,7 @@ theorem limitFunctorial_map {F G : J ⥤ C} (α : F ⟶ G) :
 variable [MonoidalCategory.{v} C]
 
 @[simps]
-instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorHom
+instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := fast_instance% .ofTensorHom
   (ε :=
     limit.lift _
       { pt := _

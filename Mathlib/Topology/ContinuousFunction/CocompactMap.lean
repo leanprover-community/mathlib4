@@ -61,7 +61,7 @@ def toCocompactMap (f : F) : CocompactMap α β :=
   { (f : C(α, β)) with
     cocompact_tendsto' := cocompact_tendsto f }
 
-instance : CoeTC F (CocompactMap α β) :=
+instance : CoeTC F (CocompactMap α β) := fast_instance%
   ⟨toCocompactMap⟩
 
 end CocompactMapClass
@@ -139,7 +139,7 @@ theorem coe_id : ⇑(CocompactMap.id α) = id :=
 
 end
 
-instance : Inhabited (CocompactMap α α) :=
+instance : Inhabited (CocompactMap α α) := fast_instance%
   ⟨CocompactMap.id α⟩
 
 /-- The composition of cocompact continuous maps, as a cocompact continuous map. -/

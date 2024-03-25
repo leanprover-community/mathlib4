@@ -51,10 +51,10 @@ noncomputable instance WithTop.instSupSet {α : Type*} [Preorder α] [SupSet α]
     if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α) then
       ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α)) else ⊤⟩
 
-noncomputable instance WithTop.instInfSet {α : Type*} [InfSet α] : InfSet (WithTop α) :=
+noncomputable instance WithTop.instInfSet {α : Type*} [InfSet α] : InfSet (WithTop α) := fast_instance%
   ⟨fun S => if S ⊆ {⊤} then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
-noncomputable instance WithBot.instSupSet {α : Type*} [SupSet α] : SupSet (WithBot α) :=
+noncomputable instance WithBot.instSupSet {α : Type*} [SupSet α] : SupSet (WithBot α) := fast_instance%
   ⟨(WithTop.instInfSet (α := αᵒᵈ)).sInf⟩
 
 noncomputable instance WithBot.instInfSet {α : Type*} [Preorder α] [InfSet α] :
@@ -208,7 +208,7 @@ class ConditionallyCompleteLinearOrder (α : Type*) extends ConditionallyComplet
   csInf_of_not_bddBelow : ∀ s, ¬BddBelow s → sInf s = sInf (∅ : Set α)
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
 
-instance (α : Type*) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
+instance (α : Type*) [ConditionallyCompleteLinearOrder α] : LinearOrder α := fast_instance%
   { ‹ConditionallyCompleteLinearOrder α› with
     max := Sup.sup, min := Inf.inf,
     min_def := fun a b ↦ by
@@ -314,7 +314,7 @@ instance instConditionallyCompleteLattice (α : Type*) [ConditionallyCompleteLat
     le_csInf := ConditionallyCompleteLattice.csSup_le (α := α)
     csInf_le := ConditionallyCompleteLattice.le_csSup (α := α) }
 
-instance (α : Type*) [ConditionallyCompleteLinearOrder α] : ConditionallyCompleteLinearOrder αᵒᵈ :=
+instance (α : Type*) [ConditionallyCompleteLinearOrder α] : ConditionallyCompleteLinearOrder αᵒᵈ := fast_instance%
   { OrderDual.instConditionallyCompleteLattice α, OrderDual.instLinearOrder α with
     csSup_of_not_bddAbove := ConditionallyCompleteLinearOrder.csInf_of_not_bddBelow (α := α)
     csInf_of_not_bddBelow := ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove (α := α) }
@@ -327,7 +327,7 @@ constructor provides poor definitional equalities.  If other fields are known ex
 should be provided; for example, if `inf` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
-instance : ConditionallyCompleteLattice my_T :=
+instance : ConditionallyCompleteLattice my_T := fast_instance%
   { inf := better_inf,
     le_inf := ...,
     inf_le_right := ...,
@@ -379,7 +379,7 @@ constructor provides poor definitional equalities.  If other fields are known ex
 should be provided; for example, if `inf` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
-instance : ConditionallyCompleteLattice my_T :=
+instance : ConditionallyCompleteLattice my_T := fast_instance%
   { inf := better_inf,
     le_inf := ...,
     inf_le_right := ...,
@@ -1380,7 +1380,7 @@ theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
     exact bot_le
 #align with_top.is_glb_Inf WithTop.isGLB_sInf
 
-noncomputable instance : CompleteLinearOrder (WithTop α) :=
+noncomputable instance : CompleteLinearOrder (WithTop α) := fast_instance%
   { WithTop.linearOrder, WithTop.lattice, WithTop.orderTop, WithTop.orderBot with
     sup := Sup.sup
     le_sSup := fun s => (isLUB_sSup s).1

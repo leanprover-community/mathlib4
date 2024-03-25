@@ -936,7 +936,7 @@ protected irreducible_def add (z w : Localization M) : Localization M :=
           )
 #align localization.add Localization.add
 
-instance : Add (Localization M) :=
+instance : Add (Localization M) := fast_instance%
   ⟨Localization.add⟩
 
 theorem add_mk (a b c d) : (mk a b : Localization M) + mk c d =
@@ -960,7 +960,7 @@ local macro "localization_tac" : tactic =>
      simp only [Submonoid.coe_mul]
      ring })
 
-instance : CommSemiring (Localization M) :=
+instance : CommSemiring (Localization M) := fast_instance%
   { (show CommMonoidWithZero (Localization M) by infer_instance) with
     add := (· + ·)
     nsmul := (· • ·)
@@ -1024,7 +1024,7 @@ instance {S : Type*} [Semiring S] [MulSemiringAction S R] [IsScalarTower S R R] 
   { inferInstanceAs (MulDistribMulAction S (Localization M)),
     inferInstanceAs (DistribMulAction S (Localization M)) with }
 
-instance {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] : Module S (Localization M) :=
+instance {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] : Module S (Localization M) := fast_instance%
   { inferInstanceAs (DistribMulAction S (Localization M)) with
     zero_smul :=
       Localization.ind <|
@@ -1170,7 +1170,7 @@ protected irreducible_def neg (z : Localization M) : Localization M :=
         ring_nf)
 #align localization.neg Localization.neg
 
-instance : Neg (Localization M) :=
+instance : Neg (Localization M) := fast_instance%
   ⟨Localization.neg⟩
 
 theorem neg_mk (a b) : -(mk a b : Localization M) = mk (-a) b := by
@@ -1179,7 +1179,7 @@ theorem neg_mk (a b) : -(mk a b : Localization M) = mk (-a) b := by
   apply liftOn_mk
 #align localization.neg_mk Localization.neg_mk
 
-instance : CommRing (Localization M) :=
+instance : CommRing (Localization M) := fast_instance%
   { inferInstanceAs (CommSemiring (Localization M)) with
     zsmul := (· • ·)
     zsmul_zero' := fun x =>
@@ -1346,7 +1346,7 @@ let `Sₘ` be the localization of `S` to the image of `M` under `algebraMap R S`
 Then this is the natural algebra structure on `Rₘ → Sₘ`, such that the entire square commutes,
 where `localization_map.map_comp` gives the commutativity of the underlying maps.
 
-This instance can be helpful if you define `Sₘ := Localization (Algebra.algebraMapSubmonoid S M)`,
+This instance can be helpful if you define `Sₘ := fast_instance% Localization (Algebra.algebraMapSubmonoid S M)`,
 however we will instead use the hypotheses `[Algebra Rₘ Sₘ] [IsScalarTower R Rₘ Sₘ]` in lemmas
 since the algebra structure may arise in different ways.
 -/

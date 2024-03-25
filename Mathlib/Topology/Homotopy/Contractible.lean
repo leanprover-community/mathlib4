@@ -105,7 +105,7 @@ protected theorem Homeomorph.contractibleSpace_iff (e : X ≃ₜ Y) :
 
 namespace ContractibleSpace
 
-instance [Unique Y] : ContractibleSpace Y := by
+instance [Unique Y] : ContractibleSpace Y := fast_instance% by
   have : ContractibleSpace (Unit) := ⟨⟨HomotopyEquiv.refl Unit⟩⟩
   apply (Homeomorph.homeomorphOfUnique Y Unit).contractibleSpace
 

@@ -198,31 +198,31 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
 private def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (fun a ↦ n • a) (Rel.smul n) a⟩
 
-instance : NatCast (RingQuot r) :=
+instance : NatCast (RingQuot r) := fast_instance%
   ⟨natCast r⟩
 
-instance : Zero (RingQuot r) :=
+instance : Zero (RingQuot r) := fast_instance%
   ⟨zero r⟩
 
-instance : One (RingQuot r) :=
+instance : One (RingQuot r) := fast_instance%
   ⟨one r⟩
 
-instance : Add (RingQuot r) :=
+instance : Add (RingQuot r) := fast_instance%
   ⟨add r⟩
 
-instance : Mul (RingQuot r) :=
+instance : Mul (RingQuot r) := fast_instance%
   ⟨mul r⟩
 
-instance : NatPow (RingQuot r) :=
+instance : NatPow (RingQuot r) := fast_instance%
   ⟨fun x n ↦ npow r n x⟩
 
-instance {R : Type uR} [Ring R] (r : R → R → Prop) : Neg (RingQuot r) :=
+instance {R : Type uR} [Ring R] (r : R → R → Prop) : Neg (RingQuot r) := fast_instance%
   ⟨neg r⟩
 
-instance {R : Type uR} [Ring R] (r : R → R → Prop) : Sub (RingQuot r) :=
+instance {R : Type uR} [Ring R] (r : R → R → Prop) : Sub (RingQuot r) := fast_instance%
   ⟨sub r⟩
 
-instance [Algebra S R] : SMul S (RingQuot r) :=
+instance [Algebra S R] : SMul S (RingQuot r) := fast_instance%
   ⟨smul r⟩
 
 theorem zero_quot : (⟨Quot.mk _ 0⟩ : RingQuot r) = 0 :=
@@ -352,7 +352,7 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
 private def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
   ⟨Quot.mk _ z⟩
 
-instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
+instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) := fast_instance%
   { RingQuot.instSemiring r with
     neg := Neg.neg
     add_left_neg := by
@@ -386,10 +386,10 @@ instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) 
       rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
       simp [mul_quot, mul_comm] }
 
-instance {R : Type uR} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
+instance {R : Type uR} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) := fast_instance%
   { RingQuot.instCommSemiring r, RingQuot.instRing r with }
 
-instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
+instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) := fast_instance%
   ⟨0⟩
 
 instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where

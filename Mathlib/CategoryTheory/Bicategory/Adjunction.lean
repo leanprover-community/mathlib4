@@ -116,7 +116,7 @@ def id (a : B) : 𝟙 a ⊣ 𝟙 a where
   left_triangle := by dsimp; coherence
   right_triangle := by dsimp; coherence
 
-instance : Inhabited (Adjunction (𝟙 a) (𝟙 a)) :=
+instance : Inhabited (Adjunction (𝟙 a) (𝟙 a)) := fast_instance%
   ⟨id a⟩
 
 section Composition
@@ -213,9 +213,9 @@ theorem leftZigzagIso_symm : (leftZigzagIso η ε).symm = rightZigzagIso ε.symm
 theorem rightZigzagIso_symm : (rightZigzagIso η ε).symm = leftZigzagIso ε.symm η.symm :=
   Iso.ext (rightZigzagIso_inv η ε)
 
-instance : IsIso (leftZigzag η.hom ε.hom) := inferInstanceAs <| IsIso (leftZigzagIso η ε).hom
+instance : IsIso (leftZigzag η.hom ε.hom) := fast_instance% inferInstanceAs <| IsIso (leftZigzagIso η ε).hom
 
-instance : IsIso (rightZigzag η.hom ε.hom) := inferInstanceAs <| IsIso (rightZigzagIso η ε).hom
+instance : IsIso (rightZigzag η.hom ε.hom) := fast_instance% inferInstanceAs <| IsIso (rightZigzagIso η ε).hom
 
 theorem right_triangle_of_left_triangle (h : leftZigzag η.hom ε.hom = (λ_ f).hom ≫ (ρ_ f).inv) :
     rightZigzag η.hom ε.hom = (ρ_ g).hom ≫ (λ_ g).inv := by
@@ -266,7 +266,7 @@ namespace Equivalence
 /-- The identity 1-morphism is an equivalence. -/
 def id (a : B) : a ≌ a := ⟨_, _, (ρ_ _).symm, ρ_ _, by ext; simp [bicategoricalIsoComp]⟩
 
-instance : Inhabited (Equivalence a a) := ⟨id a⟩
+instance : Inhabited (Equivalence a a) := fast_instance% ⟨id a⟩
 
 theorem left_triangle_hom (e : a ≌ b) :
     leftZigzag e.unit.hom e.counit.hom = (λ_ e.hom).hom ≫ (ρ_ e.hom).inv :=

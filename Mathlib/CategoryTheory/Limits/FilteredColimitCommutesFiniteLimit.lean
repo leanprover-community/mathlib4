@@ -318,7 +318,7 @@ theorem colimitLimitToLimitColimit_surjective :
         Bifunctor.map_id, types_id_apply]
 #align category_theory.limits.colimit_limit_to_limit_colimit_surjective CategoryTheory.Limits.colimitLimitToLimitColimit_surjective
 
-instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F) :=
+instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F) := fast_instance%
   (isIso_iff_bijective _).mpr
     ⟨colimitLimitToLimitColimit_injective F, colimitLimitToLimitColimit_surjective F⟩
 #align category_theory.limits.colimit_limit_to_limit_colimit_is_iso CategoryTheory.Limits.colimitLimitToLimitColimit_isIso

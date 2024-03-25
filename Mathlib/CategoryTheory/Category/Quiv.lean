@@ -31,9 +31,9 @@ set_option linter.uppercaseLean3 false in
 
 namespace Quiv
 
-instance : CoeSort Quiv (Type u) where coe := Bundled.α
+instance : CoeSort Quiv (Type u) where coe := fast_instance% Bundled.α
 
-instance str' (C : Quiv.{v, u}) : Quiver.{v + 1, u} C :=
+instance str' (C : Quiv.{v, u}) : Quiver.{v + 1, u} C := fast_instance%
   C.str
 set_option linter.uppercaseLean3 false in
 #align category_theory.Quiv.str CategoryTheory.Quiv.str'
@@ -44,7 +44,7 @@ def of (C : Type u) [Quiver.{v + 1} C] : Quiv.{v, u} :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.Quiv.of CategoryTheory.Quiv.of
 
-instance : Inhabited Quiv :=
+instance : Inhabited Quiv := fast_instance%
   ⟨Quiv.of (Quiver.Empty PEmpty)⟩
 
 /-- Category structure on `Quiv` -/

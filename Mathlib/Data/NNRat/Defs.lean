@@ -37,7 +37,7 @@ def NNRat := { q : ℚ // 0 ≤ q } deriving
 
 -- Porting note (#10754): Added these instances to get `OrderedSub, DenselyOrdered, Archimedean`
 -- instead of `deriving` them
-instance : OrderedSub NNRat := Nonneg.orderedSub
+instance : OrderedSub NNRat := fast_instance% Nonneg.orderedSub
 
 -- mathport name: nnrat
 scoped[NNRat] notation "ℚ≥0" => NNRat
@@ -46,7 +46,7 @@ namespace NNRat
 
 variable {α : Type*} {p q : ℚ≥0}
 
-instance instCoe : Coe ℚ≥0 ℚ := ⟨Subtype.val⟩
+instance instCoe : Coe ℚ≥0 ℚ := fast_instance% ⟨Subtype.val⟩
 
 /-
 -- Simp lemma to put back `n.val` into the normal form given by the coercion.

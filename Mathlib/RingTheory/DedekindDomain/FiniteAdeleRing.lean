@@ -49,13 +49,13 @@ def FiniteIntegralAdeles : Type _ :=
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section DerivedInstances
 
-instance : CommRing (FiniteIntegralAdeles R K) :=
+instance : CommRing (FiniteIntegralAdeles R K) := fast_instance%
   inferInstanceAs (CommRing (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
-instance : TopologicalSpace (FiniteIntegralAdeles R K) :=
+instance : TopologicalSpace (FiniteIntegralAdeles R K) := fast_instance%
   inferInstanceAs (TopologicalSpace (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
-instance : Inhabited (FiniteIntegralAdeles R K) :=
+instance : Inhabited (FiniteIntegralAdeles R K) := fast_instance%
   inferInstanceAs (Inhabited (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
 end DerivedInstances
@@ -70,19 +70,19 @@ def ProdAdicCompletions :=
 
 section DerivedInstances
 
-instance : NonUnitalNonAssocRing (ProdAdicCompletions R K) :=
+instance : NonUnitalNonAssocRing (ProdAdicCompletions R K) := fast_instance%
   inferInstanceAs (NonUnitalNonAssocRing (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
-instance : TopologicalSpace (ProdAdicCompletions R K) :=
+instance : TopologicalSpace (ProdAdicCompletions R K) := fast_instance%
   inferInstanceAs (TopologicalSpace (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
-instance : TopologicalRing (ProdAdicCompletions R K) :=
+instance : TopologicalRing (ProdAdicCompletions R K) := fast_instance%
   inferInstanceAs (TopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
-instance : CommRing (ProdAdicCompletions R K) :=
+instance : CommRing (ProdAdicCompletions R K) := fast_instance%
   inferInstanceAs (CommRing (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
-instance : Inhabited (ProdAdicCompletions R K) :=
+instance : Inhabited (ProdAdicCompletions R K) := fast_instance%
   inferInstanceAs (Inhabited (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
 end DerivedInstances
@@ -91,7 +91,7 @@ local notation "K_hat" => ProdAdicCompletions
 
 namespace FiniteIntegralAdeles
 
-noncomputable instance : Coe (R_hat R K) (K_hat R K) where coe x v := x v
+noncomputable instance : Coe (R_hat R K) (K_hat R K) where coe x v := fast_instance% x v
 
 theorem coe_apply (x : R_hat R K) (v : HeightOneSpectrum R) : (x : K_hat R K) v = ↑(x v) :=
   rfl
@@ -128,24 +128,24 @@ end FiniteIntegralAdeles
 
 section AlgebraInstances
 
-instance : Algebra K (K_hat R K) :=
+instance : Algebra K (K_hat R K) := fast_instance%
   (by infer_instance : Algebra K <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
 
-instance ProdAdicCompletions.algebra' : Algebra R (K_hat R K) :=
+instance ProdAdicCompletions.algebra' : Algebra R (K_hat R K) := fast_instance%
   (by infer_instance : Algebra R <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
 #align dedekind_domain.prod_adic_completions.algebra' DedekindDomain.ProdAdicCompletions.algebra'
 
-instance : IsScalarTower R K (K_hat R K) :=
+instance : IsScalarTower R K (K_hat R K) := fast_instance%
   (by infer_instance : IsScalarTower R K <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
 
-instance : Algebra R (R_hat R K) :=
+instance : Algebra R (R_hat R K) := fast_instance%
   (by infer_instance : Algebra R <| ∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K)
 
-instance ProdAdicCompletions.algebraCompletions : Algebra (R_hat R K) (K_hat R K) :=
+instance ProdAdicCompletions.algebraCompletions : Algebra (R_hat R K) (K_hat R K) := fast_instance%
   (FiniteIntegralAdeles.Coe.ringHom R K).toAlgebra
 #align dedekind_domain.prod_adic_completions.algebra_completions DedekindDomain.ProdAdicCompletions.algebraCompletions
 
-instance ProdAdicCompletions.isScalarTower_completions : IsScalarTower R (R_hat R K) (K_hat R K) :=
+instance ProdAdicCompletions.isScalarTower_completions : IsScalarTower R (R_hat R K) (K_hat R K) := fast_instance%
   (by infer_instance :
     IsScalarTower R (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K) <|
       ∀ v : HeightOneSpectrum R, v.adicCompletion K)

@@ -85,7 +85,7 @@ abbrev ModuleCatMax.{v₁, v₂, u₁} (R : Type u₁) [Ring R] := ModuleCat.{ma
 
 namespace ModuleCat
 
-instance : CoeSort (ModuleCat.{v} R) (Type v) :=
+instance : CoeSort (ModuleCat.{v} R) (Type v) := fast_instance%
   ⟨ModuleCat.carrier⟩
 
 attribute [coe] ModuleCat.carrier
@@ -99,10 +99,10 @@ instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   assoc f g h := LinearMap.comp_assoc (f := f) (g := g) (h := h)
 #align Module.Module_category ModuleCat.moduleCategory
 
-instance {M N : ModuleCat.{v} R} : FunLike (M ⟶ N) M N :=
+instance {M N : ModuleCat.{v} R} : FunLike (M ⟶ N) M N := fast_instance%
   LinearMap.instFunLike
 
-instance {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N :=
+instance {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N := fast_instance%
   LinearMap.semilinearMapClass
 
 instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
@@ -118,9 +118,9 @@ instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
 -- One might hope these two instances would not be needed,
 -- as we already have `AddCommGroup M` and `Module R M`,
 -- but sometimes we seem to need these when rewriting by lemmas about generic concrete categories.
-instance {M : ModuleCat.{v} R} : AddCommGroup ((forget (ModuleCat R)).obj M) :=
+instance {M : ModuleCat.{v} R} : AddCommGroup ((forget (ModuleCat R)).obj M) := fast_instance%
   (inferInstance : AddCommGroup M)
-instance {M : ModuleCat.{v} R} : Module R ((forget (ModuleCat R)).obj M) :=
+instance {M : ModuleCat.{v} R} : Module R ((forget (ModuleCat R)).obj M) := fast_instance%
   (inferInstance : Module R M)
 
 @[ext]
@@ -174,10 +174,10 @@ theorem ofHom_apply {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Modul
   rfl
 #align Module.of_hom_apply ModuleCat.ofHom_apply
 
-instance : Inhabited (ModuleCat R) :=
+instance : Inhabited (ModuleCat R) := fast_instance%
   ⟨of R PUnit⟩
 
-instance ofUnique {X : Type v} [AddCommGroup X] [Module R X] [i : Unique X] : Unique (of R X) :=
+instance ofUnique {X : Type v} [AddCommGroup X] [Module R X] [i : Unique X] : Unique (of R X) := fast_instance%
   i
 #align Module.of_unique ModuleCat.ofUnique
 
@@ -208,7 +208,7 @@ theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M whe
     apply Subsingleton.elim⟩⟩
 #align Module.is_zero_of_subsingleton ModuleCat.isZero_of_subsingleton
 
-instance : HasZeroObject (ModuleCat.{v} R) :=
+instance : HasZeroObject (ModuleCat.{v} R) := fast_instance%
   ⟨⟨of R PUnit, isZero_of_subsingleton _⟩⟩
 
 variable {M N U : ModuleCat.{v} R}
@@ -313,7 +313,7 @@ end
 
 namespace ModuleCat
 
-instance {M N : ModuleCat.{v} R} : AddCommGroup (M ⟶ N) := LinearMap.addCommGroup
+instance {M N : ModuleCat.{v} R} : AddCommGroup (M ⟶ N) := fast_instance% LinearMap.addCommGroup
 
 instance : Preadditive (ModuleCat.{v} R) where
   add_comp P Q R f f' g := by
@@ -398,11 +398,11 @@ section
 
 variable {A : AddCommGroupCat} (φ : R →+* End A)
 
-instance : AddCommGroup (mkOfSMul' φ) := by
+instance : AddCommGroup (mkOfSMul' φ) := fast_instance% by
   dsimp only [mkOfSMul']
   infer_instance
 
-instance : SMul R (mkOfSMul' φ) := ⟨fun r (x : A) => (show A ⟶ A from φ r) x⟩
+instance : SMul R (mkOfSMul' φ) := fast_instance% ⟨fun r (x : A) => (show A ⟶ A from φ r) x⟩
 
 @[simp]
 lemma mkOfSMul'_smul (r : R) (x : mkOfSMul' φ) :

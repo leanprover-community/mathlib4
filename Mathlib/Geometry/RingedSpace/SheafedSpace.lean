@@ -44,7 +44,7 @@ variable {C}
 namespace SheafedSpace
 
 -- Porting note: use `CoeOut` for the coercion happens left to right
-instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
+instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := fast_instance% X.carrier
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.coe_carrier AlgebraicGeometry.SheafedSpace.coeCarrier
 
@@ -74,7 +74,7 @@ theorem mk_coe (carrier) (presheaf) (h) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.mk_coe AlgebraicGeometry.SheafedSpace.mk_coe
 
-instance (X : SheafedSpace C) : TopologicalSpace X :=
+instance (X : SheafedSpace C) : TopologicalSpace X := fast_instance%
   X.carrier.str
 
 /-- The trivial `unit` valued sheaf on any topological space. -/
@@ -83,10 +83,10 @@ def unit (X : TopCat) : SheafedSpace (Discrete Unit) :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.unit AlgebraicGeometry.SheafedSpace.unit
 
-instance : Inhabited (SheafedSpace (Discrete Unit)) :=
+instance : Inhabited (SheafedSpace (Discrete Unit)) := fast_instance%
   ⟨unit (TopCat.of PEmpty)⟩
 
-instance : Category (SheafedSpace C) :=
+instance : Category (SheafedSpace C) := fast_instance%
   show Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace) by
     infer_instance
 
@@ -105,11 +105,11 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.forget_to_PresheafedSpace AlgebraicGeometry.SheafedSpace.forgetToPresheafedSpace
 
 -- Porting note: can't derive `Full` functor automatically
-instance forgetToPresheafedSpace_full : Full <| forgetToPresheafedSpace (C := C) where
+instance forgetToPresheafedSpace_full : Full <| forgetToPresheafedSpace (C := fast_instance% C) where
   preimage f := f
 
 -- Porting note: can't derive `Faithful` functor automatically
-instance forgetToPresheafedSpace_faithful : Faithful <| forgetToPresheafedSpace (C := C) where
+instance forgetToPresheafedSpace_faithful : Faithful <| forgetToPresheafedSpace (C := fast_instance% C) where
 
 instance is_presheafedSpace_iso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     @IsIso (PresheafedSpace C) _ _ _ f :=
@@ -237,10 +237,10 @@ noncomputable instance [HasLimits C] :
           limit_isSheaf _ fun j => Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).2⟩
         (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩⟩
 
-instance [HasLimits C] : HasColimits (SheafedSpace C) :=
+instance [HasLimits C] : HasColimits (SheafedSpace C) := fast_instance%
   hasColimits_of_hasColimits_createsColimits forgetToPresheafedSpace
 
-noncomputable instance [HasLimits C] : PreservesColimits (forget C) :=
+noncomputable instance [HasLimits C] : PreservesColimits (forget C) := fast_instance%
   Limits.compPreservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)
 
 end SheafedSpace

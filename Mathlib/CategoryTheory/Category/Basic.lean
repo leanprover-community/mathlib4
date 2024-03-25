@@ -288,10 +288,10 @@ class Mono (f : X ⟶ Y) : Prop where
   right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h
 #align category_theory.mono CategoryTheory.Mono
 
-instance (X : C) : Epi (𝟙 X) :=
+instance (X : C) : Epi (𝟙 X) := fast_instance%
   ⟨fun g h w => by aesop⟩
 
-instance (X : C) : Mono (𝟙 X) :=
+instance (X : C) : Mono (𝟙 X) := fast_instance%
   ⟨fun g h w => by aesop⟩
 
 theorem cancel_epi (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} : f ≫ g = f ≫ h ↔ g = h :=

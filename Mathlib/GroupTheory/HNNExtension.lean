@@ -49,7 +49,7 @@ def HNNExtension (G : Type*) [Group G] (A B : Subgroup G) (φ : A ≃* B) : Type
 variable {G : Type*} [Group G] {A B : Subgroup G} {φ : A ≃* B} {H : Type*}
   [Group H] {M : Type*} [Monoid M]
 
-instance : Group (HNNExtension G A B φ) := by
+instance : Group (HNNExtension G A B φ) := fast_instance% by
   delta HNNExtension; infer_instance
 
 namespace HNNExtension
@@ -180,7 +180,7 @@ structure TransversalPair : Type _ :=
   /-- We have exactly one element of each coset of the subgroup -/
   compl : ∀ u, IsComplement (toSubgroup A B u : Subgroup G) (set u)
 
-instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
+instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := fast_instance% by
   choose t ht using fun u ↦ (toSubgroup A B u).exists_right_transversal 1
   exact ⟨⟨t, fun i ↦ (ht i).1⟩⟩
 
@@ -243,9 +243,9 @@ def ofGroup (g : G) : NormalWord d :=
     mem_set := by simp
     chain := List.chain'_nil }
 
-instance : Inhabited (NormalWord d) := ⟨empty⟩
+instance : Inhabited (NormalWord d) := fast_instance% ⟨empty⟩
 
-instance : MulAction G (NormalWord d) :=
+instance : MulAction G (NormalWord d) := fast_instance%
   { smul := fun g w => { w with head := g * w.head }
     one_smul := by simp [instHSMul]
     mul_smul := by simp [instHSMul, mul_assoc] }
@@ -259,7 +259,7 @@ theorem group_smul_head (g : G) (w : NormalWord d) : (g • w).head = g * w.head
 @[simp]
 theorem group_smul_toList (g : G) (w : NormalWord d) : (g • w).toList = w.toList := rfl
 
-instance : FaithfulSMul G (NormalWord d) := ⟨by simp [group_smul_def]⟩
+instance : FaithfulSMul G (NormalWord d) := fast_instance% ⟨by simp [group_smul_def]⟩
 
 /-- A constructor to append an element `g` of `G` and `u : ℤˣ` to a word `w` with sufficient
 hypotheses that no normalization or cancellation need take place for the result to be in normal form
@@ -477,7 +477,7 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
       simp only [toSubgroup_one, SetLike.coe_sort_coe, map_mul, Submonoid.coe_mul, coe_toSubmonoid]
     conv_lhs => erw [IsComplement.equiv_mul_left]
 
-noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
+noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) := fast_instance%
   MulAction.ofEndHom <| (MulAction.toEndHom (M := Equiv.Perm (NormalWord d))).comp
     (HNNExtension.lift (MulAction.toPermHom _ _) (unitsSMulEquiv φ) <| by
       intro a
@@ -581,7 +581,7 @@ theorem prod_injective : Injective
     (fun w => w.prod φ : NormalWord d → HNNExtension G A B φ) :=
   (equiv φ d).symm.injective
 
-instance : FaithfulSMul (HNNExtension G A B φ) (NormalWord d) :=
+instance : FaithfulSMul (HNNExtension G A B φ) (NormalWord d) := fast_instance%
   ⟨fun h => by simpa using congr_arg (fun w => w.prod φ) (h empty)⟩
 
 end NormalWord

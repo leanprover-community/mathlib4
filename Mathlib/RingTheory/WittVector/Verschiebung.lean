@@ -98,7 +98,7 @@ variable (p)
 /-- `WittVector.verschiebung` has polynomial structure given by `WittVector.verschiebungPoly`.
 -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
-instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := by
+instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := fast_instance% by
   use verschiebungPoly
   simp only [aeval_verschiebung_poly', eq_self_iff_true, forall₃_true_iff]
 #align witt_vector.verschiebung_fun_is_poly WittVector.verschiebungFun_isPoly

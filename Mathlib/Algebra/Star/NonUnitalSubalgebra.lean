@@ -199,7 +199,7 @@ theorem toNonUnitalSubring_inj {R : Type u} {A : Type v} [CommRing R] [NonUnital
     S.toNonUnitalSubring = U.toNonUnitalSubring ↔ S = U :=
   toNonUnitalSubring_injective.eq_iff
 
-instance instInhabited : Inhabited S :=
+instance instInhabited : Inhabited S := fast_instance%
   ⟨(0 : S.toNonUnitalSubalgebra)⟩
 
 section
@@ -236,10 +236,10 @@ section
 
 /-! `NonUnitalStarSubalgebra`s inherit structure from their `Submodule` coercions. -/
 
-instance module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S :=
+instance module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S := fast_instance%
   SMulMemClass.toModule' _ R' R A S
 
-instance instModule : Module R S :=
+instance instModule : Module R S := fast_instance%
   S.module'
 
 instance instIsScalarTower' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
@@ -258,7 +258,7 @@ instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
 
 end
 
-instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
+instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S := fast_instance%
   ⟨fun {c x} h =>
     have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg ((↑) : S → A) h)
     this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
@@ -673,7 +673,7 @@ theorem _root_.NonUnitalSubalgebra.starClosure_eq_adjoin (S : NonUnitalSubalgebr
   le_antisymm (NonUnitalSubalgebra.starClosure_le_iff.2 <| subset_adjoin R (S : Set A))
     (adjoin_le (le_sup_left : S ≤ S ⊔ star S))
 
-instance : CompleteLattice (NonUnitalStarSubalgebra R A) :=
+instance : CompleteLattice (NonUnitalStarSubalgebra R A) := fast_instance%
   GaloisInsertion.liftCompleteLattice NonUnitalStarAlgebra.gi
 
 @[simp]
@@ -747,7 +747,7 @@ theorem iInf_toNonUnitalSubalgebra {ι : Sort*} (S : ι → NonUnitalStarSubalge
     (⨅ i, S i).toNonUnitalSubalgebra = ⨅ i, (S i).toNonUnitalSubalgebra :=
   SetLike.coe_injective <| by simp
 
-instance : Inhabited (NonUnitalStarSubalgebra R A) :=
+instance : Inhabited (NonUnitalStarSubalgebra R A) := fast_instance%
   ⟨⊥⟩
 
 theorem mem_bot {x : A} : x ∈ (⊥ : NonUnitalStarSubalgebra R A) ↔ x = 0 :=
@@ -1017,7 +1017,7 @@ theorem center_eq_top (A : Type*) [NonUnitalCommSemiring A] [StarRing A] [Module
 
 variable {R A}
 
-instance instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
+instance instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) := fast_instance%
   NonUnitalSubalgebra.center.instNonUnitalCommSemiring
 
 instance instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [StarRing A] [Module R A]

@@ -447,7 +447,7 @@ lemma map_sum {ι : Type*} {m : ι → Measure α} {f : α → β} (hf : AEMeasu
   have M i : AEMeasurable f (m i) := hf.mono_measure (le_sum m i)
   simp_rw [map_apply_of_aemeasurable (M _) hs]
 
-instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := by
+instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := fast_instance% by
   by_cases H : AEMeasurable f μ
   · rw [← sum_sFiniteSeq μ] at H ⊢
     rw [map_sum H]

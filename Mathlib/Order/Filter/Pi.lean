@@ -181,7 +181,7 @@ theorem pi_eq_bot : pi f = ⊥ ↔ ∃ i, f i = ⊥ := by
 theorem pi_neBot : NeBot (pi f) ↔ ∀ i, NeBot (f i) := by simp [neBot_iff]
 #align filter.pi_ne_bot Filter.pi_neBot
 
-instance [∀ i, NeBot (f i)] : NeBot (pi f) :=
+instance [∀ i, NeBot (f i)] : NeBot (pi f) := fast_instance%
   pi_neBot.2 ‹_›
 
 @[simp]

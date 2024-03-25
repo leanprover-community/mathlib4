@@ -114,7 +114,7 @@ instance colimitMulAction : MulAction R (M F) where
     erw [colimit_smul_mk_eq F (r * s) ⟨j, x⟩, colimit_smul_mk_eq F s ⟨j, x⟩,
       colimit_smul_mk_eq F r ⟨j, _⟩, mul_smul]
 
-instance colimitSMulWithZero : SMulWithZero R (M F) :=
+instance colimitSMulWithZero : SMulWithZero R (M F) := fast_instance%
 { colimitMulAction F with
   smul_zero := fun r => by
     erw [colimit_zero_eq _ (IsFiltered.nonempty.some : J), colimit_smul_mk_eq, smul_zero]
@@ -132,7 +132,7 @@ private theorem colimitModule.add_smul (r s : R) (x : (M F)) : (r + s) • x = r
     forget₂_map]
   rfl
 
-instance colimitModule : Module R (M F) :=
+instance colimitModule : Module R (M F) := fast_instance%
 { colimitMulAction F,
   colimitSMulWithZero F with
   smul_add := fun r x y => by
@@ -213,7 +213,7 @@ instance forget₂AddCommGroupPreservesFilteredColimits :
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.forget₂_AddCommGroup_preserves_filtered_colimits ModuleCat.FilteredColimits.forget₂AddCommGroupPreservesFilteredColimits
 
-instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget (ModuleCat.{u} R)) :=
+instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget (ModuleCat.{u} R)) := fast_instance%
   Limits.compPreservesFilteredColimits (forget₂ (ModuleCat R) AddCommGroupCat)
     (forget AddCommGroupCat)
 set_option linter.uppercaseLean3 false in

@@ -74,7 +74,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
       homEquiv_naturality_right := by intros; dsimp; simp }
 #align category_theory.evaluation_adjunction_right CategoryTheory.evaluationAdjunctionRight
 
-instance evaluationIsRightAdjoint (c : C) : IsRightAdjoint ((evaluation _ D).obj c) :=
+instance evaluationIsRightAdjoint (c : C) : IsRightAdjoint ((evaluation _ D).obj c) := fast_instance%
   ⟨_, evaluationAdjunctionRight _ _⟩
 #align category_theory.evaluation_is_right_adjoint CategoryTheory.evaluationIsRightAdjoint
 
@@ -133,7 +133,7 @@ def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRigh
               Fan.mk_pt, Fan.mk_π_app, Discrete.natTrans_app, Category.comp_id] } }
 #align category_theory.evaluation_adjunction_left CategoryTheory.evaluationAdjunctionLeft
 
-instance evaluationIsLeftAdjoint (c : C) : IsLeftAdjoint ((evaluation _ D).obj c) :=
+instance evaluationIsLeftAdjoint (c : C) : IsLeftAdjoint ((evaluation _ D).obj c) := fast_instance%
   ⟨_, evaluationAdjunctionLeft _ _⟩
 #align category_theory.evaluation_is_left_adjoint CategoryTheory.evaluationIsLeftAdjoint
 

@@ -88,7 +88,7 @@ theorem coe_toCLM (φ : characterSpace 𝕜 A) : ⇑(toCLM φ) = φ :=
 #align weak_dual.character_space.coe_to_clm WeakDual.CharacterSpace.coe_toCLM
 
 /-- Elements of the character space are non-unital algebra homomorphisms. -/
-instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
+instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 := fast_instance%
   { CharacterSpace.instContinuousLinearMapClass with
     map_smul := fun φ => map_smulₛₗ φ
     map_zero := fun φ => map_zero φ
@@ -108,7 +108,7 @@ theorem coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgH
   rfl
 #align weak_dual.character_space.coe_to_non_unital_alg_hom WeakDual.CharacterSpace.coe_toNonUnitalAlgHom
 
-instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
+instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) := fast_instance%
   ⟨fun φ => φ.prop.1 <|
     ContinuousLinearMap.ext fun x => by
       rw [show x = 0 from Subsingleton.elim x 0, map_zero, map_zero] ⟩
@@ -142,7 +142,7 @@ variable [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [Continuo
   [ContinuousConstSMul 𝕜 𝕜] [TopologicalSpace A] [Semiring A] [Algebra 𝕜 A]
 
 /-- In a unital algebra, elements of the character space are algebra homomorphisms. -/
-instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
+instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 := fast_instance%
   haveI map_one' : ∀ φ : characterSpace 𝕜 A, φ 1 = 1 := fun φ => by
     have h₁ : φ 1 * (1 - φ 1) = 0 := by rw [mul_sub, sub_eq_zero, mul_one, ← map_mul φ, one_mul]
     rcases mul_eq_zero.mp h₁ with (h₂ | h₂)
@@ -213,7 +213,7 @@ variable [Field 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousCo
 variable [Ring A] [TopologicalSpace A] [Algebra 𝕜 A]
 
 /-- The `RingHom.ker` of `φ : characterSpace 𝕜 A` is maximal. -/
-instance ker_isMaximal (φ : characterSpace 𝕜 A) : (RingHom.ker φ).IsMaximal :=
+instance ker_isMaximal (φ : characterSpace 𝕜 A) : (RingHom.ker φ).IsMaximal := fast_instance%
   RingHom.ker_isMaximal_of_surjective φ fun z =>
     ⟨algebraMap 𝕜 A z, by simp only [AlgHomClass.commutes, Algebra.id.map_eq_id, RingHom.id_apply]⟩
 #align weak_dual.ker_is_maximal WeakDual.ker_isMaximal

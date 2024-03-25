@@ -196,9 +196,9 @@ namespace PerfectField
 
 variable {K : Type*} [Field K]
 
-instance ofCharZero [CharZero K] : PerfectField K := ⟨Irreducible.separable⟩
+instance ofCharZero [CharZero K] : PerfectField K := fast_instance% ⟨Irreducible.separable⟩
 
-instance ofFinite [Finite K] : PerfectField K := by
+instance ofFinite [Finite K] : PerfectField K := fast_instance% by
   obtain ⟨p, _instP⟩ := CharP.exists K
   have : Fact p.Prime := ⟨CharP.char_is_prime K p⟩
   exact PerfectRing.toPerfectField K p
@@ -206,7 +206,7 @@ instance ofFinite [Finite K] : PerfectField K := by
 variable [PerfectField K]
 
 /-- A perfect field of characteristic `p` (prime) is a perfect ring. -/
-instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
+instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := fast_instance% by
   refine' PerfectRing.ofSurjective _ _ fun y ↦ _
   let f : K[X] := X ^ p - C y
   let L := f.SplittingField

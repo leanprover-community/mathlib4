@@ -210,10 +210,10 @@ instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [Topologica
     [TopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] : ContinuousSMul 𝕜₂ (E →SL[σ] F) :=
   strongTopology.continuousSMul σ F { S | Bornology.IsVonNBounded 𝕜₁ S } fun _ hs => hs
 
-instance uniformSpace [UniformSpace F] [UniformAddGroup F] : UniformSpace (E →SL[σ] F) :=
+instance uniformSpace [UniformSpace F] [UniformAddGroup F] : UniformSpace (E →SL[σ] F) := fast_instance%
   strongUniformity σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
 
-instance uniformAddGroup [UniformSpace F] [UniformAddGroup F] : UniformAddGroup (E →SL[σ] F) :=
+instance uniformAddGroup [UniformSpace F] [UniformAddGroup F] : UniformAddGroup (E →SL[σ] F) := fast_instance%
   strongUniformity.uniformAddGroup σ F _
 
 instance [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₁ E] [T2Space F] :

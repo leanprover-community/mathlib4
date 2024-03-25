@@ -26,11 +26,11 @@ variable {A : Type*} [AddGroup A]
 namespace Subgroup
 
 @[to_additive]
-instance (K : Subgroup G) [DecidablePred (· ∈ K)] [Fintype G] : Fintype K :=
+instance (K : Subgroup G) [DecidablePred (· ∈ K)] [Fintype G] : Fintype K := fast_instance%
   show Fintype { g : G // g ∈ K } from inferInstance
 
 @[to_additive]
-instance (K : Subgroup G) [Finite G] : Finite K :=
+instance (K : Subgroup G) [Finite G] : Finite K := fast_instance%
   Subtype.finite
 
 end Subgroup
@@ -108,7 +108,7 @@ theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s 
 #align add_subgroup.coe_finset_sum AddSubgroup.val_finset_sum
 
 @[to_additive]
-instance fintypeBot : Fintype (⊥ : Subgroup G) :=
+instance fintypeBot : Fintype (⊥ : Subgroup G) := fast_instance%
   ⟨{1}, by
     rintro ⟨x, ⟨hx⟩⟩
     exact Finset.mem_singleton_self _⟩
@@ -285,7 +285,7 @@ variable {N : Type*} [Group N]
 open Subgroup
 
 @[to_additive]
-instance decidableMemRange (f : G →* N) [Fintype G] [DecidableEq N] : DecidablePred (· ∈ f.range) :=
+instance decidableMemRange (f : G →* N) [Fintype G] [DecidableEq N] : DecidablePred (· ∈ f.range) := fast_instance%
   fun _ => Fintype.decidableExistsFintype
 #align monoid_hom.decidable_mem_range MonoidHom.decidableMemRange
 #align add_monoid_hom.decidable_mem_range AddMonoidHom.decidableMemRange
@@ -314,7 +314,7 @@ presence of `Fintype N`. -/
 
 Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.fintype` in the
  presence of `Fintype N`."]
-instance fintypeRange [Fintype G] [DecidableEq N] (f : G →* N) : Fintype (range f) :=
+instance fintypeRange [Fintype G] [DecidableEq N] (f : G →* N) : Fintype (range f) := fast_instance%
   Set.fintypeRange f
 #align monoid_hom.fintype_range MonoidHom.fintypeRange
 #align add_monoid_hom.fintype_range AddMonoidHom.fintypeRange

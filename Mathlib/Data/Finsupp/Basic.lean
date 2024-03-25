@@ -1543,7 +1543,7 @@ instance isCentralScalar [Zero M] [SMulZeroClass R M] [SMulZeroClass Rᵐᵒᵖ 
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 #align finsupp.is_central_scalar Finsupp.isCentralScalar
 
-instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
+instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) := fast_instance%
   { toDistribMulAction := Finsupp.distribMulAction α M
     zero_smul := fun _ => ext fun _ => zero_smul _ _
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _ }
@@ -1687,12 +1687,12 @@ section
 variable [Zero R]
 
 /-- The `Finsupp` version of `Pi.unique`. -/
-instance uniqueOfRight [Subsingleton R] : Unique (α →₀ R) :=
+instance uniqueOfRight [Subsingleton R] : Unique (α →₀ R) := fast_instance%
   DFunLike.coe_injective.unique
 #align finsupp.unique_of_right Finsupp.uniqueOfRight
 
 /-- The `Finsupp` version of `Pi.uniqueOfIsEmpty`. -/
-instance uniqueOfLeft [IsEmpty α] : Unique (α →₀ R) :=
+instance uniqueOfLeft [IsEmpty α] : Unique (α →₀ R) := fast_instance%
   DFunLike.coe_injective.unique
 #align finsupp.unique_of_left Finsupp.uniqueOfLeft
 

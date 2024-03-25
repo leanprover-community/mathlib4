@@ -109,8 +109,8 @@ instance instMulAction {G : MonCat.{u}} (X : Action V G) :
     rfl
 
 /- Specialize `instMulAction` to assist typeclass inference. -/
-instance {G : MonCat.{u}} (X : Action FintypeCat G) : MulAction G X.V := Action.instMulAction X
-instance {G : Type u} [Group G] (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V :=
+instance {G : MonCat.{u}} (X : Action FintypeCat G) : MulAction G X.V := fast_instance% Action.instMulAction X
+instance {G : Type u} [Group G] (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V := fast_instance%
   Action.instMulAction X
 
 end ToMulAction

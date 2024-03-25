@@ -107,7 +107,7 @@ abbrev Hom.id (X : WalkingCospan) : X ⟶ X :=
   WidePullbackShape.Hom.id X
 #align category_theory.limits.walking_cospan.hom.id CategoryTheory.Limits.WalkingCospan.Hom.id
 
-instance (X Y : WalkingCospan) : Subsingleton (X ⟶ Y) := by
+instance (X Y : WalkingCospan) : Subsingleton (X ⟶ Y) := fast_instance% by
   constructor; intros; simp [eq_iff_true_of_subsingleton]
 
 end WalkingCospan
@@ -137,7 +137,7 @@ abbrev Hom.id (X : WalkingSpan) : X ⟶ X :=
   WidePushoutShape.Hom.id X
 #align category_theory.limits.walking_span.hom.id CategoryTheory.Limits.WalkingSpan.Hom.id
 
-instance (X Y : WalkingSpan) : Subsingleton (X ⟶ Y) := by
+instance (X Y : WalkingSpan) : Subsingleton (X ⟶ Y) := fast_instance% by
   constructor; intros a b; simp [eq_iff_true_of_subsingleton]
 
 end WalkingSpan
@@ -1677,7 +1677,7 @@ theorem hasPullback_of_left_iso : HasPullback f g :=
 
 attribute [local instance] hasPullback_of_left_iso
 
-instance pullback_snd_iso_of_left_iso : IsIso (pullback.snd : pullback f g ⟶ _) := by
+instance pullback_snd_iso_of_left_iso : IsIso (pullback.snd : pullback f g ⟶ _) := fast_instance% by
   refine' ⟨⟨pullback.lift (g ≫ inv f) (𝟙 _) (by simp), _, by simp⟩⟩
   ext
   · simp [← pullback.condition_assoc]
@@ -1686,7 +1686,7 @@ instance pullback_snd_iso_of_left_iso : IsIso (pullback.snd : pullback f g ⟶ _
 
 variable (i : Z ⟶ W) [Mono i]
 
-instance hasPullback_of_right_factors_mono (f : X ⟶ Z) : HasPullback i (f ≫ i) := by
+instance hasPullback_of_right_factors_mono (f : X ⟶ Z) : HasPullback i (f ≫ i) := fast_instance% by
   conv =>
     congr
     rw [← Category.id_comp i]
@@ -1753,7 +1753,7 @@ theorem hasPullback_of_right_iso : HasPullback f g :=
 
 attribute [local instance] hasPullback_of_right_iso
 
-instance pullback_snd_iso_of_right_iso : IsIso (pullback.fst : pullback f g ⟶ _) := by
+instance pullback_snd_iso_of_right_iso : IsIso (pullback.fst : pullback f g ⟶ _) := fast_instance% by
   refine' ⟨⟨pullback.lift (𝟙 _) (f ≫ inv g) (by simp), _, by simp⟩⟩
   ext
   · simp
@@ -1762,7 +1762,7 @@ instance pullback_snd_iso_of_right_iso : IsIso (pullback.fst : pullback f g ⟶ 
 
 variable (i : Z ⟶ W) [Mono i]
 
-instance hasPullback_of_left_factors_mono (f : X ⟶ Z) : HasPullback (f ≫ i) i := by
+instance hasPullback_of_left_factors_mono (f : X ⟶ Z) : HasPullback (f ≫ i) i := fast_instance% by
   conv =>
     congr
     case g => rw [← Category.id_comp i]
@@ -1842,7 +1842,7 @@ theorem hasPushout_of_left_iso : HasPushout f g :=
 
 attribute [local instance] hasPushout_of_left_iso
 
-instance pushout_inr_iso_of_left_iso : IsIso (pushout.inr : _ ⟶ pushout f g) := by
+instance pushout_inr_iso_of_left_iso : IsIso (pushout.inr : _ ⟶ pushout f g) := fast_instance% by
   refine' ⟨⟨pushout.desc (inv f ≫ g) (𝟙 _) (by simp), by simp, _⟩⟩
   ext
   · simp [← pushout.condition]
@@ -1851,7 +1851,7 @@ instance pushout_inr_iso_of_left_iso : IsIso (pushout.inr : _ ⟶ pushout f g) :
 
 variable (h : W ⟶ X) [Epi h]
 
-instance hasPushout_of_right_factors_epi (f : X ⟶ Y) : HasPushout h (h ≫ f) := by
+instance hasPushout_of_right_factors_epi (f : X ⟶ Y) : HasPushout h (h ≫ f) := fast_instance% by
   conv =>
     congr
     rw [← Category.comp_id h]
@@ -1918,7 +1918,7 @@ theorem hasPushout_of_right_iso : HasPushout f g :=
 
 attribute [local instance] hasPushout_of_right_iso
 
-instance pushout_inl_iso_of_right_iso : IsIso (pushout.inl : _ ⟶ pushout f g) := by
+instance pushout_inl_iso_of_right_iso : IsIso (pushout.inl : _ ⟶ pushout f g) := fast_instance% by
   refine' ⟨⟨pushout.desc (𝟙 _) (inv g ≫ f) (by simp), by simp, _⟩⟩
   ext
   · simp [← pushout.condition]
@@ -1927,7 +1927,7 @@ instance pushout_inl_iso_of_right_iso : IsIso (pushout.inl : _ ⟶ pushout f g) 
 
 variable (h : W ⟶ X) [Epi h]
 
-instance hasPushout_of_left_factors_epi (f : X ⟶ Y) : HasPushout (h ≫ f) h := by
+instance hasPushout_of_left_factors_epi (f : X ⟶ Y) : HasPushout (h ≫ f) h := fast_instance% by
   conv =>
     congr
     case g => rw [← Category.comp_id h]
@@ -1951,7 +1951,7 @@ open WalkingCospan
 
 variable (f : X ⟶ Y)
 
-instance has_kernel_pair_of_mono [Mono f] : HasPullback f f :=
+instance has_kernel_pair_of_mono [Mono f] : HasPullback f f := fast_instance%
   ⟨⟨⟨_, PullbackCone.isLimitMkIdId f⟩⟩⟩
 #align category_theory.limits.has_kernel_pair_of_mono CategoryTheory.Limits.has_kernel_pair_of_mono
 
@@ -1965,14 +1965,14 @@ theorem pullbackSymmetry_hom_of_mono_eq [Mono f] : (pullbackSymmetry f f).hom = 
   ext; simp [fst_eq_snd_of_mono_eq]; simp [fst_eq_snd_of_mono_eq]
 #align category_theory.limits.pullback_symmetry_hom_of_mono_eq CategoryTheory.Limits.pullbackSymmetry_hom_of_mono_eq
 
-instance fst_iso_of_mono_eq [Mono f] : IsIso (pullback.fst : pullback f f ⟶ _) := by
+instance fst_iso_of_mono_eq [Mono f] : IsIso (pullback.fst : pullback f f ⟶ _) := fast_instance% by
   refine' ⟨⟨pullback.lift (𝟙 _) (𝟙 _) (by simp), _, by simp⟩⟩
   ext
   · simp
   · simp [fst_eq_snd_of_mono_eq]
 #align category_theory.limits.fst_iso_of_mono_eq CategoryTheory.Limits.fst_iso_of_mono_eq
 
-instance snd_iso_of_mono_eq [Mono f] : IsIso (pullback.snd : pullback f f ⟶ _) := by
+instance snd_iso_of_mono_eq [Mono f] : IsIso (pullback.snd : pullback f f ⟶ _) := fast_instance% by
   rw [← fst_eq_snd_of_mono_eq]
   infer_instance
 #align category_theory.limits.snd_iso_of_mono_eq CategoryTheory.Limits.snd_iso_of_mono_eq
@@ -1985,7 +1985,7 @@ open WalkingSpan
 
 variable (f : X ⟶ Y)
 
-instance has_cokernel_pair_of_epi [Epi f] : HasPushout f f :=
+instance has_cokernel_pair_of_epi [Epi f] : HasPushout f f := fast_instance%
   ⟨⟨⟨_, PushoutCocone.isColimitMkIdId f⟩⟩⟩
 #align category_theory.limits.has_cokernel_pair_of_epi CategoryTheory.Limits.has_cokernel_pair_of_epi
 
@@ -1999,14 +1999,14 @@ theorem pullback_symmetry_hom_of_epi_eq [Epi f] : (pushoutSymmetry f f).hom = �
   ext <;> simp [inl_eq_inr_of_epi_eq]
 #align category_theory.limits.pullback_symmetry_hom_of_epi_eq CategoryTheory.Limits.pullback_symmetry_hom_of_epi_eq
 
-instance inl_iso_of_epi_eq [Epi f] : IsIso (pushout.inl : _ ⟶ pushout f f) := by
+instance inl_iso_of_epi_eq [Epi f] : IsIso (pushout.inl : _ ⟶ pushout f f) := fast_instance% by
   refine' ⟨⟨pushout.desc (𝟙 _) (𝟙 _) (by simp), by simp, _⟩⟩
   apply pushout.hom_ext
   · simp
   · simp [inl_eq_inr_of_epi_eq]
 #align category_theory.limits.inl_iso_of_epi_eq CategoryTheory.Limits.inl_iso_of_epi_eq
 
-instance inr_iso_of_epi_eq [Epi f] : IsIso (pushout.inr : _ ⟶ pushout f f) := by
+instance inr_iso_of_epi_eq [Epi f] : IsIso (pushout.inr : _ ⟶ pushout f f) := fast_instance% by
   rw [← inl_eq_inr_of_epi_eq]
   infer_instance
 #align category_theory.limits.inr_iso_of_epi_eq CategoryTheory.Limits.inr_iso_of_epi_eq

@@ -91,13 +91,13 @@ lemma ofUpperSet_inj {a b : WithUpperSet α} : ofUpperSet a = ofUpperSet b ↔ a
 protected def rec {β : WithUpperSet α → Sort*} (h : ∀ a, β (toUpperSet a)) : ∀ a, β a :=
   fun a => h (ofUpperSet a)
 
-instance [Nonempty α] : Nonempty (WithUpperSet α) := ‹Nonempty α›
-instance [Inhabited α] : Inhabited (WithUpperSet α) := ‹Inhabited α›
+instance [Nonempty α] : Nonempty (WithUpperSet α) := fast_instance% ‹Nonempty α›
+instance [Inhabited α] : Inhabited (WithUpperSet α) := fast_instance% ‹Inhabited α›
 
 variable [Preorder α] [Preorder β] [Preorder γ]
 
-instance : Preorder (WithUpperSet α) := ‹Preorder α›
-instance : TopologicalSpace (WithUpperSet α) := upperSet α
+instance : Preorder (WithUpperSet α) := fast_instance% ‹Preorder α›
+instance : TopologicalSpace (WithUpperSet α) := fast_instance% upperSet α
 
 lemma ofUpperSet_le_iff {a b : WithUpperSet α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b := Iff.rfl
 lemma toUpperSet_le_iff {a b : α} : toUpperSet a ≤ toUpperSet b ↔ a ≤ b := Iff.rfl
@@ -136,13 +136,13 @@ lemma ofLowerSet_inj {a b : WithLowerSet α} : ofLowerSet a = ofLowerSet b ↔ a
 protected def rec {β : WithLowerSet α → Sort*} (h : ∀ a, β (toLowerSet a)) : ∀ a, β a :=
   fun a => h (ofLowerSet a)
 
-instance [Nonempty α] : Nonempty (WithLowerSet α) := ‹Nonempty α›
-instance [Inhabited α] : Inhabited (WithLowerSet α) := ‹Inhabited α›
+instance [Nonempty α] : Nonempty (WithLowerSet α) := fast_instance% ‹Nonempty α›
+instance [Inhabited α] : Inhabited (WithLowerSet α) := fast_instance% ‹Inhabited α›
 
 variable [Preorder α]
 
-instance : Preorder (WithLowerSet α) := ‹Preorder α›
-instance : TopologicalSpace (WithLowerSet α) := lowerSet α
+instance : Preorder (WithLowerSet α) := fast_instance% ‹Preorder α›
+instance : TopologicalSpace (WithLowerSet α) := fast_instance% lowerSet α
 
 lemma ofLowerSet_le_iff {a b : WithLowerSet α} : ofLowerSet a ≤ ofLowerSet b ↔ a ≤ b := Iff.rfl
 lemma toLowerSet_le_iff {a b : α} : toLowerSet a ≤ toLowerSet b ↔ a ≤ b := Iff.rfl
@@ -179,9 +179,9 @@ protected class IsUpperSet (α : Type*) [t : TopologicalSpace α] [Preorder α] 
 
 attribute [nolint docBlame] IsUpperSet.topology_eq_upperSetTopology
 
-instance [Preorder α] : Topology.IsUpperSet (WithUpperSet α) := ⟨rfl⟩
+instance [Preorder α] : Topology.IsUpperSet (WithUpperSet α) := fast_instance% ⟨rfl⟩
 
-instance [Preorder α] : @Topology.IsUpperSet α (upperSet α) _ := by
+instance [Preorder α] : @Topology.IsUpperSet α (upperSet α) _ := fast_instance% by
   letI := upperSet α
   exact ⟨rfl⟩
 
@@ -194,9 +194,9 @@ protected class IsLowerSet (α : Type*) [t : TopologicalSpace α] [Preorder α] 
 
 attribute [nolint docBlame] IsLowerSet.topology_eq_lowerSetTopology
 
-instance [Preorder α] : Topology.IsLowerSet (WithLowerSet α) := ⟨rfl⟩
+instance [Preorder α] : Topology.IsLowerSet (WithLowerSet α) := fast_instance% ⟨rfl⟩
 
-instance [Preorder α] : @Topology.IsLowerSet α (lowerSet α) _ := by
+instance [Preorder α] : @Topology.IsLowerSet α (lowerSet α) _ := fast_instance% by
   letI := lowerSet α
   exact ⟨rfl⟩
 
@@ -304,7 +304,7 @@ def WithLowerSetHomeomorph : WithLowerSet α ≃ₜ α :=
 
 lemma isOpen_iff_isLowerSet : IsOpen s ↔ IsLowerSet s := by rw [topology_eq α]; rfl
 
-instance toAlexandrovDiscrete : AlexandrovDiscrete α := IsUpperSet.toAlexandrovDiscrete (α := αᵒᵈ)
+instance toAlexandrovDiscrete : AlexandrovDiscrete α := fast_instance% IsUpperSet.toAlexandrovDiscrete (α := αᵒᵈ)
 
 lemma isClosed_iff_isUpper : IsClosed s ↔ IsUpperSet s := by
   rw [← isOpen_compl_iff, isOpen_iff_isLowerSet, isUpperSet_compl.symm, compl_compl]

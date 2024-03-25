@@ -33,7 +33,7 @@ infixr:67 " ::ᵥ " => Vector.cons
 
 attribute [simp] head_cons tail_cons
 
-instance [Inhabited α] : Inhabited (Vector α n) :=
+instance [Inhabited α] : Inhabited (Vector α n) := fast_instance%
   ⟨ofFn default⟩
 
 theorem toList_injective : Function.Injective (@toList α n) :=
@@ -48,7 +48,7 @@ theorem ext : ∀ {v w : Vector α n} (_ : ∀ m : Fin n, Vector.get v m = Vecto
 #align vector.ext Vector.ext
 
 /-- The empty `Vector` is a `Subsingleton`. -/
-instance zero_subsingleton : Subsingleton (Vector α 0) :=
+instance zero_subsingleton : Subsingleton (Vector α 0) := fast_instance%
   ⟨fun _ _ => Vector.ext fun m => Fin.elim0 m⟩
 #align vector.zero_subsingleton Vector.zero_subsingleton
 

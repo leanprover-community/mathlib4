@@ -31,7 +31,7 @@ section SMul
 variable [SMul M α] [SMul N α] (a : M) (b : α) (x : Option α)
 
 @[to_additive Option.VAdd]
-instance : SMul M (Option α) :=
+instance : SMul M (Option α) := fast_instance%
   ⟨fun a => Option.map <| (a • ·)⟩
 
 @[to_additive]
@@ -53,23 +53,23 @@ theorem smul_some : a • some b = some (a • b) :=
 #align option.vadd_some Option.vadd_some
 
 @[to_additive]
-instance [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (Option α) :=
+instance [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (Option α) := fast_instance%
   ⟨fun a b x => by
     cases x
     exacts [rfl, congr_arg some (smul_assoc _ _ _)]⟩
 
 @[to_additive]
-instance [SMulCommClass M N α] : SMulCommClass M N (Option α) :=
+instance [SMulCommClass M N α] : SMulCommClass M N (Option α) := fast_instance%
   ⟨fun _ _ => Function.Commute.option_map <| smul_comm _ _⟩
 
 @[to_additive]
-instance [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScalar M (Option α) :=
+instance [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScalar M (Option α) := fast_instance%
   ⟨fun a x => by
     cases x
     exacts [rfl, congr_arg some (op_smul_eq_smul _ _)]⟩
 
 @[to_additive]
-instance [FaithfulSMul M α] : FaithfulSMul M (Option α) :=
+instance [FaithfulSMul M α] : FaithfulSMul M (Option α) := fast_instance%
   ⟨fun h => eq_of_smul_eq_smul fun b : α => by injection h (some b)⟩
 
 end SMul

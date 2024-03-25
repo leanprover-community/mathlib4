@@ -264,7 +264,7 @@ class SmoothInv₀ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
   /-- Inversion is smooth away from `0`. -/
   smoothAt_inv₀ : ∀ ⦃x : G⦄, x ≠ 0 → SmoothAt I I (fun y ↦ y⁻¹) x
 
-instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] : SmoothInv₀ 𝓘(𝕜) 𝕜 :=
+instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] : SmoothInv₀ 𝓘(𝕜) 𝕜 := fast_instance%
   { smoothAt_inv₀ := by
       intro x hx
       change ContMDiffAt 𝓘(𝕜) 𝓘(𝕜) ⊤ Inv.inv x

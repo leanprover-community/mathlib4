@@ -107,7 +107,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 /-- `Category.uniformProd C D` is an additional instance specialised so both factors have the same
 universe levels. This helps typeclass resolution.
 -/
-instance uniformProd : Category (C × D) :=
+instance uniformProd : Category (C × D) := fast_instance%
   CategoryTheory.prod C D
 #align category_theory.uniform_prod CategoryTheory.uniformProd
 
@@ -175,7 +175,7 @@ def braiding : C × D ≌ D × C :=
     (NatIso.ofComponents fun X => eqToIso (by simp))
 #align category_theory.prod.braiding CategoryTheory.Prod.braiding
 
-instance swapIsEquivalence : IsEquivalence (swap C D) :=
+instance swapIsEquivalence : IsEquivalence (swap C D) := fast_instance%
   (by infer_instance : IsEquivalence (braiding C D).functor)
 #align category_theory.prod.swap_is_equivalence CategoryTheory.Prod.swapIsEquivalence
 

@@ -49,7 +49,7 @@ def imageToKernel (w : f ≫ g = 0) : (imageSubobject f : V) ⟶ (kernelSubobjec
   Subobject.ofLE _ _ (image_le_kernel _ _ w)
 #align image_to_kernel imageToKernel
 
-instance (w : f ≫ g = 0) : Mono (imageToKernel f g w) := by
+instance (w : f ≫ g = 0) : Mono (imageToKernel f g w) := fast_instance% by
   dsimp only [imageToKernel]
   infer_instance
 

@@ -55,7 +55,7 @@ theorem toConvexCone_pointed (S : PointedCone 𝕜 E) : (S : ConvexCone 𝕜 E).
 theorem ext {S T : PointedCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 
-instance instZero (S : PointedCone 𝕜 E) : Zero S :=
+instance instZero (S : PointedCone 𝕜 E) : Zero S := fast_instance%
   ⟨0, S.zero_mem⟩
 
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/

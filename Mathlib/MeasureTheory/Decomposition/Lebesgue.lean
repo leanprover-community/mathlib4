@@ -245,7 +245,7 @@ instance singularPart.instIsFiniteMeasure [IsFiniteMeasure μ] :
   isFiniteMeasure_of_le μ <| singularPart_le μ ν
 #align measure_theory.measure.singular_part.measure_theory.is_finite_measure MeasureTheory.Measure.singularPart.instIsFiniteMeasure
 
-instance singularPart.instSigmaFinite [SigmaFinite μ] : SigmaFinite (μ.singularPart ν) :=
+instance singularPart.instSigmaFinite [SigmaFinite μ] : SigmaFinite (μ.singularPart ν) := fast_instance%
   sigmaFinite_of_le μ <| singularPart_le μ ν
 #align measure_theory.measure.singular_part.measure_theory.sigma_finite MeasureTheory.Measure.singularPart.instSigmaFinite
 

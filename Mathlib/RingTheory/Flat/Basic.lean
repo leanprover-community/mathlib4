@@ -79,7 +79,7 @@ the canonical map `I ⊗ M →ₗ M` is injective. -/
 
 namespace Flat
 
-instance self (R : Type u) [CommRing R] : Flat R R :=
+instance self (R : Type u) [CommRing R] : Flat R R := fast_instance%
   ⟨by
     intro I _
     rw [← Equiv.injective_comp (TensorProduct.rid R I).symm.toEquiv]
@@ -196,10 +196,10 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
 
 open scoped Classical in
 /-- Free `R`-modules over discrete types are flat. -/
-instance finsupp (ι : Type v) : Flat R (ι →₀ R) :=
+instance finsupp (ι : Type v) : Flat R (ι →₀ R) := fast_instance%
   of_linearEquiv R _ _ (finsuppLEquivDirectSum R R ι)
 
-instance of_free [Free R M] : Flat R M := of_linearEquiv R _ _ (Free.repr R M)
+instance of_free [Free R M] : Flat R M := fast_instance% of_linearEquiv R _ _ (Free.repr R M)
 
 /-- A projective module with a discrete type of generator is flat -/
 lemma of_projective_surjective (ι : Type w) [Projective R M] (p : (ι →₀ R) →ₗ[R] M)
@@ -208,7 +208,7 @@ lemma of_projective_surjective (ι : Type w) [Projective R M] (p : (ι →₀ R)
   cases h with
     | _ e he => exact of_retract R _ _ _ _ he
 
-instance of_projective [h : Projective R M] : Flat R M := by
+instance of_projective [h : Projective R M] : Flat R M := fast_instance% by
   rw [Module.projective_def'] at h
   cases h with
     | _ e he => exact of_retract R _ _ _ _ he

@@ -168,11 +168,11 @@ def equivOp (H : Subgroup G) : H ≃ H.op :=
 #align subgroup.opposite_equiv_symm_apply_coe Subgroup.equivOp_symm_apply_coe
 
 @[to_additive]
-instance (H : Subgroup G) [Encodable H] : Encodable H.op :=
+instance (H : Subgroup G) [Encodable H] : Encodable H.op := fast_instance%
   Encodable.ofEquiv H H.equivOp.symm
 
 @[to_additive]
-instance (H : Subgroup G) [Countable H] : Countable H.op :=
+instance (H : Subgroup G) [Countable H] : Countable H.op := fast_instance%
   Countable.of_equiv H H.equivOp
 
 @[to_additive]

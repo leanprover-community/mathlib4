@@ -26,7 +26,7 @@ the shift functor by `a` is `shiftFunctor C (φ a)`. -/
 @[nolint unusedArguments]
 def PullbackShift (_ : A →+ B) [HasShift C B] := C
 
-instance : Category (PullbackShift C φ) := by
+instance : Category (PullbackShift C φ) := fast_instance% by
   dsimp only [PullbackShift]
   infer_instance
 
@@ -37,11 +37,11 @@ the monoidal functor `Discrete.addMonoidalFunctor φ : Discrete A ⥤ Discrete B
 noncomputable instance : HasShift (PullbackShift C φ) A where
   shift := (Discrete.addMonoidalFunctor φ).comp (@HasShift.shift C B _ _ _)
 
-instance [HasZeroObject C] : HasZeroObject (PullbackShift C φ) := by
+instance [HasZeroObject C] : HasZeroObject (PullbackShift C φ) := fast_instance% by
   dsimp [PullbackShift]
   infer_instance
 
-instance [Preadditive C] : Preadditive (PullbackShift C φ) := by
+instance [Preadditive C] : Preadditive (PullbackShift C φ) := fast_instance% by
   dsimp [PullbackShift]
   infer_instance
 

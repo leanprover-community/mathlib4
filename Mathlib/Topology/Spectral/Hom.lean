@@ -148,7 +148,7 @@ protected def id : SpectralMap α α :=
   ⟨id, isSpectralMap_id⟩
 #align spectral_map.id SpectralMap.id
 
-instance : Inhabited (SpectralMap α α) :=
+instance : Inhabited (SpectralMap α α) := fast_instance%
   ⟨SpectralMap.id α⟩
 
 @[simp]

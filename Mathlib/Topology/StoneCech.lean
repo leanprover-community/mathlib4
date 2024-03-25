@@ -36,7 +36,7 @@ def ultrafilterBasis (α : Type u) : Set (Set (Ultrafilter α)) :=
 
 variable {α : Type u}
 
-instance Ultrafilter.topologicalSpace : TopologicalSpace (Ultrafilter α) :=
+instance Ultrafilter.topologicalSpace : TopologicalSpace (Ultrafilter α) := fast_instance%
   TopologicalSpace.generateFrom (ultrafilterBasis α)
 #align ultrafilter.topological_space Ultrafilter.topologicalSpace
 
@@ -77,19 +77,19 @@ theorem ultrafilter_converges_iff {u : Ultrafilter (Ultrafilter α)} {x : Ultraf
     exact h _ xi
 #align ultrafilter_converges_iff ultrafilter_converges_iff
 
-instance ultrafilter_compact : CompactSpace (Ultrafilter α) :=
+instance ultrafilter_compact : CompactSpace (Ultrafilter α) := fast_instance%
   ⟨isCompact_iff_ultrafilter_le_nhds.mpr fun f _ =>
       ⟨joinM f, trivial, ultrafilter_converges_iff.mpr rfl⟩⟩
 #align ultrafilter_compact ultrafilter_compact
 
-instance Ultrafilter.t2Space : T2Space (Ultrafilter α) :=
+instance Ultrafilter.t2Space : T2Space (Ultrafilter α) := fast_instance%
   t2_iff_ultrafilter.mpr @fun x y f fx fy =>
     have hx : x = joinM f := ultrafilter_converges_iff.mp fx
     have hy : y = joinM f := ultrafilter_converges_iff.mp fy
     hx.trans hy.symm
 #align ultrafilter.t2_space Ultrafilter.t2Space
 
-instance : TotallyDisconnectedSpace (Ultrafilter α) := by
+instance : TotallyDisconnectedSpace (Ultrafilter α) := fast_instance% by
   rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
   intro A
   simp only [Set.eq_singleton_iff_unique_mem, mem_connectedComponent, true_and_iff]
@@ -246,9 +246,9 @@ def StoneCech : Type u :=
 
 variable {α}
 
-instance : TopologicalSpace (StoneCech α) := by unfold StoneCech; infer_instance
+instance : TopologicalSpace (StoneCech α) := fast_instance% by unfold StoneCech; infer_instance
 
-instance [Inhabited α] : Inhabited (StoneCech α) := by unfold StoneCech; infer_instance
+instance [Inhabited α] : Inhabited (StoneCech α) := fast_instance% by unfold StoneCech; infer_instance
 
 /-- The natural map from α to its Stone-Čech compactification. -/
 def stoneCechUnit (x : α) : StoneCech α :=
@@ -311,7 +311,7 @@ theorem continuous_stoneCechUnit : Continuous (stoneCechUnit : α → StoneCech 
     rwa [show ⟦g⟧ = ⟦pure x⟧ from Quotient.sound <| convergent_eqv_pure gx] at this
 #align continuous_stone_cech_unit continuous_stoneCechUnit
 
-instance StoneCech.t2Space : T2Space (StoneCech α) := by
+instance StoneCech.t2Space : T2Space (StoneCech α) := fast_instance% by
   rw [t2_iff_ultrafilter]
   rintro ⟨x⟩ ⟨y⟩ g gx gy
   apply Quotient.sound
@@ -323,7 +323,7 @@ instance StoneCech.t2Space : T2Space (StoneCech α) := by
   exact tendsto_nhds_unique (lim x gx) (lim y gy)
 #align stone_cech.t2_space StoneCech.t2Space
 
-instance StoneCech.compactSpace : CompactSpace (StoneCech α) :=
+instance StoneCech.compactSpace : CompactSpace (StoneCech α) := fast_instance%
   Quotient.compactSpace
 #align stone_cech.compact_space StoneCech.compactSpace
 

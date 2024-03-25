@@ -166,7 +166,7 @@ variable [Monoid α] [Monoid β]
 protected def mk {α : Type*} [Monoid α] (a : α) : ConjClasses α := ⟦a⟧
 #align conj_classes.mk ConjClasses.mk
 
-instance : Inhabited (ConjClasses α) := ⟨⟦1⟧⟩
+instance : Inhabited (ConjClasses α) := fast_instance% ⟨⟦1⟧⟩
 
 theorem mk_eq_mk_iff_isConj {a b : α} : ConjClasses.mk a = ConjClasses.mk b ↔ IsConj a b :=
   Iff.intro Quotient.exact Quot.sound
@@ -188,7 +188,7 @@ theorem mk_surjective : Function.Surjective (@ConjClasses.mk α _) :=
   forall_isConj.2 fun a => ⟨a, rfl⟩
 #align conj_classes.mk_surjective ConjClasses.mk_surjective
 
-instance : One (ConjClasses α) :=
+instance : One (ConjClasses α) := fast_instance%
   ⟨⟦1⟧⟩
 
 theorem one_eq_mk_one : (1 : ConjClasses α) = ConjClasses.mk 1 :=

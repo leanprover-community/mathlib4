@@ -110,7 +110,7 @@ section Monoid
 
 variable [Monoid R] [MulAction R M] [Monoid M] [IsScalarTower R M M] [SMulCommClass R M M]
 
-instance : Monoid (SubMulAction R M) :=
+instance : Monoid (SubMulAction R M) := fast_instance%
   { SubMulAction.semiGroup,
     SubMulAction.mulOneClass with }
 

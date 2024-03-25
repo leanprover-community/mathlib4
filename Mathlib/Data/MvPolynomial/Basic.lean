@@ -104,10 +104,10 @@ instance decidableEqMvPolynomial [CommSemiring R] [DecidableEq σ] [DecidableEq 
   Finsupp.instDecidableEq
 #align mv_polynomial.decidable_eq_mv_polynomial MvPolynomial.decidableEqMvPolynomial
 
-instance commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
+instance commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) := fast_instance%
   AddMonoidAlgebra.commSemiring
 
-instance inhabited [CommSemiring R] : Inhabited (MvPolynomial σ R) :=
+instance inhabited [CommSemiring R] : Inhabited (MvPolynomial σ R) := fast_instance%
   ⟨0⟩
 
 instance distribuMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
@@ -122,7 +122,7 @@ instance faithfulSMul [CommSemiring S₁] [SMulZeroClass R S₁] [FaithfulSMul R
     FaithfulSMul R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.faithfulSMul
 
-instance module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=
+instance module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) := fast_instance%
   AddMonoidAlgebra.module
 
 instance isScalarTower [CommSemiring S₂] [SMul R S₁] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
@@ -152,7 +152,7 @@ instance smulCommClass_right [CommSemiring S₁] [DistribSMul R S₁] [SMulCommC
 #align mv_polynomial.smul_comm_class_right MvPolynomial.smulCommClass_right
 
 /-- If `R` is a subsingleton, then `MvPolynomial σ R` has a unique element -/
-instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPolynomial σ R) :=
+instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPolynomial σ R) := fast_instance%
   AddMonoidAlgebra.unique
 #align mv_polynomial.unique MvPolynomial.unique
 

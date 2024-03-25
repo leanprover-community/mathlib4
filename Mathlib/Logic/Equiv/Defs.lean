@@ -83,7 +83,7 @@ def EquivLike.toEquiv {F} [EquivLike F α β] (f : F) : α ≃ β where
   right_inv := EquivLike.right_inv f
 
 /-- Any type satisfying `EquivLike` can be cast into `Equiv` via `EquivLike.toEquiv`. -/
-instance {F} [EquivLike F α β] : CoeTC F (α ≃ β) :=
+instance {F} [EquivLike F α β] : CoeTC F (α ≃ β) := fast_instance%
   ⟨EquivLike.toEquiv⟩
 
 /-- `Perm α` is the type of bijections from `α` to itself. -/
@@ -159,7 +159,7 @@ theorem Perm.ext_iff {σ τ : Equiv.Perm α} : σ = τ ↔ ∀ x, σ x = τ x :=
 @[refl] protected def refl (α : Sort*) : α ≃ α := ⟨id, id, fun _ => rfl, fun _ => rfl⟩
 #align equiv.refl Equiv.refl
 
-instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
+instance inhabited' : Inhabited (α ≃ α) := fast_instance% ⟨Equiv.refl α⟩
 
 /-- Inverse of an equivalence `e : α ≃ β`. -/
 @[symm, pp_dot]
@@ -218,13 +218,13 @@ theorem subsingleton_congr (e : α ≃ β) : Subsingleton α ↔ Subsingleton β
   ⟨fun _ => e.symm.subsingleton, fun _ => e.subsingleton⟩
 #align equiv.subsingleton_congr Equiv.subsingleton_congr
 
-instance equiv_subsingleton_cod [Subsingleton β] : Subsingleton (α ≃ β) :=
+instance equiv_subsingleton_cod [Subsingleton β] : Subsingleton (α ≃ β) := fast_instance%
   ⟨fun _ _ => Equiv.ext fun _ => Subsingleton.elim _ _⟩
 
-instance equiv_subsingleton_dom [Subsingleton α] : Subsingleton (α ≃ β) :=
+instance equiv_subsingleton_dom [Subsingleton α] : Subsingleton (α ≃ β) := fast_instance%
   ⟨fun f _ => Equiv.ext fun _ => @Subsingleton.elim _ (Equiv.subsingleton.symm f) _ _⟩
 
-instance permUnique [Subsingleton α] : Unique (Perm α) :=
+instance permUnique [Subsingleton α] : Unique (Perm α) := fast_instance%
   uniqueOfSubsingleton (Equiv.refl α)
 
 theorem Perm.subsingleton_eq_refl [Subsingleton α] (e : Perm α) : e = Equiv.refl α :=

@@ -109,7 +109,7 @@ protected lemma injective (b : FreeGroupBasis ι G) : Injective b :=
 lemma isFreeGroup (b : FreeGroupBasis ι G) : IsFreeGroup G :=
   ⟨range b, ⟨b.reindex (Equiv.ofInjective (↑b) b.injective)⟩⟩
 
-instance (X : Type*) : IsFreeGroup (FreeGroup X) :=
+instance (X : Type*) : IsFreeGroup (FreeGroup X) := fast_instance%
   (ofFreeGroup X).isFreeGroup
 
 /-- Given a free group basis of `G` over `ι`, there is a canonical bijection between maps from `ι`

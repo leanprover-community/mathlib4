@@ -90,7 +90,7 @@ theorem coe_measureUnivNNReal (μ : Measure α) [IsFiniteMeasure μ] :
   ENNReal.coe_toNNReal (measure_ne_top μ univ)
 #align measure_theory.coe_measure_univ_nnreal MeasureTheory.coe_measureUnivNNReal
 
-instance isFiniteMeasureZero : IsFiniteMeasure (0 : Measure α) :=
+instance isFiniteMeasureZero : IsFiniteMeasure (0 : Measure α) := fast_instance%
   ⟨by simp⟩
 #align measure_theory.is_finite_measure_zero MeasureTheory.isFiniteMeasureZero
 
@@ -350,7 +350,7 @@ theorem Measure.restrict_singleton' {a : α} : μ.restrict {a} = 0 := by
   simp only [measure_singleton, Measure.restrict_eq_zero]
 #align measure_theory.measure.restrict_singleton' MeasureTheory.Measure.restrict_singleton'
 
-instance Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := by
+instance Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := fast_instance% by
   refine' ⟨fun x => _⟩
   obtain ⟨t, hxt, ht1, ht2⟩ := exists_measurable_superset_of_null (measure_singleton x : μ {x} = 0)
   apply measure_mono_null hxt
@@ -533,7 +533,7 @@ class SFinite (μ : Measure α) : Prop where
 noncomputable
 def sFiniteSeq (μ : Measure α) [h : SFinite μ] : ℕ → Measure α := h.1.choose
 
-instance isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
+instance isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) := fast_instance%
   h.1.choose_spec.1 n
 
 lemma sum_sFiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sFiniteSeq μ) = μ :=

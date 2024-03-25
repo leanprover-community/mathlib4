@@ -130,7 +130,7 @@ def _root_.FreimanHomClass.toFreimanHom [FreimanHomClass F A β n] (f : F) : A �
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
-instance [FreimanHomClass F A β n] : CoeTC F (A →*[n] β) :=
+instance [FreimanHomClass F A β n] : CoeTC F (A →*[n] β) := fast_instance%
   ⟨FreimanHomClass.toFreimanHom⟩
 
 
@@ -172,7 +172,7 @@ instance freimanHomClass : FreimanHomClass (A →*[n] β) A β n where
 -- @[to_additive
 --       "Helper instance for when there's too many metavariables to apply
 --       `fun_like.has_coe_to_fun` directly."]
--- instance : CoeFun (A →*[n] β) fun _ => α → β :=
+-- instance : CoeFun (A →*[n] β) fun _ => α → β := fast_instance%
 --   ⟨toFun⟩
 
 initialize_simps_projections FreimanHom (toFun → apply)
@@ -307,7 +307,7 @@ theorem const_comp (n : ℕ) (c : γ) (f : A →*[n] β) {hf} : (const B n c).co
 
 /-- `1` is the Freiman homomorphism sending everything to `1`. -/
 @[to_additive "`0` is the Freiman homomorphism sending everything to `0`."]
-instance : One (A →*[n] β) :=
+instance : One (A →*[n] β) := fast_instance%
   ⟨const A n 1⟩
 
 @[to_additive (attr := simp)]
@@ -323,12 +323,12 @@ theorem one_comp (f : A →*[n] β) {hf} : (1 : B →*[n] γ).comp f hf = 1 :=
 #align add_freiman_hom.zero_comp AddFreimanHom.zero_comp
 
 @[to_additive]
-instance : Inhabited (A →*[n] β) :=
+instance : Inhabited (A →*[n] β) := fast_instance%
   ⟨1⟩
 
 /-- `f * g` is the Freiman homomorphism sends `x` to `f x * g x`. -/
 @[to_additive "`f + g` is the Freiman homomorphism sending `x` to `f x + g x`."]
-instance : Mul (A →*[n] β) :=
+instance : Mul (A →*[n] β) := fast_instance%
   ⟨fun f g =>
     { toFun := fun x => f x * g x
       map_prod_eq_map_prod' := fun hsA htA hs ht h => by
@@ -354,7 +354,7 @@ sending `x` to `(f x)⁻¹`. -/
 @[to_additive
       "If `f` is a Freiman homomorphism to an additive commutative group, then `-f` is the
       Freiman homomorphism sending `x` to `-f x`."]
-instance : Inv (A →*[n] G) :=
+instance : Inv (A →*[n] G) := fast_instance%
   ⟨fun f =>
     { toFun := fun x => (f x)⁻¹
       map_prod_eq_map_prod' := fun hsA htA hs ht h => by
@@ -377,7 +377,7 @@ homomorphism sending `x` to `f x / g x`. -/
 @[to_additive
       "If `f` and `g` are additive Freiman homomorphisms to an additive commutative group,
       then `f - g` is the additive Freiman homomorphism sending `x` to `f x - g x`"]
-instance : Div (A →*[n] G) :=
+instance : Div (A →*[n] G) := fast_instance%
   ⟨fun f g =>
     { toFun := fun x => f x / g x
       map_prod_eq_map_prod' := fun hsA htA hs ht h => by
@@ -422,7 +422,7 @@ instance commMonoid : CommMonoid (A →*[n] β) where
 @[to_additive
       "If `β` is an additive commutative group, then `A →*[n] β` is an additive commutative
       group too."]
-instance commGroup {β} [CommGroup β] : CommGroup (A →*[n] β) :=
+instance commGroup {β} [CommGroup β] : CommGroup (A →*[n] β) := fast_instance%
   { FreimanHom.commMonoid with
     div_eq_mul_inv := by
       intros

@@ -103,7 +103,7 @@ section Factor
 variable {P Q : C} (f : P ⟶ Q)
 
 /-- The map `p : P ⟶ image f` is an epimorphism -/
-instance : Epi (Abelian.factorThruImage f) :=
+instance : Epi (Abelian.factorThruImage f) := fast_instance%
   let I := Abelian.image f
   let p := Abelian.factorThruImage f
   let i := kernel.ι (cokernel.π f)
@@ -138,12 +138,12 @@ instance : Epi (Abelian.factorThruImage f) :=
   -- ker g is an epimorphism, but ker g ≫ g = 0 = ker g ≫ 0, so g = 0 as required.
   exact zero_of_epi_comp _ (kernel.condition g)
 
-instance isIso_factorThruImage [Mono f] : IsIso (Abelian.factorThruImage f) :=
+instance isIso_factorThruImage [Mono f] : IsIso (Abelian.factorThruImage f) := fast_instance%
   isIso_of_mono_of_epi <| Abelian.factorThruImage f
 #align category_theory.non_preadditive_abelian.is_iso_factor_thru_image CategoryTheory.NonPreadditiveAbelian.isIso_factorThruImage
 
 /-- The canonical morphism `i : coimage f ⟶ Q` is a monomorphism -/
-instance : Mono (Abelian.factorThruCoimage f) :=
+instance : Mono (Abelian.factorThruCoimage f) := fast_instance%
   let I := Abelian.coimage f
   let i := Abelian.factorThruCoimage f
   let p := cokernel.π (kernel.ι f)
@@ -176,7 +176,7 @@ instance : Mono (Abelian.factorThruCoimage f) :=
     -- coker g is a monomorphism, but g ≫ coker g = 0 = 0 ≫ coker g, so g = 0 as required.
     exact zero_of_comp_mono _ (cokernel.condition g)
 
-instance isIso_factorThruCoimage [Epi f] : IsIso (Abelian.factorThruCoimage f) :=
+instance isIso_factorThruCoimage [Epi f] : IsIso (Abelian.factorThruCoimage f) := fast_instance%
   isIso_of_mono_of_epi _
 #align category_theory.non_preadditive_abelian.is_iso_factor_thru_coimage CategoryTheory.NonPreadditiveAbelian.isIso_factorThruCoimage
 
@@ -218,11 +218,11 @@ abbrev r (A : C) : A ⟶ cokernel (diag A) :=
   prod.lift (𝟙 A) 0 ≫ cokernel.π (diag A)
 #align category_theory.non_preadditive_abelian.r CategoryTheory.NonPreadditiveAbelian.r
 
-instance mono_Δ {A : C} : Mono (diag A) :=
+instance mono_Δ {A : C} : Mono (diag A) := fast_instance%
   mono_of_mono_fac <| prod.lift_fst _ _
 #align category_theory.non_preadditive_abelian.mono_Δ CategoryTheory.NonPreadditiveAbelian.mono_Δ
 
-instance mono_r {A : C} : Mono (r A) := by
+instance mono_r {A : C} : Mono (r A) := fast_instance% by
   let hl : IsLimit (KernelFork.ofι (diag A) (cokernel.condition (diag A))) :=
     monoIsKernelOfCokernel _ (colimit.isColimit _)
   apply NormalEpiCategory.mono_of_cancel_zero
@@ -239,7 +239,7 @@ instance mono_r {A : C} : Mono (r A) := by
   rw [← hy, hyy, zero_comp, zero_comp]
 #align category_theory.non_preadditive_abelian.mono_r CategoryTheory.NonPreadditiveAbelian.mono_r
 
-instance epi_r {A : C} : Epi (r A) := by
+instance epi_r {A : C} : Epi (r A) := fast_instance% by
   have hlp : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ Limits.prod.snd = 0 := prod.lift_snd _ _
   let hp1 : IsLimit (KernelFork.ofι (prod.lift (𝟙 A) (0 : A ⟶ A)) hlp) := by
     refine' Fork.IsLimit.mk _ (fun s => Fork.ι s ≫ Limits.prod.fst) _ _
@@ -266,7 +266,7 @@ instance epi_r {A : C} : Epi (r A) := by
   rw [← ht, htt, comp_zero, comp_zero]
 #align category_theory.non_preadditive_abelian.epi_r CategoryTheory.NonPreadditiveAbelian.epi_r
 
-instance isIso_r {A : C} : IsIso (r A) :=
+instance isIso_r {A : C} : IsIso (r A) := fast_instance%
   isIso_of_mono_of_epi _
 #align category_theory.non_preadditive_abelian.is_iso_r CategoryTheory.NonPreadditiveAbelian.isIso_r
 

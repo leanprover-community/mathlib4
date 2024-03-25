@@ -60,7 +60,7 @@ structure LocQuiver (W : MorphismProperty C) where
   obj : C
 #align category_theory.localization.construction.loc_quiver CategoryTheory.Localization.Construction.LocQuiver
 
-instance : Quiver (LocQuiver W) where Hom A B := Sum (A.obj ⟶ B.obj) { f : B.obj ⟶ A.obj // W f }
+instance : Quiver (LocQuiver W) where Hom A B := fast_instance% Sum (A.obj ⟶ B.obj) { f : B.obj ⟶ A.obj // W f }
 
 /-- The object in the path category of `LocQuiver W` attached to an object in
 the category `C` -/
@@ -103,7 +103,7 @@ def Localization :=
   CategoryTheory.Quotient (Localization.Construction.relations W)
 #align category_theory.morphism_property.localization CategoryTheory.MorphismProperty.Localization
 
-instance : Category (Localization W) := by
+instance : Category (Localization W) := fast_instance% by
   dsimp only [Localization]
   infer_instance
 

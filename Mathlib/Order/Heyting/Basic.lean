@@ -53,16 +53,16 @@ variable {ι α β : Type*}
 section
 variable (α β)
 
-instance Prod.instHImp [HImp α] [HImp β] : HImp (α × β) :=
+instance Prod.instHImp [HImp α] [HImp β] : HImp (α × β) := fast_instance%
   ⟨fun a b => (a.1 ⇨ b.1, a.2 ⇨ b.2)⟩
 
-instance Prod.instHNot [HNot α] [HNot β] : HNot (α × β) :=
+instance Prod.instHNot [HNot α] [HNot β] : HNot (α × β) := fast_instance%
   ⟨fun a => (￢a.1, ￢a.2)⟩
 
-instance Prod.instSDiff [SDiff α] [SDiff β] : SDiff (α × β) :=
+instance Prod.instSDiff [SDiff α] [SDiff β] : SDiff (α × β) := fast_instance%
   ⟨fun a b => (a.1 \ b.1, a.2 \ b.2)⟩
 
-instance Prod.instHasCompl [HasCompl α] [HasCompl β] : HasCompl (α × β) :=
+instance Prod.instHasCompl [HasCompl α] [HasCompl β] : HasCompl (α × β) := fast_instance%
   ⟨fun a => (a.1ᶜ, a.2ᶜ)⟩
 
 end
@@ -111,10 +111,10 @@ namespace Pi
 
 variable {π : ι → Type*}
 
-instance [∀ i, HImp (π i)] : HImp (∀ i, π i) :=
+instance [∀ i, HImp (π i)] : HImp (∀ i, π i) := fast_instance%
   ⟨fun a b i => a i ⇨ b i⟩
 
-instance [∀ i, HNot (π i)] : HNot (∀ i, π i) :=
+instance [∀ i, HNot (π i)] : HNot (∀ i, π i) := fast_instance%
   ⟨fun a i => ￢a i⟩
 
 theorem himp_def [∀ i, HImp (π i)] (a b : ∀ i, π i) : a ⇨ b = fun i => a i ⇨ b i :=
@@ -420,7 +420,7 @@ instance (priority := 100) GeneralizedHeytingAlgebra.toDistribLattice : DistribL
     simp_rw [inf_comm a, ← le_himp_iff, sup_le_iff, le_himp_iff, ← sup_le_iff]; rfl
 #align generalized_heyting_algebra.to_distrib_lattice GeneralizedHeytingAlgebra.toDistribLattice
 
-instance : GeneralizedCoheytingAlgebra αᵒᵈ :=
+instance : GeneralizedCoheytingAlgebra αᵒᵈ := fast_instance%
   { OrderDual.instLattice α, OrderDual.instOrderBot α with
     sdiff := fun a b => toDual (ofDual b ⇨ ofDual a),
     sdiff_le_iff := fun a b c => by
@@ -703,7 +703,7 @@ instance (priority := 100) GeneralizedCoheytingAlgebra.toDistribLattice : Distri
       fun a b c => by simp_rw [← sdiff_le_iff, le_inf_iff, sdiff_le_iff, ← le_inf_iff]; rfl }
 #align generalized_coheyting_algebra.to_distrib_lattice GeneralizedCoheytingAlgebra.toDistribLattice
 
-instance : GeneralizedHeytingAlgebra αᵒᵈ :=
+instance : GeneralizedHeytingAlgebra αᵒᵈ := fast_instance%
   { OrderDual.instLattice α, OrderDual.instOrderTop α with
     himp := fun a b => toDual (ofDual b \ ofDual a),
     le_himp_iff := fun a b c => by
@@ -911,7 +911,7 @@ theorem compl_compl_himp_distrib (a b : α) : (a ⇨ b)ᶜᶜ = aᶜᶜ ⇨ bᶜ
     exact inf_himp_le
 #align compl_compl_himp_distrib compl_compl_himp_distrib
 
-instance : CoheytingAlgebra αᵒᵈ :=
+instance : CoheytingAlgebra αᵒᵈ := fast_instance%
   { OrderDual.instLattice α, OrderDual.instBoundedOrder α with
     hnot := toDual ∘ compl ∘ ofDual,
     sdiff := fun a b => toDual (ofDual b ⇨ ofDual a),
@@ -930,7 +930,7 @@ theorem toDual_compl (a : α) : toDual aᶜ = ￢toDual a :=
   rfl
 #align to_dual_compl toDual_compl
 
-instance Prod.instHeytingAlgebra [HeytingAlgebra β] : HeytingAlgebra (α × β) :=
+instance Prod.instHeytingAlgebra [HeytingAlgebra β] : HeytingAlgebra (α × β) := fast_instance%
   { Prod.instGeneralizedHeytingAlgebra, Prod.instBoundedOrder α β, Prod.instHasCompl α β with
      himp_bot := fun a => Prod.ext_iff.2 ⟨himp_bot a.1, himp_bot a.2⟩ }
 #align prod.heyting_algebra Prod.instHeytingAlgebra
@@ -1091,7 +1091,7 @@ theorem hnot_hnot_sdiff_distrib (a b : α) : ￢￢(a \ b) = ￢￢a \ ￢￢b :
     exact hnot_anti (hnot_anti le_sup_sdiff)
 #align hnot_hnot_sdiff_distrib hnot_hnot_sdiff_distrib
 
-instance : HeytingAlgebra αᵒᵈ :=
+instance : HeytingAlgebra αᵒᵈ := fast_instance%
   { OrderDual.instLattice α, OrderDual.instBoundedOrder α with
     compl := toDual ∘ hnot ∘ ofDual,
     himp := fun a b => toDual (ofDual b \ ofDual a),
@@ -1120,7 +1120,7 @@ theorem toDual_sdiff (a b : α) : toDual (a \ b) = toDual b ⇨ toDual a :=
   rfl
 #align to_dual_sdiff toDual_sdiff
 
-instance Prod.instCoheytingAlgebra [CoheytingAlgebra β] : CoheytingAlgebra (α × β) :=
+instance Prod.instCoheytingAlgebra [CoheytingAlgebra β] : CoheytingAlgebra (α × β) := fast_instance%
   { Prod.instLattice α β, Prod.instBoundedOrder α β, Prod.instSDiff α β, Prod.instHNot α β with
     sdiff_le_iff := fun _ _ _ => and_congr sdiff_le_iff sdiff_le_iff,
     top_sdiff := fun a => Prod.ext_iff.2 ⟨top_sdiff' a.1, top_sdiff' a.2⟩ }
@@ -1146,7 +1146,7 @@ end BiheytingAlgebra
 
 /-- Propositions form a Heyting algebra with implication as Heyting implication and negation as
 complement. -/
-instance Prop.instHeytingAlgebra : HeytingAlgebra Prop :=
+instance Prop.instHeytingAlgebra : HeytingAlgebra Prop := fast_instance%
   { Prop.instDistribLattice, Prop.instBoundedOrder with
     himp := (· → ·),
     le_himp_iff := fun _ _ _ => and_imp.symm, himp_bot := fun _ => rfl }
@@ -1283,7 +1283,7 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
-instance instBiheytingAlgebra : BiheytingAlgebra PUnit.{u+1} :=
+instance instBiheytingAlgebra : BiheytingAlgebra PUnit.{u+1} := fast_instance%
   { PUnit.instLinearOrder.{u} with
     top := unit,
     bot := unit,

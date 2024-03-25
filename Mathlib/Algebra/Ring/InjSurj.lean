@@ -412,7 +412,7 @@ protected def Function.Surjective.hasDistribNeg [Neg β] [Mul β] (f : α → β
     mul_neg := hf.forall₂.2 fun x y => by erw [← neg, ← mul, mul_neg, neg, mul] }
 #align function.surjective.has_distrib_neg Function.Surjective.hasDistribNeg
 
-instance AddOpposite.instHasDistribNeg : HasDistribNeg αᵃᵒᵖ :=
+instance AddOpposite.instHasDistribNeg : HasDistribNeg αᵃᵒᵖ := fast_instance%
   unop_injective.hasDistribNeg _ unop_neg unop_mul
 
 end HasDistribNeg

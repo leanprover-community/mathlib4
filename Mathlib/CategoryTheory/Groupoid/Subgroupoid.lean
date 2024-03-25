@@ -196,7 +196,7 @@ theorem le_iff (S T : Subgroupoid C) : S ≤ T ↔ ∀ {c d}, S.arrows c d ⊆ T
   rw [SetLike.le_def, Sigma.forall]; exact forall_congr' fun c => Sigma.forall
 #align category_theory.subgroupoid.le_iff CategoryTheory.Subgroupoid.le_iff
 
-instance : Top (Subgroupoid C) :=
+instance : Top (Subgroupoid C) := fast_instance%
   ⟨{  arrows := fun _ _ => Set.univ
       mul := by intros; trivial
       inv := by intros; trivial }⟩
@@ -210,21 +210,21 @@ theorem mem_top_objs (c : C) : c ∈ (⊤ : Subgroupoid C).objs := by
   simp only [univ_nonempty]
 #align category_theory.subgroupoid.mem_top_objs CategoryTheory.Subgroupoid.mem_top_objs
 
-instance : Bot (Subgroupoid C) :=
+instance : Bot (Subgroupoid C) := fast_instance%
   ⟨{  arrows := fun _ _ => ∅
       mul := False.elim
       inv := False.elim }⟩
 
-instance : Inhabited (Subgroupoid C) :=
+instance : Inhabited (Subgroupoid C) := fast_instance%
   ⟨⊤⟩
 
-instance : Inf (Subgroupoid C) :=
+instance : Inf (Subgroupoid C) := fast_instance%
   ⟨fun S T =>
     { arrows := fun c d => S.arrows c d ∩ T.arrows c d
       inv := fun hp ↦ ⟨S.inv hp.1, T.inv hp.2⟩
       mul := fun hp _ hq ↦ ⟨S.mul hp.1 hq.1, T.mul hp.2 hq.2⟩ }⟩
 
-instance : InfSet (Subgroupoid C) :=
+instance : InfSet (Subgroupoid C) := fast_instance%
   ⟨fun s =>
     { arrows := fun c d => ⋂ S ∈ s, Subgroupoid.arrows S c d
       inv := fun hp ↦ by rw [mem_iInter₂] at hp ⊢; exact fun S hS => S.inv (hp S hS)
@@ -241,7 +241,7 @@ theorem mem_sInf {s : Set (Subgroupoid C)} {p : Σ c d : C, c ⟶ d} :
     p ∈ sInf s ↔ ∀ S ∈ s, p ∈ S :=
   mem_sInf_arrows
 
-instance : CompleteLattice (Subgroupoid C) :=
+instance : CompleteLattice (Subgroupoid C) := fast_instance%
   { completeLatticeOfInf (Subgroupoid C) (by
       refine' fun s => ⟨fun S Ss F => _, fun T Tl F fT => _⟩ <;> simp only [mem_sInf]
       exacts [fun hp => hp S Ss, fun S Ss => Tl Ss fT]) with

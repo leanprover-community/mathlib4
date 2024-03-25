@@ -181,7 +181,7 @@ variable [CommSemiring R]
 variable [AddCommMonoidWithOne A] [Module R A]
 variable [AddCommMonoidWithOne B] [Module R B]
 
-instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
+instance : One (A ⊗[R] B) where one := fast_instance% 1 ⊗ₜ 1
 
 theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
   rfl
@@ -360,7 +360,7 @@ def includeLeftRingHom : A →+* A ⊗[R] B where
 
 variable [CommSemiring S] [Algebra S A]
 
-instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
+instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) := fast_instance%
   { commutes' := fun r x => by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
       rw [algebraMap_eq_smul_one, ← smul_tmul', ← one_def, mul_smul_comm, smul_mul_assoc, mul_one,
@@ -375,7 +375,7 @@ example : (algebraNat : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
-instance instAlgebra : Algebra R (A ⊗[R] B) :=
+instance instAlgebra : Algebra R (A ⊗[R] B) := fast_instance%
   inferInstance
 
 @[simp]
@@ -550,7 +550,7 @@ variable [CommRing R]
 variable [CommRing A] [Algebra R A]
 variable [CommRing B] [Algebra R B]
 
-instance instCommRing : CommRing (A ⊗[R] B) :=
+instance instCommRing : CommRing (A ⊗[R] B) := fast_instance%
   { toRing := inferInstance
     mul_comm := mul_comm }
 
@@ -565,7 +565,7 @@ def rightAlgebra : Algebra B (A ⊗[R] B) :=
 
 attribute [local instance] TensorProduct.rightAlgebra
 
-instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
+instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) := fast_instance%
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
 #align algebra.tensor_product.right_is_scalar_tower Algebra.TensorProduct.right_isScalarTower
 

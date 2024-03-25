@@ -650,10 +650,10 @@ namespace Point
 
 variable {W}
 
-instance : Inhabited W.Point :=
+instance : Inhabited W.Point := fast_instance%
   ⟨zero⟩
 
-instance : Zero W.Point :=
+instance : Zero W.Point := fast_instance%
   ⟨zero⟩
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
@@ -670,7 +670,7 @@ def neg : W.Point → W.Point
   | some h => some <| nonsingular_neg h
 #align weierstrass_curve.point.neg WeierstrassCurve.Affine.Point.neg
 
-instance : Neg W.Point :=
+instance : Neg W.Point := fast_instance%
   ⟨neg⟩
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
@@ -688,7 +688,7 @@ lemma neg_some {x y : R} (h : W.nonsingular x y) : -some h = some (nonsingular_n
   rfl
 #align weierstrass_curve.point.neg_some WeierstrassCurve.Affine.Point.neg_some
 
-instance : InvolutiveNeg W.Point :=
+instance : InvolutiveNeg W.Point := fast_instance%
   ⟨by rintro (_ | _) <;> simp [zero_def]; ring1⟩
 
 open scoped Classical
@@ -708,7 +708,7 @@ noncomputable def add : W.Point → W.Point → W.Point
     else some <| nonsingular_add h₁ h₂ fun h => (hx h).elim
 #align weierstrass_curve.point.add WeierstrassCurve.Affine.Point.add
 
-noncomputable instance instAddPoint : Add W.Point :=
+noncomputable instance instAddPoint : Add W.Point := fast_instance%
   ⟨add⟩
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
@@ -716,7 +716,7 @@ lemma add_def (P Q : W.Point) : P.add Q = P + Q :=
   rfl
 #align weierstrass_curve.point.add_def WeierstrassCurve.Affine.Point.add_def
 
-noncomputable instance instAddZeroClassPoint : AddZeroClass W.Point :=
+noncomputable instance instAddZeroClassPoint : AddZeroClass W.Point := fast_instance%
   ⟨by rintro (_ | _) <;> rfl, by rintro (_ | _) <;> rfl⟩
 
 @[simp]

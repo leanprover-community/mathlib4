@@ -63,7 +63,7 @@ theorem pure_apply_of_ne (h : a' ≠ a) : pure a a' = 0 :=
   if_neg h
 #align pmf.pure_apply_of_ne PMF.pure_apply_of_ne
 
-instance [Inhabited α] : Inhabited (PMF α) :=
+instance [Inhabited α] : Inhabited (PMF α) := fast_instance%
   ⟨pure default⟩
 
 section Measure

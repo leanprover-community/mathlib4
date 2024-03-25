@@ -354,7 +354,7 @@ def homFrom (X : C) : incl.obj X ⟶ star :=
   starTerminal.from _
 #align category_theory.with_terminal.hom_from CategoryTheory.WithTerminal.homFrom
 
-instance isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f :=
+instance isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f := fast_instance%
   match X with
   | of _X => f.elim
   | star => ⟨f, rfl, rfl⟩
@@ -656,7 +656,7 @@ def homTo (X : C) : star ⟶ incl.obj X :=
 #align category_theory.with_initial.hom_to CategoryTheory.WithInitial.homTo
 
 -- Porting note: need to do cases analysis
-instance isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f :=
+instance isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f := fast_instance%
   match X with
   | of _X => f.elim
   | star => ⟨f, rfl, rfl⟩

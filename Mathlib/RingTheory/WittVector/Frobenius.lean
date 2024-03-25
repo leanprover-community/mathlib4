@@ -228,7 +228,7 @@ variable (p)
 
 See also `frobenius_isPoly`. -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
-instance frobeniusFun_isPoly : IsPoly p fun R _Rcr => @frobeniusFun p R _ _Rcr :=
+instance frobeniusFun_isPoly : IsPoly p fun R _Rcr => @frobeniusFun p R _ _Rcr := fast_instance%
   ⟨⟨frobeniusPoly p, by intros; funext n; apply coeff_frobeniusFun⟩⟩
 #align witt_vector.frobenius_fun_is_poly WittVector.frobeniusFun_isPoly
 
@@ -283,7 +283,7 @@ variable (p)
 
 /-- `frobenius` is tautologically a polynomial function. -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
-instance frobenius_isPoly : IsPoly p fun R _Rcr => @frobenius p R _ _Rcr :=
+instance frobenius_isPoly : IsPoly p fun R _Rcr => @frobenius p R _ _Rcr := fast_instance%
   frobeniusFun_isPoly _
 #align witt_vector.frobenius_is_poly WittVector.frobenius_isPoly
 

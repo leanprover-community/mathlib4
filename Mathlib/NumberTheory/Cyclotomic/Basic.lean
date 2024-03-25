@@ -523,18 +523,18 @@ def CyclotomicField : Type w :=
 namespace CyclotomicField
 
 -- Porting note: could not be derived
-instance : Field (CyclotomicField n K) := by
+instance : Field (CyclotomicField n K) := fast_instance% by
   delta CyclotomicField; infer_instance
 
 -- Porting note: could not be derived
-instance algebra : Algebra K (CyclotomicField n K) := by
+instance algebra : Algebra K (CyclotomicField n K) := fast_instance% by
   delta CyclotomicField; infer_instance
 
 -- Porting note: could not be derived
-instance : Inhabited (CyclotomicField n K) := by
+instance : Inhabited (CyclotomicField n K) := fast_instance% by
   delta CyclotomicField; infer_instance
 
-instance [CharZero K] : CharZero (CyclotomicField n K) :=
+instance [CharZero K] : CharZero (CyclotomicField n K) := fast_instance%
   charZero_of_injective_algebraMap (algebraMap K _).injective
 
 instance isCyclotomicExtension [NeZero ((n : ℕ) : K)] :
@@ -567,7 +567,7 @@ section CyclotomicRing
 /-- If `K` is the fraction field of `A`, the `A`-algebra structure on `CyclotomicField n K`.
 -/
 @[nolint unusedArguments]
-instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
+instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) := fast_instance%
   SplittingField.algebra' (cyclotomic n K)
 #align cyclotomic_field.algebra_base CyclotomicField.algebraBase
 
@@ -579,10 +579,10 @@ instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
   SplittingField.algebra' (cyclotomic n K)
 #align cyclotomic_field.algebra' CyclotomicField.algebra'
 
-instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
+instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) := fast_instance%
   SplittingField.isScalarTower _
 
-instance CyclotomicField.noZeroSMulDivisors : NoZeroSMulDivisors A (CyclotomicField n K) := by
+instance CyclotomicField.noZeroSMulDivisors : NoZeroSMulDivisors A (CyclotomicField n K) := fast_instance% by
   refine' NoZeroSMulDivisors.of_algebraMap_injective _
   rw [IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact
@@ -602,19 +602,19 @@ def CyclotomicRing : Type w :=
 namespace CyclotomicRing
 
 -- Porting note: could not be derived
-instance : CommRing (CyclotomicRing n A K) := by
+instance : CommRing (CyclotomicRing n A K) := fast_instance% by
   delta CyclotomicRing; infer_instance
 
 -- Porting note: could not be derived
-instance : IsDomain (CyclotomicRing n A K) := by
+instance : IsDomain (CyclotomicRing n A K) := fast_instance% by
   delta CyclotomicRing; infer_instance
 
 -- Porting note: could not be derived
-instance : Inhabited (CyclotomicRing n A K) := by
+instance : Inhabited (CyclotomicRing n A K) := fast_instance% by
   delta CyclotomicRing; infer_instance
 
 /-- The `A`-algebra structure on `CyclotomicRing n A K`. -/
-instance algebraBase : Algebra A (CyclotomicRing n A K) :=
+instance algebraBase : Algebra A (CyclotomicRing n A K) := fast_instance%
   (adjoin A _).algebra
 #align cyclotomic_ring.algebra_base CyclotomicRing.algebraBase
 
@@ -622,14 +622,14 @@ instance algebraBase : Algebra A (CyclotomicRing n A K) :=
 -- but there is at `reducible_and_instances` #10906
 example {n : ℕ+} : CyclotomicRing.algebraBase n ℤ ℚ = algebraInt _ := rfl
 
-instance : NoZeroSMulDivisors A (CyclotomicRing n A K) :=
+instance : NoZeroSMulDivisors A (CyclotomicRing n A K) := fast_instance%
   (adjoin A _).noZeroSMulDivisors_bot
 
 theorem algebraBase_injective : Function.Injective <| algebraMap A (CyclotomicRing n A K) :=
   NoZeroSMulDivisors.algebraMap_injective _ _
 #align cyclotomic_ring.algebra_base_injective CyclotomicRing.algebraBase_injective
 
-instance : Algebra (CyclotomicRing n A K) (CyclotomicField n K) :=
+instance : Algebra (CyclotomicRing n A K) (CyclotomicField n K) := fast_instance%
   (adjoin A _).toAlgebra
 
 theorem adjoin_algebra_injective :
@@ -637,10 +637,10 @@ theorem adjoin_algebra_injective :
   Subtype.val_injective
 #align cyclotomic_ring.adjoin_algebra_injective CyclotomicRing.adjoin_algebra_injective
 
-instance : NoZeroSMulDivisors (CyclotomicRing n A K) (CyclotomicField n K) :=
+instance : NoZeroSMulDivisors (CyclotomicRing n A K) (CyclotomicField n K) := fast_instance%
   NoZeroSMulDivisors.of_algebraMap_injective (adjoin_algebra_injective n A K)
 
-instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
+instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) := fast_instance%
   IsScalarTower.subalgebra' _ _ _ _
 
 instance isCyclotomicExtension [NeZero ((n : ℕ) : A)] :

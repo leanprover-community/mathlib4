@@ -62,7 +62,7 @@ theorem AntisymmRel.trans [IsTrans α r] {a b c : α} (hab : AntisymmRel r a b)
   ⟨_root_.trans hab.1 hbc.1, _root_.trans hbc.2 hab.2⟩
 #align antisymm_rel.trans AntisymmRel.trans
 
-instance AntisymmRel.decidableRel [DecidableRel r] : DecidableRel (AntisymmRel r) := fun _ _ =>
+instance AntisymmRel.decidableRel [DecidableRel r] : DecidableRel (AntisymmRel r) := fast_instance% fun _ _ =>
   instDecidableAnd
 #align antisymm_rel.decidable_rel AntisymmRel.decidableRel
 
@@ -105,7 +105,7 @@ noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
   Quotient.out'
 #align of_antisymmetrization ofAntisymmetrization
 
-instance [Inhabited α] : Inhabited (Antisymmetrization α r) :=
+instance [Inhabited α] : Inhabited (Antisymmetrization α r) := fast_instance%
   by unfold Antisymmetrization; infer_instance
 
 @[elab_as_elim]
@@ -166,7 +166,7 @@ theorem wellFounded_antisymmetrization_iff :
   wellFounded_liftOn₂'_iff
 #align well_founded_antisymmetrization_iff wellFounded_antisymmetrization_iff
 
-instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) :=
+instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) := fast_instance%
   ⟨wellFounded_antisymmetrization_iff.2 IsWellFounded.wf⟩
 
 instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsTotal α (· ≤ ·)] :

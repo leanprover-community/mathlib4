@@ -41,7 +41,7 @@ def Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology
   le_cofinite' := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
 #align bornology.induced Bornology.induced
 
-instance {p : α → Prop} : Bornology (Subtype p) :=
+instance {p : α → Prop} : Bornology (Subtype p) := fast_instance%
   Bornology.induced (Subtype.val : Subtype p → α)
 
 namespace Bornology
@@ -156,10 +156,10 @@ end Bornology
 
 open Bornology
 
-instance [BoundedSpace α] [BoundedSpace β] : BoundedSpace (α × β) := by
+instance [BoundedSpace α] [BoundedSpace β] : BoundedSpace (α × β) := fast_instance% by
   simp [← cobounded_eq_bot_iff, cobounded_prod]
 
-instance [∀ i, BoundedSpace (π i)] : BoundedSpace (∀ i, π i) := by
+instance [∀ i, BoundedSpace (π i)] : BoundedSpace (∀ i, π i) := fast_instance% by
   simp [← cobounded_eq_bot_iff, cobounded_pi]
 
 theorem boundedSpace_induced_iff {α β : Type*} [Bornology β] {f : α → β} :
@@ -183,7 +183,7 @@ alias ⟨_, Bornology.IsBounded.boundedSpace_subtype⟩ := boundedSpace_subtype_
 alias ⟨_, Bornology.IsBounded.boundedSpace_val⟩ := boundedSpace_val_set_iff
 #align bornology.is_bounded.bounded_space_coe Bornology.IsBounded.boundedSpace_val
 
-instance [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) :=
+instance [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) := fast_instance%
   (IsBounded.all { x | p x }).boundedSpace_subtype
 
 /-!
@@ -193,16 +193,16 @@ The bornology on those type synonyms is inherited without change.
 -/
 
 
-instance : Bornology (Additive α) :=
+instance : Bornology (Additive α) := fast_instance%
   ‹Bornology α›
 
-instance : Bornology (Multiplicative α) :=
+instance : Bornology (Multiplicative α) := fast_instance%
   ‹Bornology α›
 
-instance [BoundedSpace α] : BoundedSpace (Additive α) :=
+instance [BoundedSpace α] : BoundedSpace (Additive α) := fast_instance%
   ‹BoundedSpace α›
 
-instance [BoundedSpace α] : BoundedSpace (Multiplicative α) :=
+instance [BoundedSpace α] : BoundedSpace (Multiplicative α) := fast_instance%
   ‹BoundedSpace α›
 
 /-!
@@ -212,8 +212,8 @@ The bornology on this type synonym is inherited without change.
 -/
 
 
-instance : Bornology αᵒᵈ :=
+instance : Bornology αᵒᵈ := fast_instance%
   ‹Bornology α›
 
-instance [BoundedSpace α] : BoundedSpace αᵒᵈ :=
+instance [BoundedSpace α] : BoundedSpace αᵒᵈ := fast_instance%
   ‹BoundedSpace α›

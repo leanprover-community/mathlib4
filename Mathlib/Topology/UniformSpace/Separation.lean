@@ -238,7 +238,7 @@ theorem comap_map_mk_uniformity : comap (Prod.map mk mk) (map (Prod.map mk mk) (
   simp only [Prod.map, Prod.ext_iff, mk_eq_mk] at hxy
   exact ((hxy.1.prod hxy.2).mem_open_iff hU.2).1 hyU
 
-instance instUniformSpace : UniformSpace (SeparationQuotient α) :=
+instance instUniformSpace : UniformSpace (SeparationQuotient α) := fast_instance%
   .ofNhdsEqComap
     { uniformity := map (Prod.map mk mk) (𝓤 α)
       refl := le_trans (by simpa using surjective_mk) (Filter.map_mono refl_le_uniformity)

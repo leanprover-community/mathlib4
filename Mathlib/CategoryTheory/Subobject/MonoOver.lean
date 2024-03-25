@@ -54,7 +54,7 @@ def MonoOver (X : C) :=
   FullSubcategory fun f : Over X => Mono f.hom
 #align category_theory.mono_over CategoryTheory.MonoOver
 
-instance (X : C) : Category (MonoOver X) :=
+instance (X : C) : Category (MonoOver X) := fast_instance%
   FullSubcategory.category _
 
 namespace MonoOver
@@ -71,7 +71,7 @@ def forget (X : C) : MonoOver X ⥤ Over X :=
   fullSubcategoryInclusion _
 #align category_theory.mono_over.forget CategoryTheory.MonoOver.forget
 
-instance : CoeOut (MonoOver X) C where coe Y := Y.obj.left
+instance : CoeOut (MonoOver X) C where coe Y := fast_instance% Y.obj.left
 
 @[simp]
 theorem forget_obj_left {f} : ((forget X).obj f).left = (f : C) :=
@@ -98,19 +98,19 @@ theorem forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow :=
   rfl
 #align category_theory.mono_over.forget_obj_hom CategoryTheory.MonoOver.forget_obj_hom
 
-instance : Full (forget X) :=
+instance : Full (forget X) := fast_instance%
   FullSubcategory.full _
 
-instance : Faithful (forget X) :=
+instance : Faithful (forget X) := fast_instance%
   FullSubcategory.faithful _
 
-instance mono (f : MonoOver X) : Mono f.arrow :=
+instance mono (f : MonoOver X) : Mono f.arrow := fast_instance%
   f.property
 #align category_theory.mono_over.mono CategoryTheory.MonoOver.mono
 
 /-- The category of monomorphisms over X is a thin category,
 which makes defining its skeleton easy. -/
-instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
+instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fast_instance% fun f g =>
   ⟨by
     intro h₁ h₂
     apply Over.OverMorphism.ext

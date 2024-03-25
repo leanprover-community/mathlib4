@@ -58,16 +58,16 @@ namespace UpperHalfPlane
 @[coe] protected def coe (z : ℍ) : ℂ := z.1
 
 -- Porting note: added to replace `deriving`
-instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
+instance : CoeOut ℍ ℂ := fast_instance% ⟨UpperHalfPlane.coe⟩
 
-instance : Inhabited ℍ :=
+instance : Inhabited ℍ := fast_instance%
   ⟨⟨Complex.I, by simp⟩⟩
 
 @[ext] theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.eq h
 
 @[simp, norm_cast] theorem ext_iff {a b : ℍ} : (a : ℂ) = b ↔ a = b := Subtype.coe_inj
 
-instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im :=
+instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im := fast_instance%
   Subtype.canLift fun (z : ℂ) => 0 < z.im
 #align upper_half_plane.can_lift UpperHalfPlane.canLift
 
@@ -286,7 +286,7 @@ instance : MulAction GL(2, ℝ)⁺ ℍ where
 
 section ModularScalarTowers
 
-instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
+instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ := fast_instance%
   MulAction.compHom ℍ <| SpecialLinearGroup.toGLPos.comp <| map (algebraMap R ℝ)
 #align upper_half_plane.SL_action UpperHalfPlane.SLAction
 
@@ -298,7 +298,7 @@ variable (Γ : Subgroup (SpecialLinearGroup (Fin 2) ℤ))
 @[coe]
 def coe' : SL(2, ℤ) → GL(2, ℝ)⁺ := fun g => ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
 
-instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
+instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ := fast_instance%
   ⟨coe'⟩
 
 set_option autoImplicit true in
@@ -311,7 +311,7 @@ set_option autoImplicit true in
 theorem det_coe' : det (Units.val <| Subtype.val <| coe' g) = 1 := by
   simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe']
 
-instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
+instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ := fast_instance%
   ⟨fun s g => s * g⟩
 #align upper_half_plane.SL_on_GL_pos UpperHalfPlane.ModularGroup.SLOnGLPos
 
@@ -327,7 +327,7 @@ instance SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
     apply mul_smul'
 #align upper_half_plane.SL_to_GL_tower UpperHalfPlane.ModularGroup.SL_to_GL_tower
 
-instance subgroupGLPos : SMul Γ GL(2, ℝ)⁺ :=
+instance subgroupGLPos : SMul Γ GL(2, ℝ)⁺ := fast_instance%
   ⟨fun s g => s * g⟩
 #align upper_half_plane.subgroup_GL_pos UpperHalfPlane.ModularGroup.subgroupGLPos
 
@@ -343,7 +343,7 @@ instance subgroup_on_glpos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ where
     apply mul_smul'
 #align upper_half_plane.subgroup_on_GL_pos UpperHalfPlane.ModularGroup.subgroup_on_glpos
 
-instance subgroupSL : SMul Γ SL(2, ℤ) :=
+instance subgroupSL : SMul Γ SL(2, ℤ) := fast_instance%
   ⟨fun s g => s * g⟩
 #align upper_half_plane.subgroup_SL UpperHalfPlane.ModularGroup.subgroupSL
 

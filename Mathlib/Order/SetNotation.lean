@@ -158,10 +158,10 @@ end delaborators
 
 namespace Set
 
-instance : InfSet (Set α) :=
+instance : InfSet (Set α) := fast_instance%
   ⟨fun s => { a | ∀ t ∈ s, a ∈ t }⟩
 
-instance : SupSet (Set α) :=
+instance : SupSet (Set α) := fast_instance%
   ⟨fun s => { a | ∃ t ∈ s, a ∈ t }⟩
 
 /-- Intersection of a set of sets. -/

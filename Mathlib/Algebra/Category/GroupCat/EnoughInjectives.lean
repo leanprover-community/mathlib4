@@ -42,7 +42,7 @@ end AddCommGroupCat
 
 namespace CommGroupCat
 
-instance enoughInjectives : EnoughInjectives CommGroupCat.{u} :=
+instance enoughInjectives : EnoughInjectives CommGroupCat.{u} := fast_instance%
   EnoughInjectives.of_equivalence commGroupAddCommGroupEquivalence.functor
 
 end CommGroupCat

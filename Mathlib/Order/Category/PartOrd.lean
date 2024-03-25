@@ -27,16 +27,16 @@ set_option linter.uppercaseLean3 false in
 
 namespace PartOrd
 
-instance : BundledHom.ParentProjection @PartialOrder.toPreorder :=
+instance : BundledHom.ParentProjection @PartialOrder.toPreorder := fast_instance%
   ⟨⟩
 
 deriving instance LargeCategory for PartOrd
 
 -- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory PartOrd :=
+instance : ConcreteCategory PartOrd := fast_instance%
   BundledHom.concreteCategory _
 
-instance : CoeSort PartOrd Type* :=
+instance : CoeSort PartOrd Type* := fast_instance%
   Bundled.coeSort
 
 /-- Construct a bundled PartOrd from the underlying type and typeclass. -/
@@ -51,13 +51,13 @@ theorem coe_of (α : Type*) [PartialOrder α] : ↥(of α) = α :=
 set_option linter.uppercaseLean3 false in
 #align PartOrd.coe_of PartOrd.coe_of
 
-instance : Inhabited PartOrd :=
+instance : Inhabited PartOrd := fast_instance%
   ⟨of PUnit⟩
 
-instance (α : PartOrd) : PartialOrder α :=
+instance (α : PartOrd) : PartialOrder α := fast_instance%
   α.str
 
-instance hasForgetToPreord : HasForget₂ PartOrd Preord :=
+instance hasForgetToPreord : HasForget₂ PartOrd Preord := fast_instance%
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
 #align PartOrd.has_forget_to_Preord PartOrd.hasForgetToPreord

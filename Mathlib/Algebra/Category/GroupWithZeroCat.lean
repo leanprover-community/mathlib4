@@ -26,10 +26,10 @@ set_option linter.uppercaseLean3 false in
 
 namespace GroupWithZeroCat
 
-instance : CoeSort GroupWithZeroCat (Type*) :=
+instance : CoeSort GroupWithZeroCat (Type*) := fast_instance%
   Bundled.coeSort
 
-instance (X : GroupWithZeroCat) : GroupWithZero X :=
+instance (X : GroupWithZeroCat) : GroupWithZero X := fast_instance%
   X.str
 
 /-- Construct a bundled `GroupWithZeroCat` from a `GroupWithZero`. -/
@@ -38,7 +38,7 @@ def of (α : Type*) [GroupWithZero α] : GroupWithZeroCat :=
 set_option linter.uppercaseLean3 false in
 #align GroupWithZero.of GroupWithZeroCat.of
 
-instance : Inhabited GroupWithZeroCat :=
+instance : Inhabited GroupWithZeroCat := fast_instance%
   ⟨of (WithZero PUnit)⟩
 
 instance : LargeCategory.{u} GroupWithZeroCat where
@@ -49,7 +49,7 @@ instance : LargeCategory.{u} GroupWithZeroCat where
   comp_id := MonoidWithZeroHom.id_comp
   assoc _ _ _ := MonoidWithZeroHom.comp_assoc _ _ _
 
-instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M N :=
+instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M N := fast_instance%
   ⟨fun f => f.toFun, fun f g h => by
     cases f
     cases g

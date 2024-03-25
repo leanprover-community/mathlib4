@@ -82,20 +82,20 @@ lemma cast_Nat_cast {n : ℕ} {R : Type*} [AddGroupWithOne R] :
 These also prevent non-computable instances like `Int.normedCommRing` being used to construct
 these instances non-computably.
 -/
-instance : AddCommMonoid ℤ    := by infer_instance
-instance : AddMonoid ℤ        := by infer_instance
-instance : Monoid ℤ           := by infer_instance
-instance : CommMonoid ℤ       := by infer_instance
-instance : CommSemigroup ℤ    := by infer_instance
-instance : Semigroup ℤ        := by infer_instance
-instance : AddCommGroup ℤ     := by infer_instance
-instance : AddGroup ℤ         := by infer_instance
-instance : AddCommSemigroup ℤ := by infer_instance
-instance : AddSemigroup ℤ     := by infer_instance
-instance : CommSemiring ℤ     := by infer_instance
-instance : Semiring ℤ         := by infer_instance
-instance instRingInt : Ring ℤ             := by infer_instance
-instance : Distrib ℤ          := by infer_instance
+instance : AddCommMonoid ℤ    := fast_instance% by infer_instance
+instance : AddMonoid ℤ        := fast_instance% by infer_instance
+instance : Monoid ℤ           := fast_instance% by infer_instance
+instance : CommMonoid ℤ       := fast_instance% by infer_instance
+instance : CommSemigroup ℤ    := fast_instance% by infer_instance
+instance : Semigroup ℤ        := fast_instance% by infer_instance
+instance : AddCommGroup ℤ     := fast_instance% by infer_instance
+instance : AddGroup ℤ         := fast_instance% by infer_instance
+instance : AddCommSemigroup ℤ := fast_instance% by infer_instance
+instance : AddSemigroup ℤ     := fast_instance% by infer_instance
+instance : CommSemiring ℤ     := fast_instance% by infer_instance
+instance : Semiring ℤ         := fast_instance% by infer_instance
+instance instRingInt : Ring ℤ             := fast_instance% by infer_instance
+instance : Distrib ℤ          := fast_instance% by infer_instance
 
 lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
   induction' k with k ih

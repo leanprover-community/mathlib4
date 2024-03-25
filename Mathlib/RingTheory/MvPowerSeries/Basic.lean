@@ -65,28 +65,28 @@ open Finsupp
 
 variable {σ R : Type*}
 
-instance [Inhabited R] : Inhabited (MvPowerSeries σ R) :=
+instance [Inhabited R] : Inhabited (MvPowerSeries σ R) := fast_instance%
   ⟨fun _ => default⟩
 
-instance [Zero R] : Zero (MvPowerSeries σ R) :=
+instance [Zero R] : Zero (MvPowerSeries σ R) := fast_instance%
   Pi.instZero
 
-instance [AddMonoid R] : AddMonoid (MvPowerSeries σ R) :=
+instance [AddMonoid R] : AddMonoid (MvPowerSeries σ R) := fast_instance%
   Pi.addMonoid
 
-instance [AddGroup R] : AddGroup (MvPowerSeries σ R) :=
+instance [AddGroup R] : AddGroup (MvPowerSeries σ R) := fast_instance%
   Pi.addGroup
 
-instance [AddCommMonoid R] : AddCommMonoid (MvPowerSeries σ R) :=
+instance [AddCommMonoid R] : AddCommMonoid (MvPowerSeries σ R) := fast_instance%
   Pi.addCommMonoid
 
-instance [AddCommGroup R] : AddCommGroup (MvPowerSeries σ R) :=
+instance [AddCommGroup R] : AddCommGroup (MvPowerSeries σ R) := fast_instance%
   Pi.addCommGroup
 
-instance [Nontrivial R] : Nontrivial (MvPowerSeries σ R) :=
+instance [Nontrivial R] : Nontrivial (MvPowerSeries σ R) := fast_instance%
   Function.nontrivial
 
-instance {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R (MvPowerSeries σ A) :=
+instance {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R (MvPowerSeries σ A) := fast_instance%
   Pi.module _ _ _
 
 instance {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module S A] [SMul R S]
@@ -173,7 +173,7 @@ theorem coeff_zero (n : σ →₀ ℕ) : coeff R n (0 : MvPowerSeries σ R) = 0 
 
 variable (m n : σ →₀ ℕ) (φ ψ : MvPowerSeries σ R)
 
-instance : One (MvPowerSeries σ R) :=
+instance : One (MvPowerSeries σ R) := fast_instance%
   ⟨monomial R (0 : σ →₀ ℕ) 1⟩
 
 theorem coeff_one [DecidableEq σ] : coeff R n (1 : MvPowerSeries σ R) = if n = 0 then 1 else 0 :=
@@ -188,14 +188,14 @@ theorem monomial_zero_one : monomial R (0 : σ →₀ ℕ) 1 = 1 :=
   rfl
 #align mv_power_series.monomial_zero_one MvPowerSeries.monomial_zero_one
 
-instance : AddMonoidWithOne (MvPowerSeries σ R) :=
+instance : AddMonoidWithOne (MvPowerSeries σ R) := fast_instance%
   { show AddMonoid (MvPowerSeries σ R) by infer_instance with
     natCast := fun n => monomial R 0 n
     natCast_zero := by simp [Nat.cast]
     natCast_succ := by simp [Nat.cast, monomial_zero_one]
     one := 1 }
 
-instance : Mul (MvPowerSeries σ R) :=
+instance : Mul (MvPowerSeries σ R) := fast_instance%
   letI := Classical.decEq σ
   ⟨fun φ ψ n => ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ⟩
 
@@ -285,7 +285,7 @@ protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * �
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;> aesop (add simp [add_assoc, mul_assoc])
 #align mv_power_series.mul_assoc MvPowerSeries.mul_assoc
 
-instance : Semiring (MvPowerSeries σ R) :=
+instance : Semiring (MvPowerSeries σ R) := fast_instance%
   { inferInstanceAs (AddMonoidWithOne (MvPowerSeries σ R)),
     inferInstanceAs (Mul (MvPowerSeries σ R)),
     inferInstanceAs (AddCommMonoid (MvPowerSeries σ R)) with
@@ -299,7 +299,7 @@ instance : Semiring (MvPowerSeries σ R) :=
 
 end Semiring
 
-instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
+instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) := fast_instance%
   { show Semiring (MvPowerSeries σ R) by infer_instance with
     mul_comm := fun φ ψ =>
       ext fun n => by
@@ -307,11 +307,11 @@ instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
         simpa only [coeff_mul, mul_comm] using
           sum_antidiagonal_swap n fun a b => coeff R a φ * coeff R b ψ }
 
-instance [Ring R] : Ring (MvPowerSeries σ R) :=
+instance [Ring R] : Ring (MvPowerSeries σ R) := fast_instance%
   { inferInstanceAs (Semiring (MvPowerSeries σ R)),
     inferInstanceAs (AddCommGroup (MvPowerSeries σ R)) with }
 
-instance [CommRing R] : CommRing (MvPowerSeries σ R) :=
+instance [CommRing R] : CommRing (MvPowerSeries σ R) := fast_instance%
   { inferInstanceAs (CommSemiring (MvPowerSeries σ R)),
     inferInstanceAs (AddCommGroup (MvPowerSeries σ R)) with }
 
@@ -728,7 +728,7 @@ section Algebra
 
 variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
-instance : Algebra R (MvPowerSeries σ A) :=
+instance : Algebra R (MvPowerSeries σ A) := fast_instance%
   {
     show Module R (MvPowerSeries σ A) by infer_instance with
     commutes' := fun a φ => by
@@ -750,7 +750,7 @@ theorem algebraMap_apply {r : R} :
   simp
 #align mv_power_series.algebra_map_apply MvPowerSeries.algebraMap_apply
 
-instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries σ R)) :=
+instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries σ R)) := fast_instance%
   ⟨⟨⊥, ⊤, by
       classical
       rw [Ne.def, SetLike.ext_iff, not_forall]
@@ -780,7 +780,7 @@ def toMvPowerSeries : MvPolynomial σ R → MvPowerSeries σ R :=
   fun φ n => coeff n φ
 
 /-- The natural inclusion from multivariate polynomials into multivariate formal power series.-/
-instance coeToMvPowerSeries : Coe (MvPolynomial σ R) (MvPowerSeries σ R) :=
+instance coeToMvPowerSeries : Coe (MvPolynomial σ R) (MvPowerSeries σ R) := fast_instance%
   ⟨toMvPowerSeries⟩
 #align mv_polynomial.coe_to_mv_power_series MvPolynomial.coeToMvPowerSeries
 
@@ -924,11 +924,11 @@ namespace MvPowerSeries
 
 variable {σ R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : MvPowerSeries σ R)
 
-instance algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPowerSeries σ A) :=
+instance algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPowerSeries σ A) := fast_instance%
   RingHom.toAlgebra (MvPolynomial.coeToMvPowerSeries.algHom A).toRingHom
 #align mv_power_series.algebra_mv_polynomial MvPowerSeries.algebraMvPolynomial
 
-instance algebraMvPowerSeries : Algebra (MvPowerSeries σ R) (MvPowerSeries σ A) :=
+instance algebraMvPowerSeries : Algebra (MvPowerSeries σ R) (MvPowerSeries σ A) := fast_instance%
   (map σ (algebraMap R A)).toAlgebra
 #align mv_power_series.algebra_mv_power_series MvPowerSeries.algebraMvPowerSeries
 

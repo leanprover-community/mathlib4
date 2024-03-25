@@ -45,7 +45,7 @@ variable {z : ℂ}
 
 open ComplexConjugate Topology Filter
 
-instance : Norm ℂ :=
+instance : Norm ℂ := fast_instance%
   ⟨abs⟩
 
 @[simp]
@@ -60,7 +60,7 @@ theorem norm_exp_ofReal_mul_I (t : ℝ) : ‖exp (t * I)‖ = 1 := by
 set_option linter.uppercaseLean3 false in
 #align complex.norm_exp_of_real_mul_I Complex.norm_exp_ofReal_mul_I
 
-instance : NormedAddCommGroup ℂ :=
+instance : NormedAddCommGroup ℂ := fast_instance%
   AddGroupNorm.toNormedAddCommGroup
     { abs with
       map_zero' := map_zero abs
@@ -235,10 +235,10 @@ theorem uniformEmbedding_equivRealProd : UniformEmbedding equivRealProd :=
   antilipschitz_equivRealProd.uniformEmbedding lipschitz_equivRealProd.uniformContinuous
 #align complex.uniform_embedding_equiv_real_prod Complex.uniformEmbedding_equivRealProd
 
-instance : CompleteSpace ℂ :=
+instance : CompleteSpace ℂ := fast_instance%
   (completeSpace_congr uniformEmbedding_equivRealProd).mpr inferInstance
 
-instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpace
+instance instT2Space : T2Space ℂ := fast_instance% TopologicalSpace.t2Space_of_metrizableSpace
 
 /-- The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
@@ -250,7 +250,7 @@ def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
 theorem equivRealProdCLM_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdCLM.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
-instance : ProperSpace ℂ :=
+instance : ProperSpace ℂ := fast_instance%
   (id lipschitz_equivRealProd : LipschitzWith 1 equivRealProdCLM.toHomeomorph).properSpace
 
 /-- The `abs` function on `ℂ` is proper. -/
@@ -358,7 +358,7 @@ theorem nndist_conj_comm (z w : ℂ) : nndist (conj z) w = nndist z (conj w) :=
   Subtype.ext <| dist_conj_comm _ _
 #align complex.nndist_conj_comm Complex.nndist_conj_comm
 
-instance : ContinuousStar ℂ :=
+instance : ContinuousStar ℂ := fast_instance%
   ⟨conjLIE.continuous⟩
 
 @[continuity]

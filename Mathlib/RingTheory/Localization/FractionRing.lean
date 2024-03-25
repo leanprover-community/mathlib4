@@ -42,7 +42,7 @@ abbrev IsFractionRing [CommRing K] [Algebra R K] :=
   IsLocalization (nonZeroDivisors R) K
 #align is_fraction_ring IsFractionRing
 
-instance {R : Type*} [Field R] : IsFractionRing R R :=
+instance {R : Type*} [Field R] : IsFractionRing R R := fast_instance%
   IsLocalization.at_units _ (fun _ ↦ isUnit_of_mem_nonZeroDivisors)
 
 /-- The cast from `Int` to `Rat` as a `FractionRing`. -/
@@ -296,17 +296,17 @@ def FractionRing :=
 
 namespace FractionRing
 
-instance unique [Subsingleton R] : Unique (FractionRing R) :=
+instance unique [Subsingleton R] : Unique (FractionRing R) := fast_instance%
   Localization.instUniqueLocalization
 #align fraction_ring.unique FractionRing.unique
 
-instance [Nontrivial R] : Nontrivial (FractionRing R) :=
+instance [Nontrivial R] : Nontrivial (FractionRing R) := fast_instance%
   ⟨⟨(algebraMap R _) 0, (algebraMap _ _) 1, fun H =>
       zero_ne_one (IsLocalization.injective _ le_rfl H)⟩⟩
 
 /-- Porting note: if the fields of this instance are explicitly defined as they were
 in mathlib3, the last instance in this file suffers a TC timeout -/
-noncomputable instance field : Field (FractionRing A) := IsFractionRing.toField A
+noncomputable instance field : Field (FractionRing A) := fast_instance% IsFractionRing.toField A
 
 @[simp]
 theorem mk_eq_div {r s} :
@@ -338,7 +338,7 @@ noncomputable def algEquiv (K : Type*) [Field K] [Algebra A K] [IsFractionRing A
   Localization.algEquiv (nonZeroDivisors A) K
 #align fraction_ring.alg_equiv FractionRing.algEquiv
 
-instance [Algebra R A] [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R (FractionRing A) := by
+instance [Algebra R A] [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R (FractionRing A) := fast_instance% by
   apply NoZeroSMulDivisors.of_algebraMap_injective
   rw [IsScalarTower.algebraMap_eq R A]
   apply Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective A (FractionRing A))

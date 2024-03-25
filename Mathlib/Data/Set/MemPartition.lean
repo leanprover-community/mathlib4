@@ -97,7 +97,7 @@ lemma finite_memPartition (f : ℕ → Set α) (n : ℕ) : Set.Finite (memPartit
     rw [Set.finite_coe_iff]
     simp
 
-instance instFinite_memPartition (f : ℕ → Set α) (n : ℕ) : Finite (memPartition f n) :=
+instance instFinite_memPartition (f : ℕ → Set α) (n : ℕ) : Finite (memPartition f n) := fast_instance%
   Set.finite_coe_iff.mp (finite_memPartition _ _)
 
 open Classical in

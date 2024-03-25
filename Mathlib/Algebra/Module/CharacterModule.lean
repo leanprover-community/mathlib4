@@ -54,7 +54,7 @@ instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
   map_add _ _ _ := by rw [AddMonoidHom.map_add]
   map_smulₛₗ _ _ _ := by rw [AddMonoidHom.map_zsmul, RingHom.id_apply]
 
-instance : AddCommGroup (CharacterModule A) :=
+instance : AddCommGroup (CharacterModule A) := fast_instance%
   inferInstanceAs (AddCommGroup (A →+ _))
 
 @[ext] theorem ext {c c' : CharacterModule A} (h : ∀ x, c x = c' x) : c = c' := DFunLike.ext _ _ h
@@ -63,7 +63,7 @@ section module
 
 variable [Module R A] [Module R A'] [Module R B]
 
-instance : Module R (CharacterModule A) :=
+instance : Module R (CharacterModule A) := fast_instance%
   Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
 
 variable {R A B}

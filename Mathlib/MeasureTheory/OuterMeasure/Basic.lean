@@ -241,7 +241,7 @@ theorem ext_nonempty {μ₁ μ₂ : OuterMeasure α} (h : ∀ s : Set α, s.None
   ext fun s => s.eq_empty_or_nonempty.elim (fun he => by rw [he, empty', empty']) (h s)
 #align measure_theory.outer_measure.ext_nonempty MeasureTheory.OuterMeasure.ext_nonempty
 
-instance instZero : Zero (OuterMeasure α) :=
+instance instZero : Zero (OuterMeasure α) := fast_instance%
   ⟨{  measureOf := fun _ => 0
       empty := rfl
       mono := by intro _ _ _; exact le_refl 0
@@ -253,11 +253,11 @@ theorem coe_zero : ⇑(0 : OuterMeasure α) = 0 :=
   rfl
 #align measure_theory.outer_measure.coe_zero MeasureTheory.OuterMeasure.coe_zero
 
-instance instInhabited : Inhabited (OuterMeasure α) :=
+instance instInhabited : Inhabited (OuterMeasure α) := fast_instance%
   ⟨0⟩
 #align measure_theory.outer_measure.inhabited MeasureTheory.OuterMeasure.instInhabited
 
-instance instAdd : Add (OuterMeasure α) :=
+instance instAdd : Add (OuterMeasure α) := fast_instance%
   ⟨fun m₁ m₂ =>
     { measureOf := fun s => m₁ s + m₂ s
       empty := show m₁ ∅ + m₂ ∅ = 0 by simp [OuterMeasure.empty]
@@ -284,7 +284,7 @@ section SMul
 variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
 variable [SMul R' ℝ≥0∞] [IsScalarTower R' ℝ≥0∞ ℝ≥0∞]
 
-instance instSMul : SMul R (OuterMeasure α) :=
+instance instSMul : SMul R (OuterMeasure α) := fast_instance%
   ⟨fun c m =>
     { measureOf := fun s => c • m s
       empty := by simp; rw [← smul_one_mul c]; simp
@@ -305,7 +305,7 @@ theorem smul_apply (c : R) (m : OuterMeasure α) (s : Set α) : (c • m) s = c 
   rfl
 #align measure_theory.outer_measure.smul_apply MeasureTheory.OuterMeasure.smul_apply
 
-instance instSMulCommClass [SMulCommClass R R' ℝ≥0∞] : SMulCommClass R R' (OuterMeasure α) :=
+instance instSMulCommClass [SMulCommClass R R' ℝ≥0∞] : SMulCommClass R R' (OuterMeasure α) := fast_instance%
   ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
 #align measure_theory.outer_measure.smul_comm_class MeasureTheory.OuterMeasure.instSMulCommClass
 
@@ -326,7 +326,7 @@ instance instMulAction [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ�
   Injective.mulAction _ coe_fn_injective coe_smul
 #align measure_theory.outer_measure.mul_action MeasureTheory.OuterMeasure.instMulAction
 
-instance addCommMonoid : AddCommMonoid (OuterMeasure α) :=
+instance addCommMonoid : AddCommMonoid (OuterMeasure α) := fast_instance%
   Injective.addCommMonoid (show OuterMeasure α → Set α → ℝ≥0∞ from _) coe_fn_injective rfl
     (fun _ _ => rfl) fun _ _ => rfl
 #align measure_theory.outer_measure.add_comm_monoid MeasureTheory.OuterMeasure.addCommMonoid
@@ -349,7 +349,7 @@ instance instModule [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0�
   Injective.module R coeFnAddMonoidHom coe_fn_injective coe_smul
 #align measure_theory.outer_measure.module MeasureTheory.OuterMeasure.instModule
 
-instance instBot : Bot (OuterMeasure α) :=
+instance instBot : Bot (OuterMeasure α) := fast_instance%
   ⟨0⟩
 #align measure_theory.outer_measure.has_bot MeasureTheory.OuterMeasure.instBot
 
@@ -365,7 +365,7 @@ instance instPartialOrder : PartialOrder (OuterMeasure α) where
   le_antisymm a b hab hba := ext fun s => le_antisymm (hab s) (hba s)
 #align measure_theory.outer_measure.outer_measure.partial_order MeasureTheory.OuterMeasure.instPartialOrder
 
-instance orderBot : OrderBot (OuterMeasure α) :=
+instance orderBot : OrderBot (OuterMeasure α) := fast_instance%
   { bot := 0,
     bot_le := fun a s => by simp only [coe_zero, Pi.zero_apply, coe_bot, zero_le] }
 #align measure_theory.outer_measure.outer_measure.order_bot MeasureTheory.OuterMeasure.orderBot
@@ -376,7 +376,7 @@ theorem univ_eq_zero_iff (m : OuterMeasure α) : m univ = 0 ↔ m = 0 :=
 
 section Supremum
 
-instance instSupSet : SupSet (OuterMeasure α) :=
+instance instSupSet : SupSet (OuterMeasure α) := fast_instance%
   ⟨fun ms =>
     { measureOf := fun s => ⨆ m ∈ ms, (m : OuterMeasure α) s
       empty := nonpos_iff_eq_zero.1 <| iSup₂_le fun m _ => le_of_eq m.empty
@@ -390,7 +390,7 @@ instance instSupSet : SupSet (OuterMeasure α) :=
              }⟩
 #align measure_theory.outer_measure.has_Sup MeasureTheory.OuterMeasure.instSupSet
 
-instance instCompleteLattice : CompleteLattice (OuterMeasure α) :=
+instance instCompleteLattice : CompleteLattice (OuterMeasure α) := fast_instance%
   { OuterMeasure.orderBot,
     completeLatticeOfSup (OuterMeasure α) fun ms =>
       ⟨fun m hm s => by apply le_iSup₂ m hm, fun m hm s => iSup₂_le fun m' hm' => hm hm' s⟩ with }
@@ -471,10 +471,10 @@ theorem map_iSup {β ι} (f : α → β) (m : ι → OuterMeasure α) : map f (�
   ext fun s => by simp only [map_apply, iSup_apply]
 #align measure_theory.outer_measure.map_supr MeasureTheory.OuterMeasure.map_iSup
 
-instance instFunctor : Functor OuterMeasure where map {_ _} f := map f
+instance instFunctor : Functor OuterMeasure where map {_ _} f := fast_instance% map f
 #align measure_theory.outer_measure.functor MeasureTheory.OuterMeasure.instFunctor
 
-instance instLawfulFunctor : LawfulFunctor OuterMeasure := by constructor <;> intros <;> rfl
+instance instLawfulFunctor : LawfulFunctor OuterMeasure := fast_instance% by constructor <;> intros <;> rfl
 #align measure_theory.outer_measure.is_lawful_functor MeasureTheory.OuterMeasure.instLawfulFunctor
 
 /-- The dirac outer measure. -/

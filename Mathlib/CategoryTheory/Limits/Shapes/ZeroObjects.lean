@@ -174,7 +174,7 @@ class HasZeroObject : Prop where
   zero : ∃ X : C, IsZero X
 #align category_theory.limits.has_zero_object CategoryTheory.Limits.HasZeroObject
 
-instance hasZeroObject_pUnit : HasZeroObject (Discrete PUnit) where zero :=
+instance hasZeroObject_pUnit : HasZeroObject (Discrete PUnit) where zero := fast_instance%
   ⟨⟨⟨⟩⟩,
     { unique_to := fun ⟨⟨⟩⟩ =>
       ⟨{ default := 𝟙 _,
@@ -202,7 +202,7 @@ theorem isZero_zero : IsZero (0 : C) :=
   HasZeroObject.zero.choose_spec
 #align category_theory.limits.is_zero_zero CategoryTheory.Limits.isZero_zero
 
-instance hasZeroObject_op : HasZeroObject Cᵒᵖ :=
+instance hasZeroObject_op : HasZeroObject Cᵒᵖ := fast_instance%
   ⟨⟨Opposite.op 0, IsZero.op (isZero_zero C)⟩⟩
 #align category_theory.limits.has_zero_object_op CategoryTheory.Limits.hasZeroObject_op
 
@@ -260,13 +260,13 @@ theorem from_zero_ext {X : C} (f g : 0 ⟶ X) : f = g :=
   (isZero_zero C).eq_of_src _ _
 #align category_theory.limits.has_zero_object.from_zero_ext CategoryTheory.Limits.HasZeroObject.from_zero_ext
 
-instance (X : C) : Subsingleton (X ≅ 0) := ⟨fun f g => by ext⟩
+instance (X : C) : Subsingleton (X ≅ 0) := fast_instance% ⟨fun f g => by ext⟩
 
-instance {X : C} (f : 0 ⟶ X) : Mono f where right_cancellation g h _ := by ext
+instance {X : C} (f : 0 ⟶ X) : Mono f where right_cancellation g h _ := fast_instance% by ext
 
-instance {X : C} (f : X ⟶ 0) : Epi f where left_cancellation g h _ := by ext
+instance {X : C} (f : X ⟶ 0) : Epi f where left_cancellation g h _ := fast_instance% by ext
 
-instance zero_to_zero_isIso (f : (0 : C) ⟶ 0) : IsIso f := by
+instance zero_to_zero_isIso (f : (0 : C) ⟶ 0) : IsIso f := fast_instance% by
   convert show IsIso (𝟙 (0 : C)) by infer_instance
 #align category_theory.limits.has_zero_object.zero_to_zero_is_iso CategoryTheory.Limits.HasZeroObject.zero_to_zero_isIso
 

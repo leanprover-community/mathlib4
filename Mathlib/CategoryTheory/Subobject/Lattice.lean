@@ -31,9 +31,9 @@ namespace MonoOver
 
 section Top
 
-instance {X : C} : Top (MonoOver X) where top := mk' (𝟙 _)
+instance {X : C} : Top (MonoOver X) where top := fast_instance% mk' (𝟙 _)
 
-instance {X : C} : Inhabited (MonoOver X) :=
+instance {X : C} : Inhabited (MonoOver X) := fast_instance%
   ⟨⊤⟩
 
 /-- The morphism to the top object in `MonoOver X`. -/
@@ -87,7 +87,7 @@ section Bot
 
 variable [HasInitial C] [InitialMonoClass C]
 
-instance {X : C} : Bot (MonoOver X) where bot := mk' (initial.to X)
+instance {X : C} : Bot (MonoOver X) where bot := fast_instance% mk' (initial.to X)
 
 @[simp]
 theorem bot_left (X : C) : ((⊥ : MonoOver X) : C) = ⊥_ C :=
@@ -222,7 +222,7 @@ instance orderTop {X : C} : OrderTop (Subobject X) where
     exact ⟨MonoOver.leTop f⟩
 #align category_theory.subobject.order_top CategoryTheory.Subobject.orderTop
 
-instance {X : C} : Inhabited (Subobject X) :=
+instance {X : C} : Inhabited (Subobject X) := fast_instance%
   ⟨⊤⟩
 
 theorem top_eq_id (B : C) : (⊤ : Subobject B) = Subobject.mk (𝟙 B) :=
@@ -234,7 +234,7 @@ theorem underlyingIso_top_hom {B : C} : (underlyingIso (𝟙 B)).hom = (⊤ : Su
   simp only [comp_id]
 #align category_theory.subobject.underlying_iso_top_hom CategoryTheory.Subobject.underlyingIso_top_hom
 
-instance top_arrow_isIso {B : C} : IsIso (⊤ : Subobject B).arrow := by
+instance top_arrow_isIso {B : C} : IsIso (⊤ : Subobject B).arrow := fast_instance% by
   rw [← underlyingIso_top_hom]
   infer_instance
 #align category_theory.subobject.top_arrow_is_iso CategoryTheory.Subobject.top_arrow_isIso
@@ -264,7 +264,7 @@ theorem isIso_arrow_iff_eq_top {Y : C} (P : Subobject Y) : IsIso P.arrow ↔ P =
   rw [isIso_iff_mk_eq_top, mk_arrow]
 #align category_theory.subobject.is_iso_arrow_iff_eq_top CategoryTheory.Subobject.isIso_arrow_iff_eq_top
 
-instance isIso_top_arrow {Y : C} : IsIso (⊤ : Subobject Y).arrow := by rw [isIso_arrow_iff_eq_top]
+instance isIso_top_arrow {Y : C} : IsIso (⊤ : Subobject Y).arrow := fast_instance% by rw [isIso_arrow_iff_eq_top]
 #align category_theory.subobject.is_iso_top_arrow CategoryTheory.Subobject.isIso_top_arrow
 
 theorem mk_eq_top_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : mk f = ⊤ :=
@@ -552,12 +552,12 @@ end SemilatticeSup
 
 section Lattice
 
-instance boundedOrder [HasInitial C] [InitialMonoClass C] {B : C} : BoundedOrder (Subobject B) :=
+instance boundedOrder [HasInitial C] [InitialMonoClass C] {B : C} : BoundedOrder (Subobject B) := fast_instance%
   { Subobject.orderTop, Subobject.orderBot with }
 
 variable [HasPullbacks C] [HasImages C] [HasBinaryCoproducts C]
 
-instance {B : C} : Lattice (Subobject B) :=
+instance {B : C} : Lattice (Subobject B) := fast_instance%
   { Subobject.semilatticeInf, Subobject.semilatticeSup with }
 
 end Lattice
@@ -617,7 +617,7 @@ def widePullbackι {A : C} (s : Set (Subobject A)) : widePullback s ⟶ A :=
   Limits.limit.π (wideCospan s) none
 #align category_theory.subobject.wide_pullback_ι CategoryTheory.Subobject.widePullbackι
 
-instance widePullbackι_mono {A : C} (s : Set (Subobject A)) : Mono (widePullbackι s) :=
+instance widePullbackι_mono {A : C} (s : Set (Subobject A)) : Mono (widePullbackι s) := fast_instance%
   ⟨fun u v h =>
     limit.hom_ext fun j => by
       cases j
@@ -726,7 +726,7 @@ variable [WellPowered C] [HasWidePullbacks.{v₁} C] [HasImages C] [HasCoproduct
 
 attribute [local instance] has_smallest_coproducts_of_hasCoproducts
 
-instance {B : C} : CompleteLattice (Subobject B) :=
+instance {B : C} : CompleteLattice (Subobject B) := fast_instance%
   { Subobject.semilatticeInf, Subobject.semilatticeSup, Subobject.boundedOrder,
     Subobject.completeSemilatticeInf, Subobject.completeSemilatticeSup with }
 

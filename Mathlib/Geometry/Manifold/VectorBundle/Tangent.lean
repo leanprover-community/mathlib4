@@ -180,9 +180,9 @@ def TangentSpace {𝕜} [NontriviallyNormedField 𝕜] {E} [NormedAddCommGroup E
 -- Porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
 #align tangent_space TangentSpace
 
-instance {x : M} : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
-instance {x : M} : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
-instance {x : M} : TopologicalAddGroup (TangentSpace I x) := inferInstanceAs (TopologicalAddGroup E)
+instance {x : M} : TopologicalSpace (TangentSpace I x) := fast_instance% inferInstanceAs (TopologicalSpace E)
+instance {x : M} : AddCommGroup (TangentSpace I x) := fast_instance% inferInstanceAs (AddCommGroup E)
+instance {x : M} : TopologicalAddGroup (TangentSpace I x) := fast_instance% inferInstanceAs (TopologicalAddGroup E)
 
 variable (M)
 
@@ -205,21 +205,21 @@ section
 
 variable {M} (x : M)
 
-instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
+instance : Module 𝕜 (TangentSpace I x) := fast_instance% inferInstanceAs (Module 𝕜 E)
 
-instance : Inhabited (TangentSpace I x) := ⟨0⟩
+instance : Inhabited (TangentSpace I x) := fast_instance% ⟨0⟩
 
 -- Porting note: removed unneeded ContinuousAdd (TangentSpace I x)
 
 end
 
-instance : TopologicalSpace TM :=
+instance : TopologicalSpace TM := fast_instance%
   (tangentBundleCore I M).toTopologicalSpace
 
-instance TangentSpace.fiberBundle : FiberBundle E (TangentSpace I : M → Type _) :=
+instance TangentSpace.fiberBundle : FiberBundle E (TangentSpace I : M → Type _) := fast_instance%
   (tangentBundleCore I M).fiberBundle
 
-instance TangentSpace.vectorBundle : VectorBundle 𝕜 E (TangentSpace I : M → Type _) :=
+instance TangentSpace.vectorBundle : VectorBundle 𝕜 E (TangentSpace I : M → Type _) := fast_instance%
   (tangentBundleCore I M).vectorBundle
 
 namespace TangentBundle
@@ -348,7 +348,7 @@ theorem continuousLinearMapAt_model_space (b b' : F) :
 
 end TangentBundle
 
-instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
+instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := fast_instance% by
   refine' ⟨fun i j => _⟩
   rw [SmoothOn, contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas I i.2),
     contMDiffOn_iff_contDiffOn]
@@ -359,7 +359,7 @@ instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
   · apply inter_subset_left
 #align tangent_bundle_core.is_smooth tangentBundleCore.isSmooth
 
-instance TangentBundle.smoothVectorBundle : SmoothVectorBundle E (TangentSpace I : M → Type _) I :=
+instance TangentBundle.smoothVectorBundle : SmoothVectorBundle E (TangentSpace I : M → Type _) I := fast_instance%
   (tangentBundleCore I M).smoothVectorBundle _
 #align tangent_bundle.smooth_vector_bundle TangentBundle.smoothVectorBundle
 
@@ -491,6 +491,6 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [Top
   {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
 
-instance {x : M} : PathConnectedSpace (TangentSpace I x) := by unfold TangentSpace; infer_instance
+instance {x : M} : PathConnectedSpace (TangentSpace I x) := fast_instance% by unfold TangentSpace; infer_instance
 
 end Real

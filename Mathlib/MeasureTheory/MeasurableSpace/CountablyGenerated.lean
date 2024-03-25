@@ -199,7 +199,7 @@ lemma finite_countablePartition (α : Type*) [MeasurableSpace α] [CountablyGene
     Set.Finite (countablePartition α n) :=
   finite_memPartition _ n
 
-instance instFinite_countablePartition (n : ℕ) : Finite (countablePartition α n) :=
+instance instFinite_countablePartition (n : ℕ) : Finite (countablePartition α n) := fast_instance%
   Set.finite_coe_iff.mp (finite_countablePartition _ _)
 
 lemma disjoint_countablePartition {n : ℕ} {s t : Set α}

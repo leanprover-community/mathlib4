@@ -80,9 +80,9 @@ attribute [reassoc (attr := simp)] wp wι
 variable {S}
 variable (h : S.RightHomologyData) {A : C}
 
-instance : Epi h.p := ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hp⟩
+instance : Epi h.p := fast_instance% ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hp⟩
 
-instance : Mono h.ι := ⟨fun _ _ => Fork.IsLimit.hom_ext h.hι⟩
+instance : Mono h.ι := fast_instance% ⟨fun _ _ => Fork.IsLimit.hom_ext h.hι⟩
 
 /-- Any morphism `k : S.X₂ ⟶ A` such that `S.f ≫ k = 0` descends
 to a morphism `Q ⟶ A` -/
@@ -311,10 +311,10 @@ def unop {S : ShortComplex Cᵒᵖ} (h : S.LeftHomologyData) : S.unop.RightHomol
 
 end LeftHomologyData
 
-instance [S.HasLeftHomology] : HasRightHomology S.op :=
+instance [S.HasLeftHomology] : HasRightHomology S.op := fast_instance%
   HasRightHomology.mk' S.leftHomologyData.op
 
-instance [S.HasRightHomology] : HasLeftHomology S.op :=
+instance [S.HasRightHomology] : HasLeftHomology S.op := fast_instance%
   HasLeftHomology.mk' S.rightHomologyData.op
 
 lemma hasLeftHomology_iff_op (S : ShortComplex C) :
@@ -380,7 +380,7 @@ def comp {φ : S₁ ⟶ S₂} {φ' : S₂ ⟶ S₃} {h₁ : S₁.RightHomologyDa
   φQ := ψ.φQ ≫ ψ'.φQ
   φH := ψ.φH ≫ ψ'.φH
 
-instance : Subsingleton (RightHomologyMapData φ h₁ h₂) :=
+instance : Subsingleton (RightHomologyMapData φ h₁ h₂) := fast_instance%
   ⟨fun ψ₁ ψ₂ => by
     have hQ : ψ₁.φQ = ψ₂.φQ := by rw [← cancel_epi h₁.p, commp, commp]
     have hH : ψ₁.φH = ψ₂.φH := by rw [← cancel_mono h₂.ι, commι, commι, hQ]
@@ -388,7 +388,7 @@ instance : Subsingleton (RightHomologyMapData φ h₁ h₂) :=
     cases ψ₂
     congr⟩
 
-instance : Inhabited (RightHomologyMapData φ h₁ h₂) := ⟨by
+instance : Inhabited (RightHomologyMapData φ h₁ h₂) := fast_instance% ⟨by
   let φQ : h₁.Q ⟶ h₂.Q := h₁.descQ (φ.τ₂ ≫ h₂.p) (by rw [← φ.comm₁₂_assoc, h₂.wp, comp_zero])
   have commg' : φQ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ :=
     by rw [← cancel_epi h₁.p, RightHomologyData.p_descQ_assoc, assoc,
@@ -397,7 +397,7 @@ instance : Inhabited (RightHomologyMapData φ h₁ h₂) := ⟨by
     (by rw [assoc, commg', RightHomologyData.ι_g'_assoc, zero_comp])
   exact ⟨φQ, φH, by simp [φQ], commg', by simp [φH]⟩⟩
 
-instance : Unique (RightHomologyMapData φ h₁ h₂) := Unique.mk' _
+instance : Unique (RightHomologyMapData φ h₁ h₂) := fast_instance% Unique.mk' _
 
 variable {φ h₁ h₂}
 
@@ -503,11 +503,11 @@ lemma f_pOpcycles : S.f ≫ S.pOpcycles = 0 := S.rightHomologyData.wp
 @[reassoc (attr := simp)]
 lemma p_fromOpcycles : S.pOpcycles ≫ S.fromOpcycles = S.g := S.rightHomologyData.p_g'
 
-instance : Epi S.pOpcycles := by
+instance : Epi S.pOpcycles := fast_instance% by
   dsimp only [pOpcycles]
   infer_instance
 
-instance : Mono S.rightHomologyι := by
+instance : Mono S.rightHomologyι := fast_instance% by
   dsimp only [rightHomologyι]
   infer_instance
 

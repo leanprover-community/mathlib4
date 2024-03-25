@@ -132,7 +132,7 @@ theorem whiskering_preadditiveCoyoneda :
   rfl
 #align category_theory.whiskering_preadditive_coyoneda CategoryTheory.whiskering_preadditiveCoyoneda
 
-instance full_preadditiveYoneda : Full (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat) :=
+instance full_preadditiveYoneda : Full (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat) := fast_instance%
   let _ : Full (preadditiveYoneda ⋙
       (whiskeringRight Cᵒᵖ AddCommGroupCat (Type v)).obj (forget AddCommGroupCat)) :=
     Yoneda.yonedaFull
@@ -140,7 +140,7 @@ instance full_preadditiveYoneda : Full (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ Ad
     ((whiskeringRight Cᵒᵖ AddCommGroupCat (Type v)).obj (forget AddCommGroupCat))
 #align category_theory.preadditive_yoneda_full CategoryTheory.full_preadditiveYoneda
 
-instance full_preadditiveCoyoneda : Full (preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGroupCat) :=
+instance full_preadditiveCoyoneda : Full (preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGroupCat) := fast_instance%
   let _ : Full (preadditiveCoyoneda ⋙
       (whiskeringRight C AddCommGroupCat (Type v)).obj (forget AddCommGroupCat)) :=
     Coyoneda.coyonedaFull
@@ -148,7 +148,7 @@ instance full_preadditiveCoyoneda : Full (preadditiveCoyoneda : Cᵒᵖ ⥤ C �
     ((whiskeringRight C AddCommGroupCat (Type v)).obj (forget AddCommGroupCat))
 #align category_theory.preadditive_coyoneda_full CategoryTheory.full_preadditiveCoyoneda
 
-instance faithful_preadditiveYoneda : Faithful (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat) :=
+instance faithful_preadditiveYoneda : Faithful (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGroupCat) := fast_instance%
   Faithful.of_comp_eq whiskering_preadditiveYoneda
 #align category_theory.preadditive_yoneda_faithful CategoryTheory.faithful_preadditiveYoneda
 

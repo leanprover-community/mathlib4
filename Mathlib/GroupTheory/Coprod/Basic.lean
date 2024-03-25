@@ -147,7 +147,7 @@ section MulOneClass
 variable {M N M' N' P : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass M'] [MulOneClass N']
   [MulOneClass P]
 
-@[to_additive] protected instance : MulOneClass (M ∗ N) := Con.mulOneClass _
+@[to_additive] protected instance : MulOneClass (M ∗ N) := fast_instance% Con.mulOneClass _
 
 /-- The natural projection `FreeMonoid (M ⊕ N) →* M ∗ N`. -/
 @[to_additive "The natural projection `FreeAddMonoid (M ⊕ N) →+ AddMonoid.Coprod M N`."]
@@ -463,7 +463,7 @@ section ToProd
 
 variable {M N : Type*} [Monoid M] [Monoid N]
 
-@[to_additive] instance : Monoid (M ∗ N) :=
+@[to_additive] instance : Monoid (M ∗ N) := fast_instance%
   { mul_assoc := (Con.monoid _).mul_assoc
     one_mul := (Con.monoid _).one_mul
     mul_one := (Con.monoid _).mul_one }

@@ -90,7 +90,7 @@ instance instInfCoe : Inf L where
   rfl
 
 /-- A sublattice of a lattice inherits a lattice structure. -/
-instance instLatticeCoe (L : Sublattice α) : Lattice L :=
+instance instLatticeCoe (L : Sublattice α) : Lattice L := fast_instance%
   Subtype.coe_injective.lattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- A sublattice of a distributive lattice inherits a distributive lattice structure. -/
@@ -149,7 +149,7 @@ instance instInfSet : InfSet (Sublattice α) where
               infClosed' := infClosed_sInter <| forall_mem_range.2 fun L ↦ infClosed_sInter <|
                 forall_mem_range.2 fun _ ↦ L.infClosed }
 
-instance instInhabited : Inhabited (Sublattice α) := ⟨⊥⟩
+instance instInhabited : Inhabited (Sublattice α) := fast_instance% ⟨⊥⟩
 
 /-- The top sublattice is isomorphic to the lattice.
 

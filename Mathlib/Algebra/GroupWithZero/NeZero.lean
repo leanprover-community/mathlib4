@@ -20,7 +20,7 @@ universe u
 variable {M₀ M₀' : Type*} [MulZeroOneClass M₀] [Nontrivial M₀]
 
 /-- In a nontrivial monoid with zero, zero and one are different. -/
-instance NeZero.one : NeZero (1 : M₀) := ⟨by
+instance NeZero.one : NeZero (1 : M₀) :=  ⟨by
   intro h
   rcases exists_pair_ne M₀ with ⟨x, y, hx⟩
   apply hx

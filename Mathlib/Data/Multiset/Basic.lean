@@ -37,7 +37,7 @@ namespace Multiset
 def ofList : List α → Multiset α :=
   Quot.mk _
 
-instance : Coe (List α) (Multiset α) :=
+instance : Coe (List α) (Multiset α) := fast_instance%
   ⟨ofList⟩
 
 @[simp]
@@ -62,7 +62,7 @@ theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ 
 
 -- Porting note: new instance;
 -- Porting note (#11215): TODO: move to better place
-instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (l₁ ≈ l₂) :=
+instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (l₁ ≈ l₂) := fast_instance%
   inferInstanceAs (Decidable (l₁ ~ l₂))
 
 -- Porting note: `Quotient.recOnSubsingleton₂ s₁ s₂` was in parens which broke elaboration
@@ -76,7 +76,7 @@ def sizeOf [SizeOf α] (s : Multiset α) : ℕ :=
   (Quot.liftOn s SizeOf.sizeOf) fun _ _ => Perm.sizeOf_eq_sizeOf
 #align multiset.sizeof Multiset.sizeOf
 
-instance [SizeOf α] : SizeOf (Multiset α) :=
+instance [SizeOf α] : SizeOf (Multiset α) := fast_instance%
   ⟨Multiset.sizeOf⟩
 
 /-! ### Empty multiset -/
@@ -87,13 +87,13 @@ protected def zero : Multiset α :=
   @nil α
 #align multiset.zero Multiset.zero
 
-instance : Zero (Multiset α) :=
+instance : Zero (Multiset α) := fast_instance%
   ⟨Multiset.zero⟩
 
-instance : EmptyCollection (Multiset α) :=
+instance : EmptyCollection (Multiset α) := fast_instance%
   ⟨0⟩
 
-instance inhabitedMultiset : Inhabited (Multiset α) :=
+instance inhabitedMultiset : Inhabited (Multiset α) := fast_instance%
   ⟨0⟩
 #align multiset.inhabited_multiset Multiset.inhabitedMultiset
 
@@ -130,7 +130,7 @@ def cons (a : α) (s : Multiset α) : Multiset α :=
 @[inherit_doc Multiset.cons]
 infixr:67 " ::ₘ " => Multiset.cons
 
-instance : Insert α (Multiset α) :=
+instance : Insert α (Multiset α) := fast_instance%
   ⟨cons⟩
 
 @[simp]
@@ -225,7 +225,7 @@ def Mem (a : α) (s : Multiset α) : Prop :=
   Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext <| e.mem_iff
 #align multiset.mem Multiset.Mem
 
-instance : Membership α (Multiset α) :=
+instance : Membership α (Multiset α) := fast_instance%
   ⟨Mem⟩
 
 @[simp]
@@ -233,7 +233,7 @@ theorem mem_coe {a : α} {l : List α} : a ∈ (l : Multiset α) ↔ a ∈ l :=
   Iff.rfl
 #align multiset.mem_coe Multiset.mem_coe
 
-instance decidableMem [DecidableEq α] (a : α) (s : Multiset α) : Decidable (a ∈ s) :=
+instance decidableMem [DecidableEq α] (a : α) (s : Multiset α) : Decidable (a ∈ s) := fast_instance%
   Quot.recOnSubsingleton' s fun l ↦ inferInstanceAs (Decidable (a ∈ l))
 #align multiset.decidable_mem Multiset.decidableMem
 
@@ -324,10 +324,10 @@ end Mem
 /-! ### Singleton -/
 
 
-instance : Singleton α (Multiset α) :=
+instance : Singleton α (Multiset α) := fast_instance%
   ⟨fun a => a ::ₘ 0⟩
 
-instance : IsLawfulSingleton α (Multiset α) :=
+instance : IsLawfulSingleton α (Multiset α) := fast_instance%
   ⟨fun _ => rfl⟩
 
 @[simp]
@@ -385,10 +385,10 @@ protected def Subset (s t : Multiset α) : Prop :=
   ∀ ⦃a : α⦄, a ∈ s → a ∈ t
 #align multiset.subset Multiset.Subset
 
-instance : HasSubset (Multiset α) :=
+instance : HasSubset (Multiset α) := fast_instance%
   ⟨Multiset.Subset⟩
 
-instance : HasSSubset (Multiset α) :=
+instance : HasSSubset (Multiset α) := fast_instance%
   ⟨fun s t => s ⊆ t ∧ ¬t ⊆ s⟩
 
 instance instIsNonstrictStrictOrder : IsNonstrictStrictOrder (Multiset α) (· ⊆ ·) (· ⊂ ·) where
@@ -520,7 +520,7 @@ instance : PartialOrder (Multiset α) where
   le_trans := by rintro ⟨l₁⟩ ⟨l₂⟩ ⟨l₃⟩; exact @Subperm.trans _ _ _ _
   le_antisymm := by rintro ⟨l₁⟩ ⟨l₂⟩ h₁ h₂; exact Quot.sound (Subperm.antisymm h₁ h₂)
 
-instance decidableLE [DecidableEq α] : DecidableRel ((· ≤ ·) : Multiset α → Multiset α → Prop) :=
+instance decidableLE [DecidableEq α] : DecidableRel ((· ≤ ·) : Multiset α → Multiset α → Prop) := fast_instance%
   fun s t => Quotient.recOnSubsingleton₂ s t List.decidableSubperm
 #align multiset.decidable_le Multiset.decidableLE
 
@@ -651,7 +651,7 @@ protected def add (s₁ s₂ : Multiset α) : Multiset α :=
     Quot.sound <| p₁.append p₂
 #align multiset.add Multiset.add
 
-instance : Add (Multiset α) :=
+instance : Add (Multiset α) := fast_instance%
   ⟨Multiset.add⟩
 
 @[simp]
@@ -667,10 +667,10 @@ theorem singleton_add (a : α) (s : Multiset α) : {a} + s = a ::ₘ s :=
 private theorem add_le_add_iff_left' {s t u : Multiset α} : s + t ≤ s + u ↔ t ≤ u :=
   Quotient.inductionOn₃ s t u fun _ _ _ => subperm_append_left _
 
-instance : CovariantClass (Multiset α) (Multiset α) (· + ·) (· ≤ ·) :=
+instance : CovariantClass (Multiset α) (Multiset α) (· + ·) (· ≤ ·) := fast_instance%
   ⟨fun _s _t _u => add_le_add_iff_left'.2⟩
 
-instance : ContravariantClass (Multiset α) (Multiset α) (· + ·) (· ≤ ·) :=
+instance : ContravariantClass (Multiset α) (Multiset α) (· + ·) (· ≤ ·) := fast_instance%
   ⟨fun _s _t _u => add_le_add_iff_left'.1⟩
 
 instance : OrderedCancelAddCommMonoid (Multiset α) where
@@ -911,7 +911,7 @@ theorem strongDownwardInductionOn_eq {p : Multiset α → Sort*} (s : Multiset �
 #align multiset.well_founded_lt wellFounded_lt
 
 /-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
-instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
+instance instWellFoundedLT : WellFoundedLT (Multiset α) := fast_instance%
   ⟨Subrelation.wf Multiset.card_lt_card (measure Multiset.card).2⟩
 #align multiset.is_well_founded_lt Multiset.instWellFoundedLT
 
@@ -1685,7 +1685,7 @@ protected def sub (s t : Multiset α) : Multiset α :=
     Quot.sound <| p₁.diff p₂
 #align multiset.sub Multiset.sub
 
-instance : Sub (Multiset α) :=
+instance : Sub (Multiset α) := fast_instance%
   ⟨Multiset.sub⟩
 
 @[simp]
@@ -1712,7 +1712,7 @@ protected theorem sub_le_iff_le_add : s - t ≤ u ↔ s ≤ u + t := by
       simp [IH, erase_le_iff_le_cons])
 #align multiset.sub_le_iff_le_add Multiset.sub_le_iff_le_add
 
-instance : OrderedSub (Multiset α) :=
+instance : OrderedSub (Multiset α) := fast_instance%
   ⟨fun _n _m _k => Multiset.sub_le_iff_le_add⟩
 
 theorem cons_sub_of_le (a : α) {s t : Multiset α} (h : t ≤ s) : a ::ₘ s - t = a ::ₘ (s - t) := by
@@ -1742,7 +1742,7 @@ def union (s t : Multiset α) : Multiset α :=
   s - t + t
 #align multiset.union Multiset.union
 
-instance : Union (Multiset α) :=
+instance : Union (Multiset α) := fast_instance%
   ⟨union⟩
 
 theorem union_def (s t : Multiset α) : s ∪ t = s - t + t :=
@@ -1800,7 +1800,7 @@ def inter (s t : Multiset α) : Multiset α :=
     Quot.sound <| p₁.bagInter p₂
 #align multiset.inter Multiset.inter
 
-instance : Inter (Multiset α) :=
+instance : Inter (Multiset α) := fast_instance%
   ⟨inter⟩
 
 @[simp]
@@ -1848,7 +1848,7 @@ theorem mem_inter : a ∈ s ∩ t ↔ a ∈ s ∧ a ∈ t :=
     rw [← cons_erase h₁, cons_inter_of_pos _ h₂]; apply mem_cons_self⟩
 #align multiset.mem_inter Multiset.mem_inter
 
-instance : Lattice (Multiset α) :=
+instance : Lattice (Multiset α) := fast_instance%
   { sup := (· ∪ ·)
     sup_le := @union_le _ _
     le_sup_left := le_union_left
@@ -2617,7 +2617,7 @@ theorem le_iff_count {s t : Multiset α} : s ≤ t ↔ ∀ a, count a s ≤ coun
     rw [← (ext.2 fun a => by simp [max_eq_right (al a)] : s ∪ t = t)]; apply le_union_left⟩
 #align multiset.le_iff_count Multiset.le_iff_count
 
-instance : DistribLattice (Multiset α) :=
+instance : DistribLattice (Multiset α) := fast_instance%
   { le_sup_inf := fun s t u =>
       le_of_eq <|
         Eq.symm <|

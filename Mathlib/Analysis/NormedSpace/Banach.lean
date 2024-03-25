@@ -39,7 +39,7 @@ structure NonlinearRightInverse where
   right_inv' : ∀ y, f (toFun y) = y
 #align continuous_linear_map.nonlinear_right_inverse ContinuousLinearMap.NonlinearRightInverse
 
-instance : CoeFun (NonlinearRightInverse f) fun _ => F → E :=
+instance : CoeFun (NonlinearRightInverse f) fun _ => F → E := fast_instance%
   ⟨fun fsymm => fsymm.toFun⟩
 
 @[simp]

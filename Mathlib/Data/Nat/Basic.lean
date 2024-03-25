@@ -53,37 +53,37 @@ instance commSemiring : CommSemiring ℕ where
 
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 
-instance addCommMonoid : AddCommMonoid ℕ :=
+instance addCommMonoid : AddCommMonoid ℕ := fast_instance%
   inferInstance
 
-instance addMonoid : AddMonoid ℕ :=
+instance addMonoid : AddMonoid ℕ := fast_instance%
   inferInstance
 
-instance monoid : Monoid ℕ :=
+instance monoid : Monoid ℕ := fast_instance%
   inferInstance
 
-instance commMonoid : CommMonoid ℕ :=
+instance commMonoid : CommMonoid ℕ := fast_instance%
   inferInstance
 
-instance commSemigroup : CommSemigroup ℕ :=
+instance commSemigroup : CommSemigroup ℕ := fast_instance%
   inferInstance
 
-instance semigroup : Semigroup ℕ :=
+instance semigroup : Semigroup ℕ := fast_instance%
   inferInstance
 
-instance addCommSemigroup : AddCommSemigroup ℕ :=
+instance addCommSemigroup : AddCommSemigroup ℕ := fast_instance%
   inferInstance
 
-instance addSemigroup : AddSemigroup ℕ :=
+instance addSemigroup : AddSemigroup ℕ := fast_instance%
   inferInstance
 
-instance distrib : Distrib ℕ :=
+instance distrib : Distrib ℕ := fast_instance%
   inferInstance
 
-instance semiring : Semiring ℕ :=
+instance semiring : Semiring ℕ := fast_instance%
   inferInstance
 
-instance cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ :=
+instance cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ := fast_instance%
   { (inferInstance : CommMonoidWithZero ℕ) with
     mul_left_cancel_of_ne_zero :=
       fun h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2 }

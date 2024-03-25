@@ -75,14 +75,14 @@ instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α]
 theorem isCyclic_multiplicative_iff [AddGroup α] : IsCyclic (Multiplicative α) ↔ IsAddCyclic α :=
   ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
 
-instance isCyclic_multiplicative [AddGroup α] [IsAddCyclic α] : IsCyclic (Multiplicative α) :=
+instance isCyclic_multiplicative [AddGroup α] [IsAddCyclic α] : IsCyclic (Multiplicative α) := fast_instance%
   isCyclic_multiplicative_iff.mpr inferInstance
 
 @[simp]
 theorem isAddCyclic_additive_iff [Group α] : IsAddCyclic (Additive α) ↔ IsCyclic α :=
   ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
 
-instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
+instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) := fast_instance%
   isAddCyclic_additive_iff.mpr inferInstance
 
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
@@ -222,13 +222,13 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
 #align infinite.add_order_of_eq_zero_of_forall_mem_zmultiples Infinite.addOrderOf_eq_zero_of_forall_mem_zmultiples
 
 @[to_additive]
-instance Bot.isCyclic {α : Type u} [Group α] : IsCyclic (⊥ : Subgroup α) :=
+instance Bot.isCyclic {α : Type u} [Group α] : IsCyclic (⊥ : Subgroup α) := fast_instance%
   ⟨⟨1, fun x => ⟨0, Subtype.eq <| (zpow_zero (1 : α)).trans <| Eq.symm (Subgroup.mem_bot.1 x.2)⟩⟩⟩
 #align bot.is_cyclic Bot.isCyclic
 #align bot.is_add_cyclic Bot.isAddCyclic
 
 @[to_additive]
-instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
+instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup α) : IsCyclic H := fast_instance%
   haveI := Classical.propDecidable
   let ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   if hx : ∃ x : α, x ∈ H ∧ x ≠ (1 : α) then
@@ -551,7 +551,7 @@ alias commutative_of_add_cyclic_center_quotient := commutative_of_addCyclic_cent
       "A group is commutative if the quotient by the center is cyclic."]
 def commGroupOfCycleCenterQuotient [IsCyclic H] (f : G →* H) (hf : f.ker ≤ center G) :
     CommGroup G :=
-  { show Group G by infer_instance with mul_comm := commutative_of_cyclic_center_quotient f hf }
+  { show Group G by infer_instance with mul_comm := fast_instance% commutative_of_cyclic_center_quotient f hf }
 #align comm_group_of_cycle_center_quotient commGroupOfCycleCenterQuotient
 #align commutative_of_add_cycle_center_quotient commutativeOfAddCycleCenterQuotient
 
@@ -622,12 +622,12 @@ theorem CommGroup.is_simple_iff_isCyclic_and_prime_card [Fintype α] [CommGroup 
 
 section SpecificInstances
 
-instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
+instance : IsAddCyclic ℤ := fast_instance% ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
 
-instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) :=
+instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) := fast_instance%
   isAddCyclic_of_surjective (Int.castRingHom _) ZMod.int_cast_surjective
 
-instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
+instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) := fast_instance%
   AddCommGroup.is_simple_iff_isAddCyclic_and_prime_card.2
     ⟨inferInstance, by simpa using (Fact.out : p.Prime)⟩
 

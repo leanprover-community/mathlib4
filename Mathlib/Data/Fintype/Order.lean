@@ -171,16 +171,16 @@ end Fintype
 /-! ### Concrete instances -/
 
 
-noncomputable instance Fin.completeLinearOrder {n : ℕ} : CompleteLinearOrder (Fin (n + 1)) :=
+noncomputable instance Fin.completeLinearOrder {n : ℕ} : CompleteLinearOrder (Fin (n + 1)) := fast_instance%
   Fintype.toCompleteLinearOrder _
 
-noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool :=
+noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool := fast_instance%
   Fintype.toCompleteLinearOrder _
 
-noncomputable instance Bool.completeBooleanAlgebra : CompleteBooleanAlgebra Bool :=
+noncomputable instance Bool.completeBooleanAlgebra : CompleteBooleanAlgebra Bool := fast_instance%
   Fintype.toCompleteBooleanAlgebra _
 
-noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Bool :=
+noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Bool := fast_instance%
   Fintype.toCompleteAtomicBooleanAlgebra _
 
 /-! ### Directed Orders -/

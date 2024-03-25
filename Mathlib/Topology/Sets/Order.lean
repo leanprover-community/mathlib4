@@ -65,22 +65,22 @@ theorem coe_mk (s : Clopens α) (h) : (mk s h : Set α) = s :=
   rfl
 #align clopen_upper_set.coe_mk ClopenUpperSet.coe_mk
 
-instance : Sup (ClopenUpperSet α) :=
+instance : Sup (ClopenUpperSet α) := fast_instance%
   ⟨fun s t => ⟨s.toClopens ⊔ t.toClopens, s.upper.union t.upper⟩⟩
 
-instance : Inf (ClopenUpperSet α) :=
+instance : Inf (ClopenUpperSet α) := fast_instance%
   ⟨fun s t => ⟨s.toClopens ⊓ t.toClopens, s.upper.inter t.upper⟩⟩
 
-instance : Top (ClopenUpperSet α) :=
+instance : Top (ClopenUpperSet α) := fast_instance%
   ⟨⟨⊤, isUpperSet_univ⟩⟩
 
-instance : Bot (ClopenUpperSet α) :=
+instance : Bot (ClopenUpperSet α) := fast_instance%
   ⟨⟨⊥, isUpperSet_empty⟩⟩
 
-instance : Lattice (ClopenUpperSet α) :=
+instance : Lattice (ClopenUpperSet α) := fast_instance%
   SetLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
 
-instance : BoundedOrder (ClopenUpperSet α) :=
+instance : BoundedOrder (ClopenUpperSet α) := fast_instance%
   BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) rfl rfl
 
 @[simp]
@@ -103,7 +103,7 @@ theorem coe_bot : (↑(⊥ : ClopenUpperSet α) : Set α) = ∅ :=
   rfl
 #align clopen_upper_set.coe_bot ClopenUpperSet.coe_bot
 
-instance : Inhabited (ClopenUpperSet α) :=
+instance : Inhabited (ClopenUpperSet α) := fast_instance%
   ⟨⊥⟩
 
 end ClopenUpperSet

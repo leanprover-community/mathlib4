@@ -68,7 +68,7 @@ instance : DecidableEq (WalkingParallelFamily J)
   | one, zero => isFalse fun t => WalkingParallelFamily.noConfusion t
   | one, one => isTrue rfl
 
-instance : Inhabited (WalkingParallelFamily J) :=
+instance : Inhabited (WalkingParallelFamily J) := fast_instance%
   ⟨zero⟩
 
 /-- The type family of morphisms for the diagram indexing a wide (co)equalizer. -/
@@ -82,7 +82,7 @@ inductive WalkingParallelFamily.Hom (J : Type w) :
   CategoryTheory.Limits.WalkingParallelFamily.Hom
 
 /-- Satisfying the inhabited linter -/
-instance (J : Type v) : Inhabited (WalkingParallelFamily.Hom J zero zero) where default := Hom.id _
+instance (J : Type v) : Inhabited (WalkingParallelFamily.Hom J zero zero) where default := fast_instance% Hom.id _
 
 open WalkingParallelFamily.Hom
 

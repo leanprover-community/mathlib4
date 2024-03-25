@@ -45,7 +45,7 @@ variable (K : Type*) [Field K] [NumberField K]
 variable (A : Type*) [Field A] [CharZero A]
 
 /-- There are finitely many embeddings of a number field. -/
-noncomputable instance : Fintype (K →+* A) :=
+noncomputable instance : Fintype (K →+* A) := fast_instance%
   Fintype.ofEquiv (K →ₐ[ℚ] A) RingHom.equivRatAlgHom.symm
 
 variable [IsAlgClosed A]
@@ -55,7 +55,7 @@ theorem card : Fintype.card (K →+* A) = finrank ℚ K := by
   rw [Fintype.ofEquiv_card RingHom.equivRatAlgHom.symm, AlgHom.card]
 #align number_field.embeddings.card NumberField.Embeddings.card
 
-instance : Nonempty (K →+* A) := by
+instance : Nonempty (K →+* A) := fast_instance% by
   rw [← Fintype.card_pos_iff, NumberField.Embeddings.card K A]
   exact FiniteDimensional.finrank_pos
 
@@ -264,7 +264,7 @@ variable {k : Type*} [Field k] (K : Type*) [Field K] {F : Type*} [Field F]
 def NumberField.InfinitePlace := { w : AbsoluteValue K ℝ // ∃ φ : K →+* ℂ, place φ = w }
 #align number_field.infinite_place NumberField.InfinitePlace
 
-instance [NumberField K] : Nonempty (NumberField.InfinitePlace K) := Set.instNonemptyRange _
+instance [NumberField K] : Nonempty (NumberField.InfinitePlace K) := fast_instance% Set.instNonemptyRange _
 
 variable {K}
 

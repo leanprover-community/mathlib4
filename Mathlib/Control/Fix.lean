@@ -119,7 +119,7 @@ end Part
 
 namespace Part
 
-instance hasFix : Fix (Part α) :=
+instance hasFix : Fix (Part α) := fast_instance%
   ⟨fun f => Part.fix (fun x u => f (x u)) ()⟩
 #align part.has_fix Part.hasFix
 
@@ -129,7 +129,7 @@ open Sigma
 
 namespace Pi
 
-instance Part.hasFix {β} : Fix (α → Part β) :=
+instance Part.hasFix {β} : Fix (α → Part β) := fast_instance%
   ⟨Part.fix⟩
 #align pi.part.has_fix Pi.Part.hasFix
 

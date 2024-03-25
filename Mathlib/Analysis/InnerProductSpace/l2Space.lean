@@ -113,7 +113,7 @@ theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
   exact norm_inner_le_norm (𝕜 := 𝕜) _ _
 #align lp.summable_inner lp.summable_inner
 
-instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
+instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) := fast_instance%
   { lp.normedAddCommGroup (E := G) (p := 2) with
     inner := fun f g => ∑' i, ⟪f i, g i⟫
     norm_sq_eq_inner := fun f => by
@@ -404,7 +404,7 @@ end
 
 namespace HilbertBasis
 
-instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) :=
+instance {ι : Type*} : Inhabited (HilbertBasis ι 𝕜 ℓ²(ι, 𝕜)) := fast_instance%
   ⟨ofRepr (LinearIsometryEquiv.refl 𝕜 _)⟩
 
 /-- `b i` is the `i`th basis vector. -/

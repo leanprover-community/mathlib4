@@ -146,10 +146,10 @@ namespace SubMulAction
 
 variable [SMul R M]
 
-instance : SetLike (SubMulAction R M) M :=
+instance : SetLike (SubMulAction R M) M := fast_instance%
   ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
 
-instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
+instance : SMulMemClass (SubMulAction R M) R M where smul_mem := fast_instance% smul_mem' _
 
 @[simp]
 theorem mem_carrier {p : SubMulAction R M} {x : M} : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
@@ -183,7 +183,7 @@ instance : Bot (SubMulAction R M) where
     { carrier := ∅
       smul_mem' := fun _c h => Set.not_mem_empty h }
 
-instance : Inhabited (SubMulAction R M) :=
+instance : Inhabited (SubMulAction R M) := fast_instance%
   ⟨⊥⟩
 
 end SubMulAction
@@ -200,7 +200,7 @@ theorem smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
   p.smul_mem' r h
 #align sub_mul_action.smul_mem SubMulAction.smul_mem
 
-instance : SMul R p where smul c x := ⟨c • x.1, smul_mem _ c x.2⟩
+instance : SMul R p where smul c x := fast_instance% ⟨c • x.1, smul_mem _ c x.2⟩
 
 variable {p}
 
@@ -266,7 +266,7 @@ theorem smul_of_tower_mem (s : S) {x : M} (h : x ∈ p) : s • x ∈ p := by
   exact p.smul_mem _ h
 #align sub_mul_action.smul_of_tower_mem SubMulAction.smul_of_tower_mem
 
-instance smul' : SMul S p where smul c x := ⟨c • x.1, smul_of_tower_mem _ c x.2⟩
+instance smul' : SMul S p where smul c x := fast_instance% ⟨c • x.1, smul_of_tower_mem _ c x.2⟩
 #align sub_mul_action.has_smul' SubMulAction.smul'
 
 instance isScalarTower : IsScalarTower S R p where
@@ -308,7 +308,7 @@ instance mulAction' : MulAction S p where
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul c₁ c₂ (x : M)
 #align sub_mul_action.mul_action' SubMulAction.mulAction'
 
-instance mulAction : MulAction R p :=
+instance mulAction : MulAction R p := fast_instance%
   p.mulAction'
 #align sub_mul_action.mul_action SubMulAction.mulAction
 
@@ -398,7 +398,7 @@ theorem neg_mem_iff : -x ∈ p ↔ x ∈ p :=
     exact neg_mem _ h, neg_mem _⟩
 #align sub_mul_action.neg_mem_iff SubMulAction.neg_mem_iff
 
-instance : Neg p :=
+instance : Neg p := fast_instance%
   ⟨fun x => ⟨-x.1, neg_mem _ x.2⟩⟩
 
 @[simp, norm_cast]

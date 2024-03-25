@@ -199,7 +199,7 @@ lemma pow_ne_zero_iff (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (pow_eq_zero_i
 lemma pow_ne_zero (n : ℕ) (h : a ≠ 0) : a ^ n ≠ 0 := mt pow_eq_zero h
 #align pow_ne_zero pow_ne_zero
 
-instance NeZero.pow [NeZero a] : NeZero (a ^ n) := ⟨pow_ne_zero n NeZero.out⟩
+instance NeZero.pow [NeZero a] : NeZero (a ^ n) := fast_instance% ⟨pow_ne_zero n NeZero.out⟩
 #align ne_zero.pow NeZero.pow
 
 lemma sq_eq_zero_iff : a ^ 2 = 0 ↔ a = 0 := pow_eq_zero_iff two_ne_zero
@@ -460,45 +460,45 @@ end CommGroupWithZero
 
 open OrderDual
 
-instance [h : MulZeroClass α] : MulZeroClass αᵒᵈ := h
+instance [h : MulZeroClass α] : MulZeroClass αᵒᵈ := fast_instance% h
 
-instance [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := h
+instance [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := fast_instance% h
 
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors αᵒᵈ := h
+instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors αᵒᵈ := fast_instance% h
 
-instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := h
+instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := fast_instance% h
 
-instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ := h
+instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ := fast_instance% h
 
-instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero αᵒᵈ := h
+instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero αᵒᵈ := fast_instance% h
 
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := h
+instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := fast_instance% h
 
-instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero αᵒᵈ := h
+instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero αᵒᵈ := fast_instance% h
 
-instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ := h
+instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ := fast_instance% h
 
-instance [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := h
+instance [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := fast_instance% h
 
 /-! ### Lexicographic order -/
 
 
-instance [h : MulZeroClass α] : MulZeroClass (Lex α) := h
+instance [h : MulZeroClass α] : MulZeroClass (Lex α) := fast_instance% h
 
-instance [h : MulZeroOneClass α] : MulZeroOneClass (Lex α) := h
+instance [h : MulZeroOneClass α] : MulZeroOneClass (Lex α) := fast_instance% h
 
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors (Lex α) := h
+instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors (Lex α) := fast_instance% h
 
-instance [h : SemigroupWithZero α] : SemigroupWithZero (Lex α) := h
+instance [h : SemigroupWithZero α] : SemigroupWithZero (Lex α) := fast_instance% h
 
-instance [h : MonoidWithZero α] : MonoidWithZero (Lex α) := h
+instance [h : MonoidWithZero α] : MonoidWithZero (Lex α) := fast_instance% h
 
-instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero (Lex α) := h
+instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero (Lex α) := fast_instance% h
 
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero (Lex α) := h
+instance [h : CommMonoidWithZero α] : CommMonoidWithZero (Lex α) := fast_instance% h
 
-instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero (Lex α) := h
+instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero (Lex α) := fast_instance% h
 
-instance [h : GroupWithZero α] : GroupWithZero (Lex α) := h
+instance [h : GroupWithZero α] : GroupWithZero (Lex α) := fast_instance% h
 
-instance [h : CommGroupWithZero α] : CommGroupWithZero (Lex α) := h
+instance [h : CommGroupWithZero α] : CommGroupWithZero (Lex α) := fast_instance% h

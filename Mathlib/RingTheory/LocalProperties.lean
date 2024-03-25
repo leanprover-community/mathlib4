@@ -183,7 +183,7 @@ theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
   apply hP.StableUnderComposition.respectsIso
   introv
   letI := e.toRingHom.toAlgebra
-  -- Porting note: was `apply_with hP.holds_for_localization_away { instances := ff }`
+  -- Porting note: was `apply_with hP.holds_for_localization_away { instances := fast_instance% ff }`
   have : IsLocalization.Away (1 : R) S := by
     apply IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.bijective
   exact RingHom.PropertyIsLocal.HoldsForLocalizationAway hP S (1 : R)
@@ -324,7 +324,7 @@ theorem localization_isReduced : LocalizationPreserves fun R hR => IsReduced R :
   exact ⟨m', by rw [← hm', mul_comm]⟩
 #align localization_is_reduced localization_isReduced
 
-instance [IsReduced R] : IsReduced (Localization M) :=
+instance [IsReduced R] : IsReduced (Localization M) := fast_instance%
   localization_isReduced M _ inferInstance
 
 theorem isReduced_ofLocalizationMaximal : OfLocalizationMaximal fun R hR => IsReduced R := by

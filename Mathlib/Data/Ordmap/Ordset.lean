@@ -167,7 +167,7 @@ def BalancedSz (l r : ℕ) : Prop :=
   l + r ≤ 1 ∨ l ≤ delta * r ∧ r ≤ delta * l
 #align ordnode.balanced_sz Ordnode.BalancedSz
 
-instance BalancedSz.dec : DecidableRel BalancedSz := fun _ _ => Or.decidable
+instance BalancedSz.dec : DecidableRel BalancedSz := fast_instance% fun _ _ => Or.decidable
 #align ordnode.balanced_sz.dec Ordnode.BalancedSz.dec
 
 /-- The `Balanced t` asserts that the tree `t` satisfies the balance invariants
@@ -1706,15 +1706,15 @@ protected def singleton (a : α) : Ordset α :=
   ⟨singleton a, valid_singleton⟩
 #align ordset.singleton Ordset.singleton
 
-instance instEmptyCollection : EmptyCollection (Ordset α) :=
+instance instEmptyCollection : EmptyCollection (Ordset α) := fast_instance%
   ⟨nil⟩
 #align ordset.has_emptyc Ordset.instEmptyCollection
 
-instance instInhabited : Inhabited (Ordset α) :=
+instance instInhabited : Inhabited (Ordset α) := fast_instance%
   ⟨nil⟩
 #align ordset.inhabited Ordset.instInhabited
 
-instance instSingleton : Singleton α (Ordset α) :=
+instance instSingleton : Singleton α (Ordset α) := fast_instance%
   ⟨Ordset.singleton⟩
 #align ordset.has_singleton Ordset.instSingleton
 
@@ -1728,7 +1728,7 @@ theorem empty_iff {s : Ordset α} : s = ∅ ↔ s.1.empty :=
     fun h => by cases s with | mk s_val _ => cases s_val <;> [rfl; cases h]⟩
 #align ordset.empty_iff Ordset.empty_iff
 
-instance Empty.instDecidablePred : DecidablePred (@Empty α _) :=
+instance Empty.instDecidablePred : DecidablePred (@Empty α _) := fast_instance%
   fun _ => decidable_of_iff' _ empty_iff
 #align ordset.empty.decidable_pred Ordset.Empty.instDecidablePred
 
@@ -1739,7 +1739,7 @@ protected def insert [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (x 
   ⟨Ordnode.insert x s.1, insert.valid _ s.2⟩
 #align ordset.insert Ordset.insert
 
-instance instInsert [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] : Insert α (Ordset α) :=
+instance instInsert [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] : Insert α (Ordset α) := fast_instance%
   ⟨Ordset.insert⟩
 #align ordset.has_insert Ordset.instInsert
 
@@ -1766,11 +1766,11 @@ def find (x : α) (s : Ordset α) : Option α :=
   Ordnode.find x s.val
 #align ordset.find Ordset.find
 
-instance instMembership : Membership α (Ordset α) :=
+instance instMembership : Membership α (Ordset α) := fast_instance%
   ⟨fun x s => mem x s⟩
 #align ordset.has_mem Ordset.instMembership
 
-instance mem.decidable (x : α) (s : Ordset α) : Decidable (x ∈ s) :=
+instance mem.decidable (x : α) (s : Ordset α) : Decidable (x ∈ s) := fast_instance%
   instDecidableEqBool _ _
 #align ordset.mem.decidable Ordset.mem.decidable
 

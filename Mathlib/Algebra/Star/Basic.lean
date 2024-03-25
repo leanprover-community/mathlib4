@@ -474,14 +474,14 @@ def starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
     star_add := fun _ _ => rfl }
 #align star_ring_of_comm starRingOfComm
 
-instance Nat.instStarRing : StarRing ℕ := starRingOfComm
-instance Int.instStarRing : StarRing ℤ := starRingOfComm
-instance Rat.instStarRing : StarRing ℚ := starRingOfComm
-instance NNRat.instStarRing : StarRing ℚ≥0 := starRingOfComm
-instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
-instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
-instance Rat.instTrivialStar : TrivialStar ℚ := ⟨fun _ ↦ rfl⟩
-instance NNRat.instTrivialStar : TrivialStar ℚ≥0 := ⟨fun _ ↦ rfl⟩
+instance Nat.instStarRing : StarRing ℕ := fast_instance% starRingOfComm
+instance Int.instStarRing : StarRing ℤ := fast_instance% starRingOfComm
+instance Rat.instStarRing : StarRing ℚ := fast_instance% starRingOfComm
+instance NNRat.instStarRing : StarRing ℚ≥0 := fast_instance% starRingOfComm
+instance Nat.instTrivialStar : TrivialStar ℕ := fast_instance% ⟨fun _ ↦ rfl⟩
+instance Int.instTrivialStar : TrivialStar ℤ := fast_instance% ⟨fun _ ↦ rfl⟩
+instance Rat.instTrivialStar : TrivialStar ℚ := fast_instance% ⟨fun _ ↦ rfl⟩
+instance NNRat.instTrivialStar : TrivialStar ℚ≥0 := fast_instance% ⟨fun _ ↦ rfl⟩
 
 /-- A star module `A` over a star ring `R` is a module which is a star add monoid,
 and the two star structures are compatible in the sense
@@ -505,18 +505,18 @@ export StarModule (star_smul)
 attribute [simp] star_smul
 
 /-- A commutative star monoid is a star module over itself via `Monoid.toMulAction`. -/
-instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=
+instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R := fast_instance%
   ⟨star_mul'⟩
 #align star_semigroup.to_star_module StarMul.toStarModule
 
-instance StarAddMonoid.toStarModuleNat {α} [AddCommMonoid α] [StarAddMonoid α] : StarModule ℕ α :=
+instance StarAddMonoid.toStarModuleNat {α} [AddCommMonoid α] [StarAddMonoid α] : StarModule ℕ α := fast_instance%
   ⟨fun n a ↦ by rw [star_nsmul, star_trivial n]⟩
 
 namespace RingHomInvPair
 
 /-- Instance needed to define star-linear maps over a commutative star ring
 (ex: conjugate-linear maps when R = ℂ).  -/
-instance [CommSemiring R] [StarRing R] : RingHomInvPair (starRingEnd R) (starRingEnd R) :=
+instance [CommSemiring R] [StarRing R] : RingHomInvPair (starRingEnd R) (starRingEnd R) := fast_instance%
   ⟨RingHom.ext star_star, RingHom.ext star_star⟩
 
 end RingHomInvPair
@@ -560,7 +560,7 @@ theorem coe_star_inv (u : Rˣ) : ↑(star u)⁻¹ = (star ↑u⁻¹ : R) :=
   rfl
 #align units.coe_star_inv Units.coe_star_inv
 
-instance {A : Type*} [Star A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
+instance {A : Type*} [Star A] [SMul R A] [StarModule R A] : StarModule Rˣ A := fast_instance%
   ⟨fun u a => star_smul (u : R) a⟩
 
 end Units
@@ -601,7 +601,7 @@ theorem star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
 namespace MulOpposite
 
 /-- The opposite type carries the same star operation. -/
-instance [Star R] : Star Rᵐᵒᵖ where star r := op (star r.unop)
+instance [Star R] : Star Rᵐᵒᵖ where star r := fast_instance% op (star r.unop)
 
 @[simp]
 theorem unop_star [Star R] (r : Rᵐᵒᵖ) : unop (star r) = star (unop r) :=

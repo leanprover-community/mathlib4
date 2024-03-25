@@ -22,7 +22,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-instance discreteCountable {α : Type*} [Countable α] : Countable (Discrete α) :=
+instance discreteCountable {α : Type*} [Countable α] : Countable (Discrete α) := fast_instance%
   Countable.of_equiv α discreteEquiv.symm
 
 /-- A category with countably many objects and morphisms. -/
@@ -43,9 +43,9 @@ variable (α : Type u) [Category.{v} α] [CountableCategory α]
 abbrev ObjAsType : Type :=
   InducedCategory α (equivShrink.{0} α).symm
 
-instance : Countable (ObjAsType α) := Countable.of_equiv α (equivShrink.{0} α)
+instance : Countable (ObjAsType α) := fast_instance% Countable.of_equiv α (equivShrink.{0} α)
 
-instance {i j : ObjAsType α} : Countable (i ⟶ j) :=
+instance {i j : ObjAsType α} : Countable (i ⟶ j) := fast_instance%
   CountableCategory.countableHom ((equivShrink.{0} α).symm i) _
 
 instance : CountableCategory (ObjAsType α) where
@@ -60,11 +60,11 @@ def HomAsType := ShrinkHoms (ObjAsType α)
 instance : LocallySmall.{0} (ObjAsType α) where
   hom_small _ _ := inferInstance
 
-instance : SmallCategory (HomAsType α) := ShrinkHoms.instCategoryShrinkHoms.{0} _
+instance : SmallCategory (HomAsType α) := fast_instance% ShrinkHoms.instCategoryShrinkHoms.{0} _
 
-instance : Countable (HomAsType α) := Countable.of_equiv α (equivShrink.{0} α)
+instance : Countable (HomAsType α) := fast_instance% Countable.of_equiv α (equivShrink.{0} α)
 
-instance {i j : HomAsType α} : Countable (i ⟶ j) :=
+instance {i j : HomAsType α} : Countable (i ⟶ j) := fast_instance%
   Countable.of_equiv ((ShrinkHoms.equivalence _).inverse.obj i ⟶
     (ShrinkHoms.equivalence _).inverse.obj j) (equivOfFullyFaithful _).symm
 

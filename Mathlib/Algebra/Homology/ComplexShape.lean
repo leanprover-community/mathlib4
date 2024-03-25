@@ -125,13 +125,13 @@ def trans (c₁ c₂ : ComplexShape ι) : ComplexShape ι where
     exact c₁.prev_eq w₁ w₁'
 #align complex_shape.trans ComplexShape.trans
 
-instance subsingleton_next (c : ComplexShape ι) (i : ι) : Subsingleton { j // c.Rel i j } := by
+instance subsingleton_next (c : ComplexShape ι) (i : ι) : Subsingleton { j // c.Rel i j } := fast_instance% by
   constructor
   rintro ⟨j, rij⟩ ⟨k, rik⟩
   congr
   exact c.next_eq rij rik
 
-instance subsingleton_prev (c : ComplexShape ι) (j : ι) : Subsingleton { i // c.Rel i j } := by
+instance subsingleton_prev (c : ComplexShape ι) (j : ι) : Subsingleton { i // c.Rel i j } := fast_instance% by
   constructor
   rintro ⟨i, rik⟩ ⟨j, rjk⟩
   congr
@@ -219,18 +219,18 @@ namespace ComplexShape
 
 variable (α : Type*) [AddRightCancelSemigroup α] [DecidableEq α]
 
-instance (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
+instance (a : α) : DecidableRel (ComplexShape.up' a).Rel := fast_instance%
   fun _ _ => by dsimp; infer_instance
 
-instance (a : α) : DecidableRel (ComplexShape.down' a).Rel :=
+instance (a : α) : DecidableRel (ComplexShape.down' a).Rel := fast_instance%
   fun _ _ => by dsimp; infer_instance
 
 variable [One α]
 
-instance : DecidableRel (ComplexShape.up α).Rel := by
+instance : DecidableRel (ComplexShape.up α).Rel := fast_instance% by
   dsimp [ComplexShape.up]; infer_instance
 
-instance : DecidableRel (ComplexShape.down α).Rel := by
+instance : DecidableRel (ComplexShape.down α).Rel := fast_instance% by
   dsimp [ComplexShape.down]; infer_instance
 
 end ComplexShape

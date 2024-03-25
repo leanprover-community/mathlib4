@@ -27,7 +27,7 @@ namespace QuadraticModuleCat
 
 open QuadraticForm
 
-instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
+instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) := fast_instance%
   ⟨(·.carrier)⟩
 
 /-- The object in the category of quadratic R-modules associated to a quadratic R-module. -/

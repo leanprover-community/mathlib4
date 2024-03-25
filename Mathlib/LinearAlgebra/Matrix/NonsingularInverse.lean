@@ -205,7 +205,7 @@ theorem isUnit_det_transpose (h : IsUnit A.det) : IsUnit Aᵀ.det := by
 
 
 /-- The inverse of a square matrix, when it is invertible (and zero otherwise).-/
-noncomputable instance inv : Inv (Matrix n n α) :=
+noncomputable instance inv : Inv (Matrix n n α) := fast_instance%
   ⟨fun A => Ring.inverse A.det • A.adjugate⟩
 
 theorem inv_def (A : Matrix n n α) : A⁻¹ = Ring.inverse A.det • A.adjugate :=
@@ -267,7 +267,7 @@ theorem nonsing_inv_mul (h : IsUnit A.det) : A⁻¹ * A = 1 := by
   rw [← invOf_eq_nonsing_inv, invOf_mul_self]
 #align matrix.nonsing_inv_mul Matrix.nonsing_inv_mul
 
-instance [Invertible A] : Invertible A⁻¹ := by
+instance [Invertible A] : Invertible A⁻¹ := fast_instance% by
   rw [← invOf_eq_nonsing_inv]
   infer_instance
 
@@ -561,7 +561,7 @@ theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
     simp [hn]
 #align matrix.inv_zero Matrix.inv_zero
 
-noncomputable instance : InvOneClass (Matrix n n α) :=
+noncomputable instance : InvOneClass (Matrix n n α) := fast_instance%
   { Matrix.one, Matrix.inv with inv_one := inv_eq_left_inv (by simp) }
 
 theorem inv_smul (k : α) [Invertible k] (h : IsUnit A.det) : (k • A)⁻¹ = ⅟ k • A⁻¹ :=

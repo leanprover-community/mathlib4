@@ -63,7 +63,7 @@ instance instLinearOrderedCommMonoidWithZeroWithZero [LinearOrderedCommMonoid α
     mul_le_mul_left := fun _ _ ↦ mul_le_mul_left', zero_le_one := WithZero.zero_le _ }
 #align with_zero.linear_ordered_comm_monoid_with_zero instLinearOrderedCommMonoidWithZeroWithZero
 
-instance [LinearOrderedCommGroup α] : LinearOrderedCommGroupWithZero (WithZero α) :=
+instance [LinearOrderedCommGroup α] : LinearOrderedCommGroupWithZero (WithZero α) := fast_instance%
   { instLinearOrderedCommMonoidWithZeroWithZero, WithZero.commGroupWithZero with }
 
 section LinearOrderedCommMonoidWithZero
@@ -283,7 +283,7 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
   rfl
 #align order_iso.mul_right₀'_symm OrderIso.mulRight₀'_symm
 
-instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
+instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) := fast_instance%
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
     neg_top := @inv_zero _ (_)

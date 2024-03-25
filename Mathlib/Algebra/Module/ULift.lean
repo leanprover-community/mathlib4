@@ -26,7 +26,7 @@ universe u v w
 variable {R : Type u} {M : Type v} {N : Type w}
 
 @[to_additive]
-instance smulLeft [SMul R M] : SMul (ULift R) M :=
+instance smulLeft [SMul R M] : SMul (ULift R) M := fast_instance%
   ⟨fun s x => s.down • x⟩
 #align ulift.has_smul_left ULift.smulLeft
 #align ulift.has_vadd_left ULift.vaddLeft
@@ -52,7 +52,7 @@ instance isScalarTower'' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] 
   ⟨fun x y z => show up ((x • y) • z.down) = ⟨x • y • z.down⟩ by rw [smul_assoc]⟩
 #align ulift.is_scalar_tower'' ULift.isScalarTower''
 
-instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar R (ULift M) :=
+instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar R (ULift M) := fast_instance%
   ⟨fun r m => congr_arg up <| op_smul_eq_smul r m.down⟩
 
 -- Porting note (#11215): TODO this takes way longer to elaborate than it should
@@ -72,7 +72,7 @@ instance mulAction' [Monoid R] [MulAction R M] : MulAction R (ULift M) where
 #align ulift.mul_action' ULift.mulAction'
 #align ulift.add_action' ULift.addAction'
 
-instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M :=
+instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M := fast_instance%
   { ULift.smulLeft with smul_zero := fun _ => smul_zero _ }
 #align ulift.smul_zero_class ULift.smulZeroClass
 
@@ -117,7 +117,7 @@ instance mulDistribMulAction' [Monoid R] [Monoid M] [MulDistribMulAction R M] :
       simp [smul_mul'] }
 #align ulift.mul_distrib_mul_action' ULift.mulDistribMulAction'
 
-instance smulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero (ULift R) M :=
+instance smulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero (ULift R) M := fast_instance%
   { ULift.smulLeft with
     smul_zero := fun _ => smul_zero _
     zero_smul := zero_smul _ }
@@ -145,7 +145,7 @@ instance mulActionWithZero' [MonoidWithZero R] [Zero M] [MulActionWithZero R M] 
     mul_smul := mul_smul }
 #align ulift.mul_action_with_zero' ULift.mulActionWithZero'
 
-instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module (ULift R) M :=
+instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module (ULift R) M := fast_instance%
   { ULift.smulWithZero with
     add_smul := fun _ _ => add_smul _ _
     smul_add := smul_add
@@ -153,7 +153,7 @@ instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module (ULift R) M
     mul_smul := mul_smul }
 #align ulift.module ULift.module
 
-instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M) :=
+instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M) := fast_instance%
   { ULift.smulWithZero' with
     add_smul := fun _ _ _ => ULift.ext _ _ <| add_smul _ _ _
     one_smul := one_smul _

@@ -66,7 +66,7 @@ namespace GradedObject
 variable {C : Type u} [Category.{v} C]
 
 @[simps!]
-instance categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObject β C) :=
+instance categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObject β C) := fast_instance%
   CategoryTheory.pi fun _ => C
 #align category_theory.graded_object.category_of_graded_objects CategoryTheory.GradedObject.categoryOfGradedObjects
 
@@ -111,7 +111,7 @@ lemma iso_inv_hom_id_apply (e : X ≅ Y) (i : β) :
     e.inv i ≫ e.hom i = 𝟙 _ :=
   congr_fun e.inv_hom_id i
 
-instance isIso_apply_of_isIso (f : X ⟶ Y) [IsIso f] (i : β) : IsIso (f i) := by
+instance isIso_apply_of_isIso (f : X ⟶ Y) [IsIso f] (i : β) : IsIso (f i) := fast_instance% by
   change IsIso ((eval i).map f)
   infer_instance
 
@@ -173,7 +173,7 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
 -- See note [dsimp, simp].
 end
 
-instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
+instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ := fast_instance%
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
       zero := comapEq C (by aesop_cat) ≪≫ Pi.comapId β fun _ => C
@@ -266,9 +266,9 @@ variable (β : Type)
 variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasCoproducts.{0} C]
   [HasZeroMorphisms C]
 
-instance : ConcreteCategory (GradedObject β C) where forget := total β C ⋙ forget C
+instance : ConcreteCategory (GradedObject β C) where forget := fast_instance% total β C ⋙ forget C
 
-instance : HasForget₂ (GradedObject β C) C where forget₂ := total β C
+instance : HasForget₂ (GradedObject β C) C where forget₂ := fast_instance% total β C
 
 end
 

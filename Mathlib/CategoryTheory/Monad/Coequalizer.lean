@@ -64,7 +64,7 @@ theorem FreeCoequalizer.condition :
   Algebra.Hom.ext _ _ X.assoc.symm
 #align category_theory.monad.free_coequalizer.condition CategoryTheory.Monad.FreeCoequalizer.condition
 
-instance : IsReflexivePair (FreeCoequalizer.topMap X) (FreeCoequalizer.bottomMap X) := by
+instance : IsReflexivePair (FreeCoequalizer.topMap X) (FreeCoequalizer.bottomMap X) := fast_instance% by
   apply IsReflexivePair.mk' _ _ _
   apply (free T).map (T.η.app X.A)
   · ext

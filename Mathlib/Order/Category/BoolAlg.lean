@@ -28,10 +28,10 @@ def BoolAlg :=
 
 namespace BoolAlg
 
-instance : CoeSort BoolAlg (Type*) :=
+instance : CoeSort BoolAlg (Type*) := fast_instance%
   Bundled.coeSort
 
-instance instBooleanAlgebra (X : BoolAlg) : BooleanAlgebra X :=
+instance instBooleanAlgebra (X : BoolAlg) : BooleanAlgebra X := fast_instance%
   X.str
 
 /-- Construct a bundled `BoolAlg` from a `BooleanAlgebra`. -/
@@ -44,7 +44,7 @@ theorem coe_of (α : Type*) [BooleanAlgebra α] : ↥(of α) = α :=
   rfl
 #align BoolAlg.coe_of BoolAlg.coe_of
 
-instance : Inhabited BoolAlg :=
+instance : Inhabited BoolAlg := fast_instance%
   ⟨of PUnit⟩
 
 /-- Turn a `BoolAlg` into a `BddDistLat` by forgetting its complement operation. -/
@@ -57,13 +57,13 @@ theorem coe_toBddDistLat (X : BoolAlg) : ↥X.toBddDistLat = ↥X :=
   rfl
 #align BoolAlg.coe_to_BddDistLat BoolAlg.coe_toBddDistLat
 
-instance : LargeCategory.{u} BoolAlg :=
+instance : LargeCategory.{u} BoolAlg := fast_instance%
   InducedCategory.category toBddDistLat
 
-instance : ConcreteCategory BoolAlg :=
+instance : ConcreteCategory BoolAlg := fast_instance%
   InducedCategory.concreteCategory toBddDistLat
 
-instance hasForgetToBddDistLat : HasForget₂ BoolAlg BddDistLat :=
+instance hasForgetToBddDistLat : HasForget₂ BoolAlg BddDistLat := fast_instance%
   InducedCategory.hasForget₂ toBddDistLat
 #align BoolAlg.has_forget_to_BddDistLat BoolAlg.hasForgetToBddDistLat
 

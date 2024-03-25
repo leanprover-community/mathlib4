@@ -43,7 +43,7 @@ variable [OrderedCancelAddCommMonoid Γ]
 
 namespace HahnSeries
 
-instance [Zero R] [One R] : One (HahnSeries Γ R) :=
+instance [Zero R] [One R] : One (HahnSeries Γ R) := fast_instance%
   ⟨single 0 1⟩
 
 @[simp]
@@ -98,7 +98,7 @@ theorem ext {Γ R V : Type*} [PartialOrder Γ] [Zero V] [SMul R V]
 
 variable {V : Type*} [AddCommMonoid V] [SMul R V]
 
-instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
+instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) := fast_instance%
   inferInstanceAs <| AddCommMonoid (HahnSeries Γ V)
 
 @[simp] theorem of_zero : of R (0 : HahnSeries Γ V) = 0 := rfl
@@ -196,7 +196,7 @@ theorem mul_coeff_left' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a
   HahnModule.smul_coeff_left hs hxs
 #align hahn_series.mul_coeff_left' HahnSeries.mul_coeff_left'
 
-instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
+instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (Mul (HahnSeries Γ R)),
     inferInstanceAs (Add (HahnSeries Γ R)) with
     left_distrib := fun x y z => by
@@ -325,7 +325,7 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
     aesop (add safe Set.add_mem_add) (add simp [add_assoc, mul_assoc])
 
-instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
+instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
     inferInstanceAs (Distrib (HahnSeries Γ R)) with
     zero_mul := fun _ => by
@@ -335,11 +335,11 @@ instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries �
       ext
       simp [mul_coeff] }
 
-instance [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) :=
+instance [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
     mul_assoc := mul_assoc' }
 
-instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
+instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) := fast_instance%
   { AddMonoidWithOne.unary,
     inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
     one_mul := fun x => by
@@ -349,7 +349,7 @@ instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
       ext
       exact mul_single_zero_coeff.trans (mul_one _) }
 
-instance [Semiring R] : Semiring (HahnSeries Γ R) :=
+instance [Semiring R] : Semiring (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)),
     inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with }
 
@@ -360,31 +360,31 @@ instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (HahnSeries Γ R) whe
     simp_rw [mul_coeff, mul_comm]
     exact Finset.sum_equiv (Equiv.prodComm _ _) (fun _ ↦ swap_mem_addAntidiagonal.symm) <| by simp
 
-instance [CommSemiring R] : CommSemiring (HahnSeries Γ R) :=
+instance [CommSemiring R] : CommSemiring (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (NonUnitalCommSemiring (HahnSeries Γ R)),
     inferInstanceAs (Semiring (HahnSeries Γ R)) with }
 
-instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing (HahnSeries Γ R) :=
+instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)),
     inferInstanceAs (AddGroup (HahnSeries Γ R)) with }
 
-instance [NonUnitalRing R] : NonUnitalRing (HahnSeries Γ R) :=
+instance [NonUnitalRing R] : NonUnitalRing (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (NonUnitalNonAssocRing (HahnSeries Γ R)),
     inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with }
 
-instance [NonAssocRing R] : NonAssocRing (HahnSeries Γ R) :=
+instance [NonAssocRing R] : NonAssocRing (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (NonUnitalNonAssocRing (HahnSeries Γ R)),
     inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)) with }
 
-instance [Ring R] : Ring (HahnSeries Γ R) :=
+instance [Ring R] : Ring (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (Semiring (HahnSeries Γ R)),
     inferInstanceAs (AddCommGroup (HahnSeries Γ R)) with }
 
-instance [NonUnitalCommRing R] : NonUnitalCommRing (HahnSeries Γ R) :=
+instance [NonUnitalCommRing R] : NonUnitalCommRing (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (NonUnitalCommSemiring (HahnSeries Γ R)),
     inferInstanceAs (NonUnitalRing (HahnSeries Γ R)) with }
 
-instance [CommRing R] : CommRing (HahnSeries Γ R) :=
+instance [CommRing R] : CommRing (HahnSeries Γ R) := fast_instance%
   { inferInstanceAs (CommSemiring (HahnSeries Γ R)),
     inferInstanceAs (Ring (HahnSeries Γ R)) with }
 
@@ -586,7 +586,7 @@ theorem algebraMap_apply {r : R} : algebraMap R (HahnSeries Γ A) r = C (algebra
   rfl
 #align hahn_series.algebra_map_apply HahnSeries.algebraMap_apply
 
-instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries Γ R)) :=
+instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries Γ R)) := fast_instance%
   ⟨⟨⊥, ⊤, by
       rw [Ne.def, SetLike.ext_iff, not_forall]
       obtain ⟨a, ha⟩ := exists_ne (0 : Γ)

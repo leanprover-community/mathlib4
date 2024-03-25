@@ -827,7 +827,7 @@ theorem prod.diag_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {
 #align category_theory.limits.prod.diag_map_fst_snd_comp CategoryTheory.Limits.prod.diag_map_fst_snd_comp
 #align category_theory.limits.prod.diag_map_fst_snd_comp_assoc CategoryTheory.Limits.prod.diag_map_fst_snd_comp_assoc
 
-instance {X : C} [HasBinaryProduct X X] : IsSplitMono (diag X) :=
+instance {X : C} [HasBinaryProduct X X] : IsSplitMono (diag X) := fast_instance%
   IsSplitMono.mk' { retraction := prod.fst }
 
 end ProdLemmas

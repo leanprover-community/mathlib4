@@ -123,7 +123,7 @@ theorem Finite.exists_finset_coe {s : Set α} (h : s.Finite) : ∃ s' : Finset �
 #align set.finite.exists_finset_coe Set.Finite.exists_finset_coe
 
 /-- Finite sets can be lifted to finsets. -/
-instance : CanLift (Set α) (Finset α) (↑) Set.Finite where prf _ hs := hs.exists_finset_coe
+instance : CanLift (Set α) (Finset α) (↑) Set.Finite where prf _ hs := fast_instance% hs.exists_finset_coe
 
 /-- A set is infinite if it is not finite.
 
@@ -319,7 +319,7 @@ Every instance here should have a corresponding `Set.Finite` constructor in the 
 
 section FintypeInstances
 
-instance fintypeUniv [Fintype α] : Fintype (@univ α) :=
+instance fintypeUniv [Fintype α] : Fintype (@univ α) := fast_instance%
   Fintype.ofEquiv α (Equiv.Set.univ α).symm
 #align set.fintype_univ Set.fintypeUniv
 
@@ -413,15 +413,15 @@ instance fintypeBind' {α β} [DecidableEq β] (s : Set α) [Fintype s] (f : α 
 
 end monad
 
-instance fintypeEmpty : Fintype (∅ : Set α) :=
+instance fintypeEmpty : Fintype (∅ : Set α) := fast_instance%
   Fintype.ofFinset ∅ <| by simp
 #align set.fintype_empty Set.fintypeEmpty
 
-instance fintypeSingleton (a : α) : Fintype ({a} : Set α) :=
+instance fintypeSingleton (a : α) : Fintype ({a} : Set α) := fast_instance%
   Fintype.ofFinset {a} <| by simp
 #align set.fintype_singleton Set.fintypeSingleton
 
-instance fintypePure : ∀ a : α, Fintype (pure a : Set α) :=
+instance fintypePure : ∀ a : α, Fintype (pure a : Set α) := fast_instance%
   Set.fintypeSingleton
 #align set.fintype_pure Set.fintypePure
 
@@ -457,7 +457,7 @@ instance (priority := 100) fintypeInsert' (a : α) (s : Set α) [Decidable <| a 
   if h : a ∈ s then fintypeInsertOfMem s h else fintypeInsertOfNotMem s h
 #align set.fintype_insert' Set.fintypeInsert'
 
-instance fintypeImage [DecidableEq β] (s : Set α) (f : α → β) [Fintype s] : Fintype (f '' s) :=
+instance fintypeImage [DecidableEq β] (s : Set α) (f : α → β) [Fintype s] : Fintype (f '' s) := fast_instance%
   Fintype.ofFinset (s.toFinset.image f) <| by simp
 #align set.fintype_image Set.fintypeImage
 
@@ -474,7 +474,7 @@ def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g
     simp [I _, (injective_of_isPartialInv I).eq_iff]
 #align set.fintype_of_fintype_image Set.fintypeOfFintypeImage
 
-instance fintypeRange [DecidableEq α] (f : ι → α) [Fintype (PLift ι)] : Fintype (range f) :=
+instance fintypeRange [DecidableEq α] (f : ι → α) [Fintype (PLift ι)] : Fintype (range f) := fast_instance%
   Fintype.ofFinset (Finset.univ.image <| f ∘ PLift.down) <| by simp
 #align set.fintype_range Set.fintypeRange
 
@@ -483,11 +483,11 @@ instance fintypeMap {α β} [DecidableEq β] :
   Set.fintypeImage
 #align set.fintype_map Set.fintypeMap
 
-instance fintypeLTNat (n : ℕ) : Fintype { i | i < n } :=
+instance fintypeLTNat (n : ℕ) : Fintype { i | i < n } := fast_instance%
   Fintype.ofFinset (Finset.range n) <| by simp
 #align set.fintype_lt_nat Set.fintypeLTNat
 
-instance fintypeLENat (n : ℕ) : Fintype { i | i ≤ n } := by
+instance fintypeLENat (n : ℕ) : Fintype { i | i ≤ n } := fast_instance% by
   simpa [Nat.lt_succ_iff] using Set.fintypeLTNat (n + 1)
 #align set.fintype_le_nat Set.fintypeLENat
 
@@ -502,7 +502,7 @@ instance fintypeProd (s : Set α) (t : Set β) [Fintype s] [Fintype t] :
   Fintype.ofFinset (s.toFinset ×ˢ t.toFinset) <| by simp
 #align set.fintype_prod Set.fintypeProd
 
-instance fintypeOffDiag [DecidableEq α] (s : Set α) [Fintype s] : Fintype s.offDiag :=
+instance fintypeOffDiag [DecidableEq α] (s : Set α) [Fintype s] : Fintype s.offDiag := fast_instance%
   Fintype.ofFinset s.toFinset.offDiag <| by simp
 #align set.fintype_off_diag Set.fintypeOffDiag
 
@@ -524,7 +524,7 @@ instance fintypeSeq' {α β : Type u} [DecidableEq β] (f : Set (α → β)) (s 
   Set.fintypeSeq f s
 #align set.fintype_seq' Set.fintypeSeq'
 
-instance fintypeMemFinset (s : Finset α) : Fintype { a | a ∈ s } :=
+instance fintypeMemFinset (s : Finset α) : Fintype { a | a ∈ s } := fast_instance%
   Finset.fintypeCoeSort s
 #align set.fintype_mem_finset Set.fintypeMemFinset
 
@@ -600,13 +600,13 @@ example : Finite (∅ : Set α) :=
 example (a : α) : Finite ({a} : Set α) :=
   inferInstance
 
-instance finite_union (s t : Set α) [Finite s] [Finite t] : Finite (s ∪ t : Set α) := by
+instance finite_union (s t : Set α) [Finite s] [Finite t] : Finite (s ∪ t : Set α) := fast_instance% by
   cases nonempty_fintype s
   cases nonempty_fintype t
   infer_instance
 #align finite.set.finite_union Finite.Set.finite_union
 
-instance finite_sep (s : Set α) (p : α → Prop) [Finite s] : Finite ({ a ∈ s | p a } : Set α) := by
+instance finite_sep (s : Set α) (p : α → Prop) [Finite s] : Finite ({ a ∈ s | p a } : Set α) := fast_instance% by
   cases nonempty_fintype s
   infer_instance
 #align finite.set.finite_sep Finite.Set.finite_sep
@@ -616,24 +616,24 @@ protected theorem subset (s : Set α) {t : Set α} [Finite s] (h : t ⊆ s) : Fi
   infer_instance
 #align finite.set.subset Finite.Set.subset
 
-instance finite_inter_of_right (s t : Set α) [Finite t] : Finite (s ∩ t : Set α) :=
+instance finite_inter_of_right (s t : Set α) [Finite t] : Finite (s ∩ t : Set α) := fast_instance%
   Finite.Set.subset t (inter_subset_right s t)
 #align finite.set.finite_inter_of_right Finite.Set.finite_inter_of_right
 
-instance finite_inter_of_left (s t : Set α) [Finite s] : Finite (s ∩ t : Set α) :=
+instance finite_inter_of_left (s t : Set α) [Finite s] : Finite (s ∩ t : Set α) := fast_instance%
   Finite.Set.subset s (inter_subset_left s t)
 #align finite.set.finite_inter_of_left Finite.Set.finite_inter_of_left
 
-instance finite_diff (s t : Set α) [Finite s] : Finite (s \ t : Set α) :=
+instance finite_diff (s t : Set α) [Finite s] : Finite (s \ t : Set α) := fast_instance%
   Finite.Set.subset s (diff_subset s t)
 #align finite.set.finite_diff Finite.Set.finite_diff
 
-instance finite_range (f : ι → α) [Finite ι] : Finite (range f) := by
+instance finite_range (f : ι → α) [Finite ι] : Finite (range f) := fast_instance% by
   haveI := Fintype.ofFinite (PLift ι)
   infer_instance
 #align finite.set.finite_range Finite.Set.finite_range
 
-instance finite_iUnion [Finite ι] (f : ι → Set α) [∀ i, Finite (f i)] : Finite (⋃ i, f i) := by
+instance finite_iUnion [Finite ι] (f : ι → Set α) [∀ i, Finite (f i)] : Finite (⋃ i, f i) := fast_instance% by
   rw [iUnion_eq_range_psigma]
   apply Set.finite_range
 #align finite.set.finite_Union Finite.Set.finite_iUnion
@@ -669,11 +669,11 @@ instance finite_iInter {ι : Sort*} [Nonempty ι] (t : ι → Set α) [∀ i, Fi
   Finite.Set.subset (t <| Classical.arbitrary ι) (iInter_subset _ _)
 #align finite.set.finite_Inter Finite.Set.finite_iInter
 
-instance finite_insert (a : α) (s : Set α) [Finite s] : Finite (insert a s : Set α) :=
+instance finite_insert (a : α) (s : Set α) [Finite s] : Finite (insert a s : Set α) := fast_instance%
   Finite.Set.finite_union {a} s
 #align finite.set.finite_insert Finite.Set.finite_insert
 
-instance finite_image (s : Set α) (f : α → β) [Finite s] : Finite (f '' s) := by
+instance finite_image (s : Set α) (f : α → β) [Finite s] : Finite (f '' s) := fast_instance% by
   cases nonempty_fintype s
   infer_instance
 #align finite.set.finite_image Finite.Set.finite_image
@@ -694,7 +694,7 @@ instance finite_image2 (f : α → β → γ) (s : Set α) (t : Set β) [Finite 
   infer_instance
 #align finite.set.finite_image2 Finite.Set.finite_image2
 
-instance finite_seq (f : Set (α → β)) (s : Set α) [Finite f] [Finite s] : Finite (f.seq s) := by
+instance finite_seq (f : Set (α → β)) (s : Set α) [Finite f] [Finite s] : Finite (f.seq s) := fast_instance% by
   rw [seq_def]
   infer_instance
 #align finite.set.finite_seq Finite.Set.finite_seq
@@ -1067,7 +1067,7 @@ end SetFiniteConstructors
 
 /-! ### Properties -/
 
-instance Finite.inhabited : Inhabited { s : Set α // s.Finite } :=
+instance Finite.inhabited : Inhabited { s : Set α // s.Finite } := fast_instance%
   ⟨⟨∅, finite_empty⟩⟩
 #align set.finite.inhabited Set.Finite.inhabited
 

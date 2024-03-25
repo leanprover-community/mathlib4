@@ -24,14 +24,14 @@ namespace DArray
 
 -- variable {n : ℕ} {α : Fin n → Type u}
 
--- instance [∀ i, Inhabited (α i)] : Inhabited (DArray n α) :=
+-- instance [∀ i, Inhabited (α i)] : Inhabited (DArray n α) := fast_instance%
 --   ⟨⟨default⟩⟩
 
 end DArray
 
 namespace Array'
 
--- instance {n α} [Inhabited α] : Inhabited (Array' n α) :=
+-- instance {n α} [Inhabited α] : Inhabited (Array' n α) := fast_instance%
 --   DArray.inhabited
 
 -- theorem toList_of_hEq {n₁ n₂ α} {a₁ : Array' n₁ α} {a₂ : Array' n₂ α} (hn : n₁ = n₂)

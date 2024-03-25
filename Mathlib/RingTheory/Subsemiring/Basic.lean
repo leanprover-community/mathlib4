@@ -92,11 +92,11 @@ instance (priority := 75) toNonAssocSemiring : NonAssocSemiring s :=
     (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_non_assoc_semiring SubsemiringClass.toNonAssocSemiring
 
-instance nontrivial [Nontrivial R] : Nontrivial s :=
+instance nontrivial [Nontrivial R] : Nontrivial s := fast_instance%
   nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
 #align subsemiring_class.nontrivial SubsemiringClass.nontrivial
 
-instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
+instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s := fast_instance%
   Subtype.coe_injective.noZeroDivisors _ rfl fun _ _ => rfl
 #align subsemiring_class.no_zero_divisors SubsemiringClass.noZeroDivisors
 
@@ -135,7 +135,7 @@ instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R
     (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_comm_semiring SubsemiringClass.toCommSemiring
 
-instance instCharZero [CharZero R] : CharZero s :=
+instance instCharZero [CharZero R] : CharZero s := fast_instance%
   ⟨Function.Injective.of_comp (f := Subtype.val) (g := Nat.cast (R := s)) Nat.cast_injective⟩
 
 end SubsemiringClass
@@ -329,7 +329,7 @@ protected theorem sum_mem (s : Subsemiring R) {ι : Type*} {t : Finset ι} {f : 
 #align subsemiring.sum_mem Subsemiring.sum_mem
 
 /-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
-instance toNonAssocSemiring : NonAssocSemiring s :=
+instance toNonAssocSemiring : NonAssocSemiring s := fast_instance%
   -- Porting note: this used to be a specialized instance which needed to be expensively unified.
   SubsemiringClass.toNonAssocSemiring _
 #align subsemiring.to_non_assoc_semiring Subsemiring.toNonAssocSemiring
@@ -354,7 +354,7 @@ theorem coe_mul (x y : s) : ((x * y : s) : R) = (x * y : R) :=
   rfl
 #align subsemiring.coe_mul Subsemiring.coe_mul
 
-instance nontrivial [Nontrivial R] : Nontrivial s :=
+instance nontrivial [Nontrivial R] : Nontrivial s := fast_instance%
   nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
 #align subsemiring.nontrivial Subsemiring.nontrivial
 
@@ -369,7 +369,7 @@ instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s where
 #align subsemiring.no_zero_divisors Subsemiring.noZeroDivisors
 
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
-instance toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
+instance toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s := fast_instance%
   { s.toNonAssocSemiring, s.toSubmonoid.toMonoid with }
 #align subsemiring.to_semiring Subsemiring.toSemiring
 
@@ -382,7 +382,7 @@ theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
 #align subsemiring.coe_pow Subsemiring.coe_pow
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
-instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
+instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s := fast_instance%
   { s.toSemiring with mul_comm := fun _ _ => Subtype.eq <| mul_comm _ _ }
 #align subsemiring.to_comm_semiring Subsemiring.toCommSemiring
 
@@ -421,7 +421,7 @@ theorem coe_toAddSubmonoid (s : Subsemiring R) : (s.toAddSubmonoid : Set R) = s 
 #align subsemiring.coe_to_add_submonoid Subsemiring.coe_toAddSubmonoid
 
 /-- The subsemiring `R` of the semiring `R`. -/
-instance : Top (Subsemiring R) :=
+instance : Top (Subsemiring R) := fast_instance%
   ⟨{ (⊤ : Submonoid R), (⊤ : AddSubmonoid R) with }⟩
 
 @[simp]
@@ -547,7 +547,7 @@ theorem map_rangeS : f.rangeS.map g = (g.comp f).rangeS := by
 /-- The range of a morphism of semirings is a fintype, if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
   presence of `Fintype S`.-/
-instance fintypeRangeS [Fintype R] [DecidableEq S] (f : R →+* S) : Fintype (rangeS f) :=
+instance fintypeRangeS [Fintype R] [DecidableEq S] (f : R →+* S) : Fintype (rangeS f) := fast_instance%
   Set.fintypeRange f
 #align ring_hom.fintype_srange RingHom.fintypeRangeS
 
@@ -555,10 +555,10 @@ end RingHom
 
 namespace Subsemiring
 
-instance : Bot (Subsemiring R) :=
+instance : Bot (Subsemiring R) := fast_instance%
   ⟨(Nat.castRingHom R).rangeS⟩
 
-instance : Inhabited (Subsemiring R) :=
+instance : Inhabited (Subsemiring R) := fast_instance%
   ⟨⊥⟩
 
 theorem coe_bot : ((⊥ : Subsemiring R) : Set R) = Set.range ((↑) : ℕ → R) :=
@@ -570,7 +570,7 @@ theorem mem_bot {x : R} : x ∈ (⊥ : Subsemiring R) ↔ ∃ n : ℕ, ↑n = x 
 #align subsemiring.mem_bot Subsemiring.mem_bot
 
 /-- The inf of two subsemirings is their intersection. -/
-instance : Inf (Subsemiring R) :=
+instance : Inf (Subsemiring R) := fast_instance%
   ⟨fun s t =>
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubmonoid ⊓ t.toAddSubmonoid with carrier := s ∩ t }⟩
 
@@ -584,7 +584,7 @@ theorem mem_inf {p p' : Subsemiring R} {x : R} : x ∈ p ⊓ p' ↔ x ∈ p ∧ 
   Iff.rfl
 #align subsemiring.mem_inf Subsemiring.mem_inf
 
-instance : InfSet (Subsemiring R) :=
+instance : InfSet (Subsemiring R) := fast_instance%
   ⟨fun s =>
     Subsemiring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, Subsemiring.toSubmonoid t) (by simp)
       (⨅ t ∈ s, Subsemiring.toAddSubmonoid t)
@@ -612,7 +612,7 @@ theorem sInf_toAddSubmonoid (s : Set (Subsemiring R)) :
 #align subsemiring.Inf_to_add_submonoid Subsemiring.sInf_toAddSubmonoid
 
 /-- Subsemirings of a semiring form a complete lattice. -/
-instance : CompleteLattice (Subsemiring R) :=
+instance : CompleteLattice (Subsemiring R) := fast_instance%
   { completeLatticeOfInf (Subsemiring R) fun _ =>
       IsGLB.of_image
         (fun {s t : Subsemiring R} => show (s : Set R) ⊆ t ↔ s ≤ t from SetLike.coe_subset_coe)
@@ -664,7 +664,7 @@ end NonAssocSemiring
 section Semiring
 
 /-- The center is commutative. -/
-instance center.commSemiring {R} [Semiring R] : CommSemiring (center R) :=
+instance center.commSemiring {R} [Semiring R] : CommSemiring (center R) := fast_instance%
   { Submonoid.center.commMonoid, (center R).toSemiring with }
 
 -- no instance diamond, unlike the primed version
@@ -1290,7 +1290,7 @@ section NonAssocSemiring
 variable [NonAssocSemiring R']
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
-instance smul [SMul R' α] (S : Subsemiring R') : SMul S α :=
+instance smul [SMul R' α] (S : Subsemiring R') : SMul S α := fast_instance%
   S.toSubmonoid.smul
 
 theorem smul_def [SMul R' α] {S : Subsemiring R'} (g : S) (m : α) : g • m = (g : R') • m :=
@@ -1313,11 +1313,11 @@ instance isScalarTower [SMul α β] [SMul R' α] [SMul R' β] [IsScalarTower R' 
     IsScalarTower S α β :=
   S.toSubmonoid.isScalarTower
 
-instance faithfulSMul [SMul R' α] [FaithfulSMul R' α] (S : Subsemiring R') : FaithfulSMul S α :=
+instance faithfulSMul [SMul R' α] [FaithfulSMul R' α] (S : Subsemiring R') : FaithfulSMul S α := fast_instance%
   S.toSubmonoid.faithfulSMul
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
-instance [Zero α] [SMulWithZero R' α] (S : Subsemiring R') : SMulWithZero S α :=
+instance [Zero α] [SMulWithZero R' α] (S : Subsemiring R') : SMulWithZero S α := fast_instance%
   SMulWithZero.compHom _ S.subtype.toMonoidWithZeroHom.toZeroHom
 
 end NonAssocSemiring
@@ -1325,7 +1325,7 @@ end NonAssocSemiring
 variable [Semiring R']
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
-instance mulAction [MulAction R' α] (S : Subsemiring R') : MulAction S α :=
+instance mulAction [MulAction R' α] (S : Subsemiring R') : MulAction S α := fast_instance%
   S.toSubmonoid.mulAction
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
@@ -1345,22 +1345,22 @@ instance mulActionWithZero [Zero α] [MulActionWithZero R' α] (S : Subsemiring 
 
 -- Porting note: instance named explicitly for use in `RingTheory/Subring/Basic`
 /-- The action by a subsemiring is the action by the underlying semiring. -/
-instance module [AddCommMonoid α] [Module R' α] (S : Subsemiring R') : Module S α :=
+instance module [AddCommMonoid α] [Module R' α] (S : Subsemiring R') : Module S α := fast_instance%
   -- Porting note: copying over the `smul` field causes a timeout
   -- { Module.compHom _ S.subtype with smul := (· • ·) }
   Module.compHom _ S.subtype
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
-instance [Semiring α] [MulSemiringAction R' α] (S : Subsemiring R') : MulSemiringAction S α :=
+instance [Semiring α] [MulSemiringAction R' α] (S : Subsemiring R') : MulSemiringAction S α := fast_instance%
   S.toSubmonoid.mulSemiringAction
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.smulCommClass_left : SMulCommClass (center R') R' R' :=
+instance center.smulCommClass_left : SMulCommClass (center R') R' R' := fast_instance%
   Submonoid.center.smulCommClass_left
 #align subsemiring.center.smul_comm_class_left Subsemiring.center.smulCommClass_left
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.smulCommClass_right : SMulCommClass R' (center R') R' :=
+instance center.smulCommClass_right : SMulCommClass R' (center R') R' := fast_instance%
   Submonoid.center.smulCommClass_right
 #align subsemiring.center.smul_comm_class_right Subsemiring.center.smulCommClass_right
 

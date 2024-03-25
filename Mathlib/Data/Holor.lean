@@ -93,33 +93,33 @@ namespace Holor
 
 variable {α : Type} {d : ℕ} {ds : List ℕ} {ds₁ : List ℕ} {ds₂ : List ℕ} {ds₃ : List ℕ}
 
-instance [Inhabited α] : Inhabited (Holor α ds) :=
+instance [Inhabited α] : Inhabited (Holor α ds) := fast_instance%
   ⟨fun _ => default⟩
 
-instance [Zero α] : Zero (Holor α ds) :=
+instance [Zero α] : Zero (Holor α ds) := fast_instance%
   ⟨fun _ => 0⟩
 
-instance [Add α] : Add (Holor α ds) :=
+instance [Add α] : Add (Holor α ds) := fast_instance%
   ⟨fun x y t => x t + y t⟩
 
-instance [Neg α] : Neg (Holor α ds) :=
+instance [Neg α] : Neg (Holor α ds) := fast_instance%
   ⟨fun a t => -a t⟩
 
-instance [AddSemigroup α] : AddSemigroup (Holor α ds) := Pi.addSemigroup
+instance [AddSemigroup α] : AddSemigroup (Holor α ds) := fast_instance% Pi.addSemigroup
 -- Porting note: Previous code was:
 -- by
 -- refine_struct { add := (· + ·).. } <;> pi_instance_derive_field
 --
 -- `refine_struct` has not been ported yet.
 
-instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) := Pi.addCommSemigroup
+instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) := fast_instance% Pi.addCommSemigroup
 -- Porting note: Previous code was:
 -- by
 -- refine_struct { add := (· + ·).. } <;> pi_instance_derive_field
 --
 -- `refine_struct` has not been ported yet.
 
-instance [AddMonoid α] : AddMonoid (Holor α ds) := Pi.addMonoid
+instance [AddMonoid α] : AddMonoid (Holor α ds) := fast_instance% Pi.addMonoid
 -- Porting note: Previous code was:
 -- by
 -- refine_struct
@@ -130,7 +130,7 @@ instance [AddMonoid α] : AddMonoid (Holor α ds) := Pi.addMonoid
 --
 -- `refine_struct` has not been ported yet.
 
-instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) := Pi.addCommMonoid
+instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) := fast_instance% Pi.addCommMonoid
 -- Porting note: Previous code was:
 -- by
 -- refine_struct
@@ -141,7 +141,7 @@ instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) := Pi.addCommMonoid
 --
 -- `refine_struct` has not been ported yet.
 
-instance [AddGroup α] : AddGroup (Holor α ds) := Pi.addGroup
+instance [AddGroup α] : AddGroup (Holor α ds) := fast_instance% Pi.addGroup
 -- Porting note: Previous code was:
 -- by
 -- refine_struct
@@ -153,7 +153,7 @@ instance [AddGroup α] : AddGroup (Holor α ds) := Pi.addGroup
 --
 -- `refine_struct` has not been ported yet.
 
-instance [AddCommGroup α] : AddCommGroup (Holor α ds) := Pi.addCommGroup
+instance [AddCommGroup α] : AddCommGroup (Holor α ds) := fast_instance% Pi.addCommGroup
 -- Porting note: Previous code was:
 -- by
 -- refine_struct
@@ -166,10 +166,10 @@ instance [AddCommGroup α] : AddCommGroup (Holor α ds) := Pi.addCommGroup
 -- `refine_struct` has not been ported yet.
 
 -- scalar product
-instance [Mul α] : SMul α (Holor α ds) :=
+instance [Mul α] : SMul α (Holor α ds) := fast_instance%
   ⟨fun a x => fun t => a * x t⟩
 
-instance [Semiring α] : Module α (Holor α ds) := Pi.module _ _ _
+instance [Semiring α] : Module α (Holor α ds) := fast_instance% Pi.module _ _ _
 
 /-- The tensor product of two holors. -/
 def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ ds₂) := fun t =>

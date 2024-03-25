@@ -191,7 +191,7 @@ theorem kernelSubobject_zero {A B : C} : kernelSubobject (0 : A ⟶ B) = ⊤ :=
   (isIso_iff_mk_eq_top _).mp (by infer_instance)
 #align category_theory.limits.kernel_subobject_zero CategoryTheory.Limits.kernelSubobject_zero
 
-instance isIso_kernelSubobject_zero_arrow : IsIso (kernelSubobject (0 : X ⟶ Y)).arrow :=
+instance isIso_kernelSubobject_zero_arrow : IsIso (kernelSubobject (0 : X ⟶ Y)).arrow := fast_instance%
   (isIso_arrow_iff_eq_top _).mpr kernelSubobject_zero
 #align category_theory.limits.is_iso_kernel_subobject_zero_arrow CategoryTheory.Limits.isIso_kernelSubobject_zero_arrow
 
@@ -320,7 +320,7 @@ def factorThruImageSubobject : X ⟶ imageSubobject f :=
   factorThruImage f ≫ (imageSubobjectIso f).inv
 #align category_theory.limits.factor_thru_image_subobject CategoryTheory.Limits.factorThruImageSubobject
 
-instance [HasEqualizers C] : Epi (factorThruImageSubobject f) := by
+instance [HasEqualizers C] : Epi (factorThruImageSubobject f) := fast_instance% by
   dsimp [factorThruImageSubobject]
   apply epi_comp
 

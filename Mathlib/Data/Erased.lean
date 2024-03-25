@@ -74,10 +74,10 @@ noncomputable def equiv (α) : Erased α ≃ α :=
   ⟨out, mk, mk_out, out_mk⟩
 #align erased.equiv Erased.equiv
 
-instance (α : Type u) : Repr (Erased α) :=
+instance (α : Type u) : Repr (Erased α) := fast_instance%
   ⟨fun _ _ => "Erased"⟩
 
-instance (α : Type u) : ToString (Erased α) :=
+instance (α : Type u) : ToString (Erased α) := fast_instance%
   ⟨fun _ => "Erased"⟩
 
 -- Porting note: Deleted `has_to_format`
@@ -92,7 +92,7 @@ theorem nonempty_iff {α} : Nonempty (Erased α) ↔ Nonempty α :=
   ⟨fun ⟨a⟩ => ⟨a.out⟩, fun ⟨a⟩ => ⟨mk a⟩⟩
 #align erased.nonempty_iff Erased.nonempty_iff
 
-instance {α} [h : Nonempty α] : Inhabited (Erased α) :=
+instance {α} [h : Nonempty α] : Inhabited (Erased α) := fast_instance%
   ⟨choice h⟩
 
 /-- `(>>=)` operation on `Erased`.
@@ -154,7 +154,7 @@ theorem map_def {α β} : ((· <$> ·) : (α → β) → Erased α → Erased β
 #align erased.map_def Erased.map_def
 
 -- Porting note: Old proof `by refine' { .. } <;> intros <;> ext <;> simp`
-protected instance instLawfulMonad : LawfulMonad Erased :=
+protected instance instLawfulMonad : LawfulMonad Erased := fast_instance%
   { id_map := by intros; ext; simp
     map_const := by intros; ext; simp [Functor.mapConst]
     pure_bind := by intros; ext; simp

@@ -35,7 +35,7 @@ universe u v w x
 
 variable {α β γ δ ε ζ : Type*}
 
-instance [DecidableEq α] : SDiff (List α) :=
+instance [DecidableEq α] : SDiff (List α) := fast_instance%
   ⟨List.diff⟩
 
 #align list.replicate List.replicate

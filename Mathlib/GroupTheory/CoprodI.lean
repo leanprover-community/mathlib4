@@ -98,10 +98,10 @@ def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
 #align free_product Monoid.CoprodI
 
 -- Porting note: could not de derived
-instance : Monoid (Monoid.CoprodI M) :=
+instance : Monoid (Monoid.CoprodI M) := fast_instance%
   by delta Monoid.CoprodI; infer_instance
 
-instance : Inhabited (Monoid.CoprodI M) :=
+instance : Inhabited (Monoid.CoprodI M) := fast_instance%
   ⟨1⟩
 
 namespace Monoid.CoprodI
@@ -235,7 +235,7 @@ theorem inv_def (x : CoprodI G) :
   rfl
 #align free_product.inv_def Monoid.CoprodI.inv_def
 
-instance : Group (CoprodI G) :=
+instance : Group (CoprodI G) := fast_instance%
   { mul_left_inv := by
       intro m
       rw [inv_def]
@@ -278,7 +278,7 @@ def empty : Word M where
   chain_ne := List.chain'_nil
 #align free_product.word.empty Monoid.CoprodI.Word.empty
 
-instance : Inhabited (Word M) :=
+instance : Inhabited (Word M) := fast_instance%
   ⟨empty⟩
 
 /-- A reduced word determines an element of the free product, given by multiplication. -/
@@ -318,7 +318,7 @@ structure Pair (i : ι) where
   fstIdx_ne : fstIdx tail ≠ some i
 #align free_product.word.pair Monoid.CoprodI.Word.Pair
 
-instance (i : ι) : Inhabited (Pair M i) :=
+instance (i : ι) : Inhabited (Pair M i) := fast_instance%
   ⟨⟨1, empty, by tauto⟩⟩
 
 variable {M}
@@ -504,7 +504,7 @@ instance summandAction (i) : MulAction (M i) (Word M) where
     simp [mul_assoc, ← equivPair_symm, Equiv.apply_symm_apply]
 #align free_product.word.summand_action Monoid.CoprodI.Word.summandAction
 
-instance : MulAction (CoprodI M) (Word M) :=
+instance : MulAction (CoprodI M) (Word M) := fast_instance%
   MulAction.ofEndHom (lift fun _ => MulAction.toEndHom)
 
 theorem smul_def {i} (m : M i) (w : Word M) :
@@ -628,10 +628,10 @@ def equiv : CoprodI M ≃ Word M where
       rw [prod_smul, mul_smul, ih]
 #align free_product.word.equiv Monoid.CoprodI.Word.equiv
 
-instance : DecidableEq (Word M) :=
+instance : DecidableEq (Word M) := fast_instance%
   Function.Injective.decidableEq Word.ext
 
-instance : DecidableEq (CoprodI M) :=
+instance : DecidableEq (CoprodI M) := fast_instance%
   Equiv.decidableEq Word.equiv
 
 end Word

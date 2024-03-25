@@ -647,7 +647,7 @@ theorem haarMeasure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ K₀ = 1
 
 /-- The Haar measure is regular. -/
 @[to_additive "The additive Haar measure is regular."]
-instance regular_haarMeasure {K₀ : PositiveCompacts G} : (haarMeasure K₀).Regular := by
+instance regular_haarMeasure {K₀ : PositiveCompacts G} : (haarMeasure K₀).Regular := fast_instance% by
   haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   apply Regular.smul
   rw [← OuterRegular.measure_closure_eq_of_isCompact K₀.isCompact,
@@ -673,7 +673,7 @@ sets and positive mass to nonempty open sets. -/
 @[to_additive
 "The additive Haar measure is an additive Haar measure, i.e., it is invariant and gives finite mass
 to compact sets and positive mass to nonempty open sets."]
-instance isHaarMeasure_haarMeasure (K₀ : PositiveCompacts G) : IsHaarMeasure (haarMeasure K₀) := by
+instance isHaarMeasure_haarMeasure (K₀ : PositiveCompacts G) : IsHaarMeasure (haarMeasure K₀) := fast_instance% by
   apply
     isHaarMeasure_of_isCompact_nonempty_interior (haarMeasure K₀) K₀ K₀.isCompact
       K₀.interior_nonempty

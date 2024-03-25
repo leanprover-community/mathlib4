@@ -438,7 +438,7 @@ section Submodule
 
 variable {R : Type*} [Ring R] [Module R M] (S : Submodule R M)
 
-instance Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) :=
+instance Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) := fast_instance%
   AddSubgroup.seminormedAddCommGroupQuotient S.toAddSubgroup
 #align submodule.quotient.seminormed_add_comm_group Submodule.Quotient.seminormedAddCommGroup
 
@@ -447,7 +447,7 @@ instance Submodule.Quotient.normedAddCommGroup [hS : IsClosed (S : Set M)] :
   @AddSubgroup.normedAddCommGroupQuotient _ _ S.toAddSubgroup hS
 #align submodule.quotient.normed_add_comm_group Submodule.Quotient.normedAddCommGroup
 
-instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M ⧸ S) :=
+instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M ⧸ S) := fast_instance%
   QuotientAddGroup.completeSpace M S.toAddSubgroup
 #align submodule.quotient.complete_space Submodule.Quotient.completeSpace
 
@@ -517,13 +517,13 @@ instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
       _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 #align ideal.quotient.semi_normed_comm_ring Ideal.Quotient.semiNormedCommRing
 
-instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (R ⧸ I) :=
+instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (R ⧸ I) := fast_instance%
   { Ideal.Quotient.semiNormedCommRing I, Submodule.Quotient.normedAddCommGroup I with }
 #align ideal.quotient.normed_comm_ring Ideal.Quotient.normedCommRing
 
 variable (𝕜 : Type*) [NormedField 𝕜]
 
-instance Ideal.Quotient.normedAlgebra [NormedAlgebra 𝕜 R] : NormedAlgebra 𝕜 (R ⧸ I) :=
+instance Ideal.Quotient.normedAlgebra [NormedAlgebra 𝕜 R] : NormedAlgebra 𝕜 (R ⧸ I) := fast_instance%
   { Submodule.Quotient.normedSpace I 𝕜, Ideal.Quotient.algebra 𝕜 with }
 #align ideal.quotient.normed_algebra Ideal.Quotient.normedAlgebra
 

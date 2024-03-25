@@ -54,7 +54,7 @@ def OnePoint (X : Type*) :=
 #align alexandroff OnePoint
 
 /-- The repr uses the notation from the `OnePoint` locale. -/
-instance [Repr X] : Repr (OnePoint X) :=
+instance [Repr X] : Repr (OnePoint X) := fast_instance%
   ⟨fun o _ =>
     match o with
     | none => "∞"
@@ -72,14 +72,14 @@ scoped notation "∞" => OnePoint.infty
 /-- Coercion from `X` to `OnePoint X`. -/
 @[coe, match_pattern] def some : X → OnePoint X := Option.some
 
-instance : CoeTC X (OnePoint X) := ⟨some⟩
+instance : CoeTC X (OnePoint X) := fast_instance% ⟨some⟩
 
-instance : Inhabited (OnePoint X) := ⟨∞⟩
+instance : Inhabited (OnePoint X) := fast_instance% ⟨∞⟩
 
-instance [Fintype X] : Fintype (OnePoint X) :=
+instance [Fintype X] : Fintype (OnePoint X) := fast_instance%
   inferInstanceAs (Fintype (Option X))
 
-instance infinite [Infinite X] : Infinite (OnePoint X) :=
+instance infinite [Infinite X] : Infinite (OnePoint X) := fast_instance%
   inferInstanceAs (Infinite (Option X))
 #align alexandroff.infinite OnePoint.infinite
 
@@ -145,7 +145,7 @@ theorem ne_infty_iff_exists {x : OnePoint X} : x ≠ ∞ ↔ ∃ y : X, (y : One
   induction x using OnePoint.rec <;> simp
 #align alexandroff.ne_infty_iff_exists OnePoint.ne_infty_iff_exists
 
-instance canLift : CanLift (OnePoint X) X (↑) fun x => x ≠ ∞ :=
+instance canLift : CanLift (OnePoint X) X (↑) fun x => x ≠ ∞ := fast_instance%
   WithTop.canLift
 #align alexandroff.can_lift OnePoint.canLift
 
@@ -316,7 +316,7 @@ theorem nhdsWithin_compl_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (co
 #align alexandroff.nhds_within_compl_infty_eq OnePoint.nhdsWithin_compl_infty_eq
 
 /-- If `X` is a non-compact space, then `∞` is not an isolated point of `OnePoint X`. -/
-instance nhdsWithin_compl_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : OnePoint X)) := by
+instance nhdsWithin_compl_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : OnePoint X)) := fast_instance% by
   rw [nhdsWithin_compl_infty_eq]
   infer_instance
 #align alexandroff.nhds_within_compl_infty_ne_bot OnePoint.nhdsWithin_compl_infty_neBot
@@ -444,7 +444,7 @@ instance : CompactSpace (OnePoint X) where
     exact this.isCompact_insert_range_of_cocompact continuous_coe
 
 /-- The one point compactification of a `T0Space` space is a `T0Space`. -/
-instance [T0Space X] : T0Space (OnePoint X) := by
+instance [T0Space X] : T0Space (OnePoint X) := fast_instance% by
   refine' ⟨fun x y hxy => _⟩
   rcases inseparable_iff.1 hxy with (⟨rfl, rfl⟩ | ⟨x, rfl, y, rfl, h⟩)
   exacts [rfl, congr_arg some h.eq]
@@ -459,7 +459,7 @@ instance [T1Space X] : T1Space (OnePoint X) where
 
 /-- The one point compactification of a weakly locally compact Hausdorff space is a T₄
 (hence, Hausdorff and regular) topological space. -/
-instance [WeaklyLocallyCompactSpace X] [T2Space X] : T4Space (OnePoint X) := by
+instance [WeaklyLocallyCompactSpace X] [T2Space X] : T4Space (OnePoint X) := fast_instance% by
   have key : ∀ z : X, Disjoint (𝓝 (some z)) (𝓝 ∞) := fun z => by
     rw [nhds_infty_eq, disjoint_sup_right, nhds_coe_eq, coclosedCompact_eq_cocompact,
       disjoint_map coe_injective, ← principal_singleton, disjoint_principal_right, compl_infty]

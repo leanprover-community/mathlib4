@@ -51,10 +51,10 @@ namespace FreeMagma
 variable {α : Type u}
 
 @[to_additive]
-instance [Inhabited α] : Inhabited (FreeMagma α) := ⟨of default⟩
+instance [Inhabited α] : Inhabited (FreeMagma α) := fast_instance% ⟨of default⟩
 
 @[to_additive]
-instance : Mul (FreeMagma α) := ⟨FreeMagma.mul⟩
+instance : Mul (FreeMagma α) := fast_instance% ⟨FreeMagma.mul⟩
 
 -- Porting note: invalid attribute 'match_pattern', declaration is in an imported module
 -- attribute [match_pattern] Mul.mul
@@ -196,7 +196,7 @@ theorem mul_seq {α β : Type u} {f g : FreeMagma (α → β)} {x : FreeMagma α
 #align free_magma.mul_seq FreeMagma.mul_seq
 
 @[to_additive]
-instance instLawfulMonad : LawfulMonad FreeMagma.{u} := LawfulMonad.mk'
+instance instLawfulMonad : LawfulMonad FreeMagma.{u} := fast_instance% LawfulMonad.mk'
   (pure_bind := fun f x ↦ rfl)
   (bind_assoc := fun x f g ↦ FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
     rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
@@ -234,7 +234,7 @@ section Category
 variable {β : Type u}
 
 @[to_additive]
-instance : Traversable FreeMagma := ⟨@FreeMagma.traverse⟩
+instance : Traversable FreeMagma := fast_instance% ⟨@FreeMagma.traverse⟩
 
 variable {m : Type u → Type u} [Applicative m] (F : α → m β)
 
@@ -268,7 +268,7 @@ theorem mul_map_seq (x y : FreeMagma α) :
 #align free_magma.mul_map_seq FreeMagma.mul_map_seq
 
 @[to_additive]
-instance : LawfulTraversable FreeMagma.{u} :=
+instance : LawfulTraversable FreeMagma.{u} := fast_instance%
   { instLawfulMonad with
     id_traverse := fun x ↦
       FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
@@ -310,7 +310,7 @@ protected def FreeAddMagma.repr {α : Type u} [Repr α] : FreeAddMagma α → Le
 attribute [to_additive existing] FreeMagma.repr
 
 @[to_additive]
-instance {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ => FreeMagma.repr o⟩
+instance {α : Type u} [Repr α] : Repr (FreeMagma α) := fast_instance% ⟨fun o _ => FreeMagma.repr o⟩
 
 /-- Length of an element of a free magma. -/
 def FreeMagma.length {α : Type u} : FreeMagma α → ℕ
@@ -384,7 +384,7 @@ def of : α →ₙ* AssocQuotient α where toFun := Quot.mk _; map_mul' _x _y :=
 #align magma.assoc_quotient.of Magma.AssocQuotient.of
 
 @[to_additive]
-instance [Inhabited α] : Inhabited (AssocQuotient α) := ⟨of default⟩
+instance [Inhabited α] : Inhabited (AssocQuotient α) := fast_instance% ⟨of default⟩
 
 @[to_additive (attr := elab_as_elim)]
 protected theorem induction_on {C : AssocQuotient α → Prop} (x : AssocQuotient α)
@@ -506,7 +506,7 @@ theorem length_of (x : α) : (of x).length = 1 := rfl
 #align free_semigroup.length_of FreeSemigroup.length_of
 
 @[to_additive]
-instance [Inhabited α] : Inhabited (FreeSemigroup α) := ⟨of default⟩
+instance [Inhabited α] : Inhabited (FreeSemigroup α) := fast_instance% ⟨of default⟩
 
 /-- Recursor for free semigroup using `of` and `*`. -/
 @[to_additive (attr := elab_as_elim) "Recursor for free additive semigroup using `of` and `+`."]
@@ -626,7 +626,7 @@ theorem mul_seq {f g : FreeSemigroup (α → β)} {x : FreeSemigroup α} :
 #align free_semigroup.mul_seq FreeSemigroup.mul_seq
 
 @[to_additive]
-instance instLawfulMonad : LawfulMonad FreeSemigroup.{u} := LawfulMonad.mk'
+instance instLawfulMonad : LawfulMonad FreeSemigroup.{u} := fast_instance% LawfulMonad.mk'
   (pure_bind := fun _ _ ↦ rfl)
   (bind_assoc := fun x g f ↦
     recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
@@ -640,7 +640,7 @@ protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
 #align free_semigroup.traverse FreeSemigroup.traverse
 
 @[to_additive]
-instance : Traversable FreeSemigroup := ⟨@FreeSemigroup.traverse⟩
+instance : Traversable FreeSemigroup := fast_instance% ⟨@FreeSemigroup.traverse⟩
 
 variable {m : Type u → Type u} [Applicative m] (F : α → m β)
 
@@ -689,7 +689,7 @@ theorem mul_map_seq (x y : FreeSemigroup α) :
 #align free_semigroup.mul_map_seq FreeSemigroup.mul_map_seq
 
 @[to_additive]
-instance : LawfulTraversable FreeSemigroup.{u} :=
+instance : LawfulTraversable FreeSemigroup.{u} := fast_instance%
   { instLawfulMonad with
     id_traverse := fun x ↦
       FreeSemigroup.recOnMul x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
@@ -708,7 +708,7 @@ instance : LawfulTraversable FreeSemigroup.{u} :=
 end Category
 
 @[to_additive]
-instance [DecidableEq α] : DecidableEq (FreeSemigroup α) :=
+instance [DecidableEq α] : DecidableEq (FreeSemigroup α) := fast_instance%
   fun _ _ ↦ decidable_of_iff' _ (FreeSemigroup.ext_iff _ _)
 
 end FreeSemigroup

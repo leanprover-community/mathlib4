@@ -55,7 +55,7 @@ When restricted to objects in `D` given by `i : D ⥤ C`, the unit is an isomorp
 More generally this applies to objects essentially in the reflective subcategory, see
 `Functor.essImage.unit_isIso`.
 -/
-instance isIso_unit_obj [Reflective i] {B : D} : IsIso ((ofRightAdjoint i).unit.app (i.obj B)) := by
+instance isIso_unit_obj [Reflective i] {B : D} : IsIso ((ofRightAdjoint i).unit.app (i.obj B)) := fast_instance% by
   have : (ofRightAdjoint i).unit.app (i.obj B) = inv (i.map ((ofRightAdjoint i).counit.app B)) := by
     rw [← comp_hom_eq_id]
     apply (ofRightAdjoint i).right_triangle_components

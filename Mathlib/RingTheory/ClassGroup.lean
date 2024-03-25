@@ -79,7 +79,7 @@ theorem mem_principal_ideals_iff {I : (FractionalIdeal R⁰ K)ˣ} :
     simp [I.ne_zero.symm] at hx
 #align mem_principal_ideals_iff mem_principal_ideals_iff
 
-instance PrincipalIdeals.normal : (toPrincipalIdeal R K).range.Normal :=
+instance PrincipalIdeals.normal : (toPrincipalIdeal R K).range.Normal := fast_instance%
   Subgroup.normal_of_comm _
 #align principal_ideals.normal PrincipalIdeals.normal
 
@@ -94,10 +94,10 @@ def ClassGroup :=
   (FractionalIdeal R⁰ (FractionRing R))ˣ ⧸ (toPrincipalIdeal R (FractionRing R)).range
 #align class_group ClassGroup
 
-noncomputable instance : CommGroup (ClassGroup R) :=
+noncomputable instance : CommGroup (ClassGroup R) := fast_instance%
   QuotientGroup.Quotient.commGroup (toPrincipalIdeal R (FractionRing R)).range
 
-noncomputable instance : Inhabited (ClassGroup R) := ⟨1⟩
+noncomputable instance : Inhabited (ClassGroup R) := fast_instance% ⟨1⟩
 
 variable {R}
 

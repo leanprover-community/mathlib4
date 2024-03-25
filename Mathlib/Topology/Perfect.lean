@@ -244,7 +244,7 @@ variable {X : Type*} [TopologicalSpace X]
 theorem perfectSpace_iff_forall_not_isolated : PerfectSpace X ↔ ∀ x : X, Filter.NeBot (𝓝[≠] x) := by
   simp [perfectSpace_def, Preperfect, AccPt]
 
-instance PerfectSpace.not_isolated [PerfectSpace X] (x : X) : Filter.NeBot (𝓝[≠] x) :=
+instance PerfectSpace.not_isolated [PerfectSpace X] (x : X) : Filter.NeBot (𝓝[≠] x) := fast_instance%
   perfectSpace_iff_forall_not_isolated.mp ‹_› x
 
 end PerfectSpace

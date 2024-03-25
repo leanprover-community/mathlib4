@@ -105,7 +105,7 @@ def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
 
 variable {R}
 
-instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
+instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) := fast_instance%
   ⟨⟨⊥, ⊤, by
       rw [Ne.def, SetLike.ext_iff, not_forall]
       refine' ⟨X, _⟩

@@ -494,7 +494,7 @@ theorem ext_int {R : Type*} [NonAssocSemiring R] (f g : ℤ →+* R) : f = g :=
   coe_addMonoidHom_injective <| AddMonoidHom.ext_int <| f.map_one.trans g.map_one.symm
 #align ring_hom.ext_int RingHom.ext_int
 
-instance Int.subsingleton_ringHom {R : Type*} [NonAssocSemiring R] : Subsingleton (ℤ →+* R) :=
+instance Int.subsingleton_ringHom {R : Type*} [NonAssocSemiring R] : Subsingleton (ℤ →+* R) := fast_instance%
   ⟨RingHom.ext_int⟩
 #align ring_hom.int.subsingleton_ring_hom RingHom.Int.subsingleton_ringHom
 
@@ -513,7 +513,7 @@ namespace Pi
 
 variable {π : ι → Type*} [∀ i, IntCast (π i)]
 
-instance intCast : IntCast (∀ i, π i) :=
+instance intCast : IntCast (∀ i, π i) := fast_instance%
   { intCast := fun n _ ↦ n }
 
 theorem int_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
@@ -538,13 +538,13 @@ theorem Sum.elim_intCast_intCast {α β γ : Type*} [IntCast γ] (n : ℤ) :
 
 open OrderDual
 
-instance [h : IntCast α] : IntCast αᵒᵈ :=
+instance [h : IntCast α] : IntCast αᵒᵈ := fast_instance%
   h
 
-instance [h : AddGroupWithOne α] : AddGroupWithOne αᵒᵈ :=
+instance [h : AddGroupWithOne α] : AddGroupWithOne αᵒᵈ := fast_instance%
   h
 
-instance [h : AddCommGroupWithOne α] : AddCommGroupWithOne αᵒᵈ :=
+instance [h : AddCommGroupWithOne α] : AddCommGroupWithOne αᵒᵈ := fast_instance%
   h
 
 @[simp]
@@ -560,13 +560,13 @@ theorem ofDual_intCast [IntCast α] (n : ℤ) : (ofDual n : α) = n :=
 /-! ### Lexicographic order -/
 
 
-instance [h : IntCast α] : IntCast (Lex α) :=
+instance [h : IntCast α] : IntCast (Lex α) := fast_instance%
   h
 
-instance [h : AddGroupWithOne α] : AddGroupWithOne (Lex α) :=
+instance [h : AddGroupWithOne α] : AddGroupWithOne (Lex α) := fast_instance%
   h
 
-instance [h : AddCommGroupWithOne α] : AddCommGroupWithOne (Lex α) :=
+instance [h : AddCommGroupWithOne α] : AddCommGroupWithOne (Lex α) := fast_instance%
   h
 
 @[simp]

@@ -44,15 +44,15 @@ class HasSheafify : Prop where
   isLeftExact : letI := isRightAdjoint.some
     Nonempty (PreservesFiniteLimits (leftAdjoint (sheafToPresheaf J A)))
 
-instance [HasSheafify J A] : HasWeakSheafify J A := HasSheafify.isRightAdjoint
+instance [HasSheafify J A] : HasWeakSheafify J A := fast_instance% HasSheafify.isRightAdjoint
 
-instance [IsRightAdjoint <| sheafToPresheaf J A] : HasWeakSheafify J A := ⟨inferInstance⟩
+instance [IsRightAdjoint <| sheafToPresheaf J A] : HasWeakSheafify J A := fast_instance% ⟨inferInstance⟩
 
 noncomputable section
 
-instance [h : HasWeakSheafify J A] : IsRightAdjoint (sheafToPresheaf J A) := h.some
+instance [h : HasWeakSheafify J A] : IsRightAdjoint (sheafToPresheaf J A) := fast_instance% h.some
 
-instance [HasSheafify J A] : PreservesFiniteLimits (leftAdjoint (sheafToPresheaf J A)) :=
+instance [HasSheafify J A] : PreservesFiniteLimits (leftAdjoint (sheafToPresheaf J A)) := fast_instance%
   HasSheafify.isLeftExact.some
 
 theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafToPresheaf J A)
@@ -68,7 +68,7 @@ theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafTo
 def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   leftAdjoint (sheafToPresheaf J A)
 
-instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
+instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) := fast_instance%
   HasSheafify.isLeftExact.some
 
 /-- The sheafification-inclusion adjunction. -/
@@ -224,7 +224,7 @@ instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
   isIso_of_fully_faithful (sheafToPresheaf J D) _
 #align category_theory.is_iso_sheafification_adjunction_counit CategoryTheory.isIso_sheafificationAdjunction_counit
 
-instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
+instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit := fast_instance%
   NatIso.isIso_of_isIso_app _
 #align category_theory.sheafification_reflective CategoryTheory.sheafification_reflective
 

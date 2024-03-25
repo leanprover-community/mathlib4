@@ -55,7 +55,7 @@ variable {𝕜 : Type*} {V : Type*} [NormedField 𝕜] [AddCommGroup V] [Module 
 -- Porting note: added to appease norm_cast complaints
 attribute [coe] ENorm.toFun
 
-instance : CoeFun (ENorm 𝕜 V) fun _ => V → ℝ≥0∞ :=
+instance : CoeFun (ENorm 𝕜 V) fun _ => V → ℝ≥0∞ := fast_instance%
   ⟨ENorm.toFun⟩
 
 theorem coeFn_injective : Function.Injective ((↑) : ENorm 𝕜 V → V → ℝ≥0∞) := fun e₁ e₂ h => by
@@ -131,7 +131,7 @@ instance partialOrder : PartialOrder (ENorm 𝕜 V) where
   le_antisymm e₁ e₂ h₁₂ h₂₁ := ext fun x => le_antisymm (h₁₂ x) (h₂₁ x)
 
 /-- The `ENorm` sending each non-zero vector to infinity. -/
-noncomputable instance : Top (ENorm 𝕜 V) :=
+noncomputable instance : Top (ENorm 𝕜 V) := fast_instance%
   ⟨{  toFun := fun x => if x = 0 then 0 else ⊤
       eq_zero' := fun x => by simp only; split_ifs <;> simp [*]
       map_add_le' := fun x y => by
@@ -147,7 +147,7 @@ noncomputable instance : Top (ENorm 𝕜 V) :=
         · tauto
         · simpa [mul_top'] using hcx.1 }⟩
 
-noncomputable instance : Inhabited (ENorm 𝕜 V) :=
+noncomputable instance : Inhabited (ENorm 𝕜 V) := fast_instance%
   ⟨⊤⟩
 
 theorem top_map {x : V} (hx : x ≠ 0) : (⊤ : ENorm 𝕜 V) x = ⊤ :=
@@ -158,7 +158,7 @@ noncomputable instance : OrderTop (ENorm 𝕜 V) where
   top := ⊤
   le_top e x := if h : x = 0 then by simp [h] else by simp [top_map h]
 
-noncomputable instance : SemilatticeSup (ENorm 𝕜 V) :=
+noncomputable instance : SemilatticeSup (ENorm 𝕜 V) := fast_instance%
   { ENorm.partialOrder with
     le := (· ≤ ·)
     lt := (· < ·)
@@ -209,7 +209,7 @@ def finiteSubspace : Subspace 𝕜 V where
 
 /-- Metric space structure on `e.finiteSubspace`. We use `EMetricSpace.toMetricSpace`
 to ensure that this definition agrees with `e.emetricSpace`. -/
-instance metricSpace : MetricSpace e.finiteSubspace := by
+instance metricSpace : MetricSpace e.finiteSubspace := fast_instance% by
   letI := e.emetricSpace
   refine' EMetricSpace.toMetricSpace fun x y => _
   change e (x - y) ≠ ⊤
@@ -224,7 +224,7 @@ theorem finite_edist_eq (x y : e.finiteSubspace) : edist x y = e (x - y) :=
 #align enorm.finite_edist_eq ENorm.finite_edist_eq
 
 /-- Normed group instance on `e.finiteSubspace`. -/
-instance normedAddCommGroup : NormedAddCommGroup e.finiteSubspace :=
+instance normedAddCommGroup : NormedAddCommGroup e.finiteSubspace := fast_instance%
   { e.metricSpace with
     norm := fun x => (e x).toReal
     dist_eq := fun _ _ => rfl }

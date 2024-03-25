@@ -512,7 +512,7 @@ variable {A M₁ : Type*} [SetLike A M₁] [One M₁] [hA : OneMemClass A M₁] 
 
 /-- A submonoid of a monoid inherits a 1. -/
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits a zero."]
-instance one : One S' :=
+instance one : One S' := fast_instance%
   ⟨⟨1, OneMemClass.one_mem S'⟩⟩
 #align one_mem_class.has_one OneMemClass.one
 #align zero_mem_class.has_zero ZeroMemClass.zero
@@ -552,7 +552,7 @@ instance AddSubmonoidClass.nSMul {M} [AddMonoid M] {A : Type*} [SetLike A M]
 namespace SubmonoidClass
 
 /-- A submonoid of a monoid inherits a power operator. -/
-instance nPow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] (S : A) : Pow S ℕ :=
+instance nPow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] (S : A) : Pow S ℕ := fast_instance%
   ⟨fun a n => ⟨a.1 ^ n, pow_mem a.2 n⟩⟩
 #align submonoid_class.has_pow SubmonoidClass.nPow
 
@@ -621,14 +621,14 @@ namespace Submonoid
 
 /-- A submonoid of a monoid inherits a multiplication. -/
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an addition."]
-instance mul : Mul S :=
+instance mul : Mul S := fast_instance%
   ⟨fun a b => ⟨a.1 * b.1, S.mul_mem a.2 b.2⟩⟩
 #align submonoid.has_mul Submonoid.mul
 #align add_submonoid.has_add AddSubmonoid.add
 
 /-- A submonoid of a monoid inherits a 1. -/
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits a zero."]
-instance one : One S :=
+instance one : One S := fast_instance%
   ⟨⟨_, S.one_mem⟩⟩
 #align submonoid.has_one Submonoid.one
 #align add_submonoid.has_zero AddSubmonoid.zero
@@ -670,7 +670,7 @@ theorem one_def : (1 : S) = ⟨1, S.one_mem⟩ :=
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
 @[to_additive
       "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
-instance toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) : MulOneClass S :=
+instance toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) : MulOneClass S := fast_instance%
   fast_instance%
   Subtype.coe_injective.mulOneClass (↑) rfl fun _ _ => rfl
 #align submonoid.to_mul_one_class Submonoid.toMulOneClass
@@ -689,7 +689,7 @@ protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx :
 
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure."]
-instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S :=
+instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S := fast_instance%
   fast_instance%
   Subtype.coe_injective.monoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid.to_monoid Submonoid.toMonoid
@@ -697,7 +697,7 @@ instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S :=
 
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive "An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`."]
-instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S :=
+instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S := fast_instance%
   fast_instance%
   Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid.to_comm_monoid Submonoid.toCommMonoid
@@ -1102,7 +1102,7 @@ theorem coe_mker (f : F) : (mker f : Set M) = (f : M → N) ⁻¹' {1} :=
 #align add_monoid_hom.coe_mker AddMonoidHom.coe_mker
 
 @[to_additive]
-instance decidableMemMker [DecidableEq N] (f : F) : DecidablePred (· ∈ mker f) := fun x =>
+instance decidableMemMker [DecidableEq N] (f : F) : DecidablePred (· ∈ mker f) := fast_instance% fun x =>
   decidable_of_iff (f x = 1) (mem_mker f)
 #align monoid_hom.decidable_mem_mker MonoidHom.decidableMemMker
 #align add_monoid_hom.decidable_mem_mker AddMonoidHom.decidableMemMker
@@ -1428,7 +1428,7 @@ section MulOneClass
 variable [MulOneClass M']
 
 @[to_additive]
-instance smul [SMul M' α] (S : Submonoid M') : SMul S α :=
+instance smul [SMul M' α] (S : Submonoid M') : SMul S α := fast_instance%
   SMul.comp _ S.subtype
 
 @[to_additive]
@@ -1461,7 +1461,7 @@ variable [SMul M' α] {S : Submonoid M'}
 @[to_additive (attr := simp)]
 lemma mk_smul (g : M') (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
 
-instance faithfulSMul [FaithfulSMul M' α] : FaithfulSMul S α :=
+instance faithfulSMul [FaithfulSMul M' α] : FaithfulSMul S α := fast_instance%
   ⟨fun h => Subtype.ext <| eq_of_smul_eq_smul h⟩
 
 end SMul
@@ -1472,7 +1472,7 @@ variable [Monoid M']
 /-- The action by a submonoid is the action by the underlying monoid. -/
 @[to_additive
       "The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. "]
-instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
+instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α := fast_instance%
   MulAction.compHom _ S.subtype
 
 /-- The action by a submonoid is the action by the underlying monoid. -/

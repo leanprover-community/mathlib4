@@ -62,22 +62,22 @@ namespace RegularExpression
 
 variable {a b : α}
 
-instance : Inhabited (RegularExpression α) :=
+instance : Inhabited (RegularExpression α) := fast_instance%
   ⟨zero⟩
 
-instance : Add (RegularExpression α) :=
+instance : Add (RegularExpression α) := fast_instance%
   ⟨plus⟩
 
-instance : Mul (RegularExpression α) :=
+instance : Mul (RegularExpression α) := fast_instance%
   ⟨comp⟩
 
-instance : One (RegularExpression α) :=
+instance : One (RegularExpression α) := fast_instance%
   ⟨epsilon⟩
 
-instance : Zero (RegularExpression α) :=
+instance : Zero (RegularExpression α) := fast_instance%
   ⟨zero⟩
 
-instance : Pow (RegularExpression α) ℕ :=
+instance : Pow (RegularExpression α) ℕ := fast_instance%
   ⟨fun n r => npowRec r n⟩
 
 -- Porting note: declaration in an imported module
@@ -374,7 +374,7 @@ theorem rmatch_iff_matches' (P : RegularExpression α) (x : List α) :
     simp only [star_rmatch_iff, matches'_star, ih, Language.mem_kstar_iff_exists_nonempty, and_comm]
 #align regular_expression.rmatch_iff_matches RegularExpression.rmatch_iff_matches'
 
-instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fun _ ↦
+instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fast_instance% fun _ ↦
   decidable_of_iff _ (rmatch_iff_matches' _ _)
 
 /-- Map the alphabet of a regular expression. -/

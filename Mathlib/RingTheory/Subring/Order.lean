@@ -68,17 +68,17 @@ namespace Subring
 variable {R : Type*}
 
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
-instance toOrderedRing [OrderedRing R] (s : Subring R) : OrderedRing s :=
+instance toOrderedRing [OrderedRing R] (s : Subring R) : OrderedRing s := fast_instance%
   SubringClass.toOrderedRing s
 #align subring.to_ordered_ring Subring.toOrderedRing
 
 /-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-instance toOrderedCommRing [OrderedCommRing R] (s : Subring R) : OrderedCommRing s :=
+instance toOrderedCommRing [OrderedCommRing R] (s : Subring R) : OrderedCommRing s := fast_instance%
   SubringClass.toOrderedCommRing s
 #align subring.to_ordered_comm_ring Subring.toOrderedCommRing
 
 /-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
-instance toLinearOrderedRing [LinearOrderedRing R] (s : Subring R) : LinearOrderedRing s :=
+instance toLinearOrderedRing [LinearOrderedRing R] (s : Subring R) : LinearOrderedRing s := fast_instance%
   SubringClass.toLinearOrderedRing s
 #align subring.to_linear_ordered_ring Subring.toLinearOrderedRing
 

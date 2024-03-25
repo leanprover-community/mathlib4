@@ -120,7 +120,7 @@ variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C]
 
 -- Porting note: Replaced with DFunLike instance
 -- /-- see Note [function coercion] -/
--- instance : CoeFun (A →ₙₐ[R] B) fun _ => A → B :=
+-- instance : CoeFun (A →ₙₐ[R] B) fun _ => A → B := fast_instance%
 --   ⟨toFun⟩
 
 instance : FunLike (A →ₙₐ[R] B) A B where
@@ -185,10 +185,10 @@ theorem mk_coe (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁�
   rfl
 #align non_unital_alg_hom.mk_coe NonUnitalAlgHom.mk_coe
 
-instance : CoeOut (A →ₙₐ[R] B) (A →+[R] B) :=
+instance : CoeOut (A →ₙₐ[R] B) (A →+[R] B) := fast_instance%
   ⟨toDistribMulActionHom⟩
 
-instance : CoeOut (A →ₙₐ[R] B) (A →ₙ* B) :=
+instance : CoeOut (A →ₙₐ[R] B) (A →ₙ* B) := fast_instance%
   ⟨toMulHom⟩
 
 @[simp]
@@ -265,10 +265,10 @@ protected def id (R A : Type*) [Monoid R] [NonUnitalNonAssocSemiring A]
 theorem coe_id : ⇑(NonUnitalAlgHom.id R A) = id :=
   rfl
 
-instance : Zero (A →ₙₐ[R] B) :=
+instance : Zero (A →ₙₐ[R] B) := fast_instance%
   ⟨{ (0 : A →+[R] B) with map_mul' := by simp }⟩
 
-instance : One (A →ₙₐ[R] A) :=
+instance : One (A →ₙₐ[R] A) := fast_instance%
   ⟨NonUnitalAlgHom.id R A⟩
 
 @[simp]
@@ -289,7 +289,7 @@ theorem one_apply (a : A) : (1 : A →ₙₐ[R] A) a = a :=
   rfl
 #align non_unital_alg_hom.one_apply NonUnitalAlgHom.one_apply
 
-instance : Inhabited (A →ₙₐ[R] B) :=
+instance : Inhabited (A →ₙₐ[R] B) := fast_instance%
   ⟨0⟩
 
 /-- The composition of morphisms is a morphism. -/
@@ -446,7 +446,7 @@ def toNonUnitalAlgHom (f : A →ₐ[R] B) : A →ₙₐ[R] B :=
   { f with map_smul' := map_smul f }
 #align alg_hom.to_non_unital_alg_hom AlgHom.toNonUnitalAlgHom
 
-instance NonUnitalAlgHom.hasCoe : CoeOut (A →ₐ[R] B) (A →ₙₐ[R] B) :=
+instance NonUnitalAlgHom.hasCoe : CoeOut (A →ₐ[R] B) (A →ₙₐ[R] B) := fast_instance%
   ⟨toNonUnitalAlgHom⟩
 #align alg_hom.non_unital_alg_hom.has_coe AlgHom.NonUnitalAlgHom.hasCoe
 

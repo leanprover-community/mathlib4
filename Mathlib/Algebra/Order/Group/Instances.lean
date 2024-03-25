@@ -17,11 +17,11 @@ import Mathlib.Algebra.Order.Monoid.OrderDual
 variable {α : Type*}
 
 @[to_additive]
-instance OrderDual.orderedCommGroup [OrderedCommGroup α] : OrderedCommGroup αᵒᵈ :=
+instance OrderDual.orderedCommGroup [OrderedCommGroup α] : OrderedCommGroup αᵒᵈ := fast_instance%
   { OrderDual.orderedCommMonoid, OrderDual.instGroup with }
 #align order_dual.ordered_comm_group OrderDual.orderedCommGroup
 #align order_dual.ordered_add_comm_group OrderDual.orderedAddCommGroup
 
 @[to_additive]
-instance OrderDual.linearOrderedCommGroup [LinearOrderedCommGroup α] : LinearOrderedCommGroup αᵒᵈ :=
+instance OrderDual.linearOrderedCommGroup [LinearOrderedCommGroup α] : LinearOrderedCommGroup αᵒᵈ := fast_instance%
   { OrderDual.orderedCommGroup, OrderDual.instLinearOrder α with }

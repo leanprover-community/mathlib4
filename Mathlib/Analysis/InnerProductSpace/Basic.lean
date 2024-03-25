@@ -1942,7 +1942,7 @@ theorem IsROrC.inner_apply (x y : 𝕜) : ⟪x, y⟫ = conj x * y :=
 
 
 /-- Induced inner product on a submodule. -/
-instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 𝕜 W :=
+instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 𝕜 W := fast_instance%
   { Submodule.normedSpace W with
     inner := fun x y => ⟪(x : E), (y : E)⟫
     conj_symm := fun _ _ => inner_conj_symm _ _

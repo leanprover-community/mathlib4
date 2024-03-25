@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Std.Tactic.Lint
+import Mathlib.Tactic.FastInstance
 
 /-!
 # A parser for superscripts and subscripts
@@ -30,7 +31,7 @@ namespace Mathlib.Tactic
 open Lean Parser PrettyPrinter
 namespace Superscript
 
-instance : Hashable Char := ⟨fun c => hash c.1⟩
+instance : Hashable Char := fast_instance% ⟨fun c => hash c.1⟩
 
 /-- A bidirectional character mapping. -/
 structure Mapping where

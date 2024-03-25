@@ -63,12 +63,12 @@ def uniqueOfEpiZero (X) [h : Epi (0 : X ⟶ of R M)] : Unique M :=
 set_option linter.uppercaseLean3 false in
 #align Module.unique_of_epi_zero ModuleCat.uniqueOfEpiZero
 
-instance mono_as_hom'_subtype (U : Submodule R X) : Mono (ModuleCat.asHomRight U.subtype) :=
+instance mono_as_hom'_subtype (U : Submodule R X) : Mono (ModuleCat.asHomRight U.subtype) := fast_instance%
   (mono_iff_ker_eq_bot _).mpr (Submodule.ker_subtype U)
 set_option linter.uppercaseLean3 false in
 #align Module.mono_as_hom'_subtype ModuleCat.mono_as_hom'_subtype
 
-instance epi_as_hom''_mkQ (U : Submodule R X) : Epi (↿U.mkQ) :=
+instance epi_as_hom''_mkQ (U : Submodule R X) : Epi (↿U.mkQ) := fast_instance%
   (epi_iff_range_eq_top _).mpr <| Submodule.range_mkQ _
 set_option linter.uppercaseLean3 false in
 #align Module.epi_as_hom''_mkq ModuleCat.epi_as_hom''_mkQ

@@ -49,7 +49,7 @@ def forgetAdjStar [HasBinaryProducts C] : Over.forget X ⊣ star X :=
 /-- Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
 -/
-instance [HasBinaryProducts C] : IsLeftAdjoint (Over.forget X) :=
+instance [HasBinaryProducts C] : IsLeftAdjoint (Over.forget X) := fast_instance%
   ⟨_, forgetAdjStar X⟩
 
 end CategoryTheory

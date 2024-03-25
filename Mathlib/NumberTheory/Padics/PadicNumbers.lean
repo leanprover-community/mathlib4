@@ -475,34 +475,34 @@ section Completion
 
 variable {p : ℕ} [Fact p.Prime]
 
-instance field : Field ℚ_[p] :=
+instance field : Field ℚ_[p] := fast_instance%
   Cauchy.field
 
-instance : Inhabited ℚ_[p] :=
+instance : Inhabited ℚ_[p] := fast_instance%
   ⟨0⟩
 
 -- short circuits
-instance : CommRing ℚ_[p] :=
+instance : CommRing ℚ_[p] := fast_instance%
   Cauchy.commRing
 
-instance : Ring ℚ_[p] :=
+instance : Ring ℚ_[p] := fast_instance%
   Cauchy.ring
 
-instance : Zero ℚ_[p] := by infer_instance
+instance : Zero ℚ_[p] := fast_instance% by infer_instance
 
-instance : One ℚ_[p] := by infer_instance
+instance : One ℚ_[p] := fast_instance% by infer_instance
 
-instance : Add ℚ_[p] := by infer_instance
+instance : Add ℚ_[p] := fast_instance% by infer_instance
 
-instance : Mul ℚ_[p] := by infer_instance
+instance : Mul ℚ_[p] := fast_instance% by infer_instance
 
-instance : Sub ℚ_[p] := by infer_instance
+instance : Sub ℚ_[p] := fast_instance% by infer_instance
 
-instance : Neg ℚ_[p] := by infer_instance
+instance : Neg ℚ_[p] := fast_instance% by infer_instance
 
-instance : Div ℚ_[p] := by infer_instance
+instance : Div ℚ_[p] := fast_instance% by infer_instance
 
-instance : AddCommGroup ℚ_[p] := by infer_instance
+instance : AddCommGroup ℚ_[p] := fast_instance% by infer_instance
 
 /-- Builds the equivalence class of a Cauchy sequence of rationals. -/
 def mk : PadicSeq p → ℚ_[p] :=
@@ -528,7 +528,7 @@ theorem coe_inj {q r : ℚ} : (↑q : ℚ_[p]) = ↑r ↔ q = r :=
   ⟨(const_equiv p).1 ∘ Quotient.eq'.1, fun h ↦ by rw [h]⟩
 #align padic.coe_inj Padic.coe_inj
 
-instance : CharZero ℚ_[p] :=
+instance : CharZero ℚ_[p] := fast_instance%
   ⟨fun m n ↦ by
     rw [← Rat.cast_coe_nat]
     norm_cast
@@ -759,7 +759,7 @@ section NormedSpace
 
 variable (p : ℕ) [Fact p.Prime]
 
-instance : Dist ℚ_[p] :=
+instance : Dist ℚ_[p] := fast_instance%
   ⟨fun x y ↦ padicNormE (x - y : ℚ_[p])⟩
 
 instance metricSpace : MetricSpace ℚ_[p] where
@@ -777,10 +777,10 @@ instance metricSpace : MetricSpace ℚ_[p] where
   -- Porting note: added because autoparam was not ported
   edist_dist := by intros; exact (ENNReal.ofReal_eq_coe_nnreal _).symm
 
-instance : Norm ℚ_[p] :=
+instance : Norm ℚ_[p] := fast_instance%
   ⟨fun x ↦ padicNormE x⟩
 
-instance normedField : NormedField ℚ_[p] :=
+instance normedField : NormedField ℚ_[p] := fast_instance%
   { Padic.field,
     Padic.metricSpace p with
     dist_eq := fun _ _ ↦ rfl
@@ -860,7 +860,7 @@ theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) 
   rw [← norm_p_zpow, zpow_coe_nat]
 #align padic_norm_e.norm_p_pow padicNormE.norm_p_pow
 
-instance : NontriviallyNormedField ℚ_[p] :=
+instance : NontriviallyNormedField ℚ_[p] := fast_instance%
   { Padic.normedField p with
     non_trivial :=
       ⟨p⁻¹, by
@@ -1007,7 +1007,7 @@ theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf :
 
 open Filter Set
 
-instance : CompleteSpace ℚ_[p] := by
+instance : CompleteSpace ℚ_[p] := fast_instance% by
   apply complete_of_cauchySeq_tendsto
   intro u hu
   let c : CauSeq ℚ_[p] norm := ⟨u, Metric.cauchySeq_iff'.mp hu⟩

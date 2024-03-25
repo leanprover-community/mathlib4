@@ -35,7 +35,7 @@ variable {n' : Type*} [DecidableEq n'] [Fintype n'] {R : Type*} [CommRing R]
 
 local notation "M" => Matrix n' n' R
 
-noncomputable instance : DivInvMonoid M :=
+noncomputable instance : DivInvMonoid M := fast_instance%
   { show Monoid M by infer_instance, show Inv M by infer_instance with }
 
 section NatPow

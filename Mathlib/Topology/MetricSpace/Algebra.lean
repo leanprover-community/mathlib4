@@ -191,14 +191,14 @@ instance BoundedSMul.op [SMul αᵐᵒᵖ β] [IsCentralScalar α β] : BoundedS
 
 end BoundedSMul
 
-instance [Monoid α] [LipschitzMul α] : LipschitzAdd (Additive α) :=
+instance [Monoid α] [LipschitzMul α] : LipschitzAdd (Additive α) := fast_instance%
   ⟨@LipschitzMul.lipschitz_mul α _ _ _⟩
 
-instance [AddMonoid α] [LipschitzAdd α] : LipschitzMul (Multiplicative α) :=
+instance [AddMonoid α] [LipschitzAdd α] : LipschitzMul (Multiplicative α) := fast_instance%
   ⟨@LipschitzAdd.lipschitz_add α _ _ _⟩
 
 @[to_additive]
-instance [Monoid α] [LipschitzMul α] : LipschitzMul αᵒᵈ :=
+instance [Monoid α] [LipschitzMul α] : LipschitzMul αᵒᵈ := fast_instance%
   ‹LipschitzMul α›
 
 variable {ι : Type*} [Fintype ι]

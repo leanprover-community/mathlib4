@@ -108,13 +108,13 @@ protected def rec {β : WithLower α → Sort*} (h : ∀ a, β (toLower a)) : �
   h (ofLower a)
 #align with_lower_topology.rec Topology.WithLower.rec
 
-instance [Nonempty α] : Nonempty (WithLower α) := ‹Nonempty α›
-instance [Inhabited α] : Inhabited (WithLower α) := ‹Inhabited α›
+instance [Nonempty α] : Nonempty (WithLower α) := fast_instance% ‹Nonempty α›
+instance [Inhabited α] : Inhabited (WithLower α) := fast_instance% ‹Inhabited α›
 
 variable [Preorder α] {s : Set α}
 
-instance : Preorder (WithLower α) := ‹Preorder α›
-instance : TopologicalSpace (WithLower α) := lower α
+instance : Preorder (WithLower α) := fast_instance% ‹Preorder α›
+instance : TopologicalSpace (WithLower α) := fast_instance% lower α
 
 lemma isOpen_preimage_ofLower : IsOpen (ofLower ⁻¹' s) ↔ (lower α).IsOpen s := Iff.rfl
 #align with_lower_topology.is_open_preimage_of_lower Topology.WithLower.isOpen_preimage_ofLower
@@ -146,13 +146,13 @@ lemma ofUpper_inj {a b : WithUpper α} : ofUpper a = ofUpper b ↔ a = b := Iff.
 protected def rec {β : WithUpper α → Sort*} (h : ∀ a, β (toUpper a)) : ∀ a, β a := fun a =>
   h (ofUpper a)
 
-instance [Nonempty α] : Nonempty (WithUpper α) := ‹Nonempty α›
-instance [Inhabited α] : Inhabited (WithUpper α) := ‹Inhabited α›
+instance [Nonempty α] : Nonempty (WithUpper α) := fast_instance% ‹Nonempty α›
+instance [Inhabited α] : Inhabited (WithUpper α) := fast_instance% ‹Inhabited α›
 
 variable [Preorder α] {s : Set α}
 
-instance : Preorder (WithUpper α) := ‹Preorder α›
-instance : TopologicalSpace (WithUpper α) := upper α
+instance : Preorder (WithUpper α) := fast_instance% ‹Preorder α›
+instance : TopologicalSpace (WithUpper α) := fast_instance% upper α
 
 lemma isOpen_preimage_ofUpper : IsOpen (ofUpper ⁻¹' s) ↔ (upper α).IsOpen s := Iff.rfl
 
@@ -178,8 +178,8 @@ class IsUpper (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_upperTopology : t = upper α
 attribute [nolint docBlame] IsUpper.topology_eq_upperTopology
 
-instance [Preorder α] : IsLower (WithLower α) := ⟨rfl⟩
-instance [Preorder α] : IsUpper (WithUpper α) := ⟨rfl⟩
+instance [Preorder α] : IsLower (WithLower α) := fast_instance% ⟨rfl⟩
+instance [Preorder α] : IsUpper (WithUpper α) := fast_instance% ⟨rfl⟩
 
 /--
 The lower topology is homeomorphic to the upper topology on the dual order
@@ -224,7 +224,7 @@ instance _root_.OrderDual.instIsUpper [Preorder α] [TopologicalSpace α] [IsLow
   topology_eq_upperTopology := topology_eq_lowerTopology (α := α)
 
 /-- Left-closed right-infinite intervals [a, ∞) are closed in the lower topology. -/
-instance : ClosedIciTopology α :=
+instance : ClosedIciTopology α := fast_instance%
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Ici_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
 -- Porting note: The old `IsLower.isClosed_Ici` was removed, since one can now use
@@ -335,7 +335,7 @@ instance _root_.OrderDual.instIsLower [Preorder α] [TopologicalSpace α] [IsUpp
   topology_eq_lowerTopology := topology_eq_upperTopology (α := α)
 
 /-- Left-infinite right-closed intervals (-∞,a] are closed in the upper topology. -/
-instance : ClosedIicTopology α :=
+instance : ClosedIicTopology α := fast_instance%
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Iic_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
 /-- The lower closure of a finite set is closed in the upper topology. -/

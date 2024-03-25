@@ -29,7 +29,7 @@ section SMul
 variable [∀ i, SMul M (α i)] [∀ i, SMul N (α i)] (a : M) (i : ι) (b : α i) (x : Σi, α i)
 
 @[to_additive Sigma.VAdd]
-instance : SMul M (Σi, α i) :=
+instance : SMul M (Σi, α i) := fast_instance%
   ⟨fun a => (Sigma.map id) fun _ => (a • ·)⟩
 
 @[to_additive]
@@ -45,19 +45,19 @@ theorem smul_mk : a • mk i b = ⟨i, a • b⟩ :=
 #align sigma.vadd_mk Sigma.vadd_mk
 
 @[to_additive]
-instance [SMul M N] [∀ i, IsScalarTower M N (α i)] : IsScalarTower M N (Σi, α i) :=
+instance [SMul M N] [∀ i, IsScalarTower M N (α i)] : IsScalarTower M N (Σi, α i) := fast_instance%
   ⟨fun a b x => by
     cases x
     rw [smul_mk, smul_mk, smul_mk, smul_assoc]⟩
 
 @[to_additive]
-instance [∀ i, SMulCommClass M N (α i)] : SMulCommClass M N (Σi, α i) :=
+instance [∀ i, SMulCommClass M N (α i)] : SMulCommClass M N (Σi, α i) := fast_instance%
   ⟨fun a b x => by
     cases x
     rw [smul_mk, smul_mk, smul_mk, smul_mk, smul_comm]⟩
 
 @[to_additive]
-instance [∀ i, SMul Mᵐᵒᵖ (α i)] [∀ i, IsCentralScalar M (α i)] : IsCentralScalar M (Σi, α i) :=
+instance [∀ i, SMul Mᵐᵒᵖ (α i)] [∀ i, IsCentralScalar M (α i)] : IsCentralScalar M (Σi, α i) := fast_instance%
   ⟨fun a x => by
     cases x
     rw [smul_mk, smul_mk, op_smul_eq_smul]⟩
@@ -70,7 +70,7 @@ protected theorem FaithfulSMul' [FaithfulSMul M (α i)] : FaithfulSMul M (Σi, �
 #align sigma.has_faithful_vadd' Sigma.FaithfulVAdd'
 
 @[to_additive]
-instance [Nonempty ι] [∀ i, FaithfulSMul M (α i)] : FaithfulSMul M (Σi, α i) :=
+instance [Nonempty ι] [∀ i, FaithfulSMul M (α i)] : FaithfulSMul M (Σi, α i) := fast_instance%
   (Nonempty.elim ‹_›) fun i => Sigma.FaithfulSMul' i
 
 end SMul

@@ -80,11 +80,11 @@ section End
 
 variable {R : Type w}
 
-instance [Semiring R] [Linear R C] (X : C) : Module R (End X) := by
+instance [Semiring R] [Linear R C] (X : C) : Module R (End X) := fast_instance% by
   dsimp [End]
   infer_instance
 
-instance [CommSemiring R] [Linear R C] (X : C) : Algebra R (End X) :=
+instance [CommSemiring R] [Linear R C] (X : C) : Algebra R (End X) := fast_instance%
   Algebra.ofModule (fun _ _ _ => comp_smul _ _ _ _ _ _) fun _ _ _ => smul_comp _ _ _ _ _ _
 
 end End
@@ -135,12 +135,12 @@ def rightComp (X : C) {Y Z : C} (g : Y ⟶ Z) : (X ⟶ Y) →ₗ[R] X ⟶ Z
   map_smul' := by simp
 #align category_theory.linear.right_comp CategoryTheory.Linear.rightComp
 
-instance {X Y : C} (f : X ⟶ Y) [Epi f] (r : R) [Invertible r] : Epi (r • f) :=
+instance {X Y : C} (f : X ⟶ Y) [Epi f] (r : R) [Invertible r] : Epi (r • f) := fast_instance%
   ⟨fun g g' H => by
     rw [smul_comp, smul_comp, ← comp_smul, ← comp_smul, cancel_epi] at H
     simpa [smul_smul] using congr_arg (fun f => ⅟ r • f) H⟩
 
-instance {X Y : C} (f : X ⟶ Y) [Mono f] (r : R) [Invertible r] : Mono (r • f) :=
+instance {X Y : C} (f : X ⟶ Y) [Mono f] (r : R) [Invertible r] : Mono (r • f) := fast_instance%
   ⟨fun g g' H => by
     rw [comp_smul, comp_smul, ← smul_comp, ← smul_comp, cancel_mono] at H
     simpa [smul_smul] using congr_arg (fun f => ⅟ r • f) H⟩

@@ -55,11 +55,11 @@ instance (priority := 100) NormedSpace.boundedSMul [NormedSpace 𝕜 E] : Bounde
   BoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
 #align normed_space.has_bounded_smul NormedSpace.boundedSMul
 
-instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := norm_mul_le a b
+instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := fast_instance% norm_mul_le a b
 #align normed_field.to_normed_space NormedField.toNormedSpace
 
 -- shortcut instance
-instance NormedField.to_boundedSMul : BoundedSMul 𝕜 𝕜 :=
+instance NormedField.to_boundedSMul : BoundedSMul 𝕜 𝕜 := fast_instance%
   NormedSpace.boundedSMul
 #align normed_field.to_has_bounded_smul NormedField.to_boundedSMul
 
@@ -108,13 +108,13 @@ instance NormedSpace.discreteTopology_zmultiples
 
 open NormedField
 
-instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) :=
+instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) := fast_instance%
   { __ := ULift.seminormedAddCommGroup (E := E),
     __ := ULift.module'
     norm_smul_le := fun s x => (norm_smul_le s x.down : _) }
 
 /-- The product of two normed spaces is a normed space, with the sup norm. -/
-instance Prod.normedSpace : NormedSpace 𝕜 (E × F) :=
+instance Prod.normedSpace : NormedSpace 𝕜 (E × F) := fast_instance%
   { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.instModule with
     norm_smul_le := fun s x => by
       simp only [norm_smul, Prod.norm_def, Prod.smul_snd, Prod.smul_fst,
@@ -130,7 +130,7 @@ instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, Sem
     exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
 #align pi.normed_space Pi.normedSpace
 
-instance MulOpposite.normedSpace : NormedSpace 𝕜 Eᵐᵒᵖ :=
+instance MulOpposite.normedSpace : NormedSpace 𝕜 Eᵐᵒᵖ := fast_instance%
   { MulOpposite.seminormedAddCommGroup (E := Eᵐᵒᵖ), MulOpposite.module _ with
     norm_smul_le := fun s x => norm_smul_le s x.unop }
 #align mul_opposite.normed_space MulOpposite.normedSpace
@@ -337,7 +337,7 @@ theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 �
   rw [dist_eq_norm, dist_eq_norm, ← RingHom.map_sub, norm_algebraMap']
 #align algebra_map_isometry algebraMap_isometry
 
-instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
+instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 := fast_instance%
   { NormedField.toNormedSpace, Algebra.id 𝕜 with }
 #align normed_algebra.id NormedAlgebra.id
 
@@ -357,7 +357,7 @@ instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
   norm_smul_le q _ := by simp only [norm_eq_zero, mul_zero, le_refl]
 #align punit.normed_algebra PUnit.normedAlgebra
 
-instance : NormedAlgebra 𝕜 (ULift 𝕜') :=
+instance : NormedAlgebra 𝕜 (ULift 𝕜') := fast_instance%
   { ULift.normedSpace, ULift.algebra with }
 
 /-- The product of two normed algebras is a normed algebra, with the sup norm. -/
@@ -456,7 +456,7 @@ variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 /-- If `E` is a normed space over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedSpace`. -/
-instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
+instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) := fast_instance%
   { RestrictScalars.module 𝕜 𝕜' E with
     norm_smul_le := fun c x =>
       (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebraMap'] }
@@ -492,7 +492,7 @@ variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 /-- If `E` is a normed algebra over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedAlgebra`. -/
-instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
+instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars 𝕜 𝕜' E) := fast_instance%
   { RestrictScalars.algebra 𝕜 𝕜' E with
     norm_smul_le := norm_smul_le }
 

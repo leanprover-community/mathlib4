@@ -74,7 +74,7 @@ theorem linear_eq_linearIsometry : f.linear = f.linearIsometry.toLinearMap := by
   rfl
 #align affine_isometry.linear_eq_linear_isometry AffineIsometry.linear_eq_linearIsometry
 
-instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ :=
+instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ := fast_instance%
   { coe := fun f => f.toFun,
     coe_injective' := fun f g => by cases f; cases g; simp }
 
@@ -226,7 +226,7 @@ theorem id_toAffineMap : (id.toAffineMap : P →ᵃ[𝕜] P) = AffineMap.id 𝕜
   rfl
 #align affine_isometry.id_to_affine_map AffineIsometry.id_toAffineMap
 
-instance : Inhabited (P →ᵃⁱ[𝕜] P) :=
+instance : Inhabited (P →ᵃⁱ[𝕜] P) := fast_instance%
   ⟨id⟩
 
 /-- Composition of affine isometries. -/
@@ -331,7 +331,7 @@ theorem linear_eq_linear_isometry : e.linear = e.linearIsometryEquiv.toLinearEqu
   rfl
 #align affine_isometry_equiv.linear_eq_linear_isometry AffineIsometryEquiv.linear_eq_linear_isometry
 
-instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ :=
+instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ := fast_instance%
   { coe := fun f => f.toFun
     inv := fun f => f.invFun
     left_inv := fun f => f.left_inv
@@ -489,7 +489,7 @@ def refl : P ≃ᵃⁱ[𝕜] P :=
 
 variable {𝕜 P}
 
-instance : Inhabited (P ≃ᵃⁱ[𝕜] P) :=
+instance : Inhabited (P ≃ᵃⁱ[𝕜] P) := fast_instance%
   ⟨refl 𝕜 P⟩
 
 @[simp]

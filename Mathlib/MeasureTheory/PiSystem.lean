@@ -594,13 +594,13 @@ theorem has_diff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h
   exact d.has_union (d.has_compl h₁) h₂ (disjoint_compl_left.mono_right h)
 #align measurable_space.dynkin_system.has_diff MeasurableSpace.DynkinSystem.has_diff
 
-instance instLEDynkinSystem : LE (DynkinSystem α) where le m₁ m₂ := m₁.Has ≤ m₂.Has
+instance instLEDynkinSystem : LE (DynkinSystem α) where le m₁ m₂ := fast_instance% m₁.Has ≤ m₂.Has
 
 theorem le_def {α} {a b : DynkinSystem α} : a ≤ b ↔ a.Has ≤ b.Has :=
   Iff.rfl
 #align measurable_space.dynkin_system.le_def MeasurableSpace.DynkinSystem.le_def
 
-instance : PartialOrder (DynkinSystem α) :=
+instance : PartialOrder (DynkinSystem α) := fast_instance%
   { DynkinSystem.instLEDynkinSystem with
     le_refl := fun a b => le_rfl
     le_trans := fun a b c hab hbc => le_def.mpr (le_trans hab hbc)
@@ -650,7 +650,7 @@ theorem generateHas_def {C : Set (Set α)} : (generate C).Has = GenerateHas C :=
   rfl
 #align measurable_space.dynkin_system.generate_has_def MeasurableSpace.DynkinSystem.generateHas_def
 
-instance : Inhabited (DynkinSystem α) :=
+instance : Inhabited (DynkinSystem α) := fast_instance%
   ⟨generate univ⟩
 
 /-- If a Dynkin system is closed under binary intersection, then it forms a `σ`-algebra. -/

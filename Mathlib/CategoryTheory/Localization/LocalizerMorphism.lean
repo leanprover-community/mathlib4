@@ -73,13 +73,13 @@ localized categories. --/
 noncomputable def localizedFunctor : D₁ ⥤ D₂ :=
   lift (Φ.functor ⋙ L₂) (Φ.inverts _) L₁
 
-noncomputable instance : Lifting L₁ W₁ (Φ.functor ⋙ L₂) (Φ.localizedFunctor L₁ L₂) := by
+noncomputable instance : Lifting L₁ W₁ (Φ.functor ⋙ L₂) (Φ.localizedFunctor L₁ L₂) := fast_instance% by
   dsimp [localizedFunctor]
   infer_instance
 
 /-- The 2-commutative square expressing that `Φ.localizedFunctor L₁ L₂` lifts the
 functor `Φ.functor`  -/
-noncomputable instance catCommSq : CatCommSq Φ.functor L₁ L₂ (Φ.localizedFunctor L₁ L₂) :=
+noncomputable instance catCommSq : CatCommSq Φ.functor L₁ L₂ (Φ.localizedFunctor L₁ L₂) := fast_instance%
   CatCommSq.mk (Lifting.iso _ W₁ _ _).symm
 
 variable (G : D₁ ⥤ D₂)

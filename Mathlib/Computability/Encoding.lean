@@ -50,7 +50,7 @@ structure FinEncoding (α : Type u) extends Encoding.{u, 0} α where
   ΓFin : Fintype Γ
 #align computability.fin_encoding Computability.FinEncoding
 
-instance Γ.fintype {α : Type u} (e : FinEncoding α) : Fintype e.toEncoding.Γ :=
+instance Γ.fintype {α : Type u} (e : FinEncoding α) : Fintype e.toEncoding.Γ := fast_instance%
   e.ΓFin
 #align computability.Γ.fintype Computability.Γ.fintype
 
@@ -65,12 +65,12 @@ inductive Γ'
 #align computability.Γ' Computability.Γ'
 
 -- Porting note: A handler for `Fintype` had not been implemented yet.
-instance Γ'.fintype : Fintype Γ' :=
+instance Γ'.fintype : Fintype Γ' := fast_instance%
   ⟨⟨{.blank, .bit true, .bit false, .bra, .ket, .comma}, by decide⟩,
     by intro; cases_type* Γ' Bool <;> decide⟩
 #align computability.Γ'.fintype Computability.Γ'.fintype
 
-instance inhabitedΓ' : Inhabited Γ' :=
+instance inhabitedΓ' : Inhabited Γ' := fast_instance%
   ⟨Γ'.blank⟩
 #align computability.inhabited_Γ' Computability.inhabitedΓ'
 
@@ -232,11 +232,11 @@ def finEncodingBoolBool : FinEncoding Bool where
   ΓFin := Bool.fintype
 #align computability.fin_encoding_bool_bool Computability.finEncodingBoolBool
 
-instance inhabitedFinEncoding : Inhabited (FinEncoding Bool) :=
+instance inhabitedFinEncoding : Inhabited (FinEncoding Bool) := fast_instance%
   ⟨finEncodingBoolBool⟩
 #align computability.inhabited_fin_encoding Computability.inhabitedFinEncoding
 
-instance inhabitedEncoding : Inhabited (Encoding Bool) :=
+instance inhabitedEncoding : Inhabited (Encoding Bool) := fast_instance%
   ⟨finEncodingBoolBool.toEncoding⟩
 #align computability.inhabited_encoding Computability.inhabitedEncoding
 

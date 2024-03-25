@@ -51,10 +51,10 @@ open DenseInducing UniformSpace Function
 section one_and_mul
 variable (α : Type*) [Ring α] [UniformSpace α]
 
-instance one : One (Completion α) :=
+instance one : One (Completion α) := fast_instance%
   ⟨(1 : α)⟩
 
-instance mul : Mul (Completion α) :=
+instance mul : Mul (Completion α) := fast_instance%
   ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
 
 @[norm_cast]
@@ -89,7 +89,7 @@ theorem Continuous.mul {β : Type*} [TopologicalSpace β] {f g : β → Completi
   Continuous.comp continuous_mul (Continuous.prod_mk hf hg : _)
 #align uniform_space.completion.continuous.mul UniformSpace.Completion.Continuous.mul
 
-instance ring : Ring (Completion α) :=
+instance ring : Ring (Completion α) := fast_instance%
   { AddMonoidWithOne.unary, (inferInstanceAs (AddCommGroup (Completion α))),
       (inferInstanceAs (Mul (Completion α))), (inferInstanceAs (One (Completion α))) with
     zero_mul := fun a =>
@@ -200,7 +200,7 @@ theorem map_smul_eq_mul_coe (r : R) :
   · simp_rw [map_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
 #align uniform_space.completion.map_smul_eq_mul_coe UniformSpace.Completion.map_smul_eq_mul_coe
 
-instance algebra : Algebra R (Completion A) :=
+instance algebra : Algebra R (Completion A) := fast_instance%
   { (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A) with
     commutes' := fun r x =>
       Completion.induction_on x (isClosed_eq (continuous_mul_left _) (continuous_mul_right _))
@@ -219,7 +219,7 @@ section CommRing
 
 variable (R : Type*) [CommRing R] [UniformSpace R] [UniformAddGroup R] [TopologicalRing R]
 
-instance commRing : CommRing (Completion R) :=
+instance commRing : CommRing (Completion R) := fast_instance%
   { Completion.ring with
     mul_comm := fun a b =>
       Completion.induction_on₂ a b
@@ -227,7 +227,7 @@ instance commRing : CommRing (Completion R) :=
         fun a b => by rw [← coe_mul, ← coe_mul, mul_comm] }
 
 /-- A shortcut instance for the common case -/
-instance algebra' : Algebra R (Completion R) := by infer_instance
+instance algebra' : Algebra R (Completion R) := fast_instance% by infer_instance
 #align uniform_space.completion.algebra' UniformSpace.Completion.algebra'
 
 end CommRing

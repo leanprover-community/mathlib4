@@ -93,7 +93,7 @@ class ValuationClass (F) (R Γ₀ : outParam (Type*)) [LinearOrderedCommMonoidWi
 
 export ValuationClass (map_add_le_max)
 
-instance [FunLike F R Γ₀] [ValuationClass F R Γ₀] : CoeTC F (Valuation R Γ₀) :=
+instance [FunLike F R Γ₀] [ValuationClass F R Γ₀] : CoeTC F (Valuation R Γ₀) := fast_instance%
   ⟨fun f =>
     { toFun := f
       map_one' := map_one f
@@ -554,7 +554,7 @@ theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = 0 :=
 #align valuation.mem_supp_iff Valuation.mem_supp_iff
 
 /-- The support of a valuation is a prime ideal. -/
-instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
+instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) := fast_instance%
   ⟨fun h =>
     one_ne_zero (α := Γ₀) <|
       calc

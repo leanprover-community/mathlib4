@@ -35,7 +35,7 @@ structure RelSeries where
 
 namespace RelSeries
 
-instance : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) :=
+instance : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) := fast_instance%
 { coe := RelSeries.toFun }
 
 /--
@@ -52,7 +52,7 @@ instance [IsEmpty α] : IsEmpty (RelSeries r) where
 instance [Inhabited α] : Inhabited (RelSeries r) where
   default := singleton r default
 
-instance [Nonempty α] : Nonempty (RelSeries r) :=
+instance [Nonempty α] : Nonempty (RelSeries r) := fast_instance%
   Nonempty.map (singleton r) inferInstance
 
 variable {r}
@@ -158,7 +158,7 @@ protected noncomputable def withLength [r.InfiniteDimensional] (n : ℕ) : RelSe
 lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
-instance membership : Membership α (RelSeries r) :=
+instance membership : Membership α (RelSeries r) := fast_instance%
   ⟨(· ∈ Set.range ·)⟩
 
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=

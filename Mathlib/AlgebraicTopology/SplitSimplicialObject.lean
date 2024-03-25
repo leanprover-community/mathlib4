@@ -68,7 +68,7 @@ def e :=
   A.2.1
 #align simplicial_object.splitting.index_set.e SimplicialObject.Splitting.IndexSet.e
 
-instance : Epi A.e :=
+instance : Epi A.e := fast_instance%
   A.2.2
 
 theorem ext' : A = ⟨A.1, ⟨A.e, A.2.2⟩⟩ := rfl
@@ -84,7 +84,7 @@ theorem ext (A₁ A₂ : IndexSet Δ) (h₁ : A₁.1 = A₂.1) (h₂ : A₁.e �
   simp only [h₂]
 #align simplicial_object.splitting.index_set.ext SimplicialObject.Splitting.IndexSet.ext
 
-instance : Fintype (IndexSet Δ) :=
+instance : Fintype (IndexSet Δ) := fast_instance%
   Fintype.ofInjective
     (fun A =>
       ⟨⟨A.1.unop.len, Nat.lt_succ_iff.mpr (len_le_of_epi (inferInstance : Epi A.e))⟩,
@@ -112,7 +112,7 @@ def id : IndexSet Δ :=
   ⟨Δ, ⟨𝟙 _, by infer_instance⟩⟩
 #align simplicial_object.splitting.index_set.id SimplicialObject.Splitting.IndexSet.id
 
-instance : Inhabited (IndexSet Δ) :=
+instance : Inhabited (IndexSet Δ) := fast_instance%
   ⟨id Δ⟩
 
 variable {Δ}

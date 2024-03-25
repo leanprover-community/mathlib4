@@ -170,7 +170,7 @@ theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsL
 
 -- Porting note: Advice is to explicitly name instances
 -- https://github.com/leanprover-community/mathlib4/wiki/Porting-wiki#some-common-fixes
-instance Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } :=
+instance Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } := fast_instance%
   ⟨fun P => ⟨1 - P, P.prop.Lcomplement⟩⟩
 
 @[simp]
@@ -178,7 +178,7 @@ theorem coe_compl (P : { P : M // IsLprojection X P }) : ↑Pᶜ = (1 : M) - ↑
   rfl
 #align is_Lprojection.coe_compl IsLprojection.coe_compl
 
-instance Subtype.inf [FaithfulSMul M X] : Inf { P : M // IsLprojection X P } :=
+instance Subtype.inf [FaithfulSMul M X] : Inf { P : M // IsLprojection X P } := fast_instance%
   ⟨fun P Q => ⟨P * Q, P.prop.mul Q.prop⟩⟩
 
 @[simp]
@@ -187,7 +187,7 @@ theorem coe_inf [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   rfl
 #align is_Lprojection.coe_inf IsLprojection.coe_inf
 
-instance Subtype.sup [FaithfulSMul M X] : Sup { P : M // IsLprojection X P } :=
+instance Subtype.sup [FaithfulSMul M X] : Sup { P : M // IsLprojection X P } := fast_instance%
   ⟨fun P Q => ⟨P + Q - P * Q, P.prop.join Q.prop⟩⟩
 
 @[simp]
@@ -196,7 +196,7 @@ theorem coe_sup [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   rfl
 #align is_Lprojection.coe_sup IsLprojection.coe_sup
 
-instance Subtype.sdiff [FaithfulSMul M X] : SDiff { P : M // IsLprojection X P } :=
+instance Subtype.sdiff [FaithfulSMul M X] : SDiff { P : M // IsLprojection X P } := fast_instance%
   ⟨fun P Q => ⟨P * (1 - Q), P.prop.mul Q.prop.Lcomplement⟩⟩
 
 @[simp]
@@ -219,7 +219,7 @@ theorem le_def [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   Iff.rfl
 #align is_Lprojection.le_def IsLprojection.le_def
 
-instance Subtype.zero : Zero { P : M // IsLprojection X P } :=
+instance Subtype.zero : Zero { P : M // IsLprojection X P } := fast_instance%
   ⟨⟨0, ⟨by rw [IsIdempotentElem, zero_mul], fun x => by
         simp only [zero_smul, norm_zero, sub_zero, one_smul, zero_add]⟩⟩⟩
 
@@ -228,7 +228,7 @@ theorem coe_zero : ↑(0 : { P : M // IsLprojection X P }) = (0 : M) :=
   rfl
 #align is_Lprojection.coe_zero IsLprojection.coe_zero
 
-instance Subtype.one : One { P : M // IsLprojection X P } :=
+instance Subtype.one : One { P : M // IsLprojection X P } := fast_instance%
   ⟨⟨1, sub_zero (1 : M) ▸ (0 : { P : M // IsLprojection X P }).prop.Lcomplement⟩⟩
 
 @[simp]

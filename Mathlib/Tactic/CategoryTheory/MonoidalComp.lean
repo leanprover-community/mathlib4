@@ -85,7 +85,7 @@ end
 namespace MonoidalCoherence
 
 @[simps]
-instance refl (X : C) : MonoidalCoherence X X := ⟨𝟙 _⟩
+instance refl (X : C) : MonoidalCoherence X X := fast_instance% ⟨𝟙 _⟩
 
 @[simps]
 instance whiskerLeft (X Y Z : C) [MonoidalCoherence Y Z] :

@@ -99,7 +99,7 @@ theorem isNoetherian_submodule_right {N : Submodule R M} :
   isNoetherian_submodule.trans ⟨fun H _ => H _ inf_le_right, fun H _ hs => inf_of_le_left hs ▸ H _⟩
 #align is_noetherian_submodule_right isNoetherian_submodule_right
 
-instance isNoetherian_submodule' [IsNoetherian R M] (N : Submodule R M) : IsNoetherian R N :=
+instance isNoetherian_submodule' [IsNoetherian R M] (N : Submodule R M) : IsNoetherian R N := fast_instance%
   isNoetherian_submodule.2 fun _ _ => IsNoetherian.noetherian _
 #align is_noetherian_submodule' isNoetherian_submodule'
 
@@ -185,7 +185,7 @@ theorem fg_of_ker_bot [IsNoetherian R P] {N : Submodule R M} (f : M →ₗ[R] P)
   IsNoetherian.noetherian N
 #align fg_of_ker_bot fg_of_ker_bot
 
-instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian R (M × P) :=
+instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian R (M × P) := fast_instance%
   ⟨fun s =>
     Submodule.fg_of_fg_map_of_fg_inf_ker (LinearMap.snd R M P) (noetherian _) <|
       have : s ⊓ LinearMap.ker (LinearMap.snd R M P) ≤ LinearMap.range (LinearMap.inl R M P) :=
@@ -281,10 +281,10 @@ section CommRing
 variable (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
   [IsNoetherian R M] [Module.Finite R N]
 
-instance isNoetherian_linearMap_pi {ι : Type*} [Finite ι] : IsNoetherian R ((ι → R) →ₗ[R] M) :=
+instance isNoetherian_linearMap_pi {ι : Type*} [Finite ι] : IsNoetherian R ((ι → R) →ₗ[R] M) := fast_instance%
   let _i : Fintype ι := Fintype.ofFinite ι; isNoetherian_of_linearEquiv (Module.piEquiv ι R M)
 
-instance isNoetherian_linearMap : IsNoetherian R (N →ₗ[R] M) := by
+instance isNoetherian_linearMap : IsNoetherian R (N →ₗ[R] M) := fast_instance% by
   obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R N
   let g : (N →ₗ[R] M) →ₗ[R] (Fin n → R) →ₗ[R] M := (LinearMap.llcomp R (Fin n → R) N M).flip f
   exact isNoetherian_of_injective g hf.injective_linearMapComp_right

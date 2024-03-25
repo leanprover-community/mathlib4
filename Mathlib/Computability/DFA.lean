@@ -42,7 +42,7 @@ namespace DFA
 
 variable {α : Type u} {σ : Type v} (M : DFA α σ)
 
-instance [Inhabited σ] : Inhabited (DFA α σ) :=
+instance [Inhabited σ] : Inhabited (DFA α σ) := fast_instance%
   ⟨DFA.mk (fun _ _ => default) default ∅⟩
 
 /-- `M.evalFrom s x` evaluates `M` with input `x` starting from the state `s`. -/

@@ -127,7 +127,7 @@ lemma smoothSheaf.eval_surjective (x : M) : Function.Surjective (smoothSheaf.eva
   intro n
   exact ⟨⊤, fun _ ↦ n, smooth_const, rfl⟩
 
-instance [Nontrivial N] (x : M) : Nontrivial ((smoothSheaf IM I M N).presheaf.stalk x) :=
+instance [Nontrivial N] (x : M) : Nontrivial ((smoothSheaf IM I M N).presheaf.stalk x) := fast_instance%
   (smoothSheaf.eval_surjective IM I N x).nontrivial
 
 variable {IM I N}
@@ -224,7 +224,7 @@ section SmoothRing
 variable [Ring R] [SmoothRing I R]
 
 open Manifold in
-instance (U : (Opens (TopCat.of M))ᵒᵖ) : Ring ((smoothSheaf IM I M R).presheaf.obj U) :=
+instance (U : (Opens (TopCat.of M))ᵒᵖ) : Ring ((smoothSheaf IM I M R).presheaf.obj U) := fast_instance%
   (SmoothMap.ring : Ring C^∞⟮IM, (unop U : Opens M); I, R⟯)
 
 /-- The presheaf of smooth functions from `M` to `R`, for `R` a smooth ring, as a presheaf
@@ -250,7 +250,7 @@ section SmoothCommRing
 variable [CommRing R] [SmoothRing I R]
 
 open Manifold in
-instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommRing ((smoothSheaf IM I M R).presheaf.obj U) :=
+instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommRing ((smoothSheaf IM I M R).presheaf.obj U) := fast_instance%
   (SmoothMap.commRing : CommRing C^∞⟮IM, (unop U : Opens M); I, R⟯)
 
 /-- The presheaf of smooth functions from `M` to `R`, for `R` a smooth commutative ring, as a
@@ -367,7 +367,7 @@ lemma smoothSheafCommRing.eval_surjective (x) :
   use (smoothSheafCommRing.forgetStalk IM I M R x).inv y
   apply smoothSheafCommRing.forgetStalk_inv_comp_eval_apply
 
-instance [Nontrivial R] (x : M) : Nontrivial ((smoothSheafCommRing IM I M R).presheaf.stalk x) :=
+instance [Nontrivial R] (x : M) : Nontrivial ((smoothSheafCommRing IM I M R).presheaf.stalk x) := fast_instance%
   (smoothSheafCommRing.eval_surjective IM I M R x).nontrivial
 
 variable {IM I M R}

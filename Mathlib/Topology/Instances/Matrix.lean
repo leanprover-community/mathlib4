@@ -37,10 +37,10 @@ open Matrix
 
 variable {X α l m n p S R : Type*} {m' n' : l → Type*}
 
-instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
+instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) := fast_instance%
   Pi.topologicalSpace
 
-instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
+instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) := fast_instance%
   Pi.t2Space
 
 /-! ### Lemmas about continuity of operations -/
@@ -49,19 +49,19 @@ section Continuity
 
 variable [TopologicalSpace X] [TopologicalSpace R]
 
-instance [SMul α R] [ContinuousConstSMul α R] : ContinuousConstSMul α (Matrix m n R) :=
+instance [SMul α R] [ContinuousConstSMul α R] : ContinuousConstSMul α (Matrix m n R) := fast_instance%
   inferInstanceAs (ContinuousConstSMul α (m → n → R))
 
-instance [TopologicalSpace α] [SMul α R] [ContinuousSMul α R] : ContinuousSMul α (Matrix m n R) :=
+instance [TopologicalSpace α] [SMul α R] [ContinuousSMul α R] : ContinuousSMul α (Matrix m n R) := fast_instance%
   inferInstanceAs (ContinuousSMul α (m → n → R))
 
-instance [Add R] [ContinuousAdd R] : ContinuousAdd (Matrix m n R) :=
+instance [Add R] [ContinuousAdd R] : ContinuousAdd (Matrix m n R) := fast_instance%
   Pi.continuousAdd
 
-instance [Neg R] [ContinuousNeg R] : ContinuousNeg (Matrix m n R) :=
+instance [Neg R] [ContinuousNeg R] : ContinuousNeg (Matrix m n R) := fast_instance%
   Pi.continuousNeg
 
-instance [AddGroup R] [TopologicalAddGroup R] : TopologicalAddGroup (Matrix m n R) :=
+instance [AddGroup R] [TopologicalAddGroup R] : TopologicalAddGroup (Matrix m n R) := fast_instance%
   Pi.topologicalAddGroup
 
 /-- To show a function into matrices is continuous it suffices to show the coefficients of the
@@ -94,7 +94,7 @@ theorem Continuous.matrix_conjTranspose [Star R] [ContinuousStar R] {A : X → M
   hA.matrix_transpose.matrix_map continuous_star
 #align continuous.matrix_conj_transpose Continuous.matrix_conjTranspose
 
-instance [Star R] [ContinuousStar R] : ContinuousStar (Matrix m m R) :=
+instance [Star R] [ContinuousStar R] : ContinuousStar (Matrix m m R) := fast_instance%
   ⟨continuous_id.matrix_conjTranspose⟩
 
 @[continuity]

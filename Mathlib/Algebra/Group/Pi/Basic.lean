@@ -47,7 +47,7 @@ namespace Pi
 /-! `1`, `0`, `+`, `*`, `+ᵥ`, `•`, `^`, `-`, `⁻¹`, and `/` are defined pointwise. -/
 
 @[to_additive]
-instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
+instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) := fast_instance%
   ⟨fun _ => 1⟩
 #align pi.has_one Pi.instOne
 #align pi.has_zero Pi.instZero
@@ -81,7 +81,7 @@ theorem comp_one [One β] (x : β → γ) : x ∘ (1 : α → β) = const α (x 
 #align pi.comp_zero Pi.comp_zero
 
 @[to_additive]
-instance instMul [∀ i, Mul <| f i] : Mul (∀ i : I, f i) :=
+instance instMul [∀ i, Mul <| f i] : Mul (∀ i : I, f i) := fast_instance%
   ⟨fun f g i => f i * g i⟩
 #align pi.has_mul Pi.instMul
 #align pi.has_add Pi.instAdd
@@ -110,13 +110,13 @@ theorem mul_comp [Mul γ] (x y : β → γ) (z : α → β) : (x * y) ∘ z = x 
 #align pi.add_comp Pi.add_comp
 
 @[to_additive]
-instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
+instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) := fast_instance%
   ⟨fun s x => fun i => s • x i⟩
 #align pi.has_smul Pi.instSMul
 #align pi.has_vadd Pi.instVAdd
 
 @[to_additive existing instSMul]
-instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
+instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β := fast_instance%
   ⟨fun x b i => x i ^ b⟩
 
 @[to_additive (attr := simp, to_additive) (reorder := 5 6) smul_apply]
@@ -167,7 +167,7 @@ theorem bit1_apply [∀ i, Add <| f i] [∀ i, One <| f i] : (bit1 x) i = bit1 (
 end deprecated
 
 @[to_additive]
-instance instInv [∀ i, Inv <| f i] : Inv (∀ i : I, f i) :=
+instance instInv [∀ i, Inv <| f i] : Inv (∀ i : I, f i) := fast_instance%
   ⟨fun f i => (f i)⁻¹⟩
 #align pi.has_inv Pi.instInv
 #align pi.has_neg Pi.instNeg
@@ -196,7 +196,7 @@ theorem inv_comp [Inv γ] (x : β → γ) (y : α → β) : x⁻¹ ∘ y = (x �
 #align pi.neg_comp Pi.neg_comp
 
 @[to_additive]
-instance instDiv [∀ i, Div <| f i] : Div (∀ i : I, f i) :=
+instance instDiv [∀ i, Div <| f i] : Div (∀ i : I, f i) := fast_instance%
   ⟨fun f g i => f i / g i⟩
 #align pi.has_div Pi.instDiv
 #align pi.has_sub Pi.instSub
@@ -258,7 +258,7 @@ instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
 #align pi.add_monoid Pi.addMonoid
 
 @[to_additive]
-instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) :=
+instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) := fast_instance%
   { monoid, commSemigroup with }
 #align pi.comm_monoid Pi.commMonoid
 #align pi.add_comm_monoid Pi.addCommMonoid
@@ -287,7 +287,7 @@ instance divisionMonoid [∀ i, DivisionMonoid (f i)] : DivisionMonoid (∀ i, f
   inv_eq_of_mul := by intros _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
 
 @[to_additive instSubtractionCommMonoid]
-instance divisionCommMonoid [∀ i, DivisionCommMonoid (f i)] : DivisionCommMonoid (∀ i, f i) :=
+instance divisionCommMonoid [∀ i, DivisionCommMonoid (f i)] : DivisionCommMonoid (∀ i, f i) := fast_instance%
   { divisionMonoid, commSemigroup with }
 
 @[to_additive]
@@ -297,7 +297,7 @@ instance group [∀ i, Group (f i)] : Group (∀ i, f i) where
 #align pi.add_group Pi.addGroup
 
 @[to_additive]
-instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := { group, commMonoid with }
+instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := fast_instance% { group, commMonoid with }
 #align pi.comm_group Pi.commGroup
 #align pi.add_comm_group Pi.addCommGroup
 
@@ -313,37 +313,37 @@ instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := { group,
     IsCancelMul (∀ i, f i) where
 
 @[to_additive]
-instance leftCancelSemigroup [∀ i, LeftCancelSemigroup (f i)] : LeftCancelSemigroup (∀ i, f i) :=
+instance leftCancelSemigroup [∀ i, LeftCancelSemigroup (f i)] : LeftCancelSemigroup (∀ i, f i) := fast_instance%
   { semigroup with mul_left_cancel := fun _ _ _ => mul_left_cancel }
 #align pi.left_cancel_semigroup Pi.leftCancelSemigroup
 #align pi.add_left_cancel_semigroup Pi.addLeftCancelSemigroup
 
 @[to_additive]
-instance rightCancelSemigroup [∀ i, RightCancelSemigroup (f i)] : RightCancelSemigroup (∀ i, f i) :=
+instance rightCancelSemigroup [∀ i, RightCancelSemigroup (f i)] : RightCancelSemigroup (∀ i, f i) := fast_instance%
   { semigroup with mul_right_cancel := fun _ _ _ => mul_right_cancel }
 #align pi.right_cancel_semigroup Pi.rightCancelSemigroup
 #align pi.add_right_cancel_semigroup Pi.addRightCancelSemigroup
 
 @[to_additive]
-instance leftCancelMonoid [∀ i, LeftCancelMonoid (f i)] : LeftCancelMonoid (∀ i, f i) :=
+instance leftCancelMonoid [∀ i, LeftCancelMonoid (f i)] : LeftCancelMonoid (∀ i, f i) := fast_instance%
   { leftCancelSemigroup, monoid with }
 #align pi.left_cancel_monoid Pi.leftCancelMonoid
 #align pi.add_left_cancel_monoid Pi.addLeftCancelMonoid
 
 @[to_additive]
-instance rightCancelMonoid [∀ i, RightCancelMonoid (f i)] : RightCancelMonoid (∀ i, f i) :=
+instance rightCancelMonoid [∀ i, RightCancelMonoid (f i)] : RightCancelMonoid (∀ i, f i) := fast_instance%
   { rightCancelSemigroup, monoid with }
 #align pi.right_cancel_monoid Pi.rightCancelMonoid
 #align pi.add_right_cancel_monoid Pi.addRightCancelMonoid
 
 @[to_additive]
-instance cancelMonoid [∀ i, CancelMonoid (f i)] : CancelMonoid (∀ i, f i) :=
+instance cancelMonoid [∀ i, CancelMonoid (f i)] : CancelMonoid (∀ i, f i) := fast_instance%
   { leftCancelMonoid, rightCancelMonoid with }
 #align pi.cancel_monoid Pi.cancelMonoid
 #align pi.add_cancel_monoid Pi.addCancelMonoid
 
 @[to_additive]
-instance cancelCommMonoid [∀ i, CancelCommMonoid (f i)] : CancelCommMonoid (∀ i, f i) :=
+instance cancelCommMonoid [∀ i, CancelCommMonoid (f i)] : CancelCommMonoid (∀ i, f i) := fast_instance%
   { leftCancelMonoid, commMonoid with }
 #align pi.cancel_comm_monoid Pi.cancelCommMonoid
 #align pi.add_cancel_comm_monoid Pi.addCancelCommMonoid

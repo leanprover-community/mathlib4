@@ -39,7 +39,7 @@ namespace Kleisli
 
 variable (T : Monad C)
 
-instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) :=
+instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) := fast_instance%
   ⟨(default : C)⟩
 
 /-- The Kleisli category on a monad `T`.
@@ -118,7 +118,7 @@ namespace Cokleisli
 
 variable (U : Comonad C)
 
-instance [Inhabited C] (U : Comonad C) : Inhabited (Cokleisli U) :=
+instance [Inhabited C] (U : Comonad C) : Inhabited (Cokleisli U) := fast_instance%
   ⟨(default : C)⟩
 
 /-- The co-Kleisli category on a comonad `U`.-/

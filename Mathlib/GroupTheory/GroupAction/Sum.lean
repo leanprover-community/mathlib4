@@ -31,7 +31,7 @@ variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (b : α) (c : �
   (x : Sum α β)
 
 @[to_additive Sum.hasVAdd]
-instance : SMul M (Sum α β) :=
+instance : SMul M (Sum α β) := fast_instance%
   ⟨fun a => Sum.map (a • ·) (a • ·)⟩
 
 @[to_additive]
@@ -57,13 +57,13 @@ theorem smul_swap : (a • x).swap = a • x.swap := by cases x <;> rfl
 #align sum.smul_swap Sum.smul_swap
 #align sum.vadd_swap Sum.vadd_swap
 
-instance [SMul M N] [IsScalarTower M N α] [IsScalarTower M N β] : IsScalarTower M N (Sum α β) :=
+instance [SMul M N] [IsScalarTower M N α] [IsScalarTower M N β] : IsScalarTower M N (Sum α β) := fast_instance%
   ⟨fun a b x => by
     cases x
     exacts [congr_arg inl (smul_assoc _ _ _), congr_arg inr (smul_assoc _ _ _)]⟩
 
 @[to_additive]
-instance [SMulCommClass M N α] [SMulCommClass M N β] : SMulCommClass M N (Sum α β) :=
+instance [SMulCommClass M N α] [SMulCommClass M N β] : SMulCommClass M N (Sum α β) := fast_instance%
   ⟨fun a b x => by
     cases x
     exacts [congr_arg inl (smul_comm _ _ _), congr_arg inr (smul_comm _ _ _)]⟩
@@ -76,13 +76,13 @@ instance [SMul Mᵐᵒᵖ α] [SMul Mᵐᵒᵖ β] [IsCentralScalar M α] [IsCen
     exacts [congr_arg inl (op_smul_eq_smul _ _), congr_arg inr (op_smul_eq_smul _ _)]⟩
 
 @[to_additive]
-instance FaithfulSMulLeft [FaithfulSMul M α] : FaithfulSMul M (Sum α β) :=
+instance FaithfulSMulLeft [FaithfulSMul M α] : FaithfulSMul M (Sum α β) := fast_instance%
   ⟨fun h => eq_of_smul_eq_smul fun a : α => by injection h (inl a)⟩
 #align sum.has_faithful_smul_left Sum.FaithfulSMulLeft
 #align sum.has_faithful_vadd_left Sum.FaithfulVAddLeft
 
 @[to_additive]
-instance FaithfulSMulRight [FaithfulSMul M β] : FaithfulSMul M (Sum α β) :=
+instance FaithfulSMulRight [FaithfulSMul M β] : FaithfulSMul M (Sum α β) := fast_instance%
   ⟨fun h => eq_of_smul_eq_smul fun b : β => by injection h (inr b)⟩
 #align sum.has_faithful_smul_right Sum.FaithfulSMulRight
 #align sum.has_faithful_vadd_right Sum.FaithfulVAddRight

@@ -51,7 +51,7 @@ structure Quotient (r : HomRel C) where
   as : C
 #align category_theory.quotient CategoryTheory.Quotient
 
-instance [Inhabited C] : Inhabited (Quotient r) :=
+instance [Inhabited C] : Inhabited (Quotient r) := fast_instance%
   ⟨{ as := default }⟩
 
 namespace Quotient
@@ -81,7 +81,7 @@ def Hom (s t : Quotient r) :=
   Quot <| @CompClosure C _ r s.as t.as
 #align category_theory.quotient.hom CategoryTheory.Quotient.Hom
 
-instance (a : Quotient r) : Inhabited (Hom r a a) :=
+instance (a : Quotient r) : Inhabited (Hom r a a) := fast_instance%
   ⟨Quot.mk _ (𝟙 a.as)⟩
 
 /-- Composition in the quotient category. -/

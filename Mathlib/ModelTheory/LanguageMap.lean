@@ -85,7 +85,7 @@ protected def id (L : Language) : L →ᴸ L :=
   ⟨fun _n => id, fun _n => id⟩
 #align first_order.language.Lhom.id FirstOrder.Language.LHom.id
 
-instance : Inhabited (L →ᴸ L) :=
+instance : Inhabited (L →ᴸ L) := fast_instance%
   ⟨LHom.id L⟩
 
 /-- The inclusion of the left factor into the sum of two languages. -/
@@ -119,7 +119,7 @@ protected theorem funext {F G : L →ᴸ L'} (h_fun : F.onFunction = G.onFunctio
   exact And.intro h_fun h_rel
 #align first_order.language.Lhom.funext FirstOrder.Language.LHom.funext
 
-instance [L.IsAlgebraic] [L.IsRelational] : Unique (L →ᴸ L') :=
+instance [L.IsAlgebraic] [L.IsRelational] : Unique (L →ᴸ L') := fast_instance%
   ⟨⟨LHom.ofIsEmpty L L'⟩, fun _ => LHom.funext (Subsingleton.elim _ _) (Subsingleton.elim _ _)⟩
 
 theorem mk₂_funext {c f₁ f₂ : Type u} {r₁ r₂ : Type v} {F G : Language.mk₂ c f₁ f₂ r₁ r₂ →ᴸ L'}
@@ -260,7 +260,7 @@ theorem map_onRelation {M : Type*} [L.Structure M] [L'.Structure M] [ϕ.IsExpans
   IsExpansionOn.map_onRelation R x
 #align first_order.language.Lhom.map_on_relation FirstOrder.Language.LHom.map_onRelation
 
-instance id_isExpansionOn (M : Type*) [L.Structure M] : IsExpansionOn (LHom.id L) M :=
+instance id_isExpansionOn (M : Type*) [L.Structure M] : IsExpansionOn (LHom.id L) M := fast_instance%
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 #align first_order.language.Lhom.id_is_expansion_on FirstOrder.Language.LHom.id_isExpansionOn
 
@@ -359,7 +359,7 @@ protected def refl : L ≃ᴸ L :=
 
 variable {L}
 
-instance : Inhabited (L ≃ᴸ L) :=
+instance : Inhabited (L ≃ᴸ L) := fast_instance%
   ⟨LEquiv.refl L⟩
 
 variable {L'' : Language} (e' : L' ≃ᴸ L'') (e : L ≃ᴸ L')
@@ -396,15 +396,15 @@ theorem constantsOn_constants : (constantsOn α).Constants = α :=
   rfl
 #align first_order.language.constants_on_constants FirstOrder.Language.constantsOn_constants
 
-instance isAlgebraic_constantsOn : IsAlgebraic (constantsOn α) :=
+instance isAlgebraic_constantsOn : IsAlgebraic (constantsOn α) := fast_instance%
   Language.isAlgebraic_mk₂
 #align first_order.language.is_algebraic_constants_on FirstOrder.Language.isAlgebraic_constantsOn
 
-instance isRelational_constantsOn [_ie : IsEmpty α] : IsRelational (constantsOn α) :=
+instance isRelational_constantsOn [_ie : IsEmpty α] : IsRelational (constantsOn α) := fast_instance%
   Language.isRelational_mk₂
 #align first_order.language.is_relational_constants_on FirstOrder.Language.isRelational_constantsOn
 
-instance isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α).Functions (n + 1)) :=
+instance isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α).Functions (n + 1)) := fast_instance%
   Nat.casesOn n (inferInstanceAs (IsEmpty PEmpty))
     fun n => Nat.casesOn n (inferInstanceAs (IsEmpty PEmpty))
     fun _ => (inferInstanceAs (IsEmpty PEmpty))
@@ -484,7 +484,7 @@ def LHom.addConstants {L' : Language} (φ : L →ᴸ L') : L[[α]] →ᴸ L'[[α
   φ.sumMap (LHom.id _)
 #align first_order.language.Lhom.add_constants FirstOrder.Language.LHom.addConstants
 
-instance paramsStructure (A : Set α) : (constantsOn A).Structure α :=
+instance paramsStructure (A : Set α) : (constantsOn A).Structure α := fast_instance%
   constantsOn.structure (↑)
 #align first_order.language.params_Structure FirstOrder.Language.paramsStructure
 
@@ -529,25 +529,25 @@ end
 
 open FirstOrder
 
-instance constantsOnSelfStructure : (constantsOn M).Structure M :=
+instance constantsOnSelfStructure : (constantsOn M).Structure M := fast_instance%
   constantsOn.structure id
 #align first_order.language.constants_on_self_Structure FirstOrder.Language.constantsOnSelfStructure
 
-instance withConstantsSelfStructure : L[[M]].Structure M :=
+instance withConstantsSelfStructure : L[[M]].Structure M := fast_instance%
   Language.sumStructure _ _ M
 #align first_order.language.with_constants_self_Structure FirstOrder.Language.withConstantsSelfStructure
 
-instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M :=
+instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M := fast_instance%
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 #align first_order.language.with_constants_self_expansion FirstOrder.Language.withConstants_self_expansion
 
 variable (α : Type*) [(constantsOn α).Structure M]
 
-instance withConstantsStructure : L[[α]].Structure M :=
+instance withConstantsStructure : L[[α]].Structure M := fast_instance%
   Language.sumStructure _ _ _
 #align first_order.language.with_constants_Structure FirstOrder.Language.withConstantsStructure
 
-instance withConstants_expansion : (L.lhomWithConstants α).IsExpansionOn M :=
+instance withConstants_expansion : (L.lhomWithConstants α).IsExpansionOn M := fast_instance%
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 #align first_order.language.with_constants_expansion FirstOrder.Language.withConstants_expansion
 

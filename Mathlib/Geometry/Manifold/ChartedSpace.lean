@@ -172,7 +172,7 @@ structure StructureGroupoid (H : Type u) [TopologicalSpace H] where
 
 variable [TopologicalSpace H]
 
-instance : Membership (PartialHomeomorph H H) (StructureGroupoid H) :=
+instance : Membership (PartialHomeomorph H H) (StructureGroupoid H) := fast_instance%
   ⟨fun (e : PartialHomeomorph H H) (G : StructureGroupoid H) ↦ e ∈ G.members⟩
 
 instance (H : Type u) [TopologicalSpace H] : SetLike (StructureGroupoid H) (PartialHomeomorph H H)
@@ -180,7 +180,7 @@ instance (H : Type u) [TopologicalSpace H] : SetLike (StructureGroupoid H) (Part
   coe s := s.members
   coe_injective' N O h := by cases N; cases O; congr
 
-instance : Inf (StructureGroupoid H) :=
+instance : Inf (StructureGroupoid H) := fast_instance%
   ⟨fun G G' => StructureGroupoid.mk
     (members := G.members ∩ G'.members)
     (trans' := fun e e' he he' =>
@@ -201,7 +201,7 @@ instance : Inf (StructureGroupoid H) :=
     (mem_of_eqOnSource' := fun e e' he hee' =>
       ⟨G.mem_of_eqOnSource' e e' he.left hee', G'.mem_of_eqOnSource' e e' he.right hee'⟩)⟩
 
-instance : InfSet (StructureGroupoid H) :=
+instance : InfSet (StructureGroupoid H) := fast_instance%
   ⟨fun S => StructureGroupoid.mk
     (members := ⋂ s ∈ S, s.members)
     (trans' := by
@@ -253,7 +253,7 @@ theorem StructureGroupoid.mem_of_eqOnSource (G : StructureGroupoid H) {e e' : Pa
 #align structure_groupoid.eq_on_source StructureGroupoid.mem_of_eqOnSource
 
 /-- Partial order on the set of groupoids, given by inclusion of the members of the groupoid. -/
-instance StructureGroupoid.partialOrder : PartialOrder (StructureGroupoid H) :=
+instance StructureGroupoid.partialOrder : PartialOrder (StructureGroupoid H) := fast_instance%
   PartialOrder.lift StructureGroupoid.members fun a b h ↦ by
     cases a
     cases b
@@ -335,7 +335,7 @@ instance instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
       rw [hf, mem_empty_iff_false] at hx
       exact hx.elim
 
-instance : Inhabited (StructureGroupoid H) := ⟨idGroupoid H⟩
+instance : Inhabited (StructureGroupoid H) := fast_instance% ⟨idGroupoid H⟩
 
 /-- To construct a groupoid, one may consider classes of partial homeomorphisms such that
 both the function and its inverse have some property. If this property is stable under composition,
@@ -421,7 +421,7 @@ def continuousPregroupoid (H : Type*) [TopologicalSpace H] : Pregroupoid H where
   congr _ _ _ := trivial
 #align continuous_pregroupoid continuousPregroupoid
 
-instance (H : Type*) [TopologicalSpace H] : Inhabited (Pregroupoid H) :=
+instance (H : Type*) [TopologicalSpace H] : Inhabited (Pregroupoid H) := fast_instance%
   ⟨continuousPregroupoid H⟩
 
 /-- The groupoid of all partial homeomorphisms on a topological space `H`. -/
@@ -434,7 +434,7 @@ instance instStructureGroupoidOrderTop : OrderTop (StructureGroupoid H) where
   top := continuousGroupoid H
   le_top _ _ _ := ⟨trivial, trivial⟩
 
-instance : CompleteLattice (StructureGroupoid H) :=
+instance : CompleteLattice (StructureGroupoid H) := fast_instance%
   { SetLike.instPartialOrder,
     completeLatticeOfInf _ (by
       refine' fun s =>
@@ -499,7 +499,7 @@ theorem idRestrGroupoid_mem {s : Set H} (hs : IsOpen s) : ofSet s hs ∈ @idRest
 #align id_restr_groupoid_mem idRestrGroupoid_mem
 
 /-- The trivial restriction-closed groupoid is indeed `ClosedUnderRestriction`. -/
-instance closedUnderRestriction_idRestrGroupoid : ClosedUnderRestriction (@idRestrGroupoid H _) :=
+instance closedUnderRestriction_idRestrGroupoid : ClosedUnderRestriction (@idRestrGroupoid H _) := fast_instance%
   ⟨by
     rintro e ⟨s', hs', he⟩ s hs
     use s' ∩ s, hs'.inter hs
@@ -536,7 +536,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
 
 /-- The groupoid of all partial homeomorphisms on a topological space `H`
 is closed under restriction. -/
-instance : ClosedUnderRestriction (continuousGroupoid H) :=
+instance : ClosedUnderRestriction (continuousGroupoid H) := fast_instance%
   (closedUnderRestriction_iff_id_le _).mpr le_top
 
 end Groupoid
@@ -756,7 +756,7 @@ section
 
 -- attribute [local reducible] ModelProd -- Porting note: not available in Lean4
 
-instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') :=
+instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') := fast_instance%
   instInhabitedProd
 #align model_prod_inhabited modelProdInhabited
 
@@ -780,11 +780,11 @@ section
 variable {ι : Type*} {Hi : ι → Type*}
 
 -- Porting note: Old proof was `Pi.inhabited _`.
-instance modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) :=
+instance modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) := fast_instance%
   ⟨fun _ ↦ default⟩
 #align model_pi_inhabited modelPiInhabited
 
-instance [∀ i, TopologicalSpace (Hi i)] : TopologicalSpace (ModelPi Hi) :=
+instance [∀ i, TopologicalSpace (Hi i)] : TopologicalSpace (ModelPi Hi) := fast_instance%
   Pi.topologicalSpace
 
 end
@@ -987,7 +987,7 @@ instance hasGroupoid_model_space (H : Type*) [TopologicalSpace H] (G : Structure
 #align has_groupoid_model_space hasGroupoid_model_space
 
 /-- Any charted space structure is compatible with the groupoid of all partial homeomorphisms. -/
-instance hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) := by
+instance hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) := fast_instance% by
   refine' ⟨fun _ _ ↦ _⟩
   rw [continuousGroupoid, mem_groupoid_of_pregroupoid]
   simp only [and_self_iff]

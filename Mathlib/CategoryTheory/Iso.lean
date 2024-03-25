@@ -135,7 +135,7 @@ def refl (X : C) : X ≅ X where
 #align category_theory.iso.refl_inv CategoryTheory.Iso.refl_inv
 #align category_theory.iso.refl_hom CategoryTheory.Iso.refl_hom
 
-instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
+instance : Inhabited (X ≅ X) := fast_instance% ⟨Iso.refl X⟩
 
 theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 
@@ -155,7 +155,7 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
 #align category_theory.iso.trans_inv CategoryTheory.Iso.trans_inv
 
 @[simps]
-instance instTransIso : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
+instance instTransIso : Trans (α := fast_instance% C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
   trans := trans
 
 /-- Notation for composition of isomorphisms. -/
@@ -362,18 +362,18 @@ theorem eq_inv_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id :
   (inv_eq_of_inv_hom_id inv_hom_id).symm
 #align category_theory.is_iso.eq_inv_of_inv_hom_id CategoryTheory.IsIso.eq_inv_of_inv_hom_id
 
-instance id (X : C) : IsIso (𝟙 X) := ⟨⟨𝟙 X, by simp⟩⟩
+instance id (X : C) : IsIso (𝟙 X) := fast_instance% ⟨⟨𝟙 X, by simp⟩⟩
 #align category_theory.is_iso.id CategoryTheory.IsIso.id
 
-instance of_iso (f : X ≅ Y) : IsIso f.hom := ⟨⟨f.inv, by simp⟩⟩
+instance of_iso (f : X ≅ Y) : IsIso f.hom := fast_instance% ⟨⟨f.inv, by simp⟩⟩
 #align category_theory.is_iso.of_iso CategoryTheory.IsIso.of_iso
 
-instance of_iso_inv (f : X ≅ Y) : IsIso f.inv := IsIso.of_iso f.symm
+instance of_iso_inv (f : X ≅ Y) : IsIso f.inv := fast_instance% IsIso.of_iso f.symm
 #align category_theory.is_iso.of_iso_inv CategoryTheory.IsIso.of_iso_inv
 
 variable {f g : X ⟶ Y} {h : Y ⟶ Z}
 
-instance inv_isIso [IsIso f] : IsIso (inv f) :=
+instance inv_isIso [IsIso f] : IsIso (inv f) := fast_instance%
   IsIso.of_iso_inv (asIso f)
 #align category_theory.is_iso.inv_is_iso CategoryTheory.IsIso.inv_isIso
 
@@ -607,7 +607,7 @@ theorem mapIso_refl (F : C ⥤ D) (X : C) : F.mapIso (Iso.refl X) = Iso.refl (F.
   Iso.ext <| F.map_id X
 #align category_theory.functor.map_iso_refl CategoryTheory.Functor.mapIso_refl
 
-instance map_isIso (F : C ⥤ D) (f : X ⟶ Y) [IsIso f] : IsIso (F.map f) :=
+instance map_isIso (F : C ⥤ D) (f : X ⟶ Y) [IsIso f] : IsIso (F.map f) := fast_instance%
   IsIso.of_iso <| F.mapIso (asIso f)
 #align category_theory.functor.map_is_iso CategoryTheory.Functor.map_isIso
 

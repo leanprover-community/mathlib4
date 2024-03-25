@@ -328,7 +328,7 @@ initialize_simps_projections AddConstMap (toFun → coe, as_prefix coe)
 @[simps (config := .asFn)]
 protected def id : G →+c[a, a] G := ⟨id, fun _ ↦ rfl⟩
 
-instance : Inhabited (G →+c[a, a] G) := ⟨.id⟩
+instance : Inhabited (G →+c[a, a] G) := fast_instance% ⟨.id⟩
 
 /-- Composition of two `AddConstMap`s. -/
 @[simps (config := .asFn)]
@@ -351,7 +351,7 @@ def replaceConsts (f : G →+c[a, b] H) (a' b') (ha : a = a') (hb : b = b') :
 -/
 
 /-- If `f` is an `AddConstMap`, then so is `(c +ᵥ f ·)`. -/
-instance {K : Type*} [VAdd K H] [VAddAssocClass K H H] : VAdd K (G →+c[a, b] H) :=
+instance {K : Type*} [VAdd K H] [VAddAssocClass K H H] : VAdd K (G →+c[a, b] H) := fast_instance%
   ⟨fun c f ↦ ⟨c +ᵥ ⇑f, fun x ↦ by simp [vadd_add_assoc]⟩⟩
 
 @[simp]

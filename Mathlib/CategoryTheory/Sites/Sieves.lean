@@ -41,13 +41,13 @@ def Presieve (X : C) :=
   ∀ ⦃Y⦄, Set (Y ⟶ X)-- deriving CompleteLattice
 #align category_theory.presieve CategoryTheory.Presieve
 
-instance : CompleteLattice (Presieve X) := by
+instance : CompleteLattice (Presieve X) := fast_instance% by
   dsimp [Presieve]
   infer_instance
 
 namespace Presieve
 
-noncomputable instance : Inhabited (Presieve X) :=
+noncomputable instance : Inhabited (Presieve X) := fast_instance%
   ⟨⊤⟩
 
 /-- Given a sieve `S` on `X : C`, its associated diagram `S.diagram` is defined to be
@@ -194,7 +194,7 @@ class hasPullbacks (R : Presieve X) : Prop where
   /-- For all arrows `f` and `g` in `R`, the pullback of `f` and `g` exists. -/
   has_pullbacks : ∀ {Y Z} {f : Y ⟶ X} (_ : R f) {g : Z ⟶ X} (_ : R g), HasPullback f g
 
-instance (R : Presieve X) [HasPullbacks C] : R.hasPullbacks := ⟨fun _ _ ↦ inferInstance⟩
+instance (R : Presieve X) [HasPullbacks C] : R.hasPullbacks := fast_instance% ⟨fun _ _ ↦ inferInstance⟩
 
 instance {α : Type v₂} {X : α → C} {B : C} (π : (a : α) → X a ⟶ B)
     [(Presieve.ofArrows X π).hasPullbacks] (a b : α) : HasPullback (π a) (π b) :=
@@ -267,7 +267,7 @@ structure Sieve {C : Type u₁} [Category.{v₁} C] (X : C) where
 
 namespace Sieve
 
-instance : CoeFun (Sieve X) fun _ => Presieve X :=
+instance : CoeFun (Sieve X) fun _ => Presieve X := fast_instance%
   ⟨Sieve.arrows⟩
 
 initialize_simps_projections Sieve (arrows → apply)
@@ -360,7 +360,7 @@ instance : CompleteLattice (Sieve X)
   bot_le _ _ _ := False.elim
 
 /-- The maximal sieve always exists. -/
-instance sieveInhabited : Inhabited (Sieve X) :=
+instance sieveInhabited : Inhabited (Sieve X) := fast_instance%
   ⟨⊤⟩
 #align category_theory.sieve.sieve_inhabited CategoryTheory.Sieve.sieveInhabited
 
@@ -841,7 +841,7 @@ theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
 #align category_theory.sieve.nat_trans_of_le_comm CategoryTheory.Sieve.natTransOfLe_comm
 
 /-- The presheaf induced by a sieve is a subobject of the yoneda embedding. -/
-instance functorInclusion_is_mono : Mono S.functorInclusion :=
+instance functorInclusion_is_mono : Mono S.functorInclusion := fast_instance%
   ⟨fun f g h => by
     ext Y y
     simpa [Subtype.ext_iff_val] using congr_fun (NatTrans.congr_app h Y) y⟩
@@ -872,7 +872,7 @@ theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusio
     exact ⟨⟨_, hf⟩, rfl⟩
 #align category_theory.sieve.sieve_of_subfunctor_functor_inclusion CategoryTheory.Sieve.sieveOfSubfunctor_functorInclusion
 
-instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
+instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion := fast_instance%
   ⟨⟨{ app := fun Y a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
 #align category_theory.sieve.functor_inclusion_top_is_iso CategoryTheory.Sieve.functorInclusion_top_isIso
 

@@ -45,7 +45,7 @@ variable (R : Type*) [Mul R] [Add R]
 `fun g h => RingEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance : Group (RingAut R) :=
+instance : Group (RingAut R) := fast_instance%
   { mul := fun g h => RingEquiv.trans h g
     one := RingEquiv.refl R
     inv := RingEquiv.symm
@@ -74,7 +74,7 @@ instance : Group (RingAut R) :=
     apply Equiv.left_inv
  -/
 
-instance : Inhabited (RingAut R) :=
+instance : Inhabited (RingAut R) := fast_instance%
   ⟨1⟩
 
 /-- Monoid homomorphism from ring automorphisms to additive automorphisms. -/
@@ -121,7 +121,7 @@ protected theorem smul_def (f : RingAut R) (r : R) : f • r = f r :=
   rfl
 #align ring_aut.smul_def RingAut.smul_def
 
-instance apply_faithfulSMul : FaithfulSMul (RingAut R) R :=
+instance apply_faithfulSMul : FaithfulSMul (RingAut R) R := fast_instance%
   ⟨RingEquiv.ext⟩
 #align ring_aut.apply_has_faithful_smul RingAut.apply_faithfulSMul
 

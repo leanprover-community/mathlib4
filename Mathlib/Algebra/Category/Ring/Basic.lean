@@ -57,7 +57,7 @@ deriving instance LargeCategory for SemiRingCat
 --deriving instance LargeCategory, ConcreteCategory for SemiRingCat
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 
-instance : ConcreteCategory SemiRingCat := by
+instance : ConcreteCategory SemiRingCat := fast_instance% by
   dsimp [SemiRingCat]
   infer_instance
 
@@ -68,18 +68,18 @@ instance : CoeSort SemiRingCat (Type*) where
 unif_hint forget_obj_eq_coe (R : SemiRingCat) where ⊢
   (forget SemiRingCat).obj R ≟ R
 
-instance instSemiring (X : SemiRingCat) : Semiring X := X.str
+instance instSemiring (X : SemiRingCat) : Semiring X := fast_instance% X.str
 
-instance instSemiring' (X : SemiRingCat) : Semiring <| (forget SemiRingCat).obj X := X.str
+instance instSemiring' (X : SemiRingCat) : Semiring <| (forget SemiRingCat).obj X := fast_instance% X.str
 
-instance instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y :=
+instance instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y := fast_instance%
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible and instance
   -- transparency. It seems that `(CategoryTheory.forget SemiRingCat).toPrefunctor` is not
   -- unfolding during unification
   ConcreteCategory.instFunLike
 
 -- Porting note (#10754): added instance
-instance instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
+instance instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y := fast_instance%
   RingHom.instRingHomClass
 
 -- Porting note (#10756): added lemma
@@ -113,10 +113,10 @@ lemma RingEquiv_coe_eq {X Y : Type _} [Semiring X] [Semiring Y] (e : X ≃+* Y) 
       ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
-instance : Inhabited SemiRingCat :=
+instance : Inhabited SemiRingCat := fast_instance%
   ⟨of PUnit⟩
 
-instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat :=
+instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat := fast_instance%
   BundledHom.mkHasForget₂
     (fun R hR => @MonoidWithZero.toMonoid R (@Semiring.toMonoidWithZero R hR))
     (fun {_ _} => RingHom.toMonoidHom)
@@ -175,7 +175,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace RingCat
 
-instance : BundledHom.ParentProjection @Ring.toSemiring :=
+instance : BundledHom.ParentProjection @Ring.toSemiring := fast_instance%
   ⟨⟩
 
 -- Porting note: Another place where mathlib had derived a concrete category
@@ -183,29 +183,29 @@ instance : BundledHom.ParentProjection @Ring.toSemiring :=
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for RingCat
 
-instance : ConcreteCategory RingCat := by
+instance : ConcreteCategory RingCat := fast_instance% by
   dsimp [RingCat]
   infer_instance
 
 instance : CoeSort RingCat (Type*) where
   coe X := X.α
 
-instance (X : RingCat) : Ring X := X.str
+instance (X : RingCat) : Ring X := fast_instance% X.str
 
 -- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : RingCat) where ⊢
   (forget RingCat).obj R ≟ R
 
-instance instRing (X : RingCat) : Ring X := X.str
+instance instRing (X : RingCat) : Ring X := fast_instance% X.str
 
-instance instRing' (X : RingCat) : Ring <| (forget RingCat).obj X := X.str
+instance instRing' (X : RingCat) : Ring <| (forget RingCat).obj X := fast_instance% X.str
 
-instance instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y :=
+instance instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y := fast_instance%
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
 -- Porting note (#10754): added instance
-instance instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y :=
+instance instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y := fast_instance%
   RingHom.instRingHomClass
 
 -- Porting note (#10756): added lemma
@@ -239,10 +239,10 @@ set_option linter.uppercaseLean3 false in
 -- set_option linter.uppercaseLean3 false in
 -- #align Ring.of_hom_apply RingCat.ofHom_apply
 
-instance : Inhabited RingCat :=
+instance : Inhabited RingCat := fast_instance%
   ⟨of PUnit⟩
 
-instance (R : RingCat) : Ring R :=
+instance (R : RingCat) : Ring R := fast_instance%
   R.str
 
 @[simp]
@@ -257,7 +257,7 @@ lemma RingEquiv_coe_eq {X Y : Type _} [Ring X] [Ring Y] (e : X ≃+* Y) :
       ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
-instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat :=
+instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat := fast_instance%
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
 #align Ring.has_forget_to_SemiRing RingCat.hasForgetToSemiRingCat
@@ -281,37 +281,37 @@ set_option linter.uppercaseLean3 false in
 
 namespace CommSemiRingCat
 
-instance : BundledHom.ParentProjection @CommSemiring.toSemiring :=
+instance : BundledHom.ParentProjection @CommSemiring.toSemiring := fast_instance%
   ⟨⟩
 
 -- Porting note: again, deriving fails for concrete category instances.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for CommSemiRingCat
 
-instance : ConcreteCategory CommSemiRingCat := by
+instance : ConcreteCategory CommSemiRingCat := fast_instance% by
   dsimp [CommSemiRingCat]
   infer_instance
 
 instance : CoeSort CommSemiRingCat (Type*) where
   coe X := X.α
 
-instance (X : CommSemiRingCat) : CommSemiring X := X.str
+instance (X : CommSemiRingCat) : CommSemiring X := fast_instance% X.str
 
 -- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : CommSemiRingCat) where ⊢
   (forget CommSemiRingCat).obj R ≟ R
 
-instance instCommSemiring (X : CommSemiRingCat) : CommSemiring X := X.str
+instance instCommSemiring (X : CommSemiRingCat) : CommSemiring X := fast_instance% X.str
 
-instance instCommSemiring' (X : CommSemiRingCat) : CommSemiring <| (forget CommSemiRingCat).obj X :=
+instance instCommSemiring' (X : CommSemiRingCat) : CommSemiring <| (forget CommSemiRingCat).obj X := fast_instance%
   X.str
 
-instance instFunLike {X Y : CommSemiRingCat} : FunLike (X ⟶ Y) X Y :=
+instance instFunLike {X Y : CommSemiRingCat} : FunLike (X ⟶ Y) X Y := fast_instance%
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
 -- Porting note (#10754): added instance
-instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
+instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y := fast_instance%
   RingHom.instRingHomClass
 
 -- Porting note (#10756): added lemma
@@ -354,10 +354,10 @@ lemma RingEquiv_coe_eq {X Y : Type _} [CommSemiring X] [CommSemiring Y] (e : X �
 -- set_option linter.uppercaseLean3 false in
 #noalign CommSemiRing.of_hom_apply
 
-instance : Inhabited CommSemiRingCat :=
+instance : Inhabited CommSemiRingCat := fast_instance%
   ⟨of PUnit⟩
 
-instance (R : CommSemiRingCat) : CommSemiring R :=
+instance (R : CommSemiRingCat) : CommSemiring R := fast_instance%
   R.str
 
 @[simp]
@@ -366,13 +366,13 @@ theorem coe_of (R : Type u) [CommSemiring R] : (CommSemiRingCat.of R : Type u) =
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.coe_of CommSemiRingCat.coe_of
 
-instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat :=
+instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat := fast_instance%
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.has_forget_to_SemiRing CommSemiRingCat.hasForgetToSemiRingCat
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
-instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
+instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat := fast_instance%
   HasForget₂.mk' (fun R : CommSemiRingCat => CommMonCat.of R) (fun R => rfl)
     -- Porting note: `(_ := _)` trick
     (fun {R₁ R₂} f => RingHom.toMonoidHom (α := R₁) (β := R₂) f) (by rfl)
@@ -406,14 +406,14 @@ set_option linter.uppercaseLean3 false in
 
 namespace CommRingCat
 
-instance : BundledHom.ParentProjection @CommRing.toRing :=
+instance : BundledHom.ParentProjection @CommRing.toRing := fast_instance%
   ⟨⟩
 
 -- Porting note: deriving fails for concrete category.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for CommRingCat
 
-instance : ConcreteCategory CommRingCat := by
+instance : ConcreteCategory CommRingCat := fast_instance% by
   dsimp [CommRingCat]
   infer_instance
 
@@ -424,16 +424,16 @@ instance : CoeSort CommRingCat (Type*) where
 unif_hint forget_obj_eq_coe (R : CommRingCat) where ⊢
   (forget CommRingCat).obj R ≟ R
 
-instance instCommRing (X : CommRingCat) : CommRing X := X.str
+instance instCommRing (X : CommRingCat) : CommRing X := fast_instance% X.str
 
-instance instCommRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := X.str
+instance instCommRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := fast_instance% X.str
 
-instance instFunLike {X Y : CommRingCat} : FunLike (X ⟶ Y) X Y :=
+instance instFunLike {X Y : CommRingCat} : FunLike (X ⟶ Y) X Y := fast_instance%
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
 -- Porting note (#10754): added instance
-instance instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
+instance instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y := fast_instance%
   RingHom.instRingHomClass
 
 -- Porting note (#10756): added lemma
@@ -490,10 +490,10 @@ lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) 
 -- set_option linter.uppercaseLean3 false in
 #noalign CommRing.of_hom_apply
 
-instance : Inhabited CommRingCat :=
+instance : Inhabited CommRingCat := fast_instance%
   ⟨of PUnit⟩
 
-instance (R : CommRingCat) : CommRing R :=
+instance (R : CommRingCat) : CommRing R := fast_instance%
   R.str
 
 @[simp]
@@ -502,19 +502,19 @@ theorem coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
 set_option linter.uppercaseLean3 false in
 #align CommRing.coe_of CommRingCat.coe_of
 
-instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat :=
+instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat := fast_instance%
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
 #align CommRing.has_forget_to_Ring CommRingCat.hasForgetToRingCat
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
-instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :=
+instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat := fast_instance%
   HasForget₂.mk' (fun R : CommRingCat => CommSemiRingCat.of R) (fun R => rfl)
     (fun {R₁ R₂} f => f) (by rfl)
 set_option linter.uppercaseLean3 false in
 #align CommRing.has_forget_to_CommSemiRing CommRingCat.hasForgetToCommSemiRingCat
 
-instance : Full (forget₂ CommRingCat CommSemiRingCat) where preimage {X Y} f := f
+instance : Full (forget₂ CommRingCat CommSemiRingCat) where preimage {X Y} f := fast_instance% f
 
 end CommRingCat
 

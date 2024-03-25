@@ -229,7 +229,7 @@ theorem map_symmDiff (a b : α) : f (a ∆ b) = f a ∆ f b := by simp_rw [symmD
 
 end CoheytingAlgebra
 
-instance [HeytingAlgebra α] [HeytingAlgebra β] [HeytingHomClass F α β] : CoeTC F (HeytingHom α β) :=
+instance [HeytingAlgebra α] [HeytingAlgebra β] [HeytingHomClass F α β] : CoeTC F (HeytingHom α β) := fast_instance%
   ⟨fun f =>
     { toFun := f
       map_sup' := map_sup f
@@ -273,7 +273,7 @@ instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
 -- Porting note: CoeFun undesired here in lean 4
 -- /-- Helper instance for when there's too many metavariables to apply `DFunLike.CoeFun`
 -- directly. -/
--- instance : CoeFun (HeytingHom α β) fun _ => α → β :=
+-- instance : CoeFun (HeytingHom α β) fun _ => α → β := fast_instance%
 --   DFunLike.hasCoeToFun
 
 -- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
@@ -330,10 +330,10 @@ theorem id_apply (a : α) : HeytingHom.id α a = a :=
   rfl
 #align heyting_hom.id_apply HeytingHom.id_apply
 
-instance : Inhabited (HeytingHom α α) :=
+instance : Inhabited (HeytingHom α α) := fast_instance%
   ⟨HeytingHom.id _⟩
 
-instance : PartialOrder (HeytingHom α β) :=
+instance : PartialOrder (HeytingHom α β) := fast_instance%
   PartialOrder.lift _ DFunLike.coe_injective
 
 /-- Composition of `HeytingHom`s as a `HeytingHom`. -/
@@ -452,10 +452,10 @@ theorem id_apply (a : α) : CoheytingHom.id α a = a :=
   rfl
 #align coheyting_hom.id_apply CoheytingHom.id_apply
 
-instance : Inhabited (CoheytingHom α α) :=
+instance : Inhabited (CoheytingHom α α) := fast_instance%
   ⟨CoheytingHom.id _⟩
 
-instance : PartialOrder (CoheytingHom α β) :=
+instance : PartialOrder (CoheytingHom α β) := fast_instance%
   PartialOrder.lift _ DFunLike.coe_injective
 
 /-- Composition of `CoheytingHom`s as a `CoheytingHom`. -/
@@ -572,10 +572,10 @@ theorem id_apply (a : α) : BiheytingHom.id α a = a :=
   rfl
 #align biheyting_hom.id_apply BiheytingHom.id_apply
 
-instance : Inhabited (BiheytingHom α α) :=
+instance : Inhabited (BiheytingHom α α) := fast_instance%
   ⟨BiheytingHom.id _⟩
 
-instance : PartialOrder (BiheytingHom α β) :=
+instance : PartialOrder (BiheytingHom α β) := fast_instance%
   PartialOrder.lift _ DFunLike.coe_injective
 
 /-- Composition of `BiheytingHom`s as a `BiheytingHom`. -/

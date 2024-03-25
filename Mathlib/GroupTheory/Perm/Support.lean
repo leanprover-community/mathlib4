@@ -53,7 +53,7 @@ theorem Disjoint.symm : Disjoint f g → Disjoint g f := by simp only [Disjoint,
 theorem Disjoint.symmetric : Symmetric (@Disjoint α) := fun _ _ => Disjoint.symm
 #align equiv.perm.disjoint.symmetric Equiv.Perm.Disjoint.symmetric
 
-instance : IsSymm (Perm α) Disjoint :=
+instance : IsSymm (Perm α) Disjoint := fast_instance%
   ⟨Disjoint.symmetric⟩
 
 theorem disjoint_comm : Disjoint f g ↔ Disjoint g f :=

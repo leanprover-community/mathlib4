@@ -45,7 +45,7 @@ protected def GT (p) (x y : Upto p) : Prop :=
   x.1 > y.1
 #align nat.upto.gt Nat.Upto.GT
 
-instance : LT (Upto p) :=
+instance : LT (Upto p) := fast_instance%
   ⟨fun x y => x.1 < y.1⟩
 
 /-- The "greater than" relation on `Upto p` is well founded if (and only if) there exists a value

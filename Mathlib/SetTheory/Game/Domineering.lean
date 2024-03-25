@@ -155,7 +155,7 @@ def domineering (b : Domineering.Board) : PGame :=
 #align pgame.domineering SetTheory.PGame.domineering
 
 /-- All games of Domineering are short, because each move removes two squares. -/
-instance shortDomineering (b : Domineering.Board) : Short (domineering b) := by
+instance shortDomineering (b : Domineering.Board) : Short (domineering b) := fast_instance% by
   dsimp [domineering]
   infer_instance
 #align pgame.short_domineering SetTheory.PGame.shortDomineering
@@ -171,10 +171,10 @@ def domineering.L :=
 set_option linter.uppercaseLean3 false in
 #align pgame.domineering.L SetTheory.PGame.domineering.L
 
-instance shortOne : Short domineering.one := by dsimp [domineering.one]; infer_instance
+instance shortOne : Short domineering.one := fast_instance% by dsimp [domineering.one]; infer_instance
 #align pgame.short_one SetTheory.PGame.shortOne
 
-instance shortL : Short domineering.L := by dsimp [domineering.L]; infer_instance
+instance shortL : Short domineering.L := fast_instance% by dsimp [domineering.L]; infer_instance
 set_option linter.uppercaseLean3 false in
 #align pgame.short_L SetTheory.PGame.shortL
 

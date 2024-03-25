@@ -41,7 +41,7 @@ section
 variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (x : α × β)
 
 @[to_additive]
-instance smul : SMul M (α × β) :=
+instance smul : SMul M (α × β) := fast_instance%
   ⟨fun a p => (a • p.1, a • p.2)⟩
 
 @[to_additive (attr := simp)]
@@ -85,7 +85,7 @@ theorem smul_mk_zero {β : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M 
 variable [Pow α E] [Pow β E]
 
 @[to_additive existing smul]
-instance pow : Pow (α × β) E where pow p c := (p.1 ^ c, p.2 ^ c)
+instance pow : Pow (α × β) E where pow p c := fast_instance% (p.1 ^ c, p.2 ^ c)
 #align prod.has_pow Prod.pow
 #align prod.has_smul Prod.smul
 
@@ -135,7 +135,7 @@ instance isCentralScalar [SMul Mᵐᵒᵖ α] [SMul Mᵐᵒᵖ β] [IsCentralSca
 #align prod.is_central_vadd Prod.isCentralVAdd
 
 @[to_additive]
-instance faithfulSMulLeft [FaithfulSMul M α] [Nonempty β] : FaithfulSMul M (α × β) :=
+instance faithfulSMulLeft [FaithfulSMul M α] [Nonempty β] : FaithfulSMul M (α × β) := fast_instance%
   ⟨fun h =>
     let ⟨b⟩ := ‹Nonempty β›
     eq_of_smul_eq_smul fun a : α => by injection h (a, b)⟩
@@ -143,7 +143,7 @@ instance faithfulSMulLeft [FaithfulSMul M α] [Nonempty β] : FaithfulSMul M (α
 #align prod.has_faithful_vadd_left Prod.faithfulVAddLeft
 
 @[to_additive]
-instance faithfulSMulRight [Nonempty α] [FaithfulSMul M β] : FaithfulSMul M (α × β) :=
+instance faithfulSMulRight [Nonempty α] [FaithfulSMul M β] : FaithfulSMul M (α × β) := fast_instance%
   ⟨fun h =>
     let ⟨a⟩ := ‹Nonempty α›
     eq_of_smul_eq_smul fun b : β => by injection h (a, b)⟩
@@ -215,10 +215,10 @@ section Action_by_Prod
 variable (M N α) [Monoid M] [Monoid N]
 
 /-- Construct a `MulAction` by a product monoid from `MulAction`s by the factors.
-  This is not an instance to avoid diamonds for example when `α := M × N`. -/
+  This is not an instance to avoid diamonds for example when `α := fast_instance% M × N`. -/
 @[to_additive AddAction.prodOfVAddCommClass
   "Construct an `AddAction` by a product monoid from `AddAction`s by the factors.
-  This is not an instance to avoid diamonds for example when `α := M × N`."]
+  This is not an instance to avoid diamonds for example when `α := fast_instance% M × N`."]
 abbrev MulAction.prodOfSMulCommClass [MulAction M α] [MulAction N α] [SMulCommClass M N α] :
     MulAction (M × N) α where
   smul mn a := mn.1 • mn.2 • a

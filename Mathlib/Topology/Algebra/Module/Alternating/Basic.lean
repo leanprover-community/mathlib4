@@ -141,10 +141,10 @@ theorem map_eq_zero_of_not_injective (v : ι → M) (hv : ¬Function.Injective v
 def codRestrict (f : M [⋀^ι]→L[R] N) (p : Submodule R N) (h : ∀ v, f v ∈ p) : M [⋀^ι]→L[R] p :=
   { f.toAlternatingMap.codRestrict p h with toContinuousMultilinearMap := f.1.codRestrict p h }
 
-instance : Zero (M [⋀^ι]→L[R] N) :=
+instance : Zero (M [⋀^ι]→L[R] N) := fast_instance%
   ⟨⟨0, (0 : M [⋀^ι]→ₗ[R] N).map_eq_zero_of_eq⟩⟩
 
-instance : Inhabited (M [⋀^ι]→L[R] N) :=
+instance : Inhabited (M [⋀^ι]→L[R] N) := fast_instance%
   ⟨0⟩
 
 @[simp]
@@ -165,7 +165,7 @@ variable {R' R'' A : Type*} [Monoid R'] [Monoid R''] [Semiring A] [Module A M] [
   [DistribMulAction R' N] [ContinuousConstSMul R' N] [SMulCommClass A R' N] [DistribMulAction R'' N]
   [ContinuousConstSMul R'' N] [SMulCommClass A R'' N]
 
-instance : SMul R' (M [⋀^ι]→L[A] N) :=
+instance : SMul R' (M [⋀^ι]→L[A] N) := fast_instance%
   ⟨fun c f => ⟨c • f.1, (c • f.toAlternatingMap).map_eq_zero_of_eq⟩⟩
 
 @[simp]
@@ -185,16 +185,16 @@ theorem toAlternatingMap_smul (c : R') (f : M [⋀^ι]→L[A] N) :
     (c • f).toAlternatingMap = c • f.toAlternatingMap :=
   rfl
 
-instance [SMulCommClass R' R'' N] : SMulCommClass R' R'' (M [⋀^ι]→L[A] N) :=
+instance [SMulCommClass R' R'' N] : SMulCommClass R' R'' (M [⋀^ι]→L[A] N) := fast_instance%
   ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
 
-instance [SMul R' R''] [IsScalarTower R' R'' N] : IsScalarTower R' R'' (M [⋀^ι]→L[A] N) :=
+instance [SMul R' R''] [IsScalarTower R' R'' N] : IsScalarTower R' R'' (M [⋀^ι]→L[A] N) := fast_instance%
   ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
 
-instance [DistribMulAction R'ᵐᵒᵖ N] [IsCentralScalar R' N] : IsCentralScalar R' (M [⋀^ι]→L[A] N) :=
+instance [DistribMulAction R'ᵐᵒᵖ N] [IsCentralScalar R' N] : IsCentralScalar R' (M [⋀^ι]→L[A] N) := fast_instance%
   ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
 
-instance : MulAction R' (M [⋀^ι]→L[A] N) :=
+instance : MulAction R' (M [⋀^ι]→L[A] N) := fast_instance%
   toContinuousMultilinearMap_injective.mulAction toContinuousMultilinearMap fun _ _ => rfl
 
 end SMul
@@ -203,7 +203,7 @@ section ContinuousAdd
 
 variable [ContinuousAdd N]
 
-instance : Add (M [⋀^ι]→L[R] N) :=
+instance : Add (M [⋀^ι]→L[R] N) := fast_instance%
   ⟨fun f g => ⟨f.1 + g.1, (f.toAlternatingMap + g.toAlternatingMap).map_eq_zero_of_eq⟩⟩
 
 @[simp]
@@ -223,7 +223,7 @@ theorem toAlternatingMap_add (f g : M [⋀^ι]→L[R] N) :
     (f + g).toAlternatingMap = f.toAlternatingMap + g.toAlternatingMap :=
   rfl
 
-instance addCommMonoid : AddCommMonoid (M [⋀^ι]→L[R] N) :=
+instance addCommMonoid : AddCommMonoid (M [⋀^ι]→L[R] N) := fast_instance%
   toContinuousMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Evaluation of a `ContinuousAlternatingMap` at a vector as an `AddMonoidHom`. -/
@@ -466,7 +466,7 @@ section TopologicalAddGroup
 
 variable [TopologicalAddGroup N]
 
-instance : Neg (M [⋀^ι]→L[R] N) :=
+instance : Neg (M [⋀^ι]→L[R] N) := fast_instance%
   ⟨fun f => { -f.toAlternatingMap with toContinuousMultilinearMap := -f.1 }⟩
 
 @[simp]
@@ -476,7 +476,7 @@ theorem coe_neg : ⇑(-f) = -f :=
 theorem neg_apply (m : ι → M) : (-f) m = -f m :=
   rfl
 
-instance : Sub (M [⋀^ι]→L[R] N) :=
+instance : Sub (M [⋀^ι]→L[R] N) := fast_instance%
   ⟨fun f g =>
     { f.toAlternatingMap - g.toAlternatingMap with toContinuousMultilinearMap := f.1 - g.1 }⟩
 
@@ -484,7 +484,7 @@ instance : Sub (M [⋀^ι]→L[R] N) :=
 
 theorem sub_apply (m : ι → M) : (f - g) m = f m - g m := rfl
 
-instance : AddCommGroup (M [⋀^ι]→L[R] N) :=
+instance : AddCommGroup (M [⋀^ι]→L[R] N) := fast_instance%
   toContinuousMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
@@ -517,7 +517,7 @@ variable {R A M N ι : Type*} [Monoid R] [Semiring A] [AddCommMonoid M] [AddComm
   [TopologicalSpace M] [TopologicalSpace N] [Module A M] [Module A N] [DistribMulAction R N]
   [ContinuousConstSMul R N] [SMulCommClass A R N]
 
-instance [ContinuousAdd N] : DistribMulAction R (M [⋀^ι]→L[A] N) :=
+instance [ContinuousAdd N] : DistribMulAction R (M [⋀^ι]→L[A] N) := fast_instance%
   Function.Injective.distribMulAction toMultilinearAddHom
     toContinuousMultilinearMap_injective fun _ _ => rfl
 
@@ -531,7 +531,7 @@ variable {R A M N ι : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [AddCo
 
 /-- The space of continuous alternating maps over an algebra over `R` is a module over `R`, for the
 pointwise addition and scalar multiplication. -/
-instance : Module R (M [⋀^ι]→L[A] N) :=
+instance : Module R (M [⋀^ι]→L[A] N) := fast_instance%
   Function.Injective.module _ toMultilinearAddHom toContinuousMultilinearMap_injective fun _ _ =>
     rfl
 

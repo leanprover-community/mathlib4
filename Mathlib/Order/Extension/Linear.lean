@@ -92,5 +92,5 @@ def toLinearExtension {α : Type u} [PartialOrder α] : α →o LinearExtension 
   monotone' := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.2
 #align to_linear_extension toLinearExtension
 
-instance {α : Type u} [Inhabited α] : Inhabited (LinearExtension α) :=
+instance {α : Type u} [Inhabited α] : Inhabited (LinearExtension α) := fast_instance%
   ⟨(default : α)⟩

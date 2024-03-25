@@ -78,7 +78,7 @@ def toContinuousOrderHom (f : F) : α →Co β :=
       monotone' := ContinuousOrderHomClass.map_monotone f
       continuous_toFun := map_continuous f }
 
-instance : CoeTC F (α →Co β) :=
+instance : CoeTC F (α →Co β) := fast_instance%
   ⟨toContinuousOrderHom⟩
 
 end ContinuousOrderHomClass
@@ -142,7 +142,7 @@ protected def id : α →Co α :=
   ⟨OrderHom.id, continuous_id⟩
 #align continuous_order_hom.id ContinuousOrderHom.id
 
-instance : Inhabited (α →Co α) :=
+instance : Inhabited (α →Co α) := fast_instance%
   ⟨ContinuousOrderHom.id _⟩
 
 @[simp]
@@ -200,12 +200,12 @@ theorem cancel_left {g : β →Co γ} {f₁ f₂ : α →Co β} (hg : Injective 
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align continuous_order_hom.cancel_left ContinuousOrderHom.cancel_left
 
-instance : Preorder (α →Co β) :=
+instance : Preorder (α →Co β) := fast_instance%
   Preorder.lift ((↑) : (α →Co β) → α → β)
 
 end Preorder
 
-instance [PartialOrder β] : PartialOrder (α →Co β) :=
+instance [PartialOrder β] : PartialOrder (α →Co β) := fast_instance%
   PartialOrder.lift ((↑) : (α →Co β) → α → β) DFunLike.coe_injective
 
 end ContinuousOrderHom

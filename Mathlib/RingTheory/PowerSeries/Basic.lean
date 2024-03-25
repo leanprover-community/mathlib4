@@ -74,51 +74,51 @@ the semiring of formal power series in one variable over a semiring `R`.
 -/
 scoped notation:9000 R "⟦X⟧" => PowerSeries R
 
-instance [Inhabited R] : Inhabited R⟦X⟧ := by
+instance [Inhabited R] : Inhabited R⟦X⟧ := fast_instance% by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [Zero R] : Zero R⟦X⟧ := by
+instance [Zero R] : Zero R⟦X⟧ := fast_instance% by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [AddMonoid R] : AddMonoid R⟦X⟧ := by
+instance [AddMonoid R] : AddMonoid R⟦X⟧ := fast_instance% by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [AddGroup R] : AddGroup R⟦X⟧ := by
+instance [AddGroup R] : AddGroup R⟦X⟧ := fast_instance% by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [AddCommMonoid R] : AddCommMonoid R⟦X⟧ := by
+instance [AddCommMonoid R] : AddCommMonoid R⟦X⟧ := fast_instance% by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [AddCommGroup R] : AddCommGroup R⟦X⟧ := by
+instance [AddCommGroup R] : AddCommGroup R⟦X⟧ := fast_instance% by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [Semiring R] : Semiring R⟦X⟧ := by
+instance [Semiring R] : Semiring R⟦X⟧ := fast_instance% by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [CommSemiring R] : CommSemiring R⟦X⟧ := by
+instance [CommSemiring R] : CommSemiring R⟦X⟧ := fast_instance% by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [Ring R] : Ring R⟦X⟧ := by
+instance [Ring R] : Ring R⟦X⟧ := fast_instance% by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [CommRing R] : CommRing R⟦X⟧ := by
+instance [CommRing R] : CommRing R⟦X⟧ := fast_instance% by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [Nontrivial R] : Nontrivial R⟦X⟧ := by
+instance [Nontrivial R] : Nontrivial R⟦X⟧ := fast_instance% by
   dsimp only [PowerSeries]
   infer_instance
 
-instance {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R A⟦X⟧ := by
+instance {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R A⟦X⟧ := fast_instance% by
   dsimp only [PowerSeries]
   infer_instance
 
@@ -126,7 +126,7 @@ instance {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module 
     [IsScalarTower R S A] : IsScalarTower R S A⟦X⟧ :=
   Pi.isScalarTower
 
-instance {A} [Semiring A] [CommSemiring R] [Algebra R A] : Algebra R A⟦X⟧ := by
+instance {A} [Semiring A] [CommSemiring R] [Algebra R A] : Algebra R A⟦X⟧ := fast_instance% by
   dsimp only [PowerSeries]
   infer_instance
 
@@ -728,7 +728,7 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : R⟦X⟧) 
 instance [NoZeroDivisors R] : NoZeroDivisors R⟦X⟧ where
   eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero _ _
 
-instance [IsDomain R] : IsDomain R⟦X⟧ :=
+instance [IsDomain R] : IsDomain R⟦X⟧ := fast_instance%
   NoZeroDivisors.to_isDomain _
 
 end Domain
@@ -784,7 +784,7 @@ theorem algebraMap_apply {r : R} : algebraMap R A⟦X⟧ r = C A (algebraMap R A
   MvPowerSeries.algebraMap_apply
 #align power_series.algebra_map_apply PowerSeries.algebraMap_apply
 
-instance [Nontrivial R] : Nontrivial (Subalgebra R R⟦X⟧) :=
+instance [Nontrivial R] : Nontrivial (Subalgebra R R⟦X⟧) := fast_instance%
   { inferInstanceAs <| Nontrivial <| Subalgebra R <| MvPowerSeries Unit R with }
 
 end Algebra
@@ -804,7 +804,7 @@ def ToPowerSeries : R[X] → (PowerSeries R) := fun φ =>
   PowerSeries.mk fun n => coeff φ n
 
 /-- The natural inclusion from polynomials into formal power series.-/
-instance coeToPowerSeries : Coe R[X] (PowerSeries R) :=
+instance coeToPowerSeries : Coe R[X] (PowerSeries R) := fast_instance%
   ⟨ToPowerSeries⟩
 #align polynomial.coe_to_power_series Polynomial.coeToPowerSeries
 
@@ -957,11 +957,11 @@ open Polynomial
 
 variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : R⟦X⟧)
 
-instance algebraPolynomial : Algebra R[X] A⟦X⟧ :=
+instance algebraPolynomial : Algebra R[X] A⟦X⟧ := fast_instance%
   RingHom.toAlgebra (Polynomial.coeToPowerSeries.algHom A).toRingHom
 #align power_series.algebra_polynomial PowerSeries.algebraPolynomial
 
-instance algebraPowerSeries : Algebra R⟦X⟧ A⟦X⟧ :=
+instance algebraPowerSeries : Algebra R⟦X⟧ A⟦X⟧ := fast_instance%
   (map (algebraMap R A)).toAlgebra
 #align power_series.algebra_power_series PowerSeries.algebraPowerSeries
 

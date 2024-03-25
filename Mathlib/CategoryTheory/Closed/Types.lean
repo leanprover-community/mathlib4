@@ -41,19 +41,19 @@ instance (X : Type v₁) : IsLeftAdjoint (Types.binaryProductFunctor.obj X) wher
         counit := { app := fun Z xf => xf.2 xf.1 } }
 
 -- Porting note: this instance should be moved to a higher file.
-instance : HasFiniteProducts (Type v₁) :=
+instance : HasFiniteProducts (Type v₁) := fast_instance%
   hasFiniteProducts_of_hasProducts.{v₁} _
 
-instance : CartesianClosed (Type v₁) :=
+instance : CartesianClosed (Type v₁) := fast_instance%
   CartesianClosed.mk _
     (fun X => Adjunction.leftAdjointOfNatIso (Types.binaryProductIsoProd.app X))
 
 -- Porting note: in mathlib3, the assertion was for `(C ⥤ Type u₁)`, but then Lean4 was
 -- confused with universes. It makes no harm to relax the universe assumptions here.
-instance {C : Type u₁} [Category.{v₁} C] : HasFiniteProducts (C ⥤ Type u₂) :=
+instance {C : Type u₁} [Category.{v₁} C] : HasFiniteProducts (C ⥤ Type u₂) := fast_instance%
   hasFiniteProducts_of_hasProducts _
 
-instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :=
+instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) := fast_instance%
   CartesianClosed.mk _
     (fun F =>
       letI := FunctorCategory.prodPreservesColimits F

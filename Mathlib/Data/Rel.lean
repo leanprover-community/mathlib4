@@ -43,8 +43,8 @@ def Rel (α β : Type*) :=
 #align rel Rel
 
 -- Porting note: `deriving` above doesn't work.
-instance : CompleteLattice (Rel α β) := show CompleteLattice (α → β → Prop) from inferInstance
-instance : Inhabited (Rel α β) := show Inhabited (α → β → Prop) from inferInstance
+instance : CompleteLattice (Rel α β) := fast_instance% show CompleteLattice (α → β → Prop) from inferInstance
+instance : Inhabited (Rel α β) := fast_instance% show Inhabited (α → β → Prop) from inferInstance
 
 namespace Rel
 

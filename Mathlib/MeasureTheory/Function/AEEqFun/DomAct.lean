@@ -56,7 +56,7 @@ theorem smul_aeeqFun_const (c : Mᵈᵐᵃ) (b : β) :
 instance [SMul N β] [ContinuousConstSMul N β] : SMulCommClass Mᵈᵐᵃ N (α →ₘ[μ] β) where
   smul_comm := by rintro _ _ ⟨_⟩; rfl
 
-instance [SMul N β] [ContinuousConstSMul N β] : SMulCommClass N Mᵈᵐᵃ (α →ₘ[μ] β) :=
+instance [SMul N β] [ContinuousConstSMul N β] : SMulCommClass N Mᵈᵐᵃ (α →ₘ[μ] β) := fast_instance%
   .symm _ _ _
 
 @[to_additive]

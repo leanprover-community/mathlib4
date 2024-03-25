@@ -68,7 +68,7 @@ local notation "N" => Discrete ∘ NormalMonoidalObject
 local infixr:10 " ⟶ᵐ " => Hom
 
 -- Porting note: this was automatic in mathlib 3
-instance (x y : N C) : Subsingleton (x ⟶ y) := Discrete.instSubsingletonDiscreteHom _ _
+instance (x y : N C) : Subsingleton (x ⟶ y) := fast_instance% Discrete.instSubsingletonDiscreteHom _ _
 
 /-- Auxiliary definition for `inclusion`. -/
 @[simp]
@@ -334,7 +334,7 @@ def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=
 end
 
 /-- The monoidal coherence theorem. -/
-instance subsingleton_hom : Quiver.IsThin (F C) := fun X Y =>
+instance subsingleton_hom : Quiver.IsThin (F C) := fast_instance% fun X Y =>
   ⟨fun f g => by
     have hfg : (fullNormalize C).map f = (fullNormalize C).map g := Subsingleton.elim _ _
     have hf := NatIso.naturality_2 (fullNormalizeIso.{u} C) f
@@ -366,7 +366,7 @@ def inverseAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (Y ⟶ᵐ X)
 
 end
 
-instance : Groupoid.{u} (F C) :=
+instance : Groupoid.{u} (F C) := fast_instance%
   { (inferInstance : Category (F C)) with
     inv := Quotient.lift (fun f => ⟦inverseAux f⟧) (by aesop_cat) }
 

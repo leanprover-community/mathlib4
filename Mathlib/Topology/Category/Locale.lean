@@ -27,10 +27,10 @@ def Locale :=
 
 namespace Locale
 
-instance : CoeSort Locale (Type*) :=
+instance : CoeSort Locale (Type*) := fast_instance%
   ⟨fun X => X.unop⟩
 
-instance (X : Locale) : Frame X :=
+instance (X : Locale) : Frame X := fast_instance%
   X.unop.str
 
 /-- Construct a bundled `Locale` from a `Frame`. -/
@@ -43,7 +43,7 @@ theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α :=
   rfl
 #align Locale.coe_of Locale.coe_of
 
-instance : Inhabited Locale :=
+instance : Inhabited Locale := fast_instance%
   ⟨of PUnit⟩
 
 end Locale
@@ -56,7 +56,7 @@ def topToLocale : TopCat ⥤ Locale :=
 #align Top_to_Locale topToLocale
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
-instance CompHausToLocale.faithful : Faithful (compHausToTop ⋙ topToLocale.{u}) :=
+instance CompHausToLocale.faithful : Faithful (compHausToTop ⋙ topToLocale.{u}) := fast_instance%
   ⟨fun h => by
     dsimp at h
     exact Opens.comap_injective (Quiver.Hom.op_inj h)⟩

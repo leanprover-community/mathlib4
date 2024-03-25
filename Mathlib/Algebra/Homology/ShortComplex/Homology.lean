@@ -81,14 +81,14 @@ lemma comm (h : HomologyMapData φ h₁ h₂) :
     LeftHomologyMapData.commπ_assoc, HomologyData.comm, LeftHomologyMapData.commi_assoc,
     RightHomologyMapData.commι, HomologyData.comm_assoc, RightHomologyMapData.commp]
 
-instance : Subsingleton (HomologyMapData φ h₁ h₂) := ⟨by
+instance : Subsingleton (HomologyMapData φ h₁ h₂) := fast_instance% ⟨by
   rintro ⟨left₁, right₁⟩ ⟨left₂, right₂⟩
   simp only [mk.injEq, eq_iff_true_of_subsingleton, and_self]⟩
 
-instance : Inhabited (HomologyMapData φ h₁ h₂) :=
+instance : Inhabited (HomologyMapData φ h₁ h₂) := fast_instance%
   ⟨⟨default, default⟩⟩
 
-instance : Unique (HomologyMapData φ h₁ h₂) := Unique.mk' _
+instance : Unique (HomologyMapData φ h₁ h₂) := fast_instance% Unique.mk' _
 
 variable (φ h₁ h₂)
 
@@ -211,16 +211,16 @@ variable {S}
 lemma HasHomology.mk' (h : S.HomologyData) : HasHomology S :=
   ⟨Nonempty.intro h⟩
 
-instance [HasHomology S] : HasHomology S.op :=
+instance [HasHomology S] : HasHomology S.op := fast_instance%
   HasHomology.mk' S.homologyData.op
 
-instance (S : ShortComplex Cᵒᵖ) [HasHomology S] : HasHomology S.unop :=
+instance (S : ShortComplex Cᵒᵖ) [HasHomology S] : HasHomology S.unop := fast_instance%
   HasHomology.mk' S.homologyData.unop
 
-instance hasLeftHomology_of_hasHomology [S.HasHomology] : S.HasLeftHomology :=
+instance hasLeftHomology_of_hasHomology [S.HasHomology] : S.HasLeftHomology := fast_instance%
   HasLeftHomology.mk' S.homologyData.left
 
-instance hasRightHomology_of_hasHomology [S.HasHomology] : S.HasRightHomology :=
+instance hasRightHomology_of_hasHomology [S.HasHomology] : S.HasRightHomology := fast_instance%
   HasRightHomology.mk' S.homologyData.right
 
 instance hasHomology_of_hasCokernel {X Y : C} (f : X ⟶ Y) (Z : C) [HasCokernel f] :
@@ -786,7 +786,7 @@ class _root_.CategoryTheory.CategoryWithHomology : Prop where
 
 attribute [instance] CategoryWithHomology.hasHomology
 
-instance [CategoryWithHomology C] : CategoryWithHomology Cᵒᵖ :=
+instance [CategoryWithHomology C] : CategoryWithHomology Cᵒᵖ := fast_instance%
   ⟨fun S => HasHomology.mk' S.unop.homologyData.op⟩
 
 /-- The homology functor `ShortComplex C ⥤ C` for a category `C` with homology. -/
@@ -876,10 +876,10 @@ noncomputable def homologyIsKernel :
   IsLimit.ofIsoLimit S.rightHomologyIsKernel
     (Fork.ext S.rightHomologyIso (by simp))
 
-instance : Epi S.homologyπ :=
+instance : Epi S.homologyπ := fast_instance%
   Limits.epi_of_isColimit_cofork (S.homologyIsCokernel)
 
-instance : Mono S.homologyι :=
+instance : Mono S.homologyι := fast_instance%
   Limits.mono_of_isLimit_fork (S.homologyIsKernel)
 
 /-- Given a morphism `k : S.cycles ⟶ A` such that `S.toCycles ≫ k = 0`, this is the

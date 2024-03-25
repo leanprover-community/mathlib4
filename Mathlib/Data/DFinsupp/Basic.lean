@@ -81,7 +81,7 @@ section Basic
 
 variable [∀ i, Zero (β i)] [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
 
-instance instDFunLike : DFunLike (Π₀ i, β i) ι β :=
+instance instDFunLike : DFunLike (Π₀ i, β i) ι β := fast_instance%
   ⟨fun f => f.toFun, fun ⟨f₁, s₁⟩ ⟨f₂, s₁⟩ ↦ fun (h : f₁ = f₂) ↦ by
     subst h
     congr
@@ -90,7 +90,7 @@ instance instDFunLike : DFunLike (Π₀ i, β i) ι β :=
 
 /-- Helper instance for when there are too many metavariables to apply `DFunLike.coeFunForall`
 directly. -/
-instance : CoeFun (Π₀ i, β i) fun _ => ∀ i, β i :=
+instance : CoeFun (Π₀ i, β i) fun _ => ∀ i, β i := fast_instance%
   inferInstance
 
 @[simp]
@@ -115,10 +115,10 @@ theorem coeFn_injective : @Function.Injective (Π₀ i, β i) (∀ i, β i) (⇑
   DFunLike.coe_injective
 #align dfinsupp.coe_fn_injective DFinsupp.coeFn_injective
 
-instance : Zero (Π₀ i, β i) :=
+instance : Zero (Π₀ i, β i) := fast_instance%
   ⟨⟨0, Trunc.mk <| ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
 
-instance : Inhabited (Π₀ i, β i) :=
+instance : Inhabited (Π₀ i, β i) := fast_instance%
   ⟨0⟩
 
 @[simp, norm_cast] lemma coe_mk' (f : ∀ i, β i) (s) : ⇑(⟨f, s⟩ : Π₀ i, β i) = f := rfl
@@ -228,7 +228,7 @@ end Basic
 
 section Algebra
 
-instance [∀ i, AddZeroClass (β i)] : Add (Π₀ i, β i) :=
+instance [∀ i, AddZeroClass (β i)] : Add (Π₀ i, β i) := fast_instance%
   ⟨zipWith (fun _ => (· + ·)) fun _ => add_zero 0⟩
 
 theorem add_apply [∀ i, AddZeroClass (β i)] (g₁ g₂ : Π₀ i, β i) (i : ι) :
@@ -241,7 +241,7 @@ theorem coe_add [∀ i, AddZeroClass (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g
   rfl
 #align dfinsupp.coe_add DFinsupp.coe_add
 
-instance addZeroClass [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i) :=
+instance addZeroClass [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i) := fast_instance%
   DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 instance instIsLeftCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsLeftCancelAdd (β i)] :
@@ -257,7 +257,7 @@ instance instIsCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsCancelAdd (β i)
 
 /-- Note the general `SMul` instance doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
-instance hasNatScalar [∀ i, AddMonoid (β i)] : SMul ℕ (Π₀ i, β i) :=
+instance hasNatScalar [∀ i, AddMonoid (β i)] : SMul ℕ (Π₀ i, β i) := fast_instance%
   ⟨fun c v => v.mapRange (fun _ => (c • ·)) fun _ => nsmul_zero _⟩
 #align dfinsupp.has_nat_scalar DFinsupp.hasNatScalar
 
@@ -270,7 +270,7 @@ theorem coe_nsmul [∀ i, AddMonoid (β i)] (b : ℕ) (v : Π₀ i, β i) : ⇑(
   rfl
 #align dfinsupp.coe_nsmul DFinsupp.coe_nsmul
 
-instance [∀ i, AddMonoid (β i)] : AddMonoid (Π₀ i, β i) :=
+instance [∀ i, AddMonoid (β i)] : AddMonoid (Π₀ i, β i) := fast_instance%
   DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
 /-- Coercion from a `DFinsupp` to a pi type is an `AddMonoidHom`. -/
@@ -287,7 +287,7 @@ def evalAddMonoidHom [∀ i, AddZeroClass (β i)] (i : ι) : (Π₀ i, β i) →
   (Pi.evalAddMonoidHom β i).comp coeFnAddMonoidHom
 #align dfinsupp.eval_add_monoid_hom DFinsupp.evalAddMonoidHom
 
-instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
+instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) := fast_instance%
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
 @[simp, norm_cast]
@@ -302,7 +302,7 @@ theorem finset_sum_apply {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g :
   map_sum (evalAddMonoidHom i) g s
 #align dfinsupp.finset_sum_apply DFinsupp.finset_sum_apply
 
-instance [∀ i, AddGroup (β i)] : Neg (Π₀ i, β i) :=
+instance [∀ i, AddGroup (β i)] : Neg (Π₀ i, β i) := fast_instance%
   ⟨fun f => f.mapRange (fun _ => Neg.neg) fun _ => neg_zero⟩
 
 theorem neg_apply [∀ i, AddGroup (β i)] (g : Π₀ i, β i) (i : ι) : (-g) i = -g i :=
@@ -312,7 +312,7 @@ theorem neg_apply [∀ i, AddGroup (β i)] (g : Π₀ i, β i) (i : ι) : (-g) i
 @[simp, norm_cast] lemma coe_neg [∀ i, AddGroup (β i)] (g : Π₀ i, β i) : ⇑(-g) = -g := rfl
 #align dfinsupp.coe_neg DFinsupp.coe_neg
 
-instance [∀ i, AddGroup (β i)] : Sub (Π₀ i, β i) :=
+instance [∀ i, AddGroup (β i)] : Sub (Π₀ i, β i) := fast_instance%
   ⟨zipWith (fun _ => Sub.sub) fun _ => sub_zero 0⟩
 
 theorem sub_apply [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
@@ -326,7 +326,7 @@ theorem coe_sub [∀ i, AddGroup (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g₁ 
 
 /-- Note the general `SMul` instance doesn't apply as `ℤ` is not distributive
 unless `β i`'s addition is commutative. -/
-instance hasIntScalar [∀ i, AddGroup (β i)] : SMul ℤ (Π₀ i, β i) :=
+instance hasIntScalar [∀ i, AddGroup (β i)] : SMul ℤ (Π₀ i, β i) := fast_instance%
   ⟨fun c v => v.mapRange (fun _ => (c • ·)) fun _ => zsmul_zero _⟩
 #align dfinsupp.has_int_scalar DFinsupp.hasIntScalar
 
@@ -339,17 +339,17 @@ theorem coe_zsmul [∀ i, AddGroup (β i)] (b : ℤ) (v : Π₀ i, β i) : ⇑(b
   rfl
 #align dfinsupp.coe_zsmul DFinsupp.coe_zsmul
 
-instance [∀ i, AddGroup (β i)] : AddGroup (Π₀ i, β i) :=
+instance [∀ i, AddGroup (β i)] : AddGroup (Π₀ i, β i) := fast_instance%
   DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
-instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
+instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
 /-- Dependent functions with finite support inherit a semiring action from an action on each
 coordinate. -/
-instance [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] : SMul γ (Π₀ i, β i) :=
+instance [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] : SMul γ (Π₀ i, β i) := fast_instance%
   ⟨fun c v => v.mapRange (fun _ => (c • ·)) fun _ => smul_zero _⟩
 
 theorem smul_apply [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] (b : γ)
@@ -604,11 +604,11 @@ theorem mk_injective (s : Finset ι) : Function.Injective (@mk ι β _ _ s) := b
   simpa only [dif_pos hi] using h1
 #align dfinsupp.mk_injective DFinsupp.mk_injective
 
-instance unique [∀ i, Subsingleton (β i)] : Unique (Π₀ i, β i) :=
+instance unique [∀ i, Subsingleton (β i)] : Unique (Π₀ i, β i) := fast_instance%
   DFunLike.coe_injective.unique
 #align dfinsupp.unique DFinsupp.unique
 
-instance uniqueOfIsEmpty [IsEmpty ι] : Unique (Π₀ i, β i) :=
+instance uniqueOfIsEmpty [IsEmpty ι] : Unique (Π₀ i, β i) := fast_instance%
   DFunLike.coe_injective.unique
 #align dfinsupp.unique_of_is_empty DFinsupp.uniqueOfIsEmpty
 
@@ -1182,7 +1182,7 @@ theorem support_eq_empty {f : Π₀ i, β i} : f.support = ∅ ↔ f = 0 :=
   ⟨fun H => ext <| by simpa [Finset.ext_iff] using H, by simp (config := { contextual := true })⟩
 #align dfinsupp.support_eq_empty DFinsupp.support_eq_empty
 
-instance decidableZero : DecidablePred (Eq (0 : Π₀ i, β i)) := fun _ =>
+instance decidableZero : DecidablePred (Eq (0 : Π₀ i, β i)) := fast_instance% fun _ =>
   decidable_of_iff _ <| support_eq_empty.trans eq_comm
 #align dfinsupp.decidable_zero DFinsupp.decidableZero
 
@@ -1321,7 +1321,7 @@ theorem support_smul {γ : Type w} [Semiring γ] [∀ i, AddCommMonoid (β i)] [
   support_mapRange
 #align dfinsupp.support_smul DFinsupp.support_smul
 
-instance [∀ i, Zero (β i)] [∀ i, DecidableEq (β i)] : DecidableEq (Π₀ i, β i) := fun f g =>
+instance [∀ i, Zero (β i)] [∀ i, DecidableEq (β i)] : DecidableEq (Π₀ i, β i) := fast_instance% fun f g =>
   decidable_of_iff (f.support = g.support ∧ ∀ i ∈ f.support, f i = g i)
     ⟨fun ⟨h₁, h₂⟩ => ext fun i => if h : i ∈ f.support then h₂ i h else by
       have hf : f i = 0 := by rwa [mem_support_iff, not_not] at h
@@ -1460,17 +1460,17 @@ section SigmaCurry
 variable {α : ι → Type*} {δ : ∀ i, α i → Type v}
 
 -- lean can't find these instances -- Porting note: but Lean 4 can!!!
-instance hasAdd₂ [∀ i j, AddZeroClass (δ i j)] : Add (Π₀ (i : ι) (j : α i), δ i j) :=
+instance hasAdd₂ [∀ i j, AddZeroClass (δ i j)] : Add (Π₀ (i : ι) (j : α i), δ i j) := fast_instance%
   inferInstance
   -- @DFinsupp.hasAdd ι (fun i => Π₀ j, δ i j) _
 #align dfinsupp.has_add₂ DFinsupp.hasAdd₂
 
-instance addZeroClass₂ [∀ i j, AddZeroClass (δ i j)] : AddZeroClass (Π₀ (i : ι) (j : α i), δ i j) :=
+instance addZeroClass₂ [∀ i j, AddZeroClass (δ i j)] : AddZeroClass (Π₀ (i : ι) (j : α i), δ i j) := fast_instance%
   inferInstance
   -- @DFinsupp.addZeroClass ι (fun i => Π₀ j, δ i j) _
 #align dfinsupp.add_zero_class₂ DFinsupp.addZeroClass₂
 
-instance addMonoid₂ [∀ i j, AddMonoid (δ i j)] : AddMonoid (Π₀ (i : ι) (j : α i), δ i j) :=
+instance addMonoid₂ [∀ i j, AddMonoid (δ i j)] : AddMonoid (Π₀ (i : ι) (j : α i), δ i j) := fast_instance%
   inferInstance
   -- @DFinsupp.addMonoid ι (fun i => Π₀ j, δ i j) _
 #align dfinsupp.add_monoid₂ DFinsupp.addMonoid₂

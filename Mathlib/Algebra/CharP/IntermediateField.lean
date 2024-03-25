@@ -22,9 +22,9 @@ namespace Subfield
 
 variable (L : Subfield F) (p : ℕ)
 
-instance charP [CharP F p] : CharP L p := RingHom.charP _ (algebraMap _ F).injective p
+instance charP [CharP F p] : CharP L p := fast_instance% RingHom.charP _ (algebraMap _ F).injective p
 
-instance expChar [ExpChar F p] : ExpChar L p := RingHom.expChar _ (algebraMap _ F).injective p
+instance expChar [ExpChar F p] : ExpChar L p := fast_instance% RingHom.expChar _ (algebraMap _ F).injective p
 
 end Subfield
 
@@ -32,17 +32,17 @@ namespace IntermediateField
 
 variable (L : IntermediateField F E) (p : ℕ)
 
-instance charZero [CharZero F] : CharZero L :=
+instance charZero [CharZero F] : CharZero L := fast_instance%
   charZero_of_injective_algebraMap (algebraMap F _).injective
 
-instance charP [CharP F p] : CharP L p :=
+instance charP [CharP F p] : CharP L p := fast_instance%
   charP_of_injective_algebraMap (algebraMap F _).injective p
 
-instance expChar [ExpChar F p] : ExpChar L p :=
+instance expChar [ExpChar F p] : ExpChar L p := fast_instance%
   expChar_of_injective_algebraMap (algebraMap F _).injective p
 
-instance charP' [CharP E p] : CharP L p := Subfield.charP L.toSubfield p
+instance charP' [CharP E p] : CharP L p := fast_instance% Subfield.charP L.toSubfield p
 
-instance expChar' [ExpChar E p] : ExpChar L p := Subfield.expChar L.toSubfield p
+instance expChar' [ExpChar E p] : ExpChar L p := fast_instance% Subfield.expChar L.toSubfield p
 
 end IntermediateField

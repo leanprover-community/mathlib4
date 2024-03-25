@@ -100,7 +100,7 @@ def maxIdeal : Ideal (MvPolynomial (MonicIrreducible k) k) :=
   Classical.choose <| Ideal.exists_le_maximal _ <| spanEval_ne_top k
 #align algebraic_closure.max_ideal AlgebraicClosure.maxIdeal
 
-instance maxIdeal.isMaximal : (maxIdeal k).IsMaximal :=
+instance maxIdeal.isMaximal : (maxIdeal k).IsMaximal := fast_instance%
   (Classical.choose_spec <| Ideal.exists_le_maximal _ <| spanEval_ne_top k).1
 #align algebraic_closure.max_ideal.is_maximal AlgebraicClosure.maxIdeal.isMaximal
 
@@ -113,11 +113,11 @@ def AdjoinMonic : Type u :=
   MvPolynomial (MonicIrreducible k) k ⧸ maxIdeal k
 #align algebraic_closure.adjoin_monic AlgebraicClosure.AdjoinMonic
 
-instance AdjoinMonic.field : Field (AdjoinMonic k) :=
+instance AdjoinMonic.field : Field (AdjoinMonic k) := fast_instance%
   Ideal.Quotient.field _
 #align algebraic_closure.adjoin_monic.field AlgebraicClosure.AdjoinMonic.field
 
-instance AdjoinMonic.inhabited : Inhabited (AdjoinMonic k) :=
+instance AdjoinMonic.inhabited : Inhabited (AdjoinMonic k) := fast_instance%
   ⟨37⟩
 #align algebraic_closure.adjoin_monic.inhabited AlgebraicClosure.AdjoinMonic.inhabited
 
@@ -126,7 +126,7 @@ def toAdjoinMonic : k →+* AdjoinMonic k :=
   (Ideal.Quotient.mk _).comp C
 #align algebraic_closure.to_adjoin_monic AlgebraicClosure.toAdjoinMonic
 
-instance AdjoinMonic.algebra : Algebra k (AdjoinMonic k) :=
+instance AdjoinMonic.algebra : Algebra k (AdjoinMonic k) := fast_instance%
   (toAdjoinMonic k).toAlgebra
 #align algebraic_closure.adjoin_monic.algebra AlgebraicClosure.AdjoinMonic.algebra
 
@@ -169,14 +169,14 @@ def Step (n : ℕ) : Type u :=
 -- Porting note: added during the port to help in the proof of `Step.isIntegral` below.
 theorem Step.zero : Step k 0 = k := rfl
 
-instance Step.field (n : ℕ) : Field (Step k n) :=
+instance Step.field (n : ℕ) : Field (Step k n) := fast_instance%
   (stepAux k n).2
 #align algebraic_closure.step.field AlgebraicClosure.Step.field
 
 -- Porting note: added during the port to help in the proof of `Step.isIntegral` below.
 theorem Step.succ (n : ℕ) : Step k (n + 1) = AdjoinMonic (Step k n) := rfl
 
-instance Step.inhabited (n) : Inhabited (Step k n) :=
+instance Step.inhabited (n) : Inhabited (Step k n) := fast_instance%
   ⟨37⟩
 #align algebraic_closure.step.inhabited AlgebraicClosure.Step.inhabited
 
@@ -190,7 +190,7 @@ def toStepSucc (n : ℕ) : Step k n →+* (Step k (n + 1)) :=
   @toAdjoinMonic (Step k n) (Step.field k n)
 #align algebraic_closure.to_step_succ AlgebraicClosure.toStepSucc
 
-instance Step.algebraSucc (n) : Algebra (Step k n) (Step k (n + 1)) :=
+instance Step.algebraSucc (n) : Algebra (Step k n) (Step k (n + 1)) := fast_instance%
   (toStepSucc k n).toAlgebra
 #align algebraic_closure.step.algebra_succ AlgebraicClosure.Step.algebraSucc
 
@@ -250,11 +250,11 @@ theorem coe_toStepOfLE (m n : ℕ) (h : m ≤ n) :
   rfl
 #align algebraic_closure.coe_to_step_of_le AlgebraicClosure.coe_toStepOfLE
 
-instance Step.algebra (n) : Algebra k (Step k n) :=
+instance Step.algebra (n) : Algebra k (Step k n) := fast_instance%
   (toStepOfLE k 0 n n.zero_le).toAlgebra
 #align algebraic_closure.step.algebra AlgebraicClosure.Step.algebra
 
-instance Step.scalar_tower (n) : IsScalarTower k (Step k n) (Step k (n + 1)) :=
+instance Step.scalar_tower (n) : IsScalarTower k (Step k n) (Step k (n + 1)) := fast_instance%
   IsScalarTower.of_algebraMap_eq fun z =>
     @Nat.leRecOn_succ (Step k) 0 n n.zero_le (n + 1).zero_le (@fun n => toStepSucc k n) z
 #align algebraic_closure.step.scalar_tower AlgebraicClosure.Step.scalar_tower
@@ -292,7 +292,7 @@ theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
     · convert h -- Porting note: This times out at 500000
 #align algebraic_closure.step.is_integral AlgebraicClosure.Step.isIntegral
 
-instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h :=
+instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h := fast_instance%
   ⟨fun _ x _ => Nat.leRecOn_self x, fun h₁₂ h₂₃ x => (Nat.leRecOn_trans h₁₂ h₂₃ x).symm⟩
 #align algebraic_closure.to_step_of_le.directed_system AlgebraicClosure.toStepOfLE.directedSystem
 
@@ -311,10 +311,10 @@ namespace AlgebraicClosureAux
 open AlgebraicClosure
 
 /-- `AlgebraicClosureAux k` is a `Field` -/
-local instance field : Field (AlgebraicClosureAux k) :=
+local instance field : Field (AlgebraicClosureAux k) := fast_instance%
   Field.DirectLimit.field _ _
 
-instance : Inhabited (AlgebraicClosureAux k) :=
+instance : Inhabited (AlgebraicClosureAux k) := fast_instance%
   ⟨37⟩
 
 /-- The canonical ring embedding from the `n`th step to the algebraic closure. -/
@@ -358,11 +358,11 @@ theorem exists_root {f : Polynomial (AlgebraicClosureAux k)}
   rw [← ofStep_succ k n, eval_map, ← hom_eval₂, hx, RingHom.map_zero]
 #noalign algebraic_closure.exists_root
 
-@[local instance] theorem instIsAlgClosed : IsAlgClosed (AlgebraicClosureAux k) :=
+@[local instance] theorem instIsAlgClosed : IsAlgClosed (AlgebraicClosureAux k) := fast_instance%
   IsAlgClosed.of_exists_root _ fun _ => exists_root k
 
 /-- `AlgebraicClosureAux k` is a `k`-`Algebra` -/
-local instance instAlgebra : Algebra k (AlgebraicClosureAux k) :=
+local instance instAlgebra : Algebra k (AlgebraicClosureAux k) := fast_instance%
   (ofStep k 0).toAlgebra
 
 #noalign algebraic_closure.algebra_map_def
@@ -385,7 +385,7 @@ theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) := fun z =>
     let ⟨n, x, hx⟩ := exists_ofStep k z
     hx ▸ (Step.isIntegral k n x).map (ofStepHom k n)
 
-@[local instance] theorem isAlgClosure : IsAlgClosure k (AlgebraicClosureAux k) :=
+@[local instance] theorem isAlgClosure : IsAlgClosure k (AlgebraicClosureAux k) := fast_instance%
   ⟨AlgebraicClosureAux.instIsAlgClosed k, isAlgebraic k⟩
 
 end AlgebraicClosureAux
@@ -401,16 +401,16 @@ def AlgebraicClosure : Type u :=
 
 namespace AlgebraicClosure
 
-instance commRing : CommRing (AlgebraicClosure k) :=
+instance commRing : CommRing (AlgebraicClosure k) := fast_instance%
   Ideal.Quotient.commRing _
 
-instance inhabited : Inhabited (AlgebraicClosure k) :=
+instance inhabited : Inhabited (AlgebraicClosure k) := fast_instance%
   ⟨37⟩
 
-instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
+instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) := fast_instance%
   Submodule.Quotient.instSMul' _
 
-instance instAlgebra {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
+instance instAlgebra {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (AlgebraicClosure k) := fast_instance%
   Ideal.Quotient.algebra _
 
 instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
@@ -426,7 +426,7 @@ def algEquivAlgebraicClosureAux :
     (fun x => ⟨MvPolynomial.X x, by simp⟩)
 
 -- This instance is basically copied from the `Field` instance on `SplittingField`
-instance : Field (AlgebraicClosure k) :=
+instance : Field (AlgebraicClosure k) := fast_instance%
   letI e := algEquivAlgebraicClosureAux k
   { toCommRing := AlgebraicClosure.commRing k
     ratCast := fun a => algebraMap k _ (a : k)
@@ -448,11 +448,11 @@ instance : Field (AlgebraicClosure k) :=
       exact mul_inv_cancel ((AddEquivClass.map_ne_zero_iff e).mpr w)
     inv_zero := by simp }
 
-instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
+instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) := fast_instance%
   IsAlgClosed.of_ringEquiv _ _ (algEquivAlgebraicClosureAux k).symm.toRingEquiv
 #align algebraic_closure.is_alg_closed AlgebraicClosure.isAlgClosed
 
-instance : IsAlgClosure k (AlgebraicClosure k) := by
+instance : IsAlgClosure k (AlgebraicClosure k) := fast_instance% by
   rw [isAlgClosure_iff]
   refine ⟨inferInstance, (algEquivAlgebraicClosureAux k).symm.isAlgebraic <|
     AlgebraicClosureAux.isAlgebraic _⟩
@@ -461,10 +461,10 @@ theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
   IsAlgClosure.algebraic
 #align algebraic_closure.is_algebraic AlgebraicClosure.isAlgebraic
 
-instance [CharZero k] : CharZero (AlgebraicClosure k) :=
+instance [CharZero k] : CharZero (AlgebraicClosure k) := fast_instance%
   charZero_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k)))
 
-instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
+instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p := fast_instance%
   charP_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k))) p
 
 example : (AddCommMonoid.natModule : Module ℕ (AlgebraicClosure k)) =

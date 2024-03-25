@@ -51,7 +51,7 @@ section AlgebraicInstances
 
 variable {α β ι R : Type*} {𝔖 : Set <| Set α} {x : α}
 
-@[to_additive] instance [One β] : One (α →ᵤ β) := Pi.instOne
+@[to_additive] instance [One β] : One (α →ᵤ β) := fast_instance% Pi.instOne
 
 @[to_additive (attr := simp)]
 lemma UniformFun.toFun_one [One β] : toFun (1 : α →ᵤ β) = 1 := rfl
@@ -59,7 +59,7 @@ lemma UniformFun.toFun_one [One β] : toFun (1 : α →ᵤ β) = 1 := rfl
 @[to_additive (attr := simp)]
 lemma UniformFun.ofFun_one [One β] : ofFun (1 : α → β) = 1 := rfl
 
-@[to_additive] instance [One β] : One (α →ᵤ[𝔖] β) := Pi.instOne
+@[to_additive] instance [One β] : One (α →ᵤ[𝔖] β) := fast_instance% Pi.instOne
 
 @[to_additive (attr := simp)]
 lemma UniformOnFun.toFun_one [One β] : toFun 𝔖 (1 : α →ᵤ[𝔖] β) = 1 := rfl
@@ -67,7 +67,7 @@ lemma UniformOnFun.toFun_one [One β] : toFun 𝔖 (1 : α →ᵤ[𝔖] β) = 1 
 @[to_additive (attr := simp)]
 lemma UniformOnFun.one_apply [One β] : ofFun 𝔖 (1 : α → β) = 1 := rfl
 
-@[to_additive] instance [Mul β] : Mul (α →ᵤ β) := Pi.instMul
+@[to_additive] instance [Mul β] : Mul (α →ᵤ β) := fast_instance% Pi.instMul
 
 @[to_additive (attr := simp)]
 lemma UniformFun.toFun_mul [Mul β] (f g : α →ᵤ β) : toFun (f * g) = toFun f * toFun g := rfl
@@ -75,7 +75,7 @@ lemma UniformFun.toFun_mul [Mul β] (f g : α →ᵤ β) : toFun (f * g) = toFun
 @[to_additive (attr := simp)]
 lemma UniformFun.ofFun_mul [Mul β] (f g : α → β) : ofFun (f * g) = ofFun f * ofFun g := rfl
 
-@[to_additive] instance [Mul β] : Mul (α →ᵤ[𝔖] β) := Pi.instMul
+@[to_additive] instance [Mul β] : Mul (α →ᵤ[𝔖] β) := fast_instance% Pi.instMul
 
 @[to_additive (attr := simp)]
 lemma UniformOnFun.toFun_mul [Mul β] (f g : α →ᵤ[𝔖] β) :
@@ -85,7 +85,7 @@ lemma UniformOnFun.toFun_mul [Mul β] (f g : α →ᵤ[𝔖] β) :
 @[to_additive (attr := simp)]
 lemma UniformOnFun.ofFun_mul [Mul β] (f g : α → β) : ofFun 𝔖 (f * g) = ofFun 𝔖 f * ofFun 𝔖 g := rfl
 
-@[to_additive] instance [Inv β] : Inv (α →ᵤ β) := Pi.instInv
+@[to_additive] instance [Inv β] : Inv (α →ᵤ β) := fast_instance% Pi.instInv
 
 @[to_additive (attr := simp)]
 lemma UniformFun.toFun_inv [Inv β] (f : α →ᵤ β) : toFun (f⁻¹) = (toFun f)⁻¹ := rfl
@@ -93,7 +93,7 @@ lemma UniformFun.toFun_inv [Inv β] (f : α →ᵤ β) : toFun (f⁻¹) = (toFun
 @[to_additive (attr := simp)]
 lemma UniformFun.ofFun_inv [Inv β] (f : α → β) : ofFun (f⁻¹) = (ofFun f)⁻¹ := rfl
 
-@[to_additive] instance [Inv β] : Inv (α →ᵤ[𝔖] β) := Pi.instInv
+@[to_additive] instance [Inv β] : Inv (α →ᵤ[𝔖] β) := fast_instance% Pi.instInv
 
 @[to_additive (attr := simp)]
 lemma UniformOnFun.toFun_inv [Inv β] (f : α →ᵤ[𝔖] β) : toFun 𝔖 (f⁻¹) = (toFun 𝔖 f)⁻¹ := rfl
@@ -101,7 +101,7 @@ lemma UniformOnFun.toFun_inv [Inv β] (f : α →ᵤ[𝔖] β) : toFun 𝔖 (f�
 @[to_additive (attr := simp)]
 lemma UniformOnFun.ofFun_inv [Inv β] (f : α → β) : ofFun 𝔖 (f⁻¹) = (ofFun 𝔖 f)⁻¹ := rfl
 
-@[to_additive] instance [Div β] : Div (α →ᵤ β) := Pi.instDiv
+@[to_additive] instance [Div β] : Div (α →ᵤ β) := fast_instance% Pi.instDiv
 
 @[to_additive (attr := simp)]
 lemma UniformFun.toFun_div [Div β] (f g : α →ᵤ β) : toFun (f / g) = toFun f / toFun g := rfl
@@ -109,7 +109,7 @@ lemma UniformFun.toFun_div [Div β] (f g : α →ᵤ β) : toFun (f / g) = toFun
 @[to_additive (attr := simp)]
 lemma UniformFun.ofFun_div [Div β] (f g : α → β) : ofFun (f / g) = ofFun f / ofFun g := rfl
 
-@[to_additive] instance [Div β] : Div (α →ᵤ[𝔖] β) := Pi.instDiv
+@[to_additive] instance [Div β] : Div (α →ᵤ[𝔖] β) := fast_instance% Pi.instDiv
 
 @[to_additive (attr := simp)]
 lemma UniformOnFun.toFun_div [Div β] (f g : α →ᵤ[𝔖] β) :
@@ -120,38 +120,38 @@ lemma UniformOnFun.toFun_div [Div β] (f g : α →ᵤ[𝔖] β) :
 lemma UniformOnFun.ofFun_div [Div β] (f g : α → β) : ofFun 𝔖 (f / g) = ofFun 𝔖 f / ofFun 𝔖 g := rfl
 
 @[to_additive]
-instance [Monoid β] : Monoid (α →ᵤ β) :=
+instance [Monoid β] : Monoid (α →ᵤ β) := fast_instance%
   Pi.monoid
 
 @[to_additive]
-instance [Monoid β] : Monoid (α →ᵤ[𝔖] β) :=
+instance [Monoid β] : Monoid (α →ᵤ[𝔖] β) := fast_instance%
   Pi.monoid
 
 @[to_additive]
-instance [CommMonoid β] : CommMonoid (α →ᵤ β) :=
+instance [CommMonoid β] : CommMonoid (α →ᵤ β) := fast_instance%
   Pi.commMonoid
 
 @[to_additive]
-instance [CommMonoid β] : CommMonoid (α →ᵤ[𝔖] β) :=
+instance [CommMonoid β] : CommMonoid (α →ᵤ[𝔖] β) := fast_instance%
   Pi.commMonoid
 
 @[to_additive]
-instance [Group β] : Group (α →ᵤ β) :=
+instance [Group β] : Group (α →ᵤ β) := fast_instance%
   Pi.group
 
 @[to_additive]
-instance [Group β] : Group (α →ᵤ[𝔖] β) :=
+instance [Group β] : Group (α →ᵤ[𝔖] β) := fast_instance%
   Pi.group
 
 @[to_additive]
-instance [CommGroup β] : CommGroup (α →ᵤ β) :=
+instance [CommGroup β] : CommGroup (α →ᵤ β) := fast_instance%
   Pi.commGroup
 
 @[to_additive]
-instance [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) :=
+instance [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) := fast_instance%
   Pi.commGroup
 
-instance {M : Type*} [SMul M β] : SMul M (α →ᵤ β) := Pi.instSMul
+instance {M : Type*} [SMul M β] : SMul M (α →ᵤ β) := fast_instance% Pi.instSMul
 
 @[simp]
 lemma UniformFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ β) :
@@ -163,7 +163,7 @@ lemma UniformFun.ofFun_smul {M : Type*} [SMul M β] (c : M) (f : α → β) :
     ofFun (c • f) = c • ofFun f :=
   rfl
 
-instance {M : Type*} [SMul M β] : SMul M (α →ᵤ[𝔖] β) := Pi.instSMul
+instance {M : Type*} [SMul M β] : SMul M (α →ᵤ[𝔖] β) := fast_instance% Pi.instSMul
 
 @[simp]
 lemma UniformOnFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ[𝔖] β) :
@@ -191,9 +191,9 @@ instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
     SMulCommClass M N (α →ᵤ[𝔖] β) :=
   Pi.smulCommClass
 
-instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ β) := Pi.mulAction _
+instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ β) := fast_instance% Pi.mulAction _
 
-instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ[𝔖] β) := Pi.mulAction _
+instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ[𝔖] β) := fast_instance% Pi.mulAction _
 
 instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
     DistribMulAction M (α →ᵤ β) :=
@@ -203,10 +203,10 @@ instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
     DistribMulAction M (α →ᵤ[𝔖] β) :=
   Pi.distribMulAction _
 
-instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) :=
+instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) := fast_instance%
   Pi.module _ _ _
 
-instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ[𝔖] β) :=
+instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ[𝔖] β) := fast_instance%
   Pi.module _ _ _
 
 end AlgebraicInstances
@@ -218,7 +218,7 @@ variable {α G ι : Type*} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [Un
 /-- If `G` is a uniform group, then `α →ᵤ G` is a uniform group as well. -/
 @[to_additive "If `G` is a uniform additive group,
 then `α →ᵤ G` is a uniform additive group as well."]
-instance : UniformGroup (α →ᵤ G) :=
+instance : UniformGroup (α →ᵤ G) := fast_instance%
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
     -- `UniformFun.postcomp_uniformContinuous` tells us that
     -- `((/) ∘ —) : (α →ᵤ G × G) → (α →ᵤ G)` is uniformly continuous too. By precomposing with
@@ -251,7 +251,7 @@ protected theorem UniformFun.hasBasis_nhds_one :
 well. -/
 @[to_additive "Let `𝔖 : Set (Set α)`. If `G` is a uniform additive group,
 then `α →ᵤ[𝔖] G` is a uniform additive group as well."]
-instance : UniformGroup (α →ᵤ[𝔖] G) :=
+instance : UniformGroup (α →ᵤ[𝔖] G) := fast_instance%
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
     -- `UniformOnFun.postcomp_uniformContinuous` tells us that
     -- `((/) ∘ —) : (α →ᵤ[𝔖] G × G) → (α →ᵤ[𝔖] G)` is uniformly continuous too. By precomposing with

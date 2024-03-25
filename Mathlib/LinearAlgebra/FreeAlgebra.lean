@@ -34,7 +34,7 @@ noncomputable def basisFreeMonoid : Basis (FreeMonoid X) R (FreeAlgebra R X) :=
   Finsupp.basisSingleOne.map (equivMonoidAlgebraFreeMonoid (R := R) (X := X)).symm.toLinearEquiv
 #align free_algebra.basis_free_monoid FreeAlgebra.basisFreeMonoid
 
-instance : Module.Free R (FreeAlgebra R X) :=
+instance : Module.Free R (FreeAlgebra R X) := fast_instance%
   have : Module.Free R (MonoidAlgebra R (FreeMonoid X)) := Module.Free.finsupp _ _ _
   Module.Free.of_equiv (equivMonoidAlgebraFreeMonoid (R := R) (X := X)).symm.toLinearEquiv
 
