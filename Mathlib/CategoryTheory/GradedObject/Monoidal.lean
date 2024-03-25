@@ -93,8 +93,8 @@ lemma ι_tensorObjDesc {A : C} {k : I}
 
 end
 
-noncomputable def tensorHom {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) [HasTensor X₁ Y₁]
-    [HasTensor X₂ Y₂] :
+noncomputable def tensorHom {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂)
+    [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] :
     tensorObj X₁ Y₁ ⟶ tensorObj X₂ Y₂ :=
   mapBifunctorMapMap _ _ f g
 
@@ -186,7 +186,8 @@ noncomputable def associator [HasGoodTensor₁₂Tensor X₁ X₂ X₃] [HasGood
 
 noncomputable def ιTensorObj₃ (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     X₁ i₁ ⊗ X₂ i₂ ⊗ X₃ i₃ ⟶ tensorObj X₁ (tensorObj X₂ X₃) j :=
-  X₁ i₁ ◁ ιTensorObj X₂ X₃ i₂ i₃ _ rfl ≫ ιTensorObj X₁ (tensorObj X₂ X₃) i₁ (i₂ + i₃) j (by rw [← add_assoc, h])
+  X₁ i₁ ◁ ιTensorObj X₂ X₃ i₂ i₃ _ rfl ≫ ιTensorObj X₁ (tensorObj X₂ X₃) i₁ (i₂ + i₃) j
+    (by rw [← add_assoc, h])
 
 @[reassoc]
 lemma ιTensorObj₃_eq (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) (i₂₃ : I) (h' : i₂ + i₃ = i₂₃) :
@@ -238,7 +239,8 @@ section
 lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
     [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
     (h : ∀ (i₁ i₂ i₃ : I) (hi : i₁ + i₂ + i₃ = j),
-      ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j hi ≫ f = ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j hi ≫ g) : f = g := by
+      ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j hi ≫ f = ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j hi ≫ g) :
+      f = g := by
   apply mapBifunctorBifunctor₂₃MapObj_ext (H := H)
   intro i₁ i₂ i₃ hi
   exact h i₁ i₂ i₃ hi
@@ -247,7 +249,8 @@ lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X�
 lemma tensorObj₃'_ext {j : I} {A : C} (f g : tensorObj (tensorObj X₁ X₂) X₃ j ⟶ A)
     [H : HasGoodTensor₁₂Tensor X₁ X₂ X₃]
     (h : ∀ (i₁ i₂ i₃ : I) (h : i₁ + i₂ + i₃ = j),
-      ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f = ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) : f = g := by
+      ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ f = ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ g) :
+      f = g := by
   apply mapBifunctor₁₂BifunctorMapObj_ext (H := H)
   intro i₁ i₂ i₃ hi
   exact h i₁ i₂ i₃ hi
@@ -255,13 +258,16 @@ lemma tensorObj₃'_ext {j : I} {A : C} (f g : tensorObj (tensorObj X₁ X₂) X
 variable (X₁ X₂ X₃)
 
 abbrev HasLeftTensor₃ObjExt (j : I) := PreservesColimit
-  (Discrete.functor fun (i : { i : (I × I × I) | i.1 + i.2.1 + i.2.2 = j }) ↦ (((mapTrifunctor (bifunctorComp₂₃ (curriedTensor C) (curriedTensor C)) I I I).obj X₁).obj X₂).obj X₃ i)
+  (Discrete.functor fun (i : { i : (I × I × I) | i.1 + i.2.1 + i.2.2 = j }) ↦
+    (((mapTrifunctor (bifunctorComp₂₃ (curriedTensor C)
+      (curriedTensor C)) I I I).obj X₁).obj X₂).obj X₃ i)
    ((curriedTensor C).obj Z)
 
 variable {X₁ X₂ X₃}
 
 @[ext]
-lemma left_tensor_tensorObj₃_ext {j : I} {A : C} (Z : C) (f g : Z ⊗ tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
+lemma left_tensor_tensorObj₃_ext {j : I} {A : C} (Z : C)
+    (f g : Z ⊗ tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
     [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
     [hZ : HasLeftTensor₃ObjExt Z X₁ X₂ X₃ j]
     (h : ∀ (i₁ i₂ i₃ : I) (h : i₁ + i₂ + i₃ = j),
@@ -282,7 +288,8 @@ lemma ιTensorObj₃'_associator_hom
     (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ (associator X₁ X₂ X₃).hom j =
       (α_ _ _ _).hom ≫ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h :=
-  ι_mapBifunctorAssociator_hom (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h
+  ι_mapBifunctorAssociator_hom (MonoidalCategory.curriedAssociatorNatIso C)
+    ρ₁₂ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h
 
 @[reassoc (attr := simp)]
 lemma ιTensorObj₃_associator_inv
@@ -290,7 +297,8 @@ lemma ιTensorObj₃_associator_inv
     (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ (associator X₁ X₂ X₃).inv j =
       (α_ _ _ _).inv ≫ ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h :=
-  ι_mapBifunctorAssociator_inv (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h
+  ι_mapBifunctorAssociator_inv (MonoidalCategory.curriedAssociatorNatIso C)
+    ρ₁₂ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h
 
 variable {X₁ X₂ X₃}
 
@@ -312,16 +320,20 @@ variable (X₁ X₂ X₃ X₄ : GradedObject I C)
 noncomputable def ιTensorObj₄ (i₁ i₂ i₃ i₄ j : I) (h : i₁ + i₂ + i₃ + i₄ = j) :
     X₁ i₁ ⊗ X₂ i₂ ⊗ X₃ i₃ ⊗ X₄ i₄ ⟶ tensorObj X₁ (tensorObj X₂ (tensorObj X₃ X₄)) j :=
   (_ ◁ ιTensorObj₃ X₂ X₃ X₄ i₂ i₃ i₄ _ rfl) ≫
-    ιTensorObj X₁ (tensorObj X₂ (tensorObj X₃ X₄)) i₁ (i₂ + i₃ + i₄) j (by rw [← h, ← add_assoc, ← add_assoc])
+    ιTensorObj X₁ (tensorObj X₂ (tensorObj X₃ X₄)) i₁ (i₂ + i₃ + i₄) j
+      (by rw [← h, ← add_assoc, ← add_assoc])
 
-lemma ιTensorObj₄_eq (i₁ i₂ i₃ i₄ j : I) (h : i₁ + i₂ + i₃ + i₄ = j) (i₂₃₄ : I) (hi : i₂ + i₃ + i₄ = i₂₃₄) :
+lemma ιTensorObj₄_eq (i₁ i₂ i₃ i₄ j : I) (h : i₁ + i₂ + i₃ + i₄ = j) (i₂₃₄ : I)
+    (hi : i₂ + i₃ + i₄ = i₂₃₄) :
     ιTensorObj₄ X₁ X₂ X₃ X₄ i₁ i₂ i₃ i₄ j h =
       (_ ◁ ιTensorObj₃ X₂ X₃ X₄ i₂ i₃ i₄ _ hi) ≫
-        ιTensorObj X₁ (tensorObj X₂ (tensorObj X₃ X₄)) i₁ i₂₃₄ j (by rw [← hi, ← add_assoc, ← add_assoc, h]) := by
+        ιTensorObj X₁ (tensorObj X₂ (tensorObj X₃ X₄)) i₁ i₂₃₄ j
+          (by rw [← hi, ← add_assoc, ← add_assoc, h]) := by
   subst hi
   rfl
 
-abbrev _root_.CategoryTheory.GradedObject.HasTensor₄ObjExt := ∀ (i₁ i₂₃₄ : I), HasLeftTensor₃ObjExt (X₁ i₁) X₂ X₃ X₄ i₂₃₄
+abbrev _root_.CategoryTheory.GradedObject.HasTensor₄ObjExt :=
+  ∀ (i₁ i₂₃₄ : I), HasLeftTensor₃ObjExt (X₁ i₁) X₂ X₃ X₄ i₂₃₄
 
 variable {X₁ X₂ X₃ X₄}
 
