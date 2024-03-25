@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Std.Data.List.Lemmas
-import Mathlib.Tactic.Cases
+import Mathlib.Mathport.Rename
 
 #align_import init.data.list.instances from "leanprover-community/lean"@"9af482290ef68e8aaa5ead01aa7b09b7be7019fd"
 
 /-!
-Decidable Instances for `List` not (yet) in `Std`
+# Decidable and Monad instances for `List` not (yet) in `Std`
 -/
 
 universe u v w
@@ -70,13 +70,13 @@ instance decidableBex : ∀ (l : List α), Decidable (∃ x ∈ l, p x)
     | isTrue h₁ => isTrue ⟨x, mem_cons_self _ _, h₁⟩
     | isFalse h₁ => match decidableBex xs with
       | isTrue h₂  => isTrue <| by
-        cases' h₂ with y h; cases' h with hm hp
+        rcases h₂ with ⟨y, hm, hp⟩
         exact ⟨y, mem_cons_of_mem _ hm, hp⟩
       | isFalse h₂ => isFalse <| by
-        intro h; cases' h with y h; cases' h with hm hp
-        cases' mem_cons.1 hm with h h
-        · rw [h] at hp; contradiction
-        · exact absurd ⟨y, h, hp⟩ h₂
+        rintro ⟨y, hm, hp⟩
+        cases mem_cons.1 hm with
+        | inl h => rw [h] at hp; contradiction
+        | inr h => exact absurd ⟨y, h, hp⟩ h₂
 #align list.decidable_bex List.decidableBex
 
 instance decidableBall (l : List α) : Decidable (∀ x ∈ l, p x) :=
