@@ -14,7 +14,7 @@ In this file we present a proof of a special case Hadamard's three-lines Theorem
 
 ## Main result
 
-- `abs_le_interp_on_closed_strip` :
+- `abs_le_interp_on_closedStrip` :
 Hadamard three-line theorem on `re ⁻¹' [0,1]`: If `f` is a bounded function, continuous on
 `re ⁻¹' [0,1]` and differentiable on `re ⁻¹' (0,1)`, then for
 `M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))`, that is `M(x)` is the supremum of the absolute value of
@@ -37,8 +37,8 @@ that `log M(re z)` is a convex function on `[0,1]`.
 - `Complex.HadamardThreeLines.F` :
     Function defined by `f` times `invInterpStrip`. Convenient form for proofs.
 
-- `Complex.HadamardThreeLines.cocompactStrip` :
-    The filter along the vertical strip `re ⁻¹' Ioo a b` and `|z.im| atTop`.
+- `Complex.HadamardThreeLines.interpStrip` :
+    The interpolation between the `sSupAbsIm` on the edges of the strip.
 
 - `Complex.HadamardThreeLines.transl`
     A function translated by a constant `ε`.
@@ -64,7 +64,7 @@ def closedStrip (a : ℝ) (b : ℝ) : Set ℂ := re ⁻¹' Icc a b
 
 /-- The supremum of the absolute value of `f` on imaginary lines. (Fixed real part)
 This is also known as the function `M` -/
-noncomputable def sSupAbsIm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+noncomputable def sSupAbsIm {E : Type*} [NormedAddCommGroup E]
     (f : ℂ → E) (x : ℝ) : ℝ :=
   sSup ((norm ∘ f) '' (re ⁻¹' {x}))
 
@@ -199,6 +199,7 @@ end invInterpStrip
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] (f : ℂ → E)
 variable (z : ℂ)
 
+/-- The interpolation between the `sSupAbsIm` on the edges of the strip.-/
 noncomputable def interpStrip : ℂ :=
   if (sSupAbsIm f (0 : ℝ)) = (0 : ℝ) ∨ (sSupAbsIm f (1 : ℝ)) = (0 : ℝ)
     then 0
@@ -250,6 +251,8 @@ section transl
  -/
 
 variable (ε : E)
+
+/-- The translation of `f` by a constant `ε`.-/
 def transl := fun z ↦ f z + ε
 
 lemma transl_def : (transl f ε) = fun z ↦ f z + ε := by
@@ -304,7 +307,7 @@ lemma transl_sub_sSupAbsIm_le_transl_of_sSupAbsIm (w : ℝ) (hset: w ∈ Icc 0 1
   use w
   simp only [mem_preimage, ofReal_re, mem_singleton_iff, comp_apply, and_self]
 
-lemma Continuous_sSupAbsIm_transl_zero (w : ℝ) (hset: w ∈ Icc 0 1) :
+lemma ContinuousAt.sSupAbsIm_transl_zero (w : ℝ) (hset: w ∈ Icc 0 1) :
     Tendsto (fun ε => sSupAbsIm (transl f ε) w) (nhds 0) (nhds (sSupAbsIm f w)) := by
   simp_rw [sSupAbsIm, transl_def, comp_apply, Metric.tendsto_nhds_nhds, dist_eq_norm_sub]
   simp only [gt_iff_lt, sub_zero, Real.norm_eq_abs]
@@ -369,7 +372,7 @@ lemma interpStrip_nhds_zero_pos :
   intro ε hε
   simp only [(eq_comm.mp (interpStrip_eq_of_pos _ _ (hT ε hε).1 (hT ε hε).2))]
 
-lemma eventuallyle (hd : DiffContOnCl ℂ f (strip 0 1)) (hz : z ∈ strip 0 1) :
+lemma eventuallyLe_interpStrip (hd : DiffContOnCl ℂ f (strip 0 1)) (hz : z ∈ strip 0 1) :
     (fun ε ↦ norm ((transl f ε) z))
       ≤ᶠ[nhdsWithin 0 {0}ᶜ] (fun ε ↦ norm (interpStrip (transl f ε) z)) := by
   obtain ⟨T, hTpos, hT⟩ := sSupAbsIm_transl_nhds_zero_pos f hB
@@ -390,11 +393,11 @@ lemma tendsto_interpStrip_pos (hz: z ∈ strip 0 1) : ContinuousAt (fun ε =>
   apply ContinuousAt.mul
   · apply ContinuousAt.rpow_const _ _
     · apply continuousAt_of_tendsto_nhds
-      exact Continuous_sSupAbsIm_transl_zero _ hB 0 (left_mem_Icc.mpr zero_le_one)
+      exact ContinuousAt.sSupAbsIm_transl_zero _ hB 0 (left_mem_Icc.mpr zero_le_one)
     simp only [or_true, sub_re, one_re, sub_nonneg, le_of_lt, hz.2]
   · apply ContinuousAt.rpow_const _ _
     · apply continuousAt_of_tendsto_nhds
-      exact Continuous_sSupAbsIm_transl_zero _ hB 1 (right_mem_Icc.mpr zero_le_one)
+      exact ContinuousAt.sSupAbsIm_transl_zero _ hB 1 (right_mem_Icc.mpr zero_le_one)
     simp only [or_true, le_of_lt, hz.1]
 
 lemma Tendsto_interpStrip (hz: z ∈ strip 0 1) (h : sSupAbsIm f 0 = 0 ∨ sSupAbsIm f 1 = 0) :
@@ -431,7 +434,7 @@ variable [Filter.NeBot (nhdsWithin (0 : E) {0}ᶜ)]
 
 lemma abs_le_interp_on_strip_zero (hz : z ∈ strip 0 1)
     (h : sSupAbsIm f 0 = 0 ∨ sSupAbsIm f 1 = 0) : norm (f z) ≤ norm (interpStrip f z) := by
-  apply tendsto_le_of_eventuallyLE _ _ (eventuallyle f z hB hd hz)
+  apply tendsto_le_of_eventuallyLE _ _ (eventuallyLe_interpStrip f z hB hd hz)
   · apply tendsto_inf_left
     apply Continuous.tendsto'
       (Continuous.comp continuous_norm (Continuous.add continuous_const continuous_id))
