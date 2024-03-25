@@ -360,14 +360,9 @@ theorem isOpen_of_isOpen_WeakSpace (U : Set (WeakSpace 𝕜 E))
   exact ((continuousLinearMapToWeakSpace 𝕜 E).cont).isOpen_preimage U hU
 
 /-- The canonical map from `WeakSpace 𝕜 E` to `E` is an open map. -/
-theorem isOpenMap_inv_toWeakSpace : IsOpenMap (toWeakSpace 𝕜 E).symm := by
-  apply IsOpenMap.of_inverse (continuousLinearMapToWeakSpace 𝕜 E).cont _ _
-  intro x
-  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe,
-    continuousLinearMapToWeakSpace_eq_toWeakSpace, LinearEquiv.symm_apply_apply]
-  intro x
-  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe,
-    continuousLinearMapToWeakSpace_eq_toWeakSpace, LinearEquiv.apply_symm_apply]
+theorem isOpenMap_inv_toWeakSpace : IsOpenMap (toWeakSpace 𝕜 E).symm :=
+  IsOpenMap.of_inverse (continuousLinearMapToWeakSpace 𝕜 E).cont
+    (toWeakSpace 𝕜 E).left_inv (toWeakSpace 𝕜 E).right_inv
 
 /-- A set in `E` which is open in the weak topology is open. -/
 theorem isOpen_of_isOpen_WeakSpace' (V : Set E)
