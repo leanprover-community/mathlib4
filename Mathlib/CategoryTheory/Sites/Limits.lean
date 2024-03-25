@@ -44,7 +44,6 @@ universe w v' v u z z'
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 variable {D : Type w} [Category.{v'} D]
---variable {D : Type w} [Category.{max v u} D]
 variable {K : Type z} [Category.{z'} K]
 
 noncomputable section
