@@ -487,9 +487,7 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
 
 /-! ### pure -/
 
-@[simp]
-theorem mem_pure {α} (x y : α) : x ∈ (pure y : List α) ↔ x = y :=
-  show x ∈ [y] ↔ x = y by simp
+theorem mem_pure {α} (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
 #align list.mem_pure List.mem_pure
 
 /-! ### bind -/
