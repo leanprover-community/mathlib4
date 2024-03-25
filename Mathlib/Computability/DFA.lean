@@ -56,8 +56,8 @@ instance [Inhabited σ] : Inhabited (DFA α σ) :=
   ⟨DFA.mk (fun _ _ => default) default ∅⟩
 
 /-- `M.evalFrom s x` evaluates `M` with input `x` starting from the state `s`. -/
-def evalFrom (start : σ) : List α → σ :=
-  List.foldl M.step start
+def evalFrom (s : σ) : List α → σ :=
+  List.foldl M.step s
 #align DFA.eval_from DFA.evalFrom
 
 @[simp]
@@ -102,12 +102,12 @@ theorem evalFrom_of_append (start : σ) (x y : List α) :
 #align DFA.eval_from_of_append DFA.evalFrom_of_append
 
 /--
-`M.acceptsFrom start` is the language of `x` such that `M.evalFrom start x` is an accept state.
+`M.acceptsFrom s` is the language of `x` such that `M.evalFrom s x` is an accept state.
 -/
-def acceptsFrom (start : σ) : Language α := {x | M.evalFrom start x ∈ M.accept}
+def acceptsFrom (s : σ) : Language α := {x | M.evalFrom start x ∈ M.accept}
 
-theorem mem_acceptsFrom {start : σ} {x : List α} :
-    x ∈ M.acceptsFrom start ↔ M.evalFrom start x ∈ M.accept := by rfl
+theorem mem_acceptsFrom {s : σ} {x : List α} :
+    x ∈ M.acceptsFrom s ↔ M.evalFrom s x ∈ M.accept := by rfl
 
 /-- `M.accepts` is the language of `x` such that `M.eval x` is an accept state. -/
 def accepts : Language α := M.acceptsFrom M.start
