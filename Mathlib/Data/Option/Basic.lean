@@ -434,4 +434,13 @@ lemma not_comp_isSome : Bool.not ∘ @Option.isSome α = Option.isNone := by
   funext x
   cases x <;> simp
 
+@[simp]
+lemma not_comp_isNone : Bool.not ∘ @Option.isNone α = Option.isSome := by
+  funext x
+  cases x <;> simp
+
+@[simp]
+lemma isNone_eq_false_iff (a : Option α) : Option.isNone a = false ↔ Option.isSome a := by
+  cases a <;> simp
+
 end Option
