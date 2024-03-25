@@ -502,6 +502,7 @@ def ignored : HashSet Name := HashSet.empty
 and that can only be followed by other `stainers`. -/
 def stainers : HashSet Name := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.simp
+--  |>.insert ``Lean.Parser.Tactic.rwSeq  -- remove me! `rw` is not a stainer!
 
 
 /-- The main entry point to the unreachable tactic linter. -/
@@ -522,6 +523,7 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --  let x := trees.toList.map (extractRealGoalsCtx (·.getKind == ``Lean.Parser.Tactic.tacticHave_))
   let x := trees.toList.map (extractRealGoalsCtx' (fun _ => true)) -- (·.getKind == ``Lean.Parser.Tactic.tacticHave_))
   let mut stains : HashSet stained := .empty
+  let mut sfvrs : HashSet FVarId := .empty
 --  let mut stains : HashSet FVarId := .empty
   let _ : Ord FVarId := ⟨fun f g => compare f.name.toString g.name.toString⟩
   for d in x do for (s, ctxb, ctx, mvsb, mvs) in d do
@@ -532,26 +534,36 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --    for locs in getStained! s do
 --      Meta.inspect s
 --      logInfoAt s m!"{s}\nstains '{locs}'"
+    let declsb := (ctxb.decls.find? (mvsb.getD 0 default)).getD default
     let decls := (ctx.decls.find? (mvs.getD 0 default)).getD default
-    let decls := (ctxb.decls.find? (mvsb.getD 0 default)).getD default
-    let declsIdxs := ctx.decls.toList.map fun m => (m.2.index)
-    let dsorted := declsIdxs.toArray.qsort (· < ·)
-    dbg_trace "index: [0,{declsIdxs.length-1}]? {dsorted == Array.range declsIdxs.length} {declsIdxs.length}\n"
+--    liftCoreM do
+--      return (← Meta.MetaM.run do
+--        logInfo m!"ctx.decls: {← ctx.decls.toList.mapM fun m => do
+--      return (m.1.name, match m.2.kind with | .natural => "nat" | .synthetic => "syn" | _ => "opq", ← ppExpr m.2.type)}").1
+--    let declsIdxs := ctx.decls.toList.map fun m => (m.2.index)
+--    let dsorted := declsIdxs.toArray.qsort (· < ·)
+--    dbg_trace "index: [0,{declsIdxs.length-1}]? {dsorted == Array.range declsIdxs.length} {declsIdxs.length}\n"
     let lctx := decls.lctx
+    let lctxb := declsb.lctx
     let newStained := getStained! s
     let all := if newStained.contains .wildcard then
       lctx.decls.toArray.reduceOption.map (stained.name ·.userName) else #[]
     let newStained := (newStained.erase .wildcard) ++ all
-    let fvs := (newStained).map (stained.toFVarId lctx)
+    let fvsb := newStained.map (stained.toFVarId lctxb)
+    let fvsb := fvsb.flatten.sortAndDeduplicate
+    let fvs := newStained.map (stained.toFVarId lctx)
     let fvs := fvs.flatten.sortAndDeduplicate
 --    dbg_trace s!"syntax: {s}\n{s.getKind}\n"
-    dbg_trace s!"---\n{s.getKind}"
+    --Meta.inspect s
+    dbg_trace s!"---\n{s[0]} ({s.getKind})"
 --    dbg_trace "already stained: {stains.toList.map (·.name)}"
     dbg_trace "already stained: {stains.toList}"
+    dbg_trace "already sfvrsed: {sfvrs.toList.map (·.name)}"
     dbg_trace "getStained! s: {newStained}"
     dbg_trace "getLocs s:     {getLocs s}"
-    dbg_trace "fvrs stains: {fvs.map (·.name)}\n"
-    dbg_trace "goal? '{(lctx.decls.get! 0).get!.userName}'"
+    dbg_trace "fvrsb stains:  {fvsb.map (·.name)}"
+    dbg_trace "fvrs stains:   {fvs.map (·.name)}\n"
+--    dbg_trace "goal? '{(lctxb.decls.get! 0).get!.userName}'"
     let inds := fvs.erase default
 --    for v in inds do
 --      dbg_trace "checking {v.name}"
@@ -561,12 +573,23 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
       dbg_trace "checking {v}"
       let stainer? := stainers.contains s.getKind
       if stains.contains v && !stainer? then
-          logInfoAt s m!"'{s.getKind}' acts on the stained '{v}'!"
+          logInfoAt s m!"'{s}' acts on the stained '{v}'!\n({s.getKind})"
       else
         if stainer? then
           stains := stains.insert v
         else
           dbg_trace "{s.getKind} does not stain '{v}'"
+
+    for v in fvs do
+      dbg_trace "checking {v.name}"
+      let stainer? := stainers.contains s.getKind
+      if sfvrs.contains v && !stainer? then
+          logInfoAt s m!"'{s}' acts on the stained '{v.name}'!\n({s.getKind})"
+      else
+        if stainer? then
+          sfvrs := sfvrs.insert v
+        else
+          dbg_trace "{s.getKind} does not stain '{v.name}'"
 
 initialize addLinter nonTerminalSimpLinter
 #exit
