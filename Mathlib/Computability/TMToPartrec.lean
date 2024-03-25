@@ -1240,8 +1240,7 @@ def K'.elim (a b c d : List Γ') : K' → List Γ'
   | K'.stack => d
 #align turing.partrec_to_TM2.K'.elim Turing.PartrecToTM2.K'.elim
 
-/- Porting note: The equation lemma of `elim` simplifies to `match` structures. To prevent this,
-we replace equation lemmas of `elim`. -/
+-- The equation lemma of `elim` simplifies to `match` structures.
 
 theorem K'.elim_main (a b c d) : K'.elim a b c d K'.main = a := rfl
 
@@ -1251,7 +1250,6 @@ theorem K'.elim_aux (a b c d) : K'.elim a b c d K'.aux = c := rfl
 
 theorem K'.elim_stack (a b c d) : K'.elim a b c d K'.stack = d := rfl
 
-attribute [eqns K'.elim_main K'.elim_rev K'.elim_aux K'.elim_stack] K'.elim
 attribute [simp] K'.elim
 
 @[simp]
