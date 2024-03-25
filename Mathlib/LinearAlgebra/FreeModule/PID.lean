@@ -54,7 +54,6 @@ universe u v
 section Ring
 
 variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
-
 variable {ι : Type*} (b : Basis ι R M)
 
 open Submodule.IsPrincipal Submodule
@@ -89,7 +88,6 @@ end Ring
 section IsDomain
 
 variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
 
 open Submodule.IsPrincipal Set Submodule
@@ -109,7 +107,6 @@ section PrincipalIdealDomain
 open Submodule.IsPrincipal Set Submodule
 
 variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
 
 open Submodule.IsPrincipal
@@ -681,7 +678,7 @@ theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
   simp [hi]
 #align ideal.smith_coeffs_ne_zero Ideal.smithCoeffs_ne_zero
 
--- porting note: can be inferred in Lean 4 so no longer necessary
+-- Porting note: can be inferred in Lean 4 so no longer necessary
 #noalign has_quotient.quotient.module
 
 end Ideal

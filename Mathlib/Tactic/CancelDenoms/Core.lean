@@ -3,7 +3,8 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Data.Tree
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.NormNum.Core
@@ -67,7 +68,7 @@ theorem pow_subst {α} [CommRing α] {n e1 t1 k l : α} {e2 : ℕ}
   rw [← h2, ← h1, mul_pow, mul_assoc]
 
 theorem inv_subst {α} [Field α] {n k e : α} (h2 : e ≠ 0) (h3 : n * e = k) :
-    k * (e ⁻¹) = n := by rw [← div_eq_mul_inv, ← h3, mul_div_cancel _ h2]
+    k * (e ⁻¹) = n := by rw [← div_eq_mul_inv, ← h3, mul_div_cancel_right₀ _ h2]
 
 theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
@@ -338,7 +339,7 @@ def cancelDenominatorsTarget : TacticM Unit := do
 
 def cancelDenominators (loc : Location) : TacticM Unit := do
   withLocation loc cancelDenominatorsAt cancelDenominatorsTarget
-    (λ _ => throwError "Failed to cancel any denominators")
+    (fun _ ↦ throwError "Failed to cancel any denominators")
 
 elab "cancel_denoms" loc?:(location)? : tactic => do
   cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))

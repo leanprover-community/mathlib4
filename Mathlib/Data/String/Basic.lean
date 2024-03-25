@@ -77,10 +77,14 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
     induction s₁ generalizing s₂ <;> cases s₂
     · decide
     · rename_i c₂ cs₂; apply iff_of_true
-      · unfold ltb; simp [Iterator.hasNext, csize_pos]
+      · unfold ltb
+        -- Adaptation note: v4.7.0-rc1 exclude reduceMk from simp
+        simp [-reduceMk, Iterator.hasNext, csize_pos]
       · apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih; apply iff_of_false
-      · unfold ltb; simp [Iterator.hasNext]
+      · unfold ltb
+        -- Adaptation note: v4.7.0-rc1 exclude reduceMk from simp
+        simp [-reduceMk, Iterator.hasNext]
       · apply not_lt_of_lt; apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
       simp only [Iterator.hasNext, Pos.byteIdx_zero, endPos, utf8ByteSize, utf8ByteSize.go,

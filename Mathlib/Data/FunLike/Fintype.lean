@@ -19,8 +19,8 @@ This corresponds to the following two pairs of declarations:
    codomain are.
  * `DFunLike.finite` is a lemma stating all `DFunLike`s are finite if their domain and
    codomain are.
- * `DFunLike.fintype'` is a non-dependent version of `DFunLike.fintype` and
- * `DFunLike.finite` is a non-dependent version of `DFunLike.finite`, because dependent instances
+ * `FunLike.fintype` is a non-dependent version of `DFunLike.fintype` and
+ * `FunLike.finite` is a non-dependent version of `DFunLike.finite`, because dependent instances
    are harder to infer.
 
 You can use these to produce instances for specific `DFunLike` types.

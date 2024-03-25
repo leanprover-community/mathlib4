@@ -145,7 +145,8 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
     rw [integral_Icc_eq_integral_Ioc, ← uIoc_of_le h, this]
     rw [intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le h
       (f := fun a ↦ -1 * rexp (-(r * a))) _ _]
-    rw [ENNReal.toReal_ofReal_eq_iff.2 (by norm_num; positivity)]
+    rw [ENNReal.toReal_ofReal_eq_iff.2
+      (by set_option tactic.skipAssignedInstances false in norm_num; positivity)]
     · norm_num; ring
     · simp only [intervalIntegrable_iff, uIoc_of_le h]
       exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
@@ -155,7 +156,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
     · simp only [neg_mul, one_mul]
       exact fun _ _ ↦ HasDerivAt.hasDerivWithinAt hasDerivAt_neg_exp_mul_exp
     · apply Integrable.aestronglyMeasurable (Integrable.const_mul _ _)
-      rw [← integrableOn_def, integrableOn_Icc_iff_integrableOn_Ioc]
+      rw [← IntegrableOn, integrableOn_Icc_iff_integrableOn_Ioc]
       exact exp_neg_integrableOn_Ioc hr
     · refine ne_of_lt (IntegrableOn.set_lintegral_lt_top ?_)
       rw [integrableOn_Icc_iff_integrableOn_Ioc]

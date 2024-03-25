@@ -93,7 +93,7 @@ lemma inf_div (a b c : α) : (a ⊓ b) / c = a / c ⊓ b / c := (OrderIso.divRig
 -- Chapter V, 1.E
 -- See also `one_le_pow_iff` for the existing version in linear orders
 @[to_additive]
-lemma pow_two_semiclosed [CovariantClass α α (· * ·) (· ≤ ·)]
+lemma pow_two_semiclosed
     [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a : α} (ha : 1 ≤ a ^ 2) : 1 ≤ a := by
   suffices this : (a ⊓ 1) * (a ⊓ 1) = a ⊓ 1 by
     rwa [← inf_eq_right, ← mul_right_eq_self]

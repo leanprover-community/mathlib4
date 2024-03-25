@@ -32,7 +32,7 @@ open scoped BigOperators
 
 namespace Imo2013Q1
 
--- porting note: simplified proof using `positivity`
+-- Porting note: simplified proof using `positivity`
 theorem arith_lemma (k n : ℕ) : 0 < 2 * n + 2 ^ k.succ := by positivity
 #align imo2013_q1.arith_lemma Imo2013Q1.arith_lemma
 
@@ -75,7 +75,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
         field_simp
         ring
       _ = (1 + 1 / (2 * t + 2 ^ pk.succ)) * (1 + (2 ^ pk - 1) / t_succ) := by
-        -- porting note: used to work with `norm_cast`
+        -- Porting note: used to work with `norm_cast`
         simp only [t_succ, PNat.mk_coe, Nat.cast_add, Nat.cast_one, mul_eq_mul_right_iff]
         left
         rfl
