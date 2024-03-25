@@ -355,7 +355,7 @@ example {n : Nat} : True := by
   simp [] at n n n |-
 
 variable {n : Nat} (h : n + 0 = n) in
-inspect
+--inspect
 get
 example : True := by
   simp (config := {singlePass := true}) [] at h |-
