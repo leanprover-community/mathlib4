@@ -187,7 +187,7 @@ theorem copy_eq (u : αˣ) (val hv inv hi) : u.copy val hv inv hi = u :=
 #align units.copy_eq Units.copy_eq
 #align add_units.copy_eq AddUnits.copy_eq
 
-/-- Units of a monoid form have an induced multiplication. -/
+/-- Units of a monoid have an induced multiplication. -/
 @[to_additive "Additive units of an additive monoid have an induced addition."]
 instance : Mul αˣ where
   mul u₁ u₂ :=
@@ -200,7 +200,7 @@ instance : Mul αˣ where
 instance : One αˣ where
   one := ⟨1, 1, one_mul 1, one_mul 1⟩
 
-/-- Units of a monoid form have a multiplication and multiplicative identity. -/
+/-- Units of a monoid have a multiplication and multiplicative identity. -/
 @[to_additive "Additive units of an additive monoid have an addition and an additive identity."]
 instance instMulOneClass : MulOneClass αˣ where
   one_mul u := ext <| one_mul (u : α)
@@ -1190,9 +1190,8 @@ section NoncomputableDefs
 
 variable {M : Type*}
 
--- Unused linter bug at `hM`
 /-- Constructs an inv operation for a `Monoid` consisting only of units. -/
-noncomputable def invOfIsUnit [_hM : Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
+noncomputable def invOfIsUnit [Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
   inv := fun a =>  ↑(h a).unit⁻¹
 
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
