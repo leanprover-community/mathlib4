@@ -168,7 +168,7 @@ def toIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R)
     exact Set.PartiallyWellOrderedOn.imageProdLex x.isPWO_support'
 
 /-- The equivalence between iterated Hahn series and Hahn series on the lex product. -/
-@[simps?]
+@[simps]
 def iterateEquiv {Γ' : Type*} [PartialOrder Γ'] :
     HahnSeries Γ (HahnSeries Γ' R) ≃ HahnSeries (Γ ×ₗ Γ') R where
   toFun := ofIterate

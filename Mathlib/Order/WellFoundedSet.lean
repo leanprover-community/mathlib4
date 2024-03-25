@@ -847,7 +847,9 @@ theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
     · by_contra hx
       rw [Nat.not_lt] at hx
       have hhc : (ofLex f (g 0)).1 < (ofLex f (g n)).1 := hc.choose_spec
-      have hhg : g n = g 0 := by simp_all only [OrderEmbedding.le_iff_le, nonpos_iff_eq_zero]
+      have hhg : g n = g 0 := by
+        simp_all only [OrderEmbedding.le_iff_le, nonpos_iff_eq_zero]
+        exact congrArg (⇑g) hx
       simp_all [hhg]
     · refine (Prod.Lex.le_iff (f (g 0)) _).mpr ?_
       left
