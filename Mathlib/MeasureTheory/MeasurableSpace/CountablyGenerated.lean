@@ -63,7 +63,7 @@ lemma countable_countableGeneratingSet [MeasurableSpace α] [h : CountablyGenera
   Countable.insert _ h.isCountablyGenerated.choose_spec.1
 
 lemma generateFrom_countableGeneratingSet [m : MeasurableSpace α] [h : CountablyGenerated α] :
-    generateFrom (countableGeneratingSet _) = m :=
+    generateFrom (countableGeneratingSet α) = m :=
   (generateFrom_insert_empty _).trans <| h.isCountablyGenerated.choose_spec.2.symm
 
 lemma empty_mem_countableGeneratingSet [MeasurableSpace α] [CountablyGenerated α] :
