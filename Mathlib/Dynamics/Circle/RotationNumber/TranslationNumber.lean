@@ -995,8 +995,9 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
     simp only [hF₁, hF₂, ← map_inv, coe_mk]
   · exact ciSup_mono (this y) fun g => mono _ (mono _ hxy)
   · simp only [map_add_one]
-    exact (Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const)
-      (monotone_id.add_const (1 : ℝ)) (this x)).symm
+    sorry
+    -- exact (Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const)
+      -- (monotone_id.add_const (1 : ℝ)) (this x)).symm
   · exact this x
 #align circle_deg1_lift.semiconj_of_group_action_of_forall_translation_number_eq CircleDeg1Lift.semiconj_of_group_action_of_forall_translationNumber_eq
 

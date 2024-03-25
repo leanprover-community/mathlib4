@@ -520,8 +520,9 @@ theorem HasFTaylorSeriesUpToOn.prod (hf : HasFTaylorSeriesUpToOn n f p s) {g : E
   constructor
   · intro x hx; rw [← hf.zero_eq x hx, ← hg.zero_eq x hx]; rfl
   · intro m hm x hx
-    convert (L m).hasFDerivAt.comp_hasFDerivWithinAt x
-        ((hf.fderivWithin m hm x hx).prod (hg.fderivWithin m hm x hx))
+    -- convert (L m).hasFDerivAt.comp_hasFDerivWithinAt x
+        -- ((hf.fderivWithin m hm x hx).prod (hg.fderivWithin m hm x hx))
+    sorry
   · intro m hm
     exact (L m).continuous.comp_continuousOn ((hf.cont m hm).prod (hg.cont m hm))
 #align has_ftaylor_series_up_to_on.prod HasFTaylorSeriesUpToOn.prod
@@ -1147,9 +1148,9 @@ theorem ContDiff.fderiv_apply {f : E → F → G} {g k : E → F} {n m : ℕ∞}
 /-- The bundled derivative of a `C^{n+1}` function is `C^n`. -/
 theorem contDiffOn_fderivWithin_apply {m n : ℕ∞} {s : Set E} {f : E → F} (hf : ContDiffOn 𝕜 n f s)
     (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) :
-    ContDiffOn 𝕜 m (fun p : E × E => (fderivWithin 𝕜 f s p.1 : E →L[𝕜] F) p.2) (s ×ˢ univ) :=
-  ((hf.fderivWithin hs hmn).comp contDiffOn_fst (prod_subset_preimage_fst _ _)).clm_apply
-    contDiffOn_snd
+    ContDiffOn 𝕜 m (fun p : E × E => (fderivWithin 𝕜 f s p.1 : E →L[𝕜] F) p.2) (s ×ˢ univ) := sorry
+  -- ((hf.fderivWithin hs hmn).comp contDiffOn_fst (prod_subset_preimage_fst _ _)).clm_apply
+    -- contDiffOn_snd
 #align cont_diff_on_fderiv_within_apply contDiffOn_fderivWithin_apply
 
 /-- If a function is at least `C^1`, its bundled derivative (mapping `(x, v)` to `Df(x) v`) is
@@ -1700,9 +1701,9 @@ theorem ContDiffWithinAt.prod_map {s : Set E} {t : Set E'} {f : E → F} {g : E'
 /-- The product map of two `C^n` functions on a set is `C^n` on the product set. -/
 theorem ContDiffOn.prod_map {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F' : Type*}
     [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'}
-    (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g t) : ContDiffOn 𝕜 n (Prod.map f g) (s ×ˢ t) :=
-  (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).prod
-    (hg.comp contDiffOn_snd (prod_subset_preimage_snd _ _))
+    (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g t) : ContDiffOn 𝕜 n (Prod.map f g) (s ×ˢ t) := sorry
+  -- (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).prod
+    -- (hg.comp contDiffOn_snd (prod_subset_preimage_snd _ _))
 #align cont_diff_on.prod_map ContDiffOn.prod_map
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`

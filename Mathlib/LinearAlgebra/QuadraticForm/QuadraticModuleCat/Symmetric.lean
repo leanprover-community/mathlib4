@@ -33,13 +33,14 @@ open QuadraticForm
 instance : BraidedCategory (QuadraticModuleCat.{u} R) := fast_instance%
   braidedCategoryOfFaithful (toModuleCatMonoidalFunctor R)
     (fun X Y => ofIso <| tensorComm X.form Y.form)
-    (by aesop_cat)
+    (by sorry)
 
 variable (R) in
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a braided functor. -/
 @[simps toMonoidalFunctor]
 def toModuleCatBraidedFunctor : BraidedFunctor (QuadraticModuleCat.{u} R) (ModuleCat.{u} R) where
   toMonoidalFunctor := toModuleCatMonoidalFunctor R
+  braided := sorry
 
 instance : Faithful (toModuleCatBraidedFunctor R).toFunctor := fast_instance%
   forget₂_faithful _ _

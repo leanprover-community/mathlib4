@@ -376,8 +376,8 @@ set_option linter.uppercaseLean3 false in
 theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro hf x₁ x₂ h
-    let g₁ : of PUnit ⟶ X := ⟨fun _ => x₁, continuous_const⟩
-    let g₂ : of PUnit ⟶ X := ⟨fun _ => x₂, continuous_const⟩
+    let g₁ : of PUnit.{u+1} ⟶ X := ⟨fun _ => x₁, continuous_const⟩
+    let g₂ : of PUnit.{u+1} ⟶ X := ⟨fun _ => x₂, continuous_const⟩
     have : g₁ ≫ f = g₂ ≫ f := by
       ext
       exact h

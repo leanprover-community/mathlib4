@@ -64,7 +64,7 @@ instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Alg
   neg_mem {s a} ha := show -a ∈ s.toSubalgebra from neg_mem ha
 
 -- this uses the `Star` instance `s` inherits from `StarMemClass (StarSubalgebra R A) A`
-instance starRing (s : StarSubalgebra R A) : StarRing s := fast_instance%
+instance starRing (s : StarSubalgebra R A) : StarRing s :=
   { StarMemClass.instStar s with
     star_involutive := fun r => Subtype.ext (star_star (r : A))
     star_mul := fun r₁ r₂ => Subtype.ext (star_mul (r₁ : A) (r₂ : A))

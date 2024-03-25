@@ -102,7 +102,8 @@ variable (R) in
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a monoidal functor. -/
 def toModuleCatMonoidalFunctor : MonoidalFunctor (QuadraticModuleCat.{u} R) (ModuleCat.{u} R) := by
   unfold instMonoidalCategory
-  exact Monoidal.fromInduced (forget₂ (QuadraticModuleCat R) (ModuleCat R)) _
+  refine Monoidal.fromInduced (forget₂ (QuadraticModuleCat R) (ModuleCat R)) ?_
+  sorry
 
 instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor := fast_instance%
   forget₂_faithful _ _

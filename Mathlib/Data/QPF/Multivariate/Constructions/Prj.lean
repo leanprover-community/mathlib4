@@ -26,7 +26,7 @@ variable {n : ℕ} (i : Fin2 n)
 def Prj (v : TypeVec.{u} n) : Type u := v i
 #align mvqpf.prj MvQPF.Prj
 
-instance Prj.inhabited {v : TypeVec.{u} n} [Inhabited (v i)] : Inhabited (Prj i v) := fast_instance%
+instance Prj.inhabited {v : TypeVec.{u} n} [Inhabited (v i)] : Inhabited (Prj i v) :=
   ⟨(default : v i)⟩
 #align mvqpf.prj.inhabited MvQPF.Prj.inhabited
 
@@ -34,7 +34,7 @@ instance Prj.inhabited {v : TypeVec.{u} n} [Inhabited (v i)] : Inhabited (Prj i 
 def Prj.map ⦃α β : TypeVec n⦄ (f : α ⟹ β) : Prj i α → Prj i β := f _
 #align mvqpf.prj.map MvQPF.Prj.map
 
-instance Prj.mvfunctor : MvFunctor (Prj i) where map := fast_instance% @Prj.map _ i
+instance Prj.mvfunctor : MvFunctor (Prj i) where map :=  @Prj.map _ i
 #align mvqpf.prj.mvfunctor MvQPF.Prj.mvfunctor
 
 /-- Polynomial representation of the projection functor -/

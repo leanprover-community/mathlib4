@@ -126,7 +126,7 @@ def Cofix.map {α β : TypeVec n} (g : α ⟹ β) : Cofix F α → Cofix F β :=
       show r' (g <$$> aa₁) (g <$$> aa₂); exact ⟨aa₁, aa₂, ra₁a₂, rfl, rfl⟩)
 #align mvqpf.cofix.map MvQPF.Cofix.map
 
-instance Cofix.mvfunctor : MvFunctor (Cofix F) where map := fast_instance% @Cofix.map _ _ _ _
+instance Cofix.mvfunctor : MvFunctor (Cofix F) where map :=  @Cofix.map _ _ _ _
 #align mvqpf.cofix.mvfunctor MvQPF.Cofix.mvfunctor
 
 /-- Corecursor for `Cofix F` -/

@@ -60,7 +60,7 @@ instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) := fast
   ⟨⟨default, default⟩⟩
 #align pfunctor.obj.inhabited PFunctor.Obj.inhabited
 
-instance : Functor.{v, max u v} P.Obj where map := fast_instance% @map P
+instance : Functor.{v, max u v} P.Obj where map := @map P
 
 /-- We prefer `PFunctor.map` to `Functor.map` because it is universe-polymorphic. -/
 @[simp]

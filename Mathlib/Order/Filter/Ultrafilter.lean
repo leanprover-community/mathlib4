@@ -342,10 +342,10 @@ instance instBind : Bind Ultrafilter := fast_instance%
   ⟨@Ultrafilter.bind⟩
 #align ultrafilter.has_bind Ultrafilter.instBind
 
-instance functor : Functor Ultrafilter where map := fast_instance% @Ultrafilter.map
+instance functor : Functor Ultrafilter where map := @Ultrafilter.map
 #align ultrafilter.functor Ultrafilter.functor
 
-instance monad : Monad Ultrafilter where map := fast_instance% @Ultrafilter.map
+instance monad : Monad Ultrafilter where map := @Ultrafilter.map
 #align ultrafilter.monad Ultrafilter.monad
 
 section

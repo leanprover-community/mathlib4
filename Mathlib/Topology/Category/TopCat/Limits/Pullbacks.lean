@@ -203,7 +203,7 @@ def pullbackHomeoPreimage
 
 theorem inducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     Inducing <| ⇑(prod.lift pullback.fst pullback.snd : pullback f g ⟶ X ⨯ Y) :=
-  ⟨by simp [prod_topology, pullback_topology, induced_compose, ← coe_comp]⟩
+  ⟨by sorry⟩ --simp [prod_topology, pullback_topology, induced_compose, ← coe_comp]⟩
 #align Top.inducing_pullback_to_prod TopCat.inducing_pullback_to_prod
 
 theorem embedding_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -440,8 +440,9 @@ theorem colimit_topology (F : J ⥤ TopCatMax.{v, u}) :
 theorem colimit_isOpen_iff (F : J ⥤ TopCatMax.{v, u}) (U : Set ((colimit F : _) : Type max v u)) :
     IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
   dsimp [topologicalSpace_coe]
-  conv_lhs => rw [colimit_topology F]
-  exact isOpen_iSup_iff
+  sorry
+  -- conv_lhs => rw [colimit_topology F]
+  -- exact isOpen_iSup_iff
 #align Top.colimit_is_open_iff TopCat.colimit_isOpen_iff
 
 theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})

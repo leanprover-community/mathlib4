@@ -242,7 +242,7 @@ protected def semigroupWithZero [SemigroupWithZero β] : SemigroupWithZero α :=
 #align equiv.semigroup_with_zero Equiv.semigroupWithZero
 
 @[to_additive]
-noncomputable instance [Small.{v} α] [SemigroupWithZero α] : SemigroupWithZero (Shrink.{v} α) := fast_instance%
+noncomputable instance [Small.{v} α] [SemigroupWithZero α] : SemigroupWithZero (Shrink.{v} α) :=
   (equivShrink α).symm.semigroupWithZero
 
 /-- Transfer `CommSemigroup` across an `Equiv` -/

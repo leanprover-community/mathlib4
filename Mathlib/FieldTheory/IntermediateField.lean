@@ -400,9 +400,9 @@ instance isScalarTower_mid' : IsScalarTower K S L := fast_instance%
 
 section shortcut_instances
 variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
-instance : Algebra S T := fast_instance% T.algebra
-instance : Module S T := fast_instance% Algebra.toModule
-instance : SMul S T := fast_instance% Algebra.toSMul
+instance : Algebra S T := T.algebra
+instance : Module S T := Algebra.toModule
+instance : SMul S T := Algebra.toSMul
 instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := fast_instance% T.isScalarTower
 end shortcut_instances
 

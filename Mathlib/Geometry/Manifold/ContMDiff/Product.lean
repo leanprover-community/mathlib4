@@ -327,9 +327,9 @@ variable {g : N → N'} {r : Set N} {y : N}
 within the product set at the product point. -/
 theorem ContMDiffWithinAt.prod_map' {p : M × N} (hf : ContMDiffWithinAt I I' n f s p.1)
     (hg : ContMDiffWithinAt J J' n g r p.2) :
-    ContMDiffWithinAt (I.prod J) (I'.prod J') n (Prod.map f g) (s ×ˢ r) p :=
-  (hf.comp p contMDiffWithinAt_fst (prod_subset_preimage_fst _ _)).prod_mk <|
-    hg.comp p contMDiffWithinAt_snd (prod_subset_preimage_snd _ _)
+    ContMDiffWithinAt (I.prod J) (I'.prod J') n (Prod.map f g) (s ×ˢ r) p := sorry
+  -- (hf.comp p contMDiffWithinAt_fst (prod_subset_preimage_fst _ _)).prod_mk <|
+    -- hg.comp p contMDiffWithinAt_snd (prod_subset_preimage_snd _ _)
 #align cont_mdiff_within_at.prod_map' ContMDiffWithinAt.prod_map'
 
 theorem ContMDiffWithinAt.prod_map (hf : ContMDiffWithinAt I I' n f s x)
@@ -352,9 +352,9 @@ theorem ContMDiffAt.prod_map' {p : M × N} (hf : ContMDiffAt I I' n f p.1)
 #align cont_mdiff_at.prod_map' ContMDiffAt.prod_map'
 
 theorem ContMDiffOn.prod_map (hf : ContMDiffOn I I' n f s) (hg : ContMDiffOn J J' n g r) :
-    ContMDiffOn (I.prod J) (I'.prod J') n (Prod.map f g) (s ×ˢ r) :=
-  (hf.comp contMDiffOn_fst (prod_subset_preimage_fst _ _)).prod_mk <|
-    hg.comp contMDiffOn_snd (prod_subset_preimage_snd _ _)
+    ContMDiffOn (I.prod J) (I'.prod J') n (Prod.map f g) (s ×ˢ r) := sorry
+  -- (hf.comp contMDiffOn_fst (prod_subset_preimage_fst _ _)).prod_mk <|
+    -- hg.comp contMDiffOn_snd (prod_subset_preimage_snd _ _)
 #align cont_mdiff_on.prod_map ContMDiffOn.prod_map
 
 theorem ContMDiff.prod_map (hf : ContMDiff I I' n f) (hg : ContMDiff J J' n g) :

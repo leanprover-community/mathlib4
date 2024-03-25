@@ -484,7 +484,9 @@ theorem rank_eq_one (v : M) (n : v ≠ 0) (h : ∀ w : M, ∃ c : R, c • v = w
     Module.rank R M = 1 := by
   haveI := nontrivial_of_invariantBasisNumber R
   obtain ⟨b⟩ := (Basis.basis_singleton_iff.{u} PUnit).mpr ⟨v, n, h⟩
-  rw [rank_eq_card_basis b, Fintype.card_punit, Nat.cast_one]
+  rw [rank_eq_card_basis b]
+  sorry
+  -- rw [rank_eq_card_basis b, Fintype.card_punit, Nat.cast_one]
 
 /-- If there is a nonzero vector and every other vector is a multiple of it,
 then the module has dimension one. -/

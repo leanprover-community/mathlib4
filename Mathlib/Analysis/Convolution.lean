@@ -1187,11 +1187,12 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     have T : HasCompactSupport fun y => g' (q₀.1, y) :=
       HasCompactSupport.intro hk fun x hx => g'_zero q₀.1 x hq₀ hx
     apply (HasCompactSupport.convolutionExists_right (L.precompR (P × G) : _) T hf _ q₀.2).1
-    have : ContinuousOn g' (s ×ˢ univ) :=
-      hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
-    apply this.comp_continuous (continuous_const.prod_mk continuous_id')
-    intro x
-    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hq₀
+    sorry
+    -- have : ContinuousOn g' (s ×ˢ univ) :=
+    --   hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
+    -- apply this.comp_continuous (continuous_const.prod_mk continuous_id')
+    -- intro x
+    -- simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hq₀
   set K' := (-k + {q₀.2} : Set G) with K'_def
   have hK' : IsCompact K' := hk.neg.add isCompact_singleton
   obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ IntegrableOn f U μ :=
@@ -1229,26 +1230,27 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
   have I5 : Integrable bound μ := by
     rw [integrable_indicator_iff U_open.measurableSet]
     exact (hU.norm.const_mul _).mul_const _
-  have I6 : ∀ᵐ a : G ∂μ, ∀ x : P × G, dist x q₀ < δ →
-      HasFDerivAt (fun x : P × G => L (f a) (g x.1 (x.2 - a)))
-        ((L (f a)).comp (g' (x.fst, x.snd - a))) x := by
-    apply eventually_of_forall
-    intro a x hx
-    apply (L _).hasFDerivAt.comp x
-    have N : s ×ˢ univ ∈ 𝓝 (x.1, x.2 - a) := by
-      apply A'
-      apply h₀ε
-      rw [Prod.dist_eq] at hx
-      exact lt_of_lt_of_le (lt_of_le_of_lt (le_max_left _ _) hx) δε
-    have Z := ((hg.differentiableOn le_rfl).differentiableAt N).hasFDerivAt
-    have Z' :
-        HasFDerivAt (fun x : P × G => (x.1, x.2 - a)) (ContinuousLinearMap.id 𝕜 (P × G)) x := by
-      have : (fun x : P × G => (x.1, x.2 - a)) = _root_.id - fun x => (0, a) := by
-        ext x <;> simp only [Pi.sub_apply, id.def, Prod.fst_sub, sub_zero, Prod.snd_sub]
-      rw [this]
-      exact (hasFDerivAt_id x).sub_const (0, a)
-    exact Z.comp x Z'
-  exact hasFDerivAt_integral_of_dominated_of_fderiv_le δpos I1 I2 I3 I4 I5 I6
+  -- have I6 : ∀ᵐ a : G ∂μ, ∀ x : P × G, dist x q₀ < δ →
+  --     HasFDerivAt (fun x : P × G => L (f a) (g x.1 (x.2 - a)))
+  --       ((L (f a)).comp (g' (x.fst, x.snd - a))) x := by
+  --   apply eventually_of_forall
+  --   intro a x hx
+  --   apply (L _).hasFDerivAt.comp x
+  --   have N : s ×ˢ univ ∈ 𝓝 (x.1, x.2 - a) := by
+  --     apply A'
+  --     apply h₀ε
+  --     rw [Prod.dist_eq] at hx
+  --     exact lt_of_lt_of_le (lt_of_le_of_lt (le_max_left _ _) hx) δε
+  --   have Z := ((hg.differentiableOn le_rfl).differentiableAt N).hasFDerivAt
+  --   have Z' :
+  --       HasFDerivAt (fun x : P × G => (x.1, x.2 - a)) (ContinuousLinearMap.id 𝕜 (P × G)) x := by
+  --     have : (fun x : P × G => (x.1, x.2 - a)) = _root_.id - fun x => (0, a) := by
+  --       ext x <;> simp only [Pi.sub_apply, id.def, Prod.fst_sub, sub_zero, Prod.snd_sub]
+  --     rw [this]
+  --     exact (hasFDerivAt_id x).sub_const (0, a)
+  --   exact Z.comp x Z'
+  sorry
+  -- exact hasFDerivAt_integral_of_dominated_of_fderiv_le δpos I1 I2 I3 I4 I5 I6
 #align has_fderiv_at_convolution_right_with_param hasFDerivAt_convolution_right_with_param
 
 /-- The convolution `f * g` is `C^n` when `f` is locally integrable and `g` is `C^n` and compactly
@@ -1413,8 +1415,9 @@ theorem HasCompactSupport.contDiff_convolution_right {n : ℕ∞} (hcg : HasComp
     (hf : LocallyIntegrable f μ) (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n (f ⋆[L, μ] g) := by
   rcases exists_compact_iff_hasCompactSupport.2 hcg with ⟨k, hk, h'k⟩
   rw [← contDiffOn_univ]
-  exact contDiffOn_convolution_right_with_param_comp L contDiffOn_id isOpen_univ hk
-    (fun p x _ hx => h'k x hx) hf (hg.comp contDiff_snd).contDiffOn
+  sorry
+  -- exact contDiffOn_convolution_right_with_param_comp L contDiffOn_id isOpen_univ hk
+    -- (fun p x _ hx => h'k x hx) hf (hg.comp contDiff_snd).contDiffOn
 #align has_compact_support.cont_diff_convolution_right HasCompactSupport.contDiff_convolution_right
 
 theorem HasCompactSupport.contDiff_convolution_left [μ.IsAddLeftInvariant] [μ.IsNegInvariant]

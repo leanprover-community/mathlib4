@@ -550,8 +550,8 @@ alias commutative_of_add_cyclic_center_quotient := commutative_of_addCyclic_cent
 @[to_additive commutativeOfAddCycleCenterQuotient
       "A group is commutative if the quotient by the center is cyclic."]
 def commGroupOfCycleCenterQuotient [IsCyclic H] (f : G →* H) (hf : f.ker ≤ center G) :
-    CommGroup G :=
-  { show Group G by infer_instance with mul_comm := fast_instance% commutative_of_cyclic_center_quotient f hf }
+    CommGroup G := fast_instance%
+  { show Group G by infer_instance with mul_comm := commutative_of_cyclic_center_quotient f hf }
 #align comm_group_of_cycle_center_quotient commGroupOfCycleCenterQuotient
 #align commutative_of_add_cycle_center_quotient commutativeOfAddCycleCenterQuotient
 

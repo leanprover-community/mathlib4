@@ -2126,7 +2126,7 @@ instance : Pure Filter := fast_instance%
 instance : Bind Filter := fast_instance%
   ⟨@Filter.bind⟩
 
-instance : Functor Filter where map := fast_instance% @Filter.map
+instance : Functor Filter where map := @Filter.map
 
 instance : LawfulFunctor (Filter : Type u → Type u) where
   id_map _ := map_id

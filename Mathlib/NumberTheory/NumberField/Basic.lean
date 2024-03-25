@@ -84,7 +84,7 @@ theorem isIntegral_of_mem_ringOfIntegers {K : Type*} [Field K] {x : K} (hx : x �
 #align number_field.is_integral_of_mem_ring_of_integers NumberField.isIntegral_of_mem_ringOfIntegers
 
 /-- Given an algebra between two fields, create an algebra between their two rings of integers. -/
-instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) := fast_instance%
+instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
   RingHom.toAlgebra
     { toFun := fun k => ⟨algebraMap K L k, IsIntegral.algebraMap k.2⟩
       map_zero' := Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_zero, map_zero]

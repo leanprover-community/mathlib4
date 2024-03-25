@@ -47,7 +47,7 @@ inductive Short : PGame.{u} → Type (u + 1)
 -- The simplifier can already prove this using `eq_iff_true_of_subsingleton`
 attribute [nolint simpNF] Short.mk.injEq
 
-instance subsingleton_short (x : PGame) : Subsingleton (Short x) := fast_instance% by
+instance subsingleton_short (x : PGame) : Subsingleton (Short x) :=  by
   induction x with
   | mk xl xr xL xR =>
     constructor
@@ -105,7 +105,7 @@ def fintypeLeft {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} [
 
 attribute [local instance] fintypeLeft
 
-instance fintypeLeftMoves (x : PGame) [S : Short x] : Fintype x.LeftMoves := fast_instance% by
+instance fintypeLeftMoves (x : PGame) [S : Short x] : Fintype x.LeftMoves :=  by
   cases S; assumption
 #align pgame.fintype_left_moves SetTheory.PGame.fintypeLeftMoves
 
@@ -118,11 +118,11 @@ def fintypeRight {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} 
 
 attribute [local instance] fintypeRight
 
-instance fintypeRightMoves (x : PGame) [S : Short x] : Fintype x.RightMoves := fast_instance% by
+instance fintypeRightMoves (x : PGame) [S : Short x] : Fintype x.RightMoves :=  by
   cases S; assumption
 #align pgame.fintype_right_moves SetTheory.PGame.fintypeRightMoves
 
-instance moveLeftShort (x : PGame) [S : Short x] (i : x.LeftMoves) : Short (x.moveLeft i) := fast_instance% by
+instance moveLeftShort (x : PGame) [S : Short x] (i : x.LeftMoves) : Short (x.moveLeft i) :=  by
   cases' S with _ _ _ _ L _ _ _; apply L
 #align pgame.move_left_short SetTheory.PGame.moveLeftShort
 
@@ -136,7 +136,7 @@ def moveLeftShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (i : xl) : Short
 
 attribute [local instance] moveLeftShort'
 
-instance moveRightShort (x : PGame) [S : Short x] (j : x.RightMoves) : Short (x.moveRight j) := fast_instance% by
+instance moveRightShort (x : PGame) [S : Short x] (j : x.RightMoves) : Short (x.moveRight j) :=  by
   cases' S with _ _ _ _ _ R _ _; apply R
 #align pgame.move_right_short SetTheory.PGame.moveRightShort
 
@@ -175,11 +175,11 @@ def Short.ofIsEmpty {l r xL xR} [IsEmpty l] [IsEmpty r] : Short (PGame.mk l r xL
   exact Short.mk isEmptyElim isEmptyElim
 #align pgame.short.of_is_empty SetTheory.PGame.Short.ofIsEmpty
 
-instance short0 : Short 0 := fast_instance%
+instance short0 : Short 0 :=
   Short.ofIsEmpty
 #align pgame.short_0 SetTheory.PGame.short0
 
-instance short1 : Short 1 := fast_instance%
+instance short1 : Short 1 :=
   Short.mk (fun i => by cases i; infer_instance) fun j => by cases j
 #align pgame.short_1 SetTheory.PGame.short1
 
@@ -256,16 +256,16 @@ instance shortNat : ∀ n : ℕ, Short n
   | n + 1 => @PGame.shortAdd _ _ (shortNat n) PGame.short1
 #align pgame.short_nat SetTheory.PGame.shortNat
 
-instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short (no_index (OfNat.ofNat n)) := fast_instance% shortNat n
+instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short (no_index (OfNat.ofNat n)) := shortNat n
 
 -- Porting note: `bit0` and `bit1` are deprecated so these instances can probably be removed.
 set_option linter.deprecated false in
-instance shortBit0 (x : PGame.{u}) [Short x] : Short (bit0 x) := fast_instance% by dsimp [bit0]; infer_instance
+instance shortBit0 (x : PGame.{u}) [Short x] : Short (bit0 x) := by dsimp [bit0]; infer_instance
 #align pgame.short_bit0 SetTheory.PGame.shortBit0
 
-set_option linter.deprecated false in
-instance shortBit1 (x : PGame.{u}) [Short x] : Short (bit1 x) := fast_instance% by dsimp [bit1]; infer_instance
-#align pgame.short_bit1 SetTheory.PGame.shortBit1
+-- set_option linter.deprecated false in
+-- instance shortBit1 (x : PGame.{u}) [Short x] : Short (bit1 x) := by dsimp [bit1]; infer_instance
+-- #align pgame.short_bit1 SetTheory.PGame.shortBit1
 
 /-- Auxiliary construction of decidability instances.
 We build `Decidable (x ≤ y)` and `Decidable (x ⧏ y)` in a simultaneous induction.
@@ -293,19 +293,19 @@ def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ 
 termination_by x y => (x, y)
 #align pgame.le_lf_decidable SetTheory.PGame.leLFDecidable
 
-instance leDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ≤ y) := fast_instance%
+instance leDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ≤ y) :=
   (leLFDecidable x y).1
 #align pgame.le_decidable SetTheory.PGame.leDecidable
 
-instance lfDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ⧏ y) := fast_instance%
+instance lfDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ⧏ y) :=
   (leLFDecidable x y).2
 #align pgame.lf_decidable SetTheory.PGame.lfDecidable
 
-instance ltDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x < y) := fast_instance%
+instance ltDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x < y) :=
   And.decidable
 #align pgame.lt_decidable SetTheory.PGame.ltDecidable
 
-instance equivDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ≈ y) := fast_instance%
+instance equivDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ≈ y) :=
   And.decidable
 #align pgame.equiv_decidable SetTheory.PGame.equivDecidable
 

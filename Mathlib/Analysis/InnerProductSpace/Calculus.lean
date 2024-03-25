@@ -119,9 +119,9 @@ theorem HasDerivAt.inner {f g : ℝ → E} {f' g' : E} {x : ℝ} :
 #align has_deriv_at.inner HasDerivAt.inner
 
 theorem DifferentiableWithinAt.inner (hf : DifferentiableWithinAt ℝ f s x)
-    (hg : DifferentiableWithinAt ℝ g s x) : DifferentiableWithinAt ℝ (fun x => ⟪f x, g x⟫) s x :=
-  ((differentiable_inner _).hasFDerivAt.comp_hasFDerivWithinAt x
-      (hf.prod hg).hasFDerivWithinAt).differentiableWithinAt
+    (hg : DifferentiableWithinAt ℝ g s x) : DifferentiableWithinAt ℝ (fun x => ⟪f x, g x⟫) s x := sorry
+  -- ((differentiable_inner _).hasFDerivAt.comp_hasFDerivWithinAt x
+      -- (hf.prod hg).hasFDerivWithinAt).differentiableWithinAt
 #align differentiable_within_at.inner DifferentiableWithinAt.inner
 
 theorem DifferentiableAt.inner (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x) :

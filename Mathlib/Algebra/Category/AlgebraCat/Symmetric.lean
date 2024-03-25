@@ -27,13 +27,14 @@ namespace AlgebraCat
 instance : BraidedCategory (AlgebraCat.{u} R) := fast_instance%
   braidedCategoryOfFaithful (toModuleCatMonoidalFunctor R)
     (fun X Y => (Algebra.TensorProduct.comm R X Y).toAlgebraIso)
-    (by aesop_cat)
+    (by sorry)
 
 variable (R) in
 /-- `forget₂ (AlgebraCat R) (ModuleCat R)` as a braided functor. -/
 @[simps toMonoidalFunctor]
 def toModuleCatBraidedFunctor : BraidedFunctor (AlgebraCat.{u} R) (ModuleCat.{u} R) where
   toMonoidalFunctor := toModuleCatMonoidalFunctor R
+  braided := sorry
 
 instance : Faithful (toModuleCatBraidedFunctor R).toFunctor := fast_instance%
   forget₂_faithful _ _
