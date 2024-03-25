@@ -26,10 +26,8 @@ Since everything runs in parallel for quotients of `R`-algebras, we do that case
 universe uR uS uT uA u₄
 
 variable {R : Type uR} [Semiring R]
-
 variable {S : Type uS} [CommSemiring S]
 variable {T : Type uT}
-
 variable {A : Type uA} [Semiring A] [Algebra S A]
 
 namespace RingCon

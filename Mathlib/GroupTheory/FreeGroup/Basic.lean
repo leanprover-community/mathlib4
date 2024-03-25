@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Sublists
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.InsertNth
 import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import group_theory.free_group from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
@@ -753,8 +753,12 @@ theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f 
 #align free_add_group.ext_hom FreeAddGroup.ext_hom
 
 @[to_additive]
+theorem lift_of_eq_id (α) : lift of = MonoidHom.id (FreeGroup α) :=
+  lift.apply_symm_apply (MonoidHom.id _)
+
+@[to_additive]
 theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
-  DFunLike.congr_fun (lift.apply_symm_apply (MonoidHom.id _)) x
+  DFunLike.congr_fun (lift_of_eq_id α) x
 #align free_group.lift.of_eq FreeGroup.lift.of_eq
 #align free_add_group.lift.of_eq FreeAddGroup.lift.of_eq
 
@@ -776,6 +780,14 @@ theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
   exact ⟨FreeGroup.of a, by simp only [lift.of]⟩
 #align free_group.lift.range_eq_closure FreeGroup.lift.range_eq_closure
 #align free_add_group.lift.range_eq_closure FreeAddGroup.lift.range_eq_closure
+
+/-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
+set of generators equals `⊤`. -/
+@[to_additive (attr := simp)]
+theorem closure_range_of (α) :
+    Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
+  rw [← lift.range_eq_closure, lift_of_eq_id]
+  exact MonoidHom.range_top_of_surjective _ Function.surjective_id
 
 end lift
 
@@ -1000,10 +1012,10 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
   right_inv x :=
     Int.induction_on x (by simp)
       (fun i ih => by
-        simp only [zpow_coe_nat, map_pow, map.of] at ih
+        simp only [zpow_natCast, map_pow, map.of] at ih
         simp [zpow_add, ih])
       (fun i ih => by
-        simp only [zpow_neg, zpow_coe_nat, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
+        simp only [zpow_neg, zpow_natCast, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
         simp [zpow_add, ih, sub_eq_add_neg])
 #align free_group.free_group_unit_equiv_int FreeGroup.freeGroupUnitEquivInt
 

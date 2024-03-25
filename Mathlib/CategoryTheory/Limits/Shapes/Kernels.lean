@@ -59,7 +59,6 @@ open CategoryTheory.Limits.WalkingParallelPair
 namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-
 variable [HasZeroMorphisms C]
 
 /-- A morphism `f` has a kernel if the functor `ParallelPair f 0` has a limit. -/
@@ -1142,7 +1141,6 @@ end Transport
 section Comparison
 
 variable {D : Type u₂} [Category.{v₂} D] [HasZeroMorphisms D]
-
 variable (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
 
 /-- The comparison morphism for the kernel of `f`.
@@ -1220,7 +1218,6 @@ end CategoryTheory.Limits
 namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]
-
 variable [HasZeroMorphisms C]
 
 /-- `HasKernels` represents the existence of kernels for every morphism. -/

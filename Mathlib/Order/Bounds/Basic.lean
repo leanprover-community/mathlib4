@@ -1590,7 +1590,7 @@ lemma bddBelow_range_prod {F : ι → α × β} :
     BddBelow (range F) ↔ BddBelow (range <| Prod.fst ∘ F) ∧ BddBelow (range <| Prod.snd ∘ F) :=
   bddAbove_range_prod (α := αᵒᵈ) (β := βᵒᵈ)
 
-theorem isLUB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
+theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
   refine'
     ⟨fun H =>
@@ -1607,7 +1607,7 @@ theorem isLUB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × �
         H.2.2 <| monotone_snd.mem_upperBounds_image hq⟩
 #align is_lub_prod isLUB_prod
 
-theorem isGLB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
+theorem isGLB_prod {s : Set (α × β)} (p : α × β) :
     IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
   @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
 #align is_glb_prod isGLB_prod

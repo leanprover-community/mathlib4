@@ -37,11 +37,8 @@ namespace StarSubalgebra
 add_decl_doc StarSubalgebra.toSubalgebra
 
 variable {F R A B C : Type*} [CommSemiring R] [StarRing R]
-
 variable [Semiring A] [StarRing A] [Algebra R A] [StarModule R A]
-
 variable [Semiring B] [StarRing B] [Algebra R B] [StarModule R B]
-
 variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
 
 instance setLike : SetLike (StarSubalgebra R A) A where
@@ -331,9 +328,7 @@ namespace Subalgebra
 open Pointwise
 
 variable {F R A B : Type*} [CommSemiring R] [StarRing R]
-
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-
 variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
 
 /-- The pointwise `star` of a subalgebra is a subalgebra. -/
@@ -418,11 +413,8 @@ end Subalgebra
 namespace StarSubalgebra
 
 variable {F R A B : Type*} [CommSemiring R] [StarRing R]
-
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-
 variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
-
 variable (R)
 
 /-- The minimal star subalgebra that contains `s`. -/
@@ -729,11 +721,8 @@ namespace StarAlgHom
 open StarSubalgebra
 
 variable {F R A B : Type*} [CommSemiring R] [StarRing R]
-
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-
 variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
-
 variable [FunLike F A B] [AlgHomClass F R A B] [StarAlgHomClass F R A B] (f g : F)
 
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
@@ -756,7 +745,7 @@ theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃f g : F⦄ (h
   DFunLike.ext f g fun _x => StarAlgHom.adjoin_le_equalizer f g hs <| h.symm ▸ trivial
 #align star_alg_hom.ext_of_adjoin_eq_top StarAlgHom.ext_of_adjoin_eq_top
 
-theorem map_adjoin [StarModule R B] (f : A →⋆ₐ[R] B) (s : Set A) :
+theorem map_adjoin (f : A →⋆ₐ[R] B) (s : Set A) :
     map f (adjoin R s) = adjoin R (f '' s) :=
   GaloisConnection.l_comm_of_u_comm Set.image_preimage (gc_map_comap f) StarSubalgebra.gc
     StarSubalgebra.gc fun _ => rfl

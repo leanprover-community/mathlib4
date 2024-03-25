@@ -35,7 +35,7 @@ lemma Set.biInter_finsetSigma_univ (s : Finset ι) (f : Sigma κ → Set α) :
 lemma Set.biInter_finsetSigma_univ' (s : Finset ι) (f : Π i, κ i → Set α) :
     ⋂ i ∈ s, ⋂ j, f i j = ⋂ ij ∈ s.sigma fun _ ↦ Finset.univ, f ij.1 ij.2 := by aesop
 
-variable [Fintype ι] [Π i, Fintype (κ i)]
+variable [Fintype ι]
 
 instance Sigma.instFintype : Fintype (Σ i, κ i) := ⟨univ.sigma fun _ ↦ univ, by simp⟩
 instance PSigma.instFintype : Fintype (Σ' i, κ i) := .ofEquiv _ (Equiv.psigmaEquivSigma _).symm

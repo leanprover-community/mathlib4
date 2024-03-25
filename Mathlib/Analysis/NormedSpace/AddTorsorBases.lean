@@ -28,9 +28,7 @@ This file contains results about bases in normed affine spaces.
 section Barycentric
 
 variable {ι 𝕜 E P : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable [MetricSpace P] [NormedAddTorsor E P]
 
 theorem isOpenMap_barycentric_coord [Nontrivial ι] (b : AffineBasis ι 𝕜 P) (i : ι) :
