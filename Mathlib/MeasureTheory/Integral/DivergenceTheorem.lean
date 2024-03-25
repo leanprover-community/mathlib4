@@ -20,9 +20,10 @@ In this file we prove the Divergence theorem for Bochner integral on a box in
 
 Let `E` be a complete normed space. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is
 continuous on a rectangular box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, differentiable on its interior with
-derivative `f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹`, and the divergence `λ x, ∑ i, f' x eᵢ i` is integrable on
-`[a, b]`, where `eᵢ = Pi.single i 1` is the `i`-th basis vector, then its integral is equal to the
-sum of integrals of `f` over the faces of `[a, b]`, taken with appropriate signs. Moreover, the same
+derivative `f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹`, and the divergence `fun x ↦ ∑ i, f' x eᵢ i`
+is integrable on `[a, b]`, where `eᵢ = Pi.single i 1` is the `i`-th basis vector,
+then its integral is equal to the sum of integrals of `f` over the faces of `[a, b]`,
+taken with appropriate signs. Moreover, the same
 is true if the function is not differentiable at countably many points of the interior of `[a, b]`.
 
 Once we prove the general theorem, we deduce corollaries for functions `ℝ → E` and pairs of
@@ -239,10 +240,9 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (
     _ ≤ ε := by
       rw [Box.Icc_def, Real.volume_Icc_pi_toReal ((J k).face i).lower_le_upper,
         ← le_div_iff (hvol_pos _)]
-      refine' div_le_div_of_le_left εpos.le (hvol_pos _)
-        (prod_le_prod (fun j _ => _) fun j _ => _)
-      exacts [sub_nonneg.2 (Box.lower_le_upper _ _),
-        sub_le_sub ((hJ_sub' _ (J _).upper_mem_Icc).2 _) ((hJ_sub' _ (J _).lower_mem_Icc).1 _)]
+      gcongr
+      exacts [hvol_pos _, fun _ _ ↦ sub_nonneg.2 (Box.lower_le_upper _ _),
+        (hJ_sub' _ (J _).upper_mem_Icc).2 _, (hJ_sub' _ (J _).lower_mem_Icc).1 _]
 #align measure_theory.integral_divergence_of_has_fderiv_within_at_off_countable_aux₂ MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂
 
 variable (a b : Fin (n + 1) → ℝ)
@@ -405,7 +405,7 @@ theorem integral_eq_of_hasDerivWithinAt_off_countable_of_le (f f' : ℝ → E) {
       · rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hle] at Hi
         exact Hi.congr_set_ae Ioc_ae_eq_Icc.symm
     _ = f b - f a := by
-      simp only [Fin.sum_univ_one, e_symm]
+      simp only [e, Fin.sum_univ_one, e_symm]
       have : ∀ c : ℝ, const (Fin 0) c = isEmptyElim := fun c => Subsingleton.elim _ _
       simp [this, volume_pi, Measure.pi_of_empty fun _ : Fin 0 => volume]
 #align measure_theory.integral_eq_of_has_deriv_within_at_off_countable_of_le MeasureTheory.integral_eq_of_hasDerivWithinAt_off_countable_of_le

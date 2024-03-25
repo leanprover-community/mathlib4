@@ -12,8 +12,8 @@ Given functors `F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂`, `G : C₁₂ ⥤ C₃ ⥤ 
 `associator : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃` (which informally means
 that we have natural isomorphisms `G(F₁₂(X₁, X₂), X₃) ≅ F(X₁, G₂₃(X₂, X₃))`),
 a map `r : I₁ × I₂ × I₃ → J`, and data `ρ₁₂ : BifunctorComp₁₂IndexData r` and
-`ρ₂₃ : BifunctorComp₂₃IndexData r`, then if
-`X₁ : GradedObject I₁ C₁`, `X₂ : GradedObject I₂ C₂` and `X₃ : GradedObject I₃ C₃`
+`ρ₂₃ : BifunctorComp₂₃IndexData r`, then if `X₁ : GradedObject I₁ C₁`,
+`X₂ : GradedObject I₂ C₂` and `X₃ : GradedObject I₃ C₃`
 satisfy suitable assumptions, we construct an isomorphism
 `mapBifunctorAssociator associator ρ₁₂ ρ₂₃ X₁ X₂ X₃` between
 `mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃` and

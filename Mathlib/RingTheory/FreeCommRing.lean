@@ -52,7 +52,8 @@ free commutative ring, free ring
 
 noncomputable section
 
-open Classical Polynomial
+open scoped Classical
+open Polynomial
 
 universe u v
 
@@ -63,7 +64,7 @@ def FreeCommRing (α : Type u) : Type u :=
   FreeAbelianGroup <| Multiplicative <| Multiset α
 #align free_comm_ring FreeCommRing
 
---Porting note: two instances below couldn't be derived
+-- Porting note: two instances below couldn't be derived
 instance FreeCommRing.instCommRing : CommRing (FreeCommRing α) := by
   delta FreeCommRing; infer_instance
 #align free_comm_ring.comm_ring FreeCommRing.instCommRing

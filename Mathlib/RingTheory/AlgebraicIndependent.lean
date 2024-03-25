@@ -44,20 +44,16 @@ noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
-open Classical BigOperators
+open scoped Classical
+open BigOperators
 
 universe x u v w
 
 variable {ι : Type*} {ι' : Type*} (R : Type*) {K : Type*}
-
 variable {A : Type*} {A' A'' : Type*} {V : Type u} {V' : Type*}
-
 variable (x : ι → A)
-
 variable [CommRing R] [CommRing A] [CommRing A'] [CommRing A'']
-
 variable [Algebra R A] [Algebra R A'] [Algebra R A'']
-
 variable {a b : R}
 
 /-- `AlgebraicIndependent R x` states the family of elements `x`
@@ -237,7 +233,7 @@ theorem algebraicIndependent_finset_map_embedding_subtype (s : Set A)
   rw [Finset.mem_map] at hx hy
   obtain ⟨a, _, rfl⟩ := hx
   obtain ⟨b, _, rfl⟩ := hy
-  simp only [imp_self, Subtype.mk_eq_mk]
+  simp only [f, imp_self, Subtype.mk_eq_mk]
 #align algebraic_independent_finset_map_embedding_subtype algebraicIndependent_finset_map_embedding_subtype
 
 /-- If every finite set of algebraically independent element has cardinality at most `n`,
@@ -444,7 +440,7 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C
 set_option linter.uppercaseLean3 false in
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin_C AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_C
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_none
     (hx : AlgebraicIndependent R x) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (X none) = Polynomial.X := by
@@ -453,7 +449,7 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_none
 set_option linter.uppercaseLean3 false in
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin_X_none AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_none
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
     (hx : AlgebraicIndependent R x) (i) :
     hx.mvPolynomialOptionEquivPolynomialAdjoin (X (some i)) =

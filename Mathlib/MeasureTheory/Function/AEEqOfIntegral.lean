@@ -268,13 +268,13 @@ theorem ae_nonneg_of_forall_set_integral_nonneg_of_stronglyMeasurable (hfm : Str
   have hs : MeasurableSet s := hfm.measurableSet_le stronglyMeasurable_const
   have mus : μ s < ∞ := by
     let c : ℝ≥0 := ⟨|b|, abs_nonneg _⟩
-    have c_pos : (c : ℝ≥0∞) ≠ 0 := by simpa [← NNReal.coe_eq_zero] using hb_neg.ne
+    have c_pos : (c : ℝ≥0∞) ≠ 0 := by simpa [c, ← NNReal.coe_eq_zero] using hb_neg.ne
     calc
       μ s ≤ μ {x | (c : ℝ≥0∞) ≤ ‖f x‖₊} := by
         apply measure_mono
         intro x hx
-        simp only [Set.mem_setOf_eq] at hx
-        simpa only [nnnorm, abs_of_neg hb_neg, abs_of_neg (hx.trans_lt hb_neg), Real.norm_eq_abs,
+        simp only [s, Set.mem_setOf_eq] at hx
+        simpa only [c, nnnorm, abs_of_neg hb_neg, abs_of_neg (hx.trans_lt hb_neg), Real.norm_eq_abs,
           Subtype.mk_le_mk, neg_le_neg_iff, Set.mem_setOf_eq, ENNReal.coe_le_coe, NNReal] using hx
       _ ≤ (∫⁻ x, ‖f x‖₊ ∂μ) / c :=
         (meas_ge_le_lintegral_div hfm.aemeasurable.ennnorm c_pos ENNReal.coe_ne_top)

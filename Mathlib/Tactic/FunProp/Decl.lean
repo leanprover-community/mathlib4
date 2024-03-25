@@ -3,7 +3,7 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Qq
+import Lean
 
 /-!
 ## `funProp` environment extension that stores all registered function properties
@@ -23,25 +23,24 @@ To use `funProp` to prove a function property `P : (α→β)→Prop` one has to 
 structure FunPropDecl where
   /-- function transformation name -/
   funPropName : Name
-  /-- path for discriminatory tree -/
+  /-- path for discrimination tree -/
   path : Array DiscrTree.Key
   /-- argument index of a function this function property talks about.
   For example, this would be 4 for `@Continuous α β _ _ f` -/
   funArgId : Nat
-  /-- Custom discharger for this function property. -/
-  dischargeStx? : Option (TSyntax `tactic)
   deriving Inhabited, BEq
 
-/-- -/
+/-- Discrimination tree for function properties. -/
 structure FunPropDecls where
-  /-- discriminatory tree for function properties -/
+  /-- Discrimination tree for function properties. -/
   decls : DiscrTree FunPropDecl := {}
   deriving Inhabited
 
 /-- -/
 abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
 
-/-- -/
+/-- Extension storing function properties tracked and used by the `fun_prop` attribute and tactic,
+including, for example, `Continuous`, `Measurable`, `Differentiable`, etc. -/
 initialize funPropDeclsExt : FunPropDeclsExt ←
   registerSimpleScopedEnvExtension {
     name := by exact decl_name%
@@ -50,12 +49,12 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
       {d with decls := d.decls.insertCore e.path e}
   }
 
-/-- -/
-def addFunPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) : MetaM Unit := do
+/-- Register new function property. -/
+def addFunPropDecl (declName : Name) : MetaM Unit := do
 
   let info ← getConstInfo declName
 
-  let (xs,_,b) ← forallMetaTelescope info.type
+  let (xs,bi,b) ← forallMetaTelescope info.type
 
   if ¬b.isProp then
     throwError "invalid fun_prop declaration, has to be `Prop` valued function"
@@ -65,19 +64,17 @@ def addFunPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) 
   let path ← DiscrTree.mkPath e {}
 
   -- find the argument position of the function `f` in `P f`
-  let mut .some funArgId ← xs.reverse.findIdxM? fun x => do
-    if (← inferType x).isForall then
+  let mut .some funArgId ← (xs.zip bi).findIdxM? fun (x,bi) => do
+    if (← inferType x).isForall && bi.isExplicit then
       return true
     else
       return false
     | throwError "invalid fun_prop declaration, can't find argument of type `α → β`"
-  funArgId := xs.size - funArgId - 1
 
   let decl : FunPropDecl := {
     funPropName := declName
     path := path
     funArgId := funArgId
-    dischargeStx? := dischargeStx?
   }
 
   modifyEnv fun env => funPropDeclsExt.addEntry env decl
@@ -86,7 +83,8 @@ def addFunPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) 
     "added new function property `{declName}`\nlook up pattern is `{path}`"
 
 
-/-- -/
+/-- Is `e` a function property statement? If yes return function property declaration and
+the function it talks about. -/
 def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
   let ext := funPropDeclsExt.getState (← getEnv)
 
@@ -105,7 +103,7 @@ fun_prop bug: expression {← ppExpr e} matches multiple function properties
 
   return (decl,f)
 
-/-- -/
+/-- Is `e` a function property statement? -/
 def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome
 
 /-- Returns function property declaration from `e = P f`. -/
@@ -123,7 +121,7 @@ def getFunPropFun? (e : Expr) : MetaM (Option Expr) := do
 
 
 open Elab Term in
-/-- -/
+/-- Turn tactic syntax into a discharger function. -/
 def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Expr) := fun e =>
   withTraceNode `Meta.Tactic.fun_prop
     (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
@@ -147,9 +145,3 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
     let (result?, _) ← runTac?.run {} {}
 
     return result?
-
-/-- -/
-def FunPropDecl.discharger (funPropDecl : FunPropDecl) (e : Expr) : MetaM (Option Expr) := do
-    let .some stx := funPropDecl.dischargeStx?
-      | return none
-    tacticToDischarge stx e

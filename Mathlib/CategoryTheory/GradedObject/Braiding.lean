@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.GradedObject.Monoidal
-import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 /-!
 # The braided and symmetric category structures on graded objects
 
@@ -70,24 +70,31 @@ lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
   ext k i₁ i₂ i₃ h
   dsimp [braiding]
   -- working on the LHS
-  rw [ιTensorObj₃'_associator_hom_assoc, ιTensorObj₃_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc,
-    ι_tensorObjDesc_assoc, assoc, BraidedCategory.braiding_naturality_assoc,
+  conv_lhs => rw [ιTensorObj₃'_associator_hom_assoc, ιTensorObj₃_eq X Y Z i₁ i₂ i₃ k h _ rfl,
+    assoc, ι_tensorObjDesc_assoc, assoc, ← MonoidalCategory.id_tensorHom,
+    BraidedCategory.braiding_naturality_assoc,
     BraidedCategory.braiding_tensor_right, assoc, assoc, assoc, assoc, Iso.hom_inv_id_assoc,
+    MonoidalCategory.tensorHom_id,
     ← ιTensorObj₃'_eq_assoc Y Z X i₂ i₃ i₁ k (by rw [add_comm _ i₁, ← add_assoc, h]) _ rfl,
     ιTensorObj₃'_associator_hom, Iso.inv_hom_id_assoc]
   -- working on the RHS
-  rw [ιTensorObj₃'_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc, ι_tensorHom_assoc,
+  conv_rhs => rw [ιTensorObj₃'_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc, ι_tensorHom_assoc,
+    ← MonoidalCategory.tensorHom_id,
     ← MonoidalCategory.tensor_comp_assoc, id_comp, ι_tensorObjDesc,
     categoryOfGradedObjects_id, MonoidalCategory.comp_tensor_id, assoc,
+    MonoidalCategory.tensorHom_id, MonoidalCategory.tensorHom_id,
     ← ιTensorObj₃'_eq_assoc Y X Z i₂ i₁ i₃ k
       (by rw [add_comm i₂ i₁, h]) (i₁ + i₂) (add_comm i₂ i₁),
     ιTensorObj₃'_associator_hom_assoc,
     ιTensorObj₃_eq Y X Z i₂ i₁ i₃ k (by rw [add_comm i₂ i₁, h]) _ rfl, assoc,
-    ι_tensorHom, categoryOfGradedObjects_id, ← MonoidalCategory.id_tensor_comp_assoc,
+    ι_tensorHom, categoryOfGradedObjects_id, ← MonoidalCategory.tensorHom_id,
+    ← MonoidalCategory.id_tensorHom,
+    ← MonoidalCategory.id_tensor_comp_assoc,
     ι_tensorObjDesc, MonoidalCategory.id_tensor_comp, assoc,
+    ← MonoidalCategory.id_tensor_comp_assoc, MonoidalCategory.tensorHom_id,
+    MonoidalCategory.id_tensorHom, MonoidalCategory.whiskerLeft_comp, assoc,
     ← ιTensorObj₃_eq Y Z X i₂ i₃ i₁ k (by rw [add_comm _ i₁, ← add_assoc, h])
       (i₁ + i₃) (add_comm _ _ )]
-  coherence
 
 lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
     [HasTensor Z Y] [HasTensor X Z]
@@ -102,23 +109,29 @@ lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
   ext k i₁ i₂ i₃ h
   dsimp [braiding]
   -- working on the LHS
-  rw [ιTensorObj₃_associator_inv_assoc, ιTensorObj₃'_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc,
-    ι_tensorObjDesc_assoc, assoc, BraidedCategory.braiding_naturality_assoc,
+  conv_lhs => rw [ιTensorObj₃_associator_inv_assoc, ιTensorObj₃'_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc,
+    ι_tensorObjDesc_assoc, assoc, ← MonoidalCategory.tensorHom_id,
+    BraidedCategory.braiding_naturality_assoc,
     BraidedCategory.braiding_tensor_left, assoc, assoc, assoc, assoc, Iso.inv_hom_id_assoc,
+    MonoidalCategory.id_tensorHom,
     ← ιTensorObj₃_eq_assoc Z X Y i₃ i₁ i₂ k (by rw [add_assoc, add_comm i₃, h]) _ rfl,
     ιTensorObj₃_associator_inv, Iso.hom_inv_id_assoc]
   -- working on the RHS
-  rw [ιTensorObj₃_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc, ι_tensorHom_assoc,
+  conv_rhs => rw [ιTensorObj₃_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc, ι_tensorHom_assoc,
+    ← MonoidalCategory.id_tensorHom,
     ← MonoidalCategory.tensor_comp_assoc, id_comp, ι_tensorObjDesc,
     categoryOfGradedObjects_id, MonoidalCategory.id_tensor_comp, assoc,
+    MonoidalCategory.id_tensorHom, MonoidalCategory.id_tensorHom,
     ← ιTensorObj₃_eq_assoc X Z Y i₁ i₃ i₂ k
       (by rw [add_assoc, add_comm i₃, ← add_assoc, h]) (i₂ + i₃) (add_comm _ _),
     ιTensorObj₃_associator_inv_assoc,
     ιTensorObj₃'_eq X Z Y i₁ i₃ i₂ k (by rw [add_assoc, add_comm i₃, ← add_assoc, h]) _ rfl,
-    assoc, ι_tensorHom, categoryOfGradedObjects_id, ← MonoidalCategory.comp_tensor_id_assoc,
+    assoc, ι_tensorHom, categoryOfGradedObjects_id, ← MonoidalCategory.tensorHom_id,
+    ← MonoidalCategory.comp_tensor_id_assoc,
     ι_tensorObjDesc, MonoidalCategory.comp_tensor_id, assoc,
-    ιTensorObj₃'_eq Z X Y i₃ i₁ i₂ k (by rw [add_assoc, add_comm i₃, h]) (i₁ + i₃) (add_comm _ _)]
-  coherence
+    MonoidalCategory.tensorHom_id, MonoidalCategory.tensorHom_id,
+    ← ιTensorObj₃'_eq Z X Y i₃ i₁ i₂ k (by rw [add_assoc, add_comm i₃, h])
+      (i₁ + i₃) (add_comm _ _)]
 
 end Braided
 
@@ -138,9 +151,9 @@ variable
   [∀ (X₁ X₂ X₃ : GradedObject I C), HasGoodTensorTensor₂₃ X₁ X₂ X₃]
   [DecidableEq I] [HasInitial C]
   [∀ X₁, PreservesColimit (Functor.empty.{0} C)
-    ((curryObj (MonoidalCategory.tensor C)).obj X₁)]
+    ((MonoidalCategory.curriedTensor C).obj X₁)]
   [∀ X₂, PreservesColimit (Functor.empty.{0} C)
-    ((curryObj (MonoidalCategory.tensor C)).flip.obj X₂)]
+    ((MonoidalCategory.curriedTensor C).flip.obj X₂)]
   [∀ (X₁ X₂ X₃ X₄ : GradedObject I C), HasTensor₄ObjExt X₁ X₂ X₃ X₄]
 
 noncomputable instance braidedCategory [BraidedCategory C] :
@@ -158,8 +171,8 @@ noncomputable instance symmetricCategory [SymmetricCategory C] :
 section HasFiniteCoproducts
 
 variable [HasFiniteCoproducts C]
-    [∀ (X : C), PreservesFiniteCoproducts ((curryObj (MonoidalCategory.tensor C)).obj X)]
-    [∀ (X : C), PreservesFiniteCoproducts ((curryObj (MonoidalCategory.tensor C)).flip.obj X)]
+    [∀ (X : C), PreservesFiniteCoproducts ((MonoidalCategory.curriedTensor C).obj X)]
+    [∀ (X : C), PreservesFiniteCoproducts ((MonoidalCategory.curriedTensor C).flip.obj X)]
 
 noncomputable example [BraidedCategory C] :
     BraidedCategory (GradedObject ℕ C) :=

@@ -68,7 +68,6 @@ noncomputable section
 universe u v w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
-
 variable (K : Type w) [Field K] [Algebra F K]
 
 section separableClosure
@@ -380,3 +379,15 @@ theorem insepDegree_bot' : insepDegree F (⊥ : IntermediateField E K) = insepDe
 end Tower
 
 end IntermediateField
+
+/-- A separable extension has separable degree equal to degree. -/
+theorem IsSeparable.sepDegree_eq [IsSeparable F E] : sepDegree F E = Module.rank F E := by
+  rw [sepDegree, (separableClosure.eq_top_iff F E).2 ‹_›, IntermediateField.rank_top']
+
+/-- A separable extension has inseparable degree one. -/
+theorem IsSeparable.insepDegree_eq [IsSeparable F E] : insepDegree F E = 1 := by
+  rw [insepDegree, (separableClosure.eq_top_iff F E).2 ‹_›, IntermediateField.rank_top]
+
+/-- A separable extension has finite inseparable degree one. -/
+theorem IsSeparable.finInsepDegree_eq [IsSeparable F E] : finInsepDegree F E = 1 :=
+  Cardinal.one_toNat ▸ congr(Cardinal.toNat $(insepDegree_eq F E))
