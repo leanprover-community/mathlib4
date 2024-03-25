@@ -140,8 +140,7 @@ theorem IsSymm.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n 
     rw [← hBC]
     simp
   unfold Matrix.IsSymm
-  rw [fromBlocks_transpose]
-  congr; rw [hA, hCB, hBC, hD]
+  rw [fromBlocks_transpose, hA, hCB, hBC, hD]
 #align matrix.is_symm.from_blocks Matrix.IsSymm.fromBlocks
 
 /-- This is the `iff` version of `Matrix.isSymm.fromBlocks`. -/

@@ -237,7 +237,7 @@ protected theorem mono (f : α →o β) : Monotone f :=
 projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
-/- Porting note: TODO: all other DFunLike classes use `apply` instead of `coe`
+/- Porting note (#11215): TODO: all other DFunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
@@ -826,7 +826,7 @@ protected theorem surjective (e : α ≃o β) : Function.Surjective e :=
   e.toEquiv.surjective
 #align order_iso.surjective OrderIso.surjective
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem apply_eq_iff_eq (e : α ≃o β) {x y : α} : e x = e y ↔ x = y :=
   e.toEquiv.apply_eq_iff_eq
@@ -988,7 +988,7 @@ section LE
 
 variable [LE α] [LE β] [LE γ]
 
---@[simp] porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
 #align order_iso.le_iff_le OrderIso.le_iff_le
@@ -1147,7 +1147,6 @@ end Equiv
 namespace StrictMono
 
 variable [LinearOrder α] [Preorder β]
-
 variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f)
 
 /-- A strictly monotone function with a right inverse is an order isomorphism. -/

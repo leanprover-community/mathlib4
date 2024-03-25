@@ -71,7 +71,7 @@ theorem monic_ascPochhammer (n : ℕ) [Nontrivial S] [NoZeroDivisors S] :
   induction' n with n hn
   · simp
   · have : leadingCoeff (X + 1 : S[X]) = 1 := leadingCoeff_X_add_C 1
-    rw [ascPochhammer_succ_left, Monic.def, leadingCoeff_mul,
+    rw [ascPochhammer_succ_left, Monic.def', leadingCoeff_mul,
       leadingCoeff_comp (ne_zero_of_eq_one <| natDegree_X_add_C 1 : natDegree (X + 1) ≠ 0), hn,
       monic_X, one_mul, one_mul, this, one_pow]
 
@@ -104,7 +104,7 @@ end
 theorem ascPochhammer_eval_cast (n k : ℕ) :
     (((ascPochhammer ℕ n).eval k : ℕ) : S) = ((ascPochhammer S n).eval k : S) := by
   rw [← ascPochhammer_map (algebraMap ℕ S), eval_map, ← eq_natCast (algebraMap ℕ S),
-      eval₂_at_nat_cast,Nat.cast_id, eq_natCast]
+      eval₂_at_nat_cast,Nat.cast_id]
 #align pochhammer_eval_cast ascPochhammer_eval_cast
 
 theorem ascPochhammer_eval_zero {n : ℕ} : (ascPochhammer S n).eval 0 = if n = 0 then 1 else 0 := by
@@ -123,8 +123,8 @@ theorem ascPochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (ascPochhammer
 
 theorem ascPochhammer_succ_right (n : ℕ) :
     ascPochhammer S (n + 1) = ascPochhammer S n * (X + (n : S[X])) := by
-  suffices h : ascPochhammer ℕ (n + 1) = ascPochhammer ℕ n * (X + (n : ℕ[X]))
-  · apply_fun Polynomial.map (algebraMap ℕ S) at h
+  suffices h : ascPochhammer ℕ (n + 1) = ascPochhammer ℕ n * (X + (n : ℕ[X])) by
+    apply_fun Polynomial.map (algebraMap ℕ S) at h
     simpa only [ascPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
       Polynomial.map_nat_cast] using h
   induction' n with n ih
@@ -265,7 +265,7 @@ theorem monic_descPochhammer (n : ℕ) [Nontrivial R] [NoZeroDivisors R] :
   · simp
   · have h : leadingCoeff (X - 1 : R[X]) = 1 := leadingCoeff_X_sub_C 1
     have : natDegree (X - (1 : R[X])) ≠ 0 := ne_zero_of_eq_one <| natDegree_X_sub_C (1 : R)
-    rw [descPochhammer_succ_left, Monic.def, leadingCoeff_mul, leadingCoeff_comp this, hn, monic_X,
+    rw [descPochhammer_succ_left, Monic.def', leadingCoeff_mul, leadingCoeff_comp this, hn, monic_X,
         one_mul, one_mul, h, one_pow]
 
 section
@@ -300,8 +300,8 @@ theorem descPochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (descPochhamm
 
 theorem descPochhammer_succ_right (n : ℕ) :
     descPochhammer R (n + 1) = descPochhammer R n * (X - (n : R[X])) := by
-  suffices h : descPochhammer ℤ (n + 1) = descPochhammer ℤ n * (X - (n : ℤ[X]))
-  · apply_fun Polynomial.map (algebraMap ℤ R) at h
+  suffices h : descPochhammer ℤ (n + 1) = descPochhammer ℤ n * (X - (n : ℤ[X])) by
+    apply_fun Polynomial.map (algebraMap ℤ R) at h
     simpa [descPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
       Polynomial.map_int_cast] using h
   induction' n with n ih
@@ -344,7 +344,7 @@ theorem descPochhammer_eval_eq_ascPochhammer (r : R) (n : ℕ) :
   induction n with
   | zero => rw [descPochhammer_zero, eval_one, ascPochhammer_zero, eval_one]
   | succ n ih =>
-    rw [Nat.cast_succ, sub_add, add_sub_cancel, descPochhammer_succ_eval, ih,
+    rw [Nat.cast_succ, sub_add, add_sub_cancel_right, descPochhammer_succ_eval, ih,
       ascPochhammer_succ_left, X_mul, eval_mul_X, show (X + 1 : R[X]) =
       (X + 1 : ℕ[X]).map (algebraMap ℕ R) by simp only [Polynomial.map_add, map_X,
       Polynomial.map_one], ascPochhammer_eval_comp, eval₂_add, eval₂_X, eval₂_one]

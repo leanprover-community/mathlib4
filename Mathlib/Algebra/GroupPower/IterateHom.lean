@@ -227,7 +227,7 @@ section Semigroup
 
 variable [Semigroup G] {a b c : G}
 
--- Porting note: need `dsimp only`, see https://leanprover.zulipchat.com/#narrow/stream/
+-- Porting note (#10971): need `dsimp only`, see https://leanprover.zulipchat.com/#narrow/stream/
 -- 287929-mathlib4/topic/dsimp.20before.20rw/near/317063489
 @[to_additive]
 theorem SemiconjBy.function_semiconj_mul_left (h : SemiconjBy a b c) :

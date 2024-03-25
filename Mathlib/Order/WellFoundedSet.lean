@@ -412,7 +412,7 @@ theorem PartiallyWellOrderedOn.wellFoundedOn [IsPreorder α r] (h : s.PartiallyW
       le_refl := refl_of r
       le_trans := fun _ _ _ => trans_of r }
   change s.WellFoundedOn (· < ·)
-  replace h : s.PartiallyWellOrderedOn (· ≤ ·) := h -- porting note: was `change _ at h`
+  replace h : s.PartiallyWellOrderedOn (· ≤ ·) := h -- Porting note: was `change _ at h`
   rw [wellFoundedOn_iff_no_descending_seq]
   intro f hf
   obtain ⟨m, n, hlt, hle⟩ := h f hf
@@ -552,7 +552,7 @@ protected theorem IsWF.isPWO (hs : s.IsWF) : s.IsPWO := by
   intro f hf
   lift f to ℕ → s using hf
   rcases hs.has_min (range f) (range_nonempty _) with ⟨_, ⟨m, rfl⟩, hm⟩
-  simp only [forall_range_iff, not_lt] at hm
+  simp only [forall_mem_range, not_lt] at hm
   exact ⟨m, m + 1, lt_add_one m, hm _⟩
 #align set.is_wf.is_pwo Set.IsWF.isPWO
 
@@ -702,6 +702,22 @@ end Set
 
 open Set
 
+section LocallyFiniteOrder
+
+variable {s : Set α} [Preorder α] [LocallyFiniteOrder α]
+
+theorem BddBelow.wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) := by
+  rw [wellFoundedOn_iff_no_descending_seq]
+  rintro ⟨a, ha⟩ f hf
+  refine infinite_range_of_injective f.injective ?_
+  exact (finite_Icc a <| f 0).subset <| range_subset_iff.2 <| fun n =>
+    ⟨ha <| hf _, antitone_iff_forall_lt.2 (fun a b hab => (f.map_rel_iff.2 hab).le) <| zero_le _⟩
+
+theorem BddAbove.wellFoundedOn_gt : BddAbove s → s.WellFoundedOn (· > ·) :=
+  fun h => h.dual.wellFoundedOn_lt
+
+end LocallyFiniteOrder
+
 namespace Set.PartiallyWellOrderedOn
 
 variable {r : α → α → Prop}
@@ -785,8 +801,8 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl
   rintro ⟨f, hf1, hf2⟩
   have hnil : ∀ n, f n ≠ List.nil := fun n con =>
     hf1.2 n n.succ n.lt_succ_self (con.symm ▸ List.SublistForall₂.nil)
-  have : ∀ n, (f n).headI ∈ s
-  · exact fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
+  have : ∀ n, (f n).headI ∈ s :=
+    fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
   obtain ⟨g, hg⟩ := h.exists_monotone_subseq (fun n => (f n).headI) this
   have hf' :=
     hf2 (g 0) (fun n => if n < g 0 then f n else List.tail (f (g (n - g 0))))

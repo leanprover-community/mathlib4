@@ -69,7 +69,6 @@ open BigOperators
 --attribute [-simp] coe_eval₂_hom
 
 variable (p : ℕ)
-
 variable (R : Type*) [CommRing R] [DecidableEq R]
 
 /-- `wittPolynomial p R n` is the `n`-th Witt polynomial
@@ -229,7 +228,7 @@ theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : 
   intro n IH
   rw [xInTermsOfW_eq, mul_comm, RingHom.map_mul, RingHom.map_sub, map_sum, constantCoeff_C,
     constantCoeff_X, zero_sub, mul_neg, neg_eq_zero]
-  -- porting note: here, we should be able to do `rw [sum_eq_zero]`, but the goal that
+  -- Porting note: here, we should be able to do `rw [sum_eq_zero]`, but the goal that
   -- is created is not what we expect, and the sum is not replaced by zero...
   -- is it a bug in `rw` tactic?
   refine' Eq.trans (_ : _ = ((⅟↑p : R) ^ n)* 0) (mul_zero _)
@@ -278,8 +277,8 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     replace H := (ih j hj).2 (vars_pow _ _ H)
     rw [mem_range] at H
   · rw [mem_range]
-    linarith
-  · linarith
+    omega
+  · omega
 set_option linter.uppercaseLean3 false in
 #align X_in_terms_of_W_vars_aux xInTermsOfW_vars_aux
 

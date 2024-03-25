@@ -216,7 +216,7 @@ variable {s : Set ℕ} [Infinite s]
 
 section Classical
 
-open Classical
+open scoped Classical
 
 theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s :=
   _root_.by_contradiction fun h =>

@@ -39,9 +39,7 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{u} D]
-
 variable {E : Type u} [Category.{v₂} E]
 
 /-- If `X × -` preserves colimits in `D` for any `X : D`, then the product functor `F ⨯ -` for
@@ -103,7 +101,7 @@ instance whiskeringRightPreservesLimits {C : Type u} [Category C] {D : Type*} [C
   ⟨inferInstance⟩
 #align category_theory.whiskering_right_preserves_limits CategoryTheory.whiskeringRightPreservesLimits
 
--- porting note: fixed spelling mistake in def
+-- Porting note: fixed spelling mistake in def
 /-- If `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
 noncomputable def preservesLimitOfLanPreservesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]
