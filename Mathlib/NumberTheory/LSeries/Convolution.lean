@@ -83,7 +83,7 @@ lemma convolution_map_zero {R : Type*} [Semiring R] (f g : ℕ → R) : (f ⍟ g
 
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
 in terms of a sum over `Nat.divisorsAntidiagonal`. -/
-lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
+lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     term (f ⍟ g) s n = ∑ p in n.divisorsAntidiagonal, term f s p.1 * term g s p.2 := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [term_zero, Nat.divisorsAntidiagonal_zero, Finset.sum_empty]
@@ -100,7 +100,7 @@ open Set in
 in terms of an a priori infinte sum over all pairs `(k, m)` with `k * m = n`
 (the set we sum over is infinite when `n = 0`). This is the version needed for the
 proof that `L (f ⍟ g) = L f * L g`. -/
-lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) :
+lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) :
     term (f ⍟ g) s = fun n ↦
       ∑' (b : (fun p : ℕ × ℕ ↦ p.1 * p.2) ⁻¹' {n}), term f s b.val.1 * term g s b.val.2 := by
   ext n
@@ -119,7 +119,7 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) :
   -- now `n ≠ 0`
   rw [show (fun p : ℕ × ℕ ↦ p.1 * p.2) ⁻¹' {n} = n.divisorsAntidiagonal by ext; simp [hn],
     Finset.tsum_subtype' n.divisorsAntidiagonal fun p ↦ term f s p.1 * term g s p.2,
-    term_convolution' f g s n]
+    term_convolution f g s n]
 
 end LSeries
 
@@ -129,7 +129,7 @@ equals the product of their L-series, assuming both L-series converge. -/
 lemma LSeriesHasSum.convolution {f g : ℕ → ℂ} {s a b : ℂ} (hf : LSeriesHasSum f s a)
     (hg : LSeriesHasSum g s b) :
     LSeriesHasSum (f ⍟ g) s (a * b) := by
-  simp only [LSeriesHasSum, term_convolution]
+  simp only [LSeriesHasSum, term_convolution']
   have hsum := summable_mul_of_summable_norm hf.summable.norm hg.summable.norm
   exact (HasSum.mul hf hg hsum).tsum_fiberwise (fun p ↦ p.1 * p.2)
 
