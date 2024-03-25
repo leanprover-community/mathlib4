@@ -438,28 +438,6 @@ where
         failure
     | _ => failure
 
-/-- Reduction procedure for the `RefinedDiscrTree` indexing. -/
-partial def reduce (e : Expr) (config : WhnfCoreConfig) : MetaM Expr := do
-  let e ← whnfCore e config
-  match (← unfoldDefinition? e) with
-  | some e => reduce e config
-  | none => match e.etaExpandedStrict? with
-    | some e => reduce e config
-    | none   => return e
-
-/-- Repeatedly apply reduce while stripping lambda binders and introducing their variables -/
-@[specialize]
-partial def lambdaTelescopeReduce {m} [Monad m] [MonadLiftT MetaM m] [MonadControlT MetaM m]
-    [Inhabited α] (e : Expr) (fvars : List FVarId) (config : WhnfCoreConfig)
-    (k : Expr → List FVarId → m α) : m α := do
-  match ← reduce e config with
-  | .lam n d b bi =>
-    withLocalDecl n bi d fun fvar =>
-      lambdaTelescopeReduce (b.instantiate1 fvar) (fvar.fvarId! :: fvars) config k
-  | e => k e fvars
-
-
-
 /-- Check whether the expression is represented by `Key.star`. -/
 def isStar : Expr → Bool
   | .mvar .. => true
@@ -631,6 +609,30 @@ private def withLams {m} [Monad m] [MonadWithReader Context m]
   else do
     let e ← withReader (fun c => { c with bvars := lambdas ++ c.bvars }) k
     return lambdas.foldl (fun _ => ·.lam) e
+
+/-- Reduction procedure for the `RefinedDiscrTree` indexing. -/
+partial def reduce (e : Expr) (config : WhnfCoreConfig) : MetaM Expr := do
+  let e ← whnfCore e config
+  match (← unfoldDefinition? e) with
+  | some e => reduce e config
+  | none => match e.etaExpandedStrict? with
+    | some e => reduce e config
+    | none   => return e
+
+/-- Repeatedly reduce while stripping lambda binders and introducing their variables -/
+@[specialize]
+partial def lambdaTelescopeReduce {m} [Monad m] [MonadLiftT MetaM m] [MonadControlT MetaM m]
+    [MonadWithReader Context m] (e : Expr) (lambdas : List FVarId) (config : WhnfCoreConfig)
+    (k : Expr → List FVarId → m DTExpr) : m DTExpr := do
+  -- expressions marked with `no_index` are indexed with a star
+  if DiscrTree.hasNoindexAnnotation e then
+    withLams lambdas do return .star none
+  else
+  match ← reduce e config with
+  | .lam n d b bi =>
+    withLocalDecl n bi d fun fvar =>
+      lambdaTelescopeReduce (b.instantiate1 fvar) (fvar.fvarId! :: lambdas) config k
+  | e => k e lambdas
 
 
 /-- Return the encoding of `e` as a `DTExpr`.
