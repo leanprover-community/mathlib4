@@ -338,7 +338,7 @@ elab "get " cmd:command : command => do
 
 #eval show MetaM _ from do
   IO.println star
-  Meta.inspect star
+--  Meta.inspect star
   dbg_trace star
 
 get
