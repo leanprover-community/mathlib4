@@ -37,10 +37,6 @@ variable {C : Type u} [Category.{v} C]
 
 variable {J : Type v} [SmallCategory J] (F : J ⥤ Cᵒᵖ ⥤ Type v)
 
--- IndCategory C ≌ FullSubcategory IsIndObject
--- ProCategory C ≌ (IndCategory Cᵒᵖ)ᵒᵖ
--- `C ⥤ IndCategory C`, `IndCategory C ⥤ Cᵒᵖ ⥤ Type v`, `C ⥤ ProCategory C`, `ProCategory C ⥤ (C ⥤ Type v)ᵒᵖ`
-
 /-- Naturally in `X`, we have `Hom(YX, colim_i Fi) ≅ colim_i Hom(YX, Fi)`. -/
 noncomputable def yonedaYonedaColimit :
     yoneda.op ⋙ yoneda.obj (colimit F) ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) := calc
