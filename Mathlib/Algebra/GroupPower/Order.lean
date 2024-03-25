@@ -15,6 +15,8 @@ Note that some lemmas are in `Algebra/GroupPower/Lemmas.lean` as they import fil
 depend on this file.
 -/
 
+assert_not_exists Set.range
+
 open Function Int
 
 variable {α M R : Type*}
@@ -261,6 +263,7 @@ lemma pow_right_strictMono (h : 1 < a) : StrictMono (a ^ ·) :=
 @[gcongr]
 theorem pow_lt_pow_right (h : 1 < a) (hmn : m < n) : a ^ m < a ^ n := pow_right_strictMono h hmn
 #align pow_lt_pow_right pow_lt_pow_right
+#align nat.pow_lt_pow_of_lt_right pow_lt_pow_right
 
 lemma pow_lt_pow_iff_right (h : 1 < a) : a ^ n < a ^ m ↔ n < m := (pow_right_strictMono h).lt_iff_lt
 #align pow_lt_pow_iff_ pow_lt_pow_iff_right
@@ -524,6 +527,20 @@ theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, ne
 
 end MonoidHom
 
+namespace Nat
+variable {n : ℕ} {f : α → ℕ}
+
+/-- See also `pow_left_strictMonoOn`. -/
+protected lemma pow_left_strictMono (hn : n ≠ 0) : StrictMono (. ^ n : ℕ → ℕ) :=
+  fun _ _ h ↦ Nat.pow_lt_pow_left h hn
+#align nat.pow_left_strict_mono Nat.pow_left_strictMono
+
+lemma _root_.StrictMono.nat_pow [Preorder α] (hn : n ≠ 0) (hf : StrictMono f) :
+    StrictMono (f · ^ n) := (Nat.pow_left_strictMono hn).comp hf
+#align strict_mono.nat_pow StrictMono.nat_pow
+
+end Nat
+
 /-!
 ### Deprecated lemmas
 
@@ -546,3 +563,9 @@ Those lemmas have been deprecated on 2023-12-23.
 @[deprecated] alias lt_of_pow_lt_pow := lt_of_pow_lt_pow_left
 @[deprecated] alias le_of_pow_le_pow := le_of_pow_le_pow_left
 @[deprecated] alias self_le_pow := le_self_pow
+@[deprecated] alias Nat.pow_lt_pow_of_lt_left := Nat.pow_lt_pow_left
+@[deprecated] alias Nat.pow_le_iff_le_left := Nat.pow_le_pow_iff_left
+@[deprecated] alias Nat.pow_lt_pow_of_lt_right := pow_lt_pow_right
+@[deprecated] protected alias Nat.pow_right_strictMono := pow_right_strictMono
+@[deprecated] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right
+@[deprecated] alias Nat.pow_lt_iff_lt_right := pow_lt_pow_iff_right

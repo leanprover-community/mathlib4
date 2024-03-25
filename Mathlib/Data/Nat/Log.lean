@@ -3,7 +3,7 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
-import Mathlib.Data.Nat.Pow
+import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Set.Intervals.Basic
 
 #align_import data.nat.log from "leanprover-community/mathlib"@"3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6"
@@ -31,7 +31,7 @@ such that `b^k ≤ n`, so if `b^k = n`, it returns exactly `k`. -/
 def log (b : ℕ) : ℕ → ℕ
   | n =>
     if h : b ≤ n ∧ 1 < b then
-      have : n / b < n := div_lt_self ((zero_lt_one.trans h.2).trans_le h.1) h.2
+      have : n / b < n := div_lt_self ((Nat.zero_lt_one.trans h.2).trans_le h.1) h.2
       log b (n / b) + 1
     else 0
 #align nat.log Nat.log
@@ -52,7 +52,7 @@ theorem log_of_left_le_one {b : ℕ} (hb : b ≤ 1) (n) : log b n = 0 :=
 
 @[simp]
 theorem log_pos_iff {b n : ℕ} : 0 < log b n ↔ b ≤ n ∧ 1 < b := by
-  rw [pos_iff_ne_zero, Ne.def, log_eq_zero_iff, not_or, not_lt, not_le]
+  rw [Nat.pos_iff_ne_zero, Ne.def, log_eq_zero_iff, not_or, not_lt, not_le]
 #align nat.log_pos_iff Nat.log_pos_iff
 
 theorem log_pos {b n : ℕ} (hb : 1 < b) (hbn : b ≤ n) : 0 < log b n :=
@@ -64,9 +64,7 @@ theorem log_of_one_lt_of_le {b n : ℕ} (h : 1 < b) (hn : b ≤ n) : log b n = l
   exact if_pos ⟨hn, h⟩
 #align nat.log_of_one_lt_of_le Nat.log_of_one_lt_of_le
 
-@[simp]
-theorem log_zero_left : ∀ n, log 0 n = 0 :=
-  log_of_left_le_one zero_le_one
+@[simp] lemma log_zero_left : ∀ n, log 0 n = 0 := log_of_left_le_one $ Nat.zero_le _
 #align nat.log_zero_left Nat.log_zero_left
 
 @[simp]
@@ -90,13 +88,13 @@ theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
     b ^ x ≤ y ↔ x ≤ log b y := by
   induction' y using Nat.strong_induction_on with y ih generalizing x
   cases x with
-  | zero => exact iff_of_true hy.bot_lt (zero_le _)
+  | zero => dsimp; omega
   | succ x =>
     rw [log]; split_ifs with h
-    · have b_pos : 0 < b := zero_le_one.trans_lt hb
-      rw [succ_eq_add_one, add_le_add_iff_right, ←
-        ih (y / b) (div_lt_self hy.bot_lt hb) (Nat.div_pos h.1 b_pos).ne', le_div_iff_mul_le b_pos,
-        pow_succ', mul_comm]
+    · have b_pos : 0 < b := lt_of_succ_lt hb
+      rw [succ_eq_add_one, Nat.add_le_add_iff_right, ←
+        ih (y / b) (div_lt_self (Nat.pos_iff_ne_zero.2 hy) hb) (Nat.div_pos h.1 b_pos).ne', le_div_iff_mul_le b_pos,
+        pow_succ', Nat.mul_comm]
     · exact iff_of_false (fun hby => h ⟨(le_self_pow x.succ_ne_zero _).trans hby, hb⟩)
         (not_succ_le_zero _)
 #align nat.pow_le_iff_le_log Nat.pow_le_iff_le_log
@@ -107,13 +105,13 @@ theorem lt_pow_iff_log_lt {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) : y 
 
 theorem pow_le_of_le_log {b x y : ℕ} (hy : y ≠ 0) (h : x ≤ log b y) : b ^ x ≤ y := by
   refine' (le_or_lt b 1).elim (fun hb => _) fun hb => (pow_le_iff_le_log hb hy).2 h
-  rw [log_of_left_le_one hb, nonpos_iff_eq_zero] at h
-  rwa [h, pow_zero, one_le_iff_ne_zero]
+  rw [log_of_left_le_one hb, Nat.le_zero] at h
+  rwa [h, Nat.pow_zero, one_le_iff_ne_zero]
 #align nat.pow_le_of_le_log Nat.pow_le_of_le_log
 
 theorem le_log_of_pow_le {b x y : ℕ} (hb : 1 < b) (h : b ^ x ≤ y) : x ≤ log b y := by
   rcases ne_or_eq y 0 with (hy | rfl)
-  exacts [(pow_le_iff_le_log hb hy).1 h, (h.not_lt (pow_pos (zero_lt_one.trans hb) _)).elim]
+  exacts [(pow_le_iff_le_log hb hy).1 h, (h.not_lt (Nat.pow_pos (Nat.zero_lt_one.trans hb))).elim]
 #align nat.le_log_of_pow_le Nat.le_log_of_pow_le
 
 theorem pow_log_le_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : b ^ log b x ≤ x :=
@@ -148,13 +146,13 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
 theorem log_eq_of_pow_le_of_lt_pow {b m n : ℕ} (h₁ : b ^ m ≤ n) (h₂ : n < b ^ (m + 1)) :
     log b n = m := by
   rcases eq_or_ne m 0 with (rfl | hm)
-  · rw [pow_one] at h₂
+  · rw [Nat.pow_one] at h₂
     exact log_of_lt h₂
   · exact (log_eq_iff (Or.inl hm)).2 ⟨h₁, h₂⟩
 #align nat.log_eq_of_pow_le_of_lt_pow Nat.log_eq_of_pow_le_of_lt_pow
 
 theorem log_pow {b : ℕ} (hb : 1 < b) (x : ℕ) : log b (b ^ x) = x :=
-  log_eq_of_pow_le_of_lt_pow le_rfl (pow_lt_pow_right hb x.lt_succ_self)
+  log_eq_of_pow_le_of_lt_pow le_rfl (Nat.pow_lt_pow_right hb x.lt_succ_self)
 #align nat.log_pow Nat.log_pow
 
 theorem log_eq_one_iff' {b n : ℕ} : log b n = 1 ↔ b ≤ n ∧ n < b * b := by
