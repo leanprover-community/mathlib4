@@ -277,9 +277,9 @@ namespace NumberField.InfinitePlace
 
 open NumberField
 
-instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ :=
-{ coe := fun w x => w.1 x
-  coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)}
+instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
+  coe w x := w.1 x
+  coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
   map_mul w _ _ := w.1.map_mul _ _
@@ -532,7 +532,7 @@ theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
       by_cases hz : z = w
       · rwa [hz]
       · exact h hz
-  rw [← Algebra.coe_norm_int, ← Int.cast_one, ← Int.cast_abs, Rat.cast_coe_int, Int.cast_le]
+  rw [← Algebra.coe_norm_int, ← Int.cast_one, ← Int.cast_abs, Rat.cast_intCast, Int.cast_le]
   exact Int.one_le_abs (Algebra.norm_ne_zero_iff.mpr ha)
 
 open scoped IntermediateField in
@@ -547,17 +547,17 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
       contrapose! h
       exact h₂ h.symm
     rw [(mk_embedding w).symm, mk_eq_iff] at main
-    by_cases hw : IsReal w
-    · rw [conjugate_embedding_eq_of_isReal hw, or_self] at main
+    cases h₃ with
+    | inl hw =>
+      rw [conjugate_embedding_eq_of_isReal hw, or_self] at main
       exact congr_arg RingHom.toRatAlgHom main
-    · refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ ?_)
+    | inr hw =>
+      refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ hw.not_le ?_)
       have : (embedding w x).im = 0 := by
         erw [← Complex.conj_eq_iff_im, RingHom.congr_fun h' x]
         exact hψ.symm
-      contrapose! h
-      rw [← norm_embedding_eq, ← Complex.re_add_im (embedding w x), this, Complex.ofReal_zero,
-        zero_mul, add_zero, Complex.norm_eq_abs, Complex.abs_ofReal]
-      exact h₃.resolve_left hw
+      rwa [← norm_embedding_eq, ← Complex.re_add_im (embedding w x), this, Complex.ofReal_zero,
+        zero_mul, add_zero, Complex.norm_eq_abs, Complex.abs_ofReal] at h
   · exact fun x ↦ IsAlgClosed.splits_codomain (minpoly ℚ x)
 
 theorem _root_.NumberField.adjoin_eq_top_of_infinitePlace_lt {x : 𝓞 K} {w : InfinitePlace K}
@@ -1057,12 +1057,12 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
   let f := w.embedding
   have hζ' : IsPrimitiveRoot (f ζ) k := hζ.map_of_injective f.injective
   have him : (f ζ).im = 0 := by
-    · rw [← Complex.conj_eq_iff_im, ← NumberField.ComplexEmbedding.conjugate_coe_eq]
-      congr
+    rw [← Complex.conj_eq_iff_im, ← NumberField.ComplexEmbedding.conjugate_coe_eq]
+    congr
   have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
-    · rw [← Complex.abs_re_eq_abs] at him
-      have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by linarith)
-      rwa [Complex.norm_eq_abs, ← him, ← abs_one, abs_eq_abs] at this
+    rw [← Complex.abs_re_eq_abs] at him
+    have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by linarith)
+    rwa [Complex.norm_eq_abs, ← him, ← abs_one, abs_eq_abs] at this
   cases hre with
   | inl hone =>
     exact hζ'.ne_one (by linarith) <| Complex.ext (by simp [hone]) (by simp [him])

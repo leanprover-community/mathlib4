@@ -657,6 +657,9 @@ lemma toSpec_fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x :
       rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
         HomogeneousLocalization.zero_val, Localization.mk_zero]
 
+@[deprecated] -- 2024-03-02
+alias toSpecFromSpec := toSpec_fromSpec
+
 end toSpecFromSpec
 
 section fromSpecToSpec
@@ -685,7 +688,7 @@ lemma fromSpec_toSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x :
   · intro i
     erw [ToSpec.mem_carrier_iff, HomogeneousLocalization.val_mk'']
     dsimp only [GradedAlgebra.proj_apply]
-    rw [show (mk (decompose 𝒜 z i ^ m) ⟨f^i, ⟨i, rfl⟩⟩: Away f) =
+    rw [show (mk (decompose 𝒜 z i ^ m) ⟨f^i, ⟨i, rfl⟩⟩ : Away f) =
       (decompose 𝒜 z i ^ m : A) • (mk 1 ⟨f^i, ⟨i, rfl⟩⟩ : Away f) by
       · rw [smul_mk, smul_eq_mul, mul_one], Algebra.smul_def]
     exact Ideal.mul_mem_right _ _ <|
