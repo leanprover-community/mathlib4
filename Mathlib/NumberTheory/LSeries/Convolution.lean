@@ -95,7 +95,7 @@ lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
   rw [term_of_ne_zero hp₁ f s, term_of_ne_zero hp₂ g s, mul_comm_div, div_div,
     ← mul_div_assoc, ← natCast_mul_natCast_cpow, ← Nat.cast_mul, mul_comm p.2, hp]
 
-open Set Nat in
+open Set in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
 in terms of an a priori infinte sum over all pairs `(k, m)` with `k * m = n`
 (the set we sum over is infinite when `n = 0`). This is the version needed for the
@@ -110,7 +110,7 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) :
     -- the right hand sum is over the union below, but in each term, one factor is always zero
     have hS : (fun p ↦ p.1 * p.2) ⁻¹' {0} = {0} ×ˢ univ ∪ univ ×ˢ {0} := by
       ext
-      simp only [mem_preimage, mem_singleton_iff, _root_.mul_eq_zero, mem_union, mem_prod, mem_univ,
+      simp only [mem_preimage, mem_singleton_iff, mul_eq_zero, mem_union, mem_prod, mem_univ,
         and_true, true_and]
     have : ∀ p : (fun p : ℕ × ℕ ↦ p.1 * p.2) ⁻¹' {0}, term f s p.val.1 * term g s p.val.2 = 0 := by
       rintro ⟨⟨p₁, p₂⟩, hp⟩
