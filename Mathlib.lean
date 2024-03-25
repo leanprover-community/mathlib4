@@ -1806,6 +1806,7 @@ import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
+import Mathlib.Data.List.ReduceOption
 import Mathlib.Data.List.Rotate
 import Mathlib.Data.List.Sections
 import Mathlib.Data.List.Sigma
