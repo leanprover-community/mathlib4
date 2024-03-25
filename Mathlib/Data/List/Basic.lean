@@ -2863,6 +2863,18 @@ theorem length_lookmap (l : List α) : length (l.lookmap f) = length l := by
 end Lookmap
 
 /-! ### filter -/
+
+theorem length_eq_length_filter_add_length_filter_not {l : List (α)} (f : α → Bool) :
+    l.length = (l.filter f).length + (l.filter (Bool.not ∘ f)).length := by
+  induction' l with hd tl hl
+  · simp
+  · simp [length_cons, hl, filter_cons]
+    cases hfd : f hd
+    · simp [hfd]
+      omega
+    · simp [hfd]
+      omega
+
 /-! ### filterMap -/
 
 #align list.filter_map_nil List.filterMap_nil
@@ -2949,29 +2961,35 @@ theorem reduceOption_append (l l' : List (Option α)) :
   filterMap_append l l' id
 #align list.reduce_option_append List.reduceOption_append
 
-theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length ≤ l.length := by
+theorem reduceOption_length_eq {l : List (Option α)} :
+    l.reduceOption.length = (l.filter Option.isSome).length := by
   induction' l with hd tl hl
-  · simp [reduceOption_nil, length]
-  · cases hd
-    · exact Nat.le_succ_of_le hl
-    · simpa only [length, Nat.add_le_add_iff_right, reduceOption_cons_of_some] using hl
+  · simp only [reduceOption_nil, filter_nil, length, zero_add]
+  · cases hd <;> simp [hl]
+
+@[simp]
+lemma Option.not_comp_isSome : Bool.not ∘ @Option.isSome α = Option.isNone := by
+  funext x
+  cases x <;> simp
+
+theorem length_eq_reduceOption_length_add_filter_none {l : List (Option α)} :
+    l.length = l.reduceOption.length + (l.filter Option.isNone).length := by
+  rw [reduceOption_length_eq]
+  convert length_eq_length_filter_add_length_filter_not Option.isSome
+  simp only [Option.not_comp_isSome]
+
+theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length ≤ l.length := by
+  rw [length_eq_reduceOption_length_add_filter_none]
+  apply Nat.le_add_right
 #align list.reduce_option_length_le List.reduceOption_length_le
+
+lemma foo (a b : ℕ) : a = a + b ↔ b = 0 := by
+  omega
 
 theorem reduceOption_length_eq_iff {l : List (Option α)} :
     l.reduceOption.length = l.length ↔ ∀ x ∈ l, Option.isSome x := by
-  induction' l with hd tl hl
-  · simp only [forall_const, reduceOption_nil, not_mem_nil, forall_prop_of_false, eq_self_iff_true,
-      length, not_false_iff]
-  · cases hd
-    · simp only [mem_cons, forall_eq_or_imp, Bool.coe_sort_false, false_and_iff,
-        reduceOption_cons_of_none, length, Option.isSome_none, iff_false_iff]
-      intro H
-      have := reduceOption_length_le tl
-      rw [H] at this
-      exact absurd (Nat.lt_succ_self _) (not_lt_of_le this)
-    · simp only [length, mem_cons, forall_eq_or_imp, Option.isSome_some, ← hl, reduceOption,
-        true_and]
-      omega
+  rw [length_eq_reduceOption_length_add_filter_none, foo, length_eq_zero, filter_eq_nil]
+  simp_rw [← Option.not_isSome, Bool.not_eq_false]
 #align list.reduce_option_length_eq_iff List.reduceOption_length_eq_iff
 
 theorem reduceOption_length_lt_iff {l : List (Option α)} :
