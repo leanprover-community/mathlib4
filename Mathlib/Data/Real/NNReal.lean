@@ -314,7 +314,7 @@ theorem coe_list_sum (l : List ℝ≥0) : ((l.sum : ℝ≥0) : ℝ) = (l.map (�
 
 @[norm_cast]
 theorem coe_list_prod (l : List ℝ≥0) : ((l.prod : ℝ≥0) : ℝ) = (l.map (↑)).prod :=
-  toRealHom.map_list_prod l
+  map_list_prod toRealHom l
 #align nnreal.coe_list_prod NNReal.coe_list_prod
 
 @[norm_cast]
@@ -324,7 +324,7 @@ theorem coe_multiset_sum (s : Multiset ℝ≥0) : ((s.sum : ℝ≥0) : ℝ) = (s
 
 @[norm_cast]
 theorem coe_multiset_prod (s : Multiset ℝ≥0) : ((s.prod : ℝ≥0) : ℝ) = (s.map (↑)).prod :=
-  toRealHom.map_multiset_prod s
+  map_multiset_prod toRealHom s
 #align nnreal.coe_multiset_prod NNReal.coe_multiset_prod
 
 @[norm_cast]
