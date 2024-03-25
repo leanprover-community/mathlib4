@@ -1585,9 +1585,14 @@ theorem map_join (f : α → β) (L : List (List α)) : map f (join L) = join (m
   induction L <;> [rfl; simp only [*, join, map, map_append]]
 #align list.map_join List.map_join
 
-theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l := by
-  induction l <;> [rfl; simp [*, List.ret]]
-#align list.bind_ret_eq_map List.bind_ret_eq_map
+theorem bind_pure_eq_map (f : α → β) (l : List α) : l.bind (List.pure ∘ f) = map f l := by
+  induction l <;> [rfl; simp [*, List.pure]]
+#align list.bind_ret_eq_map List.bind_pure_eq_map
+
+set_option linter.deprecated false in
+@[deprecated bind_pure_eq_map] -- 2024-03-24
+theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l :=
+  bind_pure_eq_map f l
 
 theorem bind_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
     List.bind l f = List.bind l g :=

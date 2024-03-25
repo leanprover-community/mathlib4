@@ -210,17 +210,21 @@ theorem length_sublists (l : List α) : length (sublists l) = 2 ^ length l := by
   simp only [sublists_eq_sublists', length_map, length_sublists', length_reverse]
 #align list.length_sublists List.length_sublists
 
-theorem map_ret_sublist_sublists (l : List α) : map List.ret l <+ sublists l := by
+theorem map_pure_sublist_sublists (l : List α) : map List.pure l <+ sublists l := by
   induction' l using reverseRecOn with l a ih <;>
-  simp only [map, map_append, sublists_concat]
+    simp only [map, map_append, sublists_concat]
   · simp only [sublists_nil, sublist_cons]
   exact ((append_sublist_append_left _).2 <|
               singleton_sublist.2 <| mem_map.2 ⟨[], mem_sublists.2 (nil_sublist _), by rfl⟩).trans
           ((append_sublist_append_right _).2 ih)
-#align list.map_ret_sublist_sublists List.map_ret_sublist_sublists
+#align list.map_ret_sublist_sublists List.map_pure_sublist_sublists
+
+set_option linter.deprecated false in
+@[deprecated map_pure_sublist_sublists] -- 2024-03-24
+theorem map_ret_sublist_sublists (l : List α) : map List.ret l <+ sublists l :=
+  map_pure_sublist_sublists l
 
 /-! ### sublistsLen -/
-
 
 /-- Auxiliary function to construct the list of all sublists of a given length. Given an
 integer `n`, a list `l`, a function `f` and an auxiliary list `L`, it returns the list made of
