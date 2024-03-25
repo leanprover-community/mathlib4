@@ -35,7 +35,7 @@ lemma Iso.map_inv_hom_id {C D : Type*} [Category C] [Category D] {X Y : C} (e : 
 
 @[reassoc (attr := simp)]
 lemma Iso.map_hom_inv_id_apply {C D J : Type*} [Category C] [Category D]
-  {X Y : GradedObject J C} (e : X ≅ Y)
+    {X Y : GradedObject J C} (e : X ≅ Y)
     (F : C ⥤ D) (j : J) : F.map (e.hom j) ≫ F.map (e.inv j) = 𝟙 _ := by
   rw [← F.map_comp, ← GradedObject.categoryOfGradedObjects_comp, e.hom_inv_id,
     GradedObject.categoryOfGradedObjects_id, Functor.map_id]
