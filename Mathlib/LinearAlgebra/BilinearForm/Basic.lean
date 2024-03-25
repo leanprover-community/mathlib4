@@ -165,6 +165,9 @@ When `R` itself is commutative, this provides an `R`-action via `Algebra.id`. -/
 instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] : SMul α (BilinForm R M) :=
   LinearMap.instSMulLinearMap
 
+#noalign bilin_form.coe_smul
+#noalign bilin_form.smul_apply
+
 instance {α β} [Monoid α] [Monoid β] [DistribMulAction α R] [DistribMulAction β R]
     [SMulCommClass R α R] [SMulCommClass R β R] [SMulCommClass α β R] :
     SMulCommClass α β (BilinForm R M) :=
