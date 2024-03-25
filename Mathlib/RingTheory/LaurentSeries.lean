@@ -116,7 +116,8 @@ theorem hasseDeriv_zero' (f : LaurentSeries V) : hasseDeriv 0 f = f := by
   exact rfl
 
 /-- The Hasse derivative as a linear map. -/
-def hasseDeriv.linearMap (k : ℕ) : LaurentSeries V →ₗ[R] LaurentSeries V where
+def hasseDeriv.linearMap (R) [CommRing R] [Module R V] (k : ℕ) :
+    LaurentSeries V →ₗ[R] LaurentSeries V where
   toFun := fun f => hasseDeriv k f
   map_add' := by
     intros
@@ -129,11 +130,12 @@ def hasseDeriv.linearMap (k : ℕ) : LaurentSeries V →ₗ[R] LaurentSeries V w
 
 @[simp]
 theorem hasseDeriv_apply (k : ℕ) (f : LaurentSeries V) :
-    @hasseDeriv.linearMap R V _ _ _ k f = hasseDeriv k f := by
+    hasseDeriv.linearMap R k f = hasseDeriv k f := by
   exact rfl
 
 @[simp]
-theorem hasseDeriv_zero : @hasseDeriv.linearMap R V _ _ _ 0 = LinearMap.id :=
+theorem hasseDeriv_zero (R) [CommRing R] [Module R V] :
+    @hasseDeriv.linearMap V _ R _ _ 0 = LinearMap.id :=
   LinearMap.ext <| hasseDeriv_zero'
 
 theorem hasseDeriv_single' (k : ℕ) (n : ℤ) (x : V) :
@@ -161,16 +163,17 @@ theorem hasseDeriv_comp' (k l : ℕ) (f : LaurentSeries V) :
   ext n
   rw [@hasseDeriv_comp_coeff R]
 
-theorem hasseDeriv_comp (k l : ℕ) :
-    (@hasseDeriv.linearMap R V _ _ _ k).comp (@hasseDeriv.linearMap R V _ _ _ l) =
-    (k + l).choose k • (@hasseDeriv.linearMap R V _ _ _ (k + l)) := by
+theorem hasseDeriv_comp (R) [CommRing R] [Module R V] (k l : ℕ) :
+    (hasseDeriv.linearMap R k).comp (hasseDeriv.linearMap R l) =
+    (k + l).choose k • (@hasseDeriv.linearMap V _ R _ _ (k + l)) := by
   ext f n
-  simp only [LinearMap.coe_comp, Function.comp_apply, hasseDeriv_apply, LinearMap.smul_apply]
-  rw [nsmul_eq_smul_cast R, LinearMap.smul_apply, hasseDeriv_apply, @hasseDeriv_comp_coeff R,
-    nsmul_eq_smul_cast R]
+  simp_all only [LinearMap.coe_comp, Function.comp_apply, hasseDeriv_apply, nsmul_eq_mul,
+  LinearMap.mul_apply, Module.End.natCast_apply]
+  rw [nsmul_eq_smul_cast R, smul_coeff, @hasseDeriv_comp_coeff R, nsmul_eq_smul_cast R]
+  exact rfl
 
 /-- The derivative of a Laurent series. -/
-def derivative : LaurentSeries V →ₗ[R] LaurentSeries V := hasseDeriv.linearMap 1
+def derivative : LaurentSeries V →ₗ[R] LaurentSeries V := hasseDeriv.linearMap R 1
 
 theorem derivative_apply (f : LaurentSeries V) : @derivative R V _ _ _ f = hasseDeriv 1 f := by
   exact rfl
@@ -186,7 +189,7 @@ theorem factorial_smul_hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ
       Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]
 
 theorem factorial_smul_hasseDeriv (k : ℕ) :
-    (k.factorial • @hasseDeriv.linearMap R V _ _ _ k) = (@derivative R V _ _ _)^[k] := by
+    ⇑(k.factorial • hasseDeriv.linearMap R k) = (@derivative R V _ _ _)^[k] := by
   ext f n
   exact factorial_smul_hasseDeriv_coeff k f n
 

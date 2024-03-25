@@ -672,10 +672,13 @@ theorem eval_congr : f = g → x = y → f.eval x = g.eval y := by rintro rfl rf
 theorem eval_zero : (0 : R[T;T⁻¹]).eval x = (0 : S) := by
   simp only [eval_eq_sum, Finsupp.sum_zero_index]
 
-@[simp]
 theorem eval_single (n : ℤ) (r : R) : eval (Finsupp.single n r) x = r • (x ^ n).val := by
   simp only [eval_eq_sum]
   rw [Finsupp.sum_single_index (zero_smul R (x ^ n).val)]
+
+@[simp]
+theorem eval_C_mul_T_n (n : ℤ) (r : R) : (C r * T n).eval x = r • (x ^ n).val := by
+  rw [← @single_eq_C_mul_T, eval_single]
 
 @[simp]
 theorem eval_C (r : R) : (C r).eval x = r • 1 := by
@@ -710,10 +713,11 @@ theorem eval_smul (r : R) : (r • f).eval x = r • (f.eval x) := by
   | h_add hp hq=>
     rw [smul_add, eval_add, eval_add, hp, hq, smul_add]
   | h_C_mul_T n s _ =>
-    rw [← single_eq_C_mul_T, smul_single', eval_single, eval_single, mul_smul]
+    rw [eval_C_mul_T_n, ← single_eq_C_mul_T, smul_single', eval_single, mul_smul]
   | h_C_mul_T_Z n s _ =>
-    rw [← single_eq_C_mul_T, smul_single', eval_single, eval_single, mul_smul]
+    rw [eval_C_mul_T_n, ← single_eq_C_mul_T, smul_single', eval_single, mul_smul]
 
+/-- Evaluation as an `R`-linear map. -/
 def eval.linearMap : R[T;T⁻¹] →ₗ[R] S where -- make R explicit?
   toFun f := f.eval x
   map_add' f g := eval_add f g x

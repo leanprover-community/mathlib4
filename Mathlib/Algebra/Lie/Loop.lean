@@ -62,12 +62,12 @@ instance instLieAlgebra : LieAlgebra R (LoopAlgebra R L) :=
 /-!
 /-- The evaluation representation, given by composing a representation with the evaluation map
 `L[z,z^{-1}] → L` attached to a unit in `R`. -/
-def eval (x : Units R) : (LoopAlgebra R L) →ₗ⁅R⁆ L where
+--define eval (x : Units R) : (LoopAlgebra R L) →ₗ⁅R⁆ L where
   toFun l := sorry
   map_add' := sorry
   map_smul' := sorry
   map_lie' := sorry
 
 /-- The evaluation module -/
-def eval.LieModule
+-- define eval.LieModule
 -/

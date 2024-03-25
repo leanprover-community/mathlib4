@@ -344,8 +344,9 @@ theorem descPochhammer_eq_ascPochhammer : ∀(n : ℕ),
   | 0 => by
     rw [descPochhammer_zero, ascPochhammer_zero, @one_comp]
   | (n+1) => by
-    rw [Nat.cast_succ, sub_add, add_sub_cancel, descPochhammer_succ_right, ascPochhammer_succ_left,
-      descPochhammer_eq_ascPochhammer n, X_mul, mul_X_comp, comp_assoc, add_comp, X_comp, one_comp]
+    rw [Nat.cast_succ, sub_add, add_sub_cancel_right, descPochhammer_succ_right,
+      ascPochhammer_succ_left, descPochhammer_eq_ascPochhammer n, X_mul, mul_X_comp, comp_assoc,
+      add_comp, X_comp, one_comp]
 
 theorem descPochhammer_eval_eq_ascPochhammer (r : R) (n : ℕ) :
     (descPochhammer R n).eval r = (ascPochhammer R n).eval (r - n + 1) := by

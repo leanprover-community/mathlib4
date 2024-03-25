@@ -46,4 +46,7 @@ namespace LieAlgebra
 
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing M] [LieAlgebra R M]
 
+/-- A Lie algebra homomorphism is a central extension if it is surjective and the kernel lies in the
+center. The center condition is equivalent to the kernel being a trivial module for the adjoint
+adjoint action. -/
 def IsCentralExtension (f : M →ₗ⁅R⁆ L) : Prop := Function.Surjective f ∧ LieModule.IsTrivial M f.ker
