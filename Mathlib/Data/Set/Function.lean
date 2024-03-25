@@ -40,7 +40,7 @@ open Equiv Equiv.Perm Function
 namespace Set
 
 /-! ### Restrict -/
-
+section restrict
 
 /-- Restrict domain of a function `f` to a set `s`. Same as `Subtype.restrict` but this version
 takes an argument `↥s` instead of `Subtype s`. -/
@@ -169,10 +169,13 @@ theorem injective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s
 alias ⟨_, _root_.Function.Injective.codRestrict⟩ := injective_codRestrict
 #align function.injective.cod_restrict Function.Injective.codRestrict
 
+end restrict
+
 variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ f₃ : α → β} {g g₁ g₂ : β → γ}
   {f' f₁' f₂' : β → α} {g' : γ → β} {a : α} {b : β}
 
 /-! ### Equality on a set -/
+section equality
 
 @[simp]
 theorem eqOn_empty (f₁ f₂ : α → β) : EqOn f₁ f₂ ∅ := fun _ => False.elim
@@ -251,9 +254,9 @@ theorem eqOn_range {ι : Sort*} {f : ι → α} {g₁ g₂ : α → β} :
 alias ⟨EqOn.comp_eq, _⟩ := eqOn_range
 #align set.eq_on.comp_eq Set.EqOn.comp_eq
 
-/-! ### Congruence lemmas -/
+end equality
 
-
+/-! ### Congruence lemmas for monotonicity and antitonicity -/
 section Order
 
 variable [Preorder α] [Preorder β]
@@ -297,9 +300,7 @@ theorem EqOn.congr_strictAntiOn (h : s.EqOn f₁ f₂) : StrictAntiOn f₁ s ↔
 
 end Order
 
-/-! ### Mono lemmas-/
-
-
+/-! ### Monotonicity lemmas-/
 section Mono
 
 variable [Preorder α] [Preorder β]
@@ -342,7 +343,7 @@ protected theorem _root_.StrictAntiOn.strictAnti (h : StrictAntiOn f s) :
 
 end Mono
 
-/-! ### maps to -/
+section MapsTo
 
 theorem MapsTo.restrict_commutes (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) :
     Subtype.val ∘ h.restrict f s t = f ∘ Subtype.val :=
@@ -557,9 +558,9 @@ theorem MapsTo.mem_iff (h : MapsTo f s t) (hc : MapsTo f sᶜ tᶜ) {x} : f x �
   ⟨fun ht => by_contra fun hs => hc hs ht, fun hx => h hx⟩
 #align set.maps_to.mem_iff Set.MapsTo.mem_iff
 
+end MapsTo
+
 /-! ### Restriction onto preimage -/
-
-
 section
 
 variable (t f)
@@ -594,6 +595,7 @@ alias _root_.Function.Bijective.restrictPreimage := Set.restrictPreimage_bijecti
 end
 
 /-! ### Injectivity on a set -/
+section injOn
 
 theorem Subsingleton.injOn (hs : s.Subsingleton) (f : α → β) : InjOn f s := fun _ hx _ hy _ =>
   hs hx hy
@@ -749,11 +751,16 @@ lemma InjOn.image_inter {s t u : Set α} (hf : u.InjOn f) (hs : s ⊆ u) (ht : t
   exact ⟨y, ⟨ys, zt⟩, hy⟩
 #align set.inj_on.image_inter Set.InjOn.image_inter
 
+end injOn
+
+-- TODO: can this move to a better place?
 theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
     (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
   rw [disjoint_iff_inter_eq_empty] at h ⊢
   rw [← hf.image_inter hs ht, h, image_empty]
 #align disjoint.image Disjoint.image
+
+section graphOn
 
 @[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := image_empty _
 
@@ -792,7 +799,10 @@ lemma exists_eq_graphOn [Nonempty β] {s : Set (α × β)} :
   .trans ⟨fun ⟨f, t, hs⟩ ↦ ⟨f, by rw [hs, image_fst_graphOn]⟩, fun ⟨f, hf⟩ ↦ ⟨f, _, hf⟩⟩
     exists_eq_graphOn_image_fst
 
+end graphOn
+
 /-! ### Surjectivity on a set -/
+section surjOn
 
 theorem SurjOn.subset_range (h : SurjOn f s t) : t ⊆ range f :=
   Subset.trans h <| image_subset_range f s
@@ -951,7 +961,10 @@ theorem eqOn_comp_right_iff : s.EqOn (g₁ ∘ f) (g₂ ∘ f) ↔ (f '' s).EqOn
   (s.surjOn_image f).cancel_right <| s.mapsTo_image f
 #align set.eq_on_comp_right_iff Set.eqOn_comp_right_iff
 
+end surjOn
+
 /-! ### Bijectivity -/
+section bijOn
 
 theorem BijOn.mapsTo (h : BijOn f s t) : MapsTo f s t :=
   h.left
@@ -1067,7 +1080,10 @@ theorem BijOn.compl (hst : BijOn f s t) (hf : Bijective f) : BijOn f sᶜ tᶜ :
   ⟨hst.surjOn.mapsTo_compl hf.1, hf.1.injOn _, hst.mapsTo.surjOn_compl hf.2⟩
 #align set.bij_on.compl Set.BijOn.compl
 
+end bijOn
+
 /-! ### left inverse -/
+section LeftInvOn
 
 theorem LeftInvOn.eqOn (h : LeftInvOn f' f s) : EqOn (f' ∘ f) id s :=
   h
@@ -1139,7 +1155,10 @@ theorem LeftInvOn.image_image' (hf : LeftInvOn f' f s) (hs : s₁ ⊆ s) : f' ''
   (hf.mono hs).image_image
 #align set.left_inv_on.image_image' Set.LeftInvOn.image_image'
 
+end LeftInvOn
+
 /-! ### Right inverse -/
+section RightInvOn
 
 theorem RightInvOn.eqOn (h : RightInvOn f' f t) : EqOn (f ∘ f') id t :=
   h
@@ -1201,7 +1220,10 @@ theorem SurjOn.leftInvOn_of_rightInvOn (hf : SurjOn f s t) (hf' : RightInvOn f f
   rw [← heq, hf' hx]
 #align set.surj_on.left_inv_on_of_right_inv_on Set.SurjOn.leftInvOn_of_rightInvOn
 
+end RightInvOn
+
 /-! ### Two-side inverses -/
+section InvOn
 
 lemma invOn_id (s : Set α) : InvOn id id s s := ⟨s.leftInvOn_id, s.rightInvOn_id⟩
 #align set.inv_on_id Set.invOn_id
@@ -1227,12 +1249,11 @@ into `s`, then `f` is a bijection between `s` and `t`. The `mapsTo` arguments ca
 theorem InvOn.bijOn (h : InvOn f' f s t) (hf : MapsTo f s t) (hf' : MapsTo f' t s) : BijOn f s t :=
   ⟨hf, h.left.injOn, h.right.surjOn hf'⟩
 #align set.inv_on.bij_on Set.InvOn.bijOn
+end InvOn
 
 end Set
 
 /-! ### `invFunOn` is a left/right inverse -/
-
-
 namespace Function
 
 variable [Nonempty α] {s : Set α} {f : α → β} {a : α} {b : β}
@@ -1390,8 +1411,6 @@ lemma bijOn_comm {g : β → α} (h : InvOn f g t s) : BijOn f s t ↔ BijOn g t
 end Set
 
 /-! ### Monotone -/
-
-
 namespace Monotone
 
 variable [Preorder α] [Preorder β] {f : α → β}
@@ -1412,8 +1431,6 @@ protected theorem rangeFactorization (h : Monotone f) : Monotone (Set.rangeFacto
 end Monotone
 
 /-! ### Piecewise defined function -/
-
-
 namespace Set
 
 variable {δ : α → Sort*} (s : Set α) (f g : ∀ i, δ i)
@@ -1438,6 +1455,7 @@ theorem piecewise_insert_self {j : α} [∀ i, Decidable (i ∈ insert j s)] :
 
 variable [∀ j, Decidable (j ∈ s)]
 
+-- TODO: move!
 instance Compl.decidableMem (j : α) : Decidable (j ∈ sᶜ) :=
   instDecidableNot
 #align set.compl.decidable_mem Set.Compl.decidableMem
@@ -1577,7 +1595,6 @@ theorem range_piecewise (f g : α → β) : range (s.piecewise f g) = f '' s ∪
   · rintro (⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩) <;> use x <;> simp_all
 #align set.range_piecewise Set.range_piecewise
 
-
 theorem injective_piecewise_iff {f g : α → β} :
     Injective (s.piecewise f g) ↔
       InjOn f s ∧ InjOn g sᶜ ∧ ∀ x ∈ s, ∀ y ∉ s, f x ≠ g y := by
@@ -1610,7 +1627,7 @@ theorem univ_pi_piecewise_univ {ι : Type*} {α : ι → Type*} (s : Set ι) (t 
 
 end Set
 
-open Set
+section strictMono
 
 theorem StrictMonoOn.injOn [LinearOrder α] [Preorder β] {f : α → β} {s : Set α}
     (H : StrictMonoOn f s) : s.InjOn f := fun x hx y hy hxy =>
@@ -1657,6 +1674,8 @@ theorem StrictMono.codRestrict [Preorder α] [Preorder β] {f : α → β} (hf :
     {s : Set β} (hs : ∀ x, f x ∈ s) : StrictMono (Set.codRestrict f s hs) :=
   hf
 #align strict_mono.cod_restrict StrictMono.codRestrict
+
+end strictMono
 
 namespace Function
 
@@ -1784,8 +1803,8 @@ theorem antitoneOn_of_rightInvOn_of_mapsTo [PartialOrder α] [LinearOrder β]
 end Function
 
 /-! ### Equivalences, permutations -/
-
 namespace Set
+
 variable {p : β → Prop} [DecidablePred p] {f : α ≃ Subtype p} {g g₁ g₂ : Perm α} {s t : Set α}
 
 protected lemma MapsTo.extendDomain (h : MapsTo g s t) :
@@ -1823,6 +1842,8 @@ protected lemma InvOn.extendDomain (h : InvOn g₁ g₂ s t) :
 end Set
 
 namespace Equiv
+open Set
+
 variable (e : α ≃ β) {s : Set α} {t : Set β}
 
 lemma bijOn' (h₁ : MapsTo e s t) (h₂ : MapsTo e.symm t s) : BijOn e s t :=
