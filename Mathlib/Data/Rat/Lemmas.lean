@@ -3,11 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Div
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Data.PNat.Defs
+import Mathlib.Data.Rat.Defs
 
 #align_import data.rat.lemmas from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
@@ -202,7 +201,7 @@ theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den
     simp_rw [eq_div_iff_mul_eq hn, ← Int.cast_mul] at hk
     rwa [mul_comm, eq_comm, coe_int_inj] at hk
   · rintro ⟨d, rfl⟩
-    rw [Int.cast_mul, mul_comm, mul_div_cancel _ hn, Rat.coe_int_den]
+    rw [Int.cast_mul, mul_comm, mul_div_cancel_right₀ _ hn, Rat.coe_int_den]
 #align rat.denom_div_cast_eq_one_iff Rat.den_div_cast_eq_one_iff
 
 theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :

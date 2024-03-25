@@ -295,7 +295,7 @@ section PushBack
 -- @[simp]
 -- theorem read_pushBack_right : (a.pushBack v).read (Fin.last _) = v := by
 --   cases' hn : Fin.last n with k hk
---   have : k = n := by simpa [Fin.eq_iff_veq] using hn.symm
+--   have : k = n := by simpa [Fin.ext_iff] using hn.symm
 --   simp [push_back, this, Fin.castSucc, Fin.castAdd, Fin.castLe, Fin.castLt, read, DArray.read]
 #noalign array.read_push_back_right -- Array'.read_pushBack_right
 
@@ -337,4 +337,3 @@ section Map₂
 end Map₂
 
 end Array'
-

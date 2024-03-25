@@ -98,7 +98,7 @@ theorem _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with
     intCast := fun z ↦ z • (1 : N₁ →ₗ[R] N₁)
-    intCast_ofNat := coe_nat_zsmul _
+    intCast_ofNat := natCast_zsmul _
     intCast_negSucc := negSucc_zsmul _ }
 #align module.End.ring Module.End.ring
 
@@ -343,7 +343,7 @@ section SMulRight
 variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
 variable [Semiring S] [Module R S] [Module S M] [IsScalarTower R S M]
 
-/-- When `f` is an `R`-linear map taking values in `S`, then `fun ↦ b, f b • x` is an `R`-linear
+/-- When `f` is an `R`-linear map taking values in `S`, then `fun b ↦ f b • x` is an `R`-linear
 map. -/
 def smulRight (f : M₁ →ₗ[R] S) (x : M) : M₁ →ₗ[R] M where
   toFun b := f b • x
@@ -384,7 +384,6 @@ section Module
 
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂] [Module S M₂] [SMulCommClass R S M₂]
-
 variable (S)
 
 /-- Applying a linear map at `v : M`, seen as `S`-linear map from `M →ₗ[R] M₂` to `M₂`.

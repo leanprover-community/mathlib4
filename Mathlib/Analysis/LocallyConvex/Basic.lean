@@ -169,13 +169,6 @@ theorem absorbs_iff_eventually_nhdsWithin_zero :
 
 alias ⟨Absorbs.eventually_nhdsWithin_zero, _⟩ := absorbs_iff_eventually_nhdsWithin_zero
 
-theorem Absorbs.eventually_nhds_zero (h : Absorbs 𝕜 s t) (h₀ : 0 ∈ s) :
-    ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s := by
-  rw [← nhdsWithin_compl_singleton_sup_pure, Filter.eventually_sup, Filter.eventually_pure,
-    ← absorbs_iff_eventually_nhdsWithin_zero]
-  refine ⟨h, fun x _ ↦ ?_⟩
-  simpa only [zero_smul]
-
 theorem absorbent_iff_eventually_nhdsWithin_zero :
     Absorbent 𝕜 s ↔ ∀ x : E, ∀ᶠ c : 𝕜 in 𝓝[≠] 0, c • x ∈ s :=
   forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_nhdsWithin_zero, mapsTo_singleton]
@@ -183,9 +176,15 @@ theorem absorbent_iff_eventually_nhdsWithin_zero :
 alias ⟨Absorbent.eventually_nhdsWithin_zero, _⟩ := absorbent_iff_eventually_nhdsWithin_zero
 
 theorem absorbs_iff_eventually_nhds_zero (h₀ : 0 ∈ s) :
-    Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s :=
-  ⟨fun h ↦ h.eventually_nhds_zero h₀, fun h ↦ absorbs_iff_eventually_nhdsWithin_zero.2 <|
-    h.filter_mono inf_le_left⟩
+    Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s := by
+  rw [← nhdsWithin_compl_singleton_sup_pure, Filter.eventually_sup, Filter.eventually_pure,
+    ← absorbs_iff_eventually_nhdsWithin_zero, and_iff_left]
+  intro x _
+  simpa only [zero_smul]
+
+theorem Absorbs.eventually_nhds_zero (h : Absorbs 𝕜 s t) (h₀ : 0 ∈ s) :
+    ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s :=
+  (absorbs_iff_eventually_nhds_zero h₀).1 h
 
 end NormedDivisionRing
 

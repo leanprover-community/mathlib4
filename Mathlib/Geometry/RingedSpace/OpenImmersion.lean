@@ -590,7 +590,6 @@ open CategoryTheory.Limits.WalkingCospan
 section ToSheafedSpace
 
 variable {X : PresheafedSpace C} (Y : SheafedSpace C)
-
 variable (f : X ⟶ Y.toPresheafedSpace) [H : IsOpenImmersion f]
 
 /-- If `X ⟶ Y` is an open immersion, and `Y` is a SheafedSpace, then so is `X`. -/
@@ -638,7 +637,6 @@ end ToSheafedSpace
 section ToLocallyRingedSpace
 
 variable {X : PresheafedSpace CommRingCat} (Y : LocallyRingedSpace)
-
 variable (f : X ⟶ Y.toPresheafedSpace) [H : IsOpenImmersion f]
 
 /-- If `X ⟶ Y` is an open immersion, and `Y` is a LocallyRingedSpace, then so is `X`. -/
@@ -707,7 +705,6 @@ instance comp {X Y Z : SheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) [SheafedSpace
 noncomputable section Pullback
 
 variable {X Y Z : SheafedSpace C} (f : X ⟶ Z) (g : Y ⟶ Z)
-
 variable [H : SheafedSpace.IsOpenImmersion f]
 
 -- Porting note: in mathlib3, this local notation is often followed by a space to avoid confusion
@@ -824,7 +821,6 @@ end Pullback
 section OfStalkIso
 
 variable [HasLimits C] [HasColimits C] [ConcreteCategory C]
-
 variable [ReflectsIsomorphisms (CategoryTheory.forget C)]
   [PreservesLimits (CategoryTheory.forget C)]
 
@@ -919,7 +915,7 @@ instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
     suffices IsIso <| (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
         (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).c.app <|
       op (H.isOpenMap.functor.obj U) by
-      -- Porting note: just `convert` is very slow, so helps it a bit
+      -- Porting note (#11083): just `convert` is very slow, so helps it a bit
       convert this using 2 <;> congr
     rw [PresheafedSpace.comp_c_app,
       ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
@@ -952,7 +948,6 @@ namespace LocallyRingedSpace.IsOpenImmersion
 noncomputable section Pullback
 
 variable {X Y Z : LocallyRingedSpace} (f : X ⟶ Z) (g : Y ⟶ Z)
-
 variable [H : LocallyRingedSpace.IsOpenImmersion f]
 
 instance (priority := 100) of_isIso [IsIso g] : LocallyRingedSpace.IsOpenImmersion g :=
@@ -1173,7 +1168,7 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) f g
   rw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
-  -- Porting note: change `rw` to `erw` on this lemma
+  -- Porting note (#11224): change `rw` to `erw` on this lemma
   erw [TopCat.pullback_fst_range]
   ext
   constructor

@@ -60,7 +60,8 @@ theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ 
   Quotient.eq
 #align multiset.coe_eq_coe Multiset.coe_eq_coe
 
--- Porting note: new, TODO move to better place
+-- Porting note: new instance;
+-- Porting note (#11215): TODO: move to better place
 instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (l₁ ≈ l₂) :=
   inferInstanceAs (Decidable (l₁ ~ l₂))
 
@@ -257,7 +258,7 @@ theorem forall_mem_cons {p : α → Prop} {a : α} {s : Multiset α} :
 
 theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a ::ₘ t :=
   Quot.inductionOn s fun l (h : a ∈ l) =>
-    let ⟨l₁, l₂, e⟩ := mem_split h
+    let ⟨l₁, l₂, e⟩ := append_of_mem h
     e.symm ▸ ⟨(l₁ ++ l₂ : List α), Quot.sound perm_middle⟩
 #align multiset.exists_cons_of_mem Multiset.exists_cons_of_mem
 
@@ -602,7 +603,7 @@ theorem le_cons_of_not_mem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
   revert m
   refine' leInductionOn h _
   introv s m₁ m₂
-  rcases mem_split m₂ with ⟨r₁, r₂, rfl⟩
+  rcases append_of_mem m₂ with ⟨r₁, r₂, rfl⟩
   exact
     perm_middle.subperm_left.2
       ((subperm_cons _).2 <| ((sublist_or_mem_of_sublist s).resolve_right m₁).subperm)
@@ -682,6 +683,7 @@ instance : OrderedCancelAddCommMonoid (Multiset α) where
   add_zero := fun s => Quotient.inductionOn s fun l => congr_arg _ <| append_nil l
   add_le_add_left := fun s₁ s₂ => add_le_add_left
   le_of_add_le_add_left := fun s₁ s₂ s₃ => le_of_add_le_add_left
+  nsmul := nsmulRec
 
 theorem le_add_right (s t : Multiset α) : s ≤ s + t := by simpa using add_le_add_left (zero_le t) s
 #align multiset.le_add_right Multiset.le_add_right
@@ -1203,10 +1205,8 @@ theorem forall_mem_map_iff {f : α → β} {p : β → Prop} {s : Multiset α} :
   Quotient.inductionOn' s fun _L => List.forall_mem_map_iff
 #align multiset.forall_mem_map_iff Multiset.forall_mem_map_iff
 
-@[simp]
-theorem coe_map (f : α → β) (l : List α) : map f ↑l = l.map f :=
-  rfl
-#align multiset.coe_map Multiset.coe_map
+@[simp, norm_cast] lemma map_coe (f : α → β) (l : List α) : map f l = l.map f := rfl
+#align multiset.coe_map Multiset.map_coe
 
 @[simp]
 theorem map_zero (f : α → β) : map f 0 = 0 :=
@@ -1230,7 +1230,7 @@ theorem map_singleton (f : α → β) (a : α) : ({a} : Multiset α).map f = {f 
 
 @[simp]
 theorem map_replicate (f : α → β) (k : ℕ) (a : α) : (replicate k a).map f = replicate k (f a) := by
-  simp only [← coe_replicate, coe_map, List.map_replicate]
+  simp only [← coe_replicate, map_coe, List.map_replicate]
 #align multiset.map_replicate Multiset.map_replicate
 
 @[simp]
@@ -1245,7 +1245,7 @@ instance canLift (c) (p) [CanLift α β c p] :
   prf := by
     rintro ⟨l⟩ hl
     lift l to List β using hl
-    exact ⟨l, coe_map _ _⟩
+    exact ⟨l, map_coe _ _⟩
 #align multiset.can_lift Multiset.canLift
 
 /-- `Multiset.map` as an `AddMonoidHom`. -/
@@ -1782,11 +1782,11 @@ theorem map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f)
     congr_arg ofList (by rw [List.map_append f, List.map_diff finj])
 #align multiset.map_union Multiset.map_union
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp] theorem zero_union : 0 ∪ s = s := by
   simp [union_def]
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp] theorem union_zero : s ∪ 0 = s := by
   simp [union_def]
 
@@ -1878,12 +1878,10 @@ theorem union_le_iff : s ∪ t ≤ u ↔ s ≤ u ∧ t ≤ u :=
   sup_le_iff
 #align multiset.union_le_iff Multiset.union_le_iff
 
-theorem union_comm (s t : Multiset α) : s ∪ t = t ∪ s :=
-  sup_comm
+theorem union_comm (s t : Multiset α) : s ∪ t = t ∪ s := sup_comm _ _
 #align multiset.union_comm Multiset.union_comm
 
-theorem inter_comm (s t : Multiset α) : s ∩ t = t ∩ s :=
-  inf_comm
+theorem inter_comm (s t : Multiset α) : s ∩ t = t ∩ s := inf_comm _ _
 #align multiset.inter_comm Multiset.inter_comm
 
 theorem eq_union_right (h : s ≤ t) : s ∪ t = t := by rw [union_comm, eq_union_left h]
@@ -1973,10 +1971,8 @@ def filter (s : Multiset α) : Multiset α :=
   Quot.liftOn s (fun l => (List.filter p l : Multiset α)) fun _l₁ _l₂ h => Quot.sound <| h.filter p
 #align multiset.filter Multiset.filter
 
-@[simp]
-theorem coe_filter (l : List α) : filter p ↑l = l.filter p :=
-  rfl
-#align multiset.coe_filter Multiset.coe_filter
+@[simp, norm_cast] lemma filter_coe (l : List α) : filter p l = l.filter p := rfl
+#align multiset.coe_filter Multiset.filter_coe
 
 @[simp]
 theorem filter_zero : filter p 0 = 0 :=
@@ -2179,10 +2175,9 @@ def filterMap (f : α → Option β) (s : Multiset α) : Multiset β :=
     fun _l₁ _l₂ h => Quot.sound <| h.filterMap f
 #align multiset.filter_map Multiset.filterMap
 
-@[simp]
-theorem coe_filterMap (f : α → Option β) (l : List α) : filterMap f l = l.filterMap f :=
-  rfl
-#align multiset.coe_filter_map Multiset.coe_filterMap
+@[simp, norm_cast]
+lemma filterMap_coe (f : α → Option β) (l : List α) : filterMap f l = l.filterMap f := rfl
+#align multiset.coe_filter_map Multiset.filterMap_coe
 
 @[simp]
 theorem filterMap_zero (f : α → Option β) : filterMap f 0 = 0 :=
@@ -2371,11 +2366,11 @@ theorem countP_map (f : α → β) (s : Multiset α) (p : β → Prop) [Decidabl
       add_comm]
 #align multiset.countp_map Multiset.countP_map
 
--- porting note: `Lean.Internal.coeM` forces us to type-ascript `{a // a ∈ s}`
+-- Porting note: `Lean.Internal.coeM` forces us to type-ascript `{a // a ∈ s}`
 lemma countP_attach (s : Multiset α) : s.attach.countP (fun a : {a // a ∈ s} ↦ p a) = s.countP p :=
   Quotient.inductionOn s fun l => by
     simp only [quot_mk_to_coe, coe_countP]
-    -- porting note: was
+    -- Porting note: was
     -- rw [quot_mk_to_coe, coe_attach, coe_countP]
     -- exact List.countP_attach _ _
     rw [coe_attach]
@@ -2584,7 +2579,7 @@ theorem le_count_iff_replicate_le {a : α} {s : Multiset α} {n : ℕ} :
 theorem count_filter_of_pos {p} [DecidablePred p] {a} {s : Multiset α} (h : p a) :
     count a (filter p s) = count a s :=
   Quot.inductionOn s fun _l => by
-    simp only [quot_mk_to_coe'', coe_filter, mem_coe, coe_count, decide_eq_true_eq]
+    simp only [quot_mk_to_coe'', filter_coe, mem_coe, coe_count, decide_eq_true_eq]
     apply count_filter
     simpa using h
 #align multiset.count_filter_of_pos Multiset.count_filter_of_pos
@@ -2604,7 +2599,7 @@ theorem count_filter {p} [DecidablePred p] {a} {s : Multiset α} :
 
 theorem ext {s t : Multiset α} : s = t ↔ ∀ a, count a s = count a t :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => Quotient.eq.trans <| by
-    simp only [quot_mk_to_coe, coe_filter, mem_coe, coe_count, decide_eq_true_eq]
+    simp only [quot_mk_to_coe, filter_coe, mem_coe, coe_count, decide_eq_true_eq]
     apply perm_iff_count
 #align multiset.ext Multiset.ext
 
@@ -2662,7 +2657,7 @@ theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (
 
 theorem filter_eq' (s : Multiset α) (b : α) : s.filter (· = b) = replicate (count b s) b :=
   Quotient.inductionOn s fun l => by
-    simp only [quot_mk_to_coe, coe_filter, mem_coe, coe_count]
+    simp only [quot_mk_to_coe, filter_coe, mem_coe, coe_count]
     rw [List.filter_eq l b, coe_replicate]
 #align multiset.filter_eq' Multiset.filter_eq'
 
@@ -2685,6 +2680,15 @@ theorem inter_replicate (s : Multiset α) (n : ℕ) (x : α) :
     s ∩ replicate n x = replicate (min (s.count x) n) x := by
   rw [inter_comm, replicate_inter, min_comm]
 #align multiset.inter_replicate Multiset.inter_replicate
+
+theorem erase_attach_map_val (s : Multiset α) (x : {x // x ∈ s}) :
+    (s.attach.erase x).map (↑) = s.erase x := by
+  rw [Multiset.map_erase _ val_injective, attach_map_val]
+
+theorem erase_attach_map (s : Multiset α) (f : α → β) (x : {x // x ∈ s}) :
+    (s.attach.erase x).map (fun j : {x // x ∈ s} ↦ f j) = (s.erase x).map f := by
+  simp only [← Function.comp_apply (f := f)]
+  rw [← map_map, erase_attach_map_val]
 
 end
 
@@ -2952,7 +2956,7 @@ lemma filter_attach' (s : Multiset α) (p : {a // a ∈ s} → Prop) [DecidableE
   classical
   refine' Multiset.map_injective Subtype.val_injective _
   rw [map_filter' _ Subtype.val_injective]
-  simp only [Function.comp, Subtype.exists, coe_mk,
+  simp only [Function.comp, Subtype.exists, coe_mk, Subtype.map,
     exists_and_right, exists_eq_right, attach_map_val, map_map, map_coe, id.def]
 #align multiset.filter_attach' Multiset.filter_attach'
 

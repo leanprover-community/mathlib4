@@ -96,7 +96,6 @@ namespace ExactPairing
 -- arguments for class fields explicit,
 -- we now repeat all the fields without primes.
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Making.20variable.20in.20class.20field.20explicit
-
 variable (X Y : C)
 variable [ExactPairing X Y]
 
@@ -119,11 +118,11 @@ lemma evaluation_coevaluation :
 
 lemma coevaluation_evaluation'' :
     Y ◁ η_ X Y ⊗≫ ε_ X Y ▷ Y = ⊗𝟙 := by
-  convert coevaluation_evaluation X Y <;> simp [Mathlib.Tactic.Coherence.monoidalComp]
+  convert coevaluation_evaluation X Y <;> simp [monoidalComp]
 
 lemma evaluation_coevaluation'' :
     η_ X Y ▷ X ⊗≫ X ◁ ε_ X Y = ⊗𝟙 := by
-  convert evaluation_coevaluation X Y <;> simp [Mathlib.Tactic.Coherence.monoidalComp]
+  convert evaluation_coevaluation X Y <;> simp [monoidalComp]
 
 end ExactPairing
 
@@ -331,31 +330,29 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
         rw [coevaluation_evaluation'']; coherence
 #align category_theory.tensor_right_hom_equiv CategoryTheory.tensorRightHomEquiv
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 theorem tensorLeftHomEquiv_naturality {X Y Y' Z Z' : C} [ExactPairing Y Y'] (f : Y' ⊗ X ⟶ Z)
     (g : Z ⟶ Z') :
-    (tensorLeftHomEquiv X Y Y' Z') (f ≫ g) = (tensorLeftHomEquiv X Y Y' Z) f ≫ (𝟙 Y ⊗ g) := by
+    (tensorLeftHomEquiv X Y Y' Z') (f ≫ g) = (tensorLeftHomEquiv X Y Y' Z) f ≫ Y ◁ g := by
   simp [tensorLeftHomEquiv]
 #align category_theory.tensor_left_hom_equiv_naturality CategoryTheory.tensorLeftHomEquiv_naturality
 
 theorem tensorLeftHomEquiv_symm_naturality {X X' Y Y' Z : C} [ExactPairing Y Y'] (f : X ⟶ X')
     (g : X' ⟶ Y ⊗ Z) :
     (tensorLeftHomEquiv X Y Y' Z).symm (f ≫ g) =
-      (𝟙 _ ⊗ f) ≫ (tensorLeftHomEquiv X' Y Y' Z).symm g := by
+      _ ◁ f ≫ (tensorLeftHomEquiv X' Y Y' Z).symm g := by
   simp [tensorLeftHomEquiv]
 #align category_theory.tensor_left_hom_equiv_symm_naturality CategoryTheory.tensorLeftHomEquiv_symm_naturality
 
 theorem tensorRightHomEquiv_naturality {X Y Y' Z Z' : C} [ExactPairing Y Y'] (f : X ⊗ Y ⟶ Z)
     (g : Z ⟶ Z') :
-    (tensorRightHomEquiv X Y Y' Z') (f ≫ g) = (tensorRightHomEquiv X Y Y' Z) f ≫ (g ⊗ 𝟙 Y') := by
+    (tensorRightHomEquiv X Y Y' Z') (f ≫ g) = (tensorRightHomEquiv X Y Y' Z) f ≫ g ▷ Y' := by
   simp [tensorRightHomEquiv]
 #align category_theory.tensor_right_hom_equiv_naturality CategoryTheory.tensorRightHomEquiv_naturality
 
 theorem tensorRightHomEquiv_symm_naturality {X X' Y Y' Z : C} [ExactPairing Y Y'] (f : X ⟶ X')
     (g : X' ⟶ Z ⊗ Y') :
     (tensorRightHomEquiv X Y Y' Z).symm (f ≫ g) =
-      (f ⊗ 𝟙 Y) ≫ (tensorRightHomEquiv X' Y Y' Z).symm g := by
+      f ▷ Y ≫ (tensorRightHomEquiv X' Y Y' Z).symm g := by
   simp [tensorRightHomEquiv]
 #align category_theory.tensor_right_hom_equiv_symm_naturality CategoryTheory.tensorRightHomEquiv_symm_naturality
 
@@ -534,7 +531,7 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
       _ = (λ_ X).hom ≫ (ρ_ X).inv := by
         rw [Iso.hom_inv_id]
         -- coherence failed
-        simp [Mathlib.Tactic.Coherence.monoidalComp]
+        simp [monoidalComp]
   coevaluation_evaluation' := by
     calc
       _ = Y ◁ η_ X' Y ≫ Y ◁ (i.inv ≫ i.hom) ▷ Y ⊗≫ ε_ X' Y ▷ Y := by
@@ -544,7 +541,7 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
       _ = _ := by
         rw [coevaluation_evaluation'']
         -- coherence failed
-        simp [Mathlib.Tactic.Coherence.monoidalComp]
+        simp [monoidalComp]
 #align category_theory.exact_pairing_congr_left CategoryTheory.exactPairingCongrLeft
 
 /-- Transport an exact pairing across an isomorphism in the second argument. -/
@@ -560,7 +557,7 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
       _ = _ := by
         rw [evaluation_coevaluation'']
         -- coherence failed
-        simp [Mathlib.Tactic.Coherence.monoidalComp]
+        simp [monoidalComp]
   coevaluation_evaluation' :=
     calc
       _ = Y ◁ η_ X Y' ⊗≫ (Y ◁ (X ◁ i.inv) ≫ i.hom ▷ (X ⊗ Y)) ⊗≫ ε_ X Y' ▷ Y := by
@@ -575,7 +572,7 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
       _ = (ρ_ Y).hom ≫ (λ_ Y).inv := by
         rw [Iso.hom_inv_id]
         -- coherence failed
-        simp [Mathlib.Tactic.Coherence.monoidalComp]
+        simp [monoidalComp]
 #align category_theory.exact_pairing_congr_right CategoryTheory.exactPairingCongrRight
 
 /-- Transport an exact pairing across isomorphisms. -/
