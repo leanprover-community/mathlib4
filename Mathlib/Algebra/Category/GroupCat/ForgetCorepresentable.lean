@@ -6,6 +6,15 @@ Authors: Joël Riou
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Algebra.Group.ULift
 
+/-!
+# The forget functor is corepresentable
+
+It is shown that the forget functor `AddCommGroupCat.{u} ⥤ Type u` is corepresentable
+by `ULift ℤ`. Similar results are obtained for the variants `CommGroupCat`, `AddGroupCat`
+and `GroupCat`.
+
+-/
+
 universe u
 
 open CategoryTheory Opposite
@@ -69,17 +78,17 @@ end AddMonoidHom
 
 /-- The forget functor `GroupCat.{u} ⥤ Type u` is representable. -/
 def GroupCat.coyonedaObjIsoForget :
-  coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget GroupCat.{u} :=
+    coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget GroupCat.{u} :=
   (NatIso.ofComponents (fun M => (MonoidHom.fromULiftMultiplicativeIntEquiv M.α).toIso))
 
 /-- The forget functor `CommGroupCat.{u} ⥤ Type u` is representable. -/
 def CommGroupCat.coyonedaObjIsoForget :
-  coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget CommGroupCat.{u} :=
+    coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget CommGroupCat.{u} :=
   (NatIso.ofComponents (fun M => (MonoidHom.fromULiftMultiplicativeIntEquiv M.α).toIso))
 
 /-- The forget functor `AddGroupCat.{u} ⥤ Type u` is representable. -/
 def AddGroupCat.coyonedaObjIsoForget :
-  coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddGroupCat.{u} :=
+    coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddGroupCat.{u} :=
   (NatIso.ofComponents (fun M => (AddMonoidHom.fromULiftIntEquiv M.α).toIso))
 
 /-- The forget functor `AddCommGroupCat.{u} ⥤ Type u` is representable. -/
