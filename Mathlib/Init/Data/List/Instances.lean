@@ -39,10 +39,12 @@ theorem bind_assoc {α β} (l : List α) (f : α → List β) (g : β → List �
 #align list.bind_assoc List.bind_assoc
 
 instance instMonad : Monad List.{u} where
-  pure := @List.ret
+  pure := @List.pure
   bind := @List.bind
   map := @List.map
 #align list.monad List.instMonad
+
+@[simp] theorem pure_def (a : α) : pure a = [a] := rfl
 
 instance instLawfulMonad : LawfulMonad List.{u} := LawfulMonad.mk'
   (id_map := map_id)

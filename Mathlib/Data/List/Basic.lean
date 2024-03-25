@@ -1585,8 +1585,8 @@ theorem map_join (f : α → β) (L : List (List α)) : map f (join L) = join (m
   induction L <;> [rfl; simp only [*, join, map, map_append]]
 #align list.map_join List.map_join
 
-theorem bind_pure_eq_map (f : α → β) (l : List α) : l.bind (List.pure ∘ f) = map f l := by
-  induction l <;> [rfl; simp [*, List.pure]]
+theorem bind_pure_eq_map (f : α → β) (l : List α) : l.bind (pure ∘ f) = map f l :=
+  .symm <| map_eq_bind ..
 #align list.bind_ret_eq_map List.bind_pure_eq_map
 
 set_option linter.deprecated false in
