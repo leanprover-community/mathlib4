@@ -349,7 +349,7 @@ example {n m h : Nat} : True := by
   try simp at n m h ⊢
 --  simp
 
-inspect
+--inspect
 --get
 example {n : Nat} : True := by
   simp [] at n n n |-
