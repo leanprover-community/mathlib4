@@ -327,12 +327,9 @@ variable (𝕜 E) in
 theorem continuousLinearMapToWeakSpace_eq_toWeakSpace (x : E) :
     continuousLinearMapToWeakSpace 𝕜 E x = toWeakSpace 𝕜 E x := by rfl
 
-theorem injective_continuousLinearMapToWeakSpace :
-    Function.Injective (continuousLinearMapToWeakSpace 𝕜 E) := by
-  intro x y hxy
-  rw [continuousLinearMapToWeakSpace_eq_toWeakSpace,
-    continuousLinearMapToWeakSpace_eq_toWeakSpace] at hxy
-  exact LinearEquiv.injective (toWeakSpace 𝕜 E) hxy
+theorem continuousLinearMapToWeakSpace_bijective :
+    Function.Bijective (continuousLinearMapToWeakSpace 𝕜 E) :=
+  (toWeakSpace 𝕜 E).bijective
 
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
 
