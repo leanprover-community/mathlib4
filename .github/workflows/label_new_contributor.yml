@@ -13,7 +13,9 @@ jobs:
     steps:
     - name: Get PR author
       id: pr-author
-      run: echo "::set-output name=author::$(jq -r .pull_request.user.login "$GITHUB_EVENT_PATH")"
+      run: |
+        echo "$(jq -r .pull_request.user.login "$GITHUB_EVENT_PATH")"
+        echo "$(jq -r .pull_request.user.login "$GITHUB_EVENT_PATH")" >> "${GITHUB_OUTPUT}"
       shell: bash
 
     - name: Check if user is new contributor
