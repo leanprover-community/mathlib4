@@ -42,7 +42,8 @@ instance rel : LargeCategory RelCat where
 @[ext] theorem rel_ext {X Y : RelCat} (f g : X ⟶ Y) (h : ∀ a b, f a b ↔ g a b) : f = g :=
   funext₂ (fun a b => propext (h a b))
 
-namespace RelCat.Hom
+namespace RelCat
+namespace Hom
 
 protected theorem rel_id (X : RelCat) : 𝟙 X = (· = ·) := rfl
 
@@ -53,8 +54,7 @@ protected theorem rel_comp {X Y Z : RelCat} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ 
 
 @[simp] theorem rel_comp_apply₂ {X Y Z : RelCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) (z : Z) :
     (f ≫ g) x z ↔ ∃ y, f x y ∧ g y z := by rfl
-
-end RelCat.Hom
+end Hom
 
 /-- The essentially surjective faithful embedding
 from the category of types and functions into the category of types and relations. -/
@@ -71,7 +71,6 @@ instance graphFunctor_faithful : Faithful graphFunctor where
 instance graphFunctor_essSurj : EssSurj graphFunctor :=
     graphFunctor.essSurj_of_surj Function.surjective_id
 
-open Classical
 /-- A relation is an isomorphism in `RelCat` iff it is the image of an isomorphism in
 `Type`. -/
 theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
@@ -81,8 +80,8 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
     have h1 := congr_fun₂ h.hom_inv_id
     have h2 := congr_fun₂ h.inv_hom_id
     simp only [RelCat.Hom.rel_comp_apply₂, RelCat.Hom.rel_id_apply₂, eq_iff_iff] at h1 h2
-    obtain ⟨f, hf⟩ := axiomOfChoice (fun a => (h1 a a).mpr rfl)
-    obtain ⟨g, hg⟩ := axiomOfChoice (fun a => (h2 a a).mpr rfl)
+    obtain ⟨f, hf⟩ := Classical.axiomOfChoice (fun a => (h1 a a).mpr rfl)
+    obtain ⟨g, hg⟩ := Classical.axiomOfChoice (fun a => (h2 a a).mpr rfl)
     suffices hif : IsIso (C := Type) f by
       use asIso f
       ext x y
@@ -109,7 +108,7 @@ section Opposite
 open Opposite
 
 /-- The argument-swap isomorphism from `rel` to its opposite. -/
-def relRelOp : RelCat ⥤ RelCatᵒᵖ where
+def opFunctor : RelCat ⥤ RelCatᵒᵖ where
   obj X := op X
   map {X Y} r := op (fun y x => r x y)
   map_id X := by
@@ -124,8 +123,8 @@ def relRelOp : RelCat ⥤ RelCatᵒᵖ where
     apply exists_congr
     exact fun a => And.comm
 
-/-- The other direction of `relRelOp`. -/
-def relOpRel : RelCatᵒᵖ ⥤ RelCat where
+/-- The other direction of `opFunctor`. -/
+def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
   obj X := unop X
   map {X Y} r x y := unop r y x
   map_id X := by
@@ -140,27 +139,28 @@ def relOpRel : RelCatᵒᵖ ⥤ RelCat where
     apply exists_congr
     exact fun a => And.comm
 
-@[simp] theorem relRelOp_comp_relOpRel_eq : Functor.comp relRelOp relOpRel = Functor.id _ := by
-  rfl
+@[simp] theorem opFunctor_comp_unopFunctor_eq :
+    Functor.comp opFunctor unopFunctor = Functor.id _ := by rfl
 
-@[simp] theorem relOpRel_comp_relRelOp_eq : Functor.comp relOpRel relRelOp = Functor.id _ := by
-  rfl
+@[simp] theorem unopFunctor_comp_opFunctor_eq :
+    Functor.comp unopFunctor opFunctor = Functor.id _ := by rfl
 
-instance relRelOp_isEquivalence : IsEquivalence relRelOp where
-  inverse := relOpRel
+instance opFunctor_isEquivalence : IsEquivalence opFunctor where
+  inverse := unopFunctor
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-instance relOpRel_isEquivalence : IsEquivalence relOpRel where
-  inverse := relRelOp
+instance unopFunctor_isEquivalence : IsEquivalence unopFunctor where
+  inverse := opFunctor
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
 /-- `rel` is self-dual: The map that swaps the argument order of a
     relation induces an equivalence between `rel` and its opposite. -/
-def relRelOp_equivalence : Equivalence RelCat RelCatᵒᵖ :=
-  Equivalence.mk relRelOp relOpRel (Iso.refl _) (Iso.refl _)
+def opFunctor_equivalence : Equivalence RelCat RelCatᵒᵖ :=
+  Equivalence.mk opFunctor unopFunctor (Iso.refl _) (Iso.refl _)
 
 end Opposite
 
+end RelCat
 end CategoryTheory
