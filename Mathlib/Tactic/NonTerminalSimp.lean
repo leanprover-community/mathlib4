@@ -221,7 +221,7 @@ def modifiedLocs (stx : Syntax) : Array Name :=
 partial
 def sloc : Syntax → Command.CommandElabM Unit
   | stx@(.node _ _ args) => do
-    if simpLocs stx then logInfoAt stx "here"
+    --if simpLocs stx then logInfoAt stx "here"
     let _ ← args.mapM sloc
   | _ => return
 #check List.getLastD
@@ -320,12 +320,12 @@ elab "get " cmd:command : command => do
 --    logInfoAt tac m!"may act on {locs.map getStained}"
 --    dbg_trace "{tac}:\nlocs: {getLocs tac}\n"
 --    let _ ← (getLocs tac).mapM (Meta.inspect ·)
-    dbg_trace "{tac.getKind} {getStained tac}"
+--    dbg_trace "{tac.getKind} {getStained tac}"
     let locs := getStained tac
 
 --    Meta.inspect tac
 --    dbg_trace "{tac}\n{locs}\n"
-    logInfoAt tac m!"may act on {locs} and {getStained! tac}"
+--    logInfoAt tac m!"may act on {locs} and {getStained! tac}"
     --logInfo m!"tactic: '{tac}'\nacts:   {locs}\natoms: {locs.map getStained}"
 --    let _ ← locs.mapM Meta.inspect
 --    dbg_trace "{locs}"
@@ -558,17 +558,17 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
     let fvs := fvs.flatten.sortAndDeduplicate
 --    dbg_trace s!"syntax: {s}\n{s.getKind}\n"
     --Meta.inspect s
-    dbg_trace s!"\n---\n{s[0]} ({s.getKind})"
---    dbg_trace "already stained: {stains.toList.map (·.name)}"
-    dbg_trace "already stained: {stains.toList}"
-    dbg_trace "already sfvrsed: {sfvrs.toList.map (·.name)}"
-    dbg_trace "getStained! s: {newStained}"
-    dbg_trace "getLocs s:     {getLocs s}"
-    dbg_trace "(fvrsb, fvrs) stains:  {(fvsb.map (·.name)).zip (fvs.map (·.name))} -- {fvsb.size == fvs.size}"
-    dbg_trace "(mvsb, mvsa) stains:\nb: {newMVb.map (·.name)}\na: {newMVa.map (·.name)}"
+--    dbg_trace s!"\n---\n{s[0]} ({s.getKind})"
+----    dbg_trace "already stained: {stains.toList.map (·.name)}"
+--    dbg_trace "already stained: {stains.toList}"
+--    dbg_trace "already sfvrsed: {sfvrs.toList.map (·.name)}"
+--    dbg_trace "getStained! s: {newStained}"
+--    dbg_trace "getLocs s:     {getLocs s}"
+--    dbg_trace "(fvrsb, fvrs) stains:  {(fvsb.map (·.name)).zip (fvs.map (·.name))} -- {fvsb.size == fvs.size}"
+--    dbg_trace "(mvsb, mvsa) stains:\nb: {newMVb.map (·.name)}\na: {newMVa.map (·.name)}"
     let unchMVs := mvsb.diff newMVb
     if unchMVs != mvs.diff newMVa then logErrorAt s "unchanged diff!"
-    dbg_trace "unchanged: {unchMVs.map (·.name)} {unchMVs == mvs.diff newMVa}"
+--    dbg_trace "unchanged: {unchMVs.map (·.name)} {unchMVs == mvs.diff newMVa}"
 --    dbg_trace "fvrs stains:   {fvs.map (·.name)}\n"
 --    dbg_trace "goal? '{(lctxb.decls.get! 0).get!.userName}'"
     let inds := fvs.erase default
@@ -577,26 +577,28 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --      let uname := ((lctx.find? v).getD default).userName
 --      if stains.contains v then logInfoAt s m!"'{s.getKind}' acts on '{(v.name, uname)}' is stained!" else stains := stains.insert v
     for v in newStained do
-      dbg_trace "checking {v}"
+      --dbg_trace "checking {v}"
       let stainer? := stainers.contains s.getKind
       if stains.contains v && !stainer? then
-          logInfoAt s m!"'{s}' acts on the stained '{v}'!\n({s.getKind}) --hyps"
+          return
+          --logInfoAt s m!"'{s}' acts on the stained '{v}'!\n({s.getKind}) --hyps"
       else
         if stainer? then
           stains := stains.insert v
         else
-          dbg_trace "{s.getKind} does not stain '{v}'"
+          --dbg_trace "{s.getKind} does not stain '{v}'"
 
     for v in fvs do
-      dbg_trace "checking {v.name}"
+      --dbg_trace "checking {v.name}"
       let stainer? := stainers.contains s.getKind
       if sfvrs.contains v && !stainer? then
-          logInfoAt s m!"'{s}' acts on the stained '{v.name}'!\n({s.getKind}) --fvars"
+          return
+          --logInfoAt s m!"'{s}' acts on the stained '{v.name}'!\n({s.getKind}) --fvars"
       else
         if stainer? then
           sfvrs := sfvrs.insert v
-        else
-          dbg_trace "{s.getKind} does not stain '{v.name}'"
+        --else
+          --dbg_trace "{s.getKind} does not stain '{v.name}'"
 
 initialize addLinter nonTerminalSimpLinter
 #exit
