@@ -240,8 +240,9 @@ attribute [simp] le_add_left le_add_right Nat.lt_add_left_iff_pos Nat.lt_add_rig
   Nat.add_le_add_iff_left Nat.add_le_add_iff_right Nat.add_lt_add_iff_left Nat.add_lt_add_iff_right
   not_lt_zero
 
-@[simp] protected alias add_left_inj := Nat.add_right_cancel_iff
-@[simp] protected alias add_right_inj := Nat.add_left_cancel_iff
+-- We want to use these two lemmas earlier than the lemmas simp can prove them with
+@[simp, nolint simpNF] protected alias add_left_inj := Nat.add_right_cancel_iff
+@[simp, nolint simpNF] protected alias add_right_inj := Nat.add_left_cancel_iff
 
 -- Sometimes a bare `Nat.add` or similar appears as a consequence of unfolding during pattern
 -- matching. These lemmas package them back up as typeclass mediated operations.
@@ -656,6 +657,11 @@ lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := b
 protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) :=by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_right ha]
 #align nat.pow_right_injective Nat.pow_right_injective
+
+-- We want to use this lemma earlier than the lemma simp can prove it with
+@[simp] protected lemma pow_eq_zero {a : ℕ} : ∀ {n : ℕ}, a ^ n = 0 ↔ a = 0 ∧ n ≠ 0
+  | 0 => by simp
+  | n + 1 => by rw [Nat.pow_succ, mul_eq_zero, Nat.pow_eq_zero]; omega
 
 lemma le_self_pow (hn : n ≠ 0) : ∀ a : ℕ, a ≤ a ^ n
   | 0 => zero_le _

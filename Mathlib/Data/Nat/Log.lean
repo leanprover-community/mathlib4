@@ -131,10 +131,6 @@ theorem lt_pow_succ_log_self {b : ℕ} (hb : 1 < b) (x : ℕ) : x < b ^ (log b x
   lt_pow_of_log_lt hb (lt_succ_self _)
 #align nat.lt_pow_succ_log_self Nat.lt_pow_succ_log_self
 
-@[simp] protected lemma pow_eq_zero {a : ℕ} : ∀ {n : ℕ} (_ : n ≠ 0), a ^ n = 0 ↔ a = 0
-  | 1, _ => by simp
-  | n + 2, _ => by rw [Nat.pow_succ, mul_eq_zero, Nat.pow_eq_zero n.succ_ne_zero, or_self]
-
 theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
     log b n = m ↔ b ^ m ≤ n ∧ n < b ^ (m + 1) := by
   rcases em (1 < b ∧ n ≠ 0) with (⟨hb, hn⟩ | hbn)
