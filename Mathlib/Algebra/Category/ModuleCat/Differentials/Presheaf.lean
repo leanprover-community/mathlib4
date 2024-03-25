@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Kaehler
 # The presheaf of differentials of a presheaf of modules
 
 In this file, we shall define the presheaf of relative differentials of of a morphism
-of presheaves of commutative rings `R₀ ⟶ R`. In order to do this (TODO), we first
+of presheaves of commutative rings `R₀ ⟶ R` (TODO). In order to do this, we first
 introduce the presheaf of absolute differentials `absoluteDifferenials R` (i.e. the
 differentials over `ℤ`).
 
@@ -155,7 +155,7 @@ noncomputable def absoluteDifferentialsBundledCore :
 
 noncomputable def absoluteDifferentials :
     PresheafOfModules.{u} (R ⋙ forget₂ CommRingCat RingCat) :=
-  PresheafOfModules.mk'' (absoluteDifferentialsBundledCore R)
+  (absoluteDifferentialsBundledCore R).toPresheafOfModules
 
 lemma absoluteDifferentials_presheaf_obj (X : Cᵒᵖ) :
     (absoluteDifferentials R).presheaf.obj X = AddCommGroupCat.of (Ω[(R.obj X)⁄ℤ]) := rfl
@@ -199,8 +199,8 @@ noncomputable def desc : absoluteDifferentials R ⟶ M' :=
       restrictionApp_apply]
     dsimp
     rw [absoluteDifferentials_presheaf_map_apply_d]
-    erw [Derivation.liftKaehlerDifferential_comp_D]
-    erw [Derivation.liftKaehlerDifferential_comp_D]
+    erw [Derivation.liftKaehlerDifferential_comp_D,
+      Derivation.liftKaehlerDifferential_comp_D]
     rw [d'.derivation_apply, d'.derivation_apply, d'.d_map])
 
 @[simp]
