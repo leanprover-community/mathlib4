@@ -320,9 +320,7 @@ Salem-Spencer subset. -/
 Salem-Spencer subset. The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see
 `rothNumberNat`. "]
 def mulRothNumber : Finset α →o ℕ :=
-  ⟨fun s =>
-    Nat.findGreatest (fun m => ∃ (t : _) (_ : t ⊆ s), t.card = m ∧ MulSalemSpencer (t : Set α))
-      s.card, by
+  ⟨fun s ↦ Nat.findGreatest (fun m => ∃ t ⊆ s, t.card = m ∧ MulSalemSpencer (t : Set α)) s.card, by
     rintro t u htu
     refine' Nat.findGreatest_mono (fun m => _) (card_le_card htu)
     rintro ⟨v, hvt, hv⟩
@@ -337,10 +335,9 @@ theorem mulRothNumber_le : mulRothNumber s ≤ s.card := Nat.findGreatest_le s.c
 
 @[to_additive]
 theorem mulRothNumber_spec :
-    ∃ (t : _) (_ : t ⊆ s), t.card = mulRothNumber s ∧ MulSalemSpencer (t : Set α) :=
-  @Nat.findGreatest_spec _ _
-    (fun m => ∃ (t : _) (_ : t ⊆ s), t.card = m ∧ MulSalemSpencer (t : Set α)) _ (Nat.zero_le _)
-    ⟨∅, empty_subset _, card_empty, by norm_cast; exact mulSalemSpencer_empty⟩
+    ∃ t ⊆ s, t.card = mulRothNumber s ∧ MulSalemSpencer (t : Set α) :=
+  Nat.findGreatest_spec (P := fun m ↦ ∃ t ⊆ s, t.card = m ∧ MulSalemSpencer (t : Set α))
+    (Nat.zero_le _) ⟨∅, empty_subset _, card_empty, by norm_cast; exact mulSalemSpencer_empty⟩
 #align mul_roth_number_spec mulRothNumber_spec
 #align add_roth_number_spec addRothNumber_spec
 
