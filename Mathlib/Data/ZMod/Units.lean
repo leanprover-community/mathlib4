@@ -32,7 +32,7 @@ lemma unitsMap_comp {d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
 lemma unitsMap_self (n : ℕ) : unitsMap (dvd_refl n) = MonoidHom.id _ := by
   simp [unitsMap, castHom_self]
 
-lemma IsUnit_cast_of_dvd (hm : n ∣ m) (a : Units (ZMod m)) : IsUnit ((a : ZMod m) : ZMod n) :=
+lemma IsUnit_cast_of_dvd (hm : n ∣ m) (a : Units (ZMod m)) : IsUnit (cast (a : ZMod m) : ZMod n) :=
   Units.isUnit (unitsMap hm a)
 
 theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
@@ -61,5 +61,12 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     have h := Nat.dvd_sub' hp ((Finset.dvd_prod_of_mem id pps).mul_right n)
     rw [Nat.add_sub_cancel] at h
     contradiction
+
+-- This needs `Nat.primeFactors`, so cannot go into `Mathlib.Data.ZMod.Basic`.
+open Nat in
+lemma not_isUnit_of_mem_primeFactors {n p : ℕ} (h : p ∈ n.primeFactors) :
+    ¬ IsUnit (p : ZMod n) := by
+  rw [isUnit_iff_coprime]
+  exact (Prime.dvd_iff_not_coprime <| prime_of_mem_primeFactors h).mp <| dvd_of_mem_primeFactors h
 
 end ZMod

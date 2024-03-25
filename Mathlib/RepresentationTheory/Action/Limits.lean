@@ -40,6 +40,11 @@ instance [HasFiniteLimits V] : HasFiniteLimits (Action V G) where
 instance [HasLimits V] : HasLimits (Action V G) :=
   Adjunction.has_limits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
+/-- If `V` has limits of shape `J`, so does `Action V G`.-/
+instance hasLimitsOfShape {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
+    HasLimitsOfShape J (Action V G) :=
+  Adjunction.hasLimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
+
 instance [HasFiniteCoproducts V] : HasFiniteCoproducts (Action V G) where
   out _ :=
     Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
@@ -50,6 +55,11 @@ instance [HasFiniteColimits V] : HasFiniteColimits (Action V G) where
 
 instance [HasColimits V] : HasColimits (Action V G) :=
   Adjunction.has_colimits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
+
+/-- If `V` has colimits of shape `J`, so does `Action V G`.-/
+instance hasColimitsOfShape {J : Type w₁} [Category.{w₂} J]
+    [HasColimitsOfShape J V] : HasColimitsOfShape J (Action V G) :=
+  Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
 end Limits
 
@@ -137,11 +147,65 @@ def preservesColimitsOfSizeOfPreserves (F : C ⥤ Action V G)
 
 end Preservation
 
+section Forget
+
+noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
+    PreservesLimitsOfShape J (Action.forget V G) := by
+  show PreservesLimitsOfShape J ((Action.functorCategoryEquivalence V G).functor ⋙
+    (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  infer_instance
+
+noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasColimitsOfShape J V] :
+    PreservesColimitsOfShape J (Action.forget V G) := by
+  show PreservesColimitsOfShape J ((Action.functorCategoryEquivalence V G).functor ⋙
+    (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  infer_instance
+
+noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (Action.forget V G) := by
+  show PreservesFiniteLimits ((Action.functorCategoryEquivalence V G).functor ⋙
+    (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  have : PreservesFiniteLimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
+    constructor
+    intro _ _ _
+    infer_instance
+  apply compPreservesFiniteLimits
+
+noncomputable instance [HasFiniteColimits V] : PreservesFiniteColimits (Action.forget V G) := by
+  show PreservesFiniteColimits ((Action.functorCategoryEquivalence V G).functor ⋙
+    (evaluation (SingleObj G) V).obj (SingleObj.star G))
+  have : PreservesFiniteColimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
+    constructor
+    intro _ _ _
+    infer_instance
+  apply compPreservesFiniteColimits
+
+instance {J : Type w₁} [Category.{w₂} J] (F : J ⥤ Action V G) :
+    ReflectsLimit F (Action.forget V G) where
+  reflects h := by
+    apply isLimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
+    exact evaluationJointlyReflectsLimits _ (fun _ => h)
+
+instance {J : Type w₁} [Category.{w₂} J] : ReflectsLimitsOfShape J (Action.forget V G) where
+
+instance : ReflectsLimits (Action.forget V G) where
+
+instance {J : Type w₁} [Category.{w₂} J] (F : J ⥤ Action V G) :
+    ReflectsColimit F (Action.forget V G) where
+  reflects h := by
+    apply isColimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
+    exact evaluationJointlyReflectsColimits _ (fun _ => h)
+
+instance {J : Type w₁} [Category.{w₂} J] : ReflectsColimitsOfShape J (Action.forget V G) where
+
+instance : ReflectsColimits (Action.forget V G) where
+
+end Forget
+
 section HasZeroMorphisms
 
 variable [HasZeroMorphisms V]
 
--- porting note: in order to ease automation, the `Zero` instance is introduced separately,
+-- porting note (#10688): in order to ease automation, the `Zero` instance is introduced separately,
 -- and the lemma `zero_hom` was moved just below
 instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by aesop_cat⟩
 
@@ -173,10 +237,16 @@ section Preadditive
 
 variable [Preadditive V]
 
+instance {X Y : Action V G} : Add (X ⟶ Y) where
+  add f g := ⟨f.hom + g.hom, by simp [f.comm, g.comm]⟩
+
+instance {X Y : Action V G} : Neg (X ⟶ Y) where
+  neg f := ⟨-f.hom, by simp [f.comm]⟩
+
 instance : Preadditive (Action V G) where
   homGroup X Y :=
-    { add := fun f g => ⟨f.hom + g.hom, by simp [f.comm, g.comm]⟩
-      neg := fun f => ⟨-f.hom, by simp [f.comm]⟩
+    { nsmul := nsmulRec
+      zsmul := zsmulRec
       zero_add := by intros; ext; exact zero_add _
       add_zero := by intros; ext; exact add_zero _
       add_assoc := by intros; ext; exact add_assoc _ _ _
@@ -256,13 +326,11 @@ set_option linter.uppercaseLean3 false in
 
 variable {H : MonCat.{u}} (f : G ⟶ H)
 
-instance res_additive [Preadditive V] : (res V f).Additive where
+instance res_additive : (res V f).Additive where
 set_option linter.uppercaseLean3 false in
 #align Action.res_additive Action.res_additive
 
-variable {R : Type*} [Semiring R]
-
-instance res_linear [Preadditive V] [Linear R V] : (res V f).Linear R where
+instance res_linear : (res V f).Linear R where
 set_option linter.uppercaseLean3 false in
 #align Action.res_linear Action.res_linear
 
@@ -270,7 +338,7 @@ end Linear
 
 section Abelian
 
-/-- Auxilliary construction for the `Abelian (Action V G)` instance. -/
+/-- Auxiliary construction for the `Abelian (Action V G)` instance. -/
 def abelianAux : Action V G ≌ ULift.{u} (SingleObj G) ⥤ V :=
   (functorCategoryEquivalence V G).trans (Equivalence.congrLeft ULift.equivalence)
 set_option linter.uppercaseLean3 false in

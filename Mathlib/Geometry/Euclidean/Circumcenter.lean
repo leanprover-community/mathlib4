@@ -34,7 +34,7 @@ noncomputable section
 
 open BigOperators
 
-open Classical
+open scoped Classical
 
 open RealInnerProductSpace
 
@@ -125,13 +125,13 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
           ← dist_eq_norm_vsub V p, dist_comm _ cc]
-        field_simp [hy0]
+        field_simp [ycc₂, hy0]
         ring
       · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp1),
           orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc, Subtype.coe_mk,
           dist_of_mem_subset_mk_sphere hp1 hcr, dist_eq_norm_vsub V cc₂ cc, vadd_vsub, norm_smul, ←
           dist_eq_norm_vsub V, Real.norm_eq_abs, abs_div, abs_of_nonneg dist_nonneg,
-          div_mul_cancel _ hy0, abs_mul_abs_self]
+          div_mul_cancel₀ _ hy0, abs_mul_abs_self]
   · rintro ⟨cc₃, cr₃⟩ ⟨hcc₃, hcr₃⟩
     simp only at hcc₃ hcr₃
     obtain ⟨t₃, cc₃', hcc₃', hcc₃''⟩ :
@@ -173,7 +173,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
         by ring,
       add_left_inj] at hcr₃
     have ht₃ : t₃ = ycc₂ / y := by
-      field_simp [← hcr₃, hy0]
+      field_simp [ycc₂, ← hcr₃, hy0]
       ring
     subst ht₃
     change cc₃ = cc₂ at hcc₃''
@@ -181,7 +181,6 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     rw [hcr₃val]
     congr 2
     field_simp [hy0]
-    ring
 #align euclidean_geometry.exists_unique_dist_eq_of_insert EuclideanGeometry.existsUnique_dist_eq_of_insert
 
 /-- Given a finite nonempty affinely independent family of points,
@@ -323,11 +322,11 @@ theorem eq_circumcenter_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     p = s.circumcenter := by
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
   simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
-    Set.forall_range_iff, mem_sphere, true_and] at h
+    Set.forall_mem_range, mem_sphere, true_and] at h
   -- Porting note: added the next three lines (`simp` less powerful)
   rw [subset_sphere (s := ⟨p, r⟩)] at h
   simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
-    Set.forall_range_iff, mem_sphere, true_and] at h
+    Set.forall_mem_range, mem_sphere, true_and] at h
   exact h.1
 #align affine.simplex.eq_circumcenter_of_dist_eq Affine.Simplex.eq_circumcenter_of_dist_eq
 
@@ -338,11 +337,11 @@ theorem eq_circumradius_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     r = s.circumradius := by
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
   simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
-    Set.forall_range_iff, mem_sphere, true_and_iff] at h
+    Set.forall_mem_range, mem_sphere, true_and_iff] at h
   -- Porting note: added the next three lines (`simp` less powerful)
   rw [subset_sphere (s := ⟨p, r⟩)] at h
   simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
-    Set.forall_range_iff, mem_sphere, true_and_iff] at h
+    Set.forall_mem_range, mem_sphere, true_and_iff] at h
   exact h.2
 #align affine.simplex.eq_circumradius_of_dist_eq Affine.Simplex.eq_circumradius_of_dist_eq
 
@@ -457,7 +456,7 @@ theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Sim
     dist p₁ s.circumcenter * dist p₁ s.circumcenter = r * r - s.circumradius * s.circumradius := by
   rw [dist_comm, ← h₁ 0,
     s.dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p₁ h]
-  simp only [h₁', dist_comm p₁, add_sub_cancel', Simplex.dist_circumcenter_eq_circumradius]
+  simp only [h₁', dist_comm p₁, add_sub_cancel_left, Simplex.dist_circumcenter_eq_circumradius]
 #align affine.simplex.dist_circumcenter_sq_eq_sq_sub_circumradius Affine.Simplex.dist_circumcenter_sq_eq_sq_sub_circumradius
 
 /-- If there exists a distance that a point has from all vertices of a
@@ -471,7 +470,7 @@ theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Si
       a ∈ Set.range (fun (i : Fin (n + 1)) => s.points i) → dist a p = r := by
     cases' hr with r hr
     use r
-    refine' Set.forall_range_iff.mpr _
+    refine' Set.forall_mem_range.mpr _
     exact hr
   rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq (subset_affineSpan ℝ _) p] at hr
   cases' hr with r hr
@@ -680,8 +679,8 @@ theorem sum_reflectionCircumcenterWeightsWithCircumcenter {n : ℕ} {i₁ i₂ :
     (h : i₁ ≠ i₂) : ∑ i, reflectionCircumcenterWeightsWithCircumcenter i₁ i₂ i = 1 := by
   simp_rw [sum_pointsWithCircumcenter, reflectionCircumcenterWeightsWithCircumcenter, sum_ite,
     sum_const, filter_or, filter_eq']
-  rw [card_union_eq]
-  · simp
+  rw [card_union_of_disjoint]
+  · set_option simprocs false in simp
   · simpa only [if_true, mem_univ, disjoint_singleton] using h
 #align affine.simplex.sum_reflection_circumcenter_weights_with_circumcenter Affine.Simplex.sum_reflectionCircumcenterWeightsWithCircumcenter
 

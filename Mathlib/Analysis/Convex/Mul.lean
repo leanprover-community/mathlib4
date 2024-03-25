@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Function
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Monovary
 import Mathlib.Tactic.FieldSimp
 
@@ -144,6 +145,7 @@ lemma ConvexOn.pow (hf : ConvexOn 𝕜 s f) (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 
 /-- `x^n`, `n : ℕ` is convex on `[0, +∞)` for all `n`. -/
 lemma convexOn_pow : ∀ n, ConvexOn 𝕜 (Ici 0) fun x : 𝕜 ↦ x ^ n :=
   (convexOn_id <| convex_Ici _).pow fun _ ↦ id
+#align convex_on_pow convexOn_pow
 
 /-- `x^n`, `n : ℕ` is convex on the whole real line whenever `n` is even. -/
 protected lemma Even.convexOn_pow {n : ℕ} (hn : Even n) : ConvexOn 𝕜 univ fun x : 𝕜 ↦ x ^ n := by
@@ -154,6 +156,7 @@ protected lemma Even.convexOn_pow {n : ℕ} (hn : Even n) : ConvexOn 𝕜 univ f
   calc
     (0 : 𝕜) ≤ (a * b) * (x - y) ^ 2 := by positivity
     _ = _ := by obtain rfl := eq_sub_of_add_eq hab; simp only [smul_eq_mul]; ring
+#align even.convex_on_pow Even.convexOn_pow
 
 end LinearOrderedCommRing
 
@@ -164,7 +167,7 @@ open Int in
 /-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m`. -/
 lemma convexOn_zpow : ∀ n : ℤ, ConvexOn 𝕜 (Ioi 0) fun x : 𝕜 ↦ x ^ n
   | (n : ℕ) => by
-    simp_rw [zpow_ofNat]
+    simp_rw [zpow_natCast]
     exact (convexOn_pow n).subset Ioi_subset_Ici_self (convex_Ioi _)
   | -[n+1] => by
     simp_rw [zpow_negSucc, ← inv_pow]
@@ -176,3 +179,4 @@ lemma convexOn_zpow : ∀ n : ℤ, ConvexOn 𝕜 (Ioi 0) fun x : 𝕜 ↦ x ^ n
       0 ≤ a * b * (x - y) ^ 2 := by positivity
       _ = _ := by obtain rfl := eq_sub_of_add_eq hab; ring
     all_goals positivity
+#align convex_on_zpow convexOn_zpow

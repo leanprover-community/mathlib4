@@ -42,8 +42,8 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   /- Without loss of generality, `s` is bounded. Indeed, `∂s ⊆ ⋃ n, ∂(s ∩ ball x (n + 1))`, hence it
     suffices to prove that `∀ n, μ (s ∩ ball x (n + 1)) = 0`; the latter set is bounded.
     -/
-  suffices H : ∀ t : Set E, Convex ℝ t → x ∈ interior t → IsBounded t → μ (frontier t) = 0
-  · let B : ℕ → Set E := fun n => ball x (n + 1)
+  suffices H : ∀ t : Set E, Convex ℝ t → x ∈ interior t → IsBounded t → μ (frontier t) = 0 by
+    let B : ℕ → Set E := fun n => ball x (n + 1)
     have : μ (⋃ n : ℕ, frontier (s ∩ B n)) = 0 := by
       refine' measure_iUnion_null fun n =>
         H _ (hs.inter (convex_ball _ _)) _ (isBounded_ball.subset (inter_subset_right _ _))
@@ -52,8 +52,8 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
     refine' measure_mono_null (fun y hy => _) this; clear this
     set N : ℕ := ⌊dist y x⌋₊
     refine' mem_iUnion.2 ⟨N, _⟩
-    have hN : y ∈ B N := by simp [Nat.lt_floor_add_one]
-    suffices : y ∈ frontier (s ∩ B N) ∩ B N; exact this.1
+    have hN : y ∈ B N := by simp [B, N, Nat.lt_floor_add_one]
+    suffices y ∈ frontier (s ∩ B N) ∩ B N from this.1
     rw [frontier_inter_open_inter isOpen_ball]
     exact ⟨hy, hN⟩
   intro s hs hx hb

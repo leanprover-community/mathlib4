@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Order.Hom.Basic
+import Mathlib.Util.AssertExists
 
 #align_import algebra.order.group.defs from "leanprover-community/mathlib"@"b599f4e4e5cf1fbcb4194503671d3d9e569c1fce"
 
@@ -250,7 +250,7 @@ theorem le_mul_inv_iff_mul_le : c ≤ a * b⁻¹ ↔ c * b ≤ a :=
 #align le_mul_inv_iff_mul_le le_mul_inv_iff_mul_le
 #align le_add_neg_iff_add_le le_add_neg_iff_add_le
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem mul_inv_le_one_iff_le : a * b⁻¹ ≤ 1 ↔ a ≤ b :=
   mul_inv_le_iff_le_mul.trans <| by rw [one_mul]
@@ -313,7 +313,7 @@ theorem lt_mul_inv_iff_mul_lt : c < a * b⁻¹ ↔ c * b < a :=
 #align lt_mul_inv_iff_mul_lt lt_mul_inv_iff_mul_lt
 #align lt_add_neg_iff_add_lt lt_add_neg_iff_add_lt
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem inv_mul_lt_one_iff_lt : a * b⁻¹ < 1 ↔ a < b := by
   rw [← mul_lt_mul_iff_right b, inv_mul_cancel_right, one_mul]
@@ -711,7 +711,7 @@ theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
 #align div_le_div_iff_right div_le_div_iff_right
 #align sub_le_sub_iff_right sub_le_sub_iff_right
 
-@[to_additive sub_le_sub_right]
+@[to_additive (attr := gcongr) sub_le_sub_right]
 theorem div_le_div_right' (h : a ≤ b) (c : α) : a / c ≤ b / c :=
   (div_le_div_iff_right c).2 h
 #align div_le_div_right' div_le_div_right'
@@ -770,7 +770,6 @@ end Right
 section Left
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)]
-
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
 @[to_additive]
@@ -780,7 +779,7 @@ theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
 #align div_le_div_iff_left div_le_div_iff_left
 #align sub_le_sub_iff_left sub_le_sub_iff_left
 
-@[to_additive sub_le_sub_left]
+@[to_additive (attr := gcongr) sub_le_sub_left]
 theorem div_le_div_left' (h : a ≤ b) (c : α) : c / b ≤ c / a :=
   (div_le_div_iff_left c).2 h
 #align div_le_div_left' div_le_div_left'
@@ -851,7 +850,7 @@ section Preorder
 
 variable [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α}
 
-@[to_additive sub_le_sub]
+@[to_additive (attr := gcongr) sub_le_sub]
 theorem div_le_div'' (hab : a ≤ b) (hcd : c ≤ d) : a / d ≤ b / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_comm b, mul_inv_le_inv_mul_iff, mul_comm]
   exact mul_le_mul' hab hcd
@@ -878,7 +877,7 @@ theorem div_lt_div_iff_right (c : α) : a / c < b / c ↔ a < b := by
 #align div_lt_div_iff_right div_lt_div_iff_right
 #align sub_lt_sub_iff_right sub_lt_sub_iff_right
 
-@[to_additive sub_lt_sub_right]
+@[to_additive (attr := gcongr) sub_lt_sub_right]
 theorem div_lt_div_right' (h : a < b) (c : α) : a / c < b / c :=
   (div_lt_div_iff_right c).2 h
 #align div_lt_div_right' div_lt_div_right'
@@ -947,7 +946,7 @@ theorem inv_lt_div_iff_lt_mul : a⁻¹ < b / c ↔ c < a * b := by
 #align inv_lt_div_iff_lt_mul inv_lt_div_iff_lt_mul
 #align neg_lt_sub_iff_lt_add neg_lt_sub_iff_lt_add
 
-@[to_additive sub_lt_sub_left]
+@[to_additive (attr := gcongr) sub_lt_sub_left]
 theorem div_lt_div_left' (h : a < b) (c : α) : c / b < c / a :=
   (div_lt_div_iff_left c).2 h
 #align div_lt_div_left' div_lt_div_left'
@@ -1013,7 +1012,7 @@ section Preorder
 
 variable [Preorder α] [CovariantClass α α (· * ·) (· < ·)] {a b c d : α}
 
-@[to_additive sub_lt_sub]
+@[to_additive (attr := gcongr) sub_lt_sub]
 theorem div_lt_div'' (hab : a < b) (hcd : c < d) : a / d < b / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_comm b, mul_inv_lt_inv_mul_iff, mul_comm]
   exact mul_lt_mul_of_lt_of_lt hab hcd
@@ -1037,7 +1036,7 @@ variable [Group α] [LinearOrder α]
 
 @[to_additive (attr := simp) cmp_sub_zero]
 theorem cmp_div_one' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b : α) :
-    cmp (a / b) 1 = cmp a b := by rw [← cmp_mul_right' _ _ b, one_mul, div_mul_cancel']
+    cmp (a / b) 1 = cmp a b := by rw [← cmp_mul_right' _ _ b, one_mul, div_mul_cancel]
 #align cmp_div_one' cmp_div_one'
 #align cmp_sub_zero cmp_sub_zero
 
@@ -1188,88 +1187,20 @@ theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by simp [← not_iff_not]
 
 end LinearOrderedCommGroup
 
-namespace AddCommGroup
-
-/-- A collection of elements in an `AddCommGroup` designated as "non-negative".
-This is useful for constructing an `OrderedAddCommGroup`
-by choosing a positive cone in an existing `AddCommGroup`. -/
--- Porting note: @[nolint has_nonempty_instance]
-structure PositiveCone (α : Type*) [AddCommGroup α] where
-  nonneg : α → Prop
-  pos : α → Prop := fun a => nonneg a ∧ ¬nonneg (-a)
-  pos_iff : ∀ a, pos a ↔ nonneg a ∧ ¬nonneg (-a) := by intros; rfl
-  zero_nonneg : nonneg 0
-  add_nonneg : ∀ {a b}, nonneg a → nonneg b → nonneg (a + b)
-  nonneg_antisymm : ∀ {a}, nonneg a → nonneg (-a) → a = 0
-#align add_comm_group.positive_cone AddCommGroup.PositiveCone
-
-/-- A positive cone in an `AddCommGroup` induces a linear order if
-for every `a`, either `a` or `-a` is non-negative. -/
--- Porting note: @[nolint has_nonempty_instance]
-structure TotalPositiveCone (α : Type*) [AddCommGroup α] extends PositiveCone α where
-  /-- For any `a` the proposition `nonneg a` is decidable -/
-  nonnegDecidable : DecidablePred nonneg
-  /-- Either `a` or `-a` is `nonneg` -/
-  nonneg_total : ∀ a : α, nonneg a ∨ nonneg (-a)
-#align add_comm_group.total_positive_cone AddCommGroup.TotalPositiveCone
-
-/-- Forget that a `TotalPositiveCone` is total. -/
-add_decl_doc TotalPositiveCone.toPositiveCone
-#align add_comm_group.total_positive_cone.to_positive_cone AddCommGroup.TotalPositiveCone.toPositiveCone
-
-end AddCommGroup
-
-namespace OrderedAddCommGroup
-
-open AddCommGroup
-
-/-- Construct an `OrderedAddCommGroup` by
-designating a positive cone in an existing `AddCommGroup`. -/
-def mkOfPositiveCone {α : Type*} [AddCommGroup α] (C : PositiveCone α) : OrderedAddCommGroup α :=
-  { ‹AddCommGroup α› with
-    le := fun a b => C.nonneg (b - a),
-    lt := fun a b => C.pos (b - a),
-    lt_iff_le_not_le := fun a b => by simp [C.pos_iff],
-    le_refl := fun a => by simp [C.zero_nonneg],
-    le_trans := fun a b c nab nbc => by simpa [← sub_add_sub_cancel] using C.add_nonneg nbc nab,
-    le_antisymm := fun a b nab nba =>
-      eq_of_sub_eq_zero <| C.nonneg_antisymm nba (by rwa [neg_sub]),
-    add_le_add_left := fun a b nab c => by simpa using nab }
-#align ordered_add_comm_group.mk_of_positive_cone OrderedAddCommGroup.mkOfPositiveCone
-
-end OrderedAddCommGroup
-
-namespace LinearOrderedAddCommGroup
-
-open AddCommGroup
-
-/-- Construct a `LinearOrderedAddCommGroup` by
-designating a positive cone in an existing `AddCommGroup`
-such that for every `a`, either `a` or `-a` is non-negative. -/
-def mkOfPositiveCone {α : Type*} [AddCommGroup α] (C : TotalPositiveCone α) :
-    LinearOrderedAddCommGroup α :=
-  { OrderedAddCommGroup.mkOfPositiveCone C.toPositiveCone with
-    -- Porting note: was `C.nonneg_total (b - a)`
-    le_total := fun a b => by simpa [neg_sub] using C.nonneg_total (b - a)
-    decidableLE := fun a b => C.nonnegDecidable _ }
-#align linear_ordered_add_comm_group.mk_of_positive_cone LinearOrderedAddCommGroup.mkOfPositiveCone
-
-end LinearOrderedAddCommGroup
-
 section NormNumLemmas
 
 /- The following lemmas are stated so that the `norm_num` tactic can use them with the
 expected signatures.  -/
 variable [OrderedCommGroup α] {a b : α}
 
-@[to_additive neg_le_neg]
+@[to_additive (attr := gcongr) neg_le_neg]
 theorem inv_le_inv' : a ≤ b → b⁻¹ ≤ a⁻¹ :=
   -- Porting note: explicit type annotation was not needed before.
   (@inv_le_inv_iff α ..).mpr
 #align inv_le_inv' inv_le_inv'
 #align neg_le_neg neg_le_neg
 
-@[to_additive neg_lt_neg]
+@[to_additive (attr := gcongr) neg_lt_neg]
 theorem inv_lt_inv' : a < b → b⁻¹ < a⁻¹ :=
   -- Porting note: explicit type annotation was not needed before.
   (@inv_lt_inv_iff α ..).mpr

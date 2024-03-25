@@ -3,12 +3,10 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-
-import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupPower.Basic
-import Mathlib.Algebra.Group.Prod
 import Mathlib.GroupTheory.GroupAction.Prod
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Typeclasses for power-associative structures
@@ -97,7 +95,7 @@ section Monoid
 
 variable [Monoid M]
 
-instance Monoid.PowAssoc [Monoid M] : NatPowAssoc M where
+instance Monoid.PowAssoc : NatPowAssoc M where
   npow_add _ _ _ := pow_add _ _ _
   npow_zero _ := pow_zero _
   npow_one _ := pow_one _

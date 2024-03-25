@@ -126,7 +126,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     · obtain ⟨y, e⟩ := IsIntegrallyClosed.algebraMap_eq_of_integral this
       refine' (hb₂ (Ideal.mem_span_singleton'.mpr ⟨y, _⟩)).elim
       apply IsFractionRing.injective R K
-      rw [map_mul, e, div_mul_cancel _ ha₃]
+      rw [map_mul, e, div_mul_cancel₀ _ ha₃]
     · rw [Submodule.ne_bot_iff]; refine' ⟨_, ⟨a, ha₁, rfl⟩, _⟩
       exact (IsFractionRing.to_map_eq_zero_iff (K := K)).not.mpr ha₂
     · apply Submodule.FG.map; exact IsNoetherian.noetherian _
@@ -136,7 +136,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
       rintro m' ⟨m, hm, rfl : algebraMap R K m = m'⟩
       obtain ⟨k, hk⟩ := hb₃ m hm
       have hk' : x * algebraMap R K m = algebraMap R K k := by
-        rw [← mul_div_right_comm, ← map_mul, ← hk, map_mul, mul_div_cancel _ ha₃]
+        rw [← mul_div_right_comm, ← map_mul, ← hk, map_mul, mul_div_cancel_right₀ _ ha₃]
       exact ⟨k, le_maximalIdeal h ⟨_, ⟨_, hm, rfl⟩, hk'⟩, hk'.symm⟩
     obtain ⟨y, hy₁, hy₂⟩ : ∃ y ∈ maximalIdeal R, b * y = a := by
       rw [Ideal.eq_top_iff_one, Submodule.mem_comap] at this
@@ -201,9 +201,7 @@ theorem tfae_of_isNoetherianRing_of_localRing_of_isDomain
     by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
     obtain ⟨n, rfl⟩ := H I hI
     obtain ⟨m, rfl⟩ := H J hJ
-    rcases le_total m n with h' | h'
-    · left; exact Ideal.pow_le_pow_right h'
-    · right; exact Ideal.pow_le_pow_right h'
+    exact (le_total m n).imp Ideal.pow_le_pow_right Ideal.pow_le_pow_right
   tfae_finish
 
 /--
@@ -227,8 +225,8 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
         finrank (ResidueField R) (CotangentSpace R) = 1,
         ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
   have : finrank (ResidueField R) (CotangentSpace R) = 1 ↔
-    finrank (ResidueField R) (CotangentSpace R) ≤ 1
-  · simp [Nat.le_one_iff_eq_zero_or_eq_one, finrank_cotangentSpace_eq_zero_iff, h]
+      finrank (ResidueField R) (CotangentSpace R) ≤ 1 := by
+    simp [Nat.le_one_iff_eq_zero_or_eq_one, finrank_cotangentSpace_eq_zero_iff, h]
   rw [this]
   have : maximalIdeal R ≠ ⊥ := isField_iff_maximalIdeal_eq.not.mp h
   convert tfae_of_isNoetherianRing_of_localRing_of_isDomain R

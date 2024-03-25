@@ -107,8 +107,8 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
     (has : a ∈ s) (hat : a ∉ t) : ∃ b, b ∈ u ∧ b ∉ s ∧ a ≤ b := by
   classical
   let s' : Finset α := s.filter fun b ↦ b ∉ t ∧ a ≤ b
-  have ⟨b, hb, hbmax⟩ := exists_maximal s' ⟨a, by simp [has, hat]⟩
-  simp only [mem_filter, and_imp] at hb hbmax
+  have ⟨b, hb, hbmax⟩ := exists_maximal s' ⟨a, by simp [s', has, hat]⟩
+  simp only [s', mem_filter, and_imp] at hb hbmax
   have ⟨c, hct, hcs, hbc⟩ := hst hb.1 hb.2.1
   by_cases hcu : c ∈ u
   · exact ⟨c, hcu, hcs, hb.2.2.trans hbc⟩
@@ -265,6 +265,8 @@ instance instLinearOrder : LinearOrder (Colex α) where
       (fun ha b hbt hbs ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inl ⟨hbt, hbs⟩⟩)
   decidableLE := instDecidableLE
   decidableLT := instDecidableLT
+
+open scoped symmDiff
 
 private lemma max_mem_aux {s t : Colex α} (hst : s ≠ t) : (ofColex s ∆ ofColex t).Nonempty := by
   simpa

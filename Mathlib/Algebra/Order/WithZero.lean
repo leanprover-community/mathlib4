@@ -7,9 +7,9 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Monoid.Basic
-import Mathlib.Algebra.Order.Monoid.WithZero.Defs
-import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
+import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 
 #align_import algebra.order.with_zero from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
@@ -36,9 +36,7 @@ class LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoi
   CommGroupWithZero α
 #align linear_ordered_comm_group_with_zero LinearOrderedCommGroupWithZero
 
-variable {α : Type*}
-
-variable {a b c d x y z : α}
+variable {α : Type*} {a b c d x y z : α}
 
 instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     [LinearOrderedAddCommMonoidWithTop α] :
@@ -68,9 +66,8 @@ instance instLinearOrderedCommMonoidWithZeroWithZero [LinearOrderedCommMonoid α
 instance [LinearOrderedCommGroup α] : LinearOrderedCommGroupWithZero (WithZero α) :=
   { instLinearOrderedCommMonoidWithZeroWithZero, WithZero.commGroupWithZero with }
 
-section LinearOrderedCommMonoid
-
-variable [LinearOrderedCommMonoidWithZero α]
+section LinearOrderedCommMonoidWithZero
+variable [LinearOrderedCommMonoidWithZero α] {n : ℕ}
 
 /-
 The following facts are true more generally in a (linearly) ordered commutative monoid.
@@ -118,9 +115,14 @@ instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
     le_top := fun _ ↦ zero_le' }
 #align additive.linear_ordered_add_comm_monoid_with_top instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
 
-end LinearOrderedCommMonoid
+variable [NoZeroDivisors α]
 
-variable [LinearOrderedCommGroupWithZero α]
+lemma pow_pos_iff (hn : n ≠ 0) : 0 < a ^ n ↔ 0 < a := by simp_rw [zero_lt_iff, pow_ne_zero_iff hn]
+#align pow_pos_iff pow_pos_iff
+
+end LinearOrderedCommMonoidWithZero
+
+variable [LinearOrderedCommGroupWithZero α] {m n : ℕ}
 
 -- TODO: Do we really need the following two?
 /-- Alias of `mul_le_one'` for unification. -/
@@ -285,4 +287,16 @@ instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
     neg_top := @inv_zero _ (_)
-    add_neg_cancel := fun a ha ↦ mul_inv_cancel (id ha : Additive.toMul a ≠ 0) }
+    add_neg_cancel := fun a ha ↦ mul_inv_cancel (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
+
+lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
+  rw [← one_mul (a ^ n), pow_succ];
+  exact mul_lt_right₀ _ ha (pow_ne_zero _ (zero_lt_one.trans ha).ne')
+#align pow_lt_pow_succ pow_lt_pow_succ
+
+lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
+  induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
+#align pow_lt_pow₀ pow_lt_pow_right₀
+
+-- 2023-12-23
+@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀

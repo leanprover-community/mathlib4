@@ -5,6 +5,7 @@ Authors: Neil Strickland, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Semiconj.Defs
 import Mathlib.Data.Nat.Defs
+import Mathlib.Init.Algebra.Classes
 
 #align_import algebra.group.commute from "leanprover-community/mathlib"@"05101c3df9d9cfe9430edc205860c79b6d660102"
 
@@ -36,6 +37,12 @@ def Commute {S : Type*} [Mul S] (a b : S) : Prop :=
   SemiconjBy a b b
 #align commute Commute
 #align add_commute AddCommute
+
+/--
+Two elements `a` and `b` commute if `a * b = b * a`.
+-/
+@[to_additive]
+theorem commute_iff_eq {S : Type*} [Mul S] (a b : S) : Commute a b ↔ a * b = b * a := Iff.rfl
 
 namespace Commute
 
@@ -186,7 +193,7 @@ theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
 #align add_commute.nsmul_nsmul AddCommute.nsmul_nsmulₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- porting note: `simpNF` told me to remove the `simp` attribute
+-- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
   (Commute.refl a).pow_right n
@@ -194,7 +201,7 @@ theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
 #align add_commute.self_nsmul AddCommute.self_nsmulₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- porting note: `simpNF` told me to remove the `simp` attribute
+-- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
   (Commute.refl a).pow_left n
@@ -202,7 +209,7 @@ theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 #align commute.pow_self Commute.pow_self
 
--- porting note: `simpNF` told me to remove the `simp` attribute
+-- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
   (Commute.refl a).pow_pow m n
