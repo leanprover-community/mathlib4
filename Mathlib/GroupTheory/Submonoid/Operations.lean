@@ -1102,7 +1102,7 @@ theorem coe_mker (f : F) : (mker f : Set M) = (f : M → N) ⁻¹' {1} :=
 #align add_monoid_hom.coe_mker AddMonoidHom.coe_mker
 
 @[to_additive]
-instance decidableMemMker [DecidableEq N] (f : F) : DecidablePred (· ∈ mker f) := fast_instance% fun x =>
+instance decidableMemMker [DecidableEq N] (f : F) : DecidablePred (· ∈ mker f) := fun x =>
   decidable_of_iff (f x = 1) (mem_mker f)
 #align monoid_hom.decidable_mem_mker MonoidHom.decidableMemMker
 #align add_monoid_hom.decidable_mem_mker AddMonoidHom.decidableMemMker

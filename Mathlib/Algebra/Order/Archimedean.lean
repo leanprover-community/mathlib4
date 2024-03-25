@@ -409,7 +409,7 @@ instance : Archimedean ℤ := fast_instance%
         simpa only [nsmul_eq_mul, zero_add, mul_one] using
           mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.ofNat_zero_le n.toNat)⟩⟩
 
-instance : Archimedean ℚ := fast_instance%
+instance : Archimedean ℚ :=
   archimedean_iff_rat_le.2 fun q => ⟨q, by rw [Rat.cast_id]⟩
 
 instance Nonneg.archimedean [OrderedAddCommMonoid α] [Archimedean α] :

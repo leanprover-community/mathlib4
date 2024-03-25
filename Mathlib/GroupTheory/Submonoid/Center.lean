@@ -83,7 +83,7 @@ theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
 #align add_submonoid.mem_center_iff AddSubmonoid.mem_center_iff
 
 @[to_additive]
-instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) := fast_instance%
+instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) :=
   decidable_of_iff' _ mem_center_iff
 #align submonoid.decidable_mem_center Submonoid.decidableMemCenter
 #align add_submonoid.decidable_mem_center AddSubmonoid.decidableMemCenter

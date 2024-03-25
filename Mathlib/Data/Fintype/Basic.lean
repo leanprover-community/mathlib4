@@ -381,11 +381,11 @@ instance decidableSubsingleton [Fintype α] [DecidableEq α] {s : Set α} [Decid
 
 section BundledHoms
 
-instance decidableEqEquivFintype [DecidableEq β] [Fintype α] : DecidableEq (α ≃ β) := fast_instance% fun a b =>
+instance decidableEqEquivFintype [DecidableEq β] [Fintype α] : DecidableEq (α ≃ β) := fun a b =>
   decidable_of_iff (a.1 = b.1) Equiv.coe_fn_injective.eq_iff
 #align fintype.decidable_eq_equiv_fintype Fintype.decidableEqEquivFintype
 
-instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq (α ↪ β) := fast_instance% fun a b =>
+instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq (α ↪ β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) Function.Embedding.coe_injective.eq_iff
 #align fintype.decidable_eq_embedding_fintype Fintype.decidableEqEmbeddingFintype
 

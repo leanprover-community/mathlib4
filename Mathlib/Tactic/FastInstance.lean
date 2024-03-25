@@ -14,9 +14,18 @@ import Lean.Meta.Tactic.ElimInfo
 open Lean Meta
 private partial def makeFastInstance (provided : Expr) : MetaM Expr := do
   let ty ← inferType provided
+  if (← inferType ty).isProp || ty.isProp then return provided else
+  let constName := ty.constName?
+  match constName with
+  | some `Decidable => return provided
+  | some `DecidableEq => return provided
+  | _ =>
   withTraceNode `Tactic.fast_instance (fun e => return m!"{exceptEmoji e} type: {ty}") do
-  let .some className ← isClass? ty
-    | throwError "Can only be used for classes, but given term of type{indentExpr ty}"
+  let className ← isClass? ty
+    -- | throwError "Can only be used for classes, but given term of type{indentExpr ty}"
+  match className with
+  | none => return provided
+  | some className =>
   if let .some new ← trySynthInstance ty then
     if ← withReducibleAndInstances <| isDefEq provided new then
       trace[Tactic.fast_instance] "replaced with synthesized instance"
@@ -31,7 +40,17 @@ private partial def makeFastInstance (provided : Expr) : MetaM Expr := do
       -- throwError "\
       --   Provided instance {indentExpr provided}\n\
       --   is not defeq to inferred instance{indentExpr new}"
-  let ctor := getStructureCtor (← getEnv) className
+  -- let ctor := getStructureCtor (← getEnv) className
+  let env ← getEnv
+  let ctor := match env.find? className with
+  | some (.inductInfo { isRec := false, ctors := [ctorName], .. }) =>
+    match env.find? ctorName with
+    | some (ConstantInfo.ctorInfo val) => some val
+    | _ => none
+  | _ => none
+  match ctor with
+  | none => return provided
+  | some ctor =>
   withReducible <| forallTelescopeReducing ty fun tyArgs _ => do
     let provided' ← withReducibleAndInstances <| whnf <| mkAppN provided tyArgs
     -- unless provided'.isAppOf ctor.name do
@@ -41,7 +60,8 @@ private partial def makeFastInstance (provided : Expr) : MetaM Expr := do
     let instParams ← withReducible <| forallTelescopeReducing ctor.type fun args _ =>
       args.mapM fun arg => return (← arg.fvarId!.getBinderInfo).isInstImplicit
     unless args.size == instParams.size do
-      throwError "Incorrect number of arguments for constructor application{indentExpr provided}"
+      return provided
+      -- throwError "Incorrect number of arguments for constructor application{indentExpr provided}"
     for i in [ctor.numParams:args.size] do
       if instParams[i]! then
         args := args.set! i (← makeFastInstance args[i]!)

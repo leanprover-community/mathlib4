@@ -1208,7 +1208,7 @@ theorem insert_ne_empty (a : α) (s : Finset α) : insert a s ≠ ∅ :=
 #align finset.insert_ne_empty Finset.insert_ne_empty
 
 -- Porting note: explicit universe annotation is no longer required.
-instance (i : α) (s : Finset α) : Nonempty ((insert i s : Finset α) : Set α) := fast_instance%
+instance (i : α) (s : Finset α) : Nonempty ((insert i s : Finset α) : Set α) :=
   (Finset.coe_nonempty.mpr (s.insert_nonempty i)).to_subtype
 
 theorem ne_insert_of_not_mem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ insert a t := by
@@ -1388,7 +1388,7 @@ theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
   disjoint_iff
 #align finset.disjoint_iff_inter_eq_empty Finset.disjoint_iff_inter_eq_empty
 
-instance decidableDisjoint (U V : Finset α) : Decidable (Disjoint U V) := fast_instance%
+instance decidableDisjoint (U V : Finset α) : Decidable (Disjoint U V) :=
   decidable_of_iff _ disjoint_left.symm
 #align finset.decidable_disjoint Finset.decidableDisjoint
 
@@ -1463,21 +1463,21 @@ theorem union_subset_union_right (h : t₁ ⊆ t₂) : s ∪ t₁ ⊆ s ∪ t₂
 theorem union_comm (s₁ s₂ : Finset α) : s₁ ∪ s₂ = s₂ ∪ s₁ := sup_comm _ _
 #align finset.union_comm Finset.union_comm
 
-instance : Std.Commutative (α := fast_instance% Finset α) (· ∪ ·) :=
+instance : Std.Commutative (α := Finset α) (· ∪ ·) :=
   ⟨union_comm⟩
 
 @[simp]
 theorem union_assoc (s₁ s₂ s₃ : Finset α) : s₁ ∪ s₂ ∪ s₃ = s₁ ∪ (s₂ ∪ s₃) := sup_assoc _ _ _
 #align finset.union_assoc Finset.union_assoc
 
-instance : Std.Associative (α := fast_instance% Finset α) (· ∪ ·) :=
+instance : Std.Associative (α := Finset α) (· ∪ ·) :=
   ⟨union_assoc⟩
 
 @[simp]
 theorem union_idempotent (s : Finset α) : s ∪ s = s := sup_idem _
 #align finset.union_idempotent Finset.union_idempotent
 
-instance : Std.IdempotentOp (α := fast_instance% Finset α) (· ∪ ·) :=
+instance : Std.IdempotentOp (α := Finset α) (· ∪ ·) :=
   ⟨union_idempotent⟩
 
 theorem union_subset_left (h : s ∪ t ⊆ u) : s ⊆ u :=

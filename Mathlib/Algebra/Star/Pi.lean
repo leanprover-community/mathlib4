@@ -26,7 +26,7 @@ variable {f : I → Type v}
 -- The family of types already equipped with instances
 namespace Pi
 
-instance [∀ i, Star (f i)] : Star (∀ i, f i) where star x i := fast_instance% star (x i)
+instance [∀ i, Star (f i)] : Star (∀ i, f i) where star x i := star (x i)
 
 @[simp]
 theorem star_apply [∀ i, Star (f i)] (x : ∀ i, f i) (i : I) : star x i = star (x i) :=

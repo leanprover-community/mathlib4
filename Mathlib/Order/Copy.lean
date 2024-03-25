@@ -110,7 +110,7 @@ def Frame.copy (c : Frame α) (le : α → α → Prop) (eq_le : le = (by infer_
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
     (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
-    (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) : Frame α := fast_instance%
+    (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) : Frame α :=
   { CompleteLattice.copy (@Frame.toCompleteLattice α c) le eq_le top eq_top bot eq_bot
       sup eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf with
     inf_sSup_le_iSup_inf := fun a s => by
@@ -127,7 +127,7 @@ def Coframe.copy (c : Coframe α) (le : α → α → Prop) (eq_le : le = (by in
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
     (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
-    (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) : Coframe α := fast_instance%
+    (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) : Coframe α :=
   { CompleteLattice.copy (@Coframe.toCompleteLattice α c) le eq_le top eq_top bot eq_bot sup
         eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf with
     iInf_sup_le_sup_sInf := fun a s => by

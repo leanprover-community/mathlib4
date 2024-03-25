@@ -40,14 +40,14 @@ theorem even_iff : Even n ↔ n % 2 = 0 :=
     ⟨n / 2, (mod_add_div n 2).symm.trans (by simp [← two_mul, h])⟩⟩
 #align nat.even_iff Nat.even_iff
 
-instance : DecidablePred (Even : ℕ → Prop) := fast_instance% fun _ => decidable_of_iff _ even_iff.symm
+instance : DecidablePred (Even : ℕ → Prop) := fun _ => decidable_of_iff _ even_iff.symm
 
 theorem odd_iff : Odd n ↔ n % 2 = 1 :=
   ⟨fun ⟨m, hm⟩ => by norm_num [hm, add_mod],
     fun h => ⟨n / 2, (mod_add_div n 2).symm.trans (by rw [h, add_comm])⟩⟩
 #align nat.odd_iff Nat.odd_iff
 
-instance : DecidablePred (Odd : ℕ → Prop) := fast_instance% fun _ => decidable_of_iff _ odd_iff.symm
+instance : DecidablePred (Odd : ℕ → Prop) := fun _ => decidable_of_iff _ odd_iff.symm
 
 theorem not_even_iff : ¬Even n ↔ n % 2 = 1 := by rw [even_iff, mod_two_ne_zero]
 #align nat.not_even_iff Nat.not_even_iff

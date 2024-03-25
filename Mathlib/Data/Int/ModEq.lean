@@ -38,7 +38,7 @@ notation:50 a " ≡ " b " [ZMOD " n "]" => ModEq n a b
 variable {m n a b c d : ℤ}
 
 -- Porting note: This instance should be derivable automatically
-instance : Decidable (ModEq n a b) := fast_instance% decEq (a % n) (b % n)
+instance : Decidable (ModEq n a b) := decEq (a % n) (b % n)
 
 namespace ModEq
 
