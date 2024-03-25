@@ -61,7 +61,7 @@ constructor applications that leverage existing instances.
 For instance, when used as
 ```lean
 instance instSemiring : Semiring X := sorry
-instance instRing : Ring X := fast_instance% Function.Injective.ring ..
+instance instRing : Ring X := fast_instance% fast_instance% Function.Injective.ring ..
 ```
 this will define `instRing` as a nested constructor application that refers to `instSemiring`.
 The advantage is then that `instRing.toSemiring` unifies almost immediately with `instSemiring`,
