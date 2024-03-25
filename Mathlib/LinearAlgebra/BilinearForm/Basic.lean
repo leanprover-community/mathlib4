@@ -62,6 +62,8 @@ namespace LinearMap
 
 namespace BilinForm
 
+#noalign bilin_form.coe_fn_mk
+
 theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
   | _, _, _, _, rfl, rfl => rfl
 #align bilin_form.coe_fn_congr LinearMap.BilinForm.coeFn_congr
