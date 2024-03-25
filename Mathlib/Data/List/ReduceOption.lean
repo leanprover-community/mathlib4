@@ -19,7 +19,7 @@ open Function
 
 namespace List
 
-universe u v w
+universe u v
 
 variable {α : Type u} {β : Type v}
 
