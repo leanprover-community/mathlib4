@@ -127,6 +127,10 @@ def ofNat : ℕ → ONote
   | Nat.succ n => oadd 0 n.succPNat 0
 #align onote.of_nat ONote.ofNat
 
+-- Adaptation note:
+-- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
+-- See https://github.com/leanprover-community/mathlib4/issues/11647
+
 @[simp] theorem ofNat_zero : ofNat 0 = 0 :=
   rfl
 
