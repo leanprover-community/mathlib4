@@ -1094,6 +1094,7 @@ import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.EffectiveEpi.Basic
 import Mathlib.CategoryTheory.EffectiveEpi.Comp
 import Mathlib.CategoryTheory.EffectiveEpi.Coproduct
+import Mathlib.CategoryTheory.EffectiveEpi.Enough
 import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 import Mathlib.CategoryTheory.Elements
