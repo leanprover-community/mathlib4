@@ -395,7 +395,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     rw [Set.mem_iUnion] at hx
     obtain ⟨g, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image_iff_bex]
-    refine' ⟨g⁻¹ • a, _, by simp only [Quotient.eq']; use g⁻¹⟩
+    refine' ⟨g⁻¹ • a, _, by simp only [f, Quotient.eq']; use g⁻¹⟩
     rw [← hu₂]
     convert hu₁
     simp only [inv_smul_smul]
@@ -440,6 +440,8 @@ def orbitRel.Quotient : Type _ :=
 
 /-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
 subsingleton. -/
+@[to_additive "An additive action is pretransitive if and only if the quotient by
+`AddAction.orbitRel` is a subsingleton."]
 theorem pretransitive_iff_subsingleton_quotient :
     IsPretransitive G α ↔ Subsingleton (orbitRel.Quotient G α) := by
   refine ⟨fun _ ↦ ⟨fun a b ↦ ?_⟩, fun _ ↦ ⟨fun a b ↦ ?_⟩⟩
@@ -450,6 +452,8 @@ theorem pretransitive_iff_subsingleton_quotient :
 
 /-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
 element. -/
+@[to_additive "If `α` is non-empty, an additive action is pretransitive if and only if the
+quotient has exactly one element."]
 theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
     IsPretransitive G α ↔ Nonempty (Unique <| orbitRel.Quotient G α) := by
   rw [unique_iff_subsingleton_and_nonempty, pretransitive_iff_subsingleton_quotient, iff_self_and]

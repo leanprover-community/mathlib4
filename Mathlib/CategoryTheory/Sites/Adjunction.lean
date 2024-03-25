@@ -24,13 +24,9 @@ open GrothendieckTopology CategoryTheory Limits Opposite
 universe v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-
 variable {D : Type*} [Category D]
-
 variable {E : Type*} [Category E]
-
 variable {F : D ⥤ E} {G : E ⥤ D}
-
 variable [HasWeakSheafify J D] [HasSheafCompose J F]
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`

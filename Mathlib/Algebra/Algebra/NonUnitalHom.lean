@@ -43,9 +43,6 @@ TODO: add `NonUnitalAlgEquiv` when needed.
 non-unital, algebra, morphism
 -/
 
-set_option autoImplicit true
-
-
 universe u v w w₁ w₂ w₃
 
 variable (R : Type u) (A : Type v) (B : Type w) (C : Type w₁)
@@ -117,11 +114,8 @@ end NonUnitalAlgHomClass
 namespace NonUnitalAlgHom
 
 variable {R A B C} [Monoid R]
-
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
-
 variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C]
 
 -- Porting note: Replaced with DFunLike instance
@@ -240,22 +234,22 @@ theorem coe_mulHom_mk (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) :
   rfl
 #align non_unital_alg_hom.coe_mul_hom_mk NonUnitalAlgHom.coe_mulHom_mk
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_smul (f : A →ₙₐ[R] B) (c : R) (x : A) : f (c • x) = c • f x :=
   map_smul _ _ _
 #align non_unital_alg_hom.map_smul NonUnitalAlgHom.map_smul
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_add (f : A →ₙₐ[R] B) (x y : A) : f (x + y) = f x + f y :=
   map_add _ _ _
 #align non_unital_alg_hom.map_add NonUnitalAlgHom.map_add
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_mul (f : A →ₙₐ[R] B) (x y : A) : f (x * y) = f x * f y :=
   map_mul _ _ _
 #align non_unital_alg_hom.map_mul NonUnitalAlgHom.map_mul
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_zero (f : A →ₙₐ[R] B) : f 0 = 0 :=
   map_zero _
 #align non_unital_alg_hom.map_zero NonUnitalAlgHom.map_zero
@@ -442,7 +436,7 @@ variable {R A B} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
   [Algebra R B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) [FunLike F A B] [AlgHomClass F R A B] :
+instance (priority := 100) {F : Type*} [FunLike F A B] [AlgHomClass F R A B] :
     NonUnitalAlgHomClass F R A B :=
   { ‹AlgHomClass F R A B› with map_smul := map_smul }
 

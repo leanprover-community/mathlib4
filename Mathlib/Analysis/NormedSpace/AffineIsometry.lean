@@ -645,7 +645,7 @@ protected theorem surjective : Surjective e :=
   e.1.surjective
 #align affine_isometry_equiv.surjective AffineIsometryEquiv.surjective
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem map_eq_iff {x y : P} : e x = e y ↔ x = y :=
   e.injective.eq_iff
 #align affine_isometry_equiv.map_eq_iff AffineIsometryEquiv.map_eq_iff

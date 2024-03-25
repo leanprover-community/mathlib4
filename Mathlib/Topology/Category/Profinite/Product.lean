@@ -108,21 +108,21 @@ instance isIso_indexCone_lift :
           apply funext
           intro J
           exact hb (unop J)
-        have hc : ∀ (J : Finset ι) s, IsClosed ((π_app C (· ∈ J)) ⁻¹' {s})
-        · intro J s
+        have hc : ∀ (J : Finset ι) s, IsClosed ((π_app C (· ∈ J)) ⁻¹' {s}) := by
+          intro J s
           refine IsClosed.preimage (π_app C (· ∈ J)).continuous ?_
           exact T1Space.t1 s
         have H₁ : ∀ (Q₁ Q₂ : Finset ι), Q₁ ≤ Q₂ →
             π_app C (· ∈ Q₁) ⁻¹' {a.val (op Q₁)} ⊇
-            π_app C (· ∈ Q₂) ⁻¹' {a.val (op Q₂)}
-        · intro J K h x hx
+            π_app C (· ∈ Q₂) ⁻¹' {a.val (op Q₂)} := by
+          intro J K h x hx
           simp only [Set.mem_preimage, Set.mem_singleton_iff] at hx ⊢
           rw [← map_comp_π_app C h, Function.comp_apply,
             hx, ← a.prop (homOfLE h).op]
           rfl
         obtain ⟨x, hx⟩ :
             Set.Nonempty (⋂ (J : Finset ι), π_app C (· ∈ J) ⁻¹' {a.val (op J)}) :=
-          IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+          IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
             (fun J : Finset ι => π_app C (· ∈ J) ⁻¹' {a.val (op J)}) (directed_of_isDirected_le H₁)
             (fun J => (Set.singleton_nonempty _).preimage (surjective_π_app _))
             (fun J => (hc J (a.val (op J))).isCompact) fun J => hc J (a.val (op J))

@@ -23,7 +23,8 @@ variable {R R' A T B ι : Type*}
 
 namespace AddMonoidAlgebra
 
-open Classical BigOperators
+open scoped Classical
+open BigOperators
 
 /-!
 
@@ -177,7 +178,7 @@ theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (m : Multiset R[A]) :
     m.prod.support.sup degb ≤ (m.map fun f : R[A] => f.support.sup degb).sum := by
   induction m using Quot.inductionOn
-  rw [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_sum, Multiset.coe_prod]
+  rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.sum_coe, Multiset.prod_coe]
   exact sup_support_list_prod_le degb0 degbm _
 #align add_monoid_algebra.sup_support_multiset_prod_le AddMonoidAlgebra.sup_support_multiset_prod_le
 
@@ -225,7 +226,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup B] [OrderBot B]
 
-/-- Let `R` be a semiring, let `A, B` be two `AddZeroClass`es, let `B` be an `OrderBot`,
+/-- Let `R` be a semiring, let `A` be an `AddZeroClass`, let `B` be an `OrderBot`,
 and let `D : A → B` be a "degree" function.
 For an element `f : R[A]`, the element `supDegree f : B` is the supremum of all the elements in the
 support of `f`, or `⊥` if `f` is zero.
@@ -358,12 +359,6 @@ theorem apply_add_of_supDegree_le (hD : D.Injective) {ap aq : A}
   · refine fun h => Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
     rw [Finsupp.not_mem_support_iff.mp h, zero_mul]
 
-@[deprecated apply_add_of_supDegree_le]
-lemma apply_add_of_supDegree_eq (hD : D.Injective) {ap aq : A}
-    (hp : p.supDegree D = D ap) (hq : q.supDegree D = D aq) :
-    (p * q) (ap + aq) = p ap * q aq :=
-  apply_add_of_supDegree_le hadd hD hp.le hq.le
-
 theorem supDegree_withBot_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.Nonempty) :
     supDegree (WithBot.some ∘ D) s = supDegree D s := by
   unfold AddMonoidAlgebra.supDegree
@@ -450,9 +445,10 @@ lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
     rw [h k hk, h j hj] at hne; exact (hne rfl).elim
   push_neg at h; obtain ⟨j, hj, hne⟩ := h
   apply ne_zero_of_supDegree_ne_bot (D := D)
-  have : _; swap; rw [(supDegree_leadingCoeff_sum_eq hi this).1]
-  · exact (this j hj hne).ne_bot
-  exact fun k hk hne => ((le_sup hk).trans_eq he).lt_of_ne (hd.ne hk hi hne)
+  have : ∀ j ∈ s, j ≠ i → supDegree D (f j) < supDegree D (f i) :=
+    fun k hk hne => ((le_sup hk).trans_eq he).lt_of_ne (hd.ne hk hi hne)
+  rw [(supDegree_leadingCoeff_sum_eq hi this).1]
+  exact (this j hj hne).ne_bot
 
 lemma sum_ne_zero_of_injOn_supDegree (hs : s ≠ ∅)
     (hf : ∀ i ∈ s, f i ≠ 0) (hd : (s : Set ι).InjOn (supDegree D ∘ f)) :
@@ -530,7 +526,7 @@ section InfDegree
 
 variable [AddZeroClass A] [SemilatticeInf T] [Add T] [OrderTop T] (D : A → T)
 
-/-- Let `R` be a semiring, let `A, B` be two `AddZeroClass`es, let `T` be an `OrderTop`,
+/-- Let `R` be a semiring, let `A` be an `AddZeroClass`, let `T` be an `OrderTop`,
 and let `D : A → T` be a "degree" function.
 For an element `f : R[A]`, the element `infDegree f : T` is the infimum of all the elements in the
 support of `f`, or `⊤` if `f` is zero.
@@ -551,7 +547,6 @@ variable [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Functio
   {D : AddHom A T} in
 theorem le_infDegree_mul (f g : R[A]) :
     f.infDegree D + g.infDegree D ≤ (f * g).infDegree D :=
-  --  Porting note: added `a b` in `AddMonoidHom.map_add D a b`, was `AddMonoidHom.map_add D _ _`
   le_inf_support_mul (fun {a b : A} => (map_add D a b).ge) _ _
 
 theorem infDegree_withTop_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.Nonempty) :

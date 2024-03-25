@@ -135,7 +135,7 @@ lemma esymmAlgHom_apply [Fintype σ] (p : MvPolynomial (Fin n) R) :
   (Subalgebra.mvPolynomial_aeval_coe _ _ _).symm
 
 lemma rename_esymmAlgHom [Fintype σ] [Fintype τ] (e : σ ≃ τ) :
-    (rename_symmetricSubalgebra e).toAlgHom.comp (esymmAlgHom σ R n) = esymmAlgHom τ R n := by
+    (renameSymmetricSubalgebra e).toAlgHom.comp (esymmAlgHom σ R n) = esymmAlgHom τ R n := by
   refine algHom_ext (fun i ↦ Subtype.ext ?_)
   simp_rw [AlgHom.comp_apply, esymmAlgHom, aeval_X]
   exact rename_esymm σ R _ e
@@ -286,8 +286,9 @@ lemma bijective_esymmAlgHom_fin (n : ℕ) :
   obtain rfl | h0 := eq_or_ne p 0; apply Subalgebra.zero_mem
   induction' he : p.supDegree toLex using WellFoundedLT.induction with t ih generalizing p; subst he
   let t := Finsupp.equivFunOnFinite.symm (inv_accumulate n n <| ↑(ofLex <| p.supDegree toLex))
-  have hd : (esymmAlgHom_monomial _ t <| p.leadingCoeff toLex).supDegree toLex = p.supDegree toLex
-  · rw [← ofLex_inj, DFunLike.ext'_iff, supDegree_esymmAlgHom_monomial _ _ le_rfl]
+  have hd :
+      (esymmAlgHom_monomial _ t <| p.leadingCoeff toLex).supDegree toLex = p.supDegree toLex := by
+    rw [← ofLex_inj, DFunLike.ext'_iff, supDegree_esymmAlgHom_monomial _ _ le_rfl]
     · exact surjective_accumulate le_rfl hp.antitone_supDegree
     · rwa [Ne, leadingCoeff_eq_zero toLex.injective]
   obtain he | hne := eq_or_ne p (esymmAlgHom_monomial _ t <| p.leadingCoeff toLex)

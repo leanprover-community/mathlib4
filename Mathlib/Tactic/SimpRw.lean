@@ -34,7 +34,7 @@ def withSimpRWRulesSeq (token : Syntax) (rwRulesSeqStx : Syntax)
 /--
 `simp_rw` functions as a mix of `simp` and `rw`. Like `rw`, it applies each
 rewrite rule in the given order, but like `simp` it repeatedly applies these
-rules and also under binders like `∀ x, ...`, `∃ x, ...` and `λ x, ...`.
+rules and also under binders like `∀ x, ...`, `∃ x, ...` and `fun x ↦...`.
 Usage:
 
 - `simp_rw [lemma_1, ..., lemma_n]` will rewrite the goal by applying the
