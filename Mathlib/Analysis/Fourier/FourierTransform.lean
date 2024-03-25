@@ -127,6 +127,7 @@ section Continuous
 variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
 
+-- TODO: rename, swap sides
 /-- For any `w`, the Fourier integral is convergent iff `f` is integrable. -/
 theorem fourier_integral_convergent_iff (he : Continuous e)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) {f : V → E} (w : W) :
@@ -317,6 +318,13 @@ theorem vector_fourierIntegral_eq_integral_exp_smul {V : Type*} [AddCommGroup V]
     neg_mul]
 #align real.vector_fourier_integral_eq_integral_exp_smul Real.vector_fourierIntegral_eq_integral_exp_smul
 
+@[simp]
+theorem fourierIntegral_convergent_iff {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
+    (f : V → E) (L : V →L[ℝ] W →L[ℝ] ℝ) (w : W) :
+    Integrable (fun v : V ↦ 𝐞 (-L v w) • f v) μ ↔ Integrable f μ :=
+  (VectorFourier.fourier_integral_convergent_iff (E := E) (L := L.toLinearMap₂)
+    continuous_fourierChar L.continuous₂ _).symm
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
   {V : Type*} [NormedAddCommGroup V]
