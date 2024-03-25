@@ -196,7 +196,7 @@ end invInterpStrip
 
 -----
 
-variable [NormedAddCommGroup E] [NormedSpace ℂ E] (f : ℂ → E)
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] (f : ℂ → E)
 variable (z : ℂ)
 
 noncomputable def interpStrip : ℂ :=
@@ -459,7 +459,7 @@ lemma abs_eq_zero_on_closedStrip (hz : z ∈ closedStrip 0 1)
   simp only [norm_eq_zero]
   apply eq_of_mem_singleton
   rw [closedStrip, ← closure_Ioo zero_ne_one, ← closure_preimage_re] at hz
-  rw [←this]
+  rw [← this]
   apply ContinuousWithinAt.mem_closure_image
     (ContinuousWithinAt.mono (ContinuousOn.continuousWithinAt hd.2 hz) subset_closure) hz
 
