@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis,
 Floris van Doorn, E.W.Ayers
 -/
-import Mathlib.Lean.Expr.Traverse
+import Lean.Expr
 import Mathlib.Util.MemoFix
 
 namespace Lean.Expr

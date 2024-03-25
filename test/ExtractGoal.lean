@@ -164,7 +164,7 @@ example : ∀ n, n < n + 1 := by
 
 -- Throwing metavariables into the terms
 /--
-info: theorem extracted_1 (m : ℕ) (this : m < Nat.succ (Nat.succ m)) : m < m + 1 := sorry
+info: theorem extracted_1 (m : ℕ) (this : m < m.succ.succ) : m < m + 1 := sorry
 ---
 warning: declaration uses 'sorry'
 -/
