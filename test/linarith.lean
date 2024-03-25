@@ -1,8 +1,8 @@
 import Mathlib.Tactic.Linarith
-import Mathlib.Data.Rat.Init
-import Mathlib.Data.Rat.Order
+import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Interval
+import Mathlib.Data.Rat.Order
 
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
@@ -597,3 +597,7 @@ example (h : False): True := by
     -- this should not panic:
     nlinarith
   trivial
+
+example (x : Nat) : 0 ≤ x ^ 9890 := by
+  fail_if_success linarith -- this should not stack overflow
+  apply zero_le

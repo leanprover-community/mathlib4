@@ -94,7 +94,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
   have hI₂ : μ (I j) * ↑(n j) = ENNReal.ofReal T := by
     rw [volume_closedBall, mul_div, mul_div_mul_left T _ two_ne_zero,
       min_eq_right (div_le_self hT₀.le huj'), mul_comm, ← nsmul_eq_mul, ← ENNReal.ofReal_nsmul,
-      nsmul_eq_mul, mul_div_cancel']
+      nsmul_eq_mul, mul_div_cancel₀]
     exact Nat.cast_ne_zero.mpr hj.ne'
   rw [ENNReal.div_eq_div_iff hT₁ ENNReal.ofReal_ne_top hI₀ hI₁,
     volume_of_add_preimage_eq s _ (u j) d huj (hu₁ j) closedBall_ae_eq_ball, nsmul_eq_mul, ←

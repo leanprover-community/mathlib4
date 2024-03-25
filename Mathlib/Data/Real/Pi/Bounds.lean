@@ -31,7 +31,7 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) :
     rw [← lt_div_iff, ← sin_pi_over_two_pow_succ]; apply sin_lt; apply div_pos pi_pos
     all_goals apply pow_pos; norm_num
   apply lt_of_le_of_lt (le_of_eq _) this
-  rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel, mul_comm]; norm_num
+  rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; norm_num
 #align real.pi_gt_sqrt_two_add_series Real.pi_gt_sqrtTwoAddSeries
 
 theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
@@ -58,10 +58,10 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     -- Porting note: removed `convert le_rfl`
     all_goals (repeat' apply pow_pos); norm_num
   apply lt_of_lt_of_le this (le_of_eq _); rw [add_mul]; congr 1
-  · rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel, mul_comm]; norm_num
+  · rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; norm_num
   rw [pow_succ, ← pow_mul, mul_comm n 2, pow_mul, show (2 : ℝ) ^ 2 = 4 by norm_num, pow_succ,
-    pow_succ, ← mul_assoc (2 : ℝ), show (2 : ℝ) * 2 = 4 by norm_num, ← mul_assoc, div_mul_cancel,
-    mul_comm ((2 : ℝ) ^ n), ← div_div, div_mul_cancel]
+    pow_succ, ← mul_assoc (2 : ℝ), show (2 : ℝ) * 2 = 4 by norm_num, ← mul_assoc, div_mul_cancel₀,
+    mul_comm ((2 : ℝ) ^ n), ← div_div, div_mul_cancel₀]
   apply pow_ne_zero; norm_num; norm_num
 #align real.pi_lt_sqrt_two_add_series Real.pi_lt_sqrtTwoAddSeries
 
