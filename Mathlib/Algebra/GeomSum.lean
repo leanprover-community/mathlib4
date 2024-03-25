@@ -9,6 +9,7 @@ import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Ring.Opposite
 
 #align_import algebra.geom_sum from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
