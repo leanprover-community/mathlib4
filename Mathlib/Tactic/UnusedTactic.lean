@@ -67,6 +67,15 @@ abbrev M := StateRefT (HashMap String.Range Syntax) IO
 def allowed : HashSet SyntaxNodeKind:= HashSet.empty
   |>.insert `Mathlib.Tactic.Says.says
   |>.insert `Std.Tactic.«tacticOn_goal-_=>_»
+  -- attempt to speed up, by ignoring more tactics
+  |>.insert `by
+  |>.insert `null
+  |>.insert `«]»
+  |>.insert ``Lean.Parser.Term.byTactic
+  |>.insert ``Lean.Parser.Tactic.tacticSeq
+  |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented
+  |>.insert ``Lean.Parser.Tactic.tacticTry_
+
   -- the following `SyntaxNodeKind`s play a role in silencing `test`s
   |>.insert ``Lean.Parser.Tactic.guardHyp
   |>.insert ``Lean.Parser.Tactic.guardTarget
@@ -145,12 +154,15 @@ changed something. -/
 partial def eraseUsedTactics : InfoTree → M Unit
   | .node i c => do
     if let .ofTacticInfo i := i then
+--      dbg_trace "working on '{i.stx.getKind}': {i.stx}"
       if let some r := i.stx.getRange? true then
+        if allowed.contains i.stx.getKind
+        -- if the tactic is allowed to not change the goals
+        then modify (·.erase r)
+        else
+        --dbg_trace "{i.stx.getKind}"
         -- if the goals have changed
         if i.goalsAfter != i.goalsBefore
-        then modify (·.erase r)
-        else if allowed.contains i.stx.getKind
-        -- if the tactic is allowed to not change the goals
         then modify (·.erase r)
         -- bespoke check for `swap_var`: the only change that it does is
         -- in the usernames of local declarations, so we check the names before and after
