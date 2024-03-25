@@ -105,7 +105,8 @@ lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
     [HasGoodTensor₁₂Tensor Z X Y] [HasGoodTensorTensor₂₃ Z X Y]
     [HasGoodTensor₁₂Tensor X Z Y] [HasGoodTensorTensor₂₃ X Z Y]:
     (associator X Y Z).inv ≫ (braiding (tensorObj X Y) Z).hom ≫ (associator Z X Y).inv =
-      whiskerLeft X (braiding Y Z).hom ≫ (associator X Z Y).inv ≫ whiskerRight (braiding X Z).hom Y := by
+      whiskerLeft X (braiding Y Z).hom ≫ (associator X Z Y).inv ≫
+        whiskerRight (braiding X Z).hom Y := by
   ext k i₁ i₂ i₃ h
   dsimp [braiding]
   -- working on the LHS

@@ -11,6 +11,11 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Fintype.Prod
 
+/-!
+# The monoidal category structures on graded objects
+
+-/
+
 universe u v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
