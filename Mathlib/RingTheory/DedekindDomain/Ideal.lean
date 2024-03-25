@@ -907,7 +907,7 @@ end IsDedekindDomain
 
 section IsDedekindDomain
 
-variable {T : Type*} [CommRing T] [IsDomain T] [IsDedekindDomain T] {I J : Ideal T}
+variable {T : Type*} [CommRing T] [IsDedekindDomain T] {I J : Ideal T}
 
 open scoped Classical
 
