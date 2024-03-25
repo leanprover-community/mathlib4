@@ -402,7 +402,7 @@ noncomputable instance instField [Fact (Irreducible f)] : Field (AdjoinRoot f) w
   qsmul_def q x :=
     -- Porting note: I gave the explicit motive and changed `rw` to `simp`.
     AdjoinRoot.induction_on (C := fun y ↦ q • y = (of f) q * y) x fun p ↦ by
-      simp only [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.qsmul_eq_C_mul]
+      simp only [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.rat_smul_eq_C_mul]
 #align adjoin_root.field AdjoinRoot.instField
 
 theorem coe_injective (h : degree f ≠ 0) : Function.Injective ((↑) : K → AdjoinRoot f) :=
