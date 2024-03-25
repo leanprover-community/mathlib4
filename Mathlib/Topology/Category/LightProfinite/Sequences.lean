@@ -5,7 +5,6 @@ open CategoryTheory Limits Opposite
 
 namespace Profinite
 
-
 example : TopologicalSpace (OnePoint ℕ) := inferInstance
 
 example : CompactSpace (OnePoint ℕ) := inferInstance
@@ -87,49 +86,29 @@ end Profinite
 namespace LightProfinite
 
 def NatUnionInftyDiagram : ℕᵒᵖ ⥤ FintypeCat where
-  obj n := FintypeCat.of (Option (Finset.range (unop n)))
-  map {n m} f x := by
-    cases x with
-    | none => exact none
-    | some val =>
-      dsimp
-      induction m.unop with
-      | zero => exact none
-      | succ p _ =>
-        refine some ⟨Nat.min val.val p, ?_⟩
-        simp
-  map_id := by
-    intro ⟨n⟩
-    ext x
-    cases x with
-    | none => rfl
-    | some val =>
-      induction n with
-      | zero => cases val.prop
-      | succ n ih =>
-        have h := val.prop
-        simp only [Finset.mem_range, Nat.lt_succ] at h
-        simp [h]
+  obj n := FintypeCat.of (Finset.range (unop n + 1))
+  map {_ m} _ k := if h : k.1 ∈ Finset.range (unop m + 1) then ⟨k.1, h⟩ else ⟨unop m, by simp⟩
   map_comp := by
-    intro ⟨n⟩ ⟨m⟩ ⟨k⟩ ⟨⟨⟨(hmn : m ≤ n)⟩⟩⟩ ⟨⟨⟨(hkm : k ≤ m)⟩⟩⟩
+    intro _ _ _ _ ⟨⟨⟨(h : _ ≤ _)⟩⟩⟩
     ext x
-    cases x with
-    | none => rfl
-    | some val =>
-      induction n with
-      | zero => cases val.prop
-      | succ n ih =>
-        induction m with
-        | zero =>
-          sorry
-        | succ m ih_m => sorry
-        -- have h := val.prop
-        -- simp only [Finset.mem_range, Nat.lt_succ] at h
+    simp
+    split_ifs with h₁ h₂ _ _ h₃
+    · rfl
+    · exfalso
+      apply h₂
+      refine lt_of_lt_of_le h₁ ?_
+      simpa using h
+    · exfalso
+      apply h₂
+      refine lt_of_lt_of_le h₁ ?_
+      simpa using h
+    · rfl
+    · congr 1
+      exact (Nat.eq_of_le_of_lt_succ h h₃).symm
+    · rfl
 
+noncomputable def NatUnionInfty := of NatUnionInftyDiagram
 
-def NatUnionInfty : LightProfinite where
-  diagram := sorry
-  cone := sorry
-  isLimit := sorry
+proof_wanted NatUnionInftyIso : Nonempty (NatUnionInfty.toProfinite ≅ Profinite.NatUnionInfty)
 
 end LightProfinite
