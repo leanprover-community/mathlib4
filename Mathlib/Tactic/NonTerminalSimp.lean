@@ -319,7 +319,7 @@ elab "get " cmd:command : command => do
 --    let locs := getLocs tac
 --    logInfoAt tac m!"may act on {locs.map getStained}"
 --    dbg_trace "{tac}:\nlocs: {getLocs tac}\n"
-    let _ ← (getLocs tac).mapM (Meta.inspect ·)
+--    let _ ← (getLocs tac).mapM (Meta.inspect ·)
     dbg_trace "{tac.getKind} {getStained tac}"
     let locs := getStained tac
 
