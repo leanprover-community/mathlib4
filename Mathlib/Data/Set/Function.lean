@@ -171,11 +171,11 @@ alias ⟨_, _root_.Function.Injective.codRestrict⟩ := injective_codRestrict
 
 end restrict
 
-variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ f₃ : α → β} {g g₁ g₂ : β → γ}
-  {f' f₁' f₂' : β → α} {g' : γ → β} {a : α} {b : β}
-
 /-! ### Equality on a set -/
 section equality
+
+variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ f₃ : α → β} {g g₁ g₂ : β → γ}
+  {f' f₁' f₂' : β → α} {g' : γ → β} {a : α} {b : β}
 
 @[simp]
 theorem eqOn_empty (f₁ f₂ : α → β) : EqOn f₁ f₂ ∅ := fun _ => False.elim
@@ -259,7 +259,7 @@ end equality
 /-! ### Congruence lemmas for monotonicity and antitonicity -/
 section Order
 
-variable [Preorder α] [Preorder β]
+variable {s : Set α} {f₁ f₂ : α → β} [Preorder α] [Preorder β]
 
 theorem _root_.MonotoneOn.congr (h₁ : MonotoneOn f₁ s) (h : s.EqOn f₁ f₂) : MonotoneOn f₂ s := by
   intro a ha b hb hab
@@ -303,7 +303,7 @@ end Order
 /-! ### Monotonicity lemmas-/
 section Mono
 
-variable [Preorder α] [Preorder β]
+variable {s s₁ s₂ : Set α} {f f₁ f₂ : α → β} [Preorder α] [Preorder β]
 
 theorem _root_.MonotoneOn.mono (h : MonotoneOn f s) (h' : s₂ ⊆ s) : MonotoneOn f s₂ :=
   fun _ hx _ hy => h (h' hx) (h' hy)
@@ -342,6 +342,9 @@ protected theorem _root_.StrictAntiOn.strictAnti (h : StrictAntiOn f s) :
 #align strict_anti_on.strict_anti StrictAntiOn.strictAnti
 
 end Mono
+
+variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ f₃ : α → β} {g g₁ g₂ : β → γ}
+  {f' f₁' f₂' : β → α} {g' : γ → β} {a : α} {b : β}
 
 section MapsTo
 
@@ -563,15 +566,16 @@ end MapsTo
 /-! ### Restriction onto preimage -/
 section
 
-variable (t f)
+variable (t)
 
+variable (f) in
 theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻¹' range f := by
   delta Set.restrictPreimage
   rw [MapsTo.range_restrict, Set.image_preimage_eq_inter_range, Set.preimage_inter,
     Subtype.coe_preimage_self, Set.univ_inter]
 #align set.range_restrict_preimage Set.range_restrictPreimage
 
-variable {f} {U : ι → Set β}
+variable {U : ι → Set β}
 
 lemma restrictPreimage_injective (hf : Injective f) : Injective (t.restrictPreimage f) :=
   fun _ _ e => Subtype.coe_injective <| hf <| Subtype.mk.inj e
