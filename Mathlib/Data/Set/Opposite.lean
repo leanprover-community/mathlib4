@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.Data.Opposite
-import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Defs
 
 #align_import data.set.opposite from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 

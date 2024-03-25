@@ -25,16 +25,15 @@ section Lemmas
 open Function
 
 variable {F : Type u → Type v}
-
 variable [Applicative F] [LawfulApplicative F]
-
 variable {α β γ σ : Type u}
 
 theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α) (y : F σ) :
-    f <$> x <*> g <$> y = (flip (· ∘ ·) g ∘ f) <$> x <*> y := by simp [flip, functor_norm]
+    f <$> x <*> g <$> y = ((· ∘ g) ∘ f) <$> x <*> y := by
+  simp [flip, functor_norm]
 #align applicative.map_seq_map Applicative.map_seq_map
 
-theorem Applicative.pure_seq_eq_map' (f : α → β) : (· <*> ·) (pure f : F (α → β)) = (· <$> ·) f :=
+theorem Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) :=
   by ext; simp [functor_norm]
 #align applicative.pure_seq_eq_map' Applicative.pure_seq_eq_map'
 
@@ -83,11 +82,8 @@ open Function hiding comp
 open Functor
 
 variable {F : Type u → Type w} {G : Type v → Type u}
-
 variable [Applicative F] [Applicative G]
-
 variable [LawfulApplicative F] [LawfulApplicative G]
-
 variable {α β γ : Type v}
 
 theorem map_pure (f : α → β) (x : α) : (f <$> pure x : Comp F G β) = pure (f x) :=
@@ -138,7 +134,7 @@ instance {f : Type u → Type w} {g : Type v → Type u} [Applicative f] [Applic
   intros
   simp! [map, Seq.seq, functor_norm]
   rw [commutative_map]
-  simp [Comp.mk, flip, (· ∘ ·), functor_norm]
+  simp only [mk, flip, seq_map_assoc, Function.comp, map_map]
   congr
   funext x y
   rw [commutative_map]

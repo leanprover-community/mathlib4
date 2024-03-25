@@ -87,9 +87,9 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
     (show Continuous f.1.base from ContinuousMap.continuous_toFun _)
   symm
   rw [eq_top_iff, Set.top_eq_univ, Set.top_eq_univ]
-  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.open_range _
+  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _
   rw [Set.univ_inter, Set.image_univ]
-  apply PreirreducibleSpace.isPreirreducible_univ (α := Y.carrier)
+  apply PreirreducibleSpace.isPreirreducible_univ (X := Y.carrier)
   exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
 #align algebraic_geometry.generic_point_eq_of_is_open_immersion AlgebraicGeometry.genericPoint_eq_of_isOpenImmersion
 
@@ -145,14 +145,11 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
           ((genericPoint_spec X.carrier).mem_open_set_iff U.isOpen).mpr (by simpa using h)⟩ =
       genericPoint (Scheme.Spec.obj <| op <| X.presheaf.obj <| op U).carrier := by
   haveI : IsAffine _ := hU
-  have e : U.openEmbedding.isOpenMap.functor.obj ⊤ = U := by
-    ext1; exact Set.image_univ.trans Subtype.range_coe
   delta IsAffineOpen.primeIdealOf
-  erw [← Scheme.comp_val_base_apply]
   convert
     genericPoint_eq_of_isOpenImmersion
       ((X.restrict U.openEmbedding).isoSpec.hom ≫
-        Scheme.Spec.map (X.presheaf.map (eqToHom e).op).op)
+        Scheme.Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op).op)
   -- Porting note: this was `ext1`
   apply Subtype.ext
   exact (genericPoint_eq_of_isOpenImmersion (X.ofRestrict U.openEmbedding)).symm
@@ -179,7 +176,7 @@ instance [IsIntegral X] (x : X.carrier) :
     IsFractionRing (X.presheaf.stalk x) X.functionField :=
   let U : Opens X.carrier :=
     ⟨Set.range (X.affineCover.map x).1.base,
-      PresheafedSpace.IsOpenImmersion.base_open.open_range⟩
+      PresheafedSpace.IsOpenImmersion.base_open.isOpen_range⟩
   have hU : IsAffineOpen U := rangeIsAffineOpenOfOpenImmersion (X.affineCover.map x)
   let x : U := ⟨x, X.affineCover.Covers x⟩
   have : Nonempty U := ⟨x⟩

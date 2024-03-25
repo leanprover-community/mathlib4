@@ -86,7 +86,7 @@ instance : LinearOrderedCommMonoidWithZero Foo :=
     zero_le_one := by decide }
 
 theorem not_mul_pos : ¬∀ {M : Type} [LinearOrderedCommMonoidWithZero M],
-    ∀ (a b : M) (_ : 0 < a) (_ : 0 < b), 0 < a * b := by
+    ∀ a b : M, 0 < a → 0 < b → 0 < a * b := by
   intro h
   specialize h ε ε (by boom) (by boom)
   exact (lt_irrefl 0 (h.trans_le (by boom))).elim

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.BigOperators.Finsupp
 
 #align_import algebra.algebra.hom from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
@@ -21,9 +22,6 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 * `A →ₐ[R] B` : `R`-algebra homomorphism from `A` to `B`.
 -/
-
-set_option autoImplicit true
-
 
 open BigOperators
 
@@ -47,22 +45,22 @@ notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`.  -/
-class AlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
-  (B : outParam (Type*)) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-  [Algebra R B] extends RingHomClass F A B where
+class AlgHomClass (F : Type*) (R A B : outParam Type*)
+  [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+  [FunLike F A B] extends RingHomClass F A B : Prop where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_hom_class AlgHomClass
 
 -- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
 -- attribute [nolint dangerousInstance] AlgHomClass.toRingHomClass
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- attribute [simp] AlgHomClass.commutes
 
 namespace AlgHomClass
 
-variable {R : Type*} {A : Type*} {B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B]
+variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+  [Algebra R A] [Algebra R B] [FunLike F A B]
 
 -- see Note [lower instance priority]
 instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
@@ -71,16 +69,16 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 #align alg_hom_class.linear_map_class AlgHomClass.linearMapClass
 
--- Porting note: A new definition underlying a coercion `↑`.
+-- Porting note (#11445): A new definition underlying a coercion `↑`.
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def toAlgHom {F : Type*} [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
-  { (f : A →+* B) with
-      toFun := f
-      commutes' := AlgHomClass.commutes f }
+def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
+  __ := (f : A →+* B)
+  toFun := f
+  commutes' := AlgHomClass.commutes f
 
-instance coeTC {F : Type*} [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
+instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
 #align alg_hom_class.alg_hom.has_coe_t AlgHomClass.coeTC
 
@@ -93,19 +91,20 @@ variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁} {D : Type v₁}
 section Semiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
-
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
--- Porting note: we don't port specialized `CoeFun` instances if there is `FunLike` instead
+-- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
 #noalign alg_hom.has_coe_to_fun
 
--- Porting note: This instance is moved.
-instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
+instance funLike : FunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     congr
+
+-- Porting note: This instance is moved.
+instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
@@ -114,13 +113,14 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
 #align alg_hom.alg_hom_class AlgHom.algHomClass
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R α β : Type _} [CommSemiring R]
+def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
     [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
 
 initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [AlgHomClass F R A B] (f : F) : ⇑(f : A →ₐ[R] B) = f :=
+protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    ⇑(f : A →ₐ[R] B) = f :=
   rfl
 #align alg_hom.coe_coe AlgHom.coe_coe
 
@@ -129,13 +129,9 @@ theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
   rfl
 #align alg_hom.to_fun_eq_coe AlgHom.toFun_eq_coe
 
-attribute [coe] AlgHom.toRingHom
+#noalign alg_hom.coe_ring_hom
 
-instance coeOutRingHom : CoeOut (A →ₐ[R] B) (A →+* B) :=
-  ⟨AlgHom.toRingHom⟩
-#align alg_hom.coe_ring_hom AlgHom.coeOutRingHom
-
--- Porting note: A new definition underlying a coercion `↑`.
+-- Porting note (#11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
 
@@ -143,7 +139,7 @@ instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 #align alg_hom.coe_monoid_hom AlgHom.coeOutMonoidHom
 
--- Porting note: A new definition underlying a coercion `↑`.
+-- Porting note (#11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
 
@@ -191,11 +187,11 @@ theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
 variable (φ : A →ₐ[R] B)
 
 theorem coe_fn_injective : @Function.Injective (A →ₐ[R] B) (A → B) (↑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align alg_hom.coe_fn_injective AlgHom.coe_fn_injective
 
 theorem coe_fn_inj {φ₁ φ₂ : A →ₐ[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
-  FunLike.coe_fn_eq
+  DFunLike.coe_fn_eq
 #align alg_hom.coe_fn_inj AlgHom.coe_fn_inj
 
 theorem coe_ringHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
@@ -211,20 +207,20 @@ theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B)
 #align alg_hom.coe_add_monoid_hom_injective AlgHom.coe_addMonoidHom_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₐ[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
-  FunLike.congr_fun H x
+  DFunLike.congr_fun H x
 #align alg_hom.congr_fun AlgHom.congr_fun
 
 protected theorem congr_arg (φ : A →ₐ[R] B) {x y : A} (h : x = y) : φ x = φ y :=
-  FunLike.congr_arg φ h
+  DFunLike.congr_arg φ h
 #align alg_hom.congr_arg AlgHom.congr_arg
 
 @[ext]
 theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align alg_hom.ext AlgHom.ext
 
 theorem ext_iff {φ₁ φ₂ : A →ₐ[R] B} : φ₁ = φ₂ ↔ ∀ x, φ₁ x = φ₂ x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align alg_hom.ext_iff AlgHom.ext_iff
 
 @[simp]
@@ -261,7 +257,7 @@ protected theorem map_pow (x : A) (n : ℕ) : φ (x ^ n) = φ x ^ n :=
   map_pow _ _ _
 #align alg_hom.map_pow AlgHom.map_pow
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
   map_smul _ _ _
 #align alg_hom.map_smul AlgHom.map_smul
@@ -455,7 +451,6 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
 protected theorem map_multiset_prod (s : Multiset A) : φ s.prod = (s.map φ).prod :=
@@ -477,7 +472,6 @@ end CommSemiring
 section Ring
 
 variable [CommSemiring R] [Ring A] [Ring B]
-
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
 protected theorem map_neg (x) : φ (-x) = -φ x :=
@@ -507,6 +501,10 @@ def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
 def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S :=
   { f with commutes' := fun n => by simp }
 #align ring_hom.to_int_alg_hom RingHom.toIntAlgHom
+
+lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
+    Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
+  fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
 
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
 see `RingHom.equivRatAlgHom`. -/
@@ -547,7 +545,6 @@ end
 namespace Algebra
 
 variable (R : Type u) (A : Type v)
-
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
@@ -561,12 +558,33 @@ theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
 #align algebra.of_id_apply Algebra.ofId_apply
 
+/-- This is a special case of a more general instance that we define in a later file. -/
+instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
+  ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
+
+/-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
+@[ext high]
+theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
+
+section MulDistribMulAction
+
+instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
+  smul := fun f => Units.map f
+  one_smul := fun x => by ext; rfl
+  mul_smul := fun x y z => by ext; rfl
+  smul_mul := fun x y z => by ext; exact x.map_mul _ _
+  smul_one := fun x => by ext; exact x.map_one
+
+@[simp]
+theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
+    f • x = Units.map (f : A →* A) x := rfl
+
+end MulDistribMulAction
 end Algebra
 
 namespace MulSemiringAction
 
 variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
 /-- Each element of the monoid defines an algebra homomorphism.

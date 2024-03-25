@@ -64,13 +64,12 @@ theorem aeval_apply_of_hasEigenvector {f : End K V} {p : K[X]} {μ : K} {x : V}
 
 theorem isRoot_of_hasEigenvalue {f : End K V} {μ : K} (h : f.HasEigenvalue μ) :
     (minpoly K f).IsRoot μ := by
-  rcases(Submodule.ne_bot_iff _).1 h with ⟨w, ⟨H, ne0⟩⟩
+  rcases (Submodule.ne_bot_iff _).1 h with ⟨w, ⟨H, ne0⟩⟩
   refine' Or.resolve_right (smul_eq_zero.1 _) ne0
   simp [← aeval_apply_of_hasEigenvector ⟨H, ne0⟩, minpoly.aeval K f]
 #align module.End.is_root_of_has_eigenvalue Module.End.isRoot_of_hasEigenvalue
 
 variable [FiniteDimensional K V] (f : End K V)
-
 variable {f} {μ : K}
 
 theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue μ := by
@@ -89,26 +88,25 @@ theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue 
   have h_deg := minpoly.degree_le_of_ne_zero K f p_ne_0 this
   rw [hp, degree_mul, degree_X_sub_C, Polynomial.degree_eq_natDegree p_ne_0] at h_deg
   norm_cast at h_deg
-  linarith
+  omega
 #align module.End.has_eigenvalue_of_is_root Module.End.hasEigenvalue_of_isRoot
 
 theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly K f).IsRoot μ :=
   ⟨isRoot_of_hasEigenvalue, hasEigenvalue_of_isRoot⟩
 #align module.End.has_eigenvalue_iff_is_root Module.End.hasEigenvalue_iff_isRoot
 
+variable (f)
+
+lemma finite_hasEigenvalue : Set.Finite f.HasEigenvalue := by
+  have h : minpoly K f ≠ 0 := minpoly.ne_zero f.isIntegral
+  convert (minpoly K f).rootSet_finite K
+  ext μ
+  change f.HasEigenvalue μ ↔ _
+  rw [hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot, coe_aeval_eq_eval]
+
 /-- An endomorphism of a finite-dimensional vector space has finitely many eigenvalues. -/
-noncomputable instance (f : End K V) : Fintype f.Eigenvalues :=
-  Set.Finite.fintype <| show {μ | eigenspace f μ ≠ ⊥}.Finite by
-    have h : minpoly K f ≠ 0 := minpoly.ne_zero f.isIntegral
-    convert (minpoly K f).rootSet_finite K
-    ext μ
-    -- Porting note: was the below, but this applied unwanted simp lemmas
-    -- ```
-    -- classical simp [Polynomial.rootSet_def, Polynomial.mem_roots h, ← hasEigenvalue_iff_isRoot,
-    --   HasEigenvalue]
-    -- ```
-    rw [Set.mem_setOf_eq, ← HasEigenvalue, hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot,
-      coe_aeval_eq_eval]
+noncomputable instance : Fintype f.Eigenvalues :=
+  Set.Finite.fintype f.finite_hasEigenvalue
 
 end End
 

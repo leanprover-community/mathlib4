@@ -62,7 +62,7 @@ def subchain : Set (List α) :=
 #align set.subchain Set.subchain
 
 @[simp] -- porting note: new `simp`
-theorem nil_mem_subchain : [] ∈ s.subchain := ⟨trivial, fun _ ↦ fun.⟩
+theorem nil_mem_subchain : [] ∈ s.subchain := ⟨trivial, fun _ ↦ nofun⟩
 #align set.nil_mem_subchain Set.nil_mem_subchain
 
 variable {s} {l : List α} {a : α}
@@ -73,7 +73,7 @@ theorem cons_mem_subchain_iff :
     and_assoc]
 #align set.cons_mem_subchain_iff Set.cons_mem_subchain_iff
 
-@[simp] -- porting note: new lemma + `simp`
+@[simp] -- Porting note (#10756): new lemma + `simp`
 theorem singleton_mem_subchain_iff : [a] ∈ s.subchain ↔ a ∈ s := by simp [cons_mem_subchain_iff]
 
 instance : Nonempty s.subchain :=
@@ -92,7 +92,7 @@ theorem chainHeight_eq_iSup_subtype : s.chainHeight = ⨆ l : s.subchain, ↑l.1
 
 theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight) :
     ∃ l ∈ s.subchain, length l = n := by
-  cases' (le_top : s.chainHeight ≤ ⊤).eq_or_lt with ha ha <;>
+  rcases (le_top : s.chainHeight ≤ ⊤).eq_or_lt with ha | ha <;>
     rw [chainHeight_eq_iSup_subtype] at ha
   · obtain ⟨_, ⟨⟨l, h₁, h₂⟩, rfl⟩, h₃⟩ :=
       not_bddAbove_iff'.mp (WithTop.iSup_coe_eq_top.1 ha) n
@@ -167,7 +167,7 @@ theorem chainHeight_add_le_chainHeight_add (s : Set α) (t : Set β) (n m : ℕ)
       le_chainHeight_add_nat_iff.1
         ((add_le_add_right (length_le_chainHeight_of_mem_subchain h) _).trans e),
       fun H ↦ _⟩
-  by_cases s.chainHeight = ⊤
+  by_cases h : s.chainHeight = ⊤
   · suffices t.chainHeight = ⊤ by
       rw [this, top_add]
       exact le_top
@@ -324,7 +324,8 @@ theorem chainHeight_union_le : (s ∪ t).chainHeight ≤ s.chainHeight + t.chain
       apply Set.length_le_chainHeight_of_mem_subchain
       exact ⟨hl.1.sublist (filter_sublist _), fun i h ↦ by simpa using (of_mem_filter h : _)⟩
     refine' le_trans _ (add_le_add hl₁ hl₂)
-    simp_rw [← Nat.cast_add, ← Multiset.coe_card, ← Multiset.card_add, ← Multiset.coe_filter]
+    simp_rw [l₁, l₂, ← Nat.cast_add, ← Multiset.coe_card, ← Multiset.card_add,
+      ← Multiset.filter_coe]
     rw [Multiset.filter_add_filter, Multiset.filter_eq_self.mpr, Multiset.card_add, Nat.cast_add]
     exacts [le_add_right rfl.le, hl.2]
 #align set.chain_height_union_le Set.chainHeight_union_le

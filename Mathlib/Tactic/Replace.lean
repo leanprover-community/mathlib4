@@ -3,8 +3,17 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Mario Carneiro
 -/
-import Std.Tactic.Replace
 import Mathlib.Tactic.Have
+
+/-!
+# Extending `replace`
+
+This file extends the `replace` tactic from `Std` to allow the addition of hypotheses to
+the context without requiring their proofs to be provided immediately.
+
+As a style choice, this should not be used in mathlib; but is provided for downstream users who
+preferred the old style.
+-/
 
 namespace Mathlib.Tactic
 
@@ -49,7 +58,5 @@ elab_rules : tactic
     let name := optBinderIdent.name n
     let hId? := (← getLCtx).findFromUserName? name |>.map fun d ↦ d.fvarId
     match hId? with
-    | some hId =>
-      try replaceMainGoal [goal1, ← goal2.clear hId]
-      catch | _ => pure ()
+    | some hId => replaceMainGoal [goal1, (← observing? <| goal2.clear hId).getD goal2]
     | none     => replaceMainGoal [goal1, goal2]

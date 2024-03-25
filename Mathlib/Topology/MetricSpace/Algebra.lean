@@ -55,7 +55,7 @@ set_option linter.uppercaseLean3 false in
 variable [Monoid β]
 
 /-- The Lipschitz constant of a monoid `β` satisfying `LipschitzMul` -/
-@[to_additive existing] -- porting note: had to add `LipschitzAdd.C`. to_additive silently failed
+@[to_additive existing] -- Porting note: had to add `LipschitzAdd.C`. to_additive silently failed
 def LipschitzMul.C [_i : LipschitzMul β] : ℝ≥0 := Classical.choose _i.lipschitz_mul
 set_option linter.uppercaseLean3 false in
 #align has_lipschitz_mul.C LipschitzMul.C
@@ -105,7 +105,7 @@ instance MulOpposite.lipschitzMul : LipschitzMul βᵐᵒᵖ where
 -- this instance could be deduced from `NormedAddCommGroup.lipschitzAdd`, but we prove it
 -- separately here so that it is available earlier in the hierarchy
 instance Real.hasLipschitzAdd : LipschitzAdd ℝ where
-  lipschitz_add := ⟨2, LipschitzWith.of_dist_le_mul <| fun p q => by
+  lipschitz_add := ⟨2, LipschitzWith.of_dist_le_mul fun p q => by
     simp only [Real.dist_eq, Prod.dist_eq, Prod.fst_sub, Prod.snd_sub, NNReal.coe_ofNat,
       add_sub_add_comm, two_mul]
     refine le_trans (abs_add (p.1 - q.1) (p.2 - q.2)) ?_

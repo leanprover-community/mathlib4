@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.MvPolynomial.Variables
+import Mathlib.Data.MvPolynomial.Degrees
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Algebra.BigOperators.Fin
@@ -71,10 +71,10 @@ def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
     show ∀ p, f.comp g p = p
     apply is_id
     · ext a
-      dsimp
+      dsimp [f, g]
       rw [eval₂_C, Polynomial.eval₂_C]
     · rintro ⟨⟩
-      dsimp
+      dsimp [f, g]
       rw [eval₂_X, Polynomial.eval₂_X]
   right_inv p :=
     Polynomial.induction_on p (fun a => by rw [Polynomial.eval₂_C, MvPolynomial.eval₂_C])
@@ -121,7 +121,6 @@ theorem mapEquiv_trans [CommSemiring S₁] [CommSemiring S₂] [CommSemiring S�
 #align mv_polynomial.map_equiv_trans MvPolynomial.mapEquiv_trans
 
 variable {A₁ A₂ A₃ : Type*} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
-
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 
 /-- If `e : A ≃ₐ[R] B` is an isomorphism of `R`-algebras, then so is `map e`. -/
@@ -192,16 +191,19 @@ def iterToSum : MvPolynomial S₁ (MvPolynomial S₂ R) →+* MvPolynomial (Sum 
   eval₂Hom (eval₂Hom C (X ∘ Sum.inr)) (X ∘ Sum.inl)
 #align mv_polynomial.iter_to_sum MvPolynomial.iterToSum
 
+@[simp]
 theorem iterToSum_C_C (a : R) : iterToSum R S₁ S₂ (C (C a)) = C a :=
   Eq.trans (eval₂_C _ _ (C a)) (eval₂_C _ _ _)
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.iter_to_sum_C_C MvPolynomial.iterToSum_C_C
 
+@[simp]
 theorem iterToSum_X (b : S₁) : iterToSum R S₁ S₂ (X b) = X (Sum.inl b) :=
   eval₂_X _ _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.iter_to_sum_X MvPolynomial.iterToSum_X
 
+@[simp]
 theorem iterToSum_C_X (c : S₂) : iterToSum R S₁ S₂ (C (X c)) = X (Sum.inr c) :=
   Eq.trans (eval₂_C _ _ (X c)) (eval₂_X _ _ _)
 set_option linter.uppercaseLean3 false in
@@ -214,9 +216,7 @@ and the ground ring. -/
 @[simps!]
 def isEmptyAlgEquiv [he : IsEmpty σ] : MvPolynomial σ R ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom (aeval (IsEmpty.elim he)) (Algebra.ofId _ _)
-    (by
-      ext
-      simp [Algebra.ofId_apply, algebraMap_eq])
+    (by ext)
     (by
       ext i m
       exact IsEmpty.elim' he i)
@@ -264,13 +264,14 @@ def sumRingEquiv : MvPolynomial (Sum S₁ S₂) R ≃+* MvPolynomial S₁ (MvPol
 and multivariable polynomials in one of the types,
 with coefficients in multivariable polynomials in the other type.
 -/
+@[simps!]
 def sumAlgEquiv : MvPolynomial (Sum S₁ S₂) R ≃ₐ[R] MvPolynomial S₁ (MvPolynomial S₂ R) :=
   { sumRingEquiv R S₁ S₂ with
     commutes' := by
       intro r
       have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) : _) := rfl
       have B : algebraMap R (MvPolynomial (Sum S₁ S₂) R) r = C r := rfl
-      simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe_apply,
+      simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
         Equiv.coe_fn_mk, B, sumToIter_C, A] }
 #align mv_polynomial.sum_alg_equiv MvPolynomial.sumAlgEquiv
 
@@ -401,7 +402,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
   congr 2
   apply MvPolynomial.algHom_ext
   rw [Fin.forall_fin_succ]
-  simp only [aeval_X, Fin.cons_zero, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp,
+  simp only [φ, aeval_X, Fin.cons_zero, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp,
     Polynomial.coe_aeval_eq_eval, Polynomial.map_C, AlgHom.coe_mk, RingHom.toFun_eq_coe,
     Polynomial.coe_mapRingHom, comp_apply, finSuccEquiv_apply, eval₂Hom_X',
     Fin.cases_zero, Polynomial.map_X, Polynomial.eval_X, Fin.cons_succ,
@@ -424,10 +425,30 @@ theorem support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} 
     simpa [mem_support_iff, ← finSuccEquiv_coeff_coeff m f i] using h
 #align mv_polynomial.support_coeff_fin_succ_equiv MvPolynomial.support_coeff_finSuccEquiv
 
+/--
+The `totalDegree` of a multivariable polynomial `p` is at least `i` more than the `totalDegree` of
+the `i`th coefficient of `finSuccEquiv` applied to `p`, if this is nonzero.
+-/
+lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (i : ℕ)
+    (hi : (finSuccEquiv R n f).coeff i ≠ 0) :
+    totalDegree ((finSuccEquiv R n f).coeff i) + i ≤ totalDegree f := by
+  have hf'_sup : ((finSuccEquiv R n f).coeff i).support.Nonempty := by
+    rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty]
+    exact hi
+  -- Let σ be a monomial index of ((finSuccEquiv R n p).coeff i) of maximal total degree
+  have ⟨σ, hσ1, hσ2⟩ := Finset.exists_mem_eq_sup (support _) hf'_sup
+                          (fun s => Finsupp.sum s fun _ e => e)
+  -- Then cons i σ is a monomial index of p with total degree equal to the desired bound
+  let σ' : Fin (n+1) →₀ ℕ := cons i σ
+  convert le_totalDegree (s := σ') _
+  · rw [totalDegree, hσ2, sum_cons, add_comm]
+  · rw [← support_coeff_finSuccEquiv]
+    exact hσ1
+
 theorem finSuccEquiv_support (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).support = Finset.image (fun m : Fin (n + 1) →₀ ℕ => m 0) f.support := by
   ext i
-  rw [Polynomial.mem_support_iff, Finset.mem_image, nonzero_iff_exists]
+  rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
   constructor
   · rintro ⟨m, hm⟩
     refine' ⟨cons i m, _, cons_zero _ _⟩
@@ -435,7 +456,7 @@ theorem finSuccEquiv_support (f : MvPolynomial (Fin (n + 1)) R) :
     simpa using hm
   · rintro ⟨m, h, rfl⟩
     refine' ⟨tail m, _⟩
-    rwa [← coeff, ← mem_support_iff, support_coeff_finSuccEquiv, cons_tail]
+    rwa [← coeff, zero_apply, ← mem_support_iff, support_coeff_finSuccEquiv, cons_tail]
 #align mv_polynomial.fin_succ_equiv_support MvPolynomial.finSuccEquiv_support
 
 theorem finSuccEquiv_support' {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} :
@@ -500,6 +521,27 @@ theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin 
     (f := fun (g : Fin (Nat.succ n) →₀ ℕ) => g (Fin.succ j))
     (support_coeff_finSuccEquiv.1 hm)
 #align mv_polynomial.degree_of_coeff_fin_succ_equiv MvPolynomial.degreeOf_coeff_finSuccEquiv
+
+/-- Consider a multivariate polynomial `φ` whose variables are indexed by `Option σ`,
+and suppose that `σ ≃ Fin n`.
+Then one may view `φ` as a polynomial over `MvPolynomial (Fin n) R`, by
+
+1. renaming the variables via `Option σ ≃ Fin (n+1)`, and then singling out the `0`-th variable
+    via `MvPolynomial.finSuccEquiv`;
+2. first viewing it as polynomial over `MvPolynomial σ R` via `MvPolynomial.optionEquivLeft`,
+    and then renaming the variables.
+
+This lemma shows that both constructions are the same. -/
+lemma finSuccEquiv_rename_finSuccEquiv (e : σ ≃ Fin n) (φ : MvPolynomial (Option σ) R) :
+    ((finSuccEquiv R n) ((rename ((Equiv.optionCongr e).trans (_root_.finSuccEquiv n).symm)) φ)) =
+      Polynomial.map (rename e).toRingHom (optionEquivLeft R σ φ) := by
+  suffices (finSuccEquiv R n).toRingEquiv.toRingHom.comp (rename ((Equiv.optionCongr e).trans
+        (_root_.finSuccEquiv n).symm)).toRingHom =
+      (Polynomial.mapRingHom (rename e).toRingHom).comp (optionEquivLeft R σ) by
+    exact DFunLike.congr_fun this φ
+  apply ringHom_ext
+  · simp [Polynomial.algebraMap_apply, algebraMap_eq]
+  · rintro (i|i) <;> simp
 
 end
 

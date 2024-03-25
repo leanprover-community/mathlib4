@@ -32,7 +32,7 @@ def runDefEqTactic (m : Expr → MetaM Expr)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc?))
     (atLocal := fun h => liftMetaTactic1 fun mvarId => do
       let ty ← instantiateMVars (← h.getType)
-      mvarId.changeLocalDecl' (checkDefEq := checkDefEq) h (← m ty))
+      mvarId.changeLocalDecl (checkDefEq := checkDefEq) h (← m ty))
     (atTarget := liftMetaTactic1 fun mvarId => do
       let ty ← instantiateMVars (← mvarId.getType)
       mvarId.change (checkDefEq := checkDefEq) (← m ty))
@@ -154,7 +154,10 @@ elab "unfold_projs" : conv => runDefEqConvTactic unfoldProjs
 
 /-- Eta reduce everything -/
 def etaReduceAll (e : Expr) : MetaM Expr := do
-  transform e fun node => pure <| .continue node.etaExpanded?
+  transform e fun node =>
+    match node.etaExpandedStrict? with
+    | some e' => return .visit e'
+    | none => return .continue
 
 /--
 `eta_reduce at loc` eta reduces all sub-expressions at the given location.

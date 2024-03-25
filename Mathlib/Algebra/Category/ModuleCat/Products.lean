@@ -3,8 +3,9 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.LinearAlgebra.Pi
 import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.LinearAlgebra.Pi
+import Mathlib.Tactic.CategoryTheory.Elementwise
 
 #align_import algebra.category.Module.products from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -22,7 +23,6 @@ universe u v w
 namespace ModuleCat
 
 variable {R : Type u} [Ring R]
-
 variable {ι : Type v} (Z : ι → ModuleCatMax.{v, w} R)
 
 set_option linter.uppercaseLean3 false

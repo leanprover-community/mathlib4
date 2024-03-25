@@ -154,13 +154,13 @@ instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
 
 @[simp]
 theorem op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op := by
-  aesop_cat_nonterminal
+  apply IsIso.eq_inv_of_hom_inv_id
   rw [← op_comp, IsIso.inv_hom_id, op_id]
 #align category_theory.op_inv CategoryTheory.op_inv
 
 @[simp]
 theorem unop_inv {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : (inv f).unop = inv f.unop := by
-  aesop_cat_nonterminal
+  apply IsIso.eq_inv_of_hom_inv_id
   rw [← unop_comp, IsIso.inv_hom_id, unop_id]
 #align category_theory.unop_inv CategoryTheory.unop_inv
 
@@ -460,12 +460,25 @@ theorem unop_op {X Y : Cᵒᵖ} (f : X ≅ Y) : f.unop.op = f := by (ext; rfl)
 theorem op_unop {X Y : C} (f : X ≅ Y) : f.op.unop = f := by (ext; rfl)
 #align category_theory.iso.op_unop CategoryTheory.Iso.op_unop
 
+section
+
+variable {D : Type*} [Category D] {F G : C ⥤ Dᵒᵖ} (e : F ≅ G) (X : C)
+
+@[reassoc (attr := simp)]
+lemma unop_hom_inv_id_app : (e.hom.app X).unop ≫ (e.inv.app X).unop = 𝟙 _ := by
+  rw [← unop_comp, inv_hom_id_app, unop_id]
+
+@[reassoc (attr := simp)]
+lemma unop_inv_hom_id_app : (e.inv.app X).unop ≫ (e.hom.app X).unop = 𝟙 _ := by
+  rw [← unop_comp, hom_inv_id_app, unop_id]
+
+end
+
 end Iso
 
 namespace NatIso
 
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {F G : C ⥤ D}
 
 /-- The natural isomorphism between opposite functors `G.op ≅ F.op` induced by a natural
@@ -484,8 +497,6 @@ between the opposite functors `F.op ≅ G.op`. -/
 protected def removeOp (α : F.op ≅ G.op) : G ≅ F where
   hom := NatTrans.removeOp α.hom
   inv := NatTrans.removeOp α.inv
-  hom_inv_id := by ext; dsimp; rw [← unop_comp]; rw [α.inv_hom_id_app]; rfl
-  inv_hom_id := by ext; dsimp; rw [← unop_comp]; rw [α.hom_inv_id_app]; rfl
 #align category_theory.nat_iso.remove_op CategoryTheory.NatIso.removeOp
 
 /-- The natural isomorphism between functors `G.unop ≅ F.unop` induced by a natural isomorphism
@@ -494,8 +505,6 @@ between the original functors `F ≅ G`. -/
 protected def unop {F G : Cᵒᵖ ⥤ Dᵒᵖ} (α : F ≅ G) : G.unop ≅ F.unop where
   hom := NatTrans.unop α.hom
   inv := NatTrans.unop α.inv
-  hom_inv_id := by ext; dsimp; rw [← unop_comp]; rw [α.inv_hom_id_app]; rfl
-  inv_hom_id := by ext; dsimp; rw [← unop_comp]; rw [α.hom_inv_id_app]; rfl
 #align category_theory.nat_iso.unop CategoryTheory.NatIso.unop
 
 end NatIso
@@ -586,7 +595,6 @@ def isoOpEquiv (A B : Cᵒᵖ) : (A ≅ B) ≃ (B.unop ≅ A.unop) where
 namespace Functor
 
 variable (C)
-
 variable (D : Type u₂) [Category.{v₂} D]
 
 /-- The equivalence of functor categories induced by `op` and `unop`.

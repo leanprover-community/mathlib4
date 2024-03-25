@@ -25,7 +25,7 @@ symmetric, if for all `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`
 
 ## Main statements
 
-* `is_symmetric.continuous`: if a symmetric operator is defined on a complete space, then
+* `IsSymmetric.continuous`: if a symmetric operator is defined on a complete space, then
   it is automatically continuous.
 
 ## Tags
@@ -39,13 +39,9 @@ open IsROrC
 open ComplexConjugate
 
 variable {𝕜 E E' F G : Type*} [IsROrC 𝕜]
-
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-
 variable [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-
 variable [NormedAddCommGroup E'] [InnerProductSpace ℝ E']
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -66,7 +62,7 @@ section Real
 /-- An operator `T` on an inner product space is symmetric if and only if it is
 `LinearMap.IsSelfAdjoint` with respect to the sesquilinear form given by the inner product. -/
 theorem isSymmetric_iff_sesqForm (T : E →ₗ[𝕜] E) :
-    T.IsSymmetric ↔ @LinearMap.IsSelfAdjoint 𝕜 E _ _ _ (starRingEnd 𝕜) sesqFormOfInner T :=
+    T.IsSymmetric ↔ LinearMap.IsSelfAdjoint (R := 𝕜) (M := E) sesqFormOfInner T :=
   ⟨fun h x y => (h y x).symm, fun h x y => (h y x).symm⟩
 #align linear_map.is_symmetric_iff_sesq_form LinearMap.isSymmetric_iff_sesqForm
 

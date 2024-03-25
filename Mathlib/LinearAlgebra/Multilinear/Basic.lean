@@ -3,14 +3,12 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Data.List.FinRange
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Sort
-import Mathlib.Tactic.Abel
+import Mathlib.Data.List.FinRange
+import Mathlib.LinearAlgebra.Pi
 
 #align_import linear_algebra.multilinear.basic from "leanprover-community/mathlib"@"78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea"
 
@@ -110,7 +108,7 @@ variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M₁ i
   [Module R M₃] [Module R M'] (f f' : MultilinearMap R M₁ M₂)
 
 -- Porting note: Replaced CoeFun with FunLike instance
-instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) (fun _ ↦ M₂) where
+instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
   coe_injective' := fun f g h ↦ by cases f; cases g; cases h; rfl
 
@@ -127,29 +125,29 @@ theorem coe_mk (f : (∀ i, M₁ i) → M₂) (h₁ h₂) : ⇑(⟨f, h₁, h₂
 #align multilinear_map.coe_mk MultilinearMap.coe_mk
 
 theorem congr_fun {f g : MultilinearMap R M₁ M₂} (h : f = g) (x : ∀ i, M₁ i) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align multilinear_map.congr_fun MultilinearMap.congr_fun
 
 nonrec theorem congr_arg (f : MultilinearMap R M₁ M₂) {x y : ∀ i, M₁ i} (h : x = y) : f x = f y :=
-  FunLike.congr_arg f h
+  DFunLike.congr_arg f h
 #align multilinear_map.congr_arg MultilinearMap.congr_arg
 
 theorem coe_injective : Injective ((↑) : MultilinearMap R M₁ M₂ → (∀ i, M₁ i) → M₂) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align multilinear_map.coe_injective MultilinearMap.coe_injective
 
-@[norm_cast] -- Porting note: Removed simp attribute, simp can prove this
+@[norm_cast] -- Porting note (#10618): Removed simp attribute, simp can prove this
 theorem coe_inj {f g : MultilinearMap R M₁ M₂} : (f : (∀ i, M₁ i) → M₂) = g ↔ f = g :=
-  FunLike.coe_fn_eq
+  DFunLike.coe_fn_eq
 #align multilinear_map.coe_inj MultilinearMap.coe_inj
 
 @[ext]
 theorem ext {f f' : MultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x) : f = f' :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align multilinear_map.ext MultilinearMap.ext
 
 theorem ext_iff {f g : MultilinearMap R M₁ M₂} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align multilinear_map.ext_iff MultilinearMap.ext_iff
 
 @[simp]
@@ -234,7 +232,7 @@ instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) :=
 
 /-- Coercion of a multilinear map to a function as an additive monoid homomorphism. -/
 @[simps] def coeAddMonoidHom : MultilinearMap R M₁ M₂ →+ (((i : ι) → M₁ i) → M₂) where
-  toFun := FunLike.coe; map_zero' := rfl; map_add' _ _ := rfl
+  toFun := DFunLike.coe; map_zero' := rfl; map_add' _ _ := rfl
 
 @[simp]
 theorem coe_sum {α : Type*} (f : α → MultilinearMap R M₁ M₂) (s : Finset α) :
@@ -278,28 +276,30 @@ def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)] [∀ i, 
 
 section
 
-variable (R M₂)
+variable (R M₂ M₃)
 
-/-- The evaluation map from `ι → M₂` to `M₂` is multilinear at a given `i` when `ι` is subsingleton.
--/
+/-- Equivalence between linear maps `M₂ →ₗ[R] M₃` and one-multilinear maps. -/
 @[simps]
-def ofSubsingleton [Subsingleton ι] (i' : ι) : MultilinearMap R (fun _ : ι => M₂) M₂ where
-  toFun := Function.eval i'
-  map_add' m i x y := by
-    rw [Subsingleton.elim i i']
-    simp only [Function.eval, Function.update_same]
-  map_smul' m i r x := by
-    rw [Subsingleton.elim i i']
-    simp only [Function.eval, Function.update_same]
-#align multilinear_map.of_subsingleton MultilinearMap.ofSubsingleton
-#align multilinear_map.of_subsingleton_apply MultilinearMap.ofSubsingleton_apply
-
+def ofSubsingleton [Subsingleton ι] (i : ι) :
+    (M₂ →ₗ[R] M₃) ≃ MultilinearMap R (fun _ : ι ↦ M₂) M₃ where
+  toFun f :=
+    { toFun := fun x ↦ f (x i)
+      map_add' := by intros; simp [update_eq_const_of_subsingleton]
+      map_smul' := by intros; simp [update_eq_const_of_subsingleton] }
+  invFun f :=
+    { toFun := fun x ↦ f fun _ ↦ x
+      map_add' := fun x y ↦ by simpa [update_eq_const_of_subsingleton] using f.map_add 0 i x y
+      map_smul' := fun c x ↦ by simpa [update_eq_const_of_subsingleton] using f.map_smul 0 i c x }
+  left_inv f := rfl
+  right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
+#align multilinear_map.of_subsingleton MultilinearMap.ofSubsingletonₓ
+#align multilinear_map.of_subsingleton_apply MultilinearMap.ofSubsingleton_apply_applyₓ
 
 variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
 -- Porting note: Removed [simps] & added simpNF-approved version of the generated lemma manually.
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
   toFun := Function.const _ m
   map_add' _ := isEmptyElim
@@ -309,7 +309,7 @@ def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
 
 end
 
--- Porting note: Included `FunLike.coe` to avoid strange CoeFun instance for Equiv
+-- Porting note: Included `DFunLike.coe` to avoid strange CoeFun instance for Equiv
 /-- Given a multilinear map `f` on `n` variables (parameterized by `Fin n`) and a subset `s` of `k`
 of these variables, one gets a new multilinear map on `Fin k` by varying these variables, and fixing
 the other ones equal to a given value `z`. It is denoted by `f.restr s hk z`, where `hk` is a
@@ -317,18 +317,18 @@ proof that the cardinality of `s` is `k`. The implicit identification between `F
 we use is the canonical (increasing) bijection. -/
 def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Finset (Fin n))
     (hk : s.card = k) (z : M') : MultilinearMap R (fun _ : Fin k => M') M₂ where
-  toFun v := f fun j => if h : j ∈ s then v ((FunLike.coe (s.orderIsoOfFin hk).symm) ⟨j, h⟩) else z
+  toFun v := f fun j => if h : j ∈ s then v ((DFunLike.coe (s.orderIsoOfFin hk).symm) ⟨j, h⟩) else z
   /- Porting note: The proofs of the following two lemmas used to only use `erw` followed by `simp`,
   but it seems `erw` no longer unfolds or unifies well enough to work without more help. -/
   map_add' v i x y := by
-    have : FunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
+    have : DFunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
     simp only [this]
     erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
     simp
   map_smul' v i c x := by
-    have : FunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
+    have : DFunLike.coe (s.orderIsoOfFin hk).symm = (s.orderIsoOfFin hk).toEquiv.symm := rfl
     simp only [this]
     erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
@@ -371,7 +371,6 @@ theorem snoc_smul (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M (castSucc 
 section
 
 variable {M₁' : ι → Type*} [∀ i, AddCommMonoid (M₁' i)] [∀ i, Module R (M₁' i)]
-
 variable {M₁'' : ι → Type*} [∀ i, AddCommMonoid (M₁'' i)] [∀ i, Module R (M₁'' i)]
 
 /-- If `g` is a multilinear map and `f` is a collection of linear maps,
@@ -464,8 +463,8 @@ theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι
     ext j
     by_cases h : j = i
     · rw [h]
-      simp [hit]
-    · by_cases h' : j ∈ t <;> simp [h, hit, h']
+      simp [m'', hit]
+    · by_cases h' : j ∈ t <;> simp [m'', h, hit, h']
   rw [A, f.map_add, B, C, Finset.sum_powerset_insert hit, Hrec, Hrec, add_comm (_ : M₂)]
   congr 1
   refine Finset.sum_congr rfl fun s hs => ?_
@@ -473,8 +472,8 @@ theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι
     ext j
     by_cases h : j = i
     · rw [h]
-      simp [Finset.not_mem_of_mem_powerset_of_not_mem hs hit]
-    · by_cases h' : j ∈ s <;> simp [h, h']
+      simp [m'', Finset.not_mem_of_mem_powerset_of_not_mem hs hit]
+    · by_cases h' : j ∈ s <;> simp [m'', h, h']
   rw [this]
 #align multilinear_map.map_piecewise_add MultilinearMap.map_piecewise_add
 
@@ -545,14 +544,14 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     intro i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [sdiff_subset, update_same]
-    · simp only [hi, update_noteq, Ne.def, not_false_iff, Finset.Subset.refl]
+      simp only [B, sdiff_subset, update_same]
+    · simp only [B, hi, update_noteq, Ne.def, not_false_iff, Finset.Subset.refl]
   have C_subset_A : ∀ i, C i ⊆ A i := by
     intro i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [hj₂, Finset.singleton_subset_iff, update_same]
-    · simp only [hi, update_noteq, Ne.def, not_false_iff, Finset.Subset.refl]
+      simp only [C, hj₂, Finset.singleton_subset_iff, update_same]
+    · simp only [C, hi, update_noteq, Ne.def, not_false_iff, Finset.Subset.refl]
   -- split the sum at `i₀` as the sum over `B i₀` plus the sum over `C i₀`, to use additivity.
   have A_eq_BC :
     (fun i => ∑ j in A i, g i j) =
@@ -562,15 +561,15 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     by_cases hi : i = i₀
     · rw [hi, update_same]
       have : A i₀ = B i₀ ∪ C i₀ := by
-        simp only [Function.update_same, Finset.sdiff_union_self_eq_union]
+        simp only [B, C, Function.update_same, Finset.sdiff_union_self_eq_union]
         symm
-        simp only [hj₂, Finset.singleton_subset_iff, Finset.union_eq_left_iff_subset]
+        simp only [hj₂, Finset.singleton_subset_iff, Finset.union_eq_left]
       rw [this]
       refine Finset.sum_union <| Finset.disjoint_right.2 fun j hj => ?_
       have : j = j₂ := by
-        simpa using hj
+        simpa [C] using hj
       rw [this]
-      simp only [mem_sdiff, eq_self_iff_true, not_true, not_false_iff, Finset.mem_singleton,
+      simp only [B, mem_sdiff, eq_self_iff_true, not_true, not_false_iff, Finset.mem_singleton,
         update_same, and_false_iff]
     · simp [hi]
   have Beq :
@@ -580,7 +579,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     by_cases hi : i = i₀
     · rw [hi]
       simp only [update_same]
-    · simp only [hi, update_noteq, Ne.def, not_false_iff]
+    · simp only [B, hi, update_noteq, Ne.def, not_false_iff]
   have Ceq :
     Function.update (fun i => ∑ j in A i, g i j) i₀ (∑ j in C i₀, g i₀ j) = fun i =>
       ∑ j in C i, g i j := by
@@ -588,27 +587,27 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     by_cases hi : i = i₀
     · rw [hi]
       simp only [update_same]
-    · simp only [hi, update_noteq, Ne.def, not_false_iff]
+    · simp only [C, hi, update_noteq, Ne.def, not_false_iff]
   -- Express the inductive assumption for `B`
   have Brec : (f fun i => ∑ j in B i, g i j) = ∑ r in piFinset B, f fun i => g i (r i) := by
     have : (∑ i, Finset.card (B i)) < ∑ i, Finset.card (A i) := by
       refine'
-        Finset.sum_lt_sum (fun i _ => Finset.card_le_of_subset (B_subset_A i))
+        Finset.sum_lt_sum (fun i _ => Finset.card_le_card (B_subset_A i))
           ⟨i₀, Finset.mem_univ _, _⟩
       have : {j₂} ⊆ A i₀ := by simp [hj₂]
-      simp only [Finset.card_sdiff this, Function.update_same, Finset.card_singleton]
+      simp only [B, Finset.card_sdiff this, Function.update_same, Finset.card_singleton]
       exact Nat.pred_lt (ne_of_gt (lt_trans Nat.zero_lt_one hi₀))
     rw [h] at this
     exact IH _ this B rfl
   -- Express the inductive assumption for `C`
   have Crec : (f fun i => ∑ j in C i, g i j) = ∑ r in piFinset C, f fun i => g i (r i) := by
     have : (∑ i, Finset.card (C i)) < ∑ i, Finset.card (A i) :=
-      Finset.sum_lt_sum (fun i _ => Finset.card_le_of_subset (C_subset_A i))
-        ⟨i₀, Finset.mem_univ _, by simp [hi₀]⟩
+      Finset.sum_lt_sum (fun i _ => Finset.card_le_card (C_subset_A i))
+        ⟨i₀, Finset.mem_univ _, by simp [C, hi₀]⟩
     rw [h] at this
     exact IH _ this C rfl
   have D : Disjoint (piFinset B) (piFinset C) :=
-    haveI : Disjoint (B i₀) (C i₀) := by simp
+    haveI : Disjoint (B i₀) (C i₀) := by simp [B, C]
     piFinset_disjoint_of_disjoint B C this
   have pi_BC : piFinset A = piFinset B ∪ piFinset C := by
     apply Finset.Subset.antisymm
@@ -617,15 +616,15 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
       · apply Finset.mem_union_right
         refine mem_piFinset.2 fun i => ?_
         by_cases hi : i = i₀
-        · have : r i₀ ∈ C i₀ := by simp [hri₀]
+        · have : r i₀ ∈ C i₀ := by simp [C, hri₀]
           rwa [hi]
-        · simp [hi, mem_piFinset.1 hr i]
+        · simp [C, hi, mem_piFinset.1 hr i]
       · apply Finset.mem_union_left
         refine mem_piFinset.2 fun i => ?_
         by_cases hi : i = i₀
-        · have : r i₀ ∈ B i₀ := by simp [hri₀, mem_piFinset.1 hr i₀]
+        · have : r i₀ ∈ B i₀ := by simp [B, hri₀, mem_piFinset.1 hr i₀]
           rwa [hi]
-        · simp [hi, mem_piFinset.1 hr i]
+        · simp [B, hi, mem_piFinset.1 hr i]
     · exact
         Finset.union_subset (piFinset_subset _ _ fun i => B_subset_A i)
           (piFinset_subset _ _ fun i => C_subset_A i)
@@ -676,7 +675,6 @@ def codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂) (h : ∀
 section RestrictScalar
 
 variable (R)
-
 variable {A : Type*} [Semiring A] [SMul R A] [∀ i : ι, Module A (M₁ i)] [Module A M₂]
   [∀ i, IsScalarTower R A (M₁ i)] [IsScalarTower R A M₂]
 
@@ -761,6 +759,70 @@ theorem domDomCongr_eq_iff (σ : ι₁ ≃ ι₂) (f g : MultilinearMap R (fun _
 
 end
 
+/-! If `{a // P a}` is a subtype of `ι` and if we fix an element `z` of `(i : {a // ¬ P a}) → M₁ i`,
+then a multilinear map on `M₁` defines a multilinear map on the restriction of `M₁` to
+`{a // P a}`, by fixing the arguments out of `{a // P a}` equal to the values of `z`.-/
+
+lemma domDomRestrict_aux [DecidableEq ι] (P : ι → Prop) [DecidablePred P]
+    [DecidableEq {a // P a}]
+    (x : (i : {a // P a}) → M₁ i) (z : (i : {a // ¬ P a}) → M₁ i) (i : {a : ι // P a})
+    (c : M₁ i) : (fun j ↦ if h : P j then Function.update x i c ⟨j, h⟩ else z ⟨j, h⟩) =
+    Function.update (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by
+  ext j
+  by_cases h : j = i
+  · rw [h, Function.update_same]
+    simp only [i.2, update_same, dite_true]
+  · rw [Function.update_noteq h]
+    by_cases h' : P j
+    · simp only [h', ne_eq, Subtype.mk.injEq, dite_true]
+      have h'' : ¬ ⟨j, h'⟩ = i :=
+        fun he => by apply_fun (fun x => x.1) at he; exact h he
+      rw [Function.update_noteq h'']
+    · simp only [h', ne_eq, Subtype.mk.injEq, dite_false]
+
+/-- Given a multilinear map `f` on `(i : ι) → M i`, a (decidable) predicate `P` on `ι` and
+an element `z` of `(i : {a // ¬ P a}) → M₁ i`, construct a multilinear map on
+`(i : {a // P a}) → M₁ i)` whose value at `x` is `f` evaluated at the vector with `i`th coordinate
+`x i` if `P i` and `z i` otherwise.
+
+The naming is similar to `MultilinearMap.domDomCongr`: here we are applying the restriction to the
+domain of the domain.
+-/
+def domDomRestrict (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P]
+    (z : (i : {a : ι // ¬ P a}) → M₁ i) :
+    MultilinearMap R (fun (i : {a : ι // P a}) => M₁ i) M₂ where
+  toFun x := f (fun j ↦ if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩)
+  map_add' x i a b := by
+    classical
+    simp only
+    repeat (rw [domDomRestrict_aux])
+    simp only [MultilinearMap.map_add]
+  map_smul' z i c a := by
+    classical
+    simp only
+    repeat (rw [domDomRestrict_aux])
+    simp only [MultilinearMap.map_smul]
+
+@[simp]
+lemma domDomRestrict_apply (f : MultilinearMap R M₁ M₂) (P : ι → Prop)
+    [DecidablePred P] (x : (i : {a // P a}) → M₁ i) (z : (i : {a // ¬ P a}) → M₁ i) :
+    f.domDomRestrict P z x = f (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) := rfl
+
+-- TODO: Should add a ref here when available.
+/-- The "derivative" of a multilinear map, as a linear map from `(i : ι) → M₁ i` to `M₂`.
+For continuous multilinear maps, this will indeed be the derivative.-/
+def linearDeriv [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁ M₂)
+    (x : (i : ι) → M₁ i) : ((i : ι) → M₁ i) →ₗ[R] M₂ :=
+  ∑ i : ι, (f.toLinearMap x i).comp (LinearMap.proj i)
+
+@[simp]
+lemma linearDeriv_apply [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁ M₂)
+    (x y : (i : ι) → M₁ i) :
+    f.linearDeriv x y = ∑ i, f (update x i (y i)) := by
+  unfold linearDeriv
+  simp only [LinearMap.coeFn_sum, LinearMap.coe_comp, LinearMap.coe_proj, Finset.sum_apply,
+    Function.comp_apply, Function.eval, toLinearMap_apply]
+
 end Semiring
 
 end MultilinearMap
@@ -830,7 +892,7 @@ instance [Monoid S] [DistribMulAction S M₂] [Module R M₂] [SMulCommClass R S
 
 section Module
 
-variable [Semiring S] [Module S M₂] [Module R M₂] [SMulCommClass R S M₂]
+variable [Semiring S] [Module S M₂] [SMulCommClass R S M₂]
 
 /-- The space of multilinear maps over an algebra over `R` is a module over `R`, for the pointwise
 addition and scalar multiplication. -/
@@ -841,6 +903,21 @@ instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (MultilinearMap R M�
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
 
 variable (R S M₁ M₂ M₃)
+
+section OfSubsingleton
+
+variable [AddCommMonoid M₃] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
+
+/-- Linear equivalence between linear maps `M₂ →ₗ[R] M₃`
+and one-multilinear maps `MultilinearMap R (fun _ : ι ↦ M₂) M₃`. -/
+@[simps (config := { simpRhs := true })]
+def ofSubsingletonₗ [Subsingleton ι] (i : ι) :
+    (M₂ →ₗ[R] M₃) ≃ₗ[S] MultilinearMap R (fun _ : ι ↦ M₂) M₃ :=
+  { ofSubsingleton R M₂ M₃ i with
+    map_add' := fun _ _ ↦ rfl
+    map_smul' := fun _ _ ↦ rfl }
+
+end OfSubsingleton
 
 /-- The dependent version of `MultilinearMap.domDomCongrLinearEquiv`. -/
 @[simps apply symm_apply]
@@ -923,6 +1000,59 @@ section CommSemiring
 
 variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M₂]
   [∀ i, Module R (M i)] [∀ i, Module R (M₁ i)] [Module R M₂] (f f' : MultilinearMap R M₁ M₂)
+
+section
+variable {M₁' : ι → Type*} [Π i, AddCommMonoid (M₁' i)] [Π i, Module R (M₁' i)]
+
+/-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
+sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g`. -/
+@[simps] def compLinearMapₗ (f : Π (i : ι), M₁ i →ₗ[R] M₁' i) :
+    (MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂ where
+  toFun := fun g ↦ g.compLinearMap f
+  map_add' := fun _ _ ↦ rfl
+  map_smul' := fun _ _ ↦ rfl
+
+/-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
+sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
+`f₁, ..., fₙ`. -/
+@[simps] def compLinearMapMultilinear :
+  @MultilinearMap R ι (fun i ↦ M₁ i →ₗ[R] M₁' i)
+    ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _
+      (fun i ↦ LinearMap.module) _ where
+  toFun := MultilinearMap.compLinearMapₗ
+  map_add' := by
+    intro _ f i f₁ f₂
+    ext g x
+    change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
+        (g fun j ↦ update f i f₁ j <|x j) + g fun j ↦ update f i f₂ j (x j)
+    let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := fun i f ↦ f (x i)
+    convert g.map_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) with j j j
+    · exact Function.apply_update c f i (f₁ + f₂) j
+    · exact Function.apply_update c f i f₁ j
+    · exact Function.apply_update c f i f₂ j
+  map_smul' := by
+    intro _ f i a f₀
+    ext g x
+    change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
+    let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := fun i f ↦ f (x i)
+    convert g.map_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) with j j j
+    · exact Function.apply_update c f i (a • f₀) j
+    · exact Function.apply_update c f i f₀ j
+
+/--
+Let `M₁ᵢ` and `M₁ᵢ'` be two families of `R`-modules and `M₂` an `R`-module.
+Let us denote `Π i, M₁ᵢ` and `Π i, M₁ᵢ'` by `M` and `M'` respectively.
+If `g` is a multilinear map `M' → M₂`, then `g` can be reinterpreted as a multilinear
+map from `Π i, M₁ᵢ ⟶ M₁ᵢ'` to `M ⟶ M₂` via `(fᵢ) ↦ v ↦ g(fᵢ vᵢ)`.
+-/
+@[simps!] def piLinearMap :
+    MultilinearMap R M₁' M₂ →ₗ[R]
+    MultilinearMap R (fun i ↦ M₁ i →ₗ[R] M₁' i) (MultilinearMap R M₁ M₂) where
+  toFun g := (LinearMap.applyₗ g).compMultilinearMap compLinearMapMultilinear
+  map_add' := by aesop
+  map_smul' := by aesop
+
+end
 
 /-- If one multiplies by `c i` the coordinates in a finset `s`, then the image under a multilinear
 map is multiplied by `∏ i in s, c i`. This is mainly an auxiliary statement to prove the result when
@@ -1116,7 +1246,7 @@ instance : AddCommGroup (MultilinearMap R M₁ M₂) :=
       { toFun := fun m => n • f m
         map_add' := fun m i x y => by simp [smul_add]
         map_smul' := fun l i x d => by simp [← smul_comm x n (_ : M₂)] }
-    -- porting note: changed from `AddCommGroup` to `SubNegMonoid`
+    -- Porting note: changed from `AddCommGroup` to `SubNegMonoid`
     zsmul_zero' := fun a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_zero' _
     zsmul_succ' := fun z a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_succ' _ _
     zsmul_neg' := fun z a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_neg' _ _ }
@@ -1140,6 +1270,70 @@ theorem map_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) := by
   rw [sub_eq_add_neg, sub_eq_add_neg, MultilinearMap.map_add, map_neg]
 #align multilinear_map.map_sub MultilinearMap.map_sub
+
+lemma map_update [DecidableEq ι] (x : (i : ι) → M₁ i) (i : ι) (v : M₁ i)  :
+    f (update x i v) = f x - f (update x i (x i - v)) := by
+  rw [map_sub, update_eq_self, sub_sub_cancel]
+
+open Finset in
+lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Finset ι) :
+    f a - f (s.piecewise b a) =
+    ∑ i in s, f (fun j ↦ if j ∈ s → j < i then a j else if i = j then a j - b j else b j) := by
+  refine s.induction_on_min ?_ fun k s hk ih ↦ ?_
+  · rw [Finset.piecewise_empty, sum_empty, sub_self]
+  rw [Finset.piecewise_insert, map_update, ← sub_add, ih,
+      add_comm, sum_insert (lt_irrefl _ <| hk k ·)]
+  simp_rw [s.mem_insert]
+  congr 1
+  · congr; ext i; split_ifs with h₁ h₂
+    · rw [update_noteq, Finset.piecewise_eq_of_not_mem]
+      · exact fun h ↦ (hk i h).not_lt (h₁ <| .inr h)
+      · exact fun h ↦ (h₁ <| .inl h).ne h
+    · cases h₂
+      rw [update_same, s.piecewise_eq_of_not_mem _ _ (lt_irrefl _ <| hk k ·)]
+    · push_neg at h₁
+      rw [update_noteq (Ne.symm h₂), s.piecewise_eq_of_mem _ _ (h₁.1.resolve_left <| Ne.symm h₂)]
+  · apply sum_congr rfl; intro i hi; congr; ext j; congr 1; apply propext
+    simp_rw [imp_iff_not_or, not_or]; apply or_congr_left'
+    intro h; rw [and_iff_right]; rintro rfl; exact h (hk i hi)
+
+/-- This calculates the differences between the values of a multilinear map at
+two arguments that differ on a finset `s` of `ι`. It requires a
+linear order on `ι` in order to express the result.-/
+lemma map_piecewise_sub_map_piecewise [LinearOrder ι] (a b v : (i : ι) → M₁ i) (s : Finset ι) :
+    f (s.piecewise a v) - f (s.piecewise b v) = ∑ i in s, f
+      fun j ↦ if j ∈ s then if j < i then a j else if j = i then a j - b j else b j else v j := by
+  rw [← s.piecewise_idem_right b a, map_sub_map_piecewise]
+  refine Finset.sum_congr rfl fun i hi ↦ congr_arg f <| funext fun j ↦ ?_
+  by_cases hjs : j ∈ s
+  · rw [if_pos hjs]; by_cases hji : j < i
+    · rw [if_pos fun _ ↦ hji, if_pos hji, s.piecewise_eq_of_mem _ _ hjs]
+    rw [if_neg (not_imp.mpr ⟨hjs, hji⟩), if_neg hji]
+    obtain rfl | hij := eq_or_ne i j
+    · rw [if_pos rfl, if_pos rfl, s.piecewise_eq_of_mem _ _ hi]
+    · rw [if_neg hij, if_neg hij.symm]
+  · rw [if_neg hjs, if_pos fun h ↦ (hjs h).elim, s.piecewise_eq_of_not_mem _ _ hjs]
+
+open Finset in
+lemma map_add_eq_map_add_linearDeriv_add [DecidableEq ι] [Fintype ι] (x h : (i : ι) → M₁ i) :
+    f (x + h) = f x + f.linearDeriv x h +
+      ∑ s in univ.powerset.filter (2 ≤ ·.card), f (s.piecewise h x) := by
+  rw [add_comm, map_add_univ, ← Finset.powerset_univ,
+      ← sum_filter_add_sum_filter_not _ (2 ≤ ·.card)]
+  simp_rw [not_le, Nat.lt_succ, le_iff_lt_or_eq (b := 1), Nat.lt_one_iff, filter_or,
+    ← powersetCard_eq_filter, sum_union (univ.pairwise_disjoint_powersetCard zero_ne_one),
+    powersetCard_zero, powersetCard_one, sum_singleton, Finset.piecewise_empty, sum_map,
+    Function.Embedding.coeFn_mk, Finset.piecewise_singleton, linearDeriv_apply, add_comm]
+
+open Finset in
+/-- This expresses the difference between the values of a multilinear map
+at two points "close to `x`" in terms of the "derivative" of the multilinear map at `x`
+and of "second-order" terms.-/
+lemma map_add_sub_map_add_sub_linearDeriv [DecidableEq ι] [Fintype ι] (x h h' : (i : ι) → M₁ i) :
+    f (x + h) - f (x + h') - f.linearDeriv x (h - h') =
+    ∑ s in univ.powerset.filter (2 ≤ ·.card), (f (s.piecewise h x) - f (s.piecewise h' x)) := by
+  simp_rw [map_add_eq_map_add_linearDeriv_add, add_assoc, add_sub_add_comm, sub_self, zero_add,
+    ← LinearMap.map_sub, add_sub_cancel_left, sum_sub_distrib]
 
 end AddCommGroup
 
@@ -1200,7 +1394,7 @@ def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => 
     MultilinearMap R M M₂ where
   toFun m := f (m 0) (tail m)
   map_add' := @fun dec m i x y => by
-    -- porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
+    -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     by_cases h : i = 0
     · subst i
@@ -1211,7 +1405,7 @@ def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => 
       intro x y
       rw [tail_update_succ, MultilinearMap.map_add, tail_update_succ, tail_update_succ]
   map_smul' := @fun dec m i c x => by
-    -- porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
+    -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     by_cases h : i = 0
     · subst i
@@ -1236,11 +1430,11 @@ def MultilinearMap.curryLeft (f : MultilinearMap R M M₂) :
   toFun x :=
     { toFun := fun m => f (cons x m)
       map_add' := @fun dec m i y y' => by
-        -- porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
+        -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
         rw [Subsingleton.elim dec (by clear dec; infer_instance)]
         simp
       map_smul' := @fun dec m i y c => by
-        -- porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
+        -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
         rw [Subsingleton.elim dec (by clear dec; infer_instance)]
         simp }
   map_add' x y := by
@@ -1276,7 +1470,7 @@ variable (R M M₂)
 
 /-- The space of multilinear maps on `∀ (i : Fin (n+1)), M i` is canonically isomorphic to
 the space of linear maps from `M 0` to the space of multilinear maps on
-`∀ (i : Fin n), M i.succ `, by separating the first variable. We register this isomorphism as a
+`∀ (i : Fin n), M i.succ`, by separating the first variable. We register this isomorphism as a
 linear isomorphism in `multilinearCurryLeftEquiv R M M₂`.
 
 The direct and inverse maps are given by `f.uncurryLeft` and `f.curryLeft`. Use these
@@ -1308,7 +1502,7 @@ def MultilinearMap.uncurryRight
     MultilinearMap R M M₂ where
   toFun m := f (init m) (m (last n))
   map_add' {dec} m i x y := by
-    -- porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
+    -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     by_cases h : i.val < n
     · have : last n ≠ i := Ne.symm (ne_of_lt h)
@@ -1323,7 +1517,7 @@ def MultilinearMap.uncurryRight
       intro x y
       simp_rw [init_update_last, update_same, LinearMap.map_add]
   map_smul' {dec} m i c x := by
-    -- porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
+    -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     by_cases h : i.val < n
     · have : last n ≠ i := Ne.symm (ne_of_lt h)

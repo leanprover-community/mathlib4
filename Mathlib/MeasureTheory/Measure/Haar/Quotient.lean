@@ -3,6 +3,7 @@ Copyright (c) 2022 Alex Kontorovich and Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Group.FundamentalDomain
 import Mathlib.Algebra.Group.Opposite
@@ -17,12 +18,12 @@ subgroup of a group `G` on `G` itself.
 
 ## Main results
 
-* `MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map `: given a subgroup `Γ` of a
+* `MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map`: given a subgroup `Γ` of a
   topological group `G`, the pushforward to the coset space `G ⧸ Γ` of the restriction of a both
   left- and right-invariant measure on `G` to a fundamental domain `𝓕` is a `G`-invariant measure
   on `G ⧸ Γ`.
 
-* `MeasureTheory.IsFundamentalDomain.isMulLeftInvariant_map `: given a normal subgroup `Γ` of
+* `MeasureTheory.IsFundamentalDomain.isMulLeftInvariant_map`: given a normal subgroup `Γ` of
   a topological group `G`, the pushforward to the quotient group `G ⧸ Γ` of the restriction of
   a both left- and right-invariant measure on `G` to a fundamental domain `𝓕` is a left-invariant
   measure on `G ⧸ Γ`.
@@ -49,8 +50,7 @@ instance QuotientGroup.measurableSMul [MeasurableSpace (G ⧸ Γ)] [BorelSpace (
 #align quotient_group.has_measurable_smul QuotientGroup.measurableSMul
 #align quotient_add_group.has_measurable_vadd QuotientAddGroup.measurableVAdd
 
-variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕 μ)
-
+variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 μ)
 variable [Countable Γ] [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)]
 
 /-- The pushforward to the coset space `G ⧸ Γ` of the restriction of a both left- and right-
@@ -71,7 +71,7 @@ theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map [μ.IsMulLeft
       Measure.restrict_apply₀' 𝓕meas, Measure.restrict_apply₀' 𝓕meas]
     set π_preA := π ⁻¹' A
     have : π ⁻¹' ((fun x : G ⧸ Γ => g • x) ⁻¹' A) = (g * ·) ⁻¹' π_preA := by
-      ext1; simp
+      ext1; simp [π_preA, π]
     rw [this]
     have : μ ((g * ·) ⁻¹' π_preA ∩ 𝓕) = μ (π_preA ∩ (g⁻¹ * ·) ⁻¹' 𝓕) := by
       trans μ ((g * ·) ⁻¹' (π_preA ∩ (g⁻¹ * ·) ⁻¹' 𝓕))
@@ -80,13 +80,13 @@ theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map [μ.IsMulLeft
         simp [Set.preimage]
       rw [measure_preimage_mul]
     rw [this]
-    have h𝓕_translate_fundom : IsFundamentalDomain (Subgroup.opposite Γ) (g • 𝓕) μ :=
+    have h𝓕_translate_fundom : IsFundamentalDomain Γ.op (g • 𝓕) μ :=
       h𝓕.smul_of_comm g
     rw [h𝓕.measure_set_eq h𝓕_translate_fundom meas_πA, ← preimage_smul_inv]; rfl
     rintro ⟨γ, γ_in_Γ⟩
     ext x
-    have : π (x * MulOpposite.unop γ) = π x := by simpa [QuotientGroup.eq'] using γ_in_Γ
-    simp only [(· • ·), ← this, mem_preimage]
+    have : π (x * MulOpposite.unop γ) = π x := by simpa [π, QuotientGroup.eq'] using γ_in_Γ
+    simp only [π_preA, (· • ·), ← this, mem_preimage]
     rfl
 #align measure_theory.is_fundamental_domain.smul_invariant_measure_map MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map
 #align measure_theory.is_add_fundamental_domain.vadd_invariant_measure_map MeasureTheory.IsAddFundamentalDomain.vaddInvariantMeasure_map
@@ -217,9 +217,9 @@ lemma QuotientGroup.integral_eq_integral_automorphize {E : Type*} [NormedAddComm
     [NormedSpace ℝ E] [μ.IsMulRightInvariant] {f : G → E}
     (hf₁ : Integrable f μ) (hf₂ : AEStronglyMeasurable (automorphize f) μ_𝓕) :
     ∫ x : G, f x ∂μ = ∫ x : G ⧸ Γ, automorphize f x ∂μ_𝓕 := by
-  calc ∫ x : G, f x ∂μ = ∑' γ : (Subgroup.opposite Γ), ∫ x in 𝓕, f (γ • x) ∂μ :=
+  calc ∫ x : G, f x ∂μ = ∑' γ : Γ.op, ∫ x in 𝓕, f (γ • x) ∂μ :=
     h𝓕.integral_eq_tsum'' f hf₁
-    _ = ∫ x in 𝓕, ∑' γ : (Subgroup.opposite Γ), f (γ • x) ∂μ := ?_
+    _ = ∫ x in 𝓕, ∑' γ : Γ.op, f (γ • x) ∂μ := ?_
     _ = ∫ x : G ⧸ Γ, automorphize f x ∂μ_𝓕 :=
       (integral_map continuous_quotient_mk'.aemeasurable hf₂).symm
   rw [integral_tsum]
@@ -246,17 +246,16 @@ lemma QuotientGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [Norme
   calc ∫ (x : G), g (π x) * (f x) ∂μ =
         ∫ (x : G ⧸ Γ), QuotientGroup.automorphize ((g ∘ π) * f) x ∂μ_𝓕 := ?_
     _ = ∫ (x : G ⧸ Γ), g x * (QuotientGroup.automorphize f x) ∂μ_𝓕 := by simp [H₀]
-  have H₁ : Integrable ((g ∘ π) * f) μ
-  · have : AEStronglyMeasurable (fun (x : G) ↦ g (x : (G ⧸ Γ))) μ
-    · refine (AEStronglyMeasurable.mono' hg ?_).comp_measurable meas_π
-      exact h𝓕.absolutelyContinuous_map
+  have H₁ : Integrable ((g ∘ π) * f) μ := by
+    have : AEStronglyMeasurable (fun (x : G) ↦ g (x : (G ⧸ Γ))) μ :=
+      (hg.mono_ac h𝓕.absolutelyContinuous_map).comp_measurable meas_π
     refine Integrable.essSup_smul f_ℒ_1 this ?_
     have hg' : AEStronglyMeasurable (fun x ↦ (‖g x‖₊ : ℝ≥0∞)) μ_𝓕 :=
       (ENNReal.continuous_coe.comp continuous_nnnorm).comp_aestronglyMeasurable hg
     rw [← essSup_comp_quotientGroup_mk h𝓕 hg'.aemeasurable]
     exact g_ℒ_infinity
-  have H₂ : AEStronglyMeasurable (QuotientGroup.automorphize ((g ∘ π) * f)) μ_𝓕
-  · simp_rw [H₀]
+  have H₂ : AEStronglyMeasurable (QuotientGroup.automorphize ((g ∘ π) * f)) μ_𝓕 := by
+    simp_rw [H₀]
     exact hg.mul F_ae_measurable
   apply QuotientGroup.integral_eq_integral_automorphize h𝓕 H₁ H₂
 
@@ -282,7 +281,7 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
     (f_ℒ_1 : Integrable f μ') {g : G' ⧸ Γ' → K} (hg : AEStronglyMeasurable g μ_𝓕)
     (g_ℒ_infinity : essSup (fun x ↦ (‖g x‖₊ : ℝ≥0∞)) μ_𝓕 ≠ ∞)
     (F_ae_measurable : AEStronglyMeasurable (QuotientAddGroup.automorphize f) μ_𝓕)
-    (h𝓕 : IsAddFundamentalDomain (AddSubgroup.opposite Γ') 𝓕' μ') :
+    (h𝓕 : IsAddFundamentalDomain Γ'.op 𝓕' μ') :
     ∫ x : G', g (x : G' ⧸ Γ') * (f x) ∂μ'
       = ∫ x : G' ⧸ Γ', g x * (QuotientAddGroup.automorphize f x) ∂μ_𝓕 := by
   let π : G' → G' ⧸ Γ' := QuotientAddGroup.mk
@@ -292,17 +291,16 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
   calc ∫ (x : G'), g (π x) * f x ∂μ' =
     ∫ (x : G' ⧸ Γ'), QuotientAddGroup.automorphize ((g ∘ π) * f) x ∂μ_𝓕 := ?_
     _ = ∫ (x : G' ⧸ Γ'), g x * (QuotientAddGroup.automorphize f x) ∂μ_𝓕 := by simp [H₀]
-  have H₁ : Integrable ((g ∘ π) * f) μ'
-  · have : AEStronglyMeasurable (fun (x : G') ↦ g (x : (G' ⧸ Γ'))) μ'
-    · refine (AEStronglyMeasurable.mono' hg ?_).comp_measurable meas_π
-      exact h𝓕.absolutelyContinuous_map
+  have H₁ : Integrable ((g ∘ π) * f) μ' := by
+    have : AEStronglyMeasurable (fun (x : G') ↦ g (x : (G' ⧸ Γ'))) μ' :=
+      (hg.mono_ac h𝓕.absolutelyContinuous_map).comp_measurable meas_π
     refine Integrable.essSup_smul f_ℒ_1 this ?_
     have hg' : AEStronglyMeasurable (fun x ↦ (‖g x‖₊ : ℝ≥0∞)) μ_𝓕 :=
       (ENNReal.continuous_coe.comp continuous_nnnorm).comp_aestronglyMeasurable hg
     rw [← essSup_comp_quotientAddGroup_mk h𝓕 hg'.aemeasurable]
     exact g_ℒ_infinity
-  have H₂ : AEStronglyMeasurable (QuotientAddGroup.automorphize ((g ∘ π) * f)) μ_𝓕
-  · simp_rw [H₀]
+  have H₂ : AEStronglyMeasurable (QuotientAddGroup.automorphize ((g ∘ π) * f)) μ_𝓕 := by
+    simp_rw [H₀]
     exact hg.mul F_ae_measurable
   apply QuotientAddGroup.integral_eq_integral_automorphize h𝓕 H₁ H₂
 

@@ -1,5 +1,4 @@
 import Mathlib.Tactic.CasesM
-import Std.Tactic.GuardExpr
 
 set_option autoImplicit true
 

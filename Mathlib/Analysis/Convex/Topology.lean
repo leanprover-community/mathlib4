@@ -5,7 +5,7 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Strict
-import Mathlib.Topology.PathConnected
+import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Module.Basic
 
@@ -68,6 +68,20 @@ theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
 theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=
   Metric.isCompact_iff_isClosed_bounded.2 ⟨isClosed_stdSimplex ι, bounded_stdSimplex ι⟩
 #align is_compact_std_simplex isCompact_stdSimplex
+
+instance stdSimplex.instCompactSpace_coe : CompactSpace ↥(stdSimplex ℝ ι) :=
+  isCompact_iff_compactSpace.mp <| isCompact_stdSimplex _
+
+/-- The standard one-dimensional simplex in `ℝ² = Fin 2 → ℝ`
+is homeomorphic to the unit interval. -/
+@[simps! (config := .asFn)]
+def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterval where
+  toEquiv := stdSimplexEquivIcc ℝ
+  continuous_toFun := .subtype_mk ((continuous_apply 0).comp continuous_subtype_val) _
+  continuous_invFun := by
+    apply Continuous.subtype_mk
+    exact (continuous_pi <| Fin.forall_fin_two.2
+      ⟨continuous_subtype_val, continuous_const.sub continuous_subtype_val⟩)
 
 end stdSimplex
 
@@ -203,7 +217,7 @@ theorem Convex.add_smul_sub_mem_interior' {s : Set E} (hs : Convex 𝕜 s) {x y 
     x + t • (y - x) ∈ interior s := by
   simpa only [sub_smul, smul_sub, one_smul, add_sub, add_comm] using
     hs.combo_interior_closure_mem_interior hy hx ht.1 (sub_nonneg.mpr ht.2)
-      (add_sub_cancel'_right _ _)
+      (add_sub_cancel _ _)
 #align convex.add_smul_sub_mem_interior' Convex.add_smul_sub_mem_interior'
 
 /-- If `x ∈ s` and `y ∈ interior s`, then the segment `(x, y]` is included in `interior s`. -/
@@ -215,7 +229,7 @@ theorem Convex.add_smul_sub_mem_interior {s : Set E} (hs : Convex 𝕜 s) {x y :
 /-- If `x ∈ closure s` and `x + y ∈ interior s`, then `x + t y ∈ interior s` for `t ∈ (0, 1]`. -/
 theorem Convex.add_smul_mem_interior' {s : Set E} (hs : Convex 𝕜 s) {x y : E} (hx : x ∈ closure s)
     (hy : x + y ∈ interior s) {t : 𝕜} (ht : t ∈ Ioc (0 : 𝕜) 1) : x + t • y ∈ interior s := by
-  simpa only [add_sub_cancel'] using hs.add_smul_sub_mem_interior' hx hy ht
+  simpa only [add_sub_cancel_left] using hs.add_smul_sub_mem_interior' hx hy ht
 #align convex.add_smul_mem_interior' Convex.add_smul_mem_interior'
 
 /-- If `x ∈ s` and `x + y ∈ interior s`, then `x + t y ∈ interior s` for `t ∈ (0, 1]`. -/
@@ -333,7 +347,7 @@ theorem Convex.subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Conve
   subset_closure.trans <| hs.closure_subset_interior_image_homothety_of_one_lt hx t ht
 #align convex.subset_interior_image_homothety_of_one_lt Convex.subset_interior_image_homothety_of_one_lt
 
-theorem JoinedIn_of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
+theorem JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
     {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s) : JoinedIn s x y := by
   have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by continuity
@@ -346,7 +360,7 @@ protected theorem Convex.isPathConnected {s : Set E} (hconv : Convex ℝ s) (hne
     IsPathConnected s := by
   refine' isPathConnected_iff.mpr ⟨hne, _⟩
   intro x x_in y y_in
-  exact JoinedIn_of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
+  exact JoinedIn.of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
 #align convex.is_path_connected Convex.isPathConnected
 
 /-- A nonempty convex set is connected. -/

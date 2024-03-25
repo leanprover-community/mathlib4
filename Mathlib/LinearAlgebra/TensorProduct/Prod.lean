@@ -3,7 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.Prod
 
 /-!
@@ -19,6 +19,8 @@ This file shows that taking `TensorProduct`s commutes with taking `Prod`s in bot
 
 universe uR uM₁ uM₂ uM₃
 variable (R : Type uR) (M₁ : Type uM₁) (M₂ : Type uM₂) (M₃ : Type uM₃)
+
+suppress_compilation
 
 namespace TensorProduct
 

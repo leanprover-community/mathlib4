@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basis
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import ring_theory.matrix_algebra from "leanprover-community/mathlib"@"6c351a8fb9b06e5a542fdf427bfb9f46724f9453"
 
@@ -12,6 +12,7 @@ import Mathlib.RingTheory.TensorProduct
 We show `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
 -/
 
+suppress_compilation
 
 universe u v w
 
@@ -26,11 +27,8 @@ open Algebra.TensorProduct
 open Matrix
 
 variable {R : Type u} [CommSemiring R]
-
 variable {A : Type v} [Semiring A] [Algebra R A]
-
 variable {n : Type w}
-
 variable (R A n)
 
 namespace MatrixEquivTensor
@@ -71,16 +69,13 @@ def toFunAlgHom : A ⊗[R] Matrix n n R →ₐ[R] Matrix n n A :=
       simp_rw [Matrix.mul_apply, Matrix.smul_apply, Matrix.map_apply, smul_eq_mul, Finset.mul_sum,
         _root_.mul_assoc, Algebra.left_comm])
     (by
-      intros
       simp_rw [toFunLinear, lift.tmul, toFunBilinear_apply,
-        Matrix.map_one (algebraMap R A) (map_zero _) (map_one _), algebraMap_smul,
-        Algebra.algebraMap_eq_smul_one])
+        Matrix.map_one (algebraMap R A) (map_zero _) (map_one _), one_smul])
 #align matrix_equiv_tensor.to_fun_alg_hom MatrixEquivTensor.toFunAlgHom
 
 @[simp]
 theorem toFunAlgHom_apply (a : A) (m : Matrix n n R) :
-    toFunAlgHom R A n (a ⊗ₜ m) = a • m.map (algebraMap R A) := by
-  simp [toFunAlgHom, algHomOfLinearMapTensorProduct, toFunLinear]
+    toFunAlgHom R A n (a ⊗ₜ m) = a • m.map (algebraMap R A) := rfl
 #align matrix_equiv_tensor.to_fun_alg_hom_apply MatrixEquivTensor.toFunAlgHom_apply
 
 /-- (Implementation detail.)
@@ -164,7 +159,7 @@ theorem matrixEquivTensor_apply (M : Matrix n n A) :
   rfl
 #align matrix_equiv_tensor_apply matrixEquivTensor_apply
 
--- Porting note : short circuiting simplifier from simplifying left hand side
+-- Porting note: short circuiting simplifier from simplifying left hand side
 @[simp (high)]
 theorem matrixEquivTensor_apply_std_basis (i j : n) (x : A) :
     matrixEquivTensor R A n (stdBasisMatrix i j x) = x ⊗ₜ stdBasisMatrix i j 1 := by
@@ -174,8 +169,6 @@ theorem matrixEquivTensor_apply_std_basis (i j : n) (x : A) :
 
 @[simp]
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
-    (matrixEquivTensor R A n).symm (a ⊗ₜ M) = M.map fun x => a * algebraMap R A x := by
-  simp [matrixEquivTensor, MatrixEquivTensor.toFunAlgHom, algHomOfLinearMapTensorProduct,
-    MatrixEquivTensor.toFunLinear]
+    (matrixEquivTensor R A n).symm (a ⊗ₜ M) = M.map fun x => a * algebraMap R A x :=
   rfl
 #align matrix_equiv_tensor_apply_symm matrixEquivTensor_apply_symm

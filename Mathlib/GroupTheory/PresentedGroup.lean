@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Michael Howes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Howes
+Authors: Michael Howes, Newell Jensen
 -/
 import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.QuotientGroup
@@ -47,6 +47,16 @@ def of {rels : Set (FreeGroup α)} (x : α) : PresentedGroup rels :=
   QuotientGroup.mk (FreeGroup.of x)
 #align presented_group.of PresentedGroup.of
 
+/-- The generators of a presented group generate the presented group. That is, the subgroup closure
+of the set of generators equals `⊤`. -/
+@[simp]
+theorem closure_range_of (rels : Set (FreeGroup α)) :
+    Subgroup.closure (Set.range (PresentedGroup.of : α → PresentedGroup rels)) = ⊤ := by
+  have : (PresentedGroup.of : α → PresentedGroup rels) = QuotientGroup.mk' _ ∘ FreeGroup.of := rfl
+  rw [this, Set.range_comp, ← MonoidHom.map_closure (QuotientGroup.mk' _),
+    FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
+  exact MonoidHom.range_top_of_surjective _ (QuotientGroup.mk'_surjective _)
+
 section ToGroup
 
 /-
@@ -87,6 +97,30 @@ theorem toGroup.unique (g : PresentedGroup rels →* G)
   refine' QuotientGroup.induction_on x _
   exact fun _ ↦ FreeGroup.lift.unique (g.comp (QuotientGroup.mk' _)) hg
 #align presented_group.to_group.unique PresentedGroup.toGroup.unique
+
+@[ext]
+theorem ext {φ ψ : PresentedGroup rels →* G} (hx : ∀ (x : α), φ (.of x) = ψ (.of x)) : φ = ψ := by
+  unfold PresentedGroup
+  ext
+  apply hx
+
+variable {β : Type*}
+
+/-- Presented groups of isomorphic types are isomorphic. -/
+def equivPresentedGroup (rels : Set (FreeGroup α)) (e : α ≃ β) :
+    PresentedGroup rels ≃* PresentedGroup (FreeGroup.freeGroupCongr e '' rels) :=
+  QuotientGroup.congr (Subgroup.normalClosure rels)
+    (Subgroup.normalClosure ((FreeGroup.freeGroupCongr e) '' rels)) (FreeGroup.freeGroupCongr e)
+    (Subgroup.map_normalClosure rels (FreeGroup.freeGroupCongr e).toMonoidHom
+      (FreeGroup.freeGroupCongr e).surjective)
+
+theorem equivPresentedGroup_apply_of (x : α) (rels : Set (FreeGroup α)) (e : α ≃ β) :
+    equivPresentedGroup rels e (PresentedGroup.of x) =
+      PresentedGroup.of (rels := FreeGroup.freeGroupCongr e '' rels) (e x) := rfl
+
+theorem equivPresentedGroup_symm_apply_of (x : β) (rels : Set (FreeGroup α)) (e : α ≃ β) :
+    (equivPresentedGroup rels e).symm (PresentedGroup.of x) =
+      PresentedGroup.of (rels := rels) (e.symm x) := rfl
 
 end ToGroup
 

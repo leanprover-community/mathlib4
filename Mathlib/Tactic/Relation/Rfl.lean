@@ -3,79 +3,44 @@ Copyright (c) 2022 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
-import Lean
-import Mathlib.Lean.Meta
+import Lean.Meta.Tactic.Subst
+import Std.Tactic.Relation.Rfl
 
 /-!
-# `rfl` tactic extension for reflexive relations
+# `Lean.MVarId.liftReflToEq`
 
-This extends the `rfl` tactic so that it works on any reflexive relation,
-provided the reflexivity lemma has been marked as `@[refl]`.
+Convert a goal of the form `x ~ y` into the form `x = y`, where `~` is a reflexive
+relation, that is, a relation which has a reflexive lemma tagged with the attribute `[refl]`.
+If this can't be done, returns the original `MVarId`.
 -/
 
 namespace Mathlib.Tactic
 
-open Lean Meta
-
-/-- Environment extensions for `refl` lemmas -/
-initialize reflExt :
-    SimpleScopedEnvExtension (Name × Array (DiscrTree.Key true)) (DiscrTree Name true) ←
-  registerSimpleScopedEnvExtension {
-    addEntry := fun dt (n, ks) ↦ dt.insertCore ks n
-    initial := {}
-  }
-
-initialize registerBuiltinAttribute {
-  name := `refl
-  descr := "reflexivity relation"
-  add := fun decl _ kind ↦ MetaM.run' do
-    let declTy := (← getConstInfo decl).type
-    let (_, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
-    let fail := throwError
-      "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy}"
-    let .app (.app rel lhs) rhs := targetTy | fail
-    unless ← withNewMCtxDepth <| isDefEq lhs rhs do fail
-    let key ← DiscrTree.mkPath rel
-    reflExt.add (decl, key) kind
-}
-
-open Elab Tactic
-
-/-- Closes the goal if the target has the form `x ~ x`, where `~` is a reflexive
-relation, that is, a relation which has a reflexive lemma tagged with the attribute `[refl]`.
-Otherwise throws an error.
-
-See also `Lean.MVarId.refl`, which is for `x = x` specifically.
-
-This is the `MetaM` implementation of the `rfl` tactic.
--/
-def _root_.Lean.MVarId.rfl (goal : MVarId) : MetaM Unit := do
-  let .app (.app rel _) _ ← withReducible goal.getType'
-    | throwError "reflexivity lemmas only apply to binary relations, not
-      {indentExpr (← goal.getType)}"
-  let s ← saveState
-  let mut ex? := none
-  for lem in ← (reflExt.getState (← getEnv)).getMatch rel do
-    try
-      let gs ← goal.apply (← mkConstWithFreshMVarLevels lem)
-      if gs.isEmpty then return () else
-        logError <| MessageData.tagged `Tactic.unsolvedGoals <| m!"unsolved goals\n
-          {goalsToMessageData gs}"
-    catch e =>
-      ex? := ex? <|> (some (← saveState, e)) -- stash the first failure of `apply`
-    s.restore
-  if let some (sErr, e) := ex? then
-    sErr.restore
-    throw e
-  else
-    throwError "rfl failed, no lemma with @[refl] applies"
+open Lean Meta Elab Tactic Std.Tactic
 
 /--
 This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
 relation, that is, a relation which has a reflexive lemma tagged with the attribute [refl].
 -/
-elab_rules : tactic
-| `(tactic| rfl) => withMainContext do liftMetaFinishingTactic (·.rfl)
+def rflTac : TacticM Unit :=
+  withMainContext do liftMetaFinishingTactic (·.applyRfl)
+
+/-- If `e` is the form `@R .. x y`, where `R` is a reflexive
+relation, return `some (R, x, y)`.
+As a special case, if `e` is `@HEq α a β b`, return ``some (`HEq, a, b)``. -/
+def _root_.Lean.Expr.relSidesIfRefl? (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
+  if let some (_, lhs, rhs) := e.eq? then
+    return (``Eq, lhs, rhs)
+  if let some (lhs, rhs) := e.iff? then
+    return (``Iff, lhs, rhs)
+  if let some (_, lhs, _, rhs) := e.heq? then
+    return (``HEq, lhs, rhs)
+  if let .app (.app rel lhs) rhs := e then
+    unless (← (reflExt.getState (← getEnv)).getMatch rel reflExt.config).isEmpty do
+      match rel.getAppFn.constName? with
+      | some n => return some (n, lhs, rhs)
+      | none => return none
+  return none
 
 /-- Helper theorem for `Lean.MVar.liftReflToEq`. -/
 private theorem rel_of_eq_and_refl {α : Sort _} {R : α → α → Prop}
@@ -93,7 +58,7 @@ def _root_.Lean.MVarId.liftReflToEq (mvarId : MVarId) : MetaM MVarId := do
   if rel.isAppOf `Eq then
     -- No need to lift Eq to Eq
     return mvarId
-  for lem in ← (reflExt.getState (← getEnv)).getMatch rel do
+  for lem in ← (Std.Tactic.reflExt.getState (← getEnv)).getMatch rel Std.Tactic.reflExt.config do
     let res ← observing? do
       -- First create an equality relating the LHS and RHS
       -- and reduce the goal to proving that LHS is related to LHS.

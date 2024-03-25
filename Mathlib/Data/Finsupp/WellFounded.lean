@@ -53,33 +53,33 @@ theorem Lex.wellFounded' [IsTrichotomous α r] (hr : WellFounded (Function.swap 
 #align finsupp.lex.well_founded' Finsupp.Lex.wellFounded'
 
 instance Lex.wellFoundedLT {α N} [LT α] [IsTrichotomous α (· < ·)] [hα : WellFoundedGT α]
-    [CanonicallyOrderedAddMonoid N] [hN : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
+    [CanonicallyOrderedAddCommMonoid N] [hN : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
   ⟨Lex.wellFounded' (fun n => (zero_le n).not_lt) hN.wf hα.wf⟩
 #align finsupp.lex.well_founded_lt Finsupp.Lex.wellFoundedLT
 
 variable (r)
 
-theorem Lex.wellFounded_of_finite [IsStrictTotalOrder α r] [Finite α] [Zero N]
+theorem Lex.wellFounded_of_finite [IsStrictTotalOrder α r] [Finite α]
     (hs : WellFounded s) : WellFounded (Finsupp.Lex r s) :=
   InvImage.wf (@equivFunOnFinite α N _ _) (Pi.Lex.wellFounded r fun _ => hs)
 #align finsupp.lex.well_founded_of_finite Finsupp.Lex.wellFounded_of_finite
 
-theorem Lex.wellFoundedLT_of_finite [LinearOrder α] [Finite α] [Zero N] [LT N]
+theorem Lex.wellFoundedLT_of_finite [LinearOrder α] [Finite α] [LT N]
     [hwf : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
   ⟨Finsupp.Lex.wellFounded_of_finite (· < ·) hwf.1⟩
 #align finsupp.lex.well_founded_lt_of_finite Finsupp.Lex.wellFoundedLT_of_finite
 
-protected theorem wellFoundedLT [Zero N] [Preorder N] [WellFoundedLT N] (hbot : ∀ n : N, ¬n < 0) :
+protected theorem wellFoundedLT [Preorder N] [WellFoundedLT N] (hbot : ∀ n : N, ¬n < 0) :
     WellFoundedLT (α →₀ N) :=
   ⟨InvImage.wf toDFinsupp (DFinsupp.wellFoundedLT fun _ a => hbot a).wf⟩
 #align finsupp.well_founded_lt Finsupp.wellFoundedLT
 
-instance wellFoundedLT' {N} [CanonicallyOrderedAddMonoid N] [WellFoundedLT N] :
+instance wellFoundedLT' {N} [CanonicallyOrderedAddCommMonoid N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
   Finsupp.wellFoundedLT fun a => (zero_le a).not_lt
 #align finsupp.well_founded_lt' Finsupp.wellFoundedLT'
 
-instance wellFoundedLT_of_finite [Finite α] [Zero N] [Preorder N] [WellFoundedLT N] :
+instance wellFoundedLT_of_finite [Finite α] [Preorder N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
   ⟨InvImage.wf equivFunOnFinite Function.wellFoundedLT.wf⟩
 #align finsupp.well_founded_lt_of_finite Finsupp.wellFoundedLT_of_finite

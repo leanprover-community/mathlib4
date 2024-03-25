@@ -49,6 +49,10 @@ theorem map_smul {X Y : C} (r : R) (f : X ⟶ Y) : F.map (r • f) = r • F.map
   Functor.Linear.map_smul _ _
 #align category_theory.functor.map_smul CategoryTheory.Functor.map_smul
 
+@[simp]
+theorem map_units_smul {X Y : C} (r : Rˣ) (f : X ⟶ Y) : F.map (r • f) = r • F.map f := by
+  apply map_smul
+
 instance : Linear R (𝟭 C) where
 
 instance {E : Type*} [Category E] [Preadditive E] [CategoryTheory.Linear R E] (G : D ⥤ E)

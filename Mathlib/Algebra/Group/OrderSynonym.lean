@@ -51,6 +51,15 @@ instance [h : Semigroup α] : Semigroup αᵒᵈ := h
 instance [h : CommSemigroup α] : CommSemigroup αᵒᵈ := h
 
 @[to_additive]
+instance [Mul α] [h : IsLeftCancelMul α] : IsLeftCancelMul αᵒᵈ := h
+
+@[to_additive]
+instance [Mul α] [h : IsRightCancelMul α] : IsRightCancelMul αᵒᵈ := h
+
+@[to_additive]
+instance [Mul α] [h : IsCancelMul α] : IsCancelMul αᵒᵈ := h
+
+@[to_additive]
 instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup αᵒᵈ := h
 
 @[to_additive]

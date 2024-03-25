@@ -45,7 +45,6 @@ open scoped BigOperators NNReal ENNReal
 open Set MeasureTheory Classical
 
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
-
 variable (f : ℝ → E) (s : Set ℝ) (l : ℝ≥0)
 
 /-- `f` has constant speed `l` on `s` if the variation of `f` on `s ∩ Icc x y` is equal to
@@ -155,11 +154,11 @@ theorem HasConstantSpeedOnWith.Icc_Icc {x y z : ℝ} (hfs : HasConstantSpeedOnWi
 #align has_constant_speed_on_with.Icc_Icc HasConstantSpeedOnWith.Icc_Icc
 
 theorem hasConstantSpeedOnWith_zero_iff :
-    HasConstantSpeedOnWith f s 0 ↔ ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s), edist (f x) (f y) = 0 := by
+    HasConstantSpeedOnWith f s 0 ↔ ∀ᵉ (x ∈ s) (y ∈ s), edist (f x) (f y) = 0 := by
   dsimp [HasConstantSpeedOnWith]
   simp only [zero_mul, ENNReal.ofReal_zero, ← eVariationOn.eq_zero_iff]
   constructor
-  · by_contra'
+  · by_contra!
     obtain ⟨h, hfs⟩ := this
     simp_rw [ne_eq, eVariationOn.eq_zero_iff] at hfs h
     push_neg at hfs
@@ -227,7 +226,7 @@ theorem unique_unit_speed_on_Icc_zero {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) 
   rw [← φst] at hf
   convert unique_unit_speed φm hfφ hf ⟨le_rfl, hs⟩ using 1
   have : φ 0 = 0 := by
-    have hm : 0 ∈ φ '' Icc 0 s := by simp only [mem_Icc, le_refl, ht, φst]
+    have hm : 0 ∈ φ '' Icc 0 s := by simp only [φst, ht, mem_Icc, le_refl, and_self]
     obtain ⟨x, xs, hx⟩ := hm
     apply le_antisymm ((φm ⟨le_rfl, hs⟩ xs xs.1).trans_eq hx) _
     have := φst ▸ mapsTo_image φ (Icc 0 s)

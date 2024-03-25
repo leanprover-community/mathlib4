@@ -27,10 +27,10 @@ open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor Cate
 
 variable {C : Type u} [Category.{v} C] [HasColimits C]
 
--- Porting note : no tidy tactic
+-- Porting note: no tidy tactic
 -- attribute [local tidy] tactic.auto_cases_opens
 -- this could be replaced by
--- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
 -- but it doesn't appear to be needed here.
 
 open TopCat.Presheaf
@@ -52,13 +52,20 @@ def stalkMap {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map AlgebraicGeometry.PresheafedSpace.stalkMap
 
-@[elementwise (attr := simp), reassoc (attr := simp)]
+@[elementwise, reassoc]
 theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Opens Y)
     (x : (Opens.map α.base).obj U) :
     Y.presheaf.germ ⟨α.base x.1, x.2⟩ ≫ stalkMap α ↑x = α.c.app (op U) ≫ X.presheaf.germ x := by
   rw [stalkMap, stalkFunctor_map_germ_assoc, stalkPushforward_germ]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map_germ AlgebraicGeometry.PresheafedSpace.stalkMap_germ
+
+@[simp, elementwise, reassoc]
+theorem stalkMap_germ' {X Y : PresheafedSpace.{_, _, v} C}
+    (α : X ⟶ Y) (U : Opens Y) (x : X) (hx : α.base x ∈ U) :
+    Y.presheaf.germ ⟨α.base x, hx⟩ ≫ stalkMap α x = α.c.app (op U) ≫
+      X.presheaf.germ (U := (Opens.map α.base).obj U) ⟨x, hx⟩ :=
+  PresheafedSpace.stalkMap_germ α U ⟨x, hx⟩
 
 section Restrict
 
@@ -75,7 +82,7 @@ def restrictStalkIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C) {f : U ⟶ (
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.restrict_stalk_iso AlgebraicGeometry.PresheafedSpace.restrictStalkIso
 
--- Porting note : removed `simp` attribute, for left hand side is not in simple normal form.
+-- Porting note (#11119): removed `simp` attribute, for left hand side is not in simple normal form.
 @[elementwise, reassoc]
 theorem restrictStalkIso_hom_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :
@@ -218,12 +225,12 @@ def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.stalk_iso AlgebraicGeometry.PresheafedSpace.stalkMap.stalkIso
 
-@[simp, reassoc, elementwise]
+@[reassoc, elementwise, simp, nolint simpNF] -- see std4#365 for the simpNF issue
 theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
     (f : X ⟶ Y) {x y : X} (h : x ⤳ y) :
     Y.presheaf.stalkSpecializes (f.base.map_specializes h) ≫ stalkMap f x =
       stalkMap f y ≫ X.presheaf.stalkSpecializes h := by
-  -- Porting note : the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
+  -- Porting note: the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
   -- I had to uglify this
   dsimp [stalkSpecializes, stalkMap, stalkFunctor, stalkPushforward]
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159

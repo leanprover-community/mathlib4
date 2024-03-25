@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 -/
 import Mathlib.Data.List.Basic
+import Mathlib.Order.MinMax
+import Mathlib.Order.WithBot
 
 #align_import data.list.min_max from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
 
@@ -41,7 +43,8 @@ def argAux (a : Option α) (b : α) : Option α :=
 @[simp]
 theorem foldl_argAux_eq_none : l.foldl (argAux r) o = none ↔ l = [] ∧ o = none :=
   List.reverseRecOn l (by simp) fun tl hd => by
-    simp [argAux]; cases foldl (argAux r) o tl <;> simp; try split_ifs <;> simp
+    simp only [foldl_append, foldl_cons, argAux, foldl_nil, append_eq_nil, and_false, false_and,
+      iff_false]; cases foldl (argAux r) o tl <;> simp; try split_ifs <;> simp
 #align list.foldl_arg_aux_eq_none List.foldl_argAux_eq_none
 
 private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (some a) l → m ∈ a :: l :=
@@ -213,13 +216,14 @@ theorem index_of_argmax :
       simp_all
     rw [h] at hm
     dsimp only at hm
+    simp only [cond_eq_if, beq_iff_eq]
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
     · cases not_le_of_lt ‹_› ‹_›
     · rw [if_pos rfl]
     · rw [if_neg, if_neg]
       exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
-      · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne'
-      · exact ne_of_apply_ne _ ‹f hd < f _›.ne'
+      · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne
+      · exact ne_of_apply_ne _ ‹f hd < f _›.ne
     · rw [if_pos rfl]
       exact Nat.zero_le _
 #align list.index_of_argmax List.index_of_argmax
@@ -345,7 +349,7 @@ variable [LinearOrder α] {l : List α} {a m : α}
 
 theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximum l) a := by
   simp only [maximum, argmax_concat, id]
-  cases h : argmax id l
+  cases argmax id l
   · exact (max_eq_right bot_le).symm
   · simp [WithBot.some_eq_coe, max_def_lt, WithBot.coe_lt_coe]
 #align list.maximum_concat List.maximum_concat
@@ -387,7 +391,7 @@ theorem maximum_le_of_forall_le {b : WithBot α} (h : ∀ a ∈ l, a ≤ b) : l.
     exact ⟨h a (by simp), ih fun a w => h a (mem_cons.mpr (Or.inr w))⟩
 
 theorem le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b ≤ l.minimum :=
-  maximum_le_of_forall_le (α:= αᵒᵈ) h
+  maximum_le_of_forall_le (α := αᵒᵈ) h
 
 theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
   rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]
@@ -449,9 +453,18 @@ theorem minimum_of_length_pos_le_iff (h : 0 < l.length) :
     minimum_of_length_pos h ≤ b ↔ l.minimum ≤ b :=
   le_maximum_of_length_pos_iff (α := αᵒᵈ) h
 
+theorem maximum_of_length_pos_mem (h : 0 < l.length) :
+    maximum_of_length_pos h ∈ l := by
+  apply maximum_mem
+  simp only [coe_maximum_of_length_pos]
+
+theorem minimum_of_length_pos_mem (h : 0 < l.length) :
+    minimum_of_length_pos h ∈ l :=
+  maximum_of_length_pos_mem (α := αᵒᵈ) h
+
 theorem le_maximum_of_length_pos_of_mem (h : a ∈ l) (w : 0 < l.length) :
     a ≤ l.maximum_of_length_pos w := by
-  simp [le_maximum_of_length_pos_iff]
+  simp only [le_maximum_of_length_pos_iff]
   exact le_maximum_of_mem' h
 
 theorem minimum_of_length_pos_le_of_mem (h : a ∈ l) (w : 0 < l.length) :

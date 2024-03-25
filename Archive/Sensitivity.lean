@@ -138,7 +138,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
     q ∈ p.adjacent ↔ π q ∈ (π p).adjacent := by
   constructor
   · rintro ⟨i, h_eq, h_uni⟩
-    have h_i : i ≠ 0 := fun h_i => absurd h₀ (by rwa [h_i] at h_eq )
+    have h_i : i ≠ 0 := fun h_i => absurd h₀ (by rwa [h_i] at h_eq)
     use i.pred h_i,
       show p (Fin.succ (Fin.pred i _)) ≠ q (Fin.succ (Fin.pred i _)) by rwa [Fin.succ_pred]
     intro y hy
@@ -183,11 +183,11 @@ variable (n : ℕ)
 /-! `V n` is a real vector space whose equality relation is computable. -/
 
 
-instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
+instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
-instance : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
+instance : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
-instance : Module ℝ (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
+instance : Module ℝ (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
 end V
 
@@ -216,6 +216,7 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   · rw [show p = q from Subsingleton.elim (α := Q 0) p q]
     dsimp [ε, e]
     simp
+    rfl
   · dsimp [ε, e]
     cases hp : p 0 <;> cases hq : q 0
     all_goals
@@ -238,7 +239,7 @@ theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
       first
       | rw [ε, show q 0 = true from rfl, Bool.cond_true] at h
       | rw [ε, show q 0 = false from rfl, Bool.cond_false] at h
-      rwa [show p = π q by ext; simp [Fin.succ_ne_zero, π]]
+      rwa [show p = π q by ext; simp [q, Fin.succ_ne_zero, π]]
 #align sensitivity.epsilon_total Sensitivity.epsilon_total
 
 open Module
@@ -247,7 +248,7 @@ open Module
 and `ε` computes coefficients of decompositions of vectors on that basis. -/
 theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
   eval := duality
-  Total := @epsilon_total _
+  total := @epsilon_total _
 #align sensitivity.dual_bases_e_ε Sensitivity.dualBases_e_ε
 
 /-! We will now derive the dimension of `V`, first as a cardinal in `dim_V` and,
@@ -327,7 +328,7 @@ theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 
 #align sensitivity.f_matrix Sensitivity.f_matrix
 
 /-- The linear operator $g_m$ corresponding to Knuth's matrix $B_m$. -/
-noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ:=
+noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ :=
   LinearMap.prod (f m + √ (m + 1) • LinearMap.id) LinearMap.id
 #align sensitivity.g Sensitivity.g
 
@@ -352,7 +353,7 @@ theorem g_injective : Injective (g m) := by
 
 theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
-  have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (by exact_mod_cast zero_le _)
+  have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
   rw [f_succ_apply, g_apply]
   simp [this, f_squared, smul_add, add_smul, smul_smul, V]
   abel
@@ -399,8 +400,8 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   let W := Span (e '' H)
   let img := range (g m)
   suffices 0 < dim (W ⊓ img) by
-    exact_mod_cast exists_mem_ne_zero_of_rank_pos this
-  have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1) := by
+    exact mod_cast exists_mem_ne_zero_of_rank_pos this
+  have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1 : Cardinal) := by
     convert ← rank_submodule_le (W ⊔ img)
     rw [← Nat.cast_succ]
     apply dim_V
@@ -435,15 +436,14 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     rw [Finsupp.mem_support_iff] at p_in
     rw [Set.mem_toFinset]
     exact (dualBases_e_ε _).mem_of_mem_span y_mem_H p p_in
-  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' : _) y| ≤ |ε q y|
-  exact Finite.exists_max _
+  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' : _) y| ≤ |ε q y| :=
+    Finite.exists_max _
   have H_q_pos : 0 < |ε q y| := by
     contrapose! y_ne
     exact epsilon_total fun p => abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
   refine' ⟨q, (dualBases_e_ε _).mem_of_mem_span y_mem_H q (abs_pos.mp H_q_pos), _⟩
   let s := √ (m + 1)
-  suffices : s * |ε q y| ≤ _ * |ε q y|
-  exact (mul_le_mul_right H_q_pos).mp ‹_›
+  suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_right H_q_pos).mp ‹_›
   let coeffs := (dualBases_e_ε m.succ).coeffs
   calc
     s * |ε q y| = |ε q (s • y)| := by
@@ -454,7 +454,6 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
         |(coeffs y).sum fun (i : Q m.succ) (a : ℝ) =>
             a • (ε q ∘ f m.succ ∘ fun i : Q m.succ => e i) i| := by
       erw [(f m.succ).map_finsupp_total, (ε q).map_finsupp_total, Finsupp.total_apply]
-      rfl
     _ ≤ ∑ p in (coeffs y).support, |coeffs y p * (ε q <| f m.succ <| e p)| :=
       (norm_sum_le _ fun p => coeffs y p * _)
     _ = ∑ p in (coeffs y).support, |coeffs y p| * ite (p ∈ q.adjacent) 1 0 := by
@@ -470,7 +469,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     _ ≤ Finset.card (H ∩ q.adjacent).toFinset * |ε q y| := by
       refine' (mul_le_mul_right H_q_pos).2 _
       norm_cast
-      apply Finset.card_le_of_subset
+      apply Finset.card_le_card
       rw [Set.toFinset_inter]
       convert Finset.inter_subset_inter_right coeffs_support
 #align sensitivity.huang_degree_theorem Sensitivity.huang_degree_theorem
