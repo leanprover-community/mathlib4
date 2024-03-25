@@ -160,7 +160,7 @@ theorem mulLeftMap_apply {ι : Type*} (m : ι → M) (n : ι →₀ N) :
   congr($(mulLeftMap_def' N m) n)
 
 variable {M N} in
-theorem map_linearIndependent_left (H : M.LinearDisjoint N) [Module.Flat R N]
+theorem map_linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N]
     {ι : Type*} {m : ι → M} (hm : LinearIndependent R m) : LinearMap.ker (mulLeftMap N m) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
   let f := mulMap M N ∘ₗ LinearMap.rTensor N (Finsupp.total ι M R m)
@@ -233,7 +233,7 @@ theorem _root_.Module.Flat.preserves_injective_linearMap'
   exact Module.Flat.preserves_injective_linearMap L hL
 
 variable {M N} in
-theorem map_linearIndependent_right (H : M.LinearDisjoint N) [Module.Flat R M]
+theorem map_linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R M]
     {ι : Type*} {n : ι → N} (hn : LinearIndependent R n) : LinearMap.ker (mulRightMap M n) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
   let f := mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.total ι N R n)
@@ -299,7 +299,8 @@ theorem map_linearIndependent_mul_of_flat_right (H : M.LinearDisjoint N) [Module
   rwa [this] at h
 
 variable {M N} in
-theorem map_linearIndependent_mul (H : M.LinearDisjoint N) (hf : Module.Flat R M ∨ Module.Flat R N)
+theorem map_linearIndependent_mul_of_flat (H : M.LinearDisjoint N)
+    (hf : Module.Flat R M ∨ Module.Flat R N)
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
     (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
   rcases hf with _ | _
@@ -320,6 +321,195 @@ theorem of_map_linearIndependent_mul {κ ι : Type*} (m : Basis κ R M) (n : Bas
     simp [i1]
   simp_rw [← this, i, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact H
+
+variable {M N} in
+theorem of_le_left_of_flat (H : M.LinearDisjoint N) {M' : Submodule R S}
+    (h : M' ≤ M) [Module.Flat R N] :
+    M'.LinearDisjoint N := by
+  let i := mulMap M N ∘ₗ (Submodule.inclusion h).rTensor N
+  have hi : Function.Injective i := H.injective.comp <|
+    Module.Flat.preserves_injective_linearMap _ <| Submodule.inclusion_injective h
+  have : i = mulMap M' N := by ext; simp [i]
+  rwa [this] at hi
+
+variable {M N} in
+theorem of_le_right_of_flat (H : M.LinearDisjoint N) {N' : Submodule R S}
+    (h : N' ≤ N) [Module.Flat R M] :
+    M.LinearDisjoint N' := by
+  let i := mulMap M N ∘ₗ (Submodule.inclusion h).lTensor M
+  have hi : Function.Injective i := H.injective.comp <|
+    Module.Flat.preserves_injective_linearMap' _ <| Submodule.inclusion_injective h
+  have : i = mulMap M N' := by ext; simp [i]
+  rwa [this] at hi
+
+variable {M N} in
+theorem of_le_of_flat_right (H : M.LinearDisjoint N) {M' N' : Submodule R S}
+    (hm : M' ≤ M) (hn : N' ≤ N) [Module.Flat R N] [Module.Flat R M'] :
+    M'.LinearDisjoint N' := (H.of_le_left_of_flat hm).of_le_right_of_flat hn
+
+variable {M N} in
+theorem of_le_of_flat_left (H : M.LinearDisjoint N) {M' N' : Submodule R S}
+    (hm : M' ≤ M) (hn : N' ≤ N) [Module.Flat R M] [Module.Flat R N'] :
+    M'.LinearDisjoint N' := (H.of_le_right_of_flat hn).of_le_left_of_flat hm
+
+theorem of_bot_left : (⊥ : Submodule R S).LinearDisjoint N :=
+  Function.injective_of_subsingleton _
+
+theorem of_bot_right : M.LinearDisjoint (⊥ : Submodule R S) :=
+  Function.injective_of_subsingleton _
+
+-- TODO: move to suitable file (???)
+/-- If `N` is a submodule in an algebra `S` over `R`, there is the natural map
+`i(R) ⊗[R] N →ₗ[R] N` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
+noncomputable def _root_.Submodule.lTensorAlgebraMap'
+    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (N : Submodule R S) :
+    (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) ⊗[R] N →ₗ[R] N := by
+  refine (mulMap (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) N).codRestrict N ?_
+  intro c
+  induction c using TensorProduct.induction_on with
+  | zero => rw [_root_.map_zero]; exact N.zero_mem
+  | tmul r n =>
+    rw [mulMap_tmul]
+    obtain ⟨_, y, rfl⟩ := r
+    convert N.smul_mem y n.2 using 1
+    simp [Algebra.smul_def]
+  | add x y hx hy => rw [_root_.map_add]; exact N.add_mem hx hy
+
+-- TODO: move to suitable file (???)
+theorem _root_.Submodule.lTensorAlgebraMap'_apply
+    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (N : Submodule R S)
+    (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
+    (n : N) :
+    N.lTensorAlgebraMap' (⟨algebraMap R S y, hy⟩ ⊗ₜ[R] n) = y • n := by
+  apply Subtype.val_injective
+  simp [lTensorAlgebraMap', Algebra.smul_def]
+
+-- TODO: move to suitable file (???)
+/-- If `N` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
+`i(R) ⊗[R] N` and `N` induced by multiplication in `S`, here `i : R → S` is the structure map.
+This generalizes `TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
+noncomputable def _root_.Submodule.lTensorAlgebraMap
+    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (N : Submodule R S) :
+    (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) ⊗[R] N ≃ₗ[R] N := by
+  refine LinearEquiv.ofLinear N.lTensorAlgebraMap'
+    (TensorProduct.mk R (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) N
+      ⟨1, 1, map_one _⟩) ?_ ?_
+  · ext; simp [lTensorAlgebraMap']
+  · ext r n
+    obtain ⟨_, y, rfl⟩ := r
+    simp only [AlgHom.toRingHom_eq_coe, IsScalarTower.coe_toAlgHom,
+      TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+      LinearMap.coe_restrictScalars, LinearMap.coe_comp, Function.comp_apply,
+      TensorProduct.mk_apply, LinearMap.id_coe, id_eq, lTensorAlgebraMap'_apply]
+    rw [← TensorProduct.smul_tmul]
+    congr 1
+    apply Subtype.val_injective
+    simp [Algebra.smul_def]
+
+-- TODO: move to suitable file (???)
+theorem _root_.Submodule.lTensorAlgebraMap_apply
+    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (N : Submodule R S)
+    (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
+    (n : N) :
+    N.lTensorAlgebraMap (⟨algebraMap R S y, hy⟩ ⊗ₜ[R] n) = y • n :=
+  N.lTensorAlgebraMap'_apply y n
+
+-- TODO: move to suitable file (???)
+theorem _root_.Submodule.lTensorAlgebraMap_symm_apply
+    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (N : Submodule R S)
+    (n : N) :
+    N.lTensorAlgebraMap.symm n = ⟨1, 1, map_one _⟩ ⊗ₜ[R] n := rfl
+
+-- TODO: move to suitable file (???)
+/-- If `M` is a submodule in an algebra `S` over `R`, there is the natural map
+`M ⊗[R] i(R) →ₗ[R] M` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
+noncomputable def _root_.Submodule.rTensorAlgebraMap'
+    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (M : Submodule R S) :
+    M ⊗[R] (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) →ₗ[R] M := by
+  refine (mulMap M (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range)).codRestrict M ?_
+  intro c
+  induction c using TensorProduct.induction_on with
+  | zero => rw [_root_.map_zero]; exact M.zero_mem
+  | tmul m r =>
+    rw [mulMap_tmul]
+    obtain ⟨_, y, rfl⟩ := r
+    convert M.smul_mem y m.2 using 1
+    simp [Algebra.smul_def, show _ * _ = _ * _ from Algebra.commute_algebraMap_left y m.1]
+  | add x y hx hy => rw [_root_.map_add]; exact M.add_mem hx hy
+
+-- TODO: move to suitable file (???)
+theorem _root_.Submodule.rTensorAlgebraMap'_apply
+    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (M : Submodule R S)
+    (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
+    (m : M) :
+    M.rTensorAlgebraMap' (m ⊗ₜ[R] ⟨algebraMap R S y, hy⟩) = y • m := by
+  apply Subtype.val_injective
+  simp [rTensorAlgebraMap', Algebra.smul_def,
+    show _ * _ = _ * _ from Algebra.commute_algebraMap_left y m.1]
+
+-- TODO: move to suitable file (???)
+/-- If `M` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
+`M ⊗[R] i(R)` and `M` induced by multiplication in `S`, here `i : R → S` is the structure map.
+This generalizes `TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`. -/
+noncomputable def _root_.Submodule.rTensorAlgebraMap
+    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (M : Submodule R S) :
+    M ⊗[R] (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) ≃ₗ[R] M := by
+  refine LinearEquiv.ofLinear M.rTensorAlgebraMap'
+    ((TensorProduct.comm R _ _).toLinearMap ∘ₗ TensorProduct.mk R
+      (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) M ⟨1, 1, map_one _⟩) ?_ ?_
+  · ext; simp [rTensorAlgebraMap']
+  · ext m r
+    obtain ⟨_, y, rfl⟩ := r
+    simp only [TensorProduct.AlgebraTensorModule.curry_apply, AlgHom.toRingHom_eq_coe,
+      IsScalarTower.coe_toAlgHom, TensorProduct.curry_apply, LinearMap.coe_restrictScalars,
+      LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, TensorProduct.mk_apply,
+      TensorProduct.comm_tmul, LinearMap.id_coe, id_eq, rTensorAlgebraMap'_apply]
+    rw [TensorProduct.smul_tmul]
+    congr 1
+    apply Subtype.val_injective
+    simp [Algebra.smul_def]
+
+-- TODO: move to suitable file (???)
+theorem _root_.Submodule.rTensorAlgebraMap_apply
+    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (M : Submodule R S)
+    (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
+    (m : M) :
+    M.rTensorAlgebraMap (m ⊗ₜ[R] ⟨algebraMap R S y, hy⟩) = y • m :=
+  M.rTensorAlgebraMap'_apply y m
+
+-- TODO: move to suitable file (???)
+theorem _root_.Submodule.rTensorAlgebraMap_symm_apply
+    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (M : Submodule R S)
+    (m : M) :
+    M.rTensorAlgebraMap.symm m = m ⊗ₜ[R] ⟨1, 1, map_one _⟩ := rfl
+
+theorem of_self_left :
+    (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range).LinearDisjoint N := by
+  have : N.subtype ∘ₗ N.lTensorAlgebraMap.toLinearMap =
+      mulMap (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) N := by
+    change N.subtype ∘ₗ N.lTensorAlgebraMap' = _
+    simp [lTensorAlgebraMap']
+  have h : Function.Injective (N.subtype ∘ₗ N.lTensorAlgebraMap.toLinearMap) :=
+    N.injective_subtype.comp N.lTensorAlgebraMap.injective
+  rwa [this] at h
+
+theorem of_self_right :
+    M.LinearDisjoint (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) := by
+  have : M.subtype ∘ₗ M.rTensorAlgebraMap.toLinearMap =
+      mulMap M (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) := by
+    change M.subtype ∘ₗ M.rTensorAlgebraMap' = _
+    simp [rTensorAlgebraMap']
+  have h : Function.Injective (M.subtype ∘ₗ M.rTensorAlgebraMap.toLinearMap) :=
+    M.injective_subtype.comp M.rTensorAlgebraMap.injective
+  rwa [this] at h
+
+theorem of_left_le_self_of_flat
+    (h : M ≤ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) [Module.Flat R N] :
+    M.LinearDisjoint N := (of_self_left N).of_le_left_of_flat h
+
+theorem of_right_le_self_of_flat
+    (h : N ≤ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) [Module.Flat R M] :
+    M.LinearDisjoint N := (of_self_right M).of_le_right_of_flat h
 
 end LinearDisjoint
 
@@ -355,7 +545,7 @@ protected def LinearDisjoint : Prop :=
 --       fun H ↦ H.of_comp A.val.toLinearMap⟩
 --   simp_rw [linearDisjoint_iff, h]
 
--- variable {A B}
+variable {A B}
 
 -- /-- If `A` and `B` are linearly disjoint, then any `F`-linearly independent family on `A` remains
 -- linearly independent over `B`. -/
@@ -529,32 +719,28 @@ protected def LinearDisjoint : Prop :=
 -- theorem linearDisjoint_symm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
 --   ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
 
--- variable (A) in
--- theorem LinearDisjoint.of_bot_right : A.LinearDisjoint ⊥ := fun a ha ↦
---   ha.map_of_injective_injective (M' := E) (botEquiv F E) A.val
---     (fun _ _ ↦ (botEquiv F E).injective (by rwa [map_zero]))
---     (fun _ _ ↦ A.val.injective (by rwa [map_zero]))
---     (fun r _ ↦ by obtain ⟨x, h⟩ := r.2; simp_rw [Algebra.smul_def,
---       show r = algebraMap F _ x from SetCoe.ext h.symm, botEquiv_def]; rfl)
+variable (A) in
+theorem LinearDisjoint.of_bot_right : A.LinearDisjoint ⊥ :=
+  Submodule.LinearDisjoint.of_self_right (Subalgebra.toSubmodule A.toSubalgebra)
 
--- variable (B) in
--- theorem LinearDisjoint.of_bot_left : (⊥ : IntermediateField F E).LinearDisjoint B :=
---   LinearDisjoint.of_bot_right B |>.symm
+variable (B) in
+theorem LinearDisjoint.of_bot_left : (⊥ : IntermediateField F E).LinearDisjoint B :=
+  Submodule.LinearDisjoint.of_self_left (Subalgebra.toSubmodule B.toSubalgebra)
 
--- theorem LinearDisjoint.of_inclusion_right {B' : IntermediateField F E} (H : A.LinearDisjoint B)
+-- theorem LinearDisjoint.of_le_right {B' : IntermediateField F E} (H : A.LinearDisjoint B)
 --     (h : B' ≤ B) : A.LinearDisjoint B' := fun a ha ↦
 --   (H ha).map_of_injective_injective (M' := E) (inclusion h)
 --     (AddMonoidHom.id E) (fun _ _ ↦ (inclusion h).injective (by rwa [map_zero]))
 --     (fun _ ↦ id) (fun _ _ ↦ rfl)
 
--- theorem LinearDisjoint.of_inclusion_left {A' : IntermediateField F E} (H : A.LinearDisjoint B)
---     (h : A' ≤ A) : A'.LinearDisjoint B := H.symm.of_inclusion_right h |>.symm
+-- theorem LinearDisjoint.of_le_left {A' : IntermediateField F E} (H : A.LinearDisjoint B)
+--     (h : A' ≤ A) : A'.LinearDisjoint B := H.symm.of_le_right h |>.symm
 
 -- /-- If `A` and `B` are linearly disjoint, `A'` and `B'` are contained in `A` and `B`,
 -- respectively, then `A'` and `B'` are also linearly disjoint. -/
--- theorem LinearDisjoint.of_inclusion {A' B' : IntermediateField F E} (H : A.LinearDisjoint B)
+-- theorem LinearDisjoint.of_le {A' B' : IntermediateField F E} (H : A.LinearDisjoint B)
 --     (hA : A' ≤ A) (hB : B' ≤ B) : A'.LinearDisjoint B' :=
---   H.of_inclusion_left hA |>.of_inclusion_right hB
+--   H.of_le_left hA |>.of_le_right hB
 
 -- /-- If `A` and `B` are linearly disjoint over `F`, then their intersection is equal to `F`. -/
 -- theorem LinearDisjoint.inf_eq_bot (H : A.LinearDisjoint B) :
