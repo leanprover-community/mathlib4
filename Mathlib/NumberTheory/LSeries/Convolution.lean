@@ -139,17 +139,17 @@ lemma LSeriesHasSum.convolution {f g : ℕ → ℂ} {s a b : ℂ} (hf : LSeriesH
 
 /-- The L-series of the convolution product `f ⍟ g` of two sequences `f` and `g`
 equals the product of their L-series, assuming both L-series converge. -/
-lemma LSeries_convolution {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s)
+lemma LSeries_convolution' {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s)
     (hg : LSeriesSummable g s) :
     LSeries (f ⍟ g) s = LSeries f s * LSeries g s :=
   (LSeriesHasSum.convolution hf.LSeriesHasSum hg.LSeriesHasSum).LSeries_eq
 
 /-- The L-series of the convolution product `f ⍟ g` of two sequences `f` and `g`
 equals the product of their L-series in their common half-plane of absolute convergence. -/
-lemma LSeries_convolution' {f g : ℕ → ℂ} {s : ℂ}
+lemma LSeries_convolution {f g : ℕ → ℂ} {s : ℂ}
     (hf : abscissaOfAbsConv f < s.re) (hg : abscissaOfAbsConv g < s.re) :
     LSeries (f ⍟ g) s = LSeries f s * LSeries g s :=
-  LSeries_convolution (LSeriesSummable_of_abscissaOfAbsConv_lt_re hf)
+  LSeries_convolution' (LSeriesSummable_of_abscissaOfAbsConv_lt_re hf)
     (LSeriesSummable_of_abscissaOfAbsConv_lt_re hg)
 
 /-- The L-series of the convolution product `f ⍟ g` of two sequences `f` and `g`
@@ -174,17 +174,17 @@ lemma LSeriesHasSum_mul {f g : ArithmeticFunction ℂ} {s a b : ℂ} (hf : LSeri
 
 /-- The L-series of the (convolution) product of two `ℂ`-valued arithmetic functions `f` and `g`
 equals the product of their L-series, assuming both L-series converge. -/
-lemma LSeries_mul {f g : ArithmeticFunction ℂ} {s : ℂ} (hf : LSeriesSummable ↗f s)
+lemma LSeries_mul' {f g : ArithmeticFunction ℂ} {s : ℂ} (hf : LSeriesSummable ↗f s)
     (hg : LSeriesSummable ↗g s) :
     LSeries ↗(f * g) s = LSeries ↗f s * LSeries ↗g s :=
-  coe_mul f g ▸ LSeries_convolution hf hg
+  coe_mul f g ▸ LSeries_convolution' hf hg
 
 /-- The L-series of the (convolution) product of two `ℂ`-valued arithmetic functions `f` and `g`
 equals the product of their L-series in their common half-plane of absolute convergence. -/
-lemma LSeries_mul' {f g : ArithmeticFunction ℂ} {s : ℂ}
+lemma LSeries_mul {f g : ArithmeticFunction ℂ} {s : ℂ}
     (hf : abscissaOfAbsConv ↗f < s.re) (hg : abscissaOfAbsConv ↗g < s.re) :
     LSeries ↗(f * g) s = LSeries ↗f s * LSeries ↗g s :=
-  coe_mul f g ▸ LSeries_convolution' hf hg
+  coe_mul f g ▸ LSeries_convolution hf hg
 
 /-- The L-series of the (convolution) product of two `ℂ`-valued arithmetic functions `f` and `g`
 is summable when both L-series are summable. -/
