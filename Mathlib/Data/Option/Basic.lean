@@ -429,4 +429,9 @@ theorem elim_comp₂ (h : α → β → γ) {f : γ → α} {x : α} {g : γ →
 theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : α} :
     i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
 
+@[simp]
+lemma not_comp_isSome : Bool.not ∘ @Option.isSome α = Option.isNone := by
+  funext x
+  cases x <;> simp
+
 end Option
