@@ -155,18 +155,21 @@ partial def eraseUsedTactics : InfoTree → M Unit
   | .node i c => do
     if let .ofTacticInfo i := i then
 --      dbg_trace "working on '{i.stx.getKind}': {i.stx}"
-      if let some r := i.stx.getRange? true then
-        if allowed.contains i.stx.getKind
+      let stx := i.stx
+      let kind := stx.getKind
+      if let some r := stx.getRange? true then
+        if allowed.contains kind
         -- if the tactic is allowed to not change the goals
         then modify (·.erase r)
         else
-        --dbg_trace "{i.stx.getKind}"
+        --dbg_trace "{kind} {i.goalsAfter.map (·.name)} {i.goalsBefore.map (·.name)}"
         -- if the goals have changed
         if i.goalsAfter != i.goalsBefore
         then modify (·.erase r)
         -- bespoke check for `swap_var`: the only change that it does is
         -- in the usernames of local declarations, so we check the names before and after
-        else if (i.stx.getKind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
+        else --dbg_trace "here";
+        if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
                 (getNames i.mctxBefore != getNames i.mctxAfter)
         then modify (·.erase r)
     eraseUsedTacticsList c
