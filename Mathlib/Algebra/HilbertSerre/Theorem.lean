@@ -662,8 +662,8 @@ section
 
 variable [DecidableEq A]
 variable (N : ℕ) (card : S.toFinset.card = N + 1)
-variable (s : A) (s_not_mem : s ∈ S.toFinset) (S' : Finset A) (hS' : insert s S' = S.toFinset)
-variable (d : ℕ) (deg_s : s ∈ 𝒜 d)
+variable (x : A) (x_not_mem : x ∈ S.toFinset) (S' : Finset A) (hS' : insert x S' = S.toFinset)
+variable (d : ℕ) (deg_x : x ∈ 𝒜 d)
 
 /--
 If `A = A₀[S, s]`, define `A'` as `A₀[S]`
@@ -671,47 +671,47 @@ If `A = A₀[S, s]`, define `A'` as `A₀[S]`
 abbrev A' : HomogeneousSubring 𝒜 := induction.constructions.adjoinHomogeneous S' fun _ h ↦
   ⟨S.deg (hS' ▸ Finset.mem_insert_of_mem h), S.mem_deg _⟩
 
-lemma mem_A' (a : A) : a ∈ A' S s S' hS' ↔ a ∈ Algebra.adjoin (𝒜 0) S' := Iff.rfl
+lemma mem_A' (a : A) : a ∈ A' S x S' hS' ↔ a ∈ Algebra.adjoin (𝒜 0) S' := Iff.rfl
 
-instance noetherian_A' : IsNoetherianRing (A' S s S' hS') :=
+instance noetherian_A' : IsNoetherianRing (A' S x S' hS') :=
   Algebra.adjoin_isNoetherian (R := 𝒜 0) S'
 
 /--
 If `A = A₀[S, s]`, define `A'` as `A₀[S]`. Then `A'` has grading defined by `n`-th grading being
 `Aₙ ∩ A₀[S]`.
 -/
-abbrev 𝒜' : ℕ → AddSubgroup (A' S s S' hS') := (A' S s S' hS').grading
+abbrev 𝒜' : ℕ → AddSubgroup (A' S x S' hS') := (A' S x S' hS').grading
 
-variable [(a : A) → Decidable (a ∈ A' S s S' hS')]
+variable [(a : A) → Decidable (a ∈ A' S x S' hS')]
 
-instance gradedRing_A' : GradedRing (𝒜' S s S' hS') :=
-  HomogeneousSubring.gradedRing (A' S s S' hS')
+instance gradedRing_A' : GradedRing (𝒜' S x S' hS') :=
+  HomogeneousSubring.gradedRing (A' S x S' hS')
 
-instance noetherian_A'_zero : IsNoetherianRing (𝒜' S s S' hS' 0) := by
+instance noetherian_A'_zero : IsNoetherianRing (𝒜' S x S' hS' 0) := by
   apply GradedRing.GradeZero.subring_isNoetherianRing_of_isNoetherianRing
 
-noncomputable instance abelian_A'_zero : CategoryTheory.Abelian (FGModuleCat (𝒜' S s S' hS' 0)) :=
+noncomputable instance abelian_A'_zero : CategoryTheory.Abelian (FGModuleCat (𝒜' S x S' hS' 0)) :=
   FGModuleCat.abelian_of_noetherian
 
-instance finite_KER : Module.Finite (A' S s S' hS') (KER ℳ s deg_s).toSubmodule :=
-  Algebra.adjoin_module_finite_of_annihilating (𝒜 0) A S' s
-    (by rw [← S.span_eq, ← hS', Finset.coe_insert]) (KER ℳ s deg_s).toSubmodule
+instance finite_KER : Module.Finite (A' S x S' hS') (KER ℳ x deg_x).toSubmodule :=
+  Algebra.adjoin_module_finite_of_annihilating (𝒜 0) A S' x
+    (by rw [← S.span_eq, ← hS', Finset.coe_insert]) (KER ℳ x deg_x).toSubmodule
     fun x ↦ by ext; exact x.2
 
-instance finite_COKER : Module.Finite (A' S s S' hS') (COKER ℳ s deg_s) := by
-  refine Algebra.adjoin_module_finite_of_annihilating (𝒜 0) A S' s
-    (by rw [← S.span_eq, ← hS', Finset.coe_insert]) (COKER ℳ s deg_s) fun x ↦ ?_
+instance finite_COKER : Module.Finite (A' S x S' hS') (COKER ℳ x deg_x) := by
+  refine Algebra.adjoin_module_finite_of_annihilating (𝒜 0) A S' x
+    (by rw [← S.span_eq, ← hS', Finset.coe_insert]) (COKER ℳ x deg_x) fun x ↦ ?_
   induction' x using Quotient.inductionOn' with x
   erw [Submodule.Quotient.eq', add_zero]
   refine ⟨-x, trivial, ?_⟩
   simp only [map_neg, DistribMulAction.toLinearMap_apply]
 
 instance gradedModule_KER :
-    SetLike.GradedSMul (𝒜' S s S' hS') (HomogeneousSubmodule.grading (KER ℳ s deg_s)) where
+    SetLike.GradedSMul (𝒜' S x S' hS') (HomogeneousSubmodule.grading (KER ℳ x deg_x)) where
   smul_mem {_ _ _ _} ha hb := (inferInstance : SetLike.GradedSMul 𝒜 ℳ).smul_mem ha hb
 
 instance gradedModule_COKER :
-    SetLike.GradedSMul (𝒜' S s S' hS') (COKER.den ℳ s deg_s).quotientGrading where
+    SetLike.GradedSMul (𝒜' S x S' hS') (COKER.den ℳ x deg_x).quotientGrading where
   smul_mem {i j a b} (ha : (a : A) ∈ 𝒜 i) hb := by
     obtain ⟨b, rfl⟩ := hb
     induction' b using Quotient.inductionOn' with b
@@ -723,7 +723,7 @@ instance gradedModule_COKER :
 The degree zero part of `A` and `A'` agrees.
 -/
 @[simps]
-def AZeroToA'Zero : 𝒜 0 →+* 𝒜' S s S' hS' 0 where
+def AZeroToA'Zero : 𝒜 0 →+* 𝒜' S x S' hS' 0 where
   toFun := fun x ↦ ⟨⟨(x : A), by
     rw [mem_A', Algebra.mem_adjoin_iff]
     exact Subring.subset_closure <| Or.inl ⟨x, rfl⟩⟩, x.2⟩
@@ -736,7 +736,7 @@ def AZeroToA'Zero : 𝒜 0 →+* 𝒜' S s S' hS' 0 where
 The degree zero part of `A'` and `A` agrees.
 -/
 @[simps]
-def A'ZeroToAZero : 𝒜' S s S' hS' 0 →+* 𝒜 0 where
+def A'ZeroToAZero : 𝒜' S x S' hS' 0 →+* 𝒜 0 where
   toFun := fun x ↦ ⟨x.1, x.2⟩
   map_one' := by ext; rfl
   map_mul' := by intros; ext; rfl
@@ -744,12 +744,12 @@ def A'ZeroToAZero : 𝒜' S s S' hS' 0 →+* 𝒜 0 where
   map_add' := by intros; ext; rfl
 
 lemma A'ZeroToAZero_comp_AZeroToA'Zero :
-    (A'ZeroToAZero S s S' hS').comp (AZeroToA'Zero S s S' hS') = RingHom.id (𝒜 0) := by
+    (A'ZeroToAZero S x S' hS').comp (AZeroToA'Zero S x S' hS') = RingHom.id (𝒜 0) := by
   ext ⟨x, hx⟩
   simp
 
 lemma AZeroToA'Zero_comp_A'ZeroToAZero :
-    (AZeroToA'Zero S s S' hS').comp (A'ZeroToAZero S s S' hS') = RingHom.id (𝒜' S s S' hS' 0) := by
+    (AZeroToA'Zero S x S' hS').comp (A'ZeroToAZero S x S' hS') = RingHom.id (𝒜' S x S' hS' 0) := by
   ext ⟨⟨x, hx1⟩, hx2⟩
   rw [RingHom.comp_apply, AZeroToA'Zero_apply_coe_coe, RingHom.id_apply,
     A'ZeroToAZero_apply_coe]
@@ -758,24 +758,24 @@ lemma AZeroToA'Zero_comp_A'ZeroToAZero :
 The degree zero part of `A'` and `A` agrees.
 -/
 @[simps!]
-def AZeroEquivA'Zero : 𝒜 0 ≃+* 𝒜' S s S' hS' 0 :=
-RingEquiv.ofHomInv (AZeroToA'Zero S s S' hS') (A'ZeroToAZero S s S' hS')
-  (A'ZeroToAZero_comp_AZeroToA'Zero S s S' hS')
-  (AZeroToA'Zero_comp_A'ZeroToAZero S s S' hS')
+def AZeroEquivA'Zero : 𝒜 0 ≃+* 𝒜' S x S' hS' 0 :=
+RingEquiv.ofHomInv (AZeroToA'Zero S x S' hS') (A'ZeroToAZero S x S' hS')
+  (A'ZeroToAZero_comp_AZeroToA'Zero S x S' hS')
+  (AZeroToA'Zero_comp_A'ZeroToAZero S x S' hS')
 
 /--
 Since the degree zero part of `A'` and `A` agrees. any additive `μ` from finitely generated `Aₒ`
 modules gaves an additive function from finitely generated `A'₀` modules.
 
 -/
-noncomputable def μ' : FGModuleCat (𝒜' S s S' hS' 0) ⟹+ ℤ :=
-  μ.pushforward <| RingEquiv.toFGModuleCatEquivalence <| AZeroEquivA'Zero S s S' hS'
+noncomputable def μ' : FGModuleCat (𝒜' S x S' hS' 0) ⟹+ ℤ :=
+  μ.pushforward <| RingEquiv.toFGModuleCatEquivalence <| AZeroEquivA'Zero S x S' hS'
 
 /--
 If `A = A₀[S, s]`, define `A'` as `A₀[S]`, then `S` generates `A₉[S]` over `A₀`.
 -/
 @[simps]
-def generatingSet' : generatingSetOverBaseRing (𝒜' S s S' hS') where
+def generatingSet' : generatingSetOverBaseRing (𝒜' S x S' hS') where
   toFinset := S'.attach.image fun x : S' ↦ ⟨x, by
     rw [mem_A', Algebra.mem_adjoin_iff]
     refine Subring.subset_closure <| Or.inr x.2⟩
@@ -801,12 +801,12 @@ def generatingSet' : generatingSetOverBaseRing (𝒜' S s S' hS') where
     rw [mem_A', Algebra.mem_adjoin_iff, Subring.mem_closure] at ha
     rw [Algebra.mem_adjoin_iff, Subring.mem_closure]
     intros R hR
-    specialize ha (R.map (A' S s S' hS').toSubring.subtype) (by
+    specialize ha (R.map (A' S x S' hS').toSubring.subtype) (by
       simp only [Finset.coe_image, Set.union_subset_iff, Set.image_subset_iff, Subring.coe_map,
         Subring.coeSubtype] at hR ⊢
       constructor
       · rintro _ ⟨a, rfl⟩
-        let a' : 𝒜' S s S' hS' 0 := ⟨⟨(a : A), by
+        let a' : 𝒜' S x S' hS' 0 := ⟨⟨(a : A), by
           erw [mem_A', Algebra.mem_adjoin_iff]
           refine Subring.subset_closure <| Or.inl ?_
           exact ⟨a, rfl⟩⟩, a.2⟩
@@ -823,36 +823,36 @@ def generatingSet' : generatingSetOverBaseRing (𝒜' S s S' hS') where
 
 open Classical in
 lemma eqKER :
-    (μ' μ S s S' hS').poincareSeries (𝒜' S s S' hS') (KER ℳ s deg_s).grading =
-    μ.poincareSeries 𝒜 (KER ℳ s deg_s).grading := by
+    (μ' μ S x S' hS').poincareSeries (𝒜' S x S' hS') (KER ℳ x deg_x).grading =
+    μ.poincareSeries 𝒜 (KER ℳ x deg_x).grading := by
   ext n
   rw [AdditiveFunction.coeff_poincareSeries, AdditiveFunction.coeff_poincareSeries]
   exact μ.eq_of_iso
     { hom :=
       { toFun := fun x ↦ x
         map_add' := by intros; rfl
-        map_smul' := by rintro r (x : (KER ℳ s deg_s).grading n); rfl }
+        map_smul' := by rintro r (y : (KER ℳ x deg_x).grading n); rfl }
       inv :=
       { toFun := fun x ↦ x
         map_add' := by intros; rfl
-        map_smul' := by rintro r (x : (KER ℳ s deg_s).grading n); rfl }
+        map_smul' := by rintro r (y : (KER ℳ x deg_x).grading n); rfl }
       hom_inv_id := by ext; rfl
       inv_hom_id := by ext; rfl }
 
 lemma eqCOKER :
-    (μ' μ S s S' hS').poincareSeries (𝒜' S s S' hS') (COKER.den ℳ s deg_s).quotientGrading =
-    μ.poincareSeries 𝒜 (COKER.den ℳ s deg_s).quotientGrading := by
+    (μ' μ S x S' hS').poincareSeries (𝒜' S x S' hS') (COKER.den ℳ x deg_x).quotientGrading =
+    μ.poincareSeries 𝒜 (COKER.den ℳ x deg_x).quotientGrading := by
   ext n
   rw [AdditiveFunction.coeff_poincareSeries, AdditiveFunction.coeff_poincareSeries]
   exact μ.eq_of_iso
     { hom :=
       { toFun := fun x ↦ x
         map_add' := by intros; rfl
-        map_smul' := by rintro r (x : (COKER.den ℳ s deg_s).quotientGrading n); rfl }
+        map_smul' := by rintro r (y : (COKER.den ℳ x deg_x).quotientGrading n); rfl }
       inv :=
       { toFun := fun x ↦ x
         map_add' := by intros; rfl
-        map_smul' := by rintro r (x : (COKER.den ℳ s deg_s).quotientGrading n); rfl }
+        map_smul' := by rintro r (y : (COKER.den ℳ x deg_x).quotientGrading n); rfl }
       hom_inv_id := by ext; rfl
       inv_hom_id := by ext; rfl }
 
