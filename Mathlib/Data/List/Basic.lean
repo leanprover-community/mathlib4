@@ -14,6 +14,7 @@ import Mathlib.Data.List.Defs
 import Mathlib.Order.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.Group.Basic
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -2864,16 +2865,11 @@ end Lookmap
 
 /-! ### filter -/
 
-theorem length_eq_length_filter_add_length_filter_not {l : List (α)} (f : α → Bool) :
+theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
     l.length = (l.filter f).length + (l.filter (Bool.not ∘ f)).length := by
   induction' l with hd tl hl
   · simp
-  · simp [length_cons, hl, filter_cons]
-    cases hfd : f hd
-    · simp [hfd]
-      omega
-    · simp [hfd]
-      omega
+  · cases hfd : f hd <;> simp [length_cons, hl, filter_cons, hfd] <;> omega
 
 /-! ### filterMap -/
 
@@ -2974,21 +2970,16 @@ lemma Option.not_comp_isSome : Bool.not ∘ @Option.isSome α = Option.isNone :=
 
 theorem length_eq_reduceOption_length_add_filter_none {l : List (Option α)} :
     l.length = l.reduceOption.length + (l.filter Option.isNone).length := by
-  rw [reduceOption_length_eq]
-  convert length_eq_length_filter_add_length_filter_not Option.isSome
-  simp only [Option.not_comp_isSome]
+  rw [reduceOption_length_eq, ← Option.not_comp_isSome, length_eq_length_filter_add Option.isSome]
 
 theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length ≤ l.length := by
   rw [length_eq_reduceOption_length_add_filter_none]
   apply Nat.le_add_right
 #align list.reduce_option_length_le List.reduceOption_length_le
 
-lemma foo (a b : ℕ) : a = a + b ↔ b = 0 := by
-  omega
-
 theorem reduceOption_length_eq_iff {l : List (Option α)} :
     l.reduceOption.length = l.length ↔ ∀ x ∈ l, Option.isSome x := by
-  rw [length_eq_reduceOption_length_add_filter_none, foo, length_eq_zero, filter_eq_nil]
+  rw [length_eq_reduceOption_length_add_filter_none, self_eq_add_right, length_eq_zero, filter_eq_nil]
   simp_rw [← Option.not_isSome, Bool.not_eq_false]
 #align list.reduce_option_length_eq_iff List.reduceOption_length_eq_iff
 
