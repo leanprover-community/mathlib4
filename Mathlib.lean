@@ -905,6 +905,8 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 import Mathlib.Analysis.NormedSpace.PiLp
+import Mathlib.Analysis.NormedSpace.PiTensorProduct.InjectiveSeminorm
+import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.NormedSpace.ProdLp
 import Mathlib.Analysis.NormedSpace.QuaternionExponential
@@ -3747,6 +3749,7 @@ import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.Module.LinearPMap
 import Mathlib.Topology.Algebra.Module.LocallyConvex
 import Mathlib.Topology.Algebra.Module.Multilinear.Basic
+import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Star
 import Mathlib.Topology.Algebra.Module.StrongTopology

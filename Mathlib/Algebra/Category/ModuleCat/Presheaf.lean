@@ -3,8 +3,8 @@ Copyright (c) 2023 Scott Morrison All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+import Mathlib.Algebra.Category.Ring.Basic
 
 /-!
 # Presheaves of modules over a presheaf of rings.
@@ -13,11 +13,11 @@ We give a hands-on description of a presheaf of modules over a fixed presheaf of
 as a presheaf of abelian groups with additional data.
 
 We also provide two alternative constructors :
-* `mk' : CorePresheafOfModules R → PresheafOfModules R` where `M : CorePresheafOfModules R`
-consists of a family of unbundled modules over `R.obj X` for all `X`
-* `mk'' : BundledCorePresheafOfModules R → PresheafOfModules R`
-where `M : BundledCorePresheafOfModules R` consists of a family of objects in
-`ModuleCat (R.obj X)` for all `X`
+* When `M : CorePresheafOfModules R` consists of a family of unbundled modules over `R.obj X`
+for all `X`, the corresponding presheaf of modules is `M.toPresheafOfModules`.
+* When `M : BundledCorePresheafOfModules R` consists of a family of objects in
+`ModuleCat (R.obj X)` for all `X`, the corresponding presheaf of modules
+is `M.toPresheafOfModules`.
 
 ## Future work
 
@@ -134,25 +134,6 @@ theorem ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
   ext X x
   exact LinearMap.congr_fun (w X) x
 
-section
-
-variable (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
-  (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y) (x : P.obj X),
-    app Y (P.map f x) = Q.map f (app X x))
-
-/-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
-of a family of linear maps over the various rings `R.obj X`. -/
-def mk' : P ⟶ Q where
-  hom :=
-    { app := fun X => (app X).toAddMonoidHom
-      naturality := fun X Y f => by ext x; apply naturality }
-  map_smul X := (app X).map_smul
-
-@[simp]
-lemma mk'_app : (mk' app naturality).app = app := rfl
-
-end
-
 instance : Zero (P ⟶ Q) := ⟨mk 0 (by
   intros
   simp only [Limits.zero_app, AddMonoidHom.zero_apply, smul_zero])⟩
@@ -203,9 +184,9 @@ instance : Preadditive (PresheafOfModules R) where
 
 end Hom
 
-lemma naturality_apply {M M' : PresheafOfModules R} (f : M ⟶ M')
-    {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : M.obj X) :
-    f.app Y (M.presheaf.map g x) = M'.presheaf.map g (f.app X x) :=
+lemma naturality_apply {P Q : PresheafOfModules R} (f : P ⟶ Q)
+    {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : P.obj X) :
+    f.app Y (P.presheaf.map g x) = Q.presheaf.map g (f.app X x) :=
   congr_fun ((forget _).congr_map (f.hom.naturality g)) x
 
 variable (R)
@@ -282,6 +263,40 @@ lemma restriction_app_comp (M : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X �
         (ModuleCat.restrictScalars (R.map f)).map (restrictionApp g M) ≫
         (ModuleCat.restrictScalarsComp' _ _ _ (R.map_comp f g)).inv.app (M.obj Z) := by aesop
 
+namespace Hom
+
+variable {P Q : PresheafOfModules R} (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
+
+section
+
+variable (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y) (x : P.obj X),
+  app Y (P.map f x) = Q.map f (app X x))
+
+/-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
+of a family of linear maps over the various rings `R.obj X`. -/
+def mk' : P ⟶ Q where
+  hom :=
+    { app := fun X => (app X).toAddMonoidHom
+      naturality := fun X Y f => by ext x; apply naturality }
+  map_smul X := (app X).map_smul
+
+@[simp]
+lemma mk'_app : (mk' app naturality).app = app := rfl
+
+end
+
+/-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
+of a family of linear maps over the various rings `R.obj X`, and for which the
+naturality condition is stated using the restriction of scalars. -/
+abbrev mk''
+    (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
+      restrictionApp f P ≫ (ModuleCat.restrictScalars (R.map f)).map (app Y) =
+        ModuleCat.ofHom (app X) ≫ restrictionApp f Q) :
+    P ⟶ Q :=
+  mk' app (fun _ _ f x => congr_hom (naturality f) x)
+
+end Hom
+
 end PresheafOfModules
 
 variable (R) in
@@ -325,25 +340,22 @@ def presheaf : Cᵒᵖ ⥤ AddCommGroupCat.{v} where
 
 instance (X : Cᵒᵖ) : Module (R.obj X) (M.presheaf.obj X) := M.module X
 
-end CorePresheafOfModules
-
-namespace PresheafOfModules
-
 /-- Constructor for `PresheafOfModules R` based on a collection of types
 equipped with module structures over the various rings `R.obj X`, see
 the structure `CorePresheafOfModules`. -/
-def mk' (M : CorePresheafOfModules R) : PresheafOfModules R where
+def toPresheafOfModules : PresheafOfModules R where
   presheaf := M.presheaf
 
 @[simp]
-lemma mk'_obj (M : CorePresheafOfModules R) (X : Cᵒᵖ) :
-    (mk' M).obj X = ModuleCat.of _ (M.obj X) := rfl
+lemma toPresheafOfModules_obj (X : Cᵒᵖ) :
+    M.toPresheafOfModules.obj X = ModuleCat.of _ (M.obj X) := rfl
 
 @[simp]
-lemma mk'_presheaf_map_apply (M : CorePresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
-    (mk' M).presheaf.map f x = M.map f x := rfl
+lemma toPresheafOfModules_presheaf_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
+    M.toPresheafOfModules.presheaf.map f x = M.map f x := rfl
 
-end PresheafOfModules
+
+end CorePresheafOfModules
 
 variable (R) in
 /-- This structure contains the data and axioms in order to
@@ -376,52 +388,23 @@ noncomputable def toCorePresheafOfModules : CorePresheafOfModules R where
   obj X := (M.obj X).carrier
   map {X Y} f := (ModuleCat.semilinearMapAddEquiv (R.map f) (M.obj X) (M.obj Y)).symm (M.map f)
 
-end BundledCorePresheafOfModules
-
-namespace PresheafOfModules
-
 /-- Constructor for `PresheafOfModules R` based on a collection of objects
 of type `ModuleCat (R.obj X)` for all `X`, and restriction maps expressed
 as linear maps to restriction of scalars, see
 the structure `BundledCorePresheafOfModules`. -/
-noncomputable def mk'' (M : BundledCorePresheafOfModules R) : PresheafOfModules R :=
-  mk' M.toCorePresheafOfModules
+noncomputable def toPresheafOfModules : PresheafOfModules R :=
+  M.toCorePresheafOfModules.toPresheafOfModules
 
 @[simp]
-lemma mk''_obj (M : BundledCorePresheafOfModules R) (X : Cᵒᵖ) :
-    (mk'' M).obj X = (M.obj X).carrier := rfl
+lemma toPresheafOfModules_obj (X : Cᵒᵖ) :
+    M.toPresheafOfModules.obj X = (M.obj X).carrier := rfl
 
 @[simp]
-lemma mk''_presheaf_map_apply (M : BundledCorePresheafOfModules R)
-    {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
-    (mk'' M).presheaf.map f x = M.map f x := rfl
+lemma toPresheafOfModules_presheaf_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
+    M.toPresheafOfModules.presheaf.map f x = M.map f x := rfl
 
 @[simp]
-lemma restrictionApp_mk'' (M : BundledCorePresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    restrictionApp f (mk'' M) = M.map f := rfl
+lemma restrictionApp_toPresheafOfModules {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    PresheafOfModules.restrictionApp f M.toPresheafOfModules = M.map f := rfl
 
-namespace Hom
-
-variable {P Q : PresheafOfModules R}
-  (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
-  (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
-    restrictionApp f P ≫ (ModuleCat.restrictScalars (R.map f)).map (app Y) =
-      ModuleCat.ofHom (app X) ≫ restrictionApp f Q)
-
-/-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
-of a family of linear maps over the various rings `R.obj X`, and for which the
-naturality condition is stated using the restriction of scalars. -/
-def mk'' : P ⟶ Q where
-  hom :=
-    { app := fun X => (app X).toAddMonoidHom
-      naturality := fun X Y f => by
-        ext x
-        exact congr_hom (naturality f) x }
-  map_smul X := (app X).map_smul
-
-@[simp]
-lemma mk''_app : (mk'' app naturality).app = app := rfl
-
-end Hom
-
-end PresheafOfModules
+end BundledCorePresheafOfModules

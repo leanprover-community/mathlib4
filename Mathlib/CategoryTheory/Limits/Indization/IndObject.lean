@@ -61,6 +61,16 @@ structure IndObjectPresentation (A : Cᵒᵖ ⥤ Type v) where
 
 namespace IndObjectPresentation
 
+/-- Alternative constructor for `IndObjectPresentation` taking a cocone instead of its defining
+    natural transformation. -/
+@[simps]
+def ofCocone {I : Type v} [SmallCategory I] [IsFiltered I] {F : I ⥤ C}
+    (c : Cocone (F ⋙ yoneda)) (hc : IsColimit c) : IndObjectPresentation c.pt where
+  I := I
+  F := F
+  ι := c.ι
+  isColimit := hc
+
 variable {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A)
 
 instance : SmallCategory P.I := P.ℐ
@@ -75,6 +85,13 @@ def cocone : Cocone (P.F ⋙ yoneda) where
 /-- `P.cocone` is a colimit cocone. -/
 def coconeIsColimit : IsColimit P.cocone :=
   P.isColimit
+
+/-- If `A` and `B` are isomorphic, then an ind-object presentation of `A` can be extended to an
+    ind-object presentation of `B`. -/
+@[simps!]
+noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ⟶ B) [IsIso η] :
+    IndObjectPresentation B :=
+  .ofCocone (P.cocone.extend η) (P.coconeIsColimit.extendIso (by exact η))
 
 /-- The canonical comparison functor between the indexing category of the presentation and the
     comma category `CostructuredArrow yoneda A`. This functor is always final. -/
@@ -112,6 +129,12 @@ theorem isIndObject_yoneda (X : C) : IsIndObject (yoneda.obj X) :=
 namespace IsIndObject
 
 variable {A : Cᵒᵖ ⥤ Type v}
+
+theorem map {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A → IsIndObject B
+  | ⟨⟨P⟩⟩ => ⟨⟨P.extend η⟩⟩
+
+theorem iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A ↔ IsIndObject B :=
+  ⟨.map η, .map (inv η)⟩
 
 /-- Pick a presentation for an ind-object using choice. -/
 noncomputable def presentation : IsIndObject A → IndObjectPresentation A
