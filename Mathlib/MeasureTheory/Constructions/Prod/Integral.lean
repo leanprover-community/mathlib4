@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.SetIntegral
 
 #align_import measure_theory.constructions.prod.integral from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
@@ -47,13 +48,9 @@ open TopologicalSpace
 open Filter hiding prod_eq map
 
 variable {α α' β β' γ E : Type*}
-
 variable [MeasurableSpace α] [MeasurableSpace α'] [MeasurableSpace β] [MeasurableSpace β']
-
 variable [MeasurableSpace γ]
-
 variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
-
 variable [NormedAddCommGroup E]
 
 /-! ### Measurability
@@ -95,17 +92,17 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SigmaFinite ν] �
     simp only [SimpleFunc.integral_eq_sum_of_subset (this _)]
     refine' Finset.stronglyMeasurable_sum _ fun x _ => _
     refine' (Measurable.ennreal_toReal _).stronglyMeasurable.smul_const _
-    simp only [SimpleFunc.coe_comp, preimage_comp]
+    simp only [s', SimpleFunc.coe_comp, preimage_comp]
     apply measurable_measure_prod_mk_left
     exact (s n).measurableSet_fiber x
   have h2f' : Tendsto f' atTop (𝓝 fun x : α => ∫ y : β, f x y ∂ν) := by
     rw [tendsto_pi_nhds]; intro x
     by_cases hfx : Integrable (f x) ν
-    · have : ∀ n, Integrable (s' n x) ν := by
-        intro n; apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
-        apply eventually_of_forall; intro y
-        simp_rw [SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
-      simp only [hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
+    · have (n) : Integrable (s' n x) ν := by
+        apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
+        filter_upwards with y
+        simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
+      simp only [f', hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
         mem_setOf_eq]
       refine'
         tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
@@ -120,7 +117,7 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SigmaFinite ν] �
         · simp
         apply subset_closure
         simp [-uncurry_apply_pair]
-    · simp [hfx, integral_undef]
+    · simp [f', hfx, integral_undef]
   exact stronglyMeasurable_of_tendsto _ hf' h2f'
 #align measure_theory.strongly_measurable.integral_prod_right MeasureTheory.StronglyMeasurable.integral_prod_right
 
@@ -165,7 +162,7 @@ theorem integrable_measure_prod_mk_left {s : Set (α × β)} (hs : MeasurableSet
   -- Porting note: was `simp_rw`
   rw [prod_apply hs]
   apply lintegral_congr_ae
-  refine' (ae_measure_lt_top hs h2s).mp _; apply eventually_of_forall; intro x hx
+  filter_upwards [ae_measure_lt_top hs h2s] with x hx
   rw [lt_top_iff_ne_top] at hx; simp [ofReal_toReal, hx]
 #align measure_theory.measure.integrable_measure_prod_mk_left MeasureTheory.Measure.integrable_measure_prod_mk_left
 
@@ -240,7 +237,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
   simp only [HasFiniteIntegral]
   -- porting note (#10745): was `simp`
   rw [lintegral_prod_of_measurable _ h1f.ennnorm]
-  have : ∀ x, ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := fun x => eventually_of_forall fun y => norm_nonneg _
+  have (x) : ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := by filter_upwards with y using norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prod_mk_left).aestronglyMeasurable,
     ennnorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_coe_nnnorm]
@@ -249,7 +246,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
     rw [← and_congr_right_iff, and_iff_right_of_imp h1]
   rw [this]
   · intro h2f; rw [lintegral_congr_ae]
-    refine' h2f.mp _; apply eventually_of_forall; intro x hx; dsimp only
+    filter_upwards [h2f] with x hx
     rw [ofReal_toReal]; rw [← lt_top_iff_ne_top]; exact hx
   · intro h2f; refine' ae_lt_top _ h2f.ne; exact h1f.ennnorm.lintegral_prod_right'
 #align measure_theory.has_finite_integral_prod_iff MeasureTheory.hasFiniteIntegral_prod_iff
@@ -472,10 +469,8 @@ theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
   · exact isClosed_eq continuous_integral continuous_integral_integral
   · rintro f g hfg - hf; convert hf using 1
     · exact integral_congr_ae hfg.symm
-    · refine' integral_congr_ae _
-      refine' (ae_ae_of_ae_prod hfg).mp _
-      apply eventually_of_forall; intro x hfgx
-      exact integral_congr_ae (ae_eq_symm hfgx)
+    · apply integral_congr_ae
+      filter_upwards [ae_ae_of_ae_prod hfg] with x hfgx using integral_congr_ae (ae_eq_symm hfgx)
 #align measure_theory.integral_prod MeasureTheory.integral_prod
 
 /-- Symmetric version of **Fubini's Theorem**: For integrable functions on `α × β`,

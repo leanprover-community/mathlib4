@@ -40,7 +40,6 @@ variable {ι : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
 namespace DFinsupp
 
 variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
-
 variable [AddCommMonoid N] [Module R N]
 
 section DecidableEq
@@ -185,9 +184,7 @@ The names should match the equivalent bundled `Finsupp.mapRange` definitions.
 section mapRange
 
 variable {β β₁ β₂ : ι → Type*}
-
 variable [∀ i, AddCommMonoid (β i)] [∀ i, AddCommMonoid (β₁ i)] [∀ i, AddCommMonoid (β₂ i)]
-
 variable [∀ i, Module R (β i)] [∀ i, Module R (β₁ i)] [∀ i, Module R (β₂ i)]
 
 theorem mapRange_smul (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (r : R)
@@ -587,7 +584,6 @@ variable {M : Type*} {M' : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*} {
 variable {N : Type*} {N₂ : Type*}
 variable {ι : Type*}
 variable {V : Type*} {V₂ : Type*}
-
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
@@ -648,15 +644,10 @@ section DFinsupp
 open DFinsupp
 
 variable [Semiring R] [Semiring R₂]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂]
-
 variable [Module R M] [Module R₂ M₂]
-
 variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
-
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
-
 variable {γ : ι → Type*} [DecidableEq ι]
 
 

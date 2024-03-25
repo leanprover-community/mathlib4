@@ -338,9 +338,9 @@ lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M]
     (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₂ l)
   have : IsNilpotent (f₂ - f₁) := by
     apply Commute.isNilpotent_sub (x := f₂) (y := f₁) _ ⟨l, ?_⟩ ⟨k, ?_⟩
-    · ext; simp [smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
+    · ext; simp [f₁, f₂, smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
     all_goals ext ⟨x, _, _⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using ‹_›
-  have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [sub_smul]
+  have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [f₁, f₂, sub_smul]
   rw [hf₁₂, IsNilpotent.map_iff (NoZeroSMulDivisors.algebraMap_injective R (End R p)),
     isNilpotent_iff_eq_zero, sub_eq_zero] at this
   contradiction
@@ -458,7 +458,7 @@ theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End
               rw [generalizedEigenspace, OrderHom.coe_mk, ← LinearMap.ker_comp]; rfl
       _ = f.generalizedEigenspace μ (finrank K V + finrank K V) := by rw [← pow_add]; rfl
       _ = f.generalizedEigenspace μ (finrank K V) := by
-        rw [generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le]; linarith
+        rw [generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le]; omega
   rw [disjoint_iff_inf_le, generalizedEigenrange, LinearMap.range_eq_map,
     Submodule.map_inf_eq_map_inf_comap, top_inf_eq, h]
   apply Submodule.map_comap_le
@@ -539,7 +539,7 @@ lemma map_smul_of_iInf_generalizedEigenspace_ne_bot [NoZeroSMulDivisors R M]
   have : ⨅ x, g x ≤ g x ⊓ g (t • x) := le_inf_iff.mpr ⟨iInf_le g x, iInf_le g (t • x)⟩
   refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp ?_))
   apply Disjoint.mono_left (iSup_generalizedEigenspace_le_smul (f x) (μ x) t)
-  simp only [map_smul]
+  simp only [g, map_smul]
   exact disjoint_iSup_generalizedEigenspace (t • f x) (Ne.symm contra)
 
 lemma map_add_of_iInf_generalizedEigenspace_ne_bot_of_commute [NoZeroSMulDivisors R M]
@@ -553,7 +553,7 @@ lemma map_add_of_iInf_generalizedEigenspace_ne_bot_of_commute [NoZeroSMulDivisor
     le_inf_iff.mpr ⟨le_inf_iff.mpr ⟨iInf_le g x, iInf_le g y⟩, iInf_le g (x + y)⟩
   refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp ?_))
   apply Disjoint.mono_left (iSup_generalizedEigenspace_inf_le_add (f x) (f y) (μ x) (μ y) (h x y))
-  simp only [map_add]
+  simp only [g, map_add]
   exact disjoint_iSup_generalizedEigenspace (f x + f y) (Ne.symm contra)
 
 end End

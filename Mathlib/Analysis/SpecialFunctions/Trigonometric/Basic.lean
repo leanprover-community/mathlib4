@@ -44,7 +44,8 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open Classical Topology Filter Set
+open scoped Classical
+open Topology Filter Set
 
 namespace Complex
 
@@ -134,17 +135,17 @@ scoped notation "π" => Real.pi
 
 @[simp]
 theorem cos_pi_div_two : cos (π / 2) = 0 := by
-  rw [Real.pi, mul_div_cancel_left _ (two_ne_zero' ℝ)]
+  rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
   exact (Classical.choose_spec exists_cos_eq_zero).2
 #align real.cos_pi_div_two Real.cos_pi_div_two
 
 theorem one_le_pi_div_two : (1 : ℝ) ≤ π / 2 := by
-  rw [Real.pi, mul_div_cancel_left _ (two_ne_zero' ℝ)]
+  rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
   exact (Classical.choose_spec exists_cos_eq_zero).1.1
 #align real.one_le_pi_div_two Real.one_le_pi_div_two
 
 theorem pi_div_two_le_two : π / 2 ≤ 2 := by
-  rw [Real.pi, mul_div_cancel_left _ (two_ne_zero' ℝ)]
+  rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
   exact (Classical.choose_spec exists_cos_eq_zero).1.2
 #align real.pi_div_two_le_two Real.pi_div_two_le_two
 
@@ -225,12 +226,12 @@ open Real
 
 @[simp]
 theorem sin_pi : sin π = 0 := by
-  rw [← mul_div_cancel_left π (two_ne_zero' ℝ), two_mul, add_div, sin_add, cos_pi_div_two]; simp
+  rw [← mul_div_cancel_left₀ π (two_ne_zero' ℝ), two_mul, add_div, sin_add, cos_pi_div_two]; simp
 #align real.sin_pi Real.sin_pi
 
 @[simp]
 theorem cos_pi : cos π = -1 := by
-  rw [← mul_div_cancel_left π (two_ne_zero' ℝ), mul_div_assoc, cos_two_mul, cos_pi_div_two]
+  rw [← mul_div_cancel_left₀ π (two_ne_zero' ℝ), mul_div_assoc, cos_two_mul, cos_pi_div_two]
   norm_num
 #align real.cos_pi Real.cos_pi
 
@@ -396,22 +397,22 @@ theorem cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = co
   cos_neg x ▸ cos_periodic.int_mul_sub_eq n
 #align real.cos_int_mul_two_pi_sub Real.cos_int_mul_two_pi_sub
 
--- porting note : was @[simp] but simp can prove it
+-- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_nat_mul_two_pi_add_pi (n : ℕ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).add_antiperiod_eq cos_antiperiodic
 #align real.cos_nat_mul_two_pi_add_pi Real.cos_nat_mul_two_pi_add_pi
 
--- porting note : was @[simp] but simp can prove it
+-- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_int_mul_two_pi_add_pi (n : ℤ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).add_antiperiod_eq cos_antiperiodic
 #align real.cos_int_mul_two_pi_add_pi Real.cos_int_mul_two_pi_add_pi
 
--- porting note : was @[simp] but simp can prove it
+-- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_nat_mul_two_pi_sub_pi (n : ℕ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).sub_antiperiod_eq cos_antiperiodic
 #align real.cos_nat_mul_two_pi_sub_pi Real.cos_nat_mul_two_pi_sub_pi
 
--- porting note : was @[simp] but simp can prove it
+-- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_int_mul_two_pi_sub_pi (n : ℤ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).sub_antiperiod_eq cos_antiperiodic
 #align real.cos_int_mul_two_pi_sub_pi Real.cos_int_mul_two_pi_sub_pi
@@ -578,7 +579,7 @@ theorem cos_eq_one_iff_of_lt_of_lt {x : ℝ} (hx₁ : -(2 * π) < x) (hx₂ : x 
     rw [mul_lt_iff_lt_one_left two_pi_pos] at hx₂
     rw [neg_lt, neg_mul_eq_neg_mul, mul_lt_iff_lt_one_left two_pi_pos] at hx₁
     norm_cast at hx₁ hx₂
-    obtain rfl : n = 0 := le_antisymm (by linarith) (by linarith)
+    obtain rfl : n = 0 := le_antisymm (by omega) (by omega)
     simp, fun h => by simp [h]⟩
 #align real.cos_eq_one_iff_of_lt_of_lt Real.cos_eq_one_iff_of_lt_of_lt
 
@@ -978,7 +979,7 @@ theorem tan_periodic : Function.Periodic tan π := by
   simpa only [Function.Periodic, tan_eq_sin_div_cos] using sin_antiperiodic.div cos_antiperiodic
 #align real.tan_periodic Real.tan_periodic
 
--- Porting note: added
+-- Porting note (#10756): added theorem
 @[simp]
 theorem tan_pi : tan π = 0 := by rw [tan_periodic.eq, tan_zero]
 

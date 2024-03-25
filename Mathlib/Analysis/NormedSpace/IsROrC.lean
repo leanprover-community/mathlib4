@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.Data.IsROrC.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 import Mathlib.Analysis.NormedSpace.Pointwise
 
 #align_import analysis.normed_space.is_R_or_C from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
@@ -66,7 +66,7 @@ theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f :
   have r_ne_zero : (r : 𝕜) ≠ 0 := IsROrC.ofReal_ne_zero.mpr r_pos.ne'
   have eq : f z = ‖z‖ / r * f z₁ := by
     rw [hz₁, LinearMap.map_smul, smul_eq_mul]
-    rw [← mul_assoc, ← mul_assoc, div_mul_cancel _ r_ne_zero, mul_inv_cancel, one_mul]
+    rw [← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ r_ne_zero, mul_inv_cancel, one_mul]
     simp only [z_zero, IsROrC.ofReal_eq_zero, norm_eq_zero, Ne.def, not_false_iff]
   rw [eq, norm_mul, norm_div, IsROrC.norm_coe_norm, IsROrC.norm_of_nonneg r_pos.le,
     div_mul_eq_mul_div, div_mul_eq_mul_div, mul_comm]

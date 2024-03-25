@@ -3,13 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Instances.NNReal
-import Mathlib.Topology.Algebra.Order.MonotoneContinuity
+import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.Algebra.Order.T5
+import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.Order.T5
 
 #align_import topology.instances.ennreal from "leanprover-community/mathlib"@"ec4b2eeb50364487f80421c0b4c41328a611f30d"
 
@@ -68,7 +68,7 @@ theorem openEmbedding_coe : OpenEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
 #align ennreal.open_embedding_coe ENNReal.openEmbedding_coe
 
 theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r : ℝ≥0∞) :=
-  IsOpen.mem_nhds openEmbedding_coe.open_range <| mem_range_self _
+  IsOpen.mem_nhds openEmbedding_coe.isOpen_range <| mem_range_self _
 #align ennreal.coe_range_mem_nhds ENNReal.coe_range_mem_nhds
 
 @[norm_cast]
@@ -138,6 +138,9 @@ theorem tendsto_toReal {a : ℝ≥0∞} (ha : a ≠ ∞) : Tendsto ENNReal.toRea
 
 lemma continuousOn_toReal : ContinuousOn ENNReal.toReal { a | a ≠ ∞ } :=
   NNReal.continuous_coe.comp_continuousOn continuousOn_toNNReal
+
+lemma continuousAt_toReal (hx : x ≠ ∞) : ContinuousAt ENNReal.toReal x :=
+  continuousOn_toReal.continuousAt (isOpen_ne_top.mem_nhds_iff.mpr hx)
 
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
 def neTopHomeomorphNNReal : { a | a ≠ ∞ } ≃ₜ ℝ≥0 where
@@ -209,7 +212,7 @@ theorem nhds_zero_basis_Iic : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0�
   nhds_bot_basis_Iic
 #align ennreal.nhds_zero_basis_Iic ENNReal.nhds_zero_basis_Iic
 
--- porting note: todo: add a TC for `≠ ∞`?
+-- Porting note (#11215): TODO: add a TC for `≠ ∞`?
 @[instance]
 theorem nhdsWithin_Ioi_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).NeBot :=
   nhdsWithin_Ioi_self_neBot' ⟨∞, ENNReal.coe_lt_top⟩
@@ -270,7 +273,7 @@ theorem biInf_le_nhds : ∀ x : ℝ≥0∞, ⨅ ε > 0, 𝓟 (Icc (x - ε) (x + 
     simpa only [← coe_one, top_sub_coe, top_add, Icc_self, principal_singleton] using pure_le_nhds _
   | (x : ℝ≥0) => (nhds_of_ne_top coe_ne_top).ge
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 protected theorem tendsto_nhds_of_Icc {f : Filter α} {u : α → ℝ≥0∞} {a : ℝ≥0∞}
     (h : ∀ ε > 0, ∀ᶠ x in f, u x ∈ Icc (a - ε) (a + ε)) : Tendsto u f (𝓝 a) := by
   refine Tendsto.mono_right ?_ (biInf_le_nhds _)
@@ -446,7 +449,7 @@ theorem continuousOn_sub :
   rw [ContinuousOn]
   rintro ⟨x, y⟩ hp
   simp only [Ne.def, Set.mem_setOf_eq, Prod.mk.inj_iff] at hp
-  refine' tendsto_nhdsWithin_of_tendsto_nhds (tendsto_sub (not_and_or.mp hp))
+  exact tendsto_nhdsWithin_of_tendsto_nhds (tendsto_sub (not_and_or.mp hp))
 #align ennreal.continuous_on_sub ENNReal.continuousOn_sub
 
 theorem continuous_sub_left {a : ℝ≥0∞} (a_ne_top : a ≠ ∞) : Continuous (a - ·) := by
@@ -536,7 +539,7 @@ theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
 
 instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
 
-@[simp] -- porting note: todo: generalize to `[InvolutiveInv _] [ContinuousInv _]`
+@[simp] -- Porting note (#11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun x => (m x)⁻¹) f (𝓝 a⁻¹) ↔ Tendsto m f (𝓝 a) :=
   ⟨fun h => by simpa only [inv_inv] using Tendsto.inv h, Tendsto.inv⟩

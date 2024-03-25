@@ -49,7 +49,7 @@ section MatrixNotation
 
 /-- `![]` is the vector with no entries. -/
 def vecEmpty : Fin 0 → α :=
-  Fin.elim0'
+  Fin.elim0
 #align matrix.vec_empty Matrix.vecEmpty
 
 /-- `vecCons h t` prepends an entry `h` to a vector `t`.
@@ -212,6 +212,16 @@ theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead 
 
 @[simp]
 theorem cons_val_two (x : α) (u : Fin m.succ.succ → α) : vecCons x u 2 = vecHead (vecTail u) :=
+  rfl
+
+@[simp]
+lemma cons_val_three (x : α) (u : Fin m.succ.succ.succ → α) :
+    vecCons x u 3 = vecHead (vecTail (vecTail u)) :=
+  rfl
+
+@[simp]
+lemma cons_val_four (x : α) (u : Fin m.succ.succ.succ.succ → α) :
+    vecCons x u 4 = vecHead (vecTail (vecTail (vecTail u))) :=
   rfl
 
 @[simp]
@@ -566,7 +576,7 @@ theorem cons_eq_zero_iff {v : Fin n → α} {x : α} : vecCons x v = 0 ↔ x = 0
     fun ⟨hx, hv⟩ => by simp [hx, hv]⟩
 #align matrix.cons_eq_zero_iff Matrix.cons_eq_zero_iff
 
-open Classical
+open scoped Classical
 
 theorem cons_nonzero_iff {v : Fin n → α} {x : α} : vecCons x v ≠ 0 ↔ x ≠ 0 ∨ v ≠ 0 :=
   ⟨fun h => not_and_or.mp (h ∘ cons_eq_zero_iff.mpr), fun h =>
@@ -601,5 +611,8 @@ theorem tail_neg (a : Fin n.succ → α) : vecTail (-a) = -vecTail a :=
 #align matrix.tail_neg Matrix.tail_neg
 
 end Neg
+
+lemma const_fin1_eq (x : α) : (fun _ : Fin 1 => x) = ![x] :=
+  (cons_fin_one x _).symm
 
 end Matrix

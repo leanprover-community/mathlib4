@@ -70,7 +70,7 @@ instance quasiCompactComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCom
   rw [Scheme.comp_val_base, coe_comp, Set.preimage_comp]
   apply QuasiCompact.isCompact_preimage
   · exact Continuous.isOpen_preimage (by
-    -- porting note: `continuity` failed
+    -- Porting note: `continuity` failed
     -- see https://github.com/leanprover-community/mathlib4/issues/5030
       exact Scheme.Hom.continuous g) _ hU
   apply QuasiCompact.isCompact_preimage <;> assumption
@@ -146,7 +146,7 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X.carrier} (hU : IsCompact (
   rw [e, Set.iUnion₂_inter]
   apply le_antisymm <;> apply Set.iUnion₂_subset
   · intro i hi
-    -- porting note: had to make explicit the first given parameter to `Set.subset_iUnion₂`
+    -- Porting note: had to make explicit the first given parameter to `Set.subset_iUnion₂`
     exact Set.Subset.trans (Set.Subset.rfl : _ ≤ g ⟨i, hi⟩)
       (@Set.subset_iUnion₂ _ _ _
         (fun (i : Scheme.affineOpens X) (_ : i ∈ Set.range g) => (i : Set X.toPresheafedSpace)) _
@@ -251,8 +251,8 @@ theorem QuasiCompact.affineProperty_stableUnderBaseChange :
   intro X Y S _ _ f g h
   rw [QuasiCompact.affineProperty] at h ⊢
   let 𝒰 := Scheme.Pullback.openCoverOfRight Y.affineCover.finiteSubcover f g
-  have : Finite 𝒰.J := by dsimp; infer_instance
-  have : ∀ i, CompactSpace (𝒰.obj i).carrier := by intro i; dsimp; infer_instance
+  have : Finite 𝒰.J := by dsimp [𝒰]; infer_instance
+  have : ∀ i, CompactSpace (𝒰.obj i).carrier := by intro i; dsimp [𝒰]; infer_instance
   exact 𝒰.compactSpace
 #align algebraic_geometry.quasi_compact.affine_property_stable_under_base_change AlgebraicGeometry.QuasiCompact.affineProperty_stableUnderBaseChange
 
@@ -312,7 +312,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     intro i
     change (i : Opens X.carrier) ≤ U
     rw [e]
-    -- porting note: `exact le_iSup _ _` no longer works
+    -- Porting note: `exact le_iSup _ _` no longer works
     exact le_iSup (fun (i : s) => (i : Opens (X.toPresheafedSpace))) _
   have H' := fun i : s =>
     exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen X i.1.2

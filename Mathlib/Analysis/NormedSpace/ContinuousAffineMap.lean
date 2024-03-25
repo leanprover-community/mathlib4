@@ -3,10 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Topology.Algebra.ContinuousAffineMap
-import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.AffineIsometry
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Topology.Algebra.ContinuousAffineMap
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 
 #align_import analysis.normed_space.continuous_affine_map from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
@@ -45,15 +44,10 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 namespace ContinuousAffineMap
 
 variable {𝕜 R V W W₂ P Q Q₂ : Type*}
-
 variable [NormedAddCommGroup V] [MetricSpace P] [NormedAddTorsor V P]
-
 variable [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
-
 variable [NormedAddCommGroup W₂] [MetricSpace Q₂] [NormedAddTorsor W₂ Q₂]
-
 variable [NormedField R] [NormedSpace R V] [NormedSpace R W] [NormedSpace R W₂]
-
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [NormedSpace 𝕜 W₂]
 
 /-- The linear map underlying a continuous affine map is continuous. -/

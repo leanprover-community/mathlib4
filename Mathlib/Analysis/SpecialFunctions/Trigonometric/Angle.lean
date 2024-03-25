@@ -32,15 +32,15 @@ def Angle : Type :=
 
 namespace Angle
 
--- Porting note: added due to missing instances due to no deriving
+-- Porting note (#10754): added due to missing instances due to no deriving
 instance : NormedAddCommGroup Angle :=
   inferInstanceAs (NormedAddCommGroup (AddCircle (2 * π)))
 
--- Porting note: added due to missing instances due to no deriving
+-- Porting note (#10754): added due to missing instances due to no deriving
 instance : Inhabited Angle :=
   inferInstanceAs (Inhabited (AddCircle (2 * π)))
 
--- Porting note: added due to missing instances due to no deriving
+-- Porting note (#10754): added due to missing instances due to no deriving
 -- also, without this, a plain `QuotientAddGroup.mk`
 -- causes coerced terms to be of type `ℝ ⧸ AddSubgroup.zmultiples (2 * π)`
 /-- The canonical map from `ℝ` to the quotient `Angle`. -/
@@ -144,12 +144,12 @@ theorem two_zsmul_coe_div_two (θ : ℝ) : (2 : ℤ) • (↑(θ / 2) : Angle) =
   rw [← coe_zsmul, two_zsmul, add_halves]
 #align real.angle.two_zsmul_coe_div_two Real.Angle.two_zsmul_coe_div_two
 
--- Porting note: @[simp] can prove it
+-- Porting note (#10618): @[simp] can prove it
 theorem two_nsmul_neg_pi_div_two : (2 : ℕ) • (↑(-π / 2) : Angle) = π := by
   rw [two_nsmul_coe_div_two, coe_neg, neg_coe_pi]
 #align real.angle.two_nsmul_neg_pi_div_two Real.Angle.two_nsmul_neg_pi_div_two
 
--- Porting note: @[simp] can prove it
+-- Porting note (#10618): @[simp] can prove it
 theorem two_zsmul_neg_pi_div_two : (2 : ℤ) • (↑(-π / 2) : Angle) = π := by
   rw [two_zsmul, ← two_nsmul, two_nsmul_neg_pi_div_two]
 #align real.angle.two_zsmul_neg_pi_div_two Real.Angle.two_zsmul_neg_pi_div_two
@@ -185,11 +185,11 @@ theorem two_zsmul_eq_iff {ψ θ : Angle} : (2 : ℤ) • ψ = (2 : ℤ) • θ �
   have : Int.natAbs 2 = 2 := rfl
   rw [zsmul_eq_iff two_ne_zero, this, Fin.exists_fin_two, Fin.val_zero,
     Fin.val_one, zero_smul, add_zero, one_smul, Int.cast_two,
-    mul_div_cancel_left (_ : ℝ) two_ne_zero]
+    mul_div_cancel_left₀ (_ : ℝ) two_ne_zero]
 #align real.angle.two_zsmul_eq_iff Real.Angle.two_zsmul_eq_iff
 
 theorem two_nsmul_eq_iff {ψ θ : Angle} : (2 : ℕ) • ψ = (2 : ℕ) • θ ↔ ψ = θ ∨ ψ = θ + ↑π := by
-  simp_rw [← coe_nat_zsmul, Nat.cast_ofNat, two_zsmul_eq_iff]
+  simp_rw [← natCast_zsmul, Nat.cast_ofNat, two_zsmul_eq_iff]
 #align real.angle.two_nsmul_eq_iff Real.Angle.two_nsmul_eq_iff
 
 theorem two_nsmul_eq_zero_iff {θ : Angle} : (2 : ℕ) • θ = 0 ↔ θ = 0 ∨ θ = π := by
@@ -254,10 +254,10 @@ theorem cos_eq_iff_coe_eq_or_eq_neg {θ ψ : ℝ} :
         zero_add]
   · rw [angle_eq_iff_two_pi_dvd_sub, ← coe_neg, angle_eq_iff_two_pi_dvd_sub]
     rintro (⟨k, H⟩ | ⟨k, H⟩)
-    rw [← sub_eq_zero, cos_sub_cos, H, mul_assoc 2 π k, mul_div_cancel_left _ (two_ne_zero' ℝ),
+    rw [← sub_eq_zero, cos_sub_cos, H, mul_assoc 2 π k, mul_div_cancel_left₀ _ (two_ne_zero' ℝ),
       mul_comm π _, sin_int_mul_pi, mul_zero]
     rw [← sub_eq_zero, cos_sub_cos, ← sub_neg_eq_add, H, mul_assoc 2 π k,
-      mul_div_cancel_left _ (two_ne_zero' ℝ), mul_comm π _, sin_int_mul_pi, mul_zero,
+      mul_div_cancel_left₀ _ (two_ne_zero' ℝ), mul_comm π _, sin_int_mul_pi, mul_zero,
       zero_mul]
 #align real.angle.cos_eq_iff_coe_eq_or_eq_neg Real.Angle.cos_eq_iff_coe_eq_or_eq_neg
 
@@ -276,13 +276,13 @@ theorem sin_eq_iff_coe_eq_or_add_eq_pi {θ ψ : ℝ} :
     exact h.symm
   · rw [angle_eq_iff_two_pi_dvd_sub, ← eq_sub_iff_add_eq, ← coe_sub, angle_eq_iff_two_pi_dvd_sub]
     rintro (⟨k, H⟩ | ⟨k, H⟩)
-    rw [← sub_eq_zero, sin_sub_sin, H, mul_assoc 2 π k, mul_div_cancel_left _ (two_ne_zero' ℝ),
+    rw [← sub_eq_zero, sin_sub_sin, H, mul_assoc 2 π k, mul_div_cancel_left₀ _ (two_ne_zero' ℝ),
       mul_comm π _, sin_int_mul_pi, mul_zero, zero_mul]
     have H' : θ + ψ = 2 * k * π + π := by
       rwa [← sub_add, sub_add_eq_add_sub, sub_eq_iff_eq_add, mul_assoc, mul_comm π _, ←
         mul_assoc] at H
     rw [← sub_eq_zero, sin_sub_sin, H', add_div, mul_assoc 2 _ π,
-      mul_div_cancel_left _ (two_ne_zero' ℝ), cos_add_pi_div_two, sin_int_mul_pi, neg_zero,
+      mul_div_cancel_left₀ _ (two_ne_zero' ℝ), cos_add_pi_div_two, sin_int_mul_pi, neg_zero,
       mul_zero]
 #align real.angle.sin_eq_iff_coe_eq_or_add_eq_pi Real.Angle.sin_eq_iff_coe_eq_or_add_eq_pi
 
@@ -355,7 +355,7 @@ theorem sin_eq_iff_eq_or_add_eq_pi {θ ψ : Angle} : sin θ = sin ψ ↔ θ = ψ
 theorem sin_zero : sin (0 : Angle) = 0 := by rw [← coe_zero, sin_coe, Real.sin_zero]
 #align real.angle.sin_zero Real.Angle.sin_zero
 
--- Porting note: @[simp] can prove it
+-- Porting note (#10618): @[simp] can prove it
 theorem sin_coe_pi : sin (π : Angle) = 0 := by rw [sin_coe, Real.sin_pi]
 #align real.angle.sin_coe_pi Real.Angle.sin_coe_pi
 
@@ -395,7 +395,7 @@ theorem sin_sub_pi (θ : Angle) : sin (θ - π) = -sin θ :=
 theorem cos_zero : cos (0 : Angle) = 1 := by rw [← coe_zero, cos_coe, Real.cos_zero]
 #align real.angle.cos_zero Real.Angle.cos_zero
 
--- Porting note: @[simp] can prove it
+-- Porting note (#10618): @[simp] can prove it
 theorem cos_coe_pi : cos (π : Angle) = -1 := by rw [cos_coe, Real.cos_pi]
 #align real.angle.cos_coe_pi Real.Angle.cos_coe_pi
 
@@ -689,7 +689,8 @@ theorem toReal_coe_eq_self_sub_two_pi_iff {θ : ℝ} :
 
 theorem toReal_coe_eq_self_add_two_pi_iff {θ : ℝ} :
     (θ : Angle).toReal = θ + 2 * π ↔ θ ∈ Set.Ioc (-3 * π) (-π) := by
-  convert @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ (-1) using 2 <;> norm_num
+  convert @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ (-1) using 2 <;>
+    set_option tactic.skipAssignedInstances false in norm_num
 #align real.angle.to_real_coe_eq_self_add_two_pi_iff Real.Angle.toReal_coe_eq_self_add_two_pi_iff
 
 theorem two_nsmul_toReal_eq_two_mul_sub_two_pi {θ : Angle} :
@@ -786,7 +787,7 @@ theorem tan_coe (x : ℝ) : tan (x : Angle) = Real.tan x := by
 theorem tan_zero : tan (0 : Angle) = 0 := by rw [← coe_zero, tan_coe, Real.tan_zero]
 #align real.angle.tan_zero Real.Angle.tan_zero
 
--- Porting note: @[simp] can now prove it
+-- Porting note (#10618): @[simp] can now prove it
 theorem tan_coe_pi : tan (π : Angle) = 0 := by rw [tan_coe, Real.tan_pi]
 #align real.angle.tan_coe_pi Real.Angle.tan_coe_pi
 

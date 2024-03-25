@@ -45,7 +45,7 @@ theorem setOf_liouvilleWith_subset_aux :
     have hx : x + ↑(-⌊x⌋) ∈ Ico (0 : ℝ) 1 := by
       simp only [Int.floor_le, Int.lt_floor_add_one, add_neg_lt_iff_le_add', zero_add, and_self_iff,
         mem_Ico, Int.cast_neg, le_add_neg_iff_add_le]
-    refine' ⟨-⌊x⌋, n + 1, n.succ_pos, this _ (hxp.add_int _) hx⟩
+    exact ⟨-⌊x⌋, n + 1, n.succ_pos, this _ (hxp.add_int _) hx⟩
   clear hxp x; intro x hxp hx01
   refine' ((hxp.frequently_lt_rpow_neg hn).and_eventually (eventually_ge_atTop 1)).mono _
   rintro b ⟨⟨a, -, hlt⟩, hb⟩

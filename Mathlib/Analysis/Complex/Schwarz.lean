@@ -126,7 +126,9 @@ theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div [CompleteSpace E] [St
     (differentiableOn_dslope (isOpen_ball.mem_nhds (mem_ball_self h_R₁))).mpr hd
   have : g z = g z₀ := eqOn_of_isPreconnected_of_isMaxOn_norm (convex_ball c R₁).isPreconnected
     isOpen_ball g_diff h_z₀ g_max hz
-  simp [← this]
+  simp [g] at this
+  simp [g, ← this]
+
 #align complex.affine_of_maps_to_ball_of_exists_norm_dslope_eq_div Complex.affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div
 
 theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div' [CompleteSpace E]
@@ -183,7 +185,7 @@ disk to itself, then for any point `z` of this disk we have `dist (f z) c ≤ di
 theorem dist_le_dist_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball c R))
     (h_maps : MapsTo f (ball c R) (ball c R)) (hc : f c = c) (hz : z ∈ ball c R) :
     dist (f z) c ≤ dist z c := by
-  -- porting note: `simp` was failing to use `div_self`
+  -- Porting note: `simp` was failing to use `div_self`
   have := dist_le_div_mul_dist_of_mapsTo_ball hd (by rwa [hc]) hz
   rwa [hc, div_self, one_mul] at this
   exact (nonempty_ball.1 ⟨z, hz⟩).ne'
