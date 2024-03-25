@@ -180,6 +180,8 @@ structure G (V : Type) where
 def g : G Nat where
   Adj a b := (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a))
 
+-- mutes `'push_neg' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 example {p q : Nat} : ¬ g.Adj p q := by
   rw [g]
   guard_target =ₛ ¬ G.Adj { Adj := fun a b => (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a)) } p q

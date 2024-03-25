@@ -106,6 +106,8 @@ example : True := by
   · simp
   · simp
 
+-- mutes `'congr!' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 example [Fintype α] [Fintype β] : Fintype.card α = Fintype.card β := by
   congr!
   guard_target = Fintype.card α = Fintype.card β
