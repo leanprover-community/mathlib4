@@ -104,7 +104,7 @@ theorem evalFrom_of_append (start : σ) (x y : List α) :
 /--
 `M.acceptsFrom s` is the language of `x` such that `M.evalFrom s x` is an accept state.
 -/
-def acceptsFrom (s : σ) : Language α := {x | M.evalFrom start x ∈ M.accept}
+def acceptsFrom (s : σ) : Language α := {x | M.evalFrom s x ∈ M.accept}
 
 theorem mem_acceptsFrom {s : σ} {x : List α} :
     x ∈ M.acceptsFrom s ↔ M.evalFrom s x ∈ M.accept := by rfl
