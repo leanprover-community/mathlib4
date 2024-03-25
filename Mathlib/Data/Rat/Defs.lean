@@ -459,11 +459,9 @@ theorem divInt_ne_zero_of_ne_zero {n d : ℤ} (h : n ≠ 0) (hd : d ≠ 0) : n /
 #align rat.mk_ne_zero_of_ne_zero Rat.divInt_ne_zero_of_ne_zero
 
 theorem mul_num_den (q r : ℚ) : q * r = q.num * r.num /. ↑(q.den * r.den) := by
-  have hq' : (↑q.den : ℤ) ≠ 0 := by have := den_nz q; simpa
-  have hr' : (↑r.den : ℤ) ≠ 0 := by have := den_nz r; simpa
   suffices q.num /. ↑q.den * (r.num /. ↑r.den) = q.num * r.num /. ↑(q.den * r.den) by
     simpa [num_den] using this
-  simp [mul_def' hq' hr']
+  simp [mul_def']
 #align rat.mul_num_denom Rat.mul_num_den
 
 theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
@@ -475,7 +473,7 @@ theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
       q / r = q * r⁻¹ := div_eq_mul_inv q r
       _ = q.num /. q.den * (r.num /. r.den)⁻¹ := by simp [num_den]
       _ = q.num /. q.den * (r.den /. r.num) := by rw [inv_def']
-      _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simpa using den_nz q) hr
+      _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simp) hr
 #align rat.div_num_denom Rat.div_num_den
 
 section Casts
