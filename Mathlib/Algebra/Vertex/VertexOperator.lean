@@ -48,7 +48,7 @@ def ncoef [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n
 
 theorem coeff_eq_ncoef (A : VertexOperator R V)
     (n : ℤ) : coeff A n = ncoef A (-n - 1) := by
-  rw [ncoef, neg_sub, sub_neg_eq_add, add_sub_cancel']
+  rw [ncoef, neg_sub, sub_neg_eq_add, add_sub_cancel_left]
 
 /-- The normal convention for the normalized coefficient of a vertex operator is either `Aₙ` or
 `A(n)`. -/

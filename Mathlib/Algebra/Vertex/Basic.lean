@@ -36,7 +36,7 @@ theorem Int.toNat_sub_eq_zero_leq {m n : ℤ} : Int.toNat (-m - n) = 0 ↔ -n �
 theorem Int.neg_sub_one_sub_nat (i : ℕ) (r s t : ℤ) (hi: i ≤ t) :
     -r - s - ↑(Int.toNat t - i) = ↑i - (r + Int.toNat t) - s := by
   rw [Nat.cast_sub ((Int.le_toNat (le_trans (Int.ofNat_nonneg i) hi)).mpr hi),
-    sub_eq_sub_iff_add_eq_add, Int.sub_add_cancel, sub_add_sub_cancel', sub_add_cancel'']
+    sub_eq_sub_iff_add_eq_add, Int.sub_add_cancel, sub_add_sub_cancel', sub_add_cancel_right]
 
 theorem Int.neg_one_pow_sub (n i : ℕ) (hi : i ≤ n) : (-1) ^ (n - i) = (-1) ^ n * (-1) ^ i := by
   refine Int.eq_of_mul_eq_one ?_
@@ -166,7 +166,7 @@ theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
   intro i hi
   simp_all only [Finset.mem_range]
   congr 1
-  rw [Ring.choose_eq_Nat_choose, coe_nat_zsmul]
+  rw [Ring.choose_eq_Nat_choose, natCast_zsmul]
   congr 1
   rw [Int.neg_sub_one_sub_nat i r 1 (-s - order R b c) (le_of_lt (Int.lt_toNat.mp hi)),
     show -s - 1 - i = -i + -s - 1 by linarith]
@@ -190,10 +190,10 @@ theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s: ℤ) : Finset.sum (F
   simp_all only [Finset.mem_range]
   congr 1
   rw [Int.neg_one_pow_sub, ← Int.mul_neg_one]
-  simp only [zpow_add, mul_neg, mul_one, zpow_coe_nat, zpow_one, Units.val_neg, Units.val_mul,
+  simp only [zpow_add, mul_neg, mul_one, zpow_natCast, zpow_one, Units.val_neg, Units.val_mul,
     Units.val_pow_eq_pow_val, Units.val_one]
   exact le_of_lt hi
-  rw [Ring.choose_eq_Nat_choose, coe_nat_zsmul]
+  rw [Ring.choose_eq_Nat_choose, natCast_zsmul]
   congr 1
   rw [Nat.choose_symm (le_of_lt hi)]
   rw [Int.neg_sub_one_sub_nat i s 1 (-r - order R a c) (le_of_lt (Int.lt_toNat.mp hi)),
@@ -319,7 +319,7 @@ theorem borcherds3Recursion [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVert
       refine Finset.sum_congr rfl ?_
       intro i _
       rw [← Nat.add_one, Nat.cast_add, Nat.cast_one, show (-1:ℤˣ)^(t + 1 + (i + 1) + 1) =
-        (-1)^(t + i + 1) by simp only [zpow_add, zpow_one, mul_neg, mul_one, zpow_coe_nat, neg_mul,
+        (-1)^(t + i + 1) by simp only [zpow_add, zpow_one, mul_neg, mul_one, zpow_natCast, neg_mul,
         neg_neg], show r + 1 + i =r + (i + 1) by linarith,
         show s + (t + 1) - (i + 1) = s + t - i by linarith] -- end first sum
       refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_

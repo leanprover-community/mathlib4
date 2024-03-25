@@ -112,7 +112,6 @@ instance instSmul {R V : Type*} [SMul R V] : SMul R (FormalSeries Γ V) where
 
 /-- The space of formal series is an additive monoid if the space of its coefficients is an
 additive monoid. -/
-@[simps!]
 instance [AddMonoid C] : AddMonoid (FormalSeries Γ C) where
   add_assoc f g h := by
     ext p
@@ -123,6 +122,7 @@ instance [AddMonoid C] : AddMonoid (FormalSeries Γ C) where
   add_zero f := by
     ext p
     simp only [instAdd_add_coef, instZero_zero_coef, add_zero]
+  nsmul := nsmulRec
 
 /-- The space of formal series is an additive commutative monoid if the space of its coefficients
 is an additive commutative monoid. -/
@@ -137,6 +137,7 @@ instance [AddGroup C] : AddGroup (FormalSeries Γ C) where
   add_left_neg f := by
     ext p
     simp only [instAdd_add_coef, instNeg_neg_coef, add_left_neg, instZero_zero_coef]
+  zsmul := zsmulRec
 
 /-- The space of formal series is an additive commutative group if the space of its coefficients
 is an additive commutative group. -/

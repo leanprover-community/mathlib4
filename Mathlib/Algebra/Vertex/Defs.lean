@@ -109,7 +109,7 @@ theorem ncoef_zero_if_neg_order_leq (a b : V) (n : ℤ) (h: - order R a b ≤ n)
 
 theorem ncoef_nonzero_at_neg_order_minus_one (a b : V) (h: Y R a b ≠ 0) :
     ncoef (Y R a) (-order R a b - 1) b ≠ 0 := by
-  rw [ncoef, neg_sub, sub_neg_eq_add, add_sub_cancel']
+  rw [ncoef, neg_sub, sub_neg_eq_add, add_sub_cancel_left]
   exact coeff_nonzero_at_order R a b h
 
 -- Reminder: a (t + i) b = 0 for i ≥ -t - (order a b)

@@ -719,9 +719,9 @@ theorem eval_smul (r : R) : (r • f).eval x = r • (f.eval x) := by
 
 /-- Evaluation as an `R`-linear map. -/
 def eval.linearMap : R[T;T⁻¹] →ₗ[R] S where -- make R explicit?
-  toFun f := f.eval x
-  map_add' f g := eval_add f g x
-  map_smul' r f := eval_smul f x r
+    toFun f := f.eval x
+    map_add' f g := eval_add f g x
+    map_smul' r f := eval_smul f x r
 
 -- TODO: linear map from R[T;T⁻¹] ⊗[R] M to M via unit in R.
 -- TODO: R-algebra maps from R[T;T⁻¹] to S are in bijection with units in S.

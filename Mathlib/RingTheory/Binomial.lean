@@ -279,7 +279,7 @@ theorem ascPochhammer_smeval_nat_int [NatPowAssoc R] (r : R) : ∀(n : ℕ),
   | n + 1 => by
     simp only [ascPochhammer_succ_right, smeval_mul]
     rw [ascPochhammer_smeval_nat_int r n]
-    simp only [smeval_add, smeval_X, ← C_eq_nat_cast, smeval_C, coe_nat_zsmul, nsmul_eq_mul,
+    simp only [smeval_add, smeval_X, ← C_eq_nat_cast, smeval_C, natCast_zsmul, nsmul_eq_mul,
     Nat.cast_id]
 
 end Ring
