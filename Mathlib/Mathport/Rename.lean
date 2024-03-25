@@ -5,6 +5,7 @@ Authors: Daniel Selsam
 -/
 import Lean.Elab.Command
 import Lean.Linter.Util
+import Mathlib.Tactic.FastInstance
 
 set_option autoImplicit true
 

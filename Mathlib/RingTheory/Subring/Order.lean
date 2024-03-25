@@ -27,6 +27,7 @@ variable {R S : Type*} [SetLike S R] (s : S)
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
 instance (priority := 75) toOrderedRing [OrderedRing R] [SubringClass S R] :
     OrderedRing s :=
+  fast_instance%
   Subtype.coe_injective.orderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subring_class.to_ordered_ring SubringClass.toOrderedRing
@@ -35,6 +36,7 @@ instance (priority := 75) toOrderedRing [OrderedRing R] [SubringClass S R] :
 /-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
 instance (priority := 75) toOrderedCommRing [OrderedCommRing R] [SubringClass S R] :
     OrderedCommRing s :=
+  fast_instance%
   Subtype.coe_injective.orderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subring_class.to_ordered_comm_ring SubringClass.toOrderedCommRing
@@ -43,6 +45,7 @@ instance (priority := 75) toOrderedCommRing [OrderedCommRing R] [SubringClass S 
 /-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
 instance (priority := 75) toLinearOrderedRing [LinearOrderedRing R] [SubringClass S R] :
     LinearOrderedRing s :=
+  fast_instance%
   Subtype.coe_injective.linearOrderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
@@ -52,6 +55,7 @@ instance (priority := 75) toLinearOrderedRing [LinearOrderedRing R] [SubringClas
 /-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
 instance (priority := 75) toLinearOrderedCommRing [LinearOrderedCommRing R] [SubringClass S R] :
     LinearOrderedCommRing s :=
+  fast_instance%
   Subtype.coe_injective.linearOrderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl

@@ -252,6 +252,7 @@ variable (H)
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits an `AddGroup` structure."]
 instance (priority := 75) toGroup : Group H :=
+  fast_instance%
   Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup_class.to_group SubgroupClass.toGroup
@@ -262,6 +263,7 @@ instance (priority := 75) toGroup : Group H :=
 @[to_additive "An additive subgroup of an `AddCommGroup` is an `AddCommGroup`."]
 instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [SubgroupClass S G] :
     CommGroup H :=
+  fast_instance%
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup_class.to_comm_group SubgroupClass.toCommGroup
@@ -741,6 +743,7 @@ theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := by simp
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure."]
 instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
+  fast_instance%
   Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup.to_group Subgroup.toGroup
@@ -749,6 +752,7 @@ instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive "An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`."]
 instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
+  fast_instance%
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup.to_comm_group Subgroup.toCommGroup
