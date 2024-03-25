@@ -33,7 +33,6 @@ theorem prod_nil : ([] : List M).prod = 1 :=
 #align list.prod_nil List.prod_nil
 #align list.sum_nil List.sum_nil
 
-
 @[to_additive]
 theorem prod_singleton : [a].prod = a :=
   one_mul a
