@@ -144,7 +144,8 @@ def size : Ordnode α → ℕ
 
 @[simp] theorem size_nil : size (nil : Ordnode α) = 0 :=
   rfl
-@[simp] theorem size_node (sz : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : size (node sz l x r) = sz :=
+@[simp] theorem size_node (sz : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) :
+    size (node sz l x r) = sz :=
   rfl
 
 /-- O(1). Is the set empty?
