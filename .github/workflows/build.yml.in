@@ -132,6 +132,7 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
           # printf $'val: %s\ntest: %s\n' "$GITHUB_EVENT_PATH" "$(jq -r .pull_request.user.login "$GITHUB_EVENT_PATH")"
           printf $'val: %s\n' "$GITHUB_EVENT_PATH"; cat "$GITHUB_EVENT_PATH"
+          echo "name=$(jq -r .head_commit.author.name "$GITHUB_EVENT_PATH")"
 
       - uses: actions/checkout@v4
 
