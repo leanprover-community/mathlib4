@@ -485,7 +485,7 @@ theorem lintegral_rpow_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤�
   have key := lintegral_comp_eq_lintegral_meas_le_mul μ f_nn f_mble g_intble g_nn
   rw [← key, ← lintegral_const_mul'' (ENNReal.ofReal p)] <;> simp_rw [obs]
   · congr with ω
-    rw [← ENNReal.ofReal_mul p_pos.le, mul_div_cancel' (f ω ^ p) p_pos.ne.symm]
+    rw [← ENNReal.ofReal_mul p_pos.le, mul_div_cancel₀ (f ω ^ p) p_pos.ne.symm]
   · have aux := (@measurable_const ℝ α (by infer_instance) (by infer_instance) p).aemeasurable
                   (μ := μ)
     exact (Measurable.ennreal_ofReal (hf := measurable_id)).comp_aemeasurable
