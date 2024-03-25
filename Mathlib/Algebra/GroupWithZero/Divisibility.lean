@@ -175,7 +175,7 @@ lemma dvd_of_mul_dvd_mul_left {c : α} (hc : c ≠ 0)
 
 lemma dvd_of_mul_dvd_mul_right {c : α} (hc : c ≠ 0)
     (H : a * c ∣ b * c) : a ∣ b := by
-    rw [mul_comm a c, mul_comm b c] at H
-    exact dvd_of_mul_dvd_mul_left hc H
+  rw [mul_comm a c, mul_comm b c] at H
+  exact dvd_of_mul_dvd_mul_left hc H
 
 end CancelCommMonoidWithZero
