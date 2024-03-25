@@ -175,9 +175,9 @@ theorem exists_countablyGenerated_le_of_hasCountableSeparatingOn [m : Measurable
     [h : HasCountableSeparatingOn α MeasurableSet univ] :
     ∃ m' : MeasurableSpace α, @CountablyGenerated _ m' ∧ @SeparatesPoints _ m' ∧ m' ≤ m := by
   rcases h.1 with ⟨b, bct, hbm, hb⟩
-  refine' ⟨generateFrom b, _, _, generateFrom_le hbm⟩
+  refine ⟨generateFrom b, ?_, ?_, generateFrom_le hbm⟩
   · use b
-  refine' @SeparatesPoints.mk _ (generateFrom b) fun x y hxy ↦ hb _ trivial _ trivial _
+  refine @SeparatesPoints.mk _ (generateFrom b) fun x y hxy ↦ hb _ trivial _ trivial ?_
   intro s hs
   use hxy _ (measurableSet_generateFrom hs)
   contrapose
@@ -190,19 +190,19 @@ open Function
 /-- A map from a measurable space to the Cantor space `ℕ → Bool` induced by a countable
 sequence of sets generating the measurable space. -/
 noncomputable
-def map_nat_bool_of_countablyGenerated [MeasurableSpace α] [CountablyGenerated α] (x : α) (n : ℕ) :
+def mapNatBool [MeasurableSpace α] [CountablyGenerated α] (x : α) (n : ℕ) :
     Bool := x ∈ natGeneratingSequence α n
 
-theorem measurable_map_nat_bool_of_countablyGenerated [MeasurableSpace α] [CountablyGenerated α] :
-    Measurable (map_nat_bool_of_countablyGenerated α) := by
+theorem measurable_mapNatBool [MeasurableSpace α] [CountablyGenerated α] :
+    Measurable (mapNatBool α) := by
   rw [measurable_pi_iff]
   refine fun n ↦ measurable_to_bool ?_
-  simp only [preimage, mem_singleton_iff, map_nat_bool_of_countablyGenerated,
+  simp only [preimage, mem_singleton_iff, mapNatBool,
     Bool.decide_iff, setOf_mem_eq]
   apply measurableSet_natGeneratingSequence
 
-theorem injective_map_nat_bool_of_countablyGenerated [MeasurableSpace α] [CountablyGenerated α]
-    [SeparatesPoints α] : Injective (map_nat_bool_of_countablyGenerated α) := by
+theorem injective_mapNatBool [MeasurableSpace α] [CountablyGenerated α]
+    [SeparatesPoints α] : Injective (mapNatBool α) := by
   intro x y hxy
   rw [← generateFrom_natGeneratingSequence α] at *
   apply separating_of_generateFrom (range (natGeneratingSequence _))
@@ -217,16 +217,16 @@ the Cantor Space. -/
 theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
     [CountablyGenerated α] [SeparatesPoints α] :
     ∃ s : Set (ℕ → Bool), Nonempty (α ≃ᵐ s) := by
-  use range (map_nat_bool_of_countablyGenerated α), Equiv.ofInjective _ $
-    injective_map_nat_bool_of_countablyGenerated _,
-    Measurable.subtype_mk $ measurable_map_nat_bool_of_countablyGenerated _
+  use range (mapNatBool α), Equiv.ofInjective _ $
+    injective_mapNatBool _,
+    Measurable.subtype_mk $ measurable_mapNatBool _
   simp_rw [← generateFrom_natGeneratingSequence α]
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
   rw [← Equiv.image_eq_preimage _ _]
   refine ⟨{y | y n}, by measurability, ?_⟩
   rw [← Equiv.preimage_eq_iff_eq_image]
-  simp[map_nat_bool_of_countablyGenerated]
+  simp[mapNatBool]
 
 /-- If a measurable space admits a countable sequence of measurable sets separating points,
 it admits a measurable injection into the Cantor space `ℕ → Bool`
@@ -235,8 +235,8 @@ theorem measurable_injection_nat_bool_of_hasCountableSeparatingOn [MeasurableSpa
     [HasCountableSeparatingOn α MeasurableSet univ] :
     ∃ f : α → ℕ → Bool, Measurable f ∧ Injective f := by
   rcases exists_countablyGenerated_le_of_hasCountableSeparatingOn α with ⟨m', _, _, m'le⟩
-  refine ⟨map_nat_bool_of_countablyGenerated α, ?_, injective_map_nat_bool_of_countablyGenerated _⟩
-  exact (measurable_map_nat_bool_of_countablyGenerated _).mono m'le le_rfl
+  refine ⟨mapNatBool α, ?_, injective_mapNatBool _⟩
+  exact (measurable_mapNatBool _).mono m'le le_rfl
 
 variable {α}
 
@@ -245,7 +245,7 @@ theorem measurableSingletonClass_of_hasCountableSeparatingOn
     [MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
     MeasurableSingletonClass α := by
   rcases measurable_injection_nat_bool_of_hasCountableSeparatingOn α with ⟨f, fmeas, finj⟩
-  refine' ⟨fun x ↦ _⟩
+  refine ⟨fun x ↦ ?_⟩
   rw [← finj.preimage_image {x}, image_singleton]
   exact fmeas $ MeasurableSet.singleton _
 
