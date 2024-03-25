@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro, Yaël Dillies
+Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Rat.Init
@@ -117,7 +117,7 @@ class DivisionRing (α : Type*)
 
   Do not use directly. Instead use the `•` notation. -/
   protected qsmul : ℚ → α → α
-  /-- However `qsmul` is defined, it must be equal to multiplication by `Rat.cast`.
+  /-- However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
 
   Do not use this lemma directly. Use `Rat.cast_def` instead. -/
   protected qsmul_def (a : ℚ) (x : α) : qsmul a x = Rat.cast a * x := by intros; rfl
