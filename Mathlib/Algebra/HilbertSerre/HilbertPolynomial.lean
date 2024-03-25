@@ -25,7 +25,21 @@ open BigOperators
 open PowerSeries
 
 
+namespace Polynomial
+
+theorem one_sub_ne_zero : (@OfNat.ofNat ℤ[X] 1 One.toOfNat1) - Polynomial.X ≠ 0 := λ h0 ↦ by
+  rw [sub_eq_zero, Polynomial.ext_iff] at h0; let h01 := h0 1; simp only [coeff_X_one] at h01
+  have hC1 : Polynomial.coeff (Polynomial.C 1 : Polynomial ℤ) 1 = 0 := by
+    rw [Polynomial.coeff_C]; simp only [one_ne_zero, ↓reduceIte]
+  rw [← show @OfNat.ofNat ℤ[X] 1 One.toOfNat1 = Polynomial.C 1 by
+    simp only [map_one]] at hC1
+  rw [hC1] at h01; exact zero_ne_one h01
+
+end Polynomial
+
 namespace PowerSeries
+
+open Polynomial
 
 variable {R : Type _} [CommRing R]
 
@@ -118,6 +132,26 @@ theorem oneSub_inv_pow_eq_oneSub_pow_inv (d : ℕ) :
 theorem oneSubPow_inv_eq_invOneSubPow' (d : ℕ) :
     (oneSubPow d : (PowerSeries R)ˣ)⁻¹ = invOneSubPow' d := by
   rw [← oneSub_inv_pow_eq_oneSub_pow_inv]; exact oneSub_inv_pow_eq_invOneSubPow' d
+
+lemma oneSub_eq_toPowerSeries : 1 - PowerSeries.X =
+    ((@Polynomial.C ℤ _ 1) - Polynomial.X).ToPowerSeries := by
+  rw [PowerSeries.ext_iff]
+  exact λ i ↦ by_cases (λ (hi : i = 0) ↦ by simp only [hi, map_sub, coeff_one, ↓reduceIte,
+  coeff_zero_X, sub_zero, map_one, coeff_coe, coeff_sub, coeff_one_zero, coeff_X_zero]) (λ hi ↦ by
+    simp only [map_sub, PowerSeries.coeff_one, hi, ↓reduceIte, zero_sub, map_one, coeff_coe,
+    coeff_sub]; rw [Polynomial.coeff_one]; simp only [hi, ↓reduceIte, zero_sub, neg_inj]; rw
+    [coeff_X, Polynomial.coeff_X]; exact by_cases (λ (hi : i = 1) ↦ by simp only [hi, ↓reduceIte])
+      (λ hi ↦ by simp only [hi, ↓reduceIte]; exact Eq.symm <| if_neg <| Ne.symm hi))
+
+lemma oneSub_eq_toPowerSeries' : 1 - PowerSeries.X =
+    ((1 : ℤ[X]) - Polynomial.X).ToPowerSeries := by
+  rw [PowerSeries.ext_iff]
+  exact λ i ↦ by_cases (λ (hi : i = 0) ↦ by simp only [hi, map_sub, coeff_one, ↓reduceIte,
+  coeff_zero_X, sub_zero, map_one, coeff_coe, coeff_sub, coeff_one_zero, coeff_X_zero]) (λ hi ↦ by
+    simp only [map_sub, PowerSeries.coeff_one, hi, ↓reduceIte, zero_sub, map_one, coeff_coe,
+    coeff_sub]; rw [Polynomial.coeff_one]; simp only [hi, ↓reduceIte, zero_sub, neg_inj]; rw
+    [coeff_X, Polynomial.coeff_X]; exact by_cases (λ (hi : i = 1) ↦ by simp only [hi, ↓reduceIte])
+      (λ hi ↦ by simp only [hi, ↓reduceIte]; exact Eq.symm <| if_neg <| Ne.symm hi))
 
 end PowerSeries
 
@@ -263,7 +297,9 @@ end generatingSetOverBaseRing
 
 namespace HilbertSerre
 
+open Polynomial
 open generatingSetOverBaseRing
+open Hilbert
 
 lemma _root_.hilbert_serre' : ∃ (p : Polynomial ℤ), μ.poincareSeries 𝒜 ℳ = p * S.poles⁻¹ :=
   statement'_imp_statement 𝒜 ℳ μ S proof'.{u}
@@ -279,42 +315,136 @@ lemma auxPolynomial_mul_eq :
   Eq.symm (hilbert_serre' 𝒜 ℳ μ S).choose_spec
 
 /--
+Assume that `auxPolynomial 𝒜 ℳ μ S ≠ 0`. The greatest factor of `auxPolynomial 𝒜 ℳ μ S`
+that does not have the factor `1 - X`.
+-/
+noncomputable def auxPolynomial' (hn0 : auxPolynomial 𝒜 ℳ μ S ≠ 0) : Polynomial ℤ :=
+  ((- 1) ^ (Polynomial.rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S))) *
+  (exists_eq_pow_rootMultiplicity_mul_and_not_dvd (auxPolynomial 𝒜 ℳ μ S) hn0 1).choose
+
+theorem pow_rootMultiplicity_mul_auxPolynomial'_eq_auxPolynomial
+    (hn0 : auxPolynomial 𝒜 ℳ μ S ≠ 0) :
+    ((1 - Polynomial.X) ^ (Polynomial.rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S))) *
+    (auxPolynomial' 𝒜 ℳ μ S hn0) = auxPolynomial 𝒜 ℳ μ S := by
+  rw [auxPolynomial', ← mul_assoc, ← mul_pow]; simp only [mul_neg, mul_one, neg_sub, map_one];
+  exact id (exists_eq_pow_rootMultiplicity_mul_and_not_dvd (auxPolynomial 𝒜 ℳ μ S)
+    hn0 1).choose_spec.1.symm
+
+theorem auxPolynomial'_ne_zero (h : auxPolynomial 𝒜 ℳ μ S ≠ 0) :
+    auxPolynomial' 𝒜 ℳ μ S h ≠ 0 := λ h0 ↦ by
+  let hpow := pow_rootMultiplicity_mul_auxPolynomial'_eq_auxPolynomial 𝒜 ℳ μ S h
+  rw [h0] at hpow; simp at hpow; exact h (id hpow.symm)
+
+theorem natDegree_auxPolynomial'_le (h : auxPolynomial 𝒜 ℳ μ S ≠ 0) :
+    (auxPolynomial' 𝒜 ℳ μ S h).natDegree ≤ (auxPolynomial 𝒜 ℳ μ S).natDegree := by
+  rw [← pow_rootMultiplicity_mul_auxPolynomial'_eq_auxPolynomial 𝒜 ℳ μ S h]
+  rw [Polynomial.natDegree_mul]
+  exact Nat.le_add_left (natDegree (auxPolynomial' 𝒜 ℳ μ S h))
+    (natDegree ((1 - Polynomial.X) ^ rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S)))
+  exact pow_ne_zero _ one_sub_ne_zero
+  exact auxPolynomial'_ne_zero 𝒜 ℳ μ S h
+
+theorem natDegree_pow_mul_auxPolynomial'_le (h : ¬auxPolynomial 𝒜 ℳ μ S = 0)
+    (h1 : S.toFinset.card ≤ rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S)) :
+    natDegree ((Polynomial.C 1 - Polynomial.X) ^ (rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) -
+    S.toFinset.card) * auxPolynomial' 𝒜 ℳ μ S h) ≤ natDegree (auxPolynomial 𝒜 ℳ μ S) := by
+  rw [show natDegree (auxPolynomial 𝒜 ℳ μ S) = natDegree (((1 - Polynomial.X)
+    ^ (rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) - S.toFinset.card
+    + S.toFinset.card)) * (auxPolynomial' 𝒜 ℳ μ S h)) by
+    rw [← Nat.eq_add_of_sub_eq h1 rfl, pow_rootMultiplicity_mul_auxPolynomial'_eq_auxPolynomial],
+    pow_add, mul_assoc, mul_comm ((1 - Polynomial.X) ^ S.toFinset.card), ← mul_assoc,
+    natDegree_mul, natDegree_mul, natDegree_mul]
+  simp only [map_one, natDegree_pow, le_add_iff_nonneg_right, zero_le]
+  · exact pow_ne_zero _ one_sub_ne_zero
+  · exact auxPolynomial'_ne_zero 𝒜 ℳ μ S h
+  · rw [mul_ne_zero_iff]; exact ⟨pow_ne_zero _ one_sub_ne_zero, auxPolynomial'_ne_zero 𝒜 ℳ μ S h⟩
+  · exact pow_ne_zero _ one_sub_ne_zero
+  · exact pow_ne_zero _ one_sub_ne_zero
+  · exact auxPolynomial'_ne_zero 𝒜 ℳ μ S h
+
+/--
 The Hilbert polynomial, i.e. the polynomial such that for any `n : ℕ` which
 is big enough, its value at `n` is equal to `μ <| .of _ <| (ℳ n : Type u)`.
 -/
 noncomputable def hilbertPolynomial : Polynomial ℚ :=
-  if S.toFinset.card = 0 then 0
+  if h : auxPolynomial 𝒜 ℳ μ S = 0 then 0
+  else (if S.toFinset.card ≤ (auxPolynomial 𝒜 ℳ μ S).rootMultiplicity 1 then 0
   else Hilbert.polynomial_of_polynomial
-  (auxPolynomial 𝒜 ℳ μ S) (S.toFinset.card - 1)
+  (auxPolynomial' 𝒜 ℳ μ S h) (S.toFinset.card -
+  ((auxPolynomial 𝒜 ℳ μ S).rootMultiplicity 1) - 1))
 
-theorem additiveFunction_eq_hilbertPolynomial_eval
+theorem additiveFunction_val_eq_hilbertPolynomial_eval
     (n : ℕ) (hn : (auxPolynomial 𝒜 ℳ μ S).natDegree < n) :
     (μ <| .of _ <| (ℳ n : Type u) : ℚ) =
     Polynomial.eval (n : ℚ) (hilbertPolynomial 𝒜 ℳ μ S) := by
   have hμ : μ (FGModuleCat.of ↥(𝒜 0) ↥(ℳ n)) = coeff ℤ n (μ.poincareSeries 𝒜 ℳ) := by
     rw [AdditiveFunction.poincareSeries]; simp only [coeff_mk]
-  by_cases hS' : IsEmpty S.toFinset
-  · rw [hilbertPolynomial]
-    simp only [show S.toFinset.card = 0 by
-      rw [Finset.card_eq_zero]; exact Finset.isEmpty_coe_sort.mp hS',
-      ↓reduceIte, Polynomial.eval_zero, Int.cast_eq_zero]
-    rw [hμ, ← auxPolynomial_mul_eq 𝒜 ℳ μ S, generatingSetOverBaseRing.poles]
-    simp_rw [Finset.eq_empty_of_isEmpty (Finset.attach S.toFinset), Finset.prod_empty]
-    simp only [Units.inv_mk]
-    rw [show (invOfUnit 1 1 : PowerSeries ℤ) = 1 by
-      rw [← one_mul (invOfUnit 1 1)]; exact mul_invOfUnit 1 1 rfl]
-    simp only [mul_one, Polynomial.coeff_coe]
-    exact Polynomial.coeff_eq_zero_of_natDegree_lt hn
-  · rw [hμ, ← auxPolynomial_mul_eq 𝒜 ℳ μ S, hilbertPolynomial]
-    have hS1 : S.toFinset.card ≠ 0 := λ h ↦ hS' <| show IsEmpty S.toFinset by
-      rw [Finset.card_eq_zero] at h; exact Finset.isEmpty_coe_sort.mpr h
-    rw [if_neg hS1, poles_eq_oneSubPow_of_deg_eq_one_and_card_gt_zero',
-      PowerSeries.oneSubPow_inv_eq_invOneSubPow']
-    let m : Set.Ici (Polynomial.natDegree (auxPolynomial 𝒜 ℳ μ S)) :=
-      ⟨n, Nat.lt_succ.mp (Nat.le.step hn)⟩
-    rw [show @Nat.cast ℚ Semiring.toNatCast n = (m : ℚ) by
-      simp only, ← Hilbert.polynomial_mul_invOneSubPow'_coeff_eq_polynomial_of_polynomial_eval]
-    exact fun i ↦ hS i
-    exact Nat.pos_of_ne_zero hS1
+  by_cases h : auxPolynomial 𝒜 ℳ μ S = 0
+  · rw [hilbertPolynomial]; simp only [h, ↓reduceDite, eval_zero, Int.cast_eq_zero]
+    rw [hμ, ← auxPolynomial_mul_eq 𝒜 ℳ μ S, h]; simp only [coe_zero, val_inv_poles, zero_mul]
+    exact rfl
+  · rw [hilbertPolynomial]; simp only [h, ↓reduceDite]
+    by_cases h1 : S.toFinset.card ≤ (auxPolynomial 𝒜 ℳ μ S).rootMultiplicity 1
+    · simp only [h1, ↓reduceIte, eval_zero, Int.cast_eq_zero]
+      rw [hμ, ← auxPolynomial_mul_eq 𝒜 ℳ μ S,
+        ← pow_rootMultiplicity_mul_auxPolynomial'_eq_auxPolynomial 𝒜 ℳ μ S h]
+      let one_sub : ℤ⟦X⟧ˣ := {
+        val := 1 - PowerSeries.X
+        inv := invOfUnit (1 - PowerSeries.X) 1
+        val_inv := @PowerSeries.mul_invOfUnit ℤ _ (1 - PowerSeries.X) 1 <| by
+          simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one]
+        inv_val := by
+          rw [mul_comm]; exact @PowerSeries.mul_invOfUnit ℤ _ (1 - PowerSeries.X) 1 <| by
+            simp only [map_sub, map_one, constantCoeff_X, sub_zero, Units.val_one] }
+      rw [show poles S = one_sub ^ S.toFinset.card by
+        rw [poles]; simp_rw [hS]; simp only [pow_one, Finset.prod_const, Finset.card_attach];
+        exact Units.eq_iff.mp rfl, coe_mul, coe_pow, show @ToPowerSeries ℤ
+        Int.instCommSemiringInt (1 - Polynomial.X) = one_sub.val by
+        rw [PowerSeries.ext_iff]; intro i; exact by_cases (λ (hi : i = 0) ↦ by
+        simp only [hi, coeff_coe, coeff_sub, coeff_one_zero, coeff_X_zero, sub_zero, map_sub,
+        PowerSeries.coeff_one, ↓reduceIte, coeff_zero_X]) (λ hi ↦ by
+          simp only [coeff_coe, coeff_sub, map_sub, PowerSeries.coeff_one, hi, ↓reduceIte,
+          zero_sub]; rw [Polynomial.coeff_one]; simp only [hi, ↓reduceIte, zero_sub, neg_inj];
+          rw [PowerSeries.coeff_X, Polynomial.coeff_X]; exact by_cases (λ (hi : i = 1) ↦ by
+          simp only [hi, ↓reduceIte]) (λ hi ↦ by
+          simp only [hi, ↓reduceIte, ite_eq_right_iff, one_ne_zero, imp_false];
+          exact Ne.symm hi)), mul_comm, ← mul_assoc, ← Units.val_pow_eq_pow_val, ← Units.val_mul,
+          mul_comm (one_sub ^ S.toFinset.card)⁻¹, ← pow_sub, show @Units.val ℤ⟦X⟧
+          MonoidWithZero.toMonoid (one_sub ^ (rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) -
+          S.toFinset.card)) = ((@Polynomial.C ℤ _ 1) - Polynomial.X).ToPowerSeries ^
+          (rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) - S.toFinset.card) by
+          simp only [Units.val_pow_eq_pow_val, map_one]; rw [oneSub_eq_toPowerSeries]; simp only
+          [map_one], ← coe_pow, ← coe_mul, coeff_coe]
+      exact Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_le_of_lt
+        (natDegree_pow_mul_auxPolynomial'_le 𝒜 ℳ μ S h h1) hn)
+      exact h1
+    · rw [hμ]; simp only [h1, ↓reduceIte]
+      rw [← auxPolynomial_mul_eq 𝒜 ℳ μ S, show @ToPowerSeries ℤ Int.instCommSemiringInt
+        (auxPolynomial 𝒜 ℳ μ S) = ((1 - Polynomial.X) ^ rootMultiplicity 1 (auxPolynomial
+        𝒜 ℳ μ S) * auxPolynomial' 𝒜 ℳ μ S h).ToPowerSeries by
+        rw [Polynomial.coe_inj]; exact id (pow_rootMultiplicity_mul_auxPolynomial'_eq_auxPolynomial
+        𝒜 ℳ μ S h).symm]
+      let m : Set.Ici (Polynomial.natDegree (auxPolynomial' 𝒜 ℳ μ S h)) := ⟨n, Nat.le_of_lt <|
+        Nat.lt_of_le_of_lt (natDegree_auxPolynomial'_le 𝒜 ℳ μ S h) hn⟩
+      rw [show @Nat.cast ℚ Semiring.toNatCast n = (m : ℚ) by
+        simp only, ← polynomial_mul_invOneSubPow'_coeff_eq_polynomial_of_polynomial_eval, coe_mul,
+        coe_pow, ← oneSub_eq_toPowerSeries', poles_eq_oneSubPow_of_deg_eq_one_and_card_gt_zero',
+        show (1 : PowerSeries ℤ) - PowerSeries.X = (@PowerSeries.oneSub ℤ _ : PowerSeries ℤ) by
+        rw [oneSub], ← oneSubPow_inv_eq_invOneSubPow', oneSubPow_eq_oneSub_pow,
+        oneSubPow_eq_oneSub_pow, ← Units.val_pow_eq_pow_val, mul_comm, ← mul_assoc,
+        ← Units.val_mul, Nat.sub_add_cancel <| show 1 ≤ S.toFinset.card by
+        haveI : NeZero S.toFinset.card := { out := by { intro h; rw [h] at h1; exact h1 (zero_le
+        (rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S))) } }; exact NeZero.one_le, ← inv_pow_sub,
+        Nat.sub_add_cancel <| show
+        1 ≤ S.toFinset.card - rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) by
+        exact Nat.le_sub_of_add_le' <| show S.toFinset.card >
+          rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) by
+          exact Nat.not_le.mp h1, ← inv_pow, mul_comm (@ToPowerSeries ℤ Int.instCommSemiringInt
+          (auxPolynomial' 𝒜 ℳ μ S h))]
+      · exact Nat.le_of_not_ge h1
+      · exact fun i ↦ hS i
+      · exact Nat.pos_of_ne_zero <| show S.toFinset.card ≠ 0 by
+          intro h; rw [h] at h1;
+          exact h1 (Nat.zero_le (rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S)))
 
 end HilbertSerre
