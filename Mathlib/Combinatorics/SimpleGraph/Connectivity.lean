@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Data.List.Rotate
+import Mathlib.SetTheory.Cardinal.Finite
 
 #align_import combinatorics.simple_graph.connectivity from "leanprover-community/mathlib"@"b99e2d58a5e6861833fa8de11e51a81144258db4"
 
@@ -2152,6 +2153,19 @@ theorem _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent (h : G.P
   ⟨ConnectedComponent.ind₂ fun v w => ConnectedComponent.sound (h v w)⟩
 #align simple_graph.preconnected.subsingleton_connected_component SimpleGraph.Preconnected.subsingleton_connectedComponent
 
+/-- This is `Quot.recOn` specialized to connected components.
+For convenience, it strengthens the assumptions in the hypothesis
+to provide a path between the vertices. -/
+@[elab_as_elim]
+def recOn
+    {motive : G.ConnectedComponent → Sort*}
+    (c : G.ConnectedComponent)
+    (f : (v : V) → motive (G.connectedComponentMk v))
+    (h : ∀ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
+      ConnectedComponent.sound p.reachable ▸ f u = f v) :
+    motive c :=
+  Quot.recOn c f (fun u v r => r.elim_path fun p => h u v p p.2)
+
 /-- The map on connected components induced by a graph homomorphism. -/
 def map (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
   C.lift (fun v => G'.connectedComponentMk (φ v)) fun _ _ p _ =>
@@ -2280,6 +2294,17 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
   left_inv v := Subtype.ext_val (φ.toEquiv.left_inv ↑v)
   right_inv v := Subtype.ext_val (φ.toEquiv.right_inv ↑v)
 #align simple_graph.connected_component.iso_equiv_supp SimpleGraph.ConnectedComponent.isoEquivSupp
+
+/-- A connected component is *odd* if it has an add number of vertices
+in its support. Note that `Nat.card` is 0 in the case of an infinite component, so they are
+not odd. -/
+def isOdd (c : G.ConnectedComponent) : Prop :=
+  Odd (Nat.card c.supp)
+
+
+lemma isOdd_iff (c : G.ConnectedComponent) [Fintype c.supp] :
+    c.isOdd ↔ Odd (Fintype.card c.supp) := by
+  rw [isOdd, Nat.card_eq_fintype_card]
 
 end ConnectedComponent
 

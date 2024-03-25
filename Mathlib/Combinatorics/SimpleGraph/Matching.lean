@@ -1,10 +1,10 @@
 /-
 Copyright (c) 2020 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alena Gusakov, Arthur Paulino, Kyle Miller
+Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 -/
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.Combinatorics.SimpleGraph.Connectivity
 
 #align_import combinatorics.simple_graph.matching from "leanprover-community/mathlib"@"138448ae98f529ef34eeb61114191975ee2ca508"
 
@@ -130,6 +130,116 @@ theorem IsPerfectMatching.even_card {M : Subgraph G} [Fintype V] (h : M.IsPerfec
   simpa only [h.2.card_verts] using IsMatching.even_card h.1
 #align simple_graph.subgraph.is_perfect_matching.even_card SimpleGraph.Subgraph.IsPerfectMatching.even_card
 
+lemma isPerfectMatching_induce_supp_isMatching {M : Subgraph G} (h : Subgraph.IsPerfectMatching M)
+    (c : ConnectedComponent G) : (M.induce c.supp).IsMatching  := by
+    intro v hv
+    obtain ⟨ w, hw ⟩ := h.1 (h.2 _)
+    use w
+    constructor
+    · constructor
+      · assumption
+      · constructor
+        · rw [ConnectedComponent.mem_supp_iff] at *
+          rw [← hv]
+          apply ConnectedComponent.connectedComponentMk_eq_of_adj
+          apply M.adj_sub
+          rw [Subgraph.adj_comm]
+          exact hw.1
+        · exact hw.1
+    · intro y hy
+      exact hw.2 y hy.2.2
+
 end Subgraph
+
+namespace ConnectedComponent
+
+section Finite
+
+variable [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
+
+instance (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
+  c.recOn
+    (fun w => by simp only [ConnectedComponent.mem_supp_iff, ConnectedComponent.eq]; infer_instance)
+    (fun _ _ _ _ => Subsingleton.elim _ _)
+
+lemma even_if_perfect_matching {M : Subgraph G} (c : ConnectedComponent G)
+   (hM : Subgraph.IsPerfectMatching M) : Even (Fintype.card ↑(ConnectedComponent.supp c)) := by
+    classical
+    obtain ⟨ k , hk ⟩ := (M.isPerfectMatching_induce_supp_isMatching hM c).even_card
+    use k
+    rw [← hk, Subgraph.induce_verts, Fintype.card_ofFinset]
+    congr
+    simp only [ConnectedComponent.mem_supp_iff, Finset.mem_univ, forall_true_left]
+    exact Set.filter_mem_univ_eq_toFinset fun x => connectedComponentMk G x = c
+
+noncomputable local instance (u : Set V) : Fintype u := Fintype.ofFinite ↑u
+
+
+theorem mem_supp_of_adj {u : Set V} {v w : V} {c : ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe}
+       (hv : v ∈ Subtype.val '' c.supp) (hw : w ∈ ((⊤ : Subgraph G).deleteVerts  u).verts)
+      (hadj : G.Adj v w) : w ∈ Subtype.val '' c.supp := by
+      rw [Set.mem_image]
+      obtain ⟨ v' , hv' ⟩ := hv
+      use ⟨ w , ⟨ by trivial , by refine Set.not_mem_of_mem_diff hw ⟩ ⟩
+      rw [ConnectedComponent.mem_supp_iff]
+      constructor
+      · rw [← (ConnectedComponent.mem_supp_iff _ _).mp hv'.1]
+        apply ConnectedComponent.connectedComponentMk_eq_of_adj
+        apply SimpleGraph.Subgraph.Adj.coe
+        rw [Subgraph.deleteVerts_adj]
+        constructor
+        · trivial
+        · constructor
+          · exact Set.not_mem_of_mem_diff hw
+          · constructor
+            · trivial
+            · constructor
+              · exact v'.prop.2
+              · rw [Subgraph.top_adj]
+                rw [hv'.2]
+                exact adj_symm G hadj
+      · rfl
+
+lemma odd_matches_node_outside {M : Subgraph G} {u : Set V}
+  {c : ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe} (hM : Subgraph.IsPerfectMatching M)
+  (codd : c.isOdd) : ∃ (w : u.Elem) (v : ((⊤ : G.Subgraph).deleteVerts u).verts.Elem), M.Adj v w ∧ v ∈ c.supp := by
+      rw [ConnectedComponent.isOdd_iff] at codd
+      by_contra! h
+      have h' : (M.induce c.supp).IsMatching := by
+        intro v hv
+        obtain ⟨ w , hw ⟩ := hM.1 (hM.2 v)
+        obtain ⟨ v' , hv' ⟩ := hv
+        use w
+        constructor
+        · constructor
+          · exact ⟨ v' , hv' ⟩
+          · constructor
+            · have h'' : w ∉ u := by
+                intro hw'
+                apply h ⟨ w , hw' ⟩ v' _
+                · exact hv'.1
+                rw [hv'.2]
+                exact hw.1
+              apply mem_supp_of_adj ⟨ v' , ⟨ hv'.1 , rfl ⟩ ⟩ ⟨ by trivial , h'' ⟩
+              rw [hv'.2]
+              exact Subgraph.adj_sub _ hw.1
+            · exact hw.1
+        · intro y hy
+          apply hw.2
+          exact hy.2.2
+
+      apply Nat.odd_iff_not_even.mp codd
+      have h'' := Subgraph.IsMatching.even_card h'
+      simp only [Subgraph.induce_verts, Subgraph.verts_top] at h''
+
+      rw [Nat.even_iff] at h'' ⊢
+      rw [← h'', Set.toFinset_image, Finset.card_image_of_injective _ (Subtype.val_injective)]
+      simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_card]
+
+
+end Finite
+
+end ConnectedComponent
+
 
 end SimpleGraph
