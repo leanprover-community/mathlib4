@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.List.Forall2
 import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Int.Basic
 
@@ -144,10 +145,9 @@ theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α
 #align list.sum_map_add List.sum_map_add
 
 @[simp]
-theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
+theorem prod_map_neg [HasDistribNeg M] (l : List M) :
     (l.map Neg.neg).prod = (-1) ^ l.length * l.prod := by
-  simpa only [id_eq, neg_mul, one_mul, map_const', prod_replicate, map_id]
-    using @prod_map_mul α α _ l (fun _ => -1) id
+  induction l <;> simp [*, pow_succ, ((Commute.neg_one_left _).pow_left _).left_comm]
 #align list.prod_map_neg List.prod_map_neg
 
 @[to_additive]
