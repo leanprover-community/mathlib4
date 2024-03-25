@@ -95,7 +95,6 @@ universe v u
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
-
 variable (C)
 
 /-- A (preadditive) category `C` is called abelian if it has all finite products,
@@ -130,7 +129,6 @@ is an abelian category.
 namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
-
 variable [Limits.HasKernels C] [Limits.HasCokernels C]
 
 namespace OfCoimageImageComparisonIsIso

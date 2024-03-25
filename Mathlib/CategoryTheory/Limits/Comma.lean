@@ -30,17 +30,13 @@ open Category Limits
 universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {J : Type w} [Category.{w'} J]
-
 variable {A : Type u₁} [Category.{v₁} A]
-
 variable {B : Type u₂} [Category.{v₂} B]
-
 variable {T : Type u₃} [Category.{v₃} T]
 
 namespace Comma
 
 variable {L : A ⥤ T} {R : B ⥤ T}
-
 variable (F : J ⥤ Comma L R)
 
 /-- (Implementation). An auxiliary cone which is useful in order to construct limits

@@ -62,9 +62,6 @@ import Mathlib.Data.Set.Lattice
 Torsion, submodule, module, quotient
 -/
 
-set_option autoImplicit true
-
-
 namespace Ideal
 
 section TorsionOf
@@ -173,6 +170,7 @@ def torsionBySet (s : Set R) : Submodule R M :=
   sInf (torsionBy R M '' s)
 #align submodule.torsion_by_set Submodule.torsionBySet
 
+set_option autoImplicit true in
 -- Porting note: torsion' had metavariables and factoring out this fixed it
 -- perhaps there is a better fix
 /-- The additive submonoid of all elements `x` of `M` such that `a • x = 0`
@@ -187,6 +185,7 @@ def torsion'AddSubMonoid (S : Type w) [CommMonoid S] [DistribMulAction S M] :
     rw [smul_add, mul_smul, mul_comm, mul_smul, hx, hy, smul_zero, smul_zero, add_zero]
   zero_mem' := ⟨1, smul_zero 1⟩
 
+set_option autoImplicit true in
 /-- The `S`-torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
 `a` in `S`. -/
 @[simps!]
@@ -392,7 +391,6 @@ section Coprime
 open BigOperators
 
 variable {ι : Type*} {p : ι → Ideal R} {S : Finset ι}
-
 variable (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
 
 -- Porting note: mem_iSup_finset_iff_exists_sum now requires DecidableEq ι
@@ -622,7 +620,6 @@ section Torsion'
 open Module
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M]
 
 @[simp]
@@ -833,6 +830,7 @@ namespace Ideal.Quotient
 
 open Submodule
 
+universe w
 theorem torsionBy_eq_span_singleton {R : Type w} [CommRing R] (a b : R) (ha : a ∈ R⁰) :
     torsionBy R (R ⧸ R ∙ a * b) a = R ∙ mk (R ∙ a * b) b := by
   ext x; rw [mem_torsionBy_iff, Submodule.mem_span_singleton]
@@ -868,7 +866,7 @@ theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
   · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact
       ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt <| Int.coe_nat_pos.mpr h0⟩,
-        (coe_nat_zsmul _ _).trans hn⟩
+        (natCast_zsmul _ _).trans hn⟩
   · rw [isOfFinAddOrder_iff_nsmul_eq_zero]
     obtain ⟨n, hn⟩ := @h x
     exact ⟨_, Int.natAbs_pos.2 (nonZeroDivisors.coe_ne_zero n), natAbs_nsmul_eq_zero.2 hn⟩

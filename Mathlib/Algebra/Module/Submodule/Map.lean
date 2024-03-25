@@ -281,7 +281,6 @@ theorem le_comap_map [RingHomSurjective σ₁₂] (f : F) (p : Submodule R M) : 
 section GaloisInsertion
 
 variable {f : F} (hf : Surjective f)
-
 variable [RingHomSurjective σ₁₂]
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
@@ -450,7 +449,6 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M)
-
 variable [AddCommGroup M₂] [Module R M₂]
 
 @[simp]
@@ -534,13 +532,9 @@ end Submodule
 namespace Submodule
 
 variable [Semiring R] [Semiring R₂]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
-
 variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
-
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
-
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
 
 -- Porting note: Was `@[simp]`.
@@ -601,19 +595,12 @@ end Submodule
 namespace Submodule
 
 variable {N N₂ : Type*}
-
 variable [CommSemiring R] [CommSemiring R₂]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
-
 variable [AddCommMonoid N] [AddCommMonoid N₂] [Module R N] [Module R N₂]
-
 variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
-
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
-
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
-
 variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
 
 theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
