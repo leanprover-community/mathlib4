@@ -116,8 +116,7 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
       have hS : m ⁻¹' {0} = {0} ×ˢ univ ∪ (univ \ {0}) ×ˢ {0} := by
         ext
         simp only [m, mem_preimage, mem_singleton_iff, _root_.mul_eq_zero, mem_union, mem_prod,
-          mem_univ, mem_diff, and_true, true_and]
-        tauto
+          mem_univ, mem_diff, and_true, true_and, or_and_left, or_not]
       rw [tsum_congr_set_coe h hS,
         tsum_union_disjoint (Disjoint.set_prod_left disjoint_sdiff_right ..) ?_ ?_,
         tsum_setProd_singleton_left 0 _ h, tsum_setProd_singleton_right _ 0 h] <;>
