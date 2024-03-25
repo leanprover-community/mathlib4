@@ -28,7 +28,7 @@ namespace CategoryTheory
 
 open Opposite
 
-universe v₁ u₁ u₂
+universe v₁ v₂ u₁ u₂
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable {C : Type u₁} [Category.{v₁} C]
@@ -110,6 +110,37 @@ def ext (X Y : C) (p : ∀ {Z : C}, (Z ⟶ X) → (Z ⟶ Y)) (q : ∀ {Z : C}, (
 theorem isIso {X Y : C} (f : X ⟶ Y) [IsIso (yoneda.map f)] : IsIso f :=
   isIso_of_fully_faithful yoneda f
 #align category_theory.yoneda.is_iso CategoryTheory.Yoneda.isIso
+
+section FullyFaithful
+
+-- This is stupid
+-- def natIsoOfFullyFaithful {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D) [Full F] [Faithful F]
+--     (X : C) : F.op ⋙ yoneda.obj (F.obj X) ⋙ uliftFunctor.{v₁} ≅
+--       yoneda.obj X ⋙ uliftFunctor.{v₂} := NatIso.ofComponents (fun T => Equiv.toIso
+--         (
+--            Equiv.ulift.trans ((equivOfFullyFaithful F).symm.trans Equiv.ulift.symm))
+--           ) (by
+--           intros Y Z f
+--           ext x
+
+--           simp [t1]
+--           erw [t1]
+--           rcases x with ⟨x⟩
+--           rw [← ULift.down_inj]
+
+--           simp
+--           erw [t2 ((F.preimage (Equiv.ulift.{v₁} { down := F.toPrefunctor.map f.unop ≫ x.down })))]
+--           change (ULift.up _).down = _ ≫ (ULift.up _).down
+--           simp
+--           rfl
+--           )
+
+/-- Natural version of `equivOfFullyFaithful`. -/
+def natIsoOfFullyFaithful {D : Type u₂} [Category.{max v₁ v₂} D] (F : C ⥤ D) [Full F] [Faithful F]
+    (X : C) : F.op ⋙ yoneda.obj (F.obj X) ≅ yoneda.obj X ⋙ uliftFunctor.{v₂} :=
+  NatIso.ofComponents (fun Y => Equiv.toIso ((equivOfFullyFaithful F).symm.trans Equiv.ulift.symm))
+
+end FullyFaithful
 
 end Yoneda
 
@@ -463,26 +494,28 @@ theorem yonedaSectionsSmall_inv_app_apply {C : Type u₁} [SmallCategory C] (X :
 
 attribute [local ext] Functor.ext
 
-/- Porting note: this used to be two calls to `tidy` -/
 /-- The curried version of yoneda lemma when `C` is small. -/
-def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
-    (yoneda.op ⋙ coyoneda : Cᵒᵖ ⥤ (Cᵒᵖ ⥤ Type u₁) ⥤ Type u₁) ≅ evaluation Cᵒᵖ (Type u₁) := by
-  refine eqToIso ?_ ≪≫ curry.mapIso
-    (yonedaLemma C ≪≫ isoWhiskerLeft (evaluationUncurried Cᵒᵖ (Type u₁)) uliftFunctorTrivial) ≪≫
-    eqToIso ?_
-  · apply Functor.ext
-    · intro X Y f
-      ext
-      simp
-    · aesop_cat
-  · apply Functor.ext
-    · intro X Y f
-      ext
-      simp
-    · intro X
-      simp only [curry, yoneda, coyoneda, curryObj, yonedaPairing]
-      aesop_cat
-#align category_theory.curried_yoneda_lemma CategoryTheory.curriedYonedaLemma
+def smallCurriedYonedaLemma {C : Type u₁} [SmallCategory C] :
+    (yoneda.op ⋙ coyoneda : Cᵒᵖ ⥤ (Cᵒᵖ ⥤ Type u₁) ⥤ Type u₁) ≅ evaluation Cᵒᵖ (Type u₁) :=
+  NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y => yonedaSectionsSmall _ _)) <| by
+    intros X Y f
+    ext _ g
+    simpa using congrFun (g.naturality f) (𝟙 _)
+#align category_theory.curried_yoneda_lemma CategoryTheory.smallCurriedYonedaLemma
+
+/-- The curried version of the Yoneda lemma. -/
+def curriedYonedaLemma {C : Type u} [Category.{v} C] :
+    yoneda.op ⋙ coyoneda ≅ evaluation Cᵒᵖ (Type v) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} :=
+  NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y => yonedaSections _ _)) <| by
+    intros X Y f
+    ext _ g
+    rw [← ULift.down_inj]
+    simpa using congrFun (g.naturality f) (𝟙 _)
+
+/-- Version of the Yoneda lemma where the presheaf is fixed but the argument varies. -/
+def yonedaOpCompYonedaObj {C : Type u} [Category.{v} C] (P : Cᵒᵖ ⥤ Type v) :
+    yoneda.op ⋙ yoneda.obj P ≅ P ⋙ uliftFunctor.{u} :=
+  isoWhiskerRight curriedYonedaLemma ((evaluation _ _).obj P)
 
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
