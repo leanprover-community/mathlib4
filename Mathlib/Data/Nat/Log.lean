@@ -92,8 +92,8 @@ theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
   | succ x =>
     rw [log]; split_ifs with h
     · have b_pos : 0 < b := lt_of_succ_lt hb
-      rw [succ_eq_add_one, Nat.add_le_add_iff_right, ←
-        ih (y / b) (div_lt_self (Nat.pos_iff_ne_zero.2 hy) hb) (Nat.div_pos h.1 b_pos).ne', le_div_iff_mul_le b_pos,
+      rw [succ_eq_add_one, Nat.add_le_add_iff_right, ← ih (y / b) (div_lt_self
+        (Nat.pos_iff_ne_zero.2 hy) hb) (Nat.div_pos h.1 b_pos).ne', le_div_iff_mul_le b_pos,
         pow_succ', Nat.mul_comm]
     · exact iff_of_false (fun hby => h ⟨(le_self_pow x.succ_ne_zero _).trans hby, hb⟩)
         (not_succ_le_zero _)
