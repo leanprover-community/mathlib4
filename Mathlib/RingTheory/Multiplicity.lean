@@ -3,6 +3,7 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes
 -/
+import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.PartENat
@@ -29,8 +30,7 @@ several basic results on it.
 variable {α β : Type*}
 
 open Nat Part
-
-open BigOperators
+open scoped BigOperators
 
 /-- `multiplicity a b` returns the largest natural number `n` such that
   `a ^ n ∣ b`, as a `PartENat` or natural with infinity. If `∀ n, a ^ n ∣ b`,
