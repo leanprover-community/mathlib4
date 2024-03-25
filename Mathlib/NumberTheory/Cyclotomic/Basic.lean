@@ -42,7 +42,7 @@ primitive roots of unity, for all `n ∈ S`.
   `B` is a finite `A`-algebra.
 * `IsCyclotomicExtension.numberField` : a finite cyclotomic extension of a number field is a
   number field.
-* `IsCyclotomicExtension.splitting_field_X_pow_sub_one` : if `IsCyclotomicExtension {n} K L`,
+* `IsCyclotomicExtension.isSplittingField_X_pow_sub_one` : if `IsCyclotomicExtension {n} K L`,
   then `L` is the splitting field of `X ^ n - 1`.
 * `IsCyclotomicExtension.splitting_field_cyclotomic` : if `IsCyclotomicExtension {n} K L`,
   then `L` is the splitting field of `cyclotomic n K`.
