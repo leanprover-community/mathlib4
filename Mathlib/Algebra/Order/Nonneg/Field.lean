@@ -79,6 +79,7 @@ theorem mk_zpow (hx : 0 ≤ x) (n : ℤ) :
 #align nonneg.mk_zpow Nonneg.mk_zpow
 
 instance linearOrderedSemifield : LinearOrderedSemifield { x : α // 0 ≤ x } :=
+  fast_instance%
   Subtype.coe_injective.linearOrderedSemifield _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
     Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) Nonneg.coe_pow Nonneg.coe_zpow
     Nonneg.coe_nat_cast (fun _ _ => rfl) fun _ _ => rfl
@@ -88,12 +89,13 @@ end LinearOrderedSemifield
 
 instance canonicallyLinearOrderedSemifield [LinearOrderedField α] :
     CanonicallyLinearOrderedSemifield { x : α // 0 ≤ x } :=
+  fast_instance%
   { Nonneg.linearOrderedSemifield, Nonneg.canonicallyOrderedCommSemiring with }
 #align nonneg.canonically_linear_ordered_semifield Nonneg.canonicallyLinearOrderedSemifield
 
 instance linearOrderedCommGroupWithZero [LinearOrderedField α] :
     LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
-  inferInstance
+  fast_instance% inferInstance
 #align nonneg.linear_ordered_comm_group_with_zero Nonneg.linearOrderedCommGroupWithZero
 
 end Nonneg
