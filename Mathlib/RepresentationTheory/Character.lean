@@ -139,45 +139,6 @@ theorem average_char_eq_finrank_invariants (V : FdRep k G) :
 
 end Group
 
-namespace MonoidAlgebra
-
-universe u₁ u₂
-
-instance {k : Type u₁} {G : Type u₂} [Semiring k] :
-    Coe G (MonoidAlgebra k G) where
-  coe g := MonoidAlgebra.single g 1
-
-def std_basis (k : Type u₁) (G : Type u₂) [Semiring k] :
-    Basis G k (MonoidAlgebra k G) :=
-  .ofRepr (LinearEquiv.refl _ _)
-
-instance my_inst {k : Type u₁} {G : Type u₂} [Semiring k] :
-    CoeDep (Type u₂) G (Basis G k (MonoidAlgebra k G)) where
-  coe := std_basis k G
-
-instance {k : Type u₁} {G : Type u₂} [Semiring k] :
-    Inhabited (Basis G k (MonoidAlgebra k G)) :=
-  ⟨std_basis k G⟩
-
-instance {k : Type u₁} {G : Type u₂} [Semiring k] :
-    Module.Free k (MonoidAlgebra k G) where
-  exists_basis := ⟨G, std_basis k G⟩
-
-end MonoidAlgebra
-
-
-def is_conj_inv (f : MonoidAlgebra k G →ₗ[k] k) := ∀ g h : G, f (h * g * h⁻¹) = f g
-
-def ClassFuntion := {f : MonoidAlgebra k G →ₗ[k] k // is_conj_inv f}
-
-lemma char_is_class_func (V : FdRep k G) :
-    is_conj_inv (Basis.constr (MonoidAlgebra.my_inst.coe : Basis G k (MonoidAlgebra k G)) k V.character) := by
-  intro g h
-  have foo := Basis.constr_basis G k V.character h
-  have (g : G) : B g = MonoidAlgebra.single g 1 := B.repr_self g
-  repeat rw [← this]
-  sorry
-
 section Orthogonality
 
 variable {G : GroupCat.{u}} [IsAlgClosed k]
@@ -254,27 +215,6 @@ lemma char_is_class_func (V : FdRep k G) :
 open scoped Classical
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
-
-def IsClassFunction (f : MonoidAlgebra k G →ₗ[k] k) : Prop :=
-  ∀ (g h : G), f (MonoidAlgebra.single (h * g * h⁻¹) 1) = f (MonoidAlgebra.single g 1)
-
-def ClassFunction : Type u :=
-  { f : MonoidAlgebra k G →ₗ[k] k // IsClassFunction f }
-
--- def linearLift (f : G → k) : MonoidAlgebra k G →ₗ[k] k where
---   toFun := fun x ↦ ∑ g, f g * x g
---   map_add' := by
---     intros x y
---     sorry
---   map_smul' := sorry
-
-def liftNC (f : k →+ R) (g : G → R) : MonoidAlgebra k G →+ R :=
-  liftAddHom fun x : G => (AddMonoidHom.mulRight (g x)).comp f
-
-def linearLiftNC {R : Type*} [Module k R] (f : k →+ R) (g : G → R) : MonoidAlgebra k G →+ R :=
-  liftAddHom fun x : G => (AddMonoidHom.mulRight (g x)).comp f
-
-theorem char_isClassFunction (V : FdRep k G) : IsClassFunction (linearLift V.character) := by sorry
 
 /-- Orthogonality of characters for irreducible representations of finite group over an
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
