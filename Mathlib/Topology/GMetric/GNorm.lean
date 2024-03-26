@@ -18,12 +18,12 @@ variable [Monoid α]
 class GNorm (α : Type*) (γ : Type*) [AddCommMonoid γ] [LinearOrder γ]
   [CovariantClass γ γ (. + .) (. ≤ .)] {T : Type*} [FunLike T α (α → γ)] [GPseudoMetricClass T α γ]
   [Monoid α] (gdist:T) : Prop where
-  gdist_absorb_mul : ∀ z, (gdist on (.*z)) = gdist
+  gdist_absorb_mul : ∀ z x y, (gdist (x*z) (y*z)) = gdist x y
 
 def gnorm (gdist:T) [GNorm α γ gdist] (x :α) :γ := gdist x 1
 
 lemma gdist_absorb_mul
-    (gdist:T) [h:GNorm α γ gdist] : ∀ z, (gdist on (.*z)) = gdist := by
+    (gdist:T) [h:GNorm α γ gdist] : ∀ z x y, (gdist (x*z) (y*z)) = gdist x y := by
   exact h.gdist_absorb_mul
 end monoid
 
@@ -33,7 +33,6 @@ lemma dist_eq [Group α] (gdist:T) [GNorm α γ gdist] :
   intro x y
   rw [gnorm]
   nth_rw 2 [← gdist_absorb_mul gdist y]
-  rw [Function.onFun]
   simp only [one_mul, div_mul_cancel']
 
 end group
@@ -45,10 +44,10 @@ variable [AddMonoid α]
 
 class AddGNorm (α : Type*) (γ : Type*) [AddCommMonoid γ] [LinearOrder γ] [CovariantClass γ γ (. + .) (. ≤ .)]
   {T : Type*} [FunLike T α (α → γ)] [GPseudoMetricClass T α γ] [AddMonoid α] (gdist:T) :Prop where
-  gdist_absorb_add : ∀ z, (gdist on (.+z)) = gdist
+  gdist_absorb_add : ∀ z x y, (gdist (x+z) (y+z)) = gdist x y
 
 lemma gdist_absorb_add
-    (gdist:T) [h:AddGNorm α γ gdist] : ∀ z, (gdist on (.+z)) = gdist := by
+    (gdist:T) [h:AddGNorm α γ gdist] : ∀ z x y, (gdist (x+z) (y+z)) = gdist x y:= by
   exact h.gdist_absorb_add
 
 def addGNorm (gdist:T) [AddGNorm α γ gdist] (x:α) : γ :=
@@ -63,7 +62,6 @@ lemma addDist_eq (gdist:T) [AddGNorm α γ gdist] :
   intro x y
   rw [addGNorm]
   nth_rw 2 [← gdist_absorb_add gdist y]
-  rw [Function.onFun]
   simp only [zero_add, sub_add_cancel]
 
 end addcommgroup
