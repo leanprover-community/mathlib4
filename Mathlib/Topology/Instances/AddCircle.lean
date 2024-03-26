@@ -349,7 +349,7 @@ theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜)
   rw [addOrderOf_eq_iff h]
   replace h : 0 < (n : 𝕜) := Nat.cast_pos.2 h
   refine' ⟨_, fun m hn h0 => _⟩ <;> simp only [Ne, ← coe_nsmul, nsmul_eq_mul]
-  · rw [mul_div_cancel' _ h.ne', coe_period]
+  · rw [mul_div_cancel₀ _ h.ne', coe_period]
   rw [coe_eq_zero_of_pos_iff p hp.out (mul_pos (Nat.cast_pos.2 h0) <| div_pos hp.out h)]
   rintro ⟨k, hk⟩
   rw [mul_div, eq_div_iff h.ne', nsmul_eq_mul, mul_right_comm, ← Nat.cast_mul,
@@ -403,7 +403,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
   have h0 : (_ : 𝕜) ≠ 0 := Nat.cast_ne_zero.2 h.ne'
   rw [nsmul_eq_mul, mul_comm, ← div_eq_iff h0, ← a.ediv_add_emod' n, add_smul, add_div,
     zsmul_eq_mul, Int.cast_mul, Int.cast_ofNat, mul_assoc, ← mul_div, mul_comm _ p,
-    mul_div_cancel p h0] at ha
+    mul_div_cancel_right₀ p h0] at ha
   have han : _ = a % n := Int.toNat_of_nonneg (Int.emod_nonneg _ <| mod_cast h.ne')
   have he : (↑(↑((a % n).toNat) / ↑n * p) : AddCircle p) = k := by
     convert congr_arg (QuotientAddGroup.mk : 𝕜 → (AddCircle p)) ha using 1
