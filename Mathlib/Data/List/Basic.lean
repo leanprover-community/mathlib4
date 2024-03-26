@@ -14,6 +14,7 @@ import Mathlib.Data.List.Defs
 import Mathlib.Order.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.Common
+import Mathlib.Init.Data.List.Basic
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -487,9 +488,7 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
 
 /-! ### pure -/
 
-@[simp]
-theorem mem_pure {α} (x y : α) : x ∈ (pure y : List α) ↔ x = y :=
-  show x ∈ [y] ↔ x = y by simp
+theorem mem_pure {α} (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
 #align list.mem_pure List.mem_pure
 
 /-! ### bind -/
@@ -1585,12 +1584,14 @@ theorem map_join (f : α → β) (L : List (List α)) : map f (join L) = join (m
   induction L <;> [rfl; simp only [*, join, map, map_append]]
 #align list.map_join List.map_join
 
-theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l := by
-  unfold List.bind
-  induction l <;>
-    simp (config := { unfoldPartialApp := true })
-      [map, join, List.ret, cons_append, nil_append, *] at *
-#align list.bind_ret_eq_map List.bind_ret_eq_map
+theorem bind_pure_eq_map (f : α → β) (l : List α) : l.bind (pure ∘ f) = map f l :=
+  .symm <| map_eq_bind ..
+#align list.bind_ret_eq_map List.bind_pure_eq_map
+
+set_option linter.deprecated false in
+@[deprecated bind_pure_eq_map] -- 2024-03-24
+theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l :=
+  bind_pure_eq_map f l
 
 theorem bind_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
     List.bind l f = List.bind l g :=
@@ -2916,96 +2917,6 @@ theorem Sublist.map (f : α → β) {l₁ l₂ : List α} (s : l₁ <+ l₂) : m
   filterMap_eq_map f ▸ s.filterMap _
 #align list.sublist.map List.Sublist.map
 
-/-! ### reduceOption -/
-
-@[simp]
-theorem reduceOption_cons_of_some (x : α) (l : List (Option α)) :
-    reduceOption (some x :: l) = x :: l.reduceOption := by
-  simp only [reduceOption, filterMap, id.def, eq_self_iff_true, and_self_iff]
-#align list.reduce_option_cons_of_some List.reduceOption_cons_of_some
-
-@[simp]
-theorem reduceOption_cons_of_none (l : List (Option α)) :
-    reduceOption (none :: l) = l.reduceOption := by simp only [reduceOption, filterMap, id.def]
-#align list.reduce_option_cons_of_none List.reduceOption_cons_of_none
-
-@[simp]
-theorem reduceOption_nil : @reduceOption α [] = [] :=
-  rfl
-#align list.reduce_option_nil List.reduceOption_nil
-
-@[simp]
-theorem reduceOption_map {l : List (Option α)} {f : α → β} :
-    reduceOption (map (Option.map f) l) = map f (reduceOption l) := by
-  induction' l with hd tl hl
-  · simp only [reduceOption_nil, map_nil]
-  · cases hd <;>
-      simpa [true_and_iff, Option.map_some', map, eq_self_iff_true,
-        reduceOption_cons_of_some] using hl
-#align list.reduce_option_map List.reduceOption_map
-
-theorem reduceOption_append (l l' : List (Option α)) :
-    (l ++ l').reduceOption = l.reduceOption ++ l'.reduceOption :=
-  filterMap_append l l' id
-#align list.reduce_option_append List.reduceOption_append
-
-theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length ≤ l.length := by
-  induction' l with hd tl hl
-  · simp [reduceOption_nil, length]
-  · cases hd
-    · exact Nat.le_succ_of_le hl
-    · simpa only [length, Nat.add_le_add_iff_right, reduceOption_cons_of_some] using hl
-#align list.reduce_option_length_le List.reduceOption_length_le
-
-theorem reduceOption_length_eq_iff {l : List (Option α)} :
-    l.reduceOption.length = l.length ↔ ∀ x ∈ l, Option.isSome x := by
-  induction' l with hd tl hl
-  · simp only [forall_const, reduceOption_nil, not_mem_nil, forall_prop_of_false, eq_self_iff_true,
-      length, not_false_iff]
-  · cases hd
-    · simp only [mem_cons, forall_eq_or_imp, Bool.coe_sort_false, false_and_iff,
-        reduceOption_cons_of_none, length, Option.isSome_none, iff_false_iff]
-      intro H
-      have := reduceOption_length_le tl
-      rw [H] at this
-      exact absurd (Nat.lt_succ_self _) (not_lt_of_le this)
-    · simp only [length, mem_cons, forall_eq_or_imp, Option.isSome_some, ← hl, reduceOption,
-        true_and]
-      omega
-#align list.reduce_option_length_eq_iff List.reduceOption_length_eq_iff
-
-theorem reduceOption_length_lt_iff {l : List (Option α)} :
-    l.reduceOption.length < l.length ↔ none ∈ l := by
-  rw [(reduceOption_length_le l).lt_iff_ne, Ne, reduceOption_length_eq_iff]
-  induction l <;> simp [*]
-  rw [@eq_comm _ none, ← Option.not_isSome_iff_eq_none, Decidable.imp_iff_not_or]
-#align list.reduce_option_length_lt_iff List.reduceOption_length_lt_iff
-
-theorem reduceOption_singleton (x : Option α) : [x].reduceOption = x.toList := by cases x <;> rfl
-#align list.reduce_option_singleton List.reduceOption_singleton
-
-theorem reduceOption_concat (l : List (Option α)) (x : Option α) :
-    (l.concat x).reduceOption = l.reduceOption ++ x.toList := by
-  induction' l with hd tl hl generalizing x
-  · cases x <;> simp [Option.toList]
-  · simp only [concat_eq_append, reduceOption_append] at hl
-    cases hd <;> simp [hl, reduceOption_append]
-#align list.reduce_option_concat List.reduceOption_concat
-
-theorem reduceOption_concat_of_some (l : List (Option α)) (x : α) :
-    (l.concat (some x)).reduceOption = l.reduceOption.concat x := by
-  simp only [reduceOption_nil, concat_eq_append, reduceOption_append, reduceOption_cons_of_some]
-#align list.reduce_option_concat_of_some List.reduceOption_concat_of_some
-
-theorem reduceOption_mem_iff {l : List (Option α)} {x : α} : x ∈ l.reduceOption ↔ some x ∈ l := by
-  simp only [reduceOption, id.def, mem_filterMap, exists_eq_right]
-#align list.reduce_option_mem_iff List.reduceOption_mem_iff
-
-theorem reduceOption_get?_iff {l : List (Option α)} {x : α} :
-    (∃ i, l.get? i = some (some x)) ↔ ∃ i, l.reduceOption.get? i = some x := by
-  rw [← mem_iff_get?, ← mem_iff_get?, reduceOption_mem_iff]
-#align list.reduce_option_nth_iff List.reduceOption_get?_iff
-
 /-! ### filter -/
 
 section Filter
@@ -3452,10 +3363,7 @@ theorem enum_append (xs ys : List α) : enum (xs ++ ys) = enum xs ++ enumFrom xs
 
 theorem map_fst_add_enumFrom_eq_enumFrom (l : List α) (n k : ℕ) :
     map (Prod.map (· + n) id) (enumFrom k l) = enumFrom (n + k) l := by
-  induction' l with hd tl IH generalizing n k
-  · simp [enumFrom]
-  · simp only [enumFrom, map, zero_add, Prod.map_mk, id.def, eq_self_iff_true, true_and_iff]
-    simp [IH, add_comm n k, add_assoc, Nat.add_left_comm]
+  induction l generalizing n k <;> [rfl; simp_all [add_assoc, add_comm k]]
 #align list.map_fst_add_enum_from_eq_enum_from List.map_fst_add_enumFrom_eq_enumFrom
 
 theorem map_fst_add_enum_eq_enumFrom (l : List α) (n : ℕ) :
@@ -3918,31 +3826,22 @@ section Disjoint
 
 variable {α β : Type*}
 
-/-- The images of disjoint lists under an injective map are disjoint -/
-theorem disjoint_map {f : α → β} {s t : List α} (hf : Function.Injective f)
-    (h : Disjoint s t) : Disjoint (s.map f) (t.map f) := by
-  simp only [Disjoint]
-  intro b hbs hbt
-  rw [mem_map] at hbs hbt
-  obtain ⟨a, ha, rfl⟩ := hbs
-  apply h ha
-  obtain ⟨a', ha', ha''⟩ := hbt
-  rw [hf ha''.symm]; exact ha'
-
 /-- The images of disjoint lists under a partially defined map are disjoint -/
 theorem disjoint_pmap {p : α → Prop} {f : ∀ a : α, p a → β} {s t : List α}
     (hs : ∀ a ∈ s, p a) (ht : ∀ a ∈ t, p a)
     (hf : ∀ (a a' : α) (ha : p a) (ha' : p a'), f a ha = f a' ha' → a = a')
     (h : Disjoint s t) :
     Disjoint (s.pmap f hs) (t.pmap f ht) := by
-  simp only [Disjoint]
-  intro b hbs hbt
-  rw [mem_pmap] at hbs hbt
-  obtain ⟨a, ha, rfl⟩ := hbs
+  simp only [Disjoint, mem_pmap]
+  rintro b ⟨a, ha, rfl⟩ ⟨a', ha', ha''⟩
   apply h ha
-  obtain ⟨a', ha', ha''⟩ := hbt
-  rw [hf a a' (hs a ha) (ht a' ha') ha''.symm]
-  exact ha'
+  rwa [hf a a' (hs a ha) (ht a' ha') ha''.symm]
+
+/-- The images of disjoint lists under an injective map are disjoint -/
+theorem disjoint_map {f : α → β} {s t : List α} (hf : Function.Injective f)
+    (h : Disjoint s t) : Disjoint (s.map f) (t.map f) := by
+  rw [← pmap_eq_map _ _ _ (fun _ _ ↦ trivial), ← pmap_eq_map _ _ _ (fun _ _ ↦ trivial)]
+  exact disjoint_pmap _ _ (fun _ _ _ _ h' ↦ hf h') h
 
 end Disjoint
 
