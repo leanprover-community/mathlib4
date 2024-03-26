@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Multiset.Lemmas
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Pi
@@ -42,10 +43,7 @@ See the documentation of `to_additive.attr` for more information.
 
 -/
 
-
-universe u v w
-
-variable {ι : Type*} {β : Type u} {α : Type v} {γ : Type w}
+variable {ι κ α β γ : Type*}
 
 open Fin Function
 
@@ -141,7 +139,7 @@ to show the domain type when the product is over `Finset.univ`. -/
   if s.isAppOfArity ``Finset.univ 2 then
     let binder ←
       if ppDomain then
-        let ty ← withNaryArg 1 delab
+        let ty ← withNaryArg 0 delab
         `(extBinder| $(.mk i):ident : $ty)
       else
         `(extBinder| $(.mk i):ident)
@@ -161,7 +159,7 @@ to show the domain type when the sum is over `Finset.univ`. -/
   if s.isAppOfArity ``Finset.univ 2 then
     let binder ←
       if ppDomain then
-        let ty ← withNaryArg 1 delab
+        let ty ← withNaryArg 0 delab
         `(extBinder| $(.mk i):ident : $ty)
       else
         `(extBinder| $(.mk i):ident)
@@ -1071,6 +1069,32 @@ theorem prod_subtype {p : α → Prop} {F : Fintype (Subtype p)} (s : Finset α)
   congr!
 #align finset.prod_subtype Finset.prod_subtype
 #align finset.sum_subtype Finset.sum_subtype
+
+@[to_additive]
+lemma prod_preimage' (f : ι → κ) [DecidablePred (· ∈ Set.range f)] (s : Finset κ) (hf) (g : κ → β) :
+    ∏ x in s.preimage f hf, g (f x) = ∏ x in s.filter (· ∈ Set.range f), g x := by
+  classical
+  calc
+    ∏ x in preimage s f hf, g (f x) = ∏ x in image f (preimage s f hf), g x :=
+      Eq.symm <| prod_image <| by simpa only [mem_preimage, Set.InjOn] using hf
+    _ = ∏ x in s.filter fun x => x ∈ Set.range f, g x := by rw [image_preimage]
+#align finset.prod_preimage' Finset.prod_preimage'
+#align finset.sum_preimage' Finset.sum_preimage'
+
+@[to_additive]
+lemma prod_preimage (f : ι → κ) (s : Finset κ) (hf) (g : κ → β)
+    (hg : ∀ x ∈ s, x ∉ Set.range f → g x = 1) :
+    ∏ x in s.preimage f hf, g (f x) = ∏ x in s, g x := by
+  classical rw [prod_preimage', prod_filter_of_ne]; exact fun x hx ↦ Not.imp_symm (hg x hx)
+#align finset.prod_preimage Finset.prod_preimage
+#align finset.sum_preimage Finset.sum_preimage
+
+@[to_additive]
+lemma prod_preimage_of_bij (f : ι → κ) (s : Finset κ) (hf : Set.BijOn f (f ⁻¹' ↑s) ↑s) (g : κ → β) :
+    ∏ x in s.preimage f hf.injOn, g (f x) = ∏ x in s, g x :=
+  prod_preimage _ _ hf.injOn g fun _ hs h_f ↦ (h_f <| hf.subset_range hs).elim
+#align finset.prod_preimage_of_bij Finset.prod_preimage_of_bij
+#align finset.sum_preimage_of_bij Finset.sum_preimage_of_bij
 
 @[to_additive]
 theorem prod_set_coe (s : Set α) [Fintype s] : (∏ i : s, f i) = ∏ i in s.toFinset, f i :=
