@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.OrderClosed
 
 #align_import analysis.convex.exposed from "leanprover-community/mathlib"@"48024901a8e2a462363650c50d62248a77cbcab3"
 
@@ -46,7 +46,8 @@ More not-yet-PRed stuff is available on the branch `sperner_again`.
 -/
 
 
-open Classical Affine BigOperators
+open scoped Classical
+open Affine BigOperators
 
 open Set
 
@@ -265,7 +266,7 @@ protected theorem isExtreme (hAB : IsExposed 𝕜 A B) : IsExtreme 𝕜 A B := b
 end IsExposed
 
 theorem exposedPoints_subset_extremePoints : A.exposedPoints 𝕜 ⊆ A.extremePoints 𝕜 := fun _ hx =>
-  mem_extremePoints_iff_extreme_singleton.2 (mem_exposedPoints_iff_exposed_singleton.1 hx).isExtreme
+  (mem_exposedPoints_iff_exposed_singleton.1 hx).isExtreme.mem_extremePoints
 #align exposed_points_subset_extreme_points exposedPoints_subset_extremePoints
 
 end LinearOrderedRing

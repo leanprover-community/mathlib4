@@ -5,6 +5,7 @@ Authors: David Loeffler, Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 
 /-!
 # Various ways to combine analytic functions
@@ -18,20 +19,18 @@ We show that the following are analytic:
 
 noncomputable section
 
-open Topology Classical BigOperators NNReal Filter ENNReal
+open scoped Classical
+open Topology BigOperators NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 
 variable {α : Type*}
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H]
   [NormedSpace 𝕜 H]
 
 variable {𝕝 : Type*} [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
-
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 
 /-!
@@ -52,17 +51,17 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
       refine (isBigO_of_le _ fun n ↦ ?_).trans this.isBigO
       rw [norm_mul, norm_norm, norm_mul, norm_norm]
       refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-      rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.op_norm_prod]
+      rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
       try apply le_max_left
       try apply le_max_right }
   · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
     rw [lt_min_iff] at hr
     have := ((p.isLittleO_one_of_lt_radius hr.1).add
       (q.isLittleO_one_of_lt_radius hr.2)).isBigO
-    refine (p.prod q).le_radius_of_isBigO ((isBigO_of_le _ λ n ↦ ?_).trans this)
-    rw [norm_mul, norm_norm, ←add_mul, norm_mul]
+    refine (p.prod q).le_radius_of_isBigO ((isBigO_of_le _ fun n ↦ ?_).trans this)
+    rw [norm_mul, norm_norm, ← add_mul, norm_mul]
     refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-    rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.op_norm_prod]
+    rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
     refine (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)).trans ?_
     apply Real.le_norm_self
 
@@ -117,24 +116,28 @@ theorem AnalyticOn.comp₂ {h : F × G → H} {f : E → F} {g : E → G} {s : S
   fun _ xt ↦ (ha _ (m _ xt)).comp₂ (fa _ xt) (ga _ xt)
 
 /-- Analytic functions on products are analytic in the first coordinate -/
-theorem AnalyticAt.along_fst {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
+theorem AnalyticAt.curry_left {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
     AnalyticAt 𝕜 (fun x ↦ f (x, p.2)) p.1 :=
   AnalyticAt.comp₂ fa (analyticAt_id _ _) analyticAt_const
+alias AnalyticAt.along_fst := AnalyticAt.curry_left
 
 /-- Analytic functions on products are analytic in the second coordinate -/
-theorem AnalyticAt.along_snd {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
+theorem AnalyticAt.curry_right {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
     AnalyticAt 𝕜 (fun y ↦ f (p.1, y)) p.2 :=
   AnalyticAt.comp₂ fa analyticAt_const (analyticAt_id _ _)
+alias AnalyticAt.along_snd := AnalyticAt.curry_right
 
 /-- Analytic functions on products are analytic in the first coordinate -/
-theorem AnalyticOn.along_fst {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticOn 𝕜 f s) :
+theorem AnalyticOn.curry_left {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (fun x ↦ f (x, y)) {x | (x, y) ∈ s} :=
   fun x m ↦ (fa (x, y) m).along_fst
+alias AnalyticOn.along_fst := AnalyticOn.curry_left
 
 /-- Analytic functions on products are analytic in the second coordinate -/
-theorem AnalyticOn.along_snd {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticOn 𝕜 f s) :
+theorem AnalyticOn.curry_right {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (fun y ↦ f (x, y)) {y | (x, y) ∈ s} :=
   fun y m ↦ (fa (x, y) m).along_snd
+alias AnalyticOn.along_snd := AnalyticOn.curry_right
 
 /-!
 ### Arithmetic on analytic functions
@@ -149,7 +152,7 @@ lemma analyticAt_smul [NormedSpace 𝕝 E] [IsScalarTower 𝕜 𝕝 E] (z : 𝕝
     AnalyticAt 𝕜 (fun x : 𝕝 × E ↦ x.1 • x.2) z :=
   (ContinuousLinearMap.lsmul 𝕜 𝕝).analyticAt_bilinear z
 
-/-- Multiplication in a normed algebra over `𝕜` is -/
+/-- Multiplication in a normed algebra over `𝕜` is analytic. -/
 lemma analyticAt_mul (z : A × A) : AnalyticAt 𝕜 (fun x : A × A ↦ x.1 * x.2) z :=
   (ContinuousLinearMap.mul 𝕜 A).analyticAt_bilinear z
 
@@ -165,12 +168,12 @@ lemma AnalyticOn.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E �
     AnalyticOn 𝕜 (fun x ↦ f x • g x) s :=
   fun _ m ↦ (hf _ m).smul (hg _ m)
 
-/-- Multiplication of analytic functions (valued in a normd `𝕜`-algebra) is analytic. -/
+/-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
 lemma AnalyticAt.mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (fun x ↦ f x * g x) z :=
   (analyticAt_mul _).comp₂ hf hg
 
-/-- Multiplication of analytic functions (valued in a normd `𝕜`-algebra) is analytic. -/
+/-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
 lemma AnalyticOn.mul {f g : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (fun x ↦ f x * g x) s :=
   fun _ m ↦ (hf _ m).mul (hg _ m)
@@ -178,10 +181,12 @@ lemma AnalyticOn.mul {f g : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) :
     AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
-  induction' n with m hm
-  · simp only [Nat.zero_eq, pow_zero]
+  induction n with
+  | zero =>
+    simp only [Nat.zero_eq, pow_zero]
     apply analyticAt_const
-  · simp only [pow_succ]
+  | succ m hm =>
+    simp only [pow_succ]
     exact hf.mul hm
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
@@ -209,7 +214,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
     (formalMultilinearSeries_geometric 𝕜 A).radius = 1 := by
   apply le_antisymm
   · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [←coe_one, ENNReal.coe_le_coe]
+    rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
     have := FormalMultilinearSeries.isLittleO_one_of_lt_radius _ hr
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul] at this
     contrapose! this
@@ -220,10 +225,10 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
     intro n hn
     push_neg
     rwa [norm_pow, one_lt_pow_iff_of_nonneg (norm_nonneg _) hn,
-      Real.norm_of_nonneg (NNReal.coe_nonneg _), ←NNReal.coe_one,
+      Real.norm_of_nonneg (NNReal.coe_nonneg _), ← NNReal.coe_one,
       NNReal.coe_lt_coe]
   · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [←Nat.cast_one, ENNReal.coe_lt_coe_nat, Nat.cast_one] at hr
+    rw [← Nat.cast_one, ENNReal.coe_lt_coe_nat, Nat.cast_one] at hr
     apply FormalMultilinearSeries.le_radius_of_isBigO
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul]
     refine isBigO_of_le atTop (fun n ↦ ?_)
@@ -241,8 +246,8 @@ lemma hasFPowerSeriesOnBall_inv_one_sub
         ContinuousMultilinearMap.mkPiAlgebraFin_apply,
         List.prod_ofFn, Finset.prod_const,
         Finset.card_univ, Fintype.card_fin]
-    apply hasSum_geometric_of_norm_lt_1
-    simpa only [←ofReal_one, Metric.emetric_ball, Metric.ball,
+    apply hasSum_geometric_of_norm_lt_one
+    simpa only [← ofReal_one, Metric.emetric_ball, Metric.ball,
       dist_eq_norm, sub_zero] using hy
 
 lemma analyticAt_inv_one_sub (𝕝 : Type*) [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
@@ -257,9 +262,9 @@ lemma analyticAt_inv {z : 𝕝} (hz : z ≠ 0) : AnalyticAt 𝕜 Inv.inv z := by
   let f3 : 𝕝 → 𝕝 := fun c ↦ 1 - c / z
   have feq : f1 ∘ f2 ∘ f3 = Inv.inv := by
     ext1 x
-    dsimp only [Function.comp_apply]
+    dsimp only [f1, f2, f3, Function.comp_apply]
     field_simp
-  have f3val : f3 z = 0 := by simp only [div_self hz, sub_self]
+  have f3val : f3 z = 0 := by simp only [f3, div_self hz, sub_self]
   have f3an : AnalyticAt 𝕜 f3 z := by
     apply analyticAt_const.sub
     simpa only [div_eq_inv_mul] using analyticAt_const.mul (analyticAt_id 𝕜 z)

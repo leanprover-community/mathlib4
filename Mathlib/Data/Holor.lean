@@ -196,7 +196,8 @@ theorem mul_assoc0 [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z :
   funext fun t : HolorIndex (ds₁ ++ ds₂ ++ ds₃) => by
     rw [assocLeft]
     unfold mul
-    rw [mul_assoc, ←HolorIndex.take_take, ←HolorIndex.drop_take, ←HolorIndex.drop_drop, cast_type]
+    rw [mul_assoc, ← HolorIndex.take_take, ← HolorIndex.drop_take, ← HolorIndex.drop_drop,
+      cast_type]
     rfl
     rw [append_assoc]
 #align holor.mul_assoc0 Holor.mul_assoc0

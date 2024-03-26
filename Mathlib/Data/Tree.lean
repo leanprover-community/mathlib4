@@ -3,7 +3,7 @@ Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
-import Std.Data.RBMap
+import Std.Data.RBMap.Basic
 import Mathlib.Data.Num.Basic
 import Mathlib.Order.Basic
 import Mathlib.Init.Data.Ordering.Basic
@@ -148,7 +148,7 @@ def right : Tree α → Tree α
 -- Notation for making a node with `Unit` data
 scoped infixr:65 " △ " => Tree.node ()
 
--- porting note: workaround for leanprover/lean4#2049
+-- Porting note: workaround for leanprover/lean4#2049
 compile_inductive% Tree
 
 @[elab_as_elim]

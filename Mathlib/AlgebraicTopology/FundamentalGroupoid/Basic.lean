@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Homotopy.Path
+import Mathlib.Data.Set.Basic
 
 #align_import algebraic_topology.fundamental_groupoid.basic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
@@ -24,7 +25,6 @@ open CategoryTheory
 universe u v
 
 variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
-
 variable {x₀ x₁ : X}
 
 noncomputable section
@@ -107,6 +107,7 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
     cases hx with
     | inl hx
     | inr hx =>
+      set_option tactic.skipAssignedInstances false in
       rw [hx]
       norm_num [reflTransSymmAux]
 #align path.homotopy.refl_trans_symm Path.Homotopy.reflTransSymm
@@ -114,7 +115,7 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
   `p.symm.trans p`. -/
 def reflSymmTrans (p : Path x₀ x₁) : Homotopy (Path.refl x₁) (p.symm.trans p) :=
-  (reflTransSymm p.symm).cast rfl <| congr_arg _ Path.symm_symm
+  (reflTransSymm p.symm).cast rfl <| congr_arg _ (Path.symm_symm _)
 #align path.homotopy.refl_symm_trans Path.Homotopy.reflSymmTrans
 
 end
@@ -141,11 +142,11 @@ set_option linter.uppercaseLean3 false in
 #align path.homotopy.trans_refl_reparam_aux_mem_I Path.Homotopy.transReflReparamAux_mem_I
 
 theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
-  norm_num [transReflReparamAux]
+  set_option tactic.skipAssignedInstances false in norm_num [transReflReparamAux]
 #align path.homotopy.trans_refl_reparam_aux_zero Path.Homotopy.transReflReparamAux_zero
 
 theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
-  norm_num [transReflReparamAux]
+  set_option tactic.skipAssignedInstances false in norm_num [transReflReparamAux]
 #align path.homotopy.trans_refl_reparam_aux_one Path.Homotopy.transReflReparamAux_one
 
 theorem trans_refl_reparam (p : Path x₀ x₁) :
@@ -192,7 +193,7 @@ theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
     [continuity; continuity; continuity; continuity; continuity; continuity; continuity; skip;
       skip] <;>
     · intro x hx
-      norm_num [hx]
+      set_option tactic.skipAssignedInstances false in norm_num [hx]
 #align path.homotopy.continuous_trans_assoc_reparam_aux Path.Homotopy.continuous_transAssocReparamAux
 
 theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
@@ -202,11 +203,11 @@ set_option linter.uppercaseLean3 false in
 #align path.homotopy.trans_assoc_reparam_aux_mem_I Path.Homotopy.transAssocReparamAux_mem_I
 
 theorem transAssocReparamAux_zero : transAssocReparamAux 0 = 0 := by
-  norm_num [transAssocReparamAux]
+  set_option tactic.skipAssignedInstances false in norm_num [transAssocReparamAux]
 #align path.homotopy.trans_assoc_reparam_aux_zero Path.Homotopy.transAssocReparamAux_zero
 
 theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
-  norm_num [transAssocReparamAux]
+  set_option tactic.skipAssignedInstances false in norm_num [transAssocReparamAux]
 #align path.homotopy.trans_assoc_reparam_aux_one Path.Homotopy.transAssocReparamAux_one
 
 theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
@@ -387,8 +388,12 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
     rfl
 #align fundamental_groupoid.fundamental_groupoid_functor FundamentalGroupoid.fundamentalGroupoidFunctor
 
-scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
+@[inherit_doc] scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
+
+/-- The fundamental groupoid of a topological space. -/
 scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
+
+/-- The functor between fundamental groupoids induced by a continuous map. -/
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :

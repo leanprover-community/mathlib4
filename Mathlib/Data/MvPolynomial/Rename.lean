@@ -57,7 +57,6 @@ def rename (f : σ → τ) : MvPolynomial σ R →ₐ[R] MvPolynomial τ R :=
   aeval (X ∘ f)
 #align mv_polynomial.rename MvPolynomial.rename
 
-@[simp]
 theorem rename_C (f : σ → τ) (r : R) : rename f (C r) = C r :=
   eval₂_C _ _ _
 set_option linter.uppercaseLean3 false in
@@ -82,7 +81,7 @@ theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPolynomial σ R) :
     rename g (rename f p) = rename (g ∘ f) p :=
   show rename g (eval₂ C (X ∘ f) p) = _ by
     simp only [rename, aeval_eq_eval₂Hom]
-    -- porting note: the Lean 3 proof of this was very fragile and included a nonterminal `simp`.
+    -- Porting note: the Lean 3 proof of this was very fragile and included a nonterminal `simp`.
     -- Hopefully this is less prone to breaking
     rw [eval₂_comp_left (eval₂Hom (algebraMap R (MvPolynomial α R)) (X ∘ g)) C (X ∘ f) p]
     simp only [(· ∘ ·), eval₂Hom_X']
@@ -124,7 +123,7 @@ section
 
 variable {f : σ → τ} (hf : Function.Injective f)
 
-open Classical
+open scoped Classical
 
 /-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
   `MvPolynomial.killCompl hf` is the `AlgHom` from `R[τ]` to `R[σ]` that is left inverse to
@@ -132,6 +131,8 @@ open Classical
 def killCompl : MvPolynomial τ R →ₐ[R] MvPolynomial σ R :=
   aeval fun i => if h : i ∈ Set.range f then X <| (Equiv.ofInjective f hf).symm ⟨i, h⟩ else 0
 #align mv_polynomial.kill_compl MvPolynomial.killCompl
+
+theorem killCompl_C (r : R) : killCompl hf (C r) = C r := algHom_C _ _
 
 theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
   algHom_ext fun i => by
@@ -187,6 +188,9 @@ theorem eval₂_rename : (rename k p).eval₂ f g = p.eval₂ f (g ∘ k) := by
     · intros
       simp [*]
 #align mv_polynomial.eval₂_rename MvPolynomial.eval₂_rename
+
+theorem eval_rename (g : τ → R) (p : MvPolynomial σ R) : eval g (rename k p) = eval (g ∘ k) p :=
+  eval₂_rename _ _ _ _
 
 theorem eval₂Hom_rename : eval₂Hom f g (rename k p) = eval₂Hom f (g ∘ k) p :=
   eval₂_rename _ _ _ _
@@ -259,7 +263,7 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
     use s₁ ∪ s₂
     use rename (Set.inclusion <| s₁.subset_union_left s₂) q₁
     use rename (Set.inclusion <| s₁.subset_union_right s₂) q₂
-    constructor -- porting note: was `<;> simp <;> rfl` but Lean couldn't infer the arguments
+    constructor -- Porting note: was `<;> simp <;> rfl` but Lean couldn't infer the arguments
     · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [rename_rename (Set.inclusion <| s₁.subset_union_left s₂)]
       rfl
@@ -303,6 +307,11 @@ theorem coeff_rename_mapDomain (f : σ → τ) (hf : Injective f) (φ : MvPolyno
     simp only [*, AlgHom.map_add, coeff_add]
 #align mv_polynomial.coeff_rename_map_domain MvPolynomial.coeff_rename_mapDomain
 
+@[simp]
+theorem coeff_rename_embDomain (f : σ ↪ τ) (φ : MvPolynomial σ R) (d : σ →₀ ℕ) :
+    (rename f φ).coeff (d.embDomain f) = φ.coeff d := by
+  rw [Finsupp.embDomain_eq_mapDomain f, coeff_rename_mapDomain f f.injective]
+
 theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ →₀ ℕ)
     (h : ∀ u : σ →₀ ℕ, u.mapDomain f = d → φ.coeff u = 0) : (rename f φ).coeff d = 0 := by
   classical
@@ -312,7 +321,7 @@ theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ �
   rw [Finset.mem_image] at H
   obtain ⟨u, hu, rfl⟩ := H
   specialize h u rfl
-  simp at h hu
+  simp? at h hu says simp only [Finsupp.mem_support_iff, ne_eq] at h hu
   contradiction
 #align mv_polynomial.coeff_rename_eq_zero MvPolynomial.coeff_rename_eq_zero
 

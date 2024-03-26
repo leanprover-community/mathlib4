@@ -33,9 +33,9 @@ needed. In the future there will likely be a data-carrying, constructive, typecl
 When `CompleteLattice.Independent (Set.range A)` (a weaker condition than
 `DirectSum.IsInternal A`), these provide a grading of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
-`DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion $ le_iSup A i)`.
+`DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
-## tags
+## Tags
 
 internally graded ring
 -/
@@ -221,7 +221,6 @@ end coe
 section CanonicallyOrderedAddCommMonoid
 
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
-
 variable [CanonicallyOrderedAddCommMonoid ι] [SetLike.GradedMonoid A]
 
 theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) (h : ¬i ≤ n) :

@@ -31,7 +31,7 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) :
     rw [← lt_div_iff, ← sin_pi_over_two_pow_succ]; apply sin_lt; apply div_pos pi_pos
     all_goals apply pow_pos; norm_num
   apply lt_of_le_of_lt (le_of_eq _) this
-  rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel, mul_comm]; norm_num
+  rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; norm_num
 #align real.pi_gt_sqrt_two_add_series Real.pi_gt_sqrtTwoAddSeries
 
 theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
@@ -45,11 +45,11 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     · rw [div_le_iff']
       · refine' le_trans pi_le_four _
         simp only [show (4 : ℝ) = (2 : ℝ) ^ 2 by norm_num, mul_one]
-        apply pow_le_pow; norm_num; apply le_add_of_nonneg_left; apply Nat.zero_le
+        apply pow_le_pow_right; norm_num; apply le_add_of_nonneg_left; apply Nat.zero_le
       · apply pow_pos; norm_num
     apply add_le_add_left; rw [div_le_div_right]
     rw [le_div_iff, ← mul_pow]
-    refine' le_trans _ (le_of_eq (one_pow 3)); apply pow_le_pow_of_le_left
+    refine' le_trans _ (le_of_eq (one_pow 3)); apply pow_le_pow_left
     · apply le_of_lt; apply mul_pos; apply div_pos pi_pos; apply pow_pos; norm_num; apply pow_pos
       norm_num
     rw [← le_div_iff]
@@ -58,10 +58,10 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     -- Porting note: removed `convert le_rfl`
     all_goals (repeat' apply pow_pos); norm_num
   apply lt_of_lt_of_le this (le_of_eq _); rw [add_mul]; congr 1
-  · rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel, mul_comm]; norm_num
+  · rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; norm_num
   rw [pow_succ, ← pow_mul, mul_comm n 2, pow_mul, show (2 : ℝ) ^ 2 = 4 by norm_num, pow_succ,
-    pow_succ, ← mul_assoc (2 : ℝ), show (2 : ℝ) * 2 = 4 by norm_num, ← mul_assoc, div_mul_cancel,
-    mul_comm ((2 : ℝ) ^ n), ← div_div, div_mul_cancel]
+    pow_succ, ← mul_assoc (2 : ℝ), show (2 : ℝ) * 2 = 4 by norm_num, ← mul_assoc, div_mul_cancel₀,
+    mul_comm ((2 : ℝ) ^ n), ← div_div, div_mul_cancel₀]
   apply pow_ne_zero; norm_num; norm_num
 #align real.pi_lt_sqrt_two_add_series Real.pi_lt_sqrtTwoAddSeries
 

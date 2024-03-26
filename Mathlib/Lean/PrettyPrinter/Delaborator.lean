@@ -45,4 +45,11 @@ See also `Lean.PrettyPrinter.Delaborator.withBindingBodyUnusedName`. -/
 def withBindingBodyUnusedName' {α} (d : Syntax → Expr → DelabM α) : DelabM α := do
   let n ← getUnusedName (← getExpr).bindingName! (← getExpr).bindingBody!
   let stxN ← annotateCurPos (mkIdent n)
-  withBindingBody' n $ d stxN
+  withBindingBody' n <| d stxN
+
+/-- Update `OptionsPerPos` at the given position, setting the key `n`
+to have the boolean value `v`. -/
+def OptionsPerPos.setBool (opts : OptionsPerPos) (p : SubExpr.Pos) (n : Name) (v : Bool) :
+    OptionsPerPos :=
+  let e := opts.findD p {} |>.setBool n v
+  opts.insert p e

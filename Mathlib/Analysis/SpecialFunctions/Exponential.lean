@@ -252,7 +252,6 @@ TODO: prove this result too!
 section exp_smul
 
 variable {𝕂 𝕊 𝔸 : Type*}
-
 variable (𝕂)
 
 open scoped Topology
@@ -262,13 +261,9 @@ open Asymptotics Filter
 section MemBall
 
 variable [NontriviallyNormedField 𝕂] [CharZero 𝕂]
-
 variable [NormedCommRing 𝕊] [NormedRing 𝔸]
-
 variable [NormedSpace 𝕂 𝕊] [NormedAlgebra 𝕂 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
-
 variable [IsScalarTower 𝕂 𝕊 𝔸]
-
 variable [CompleteSpace 𝔸]
 
 theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
@@ -283,8 +278,8 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
         fun h =>
           exp 𝕂 ((t + h) • x) - exp 𝕂 (t • x) - (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) h by
     apply (IsLittleO.const_mul_left _ _).congr' this (EventuallyEq.refl _ _)
-    rw [← @hasFDerivAt_iff_isLittleO_nhds_zero _ _ _ _ _ _ _ _ (fun u => exp 𝕂 (u • x))
-      ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x) 0]
+    rw [← hasFDerivAt_iff_isLittleO_nhds_zero (f := fun u => exp 𝕂 (u • x))
+      (f' := (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) (x := 0)]
     have : HasFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x 0) := by
       rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, zero_smul]
       exact hasFDerivAt_exp_zero_of_radius_pos hpos
@@ -366,13 +361,9 @@ end MemBall
 section IsROrC
 
 variable [IsROrC 𝕂]
-
 variable [NormedCommRing 𝕊] [NormedRing 𝔸]
-
 variable [NormedAlgebra 𝕂 𝕊] [NormedAlgebra 𝕂 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
-
 variable [IsScalarTower 𝕂 𝕊 𝔸]
-
 variable [CompleteSpace 𝔸]
 
 theorem hasFDerivAt_exp_smul_const (x : 𝔸) (t : 𝕊) :

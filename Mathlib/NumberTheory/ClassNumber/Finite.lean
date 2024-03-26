@@ -36,21 +36,13 @@ open scoped BigOperators
 section EuclideanDomain
 
 variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
-
 variable [Field K] [Field L]
-
 variable [Algebra R K] [IsFractionRing R K]
-
 variable [Algebra K L] [FiniteDimensional K L] [IsSeparable K L]
-
 variable [algRL : Algebra R L] [IsScalarTower R K L]
-
 variable [Algebra R S] [Algebra S L]
-
 variable [ist : IsScalarTower R S L] [iic : IsIntegralClosure S R L]
-
 variable (abv : AbsoluteValue R ℤ)
-
 variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 
 /-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer
@@ -69,7 +61,7 @@ noncomputable def normBound : ℤ :=
 
 theorem normBound_pos : 0 < normBound abv bS := by
   obtain ⟨i, j, k, hijk⟩ : ∃ i j k, Algebra.leftMulMatrix bS (bS i) j k ≠ 0 := by
-    by_contra' h
+    by_contra! h
     obtain ⟨i⟩ := bS.index_nonempty
     apply bS.ne_zero i
     apply
@@ -121,21 +113,19 @@ theorem norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
   apply (Int.cast_le.mpr (norm_le abv bS a hy')).trans_lt
   simp only [Int.cast_mul, Int.cast_pow]
   apply mul_lt_mul' le_rfl
-  · exact pow_lt_pow_of_lt_left this (Int.cast_nonneg.mpr y'_nonneg) (Fintype.card_pos_iff.mpr ⟨i⟩)
+  · exact pow_lt_pow_left this (Int.cast_nonneg.mpr y'_nonneg) (@Fintype.card_ne_zero _ _ ⟨i⟩)
   · exact pow_nonneg (Int.cast_nonneg.mpr y'_nonneg) _
   · exact Int.cast_pos.mpr (normBound_pos abv bS)
 #align class_group.norm_lt ClassGroup.norm_lt
 
 
 /-- A nonzero ideal has an element of minimal norm. -/
--- porting note: port of Int.exists_least_of_bdd requires DecidablePred, so we use classical
 theorem exists_min (I : (Ideal S)⁰) :
     ∃ b ∈ (I : Ideal S),
       b ≠ 0 ∧ ∀ c ∈ (I : Ideal S), abv (Algebra.norm R c) < abv (Algebra.norm R b) → c =
       (0 : S) := by
-  classical
   obtain ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩, min⟩ := @Int.exists_least_of_bdd
-      (fun a => ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a) _
+      (fun a => ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a)
     (by
       use 0
       rintro _ ⟨b, _, _, rfl⟩
@@ -219,9 +209,9 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
                 ≤ abv b ^ (Fintype.card ι : ℝ) := by
     have := normBound_pos abv bS
     have := abv.nonneg b
-    rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel, rpow_neg_one,
+    rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel₀, rpow_neg_one,
       mul_left_comm, mul_inv_cancel, mul_one, rpow_nat_cast] <;>
-      try norm_cast; linarith
+      try norm_cast; omega
     · exact Iff.mpr Int.cast_nonneg this
     · linarith
   set μ : Fin (cardM bS adm).succ ↪ R := distinctElems bS adm with hμ
@@ -236,7 +226,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   have μ_mul_a_eq : ∀ j, μ j • a = b • ∑ i, qs j i • bS i + ∑ i, rs j i • bS i := by
     intro j
     rw [← bS.sum_repr a]
-    simp only [Finset.smul_sum, ← Finset.sum_add_distrib]
+    simp only [μ, qs, rs, Finset.smul_sum, ← Finset.sum_add_distrib]
     refine'
       Finset.sum_congr rfl fun i _ => _
 -- Porting note `← hμ, ← r_eq` and the final `← μ_eq` were not needed.
@@ -248,7 +238,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   refine' ⟨q, r, (mem_finsetApprox bS adm).mpr _, _⟩
   · exact ⟨k, j, j_ne_k.symm, rfl⟩
   have : r • a - b • q = ∑ x : ι, (rs k x • bS x - rs j x • bS x) := by
-    simp only [r_eq, sub_smul, μ_mul_a_eq, Finset.smul_sum, ← Finset.sum_add_distrib,
+    simp only [q, r_eq, sub_smul, μ_mul_a_eq, Finset.smul_sum, ← Finset.sum_add_distrib,
       ← Finset.sum_sub_distrib, smul_sub]
     refine' Finset.sum_congr rfl fun x _ => _
     ring
@@ -355,7 +345,7 @@ set_option linter.uppercaseLean3 false in
 
 open scoped Classical
 
-/-- The main theorem: the class group of an integral closure `S` of `R` in an
+/-- The **class number theorem**: the class group of an integral closure `S` of `R` in an
 algebraic extension `L` is finite if there is an admissible absolute value.
 
 See also `ClassGroup.fintypeOfAdmissibleOfFinite` where `L` is a finite

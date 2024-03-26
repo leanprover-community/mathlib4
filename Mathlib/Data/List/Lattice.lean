@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro,
 Scott Morrison
 -/
-import Mathlib.Data.List.Count
-import Mathlib.Data.List.Infix
-import Mathlib.Algebra.Order.Monoid.MinMax
+import Mathlib.Data.List.Basic
 
 #align_import data.list.lattice from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
@@ -150,7 +148,7 @@ theorem mem_of_mem_inter_right (h : a ∈ l₁ ∩ l₂) : a ∈ l₂ := by simp
 #align list.mem_of_mem_inter_right List.mem_of_mem_inter_right
 
 theorem mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ l₁ ∩ l₂ :=
-  mem_filter_of_mem h₁ $ by simpa using h₂
+  mem_filter_of_mem h₁ <| by simpa using h₂
 #align list.mem_inter_of_mem_of_mem List.mem_inter_of_mem_of_mem
 
 #align list.mem_inter List.mem_inter_iff
@@ -239,16 +237,16 @@ theorem count_bagInter {a : α} :
   | l₁, [] => by simp
   | b :: l₁, l₂ => by
     by_cases hb : b ∈ l₂
-    · rw [cons_bagInter_of_pos _ hb, count_cons, count_cons, count_bagInter, count_erase, ←
-        min_add_add_right]
+    · rw [cons_bagInter_of_pos _ hb, count_cons, count_cons, count_bagInter, count_erase,
+        ← Nat.add_min_add_right]
       by_cases ab : a = b
-      · rw [if_pos ab, @tsub_add_cancel_of_le]
+      · rw [if_pos ab, Nat.sub_add_cancel]
         rwa [succ_le_iff, count_pos_iff_mem, ab]
-      · rw [if_neg ab, tsub_zero, add_zero, add_zero]
+      · rw [if_neg ab, Nat.sub_zero, add_zero, add_zero]
     · rw [cons_bagInter_of_neg _ hb, count_bagInter]
       by_cases ab : a = b
       · rw [← ab] at hb
-        rw [count_eq_zero.2 hb, min_zero, min_zero]
+        rw [count_eq_zero.2 hb, Nat.min_zero, Nat.min_zero]
       · rw [count_cons_of_ne ab]
 #align list.count_bag_inter List.count_bagInter
 

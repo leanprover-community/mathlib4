@@ -79,11 +79,11 @@ instance [Zero (Fin n)] : Inhabited (EuclideanHalfSpace n) :=
 instance : Inhabited (EuclideanQuadrant n) :=
   ⟨⟨0, fun _ => le_rfl⟩⟩
 
-@[ext] -- porting note: new theorem
+@[ext] -- Porting note (#10756): new theorem
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
   Subtype.eq h
 
-@[ext] -- porting note: new theorem
+@[ext] -- Porting note (#10756): new theorem
 theorem EuclideanHalfSpace.ext [Zero (Fin n)] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
   Subtype.eq h
@@ -166,7 +166,7 @@ scoped[Manifold]
 `EuclideanHalfSpace 1`.
 -/
 def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
-    LocalHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
+    PartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | z.val < y }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun := fun z : Icc x y => ⟨fun _ => z.val - x, sub_nonneg.mpr z.property.1⟩
@@ -186,7 +186,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     dsimp at hz h'z
     have A : x + z 0 ≤ y := by linarith
     rw [Subsingleton.elim i 0]
-    simp only [A, add_comm, add_sub_cancel', min_eq_left]
+    simp only [A, add_comm, add_sub_cancel_left, min_eq_left]
   open_source :=
     haveI : IsOpen { z : ℝ | z < y } := isOpen_Iio
     this.preimage continuous_subtype_val
@@ -195,13 +195,13 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@continuous_apply (Fin 1) (fun _ => ℝ) _ 0)
     exact this.preimage continuous_subtype_val
-  continuous_toFun := by
+  continuousOn_toFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
     have : Continuous fun (z : ℝ) (_ : Fin 1) => z - x :=
       Continuous.sub (continuous_pi fun _ => continuous_id) continuous_const
     exact this.comp continuous_subtype_val
-  continuous_invFun := by
+  continuousOn_invFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
     have A : Continuous fun z : ℝ => min (z + x) y :=
@@ -214,7 +214,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
 `EuclideanHalfSpace 1`.
 -/
 def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
-    LocalHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
+    PartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | x < z.val }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun z := ⟨fun _ => y - z.val, sub_nonneg.mpr z.property.2⟩
@@ -244,13 +244,13 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@continuous_apply (Fin 1) (fun _ => ℝ) _ 0)
     exact this.preimage continuous_subtype_val
-  continuous_toFun := by
+  continuousOn_toFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
     have : Continuous fun (z : ℝ) (_ : Fin 1) => y - z :=
       continuous_const.sub (continuous_pi fun _ => continuous_id)
     exact this.comp continuous_subtype_val
-  continuous_invFun := by
+  continuousOn_invFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
     have A : Continuous fun z : ℝ => max (y - z) x :=

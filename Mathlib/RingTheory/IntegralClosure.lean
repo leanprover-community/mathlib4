@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
@@ -33,12 +33,12 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 -/
 
 
-open Classical BigOperators Polynomial Submodule
+open scoped Classical
+open BigOperators Polynomial Submodule
 
 section Ring
 
 variable {R S A : Type*}
-
 variable [CommRing R] [Ring A] [Ring S] (f : R →+* S)
 
 /-- An element `x` of `A` is said to be integral over `R` with respect to `f`
@@ -84,13 +84,12 @@ end Ring
 section
 
 variable {R A B S : Type*}
-
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
-
 variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
 theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra A B] [Algebra R C]
-    [IsScalarTower R A B] [Algebra A C] [IsScalarTower R A C] {b : B} [AlgHomClass F A B C] (f : F)
+    [IsScalarTower R A B] [Algebra A C] [IsScalarTower R A C] {b : B}
+    [FunLike F B C] [AlgHomClass F A B C] (f : F)
     (hb : IsIntegral R b) : IsIntegral R (f b) := by
   obtain ⟨P, hP⟩ := hb
   refine' ⟨P, hP.1, _⟩
@@ -138,7 +137,8 @@ theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
 #align is_integral_of_is_scalar_tower IsIntegral.tower_top
 #align is_integral_tower_top_of_is_integral IsIntegral.tower_top
 
-theorem map_isIntegral_int {B C F : Type*} [Ring B] [Ring C] {b : B} [RingHomClass F B C] (f : F)
+theorem map_isIntegral_int {B C F : Type*} [Ring B] [Ring C] {b : B}
+    [FunLike F B C] [RingHomClass F B C] (f : F)
     (hb : IsIntegral ℤ b) : IsIntegral ℤ (f b) :=
   hb.map (f : B →+* C).toIntAlgHom
 #align map_is_integral_int map_isIntegral_int
@@ -170,22 +170,29 @@ theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
   exact hsr.of_subring _
 #align is_integral_iff_is_integral_closure_finite isIntegral_iff_isIntegral_closure_finite
 
-theorem IsIntegral.fg_adjoin_singleton {x : B} (hx : IsIntegral R x) :
-    (Algebra.adjoin R {x}).toSubmodule.FG := by
-  rcases hx with ⟨f, hfm, hfx⟩
-  use (Finset.range <| f.natDegree + 1).image (x ^ ·)
+theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A] [Algebra R A]
+    {x : A} {f : R[X]} (hf : f.Monic) (hfx : aeval x f = 0) :
+    span R (Finset.image (x ^ ·) (Finset.range (natDegree f))) =
+      Subalgebra.toSubmodule (Algebra.adjoin R {x}) := by
+  nontriviality A
+  have hf1 : f ≠ 1 := by rintro rfl; simp [one_ne_zero' A] at hfx
   refine (span_le.mpr fun s hs ↦ ?_).antisymm fun r hr ↦ ?_
   · rcases Finset.mem_image.1 hs with ⟨k, -, rfl⟩
     exact (Algebra.adjoin R {x}).pow_mem (Algebra.subset_adjoin rfl) k
   rw [Subalgebra.mem_toSubmodule, Algebra.adjoin_singleton_eq_range_aeval] at hr
   rcases (aeval x).mem_range.mp hr with ⟨p, rfl⟩
-  rw [← modByMonic_add_div p hfm, map_add, map_mul, aeval_def x f, hfx,
+  rw [← modByMonic_add_div p hf, map_add, map_mul, hfx,
       zero_mul, add_zero, ← sum_C_mul_X_pow_eq (p %ₘ f), aeval_def, eval₂_sum, sum_def]
   refine sum_mem fun k hkq ↦ ?_
   rw [C_mul_X_pow_eq_monomial, eval₂_monomial, ← Algebra.smul_def]
-  exact smul_mem _ _ (subset_span <| Finset.mem_image_of_mem _ <| Finset.mem_range_succ_iff.mpr <|
-    (le_natDegree_of_mem_supp _ hkq).trans <| natDegree_modByMonic_le p hfm)
-#align fg_adjoin_singleton_of_integral IsIntegral.fg_adjoin_singleton
+  exact smul_mem _ _ (subset_span <| Finset.mem_image_of_mem _ <| Finset.mem_range.mpr <|
+    (le_natDegree_of_mem_supp _ hkq).trans_lt <| natDegree_modByMonic_lt p hf hf1)
+
+theorem IsIntegral.fg_adjoin_singleton {x : B} (hx : IsIntegral R x) :
+    (Algebra.adjoin R {x}).toSubmodule.FG := by
+  rcases hx with ⟨f, hfm, hfx⟩
+  use (Finset.range <| f.natDegree).image (x ^ ·)
+  exact span_range_natDegree_eq_adjoin hfm (by rwa [aeval_def])
 
 theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsIntegral R x) :
     (Algebra.adjoin R s).toSubmodule.FG :=
@@ -255,20 +262,19 @@ theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R 
   let f : A' →ₐ[R] Module.End R N :=
     AlgHom.ofLinearMap
       { toFun := fun x => (DistribMulAction.toLinearMap R M x).restrict x.prop
-        -- porting note: was
+        -- Porting note: was
                 -- `fun x y => LinearMap.ext fun n => Subtype.ext <| add_smul x y n`
         map_add' := by intros x y; ext; exact add_smul _ _ _
-        -- porting note: was
+        -- Porting note: was
                 --  `fun r s => LinearMap.ext fun n => Subtype.ext <| smul_assoc r s n`
         map_smul' := by intros r s; ext; apply smul_assoc }
-      -- porting note: the next two lines were
+      -- Porting note: the next two lines were
       --`(LinearMap.ext fun n => Subtype.ext <| one_smul _ _) fun x y =>`
       --`LinearMap.ext fun n => Subtype.ext <| mul_smul x y n`
       (by ext; apply one_smul)
       (by intros x y; ext; apply mul_smul)
   obtain ⟨a, ha₁, ha₂⟩ : ∃ a ∈ N, a ≠ (0 : M) := by
-    by_contra h'
-    push_neg at h'
+    by_contra! h'
     apply hN
     rwa [eq_bot_iff]
   have : Function.Injective f := by
@@ -468,6 +474,28 @@ theorem integralClosure_map_algEquiv [Algebra R S] (f : A ≃ₐ[R] S) :
     simp
 #align integral_closure_map_alg_equiv integralClosure_map_algEquiv
 
+/-- An `AlgHom` between two rings restrict to an `AlgHom` between the integral closures inside
+them. -/
+def AlgHom.mapIntegralClosure [Algebra R S] (f : A →ₐ[R] S) :
+    integralClosure R A →ₐ[R] integralClosure R S :=
+  (f.restrictDomain (integralClosure R A)).codRestrict (integralClosure R S) (fun ⟨_, h⟩ => h.map f)
+
+@[simp]
+theorem AlgHom.coe_mapIntegralClosure [Algebra R S] (f : A →ₐ[R] S)
+    (x : integralClosure R A) : (f.mapIntegralClosure x : S) = f (x : A) := rfl
+
+/-- An `AlgEquiv` between two rings restrict to an `AlgEquiv` between the integral closures inside
+them. -/
+def AlgEquiv.mapIntegralClosure [Algebra R S] (f : A ≃ₐ[R] S) :
+    integralClosure R A ≃ₐ[R] integralClosure R S :=
+  AlgEquiv.ofAlgHom (f : A →ₐ[R] S).mapIntegralClosure (f.symm : S →ₐ[R] A).mapIntegralClosure
+    (AlgHom.ext fun _ ↦ Subtype.ext (f.right_inv _))
+    (AlgHom.ext fun _ ↦ Subtype.ext (f.left_inv _))
+
+@[simp]
+theorem AlgEquiv.coe_mapIntegralClosure [Algebra R S] (f : A ≃ₐ[R] S)
+    (x : integralClosure R A) : (f.mapIntegralClosure x : S) = f (x : A) := rfl
+
 theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
   let ⟨p, hpm, hpx⟩ := x.2
   ⟨p, hpm,
@@ -584,7 +612,7 @@ theorem leadingCoeff_smul_normalizeScaleRoots (p : R[X]) :
   ext
   simp only [coeff_scaleRoots, normalizeScaleRoots, coeff_monomial, coeff_smul, Finset.smul_sum,
     Ne.def, Finset.sum_ite_eq', finset_sum_coeff, smul_ite, smul_zero, mem_support_iff]
-  -- porting note: added the following `simp only`
+  -- Porting note: added the following `simp only`
   simp only [ge_iff_le, tsub_le_iff_right, smul_eq_mul, mul_ite, mul_one, mul_zero,
     Finset.sum_ite_eq', mem_support_iff, ne_eq, ite_not]
   split_ifs with h₁ h₂
@@ -692,9 +720,7 @@ theorem algebraMap_injective (A R B : Type*) [CommRing R] [CommSemiring A] [Comm
   algebraMap_injective' R
 
 variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
-
 variable [Algebra R B] [Algebra A B] [IsIntegralClosure A R B]
-
 variable (R B)
 
 protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsIntegral R x :=
@@ -760,7 +786,6 @@ section lift
 variable (B) {S : Type*} [CommRing S] [Algebra R S]
 -- split from above, since otherwise it does not synthesize `Semiring S`
 variable [Algebra S B] [IsScalarTower R S B]
-
 variable [Algebra R A] [IsScalarTower R A B] (h : Algebra.IsIntegral R S)
 
 /-- If `B / S / R` is a tower of ring extensions where `S` is integral over `R`,
@@ -785,7 +810,6 @@ section Equiv
 
 variable (R B) (A' : Type*) [CommRing A']
 variable [Algebra A' B] [IsIntegralClosure A' R B]
-
 variable [Algebra R A] [Algebra R A'] [IsScalarTower R A B] [IsScalarTower R A' B]
 
 /-- Integral closures are all isomorphic to each other. -/
@@ -811,11 +835,8 @@ section Algebra
 open Algebra
 
 variable {R A B S T : Type*}
-
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S] [CommRing T]
-
 variable [Algebra A B] [Algebra R B] (f : R →+* S) (g : S →+* T)
-
 variable [Algebra R A] [IsScalarTower R A B]
 
 /-- If A is an R-algebra all of whose elements are integral over R,

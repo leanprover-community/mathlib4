@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 #align_import category_theory.sites.limits from "leanprover-community/mathlib"@"95e83ced9542828815f53a1096a4d373c1b08a77"
@@ -43,9 +43,7 @@ section Limits
 universe w v u z z'
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-
 variable {D : Type w} [Category.{max v u} D]
-
 variable {K : Type z} [Category.{z'} K]
 
 noncomputable section
@@ -187,22 +185,15 @@ section Colimits
 universe w v u z z'
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-
 variable {D : Type w} [Category.{max v u} D]
-
 variable {K : Type z} [Category.{z'} K]
 
 -- Now we need a handful of instances to obtain sheafification...
 variable [ConcreteCategory.{max v u} D]
-
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-
 variable [PreservesLimits (forget D)]
-
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-
 variable [ReflectsIsomorphisms (forget D)]
 
 /-- Construct a cocone by sheafifying a cocone point of a cocone `E` of presheaves

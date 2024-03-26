@@ -3,9 +3,11 @@ Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Yaël Dillies
 -/
+import Mathlib.Algebra.GCDMonoid.Finset
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Rat.Defs
-import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.TFAE
 
 /-!
@@ -21,10 +23,10 @@ open List
 def FermatLastTheoremWith (α : Type*) [Semiring α] (n : ℕ) : Prop :=
   ∀ a b c : α, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n ≠ c ^ n
 
-/-- Statement of Fermat's Last Theorem for a given exponent. -/
+/-- Statement of Fermat's Last Theorem over the naturals for a given exponent. -/
 def FermatLastTheoremFor (n : ℕ) : Prop := FermatLastTheoremWith ℕ n
 
-/-- Statement of Fermat's Last Theorem: `a ^ n + b ^ n = c ^ n` has no nontrivial integer solution
+/-- Statement of Fermat's Last Theorem: `a ^ n + b ^ n = c ^ n` has no nontrivial natural solution
 when `n ≥ 3`. -/
 def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremFor n
 
@@ -64,8 +66,8 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     · refine' h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.coe_nat_inj'.1 _)
       push_cast
-      simp only [abs_of_neg, neg_pow a, neg_pow b, neg_pow c, ←mul_add, habc, *]
-    · exact (by positivity : 0 < c ^ n).not_lt $ habc.symm.trans_lt $ add_neg (hn.pow_neg ha) $
+      simp only [abs_of_neg, neg_pow a, neg_pow b, neg_pow c, ← mul_add, habc, *]
+    · exact (by positivity : 0 < c ^ n).not_lt <| habc.symm.trans_lt <| add_neg (hn.pow_neg ha) <|
         hn.pow_neg hb
     · refine' h b.natAbs c.natAbs a.natAbs (by positivity) (by positivity) (by positivity)
         (Int.coe_nat_inj'.1 _)
@@ -87,23 +89,20 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
       push_cast
       simp only [abs_of_pos, abs_of_neg, hn.neg_pow, habc, add_neg_eq_iff_eq_add,
         eq_add_neg_iff_add_eq, *]
-    · exact (by positivity : 0 < a ^ n + b ^ n).not_lt $ habc.trans_lt $ hn.pow_neg hc
+    · exact (by positivity : 0 < a ^ n + b ^ n).not_lt <| habc.trans_lt <| hn.pow_neg hc
     · refine' h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.coe_nat_inj'.1 _)
       push_cast
       simp only [abs_of_pos, habc, *]
   tfae_have 2 → 3
   · rintro h a b c ha hb hc habc
-    rw [←Rat.num_ne_zero] at ha hb hc
-    have : a.den ≠ 0 := a.den_pos.ne'
-    have : b.den ≠ 0 := b.den_pos.ne'
-    have : c.den ≠ 0 := c.den_pos.ne'
+    rw [← Rat.num_ne_zero] at ha hb hc
     refine' h (a.num * b.den * c.den) (a.den * b.num * c.den) (a.den * b.den * c.num)
       (by positivity) (by positivity) (by positivity) _
     have : (a.den * b.den * c.den : ℚ) ^ n ≠ 0 := by positivity
-    refine' Int.cast_injective $ (div_left_inj' this).1 _
+    refine' Int.cast_injective <| (div_left_inj' this).1 _
     push_cast
-    simp only [add_div, ←div_pow, mul_div_mul_comm, div_self (by positivity : (a.den : ℚ) ≠ 0),
+    simp only [add_div, ← div_pow, mul_div_mul_comm, div_self (by positivity : (a.den : ℚ) ≠ 0),
       div_self (by positivity : (b.den : ℚ) ≠ 0), div_self (by positivity : (c.den : ℚ) ≠ 0),
       one_mul, mul_one, Rat.num_div_den, habc]
   tfae_have 3 → 1
@@ -119,3 +118,25 @@ lemma fermatLastTheoremFor_iff_int {n : ℕ} : FermatLastTheoremFor n ↔ Fermat
 
 lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℚ n :=
   (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 2
+
+open Finset in
+/-- To prove Fermat Last Theorem in any semiring that is a `NormalizedGCDMonoid` one can assume
+that the `gcd` of `{a, b, c}` is `1`. -/
+lemma fermatLastTheoremWith_of_fermatLastTheoremWith_coprime {n : ℕ} {R : Type*} [CommSemiring R]
+    [IsDomain R] [DecidableEq R] [NormalizedGCDMonoid R]
+    (hn : ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset R).gcd id = 1 →
+      a ^ n + b ^ n ≠ c ^ n) :
+    FermatLastTheoremWith R n := by
+  intro a b c ha hb hc habc
+  let s : Finset R := {a, b, c}; let d := s.gcd id
+  obtain ⟨A, hA⟩ : d ∣ a := gcd_dvd (by simp [s])
+  obtain ⟨B, hB⟩ : d ∣ b := gcd_dvd (by simp [s])
+  obtain ⟨C, hC⟩ : d ∣ c := gcd_dvd (by simp [s])
+  simp only [hA, hB, hC, mul_ne_zero_iff, mul_pow] at ha hb hc habc
+  rw [← mul_add, mul_right_inj' (pow_ne_zero n ha.1)] at habc
+  refine hn A B C ha.2 hb.2 hc.2 ?_ habc
+  rw [← Finset.normalize_gcd, normalize_eq_one]
+  obtain ⟨u, hu⟩ := normalize_associated d
+  refine ⟨u, mul_left_cancel₀ (mt normalize_eq_zero.mp ha.1) (hu.symm ▸ ?_)⟩
+  rw [← Finset.gcd_mul_left, gcd_eq_gcd_image, image_insert, image_insert, image_singleton,
+      id_eq, id_eq, id_eq, ← hA, ← hB, ← hC]

@@ -3,12 +3,12 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.RepresentationTheory.Action
+import Mathlib.RepresentationTheory.Action.Monoidal
 import Mathlib.RepresentationTheory.Basic
 
 #align_import representation_theory.Rep from "leanprover-community/mathlib"@"cec81510e48e579bde6acd8568c06a87af045b63"
@@ -64,7 +64,7 @@ instance (V : Rep k G) : Module k V := by
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=
--- porting note: was `V.ρ`
+-- Porting note: was `V.ρ`
   Action.ρ V
 set_option linter.uppercaseLean3 false in
 #align Rep.ρ Rep.ρ
@@ -225,7 +225,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
     (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
--- Porting note: broken proof was
+-- Porting note (#11039): broken proof was
 /-simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
   apply IsIso.inv_eq_of_hom_inv_id _
   exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/
@@ -288,6 +288,41 @@ noncomputable def linearizationOfMulActionIso (H : Type u) [MulAction G H] :
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_of_mul_action_iso Rep.linearizationOfMulActionIso
 
+section
+
+variable (k G A : Type u) [CommRing k] [Monoid G] [AddCommGroup A]
+  [Module k A] [DistribMulAction G A] [SMulCommClass G k A]
+
+/-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
+`k`-linear `G`-representation on `A`. -/
+def ofDistribMulAction : Rep k G := Rep.of (Representation.ofDistribMulAction k G A)
+
+@[simp] theorem ofDistribMulAction_ρ_apply_apply (g : G) (a : A) :
+    (ofDistribMulAction k G A).ρ g a = g • a := rfl
+
+/-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
+`S ≃ₐ[R] S` on `S`. -/
+@[simp] def ofAlgebraAut (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
+    Rep ℤ (S ≃ₐ[R] S) := ofDistribMulAction ℤ (S ≃ₐ[R] S) S
+
+end
+section
+variable (M G : Type) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
+
+/-- Turns a `CommGroup` `G` with a `MulDistribMulAction` of a monoid `M` into a
+`ℤ`-linear `M`-representation on `Additive G`. -/
+def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulAction M G)
+
+@[simp] theorem ofMulDistribMulAction_ρ_apply_apply (g : M) (a : Additive G) :
+    (ofMulDistribMulAction M G).ρ g a = Additive.ofMul (g • Additive.toMul a) := rfl
+
+/-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
+`S ≃ₐ[R] S` on `Sˣ`. -/
+@[simp] def ofAlgebraAutOnUnits (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
+    Rep ℤ (S ≃ₐ[R] S) := Rep.ofMulDistribMulAction (S ≃ₐ[R] S) Sˣ
+
+end
+
 variable {k G}
 
 /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
@@ -296,7 +331,7 @@ variable {k G}
 noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G ⟶ A where
   hom := Finsupp.lift _ _ _ fun g => A.ρ g x
   comm g := by
-    refine' Finsupp.lhom_ext' fun y => LinearMap.ext_ring _
+    refine Finsupp.lhom_ext' fun y => LinearMap.ext_ring ?_
 /- Porting note: rest of broken proof was
     simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
       Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,
@@ -337,7 +372,7 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
       Representation.ofMulAction_single x (1 : G) (1 : k), smul_eq_mul, mul_one] -/
     simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, leftRegularHom_hom]
     erw [Finsupp.lift_apply]
-    rw [Finsupp.sum_single_index, ←this, of_ρ_apply]
+    rw [Finsupp.sum_single_index, ← this, of_ρ_apply]
     erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
     simp only [one_smul, smul_eq_mul, mul_one]
     · -- This goal didn't exist before leanprover/lean4#2644
@@ -396,9 +431,9 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
       comm := fun g => by
         refine' LinearMap.ext fun x => LinearMap.ext fun y => _
         change f.hom (_ ⊗ₜ[k] _) = C.ρ g (f.hom (_ ⊗ₜ[k] _))
-        rw [←hom_comm_apply]
+        rw [← hom_comm_apply]
         change _ = f.hom ((A.ρ g * A.ρ g⁻¹) y ⊗ₜ[k] _)
-        simp only [←map_mul, mul_inv_self, map_one]
+        simp only [← map_mul, mul_inv_self, map_one]
         rfl }
   invFun f :=
     { hom := TensorProduct.uncurry k _ _ _ f.hom.flip
@@ -649,9 +684,10 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
   LinearEquiv.toModuleIso'
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
+        set_option tactic.skipAssignedInstances false in
         dsimp [counitIsoAddEquiv]
-/- Porting note: rest of broken proof was `simp`. -/
-        rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply]
+        /- Porting note: rest of broken proof was `simp`. -/
+        rw [AddEquiv.trans_apply]
         rw [AddEquiv.trans_apply]
         erw [@Representation.ofModule_asAlgebraHom_apply_apply k G _ _ _ _ (_)]
         exact AddEquiv.symm_apply_apply _ _}
@@ -681,7 +717,7 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
           simp only [Representation.asModuleEquiv_symm_map_smul,
             RestrictScalars.addEquiv_symm_map_algebraMap_smul] -/
           -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-          erw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply,
+          erw [AddEquiv.trans_apply,
             Representation.asModuleEquiv_symm_map_smul]
           rfl })
     fun g => by ext; apply unit_iso_comm

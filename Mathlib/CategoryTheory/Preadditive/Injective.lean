@@ -134,7 +134,6 @@ instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
 
 instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injective (P ⨯ Q) where
   factors g f mono := by
-    skip
     use Limits.prod.lift (factorThru (g ≫ Limits.prod.fst) f) (factorThru (g ≫ Limits.prod.snd) f)
     simp only [prod.comp_lift, comp_factorThru]
     ext
@@ -143,7 +142,6 @@ instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injectiv
 
 instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ c) where
   factors g f mono := by
-    skip
     refine' ⟨Pi.lift fun b => factorThru (g ≫ Pi.π c _) f, _⟩
     ext b
     simp only [Category.assoc, limit.lift_π, Fan.mk_π_app, comp_factorThru]
@@ -151,7 +149,6 @@ instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : 
 instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Injective P] [Injective Q] :
     Injective (P ⊞ Q) where
   factors g f mono := by
-    skip
     refine' ⟨biprod.lift (factorThru (g ≫ biprod.fst) f) (factorThru (g ≫ biprod.snd) f), _⟩
     ext
     · simp only [Category.assoc, biprod.lift_fst, comp_factorThru]
@@ -160,7 +157,6 @@ instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Injective P] [
 instance {β : Type v} (c : β → C) [HasZeroMorphisms C] [HasBiproduct c] [∀ b, Injective (c b)] :
     Injective (⨁ c) where
   factors g f mono := by
-    skip
     refine' ⟨biproduct.lift fun b => factorThru (g ≫ biproduct.π _ _) f, _⟩
     ext
     simp only [Category.assoc, biproduct.lift_π, comp_factorThru]
@@ -200,7 +196,6 @@ section Adjunction
 open CategoryTheory.Functor
 
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {L : C ⥤ D} {R : D ⥤ C} [PreservesMonomorphisms L]
 
 theorem injective_of_adjoint (adj : L ⊣ R) (J : D) [Injective J] : Injective <| R.obj J :=
@@ -346,7 +341,34 @@ def mapInjectivePresentation (adj : F ⊣ G) [F.PreservesMonomorphisms] (X : D)
     haveI : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjointPreservesLimits; infer_instance
 #align category_theory.adjunction.map_injective_presentation CategoryTheory.Adjunction.mapInjectivePresentation
 
+/-- Given an adjunction `F ⊣ G` such that `F` preserves monomorphisms and is faithful,
+  then any injective presentation of `F(X)` can be pulled back to an injective presentation of `X`.
+  This is similar to `mapInjectivePresentation`. -/
+def injectivePresentationOfMap (adj : F ⊣ G)
+    [F.PreservesMonomorphisms] [F.ReflectsMonomorphisms] (X : C)
+    (I : InjectivePresentation <| F.obj X) :
+    InjectivePresentation X where
+  J := G.obj I.J
+  injective := Injective.injective_of_adjoint adj _
+  f := adj.homEquiv _ _ I.f
+
 end Adjunction
+
+/--
+[Lemma 3.8](https://ncatlab.org/nlab/show/injective+object#preservation_of_injective_objects)
+-/
+lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
+    [Category.{v₁} C] [Category.{v₂} D]
+    {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) [L.PreservesMonomorphisms] [L.ReflectsMonomorphisms]
+    [EnoughInjectives D] : EnoughInjectives C where
+  presentation _ :=
+    ⟨adj.injectivePresentationOfMap _ (EnoughInjectives.presentation _).some⟩
+
+/-- An equivalence of categories transfers enough injectives. -/
+lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
+    [Category.{v₁} C] [Category.{v₂} D]
+    (e : C ⥤ D) [IsEquivalence e] [EnoughInjectives D] : EnoughInjectives C :=
+  EnoughInjectives.of_adjunction (adj := e.asEquivalence.toAdjunction)
 
 namespace Equivalence
 
@@ -358,22 +380,12 @@ theorem map_injective_iff (P : C) : Injective (F.functor.obj P) ↔ Injective P 
 /-- Given an equivalence of categories `F`, an injective presentation of `F(X)` induces an
 injective presentation of `X.` -/
 def injectivePresentationOfMapInjectivePresentation (X : C)
-    (I : InjectivePresentation (F.functor.obj X)) : InjectivePresentation X where
-  J := F.inverse.obj I.J
-  injective := Adjunction.map_injective F.toAdjunction I.J I.injective
-  f := F.unit.app _ ≫ F.inverse.map I.f
-  mono := mono_comp _ _
+    (I : InjectivePresentation (F.functor.obj X)) : InjectivePresentation X :=
+  F.toAdjunction.injectivePresentationOfMap _ I
 #align category_theory.equivalence.injective_presentation_of_map_injective_presentation CategoryTheory.Equivalence.injectivePresentationOfMapInjectivePresentation
 
-theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInjectives D := by
-  constructor
-  all_goals intro H; constructor; intro X; constructor
-  · exact
-      F.symm.injectivePresentationOfMapInjectivePresentation _
-        (Nonempty.some (H.presentation (F.inverse.obj X)))
-  · exact
-      F.injectivePresentationOfMapInjectivePresentation X
-        (Nonempty.some (H.presentation (F.functor.obj X)))
+theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInjectives D :=
+  ⟨fun h => h.of_adjunction F.symm.toAdjunction, fun h => h.of_adjunction F.toAdjunction⟩
 #align category_theory.equivalence.enough_injectives_iff CategoryTheory.Equivalence.enoughInjectives_iff
 
 end Equivalence

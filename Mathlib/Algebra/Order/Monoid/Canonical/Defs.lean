@@ -14,9 +14,6 @@ import Mathlib.Algebra.Order.Monoid.Defs
 # Canonically ordered monoids
 -/
 
-set_option autoImplicit true
-
-
 universe u
 
 variable {α : Type u}
@@ -237,8 +234,7 @@ theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
 #align pos_iff_ne_zero pos_iff_ne_zero
 
 @[to_additive]
-theorem eq_one_or_one_lt : a = 1 ∨ 1 < a :=
-  (one_le a).eq_or_lt.imp_left Eq.symm
+theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
 #align eq_one_or_one_lt eq_one_or_one_lt
 #align eq_zero_or_pos eq_zero_or_pos
 
@@ -275,7 +271,7 @@ theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
 
 @[to_additive]
 theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔ ∃ c > 1, b = a * c := by
-  rw [lt_iff_le_and_ne, le_iff_exists_mul, ←exists_and_right]
+  rw [lt_iff_le_and_ne, le_iff_exists_mul, ← exists_and_right]
   apply exists_congr
   intro c
   rw [and_comm, and_congr_left_iff, gt_iff_lt]
@@ -309,7 +305,7 @@ theorem of_gt {M} [CanonicallyOrderedAddCommMonoid M] {x y : M} (h : x < y) : Ne
 -- 1 < p is still an often-used `Fact`, due to `Nat.Prime` implying it, and it implying `Nontrivial`
 -- on `ZMod`'s ring structure. We cannot just set this to be any `x < y`, else that becomes a
 -- metavariable and it will hugely slow down typeclass inference.
-instance (priority := 10) of_gt' [CanonicallyOrderedAddCommMonoid M] [One M] {y : M}
+instance (priority := 10) of_gt' {M : Type*} [CanonicallyOrderedAddCommMonoid M] [One M] {y : M}
   -- Porting note: Fact.out has different type signature from mathlib3
   [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
 #align ne_zero.of_gt' NeZero.of_gt'
@@ -349,9 +345,9 @@ instance (priority := 100) CanonicallyLinearOrderedCommMonoid.semilatticeSup : S
 
 @[to_additive]
 theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c) := by
-  cases' le_total a b with hb hb
+  rcases le_total a b with hb | hb
   · simp [hb, le_mul_right]
-  · cases' le_total a c with hc hc
+  · rcases le_total a c with hc | hc
     · simp [hc, le_mul_left]
     · simp [hb, hc]
 #align min_mul_distrib min_mul_distrib
@@ -363,14 +359,14 @@ theorem min_mul_distrib' (a b c : α) : min (a * b) c = min (min a c * min b c) 
 #align min_mul_distrib' min_mul_distrib'
 #align min_add_distrib' min_add_distrib'
 
--- Porting note: no longer `@[simp]`, as `simp` can prove this.
+-- Porting note (#10618): no longer `@[simp]`, as `simp` can prove this.
 @[to_additive]
 theorem one_min (a : α) : min 1 a = 1 :=
   min_eq_left (one_le a)
 #align one_min one_min
 #align zero_min zero_min
 
--- Porting note: no longer `@[simp]`, as `simp` can prove this.
+-- Porting note (#10618): no longer `@[simp]`, as `simp` can prove this.
 @[to_additive]
 theorem min_one (a : α) : min a 1 = 1 :=
   min_eq_right (one_le a)

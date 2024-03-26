@@ -157,7 +157,7 @@ theorem step (s : CompositionSeries X) :
   s.step'
 #align composition_series.step CompositionSeries.step
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem coeFn_mk (length : ℕ) (series step) :
     (@CompositionSeries.mk X _ _ length series step : Fin length.succ → X) = series :=
   rfl
@@ -287,7 +287,7 @@ theorem length_ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l
 theorem ofList_toList (s : CompositionSeries X) :
     ofList s.toList s.toList_ne_nil s.chain'_toList = s := by
   refine' ext_fun _ _
-  · rw [length_ofList, length_toList, Nat.succ_sub_one]
+  · rw [length_ofList, length_toList, Nat.add_one_sub_one]
   · rintro ⟨i, hi⟩
     -- Porting note: Was `dsimp [ofList, toList]; rw [List.nthLe_ofFn']`.
     simp [ofList, toList, -List.ofFn_succ]
@@ -411,7 +411,8 @@ theorem mem_eraseTop_of_ne_of_mem {s : CompositionSeries X} {x : X} (hx : x ≠ 
     x ∈ s.eraseTop := by
   rcases hxs with ⟨i, rfl⟩
   have hi : (i : ℕ) < (s.length - 1).succ := by
-    conv_rhs => rw [← Nat.succ_sub (length_pos_of_mem_ne ⟨i, rfl⟩ s.top_mem hx), Nat.succ_sub_one]
+    conv_rhs => rw [← Nat.succ_sub (length_pos_of_mem_ne ⟨i, rfl⟩ s.top_mem hx),
+      Nat.add_one_sub_one]
     exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [top, s.inj, Fin.ext_iff] using hx)
   refine' ⟨Fin.castSucc (n := s.length + 1) i, _⟩
   simp [Fin.ext_iff, Nat.mod_eq_of_lt hi]
@@ -424,9 +425,9 @@ theorem mem_eraseTop {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
   constructor
   · rintro ⟨i, rfl⟩
     have hi : (i : ℕ) < s.length := by
-      conv_rhs => rw [← Nat.succ_sub_one s.length, Nat.succ_sub h]
+      conv_rhs => rw [← Nat.add_one_sub_one s.length, Nat.succ_sub h]
       exact i.2
-    -- Porting note: Was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
+    -- porting note (#10745): was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
     simp [top, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
   · intro h
     exact mem_eraseTop_of_ne_of_mem h.1 h.2
@@ -440,7 +441,7 @@ theorem lt_top_of_mem_eraseTop {s : CompositionSeries X} {x : X} (h : 0 < s.leng
 theorem isMaximal_eraseTop_top {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseTop.top s.top := by
   have : s.length - 1 + 1 = s.length := by
-    conv_rhs => rw [← Nat.succ_sub_one s.length]; rw [Nat.succ_sub h]
+    conv_rhs => rw [← Nat.add_one_sub_one s.length]; rw [Nat.succ_sub h]
   rw [top_eraseTop, top]
   convert s.step ⟨s.length - 1, Nat.sub_lt h zero_lt_one⟩; ext; simp [this]
 #align composition_series.is_maximal_erase_top_top CompositionSeries.isMaximal_eraseTop_top
@@ -652,9 +653,9 @@ theorem append {s₁ s₂ t₁ t₂ : CompositionSeries X} (hs : s₁.top = s₂
     intro i
     refine' Fin.addCases _ _ i
     · intro i
-      simpa [top, bot] using h₁.choose_spec i
+      simpa [e, top, bot] using h₁.choose_spec i
     · intro i
-      simpa [top, bot] using h₂.choose_spec i⟩
+      simpa [e, top, bot] using h₂.choose_spec i⟩
 #align composition_series.equivalent.append CompositionSeries.Equivalent.append
 
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.top x₁}
@@ -668,9 +669,9 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
 
   ⟨e, fun i => by
     refine' Fin.lastCases _ _ i
-    · simpa [top] using htop
+    · simpa [e, top] using htop
     · intro i
-      simpa [Fin.succ_castSucc] using hequiv.choose_spec i⟩
+      simpa [e, Fin.succ_castSucc] using hequiv.choose_spec i⟩
 #align composition_series.equivalent.snoc CompositionSeries.Equivalent.snoc
 
 theorem length_eq {s₁ s₂ : CompositionSeries X} (h : Equivalent s₁ s₂) : s₁.length = s₂.length := by
@@ -692,7 +693,7 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
     ne_of_lt (by simp [Fin.castSucc_lt_last])
   ⟨e, by
     intro i
-    dsimp only []
+    dsimp only [e]
     refine' Fin.lastCases _ (fun i => _) i
     · erw [Equiv.swap_apply_left, snoc_castSucc, snoc_last, Fin.succ_last, snoc_last,
         snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc, Fin.succ_last,

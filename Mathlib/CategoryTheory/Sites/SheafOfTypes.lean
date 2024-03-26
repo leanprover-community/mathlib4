@@ -15,7 +15,7 @@ Defines the notion of a sheaf of types (usually called a sheaf of sets by mathem
 on a category equipped with a Grothendieck topology, as well as a range of equivalent
 conditions useful in different situations.
 
-In `Mathlib/CategoryTheory/Sites/IsSheafFor` it is defined what it means for a presheaf to be a
+In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
 sheaf *for* a particular sieve. Given a Grothendieck topology `J`, `P` is a sheaf if it is a sheaf
 for every sieve in the topology. See `IsSheaf`.
 
@@ -58,11 +58,8 @@ open Opposite CategoryTheory Category Limits Sieve
 namespace Presieve
 
 variable {C : Type u} [Category.{v} C]
-
 variable {P : Cᵒᵖ ⥤ Type w}
-
 variable {X : C}
-
 variable (J J₂ : GrothendieckTopology C)
 
 /-- A presheaf is separated for a topology if it is separated for every sieve in the topology. -/
@@ -159,7 +156,6 @@ namespace Sieve
 open Presieve
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X : C}
 
 theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.arrows)) :
@@ -214,7 +210,6 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
 end Sieve
 
 variable {C : Type u} [Category.{v} C]
-
 variable (J : GrothendieckTopology C)
 
 /-- The category of sheaves on a grothendieck topology. -/

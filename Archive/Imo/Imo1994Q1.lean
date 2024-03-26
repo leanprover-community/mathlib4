@@ -53,7 +53,7 @@ open Imo1994Q1
 
 theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     (hrange : ∀ a ∈ A, 0 < a ∧ a ≤ n)
-    (hadd : ∀ (a) (_ : a ∈ A) (b) (_ : b ∈ A), a + b ≤ n → a + b ∈ A) :
+    (hadd : ∀ a ∈ A, ∀ b ∈ A, a + b ≤ n → a + b ∈ A) :
     (m + 1) * (n + 1) ≤ 2 * ∑ x in A, x := by
   set a := orderEmbOfFin A hm
   -- We sort the elements of `A`
@@ -63,11 +63,10 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
   -- We reindex the sum by fin (m+1)
   have : ∑ x in A, x = ∑ i : Fin (m + 1), a i := by
     convert sum_image (α := ℕ) (β := ℕ) fun x _ y _ => (OrderEmbedding.eq_iff_eq a).1
-    rw [← coe_inj]; simp
+    rw [← coe_inj]; simp [a]
   rw [this]; clear this
   -- The main proof is a simple calculation by rearranging one of the two sums
-  suffices hpair : ∀ k ∈ univ, a k + a (rev k) ≥ n + 1
-  calc
+  suffices hpair : ∀ k ∈ univ, a k + a (rev k) ≥ n + 1 by calc
     2 * ∑ i : Fin (m + 1), a i = ∑ i : Fin (m + 1), a i + ∑ i : Fin (m + 1), a i := two_mul _
     _ = ∑ i : Fin (m + 1), a i + ∑ i : Fin (m + 1), a (rev i) := by rw [Equiv.sum_comp rev]
     _ = ∑ i : Fin (m + 1), (a i + a (rev i)) := sum_add_distrib.symm
@@ -75,7 +74,7 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     _ = (m + 1) * (n + 1) := by rw [sum_const, card_fin, Nat.nsmul_eq_mul]
   -- It remains to prove the key inequality, by contradiction
   rintro k -
-  by_contra' h : a k + a (rev k) < n + 1
+  by_contra! h : a k + a (rev k) < n + 1
   -- We exhibit `k+1` elements of `A` greater than `a (rev k)`
   set f : Fin (m + 1) ↪ ℕ :=
     ⟨fun i => a i + a (rev k), by
@@ -85,11 +84,11 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
   -- Proof that the `f i` are greater than `a (rev k)` for `i ≤ k`
   have hf : map f (Icc 0 k) ⊆ map a.toEmbedding (Ioc (rev k) (Fin.last m)) := by
     intro x hx
-    simp only [Equiv.subLeft_apply] at h
+    simp only [Equiv.subLeft_apply, a, rev] at h
     simp only [mem_map, mem_Icc, mem_Ioc, Fin.zero_le, true_and_iff, Equiv.subLeft_apply,
-      Function.Embedding.coeFn_mk, exists_prop, RelEmbedding.coe_toEmbedding] at hx ⊢
+      Function.Embedding.coeFn_mk, exists_prop, RelEmbedding.coe_toEmbedding, f, rev] at hx ⊢
     rcases hx with ⟨i, ⟨hi, rfl⟩⟩
-    have h1 : a i + a (Fin.last m - k) ≤ n := by linarith only [h, a.monotone hi]
+    have h1 : a i + a (Fin.last m - k) ≤ n := by unfold_let; linarith only [h, a.monotone hi]
     have h2 : a i + a (Fin.last m - k) ∈ A := hadd _ (ha _) _ (ha _) h1
     rw [← mem_coe, ← range_orderEmbOfFin A hm, Set.mem_range] at h2
     cases' h2 with j hj
@@ -97,5 +96,5 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     rw [← a.strictMono.lt_iff_lt, hj]
     simpa using (hrange (a i) (ha i)).1
   -- A set of size `k+1` embed in one of size `k`, which yields a contradiction
-  simpa [Fin.coe_sub, tedious] using card_le_of_subset hf
+  simpa [Fin.coe_sub, tedious, rev] using card_le_card hf
 #align imo1994_q1 imo1994_q1

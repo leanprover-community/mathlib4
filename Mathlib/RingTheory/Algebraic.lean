@@ -21,7 +21,8 @@ a tower of algebraic field extensions is algebraic.
 
 universe u v w
 
-open Classical Polynomial
+open scoped Classical
+open Polynomial
 
 section
 
@@ -87,9 +88,7 @@ end
 section zero_ne_one
 
 variable {R : Type u} {S : Type*} {A : Type v} [CommRing R]
-
 variable [CommRing S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
-
 variable [IsScalarTower R S A]
 
 /-- An integral element of an algebra is algebraic.-/
@@ -193,6 +192,24 @@ theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 <
     Transcendental R (r ^ n) := fun ht' ↦ ht <| ht'.of_pow hn
 #align transcendental.pow Transcendental.pow
 
+lemma IsAlgebraic.invOf {x : S} [Invertible x] (h : IsAlgebraic R x) : IsAlgebraic R (⅟ x) := by
+  obtain ⟨p, hp, hp'⟩ := h
+  refine ⟨p.reverse, by simpa using hp, ?_⟩
+  rwa [Polynomial.aeval_def, Polynomial.eval₂_reverse_eq_zero_iff, ← Polynomial.aeval_def]
+
+lemma IsAlgebraic.invOf_iff {x : S} [Invertible x] :
+    IsAlgebraic R (⅟ x) ↔ IsAlgebraic R x :=
+  ⟨IsAlgebraic.invOf, IsAlgebraic.invOf⟩
+
+lemma IsAlgebraic.inv_iff {K} [Field K] [Algebra R K] {x : K} :
+    IsAlgebraic R (x⁻¹) ↔ IsAlgebraic R x := by
+  by_cases hx : x = 0
+  · simp [hx]
+  letI := invertibleOfNonzero hx
+  exact IsAlgebraic.invOf_iff (R := R) (x := x)
+
+alias ⟨_, IsAlgebraic.inv⟩ := IsAlgebraic.inv_iff
+
 end zero_ne_one
 
 section Field
@@ -226,7 +243,6 @@ section Ring
 section CommRing
 
 variable [CommRing R] [CommRing S] [Ring A]
-
 variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
 /-- If x is algebraic over R, then x is algebraic over S when S is an extension of R,
@@ -251,9 +267,7 @@ end CommRing
 section Field
 
 variable [Field K] [Field L] [Ring A]
-
 variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
-
 variable (L)
 
 /-- If x is algebraic over K, then x is algebraic over L when L is an extension of K -/
@@ -286,7 +300,6 @@ end Ring
 section CommRing
 
 variable [Field K] [Field L] [Ring A]
-
 variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 
 /-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
@@ -304,7 +317,6 @@ section NoZeroSMulDivisors
 namespace Algebra.IsAlgebraic
 
 variable [CommRing K] [Field L]
-
 variable [Algebra K L] [NoZeroSMulDivisors K L]
 
 theorem algHom_bijective (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] L) :
@@ -354,7 +366,6 @@ end NoZeroSMulDivisors
 section Field
 
 variable [Field K] [Field L]
-
 variable [Algebra K L]
 
 theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
@@ -378,7 +389,7 @@ variable {R S : Type*} [CommRing R] [IsDomain R] [CommRing S]
 
 theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     (inj : ∀ x, algebraMap R S x = 0 → x = 0) :
-    ∃ (x : integralClosure R S) (y : _) (_ : y ≠ (0 : R)), z * algebraMap R S y = x := by
+    ∃ᵉ (x : integralClosure R S) (y ≠ (0 : R)), z * algebraMap R S y = x := by
   rcases hz with ⟨p, p_ne_zero, px⟩
   set a := p.leadingCoeff
   have a_ne_zero : a ≠ 0 := mt Polynomial.leadingCoeff_eq_zero.mp p_ne_zero
@@ -393,7 +404,7 @@ if `S` is the integral closure of `R` in an algebraic extension `L` of `R`. -/
 theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S] [Algebra S L]
     [Algebra R L] [IsScalarTower R S L] [IsIntegralClosure S R L] (h : Algebra.IsAlgebraic R L)
     (inj : Function.Injective (algebraMap R L)) (a : S) {b : S} (hb : b ≠ 0) :
-    ∃ (c : S) (d : _) (_ : d ≠ (0 : R)), d • a = b * c := by
+    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c := by
   obtain ⟨c, d, d_ne, hx⟩ :=
     exists_integral_multiple (h (algebraMap _ L a / algebraMap _ L b))
       ((injective_iff_map_eq_zero _).mp inj)
@@ -401,7 +412,7 @@ theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S]
     ⟨IsIntegralClosure.mk' S (c : L) c.2, d, d_ne, IsIntegralClosure.algebraMap_injective S R L _⟩
   simp only [Algebra.smul_def, RingHom.map_mul, IsIntegralClosure.algebraMap_mk', ← hx, ←
     IsScalarTower.algebraMap_apply]
-  rw [← mul_assoc _ (_ / _), mul_div_cancel' (algebraMap S L a), mul_comm]
+  rw [← mul_assoc _ (_ / _), mul_div_cancel₀ (algebraMap S L a), mul_comm]
   exact mt ((injective_iff_map_eq_zero _).mp (IsIntegralClosure.algebraMap_injective S R L) _) hb
 #align is_integral_closure.exists_smul_eq_mul IsIntegralClosure.exists_smul_eq_mul
 
@@ -435,7 +446,7 @@ theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
     rw [this]
     exact A.smul_mem (aeval x _).2 _
   have : aeval (x : L) p = 0 := by rw [Subalgebra.aeval_coe, aeval_eq, Subalgebra.coe_zero]
-  -- porting note: this was a long sequence of `rw`.
+  -- Porting note: this was a long sequence of `rw`.
   rw [inv_eq_of_root_of_coeff_zero_ne_zero this coeff_zero_ne, div_eq_inv_mul, Algebra.smul_def]
   simp only [aeval_coe, Submonoid.coe_mul, Subsemiring.coe_toSubmonoid, coe_toSubsemiring,
     coe_algebraMap]
@@ -506,7 +517,7 @@ theorem polynomial_smul_apply' [CommSemiring R'] [Semiring S'] [Algebra R' S'] [
 
 variable [CommSemiring R'] [CommSemiring S'] [CommSemiring T'] [Algebra R' S'] [Algebra S' T']
 
--- porting note: the proofs in this definition used `funext` in term-mode, but I was not able
+-- Porting note: the proofs in this definition used `funext` in term-mode, but I was not able
 -- to get them to work anymore.
 /-- This is not an instance for the same reasons as `Polynomial.hasSMulPi'`. -/
 noncomputable def Polynomial.algebraPi : Algebra R'[X] (S' → T') :=

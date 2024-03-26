@@ -202,7 +202,6 @@ theorem walkingParallelPairOpEquiv_counitIso_one :
 #align category_theory.limits.walking_parallel_pair_op_equiv_counit_iso_one CategoryTheory.Limits.walkingParallelPairOpEquiv_counitIso_one
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : C}
 
 /-- `parallelPair f g` is the diagram in `C` consisting of the two morphisms `f` and `g` with
@@ -436,7 +435,7 @@ theorem Cofork.IsColimit.π_desc {s t : Cofork f g} (hs : IsColimit s) : s.π �
   hs.fac _ _
 #align category_theory.limits.cofork.is_colimit.π_desc CategoryTheory.Limits.Cofork.IsColimit.π_desc
 
--- porting note: `Fork.IsLimit.lift` was added in order to ease the port
+-- Porting note: `Fork.IsLimit.lift` was added in order to ease the port
 /-- If `s` is a limit fork over `f` and `g`, then a morphism `k : W ⟶ X` satisfying
     `k ≫ f = k ≫ g` induces a morphism `l : W ⟶ s.pt` such that `l ≫ fork.ι s = k`. -/
 def Fork.IsLimit.lift {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
@@ -455,7 +454,7 @@ def Fork.IsLimit.lift' {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h 
   ⟨Fork.IsLimit.lift hs k h, by simp⟩
 #align category_theory.limits.fork.is_limit.lift' CategoryTheory.Limits.Fork.IsLimit.lift'
 
--- porting note: `Cofork.IsColimit.desc` was added in order to ease the port
+-- Porting note: `Cofork.IsColimit.desc` was added in order to ease the port
 /-- If `s` is a colimit cofork over `f` and `g`, then a morphism `k : Y ⟶ W` satisfying
     `f ≫ k = g ≫ k` induces a morphism `l : s.pt ⟶ W` such that `cofork.π s ≫ l = k`. -/
 def Cofork.IsColimit.desc {s : Cofork f g} (hs : IsColimit s) {W : C} (k : Y ⟶ W)
@@ -794,7 +793,7 @@ noncomputable abbrev equalizer.lift {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g
   limit.lift (parallelPair f g) (Fork.ofι k h)
 #align category_theory.limits.equalizer.lift CategoryTheory.Limits.equalizer.lift
 
--- Porting note: removed simp since simp can prove this and the reassoc version
+-- Porting note (#10618): removed simp since simp can prove this and the reassoc version
 @[reassoc]
 theorem equalizer.lift_ι {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
     equalizer.lift k h ≫ equalizer.ι f g = k :=
@@ -949,7 +948,7 @@ theorem coequalizer.cofork_π : (coequalizer.cofork f g).π = coequalizer.π f g
   rfl
 #align category_theory.limits.coequalizer.cofork_π CategoryTheory.Limits.coequalizer.cofork_π
 
--- Porting note: simp can prove this, simp removed
+-- Porting note (#10618): simp can prove this, simp removed
 theorem coequalizer.cofork_ι_app_one : (coequalizer.cofork f g).ι.app one = coequalizer.π f g :=
   rfl
 #align category_theory.limits.coequalizer.cofork_ι_app_one CategoryTheory.Limits.coequalizer.cofork_ι_app_one
@@ -974,7 +973,7 @@ noncomputable abbrev coequalizer.desc {W : C} (k : Y ⟶ W) (h : f ≫ k = g ≫
   colimit.desc (parallelPair f g) (Cofork.ofπ k h)
 #align category_theory.limits.coequalizer.desc CategoryTheory.Limits.coequalizer.desc
 
--- Porting note: removing simp since simp can prove this and reassoc version
+-- Porting note (#10618): removing simp since simp can prove this and reassoc version
 @[reassoc]
 theorem coequalizer.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = g ≫ k) :
     coequalizer.π f g ≫ coequalizer.desc k h = k :=
@@ -1228,7 +1227,7 @@ variable {C f g}
 /-- The fork obtained by postcomposing an equalizer fork with a monomorphism is an equalizer. -/
 def isEqualizerCompMono {c : Fork f g} (i : IsLimit c) {Z : C} (h : Y ⟶ Z) [hm : Mono h] :
     have : Fork.ι c ≫ f ≫ h = Fork.ι c ≫ g ≫ h := by
-      simp only [←Category.assoc]
+      simp only [← Category.assoc]
       exact congrArg (· ≫ h) c.condition;
     IsLimit (Fork.ofι c.ι (by simp [this]) : Fork (f ≫ h) (g ≫ h)) :=
   Fork.IsLimit.mk' _ fun s =>

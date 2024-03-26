@@ -25,7 +25,7 @@ namespace CategoryTheory
 
 namespace Coyoneda
 
-variable {C : Type v} [SmallCategory C]
+variable {C : Type u} [Category.{v} C]
 
 /-- The colimit cocone over `coyoneda.obj X`, with cocone point `PUnit`.
 -/
@@ -162,7 +162,4 @@ instance coyonedaFunctorReflectsLimits : ReflectsLimits (@coyoneda D _) := infer
 
 end CategoryTheory
 
-assert_not_exists Set.range
-
--- Porting note: after the port see if this import can be removed
--- assert_not_exists AddCommMonoid
+assert_not_exists AddCommMonoid

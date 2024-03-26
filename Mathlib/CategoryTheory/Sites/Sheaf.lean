@@ -64,9 +64,7 @@ open Opposite CategoryTheory Category Limits Sieve
 namespace Presheaf
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {A : Type u₂} [Category.{v₂} A]
-
 variable (J : GrothendieckTopology C)
 
 -- We follow https://stacks.math.columbia.edu/tag/00VL definition 00VR
@@ -272,9 +270,7 @@ theorem isSheaf_of_isTerminal {X : A} (hX : IsTerminal X) :
 end Presheaf
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable (J : GrothendieckTopology C)
-
 variable (A : Type u₂) [Category.{v₂} A]
 
 /-- The category of sheaves taking values in `A` on a grothendieck topology. -/
@@ -311,7 +307,7 @@ instance instCategorySheaf : Category (Sheaf J A) where
 instance (X : Sheaf J A) : Inhabited (Hom X X) :=
   ⟨𝟙 X⟩
 
--- porting note: added because `Sheaf.Hom.ext` was not triggered automatically
+-- Porting note: added because `Sheaf.Hom.ext` was not triggered automatically
 @[ext]
 lemma hom_ext {X Y : Sheaf J A} (x y : X ⟶ Y) (h : x.val = y.val) : x = y :=
   Sheaf.Hom.ext _ _ h
@@ -359,7 +355,7 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
   constructor
   · intro hP
     refine' Presieve.isSheaf_iso J _ (hP PUnit)
-    refine' isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
+    exact isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
   · intro hP X Y S hS z hz
     refine' ⟨fun x => (hP S hS).amalgamate (fun Z f hf => z f hf x) _, _, _⟩
     · intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ h
@@ -411,7 +407,7 @@ open Preadditive
 
 variable [Preadditive A] {P Q : Sheaf J A}
 
-instance sheafHomHasZsmul : SMul ℤ (P ⟶ Q) where
+instance sheafHomHasZSMul : SMul ℤ (P ⟶ Q) where
   smul n f :=
     Sheaf.Hom.mk
       { app := fun U => n • f.1.app U
@@ -423,13 +419,13 @@ instance sheafHomHasZsmul : SMul ℤ (P ⟶ Q) where
           · simpa only [sub_smul, one_zsmul, comp_sub, NatTrans.naturality, sub_comp,
               sub_left_inj] using ih }
 set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf_hom_has_zsmul CategoryTheory.sheafHomHasZsmul
+#align category_theory.Sheaf_hom_has_zsmul CategoryTheory.sheafHomHasZSMul
 
 instance : Sub (P ⟶ Q) where sub f g := Sheaf.Hom.mk <| f.1 - g.1
 
 instance : Neg (P ⟶ Q) where neg f := Sheaf.Hom.mk <| -f.1
 
-instance sheafHomHasNsmul : SMul ℕ (P ⟶ Q) where
+instance sheafHomHasNSMul : SMul ℕ (P ⟶ Q) where
   smul n f :=
     Sheaf.Hom.mk
       { app := fun U => n • f.1.app U
@@ -439,7 +435,7 @@ instance sheafHomHasNsmul : SMul ℕ (P ⟶ Q) where
           · simp only [Nat.succ_eq_add_one, add_smul, ih, one_nsmul, comp_add,
               NatTrans.naturality, add_comp] }
 set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf_hom_has_nsmul CategoryTheory.sheafHomHasNsmul
+#align category_theory.Sheaf_hom_has_nsmul CategoryTheory.sheafHomHasNSMul
 
 instance : Zero (P ⟶ Q) where zero := Sheaf.Hom.mk 0
 
@@ -483,11 +479,8 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {A : Type u₂} [Category.{v₂} A]
 variable {A' : Type u₂} [Category.{max v₁ u₁} A']
 variable {B : Type u₃} [Category.{v₃} B]
-
 variable (J : GrothendieckTopology C)
-
 variable {U : C} (R : Presieve U)
-
 variable (P : Cᵒᵖ ⥤ A) (P' : Cᵒᵖ ⥤ A')
 
 section MultiequalizerConditions

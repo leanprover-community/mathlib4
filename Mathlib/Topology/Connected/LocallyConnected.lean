@@ -83,7 +83,7 @@ theorem isOpen_connectedComponent [LocallyConnectedSpace α] {x : α} :
 
 theorem isClopen_connectedComponent [LocallyConnectedSpace α] {x : α} :
     IsClopen (connectedComponent x) :=
-  ⟨isOpen_connectedComponent, isClosed_connectedComponent⟩
+  ⟨isClosed_connectedComponent, isOpen_connectedComponent⟩
 #align is_clopen_connected_component isClopen_connectedComponent
 
 theorem locallyConnectedSpace_iff_connectedComponentIn_open :
@@ -119,7 +119,7 @@ theorem locallyConnectedSpace_iff_connected_basis :
     LocallyConnectedSpace α ↔
       ∀ x, (𝓝 x).HasBasis (fun s : Set α => s ∈ 𝓝 x ∧ IsPreconnected s) id := by
   rw [locallyConnectedSpace_iff_connected_subsets]
-  exact forall_congr' <| fun x => Filter.hasBasis_self.symm
+  exact forall_congr' fun x => Filter.hasBasis_self.symm
 #align locally_connected_space_iff_connected_basis locallyConnectedSpace_iff_connected_basis
 
 theorem locallyConnectedSpace_of_connected_bases {ι : Type*} (b : α → ι → Set α) (p : α → ι → Prop)
@@ -136,10 +136,10 @@ theorem OpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] [Topologi
     {f : β → α} (h : OpenEmbedding f) : LocallyConnectedSpace β := by
   refine locallyConnectedSpace_of_connected_bases (fun _ s ↦ f ⁻¹' s)
     (fun x s ↦ (IsOpen s ∧ f x ∈ s ∧ IsConnected s) ∧ s ⊆ range f) (fun x ↦ ?_)
-    (fun x s hxs ↦ hxs.1.2.2.isPreconnected.preimage_of_open_map h.inj h.isOpenMap hxs.2)
+    (fun x s hxs ↦ hxs.1.2.2.isPreconnected.preimage_of_isOpenMap h.inj h.isOpenMap hxs.2)
   rw [h.nhds_eq_comap]
   exact LocallyConnectedSpace.open_connected_basis (f x) |>.restrict_subset
-    (h.open_range.mem_nhds <| mem_range_self _) |>.comap _
+    (h.isOpen_range.mem_nhds <| mem_range_self _) |>.comap _
 
 theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU : IsOpen U) :
     LocallyConnectedSpace U :=

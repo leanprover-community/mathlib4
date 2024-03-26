@@ -116,10 +116,9 @@ theorem evariance_eq_lintegral_ofReal (X : Ω → ℝ) (μ : Measure Ω) :
 theorem _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero (hX : Memℒp X 2 μ)
     (hXint : μ[X] = 0) : variance X μ = μ[X ^ (2 : Nat)] := by
   rw [variance, evariance_eq_lintegral_ofReal, ← ofReal_integral_eq_lintegral_ofReal,
-      ENNReal.toReal_ofReal] <;>
+      ENNReal.toReal_ofReal (by positivity)] <;>
     simp_rw [hXint, sub_zero]
   · rfl
-  · exact integral_nonneg fun ω => pow_two_nonneg _
   · convert hX.integrable_norm_rpow two_ne_zero ENNReal.two_ne_top with ω
     simp only [Pi.sub_apply, Real.norm_eq_abs, coe_two, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]
@@ -129,9 +128,8 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero (hX : Mem�
 theorem _root_.MeasureTheory.Memℒp.variance_eq [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
     variance X μ = μ[(X - fun _ => μ[X] :) ^ (2 : Nat)] := by
   rw [variance, evariance_eq_lintegral_ofReal, ← ofReal_integral_eq_lintegral_ofReal,
-    ENNReal.toReal_ofReal]
+    ENNReal.toReal_ofReal (by positivity)]
   · rfl
-  · exact integral_nonneg fun ω => pow_two_nonneg _
   · -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,
     -- and `convert` cannot disambiguate based on typeclass inference failure.
     convert (hX.sub <| memℒp_const (μ [X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
@@ -149,9 +147,8 @@ theorem evariance_eq_zero_iff (hX : AEMeasurable X μ) :
     evariance X μ = 0 ↔ X =ᵐ[μ] fun _ => μ[X] := by
   rw [evariance, lintegral_eq_zero_iff']
   constructor <;> intro hX <;> filter_upwards [hX] with ω hω
-  · simp only [Pi.zero_apply, pow_eq_zero_iff, Nat.succ_pos', ENNReal.coe_eq_zero, nnnorm_eq_zero,
-      sub_eq_zero] at hω
-    exact hω
+  · simpa only [Pi.zero_apply, sq_eq_zero_iff, ENNReal.coe_eq_zero, nnnorm_eq_zero, sub_eq_zero]
+      using hω
   · rw [hω]
     simp
   · measurability
@@ -260,7 +257,7 @@ theorem evariance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : A
     exact mod_cast hℒ fun _ => zero_le_two
 #align probability_theory.evariance_def' ProbabilityTheory.evariance_def'
 
-/-- *Chebyshev's inequality* for `ℝ≥0∞`-valued variance. -/
+/-- **Chebyshev's inequality** for `ℝ≥0∞`-valued variance. -/
 theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable X ℙ) {c : ℝ≥0}
     (hc : c ≠ 0) : ℙ {ω | ↑c ≤ |X ω - 𝔼[X]|} ≤ eVar[X] / c ^ 2 := by
   have A : (c : ℝ≥0∞) ≠ 0 := by rwa [Ne.def, ENNReal.coe_eq_zero]
@@ -278,7 +275,7 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
       ENNReal.rpow_one, evariance]
 #align probability_theory.meas_ge_le_evariance_div_sq ProbabilityTheory.meas_ge_le_evariance_div_sq
 
-/-- *Chebyshev's inequality* : one can control the deviation probability of a real random variable
+/-- **Chebyshev's inequality**: one can control the deviation probability of a real random variable
 from its expectation in terms of the variance. -/
 theorem meas_ge_le_variance_div_sq [@IsFiniteMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : Memℒp X 2) {c : ℝ}
     (hc : 0 < c) : ℙ {ω | c ≤ |X ω - 𝔼[X]|} ≤ ENNReal.ofReal (Var[X] / c ^ 2) := by
@@ -365,7 +362,7 @@ theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X :
           Memℒp.integrable one_le_two (hs _ (mem_insert_of_mem hi)),
         mul_sum, mul_sum, ← sum_sub_distrib]
       apply Finset.sum_eq_zero fun i hi => ?_
-      have : ∀ (a : Ω), @OfNat.ofNat (Ω → ℝ) 2 instOfNat a = (2 : ℝ) := fun a => rfl
+      have : ∀ (a : Ω), @OfNat.ofNat (Ω → ℝ) 2 instOfNatAtLeastTwo a = (2 : ℝ) := fun a => rfl
       conv_lhs => enter [1, 2, a]; rw [this]
       rw [integral_mul_left, IndepFun.integral_mul', sub_self]
       · apply h (mem_insert_self _ _) (mem_insert_of_mem hi)
