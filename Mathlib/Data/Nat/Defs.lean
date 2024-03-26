@@ -25,10 +25,21 @@ This file contains:
   * `strong_rec'`: recursion based on strong inequalities
 * decidability instances on predicates about the natural numbers
 
-Many theorems that used to live in this file have been moved to `Data.Nat.Order`, so that
-this file requires fewer imports. For each section here there is a corresponding section in
-that file with additional results. It may be possible to move some of these results here,
-by tweaking their proofs.
+## Implementation note
+
+Std has a home-baked development of the algebraic and order theoretic theory of `ℕ` which, in
+particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness libraries
+in mathlib (naturals show up as indices in lists, cardinality in finsets, powers in groups, ...).
+This home-baked development is pursued in this file.
+
+Less basic uses of `ℕ` should however use the typeclass-mediated development. `Data.Nat.Basic` gives
+access to the algebraic instances. `Data.Nat.Order.Basic` is the one giving access to the algebraic
+order instances.
+
+## TODO
+
+The names of this file, `Data.Nat.Basic` and `Data.Nat.Order.Basic` are archaic and don't match up
+with reality anymore. Rename them.
 -/
 
 open Function

@@ -9,7 +9,25 @@ import Mathlib.Data.Nat.Basic
 #align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
 
 /-!
-# The natural numbers as a linearly ordered commutative semiring
+# Algebraic order instances for the natural numbers
+
+This file contains algebraic order instances on the natural numbers and a few lemmas about them.
+
+## Implementation note
+
+Std has a home-baked development of the algebraic and order theoretic theory of `ℕ` which, in
+particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness libraries
+in mathlib (naturals show up as indices in lists, cardinality in finsets, powers in groups, ...).
+This home-baked development is pursued in `Data.Nat.Defs`.
+
+Less basic uses of `ℕ` should however use the typeclass-mediated development. `Data.Nat.Basic` gives
+access to the algebraic instances. The current file is the one giving access to the algebraic
+order instances.
+
+## TODO
+
+The names of this file, `Data.Nat.Defs` and `Data.Nat.Basic` are archaic and don't match up with
+reality anymore. Rename them.
 -/
 
 universe u v
