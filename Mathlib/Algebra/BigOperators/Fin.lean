@@ -54,7 +54,6 @@ theorem prod_ofFn [CommMonoid β] {n : ℕ} (f : Fin n → β) : (List.ofFn f).p
 theorem prod_univ_def [CommMonoid β] {n : ℕ} (f : Fin n → β) :
     ∏ i, f i = ((List.finRange n).map f).prod := by
   rw [← List.ofFn_eq_map, prod_ofFn]
-  -- simp only [univ_def, prod_mk, Multiset.map_coe, Multiset.prod_coe]
 #align fin.prod_univ_def Fin.prod_univ_def
 #align fin.sum_univ_def Fin.sum_univ_def
 
