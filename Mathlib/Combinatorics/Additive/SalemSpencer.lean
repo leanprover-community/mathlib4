@@ -469,7 +469,7 @@ theorem rothNumberNat_le (N : ℕ) : rothNumberNat N ≤ N :=
 #align roth_number_nat_le rothNumberNat_le
 
 theorem rothNumberNat_spec (n : ℕ) :
-    ∃ (t : _) (_ : t ⊆ range n), t.card = rothNumberNat n ∧ AddSalemSpencer (t : Set ℕ) :=
+    ∃ t ⊆ range n, t.card = rothNumberNat n ∧ AddSalemSpencer (t : Set ℕ) :=
   addRothNumber_spec _
 #align roth_number_nat_spec rothNumberNat_spec
 
