@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.Opposites
 import Mathlib.Data.List.BigOperators.Defs
-import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.List.Forall2
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Data.Int.Basic
 
 #align_import data.list.big_operators.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
 
@@ -14,7 +16,7 @@ import Mathlib.Data.List.Forall2
 # Sums and products from lists
 
 This file provides basic results about `List.prod`, `List.sum`, which calculate the product and sum
-of elements of a list and `List.alternating_prod`, `List.alternating_sum`, their alternating
+of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their alternating
 counterparts. These are defined in [`Data.List.BigOperators.Defs`](./Defs).
 -/
 
@@ -22,9 +24,9 @@ variable {ι α M N P M₀ G R : Type*}
 
 namespace List
 
-section Monoid
+section MulOneClass
 
-variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
+variable [MulOneClass M] {l : List M} {a : M}
 
 @[to_additive (attr := simp)]
 theorem prod_nil : ([] : List M).prod = 1 :=
@@ -37,6 +39,23 @@ theorem prod_singleton : [a].prod = a :=
   one_mul a
 #align list.prod_singleton List.prod_singleton
 #align list.sum_singleton List.sum_singleton
+
+@[to_additive (attr := simp)]
+theorem prod_one_cons : (1 :: l).prod = l.prod := by
+  rw [prod, foldl, mul_one]
+
+@[to_additive]
+theorem prod_map_one {l : List ι} :
+    (l.map fun _ => (1 : M)).prod = 1 := by
+  induction l with
+  | nil => rfl
+  | cons hd tl ih => rw [map_cons, prod_one_cons, ih]
+
+end MulOneClass
+
+section Monoid
+
+variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 
 @[to_additive (attr := simp)]
 theorem prod_cons : (a :: l).prod = a * l.prod :=
@@ -113,7 +132,7 @@ theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * 
 #align list.rel_sum List.rel_sum
 
 @[to_additive]
-theorem prod_hom (l : List M) {F : Type*} [MonoidHomClass F M N] (f : F) :
+theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
     (l.map f).prod = f l.prod := by
   simp only [prod, foldl_map, ← map_one f]
   exact l.foldl_hom f (· * ·) (· * f ·) 1 (fun x y => (map_mul f x y).symm)
@@ -143,14 +162,14 @@ theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α
 #align list.sum_map_add List.sum_map_add
 
 @[simp]
-theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
+theorem prod_map_neg [HasDistribNeg M] (l : List M) :
     (l.map Neg.neg).prod = (-1) ^ l.length * l.prod := by
-  simpa only [id_eq, neg_mul, one_mul, map_const', prod_replicate, map_id]
-    using @prod_map_mul α α _ l (fun _ => -1) id
+  induction l <;> simp [*, pow_succ, ((Commute.neg_one_left _).pow_left _).left_comm]
 #align list.prod_map_neg List.prod_map_neg
 
 @[to_additive]
-theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type*} [MonoidHomClass G M N] (g : G) :
+theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type*} [FunLike G M N] [MonoidHomClass G M N]
+    (g : G) :
     (L.map (g ∘ f)).prod = g (L.map f).prod := by rw [← prod_hom, map_map]
 #align list.prod_map_hom List.prod_map_hom
 #align list.sum_map_hom List.sum_map_hom
@@ -200,8 +219,7 @@ theorem prod_take_succ :
 @[to_additive "A list with sum not zero must have positive length."]
 theorem length_pos_of_prod_ne_one (L : List M) (h : L.prod ≠ 1) : 0 < L.length := by
   cases L
-  · contrapose h
-    simp
+  · simp at h
   · simp
 #align list.length_pos_of_prod_ne_one List.length_pos_of_prod_ne_one
 #align list.length_pos_of_sum_ne_zero List.length_pos_of_sum_ne_zero
@@ -230,8 +248,6 @@ theorem prod_set :
   | [], _, _ => by simp [set, (Nat.zero_le _).not_lt, Nat.zero_le]
 #align list.prod_update_nth List.prod_set
 #align list.sum_update_nth List.sum_set
-
-open MulOpposite
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
@@ -448,6 +464,14 @@ theorem prod_drop_succ :
 #align list.prod_drop_succ List.prod_drop_succ
 #align list.sum_drop_succ List.sum_drop_succ
 
+/-- Cancellation of a telescoping product. -/
+@[to_additive "Cancellation of a telescoping sum."]
+theorem prod_range_div' (n : ℕ) (f : ℕ → G) :
+    ((range n).map fun k ↦ f k / f (k + 1)).prod = f 0 / f n := by
+  induction' n with n h
+  · exact (div_self' (f 0)).symm
+  · rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel']
+
 end Group
 
 section CommGroup
@@ -461,6 +485,13 @@ theorem prod_inv : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).prod
   | x :: xs => by simp [mul_comm, prod_inv xs]
 #align list.prod_inv List.prod_inv
 #align list.sum_neg List.sum_neg
+
+/-- Cancellation of a telescoping product. -/
+@[to_additive "Cancellation of a telescoping sum."]
+theorem prod_range_div (n : ℕ) (f : ℕ → G) :
+    ((range n).map fun k ↦ f (k + 1) / f k).prod = f n / f 0 := by
+  have h : ((·⁻¹) ∘ fun k ↦ f (k + 1) / f k) = fun k ↦ f k / f (k + 1) := by ext; apply inv_div
+  rw [← inv_inj, prod_inv, map_map, inv_div, h, prod_range_div']
 
 /-- Alternative version of `List.prod_set` when the list is over a group -/
 @[to_additive "Alternative version of `List.sum_set` when the list is over a group"]
@@ -563,8 +594,9 @@ theorem sum_le_foldr_max [AddMonoid M] [AddMonoid N] [LinearOrder N] (f : M → 
 theorem prod_erase_of_comm [DecidableEq M] [Monoid M] {a} {l : List M} (ha : a ∈ l)
     (comm : ∀ x ∈ l, ∀ y ∈ l, x * y = y * x) :
     a * (l.erase a).prod = l.prod := by
-  induction' l with b l ih; simp at ha
-  obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem ha; simp
+  induction' l with b l ih; simp only [not_mem_nil] at ha
+  obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem ha
+  simp only [erase_cons_head, prod_cons]
   rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
     comm a ha b (l.mem_cons_self b), mul_assoc,
     ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]
@@ -582,7 +614,7 @@ theorem prod_map_erase [DecidableEq ι] [CommMonoid M] (f : ι → M) {a} :
   | b :: l, h => by
     obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem h
     · simp only [map, erase_cons_head, prod_cons]
-    · simp only [map, erase_cons_tail _ ne.symm, prod_cons, prod_map_erase _ h,
+    · simp only [map, erase_cons_tail _ (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
         mul_left_comm (f a) (f b)]
 #align list.prod_map_erase List.prod_map_erase
 #align list.sum_map_erase List.sum_map_erase
@@ -708,7 +740,7 @@ section MonoidHom
 variable [Monoid M] [Monoid N]
 
 @[to_additive]
-theorem map_list_prod {F : Type*} [MonoidHomClass F M N] (f : F) (l : List M) :
+theorem map_list_prod {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) (l : List M) :
     f l.prod = (l.map f).prod :=
   (l.prod_hom f).symm
 #align map_list_prod map_list_prod

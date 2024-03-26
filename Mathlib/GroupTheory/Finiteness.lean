@@ -187,13 +187,13 @@ instance Monoid.fg_range {M' : Type*} [Monoid M'] [Monoid.FG M] (f : M →* M') 
 #align monoid.fg_range Monoid.fg_range
 #align add_monoid.fg_range AddMonoid.fg_range
 
-@[to_additive AddSubmonoid.multiples_fg]
+@[to_additive]
 theorem Submonoid.powers_fg (r : M) : (Submonoid.powers r).FG :=
   ⟨{r}, (Finset.coe_singleton r).symm ▸ (Submonoid.powers_eq_closure r).symm⟩
 #align submonoid.powers_fg Submonoid.powers_fg
 #align add_submonoid.multiples_fg AddSubmonoid.multiples_fg
 
-@[to_additive AddMonoid.multiples_fg]
+@[to_additive]
 instance Monoid.powers_fg (r : M) : Monoid.FG (Submonoid.powers r) :=
   (Monoid.fg_iff_submonoid_fg _).mpr (Submonoid.powers_fg r)
 #align monoid.powers_fg Monoid.powers_fg
@@ -442,15 +442,15 @@ theorem rank_congr {H K : Subgroup G} [Group.FG H] [Group.FG K] (h : H = K) :
 @[to_additive]
 theorem rank_closure_finset_le_card (s : Finset G) : Group.rank (closure (s : Set G)) ≤ s.card := by
   classical
-    let t : Finset (closure (s : Set G)) := s.preimage Subtype.val (Subtype.coe_injective.injOn _)
-    have ht : closure (t : Set (closure (s : Set G))) = ⊤ := by
-      rw [Finset.coe_preimage]
-      exact closure_preimage_eq_top (s : Set G)
-    apply (Group.rank_le (closure (s : Set G)) ht).trans
-    suffices H : Set.InjOn Subtype.val (t : Set (closure (s : Set G)))
+  let t : Finset (closure (s : Set G)) := s.preimage Subtype.val (Subtype.coe_injective.injOn _)
+  have ht : closure (t : Set (closure (s : Set G))) = ⊤ := by
+    rw [Finset.coe_preimage]
+    exact closure_preimage_eq_top (s : Set G)
+  apply (Group.rank_le (closure (s : Set G)) ht).trans
+  suffices H : Set.InjOn Subtype.val (t : Set (closure (s : Set G))) by
     rw [← Finset.card_image_of_injOn H, Finset.image_preimage]
-    · apply Finset.card_filter_le
-    · apply Subtype.coe_injective.injOn
+    apply Finset.card_filter_le
+  apply Subtype.coe_injective.injOn
 #align subgroup.rank_closure_finset_le_card Subgroup.rank_closure_finset_le_card
 #align add_subgroup.rank_closure_finset_le_card AddSubgroup.rank_closure_finset_le_card
 

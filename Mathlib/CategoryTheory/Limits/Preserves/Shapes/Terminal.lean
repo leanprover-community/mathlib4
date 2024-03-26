@@ -26,9 +26,7 @@ noncomputable section
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (G : C ⥤ D)
 
 namespace CategoryTheory.Limits
@@ -55,6 +53,16 @@ def IsTerminal.isTerminalOfObj [ReflectsLimit (Functor.empty.{0} C) G] (l : IsTe
     IsTerminal X :=
   ReflectsLimit.reflects ((isLimitMapConeEmptyConeEquiv G X).symm l)
 #align category_theory.limits.is_terminal.is_terminal_of_obj CategoryTheory.Limits.IsTerminal.isTerminalOfObj
+
+/-- A functor that preserves and reflects terminal objects induces an equivalence on
+`IsTerminal`. -/
+def IsTerminal.isTerminalIffObj [PreservesLimit (Functor.empty.{0} C) G]
+    [ReflectsLimit (Functor.empty.{0} C) G] (X : C) :
+    IsTerminal X ≃ IsTerminal (G.obj X) where
+  toFun := IsTerminal.isTerminalObj G X
+  invFun := IsTerminal.isTerminalOfObj G X
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
 
 /-- Preserving the terminal object implies preserving all limits of the empty diagram. -/
 def preservesLimitsOfShapePemptyOfPreservesTerminal [PreservesLimit (Functor.empty.{0} C) G] :
@@ -148,6 +156,15 @@ def IsInitial.isInitialOfObj [ReflectsColimit (Functor.empty.{0} C) G] (l : IsIn
     IsInitial X :=
   ReflectsColimit.reflects ((isColimitMapCoconeEmptyCoconeEquiv G X).symm l)
 #align category_theory.limits.is_initial.is_initial_of_obj CategoryTheory.Limits.IsInitial.isInitialOfObj
+
+/-- A functor that preserves and reflects initial objects induces an equivalence on `IsInitial`. -/
+def IsInitial.isInitialIffObj [PreservesColimit (Functor.empty.{0} C) G]
+    [ReflectsColimit (Functor.empty.{0} C) G] (X : C) :
+    IsInitial X ≃ IsInitial (G.obj X) where
+  toFun := IsInitial.isInitialObj G X
+  invFun := IsInitial.isInitialOfObj G X
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
 
 /-- Preserving the initial object implies preserving all colimits of the empty diagram. -/
 def preservesColimitsOfShapePemptyOfPreservesInitial [PreservesColimit (Functor.empty.{0} C) G] :

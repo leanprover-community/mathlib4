@@ -3,7 +3,7 @@ Copyright (c) 2022 Dhruv Bhatia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Bhatia, Eric Wieser, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Rat.Field
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -425,5 +425,5 @@ elab_rules : tactic
     match ← polyrith (← getMainGoal) tk.isNone hyps traceMe with
     | .ok stx =>
       replaceMainGoal []
-      if !traceMe then Std.Tactic.TryThis.addSuggestion tk stx
+      if !traceMe then Lean.Meta.Tactic.TryThis.addSuggestion tk stx
     | .error g => replaceMainGoal [g]

@@ -44,29 +44,30 @@ add_decl_doc RingInvo.toRingEquiv
 
 /-- `RingInvoClass F R` states that `F` is a type of ring involutions.
 You should extend this class when you extend `RingInvo`. -/
-class RingInvoClass (F : Type*) (R : outParam (Type*)) [Semiring R] extends
-    RingEquivClass F R Rᵐᵒᵖ where
+class RingInvoClass (F R : Type*) [Semiring R] [EquivLike F R Rᵐᵒᵖ]
+  extends RingEquivClass F R Rᵐᵒᵖ : Prop where
   /-- Every ring involution must be its own inverse -/
   involution : ∀ (f : F) (x), (f (f x).unop).unop = x
 #align ring_invo_class RingInvoClass
 
+
 /-- Turn an element of a type `F` satisfying `RingInvoClass F R` into an actual
 `RingInvo`. This is declared as the default coercion from `F` to `RingInvo R`. -/
 @[coe]
-def RingInvoClass.toRingInvo {R} [Semiring R] [RingInvoClass F R] (f : F) :
+def RingInvoClass.toRingInvo {R} [Semiring R] [EquivLike F R Rᵐᵒᵖ] [RingInvoClass F R] (f : F) :
     RingInvo R :=
   { (f : R ≃+* Rᵐᵒᵖ) with involution' := RingInvoClass.involution f }
 
 namespace RingInvo
 
-variable {R} [Semiring R]
+variable {R} [Semiring R] [EquivLike F R Rᵐᵒᵖ]
 
 /-- Any type satisfying `RingInvoClass` can be cast into `RingInvo` via
 `RingInvoClass.toRingInvo`. -/
-instance [Semiring R] [RingInvoClass F R] : CoeTC F (RingInvo R) :=
+instance [RingInvoClass F R] : CoeTC F (RingInvo R) :=
   ⟨RingInvoClass.toRingInvo⟩
 
-instance [Semiring R] : RingInvoClass (RingInvo R) R where
+instance : EquivLike (RingInvo R) R Rᵐᵒᵖ where
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' e f h₁ h₂ := by
@@ -74,10 +75,12 @@ instance [Semiring R] : RingInvoClass (RingInvo R) R where
     cases tE
     cases tF
     congr
-  map_add f := f.map_add'
-  map_mul f := f.map_mul'
   left_inv f := f.left_inv
   right_inv f := f.right_inv
+
+instance : RingInvoClass (RingInvo R) R where
+  map_add f := f.map_add'
+  map_mul f := f.map_mul'
   involution f := f.involution'
 
 /-- Construct a ring involution from a ring homomorphism. -/
@@ -99,7 +102,7 @@ theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x
 #align ring_invo.involution RingInvo.involution
 
--- porting note: remove Coe instance, not needed
+-- Porting note: remove Coe instance, not needed
 -- instance hasCoeToRingEquiv : Coe (RingInvo R) (R ≃+* Rᵐᵒᵖ) :=
 --   ⟨RingInvo.toRingEquiv⟩
 -- #align ring_invo.has_coe_to_ring_equiv RingInvo.hasCoeToRingEquiv
@@ -109,7 +112,7 @@ theorem coe_ringEquiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f 
   rfl
 #align ring_invo.coe_ring_equiv RingInvo.coe_ringEquiv
 
--- porting Note: simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem map_eq_zero_iff (f : RingInvo R) {x : R} : f x = 0 ↔ x = 0 :=
   f.toRingEquiv.map_eq_zero_iff

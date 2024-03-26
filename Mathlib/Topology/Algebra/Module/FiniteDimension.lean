@@ -158,9 +158,8 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     -- is injective. Since `φ.symm` is linear, it is also a vector space topology.
     -- Hence, we know that it is equal to the topology induced by the norm.
     have : induced φ.toEquiv.symm inferInstance = hnorm.toUniformSpace.toTopologicalSpace := by
-      refine'
-        unique_topology_of_t2 (topologicalAddGroup_induced φ.symm.toLinearMap)
-          (continuousSMul_induced φ.symm.toLinearMap) _
+      refine' unique_topology_of_t2 (topologicalAddGroup_induced φ.symm.toLinearMap)
+        (continuousSMul_induced φ.symm.toLinearMap) _
       -- Porting note: was `rw [t2Space_iff]`
       refine (@t2Space_iff 𝕜 (induced (↑(LinearEquiv.toEquiv φ).symm) inferInstance)).mpr ?_
       exact fun x y hxy =>
@@ -196,11 +195,10 @@ variable [CompleteSpace 𝕜]
 
 /-- This version imposes `ι` and `E` to live in the same universe, so you should instead use
 `continuous_equivFun_basis` which gives the same result without universe restrictions. -/
-private theorem continuous_equivFun_basis_aux [ht2 : T2Space E] {ι : Type v} [Fintype ι]
+private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype ι]
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
   letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
   letI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
-  letI : SeparatedSpace E := separated_iff_t2.mpr ht2
   induction' hn : Fintype.card ι with n IH generalizing ι E
   · rw [Fintype.card_eq_zero_iff] at hn
     exact continuous_of_const fun x y => funext hn.elim
@@ -271,7 +269,7 @@ instance LinearMap.continuousLinearMapClassOfFiniteDimensional [T2Space E] [Fini
 This is the key fact which makes all linear maps from a T2 finite dimensional TVS over such a field
 continuous (see `LinearMap.continuous_of_finiteDimensional`), which in turn implies that all
 norms are equivalent in finite dimensions. -/
-theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Fintype ι] (ξ : Basis ι 𝕜 E) :
+theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Finite ι] (ξ : Basis ι 𝕜 E) :
     Continuous ξ.equivFun :=
   haveI : FiniteDimensional 𝕜 E := of_fintype_basis ξ
   ξ.equivFun.toLinearMap.continuous_of_finiteDimensional
@@ -391,7 +389,7 @@ theorem toLinearEquiv_toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) :
   rfl
 #align linear_equiv.to_linear_equiv_to_continuous_linear_equiv LinearEquiv.toLinearEquiv_toContinuousLinearEquiv
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem toLinearEquiv_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
     e.toContinuousLinearEquiv.symm.toLinearEquiv = e.symm := by
   ext x
@@ -434,7 +432,7 @@ namespace Basis
 
 set_option linter.uppercaseLean3 false
 
-variable {ι : Type*} [Fintype ι] [T2Space E]
+variable {ι : Type*} [Finite ι] [T2Space E]
 
 /-- Construct a continuous linear map given the value at a finite basis. -/
 def constrL (v : Basis ι 𝕜 E) (f : ι → F) : E →L[𝕜] F :=
@@ -466,7 +464,7 @@ lemma equivFunL_symm_apply_repr (v : Basis ι 𝕜 E) (x : E) :
   v.equivFunL.symm_apply_apply x
 
 @[simp]
-theorem constrL_apply (v : Basis ι 𝕜 E) (f : ι → F) (e : E) :
+theorem constrL_apply {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) (f : ι → F) (e : E) :
     v.constrL f e = ∑ i, v.equivFun e i • f i :=
   v.constr_apply_fintype 𝕜 _ _
 #align basis.constrL_apply Basis.constrL_apply
@@ -547,7 +545,6 @@ theorem Submodule.closed_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDime
     IsClosed (s : Set E) :=
   letI := TopologicalAddGroup.toUniformSpace E
   haveI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
-  haveI := separated_iff_t2.2 ‹T2Space E›
   s.complete_of_finiteDimensional.isClosed
 #align submodule.closed_of_finite_dimensional Submodule.closed_of_finiteDimensional
 
@@ -556,7 +553,7 @@ theorem LinearMap.closedEmbedding_of_injective [FiniteDimensional 𝕜 E] {f : E
     (hf : LinearMap.ker f = ⊥) : ClosedEmbedding f :=
   let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
   { embedding_subtype_val.comp g.toContinuousLinearEquiv.toHomeomorph.embedding with
-    closed_range := by
+    isClosed_range := by
       haveI := f.finiteDimensional_range
       simpa [LinearMap.range_coe f] using f.range.closed_of_finiteDimensional }
 #align linear_equiv.closed_embedding_of_injective LinearMap.closedEmbedding_of_injective

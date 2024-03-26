@@ -38,7 +38,6 @@ traversable bitraversable functor bifunctor applicative
 universe u
 
 variable {t : Type u → Type u → Type u} [Bitraversable t]
-
 variable {β : Type u}
 
 namespace Bitraversable

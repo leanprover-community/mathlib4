@@ -42,9 +42,7 @@ open Topology InnerProductSpace Set
 noncomputable section
 
 variable {𝕜 F : Type*} [IsROrC 𝕜]
-
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
-
 variable {f : F → 𝕜} {f' x : F}
 
 /-- A function `f` has the gradient `f'` as derivative along the filter `L` if
@@ -157,14 +155,14 @@ variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
     HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g'
-  · ext; simp
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
+    ext; simp
   rwa [HasDerivAtFilter, this]
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
     HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g')
-  · ext; simp
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
+    ext; simp
   rwa [HasGradientAtFilter, ← this]
 
 theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :

@@ -205,11 +205,8 @@ variable [Semiring R] [AddCommMonoid M]
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
 variable {module_M : Module R M}
-
 variable {p q : Submodule R M}
-
 variable {r : R} {x y : M}
-
 variable (p)
 
 -- Porting note: removing `@[simp]` since it can already be proven
@@ -284,14 +281,13 @@ protected theorem nonempty : (p : Set M).Nonempty :=
   ⟨0, p.zero_mem⟩
 #align submodule.nonempty Submodule.nonempty
 
-@[simp]
 theorem mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
   Subtype.ext_iff_val
 #align submodule.mk_eq_zero Submodule.mk_eq_zero
 
 variable {p}
 
-@[norm_cast] -- porting note: removed `@[simp]` because this follows from `ZeroMemClass.coe_zero`
+@[norm_cast] -- Porting note: removed `@[simp]` because this follows from `ZeroMemClass.coe_zero`
 theorem coe_eq_zero {x : p} : (x : M) = 0 ↔ x = 0 :=
   (SetLike.coe_eq_coe : (x : M) = (0 : p) ↔ x = 0)
 #align submodule.coe_eq_zero Submodule.coe_eq_zero
@@ -317,12 +313,12 @@ theorem coe_smul_of_tower [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (x
   rfl
 #align submodule.coe_smul_of_tower Submodule.coe_smul_of_tower
 
-@[norm_cast] -- porting note: removed `@[simp]` because this is now structure eta
+@[norm_cast] -- Porting note: removed `@[simp]` because this is now structure eta
 theorem coe_mk (x : M) (hx : x ∈ p) : ((⟨x, hx⟩ : p) : M) = x :=
   rfl
 #align submodule.coe_mk Submodule.coe_mk
 
--- porting note: removed `@[simp]` because this is exactly `SetLike.coe_mem`
+-- Porting note: removed `@[simp]` because this is exactly `SetLike.coe_mem`
 theorem coe_mem (x : p) : (x : M) ∈ p :=
   x.2
 #align submodule.coe_mem Submodule.coe_mem
@@ -382,80 +378,13 @@ theorem vadd_def [VAdd M α] (g : p) (m : α) : g +ᵥ m = (g : M) +ᵥ m :=
 
 end AddAction
 
-section RestrictScalars
-
-variable (S) [Semiring S] [Module S M] [Module R M] [SMul S R] [IsScalarTower S R M]
-
-/-- `V.restrict_scalars S` is the `S`-submodule of the `S`-module given by restriction of scalars,
-corresponding to `V`, an `R`-submodule of the original `R`-module.
--/
-def restrictScalars (V : Submodule R M) : Submodule S M where
-  carrier := V
-  zero_mem' := V.zero_mem
-  smul_mem' c _ h := V.smul_of_tower_mem c h
-  add_mem' hx hy := V.add_mem hx hy
-#align submodule.restrict_scalars Submodule.restrictScalars
-
-@[simp]
-theorem coe_restrictScalars (V : Submodule R M) : (V.restrictScalars S : Set M) = V :=
-  rfl
-#align submodule.coe_restrict_scalars Submodule.coe_restrictScalars
-
-@[simp]
-theorem restrictScalars_mem (V : Submodule R M) (m : M) : m ∈ V.restrictScalars S ↔ m ∈ V :=
-  Iff.refl _
-#align submodule.restrict_scalars_mem Submodule.restrictScalars_mem
-
-@[simp]
-theorem restrictScalars_self (V : Submodule R M) : V.restrictScalars R = V :=
-  SetLike.coe_injective rfl
-#align submodule.restrict_scalars_self Submodule.restrictScalars_self
-
-variable (R M)
-
-theorem restrictScalars_injective :
-    Function.Injective (restrictScalars S : Submodule R M → Submodule S M) := fun _ _ h =>
-  ext <| Set.ext_iff.1 (SetLike.ext'_iff.1 h : _)
-#align submodule.restrict_scalars_injective Submodule.restrictScalars_injective
-
-@[simp]
-theorem restrictScalars_inj {V₁ V₂ : Submodule R M} :
-    restrictScalars S V₁ = restrictScalars S V₂ ↔ V₁ = V₂ :=
-  (restrictScalars_injective S _ _).eq_iff
-#align submodule.restrict_scalars_inj Submodule.restrictScalars_inj
-
-/-- Even though `p.restrictScalars S` has type `Submodule S M`, it is still an `R`-module. -/
-instance restrictScalars.origModule (p : Submodule R M) : Module R (p.restrictScalars S) :=
-  (by infer_instance : Module R p)
-#align submodule.restrict_scalars.orig_module Submodule.restrictScalars.origModule
-
-instance restrictScalars.isScalarTower (p : Submodule R M) :
-    IsScalarTower S R (p.restrictScalars S) where
-  smul_assoc r s x := Subtype.ext <| smul_assoc r s (x : M)
-#align submodule.restrict_scalars.is_scalar_tower Submodule.restrictScalars.isScalarTower
-
-/-- `restrictScalars S` is an embedding of the lattice of `R`-submodules into
-the lattice of `S`-submodules. -/
-@[simps]
-def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
-  toFun := restrictScalars S
-  inj' := restrictScalars_injective S R M
-  map_rel_iff' := by simp [SetLike.le_def]
-#align submodule.restrict_scalars_embedding Submodule.restrictScalarsEmbedding
-#align submodule.restrict_scalars_embedding_apply Submodule.restrictScalarsEmbedding_apply
-
-end RestrictScalars
-
 end AddCommMonoid
 
 section AddCommGroup
 
 variable [Ring R] [AddCommGroup M]
-
 variable {module_M : Module R M}
-
 variable (p p' : Submodule R M)
-
 variable {r : R} {x y : M}
 
 instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
@@ -521,7 +450,7 @@ protected theorem add_mem_iff_right : x ∈ p → (x + y ∈ p ↔ y ∈ p) :=
 #align submodule.add_mem_iff_right Submodule.add_mem_iff_right
 
 protected theorem coe_neg (x : p) : ((-x : p) : M) = -x :=
-  AddSubgroupClass.coe_neg _
+  NegMemClass.coe_neg _
 #align submodule.coe_neg Submodule.coe_neg
 
 protected theorem coe_sub (x y : p) : (↑(x - y) : M) = ↑x - ↑y :=
@@ -550,7 +479,6 @@ end AddCommGroup
 section IsDomain
 
 variable [Ring R] [IsDomain R]
-
 variable [AddCommGroup M] [Module R M] {b : ι → M}
 
 theorem not_mem_of_ortho {x : M} {N : Submodule R M}
@@ -566,68 +494,12 @@ theorem ne_zero_of_ortho {x : M} {N : Submodule R M}
 
 end IsDomain
 
-section OrderedMonoid
-
-variable [Semiring R]
-
-/-- A submodule of an `OrderedAddCommMonoid` is an `OrderedAddCommMonoid`. -/
-instance toOrderedAddCommMonoid {M} [OrderedAddCommMonoid M] [Module R M] (S : Submodule R M) :
-    OrderedAddCommMonoid S :=
-  Subtype.coe_injective.orderedAddCommMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
-#align submodule.to_ordered_add_comm_monoid Submodule.toOrderedAddCommMonoid
-
-/-- A submodule of a `LinearOrderedAddCommMonoid` is a `LinearOrderedAddCommMonoid`. -/
-instance toLinearOrderedAddCommMonoid {M} [LinearOrderedAddCommMonoid M] [Module R M]
-    (S : Submodule R M) : LinearOrderedAddCommMonoid S :=
-  Subtype.coe_injective.linearOrderedAddCommMonoid Subtype.val rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-#align submodule.to_linear_ordered_add_comm_monoid Submodule.toLinearOrderedAddCommMonoid
-
-/-- A submodule of an `OrderedCancelAddCommMonoid` is an `OrderedCancelAddCommMonoid`. -/
-instance toOrderedCancelAddCommMonoid {M} [OrderedCancelAddCommMonoid M] [Module R M]
-    (S : Submodule R M) : OrderedCancelAddCommMonoid S :=
-  Subtype.coe_injective.orderedCancelAddCommMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
-#align submodule.to_ordered_cancel_add_comm_monoid Submodule.toOrderedCancelAddCommMonoid
-
-/-- A submodule of a `LinearOrderedCancelAddCommMonoid` is a
-`LinearOrderedCancelAddCommMonoid`. -/
-instance toLinearOrderedCancelAddCommMonoid {M} [LinearOrderedCancelAddCommMonoid M] [Module R M]
-    (S : Submodule R M) : LinearOrderedCancelAddCommMonoid S :=
-  Subtype.coe_injective.linearOrderedCancelAddCommMonoid Subtype.val rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align submodule.to_linear_ordered_cancel_add_comm_monoid Submodule.toLinearOrderedCancelAddCommMonoid
-
-end OrderedMonoid
-
-section OrderedGroup
-
-variable [Ring R]
-
-/-- A submodule of an `OrderedAddCommGroup` is an `OrderedAddCommGroup`. -/
-instance toOrderedAddCommGroup {M} [OrderedAddCommGroup M] [Module R M] (S : Submodule R M) :
-    OrderedAddCommGroup S :=
-  Subtype.coe_injective.orderedAddCommGroup Subtype.val rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align submodule.to_ordered_add_comm_group Submodule.toOrderedAddCommGroup
-
-/-- A submodule of a `LinearOrderedAddCommGroup` is a
-`LinearOrderedAddCommGroup`. -/
-instance toLinearOrderedAddCommGroup {M} [LinearOrderedAddCommGroup M] [Module R M]
-    (S : Submodule R M) : LinearOrderedAddCommGroup S :=
-  Subtype.coe_injective.linearOrderedAddCommGroup Subtype.val rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align submodule.to_linear_ordered_add_comm_group Submodule.toLinearOrderedAddCommGroup
-
-end OrderedGroup
-
 end Submodule
 
 namespace Submodule
 
 variable [DivisionSemiring S] [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable [SMul S R] [Module S M] [IsScalarTower S R M]
-
 variable (p : Submodule R M) {s : S} {x y : M}
 
 theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=

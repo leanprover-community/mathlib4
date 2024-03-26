@@ -51,7 +51,7 @@ def galLift (σ : B →ₐ[A] B) : L →ₐ[K] L :=
     simp only [RingHom.coe_comp, Function.comp_apply, ← IsScalarTower.algebraMap_apply A K L,
       IsScalarTower.algebraMap_apply A B L, IsLocalization.lift_eq,
       RingHom.coe_coe, AlgHom.commutes]
-  { IsLocalization.lift (S := L) H with commutes' := FunLike.congr_fun H_eq }
+  { IsLocalization.lift (S := L) H with commutes' := DFunLike.congr_fun H_eq }
 
 /-- The restriction `End(L/K) → End(B/A)` in an AKLB setup.
 Also see `galRestrict` for the `AlgEquiv` version. -/
@@ -166,7 +166,6 @@ lemma Algebra.map_intTraceAux [IsIntegrallyClosed A] (x : B) :
   IsIntegralClosure.algebraMap_equiv A (integralClosure A K) K A _
 
 variable (A B)
-
 variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
 variable [Module.Finite A B] [NoZeroSMulDivisors A B]
 
@@ -285,7 +284,7 @@ variable [IsIntegrallyClosed A]
 /-- The restriction of the norm on `L/K` restricted onto `B/A` in an AKLB setup.
 See `Algebra.intNorm` instead. -/
 noncomputable
-def Algebra.intNormAux [IsIntegrallyClosed A] [IsSeparable K L] :
+def Algebra.intNormAux [IsSeparable K L] :
     B →* A where
   toFun := fun s ↦ IsIntegralClosure.mk' (R := A) A (Algebra.norm K (algebraMap B L s))
     (isIntegral_norm K <| IsIntegral.map (IsScalarTower.toAlgHom A B L)
@@ -301,7 +300,6 @@ lemma Algebra.map_intNormAux [IsIntegrallyClosed A] [IsSeparable K L] (x : B) :
   exact IsIntegralClosure.algebraMap_mk' _ _ _
 
 variable (A B)
-
 variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
 variable [Module.Finite A B] [NoZeroSMulDivisors A B]
 variable [IsSeparable (FractionRing A) (FractionRing B)] -- TODO: remove this
@@ -398,8 +396,7 @@ variable [IsDomain Aₘ] [IsIntegrallyClosed Aₘ] [IsDomain Bₘ] [IsIntegrally
 variable [NoZeroSMulDivisors Aₘ Bₘ] [Module.Finite Aₘ Bₘ]
 variable [IsSeparable (FractionRing Aₘ) (FractionRing Bₘ)]
 
-lemma Algebra.intNorm_eq_of_isLocalization
-    [IsSeparable (FractionRing Aₘ) (FractionRing Bₘ)] (x : B) :
+lemma Algebra.intNorm_eq_of_isLocalization (x : B) :
     algebraMap A Aₘ (Algebra.intNorm A B x) = Algebra.intNorm Aₘ Bₘ (algebraMap B Bₘ x) := by
   by_cases hM : 0 ∈ M
   · have := IsLocalization.uniqueOfZeroMem (S := Aₘ) hM

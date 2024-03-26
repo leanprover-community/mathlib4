@@ -75,12 +75,8 @@ variable {R} {a : R} {b : M}
 
 lemma smul_eq_zero_of_left (h : a = 0) (b : M) : a • b = 0 := h.symm ▸ zero_smul _ b
 #align smul_eq_zero_of_left smul_eq_zero_of_left
-lemma smul_eq_zero_of_right (a : R) (h : b = 0) : a • b = 0 := h.symm ▸ smul_zero a
-#align smul_eq_zero_of_right smul_eq_zero_of_right
 lemma left_ne_zero_of_smul : a • b ≠ 0 → a ≠ 0 := mt fun h ↦ smul_eq_zero_of_left h b
 #align left_ne_zero_of_smul left_ne_zero_of_smul
-lemma right_ne_zero_of_smul : a • b ≠ 0 → b ≠ 0 := mt <| smul_eq_zero_of_right a
-#align right_ne_zero_of_smul right_ne_zero_of_smul
 
 variable [Zero R'] [Zero M'] [SMul R M']
 
@@ -132,7 +128,6 @@ instance AddGroup.intSMulWithZero [AddGroup M] : SMulWithZero ℤ M where
 section MonoidWithZero
 
 variable [MonoidWithZero R] [MonoidWithZero R'] [Zero M]
-
 variable (R M)
 
 /-- An action of a monoid with zero `R` on a Type `M`, also with `0`, extends `MulAction` and
@@ -165,7 +160,7 @@ instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒ�
 
 protected lemma MulActionWithZero.subsingleton
     [MulActionWithZero R M] [Subsingleton R] : Subsingleton M :=
-  ⟨λ x y => by
+  ⟨fun x y => by
     rw [← one_smul R x, ← one_smul R y, Subsingleton.elim (1 : R) 0, zero_smul, zero_smul]⟩
 #align mul_action_with_zero.subsingleton MulActionWithZero.subsingleton
 
@@ -233,3 +228,8 @@ def smulMonoidWithZeroHom {α β : Type*} [MonoidWithZero α] [MulZeroOneClass �
   { smulMonoidHom with map_zero' := smul_zero _ }
 #align smul_monoid_with_zero_hom smulMonoidWithZeroHom
 #align smul_monoid_with_zero_hom_apply smulMonoidWithZeroHom_apply
+
+-- This instance seems a bit incongruous in this file, but `#find_home!` told me to put it here.
+instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring R] :
+    DistribSMul R R where
+  smul_add := mul_add

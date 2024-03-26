@@ -148,7 +148,7 @@ def right : Tree α → Tree α
 -- Notation for making a node with `Unit` data
 scoped infixr:65 " △ " => Tree.node ()
 
--- porting note: workaround for leanprover/lean4#2049
+-- Porting note: workaround for leanprover/lean4#2049
 compile_inductive% Tree
 
 @[elab_as_elim]

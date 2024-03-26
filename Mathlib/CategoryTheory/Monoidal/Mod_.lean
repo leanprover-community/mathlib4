@@ -17,15 +17,14 @@ universe v₁ v₂ u₁ u₂
 open CategoryTheory MonoidalCategory
 
 variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
-
 variable {C}
 
 /-- A module object for a monoid object, all internal to some monoidal category. -/
 structure Mod_ (A : Mon_ C) where
   X : C
   act : A.X ⊗ X ⟶ X
-  one_act : (A.one ⊗ 𝟙 X) ≫ act = (λ_ X).hom := by aesop_cat
-  assoc : (A.mul ⊗ 𝟙 X) ≫ act = (α_ A.X A.X X).hom ≫ (𝟙 A.X ⊗ act) ≫ act := by aesop_cat
+  one_act : (A.one ▷ X) ≫ act = (λ_ X).hom := by aesop_cat
+  assoc : (A.mul ▷ X) ≫ act = (α_ A.X A.X X).hom ≫ (A.X ◁ act) ≫ act := by aesop_cat
 set_option linter.uppercaseLean3 false in
 #align Mod_ Mod_
 
@@ -36,7 +35,7 @@ namespace Mod_
 variable {A : Mon_ C} (M : Mod_ A)
 
 theorem assoc_flip :
-    (𝟙 A.X ⊗ M.act) ≫ M.act = (α_ A.X A.X M.X).inv ≫ (A.mul ⊗ 𝟙 M.X) ≫ M.act := by simp
+    (A.X ◁ M.act) ≫ M.act = (α_ A.X A.X M.X).inv ≫ (A.mul ▷ M.X) ≫ M.act := by simp
 set_option linter.uppercaseLean3 false in
 #align Mod_.assoc_flip Mod_.assoc_flip
 
@@ -45,7 +44,7 @@ set_option linter.uppercaseLean3 false in
 @[ext]
 structure Hom (M N : Mod_ A) where
   hom : M.X ⟶ N.X
-  act_hom : M.act ≫ hom = (𝟙 A.X ⊗ hom) ≫ N.act := by aesop_cat
+  act_hom : M.act ≫ hom = (A.X ◁ hom) ≫ N.act := by aesop_cat
 set_option linter.uppercaseLean3 false in
 #align Mod_.hom Mod_.Hom
 
@@ -73,7 +72,7 @@ instance : Category (Mod_ A) where
   id := id
   comp f g := comp f g
 
--- porting note: added because `Hom.ext` is not triggered automatically
+-- Porting note: added because `Hom.ext` is not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {M N : Mod_ A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f₁ = f₂ :=
@@ -121,26 +120,26 @@ between the categories of module objects.
 def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
   obj M :=
     { X := M.X
-      act := (f.hom ⊗ 𝟙 M.X) ≫ M.act
+      act := (f.hom ▷ M.X) ≫ M.act
       one_act := by
-        slice_lhs 1 2 => rw [← comp_tensor_id]
+        slice_lhs 1 2 => rw [← comp_whiskerRight]
         rw [f.one_hom, one_act]
       assoc := by
         -- oh, for homotopy.io in a widget!
-        slice_rhs 2 3 => rw [id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
-        rw [id_tensor_comp]
+        slice_rhs 2 3 => rw [whisker_exchange]
+        simp only [whiskerRight_tensor, MonoidalCategory.whiskerLeft_comp, Category.assoc,
+          Iso.hom_inv_id_assoc]
         slice_rhs 4 5 => rw [Mod_.assoc_flip]
-        slice_rhs 3 4 => rw [associator_inv_naturality]
-        slice_rhs 2 3 => rw [← tensor_id, associator_inv_naturality]
-        slice_rhs 1 3 => rw [Iso.hom_inv_id_assoc]
-        slice_rhs 1 2 => rw [← comp_tensor_id, tensor_id_comp_id_tensor]
-        slice_rhs 1 2 => rw [← comp_tensor_id, ← f.mul_hom]
-        rw [comp_tensor_id, Category.assoc] }
+        slice_rhs 3 4 => rw [associator_inv_naturality_middle]
+        slice_rhs 2 4 => rw [Iso.hom_inv_id_assoc]
+        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← whisker_exchange]
+        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← tensorHom_def', ← f.mul_hom]
+        rw [comp_whiskerRight, Category.assoc] }
   map g :=
     { hom := g.hom
       act_hom := by
         dsimp
-        slice_rhs 1 2 => rw [id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
+        slice_rhs 1 2 => rw [whisker_exchange]
         slice_rhs 2 3 => rw [← g.act_hom]
         rw [Category.assoc] }
 set_option linter.uppercaseLean3 false in

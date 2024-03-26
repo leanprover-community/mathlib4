@@ -39,7 +39,7 @@ theorem contDiffOn_clm_apply {n : ℕ∞} {f : E → F →L[𝕜] G} {s : Set E}
   have hd : d = finrank 𝕜 (Fin d → 𝕜) := (finrank_fin_fun 𝕜).symm
   let e₁ := ContinuousLinearEquiv.ofFinrankEq hd
   let e₂ := (e₁.arrowCongr (1 : G ≃L[𝕜] G)).trans (ContinuousLinearEquiv.piRing (Fin d))
-  rw [← comp.left_id f, ← e₂.symm_comp_self]
+  rw [← id_comp f, ← e₂.symm_comp_self]
   exact e₂.symm.contDiff.comp_contDiffOn (contDiffOn_pi.mpr fun i => h _)
 #align cont_diff_on_clm_apply contDiffOn_clm_apply
 
