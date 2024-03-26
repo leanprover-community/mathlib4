@@ -43,7 +43,7 @@ lemma π_liftedConeElement' (i : I) :
     limit.π ((F ⋙ π A) ⋙ A) i (liftedConeElement' F) = (F.obj i).2 :=
   Types.Limit.π_mk _ _ _ _
 
-/-- (implementation) A system `(Fi, fi)_i` of elements induces an element in `A(lim_i Fi)`.-/
+/-- (implementation) A system `(Fi, fi)_i` of elements induces an element in `A(lim_i Fi)`. -/
 noncomputable def liftedConeElement : A.obj (limit (F ⋙ π A)) :=
   (preservesLimitIso A (F ⋙ π A)).inv (liftedConeElement' F)
 
