@@ -143,7 +143,8 @@ theorem eq_of_suffix_of_length_eq (h : l₁ <:+ l₂) : l₁.length = l₂.lengt
 #align list.mem_of_mem_drop List.mem_of_mem_drop
 
 lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
-  calc l.dropSlice n m = take n l ++ drop m (drop n l) := by rw [dropSlice_eq, drop_drop, add_comm]
+  calc
+    l.dropSlice n m = take n l ++ drop m (drop n l) := by rw [dropSlice_eq, drop_drop, Nat.add_comm]
   _ <+ take n l ++ drop n l := (Sublist.refl _).append (drop_sublist _ _)
   _ = _ := take_append_drop _ _
 #align list.slice_sublist List.dropSlice_sublist

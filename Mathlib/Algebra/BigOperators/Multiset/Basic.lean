@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.BigOperators.Basic
+import Mathlib.Algebra.Group.Hom.Basic
+import Mathlib.Algebra.GroupPower.Hom
 import Mathlib.Data.Multiset.Basic
 
 #align_import algebra.big_operators.multiset.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
@@ -148,6 +150,12 @@ theorem prod_eq_pow_single [DecidableEq α] (a : α) (h : ∀ a' ≠ a, a' ∈ s
 #align multiset.sum_eq_nsmul_single Multiset.sum_eq_nsmul_single
 
 @[to_additive]
+lemma prod_eq_one (h : ∀ x ∈ s, x = (1 : α)) : s.prod = 1 := by
+  induction' s using Quotient.inductionOn with l; simp [List.prod_eq_one h]
+#align multiset.prod_eq_one Multiset.prod_eq_one
+#align multiset.sum_eq_zero Multiset.sum_eq_zero
+
+@[to_additive]
 theorem pow_count [DecidableEq α] (a : α) : a ^ s.count a = (s.filter (Eq a)).prod := by
   rw [filter_eq, prod_replicate]
 #align multiset.pow_count Multiset.pow_count
@@ -199,12 +207,6 @@ theorem prod_map_mul : (m.map fun i => f i * g i).prod = (m.map f).prod * (m.map
   m.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 #align multiset.prod_map_mul Multiset.prod_map_mul
 #align multiset.sum_map_add Multiset.sum_map_add
-
-@[simp]
-theorem prod_map_neg [HasDistribNeg α] (s : Multiset α) :
-    (s.map Neg.neg).prod = (-1) ^ card s * s.prod :=
-  Quotient.inductionOn s (by simp)
-#align multiset.prod_map_neg Multiset.prod_map_neg
 
 @[to_additive]
 theorem prod_map_pow {n : ℕ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n :=
@@ -275,30 +277,6 @@ theorem coe_sumAddMonoidHom : (sumAddMonoidHom : Multiset α → α) = sum :=
 #align multiset.coe_sum_add_monoid_hom Multiset.coe_sumAddMonoidHom
 
 end AddCommMonoid
-
-section CommMonoidWithZero
-
-variable [CommMonoidWithZero α]
-
-theorem prod_eq_zero {s : Multiset α} (h : (0 : α) ∈ s) : s.prod = 0 := by
-  rcases Multiset.exists_cons_of_mem h with ⟨s', hs'⟩
-  simp [hs', Multiset.prod_cons]
-#align multiset.prod_eq_zero Multiset.prod_eq_zero
-
-variable [NoZeroDivisors α] [Nontrivial α] {s : Multiset α}
-
-@[simp]
-theorem prod_eq_zero_iff : s.prod = 0 ↔ (0 : α) ∈ s :=
-  Quotient.inductionOn s fun l => by
-    rw [quot_mk_to_coe, prod_coe]
-    exact List.prod_eq_zero_iff
-#align multiset.prod_eq_zero_iff Multiset.prod_eq_zero_iff
-
-theorem prod_ne_zero (h : (0 : α) ∉ s) : s.prod ≠ 0 :=
-  mt prod_eq_zero_iff.1 h
-#align multiset.prod_ne_zero Multiset.prod_ne_zero
-
-end CommMonoidWithZero
 
 section DivisionCommMonoid
 
@@ -460,15 +438,6 @@ theorem prod_nonneg [OrderedCommSemiring α] {m : Multiset α} (h : ∀ a ∈ m,
   rw [prod_cons]
   exact mul_nonneg (ih _ <| mem_cons_self _ _) (hs fun a ha => ih _ <| mem_cons_of_mem ha)
 #align multiset.prod_nonneg Multiset.prod_nonneg
-
-/-- Slightly more general version of `Multiset.prod_eq_one_iff` for a non-ordered `Monoid` -/
-@[to_additive
-      "Slightly more general version of `Multiset.sum_eq_zero_iff` for a non-ordered `AddMonoid`"]
-theorem prod_eq_one [CommMonoid α] {m : Multiset α} (h : ∀ x ∈ m, x = (1 : α)) : m.prod = 1 := by
-  induction' m using Quotient.inductionOn with l
-  simp [List.prod_eq_one h]
-#align multiset.prod_eq_one Multiset.prod_eq_one
-#align multiset.sum_eq_zero Multiset.sum_eq_zero
 
 @[to_additive]
 theorem le_prod_of_mem [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α} (h : a ∈ m) :
