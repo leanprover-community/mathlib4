@@ -377,7 +377,7 @@ theorem tails_cons (a : α) (l : List α) : tails (a :: l) = (a :: l) :: l.tails
 @[simp]
 theorem inits_append : ∀ s t : List α, inits (s ++ t) = s.inits ++ t.inits.tail.map fun l => s ++ l
   | [], [] => by simp
-  | [], a :: t => by simp[· ∘ ·]
+  | [], a :: t => by simp [· ∘ ·]
   | a :: s, t => by simp [inits_append s t, · ∘ ·]
 #align list.inits_append List.inits_append
 
@@ -440,7 +440,7 @@ theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
   induction' l with x l IH generalizing n
   · simp
   · cases n
-    · simp[nthLe_cons]
+    · simp [nthLe_cons]
     · simpa[nthLe_cons] using IH _ _
 #align list.nth_le_tails List.nth_le_tails
 
@@ -450,7 +450,7 @@ theorem nth_le_inits (l : List α) (n : ℕ) (hn : n < length (inits l)) :
   induction' l with x l IH generalizing n
   · simp
   · cases n
-    · simp[nthLe_cons]
+    · simp [nthLe_cons]
     · simpa[nthLe_cons] using IH _ _
 #align list.nth_le_inits List.nth_le_inits
 end deprecated
