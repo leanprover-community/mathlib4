@@ -70,6 +70,18 @@ theorem infix_rfl : l <:+: l :=
 theorem prefix_concat (a : α) (l) : l <+: concat l a := by simp
 #align list.prefix_concat List.prefix_concat
 
+theorem prefix_concat_iff {x y : List α} {a : α} : x <+: y ++ [a] ↔ x <+: y ∨ x = y ++ [a] := by
+  constructor
+  · intro ⟨z, h⟩
+    induction' z using List.reverseRecOn with z
+    · rw [List.append_nil] at h
+      exact Or.inr h
+    · rw [← List.append_assoc] at h
+      exact Or.inl ⟨z, List.append_inj_left' h rfl⟩
+  · rintro (h | rfl)
+    · exact List.IsPrefix.trans h <| List.prefix_append y [a]
+    · exact List.prefix_rfl
+
 #align list.infix_cons List.infix_cons
 #align list.infix_concat List.infix_concat
 #align list.is_prefix.trans List.IsPrefix.trans
@@ -209,6 +221,27 @@ theorem prefix_iff_eq_take : l₁ <+: l₂ ↔ l₁ = take (length l₁) l₂ :=
   ⟨fun h => append_cancel_right <| (prefix_iff_eq_append.1 h).trans (take_append_drop _ _).symm,
     fun e => e.symm ▸ take_prefix _ _⟩
 #align list.prefix_iff_eq_take List.prefix_iff_eq_take
+
+theorem prefix_take_iff {x y : List α} {n : ℕ} : x <+: y.take n ↔ x <+: y ∧ x.length ≤ n := by
+  constructor
+  · intro h
+    constructor
+    · exact List.IsPrefix.trans h <| List.take_prefix n y
+    · replace h := h.length_le
+      rw [length_take, Nat.le_min] at h
+      exact h.left
+  · intro ⟨hp, hl⟩
+    have hl' := hp.length_le
+    rw [List.prefix_iff_eq_take] at *
+    rw [hp, List.take_take]
+    simp [min_eq_left, hl, hl']
+
+theorem concat_prefix_of_length_lt {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
+    x ++ [y.get ⟨x.length, hl⟩] <+: y := by
+  use y.drop (x.length + 1)
+  nth_rw 1 [List.prefix_iff_eq_take.mp h]
+  convert List.take_append_drop (x.length + 1) y using 2
+  rw [← List.take_concat_get, List.concat_eq_append]; rfl
 
 theorem suffix_iff_eq_drop : l₁ <:+ l₂ ↔ l₁ = drop (length l₂ - length l₁) l₂ :=
   ⟨fun h => append_cancel_left <| (suffix_iff_eq_append.1 h).trans (take_append_drop _ _).symm,
@@ -377,7 +410,7 @@ theorem tails_cons (a : α) (l : List α) : tails (a :: l) = (a :: l) :: l.tails
 @[simp]
 theorem inits_append : ∀ s t : List α, inits (s ++ t) = s.inits ++ t.inits.tail.map fun l => s ++ l
   | [], [] => by simp
-  | [], a :: t => by simp[· ∘ ·]
+  | [], a :: t => by simp [· ∘ ·]
   | a :: s, t => by simp [inits_append s t, · ∘ ·]
 #align list.inits_append List.inits_append
 
@@ -440,8 +473,8 @@ theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
   induction' l with x l IH generalizing n
   · simp
   · cases n
-    · simp[nthLe_cons]
-    · simpa[nthLe_cons] using IH _ _
+    · simp [nthLe_cons]
+    · simpa [nthLe_cons] using IH _ _
 #align list.nth_le_tails List.nth_le_tails
 
 @[simp]
@@ -450,8 +483,8 @@ theorem nth_le_inits (l : List α) (n : ℕ) (hn : n < length (inits l)) :
   induction' l with x l IH generalizing n
   · simp
   · cases n
-    · simp[nthLe_cons]
-    · simpa[nthLe_cons] using IH _ _
+    · simp [nthLe_cons]
+    · simpa [nthLe_cons] using IH _ _
 #align list.nth_le_inits List.nth_le_inits
 end deprecated
 
@@ -508,5 +541,18 @@ end Insert
 theorem mem_of_mem_suffix (hx : a ∈ l₁) (hl : l₁ <:+ l₂) : a ∈ l₂ :=
   hl.subset hx
 #align list.mem_of_mem_suffix List.mem_of_mem_suffix
+
+theorem ne_nil_prefix {x y : List α} (hx : x ≠ []) (h : x <+: y) : y ≠ [] := by
+  rintro rfl; exact hx <| List.prefix_nil.mp h
+
+theorem get_eq_prefix {x y : List α} {n} (hn : n < x.length) (h : x <+: y) :
+    x.get ⟨n, hn⟩ = y.get ⟨n, by replace h := h.length_le; omega⟩ := by
+  obtain ⟨_, rfl⟩ := h
+  exact (List.get_append n hn).symm
+
+theorem head_eq_prefix {x y : List α} (hx : x ≠ []) (h : x <+: y) :
+    x.head hx = y.head (ne_nil_prefix hx h) := by
+  cases x <;> cases y <;> simp only [head_cons, ne_eq, not_true_eq_false] at hx ⊢
+  all_goals (obtain ⟨_, h⟩ := h; injection h)
 
 end List
