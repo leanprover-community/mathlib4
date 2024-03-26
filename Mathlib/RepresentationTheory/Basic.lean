@@ -30,7 +30,12 @@ representations.
 ## Implementation notes
 
 Representations of a monoid `G` on a `k`-module `V` are implemented as
-homomorphisms `G →* (V →ₗ[k] V)`.
+homomorphisms `G →* (V →ₗ[k] V)`. We use the abbreviation `Representation` for this hom space.
+
+The theorem `asAlgebraHom_def` constructs a module over the group `k`-algebra of `G` (implemented
+as `MonoidAlgebra k G`) corresponding to a representation. If `ρ : Representation k G V`, this
+module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G-module `M`
+`M.ofModule` is the associociated representation seen as a homomorphism.
 -/
 
 
