@@ -133,19 +133,19 @@ lemma map_hom_inv_id_eval (e : X ≅ Y) (F : C ⥤ D) (j : J) :
     GradedObject.categoryOfGradedObjects_id, Functor.map_id]
 
 @[reassoc (attr := simp)]
-lemma map_inv_hom_id_apply (e : X ≅ Y) (F : C ⥤ D) (j : J) :
+lemma map_inv_hom_id_eval (e : X ≅ Y) (F : C ⥤ D) (j : J) :
     F.map (e.inv j) ≫ F.map (e.hom j) = 𝟙 _ := by
   rw [← F.map_comp, ← GradedObject.categoryOfGradedObjects_comp, e.inv_hom_id,
     GradedObject.categoryOfGradedObjects_id, Functor.map_id]
 
 @[reassoc (attr := simp)]
-lemma map_hom_inv_id_app_apply (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
+lemma map_hom_inv_id_eval_app (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
     (F.map (e.hom j)).app Y ≫ (F.map (e.inv j)).app Y = 𝟙 _ := by
   rw [← NatTrans.comp_app, ← F.map_comp, hom_inv_id_eval,
     Functor.map_id, NatTrans.id_app]
 
 @[reassoc (attr := simp)]
-lemma map_inv_hom_id_app_apply (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
+lemma map_inv_hom_id_eval_app (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
     (F.map (e.inv j)).app Y ≫ (F.map (e.hom j)).app Y = 𝟙 _ := by
   rw [← NatTrans.comp_app, ← F.map_comp, inv_hom_id_eval,
     Functor.map_id, NatTrans.id_app]
