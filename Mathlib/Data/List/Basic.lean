@@ -772,7 +772,7 @@ theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?)
 /-! ### head(!?) and tail -/
 
 @[simp]
-theorem head!_nil : List.head! [] = 0 := rfl
+theorem head!_nil : ([] : List α).head! = default := rfl
 
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
 #align list.head_eq_head' List.head!_eq_head?
