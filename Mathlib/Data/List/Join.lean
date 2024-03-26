@@ -159,28 +159,8 @@ theorem sum_take_map_length_lt1 (L : List (List α)) {i j : ℕ} (hi : i < L.len
   simp [hi, sum_take_succ, hj]
 #align list.sum_take_map_length_lt1 List.sum_take_map_length_lt1
 
-set_option linter.deprecated false in
-/-- Auxiliary lemma to control elements in a join. -/
-@[deprecated]
-theorem sum_take_map_length_lt2 (L : List (List α)) {i j : ℕ} (hi : i < L.length)
-    (hj : j < (nthLe L i hi).length) : ((L.map length).take i).sum + j < L.join.length := by
-  convert lt_of_lt_of_le (sum_take_map_length_lt1 L hi hj) (monotone_sum_take _ hi)
-  have : L.length = (L.map length).length := by simp
-  simp [this, -length_map]
-#align list.sum_take_map_length_lt2 List.sum_take_map_length_lt2
-
-set_option linter.deprecated false in
-/-- The `n`-th element in a join of sublists is the `j`-th element of the `i`th sublist,
-where `n` can be obtained in terms of `i` and `j` by adding the lengths of all the sublists
-of index `< i`, and adding `j`. -/
-@[deprecated]
-theorem nthLe_join (L : List (List α)) {i j : ℕ} (hi : i < L.length)
-    (hj : j < (nthLe L i hi).length) :
-    nthLe L.join (((L.map length).take i).sum + j) (sum_take_map_length_lt2 L hi hj) =
-      nthLe (nthLe L i hi) j hj := by
-  have := nthLe_take L.join (sum_take_map_length_lt2 L hi hj) (sum_take_map_length_lt1 L hi hj)
-  rw [this, nthLe_drop, nthLe_of_eq (drop_take_succ_join_eq_nthLe L hi)]
-#align list.nth_le_join List.nthLe_join
+#noalign list.sum_take_map_length_lt2
+#noalign list.nth_le_join
 
 /-- Two lists of sublists are equal iff their joins coincide, as well as the lengths of the
 sublists. -/
