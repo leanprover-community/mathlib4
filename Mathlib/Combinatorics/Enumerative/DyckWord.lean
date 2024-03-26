@@ -3,6 +3,7 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
+import Mathlib.Algebra.Parity
 import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.Data.List.Indexes
 
@@ -101,12 +102,13 @@ lemma IsBalanced.append {q : DyckPath} (bq : q.IsBalanced) : (p ++ q).IsBalanced
 /-- If `x` is a balanced Dyck path then so is `(x)`. -/
 lemma IsBalanced.nest : (↑[U] ++ p ++ ↑[D]).IsBalanced := by
   simp only [IsBalanced, take_append_eq_append_take, count_append]
-  refine' ⟨by rw [bp.1]; omega, fun i ↦ _⟩
+  refine' ⟨by rw [bp.1]; simp [add_comm], fun i ↦ _⟩
   rw [← add_rotate (count D _), ← add_rotate (count U _)]
   apply add_le_add _ (bp.2 _)
   cases' i.eq_zero_or_pos with hi hi; · simp [hi]
   simp_rw [take_all_of_le (show [U].length ≤ i by rwa [length_singleton]),
-    count_singleton', ite_true, ite_false, add_comm _ 0]
+    count_singleton', ite_true, ite_false]
+  rw [add_comm _ 0]
   exact add_le_add (zero_le _) ((count_le_length _ _).trans (by simp))
 
 /-- A balanced Dyck path is split into two parts. If one part is balanced, so is the other. -/
@@ -307,7 +309,7 @@ def treeEquivToFun (st : { p : DyckPath // p.IsBalanced }) : Tree Unit :=
     have := rightPart_length_lt bp e
     exact treeEquivToFun ⟨_, leftPart_isBalanced bp e⟩ △
       treeEquivToFun ⟨_, rightPart_isBalanced bp e⟩
-termination_by _ => st.1.length
+termination_by st.1.length
 
 /-- Convert a binary rooted tree to a Dyck path (that it is balanced is shown in
 `isBalanced_treeEquivInvFun'`). -/
