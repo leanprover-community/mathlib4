@@ -176,7 +176,7 @@ theorem prod_le_univ_prod_of_one_le' [Fintype ι] {s : Finset ι} (w : ∀ x, 1 
 #align finset.prod_le_univ_prod_of_one_le' Finset.prod_le_univ_prod_of_one_le'
 #align finset.sum_le_univ_sum_of_nonneg Finset.sum_le_univ_sum_of_nonneg
 
--- Porting Note: TODO -- The two next lemmas give the same lemma in additive version
+-- Porting note (#11215): TODO -- The two next lemmas give the same lemma in additive version
 @[to_additive sum_eq_zero_iff_of_nonneg]
 theorem prod_eq_one_iff_of_one_le' :
     (∀ i ∈ s, 1 ≤ f i) → ((∏ i in s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) := by
@@ -399,6 +399,16 @@ section CanonicallyOrderedCommMonoid
 
 variable [CanonicallyOrderedCommMonoid M] {f : ι → M} {s t : Finset ι}
 
+/-- In a canonically-ordered monoid, a product bounds each of its terms.
+
+See also `Finset.single_le_prod'`.-/
+@[to_additive "In a canonically-ordered additive monoid, a sum bounds each of its terms.
+
+See also `Finset.single_le_sum`."]
+lemma _root_.CanonicallyOrderedCommMonoid.single_le_prod {i : ι} (hi : i ∈ s) :
+    f i ≤ ∏ j in s, f j :=
+  single_le_prod' (fun _ _ ↦ one_le _) hi
+
 @[to_additive (attr := simp) sum_eq_zero_iff]
 theorem prod_eq_one_iff' : ∏ x in s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
   prod_eq_one_iff_of_one_le' fun x _ ↦ one_le (f x)
@@ -471,7 +481,7 @@ This is a variant (beta-reduced) version of the standard lemma `Finset.sum_lt_su
 convenient for the `gcongr` tactic. -/
 add_decl_doc GCongr.sum_lt_sum_of_nonempty
 
--- Porting note: TODO -- calc indentation
+-- Porting note (#11215): TODO -- calc indentation
 @[to_additive sum_lt_sum_of_subset]
 theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i ∉ s) (hlt : 1 < f i)
     (hle : ∀ j ∈ t, j ∉ s → 1 ≤ f j) : ∏ j in s, f j < ∏ j in t, f j := by
@@ -754,9 +764,9 @@ theorem prod_mono' : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
 #align fintype.sum_mono Fintype.sum_mono
 
 @[to_additive sum_nonneg]
-lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' λ _ _ ↦ hf _
+lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' fun _ _ ↦ hf _
 
-@[to_additive] lemma prod_le_one (hf : f ≤ 1) : ∏ i, f i ≤ 1 := Finset.prod_le_one' λ _ _ ↦ hf _
+@[to_additive] lemma prod_le_one (hf : f ≤ 1) : ∏ i, f i ≤ 1 := Finset.prod_le_one' fun _ _ ↦ hf _
 
 @[to_additive]
 lemma prod_eq_one_iff_of_one_le (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
@@ -781,11 +791,11 @@ theorem prod_strictMono' : StrictMono fun f : ι → M ↦ ∏ x, f x :=
 
 @[to_additive sum_pos]
 lemma one_lt_prod (hf : 1 < f) : 1 < ∏ i, f i :=
-  Finset.one_lt_prod' (λ _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
+  Finset.one_lt_prod' (fun _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
 
 @[to_additive]
 lemma prod_lt_one (hf : f < 1) : ∏ i, f i < 1 :=
-  Finset.prod_lt_one' (λ _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
+  Finset.prod_lt_one' (fun _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
 
 @[to_additive sum_pos_iff_of_nonneg]
 lemma one_lt_prod_iff_of_one_le (hf : 1 ≤ f) : 1 < ∏ i, f i ↔ 1 < f := by
@@ -844,7 +854,7 @@ because `compareHyp` can't look for assumptions behind binders.
 @[positivity Finset.sum _ _]
 def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
   match e with
-  | ~q(@Finset.sum _ $ι $instα $s $f) =>
+  | ~q(@Finset.sum $ι _ $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := .betaRev f #[i]
     let rbody ← core zα pα body

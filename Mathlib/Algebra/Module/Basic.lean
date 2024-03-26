@@ -124,7 +124,9 @@ protected def Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : 
     zero_smul := fun x => hf <| by simp only [smul, zero_smul, f.map_zero] }
 #align function.injective.module Function.Injective.module
 
-/-- Pushforward a `Module` structure along a surjective additive monoid homomorphism. -/
+/-- Pushforward a `Module` structure along a surjective additive monoid homomorphism.
+See note [reducible non-instances]. -/
+@[reducible]
 protected def Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f : M →+ M₂)
     (hf : Surjective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { toDistribMulAction := hf.distribMulAction f smul
@@ -201,7 +203,7 @@ theorem Module.eq_zero_of_zero_eq_one (zero_eq_one : (0 : R) = 1) : x = 0 := by
 
 @[simp]
 theorem smul_add_one_sub_smul {R : Type*} [Ring R] [Module R M] {r : R} {m : M} :
-    r • m + (1 - r) • m = m := by rw [← add_smul, add_sub_cancel'_right, one_smul]
+    r • m + (1 - r) • m = m := by rw [← add_smul, add_sub_cancel, one_smul]
 #align smul_add_one_sub_smul smul_add_one_sub_smul
 
 end AddCommMonoid

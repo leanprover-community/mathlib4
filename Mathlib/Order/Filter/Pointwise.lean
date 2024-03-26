@@ -167,7 +167,8 @@ theorem pureOneHom_apply (a : α) : pureOneHom a = pure a :=
 
 variable [One β]
 
-@[to_additive] -- Porting note: removed `simp` attribute because `simpNF` says it can prove it.
+@[to_additive]
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 protected theorem map_one [FunLike F α β] [OneHomClass F α β] (φ : F) : map φ 1 = 1 := by
   rw [Filter.map_one', map_one, pure_one]
 #align filter.map_one Filter.map_one
@@ -375,7 +376,8 @@ theorem mul_pure : f * pure b = f.map (· * b) :=
 #align filter.mul_pure Filter.mul_pure
 #align filter.add_pure Filter.add_pure
 
-@[to_additive] -- Porting note: removed `simp` attribute because `simpNF` says it can prove it.
+@[to_additive]
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_mul_pure : (pure a : Filter α) * pure b = pure (a * b) :=
   map₂_pure
 #align filter.pure_mul_pure Filter.pure_mul_pure
@@ -521,7 +523,8 @@ theorem div_pure : f / pure b = f.map (· / b) :=
 #align filter.div_pure Filter.div_pure
 #align filter.sub_pure Filter.sub_pure
 
-@[to_additive] -- Porting note: removed `simp` attribute because `simpNF` says it can prove it.
+@[to_additive]
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_div_pure : (pure a : Filter α) / pure b = pure (a / b) :=
   map₂_pure
 #align filter.pure_div_pure Filter.pure_div_pure
@@ -1051,7 +1054,8 @@ theorem smul_pure : f • pure b = f.map (· • b) :=
 #align filter.smul_pure Filter.smul_pure
 #align filter.vadd_pure Filter.vadd_pure
 
-@[to_additive] -- Porting note: removed `simp` attribute because `simpNF` says it can prove it.
+@[to_additive]
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_smul_pure : (pure a : Filter α) • (pure b : Filter β) = pure (a • b) :=
   map₂_pure
 #align filter.pure_smul_pure Filter.pure_smul_pure
@@ -1164,7 +1168,7 @@ theorem vsub_pure : f -ᵥ pure b = f.map (· -ᵥ b) :=
   map₂_pure_right
 #align filter.vsub_pure Filter.vsub_pure
 
--- Porting note: removed `simp` attribute because `simpNF` says it can prove it.
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_vsub_pure : (pure a : Filter β) -ᵥ pure b = (pure (a -ᵥ b) : Filter α) :=
   map₂_pure
 #align filter.pure_vsub_pure Filter.pure_vsub_pure

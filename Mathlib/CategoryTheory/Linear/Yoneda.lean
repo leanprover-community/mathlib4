@@ -28,7 +28,6 @@ open Opposite
 namespace CategoryTheory
 
 variable (R : Type w) [Ring R] {C : Type u} [Category.{v} C] [Preadditive C] [Linear R C]
-
 variable (C)
 
 -- Porting note: inserted specific `ModuleCat.ofHom` in the definition of `linearYoneda`

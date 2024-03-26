@@ -44,9 +44,7 @@ open scoped Matrix
 section CommRing
 
 variable [Fintype l] [Fintype m] [Fintype n]
-
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n]
-
 variable [CommRing α]
 
 /-- LDU decomposition of a block matrix with an invertible top-left corner, using the
@@ -58,7 +56,7 @@ theorem fromBlocks_eq_of_invertible₁₁ (A : Matrix m m α) (B : Matrix m n α
         fromBlocks 1 (⅟ A * B) 0 1 := by
   simp only [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, add_zero, zero_add,
     Matrix.one_mul, Matrix.mul_one, invOf_mul_self, Matrix.mul_invOf_self_assoc,
-    Matrix.mul_invOf_mul_self_cancel, Matrix.mul_assoc, add_sub_cancel'_right]
+    Matrix.mul_invOf_mul_self_cancel, Matrix.mul_assoc, add_sub_cancel]
 #align matrix.from_blocks_eq_of_invertible₁₁ Matrix.fromBlocks_eq_of_invertible₁₁
 
 /-- LDU decomposition of a block matrix with an invertible bottom-right corner, using the
@@ -556,9 +554,7 @@ theorem PosSemidef.fromBlocks₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A :
   rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
   convert PosSemidef.fromBlocks₁₁ Bᴴ A hD <;>
-    first
-    | infer_instance
-    | simp
+    simp
 #align matrix.pos_semidef.from_blocks₂₂ Matrix.PosSemidef.fromBlocks₂₂
 
 end StarOrderedRing
