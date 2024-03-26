@@ -39,14 +39,17 @@ class IsId {M : Type*} (σ : M → M) : Prop where
 instance {M : Type*} : IsId (@id M) where
   eq_id := rfl
 
+/-- Trivial CompTriple when the first map is id -/
 instance instComp_id {N P : Type*} {φ : N → N} [IsId φ] {ψ : N → P} :
     CompTriple φ ψ ψ where
   comp_eq := by simp only [IsId.eq_id, Function.comp_id]
 
+/-- Trivial CompTriple when the second map is id -/
 instance instId_comp {M N : Type*} {φ : M → N} {ψ : N → N} [IsId ψ] :
     CompTriple φ ψ φ where
   comp_eq := by simp only [IsId.eq_id, Function.id_comp]
 
+/-- This instance has a very low priority because it misses any possible simplification. -/
 instance (priority := 10) instComp {M N P : Type*}
     {φ : M → N} {ψ : N → P} :
     CompTriple φ ψ (ψ.comp φ) where
@@ -57,8 +60,9 @@ lemma comp_inv {M N : Type*} {φ : M → N} {ψ : N → M}
     CompTriple φ ψ χ where
   comp_eq := by simp only [IsId.eq_id, h.id]
 
+@[simp]
 lemma comp_apply {M N P : Type*}
-    {φ : M → N} {ψ : N → P} {χ : M → P} (h : CompTriple φ ψ χ) (x : M) :
+    {φ : M → N} {ψ : N → P} {χ : M → P} [h : CompTriple φ ψ χ] (x : M) :
     ψ (φ x) = χ x := by
   rw [← h.comp_eq, Function.comp_apply]
 

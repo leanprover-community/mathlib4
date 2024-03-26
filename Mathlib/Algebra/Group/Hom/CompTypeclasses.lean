@@ -61,11 +61,13 @@ instance instIsId {M : Type*} [Monoid M] : IsId (MonoidHom.id M) where
 instance {σ : M →* M} [h : _root_.CompTriple.IsId σ] : IsId σ  where
   eq_id := by ext; exact _root_.congr_fun h.eq_id _
 
+/-- Trivial CompTriple when the first map is id -/
 instance instComp_id {N P : Type*} [Monoid N] [Monoid P]
     {φ : N →* N} [IsId φ] {ψ : N →* P} :
     CompTriple φ ψ ψ where
   comp_eq := by simp only [IsId.eq_id, MonoidHom.comp_id]
 
+/-- Trivial CompTriple when the second map is id -/
 instance instId_comp {M N : Type*} [Monoid M] [Monoid N]
     {φ : M →* N} {ψ : N →* N} [IsId ψ] :
     CompTriple φ ψ φ where
@@ -82,12 +84,14 @@ instance instRootCompTriple {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ
     _root_.CompTriple φ ψ χ where
   comp_eq := by rw [← MonoidHom.coe_comp, κ.comp_eq]
 
+/-- This instance has a low priority because it misses any possible simplification. -/
 instance (priority := 10) instComp {φ : M →* N} {ψ : N →* P} :
     CompTriple φ ψ (ψ.comp φ) where
   comp_eq := rfl
 
+@[simp]
 lemma comp_apply
-    {φ : M →* N} {ψ : N →* P} {χ : M →* P} (h : CompTriple φ ψ χ) (x : M) :
+    {φ : M →* N} {ψ : N →* P} {χ : M →* P} [h : CompTriple φ ψ χ] (x : M) :
     ψ (φ x) = χ x := by
   rw [← h.comp_eq, MonoidHom.comp_apply]
 
@@ -95,7 +99,7 @@ lemma comp_apply
 theorem comp_assoc {Q : Type*} [Monoid Q]
     {φ₁ : M →* N} {φ₂ : N →* P} {φ₁₂ : M →* P}
     (κ : CompTriple φ₁ φ₂ φ₁₂)
-    {φ₃ : P →* Q} {φ₂₃ : N →* Q} (κ' : CompTriple φ₂ φ₃ φ₂₃)
+    {φ₃ : P →* Q} {φ₂₃ : N →* Q} [κ' : CompTriple φ₂ φ₃ φ₂₃]
     {φ₁₂₃ : M →* Q} :
     CompTriple φ₁ φ₂₃ φ₁₂₃ ↔ CompTriple φ₁₂ φ₃ φ₁₂₃ := by
   constructor <;>
