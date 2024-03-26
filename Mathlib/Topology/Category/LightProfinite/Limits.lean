@@ -171,13 +171,13 @@ lemma finiteCoproduct.hom_ext {B : LightProfinite.{u}} (f g : finiteCoproduct X 
 
 /-- The coproduct cocone associated to the explicit finite coproduct. -/
 @[simps]
-noncomputable def finiteCoproduct.cocone : Limits.Cocone (Discrete.functor X) where
+noncomputable def finiteCoproduct.cofan : Limits.Cofan X where
   pt := finiteCoproduct X
   ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
 
 /-- The explicit finite coproduct cocone is a colimit cocone. -/
 @[simps]
-def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cocone X) where
+def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cofan X) where
   desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
   fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
   uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
@@ -192,12 +192,10 @@ section HasPreserves
 
 instance (n : ℕ) (F : Discrete (Fin n) ⥤ LightProfinite) :
     HasColimit (Discrete.functor (F.obj ∘ Discrete.mk) : Discrete (Fin n) ⥤ LightProfinite) where
-  exists_colimit := ⟨⟨finiteCoproduct.cocone _, finiteCoproduct.isColimit _⟩⟩
+  exists_colimit := ⟨⟨finiteCoproduct.cofan _, finiteCoproduct.isColimit _⟩⟩
 
 instance : HasFiniteCoproducts LightProfinite where
-  out _ := {
-    has_colimit := fun _ ↦ hasColimitOfIso Discrete.natIsoFunctor
-  }
+  out _ := { has_colimit := fun _ ↦ hasColimitOfIso Discrete.natIsoFunctor }
 
 instance {X Y B : LightProfinite} (f : X ⟶ B) (g : Y ⟶ B) : HasLimit (cospan f g) where
   exists_limit := ⟨⟨pullback.cone f g, pullback.isLimit f g⟩⟩

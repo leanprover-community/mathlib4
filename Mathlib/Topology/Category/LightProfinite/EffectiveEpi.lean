@@ -101,6 +101,7 @@ instance : Preregular LightProfinite where
 instance : FinitaryExtensive LightProfinite :=
   finitaryExtensive_of_preserves_and_reflects lightToProfinite
 
-example : Precoherent LightProfinite := inferInstance
+-- Was an `example`, but that made the linter complain about unused imports
+instance : Precoherent LightProfinite := inferInstance
 
 end LightProfinite
