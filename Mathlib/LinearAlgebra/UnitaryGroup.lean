@@ -55,7 +55,7 @@ variable (α : Type v) [CommRing α] [StarRing α]
 inverse.
 -/
 abbrev unitaryGroup :=
-  unitxary (Matrix n n α)
+  unitary (Matrix n n α)
 #align matrix.unitary_group Matrix.unitaryGroup
 
 end
