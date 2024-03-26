@@ -23,25 +23,12 @@ open Limits
 variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
   [F.EffectivelyEnough]
 
-namespace Functor
-
-lemma isCoverDense_of_generate_singleton_functor_π_mem (K : GrothendieckTopology D)
-    (h : ∀ B, Sieve.generate (Presieve.singleton (F.effectiveEpiOver B)) ∈ K B) :
-    F.IsCoverDense K where
-  is_cover B := by
-    refine K.superset_covering ?_ (h B)
-    intro Y f ⟨Z, g, _, h, w⟩
-    cases h
-    exact ⟨⟨_, g, F.effectiveEpiOver B, w⟩⟩
-
-end Functor
-
 namespace coherentTopology
 
 variable [Precoherent D]
 
-lemma generate_singleton_functor_π_mem (B : D) :
-    Sieve.generate (Presieve.singleton (F.effectiveEpiOver B)) ∈ coherentTopology D B := by
+instance : F.IsCoverDense (coherentTopology _) := by
+  refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.saturate.of
   refine ⟨Unit, inferInstance, fun _ => F.effectiveEpiOverObj B,
     fun _ => F.effectiveEpiOver B, ?_ , ?_⟩
@@ -53,17 +40,14 @@ lemma generate_singleton_functor_π_mem (B : D) :
   · rw [← effectiveEpi_iff_effectiveEpiFamily]
     infer_instance
 
-instance : F.IsCoverDense (coherentTopology _) :=
-  F.isCoverDense_of_generate_singleton_functor_π_mem _ (generate_singleton_functor_π_mem F)
-
 end coherentTopology
 
 namespace regularTopology
 
 variable [Preregular D]
 
-lemma generate_singleton_functor_π_mem (B : D) :
-    Sieve.generate (Presieve.singleton (F.effectiveEpiOver B)) ∈ regularTopology D B := by
+instance : F.IsCoverDense (regularTopology _) := by
+  refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.saturate.of
   refine ⟨F.effectiveEpiOverObj B, F.effectiveEpiOver B, ?_, inferInstance⟩
   funext X f
@@ -71,8 +55,5 @@ lemma generate_singleton_functor_π_mem (B : D) :
   refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩
   rintro ⟨⟩
   simp only [Presieve.singleton_eq_iff_domain]
-
-instance : F.IsCoverDense (regularTopology _) :=
-  F.isCoverDense_of_generate_singleton_functor_π_mem _ (generate_singleton_functor_π_mem F)
 
 end regularTopology
