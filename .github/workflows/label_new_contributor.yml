@@ -29,7 +29,7 @@ jobs:
             state: "closed",
             author
           })
-          return (prs.data.length < 10)
+          return (prs.data.length > 0)
 
     - name: Add label if new contributor
       if: steps.check-contributor.outputs.result == 'true'
