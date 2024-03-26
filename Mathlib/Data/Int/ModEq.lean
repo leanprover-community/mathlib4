@@ -77,7 +77,7 @@ theorem modEq_comm : a ≡ b [ZMOD n] ↔ b ≡ a [ZMOD n] := ⟨ModEq.symm, Mod
 
 theorem natCast_modEq_iff {a b n : ℕ} : a ≡ b [ZMOD n] ↔ a ≡ b [MOD n] := by
   unfold ModEq Nat.ModEq; rw [← Int.ofNat_inj]; simp [natCast_mod]
-#align int.natCast_modEq_iff Int.natCast_modEq_iff
+#align int.coe_nat_modeq_iff Int.natCast_modEq_iff
 
 theorem modEq_zero_iff_dvd : a ≡ 0 [ZMOD n] ↔ n ∣ a := by
   rw [ModEq, zero_emod, dvd_iff_emod_eq_zero]

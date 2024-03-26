@@ -85,10 +85,10 @@ lemma cast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n) = (m ^ n : α)
   | n + 1 => by rw [_root_.pow_succ', _root_.pow_succ', cast_mul, cast_pow m n]
 #align nat.cast_pow Nat.cast_pow
 
-lemma natCast_dvd_natCast (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
-#align nat.natCast_dvd_natCast Nat.natCast_dvd_natCast
+lemma cast_dvd_cast (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
+#align nat.coe_nat_dvd Nat.cast_dvd_cast
 
-alias _root_.Dvd.dvd.natCast := natCast_dvd_natCast
+alias _root_.Dvd.dvd.natCast := cast_dvd_cast
 
 end Semiring
 end Nat
