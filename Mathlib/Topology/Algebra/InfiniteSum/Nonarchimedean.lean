@@ -3,14 +3,11 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Group
-import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
 /-!
-# Infinite sums in nonarchimedean additive groups
+# Infinite sums in nonarchimedean abelian groups
 
 Let `G` be a complete nonarchimedean abelian group and let `f : α → G` be a function. We prove that
 `f` is unconditionally summable if and only if `f a` tends to zero on the cofinite filter on `α`.
