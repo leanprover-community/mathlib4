@@ -49,7 +49,7 @@ instance instId_comp {M N : Type*} {φ : M → N} {ψ : N → N} [IsId ψ] :
 
 instance (priority := 10) instComp {M N P : Type*}
     {φ : M → N} {ψ : N → P} :
-    CompTriple φ ψ  (ψ.comp φ) where
+    CompTriple φ ψ (ψ.comp φ) where
   comp_eq := rfl
 
 lemma comp_inv {M N : Type*} {φ : M → N} {ψ : N → M}
