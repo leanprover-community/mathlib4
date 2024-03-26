@@ -49,25 +49,6 @@ open MeasureTheory Set Filter TopologicalSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology
 
-section AuxLemmasToBeMoved
-
-variable {α β ι : Type*}
-
--- todo: find nice place for the following two theorems
-theorem notBddAbove_coe: ¬(BddAbove <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
-  dsimp only [BddAbove, upperBounds]
-  rw [Set.not_nonempty_iff_eq_empty]
-  ext
-  simpa using  exists_rat_gt _
-
-theorem notBddBelow_coe: ¬(BddBelow <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
-  dsimp only [BddBelow, lowerBounds]
-  rw [Set.not_nonempty_iff_eq_empty]
-  ext
-  simpa using exists_rat_lt _
-
-end AuxLemmasToBeMoved
-
 namespace MeasureTheory.Measure
 
 variable {α β : Type*} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
@@ -142,7 +123,7 @@ theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableS
     Tendsto (fun r : ℚ => ρ.IicSnd r s) atBot (𝓝 0) := by
   simp_rw [ρ.IicSnd_apply _ hs]
   have h_empty : ρ (s ×ˢ ∅) = 0 := by simp only [prod_empty, measure_empty]
-  rw [← h_empty, ← iInter_Iic_eq_iff.mpr notBddBelow_coe, prod_iInter]
+  rw [← h_empty, ← iInter_Iic_eq_empty_iff.mpr notBddBelow_coe, prod_iInter]
   suffices h_neg :
       Tendsto (fun r : ℚ => ρ (s ×ˢ Iic ↑(-r))) atTop (𝓝 (ρ (⋂ r : ℚ, s ×ˢ Iic ↑(-r)))) by
     have h_inter_eq : ⋂ r : ℚ, s ×ˢ Iic ↑(-r) = ⋂ r : ℚ, s ×ˢ Iic (r : ℝ) := by
