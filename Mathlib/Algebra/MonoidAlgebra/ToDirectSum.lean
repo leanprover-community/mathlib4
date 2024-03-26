@@ -139,7 +139,7 @@ theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddM
   let _ : NonUnitalNonAssocSemiring (ι →₀ M) := AddMonoidAlgebra.nonUnitalNonAssocSemiring
   revert f g
   rw [AddMonoidHom.map_mul_iff]
-  -- porting note: does not find `addHom_ext'`, was `ext (xi xv yi yv) : 4`
+  -- Porting note: does not find `addHom_ext'`, was `ext (xi xv yi yv) : 4`
   refine Finsupp.addHom_ext' fun xi => AddMonoidHom.ext fun xv => ?_
   refine Finsupp.addHom_ext' fun yi => AddMonoidHom.ext fun yv => ?_
   dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.compl₂_apply, AddMonoidHom.compr₂_apply,

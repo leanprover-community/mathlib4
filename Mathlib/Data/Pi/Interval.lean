@@ -29,7 +29,7 @@ variable [∀ i, PartialOrder (α i)]
 section LocallyFiniteOrder
 variable [∀ i, LocallyFiniteOrder (α i)]
 
-instance : LocallyFiniteOrder (∀ i, α i) :=
+instance instLocallyFiniteOrder : LocallyFiniteOrder (∀ i, α i) :=
   LocallyFiniteOrder.ofIcc _ (fun a b => piFinset fun i => Icc (a i) (b i)) fun a b x => by
     simp_rw [mem_piFinset, mem_Icc, le_def, forall_and]
 
@@ -60,8 +60,8 @@ end LocallyFiniteOrder
 section LocallyFiniteOrderBot
 variable [∀ i, LocallyFiniteOrderBot (α i)] (b : ∀ i, α i)
 
-instance : LocallyFiniteOrderBot (∀ i, α i) :=
-  LocallyFiniteOrderTop.ofIic _ (fun b => piFinset fun i => Iic (b i)) fun b x => by
+instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (∀ i, α i) :=
+  .ofIic _ (fun b => piFinset fun i => Iic (b i)) fun b x => by
     simp_rw [mem_piFinset, mem_Iic, le_def]
 
 theorem card_Iic : (Iic b).card = ∏ i, (Iic (b i)).card :=
@@ -77,7 +77,7 @@ end LocallyFiniteOrderBot
 section LocallyFiniteOrderTop
 variable [∀ i, LocallyFiniteOrderTop (α i)] (a : ∀ i, α i)
 
-instance : LocallyFiniteOrderTop (∀ i, α i) :=
+instance instLocallyFiniteOrderTop : LocallyFiniteOrderTop (∀ i, α i) :=
   LocallyFiniteOrderTop.ofIci _ (fun a => piFinset fun i => Ici (a i)) fun a x => by
     simp_rw [mem_piFinset, mem_Ici, le_def]
 

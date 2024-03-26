@@ -321,7 +321,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
         -- Porting note: this `(BinaryCofan.inl s).2` was unnecessary
         have := (BinaryCofan.inl s).2
         continuity
-      · convert f.2.1 _ openEmbedding_inl.open_range
+      · convert f.2.1 _ openEmbedding_inl.isOpen_range
         rename_i x
         exact ⟨fun h => ⟨_, h.symm⟩,
           fun ⟨e, h⟩ => h.symm.trans (congr_arg Sum.inl <| Subsingleton.elim _ _)⟩
@@ -335,7 +335,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
         -- Porting note: this `(BinaryCofan.inr s).2` was unnecessary
         have := (BinaryCofan.inr s).2
         continuity
-      · convert f.2.1 _ openEmbedding_inr.open_range
+      · convert f.2.1 _ openEmbedding_inr.isOpen_range
         rename_i x
         change f x ≠ Sum.inl PUnit.unit ↔ f x ∈ Set.range Sum.inr
         trans f x = Sum.inr PUnit.unit
@@ -491,7 +491,7 @@ theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin [FinitaryPreExtens
     {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c := by
   let f : Fin n → C := F.obj ∘ Discrete.mk
   have : F = Discrete.functor f :=
-    Functor.hext (fun _ ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp)
+    Functor.hext (fun _ ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp [f])
   clear_value f
   subst this
   induction' n with n IH
@@ -517,7 +517,7 @@ theorem FinitaryExtensive.isVanKampen_finiteCoproducts_Fin [FinitaryExtensive C]
     {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsVanKampenColimit c := by
   let f : Fin n → C := F.obj ∘ Discrete.mk
   have : F = Discrete.functor f :=
-    Functor.hext (fun _ ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp)
+    Functor.hext (fun _ ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp [f])
   clear_value f
   subst this
   induction' n with n IH
@@ -545,7 +545,7 @@ lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C]
   classical
   let f : ι → C := F.obj ∘ Discrete.mk
   have : F = Discrete.functor f :=
-    Functor.hext (fun i ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp)
+    Functor.hext (fun i ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp [f])
   clear_value f
   subst this
   change Cofan f at c
@@ -565,7 +565,7 @@ lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C]
   let e' : c.pt ≅ f i ⨿ (∐ fun j : ({i}ᶜ : Set ι) ↦ f j) :=
     hc.coconePointUniqueUpToIso (getColimitCocone _).2 ≪≫ e
   have : coprod.inl ≫ e'.inv = c.ι.app ⟨i⟩ := by
-    simp only [Iso.trans_inv, coprod.desc_comp, colimit.ι_desc, BinaryCofan.mk_pt,
+    simp only [e', Iso.trans_inv, coprod.desc_comp, colimit.ι_desc, BinaryCofan.mk_pt,
       BinaryCofan.ι_app_left, BinaryCofan.mk_inl]
     exact colimit.comp_coconePointUniqueUpToIso_inv _ _
   clear_value e'

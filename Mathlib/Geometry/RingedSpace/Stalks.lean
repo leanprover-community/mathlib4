@@ -30,7 +30,7 @@ variable {C : Type u} [Category.{v} C] [HasColimits C]
 -- Porting note: no tidy tactic
 -- attribute [local tidy] tactic.auto_cases_opens
 -- this could be replaced by
--- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
 -- but it doesn't appear to be needed here.
 
 open TopCat.Presheaf
@@ -82,7 +82,7 @@ def restrictStalkIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C) {f : U ⟶ (
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.restrict_stalk_iso AlgebraicGeometry.PresheafedSpace.restrictStalkIso
 
--- Porting note: removed `simp` attribute, for left hand side is not in simple normal form.
+-- Porting note (#11119): removed `simp` attribute, for left hand side is not in simple normal form.
 @[elementwise, reassoc]
 theorem restrictStalkIso_hom_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :

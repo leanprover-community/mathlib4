@@ -92,7 +92,7 @@ theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z
     exact ne_of_gt (WithBot.coe_lt_coe.2 hn)
   obtain ⟨z, hz⟩ := exists_root (X ^ n - C x) this
   · use z
-    simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def] at hz
+    simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.definition] at hz
     exact sub_eq_zero.1 hz
 #align is_alg_closed.exists_pow_nat_eq IsAlgClosed.exists_pow_nat_eq
 
@@ -246,7 +246,6 @@ private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
     (IntermediateField.adjoin_univ K L)
 
 variable {R : Type u} [CommRing R]
-
 variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M] [NoZeroSMulDivisors R S]
   [NoZeroSMulDivisors R M] (hS : Algebra.IsAlgebraic R S)
 
@@ -293,7 +292,7 @@ instance (priority := 500) {K : Type*} [Field K] [IsAlgClosed K] : Infinite K :=
   intro hfin
   set n := Fintype.card K
   set f := (X : K[X]) ^ (n + 1) - 1
-  have hfsep : Separable f := separable_X_pow_sub_C 1 (by simp) one_ne_zero
+  have hfsep : Separable f := separable_X_pow_sub_C 1 (by simp [n]) one_ne_zero
   apply Nat.not_succ_le_self (Fintype.card K)
   have hroot : n.succ = Fintype.card (f.rootSet K) := by
     erw [card_rootSet_eq_natDegree hfsep (IsAlgClosed.splits_domain _), natDegree_X_pow_sub_C]

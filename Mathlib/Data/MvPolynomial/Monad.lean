@@ -56,7 +56,6 @@ namespace MvPolynomial
 open Finsupp
 
 variable {σ : Type*} {τ : Type*}
-
 variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
 
 /--
@@ -168,9 +167,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (f : σ → MvPolynomial τ R)
 
-@[simp]
-theorem bind₁_C_right (f : σ → MvPolynomial τ R) (x) : bind₁ f (C x) = C x := by
-  simp [bind₁, algebraMap_eq]
+theorem bind₁_C_right (f : σ → MvPolynomial τ R) (x) : bind₁ f (C x) = C x := algHom_C _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.bind₁_C_right MvPolynomial.bind₁_C_right
 
@@ -404,7 +401,7 @@ instance monad : Monad fun σ => MvPolynomial σ R
 instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R
     where
   map_const := by intros; rfl
-  -- porting note: I guess `map_const` no longer has a default implementation?
+  -- Porting note: I guess `map_const` no longer has a default implementation?
   id_map := by intros; simp [(· <$> ·)]
   comp_map := by intros; simp [(· <$> ·)]
 #align mv_polynomial.is_lawful_functor MvPolynomial.lawfulFunctor

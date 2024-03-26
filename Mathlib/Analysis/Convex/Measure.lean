@@ -52,7 +52,7 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
     refine' measure_mono_null (fun y hy => _) this; clear this
     set N : ℕ := ⌊dist y x⌋₊
     refine' mem_iUnion.2 ⟨N, _⟩
-    have hN : y ∈ B N := by simp [Nat.lt_floor_add_one]
+    have hN : y ∈ B N := by simp [B, N, Nat.lt_floor_add_one]
     suffices y ∈ frontier (s ∩ B N) ∩ B N from this.1
     rw [frontier_inter_open_inter isOpen_ball]
     exact ⟨hy, hN⟩

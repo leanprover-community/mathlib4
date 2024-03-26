@@ -35,10 +35,11 @@ https://github.com/leanprover-community/mathlib/pull/14448#discussion_r906109235
 for some ideas.
 -/
 
+assert_not_exists Finset.sum
 
 open Function OrderDual
 
-open BigOperators FinsetInterval
+open FinsetInterval
 
 variable {ι α : Type*}
 
@@ -52,17 +53,17 @@ section LocallyFiniteOrder
 
 variable [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b := by
   rw [← coe_nonempty, coe_Icc, Set.nonempty_Icc]
 #align finset.nonempty_Icc Finset.nonempty_Icc
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ico, Set.nonempty_Ico]
 #align finset.nonempty_Ico Finset.nonempty_Ico
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioc, Set.nonempty_Ioc]
 #align finset.nonempty_Ioc Finset.nonempty_Ioc
@@ -395,9 +396,9 @@ section LocallyFiniteOrderTop
 
 variable [LocallyFiniteOrderTop α]
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
 
 theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by
@@ -1166,18 +1167,6 @@ theorem image_add_right_Ioo (a b c : α) : (Ioo a b).image (· + c) = Ioo (a + c
 #align finset.image_add_right_Ioo Finset.image_add_right_Ioo
 
 end OrderedCancelAddCommMonoid
-
-@[to_additive]
-theorem prod_prod_Ioi_mul_eq_prod_prod_off_diag [Fintype ι] [LinearOrder ι]
-    [LocallyFiniteOrderTop ι] [LocallyFiniteOrderBot ι] [CommMonoid α] (f : ι → ι → α) :
-    (∏ i, ∏ j in Ioi i, f j i * f i j) = ∏ i, ∏ j in {i}ᶜ, f j i := by
-  simp_rw [← Ioi_disjUnion_Iio, prod_disjUnion, prod_mul_distrib]
-  congr 1
-  rw [prod_sigma', prod_sigma']
-  refine' prod_nbij' (fun i ↦ ⟨i.2, i.1⟩) (fun i ↦ ⟨i.2, i.1⟩) _ _ _ _ _ <;> simp
-#align finset.prod_prod_Ioi_mul_eq_prod_prod_off_diag Finset.prod_prod_Ioi_mul_eq_prod_prod_off_diag
-#align finset.sum_sum_Ioi_add_eq_sum_sum_off_diag Finset.sum_sum_Ioi_add_eq_sum_sum_off_diag
-
 end Finset
 
 /-! ### `⩿`, `⋖` and monotonicity -/

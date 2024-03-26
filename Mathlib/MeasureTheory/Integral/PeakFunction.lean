@@ -160,7 +160,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto_aux
         apply set_integral_mono_set
         · exact I.norm.mul_const _
         · exact eventually_of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
-        · apply eventually_of_forall ut
+        · exact eventually_of_forall ut
       _ = ∫ x in t, φ i x * δ ∂μ := by
         apply set_integral_congr ht fun x hx => ?_
         rw [Real.norm_of_nonneg (hφpos _ (hts hx))]
@@ -180,8 +180,8 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto_aux
       _ ≤ δ * ∫ x in s, ‖g x‖ ∂μ := by
         rw [integral_mul_left]
         apply mul_le_mul_of_nonneg_left (set_integral_mono_set hmg.norm _ _) δpos.le
-        · exact eventually_of_forall fun x => norm_nonneg _
-        · apply eventually_of_forall; exact diff_subset s u
+        · filter_upwards with x using norm_nonneg _
+        · filter_upwards using diff_subset s u
   calc
     ‖∫ x in s, φ i x • g x ∂μ‖ =
       ‖(∫ x in s \ u, φ i x • g x ∂μ) + ∫ x in s ∩ u, φ i x • g x ∂μ‖ := by
@@ -224,7 +224,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto
   filter_upwards [integrableOn_peak_smul_of_integrableOn_of_tendsto hs h'ts
     hlφ hiφ h'iφ hmg hcg,
     (tendsto_order.1 (tendsto_iff_norm_sub_tendsto_zero.1 hiφ)).2 1 zero_lt_one] with i hi h'i
-  simp only [Pi.sub_apply, smul_sub, ← indicator_smul_apply]
+  simp only [h, Pi.sub_apply, smul_sub, ← indicator_smul_apply]
   rw [integral_sub hi, set_integral_indicator ht, inter_eq_right.mpr hts,
     integral_smul_const, sub_add_cancel]
   rw [integrable_indicator_iff ht]
@@ -331,7 +331,7 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
               exact pow_le_pow_left t'_pos.le (le_of_lt (hv hx)) _
           _ ≤ ∫ y in s, c y ^ n ∂μ :=
             set_integral_mono_set (I n) (J n) (eventually_of_forall (inter_subset_right _ _))
-      simp_rw [← div_eq_inv_mul, div_pow, div_div]
+      simp_rw [φ, ← div_eq_inv_mul, div_pow, div_div]
       apply div_le_div (pow_nonneg t_pos n) _ _ B
       · exact pow_le_pow_left (hnc _ hx.1) (ht x hx) _
       · apply mul_pos (pow_pos (t_pos.trans_lt tt') _) (ENNReal.toReal_pos (hμ v v_open x₀_v).ne' _)
@@ -357,7 +357,7 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
       hs.measurableSet (Subset.rfl) (self_mem_nhdsWithin)
       hs.measure_lt_top.ne (eventually_of_forall hnφ) A B C hmg hcg
   convert this
-  simp_rw [← smul_smul, integral_smul]
+  simp_rw [φ, ← smul_smul, integral_smul]
 #align tendsto_set_integral_pow_smul_of_unique_maximum_of_is_compact_of_measure_nhds_within_pos tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_nhdsWithin_pos
 
 /-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
@@ -480,14 +480,14 @@ theorem tendsto_integral_comp_smul_smul_of_integrable'
     Tendsto (fun (c : ℝ) ↦ ∫ x, (c ^ (finrank ℝ F) * φ (c • (x₀ - x))) • g x ∂μ)
       atTop (𝓝 (g x₀)) := by
   let f := fun x ↦ g (x₀ - x)
-  have If : Integrable f μ := by simpa [sub_eq_add_neg] using (hg.comp_add_left x₀).comp_neg
+  have If : Integrable f μ := by simpa [f, sub_eq_add_neg] using (hg.comp_add_left x₀).comp_neg
   have : Tendsto (fun (c : ℝ) ↦ ∫ x, (c ^ (finrank ℝ F) * φ (c • x)) • f x ∂μ)
       atTop (𝓝 (f 0)) := by
     apply tendsto_integral_comp_smul_smul_of_integrable hφ h'φ h If
     have A : ContinuousAt g (x₀ - 0) := by simpa using h'g
     have B : ContinuousAt (fun x ↦ x₀ - x) 0 := Continuous.continuousAt (by continuity)
     exact A.comp B
-  simp only [sub_zero] at this
+  simp only [f, sub_zero] at this
   convert this using 2 with c
   conv_rhs => rw [← integral_add_left_eq_self x₀ (μ := μ)
     (f := fun x ↦ (c ^ finrank ℝ F * φ (c • x)) • g (x₀ - x)), ← integral_neg_eq_self]

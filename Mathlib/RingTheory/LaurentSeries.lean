@@ -22,8 +22,8 @@ import Mathlib.RingTheory.Localization.FractionRing
 
 -/
 
-
-open HahnSeries BigOperators Classical Polynomial
+open scoped Classical
+open HahnSeries BigOperators Polynomial
 
 noncomputable section
 
@@ -34,7 +34,7 @@ abbrev LaurentSeries (R : Type*) [Zero R] :=
   HahnSeries ℤ R
 #align laurent_series LaurentSeries
 
-variable {R : Type u}
+variable {R : Type*}
 
 namespace LaurentSeries
 
@@ -97,7 +97,7 @@ theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
   by_cases h : x.order ≤ n
   · rw [Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h), coeff_coe_powerSeries,
       powerSeriesPart_coeff, ← Int.eq_natAbs_of_zero_le (sub_nonneg_of_le h),
-      add_sub_cancel'_right]
+      add_sub_cancel]
   · rw [ofPowerSeries_apply, embDomain_notin_range]
     · contrapose! h
       exact order_le_of_coeff_ne_zero h.symm

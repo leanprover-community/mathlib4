@@ -35,9 +35,7 @@ open scoped BigOperators Classical Topology
 section DerivInner
 
 variable {𝕜 E F : Type*} [IsROrC 𝕜]
-
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -54,7 +52,7 @@ theorem fderivInnerCLM_apply (p x : E × E) : fderivInnerCLM 𝕜 p x = ⟪p.1, 
   rfl
 #align fderiv_inner_clm_apply fderivInnerCLM_apply
 
-variable {𝕜} -- porting note: Lean 3 magically switches back to `{𝕜}` here
+variable {𝕜} -- Porting note: Lean 3 magically switches back to `{𝕜}` here
 
 theorem contDiff_inner {n} : ContDiff ℝ n fun p : E × E => ⟪p.1, p.2⟫ :=
   isBoundedBilinearMap_inner.contDiff
@@ -216,7 +214,7 @@ theorem ContDiff.dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) (hne : ∀
   contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.dist 𝕜 hg.contDiffAt (hne x)
 #align cont_diff.dist ContDiff.dist
 
--- porting note: use `2 •` instead of `bit0`
+-- Porting note: use `2 •` instead of `bit0`
 theorem hasStrictFDerivAt_norm_sq (x : F) :
     HasStrictFDerivAt (fun x => ‖x‖ ^ 2) (2 • (innerSL ℝ x)) x := by
   simp only [sq, ← @inner_self_eq_norm_mul_norm ℝ]

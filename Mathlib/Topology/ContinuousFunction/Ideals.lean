@@ -79,9 +79,7 @@ open TopologicalSpace
 section TopologicalRing
 
 variable {X R : Type*} [TopologicalSpace X] [Semiring R]
-
 variable [TopologicalSpace R] [TopologicalSemiring R]
-
 variable (R)
 
 /-- Given a topological ring `R` and `s : Set X`, construct the ideal in `C(X, R)` of functions
@@ -214,7 +212,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   have ht : IsClosed t := isClosed_le continuous_const (map_continuous f).nnnorm
   have htI : Disjoint t (setOfIdeal I)ᶜ := by
     refine' Set.subset_compl_iff_disjoint_left.mp fun x hx => _
-    simpa only [Set.mem_setOf, Set.mem_compl_iff, not_le] using
+    simpa only [t, Set.mem_setOf, Set.mem_compl_iff, not_le] using
       (nnnorm_eq_zero.mpr (mem_idealOfSet.mp hf hx)).trans_lt (half_pos hε)
   /- It suffices to produce `g : C(X, ℝ≥0)` which takes values in `[0,1]` and is constantly `1` on
     `t` such that when composed with the natural embedding of `ℝ≥0` into `𝕜` lies in the ideal `I`.
@@ -408,7 +406,6 @@ variable (X 𝕜 : Type*) [TopologicalSpace X]
 section ContinuousMapEval
 
 variable [LocallyCompactSpace X] [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
-
 variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 
 /-- The natural continuous map from a locally compact topological space `X` to the
