@@ -111,7 +111,7 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
     (AddCircle.measurePreserving_mk T (-(T / 2))).measure_preimage measurableSet_closedBall]
   by_cases hε : ε < T / 2
   · simp [hε, min_eq_right (by linarith : 2 * ε ≤ T)]
-  · simp [hε, min_eq_left (by linarith : T ≤ 2 * ε)]
+  · simp [I, hε, min_eq_left (by linarith : T ≤ 2 * ε)]
 #align add_circle.volume_closed_ball AddCircle.volume_closedBall
 
 instance : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) := by
@@ -196,7 +196,6 @@ namespace UnitAddCircle
 
 attribute [local instance] Real.fact_zero_lt_one
 
-@[simp]
 protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by simp
 #align unit_add_circle.measure_univ UnitAddCircle.measure_univ
 
@@ -261,7 +260,7 @@ theorem intervalIntegral_add_eq (hf : Periodic f T) (t s : ℝ) :
   · exact hf.intervalIntegral_add_eq_of_pos hT t s
   · simp
   · rw [← neg_inj, ← integral_symm, ← integral_symm]
-    simpa only [← sub_eq_add_neg, add_sub_cancel] using
+    simpa only [← sub_eq_add_neg, add_sub_cancel_right] using
       hf.neg.intervalIntegral_add_eq_of_pos (neg_pos.2 hT) (t + T) (s + T)
 #align function.periodic.interval_integral_add_eq Function.Periodic.intervalIntegral_add_eq
 
@@ -302,7 +301,6 @@ section RealValued
 open Filter
 
 variable {g : ℝ → ℝ}
-
 variable (hg : Periodic g T) (h_int : ∀ t₁ t₂, IntervalIntegrable g MeasureSpace.volume t₁ t₂)
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0`, then for any `t : ℝ`, the function

@@ -970,8 +970,6 @@ lemma not_monotone_not_antitone_iff_exists_lt_lt :
 -/
 
 
-variable [LinearOrder β] {f : α → β} {s : Set α} {x y : α}
-
 theorem StrictMonoOn.cmp_map_eq (hf : StrictMonoOn f s) (hx : x ∈ s) (hy : y ∈ s) :
     cmp (f x) (f y) = cmp x y :=
   ((hf.compares hx hy).2 (cmp_compares x y)).cmp_eq
@@ -1222,7 +1220,7 @@ namespace Function
 
 variable [Preorder α] [DecidableEq ι] [∀ i, Preorder (π i)] {f : ∀ i, π i} {i : ι}
 
--- porting note: Dot notation breaks in `f.update i`
+-- Porting note: Dot notation breaks in `f.update i`
 theorem update_mono : Monotone (update f i) := fun _ _ => update_le_update_iff'.2
 #align function.update_mono Function.update_mono
 

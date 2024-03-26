@@ -17,6 +17,9 @@ This file defines unoriented angles in real inner product spaces.
 
 * `InnerProductGeometry.angle` is the undirected angle between two vectors.
 
+## TODO
+
+Prove the triangle inequality for the angle.
 -/
 
 
@@ -111,6 +114,8 @@ theorem angle_neg_right (x y : V) : angle x (-y) = π - angle x y := by
 theorem angle_neg_left (x y : V) : angle (-x) y = π - angle x y := by
   rw [← angle_neg_neg, neg_neg, angle_neg_right]
 #align inner_product_geometry.angle_neg_left InnerProductGeometry.angle_neg_left
+
+proof_wanted angle_triangle (x y z : V) : angle x z ≤ angle x y + angle y z
 
 /-- The angle between the zero vector and a vector. -/
 @[simp]
@@ -223,7 +228,7 @@ vectors and a third vector add to π. -/
 theorem angle_add_angle_eq_pi_of_angle_eq_pi {x y : V} (z : V) (h : angle x y = π) :
     angle x z + angle y z = π := by
   rcases angle_eq_pi_iff.1 h with ⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩
-  rw [angle_smul_left_of_neg x z hr, angle_neg_left, add_sub_cancel'_right]
+  rw [angle_smul_left_of_neg x z hr, angle_neg_left, add_sub_cancel]
 #align inner_product_geometry.angle_add_angle_eq_pi_of_angle_eq_pi InnerProductGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
 
 /-- Two vectors have inner product 0 if and only if the angle between

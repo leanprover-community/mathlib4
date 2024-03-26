@@ -94,8 +94,8 @@ theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z
   simp only [eisSummand, specialLinearGroup_apply, algebraMap_int_eq, eq_intCast, ofReal_int_cast,
     one_div, vecMul, vec2_dotProduct, Int.cast_add, Int.cast_mul]
   have h (a b c d u v : ℂ) (hc : c * z + d ≠ 0) : ((u * ((a * z + b) / (c * z + d)) + v) ^ k)⁻¹ =
-      (c * z + d) ^ k * (((u * a + v * c) * z + (u * b + v * d)) ^ k)⁻¹
-  · field_simp [hc]
+      (c * z + d) ^ k * (((u * a + v * c) * z + (u * b + v * d)) ^ k)⁻¹ := by
+    field_simp [hc]
     ring_nf
   apply h (hc := z.denom_ne_zero A)
 

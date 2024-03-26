@@ -216,16 +216,15 @@ theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_not_mem : a ∉ s) :
   refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
   · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h => (h ▸ a_not_mem) hx)
   · rcases a_glb.exists_between hx with ⟨y, hys, _, hyx⟩
-    apply mem_iUnion₂.mpr
-    refine' ⟨y, hys, hyx.le⟩
+    rw [mem_iUnion₂]
+    exact ⟨y, hys, hyx.le⟩
 #align is_glb.bUnion_Ici_eq_Ioi IsGLB.biUnion_Ici_eq_Ioi
 
 theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
     ⋃ x ∈ s, Ici x = Ici a := by
   refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
   · exact Ici_subset_Ici.mpr (mem_lowerBounds.mp a_glb.1 x hx)
-  · apply mem_iUnion₂.mpr
-    refine' ⟨a, a_mem, hx⟩
+  · exact mem_iUnion₂.mpr ⟨a, a_mem, hx⟩
 #align is_glb.bUnion_Ici_eq_Ici IsGLB.biUnion_Ici_eq_Ici
 
 theorem IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_not_mem : a ∉ s) :
@@ -267,12 +266,12 @@ theorem iUnion_Iic_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) : ⋃ i, I
   gcongr
   exact Iio_subset_Iic_self
 
-theorem iInter_Iic_eq_iff : ⋂ i, Iic (f i) = ∅ ↔ ¬ BddBelow (range f) := by
+theorem iInter_Iic_eq_empty_iff : ⋂ i, Iic (f i) = ∅ ↔ ¬ BddBelow (range f) := by
   simp [not_bddBelow_iff, Set.eq_empty_iff_forall_not_mem]
 
-theorem iInter_Iio_eq_empty_iff (hf : ¬ BddBelow (range f)) : ⋂ i, Iio (f i) = ∅ := by
+theorem iInter_Iio_of_not_bddBelow_range (hf : ¬ BddBelow (range f)) : ⋂ i, Iio (f i) = ∅ := by
   refine' eq_empty_of_subset_empty _
-  rw [← iInter_Iic_eq_iff.mpr hf]
+  rw [← iInter_Iic_eq_empty_iff.mpr hf]
   gcongr
   exact Iio_subset_Iic_self
 

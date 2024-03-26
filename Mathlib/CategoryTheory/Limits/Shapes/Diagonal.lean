@@ -81,7 +81,6 @@ open pullback
 section
 
 variable {U V₁ V₂ : C} (f : X ⟶ Y) (i : U ⟶ Y)
-
 variable (i₁ : V₁ ⟶ pullback f i) (i₂ : V₂ ⟶ pullback f i)
 
 @[reassoc (attr := simp)]
@@ -199,9 +198,7 @@ end
 section
 
 variable {S T : C} (f : X ⟶ T) (g : Y ⟶ T) (i : T ⟶ S)
-
 variable [HasPullback i i] [HasPullback f g] [HasPullback (f ≫ i) (g ≫ i)]
-
 variable
   [HasPullback (diagonal i)
       (pullback.map (f ≫ i) (g ≫ i) i i f g (𝟙 _) (Category.comp_id _) (Category.comp_id _))]

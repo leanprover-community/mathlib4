@@ -29,7 +29,7 @@ noncomputable section
 
 open Set Fin Topology
 
--- porting note: added explicit universes to fix compile
+-- Porting note: added explicit universes to fix compile
 universe u u' v w x
 variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x}
 
@@ -67,13 +67,13 @@ end Module
 
 namespace FormalMultilinearSeries
 
-@[simp] -- porting note: new; was not needed in Lean 3
+@[simp] -- Porting note (#10756): new theorem; was not needed in Lean 3
 theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
 
-@[simp] -- porting note: new; was not needed in Lean 3
+@[simp] -- Porting note (#10756): new theorem; was not needed in Lean 3
 theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
 
-@[ext] -- porting note: new theorem
+@[ext] -- Porting note (#10756): new theorem
 protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=
   funext h
 
@@ -137,9 +137,7 @@ theorem compContinuousLinearMap_apply (p : FormalMultilinearSeries 𝕜 F G) (u 
 #align formal_multilinear_series.comp_continuous_linear_map_apply FormalMultilinearSeries.compContinuousLinearMap_apply
 
 variable (𝕜) [Ring 𝕜'] [SMul 𝕜 𝕜']
-
 variable [Module 𝕜' E] [ContinuousConstSMul 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
-
 variable [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 
 /-- Reinterpret a formal `𝕜'`-multilinear series as a formal `𝕜`-multilinear series. -/
@@ -172,7 +170,7 @@ corresponds to starting from a Taylor series (`HasFTaylorSeriesUpTo`) for the de
 function, and building a Taylor series for the function itself. -/
 def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : FormalMultilinearSeries 𝕜 E F
   | 0 => (continuousMultilinearCurryFin0 𝕜 E F).symm z
-  | n + 1 => -- porting note: added type hint here and explicit universes to fix compile
+  | n + 1 => -- Porting note: added type hint here and explicit universes to fix compile
     (continuousMultilinearCurryRightEquiv' 𝕜 n E F :
       (E [×n]→L[𝕜] E →L[𝕜] F) → (E [×n.succ]→L[𝕜] F)) (q n)
 #align formal_multilinear_series.unshift FormalMultilinearSeries.unshift
@@ -300,7 +298,6 @@ theorem mkPiRing_coeff_eq (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) :
 @[simp]
 theorem apply_eq_prod_smul_coeff : p n y = (∏ i, y i) • p.coeff n := by
   convert (p n).toMultilinearMap.map_smul_univ y 1
-  funext
   simp only [Pi.one_apply, Algebra.id.smul_eq_mul, mul_one]
 #align formal_multilinear_series.apply_eq_prod_smul_coeff FormalMultilinearSeries.apply_eq_prod_smul_coeff
 
@@ -308,7 +305,6 @@ theorem coeff_eq_zero : p.coeff n = 0 ↔ p n = 0 := by
   rw [← mkPiRing_coeff_eq p, ContinuousMultilinearMap.mkPiRing_eq_zero_iff]
 #align formal_multilinear_series.coeff_eq_zero FormalMultilinearSeries.coeff_eq_zero
 
-@[simp]
 theorem apply_eq_pow_smul_coeff : (p n fun _ => z) = z ^ n • p.coeff n := by simp
 #align formal_multilinear_series.apply_eq_pow_smul_coeff FormalMultilinearSeries.apply_eq_pow_smul_coeff
 

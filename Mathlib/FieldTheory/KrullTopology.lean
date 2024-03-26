@@ -275,3 +275,20 @@ theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Alg
 #align krull_topology_totally_disconnected krullTopology_totallyDisconnected
 
 end TotallyDisconnected
+
+@[simp] lemma IntermediateField.fixingSubgroup_top (K L : Type*) [Field K] [Field L] [Algebra K L] :
+    IntermediateField.fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
+  ext
+  simp [mem_fixingSubgroup_iff, DFunLike.ext_iff]
+
+@[simp] lemma IntermediateField.fixingSubgroup_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
+    IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
+  ext
+  simp [mem_fixingSubgroup_iff, mem_bot]
+
+instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type) [Field K] [Field L]
+    [Algebra K L] [FiniteDimensional K L] : DiscreteTopology (L ≃ₐ[K] L) := by
+  rw [discreteTopology_iff_isOpen_singleton_one]
+  change IsOpen (⊥ : Subgroup (L ≃ₐ[K] L))
+  rw [← IntermediateField.fixingSubgroup_top]
+  exact IntermediateField.fixingSubgroup_isOpen ⊤

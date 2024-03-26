@@ -32,7 +32,7 @@ def EventuallyConst (f : α → β) (l : Filter α) : Prop := (map f l).Subsingl
 
 theorem HasBasis.eventuallyConst_iff {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
     (h : l.HasBasis p s) : EventuallyConst f l ↔ ∃ i, p i ∧ ∀ x ∈ s i, ∀ y ∈ s i, f x = f y :=
-  (h.map f).subsingleton_iff.trans <| by simp only [Set.Subsingleton, ball_image_iff]
+  (h.map f).subsingleton_iff.trans <| by simp only [Set.Subsingleton, forall_mem_image]
 
 theorem HasBasis.eventuallyConst_iff' {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
     {x : ι → α} (h : l.HasBasis p s) (hx : ∀ i, p i → x i ∈ s i) :
