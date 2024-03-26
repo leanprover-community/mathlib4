@@ -310,9 +310,8 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   · exact discreteTopology_pi_basisFun
   · refine Subtype.map_injective _ (Basis.equivFun b).injective
 
-instance [Fintype ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup := by
-  change DiscreteTopology (span ℤ (Set.range b))
-  infer_instance
+instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :=
+  inferInstanceAs <| DiscreteTopology (span ℤ (Set.range b))
 
 @[measurability]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
@@ -382,7 +381,7 @@ class IsZlattice (K : Type*) [NormedField K] {E : Type*} [NormedAddCommGroup E] 
   span_top : span K (L : Set E) = ⊤
 
 theorem _root_.Zspan.isZlattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [Fintype ι] (b : Basis ι ℝ E) :
+    [Finite ι] (b : Basis ι ℝ E) :
     IsZlattice ℝ (span ℤ (Set.range b)).toAddSubgroup where
   span_top := Zspan.span_top b
 

@@ -31,7 +31,7 @@ variable [Precoherent C]
 /-- `Precoherent` is preserved by equivalence of categories. -/
 theorem precoherent : Precoherent D := reflects_precoherent e.inverse
 
-instance [EssentiallySmall C] [Precoherent C] :
+instance [EssentiallySmall C] :
     Precoherent (SmallModel C) := (equivSmallModel C).precoherent
 
 /--
@@ -84,7 +84,7 @@ variable [Preregular C]
 theorem preregular : Preregular D :=
   reflects_preregular e.inverse
 
-instance [EssentiallySmall C] [Preregular C] :
+instance [EssentiallySmall C] :
     Preregular (SmallModel C) := (equivSmallModel C).preregular
 
 /--

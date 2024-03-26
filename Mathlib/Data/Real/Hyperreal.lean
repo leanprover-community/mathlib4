@@ -819,7 +819,7 @@ theorem infinitePos_mul_of_infinitePos_not_infinitesimal_pos {x y : ℝ*} :
   let ⟨r₁, hy₁''⟩ := hy₁'
   have hyr : 0 < r₁ ∧ ↑r₁ ≤ y := by
     rwa [not_imp, ← abs_lt, not_lt, abs_of_pos hy₂] at hy₁''
-  rw [← div_mul_cancel r (ne_of_gt hyr.1), coe_mul]
+  rw [← div_mul_cancel₀ r (ne_of_gt hyr.1), coe_mul]
   exact mul_lt_mul (hx (r / r₁)) hyr.2 (coe_lt_coe.2 hyr.1) (le_of_lt (hx 0))
 #align hyperreal.infinite_pos_mul_of_infinite_pos_not_infinitesimal_pos Hyperreal.infinitePos_mul_of_infinitePos_not_infinitesimal_pos
 
