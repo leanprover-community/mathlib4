@@ -354,7 +354,7 @@ theorem CharP.neg_one_pow_char_pow [Ring R] (p n : ℕ) [CharP R p] [Fact p.Prim
 
 theorem RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
     (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
-  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, f.map_zero]
+  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, map_zero f]
 #align ring_hom.char_p_iff_char_p RingHom.charP_iff_charP
 
 namespace CharP

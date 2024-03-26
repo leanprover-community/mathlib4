@@ -13,16 +13,10 @@ open Nat
 
 #align int.neg_succ_of_nat Int.negSucc
 
-@[inherit_doc]
+-- @[inherit_doc]
 notation "ℤ" => Int
 
 namespace Int
-
-/-- The number `0 : ℤ`, as a standalone definition. -/
-@[deprecated] protected def zero : ℤ := ofNat 0
-
-/-- The number `1 : ℤ`, as a standalone definition. -/
-@[deprecated] protected def one : ℤ := ofNat 1
 
 #align int.of_nat_zero Int.ofNat_zero
 #align int.of_nat_one Int.ofNat_one
@@ -81,14 +75,8 @@ protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 
 
 #align int.nat_abs Int.natAbs
 
-@[deprecated natAbs_eq_zero]
-theorem eq_zero_of_natAbs_eq_zero : ∀ {a : ℤ}, natAbs a = 0 → a = 0 := natAbs_eq_zero.1
-#align int.eq_zero_of_nat_abs_eq_zero Int.eq_zero_of_natAbs_eq_zero
-
-@[deprecated natAbs_pos]
-theorem natAbs_pos_of_ne_zero {a : ℤ} (h : a ≠ 0) : 0 < natAbs a := natAbs_pos.2 h
-#align int.nat_abs_pos_of_ne_zero Int.natAbs_pos_of_ne_zero
-
+#align int.nat_abs_pos_of_ne_zero Int.natAbs_pos
+#align int.eq_zero_of_nat_abs_eq_zero Int.natAbs_eq_zero
 #align int.nat_abs_zero Int.natAbs_zero
 #align int.nat_abs_one Int.natAbs_one
 #align int.nat_abs_mul_self Int.natAbs_mul_self
