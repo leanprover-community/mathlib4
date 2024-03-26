@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.List.Forall2
 import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Int.Basic
 
@@ -23,9 +24,9 @@ variable {ι α M N P M₀ G R : Type*}
 
 namespace List
 
-section Monoid
+section MulOneClass
 
-variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
+variable [MulOneClass M] {l : List M} {a : M}
 
 @[to_additive (attr := simp)]
 theorem prod_nil : ([] : List M).prod = 1 :=
@@ -38,6 +39,23 @@ theorem prod_singleton : [a].prod = a :=
   one_mul a
 #align list.prod_singleton List.prod_singleton
 #align list.sum_singleton List.sum_singleton
+
+@[to_additive (attr := simp)]
+theorem prod_one_cons : (1 :: l).prod = l.prod := by
+  rw [prod, foldl, mul_one]
+
+@[to_additive]
+theorem prod_map_one {l : List ι} :
+    (l.map fun _ => (1 : M)).prod = 1 := by
+  induction l with
+  | nil => rfl
+  | cons hd tl ih => rw [map_cons, prod_one_cons, ih]
+
+end MulOneClass
+
+section Monoid
+
+variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 
 @[to_additive (attr := simp)]
 theorem prod_cons : (a :: l).prod = a * l.prod :=
@@ -144,10 +162,9 @@ theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α
 #align list.sum_map_add List.sum_map_add
 
 @[simp]
-theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
+theorem prod_map_neg [HasDistribNeg M] (l : List M) :
     (l.map Neg.neg).prod = (-1) ^ l.length * l.prod := by
-  simpa only [id_eq, neg_mul, one_mul, map_const', prod_replicate, map_id]
-    using @prod_map_mul α α _ l (fun _ => -1) id
+  induction l <;> simp [*, pow_succ, ((Commute.neg_one_left _).pow_left _).left_comm]
 #align list.prod_map_neg List.prod_map_neg
 
 @[to_additive]
