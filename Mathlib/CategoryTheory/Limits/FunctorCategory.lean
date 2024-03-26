@@ -325,6 +325,10 @@ theorem colimit_map_colimitObjIsoColimitCompEvaluation_hom [HasColimitsOfShape J
     colimitObjIsoColimitCompEvaluation_inv_colimit_map]
 #align category_theory.limits.colimit_map_colimit_obj_iso_colimit_comp_evaluation_hom CategoryTheory.Limits.colimit_map_colimitObjIsoColimitCompEvaluation_hom
 
+theorem ι_colimit_map [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) {i j : K} (f : i ⟶ j) (u : J) :
+    (colimit.ι F u).app _ ≫ (colimit F).map f = (F.obj u).map f ≫ (colimit.ι F u).app _ :=
+  ((colimit.ι F u).naturality _).symm
+
 @[ext]
 theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W : C}
     {f g : (colimit H).obj k ⟶ W} (w : ∀ j, (colimit.ι H j).app k ≫ f = (colimit.ι H j).app k ≫ g) :
