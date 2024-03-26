@@ -374,7 +374,7 @@ theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ℕ → ℂ} {m : ℝ}
 
 open Set in
 /-- The `LSeries` with all coefficients `1` converges at `s` if and only if `re s > 1`. -/
-theorem LSeriesSummable.one_iff_one_lt_re {s : ℂ} : LSeriesSummable 1 s ↔ 1 < s.re := by
+theorem LSeriesSummable.one_iff {s : ℂ} : LSeriesSummable 1 s ↔ 1 < s.re := by
   rw [← LSeriesSummable_iff_of_re_eq_re (Complex.ofReal_re s.re), LSeriesSummable,
     ← summable_norm_iff, ← Real.summable_one_div_nat_rpow]
   simp_rw [← Finite.summable_compl_iff (finite_singleton 0), summable_subtype_iff_indicator]
@@ -387,8 +387,8 @@ theorem LSeriesSummable.one_iff_one_lt_re {s : ℂ} : LSeriesSummable 1 s ↔ 1 
 open scoped ArithmeticFunction in
 /-- The `LSeries` associated to the arithmetic function `ζ` converges at `s` if and only if
 `re s > 1`. -/
-theorem zeta_LSeriesSummable_iff_one_lt_re {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re := by
+theorem zeta_LSeriesSummable_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re := by
   have (n : ℕ) (hn : n ≠ 0) : ζ n = (1 : ℕ → ℂ) n := by
     simp only [ArithmeticFunction.zeta_apply, hn, ↓reduceIte, Nat.cast_one, Pi.one_apply]
-  exact (LSeriesSummable_congr s this).trans <| LSeriesSummable.one_iff_one_lt_re
-#align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re zeta_LSeriesSummable_iff_one_lt_re
+  exact (LSeriesSummable_congr s this).trans <| LSeriesSummable.one_iff
+#align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re zeta_LSeriesSummable_iff

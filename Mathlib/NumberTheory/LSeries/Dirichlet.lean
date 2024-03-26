@@ -112,8 +112,7 @@ lemma mul_convolution_distrib {R : Type*} [CommSemiring R] {n : ℕ} (χ : Diric
 open ArithmeticFunction in
 /-- The convolution of a Dirichlet character `χ` with the twist `χ * μ` is `δ`,
 the indicator function of `{1}`. -/
-lemma convolution_mul_moebius {n : ℕ} (χ : DirichletCharacter ℂ n) :
-    ↗χ ⍟ (↗χ * ↗μ) = δ := by
+lemma convolution_mul_moebius {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ ⍟ (↗χ * ↗μ) = δ := by
   have : (1 : ℕ → ℂ) ⍟ (μ ·) = δ := by
     rw [one_convolution_eq_zeta_convolution, ← one_eq_delta]
     change ⇑(ζ : ArithmeticFunction ℂ) ⍟ ⇑(μ : ArithmeticFunction ℂ) = ⇑(1 : ArithmeticFunction ℂ)
@@ -122,9 +121,8 @@ lemma convolution_mul_moebius {n : ℕ} (χ : DirichletCharacter ℂ n) :
   simpa only [← mul_convolution_distrib χ 1 ↗μ, this] using
     mul_delta <| by simp only [cast_one, map_one]
 
-lemma mul_delta {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ * δ = δ := by
-  refine LSeries.mul_delta ?_
-  rw [cast_one, MulChar.map_one]
+lemma mul_delta {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ * δ = δ :=
+  LSeries.mul_delta <| by rw [cast_one, MulChar.map_one]
 
 lemma delta_mul {n : ℕ} (χ : DirichletCharacter ℂ n) : δ * ↗χ = δ :=
   mul_comm δ _ ▸ mul_delta ..
@@ -260,9 +258,7 @@ lemma LSeries_zeta_eq_riemannZeta {s : ℂ} (hs : 1 < s.re) : L ↗ζ s = rieman
 /-- The L-series of the arithmetic function `ζ` equals the Riemann Zeta Function on its
 domain of convergence `1 < re s`. -/
 lemma LSeriesHasSum_zeta {s : ℂ} (hs : 1 < s.re) : LSeriesHasSum ↗ζ s (riemannZeta s) :=
-  LSeries_zeta_eq_riemannZeta hs ▸ (zeta_LSeriesSummable_iff_one_lt_re.mpr hs).LSeriesHasSum
-
--- Rename `zeta_LSeriesSummable_iff_one_lt_re` → `zeta_LSeriesSummable_iff`
+  LSeries_zeta_eq_riemannZeta hs ▸ (zeta_LSeriesSummable_iff.mpr hs).LSeriesHasSum
 
 lemma convolution_zeta_moebius : ↗ζ ⍟ ↗μ = δ := by
   have hζ : ↗ζ = ↗(ζ : ArithmeticFunction ℂ) := by
@@ -274,7 +270,7 @@ lemma convolution_zeta_moebius : ↗ζ ⍟ ↗μ = δ := by
 
 /-- The L-series of the arithmetic function `ζ` and of the Möbius function are inverses. -/
 lemma LSeries_zeta_mul_Lseries_moebius {s : ℂ} (hs : 1 < s.re) : L ↗ζ s * L ↗μ s = 1 := by
-  rw [← LSeries_convolution' (zeta_LSeriesSummable_iff_one_lt_re.mpr hs)
+  rw [← LSeries_convolution' (zeta_LSeriesSummable_iff.mpr hs)
     (LSeriesSummable_moebius_iff.mpr hs),
     convolution_zeta_moebius, LSeries_delta, Pi.one_apply]
 
