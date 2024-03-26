@@ -3031,25 +3031,15 @@ theorem filter_subset (l : List α) : filter p l ⊆ l :=
   (filter_sublist l).subset
 #align list.filter_subset List.filter_subset
 
-theorem of_mem_filter {a : α} : ∀ {l}, a ∈ filter p l → p a
-  | b :: l, ain =>
-    if pb : p b then
-      have : a ∈ b :: filter p l := by simpa only [filter_cons_of_pos _ pb] using ain
-      Or.elim (eq_or_mem_of_mem_cons this) (fun h : a = b => by rw [← h] at pb; exact pb)
-        fun h : a ∈ filter p l => of_mem_filter h
-    else by simp only [filter_cons_of_neg _ pb] at ain; exact of_mem_filter ain
+theorem of_mem_filter {a : α} {l} (h : a ∈ filter p l) : p a := (mem_filter.1 h).2
 #align list.of_mem_filter List.of_mem_filter
 
 theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
   filter_subset l h
 #align list.mem_of_mem_filter List.mem_of_mem_filter
 
-theorem mem_filter_of_mem {a : α} : ∀ {l}, a ∈ l → p a → a ∈ filter p l
-  | x :: l, h, h1 => by
-    rcases mem_cons.1 h with rfl | h
-    · simp [filter, h1]
-    · rw [filter]
-      cases p x <;> simp [mem_filter_of_mem h h1]
+theorem mem_filter_of_mem {a : α} {l} (h₁ : a ∈ l) (h₂ : p a) : a ∈ filter p l :=
+  mem_filter.2 ⟨h₁, h₂⟩
 #align list.mem_filter_of_mem List.mem_filter_of_mem
 
 #align list.mem_filter List.mem_filter
