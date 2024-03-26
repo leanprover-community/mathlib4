@@ -260,7 +260,8 @@ lemma add_eq_min_iff : m + n = min m n ↔ m = 0 ∧ n = 0 := by omega
 #align nat.add_eq_max_iff Nat.add_eq_max_iff
 #align nat.add_eq_min_iff Nat.add_eq_min_iff
 
-@[simp] protected lemma add_eq_zero : m + n = 0 ↔ m = 0 ∧ n = 0 := by omega
+-- We want to use this lemma earlier than the lemma simp can prove it with
+@[simp, nolint simpNF] protected lemma add_eq_zero : m + n = 0 ↔ m = 0 ∧ n = 0 := by omega
 
 lemma add_pos_iff_pos_or_pos : 0 < m + n ↔ 0 < m ∨ 0 < n := by omega
 #align nat.add_pos_iff_pos_or_pos Nat.add_pos_iff_pos_or_pos
@@ -659,7 +660,7 @@ protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) :=by
 #align nat.pow_right_injective Nat.pow_right_injective
 
 -- We want to use this lemma earlier than the lemma simp can prove it with
-@[simp] protected lemma pow_eq_zero {a : ℕ} : ∀ {n : ℕ}, a ^ n = 0 ↔ a = 0 ∧ n ≠ 0
+@[simp, nolint simpNF] protected lemma pow_eq_zero {a : ℕ} : ∀ {n : ℕ}, a ^ n = 0 ↔ a = 0 ∧ n ≠ 0
   | 0 => by simp
   | n + 1 => by rw [Nat.pow_succ, mul_eq_zero, Nat.pow_eq_zero]; omega
 
