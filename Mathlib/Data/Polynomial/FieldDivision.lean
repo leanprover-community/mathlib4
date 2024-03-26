@@ -312,12 +312,13 @@ theorem mod_def : p % q = p %ₘ (q * C (leadingCoeff q)⁻¹) := rfl
 #align polynomial.mod_def Polynomial.mod_def
 
 theorem modByMonic_eq_mod (p : R[X]) (hq : Monic q) : p %ₘ q = p % q :=
-  show p %ₘ q = p %ₘ (q * C (leadingCoeff q)⁻¹) by simp only [Monic.def.1 hq, inv_one, mul_one, C_1]
+  show p %ₘ q = p %ₘ (q * C (leadingCoeff q)⁻¹) by
+    simp only [Monic.def'.1 hq, inv_one, mul_one, C_1]
 #align polynomial.mod_by_monic_eq_mod Polynomial.modByMonic_eq_mod
 
 theorem divByMonic_eq_div (p : R[X]) (hq : Monic q) : p /ₘ q = p / q :=
   show p /ₘ q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹)) by
-    simp only [Monic.def.1 hq, inv_one, C_1, one_mul, mul_one]
+    simp only [Monic.def'.1 hq, inv_one, C_1, one_mul, mul_one]
 #align polynomial.div_by_monic_eq_div Polynomial.divByMonic_eq_div
 
 theorem mod_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) :=
@@ -498,7 +499,7 @@ theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
       change natDegree p = 1 at h'; rw [← h']
       exact mt leadingCoeff_eq_zero.1 fun h0 => by simp [h0] at h
     conv in p => rw [eq_X_add_C_of_degree_le_one (show degree p ≤ 1 by rw [h])]
-    simp [IsRoot, mul_div_cancel' _ this]⟩
+    simp [IsRoot, mul_div_cancel₀ _ this]⟩
 #align polynomial.exists_root_of_degree_eq_one Polynomial.exists_root_of_degree_eq_one
 
 theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = (↑u⁻¹ : R[X]).coeff n := by
@@ -640,7 +641,7 @@ theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f
         (irreducible_of_degree_eq_one (Polynomial.degree_X_sub_C a))) ?_
   contrapose! hf' with h
   have : X - C a ∣ derivative f := X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic f h
-  rw [← dvd_iff_modByMonic_eq_zero (monic_X_sub_C _), modByMonic_X_sub_C_eq_C_eval] at this
+  rw [← modByMonic_eq_zero_iff_dvd (monic_X_sub_C _), modByMonic_X_sub_C_eq_C_eval] at this
   rwa [← C_inj, C_0]
 #align polynomial.is_coprime_of_is_root_of_eval_derivative_ne_zero Polynomial.isCoprime_of_is_root_of_eval_derivative_ne_zero
 

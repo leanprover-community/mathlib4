@@ -3,13 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Instances.NNReal
-import Mathlib.Topology.Algebra.Order.MonotoneContinuity
+import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.Algebra.Order.T5
+import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.Order.T5
 
 #align_import topology.instances.ennreal from "leanprover-community/mathlib"@"ec4b2eeb50364487f80421c0b4c41328a611f30d"
 
@@ -68,7 +68,7 @@ theorem openEmbedding_coe : OpenEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
 #align ennreal.open_embedding_coe ENNReal.openEmbedding_coe
 
 theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r : ℝ≥0∞) :=
-  IsOpen.mem_nhds openEmbedding_coe.open_range <| mem_range_self _
+  IsOpen.mem_nhds openEmbedding_coe.isOpen_range <| mem_range_self _
 #align ennreal.coe_range_mem_nhds ENNReal.coe_range_mem_nhds
 
 @[norm_cast]

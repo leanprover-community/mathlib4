@@ -31,7 +31,6 @@ open Set Filter Topology TopologicalSpace Classical Function
 universe u v
 
 variable {X : Type u} {Y : Type v} {ι : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 -- compact sets
@@ -630,13 +629,28 @@ theorem hasBasis_coclosedCompact :
     compl_subset_compl.2 (subset_union_right _ _)⟩⟩
 #align filter.has_basis_coclosed_compact Filter.hasBasis_coclosedCompact
 
+/-- A set belongs to `coclosedCompact` if and only if the closure of its complement is compact. -/
+theorem mem_coclosedCompact_iff :
+    s ∈ coclosedCompact X ↔ IsCompact (closure sᶜ) := by
+  refine hasBasis_coclosedCompact.mem_iff.trans ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨t, ⟨htcl, htco⟩, hst⟩
+    exact htco.of_isClosed_subset isClosed_closure <|
+      closure_minimal (compl_subset_comm.2 hst) htcl
+  · exact ⟨closure sᶜ, ⟨isClosed_closure, h⟩, compl_subset_comm.2 subset_closure⟩
+
+@[deprecated mem_coclosedCompact_iff] -- 2024-02-16
 theorem mem_coclosedCompact : s ∈ coclosedCompact X ↔ ∃ t, IsClosed t ∧ IsCompact t ∧ tᶜ ⊆ s := by
   simp only [hasBasis_coclosedCompact.mem_iff, and_assoc]
 #align filter.mem_coclosed_compact Filter.mem_coclosedCompact
 
+@[deprecated mem_coclosedCompact_iff] -- 2024-02-16
 theorem mem_coclosed_compact' : s ∈ coclosedCompact X ↔ ∃ t, IsClosed t ∧ IsCompact t ∧ sᶜ ⊆ t := by
-  simp only [mem_coclosedCompact, compl_subset_comm]
+  simp only [hasBasis_coclosedCompact.mem_iff, compl_subset_comm, and_assoc]
 #align filter.mem_coclosed_compact' Filter.mem_coclosed_compact'
+
+/-- Complement of a set belongs to `coclosedCompact` if and only if its closure is compact. -/
+theorem compl_mem_coclosedCompact : sᶜ ∈ coclosedCompact X ↔ IsCompact (closure s) := by
+  rw [mem_coclosedCompact_iff, compl_compl]
 
 theorem cocompact_le_coclosedCompact : cocompact X ≤ coclosedCompact X :=
   iInf_mono fun _ => le_iInf fun _ => le_rfl
@@ -934,7 +948,7 @@ lemma Inducing.isCompact_preimage' {f : X → Y} (hf : Inducing f) {K : Set Y}
 /-- The preimage of a compact set under a closed embedding is a compact set. -/
 theorem ClosedEmbedding.isCompact_preimage {f : X → Y} (hf : ClosedEmbedding f)
     {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
-  hf.toInducing.isCompact_preimage (hf.closed_range) hK
+  hf.toInducing.isCompact_preimage (hf.isClosed_range) hK
 #align closed_embedding.is_compact_preimage ClosedEmbedding.isCompact_preimage
 
 /-- A closed embedding is proper, ie, inverse images of compact sets are contained in compacts.
@@ -975,7 +989,7 @@ protected theorem ClosedEmbedding.noncompactSpace [NoncompactSpace X] {f : X →
 
 protected theorem ClosedEmbedding.compactSpace [h : CompactSpace Y] {f : X → Y}
     (hf : ClosedEmbedding f) : CompactSpace X :=
-  ⟨by rw [hf.toInducing.isCompact_iff, image_univ]; exact hf.closed_range.isCompact⟩
+  ⟨by rw [hf.toInducing.isCompact_iff, image_univ]; exact hf.isClosed_range.isCompact⟩
 #align closed_embedding.compact_space ClosedEmbedding.compactSpace
 
 theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :

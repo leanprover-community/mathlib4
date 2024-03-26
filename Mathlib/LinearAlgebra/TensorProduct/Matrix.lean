@@ -21,21 +21,13 @@ equivalent to taking the Kronecker product of their matrix representations.
 
 
 variable {R : Type*} {M N P M' N' : Type*} {ι κ τ ι' κ' : Type*}
-
 variable [DecidableEq ι] [DecidableEq κ] [DecidableEq τ]
-
 variable [Fintype ι] [Fintype κ] [Fintype τ] [Fintype ι'] [Fintype κ']
-
 variable [CommRing R]
-
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
-
 variable [AddCommGroup M'] [AddCommGroup N']
-
 variable [Module R M] [Module R N] [Module R P] [Module R M'] [Module R N']
-
 variable (bM : Basis ι R M) (bN : Basis κ R N) (bP : Basis τ R P)
-
 variable (bM' : Basis ι' R M') (bN' : Basis κ' R N')
 
 open Kronecker

@@ -1222,7 +1222,6 @@ end Subtype
 section Quotient
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-
 variable {r : X → X → Prop} {s : Setoid X}
 
 theorem quotientMap_quot_mk : QuotientMap (@Quot.mk X r) :=
@@ -1535,12 +1534,9 @@ theorem pi_generateFrom_eq_finite {π : ι → Type*} {g : ∀ a, Set (Set (π a
     by_cases a ∈ i <;> simp [*]
 #align pi_generate_from_eq_finite pi_generateFrom_eq_finite
 
--- Porting note (#10756): new lemma
 theorem induced_to_pi {X : Type*} (f : X → ∀ i, π i) :
     induced f Pi.topologicalSpace = ⨅ i, induced (f · i) inferInstance := by
-  erw [induced_iInf]
-  simp only [induced_compose]
-  rfl
+  simp_rw [Pi.topologicalSpace, induced_iInf, induced_compose, Function.comp]
 
 /-- Suppose `π i` is a family of topological spaces indexed by `i : ι`, and `X` is a type
 endowed with a family of maps `f i : X → π i` for every `i : ι`, hence inducing a
@@ -1609,7 +1605,7 @@ theorem isClosedMap_sigmaMk {i : ι} : IsClosedMap (@Sigma.mk ι σ i) := by
 #align is_closed_map_sigma_mk isClosedMap_sigmaMk
 
 theorem isClosed_range_sigmaMk {i : ι} : IsClosed (Set.range (@Sigma.mk ι σ i)) :=
-  isClosedMap_sigmaMk.closed_range
+  isClosedMap_sigmaMk.isClosed_range
 #align is_closed_range_sigma_mk isClosed_range_sigmaMk
 
 theorem openEmbedding_sigmaMk {i : ι} : OpenEmbedding (@Sigma.mk ι σ i) :=
@@ -1722,9 +1718,7 @@ section ULift
 
 theorem ULift.isOpen_iff [TopologicalSpace X] {s : Set (ULift.{v} X)} :
     IsOpen s ↔ IsOpen (ULift.up ⁻¹' s) := by
-  unfold ULift.topologicalSpace
-  erw [← Equiv.ulift.coinduced_symm]
-  rfl
+  rw [ULift.topologicalSpace, ← Equiv.ulift_apply, ← Equiv.ulift.coinduced_symm, ← isOpen_coinduced]
 
 theorem ULift.isClosed_iff [TopologicalSpace X] {s : Set (ULift.{v} X)} :
     IsClosed s ↔ IsClosed (ULift.up ⁻¹' s) := by

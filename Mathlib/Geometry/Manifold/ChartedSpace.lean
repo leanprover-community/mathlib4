@@ -513,7 +513,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     ClosedUnderRestriction G ↔ idRestrGroupoid ≤ G := by
   constructor
   · intro _i
-    apply StructureGroupoid.le_iff.mpr
+    rw [StructureGroupoid.le_iff]
     rintro e ⟨s, hs, hes⟩
     refine' G.mem_of_eqOnSource _ hes
     convert closedUnderRestriction' G.id_mem hs
@@ -1164,7 +1164,6 @@ namespace TopologicalSpace.Opens
 open TopologicalSpace
 
 variable (G : StructureGroupoid H) [HasGroupoid M G]
-
 variable (s : Opens M)
 
 /-- An open subset of a charted space is naturally a charted space. -/

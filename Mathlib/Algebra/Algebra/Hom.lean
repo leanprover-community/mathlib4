@@ -73,10 +73,10 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
-  { (f : A →+* B) with
-      toFun := f
-      commutes' := AlgHomClass.commutes f }
+def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
+  __ := (f : A →+* B)
+  toFun := f
+  commutes' := AlgHomClass.commutes f
 
 instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
@@ -91,7 +91,6 @@ variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁} {D : Type v₁}
 section Semiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
-
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
 -- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
@@ -452,7 +451,6 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
 protected theorem map_multiset_prod (s : Multiset A) : φ s.prod = (s.map φ).prod :=
@@ -474,7 +472,6 @@ end CommSemiring
 section Ring
 
 variable [CommSemiring R] [Ring A] [Ring B]
-
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
 protected theorem map_neg (x) : φ (-x) = -φ x :=
@@ -548,7 +545,6 @@ end
 namespace Algebra
 
 variable (R : Type u) (A : Type v)
-
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
@@ -589,7 +585,6 @@ end Algebra
 namespace MulSemiringAction
 
 variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
 /-- Each element of the monoid defines an algebra homomorphism.

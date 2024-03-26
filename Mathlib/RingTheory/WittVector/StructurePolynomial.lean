@@ -186,7 +186,7 @@ theorem wittStructureRat_rec (Φ : MvPolynomial idx ℚ) (n : ℕ) :
   calc
     wittStructureRat p Φ n = C (1 / (p : ℚ) ^ n) * (wittStructureRat p Φ n * C ((p : ℚ) ^ n)) := ?_
     _ = _ := by rw [wittStructureRat_rec_aux]
-  rw [mul_left_comm, ← C_mul, div_mul_cancel, C_1, mul_one]
+  rw [mul_left_comm, ← C_mul, div_mul_cancel₀, C_1, mul_one]
   exact pow_ne_zero _ (Nat.cast_ne_zero.2 hp.1.ne_zero)
 #align witt_structure_rat_rec wittStructureRat_rec
 
