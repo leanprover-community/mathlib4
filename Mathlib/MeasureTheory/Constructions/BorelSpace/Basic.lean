@@ -418,6 +418,14 @@ theorem MeasurableSet.nhdsWithin_isMeasurablyGenerated {s : Set α} (hs : Measur
   Filter.inf_isMeasurablyGenerated _ _
 #align measurable_set.nhds_within_is_measurably_generated MeasurableSet.nhdsWithin_isMeasurablyGenerated
 
+instance (priority := 100) OpensMeasurableSpace.toSeparatesPoints [T0Space α] :
+    SeparatesPoints α := by
+  rw [separatesPoints_iff]
+  intro x y hxy
+  apply Inseparable.eq
+  rw [inseparable_iff_forall_open]
+  exact fun s hs => hxy _ hs.measurableSet
+
 -- see Note [lower instance priority]
 instance (priority := 100) OpensMeasurableSpace.toMeasurableSingletonClass [T1Space α] :
     MeasurableSingletonClass α :=
@@ -1894,6 +1902,27 @@ theorem tendsto_measure_cthickening_of_isCompact [MetricSpace α] [MeasurableSpa
   tendsto_measure_cthickening_of_isClosed
     ⟨1, zero_lt_one, hs.isBounded.cthickening.measure_lt_top.ne⟩ hs.isClosed
 #align tendsto_measure_cthickening_of_is_compact tendsto_measure_cthickening_of_isCompact
+
+/-- If a measurable space is countably generated and separates points, it arises as
+the borel sets of some second countable t4 topology (i.e. a separable metrizable one). -/
+theorem exists_borelSpace_of_countablyGenerated_of_separatesPoints (α : Type*)
+    [m : MeasurableSpace α] [CountablyGenerated α] [SeparatesPoints α] :
+    ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ BorelSpace α := by
+  rcases measurableEquiv_nat_bool_of_countablyGenerated α with ⟨s, ⟨f⟩⟩
+  letI := induced f inferInstance
+  let F := f.toEquiv.toHomeomorphOfInducing $ inducing_induced _
+  refine' ⟨inferInstance, F.secondCountableTopology, F.symm.t4Space,
+    MeasurableEmbedding.borelSpace f.measurableEmbedding <| inducing_induced _⟩
+
+/-- If a measurable space on `α` is countably generated and separates points, there is some
+second countable t4 topology on `α` (i.e. a separable metrizable one) for which every
+open set is measurable. -/
+theorem opensMeasurableSpace_secondCountableTopology_t4_of_hasCountableSeparatingOn (α : Type*)
+    [m : MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
+  ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ OpensMeasurableSpace α := by
+rcases exists_countablyGenerated_le_of_hasCountableSeparatingOn α with ⟨m', _, _, m'le⟩
+rcases exists_borelSpace_of_countablyGenerated_of_separatesPoints (m := m') with ⟨τ, _, _, τm'⟩
+refine' ⟨τ, ‹_›, ‹_›, @OpensMeasurableSpace.mk _ _ m (τm'.measurable_eq.symm.le.trans m'le)⟩
 
 namespace Real
 
