@@ -68,7 +68,7 @@ theorem locally_lipschitz_exp {r : ℝ} (hr_nonneg : 0 ≤ r) (hr_le : r ≤ 1) 
 theorem continuous_exp : Continuous exp :=
   continuous_iff_continuousAt.mpr fun x =>
     continuousAt_of_locally_lipschitz zero_lt_one (2 * ‖exp x‖)
-      (λ y => by
+      (fun y ↦ by
         convert locally_lipschitz_exp zero_le_one le_rfl x y using 2
         congr
         ring)
@@ -99,15 +99,18 @@ theorem ContinuousWithinAt.cexp (h : ContinuousWithinAt f s x) :
   h.cexp
 #align continuous_within_at.cexp ContinuousWithinAt.cexp
 
+@[fun_prop]
 nonrec
 theorem ContinuousAt.cexp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
   h.cexp
 #align continuous_at.cexp ContinuousAt.cexp
 
+@[fun_prop]
 theorem ContinuousOn.cexp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f y)) s :=
   fun x hx => (h x hx).cexp
 #align continuous_on.cexp ContinuousOn.cexp
 
+@[fun_prop]
 theorem Continuous.cexp (h : Continuous f) : Continuous fun y => exp (f y) :=
   continuous_iff_continuousAt.2 fun _ => h.continuousAt.cexp
 #align continuous.cexp Continuous.cexp
@@ -146,15 +149,18 @@ theorem ContinuousWithinAt.exp (h : ContinuousWithinAt f s x) :
   h.exp
 #align continuous_within_at.exp ContinuousWithinAt.exp
 
+@[fun_prop]
 nonrec
 theorem ContinuousAt.exp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
   h.exp
 #align continuous_at.exp ContinuousAt.exp
 
+@[fun_prop]
 theorem ContinuousOn.exp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f y)) s := fun x hx =>
   (h x hx).exp
 #align continuous_on.exp ContinuousOn.exp
 
+@[fun_prop]
 theorem Continuous.exp (h : Continuous f) : Continuous fun y => exp (f y) :=
   continuous_iff_continuousAt.2 fun _ => h.continuousAt.exp
 #align continuous.exp Continuous.exp
@@ -179,18 +185,20 @@ theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
 
 /-- The real exponential function tends to `0` at `-∞` or, equivalently, `exp(-x)` tends to `0`
 at `+∞` -/
-theorem tendsto_exp_neg_atTop_nhds_0 : Tendsto (fun x => exp (-x)) atTop (𝓝 0) :=
+theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x => exp (-x)) atTop (𝓝 0) :=
   (tendsto_inv_atTop_zero.comp tendsto_exp_atTop).congr fun x => (exp_neg x).symm
-#align real.tendsto_exp_neg_at_top_nhds_0 Real.tendsto_exp_neg_atTop_nhds_0
+#align real.tendsto_exp_neg_at_top_nhds_0 Real.tendsto_exp_neg_atTop_nhds_zero
+@[deprecated] alias tendsto_exp_neg_atTop_nhds_0 := tendsto_exp_neg_atTop_nhds_zero
 
 /-- The real exponential function tends to `1` at `0`. -/
-theorem tendsto_exp_nhds_0_nhds_1 : Tendsto exp (𝓝 0) (𝓝 1) := by
+theorem tendsto_exp_nhds_zero_nhds_one : Tendsto exp (𝓝 0) (𝓝 1) := by
   convert continuous_exp.tendsto 0
   simp
-#align real.tendsto_exp_nhds_0_nhds_1 Real.tendsto_exp_nhds_0_nhds_1
+#align real.tendsto_exp_nhds_0_nhds_1 Real.tendsto_exp_nhds_zero_nhds_one
+@[deprecated] alias tendsto_exp_nhds_0_nhds_1 := tendsto_exp_nhds_zero_nhds_one
 
 theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
-  (tendsto_exp_neg_atTop_nhds_0.comp tendsto_neg_atBot_atTop).congr fun x =>
+  (tendsto_exp_neg_atTop_nhds_zero.comp tendsto_neg_atBot_atTop).congr fun x =>
     congr_arg exp <| neg_neg x
 #align real.tendsto_exp_at_bot Real.tendsto_exp_atBot
 
@@ -227,18 +235,17 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
   calc
     x ^ n ≤ ⌈x⌉₊ ^ n := mod_cast pow_le_pow_left hx₀.le (Nat.le_ceil _) _
     _ ≤ exp ⌈x⌉₊ / (exp 1 * C) := mod_cast (hN _ (Nat.lt_ceil.2 hx).le).le
-    _ ≤ exp (x + 1) / (exp 1 * C) :=
-      (div_le_div_of_le (mul_pos (exp_pos _) hC₀).le
-        (exp_le_exp.2 <| (Nat.ceil_lt_add_one hx₀.le).le))
+    _ ≤ exp (x + 1) / (exp 1 * C) := by gcongr; exact (Nat.ceil_lt_add_one hx₀.le).le
     _ = exp x / C := by rw [add_comm, exp_add, mul_div_mul_left _ _ (exp_pos _).ne']
 #align real.tendsto_exp_div_pow_at_top Real.tendsto_exp_div_pow_atTop
 
 /-- The function `x^n * exp(-x)` tends to `0` at `+∞`, for any natural number `n`. -/
-theorem tendsto_pow_mul_exp_neg_atTop_nhds_0 (n : ℕ) :
+theorem tendsto_pow_mul_exp_neg_atTop_nhds_zero (n : ℕ) :
     Tendsto (fun x => x ^ n * exp (-x)) atTop (𝓝 0) :=
   (tendsto_inv_atTop_zero.comp (tendsto_exp_div_pow_atTop n)).congr fun x => by
     rw [comp_apply, inv_eq_one_div, div_div_eq_mul_div, one_mul, div_eq_mul_inv, exp_neg]
-#align real.tendsto_pow_mul_exp_neg_at_top_nhds_0 Real.tendsto_pow_mul_exp_neg_atTop_nhds_0
+#align real.tendsto_pow_mul_exp_neg_at_top_nhds_0 Real.tendsto_pow_mul_exp_neg_atTop_nhds_zero
+@[deprecated] alias tendsto_pow_mul_exp_neg_atTop_nhds_0 := tendsto_pow_mul_exp_neg_atTop_nhds_zero
 
 /-- The function `(b * exp x + c) / (x ^ n)` tends to `+∞` at `+∞`, for any natural number
 `n` and any real numbers `b` and `c` such that `b` is positive. -/
@@ -342,15 +349,17 @@ theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]
 #align real.tendsto_exp_comp_nhds_zero Real.tendsto_exp_comp_nhds_zero
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem openEmbedding_exp : OpenEmbedding exp :=
   isOpen_Ioi.openEmbedding_subtype_val.comp expOrderIso.toHomeomorph.openEmbedding
 
--- Porting note: new lemma; TODO: backport & make `@[simp]`
+-- Porting note (#10756): new lemma;
+-- Porting note (#11215): TODO: backport & make `@[simp]`
 theorem map_exp_nhds (x : ℝ) : map exp (𝓝 x) = 𝓝 (exp x) :=
   openEmbedding_exp.map_nhds_eq x
 
--- Porting note: new lemma; TODO: backport & make `@[simp]`
+-- Porting note (#10756): new lemma;
+-- Porting note (#11215): TODO: backport & make `@[simp]`
 theorem comap_exp_nhds_exp (x : ℝ) : comap exp (𝓝 (exp x)) = 𝓝 x :=
   (openEmbedding_exp.nhds_eq_comap x).symm
 
@@ -383,7 +392,7 @@ theorem isLittleO_exp_comp_exp_comp {f g : α → ℝ} :
     imp_true_iff, tendsto_exp_comp_nhds_zero, neg_sub]
 #align real.is_o_exp_comp_exp_comp Real.isLittleO_exp_comp_exp_comp
 
--- Porting note: @[simp] can prove:  by simp only [@Asymptotics.isLittleO_one_left_iff,
+-- Porting note (#10618): @[simp] can prove:  by simp only [@Asymptotics.isLittleO_one_left_iff,
 --   Real.norm_eq_abs, Real.abs_exp, @Real.tendsto_exp_comp_atTop]
 theorem isLittleO_one_exp_comp {f : α → ℝ} :
     ((fun _ => 1 : α → ℝ) =o[l] fun x => exp (f x)) ↔ Tendsto f l atTop := by
@@ -418,11 +427,17 @@ set_option linter.uppercaseLean3 false in
 
 lemma summable_exp_nat_mul_iff {a : ℝ} :
     Summable (fun n : ℕ ↦ exp (n * a)) ↔ a < 0 := by
-  simp only [exp_nat_mul, summable_geometric_iff_norm_lt_1, norm_of_nonneg (exp_nonneg _),
+  simp only [exp_nat_mul, summable_geometric_iff_norm_lt_one, norm_of_nonneg (exp_nonneg _),
     exp_lt_one_iff]
 
 lemma summable_exp_neg_nat : Summable fun n : ℕ ↦ exp (-n) := by
   simpa only [mul_neg_one] using summable_exp_nat_mul_iff.mpr neg_one_lt_zero
+
+lemma summable_pow_mul_exp_neg_nat_mul (k : ℕ) {r : ℝ} (hr : 0 < r) :
+    Summable fun n : ℕ ↦ n ^ k * exp (-r * n) := by
+  simp_rw [mul_comm (-r), exp_nat_mul]
+  apply summable_pow_mul_geometric_of_norm_lt_one
+  rwa [norm_of_nonneg (exp_nonneg _), exp_lt_one_iff, neg_lt_zero]
 
 end Real
 

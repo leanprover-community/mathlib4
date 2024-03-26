@@ -37,8 +37,8 @@ namespace Imo2019Q4
 
 theorem upper_bound {k n : ℕ} (hk : k > 0)
     (h : (k ! : ℤ) = ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i)) : n < 6 := by
-  have h2 : ∑ i in range n, i < k
-  · suffices multiplicity 2 (k ! : ℤ) = ↑(∑ i in range n, i : ℕ) by
+  have h2 : ∑ i in range n, i < k := by
+    suffices multiplicity 2 (k ! : ℤ) = ↑(∑ i in range n, i : ℕ) by
       rw [← PartENat.coe_lt_coe, ← this]; change multiplicity ((2 : ℕ) : ℤ) _ < _
       simp_rw [Int.coe_nat_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
     rw [h, multiplicity.Finset.prod Int.prime_two, Nat.cast_sum]
@@ -65,8 +65,8 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
   induction' n, hn using Nat.le_induction with n' hn' IH
   · decide
   let A := ∑ i in range n', i
-  have le_sum : ∑ i in range 6, i ≤ A
-  · apply sum_le_sum_of_subset
+  have le_sum : ∑ i in range 6, i ≤ A := by
+    apply sum_le_sum_of_subset
     simpa using hn'
   calc 2 ^ ((n' + 1) * (n' + 1))
       ≤ 2 ^ (n' * n' + 4 * n') := by gcongr <;> linarith

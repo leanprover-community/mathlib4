@@ -381,7 +381,7 @@ theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U :
     exact ⟨x, hx, rfl⟩
 #align topological_space.opens.functor_obj_map_obj TopologicalSpace.Opens.functor_obj_map_obj
 
--- porting note: added to ease the proof of `functor_map_eq_inf`
+-- Porting note: added to ease the proof of `functor_map_eq_inf`
 lemma set_range_forget_map_inclusion {X : TopCat} (U : Opens X) :
     Set.range ((forget TopCat).map (inclusion U)) = (U : Set X) := by
   ext x

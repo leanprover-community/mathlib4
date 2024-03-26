@@ -80,7 +80,8 @@ universe u v
 
 open Function Set Filter
 
-open BigOperators Topology Classical
+open scoped Classical
+open BigOperators Topology
 
 noncomputable section
 
@@ -180,19 +181,19 @@ section finsupport
 variable {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
 
 /-- The support of a partition of unity at a point `x₀` as a `Finset`.
-  This is the set of `i : ι` such that `f i` doesn't vanish at `x₀`. -/
+  This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i ≠ x₀`. -/
 def finsupport : Finset ι := (ρ.locallyFinite.point_finite x₀).toFinset
-
-@[simp]
-theorem coe_finsupport (x₀ : X) :
-    (ρ.finsupport x₀ : Set ι) = support fun i ↦ ρ i x₀ := by
-  rw [finsupport, Finite.coe_toFinset, setOf_set]
-  rfl
 
 @[simp]
 theorem mem_finsupport (x₀ : X) {i} :
     i ∈ ρ.finsupport x₀ ↔ i ∈ support fun i ↦ ρ i x₀ := by
   simp only [finsupport, mem_support, Finite.mem_toFinset, mem_setOf_eq]
+
+@[simp]
+theorem coe_finsupport (x₀ : X) :
+    (ρ.finsupport x₀ : Set ι) = support fun i ↦ ρ i x₀ := by
+  ext
+  rw [Finset.mem_coe, mem_finsupport]
 
 variable {x₀ : X}
 
@@ -210,14 +211,53 @@ theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport
   simp only [Finset.mem_sdiff, ρ.mem_finsupport, mem_support, Classical.not_not] at hx
   exact hx.2
 
-theorem sum_finsupport_smul_eq_finsum {M : Type _} [AddCommGroup M] [Module ℝ M] (φ : ι → X → M) :
+theorem sum_finsupport_smul_eq_finsum {M : Type*} [AddCommGroup M] [Module ℝ M] (φ : ι → X → M) :
     ∑ i in ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ := by
   apply (finsum_eq_sum_of_support_subset _ _).symm
-  have : (fun i ↦ (ρ i) x₀ • φ i x₀) = (fun i ↦ (ρ i) x₀) • (fun i ↦ φ i x₀) := rfl
+  have : (fun i ↦ (ρ i) x₀ • φ i x₀) = (fun i ↦ (ρ i) x₀) • (fun i ↦ φ i x₀) :=
+    funext fun _ => (Pi.smul_apply' _ _ _).symm
   rw [ρ.coe_finsupport x₀, this, support_smul]
   exact inter_subset_left _ _
 
 end finsupport
+
+section fintsupport -- partitions of unity have locally finite `tsupport`
+
+variable {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
+
+/-- The `tsupport`s of a partition of unity are locally finite. -/
+theorem finite_tsupport : {i | x₀ ∈ tsupport (ρ i)}.Finite := by
+  rcases ρ.locallyFinite x₀ with ⟨t, t_in, ht⟩
+  apply ht.subset
+  rintro i hi
+  simp only [inter_comm]
+  exact mem_closure_iff_nhds.mp hi t t_in
+
+/-- The tsupport of a partition of unity at a point `x₀` as a `Finset`.
+  This is the set of `i : ι` such that `x₀ ∈ tsupport f i`. -/
+def fintsupport (x₀ : X) : Finset ι :=
+  (ρ.finite_tsupport x₀).toFinset
+
+theorem mem_fintsupport_iff (i : ι) : i ∈ ρ.fintsupport x₀ ↔ x₀ ∈ tsupport (ρ i) :=
+  Finite.mem_toFinset _
+
+theorem eventually_fintsupport_subset :
+    ∀ᶠ y in 𝓝 x₀, ρ.fintsupport y ⊆ ρ.fintsupport x₀ := by
+  apply (ρ.locallyFinite.closure.eventually_subset (fun _ ↦ isClosed_closure) x₀).mono
+  intro y hy z hz
+  rw [PartitionOfUnity.mem_fintsupport_iff] at *
+  exact hy hz
+
+theorem finsupport_subset_fintsupport : ρ.finsupport x₀ ⊆ ρ.fintsupport x₀ := fun i hi ↦ by
+  rw [ρ.mem_fintsupport_iff]
+  apply subset_closure
+  exact (ρ.mem_finsupport x₀).mp hi
+
+theorem eventually_finsupport_subset : ∀ᶠ y in 𝓝 x₀, ρ.finsupport y ⊆ ρ.fintsupport x₀ :=
+  (ρ.eventually_fintsupport_subset x₀).mono
+    fun y hy ↦ (ρ.finsupport_subset_fintsupport y).trans hy
+
+end fintsupport
 
 /-- If `f` is a partition of unity on `s : Set X` and `g : X → E` is continuous at every point of
 the topological support of some `f i`, then `fun x ↦ f i x • g x` is continuous on the whole space.

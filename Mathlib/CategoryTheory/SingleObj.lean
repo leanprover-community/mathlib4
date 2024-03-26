@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.CategoryTheory.FinCategory.Basic
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Combinatorics.Quiver.SingleObj
@@ -77,6 +78,10 @@ theorem id_as_one (x : SingleObj M) : 𝟙 x = 1 :=
 theorem comp_as_mul {x y z : SingleObj M} (f : x ⟶ y) (g : y ⟶ z) : f ≫ g = g * f :=
   rfl
 #align category_theory.single_obj.comp_as_mul CategoryTheory.SingleObj.comp_as_mul
+
+/-- If `M` is finite and in universe zero, then `SingleObj M` is a `FinCategory`. -/
+instance finCategoryOfFintype (M : Type) [Fintype M] [Monoid M] : FinCategory (SingleObj M)
+  where
 
 /-- Groupoid structure on `SingleObj M`.
 
@@ -236,7 +241,7 @@ namespace Units
 
 variable (M : Type u) [Monoid M]
 
--- porting note: it was necessary to add `by exact` in this definition, presumably
+-- Porting note: it was necessary to add `by exact` in this definition, presumably
 -- so that Lean4 is not confused by the fact that `M` has two opposite multiplications
 /-- The units in a monoid are (multiplicatively) equivalent to
 the automorphisms of `star` when we think of the monoid as a single-object category. -/

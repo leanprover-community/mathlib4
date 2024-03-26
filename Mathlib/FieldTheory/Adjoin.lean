@@ -6,7 +6,7 @@ Authors: Thomas Browning, Patrick Lutz
 import Mathlib.FieldTheory.IntermediateField
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import field_theory.adjoin from "leanprover-community/mathlib"@"df76f43357840485b9d04ed5dee5ab115d420e87"
 
@@ -41,7 +41,7 @@ section AdjoinDef
 
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 
---Porting note: not adding `neg_mem'` causes an error.
+-- Porting note: not adding `neg_mem'` causes an error.
 /-- `adjoin F S` extends a field `F` by adjoining a set `S ⊆ E`. -/
 def adjoin : IntermediateField F E :=
   { Subfield.closure (Set.range (algebraMap F E) ∪ S) with
@@ -536,12 +536,13 @@ theorem adjoin_eq_top_of_algebra (hS : Algebra.adjoin F S = ⊤) : adjoin F S = 
   top_le_iff.mp (hS.symm.trans_le <| algebra_adjoin_le_adjoin F S)
 
 @[elab_as_elim]
-theorem adjoin_induction {s : Set E} {p : E → Prop} {x} (h : x ∈ adjoin F s) (Hs : ∀ x ∈ s, p x)
-    (Hmap : ∀ x, p (algebraMap F E x)) (Hadd : ∀ x y, p x → p y → p (x + y))
-    (Hneg : ∀ x, p x → p (-x)) (Hinv : ∀ x, p x → p x⁻¹) (Hmul : ∀ x y, p x → p y → p (x * y)) :
+theorem adjoin_induction {s : Set E} {p : E → Prop} {x} (h : x ∈ adjoin F s) (mem : ∀ x ∈ s, p x)
+    (algebraMap : ∀ x, p (algebraMap F E x)) (add : ∀ x y, p x → p y → p (x + y))
+    (neg : ∀ x, p x → p (-x)) (inv : ∀ x, p x → p x⁻¹) (mul : ∀ x y, p x → p y → p (x * y)) :
     p x :=
-  Subfield.closure_induction h (fun x hx => Or.casesOn hx (fun ⟨x, hx⟩ => hx ▸ Hmap x) (Hs x))
-    ((algebraMap F E).map_one ▸ Hmap 1) Hadd Hneg Hinv Hmul
+  Subfield.closure_induction h
+    (fun x hx => Or.casesOn hx (fun ⟨x, hx⟩ => hx ▸ algebraMap x) (mem x))
+    ((_root_.algebraMap F E).map_one ▸ algebraMap 1) add neg inv mul
 #align intermediate_field.adjoin_induction IntermediateField.adjoin_induction
 
 /- Porting note (kmill): this notation is replacing the typeclass-based one I had previously
@@ -740,7 +741,7 @@ instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensio
   let P : Set ι → Prop := fun s => FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L)
   change P Set.univ
   apply Set.Finite.induction_on
-  all_goals dsimp only
+  all_goals dsimp only [P]
   · exact Set.finite_univ
   · rw [iSup_emptyset]
     exact (botEquiv K L).symm.toLinearEquiv.finiteDimensional
@@ -761,7 +762,7 @@ instance finiteDimensional_iSup_of_finset
 theorem finiteDimensional_iSup_of_finset'
     /-Porting note: this was the mathlib3 version. Using `[h : ...]`, as in mathlib3, causes the
     error "invalid parametric local instance".-/
-    {s : Finset ι} (h : ∀ i, i ∈ s → FiniteDimensional K (t i)) :
+    {s : Finset ι} (h : ∀ i ∈ s, FiniteDimensional K (t i)) :
     FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L) :=
   have := Subtype.forall'.mp h
   iSup_subtype'' s t ▸ IntermediateField.finiteDimensional_iSup_of_finite
@@ -787,7 +788,6 @@ end Supremum
 section Tower
 
 variable (E)
-
 variable {K : Type*} [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K]
 
 /-- If `K / E / F` is a field extension tower, `L` is an intermediate field of `K / F`, such that
@@ -946,7 +946,7 @@ theorem adjoin_one : F⟮(1 : E)⟯ = ⊥ :=
 
 @[simp]
 theorem adjoin_int (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
-  refine' adjoin_simple_eq_bot_iff.mpr (coe_int_mem ⊥ n)
+  exact adjoin_simple_eq_bot_iff.mpr (coe_int_mem ⊥ n)
 #align intermediate_field.adjoin_int IntermediateField.adjoin_int
 
 @[simp]
@@ -979,6 +979,12 @@ theorem rank_bot : Module.rank F (⊥ : IntermediateField F E) = 1 := by rw [ran
 @[simp] protected
 theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := by rw [finrank_eq_one_iff]
 #align intermediate_field.finrank_bot IntermediateField.finrank_bot
+
+@[simp] theorem rank_bot' : Module.rank (⊥ : IntermediateField F E) E = Module.rank F E := by
+  rw [← rank_mul_rank F (⊥ : IntermediateField F E) E, IntermediateField.rank_bot, one_mul]
+
+@[simp] theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
+  congr(Cardinal.toNat $(rank_bot'))
 
 @[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
   Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
@@ -1055,7 +1061,6 @@ section AdjoinIntegralElement
 universe u
 
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {α : E}
-
 variable {K : Type u} [Field K] [Algebra F K]
 
 theorem minpoly_gen (α : E) :
@@ -1070,7 +1075,7 @@ theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α
   exact (aeval_algebraMap_apply E (AdjoinSimple.gen F α) _).symm
 #align intermediate_field.aeval_gen_minpoly IntermediateField.aeval_gen_minpoly
 
---Porting note: original proof used `Exists.cases_on`.
+-- Porting note: original proof used `Exists.cases_on`.
 /-- algebra isomorphism between `AdjoinRoot` and `F⟮α⟯` -/
 noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
     AdjoinRoot (minpoly F α) ≃ₐ[F] F⟮α⟯ :=
@@ -1130,7 +1135,7 @@ noncomputable def adjoin.powerBasis {x : L} (hx : IsIntegral K x) : PowerBasis K
 #align intermediate_field.adjoin.power_basis IntermediateField.adjoin.powerBasis
 
 theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimensional K K⟮x⟯ :=
-  PowerBasis.finiteDimensional (adjoin.powerBasis hx)
+  (adjoin.powerBasis hx).finite
 #align intermediate_field.adjoin.finite_dimensional IntermediateField.adjoin.finiteDimensional
 
 theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
@@ -1163,12 +1168,12 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     rintro ⟨n, -, rfl⟩
     rw [coeff_map]
     apply Subtype.mem
-  have dvd_g : minpoly K' α ∣ g.toSubring K'.toSubring (subset_adjoin F _)
-  · apply minpoly.dvd
+  have dvd_g : minpoly K' α ∣ g.toSubring K'.toSubring (subset_adjoin F _) := by
+    apply minpoly.dvd
     erw [aeval_def, eval₂_eq_eval_map, g.map_toSubring K'.toSubring, eval_map, ← aeval_def]
     exact minpoly.aeval K α
-  have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α)
-  · intro K
+  have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α) := by
+    intro K
     have := adjoin.finrank (.of_finite K α)
     erw [adjoin_eq_top_of_adjoin_eq_top F hprim, finrank_top K E] at this
     exact this
@@ -1264,6 +1269,7 @@ theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : (minpoly F α
     simp only [adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen, h_sep, h_splits]
 #align intermediate_field.card_alg_hom_adjoin_integral IntermediateField.card_algHom_adjoin_integral
 
+-- Apparently `K⟮root f⟯ →+* K⟮root f⟯` is expensive to unify during instance synthesis.
 open FiniteDimensional AdjoinRoot in
 /-- Let `f, g` be monic polynomials over `K`. If `f` is irreducible, and `g(x) - α` is irreducible
 in `K⟮α⟯` with `α` a root of `f`, then `f(g(x))` is irreducible. -/
@@ -1274,11 +1280,12 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     Irreducible (f.comp g) := by
   have hf' : natDegree f ≠ 0 :=
     fun e ↦ not_irreducible_C (f.coeff 0) (eq_C_of_natDegree_eq_zero e ▸ hf)
-  have hg' : natDegree g ≠ 0
-  · have := Fact.mk hf
+  have hg' : natDegree g ≠ 0 := by
+    have := Fact.mk hf
     intro e
     apply not_irreducible_C ((g.map (algebraMap _ _)).coeff 0 - AdjoinSimple.gen K (root f))
-    rw [map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
+    -- Needed to specialize `map_sub` to avoid a timeout #8386
+    rw [RingHom.map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
     apply hg (AdjoinRoot f)
     rw [AdjoinRoot.minpoly_root hf.ne_zero, hfm, inv_one, map_one, mul_one]
   have H₁ : f.comp g ≠ 0 := fun h ↦ by simpa [hf', hg', natDegree_comp] using congr_arg natDegree h
@@ -1289,22 +1296,22 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     (this.trans natDegree_comp.symm).ge).irreducible hp₁
   have := Fact.mk hp₁
   let Kx := AdjoinRoot p
-  letI := (AdjoinRoot.powerBasis hp₁.ne_zero).finiteDimensional
-  have key₁ : f = minpoly K (aeval (root p) g)
-  · refine minpoly.eq_of_irreducible_of_monic hf ?_ hfm
+  letI := (AdjoinRoot.powerBasis hp₁.ne_zero).finite
+  have key₁ : f = minpoly K (aeval (root p) g) := by
+    refine minpoly.eq_of_irreducible_of_monic hf ?_ hfm
     rw [← aeval_comp]
     exact aeval_eq_zero_of_dvd_aeval_eq_zero hp₂ (AdjoinRoot.eval₂_root p)
-  have key₁' : finrank K K⟮aeval (root p) g⟯ = natDegree f
-  · rw [adjoin.finrank, ← key₁]
+  have key₁' : finrank K K⟮aeval (root p) g⟯ = natDegree f := by
+    rw [adjoin.finrank, ← key₁]
     exact IsIntegral.of_finite _ _
   have key₂ : g.map (algebraMap _ _) - C (AdjoinSimple.gen K (aeval (root p) g)) =
-      minpoly K⟮aeval (root p) g⟯ (root p)
-  · exact minpoly.eq_of_irreducible_of_monic (hg _ _ key₁.symm) (by simp [AdjoinSimple.gen])
+      minpoly K⟮aeval (root p) g⟯ (root p) :=
+    minpoly.eq_of_irreducible_of_monic (hg _ _ key₁.symm) (by simp [AdjoinSimple.gen])
       (Monic.sub_of_left (hgm.map _) (degree_lt_degree (by simpa [Nat.pos_iff_ne_zero] using hg')))
-  have key₂' : finrank K⟮aeval (root p) g⟯ Kx = natDegree g
-  · trans natDegree (minpoly K⟮aeval (root p) g⟯ (root p))
-    · have : K⟮aeval (root p) g⟯⟮root p⟯ = ⊤
-      · apply restrictScalars_injective K
+  have key₂' : finrank K⟮aeval (root p) g⟯ Kx = natDegree g := by
+    trans natDegree (minpoly K⟮aeval (root p) g⟯ (root p))
+    · have : K⟮aeval (root p) g⟯⟮root p⟯ = ⊤ := by
+        apply restrictScalars_injective K
         rw [restrictScalars_top, adjoin_adjoin_left, Set.union_comm, ← adjoin_adjoin_left,
           adjoin_root_eq_top p, restrictScalars_adjoin]
         simp
@@ -1335,7 +1342,7 @@ theorem fg_def {S : IntermediateField F E} : S.FG ↔ ∃ t : Set E, Set.Finite 
 #align intermediate_field.fg_def IntermediateField.fg_def
 
 theorem fg_bot : (⊥ : IntermediateField F E).FG :=
-  -- porting note: was `⟨∅, adjoin_empty F E⟩`
+  -- Porting note: was `⟨∅, adjoin_empty F E⟩`
   ⟨∅, by simp only [Finset.coe_empty, adjoin_empty]⟩
 #align intermediate_field.fg_bot IntermediateField.fg_bot
 
