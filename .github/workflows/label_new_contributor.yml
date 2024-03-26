@@ -2,7 +2,7 @@ name: Label New Contributors
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize]
 
 jobs:
   label-new-contributor:
@@ -29,7 +29,7 @@ jobs:
             state: "closed",
             author
           })
-          return (prs.data.length < 5)
+          return (prs.data.length < 25)
 
     - name: Add label if new contributor
       if: steps.check-contributor.outputs.result == 'true'
