@@ -6,6 +6,8 @@ Authors: Mario Carneiro, Yakov Pechersky, Eric Wieser
 import Mathlib.Data.Nat.Basic
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Convert
 
 /-!
 # Properties of `List.enum`
@@ -162,4 +164,3 @@ theorem enumFrom_eq_nil {n : ℕ} {l : List α} : List.enumFrom n l = [] ↔ l =
 
 @[simp]
 theorem enum_eq_nil {l : List α} : List.enum l = [] ↔ l = [] := enumFrom_eq_nil
-
