@@ -368,6 +368,9 @@ lemma mul_right_eq_self_iff (ha : 0 < a) : a * b = a ↔ b = 1 := mul_eq_left $ 
 lemma mul_left_eq_self_iff (hb : 0 < b) : a * b = b ↔ a = 1 := mul_eq_right $ ne_of_gt hb
 #align nat.mul_left_eq_self_iff Nat.mul_left_eq_self_iff
 
+protected lemma le_of_mul_le_mul_right (h : a * c ≤ b * c) (hc : 0 < c) : a ≤ b :=
+  Nat.le_of_mul_le_mul_left (by simpa [Nat.mul_comm]) hc
+
 set_option push_neg.use_distrib true in
 /-- The product of two natural numbers is greater than 1 if and only if
   at least one of them is greater than 1 and both are positive. -/
