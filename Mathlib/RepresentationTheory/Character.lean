@@ -243,6 +243,11 @@ theorem char_orthonormal (V W : FdRep k G) [Simple V] [Simple W] :
   rw_mod_cast [finrank_hom_simple_simple W V, Iso.nonempty_iso_symm]
 #align fdRep.char_orthonormal FdRep.char_orthonormal
 
+def average_function (α : G → k) (V : FdRep k G) : (V.V ⟶  V.V) where
+  toFun := fun v ↦ ⅟ (Fintype.card G : k) • ∑ g : G, (α g) • ((V.ρ g) v)
+  map_add':= sorry
+  map_smul':= sorry
+
 /-- Irreducbile characters are a basis of ClassFunction G -/
 lemma orthogonal_all_characters_implies_zero (f : G → k) (hf : IsClassFunction f) (h : ∀ V : {V : FdRep k G // Simple V}, (scalarProduct f V.1.character = (0 : k))) : f = fun _ ↦ (0 : k) := by
   sorry
