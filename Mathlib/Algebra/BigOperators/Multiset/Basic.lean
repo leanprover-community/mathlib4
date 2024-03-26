@@ -336,6 +336,11 @@ theorem dvd_sum {a : α} {s : Multiset α} : (∀ x ∈ s, a ∣ x) → a ∣ s.
 
 end NonUnitalSemiring
 
+@[simp]
+theorem sum_map_singleton (s : Multiset α) : (s.map fun a => ({a} : Multiset α)).sum = s :=
+  Multiset.induction_on s (by simp) (by simp)
+#align multiset.sum_map_singleton Multiset.sum_map_singleton
+
 theorem sum_nat_mod (s : Multiset ℕ) (n : ℕ) : s.sum % n = (s.map (· % n)).sum % n := by
   induction s using Multiset.induction <;> simp [Nat.add_mod, *]
 #align multiset.sum_nat_mod Multiset.sum_nat_mod
