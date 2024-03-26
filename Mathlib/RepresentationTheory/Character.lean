@@ -256,12 +256,17 @@ variable [Fintype G] [DecidableEq G] [Invertible (Fintype.card G : k)]
 
 def RegularRep : FdRep k G := FdRep.of (Representation.ofMulAction k G G)
 
-lemma RegularRep_character : (RegularRep).character =
+lemma RegularRep_character : RegularRep.character =
     fun (g : G) ↦ if g = 1 then (Fintype.card G : k) else 0 := by
   sorry
 
-lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) : scalarProduct (RegularRep).character V.character = (FiniteDimensional.finrank k V.1 : k) := by
-  sorry
+lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) :
+    scalarProduct RegularRep.character V.character = (FiniteDimensional.finrank k V : k) := by
+  simp only
+    [ RegularRep_character, scalarProduct, invOf_eq_inv, ite_mul
+    , zero_mul, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, inv_one
+    , char_one, smul_eq_mul, ← mul_assoc, inv_mul_cancel_of_invertible, one_mul
+    ]
 
 end RegularRepresentation
 
