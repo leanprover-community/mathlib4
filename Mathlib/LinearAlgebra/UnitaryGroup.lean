@@ -224,6 +224,8 @@ theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
   rwa [mul_eq_one_comm] at hA
 #align matrix.mem_orthogonal_group_iff' Matrix.mem_orthogonalGroup_iff'
 
+abbrev specialOrthogonalGroup := {w : orthogonalGroup n β // Matrix.det (w : Matrix n n β) = 1}
+
 end OrthogonalGroup
 
 end Matrix
