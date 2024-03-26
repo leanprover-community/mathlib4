@@ -52,17 +52,6 @@ theorem prod_eq_one_iff [CanonicallyOrderedCommMonoid α] {m : Multiset α} :
 #align multiset.prod_eq_one_iff Multiset.prod_eq_one_iff
 #align multiset.sum_eq_zero_iff Multiset.sum_eq_zero_iff
 
-section NonUnitalSemiring
-variable [NonUnitalSemiring α] {s : Multiset α} {a : α}
-
-lemma dvd_sum : (∀ x ∈ s, a ∣ x) → a ∣ s.sum :=
-  Multiset.induction_on s (fun _ ↦ dvd_zero _) fun x s ih h => by
-    rw [sum_cons]
-    exact dvd_add (h _ (mem_cons_self _ _)) (ih fun y hy => h _ <| mem_cons.2 <| Or.inr hy)
-#align multiset.dvd_sum Multiset.dvd_sum
-
-end NonUnitalSemiring
-
 end Multiset
 
 @[simp]
