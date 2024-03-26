@@ -49,7 +49,6 @@ theorem cauchy_partial_sums_of_tendsto_cofinite_zero {α G : Type*} [AddCommGrou
     have hV : V ∈ map (fun s ↦ Finset.sum s f) atTop := by
       /- We will, in fact, show that for all finite supersets `S'` of `S`, the partial sum of `f` on
       `S'` is in `V`. -/
-      apply mem_map.mpr
       apply mem_of_superset <| mem_atTop S
       intro S' hS'
 
