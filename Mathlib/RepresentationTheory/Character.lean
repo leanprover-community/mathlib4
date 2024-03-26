@@ -262,14 +262,39 @@ section RegularRepresentation
 variable {G : GroupCat.{u}} [IsAlgClosed k]
 variable [Fintype G] [DecidableEq G] [Invertible (Fintype.card G : k)]
 
+variable (k G)
+
 def RegularRep : FdRep k G := FdRep.of (Representation.ofMulAction k G G)
 
-lemma RegularRep_character : RegularRep.character =
+def stdBasis : Basis G k (RegularRep k G) :=
+  Basis.ofRepr (LinearEquiv.refl _ _)
+
+lemma RegularRep_character_one : (RegularRep k G).character (1 : G) = (Fintype.card G : k) := by
+  rw [character, LinearMap.trace_eq_matrix_trace k (stdBasis k G)]
+  simp only [map_one, toMatrix_one, Matrix.trace_one]
+
+lemma RegularRep_character_ne_one (g : G) (h : g ≠ 1) : (RegularRep k G).character g = (0 : k) := by
+  rw [character, LinearMap.trace_eq_matrix_trace k (stdBasis k G)]
+  apply Fintype.sum_eq_zero
+  intro g'
+  simp only [toMatrix, LinearEquiv.trans_apply, Matrix.diag_apply, toMatrix'_apply,
+    LinearEquiv.arrowCongr_apply, Basis.equivFun_symm_apply, ite_smul, one_smul, zero_smul,
+    Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, Basis.equivFun_apply]
+  erw [ofMulAction_single]
+  apply Finsupp.single_eq_of_ne
+  simp only [smul_eq_mul, ne_eq, mul_left_eq_self]
+  exact h
+
+lemma RegularRep_character : (RegularRep k G).character =
     fun (g : G) ↦ if g = 1 then (Fintype.card G : k) else 0 := by
-  sorry
+  ext g
+  if h : g = 1 then
+    simp [h, RegularRep_character_one k G]
+  else
+    simp [h, RegularRep_character_ne_one k G]
 
 lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) :
-    scalarProduct RegularRep.character V.character = (FiniteDimensional.finrank k V : k) := by
+    scalarProduct (RegularRep k G).character V.character = (FiniteDimensional.finrank k V : k) := by
   simp only
     [ RegularRep_character, scalarProduct, invOf_eq_inv, ite_mul
     , zero_mul, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, inv_one
