@@ -270,16 +270,16 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
     (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
   nontriviality R
   convert multiset_prod_X_sub_C_nextCoeff (by assumption)
-  rw [nextCoeff]; split_ifs with h
-  · rw [natDegree_multiset_prod_of_monic] at h
+  rw [nextCoeff, if_neg]
+  swap
+  · rw [natDegree_multiset_prod_of_monic]
     swap
     · simp only [Multiset.mem_map]
       rintro _ ⟨_, _, rfl⟩
       apply monic_X_sub_C
-    simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map] at h
-    contrapose! h
+    simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map]
     obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp ht
-    exact ⟨_, ⟨_, ⟨x, hx, rfl⟩, natDegree_X_sub_C _⟩, one_ne_zero⟩
+    exact fun h => one_ne_zero <| h 1 ⟨_, ⟨x, hx, rfl⟩, natDegree_X_sub_C _⟩
   congr; rw [natDegree_multiset_prod_of_monic] <;> · simp [natDegree_X_sub_C, monic_X_sub_C]
 set_option linter.uppercaseLean3 false in
 #align polynomial.multiset_prod_X_sub_C_coeff_card_pred Polynomial.multiset_prod_X_sub_C_coeff_card_pred

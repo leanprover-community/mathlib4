@@ -398,13 +398,11 @@ theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
   · rcases h with ⟨_, rfl⟩
     apply dvd_mul_right
   · rcases h with ⟨a, h⟩
-    cases a with
-    | zero =>
-      contrapose h
-      apply ne_zero
-    | succ n =>
-      use ⟨n.succ, n.succ_pos⟩
-      rw [← coe_inj, h, mul_coe, mk_coe]
+    obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (n := a) <| by
+      rintro rfl
+      simp only [mul_zero, ne_zero] at h
+    use ⟨n.succ, n.succ_pos⟩
+    rw [← coe_inj, h, mul_coe, mk_coe]
 #align pnat.dvd_iff PNat.dvd_iff
 
 theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by

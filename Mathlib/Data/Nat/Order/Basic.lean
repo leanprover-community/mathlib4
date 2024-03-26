@@ -323,7 +323,7 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
     have _ : a + (b + 1) < (a + 1) + (b + 1) := by simp
     apply diag_induction P ha hb hd a (b + 1)
     apply lt_of_le_of_lt (Nat.le_succ _) h
-  termination_by a b c => a + b
+  termination_by a b _c => a + b
   decreasing_by all_goals assumption
 #align nat.diag_induction Nat.diag_induction
 
@@ -500,7 +500,7 @@ section Find
 
 variable {p q : ℕ → Prop} [DecidablePred p] [DecidablePred q]
 
--- Porting note: removing `simp` attribute as `simp` can prove it
+-- Porting note (#10618): removing `simp` attribute as `simp` can prove it
 theorem find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 := by
   rw [pos_iff_ne_zero, Ne, Nat.find_eq_zero]
 #align nat.find_pos Nat.find_pos

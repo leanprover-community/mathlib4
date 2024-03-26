@@ -73,10 +73,10 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
-  { (f : A →+* B) with
-      toFun := f
-      commutes' := AlgHomClass.commutes f }
+def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
+  __ := (f : A →+* B)
+  toFun := f
+  commutes' := AlgHomClass.commutes f
 
 instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
@@ -418,8 +418,8 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
   φ.toLinearMap.map_smul_of_tower r x
 #align alg_hom.map_smul_of_tower AlgHom.map_smul_of_tower
 
-theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
-  φ.toRingHom.map_list_prod s
+nonrec theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
+  map_list_prod φ s
 #align alg_hom.map_list_prod AlgHom.map_list_prod
 
 @[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
