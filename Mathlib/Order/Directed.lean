@@ -312,7 +312,7 @@ theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] [Nontrivial β] : �
   ⟨b, a, h⟩
 #align exists_lt_of_directed_le exists_lt_of_directed_le
 
-variable [PartialOrder β] {f : α → β} {s : Set α}
+variable {f : α → β} {s : Set α}
 
 -- TODO: Generalise the following two lemmas to connected orders
 

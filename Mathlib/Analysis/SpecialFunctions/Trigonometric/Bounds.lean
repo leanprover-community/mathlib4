@@ -62,10 +62,12 @@ lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
   · simpa using this $ neg_nonneg.2 $ le_of_not_le hx₀
   suffices MonotoneOn (fun x ↦ cos x + x ^ 2 / 2) (Ici 0) by
     simpa using this left_mem_Ici hx₀ hx₀
-  refine monotoneOn_of_hasDerivWithinAt_nonneg (convex_Ici _) (Continuous.continuousOn $ by
-    continuity) (fun x _ ↦
-    ((hasDerivAt_cos ..).add $ (hasDerivAt_pow ..).div_const _).hasDerivWithinAt) fun x hx ↦ ?_
-  simpa [mul_div_cancel_left] using sin_le $ interior_subset hx
+  refine monotoneOn_of_hasDerivWithinAt_nonneg
+    (convex_Ici _)
+    (Continuous.continuousOn <| by continuity)
+    (fun x _ ↦ ((hasDerivAt_cos ..).add <| (hasDerivAt_pow ..).div_const _).hasDerivWithinAt)
+    fun x hx ↦ ?_
+  simpa [mul_div_cancel_left₀] using sin_le <| interior_subset hx
 
 /-- **Jordan's inequality**. -/
 lemma two_div_pi_mul_le_sin (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 2 / π * x ≤ sin x := by
@@ -98,8 +100,11 @@ lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   simp only [Nat.cast_ofNat, Nat.succ_sub_succ_eq_sub, tsub_zero, pow_one, ← neg_sub', neg_sub,
     ← mul_assoc] at hderiv
   have hmono : MonotoneOn (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) (Icc 0 (π / 2)) := by
-    refine monotoneOn_of_hasDerivWithinAt_nonneg (convex_Icc ..) (Continuous.continuousOn $
-      by continuity) (fun x _ ↦ (hderiv _).hasDerivWithinAt) fun x hx ↦ sub_nonneg.2 ?_
+    refine monotoneOn_of_hasDerivWithinAt_nonneg
+      (convex_Icc ..)
+      (Continuous.continuousOn $ by continuity)
+      (fun x _ ↦ (hderiv _).hasDerivWithinAt)
+      fun x hx ↦ sub_nonneg.2 ?_
     have ⟨hx₀, hx⟩ := interior_subset hx
     calc 2 / π ^ 2 * 2 * x
         = 2 / π * (2 / π * x) := by ring

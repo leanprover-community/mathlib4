@@ -327,7 +327,7 @@ theorem measurableSet_preimage {t : Set β} (hf : Measurable f) (ht : Measurable
   hf ht
 #align measurable_set_preimage measurableSet_preimage
 
--- Porting note: new
+-- Porting note (#10756): new theorem
 protected theorem MeasurableSet.preimage {t : Set β} (ht : MeasurableSet t) (hf : Measurable f) :
     MeasurableSet (f ⁻¹' t) :=
   hf ht
@@ -659,7 +659,7 @@ theorem MeasurableSet.of_union_cover {s t u : Set α} (hs : MeasurableSet s) (ht
     (h : univ ⊆ s ∪ t) (hsu : MeasurableSet (((↑) : s → α) ⁻¹' u))
     (htu : MeasurableSet (((↑) : t → α) ⁻¹' u)) : MeasurableSet u := by
   convert (hs.subtype_image hsu).union (ht.subtype_image htu)
-  simp [image_preimage_eq_inter_range, ← inter_distrib_left, univ_subset_iff.1 h]
+  simp [image_preimage_eq_inter_range, ← inter_union_distrib_left, univ_subset_iff.1 h]
 
 theorem measurable_of_measurable_union_cover {f : α → β} (s t : Set α) (hs : MeasurableSet s)
     (ht : MeasurableSet t) (h : univ ⊆ s ∪ t) (hc : Measurable fun a : s => f a)
@@ -1099,7 +1099,7 @@ theorem measurable_inr [MeasurableSpace α] [MeasurableSpace β] : Measurable (@
 
 variable {m : MeasurableSpace α} {mβ : MeasurableSpace β}
 
--- Porting note: new
+-- Porting note (#10756): new theorem
 theorem measurableSet_sum_iff {s : Set (α ⊕ β)} :
     MeasurableSet s ↔ MeasurableSet (Sum.inl ⁻¹' s) ∧ MeasurableSet (Sum.inr ⁻¹' s) :=
   Iff.rfl
@@ -1121,7 +1121,7 @@ theorem Measurable.sumMap {_ : MeasurableSpace γ} {_ : MeasurableSpace δ} {f :
     (hf : Measurable f) (hg : Measurable g) : Measurable (Sum.map f g) :=
   (measurable_inl.comp hf).sumElim (measurable_inr.comp hg)
 
--- Porting note: new
+-- Porting note (#10756): new theorem
 @[simp] theorem measurableSet_inl_image {s : Set α} :
     MeasurableSet (Sum.inl '' s : Set (α ⊕ β)) ↔ MeasurableSet s := by
   simp [measurableSet_sum_iff, Sum.inl_injective.preimage_image]
@@ -1129,7 +1129,7 @@ theorem Measurable.sumMap {_ : MeasurableSpace γ} {_ : MeasurableSpace δ} {f :
 alias ⟨_, MeasurableSet.inl_image⟩ := measurableSet_inl_image
 #align measurable_set.inl_image MeasurableSet.inl_image
 
--- Porting note: new
+-- Porting note (#10756): new theorem
 @[simp] theorem measurableSet_inr_image {s : Set β} :
     MeasurableSet (Sum.inr '' s : Set (α ⊕ β)) ↔ MeasurableSet s := by
   simp [measurableSet_sum_iff, Sum.inr_injective.preimage_image]
