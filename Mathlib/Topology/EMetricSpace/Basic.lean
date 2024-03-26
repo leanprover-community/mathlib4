@@ -93,13 +93,12 @@ namespace, while notions associated to metric spaces are mostly in the root name
 
 /-- Two pseudo emetric space structures with the same edistance function coincide. -/
 @[ext]
-theorem PseudoEMetricSpace.ext {α : Type*} {m m' : PseudoEMetricSpace α}
+protected theorem PseudoEMetricSpace.ext {α : Type*} {m m' : PseudoEMetricSpace α}
     (h : m.toEDist = m'.toEDist) : m = m' := by
   cases' m with ed  _ _ _ U hU
   cases' m' with ed' _ _ _ U' hU'
-  obtain rfl : ed = ed' := h
-  congr
-  · exact UniformSpace.ext (hU.trans hU'.symm)
+  congr 1
+  exact UniformSpace.ext (((show ed = ed' from h) ▸ hU).trans hU'.symm)
 
 variable [PseudoEMetricSpace α]
 
@@ -1028,9 +1027,13 @@ class EMetricSpace (α : Type u) extends PseudoEMetricSpace α : Type u where
 #align emetric_space EMetricSpace
 
 @[ext]
-theorem EMetricSpace.ext {α : Type*} {m m' : EMetricSpace α} (h : m.toEDist = m'.toEDist) :
+protected theorem EMetricSpace.ext {α : Type*} {m m' : EMetricSpace α} (h : m.toEDist = m'.toEDist) :
     m = m' := by
-  cases m; cases m'; congr; ext1; assumption
+  cases m
+  cases m'
+  congr
+  ext1
+  assumption
 
 variable {γ : Type w} [EMetricSpace γ]
 
