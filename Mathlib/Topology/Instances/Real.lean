@@ -18,7 +18,8 @@ import Mathlib.Topology.Instances.Int
 
 noncomputable section
 
-open Classical Filter Int Metric Set TopologicalSpace Bornology
+open scoped Classical
+open Filter Int Metric Set TopologicalSpace Bornology
 open scoped Topology Uniformity Interval
 
 universe u v w
@@ -78,7 +79,7 @@ theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
 #align real.cocompact_eq Real.cocompact_eq
 
 @[deprecated] alias Real.atBot_le_cocompact := atBot_le_cocompact -- deprecated on 2024-02-07
-@[deprecated] alias Real.atTop_le_cocompact := atBot_le_cocompact -- deprecated on 2024-02-07
+@[deprecated] alias Real.atTop_le_cocompact := atTop_le_cocompact -- deprecated on 2024-02-07
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
 lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
@@ -135,7 +136,7 @@ theorem Real.uniformContinuous_mul (s : Set (ℝ × ℝ)) {r₁ r₂ : ℝ}
 protected theorem Real.continuous_mul : Continuous fun p : ℝ × ℝ => p.1 * p.2 := continuous_mul
 #align real.continuous_mul Real.continuous_mul
 
--- porting note: moved `TopologicalRing` instance up
+-- Porting note: moved `TopologicalRing` instance up
 
 instance : CompleteSpace ℝ := by
   apply complete_of_cauchySeq_tendsto
@@ -145,7 +146,7 @@ instance : CompleteSpace ℝ := by
   rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
   have := c.equiv_lim ε ε0
   simp only [mem_map, mem_atTop_sets, mem_setOf_eq]
-  refine' this.imp fun N hN n hn => hε (hN n hn)
+  exact this.imp fun N hN n hn => hε (hN n hn)
 
 theorem Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by
   rw [Real.ball_eq_Ioo]; apply totallyBounded_Ioo
@@ -156,7 +157,7 @@ section
 theorem closure_of_rat_image_lt {q : ℚ} :
     closure (((↑) : ℚ → ℝ) '' { x | q < x }) = { r | ↑q ≤ r } :=
   Subset.antisymm
-    ((isClosed_ge' _).closure_subset_iff.2
+    (isClosed_Ici.closure_subset_iff.2
       (image_subset_iff.2 fun p h => le_of_lt <| (@Rat.cast_lt ℝ _ _ _).2 h))
     fun x hx => mem_closure_iff_nhds.2 fun t ht =>
       let ⟨ε, ε0, hε⟩ := Metric.mem_nhds_iff.1 ht

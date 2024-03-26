@@ -75,6 +75,15 @@ def id (Q : QuadraticForm R M) : Q →qᵢ Q where
   __ := LinearMap.id
   map_app' _ := rfl
 
+/-- The identity isometry between equal quadratic forms. -/
+@[simps!]
+def ofEq {Q₁ Q₂ : QuadraticForm R M₁} (h : Q₁ = Q₂) : Q₁ →qᵢ Q₂ where
+  __ := LinearMap.id
+  map_app' _ := h ▸ rfl
+
+@[simp]
+theorem ofEq_rfl {Q : QuadraticForm R M₁} : ofEq (rfl : Q = Q) = .id Q := rfl
+
 /-- The composition of two isometries between quadratic forms. -/
 @[simps]
 def comp (g : Q₂ →qᵢ Q₃) (f : Q₁ →qᵢ Q₂) : Q₁ →qᵢ Q₃ where

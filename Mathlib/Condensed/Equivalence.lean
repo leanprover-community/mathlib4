@@ -69,8 +69,8 @@ instance isCoverDense : Stonean.toCompHaus.IsCoverDense (coherentTopology _)  :=
   convert generate_singleton_mem_coherentTopology B
   ext Y f
   refine ⟨fun ⟨⟨obj, lift, map, fact⟩⟩ ↦ ?_, fun ⟨Z, h, g, hypo1, hf⟩ ↦ ?_⟩
-  · have : Projective (Stonean.toCompHaus.obj obj) -- Lean should find this instance?
-    · simp only [Stonean.toCompHaus, inducedFunctor_obj]
+  · have : Projective (Stonean.toCompHaus.obj obj) := by -- Lean should find this instance?
+      simp only [Stonean.toCompHaus, inducedFunctor_obj]
       exact inferInstance
     obtain ⟨p, p_factors⟩ := Projective.factors map (CompHaus.presentation.π B)
     exact ⟨(Stonean.toCompHaus.obj (presentation B)), ⟨lift ≫ p, ⟨(presentation.π B),

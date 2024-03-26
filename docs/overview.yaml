@@ -273,7 +273,7 @@ Analysis:
     Hahn-Banach theorem: 'exists_extension_norm_eq'
     dual of a normed space: 'NormedSpace.Dual'
     isometric inclusion in double dual: 'NormedSpace.inclusionInDoubleDualLi'
-    completeness of spaces of bounded continuous functions: 'BoundedContinuousFunction.instCompleteSpaceBoundedContinuousFunctionToUniformSpaceInstPseudoMetricSpaceBoundedContinuousFunction'
+    completeness of spaces of bounded continuous functions: 'BoundedContinuousFunction.instCompleteSpace'
 
   Hilbert spaces:
     Inner product space, over $R$ or $C$: 'InnerProductSpace'
@@ -361,6 +361,12 @@ Analysis:
 
   Distribution theory:
     Schwartz space: 'SchwartzMap'
+
+  Fourier analysis:
+    Fourier transform as an integral: 'Real.fourierIntegral'
+    inversion formula: 'Continuous.fourier_inversion'
+    Riemann-Lebesgue lemma: 'tendsto_integral_exp_inner_smul_cocompact'
+    Parseval formula for Fourier series: 'tsum_sq_fourierCoeff'
 
 Probability Theory:
   Definitions in probability theory:

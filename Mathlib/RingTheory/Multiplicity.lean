@@ -3,10 +3,12 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes
 -/
+import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.PartENat
 import Mathlib.Tactic.Linarith
+import Mathlib.Data.Nat.Pow
 
 #align_import ring_theory.multiplicity from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -28,8 +30,7 @@ several basic results on it.
 variable {α β : Type*}
 
 open Nat Part
-
-open BigOperators
+open scoped BigOperators
 
 /-- `multiplicity a b` returns the largest natural number `n` such that
   `a ^ n ∣ b`, as a `PartENat` or natural with infinity. If `∀ n, a ^ n ∣ b`,
@@ -183,7 +184,7 @@ theorem isUnit_left {a : α} (b : α) (ha : IsUnit a) : multiplicity a b = ⊤ :
   eq_top_iff.2 fun _ => IsUnit.dvd (ha.pow _)
 #align multiplicity.is_unit_left multiplicity.isUnit_left
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem one_left (b : α) : multiplicity 1 b = ⊤ :=
   isUnit_left b isUnit_one
 #align multiplicity.one_left multiplicity.one_left
@@ -194,7 +195,7 @@ theorem get_one_right {a : α} (ha : Finite a 1) : get (multiplicity a 1) ha = 0
   simp [not_dvd_one_of_finite_one_right ha]
 #align multiplicity.get_one_right multiplicity.get_one_right
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem unit_left (a : α) (u : αˣ) : multiplicity (u : α) a = ⊤ :=
   isUnit_left a u.isUnit
 #align multiplicity.unit_left multiplicity.unit_left
@@ -298,7 +299,7 @@ theorem finite_nat_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 < b := by
               match a with
               | 0 => ha rfl
               | 1 => ha1 rfl
-              | b+2 => by linarith
+              | b+2 => by omega
           not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (lt_pow_self ha_gt_one b),
       fun h => by cases h <;> simp [*]⟩
 #align multiplicity.finite_nat_iff multiplicity.finite_nat_iff
@@ -332,7 +333,7 @@ theorem unit_right {a : α} (ha : ¬IsUnit a) (u : αˣ) : multiplicity a u = 0 
   isUnit_right ha u.isUnit
 #align multiplicity.unit_right multiplicity.unit_right
 
-open Classical
+open scoped Classical
 
 theorem multiplicity_le_multiplicity_of_dvd_left {a b c : α} (hdvd : a ∣ b) :
     multiplicity b c ≤ multiplicity a c :=
@@ -376,7 +377,6 @@ end MonoidWithZero
 section CommMonoidWithZero
 
 variable [CommMonoidWithZero α]
-
 variable [DecidableRel ((· ∣ ·) : α → α → Prop)]
 
 theorem multiplicity_mk_eq_multiplicity
@@ -478,8 +478,8 @@ section CancelCommMonoidWithZero
 
 variable [CancelCommMonoidWithZero α]
 
-/- Porting note: removed previous wf recursion hints and added termination_by
-Also pulled a b intro parameters since Lean parses that more easily -/
+/- Porting note:
+Pulled a b intro parameters since Lean parses that more easily -/
 theorem finite_mul_aux {p : α} (hp : Prime p) {a b : α} :
     ∀ {n m : ℕ}, ¬p ^ (n + 1) ∣ a → ¬p ^ (m + 1) ∣ b → ¬p ^ (n + m + 1) ∣ a * b
   | n, m => fun ha hb ⟨s, hs⟩ =>
@@ -511,7 +511,6 @@ theorem finite_mul_aux {p : α} (hp : Prime p) {a b : α} :
         ⟨s, mul_right_cancel₀ hp.1 (by
               rw [add_assoc, tsub_add_cancel_of_le (succ_le_of_lt hm0)]
               simp_all [mul_comm, mul_assoc, mul_left_comm, pow_add])⟩
-termination_by n m => n + m
 #align multiplicity.finite_mul_aux multiplicity.finite_mul_aux
 
 theorem finite_mul {p a b : α} (hp : Prime p) : Finite p a → Finite p b → Finite p (a * b) :=
@@ -576,7 +575,7 @@ protected theorem mul' {p a b : α} (hp : Prime p) (h : (multiplicity p (a * b))
   rw [← PartENat.natCast_inj, PartENat.natCast_get, eq_coe_iff]; exact ⟨hdiv, hsucc⟩
 #align multiplicity.mul' multiplicity.mul'
 
-open Classical
+open scoped Classical
 
 protected theorem mul {p a b : α} (hp : Prime p) :
     multiplicity p (a * b) = multiplicity p a + multiplicity p b :=

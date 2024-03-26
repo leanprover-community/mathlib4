@@ -169,6 +169,20 @@ lemma isUnit_iff' :
   conv_lhs => rw [← modByMonic_add_div P monic_X]
   simp [modByMonic_X]
 
+theorem not_isUnit_of_natDegree_pos_of_isReduced [IsReduced R] (p : R[X])
+    (hpl : 0 < p.natDegree) : ¬ IsUnit p := by
+  simp only [ne_eq, isNilpotent_iff_eq_zero, not_and, not_forall, exists_prop,
+    Polynomial.isUnit_iff_coeff_isUnit_isNilpotent]
+  intro _
+  refine ⟨p.natDegree, hpl.ne', ?_⟩
+  contrapose! hpl
+  simp only [coeff_natDegree, leadingCoeff_eq_zero] at hpl
+  simp [hpl]
+
+theorem not_isUnit_of_degree_pos_of_isReduced [IsReduced R] (p : R[X])
+    (hpl : 0 < p.degree) : ¬ IsUnit p :=
+  not_isUnit_of_natDegree_pos_of_isReduced _ (natDegree_pos_iff_degree_pos.mpr hpl)
+
 end CommRing
 
 section CommAlgebra
@@ -186,7 +200,7 @@ variable {P}
 lemma isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub
     (hb : IsUnit (aeval b P)) (hab : IsNilpotent (a - b)) :
     IsUnit (aeval a P) := by
-  rw [← add_sub_cancel'_right (aeval b P) (aeval a P)]
+  rw [← add_sub_cancel (aeval b P) (aeval a P)]
   refine IsNilpotent.isUnit_add_left_of_commute ?_ hb (Commute.all _ _)
   exact isNilpotent_aeval_sub_of_isNilpotent_sub P hab
 

@@ -124,7 +124,9 @@ protected def Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : 
     zero_smul := fun x => hf <| by simp only [smul, zero_smul, f.map_zero] }
 #align function.injective.module Function.Injective.module
 
-/-- Pushforward a `Module` structure along a surjective additive monoid homomorphism. -/
+/-- Pushforward a `Module` structure along a surjective additive monoid homomorphism.
+See note [reducible non-instances]. -/
+@[reducible]
 protected def Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f : M →+ M₂)
     (hf : Surjective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { toDistribMulAction := hf.distribMulAction f smul
@@ -201,7 +203,7 @@ theorem Module.eq_zero_of_zero_eq_one (zero_eq_one : (0 : R) = 1) : x = 0 := by
 
 @[simp]
 theorem smul_add_one_sub_smul {R : Type*} [Ring R] [Module R M] {r : R} {m : M} :
-    r • m + (1 - r) • m = m := by rw [← add_smul, add_sub_cancel'_right, one_smul]
+    r • m + (1 - r) • m = m := by rw [← add_smul, add_sub_cancel, one_smul]
 #align smul_add_one_sub_smul smul_add_one_sub_smul
 
 end AddCommMonoid
@@ -254,7 +256,7 @@ theorem neg_smul : -r • x = -(r • x) :=
   eq_neg_of_add_eq_zero_left <| by rw [← add_smul, add_left_neg, zero_smul]
 #align neg_smul neg_smul
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 --@[simp]
 theorem neg_smul_neg : -r • -x = r • x := by rw [neg_smul, smul_neg, neg_neg]
 #align neg_smul_neg neg_smul_neg
@@ -565,6 +567,7 @@ is the result `smul_eq_zero`: a scalar multiple is `0` iff either argument is `0
 
 It is a generalization of the `NoZeroDivisors` class to heterogeneous multiplication.
 -/
+@[mk_iff]
 class NoZeroSMulDivisors (R M : Type*) [Zero R] [Zero M] [SMul R M] : Prop where
   /-- If scalar multiplication yields zero, either the scalar or the vector was zero. -/
   eq_zero_or_eq_zero_of_smul_eq_zero : ∀ {c : R} {x : M}, c • x = 0 → c = 0 ∨ x = 0
@@ -622,8 +625,6 @@ section Nat
 variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R) (M)
 
---include R
-
 theorem Nat.noZeroSMulDivisors : NoZeroSMulDivisors ℕ M :=
   ⟨by
     intro c x
@@ -678,7 +679,6 @@ section Nat
 
 variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R M)
---include R
 
 theorem self_eq_neg {v : M} : v = -v ↔ v = 0 := by
   rw [← two_nsmul_eq_zero R M, two_smul, add_eq_zero_iff_eq_neg]
@@ -761,13 +761,13 @@ instance (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module
 
 end NoZeroSMulDivisors
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 --@[simp]
 theorem Nat.smul_one_eq_coe {R : Type*} [Semiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]
 #align nat.smul_one_eq_coe Nat.smul_one_eq_coe
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 --@[simp]
 theorem Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]

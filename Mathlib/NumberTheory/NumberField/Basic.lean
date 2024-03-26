@@ -106,7 +106,7 @@ instance [Algebra K L] : IsScalarTower (𝓞 K) (𝓞 L) L :=
 instance (priority := 100) [Algebra K L] [NumberField L] : FiniteDimensional K L :=
   Module.Finite.of_restrictScalars_finite ℚ K L
 
--- no diamond
+-- diamond at `reducible_and_instances` #10906
 example : Algebra.id (𝓞 K) = inst_ringOfIntegersAlgebra K K := rfl
 
 namespace RingOfIntegers

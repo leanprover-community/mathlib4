@@ -92,7 +92,7 @@ theorem equicontinuousAt_of_continuity_modulus {ι : Type*} [TopologicalSpace β
     (H : ∀ᶠ x in 𝓝 x₀, ∀ i, dist (F i x₀) (F i x) ≤ b x) : EquicontinuousAt F x₀ := by
   rw [Metric.equicontinuousAt_iff_right]
   intro ε ε0
-  -- porting note: Lean 3 didn't need `Filter.mem_map.mp` here
+  -- Porting note: Lean 3 didn't need `Filter.mem_map.mp` here
   filter_upwards [Filter.mem_map.mp <| b_lim (Iio_mem_nhds ε0), H] using
     fun x hx₁ hx₂ i => (hx₂ i).trans_lt hx₁
 #align metric.equicontinuous_at_of_continuity_modulus Metric.equicontinuousAt_of_continuity_modulus

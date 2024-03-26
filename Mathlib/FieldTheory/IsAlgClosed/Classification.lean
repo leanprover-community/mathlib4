@@ -36,7 +36,6 @@ section AlgebraicClosure
 namespace Algebra.IsAlgebraic
 
 variable (R L : Type u) [CommRing R] [CommRing L] [IsDomain L] [Algebra R L]
-
 variable [NoZeroSMulDivisors R L] (halg : Algebra.IsAlgebraic R L)
 
 theorem cardinal_mk_le_sigma_polynomial :
@@ -88,15 +87,10 @@ section Classification
 noncomputable section
 
 variable {R L K : Type*} [CommRing R]
-
 variable [Field K] [Algebra R K]
-
 variable [Field L] [Algebra R L]
-
 variable {ι : Type*} (v : ι → K)
-
 variable {κ : Type*} (w : κ → L)
-
 variable (hv : AlgebraicIndependent R v)
 
 theorem isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenceBasis R v) :
@@ -115,8 +109,8 @@ def equivOfTranscendenceBasis [IsAlgClosed K] [IsAlgClosed L] (e : ι ≃ κ)
     (hv : IsTranscendenceBasis R v) (hw : IsTranscendenceBasis R w) : K ≃+* L := by
   letI := isAlgClosure_of_transcendence_basis v hv
   letI := isAlgClosure_of_transcendence_basis w hw
-  have e : Algebra.adjoin R (Set.range v) ≃+* Algebra.adjoin R (Set.range w)
-  · refine' hv.1.aevalEquiv.symm.toRingEquiv.trans _
+  have e : Algebra.adjoin R (Set.range v) ≃+* Algebra.adjoin R (Set.range w) := by
+    refine' hv.1.aevalEquiv.symm.toRingEquiv.trans _
     refine' (AlgEquiv.ofAlgHom (MvPolynomial.rename e)
       (MvPolynomial.rename e.symm) _ _).toRingEquiv.trans _
     · ext; simp
@@ -132,11 +126,8 @@ end Classification
 section Cardinal
 
 variable {R L K : Type u} [CommRing R]
-
 variable [Field K] [Algebra R K] [IsAlgClosed K]
-
 variable {ι : Type u} (v : ι → K)
-
 variable (hv : IsTranscendenceBasis R v)
 
 theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
