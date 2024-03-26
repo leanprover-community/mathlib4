@@ -27,9 +27,8 @@ namespace coherentTopology
 
 variable [Precoherent D]
 
-lemma generate_singleton_functor_π_mem (B : D) :
-    ∃ (X : C) (f : F.obj X ⟶ B), Sieve.generate (Presieve.singleton f) ∈ coherentTopology D B := by
-  refine ⟨_, F.effectiveEpiOver B, ?_⟩
+instance : F.IsCoverDense (coherentTopology _) := by
+  refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.saturate.of
   refine ⟨Unit, inferInstance, fun _ => F.effectiveEpiOverObj B,
     fun _ => F.effectiveEpiOver B, ?_ , ?_⟩
@@ -41,18 +40,14 @@ lemma generate_singleton_functor_π_mem (B : D) :
   · rw [← effectiveEpi_iff_effectiveEpiFamily]
     infer_instance
 
-instance : F.IsCoverDense (coherentTopology _) :=
-  F.isCoverDense_of_generate_singleton_functor_π_mem _ (generate_singleton_functor_π_mem F)
-
 end coherentTopology
 
 namespace regularTopology
 
 variable [Preregular D]
 
-lemma generate_singleton_functor_π_mem (B : D) :
-    ∃ (X : C) (f : F.obj X ⟶ B), Sieve.generate (Presieve.singleton f) ∈ regularTopology D B := by
-  refine ⟨_, F.effectiveEpiOver B, ?_⟩
+instance : F.IsCoverDense (regularTopology _) := by
+  refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.saturate.of
   refine ⟨F.effectiveEpiOverObj B, F.effectiveEpiOver B, ?_, inferInstance⟩
   funext X f
@@ -60,8 +55,5 @@ lemma generate_singleton_functor_π_mem (B : D) :
   refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩
   rintro ⟨⟩
   simp only [Presieve.singleton_eq_iff_domain]
-
-instance : F.IsCoverDense (regularTopology _) :=
-  F.isCoverDense_of_generate_singleton_functor_π_mem _ (generate_singleton_functor_π_mem F)
 
 end regularTopology
