@@ -229,7 +229,12 @@ open LSeries Nat Complex DirichletCharacter
 
 /-- The abscissa of (absolute) convergence of the constant sequence `1` is `1`. -/
 lemma LSeries.abscissaOfAbsConv_one : abscissaOfAbsConv 1 = 1 :=
-  modOne_eq_one (R := ℂ) ▸ absicssaOfAbsConv_eq_one one_ne_zero χ₁
+  modOne_eq_one (χ := χ₁) ▸ absicssaOfAbsConv_eq_one one_ne_zero χ₁
+
+/-- The `LSeries` of the constant sequence `1` converges at `s` if and only if `re s > 1`. -/
+theorem LSeriesSummable.one_iff {s : ℂ} : LSeriesSummable 1 s ↔ 1 < s.re :=
+  modOne_eq_one (χ := χ₁) ▸ LSeriesSummable_iff one_ne_zero χ₁
+
 
 namespace ArithmeticFunction
 
@@ -239,6 +244,14 @@ lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
   ext s
   refine LSeries_congr s fun n hn ↦ ?_
   simp only [zeta_apply, hn, ↓reduceIte, cast_one, Pi.one_apply]
+
+/-- The `LSeries` associated to the arithmetic function `ζ` converges at `s` if and only if
+`re s > 1`. -/
+theorem zeta_LSeriesSummable_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re := by
+  have (n : ℕ) (hn : n ≠ 0) : ζ n = (1 : ℕ → ℂ) n := by
+    simp only [ArithmeticFunction.zeta_apply, hn, ↓reduceIte, Nat.cast_one, Pi.one_apply]
+  exact (LSeriesSummable_congr s this).trans <| LSeriesSummable.one_iff
+#align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re ArithmeticFunction.zeta_LSeriesSummable_iff
 
 /-- The abscissa of (absolute) convergence of the arithmetic function `ζ` is `1`. -/
 lemma abscissaOfAbsConv_zeta : abscissaOfAbsConv ↗ζ = 1 := by
@@ -291,7 +304,7 @@ lemma LSeries_one_eq_riemannZeta {s : ℂ} (hs : 1 < s.re) : L 1 s = riemannZeta
 /-- The L-series of the constant sequence `1` equals the Riemann Zeta Function on its
 domain of convergence `1 < re s`. -/
 lemma LSeriesHasSum_one {s : ℂ} (hs : 1 < s.re) : LSeriesHasSum 1 s (riemannZeta s) :=
-  LSeries_one_eq_riemannZeta hs ▸ (LSeriesSummable.one_iff_one_lt_re.mpr hs).LSeriesHasSum
+  LSeries_one_eq_riemannZeta hs ▸ (LSeriesSummable.one_iff.mpr hs).LSeriesHasSum
 
 /-- The L-series of the constant sequence `1` and of the Möbius function are inverses. -/
 lemma LSeries_one_mul_Lseries_moebius {s : ℂ} (hs : 1 < s.re) : L 1 s * L ↗μ s = 1 :=
@@ -346,7 +359,7 @@ lemma LSeriesSummable_vonMangoldt {s : ℂ} (hs : 1 < s.re) : LSeriesSummable �
 /-- The L-series of the von Mangoldt function `Λ` equals the negative logarithmic derivative
 of the L-series of the constant sequence `1` on its domain of convergence `re s > 1`. -/
 lemma LSeries_vonMangoldt_eq {s : ℂ} (hs : 1 < s.re) : L ↗Λ s = - deriv (L 1) s / L 1 s := by
-  have hζ : LSeriesSummable ↗ζ s := zeta_LSeriesSummable_iff_one_lt_re.mpr hs
+  have hζ : LSeriesSummable ↗ζ s := zeta_LSeriesSummable_iff.mpr hs
   have hs' : abscissaOfAbsConv ↗ζ < s.re := by
     rwa [abscissaOfAbsConv_zeta, ← EReal.coe_one, EReal.coe_lt_coe_iff]
   have hΛ : LSeriesSummable ↗Λ s := LSeriesSummable_vonMangoldt hs
