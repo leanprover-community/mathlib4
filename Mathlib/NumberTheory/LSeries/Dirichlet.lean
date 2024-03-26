@@ -232,7 +232,7 @@ lemma LSeries.abscissaOfAbsConv_one : abscissaOfAbsConv 1 = 1 :=
   modOne_eq_one (χ := χ₁) ▸ absicssaOfAbsConv_eq_one one_ne_zero χ₁
 
 /-- The `LSeries` of the constant sequence `1` converges at `s` if and only if `re s > 1`. -/
-theorem LSeriesSummable.one_iff {s : ℂ} : LSeriesSummable 1 s ↔ 1 < s.re :=
+theorem LSeriesSummable_one_iff {s : ℂ} : LSeriesSummable 1 s ↔ 1 < s.re :=
   modOne_eq_one (χ := χ₁) ▸ LSeriesSummable_iff one_ne_zero χ₁
 
 
@@ -250,7 +250,7 @@ lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
 theorem zeta_LSeriesSummable_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re := by
   have (n : ℕ) (hn : n ≠ 0) : ζ n = (1 : ℕ → ℂ) n := by
     simp only [ArithmeticFunction.zeta_apply, hn, ↓reduceIte, Nat.cast_one, Pi.one_apply]
-  exact (LSeriesSummable_congr s this).trans <| LSeriesSummable.one_iff
+  exact (LSeriesSummable_congr s this).trans <| LSeriesSummable_one_iff
 #align nat.arithmetic_function.zeta_l_series_summable_iff_one_lt_re ArithmeticFunction.zeta_LSeriesSummable_iff
 
 /-- The abscissa of (absolute) convergence of the arithmetic function `ζ` is `1`. -/
@@ -274,10 +274,8 @@ lemma LSeriesHasSum_zeta {s : ℂ} (hs : 1 < s.re) : LSeriesHasSum ↗ζ s (riem
   LSeries_zeta_eq_riemannZeta hs ▸ (zeta_LSeriesSummable_iff.mpr hs).LSeriesHasSum
 
 lemma convolution_zeta_moebius : ↗ζ ⍟ ↗μ = δ := by
-  have hζ : ↗ζ = ↗(ζ : ArithmeticFunction ℂ) := by
-    simp only [zeta_apply, cast_ite, CharP.cast_eq_zero, cast_one, natCoe_apply]
-  have hμ : ↗μ = ↗(μ : ArithmeticFunction ℂ) := by
-    simp only [intCoe_apply]
+  have hζ : ↗ζ = ↗(ζ : ArithmeticFunction ℂ) := rfl
+  have hμ : ↗μ = ↗(μ : ArithmeticFunction ℂ) := rfl
   ext
   simp only [hμ, hζ, coe_mul, coe_zeta_mul_coe_moebius, one_apply, delta]
 
@@ -304,7 +302,7 @@ lemma LSeries_one_eq_riemannZeta {s : ℂ} (hs : 1 < s.re) : L 1 s = riemannZeta
 /-- The L-series of the constant sequence `1` equals the Riemann Zeta Function on its
 domain of convergence `1 < re s`. -/
 lemma LSeriesHasSum_one {s : ℂ} (hs : 1 < s.re) : LSeriesHasSum 1 s (riemannZeta s) :=
-  LSeries_one_eq_riemannZeta hs ▸ (LSeriesSummable.one_iff.mpr hs).LSeriesHasSum
+  LSeries_one_eq_riemannZeta hs ▸ (LSeriesSummable_one_iff.mpr hs).LSeriesHasSum
 
 /-- The L-series of the constant sequence `1` and of the Möbius function are inverses. -/
 lemma LSeries_one_mul_Lseries_moebius {s : ℂ} (hs : 1 < s.re) : L 1 s * L ↗μ s = 1 :=
