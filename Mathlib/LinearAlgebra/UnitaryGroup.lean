@@ -55,7 +55,7 @@ variable (α : Type v) [CommRing α] [StarRing α]
 inverse.
 -/
 abbrev unitaryGroup :=
-  unitary (Matrix n n α)
+  unitxary (Matrix n n α)
 #align matrix.unitary_group Matrix.unitaryGroup
 
 end
@@ -224,6 +224,9 @@ theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
   rwa [mul_eq_one_comm] at hA
 #align matrix.mem_orthogonal_group_iff' Matrix.mem_orthogonalGroup_iff'
 
+/-- `Matrix.specialOrthogonalGroup n` is the group of `n` by `n` matrices where the transpose is the
+inverse and where the determinant is one. `Matrix.specialOrthogonalGroup 3` is also called is also
+called the rotation group.--/
 abbrev specialOrthogonalGroup := {w : orthogonalGroup n β // Matrix.det (w : Matrix n n β) = 1}
 
 end OrthogonalGroup
