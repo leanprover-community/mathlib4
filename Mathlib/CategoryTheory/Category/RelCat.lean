@@ -49,10 +49,10 @@ protected theorem rel_id (X : RelCat) : 𝟙 X = (· = ·) := rfl
 
 protected theorem rel_comp {X Y Z : RelCat} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ g = Rel.comp f g := rfl
 
-@[simp] theorem rel_id_apply₂ (X : RelCat) (x y : X) : (𝟙 X) x y ↔ x = y := by
+theorem rel_id_apply₂ (X : RelCat) (x y : X) : (𝟙 X) x y ↔ x = y := by
   rw [RelCat.Hom.rel_id]
 
-@[simp] theorem rel_comp_apply₂ {X Y Z : RelCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) (z : Z) :
+theorem rel_comp_apply₂ {X Y Z : RelCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) (z : Z) :
     (f ≫ g) x z ↔ ∃ y, f x y ∧ g y z := by rfl
 end Hom
 
@@ -61,6 +61,13 @@ from the category of types and functions into the category of types and relation
 def graphFunctor : Type u ⥤ RelCat.{u} where
   obj X := X
   map f := f.graph
+  map_id X := by
+    ext
+    simp[Hom.rel_id_apply₂]
+  map_comp f g := by
+    ext
+    simp[Hom.rel_comp_apply₂]
+
 
 @[simp] theorem graphFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : X) (y : Y) :
     graphFunctor.map f x y ↔ f x = y := f.graph_def x y
