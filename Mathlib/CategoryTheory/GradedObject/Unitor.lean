@@ -12,8 +12,10 @@ Given a bifunctor `F : C ⥤ D ⥤ D`, an object `X : C` such that `F.obj X ≅ 
 map `p : I × J → J` such that `hp : ∀ (j : J), p ⟨0, j⟩ = j`,
 we define an isomorphism of `J`-graded objects for any `Y : GradedObject J D`.
 `mapBifunctorLeftUnitor F X e p hp Y : mapBifunctorMapObj F p ((single₀ I).obj X) Y ≅ Y`.
+Under similar assumptions, we also obtain a right unitor isomorphism
+`mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`.
 
-TODO (@joelriou): define similarly a right unitor isomorphism and get the triangle identity.
+TODO (@joelriou): get the triangle identity.
 
 -/
 
@@ -97,7 +99,7 @@ noncomputable def mapBifunctorLeftUnitor : mapBifunctorMapObj F p ((single₀ I)
     (mapBifunctorLeftUnitorCofanIsColimit F X e p hp Y j)).symm)
 
 @[reassoc (attr := simp)]
-lemma ι_mapBifunctorLeftUnitor_hom (j : J) :
+lemma ι_mapBifunctorLeftUnitor_hom_apply (j : J) :
     ιMapBifunctorMapObj F p ((single₀ I).obj X) Y 0 j j (hp j) ≫
       (mapBifunctorLeftUnitor F X e p hp Y).hom j =
       (F.map (singleObjApplyIso (0 : I) X).hom).app _ ≫ e.hom.app (Y j) := by
@@ -143,15 +145,25 @@ variable {C D I J : Type*} [Category C] [Category D]
   (p : J × I → J)
   (hp : ∀ (j : J), p ⟨j, 0⟩ = j) (X X' : GradedObject J D) (φ : X ⟶ X')
 
+/-- Given `F : D ⥤ C ⥤ D`, `Y : C`, `e : F.flip.obj X ≅ 𝟭 D` and `X : GradedObject J D`,
+this is the isomorphism `((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y) a ≅ Y a.2`
+when `a : J × I` is such that `a.2 = 0`. -/
 @[simps!]
 noncomputable def mapBifunctorObjObjSingle₀Iso (a : J × I) (ha : a.2 = 0) :
     ((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y) a ≅ X a.1 :=
   Functor.mapIso _ (singleObjApplyIsoOfEq _ Y _ ha) ≪≫ e.app (X a.1)
 
+/-- Given `F : D ⥤ C ⥤ D`, `Y : C` and `X : GradedObject J D`,
+`((mapBifunctor F J I).obj X).obj ((single₀ I).obj X) a` is an initial when `a : J × I`
+is such that `a.2 ≠ 0`. -/
 noncomputable def mapBifunctorObjObjSingle₀IsInitial (a : J × I) (ha : a.2 ≠ 0) :
     IsInitial (((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y) a) :=
   IsInitial.isInitialObj (F.obj (X a.1)) _ (isInitialSingleObjApply _ _ _ ha)
 
+/-- Given `F : D ⥤ C ⥤ D`, `Y : C`, `e : F.flip.obj Y ≅ 𝟭 D`, `X : GradedObject J D` and
+`p : J × I → J` such that `p ⟨j, 0⟩ = j` for all `j`,
+this is the (colimit) cofan which shall be used to construct the isomorphism
+`mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`, see `mapBifunctorRightUnitor`. -/
 noncomputable def mapBifunctorRightUnitorCofan (j : J) :
     (((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y)).CofanMapObjFun p j :=
   CofanMapObjFun.mk _ _ _ (X j) (fun a ha =>
@@ -166,6 +178,7 @@ lemma mapBifunctorRightUnitorCofan_inj (j : J) :
       (F.obj (X j)).map (singleObjApplyIso (0 : I) Y).hom ≫ e.hom.app (X j) := by
   simp [mapBifunctorRightUnitorCofan]
 
+/-- The cofan `mapBifunctorRightUnitorCofan F Y e p hp X j` is a colimit. -/
 noncomputable def mapBifunctorRightUnitorCofanIsColimit (j : J) :
     IsColimit (mapBifunctorRightUnitorCofan F Y e p hp X j) :=
   mkCofanColimit _
@@ -194,12 +207,15 @@ lemma mapBifunctorRightUnitor_hasMap :
 variable [HasMap (((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y)) p]
   [HasMap (((mapBifunctor F J I).obj X').obj ((single₀ I).obj Y)) p]
 
+/-- Given `F : D ⥤ C ⥤ D`, `Y : C`, `e : F.flip.obj Y ≅ 𝟭 D`, `X : GradedObject J D` and
+`p : J × I → J` such that `p ⟨j, 0⟩ = j` for all `j`,
+this is the right unitor isomorphism `mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`. -/
 noncomputable def mapBifunctorRightUnitor : mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X :=
   isoMk _ _ (fun j => (CofanMapObjFun.iso
     (mapBifunctorRightUnitorCofanIsColimit F Y e p hp X j)).symm)
 
 @[reassoc (attr := simp)]
-lemma ι_mapBifunctorRightUnitor_hom (j : J) :
+lemma ι_mapBifunctorRightUnitor_hom_apply (j : J) :
     ιMapBifunctorMapObj F p X ((single₀ I).obj Y) j 0 j (hp j) ≫
         (mapBifunctorRightUnitor F Y e p hp X).hom j =
       (F.obj (X j)).map (singleObjApplyIso (0 : I) Y).hom ≫ e.hom.app (X j) := by
