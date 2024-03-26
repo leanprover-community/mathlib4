@@ -148,7 +148,25 @@ theorem glouk [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
       · simpa using hf 1 (Nat.le_add_left 1 n)
 
 /-- The formal multilinear series whose `n`-th term is
-`(w₁, ..., wₙ) ↦ (-2Iπ)^n * L v w₁ * ... * L v wₙ * f v`. -/
+`(w₁, ..., wₙ) ↦ (-2Iπ)^n * L v w₁ * ... * L v wₙ • f v`.
+
+For good continuity and differentiability properties, we decompose it as follows:
+* Let `B` be the bilinear form mapping `u : W [×n]→L[ℝ] ℝ` and `m : E`
+    to `u.smulRight m : W [×n]→L[ℝ] E`.
+* We write the desired form as `(-2Iπ)^n • B (A v) (f v)` where `A` maps `(w₁, ..., wₙ)`
+  to `L v w₁ * ... * L v wₙ`.
+* To write `A`, consider the product of `n` terms, as a continuous multilinear
+  map `J : ℝ [×n]→L[ℝ] ℝ`, and compose it with the linear maps `(L v ⬝, ..., L v ⬝)`. The map
+  `(L₁, ..., Lₙ) ↦ J ∘ (L₁, ..., Lₙ)` is itself a continuous multilinear map from
+  `(W →L[ℝ] ℝ)^n` to `W [×n]→L[ℝ] ℝ` that we denote by `C`.
+  Then `A = C ∘ (fun v ↦ (L v ⬝, ..., L v ⬝))`, and is therefore continuous.
+
+Here are the Lean names of the above maps:
+* `J` is `ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ`
+* `C` is `ContinuousLinearMap.compContinuousLinearMapContinuousMultilinear` (except that we fix the
+  second variable).
+
+-/
 def bloublou (f : V → E) (v : V) : FormalMultilinearSeries ℝ W E := fun n ↦
   (- (2 * π * I))^n • ((ContinuousMultilinearMap.mkPiRing ℝ (Fin n) (f v)).compContinuousLinearMap
   (fun _i ↦ L v))
