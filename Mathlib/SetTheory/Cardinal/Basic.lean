@@ -530,6 +530,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   mul_comm := mul_comm'
   left_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodSumDistrib α β γ
   right_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumProdDistrib α β γ
+  nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
   npow_zero := @power_zero
   npow_succ n c := show c ^ (↑(n + 1) : Cardinal) = c * c ^ (↑n : Cardinal)
@@ -538,7 +539,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   natCast_zero := rfl
   natCast_succ := Cardinal.cast_succ
 
-/-! Porting note: Deprecated section. Remove. -/
+/-! Porting note (#11229): Deprecated section. Remove. -/
 section deprecated
 set_option linter.deprecated false
 
@@ -618,7 +619,7 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
     mk_congr <| Equiv.ulift.trans (Equiv.prodCongr Equiv.ulift Equiv.ulift).symm
 #align cardinal.lift_mul Cardinal.lift_mul
 
-/-! Porting note: Deprecated section. Remove. -/
+/-! Porting note (#11229): Deprecated section. Remove. -/
 section deprecated
 set_option linter.deprecated false
 
@@ -1487,6 +1488,17 @@ theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   rw [← Nat.cast_succ]
   exact natCast_lt.2 (Nat.lt_succ_self _)
 
+lemma succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
+  rw [← Cardinal.nat_succ]
+  norm_cast
+
+lemma natCast_add_one_le_iff {n : ℕ} {c : Cardinal} : n + 1 ≤ c ↔ n < c := by
+  rw [← Order.succ_le_iff, Cardinal.succ_natCast]
+
+lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c := by
+  convert natCast_add_one_le_iff
+  norm_cast
+
 @[simp]
 theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
 #align cardinal.succ_zero Cardinal.succ_zero
@@ -1549,6 +1561,10 @@ theorem lt_aleph0 {c : Cardinal} : c < ℵ₀ ↔ ∃ n : ℕ, c = n :=
     haveI := Infinite.to_subtype h'
     exact ⟨Infinite.natEmbedding S⟩, fun ⟨n, e⟩ => e.symm ▸ nat_lt_aleph0 _⟩
 #align cardinal.lt_aleph_0 Cardinal.lt_aleph0
+
+lemma succ_eq_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : Order.succ c = c + 1 := by
+  obtain ⟨n, hn⟩ := Cardinal.lt_aleph0.mp h
+  rw [hn, succ_natCast]
 
 theorem aleph0_le {c : Cardinal} : ℵ₀ ≤ c ↔ ∀ n : ℕ, ↑n ≤ c :=
   ⟨fun h n => (nat_lt_aleph0 _).le.trans h, fun h =>

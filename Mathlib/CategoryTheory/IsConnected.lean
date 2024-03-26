@@ -81,7 +81,6 @@ class IsConnected (J : Type u₁) [Category.{v₁} J] extends IsPreconnected J :
 attribute [instance 100] IsConnected.is_nonempty
 
 variable {J : Type u₁} [Category.{v₁} J]
-
 variable {K : Type u₂} [Category.{v₂} K]
 
 namespace IsPreconnected.IsoConstantAux
@@ -326,20 +325,26 @@ theorem Zigzag.trans {j₁ j₂ j₃ : J} (h₁ : Zigzag j₁ j₂) (h₂ : Zigz
 theorem Zigzag.of_zag {j₁ j₂ : J} (h : Zag j₁ j₂) : Zigzag j₁ j₂ :=
   Relation.ReflTransGen.single h
 
+theorem Zigzag.of_hom {j₁ j₂ : J} (f : j₁ ⟶ j₂) : Zigzag j₁ j₂ :=
+  of_zag (Zag.of_hom f)
+
+theorem Zigzag.of_inv {j₁ j₂ : J} (f : j₂ ⟶ j₁) : Zigzag j₁ j₂ :=
+  of_zag (Zag.of_inv f)
+
 theorem Zigzag.of_zag_trans {j₁ j₂ j₃ : J} (h₁ : Zag j₁ j₂) (h₂ : Zag j₂ j₃) : Zigzag j₁ j₃ :=
   trans (of_zag h₁) (of_zag h₂)
 
 theorem Zigzag.of_hom_hom {j₁ j₂ j₃ : J} (f₁₂ : j₁ ⟶ j₂) (f₂₃ : j₂ ⟶ j₃) : Zigzag j₁ j₃ :=
-  of_zag_trans (Zag.of_hom f₁₂) (Zag.of_hom f₂₃)
+  (of_hom f₁₂).trans (of_hom f₂₃)
 
 theorem Zigzag.of_hom_inv {j₁ j₂ j₃ : J} (f₁₂ : j₁ ⟶ j₂) (f₃₂ : j₃ ⟶ j₂) : Zigzag j₁ j₃ :=
-  of_zag_trans (Zag.of_hom f₁₂) (Zag.of_inv f₃₂)
+  (of_hom f₁₂).trans (of_inv f₃₂)
 
 theorem Zigzag.of_inv_hom {j₁ j₂ j₃ : J} (f₂₁ : j₂ ⟶ j₁) (f₂₃ : j₂ ⟶ j₃) : Zigzag j₁ j₃ :=
-  of_zag_trans (Zag.of_inv f₂₁) (Zag.of_hom f₂₃)
+  (of_inv f₂₁).trans (of_hom f₂₃)
 
 theorem Zigzag.of_inv_inv {j₁ j₂ j₃ : J} (f₂₁ : j₂ ⟶ j₁) (f₃₂ : j₃ ⟶ j₂) : Zigzag j₁ j₃ :=
-  of_zag_trans (Zag.of_inv f₂₁) (Zag.of_inv f₃₂)
+  (of_inv f₂₁).trans (of_inv f₃₂)
 
 /-- The setoid given by the equivalence relation `Zigzag`. A quotient for this
 setoid is a connected component of the category.

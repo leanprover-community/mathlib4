@@ -1087,7 +1087,6 @@ end Sum
 section Sigma
 
 variable {η : Type*} [Fintype η] {ιs : η → Type*} [Zero α]
-
 variable (R)
 
 /-- On a `Fintype η`, `Finsupp.split` is a linear equivalence between
@@ -1162,9 +1161,7 @@ end Finsupp
 section Fintype
 
 variable {α M : Type*} (R : Type*) [Fintype α] [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable (S : Type*) [Semiring S] [Module S M] [SMulCommClass R S M]
-
 variable (v : α → M)
 
 /-- `Fintype.total R S v f` is the linear combination of vectors in `v` with weights in `f`.
@@ -1249,7 +1246,6 @@ end SpanRange
 end Fintype
 
 variable {R : Type*} {M : Type*} {N : Type*}
-
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 section

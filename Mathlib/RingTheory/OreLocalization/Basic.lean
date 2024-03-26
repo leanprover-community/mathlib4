@@ -80,7 +80,6 @@ namespace OreLocalization
 section Monoid
 
 variable {R : Type*} [Monoid R] {S : Submonoid R}
-
 variable (R S) [OreSet S]
 
 @[inherit_doc OreLocalization]
@@ -129,7 +128,7 @@ those factors expand to equal elements of `R`. -/
 protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : r * t = r' * t) :
     r₁ * r * r₂ /ₒ s = r₁ * r' * r₂ /ₒ s := by
   rcases oreCondition r₂ t with ⟨r₂', t', hr₂⟩
-  -- Porting note: todo: use `assoc_rw`?
+  -- Porting note (#11215): TODO: use `assoc_rw`?
   calc
     r₁ * r * r₂ /ₒ s = r₁ * r * r₂ * t' /ₒ (s * t') := OreLocalization.expand (r₁ * r * r₂) s t' _
     _ = r₁ * r * (r₂ * t') /ₒ (s * t') := by simp [← mul_assoc]
@@ -375,9 +374,7 @@ theorem numerator_isUnit (s : S) : IsUnit (numeratorHom (s : R) : R[S⁻¹]) :=
 section UMP
 
 variable {T : Type*} [Monoid T]
-
 variable (f : R →* T) (fS : S →* Units T)
-
 variable (hf : ∀ s : S, f s = fS s)
 
 /-- The universal lift from a morphism `R →* T`, which maps elements of `S` to units of `T`,
@@ -679,7 +676,8 @@ instance instAddCommMonoidOreLocalization : AddCommMonoid R[S⁻¹] :=
     add_assoc := OreLocalization.add_assoc
     zero := zero
     zero_add := OreLocalization.zero_add
-    add_zero := fun x => by rw [OreLocalization.add_comm, OreLocalization.zero_add] }
+    add_zero := fun x => by rw [OreLocalization.add_comm, OreLocalization.zero_add]
+    nsmul := nsmulRec }
 
 protected theorem zero_mul (x : R[S⁻¹]) : 0 * x = 0 := by
   induction' x using OreLocalization.ind with r s
@@ -745,9 +743,7 @@ instance instSemiringOreLocalization : Semiring R[S⁻¹] :=
 section UMP
 
 variable {T : Type*} [Semiring T]
-
 variable (f : R →+* T) (fS : S →* Units T)
-
 variable (hf : ∀ s : S, f s = fS s)
 
 /-- The universal lift from a ring homomorphism `f : R →+* T`, which maps elements in `S` to
@@ -847,7 +843,8 @@ protected theorem add_left_neg (x : R[S⁻¹]) : -x + x = 0 := by
 instance ring : Ring R[S⁻¹] :=
   { OreLocalization.instSemiringOreLocalization,
     OreLocalization.instNegOreLocalization with
-    add_left_neg := OreLocalization.add_left_neg }
+    add_left_neg := OreLocalization.add_left_neg
+    zsmul := zsmulRec }
 
 open nonZeroDivisors
 
@@ -930,7 +927,8 @@ instance divisionRing : DivisionRing R[R⁰⁻¹] :=
     OreLocalization.inv',
     OreLocalization.ring with
     mul_inv_cancel := OreLocalization.mul_inv_cancel
-    inv_zero := OreLocalization.inv_zero }
+    inv_zero := OreLocalization.inv_zero
+    qsmul := qsmulRec _ }
 
 end DivisionRing
 

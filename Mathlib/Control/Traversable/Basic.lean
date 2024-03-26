@@ -62,7 +62,6 @@ universe u v w
 section ApplicativeTransformation
 
 variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
-
 variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
 
 /-- A transformation between applicative functors.  It is a natural
@@ -83,11 +82,10 @@ end ApplicativeTransformation
 namespace ApplicativeTransformation
 
 variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
-
 variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
 
 instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G α :=
-  ⟨λ η => η.app _⟩
+  ⟨fun η ↦ η.app _⟩
 
 variable {F G}
 
@@ -227,11 +225,8 @@ export Traversable (traverse)
 section Functions
 
 variable {t : Type u → Type u}
-
 variable {m : Type u → Type v} [Applicative m]
-
 variable {α β : Type u}
-
 variable {f : Type u → Type u} [Applicative f]
 
 /-- A traversable functor commutes with all applicative functors. -/
@@ -287,9 +282,7 @@ end
 namespace Sum
 
 variable {σ : Type u}
-
 variable {F : Type u → Type u}
-
 variable [Applicative F]
 
 -- Porting note: this was marked as a dubious translation but the only issue seems to be

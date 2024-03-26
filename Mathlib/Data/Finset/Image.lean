@@ -514,7 +514,7 @@ theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=
 #align finset.coe_image_subset_range Finset.coe_image_subset_range
 
 theorem filter_image {p : β → Prop} [DecidablePred p] :
-    (s.image f).filter p = (s.filter λ a ↦ p (f a)).image f :=
+    (s.image f).filter p = (s.filter fun a ↦ p (f a)).image f :=
   ext fun b => by
     simp only [mem_filter, mem_image, exists_prop]
     exact

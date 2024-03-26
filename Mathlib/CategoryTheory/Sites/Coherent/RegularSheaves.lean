@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Limits.Final.ParallelPair
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
+import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 /-!
 
 # Sheaves for the regular topology

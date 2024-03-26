@@ -30,6 +30,8 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 suppress_compilation
 
+open Set
+
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   (H : LieSubalgebra R L) [LieAlgebra.IsNilpotent R H]
   {M : Type*} [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -147,6 +149,14 @@ theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ 
     AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, lift_apply, LinearMap.coe_mk, AddHom.coe_mk,
     Submodule.coe_mk]
 #align lie_algebra.coe_root_space_weight_space_product_tmul LieAlgebra.coe_rootSpaceWeightSpaceProduct_tmul
+
+theorem mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace (α χ : H → R)
+    {x : L} (hx : x ∈ rootSpace H α) :
+    MapsTo (toEndomorphism R L M x) (weightSpace M χ) (weightSpace M (α + χ)) := by
+  intro m hm
+  let x' : rootSpace H α := ⟨x, hx⟩
+  let m' : weightSpace M χ := ⟨m, hm⟩
+  exact (rootSpaceWeightSpaceProduct R L H M α χ (α + χ) rfl (x' ⊗ₜ m')).property
 
 /-- Given a nilpotent Lie subalgebra `H ⊆ L` together with `χ₁ χ₂ : H → R`, there is a natural
 `R`-bilinear product of root vectors, compatible with the actions of `H`. -/

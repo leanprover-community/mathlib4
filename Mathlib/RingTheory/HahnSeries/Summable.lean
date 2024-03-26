@@ -191,8 +191,8 @@ theorem zero_apply {a : α} : (0 : SummableFamily Γ R α) a = 0 :=
 #align hahn_series.summable_family.zero_apply HahnSeries.SummableFamily.zero_apply
 
 instance : AddCommMonoid (SummableFamily Γ R α) where
-  add := (· + ·)
   zero := 0
+  nsmul := nsmulRec
   zero_add s := by
     ext
     apply zero_add
@@ -244,16 +244,19 @@ section AddCommGroup
 
 variable [PartialOrder Γ] [AddCommGroup R] {α : Type*} {s t : SummableFamily Γ R α} {a : α}
 
+instance : Neg (SummableFamily Γ R α) :=
+  ⟨fun s =>
+    { toFun := fun a => -s a
+      isPWO_iUnion_support' := by
+        simp_rw [support_neg]
+        exact s.isPWO_iUnion_support
+      finite_co_support' := fun g => by
+        simp only [neg_coeff', Pi.neg_apply, Ne.def, neg_eq_zero]
+        exact s.finite_co_support g }⟩
+
 instance : AddCommGroup (SummableFamily Γ R α) :=
   { inferInstanceAs (AddCommMonoid (SummableFamily Γ R α)) with
-    neg := fun s =>
-      { toFun := fun a => -s a
-        isPWO_iUnion_support' := by
-          simp_rw [support_neg]
-          exact s.isPWO_iUnion_support'
-        finite_co_support' := fun g => by
-          simp only [neg_coeff', Pi.neg_apply, Ne.def, neg_eq_zero]
-          exact s.finite_co_support g }
+    zsmul := zsmulRec
     add_left_neg := fun a => by
       ext
       apply add_left_neg }
@@ -420,9 +423,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
     · dsimp only at h
       rw [dif_pos hb] at h
       exact Set.mem_iUnion.2 ⟨Classical.choose hb, h⟩
-    · contrapose! h
-      rw [dif_neg hb]
-      simp
+    · simp [-Set.mem_range, dif_neg hb] at h
   finite_co_support' g :=
     ((s.finite_co_support g).image f).subset
       (by
@@ -430,8 +431,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
         by_cases hb : b ∈ Set.range f
         · simp only [Ne.def, Set.mem_setOf_eq, dif_pos hb] at h
           exact ⟨Classical.choose hb, h, Classical.choose_spec hb⟩
-        · contrapose! h
-          simp only [Ne.def, Set.mem_setOf_eq, dif_neg hb, Classical.not_not, zero_coeff])
+        · simp only [Ne.def, Set.mem_setOf_eq, dif_neg hb, zero_coeff, not_true_eq_false] at h)
 #align hahn_series.summable_family.emb_domain HahnSeries.SummableFamily.embDomain
 
 variable (s : SummableFamily Γ R α) (f : α ↪ β) {a : α} {b : β}
@@ -588,7 +588,8 @@ instance [Field R] : Field (HahnSeries Γ R) :=
         SummableFamily.one_sub_self_mul_hsum_powers
           (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))
       rw [sub_sub_cancel] at h
-      rw [← mul_assoc, mul_comm x, h] }
+      rw [← mul_assoc, mul_comm x, h]
+    qsmul := qsmulRec _ }
 
 end Inversion
 

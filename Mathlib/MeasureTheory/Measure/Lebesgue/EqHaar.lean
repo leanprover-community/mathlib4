@@ -123,7 +123,7 @@ theorem addHaarMeasure_eq_volume_pi (ι : Type*) [Fintype ι] :
     Compacts.coe_mk, Finset.prod_const_one, ENNReal.ofReal_one, Real.volume_Icc, one_smul, sub_zero]
 #align measure_theory.add_haar_measure_eq_volume_pi MeasureTheory.addHaarMeasure_eq_volume_pi
 
--- Porting note: TODO: remove this instance?
+-- Porting note (#11215): TODO: remove this instance?
 instance isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
     IsAddHaarMeasure (volume : Measure (ι → ℝ)) :=
   inferInstance
@@ -733,7 +733,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
     Tendsto (fun r : ℝ => μ (s ∩ ({x} + r • t)) / μ ({x} + r • t)) (𝓝[>] 0) (𝓝 0) := by
   refine' tendsto_order.2 ⟨fun a' ha' => (ENNReal.not_lt_zero ha').elim, fun ε (εpos : 0 < ε) => _⟩
   rcases eq_or_ne (μ t) 0 with (h't | h't)
-  · apply eventually_of_forall fun r => ?_
+  · filter_upwards with r
     suffices H : μ (s ∩ ({x} + r • t)) = 0 by
       rw [H]; simpa only [ENNReal.zero_div] using εpos
     apply le_antisymm _ (zero_le _)

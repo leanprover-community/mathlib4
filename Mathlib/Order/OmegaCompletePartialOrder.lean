@@ -154,7 +154,7 @@ theorem map_comp : (c.map f).map g = c.map (g.comp f) :=
 
 @[mono]
 theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g :=
-  fun i => by simp [mem_map_iff]; intros; exists i; apply h
+  fun i => by simp [mem_map_iff]; exists i; apply h
 #align omega_complete_partial_order.chain.map_le_map OmegaCompletePartialOrder.Chain.map_le_map
 
 /-- `OmegaCompletePartialOrder.Chain.zip` pairs up the elements of two chains
@@ -194,7 +194,6 @@ class OmegaCompletePartialOrder (α : Type*) extends PartialOrder α where
 namespace OmegaCompletePartialOrder
 
 variable {α : Type u} {β : Type v} {γ : Type*}
-
 variable [OmegaCompletePartialOrder α]
 
 /-- Transfer an `OmegaCompletePartialOrder` on `β` to an `OmegaCompletePartialOrder` on `α`
@@ -529,16 +528,16 @@ theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f)
 
 theorem iSup_continuous {ι : Sort*} {f : ι → α →o β} (h : ∀ i, Continuous (f i)) :
     Continuous (⨆ i, f i) :=
-  sSup_continuous _ <| Set.forall_range_iff.2 h
+  sSup_continuous _ <| Set.forall_mem_range.2 h
 #align complete_lattice.supr_continuous CompleteLattice.iSup_continuous
 
 theorem sSup_continuous' (s : Set (α → β)) (hc : ∀ f ∈ s, Continuous' f) :
     Continuous' (sSup s) := by
   lift s to Set (α →o β) using fun f hf => (hc f hf).to_monotone
-  simp only [Set.ball_image_iff, continuous'_coe] at hc
+  simp only [Set.forall_mem_image, continuous'_coe] at hc
   rw [sSup_image]
   norm_cast
-  exact iSup_continuous fun f => iSup_continuous fun hf => hc f hf
+  exact iSup_continuous fun f ↦ iSup_continuous fun hf ↦ hc hf
 #align complete_lattice.Sup_continuous' CompleteLattice.sSup_continuous'
 
 theorem sup_continuous {f g : α →o β} (hf : Continuous f) (hg : Continuous g) :
@@ -584,7 +583,6 @@ end CompleteLattice
 namespace OmegaCompletePartialOrder
 
 variable {α : Type u} {α' : Type*} {β : Type v} {β' : Type*} {γ : Type*} {φ : Type*}
-
 variable [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
 variable [OmegaCompletePartialOrder γ] [OmegaCompletePartialOrder φ]
 variable [OmegaCompletePartialOrder α'] [OmegaCompletePartialOrder β']
