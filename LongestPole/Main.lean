@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Util.Imports
+import ImportGraph
 import Mathlib.Data.String.Defs
 import Std.Lean.Util.Path
 import Cli
