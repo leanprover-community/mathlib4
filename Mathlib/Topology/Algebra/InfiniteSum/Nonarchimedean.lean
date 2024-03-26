@@ -45,7 +45,7 @@ theorem cauchy_partial_sums_of_tendsto_cofinite_zero {α G : Type*} [AddCommGrou
     -- Let `V` be the coset of `H` that contains the sum of `f` over the set `S`.
     let V : Set G := Finset.sum S f +ᵥ (H : Set G)
 
-    -- The partial sum of `f` on a subset eventually lies in `v`.
+    -- The partial sum of `f` on a subset eventually lies in `V`.
     have hV : V ∈ map (fun s ↦ Finset.sum s f) atTop := by
       /- We will, in fact, show that for all finite supersets `S'` of `S`, the partial sum of `f` on
       `S'` is in `V`. -/
