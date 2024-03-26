@@ -75,18 +75,15 @@ lemma aevalMultiset_apply (m : Multiset S) (p : symmetricSubalgebra σ R) :
     aevalMultiset σ R m p =
       aeval (fun i : Fin _ ↦ m.esymm (i + 1)) ((equiv_symmetricSubalgebra R rfl).symm p) := rfl
 
-def aevalMultiset_map (f : σ → S) (p : symmetricSubalgebra σ R) :
+theorem aevalMultiset_map (f : σ → S) (p : symmetricSubalgebra σ R) :
     aevalMultiset σ R (Finset.univ.val.map f) p = aeval f (p : MvPolynomial σ R) := by
   rw [aevalMultiset_apply]
   conv_rhs =>
     rw [← AlgEquiv.apply_symm_apply (equiv_symmetricSubalgebra R rfl) p]
-  erw [esymmAlgHom_apply]
-  have : (fun i : Fin (Fintype.card σ) ↦ (Finset.univ.val.map f).esymm (↑i + 1)) =
-    (fun (i : Fin (Fintype.card σ)) ↦ aeval f (esymm σ R (↑i + 1))) := by
-    simp_rw [aeval_esymm_eq_multiset_esymm]
-  rw [this, ← comp_aeval, AlgHom.coe_comp, Function.comp_apply]
+  simp_rw [equiv_symmetricSubalgebra_symm_apply, equiv_symmetricSubalgebra_apply, esymmAlgHom_apply,
+    ← aeval_esymm_eq_multiset_esymm σ R, ← comp_aeval, AlgHom.coe_comp, Function.comp_apply]
 
-def aevalMultiset_map' (f : τ → S) (p : symmetricSubalgebra σ R)
+theorem aevalMultiset_map' (f : τ → S) (p : symmetricSubalgebra σ R)
     (h : Fintype.card σ = Fintype.card τ) :
     aevalMultiset σ R (Finset.univ.val.map f) p =
       aeval (f ∘ Fintype.equivOfCardEq h) (p : MvPolynomial σ R) := by
@@ -94,8 +91,7 @@ def aevalMultiset_map' (f : τ → S) (p : symmetricSubalgebra σ R)
     ← Multiset.map_map f (Fintype.equivOfCardEq h)]
   congr
   refine (congr_arg Finset.val (Finset.map_univ_equiv (Fintype.equivOfCardEq h)).symm).trans ?_
-  rw [Finset.map_val]
-  rfl
+  rw [Finset.map_val, Equiv.coe_toEmbedding]
 
 end symmetricSubalgebra
 
