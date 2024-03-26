@@ -53,6 +53,32 @@ def character (V : FdRep k G) (g : G) :=
   LinearMap.trace k V (V.ρ g)
 #align fdRep.character FdRep.character
 
+def character' (V : FdRep k G) [Fintype G] : MonoidAlgebra k G →ₗ[k] k where
+  toFun := fun x ↦ ∑ g, x g * (V.character g)
+  map_add' := by
+    intros x y
+    simp only
+    have (g : G) : (x + y) g = x g + y g := by exact rfl
+    simp_rw [this]
+    have : ∑ g, x g * V.character g + ∑ g, y g * V.character g = ∑ g, (x g * V.character g + y g * V.character g) := by
+      simp only [Finset.sum_add_distrib]
+    simp_rw [this]
+    congr
+    funext g
+    rw [add_mul]
+  map_smul' := by
+    intros c x
+    simp only
+    have (g : G) : (c • x) g = c * x g := by exact rfl
+    simp_rw [this]
+    have : ∑ g, c * x g * V.character g = c * ∑ g, x g * V.character g := by
+      simp only [Finset.mul_sum]
+      congr
+      funext g
+      rw [mul_assoc]
+    simp_rw [this]
+    congr
+
 theorem char_mul_comm (V : FdRep k G) (g : G) (h : G) : V.character (h * g) = V.character (g * h) :=
   by simp only [trace_mul_comm, character, map_mul]
 #align fdRep.char_mul_comm FdRep.char_mul_comm
