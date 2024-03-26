@@ -224,7 +224,6 @@ lemma finsuppScalarLeft_apply_tmul (p : ι →₀ R) (n : N) :
   rw [Finsupp.sum_eq_single i (fun _ _ => Finsupp.single_eq_of_ne) (fun _ => by simp)]
   simp only [Finsupp.single_eq_same]
 
-@[simp]
 lemma finsuppScalarLeft_apply (pn : (ι →₀ R) ⊗[R] N) (i : ι) :
     finsuppScalarLeft pn i = TensorProduct.lid R N ((Finsupp.lapply i).rTensor N pn) := by
   simp [finsuppScalarLeft, finsuppLeft_apply]
@@ -260,7 +259,6 @@ lemma finsuppScalarRight_apply_tmul (m : M) (p : ι →₀ R) :
   rw [Finsupp.sum_eq_single i (fun _ _ => Finsupp.single_eq_of_ne) (fun _ => by simp)]
   simp only [Finsupp.single_eq_same]
 
-@[simp]
 lemma finsuppScalarRight_apply (t : M ⊗[R] (ι →₀ R)) (i : ι) :
     finsuppScalarRight t i = TensorProduct.rid R M ((Finsupp.lapply i).lTensor M t) := by
   simp [finsuppScalarRight, finsuppRight_apply]
