@@ -3,11 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Jon Bannon
 -/
-import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Analysis.NormedSpace.Star.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.Analysis.NormedSpace.Star.Unitization
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 #align_import analysis.normed_space.star.multiplier from "leanprover-community/mathlib"@"ba5ff5ad5d120fb0ef094ad2994967e9bfaf5112"
 
@@ -77,7 +75,7 @@ scoped[MultiplierAlgebra] notation "𝓜(" 𝕜 ", " A ")" => DoubleCentralizer 
 
 open MultiplierAlgebra
 
--- porting note: `ext` was generating the wrong extensionality lemma; it deconstructed the `×`.
+-- Porting note: `ext` was generating the wrong extensionality lemma; it deconstructed the `×`.
 @[ext]
 lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
@@ -91,7 +89,6 @@ namespace DoubleCentralizer
 section NontriviallyNormed
 
 variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
-
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
 /-!
@@ -99,8 +96,8 @@ variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
 Because the multiplier algebra is defined as the algebra of double centralizers, there is a natural
 injection `DoubleCentralizer.toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`
-defined by `λ a, (a.fst, MulOpposite.op a.snd)`. We use this map to pull back the ring, module and
-algebra structure from `(A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` to `𝓜(𝕜, A)`. -/
+defined by `fun a ↦ (a.fst, MulOpposite.op a.snd)`. We use this map to pull back the ring, module
+and algebra structure from `(A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` to `𝓜(𝕜, A)`. -/
 
 variable {𝕜 A}
 
@@ -475,7 +472,7 @@ maps `Lₐ Rₐ : A →L[𝕜] A` given by left- and right-multiplication by `a`
 Warning: if `A = 𝕜`, then this is a coercion which is not definitionally equal to the
 `algebraMap 𝕜 𝓜(𝕜, 𝕜)` coercion, but these are propositionally equal. See
 `DoubleCentralizer.coe_eq_algebraMap` below. -/
--- porting note: added `noncomputable` because an IR check failed?
+-- Porting note: added `noncomputable` because an IR check failed?
 @[coe]
 protected noncomputable def coe (a : A) : 𝓜(𝕜, A) :=
   { fst := ContinuousLinearMap.mul 𝕜 A a
@@ -654,9 +651,7 @@ end NontriviallyNormed
 section DenselyNormed
 
 variable {𝕜 A : Type*} [DenselyNormedField 𝕜] [StarRing 𝕜]
-
 variable [NonUnitalNormedRing A] [StarRing A] [CstarRing A]
-
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] [StarModule 𝕜 A]
 
 instance instCstarRing : CstarRing 𝓜(𝕜, A) where

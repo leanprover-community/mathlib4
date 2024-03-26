@@ -44,13 +44,9 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 universe u v w
 
 variable {R S T : Type*} [CommRing R] [Ring S]
-
 variable [Algebra R S]
-
 variable {K L F : Type*} [Field K] [Field L] [Field F]
-
 variable [Algebra K L] [Algebra K F]
-
 variable {ι : Type w}
 
 open FiniteDimensional
@@ -99,7 +95,7 @@ theorem norm_algebraMap_of_basis [Fintype ι] (b : Basis ι R S) (x : R) :
   haveI := Classical.decEq ι
   rw [norm_apply, ← det_toMatrix b, lmul_algebraMap]
   convert @det_diagonal _ _ _ _ _ fun _ : ι => x
-  · ext (i j); rw [toMatrix_lsmul, Matrix.diagonal]
+  · ext (i j); rw [toMatrix_lsmul]
   · rw [Finset.prod_const, Finset.card_univ]
 #align algebra.norm_algebra_map_of_basis Algebra.norm_algebraMap_of_basis
 

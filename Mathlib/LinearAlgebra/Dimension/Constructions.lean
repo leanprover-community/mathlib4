@@ -35,13 +35,11 @@ noncomputable section
 universe u v v' u₁' w w'
 
 variable {R S : Type u} {M : Type v} {M' : Type v'} {M₁ : Type v}
-
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
 open BigOperators Cardinal Basis Submodule Function Set FiniteDimensional DirectSum
 
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
-
 variable [Module R M] [Module R M'] [Module R M₁]
 
 section Quotient
@@ -55,8 +53,8 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Quotient.mk_surjective M'
   let g : s ⊕ t → M := Sum.elim (f ·) (·)
-  suffices : LinearIndependent R g
-  · refine le_trans ?_ (le_ciSup (bddAbove_range.{v, v} _) ⟨_, this.to_subtype_range⟩)
+  suffices LinearIndependent R g by
+    refine le_trans ?_ (le_ciSup (bddAbove_range.{v, v} _) ⟨_, this.to_subtype_range⟩)
     rw [mk_range_eq _ this.injective, mk_sum, lift_id, lift_id]
   refine .sum_type (.of_comp M'.mkQ ?_) (ht.map' M'.subtype M'.ker_subtype) ?_
   · convert hs; ext x; exact hf x
@@ -118,7 +116,6 @@ theorem rank_add_rank_le_rank_prod [Nontrivial R] :
   convert ← lift_rank_add_lift_rank_le_rank_prod R M M₁ <;> apply lift_id
 
 variable {R M M'}
-
 variable [StrongRankCondition R] [Module.Free R M] [Module.Free R M'] [Module.Free R M₁]
 
 open Module.Free
@@ -149,7 +146,6 @@ end Prod
 section Finsupp
 
 variable (R M M')
-
 variable [StrongRankCondition R] [Module.Free R M] [Module.Free R M']
 
 open Module.Free BigOperators
@@ -209,7 +205,7 @@ theorem rank_matrix' (m n : Type v) [Finite m] [Finite n] :
 
 /-- If `m` and `n` are `Fintype` that lie in the same universe as `R`, the rank of `m × n` matrices
   is `# m * # n`. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem rank_matrix'' (m n : Type u) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = #m * #n := by simp
 #align rank_matrix'' rank_matrix''
@@ -253,7 +249,6 @@ end Finsupp
 section Pi
 
 variable [StrongRankCondition R] [Module.Free R M]
-
 variable [∀ i, AddCommGroup (φ i)] [∀ i, Module R (φ i)] [∀ i, Module.Free R (φ i)]
 
 open Module.Free
@@ -304,7 +299,7 @@ theorem rank_fun_eq_lift_mul : Module.rank R (η → M) =
 #align rank_fun_eq_lift_mul rank_fun_eq_lift_mul
 
 theorem rank_fun' : Module.rank R (η → R) = Fintype.card η := by
-  rw [rank_fun_eq_lift_mul, rank_self, Cardinal.lift_one, mul_one, Cardinal.natCast_inj]
+  rw [rank_fun_eq_lift_mul, rank_self, Cardinal.lift_one, mul_one]
 #align rank_fun' rank_fun'
 
 theorem rank_fin_fun (n : ℕ) : Module.rank R (Fin n → R) = n := by simp [rank_fun']
@@ -319,7 +314,7 @@ theorem FiniteDimensional.finrank_fintype_fun_eq_card : finrank R (η → R) = F
 #align finite_dimensional.finrank_fintype_fun_eq_card FiniteDimensional.finrank_fintype_fun_eq_card
 
 /-- The vector space of functions on `Fin n` has finrank equal to `n`. -/
--- @[simp] -- Porting note: simp already proves this
+-- @[simp] -- Porting note (#10618): simp already proves this
 theorem FiniteDimensional.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by simp
 #align finite_dimensional.finrank_fin_fun FiniteDimensional.finrank_fin_fun
 
@@ -344,7 +339,6 @@ section TensorProduct
 open TensorProduct
 
 variable [StrongRankCondition S]
-
 variable [Module S M] [Module.Free S M] [Module S M'] [Module.Free S M']
 variable [Module S M₁] [Module.Free S M₁]
 

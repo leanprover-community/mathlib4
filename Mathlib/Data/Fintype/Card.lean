@@ -340,13 +340,13 @@ theorem card_finset_fin_le {n : ℕ} (s : Finset (Fin n)) : s.card ≤ n := by
   simpa only [Fintype.card_fin] using s.card_le_univ
 #align card_finset_fin_le card_finset_fin_le
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem Fintype.card_subtype_eq (y : α) [Fintype { x // x = y }] :
     Fintype.card { x // x = y } = 1 :=
   Fintype.card_unique
 #align fintype.card_subtype_eq Fintype.card_subtype_eq
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem Fintype.card_subtype_eq' (y : α) [Fintype { x // y = x }] :
     Fintype.card { x // y = x } = 1 :=
   Fintype.card_unique
@@ -450,11 +450,14 @@ noncomputable def Fintype.ofFinite (α : Type*) [Finite α] : Fintype α :=
 #align fintype.of_finite Fintype.ofFinite
 
 theorem Finite.of_injective {α β : Sort*} [Finite β] (f : α → β) (H : Injective f) : Finite α := by
-  cases nonempty_fintype (PLift β)
-  rw [← Equiv.injective_comp Equiv.plift f, ← Equiv.comp_injective _ Equiv.plift.symm] at H
-  haveI := Fintype.ofInjective _ H
-  exact Finite.of_equiv _ Equiv.plift
+  rcases Finite.exists_equiv_fin β with ⟨n, ⟨e⟩⟩
+  classical exact .of_equiv (Set.range (e ∘ f)) (Equiv.ofInjective _ (e.injective.comp H)).symm
 #align finite.of_injective Finite.of_injective
+
+/-- This instance also provides `[Finite s]` for `s : Set α`. -/
+instance Subtype.finite {α : Sort*} [Finite α] {p : α → Prop} : Finite { x // p x } :=
+  Finite.of_injective (↑) Subtype.coe_injective
+#align subtype.finite Subtype.finite
 
 theorem Finite.of_surjective {α β : Sort*} [Finite α] (f : α → β) (H : Surjective f) : Finite β :=
   Finite.of_injective _ <| injective_surjInv H
@@ -538,6 +541,8 @@ theorem card_eq_zero_iff : card α = 0 ↔ IsEmpty α := by
   card_eq_zero_iff.2 ‹_›
 #align fintype.card_eq_zero Fintype.card_eq_zero
 
+alias card_of_isEmpty := card_eq_zero
+
 theorem card_eq_one_iff_nonempty_unique : card α = 1 ↔ Nonempty (Unique α) :=
   ⟨fun h =>
     let ⟨d, h⟩ := Fintype.card_eq_one_iff.mp h
@@ -577,7 +582,7 @@ theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
       let ⟨x, hx⟩ := card_eq_one_iff.1 ha.symm
       rw [hx a, hx b], fun _ => ha ▸ le_rfl⟩
   | n + 2, ha =>
-    ⟨fun h => False.elim <| by rw [← ha] at h; cases h with | step h => cases h; done, fun h =>
+    ⟨fun h => False.elim <| by rw [← ha] at h; cases h with | step h => cases h; , fun h =>
       card_unit ▸ card_le_of_injective (fun _ => ()) fun _ _ _ => h _ _⟩
 #align fintype.card_le_one_iff Fintype.card_le_one_iff
 
@@ -632,7 +637,7 @@ namespace Finite
 
 variable [Finite α]
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem surjective_of_injective {f : α → α} (hinj : Injective f) : Surjective f := by
   intro x
   have := Classical.propDecidable
@@ -975,7 +980,7 @@ noncomputable def fintypeOfNotInfinite {α : Type*} (h : ¬Infinite α) : Fintyp
 
 section
 
-open Classical
+open scoped Classical
 
 /-- Any type is (classically) either a `Fintype`, or `Infinite`.
 
@@ -1118,8 +1123,8 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   by_contra hmn
   have hmn : m < n := lt_of_le_of_ne hmlen hmn
   refine (Classical.choose_spec (exists_not_mem_finset
-    ((Multiset.range n).pmap (λ m (_ : m < n) => natEmbeddingAux α m)
-      (fun _ => Multiset.mem_range.1)).toFinset)) ?_
+    ((Multiset.range n).pmap (fun m (_ : m < n) ↦ natEmbeddingAux α m)
+      (fun _ ↦ Multiset.mem_range.1)).toFinset)) ?_
   refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, ?_⟩)
   rw [h, natEmbeddingAux]
 
@@ -1232,7 +1237,8 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
   constructor
   · -- length
     rw [← ranges_length c]
-    simp only [map_map, map_pmap, Function.comp_apply, length_map, length_pmap, pmap_eq_map]
+    simp only [l, klift', map_map, map_pmap, Function.comp_apply, length_map, length_pmap,
+      pmap_eq_map]
   constructor
   · -- nodup
     intro s
@@ -1250,7 +1256,7 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
       intro u hu v hv huv
       apply disjoint_pmap
       · intro a a' ha ha' h
-        simpa only [Fin.mk_eq_mk] using h
+        simpa only [klift, Fin.mk_eq_mk] using h
       exact huv
 
 end Ranges

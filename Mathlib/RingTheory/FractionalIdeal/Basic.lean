@@ -61,9 +61,7 @@ open IsLocalization Pointwise nonZeroDivisors
 section Defs
 
 variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
-
 variable [Algebra R P]
-
 variable (S)
 
 /-- A submodule `I` is a fractional ideal if `a I ⊆ R` for some `a ≠ 0`. -/
@@ -90,7 +88,6 @@ namespace FractionalIdeal
 open Set Submodule
 
 variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
-
 variable [Algebra R P] [loc : IsLocalization S P]
 
 /-- Map a fractional ideal `I` to a submodule by forgetting that `∃ a, a I ⊆ R`.
@@ -208,7 +205,7 @@ theorem coe_mk (I : Submodule R P) (hI : IsFractional S I) :
   rfl
 #align fractional_ideal.coe_mk FractionalIdeal.coe_mk
 
--- Porting note: added this lemma because Lean can't see through the composition of coercions.
+-- Porting note (#10756): added lemma because Lean can't see through the composition of coercions.
 theorem coeToSet_coeToSubmodule (I : FractionalIdeal S P) :
     ((I : Submodule R P) : Set P) = I :=
   rfl

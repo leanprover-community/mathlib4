@@ -105,9 +105,9 @@ section ClosedIicTopology
 
 section Preorder
 
-variable [TopologicalSpace α] [Preorder α] [ClosedIicTopology α] {s : Set α}
+variable [TopologicalSpace α] [Preorder α] [ClosedIicTopology α] {f : β → α} {a b : α} {s : Set α}
 
-theorem isClosed_Iic {a : α} : IsClosed (Iic a) :=
+theorem isClosed_Iic : IsClosed (Iic a) :=
   ClosedIicTopology.isClosed_Iic a
 #align is_closed_Iic isClosed_Iic
 #align is_closed_le' isClosed_Iic
@@ -124,16 +124,16 @@ theorem closure_Iic (a : α) : closure (Iic a) = Iic a :=
   isClosed_Iic.closure_eq
 #align closure_Iic closure_Iic
 
-theorem le_of_tendsto_of_frequently {f : β → α} {a b : α} {x : Filter β} (lim : Tendsto f x (𝓝 a))
+theorem le_of_tendsto_of_frequently {x : Filter β} (lim : Tendsto f x (𝓝 a))
     (h : ∃ᶠ c in x, f c ≤ b) : a ≤ b :=
   isClosed_Iic.mem_of_frequently_of_tendsto h lim
 
-theorem le_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+theorem le_of_tendsto {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ᶠ c in x, f c ≤ b) : a ≤ b :=
   isClosed_Iic.mem_of_tendsto lim h
 #align le_of_tendsto le_of_tendsto
 
-theorem le_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+theorem le_of_tendsto' {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ c, f c ≤ b) : a ≤ b :=
   le_of_tendsto lim (eventually_of_forall h)
 #align le_of_tendsto' le_of_tendsto'
@@ -150,7 +150,40 @@ protected alias ⟨_, BddAbove.closure⟩ := bddAbove_closure
 #align bdd_above.of_closure BddAbove.of_closure
 #align bdd_above.closure BddAbove.closure
 
+@[simp]
+theorem disjoint_nhds_atBot_iff : Disjoint (𝓝 a) atBot ↔ ¬IsBot a := by
+  constructor
+  · intro hd hbot
+    rw [hbot.atBot_eq, disjoint_principal_right] at hd
+    exact mem_of_mem_nhds hd le_rfl
+  · simp only [IsBot, not_forall]
+    rintro ⟨b, hb⟩
+    refine disjoint_of_disjoint_of_mem disjoint_compl_left ?_ (Iic_mem_atBot b)
+    exact isClosed_Iic.isOpen_compl.mem_nhds hb
+
 end Preorder
+
+section NoBotOrder
+
+variable [Preorder α] [NoBotOrder α] [TopologicalSpace α] [ClosedIicTopology α] {a : α}
+  {l : Filter β} [NeBot l] {f : β → α}
+
+theorem disjoint_nhds_atBot (a : α) : Disjoint (𝓝 a) atBot := by simp
+#align disjoint_nhds_at_bot disjoint_nhds_atBot
+
+@[simp]
+theorem inf_nhds_atBot (a : α) : 𝓝 a ⊓ atBot = ⊥ := (disjoint_nhds_atBot a).eq_bot
+#align inf_nhds_at_bot inf_nhds_atBot
+
+theorem not_tendsto_nhds_of_tendsto_atBot (hf : Tendsto f l atBot) (a : α) : ¬Tendsto f l (𝓝 a) :=
+  hf.not_tendsto (disjoint_nhds_atBot a).symm
+#align not_tendsto_nhds_of_tendsto_at_bot not_tendsto_nhds_of_tendsto_atBot
+
+theorem not_tendsto_atBot_of_tendsto_nhds (hf : Tendsto f l (𝓝 a)) : ¬Tendsto f l atBot :=
+  hf.not_tendsto (disjoint_nhds_atBot a)
+#align not_tendsto_at_bot_of_tendsto_nhds not_tendsto_atBot_of_tendsto_nhds
+
+end NoBotOrder
 
 section LinearOrder
 
@@ -223,7 +256,8 @@ in another file.
 #### Point excluded
 -/
 
--- porting note: new lemma; todo: swap `'`?
+-- Porting note (#10756): new lemma;
+-- Porting note (#11215): TODO: swap `'`?
 theorem Ioo_mem_nhdsWithin_Iio' (H : a < b) : Ioo a b ∈ 𝓝[<] b := by
   simpa only [← Iio_inter_Ioi] using inter_mem_nhdsWithin _ (Ioi_mem_nhds H)
 
@@ -237,8 +271,10 @@ theorem CovBy.nhdsWithin_Iio (h : a ⋖ b) : 𝓝[<] b = ⊥ :=
 theorem Ico_mem_nhdsWithin_Iio (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Ico_self
 #align Ico_mem_nhds_within_Iio Ico_mem_nhdsWithin_Iio
-
--- porting note: new lemma; todo: swap `'`?
+-- Porting note (#10756): new lemma;
+-- Porting note (#11215): TODO: swap `'`?
+-- Porting note (#10756): new lemma;
+-- Porting note (#11215): TODO: swap `'`?
 theorem Ico_mem_nhdsWithin_Iio' (H : a < b) : Ico a b ∈ 𝓝[<] b :=
   Ico_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
 
@@ -246,7 +282,8 @@ theorem Ioc_mem_nhdsWithin_Iio (H : b ∈ Ioc a c) : Ioc a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Ioc_self
 #align Ioc_mem_nhds_within_Iio Ioc_mem_nhdsWithin_Iio
 
--- porting note: new lemma; todo: swap `'`?
+-- Porting note (#10756): new lemma;
+-- Porting note (#11215): TODO: swap `'`?
 theorem Ioc_mem_nhdsWithin_Iio' (H : a < b) : Ioc a b ∈ 𝓝[<] b :=
   Ioc_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
 
@@ -335,7 +372,7 @@ section ClosedIciTopology
 
 section Preorder
 
-variable [TopologicalSpace α] [Preorder α] [ClosedIciTopology α] {s : Set α}
+variable [TopologicalSpace α] [Preorder α] [ClosedIciTopology α] {f : β → α} {a b : α} {s : Set α}
 
 theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
   ClosedIciTopology.isClosed_Ici a
@@ -354,16 +391,16 @@ theorem closure_Ici (a : α) : closure (Ici a) = Ici a :=
   isClosed_Ici.closure_eq
 #align closure_Ici closure_Ici
 
-lemma ge_of_tendsto_of_frequently {f : β → α} {a b : α} {x : Filter β} (lim : Tendsto f x (𝓝 a))
+lemma ge_of_tendsto_of_frequently {x : Filter β} (lim : Tendsto f x (𝓝 a))
     (h : ∃ᶠ c in x, b ≤ f c) : b ≤ a :=
   isClosed_Ici.mem_of_frequently_of_tendsto h lim
 
-theorem ge_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+theorem ge_of_tendsto {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ᶠ c in x, b ≤ f c) : b ≤ a :=
   isClosed_Ici.mem_of_tendsto lim h
 #align ge_of_tendsto ge_of_tendsto
 
-theorem ge_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
+theorem ge_of_tendsto' {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ c, b ≤ f c) : b ≤ a :=
   ge_of_tendsto lim (eventually_of_forall h)
 #align ge_of_tendsto' ge_of_tendsto'
@@ -380,7 +417,33 @@ protected alias ⟨_, BddBelow.closure⟩ := bddBelow_closure
 #align bdd_below.of_closure BddBelow.of_closure
 #align bdd_below.closure BddBelow.closure
 
+@[simp]
+theorem disjoint_nhds_atTop_iff : Disjoint (𝓝 a) atTop ↔ ¬IsTop a :=
+  disjoint_nhds_atBot_iff (α := αᵒᵈ)
+
 end Preorder
+
+section NoTopOrder
+
+variable [Preorder α] [NoTopOrder α] [TopologicalSpace α] [ClosedIciTopology α] {a : α}
+  {l : Filter β} [NeBot l] {f : β → α}
+
+theorem disjoint_nhds_atTop (a : α) : Disjoint (𝓝 a) atTop := disjoint_nhds_atBot (toDual a)
+#align disjoint_nhds_at_top disjoint_nhds_atTop
+
+@[simp]
+theorem inf_nhds_atTop (a : α) : 𝓝 a ⊓ atTop = ⊥ := (disjoint_nhds_atTop a).eq_bot
+#align inf_nhds_at_top inf_nhds_atTop
+
+theorem not_tendsto_nhds_of_tendsto_atTop (hf : Tendsto f l atTop) (a : α) : ¬Tendsto f l (𝓝 a) :=
+  hf.not_tendsto (disjoint_nhds_atTop a).symm
+#align not_tendsto_nhds_of_tendsto_at_top not_tendsto_nhds_of_tendsto_atTop
+
+theorem not_tendsto_atTop_of_tendsto_nhds (hf : Tendsto f l (𝓝 a)) : ¬Tendsto f l atTop :=
+  hf.not_tendsto (disjoint_nhds_atTop a)
+#align not_tendsto_at_top_of_tendsto_nhds not_tendsto_atTop_of_tendsto_nhds
+
+end NoTopOrder
 
 section LinearOrder
 
@@ -450,7 +513,8 @@ theorem Ioo_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioo a c ∈ �
     ⟨Iio c, isOpen_Iio, H.2, by rw [inter_comm, Ioi_inter_Iio]; exact Ioo_subset_Ioo_left H.1⟩
 #align Ioo_mem_nhds_within_Ioi Ioo_mem_nhdsWithin_Ioi
 
--- porting note: new lemma; todo: swap `'`?
+-- Porting note (#10756): new lemma;
+-- Porting note (#11215): TODO: swap `'`?
 theorem Ioo_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[>] a :=
   Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
@@ -461,7 +525,8 @@ theorem Ioc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioc a c ∈ �
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Ioc_self
 #align Ioc_mem_nhds_within_Ioi Ioc_mem_nhdsWithin_Ioi
 
--- porting note: new lemma; todo: swap `'`?
+-- Porting note (#10756): new lemma;
+-- Porting note (#11215): TODO: swap `'`?
 theorem Ioc_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioc a b ∈ 𝓝[>] a :=
   Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
@@ -469,7 +534,8 @@ theorem Ico_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ico a c ∈ �
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Ico_self
 #align Ico_mem_nhds_within_Ioi Ico_mem_nhdsWithin_Ioi
 
--- porting note: new lemma; todo: swap `'`?
+-- Porting note (#10756): new lemma;
+-- Porting note (#11215): TODO: swap `'`?
 theorem Ico_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ico a b ∈ 𝓝[>] a :=
   Ico_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
@@ -477,7 +543,8 @@ theorem Icc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Icc a c ∈ �
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Icc_self
 #align Icc_mem_nhds_within_Ioi Icc_mem_nhdsWithin_Ioi
 
--- porting note: new lemma; todo: swap `'`?
+-- Porting note (#10756): new lemma;
+-- Porting note (#11215): TODO: swap `'`?
 theorem Icc_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Icc a b ∈ 𝓝[>] a :=
   Icc_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 

@@ -153,7 +153,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
   · refine' ⟨k - 1, tsub_eq_of_eq_add <| hg.trans _⟩
     rw [add_assoc, one_add_one_eq_two, ← Nat.mul_succ, ← two_mul]
     congr
-    exact (tsub_add_cancel_of_le <| Nat.succ_le_iff.2 hk).symm
+    omega
   · simpa only [true_and_iff, mem_filter, mem_univ]
 #align simple_graph.odd_card_odd_degree_vertices_ne SimpleGraph.odd_card_odd_degree_vertices_ne
 

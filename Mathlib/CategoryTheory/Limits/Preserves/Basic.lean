@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 # Preservation and reflection of (co)limits.
 
 There are various distinct notions of "preserving limits". The one we
-aim to capture here is: A functor F : C → D "preserves limits" if it
+aim to capture here is: A functor F : C ⥤ D "preserves limits" if it
 sends every limit cone in C to a limit cone in D. Informally, F
 preserves all the limits which exist in C.
 
@@ -45,9 +45,7 @@ namespace CategoryTheory.Limits
 universe w' w₂' w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {J : Type w} [Category.{w'} J] {K : J ⥤ C}
 
 /-- A functor `F` preserves limits of `K` (written as `PreservesLimit K F`)
@@ -186,10 +184,16 @@ instance idPreservesColimits : PreservesColimitsOfSize.{w', w} (𝟭 C) where
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_preserves_colimits CategoryTheory.Limits.idPreservesColimits
 
+instance [HasLimit K] {F : C ⥤ D} [PreservesLimit K F] : HasLimit (K ⋙ F) where
+  exists_limit := ⟨⟨F.mapCone (limit.cone K), PreservesLimit.preserves (limit.isLimit K)⟩⟩
+
+instance [HasColimit K] {F : C ⥤ D} [PreservesColimit K F] : HasColimit (K ⋙ F) where
+  exists_colimit :=
+    ⟨⟨F.mapCocone (colimit.cocone K), PreservesColimit.preserves (colimit.isColimit K)⟩⟩
+
 section
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E]
-
 variable (F : C ⥤ D) (G : D ⥤ E)
 
 -- Porting note: made this global by removing local
@@ -237,7 +241,7 @@ def preservesLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅
     apply IsLimit.postcomposeInvEquiv (isoWhiskerRight h F : _) _ _
     have := (IsLimit.postcomposeInvEquiv h c).symm t
     apply IsLimit.ofIsoLimit (isLimitOfPreserves F this)
-    refine' Cones.ext (Iso.refl _)
+    exact Cones.ext (Iso.refl _)
 #align category_theory.limits.preserves_limit_of_iso_diagram CategoryTheory.Limits.preservesLimitOfIsoDiagram
 
 /-- Transfer preservation of a limit along a natural isomorphism in the functor. -/
@@ -268,7 +272,7 @@ def preservesLimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J 
         apply ((IsLimit.postcomposeHomEquiv equ _).symm this).ofIsoLimit
         refine' Cones.ext (Iso.refl _) fun j => _
         · dsimp
-          simp [← Functor.map_comp] }
+          simp [equ, ← Functor.map_comp] }
 #align category_theory.limits.preserves_limits_of_shape_of_equiv CategoryTheory.Limits.preservesLimitsOfShapeOfEquiv
 
 /-- A functor preserving larger limits also preserves smaller limits. -/
@@ -305,7 +309,7 @@ def preservesColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ �
     apply IsColimit.precomposeHomEquiv (isoWhiskerRight h F : _) _ _
     have := (IsColimit.precomposeHomEquiv h c).symm t
     apply IsColimit.ofIsoColimit (isColimitOfPreserves F this)
-    refine' Cocones.ext (Iso.refl _)
+    exact Cocones.ext (Iso.refl _)
 #align category_theory.limits.preserves_colimit_of_iso_diagram CategoryTheory.Limits.preservesColimitOfIsoDiagram
 
 /-- Transfer preservation of a colimit along a natural isomorphism in the functor. -/
@@ -337,7 +341,7 @@ def preservesColimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : 
         apply ((IsColimit.precomposeInvEquiv equ _).symm this).ofIsoColimit
         refine' Cocones.ext (Iso.refl _) fun j => _
         · dsimp
-          simp [← Functor.map_comp] }
+          simp [equ, ← Functor.map_comp] }
 #align category_theory.limits.preserves_colimits_of_shape_of_equiv CategoryTheory.Limits.preservesColimitsOfShapeOfEquiv
 
 /-- A functor preserving larger colimits also preserves smaller colimits. -/
@@ -533,7 +537,6 @@ instance idReflectsColimits : ReflectsColimitsOfSize.{w, w'} (𝟭 C) where
 section
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E]
-
 variable (F : C ⥤ D) (G : D ⥤ E)
 
 instance compReflectsLimit [ReflectsLimit K F] [ReflectsLimit (K ⋙ F) G] :
@@ -658,7 +661,7 @@ def reflectsLimitOfReflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [ReflectsIso
     suffices IsIso (Prefunctor.map (Cones.functoriality F G).toPrefunctor
       (IsLimit.liftConeMorphism (limit.isLimit F) c)) from by
         apply isIso_of_reflects_iso _ (Cones.functoriality F G)
-    refine' t.hom_isIso (isLimitOfPreserves G (limit.isLimit F)) _
+    exact t.hom_isIso (isLimitOfPreserves G (limit.isLimit F)) _
 #align category_theory.limits.reflects_limit_of_reflects_isomorphisms CategoryTheory.Limits.reflectsLimitOfReflectsIsomorphisms
 
 /-- If `C` has limits of shape `J` and `G` preserves them, then if `G` reflects isomorphisms then it
@@ -773,7 +776,7 @@ def reflectsColimitOfReflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [ReflectsI
     suffices IsIso (Prefunctor.map (Cocones.functoriality F G).toPrefunctor
       (IsColimit.descCoconeMorphism (colimit.isColimit F) c)) from by
         apply isIso_of_reflects_iso _ (Cocones.functoriality F G)
-    refine' (isColimitOfPreserves G (colimit.isColimit F)).hom_isIso t _
+    exact (isColimitOfPreserves G (colimit.isColimit F)).hom_isIso t _
 #align category_theory.limits.reflects_colimit_of_reflects_isomorphisms CategoryTheory.Limits.reflectsColimitOfReflectsIsomorphisms
 
 /--

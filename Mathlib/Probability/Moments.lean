@@ -180,10 +180,7 @@ theorem cgf_undef (hX : ¬Integrable (fun ω => exp (t * X ω)) μ) : cgf X μ t
 #align probability_theory.cgf_undef ProbabilityTheory.cgf_undef
 
 theorem mgf_nonneg : 0 ≤ mgf X μ t := by
-  refine' integral_nonneg _
-  intro ω
-  simp only [Pi.zero_apply]
-  exact (exp_pos _).le
+  unfold mgf; positivity
 #align probability_theory.mgf_nonneg ProbabilityTheory.mgf_nonneg
 
 theorem mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω)) μ) :
@@ -199,7 +196,7 @@ theorem mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω
     rw [h_eq_univ, Set.inter_univ _]
     refine' Ne.bot_lt _
     simp only [hμ, ENNReal.bot_eq_zero, Ne.def, Measure.measure_univ_eq_zero, not_false_iff]
-  · refine' eventually_of_forall fun x => _
+  · filter_upwards with x
     rw [Pi.zero_apply]
     exact (exp_pos _).le
   · rwa [integrableOn_univ]

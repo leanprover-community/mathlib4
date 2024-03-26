@@ -233,9 +233,9 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
     -- · rw [id.def, ofReal_re]; exact Or.inl hx
     apply HasDerivAt.comp_ofReal (e := fun y => (y : ℂ) ^ (r + 1) / (r + 1))
     convert HasDerivAt.div_const (𝕜 := ℂ) ?_ (r + 1) using 1
-    · exact (mul_div_cancel _ hr).symm
+    · exact (mul_div_cancel_right₀ _ hr).symm
     · convert HasDerivAt.cpow_const ?_ ?_ using 1
-      · rw [add_sub_cancel, mul_comm]; exact (mul_one _).symm
+      · rw [add_sub_cancel_right, mul_comm]; exact (mul_one _).symm
       · exact hasDerivAt_id (x : ℂ)
       · simp [hx]
   · -- harder case : `x < 0`
@@ -248,7 +248,7 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
     suffices HasDerivAt (fun y : ℝ => (-↑y) ^ (r + 1) * exp (↑π * I * (r + 1)))
         ((r + 1) * (-↑x) ^ r * exp (↑π * I * r)) x by
       convert this.div_const (r + 1) using 1
-      conv_rhs => rw [mul_assoc, mul_comm, mul_div_cancel _ hr]
+      conv_rhs => rw [mul_assoc, mul_comm, mul_div_cancel_right₀ _ hr]
     rw [mul_add ((π : ℂ) * _), mul_one, exp_add, exp_pi_mul_I, mul_comm (_ : ℂ) (-1 : ℂ),
       neg_one_mul]
     simp_rw [mul_neg, ← neg_mul, ← ofReal_neg]
@@ -261,7 +261,7 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
       exact this.comp_ofReal
     conv in ↑_ ^ _ => rw [(by ring : r = r + 1 - 1)]
     convert HasDerivAt.cpow_const ?_ ?_ using 1
-    · rw [add_sub_cancel, add_sub_cancel]; exact (mul_one _).symm
+    · rw [add_sub_cancel_right, add_sub_cancel_right]; exact (mul_one _).symm
     · exact hasDerivAt_id ((-x : ℝ) : ℂ)
     · simp [hx]
 #align has_deriv_at_of_real_cpow hasDerivAt_ofReal_cpow
@@ -400,7 +400,7 @@ theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
   · have h1 : 1 ≤ p := le_trans (by simp) h
     rw [Nat.cast_succ, ← le_sub_iff_add_le] at h
     rw [contDiff_succ_iff_deriv, deriv_rpow_const' h1]
-    refine' ⟨differentiable_rpow_const h1, contDiff_const.mul (ihn h)⟩
+    exact ⟨differentiable_rpow_const h1, contDiff_const.mul (ihn h)⟩
 #align real.cont_diff_rpow_const_of_le Real.contDiff_rpow_const_of_le
 
 theorem contDiffAt_rpow_const_of_le {x p : ℝ} {n : ℕ} (h : ↑n ≤ p) :

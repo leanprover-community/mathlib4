@@ -147,7 +147,7 @@ theorem dvd_antisymm : a ∣ b → b ∣ a → a = b := by
   obtain ⟨rfl, -⟩ | rfl := hcd <;> simp
 #align dvd_antisymm dvd_antisymm
 
--- porting note: `attribute [protected]` is currently unsupported
+-- Porting note: `attribute [protected]` is currently unsupported
 -- attribute [protected] Nat.dvd_antisymm --This lemma is in core, so we protect it here
 
 theorem dvd_antisymm' : a ∣ b → b ∣ a → b = a :=
@@ -167,5 +167,15 @@ theorem eq_of_forall_dvd (h : ∀ c, a ∣ c ↔ b ∣ c) : a = b :=
 theorem eq_of_forall_dvd' (h : ∀ c, c ∣ a ↔ c ∣ b) : a = b :=
   ((h _).1 dvd_rfl).antisymm <| (h _).2 dvd_rfl
 #align eq_of_forall_dvd' eq_of_forall_dvd'
+
+lemma dvd_of_mul_dvd_mul_left {c : α} (hc : c ≠ 0)
+    (H : c * a ∣ c * b) : a ∣ b := by
+  rcases H with ⟨d, hd⟩
+  exact ⟨d, by simpa [mul_assoc, hc] using hd⟩
+
+lemma dvd_of_mul_dvd_mul_right {c : α} (hc : c ≠ 0)
+    (H : a * c ∣ b * c) : a ∣ b := by
+  rw [mul_comm a c, mul_comm b c] at H
+  exact dvd_of_mul_dvd_mul_left hc H
 
 end CancelCommMonoidWithZero
