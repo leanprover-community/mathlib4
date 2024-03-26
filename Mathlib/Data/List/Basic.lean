@@ -307,14 +307,8 @@ instance : IsTrans (List α) Subset where
   trans := fun _ _ _ => List.Subset.trans
 
 #align list.subset_def List.subset_def
-
 #align list.subset_append_of_subset_left List.subset_append_of_subset_left
-
-@[deprecated subset_append_of_subset_right]
-theorem subset_append_of_subset_right' (l l₁ l₂ : List α) : l ⊆ l₂ → l ⊆ l₁ ++ l₂ :=
-  subset_append_of_subset_right _
-#align list.subset_append_of_subset_right List.subset_append_of_subset_right'
-
+#align list.subset_append_of_subset_right List.subset_append_of_subset_right
 #align list.cons_subset List.cons_subset
 
 theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
@@ -506,21 +500,12 @@ theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bi
 #align list.concat_nil List.concat_nil
 #align list.concat_cons List.concat_cons
 
-@[deprecated concat_eq_append]
-theorem concat_eq_append' (a : α) (l : List α) : concat l a = l ++ [a] :=
-  concat_eq_append l a
-#align list.concat_eq_append List.concat_eq_append'
-
+#align list.concat_eq_append List.concat_eq_append
 #align list.init_eq_of_concat_eq List.init_eq_of_concat_eq
 #align list.last_eq_of_concat_eq List.last_eq_of_concat_eq
 #align list.concat_ne_nil List.concat_ne_nil
 #align list.concat_append List.concat_append
-
-@[deprecated length_concat]
-theorem length_concat' (a : α) (l : List α) : length (concat l a) = succ (length l) := by
-  simp only [concat_eq_append, length_append, length]
-#align list.length_concat List.length_concat'
-
+#align list.length_concat List.length_concat
 #align list.append_concat List.append_concat
 
 /-! ### reverse -/
@@ -1204,10 +1189,7 @@ theorem nthLe_get? {l : List α} {n} (h) : get? l n = some (nthLe l n h) := get?
 theorem get?_length (l : List α) : l.get? l.length = none := get?_len_le le_rfl
 #align list.nth_length List.get?_length
 
-@[deprecated get?_eq_some]
-theorem get?_eq_some' {l : List α} {n a} : get? l n = some a ↔ ∃ h, nthLe l n h = a := get?_eq_some
-#align list.nth_eq_some List.get?_eq_some'
-
+#align list.nth_eq_some List.get?_eq_some
 #align list.nth_eq_none_iff List.get?_eq_none
 #align list.nth_of_mem List.get?_of_mem
 
@@ -1282,10 +1264,7 @@ theorem nthLe_zero [Inhabited α] {L : List α} (h : 0 < L.length) : List.nthLe 
   simp [nthLe]
 #align list.nth_le_zero List.nthLe_zero
 
-@[deprecated get_append]
-theorem nthLe_append {l₁ l₂ : List α} {n : ℕ} (hn₁) (hn₂) :
-    (l₁ ++ l₂).nthLe n hn₁ = l₁.nthLe n hn₂ := get_append _ hn₂
-#align list.nth_le_append List.nthLe_append
+#align list.nth_le_append List.get_append
 
 @[deprecated get_append_right']
 theorem nthLe_append_right {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length ≤ n) (h₂) :
@@ -1294,30 +1273,16 @@ theorem nthLe_append_right {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length �
 #align list.nth_le_append_right_aux List.get_append_right_aux
 #align list.nth_le_append_right List.nthLe_append_right
 
-@[deprecated get_replicate]
-theorem nthLe_replicate (a : α) {n m : ℕ} (h : m < (replicate n a).length) :
-    (replicate n a).nthLe m h = a := get_replicate ..
-#align list.nth_le_replicate List.nthLe_replicate
-
+#align list.nth_le_replicate List.get_replicate
 #align list.nth_append List.get?_append
 #align list.nth_append_right List.get?_append_right
-
-@[deprecated getLast_eq_get]
-theorem getLast_eq_nthLe (l : List α) (h : l ≠ []) :
-    getLast l h = l.nthLe (l.length - 1) (have := length_pos_of_ne_nil h; by omega) :=
-  getLast_eq_get ..
-#align list.last_eq_nth_le List.getLast_eq_nthLe
+#align list.last_eq_nth_le List.getLast_eq_get
 
 theorem get_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
     l.get ⟨l.length - 1, h⟩ = l.getLast (by rintro rfl; exact Nat.lt_irrefl 0 h) :=
   (getLast_eq_get l _).symm
 
-@[deprecated get_length_sub_one]
-theorem nthLe_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
-    l.nthLe (l.length - 1) h = l.getLast (by rintro rfl; exact Nat.lt_irrefl 0 h) :=
-  get_length_sub_one _
-#align list.nth_le_length_sub_one List.nthLe_length_sub_one
-
+#align list.nth_le_length_sub_one List.get_length_sub_one
 #align list.nth_concat_length List.get?_concat_length
 
 @[deprecated get_cons_length]
@@ -1342,11 +1307,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
     rw [drop, get]
     apply ih
 
-@[deprecated take_one_drop_eq_of_lt_length]
-theorem take_one_drop_eq_of_lt_length' {l : List α} {n : ℕ} (h : n < l.length) :
-    (l.drop n).take 1 = [l.nthLe n h] := take_one_drop_eq_of_lt_length h
-#align list.take_one_drop_eq_of_lt_length List.take_one_drop_eq_of_lt_length'
-
+#align list.take_one_drop_eq_of_lt_length List.take_one_drop_eq_of_lt_length
 #align list.ext List.ext
 
 @[deprecated ext_get]
@@ -1443,15 +1404,8 @@ theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l
   rw [get?_eq_some]
   simp [n.2]
 
-@[deprecated get_eq_iff]
-theorem nthLe_eq_iff {l : List α} {n : ℕ} {x : α} {h} : l.nthLe n h = x ↔ l.get? n = some x :=
-  get_eq_iff
-#align list.nth_le_eq_iff List.nthLe_eq_iff
-
-@[deprecated get?_eq_get]
-theorem some_nthLe_eq {l : List α} {n : ℕ} {h} : some (l.nthLe n h) = l.get? n :=
-  (get?_eq_get _).symm
-#align list.some_nth_le_eq List.some_nthLe_eq
+#align list.nth_le_eq_iff List.get_eq_iff
+#align list.some_nth_le_eq List.get?_eq_get
 
 end deprecated
 
@@ -1522,26 +1476,15 @@ theorem length_modifyNth (f : α → α) : ∀ n l, length (modifyNth f n l) = l
 #align list.update_nth_succ List.set_succ
 #align list.update_nth_comm List.set_comm
 
-@[simp, deprecated get_set_eq]
-theorem nthLe_set_eq (l : List α) (i : ℕ) (a : α) (h : i < (l.set i a).length) :
-    (l.set i a).nthLe i h = a := get_set_eq ..
-#align list.nth_le_update_nth_eq List.nthLe_set_eq
-
+#align list.nth_le_update_nth_eq List.get_set_eq
 @[simp]
 theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
     (hj : j < (l.set i a).length) :
     (l.set i a).get ⟨j, hj⟩ = l.get ⟨j, by simpa using hj⟩ := by
   rw [← Option.some_inj, ← List.get?_eq_get, List.get?_set_ne _ _ h, List.get?_eq_get]
 
-@[simp, deprecated get_set_of_ne]
-theorem nthLe_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
-    (hj : j < (l.set i a).length) :
-    (l.set i a).nthLe j hj = l.nthLe j (by simpa using hj) :=
-  get_set_of_ne h _ hj
-#align list.nth_le_update_nth_of_ne List.nthLe_set_of_ne
-
+#align list.nth_le_update_nth_of_ne List.get_set_of_ne
 #align list.mem_or_eq_of_mem_update_nth List.mem_or_eq_of_mem_set
-
 
 /-! ### map -/
 
@@ -1756,25 +1699,8 @@ theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: tak
 #align list.take_append_eq_append_take List.take_append_eq_append_take
 #align list.take_append_of_le_length List.take_append_of_le_length
 #align list.take_append List.take_append
-
-set_option linter.deprecated false in
-/-- The `i`-th element of a list coincides with the `i`-th element of any of its prefixes of
-length `> i`. Version designed to rewrite from the big list to the small list. -/
-@[deprecated get_take]
-theorem nthLe_take (L : List α) {i j : ℕ} (hi : i < L.length) (hj : i < j) :
-    nthLe L i hi = nthLe (L.take j) i (length_take .. ▸ lt_min hj hi) :=
-  get_take _ hi hj
-#align list.nth_le_take List.nthLe_take
-
-set_option linter.deprecated false in
-/-- The `i`-th element of a list coincides with the `i`-th element of any of its prefixes of
-length `> i`. Version designed to rewrite from the small list to the big list. -/
-@[deprecated get_take']
-theorem nthLe_take' (L : List α) {i j : ℕ} (hi : i < (L.take j).length) :
-    nthLe (L.take j) i hi = nthLe L i (lt_of_lt_of_le hi (by simp only [length_take]; omega)) :=
-  get_take' _
-#align list.nth_le_take' List.nthLe_take'
-
+#align list.nth_le_take List.get_take
+#align list.nth_le_take' List.get_take'
 #align list.nth_take List.get?_take
 #align list.nth_take_of_succ List.nth_take_of_succ
 #align list.take_succ List.take_succ
@@ -1803,11 +1729,7 @@ theorem cons_get_drop_succ {l : List α} {n} :
       simp only [Nat.succ_lt_succ_iff, List.length] at hn
       simpa [List.get, List.drop] using hl
 
-@[deprecated cons_get_drop_succ]
-theorem cons_nthLe_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
-    l.nthLe n hn :: l.drop (n + 1) = l.drop n := cons_get_drop_succ
-#align list.cons_nth_le_drop_succ List.cons_nthLe_drop_succ
-
+#align list.cons_nth_le_drop_succ List.cons_get_drop_succ
 #align list.drop_nil List.drop_nil
 #align list.drop_one List.drop_one
 #align list.drop_add List.drop_add
@@ -1820,28 +1742,8 @@ theorem cons_nthLe_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
 #align list.drop_append_of_le_length List.drop_append_of_le_length
 #align list.drop_append List.drop_append
 #align list.drop_sizeof_le List.drop_sizeOf_le
-
-set_option linter.deprecated false in
-/-- The `i + j`-th element of a list coincides with the `j`-th element of the list obtained by
-dropping the first `i` elements. Version designed to rewrite from the big list to the small list. -/
-@[deprecated get_drop]
-theorem nthLe_drop (L : List α) {i j : ℕ} (h : i + j < L.length) :
-    nthLe L (i + j) h = nthLe (L.drop i) j (by
-      have A : i < L.length := lt_of_le_of_lt (Nat.le.intro rfl) h
-      rw [(take_append_drop i L).symm] at h
-      simp_all only [take_append_drop, length_drop, gt_iff_lt]
-      omega) := get_drop ..
-#align list.nth_le_drop List.nthLe_drop
-
-set_option linter.deprecated false in
-/-- The `i + j`-th element of a list coincides with the `j`-th element of the list obtained by
-dropping the first `i` elements. Version designed to rewrite from the small list to the big list. -/
-@[deprecated get_drop']
-theorem nthLe_drop' (L : List α) {i j : ℕ} (h : j < (L.drop i).length) :
-    nthLe (L.drop i) j h = nthLe L (i + j) (have := length_drop i L; by omega) :=
-  get_drop' ..
-#align list.nth_le_drop' List.nthLe_drop'
-
+#align list.nth_le_drop List.get_drop
+#align list.nth_le_drop' List.get_drop'
 #align list.nth_drop List.get?_drop
 #align list.drop_drop List.drop_drop
 #align list.drop_take List.drop_take
@@ -3490,27 +3392,14 @@ theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length)
     (l.enumFrom n).get i = (n + i, l.get ⟨i, hi⟩) := by
   rw [← Option.some_inj, ← get?_eq_get]
   simp [enumFrom_get?, get?_eq_get hi]
-
-set_option linter.deprecated false in
-@[deprecated get_enumFrom]
-theorem nthLe_enumFrom (l : List α) (n i : ℕ) (hi' : i < (l.enumFrom n).length)
-    (hi : i < l.length := (by simpa using hi')) :
-    (l.enumFrom n).nthLe i hi' = (n + i, l.nthLe i hi) :=
-  get_enumFrom ..
-#align list.nth_le_enum_from List.nthLe_enumFrom
+#align list.nth_le_enum_from List.get_enumFrom
 
 theorem get_enum (l : List α) (i : Fin l.enum.length)
     (hi : i < l.length := (by simpa using i.2)) :
     l.enum.get i = (i.1, l.get ⟨i, hi⟩) := by
   convert get_enumFrom _ _ i
   exact (zero_add _).symm
-
-set_option linter.deprecated false in
-@[deprecated get_enum]
-theorem nthLe_enum (l : List α) (i : ℕ) (hi' : i < l.enum.length)
-    (hi : i < l.length := (by simpa using hi')) :
-    l.enum.nthLe i hi' = (i, l.nthLe i hi) := get_enum ..
-#align list.nth_le_enum List.nthLe_enum
+#align list.nth_le_enum List.get_enum
 
 @[simp]
 theorem enumFrom_eq_nil {n : ℕ} {l : List α} : List.enumFrom n l = [] ↔ l = [] := by
@@ -3868,12 +3757,7 @@ theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = (L.attach.map Subtype.val).get ⟨i, by simpa using i.2⟩ :=
       by rw [get_map]
     _ = L.get { val := i, isLt := _ } := by congr 2 <;> simp
-
-set_option linter.deprecated false in
-@[simp, deprecated get_attach]
-theorem nthLe_attach (L : List α) (i) (H : i < L.attach.length) :
-    (L.attach.nthLe i H).1 = L.nthLe i (length_attach L ▸ H) := get_attach ..
-#align list.nth_le_attach List.nthLe_attach
+#align list.nth_le_attach List.get_attach
 
 @[simp 1100]
 theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
