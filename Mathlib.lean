@@ -2707,6 +2707,7 @@ import Mathlib.Logic.Equiv.Functor
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Logic.Equiv.Option
+import Mathlib.Logic.Equiv.Pairwise
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Equiv.TransferInstance
