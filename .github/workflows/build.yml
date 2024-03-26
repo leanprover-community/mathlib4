@@ -147,6 +147,7 @@ jobs:
 
       - name: install elan
         run: |
+          cat "$GITHUB_EVENT_PATH"
           set -o pipefail
           curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y --default-toolchain none
