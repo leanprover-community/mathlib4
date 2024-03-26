@@ -23,55 +23,6 @@ namespace CategoryTheory
 
 open Category
 
-@[reassoc (attr := simp)]
-lemma Iso.map_hom_inv_id {C D : Type*} [Category C] [Category D] {X Y : C} (e : X ≅ Y)
-    (F : C ⥤ D) : F.map e.hom ≫ F.map e.inv = 𝟙 _ := by
-  rw [← F.map_comp, e.hom_inv_id, F.map_id]
-
-@[reassoc (attr := simp)]
-lemma Iso.map_inv_hom_id {C D : Type*} [Category C] [Category D] {X Y : C} (e : X ≅ Y)
-    (F : C ⥤ D) : F.map e.inv ≫ F.map e.hom = 𝟙 _ := by
-  rw [← F.map_comp, e.inv_hom_id, F.map_id]
-
-@[reassoc (attr := simp)]
-lemma Iso.map_hom_inv_id_apply {C D J : Type*} [Category C] [Category D]
-    {X Y : GradedObject J C} (e : X ≅ Y)
-    (F : C ⥤ D) (j : J) : F.map (e.hom j) ≫ F.map (e.inv j) = 𝟙 _ := by
-  rw [← F.map_comp, ← GradedObject.categoryOfGradedObjects_comp, e.hom_inv_id,
-    GradedObject.categoryOfGradedObjects_id, Functor.map_id]
-
-@[reassoc (attr := simp)]
-lemma Iso.map_inv_hom_id_apply {C D J : Type*} [Category C] [Category D] {X Y : GradedObject J C}
-    (e : X ≅ Y) (F : C ⥤ D) (j : J) : F.map (e.inv j) ≫ F.map (e.hom j) = 𝟙 _ := by
-  rw [← F.map_comp, ← GradedObject.categoryOfGradedObjects_comp, e.inv_hom_id,
-    GradedObject.categoryOfGradedObjects_id, Functor.map_id]
-
-@[reassoc (attr := simp)]
-lemma Iso.map_hom_inv_id_app {C D E : Type*} [Category C] [Category D] [Category E]
-    {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Y : D) :
-    (F.map e.hom).app Y ≫ (F.map e.inv).app Y = 𝟙 _ := by
-  rw [← NatTrans.comp_app, ← F.map_comp, e.hom_inv_id, F.map_id, NatTrans.id_app]
-
-@[reassoc (attr := simp)]
-lemma Iso.map_inv_hom_id_app {C D E : Type*} [Category C] [Category D] [Category E]
-    {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Y : D) :
-    (F.map e.inv).app Y ≫ (F.map e.hom).app Y = 𝟙 _ := by
-  rw [← NatTrans.comp_app, ← F.map_comp, e.inv_hom_id, F.map_id, NatTrans.id_app]
-
-@[reassoc (attr := simp)]
-lemma Iso.map_hom_inv_id_app_apply {C D E J : Type*} [Category C] [Category D] [Category E]
-    {X Y : GradedObject J C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
-    (F.map (e.hom j)).app Y ≫ (F.map (e.inv j)).app Y = 𝟙 _ := by
-  rw [← NatTrans.comp_app, ← F.map_comp, GradedObject.iso_hom_inv_id_apply,
-    Functor.map_id, NatTrans.id_app]
-
-@[reassoc (attr := simp)]
-lemma Iso.map_inv_hom_id_app_apply {C D E J : Type*} [Category C] [Category D] [Category E]
-    {X Y : GradedObject J C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
-    (F.map (e.inv j)).app Y ≫ (F.map (e.hom j)).app Y = 𝟙 _ := by
-  rw [← NatTrans.comp_app, ← F.map_comp, GradedObject.iso_inv_hom_id_apply,
-    Functor.map_id, NatTrans.id_app]
-
 variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
   (F : C₁ ⥤ C₂ ⥤ C₃)
 

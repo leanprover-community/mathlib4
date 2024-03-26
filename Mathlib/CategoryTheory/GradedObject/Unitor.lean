@@ -13,9 +13,9 @@ map `p : I × J → J` such that `hp : ∀ (j : J), p ⟨0, j⟩ = j`,
 we define an isomorphism of `J`-graded objects for any `Y : GradedObject J D`.
 `mapBifunctorLeftUnitor F X e p hp Y : mapBifunctorMapObj F p ((single₀ I).obj X) Y ≅ Y`.
 Under similar assumptions, we also obtain a right unitor isomorphism
-`mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`.
-
-TODO (@joelriou): get the triangle identity.
+`mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`. Finally,
+the lemma `mapBifunctor_triangle` promotes a triangle identity involving functors
+to a triangle identity for the induced functors on graded objects.
 
 -/
 
@@ -233,7 +233,7 @@ variable {Y Y'}
 @[reassoc]
 lemma mapBifunctorRightUnitor_inv_naturality :
     φ ≫ (mapBifunctorRightUnitor F Y e p hp X').inv =
-      (mapBifunctorRightUnitor F Y e p hp X).inv ≫ mapBifunctorMapMap F p φ (𝟙 _):= by
+      (mapBifunctorRightUnitor F Y e p hp X).inv ≫ mapBifunctorMapMap F p φ (𝟙 _) := by
   ext j
   dsimp
   rw [mapBifunctorRightUnitor_inv_apply, mapBifunctorRightUnitor_inv_apply, assoc, assoc,
@@ -256,9 +256,14 @@ section
 
 variable {I₁ I₂ I₃ J : Type*} [Zero I₂]
 
+/-- Given two maps `r : I₁ × I₂ × I₃ → J` and `π : I₁ × I₃ → J`, this structure is the
+input in the formulation of the triangle equality `mapBifunctor_triangle` which
+relates the left and right unitor and the associator for `GradedObject.mapBifunctor`. -/
 structure TriangleIndexData (r : I₁ × I₂ × I₃ → J) (π : I₁ × I₃ → J) where
+  /-- a map `I₁ × I₂ → I₁` -/
   p₁₂ : I₁ × I₂ → I₁
   hp₁₂ (i : I₁ × I₂ × I₃) : π ⟨p₁₂ ⟨i.1, i.2.1⟩, i.2.2⟩ = r i
+  /-- a map `I₂ × I₃ → I₃` -/
   p₂₃ : I₂ × I₃ → I₃
   hp₂₃ (i : I₁ × I₂ × I₃) : π (i.1, p₂₃ i.2) = r i
   h₁ (i₁ : I₁) : p₁₂ (i₁, 0) = i₁
@@ -274,6 +279,7 @@ attribute [simp] h₁ h₃
 lemma r_zero (i₁ : I₁) (i₃ : I₃) : r ⟨i₁, 0, i₃⟩ = π ⟨i₁, i₃⟩ := by
   rw [← τ.hp₂₃, τ.h₃ i₃]
 
+/-- The `BifunctorComp₁₂IndexData r` attached to a `TriangleIndexData r π`. -/
 @[reducible]
 def ρ₁₂ : BifunctorComp₁₂IndexData r where
   I₁₂ := I₁
@@ -281,6 +287,7 @@ def ρ₁₂ : BifunctorComp₁₂IndexData r where
   q := π
   hpq := τ.hp₁₂
 
+/-- The `BifunctorComp₂₃IndexData r` attached to a `TriangleIndexData r π`. -/
 @[reducible]
 def ρ₂₃ : BifunctorComp₂₃IndexData r where
   I₂₃ := I₃
@@ -335,8 +342,8 @@ lemma mapBifunctor_triangle :
   dsimp
   rw [Functor.map_id, NatTrans.id_app, id_comp,
     ← Functor.map_comp_assoc, ← NatTrans.comp_app_assoc, ← Functor.map_comp,
-    ι_mapBifunctorLeftUnitor_hom F₂ X₂ e₂ τ.p₂₃ τ.h₃ X₃ i₃,
-    ι_mapBifunctorRightUnitor_hom F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁ i₁]
+    ι_mapBifunctorLeftUnitor_hom_apply F₂ X₂ e₂ τ.p₂₃ τ.h₃ X₃ i₃,
+    ι_mapBifunctorRightUnitor_hom_apply F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁ i₁]
   dsimp
   simp only [Functor.map_comp, assoc, NatTrans.comp_app, ← triangle (X₁ i₁) (X₃ i₃)]
   erw [← NatTrans.naturality_app_assoc]
