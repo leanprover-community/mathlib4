@@ -13,8 +13,7 @@ import Mathlib.Topology.Algebra.UniformGroup
 # Infinite sums in nonarchimedean additive groups
 
 Let `G` be a complete nonarchimedean abelian group and let `f : α → G` be a function. We prove that
-`f` is unconditionally summable if and only if `f a` tends to zero with respect to the cofinite
-filter on `α`.
+`f` is unconditionally summable if and only if `f a` tends to zero on the cofinite filter on `α`.
 -/
 
 open Filter Topology
