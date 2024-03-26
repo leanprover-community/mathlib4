@@ -251,10 +251,6 @@ def averageClassFunction (α : G → k) (h : IsClassFunction α) (V : FdRep k G)
   rw [averageFunction]
   sorry
 
-/-- Irreducbile characters are a basis of ClassFunction G -/
-lemma orthogonal_all_characters_implies_zero (f : G → k) (hf : IsClassFunction f) (h : ∀ V : {V : FdRep k G // Simple V}, (scalarProduct f V.1.character = (0 : k))) : f = fun _ ↦ (0 : k) := by
-  sorry
-
 end Orthogonality
 
 section RegularRepresentation
@@ -275,6 +271,59 @@ lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) :
     , zero_mul, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, inv_one
     , char_one, smul_eq_mul, ← mul_assoc, inv_mul_cancel_of_invertible, one_mul
     ]
+
+/-- Irreducbile characters are a basis of ClassFunction G -/
+lemma orthogonal_all_characters_implies_zero (f : G → k) (hf : IsClassFunction f) (h : ∀ V : {V : FdRep k G // Simple V}, (scalarProduct f V.1.character = (0 : k))) : f = fun _ ↦ (0 : k) := by
+  have (V : FdRep k G) (hV : Simple V) : averageClassFunction f hf V = (0 : V ⟶  V) := by
+    have : finrank k (V ⟶  V) = 1 := by
+      rw [finrank_hom_simple_simple V V]
+      simp only [ite_eq_left_iff, not_nonempty_iff, not_isEmpty_of_nonempty, zero_ne_one,
+        IsEmpty.forall_iff]
+    have nonzero : (Action.Hom.id V)  ≠ (0 : V ⟶  V) := by sorry
+    let mul_id := exists_smul_eq_of_finrank_eq_one this nonzero (averageClassFunction f hf V)
+    obtain ⟨c, hc⟩ := mul_id
+    rw [← hc]
+    have tr : LinearMap.trace k V (averageClassFunction f hf V).hom = 0 := by
+      calc
+        LinearMap.trace k V (averageClassFunction f hf V).hom = ∑ g : G, f g * V.character g := by
+          sorry
+        _ = ∑ g : G, f g * (of (dual V.ρ)).character g⁻¹ := by
+          sorry
+        _ = scalarProduct f (of (dual V.ρ)).character := by
+          sorry
+        _ = 0 := by
+          sorry
+    rw [← hc] at tr
+    have : LinearMap.trace k V (c •(Action.Hom.id V).hom) = c * finrank k V := by
+      simp only [Action.Hom.id_hom, map_smul, smul_eq_mul, mul_eq_mul_left_iff]
+      sorry
+    sorry
+    -- have : ∃ c : k, c • (Action.Hom.id V) = averageClassFunction f hf V := by
+    --   sorry
+  -- ext g
+  -- by_contra hg
+  -- push_neg at hg
+  -- let f' : G → k := fun x ↦ f (g * x)
+  -- have : f' (1 : G) ≠ 0 := by
+  --   simp only [f', mul_one, ne_eq, hg]
+  --   trivial
+  -- have : scalarProduct RegularRep.character f' ≠ 0 := by
+  --   rw [scalarProduct, RegularRep_character]
+  --   simp only [invOf_eq_inv, ite_mul, zero_mul, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte,
+  --     inv_one, smul_eq_mul, ne_eq, mul_eq_zero, inv_eq_zero, or_self_left]
+  --   push_neg
+  --   constructor
+  --   · have : ((Fintype.card G) : k) ≠ 0 := by
+  --       exact nonzero_of_invertible ((Fintype.card G) : k)
+  --     assumption
+  --   · assumption
+  -- apply this
+  -- have hf' : ∀ V : {V : FdRep k G // Simple V}, (scalarProduct f' V.1.character = (0 : k)) := by
+  --   intro V
+  --   specialize h ⟨V.1, V.2⟩
+  --   rw [char_conj, char_mul_comm, char_one] at h
+  --   exact h
+  sorry -- Needs Maschke's theorem!
 
 end RegularRepresentation
 
