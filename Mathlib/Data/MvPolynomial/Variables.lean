@@ -260,10 +260,10 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
     · rw [Finsupp.prod_zero_index, mul_one]
       rfl
     intro d hd hd0
-    on_goal 2 =>
-      rw [constantCoeff_eq, coeff, ← Ne.def, ← Finsupp.mem_support_iff] at h0
-      intro
-      contradiction
+  on_goal 3 =>
+    rw [constantCoeff_eq, coeff, ← Ne.def, ← Finsupp.mem_support_iff] at h0
+    intro
+    contradiction
   repeat'
     obtain ⟨i, hi⟩ : Finset.Nonempty (Finsupp.support d) := by
       rw [constantCoeff_eq, coeff, ← Finsupp.not_mem_support_iff] at h0
