@@ -972,7 +972,7 @@ variable {r : α → α → Prop} {s : Cycle α}
 theorem Chain.imp {r₁ r₂ : α → α → Prop} (H : ∀ a b, r₁ a b → r₂ a b) (p : Chain r₁ s) :
     Chain r₂ s := by
   induction s using Cycle.induction_on
-  · triv
+  · trivial
   · rw [chain_coe_cons] at p ⊢
     exact p.imp H
 #align cycle.chain.imp Cycle.Chain.imp
