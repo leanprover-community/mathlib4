@@ -3,6 +3,7 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Lean.Linter.Util
 import Std.Data.Array.Basic
 import Std.Tactic.Lint
 
@@ -87,8 +88,8 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx => do
         let nm := declName.components
         let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) => x == y
           | return
-        logWarningAt id m!"The namespace '{dup}' is duplicated in the declaration '{declName}'\n\
-          [linter.dupNamespace]"
+        Linter.logLint linter.dupNamespace id
+          m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
       | _ => return
 
 initialize addLinter dupNamespace
