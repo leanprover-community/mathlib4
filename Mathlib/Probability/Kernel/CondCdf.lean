@@ -112,7 +112,7 @@ theorem iInf_IicSnd_gt (t : ℚ) {s : Set α} (hs : MeasurableSet s) [IsFiniteMe
 theorem tendsto_IicSnd_atTop {s : Set α} (hs : MeasurableSet s) :
     Tendsto (fun r : ℚ => ρ.IicSnd r s) atTop (𝓝 (ρ.fst s)) := by
   simp_rw [ρ.IicSnd_apply _ hs, fst_apply hs, ← prod_univ]
-  rw [← iUnion_Iic_of_not_bddAbove_range notBddAbove_coe, prod_iUnion]
+  rw [← iUnion_Iic_rat, prod_iUnion]
   refine' tendsto_measure_iUnion fun r q hr_le_q x => _
   simp only [mem_prod, mem_Iic, and_imp]
   refine' fun hxs hxr => ⟨hxs, hxr.trans _⟩
@@ -123,7 +123,7 @@ theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableS
     Tendsto (fun r : ℚ => ρ.IicSnd r s) atBot (𝓝 0) := by
   simp_rw [ρ.IicSnd_apply _ hs]
   have h_empty : ρ (s ×ˢ ∅) = 0 := by simp only [prod_empty, measure_empty]
-  rw [← h_empty, ← iInter_Iic_eq_empty_iff.mpr notBddBelow_coe, prod_iInter]
+  rw [← h_empty, ← iInter_Iic_rat, prod_iInter]
   suffices h_neg :
       Tendsto (fun r : ℚ => ρ (s ×ˢ Iic ↑(-r))) atTop (𝓝 (ρ (⋂ r : ℚ, s ×ˢ Iic ↑(-r)))) by
     have h_inter_eq : ⋂ r : ℚ, s ×ˢ Iic ↑(-r) = ⋂ r : ℚ, s ×ˢ Iic (r : ℝ) := by
