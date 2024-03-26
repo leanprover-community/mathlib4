@@ -318,6 +318,7 @@ protected lemma sub_lt_iff_lt_add' (hba : b ≤ a) : a - b < c ↔ a < c + b := 
 
 protected lemma sub_sub_sub_cancel_right (h : c ≤ b) : a - c - (b - c) = a - b := by omega
 protected lemma add_sub_sub_cancel (h : c ≤ a) : a + b - (a - c) = b + c := by omega
+protected lemma sub_add_sub_cancel (hab : b ≤ a) (hcb : c ≤ b) : a - b + (b - c) = a - c := by omega
 
 lemma lt_pred_iff : a < pred b ↔ succ a < b := Nat.lt_sub_iff_add_lt (b := 1)
 #align nat.lt_pred_iff Nat.lt_pred_iff
