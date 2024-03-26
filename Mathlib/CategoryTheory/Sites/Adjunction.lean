@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Adjunction.Whiskering
-import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 import Mathlib.CategoryTheory.Sites.Whiskering
+import Mathlib.CategoryTheory.Sites.Sheafification
 
 #align_import category_theory.sites.adjunction from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -24,13 +24,9 @@ open GrothendieckTopology CategoryTheory Limits Opposite
 universe v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-
 variable {D : Type*} [Category D]
-
 variable {E : Type*} [Category E]
-
 variable {F : D ⥤ E} {G : E ⥤ D}
-
 variable [HasWeakSheafify J D] [HasSheafCompose J F]
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`

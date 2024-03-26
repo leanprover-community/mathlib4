@@ -3,13 +3,10 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.PathCategory
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Combinatorics.Quiver.ConnectedComponent
 
 #align_import category_theory.groupoid.vertex_group from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 

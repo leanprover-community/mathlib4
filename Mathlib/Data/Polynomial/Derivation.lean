@@ -6,7 +6,7 @@ Authors: Kevin Buzzard, Richard Hill
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Module
+import Mathlib.Data.Polynomial.Module.Basic
 /-!
 # Derivations of univariate polynomials
 
@@ -51,7 +51,6 @@ theorem derivation_ext {D₁ D₂ : Derivation R R[X] A} (h : D₁ X = D₂ X) :
     simp only [adjoin_X, Algebra.coe_top, Set.mem_univ]
 
 variable [IsScalarTower R (Polynomial R) A]
-
 variable (R)
 
 /-- The derivation on `R[X]` that takes the value `a` on `X`. -/

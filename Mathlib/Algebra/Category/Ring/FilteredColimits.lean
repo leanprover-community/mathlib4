@@ -27,7 +27,7 @@ universe v u
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 open CategoryTheory
 
@@ -60,14 +60,14 @@ variable [IsFiltered J]
 /-- The colimit of `F ⋙ forget₂ SemiRing Mon` in the category `Mon`.
 In the following, we will show that this has the structure of a semiring.
 -/
-abbrev R : MonCat :=
-  MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ SemiRingCatMax.{v, u} MonCat.{max v u})
+abbrev R : MonCatMax.{v, u} :=
+  MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ SemiRingCatMax.{v, u} MonCatMax.{v, u})
 set_option linter.uppercaseLean3 false in
 #align SemiRing.filtered_colimits.R SemiRingCat.FilteredColimits.R
 
 instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
   { (R.{v, u} F).str,
-    AddCommMonCat.FilteredColimits.colimitAddCommMonoid
+    AddCommMonCat.FilteredColimits.colimitAddCommMonoid.{v, u}
       (F ⋙ forget₂ SemiRingCat AddCommMonCat.{max v u}) with
     mul_zero := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
@@ -130,7 +130,7 @@ def colimitCocone : Cocone F where
             (AddCommMonCat.FilteredColimits.colimitCocone
               (F ⋙ forget₂ SemiRingCatMax.{v, u} AddCommMonCat)).ι.app j with }
       naturality := fun {_ _} f =>
-        RingHom.coe_inj ((Types.colimitCocone (F ⋙ forget SemiRingCat)).ι.naturality f) }
+        RingHom.coe_inj ((Types.TypeMax.colimitCocone (F ⋙ forget SemiRingCat)).ι.naturality f) }
 set_option linter.uppercaseLean3 false in
 #align SemiRing.filtered_colimits.colimit_cocone SemiRingCat.FilteredColimits.colimitCocone
 
@@ -145,11 +145,11 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
         ((forget₂ SemiRingCatMax.{v, u} AddCommMonCat).mapCocone t) with }
   fac t j :=
     RingHom.coe_inj <|
-      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget SemiRingCatMax.{v, u})).fac
+      (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget SemiRingCatMax.{v, u})).fac
         ((forget SemiRingCatMax.{v, u}).mapCocone t) j
   uniq t _ h :=
     RingHom.coe_inj <|
-      (Types.colimitCoconeIsColimit (F ⋙ forget SemiRingCat)).uniq
+      (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget SemiRingCat)).uniq
         ((forget SemiRingCat).mapCocone t) _ fun j => funext fun x => RingHom.congr_fun (h j) x
 set_option linter.uppercaseLean3 false in
 #align SemiRing.filtered_colimits.colimit_cocone_is_colimit SemiRingCat.FilteredColimits.colimitCoconeIsColimit
@@ -219,11 +219,11 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
       ((forget₂ CommSemiRingCat SemiRingCat).mapCocone t)
   fac t j :=
     RingHom.coe_inj <|
-      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommSemiRingCat)).fac
+      (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommSemiRingCat)).fac
         ((forget CommSemiRingCat).mapCocone t) j
   uniq t _ h :=
     RingHom.coe_inj <|
-      (Types.colimitCoconeIsColimit (F ⋙ forget CommSemiRingCat)).uniq
+      (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget CommSemiRingCat)).uniq
         ((forget CommSemiRingCat).mapCocone t) _ fun j => funext fun x => RingHom.congr_fun (h j) x
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.filtered_colimits.colimit_cocone_is_colimit CommSemiRingCat.FilteredColimits.colimitCoconeIsColimit
@@ -295,12 +295,12 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
       ((forget₂ RingCat SemiRingCat).mapCocone t)
   fac t j :=
     RingHom.coe_inj <|
-      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget RingCat)).fac
+      (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget RingCat)).fac
         ((forget RingCat).mapCocone t) j
   uniq t _ h :=
     RingHom.coe_inj <|
-      (Types.colimitCoconeIsColimit (F ⋙ forget RingCat)).uniq ((forget RingCat).mapCocone t) _
-        fun j => funext fun x => RingHom.congr_fun (h j) x
+      (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget RingCat)).uniq
+        ((forget RingCat).mapCocone t) _ fun j => funext fun x => RingHom.congr_fun (h j) x
 set_option linter.uppercaseLean3 false in
 #align Ring.filtered_colimits.colimit_cocone_is_colimit RingCat.FilteredColimits.colimitCoconeIsColimit
 
@@ -369,11 +369,11 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
       ((forget₂ CommRingCat RingCat).mapCocone t)
   fac t j :=
     RingHom.coe_inj <|
-      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommRingCat)).fac
+      (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommRingCat)).fac
         ((forget CommRingCat).mapCocone t) j
   uniq t _ h :=
     RingHom.coe_inj <|
-      (Types.colimitCoconeIsColimit (F ⋙ forget CommRingCat)).uniq
+      (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget CommRingCat)).uniq
         ((forget CommRingCat).mapCocone t) _ fun j => funext fun x => RingHom.congr_fun (h j) x
 set_option linter.uppercaseLean3 false in
 #align CommRing.filtered_colimits.colimit_cocone_is_colimit CommRingCat.FilteredColimits.colimitCoconeIsColimit

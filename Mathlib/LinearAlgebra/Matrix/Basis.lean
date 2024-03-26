@@ -43,9 +43,7 @@ open Matrix
 section BasisToMatrix
 
 variable {ι ι' κ κ' : Type*}
-
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable {R₂ M₂ : Type*} [CommRing R₂] [AddCommGroup M₂] [Module R₂ M₂]
 
 open Function Matrix
@@ -74,7 +72,7 @@ theorem toMatrix_eq_toMatrix_constr [Fintype ι] [DecidableEq ι] (v : ι → M)
 #align basis.to_matrix_eq_to_matrix_constr Basis.toMatrix_eq_toMatrix_constr
 
 -- TODO (maybe) Adjust the definition of `Basis.toMatrix` to eliminate the transpose.
-theorem coePiBasisFun.toMatrix_eq_transpose [Fintype ι] :
+theorem coePiBasisFun.toMatrix_eq_transpose [Finite ι] :
     ((Pi.basisFun R ι).toMatrix : Matrix ι ι R → Matrix ι ι R) = Matrix.transpose := by
   ext M i j
   rfl
@@ -126,7 +124,7 @@ theorem toMatrix_smul {R₁ S : Type*} [CommRing R₁] [Ring S] [Algebra R₁ S]
   rfl
 
 theorem toMatrix_map_vecMul {S : Type*} [Ring S] [Algebra R S] [Fintype ι] (b : Basis ι R S)
-    (v : ι' → S) : ((b.toMatrix v).map <| algebraMap R S).vecMul b = v := by
+    (v : ι' → S) : b ᵥ* ((b.toMatrix v).map <| algebraMap R S) = v := by
   ext i
   simp_rw [vecMul, dotProduct, Matrix.map_apply, ← Algebra.commutes, ← Algebra.smul_def,
     sum_toMatrix_smul_self]
@@ -165,14 +163,22 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
       LinearEquiv.apply_symm_apply]
 #align basis.to_matrix_equiv Basis.toMatrixEquiv
 
+variable (R₂) in
+theorem restrictScalars_toMatrix [Fintype ι] [DecidableEq ι] {S : Type*} [CommRing S] [Nontrivial S]
+    [Algebra R₂ S] [Module S M₂] [IsScalarTower R₂ S M₂] [NoZeroSMulDivisors R₂ S]
+    (b : Basis ι S M₂) (v : ι → span R₂ (Set.range b)) :
+    (algebraMap R₂ S).mapMatrix ((b.restrictScalars R₂).toMatrix v) =
+      b.toMatrix (fun i ↦ (v i : M₂)) := by
+  ext
+  rw [RingHom.mapMatrix_apply, Matrix.map_apply, Basis.toMatrix_apply,
+    Basis.restrictScalars_repr_apply, Basis.toMatrix_apply]
+
 end Basis
 
 section MulLinearMapToMatrix
 
 variable {N : Type*} [AddCommMonoid N] [Module R N]
-
 variable (b : Basis ι R M) (b' : Basis ι' R M) (c : Basis κ R N) (c' : Basis κ' R N)
-
 variable (f : M →ₗ[R] N)
 
 open LinearMap

@@ -5,11 +5,9 @@ Authors: Tian Chen, Mantas Bakšys
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Int.Parity
-import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.Padics.PadicVal
-import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.RingTheory.Ideal.Quotient
 
 #align_import number_theory.multiplicity from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -263,7 +261,7 @@ theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
       ring
 #align pow_two_pow_sub_pow_two_pow pow_two_pow_sub_pow_two_pow
 
--- porting note: simplified proof because `fin_cases` was not available in that case
+-- Porting note: simplified proof because `fin_cases` was not available in that case
 theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
   intro hx
   unfold Odd at hx
@@ -388,7 +386,7 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · convert Nat.two_pow_sub_pow hxy hx hneven using 2
   · exact hn.bot_lt
   · exact Nat.sub_pos_of_lt hyx
-  · linarith
+  · omega
   · simp only [tsub_pos_iff_lt, pow_lt_pow_left hyx zero_le' hn]
 #align padic_val_nat.pow_two_sub_pow padicValNat.pow_two_sub_pow
 

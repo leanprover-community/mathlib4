@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Simon Hudon
 -/
 import Std.Data.List.Lemmas
-import Std.Tactic.RCases
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.TypeStar
 import Mathlib.Mathport.Rename
 
 #align_import data.list.tfae from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
@@ -113,5 +112,12 @@ theorem exists_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.ma
   intros p₁ hp₁ p₂ hp₂
   exact exists_congr fun a ↦ H a (p₁ a) (mem_map_of_mem (fun p ↦ p a) hp₁)
     (p₂ a) (mem_map_of_mem (fun p ↦ p a) hp₂)
+
+theorem tfae_not_iff {l : List Prop} : TFAE (l.map Not) ↔ TFAE l := by
+  classical
+  simp only [TFAE, mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+    Decidable.not_iff_not]
+
+alias ⟨_, TFAE.not⟩ := tfae_not_iff
 
 end List

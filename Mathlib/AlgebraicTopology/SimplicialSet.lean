@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
-import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
@@ -34,9 +33,6 @@ from a non-surjective order preserving function `Fin n → Fin n`
 a morphism `Δ[n] ⟶ ∂Δ[n]`.
 -/
 
-set_option autoImplicit true
-
-
 universe v u
 
 open CategoryTheory CategoryTheory.Limits
@@ -65,7 +61,7 @@ instance hasColimits : HasColimits SSet := by
   dsimp only [SSet]
   infer_instance
 
--- Porting note: added an `ext` lemma.
+-- Porting note (#10756): added an `ext` lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
@@ -83,6 +79,7 @@ set_option linter.uppercaseLean3 false in
 #align sSet.standard_simplex SSet.standardSimplex
 
 -- mathport name: standard_simplex
+@[inherit_doc SSet.standardSimplex]
 scoped[Simplicial] notation3 "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCategory.mk n)
 
 instance : Inhabited SSet :=
@@ -352,18 +349,19 @@ instance Truncated.largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
-instance Truncated.hasLimits : HasLimits (Truncated n) := by
+instance Truncated.hasLimits {n : ℕ} : HasLimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
-instance Truncated.hasColimits : HasColimits (Truncated n) := by
+instance Truncated.hasColimits {n : ℕ} : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
--- Porting note: added an `ext` lemma.
+-- Porting note (#10756): added an `ext` lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
-lemma Truncated.hom_ext {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
+lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
+    f = g :=
   NatTrans.ext _ _ (funext w)
 
 /-- The skeleton functor on simplicial sets. -/
@@ -384,7 +382,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Augmented
 
--- porting note: an instance of `Subsingleton (⊤_ (Type u))` was added in
+-- Porting note: an instance of `Subsingleton (⊤_ (Type u))` was added in
 -- `CategoryTheory.Limits.Types` to ease the automation in this definition
 /-- The functor which sends `[n]` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/

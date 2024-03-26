@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.ForSqrt
 
 #align_import data.nat.sqrt from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
@@ -183,11 +182,11 @@ instance : DecidablePred (IsSquare : ℕ → Prop) :=
     simp_rw [← Nat.exists_mul_self m, IsSquare, eq_comm]
 
 theorem sqrt_mul_sqrt_lt_succ (n : ℕ) : sqrt n * sqrt n < n + 1 :=
-  lt_succ_iff.mpr (sqrt_le _)
+  Nat.lt_succ_iff.mpr (sqrt_le _)
 #align nat.sqrt_mul_sqrt_lt_succ Nat.sqrt_mul_sqrt_lt_succ
 
 theorem sqrt_mul_sqrt_lt_succ' (n : ℕ) : sqrt n ^ 2 < n + 1 :=
-  lt_succ_iff.mpr (sqrt_le' _)
+  Nat.lt_succ_iff.mpr (sqrt_le' _)
 #align nat.sqrt_mul_sqrt_lt_succ' Nat.sqrt_mul_sqrt_lt_succ'
 
 theorem succ_le_succ_sqrt (n : ℕ) : n + 1 ≤ (sqrt n + 1) * (sqrt n + 1) :=

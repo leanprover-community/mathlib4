@@ -3,7 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.Dimension.Finite
 
 #align_import field_theory.finiteness from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
@@ -15,7 +17,8 @@ import Mathlib.LinearAlgebra.Dimension.DivisionRing
 
 universe u v
 
-open Classical Cardinal
+open scoped Classical
+open Cardinal
 
 open Cardinal Submodule Module Function
 
@@ -85,7 +88,7 @@ theorem coeSort_finsetBasisIndex [IsNoetherian K V] :
 #align is_noetherian.coe_sort_finset_basis_index IsNoetherian.coeSort_finsetBasisIndex
 
 /-- In a noetherian module over a division ring, there exists a finite basis.
-This is indexed by the `Finset` `FiniteDimensional.finsetBasisIndex`.
+This is indexed by the `Finset` `IsNoetherian.finsetBasisIndex`.
 This is in contrast to the result `finite_basis_index (Basis.ofVectorSpace K V)`,
 which provides a set and a `Set.finite`.
 -/

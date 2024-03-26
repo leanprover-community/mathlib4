@@ -62,16 +62,13 @@ variable [Module A M] [Module B M] [Module R M]
 
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
-instance : AddMonoidHomClass (Derivation R A M) A M where
+instance : FunLike (Derivation R A M) A M where
   coe D := D.toFun
-  coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact FunLike.coe_injective h
+  coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
+
+instance : AddMonoidHomClass (Derivation R A M) A M where
   map_add D := D.toLinearMap.map_add'
   map_zero D := D.toLinearMap.map_zero
-
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
-directly. -/
-instance : CoeFun (Derivation R A M) fun _ => A → M :=
-  ⟨FunLike.coe⟩
 
 -- Not a simp lemma because it can be proved via `coeFn_coe` + `toLinearMap_eq_coe`
 theorem toFun_eq_coe : D.toFun = ⇑D :=
@@ -89,7 +86,7 @@ instance hasCoeToLinearMap : Coe (Derivation R A M) (A →ₗ[R] M) :=
   ⟨fun D => D.toLinearMap⟩
 #align derivation.has_coe_to_linear_map Derivation.hasCoeToLinearMap
 
-#noalign derivation.to_linear_map_eq_coe -- porting note: not needed anymore
+#noalign derivation.to_linear_map_eq_coe -- Porting note: not needed anymore
 
 @[simp]
 theorem mk_coe (f : A →ₗ[R] M) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : Derivation R A M) : A → M) = f :=
@@ -101,17 +98,17 @@ theorem coeFn_coe (f : Derivation R A M) : ⇑(f : A →ₗ[R] M) = f :=
   rfl
 #align derivation.coe_fn_coe Derivation.coeFn_coe
 
-theorem coe_injective : @Function.Injective (Derivation R A M) (A → M) FunLike.coe :=
-  FunLike.coe_injective
+theorem coe_injective : @Function.Injective (Derivation R A M) (A → M) DFunLike.coe :=
+  DFunLike.coe_injective
 #align derivation.coe_injective Derivation.coe_injective
 
 @[ext]
 theorem ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
-  FunLike.ext _ _ H
+  DFunLike.ext _ _ H
 #align derivation.ext Derivation.ext
 
 theorem congr_fun (h : D1 = D2) (a : A) : D1 a = D2 a :=
-  FunLike.congr_fun h a
+  DFunLike.congr_fun h a
 #align derivation.congr_fun Derivation.congr_fun
 
 protected theorem map_add : D (a + b) = D a + D b :=
@@ -228,9 +225,7 @@ instance : Inhabited (Derivation R A M) :=
 section Scalar
 
 variable {S T : Type*}
-
 variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M] [SMulCommClass S A M]
-
 variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulCommClass T A M]
 
 instance : SMul S (Derivation R A M) :=
@@ -345,9 +340,7 @@ def compAlgebraMap [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
 section RestrictScalars
 
 variable {S : Type*} [CommSemiring S]
-
 variable [Algebra S A] [Module S M] [LinearMap.CompatibleSMul A M R S]
-
 variable (R)
 
 /-- If `A` is both an `R`-algebra and an `S`-algebra; `M` is both an `R`-module and an `S`-module,
@@ -390,13 +383,11 @@ end Cancel
 section
 
 variable {R : Type*} [CommRing R]
-
 variable {A : Type*} [CommRing A] [Algebra R A]
 
 section
 
 variable {M : Type*} [AddCommGroup M] [Module A M] [Module R M]
-
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
 protected theorem map_neg : D (-a) = -D a :=

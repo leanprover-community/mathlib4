@@ -44,7 +44,6 @@ namespace FirstOrder
 namespace Language
 
 variable {L : Language.{u, v}} {M : Type w} {N P : Type*}
-
 variable [L.Structure M] [L.Structure N] [L.Structure P]
 
 open FirstOrder Cardinal
@@ -107,7 +106,7 @@ namespace Substructure
 attribute [coe] Substructure.carrier
 
 instance instSetLike : SetLike (L.Substructure M) M :=
-  ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr ⟩
+  ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 #align first_order.language.substructure.set_like FirstOrder.Language.Substructure.instSetLike
 
 /-- See Note [custom simps projection] -/
@@ -221,7 +220,7 @@ theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p �
 #align first_order.language.substructure.mem_Inf FirstOrder.Language.Substructure.mem_sInf
 
 theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i :=
-  by simp only [iInf, mem_sInf, Set.forall_range_iff]
+  by simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align first_order.language.substructure.mem_infi FirstOrder.Language.Substructure.mem_iInf
 
 @[simp, norm_cast]

@@ -1,7 +1,6 @@
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Real.Basic
-import Std.Tactic.GuardExpr
 
 example {α β : Type*} (f : α → β) (a : α) : β := by
   apply f at a
@@ -98,11 +97,11 @@ example {A B : Prop} (h : A ↔ B) : A → B := by
   assumption
 
 example (a : ℝ) (h3: a + 1 = 0) : a = -1 := by
-    apply (congrArg (fun x => x - 1)) at h3
-    simp at h3
-    assumption
+  apply (congrArg (fun x => x - 1)) at h3
+  simp at h3
+  assumption
 
 example (a b : ℝ) (h : -a * b = 0) : a = 0 ∨ b = 0 := by
-    apply (congrArg (fun x => x / 1)) at h
-    simp at h
-    assumption
+  apply (congrArg (fun x => x / 1)) at h
+  simp at h
+  assumption

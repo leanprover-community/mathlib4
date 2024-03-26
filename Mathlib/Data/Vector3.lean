@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.Fin2
-import Mathlib.Init.Align
+import Mathlib.Init.Logic
 import Mathlib.Mathport.Notation
+import Mathlib.Tactic.TypeStar
 
 #align_import data.vector3 from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
@@ -37,7 +38,7 @@ namespace Vector3
 /-- The empty vector -/
 @[match_pattern]
 def nil : Vector3 α 0 :=
-  fun.
+  nofun
 #align vector3.nil Vector3.nil
 
 /-- The vector cons operation -/
@@ -68,6 +69,7 @@ scoped macro_rules | `([$l,*]) => `(expand_foldr% (h t => cons h t) nil [$(.ofEl
 end
 
 -- Overloading the usual `::` notation for `List.cons` with `Vector3.cons`.
+@[inherit_doc]
 scoped notation a " :: " b => cons a b
 
 @[simp]
@@ -110,13 +112,13 @@ theorem cons_head_tail (v : Vector3 α (succ n)) : (head v :: tail v) = v :=
 #align vector3.cons_head_tail Vector3.cons_head_tail
 
 /-- Eliminator for an empty vector. -/
-@[elab_as_elim]  -- porting note: add `elab_as_elim`
+@[elab_as_elim]  -- Porting note: add `elab_as_elim`
 def nilElim {C : Vector3 α 0 → Sort u} (H : C []) (v : Vector3 α 0) : C v := by
   rw [eq_nil v]; apply H
 #align vector3.nil_elim Vector3.nilElim
 
 /-- Recursion principle for a nonempty vector. -/
-@[elab_as_elim]  -- porting note: add `elab_as_elim`
+@[elab_as_elim]  -- Porting note: add `elab_as_elim`
 def consElim {C : Vector3 α (succ n) → Sort u} (H : ∀ (a : α) (t : Vector3 α n), C (a :: t))
     (v : Vector3 α (succ n)) : C v := by rw [← cons_head_tail v]; apply H
 #align vector3.cons_elim Vector3.consElim
@@ -264,7 +266,7 @@ theorem vectorAllP_nil (p : α → Prop) : VectorAllP p [] = True :=
   rfl
 #align vector_allp_nil vectorAllP_nil
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 theorem vectorAllP_singleton (p : α → Prop) (x : α) : VectorAllP p (cons x []) = p x :=
   rfl
 #align vector_allp_singleton vectorAllP_singleton

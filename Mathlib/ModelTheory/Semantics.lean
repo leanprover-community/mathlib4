@@ -5,6 +5,7 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 import Mathlib.Data.Finset.Basic
 import Mathlib.ModelTheory.Syntax
+import Mathlib.Data.List.ProdSigma
 
 #align_import model_theory.semantics from "leanprover-community/mathlib"@"d565b3df44619c1498326936be16f1a935df0728"
 
@@ -56,9 +57,7 @@ namespace FirstOrder
 namespace Language
 
 variable {L : Language.{u, v}} {L' : Language}
-
 variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
-
 variable {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder Cardinal
@@ -67,7 +66,7 @@ open Structure Cardinal Fin
 
 namespace Term
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- A term `t` with variables indexed by `α` can be evaluated by giving a value to each variable. -/
 def realize (v : α → M) : ∀ _t : L.Term α, M
   | var k => v k
@@ -164,13 +163,13 @@ theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).
   · cases n
     · cases f
       · simp only [realize, ih, Nat.zero_eq, constantsOn, mk₂_Functions]
-        --Porting note: below lemma does not work with simp for some reason
+        -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sum_inl]
       · simp only [realize, constantsToVars, Sum.elim_inl, funMap_eq_coe_constants]
         rfl
     · cases' f with _ f
       · simp only [realize, ih, constantsOn, mk₂_Functions]
-        --Porting note: below lemma does not work with simp for some reason
+        -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sum_inl]
       · exact isEmptyElim f
 #align first_order.language.term.realize_constants_to_vars FirstOrder.Language.Term.realize_constantsToVars
@@ -181,11 +180,11 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
     t.varsToConstants.realize v = t.realize (Sum.elim (fun a => ↑(L.con a)) v) := by
   induction' t with ab n f ts ih
   · cases' ab with a b
-    --Porting note: both cases were `simp [Language.con]`
+    -- Porting note: both cases were `simp [Language.con]`
     · simp [Language.con, realize, funMap_eq_coe_constants]
     · simp [realize, constantMap]
   · simp only [realize, constantsOn, mk₂_Functions, ih]
-    --Porting note: below lemma does not work with simp for some reason
+    -- Porting note: below lemma does not work with simp for some reason
     rw [withConstants_funMap_sum_inl]
 #align first_order.language.term.realize_vars_to_constants FirstOrder.Language.Term.realize_varsToConstants
 
@@ -245,7 +244,7 @@ namespace BoundedFormula
 
 open Term
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- A bounded formula can be evaluated as true or false by giving values to each free variable. -/
 def Realize : ∀ {l} (_f : L.BoundedFormula α l) (_v : α → M) (_xs : Fin l → M), Prop
   | _, falsum, _v, _xs => False
@@ -256,7 +255,6 @@ def Realize : ∀ {l} (_f : L.BoundedFormula α l) (_v : α → M) (_xs : Fin l 
 #align first_order.language.bounded_formula.realize FirstOrder.Language.BoundedFormula.Realize
 
 variable {l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}
-
 variable {v : α → M} {xs : Fin l → M}
 
 @[simp]
@@ -571,7 +569,7 @@ theorem realize_toPrenex (φ : L.BoundedFormula α n) {v : α → M} :
 end BoundedFormula
 
 
---Porting note: no `protected` attribute in Lean4
+-- Porting note: no `protected` attribute in Lean4
 -- attribute [protected] bounded_formula.falsum bounded_formula.equal bounded_formula.rel
 
 -- attribute [protected] bounded_formula.imp bounded_formula.all
@@ -598,7 +596,7 @@ set_option linter.uppercaseLean3 false in
 
 end LHom
 
---Porting note: no `protected` attribute in Lean4
+-- Porting note: no `protected` attribute in Lean4
 -- attribute [protected] bounded_formula.falsum bounded_formula.equal bounded_formula.rel
 
 -- attribute [protected] bounded_formula.imp bounded_formula.all
@@ -735,7 +733,7 @@ namespace Formula
 theorem realize_equivSentence_symm_con [L[[α]].Structure M]
     [(L.lhomWithConstants α).IsExpansionOn M] (φ : L[[α]].Sentence) :
     ((equivSentence.symm φ).Realize fun a => (L.con a : M)) ↔ φ.Realize M := by
-  simp only [equivSentence, Equiv.symm_symm, Equiv.coe_trans, Realize,
+  simp only [equivSentence, _root_.Equiv.symm_symm, Equiv.coe_trans, Realize,
     BoundedFormula.realize_relabelEquiv, Function.comp]
   refine' _root_.trans _ BoundedFormula.realize_constantsVarsEquiv
   rw [iff_iff_eq]
