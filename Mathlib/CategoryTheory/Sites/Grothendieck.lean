@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.Order.Copy
+import Mathlib.Data.Set.Basic
 
 #align_import category_theory.sites.grothendieck from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
@@ -25,8 +26,9 @@ Two explicit examples of Grothendieck topologies are given:
 as well as the complete lattice structure on Grothendieck topologies (which gives two additional
 explicit topologies: the discrete and trivial topologies.)
 
-A pretopology, or a basis for a topology is defined in `Pretopology.lean`. The topology associated
-to a topological space is defined in `Spaces.lean`.
+A pretopology, or a basis for a topology is defined in
+`Mathlib/CategoryTheory/Sites/Pretopology.lean`. The topology associated
+to a topological space is defined in `Mathlib/CategoryTheory/Sites/Spaces.lean`.
 
 ## Tags
 
@@ -93,7 +95,6 @@ instance : CoeFun (GrothendieckTopology C) fun _ => ∀ X : C, Set (Sieve X) :=
 
 variable {C}
 variable {X Y : C} {S R : Sieve X}
-
 variable (J : GrothendieckTopology C)
 
 /-- An extensionality lemma in terms of the coercion to a pi-type.
@@ -400,7 +401,7 @@ def atomic (hro : RightOreCondition C) : GrothendieckTopology C
 
 /-- `J.Cover X` denotes the poset of covers of `X` with respect to the
 Grothendieck topology `J`. -/
--- porting note : Lean 3 inferred `Type max u v`, Lean 4 by default gives `Type (max 0 u v)`
+-- Porting note: Lean 3 inferred `Type max u v`, Lean 4 by default gives `Type (max 0 u v)`
 def Cover (X : C) : Type max u v :=
   { S : Sieve X // S ∈ J X } -- deriving Preorder
 #align category_theory.grothendieck_topology.cover CategoryTheory.GrothendieckTopology.Cover
@@ -423,7 +424,7 @@ instance : Coe (J.Cover X) (Sieve X) :=
 -/
 
 /-
-Porting note: Added this def as a replacement for the "dangerous" `Coe` above.
+Porting note (#11445): Added this def as a replacement for the "dangerous" `Coe` above.
 -/
 /-- The sieve associated to a term of `J.Cover X`.-/
 def sieve (S : J.Cover X) : Sieve X := S.1

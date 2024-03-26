@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.LinearAlgebra.Basic
 
 #align_import algebra.category.Module.basic from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
@@ -98,6 +99,9 @@ instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   assoc f g h := LinearMap.comp_assoc (f := f) (g := g) (h := h)
 #align Module.Module_category ModuleCat.moduleCategory
 
+instance {M N : ModuleCat.{v} R} : FunLike (M ⟶ N) M N :=
+  LinearMap.instFunLike
+
 instance {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N :=
   LinearMap.semilinearMapClass
 
@@ -156,7 +160,7 @@ theorem forget₂_map (X Y : ModuleCat R) (f : X ⟶ Y) :
   rfl
 #align Module.forget₂_map ModuleCat.forget₂_map
 
--- Porting note: TODO: `ofHom` and `asHom` are duplicates!
+-- Porting note (#11215): TODO: `ofHom` and `asHom` are duplicates!
 
 /-- Typecheck a `LinearMap` as a morphism in `Module R`. -/
 def ofHom {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
@@ -223,13 +227,12 @@ theorem comp_def (f : M ⟶ N) (g : N ⟶ U) : f ≫ g = g.comp f :=
   rfl
 #align Module.comp_def ModuleCat.comp_def
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[simp] lemma forget_map (f : M ⟶ N) : (forget (ModuleCat R)).map f = (f : M → N) := rfl
 
 end ModuleCat
 
 variable {R}
-
 variable {X₁ X₂ : Type v}
 
 /-- Reinterpreting a linear map in the category of `R`-modules. -/
@@ -406,8 +409,8 @@ lemma mkOfSMul'_smul (r : R) (x : mkOfSMul' φ) :
     r • x = (show A ⟶ A from φ r) x := rfl
 
 instance : Module R (mkOfSMul' φ) where
-  smul_zero _ := map_zero _
-  smul_add _ _ _ := map_add _ _ _
+  smul_zero _ := map_zero (N := A) _
+  smul_add _ _ _ := map_add (N := A) _ _ _
   one_smul := by simp
   mul_smul := by simp
   add_smul _ _ _ := by simp; rfl
@@ -437,7 +440,7 @@ with the scalar multiplication. -/
 @[simps]
 def homMk : M ⟶ N where
   toFun := φ
-  map_add' _ _ := map_add _ _ _
+  map_add' _ _ := φ.map_add _ _
   map_smul' r x := (congr_hom (hφ r) x).symm
 
 lemma forget₂_map_homMk :

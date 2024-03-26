@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
 import Mathlib.Analysis.Complex.RemovableSingularity
-import Mathlib.Analysis.Calculus.SmoothSeries
+import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+import Mathlib.Analysis.NormedSpace.FunctionSeries
 
 #align_import analysis.complex.locally_uniform_limit from "leanprover-community/mathlib"@"fe44cd36149e675eb5dec87acc7e8f1d6568e081"
 
@@ -106,7 +107,7 @@ theorem _root_.TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthick
   have e3 := sphere_subset_closedBall.trans (closedBall_subset_cthickening hz δ)
   have hf : ContinuousOn f (sphere z δ) :=
     e1.mono (sphere_subset_closedBall.trans (closedBall_subset_cthickening hz δ))
-  simpa only [mul_div_cancel _ hδ.ne.symm] using norm_cderiv_sub_lt hδ e2 hf (h'.mono e3)
+  simpa only [mul_div_cancel_right₀ _ hδ.ne.symm] using norm_cderiv_sub_lt hδ e2 hf (h'.mono e3)
 #align tendsto_uniformly_on.cderiv TendstoUniformlyOn.cderiv
 
 end Cderiv
@@ -144,8 +145,8 @@ theorem _root_.TendstoLocallyUniformlyOn.differentiableOn [φ.NeBot]
   obtain ⟨K, ⟨hKx, hK⟩, hKU⟩ := (compact_basis_nhds x).mem_iff.mp (hU.mem_nhds hx)
   obtain ⟨δ, _, _, h1⟩ := exists_cthickening_tendstoUniformlyOn hf hF hK hU hKU
   have h2 : interior K ⊆ U := interior_subset.trans hKU
-  have h3 : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) (interior K)
-  filter_upwards [hF] with n h using h.mono h2
+  have h3 : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) (interior K) := by
+    filter_upwards [hF] with n h using h.mono h2
   have h4 : TendstoLocallyUniformlyOn F f φ (interior K) := hf.mono h2
   have h5 : TendstoLocallyUniformlyOn (deriv ∘ F) (cderiv δ f) φ (interior K) :=
     h1.tendstoLocallyUniformlyOn.mono interior_subset

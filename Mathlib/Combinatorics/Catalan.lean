@@ -11,6 +11,7 @@ import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Tree
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Positivity
 
 #align_import combinatorics.catalan from "leanprover-community/mathlib"@"26b40791e4a5772a4e53d0e28e4df092119dc7da"
 
@@ -90,8 +91,8 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
       Nat.centralBinom i / (i + 1) * Nat.centralBinom (n - i) / (n - i + 1) := by
   have l₁ : (i : ℚ) + 1 ≠ 0 := by norm_cast; exact i.succ_ne_zero
   have l₂ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast; exact (n - i).succ_ne_zero
-  have h₁ := (mul_div_cancel_left (↑(Nat.centralBinom (i + 1))) l₁).symm
-  have h₂ := (mul_div_cancel_left (↑(Nat.centralBinom (n - i + 1))) l₂).symm
+  have h₁ := (mul_div_cancel_left₀ (↑(Nat.centralBinom (i + 1))) l₁).symm
+  have h₂ := (mul_div_cancel_left₀ (↑(Nat.centralBinom (n - i + 1))) l₂).symm
   have h₃ : ((i : ℚ) + 1) * (i + 1).centralBinom = 2 * (2 * i + 1) * i.centralBinom :=
     mod_cast Nat.succ_mul_centralBinom_succ i
   have h₄ :
@@ -172,10 +173,8 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
       pairwiseNode (treesOfNumNodesEq ijh.1.1) (treesOfNumNodesEq ijh.1.2)
   -- Porting note: Add this to satisfy the linter.
   decreasing_by
-      simp_wf
-      have := fst_le ijh.2
-      have := snd_le ijh.2
-      omega
+    · simp_wf; have := fst_le ijh.2; omega
+    · simp_wf; have := snd_le ijh.2; omega
 #align tree.trees_of_num_nodes_eq Tree.treesOfNumNodesEq
 
 @[simp]

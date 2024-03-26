@@ -227,9 +227,9 @@ theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
   simp [Polynomial.eval_comp, h]
   obtain rfl | h' := h.eq_or_lt
   · simp
-  · congr
-    norm_cast
-    rw [← tsub_add_eq_tsub_tsub, tsub_tsub_cancel_of_le (Nat.succ_le_iff.mpr h')]
+  · norm_cast
+    congr
+    omega
 #align bernstein_polynomial.iterate_derivative_at_1 bernsteinPolynomial.iterate_derivative_at_1
 
 theorem iterate_derivative_at_1_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
@@ -257,7 +257,8 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
       simp only [Fin.val_last, Fin.init_def]
       dsimp
       apply not_mem_span_of_apply_not_mem_span_image (@Polynomial.derivative ℚ _ ^ (n - k))
-      simp only [not_exists, not_and, Submodule.mem_map, Submodule.span_image]
+      -- Note: #8386 had to change `span_image` into `span_image _`
+      simp only [not_exists, not_and, Submodule.mem_map, Submodule.span_image _]
       intro p m
       apply_fun Polynomial.eval (1 : ℚ)
       simp only [LinearMap.pow_apply]
@@ -326,14 +327,14 @@ theorem sum_smul (n : ℕ) :
     rw [add_pow, (pderiv true).map_sum, (MvPolynomial.aeval e).map_sum, Finset.sum_mul]
     -- Step inside the sum:
     refine' Finset.sum_congr rfl fun k _ => (w k).trans _
-    simp only [pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul, Bool.cond_true,
-      Bool.cond_false, add_zero, mul_one, mul_zero, smul_zero, MvPolynomial.aeval_X,
+    simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
+      Bool.cond_true, Bool.cond_false, add_zero, mul_one, mul_zero, smul_zero, MvPolynomial.aeval_X,
       MvPolynomial.pderiv_mul, Derivation.leibniz_pow, Derivation.map_coe_nat, map_natCast, map_pow,
       map_mul]
   · rw [(pderiv true).leibniz_pow, (pderiv true).map_add, pderiv_true_x, pderiv_true_y]
-    simp only [Algebra.id.smul_eq_mul, nsmul_eq_mul, map_natCast, map_pow, map_add, map_mul,
-      Bool.cond_true, Bool.cond_false, MvPolynomial.aeval_X, add_sub_cancel'_right, one_pow,
-      add_zero, mul_one]
+    simp only [x, y, e, Algebra.id.smul_eq_mul, nsmul_eq_mul, map_natCast, map_pow, map_add,
+      map_mul, Bool.cond_true, Bool.cond_false, MvPolynomial.aeval_X, add_sub_cancel,
+      one_pow, add_zero, mul_one]
 #align bernstein_polynomial.sum_smul bernsteinPolynomial.sum_smul
 
 theorem sum_mul_smul (n : ℕ) :
@@ -366,16 +367,16 @@ theorem sum_mul_smul (n : ℕ) :
       Finset.sum_mul]
     -- Step inside the sum:
     refine' Finset.sum_congr rfl fun k _ => (w k).trans _
-    simp only [pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul, Bool.cond_true,
-      Bool.cond_false, add_zero, zero_add, mul_zero, smul_zero, mul_one,
+    simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
+      Bool.cond_true, Bool.cond_false, add_zero, zero_add, mul_zero, smul_zero, mul_one,
       MvPolynomial.aeval_X, MvPolynomial.pderiv_X_self, MvPolynomial.pderiv_X_of_ne,
       Derivation.leibniz_pow, Derivation.leibniz, Derivation.map_coe_nat, map_natCast, map_pow,
       map_mul, map_add]
   -- On the right hand side, we'll just simplify.
-  · simp only [pderiv_one, pderiv_mul, (pderiv _).leibniz_pow, (pderiv _).map_coe_nat,
+  · simp only [x, y, e, pderiv_one, pderiv_mul, (pderiv _).leibniz_pow, (pderiv _).map_coe_nat,
       (pderiv true).map_add, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, add_zero,
       mul_one, Derivation.map_smul_of_tower, map_nsmul, map_pow, map_add, Bool.cond_true,
-      Bool.cond_false, MvPolynomial.aeval_X, add_sub_cancel'_right, one_pow, smul_smul,
+      Bool.cond_false, MvPolynomial.aeval_X, add_sub_cancel, one_pow, smul_smul,
       smul_one_mul]
 #align bernstein_polynomial.sum_mul_smul bernsteinPolynomial.sum_mul_smul
 

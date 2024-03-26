@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Scott Morrison
 -/
 import Mathlib.Tactic.NormNum
 import Mathlib.Util.AtomM
-import Mathlib.Data.Int.Basic
 
 /-!
 # The `abel` tactic
@@ -187,7 +186,7 @@ partial def evalAdd : NormalExpr → NormalExpr → M (NormalExpr × Expr)
 
 theorem term_neg {α} [AddCommGroup α] (n x a n' a')
     (h₁ : -n = n') (h₂ : -a = a') : -@termg α _ n x a = termg n' x a' := by
-  simp [h₂.symm, h₁.symm, termg]; exact add_comm _ _
+  simpa [h₂.symm, h₁.symm, termg] using add_comm _ _
 
 /--
 Interpret a negated expression in `abel`'s normal form.
@@ -273,7 +272,7 @@ lemma subst_into_smulg {α} [AddCommGroup α]
 lemma subst_into_smul_upcast {α} [AddCommGroup α]
     (l r tl zl tr t) (prl₁ : l = tl) (prl₂ : ↑tl = zl) (prr : r = tr)
     (prt : @smulg α _ zl tr = t) : smul l r = t := by
-  simp [← prt, prl₁, ← prl₂, prr, smul, smulg, coe_nat_zsmul]
+  simp [← prt, prl₁, ← prl₂, prr, smul, smulg, natCast_zsmul]
 
 lemma subst_into_add {α} [AddCommMonoid α] (l r tl tr t)
     (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t := by
@@ -299,7 +298,7 @@ lemma subst_into_negg {α} [AddCommGroup α] (a ta t : α)
 def evalSMul' (eval : Expr → M (NormalExpr × Expr))
     (is_smulg : Bool) (orig e₁ e₂ : Expr) : M (NormalExpr × Expr) := do
   trace[abel] "Calling NormNum on {e₁}"
-  let ⟨e₁', p₁, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
+  let ⟨e₁', p₁, _, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
   let p₁ ← p₁.getDM (mkEqRefl e₁')
   match e₁'.int? with
   | some n => do
@@ -442,7 +441,7 @@ partial def abelNFCore
     let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
     let ctx' := { ctx with simpTheorems := #[← thms.foldlM (·.addConst ·) {:_}] }
     pure fun r' : Simp.Result ↦ do
-      Simp.mkEqTrans r' (← Simp.main r'.expr ctx' (methods := Simp.DefaultMethods.methods)).1
+      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
   let rec
     /-- The recursive case of `abelNF`.
     * `root`: true when the function is called directly from `abelNFCore`
@@ -452,7 +451,7 @@ partial def abelNFCore
       `go -> eval -> evalAtom -> go` which makes no progress.
     -/
     go root parent :=
-      let pre e :=
+      let pre : Simp.Simproc := fun e =>
         try
           guard <| root || parent != e -- recursion guard
           let e ← withReducible <| whnf e
@@ -462,8 +461,8 @@ partial def abelNFCore
           let r ← simp { expr := a, proof? := pa }
           if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
           pure (.done r)
-        catch _ => pure <| .visit { expr := e }
-      let post := (Simp.postDefault · fun _ ↦ none)
+        catch _ => pure <| .continue
+      let post : Simp.Simproc := Simp.postDefault #[]
       (·.1) <$> Simp.main parent ctx (methods := { pre, post }),
     /-- The `evalAtom` implementation passed to `eval` calls `go` if `cfg.recursive` is true,
     and does nothing otherwise. -/

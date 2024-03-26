@@ -3,7 +3,8 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Periodic
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.Group.Instances
 
 /-!
@@ -156,7 +157,7 @@ theorem map_ofNat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMap
 @[simp]
 theorem map_sub_nsmul [AddGroup G] [AddGroup H] [AddConstMapClass F G H a b]
     (f : F) (x : G) (n : ℕ) : f (x - n • a) = f x - n • b := by
-  conv_rhs => rw [← sub_add_cancel x (n • a), map_add_nsmul, add_sub_cancel]
+  conv_rhs => rw [← sub_add_cancel x (n • a), map_add_nsmul, add_sub_cancel_right]
 
 @[simp]
 theorem map_sub_const [AddGroup G] [AddGroup H] [AddConstMapClass F G H a b]

@@ -241,9 +241,7 @@ structure PerfectionMap (p : ℕ) [Fact p.Prime] {R : Type u₁} [CommSemiring R
 namespace PerfectionMap
 
 variable {p : ℕ} [Fact p.Prime]
-
 variable {R : Type u₁} [CommSemiring R] [CharP R p]
-
 variable {P : Type u₃} [CommSemiring P] [CharP P p] [PerfectRing P p]
 
 /-- Create a `PerfectionMap` from an isomorphism to the perfection. -/
@@ -340,9 +338,7 @@ theorem hom_ext [PerfectRing R p] {S : Type u₂} [CommSemiring S] [CharP S p] {
 #align perfection_map.hom_ext PerfectionMap.hom_ext
 
 variable {P} (p)
-
 variable {S : Type u₂} [CommSemiring S] [CharP S p]
-
 variable {Q : Type u₄} [CommSemiring Q] [CharP Q p] [PerfectRing Q p]
 
 /-- A ring homomorphism `R →+* S` induces `P →+* Q`, a map of the respective perfections. -/
@@ -371,9 +367,7 @@ end PerfectionMap
 section Perfectoid
 
 variable (K : Type u₁) [Field K] (v : Valuation K ℝ≥0)
-
 variable (O : Type u₂) [CommRing O] [Algebra O K] (hv : v.Integers O)
-
 variable (p : ℕ)
 
 -- Porting note: Specified all arguments explicitly
@@ -480,8 +474,9 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP K v O hv p} (hx : x ^ p ≠ 0) 
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
   have h1p : (0 : ℝ) < 1 / p := one_div_pos.2 (Nat.cast_pos.2 hp.1.pos)
-  erw [← RingHom.map_mul]; erw [← RingHom.map_pow] at hx hy
-  erw [← v_p_lt_val hv] at hx hy ⊢
+  rw [← (Ideal.Quotient.mk (Ideal.span {(p : O)})).map_mul]
+  rw [← (Ideal.Quotient.mk (Ideal.span {(p : O)})).map_pow] at hx hy
+  rw [← v_p_lt_val hv] at hx hy ⊢
   rw [RingHom.map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_nat_cast, ← rpow_mul,
     mul_one_div_cancel (Nat.cast_ne_zero.2 hp.1.ne_zero : (p : ℝ) ≠ 0), rpow_one] at hx hy
   rw [RingHom.map_mul, v.map_mul]; refine' lt_of_le_of_lt _ (mul_lt_mul₀ hx hy)

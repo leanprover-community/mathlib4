@@ -57,9 +57,7 @@ open scoped DirectSum BigOperators Pointwise
 open DirectSum SetLike Localization TopCat TopologicalSpace CategoryTheory Opposite
 
 variable {R A : Type*}
-
 variable [CommRing R] [CommRing A] [Algebra R A]
-
 variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
 
 local notation3 "at " x =>
@@ -281,7 +279,7 @@ def stalkToFiberRingHom (x : ProjectiveSpectrum.top 𝒜) :
       ι :=
         { app := fun U =>
             openToLocalization 𝒜 ((OpenNhds.inclusion _).obj U.unop) x U.unop.2
-          -- porting note: this proof was automatic in mathlib3
+          -- Porting note: this proof was automatic in mathlib3
           naturality := fun _ _ _ => rfl } }
 #align algebraic_geometry.stalk_to_fiber_ring_hom AlgebraicGeometry.stalkToFiberRingHom
 

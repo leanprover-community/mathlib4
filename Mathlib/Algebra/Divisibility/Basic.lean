@@ -97,8 +97,8 @@ section map_dvd
 
 variable {M N : Type*}
 
-theorem map_dvd [Semigroup M] [Semigroup N] {F : Type*} [MulHomClass F M N] (f : F) {a b} :
-    a ∣ b → f a ∣ f b
+theorem map_dvd [Semigroup M] [Semigroup N] {F : Type*} [FunLike F M N] [MulHomClass F M N]
+    (f : F) {a b} : a ∣ b → f a ∣ f b
   | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩
 #align map_dvd map_dvd
 
@@ -111,6 +111,21 @@ theorem MonoidHom.map_dvd [Monoid M] [Monoid N] (f : M →* N) {a b} : a ∣ b �
 #align monoid_hom.map_dvd MonoidHom.map_dvd
 
 end map_dvd
+
+/-- An element `a` in a semigroup is primal if whenever `a` is a divisor of `b * c`, it can be
+factored as the product of a divisor of `b` and a divisor of `c`. -/
+def IsPrimal (a : α) : Prop := ∀ ⦃b c⦄, a ∣ b * c → ∃ a₁ a₂, a₁ ∣ b ∧ a₂ ∣ c ∧ a = a₁ * a₂
+
+variable (α) in
+/-- A monoid is a decomposition monoid if every element is primal. An integral domain whose
+multiplicative monoid is a decomposition monoid, is called a pre-Schreier domain; it is a
+Schreier domain if it is moreover integrally closed. -/
+@[mk_iff] class DecompositionMonoid : Prop where
+  primal (a : α) : IsPrimal a
+
+theorem exists_dvd_and_dvd_of_dvd_mul [DecompositionMonoid α] {b c a : α} (H : a ∣ b * c) :
+    ∃ a₁ a₂, a₁ ∣ b ∧ a₂ ∣ c ∧ a = a₁ * a₂ := DecompositionMonoid.primal a H
+#align exists_dvd_and_dvd_of_dvd_mul exists_dvd_and_dvd_of_dvd_mul
 
 end Semigroup
 
@@ -199,6 +214,13 @@ theorem mul_dvd_mul : ∀ {a b c d : α}, a ∣ b → c ∣ d → a * c ∣ b * 
 theorem dvd_of_mul_left_dvd (h : a * b ∣ c) : b ∣ c :=
   Dvd.elim h fun d ceq => Dvd.intro (a * d) (by simp [ceq])
 #align dvd_of_mul_left_dvd dvd_of_mul_left_dvd
+
+theorem dvd_mul [DecompositionMonoid α] {k m n : α} :
+    k ∣ m * n ↔ ∃ d₁ d₂, d₁ ∣ m ∧ d₂ ∣ n ∧ k = d₁ * d₂ := by
+  refine ⟨exists_dvd_and_dvd_of_dvd_mul, ?_⟩
+  rintro ⟨d₁, d₂, hy, hz, rfl⟩
+  exact mul_dvd_mul hy hz
+#align dvd_mul dvd_mul
 
 end CommSemigroup
 

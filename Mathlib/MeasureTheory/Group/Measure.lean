@@ -568,6 +568,24 @@ instance Measure.Regular.inv [ContinuousInv G] [Regular μ] : Regular μ.inv :=
 instance Measure.InnerRegular.inv [ContinuousInv G] [InnerRegular μ] : InnerRegular μ.inv :=
   InnerRegular.map (Homeomorph.inv G)
 
+/-- The image of an inner regular measure under map of a left action is again inner regular. -/
+@[to_additive
+   "The image of a inner regular measure under map of a left additive action is again
+    inner regular"]
+instance innerRegular_map_smul {α} [Monoid α] [MulAction α G] [ContinuousConstSMul α G]
+    [InnerRegular μ] (a : α) : InnerRegular (Measure.map (a • · : G → G) μ) :=
+  InnerRegular.map_of_continuous (continuous_const_smul a)
+
+/-- The image of an inner regular measure under left multiplication is again inner regular. -/
+@[to_additive "The image of an inner regular measure under left addition is again inner regular."]
+instance innerRegular_map_mul_left [TopologicalGroup G] [InnerRegular μ] (g : G) :
+    InnerRegular (Measure.map (g * ·) μ) := InnerRegular.map_of_continuous (continuous_mul_left g)
+
+/-- The image of an inner regular measure under right multiplication is again inner regular. -/
+@[to_additive "The image of an inner regular measure under right addition is again inner regular."]
+instance innerRegular_map_mul_right [TopologicalGroup G] [InnerRegular μ] (g : G) :
+    InnerRegular (Measure.map (· * g) μ) := InnerRegular.map_of_continuous (continuous_mul_right g)
+
 variable [TopologicalGroup G]
 
 @[to_additive]
@@ -722,21 +740,21 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
     intro n
     induction' n with n IH
     · exact hK
-    · simp_rw [iterate_succ']
+    · simp_rw [L, iterate_succ']
       apply IsCompact.union IH (hK.smul (g (L n)))
   have Lclosed : ∀ n, IsClosed (L n) := by
     intro n
     induction' n with n IH
     · exact Kclosed
-    · simp_rw [iterate_succ']
+    · simp_rw [L, iterate_succ']
       apply IsClosed.union IH (Kclosed.smul (g (L n)))
   have M : ∀ n, μ (L n) = (n + 1 : ℕ) * μ K := by
     intro n
     induction' n with n IH
-    · simp only [one_mul, Nat.cast_one, iterate_zero, id.def, Nat.zero_eq, Nat.zero_add]
+    · simp only [L, one_mul, Nat.cast_one, iterate_zero, id.def, Nat.zero_eq, Nat.zero_add]
     · calc
         μ (L (n + 1)) = μ (L n) + μ (g (L n) • K) := by
-          simp_rw [iterate_succ']
+          simp_rw [L, iterate_succ']
           exact measure_union' (hg _ (Lcompact _)) (Lclosed _).measurableSet
         _ = (n + 1 + 1 : ℕ) * μ K := by
           simp only [IH, measure_smul, add_mul, Nat.cast_add, Nat.cast_one, one_mul]
@@ -848,15 +866,6 @@ class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace 
 #noalign measure_theory.measure.is_locally_finite_measure_of_is_add_haar_measure
 
 variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsHaarMeasure μ]
-
-/-! Check that typeclass inference knows that a Haar measure on a locally compact second countable
-topological group is automatically regular and inner regular. -/
-
-example [TopologicalGroup G] [LocallyCompactSpace G] [SecondCountableTopology G] [BorelSpace G] :
-    Regular μ := by infer_instance
-
-example [TopologicalGroup G] [LocallyCompactSpace G] [SecondCountableTopology G] [BorelSpace G] :
-    InnerRegular μ := by infer_instance
 
 @[to_additive (attr := simp)]
 theorem haar_singleton [TopologicalGroup G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by

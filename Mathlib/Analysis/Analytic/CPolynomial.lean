@@ -31,7 +31,7 @@ We develop the basic properties of these notions, notably:
   `CPolynomialAt.analyticAt` and `CPolynomialOn.analyticOn`.
 * The sum of a finite formal power series with positive radius is well defined on the whole space,
   see `FormalMultilinearSeries.hasFiniteFPowerSeriesOnBall_of_finite`.
-* If a function admits a finite power series in a ball, then it is continuously polynimial at
+* If a function admits a finite power series in a ball, then it is continuously polynomial at
   any point `y` of this ball, and the power series there can be expressed in terms of the initial
   power series `p` as `p.changeOrigin y`, which is finite (with the same bound as `p`) by
   `changeOrigin_finite_of_finite`. See `HasFiniteFPowerSeriesOnBall.changeOrigin `. It follows in
@@ -42,7 +42,8 @@ We develop the basic properties of these notions, notably:
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-open Topology Classical BigOperators NNReal Filter ENNReal
+open scoped Classical
+open Topology BigOperators NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 
@@ -56,6 +57,16 @@ section FiniteFPowerSeries
 structure HasFiniteFPowerSeriesOnBall (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E)
     (n : ℕ) (r : ℝ≥0∞) extends HasFPowerSeriesOnBall f p x r : Prop where
   finite : ∀ (m : ℕ), n ≤ m → p m = 0
+
+theorem HasFiniteFPowerSeriesOnBall.mk' {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {x : E}
+    {n : ℕ} {r : ℝ≥0∞} (finite : ∀ (m : ℕ), n ≤ m → p m = 0) (pos : 0 < r)
+    (sum_eq : ∀ y ∈ EMetric.ball 0 r, (∑ i in Finset.range n, p i fun _ ↦ y) = f (x + y)) :
+    HasFiniteFPowerSeriesOnBall f p x n r where
+  r_le := p.radius_eq_top_of_eventually_eq_zero (Filter.eventually_atTop.mpr ⟨n, finite⟩) ▸ le_top
+  r_pos := pos
+  hasSum hy := sum_eq _ hy ▸ hasSum_sum_of_ne_finset_zero fun m hm ↦ by
+    rw [Finset.mem_range, not_lt] at hm; rw [finite m hm]; rfl
+  finite := finite
 
 /-- Given a function `f : E → F`, a formal multilinear series `p` and `n : ℕ`, we say that
 `f` has `p` as a finite power series around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `y` in a
@@ -258,7 +269,7 @@ theorem HasFiniteFPowerSeriesOnBall.eq_partialSum'
     f y = p.partialSum m (y - x) := by
   intro y hy m hm
   rw [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, ← mem_emetric_ball_zero_iff] at hy
-  rw [← (HasFiniteFPowerSeriesOnBall.eq_partialSum hf _ hy m hm), add_sub_cancel'_right]
+  rw [← (HasFiniteFPowerSeriesOnBall.eq_partialSum hf _ hy m hm), add_sub_cancel]
 
 /-! The particular cases where `f` has a finite power series bounded by `0` or `1`.-/
 
@@ -279,7 +290,7 @@ theorem HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ EMetri
     rw [hf (x + y)]
     · convert hasSum_zero
       rw [hp, ContinuousMultilinearMap.zero_apply]
-    · rwa [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, add_comm, add_sub_cancel,
+    · rwa [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, add_comm, add_sub_cancel_right,
         ← edist_eq_coe_nnnorm, ← EMetric.mem_ball]
 
 /-- If `f` has a formal power series at `x` bounded by `0`, then `f` is equal to `0` in a
@@ -376,9 +387,7 @@ lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : �
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k l : ℕ) {s : Finset (Fin (k + l))}
     (hs : s.card = l) (hkl : n ≤ k + l) :
     p.changeOriginSeriesTerm k l s hs = 0 := by
-  rw [changeOriginSeriesTerm]
-  simp only [AddEquivClass.map_eq_zero_iff]
-  exact hn _ hkl
+  rw [changeOriginSeriesTerm, hn _ hkl, map_zero]
 
 /-- If `p` is a finite formal multilinear series, then so is `p.changeOriginSeries k` for every
 `k` in `ℕ`. More precisely, if `p m = 0` for `n ≤ m`, then `p.changeOriginSeries k m = 0` for
@@ -425,8 +434,8 @@ theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
     (p.changeOrigin x).sum y = p.sum (x + y) := by
   let f (s : Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) : F :=
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ ↦ x) fun _ ↦ y
-  have finsupp : f.support.Finite
-  · apply Set.Finite.subset (s := changeOriginIndexEquiv ⁻¹' (Sigma.fst ⁻¹' {m | m < n}))
+  have finsupp : f.support.Finite := by
+    apply Set.Finite.subset (s := changeOriginIndexEquiv ⁻¹' (Sigma.fst ⁻¹' {m | m < n}))
     · apply Set.Finite.preimage ((Equiv.injective _).injOn _)
       simp_rw [← {m | m < n}.iUnion_of_singleton_coe, preimage_iUnion, ← range_sigmaMk]
       exact finite_iUnion fun _ ↦ finite_range _
@@ -435,11 +444,11 @@ theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
       dsimp only [f]
       rw [changeOriginSeriesTerm_bound p hn _ _ _ hs, ContinuousMultilinearMap.zero_apply,
         ContinuousMultilinearMap.zero_apply]
-  have hfkl k l : HasSum (f ⟨k, l, ·⟩) (changeOriginSeries p k l (fun _ ↦ x) fun _ ↦ y)
-  · simp_rw [changeOriginSeries, ContinuousMultilinearMap.sum_apply]; apply hasSum_fintype
-  have hfk k : HasSum (f ⟨k, ·⟩) (changeOrigin p x k fun _ ↦ y)
-  · have (m) (hm : m ∉ Finset.range n) : changeOriginSeries p k m (fun _ ↦ x) = 0
-    · rw [Finset.mem_range, not_lt] at hm
+  have hfkl k l : HasSum (f ⟨k, l, ·⟩) (changeOriginSeries p k l (fun _ ↦ x) fun _ ↦ y) := by
+    simp_rw [changeOriginSeries, ContinuousMultilinearMap.sum_apply]; apply hasSum_fintype
+  have hfk k : HasSum (f ⟨k, ·⟩) (changeOrigin p x k fun _ ↦ y) := by
+    have (m) (hm : m ∉ Finset.range n) : changeOriginSeries p k m (fun _ ↦ x) = 0 := by
+      rw [Finset.mem_range, not_lt] at hm
       rw [changeOriginSeries_finite_of_finite _ hn _ (le_add_of_le_right hm),
         ContinuousMultilinearMap.zero_apply]
     rw [changeOrigin, FormalMultilinearSeries.sum,
@@ -495,7 +504,7 @@ theorem HasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
     CPolynomialAt 𝕜 f y := by
   have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_coe_nnnorm_sub] using h
   have := hf.changeOrigin this
-  rw [add_sub_cancel'_right] at this
+  rw [add_sub_cancel] at this
   exact this.cPolynomialAt
 
 theorem HasFiniteFPowerSeriesOnBall.cPolynomialOn (hf : HasFiniteFPowerSeriesOnBall f p x n r) :

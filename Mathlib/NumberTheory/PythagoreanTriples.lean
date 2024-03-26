@@ -41,7 +41,7 @@ theorem Int.sq_ne_two_mod_four (z : ℤ) : z * z % 4 ≠ 2 := by
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 /-- Three integers `x`, `y`, and `z` form a Pythagorean triple if `x * x + y * y = z * z`. -/
 def PythagoreanTriple (x y z : ℤ) : Prop :=
@@ -291,7 +291,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
     have h3 : (2 : K) ≠ 0 := by
       convert hk 1
       rw [one_pow 2, h2]
-    field_simp [hk x, h2, add_assoc, add_comm, add_sub_cancel'_right, mul_comm]
+    field_simp [hk x, h2, add_assoc, add_comm, add_sub_cancel, mul_comm]
   right_inv := fun ⟨⟨x, y⟩, hxy, hy⟩ => by
     change x ^ 2 + y ^ 2 = 1 at hxy
     have h2 : y + 1 ≠ 0 := mt eq_neg_of_add_eq_zero_left hy
@@ -446,8 +446,7 @@ theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
     (hw2 : (y : ℚ) / z = ((m : ℚ) ^ 2 - (n : ℚ) ^ 2) / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2))
     (H : Int.gcd (m ^ 2 - n ^ 2) (m ^ 2 + n ^ 2) = 1) (co : Int.gcd m n = 1)
     (pp : m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) : h.IsPrimitiveClassified := by
-  have hz : z ≠ 0
-  apply ne_of_gt hzpos
+  have hz : z ≠ 0 := ne_of_gt hzpos
   have h2 : y = m ^ 2 - n ^ 2 ∧ z = m ^ 2 + n ^ 2 := by
     apply Rat.div_int_inj hzpos hm2n2 (h.coprime_of_coprime hc) H
     rw [hw2]
@@ -467,14 +466,14 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   let v := (x : ℚ) / z
   let w := (y : ℚ) / z
   have hq : v ^ 2 + w ^ 2 = 1 := by
-    field_simp [sq]
+    field_simp [v, w, sq]
     norm_cast
   have hvz : v ≠ 0 := by
-    field_simp
+    field_simp [v]
     exact h0
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1
-    -- porting note: `contrapose` unfolds local names, refold them
+    -- Porting note: `contrapose` unfolds local names, refold them
     replace hw1 : w = -1 := hw1; show v = 0
     rw [hw1, neg_sq, one_pow, add_left_eq_self] at hq
     exact pow_eq_zero hq
@@ -605,7 +604,7 @@ theorem coprime_classification :
         (x = m ^ 2 - n ^ 2 ∧ y = 2 * m * n ∨ x = 2 * m * n ∧ y = m ^ 2 - n ^ 2) ∧
           (z = m ^ 2 + n ^ 2 ∨ z = -(m ^ 2 + n ^ 2)) ∧
             Int.gcd m n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) := by
-  clear h -- porting note: don't want this variable, but can't use `include` / `omit`
+  clear h -- Porting note: don't want this variable, but can't use `include` / `omit`
   constructor
   · intro h
     obtain ⟨m, n, H⟩ := h.left.isPrimitiveClassified_of_coprime h.right

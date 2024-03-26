@@ -17,7 +17,7 @@ namespace Nat
 
 section Misc
 
--- porting note: Miscellaneous lemmas that should be integrated with `Mathlib` in the future
+-- Porting note: Miscellaneous lemmas that should be integrated with `Mathlib` in the future
 
 protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y := by
   if hk : k = 0 then
@@ -41,9 +41,9 @@ private lemma iter_fp_bound (n k : ℕ) :
   intro iter_next
   unfold sqrt.iter
   if h : (k + n / k) / 2 < k then
-    simp [if_pos h]; exact iter_fp_bound _ _
+    simpa [if_pos h] using iter_fp_bound _ _
   else
-    simp [if_neg h]; exact Nat.le_of_not_lt h
+    simpa [if_neg h] using Nat.le_of_not_lt h
 
 private lemma AM_GM : {a b : ℕ} → (4 * a * b ≤ (a + b) * (a + b))
   | 0, _ => by rw [mul_zero, zero_mul]; exact zero_le _
@@ -58,7 +58,7 @@ end Misc
 
 section Std
 
--- porting note: These two lemmas seem like they belong to `Std.Data.Nat.Basic`.
+-- Porting note: These two lemmas seem like they belong to `Std.Data.Nat.Basic`.
 
 lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess ≤ n := by
   unfold sqrt.iter

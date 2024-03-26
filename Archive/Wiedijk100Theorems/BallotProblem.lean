@@ -171,7 +171,6 @@ theorem countedSequence_finite : ∀ p q : ℕ, (countedSequence p q).Finite
     rw [counted_succ_succ, Set.finite_union, Set.finite_image_iff (List.cons_injective.injOn _),
       Set.finite_image_iff (List.cons_injective.injOn _)]
     exact ⟨countedSequence_finite _ _, countedSequence_finite _ _⟩
-termination_by _ p q => p + q -- Porting note: Added `termination_by`
 #align ballot.counted_sequence_finite Ballot.countedSequence_finite
 
 theorem countedSequence_nonempty : ∀ p q : ℕ, (countedSequence p q).Nonempty
@@ -215,7 +214,6 @@ theorem count_countedSequence : ∀ p q : ℕ, count (countedSequence p q) = (p 
       count_injective_image List.cons_injective, count_countedSequence _ _]
     · norm_cast
       rw [add_assoc, add_comm 1 q, ← Nat.choose_succ_succ, Nat.succ_eq_add_one, add_right_comm]
-termination_by _ p q => p + q -- Porting note: Added `termination_by`
 #align ballot.count_counted_sequence Ballot.count_countedSequence
 
 theorem first_vote_pos :
@@ -315,7 +313,7 @@ theorem ballot_pos (p q : ℕ) :
   have : (1 :: ·) '' countedSequence p (q + 1) ∩ staysPositive =
       (1 :: ·) '' (countedSequence p (q + 1) ∩ staysPositive) := by
     simp only [image_inter List.cons_injective, Set.ext_iff, mem_inter_iff, and_congr_right_iff,
-      ball_image_iff, List.cons_injective.mem_set_image, staysPositive_cons_pos _ one_pos]
+      forall_mem_image, List.cons_injective.mem_set_image, staysPositive_cons_pos _ one_pos]
     exact fun _ _ ↦ trivial
   rw [this, count_injective_image]
   exact List.cons_injective
@@ -344,7 +342,7 @@ theorem ballot_neg (p q : ℕ) (qp : q < p) :
   have : List.cons (-1) '' countedSequence (p + 1) q ∩ staysPositive =
       List.cons (-1) '' (countedSequence (p + 1) q ∩ staysPositive) := by
     simp only [image_inter List.cons_injective, Set.ext_iff, mem_inter_iff, and_congr_right_iff,
-      ball_image_iff, List.cons_injective.mem_set_image, staysPositive_cons, and_iff_left_iff_imp]
+      forall_mem_image, List.cons_injective.mem_set_image, staysPositive_cons, and_iff_left_iff_imp]
     intro l hl _
     simp [sum_of_mem_countedSequence hl, lt_sub_iff_add_lt', qp]
   rw [this, count_injective_image]

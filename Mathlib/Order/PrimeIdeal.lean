@@ -43,7 +43,7 @@ namespace Ideal
 
 /-- A pair of an `Order.Ideal` and an `Order.PFilter` which form a partition of `P`.
 -/
--- porting note: no attr @[nolint has_nonempty_instance]
+-- Porting note: no attr @[nolint has_nonempty_instance]
 structure PrimePair (P : Type*) [Preorder P] where
   I : Ideal P
   F : PFilter P

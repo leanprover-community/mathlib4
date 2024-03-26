@@ -138,7 +138,7 @@ end Pullbacks
 
 section FiniteCoproducts
 
-variable {α : Type} [Fintype α] (X : α → CompHaus.{u})
+variable {α : Type} [Finite α] (X : α → CompHaus.{u})
 
 /--
 The coproduct of a finite family of objects in `CompHaus`, constructed as the disjoint
@@ -234,8 +234,8 @@ lemma finiteCoproduct.ι_desc_apply {B : CompHaus} {π : (a : α) → X a ⟶ B}
 
 instance : PreservesFiniteCoproducts compHausToTop := by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
-  suffices : PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) compHausToTop
-  · exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) compHausToTop from
+    preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (CompHaus.finiteCoproduct.isColimit _)
   exact TopCat.sigmaCofanIsColimit _
 

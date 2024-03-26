@@ -258,7 +258,7 @@ def loopHomeo (i : N) : Ω^ N X x ≃ₜ Ω (Ω^ { j // j ≠ i } X x) const
     where
   toFun := toLoop i
   invFun := fromLoop i
-  left_inv p := by ext; exact congr_arg p (Equiv.apply_symm_apply _ _)
+  left_inv p := by ext; exact congr_arg p (by dsimp; exact Equiv.apply_symm_apply _ _)
   right_inv := to_from i
   continuous_toFun := continuous_toLoop i
   continuous_invFun := continuous_fromLoop i
@@ -289,7 +289,7 @@ def homotopyTo (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 (Cube.boundary
       (cCompInsert i).comp H.toContinuousMap.curry).uncurry
 #align gen_loop.homotopy_to GenLoop.homotopyTo
 
--- porting note: `@[simps]` no longer too slow in Lean 4 but does not generate this lemma.
+-- porting note (#11083): `@[simps]` no longer too slow in Lean 4 but does not generate this lemma.
 theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| Cube.boundary N)
     (t : I × I) (tₙ : I^{ j // j ≠ i }) :
     homotopyTo i H t tₙ = H (t.fst, Cube.insertAt i (t.snd, tₙ)) :=
@@ -320,7 +320,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
           (ContinuousMap.comp ⟨Subtype.val, by continuity⟩ H.toContinuousMap).curry).uncurry.comp <|
     (ContinuousMap.id I).prodMap (Cube.splitAt i).toContinuousMap
 #align gen_loop.homotopy_from GenLoop.homotopyFrom
--- porting note: @[simps!] no longer too slow in Lean 4.
+-- porting note (#11083): @[simps!] no longer too slow in Lean 4.
 #align gen_loop.homotopy_from_apply GenLoop.homotopyFrom_apply
 
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
@@ -332,18 +332,16 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     obtain rfl | h := eq_or_ne j i
     · rw [H.eq_fst]; exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
     · rw [p.2 _ ⟨j, jH⟩]; apply boundary; exact ⟨⟨j, h⟩, jH⟩
-    /- porting note: the following is indented two spaces more than it should be due to
-      strange behavior of `erw` -/
-    all_goals
-      intro
-      apply (homotopyFrom_apply _ _ _).trans
-      first
-      | rw [H.apply_zero]
-      | rw [H.apply_one]
-      first
-      | apply congr_arg p
-      | apply congr_arg q
-      apply (Cube.splitAt i).left_inv
+  all_goals
+    intro
+    apply (homotopyFrom_apply _ _ _).trans
+    first
+    | rw [H.apply_zero]
+    | rw [H.apply_one]
+    first
+    | apply congr_arg p
+    | apply congr_arg q
+    apply (Cube.splitAt i).left_inv
 #align gen_loop.homotopic_from GenLoop.homotopicFrom
 
 /-- Concatenation of two `GenLoop`s along the `i`th coordinate. -/
@@ -394,7 +392,7 @@ def HomotopyGroup (N X : Type*) [TopologicalSpace X] (x : X) : Type _ :=
   Quotient (GenLoop.Homotopic.setoid N x)
 #align homotopy_group HomotopyGroup
 
--- porting note: in Lean 3 this instance was derived
+-- Porting note: in Lean 3 this instance was derived
 instance : Inhabited (HomotopyGroup N X x) :=
   inferInstanceAs <| Inhabited <| Quotient (GenLoop.Homotopic.setoid N x)
 
@@ -517,8 +515,10 @@ def auxGroup (i : N) : Group (HomotopyGroup N X x) :=
 #align homotopy_group.aux_group HomotopyGroup.auxGroup
 
 theorem isUnital_auxGroup (i : N) :
-    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) :=
-  ⟨⟨(auxGroup i).one_mul⟩, ⟨(auxGroup i).mul_one⟩⟩
+    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) := {
+    left_id := (auxGroup i).one_mul,
+    right_id := (auxGroup i).mul_one
+  }
 #align homotopy_group.is_unital_aux_group HomotopyGroup.isUnital_auxGroup
 
 theorem auxGroup_indep (i j : N) : (auxGroup i : Group (HomotopyGroup N X x)) = auxGroup j := by
@@ -552,7 +552,7 @@ theorem one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦const⟧ :=
 
 /-- Characterization of multiplication -/
 theorem mul_spec [Nonempty N] {i} {p q : Ω^ N X x} :
-    -- porting note: TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
+    -- Porting note (#11215): TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
     ((· * ·) : _ → _ → HomotopyGroup N X x) ⟦p⟧ ⟦q⟧ = ⟦transAt i q p⟧ := by
   rw [transAt_indep _ q, ← fromLoop_trans_toLoop]; apply Quotient.sound; rfl
 #align homotopy_group.mul_spec HomotopyGroup.mul_spec

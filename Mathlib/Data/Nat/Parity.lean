@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Benjamin Davidson
 import Mathlib.Algebra.Parity
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Set.Basic
 
 #align_import data.nat.parity from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -154,6 +155,8 @@ theorem Odd.sub_odd (hm : Odd m) (hn : Odd n) : Even (m - n) :=
   (le_total n m).elim (fun h => by simp only [even_sub' h, *]) fun h => by
     simp only [tsub_eq_zero_iff_le.mpr h, even_zero]
 #align nat.odd.sub_odd Nat.Odd.sub_odd
+
+alias _root_.Odd.tsub_odd := Nat.Odd.sub_odd
 
 @[parity_simps]
 theorem even_mul : Even (m * n) ↔ Even m ∨ Even n := by

@@ -50,9 +50,7 @@ open scoped Classical Topology BigOperators
 open Filter Asymptotics Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- The `n`-th iterated derivative of a function from `𝕜` to `F`, as a function from `𝕜` to `F`. -/
@@ -187,7 +185,7 @@ theorem iteratedDerivWithin_succ {x : 𝕜} (hxs : UniqueDiffWithinAt 𝕜 s x) 
     iteratedDerivWithin (n + 1) f s x = derivWithin (iteratedDerivWithin n f s) s x := by
   rw [iteratedDerivWithin_eq_iteratedFDerivWithin, iteratedFDerivWithin_succ_apply_left,
     iteratedFDerivWithin_eq_equiv_comp, LinearIsometryEquiv.comp_fderivWithin _ hxs, derivWithin]
-  change ((ContinuousMultilinearMap.mkPiField 𝕜 (Fin n) ((fderivWithin 𝕜
+  change ((ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) ((fderivWithin 𝕜
     (iteratedDerivWithin n f s) s x : 𝕜 → F) 1) : (Fin n → 𝕜) → F) fun i : Fin n => 1) =
     (fderivWithin 𝕜 (iteratedDerivWithin n f s) s x : 𝕜 → F) 1
   simp

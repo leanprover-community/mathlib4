@@ -167,11 +167,8 @@ end
 open DirectSum BigOperators
 
 variable {ιA ιM R A M σ σ' : Type*}
-
 variable [AddMonoid ιA] [AddAction ιA ιM] [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable (𝓐 : ιA → σ') [SetLike σ' A]
-
 variable (𝓜 : ιM → σ)
 
 namespace SetLike
@@ -211,7 +208,6 @@ namespace GradedModule
 variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
   [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜]
 
-set_option maxHeartbeats 300000 in -- Porting note: needs more Heartbeats to elaborate
 /-- The smul multiplication of `A` on `⨁ i, 𝓜 i` from `(⨁ i, 𝓐 i) →+ (⨁ i, 𝓜 i) →+ ⨁ i, 𝓜 i`
 turns `⨁ i, 𝓜 i` into an `A`-module
 -/
