@@ -68,8 +68,7 @@ lemma convolution_def {R : Type*} [Semiring R] (f g : ℕ → R) :
   simp only [convolution, toArithmeticFunction, ArithmeticFunction.mul_apply,
     ArithmeticFunction.coe_mk, mul_ite, mul_zero, ite_mul, zero_mul]
   refine Finset.sum_congr rfl fun p hp ↦ ?_
-  obtain ⟨hp₁, hp₂⟩ := Nat.mem_divisorsAntidiagonal.mp hp
-  obtain ⟨h₁, h₂⟩ := mul_ne_zero_iff.mp (hp₁.symm ▸ hp₂)
+  obtain ⟨h₁, h₂⟩ := Nat.ne_zero_of_mem_divisorsAntidiagonal hp
   simp only [h₂, ↓reduceIte, h₁]
 
 @[simp]
@@ -81,6 +80,7 @@ lemma convolution_map_zero {R : Type*} [Semiring R] (f g : ℕ → R) : (f ⍟ g
 ### Multiplication of L-series
 -/
 
+open Nat in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
 in terms of a sum over `Nat.divisorsAntidiagonal`. -/
 lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
@@ -90,10 +90,9 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
   -- now `n ≠ 0`
   rw [term_of_ne_zero hn, convolution_def, Finset.sum_div]
   refine Finset.sum_congr rfl fun p hp ↦ ?_
-  obtain ⟨hp, hn₀⟩ := Nat.mem_divisorsAntidiagonal.mp hp
-  have ⟨hp₁, hp₂⟩ := mul_ne_zero_iff.mp <| hp.symm ▸ hn₀
-  rw [term_of_ne_zero hp₁ f s, term_of_ne_zero hp₂ g s, mul_comm_div, div_div,
-    ← mul_div_assoc, ← natCast_mul_natCast_cpow, ← Nat.cast_mul, mul_comm p.2, hp]
+  have ⟨hp₁, hp₂⟩ := Nat.ne_zero_of_mem_divisorsAntidiagonal hp
+  rw [term_of_ne_zero hp₁ f s, term_of_ne_zero hp₂ g s, mul_comm_div, div_div, ← mul_div_assoc,
+    ← natCast_mul_natCast_cpow, ← cast_mul, mul_comm p.2, (mem_divisorsAntidiagonal.mp hp).1]
 
 open Set in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
