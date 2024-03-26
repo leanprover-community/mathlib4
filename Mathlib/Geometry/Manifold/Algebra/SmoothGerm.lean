@@ -57,7 +57,7 @@ theorem smoothGerm.coe_coe (f : C^∞⟮I, M; I', N⟯) (x : M) :
 theorem smoothGerm.coe_eq_coe (f g : C^∞⟮I, M; I', N⟯) {x : M} (h : ∀ᶠ y in 𝓝 x, f y = g y) :
     (f : smoothGerm I I' N x) = (g : smoothGerm I I' N x) := by
   ext
-  exact Germ.coe_eq.mpr h
+  rwa [Germ.coe_eq]
 
 -- xxx: is this lemma useful?
 lemma smoothGerm_iff_of_smooth_function {x : M} (a : Germ (𝓝 x) N) :
@@ -110,16 +110,8 @@ def smoothGerm.toAddSubgroup [LieAddGroup I' R] (x : M) : AddSubgroup (Germ (�
 
 /-- If `R` is a smooth ring, `smoothGerm I I' R x` is a subring of `Germ (𝓝 x) R`. -/
 def smoothGerm.toSubring [SmoothRing I' R] (x : M) : Subring (Germ (𝓝 x) R) where
-  toSubmonoid := smoothGerm.toSubmonoid I I' R x
-  -- FIXME: can I copy these fields from `toAddSubgroup`?
-  zero_mem' := ⟨0, by rw [SmoothMap.coe_zero, Germ.coe_zero]⟩
-  add_mem' ha hb := by
-    choose f hf using ha
-    choose g hg using hb
-    exact ⟨f + g, by rw [← hf, ← hg, SmoothMap.coe_add, Germ.coe_add]⟩
-  neg_mem' h := by
-    choose f hf using h
-    exact ⟨ -f, by rw [← hf, SmoothMap.coe_neg, Germ.coe_neg]⟩
+  __ := smoothGerm.toSubmonoid I I' R x
+  __ := smoothGerm.toAddSubgroup I I' R x
 
 -- xxx: is this lemma useful?
 lemma smoothGerm.toSubring_mem_coe [SmoothRing I' R] {x : M} (a : Germ (𝓝 x) R) :
@@ -128,7 +120,7 @@ lemma smoothGerm.toSubring_mem_coe [SmoothRing I' R] {x : M} (a : Germ (𝓝 x) 
 /-- The map `C^∞(M, R) → Germ (𝓝 x) R` as a ring homomorphism, for a smooth ring `R`. -/
 def RingHom.germOfContMDiffMap (R : Type*) [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
     [SmoothRing I' R] (x : M) : C^∞⟮I, M; I', R⟯ →+* Germ (𝓝 x) R :=
-  RingHom.comp (Germ.coeRingHom _) SmoothMap.coeFnRingHom
+  (Germ.coeRingHom _).comp SmoothMap.coeFnRingHom
 
 lemma toSubring_eq_range [SmoothRing I' R] (x : M) :
     smoothGerm.toSubring I I' R x = (RingHom.germOfContMDiffMap I I' R x).range := by
