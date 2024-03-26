@@ -115,39 +115,39 @@ variable {C D E J : Type*} [Category C] [Category D] [Category E]
   {X Y : GradedObject J C}
 
 @[reassoc (attr := simp)]
-lemma hom_inv_id_apply (e : X ≅ Y) (j : J) :
+lemma hom_inv_id_eval (e : X ≅ Y) (j : J) :
     e.hom j ≫ e.inv j = 𝟙 _ := by
   rw [← GradedObject.categoryOfGradedObjects_comp, e.hom_inv_id,
     GradedObject.categoryOfGradedObjects_id]
 
 @[reassoc (attr := simp)]
-lemma inv_hom_id_apply (e : X ≅ Y) (j : J) :
+lemma inv_hom_id_eval (e : X ≅ Y) (j : J) :
     e.inv j ≫ e.hom j = 𝟙 _ := by
   rw [← GradedObject.categoryOfGradedObjects_comp, e.inv_hom_id,
     GradedObject.categoryOfGradedObjects_id]
 
 @[reassoc (attr := simp)]
-lemma map_hom_inv_id_apply (e : X ≅ Y) (F : C ⥤ D) (j : J) :
+lemma map_hom_inv_id_eval (e : X ≅ Y) (F : C ⥤ D) (j : J) :
     F.map (e.hom j) ≫ F.map (e.inv j) = 𝟙 _ := by
   rw [← F.map_comp, ← GradedObject.categoryOfGradedObjects_comp, e.hom_inv_id,
     GradedObject.categoryOfGradedObjects_id, Functor.map_id]
 
 @[reassoc (attr := simp)]
-lemma Iso.map_inv_hom_id_apply (e : X ≅ Y) (F : C ⥤ D) (j : J) :
+lemma Iso.map_inv_hom_id_eval (e : X ≅ Y) (F : C ⥤ D) (j : J) :
     F.map (e.inv j) ≫ F.map (e.hom j) = 𝟙 _ := by
   rw [← F.map_comp, ← GradedObject.categoryOfGradedObjects_comp, e.inv_hom_id,
     GradedObject.categoryOfGradedObjects_id, Functor.map_id]
 
 @[reassoc (attr := simp)]
-lemma Iso.map_hom_inv_id_app_apply (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
+lemma Iso.map_hom_inv_id_eval_app (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
     (F.map (e.hom j)).app Y ≫ (F.map (e.inv j)).app Y = 𝟙 _ := by
-  rw [← NatTrans.comp_app, ← F.map_comp, hom_inv_id_apply,
+  rw [← NatTrans.comp_app, ← F.map_comp, hom_inv_id_eval,
     Functor.map_id, NatTrans.id_app]
 
 @[reassoc (attr := simp)]
-lemma Iso.map_inv_hom_id_app_apply (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
+lemma Iso.map_inv_hom_id_eval_app (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
     (F.map (e.inv j)).app Y ≫ (F.map (e.hom j)).app Y = 𝟙 _ := by
-  rw [← NatTrans.comp_app, ← F.map_comp, inv_hom_id_apply,
+  rw [← NatTrans.comp_app, ← F.map_comp, inv_hom_id_eval,
     Functor.map_id, NatTrans.id_app]
 
 end Iso
