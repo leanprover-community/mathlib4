@@ -533,7 +533,7 @@ theorem nthHomSeq_one : nthHomSeq f_compat 1 ≈ 1 := by
   change _ < _ at hε
   use 1
   intro j hj
-  haveI : Fact (1 < p ^ j) := ⟨Nat.one_lt_pow _ _ (by omega) hp_prime.1.one_lt⟩
+  haveI : Fact (1 < p ^ j) := ⟨Nat.one_lt_pow (by omega) hp_prime.1.one_lt⟩
   suffices (ZMod.cast (1 : ZMod (p ^ j)) : ℚ) = 1 by simp [nthHomSeq, nthHom, this, hε]
   rw [ZMod.cast_eq_val, ZMod.val_one, Nat.cast_one]
 #align padic_int.nth_hom_seq_one PadicInt.nthHomSeq_one

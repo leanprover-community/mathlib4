@@ -350,7 +350,7 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
   refine' Nat.lt_le_asymm _ (Finset.le_max' S ((b * x) ^ 2) _)
   -- Porting note: these two goals were in the opposite order in Lean 3
   · convert lt_mul_of_one_lt_right hlts
-      (one_lt_pow 2 x two_ne_zero (one_lt_iff_ne_zero_and_ne_one.mpr ⟨fun h => by simp_all, hx⟩))
+      (one_lt_pow two_ne_zero (one_lt_iff_ne_zero_and_ne_one.mpr ⟨fun h => by simp_all, hx⟩))
       using 1
     rw [mul_pow]
   · simp_rw [S, hsa, Finset.mem_filter, Finset.mem_range]
