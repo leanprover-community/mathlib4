@@ -30,13 +30,19 @@ namespace HomologicalComplex₂
 
 variable {C : Type*} [Category C] [Preadditive C]
   {I₁ I₂ I₁₂ : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
-  (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (ψ : L ⟶ M)
+  (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (e : K ≅ L) (ψ : L ⟶ M)
   (c₁₂ : ComplexShape I₁₂) [DecidableEq I₁₂]
   [TotalComplexShape c₁ c₂ c₁₂]
 
 /-- A bicomplex has a total bicomplex if for any `i₁₂ : I₁₂`, the coproduct
 of the objects `(K.X i₁).X i₂` such that `ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = i₁₂` exists. -/
 abbrev HasTotal := K.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₁₂)
+
+variable {K L} in
+lemma hasTotal_of_iso [K.HasTotal c₁₂] : L.HasTotal c₁₂ :=
+  GradedObject.hasMap_of_iso (GradedObject.isoMk K.toGradedObject L.toGradedObject
+    (fun ⟨i₁, i₂⟩ =>
+      (HomologicalComplex.eval _ _ i₁ ⋙ HomologicalComplex.eval _ _ i₂).mapIso e)) _
 
 variable [K.HasTotal c₁₂]
 
@@ -403,6 +409,15 @@ variable [M.HasTotal c₁₂]
 lemma map_comp : map (φ ≫ ψ) c₁₂ = map φ c₁₂ ≫ map ψ c₁₂ := by
   apply (HomologicalComplex.forget _ _).map_injective
   exact GradedObject.mapMap_comp (toGradedObjectMap φ) (toGradedObjectMap ψ) _
+
+/-- The morphism `K.total c₁₂ ⟶ L.total c₁₂` of homological complexes induced
+by a morphism of bicomplexes `K ⟶ L`. -/
+@[simps]
+noncomputable def mapIso : K.total c₁₂ ≅ L.total c₁₂ where
+  hom := map e.hom _
+  inv := map e.inv _
+  hom_inv_id := by rw [← map_comp, e.hom_inv_id, map_id]
+  inv_hom_id := by rw [← map_comp, e.inv_hom_id, map_id]
 
 end total
 
