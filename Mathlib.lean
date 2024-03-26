@@ -3890,8 +3890,8 @@ import Mathlib.Topology.FiberBundle.Trivialization
 import Mathlib.Topology.Filter
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Germ
-import Mathlib.Topology.GPseudoMetric.Basic
 import Mathlib.Topology.Gluing
+import Mathlib.Topology.GPseudoMetric.Basic
 import Mathlib.Topology.Hom.Open
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Homotopy.Basic
