@@ -163,7 +163,7 @@ protected theorem add_left_cancel (h₁ : a ≡ b [MOD n]) (h₂ : a + c ≡ b +
   simp only [modEq_iff_dvd, Int.ofNat_add] at *
   rw [add_sub_add_comm] at h₂
   convert _root_.dvd_sub h₂ h₁ using 1
-  rw [add_sub_cancel']
+  rw [add_sub_cancel_left]
 #align nat.modeq.add_left_cancel Nat.ModEq.add_left_cancel
 
 protected theorem add_left_cancel' (c : ℕ) (h : c + a ≡ c + b [MOD n]) : a ≡ b [MOD n] :=
@@ -385,7 +385,7 @@ theorem chineseRemainder_lt_mul (co : n.Coprime m) (a b : ℕ) (hn : n ≠ 0) (h
 #align nat.chinese_remainder_lt_mul Nat.chineseRemainder_lt_mul
 
 theorem mod_lcm (hn : a ≡ b [MOD n]) (hm : a ≡ b [MOD m]) : a ≡ b [MOD lcm n m] :=
-  (Nat.modEq_iff_dvd).mpr <| Int.lcm_dvd (Nat.modEq_iff_dvd.mp hn) (Nat.modEq_iff_dvd.mp hm)
+  Nat.modEq_iff_dvd.mpr <| Int.lcm_dvd (Nat.modEq_iff_dvd.mp hn) (Nat.modEq_iff_dvd.mp hm)
 
 theorem chineseRemainder_modEq_unique (co : n.Coprime m) {a b z}
     (hzan : z ≡ a [MOD n]) (hzbm : z ≡ b [MOD m]) : z ≡ chineseRemainder co a b [MOD n*m] := by
@@ -399,8 +399,8 @@ theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℕ} (hmn : m.Coprime n) :
     rw [Nat.modEq_iff_dvd, Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.coe_nat_dvd, ← Int.dvd_natAbs,
       Int.coe_nat_dvd] at h
     rw [Nat.modEq_iff_dvd, ← Int.dvd_natAbs, Int.coe_nat_dvd]
-    exact hmn.mul_dvd_of_dvd_of_dvd h.1 h.2, fun h =>
-    ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
+    exact hmn.mul_dvd_of_dvd_of_dvd h.1 h.2,
+   fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
 #align nat.modeq_and_modeq_iff_modeq_mul Nat.modEq_and_modEq_iff_modEq_mul
 
 theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n]) : a.Coprime n := by

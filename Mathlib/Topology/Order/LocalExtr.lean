@@ -3,9 +3,9 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Filter.Extr
 import Mathlib.Topology.ContinuousOn
-import Mathlib.Algebra.Group.Defs
 
 #align_import topology.local_extr from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
@@ -629,4 +629,3 @@ theorem Filter.EventuallyEq.isLocalExtr_iff {f g : α → β} {a : α} (heq : f 
 #align filter.eventually_eq.is_local_extr_iff Filter.EventuallyEq.isLocalExtr_iff
 
 end Eventually
-

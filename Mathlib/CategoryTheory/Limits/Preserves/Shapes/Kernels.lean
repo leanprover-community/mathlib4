@@ -26,7 +26,6 @@ universe v₁ v₂ u₁ u₂
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] [HasZeroMorphisms C]
-
 variable {D : Type u₂} [Category.{v₂} D] [HasZeroMorphisms D]
 
 namespace CategoryTheory.Limits

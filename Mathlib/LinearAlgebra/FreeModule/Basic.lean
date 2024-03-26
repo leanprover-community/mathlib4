@@ -68,7 +68,6 @@ namespace Module.Free
 section Semiring
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
-
 variable [AddCommMonoid N] [Module R N]
 
 /-- If `Module.Free R M` then `ChooseBasisIndex R M` is the `ι` which indexes the basis

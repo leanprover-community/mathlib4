@@ -332,7 +332,7 @@ theorem PreconnectedSpace.constant {Y : Type*} [TopologicalSpace Y] [DiscreteTop
 
 /-- Refinement of `IsPreconnected.constant` only assuming the map factors through a
 discrete subset of the target. -/
-theorem IsPreconnected.constant_of_mapsTo [TopologicalSpace β] {S : Set α} (hS : IsPreconnected S)
+theorem IsPreconnected.constant_of_mapsTo {S : Set α} (hS : IsPreconnected S)
     {T : Set β} [DiscreteTopology T] {f : α → β} (hc : ContinuousOn f S) (hTm : MapsTo f S T)
     {x y : α} (hx : x ∈ S) (hy : y ∈ S) : f x = f y := by
   let F : S → T := hTm.restrict f S T
@@ -342,7 +342,7 @@ theorem IsPreconnected.constant_of_mapsTo [TopologicalSpace β] {S : Set α} (hS
 
 /-- A version of `IsPreconnected.constant_of_mapsTo` that assumes that the codomain is nonempty and
 proves that `f` is equal to `const α y` on `S` for some `y ∈ T`. -/
-theorem IsPreconnected.eqOn_const_of_mapsTo [TopologicalSpace β] {S : Set α} (hS : IsPreconnected S)
+theorem IsPreconnected.eqOn_const_of_mapsTo {S : Set α} (hS : IsPreconnected S)
     {T : Set β} [DiscreteTopology T] {f : α → β} (hc : ContinuousOn f S) (hTm : MapsTo f S T)
     (hne : T.Nonempty) : ∃ y ∈ T, EqOn f (const α y) S := by
   rcases S.eq_empty_or_nonempty with (rfl | ⟨x, hx⟩)

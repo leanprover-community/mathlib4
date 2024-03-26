@@ -100,7 +100,7 @@ protected theorem nonempty_coeSort {U : Opens α} : Nonempty U ↔ (U : Set α).
   Set.nonempty_coe_sort
 #align topological_space.opens.nonempty_coe_sort TopologicalSpace.Opens.nonempty_coeSort
 
--- Porting note: new lemma; todo: prove it for a `SetLike`?
+-- Porting note (#10756): new lemma; todo: prove it for a `SetLike`?
 protected theorem nonempty_coe {U : Opens α} : (U : Set α).Nonempty ↔ ∃ x, x ∈ U :=
   Iff.rfl
 
@@ -266,7 +266,7 @@ theorem openEmbedding' (U : Opens α) : OpenEmbedding (Subtype.val : U → α) :
 theorem openEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
     OpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) :=
   { toEmbedding := embedding_inclusion i
-    open_range := by
+    isOpen_range := by
       rw [Set.range_inclusion i]
       exact U.isOpen.preimage continuous_subtype_val }
 #align topological_space.opens.open_embedding_of_le TopologicalSpace.Opens.openEmbedding_of_le

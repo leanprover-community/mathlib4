@@ -73,16 +73,13 @@ set_option linter.uppercaseLean3 false in
 /-- Subsets of a given closed subset form a closed set -/
 theorem isClosed_subsets_of_isClosed (hs : IsClosed s) :
     IsClosed { t : Closeds α | (t : Set α) ⊆ s } := by
-  refine' isClosed_of_closure_subset fun t ht x hx => _
-  -- t : Closeds α, ht : t ∈ closure {t : Closeds α | t ⊆ s},
-  -- x : α, hx : x ∈ t
-  -- goal : x ∈ s
+  refine isClosed_of_closure_subset fun
+    (t : Closeds α) (ht : t ∈ closure {t : Closeds α | (t : Set α) ⊆ s}) (x : α) (hx : x ∈ t) => ?_
   have : x ∈ closure s := by
     refine' mem_closure_iff.2 fun ε εpos => _
-    rcases mem_closure_iff.1 ht ε εpos with ⟨u, hu, Dtu⟩
-    -- u : Closeds α, hu : u ∈ {t : Closeds α | t ⊆ s}, hu' : edist t u < ε
-    rcases exists_edist_lt_of_hausdorffEdist_lt hx Dtu with ⟨y, hy, Dxy⟩
-    -- y : α, hy : y ∈ u, Dxy : edist x y < ε
+    obtain ⟨u : Closeds α, hu : u ∈ {t : Closeds α | (t : Set α) ⊆ s}, Dtu : edist t u < ε⟩ :=
+      mem_closure_iff.1 ht ε εpos
+    obtain ⟨y : α, hy : y ∈ u, Dxy : edist x y < ε⟩ := exists_edist_lt_of_hausdorffEdist_lt hx Dtu
     exact ⟨y, hu hy, Dxy⟩
   rwa [hs.closure_eq] at this
 #align emetric.is_closed_subsets_of_is_closed EMetric.isClosed_subsets_of_isClosed
@@ -164,14 +161,12 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
             as required. -/
     intro n x xt0
     have : x ∈ closure (⋃ m ≥ n, s m : Set α) := by apply mem_iInter.1 xt0 n
-    rcases mem_closure_iff.1 this (B n) (B_pos n) with ⟨z, hz, Dxz⟩
-    -- z : α, Dxz : edist x z < B n,
+    obtain ⟨z : α, hz, Dxz : edist x z < B n⟩ := mem_closure_iff.1 this (B n) (B_pos n)
     simp only [exists_prop, Set.mem_iUnion] at hz
-    rcases hz with ⟨m, ⟨m_ge_n, hm⟩⟩
-    -- m : ℕ, m_ge_n : m ≥ n, hm : z ∈ s m
+    obtain ⟨m : ℕ, m_ge_n : m ≥ n, hm : z ∈ (s m : Set α)⟩ := hz
     have : hausdorffEdist (s m : Set α) (s n) < B n := hs n m n m_ge_n (le_refl n)
-    rcases exists_edist_lt_of_hausdorffEdist_lt hm this with ⟨y, hy, Dzy⟩
-    -- y : α, hy : y ∈ s n, Dzy : edist z y < B n
+    obtain ⟨y : α, hy : y ∈ (s n : Set α), Dzy : edist z y < B n⟩ :=
+      exists_edist_lt_of_hausdorffEdist_lt hm this
     exact
       ⟨y, hy,
         calc
@@ -204,12 +199,11 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
       isCompact_of_totallyBounded_isClosed (EMetric.totallyBounded_iff.2 fun ε εpos => _)
         isClosed_univ
     rcases exists_between εpos with ⟨δ, δpos, δlt⟩
-    rcases EMetric.totallyBounded_iff.1
-        (isCompact_iff_totallyBounded_isComplete.1 (@isCompact_univ α _ _)).1 δ δpos with
-      ⟨s, fs, hs⟩
-    -- s : Set α, fs : s.Finite, hs : univ ⊆ ⋃ (y : α) (H : y ∈ s), eball y δ
+    obtain ⟨s : Set α, fs : s.Finite, hs : univ ⊆ ⋃ y ∈ s, ball y δ⟩ :=
+      EMetric.totallyBounded_iff.1
+        (isCompact_iff_totallyBounded_isComplete.1 (@isCompact_univ α _ _)).1 δ δpos
     -- we first show that any set is well approximated by a subset of `s`.
-    have main : ∀ u : Set α, ∃ (v : _) (_ : v ⊆ s), hausdorffEdist u v ≤ δ := by
+    have main : ∀ u : Set α, ∃ v ⊆ s, hausdorffEdist u v ≤ δ := by
       intro u
       let v := { x : α | x ∈ s ∧ ∃ y ∈ u, edist x y < δ }
       exists v, (fun x hx => hx.1 : v ⊆ s)
@@ -311,8 +305,7 @@ instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (None
 the same statement for closed subsets -/
 instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   ⟨by
-    rw [NonemptyCompacts.ToCloseds.uniformEmbedding.embedding.isCompact_iff]
-    rw [image_univ]
+    rw [NonemptyCompacts.ToCloseds.uniformEmbedding.embedding.isCompact_iff, image_univ]
     exact NonemptyCompacts.isClosed_in_closeds.isCompact⟩
 #align emetric.nonempty_compacts.compact_space EMetric.NonemptyCompacts.compactSpace
 
@@ -345,8 +338,8 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
       have Fspec : ∀ x, F x ∈ s ∧ edist x (F x) < δ / 2 := fun x => (Exy x).choose_spec
       -- cover `t` with finitely many balls. Their centers form a set `a`
       have : TotallyBounded (t : Set α) := t.isCompact.totallyBounded
-      rcases totallyBounded_iff.1 this (δ / 2) δpos' with ⟨a, af, ta⟩
-      -- a : set α, af : a.finite, ta : t ⊆ ⋃ (y : α) (H : y ∈ a), eball y (δ / 2)
+      obtain ⟨a : Set α, af : Set.Finite a, ta : (t : Set α) ⊆ ⋃ y ∈ a, ball y (δ / 2)⟩ :=
+        totallyBounded_iff.1 this (δ / 2) δpos'
       -- replace each center by a nearby approximation in `s`, giving a new set `b`
       let b := F '' a
       have : b.Finite := af.image _

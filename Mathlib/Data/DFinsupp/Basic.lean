@@ -51,7 +51,6 @@ universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 open BigOperators
 
 variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
-
 variable (β)
 
 /-- A dependent function `Π i, β i` with finite support, with notation `Π₀ i, β i`.
@@ -568,7 +567,7 @@ section Basic
 variable [∀ i, Zero (β i)]
 
 theorem finite_support (f : Π₀ i, β i) : Set.Finite { i | f i ≠ 0 } := by
-  classical!
+  classical
   exact Trunc.induction_on f.support' fun xs =>
         (Multiset.toFinset xs.1).finite_toSet.subset fun i H =>
           Multiset.mem_toFinset.2 ((xs.prop i).resolve_right H)
@@ -2272,7 +2271,6 @@ variable [DecidableEq ι]
 namespace MonoidHom
 
 variable {R S : Type*}
-
 variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
 #align monoid_hom.map_dfinsupp_prod map_dfinsupp_prodₓ
