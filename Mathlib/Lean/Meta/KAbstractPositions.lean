@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
 import Lean.Meta
+/-! # Find the positions of a pattern in an expression -/
 
-open Lean Meta
+namespace Lean.Meta
 
 /-- Return the positions that `kabstract` would abstract.
 i.e. the positions that unify with the pattern -/

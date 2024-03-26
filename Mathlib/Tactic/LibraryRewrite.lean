@@ -3,7 +3,7 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Anand Rao
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree.RefinedDiscrTree
+import Mathlib.Lean.Meta.RefinedDiscrTree
 import Mathlib.Tactic.InteractiveUnfold
 
 /-!
@@ -162,6 +162,7 @@ We ignore any `Options` set by the user. -/
 def printRewriteLemma (e : Expr) (explicit : Bool) : MetaM String :=
   withOptions (fun _ => Options.empty
     |>.setBool `pp.universes false
+    |>.setBool `pp.match false
     |>.setBool `pp.instances false
     |>.setBool `pp.unicode.fun true) do
   if explicit then
@@ -387,8 +388,9 @@ def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
       profileitM Exception "libraryRewrite" (← getOptions) do
-        let unfolds ← getDefinitions loc
-        let unfolds := (renderDefinitions · props.replaceRange doc) <$> unfolds.toOption
+        let unfolds ← InteractiveUnfold.getDefinitions loc
+        let unfolds := (InteractiveUnfold.renderDefinitions · props.replaceRange doc)
+          <$> unfolds.toOption
         match ← getLibraryRewrites loc with
         | .ok results => return renderFilterResults results unfolds props.replaceRange doc
         | .error msg  => return .text msg

@@ -7,7 +7,10 @@ import Std.Lean.Position
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Lean.Meta.KAbstractPositions
 
+/-! # Interactive unfolding -/
+
 open Lean Meta Server Widget ProofWidgets Jsx
+namespace Mathlib.Tactic.InteractiveUnfold
 
 
 /-- The `Expr` at a `SubExpr.GoalsLocation`. -/
@@ -49,8 +52,8 @@ def unfold (e : Expr) : MetaM Expr := do
     if let some value ← fvarId.getValue? then
       return value.betaRev e.getAppRevArgs
   /- unfolding a constant -/
-  if let some e ← unfoldDefinition? e then
-    return e
+  if let some e' ← unfoldDefinition? e then
+    return e'
 
   throwError m! "Could not find a definition for {e}."
 
@@ -66,6 +69,7 @@ partial def unfolds (e : Expr) (acc : Array Expr := #[]) : MetaM (Array Expr) :=
 def printToPaste (e : Expr) : MetaM String :=
   withOptions (fun _ => Options.empty
     |>.setBool `pp.universes false
+    |>.setBool `pp.match false
     |>.setBool `pp.unicode.fun true) do
   return Format.pretty (← Meta.ppExpr e)
 
