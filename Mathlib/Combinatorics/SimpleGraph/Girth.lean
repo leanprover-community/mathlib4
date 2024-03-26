@@ -45,7 +45,7 @@ lemma three_le_length : 3 ≤ G.girth := by
   · rw [← girth_eq_top] at h
     rw [h]
     apply le_top
-  . rw [← exists_girth_eq_length] at h
+  · rw [← exists_girth_eq_length] at h
     have ⟨_, ⟨_, _⟩⟩ := h
     simp_all only [Nat.cast_inj, Nat.ofNat_le_cast, Walk.IsCycle.three_le_length]
 
