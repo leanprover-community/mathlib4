@@ -292,7 +292,7 @@ theorem tendsto_preCDF_atTop_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
     if h : ∃ l, Tendsto (fun r => preCDF ρ r a) atTop (𝓝 l) then h.choose else 0
   have h_tendsto_ℚ : ∀ᵐ a ∂ρ.fst, Tendsto (fun r => preCDF ρ r a) atTop (𝓝 (F a)) := by
     filter_upwards [h_exists] with a ha
-    simp_rw [dif_pos ha]
+    simp_rw [F, dif_pos ha]
     exact ha.choose_spec
   have h_tendsto_ℕ : ∀ᵐ a ∂ρ.fst, Tendsto (fun n : ℕ => preCDF ρ n a) atTop (𝓝 (F a)) := by
     filter_upwards [h_tendsto_ℚ] with a ha using ha.comp tendsto_nat_cast_atTop_atTop
@@ -356,7 +356,7 @@ theorem tendsto_preCDF_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
     if h : ∃ l, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 l) then h.choose else 0
   have h_tendsto : ∀ᵐ a ∂ρ.fst, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 (F a)) := by
     filter_upwards [h_exists] with a ha
-    simp_rw [dif_pos ha]
+    simp_rw [F, dif_pos ha]
     exact ha.choose_spec
   suffices h_lintegral_eq : ∫⁻ a, F a ∂ρ.fst = 0 by
     have hF_ae_meas : AEMeasurable F ρ.fst := by

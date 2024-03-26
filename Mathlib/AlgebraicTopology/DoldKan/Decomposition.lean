@@ -58,11 +58,11 @@ theorem decomposition_Q (n q : ℕ) :
       Finset.filter_False, Finset.sum_empty]
   · by_cases hqn : q + 1 ≤ n + 1
     swap
-    · rw [Q_is_eventually_constant (show n + 1 ≤ q by linarith), hq]
+    · rw [Q_is_eventually_constant (show n + 1 ≤ q by omega), hq]
       congr 1
       ext ⟨x, hx⟩
       simp only [Nat.succ_eq_add_one, Finset.mem_filter, Finset.mem_univ, true_and]
-      constructor <;> intro <;> linarith
+      omega
     · cases' Nat.le.dest (Nat.succ_le_succ_iff.mp hqn) with a ha
       rw [Q_succ, HomologicalComplex.sub_f_apply, HomologicalComplex.comp_f, hq]
       symm
@@ -70,7 +70,7 @@ theorem decomposition_Q (n q : ℕ) :
       let q' : Fin (n + 1) := ⟨q, Nat.succ_le_iff.mp hqn⟩
       rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp)]
       congr
-      · have hnaq' : n = a + q := by linarith
+      · have hnaq' : n = a + q := by omega
         simp only [Fin.val_mk, (HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq',
           q'.rev_eq hnaq', neg_neg]
         rfl

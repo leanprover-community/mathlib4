@@ -47,7 +47,6 @@ namespace LinearMap
 section NormedRing
 
 variable [NormedCommRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
-
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 
@@ -134,7 +133,6 @@ end NormedRing
 section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
-
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 

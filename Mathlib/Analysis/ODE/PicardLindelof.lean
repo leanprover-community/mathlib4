@@ -302,7 +302,7 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
     ‖∫ τ in Ι (v.t₀ : ℝ) t, f₁.vComp τ - f₂.vComp τ‖ ≤
         ∫ τ in Ι (v.t₀ : ℝ) t, v.L * ((v.L * |τ - v.t₀|) ^ n / n ! * d) := by
       refine' norm_integral_le_of_norm_le (Continuous.integrableOn_uIoc _) _
-      · -- porting note: was `continuity`
+      · -- Porting note: was `continuity`
         refine .mul continuous_const <| .mul (.div_const ?_ _) continuous_const
         refine .pow (.mul continuous_const <| .abs <| ?_) _
         exact .sub continuous_id continuous_const
@@ -415,7 +415,7 @@ theorem exists_isPicardLindelof_const_of_contDiffAt (hv : ContDiffAt ℝ 1 v x�
         (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans <|
         (Metric.ball_subset_ball <| min_le_right _ _).trans (subset_refl _)
       C_mul_le_R := by
-        rw [add_sub_cancel', sub_sub_cancel, max_self, hε, mul_div_left_comm, div_self, mul_one]
+        rw [add_sub_cancel_left, sub_sub_cancel, max_self, hε, mul_div_left_comm, div_self, mul_one]
         exact ne_of_gt <| add_pos_of_pos_of_nonneg zero_lt_one <| norm_nonneg _ }
 #align exists_is_picard_lindelof_const_of_cont_diff_on_nhds exists_isPicardLindelof_const_of_contDiffAt
 

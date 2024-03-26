@@ -14,7 +14,6 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 
 variable {α : Type*} {𝕜 : Type*} {E : Type*}
-
 variable [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y

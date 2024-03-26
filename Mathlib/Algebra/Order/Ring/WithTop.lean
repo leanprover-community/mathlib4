@@ -133,7 +133,7 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
       induction' y using WithTop.recTopCoe with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
-      · -- porting note: todo: `simp [← coe_mul]` times out
+      · -- Porting note (#11215): TODO: `simp [← coe_mul]` times out
         simp only [map_coe, ← coe_mul, map_mul] }
 #align monoid_with_zero_hom.with_top_map MonoidWithZeroHom.withTopMap
 
@@ -250,12 +250,12 @@ lemma mul_eq_bot_iff : a * b = ⊥ ↔ a ≠ 0 ∧ b = ⊥ ∨ a = ⊥ ∧ b ≠
 #align with_bot.mul_eq_bot_iff WithBot.mul_eq_bot_iff
 
 lemma mul_coe_eq_bind {b : α} (hb : b ≠ 0) : ∀ a, (a * b : WithBot α) = a.bind fun a ↦ ↑(a * b)
-  | ⊥ => by simp [bot_mul, hb]; rfl
+  | ⊥ => by simp only [ne_eq, coe_eq_zero, hb, not_false_eq_true, bot_mul]; rfl
   | (a : α) => rfl
 #align with_bot.mul_coe WithBot.mul_coe_eq_bind
 
 lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithBot α) = b.bind fun b ↦ ↑(a * b)
-  | ⊥ => by simp [bot_mul, ha]; rfl
+  | ⊥ => by simp only [ne_eq, coe_eq_zero, ha, not_false_eq_true, mul_bot]; rfl
   | (b : α) => rfl
 
 @[simp]

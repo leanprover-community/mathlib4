@@ -57,7 +57,6 @@ open Matrix FiniteDimensional Fintype Polynomial Finset IntermediateField
 namespace Algebra
 
 variable (A : Type u) {B : Type v} (C : Type z) {ι : Type w} [DecidableEq ι]
-
 variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
 
 section Discr
@@ -130,9 +129,7 @@ end Basic
 section Field
 
 variable (K : Type u) {L : Type v} (E : Type z) [Field K] [Field L] [Field E]
-
 variable [Algebra K L] [Algebra K E]
-
 variable [Module.Finite K L] [IsAlgClosed E]
 
 /-- If `b` is a basis of a finite separable field extension `L/K`, then `Algebra.discr K b ≠ 0`. -/
@@ -227,7 +224,7 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
     nodup_roots (Separable.map (IsSeparable.separable K pb.gen))
   have hroots : ∀ σ : L →ₐ[K] E, σ pb.gen ∈ (minpoly K pb.gen).aroots E := by
     intro σ
-    rw [mem_roots, IsRoot.def, eval_map, ← aeval_def, aeval_algHom_apply]
+    rw [mem_roots, IsRoot.definition, eval_map, ← aeval_def, aeval_algHom_apply]
     repeat' simp [minpoly.ne_zero (IsSeparable.isIntegral K pb.gen)]
   apply (algebraMap K E).injective
   rw [RingHom.map_mul, RingHom.map_pow, RingHom.map_neg, RingHom.map_one,
@@ -246,11 +243,11 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
   refine prod_bij' (fun i _ ↦ ⟨e i.2, e i.1 pb.gen⟩)
     (fun σ hσ ↦ ⟨e.symm (PowerBasis.lift pb σ.2 ?_), e.symm σ.1⟩) ?_ ?_ ?_ ?_ (fun i _ ↦ by simp)
   -- Porting note: `@mem_compl` was not necessary.
-    <;> simp only [mem_sigma, mem_univ, Finset.mem_mk, hnodup.mem_erase_iff, IsRoot.def, mem_roots',
-      minpoly.ne_zero (IsSeparable.isIntegral K pb.gen), not_false_eq_true, mem_singleton, true_and,
-      @mem_compl _ _ _ (_), Sigma.forall, Equiv.apply_symm_apply, PowerBasis.lift_gen, and_imp,
-      implies_true, forall_const, Equiv.symm_apply_apply, Sigma.ext_iff, Equiv.symm_apply_eq,
-      heq_eq_eq, and_true] at *
+    <;> simp only [mem_sigma, mem_univ, Finset.mem_mk, hnodup.mem_erase_iff, IsRoot.definition,
+      mem_roots', minpoly.ne_zero (IsSeparable.isIntegral K pb.gen), not_false_eq_true,
+      mem_singleton, true_and, @mem_compl _ _ _ (_), Sigma.forall, Equiv.apply_symm_apply,
+      PowerBasis.lift_gen, and_imp, implies_true, forall_const, Equiv.symm_apply_apply,
+      Sigma.ext_iff, Equiv.symm_apply_eq, heq_eq_eq, and_true] at *
   · simpa only [aeval_def, eval₂_eq_eval_map] using hσ.2.2
   · exact fun a b hba ↦ ⟨fun h ↦ hba <| e.injective <| pb.algHom_ext h.symm, hroots _⟩
   · rintro a b hba ha
