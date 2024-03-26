@@ -222,8 +222,7 @@ lemma buffon_integral :
 
   have : MeasureTheory.IntegrableOn (needleCrossesIndicator l)
       (Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π) := by
-    apply (MeasureTheory.integrableOn_def _ _ _).mpr
-    simp_rw [Measure.volume_eq_prod, ← Measure.prod_restrict,
+    simp_rw [MeasureTheory.IntegrableOn, Measure.volume_eq_prod, ← Measure.prod_restrict,
       integrable_needleCrossesIndicator d l hd]
 
   rw [Measure.volume_eq_prod, MeasureTheory.set_integral_prod _ this,
@@ -367,7 +366,7 @@ theorem buffon_long (h : d ≤ l) :
     MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, Set.Icc_inter_Icc, Real.volume_Icc,
     sup_eq_max, inf_eq_min, min_div_div_right zero_le_two d, max_div_div_right zero_le_two (-d),
     div_sub_div_same, neg_mul, max_neg_neg, sub_neg_eq_add, ← mul_two,
-    mul_div_cancel (min d (Real.sin _ * l)) two_ne_zero
+    mul_div_cancel_right₀ (min d (Real.sin _ * l)) two_ne_zero
   ]
 
   have : ∀ᵐ θ, θ ∈ Set.Icc 0 π →
