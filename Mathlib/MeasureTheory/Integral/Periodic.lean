@@ -93,7 +93,7 @@ interval (t, t + T]. -/
 protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := AddCircle T) ((↑) : ℝ → AddCircle T)
       (volume.restrict (Ioc t (t + T))) :=
-  measurePreserving_addQuotientGroup_mk_of_addQuotientMeasureEqMeasurePreimage
+  measurePreserving_quotientAddGroup_mk_of_AddQuotientMeasureEqMeasurePreimage
     volume (𝓕 := Ioc t (t+T)) (isAddFundamentalDomain_Ioc' hT.out _) _
 #align add_circle.measure_preserving_mk AddCircle.measurePreserving_mk
 

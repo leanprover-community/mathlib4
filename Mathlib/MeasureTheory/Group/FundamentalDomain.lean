@@ -744,7 +744,7 @@ lemma measureRestrictMap_apply (s : Set α) {U : Set (Quotient α_mod_G)} (meas_
   rw [map_apply (f := π) (fun V hV ↦ measurableSet_quotient.mp hV) meas_U,
     Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
 
-@[to_additive IsAddFundamentalDomain.addQuotientMeasure_eq]
+@[to_additive]
 lemma IsFundamentalDomain.quotientMeasure_eq [Countable G] [MeasurableSpace G] {s t : Set α}
     [SMulInvariantMeasure G α μ] [MeasurableSMul G α] (fund_dom_s : IsFundamentalDomain G s μ)
     (fund_dom_t : IsFundamentalDomain G t μ) :
@@ -865,7 +865,7 @@ class QuotientMeasureEqMeasurePreimage (ν : Measure α := by volume_tac)
   projection_respects_measure' : ∀ (t : Set α) (_ : IsFundamentalDomain G t ν),
     μ = (ν.restrict t).map π
 
-attribute [to_additive existing MeasureTheory.AddQuotientMeasureEqMeasurePreimage]
+attribute [to_additive]
   MeasureTheory.QuotientMeasureEqMeasurePreimage
 
 @[to_additive addProjection_respects_measure]
@@ -887,7 +887,7 @@ variable {ν : Measure α} [Countable G] [MeasurableSpace G]
 /-- Given a measure upstairs (i.e., on `α`), and a choice `s` of fundamental domain, there's always
 an artificial way to generate a measure downstairs such that the pair satisfies the
 `QuotientMeasureEqMeasurePreimage` typeclass. -/
-@[to_additive IsAddFundamentalDomain.addQuotientMeasureEqMeasurePreimage_addQuotientMeasure]
+@[to_additive]
 lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage_quotientMeasure
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν) :
     QuotientMeasureEqMeasurePreimage ν ((ν.restrict s).map π) where
@@ -897,7 +897,7 @@ lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage_quotientMeasure
 
 /-- One can prove `QuotientMeasureEqMeasurePreimage` by checking behavior with respect to a single
 fundamental domain. -/
-@[to_additive IsAddFundamentalDomain.addQuotientMeasureEqMeasurePreimage]
+@[to_additive]
 lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage {μ : Measure (Quotient α_mod_G)}
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν) (h : μ = (ν.restrict s).map π) :
     QuotientMeasureEqMeasurePreimage ν μ := by
@@ -925,7 +925,7 @@ theorem IsFundamentalDomain.measurePreserving_quotient_mk
     rw [h𝓕.projection_respects_measure (μ := μ)]
 
 /-- If a fundamental domain has volume 0, then `QuotientMeasureEqMeasurePreimage` holds. -/
-@[to_additive IsAddFundamentalDomain.addQuotientMeasureEqMeasurePreimage_of_zero]
+@[to_additive]
 theorem IsFundamentalDomain.quotientMeasureEqMeasurePreimage_of_zero
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν)
     (vol_s : ν s = 0) :
