@@ -845,6 +845,7 @@ theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) : (rightAssocTensor C).map f = 
   rfl
 #align category_theory.monoidal_category.right_assoc_tensor_map CategoryTheory.MonoidalCategory.rightAssocTensor_map
 
+/-- The tensor product bifunctor `C ⥤ C ⥤ C` of a monoidal category. -/
 @[simps]
 def curriedTensor : C ⥤ C ⥤ C where
   obj X :=
@@ -898,6 +899,7 @@ def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.rightUnitor
 #align category_theory.monoidal_category.right_unitor_nat_iso CategoryTheory.MonoidalCategory.rightUnitorNatIso
 
+/-- The associator as a natural isomorphism between trifunctors `C ⥤ C ⥤ C ⥤ C`. -/
 @[simps!]
 def curriedAssociatorNatIso :
     bifunctorComp₁₂ (curriedTensor C) (curriedTensor C) ≅
