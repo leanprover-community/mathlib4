@@ -243,6 +243,48 @@ theorem char_orthonormal (V W : FdRep k G) [Simple V] [Simple W] :
   rw_mod_cast [finrank_hom_simple_simple W V, Iso.nonempty_iso_symm]
 #align fdRep.char_orthonormal FdRep.char_orthonormal
 
+/-- Irreducbile characters are a basis of ClassFunction G -/
+lemma orthogonal_all_characters_implies_zero (f : G → k) (hf : IsClassFunction f) (h : ∀ V : {V : FdRep k G // Simple V}, (scalarProduct f V.1.character = (0 : k))) : f = fun _ ↦ (0 : k) := by
+  sorry
+
 end Orthogonality
+
+section RegularRepresentation
+
+variable {G : GroupCat.{u}} [IsAlgClosed k]
+variable [Fintype G] [DecidableEq G] [Invertible (Fintype.card G : k)]
+
+def RegularRep : Representation k G (MonoidAlgebra k G) where
+  toFun := fun g ↦ {
+    toFun := fun x ↦ g * x
+    map_add' := by
+      intro x y
+      simp_rw [mul_add]
+    map_smul' := by
+      intro c x
+      simp only [Algebra.mul_smul_comm, RingHom.id_apply]
+  }
+  map_one' := by
+    ext x
+    simp only [coe_mk, AddHom.coe_mk, one_apply]
+    sorry
+  map_mul' := by
+    intros g h
+    ext x
+    simp only [coe_mk, AddHom.coe_mk, mul_apply]
+    sorry
+
+instance : FiniteDimensional k (MonoidAlgebra k G) := sorry
+
+def FdRegularRep : FdRep k G := FdRep.of (RegularRep)
+
+lemma RegularRep_character : (FdRegularRep).character =
+    fun (g : G) ↦ if g = 1 then (Fintype.card G : k) else 0 := by
+  sorry
+
+lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) : scalarProduct (FdRegularRep).character V.character = V.1.finrank := by
+  sorry
+
+end RegularRepresentation
 
 end FdRep
