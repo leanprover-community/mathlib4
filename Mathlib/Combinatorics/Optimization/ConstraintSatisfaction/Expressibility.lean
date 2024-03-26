@@ -74,7 +74,7 @@ lemma Function.AdmitsFractional.minimize {m n : ℕ} {ω : FractionalOperation D
       ).AdmitsFractional ω := by
   intro x
   rw [← Multiset.sum_map_nsmul, Finset.smul_sum]
-  simp_rw [←Finset.nsmul_inf']
+  simp_rw [← Finset.nsmul_inf']
   let z :=
     fun i : Fin m =>
       (Finset.exists_mem_eq_inf' Finset.univ_nonempty
