@@ -159,6 +159,18 @@ open scoped BigOperators
     bloublou L f v n m = (- (2 * π * I))^n • (∏ i, L v (m i)) • f v := by
   simp [bloublou]
 
+def bloublou_gnou (f : V → E) (v : V) (n : ℕ) (m : Fin n → W) :
+      ∀ (i : Fin n ⊕ Unit), ContinuousMultilinearMap.SumProdUliftRingSpace ℝ E (Fin n) i
+  | Sum.inl i => ULift.up (L v (m i))
+  | Sum.inr _ => f v
+
+lemma bloublou_apply' {f : V → E} {v : V} {n : ℕ} {m : Fin n → W} :
+  bloublou L f v n m = (- (2 * π * I))^n •
+    ((ContinuousMultilinearMap.mkPiRingSmul (ι := Fin n) ℝ E) (bloublou_gnou L f v n m)) := by
+  have A (x : ULift.{uE} ℝ) : x.down = ULift.ringEquiv x := rfl
+  simp [bloublou_gnou, A]
+  rfl
+
 lemma norm_bloublou_le (f : V → E) (v : V) (n : ℕ) :
     ‖bloublou L f v n‖ ≤ (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ := by
   apply ContinuousMultilinearMap.opNorm_le_bound _ (by positivity) (fun m ↦ ?_)
