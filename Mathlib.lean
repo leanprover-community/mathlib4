@@ -1181,6 +1181,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
 import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
 import Mathlib.CategoryTheory.Limits.Creates
+import Mathlib.CategoryTheory.Limits.Elements
 import Mathlib.CategoryTheory.Limits.EpiMono
 import Mathlib.CategoryTheory.Limits.EssentiallySmall
 import Mathlib.CategoryTheory.Limits.ExactFunctor
@@ -1378,6 +1379,7 @@ import Mathlib.CategoryTheory.Sites.Coherent.Basic
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+import Mathlib.CategoryTheory.Sites.Coherent.CoverDense
 import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
@@ -1446,20 +1448,20 @@ import Mathlib.Combinatorics.Additive.Energy
 import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Additive.SalemSpencer
-import Mathlib.Combinatorics.Catalan
 import Mathlib.Combinatorics.Colex
-import Mathlib.Combinatorics.Composition
 import Mathlib.Combinatorics.Configuration
 import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Combinatorics.Derangements.Exponential
 import Mathlib.Combinatorics.Derangements.Finite
-import Mathlib.Combinatorics.DoubleCounting
+import Mathlib.Combinatorics.Enumerative.Catalan
+import Mathlib.Combinatorics.Enumerative.Composition
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
+import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Combinatorics.HalesJewett
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.Combinatorics.Hindman
 import Mathlib.Combinatorics.Optimization.ValuedCSP
-import Mathlib.Combinatorics.Partition
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.Basic
@@ -1807,6 +1809,7 @@ import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
+import Mathlib.Data.List.ReduceOption
 import Mathlib.Data.List.Rotate
 import Mathlib.Data.List.Sections
 import Mathlib.Data.List.Sigma
@@ -2708,6 +2711,7 @@ import Mathlib.Logic.Equiv.Functor
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Logic.Equiv.Option
+import Mathlib.Logic.Equiv.Pairwise
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Equiv.TransferInstance
