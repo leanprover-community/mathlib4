@@ -46,11 +46,6 @@ to `N` and `R` coerces to `ℂ`) as arguments to `LSeries` etc.
 ## Tags
 
 L-series
-
-## TODO
-
-* Move `LSeriesSummable.one_iff_one_lt_re` and `zeta_LSeriesSummable_iff_one_lt_r`
-  to a new file on L-series of specific functions
 -/
 
 open scoped BigOperators

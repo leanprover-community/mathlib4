@@ -25,6 +25,10 @@ vanish on the open half-plane `re s > 1` (see `DirichletCharacter.LSeries_ne_zer
 
 We deduce results on the Riemann zeta function (which is `L 1` or `L ↗ζ` on `re s > 1`)
 as special cases.
+
+## Tags
+
+Dirichlet L-series, Möbius function, von Mangoldt function, Riemann zeta function
 -/
 
 open scoped LSeries.notation
