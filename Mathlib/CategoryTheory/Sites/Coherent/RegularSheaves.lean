@@ -162,7 +162,8 @@ theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     (parallelPair (C := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows.categoryᵒᵖ)
     (Y := op ((Presieve.categoryMk _ (c.fst ≫ π) ⟨_, c.fst, π, ofArrows.mk (), rfl⟩)))
     (X := op ((Presieve.categoryMk _ π (Sieve.ofArrows_mk _ _ Unit.unit))))
-    (Quiver.Hom.op (Over.homMk c.fst)) (Quiver.Hom.op (Over.homMk c.snd c.condition.symm))).Initial := by
+    (Quiver.Hom.op (Over.homMk c.fst))
+    (Quiver.Hom.op (Over.homMk c.snd c.condition.symm))).Initial := by
   apply Limits.parallelPair_initial_mk
   · intro ⟨Z⟩
     obtain ⟨_, f, g, ⟨⟩, hh⟩ := Z.property
