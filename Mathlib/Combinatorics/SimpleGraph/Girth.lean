@@ -42,7 +42,7 @@ lemma exists_girth_eq_length :
 
 lemma three_le_length : 3 ≤ G.girth := by
   by_cases h : G.IsAcyclic
-  . rw [← girth_eq_top] at h
+  · rw [← girth_eq_top] at h
     rw [h]
     apply le_top
   . rw [← exists_girth_eq_length] at h
