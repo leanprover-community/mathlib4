@@ -567,7 +567,7 @@ section Basic
 variable [∀ i, Zero (β i)]
 
 theorem finite_support (f : Π₀ i, β i) : Set.Finite { i | f i ≠ 0 } := by
-  classical!
+  classical
   exact Trunc.induction_on f.support' fun xs =>
         (Multiset.toFinset xs.1).finite_toSet.subset fun i H =>
           Multiset.mem_toFinset.2 ((xs.prop i).resolve_right H)

@@ -1207,7 +1207,7 @@ def powCardSubgroup {G : Type*} [Group G] [Fintype G] (S : Set G) (hS : S.Nonemp
     rw [← pow_card_eq_one]
     exact Set.pow_mem_pow ha (Fintype.card G)
   subgroupOfIdempotent (S ^ Fintype.card G) ⟨1, one_mem⟩ <| by
-    classical!
+    classical
     apply (Set.eq_of_subset_of_card_le (Set.subset_mul_left _ one_mem) (ge_of_eq _)).symm
     simp_rw [← pow_add,
         Group.card_pow_eq_card_pow_card_univ S (Fintype.card G + Fintype.card G) le_add_self]
