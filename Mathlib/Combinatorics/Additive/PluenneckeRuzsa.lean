@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
 -/
-import Mathlib.Combinatorics.DoubleCounting
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Tactic.GCongr
