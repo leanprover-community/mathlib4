@@ -211,6 +211,9 @@ theorem LSeriesSummable_iff_of_re_eq_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re
   ⟨fun H ↦ H.of_re_le_re h.le, fun H ↦ H.of_re_le_re h.symm.le⟩
 #align nat.arithmetic_function.l_series_summable_iff_of_re_eq_re LSeriesSummable_iff_of_re_eq_re
 
+/-- The indicator function of `{1} ⊆ ℕ` with values in `ℂ`. -/
+def LSeries.delta (n : ℕ) : ℂ :=
+  if n = 1 then 1 else 0
 
 /-!
 ### Notation
@@ -225,6 +228,50 @@ Let `R` be a ring with a coercion to `ℂ`. Then we can write `↗χ` when `χ :
 or `↗f` when `f : ArithmeticFunction R` or simply `f : N → R` with a coercion from `ℕ` to `N`
 as an argument to `LSeries`, `LSeriesHasSum`, `LSeriesSummable` etc. -/
 scoped[LSeries.notation] notation:max "↗" f:max => fun n : ℕ ↦ (f n : ℂ)
+
+@[inherit_doc]
+scoped[LSeries.notation] notation "δ" => delta
+
+/-!
+### LSeries of 0 and δ
+-/
+
+lemma LSeries_zero : LSeries 0 = 0 := by
+  ext
+  simp only [LSeries, LSeries.term, Pi.zero_apply, zero_div, ite_self, tsum_zero]
+
+section delta
+
+open scoped LSeries.notation
+
+namespace LSeries
+
+open Nat Complex
+
+lemma term_delta (s : ℂ) (n : ℕ) : term δ s n = if n = 1 then 1 else 0 := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp only [term_zero, zero_ne_one, ↓reduceIte]
+  · simp only [ne_eq, hn, not_false_eq_true, term_of_ne_zero, delta]
+    rcases eq_or_ne n 1 with rfl | hn'
+    · simp only [↓reduceIte, cast_one, one_cpow, ne_eq, one_ne_zero, not_false_eq_true, div_self]
+    · simp only [hn', ↓reduceIte, zero_div]
+
+lemma mul_delta {f : ℕ → ℂ} (h : f 1 = 1) : f * δ = δ := by
+  ext n
+  simp only [Pi.mul_apply, delta, mul_ite, mul_one, mul_zero]
+  split_ifs with hn <;> simp only [hn, h]
+
+lemma delta_mul {f : ℕ → ℂ} (h : f 1 = 1) : δ * f = δ :=
+  mul_comm δ f ▸ mul_delta h
+
+end LSeries
+
+/-- The L-series of `δ` is the constant function `1`. -/
+lemma LSeries_delta : LSeries δ = 1 := by
+  ext
+  simp only [LSeries, LSeries.term_delta, tsum_ite_eq, Pi.one_apply]
+
+end delta
 
 
 /-!

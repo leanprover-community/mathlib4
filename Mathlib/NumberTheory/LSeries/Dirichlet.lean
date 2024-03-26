@@ -29,60 +29,9 @@ as special cases.
 
 open scoped LSeries.notation
 
--- to Mathlib.NumberTheory.LSeries.Basic
-lemma LSeries_zero : LSeries 0 = 0 := by
-  ext
-  simp only [LSeries, LSeries.term, Pi.zero_apply, zero_div, ite_self, tsum_zero]
-
-section delta
-
-/-! -- to ...Basic
-### L-series of δ
-
-We define `LSeries.delta` (with notation `δ`) to be the indicator function of `{1}`.
-Its `LSeries` is the constant function `1`.
--/
-
-namespace LSeries
-
-open Nat Complex
-
-/-- The indicator function of `{1} ⊆ ℕ` with values in `ℂ`. -/
-def delta (n : ℕ) : ℂ :=
-  if n = 1 then 1 else 0
-
-@[inherit_doc]
-scoped[LSeries.notation] notation "δ" => delta
-
-lemma term_delta (s : ℂ) (n : ℕ) : term δ s n = if n = 1 then 1 else 0 := by
-  rcases eq_or_ne n 0 with rfl | hn
-  · simp only [term_zero, zero_ne_one, ↓reduceIte]
-  · simp only [ne_eq, hn, not_false_eq_true, term_of_ne_zero, delta]
-    rcases eq_or_ne n 1 with rfl | hn'
-    · simp only [↓reduceIte, cast_one, one_cpow, ne_eq, one_ne_zero, not_false_eq_true, div_self]
-    · simp only [hn', ↓reduceIte, zero_div]
-
-lemma mul_delta {f : ℕ → ℂ} (h : f 1 = 1) : f * δ = δ := by
-  ext n
-  simp only [Pi.mul_apply, delta, mul_ite, mul_one, mul_zero]
-  split_ifs with hn <;> simp only [hn, h]
-
-lemma delta_mul {f : ℕ → ℂ} (h : f 1 = 1) : δ * f = δ :=
-  mul_comm δ f ▸ mul_delta h
-
-end LSeries
-
-/-- The L-series of `δ` is the constant function `1`. -/
-lemma LSeries_delta : L δ = 1 := by
-  ext
-  simp only [LSeries, LSeries.term_delta, tsum_ite_eq, Pi.one_apply]
-
 /-- `δ` is the function underlying the arithmetic function `1`. -/
 lemma ArithmeticFunction.one_eq_delta : ↗(1 : ArithmeticFunction ℂ) = δ := by
   ext ⟨- | _⟩ <;> simp only [map_zero, one_apply, LSeries.delta, ↓reduceIte]
-
-end delta
-
 
 section Moebius
 
