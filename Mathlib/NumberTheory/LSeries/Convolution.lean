@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.Analysis.Normed.Field.InfiniteSum
+import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.NumberTheory.LSeries.Convergence
 
 /-!
 # Dirichlet convolution of sequences and products of L-series
