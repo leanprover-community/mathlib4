@@ -73,7 +73,8 @@ lemma shiftFunctor₂XXIso_refl (a b y : ℤ) :
 variable (x y : ℤ) [K.HasTotal (up ℤ)]
 
 -- to be moved
-lemma hasCoproduct_of_equiv_of_iso {C I J : Type*} [Category C] (X : I → C) (Y : J → C)
+lemma _root_.CategoryTheory.Limits.hasCoproduct_of_equiv_of_iso
+    {C I J : Type*} [Category C] (X : I → C) (Y : J → C)
     [HasCoproduct X] (e : J ≃ I) (iso : ∀ j, Y j ≅ X (e j)) : HasCoproduct Y := by
   have : HasColimit ((Discrete.equivalence e).functor ⋙ Discrete.functor X) :=
     hasColimit_equivalence_comp _
@@ -81,7 +82,7 @@ lemma hasCoproduct_of_equiv_of_iso {C I J : Type*} [Category C] (X : I → C) (Y
     Discrete.natIso (fun ⟨j⟩ => iso j)
   exact hasColimitOfIso α
 
-lemma hasProduct_of_equiv_of_iso {C I J : Type*} [Category C] (X : I → C) (Y : J → C)
+lemma _root_.CategoryTheory.Limits.hasProduct_of_equiv_of_iso {C I J : Type*} [Category C] (X : I → C) (Y : J → C)
     [HasProduct X] (e : J ≃ I) (iso : ∀ j, Y j ≅ X (e j)) : HasProduct Y := by
   have : HasLimit ((Discrete.equivalence e).functor ⋙ Discrete.functor X) :=
     hasLimitEquivalenceComp _
