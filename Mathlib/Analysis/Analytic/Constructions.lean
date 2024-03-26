@@ -46,14 +46,14 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
     rw [le_min_iff]
     have := (p.prod q).isLittleO_one_of_lt_radius hr
     constructor
-    all_goals { -- kludge, there is no "work_on_goal" in Lean 4?
+    all_goals
       apply FormalMultilinearSeries.le_radius_of_isBigO
       refine (isBigO_of_le _ fun n ↦ ?_).trans this.isBigO
       rw [norm_mul, norm_norm, norm_mul, norm_norm]
       refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
       rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
-      try apply le_max_left
-      try apply le_max_right }
+    · apply le_max_left
+    · apply le_max_right
   · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
     rw [lt_min_iff] at hr
     have := ((p.isLittleO_one_of_lt_radius hr.1).add
