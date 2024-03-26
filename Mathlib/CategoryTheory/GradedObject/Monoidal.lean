@@ -45,24 +45,6 @@ abbrev HasTensor (X₁ X₂ : GradedObject I C) : Prop :=
 
 namespace Monoidal
 
-abbrev TensorCofan (X₁ X₂ : GradedObject I C) (j : I) :=
-  (((mapBifunctor (curriedTensor C) I I).obj X₁).obj X₂).CofanMapObjFun (fun ⟨i, j⟩ => i + j) j
-
-@[simps! pt]
-def TensorCofan.mk (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
-    (ι : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = j), X₁ i₁ ⊗ X₂ i₂ ⟶ pt) : TensorCofan X₁ X₂ j :=
-  CofanMapObjFun.mk _ _ _ pt (fun ⟨i₁, i₂⟩ h => ι i₁ i₂ h)
-
-@[simp]
-lemma TensorCofan.mk_inj (X₁ X₂ : GradedObject I C) (j : I) (pt : C)
-    (ι : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = j), X₁ i₁ ⊗ X₂ i₂ ⟶ pt) (i₁ i₂ : I) (h : i₁ + i₂ = j) :
-    (TensorCofan.mk X₁ X₂ j pt ι).inj ⟨⟨i₁, i₂⟩, h⟩ = ι i₁ i₂ h := rfl
-
-lemma TensorCofan.hasTensor (X₁ X₂ : GradedObject I C)
-    (c : ∀ i, TensorCofan X₁ X₂ i) (hc : ∀ i, IsColimit (c i)) :
-    HasTensor X₁ X₂ :=
-  CofanMapObjFun.hasMap _ _ c hc
-
 noncomputable abbrev tensorObj (X₁ X₂ : GradedObject I C) [HasTensor X₁ X₂] :
     GradedObject I C :=
   mapBifunctorMapObj (curriedTensor C) (fun ⟨i, j⟩ => i + j) X₁ X₂
@@ -114,13 +96,11 @@ lemma ι_tensorHom {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) 
   congr 1
   simp [curryObj, MonoidalCategory.tensorHom_def]
 
-@[simp]
-noncomputable def whiskerLeft (X : GradedObject I C) {Y₁ Y₂ : GradedObject I C} (φ : Y₁ ⟶ Y₂)
+noncomputable abbrev whiskerLeft (X : GradedObject I C) {Y₁ Y₂ : GradedObject I C} (φ : Y₁ ⟶ Y₂)
     [HasTensor X Y₁] [HasTensor X Y₂] : tensorObj X Y₁ ⟶ tensorObj X Y₂ :=
       tensorHom (𝟙 X) φ
 
-@[simp]
-noncomputable def whiskerRight {X₁ X₂ : GradedObject I C} (φ : X₁ ⟶ X₂) (Y : GradedObject I C)
+noncomputable abbrev whiskerRight {X₁ X₂ : GradedObject I C} (φ : X₁ ⟶ X₂) (Y : GradedObject I C)
     [HasTensor X₁ Y] [HasTensor X₂ Y] : tensorObj X₁ Y ⟶ tensorObj X₂ Y :=
       tensorHom φ (𝟙 Y)
 
