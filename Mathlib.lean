@@ -1379,6 +1379,7 @@ import Mathlib.CategoryTheory.Sites.Coherent.Basic
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+import Mathlib.CategoryTheory.Sites.Coherent.CoverDense
 import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
