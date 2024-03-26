@@ -1027,8 +1027,8 @@ class EMetricSpace (α : Type u) extends PseudoEMetricSpace α : Type u where
 #align emetric_space EMetricSpace
 
 @[ext]
-protected theorem EMetricSpace.ext {α : Type*} {m m' : EMetricSpace α} (h : m.toEDist = m'.toEDist) :
-    m = m' := by
+protected theorem EMetricSpace.ext
+    {α : Type*} {m m' : EMetricSpace α} (h : m.toEDist = m'.toEDist) : m = m' := by
   cases m
   cases m'
   congr
