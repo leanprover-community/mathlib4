@@ -88,7 +88,7 @@ theorem choose_succ_self (n : ℕ) : choose n (succ n) = 0 :=
 #align nat.choose_succ_self Nat.choose_succ_self
 
 @[simp]
-theorem choose_one_right (n : ℕ) : choose n 1 = n := by induction n <;> simp [*, choose, Nat.add_comm]
+lemma choose_one_right (n : ℕ) : choose n 1 = n := by induction n <;> simp [*, choose, Nat.add_comm]
 #align nat.choose_one_right Nat.choose_one_right
 
 -- The `n+1`-st triangle number is `n` more than the `n`-th triangle number
