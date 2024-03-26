@@ -657,6 +657,9 @@ protected lemma pow_lt_pow_left (h : a < b) : ∀ {n : ℕ}, n ≠ 0 → a ^ n <
     (zero_lt_of_lt h)
 #align nat.pow_lt_pow_of_lt_left Nat.pow_lt_pow_left
 
+protected lemma pow_lt_pow_right (ha : 1 < a) (h : m < n) : a ^ m < a ^ n :=
+  (Nat.pow_lt_pow_iff_right ha).2 h
+
 protected lemma pow_le_pow_iff_left {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n ↔ a ≤ b where
   mp := by simpa only [← Nat.not_le, not_imp_not] using (Nat.pow_lt_pow_left · hn)
   mpr h := Nat.pow_le_pow_left h _

@@ -146,7 +146,7 @@ theorem size_eq_zero {n : ℕ} : size n = 0 ↔ n = 0 := by
 #align nat.size_eq_zero Nat.size_eq_zero
 
 theorem size_pow {n : ℕ} : size (2 ^ n) = n + 1 :=
-  le_antisymm (size_le.2 <| (Nat.pow_lt_pow_iff_right $ by decide).2 (lt_succ_self _))
+  le_antisymm (size_le.2 <| Nat.pow_lt_pow_right (by decide) (lt_succ_self _))
     (lt_size.2 <| le_rfl)
 #align nat.size_pow Nat.size_pow
 
