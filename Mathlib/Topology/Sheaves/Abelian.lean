@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Transfer
-import Mathlib.CategoryTheory.Sites.LeftExact
+import Mathlib.CategoryTheory.Sites.Sheafification
 
 #align_import topology.sheaves.abelian from "leanprover-community/mathlib"@"ac3ae212f394f508df43e37aa093722fa9b65d31"
 
