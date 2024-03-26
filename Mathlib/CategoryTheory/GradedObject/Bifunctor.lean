@@ -98,6 +98,8 @@ variable {X₁ X₂ : GradedObject I C₁} {Y₁ Y₂ : GradedObject J C₂}
     [HasMap (((mapBifunctor F I J).obj X₁).obj Y₁) p]
     [HasMap (((mapBifunctor F I J).obj X₂).obj Y₂) p]
 
+/-- The isomorphism `mapBifunctorMapObj F p X₁ Y₁ ≅ mapBifunctorMapObj F p X₂ Y₂`
+induced by isomorphisms `X₁ ≅ X₂` and `Y₁ ≅ Y₂`. -/
 @[simps]
 noncomputable def mapBifunctorMapMapIso (e : X₁ ≅ X₂) (e' : Y₁ ≅ Y₂) :
     mapBifunctorMapObj F p X₁ Y₁ ≅ mapBifunctorMapObj F p X₂ Y₂ where
