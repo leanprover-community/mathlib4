@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johan Commelin
 -/
 import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Combinatorics.Composition
+import Mathlib.Combinatorics.Enumerative.Composition
 
 #align_import analysis.analytic.composition from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
