@@ -1,5 +1,6 @@
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.List.BigOperators.Basic
 
 /-! ### Order -/
@@ -148,28 +149,25 @@ lemma prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) 
 
 end OrderedCancelCommMonoid
 
+@[to_additive]
+lemma le_prod_of_mem [CanonicallyOrderedCommMonoid α] {s : Multiset α} {a : α} (h : a ∈ s) :
+    a ≤ s.prod := by
+  obtain ⟨t, rfl⟩ := exists_cons_of_mem h
+  rw [prod_cons]
+  exact _root_.le_mul_right (le_refl a)
+#align multiset.le_prod_of_mem Multiset.le_prod_of_mem
+#align multiset.le_sum_of_mem Multiset.le_sum_of_mem
+
 lemma abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
     abs s.sum ≤ (s.map abs).sum :=
   le_sum_of_subadditive _ abs_zero abs_add s
 #align multiset.abs_sum_le_sum_abs Multiset.abs_sum_le_sum_abs
 
-lemma prod_nonneg [OrderedCommSemiring α] {s : Multiset α} (h : ∀ a ∈ m, (0 : α) ≤ a) :
+lemma prod_nonneg [OrderedCommSemiring α] {s : Multiset α} (h : ∀ a ∈ s, (0 : α) ≤ a) :
     0 ≤ s.prod := by
   revert h
-  refine' m.induction_on _ _
-  · rintro -
-    rw [prod_zero]
-    exact zero_le_one
-  intro a s hs ih
-  rw [prod_cons]
-  exact mul_nonneg (ih _ <| mem_cons_self _ _) (hs fun a ha => ih _ <| mem_cons_of_mem ha)
+  refine s.induction_on ?_ fun a s hs ih ↦ ?_
+  · simp
+  · rw [prod_cons]
+    exact mul_nonneg (ih _ <| mem_cons_self _ _) (hs fun a ha ↦ ih _ <| mem_cons_of_mem ha)
 #align multiset.prod_nonneg Multiset.prod_nonneg
-
-@[to_additive]
-lemma le_prod_of_mem [CanonicallyOrderedCommMonoid α] {s : Multiset α} {a : α} (h : a ∈ m) :
-    a ≤ m.prod := by
-  obtain ⟨m', rfl⟩ := exists_cons_of_mem h
-  rw [prod_cons]
-  exact _root_.le_mul_right (le_refl a)
-#align multiset.le_prod_of_mem Multiset.le_prod_of_mem
-#align multiset.le_sum_of_mem Multiset.le_sum_of_mem
