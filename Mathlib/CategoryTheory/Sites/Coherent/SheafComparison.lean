@@ -49,7 +49,7 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
   · obtain ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpiFamily _).mp hS
     refine ⟨α, inferInstance, ?_⟩
     let Z : α → C := fun a ↦ (Functor.EffectivelyEnough.presentation (F := F) (Y a)).some.p
-    let g₀ : (a : α) → F.obj (Z a) ⟶ Y a := fun a ↦ F.π (Y a)
+    let g₀ : (a : α) → F.obj (Z a) ⟶ Y a := fun a ↦ F.effectiveEpiOver (Y a)
     have : EffectiveEpiFamily _ (fun a ↦ g₀ a ≫ π a) := inferInstance
     refine ⟨Z , fun a ↦ Full.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (Full.preimage _))⟩
     · refine F.finite_effectiveEpiFamily_of_map _ _ ?_
@@ -147,7 +147,7 @@ theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
     refine ⟨F.obj Y, F.map π, ⟨?_, Sieve.image_mem_functorPushforward F S H₂⟩⟩
     exact F.map_effectiveEpi _
   · obtain ⟨Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpi _).mp hS
-    let g₀ := F.π Y
+    let g₀ := F.effectiveEpiOver Y
     refine ⟨_, Full.preimage (g₀ ≫ π), ?_, (?_ : S.arrows (Full.preimage _))⟩
     · refine F.effectiveEpi_of_map _ ?_
       simp only [Full.witness]

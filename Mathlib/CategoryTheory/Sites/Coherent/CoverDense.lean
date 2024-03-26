@@ -26,12 +26,13 @@ variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
 namespace Functor
 
 lemma isCoverDense_of_generate_singleton_functor_π_mem (K : GrothendieckTopology D)
-    (h : ∀ B, Sieve.generate (Presieve.singleton (F.π B)) ∈ K B) : F.IsCoverDense K where
+    (h : ∀ B, Sieve.generate (Presieve.singleton (F.effectiveEpiOver B)) ∈ K B) :
+    F.IsCoverDense K where
   is_cover B := by
     refine K.superset_covering ?_ (h B)
     intro Y f ⟨Z, g, _, h, w⟩
     cases h
-    exact ⟨⟨_, g, F.π B, w⟩⟩
+    exact ⟨⟨_, g, F.effectiveEpiOver B, w⟩⟩
 
 end Functor
 
@@ -40,10 +41,10 @@ namespace coherentTopology
 variable [Precoherent D]
 
 lemma generate_singleton_functor_π_mem (B : D) :
-    Sieve.generate (Presieve.singleton (F.π B)) ∈ coherentTopology D B := by
+    Sieve.generate (Presieve.singleton (F.effectiveEpiOver B)) ∈ coherentTopology D B := by
   apply Coverage.saturate.of
-  refine ⟨Unit, inferInstance, fun _ => F.over B,
-    fun _ => F.π B, ?_ , ?_⟩
+  refine ⟨Unit, inferInstance, fun _ => F.effectiveEpiOverObj B,
+    fun _ => F.effectiveEpiOver B, ?_ , ?_⟩
   · funext X f
     ext
     refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩
@@ -62,9 +63,9 @@ namespace regularTopology
 variable [Preregular D]
 
 lemma generate_singleton_functor_π_mem (B : D) :
-    Sieve.generate (Presieve.singleton (F.π B)) ∈ regularTopology D B := by
+    Sieve.generate (Presieve.singleton (F.effectiveEpiOver B)) ∈ regularTopology D B := by
   apply Coverage.saturate.of
-  refine ⟨F.over B, F.π B, ?_, inferInstance⟩
+  refine ⟨F.effectiveEpiOverObj B, F.effectiveEpiOver B, ?_, inferInstance⟩
   funext X f
   ext
   refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩

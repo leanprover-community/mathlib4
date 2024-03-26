@@ -28,9 +28,9 @@ lemma reflects_precoherent : Precoherent C where
     let τ₁ := fun a ↦ F.map (π₁ a)
     have : EffectiveEpiFamily Y₁ τ₁ := inferInstance
     obtain ⟨β, _, Y₂, τ₂, H, i, ι, hh⟩ := Precoherent.pullback (F.map f) _ Y₁ τ₁ this
-    let π₂ := fun b ↦ Full.preimage (F.π (Y₂ b) ≫ τ₂ b)
+    let π₂ := fun b ↦ Full.preimage (F.effectiveEpiOver (Y₂ b) ≫ τ₂ b)
     refine ⟨β, inferInstance, _, π₂, F.finite_effectiveEpiFamily_of_map _ π₂ ?_, ⟨i,
-      fun b ↦ Full.preimage (F.π (Y₂ b) ≫ ι b), ?_⟩⟩
+      fun b ↦ Full.preimage (F.effectiveEpiOver (Y₂ b) ≫ ι b), ?_⟩⟩
     · simp only [Full.witness, π₂]
       infer_instance
     · intro b
