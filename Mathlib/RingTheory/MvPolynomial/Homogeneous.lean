@@ -108,7 +108,7 @@ theorem homogeneousSubmodule_mul [CommSemiring R] (m n : ℕ) :
   rw [← hde, ← hφ, ← hψ, Finset.sum_subset Finsupp.support_add, Finset.sum_subset hd',
     Finset.sum_subset he', ← Finset.sum_add_distrib]
   · congr
-  all_goals intro i hi; apply Finsupp.not_mem_support_iff.mp
+  all_goals intro _ _; apply Finsupp.not_mem_support_iff.mp
 #align mv_polynomial.homogeneous_submodule_mul MvPolynomial.homogeneousSubmodule_mul
 
 section
@@ -210,9 +210,12 @@ lemma C_mul (hφ : φ.IsHomogeneous m) (r : R) :
     (C r * φ).IsHomogeneous m := by
   simpa only [zero_add] using (isHomogeneous_C _ _).mul hφ
 
-lemma _root_.MvPolynomial.C_mul_X (r : R) (i : σ) :
+lemma _root_.MvPolynomial.isHomogeneous_C_mul_X (r : R) (i : σ) :
     (C r * X i).IsHomogeneous 1 :=
   (isHomogeneous_X _ _).C_mul _
+
+@[deprecated] -- 2024-03-21
+alias _root_.MvPolynomial.C_mul_X := _root_.MvPolynomial.isHomogeneous_C_mul_X
 
 lemma pow (hφ : φ.IsHomogeneous m) (n : ℕ) : (φ ^ n).IsHomogeneous (m * n) := by
   rw [show φ ^ n = ∏ _i in Finset.range n, φ by simp]

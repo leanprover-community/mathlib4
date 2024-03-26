@@ -50,7 +50,7 @@ theorem map₂_def {α β γ : Type u} (f : α → β → γ) (a : Option α) (b
   by cases a <;> rfl
 #align option.map₂_def Option.map₂_def
 
--- Porting note: In Lean3, was `@[simp]` but now `simp` can prove it
+-- Porting note (#10618): In Lean3, was `@[simp]` but now `simp` can prove it
 theorem map₂_some_some (f : α → β → γ) (a : α) (b : β) : map₂ f (some a) (some b) = f a b := rfl
 #align option.map₂_some_some Option.map₂_some_some
 
