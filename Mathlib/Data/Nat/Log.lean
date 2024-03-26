@@ -173,7 +173,7 @@ theorem log_mul_base {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) : log b (n * b) = l
 #align nat.log_mul_base Nat.log_mul_base
 
 theorem pow_log_le_add_one (b : ℕ) : ∀ x, b ^ log b x ≤ x + 1
-  | 0 => by rw [log_zero_right, pow_zero]
+  | 0 => by rw [log_zero_right, Nat.pow_zero]
   | x + 1 => (pow_log_le_self b x.succ_ne_zero).trans (x + 1).le_succ
 #align nat.pow_log_le_add_one Nat.pow_log_le_add_one
 
@@ -300,7 +300,7 @@ theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ 
   have b_pos : 0 < b := (zero_lt_one' ℕ).trans hb
   rw [clog]; split_ifs with h
   · rw [succ_eq_add_one, add_le_add_iff_right, ← ih ((x + b - 1) / b) (add_pred_div_lt hb h.2),
-      Nat.div_le_iff_le_mul_add_pred b_pos, mul_comm b, ← pow_succ,
+      Nat.div_le_iff_le_mul_add_pred b_pos, mul_comm b, ← Nat.pow_succ,
       add_tsub_assoc_of_le (Nat.succ_le_of_lt b_pos), add_le_add_iff_right]
   · exact iff_of_true ((not_lt.1 (not_and.1 h hb)).trans <| succ_le_of_lt <| pow_pos b_pos _)
       (zero_le _)

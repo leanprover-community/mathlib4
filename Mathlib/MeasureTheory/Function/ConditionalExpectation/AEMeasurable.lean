@@ -406,7 +406,7 @@ theorem lpMeasSubgroupToLpTrim_add (hm : m ≤ m0) (f g : lpMeasSubgroup F m p �
         (lpMeasSubgroupToLpTrim_ae_eq hm g).symm)
   refine' (Lp.coeFn_add _ _).trans _
   simp_rw [lpMeasSubgroup_coe]
-  exact eventually_of_forall fun x => by rfl
+  filter_upwards with x using rfl
 #align measure_theory.Lp_meas_subgroup_to_Lp_trim_add MeasureTheory.lpMeasSubgroupToLpTrim_add
 
 theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
@@ -580,7 +580,7 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
   let f' := (⟨f, hf⟩ : lpMeas F ℝ m p μ)
   let g := lpMeasToLpTrimLie F ℝ p μ hm f'
   have hfg : f' = (lpMeasToLpTrimLie F ℝ p μ hm).symm g := by
-    simp only [LinearIsometryEquiv.symm_apply_apply]
+    simp only [f', g, LinearIsometryEquiv.symm_apply_apply]
   change P ↑f'
   rw [hfg]
   refine'

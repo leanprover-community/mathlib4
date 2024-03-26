@@ -232,7 +232,7 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
     have h₁ : ∀ u v : q.P.M α, Mcongr u v → Quot.mk r' u = Quot.mk r' v := by
       intro u v cuv
       apply Quot.sound
-      dsimp [hr']
+      dsimp [r', hr']
       rw [Quot.sound cuv]
       apply h'
     let f : Quot r → Quot r' :=
@@ -272,7 +272,7 @@ theorem Cofix.bisim_rel {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop
     | inr r'xy =>
       have : ∀ x y, r x y → r' x y := fun x y h => Or.inr h
       rw [← Quot.factor_mk_eq _ _ this]
-      dsimp
+      dsimp [r']
       rw [appendFun_comp_id]
       rw [@comp_map _ _ _ q _ _ _ (appendFun id (Quot.mk r)),
         @comp_map _ _ _ q _ _ _ (appendFun id (Quot.mk r))]
@@ -400,7 +400,7 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
   have hh :
     subtypeVal _ ⊚ toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b =
       ((id ::: f) ⊗' (id ::: g)) ⊚ prod.diag := by
-    dsimp
+    dsimp [b]
     apply eq_of_drop_last_eq
     · dsimp
       simp only [prod_map_id, dropFun_prod, dropFun_appendFun, dropFun_diag, TypeVec.id_comp,

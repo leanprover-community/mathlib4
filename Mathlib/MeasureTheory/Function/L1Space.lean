@@ -49,14 +49,13 @@ integrable, function space, l1
 
 noncomputable section
 
-open Classical Topology BigOperators ENNReal MeasureTheory NNReal
+open scoped Classical
+open Topology BigOperators ENNReal MeasureTheory NNReal
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 
 variable {α β γ δ : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
-
 variable [NormedAddCommGroup β]
-
 variable [NormedAddCommGroup γ]
 
 namespace MeasureTheory
@@ -110,8 +109,6 @@ def HasFiniteIntegral {_ : MeasurableSpace α} (f : α → β) (μ : Measure α 
 theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
     HasFiniteIntegral f μ ↔ ((∫⁻ a, ‖f a‖₊ ∂μ) < ∞) :=
   Iff.rfl
-
-attribute [eqns hasFiniteIntegral_def] HasFiniteIntegral
 
 theorem hasFiniteIntegral_iff_norm (f : α → β) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) < ∞ := by
@@ -440,12 +437,6 @@ end NormedSpace
 def Integrable {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ
 #align measure_theory.integrable MeasureTheory.Integrable
-
-theorem integrable_def {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
-    Integrable f μ ↔ (AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ) :=
-  Iff.rfl
-
-attribute [eqns integrable_def] Integrable
 
 theorem memℒp_one_iff_integrable {f : α → β} : Memℒp f 1 μ ↔ Integrable f μ := by
   simp_rw [Integrable, HasFiniteIntegral, Memℒp, snorm_one_eq_lintegral_nnnorm]
@@ -1109,7 +1100,6 @@ end BoundedSMul
 section NormedSpaceOverCompleteField
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem integrable_smul_const {f : α → 𝕜} {c : E} (hc : c ≠ 0) :

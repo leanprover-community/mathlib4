@@ -74,7 +74,7 @@ instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
 def ofComposition (n : ℕ) (c : Composition n) : Partition n where
   parts := c.blocks
   parts_pos hi := c.blocks_pos hi
-  parts_sum := by rw [Multiset.coe_sum, c.blocks_sum]
+  parts_sum := by rw [Multiset.sum_coe, c.blocks_sum]
 #align nat.partition.of_composition Nat.Partition.ofComposition
 
 theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := by

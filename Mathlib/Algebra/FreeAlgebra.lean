@@ -51,7 +51,6 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
 
 
 variable (R : Type*) [CommSemiring R]
-
 variable (X : Type*)
 
 namespace FreeAlgebra
@@ -579,7 +578,7 @@ theorem induction {C : FreeAlgebra R X → Prop}
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) := by
     ext
-    simp [Subtype.coind]
+    simp [of, Subtype.coind]
   -- finding a proof is finding an element of the subalgebra
   suffices a = lift R of a by
     rw [this]

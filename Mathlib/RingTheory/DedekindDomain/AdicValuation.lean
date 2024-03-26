@@ -397,7 +397,6 @@ instance AdicCompletion.algebra' : Algebra R (v.adicCompletion K) :=
     (adicValued.has_uniform_continuous_const_smul' R K v)
 #align is_dedekind_domain.height_one_spectrum.adic_completion.algebra' IsDedekindDomain.HeightOneSpectrum.AdicCompletion.algebra'
 
-@[simp]
 theorem coe_smul_adicCompletion (r : R) (x : K) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=
   @UniformSpace.Completion.coe_smul R K v.adicValued.toUniformSpace _ _ r x
@@ -436,7 +435,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     ⟨(algebraMap R K r : adicCompletion K v), by
       -- porting note (#10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
-      --Porting note: rest of proof was `simpa only
+      -- Porting note: rest of proof was `simpa only
       --   [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
       --   v.valuation_le_one _
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -460,7 +459,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     rw [mul_comm]
   smul_def' r x := by
     ext
-    --Porting note: added `dsimp`
+    -- Porting note: added `dsimp`
     dsimp
     --porting note (#10754): added instance
     letI : Valued K ℤₘ₀ := adicValued v

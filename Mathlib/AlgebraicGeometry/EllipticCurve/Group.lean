@@ -70,7 +70,7 @@ namespace WeierstrassCurve.Affine
 
 variable {R : Type u} [CommRing R] (W : Affine R)
 
--- porting note: in Lean 3, this is a `def` under a `derive comm_ring` tag.
+-- Porting note: in Lean 3, this is a `def` under a `derive comm_ring` tag.
 -- This generates a reducible instance of `comm_ring` for `coordinate_ring`. In certain
 -- circumstances this might be extremely slow, because all instances in its definition are unified
 -- exponentially many times. In this case, one solution is to manually add the local attribute
@@ -107,7 +107,7 @@ instance instIsDomainCoordinateRing_of_Field {F : Type u} [Field F] (W : Affine 
   classical exact instIsDomainCoordinateRing W
 #align weierstrass_curve.coordinate_ring.is_domain_of_field WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing_of_Field
 
--- porting note: added the abbreviation `mk` for `AdjoinRoot.mk W.polynomial`
+-- Porting note: added the abbreviation `mk` for `AdjoinRoot.mk W.polynomial`
 /-- An element of the coordinate ring `R[W]` of `W` over `R`. -/
 noncomputable abbrev mk : R[X][Y] →+* W.CoordinateRing :=
   AdjoinRoot.mk W.polynomial
@@ -140,7 +140,7 @@ set_option linter.uppercaseLean3 false in
 
 lemma C_addPolynomial (x y L : R) : mk W (C <| W.addPolynomial x y L) =
     mk W ((Y - C (linePolynomial x y L)) * (W.negPolynomial - C (linePolynomial x y L))) :=
-  AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [W.C_addPolynomial, add_sub_cancel', mul_one]⟩
+  AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [W.C_addPolynomial, add_sub_cancel_left, mul_one]⟩
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.C_add_polynomial WeierstrassCurve.Affine.CoordinateRing.C_addPolynomial
 
@@ -266,7 +266,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁
         XYIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)
           (C <| W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
   have sup_rw : ∀ a b c d : Ideal W.CoordinateRing, a ⊔ (b ⊔ (c ⊔ d)) = a ⊔ d ⊔ b ⊔ c :=
-    fun _ _ c _ => by rw [← sup_assoc, @sup_comm _ _ c, sup_sup_sup_comm, ← sup_assoc]
+    fun _ _ c _ => by rw [← sup_assoc, sup_comm c, sup_sup_sup_comm, ← sup_assoc]
   rw [XYIdeal_add_eq, XIdeal, mul_comm, XYIdeal_eq₁ W x₁ y₁ <| W.slope x₁ x₂ y₁ y₂, XYIdeal,
     XYIdeal_eq₂ h₁ h₂ hxy, XYIdeal, span_pair_mul_span_pair]
   simp_rw [span_insert, sup_rw, Ideal.sup_mul, span_singleton_mul_span_singleton]
@@ -371,7 +371,7 @@ noncomputable def quotientXYIdealEquiv {x : R} {y : R[X]} (h : (W.polynomial.eva
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.quotient_XY_ideal_equiv WeierstrassCurve.Affine.CoordinateRing.quotientXYIdealEquiv
 
--- porting note: added `classical` explicitly
+-- Porting note: added `classical` explicitly
 /-- The basis $\{1, Y\}$ for the coordinate ring $R[W]$ over the polynomial ring $R[X]$. -/
 protected noncomputable def basis : Basis (Fin 2) R[X] W.CoordinateRing := by
   classical exact (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
@@ -387,19 +387,19 @@ lemma basis_apply (n : Fin 2) :
   rfl
 #align weierstrass_curve.coordinate_ring.basis_apply WeierstrassCurve.Affine.CoordinateRing.basis_apply
 
--- porting note: added `@[simp]` in lieu of `coe_basis`
+-- Porting note: added `@[simp]` in lieu of `coe_basis`
 @[simp]
 lemma basis_zero : CoordinateRing.basis W 0 = 1 := by
   simpa only [basis_apply] using pow_zero _
 #align weierstrass_curve.coordinate_ring.basis_zero WeierstrassCurve.Affine.CoordinateRing.basis_zero
 
--- porting note: added `@[simp]` in lieu of `coe_basis`
+-- Porting note: added `@[simp]` in lieu of `coe_basis`
 @[simp]
 lemma basis_one : CoordinateRing.basis W 1 = mk W Y := by
   simpa only [basis_apply] using pow_one _
 #align weierstrass_curve.coordinate_ring.basis_one WeierstrassCurve.Affine.CoordinateRing.basis_one
 
--- porting note: removed `@[simp]` in lieu of `basis_zero` and `basis_one`
+-- Porting note: removed `@[simp]` in lieu of `basis_zero` and `basis_one`
 lemma coe_basis : (CoordinateRing.basis W : Fin 2 → W.CoordinateRing) = ![1, mk W Y] := by
   ext n
   fin_cases n
@@ -489,7 +489,7 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
     · simpa only [hq, hdp, sub_zero, zero_mul, mul_zero, zero_pow two_ne_zero] using
         (max_bot_right _).symm
     · rw [← not_congr degree_eq_bot] at hp hq
-      -- porting note: BUG `cases` tactic does not modify assumptions in `hp'` and `hq'`
+      -- Porting note: BUG `cases` tactic does not modify assumptions in `hp'` and `hq'`
       rcases hp' : p.degree with _ | dp -- `hp' : ` should be redundant
       · exact (hp hp').elim -- `hp'` should be `rfl`
       · rw [hp'] at hdp hdpq -- line should be redundant
@@ -516,7 +516,7 @@ lemma degree_norm_ne_one [IsDomain R] (x : W.CoordinateRing) :
   rw [degree_norm_smul_basis]
   rcases p.degree with (_ | _ | _ | _) <;> cases q.degree
   any_goals rintro (_ | _)
-  -- porting note: replaced `dec_trivial` with `by exact (cmp_eq_lt_iff ..).mp rfl`
+  -- Porting note: replaced `dec_trivial` with `by exact (cmp_eq_lt_iff ..).mp rfl`
   exact (lt_max_of_lt_right <| by exact (cmp_eq_lt_iff ..).mp rfl).ne'
 #align weierstrass_curve.coordinate_ring.degree_norm_ne_one WeierstrassCurve.Affine.CoordinateRing.degree_norm_ne_one
 
@@ -631,6 +631,8 @@ lemma add_assoc (P Q R : W.Point) : P + Q + R = P + (Q + R) :=
 #align weierstrass_curve.point.add_assoc WeierstrassCurve.Affine.Point.add_assoc
 
 noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
+  nsmul := nsmulRec
+  zsmul := zsmulRec
   zero_add := zero_add
   add_zero := add_zero
   add_left_neg := add_left_neg
