@@ -318,7 +318,7 @@ protected theorem IsPreconnected.image [TopologicalSpace β] {s : Set α} (H : I
   replace huv : s ⊆ u' ∪ v' := by
     rw [image_subset_iff, preimage_union] at huv
     replace huv := subset_inter huv Subset.rfl
-    rw [inter_distrib_right, u'_eq, v'_eq, ← inter_distrib_right] at huv
+    rw [union_inter_distrib_right, u'_eq, v'_eq, ← union_inter_distrib_right] at huv
     exact (subset_inter_iff.1 huv).1
   -- Now `s ⊆ u' ∪ v'`, so we can apply `‹IsPreconnected s›`
   obtain ⟨z, hz⟩ : (s ∩ (u' ∩ v')).Nonempty := by
@@ -1035,11 +1035,9 @@ theorem isPreconnected_iff_subset_of_disjoint {s : Set α} :
     have hyu : y ∈ u := or_iff_not_imp_right.mp (hs hys) hyv
     exact h ⟨y, hys, hyu⟩ ⟨x, hxs, hxv⟩
   · intro u v hu hv hs hsu hsv
-    rw [nonempty_iff_ne_empty]
-    intro H
-    specialize h u v hu hv hs H
-    contrapose H
-    apply Nonempty.ne_empty
+    by_contra H
+    specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
+    apply H
     cases' h with h h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩
@@ -1097,11 +1095,9 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     exact h ⟨y, hys, hyu⟩ ⟨x, hxs, hxv⟩
   · rw [isPreconnected_closed_iff]
     intro u v hu hv hs hsu hsv
-    rw [nonempty_iff_ne_empty]
-    intro H
-    specialize h u v hu hv hs H
-    contrapose H
-    apply Nonempty.ne_empty
+    by_contra H
+    specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
+    apply H
     cases' h with h h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩
@@ -1121,7 +1117,7 @@ theorem isPreconnected_iff_subset_of_fully_disjoint_closed {s : Set α} (hs : Is
   rw [subset_inter_iff, subset_inter_iff] at H1
   simp only [Subset.refl, and_true] at H1
   apply H1 (hu.inter hs) (hv.inter hs)
-  · rw [← inter_distrib_right]
+  · rw [← union_inter_distrib_right]
     exact subset_inter hss Subset.rfl
   · rwa [disjoint_iff_inter_eq_empty, ← inter_inter_distrib_right, inter_comm]
 #align is_preconnected_iff_subset_of_fully_disjoint_closed isPreconnected_iff_subset_of_fully_disjoint_closed

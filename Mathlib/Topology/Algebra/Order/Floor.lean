@@ -99,7 +99,7 @@ theorem tendsto_floor_left_pure_sub_one (n : ℤ) :
 -- Porting note (#10756): new theorem
 theorem tendsto_ceil_right_pure_floor_add_one (x : α) :
     Tendsto (ceil : α → ℤ) (𝓝[>] x) (pure (⌊x⌋ + 1)) :=
-  have : ↑(⌊x⌋ + 1) - 1 ≤ x := by rw [cast_add, cast_one, add_sub_cancel]; exact floor_le _
+  have : ↑(⌊x⌋ + 1) - 1 ≤ x := by rw [cast_add, cast_one, add_sub_cancel_right]; exact floor_le _
   tendsto_pure.2 <| mem_of_superset (Ioc_mem_nhdsWithin_Ioi' <| lt_succ_floor _) fun _y hy =>
     ceil_eq_on_Ioc _ _ ⟨this.trans_lt hy.1, hy.2⟩
 

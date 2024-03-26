@@ -198,12 +198,7 @@ theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=
 @[to_additive]
 theorem _root_.hasCompactMulSupport_iff_eventuallyEq :
     HasCompactMulSupport f ↔ f =ᶠ[coclosedCompact α] 1 :=
-  ⟨fun h => mem_coclosedCompact.mpr
-    ⟨mulTSupport f, isClosed_mulTSupport _, h,
-      fun _ => not_imp_comm.mpr fun hx => subset_mulTSupport f hx⟩,
-    fun h =>
-      let ⟨_C, hC⟩ := mem_coclosed_compact'.mp h
-      IsCompact.of_isClosed_subset hC.2.1 (isClosed_mulTSupport _) (closure_minimal hC.2.2 hC.1)⟩
+  mem_coclosedCompact_iff.symm
 #align has_compact_mul_support_iff_eventually_eq hasCompactMulSupport_iff_eventuallyEq
 #align has_compact_support_iff_eventually_eq hasCompactSupport_iff_eventuallyEq
 

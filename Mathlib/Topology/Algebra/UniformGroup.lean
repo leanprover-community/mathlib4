@@ -135,7 +135,7 @@ theorem uniformContinuous_pow_const (n : ℕ) : UniformContinuous fun x : α => 
 theorem UniformContinuous.zpow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℤ, UniformContinuous fun x => f x ^ n
   | (n : ℕ) => by
-    simp_rw [zpow_coe_nat]
+    simp_rw [zpow_natCast]
     exact hf.pow_const _
   | Int.negSucc n => by
     simp_rw [zpow_negSucc]
@@ -558,7 +558,6 @@ commutative additive groups (see `comm_topologicalAddGroup_is_uniform`) and for 
 additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
 def TopologicalGroup.toUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
-  refl := (Tendsto.mono_right (by simp) (pure_le_nhds _)).le_comap
   symm :=
     have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
       (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap
@@ -568,8 +567,7 @@ def TopologicalGroup.toUniformSpace : UniformSpace G where
     refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
     rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
     simpa using V_mul _ hz₂ _ hz₁
-  isOpen_uniformity S := by
-    simp only [isOpen_iff_mem_nhds, ← mem_comap_prod_mk, comap_comap, (· ∘ ·), nhds_translation_div]
+  nhds_eq_comap_uniformity _ := by simp only [comap_comap, (· ∘ ·), nhds_translation_div]
 #align topological_group.to_uniform_space TopologicalGroup.toUniformSpace
 #align topological_add_group.to_uniform_space TopologicalAddGroup.toUniformSpace
 
@@ -920,7 +918,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     refine'
       ⟨y⁻¹ * g, by
         simpa only [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_cancel_left] using y_mem, _⟩
-    rw [QuotientGroup.mk_mul, QuotientGroup.mk_inv, hy, hg, inv_div, div_mul_cancel']
+    rw [QuotientGroup.mk_mul, QuotientGroup.mk_inv, hy, hg, inv_div, div_mul_cancel]
   /- Inductively construct a subsequence `φ : ℕ → ℕ` using `key₀` so that if `a b : ℕ` exceed
     `φ (n + 1)`, then we may find lifts whose quotients lie within `u n`. -/
   set φ : ℕ → ℕ := fun n => Nat.recOn n (choose <| key₀ 0 0) fun k yk => choose <| key₀ (k + 1) yk
