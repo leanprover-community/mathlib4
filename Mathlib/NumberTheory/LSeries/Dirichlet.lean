@@ -27,14 +27,6 @@ We deduce results on the Riemann zeta function (which is `L 1` or `L ↗ζ` on `
 as special cases.
 -/
 
--- put this in Mathlib.NumberTheory.Divisors
--- and use it to golf some proofs in Mathlib.NumberTheory.LSeries.Convolution
-lemma Nat.ne_zero_of_mem_divisorsAntidiagonal {n : ℕ} {p : ℕ × ℕ}
-    (hp : p ∈ n.divisorsAntidiagonal) :
-    p.1 ≠ 0 ∧ p.2 ≠ 0 := by
-  obtain ⟨hp₁, hp₂⟩ := Nat.mem_divisorsAntidiagonal.mp hp
-  exact mul_ne_zero_iff.mp (hp₁.symm ▸ hp₂)
-
 open scoped LSeries.notation
 
 -- to Mathlib.NumberTheory.LSeries.Basic
