@@ -270,7 +270,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
   · cases' b with b
     · induction' n with n ih
       · rfl
-      · rw[show succ zero = 1 by rfl] at ih ⊢
+      · rw [show succ zero = 1 by rfl] at ih ⊢
         simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
     · apply Nat.strongInductionOn n _
       clear n

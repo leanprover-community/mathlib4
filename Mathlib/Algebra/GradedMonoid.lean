@@ -448,7 +448,7 @@ theorem GradedMonoid.mk_list_dProd (l : List α) (fι : α → ι) (fA : ∀ a, 
   match l with
   | [] => simp only [List.dProdIndex_nil, List.dProd_nil, List.map_nil, List.prod_nil]; rfl
   | head::tail =>
-    simp[← GradedMonoid.mk_list_dProd tail _ _, GradedMonoid.mk_mul_mk, List.prod_cons]
+    simp [← GradedMonoid.mk_list_dProd tail _ _, GradedMonoid.mk_mul_mk, List.prod_cons]
 #align graded_monoid.mk_list_dprod GradedMonoid.mk_list_dProd
 
 /-- A variant of `GradedMonoid.mk_list_dProd` for rewriting in the other direction. -/
