@@ -1911,8 +1911,8 @@ theorem exists_borelSpace_of_countablyGenerated_of_separatesPoints (α : Type*)
   rcases measurableEquiv_nat_bool_of_countablyGenerated α with ⟨s, ⟨f⟩⟩
   letI := induced f inferInstance
   let F := f.toEquiv.toHomeomorphOfInducing $ inducing_induced _
-  refine' ⟨inferInstance, F.secondCountableTopology, F.symm.t4Space,
-    MeasurableEmbedding.borelSpace f.measurableEmbedding <| inducing_induced _⟩
+  exact ⟨inferInstance, F.secondCountableTopology, F.symm.t4Space,
+    MeasurableEmbedding.borelSpace f.measurableEmbedding F.inducing⟩
 
 /-- If a measurable space on `α` is countably generated and separates points, there is some
 second countable t4 topology on `α` (i.e. a separable metrizable one) for which every
