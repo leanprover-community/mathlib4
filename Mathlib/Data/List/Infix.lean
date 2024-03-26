@@ -72,15 +72,14 @@ theorem prefix_concat (a : α) (l) : l <+: concat l a := by simp
 
 theorem prefix_concat_iff {x y : List α} {a : α} : x <+: y ++ [a] ↔ x <+: y ∨ x = y ++ [a] := by
   constructor
-  · intro ⟨z, h⟩; induction' z using List.reverseRecOn with z
-    · right
-      rw [List.append_nil] at h
-      exact h
-    · left
-      rw [← List.append_assoc] at h
-      exact ⟨z, List.append_inj_left' h rfl⟩
+  · intro ⟨z, h⟩
+    induction' z using List.reverseRecOn with z
+    · rw [List.append_nil] at h
+      exact Or.inr h
+    · rw [← List.append_assoc] at h
+      exact Or.inl ⟨z, List.append_inj_left' h rfl⟩
   · rintro (h | rfl)
-    · exact List.IsPrefix.trans h <| List.prefix_append _ _
+    · exact List.IsPrefix.trans h <| List.prefix_append y [a]
     · exact List.prefix_rfl
 
 #align list.infix_cons List.infix_cons
@@ -225,9 +224,12 @@ theorem prefix_iff_eq_take : l₁ <+: l₂ ↔ l₁ = take (length l₁) l₂ :=
 
 theorem prefix_take_iff {x y : List α} {n : ℕ} : x <+: y.take n ↔ x <+: y ∧ x.length ≤ n := by
   constructor
-  · intro h; constructor
-    · exact List.IsPrefix.trans h (List.take_prefix _ _)
-    · replace h := h.length_le; rw [length_take, Nat.le_min] at h; exact h.left
+  · intro h
+    constructor
+    · exact List.IsPrefix.trans h <| List.take_prefix n y
+    · replace h := h.length_le
+      rw [length_take, Nat.le_min] at h
+      exact h.left
   · intro ⟨hp, hl⟩
     have hl' := hp.length_le
     rw [List.prefix_iff_eq_take] at *
@@ -543,7 +545,8 @@ theorem ne_nil_prefix {x y : List α} (hx : x ≠ []) (h : x <+: y) : y ≠ [] :
 
 theorem get_eq_prefix {x y : List α} {n} (hn : n < x.length) (h : x <+: y) :
     x.get ⟨n, hn⟩ = y.get ⟨n, by replace h := h.length_le; omega⟩ := by
-  obtain ⟨_, rfl⟩ := h; symm; apply List.get_append
+  obtain ⟨_, rfl⟩ := h
+  exact (List.get_append n hn).symm
 
 theorem head_eq_prefix {x y : List α} (hx : x ≠ []) (h : x <+: y) :
     x.head hx = y.head (ne_nil_prefix hx h) := by

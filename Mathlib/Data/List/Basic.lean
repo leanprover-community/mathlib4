@@ -397,7 +397,7 @@ theorem cons_eq_append_iff {a b c : List α} {x : α} :
 
 @[simp] theorem append_left_cancel_nil_left {x y : List α} : x ++ y = x ↔ y = [] := by
   constructor <;> intro h
-  · apply List.append_cancel_left (as := x); simp [h]
+  · exact List.append_cancel_left (as := x) <| by simp [h]
   · simp [h]
 
 @[simp] theorem append_left_cancel_nil_right {x y : List α} : x = x ++ y ↔ y = [] := by
@@ -1366,7 +1366,8 @@ theorem ext_get? : ∀ {l₁ l₂ : List α}, (∀ n, l₁.get? n = l₂.get? n)
 
 theorem ext_get?' {l₁ l₂ : List α} (h : l₁.length ≤ l₂.length)
     (h' : ∀ n < l₂.length, l₁.get? n = l₂.get? n) : l₁ = l₂ := by
-  apply ext_get?; intro n
+  apply ext_get?
+  intro n
   rcases Nat.lt_or_ge n l₂.length with hn | hn
   · exact h' _ hn
   · simp [List.get?_eq_none.mpr hn, le_trans h hn]
