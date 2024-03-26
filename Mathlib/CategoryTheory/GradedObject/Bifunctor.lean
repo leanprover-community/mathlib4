@@ -92,6 +92,7 @@ lemma mapBifunctorMapObj_ext {X : GradedObject I C₁} {Y : GradedObject J C₂}
   rintro ⟨i, j⟩ hij
   exact h i j hij
 
+/-- Constructor for morphisms from `mapBifunctorMapObj F p X Y k`. -/
 variable {F p} in
 noncomputable def mapBifunctorMapObjDesc
     {X : GradedObject I C₁} {Y : GradedObject J C₂} {A : C₃} {k : K}
