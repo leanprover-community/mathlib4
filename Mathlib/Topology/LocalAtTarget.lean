@@ -64,16 +64,13 @@ alias ClosedEmbedding.restrictPreimage := Set.restrictPreimage_closedEmbedding
 #align closed_embedding.restrict_preimage ClosedEmbedding.restrictPreimage
 
 theorem Set.restrictPreimage_isClosedMap (s : Set β) (H : IsClosedMap f) :
-    IsClosedMap (s.restrictPreimage f) := by
-  intro t ⟨u, hu, e⟩
-  refine' ⟨(f '' uᶜ)ᶜ, isOpen_compl_iff.2 (H uᶜ (IsOpen.isClosed_compl hu)), _⟩
-  simp [e, ← image_restrictPreimage]
+    IsClosedMap (s.restrictPreimage f) :=
+  fun t ⟨u, hu, e⟩ =>  ⟨(f '' uᶜ)ᶜ, isOpen_compl_iff.2 (H uᶜ (IsOpen.isClosed_compl hu)),
+    by simp [e, ← image_restrictPreimage]⟩
 
 theorem Set.restrictPreimage_isOpenMap (s : Set β) (H : IsOpenMap f) :
-    IsOpenMap (s.restrictPreimage f) := by
-  intro t ⟨u, hu, e⟩
-  refine' ⟨f '' u, H u hu, _⟩
-  rw [← e, image_restrictPreimage]
+    IsOpenMap (s.restrictPreimage f) :=
+  fun t ⟨u, hu, e⟩ => ⟨f '' u, H u hu, by rw [← e, image_restrictPreimage]⟩
 
 theorem isOpen_iff_inter_of_iSup_eq_top (s : Set β) : IsOpen s ↔ ∀ i, IsOpen (s ∩ U i) := by
   constructor
