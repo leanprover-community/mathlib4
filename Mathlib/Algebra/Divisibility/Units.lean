@@ -228,7 +228,7 @@ theorem IsRelPrime.dvd_of_dvd_mul_left_of_isPrimal (H1 : IsRelPrime x y) (H2 : x
 theorem IsRelPrime.mul_dvd_of_right_isPrimal (H : IsRelPrime x y) (H1 : x ∣ z) (H2 : y ∣ z)
     (hy : IsPrimal y) : x * y ∣ z := by
   obtain ⟨w, rfl⟩ := H1
-  exact mul_dvd_mul_left (H.symm.dvd_of_dvd_mul_left_of_isPrimal H2 hy)
+  exact mul_dvd_mul_left x (H.symm.dvd_of_dvd_mul_left_of_isPrimal H2 hy)
 
 theorem IsRelPrime.mul_dvd_of_left_isPrimal (H : IsRelPrime x y) (H1 : x ∣ z) (H2 : y ∣ z)
     (hx : IsPrimal x) : x * y ∣ z := by
