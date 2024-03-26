@@ -138,7 +138,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     intro n
     by_cases h : n = 0
     · rw [h, Nat.cast_zero, zero_smul]
-      exact mem_of_mem_nhds (bE.1.mem_of_mem <| by triv)
+      exact mem_of_mem_nhds (bE.1.mem_of_mem <| by trivial)
     rcases hu n h with ⟨y, hy, hu1⟩
     convert hy
     rw [← hu1, ← mul_smul]
