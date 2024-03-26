@@ -152,6 +152,9 @@ def extractRealGoalsCtx' : InfoTree → Array (Syntax × MetavarContext × Metav
     if let Lean.Elab.Info.ofTacticInfo i := k then
       if take? i.stx && (i.stx.getRange? true).isSome then
         #[(i.stx, i.mctxBefore, i.mctxAfter, i.activeGoalsBefore, i.activeGoalsAfter)] ++ kargs else kargs
+    else if let .ofFVarAliasInfo i := k then
+      dbg_trace (i.userName, i.id.name, i.baseId.name)
+      kargs
     else kargs
   | .context _ t => extractRealGoalsCtx' t
   | _ => default
@@ -466,6 +469,9 @@ def showTargets : InfoTree → List (List (Option Name × Name))
 --      match i.stx.getRange? true, non_terminal_simp? with
 --        | some r, true => rest
 --        | _, _ => rest
+    else if let .ofFVarAliasInfo i := i then
+      dbg_trace (i.userName, i.id.name, i.baseId.name)
+      rest
     else rest
   | .context _ t => showTargets t
   | .hole _ => []
@@ -505,6 +511,65 @@ def stainers : HashSet Name := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.simp
 --  |>.insert ``Lean.Parser.Tactic.rwSeq  -- remove me! `rw` is not a stainer!
 
+def ctor : Info → Syntax
+  | .ofTacticInfo i =>
+--    dbg_trace "TacticInfo"
+    i.stx
+  | .ofTermInfo i =>
+--    dbg_trace "TermInfo"
+    i.stx
+  | .ofCommandInfo i =>
+--    dbg_trace "CommandInfo"
+    i.stx
+  | .ofMacroExpansionInfo i =>
+--    dbg_trace "MacroExpansionInfo"
+    i.stx
+  | .ofOptionInfo i =>
+--    dbg_trace "OptionInfo"
+    i.stx
+  | .ofFieldInfo i =>
+--    dbg_trace "FieldInfo"
+    i.stx
+  | .ofCompletionInfo i =>
+--    dbg_trace "CompletionInfo"
+    i.stx
+  | .ofUserWidgetInfo i =>
+    dbg_trace "UserWidgetInfo"
+    i.stx
+  | .ofCustomInfo i =>
+    dbg_trace "CustomInfo"
+    i.stx
+  | .ofFVarAliasInfo i =>
+    dbg_trace "FVarAliasInfo"
+    default
+  | .ofFieldRedeclInfo i =>
+    dbg_trace "FieldRedeclInfo"
+    i.stx
+  | .ofOmissionInfo i =>
+    dbg_trace "OmissionInfo"
+    i.stx
+
+/-
+
+CommandInfo
+CompletionInfo
+MacroExpansionInfo
+TacticInfo
+TermInfo
+OptionInfo
+-/
+
+partial
+def showFVars : InfoTree → CommandElabM Unit
+  | .node i c => do
+    logInfo (ctor i)
+--    if let .ofFVarAliasInfo i := i then
+--      dbg_trace (i.userName, i.id.name, i.baseId.name)
+--      logInfo m!"{(i.userName, i.id.name, i.baseId.name)}"
+    let _ ← c.toArray.mapM showFVars
+  | .context _ t => showFVars t
+  | .hole _ => return
+
 
 /-- The main entry point to the unreachable tactic linter. -/
 def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
@@ -514,6 +579,12 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
     return
 --  dbg_trace "processing"
   let trees ← getInfoTrees
+  let _ ← trees.toList.mapM showFVars
+
+initialize addLinter nonTerminalSimpLinter
+#exit
+
+
 --  let (_, map) ← (addNonSimpOnlysList trees).run {}
 --  dbg_trace "processing1"
 --  Meta.inspect _stx
