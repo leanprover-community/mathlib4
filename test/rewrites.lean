@@ -2,6 +2,10 @@ import Mathlib.Data.Nat.Prime
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.InsertNth
 import Mathlib.Algebra.Group.Basic
+-- Adaptation note:
+-- Without `attribute [refl] Eq.refl`, `rw?` isn't effective.
+-- I'll move this attribute upstream.
+import Mathlib.Init.Core
 
 attribute [refl] Eq.refl
 

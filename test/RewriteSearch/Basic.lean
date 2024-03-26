@@ -1,6 +1,8 @@
 import Mathlib.Tactic.RewriteSearch
-
-attribute [refl] Eq.refl
+-- Adaptation note:
+-- Without `attribute [refl] Eq.refl`, `rw?` isn't effective.
+-- I'll move this attribute upstream.
+import Mathlib.Init.Core
 
 set_option autoImplicit true
 
