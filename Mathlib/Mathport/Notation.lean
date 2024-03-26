@@ -259,7 +259,7 @@ partial def exprToMatcher (boundFVars : HashMap FVarId Name) (localFVars : HashM
         fty ← whnf fty
         guard fty.isForall
         let bi := fty.bindingInfo!
-        fty := fty.instantiate1 arg
+        fty := fty.bindingBody!.instantiate1 arg
         if bi.isInstImplicit then
           -- Assumption: elaborated instances are canonical, so no need to match.
           -- The type of the instance is already accounted for by the previous arguments
