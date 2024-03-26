@@ -181,6 +181,75 @@ lemma char_is_class_func (V : FdRep k G) :
 section Orthogonality
 
 variable {G : GroupCat.{u}} [IsAlgClosed k]
+variable [Fintype G] [Invertible (Fintype.card G : k)]
+
+-- Move to MonoidAlgebra
+namespace MonoidAlgebra
+
+universe u₁ u₂
+
+instance CoeBasisElem {k : Type u₁} {G : Type u₂} [Semiring k] :
+    Coe G (MonoidAlgebra k G) where
+  coe g := MonoidAlgebra.single g 1
+
+-- fix
+@[simp]
+theorem CoeBasisElem.mul {k : Type u₁} {G : Type u₂} [Semiring k] [Semigroup G] (a : G) (b : G):
+    (↑(a * b) : MonoidAlgebra k G) = ↑a * ↑b := by
+  simp only [MonoidAlgebra.single_mul_single, mul_one]
+
+def std_basis (k : Type u₁) (G : Type u₂) [Semiring k] :
+    Basis G k (MonoidAlgebra k G) :=
+  .ofRepr (LinearEquiv.refl _ _)
+
+-- Check this coercion
+instance CoeBasis {k : Type u₁} {G : Type u₂} [Semiring k] :
+    CoeDep (Type u₂) G (Basis G k (MonoidAlgebra k G)) where
+  coe := std_basis k G
+
+instance {k : Type u₁} {G : Type u₂} [Semiring k] :
+    Inhabited (Basis G k (MonoidAlgebra k G)) :=
+  ⟨std_basis k G⟩
+
+-- G in Type u₂
+instance {k : Type u₁} {G : Type u₁} [Semiring k] :
+    Module.Free k (MonoidAlgebra k G) where
+  exists_basis := ⟨G, std_basis k G⟩
+
+end MonoidAlgebra
+
+
+def is_conj_inv (f : MonoidAlgebra k G →ₗ[k] k) := ∀ g h : G, f (h * g * h⁻¹) = f g
+
+def ClassFuntion := {f : MonoidAlgebra k G →ₗ[k] k // is_conj_inv f}
+
+lemma char_is_class_func (V : FdRep k G) :
+    is_conj_inv ((MonoidAlgebra.std_basis k G).constr k V.character) := by
+  intro g h
+  rw [← MonoidAlgebra.CoeBasisElem.mul]
+  rw [← MonoidAlgebra.CoeBasisElem.mul]
+  have (g : G) :
+      (MonoidAlgebra.std_basis k G) g = MonoidAlgebra.single g 1 :=
+    (MonoidAlgebra.std_basis k G).repr_self g
+  rw [← this]
+  rw [← this]
+  have (g : G) :=
+    (MonoidAlgebra.std_basis k G).constr_basis k V.character g
+  rw [this]
+  rw [this]
+  simp only [char_conj]
+
+
+-- Use coercion (G -> (MonoidAlgebra.std_basis k G)) for better syntax
+/-
+lemma char_is_class_func (V : FdRep k G) :
+    is_conj_inv (Basis.constr MonoidAlgebra.my_inst.coe k V.character) := by
+  intro g h
+  have foo := Basis.constr_basis MonoidAlgebra.my_inst.coe k V.character h
+  have (g : G) : B g = MonoidAlgebra.single g 1 := B.repr_self g
+  repeat rw [← this]
+  sorry
+-/
 
 open scoped Classical
 
