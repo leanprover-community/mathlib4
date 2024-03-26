@@ -222,7 +222,7 @@ noncomputable abbrev Scheme.restrictMapIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f
   apply IsOpenImmersion.isoOfRangeEq (f := X.ofRestrict _ ≫ f)
     (H := PresheafedSpace.IsOpenImmersion.comp (hf := inferInstance) (hg := inferInstance))
     (Y.ofRestrict _) _
-  dsimp[restrict]
+  dsimp [restrict]
   rw [coe_comp, Set.range_comp, Opens.coe_inclusion, Subtype.range_val, Subtype.range_coe]
   refine' @Set.image_preimage_eq _ _ f.1.base U.1 _
   rw [← TopCat.epi_iff_surjective]

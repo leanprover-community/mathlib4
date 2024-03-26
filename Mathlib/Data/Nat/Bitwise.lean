@@ -451,14 +451,7 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ≠ b ^^^ c) :
   on_goal 2 => right; left; rw [hac]
   on_goal 3 => right; right; rw [hab]
   all_goals
-    exact lt_of_testBit i (by
-      -- Porting note: this was originally `simp [h, hi]`
-      rw [Nat.testBit_xor, h, Bool.xor, Bool.true_xor, hi]
-      rfl
-    ) h fun j hj => by
-      -- Porting note: this was originally `simp [hi' _ hj]`
-      rw [Nat.testBit_xor, hi' _ hj, Bool.xor, Bool.xor_false, eq_self_iff_true]
-      trivial
+    exact lt_of_testBit i (by simp [h, hi]) h fun j hj => by simp [hi' _ hj]
 #align nat.lxor_trichotomy Nat.xor_trichotomy
 
 theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c :=
