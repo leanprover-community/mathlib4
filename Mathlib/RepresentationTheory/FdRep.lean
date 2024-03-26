@@ -20,6 +20,10 @@ Also `V.ρ` gives the homomorphism `G →* (V →ₗ[k] V)`.
 Conversely, given a homomorphism `ρ : G →* (V →ₗ[k] V)`,
 you can construct the bundled representation as `Rep.of ρ`.
 
+We prove Schur's Lemma: the dimension of the `Hom`-space between two irreducible representation is
+`0` if they are not isomorphic, and `1` if they are.
+This is the content of `finrank_hom_simple_simple`
+
 We verify that `FdRep k G` is a `k`-linear monoidal category, and rigid when `G` is a group.
 
 `FdRep k G` has all finite limits.
@@ -125,7 +129,8 @@ open scoped Classical
 -- deterministic timeout.
 instance : HasKernels (FdRep k G) := by infer_instance
 
--- Verify that Schur's lemma applies out of the box.
+/-- Schur's Lemma: the dimension of the `Hom`-space between two irreducible representation is `0` if
+they are not isomorphic, and `1` if they are. -/
 theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FdRep k G) [Simple V] [Simple W] :
     finrank k (V ⟶ W) = if Nonempty (V ≅ W) then 1 else 0 :=
   CategoryTheory.finrank_hom_simple_simple k V W
