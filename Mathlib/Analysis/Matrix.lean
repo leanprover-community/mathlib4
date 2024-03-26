@@ -358,7 +358,7 @@ theorem linfty_opNNNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
       Finset.sup_mono_fun fun i _hi =>
         Finset.sum_le_sum fun k _hk => nnnorm_sum_le_of_le _ fun j _hj => nnnorm_mul_le _ _
     _ = Finset.univ.sup fun i => ∑ j, ‖A i j‖₊ * ∑ k, ‖B j k‖₊ := by
-      simp_rw [@Finset.sum_comm _ m n, Finset.mul_sum]
+      simp_rw [@Finset.sum_comm m, Finset.mul_sum]
     _ ≤ Finset.univ.sup fun i => ∑ j, ‖A i j‖₊ * Finset.univ.sup fun i => ∑ j, ‖B i j‖₊ := by
       refine Finset.sup_mono_fun fun i _hi => ?_
       gcongr with j hj
@@ -697,7 +697,7 @@ variable [IsROrC α]
 
 theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [frobenius_nnnorm_def, Matrix.mul_apply]
-  rw [← NNReal.mul_rpow, @Finset.sum_comm _ n m, Finset.sum_mul_sum]
+  rw [← NNReal.mul_rpow, @Finset.sum_comm _ _ m, Finset.sum_mul_sum]
   gcongr with i _ j
   rw [← NNReal.rpow_le_rpow_iff one_half_pos, ← NNReal.rpow_mul,
     mul_div_cancel₀ (1 : ℝ) two_ne_zero, NNReal.rpow_one, NNReal.mul_rpow]
