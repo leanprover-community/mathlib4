@@ -172,22 +172,18 @@ lemma _root_.CategoryTheory.Limits.parallelPair_initial_mk' {X Y : C} (f g : X �
           exact Relation.ReflTransGen.single (Or.inr ⟨CostructuredArrow.homMk left⟩)
     exact zigzag_isConnected (fun x y => (this x).trans (zigzag_symmetric (this y)))
 
-open WalkingParallelPair WalkingParallelPairHom in
+open WalkingParallelPair WalkingParallelPairHom CostructuredArrow in
 lemma _root_.CategoryTheory.Limits.parallelPair_initial_mk {X Y : C} (f g : X ⟶ Y)
     (h₁ : ∀ Z, Nonempty (X ⟶ Z))
     (h₂ : ∀ ⦃Z : C⦄ (i j : X ⟶ Z), ∃ (a : Y ⟶ Z), i = f ≫ a ∧ j = g ≫ a) :
     (parallelPair f g).Initial :=
   parallelPair_initial_mk' f g h₁ (fun Z i j => by
     obtain ⟨a, rfl, rfl⟩ := h₂ i j
-    have z₁ : Zigzag (J := CostructuredArrow (parallelPair f g) Z)
-      (CostructuredArrow.mk (Y := zero) (f ≫ a))
-      (CostructuredArrow.mk (Y := one) a) := Relation.ReflTransGen.single
-        (Or.inl ⟨CostructuredArrow.homMk left⟩)
-    have z₃ : Zigzag (J := CostructuredArrow (parallelPair f g) Z)
-      (CostructuredArrow.mk (Y := one) a)
-      (CostructuredArrow.mk (Y := zero) (g ≫ a)) := Relation.ReflTransGen.single
-        (Or.inr ⟨CostructuredArrow.homMk right⟩)
-    exact z₁.trans z₃)
+    let f₁ : (mk (Y := zero) (f ≫ a) : CostructuredArrow (parallelPair f g) Z) ⟶ mk (Y := one) a :=
+      homMk left
+    let f₂ : (mk (Y := zero) (g ≫ a) : CostructuredArrow (parallelPair f g) Z) ⟶ mk (Y := one) a :=
+      homMk right
+    exact Zigzag.of_hom_inv f₁ f₂)
 
 -- change the definition of `Presieve.diagram` to make this the source category
 abbrev _root_.CategoryTheory.Presieve.category {X : C} (P : Presieve X) :=

@@ -289,7 +289,6 @@ theorem isConnected_of_isConnected_op [IsConnected Jᵒᵖ] : IsConnected J :=
 #align category_theory.is_connected_of_is_connected_op CategoryTheory.isConnected_of_isConnected_op
 
 /-- j₁ and j₂ are related by `Zag` if there is a morphism between them. -/
-@[reducible]
 def Zag (j₁ j₂ : J) : Prop :=
   Nonempty (j₁ ⟶ j₂) ∨ Nonempty (j₂ ⟶ j₁)
 #align category_theory.zag CategoryTheory.Zag
@@ -301,14 +300,13 @@ theorem zag_symmetric : Symmetric (@Zag J _) := fun _ _ h => h.symm
 
 theorem Zag.symm {j₁ j₂ : J} (h : Zag j₁ j₂) : Zag j₂ j₁ := zag_symmetric h
 
-theorem zag_of_hom {j₁ j₂ : J} (f : j₁ ⟶ j₂) : Zag j₁ j₂ := Or.inl ⟨f⟩
+theorem Zag.of_hom {j₁ j₂ : J} (f : j₁ ⟶ j₂) : Zag j₁ j₂ := Or.inl ⟨f⟩
 
 theorem Zag.of_inv {j₁ j₂ : J} (f : j₂ ⟶ j₁) : Zag j₁ j₂ := Or.inr ⟨f⟩
 
 /-- `j₁` and `j₂` are related by `Zigzag` if there is a chain of
 morphisms from `j₁` to `j₂`, with backward morphisms allowed.
 -/
-@[reducible]
 def Zigzag : J → J → Prop :=
   Relation.ReflTransGen Zag
 #align category_theory.zigzag CategoryTheory.Zigzag
@@ -332,13 +330,13 @@ theorem Zigzag.of_zag_trans {j₁ j₂ j₃ : J} (h₁ : Zag j₁ j₂) (h₂ : 
   trans (of_zag h₁) (of_zag h₂)
 
 theorem Zigzag.of_hom_hom {j₁ j₂ j₃ : J} (f₁₂ : j₁ ⟶ j₂) (f₂₃ : j₂ ⟶ j₃) : Zigzag j₁ j₃ :=
-  of_zag_trans (zag_of_hom f₁₂) (zag_of_hom f₂₃)
+  of_zag_trans (Zag.of_hom f₁₂) (Zag.of_hom f₂₃)
 
 theorem Zigzag.of_hom_inv {j₁ j₂ j₃ : J} (f₁₂ : j₁ ⟶ j₂) (f₃₂ : j₃ ⟶ j₂) : Zigzag j₁ j₃ :=
-  of_zag_trans (zag_of_hom f₁₂) (Zag.of_inv f₃₂)
+  of_zag_trans (Zag.of_hom f₁₂) (Zag.of_inv f₃₂)
 
 theorem Zigzag.of_inv_hom {j₁ j₂ j₃ : J} (f₂₁ : j₂ ⟶ j₁) (f₂₃ : j₂ ⟶ j₃) : Zigzag j₁ j₃ :=
-  of_zag_trans (Zag.of_inv f₂₁) (zag_of_hom f₂₃)
+  of_zag_trans (Zag.of_inv f₂₁) (Zag.of_hom f₂₃)
 
 theorem Zigzag.of_inv_inv {j₁ j₂ j₃ : J} (f₂₁ : j₂ ⟶ j₁) (f₃₂ : j₃ ⟶ j₂) : Zigzag j₁ j₃ :=
   of_zag_trans (Zag.of_inv f₂₁) (Zag.of_inv f₃₂)
