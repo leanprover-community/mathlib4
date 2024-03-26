@@ -234,7 +234,7 @@ theorem weightedSMul_smul [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass
 theorem norm_weightedSMul_le (s : Set α) : ‖(weightedSMul μ s : F →L[ℝ] F)‖ ≤ (μ s).toReal :=
   calc
     ‖(weightedSMul μ s : F →L[ℝ] F)‖ = ‖(μ s).toReal‖ * ‖ContinuousLinearMap.id ℝ F‖ :=
-      norm_smul _ _
+      norm_smul (μ s).toReal (ContinuousLinearMap.id ℝ F)
     _ ≤ ‖(μ s).toReal‖ :=
       ((mul_le_mul_of_nonneg_left norm_id_le (norm_nonneg _)).trans (mul_one _).le)
     _ = abs (μ s).toReal := Real.norm_eq_abs _
@@ -1611,7 +1611,7 @@ theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → G}
 theorem nndist_integral_add_measure_le_lintegral
     {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
     (nndist (∫ x, f x ∂μ) (∫ x, f x ∂(μ + ν)) : ℝ≥0∞) ≤ ∫⁻ x, ‖f x‖₊ ∂ν := by
-  rw [integral_add_measure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel']
+  rw [integral_add_measure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel_left]
   exact ennnorm_integral_le_lintegral_ennnorm _
 #align measure_theory.nndist_integral_add_measure_le_lintegral MeasureTheory.nndist_integral_add_measure_le_lintegral
 
@@ -2079,3 +2079,26 @@ theorem snorm_one_le_of_le' {r : ℝ} {f : α → ℝ} (hfint : Integrable f μ)
 end SnormBound
 
 end MeasureTheory
+
+namespace Mathlib.Meta.Positivity
+
+open Qq Lean Meta MeasureTheory
+
+/-- Positivity extension for integrals.
+
+This extension only proves non-negativity, strict positivity is more delicate for integration and
+requires more assumptions. -/
+@[positivity MeasureTheory.integral _ _]
+def evalIntegral : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@MeasureTheory.integral $i ℝ _ $inst2 _ _ $f) =>
+    let i : Q($i) ← mkFreshExprMVarQ q($i) .syntheticOpaque
+    have body : Q(ℝ) := .betaRev f #[i]
+    let rbody ← core zα pα body
+    let pbody ← rbody.toNonneg
+    let pr : Q(∀ x, 0 ≤ $f x) ← mkLambdaFVars #[i] pbody
+    assertInstancesCommute
+    return .nonnegative q(integral_nonneg $pr)
+  | _ => throwError "not MeasureTheory.integral"
+
+end Mathlib.Meta.Positivity
