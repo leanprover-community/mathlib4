@@ -513,7 +513,7 @@ lemma and_pow_two_sub_one_xor_eq_zero {x n} (h : x < 2 ^ n) : x &&& ((2 ^ n - 1)
   by_cases h' : (i < n)
   · simp only [h', decide_True, Bool.true_xor, Bool.not_eq_false', Bool.dichotomy]
   · simp only [h', decide_False, Bool.false_xor, or_self];
-    exact testBit_lt_two (lt_of_lt_of_le h (pow_le_pow_right (by decide) (not_lt.mp h')))
+    exact testBit_lt_two_pow (lt_of_lt_of_le h (pow_le_pow_right (by decide) (not_lt.mp h')))
 
 lemma or_pow_two_sub_one_xor_eq_pow_two_sub_one {x n} (h : x < 2 ^ n) :
     x ||| ((2 ^ n - 1) ^^^ x) = 2 ^ n - 1 := by
@@ -523,7 +523,7 @@ lemma or_pow_two_sub_one_xor_eq_pow_two_sub_one {x n} (h : x < 2 ^ n) :
   by_cases h' : (i < n)
   · simp only [h', decide_True, Bool.true_xor, Bool.or_not_self]
   · simp only [h', decide_False, Bool.false_xor, Bool.or_self];
-    exact testBit_lt_two (lt_of_lt_of_le h (pow_le_pow_right (by decide) (not_lt.mp h')))
+    exact testBit_lt_two_pow (lt_of_lt_of_le h (pow_le_pow_right (by decide) (not_lt.mp h')))
 
 lemma add_pow_two_sub_one_xor_eq_pow_two_sub_one {x n} (h : x < 2 ^ n) :
     x + ((2 ^ n - 1) ^^^ x) = 2 ^ n - 1 := by
