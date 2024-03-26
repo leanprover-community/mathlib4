@@ -145,11 +145,11 @@ and a homomorphism `g : G → R`, returns the additive homomorphism from
 and the range of either `f` or `g` is in center of `R`, then the result is a ring homomorphism.  If
 `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra homomorphism called
 `MonoidAlgebra.lift`. -/
+@[simps!]
 def liftNC (f : k →+ R) (g : G → R) : MonoidAlgebra k G →+ R :=
   liftAddHom fun x : G => (AddMonoidHom.mulRight (g x)).comp f
 #align monoid_algebra.lift_nc MonoidAlgebra.liftNC
 
-@[simp]
 theorem liftNC_single (f : k →+ R) (g : G → R) (a : G) (b : k) :
     liftNC f g (single a b) = f b * g a :=
   liftAddHom_apply_single _ _ _
@@ -160,6 +160,34 @@ end
 section Mul
 
 variable [Semiring k] [Mul G]
+
+section Sum
+
+variable {N} [AddCommMonoid N]
+
+#check sum
+def sum  [Mul G] (f : MonoidAlgebra k G) (g : G → k → N) : N
+:=
+  Finsupp.sum f g
+
+@[simp]
+theorem sum_zero {f : MonoidAlgebra k G} : (sum f fun _ _ ↦ (0 : N)) = 0 :=
+  Finsupp.sum_zero
+
+@[simp]
+theorem sum_add {f : MonoidAlgebra k G} {h₁ h₂ : G → k → N} :
+    (sum f fun a b ↦ h₁ a b + h₂ a b) = sum f h₁ + sum f h₂ :=
+  Finsupp.sum_add
+#check sum_add_index
+
+theorem sum_add_index [DecidableEq G] {f g : MonoidAlgebra k G} {h : G → k → N}
+  (h_zero : ∀ a ∈ f.support ∪ g.support, h a 0 = 0)
+  (h_add : ∀ a ∈ f.support ∪ g.support, ∀ (b₁ b₂ : k), h a (b₁ + b₂) = h a b₁ + h a b₂) :
+  sum (f + g) h = sum f h + sum g h :=
+  Finsupp.sum_add_index h_zero h_add
+
+
+end Sum
 
 /-- The product of `f g : MonoidAlgebra k G` is the finitely supported function
   whose value at `a` is the sum of `f x * g y` over all pairs `x, y`
@@ -609,19 +637,32 @@ theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
       exact h ⟨_, rfl⟩
 #align monoid_algebra.single_mul_apply_of_not_exists_mul MonoidAlgebra.single_mul_apply_of_not_exists_mul
 
+@[simps]
+def singleAddHom [Semiring k] [MulOneClass G] (a : G) : k →+ MonoidAlgebra k G where
+  toFun := single a
+  map_zero' := single_zero a
+  map_add' := single_add a
+
+@[ext]
+theorem ext {f g : MonoidAlgebra k G} (h : ∀ a, f a = g a) : f = g :=
+  Finsupp.ext h
+
+@[ext high]
+theorem addHom_ext' [Semiring k] [MulOneClass G] [AddZeroClass R] ⦃f g : MonoidAlgebra k G →+ R⦄
+    (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
+  addHom_ext fun x => DFunLike.congr_fun (H x)
+
+@[simp]
+theorem smul_single [SMulZeroClass R k] (c : R) (a : G) (b : k) :
+    c • single a b = single a (c • b) := Finsupp.smul_single c a b
+
 theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
     (φ : MonoidAlgebra k G) : liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
   suffices (liftNC (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
       (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g) from
     DFunLike.congr_fun this φ
-  -- Porting note: `ext` couldn't a find appropriate theorem.
-  refine addHom_ext' fun a => AddMonoidHom.ext fun b => ?_
-  -- Porting note: `reducible` cannot be `local` so the proof gets more complex.
-  unfold MonoidAlgebra
-  simp only [AddMonoidHom.coe_comp, Function.comp_apply, singleAddHom_apply, smulAddHom_apply,
-    smul_single, smul_eq_mul, AddMonoidHom.coe_mulLeft]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [liftNC_single, liftNC_single]; rw [AddMonoidHom.coe_coe, map_mul, mul_assoc]
+  ext
+  simp [mul_assoc]
 #align monoid_algebra.lift_nc_smul MonoidAlgebra.liftNC_smul
 
 end MiscTheorems
@@ -632,14 +673,22 @@ end MiscTheorems
 section NonUnitalNonAssocAlgebra
 
 variable (k) [Semiring k] [DistribSMul R k] [Mul G]
+#check sum
+
+theorem smul_sum {M} [AddCommMonoid M] {v : MonoidAlgebra k G} {c : R} {h : G → k → M} :
+    c • v.sum h = v.sum fun a b => c • h a b :=
+  Finset.smul_sum
 
 instance isScalarTower_self [IsScalarTower R k k] :
     IsScalarTower R (MonoidAlgebra k G) (MonoidAlgebra k G) :=
   ⟨fun t a b => by
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-    refine Finsupp.ext fun m => ?_
+    ext m
     -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
     classical
+      simp only [mul_apply, Finsupp.smul_sum, smul_ite, smul_mul_assoc, sum_smul_index', zero_mul,
+      ite_self, imp_true_iff, eq_self_iff_true, sum_zero, coe_smul, smul_eq_mul, Pi.smul_apply,
+      smul_zero]
+      simp
       simp only [smul_eq_mul, mul_apply]
       rw [coe_smul]
       refine Eq.trans (sum_smul_index' (g := a) (b := t) ?_) ?_ <;>
@@ -859,6 +908,7 @@ variable [CommSemiring k] [Monoid G] [Monoid H]
 variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Algebra k B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
+@[simps!]
 def liftNCAlgHom (f : A →ₐ[k] B) (g : G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     MonoidAlgebra A G →ₐ[k] B :=
   { liftNCRingHom (f : A →+* B) g h_comm with
@@ -891,10 +941,10 @@ def lift : (G →* A) ≃ (MonoidAlgebra k G →ₐ[k] A) where
   toFun F := liftNCAlgHom (Algebra.ofId k A) F fun _ _ => Algebra.commutes _ _
   left_inv f := by
     ext
-    simp [liftNCAlgHom, liftNCRingHom]
+    simp [liftNCRingHom]
   right_inv F := by
     ext
-    simp [liftNCAlgHom, liftNCRingHom]
+    simp [liftNCRingHom]
 #align monoid_algebra.lift MonoidAlgebra.lift
 
 variable {k G H A}
@@ -1030,11 +1080,13 @@ lemma mapRangeAlgHom_apply {k R S G} [CommSemiring k] [Semiring R] [Algebra k R]
     [Algebra k S] [Monoid G] (f : R →ₐ[k] S) :
       ⇑(mapRangeAlgHom (G := G) f) = Finsupp.mapRange f (map_zero _) := by
   ext x
-  induction' x using Finsupp.induction with a b f _ _ ih
-  · simp
-  · rw [map_add, mapRange_add (map_add _), ih]
-    erw [liftAddHom_apply_single]
-    simp [single_mul_single]
+  induction x using Finsupp.induction with
+  | h0 => simp
+  | ha a b f _ _ ih =>
+    rw [map_add, mapRange_add (map_add _), ih]
+    simp only [mapRangeAlgHom, liftNCAlgHom_apply, of_apply, AlgHom.coe_comp, AlgHom.coe_coe,
+      Function.comp_apply, map_zero, zero_mul, Finsupp.sum_single_index, singleOneAlgHom_apply,
+      single_mul_single, one_mul, mul_one, mapRange_single]
 
 @[simp]
 lemma mapRangeAlgHom_id {k R G} [CommSemiring k] [Semiring R] [Algebra k R] [Monoid G] :
@@ -1105,16 +1157,13 @@ def equivariantOfLinearOfComm : V →ₗ[MonoidAlgebra k G] W where
   toFun := f
   map_add' v v' := by simp
   map_smul' c v := by
-    -- Porting note: `dsimp` is required for beta reduction.
-    dsimp only []
-    -- Porting note: Was `apply`.
-    refine Finsupp.induction c ?_ ?_
-    · simp
-    · intro g r c' _nm _nz w
-      dsimp at *
+    induction c using Finsupp.induction with
+    | h0 => simp
+    | ha g r c' _nm _nz w =>
+      dsimp only [RingHom.id_apply] at *
       simp only [add_smul, f.map_add, w, add_left_inj, single_eq_algebraMap_mul_of, ← smul_smul]
-      erw [algebraMap_smul (MonoidAlgebra k G) r, algebraMap_smul (MonoidAlgebra k G) r, f.map_smul,
-        h g v, of_apply]
+      rw [algebraMap_smul (MonoidAlgebra k G) r, algebraMap_smul (MonoidAlgebra k G) r, f.map_smul,
+        of_apply, h g v]
 #align monoid_algebra.equivariant_of_linear_of_comm MonoidAlgebra.equivariantOfLinearOfComm
 
 @[simp]
@@ -1504,6 +1553,7 @@ instance semiring : Semiring k[G] :=
 variable [Semiring R]
 
 /-- `liftNC` as a `RingHom`, for when `f` and `g` commute -/
+@[simps!]
 def liftNCRingHom (f : k →+* R) (g : Multiplicative G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
     k[G] →+* R :=
   { liftNC (f : k →+ R) g with
@@ -1630,6 +1680,7 @@ theorem mul_apply_antidiagonal [Add G] (f g : k[G]) (x : G) (s : Finset (G × G)
   @MonoidAlgebra.mul_apply_antidiagonal k (Multiplicative G) _ _ _ _ _ s @hs
 #align add_monoid_algebra.mul_apply_antidiagonal AddMonoidAlgebra.mul_apply_antidiagonal
 
+@[simp]
 theorem single_mul_single [Add G] {a₁ a₂ : G} {b₁ b₂ : k} :
     single a₁ b₁ * single a₂ b₂ = single (a₁ + a₂) (b₁ * b₂) :=
   @MonoidAlgebra.single_mul_single k (Multiplicative G) _ _ _ _ _ _
@@ -2036,6 +2087,7 @@ variable [CommSemiring k] [AddMonoid G]
 variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Algebra k B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
+@[simps!]
 def liftNCAlgHom (f : A →ₐ[k] B) (g : Multiplicative G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     A[G] →ₐ[k] B :=
   { liftNCRingHom (f : A →+* B) g h_comm with
@@ -2236,11 +2288,11 @@ lemma mapRangeAlgHom_apply {k R S G} [CommSemiring k] [Semiring R] [Algebra k R]
     [Algebra k S] [AddMonoid G] (f : R →ₐ[k] S) :
       ⇑(mapRangeAlgHom (G := G) f) = Finsupp.mapRange f (map_zero _) := by
   ext x
-  induction' x using Finsupp.induction with a b f _ _ ih
-  · simp
-  · rw [map_add, mapRange_add (map_add _), ih]
-    erw [liftAddHom_apply_single]
-    simp [single_mul_single]
+  induction x using Finsupp.induction with
+  | h0 => simp
+  | ha a b f _ _ ih =>
+    rw [map_add, mapRange_add (map_add _), ih]
+    simp [mapRangeAlgHom]
 
 @[simp]
 lemma mapRangeAlgHom_id {k R G} [CommSemiring k] [Semiring R] [Algebra k R] [AddMonoid G] :
