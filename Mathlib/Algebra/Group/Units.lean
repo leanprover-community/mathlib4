@@ -1192,7 +1192,7 @@ variable {M : Type*}
 
 /-- Constructs an inv operation for a `Monoid` consisting only of units. -/
 noncomputable def invOfIsUnit [Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
-  inv := fun a =>  ↑(h a).unit⁻¹
+  inv := fun a => ↑(h a).unit⁻¹
 
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
