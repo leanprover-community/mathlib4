@@ -250,10 +250,24 @@ partial def exprToMatcher (boundFVars : HashMap FVarId Name) (localFVars : HashM
         -- This is an fvar from a `variable`. Match by name and type.
         let (_, m) ← exprToMatcher boundFVars localFVars (← instantiateMVars (← inferType e))
         return ([`fvar], ← ``(matchFVar $(quote n) $m))
-  | .app f arg =>
-    let (keys, matchF) ← exprToMatcher boundFVars localFVars f
-    let (_, matchArg) ← exprToMatcher boundFVars localFVars arg
-    return (if keys.isEmpty then [`app] else keys, ← ``(matchApp $matchF $matchArg))
+  | .app .. =>
+    e.withApp fun f args => do
+      let (keys, matchF) ← exprToMatcher boundFVars localFVars f
+      let mut fty ← inferType f
+      let mut matcher := matchF
+      for arg in args do
+        fty ← whnf fty
+        guard fty.isForall
+        let bi := fty.bindingInfo!
+        if bi.isInstImplicit then
+          -- Assumption: elaborated instances are canonical, so no need to match.
+          -- The type of the instance is already accounted for by the previous arguments
+          -- and the type of `f`.
+          matcher ← ``(matchApp $matcher pure)
+        else
+          let (_, matchArg) ← exprToMatcher boundFVars localFVars arg
+          matcher ← ``(matchApp $matcher $matchArg)
+      return (if keys.isEmpty then [`app] else keys, matcher)
   | .lit (.natVal n) => return ([`lit], ← ``(natLitMatcher $(quote n)))
   | .forallE n t b bi =>
     let (_, matchDom) ← exprToMatcher boundFVars localFVars t
