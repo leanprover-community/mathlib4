@@ -53,32 +53,6 @@ def character (V : FdRep k G) (g : G) :=
   LinearMap.trace k V (V.ρ g)
 #align fdRep.character FdRep.character
 
-def character' (V : FdRep k G) [Fintype G] : MonoidAlgebra k G →ₗ[k] k where
-  toFun := fun x ↦ ∑ g, x g * (V.character g)
-  map_add' := by
-    intros x y
-    simp only
-    have (g : G) : (x + y) g = x g + y g := by exact rfl
-    simp_rw [this]
-    have : ∑ g, x g * V.character g + ∑ g, y g * V.character g = ∑ g, (x g * V.character g + y g * V.character g) := by
-      simp only [Finset.sum_add_distrib]
-    simp_rw [this]
-    congr
-    funext g
-    rw [add_mul]
-  map_smul' := by
-    intros c x
-    simp only
-    have (g : G) : (c • x) g = c * x g := by exact rfl
-    simp_rw [this]
-    have : ∑ g, c * x g * V.character g = c * ∑ g, x g * V.character g := by
-      simp only [Finset.mul_sum]
-      congr
-      funext g
-      rw [mul_assoc]
-    simp_rw [this]
-    congr
-
 theorem char_mul_comm (V : FdRep k G) (g : G) (h : G) : V.character (h * g) = V.character (g * h) :=
   by simp only [trace_mul_comm, character, map_mul]
 #align fdRep.char_mul_comm FdRep.char_mul_comm
@@ -105,6 +79,19 @@ theorem char_tensor' (V W : FdRep k G) :
 theorem char_iso {V W : FdRep k G} (i : V ≅ W) : V.character = W.character := by
   ext g; simp only [character, FdRep.Iso.conj_ρ i]; exact (trace_conj' (V.ρ g) _).symm
 #align fdRep.char_iso FdRep.char_iso
+
+/-- The character of a representation `V : FdRep k G`,
+seen as k-linear map from MonoidAlgebra k G. -/
+def character' (V : FdRep k G) : MonoidAlgebra k G →ₗ[k] k := Finsupp.lift k k G V.character
+
+lemma lift_eq (f : G → k) (g : G) : Finsupp.lift k k G f (MonoidAlgebra.single g 1) = f g := by
+  rw [Finsupp.lift_apply, Finsupp.sum_single_index, one_smul]
+  simp only [smul_eq_mul, zero_mul]
+
+theorem character_eq_character' (V : FdRep k G) (g : G) :
+    character' V (MonoidAlgebra.single g 1) = V.character g := by
+  rw [character']
+  exact lift_eq V.character g
 
 end Monoid
 
@@ -139,82 +126,87 @@ theorem average_char_eq_finrank_invariants (V : FdRep k G) :
 
 end Group
 
-section Orthogonality
-
-variable {G : GroupCat.{u}} [IsAlgClosed k]
-variable [Fintype G] [Invertible (Fintype.card G : k)]
-
--- Move to MonoidAlgebra
 namespace MonoidAlgebra
 
 universe u₁ u₂
 
-instance CoeBasisElem {k : Type u₁} {G : Type u₂} [Semiring k] :
+instance {k : Type u₁} {G : Type u₂} [Semiring k] :
     Coe G (MonoidAlgebra k G) where
   coe g := MonoidAlgebra.single g 1
 
--- fix
-@[simp]
-theorem CoeBasisElem.mul {k : Type u₁} {G : Type u₂} [Semiring k] [Semigroup G] (a : G) (b : G):
-    (↑(a * b) : MonoidAlgebra k G) = ↑a * ↑b := by
-  simp only [MonoidAlgebra.single_mul_single, mul_one]
+-- def std_basis (k : Type u₁) (G : Type u₂) [Semiring k] :
+--     Basis G k (MonoidAlgebra k G) :=
+--   .ofRepr (LinearEquiv.refl _ _)
 
-def std_basis (k : Type u₁) (G : Type u₂) [Semiring k] :
-    Basis G k (MonoidAlgebra k G) :=
-  .ofRepr (LinearEquiv.refl _ _)
+-- instance my_inst {k : Type u₁} {G : Type u₂} [Semiring k] :
+--     CoeDep (Type u₂) G (Basis G k (MonoidAlgebra k G)) where
+--   coe := std_basis k G
 
--- Check this coercion
-instance CoeBasis {k : Type u₁} {G : Type u₂} [Semiring k] :
-    CoeDep (Type u₂) G (Basis G k (MonoidAlgebra k G)) where
-  coe := std_basis k G
+-- instance {k : Type u₁} {G : Type u₂} [Semiring k] :
+--     Inhabited (Basis G k (MonoidAlgebra k G)) :=
+--   ⟨std_basis k G⟩
 
-instance {k : Type u₁} {G : Type u₂} [Semiring k] :
-    Inhabited (Basis G k (MonoidAlgebra k G)) :=
-  ⟨std_basis k G⟩
-
--- G in Type u₂
-instance {k : Type u₁} {G : Type u₁} [Semiring k] :
-    Module.Free k (MonoidAlgebra k G) where
-  exists_basis := ⟨G, std_basis k G⟩
+-- instance {k : Type u₁} {G : Type u₂} [Semiring k] :
+--     Module.Free k (MonoidAlgebra k G) where
+--   exists_basis := ⟨G, std_basis k G⟩
 
 end MonoidAlgebra
 
 
-def is_conj_inv (f : MonoidAlgebra k G →ₗ[k] k) := ∀ g h : G, f (h * g * h⁻¹) = f g
+-- def is_conj_inv (f : MonoidAlgebra k G →ₗ[k] k) := ∀ g h : G, f (h * g * h⁻¹) = f g
 
-def ClassFuntion := {f : MonoidAlgebra k G →ₗ[k] k // is_conj_inv f}
+-- def ClassFuntion := {f : MonoidAlgebra k G →ₗ[k] k // is_conj_inv f}
 
-lemma char_is_class_func (V : FdRep k G) :
-    is_conj_inv ((MonoidAlgebra.std_basis k G).constr k V.character) := by
-  intro g h
-  rw [← MonoidAlgebra.CoeBasisElem.mul]
-  rw [← MonoidAlgebra.CoeBasisElem.mul]
-  have (g : G) :
-      (MonoidAlgebra.std_basis k G) g = MonoidAlgebra.single g 1 :=
-    (MonoidAlgebra.std_basis k G).repr_self g
-  rw [← this]
-  rw [← this]
-  have (g : G) :=
-    (MonoidAlgebra.std_basis k G).constr_basis k V.character g
-  rw [this]
-  rw [this]
-  simp only [char_conj]
+-- lemma char_is_class_func (V : FdRep k G) :
+--     is_conj_inv (Basis.constr (MonoidAlgebra.my_inst.coe : Basis G k (MonoidAlgebra k G)) k V.character) := by
+--   intro g h
+--   have foo := Basis.constr_basis G k V.character h
+--   have (g : G) : B g = MonoidAlgebra.single g 1 := B.repr_self g
+--   repeat rw [← this]
+--   sorry
 
+section Orthogonality
 
--- Use coercion (G -> (MonoidAlgebra.std_basis k G)) for better syntax
-/-
-lemma char_is_class_func (V : FdRep k G) :
-    is_conj_inv (Basis.constr MonoidAlgebra.my_inst.coe k V.character) := by
-  intro g h
-  have foo := Basis.constr_basis MonoidAlgebra.my_inst.coe k V.character h
-  have (g : G) : B g = MonoidAlgebra.single g 1 := B.repr_self g
-  repeat rw [← this]
-  sorry
--/
+variable {G : GroupCat.{u}} [IsAlgClosed k]
 
 open scoped Classical
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
+
+def IsClassFunction (f : G → k) : Prop := ∀ (g h : G), f (h * g * h⁻¹) = f g
+
+def IsClassFunction' (f : MonoidAlgebra k G →ₗ[k] k) : Prop := ∀ (g h : G), f (h * g * h⁻¹) = f g
+
+theorem isClassFunction_iff (f : G → k) : IsClassFunction f ↔
+    IsClassFunction' (Finsupp.lift k k G f) := by
+  simp only [IsClassFunction, IsClassFunction']
+  have (g h : G): (MonoidAlgebra.single h 1) * (MonoidAlgebra.single g 1) *
+      (MonoidAlgebra.single h⁻¹ 1) = MonoidAlgebra.single (h * g * h⁻¹) (1 : k) := by
+    simp only [MonoidAlgebra.single_mul_single, mul_one]
+  simp_rw [this]
+  constructor
+  · intro conj_inv g h
+    calc
+      Finsupp.lift k k G f (MonoidAlgebra.single (h * g * h⁻¹) 1) = f (h * g * h⁻¹) :=
+        lift_eq f (h * g * h⁻¹)
+      _ = f g := conj_inv g h
+      _ = Finsupp.lift k k G f (MonoidAlgebra.single g 1) := (lift_eq f g).symm
+  · intro conj_inv g h
+    calc
+      f (h * g * h⁻¹) = Finsupp.lift k k G f (MonoidAlgebra.single (h * g * h⁻¹) 1) :=
+        (lift_eq f (h * g * h⁻¹)).symm
+      _ = Finsupp.lift k k G f (MonoidAlgebra.single g 1) := conj_inv g h
+      _ = f g := lift_eq f g
+
+def ClassFunction : Type u := { f : MonoidAlgebra k G →ₗ[k] k // IsClassFunction' f }
+
+theorem char_isClassFunction (V : FdRep k G) : IsClassFunction V.character := by
+  intro g h
+  rw [char_conj]
+
+theorem char_isClassFunction' (V : FdRep k G) : IsClassFunction' V.character' := by
+  rw [character', ← isClassFunction_iff]
+  exact char_isClassFunction V
 
 /-- Orthogonality of characters for irreducible representations of finite group over an
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
