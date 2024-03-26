@@ -80,7 +80,7 @@ def getIds : Syntax → Array Syntax
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx => do
   if getLinterDupNamespace (← getOptions) then
-    match (getIds stx) with
+    match getIds stx with
       | #[id] =>
         let ns := (← getScope).currNamespace
         let declName := ns ++ id[0].getId
