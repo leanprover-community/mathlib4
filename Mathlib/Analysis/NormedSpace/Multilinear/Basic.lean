@@ -1356,7 +1356,7 @@ open Topology Filter
 
 /-- If the target space is complete, the space of continuous multilinear maps with its norm is also
 complete. The proof is essentially the same as for the space of continuous linear maps (modulo the
-addition of `Finset.prod` where needed. The duplication could be avoided by deducing the linear
+addition of `Finset.prod` where needed). The duplication could be avoided by deducing the linear
 case from the multilinear case via a currying isomorphism. However, this would mess up imports,
 and it is more satisfactory to have the simplest case as a standalone proof. -/
 instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearMap 𝕜 E G) := by

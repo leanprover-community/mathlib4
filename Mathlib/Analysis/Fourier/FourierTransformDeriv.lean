@@ -180,9 +180,25 @@ def bloublou_fourier [MeasurableSpace V] [BorelSpace V] (μ : Measure V)
 
 variable {L}
 
-lemma aestronglyMeasurable_boublou [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
+#check ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear
+
+lemma aestronglyMeasurable_boublou [SecondCountableTopology V]
+    [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
     {f : V → E} {k : ℕ} (hf : AEStronglyMeasurable f μ) :
-    AEStronglyMeasurable (fun v ↦ bloublou L f v k) μ := sorry
+    AEStronglyMeasurable (fun v ↦ bloublou L f v k) μ := by
+  apply AEStronglyMeasurable.const_smul'
+  let F : V → E → (W [×k]→L[ℝ] E) := fun v z ↦
+    ((ContinuousMultilinearMap.mkPiRing ℝ (Fin k) z).compContinuousLinearMap
+    (fun _i ↦ L v))
+  change AEStronglyMeasurable (F.uncurry ∘ (fun v ↦ (v, f v))) μ
+  have A : Continuous F.uncurry := by
+    simp [F]
+    sorry
+  apply A.comp_aestronglyMeasurable
+  exact aestronglyMeasurable_id.prod_mk hf
+
+
+#exit
 
 lemma integrable_bloublou [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
     {f : V → E} {k : ℕ} (hf : Integrable (fun v ↦ ‖v‖^k * ‖f v‖) μ)
