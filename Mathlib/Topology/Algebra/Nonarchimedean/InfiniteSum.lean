@@ -55,7 +55,6 @@ theorem cauchy_partial_sums_of_tendsto_cofinite_zero {α G : Type*} [AddCommGrou
       apply mem_map.mpr
       apply mem_of_superset <| mem_atTop S
       intro S' hS'
-      simp only [Set.mem_setOf_eq, Finset.le_eq_subset] at hS'
 
       /- Break the partial sum of `f` on `S'` into a sum on `S` and on `S' \ S`. The latter is a sum
       of elements of `H`, so it is in `H`. Therefore, the sum of `f` on `S'` is in the coset `V`,
