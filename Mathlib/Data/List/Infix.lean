@@ -277,7 +277,7 @@ theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ :=
     rwa [prefix_cons_inj]
 #align list.cons_prefix_iff List.cons_prefix_iff
 
-theorem IsPrefix.map (h : l₁ <+: l₂) (f : α → β) : l₁.map f <+: l₂.map f := by
+protected theorem IsPrefix.map (h : l₁ <+: l₂) (f : α → β) : l₁.map f <+: l₂.map f := by
   induction' l₁ with hd tl hl generalizing l₂
   · simp only [nil_prefix, map_nil]
   · cases' l₂ with hd₂ tl₂
@@ -286,7 +286,7 @@ theorem IsPrefix.map (h : l₁ <+: l₂) (f : α → β) : l₁.map f <+: l₂.m
       simp only [List.map_cons, h, prefix_cons_inj, hl, map]
 #align list.is_prefix.map List.IsPrefix.map
 
-theorem IsPrefix.filter_map (h : l₁ <+: l₂) (f : α → Option β) :
+protected theorem IsPrefix.filterMap (h : l₁ <+: l₂) (f : α → Option β) :
     l₁.filterMap f <+: l₂.filterMap f := by
   induction' l₁ with hd₁ tl₁ hl generalizing l₂
   · simp only [nil_prefix, filterMap_nil]
@@ -296,9 +296,11 @@ theorem IsPrefix.filter_map (h : l₁ <+: l₂) (f : α → Option β) :
       rw [← @singleton_append _ hd₁ _, ← @singleton_append _ hd₂ _, filterMap_append,
         filterMap_append, h.left, prefix_append_right_inj]
       exact hl h.right
-#align list.is_prefix.filter_map List.IsPrefix.filter_map
+#align list.is_prefix.filter_map List.IsPrefix.filterMap
 
-theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
+@[deprecated] alias IsPrefix.filter_map := IsPrefix.filterMap
+
+protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
   h.filter_map id
 #align list.is_prefix.reduce_option List.IsPrefix.reduceOption
