@@ -583,7 +583,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       trace[notation3] "Matcher creation succeeded; assembling delaborator"
       let delabName := name ++ `delab
       let matcher ← ms.foldrM (fun m t => `($(m.2) >=> $t)) (← `(pure))
-      trace[notation3] "matcher: {indentD matcher}"
+      trace[notation3] "matcher:{indentD matcher}"
       let mut result ← `(`($pat))
       for (name, id) in boundIdents.toArray do
         match boundType.findD name .normal with
