@@ -130,7 +130,7 @@ theorem exists_dvd_and_dvd_of_dvd_mul [DecompositionMonoid α] {b c a : α} (H :
 end Semigroup
 
 section Monoid
-variable [Monoid α] {a b c : α} {m n : ℕ}
+variable [Monoid α] {a b : α} {m n : ℕ}
 
 @[refl, simp]
 theorem dvd_refl (a : α) : a ∣ a :=
@@ -167,7 +167,7 @@ alias Dvd.dvd.pow := dvd_pow
 lemma dvd_pow_self (a : α) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n := dvd_rfl.pow hn
 #align dvd_pow_self dvd_pow_self
 
-theorem mul_dvd_mul_left (h : b ∣ c) : a * b ∣ a * c := by
+theorem mul_dvd_mul_left {c : α} (h : b ∣ c) : a * b ∣ a * c := by
   obtain ⟨d, rfl⟩ := h
   use d
   rw [mul_assoc]
