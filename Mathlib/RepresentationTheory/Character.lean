@@ -260,7 +260,7 @@ lemma RegularRep_character : (RegularRep).character =
     fun (g : G) ↦ if g = 1 then (Fintype.card G : k) else 0 := by
   sorry
 
-lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) : scalarProduct (RegularRep).character V.character = V.1.finrank := by
+lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) : scalarProduct (RegularRep).character V.character = (FiniteDimensional.finrank k V.1 : k) := by
   sorry
 
 end RegularRepresentation
