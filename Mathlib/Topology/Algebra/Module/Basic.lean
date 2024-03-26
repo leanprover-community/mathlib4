@@ -584,8 +584,10 @@ variable {S₂ T₂ : Type*} [Monoid S₂] [Monoid T₂]
 variable [DistribMulAction S₂ M₂] [SMulCommClass R₂ S₂ M₂] [ContinuousConstSMul S₂ M₂]
 variable [DistribMulAction T₂ M₂] [SMulCommClass R₂ T₂ M₂] [ContinuousConstSMul T₂ M₂]
 
-instance mulAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) where
+instance instSMul : SMul S₂ (M₁ →SL[σ₁₂] M₂) where
   smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.2.const_smul _ : Continuous fun x => c • f x)⟩
+
+instance mulAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) where
   one_smul _f := ext fun _x => one_smul _ _
   mul_smul _a _b _f := ext fun _x => mul_smul _ _ _
 #align continuous_linear_map.mul_action ContinuousLinearMap.mulAction
@@ -733,8 +735,6 @@ theorem coe_add' (f g : M₁ →SL[σ₁₂] M₂) : ⇑(f + g) = f + g :=
 #align continuous_linear_map.coe_add' ContinuousLinearMap.coe_add'
 
 instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
-  zero := (0 : M₁ →SL[σ₁₂] M₂)
-  add := (· + ·)
   zero_add := by
     intros
     ext
@@ -865,9 +865,6 @@ theorem mul_apply (f g : M₁ →L[R₁] M₁) (x : M₁) : (f * g) x = f (g x) 
 #align continuous_linear_map.mul_apply ContinuousLinearMap.mul_apply
 
 instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) where
-  mul := (· * ·)
-  one := 1
-  zero := 0
   mul_zero f := ext fun _ => map_zero f
   zero_mul _ := ext fun _ => rfl
   mul_one _ := ext fun _ => rfl
@@ -878,12 +875,15 @@ instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) where
 theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
+instance instNatCast [ContinuousAdd M₁] : NatCast (M₁ →L[R₁] M₁) where
+  natCast n := n • (1 : M₁ →L[R₁] M₁)
+
 instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) where
   __ := ContinuousLinearMap.monoidWithZero
   __ := ContinuousLinearMap.addCommMonoid
   left_distrib f g h := ext fun x => map_add f (g x) (h x)
   right_distrib _ _ _ := ext fun _ => LinearMap.add_apply _ _ _
-  natCast n := n • (1 : M₁ →L[R₁] M₁)
+  toNatCast := instNatCast
   natCast_zero := zero_smul ℕ (1 : M₁ →L[R₁] M₁)
   natCast_succ n := (AddMonoid.nsmul_succ n (1 : M₁ →L[R₁] M₁)).trans (add_comm _ _)
 #align continuous_linear_map.semiring ContinuousLinearMap.semiring

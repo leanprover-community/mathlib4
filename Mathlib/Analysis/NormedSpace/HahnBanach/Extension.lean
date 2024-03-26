@@ -148,7 +148,7 @@ open ContinuousLinearEquiv Submodule
 open scoped Classical
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
-  rw [norm_smul (x := coord 𝕜 x h), IsROrC.norm_coe_norm, coord_norm,
+  rw [norm_smul (α := 𝕜) (x := coord 𝕜 x h), IsROrC.norm_coe_norm, coord_norm,
     mul_inv_cancel (mt norm_eq_zero.mp h)]
 #align coord_norm' coord_norm'
 
