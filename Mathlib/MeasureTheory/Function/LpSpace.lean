@@ -186,7 +186,7 @@ theorem coeFn_mk {f : α →ₘ[μ] E} (hf : snorm f p μ < ∞) : ((⟨f, hf⟩
   rfl
 #align measure_theory.Lp.coe_fn_mk MeasureTheory.Lp.coeFn_mk
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem coe_mk {f : α →ₘ[μ] E} (hf : snorm f p μ < ∞) : ((⟨f, hf⟩ : Lp E p μ) : α →ₘ[μ] E) = f :=
   rfl
 #align measure_theory.Lp.coe_mk MeasureTheory.Lp.coe_mk
@@ -458,18 +458,16 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
 #align measure_theory.Lp.normed_add_comm_group MeasureTheory.Lp.instNormedAddCommGroup
 
 -- check no diamond is created
-example [Fact (1 ≤ p)] : PseudoEMetricSpace.toEDist = (Lp.instEDist : EDist (Lp E p μ)) :=
-  rfl
+example [Fact (1 ≤ p)] : PseudoEMetricSpace.toEDist = (Lp.instEDist : EDist (Lp E p μ)) := by
+  with_reducible_and_instances rfl
 
-example [Fact (1 ≤ p)] : SeminormedAddGroup.toNNNorm = (Lp.instNNNorm : NNNorm (Lp E p μ)) :=
-  rfl
+example [Fact (1 ≤ p)] : SeminormedAddGroup.toNNNorm = (Lp.instNNNorm : NNNorm (Lp E p μ)) := by
+  with_reducible_and_instances rfl
 
 section BoundedSMul
 
 variable {𝕜 𝕜' : Type*}
-
 variable [NormedRing 𝕜] [NormedRing 𝕜'] [Module 𝕜 E] [Module 𝕜' E]
-
 variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜' E]
 
 theorem const_smul_mem_Lp (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] E) ∈ Lp E p μ := by
@@ -740,13 +738,12 @@ lemma Memℒp.piecewise [DecidablePred (· ∈ s)]
   constructor
   · have h : ∀ᵐ (x : α) ∂μ, x ∈ s →
         (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖f x‖₊ : ℝ≥0∞) ^ p.toReal := by
-      refine ae_of_all _ (fun a ha ↦ ?_)
-      simp [ha]
+      filter_upwards with a ha using by simp [ha]
     rw [set_lintegral_congr_fun hs h]
     exact lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp_zero hp_top hf.2
   · have h : ∀ᵐ (x : α) ∂μ, x ∈ sᶜ →
         (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖g x‖₊ : ℝ≥0∞) ^ p.toReal := by
-      refine ae_of_all _ (fun a ha ↦ ?_)
+      filter_upwards with a ha
       have ha' : a ∉ s := ha
       simp [ha']
     rw [set_lintegral_congr_fun hs.compl h]
@@ -1150,7 +1147,7 @@ theorem add_compLp (L L' : E →L[𝕜] F) (f : Lp E p μ) :
   refine' EventuallyEq.trans _ (Lp.coeFn_add _ _).symm
   refine'
     EventuallyEq.trans _ (EventuallyEq.add (L.coeFn_compLp' f).symm (L'.coeFn_compLp' f).symm)
-  refine' eventually_of_forall fun x => _
+  filter_upwards with x
   rw [coe_add', Pi.add_def]
 #align continuous_linear_map.add_comp_Lp ContinuousLinearMap.add_compLp
 
@@ -1465,7 +1462,7 @@ theorem completeSpace_lp_of_cauchy_complete_ℒp [hp : Fact (1 ≤ p)]
   refine' H f1 (fun n => Lp.memℒp (f n)) B1 hB1 fun N n m hn hm => _
   specialize hf N n m hn hm
   rw [dist_def] at hf
-  dsimp only
+  dsimp only [f1]
   rwa [ENNReal.lt_ofReal_iff_toReal_lt]
   rw [snorm_congr_ae (Lp.coeFn_sub _ _).symm]
   exact Lp.snorm_ne_top _
@@ -1718,7 +1715,6 @@ open BoundedContinuousFunction
 section
 
 variable [TopologicalSpace α] [BorelSpace α] [SecondCountableTopologyEither α E]
-
 variable (E p μ)
 
 /-- An additive subgroup of `Lp E p μ`, consisting of the equivalence classes which contain a
@@ -1837,7 +1833,6 @@ end BoundedContinuousFunction
 namespace ContinuousMap
 
 variable [CompactSpace α] [IsFiniteMeasure μ]
-
 variable (𝕜 : Type*) (p μ) [Fact (1 ≤ p)]
 
 /-- The bounded linear map of considering a continuous function on a compact finite-measure

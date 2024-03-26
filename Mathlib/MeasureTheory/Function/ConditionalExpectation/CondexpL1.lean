@@ -127,8 +127,7 @@ theorem condexpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs
 
 theorem norm_condexpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     ‖condexpIndL1Fin hm hs hμs x‖ ≤ (μ s).toReal * ‖x‖ := by
-  have : 0 ≤ ∫ a : α, ‖condexpIndL1Fin hm hs hμs x a‖ ∂μ :=
-    integral_nonneg fun a => norm_nonneg _
+  have : 0 ≤ ∫ a : α, ‖condexpIndL1Fin hm hs hμs x a‖ ∂μ := by positivity
   rw [L1.norm_eq_integral_norm, ← ENNReal.toReal_ofReal (norm_nonneg x), ← ENNReal.toReal_mul, ←
     ENNReal.toReal_ofReal this,
     ENNReal.toReal_le_toReal ENNReal.ofReal_ne_top (ENNReal.mul_ne_top hμs ENNReal.ofReal_ne_top),
@@ -163,8 +162,7 @@ theorem condexpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSe
   push_cast
   rw [((toSpanSingleton ℝ x).compLpL 2 μ).map_add]
   refine' (Lp.coeFn_add _ _).trans _
-  refine' eventually_of_forall fun y => _
-  rfl
+  filter_upwards with y using rfl
 #align measure_theory.condexp_ind_L1_fin_disjoint_union MeasureTheory.condexpIndL1Fin_disjoint_union
 
 end CondexpIndL1Fin
@@ -484,7 +482,7 @@ theorem condexpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     condexpL1CLM F' hm μ (f : α →₁[μ] F') = ↑f := by
   let g := lpMeasToLpTrimLie F' ℝ 1 μ hm f
   have hfg : f = (lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g := by
-    simp only [LinearIsometryEquiv.symm_apply_apply]
+    simp only [g, LinearIsometryEquiv.symm_apply_apply]
   rw [hfg]
   refine' @Lp.induction α F' m _ 1 (μ.trim hm) _ ENNReal.coe_ne_top (fun g : α →₁[μ.trim hm] F' =>
     condexpL1CLM F' hm μ ((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g : α →₁[μ] F') =

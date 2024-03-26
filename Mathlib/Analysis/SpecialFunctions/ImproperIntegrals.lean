@@ -58,7 +58,7 @@ theorem integral_exp_neg_Ioi_zero : (∫ x : ℝ in Ioi 0, exp (-x)) = 1 := by
   simpa only [neg_zero, exp_zero] using integral_exp_neg_Ioi 0
 #align integral_exp_neg_Ioi_zero integral_exp_neg_Ioi_zero
 
-/-- If `0 < c`, then `(λ t : ℝ, t ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
+/-- If `0 < c`, then `(fun t : ℝ ↦ t ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
 theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
     IntegrableOn (fun t : ℝ => t ^ a) (Ioi c) := by
   have hd : ∀ x ∈ Ici c, HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
@@ -181,7 +181,7 @@ theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c
 
 theorem integrable_inv_one_add_sq : Integrable fun (x : ℝ) ↦ (1 + x ^ 2)⁻¹ := by
   suffices Integrable fun (x : ℝ) ↦ (1 + ‖x‖ ^ 2) ^ ((-2 : ℝ) / 2) by simpa [rpow_neg_one]
-  exact integrable_rpow_neg_one_add_norm_sq (by simpa using by norm_num)
+  exact integrable_rpow_neg_one_add_norm_sq (by simp)
 
 @[simp]
 theorem integral_Iic_inv_one_add_sq {i : ℝ} :

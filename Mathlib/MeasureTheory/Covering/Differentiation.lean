@@ -326,8 +326,8 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
           (toMeasurable μ sᶜ ∪ ⋃ n, toMeasurable (ρ + μ) (w n)) ⊆
         toMeasurable μ sᶜ ∪
           ⋃ (m) (n), toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n) := by
-      simp only [inter_distrib_left, inter_distrib_right, true_and_iff, subset_union_left,
-        union_subset_iff, inter_self]
+      simp only [inter_union_distrib_left, union_inter_distrib_right, true_and_iff,
+        subset_union_left, union_subset_iff, inter_self]
       refine' ⟨_, _, _⟩
       · exact (inter_subset_right _ _).trans (subset_union_left _ _)
       · exact (inter_subset_left _ _).trans (subset_union_left _ _)
@@ -548,7 +548,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
   have A : ν (s ∩ f ⁻¹' {0}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {0}) := by
     apply le_trans _ (zero_le _)
     have M : MeasurableSet (s ∩ f ⁻¹' {0}) := hs.inter (f_meas (measurableSet_singleton _))
-    simp only [nonpos_iff_eq_zero, M, withDensity_apply, lintegral_eq_zero_iff f_meas]
+    simp only [ν, nonpos_iff_eq_zero, M, withDensity_apply, lintegral_eq_zero_iff f_meas]
     apply (ae_restrict_iff' M).2
     exact eventually_of_forall fun x hx => hx.2
   have B : ν (s ∩ f ⁻¹' {∞}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) := by
@@ -563,7 +563,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
     intro n
     let I := Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))
     have M : MeasurableSet (s ∩ f ⁻¹' I) := hs.inter (f_meas measurableSet_Ico)
-    simp only [M, withDensity_apply, coe_nnreal_smul_apply]
+    simp only [ν, M, withDensity_apply, coe_nnreal_smul_apply]
     calc
       (∫⁻ x in s ∩ f ⁻¹' I, f x ∂μ) ≤ ∫⁻ _ in s ∩ f ⁻¹' I, (t : ℝ≥0∞) ^ (n + 1) ∂μ :=
         lintegral_mono_ae ((ae_restrict_iff' M).2 (eventually_of_forall fun x hx => hx.2.2.le))
@@ -627,7 +627,7 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
     intro n
     let I := Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))
     have M : MeasurableSet (s ∩ f ⁻¹' I) := hs.inter (f_meas measurableSet_Ico)
-    simp only [M, withDensity_apply, coe_nnreal_smul_apply]
+    simp only [ν, M, withDensity_apply, coe_nnreal_smul_apply]
     calc
       ρ (s ∩ f ⁻¹' I) ≤ (t : ℝ≥0∞) ^ (n + 1) * μ (s ∩ f ⁻¹' I) := by
         rw [← ENNReal.coe_zpow t_ne_zero']
@@ -841,9 +841,7 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : 
       v.eventually_filterAt_measurableSet x] with a ha h'a
     congr 1
     apply set_lintegral_congr_fun h'a
-    apply eventually_of_forall fun y => ?_
-    intro hy
-    simp only [ha hy, indicator_of_mem]
+    filter_upwards with y hy using (by simp only [ha hy, indicator_of_mem])
   apply ENNReal.tendsto_nhds_zero.2 fun ε εpos => ?_
   obtain ⟨c, ct, xc⟩ : ∃ c ∈ t, (‖f x - c‖₊ : ℝ≥0∞) < ε / 2 := by
     simp_rw [← edist_eq_coe_nnnorm_sub]
@@ -919,12 +917,8 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
   have A : IntegrableOn (fun y => (‖f y - f x‖₊ : ℝ)) a μ := by
     simp_rw [coe_nnnorm]
     exact (h''a.sub (integrableOn_const.2 (Or.inr h'a))).norm
-  rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal]
-  · simp_rw [coe_nnnorm]
-    rfl
-  · apply integral_nonneg
-    intro x
-    exact NNReal.coe_nonneg _
+  rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal (by positivity)]
+  rfl
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `f` on `a` tends to `f x` as `a` shrinks to `x` along a Vitali family.-/

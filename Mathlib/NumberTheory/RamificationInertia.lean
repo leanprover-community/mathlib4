@@ -45,9 +45,7 @@ namespace Ideal
 universe u v
 
 variable {R : Type u} [CommRing R]
-
 variable {S : Type v} [CommRing S] (f : R →+* S)
-
 variable (p : Ideal R) (P : Ideal S)
 
 open FiniteDimensional
@@ -227,19 +225,12 @@ open scoped BigOperators
 open scoped nonZeroDivisors
 
 variable [Algebra R S]
-
 variable {K : Type*} [Field K] [Algebra R K] [hRK : IsFractionRing R K]
-
 variable {L : Type*} [Field L] [Algebra S L] [IsFractionRing S L]
-
 variable {V V' V'' : Type*}
-
 variable [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
-
 variable [AddCommGroup V'] [Module R V'] [Module S V'] [IsScalarTower R S V']
-
 variable [AddCommGroup V''] [Module R V'']
-
 variable (K)
 
 /-- Let `V` be a vector space over `K = Frac(R)`, `S / R` a ring extension
@@ -332,7 +323,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
   let B := A.adjugate
   have A_smul : ∀ i, ∑ j, A i j • a j = 0 := by
     intros
-    simp [Matrix.sub_apply, Matrix.of_apply, ne_eq, Matrix.one_apply, sub_smul,
+    simp [A, Matrix.sub_apply, Matrix.of_apply, ne_eq, Matrix.one_apply, sub_smul,
       Finset.sum_sub_distrib, hA', sub_self]
   -- since `span S {det A} / M = 0`.
   have d_smul : ∀ i, A.det • a i = 0 := by
@@ -341,7 +332,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
       A.det • a i = ∑ j, (B * A) i j • a j := ?_
       _ = ∑ k, B i k • ∑ j, A k j • a j := ?_
       _ = 0 := Finset.sum_eq_zero fun k _ => ?_
-    · simp only [Matrix.adjugate_mul, Matrix.smul_apply, Matrix.one_apply, smul_eq_mul, ite_true,
+    · simp only [B, Matrix.adjugate_mul, Matrix.smul_apply, Matrix.one_apply, smul_eq_mul, ite_true,
         mul_ite, mul_one, mul_zero, ite_smul, zero_smul, Finset.sum_ite_eq, Finset.mem_univ]
     · simp only [Matrix.mul_apply, Finset.smul_sum, Finset.sum_smul, smul_smul]
       rw [Finset.sum_comm]
@@ -370,7 +361,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     haveI := Ideal.Quotient.nontrivial hp
     calc
       Ideal.Quotient.mk p A.det = Matrix.det ((Ideal.Quotient.mk p).mapMatrix A) := by
-        rw [RingHom.map_det, RingHom.mapMatrix_apply]
+        rw [RingHom.map_det]
       _ = Matrix.det ((Ideal.Quotient.mk p).mapMatrix (Matrix.of A' - 1)) := rfl
       _ = Matrix.det fun i j =>
           (Ideal.Quotient.mk p) (A' i j) - (1 : Matrix (Fin n) (Fin n) (R ⧸ p)) i j := ?_
@@ -584,7 +575,7 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDomain S] [IsDedekindDo
       Submodule.coe_sub]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Submodule.neg_mem _ hz)⟩, ?_⟩
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Ideal.Quotient.mk_eq_mk, map_add,
-      mul_comm y a, sub_add_cancel', map_neg]
+      mul_comm y a, sub_add_cancel_left, map_neg]
   letI := Classical.decEq (Ideal S)
   rw [sup_eq_prod_inf_factors _ (pow_ne_zero _ hP0), normalizedFactors_pow,
     normalizedFactors_irreducible ((Ideal.prime_iff_isPrime hP0).mpr hP).irreducible, normalize_eq,
@@ -634,11 +625,11 @@ theorem rank_pow_quot [IsDomain S] [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime
     fun i => Module.rank (R ⧸ p) { x // x ∈ map (Quotient.mk (P ^ e)) (P ^ i) }
       = (e - i) • Module.rank (R ⧸ p) (S ⧸ P)
   refine @Nat.decreasingInduction' Q i e (fun j lt_e _le_j ih => ?_) hi ?_
-  · dsimp only
+  · dsimp only [Q]
     rw [rank_pow_quot_aux f p P _ lt_e, ih, ← succ_nsmul, Nat.sub_succ, ← Nat.succ_eq_add_one,
       Nat.succ_pred_eq_of_pos (Nat.sub_pos_of_lt lt_e)]
     assumption
-  · dsimp only
+  · dsimp only [Q]
     rw [Nat.sub_self, zero_nsmul, map_quotient_self]
     exact rank_bot (R ⧸ p) (S ⧸ P ^ e)
 #align ideal.rank_pow_quot Ideal.rank_pow_quot

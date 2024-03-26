@@ -66,9 +66,7 @@ attribute [inherit_doc IsNoetherian] IsNoetherian.noetherian
 section
 
 variable {R : Type*} {M : Type*} {P : Type*}
-
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid P]
-
 variable [Module R M] [Module R P]
 
 open IsNoetherian
@@ -147,9 +145,7 @@ end
 namespace Module
 
 variable {R M N : Type*}
-
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
-
 variable (R M)
 
 -- see Note [lower instance priority]
@@ -173,9 +169,7 @@ end Module
 section
 
 variable {R : Type*} {M : Type*} {P : Type*}
-
 variable [Ring R] [AddCommGroup M] [AddCommGroup P]
-
 variable [Module R M] [Module R P]
 
 open IsNoetherian
@@ -551,7 +545,7 @@ also noetherian. -/
 theorem isNoetherian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M] [SMul R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsNoetherian R M) : IsNoetherian S M := by
   rw [isNoetherian_iff_wellFounded] at h ⊢
-  refine' (Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h
+  exact (Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h
 #align is_noetherian_of_tower isNoetherian_of_tower
 
 theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module R M]

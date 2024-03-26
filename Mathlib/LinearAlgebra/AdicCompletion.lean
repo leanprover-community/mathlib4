@@ -31,9 +31,7 @@ with respect to an ideal `I`:
 open Submodule
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
-
 variable (M : Type*) [AddCommGroup M] [Module R M]
-
 variable {N : Type*} [AddCommGroup N] [Module R N]
 
 /-- A module `M` is Hausdorff with respect to an ideal `I` if `⋂ I^n M = 0`. -/
@@ -289,7 +287,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   let f : ℕ → R := fun n => ∑ i in range n, (x * y) ^ i
   have hf : ∀ m n, m ≤ n → f m ≡ f n [SMOD I ^ m • (⊤ : Submodule R R)] := by
     intro m n h
-    simp only [Algebra.id.smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]
+    simp only [f, Algebra.id.smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]
     rw [← add_tsub_cancel_of_le h, Finset.sum_range_add, ← sub_sub, sub_self, zero_sub,
       @neg_mem_iff]
     apply Submodule.sum_mem

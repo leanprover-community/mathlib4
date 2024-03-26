@@ -85,9 +85,11 @@ theorem monic_of_subsingleton [Subsingleton R] (p : R[X]) : Monic p :=
   Subsingleton.elim _ _
 #align polynomial.monic_of_subsingleton Polynomial.monic_of_subsingleton
 
-theorem Monic.def : Monic p ↔ leadingCoeff p = 1 :=
+-- Adaptation note: 2024-03-15
+-- Renamed to avoid the reserved name `Monic.def`.
+theorem Monic.def' : Monic p ↔ leadingCoeff p = 1 :=
   Iff.rfl
-#align polynomial.monic.def Polynomial.Monic.def
+#align polynomial.monic.def Polynomial.Monic.def'
 
 instance Monic.decidable [DecidableEq R] : Decidable (Monic p) := by unfold Monic; infer_instance
 #align polynomial.monic.decidable Polynomial.Monic.decidable
@@ -866,12 +868,12 @@ theorem leadingCoeff_C (a : R) : leadingCoeff (C a) = a :=
   leadingCoeff_monomial a 0
 #align polynomial.leading_coeff_C Polynomial.leadingCoeff_C
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_X_pow (n : ℕ) : leadingCoeff ((X : R[X]) ^ n) = 1 := by
   simpa only [C_1, one_mul] using leadingCoeff_C_mul_X_pow (1 : R) n
 #align polynomial.leading_coeff_X_pow Polynomial.leadingCoeff_X_pow
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_X : leadingCoeff (X : R[X]) = 1 := by
   simpa only [pow_one] using @leadingCoeff_X_pow R _ 1
 #align polynomial.leading_coeff_X Polynomial.leadingCoeff_X
@@ -886,7 +888,7 @@ theorem monic_X : Monic (X : R[X]) :=
   leadingCoeff_X
 #align polynomial.monic_X Polynomial.monic_X
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_one : leadingCoeff (1 : R[X]) = 1 :=
   leadingCoeff_C 1
 #align polynomial.leading_coeff_one Polynomial.leadingCoeff_one
@@ -1202,7 +1204,7 @@ theorem eq_C_coeff_zero_iff_natDegree_eq_zero : p = C (p.coeff 0) ↔ p.natDegre
   ⟨fun h ↦ by rw [h, natDegree_C], eq_C_of_natDegree_eq_zero⟩
 
 theorem eq_one_of_monic_natDegree_zero (hf : p.Monic) (hfd : p.natDegree = 0) : p = 1 := by
-  rw [Monic.def, leadingCoeff, hfd] at hf
+  rw [Monic.def', leadingCoeff, hfd] at hf
   rw [eq_C_of_natDegree_eq_zero hfd, hf, map_one]
 
 theorem ne_zero_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : p ≠ 0 :=

@@ -31,7 +31,6 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 namespace Tuple
 
 variable {n : ℕ}
-
 variable {α : Type*} [LinearOrder α]
 
 /-- `graph f` produces the finset of pairs `(f i, i)`
@@ -52,7 +51,7 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
   · exact Finset.card_fin _
   · intro _ _
-    -- Porting note: was `simp`
+    -- porting note (#10745): was `simp`
     dsimp only
     rw [Prod.ext_iff]
     simp

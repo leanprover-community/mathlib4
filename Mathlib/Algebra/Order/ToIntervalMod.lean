@@ -392,7 +392,7 @@ theorem toIcoDiv_neg' (a b : α) : toIcoDiv hp (-a) b = -(toIocDiv hp a (-b) + 1
 #align to_Ico_div_neg' toIcoDiv_neg'
 
 theorem toIocDiv_neg (a b : α) : toIocDiv hp a (-b) = -(toIcoDiv hp (-a) b + 1) := by
-  rw [← neg_neg b, toIcoDiv_neg, neg_neg, neg_neg, neg_add', neg_neg, add_sub_cancel]
+  rw [← neg_neg b, toIcoDiv_neg, neg_neg, neg_neg, neg_add', neg_neg, add_sub_cancel_right]
 #align to_Ioc_div_neg toIocDiv_neg
 
 theorem toIocDiv_neg' (a b : α) : toIocDiv hp (-a) b = -(toIcoDiv hp a (-b) + 1) := by
@@ -857,7 +857,7 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
     toIcoMod hp x₂ x₃ ≤ toIocMod hp x₂ x₁ := by
   let x₂' := toIcoMod hp x₁ x₂
   let x₃' := toIcoMod hp x₂' x₃
-  have h : x₂' ≤ toIocMod hp x₁ x₃' := by simpa
+  have h : x₂' ≤ toIocMod hp x₁ x₃' := by simpa [x₃']
   have h₂₁ : x₂' < x₁ + p := toIcoMod_lt_right _ _ _
   have h₃₂ : x₃' - p < x₂' := sub_lt_iff_lt_add.2 (toIcoMod_lt_right _ _ _)
   suffices hequiv : x₃' ≤ toIocMod hp x₂' x₁ by
@@ -867,7 +867,7 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
   rcases le_or_lt x₃' (x₁ + p) with h₃₁ | h₁₃
   · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p from hIoc₂₁.symm.trans_ge h₃₁
     apply (toIocMod_eq_iff hp).2
-    exact ⟨⟨h₂₁, by simp [left_le_toIcoMod]⟩, -1, by simp⟩
+    exact ⟨⟨h₂₁, by simp [x₂', left_le_toIcoMod]⟩, -1, by simp⟩
   have hIoc₁₃ : toIocMod hp x₁ x₃' = x₃' - p := by
     apply (toIocMod_eq_iff hp).2
     exact ⟨⟨lt_sub_iff_add_lt.2 h₁₃, le_of_lt (h₃₂.trans h₂₁)⟩, 1, by simp⟩
@@ -889,7 +889,7 @@ private theorem toIxxMod_total' (a b c : α) :
     Thus if a ≠ b and b ≠ c then ({a-b} + {b-c}) + ({c-b} + {b-a}) = 2 * period, so one of
     `{a-b} + {b-c}` and `{c-b} + {b-a}` must be `≤ period` -/
   have := congr_arg₂ (· + ·) (toIcoMod_add_toIocMod_zero hp a b) (toIcoMod_add_toIocMod_zero hp c b)
-  simp only [add_add_add_comm] at this -- Porting note: was `rw`
+  simp only [add_add_add_comm] at this -- Porting note (#10691): Was `rw`
   rw [_root_.add_comm (toIocMod _ _ _), add_add_add_comm, ← two_nsmul] at this
   replace := min_le_of_add_le_two_nsmul this.le
   rw [min_le_iff] at this

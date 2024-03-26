@@ -355,7 +355,7 @@ noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some
   { toWord := w'
     head := (MonoidHom.ofInjective (d.injective i)).symm n.1
     normalized := fun i g hg => by
-      simp only [Word.cons, mem_cons, Sigma.mk.inj_iff] at hg
+      simp only [w', Word.cons, mem_cons, Sigma.mk.inj_iff] at hg
       rcases hg with ⟨rfl, hg | hg⟩
       · simp
       · exact w.normalized _ _ (by assumption) }
@@ -369,7 +369,7 @@ noncomputable def rcons (i : ι) (p : Pair d i) : NormalWord d :=
   { toWord := w
     head := (MonoidHom.ofInjective (d.injective i)).symm n.1
     normalized := fun i g hg => by
-        dsimp at hg
+        dsimp [w] at hg
         rw [Word.equivPair_symm, Word.mem_rcons_iff] at hg
         rcases hg with hg | ⟨_, rfl, rfl⟩
         · exact p.normalized _ _ hg
@@ -395,7 +395,7 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
       letI p := Word.equivPair i (CoprodI.of (φ i w.head) • w.toWord)
       { toPair := p
         normalized := fun j g hg => by
-          dsimp only at hg
+          dsimp only [p] at hg
           rw [Word.of_smul_def, ← Word.equivPair_symm, Equiv.apply_symm_apply] at hg
           dsimp at hg
           exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail _ hg) }
@@ -435,8 +435,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
       { equivPair i w with
         head := g * (equivPair i w).head } := rfl
 
-noncomputable instance mulAction [DecidableEq ι] [∀ i, DecidableEq (G i)] :
-    MulAction (PushoutI φ) (NormalWord d) :=
+noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
   MulAction.ofEndHom <|
     lift
       (fun i => MulAction.toEndHom)
@@ -689,7 +688,7 @@ theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (h
         simp only [Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
           List.map_nil, map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, map_one, mul_one,
           mul_inv_self, one_mem])
-      simp [Word.empty] at this)
+      simp [w, Word.empty] at this)
     (le_inf
       (by rw [← of_comp_eq_base i]
           rintro _ ⟨h, rfl⟩

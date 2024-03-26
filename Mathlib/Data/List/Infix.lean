@@ -201,7 +201,7 @@ theorem prefix_iff_eq_append : l₁ <+: l₂ ↔ l₁ ++ drop (length l₁) l₂
 #align list.prefix_iff_eq_append List.prefix_iff_eq_append
 
 theorem suffix_iff_eq_append : l₁ <:+ l₂ ↔ take (length l₂ - length l₁) l₂ ++ l₁ = l₂ :=
-  ⟨by rintro ⟨r, rfl⟩; simp only [length_append, add_tsub_cancel_right, take_left], fun e =>
+  ⟨by rintro ⟨r, rfl⟩; simp only [length_append, Nat.add_sub_cancel_right, take_left], fun e =>
     ⟨_, e⟩⟩
 #align list.suffix_iff_eq_append List.suffix_iff_eq_append
 
@@ -233,7 +233,6 @@ instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
     @decidable_of_decidable_of_iff _ _
       (@instDecidableOr _ _ _ (l₁.decidableSuffix l₂))
       suffix_cons_iff.symm
-termination_by l₁ l₂ => (l₁, l₂)
 #align list.decidable_suffix List.decidableSuffix
 
 instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
@@ -243,7 +242,6 @@ instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l
     @decidable_of_decidable_of_iff _ _
       (@instDecidableOr _ _ (l₁.decidablePrefix (b :: l₂)) (l₁.decidableInfix l₂))
       infix_cons_iff.symm
-termination_by l₁ l₂ => (l₁, l₂)
 #align list.decidable_infix List.decidableInfix
 
 theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
@@ -253,7 +251,7 @@ theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
   | zero => simp [min_eq_left, eq_self_iff_true, Nat.zero_le, take]
   | succ m IH =>
     cases L with
-    | nil => exact (not_lt_bot hm).elim
+    | nil => simp_all
     | cons l ls =>
       cases n with
       | zero =>

@@ -46,7 +46,7 @@ variable (c₂₃ : ComplexShape I₂₃) [DecidableEq I₂₃] [TotalComplexSha
 
 abbrev HasInt₂₃ := ∀ (i₁ : I₁), (K.X i₁).HasTotal c₂₃
 
-@[simps!]
+@[simps]
 noncomputable def int₂₃ [K.HasInt₂₃ c₂₃] : HomologicalComplex₂ C c₁ c₂₃ where
   X i₁ := (K.X i₁).total c₂₃
   d i₁ i₁' := HomologicalComplex₂.total.map (K.d i₁ i₁') _
@@ -88,7 +88,7 @@ variable (c₁₂ : ComplexShape I₁₂) [DecidableEq I₁₂] [TotalComplexSha
 
 abbrev HasInt₁₂ := ∀ (i₃ : I₃), (K.X' i₃).HasTotal c₁₂
 
-@[simps!]
+@[simps]
 noncomputable def int₁₂' [K.HasInt₁₂ c₁₂] : HomologicalComplex₂ C c₃ c₁₂ where
   X i₃ := (K.X' i₃).total c₁₂
   d i₃ i₃' := HomologicalComplex₂.total.map (K.d' i₃ i₃') _
@@ -364,7 +364,6 @@ lemma int₁₂_D₁ (j j' : J) :
     intro i₁ i₂ i₃ h
     rw [Preadditive.comp_add, ι_D₁, ι_D₂, K.ιTotal₁₂_eq c₁₂ c i₁ i₂ i₃ j h _ rfl, assoc,
       HomologicalComplex₂.ι_D₁]
-    dsimp
     let i₁₂ := ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩
     by_cases h₁ : c₁₂.Rel i₁₂ (c₁₂.next i₁₂)
     · rw [(K.int₁₂ c₁₂).d₁_eq c h₁ i₃ j']; swap
@@ -407,12 +406,11 @@ lemma int₁₂_D₁ (j j' : J) :
 lemma int₁₂_D₂ (j j' : J) : (int₁₂ K c₁₂).D₂ c j j' = K.D₃ c₁₂ c j j' :=
   total₁₂.hom_ext (fun i₁ i₂ i₃ h => by
     rw [ι_D₃, K.ιTotal₁₂_eq_assoc c₁₂ c i₁ i₂ i₃ j h _ rfl, HomologicalComplex₂.ι_D₂]
-    dsimp
     by_cases h₁ : c₃.Rel i₃ (c₃.next i₃)
     · by_cases h₂ : ComplexShape.π c₁₂ c₃ c
         (ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, ComplexShape.next c₃ i₃) = j'
       · rw [(K.int₁₂ c₁₂).d₂_eq c _ h₁ j' h₂, Linear.comp_units_smul, int₁₂_X_d,
-          GradedObject.ι_mapMap_assoc, K.d₃_eq c₁₂ c i₁ i₂ h₁ j' (by rw [← h₂])]
+          HomologicalComplex₂.ιTotal_map_assoc, K.d₃_eq c₁₂ c i₁ i₂ h₁ j' (by rw [← h₂])]
         rfl
       · rw [(K.int₁₂ c₁₂).d₂_eq_zero' c _ h₁ j' h₂, comp_zero,
           K.d₃_eq_zero' c₁₂ c i₁ i₂ h₁ j' (fun h₃ => h₂ (by rw [← h₃]))]
@@ -675,13 +673,11 @@ lemma int₂₃_D₁ (j j' : J) :
     (int₂₃ K c₂₃).D₁ c j j' = K.D₁' c₂₃ c j j' :=
   total₂₃.hom_ext (fun i₁ i₂ i₃ h => by
     rw [ι_D₁', K.ιTotal₂₃_eq c₂₃ c i₁ i₂ i₃ j h _ rfl, assoc, HomologicalComplex₂.ι_D₁]
-    dsimp
     by_cases h₁ : c₁.Rel i₁ (c₁.next i₁)
     · by_cases h₂ : ComplexShape.π c₁ c₂₃ c (ComplexShape.next c₁ i₁,
         ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) = j'
-      · rw [(K.int₂₃ c₂₃).d₁_eq c h₁ _ _ h₂, Linear.comp_units_smul]
-        dsimp
-        rw [GradedObject.ι_mapMap_assoc]
+      · rw [(K.int₂₃ c₂₃).d₁_eq c h₁ _ _ h₂, Linear.comp_units_smul,
+          int₂₃_d, HomologicalComplex₂.ιTotal_map_assoc]
         congr 2
         symm
         apply ιTotal₂₃OrZero_eq
@@ -694,7 +690,6 @@ lemma int₂₃_D₂ (j j' : J) : (int₂₃ K c₂₃).D₂ c j j' = K.D₂' c�
     intro i₁ i₂ i₃ h
     rw [Preadditive.comp_add, ι_D₂', ι_D₃', K.ιTotal₂₃_eq c₂₃ c i₁ i₂ i₃ j h _ rfl, assoc,
       HomologicalComplex₂.ι_D₂]
-    dsimp
     let i₂₃ := ComplexShape.π c₂ c₃ c₂₃ ⟨i₂, i₃⟩
     by_cases h₁ : c₂₃.Rel i₂₃ (c₂₃.next i₂₃)
     · rw [(K.int₂₃ c₂₃).d₂_eq c i₁ h₁ j']; swap

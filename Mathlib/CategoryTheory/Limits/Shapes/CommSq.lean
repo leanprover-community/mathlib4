@@ -989,7 +989,6 @@ end BicartesianSq
 section Functor
 
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 theorem Functor.map_isPullback [PreservesLimit (cospan h i) F] (s : IsPullback f g h i) :
