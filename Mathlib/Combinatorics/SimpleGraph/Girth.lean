@@ -40,6 +40,7 @@ lemma exists_girth_eq_length :
       ← exists_prop, Subtype.exists', Sigma.exists', eq_comm] at h ⊢
     exact ciInf_mem _
 
+/- Girth is at least 3 -/
 lemma three_le_length : 3 ≤ G.girth := by
   by_cases h : G.IsAcyclic
   · rw [← girth_eq_top] at h
