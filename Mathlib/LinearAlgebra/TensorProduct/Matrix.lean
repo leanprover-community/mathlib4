@@ -72,7 +72,7 @@ theorem TensorProduct.toMatrix_assoc :
   ext ⟨i, j, k⟩ ⟨⟨i', j'⟩, k'⟩
   simp_rw [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe,
     TensorProduct.assoc_tmul, Basis.tensorProduct_repr_tmul_apply, Matrix.submatrix_apply,
-    Equiv.prodAssoc_apply, id.eq_def, Basis.repr_self_apply, Matrix.one_apply, Prod.ext_iff, ite_and,
-    @eq_comm _ i', @eq_comm _ j', @eq_comm _ k']
+    Equiv.prodAssoc_apply, id.eq_def, Basis.repr_self_apply, Matrix.one_apply, Prod.ext_iff,
+    ite_and, @eq_comm _ i', @eq_comm _ j', @eq_comm _ k']
   split_ifs <;> simp
 #align tensor_product.to_matrix_assoc TensorProduct.toMatrix_assoc
