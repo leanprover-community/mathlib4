@@ -338,7 +338,7 @@ theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ 
         · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
           exact Subalgebra.add_mem _ (subset_adjoin (mem_singleton η)) (Subalgebra.one_mem _)
         · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
-          nth_rw 1 [← add_sub_cancel η 1]
+          nth_rw 1 [← add_sub_cancel_right η 1]
           exact Subalgebra.sub_mem _ (subset_adjoin (mem_singleton _)) (Subalgebra.one_mem _)
 -- Porting note: the previous proof was `rw [H] at this; exact this` but it now fails.
       exact IsCyclotomicExtension.equiv _ _ _ (Subalgebra.equivOfEq _ _ H)
@@ -361,7 +361,7 @@ theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ 
   rw [norm_eq_norm_adjoin K]
   · have H := hη.sub_one_norm_isPrimePow ?_ hirr₁ htwo
     swap; · rw [PNat.pow_coe]; exact hpri.1.isPrimePow.pow (Nat.succ_ne_zero _)
-    rw [add_sub_cancel] at H
+    rw [add_sub_cancel_right] at H
     rw [H]
     congr
     · rw [PNat.pow_coe, Nat.pow_minFac, hpri.1.minFac_eq]

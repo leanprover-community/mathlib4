@@ -334,7 +334,7 @@ theorem eval_eq_sum_range' {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : R) :
 @[simp]
 theorem eval₂_at_apply {S : Type*} [Semiring S] (f : R →+* S) (r : R) :
     p.eval₂ f (f r) = f (p.eval r) := by
-  rw [eval₂_eq_sum, eval_eq_sum, sum, sum, f.map_sum]
+  rw [eval₂_eq_sum, eval_eq_sum, sum, sum, map_sum f]
   simp only [f.map_mul, f.map_pow]
 #align polynomial.eval₂_at_apply Polynomial.eval₂_at_apply
 
@@ -441,8 +441,8 @@ theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
         · skip
         · ext
           rw [one_pow, mul_one, mul_comm]
-  rw [sum_range_succ, mul_add, Nat.choose_self, Nat.cast_one, one_mul, add_sub_cancel, mul_sum,
-    sum_range_succ', Nat.cast_zero, zero_mul, mul_zero, add_zero]
+  rw [sum_range_succ, mul_add, Nat.choose_self, Nat.cast_one, one_mul, add_sub_cancel_right,
+    mul_sum, sum_range_succ', Nat.cast_zero, zero_mul, mul_zero, add_zero]
   refine sum_congr rfl fun y _hy => ?_
   rw [← mul_assoc, ← mul_assoc, ← Nat.cast_mul, Nat.succ_mul_choose_eq, Nat.cast_mul,
     Nat.add_sub_cancel]
@@ -557,7 +557,7 @@ theorem X_comp : X.comp p = p :=
 #align polynomial.X_comp Polynomial.X_comp
 
 @[simp]
-theorem comp_C : p.comp (C a) = C (p.eval a) := by simp [comp, (C : R →+* _).map_sum]
+theorem comp_C : p.comp (C a) = C (p.eval a) := by simp [comp, map_sum (C : R →+* _)]
 #align polynomial.comp_C Polynomial.comp_C
 
 @[simp]
@@ -974,7 +974,7 @@ theorem eval_map (x : S) : (p.map f).eval x = p.eval₂ f x :=
 
 protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
     (∑ i in s, g i).map f = ∑ i in s, (g i).map f :=
-  (mapRingHom f).map_sum _ _
+  map_sum (mapRingHom f) _ _
 #align polynomial.map_sum Polynomial.map_sum
 
 theorem map_comp (p q : R[X]) : map f (p.comp q) = (map f p).comp (map f q) :=
@@ -1193,7 +1193,7 @@ theorem eval_multiset_prod (s : Multiset R[X]) (x : R) : eval x s.prod = (s.map 
 -/
 theorem eval_prod {ι : Type*} (s : Finset ι) (p : ι → R[X]) (x : R) :
     eval x (∏ j in s, p j) = ∏ j in s, eval x (p j) :=
-  (evalRingHom x).map_prod _ _
+  map_prod (evalRingHom x) _ _
 #align polynomial.eval_prod Polynomial.eval_prod
 
 theorem list_prod_comp (l : List R[X]) (q : R[X]) :
@@ -1256,7 +1256,7 @@ protected theorem map_multiset_prod (m : Multiset R[X]) : m.prod.map f = (m.map 
 
 protected theorem map_prod {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
     (∏ i in s, g i).map f = ∏ i in s, (g i).map f :=
-  (mapRingHom f).map_prod _ _
+  map_prod (mapRingHom f) _ _
 #align polynomial.map_prod Polynomial.map_prod
 
 theorem IsRoot.map {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot p x) : IsRoot (p.map f) (f x) := by
