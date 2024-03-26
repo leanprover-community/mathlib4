@@ -165,17 +165,17 @@ end MonoidAlgebra
 --   repeat rw [← this]
 --   sorry
 
-section Orthogonality
+section ClassFunction
 
-variable {G : GroupCat.{u}} [IsAlgClosed k]
-
-open scoped Classical
-
-variable [Fintype G] [Invertible (Fintype.card G : k)]
+variable {G : Type u} [Group G]
 
 def IsClassFunction (f : G → k) : Prop := ∀ (g h : G), f (h * g * h⁻¹) = f g
 
 def IsClassFunction' (f : MonoidAlgebra k G →ₗ[k] k) : Prop := ∀ (g h : G), f (h * g * h⁻¹) = f g
+
+def ClassFunction := { f : G → k // IsClassFunction f }
+
+def ClassFunction' := { f : MonoidAlgebra k G →ₗ[k] k // IsClassFunction' f }
 
 theorem isClassFunction_iff (f : G → k) : IsClassFunction f ↔
     IsClassFunction' (Finsupp.lift k k G f) := by
@@ -198,8 +198,6 @@ theorem isClassFunction_iff (f : G → k) : IsClassFunction f ↔
       _ = Finsupp.lift k k G f (MonoidAlgebra.single g 1) := conj_inv g h
       _ = f g := lift_eq f g
 
-def ClassFunction : Type u := { f : MonoidAlgebra k G →ₗ[k] k // IsClassFunction' f }
-
 theorem char_isClassFunction (V : FdRep k G) : IsClassFunction V.character := by
   intro g h
   rw [char_conj]
@@ -208,11 +206,25 @@ theorem char_isClassFunction' (V : FdRep k G) : IsClassFunction' V.character' :=
   rw [character', ← isClassFunction_iff]
   exact char_isClassFunction V
 
+end ClassFunction
+
+section Orthogonality
+
+variable {G : GroupCat.{u}} [IsAlgClosed k]
+
+open scoped Classical
+
+variable [Fintype G] [Invertible (Fintype.card G : k)]
+
+def scalarProduct (φ ψ : G → k) := ⅟ (Fintype.card G : k) • ∑ g : G, φ g * ψ g⁻¹
+
 /-- Orthogonality of characters for irreducible representations of finite group over an
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
 theorem char_orthonormal (V W : FdRep k G) [Simple V] [Simple W] :
-    ⅟ (Fintype.card G : k) • ∑ g : G, V.character g * W.character g⁻¹ =
+    scalarProduct V.character W.character =
       if Nonempty (V ≅ W) then ↑1 else ↑0 := by
+  -- We expand the definition of scalar product.
+  rw [scalarProduct]
   -- First, we can rewrite the summand `V.character g * W.character g⁻¹` as the character
   -- of the representation `V ⊗ W* ≅ Hom(W, V)` applied to `g`.
   -- Porting note: Originally `conv in V.character _ * W.character _ =>`
