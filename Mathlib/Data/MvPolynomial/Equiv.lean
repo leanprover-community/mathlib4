@@ -302,11 +302,11 @@ def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ 
       ext : 2 <;>
         simp only [MvPolynomial.algebraMap_eq, Option.elim, AlgHom.coe_comp, AlgHom.id_comp,
           IsScalarTower.coe_toAlgHom', comp_apply, aevalTower_C, Polynomial.aeval_X, aeval_X,
-          Option.elim', aevalTower_X, AlgHom.coe_id, id.def, eq_self_iff_true, imp_true_iff])
+          Option.elim', aevalTower_X, AlgHom.coe_id, id, eq_self_iff_true, imp_true_iff])
     (by
       ext ⟨i⟩ : 2 <;>
         simp only [Option.elim, AlgHom.coe_comp, comp_apply, aeval_X, aevalTower_C,
-          Polynomial.aeval_X, AlgHom.coe_id, id.def, aevalTower_X])
+          Polynomial.aeval_X, AlgHom.coe_id, id, aevalTower_X])
 #align mv_polynomial.option_equiv_right MvPolynomial.optionEquivRight
 
 variable (n : ℕ)
@@ -467,7 +467,7 @@ theorem finSuccEquiv_support' {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} :
   conv_lhs =>
     congr
     ext
-    rw [mem_support_iff, finSuccEquiv_coeff_coeff, Ne.def]
+    rw [mem_support_iff, finSuccEquiv_coeff_coeff, Ne]
   constructor
   · rintro ⟨m', ⟨h, hm'⟩⟩
     simp only [← hm']
@@ -507,7 +507,7 @@ theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).natDegree = degreeOf 0 f := by
   by_cases c : f = 0
   · rw [c, (finSuccEquiv R n).map_zero, Polynomial.natDegree_zero, degreeOf_zero]
-  · rw [Polynomial.natDegree, degree_finSuccEquiv (by simpa only [Ne.def] )]
+  · rw [Polynomial.natDegree, degree_finSuccEquiv (by simpa only [Ne] )]
     erw [WithBot.unbot'_coe]
     simp
 #align mv_polynomial.nat_degree_fin_succ_equiv MvPolynomial.natDegree_finSuccEquiv

@@ -414,7 +414,7 @@ theorem prod_eq_prod_iff :
     rintro ⟨rfl, rfl⟩
     exact prod_eq_empty_iff.mp h
   rw [prod_eq_prod_iff_of_nonempty h]
-  rw [nonempty_iff_ne_empty, Ne.def, prod_eq_empty_iff] at h
+  rw [nonempty_iff_ne_empty, Ne, prod_eq_empty_iff] at h
   simp_rw [h, false_and_iff, or_false_iff]
 #align set.prod_eq_prod_iff Set.prod_eq_prod_iff
 
@@ -928,7 +928,7 @@ theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine'
     ⟨fun h => or_iff_not_imp_right.2 _, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
-  rw [← Ne.def, ← nonempty_iff_ne_empty]
+  rw [← Ne, ← nonempty_iff_ne_empty]
   intro hne i hi
   simpa only [eval_image_pi hi hne, eval_image_pi hi (hne.mono h)] using
     image_subset (fun f : ∀ i, α i => f i) h

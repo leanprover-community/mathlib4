@@ -86,7 +86,7 @@ class CstarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_star_mul_self : ∀ {x : E}, ‖x⋆ * x‖ = ‖x‖ * ‖x‖
 #align cstar_ring CstarRing
 
-instance : CstarRing ℝ where norm_star_mul_self {x} := by simp only [star, id.def, norm_mul]
+instance : CstarRing ℝ where norm_star_mul_self {x} := by simp only [star, id, norm_mul]
 
 namespace CstarRing
 
@@ -138,7 +138,7 @@ theorem star_mul_self_eq_zero_iff (x : E) : x⋆ * x = 0 ↔ x = 0 := by
 #align cstar_ring.star_mul_self_eq_zero_iff CstarRing.star_mul_self_eq_zero_iff
 
 theorem star_mul_self_ne_zero_iff (x : E) : x⋆ * x ≠ 0 ↔ x ≠ 0 := by
-  simp only [Ne.def, star_mul_self_eq_zero_iff]
+  simp only [Ne, star_mul_self_eq_zero_iff]
 #align cstar_ring.star_mul_self_ne_zero_iff CstarRing.star_mul_self_ne_zero_iff
 
 @[simp]
@@ -147,7 +147,7 @@ theorem mul_star_self_eq_zero_iff (x : E) : x * x⋆ = 0 ↔ x = 0 := by
 #align cstar_ring.mul_star_self_eq_zero_iff CstarRing.mul_star_self_eq_zero_iff
 
 theorem mul_star_self_ne_zero_iff (x : E) : x * x⋆ ≠ 0 ↔ x ≠ 0 := by
-  simp only [Ne.def, mul_star_self_eq_zero_iff]
+  simp only [Ne, mul_star_self_eq_zero_iff]
 #align cstar_ring.mul_star_self_ne_zero_iff CstarRing.mul_star_self_ne_zero_iff
 
 end NonUnital

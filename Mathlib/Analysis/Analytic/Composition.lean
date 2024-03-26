@@ -154,7 +154,7 @@ theorem applyComposition_update (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     suffices C : Function.update v (r j') z ∘ r = Function.update (v ∘ r) j' z by
       convert C; exact (c.embedding_comp_inv j).symm
     exact Function.update_comp_eq_of_injective _ (c.embedding _).injective _ _
-  · simp only [h, Function.update_eq_self, Function.update_noteq, Ne.def, not_false_iff]
+  · simp only [h, Function.update_eq_self, Function.update_noteq, Ne, not_false_iff]
     let r : Fin (c.blocksFun k) → Fin n := c.embedding k
     change p (c.blocksFun k) (Function.update v j z ∘ r) = p (c.blocksFun k) (v ∘ r)
     suffices B : Function.update v j z ∘ r = v ∘ r by rw [B]
@@ -796,7 +796,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
     -- composition passes to the limit under locally uniform convergence.
     have B₁ : ContinuousAt (fun z : F => g (f x + z)) (f (x + y) - f x) := by
       refine' ContinuousAt.comp _ (continuous_const.add continuous_id).continuousAt
-      simp only [add_sub_cancel, id.def]
+      simp only [add_sub_cancel, id.eq_def]
       exact Hg.continuousOn.continuousAt (IsOpen.mem_nhds EMetric.isOpen_ball fy_mem)
     have B₂ : f (x + y) - f x ∈ EMetric.ball (0 : F) rg := by
       simpa [edist_eq_coe_nnnorm, edist_eq_coe_nnnorm_sub] using fy_mem

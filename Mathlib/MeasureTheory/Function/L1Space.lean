@@ -809,9 +809,9 @@ theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ)
   rw [show { x | ε ≤ ‖f x‖ } = { x | ENNReal.ofReal ε ≤ ‖f x‖₊ } by
       simp only [ENNReal.ofReal, Real.toNNReal_le_iff_le_coe, ENNReal.coe_le_coe, coe_nnnorm]]
   refine' (meas_ge_le_mul_pow_snorm μ one_ne_zero ENNReal.one_ne_top hf.1 _).trans_lt _
-  · simpa only [Ne.def, ENNReal.ofReal_eq_zero, not_le] using hε
+  · simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hε
   apply ENNReal.mul_lt_top
-  · simpa only [ENNReal.one_toReal, ENNReal.rpow_one, Ne.def, ENNReal.inv_eq_top,
+  · simpa only [ENNReal.one_toReal, ENNReal.rpow_one, Ne, ENNReal.inv_eq_top,
       ENNReal.ofReal_eq_zero, not_le] using hε
   simpa only [ENNReal.one_toReal, ENNReal.rpow_one] using
     (memℒp_one_iff_integrable.2 hf).snorm_ne_top
@@ -876,14 +876,14 @@ theorem ofReal_toReal_ae_eq {f : α → ℝ≥0∞} (hf : ∀ᵐ x ∂μ, f x < 
     (fun x => ENNReal.ofReal (f x).toReal) =ᵐ[μ] f := by
   filter_upwards [hf]
   intro x hx
-  simp only [hx.ne, ofReal_toReal, Ne.def, not_false_iff]
+  simp only [hx.ne, ofReal_toReal, Ne, not_false_iff]
 #align measure_theory.of_real_to_real_ae_eq MeasureTheory.ofReal_toReal_ae_eq
 
 theorem coe_toNNReal_ae_eq {f : α → ℝ≥0∞} (hf : ∀ᵐ x ∂μ, f x < ∞) :
     (fun x => ((f x).toNNReal : ℝ≥0∞)) =ᵐ[μ] f := by
   filter_upwards [hf]
   intro x hx
-  simp only [hx.ne, Ne.def, not_false_iff, coe_toNNReal]
+  simp only [hx.ne, Ne, not_false_iff, coe_toNNReal]
 #align measure_theory.coe_to_nnreal_ae_eq MeasureTheory.coe_toNNReal_ae_eq
 
 section
@@ -985,7 +985,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
     rcases eq_or_ne (f x) 0 with (hx | hx)
     · simp only [hx, zero_smul, add_zero]
     · rw [h'' _, Pi.add_apply, smul_add]
-      simpa only [Ne.def, ENNReal.coe_eq_zero] using hx
+      simpa only [Ne, ENNReal.coe_eq_zero] using hx
   map_smul' := by
     intro r u
     ext1
@@ -998,7 +998,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
     rcases eq_or_ne (f x) 0 with (hx | hx)
     · simp only [hx, zero_smul, smul_zero]
     · rw [h _, smul_comm, Pi.smul_apply]
-      simpa only [Ne.def, ENNReal.coe_eq_zero] using hx
+      simpa only [Ne, ENNReal.coe_eq_zero] using hx
   norm_map' := by
     intro u
     -- Porting note: Lean can't infer types of `AddHom.coe_mk`.

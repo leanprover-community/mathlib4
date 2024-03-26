@@ -52,7 +52,7 @@ theorem log_of_left_le_one {b : ℕ} (hb : b ≤ 1) (n) : log b n = 0 :=
 
 @[simp]
 theorem log_pos_iff {b n : ℕ} : 0 < log b n ↔ b ≤ n ∧ 1 < b := by
-  rw [pos_iff_ne_zero, Ne.def, log_eq_zero_iff, not_or, not_lt, not_le]
+  rw [pos_iff_ne_zero, Ne, log_eq_zero_iff, not_or, not_lt, not_le]
 #align nat.log_pos_iff Nat.log_pos_iff
 
 theorem log_pos {b n : ℕ} (hb : 1 < b) (hbn : b ≤ n) : 0 < log b n :=
@@ -138,7 +138,7 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
   · rw [le_antisymm_iff, ← Nat.lt_succ_iff, ← pow_le_iff_le_log, ← lt_pow_iff_log_lt, and_comm] <;>
       assumption
   · have hm : m ≠ 0 := h.resolve_right hbn
-    rw [not_and_or, not_lt, Ne.def, not_not] at hbn
+    rw [not_and_or, not_lt, Ne, not_not] at hbn
     rcases hbn with (hb | rfl)
     · simpa only [log_of_left_le_one hb, hm.symm, false_iff_iff, not_and, not_lt] using
         le_trans (pow_le_pow_right_of_le_one' hb m.le_succ)

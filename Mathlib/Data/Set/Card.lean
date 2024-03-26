@@ -98,7 +98,7 @@ theorem Infinite.encard_eq {s : Set α} (h : s.Infinite) : s.encard = ⊤ := by
   rw [encard_eq_zero]
 
 theorem nonempty_of_encard_ne_zero (h : s.encard ≠ 0) : s.Nonempty := by
-  rwa [nonempty_iff_ne_empty, Ne.def, ← encard_eq_zero]
+  rwa [nonempty_iff_ne_empty, Ne, ← encard_eq_zero]
 
 theorem encard_ne_zero : s.encard ≠ 0 ↔ s.Nonempty := by
   rw [ne_eq, encard_eq_zero, nonempty_iff_ne_empty]
@@ -134,7 +134,7 @@ theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n
   ⟨fun h ↦ by_contra fun h' ↦ h.ne (Infinite.encard_eq h'), Finite.encard_lt_top⟩
 
 @[simp] theorem encard_eq_top_iff : s.encard = ⊤ ↔ s.Infinite := by
-  rw [← not_iff_not, ← Ne.def, ← lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
+  rw [← not_iff_not, ← Ne.eq_def, ← lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
 
 theorem encard_ne_top_iff : s.encard ≠ ⊤ ↔ s.Finite := by
   simp
@@ -161,7 +161,7 @@ theorem encard_diff_add_encard_of_subset (h : s ⊆ t) : (t \ s).encard + s.enca
   rw [← encard_union_eq disjoint_sdiff_left, diff_union_self, union_eq_self_of_subset_right h]
 
 @[simp] theorem one_le_encard_iff_nonempty : 1 ≤ s.encard ↔ s.Nonempty := by
-  rw [nonempty_iff_ne_empty, Ne.def, ← encard_eq_zero, ENat.one_le_iff_ne_zero]
+  rw [nonempty_iff_ne_empty, Ne, ← encard_eq_zero, ENat.one_le_iff_ne_zero]
 
 theorem encard_diff_add_encard_inter (s t : Set α) :
     (s \ t).encard + (s ∩ t).encard = s.encard := by
@@ -297,7 +297,7 @@ theorem encard_le_one_iff_eq : s.encard ≤ 1 ↔ s = ∅ ∨ ∃ x, s = {x} := 
     encard_eq_one]
 
 theorem encard_le_one_iff : s.encard ≤ 1 ↔ ∀ a b, a ∈ s → b ∈ s → a = b := by
-  rw [encard_le_one_iff_eq, or_iff_not_imp_left, ← Ne.def, ← nonempty_iff_ne_empty]
+  rw [encard_le_one_iff_eq, or_iff_not_imp_left, ← Ne.eq_def, ← nonempty_iff_ne_empty]
   refine' ⟨fun h a b has hbs ↦ _,
     fun h ⟨x, hx⟩ ↦ ⟨x, ((singleton_subset_iff.2 hx).antisymm' (fun y hy ↦ h _ _ hy hx))⟩⟩
   obtain ⟨x, rfl⟩ := h ⟨_, has⟩
@@ -535,7 +535,7 @@ theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := by
 #align set.ncard_empty Set.ncard_empty
 
 theorem ncard_pos (hs : s.Finite := by toFinite_tac) : 0 < s.ncard ↔ s.Nonempty := by
-  rw [pos_iff_ne_zero, Ne.def, ncard_eq_zero hs, nonempty_iff_ne_empty]
+  rw [pos_iff_ne_zero, Ne, ncard_eq_zero hs, nonempty_iff_ne_empty]
 #align set.ncard_pos Set.ncard_pos
 
 theorem ncard_ne_zero_of_mem (h : a ∈ s) (hs : s.Finite := by toFinite_tac) : s.ncard ≠ 0 :=
@@ -770,7 +770,7 @@ theorem exists_ne_map_eq_of_ncard_lt_of_maps_to {t : Set β} (hc : t.ncard < s.n
     (hf : ∀ a ∈ s, f a ∈ t) (ht : t.Finite := by toFinite_tac) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   by_contra h'
-  simp only [Ne.def, exists_prop, not_exists, not_and, not_imp_not] at h'
+  simp only [Ne, exists_prop, not_exists, not_and, not_imp_not] at h'
   exact (ncard_le_ncard_of_injOn f hf h' ht).not_lt hc
 #align set.exists_ne_map_eq_of_ncard_lt_of_maps_to Set.exists_ne_map_eq_of_ncard_lt_of_maps_to
 
@@ -888,7 +888,7 @@ theorem ncard_diff_add_ncard (s t : Set α) (hs : s.Finite := by toFinite_tac)
 
 theorem diff_nonempty_of_ncard_lt_ncard (h : s.ncard < t.ncard) (hs : s.Finite := by toFinite_tac) :
     (t \ s).Nonempty := by
-  rw [Set.nonempty_iff_ne_empty, Ne.def, diff_eq_empty]
+  rw [Set.nonempty_iff_ne_empty, Ne, diff_eq_empty]
   exact fun h' ↦ h.not_le (ncard_le_ncard h' hs)
 #align set.diff_nonempty_of_ncard_lt_ncard Set.diff_nonempty_of_ncard_lt_ncard
 

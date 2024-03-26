@@ -626,7 +626,7 @@ theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
     coe_eq_zero, coe_eq_coe, perm_singleton, subperm_singleton_iff]
 
 @[simp] lemma lt_singleton : s < {a} ↔ s = 0 := by
-  simp only [lt_iff_le_and_ne, le_singleton, or_and_right, Ne.def, and_not_self, or_false,
+  simp only [lt_iff_le_and_ne, le_singleton, or_and_right, Ne, and_not_self, or_false,
     and_iff_left_iff_imp]
   rintro rfl
   exact (singleton_ne_zero _).symm
@@ -2517,7 +2517,7 @@ theorem count_eq_zero {a : α} {s : Multiset α} : count a s = 0 ↔ a ∉ s :=
 #align multiset.count_eq_zero Multiset.count_eq_zero
 
 theorem count_ne_zero {a : α} {s : Multiset α} : count a s ≠ 0 ↔ a ∈ s := by
-  simp [Ne.def, count_eq_zero]
+  simp [Ne, count_eq_zero]
 #align multiset.count_ne_zero Multiset.count_ne_zero
 
 theorem count_eq_card {a : α} {s} : count a s = card s ↔ ∀ x ∈ s, a = x := by
@@ -2957,7 +2957,7 @@ lemma filter_attach' (s : Multiset α) (p : {a // a ∈ s} → Prop) [DecidableE
   refine' Multiset.map_injective Subtype.val_injective _
   rw [map_filter' _ Subtype.val_injective]
   simp only [Function.comp, Subtype.exists, coe_mk, Subtype.map,
-    exists_and_right, exists_eq_right, attach_map_val, map_map, map_coe, id.def]
+    exists_and_right, exists_eq_right, attach_map_val, map_map, map_coe, id]
 #align multiset.filter_attach' Multiset.filter_attach'
 
 end Map

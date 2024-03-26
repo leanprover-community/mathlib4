@@ -513,7 +513,7 @@ section
 /-- We have `2 ≠ 0` in a nontrivial ring whose characteristic is not `2`. -/
 protected theorem Ring.two_ne_zero {R : Type*} [NonAssocSemiring R] [Nontrivial R]
     (hR : ringChar R ≠ 2) : (2 : R) ≠ 0 := by
-  rw [Ne.def, (by norm_cast : (2 : R) = (2 : ℕ)), ringChar.spec, Nat.dvd_prime Nat.prime_two]
+  rw [Ne, (by norm_cast : (2 : R) = (2 : ℕ)), ringChar.spec, Nat.dvd_prime Nat.prime_two]
   exact mt (or_iff_left hR).mp CharP.ringChar_ne_one
 #align ring.two_ne_zero Ring.two_ne_zero
 
@@ -628,7 +628,7 @@ theorem of_not_dvd [CharP R p] (h : ¬p ∣ n) : NeZero (n : R) :=
 #align ne_zero.of_not_dvd NeZero.of_not_dvd
 
 theorem not_char_dvd (p : ℕ) [CharP R p] (k : ℕ) [h : NeZero (k : R)] : ¬p ∣ k := by
-  rwa [← CharP.cast_eq_zero_iff R p k, ← Ne.def, ← neZero_iff]
+  rwa [← CharP.cast_eq_zero_iff R p k, ← Ne.eq_def, ← neZero_iff]
 #align ne_zero.not_char_dvd NeZero.not_char_dvd
 
 end NeZero

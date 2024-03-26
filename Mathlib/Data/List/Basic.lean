@@ -2920,12 +2920,12 @@ theorem Sublist.map (f : α → β) {l₁ l₂ : List α} (s : l₁ <+ l₂) : m
 @[simp]
 theorem reduceOption_cons_of_some (x : α) (l : List (Option α)) :
     reduceOption (some x :: l) = x :: l.reduceOption := by
-  simp only [reduceOption, filterMap, id.def, eq_self_iff_true, and_self_iff]
+  simp only [reduceOption, filterMap, id, eq_self_iff_true, and_self_iff]
 #align list.reduce_option_cons_of_some List.reduceOption_cons_of_some
 
 @[simp]
 theorem reduceOption_cons_of_none (l : List (Option α)) :
-    reduceOption (none :: l) = l.reduceOption := by simp only [reduceOption, filterMap, id.def]
+    reduceOption (none :: l) = l.reduceOption := by simp only [reduceOption, filterMap, id]
 #align list.reduce_option_cons_of_none List.reduceOption_cons_of_none
 
 @[simp]
@@ -2997,7 +2997,7 @@ theorem reduceOption_concat_of_some (l : List (Option α)) (x : α) :
 #align list.reduce_option_concat_of_some List.reduceOption_concat_of_some
 
 theorem reduceOption_mem_iff {l : List (Option α)} {x : α} : x ∈ l.reduceOption ↔ some x ∈ l := by
-  simp only [reduceOption, id.def, mem_filterMap, exists_eq_right]
+  simp only [reduceOption, id, mem_filterMap, exists_eq_right]
 #align list.reduce_option_mem_iff List.reduceOption_mem_iff
 
 theorem reduceOption_get?_iff {l : List (Option α)} {x : α} :
@@ -3106,7 +3106,7 @@ lemma filter_attach (l : List α) (p : α → Bool) :
     (l.attach.filter fun x => p x : List {x // x ∈ l}) =
       (l.filter p).attach.map (Subtype.map id fun x => mem_of_mem_filter) :=
   map_injective_iff.2 Subtype.coe_injective <| by
-    simp_rw [map_map, (· ∘ ·), Subtype.map, id.def, ← Function.comp_apply (g := Subtype.val),
+    simp_rw [map_map, (· ∘ ·), Subtype.map, id, ← Function.comp_apply (g := Subtype.val),
       ← map_filter, attach_map_val]
 #align list.filter_attach List.filter_attach
 
@@ -3463,7 +3463,7 @@ theorem map_fst_add_enumFrom_eq_enumFrom (l : List α) (n k : ℕ) :
     map (Prod.map (· + n) id) (enumFrom k l) = enumFrom (n + k) l := by
   induction' l with hd tl IH generalizing n k
   · simp [enumFrom]
-  · simp only [enumFrom, map, zero_add, Prod.map_mk, id.def, eq_self_iff_true, true_and_iff]
+  · simp only [enumFrom, map, zero_add, Prod.map_mk, id, eq_self_iff_true, true_and_iff]
     simp [IH, add_comm n k, add_assoc, Nat.add_left_comm]
 #align list.map_fst_add_enum_from_eq_enum_from List.map_fst_add_enumFrom_eq_enumFrom
 

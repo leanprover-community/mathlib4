@@ -281,8 +281,8 @@ instance : Inf (Finpartition a) :=
     ofErase ((P.parts ×ˢ Q.parts).image fun bc ↦ bc.1 ⊓ bc.2)
       (by
         rw [supIndep_iff_disjoint_erase]
-        simp only [mem_image, and_imp, exists_prop, forall_exists_index, id.def, Prod.exists,
-          mem_product, Finset.disjoint_sup_right, mem_erase, Ne.def]
+        simp only [mem_image, and_imp, exists_prop, forall_exists_index, id, Prod.exists,
+          mem_product, Finset.disjoint_sup_right, mem_erase, Ne]
         rintro _ x₁ y₁ hx₁ hy₁ rfl _ h x₂ y₂ hx₂ hy₂ rfl
         rcases eq_or_ne x₁ x₂ with (rfl | xdiff)
         · refine' Disjoint.mono inf_le_right inf_le_right (Q.disjoint hy₁ hy₂ _)
@@ -398,7 +398,7 @@ theorem card_bind (Q : ∀ i ∈ P.parts, Finpartition i) :
   rintro ⟨b, hb⟩ - ⟨c, hc⟩ - hbc
   rw [Finset.disjoint_left]
   rintro d hdb hdc
-  rw [Ne.def, Subtype.mk_eq_mk] at hbc
+  rw [Ne, Subtype.mk_eq_mk] at hbc
   exact
     (Q b hb).ne_bot hdb
       (eq_bot_iff.2 <|
@@ -441,7 +441,7 @@ def avoid (b : α) : Finpartition (a \ b) :=
 
 @[simp]
 theorem mem_avoid : c ∈ (P.avoid b).parts ↔ ∃ d ∈ P.parts, ¬d ≤ b ∧ d \ b = c := by
-  simp only [avoid, ofErase, mem_erase, Ne.def, mem_image, exists_prop, ← exists_and_left,
+  simp only [avoid, ofErase, mem_erase, Ne, mem_image, exists_prop, ← exists_and_left,
     @and_left_comm (c ≠ ⊥)]
   refine' exists_congr fun d ↦ and_congr_right' <| and_congr_left _
   rintro rfl

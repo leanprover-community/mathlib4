@@ -224,13 +224,13 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
 line, it is still real-differentiable, and the derivative is what one would formally expect. -/
 theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
     HasDerivAt (fun y : ℝ => (y : ℂ) ^ (r + 1) / (r + 1)) (x ^ r) x := by
-  rw [Ne.def, ← add_eq_zero_iff_eq_neg, ← Ne.def] at hr
+  rw [Ne, ← add_eq_zero_iff_eq_neg, ← Ne.eq_def] at hr
   rcases lt_or_gt_of_ne hx.symm with (hx | hx)
   · -- easy case : `0 < x`
     -- Porting note: proof used to be
     -- convert (((hasDerivAt_id (x : ℂ)).cpow_const _).div_const (r + 1)).comp_ofReal using 1
-    -- · rw [add_sub_cancel, id.def, mul_one, mul_comm, mul_div_cancel _ hr]
-    -- · rw [id.def, ofReal_re]; exact Or.inl hx
+    -- · rw [add_sub_cancel, id, mul_one, mul_comm, mul_div_cancel _ hr]
+    -- · rw [id, ofReal_re]; exact Or.inl hx
     apply HasDerivAt.comp_ofReal (e := fun y => (y : ℂ) ^ (r + 1) / (r + 1))
     convert HasDerivAt.div_const (𝕜 := ℂ) ?_ (r + 1) using 1
     · exact (mul_div_cancel_right₀ _ hr).symm

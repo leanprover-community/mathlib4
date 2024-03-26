@@ -67,7 +67,7 @@ theorem HasSum.update (hf : HasSum f a₁) (b : β) [DecidableEq β] (a : α) :
   by_cases h : b' = b
   · rw [h, update_same]
     simp [eq_self_iff_true, if_true, sub_add_cancel]
-  · simp only [h, update_noteq, if_false, Ne.def, zero_add, not_false_iff]
+  · simp only [h, update_noteq, if_false, Ne, zero_add, not_false_iff]
 #align has_sum.update HasSum.update
 
 theorem Summable.update (hf : Summable f) (b : β) [DecidableEq β] (a : α) :

@@ -1648,7 +1648,7 @@ alias ⟨_, map_isTrail_of_injective⟩ := map_isTrail_iff_of_injective
 
 theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
     (p.map f).IsCycle ↔ p.IsCycle := by
-  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne.def, map_eq_nil_iff,
+  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne, map_eq_nil_iff,
     support_map, ← List.map_tail, List.nodup_map_iff hinj]
 #align simple_graph.walk.map_is_cycle_iff_of_injective SimpleGraph.Walk.map_isCycle_iff_of_injective
 
@@ -2562,7 +2562,7 @@ theorem reachable_delete_edges_iff_exists_walk {v w : V} :
   constructor
   · rintro ⟨p⟩
     use p.map (Hom.mapSpanningSubgraphs (by simp))
-    simp_rw [Walk.edges_map, List.mem_map, Hom.mapSpanningSubgraphs_apply, Sym2.map_id', id.def]
+    simp_rw [Walk.edges_map, List.mem_map, Hom.mapSpanningSubgraphs_apply, Sym2.map_id', id]
     rintro ⟨e, h, rfl⟩
     simpa using p.edges_subset_edgeSet h
   · rintro ⟨p, h⟩

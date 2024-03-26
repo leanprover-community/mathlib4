@@ -238,7 +238,7 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
   · rw [dif_neg h, inv_apply_self, inv_apply_self, if_pos hab.le]
     by_cases h₁ : f (g b) ≤ f (g a)
     · have : f (g b) ≠ f (g a) := by
-        rw [Ne.def, f.injective.eq_iff, g.injective.eq_iff]
+        rw [Ne, f.injective.eq_iff, g.injective.eq_iff]
         exact ne_of_lt hab
       rw [if_pos h₁, if_neg (h₁.lt_of_ne this).not_le]
       rfl
