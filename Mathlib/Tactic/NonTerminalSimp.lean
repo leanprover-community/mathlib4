@@ -284,6 +284,7 @@ def getStained!old (stx : Syntax) : Array stained :=
     | #[] => #[.goal]
     | out => out
 
+/-- extracts the "locations" from syntax, producing an array of `stained`. -/
 partial
 def getL : Syntax → Array stained
   | .node _ _ arg => (arg.map getL).flatten
@@ -592,9 +593,15 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
 --    logInfo m!"generating syntax: '{s}'"  Lean.Parser.Term.byTactic
     --logInfoAt s m!"{s} has locs: {getLocs s}"
 --    for locs in getLocs s do
-    for locs in getStained! s do
+--    for locs in getStained! s do
 --      Meta.inspect s
-      logInfoAt s m!"{s}\nstains '{locs}'"
+    logInfoAt s m!"{s}\nstains '{getStained! s}'"
+    let currMVara := mvs[0]!
+    let currMVarb := mvsb[0]!
+    let lctxb := ((ctxb.decls.find? currMVarb).getD default).lctx
+    let lctxa := ((ctx.decls.find? currMVara).getD default).lctx
+    logInfoAt s m!"{s}\nstains '{(getStained! s).map fun d =>
+      ((((d.toFVarId lctxa).map (·.name)).zip ((d.toFVarId lctxb).map (·.name))))}'"
 
 initialize addLinter nonTerminalSimpLinter
 
