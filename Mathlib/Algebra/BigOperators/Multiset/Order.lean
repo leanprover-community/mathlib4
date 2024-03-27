@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.List.BigOperators.Order
 import Mathlib.Data.Multiset.Fold
+import Mathlib.Data.List.MinMax
 import Mathlib.Data.Nat.Order.Basic
 
 /-!
