@@ -53,12 +53,8 @@ theorem one_sub_inv_mul_eq_one : (1 - X : PowerSeries R) * (mk fun _ => 1) = 1 :
       simp only [coeff_mk, sub_self]
 
 /-- `1 - X`. -/
-noncomputable def oneSub : (PowerSeries R)ˣ where
-  val := 1 - X
-  inv := mk fun _ => 1
-  val_inv := one_sub_inv_mul_eq_one
-  inv_val := by
-    rw [mul_comm]; exact one_sub_inv_mul_eq_one
+noncomputable def oneSub : (PowerSeries R)ˣ :=
+  ⟨1 - X, mk fun _ => 1, one_sub_inv_mul_eq_one, by rw [mul_comm]; exact one_sub_inv_mul_eq_one⟩
 
 /-- `mk fun _ => 1`. -/
 noncomputable def invOneSub : (PowerSeries R)ˣ where
