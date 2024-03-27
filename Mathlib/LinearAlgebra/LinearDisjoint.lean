@@ -576,6 +576,11 @@ theorem rank_inf_le_one_of_commute_of_flat_right [Module.Flat R N]
     (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 :=
   H.rank_inf_le_one_of_commute_of_flat (Or.inr ‹_›) hc
 
+theorem rank_le_one_of_commute_of_flat_of_self (H : M.LinearDisjoint M) [Module.Flat R M]
+    (hc : ∀ (m n : M), Commute m.1 n.1) : Module.rank R M ≤ 1 := by
+  rw [← inf_of_le_left (le_refl M)] at hc ⊢
+  exact H.rank_inf_le_one_of_commute_of_flat_left hc
+
 end not_linearIndependent_pair
 
 end LinearDisjoint
@@ -592,10 +597,30 @@ variable {F : Type u} {E : Type v} [Field F] [Field E] [Algebra F E]
 
 variable (A B : IntermediateField F E)
 
-/-- Two intermediate fields `A` and `B` of `E / F` are linearly disjoint, if they are
-linearly disjoint as submodules of `E`. -/
+variable (L : Type w) [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
+
+/-- If `A` is an intermediate field of `E / F`, and `E / L / F` is a field extension tower,
+then `A` and `L` are linearly disjoint, if they are linearly disjoint as submodules of `E`. -/
 protected def LinearDisjoint : Prop :=
-  (Subalgebra.toSubmodule A.toSubalgebra).LinearDisjoint (Subalgebra.toSubmodule B.toSubalgebra)
+  (Subalgebra.toSubmodule A.toSubalgebra).LinearDisjoint
+    (Subalgebra.toSubmodule (IsScalarTower.toAlgHom F L E).range)
+
+variable {A B L}
+
+theorem linearDisjoint_def' :
+    A.LinearDisjoint B ↔ (Subalgebra.toSubmodule A.toSubalgebra).LinearDisjoint
+      (Subalgebra.toSubmodule B.toSubalgebra) := by
+  rw [IntermediateField.LinearDisjoint]
+  congr!
+  ext; simp
+
+/-- Linearly disjoint is symmetric. -/
+theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A :=
+  linearDisjoint_def'.2 (linearDisjoint_def'.1 H).symm
+
+/-- Linearly disjoint is symmetric. -/
+theorem linearDisjoint_symm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
+  ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
 
 -- theorem linearDisjoint_iff :
 --     A.LinearDisjoint B ↔ ∀ {a : Set A}, LinearIndependent F (fun x : a ↦ x.1) →
@@ -611,8 +636,6 @@ protected def LinearDisjoint : Prop :=
 --     ⟨fun H ↦ H.map' A.val.toLinearMap (LinearMap.ker_eq_bot_of_injective A.val.injective),
 --       fun H ↦ H.of_comp A.val.toLinearMap⟩
 --   simp_rw [linearDisjoint_iff, h]
-
-variable {A B}
 
 -- /-- If `A` and `B` are linearly disjoint, then any `F`-linearly independent family on `A` remains
 -- linearly independent over `B`. -/
@@ -774,25 +797,17 @@ variable {A B}
 --     fun H ↦ LinearDisjoint.of_basis_mul (Basis.ofVectorSpace F A) (Basis.ofVectorSpace F B) ?_⟩
 --   simpa only [test3'] using H (test3 F A) (test3 F B)
 
--- /-- Linearly disjoint is symmetric. -/
--- theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A := by
---   rw [linearDisjoint_iff_linearIndependent_mul_of_set] at H ⊢
---   intro a b ha hb
---   rw [← linearIndependent_equiv (Equiv.prodComm b a)]
---   convert H hb ha
---   exact mul_comm _ _
-
--- /-- Linearly disjoint is symmetric. -/
--- theorem linearDisjoint_symm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
---   ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
+variable (A) in
+theorem LinearDisjoint.of_self_right : A.LinearDisjoint F :=
+  Submodule.LinearDisjoint.of_self_right _
 
 variable (A) in
-theorem LinearDisjoint.of_bot_right : A.LinearDisjoint ⊥ :=
-  Submodule.LinearDisjoint.of_self_right (Subalgebra.toSubmodule A.toSubalgebra)
+theorem LinearDisjoint.of_bot_right : A.LinearDisjoint (⊥ : IntermediateField F E) :=
+  linearDisjoint_def'.2 (Submodule.LinearDisjoint.of_self_right _)
 
-variable (B) in
-theorem LinearDisjoint.of_bot_left : (⊥ : IntermediateField F E).LinearDisjoint B :=
-  Submodule.LinearDisjoint.of_self_left (Subalgebra.toSubmodule B.toSubalgebra)
+variable (F E L) in
+theorem LinearDisjoint.of_bot_left : (⊥ : IntermediateField F E).LinearDisjoint L :=
+  Submodule.LinearDisjoint.of_self_left _
 
 -- theorem LinearDisjoint.of_le_right {B' : IntermediateField F E} (H : A.LinearDisjoint B)
 --     (h : B' ≤ B) : A.LinearDisjoint B' := fun a ha ↦
