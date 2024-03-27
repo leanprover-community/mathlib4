@@ -19,15 +19,15 @@ set_option pp.unicode.fun true
 
 noncomputable section
 
-/-- info: Try this: exact Nat.lt.base x -/
-#guard_msgs in
+/-- info: Try this: exact Set.Ici_subset_Ioi.mp fun ⦃a⦄ a ↦ a -/
+-- #guard_msgs in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by apply?)
 
-/-- info: Try this: exact Nat.zero_lt_succ 1 -/
+/-- info: Try this: exact compare_gt_iff_gt.mp rfl -/
 #guard_msgs in
 example : 0 ≠ 1 + 1 := ne_of_lt (by apply?)
 
-/-- info: Try this: exact Nat.add_comm x y -/
+/-- info: Try this: exact AddCommMagma.add_comm x y -/
 #guard_msgs in
 example (x y : Nat) : x + y = y + x := by apply?
 
@@ -66,17 +66,17 @@ example (α : Prop) : α → α := by apply?
 -- example (a b : Prop) (h : a ∧ b) : a := by apply? -- says: `exact h.left`
 -- example (P Q : Prop) : (¬ Q → ¬ P) → (P → Q) := by apply? -- say: `exact Function.mtr`
 
-/-- info: Try this: exact Nat.add_comm a b -/
+/-- info: Try this: exact AddCommMagma.add_comm a b -/
 #guard_msgs in
 example (a b : ℕ) : a + b = b + a :=
 by apply?
 
-/-- info: Try this: exact Nat.mul_sub_left_distrib n m k -/
+/-- info: Try this: exact mul_tsub n m k -/
 #guard_msgs in
 example (n m k : ℕ) : n * (m - k) = n * m - n * k :=
 by apply?
 
-/-- info: Try this: exact (Nat.mul_sub_left_distrib n m k).symm -/
+/-- info: Try this: exact (mul_tsub n m k).symm -/
 #guard_msgs in
 example (n m k : ℕ) : n * m - n * k = n * (m - k) :=
 by apply?
@@ -228,7 +228,7 @@ example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
 
 -- Check that adding `with_reducible` prevents expensive kernel reductions.
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60exact.3F.60.20failure.3A.20.22maximum.20recursion.20depth.20has.20been.20reached.22/near/417649319
-/-- info: Try this: exact Nat.add_comm n m -/
+/-- info: Try this: exact AddCommMagma.add_comm n m -/
 #guard_msgs in
 example (_h : List.range 10000 = List.range 10000) (n m : Nat) : n + m = m + n := by
   with_reducible exact?
