@@ -465,7 +465,8 @@ end ContinuousLinearMap
 
 section ClosedGraphThm
 
-variable [CompleteSpace E] (g : E →ₛₗ[σ] F)
+variable [CompleteSpace E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F] (g : E →ₗ[𝕜] F)
 
 /-- The **closed graph theorem** : a linear map between two Banach spaces whose graph is closed
 is continuous. -/
@@ -476,7 +477,7 @@ theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| 
   have : Function.LeftInverse Prod.fst φ₀ := fun x => rfl
   let φ : E ≃ₗ[𝕜] g.graph :=
     (LinearEquiv.ofLeftInverse this).trans (LinearEquiv.ofEq _ _ g.graph_eq_range_prod.symm)
-  let ψ : g.graph ≃SL[σ] E :=
+  let ψ : g.graph ≃L[𝕜] E :=
     φ.symm.toContinuousLinearEquivOfContinuous continuous_subtype_val.fst
   exact (continuous_subtype_val.comp ψ.symm.continuous).snd
 #align linear_map.continuous_of_is_closed_graph LinearMap.continuous_of_isClosed_graph
@@ -502,7 +503,7 @@ variable {g}
 namespace ContinuousLinearMap
 
 /-- Upgrade a `LinearMap` to a `ContinuousLinearMap` using the **closed graph theorem**. -/
-def ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) : E →SL[σ] F where
+def ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) : E →L[𝕜] F where
   toLinearMap := g
   cont := g.continuous_of_isClosed_graph hg
 #align continuous_linear_map.of_is_closed_graph ContinuousLinearMap.ofIsClosedGraph
@@ -523,7 +524,7 @@ theorem coe_ofIsClosedGraph (hg : IsClosed (g.graph : Set <| E × F)) :
 **closed graph theorem**. -/
 def ofSeqClosedGraph
     (hg : ∀ (u : ℕ → E) (x y), Tendsto u atTop (𝓝 x) → Tendsto (g ∘ u) atTop (𝓝 y) → y = g x) :
-    E →SL[σ] F where
+    E →L[𝕜] F where
   toLinearMap := g
   cont := g.continuous_of_seq_closed_graph hg
 #align continuous_linear_map.of_seq_closed_graph ContinuousLinearMap.ofSeqClosedGraph
