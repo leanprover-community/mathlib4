@@ -51,7 +51,7 @@ noncomputable def P : ℕ → (K[X] ⟶ K[X])
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P AlgebraicTopology.DoldKan.P
 
--- porting note: `P_zero` and `P_succ` have been added to ease the port, because
+-- Porting note: `P_zero` and `P_succ` have been added to ease the port, because
 -- `unfold P` would sometimes unfold to a `match` rather than the induction formula
 lemma P_zero : (P 0 : K[X] ⟶ K[X]) = 𝟙 _ := rfl
 lemma P_succ (q : ℕ) : (P (q+1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl

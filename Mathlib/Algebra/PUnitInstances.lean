@@ -18,8 +18,6 @@ This file collects facts about algebraic structures on the one-element type, e.g
 commutative ring.
 -/
 
-set_option autoImplicit true
-
 namespace PUnit
 
 @[to_additive]
@@ -50,21 +48,21 @@ theorem one_eq : (1 : PUnit) = unit :=
 
 -- note simp can prove this when the Boolean ring structure is introduced
 @[to_additive]
-theorem mul_eq : x * y = unit :=
+theorem mul_eq {x y : PUnit} : x * y = unit :=
   rfl
 #align punit.mul_eq PUnit.mul_eq
 #align punit.add_eq PUnit.add_eq
 
 -- `sub_eq` simplifies `PUnit.sub_eq`, but the latter is eligible for `dsimp`
 @[to_additive (attr := simp, nolint simpNF)]
-theorem div_eq : x / y = unit :=
+theorem div_eq {x y : PUnit} : x / y = unit :=
   rfl
 #align punit.div_eq PUnit.div_eq
 #align punit.sub_eq PUnit.sub_eq
 
 -- `neg_eq` simplifies `PUnit.neg_eq`, but the latter is eligible for `dsimp`
 @[to_additive (attr := simp, nolint simpNF)]
-theorem inv_eq : x⁻¹ = unit :=
+theorem inv_eq {x : PUnit} : x⁻¹ = unit :=
   rfl
 #align punit.inv_eq PUnit.inv_eq
 #align punit.neg_eq PUnit.neg_eq
@@ -98,12 +96,12 @@ instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   normalize_lcm := by intros; rfl
 
 -- Porting note (#10618): simpNF lint: simp can prove this @[simp]
-theorem gcd_eq : gcd x y = unit :=
+theorem gcd_eq {x y : PUnit} : gcd x y = unit :=
   rfl
 #align punit.gcd_eq PUnit.gcd_eq
 
 -- Porting note (#10618): simpNF lint: simp can prove this @[simp]
-theorem lcm_eq : lcm x y = unit :=
+theorem lcm_eq {x y : PUnit} : lcm x y = unit :=
   rfl
 #align punit.lcm_eq PUnit.lcm_eq
 
@@ -114,20 +112,22 @@ theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
 
 instance canonicallyOrderedAddCommMonoid : CanonicallyOrderedAddCommMonoid PUnit := by
   refine'
-    { PUnit.commRing, PUnit.completeBooleanAlgebra with
+    { PUnit.commRing, PUnit.instCompleteBooleanAlgebra with
       exists_add_of_le := fun {_ _} _ => ⟨unit, Subsingleton.elim _ _⟩.. } <;>
     intros <;>
     trivial
 
 instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUnit where
   __ := PUnit.canonicallyOrderedAddCommMonoid
-  __ := PUnit.linearOrder
+  __ := PUnit.instLinearOrder
   le_of_add_le_add_left _ _ _ _ := trivial
   add_le_add_left := by intros; rfl
 
 instance : LinearOrderedAddCommMonoidWithTop PUnit :=
-  { PUnit.completeBooleanAlgebra, PUnit.linearOrderedCancelAddCommMonoid with
+  { PUnit.instCompleteBooleanAlgebra, PUnit.linearOrderedCancelAddCommMonoid with
     top_add' := fun _ => rfl }
+
+variable {R S : Type*}
 
 @[to_additive]
 instance smul : SMul R PUnit :=

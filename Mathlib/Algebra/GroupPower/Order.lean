@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Algebra.Order.WithZero
+import Mathlib.Algebra.Order.Ring.Canonical
 
 #align_import algebra.group_power.order from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
@@ -16,6 +16,8 @@ Note that some lemmas are in `Algebra/GroupPower/Lemmas.lean` as they import fil
 depend on this file.
 -/
 
+assert_not_exists Set.range
+
 open Function Int
 
 variable {α M R : Type*}
@@ -25,7 +27,7 @@ variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
 
 @[to_additive zsmul_pos] lemma one_lt_zpow' (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
   obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hn.le
-  rw [zpow_coe_nat]
+  rw [zpow_natCast]
   refine' one_lt_pow' ha ?_
   rintro rfl
   simp at hn
@@ -210,7 +212,7 @@ theorem pow_le_pow_right (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m := pow_r
 #align pow_le_pow pow_le_pow_right
 
 theorem le_self_pow (ha : 1 ≤ a) (h : m ≠ 0) : a ≤ a ^ m := by
-  simpa only [pow_one] using pow_le_pow_right ha <| pos_iff_ne_zero.2 h
+  simpa only [pow_one] using pow_le_pow_right ha <| Nat.pos_iff_ne_zero.2 h
 #align self_le_pow le_self_pow
 #align le_self_pow le_self_pow
 
@@ -262,6 +264,7 @@ lemma pow_right_strictMono (h : 1 < a) : StrictMono (a ^ ·) :=
 @[gcongr]
 theorem pow_lt_pow_right (h : 1 < a) (hmn : m < n) : a ^ m < a ^ n := pow_right_strictMono h hmn
 #align pow_lt_pow_right pow_lt_pow_right
+#align nat.pow_lt_pow_of_lt_right pow_lt_pow_right
 
 lemma pow_lt_pow_iff_right (h : 1 < a) : a ^ n < a ^ m ↔ n < m := (pow_right_strictMono h).lt_iff_lt
 #align pow_lt_pow_iff_ pow_lt_pow_iff_right
@@ -433,7 +436,7 @@ protected lemma Even.add_pow_le (hn : ∃ k, 2 * k = n) :
         rw [Commute.mul_pow]; simp [Commute, SemiconjBy, two_mul, mul_two]
     _ ≤ 2 ^ n * (2 ^ (n - 1) * ((a ^ 2) ^ n + (b ^ 2) ^ n)) := mul_le_mul_of_nonneg_left
           (add_pow_le (sq_nonneg _) (sq_nonneg _) _) $ pow_nonneg (zero_le_two (α := R)) _
-    _ = _ := by simp only [← mul_assoc, ← pow_add, ← pow_mul]; cases n; rfl; simp [two_mul]
+    _ = _ := by simp only [← mul_assoc, ← pow_add, ← pow_mul]; cases n; rfl; simp [Nat.two_mul]
 
 end LinearOrderedSemiring
 
@@ -508,31 +511,6 @@ lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
 
 end LinearOrderedRing
 
-section LinearOrderedCommMonoidWithZero
-
-variable [LinearOrderedCommMonoidWithZero M] [NoZeroDivisors M] {a : M} {n : ℕ}
-
-theorem pow_pos_iff (hn : n ≠ 0) : 0 < a ^ n ↔ 0 < a := by simp_rw [zero_lt_iff, pow_ne_zero_iff hn]
-#align pow_pos_iff pow_pos_iff
-
-end LinearOrderedCommMonoidWithZero
-
-section LinearOrderedCommGroupWithZero
-
-variable [LinearOrderedCommGroupWithZero M] {a : M} {m n : ℕ}
-
-theorem pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
-  rw [← one_mul (a ^ n), pow_succ]
-  exact mul_lt_right₀ _ ha (pow_ne_zero _ (zero_lt_one.trans ha).ne')
-#align pow_lt_pow_succ pow_lt_pow_succ
-
-theorem pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
-  induction' hmn with n _ ih
-  exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
-#align pow_lt_pow₀ pow_lt_pow_right₀
-
-end LinearOrderedCommGroupWithZero
-
 namespace MonoidHom
 
 variable [Ring R] [Monoid M] [LinearOrder M] [CovariantClass M M (· * ·) (· ≤ ·)] (f : R →* M)
@@ -549,6 +527,20 @@ theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, ne
 #align monoid_hom.map_sub_swap MonoidHom.map_sub_swap
 
 end MonoidHom
+
+namespace Nat
+variable {n : ℕ} {f : α → ℕ}
+
+/-- See also `pow_left_strictMonoOn`. -/
+protected lemma pow_left_strictMono (hn : n ≠ 0) : StrictMono (. ^ n : ℕ → ℕ) :=
+  fun _ _ h ↦ Nat.pow_lt_pow_left h hn
+#align nat.pow_left_strict_mono Nat.pow_left_strictMono
+
+lemma _root_.StrictMono.nat_pow [Preorder α] (hn : n ≠ 0) (hf : StrictMono f) :
+    StrictMono (f · ^ n) := (Nat.pow_left_strictMono hn).comp hf
+#align strict_mono.nat_pow StrictMono.nat_pow
+
+end Nat
 
 /-!
 ### Deprecated lemmas
@@ -571,5 +563,10 @@ Those lemmas have been deprecated on 2023-12-23.
 @[deprecated] alias pow_lt_pow_of_lt_one := pow_lt_pow_right_of_lt_one
 @[deprecated] alias lt_of_pow_lt_pow := lt_of_pow_lt_pow_left
 @[deprecated] alias le_of_pow_le_pow := le_of_pow_le_pow_left
-@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀
 @[deprecated] alias self_le_pow := le_self_pow
+@[deprecated] alias Nat.pow_lt_pow_of_lt_left := Nat.pow_lt_pow_left
+@[deprecated] alias Nat.pow_le_iff_le_left := Nat.pow_le_pow_iff_left
+@[deprecated] alias Nat.pow_lt_pow_of_lt_right := pow_lt_pow_right
+@[deprecated] protected alias Nat.pow_right_strictMono := pow_right_strictMono
+@[deprecated] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right
+@[deprecated] alias Nat.pow_lt_iff_lt_right := pow_lt_pow_iff_right

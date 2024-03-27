@@ -38,7 +38,6 @@ namespace List
 namespace Func
 
 variable {a : α}
-
 variable {as as1 as2 as3 : List α}
 
 /-- Elementwise negation of a list -/
@@ -103,8 +102,7 @@ theorem length_set : ∀ {m : ℕ} {as : List α}, as {m ↦ a}.length = max as.
   | 0, a :: as => by
     rw [max_eq_left]
     · rfl
-    · simp [Nat.le_add_right]
-      exact Nat.succ_le_succ (Nat.zero_le _)
+    · simpa [Nat.le_add_right] using Nat.succ_le_succ (Nat.zero_le _)
   | m + 1, [] => by
     simp [set, length, @length_set m, Nat.zero_max]
   | m + 1, _ :: as => by
@@ -170,7 +168,7 @@ theorem get_set_eq_of_ne {a : α} :
     contradiction
     cases as <;> simp only [set, get, get_nil]
   | as, k + 1, m, h1 => by
-    -- porting note: I somewhat rearranged the case split
+    -- Porting note: I somewhat rearranged the case split
     match as, m with
     | as, 0 => cases as <;> simp only [set, get]
     | [], m+1 =>
@@ -254,7 +252,7 @@ namespace Func
 @[simp]
 theorem get_neg [AddGroup α] {k : ℕ} {as : List α} : @get α ⟨0⟩ k (neg as) = -@get α ⟨0⟩ k as := by
   unfold neg
-  rw [@get_map' α α ⟨0⟩ ⟨0⟩] -- porting note: had to add a `⟨0⟩` b/c of instance troubles
+  rw [@get_map' α α ⟨0⟩ ⟨0⟩] -- Porting note: had to add a `⟨0⟩` b/c of instance troubles
   apply neg_zero
 #align list.func.get_neg List.Func.get_neg
 
@@ -330,7 +328,7 @@ theorem nil_add {α : Type u} [AddMonoid α] (as : List α) : add [] as = as := 
   apply Eq.trans _ (map_id as)
   congr with x
   exact zero_add x
-  -- porting note: instead of `zero_add`, it was the commented `rw` below
+  -- Porting note: instead of `zero_add`, it was the commented `rw` below
   -- (similarly at other places below)
   --rw [zero_add, id]
 #align list.func.nil_add List.Func.nil_add

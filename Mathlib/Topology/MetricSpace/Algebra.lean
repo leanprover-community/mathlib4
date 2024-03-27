@@ -55,7 +55,7 @@ set_option linter.uppercaseLean3 false in
 variable [Monoid β]
 
 /-- The Lipschitz constant of a monoid `β` satisfying `LipschitzMul` -/
-@[to_additive existing] -- porting note: had to add `LipschitzAdd.C`. to_additive silently failed
+@[to_additive existing] -- Porting note: had to add `LipschitzAdd.C`. to_additive silently failed
 def LipschitzMul.C [_i : LipschitzMul β] : ℝ≥0 := Classical.choose _i.lipschitz_mul
 set_option linter.uppercaseLean3 false in
 #align has_lipschitz_mul.C LipschitzMul.C
