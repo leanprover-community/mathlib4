@@ -136,7 +136,7 @@ attribute [local instance] MeasureTheory.Measure.IsFiniteMeasure.IicSnd
 
 /-! ### Auxiliary definitions
 
-We build towards the definition of `ProbabilityTheory.cond_cdf`. We first define
+We build towards the definition of `ProbabilityTheory.condCDF`. We first define
 `ProbabilityTheory.preCDF`, a function defined on `α × ℚ` with the properties of a cdf almost
 everywhere.  -/
 
