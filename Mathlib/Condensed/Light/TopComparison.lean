@@ -3,9 +3,6 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
-import Mathlib.Topology.Category.Profinite.Limits
-import Mathlib.Topology.Category.TopCat.Yoneda
 import Mathlib.Condensed.Light.Explicit
 import Mathlib.Condensed.TopComparison
 
