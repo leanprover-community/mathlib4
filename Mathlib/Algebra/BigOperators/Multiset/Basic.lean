@@ -7,6 +7,8 @@ import Mathlib.Algebra.GroupPower.Hom
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Data.List.BigOperators.Lemmas
+import Mathlib.Data.List.BigOperators.Order
 import Mathlib.Data.Multiset.Basic
 
 #align_import algebra.big_operators.multiset.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"

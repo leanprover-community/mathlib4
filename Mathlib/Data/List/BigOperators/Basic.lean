@@ -3,8 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.Group.Units
-import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Forall2
@@ -22,13 +21,8 @@ counterparts.
 
 -- Make sure we haven't imported `Data.Nat.Order.Basic`
 assert_not_exists OrderedSub
-
--- Make sure we haven't imported `Algebra.Ring.Basic`
-assert_not_exists vieta_formula_quadratic
 -- TODO
 -- assert_not_exists Ring
-
-assert_not_exists NeZero
 
 
 variable {ι α β γ M N P M₀ G R : Type*}
@@ -198,6 +192,12 @@ theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α
   l.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 #align list.prod_map_mul List.prod_map_mul
 #align list.sum_map_add List.sum_map_add
+
+@[simp]
+theorem prod_map_neg [HasDistribNeg M] (l : List M) :
+    (l.map Neg.neg).prod = (-1) ^ l.length * l.prod := by
+  induction l <;> simp [*, pow_succ, ((Commute.neg_one_left _).pow_left _).left_comm]
+#align list.prod_map_neg List.prod_map_neg
 
 @[to_additive]
 theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type*} [FunLike G M N] [MonoidHomClass G M N]
