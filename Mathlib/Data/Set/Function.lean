@@ -567,9 +567,8 @@ variable (s t f)
 theorem image_restrictPreimage :
     t.restrictPreimage f '' (Subtype.val ⁻¹' s) = Subtype.val ⁻¹' (f '' s) := by
   delta Set.restrictPreimage
-  rw [← preimage_image_eq  (_ '' (_ ⁻¹' s)) (Subtype.coe_injective), ← image_comp,
-    MapsTo.restrict_commutes, image_comp, image_preimage_eq_inter_range, Subtype.range_coe,
-    image_inter_preimage, inter_comm, Subtype.preimage_coe_self_inter]
+  rw [← (Subtype.coe_injective).image_injective.eq_iff, ← image_comp, MapsTo.restrict_commutes,
+    image_comp, Subtype.image_preimage_coe, Subtype.image_preimage_coe, image_preimage_inter]
 
 theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻¹' range f := by
   simp only [← image_univ, ← image_restrictPreimage, preimage_univ]
