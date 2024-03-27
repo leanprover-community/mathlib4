@@ -636,6 +636,12 @@ lemma div_eq_sub_mod_div : m / n = (m - m % n) / n := by
     rw [this, mul_div_right _ hn]
 #align nat.div_eq_sub_mod_div Nat.div_eq_sub_mod_div
 
+protected lemma eq_div_of_mul_eq_left (hc : c ≠ 0) (h : a * c = b) : a = b / c := by
+  rw [← h, Nat.mul_div_cancel _ (Nat.pos_iff_ne_zero.2 hc)]
+
+protected lemma eq_div_of_mul_eq_right (hc : c ≠ 0) (h : c * a = b) : a = b / c := by
+  rw [← h, Nat.mul_div_cancel_left _ (Nat.pos_iff_ne_zero.2 hc)]
+
 /-!
 ### `pow`
 
