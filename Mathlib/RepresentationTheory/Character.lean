@@ -218,6 +218,11 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 def scalarProduct (φ ψ : G → k) := ⅟ (Fintype.card G : k) • ∑ g : G, φ g * ψ g⁻¹
 
+lemma scalarProduct_symmetric : ∀ φ ψ : G → k, scalarProduct φ ψ = scalarProduct ψ φ := by
+  intro φ ψ
+  simp only [scalarProduct, mul_comm]
+  sorry
+
 /-- Orthogonality of characters for irreducible representations of finite group over an
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
 theorem char_orthonormal (V W : FdRep k G) [Simple V] [Simple W] :
@@ -321,21 +326,32 @@ lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) :
 
 /-- Irreducbile characters are a basis of ClassFunction G -/
 lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunction f) (h : ∀ V : FdRep k G, Simple V → scalarProduct f V.character = (0 : k)) : f = fun _ ↦ (0 : k) := by
-  have (V : FdRep k G) (hV : Simple V) : averageClassFunction f hf V = (0 : V ⟶  V) := by
+  let f' : (G → k) := fun g => f g⁻¹
+  have hf' : IsClassFunction f' := by
+    intro g h
+    simp [f']
+    rw [← mul_assoc]
+    exact hf g⁻¹ h
+  have h' : ∀ V : FdRep k G, Simple V → scalarProduct f' V.character = (0 : k) := by
+    intro V hV
+    simp_rw [scalarProduct_symmetric, scalarProduct, ← char_dual V, f']
+
+    -- apply h (of (dual V.ρ)) (simple_iff_dual_simple hV)
+  have (V : FdRep k G) (hV : Simple V) : averageClassFunction f' hf' V = (0 : V ⟶  V) := by
     have : finrank k (V ⟶  V) = 1 := by
       rw [finrank_hom_simple_simple V V]
       simp only [ite_eq_left_iff, not_nonempty_iff, not_isEmpty_of_nonempty, zero_ne_one,
         IsEmpty.forall_iff]
     have nonzero : (Action.Hom.id V) ≠ (0 : V ⟶  V) := by sorry
-    let mul_id := exists_smul_eq_of_finrank_eq_one this nonzero (averageClassFunction f hf V)
+    let mul_id := exists_smul_eq_of_finrank_eq_one this nonzero (averageClassFunction f' hf' V)
     obtain ⟨c, hc⟩ := mul_id
     rw [← hc]
-    have tr : LinearMap.trace k V (averageClassFunction f hf V).hom = 0 := by
+    have tr : LinearMap.trace k V (averageClassFunction f' hf' V).hom = 0 := by
       calc
-        LinearMap.trace k V (averageClassFunction f hf V).hom = ⅟ (Fintype.card G : k) • ∑ g : G, f g * V.character g := by
+        LinearMap.trace k V (averageClassFunction f' hf' V).hom = ⅟ (Fintype.card G : k) • ∑ g : G, f' g * V.character g := by
           simp_rw [character, averageClassFunction, averageFunction]
           simp only [invOf_eq_inv, map_smul, map_sum, smul_eq_mul]
-        _ = ⅟ (Fintype.card G : k) • ∑ g : G, f g * (of (dual V.ρ)).character g⁻¹ := by
+        _ = ⅟ (Fintype.card G : k) • ∑ g : G, f' g * (of (dual V.ρ)).character g⁻¹ := by
           simp_rw [char_dual, inv_inv]
         _ = 0 := by
           apply h (of (dual V.ρ)) ?_
@@ -345,8 +361,7 @@ lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunct
     have : LinearMap.trace k V (c • (Action.Hom.id V).hom) = c * finrank k V := by
       simp only [map_smul, smul_eq_mul, mul_eq_mul_left_iff]
       left
-      -- rw [LinearMap.trace_id k _]
-      sorry
+      exact LinearMap.trace_id k _
     by_cases hc : c = 0
     · rw [hc]
       simp only [zero_smul]
@@ -357,6 +372,7 @@ lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunct
       have : (finrank k V : k) ≠ (0 : k) := by
         sorry --exact nonzero_of_invertible (finrank k V)
       contradiction
+
   sorry -- Needs Maschke's theorem!
 
 end RegularRepresentation
