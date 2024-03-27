@@ -3221,11 +3221,12 @@ theorem eraseIdx_eq_take_drop_succ {l : List ι} {i : ℕ} :
 theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
     (l.eraseIdx i).length + 1 = l.length := calc
   (l.eraseIdx i).length + 1
-  _ = (l.take i ++ l.drop (i + 1)).length + 1         := by rw[eraseIdx_eq_take_drop_succ]
-  _ = (l.take i).length + (l.drop (i + 1)).length + 1 := by rw[length_append]
-  _ = i + (l.drop (i + 1)).length + 1                 := by rw[length_take_of_le (le_of_lt h)]
-  _ = i + (l.length - (i + 1)) + 1                    := by rw[length_drop]
-  _ = (i + 1) + (l.length - (i + 1))                  := by rw[add_assoc, add_comm _ 1, add_assoc]
+  _ = (l.take i ++ l.drop (i + 1)).length + 1         := by rw [eraseIdx_eq_take_drop_succ]
+  _ = (l.take i).length + (l.drop (i + 1)).length + 1 := by rw [length_append]
+  _ = i + (l.drop (i + 1)).length + 1                 := by rw [length_take_of_le (le_of_lt h)]
+  _ = i + (l.length - (i + 1)) + 1                    := by rw [length_drop]
+  _ = (i + 1) + (l.length - (i + 1))                  := by
+      rw [Nat.add_assoc, Nat.add_comm _ 1, Nat.add_assoc]
   _ = l.length                                        := Nat.add_sub_cancel' (succ_le_of_lt h)
 
 
