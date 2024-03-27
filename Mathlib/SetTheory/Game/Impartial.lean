@@ -176,16 +176,16 @@ theorem equiv_iff_add_equiv_zero' (H : PGame) : (G ≈ H) ↔ (G + H ≈ 0) := b
   exact ⟨Eq.symm, Eq.symm⟩
 #align pgame.impartial.equiv_iff_add_equiv_zero' SetTheory.PGame.Impartial.equiv_iff_add_equiv_zero'
 
-theorem Nat.le_zero {G : PGame} [G.Impartial] : G ≤ 0 ↔ 0 ≤ G := by
+theorem le_zero_iff {G : PGame} [G.Impartial] : G ≤ 0 ↔ 0 ≤ G := by
   rw [← zero_le_neg_iff, le_congr_right (neg_equiv_self G)]
-#align pgame.impartial.Nat.le_zero SetTheory.PGame.Impartial.Nat.le_zero
+#align pgame.impartial.le_zero_iff SetTheory.PGame.Impartial.le_zero_iff
 
 theorem lf_zero_iff {G : PGame} [G.Impartial] : G ⧏ 0 ↔ 0 ⧏ G := by
   rw [← zero_lf_neg_iff, lf_congr_right (neg_equiv_self G)]
 #align pgame.impartial.lf_zero_iff SetTheory.PGame.Impartial.lf_zero_iff
 
 theorem equiv_zero_iff_le : (G ≈ 0) ↔ G ≤ 0 :=
-  ⟨And.left, fun h => ⟨h, Nat.le_zero.1 h⟩⟩
+  ⟨And.left, fun h => ⟨h, le_zero_iff.1 h⟩⟩
 #align pgame.impartial.equiv_zero_iff_le SetTheory.PGame.Impartial.equiv_zero_iff_le
 
 theorem fuzzy_zero_iff_lf : G ‖ 0 ↔ G ⧏ 0 :=
@@ -193,7 +193,7 @@ theorem fuzzy_zero_iff_lf : G ‖ 0 ↔ G ⧏ 0 :=
 #align pgame.impartial.fuzzy_zero_iff_lf SetTheory.PGame.Impartial.fuzzy_zero_iff_lf
 
 theorem equiv_zero_iff_ge : (G ≈ 0) ↔ 0 ≤ G :=
-  ⟨And.right, fun h => ⟨Nat.le_zero.2 h, h⟩⟩
+  ⟨And.right, fun h => ⟨le_zero_iff.2 h, h⟩⟩
 #align pgame.impartial.equiv_zero_iff_ge SetTheory.PGame.Impartial.equiv_zero_iff_ge
 
 theorem fuzzy_zero_iff_gf : G ‖ 0 ↔ 0 ⧏ G :=

@@ -788,13 +788,13 @@ theorem succ_one_eq_two' [NeZero n] : Fin.succ (1 : Fin (n + 1)) = 2 := by
 #align fin.lt_add_one_iff Fin.lt_add_one_iff
 
 /--
-The `Fin.Nat.le_zero` in `Std` only applies in `Fin (n+1)`.
+The `Fin.le_zero_iff` in `Std` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
-theorem Nat.le_zero' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
+theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
   ⟨fun h => Fin.ext <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_rfl⟩
-#align fin.nat.le_zero Fin.Nat.le_zero'
+#align fin.le_zero_iff Fin.le_zero_iff'
 
 #align fin.succ_succ_ne_one Fin.succ_succ_ne_one
 #align fin.cast_lt Fin.castLT
@@ -1611,7 +1611,7 @@ theorem le_sub_one_iff {n : ℕ} {k : Fin (n + 1)} : k ≤ k - 1 ↔ k = 0 := by
 
 @[simp]
 theorem sub_one_lt_iff {n : ℕ} {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
-  not_iff_not.1 <| by simp only [not_lt, le_sub_one_iff,  le_zero']
+  not_iff_not.1 <| by simp only [not_lt, le_sub_one_iff, le_zero_iff]
 #align fin.sub_one_lt_iff Fin.sub_one_lt_iff
 
 theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=

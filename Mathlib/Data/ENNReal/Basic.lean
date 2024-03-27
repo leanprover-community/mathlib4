@@ -152,7 +152,7 @@ noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
 
 noncomputable instance : Unique (AddUnits ℝ≥0∞) where
   default := 0
-  uniq a := AddUnits.ext <| Nat.le_zero.1 <| by rw [← a.add_neg]; exact le_self_add
+  uniq a := AddUnits.ext <| le_zero_iff.1 <| by rw [← a.add_neg]; exact le_self_add
 
 instance : Inhabited ℝ≥0∞ := ⟨0⟩
 
