@@ -74,10 +74,6 @@ lemma modByMonic_eq_zero_iff_quotient_eq_zero (p q : R[X]) (hq : q.Monic) :
     p %ₘ q = 0 ↔ (p : R[X] ⧸ Ideal.span {q}) = 0 := by
   rw [modByMonic_eq_zero_iff_dvd hq, Ideal.Quotient.eq_zero_iff_dvd]
 
-@[simp]
-lemma quotient_singleton_eq (p : R[X]) : Ideal.Quotient.mk (Ideal.span {p}) p = 0 := by
-  rw [Ideal.Quotient.eq_zero_iff_dvd]
-
 end Polynomial
 
 namespace Ideal
