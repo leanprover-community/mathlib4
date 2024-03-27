@@ -498,7 +498,7 @@ def length (x : FreeSemigroup α) : ℕ := x.tail.length + 1
 
 @[to_additive (attr := simp)]
 theorem length_mul (x y : FreeSemigroup α) : (x * y).length = x.length + y.length := by
-  simp [length, ← add_assoc, add_right_comm, List.length, List.length_append]
+  simp [length, Nat.add_right_comm, List.length, List.length_append]
 #align free_semigroup.length_mul FreeSemigroup.length_mul
 
 @[to_additive (attr := simp)]

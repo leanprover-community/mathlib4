@@ -1033,7 +1033,7 @@ instance PLift.fintypeProp (p : Prop) [Decidable p] : Fintype (PLift p) :=
 #align plift.fintype_Prop PLift.fintypeProp
 
 instance Prop.fintype : Fintype Prop :=
-  ⟨⟨{True, False}, by simp [true_ne_false]⟩, Classical.cases (by simp) (by simp)⟩
+  ⟨⟨{True, False}, by simp [true_ne_false]⟩, by simpa using em⟩
 #align Prop.fintype Prop.fintype
 
 @[simp]
