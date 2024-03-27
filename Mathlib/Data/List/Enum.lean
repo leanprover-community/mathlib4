@@ -30,7 +30,7 @@ theorem enumFrom_get? :
 
 @[simp]
 theorem enum_get? : ∀ (l : List α) (n), get? (enum l) n = (fun a => (n, a)) <$> get? l n := by
-  simp only [enum, enumFrom_get?, zero_add]; intros; trivial
+  simp only [enum, enumFrom_get?, Nat.zero_add]; intros; trivial
 #align list.enum_nth List.enum_get?
 
 @[simp]
@@ -92,7 +92,7 @@ theorem enumFrom_append (xs ys : List α) (n : ℕ) :
   induction' xs with x xs IH generalizing ys n
   · simp
   · rw [cons_append, enumFrom_cons, IH, ← cons_append, ← enumFrom_cons, length, Nat.add_right_comm,
-      add_assoc]
+      Nat.add_assoc]
 #align list.enum_from_append List.enumFrom_append
 
 theorem enum_append (xs ys : List α) : enum (xs ++ ys) = enum xs ++ enumFrom xs.length ys := by
@@ -101,7 +101,7 @@ theorem enum_append (xs ys : List α) : enum (xs ++ ys) = enum xs ++ enumFrom xs
 
 theorem map_fst_add_enumFrom_eq_enumFrom (l : List α) (n k : ℕ) :
     map (Prod.map (· + n) id) (enumFrom k l) = enumFrom (n + k) l := by
-  induction l generalizing n k <;> [rfl; simp_all [add_assoc, add_comm k]]
+  induction l generalizing n k <;> [rfl; simp_all [Nat.add_assoc, Nat.add_comm k]]
 #align list.map_fst_add_enum_from_eq_enum_from List.map_fst_add_enumFrom_eq_enumFrom
 
 theorem map_fst_add_enum_eq_enumFrom (l : List α) (n : ℕ) :
@@ -111,7 +111,7 @@ theorem map_fst_add_enum_eq_enumFrom (l : List α) (n : ℕ) :
 
 theorem enumFrom_cons' (n : ℕ) (x : α) (xs : List α) :
     enumFrom n (x :: xs) = (n, x) :: (enumFrom n xs).map (Prod.map Nat.succ id) := by
-  rw [enumFrom_cons, add_comm, ← map_fst_add_enumFrom_eq_enumFrom]
+  rw [enumFrom_cons, Nat.add_comm, ← map_fst_add_enumFrom_eq_enumFrom]
 #align list.enum_from_cons' List.enumFrom_cons'
 
 theorem enum_cons' (x : α) (xs : List α) :
@@ -149,7 +149,7 @@ theorem get_enum (l : List α) (i : Fin l.enum.length)
     (hi : i < l.length := (by simpa using i.2)) :
     l.enum.get i = (i.1, l.get ⟨i, hi⟩) := by
   convert get_enumFrom _ _ i
-  exact (zero_add _).symm
+  exact (Nat.zero_add _).symm
 
 set_option linter.deprecated false in
 @[deprecated get_enum]

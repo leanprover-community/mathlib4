@@ -221,7 +221,7 @@ variable {f : α × β → ℚ → ℝ}
 /-- This property implies `IsRatCondKernelCDF`. The measurability, integrability and integral
 conditions are the same, but the limit properties of `IsRatCondKernelCDF` are replaced by
 limits of integrals. -/
-structure isRatCondKernelCDFAux (f : α × β → ℚ → ℝ) (κ : kernel α (β × ℝ)) (ν : kernel α β) :
+structure IsRatCondKernelCDFAux (f : α × β → ℚ → ℝ) (κ : kernel α (β × ℝ)) (ν : kernel α β) :
     Prop :=
   (measurable : Measurable f)
   (mono' (a : α) {q r : ℚ} (_hqr : q ≤ r) : ∀ᵐ c ∂(ν a), f (a, c) q ≤ f (a, c) r)
@@ -243,25 +243,25 @@ structure isRatCondKernelCDFAux (f : α × β → ℚ → ℝ) (κ : kernel α (
   (set_integral (a : α) {A : Set β} (_hA : MeasurableSet A) (q : ℚ) :
     ∫ c in A, f (a, c) q ∂(ν a) = (κ a (A ×ˢ Iic ↑q)).toReal)
 
-lemma isRatCondKernelCDFAux.measurable_right (hf : isRatCondKernelCDFAux f κ ν) (a : α) (q : ℚ) :
+lemma IsRatCondKernelCDFAux.measurable_right (hf : IsRatCondKernelCDFAux f κ ν) (a : α) (q : ℚ) :
     Measurable (fun t ↦ f (a, t) q) := by
   let h := hf.measurable
   rw [measurable_pi_iff] at h
   exact (h q).comp measurable_prod_mk_left
 
-lemma isRatCondKernelCDFAux.mono (hf : isRatCondKernelCDFAux f κ ν) (a : α) :
+lemma IsRatCondKernelCDFAux.mono (hf : IsRatCondKernelCDFAux f κ ν) (a : α) :
     ∀ᵐ c ∂(ν a), Monotone (f (a, c)) := by
   unfold Monotone
   simp_rw [ae_all_iff]
   exact fun _ _ hqr ↦ hf.mono' a hqr
 
-lemma isRatCondKernelCDFAux.nonneg (hf : isRatCondKernelCDFAux f κ ν) (a : α) :
+lemma IsRatCondKernelCDFAux.nonneg (hf : IsRatCondKernelCDFAux f κ ν) (a : α) :
     ∀ᵐ c ∂(ν a), ∀ q, 0 ≤ f (a, c) q := ae_all_iff.mpr <| hf.nonneg' a
 
-lemma isRatCondKernelCDFAux.le_one (hf : isRatCondKernelCDFAux f κ ν) (a : α) :
+lemma IsRatCondKernelCDFAux.le_one (hf : IsRatCondKernelCDFAux f κ ν) (a : α) :
     ∀ᵐ c ∂(ν a), ∀ q, f (a, c) q ≤ 1 := ae_all_iff.mpr <| hf.le_one' a
 
-lemma isRatCondKernelCDFAux.tendsto_zero_of_antitone (hf : isRatCondKernelCDFAux f κ ν)
+lemma IsRatCondKernelCDFAux.tendsto_zero_of_antitone (hf : IsRatCondKernelCDFAux f κ ν)
     [IsFiniteKernel ν] (a : α) (seq : ℕ → ℚ) (hseq : Antitone seq)
     (hseq_tendsto : Tendsto seq atTop atBot) :
     ∀ᵐ c ∂(ν a), Tendsto (fun m ↦ f (a, c) (seq m)) atTop (𝓝 0) := by
@@ -272,7 +272,7 @@ lemma isRatCondKernelCDFAux.tendsto_zero_of_antitone (hf : isRatCondKernelCDFAux
   · filter_upwards [hf.mono a] with t ht using fun n m hnm ↦ ht (hseq hnm)
   · filter_upwards [hf.nonneg a] with c hc using fun i ↦ hc (seq i)
 
-lemma isRatCondKernelCDFAux.tendsto_one_of_monotone (hf : isRatCondKernelCDFAux f κ ν)
+lemma IsRatCondKernelCDFAux.tendsto_one_of_monotone (hf : IsRatCondKernelCDFAux f κ ν)
     [IsFiniteKernel ν] (a : α) (seq : ℕ → ℚ) (hseq : Monotone seq)
     (hseq_tendsto : Tendsto seq atTop atTop) :
     ∀ᵐ c ∂(ν a), Tendsto (fun m ↦ f (a, c) (seq m)) atTop (𝓝 1) := by
@@ -283,7 +283,7 @@ lemma isRatCondKernelCDFAux.tendsto_one_of_monotone (hf : isRatCondKernelCDFAux 
   · filter_upwards [hf.mono a] with t ht using fun n m hnm ↦ ht (hseq hnm)
   · filter_upwards [hf.le_one a] with c hc using fun i ↦ hc (seq i)
 
-lemma isRatCondKernelCDFAux.tendsto_atTop_one (hf : isRatCondKernelCDFAux f κ ν) [IsFiniteKernel ν]
+lemma IsRatCondKernelCDFAux.tendsto_atTop_one (hf : IsRatCondKernelCDFAux f κ ν) [IsFiniteKernel ν]
     (a : α) :
     ∀ᵐ t ∂(ν a), Tendsto (f (a, t)) atTop (𝓝 1) := by
   suffices ∀ᵐ t ∂(ν a), Tendsto (fun (n : ℕ) ↦ f (a, t) n) atTop (𝓝 1) by
@@ -295,7 +295,7 @@ lemma isRatCondKernelCDFAux.tendsto_atTop_one (hf : isRatCondKernelCDFAux f κ �
   have hseq_tendsto : Tendsto seq atTop atTop := tendsto_nat_cast_atTop_atTop
   filter_upwards [hf.tendsto_one_of_monotone a seq hseq hseq_tendsto] with x hx using hx
 
-lemma isRatCondKernelCDFAux.tendsto_atBot_zero (hf : isRatCondKernelCDFAux f κ ν) [IsFiniteKernel ν]
+lemma IsRatCondKernelCDFAux.tendsto_atBot_zero (hf : IsRatCondKernelCDFAux f κ ν) [IsFiniteKernel ν]
     (a : α) :
     ∀ᵐ t ∂(ν a), Tendsto (f (a, t)) atBot (𝓝 0) := by
   suffices ∀ᵐ t ∂(ν a), Tendsto (fun q : ℚ ↦ f (a, t) (-q)) atTop (𝓝 0) by
@@ -316,7 +316,7 @@ lemma isRatCondKernelCDFAux.tendsto_atBot_zero (hf : isRatCondKernelCDFAux f κ 
     exact tendsto_nat_cast_atTop_atTop
   convert hf.tendsto_zero_of_antitone a seq hseq hseq_tendsto with x n
 
-lemma isRatCondKernelCDFAux.bddBelow_range (hf : isRatCondKernelCDFAux f κ ν) (a : α) :
+lemma IsRatCondKernelCDFAux.bddBelow_range (hf : IsRatCondKernelCDFAux f κ ν) (a : α) :
     ∀ᵐ t ∂(ν a), ∀ q : ℚ, BddBelow (range fun (r : Ioi q) ↦ f (a, t) r) := by
   filter_upwards [hf.nonneg a] with c hc
   refine fun q ↦ ⟨0, ?_⟩
@@ -324,7 +324,7 @@ lemma isRatCondKernelCDFAux.bddBelow_range (hf : isRatCondKernelCDFAux f κ ν) 
   rintro x ⟨y, rfl⟩
   exact hc y
 
-lemma isRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : isRatCondKernelCDFAux f κ ν)
+lemma IsRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : IsRatCondKernelCDFAux f κ ν)
     [IsFiniteKernel ν] (a : α) (q : ℚ) :
     Integrable (fun t ↦ ⨅ r : Ioi q, f (a, t) r) (ν a) := by
   rw [← memℒp_one_iff_integrable]
@@ -357,7 +357,7 @@ lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ
     exact mod_cast hrr'
   · exact ⟨⟨t + 1, lt_add_one _⟩, measure_ne_top ρ _⟩
 
-lemma isRatCondKernelCDFAux.set_integral_iInf_rat_gt (hf : isRatCondKernelCDFAux f κ ν)
+lemma IsRatCondKernelCDFAux.set_integral_iInf_rat_gt (hf : IsRatCondKernelCDFAux f κ ν)
     [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) (q : ℚ) {A : Set β} (hA : MeasurableSet A) :
     ∫ t in A, ⨅ r : Ioi q, f (a, t) r ∂(ν a) = (κ a (A ×ˢ Iic (q : ℝ))).toReal := by
   refine le_antisymm ?_ ?_
@@ -380,7 +380,7 @@ lemma isRatCondKernelCDFAux.set_integral_iInf_rat_gt (hf : isRatCondKernelCDFAux
     · exact (hf.integrable_iInf_rat_gt _ _).integrableOn
     · filter_upwards [hf.mono a] with c h_mono using le_ciInf (fun r ↦ h_mono (le_of_lt r.prop))
 
-lemma isRatCondKernelCDFAux.iInf_rat_gt_eq (hf : isRatCondKernelCDFAux f κ ν) [IsFiniteKernel κ]
+lemma IsRatCondKernelCDFAux.iInf_rat_gt_eq (hf : IsRatCondKernelCDFAux f κ ν) [IsFiniteKernel κ]
     [IsFiniteKernel ν] (a : α) :
     ∀ᵐ t ∂(ν a), ∀ q : ℚ, ⨅ r : Ioi q, f (a, t) r = f (a, t) q := by
   rw [ae_all_iff]
@@ -390,14 +390,14 @@ lemma isRatCondKernelCDFAux.iInf_rat_gt_eq (hf : isRatCondKernelCDFAux f κ ν) 
   · intro s hs _
     rw [hf.set_integral _ hs, hf.set_integral_iInf_rat_gt _ _ hs]
 
-lemma isRatCondKernelCDFAux.isRatStieltjesPoint_ae (hf : isRatCondKernelCDFAux f κ ν)
+lemma IsRatCondKernelCDFAux.isRatStieltjesPoint_ae (hf : IsRatCondKernelCDFAux f κ ν)
     [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) :
     ∀ᵐ t ∂(ν a), IsRatStieltjesPoint f (a, t) := by
   filter_upwards [hf.tendsto_atTop_one a, hf.tendsto_atBot_zero a,
     hf.iInf_rat_gt_eq a, hf.mono a] with t ht_top ht_bot ht_iInf h_mono
   exact ⟨h_mono, ht_top, ht_bot, ht_iInf⟩
 
-lemma isRatCondKernelCDFAux.isRatCondKernelCDF (hf : isRatCondKernelCDFAux f κ ν) [IsFiniteKernel κ]
+lemma IsRatCondKernelCDFAux.isRatCondKernelCDF (hf : IsRatCondKernelCDFAux f κ ν) [IsFiniteKernel κ]
     [IsFiniteKernel ν] :
     IsRatCondKernelCDF f κ ν where
   measurable := hf.measurable
@@ -531,13 +531,7 @@ lemma set_lintegral_toKernel_Iic [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
 lemma set_lintegral_toKernel_univ [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫⁻ b in s, hf.toKernel f (a, b) univ ∂(ν a) = κ a (s ×ˢ univ) := by
-  have : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
-    -- todo: move `Real.iUnion_Iic_rat` to an earlier file and use it here
-    ext1 x
-    simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
-    obtain ⟨r, hr⟩ := exists_rat_gt x
-    exact ⟨r, hr.le⟩
-  rw [← this, prod_iUnion]
+  rw [← Real.iUnion_Iic_rat, prod_iUnion]
   have h_dir : Directed (fun x y ↦ x ⊆ y) fun q : ℚ ↦ Iic (q : ℝ) := by
     refine Monotone.directed_le fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
     exact mod_cast hrr'
