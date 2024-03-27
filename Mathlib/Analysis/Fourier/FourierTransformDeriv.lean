@@ -162,9 +162,9 @@ For good continuity and differentiability properties, we decompose it as follows
   Then `A = C ∘ (fun v ↦ (L v ⬝, ..., L v ⬝))`, and is therefore continuous.
 
 Here are the Lean names of the above maps:
+* `B` is `ContinuousMultilinearMap.smulRightL`
 * `J` is `ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ`
-* `C` is `ContinuousLinearMap.compContinuousLinearMapContinuousMultilinear` (except that we fix the
-  second variable).
+* `C` is `ContinuousMultilinearMap.compContinuousLinearMapLRight`.
 
 -/
 def bloublou (f : V → E) (v : V) : FormalMultilinearSeries ℝ W E := fun n ↦
