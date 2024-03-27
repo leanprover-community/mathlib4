@@ -30,8 +30,6 @@ universe w w' v u
 
 open CategoryTheory Opposite Limits regularTopology ContinuousMap
 
-section
-
 variable {C : Type*} [Category C] (G : C ⥤ TopCat)
   (X : Type*) [TopologicalSpace X]
 
@@ -104,13 +102,6 @@ noncomputable instance [PreservesFiniteCoproducts G] :
   have := h.1 J
   have := h'.1 J
   exact compPreservesLimitsOfShape _ _
-
-end
-
-section
-
-variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{v})
-  (X : (Type (max u v))) [TopologicalSpace X]
 
 /--
 Associate to a `(u+1)`-small topological space the corresponding condensed set, given by
