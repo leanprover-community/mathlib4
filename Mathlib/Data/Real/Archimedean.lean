@@ -360,7 +360,7 @@ theorem not_bddBelow_coe : ¬ (BddBelow <| range (fun (x : ℚ) ↦ (x : ℝ))) 
   simpa using exists_rat_lt _
 
 theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
-  exact iUnion_Iic_of_not_bddAbove_range not_BddAbove_coe
+  exact iUnion_Iic_of_not_bddAbove_range not_bddAbove_coe
 #align real.Union_Iic_rat Real.iUnion_Iic_rat
 
 theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
