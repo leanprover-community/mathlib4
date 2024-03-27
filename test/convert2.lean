@@ -1,4 +1,4 @@
-import Mathlib.Data.List.BigOperators.Defs
+import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Convert
 

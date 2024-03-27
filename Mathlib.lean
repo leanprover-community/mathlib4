@@ -1771,7 +1771,6 @@ import Mathlib.Data.LazyList.Basic
 import Mathlib.Data.List.AList
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.BigOperators.Basic
-import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
