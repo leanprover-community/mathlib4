@@ -193,7 +193,7 @@ variable [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}
 end CanonicallyOrderedCommMonoid
 
 @[simp]
-lemma CanonicallyOrderedCommSemiring.multiset_prod_pos [CanonicallyOrderedCommSemiring α]
+lemma _root_.CanonicallyOrderedCommSemiring.multiset_prod_pos [CanonicallyOrderedCommSemiring α]
     [Nontrivial α] {m : Multiset α} : 0 < m.prod ↔ ∀ x ∈ m, 0 < x := by
   rcases m with ⟨l⟩
   rw [Multiset.quot_mk_to_coe'', Multiset.prod_coe]
