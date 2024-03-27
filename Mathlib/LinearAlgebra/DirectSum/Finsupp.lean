@@ -152,7 +152,5 @@ theorem finsuppTensorFinsuppLid_self :
 
 theorem finsuppTensorFinsuppRid_self :
     finsuppTensorFinsuppRid R R ι κ = finsuppTensorFinsupp' R ι κ := by
-  rw [finsuppTensorFinsupp', finsuppTensorFinsuppLid, finsuppTensorFinsuppRid]
-  congr
-  -- TODO: extract the proof of `TensorProduct.rid R R = TensorProduct.lid R R` as a separate lemma
-  exact LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ ↦ by simp [mul_comm]
+  rw [finsuppTensorFinsupp', finsuppTensorFinsuppLid, finsuppTensorFinsuppRid,
+    TensorProduct.lid_eq_rid]
