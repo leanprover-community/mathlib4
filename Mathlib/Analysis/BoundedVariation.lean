@@ -165,7 +165,7 @@ theorem eq_zero_iff (f : α → E) {s : Set α} :
     eVariationOn f s = 0 ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) = 0 := by
   constructor
   · rintro h x xs y ys
-    rw [← Nat.le_zero, ← h]
+    rw [← le_zero_iff, ← h]
     exact edist_le f xs ys
   · rintro h
     dsimp only [eVariationOn]
