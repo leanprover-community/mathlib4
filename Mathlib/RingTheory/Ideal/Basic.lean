@@ -578,6 +578,38 @@ theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
     (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_right (a ^ m) ha) hn
 #align ideal.pow_mem_of_mem Ideal.pow_mem_of_mem
 
+theorem pow_mem_of_pow_mem {m n : ℕ} (ha : a ^ m ∈ I) (h : m ≤ n) : a ^ n ∈ I := by
+  rw [← Nat.add_sub_of_le h, pow_add]
+  exact I.mul_mem_right _ ha
+
+theorem add_pow_add_mem_of_pow_mem  {m n : ℕ}
+    (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) :
+    (a + b) ^ (m + n) ∈ I := by
+  rw [add_pow]
+  apply I.sum_mem
+  intro c _
+  apply mul_mem_right
+  by_cases h : m ≤ c
+  · exact I.mul_mem_right _ (I.pow_mem_of_pow_mem ha h)
+  · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
+    simp only [not_le] at h
+    rw [add_comm, Nat.add_sub_assoc (le_of_lt h)]
+    apply Nat.le_add_right
+
+theorem add_pow_add_succ_mem_of_pow_succ_mem  {m n : ℕ}
+    (ha : a ^ m.succ ∈ I) (hb : b ^ n.succ ∈ I) :
+    (a + b) ^ (m + n).succ ∈ I := by
+  rw [add_pow]
+  apply I.sum_mem
+  intro c _
+  apply mul_mem_right
+  by_cases h : m.succ ≤ c
+  · exact I.mul_mem_right _ (I.pow_mem_of_pow_mem ha h)
+  · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
+    simp only [not_le, ← Nat.succ_le_iff, Nat.succ_le_succ_iff] at h
+    rw [← Nat.add_succ, add_comm, Nat.add_sub_assoc h]
+    exact Nat.le_add_right (Nat.succ n) (m - c)
+
 theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} (hI : I.IsPrime) :
     ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y =>
   ⟨hI.mem_or_mem, by

@@ -957,22 +957,8 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
 def radical (I : Ideal R) : Ideal R where
   carrier := { r | ∃ n : ℕ, r ^ n ∈ I }
   zero_mem' := ⟨1, (pow_one (0 : R)).symm ▸ I.zero_mem⟩
-  add_mem' :=
-  fun {x y} ⟨m, hxmi⟩ ⟨n, hyni⟩ =>
-    ⟨m + n,
-      (add_pow x y (m + n)).symm ▸ I.sum_mem <|
-        show
-          ∀ c ∈ Finset.range (Nat.succ (m + n)), x ^ c * y ^ (m + n - c) * Nat.choose (m + n) c ∈ I
-          from fun c _ =>
-          Or.casesOn (le_total c m) (fun hcm =>
-              I.mul_mem_right _ <|
-                I.mul_mem_left _ <|
-                  Nat.add_comm n m ▸
-                    (add_tsub_assoc_of_le hcm n).symm ▸
-                      (pow_add y n (m - c)).symm ▸ I.mul_mem_right _ hyni) (fun hmc =>
-               I.mul_mem_right _ <|
-                I.mul_mem_right _ <|
-                  add_tsub_cancel_of_le hmc ▸ (pow_add x m (c - m)).symm ▸ I.mul_mem_right _ hxmi)⟩
+  add_mem' := fun {x y} ⟨m, hxmi⟩ ⟨n, hyni⟩ =>
+    ⟨m + n, add_pow_add_mem_of_pow_mem I hxmi hyni⟩
 -- Porting note: Below gives weird errors without `by exact`
   smul_mem' {r s} := by exact fun ⟨n, h⟩ ↦ ⟨n, (mul_pow r s n).symm ▸ I.mul_mem_left (r ^ n) h⟩
 #align ideal.radical Ideal.radical
