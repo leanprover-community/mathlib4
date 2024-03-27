@@ -324,18 +324,6 @@ theorem sum_map_mul_right : sum (s.map fun i => f i * a) = sum (s.map f) * a :=
 
 end NonUnitalNonAssocSemiring
 
-section NonUnitalSemiring
-
-variable [NonUnitalSemiring α]
-
-theorem dvd_sum {a : α} {s : Multiset α} : (∀ x ∈ s, a ∣ x) → a ∣ s.sum :=
-  Multiset.induction_on s (fun _ => dvd_zero _) fun x s ih h => by
-    rw [sum_cons]
-    exact dvd_add (h _ (mem_cons_self _ _)) (ih fun y hy => h _ <| mem_cons.2 <| Or.inr hy)
-#align multiset.dvd_sum Multiset.dvd_sum
-
-end NonUnitalSemiring
-
 @[simp]
 theorem sum_map_singleton (s : Multiset α) : (s.map fun a => ({a} : Multiset α)).sum = s :=
   Multiset.induction_on s (by simp) (by simp)
