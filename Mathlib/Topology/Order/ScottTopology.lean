@@ -351,4 +351,8 @@ lemma IsLower.scottHausdorff_le [IsLower α] : scottHausdorff α ≤ ‹Topologi
     @IsScottHausdorff.isOpen_of_isLowerSet _ _ (scottHausdorff α) _ _
       <| IsLower.isLowerSet_of_isOpen h
 
+lemma Scott_Hausdorff_le_Lower' : scottHausdorff α ≤ lower α :=
+  fun s h => @IsScottHausdorff.isOpen_of_isLowerSet  _ _ (scottHausdorff α) _ _
+      <| (@IsLower.isLowerSet_of_isOpen (Topology.WithLower α) _ _  _ s h)
+
 end Topology
