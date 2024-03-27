@@ -70,9 +70,9 @@ We formalize several versions of this theorem in
 filter, countable
 -/
 
-set_option autoImplicit true
-
 open Function Set Filter
+
+variable {α : Type*} {p : Set α → Prop} {t : Set α}
 
 /-- We say that a type `α` has a *countable separating family of sets* satisfying a predicate
 `p : Set α → Prop` on a set `t` if there exists a countable family of sets `S : Set (Set α)` such
@@ -85,6 +85,24 @@ separating family of open sets and a countable separating family of closed sets.
 class HasCountableSeparatingOn (α : Type*) (p : Set α → Prop) (t : Set α) : Prop where
   exists_countable_separating : ∃ S : Set (Set α), S.Countable ∧ (∀ s ∈ S, p s) ∧
     ∀ x ∈ t, ∀ y ∈ t, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y
+
+def countableSeparatingSet (p : Set α → Prop) (t : Set α) [h : HasCountableSeparatingOn α p t] :
+    Set (Set α) :=
+  h.exists_countable_separating.choose
+
+lemma countable_countableSeparatingSet [h : HasCountableSeparatingOn α p t] :
+    (countableSeparatingSet p t).Countable :=
+  h.exists_countable_separating.choose_spec.1
+
+lemma prop_of_mem_countableSeparatingSet [h : HasCountableSeparatingOn α p t] {s : Set α}
+    (hs : s ∈ countableSeparatingSet p t) :
+    p s :=
+  h.exists_countable_separating.choose_spec.2.1 s hs
+
+lemma separatingOn_countableSeparatingSet [h : HasCountableSeparatingOn α p t] {x y : α}
+    (hx : x ∈ t) (hy : y ∈ t) (hxy : ∀ s ∈ countableSeparatingSet p t, x ∈ s ↔ y ∈ s) :
+    x = y :=
+  h.exists_countable_separating.choose_spec.2.2 x hx y hy hxy
 
 theorem exists_countable_separating (α : Type*) (p : Set α → Prop) (t : Set α)
     [h : HasCountableSeparatingOn α p t] :
@@ -127,7 +145,7 @@ theorem HasCountableSeparatingOn.of_subtype {α : Type*} {p : Set α → Prop} {
 
 namespace Filter
 
-variable {l : Filter α} [CountableInterFilter l] {f g : α → β}
+variable {β : Type*} {l : Filter α} [CountableInterFilter l] {f g : α → β}
 
 /-!
 ### Filters supported on a (sub)singleton

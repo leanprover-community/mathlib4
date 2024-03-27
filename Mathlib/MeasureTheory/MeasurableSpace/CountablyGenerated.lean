@@ -169,19 +169,39 @@ instance (priority := 100) [MeasurableSpace α] {s : Set α}
 
 variable (α)
 
-/-- If a measurable space admits a countable separating family of measurable sets,
-there is a countably generated coarser space which still separates points. -/
-theorem exists_countablyGenerated_le_of_hasCountableSeparatingOn [m : MeasurableSpace α]
-    [h : HasCountableSeparatingOn α MeasurableSet univ] :
-    ∃ m' : MeasurableSpace α, @CountablyGenerated _ m' ∧ @SeparatesPoints _ m' ∧ m' ≤ m := by
-  rcases h.1 with ⟨b, bct, hbm, hb⟩
-  refine ⟨generateFrom b, ?_, ?_, generateFrom_le hbm⟩
-  · use b
+def countableSeparatingSpace [MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
+    MeasurableSpace α :=
+  generateFrom (countableSeparatingSet MeasurableSet univ)
+
+instance instCountablyGeneratedCountableSeparatingSpace
+    [MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
+    @CountablyGenerated α (countableSeparatingSpace α) :=
+  @CountablyGenerated.mk _ (countableSeparatingSpace α)
+    ⟨countableSeparatingSet MeasurableSet univ, countable_countableSeparatingSet, rfl⟩
+
+instance instseparatesPointsCountableSeparatingSpace
+    [MeasurableSpace α] [h : HasCountableSeparatingOn α MeasurableSet univ] :
+    @SeparatesPoints α (countableSeparatingSpace α) := by
+  let b := countableSeparatingSet MeasurableSet (univ : Set α)
+  have hb : ∀ x ∈ univ, ∀ y ∈ univ, (∀ s ∈ b, x ∈ s ↔ y ∈ s) → x = y := fun x hx y hy ↦
+    separatingOn_countableSeparatingSet hx hy
   refine @SeparatesPoints.mk _ (generateFrom b) fun x y hxy ↦ hb _ trivial _ trivial ?_
   intro s hs
   use hxy _ (measurableSet_generateFrom hs)
   contrapose
   exact hxy _ (measurableSet_generateFrom hs).compl
+
+lemma countableSeparatingSpace_le [m : MeasurableSpace α]
+    [HasCountableSeparatingOn α MeasurableSet univ] :
+    countableSeparatingSpace α ≤ m :=
+  generateFrom_le (fun _ hs ↦ prop_of_mem_countableSeparatingSet hs)
+
+/-- If a measurable space admits a countable separating family of measurable sets,
+there is a countably generated coarser space which still separates points. -/
+theorem exists_countablyGenerated_le_of_hasCountableSeparatingOn [m : MeasurableSpace α]
+    [HasCountableSeparatingOn α MeasurableSet univ] :
+    ∃ m' : MeasurableSpace α, @CountablyGenerated _ m' ∧ @SeparatesPoints _ m' ∧ m' ≤ m :=
+  ⟨countableSeparatingSpace α, inferInstance, inferInstance, countableSeparatingSpace_le α⟩
 
 open scoped Classical
 
@@ -190,19 +210,24 @@ open Function
 /-- A map from a measurable space to the Cantor space `ℕ → Bool` induced by a countable
 sequence of sets generating the measurable space. -/
 noncomputable
-def mapNatBool [MeasurableSpace α] [CountablyGenerated α] (x : α) (n : ℕ) :
-    Bool := x ∈ natGeneratingSequence α n
+def mapNatBool (m : MeasurableSpace α) [CountablyGenerated α] (x : α) (n : ℕ) :
+    Bool := x ∈ @natGeneratingSequence α m _ n
 
-theorem measurable_mapNatBool [MeasurableSpace α] [CountablyGenerated α] :
-    Measurable (mapNatBool α) := by
+lemma measurable_mapNatBool (m : MeasurableSpace α) [CountablyGenerated α] :
+    Measurable[m] (mapNatBool α m) := by
   rw [measurable_pi_iff]
   refine fun n ↦ measurable_to_bool ?_
   simp only [preimage, mem_singleton_iff, mapNatBool,
     Bool.decide_iff, setOf_mem_eq]
   apply measurableSet_natGeneratingSequence
 
-theorem injective_mapNatBool [MeasurableSpace α] [CountablyGenerated α]
-    [SeparatesPoints α] : Injective (mapNatBool α) := by
+lemma measurable_mapNatBool_countableSeparatingSpace [MeasurableSpace α]
+    [HasCountableSeparatingOn α MeasurableSet univ] :
+    Measurable (mapNatBool α (countableSeparatingSpace α)) :=
+  (measurable_mapNatBool _ _).mono (countableSeparatingSpace_le α) le_rfl
+
+lemma injective_mapNatBool (m : MeasurableSpace α) [CountablyGenerated α]
+    [SeparatesPoints α] : Injective (mapNatBool α m) := by
   intro x y hxy
   rw [← generateFrom_natGeneratingSequence α] at *
   apply separating_of_generateFrom (range (natGeneratingSequence _))
@@ -210,53 +235,59 @@ theorem injective_mapNatBool [MeasurableSpace α] [CountablyGenerated α]
   rw [← decide_eq_decide]
   exact congr_fun hxy n
 
+/-- An equivalence of measurable spaces to the range of `mapNatBool`. -/
+noncomputable
+def equivNatBool [MeasurableSpace α]
+    [CountablyGenerated α] [SeparatesPoints α] :
+    α ≃ᵐ range (mapNatBool α _) where
+  toEquiv := Equiv.ofInjective _ $ injective_mapNatBool _ _
+  measurable_toFun := Measurable.subtype_mk $ measurable_mapNatBool _ _
+  measurable_invFun := by
+    simp_rw [← generateFrom_natGeneratingSequence α]
+    apply measurable_generateFrom
+    rintro _ ⟨n, rfl⟩
+    rw [← Equiv.image_eq_preimage _ _]
+    refine ⟨{y | y n}, by measurability, ?_⟩
+    rw [← Equiv.preimage_eq_iff_eq_image]
+    simp [mapNatBool]
+
 /-- If a measurable space is countably generated and separates points, it is measure equivalent
 to some some subset of the Cantor space `ℕ → Bool` (equipped with the product sigma algebra).
 Note: `s` need not be measurable, so this map need not be a `MeasurableEmbedding` to
 the Cantor Space. -/
 theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
     [CountablyGenerated α] [SeparatesPoints α] :
-    ∃ s : Set (ℕ → Bool), Nonempty (α ≃ᵐ s) := by
-  use range (mapNatBool α), Equiv.ofInjective _ $
-    injective_mapNatBool _,
-    Measurable.subtype_mk $ measurable_mapNatBool _
-  simp_rw [← generateFrom_natGeneratingSequence α]
-  apply measurable_generateFrom
-  rintro _ ⟨n, rfl⟩
-  rw [← Equiv.image_eq_preimage _ _]
-  refine ⟨{y | y n}, by measurability, ?_⟩
-  rw [← Equiv.preimage_eq_iff_eq_image]
-  simp [mapNatBool]
+    ∃ s : Set (ℕ → Bool), Nonempty (α ≃ᵐ s) :=
+  ⟨range (mapNatBool α _), ⟨equivNatBool α⟩⟩
 
 /-- If a measurable space admits a countable sequence of measurable sets separating points,
 it admits a measurable injection into the Cantor space `ℕ → Bool`
 (equipped with the product sigma algebra). -/
 theorem measurable_injection_nat_bool_of_hasCountableSeparatingOn [MeasurableSpace α]
     [HasCountableSeparatingOn α MeasurableSet univ] :
-    ∃ f : α → ℕ → Bool, Measurable f ∧ Injective f := by
-  rcases exists_countablyGenerated_le_of_hasCountableSeparatingOn α with ⟨m', _, _, m'le⟩
-  refine ⟨mapNatBool α, ?_, injective_mapNatBool _⟩
-  exact (measurable_mapNatBool _).mono m'le le_rfl
+    ∃ f : α → ℕ → Bool, Measurable f ∧ Injective f :=
+  ⟨mapNatBool α (countableSeparatingSpace α), measurable_mapNatBool_countableSeparatingSpace α,
+    injective_mapNatBool α (countableSeparatingSpace α)⟩
 
 variable {α}
 
 --TODO: Make this an instance
 theorem measurableSingletonClass_of_hasCountableSeparatingOn
     [MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
-    MeasurableSingletonClass α := by
-  rcases measurable_injection_nat_bool_of_hasCountableSeparatingOn α with ⟨f, fmeas, finj⟩
-  refine ⟨fun x ↦ ?_⟩
-  rw [← finj.preimage_image {x}, image_singleton]
-  exact fmeas $ MeasurableSet.singleton _
+    MeasurableSingletonClass α where
+  measurableSet_singleton x := by
+    rw [← (injective_mapNatBool _ (countableSeparatingSpace α)).preimage_image {x}, image_singleton]
+    exact measurable_mapNatBool_countableSeparatingSpace _ (MeasurableSet.singleton _)
 
 end SeparatesPoints
 
 instance [MeasurableSpace α] {s : Set α} [h : CountablyGenerated s] [MeasurableSingletonClass s] :
     HasCountableSeparatingOn α MeasurableSet s := by
   suffices HasCountableSeparatingOn s MeasurableSet univ from this.of_subtype fun _ ↦ id
-  rcases h.1 with ⟨b, hbc, hb⟩
-  refine ⟨⟨b, hbc, fun t ht ↦ hb.symm ▸ .basic t ht, fun x _ y _ h ↦ ?_⟩⟩
-  rw [← forall_generateFrom_mem_iff_mem_iff, ← hb] at h
+  have hs := generateFrom_countableGeneratingSet (α := s)
+  refine ⟨⟨countableGeneratingSet s, countable_countableGeneratingSet,
+    fun t ht ↦ hs.symm ▸ .basic t ht, fun x _ y _ h ↦ ?_⟩⟩
+  rw [← forall_generateFrom_mem_iff_mem_iff, hs] at h
   simpa using h {y}
 
 section MeasurableMemPartition
