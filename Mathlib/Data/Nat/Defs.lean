@@ -54,6 +54,8 @@ attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_o
   -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
   -- Nat.bit1_ne_bit0
 
+attribute [simp] Nat.min_eq_left Nat.min_eq_right
+
 /-! ### `succ`, `pred` -/
 
 lemma succ_pos' : 0 < succ n := succ_pos n

@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Data.Int.Basic
-import Mathlib.Data.List.Count
+import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Forall2
 
 #align_import data.list.big_operators.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
