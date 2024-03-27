@@ -84,7 +84,7 @@ lemma eq_len_of_finiteDimensionalType [FiniteDimensionalOrder α] :
 le_antisymm
   (iSup_le <| fun _ ↦ WithBot.coe_le_coe.mpr <| WithTop.coe_le_coe.mpr <|
     RelSeries.length_le_length_longestOf _ _) <|
-  le_iSup (fun (i : RelSeries r) ↦ (i.length : WithBot (WithTop ℕ))) <| RelSeries.longestOf _
+  le_iSup (fun (i : LTSeries _) ↦ (i.length : WithBot (WithTop ℕ))) <| LTSeries.longestOf _
 
 lemma eq_zero_of_unique [Unique α] : krullDim α = 0 :=  by
   rw [eq_len_of_finiteDimensionalType (α := α), Nat.cast_eq_zero]
