@@ -204,13 +204,10 @@ theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
                   * (Multiset.map (fun i : G => (i.val : K) ^ k) Finset.univ.val).sum = 0 := by
     rw [sub_mul, mul_comm, ← h_multiset_map_sum, one_mul, sub_self]
   rw [mul_eq_zero] at hzero
-  rcases hzero with h | h
-  · contrapose! ha
-    ext
-    rw [← sub_eq_zero]
-    simp_rw [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, OneMemClass.coe_one,
-      Units.val_one, h]
-  · exact h
+  refine hzero.resolve_left fun h => ha ?_
+  ext
+  rw [← sub_eq_zero]
+  simp_rw [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, OneMemClass.coe_one, Units.val_one, h]
 
 section
 
@@ -336,7 +333,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem X_pow_card_pow_sub_X_natDegree_eq (hn : n ≠ 0) (hp : 1 < p) :
     (X ^ p ^ n - X : K'[X]).natDegree = p ^ n :=
-  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow _ _ hn hp
+  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow hn hp
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_pow_sub_X_nat_degree_eq FiniteField.X_pow_card_pow_sub_X_natDegree_eq
 
@@ -349,7 +346,7 @@ set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_sub_X_ne_zero FiniteField.X_pow_card_sub_X_ne_zero
 
 theorem X_pow_card_pow_sub_X_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - X : K'[X]) ≠ 0 :=
-  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow _ _ hn hp
+  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow hn hp
 set_option linter.uppercaseLean3 false in
 #align finite_field.X_pow_card_pow_sub_X_ne_zero FiniteField.X_pow_card_pow_sub_X_ne_zero
 

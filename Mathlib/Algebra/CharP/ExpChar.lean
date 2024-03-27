@@ -362,12 +362,12 @@ theorem RingHom.map_iterate_frobenius (n : ℕ) :
 
 theorem MonoidHom.iterate_map_frobenius (f : R →* R) (p : ℕ) [ExpChar R p] (n : ℕ) :
     f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
-  f.iterate_map_pow _ _ _
+  iterate_map_pow f _ _ _
 #align monoid_hom.iterate_map_frobenius MonoidHom.iterate_map_frobenius
 
 theorem RingHom.iterate_map_frobenius (f : R →+* R) (p : ℕ) [ExpChar R p] (n : ℕ) :
     f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
-  f.iterate_map_pow _ _ _
+  iterate_map_pow f _ _ _
 #align ring_hom.iterate_map_frobenius RingHom.iterate_map_frobenius
 
 variable (R S)

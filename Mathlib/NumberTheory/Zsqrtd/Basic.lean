@@ -433,7 +433,7 @@ theorem sqLe_of_le {c d x y z w : ℕ} (xz : z ≤ x) (yw : y ≤ w) (xy : SqLe 
 
 theorem sqLe_add_mixed {c d x y z w : ℕ} (xy : SqLe x c y d) (zw : SqLe z c w d) :
     c * (x * z) ≤ d * (y * w) :=
-  Nat.mul_self_le_mul_self_iff.2 <| by
+  Nat.mul_self_le_mul_self_iff.1 <| by
     simpa [mul_comm, mul_left_comm] using mul_le_mul xy zw (Nat.zero_le _) (Nat.zero_le _)
 #align zsqrtd.sq_le_add_mixed Zsqrtd.sqLe_add_mixed
 
@@ -681,7 +681,7 @@ theorem nonneg_add_lem {x y z w : ℕ} (xy : Nonneg (⟨x, -y⟩ : ℤ√d)) (zw
           (fun m n xy zw => sqLe_cancel xy zw) fun m n xy zw =>
           let t := Nat.le_trans zw (sqLe_of_le (Nat.le_add_right n (m + 1)) le_rfl xy)
           have : k + j + 1 ≤ k :=
-            Nat.mul_self_le_mul_self_iff.2 (by simpa [one_mul] using t)
+            Nat.mul_self_le_mul_self_iff.1 (by simpa [one_mul] using t)
           absurd this (not_le_of_gt <| Nat.succ_le_succ <| Nat.le_add_right _ _))
       (nonnegg_pos_neg.1 xy) (nonnegg_neg_pos.1 zw)
   rw [add_def, neg_add_eq_sub]
