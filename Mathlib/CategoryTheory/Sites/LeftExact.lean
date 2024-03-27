@@ -277,6 +277,15 @@ def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D
 def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
   (sheafToPresheaf J D).mapIso  ((plusPlusSheafIsoPresheafToSheaf J D).app P)
 
+@[reassoc (attr := simp)]
+lemma toSheafify_plusPlusIsoSheafify_hom (P : Cᵒᵖ ⥤ D) :
+    J.toSheafify P ≫ (plusPlusIsoSheafify J D P).hom = toSheafify J P := by
+  convert Adjunction.unit_leftAdjointUniq_hom_app
+    (plusPlusAdjunction J D) (sheafificationAdjunction J D) P
+  ext1 P
+  dsimp [GrothendieckTopology.toSheafify, plusPlusAdjunction]
+  rw [Category.comp_id]
+
 instance [HasFiniteLimits D] : HasSheafify J D := HasSheafify.mk' J D (plusPlusAdjunction J D)
 
 variable {J D}
