@@ -8,6 +8,7 @@ import Lean.Linter.Util
 import Std.Data.Array.Basic
 import Std.Data.List.Basic
 import Std.Data.Array.Merge
+
 --import Mathlib.adomaniLeanUtils.inspect_syntax
 
 /-!
@@ -294,6 +295,16 @@ def getL : Syntax → Array stained
                   | _ => default
   | _ => default
 
+set_option hygiene false in
+run_cmd Command.liftCoreM do Meta.MetaM.run do
+    let simpStx ← `(tactic| simp at h j ⊢)
+    let rwStx ← `(tactic| rw [] at h j ⊢)
+    let stxs := #[simpStx, rwStx]
+    for stx in stxs do
+      let locs := getL stx
+      guard <| locs = #[.name `h, .name `j, .goal]
+    let rwStar ← `(tactic| rw [] at *)
+    guard <| getL rwStar = #[.wildcard]
 
 /-- `getStained stx` expects `stx` to be an argument of a node of `SyntaxNodeKind`
 `Lean.Parser.Tactic.location`.
@@ -327,7 +338,7 @@ elab "get " cmd:command : command => do
     let locs := getStained tac
 
 --    Meta.inspect tac
---    dbg_trace "{tac}\n{locs}\n"
+    dbg_trace "{tac}\n{locs}\n"
 --    logInfoAt tac m!"may act on {locs} and {getStained! tac}"
     --logInfo m!"tactic: '{tac}'\nacts:   {locs}\natoms: {locs.map getStained}"
 --    let _ ← locs.mapM Meta.inspect
@@ -512,44 +523,23 @@ def stainers : HashSet Name := HashSet.empty
 --  |>.insert ``Lean.Parser.Tactic.rwSeq  -- remove me! `rw` is not a stainer!
 
 def ctor : Info → Syntax
-  | .ofTacticInfo i =>
---    dbg_trace "TacticInfo"
-    i.stx
-  | .ofTermInfo i =>
---    dbg_trace "TermInfo"
-    i.stx
-  | .ofCommandInfo i =>
---    dbg_trace "CommandInfo"
-    i.stx
-  | .ofMacroExpansionInfo i =>
---    dbg_trace "MacroExpansionInfo"
-    i.stx
-  | .ofOptionInfo i =>
---    dbg_trace "OptionInfo"
-    i.stx
-  | .ofFieldInfo i =>
---    dbg_trace "FieldInfo"
-    i.stx
-  | .ofCompletionInfo i =>
---    dbg_trace "CompletionInfo"
-    i.stx
-  | .ofUserWidgetInfo i =>
-    dbg_trace "UserWidgetInfo"
-    i.stx
-  | .ofCustomInfo i =>
-    dbg_trace "CustomInfo"
-    i.stx
-  | .ofFVarAliasInfo i =>
-    dbg_trace "FVarAliasInfo"
-    default
-  | .ofFieldRedeclInfo i =>
-    dbg_trace "FieldRedeclInfo"
-    i.stx
-  | .ofOmissionInfo i =>
-    dbg_trace "OmissionInfo"
-    i.stx
+  | .ofTacticInfo i         => /-dbg_trace "TacticInfo"-/         i.stx
+  | .ofTermInfo i           => /-dbg_trace "TermInfo"-/           i.stx
+  | .ofCommandInfo i        => /-dbg_trace "CommandInfo"-/        i.stx
+  | .ofMacroExpansionInfo i => /-dbg_trace "MacroExpansionInfo"-/ i.stx
+  | .ofOptionInfo i         => /-dbg_trace "OptionInfo"-/         i.stx
+  | .ofFieldInfo i          => /-dbg_trace "FieldInfo"-/          i.stx
+  | .ofCompletionInfo i     => /-dbg_trace "CompletionInfo"-/     i.stx
+  | .ofUserWidgetInfo i     => dbg_trace "UserWidgetInfo";        i.stx
+  | .ofCustomInfo i         => dbg_trace "CustomInfo";            i.stx
+  | .ofFVarAliasInfo _i     => dbg_trace "FVarAliasInfo";         default
+  | .ofFieldRedeclInfo i    => dbg_trace "FieldRedeclInfo";       i.stx
+  | .ofOmissionInfo i       => dbg_trace "OmissionInfo";          i.stx
+
+#check getFileMap
 
 /-
+Lean.Server.combineIdents
 
 CommandInfo
 CompletionInfo
@@ -569,8 +559,7 @@ def showFVars : InfoTree → CommandElabM Unit
     let _ ← c.toArray.mapM showFVars
   | .context _ t => showFVars t
   | .hole _ => return
-
-
+open Lsp
 /-- The main entry point to the unreachable tactic linter. -/
 def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) && (← getInfoState).enabled do
@@ -579,9 +568,37 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
     return
 --  dbg_trace "processing"
   let trees ← getInfoTrees
-  let _ ← trees.toList.mapM showFVars
+--  let _ ← trees.toList.mapM showFVars
+  let fm ← getFileMap
+  let refs := Server.findReferences fm trees.toArray
+  let mut allRefs := #[]
+  for r in refs do allRefs := allRefs.push r.stx; --logInfo m!"ref stx: '{r.stx}'"
+  let cRefs := Server.combineIdents trees.toArray refs
+  let dRefs := Server.dedupReferences refs
+--  dbg_trace "{(allRefs.size, cRefs.size, dRefs.size)}"
+--  logInfo m!"{allRefs}"
+--  logInfo m!"{dRefs.map fun d => ((HashMap.contains Lean.Lsp.ModuleRefs d.ident))}"
+--  logInfo m!"{dRefs.map fun d => (d.stx, [d.range.start, d.range.end], d.ident.toString, d.aliases.map (·.toString))}"
+--  logInfo m!"{cRefs.map fun d => (d.stx, d.ident.toString, d.aliases.map (·.toString))}"
+  let x := trees.toList.map (extractRealGoalsCtx' (fun _ => true)) -- (·.getKind == ``Lean.Parser.Tactic.tacticHave_))
+--  let mut stains : HashSet stained := .empty
+--  let mut sfvrs : HashSet FVarId := .empty
+--  let mut stains : HashSet FVarId := .empty
+  let _ : Ord FVarId := ⟨fun f g => compare f.name.toString g.name.toString⟩
+  for d in x do for (s, ctxb, ctx, mvsb, mvs) in d do
+--    let newMVb := mvsb.diff mvs
+--    let newMVa := mvs.diff mvsb
+    if ignored.contains s.getKind then continue
+--    logInfo m!"generating syntax: '{s}'"  Lean.Parser.Term.byTactic
+    --logInfoAt s m!"{s} has locs: {getLocs s}"
+--    for locs in getLocs s do
+    for locs in getStained! s do
+--      Meta.inspect s
+      logInfoAt s m!"{s}\nstains '{locs}'"
 
 initialize addLinter nonTerminalSimpLinter
+
+
 #exit
 
 
