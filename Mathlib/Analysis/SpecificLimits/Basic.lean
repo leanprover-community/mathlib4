@@ -604,7 +604,7 @@ end ENNReal
 
 
 theorem factorial_tendsto_atTop : Tendsto Nat.factorial atTop atTop :=
-  tendsto_atTop_atTop_of_monotone Nat.monotone_factorial fun n ↦ ⟨n, n.self_le_factorial⟩
+  tendsto_atTop_atTop_of_monotone (fun _ _ ↦ Nat.factorial_le) fun n ↦ ⟨n, n.self_le_factorial⟩
 #align factorial_tendsto_at_top factorial_tendsto_atTop
 
 theorem tendsto_factorial_div_pow_self_atTop :
