@@ -14,7 +14,7 @@ a Dirichlet series".
 -/
 
 open Filter Topology Asymptotics Real Set MeasureTheory
-open Complex hiding abs_of_nonneg
+open Complex
 
 variable {ι : Type*} [Countable ι]
 
@@ -77,10 +77,10 @@ lemma hasSum_mellin_pi_mul {a : ι → ℂ} {q : ι → ℝ} {F : ℝ → ℂ} {
           ← div_eq_inv_mul]
     simp_rw [mul_div_assoc, this]
     ring_nf
-  · have (i : ι) : ‖a i‖ / ↑(π * q i) ^ s.re = π ^ (-s.re) * ‖a i‖ / q i ^ s.re := by
+  · have (i) : ‖a i‖ / ↑(π * q i) ^ s.re = π ^ (-s.re) * ‖a i‖ / q i ^ s.re := by
       rcases hq i with h | h
       · simp [h]
-      rw [mul_rpow pi_pos.le h.le, ← div_div, rpow_neg pi_pos.le, ← div_eq_inv_mul]
+      · rw [mul_rpow pi_pos.le h.le, ← div_div, rpow_neg pi_pos.le, ← div_eq_inv_mul]
     simpa only [this, mul_div_assoc] using h_sum.mul_left _
 
 /-- Version allowing some constant terms (which are omitted from the sums). -/
@@ -96,7 +96,8 @@ lemma hasSum_mellin_pi_mul₀ {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ
     split_ifs with h <;> tauto
     exact Or.inr (lt_of_le_of_ne (hp i) (Ne.symm h))
   have (i t) : (if p i = 0 then 0 else a i * rexp (-π * p i * t)) =
-    (a' i * rexp (-π * p i * t)) := by simp only [a', ite_mul, zero_mul]
+      a' i * rexp (-π * p i * t) := by
+    simp only [a', ite_mul, zero_mul]
   simp_rw [this] at hF
   convert hasSum_mellin_pi_mul hp' hs hF ?_ using 2 with i
   · rcases eq_or_ne (p i) 0 with h | h <;>
@@ -115,10 +116,8 @@ lemma hasSum_mellin_pi_mul_sq {a : ι → ℂ} {r : ι → ℝ} {F : ℝ → ℂ
     (h_sum : Summable fun i ↦ ‖a i‖ / |r i| ^ s.re) :
     HasSum (fun i ↦ Gammaℝ s * a i / |r i| ^ s) (mellin F (s / 2)) := by
   have hs' : 0 < (s / 2).re := by rw [div_ofNat_re]; positivity
-  have h (i) : r i ^ 2 = 0 ↔ r i = 0 := by simp
-  simp_rw [← h] at hF
-  have hp i : 0 ≤ (r i) ^ 2 := sq_nonneg _
-  convert hasSum_mellin_pi_mul₀ hp hs' hF ?_ using 3 with i
+  simp_rw [← sq_eq_zero_iff (a := r _)] at hF
+  convert hasSum_mellin_pi_mul₀ (fun i ↦ sq_nonneg (r i)) hs' hF ?_ using 3 with i
   · rw [← neg_div, Gammaℝ_def]
   · rw [← _root_.sq_abs, ofReal_pow, ← cpow_nat_mul']
     ring_nf
@@ -136,8 +135,9 @@ lemma hasSum_mellin_pi_mul_sq' {a : ι → ℂ} {r : ι → ℝ} {F : ℝ → �
   have hs₁ : s ≠ 0 := fun h ↦ lt_irrefl _ (zero_re ▸ h ▸ hs)
   have hs₂ : 0 < (s + 1).re := by rw [add_re, one_re]; positivity
   have hs₃ : s + 1 ≠ 0 := fun h ↦ lt_irrefl _ (zero_re ▸ h ▸ hs₂)
-  have (i t) : (a i * r i * rexp (-π * r i ^ 2 * t)) = if r i = 0 then 0 else
-    (a i * r i * rexp (-π * r i ^ 2 * t)) := by split_ifs with h <;> simp [h]
+  have (i t) : (a i * r i * rexp (-π * r i ^ 2 * t)) =
+      if r i = 0 then 0 else (a i * r i * rexp (-π * r i ^ 2 * t)) := by
+    split_ifs with h <;> simp [h]
   conv at hF => enter [t, ht, 1, i]; rw [this]
   convert hasSum_mellin_pi_mul_sq hs₂ hF ?_ using 2 with i
   · rcases eq_or_ne (r i) 0 with h | h
