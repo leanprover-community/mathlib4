@@ -1191,7 +1191,7 @@ theorem le_of_mul_le_mul_left (a b c : Associates α) (ha : a ≠ 0) : a * b ≤
 
 theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p → m = 1 ∨ m = p
   | p, m, ⟨hp0, _, h⟩, ⟨d, r⟩ => by
-    have dvd_rfl' : p ∣ m * d := by rw[r]
+    have dvd_rfl' : p ∣ m * d := by rw [r]
     rw [r]
     match h m d dvd_rfl' with
     | Or.inl h' =>
