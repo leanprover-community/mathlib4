@@ -40,7 +40,7 @@ inductive ValuedCSP.expressivePower (Γ : ValuedCSP D C) : ValuedCSP D C
 | double {n : ℕ} {f g} (hf : ⟨n, f⟩ ∈ Γ.expressivePower) (hg : ⟨n, g⟩ ∈ Γ.expressivePower) :
     Γ.expressivePower ⟨n, f+g⟩
 /-- If you take an `n+1`-ary function from `Γ.expressivePower` and minimize its first argument,
-    the resulting `n`-ary function belongs to the expressive power as well -/
+    the resulting `n`-ary function belongs to the expressive power as well. -/
 | minimize {n : ℕ} {f : (Fin n.succ → D) → C} (hf : ⟨n.succ, f⟩ ∈ Γ.expressivePower) :
     Γ.expressivePower ⟨n, fun x : Fin n → D =>
       Finset.univ.inf' Finset.univ_nonempty (fun z : D => f (Matrix.vecCons z x))⟩
