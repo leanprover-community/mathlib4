@@ -794,7 +794,7 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 @[simp]
 theorem Nat.le_zero' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
   ⟨fun h => Fin.ext <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_rfl⟩
-#align fin.Nat.le_zero Fin.Nat.le_zero'
+#align fin.nat.le_zero Fin.Nat.le_zero'
 
 #align fin.succ_succ_ne_one Fin.succ_succ_ne_one
 #align fin.cast_lt Fin.castLT
