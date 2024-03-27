@@ -7,7 +7,6 @@ import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
-import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
