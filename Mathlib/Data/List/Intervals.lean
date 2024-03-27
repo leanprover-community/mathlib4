@@ -63,7 +63,7 @@ theorem mem {n m l : ℕ} : l ∈ Ico n m ↔ n ≤ l ∧ l < m := by
   suffices n ≤ l ∧ l < n + (m - n) ↔ n ≤ l ∧ l < m by simp [Ico, this]
   rcases le_total n m with hnm | hmn
   · rw [Nat.add_sub_cancel' hnm]
-  · rw [Nat.sub_eq_zero_iff_le.mpr hmn, add_zero]
+  · rw [Nat.sub_eq_zero_iff_le.mpr hmn, Nat.add_zero]
     exact
       and_congr_right fun hnl =>
         Iff.intro (fun hln => (not_le_of_gt hln hnl).elim) fun hlm => lt_of_lt_of_le hlm hmn
@@ -74,7 +74,7 @@ theorem eq_nil_of_le {n m : ℕ} (h : m ≤ n) : Ico n m = [] := by
 #align list.Ico.eq_nil_of_le List.Ico.eq_nil_of_le
 
 theorem map_add (n m k : ℕ) : (Ico n m).map (k + ·) = Ico (n + k) (m + k) := by
-  rw [Ico, Ico, map_add_range', Nat.add_sub_add_right m k, add_comm n k]
+  rw [Ico, Ico, map_add_range', Nat.add_sub_add_right m k, Nat.add_comm n k]
 #align list.Ico.map_add List.Ico.map_add
 
 theorem map_sub (n m k : ℕ) (h₁ : k ≤ n) :
@@ -96,7 +96,7 @@ theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by
   dsimp only [Ico]
   convert range'_append n (m-n) (l-m) 1 using 2
-  · rw [one_mul, Nat.add_sub_cancel' hnm]
+  · rw [Nat.one_mul, Nat.add_sub_cancel' hnm]
   · rw [Nat.sub_add_sub_cancel hml hnm]
 #align list.Ico.append_consecutive List.Ico.append_consecutive
 
