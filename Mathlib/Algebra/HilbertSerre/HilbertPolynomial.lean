@@ -447,4 +447,99 @@ theorem additiveFunction_val_eq_hilbertPolynomial_eval
           intro h; rw [h] at h1;
           exact h1 (Nat.zero_le (rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S)))
 
+lemma coeff_S_card_sub_eq_one (h : auxPolynomial 𝒜 ℳ μ S ≠ 0) (i : ℕ) :
+    Polynomial.coeff (∏ x_1 in Finset.attach (Finset.range (S.toFinset.card - rootMultiplicity 1
+    (auxPolynomial 𝒜 ℳ μ S) - 1)), (Polynomial.X - (@Nat.cast ℚ[X] NonAssocSemiring.toNatCast
+    (i % (natDegree (auxPolynomial' 𝒜 ℳ μ S h) + 1))) + (@Nat.cast ℚ[X]
+    NonAssocSemiring.toNatCast ↑x_1) + 1)) (S.toFinset.card - rootMultiplicity 1 (auxPolynomial
+    𝒜 ℳ μ S) - 1) = 1 := by
+  let hcoeff := @Polynomial.coeff_prod_of_natDegree_le ℚ ({ x // x ∈ Finset.range (S.toFinset.card
+    - rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) - 1) }) (Finset.attach (Finset.range
+    (S.toFinset.card - rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) - 1))) _ (fun x_1 ↦
+    Polynomial.X - (@Nat.cast ℚ[X] NonAssocSemiring.toNatCast (i % (natDegree (auxPolynomial'
+    𝒜 ℳ μ S h) + 1))) + (@Nat.cast ℚ[X] NonAssocSemiring.toNatCast ↑x_1) + 1) 1
+  simp_rw [sub_add] at hcoeff
+  let hcoeff1 := hcoeff <| show ∀ x ∈ Finset.attach (Finset.range (S.toFinset.card -
+    rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) - 1)), natDegree (Polynomial.X - ((@Nat.cast ℚ[X]
+    NonAssocSemiring.toNatCast (i % (natDegree (auxPolynomial' 𝒜 ℳ μ S h) + 1))) - (@Nat.cast
+    ℚ[X] NonAssocSemiring.toNatCast ↑x) - 1)) ≤ 1 by
+    intro x _; rw [sub_eq_add_neg Polynomial.X];
+    exact le_trans (Polynomial.natDegree_add_le Polynomial.X _) <| by
+      simp only [natDegree_X, neg_sub, max_le_iff, le_refl, true_and];
+      exact le_trans (Polynomial.natDegree_sub_le _ _) <| by
+        simp only [natDegree_one, ge_iff_le, zero_le, max_eq_right];
+        exact le_trans (Polynomial.natDegree_sub_le _ _) <| by
+          simp only [natDegree_nat_cast, max_self, zero_le]
+  simp only [Finset.card_attach, Finset.card_range, mul_one, coeff_sub, coeff_X_one,
+    coeff_nat_cast_ite, one_ne_zero, ↓reduceIte, CharP.cast_eq_zero, sub_self, zero_sub,
+    sub_neg_eq_add, Finset.prod_const] at hcoeff1
+  simp_rw [← sub_add] at hcoeff1; rw [hcoeff1, Polynomial.coeff_one]
+  simp only [one_ne_zero, ↓reduceIte, add_zero, one_pow]
+
+theorem hilbertPolynomial_natDegree_eq_sub (hhP : hilbertPolynomial 𝒜 ℳ μ S ≠ 0) :
+    (hilbertPolynomial 𝒜 ℳ μ S).natDegree =
+    S.toFinset.card - (Polynomial.rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S)) - 1 := by
+  by_cases h : auxPolynomial 𝒜 ℳ μ S = 0
+  · exfalso; rw [hilbertPolynomial] at hhP;
+    simp only [h, ↓reduceDite, ne_eq, not_true_eq_false] at hhP
+  · by_cases h1 : S.toFinset.card ≤ (auxPolynomial 𝒜 ℳ μ S).rootMultiplicity 1
+    · rw [hilbertPolynomial] at hhP; simp [h1] at hhP
+    · refine' Polynomial.natDegree_eq_of_le_of_coeff_ne_zero _ _
+      · rw [hilbertPolynomial]; simp only [h, ↓reduceDite, h1, ↓reduceIte]
+        rw [polynomial_of_polynomial]; simp only [zsmul_eq_mul]
+        refine' @Polynomial.natDegree_sum_le_of_forall_le ℕ (Finset.range (natDegree
+          (auxPolynomial' 𝒜 ℳ μ S h) + 1)) ℚ _ (S.toFinset.card - rootMultiplicity 1
+          (auxPolynomial 𝒜 ℳ μ S) - 1) (fun x ↦ (@Int.cast ℚ[X] Ring.toIntCast (Polynomial.coeff
+          (auxPolynomial' 𝒜 ℳ μ S h) x)) * prePolynomial (natDegree (auxPolynomial' 𝒜 ℳ μ S h))
+          (S.toFinset.card - rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) - 1) (@Nat.cast (Fin
+          (natDegree (auxPolynomial' 𝒜 ℳ μ S _) + 1)) Semiring.toNatCast x)) _
+        · intro i _
+          refine' le_trans (@Polynomial.natDegree_mul_le ℚ _ (@Int.cast ℚ[X] Ring.toIntCast
+            (Polynomial.coeff (auxPolynomial' 𝒜 ℳ μ S h) i)) (prePolynomial (natDegree
+            (auxPolynomial' 𝒜 ℳ μ S h)) (S.toFinset.card - rootMultiplicity 1 (auxPolynomial
+            𝒜 ℳ μ S) - 1) ↑i)) _
+          simp only [natDegree_int_cast, zero_add]; rw [prePolynomial]
+          simp only [Finset.univ_eq_attach, Fin.val_nat_cast, map_natCast]
+          refine' le_trans (Polynomial.natDegree_smul_le (@Inv.inv ℚ _ ↑(Nat.factorial
+            (S.toFinset.card - rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) - 1))) _) _
+          · refine' le_trans (Polynomial.natDegree_prod_le (@Finset.attach ℕ (Finset.range
+              (S.toFinset.card - rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S) - 1))) _) _
+            · simp_rw [sub_add]
+              have : ∀ x ∈ Finset.attach (Finset.range (S.toFinset.card - rootMultiplicity 1
+                  (auxPolynomial 𝒜 ℳ μ S) - 1)), natDegree (Polynomial.X - ((@Nat.cast ℚ[X]
+                  NonAssocSemiring.toNatCast (i % (natDegree (auxPolynomial' 𝒜 ℳ μ S h) + 1))) -
+                  (@Nat.cast ℚ[X] NonAssocSemiring.toNatCast ↑x) - 1)) ≤ 1 := by
+                intro x _; rw [sub_eq_add_neg Polynomial.X]
+                exact le_trans (Polynomial.natDegree_add_le Polynomial.X _) <| by
+                  simp only [natDegree_X, neg_sub, max_le_iff, le_refl, true_and];
+                  exact le_trans (Polynomial.natDegree_sub_le _ _) <| by
+                    simp only [natDegree_one, ge_iff_le, zero_le, max_eq_right];
+                    exact le_trans (Polynomial.natDegree_sub_le _ _) <| by
+                      simp only [natDegree_nat_cast, max_self, zero_le]
+              exact le_trans (Finset.sum_le_sum this) <| by simp only [Finset.sum_const,
+                Finset.card_attach, Finset.card_range, smul_eq_mul, mul_one, le_refl]
+      · rw [hilbertPolynomial]; simp only [h, ↓reduceDite, h1, ↓reduceIte, ne_eq]
+        rw [polynomial_of_polynomial]
+        simp only [zsmul_eq_mul, finset_sum_coeff, coeff_intCast_mul]
+        simp_rw [prePolynomial, Polynomial.coeff_smul]
+        simp only [Finset.univ_eq_attach, Fin.val_nat_cast, map_natCast, smul_eq_mul]
+        simp_rw [coeff_S_card_sub_eq_one 𝒜 ℳ μ S h]
+        rw [← Finset.sum_mul]; simp only [mul_eq_zero, _root_.inv_eq_zero, Nat.cast_eq_zero]
+        rw [not_or]; constructor
+        · rw [show ∑ i in Finset.range (natDegree (auxPolynomial' 𝒜 ℳ μ S h) + 1),
+            (@Int.cast ℚ Ring.toIntCast (coeff (auxPolynomial' 𝒜 ℳ μ S h) i))
+            = eval 1 (auxPolynomial' 𝒜 ℳ μ S h) by
+              rw [Polynomial.eval_eq_sum_range]; simp only [one_pow, mul_one, Int.cast_sum]]
+          intro h'; simp only [Int.cast_eq_zero] at h'
+          change eval 1 (((- 1) ^ (Polynomial.rootMultiplicity 1 (auxPolynomial 𝒜 ℳ μ S))) *
+            (exists_eq_pow_rootMultiplicity_mul_and_not_dvd (auxPolynomial 𝒜 ℳ μ S) h 1).choose)
+            = 0 at h'
+          simp only [map_one, eval_mul, eval_pow, eval_neg, eval_one, Int.reduceNeg, mul_eq_zero,
+            pow_eq_zero_iff', neg_eq_zero, one_ne_zero, ne_eq, rootMultiplicity_eq_zero_iff,
+            IsRoot.def, not_forall, exists_prop, false_and, false_or] at h'
+          let this := (exists_eq_pow_rootMultiplicity_mul_and_not_dvd (auxPolynomial 𝒜 ℳ μ S)
+            h 1).choose_spec.2
+          rw [Polynomial.dvd_iff_isRoot] at this; exact this h'
+        · simp only [one_ne_zero, or_false]; exact Nat.factorial_ne_zero _
+
 end HilbertSerre
