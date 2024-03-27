@@ -439,9 +439,9 @@ theorem bot_eq_zero : (⊥ : FractionalIdeal S P) = 0 :=
 #align fractional_ideal.bot_eq_zero FractionalIdeal.bot_eq_zero
 
 @[simp]
-theorem le_zero_iff {I : FractionalIdeal S P} : I ≤ 0 ↔ I = 0 :=
+theorem Nat.le_zero {I : FractionalIdeal S P} : I ≤ 0 ↔ I = 0 :=
   le_bot_iff
-#align fractional_ideal.le_zero_iff FractionalIdeal.le_zero_iff
+#align fractional_ideal.Nat.le_zero FractionalIdeal.Nat.le_zero
 
 theorem eq_zero_iff {I : FractionalIdeal S P} : I = 0 ↔ ∀ x ∈ I, x = (0 : P) :=
   ⟨fun h x hx => by simpa [h, mem_zero_iff] using hx, fun h =>

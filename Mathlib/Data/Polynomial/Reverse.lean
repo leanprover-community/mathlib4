@@ -305,7 +305,7 @@ theorem reverse_leadingCoeff (f : R[X]) : f.reverse.leadingCoeff = f.trailingCoe
 theorem reverse_natTrailingDegree (f : R[X]) : f.reverse.natTrailingDegree = 0 := by
   by_cases hf : f = 0
   · rw [hf, reverse_zero, natTrailingDegree_zero]
-  · rw [← le_zero_iff]
+  · rw [← Nat.le_zero]
     apply natTrailingDegree_le_of_ne_zero
     rw [coeff_zero_reverse]
     exact mt leadingCoeff_eq_zero.mp hf

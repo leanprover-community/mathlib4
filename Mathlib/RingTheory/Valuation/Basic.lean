@@ -3,10 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.Order.WithZero
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Tactic.TFAE
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import ring_theory.valuation.basic from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
@@ -537,10 +536,10 @@ variable (v : Valuation R Γ₀)
 def supp : Ideal R where
   carrier := { x | v x = 0 }
   zero_mem' := map_zero v
-  add_mem' {x y} hx hy := le_zero_iff.mp <|
+  add_mem' {x y} hx hy := Nat.le_zero.mp <|
     calc
       v (x + y) ≤ max (v x) (v y) := v.map_add x y
-      _ ≤ 0 := max_le (le_zero_iff.mpr hx) (le_zero_iff.mpr hy)
+      _ ≤ 0 := max_le (Nat.le_zero.mpr hx) (Nat.le_zero.mpr hy)
   smul_mem' c x hx :=
     calc
       v (c * x) = v c * v x := map_mul v c x

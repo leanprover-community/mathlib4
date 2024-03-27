@@ -167,7 +167,7 @@ theorem snorm_le_snorm_top_mul_snorm (p : ℝ≥0∞) (f : α → E) {g : α →
     simp_rw [Pi.mul_apply, ← ENNReal.coe_mul, ENNReal.coe_le_coe]
     exact ha
   by_cases hp_zero : p = 0
-  · simp only [hp_zero, snorm_exponent_zero, mul_zero, le_zero_iff]
+  · simp only [hp_zero, snorm_exponent_zero, mul_zero, Nat.le_zero]
   simp_rw [snorm_eq_lintegral_rpow_nnnorm hp_zero hp_top, snorm_exponent_top, snormEssSup]
   calc
     (∫⁻ x, (‖b (f x) (g x)‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) ≤

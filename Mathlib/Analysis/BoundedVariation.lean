@@ -165,7 +165,7 @@ theorem eq_zero_iff (f : α → E) {s : Set α} :
     eVariationOn f s = 0 ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) = 0 := by
   constructor
   · rintro h x xs y ys
-    rw [← le_zero_iff, ← h]
+    rw [← Nat.le_zero, ← h]
     exact edist_le f xs ys
   · rintro h
     dsimp only [eVariationOn]
@@ -258,7 +258,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       · have : i + 1 ≤ n := Nat.succ_le_of_lt hi
         simp only [hi.le, this, if_true]
         exact hu (Nat.le_succ i)
-      · simp only [le_refl, if_true, add_le_iff_nonpos_right, le_zero_iff, Nat.one_ne_zero,
+      · simp only [le_refl, if_true, add_le_iff_nonpos_right, Nat.le_zero, Nat.one_ne_zero,
           if_false, h]
       · have A : ¬i ≤ n := hi.not_le
         have B : ¬i + 1 ≤ n := fun h => A (i.le_succ.trans h)

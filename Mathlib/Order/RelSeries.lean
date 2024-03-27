@@ -3,7 +3,6 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Algebra.Order.WithZero
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.OfFn

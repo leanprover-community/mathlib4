@@ -1046,7 +1046,7 @@ lemma exists_eq_of_iSup_eq_of_not_isLimit
   refine (not_and_or.mp hω).elim (fun e ↦ ⟨hι.some, ?_⟩)
     (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccLimit.{u, v} f ω · h)
   cases not_not.mp e
-  rw [← le_zero_iff] at h ⊢
+  rw [← Nat.le_zero] at h ⊢
   exact (le_ciSup hf _).trans h
 
 -- Porting note: simpNF is not happy with universe levels.

@@ -613,7 +613,7 @@ theorem measure_limsup_eq_zero {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠
 
 theorem measure_liminf_eq_zero {s : ℕ → Set α} (h : (∑' i, μ (s i)) ≠ ∞) :
     μ (liminf s atTop) = 0 := by
-  rw [← le_zero_iff]
+  rw [← Nat.le_zero]
   have : liminf s atTop ≤ limsup s atTop := liminf_le_limsup
   exact (μ.mono this).trans (by simp [measure_limsup_eq_zero h])
 #align measure_theory.measure_liminf_eq_zero MeasureTheory.measure_liminf_eq_zero
