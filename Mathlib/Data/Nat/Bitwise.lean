@@ -3,9 +3,10 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
+import Mathlib.Order.Basic
+import Mathlib.Tactic.Common
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
@@ -479,7 +480,7 @@ theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy : y < 2 ^ n) :
       cases n <;> simp_all
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
-  simp only [pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]
+  simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]
 
 /-- Note that the LHS is the expression used within `Std.BitVec.append`, hence the name. -/
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
