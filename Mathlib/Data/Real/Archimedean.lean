@@ -353,7 +353,7 @@ theorem not_bddAbove_coe : ¬ (BddAbove <| range (fun (x : ℚ) ↦ (x : ℝ))) 
   ext
   simpa using exists_rat_gt _
 
-theorem notBddBelow_coe: ¬(BddBelow <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
+theorem not_bddBelow_coe : ¬ (BddBelow <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
   dsimp only [BddBelow, lowerBounds]
   rw [Set.not_nonempty_iff_eq_empty]
   ext
