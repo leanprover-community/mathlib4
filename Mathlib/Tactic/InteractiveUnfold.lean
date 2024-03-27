@@ -40,6 +40,10 @@ def unfold (e : Expr) : MetaM (Option Expr) := do
   /- ζ-reduction -/
   if let .letE _ _ v b _ := e then
     return b.instantiate1 v
+  /- unfolding a let-bound free variable -/
+  if let .fvar fvarId := e.getAppFn then
+    if let some value ← fvarId.getValue? then
+      return value.betaRev e.getAppRevArgs
   /- projection reduction -/
   if let some e ← reduceProj? e then
     return e.headBeta
@@ -48,11 +52,12 @@ def unfold (e : Expr) : MetaM (Option Expr) := do
       if let some e ← unfoldDefinition? e then
         if let some r ← reduceProj? e.getAppFn then
           return mkAppN r e.getAppArgs |>.headBeta
-  /- unfolding a let-bound free variable -/
-  if let .fvar fvarId := e.getAppFn then
-    if let some value ← fvarId.getValue? then
-      return value.betaRev e.getAppRevArgs
-
+  /- unfolding a matcher -/
+  match (← reduceMatcher? e) with
+  | .reduced e  => return e
+  | .partialApp => return none
+  | .stuck _    => return none
+  | .notMatcher =>
   /- unfolding an if statement -/
   match_expr e with
   | ite _ _ i tb eb =>
@@ -66,7 +71,6 @@ def unfold (e : Expr) : MetaM (Option Expr) := do
     | isFalse _ h => return some (eb.betaRev #[h])
     | _ => return none
   | _ =>
-
   /- unfolding a constant defined with well founded recursion -/
   if let .const n lvls := e.getAppFn then
     if let some info := Elab.WF.eqnInfoExt.find? (← getEnv) n then
@@ -77,10 +81,16 @@ def unfold (e : Expr) : MetaM (Option Expr) := do
 
   return none
 
-
 partial def unfolds (e : Expr) (acc : Array Expr := #[]) : MetaM (Array Expr) := do
-  let some e ← unfold e | return acc
-  unfolds e (acc.push e)
+  if let some e ← unfold e then
+    unfolds e (acc.push e)
+  else
+    let e' ← whnf e
+    if e == e' then
+      return acc
+    else
+      return acc.push e'
+
 
 def printToPaste (e : Expr) : MetaM String :=
   withOptions (fun _ => Options.empty
