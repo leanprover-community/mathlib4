@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Order.Monotone.Basic
 
 #align_import data.nat.choose.basic from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
@@ -141,7 +139,7 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
       rw [choose_succ_succ, Nat.add_mul, Nat.add_mul, succ_sub_succ, h, h₁, h₂, Nat.add_mul,
         Nat.mul_sub_right_distrib, factorial_succ, ← Nat.add_sub_assoc h₃, Nat.add_assoc,
         ← Nat.add_mul, Nat.add_sub_cancel_left, Nat.add_comm]
-    · rw [hk₁]; simp [hk₁, mul_comm, choose, Nat.sub_self]
+    · rw [hk₁]; simp [hk₁, Nat.mul_comm, choose, Nat.sub_self]
 #align nat.choose_mul_factorial_mul_factorial Nat.choose_mul_factorial_mul_factorial
 
 theorem choose_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
