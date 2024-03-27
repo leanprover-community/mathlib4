@@ -49,25 +49,6 @@ open MeasureTheory Set Filter TopologicalSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology
 
-section AuxLemmasToBeMoved
-
-variable {α β ι : Type*}
-
-theorem Real.iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
-  ext1 x
-  simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
-  obtain ⟨r, hr⟩ := exists_rat_gt x
-  exact ⟨r, hr.le⟩
-#align real.Union_Iic_rat Real.iUnion_Iic_rat
-
-theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
-  ext1 x
-  simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false_iff, not_forall, not_le]
-  exact exists_rat_lt x
-#align real.Inter_Iic_rat Real.iInter_Iic_rat
-
-end AuxLemmasToBeMoved
-
 namespace MeasureTheory.Measure
 
 variable {α β : Type*} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
