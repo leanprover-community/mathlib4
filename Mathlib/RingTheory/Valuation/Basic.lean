@@ -536,10 +536,10 @@ variable (v : Valuation R Γ₀)
 def supp : Ideal R where
   carrier := { x | v x = 0 }
   zero_mem' := map_zero v
-  add_mem' {x y} hx hy := Nat.le_zero.mp <|
+  add_mem' {x y} hx hy := le_zero_iff.mp <|
     calc
       v (x + y) ≤ max (v x) (v y) := v.map_add x y
-      _ ≤ 0 := max_le (Nat.le_zero.mpr hx) (Nat.le_zero.mpr hy)
+      _ ≤ 0 := max_le (le_zero_iff.mpr hx) (le_zero_iff.mpr hy)
   smul_mem' c x hx :=
     calc
       v (c * x) = v c * v x := map_mul v c x
