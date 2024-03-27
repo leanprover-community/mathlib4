@@ -261,7 +261,8 @@ theorem ranges_length (l : List ℕ) :
     intro s _
     simp only [Function.comp_apply, length_map]
 
-theorem ranges_join (l : List ℕ) : l.ranges.join = range (Nat.sum l) := by
+/-- See `List.ranges_join` for the version about `List.sum`. -/
+lemma ranges_join' (l : List ℕ) : l.ranges.join = range (Nat.sum l) := by
   induction l with
   | nil => exact rfl
   | cons a l hl =>
@@ -269,16 +270,18 @@ theorem ranges_join (l : List ℕ) : l.ranges.join = range (Nat.sum l) := by
     rw [← map_join, hl]
     rw [range_add]
 
-/-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum` -/
-theorem mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
-    (∃ s ∈ List.ranges l,  n ∈ s) ↔ n < Nat.sum l := by
-  rw [← mem_range, ← ranges_join, mem_join]
+/-- Any entry of any member of `l.ranges` is strictly smaller than `Nat.sum l`.
+
+See `List.mem_mem_ranges_iff_lt_sum` for the version about `List.sum`. -/
+lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :
+    (∃ s ∈ l.ranges, n ∈ s) ↔ n < Nat.sum l := by
+  rw [← mem_range, ← ranges_join', mem_join]
 
  /-- The members of `l.ranges` have no duplicate -/
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) :
     s.Nodup := by
   refine (List.pairwise_join.mp ?_).1 s hs
-  rw [ranges_join]
+  rw [ranges_join']
   exact nodup_range _
 
 end Ranges

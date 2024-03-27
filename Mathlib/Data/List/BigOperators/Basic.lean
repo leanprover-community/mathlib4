@@ -7,6 +7,7 @@ import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Forall2
+import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
 
 #align_import data.list.big_operators.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
@@ -658,3 +659,16 @@ protected theorem map_list_prod (f : M →* N) (l : List M) : f l.prod = (l.map 
 end MonoidHom
 
 end MonoidHom
+
+@[simp] lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum :=
+  (List.foldl_eq_foldr Nat.add_comm Nat.add_assoc _ _).symm
+
+namespace List
+
+lemma ranges_join (l : List ℕ) : l.ranges.join = range l.sum := by simp [ranges_join']
+
+/-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum`. -/
+lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
+    (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by simp [mem_mem_ranges_iff_lt_natSum]
+
+end List

@@ -122,20 +122,6 @@ theorem fold_dedup_idem [DecidableEq α] [hi : Std.IdempotentOp op] (s : Multise
 
 end Fold
 
-section Order
-
-theorem max_le_of_forall_le {α : Type*} [CanonicallyLinearOrderedAddCommMonoid α] (l : Multiset α)
-    (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n := by
-  induction l using Quotient.inductionOn
-  simpa using List.max_le_of_forall_le _ _ h
-#align multiset.max_le_of_forall_le Multiset.max_le_of_forall_le
-
-theorem max_nat_le_of_forall_le (l : Multiset ℕ) (n : ℕ) (h : ∀ x ∈ l, x ≤ n) : l.fold max 0 ≤ n :=
-  max_le_of_forall_le l n h
-#align multiset.max_nat_le_of_forall_le Multiset.max_nat_le_of_forall_le
-
-end Order
-
 open Nat
 
 theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=

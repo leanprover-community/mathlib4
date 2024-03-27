@@ -298,7 +298,7 @@ theorem powersetCard_eq_empty {α : Type*} (n : ℕ) {s : Multiset α} (h : card
 @[simp]
 theorem powersetCard_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
     s.powersetCard (card s + i) = 0 :=
-  powersetCard_eq_empty _ (lt_add_of_pos_right (card s) hi)
+  powersetCard_eq_empty _ (Nat.lt_add_of_pos_right hi)
 #align multiset.powerset_len_card_add Multiset.powersetCard_card_add
 
 theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :
