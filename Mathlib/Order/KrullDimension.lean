@@ -24,6 +24,9 @@ Krull dimensions are defined to take value in `WithBot (WithTop ℕ)` so that `(
 also negative infinity. This is because we want Krull dimensions to be additive with respect
 to product of varieties so that `-∞` being the Krull dimension of empty variety is equal to
 sum of `-∞` and the Krull dimension of any other varieties.
+
+We introduce the notion of the Krull dimension of a binary relation for the sole purpose of
+specialising it to the notion of the Krull dimension of a partial order.
 -/
 
 section definitions
@@ -36,12 +39,15 @@ index of all relation series of `r`.
 
 If there is no relation series `a₀, a₁, ..., aₙ` in `α`, then its Krull dimension is defined to be
 negative infinity; if the length of all relation series `a₀, a₁, ..., aₙ` is unbounded, its Krull
-dimension is defined to be positive infinity. (Not sure if this definition is useful.) -/
+dimension is defined to be positive infinity.
+
+The sole purpose of the Krull dimension of a binary relation is to specialize it to a partial order
+and later to partial order on the collection of prime ideals of a commutative rings.-/
 noncomputable def krullDimOfRel : WithBot (WithTop ℕ) :=
   ⨆ (p : RelSeries r), p.length
 
 /--
-Krull dimension of a preorder `α` is the supremum of the rightmost index of all relation
+The **Krull dimension** of a preorder `α` is the supremum of the rightmost index of all relation
 series of `α` order by `<`. If there is no series `a₀ < a₁ < ... < aₙ` in `α`, then its Krull
 dimension is defined to be negative infinity; if the length of all series `a₀ < a₁ < ... < aₙ` is
 unbounded, its Krull dimension is defined to be positive infinity.
