@@ -59,7 +59,7 @@ variable [Preorder α]
 /--
 The Lawson topology is defined as the meet of the `LowerTopology` and the `ScottTopology`.
 -/
-def lawson : TopologicalSpace α := lower α ⊓ scott α
+def lawson (α : Type*) [Preorder α] : TopologicalSpace α := lower α ⊓ scott α
 
 variable (α) [TopologicalSpace α]
 
@@ -68,7 +68,7 @@ variable (α) [TopologicalSpace α]
 The Lawson topology is defined as the meet of the `LowerTopology` and the `ScottTopology`.
 -/
 class IsLawson : Prop where
-  topology_eq_lawson : ‹TopologicalSpace α› = lawson
+  topology_eq_lawson : ‹TopologicalSpace α› = lawson α
 
 end Preorder
 
@@ -76,7 +76,7 @@ namespace IsLawson
 section Preorder
 variable (α) [Preorder α] [TopologicalSpace α] [IsLawson α]
 
-lemma topology_eq : ‹_› = lawson := topology_eq_lawson
+lemma topology_eq : ‹_› = lawson α := topology_eq_lawson
 
 /-- The complements of the upper closures of finite sets intersected with Scott open sets form
 a basis for the lawson topology. -/
@@ -184,7 +184,7 @@ instance [Inhabited α] : Inhabited (WithLawson α) := ‹Inhabited α›
 variable [Preorder α]
 
 instance : Preorder (WithLawson α) := ‹Preorder α›
-instance : TopologicalSpace (WithLawson α) := lawson
+instance : TopologicalSpace (WithLawson α) := lawson α
 instance : IsLawson (WithLawson α) := ⟨rfl⟩
 
 /-- If `α` is equipped with the Lawson topology, then it is homeomorphic to `WithLawson α`.
