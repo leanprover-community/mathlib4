@@ -74,6 +74,8 @@ variable [CommSemiring R] [Semiring S] [Algebra R S]
 
 variable (M N : Submodule R S)
 
+section mulMap
+
 /-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural map
 `M ⊗[R] N →ₗ[R] S` induced by multiplication in `S`. -/
 def mulMap := TensorProduct.lift <| ((LinearMap.domRestrict' N).comp <| .mul R S).domRestrict M
@@ -86,6 +88,107 @@ theorem mulMap_comm_of_commute (hc : ∀ (m : M) (n : N), Commute m.1 n.1) :
   refine TensorProduct.ext' fun n m ↦ ?_
   simp_rw [LinearMap.comp_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul, mulMap_tmul]
   exact (hc m n).symm
+
+/-- If `N` is a submodule in an algebra `S` over `R`, there is the natural map
+`i(R) ⊗[R] N →ₗ[R] N` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
+def lTensorAlgebraMap' :
+    (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) ⊗[R] N →ₗ[R] N := by
+  refine (mulMap (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) N).codRestrict N ?_
+  intro c
+  induction c using TensorProduct.induction_on with
+  | zero => rw [_root_.map_zero]; exact N.zero_mem
+  | tmul r n =>
+    rw [mulMap_tmul]
+    obtain ⟨_, y, rfl⟩ := r
+    convert N.smul_mem y n.2 using 1
+    simp [Algebra.smul_def]
+  | add x y hx hy => rw [_root_.map_add]; exact N.add_mem hx hy
+
+theorem lTensorAlgebraMap'_apply
+    (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
+    (n : N) : N.lTensorAlgebraMap' (⟨algebraMap R S y, hy⟩ ⊗ₜ[R] n) = y • n := by
+  apply Subtype.val_injective
+  simp [lTensorAlgebraMap', Algebra.smul_def]
+
+/-- If `N` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
+`i(R) ⊗[R] N` and `N` induced by multiplication in `S`, here `i : R → S` is the structure map.
+This generalizes `TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
+def lTensorAlgebraMap :
+    (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) ⊗[R] N ≃ₗ[R] N := by
+  refine LinearEquiv.ofLinear N.lTensorAlgebraMap'
+    (TensorProduct.mk R (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) N
+      ⟨1, 1, map_one _⟩) ?_ ?_
+  · ext; simp [lTensorAlgebraMap']
+  · ext r n
+    obtain ⟨_, y, rfl⟩ := r
+    simp only [AlgHom.toRingHom_eq_coe, IsScalarTower.coe_toAlgHom,
+      TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+      LinearMap.coe_restrictScalars, LinearMap.coe_comp, Function.comp_apply,
+      TensorProduct.mk_apply, LinearMap.id_coe, id_eq, lTensorAlgebraMap'_apply]
+    rw [← TensorProduct.smul_tmul]
+    congr 1
+    apply Subtype.val_injective
+    simp [Algebra.smul_def]
+
+theorem lTensorAlgebraMap_apply
+    (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
+    (n : N) : N.lTensorAlgebraMap (⟨algebraMap R S y, hy⟩ ⊗ₜ[R] n) = y • n :=
+  N.lTensorAlgebraMap'_apply y n
+
+theorem lTensorAlgebraMap_symm_apply (n : N) :
+    N.lTensorAlgebraMap.symm n = ⟨1, 1, map_one _⟩ ⊗ₜ[R] n := rfl
+
+/-- If `M` is a submodule in an algebra `S` over `R`, there is the natural map
+`M ⊗[R] i(R) →ₗ[R] M` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
+def rTensorAlgebraMap' :
+    M ⊗[R] (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) →ₗ[R] M := by
+  refine (mulMap M (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range)).codRestrict M ?_
+  intro c
+  induction c using TensorProduct.induction_on with
+  | zero => rw [_root_.map_zero]; exact M.zero_mem
+  | tmul m r =>
+    rw [mulMap_tmul]
+    obtain ⟨_, y, rfl⟩ := r
+    convert M.smul_mem y m.2 using 1
+    simp [Algebra.smul_def, show _ * _ = _ * _ from Algebra.commute_algebraMap_left y m.1]
+  | add x y hx hy => rw [_root_.map_add]; exact M.add_mem hx hy
+
+theorem rTensorAlgebraMap'_apply
+    (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
+    (m : M) : M.rTensorAlgebraMap' (m ⊗ₜ[R] ⟨algebraMap R S y, hy⟩) = y • m := by
+  apply Subtype.val_injective
+  simp [rTensorAlgebraMap', Algebra.smul_def,
+    show _ * _ = _ * _ from Algebra.commute_algebraMap_left y m.1]
+
+/-- If `M` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
+`M ⊗[R] i(R)` and `M` induced by multiplication in `S`, here `i : R → S` is the structure map.
+This generalizes `TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`. -/
+def rTensorAlgebraMap :
+    M ⊗[R] (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) ≃ₗ[R] M := by
+  refine LinearEquiv.ofLinear M.rTensorAlgebraMap'
+    ((TensorProduct.comm R _ _).toLinearMap ∘ₗ TensorProduct.mk R
+      (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) M ⟨1, 1, map_one _⟩) ?_ ?_
+  · ext; simp [rTensorAlgebraMap']
+  · ext m r
+    obtain ⟨_, y, rfl⟩ := r
+    simp only [TensorProduct.AlgebraTensorModule.curry_apply, AlgHom.toRingHom_eq_coe,
+      IsScalarTower.coe_toAlgHom, TensorProduct.curry_apply, LinearMap.coe_restrictScalars,
+      LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, TensorProduct.mk_apply,
+      TensorProduct.comm_tmul, LinearMap.id_coe, id_eq, rTensorAlgebraMap'_apply]
+    rw [TensorProduct.smul_tmul]
+    congr 1
+    apply Subtype.val_injective
+    simp [Algebra.smul_def]
+
+theorem rTensorAlgebraMap_apply
+    (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
+    (m : M) : M.rTensorAlgebraMap (m ⊗ₜ[R] ⟨algebraMap R S y, hy⟩) = y • m :=
+  M.rTensorAlgebraMap'_apply y m
+
+theorem rTensorAlgebraMap_symm_apply (m : M) :
+    M.rTensorAlgebraMap.symm m = m ⊗ₜ[R] ⟨1, 1, map_one _⟩ := rfl
+
+end mulMap
 
 /-- Two submodules `M` and `N` in an algebra `S` over `R` are linearly disjoint if the natural map
 `M ⊗[R] N →ₗ[R] S` induced by multiplication in `S` is injective. -/
@@ -358,131 +461,6 @@ theorem of_bot_left : (⊥ : Submodule R S).LinearDisjoint N :=
 
 theorem of_bot_right : M.LinearDisjoint (⊥ : Submodule R S) :=
   Function.injective_of_subsingleton _
-
--- TODO: move to suitable file (???)
-/-- If `N` is a submodule in an algebra `S` over `R`, there is the natural map
-`i(R) ⊗[R] N →ₗ[R] N` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
-noncomputable def _root_.Submodule.lTensorAlgebraMap'
-    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (N : Submodule R S) :
-    (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) ⊗[R] N →ₗ[R] N := by
-  refine (mulMap (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) N).codRestrict N ?_
-  intro c
-  induction c using TensorProduct.induction_on with
-  | zero => rw [_root_.map_zero]; exact N.zero_mem
-  | tmul r n =>
-    rw [mulMap_tmul]
-    obtain ⟨_, y, rfl⟩ := r
-    convert N.smul_mem y n.2 using 1
-    simp [Algebra.smul_def]
-  | add x y hx hy => rw [_root_.map_add]; exact N.add_mem hx hy
-
--- TODO: move to suitable file (???)
-theorem _root_.Submodule.lTensorAlgebraMap'_apply
-    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (N : Submodule R S)
-    (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
-    (n : N) :
-    N.lTensorAlgebraMap' (⟨algebraMap R S y, hy⟩ ⊗ₜ[R] n) = y • n := by
-  apply Subtype.val_injective
-  simp [lTensorAlgebraMap', Algebra.smul_def]
-
--- TODO: move to suitable file (???)
-/-- If `N` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
-`i(R) ⊗[R] N` and `N` induced by multiplication in `S`, here `i : R → S` is the structure map.
-This generalizes `TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
-noncomputable def _root_.Submodule.lTensorAlgebraMap
-    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (N : Submodule R S) :
-    (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) ⊗[R] N ≃ₗ[R] N := by
-  refine LinearEquiv.ofLinear N.lTensorAlgebraMap'
-    (TensorProduct.mk R (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) N
-      ⟨1, 1, map_one _⟩) ?_ ?_
-  · ext; simp [lTensorAlgebraMap']
-  · ext r n
-    obtain ⟨_, y, rfl⟩ := r
-    simp only [AlgHom.toRingHom_eq_coe, IsScalarTower.coe_toAlgHom,
-      TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
-      LinearMap.coe_restrictScalars, LinearMap.coe_comp, Function.comp_apply,
-      TensorProduct.mk_apply, LinearMap.id_coe, id_eq, lTensorAlgebraMap'_apply]
-    rw [← TensorProduct.smul_tmul]
-    congr 1
-    apply Subtype.val_injective
-    simp [Algebra.smul_def]
-
--- TODO: move to suitable file (???)
-theorem _root_.Submodule.lTensorAlgebraMap_apply
-    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (N : Submodule R S)
-    (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
-    (n : N) :
-    N.lTensorAlgebraMap (⟨algebraMap R S y, hy⟩ ⊗ₜ[R] n) = y • n :=
-  N.lTensorAlgebraMap'_apply y n
-
--- TODO: move to suitable file (???)
-theorem _root_.Submodule.lTensorAlgebraMap_symm_apply
-    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (N : Submodule R S)
-    (n : N) :
-    N.lTensorAlgebraMap.symm n = ⟨1, 1, map_one _⟩ ⊗ₜ[R] n := rfl
-
--- TODO: move to suitable file (???)
-/-- If `M` is a submodule in an algebra `S` over `R`, there is the natural map
-`M ⊗[R] i(R) →ₗ[R] M` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
-noncomputable def _root_.Submodule.rTensorAlgebraMap'
-    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (M : Submodule R S) :
-    M ⊗[R] (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) →ₗ[R] M := by
-  refine (mulMap M (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range)).codRestrict M ?_
-  intro c
-  induction c using TensorProduct.induction_on with
-  | zero => rw [_root_.map_zero]; exact M.zero_mem
-  | tmul m r =>
-    rw [mulMap_tmul]
-    obtain ⟨_, y, rfl⟩ := r
-    convert M.smul_mem y m.2 using 1
-    simp [Algebra.smul_def, show _ * _ = _ * _ from Algebra.commute_algebraMap_left y m.1]
-  | add x y hx hy => rw [_root_.map_add]; exact M.add_mem hx hy
-
--- TODO: move to suitable file (???)
-theorem _root_.Submodule.rTensorAlgebraMap'_apply
-    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (M : Submodule R S)
-    (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
-    (m : M) :
-    M.rTensorAlgebraMap' (m ⊗ₜ[R] ⟨algebraMap R S y, hy⟩) = y • m := by
-  apply Subtype.val_injective
-  simp [rTensorAlgebraMap', Algebra.smul_def,
-    show _ * _ = _ * _ from Algebra.commute_algebraMap_left y m.1]
-
--- TODO: move to suitable file (???)
-/-- If `M` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
-`M ⊗[R] i(R)` and `M` induced by multiplication in `S`, here `i : R → S` is the structure map.
-This generalizes `TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`. -/
-noncomputable def _root_.Submodule.rTensorAlgebraMap
-    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (M : Submodule R S) :
-    M ⊗[R] (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) ≃ₗ[R] M := by
-  refine LinearEquiv.ofLinear M.rTensorAlgebraMap'
-    ((TensorProduct.comm R _ _).toLinearMap ∘ₗ TensorProduct.mk R
-      (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) M ⟨1, 1, map_one _⟩) ?_ ?_
-  · ext; simp [rTensorAlgebraMap']
-  · ext m r
-    obtain ⟨_, y, rfl⟩ := r
-    simp only [TensorProduct.AlgebraTensorModule.curry_apply, AlgHom.toRingHom_eq_coe,
-      IsScalarTower.coe_toAlgHom, TensorProduct.curry_apply, LinearMap.coe_restrictScalars,
-      LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, TensorProduct.mk_apply,
-      TensorProduct.comm_tmul, LinearMap.id_coe, id_eq, rTensorAlgebraMap'_apply]
-    rw [TensorProduct.smul_tmul]
-    congr 1
-    apply Subtype.val_injective
-    simp [Algebra.smul_def]
-
--- TODO: move to suitable file (???)
-theorem _root_.Submodule.rTensorAlgebraMap_apply
-    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (M : Submodule R S)
-    (y : R) {hy : algebraMap R S y ∈ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range}
-    (m : M) :
-    M.rTensorAlgebraMap (m ⊗ₜ[R] ⟨algebraMap R S y, hy⟩) = y • m :=
-  M.rTensorAlgebraMap'_apply y m
-
--- TODO: move to suitable file (???)
-theorem _root_.Submodule.rTensorAlgebraMap_symm_apply
-    {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S] (M : Submodule R S)
-    (m : M) :
-    M.rTensorAlgebraMap.symm m = m ⊗ₜ[R] ⟨1, 1, map_one _⟩ := rfl
 
 theorem of_self_left :
     (Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range).LinearDisjoint N := by
