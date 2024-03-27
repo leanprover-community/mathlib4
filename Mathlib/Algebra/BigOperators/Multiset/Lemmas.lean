@@ -5,6 +5,7 @@ Authors: Chris Hughes, Bhavik Mehta, Eric Wieser
 -/
 import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Algebra.BigOperators.Multiset.Basic
+import Mathlib.Algebra.Order.Ring.Canonical
 
 #align_import algebra.big_operators.multiset.lemmas from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
