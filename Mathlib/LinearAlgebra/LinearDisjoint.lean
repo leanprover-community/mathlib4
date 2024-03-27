@@ -5,6 +5,7 @@ Authors: Jz Pan
 -/
 import Mathlib.FieldTheory.Adjoin
 import Mathlib.RingTheory.Flat.Basic
+import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
 
@@ -510,6 +511,94 @@ theorem of_left_le_self_of_flat
 theorem of_right_le_self_of_flat
     (h : N ≤ Subalgebra.toSubmodule (IsScalarTower.toAlgHom R R S).range) [Module.Flat R M] :
     M.LinearDisjoint N := (of_self_right M).of_le_right_of_flat h
+
+section not_linearIndependent_pair
+
+variable {M N}
+
+variable [Nontrivial R] (H : M.LinearDisjoint N)
+
+theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
+    (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := fun h ↦ by
+  let n : Fin 2 → N := (Submodule.inclusion inf_le_right) ∘ ![a, b]
+  have hn : LinearIndependent R n := h.map' _
+    (LinearMap.ker_eq_bot_of_injective (Submodule.inclusion_injective _))
+  -- need this instance otherwise it only has semigroup structure
+  letI : AddCommGroup (Fin 2 →₀ M) := Finsupp.instAddCommGroup
+  let m : Fin 2 →₀ M := .single 0 ⟨b.1, b.2.1⟩ - .single 1 ⟨a.1, a.2.1⟩
+  have hm : mulRightMap M n m = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
+  rw [← LinearMap.mem_ker, H.map_linearIndependent_right_of_flat hn, mem_bot] at hm
+  simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
+    SetLike.coe_eq_coe, false_and, AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero,
+    false_or, m] at hm
+  exact h.ne_zero 0 hm.2
+
+theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
+    (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := fun h ↦ by
+  let m : Fin 2 → M := (Submodule.inclusion inf_le_left) ∘ ![a, b]
+  have hm : LinearIndependent R m := h.map' _
+    (LinearMap.ker_eq_bot_of_injective (Submodule.inclusion_injective _))
+  -- need this instance otherwise it only has semigroup structure
+  letI : AddCommGroup (Fin 2 →₀ N) := Finsupp.instAddCommGroup
+  let n : Fin 2 →₀ N := .single 0 ⟨b.1, b.2.2⟩ - .single 1 ⟨a.1, a.2.2⟩
+  have hn : mulLeftMap N m n = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
+  rw [← LinearMap.mem_ker, H.map_linearIndependent_left_of_flat hm, mem_bot] at hn
+  simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
+    SetLike.coe_eq_coe, false_and, AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero,
+    false_or, n] at hn
+  exact h.ne_zero 0 hn.2
+
+theorem not_linearIndependent_pair_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
+    (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := by
+  rcases hf with _ | _
+  · exact H.not_linearIndependent_pair_of_commute_of_flat_left a b hc
+  · exact H.not_linearIndependent_pair_of_commute_of_flat_right a b hc
+
+theorem not_linearIndependent_pair_of_commute_of_flat' (hf : Module.Flat R M ∨ Module.Flat R N)
+    {a b : S} (ha : a ∈ M ⊓ N) (hb : b ∈ M ⊓ N) (hc : Commute a b) :
+    ¬LinearIndependent R ![a, b] := by
+  have h := H.not_linearIndependent_pair_of_commute_of_flat hf ⟨a, ha⟩ ⟨b, hb⟩ hc
+  contrapose! h
+  refine .of_comp (M ⊓ N).subtype ?_
+  convert h
+  exact (FinVec.map_eq _ _).symm
+
+theorem not_linearIndependent_pair_of_commute_of_flat_left' [Module.Flat R M]
+    {a b : S} (ha : a ∈ M ⊓ N) (hb : b ∈ M ⊓ N) (hc : Commute a b) :
+    ¬LinearIndependent R ![a, b] :=
+  H.not_linearIndependent_pair_of_commute_of_flat' (Or.inl ‹_›) ha hb hc
+
+theorem not_linearIndependent_pair_of_commute_of_flat_right' [Module.Flat R N]
+    {a b : S} (ha : a ∈ M ⊓ N) (hb : b ∈ M ⊓ N) (hc : Commute a b) :
+    ¬LinearIndependent R ![a, b] :=
+  H.not_linearIndependent_pair_of_commute_of_flat' (Or.inr ‹_›) ha hb hc
+
+theorem rank_inf_le_one_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
+    (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 := by
+  refine rank_le fun s h ↦ ?_
+  by_contra hs
+  rw [not_le, ← Fintype.card_coe, Fintype.one_lt_card_iff_nontrivial] at hs
+  obtain ⟨a, b, hab⟩ := hs.exists_pair_ne
+  refine H.not_linearIndependent_pair_of_commute_of_flat hf a.1 b.1 (hc a.1 b.1) ?_
+  have := h.comp ![a, b] fun i j hij ↦ by
+    fin_cases i <;> fin_cases j
+    · rfl
+    · simp [hab] at hij
+    · simp [hab.symm] at hij
+    · rfl
+  convert this
+  ext i
+  fin_cases i <;> simp
+
+theorem rank_inf_le_one_of_commute_of_flat_left [Module.Flat R M]
+    (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 :=
+  H.rank_inf_le_one_of_commute_of_flat (Or.inl ‹_›) hc
+
+theorem rank_inf_le_one_of_commute_of_flat_right [Module.Flat R N]
+    (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 :=
+  H.rank_inf_le_one_of_commute_of_flat (Or.inr ‹_›) hc
+
+end not_linearIndependent_pair
 
 end LinearDisjoint
 
