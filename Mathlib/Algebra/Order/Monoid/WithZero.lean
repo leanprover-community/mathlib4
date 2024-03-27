@@ -80,8 +80,8 @@ def Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [O
       show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one] }
 #align function.injective.linear_ordered_comm_monoid_with_zero Function.Injective.linearOrderedCommMonoidWithZero
 
-@[simp]
-theorem zero_le' : 0 ≤ a := by simpa only [mul_zero, mul_one] using mul_le_mul_left' (zero_le_one' α) a
+@[simp] lemma zero_le' : 0 ≤ a := by
+  simpa only [mul_zero, mul_one] using mul_le_mul_left' (zero_le_one' α) a
 #align zero_le' zero_le'
 
 @[simp]
@@ -318,46 +318,28 @@ instance [LinearOrderedAddCommGroupWithTop α] :
     mul_inv_cancel := @LinearOrderedAddCommGroupWithTop.add_neg_cancel _ (_) }
 
 namespace WithZero
+section Preorder
+variable [Preorder α] {a b : α}
 
-instance preorder [Preorder α] : Preorder (WithZero α) :=
-  WithBot.preorder
+instance preorder : Preorder (WithZero α) := WithBot.preorder
+instance orderBot : OrderBot (WithZero α) := WithBot.orderBot
 
-instance partialOrder [PartialOrder α] : PartialOrder (WithZero α) :=
-  WithBot.partialOrder
-
-instance orderBot [Preorder α] : OrderBot (WithZero α) :=
-  WithBot.orderBot
-
-theorem zero_le [Preorder α] (a : WithZero α) : 0 ≤ a :=
-  bot_le
+lemma zero_le (a : WithZero α) : 0 ≤ a := bot_le
 #align with_zero.zero_le WithZero.zero_le
 
-theorem zero_lt_coe [Preorder α] (a : α) : (0 : WithZero α) < a :=
-  WithBot.bot_lt_coe a
+lemma zero_lt_coe (a : α) : (0 : WithZero α) < a := WithBot.bot_lt_coe a
 #align with_zero.zero_lt_coe WithZero.zero_lt_coe
 
-theorem zero_eq_bot [Preorder α] : (0 : WithZero α) = ⊥ :=
-  rfl
+lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 #align with_zero.zero_eq_bot WithZero.zero_eq_bot
 
-@[simp, norm_cast]
-theorem coe_lt_coe [Preorder α] {a b : α} : (a : WithZero α) < b ↔ a < b :=
-  WithBot.coe_lt_coe
+@[simp, norm_cast] lemma coe_lt_coe : (a : WithZero α) < b ↔ a < b := WithBot.coe_lt_coe
 #align with_zero.coe_lt_coe WithZero.coe_lt_coe
 
-@[simp, norm_cast]
-theorem coe_le_coe [Preorder α] {a b : α} : (a : WithZero α) ≤ b ↔ a ≤ b :=
-  WithBot.coe_le_coe
+@[simp, norm_cast] lemma coe_le_coe : (a : WithZero α) ≤ b ↔ a ≤ b := WithBot.coe_le_coe
 #align with_zero.coe_le_coe WithZero.coe_le_coe
 
-instance lattice [Lattice α] : Lattice (WithZero α) :=
-  WithBot.lattice
-
-instance linearOrder [LinearOrder α] : LinearOrder (WithZero α) :=
-  WithBot.linearOrder
-
-instance covariantClass_mul_le [Mul α] [Preorder α]
-    [CovariantClass α α (· * ·) (· ≤ ·)] :
+instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ ·)] :
     CovariantClass (WithZero α) (WithZero α) (· * ·) (· ≤ ·) := by
   refine ⟨fun a b c hbc => ?_⟩
   induction a using WithZero.recZeroCoe; · exact zero_le _
@@ -371,41 +353,9 @@ instance covariantClass_mul_le [Mul α] [Preorder α]
   exact mul_le_mul_left' hbc' _
 #align with_zero.covariant_class_mul_le WithZero.covariantClass_mul_le
 
-instance contravariantClass_mul_lt [Mul α] [PartialOrder α]
-    [ContravariantClass α α (· * ·) (· < ·)] :
-    ContravariantClass (WithZero α) (WithZero α) (· * ·) (· < ·) := by
-  refine ⟨fun a b c h => ?_⟩
-  have := ((zero_le _).trans_lt h).ne'
-  induction a using WithZero.recZeroCoe
-  · simp at this
-  induction c using WithZero.recZeroCoe
-  · simp at this
-  induction b using WithZero.recZeroCoe
-  exacts [zero_lt_coe _, coe_lt_coe.mpr (lt_of_mul_lt_mul_left' <| coe_lt_coe.mp h)]
-#align with_zero.contravariant_class_mul_lt WithZero.contravariantClass_mul_lt
-
--- Porting note (#10618): @[simp] can prove this
-nonrec theorem le_max_iff [LinearOrder α] {a b c : α} :
-    (a : WithZero α) ≤ max (b : WithZero α) c ↔ a ≤ max b c := by
-  simp only [WithZero.coe_le_coe, le_max_iff]
-#align with_zero.le_max_iff WithZero.le_max_iff
-
--- Porting note (#10618): @[simp] can prove this
-nonrec theorem min_le_iff [LinearOrder α] {a b c : α} :
-    min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
-  simp only [WithZero.coe_le_coe, min_le_iff]
-#align with_zero.min_le_iff WithZero.min_le_iff
-
-instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
-  { WithZero.commMonoidWithZero.toCommMonoid, WithZero.partialOrder with
-    mul_le_mul_left := fun _ _ => mul_le_mul_left' }
-
--- FIXME: `WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
-
 -- Porting note: same issue as `covariantClass_mul_le`
-protected theorem covariantClass_add_le [AddZeroClass α] [Preorder α]
-    [CovariantClass α α (· + ·) (· ≤ ·)] (h : ∀ a : α, 0 ≤ a) :
-    CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
+protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (· + ·) (· ≤ ·)]
+    (h : ∀ a : α, 0 ≤ a) : CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
   refine ⟨fun a b c hbc => ?_⟩
   induction a using WithZero.recZeroCoe
   · rwa [zero_add, zero_add]
@@ -421,27 +371,7 @@ protected theorem covariantClass_add_le [AddZeroClass α] [Preorder α]
     exact add_le_add_left hbc' _
 #align with_zero.covariant_class_add_le WithZero.covariantClass_add_le
 
-/-
-Note 1 : the below is not an instance because it requires `zero_le`. It seems
-like a rather pathological definition because α already has a zero.
-Note 2 : there is no multiplicative analogue because it does not seem necessary.
-Mathematicians might be more likely to use the order-dual version, where all
-elements are ≤ 1 and then 1 is the top element.
--/
-/-- If `0` is the least element in `α`, then `WithZero α` is an `OrderedAddCommMonoid`.
-See note [reducible non-instances].
--/
-@[reducible]
-protected def orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : α, 0 ≤ a) :
-    OrderedAddCommMonoid (WithZero α) :=
-  { WithZero.partialOrder, WithZero.addCommMonoid with
-    add_le_add_left := @add_le_add_left _ _ _ (WithZero.covariantClass_add_le zero_le).. }
-#align with_zero.ordered_add_comm_monoid WithZero.orderedAddCommMonoid
-
-section CanonicallyOrderedCommMonoid
-
-instance existsAddOfLE [Add α] [Preorder α] [ExistsAddOfLE α] :
-    ExistsAddOfLE (WithZero α) :=
+instance existsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero α) :=
   ⟨fun {a b} => by
     induction a using WithZero.cases_on
     · exact fun _ => ⟨b, (zero_add b).symm⟩
@@ -451,6 +381,65 @@ instance existsAddOfLE [Add α] [Preorder α] [ExistsAddOfLE α] :
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
     exact ⟨c, rfl⟩⟩
 #align with_zero.has_exists_add_of_le WithZero.existsAddOfLE
+
+end Preorder
+
+section PartialOrder
+variable [PartialOrder α]
+
+instance partialOrder : PartialOrder (WithZero α) := WithBot.partialOrder
+
+instance contravariantClass_mul_lt [Mul α] [ContravariantClass α α (· * ·) (· < ·)] :
+    ContravariantClass (WithZero α) (WithZero α) (· * ·) (· < ·) := by
+  refine ⟨fun a b c h => ?_⟩
+  have := ((zero_le _).trans_lt h).ne'
+  induction a using WithZero.recZeroCoe
+  · simp at this
+  induction c using WithZero.recZeroCoe
+  · simp at this
+  induction b using WithZero.recZeroCoe
+  exacts [zero_lt_coe _, coe_lt_coe.mpr (lt_of_mul_lt_mul_left' <| coe_lt_coe.mp h)]
+#align with_zero.contravariant_class_mul_lt WithZero.contravariantClass_mul_lt
+
+end PartialOrder
+
+instance lattice [Lattice α] : Lattice (WithZero α) := WithBot.lattice
+
+section LinearOrder
+variable [LinearOrder α] {a b c : α}
+
+instance linearOrder : LinearOrder (WithZero α) := WithBot.linearOrder
+
+-- Porting note (#10618): @[simp] can prove this
+protected lemma le_max_iff : (a : WithZero α) ≤ max (b : WithZero α) c ↔ a ≤ max b c := by
+  simp only [WithZero.coe_le_coe, le_max_iff]
+#align with_zero.le_max_iff WithZero.le_max_iff
+
+-- Porting note (#10618): @[simp] can prove this
+protected lemma min_le_iff : min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
+  simp only [WithZero.coe_le_coe, min_le_iff]
+#align with_zero.min_le_iff WithZero.min_le_iff
+
+end LinearOrder
+
+instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
+  { WithZero.commMonoidWithZero.toCommMonoid, WithZero.partialOrder with
+    mul_le_mul_left := fun _ _ => mul_le_mul_left' }
+
+/-
+Note 1 : the below is not an instance because it requires `zero_le`. It seems
+like a rather pathological definition because α already has a zero.
+Note 2 : there is no multiplicative analogue because it does not seem necessary.
+Mathematicians might be more likely to use the order-dual version, where all
+elements are ≤ 1 and then 1 is the top element.
+-/
+/-- If `0` is the least element in `α`, then `WithZero α` is an `OrderedAddCommMonoid`. -/
+@[reducible] -- See note [reducible non-instances]
+protected def orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : α, 0 ≤ a) :
+    OrderedAddCommMonoid (WithZero α) :=
+  { WithZero.partialOrder, WithZero.addCommMonoid with
+    add_le_add_left := @add_le_add_left _ _ _ (WithZero.covariantClass_add_le zero_le).. }
+#align with_zero.ordered_add_comm_monoid WithZero.orderedAddCommMonoid
 
 -- This instance looks absurd: a monoid already has a zero
 /-- Adding a new zero to a canonically ordered additive monoid produces another one. -/
@@ -467,17 +456,10 @@ instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
       · exact WithZero.coe_le_coe.2 le_self_add }
 #align with_zero.canonically_ordered_add_monoid WithZero.canonicallyOrderedAddCommMonoid
 
-end CanonicallyOrderedCommMonoid
-
-section CanonicallyLinearOrderedCommMonoid
-
-instance canonicallyLinearOrderedAddCommMonoid (α : Type*)
-    [CanonicallyLinearOrderedAddCommMonoid α] :
+instance canonicallyLinearOrderedAddCommMonoid [CanonicallyLinearOrderedAddCommMonoid α] :
     CanonicallyLinearOrderedAddCommMonoid (WithZero α) :=
   { WithZero.canonicallyOrderedAddCommMonoid, WithZero.linearOrder with }
 #align with_zero.canonically_linear_ordered_add_monoid WithZero.canonicallyLinearOrderedAddCommMonoid
-
-end CanonicallyLinearOrderedCommMonoid
 
 instance instLinearOrderedCommMonoidWithZero [LinearOrderedCommMonoid α] :
     LinearOrderedCommMonoidWithZero (WithZero α) :=
