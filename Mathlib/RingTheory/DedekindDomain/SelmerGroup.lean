@@ -175,7 +175,7 @@ local notation K "⟮" S "," n "⟯" => @selmerGroup _ _ _ K _ _ _ S n
 namespace selmerGroup
 
 theorem monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v => hx v ∘ mt (@hS v)
--- #align is_dedekind_domain.selmer_group.monotone IsDedekindDomain.selmerGroup.monotone
+#align is_dedekind_domain.selmer_group.monotone IsDedekindDomain.selmerGroup.monotone
 
 /-- The multiplicative `v`-adic valuations on `K⟮S, n⟯` for all `v ∈ S`. -/
 def valuation : K⟮S,n⟯ →* S → Multiplicative (ZMod n) where
