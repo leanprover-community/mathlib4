@@ -72,7 +72,7 @@ noncomputable def quotientSpanCXSubCXSubCAlgEquiv {x : R} {y : R[X]} :
 
 lemma modByMonic_eq_zero_iff_quotient_eq_zero (p q : R[X]) (hq : q.Monic) :
     p %ₘ q = 0 ↔ (p : R[X] ⧸ Ideal.span {q}) = 0 := by
-  rw [dvd_iff_modByMonic_eq_zero hq, Ideal.Quotient.eq_zero_iff_dvd]
+  rw [modByMonic_eq_zero_iff_dvd hq, Ideal.Quotient.eq_zero_iff_dvd]
 
 @[simp]
 lemma quotient_singleton_eq (p : R[X]) : Ideal.Quotient.mk (Ideal.span {p}) p = 0 := by
