@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johan Commelin
 -/
 import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Combinatorics.Composition
+import Mathlib.Combinatorics.Enumerative.Composition
 
 #align_import analysis.analytic.composition from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
@@ -77,9 +77,7 @@ open scoped Topology BigOperators Classical NNReal ENNReal
 section Topological
 
 variable [CommRing 𝕜] [AddCommGroup E] [AddCommGroup F] [AddCommGroup G]
-
 variable [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
-
 variable [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
 
 /-! ### Composing formal multilinear series -/
@@ -88,9 +86,7 @@ variable [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
 namespace FormalMultilinearSeries
 
 variable [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-
 variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
-
 variable [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
 
 /-!
@@ -180,7 +176,6 @@ namespace ContinuousMultilinearMap
 open FormalMultilinearSeries
 
 variable [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-
 variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 /-- Given a formal multilinear series `p`, a composition `c` of `n` and a continuous multilinear
@@ -214,9 +209,7 @@ end ContinuousMultilinearMap
 namespace FormalMultilinearSeries
 
 variable [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-
 variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
-
 variable [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
 
 /-- Given two formal multilinear series `q` and `p` and a composition `c` of `n`, one may
@@ -259,7 +252,7 @@ theorem comp_coeff_zero (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultil
   have : {c} = (Finset.univ : Finset (Composition 0)) := by
     apply Finset.eq_of_subset_of_card_le <;> simp [Finset.card_univ, composition_card 0]
   rw [← this, Finset.sum_singleton, compAlongComposition_apply]
-  symm; congr! -- porting note: needed the stronger `congr!`!
+  symm; congr! -- Porting note: needed the stronger `congr!`!
 #align formal_multilinear_series.comp_coeff_zero FormalMultilinearSeries.comp_coeff_zero
 
 @[simp]
@@ -284,7 +277,7 @@ theorem comp_coeff_one (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultili
     Finset.sum_singleton]
   refine' q.congr (by simp) fun i hi1 hi2 => _
   simp only [applyComposition_ones]
-  exact p.congr rfl fun j _hj1 hj2 => by congr! -- porting note: needed the stronger `congr!`
+  exact p.congr rfl fun j _hj1 hj2 => by congr! -- Porting note: needed the stronger `congr!`
 #align formal_multilinear_series.comp_coeff_one FormalMultilinearSeries.comp_coeff_one
 
 /-- Only `0`-th coefficient of `q.comp p` depends on `q 0`. -/
@@ -803,13 +796,13 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
     -- composition passes to the limit under locally uniform convergence.
     have B₁ : ContinuousAt (fun z : F => g (f x + z)) (f (x + y) - f x) := by
       refine' ContinuousAt.comp _ (continuous_const.add continuous_id).continuousAt
-      simp only [add_sub_cancel'_right, id.def]
+      simp only [add_sub_cancel, id.def]
       exact Hg.continuousOn.continuousAt (IsOpen.mem_nhds EMetric.isOpen_ball fy_mem)
     have B₂ : f (x + y) - f x ∈ EMetric.ball (0 : F) rg := by
       simpa [edist_eq_coe_nnnorm, edist_eq_coe_nnnorm_sub] using fy_mem
     rw [← EMetric.isOpen_ball.nhdsWithin_eq B₂] at A
     convert Hg.tendstoLocallyUniformlyOn.tendsto_comp B₁.continuousWithinAt B₂ A
-    simp only [add_sub_cancel'_right]
+    simp only [add_sub_cancel]
   -- Third step: the sum over all compositions in `comp_partial_sum_target 0 n n` converges to
   -- `g (f (x + y))`. As this sum is exactly the composition of the partial sum, this is a direct
   -- consequence of the second step

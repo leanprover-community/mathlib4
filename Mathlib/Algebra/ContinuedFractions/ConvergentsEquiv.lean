@@ -5,7 +5,6 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
-import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
@@ -279,7 +278,7 @@ theorem succ_nth_convergent_eq_squashGCF_nth_convergent [Field K]
       calc
         (b * g.h + a) / b = b * g.h / b + a / b := by ring
         -- requires `Field`, not `DivisionRing`
-        _ = g.h + a / b := by rw [mul_div_cancel_left _ b_ne_zero]
+        _ = g.h + a / b := by rw [mul_div_cancel_left₀ _ b_ne_zero]
     | succ n' =>
       obtain ⟨⟨pa, pb⟩, s_n'th_eq⟩ : ∃ gp_n', g.s.get? n' = some gp_n' :=
         g.s.ge_stable n'.le_succ s_nth_eq
@@ -320,10 +319,11 @@ theorem succ_nth_convergent_eq_squashGCF_nth_convergent [Field K]
         ((pb + a / b) * pA + pa * ppA) / ((pb + a / b) * pB + pa * ppB) =
           (b * (pb * pA + pa * ppA) + a * pA) / (b * (pb * pB + pa * ppB) + a * pB) by
         obtain ⟨eq1, eq2, eq3, eq4⟩ : pA' = pA ∧ pB' = pB ∧ ppA' = ppA ∧ ppB' = ppB := by
-          simp [*, (continuantsAux_eq_continuantsAux_squashGCF_of_le <| le_refl <| n' + 1).symm,
+          simp [*, pA', pB', ppA', ppB',
+            (continuantsAux_eq_continuantsAux_squashGCF_of_le <| le_refl <| n' + 1).symm,
             (continuantsAux_eq_continuantsAux_squashGCF_of_le n'.le_succ).symm]
         symm
-        simpa only [eq1, eq2, eq3, eq4, mul_div_cancel _ b_ne_zero]
+        simpa only [eq1, eq2, eq3, eq4, mul_div_cancel_right₀ _ b_ne_zero]
       field_simp
       congr 1 <;> ring
 #align generalized_continued_fraction.succ_nth_convergent_eq_squash_gcf_nth_convergent GeneralizedContinuedFraction.succ_nth_convergent_eq_squashGCF_nth_convergent

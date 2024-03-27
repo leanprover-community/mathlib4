@@ -96,8 +96,8 @@ theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) 
   apply q.P.w_cases _ y
   intro a₁ f'₁ f₁
   intro h
-  -- porting note: induction on h doesn't work.
-  refine' @WEquiv.recOn _ _ _ _ _ (λ a a' _ => recF u a = recF u a') _ _ h _ _ _
+  -- Porting note: induction on h doesn't work.
+  refine' @WEquiv.recOn _ _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h _ _ _
   · intros a f' f₀ f₁ _h ih; simp only [recF_eq, Function.comp]
     congr; funext; congr; funext; apply ih
   · intros a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]

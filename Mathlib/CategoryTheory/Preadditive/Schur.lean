@@ -29,7 +29,6 @@ namespace CategoryTheory
 open CategoryTheory.Limits
 
 variable {C : Type*} [Category C]
-
 variable [Preadditive C]
 
 -- See also `epi_of_nonzero_to_simple`, which does not require `Preadditive C`.
@@ -76,7 +75,8 @@ noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) 
         dsimp
         rw [dif_neg h]
         haveI := isIso_of_hom_simple h
-        exact IsIso.inv_hom_id f }
+        exact IsIso.inv_hom_id f
+      qsmul := qsmulRec _ }
 
 open FiniteDimensional
 
@@ -100,10 +100,9 @@ theorem finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜
 end
 
 variable (𝕜 : Type*) [Field 𝕜]
-
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
--- porting note: the defeq issue in lean3 described below is no longer a problem in Lean4.
+-- Porting note: the defeq issue in lean3 described below is no longer a problem in Lean4.
 -- In the proof below we have some difficulty using `I : FiniteDimensional 𝕜 (X ⟶ X)`
 -- where we need a `FiniteDimensional 𝕜 (End X)`.
 -- These are definitionally equal, but without eta reduction Lean can't see this.

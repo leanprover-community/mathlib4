@@ -313,7 +313,7 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     induction Hr
     · rw [← Quot.factor_mk_eq R (EqvGen R) this]
       rwa [appendFun_comp_id, ← MvFunctor.map_map, ← MvFunctor.map_map, h]
-    -- porting note: `cc` was replaced with `aesop`, maybe there is a more light-weight solution?
+    -- Porting note: `cc` was replaced with `aesop`, maybe there is a more light-weight solution?
     all_goals aesop
 #align mvpfunctor.M.bisim' MvPFunctor.M.bisim'
 

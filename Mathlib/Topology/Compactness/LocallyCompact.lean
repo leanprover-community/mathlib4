@@ -15,7 +15,6 @@ We define the following classes of topological spaces:
 open Set Filter Topology TopologicalSpace Classical
 
 variable {X : Type*} {Y : Type*} {ι : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 
@@ -188,7 +187,7 @@ protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f :
   have : ∀ x : X,
       (𝓝 x).HasBasis (fun s ↦ (s ∈ 𝓝 (f x) ∧ IsCompact s) ∧ s ⊆ range f) (f ⁻¹' ·) := fun x ↦ by
     rw [hf.nhds_eq_comap]
-    exact ((compact_basis_nhds _).restrict_subset <| hf.open_range.mem_nhds <|
+    exact ((compact_basis_nhds _).restrict_subset <| hf.isOpen_range.mem_nhds <|
       mem_range_self _).comap _
   refine .of_hasBasis this fun x s hs => ?_
   rw [hf.toInducing.isCompact_iff, image_preimage_eq_of_subset hs.2]
