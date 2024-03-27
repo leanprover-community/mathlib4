@@ -1296,6 +1296,15 @@ protected theorem prod_mk {f : α → β} {g : α → γ} (hf : AEStronglyMeasur
     hf.ae_eq_mk.prod_mk hg.ae_eq_mk⟩
 #align measure_theory.ae_strongly_measurable.prod_mk MeasureTheory.AEStronglyMeasurable.prod_mk
 
+/-- The composition of a continuous function of two variables and two ae strongly measurable
+functions is ae strongly measurable. -/
+theorem _root_.Continuous.comp_aestronglyMeasurable₂
+    {β' : Type*} [TopologicalSpace β']
+    {g : β → β' → γ} {f : α → β} {f' : α → β'} (hg : Continuous g.uncurry)
+    (hf : AEStronglyMeasurable f μ) (h'f : AEStronglyMeasurable f' μ) :
+    AEStronglyMeasurable (fun x => g (f x) (f' x)) μ :=
+  hg.comp_aestronglyMeasurable (hf.prod_mk h'f)
+
 /-- In a space with second countable topology, measurable implies ae strongly measurable. -/
 @[aesop unsafe 30% apply (rule_sets := [Measurable])]
 theorem _root_.Measurable.aestronglyMeasurable {_ : MeasurableSpace α} {μ : Measure α}
@@ -1870,7 +1879,7 @@ theorem apply_continuousLinearMap {φ : α → F →L[𝕜] E} (hφ : AEStrongly
 theorem _root_.ContinuousLinearMap.aestronglyMeasurable_comp₂ (L : E →L[𝕜] F →L[𝕜] G) {f : α → E}
     {g : α → F} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (fun x => L (f x) (g x)) μ :=
-  L.continuous₂.comp_aestronglyMeasurable <| hf.prod_mk hg
+  L.continuous₂.comp_aestronglyMeasurable₂ hf hg
 #align continuous_linear_map.ae_strongly_measurable_comp₂ ContinuousLinearMap.aestronglyMeasurable_comp₂
 
 end ContinuousLinearMapNontriviallyNormedField

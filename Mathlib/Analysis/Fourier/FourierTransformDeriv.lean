@@ -162,9 +162,9 @@ For good continuity and differentiability properties, we decompose it as follows
   Then `A = C ∘ (fun v ↦ (L v ⬝, ..., L v ⬝))`, and is therefore continuous.
 
 Here are the Lean names of the above maps:
-* `B` is `ContinuousMultilinearMap.smulRightL`
-* `J` is `ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ`
-* `C` is `ContinuousMultilinearMap.compContinuousLinearMapLRight`.
+* `B` is `smulRightL`
+* `J` is `mkPiAlgebra ℝ (Fin n) ℝ`
+* `C` is `compContinuousLinearMapLRight`.
 
 -/
 def bloublou (f : V → E) (v : V) : FormalMultilinearSeries ℝ W E := fun n ↦
@@ -176,6 +176,24 @@ open scoped BigOperators
 @[simp] lemma bloublou_apply {f : V → E} {v : V} {n : ℕ} {m : Fin n → W} :
     bloublou L f v n m = (- (2 * π * I))^n • (∏ i, L v (m i)) • f v := by
   simp [bloublou]
+
+open ContinuousMultilinearMap
+
+lemma bloublou_eq_comp {f : V → E} {v : V} {n : ℕ} :
+    bloublou L f v n = (- (2 * π * I))^n • smulRightL ℝ (fun (_ : Fin n) ↦ W) E
+      (compContinuousLinearMapLRight
+        (ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ) (fun _ ↦ L v))
+      (f v) := rfl
+
+lemma continuous_bloublou {f : V → E} (hf : Continuous f) (n : ℕ) :
+    Continuous (fun v ↦ bloublou L f v n) := by
+  simp_rw [bloublou_eq_comp]
+  apply Continuous.const_smul
+  apply (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).continuous₂.comp₂ _ hf
+  exact Continuous.comp (map_continuous _) (continuous_pi (fun _i ↦ L.continuous))
+
+
+
 
 def bloublou_gnou (f : V → E) (v : V) (n : ℕ) (m : Fin n → W) :
       ∀ (i : Fin n ⊕ Unit), ContinuousMultilinearMap.SumProdUliftRingSpace ℝ E (Fin n) i
@@ -216,7 +234,9 @@ lemma aestronglyMeasurable_boublou [SecondCountableTopology V]
     [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
     {f : V → E} {k : ℕ} (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun v ↦ bloublou L f v k) μ := by
+  simp_rw [bloublou_eq_comp]
   apply AEStronglyMeasurable.const_smul'
+  apply Continuous.comp_aestronglyMeasurable₂
   let F : V → E → (W [×k]→L[ℝ] E) := fun v z ↦
     ((ContinuousMultilinearMap.mkPiRing ℝ (Fin k) z).compContinuousLinearMap
     (fun _i ↦ L v))
