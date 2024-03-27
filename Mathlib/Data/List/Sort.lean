@@ -104,7 +104,7 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ 
   induction' hs₁ with a l₁ h₁ hs₁ IH generalizing l₂
   · exact hp.nil_eq
   · have : a ∈ l₂ := hp.subset (mem_cons_self _ _)
-    rcases mem_split this with ⟨u₂, v₂, rfl⟩
+    rcases append_of_mem this with ⟨u₂, v₂, rfl⟩
     have hp' := (perm_cons a).1 (hp.trans perm_middle)
     obtain rfl := IH hp' (hs₂.sublist <| by simp)
     change a :: u₂ ++ v₂ = u₂ ++ ([a] ++ v₂)
@@ -412,14 +412,6 @@ theorem perm_split : ∀ {l l₁ l₂ : List α}, split l = (l₁, l₂) → l ~
     exact ((perm_split e).trans perm_append_comm).cons a
 #align list.perm_split List.perm_split
 
-/-- Merge two sorted lists into one in linear time.
-
-     merge [1, 2, 4, 5] [0, 1, 3, 4] = [0, 1, 1, 2, 3, 4, 4, 5] -/
-def merge : List α → List α → List α
-  | [], l' => l'
-  | l, [] => l
-  | a :: l, b :: l' => if a ≼ b then a :: merge l (b :: l') else b :: merge (a :: l) l'
-  termination_by l₁ l₂ => length l₁ + length l₂
 #align list.merge List.merge
 
 /-- Implementation of a merge sort algorithm to sort a list. -/
@@ -433,28 +425,18 @@ def mergeSort : List α → List α
     have h := length_split_lt e
     have := h.1
     have := h.2
-    exact merge r (mergeSort ls.1) (mergeSort ls.2)
+    exact merge (r · ·) (mergeSort ls.1) (mergeSort ls.2)
   termination_by l => length l
 #align list.merge_sort List.mergeSort
 
 @[nolint unusedHavesSuffices] -- Porting note: false positive
 theorem mergeSort_cons_cons {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
-    mergeSort r (a :: b :: l) = merge r (mergeSort r l₁) (mergeSort r l₂) := by
+    mergeSort r (a :: b :: l) = merge (r · ·) (mergeSort r l₁) (mergeSort r l₂) := by
   simp only [mergeSort, h]
 #align list.merge_sort_cons_cons List.mergeSort_cons_cons
 
 section Correctness
 
-theorem perm_merge : ∀ l l' : List α, merge r l l' ~ l ++ l'
-  | [], [] => by simp [merge]
-  | [], b :: l' => by simp [merge]
-  | a :: l, [] => by simp [merge]
-  | a :: l, b :: l' => by
-    by_cases h : a ≼ b
-    · simpa [merge, h] using perm_merge _ _
-    · suffices b :: merge r (a :: l) l' ~ a :: (l ++ b :: l') by simpa [merge, h]
-      exact ((perm_merge _ _).cons _).trans ((swap _ _ _).trans (perm_middle.symm.cons _))
-  termination_by l₁ l₂ => length l₁ + length l₂
 #align list.perm_merge List.perm_merge
 
 theorem perm_mergeSort : ∀ l : List α, mergeSort r l ~ l
@@ -464,7 +446,7 @@ theorem perm_mergeSort : ∀ l : List α, mergeSort r l ~ l
     cases' e : split (a :: b :: l) with l₁ l₂
     cases' length_split_lt e with h₁ h₂
     rw [mergeSort_cons_cons r e]
-    apply (perm_merge r _ _).trans
+    apply (perm_merge (r · ·) _ _).trans
     exact
       ((perm_mergeSort l₁).append (perm_mergeSort l₂)).trans (perm_split e).symm
   termination_by l => length l
@@ -479,14 +461,14 @@ section TotalAndTransitive
 
 variable {r} [IsTotal α r] [IsTrans α r]
 
-theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sorted r (merge r l l')
-  | [], [], _, _ => by simp [List.merge]
-  | [], b :: l', _, h₂ => by simpa [List.merge] using h₂
-  | a :: l, [], h₁, _ => by simpa [List.merge] using h₁
+theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sorted r (merge (r · ·) l l')
+  | [], [], _, _ => by simp
+  | [], b :: l', _, h₂ => by simpa using h₂
+  | a :: l, [], h₁, _ => by simpa using h₁
   | a :: l, b :: l', h₁, h₂ => by
     by_cases h : a ≼ b
-    · suffices ∀ b' ∈ List.merge r l (b :: l'), r a b' by
-        simpa [List.merge, h, h₁.of_cons.merge h₂]
+    · suffices ∀ b' ∈ List.merge (r · ·) l (b :: l'), r a b' by
+        simpa [h, h₁.of_cons.merge h₂]
       intro b' bm
       rcases show b' = b ∨ b' ∈ l ∨ b' ∈ l' by
           simpa [or_left_comm] using (perm_merge _ _ _).subset bm with
@@ -495,8 +477,8 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
         assumption
       · exact rel_of_sorted_cons h₁ _ bl
       · exact _root_.trans h (rel_of_sorted_cons h₂ _ bl')
-    · suffices ∀ b' ∈ List.merge r (a :: l) l', r b b' by
-        simpa [List.merge, h, h₁.merge h₂.of_cons]
+    · suffices ∀ b' ∈ List.merge (r · ·) (a :: l) l', r b b' by
+        simpa [h, h₁.merge h₂.of_cons]
       intro b' bm
       have ba : b ≼ a := (total_of r _ _).resolve_left h
       have : b' = a ∨ b' ∈ l ∨ b' ∈ l' := by simpa using (perm_merge _ _ _).subset bm
@@ -505,7 +487,6 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
         assumption
       · exact _root_.trans ba (rel_of_sorted_cons h₁ _ bl)
       · exact rel_of_sorted_cons h₂ _ bl'
-  termination_by l₁ l₂ => length l₁ + length l₂
 #align list.sorted.merge List.Sorted.merge
 
 variable (r)

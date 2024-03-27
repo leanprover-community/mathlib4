@@ -8,8 +8,8 @@ import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Filter.Interval
 import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.NormNum
+import Mathlib.Topology.Order.LeftRight
 import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Algebra.Order.LeftRight
 
 #align_import topology.order.basic from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 
@@ -1090,7 +1090,6 @@ end LinearOrder
 section LinearOrderedAddCommGroup
 
 variable [TopologicalSpace α] [LinearOrderedAddCommGroup α] [OrderTopology α]
-
 variable {l : Filter β} {f g : β → α}
 
 theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r } := by
@@ -1102,7 +1101,7 @@ theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| <
 
 theorem orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrderedAddCommGroup α]
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r }) : OrderTopology α := by
-  refine' ⟨eq_of_nhds_eq_nhds fun a => _⟩
+  refine' ⟨TopologicalSpace.ext_nhds fun a => _⟩
   rw [h_nhds]
   letI := Preorder.topology α; letI : OrderTopology α := ⟨rfl⟩
   exact (nhds_eq_iInf_abs_sub a).symm
@@ -1543,14 +1542,27 @@ theorem interior_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} : interior (Icc 
 #align interior_Icc interior_Icc
 
 @[simp]
+theorem Icc_mem_nhds_iff [NoMinOrder α] [NoMaxOrder α] {a b x : α} :
+    Icc a b ∈ 𝓝 x ↔ x ∈ Ioo a b := by
+  rw [← interior_Icc, mem_interior_iff_mem_nhds]
+
+@[simp]
 theorem interior_Ico [NoMinOrder α] {a b : α} : interior (Ico a b) = Ioo a b := by
   rw [← Ici_inter_Iio, interior_inter, interior_Ici, interior_Iio, Ioi_inter_Iio]
 #align interior_Ico interior_Ico
 
 @[simp]
+theorem Ico_mem_nhds_iff [NoMinOrder α] {a b x : α} : Ico a b ∈ 𝓝 x ↔ x ∈ Ioo a b := by
+  rw [← interior_Ico, mem_interior_iff_mem_nhds]
+
+@[simp]
 theorem interior_Ioc [NoMaxOrder α] {a b : α} : interior (Ioc a b) = Ioo a b := by
   rw [← Ioi_inter_Iic, interior_inter, interior_Ioi, interior_Iic, Ioi_inter_Iio]
 #align interior_Ioc interior_Ioc
+
+@[simp]
+theorem Ioc_mem_nhds_iff [NoMaxOrder α] {a b x : α} : Ioc a b ∈ 𝓝 x ↔ x ∈ Ioo a b := by
+  rw [← interior_Ioc, mem_interior_iff_mem_nhds]
 
 theorem closure_interior_Icc {a b : α} (h : a ≠ b) : closure (interior (Icc a b)) = Icc a b :=
   (closure_minimal interior_subset isClosed_Icc).antisymm <|

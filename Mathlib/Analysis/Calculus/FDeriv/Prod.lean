@@ -29,25 +29,15 @@ noncomputable section
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-
 variable {f f₀ f₁ g : E → F}
-
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
-
 variable (e : E →L[𝕜] F)
-
 variable {x : E}
-
 variable {s t : Set E}
-
 variable {L L₁ L₂ : Filter E}
 
 section CartesianProduct
@@ -424,7 +414,7 @@ theorem hasStrictFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
   have h := ((hasStrictFDerivAt_pi'
              (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ':=id') (x:=f))).1
   have h' : comp (proj i) id' = proj i := by rfl
-  rw[← h']; apply h; apply hasStrictFDerivAt_id
+  rw [← h']; apply h; apply hasStrictFDerivAt_id
 
 @[simp 1100] -- Porting note: increased priority to make lint happy
 theorem hasStrictFDerivAt_pi :
@@ -487,7 +477,7 @@ theorem hasFDerivWithinAt_apply (i : ι) (f : ∀ i, F' i) (s' : Set (∀ i, F' 
   have h := ((hasFDerivWithinAt_pi'
              (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ':=id') (x:=f) (s:=s'))).1
   have h' : comp (proj i) id' = proj i := by rfl
-  rw[← h']; apply h; apply hasFDerivWithinAt_id
+  rw [← h']; apply h; apply hasFDerivWithinAt_id
 
 theorem hasFDerivWithinAt_pi :
     HasFDerivWithinAt (fun x i => φ i x) (ContinuousLinearMap.pi φ') s x ↔

@@ -23,9 +23,7 @@ open CategoryTheory.Limits
 open CategoryTheory.MonoidalCategory
 
 variable (R : Type*) [Semiring R]
-
 variable (C : Type*) [Category C] [Preadditive C] [Linear R C]
-
 variable [MonoidalCategory C]
 
 -- Porting note: added `MonoidalPreadditive` as argument ``
