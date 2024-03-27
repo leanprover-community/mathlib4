@@ -554,7 +554,7 @@ theorem eq_zero_or_one (I : FractionalIdeal K⁰ L) : I = 0 ∨ I = 1 := by
     rw [map_div₀, IsFractionRing.mk'_eq_div]
   · rintro ⟨x, rfl⟩
     obtain ⟨y, y_ne, y_mem⟩ := exists_ne_zero_mem_isInteger hI
-    rw [← div_mul_cancel x y_ne, RingHom.map_mul, ← Algebra.smul_def]
+    rw [← div_mul_cancel₀ x y_ne, RingHom.map_mul, ← Algebra.smul_def]
     exact smul_mem (M := L) I (x / y) y_mem
 #align fractional_ideal.eq_zero_or_one FractionalIdeal.eq_zero_or_one
 

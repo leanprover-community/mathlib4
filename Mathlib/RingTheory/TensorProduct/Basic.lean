@@ -659,7 +659,7 @@ theorem algEquivOfLinearEquivTripleTensorProduct_apply (f h_mul h_one x) :
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_triple_tensor_product_apply Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct_apply
 
 section lift
-variable [IsScalarTower R S A] [IsScalarTower R S C]
+variable [IsScalarTower R S C]
 
 /-- The forward direction of the universal property of tensor products of algebras; any algebra
 morphism from the tensor product can be factored as the product of two algebra morphisms that
@@ -709,9 +709,8 @@ This is `Algebra.TensorProduct.lift` as an equivalence.
 See also `GradedTensorProduct.liftEquiv` for an alternative commutativity requirement for graded
 algebra. -/
 @[simps]
-def liftEquiv [IsScalarTower R S A] [IsScalarTower R S C] :
-    {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg.1 x) (fg.2 y)}
-      ≃ ((A ⊗[R] B) →ₐ[S] C) where
+def liftEquiv : {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg.1 x) (fg.2 y)}
+    ≃ ((A ⊗[R] B) →ₐ[S] C) where
   toFun fg := lift fg.val.1 fg.val.2 fg.prop
   invFun f' := ⟨(f'.comp includeLeft, (f'.restrictScalars R).comp includeRight), fun x y =>
     ((Commute.one_right _).tmul (Commute.one_left _)).map f'⟩

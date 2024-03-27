@@ -91,13 +91,13 @@ theorem zeta_spec : IsPrimitiveRoot (zeta n A B) n :=
 
 theorem aeval_zeta [IsDomain B] [NeZero ((n : ℕ) : B)] :
     aeval (zeta n A B) (cyclotomic n A) = 0 := by
-  rw [aeval_def, ← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff]
+  rw [aeval_def, ← eval_map, ← IsRoot.definition, map_cyclotomic, isRoot_cyclotomic_iff]
   exact zeta_spec n A B
 #align is_cyclotomic_extension.aeval_zeta IsCyclotomicExtension.aeval_zeta
 
 theorem zeta_isRoot [IsDomain B] [NeZero ((n : ℕ) : B)] : IsRoot (cyclotomic n B) (zeta n A B) := by
   convert aeval_zeta n A B using 0
-  rw [IsRoot.def, aeval_def, eval₂_eq_eval_map, map_cyclotomic]
+  rw [IsRoot.definition, aeval_def, eval₂_eq_eval_map, map_cyclotomic]
 #align is_cyclotomic_extension.zeta_is_root IsCyclotomicExtension.zeta_isRoot
 
 theorem zeta_pow : zeta n A B ^ (n : ℕ) = 1 :=
@@ -151,16 +151,16 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
         haveI hn := NeZero.of_noZeroSMulDivisors K C n
         refine' ⟨x.1, _⟩
         cases x
-        rwa [mem_primitiveRoots n.pos, ← isRoot_cyclotomic_iff, IsRoot.def, ←
-          map_cyclotomic _ (algebraMap K C), hζ.minpoly_eq_cyclotomic_of_irreducible hirr, ←
-          eval₂_eq_eval_map, ← aeval_def]
+        rwa [mem_primitiveRoots n.pos, ← isRoot_cyclotomic_iff, IsRoot.definition,
+          ← map_cyclotomic _ (algebraMap K C), hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
+          ← eval₂_eq_eval_map, ← aeval_def]
       invFun := fun x => by
         haveI := IsCyclotomicExtension.neZero' n K L
         haveI hn := NeZero.of_noZeroSMulDivisors K C n
         refine' ⟨x.1, _⟩
         cases x
         rwa [aeval_def, eval₂_eq_eval_map, hζ.powerBasis_gen K, ←
-          hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_cyclotomic, ← IsRoot.def,
+          hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_cyclotomic, ← IsRoot.definition,
           isRoot_cyclotomic_iff, ← mem_primitiveRoots n.pos]
       left_inv := fun x => Subtype.ext rfl
       right_inv := fun x => Subtype.ext rfl }
@@ -338,7 +338,7 @@ theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ 
         · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
           exact Subalgebra.add_mem _ (subset_adjoin (mem_singleton η)) (Subalgebra.one_mem _)
         · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
-          nth_rw 1 [← add_sub_cancel η 1]
+          nth_rw 1 [← add_sub_cancel_right η 1]
           exact Subalgebra.sub_mem _ (subset_adjoin (mem_singleton _)) (Subalgebra.one_mem _)
 -- Porting note: the previous proof was `rw [H] at this; exact this` but it now fails.
       exact IsCyclotomicExtension.equiv _ _ _ (Subalgebra.equivOfEq _ _ H)
@@ -361,7 +361,7 @@ theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ 
   rw [norm_eq_norm_adjoin K]
   · have H := hη.sub_one_norm_isPrimePow ?_ hirr₁ htwo
     swap; · rw [PNat.pow_coe]; exact hpri.1.isPrimePow.pow (Nat.succ_ne_zero _)
-    rw [add_sub_cancel] at H
+    rw [add_sub_cancel_right] at H
     rw [H]
     congr
     · rw [PNat.pow_coe, Nat.pow_minFac, hpri.1.minFac_eq]
