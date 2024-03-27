@@ -117,7 +117,7 @@ theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n)
       dsimp at h₁₂
       rw [Fin.cons_eq_cons, Nat.succ_inj'] at h₁₂
       obtain ⟨h₁₂, rfl⟩ := h₁₂
-      rw [h₁₂] at h
+      rw [Function.onFun, h₁₂] at h
       exact h (List.mem_map_of_mem _ hx₁) (List.mem_map_of_mem _ hx₂)
 #align list.nat.nodup_antidiagonal_tuple List.Nat.nodup_antidiagonalTuple
 
