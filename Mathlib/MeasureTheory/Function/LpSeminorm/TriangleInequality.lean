@@ -98,7 +98,7 @@ set_option linter.uppercaseLean3 false in
 theorem snorm_add_le' {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (p : ℝ≥0∞) : snorm (f + g) p μ ≤ LpAddConst p * (snorm f p μ + snorm g p μ) := by
   rcases eq_or_ne p 0 with (rfl | hp)
-  · simp only [snorm_exponent_zero, add_zero, mul_zero, Nat.le_zero]
+  · simp only [snorm_exponent_zero, add_zero, mul_zero, le_zero_iff]
   rcases lt_or_le p 1 with (h'p | h'p)
   · simp only [snorm_eq_snorm' hp (h'p.trans ENNReal.one_lt_top).ne]
     convert snorm'_add_le_of_le_one hf ENNReal.toReal_nonneg _
