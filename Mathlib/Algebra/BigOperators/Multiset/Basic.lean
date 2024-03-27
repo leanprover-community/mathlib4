@@ -3,9 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.GroupPower.Hom
+import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.Multiset.Basic
 
 #align_import algebra.big_operators.multiset.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
