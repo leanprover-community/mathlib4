@@ -407,7 +407,7 @@ theorem exists_null_frontier_thickening (μ : Measure Ω) [SigmaFinite μ] (s : 
   rw [← Real.volume_Ioo, ← aux] at len_pos
   rcases nonempty_of_measure_ne_zero len_pos.ne.symm with ⟨r, ⟨r_in_Ioo, hr⟩⟩
   refine' ⟨r, r_in_Ioo, _⟩
-  simpa only [mem_setOf_eq, not_lt, Nat.le_zero] using hr
+  simpa only [mem_setOf_eq, not_lt, le_zero_iff] using hr
 #align measure_theory.exists_null_frontier_thickening MeasureTheory.exists_null_frontier_thickening
 
 theorem exists_null_frontiers_thickening (μ : Measure Ω) [SigmaFinite μ] (s : Set Ω) :
