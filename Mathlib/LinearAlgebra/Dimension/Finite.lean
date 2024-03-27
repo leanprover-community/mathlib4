@@ -55,7 +55,7 @@ lemma rank_eq_zero_iff :
         hx _ H ((Finsupp.total_unique _ _ _).symm.trans hl))
     simpa using this.cardinal_lift_le_rank
   · intro h
-    rw [← Nat.le_zero, Module.rank_def]
+    rw [← le_zero_iff, Module.rank_def]
     apply ciSup_le'
     intro ⟨s, hs⟩
     rw [nonpos_iff_eq_zero, Cardinal.mk_eq_zero_iff, ← not_nonempty_iff]
