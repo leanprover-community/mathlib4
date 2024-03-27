@@ -28,15 +28,9 @@ by taking a linearly ordered commutative group Γ and formally adjoining a zero 
 The disadvantage is that a type such as `NNReal` is not of that form,
 whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
-
-Note that to avoid issues with import cycles, `LinearOrderedCommMonoidWithZero` is defined
-in another file. However, the lemmas about it are stated here.
 -/
 
-
-universe u
-
-variable {α : Type u}
+variable {α : Type*}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends LinearOrderedCommMonoid α,
