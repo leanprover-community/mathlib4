@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Algebra.BigOperators.Multiset.Order
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Tactic.GCongr.Core
