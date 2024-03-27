@@ -20,7 +20,7 @@ set_option pp.unicode.fun true
 noncomputable section
 
 /-- info: Try this: exact Set.Ici_subset_Ioi.mp fun ⦃a⦄ a ↦ a -/
--- #guard_msgs in
+#guard_msgs in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by apply?)
 
 /-- info: Try this: exact compare_gt_iff_gt.mp rfl -/
