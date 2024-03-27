@@ -220,21 +220,10 @@ def scalarProduct (φ ψ : G → k) := ⅟ (Fintype.card G : k) • ∑ g : G, �
 
 lemma scalarProduct_symmetric : ∀ φ ψ : G → k, scalarProduct φ ψ = scalarProduct ψ φ := by
   intro φ ψ
-  simp only
-    [scalarProduct, mul_comm, invOf_eq_inv, smul_eq_mul
-    , mul_eq_mul_left_iff, inv_eq_zero]
-  apply Or.inl
-  have : (fun g => ψ g * φ g⁻¹) = (fun g => (fun g => φ g * ψ g⁻¹) g⁻¹) := by
-    simp only [inv_inv, mul_comm]
-  rw [this]
-  symm
-  -- There should be a lemma for this, e.g. MulAction.toPerm
-  let σ : Equiv.Perm G := by
-    use (fun g => g⁻¹)
-    use (fun g => g⁻¹)
-    sorry
-    sorry
-  apply Equiv.Perm.sum_comp σ Fintype.elems (fun g => φ g * ψ g⁻¹) (fun a _ => Fintype.complete a)
+  simp_rw [scalarProduct]
+  rw [Fintype.sum_equiv (Equiv.inv G) _ _]
+  simp only [Equiv.inv_apply, inv_inv, mul_comm]
+  tauto
 
 /-- Orthogonality of characters for irreducible representations of finite group over an
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
