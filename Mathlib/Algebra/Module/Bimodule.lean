@@ -65,15 +65,10 @@ namespace Subbimodule
 section Algebra
 
 variable {R A B M : Type*}
-
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-
 variable [Semiring A] [Semiring B] [Module A M] [Module B M]
-
 variable [Algebra R A] [Algebra R B]
-
 variable [IsScalarTower R A M] [IsScalarTower R B M]
-
 variable [SMulCommClass A B M]
 
 /-- A constructor for a subbimodule which demands closure under the two sets of scalars
@@ -132,7 +127,6 @@ end Algebra
 section Ring
 
 variable (R S M : Type*) [Ring R] [Ring S]
-
 variable [AddCommGroup M] [Module R M] [Module S M] [SMulCommClass R S M]
 
 /-- A `Submodule` over `R ⊗[ℕ] S` is naturally also a `Submodule` over the canonically-isomorphic

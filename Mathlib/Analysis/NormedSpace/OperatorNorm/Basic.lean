@@ -397,7 +397,7 @@ protected def seminorm : Seminorm 𝕜₂ (E →SL[σ₁₂] F) :=
 
 private lemma uniformity_eq_seminorm :
     𝓤 (E →SL[σ₁₂] F) = ⨅ r > 0, 𝓟 {f | ‖f.1 - f.2‖ < r} := by
-  refine ContinuousLinearMap.seminorm.uniformity_eq_of_hasBasis
+  refine ContinuousLinearMap.seminorm (σ₁₂ := σ₁₂) (E := E) (F := F) |>.uniformity_eq_of_hasBasis
     (ContinuousLinearMap.hasBasis_nhds_zero_of_basis Metric.nhds_basis_closedBall)
     ?_ fun (s, r) ⟨hs, hr⟩ ↦ ?_
   · rcases NormedField.exists_lt_norm 𝕜 1 with ⟨c, hc⟩
@@ -487,9 +487,7 @@ end OpNorm
 section RestrictScalars
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
-
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜' 𝕜 E]
-
 variable [NormedSpace 𝕜' Fₗ] [IsScalarTower 𝕜' 𝕜 Fₗ]
 
 @[simp]
@@ -499,7 +497,6 @@ theorem norm_restrictScalars (f : E →L[𝕜] Fₗ) : ‖f.restrictScalars 𝕜
 #align continuous_linear_map.norm_restrict_scalars ContinuousLinearMap.norm_restrictScalars
 
 variable (𝕜 E Fₗ 𝕜') (𝕜'' : Type*) [Ring 𝕜'']
-
 variable [Module 𝕜'' Fₗ] [ContinuousConstSMul 𝕜'' Fₗ]
   [SMulCommClass 𝕜 𝕜'' Fₗ] [SMulCommClass 𝕜' 𝕜'' Fₗ]
 

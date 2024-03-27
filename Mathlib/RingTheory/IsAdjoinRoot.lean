@@ -264,7 +264,6 @@ theorem eq_lift (h : IsAdjoinRoot S f) (g : S →+* T) (hmap : ∀ a, g (algebra
 #align is_adjoin_root.eq_lift IsAdjoinRoot.eq_lift
 
 variable [Algebra R T] (hx' : aeval x f = 0)
-
 variable (x)
 
 -- To match `AdjoinRoot.liftHom`

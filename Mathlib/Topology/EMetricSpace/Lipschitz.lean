@@ -105,7 +105,6 @@ namespace LipschitzWith
 open EMetric
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-
 variable {K : ℝ≥0} {f : α → β} {x y : α} {r : ℝ≥0∞}
 
 protected theorem lipschitzOnWith (h : LipschitzWith K f) (s : Set α) : LipschitzOnWith K f s :=
@@ -300,7 +299,6 @@ end LipschitzWith
 namespace LipschitzOnWith
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-
 variable {K : ℝ≥0} {s : Set α} {f : α → β}
 
 protected theorem uniformContinuousOn (hf : LipschitzOnWith K f s) : UniformContinuousOn f s :=
@@ -366,7 +364,7 @@ protected lemma const (b : β) : LocallyLipschitz (fun _ : α ↦ b) :=
 /-- A locally Lipschitz function is continuous. (The converse is false: for example,
 $x ↦ \sqrt{x}$ is continuous, but not locally Lipschitz at 0.) -/
 protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continuous f := by
-  apply continuous_iff_continuousAt.mpr
+  rw [continuous_iff_continuousAt]
   intro x
   rcases (hf x) with ⟨K, t, ht, hK⟩
   exact (hK.continuousOn).continuousAt ht

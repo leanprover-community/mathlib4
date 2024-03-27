@@ -970,8 +970,6 @@ lemma not_monotone_not_antitone_iff_exists_lt_lt :
 -/
 
 
-variable [LinearOrder β] {f : α → β} {s : Set α} {x y : α}
-
 theorem StrictMonoOn.cmp_map_eq (hf : StrictMonoOn f s) (hx : x ∈ s) (hy : y ∈ s) :
     cmp (f x) (f y) = cmp x y :=
   ((hf.compares hx hy).2 (cmp_compares x y)).cmp_eq

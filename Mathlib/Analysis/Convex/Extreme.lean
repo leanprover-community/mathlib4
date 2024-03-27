@@ -251,7 +251,6 @@ end OrderedRing
 section LinearOrderedRing
 
 variable [LinearOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A B : Set E} {x : E}
 
 /-- A useful restatement using `segment`: `x` is an extreme point iff the only (closed) segments
