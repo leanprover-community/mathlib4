@@ -323,7 +323,7 @@ lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) :
     , zero_mul, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, inv_one
     , char_one, smul_eq_mul, ← mul_assoc, inv_mul_cancel_of_invertible, one_mul
     ]
-
+#check FdRep.ρ
 /-- Irreducbile characters are a basis of ClassFunction G -/
 lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunction f) (h : ∀ V : FdRep k G, Simple V → scalarProduct f V.character = (0 : k)) : f = fun _ ↦ (0 : k) := by
   let f' : (G → k) := fun g => f g⁻¹
@@ -334,9 +334,17 @@ lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunct
     exact hf g⁻¹ h
   have h' : ∀ V : FdRep k G, Simple V → scalarProduct f' V.character = (0 : k) := by
     intro V hV
-    simp_rw [scalarProduct_symmetric, scalarProduct, ← char_dual V, f']
-
-    -- apply h (of (dual V.ρ)) (simple_iff_dual_simple hV)
+    simp_rw [scalarProduct, ← char_dual V, f']
+    have : scalarProduct (of (dual V.ρ)).character f = 0 := by
+      rw [scalarProduct_symmetric]
+      apply h (of (dual V.ρ)) ?_
+      rw [← simple_iff_dual_simple]
+      exact hV
+    rw [← this]
+    rw [scalarProduct]
+    congr
+    ext g
+    rw [mul_comm]
   have (V : FdRep k G) (hV : Simple V) : averageClassFunction f' hf' V = (0 : V ⟶  V) := by
     have : finrank k (V ⟶  V) = 1 := by
       rw [finrank_hom_simple_simple V V]
@@ -354,7 +362,7 @@ lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunct
         _ = ⅟ (Fintype.card G : k) • ∑ g : G, f' g * (of (dual V.ρ)).character g⁻¹ := by
           simp_rw [char_dual, inv_inv]
         _ = 0 := by
-          apply h (of (dual V.ρ)) ?_
+          apply h' (of (dual V.ρ)) ?_
           rw [← simple_iff_dual_simple]
           exact hV
     rw [← hc] at tr
@@ -372,8 +380,20 @@ lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunct
       have : (finrank k V : k) ≠ (0 : k) := by
         sorry --exact nonzero_of_invertible (finrank k V)
       contradiction
+  have average_reg_zero : averageClassFunction f' hf' (RegularRep k G) = (0 : RegularRep k G ⟶  RegularRep k G) := by
+    sorry -- Needs Maschke's theorem!
+  have sum_zero : ∑ g, (f' g) • MonoidAlgebra.single g⁻¹ 1 = (0 : MonoidAlgebra k G) := by
+    have act_as (x : MonoidAlgebra k G) : (averageClassFunction f' hf' (RegularRep k G)).hom x = ⅟ (Fintype.card G : k) • (∑ g, (f' g) • MonoidAlgebra.single g⁻¹ 1) * x := by
+      rw [averageClassFunction]
+      simp only [averageFunction, invOf_eq_inv]
+      simp_rw [RegularRep]
+      have (x : MonoidAlgebra k G) (g : G) : ((ρ (of (ofMulAction k ↑G ↑G))) g) x = (MonoidAlgebra.single g 1) * x := by
+        show Representation.ofMulAction k G G g x = _
+        --erw [Rep.of_ρ]
 
-  sorry -- Needs Maschke's theorem!
+
+
+
 
 end RegularRepresentation
 
