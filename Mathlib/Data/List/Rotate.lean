@@ -79,7 +79,7 @@ theorem rotate'_rotate' : ∀ (l : List α) (n m : ℕ), (l.rotate' n).rotate' m
   | a :: l, 0, m => by simp
   | [], n, m => by simp
   | a :: l, n + 1, m => by
-    rw [rotate'_cons_succ, rotate'_rotate' _ n, add_right_comm, ← rotate'_cons_succ]
+    rw [rotate'_cons_succ, rotate'_rotate' _ n, Nat.add_right_comm, ← rotate'_cons_succ]
 #align list.rotate'_rotate' List.rotate'_rotate'
 
 @[simp]
@@ -170,16 +170,6 @@ theorem rotate_length (l : List α) : rotate l l.length = l := by
 theorem rotate_length_mul (l : List α) (n : ℕ) : l.rotate (l.length * n) = l := by
   rw [rotate_eq_rotate', rotate'_length_mul]
 #align list.rotate_length_mul List.rotate_length_mul
-
-theorem prod_rotate_eq_one_of_prod_eq_one [Group α] :
-    ∀ {l : List α} (_ : l.prod = 1) (n : ℕ), (l.rotate n).prod = 1
-  | [], _, _ => by simp
-  | a :: l, hl, n => by
-    have : n % List.length (a :: l) ≤ List.length (a :: l) := le_of_lt (Nat.mod_lt _ (by simp))
-    rw [← List.take_append_drop (n % List.length (a :: l)) (a :: l)] at hl;
-      rw [← rotate_mod, rotate_eq_drop_append_take this, List.prod_append, mul_eq_one_iff_inv_eq, ←
-        one_mul (List.prod _)⁻¹, ← hl, List.prod_append, mul_assoc, mul_inv_self, mul_one]
-#align list.prod_rotate_eq_one_of_prod_eq_one List.prod_rotate_eq_one_of_prod_eq_one
 
 theorem rotate_perm (l : List α) (n : ℕ) : l.rotate n ~ l := by
   rw [rotate_eq_rotate']
@@ -292,7 +282,7 @@ theorem get_eq_get_rotate (l : List α) (n : ℕ) (k : Fin l.length) :
   rw [get_rotate]
   refine congr_arg l.get (Fin.eq_of_val_eq ?_)
   simp only [mod_add_mod]
-  rw [← add_mod_mod, add_right_comm, Nat.sub_add_cancel, add_mod_left, mod_eq_of_lt]
+  rw [← add_mod_mod, Nat.add_right_comm, Nat.sub_add_cancel, add_mod_left, mod_eq_of_lt]
   exacts [k.2, (mod_lt _ (k.1.zero_le.trans_lt k.2)).le]
 
 set_option linter.deprecated false in
