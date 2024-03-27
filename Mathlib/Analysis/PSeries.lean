@@ -118,7 +118,7 @@ theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
   have hu : Monotone u := by
     apply StrictMono.monotone hu_strict
   rw [ENNReal.tsum_eq_iSup_nat' (StrictMono.tendsto_atTop hu_strict)]
-  refine' iSup_le fun n => (Finset.le_sum_schlomilch hf h_pos hu n).trans (add_le_add_left _ _)
+  refine iSup_le fun n => (Finset.le_sum_schlomilch hf h_pos hu n).trans (add_le_add_left ?_ _)
   have (k : ℕ) : ((u (k + 1) : ℝ≥0∞) - (u k : ℝ≥0∞) : ℝ≥0∞) = (u (k + 1) - (u k : ℕ) : ℕ) := by
     simp [NNReal.coe_sub (Nat.cast_le (α := ℝ≥0).mpr <| (hu_strict k.lt_succ_self).le)]
   simp only [nsmul_eq_mul, this]
@@ -127,16 +127,14 @@ theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
 theorem tsum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (h_nonneg : ∀ n, 0 <= f n) (hu_strict : StrictMono u) (h_succ_diff : SuccDiffBounded C u) :
     ∑' k : ℕ, (u (k + 1) - u k) * f (u k) ≤ (u 1 - u 0) * f (u 0) + C * ∑' k, f k := by
-  have hu : Monotone u := by
-    apply StrictMono.monotone hu_strict
   rw [ENNReal.tsum_eq_iSup_nat' (tendsto_atTop_mono Nat.le_succ tendsto_id)]
-  refine'
+  refine
     iSup_le fun n =>
-      le_trans _
+      le_trans ?_
         (add_le_add_left
-          (mul_le_mul_of_nonneg_left (ENNReal.sum_le_tsum <| Finset.Ico (u 0 + 1) (u n + 1)) _) _)
-  simpa using Finset.sum_schlomilch_le hf h_pos h_nonneg hu h_succ_diff n
-  apply zero_le _
+          (mul_le_mul_of_nonneg_left (ENNReal.sum_le_tsum <| Finset.Ico (u 0 + 1) (u n + 1)) ?_) _)
+  simpa using Finset.sum_schlomilch_le hf h_pos h_nonneg hu_strict.monotone h_succ_diff n
+  exact zero_le _
 end ENNReal
 
 namespace NNReal
@@ -157,12 +155,11 @@ theorem summable_schlomilch_iff {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ≥0
     replace h_nonneg : ∀ n, 0 ≤ (f n : ℝ≥0∞) := fun n =>
       ENNReal.coe_le_coe.2 (h_nonneg n)
     obtain hC := tsum_schlomilch_le hf h_pos h_nonneg hu_strict h_succ_diff
-    have : (↑(u 1) - ↑(u 0)) * ↑(f (u 0)) + ↑C * ∑' (k : ℕ), ↑(f k) = ∞ := by exact eq_top_mono hC h
+    have : (↑(u 1) - ↑(u 0)) * ↑(f (u 0)) + ↑C * ∑' (k : ℕ), ↑(f k) = ∞ := eq_top_mono hC h
     simpa [add_eq_top, mul_ne_top, mul_eq_top, hC_nonzero]
   · replace hf : ∀ m n, 0 < m → m ≤ n → (f n : ℝ≥0∞) ≤ f m := fun m n hm hmn =>
       ENNReal.coe_le_coe.2 (hf hm hmn)
-    have : ∑ k in range (u 0), ↑(f k) ≠ ∞ := by
-      apply ne_top_of_lt (sum_lt_top fun a _ => coe_ne_top)
+    have : ∑ k in range (u 0), ↑(f k) ≠ ∞ := ne_top_of_lt (sum_lt_top fun a _ => coe_ne_top)
     simpa [h, add_eq_top, this] using le_tsum_schlomilch hf h_pos hu_strict
 end NNReal
 
