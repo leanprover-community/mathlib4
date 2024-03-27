@@ -238,7 +238,7 @@ namespace KummerDedekind
 open scoped BigOperators Polynomial Classical
 
 variable [IsDomain R] [IsIntegrallyClosed R]
-variable [IsDomain S] [IsDedekindDomain S]
+variable [IsDedekindDomain S]
 variable [NoZeroSMulDivisors R S]
 
 attribute [local instance] Ideal.Quotient.field
