@@ -470,7 +470,7 @@ theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ (n : O
 
 end Ordinal
 
--- Porting note: TODO: Port this meta code.
+-- Porting note (#11215): TODO: Port this meta code.
 
 -- namespace Tactic
 

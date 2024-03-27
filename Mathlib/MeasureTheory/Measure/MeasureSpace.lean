@@ -715,7 +715,6 @@ section
 synthesizing instances in `MeasureSpace` section. -/
 
 variable {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
-
 variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : Measure α} {s s' t : Set α}
 namespace Measure
 
@@ -811,7 +810,6 @@ theorem add_apply {_m : MeasurableSpace α} (μ₁ μ₂ : Measure α) (s : Set 
 section SMul
 
 variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-
 variable [SMul R' ℝ≥0∞] [IsScalarTower R' ℝ≥0∞ ℝ≥0∞]
 
 -- TODO: refactor
@@ -1017,7 +1015,7 @@ theorem sInf_caratheodory (s : Set α) (hs : MeasurableSet s) :
     MeasurableSet[(sInf (toOuterMeasure '' m)).caratheodory] s := by
   rw [OuterMeasure.sInf_eq_boundedBy_sInfGen]
   refine' OuterMeasure.boundedBy_caratheodory fun t => _
-  simp only [OuterMeasure.sInfGen, le_iInf_iff, ball_image_iff,
+  simp only [OuterMeasure.sInfGen, le_iInf_iff, forall_mem_image,
     measure_eq_iInf t]
   intro μ hμ u htu _hu
   have hm : ∀ {s t}, s ⊆ t → OuterMeasure.sInfGen (toOuterMeasure '' m) s ≤ μ t := by
@@ -1042,7 +1040,7 @@ private theorem measure_sInf_le (h : μ ∈ m) : sInf m ≤ μ :=
 
 private theorem measure_le_sInf (h : ∀ μ' ∈ m, μ ≤ μ') : μ ≤ sInf m :=
   have : μ.toOuterMeasure ≤ sInf (toOuterMeasure '' m) :=
-    le_sInf <| ball_image_of_ball fun μ hμ => toOuterMeasure_le.2 <| h _ hμ
+    le_sInf <| forall_mem_image.2 fun μ hμ ↦ toOuterMeasure_le.2 <| h _ hμ
   le_iff.2 fun s hs => by rw [sInf_apply hs]; exact this s
 
 instance instCompleteSemilatticeInf [MeasurableSpace α] : CompleteSemilatticeInf (Measure α) :=
@@ -1790,7 +1788,7 @@ theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreservi
   · replace hs : (⇑e⁻¹) ⁻¹' s =ᵐ[μ] s := by rwa [Equiv.image_eq_preimage] at hs
     replace he' : (⇑e⁻¹)^[k] ⁻¹' s =ᵐ[μ] s := he'.preimage_iterate_ae_eq k hs
     rwa [Equiv.Perm.iterate_eq_pow e⁻¹ k, inv_pow e k] at he'
-  · rw [zpow_neg, zpow_coe_nat]
+  · rw [zpow_neg, zpow_natCast]
     replace hs : e ⁻¹' s =ᵐ[μ] s := by
       convert he.preimage_ae_eq hs.symm
       rw [Equiv.preimage_image]
@@ -1975,8 +1973,7 @@ theorem ae_map_mem_range {m0 : MeasurableSpace α} (f : α → β) (hf : Measura
   by_cases h : AEMeasurable f μ
   · change range f ∈ (μ.map f).ae
     rw [mem_ae_map_iff h hf]
-    apply eventually_of_forall
-    exact mem_range_self
+    filter_upwards using mem_range_self
   · simp [map_of_not_aemeasurable h]
 #align measure_theory.ae_map_mem_range MeasureTheory.ae_map_mem_range
 

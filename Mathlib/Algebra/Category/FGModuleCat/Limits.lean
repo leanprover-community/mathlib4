@@ -37,7 +37,6 @@ open CategoryTheory.Limits
 namespace FGModuleCat
 
 variable {J : Type} [SmallCategory J] [FinCategory J]
-
 variable {k : Type v} [Field k]
 
 instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, FiniteDimensional k (Z j)] :

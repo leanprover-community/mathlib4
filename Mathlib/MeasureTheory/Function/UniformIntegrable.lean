@@ -664,8 +664,7 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
       change _ = fun x => (s ∩ { x : α | C ≤ ‖f i x‖₊ }).indicator (f i) x +
         (s ∩ { x : α | ‖f i x‖₊ < C }).indicator (f i) x
       rw [← Set.indicator_union_of_disjoint]
-      · congr
-        rw [← Set.inter_union_distrib_left, (by ext; simp [le_or_lt] :
+      · rw [← Set.inter_union_distrib_left, (by ext; simp [le_or_lt] :
             { x : α | C ≤ ‖f i x‖₊ } ∪ { x : α | ‖f i x‖₊ < C } = Set.univ),
           Set.inter_univ]
       · refine' (Disjoint.inf_right' _ _).inf_left' _
@@ -680,7 +679,7 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
       rw [← Set.indicator_indicator]
       rw [snorm_indicator_eq_snorm_restrict hs]
       have : ∀ᵐ x ∂μ.restrict s, ‖{ x : α | ‖f i x‖₊ < C }.indicator (f i) x‖ ≤ C := by
-        refine' ae_of_all _ _
+        filter_upwards
         simp_rw [norm_indicator_eq_indicator_norm]
         exact Set.indicator_le' (fun x (hx : _ < _) => hx.le) fun _ _ => NNReal.coe_nonneg _
       refine' le_trans (snorm_le_of_ae_bound this) _
@@ -692,7 +691,7 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
     _ ≤ ENNReal.ofReal (ε / 2) + ENNReal.ofReal (ε / 2) := by
       refine' add_le_add_left _ _
       rw [← ENNReal.ofReal_coe_nnreal, ← ENNReal.ofReal_mul (NNReal.coe_nonneg _), ← div_div,
-        mul_div_cancel' _ (NNReal.coe_pos.2 hCpos).ne.symm]
+        mul_div_cancel₀ _ (NNReal.coe_pos.2 hCpos).ne.symm]
     _ ≤ ENNReal.ofReal ε := by
       rw [← ENNReal.ofReal_add (half_pos hε).le (half_pos hε).le, add_halves]
 #align measure_theory.unif_integrable_of' MeasureTheory.unifIntegrable_of'
@@ -817,7 +816,7 @@ theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
           simpa using hx
     _ ≤ (C : ℝ≥0∞) * μ Set.univ ^ p.toReal⁻¹ + 1 := by
       have : ∀ᵐ x ∂μ, ‖{ x : α | ‖f i x‖₊ < C }.indicator (f i) x‖₊ ≤ C := by
-        refine' eventually_of_forall _
+        filter_upwards
         simp_rw [nnnorm_indicator_eq_indicator_nnnorm]
         exact Set.indicator_le fun x (hx : _ < _) => hx.le
       refine' add_le_add (le_trans (snorm_le_of_ae_bound this) _) (ENNReal.ofReal_one ▸ hC i)

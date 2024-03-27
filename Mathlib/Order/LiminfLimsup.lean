@@ -165,7 +165,7 @@ theorem IsBoundedUnder.bddAbove_range_of_cofinite [Preorder β] [IsDirected β (
   rcases hf with ⟨b, hb⟩
   haveI : Nonempty β := ⟨b⟩
   rw [← image_univ, ← union_compl_self { x | f x ≤ b }, image_union, bddAbove_union]
-  exact ⟨⟨b, ball_image_iff.2 fun x => id⟩, (hb.image f).bddAbove⟩
+  exact ⟨⟨b, forall_mem_image.2 fun x => id⟩, (hb.image f).bddAbove⟩
 #align filter.is_bounded_under.bdd_above_range_of_cofinite Filter.IsBoundedUnder.bddAbove_range_of_cofinite
 
 theorem IsBoundedUnder.bddBelow_range_of_cofinite [Preorder β] [IsDirected β (· ≥ ·)] {f : α → β}
@@ -1123,7 +1123,7 @@ lemma limsup_piecewise {s : Set β} [DecidablePred (· ∈ s)] {v} :
     limsup (s.piecewise u v) f = blimsup u f (· ∈ s) ⊔ blimsup v f (· ∉ s) := by
   rw [← blimsup_sup_not (p := (· ∈ s))]
   refine congr_arg₂ _ (blimsup_congr ?_) (blimsup_congr ?_) <;>
-    refine eventually_of_forall fun _ h ↦ ?_ <;> simp [h]
+    filter_upwards with _ h using by simp [h]
 
 lemma liminf_piecewise {s : Set β} [DecidablePred (· ∈ s)] {v} :
     liminf (s.piecewise u v) f = bliminf u f (· ∈ s) ⊓ bliminf v f (· ∉ s) :=

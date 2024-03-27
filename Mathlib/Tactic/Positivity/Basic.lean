@@ -3,6 +3,7 @@ Copyright (c) 2022 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.Order.Basic

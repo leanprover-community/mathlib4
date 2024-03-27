@@ -254,7 +254,7 @@ theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
 @[to_additive]
 theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}
     (h : ∀ i, @ContinuousSMul M X _ _ (ts' i)) : @ContinuousSMul M X _ _ (⨅ i, ts' i) :=
-  continuousSMul_sInf <| Set.forall_range_iff.mpr h
+  continuousSMul_sInf <| Set.forall_mem_range.mpr h
 #align has_continuous_smul_infi continuousSMul_iInf
 #align has_continuous_vadd_infi continuousVAdd_iInf
 
@@ -272,7 +272,6 @@ end LatticeOps
 section AddTorsor
 
 variable (G : Type*) (P : Type*) [AddGroup G] [AddTorsor G P] [TopologicalSpace G]
-
 variable [PreconnectedSpace G] [TopologicalSpace P] [ContinuousVAdd G P]
 
 /-- An `AddTorsor` for a connected space is a connected space. This is not an instance because

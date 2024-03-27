@@ -216,7 +216,7 @@ lemma injOn_iff_pairwise_ne {s : Set ι} : InjOn f s ↔ s.Pairwise (f · ≠ f 
 alias ⟨InjOn.pairwise_ne, _⟩ := injOn_iff_pairwise_ne
 
 protected theorem Pairwise.image {s : Set ι} (h : s.Pairwise (r on f)) : (f '' s).Pairwise r :=
-  ball_image_iff.2 fun _x hx ↦ ball_image_iff.2 fun _y hy hne ↦ h hx hy <| ne_of_apply_ne _ hne
+  forall_mem_image.2 fun _x hx ↦ forall_mem_image.2 fun _y hy hne ↦ h hx hy <| ne_of_apply_ne _ hne
 
 /-- See also `Set.Pairwise.image`. -/
 theorem InjOn.pairwise_image {s : Set ι} (h : s.InjOn f) :

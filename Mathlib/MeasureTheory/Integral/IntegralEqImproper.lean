@@ -39,7 +39,7 @@ in φ i, f x ∂μ` as `i` tends to `l`.
 When using this definition with a measure restricted to a set `s`, which happens fairly often, one
 should not try too hard to use a `MeasureTheory.AECover` of subsets of `s`, as it often makes proofs
 more complicated than necessary. See for example the proof of
-`MeasureTheory.integrableOn_Iic_of_intervalIntegral_norm_tendsto` where we use `(λ x, Ioi x)` as a
+`MeasureTheory.integrableOn_Iic_of_intervalIntegral_norm_tendsto` where we use `(fun x ↦ oi x)` as a
 `MeasureTheory.AECover` w.r.t. `μ.restrict (Iic b)`, instead of using `(fun x ↦ Ioc x b)`.
 
 ## Main statements
@@ -132,14 +132,14 @@ theorem aecover_ball {x : α} {r : ι → ℝ} (hr : Tendsto r l atTop) :
     AECover μ l (fun i ↦ Metric.ball x (r i)) where
   measurableSet _ := Metric.isOpen_ball.measurableSet
   ae_eventually_mem := by
-    apply eventually_of_forall (fun y ↦ ?_)
+    filter_upwards with y
     filter_upwards [hr (Ioi_mem_atTop (dist x y))] with a ha using by simpa [dist_comm] using ha
 
 theorem aecover_closedBall {x : α} {r : ι → ℝ} (hr : Tendsto r l atTop) :
     AECover μ l (fun i ↦ Metric.closedBall x (r i)) where
   measurableSet _ := Metric.isClosed_ball.measurableSet
   ae_eventually_mem := by
-    apply eventually_of_forall (fun y ↦ ?_)
+    filter_upwards with y
     filter_upwards [hr (Ici_mem_atTop (dist x y))] with a ha using by simpa [dist_comm] using ha
 
 end MetricSpace
@@ -195,21 +195,21 @@ section FiniteIntervals
 variable [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] [OpensMeasurableSpace α]
   {a b : ι → α} {A B : α} (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B))
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem aecover_Ioi_of_Ioi : AECover (μ.restrict (Ioi A)) l fun i ↦ Ioi (a i) where
   ae_eventually_mem := (ae_restrict_mem measurableSet_Ioi).mono fun _x hx ↦ ha.eventually <|
     eventually_lt_nhds hx
   measurableSet _ := measurableSet_Ioi
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem aecover_Iio_of_Iio : AECover (μ.restrict (Iio B)) l fun i ↦ Iio (b i) :=
   aecover_Ioi_of_Ioi (α := αᵒᵈ) hb
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem aecover_Ioi_of_Ici : AECover (μ.restrict (Ioi A)) l fun i ↦ Ici (a i) :=
   (aecover_Ioi_of_Ioi ha).superset (fun _ ↦ Ioi_subset_Ici_self) fun _ ↦ measurableSet_Ici
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem aecover_Iio_of_Iic : AECover (μ.restrict (Iio B)) l fun i ↦ Iic (b i) :=
   aecover_Ioi_of_Ici (α := αᵒᵈ) hb
 
@@ -464,7 +464,6 @@ theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGene
     rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun x => @norm_nonneg E _ (f x))
         hfm.norm.restrict]
   conv at hbounded in ENNReal.ofReal _ =>
-    dsimp
     rw [← coe_nnnorm]
     rw [ENNReal.ofReal_coe_nnreal]
   refine' hbounded.mono fun i hi => _
@@ -974,7 +973,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
 theorem integral_comp_rpow_Ioi_of_pos {g : ℝ → E} {p : ℝ} (hp : 0 < p) :
     (∫ x in Ioi 0, (p * x ^ (p - 1)) • g (x ^ p)) = ∫ y in Ioi 0, g y := by
   convert integral_comp_rpow_Ioi g hp.ne'
-  funext; congr; rw [abs_of_nonneg hp.le]
+  rw [abs_of_nonneg hp.le]
 #align measure_theory.integral_comp_rpow_Ioi_of_pos MeasureTheory.integral_comp_rpow_Ioi_of_pos
 
 theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
@@ -984,7 +983,7 @@ theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 <
     ← abs_of_pos (inv_pos.mpr hb), ← Measure.integral_comp_mul_left]
   congr
   ext1 x
-  rw [← indicator_comp_right, preimage_const_mul_Ioi _ hb, mul_div_cancel_left _ hb.ne']
+  rw [← indicator_comp_right, preimage_const_mul_Ioi _ hb, mul_div_cancel_left₀ _ hb.ne']
   rfl
 #align measure_theory.integral_comp_mul_left_Ioi MeasureTheory.integral_comp_mul_left_Ioi
 
@@ -1043,7 +1042,8 @@ theorem integrableOn_Ioi_comp_mul_left_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (
   rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet <| Ioi <| a * c)]
   convert integrable_comp_mul_left_iff ((Ioi (a * c)).indicator f) ha.ne' using 2
   ext1 x
-  rw [← indicator_comp_right, preimage_const_mul_Ioi _ ha, mul_comm a c, mul_div_cancel _ ha.ne']
+  rw [← indicator_comp_right, preimage_const_mul_Ioi _ ha, mul_comm a c,
+    mul_div_cancel_right₀ _ ha.ne']
   rfl
 #align measure_theory.integrable_on_Ioi_comp_mul_left_iff MeasureTheory.integrableOn_Ioi_comp_mul_left_iff
 

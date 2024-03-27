@@ -823,7 +823,7 @@ theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
   | (y : ℝ), (z : ℝ), h => by
     simpa only [← coe_add, EReal.coe_le_coe_iff, add_le_add_iff_left] using h
 
--- Porting note: todo: add `MulLECancellable.strictMono*` etc
+-- Porting note (#11215): TODO: add `MulLECancellable.strictMono*` etc
 theorem add_lt_add_right_coe {x y : EReal} (h : x < y) (z : ℝ) : x + z < y + z :=
   not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_le
 #align ereal.add_lt_add_right_coe EReal.add_lt_add_right_coe
@@ -884,6 +884,7 @@ instance : Neg EReal := ⟨EReal.neg⟩
 
 instance : SubNegZeroMonoid EReal where
   neg_zero := congr_arg Real.toEReal neg_zero
+  zsmul := zsmulRec
 
 @[simp]
 theorem neg_top : -(⊤ : EReal) = ⊥ :=
@@ -944,7 +945,7 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
 @[simp] theorem neg_le_neg_iff {a b : EReal} : -a ≤ -b ↔ b ≤ a := neg_strictAnti.le_iff_le
 #align ereal.neg_le_neg_iff EReal.neg_le_neg_iff
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 @[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_lt
 
 /-- `-a ≤ b ↔ -b ≤ a` on `EReal`. -/
@@ -1193,7 +1194,7 @@ instance : HasDistribNeg EReal where
 
 /-! ### Absolute value -/
 
--- Porting note: todo: use `Real.nnabs` for the case `(x : ℝ)`
+-- Porting note (#11215): TODO: use `Real.nnabs` for the case `(x : ℝ)`
 /-- The absolute value from `EReal` to `ℝ≥0∞`, mapping `⊥` and `⊤` to `⊤` and
 a real `x` to `|x|`. -/
 protected def abs : EReal → ℝ≥0∞

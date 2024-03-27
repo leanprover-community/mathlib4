@@ -3,9 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Ring.Hom.Defs -- FIXME: This import is bogus
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Fin.OrderHom
-import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import data.fintype.basic from "leanprover-community/mathlib"@"d78597269638367c3863d40d45108f52207e03cf"
 
@@ -1115,7 +1115,7 @@ end Fintype
 
 instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     Fintype (Quotient s) :=
-  Fintype.ofSurjective Quotient.mk'' fun x => Quotient.inductionOn x fun x => ⟨x, rfl⟩
+  Fintype.ofSurjective Quotient.mk'' Quotient.surjective_Quotient_mk''
 #align quotient.fintype Quotient.fintype
 
 instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
@@ -1274,7 +1274,6 @@ noncomputable def seqOfForallFinsetExistsAux {α : Type*} [DecidableEq α] (P : 
       (h
         (Finset.image (fun i : Fin n => seqOfForallFinsetExistsAux P r h i)
           (Finset.univ : Finset (Fin n))))
-  decreasing_by all_goals exact i.2
 #align seq_of_forall_finset_exists_aux seqOfForallFinsetExistsAux
 
 /-- Induction principle to build a sequence, by adding one point at a time satisfying a given

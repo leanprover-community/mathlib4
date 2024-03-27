@@ -591,7 +591,7 @@ def toFiberBundleCore : FiberBundleCore ι B F :=
         ((Z.continuousOn_coordChange i j).prod_map continuousOn_id) }
 #align vector_bundle_core.to_fiber_bundle_core VectorBundleCore.toFiberBundleCore
 
--- Porting note: TODO: restore coercion
+-- Porting note (#11215): TODO: restore coercion
 -- instance toFiberBundleCoreCoe : Coe (VectorBundleCore R B F ι) (FiberBundleCore ι B F) :=
 --   ⟨toFiberBundleCore⟩
 -- #align vector_bundle_core.to_fiber_bundle_core_coe VectorBundleCore.toFiberBundleCoreCoe
@@ -992,20 +992,14 @@ end VectorPrebundle
 namespace ContinuousLinearMap
 
 variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
-
 variable {σ : 𝕜₁ →+* 𝕜₂}
-
 variable {B' : Type*} [TopologicalSpace B']
-
 variable [NormedSpace 𝕜₁ F] [∀ x, Module 𝕜₁ (E x)] [TopologicalSpace (TotalSpace F E)]
-
 variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜₂ F'] {E' : B' → Type*}
   [∀ x, AddCommMonoid (E' x)] [∀ x, Module 𝕜₂ (E' x)] [TopologicalSpace (TotalSpace F' E')]
 
 variable [FiberBundle F E] [VectorBundle 𝕜₁ F E]
-
 variable [∀ x, TopologicalSpace (E' x)] [FiberBundle F' E'] [VectorBundle 𝕜₂ F' E']
-
 variable (F' E')
 
 /-- When `ϕ` is a continuous (semi)linear map between the fibers `E x` and `E' y` of two vector

@@ -38,12 +38,12 @@ variable {R : Type u} {S : Type v} [CommRing R] [Semiring S] (f : R →+* S)
 This is an isomorphism if `f` has a right inverse (`quotientKerEquivOfRightInverse`) /
 is surjective (`quotientKerEquivOfSurjective`).
 -/
-def kerLift (f : R →+* S) : R ⧸ ker f →+* S :=
+def kerLift : R ⧸ ker f →+* S :=
   Ideal.Quotient.lift _ f fun _ => f.mem_ker.mp
 #align ring_hom.ker_lift RingHom.kerLift
 
 @[simp]
-theorem kerLift_mk (f : R →+* S) (r : R) : kerLift f (Ideal.Quotient.mk (ker f) r) = f r :=
+theorem kerLift_mk (r : R) : kerLift f (Ideal.Quotient.mk (ker f) r) = f r :=
   Ideal.Quotient.lift_mk _ _ _
 #align ring_hom.ker_lift_mk RingHom.kerLift_mk
 
@@ -58,7 +58,7 @@ theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a 
 #align ring_hom.lift_injective_of_ker_le_ideal RingHom.lift_injective_of_ker_le_ideal
 
 /-- The induced map from the quotient by the kernel is injective. -/
-theorem kerLift_injective [Semiring S] (f : R →+* S) : Function.Injective (kerLift f) :=
+theorem kerLift_injective : Function.Injective (kerLift f) :=
   lift_injective_of_ker_le_ideal (ker f) (fun a => by simp only [mem_ker, imp_self]) le_rfl
 #align ring_hom.ker_lift_injective RingHom.kerLift_injective
 
@@ -177,7 +177,6 @@ theorem bot_quotient_isMaximal_iff (I : Ideal R) : (⊥ : Ideal (R ⧸ I)).IsMax
     @mk_ker _ _ I ▸
       comap_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective (K := ⊥) (H := hI),
     fun hI => by
-    skip
     letI := Quotient.field I
     exact bot_isMaximal⟩
 #align ideal.bot_quotient_is_maximal_iff Ideal.bot_quotient_isMaximal_iff
@@ -296,9 +295,7 @@ end ChineseRemainder
 section QuotientAlgebra
 
 variable (R₁ R₂ : Type*) {A B : Type*}
-
 variable [CommSemiring R₁] [CommSemiring R₂] [CommRing A]
-
 variable [Algebra R₁ A] [Algebra R₂ A]
 
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/

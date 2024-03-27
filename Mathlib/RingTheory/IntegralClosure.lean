@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
@@ -39,7 +39,6 @@ open BigOperators Polynomial Submodule
 section Ring
 
 variable {R S A : Type*}
-
 variable [CommRing R] [Ring A] [Ring S] (f : R →+* S)
 
 /-- An element `x` of `A` is said to be integral over `R` with respect to `f`
@@ -85,9 +84,7 @@ end Ring
 section
 
 variable {R A B S : Type*}
-
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
-
 variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
 theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra A B] [Algebra R C]
@@ -723,9 +720,7 @@ theorem algebraMap_injective (A R B : Type*) [CommRing R] [CommSemiring A] [Comm
   algebraMap_injective' R
 
 variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
-
 variable [Algebra R B] [Algebra A B] [IsIntegralClosure A R B]
-
 variable (R B)
 
 protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsIntegral R x :=
@@ -791,7 +786,6 @@ section lift
 variable (B) {S : Type*} [CommRing S] [Algebra R S]
 -- split from above, since otherwise it does not synthesize `Semiring S`
 variable [Algebra S B] [IsScalarTower R S B]
-
 variable [Algebra R A] [IsScalarTower R A B] (h : Algebra.IsIntegral R S)
 
 /-- If `B / S / R` is a tower of ring extensions where `S` is integral over `R`,
@@ -816,7 +810,6 @@ section Equiv
 
 variable (R B) (A' : Type*) [CommRing A']
 variable [Algebra A' B] [IsIntegralClosure A' R B]
-
 variable [Algebra R A] [Algebra R A'] [IsScalarTower R A B] [IsScalarTower R A' B]
 
 /-- Integral closures are all isomorphic to each other. -/
@@ -842,11 +835,8 @@ section Algebra
 open Algebra
 
 variable {R A B S T : Type*}
-
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S] [CommRing T]
-
 variable [Algebra A B] [Algebra R B] (f : R →+* S) (g : S →+* T)
-
 variable [Algebra R A] [IsScalarTower R A B]
 
 /-- If A is an R-algebra all of whose elements are integral over R,
