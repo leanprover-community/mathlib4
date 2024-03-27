@@ -1001,6 +1001,8 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 #align nat.mod_mul_right_div_self Nat.mod_mul_right_div_self
 #align nat.mod_mul_left_div_self Nat.mod_mul_left_div_self
 
+attribute [simp] Nat.dvd_zero
+
 lemma mul_div_mul_comm_of_dvd_dvd (hba : b ∣ a) (hdc : d ∣ c) :
     a * c / (b * d) = a / b * (c / d) := by
   obtain rfl | hb := b.eq_zero_or_pos; · simp

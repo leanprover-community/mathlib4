@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.List.BigOperators.Order
 import Mathlib.Data.Multiset.Fold
@@ -168,6 +169,11 @@ lemma prod_nonneg [OrderedCommSemiring α] {m : Multiset α} (h : ∀ a ∈ m, (
   rw [prod_cons]
   exact mul_nonneg (ih _ <| mem_cons_self _ _) (hs fun a ha => ih _ <| mem_cons_of_mem ha)
 #align multiset.prod_nonneg Multiset.prod_nonneg
+
+lemma abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
+    abs s.sum ≤ (s.map abs).sum :=
+  le_sum_of_subadditive _ abs_zero abs_add s
+#align multiset.abs_sum_le_sum_abs Multiset.abs_sum_le_sum_abs
 
 section CanonicallyOrderedCommMonoid
 variable [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}

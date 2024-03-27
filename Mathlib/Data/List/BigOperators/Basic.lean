@@ -9,6 +9,7 @@ import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
+import Mathlib.Data.Nat.Basic
 
 #align_import data.list.big_operators.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
 

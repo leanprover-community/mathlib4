@@ -228,7 +228,7 @@ theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
   rcases lt_or_le m (l.drop (n % l.length)).length with hm | hm
   · rw [get?_append hm, get?_drop, ← add_mod_mod]
     rw [length_drop, Nat.lt_sub_iff_add_lt] at hm
-    rw [mod_eq_of_lt hm, add_comm]
+    rw [mod_eq_of_lt hm, Nat.add_comm]
   · have hlt : n % length l < length l := mod_lt _ (m.zero_le.trans_lt hml)
     rw [get?_append_right hm, get?_take, length_drop]
     · congr 1
@@ -237,9 +237,9 @@ theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
       have : n % length l + m - length l < length l := by
         rw [Nat.sub_lt_iff_lt_add' hm']
         exact Nat.add_lt_add hlt hml
-      conv_rhs => rw [add_comm m, ← mod_add_mod, mod_eq_sub_mod hm', mod_eq_of_lt this]
+      conv_rhs => rw [Nat.add_comm m, ← mod_add_mod, mod_eq_sub_mod hm', mod_eq_of_lt this]
       rw [← Nat.add_right_inj, ← Nat.add_sub_assoc, Nat.add_sub_sub_cancel, Nat.add_sub_cancel',
-        add_comm]
+        Nat.add_comm]
       exacts [hm', hlt.le, hm]
     · rwa [Nat.sub_lt_iff_lt_add hm, length_drop, Nat.sub_add_cancel hlt.le]
 #align list.nth_rotate List.get?_rotate
@@ -252,7 +252,7 @@ theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
   exact k.2.trans_eq (length_rotate _ _)
 
 theorem head?_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotate n) = l.get? n := by
-  rw [← get?_zero, get?_rotate (n.zero_le.trans_lt h), zero_add, Nat.mod_eq_of_lt h]
+  rw [← get?_zero, get?_rotate (n.zero_le.trans_lt h), Nat.zero_add, Nat.mod_eq_of_lt h]
 #align list.head'_rotate List.head?_rotate
 
 -- Porting note: moved down from its original location below `get_rotate` so that the
@@ -664,7 +664,7 @@ theorem cyclicPermutations_rotate (l : List α) (k : ℕ) :
     · simp
     · rw [length_cyclicPermutations_of_ne_nil] <;> simp
   refine' ext_nthLe this fun n hn hn' => _
-  rw [nthLe_rotate, nthLe_cyclicPermutations, rotate_rotate, ← rotate_mod, add_comm]
+  rw [nthLe_rotate, nthLe_cyclicPermutations, rotate_rotate, ← rotate_mod, Nat.add_comm]
   cases l <;> simp
 #align list.cyclic_permutations_rotate List.cyclicPermutations_rotate
 

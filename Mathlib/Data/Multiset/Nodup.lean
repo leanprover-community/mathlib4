@@ -3,11 +3,8 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.Multiset.Bind
-import Mathlib.Data.Multiset.Range
 import Mathlib.Data.List.Range
-import Mathlib.Init.Classical
+import Mathlib.Data.Multiset.Range
 
 #align_import data.multiset.nodup from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -199,17 +196,6 @@ theorem Nodup.not_mem_erase [DecidableEq α] {a : α} {s} (h : Nodup s) : a ∉ 
   (h.mem_erase_iff.1 ha).1 rfl
 #align multiset.nodup.not_mem_erase Multiset.Nodup.not_mem_erase
 
-protected theorem Nodup.product {t : Multiset β} : Nodup s → Nodup t → Nodup (s ×ˢ t) :=
-  Quotient.inductionOn₂ s t fun l₁ l₂ d₁ d₂ => by simp [List.Nodup.product d₁ d₂]
-#align multiset.nodup.product Multiset.Nodup.product
-
-protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
-    Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) :=
-  Quot.induction_on s fun l₁ => by
-    choose f hf using fun a => Quotient.exists_rep (t a)
-    simpa [← funext hf] using List.Nodup.sigma
-#align multiset.nodup.sigma Multiset.Nodup.sigma
-
 protected theorem Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
     Nodup s → Nodup (filterMap f s) :=
   Quot.induction_on s fun _ => List.Nodup.filterMap H
@@ -234,16 +220,6 @@ theorem nodup_union [DecidableEq α] {s t : Multiset α} : Nodup (s ∪ t) ↔ N
       rw [count_union]
       exact max_le (nodup_iff_count_le_one.1 h₁ a) (nodup_iff_count_le_one.1 h₂ a)⟩
 #align multiset.nodup_union Multiset.nodup_union
-
-@[simp]
-theorem nodup_bind {s : Multiset α} {t : α → Multiset β} :
-    Nodup (bind s t) ↔ (∀ a ∈ s, Nodup (t a)) ∧ s.Pairwise fun a b => Disjoint (t a) (t b) :=
-  have h₁ : ∀ a, ∃ l : List β, t a = l := fun a => Quot.induction_on (t a) fun l => ⟨l, rfl⟩
-  let ⟨t', h'⟩ := Classical.axiom_of_choice h₁
-  have : t = fun a => ofList (t' a) := funext h'
-  have hd : Symmetric fun a b => List.Disjoint (t' a) (t' b) := fun a b h => h.symm
-  Quot.induction_on s <| by simp [this, List.nodup_bind, pairwise_coe_iff_pairwise hd]
-#align multiset.nodup_bind Multiset.nodup_bind
 
 theorem Nodup.ext {s t : Multiset α} : Nodup s → Nodup t → (s = t ↔ ∀ a, a ∈ s ↔ a ∈ t) :=
   Quotient.inductionOn₂ s t fun _ _ d₁ d₂ => Quotient.eq.trans <| perm_ext_iff_of_nodup d₁ d₂
