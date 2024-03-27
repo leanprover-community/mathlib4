@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Intervals.Disjoint
 
-
 #align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
 
 /-!
