@@ -104,7 +104,7 @@ lemma eulerMascheroniSeq'_six_lt_two_thirds : eulerMascheroniSeq' 6 < 2 / 3 := b
   rw [exp_one_rpow] at this
   refine lt_trans this ?_
   rw [← rpow_lt_rpow_iff (z := 60), ← rpow_mul, div_mul_cancel₀, ← Nat.cast_ofNat,
-    ← Nat.cast_ofNat, rpow_nat_cast, Nat.cast_ofNat, ← Nat.cast_ofNat (n := 60), rpow_nat_cast]
+    ← Nat.cast_ofNat, rpow_natCast, Nat.cast_ofNat, ← Nat.cast_ofNat (n := 60), rpow_natCast]
   norm_num
   all_goals positivity
 
