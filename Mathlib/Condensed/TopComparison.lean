@@ -30,8 +30,8 @@ universe w w' v u
 
 open CategoryTheory Opposite Limits regularCoverage ContinuousMap
 
-variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{v})
-  (X : (Type (max u v))) [TopologicalSpace X]
+variable {C : Type*} [Category C] (G : C ⥤ TopCat)
+  (X : Type*) [TopologicalSpace X]
 
 /--
 An auxiliary lemma to that allows us to use `QuotientMap.lift` in the proof of
