@@ -21,7 +21,7 @@ universe u w v v'
 
 section
 
-open Classical
+open scoped Classical
 
 -- TODO(timotree3): lower the priority on this instance?
 -- This instance applies to every synthesis problem of the form `Small ↥s` for some set `s`,
@@ -42,7 +42,7 @@ theorem small_of_surjective {α : Type v} {β : Type w} [Small.{u} α] {f : α �
 #align small_of_surjective small_of_surjective
 
 instance (priority := 100) small_subsingleton (α : Type v) [Subsingleton α] : Small.{w} α := by
-  rcases isEmpty_or_nonempty α with ⟨⟩ <;> skip
+  rcases isEmpty_or_nonempty α with ⟨⟩
   · apply small_map (Equiv.equivPEmpty α)
   · apply small_map Equiv.punitOfNonemptyOfSubsingleton
 #align small_subsingleton small_subsingleton
@@ -61,8 +61,7 @@ theorem small_of_injective_of_exists {α : Type v} {β : Type w} {γ : Type v'} 
     infer_instance
 
 /-!
-We don't define `small_of_fintype` or `small_of_countable` in this file,
-to keep imports to `Logic` to a minimum.
+We don't define `Countable.toSmall` in this file, to keep imports to `Logic` to a minimum.
 -/
 
 instance small_Pi {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :

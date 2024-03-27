@@ -227,9 +227,9 @@ theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
   simp [Polynomial.eval_comp, h]
   obtain rfl | h' := h.eq_or_lt
   · simp
-  · congr
-    norm_cast
-    rw [← tsub_add_eq_tsub_tsub, tsub_tsub_cancel_of_le (Nat.succ_le_iff.mpr h')]
+  · norm_cast
+    congr
+    omega
 #align bernstein_polynomial.iterate_derivative_at_1 bernsteinPolynomial.iterate_derivative_at_1
 
 theorem iterate_derivative_at_1_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
@@ -333,7 +333,7 @@ theorem sum_smul (n : ℕ) :
       map_mul]
   · rw [(pderiv true).leibniz_pow, (pderiv true).map_add, pderiv_true_x, pderiv_true_y]
     simp only [x, y, e, Algebra.id.smul_eq_mul, nsmul_eq_mul, map_natCast, map_pow, map_add,
-      map_mul, Bool.cond_true, Bool.cond_false, MvPolynomial.aeval_X, add_sub_cancel'_right,
+      map_mul, Bool.cond_true, Bool.cond_false, MvPolynomial.aeval_X, add_sub_cancel,
       one_pow, add_zero, mul_one]
 #align bernstein_polynomial.sum_smul bernsteinPolynomial.sum_smul
 
@@ -376,7 +376,7 @@ theorem sum_mul_smul (n : ℕ) :
   · simp only [x, y, e, pderiv_one, pderiv_mul, (pderiv _).leibniz_pow, (pderiv _).map_coe_nat,
       (pderiv true).map_add, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, add_zero,
       mul_one, Derivation.map_smul_of_tower, map_nsmul, map_pow, map_add, Bool.cond_true,
-      Bool.cond_false, MvPolynomial.aeval_X, add_sub_cancel'_right, one_pow, smul_smul,
+      Bool.cond_false, MvPolynomial.aeval_X, add_sub_cancel, one_pow, smul_smul,
       smul_one_mul]
 #align bernstein_polynomial.sum_mul_smul bernsteinPolynomial.sum_mul_smul
 

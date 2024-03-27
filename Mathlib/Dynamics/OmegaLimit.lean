@@ -60,7 +60,6 @@ scoped[omegaLimit] notation "ω⁺" => omegaLimit Filter.atTop
 scoped[omegaLimit] notation "ω⁻" => omegaLimit Filter.atBot
 
 variable [TopologicalSpace β]
-
 variable (f : Filter τ) (ϕ : τ → α → β) (s s₁ s₂ : Set α)
 
 /-!
@@ -244,7 +243,7 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
     have : ⋃ u ∈ f, j u = ⋃ u : (↥f.sets), j u := biUnion_eq_iUnion _ _
     rw [this, diff_subset_comm, diff_iUnion]
     rw [omegaLimit_eq_iInter_inter _ _ _ hv₁] at hn₂
-    simp_rw [diff_compl]
+    simp_rw [j, diff_compl]
     rw [← inter_iInter]
     exact Subset.trans (inter_subset_right _ _) hn₂
   rcases hk.elim_finite_subcover_image hj₁ hj₂ with ⟨g, hg₁ : ∀ u ∈ g, u ∈ f, hg₂, hg₃⟩

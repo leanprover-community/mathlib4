@@ -212,7 +212,7 @@ theorem inf_symmDiff_symmDiff : (a ⊓ b) ∆ (a ∆ b) = a ⊔ b := by
 
 theorem symmDiff_triangle : a ∆ c ≤ a ∆ b ⊔ b ∆ c := by
   refine' (sup_le_sup (sdiff_triangle a b c) <| sdiff_triangle _ b _).trans_eq _
-  rw [@sup_comm _ _ (c \ b), sup_sup_sup_comm, symmDiff, symmDiff]
+  rw [sup_comm (c \ b), sup_sup_sup_comm, symmDiff, symmDiff]
 #align symm_diff_triangle symmDiff_triangle
 
 end GeneralizedCoheytingAlgebra
@@ -405,7 +405,7 @@ theorem inf_symmDiff_distrib_left : a ⊓ b ∆ c = (a ⊓ b) ∆ (a ⊓ c) := b
 #align inf_symm_diff_distrib_left inf_symmDiff_distrib_left
 
 theorem inf_symmDiff_distrib_right : a ∆ b ⊓ c = (a ⊓ c) ∆ (b ⊓ c) := by
-  simp_rw [@inf_comm _ _ _ c, inf_symmDiff_distrib_left]
+  simp_rw [inf_comm _ c, inf_symmDiff_distrib_left]
 #align inf_symm_diff_distrib_right inf_symmDiff_distrib_right
 
 theorem sdiff_symmDiff : c \ a ∆ b = c ⊓ a ⊓ b ⊔ c \ a ⊓ c \ b := by
@@ -457,7 +457,7 @@ theorem symmDiff_symmDiff_left :
   calc
     a ∆ b ∆ c = a ∆ b \ c ⊔ c \ a ∆ b := symmDiff_def _ _
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ (c \ (a ⊔ b) ⊔ c ⊓ a ⊓ b) := by
-        { rw [sdiff_symmDiff', @sup_comm _ _ (c ⊓ a ⊓ b), symmDiff_sdiff] }
+        { rw [sdiff_symmDiff', sup_comm (c ⊓ a ⊓ b), symmDiff_sdiff] }
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ c \ (a ⊔ b) ⊔ a ⊓ b ⊓ c := by ac_rfl
 #align symm_diff_symm_diff_left symmDiff_symmDiff_left
 
@@ -466,7 +466,7 @@ theorem symmDiff_symmDiff_right :
   calc
     a ∆ (b ∆ c) = a \ b ∆ c ⊔ b ∆ c \ a := symmDiff_def _ _
     _ = a \ (b ⊔ c) ⊔ a ⊓ b ⊓ c ⊔ (b \ (c ⊔ a) ⊔ c \ (b ⊔ a)) := by
-        { rw [sdiff_symmDiff', @sup_comm _ _ (a ⊓ b ⊓ c), symmDiff_sdiff] }
+        { rw [sdiff_symmDiff', sup_comm (a ⊓ b ⊓ c), symmDiff_sdiff] }
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ c \ (a ⊔ b) ⊔ a ⊓ b ⊓ c := by ac_rfl
 #align symm_diff_symm_diff_right symmDiff_symmDiff_right
 
@@ -741,7 +741,7 @@ theorem compl_bihimp : (a ⇔ b)ᶜ = a ∆ b :=
 
 @[simp]
 theorem compl_symmDiff_compl : aᶜ ∆ bᶜ = a ∆ b :=
-  sup_comm.trans <| by simp_rw [compl_sdiff_compl, sdiff_eq, symmDiff_eq]
+  (sup_comm _ _).trans <| by simp_rw [compl_sdiff_compl, sdiff_eq, symmDiff_eq]
 #align compl_symm_diff_compl compl_symmDiff_compl
 
 @[simp]

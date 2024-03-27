@@ -75,7 +75,7 @@ scoped[MultiplierAlgebra] notation "𝓜(" 𝕜 ", " A ")" => DoubleCentralizer 
 
 open MultiplierAlgebra
 
--- porting note: `ext` was generating the wrong extensionality lemma; it deconstructed the `×`.
+-- Porting note: `ext` was generating the wrong extensionality lemma; it deconstructed the `×`.
 @[ext]
 lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
@@ -89,7 +89,6 @@ namespace DoubleCentralizer
 section NontriviallyNormed
 
 variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
-
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
 /-!
@@ -473,7 +472,7 @@ maps `Lₐ Rₐ : A →L[𝕜] A` given by left- and right-multiplication by `a`
 Warning: if `A = 𝕜`, then this is a coercion which is not definitionally equal to the
 `algebraMap 𝕜 𝓜(𝕜, 𝕜)` coercion, but these are propositionally equal. See
 `DoubleCentralizer.coe_eq_algebraMap` below. -/
--- porting note: added `noncomputable` because an IR check failed?
+-- Porting note: added `noncomputable` because an IR check failed?
 @[coe]
 protected noncomputable def coe (a : A) : 𝓜(𝕜, A) :=
   { fst := ContinuousLinearMap.mul 𝕜 A a
@@ -652,9 +651,7 @@ end NontriviallyNormed
 section DenselyNormed
 
 variable {𝕜 A : Type*} [DenselyNormedField 𝕜] [StarRing 𝕜]
-
 variable [NonUnitalNormedRing A] [StarRing A] [CstarRing A]
-
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] [StarModule 𝕜 A]
 
 instance instCstarRing : CstarRing 𝓜(𝕜, A) where

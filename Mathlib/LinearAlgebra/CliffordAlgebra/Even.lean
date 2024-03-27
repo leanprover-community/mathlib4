@@ -37,11 +37,10 @@ choosing `S` to itself be a submodule of morphisms.
 
 namespace CliffordAlgebra
 
--- porting note: explicit universes
+-- Porting note: explicit universes
 universe uR uM uA uB
 
 variable {R : Type uR} {M : Type uM} [CommRing R] [AddCommGroup M] [Module R M]
-
 variable {Q : QuadraticForm R M}
 
 -- put this after `Q` since we want to talk about morphisms from `CliffordAlgebra Q` to `A` and
@@ -58,7 +57,7 @@ def even : Subalgebra R (CliffordAlgebra Q) :=
     add_zero (0 : ZMod 2) ▸ SetLike.mul_mem_graded hx hy
 #align clifford_algebra.even CliffordAlgebra.even
 
--- porting note: added, otherwise Lean can't find this when it needs it
+-- Porting note: added, otherwise Lean can't find this when it needs it
 instance : AddCommMonoid (even Q) := AddSubmonoidClass.toAddCommMonoid _
 @[simp]
 theorem even_toSubmodule : Subalgebra.toSubmodule (even Q) = evenOdd Q 0 :=
@@ -89,7 +88,6 @@ def EvenHom.compr₂ (g : EvenHom Q A) (f : A →ₐ[R] B) : EvenHom Q B where
 variable (Q)
 
 /-- The embedding of pairs of vectors into the even subalgebra, as a bilinear map. -/
-@[simps! bilin_apply_apply_coe]
 nonrec def even.ι : EvenHom Q (even Q) where
   bilin :=
     LinearMap.mk₂ R (fun m₁ m₂ => ⟨ι Q m₁ * ι Q m₂, ι_mul_ι_mem_evenOdd_zero Q _ _⟩)
@@ -191,7 +189,7 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
     · rintro _ ⟨b, m₃, rfl⟩
       change f.bilin _ _ * (f.bilin _ _ * b) = Q m • (f.bilin _ _ * b)
       rw [← smul_mul_assoc, ← mul_assoc, f.contract_mid]
-    · change f.bilin m₁ m * 0 = Q m • (0 : A)  -- porting note: `•` now needs the type of `0`
+    · change f.bilin m₁ m * 0 = Q m • (0 : A)  -- Porting note: `•` now needs the type of `0`
       rw [mul_zero, smul_zero]
     · rintro x _hx y _hy ihx ihy
       rw [LinearMap.add_apply, LinearMap.add_apply, mul_add, smul_add, ihx, ihy]
@@ -205,7 +203,7 @@ direction of that equivalence, but not in the fully-bundled form. -/
 @[simps! (config := .lemmasOnly) apply]
 def aux (f : EvenHom Q A) : CliffordAlgebra.even Q →ₗ[R] A := by
   refine ?_ ∘ₗ (even Q).val.toLinearMap
-  -- porting note: added, can't be found otherwise
+  -- Porting note: added, can't be found otherwise
   letI : AddCommGroup (S f) := AddSubgroupClass.toAddCommGroup _
   exact LinearMap.fst R _ _ ∘ₗ foldr Q (fFold f) (fFold_fFold f) (1, 0)
 #align clifford_algebra.even.lift.aux CliffordAlgebra.even.lift.aux
