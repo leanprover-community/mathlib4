@@ -230,6 +230,7 @@ scoped[LSeries.notation] notation "δ" => delta
 ### LSeries of 0 and δ
 -/
 
+@[simp]
 lemma LSeries_zero : LSeries 0 = 0 := by
   ext
   simp only [LSeries, LSeries.term, Pi.zero_apply, zero_div, ite_self, tsum_zero]
@@ -250,10 +251,16 @@ lemma term_delta (s : ℂ) (n : ℕ) : term δ s n = if n = 1 then 1 else 0 := b
     · simp only [↓reduceIte, cast_one, one_cpow, ne_eq, one_ne_zero, not_false_eq_true, div_self]
     · simp only [hn', ↓reduceIte, zero_div]
 
-lemma mul_delta {f : ℕ → ℂ} (h : f 1 = 1) : f * δ = δ := by
+lemma mul_delta_eq_smul_delta {f : ℕ → ℂ} : f * δ = f 1 • δ := by
   ext n
-  simp only [Pi.mul_apply, delta, mul_ite, mul_one, mul_zero]
-  split_ifs with hn <;> simp only [hn, h]
+  simp only [Pi.mul_apply, delta, mul_ite, mul_one, mul_zero, Pi.smul_apply, smul_eq_mul]
+  split_ifs with hn <;> simp only [hn]
+
+lemma mul_delta {f : ℕ → ℂ} (h : f 1 = 1) : f * δ = δ := by
+  rw [mul_delta_eq_smul_delta, h, one_smul]
+
+lemma delta_mul_eq_smul_delta {f : ℕ → ℂ} : δ * f = f 1 • δ :=
+  mul_comm δ f ▸ mul_delta_eq_smul_delta
 
 lemma delta_mul {f : ℕ → ℂ} (h : f 1 = 1) : δ * f = δ :=
   mul_comm δ f ▸ mul_delta h

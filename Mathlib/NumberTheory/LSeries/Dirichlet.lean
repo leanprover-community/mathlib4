@@ -344,7 +344,19 @@ lemma convolution_vonMangoldt_zeta : ↗Λ ⍟ ↗ζ = ↗Complex.log := by
   norm_cast
   simpa [-vonMangoldt_mul_zeta] using congr_arg (· n) vonMangoldt_mul_zeta
 
-/-- The L-series of the von Mangoldt function `Λ` is summable at `s` when `re s > 1`. -/
+lemma convolution_vonMangoldt_const_one : ↗Λ ⍟ 1 = ↗Complex.log := by
+  have : ∀ n ≠ 0, (1 : ℕ → ℂ) n = ↗ζ n :=
+    fun n hn ↦ by simp only [Pi.one_apply, zeta_apply, hn, ↓reduceIte, cast_one]
+  rw [LSeries.convolution_congr (fun _ _ ↦ rfl) this, convolution_vonMangoldt_zeta]
+
+/-- A twisted version of the relation `Λ * ↑ζ = log` in terms of complex sequences. -/
+lemma _root_.DirichletCharacter.convolution_twist_vonMangoldt {N : ℕ}
+    (χ : DirichletCharacter ℂ N) :
+    (↗χ * ↗Λ) ⍟ ↗χ = ↗χ * ↗Complex.log := by
+  nth_rewrite 2 [← mul_one ↗χ]
+  rw [← DirichletCharacter.mul_convolution_distrib, convolution_vonMangoldt_const_one]
+
+/-- The L-series of the von Mangoldt function `Λ` converges at `s` when `re s > 1`. -/
 lemma LSeriesSummable_vonMangoldt {s : ℂ} (hs : 1 < s.re) : LSeriesSummable ↗Λ s := by
   have hs' : abscissaOfAbsConv 1 < s.re := by
     rw [abscissaOfAbsConv_one]
@@ -357,6 +369,13 @@ lemma LSeriesSummable_vonMangoldt {s : ℂ} (hs : 1 < s.re) : LSeriesSummable �
       ← Complex.natCast_log, _root_.abs_of_nonneg <| Real.log_nat_cast_nonneg n]
     exact ArithmeticFunction.vonMangoldt_le_log
   exact hΛ.trans <| by simp only [norm_eq_abs, norm_mul, Pi.one_apply, norm_one, mul_one, le_refl]
+
+/-- The L-series of the twist of the von Mangoldt function `Λ` by a Dirichlet character `χ`
+converges at `s` when `re s > 1`. -/
+lemma _root_.DirichletCharacter.LSeriesSummable_twist_vonMangoldt {N : ℕ}
+    (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
+    LSeriesSummable (↗χ * ↗Λ) s :=
+  DirichletCharacter.LSeriesSummable_mul χ <| LSeriesSummable_vonMangoldt hs
 
 /-- The L-series of the von Mangoldt function `Λ` equals the negative logarithmic derivative
 of the L-series of the constant sequence `1` on its domain of convergence `re s > 1`. -/
