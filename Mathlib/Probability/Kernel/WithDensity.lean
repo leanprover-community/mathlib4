@@ -186,21 +186,6 @@ theorem withDensity_tsum [Countable ι] (κ : kernel α β) [IsSFiniteKernel κ]
   rw [kernel.withDensity_apply' _ (hf n) a s]
 #align probability_theory.kernel.with_density_tsum ProbabilityTheory.kernel.withDensity_tsum
 
-lemma withDensity_sub_add [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞}
-    (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g))
-    (hg_int : ∀ a, ∫⁻ x, g a x ∂(κ a) ≠ ∞) (hfg : ∀ a, g a ≤ᵐ[κ a] f a) :
-    withDensity κ (fun a x ↦ f a x - g a x) + withDensity κ g = withDensity κ f := by
-  ext a s
-  simp only [coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure, OuterMeasure.coe_add]
-  rw [kernel.withDensity_apply' _ hf, kernel.withDensity_apply' _ hg, kernel.withDensity_apply']
-  swap; · exact hf.sub hg
-  rw [lintegral_sub]
-  · rw [tsub_add_cancel_iff_le]
-    exact lintegral_mono_ae (ae_restrict_of_ae (hfg a))
-  · exact hg.comp measurable_prod_mk_left
-  · exact ((set_lintegral_le_lintegral _ _).trans_lt (hg_int a).lt_top).ne
-  · exact ae_restrict_of_ae (hfg a)
-
 /-- If a kernel `κ` is finite and a function `f : α → β → ℝ≥0∞` is bounded, then `withDensity κ f`
 is finite. -/
 theorem isFiniteKernel_withDensity_of_bounded (κ : kernel α β) [IsFiniteKernel κ] {B : ℝ≥0∞}
