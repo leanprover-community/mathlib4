@@ -215,7 +215,7 @@ section CountablyGenerated
 open ProbabilityTheory.kernel
 
 lemma isRatCondKernelCDFAux_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
-    isRatCondKernelCDFAux (fun (p : α × γ) q ↦ kernel.density κ (kernel.fst κ) p.1 p.2 (Set.Iic q))
+    IsRatCondKernelCDFAux (fun (p : α × γ) q ↦ kernel.density κ (kernel.fst κ) p.1 p.2 (Set.Iic q))
       κ (kernel.fst κ) where
   measurable := measurable_pi_iff.mpr fun _ ↦ measurable_density κ (kernel.fst κ) measurableSet_Iic
   mono' a q r hqr :=
