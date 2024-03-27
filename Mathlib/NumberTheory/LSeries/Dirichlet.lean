@@ -383,8 +383,7 @@ lemma LSeriesSummable_twist_vonMangoldt {N : ℕ}
 
 /-- The L-series of the twist of the von Mangoldt function `Λ` by a Dirichlet character `χ` at `s`
 equals the negative logarithmtic dericative of the L-series of `χ` when `re s > 1`. -/
-lemma LSeries_twist_cvonMangoldt_eq  {N : ℕ} (χ : DirichletCharacter ℂ N)
-    {s : ℂ} (hs : 1 < s.re) :
+lemma LSeries_twist_vonMangoldt_eq  {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
     L (↗χ * ↗Λ) s = - deriv (L ↗χ) s / L ↗χ s := by
   rcases eq_or_ne N 0 with rfl | hN
   · simp only [modZero_eq_delta, delta_mul_eq_smul_delta, vonMangoldt_apply_one, ofReal_zero,
@@ -408,7 +407,7 @@ open DirichletCharacter in
 of the L-series of the constant sequence `1` on its domain of convergence `re s > 1`. -/
 lemma LSeries_vonMangoldt_eq {s : ℂ} (hs : 1 < s.re) : L ↗Λ s = - deriv (L 1) s / L 1 s := by
   refine (LSeries_congr s fun _ _ ↦ ?_).trans <|
-    LSeries_modOne_eq ▸ LSeries_twist_cvonMangoldt_eq χ₁ hs
+    LSeries_modOne_eq ▸ LSeries_twist_vonMangoldt_eq χ₁ hs
   have {n : ℕ} : (n : ZMod 1) = 1 := Subsingleton.eq_one _
   simp only [this, map_one, Pi.mul_apply, one_mul]
 
