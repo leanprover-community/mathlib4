@@ -3,6 +3,7 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
+import Lean
 import Std.Lean.Position
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Lean.Meta.KAbstractPositions
@@ -29,10 +30,10 @@ def _root_.Lean.SubExpr.GoalsLocation.pos : SubExpr.GoalsLocation → SubExpr.Po
 
 
 /-- Reduction function for the `unfold'` tactic. -/
-def unfold (e : Expr) : MetaM Expr := do
+def unfold (e : Expr) : MetaM (Option Expr) := do
   /- β-reduction -/
   if e.isHeadBetaTarget then
-    return e.withAppRev Expr.betaRev
+    return some (e.withAppRev Expr.betaRev)
   /- η-reduction -/
   if let some e := e.etaExpandedStrict? then
     return e
@@ -51,20 +52,35 @@ def unfold (e : Expr) : MetaM Expr := do
   if let .fvar fvarId := e.getAppFn then
     if let some value ← fvarId.getValue? then
       return value.betaRev e.getAppRevArgs
+
+  /- unfolding an if statement -/
+  match_expr e with
+  | ite _ _ i tb eb =>
+    match_expr ← whnf i with
+    | isTrue  _ _ => return some tb
+    | isFalse _ _ => return some eb
+    | _ => return none
+  | dite _ _ i tb eb =>
+    match_expr ← whnf i with
+    | isTrue  _ h => return some (tb.betaRev #[h])
+    | isFalse _ h => return some (eb.betaRev #[h])
+    | _ => return none
+  | _ =>
+
+  /- unfolding a constant defined with well founded recursion -/
+  if let .const n lvls := e.getAppFn then
+    if let some info := Elab.WF.eqnInfoExt.find? (← getEnv) n then
+      return (info.value.instantiateLevelParams info.levelParams lvls).beta e.getAppArgs
   /- unfolding a constant -/
   if let some e' ← unfoldDefinition? e then
     return e'
 
-  throwError m! "Could not find a definition for {e}."
+  return none
 
 
 partial def unfolds (e : Expr) (acc : Array Expr := #[]) : MetaM (Array Expr) := do
-  try
-    let e ← unfold e
-    unfolds e (acc.push e)
-  catch _ =>
-    return acc
-
+  let some e ← unfold e | return acc
+  unfolds e (acc.push e)
 
 def printToPaste (e : Expr) : MetaM String :=
   withOptions (fun _ => Options.empty
@@ -79,6 +95,7 @@ def getDefinitions (loc : SubExpr.GoalsLocation) :
   let subExpr ← Core.viewSubexpr loc.pos e
   if subExpr.hasLooseBVars then
     throwThe Html $ .text "rw doesn't work on expressions with bound variables."
+  let subExpr ← instantiateMVars subExpr
 
   let replacements ← unfolds subExpr
 
