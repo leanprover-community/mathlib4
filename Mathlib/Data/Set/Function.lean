@@ -572,8 +572,7 @@ theorem image_restrictPreimage :
     image_inter_preimage, inter_comm, Subtype.preimage_coe_self_inter]
 
 theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻¹' range f := by
-  simp only [← image_univ, ← image_restrictPreimage]
-  rfl
+  simp only [← image_univ, ← image_restrictPreimage, preimage_univ]
 #align set.range_restrict_preimage Set.range_restrictPreimage
 
 variable {f} {U : ι → Set β}
