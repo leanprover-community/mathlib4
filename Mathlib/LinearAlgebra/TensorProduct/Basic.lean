@@ -1120,19 +1120,17 @@ def lTensor (f : N →ₗ[R] P) : M ⊗[R] N →ₗ[R] M ⊗[R] P :=
   TensorProduct.map id f
 #align linear_map.ltensor LinearMap.lTensor
 
-/-- `rTensor f M : N₁ ⊗ M →ₗ N₂ ⊗ M` is the natural linear map induced by `f : N₁ →ₗ N₂`. -/
+/-- `rTensor M f : N₁ ⊗ M →ₗ N₂ ⊗ M` is the natural linear map induced by `f : N₁ →ₗ N₂`. -/
 def rTensor (f : N →ₗ[R] P) : N ⊗[R] M →ₗ[R] P ⊗[R] M :=
   TensorProduct.map f id
 #align linear_map.rtensor LinearMap.rTensor
 
-variable {M} in
-theorem _root_.TensorProduct.coe_congr_right_refl (f : M ≃ₗ[R] P) :
-    (TensorProduct.congr f (LinearEquiv.refl R N)).toLinearMap = LinearMap.rTensor N f :=
+theorem _root_.TensorProduct.coe_congr_left_refl (f : N ≃ₗ[R] P) :
+    (TensorProduct.congr (LinearEquiv.refl R M) f).toLinearMap = lTensor M f :=
   rfl
 
-variable {M} in
-theorem _root_.TensorProduct.coe_congr_left_refl (g : N ≃ₗ[R] Q) :
-    (TensorProduct.congr (LinearEquiv.refl R M) g).toLinearMap = LinearMap.lTensor M g :=
+theorem _root_.TensorProduct.coe_congr_right_refl (f : N ≃ₗ[R] P) :
+    (TensorProduct.congr f (LinearEquiv.refl R M)).toLinearMap = rTensor M f :=
   rfl
 
 variable (g : P →ₗ[R] Q) (f : N →ₗ[R] P)
