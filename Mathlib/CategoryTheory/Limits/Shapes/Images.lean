@@ -493,7 +493,7 @@ def image.eqToHom (h : f = f') : image f ⟶ image f' :=
 instance (h : f = f') : IsIso (image.eqToHom h) :=
   ⟨⟨image.eqToHom h.symm,
       ⟨(cancel_mono (image.ι f)).1 (by
-          -- Porting note: added let's for used to be a simp[image.eqToHom]
+          -- Porting note: added let's for used to be a simp [image.eqToHom]
           let F : MonoFactorisation f' :=
             ⟨image f, image.ι f, factorThruImage f, (by aesop_cat)⟩
           dsimp [image.eqToHom]
@@ -502,7 +502,7 @@ instance (h : f = f') : IsIso (image.eqToHom h) :=
             ⟨image f', image.ι f', factorThruImage f', (by aesop_cat)⟩
           rw [image.lift_fac F'] ),
         (cancel_mono (image.ι f')).1 (by
-          -- Porting note: added let's for used to be a simp[image.eqToHom]
+          -- Porting note: added let's for used to be a simp [image.eqToHom]
           let F' : MonoFactorisation f :=
             ⟨image f', image.ι f', factorThruImage f', (by aesop_cat)⟩
           dsimp [image.eqToHom]

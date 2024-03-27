@@ -18,6 +18,13 @@ and limit 1 at +∞, and such that for all `x : ℝ`, `a ↦ condCDF ρ a x` is 
 `x : ℝ` and measurable set `s`, that function satisfies
 `∫⁻ a in s, ennreal.of_real (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
 
+`condCDF` is build from the more general tools about kernel CDFs developed in the file
+`Probability.Kernel.Disintegration.CdfToKernel`. In that file, we build a function
+`α × β → StieltjesFunction` (which is `α × β → ℝ → ℝ` with additional properties) from a function
+`α × β → ℚ → ℝ`. The restriction to `ℚ` allows to prove some properties like measurability more
+easily. Here we apply that construction to the case `β = Unit` and then drop `β` to build
+`condCDF : α → StieltjesFunction`.
+
 ## Main definitions
 
 * `ProbabilityTheory.condCDF ρ : α → StieltjesFunction`: the conditional cdf of
@@ -29,35 +36,11 @@ and limit 1 at +∞, and such that for all `x : ℝ`, `a ↦ condCDF ρ a x` is 
 * `ProbabilityTheory.set_lintegral_condCDF`: for all `a : α` and `x : ℝ`, all measurable set `s`,
   `∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
 
-## References
-
-The construction of the conditional cdf in this file follows the proof of Theorem 3.4 in
-[O. Kallenberg, Foundations of modern probability][kallenberg2021].
-
 -/
 
 open MeasureTheory Set Filter TopologicalSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology
-
-section AuxLemmasToBeMoved
-
-variable {α β ι : Type*}
-
-theorem Real.iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
-  ext1 x
-  simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
-  obtain ⟨r, hr⟩ := exists_rat_gt x
-  exact ⟨r, hr.le⟩
-#align real.Union_Iic_rat Real.iUnion_Iic_rat
-
-theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
-  ext1 x
-  simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false_iff, not_forall, not_le]
-  exact exists_rat_lt x
-#align real.Inter_Iic_rat Real.iInter_Iic_rat
-
-end AuxLemmasToBeMoved
 
 namespace MeasureTheory.Measure
 
@@ -153,7 +136,7 @@ attribute [local instance] MeasureTheory.Measure.IsFiniteMeasure.IicSnd
 
 /-! ### Auxiliary definitions
 
-We build towards the definition of `ProbabilityTheory.cond_cdf`. We first define
+We build towards the definition of `ProbabilityTheory.condCDF`. We first define
 `ProbabilityTheory.preCDF`, a function defined on `α × ℚ` with the properties of a cdf almost
 everywhere.  -/
 
@@ -174,8 +157,8 @@ theorem measurable_preCDF {ρ : Measure (α × ℝ)} {r : ℚ} : Measurable (pre
 
 lemma measurable_preCDF' {ρ : Measure (α × ℝ)} :
     Measurable fun a r ↦ (preCDF ρ r a).toReal := by
-    rw [measurable_pi_iff]
-    exact fun _ ↦ measurable_preCDF.ennreal_toReal
+  rw [measurable_pi_iff]
+  exact fun _ ↦ measurable_preCDF.ennreal_toReal
 
 theorem withDensity_preCDF (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure ρ] :
     ρ.fst.withDensity (preCDF ρ r) = ρ.IicSnd r :=
@@ -240,7 +223,7 @@ lemma integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ
     filter_upwards [preCDF_le_one ρ] with a ha using ENNReal.ofReal_toReal_le.trans (ha _)
 
 lemma isRatCondKernelCDFAux_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
-    isRatCondKernelCDFAux (fun p r ↦ (preCDF ρ r p.2).toReal)
+    IsRatCondKernelCDFAux (fun p r ↦ (preCDF ρ r p.2).toReal)
       (kernel.const Unit ρ) (kernel.const Unit ρ.fst) where
   measurable := measurable_preCDF'.comp measurable_snd
   mono' a r r' hrr' := by

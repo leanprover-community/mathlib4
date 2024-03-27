@@ -117,7 +117,7 @@ theorem lipschitz_sub (hf : ApproximatesLinearOn f f' s c) :
 
 protected theorem lipschitz (hf : ApproximatesLinearOn f f' s c) :
     LipschitzWith (‖f'‖₊ + c) (s.restrict f) := by
-  simpa only [restrict_apply, add_sub_cancel'_right] using
+  simpa only [restrict_apply, add_sub_cancel] using
     (f'.lipschitz.restrict s).add hf.lipschitz_sub
 #align approximates_linear_on.lipschitz ApproximatesLinearOn.lipschitz
 
@@ -178,7 +178,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
   -- First bound: if `f z` is close to `y`, then `g z` is close to `z` (i.e., almost a fixed point).
   have A : ∀ z, dist (g z) z ≤ f'symm.nnnorm * dist (f z) y := by
     intro z
-    rw [dist_eq_norm, hg, add_sub_cancel', dist_eq_norm']
+    rw [dist_eq_norm, hg, add_sub_cancel_left, dist_eq_norm']
     exact f'symm.bound _
   -- Second bound: if `z` and `g z` are in the set with good control, then `f (g z)` becomes closer
   -- to `y` than `f z` was (this uses the linear approximation property, and is the reason for the
@@ -192,7 +192,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
       dist (f (g z)) y = ‖f (z + v) - y‖ := by rw [dist_eq_norm]
       _ = ‖f (z + v) - f z - f' v + f' v - (y - f z)‖ := by congr 1; abel
       _ = ‖f (z + v) - f z - f' (z + v - z)‖ := by
-        simp only [v, ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel',
+        simp only [v, ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel_left,
           sub_add_cancel]
       _ ≤ c * ‖z + v - z‖ := (hf _ (hε hgz) _ (hε hz))
       _ ≤ c * (f'symm.nnnorm * dist (f z) y) := by
