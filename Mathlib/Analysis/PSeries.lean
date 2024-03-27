@@ -145,15 +145,15 @@ open ENNReal in
 /-- for a series of `NNReal` version. -/
 theorem summable_schlomilch_iff {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ≥0}
     (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m)
-    (h_pos : ∀ n, 0 < u n) (h_nonneg : ∀ n, 0 <= f n) (hu_strict : StrictMono u)
+    (h_pos : ∀ n, 0 < u n) (hu_strict : StrictMono u)
     (hC_nonzero : C ≠ 0) (h_succ_diff : SuccDiffBounded C u) :
     (Summable fun k : ℕ => (u (k + 1) - (u k : ℝ≥0)) * f (u k)) ↔ Summable f := by
   simp only [← tsum_coe_ne_top_iff_summable, Ne.def, not_iff_not, ENNReal.coe_mul]
   constructor <;> intro h
   · replace hf : ∀ m n, 1 < m → m ≤ n → (f n : ℝ≥0∞) ≤ f m := fun m n hm hmn =>
       ENNReal.coe_le_coe.2 (hf (zero_lt_one.trans hm) hmn)
-    replace h_nonneg : ∀ n, 0 ≤ (f n : ℝ≥0∞) := fun n =>
-      ENNReal.coe_le_coe.2 (h_nonneg n)
+    have h_nonneg : ∀ n, 0 ≤ (f n : ℝ≥0∞) := fun n =>
+      ENNReal.coe_le_coe.2 (f n).2
     obtain hC := tsum_schlomilch_le hf h_pos h_nonneg hu_strict h_succ_diff
     have : (↑(u 1) - ↑(u 0)) * ↑(f (u 0)) + ↑C * ∑' (k : ℕ), ↑(f k) = ∞ := eq_top_mono hC h
     simpa [add_eq_top, mul_ne_top, mul_eq_top, hC_nonzero]
@@ -161,7 +161,21 @@ theorem summable_schlomilch_iff {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ≥0
       ENNReal.coe_le_coe.2 (hf hm hmn)
     have : ∑ k in range (u 0), ↑(f k) ≠ ∞ := ne_top_of_lt (sum_lt_top fun a _ => coe_ne_top)
     simpa [h, add_eq_top, this] using le_tsum_schlomilch hf h_pos hu_strict
+
+open ENNReal in
+theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
+    (Summable fun k : ℕ => (2 : ℝ≥0) ^ k * f (2 ^ k)) ↔ Summable f := by
+  have h_pos : ∀ (n : ℕ), 0 < 2 ^ n := fun n => pow_pos zero_lt_two n
+  have hu_strict : StrictMono (2 ^ ·) := fun m n hm =>
+      pow_lt_pow_right (Nat.lt_succ_self 1) hm
+  have h_succ_diff : SuccDiffBounded 2 (2 ^ ·) := by
+    intro n
+    simp [pow_succ, two_mul]
+  have hC_nonzero : 2 ≠ 0 := by norm_num
+  convert summable_schlomilch_iff hf h_pos hu_strict hC_nonzero h_succ_diff
+  simp [pow_succ, two_mul]
 end NNReal
+#align nnreal.summable_condensed_iff NNReal.summable_condensed_iff
 
 open NNReal in
 /-- for series of nonnegative real numbers. -/
@@ -176,7 +190,7 @@ theorem summable_schlomilch_iff_of_nonneg {C : ℕ} {u : ℕ → ℕ} {f : ℕ �
     have := Nat.cast_le (α := ℝ≥0).mpr <| (hu_strict k.lt_succ_self).le
     simp [NNReal.coe_sub this]
   simp_rw [this]
-  exact_mod_cast NNReal.summable_schlomilch_iff hf h_pos h_nonneg hu_strict hC_nonzero h_succ_diff
+  exact_mod_cast NNReal.summable_schlomilch_iff hf h_pos hu_strict hC_nonzero h_succ_diff
 
 theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 ≤ f n)
     (h_mono : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
@@ -190,6 +204,7 @@ theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 
   have hC_nonzero : 2 ≠ 0 := by norm_num
   convert summable_schlomilch_iff_of_nonneg h_nonneg h_mono h_pos hu_strict hC_nonzero h_succ_diff
   simp [pow_succ, two_mul]
+#align summable_condensed_iff_of_nonneg summable_condensed_iff_of_nonneg
 
 section p_series
 
