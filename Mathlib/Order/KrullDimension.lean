@@ -31,13 +31,12 @@ section definitions
 variable (α : Type*) [Preorder α]
 variable {β : Type*} (r : Rel β β)
 
-/--
-Krull dimension of a set `α` with a binary relation `r` is the supremum of the rightmost index of
-all relation series of `r`. If there is no relation series `a₀, a₁, ..., aₙ` in `α`, then its Krull
-dimension is defined to be negative infinity; if the length of all relation series `a₀, a₁, ..., aₙ`
-is unbounded, its Krull dimension is defined to be positive infinity. (Not sure if this definition
-is useful.)
--/
+/-- The **Krull dimension** of a set `α` with a binary relation `r` is the supremum of the rightmost
+index of all relation series of `r`.
+
+If there is no relation series `a₀, a₁, ..., aₙ` in `α`, then its Krull dimension is defined to be
+negative infinity; if the length of all relation series `a₀, a₁, ..., aₙ` is unbounded, its Krull
+dimension is defined to be positive infinity. (Not sure if this definition is useful.) -/
 noncomputable def krullDimOfRel : WithBot (WithTop ℕ) :=
   ⨆ (p : RelSeries r), p.length
 
