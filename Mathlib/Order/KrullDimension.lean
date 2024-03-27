@@ -25,26 +25,14 @@ also negative infinity. This is because we want Krull dimensions to be additive 
 to product of varieties so that `-∞` being the Krull dimension of empty variety is equal to
 sum of `-∞` and the Krull dimension of any other varieties.
 
-We introduce the notion of the Krull dimension of a binary relation for the sole purpose of
-specialising it to the notion of the Krull dimension of a partial order.
+We could generalize the notion of Krull dimension to an arbitrary binary relation; many results
+in this file would generalize as well. But we don't think it would useful, so we only define
+Krull dimension of a partial order.
 -/
 
 section definitions
 
 variable (α : Type*) [Preorder α]
-variable {β : Type*} (r : Rel β β)
-
-/-- The **Krull dimension** of a set `α` with a binary relation `r` is the supremum of the rightmost
-index of all relation series of `r`.
-
-If there is no relation series `a₀, a₁, ..., aₙ` in `α`, then its Krull dimension is defined to be
-negative infinity; if the length of all relation series `a₀, a₁, ..., aₙ` is unbounded, its Krull
-dimension is defined to be positive infinity.
-
-The sole purpose of the Krull dimension of a binary relation is to specialize it to a partial order
-and later to partial order on the collection of prime ideals of a commutative rings.-/
-noncomputable def krullDimOfRel : WithBot (WithTop ℕ) :=
-  ⨆ (p : RelSeries r), p.length
 
 /--
 The **Krull dimension** of a preorder `α` is the supremum of the rightmost index of all relation
@@ -55,7 +43,6 @@ unbounded, its Krull dimension is defined to be positive infinity.
 noncomputable def krullDim : WithBot (WithTop ℕ) :=
   ⨆ (p : LTSeries α), p.length
 
-lemma krullDim_eq_krullDimOfRel : krullDim α = krullDimOfRel (. < . : α → _) := rfl
 
 /--
 Height of an element `a` of a preordered set `α` is the Krull dimension of the subset `(-∞, a]`
@@ -69,44 +56,6 @@ noncomputable def coheight (a : α) : WithBot (WithTop ℕ) := krullDim (Set.Ici
 
 end definitions
 
-namespace krullDimOfRel
-
-variable {α β : Type _} (r : Rel α α) (s : Rel β β)
-
-lemma nonneg_of_nonempty [Nonempty α] : 0 ≤ krullDimOfRel r :=
-  le_sSup ⟨⟨0, fun _ ↦ @Nonempty.some α inferInstance, fun f ↦ f.elim0⟩, rfl⟩
-
-lemma eq_bot_of_isEmpty [IsEmpty α] : krullDimOfRel r = ⊥ := WithBot.ciSup_empty _
-
-variable {r s}
-lemma le_of_map (f : r →r s) : krullDimOfRel r ≤ krullDimOfRel s :=
-  iSup_le <| fun p ↦ le_sSup ⟨p.map f, rfl⟩
-
-lemma eq_of_relIso (f : r ≃r s) : krullDimOfRel r = krullDimOfRel s :=
-  le_antisymm (le_of_map f) <| le_of_map f.symm
-
-variable (r)
-lemma eq_top_of_infiniteDimensional [r.InfiniteDimensional] :
-    krullDimOfRel r = ⊤ :=
-le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
-| ⊥, hm => False.elim <| by
-  haveI : Inhabited α := ⟨RelSeries.withLength r 0 0⟩
-  exact not_le_of_lt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) <| hm default
-| some ⊤, _ => le_refl _
-| some (some m), hm => by
-  refine (not_lt_of_le (hm (RelSeries.withLength r (m + 1))) ?_).elim
-  erw [WithBot.coe_lt_coe, WithTop.coe_lt_coe]
-  simp
-
-lemma eq_len_of_finiteDimensional [r.FiniteDimensional] :
-    krullDimOfRel r = (RelSeries.longestOf r).length :=
-le_antisymm
-  (iSup_le <| fun _ ↦ WithBot.coe_le_coe.mpr <| WithTop.coe_le_coe.mpr <|
-    RelSeries.length_le_length_longestOf _ _) <|
-  le_iSup (fun (i : RelSeries r) ↦ (i.length : WithBot (WithTop ℕ))) <| RelSeries.longestOf _
-
-end krullDimOfRel
-
 namespace krullDim
 
 variable {α β : Type _}
@@ -114,15 +63,28 @@ variable {α β : Type _}
 variable [Preorder α] [Preorder β]
 
 lemma nonneg_of_nonempty [Nonempty α] : 0 ≤ krullDim α :=
-  krullDimOfRel.nonneg_of_nonempty _
+  le_sSup ⟨⟨0, fun _ ↦ @Nonempty.some α inferInstance, fun f ↦ f.elim0⟩, rfl⟩
 
-lemma eq_bot_of_isEmpty [IsEmpty α] : krullDim α = ⊥ := krullDimOfRel.eq_bot_of_isEmpty _
+lemma eq_bot_of_isEmpty [IsEmpty α] : krullDim α = ⊥ := WithBot.ciSup_empty _
 
 lemma eq_top_of_infiniteDimensionalType [InfiniteDimensionalOrder α] :
-    krullDim α = ⊤ := krullDimOfRel.eq_top_of_infiniteDimensional _
+    krullDim α = ⊤ :=
+le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
+| ⊥, hm => False.elim <| by
+  haveI : Inhabited α := ⟨LTSeries.withLength _ 0 0⟩
+  exact not_le_of_lt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) <| hm default
+| some ⊤, _ => le_refl _
+| some (some m), hm => by
+  refine (not_lt_of_le (hm (LTSeries.withLength _ (m + 1))) ?_).elim
+  erw [WithBot.coe_lt_coe, WithTop.coe_lt_coe]
+  simp
 
 lemma eq_len_of_finiteDimensionalType [FiniteDimensionalOrder α] :
-    krullDim α = (LTSeries.longestOf α).length := krullDimOfRel.eq_len_of_finiteDimensional _
+    krullDim α = (LTSeries.longestOf α).length :=
+le_antisymm
+  (iSup_le <| fun _ ↦ WithBot.coe_le_coe.mpr <| WithTop.coe_le_coe.mpr <|
+    RelSeries.length_le_length_longestOf _ _) <|
+  le_iSup (fun (i : RelSeries r) ↦ (i.length : WithBot (WithTop ℕ))) <| RelSeries.longestOf _
 
 lemma eq_zero_of_unique [Unique α] : krullDim α = 0 :=  by
   rw [eq_len_of_finiteDimensionalType (α := α), Nat.cast_eq_zero]
@@ -138,7 +100,7 @@ lemma infiniteDimensional_of_strictMono
   ⟨fun n ↦ ⟨(LTSeries.withLength _ n).map f hf, LTSeries.length_withLength α n⟩⟩
 
 lemma le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
-  krullDimOfRel.le_of_map ⟨f, fun h ↦ hf h⟩
+  iSup_le <| fun p ↦ le_sSup ⟨p.map f hf, rfl⟩
 
 lemma height_mono {a b : α} (h : a ≤ b) : height α a ≤ height α b :=
   le_of_strictMono (fun x ↦ ⟨x, le_trans x.2 h⟩) <| fun _ _ h ↦ h
@@ -148,8 +110,8 @@ lemma le_of_strictComono_and_surj
     krullDim β ≤ krullDim α :=
   iSup_le fun p ↦ le_sSup ⟨p.comap _ hf hf', rfl⟩
 
-lemma eq_of_orderIso (f : α ≃o β) : krullDim α = krullDim β := krullDimOfRel.eq_of_relIso
-  ⟨f, fun {_ _} ↦ f.lt_iff_lt⟩
+lemma eq_of_orderIso (f : α ≃o β) : krullDim α = krullDim β :=
+  le_antisymm (le_of_strictMono _ f.strictMono) <| le_of_strictMono _ f.symm.strictMono
 
 lemma eq_iSup_height : krullDim α = ⨆ (a : α), height α a :=
   le_antisymm
