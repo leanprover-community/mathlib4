@@ -243,6 +243,28 @@ theorem char_orthonormal (V W : FdRep k G) [Simple V] [Simple W] :
   rw_mod_cast [finrank_hom_simple_simple W V, Iso.nonempty_iso_symm]
 #align fdRep.char_orthonormal FdRep.char_orthonormal
 
+theorem simple_iff_norm_one : ∀ V : FdRep k G, Simple V ↔ scalarProduct V.character V.character = 1 := by
+  intro V
+  constructor
+  · intro h
+    rw [char_orthonormal V V]
+    simp only [ite_eq_left_iff, not_nonempty_iff, not_isEmpty_of_nonempty, zero_ne_one,
+      IsEmpty.forall_iff]
+  · intro h
+    sorry
+
+lemma simple_iff_dual_simple : ∀ V : FdRep k G, Simple V ↔ Simple (of (dual V.ρ)) := by
+  intro V
+  constructor
+  · intro h
+    rw [simple_iff_norm_one] at h
+    simp_rw [simple_iff_norm_one, scalarProduct, char_dual, inv_inv, mul_comm]
+    exact h
+  · intro h
+    rw [simple_iff_norm_one]
+    simp_rw [simple_iff_norm_one, scalarProduct, char_dual, inv_inv, mul_comm] at h
+    exact h
+
 def averageFunction (α : G → k) (V : FdRep k G) : (V.V →ₗ[k] V.V) := ⅟ (Fintype.card G : k) • ∑ g : G, (α g) • (V.ρ g)
 
 def averageClassFunction (α : G → k) (h : IsClassFunction α) (V : FdRep k G) : (V ⟶  V) := by
@@ -298,56 +320,43 @@ lemma scalarProduct_RegularRep_eq_dimension (V : FdRep k G) :
     ]
 
 /-- Irreducbile characters are a basis of ClassFunction G -/
-lemma orthogonal_all_characters_implies_zero (f : G → k) (hf : IsClassFunction f) (h : ∀ V : {V : FdRep k G // Simple V}, (scalarProduct f V.1.character = (0 : k))) : f = fun _ ↦ (0 : k) := by
+lemma orthogonal_to_all_characters_implies_zero (f : G → k) (hf : IsClassFunction f) (h : ∀ V : FdRep k G, Simple V → scalarProduct f V.character = (0 : k)) : f = fun _ ↦ (0 : k) := by
   have (V : FdRep k G) (hV : Simple V) : averageClassFunction f hf V = (0 : V ⟶  V) := by
     have : finrank k (V ⟶  V) = 1 := by
       rw [finrank_hom_simple_simple V V]
       simp only [ite_eq_left_iff, not_nonempty_iff, not_isEmpty_of_nonempty, zero_ne_one,
         IsEmpty.forall_iff]
-    have nonzero : (Action.Hom.id V)  ≠ (0 : V ⟶  V) := by sorry
+    have nonzero : (Action.Hom.id V) ≠ (0 : V ⟶  V) := by sorry
     let mul_id := exists_smul_eq_of_finrank_eq_one this nonzero (averageClassFunction f hf V)
     obtain ⟨c, hc⟩ := mul_id
     rw [← hc]
     have tr : LinearMap.trace k V (averageClassFunction f hf V).hom = 0 := by
       calc
-        LinearMap.trace k V (averageClassFunction f hf V).hom = ∑ g : G, f g * V.character g := by
-          sorry
-        _ = ∑ g : G, f g * (of (dual V.ρ)).character g⁻¹ := by
-          sorry
-        _ = scalarProduct f (of (dual V.ρ)).character := by
-          sorry
+        LinearMap.trace k V (averageClassFunction f hf V).hom = ⅟ (Fintype.card G : k) • ∑ g : G, f g * V.character g := by
+          simp_rw [character, averageClassFunction, averageFunction]
+          simp only [invOf_eq_inv, map_smul, map_sum, smul_eq_mul]
+        _ = ⅟ (Fintype.card G : k) • ∑ g : G, f g * (of (dual V.ρ)).character g⁻¹ := by
+          simp_rw [char_dual, inv_inv]
         _ = 0 := by
-          sorry
+          apply h (of (dual V.ρ)) ?_
+          rw [← simple_iff_dual_simple]
+          exact hV
     rw [← hc] at tr
-    have : LinearMap.trace k V (c •(Action.Hom.id V).hom) = c * finrank k V := by
-      simp only [Action.Hom.id_hom, map_smul, smul_eq_mul, mul_eq_mul_left_iff]
+    have : LinearMap.trace k V (c • (Action.Hom.id V).hom) = c * finrank k V := by
+      simp only [map_smul, smul_eq_mul, mul_eq_mul_left_iff]
+      left
+      -- rw [LinearMap.trace_id k _]
       sorry
-    sorry
-    -- have : ∃ c : k, c • (Action.Hom.id V) = averageClassFunction f hf V := by
-    --   sorry
-  -- ext g
-  -- by_contra hg
-  -- push_neg at hg
-  -- let f' : G → k := fun x ↦ f (g * x)
-  -- have : f' (1 : G) ≠ 0 := by
-  --   simp only [f', mul_one, ne_eq, hg]
-  --   trivial
-  -- have : scalarProduct RegularRep.character f' ≠ 0 := by
-  --   rw [scalarProduct, RegularRep_character]
-  --   simp only [invOf_eq_inv, ite_mul, zero_mul, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte,
-  --     inv_one, smul_eq_mul, ne_eq, mul_eq_zero, inv_eq_zero, or_self_left]
-  --   push_neg
-  --   constructor
-  --   · have : ((Fintype.card G) : k) ≠ 0 := by
-  --       exact nonzero_of_invertible ((Fintype.card G) : k)
-  --     assumption
-  --   · assumption
-  -- apply this
-  -- have hf' : ∀ V : {V : FdRep k G // Simple V}, (scalarProduct f' V.1.character = (0 : k)) := by
-  --   intro V
-  --   specialize h ⟨V.1, V.2⟩
-  --   rw [char_conj, char_mul_comm, char_one] at h
-  --   exact h
+    by_cases hc : c = 0
+    · rw [hc]
+      simp only [zero_smul]
+    · simp only [Action.smul_hom, Action.Hom.id_hom, map_smul, smul_eq_mul, mul_eq_zero, hc,
+      false_or] at tr
+      simp only [Action.Hom.id_hom, map_smul, smul_eq_mul, mul_eq_mul_left_iff, hc, or_false, tr] at this
+      symm at this
+      have : (finrank k V : k) ≠ (0 : k) := by
+        sorry --exact nonzero_of_invertible (finrank k V)
+      contradiction
   sorry -- Needs Maschke's theorem!
 
 end RegularRepresentation
