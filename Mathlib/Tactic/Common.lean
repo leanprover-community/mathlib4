@@ -11,6 +11,11 @@ import Qq
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
 import ImportGraph.Imports
 
+-- Currently we don't need to import all of ProofWidgets,
+-- but without this, if you don't run `lake build ProofWidgets` then `make test` will fail.
+-- Hopefully `lake` will be able to handle tests later.
+import ProofWidgets
+
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.ApplyCongr

@@ -72,7 +72,7 @@ theorem toMatrix_eq_toMatrix_constr [Fintype ι] [DecidableEq ι] (v : ι → M)
 #align basis.to_matrix_eq_to_matrix_constr Basis.toMatrix_eq_toMatrix_constr
 
 -- TODO (maybe) Adjust the definition of `Basis.toMatrix` to eliminate the transpose.
-theorem coePiBasisFun.toMatrix_eq_transpose [Fintype ι] :
+theorem coePiBasisFun.toMatrix_eq_transpose [Finite ι] :
     ((Pi.basisFun R ι).toMatrix : Matrix ι ι R → Matrix ι ι R) = Matrix.transpose := by
   ext M i j
   rfl
