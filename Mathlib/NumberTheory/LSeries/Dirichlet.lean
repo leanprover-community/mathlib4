@@ -368,16 +368,15 @@ end ArithmeticFunction
 namespace DirichletCharacter
 
 /-- A twisted version of the relation `Λ * ↑ζ = log` in terms of complex sequences. -/
-lemma convolution_twist_vonMangoldt {N : ℕ}
-    (χ : DirichletCharacter ℂ N) :
+lemma convolution_twist_vonMangoldt {N : ℕ} (χ : DirichletCharacter ℂ N) :
     (↗χ * ↗Λ) ⍟ ↗χ = ↗χ * ↗Complex.log := by
   nth_rewrite 2 [← mul_one ↗χ]
   rw [← DirichletCharacter.mul_convolution_distrib, convolution_vonMangoldt_const_one]
 
 /-- The L-series of the twist of the von Mangoldt function `Λ` by a Dirichlet character `χ`
 converges at `s` when `re s > 1`. -/
-lemma LSeriesSummable_twist_vonMangoldt {N : ℕ}
-    (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
+lemma LSeriesSummable_twist_vonMangoldt {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
+    (hs : 1 < s.re) :
     LSeriesSummable (↗χ * ↗Λ) s :=
   LSeriesSummable_mul χ <| LSeriesSummable_vonMangoldt hs
 
@@ -406,10 +405,9 @@ open DirichletCharacter in
 /-- The L-series of the von Mangoldt function `Λ` equals the negative logarithmic derivative
 of the L-series of the constant sequence `1` on its domain of convergence `re s > 1`. -/
 lemma LSeries_vonMangoldt_eq {s : ℂ} (hs : 1 < s.re) : L ↗Λ s = - deriv (L 1) s / L 1 s := by
-  refine (LSeries_congr s fun _ _ ↦ ?_).trans <|
+  refine (LSeries_congr s fun n _ ↦ ?_).trans <|
     LSeries_modOne_eq ▸ LSeries_twist_vonMangoldt_eq χ₁ hs
-  have {n : ℕ} : (n : ZMod 1) = 1 := Subsingleton.eq_one _
-  simp only [this, map_one, Pi.mul_apply, one_mul]
+  simp only [Subsingleton.eq_one (n : ZMod 1), map_one, Pi.mul_apply, one_mul]
 
 /-- The L-series of the von Mangoldt function `Λ` equals the negative logarithmic derivative
 of the Riemann zeta function on its domain of convergence `re s > 1`. -/
