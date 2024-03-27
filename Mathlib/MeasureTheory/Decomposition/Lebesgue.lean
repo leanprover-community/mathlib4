@@ -690,9 +690,9 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       refine le_trans ?_ h'.le
       rw [← ENNReal.coe_le_coe, ENNReal.coe_mul]
       exact hA₃ n
-    · rw [not_lt, Nat.le_zero] at hb
+    · rw [not_lt, le_zero_iff] at hb
       specialize hA₃ 0
-      simp? [hb, Nat.le_zero] at hA₃ says
+      simp? [hb, ] at hA₃ says
         simp only [CharP.cast_eq_zero, zero_add, ne_eq, one_ne_zero, not_false_eq_true, div_self,
           ENNReal.coe_one, hb, ENNReal.coe_zero, mul_zero, nonpos_iff_eq_zero,
           ENNReal.coe_eq_zero] at hA₃

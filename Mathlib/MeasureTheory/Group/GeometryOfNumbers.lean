@@ -98,7 +98,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
   have h_mes : μ s ≠ 0 := by
     intro hμ
     suffices μ F = 0 from fund.measure_ne_zero (NeZero.ne μ) this
-    rw [hμ, Nat.le_zero, mul_eq_zero] at h
+    rw [hμ, le_zero_iff, mul_eq_zero] at h
     exact h.resolve_right <| pow_ne_zero _ two_ne_zero
   have h_nemp : s.Nonempty := nonempty_of_measure_ne_zero h_mes
   let u : ℕ → ℝ≥0 := (exists_seq_strictAnti_tendsto 0).choose
