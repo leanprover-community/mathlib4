@@ -364,7 +364,7 @@ theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
 #align real.Union_Iic_rat Real.iUnion_Iic_rat
 
 theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
-  exact iInter_Iic_eq_empty_iff.mpr not_BddBelow_coe
+  exact iInter_Iic_eq_empty_iff.mpr not_bddBelow_coe
 #align real.Inter_Iic_rat Real.iInter_Iic_rat
 
 end Real
