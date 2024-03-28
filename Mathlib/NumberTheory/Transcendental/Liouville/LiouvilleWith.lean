@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
-import Mathlib.NumberTheory.Liouville.Basic
+import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 import Mathlib.Topology.Instances.Irrational
 
 #align_import number_theory.liouville.liouville_with from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
