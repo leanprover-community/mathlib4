@@ -185,9 +185,9 @@ Linear algebra:
     eigenvector: 'Module.End.HasEigenvector'
     existence of an eigenvalue: 'Module.End.exists_eigenvalue'
   Bilinear and quadratic forms:
-    bilinear form: 'BilinForm'
-    alternating bilinear form: 'BilinForm.IsAlt'
-    symmetric bilinear form: 'BilinForm.IsSymm'
+    bilinear form: 'LinearMap.BilinForm'
+    alternating bilinear form: 'LinearMap.BilinForm.IsAlt'
+    symmetric bilinear form: 'LinearMap.BilinForm.IsSymm'
     matrix representation: 'BilinForm.toMatrix'
     quadratic form: 'QuadraticForm'
     polar form of a quadratic: 'QuadraticForm.polar'

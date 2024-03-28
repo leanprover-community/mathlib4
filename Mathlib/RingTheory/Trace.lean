@@ -73,6 +73,7 @@ variable {ι κ : Type w} [Fintype ι]
 
 open FiniteDimensional
 
+open LinearMap (BilinForm)
 open LinearMap
 
 open Matrix
@@ -673,8 +674,9 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [IsSeparable K L
   simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul, map_div₀,
     map_pow, RingHom.coe_coe, AlgHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
     coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
-  rw [PowerBasis.coe_basis, Algebra.traceForm_apply, RingHom.map_ite_one_zero,
-  ← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
+  rw [PowerBasis.coe_basis]
+  simp only [RingHom.map_ite_one_zero, traceForm_apply]
+  rw [← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
   apply Finset.sum_congr rfl
   intro σ _
   simp only [_root_.map_mul, map_div₀, map_pow]

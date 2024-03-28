@@ -193,10 +193,10 @@ Ring Theory:
 # 4.
 Bilinear and Quadratic Forms Over a Vector Space:
   Bilinear forms:
-    bilinear forms: 'BilinForm'
-    alternating bilinear forms: 'BilinForm.IsAlt'
-    symmetric bilinear forms: 'BilinForm.IsSymm'
-    nondegenerate forms: 'BilinForm.Nondegenerate'
+    bilinear forms: 'LinearMap.BilinForm'
+    alternating bilinear forms: 'LinearMap.BilinForm.IsAlt'
+    symmetric bilinear forms: 'LinearMap.BilinForm.IsSymm'
+    nondegenerate forms: 'LinearMap.BilinForm.Nondegenerate'
     matrix representation: 'BilinForm.toMatrix'
     change of coordinates: 'BilinForm.toMatrix_comp'
     rank of a bilinear form: ''
@@ -204,8 +204,8 @@ Bilinear and Quadratic Forms Over a Vector Space:
     quadratic form: 'QuadraticForm'
     polar form of a quadratic: 'QuadraticForm.polar'
   Orthogonality:
-    orthogonal elements: 'BilinForm.IsOrtho'
-    adjoint endomorphism: 'BilinForm.leftAdjointOfNondegenerate'
+    orthogonal elements: 'LinearMap.BilinForm.IsOrtho'
+    adjoint endomorphism: 'LinearMap.BilinForm.leftAdjointOfNondegenerate'
     Sylvester's law of inertia: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
     real classification: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
     complex classification: ''
