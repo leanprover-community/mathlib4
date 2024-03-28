@@ -76,6 +76,44 @@ def mapBinaryBicone {X Y : C} (b : BinaryBicone X Y) : BinaryBicone (F.obj X) (F
   (BinaryBicones.functoriality _ _ F).obj b
 #align category_theory.functor.map_binary_bicone CategoryTheory.Functor.mapBinaryBicone
 
+/-- An inverse to `CategoryTheory.Functor.mapBinaryBicone` -/
+@[simps]
+def mapBinaryBiconeInv [IsEquivalence F] {X Y : C} (b : BinaryBicone (F.obj X) (F.obj Y)) :
+    BinaryBicone X Y where
+  pt := F.inv.obj b.pt
+  fst := (F.inv.adjunction.homEquiv _ _).symm b.fst
+  snd := (F.inv.adjunction.homEquiv _ _).symm b.snd
+  inl := (F.adjunction.homEquiv _ _) b.inl
+  inr := (F.adjunction.homEquiv _ _) b.inr
+  inl_fst := by
+    simp only [Equivalence.symm_functor, Equivalence.symm_inverse, Adjunction.homEquiv_unit,
+      Functor.id_obj, Functor.comp_obj, Adjunction.homEquiv_counit, Category.assoc]
+    slice_lhs 2 3 => rw [← Functor.map_comp, b.inl_fst, Functor.map_id]
+    simp only [adjunction_unit, adjunction_counit, inv_asEquivalence, Category.id_comp]
+    rw [Equivalence.counit, Equivalence.unit, Equivalence.symm_counitIso]
+    simp
+  inl_snd := by
+    simp only [Equivalence.symm_functor, Equivalence.symm_inverse, Adjunction.homEquiv_unit,
+      Functor.id_obj, Functor.comp_obj, Adjunction.homEquiv_counit, Category.assoc]
+    slice_lhs 2 3 => rw [← Functor.map_comp, b.inl_snd, Functor.map_zero]
+    simp only [adjunction_unit, adjunction_counit, inv_asEquivalence, Category.id_comp]
+    rw [Equivalence.counit, Equivalence.unit, Equivalence.symm_counitIso]
+    simp
+  inr_fst := by
+    simp only [Equivalence.symm_functor, Equivalence.symm_inverse, Adjunction.homEquiv_unit,
+      Functor.id_obj, Functor.comp_obj, Adjunction.homEquiv_counit, Category.assoc]
+    slice_lhs 2 3 => rw [← Functor.map_comp, b.inr_fst, Functor.map_zero]
+    simp only [adjunction_unit, adjunction_counit, inv_asEquivalence, Category.id_comp]
+    rw [Equivalence.counit, Equivalence.unit, Equivalence.symm_counitIso]
+    simp
+  inr_snd := by
+    simp only [Equivalence.symm_functor, Equivalence.symm_inverse, Adjunction.homEquiv_unit,
+      Functor.id_obj, Functor.comp_obj, Adjunction.homEquiv_counit, Category.assoc]
+    slice_lhs 2 3 => rw [← Functor.map_comp, b.inr_snd, Functor.map_id]
+    simp only [adjunction_unit, adjunction_counit, inv_asEquivalence, Category.id_comp]
+    rw [Equivalence.counit, Equivalence.unit, Equivalence.symm_counitIso]
+    simp
+
 end Map
 
 end Functor

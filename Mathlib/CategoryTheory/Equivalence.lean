@@ -543,6 +543,10 @@ theorem asEquivalence_inverse (F : C ⥤ D) [IsEquivalence F] : F.asEquivalence.
 #align category_theory.functor.as_equivalence_inverse CategoryTheory.Functor.asEquivalence_inverse
 
 @[simp]
+theorem inv_asEquivalence (F : C ⥤ D) [IsEquivalence F] :
+    F.inv.asEquivalence = F.asEquivalence.symm := rfl
+
+@[simp]
 theorem asEquivalence_unit {F : C ⥤ D} [IsEquivalence F] :
     F.asEquivalence.unitIso = IsEquivalence.unitIso :=
   rfl
