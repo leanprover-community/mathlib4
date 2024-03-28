@@ -196,6 +196,8 @@ def embeddingGL : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
 set_option linter.uppercaseLean3 false in
 #align matrix.unitary_group.embedding_GL Matrix.UnitaryGroup.embeddingGL
 
+abbrev specialUnitaryGroup :=  @MonoidHom.ker (Matrix.unitaryGroup n α) _ α _ ↑(@Matrix.detMonoidHom n _ _ α _)
+
 end UnitaryGroup
 
 section OrthogonalGroup
@@ -223,6 +225,11 @@ theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
   refine' ⟨And.left, fun hA => ⟨hA, _⟩⟩
   rwa [mul_eq_one_comm] at hA
 #align matrix.mem_orthogonal_group_iff' Matrix.mem_orthogonalGroup_iff'
+
+/-- `Matrix.specialOrthogonalGroup n` is the group of `n` by `n` matrices where the transpose is the
+inverse and where the determinant is one. `Matrix.specialOrthogonalGroup 3` is also called is also
+called the rotation group.--/
+abbrev specialOrthogonalGroup := {w : orthogonalGroup n β // Matrix.det (w : Matrix n n β) = 1}
 
 end OrthogonalGroup
 
