@@ -66,7 +66,7 @@ namespace Ideal.Filtration
 theorem pow_smul_le (i j : ℕ) : I ^ i • F.N j ≤ F.N (i + j) := by
   induction' i with _ ih
   · simp
-  · rw [pow_succ, mul_smul, Nat.succ_eq_add_one, add_assoc, add_comm 1, ← add_assoc]
+  · rw [pow_succ', mul_smul, Nat.succ_eq_add_one, add_assoc, add_comm 1, ← add_assoc]
     exact (Submodule.smul_mono_right ih).trans (F.smul_le _)
 #align ideal.filtration.pow_smul_le Ideal.Filtration.pow_smul_le
 
@@ -233,7 +233,7 @@ theorem Stable.exists_pow_smul_eq_of_ge : ∃ n₀, ∀ n ≥ n₀, F.N n = I ^ 
 theorem stable_iff_exists_pow_smul_eq_of_ge :
     F.Stable ↔ ∃ n₀, ∀ n ≥ n₀, F.N n = I ^ (n - n₀) • F.N n₀ := by
   refine' ⟨Stable.exists_pow_smul_eq_of_ge, fun h => ⟨h.choose, fun n hn => _⟩⟩
-  rw [h.choose_spec n hn, h.choose_spec (n + 1) (by omega), smul_smul, ← pow_succ,
+  rw [h.choose_spec n hn, h.choose_spec (n + 1) (by omega), smul_smul, ← pow_succ',
     tsub_add_eq_add_tsub hn]
 #align ideal.filtration.stable_iff_exists_pow_smul_eq_of_ge Ideal.Filtration.stable_iff_exists_pow_smul_eq_of_ge
 

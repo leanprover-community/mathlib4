@@ -487,8 +487,10 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
   let σ :=
     Equiv.mk (f 1) (f (p - 1)) (fun s => by rw [hf2, add_tsub_cancel_of_le hp.out.one_lt.le, hf3])
       fun s => by rw [hf2, tsub_add_cancel_of_le hp.out.one_lt.le, hf3]
-  have hσ : ∀ k v, (σ ^ k) v = f k v := fun k v =>
-    Nat.rec (hf1 v).symm (fun k hk => Eq.trans (congr_arg σ hk) (hf2 k 1 v)) k
+  have hσ : ∀ k v, (σ ^ k) v = f k v := fun k =>
+    Nat.rec (fun v => (hf1 v).symm) (fun k hk v => by
+      rw [pow_succ, Perm.mul_apply, hk (σ v), Nat.succ_eq_one_add, ← hf2 1 k]
+      rfl) k
   replace hσ : σ ^ p ^ 1 = 1 := Perm.ext fun v => by rw [pow_one, hσ, hf3, one_apply]
   let v₀ : vectorsProdEqOne G p :=
     ⟨Vector.replicate p 1, (List.prod_replicate p 1).trans (one_pow p)⟩
