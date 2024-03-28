@@ -75,10 +75,13 @@ theorem vert_inv {g : W ≅ Y} {h : X ≅ Z} (p : CommSq f g.hom h.hom i) :
     CommSq i g.inv h.inv f :=
   ⟨by rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, p.w]⟩
 
-/-- If the two inner squares below commute, then so does the outer square.
+theorem horiz_inv {f : W ≅ X} {i : Y ≅ Z} (p : CommSq f.hom g h i.hom) :
+    CommSq f.inv h g i.inv := flip (vert_inv (flip p))
+
+/-- The composite of two commutative squares as below is commutative.
 ```
   W ---f---> X ---f'--> X'
-  |          |         |
+  |          |          |
   g          h          h'
   |          |          |
   v          v          v
@@ -86,16 +89,10 @@ theorem vert_inv {g : W ≅ Y} {h : X ≅ Z} (p : CommSq f g.hom h.hom i) :
 
 ```
 -/
-lemma CommSq_comp {W X X' Y Z Z' : C} {f : W ⟶ X} {f' : X ⟶ X'} {g : W ⟶ Y} {h : X ⟶ Z}
+lemma comp {W X X' Y Z Z' : C} {f : W ⟶ X} {f' : X ⟶ X'} {g : W ⟶ Y} {h : X ⟶ Z}
     {h' : X' ⟶ Z'} {i : Y ⟶ Z} {i' : Z ⟶ Z'} (hsq₁ : CommSq f g h i) (hsq₂ : CommSq f' h h' i') :
     CommSq (f ≫ f') g h' (i ≫ i') :=
-  ⟨by rw [←Category.assoc, Category.assoc, ← hsq₁.w, hsq₂.w, Category.assoc]⟩
-
-/-- If the vertical morphisms of a commutative square are isomorphism, then we
-  also get a commutative square by replacing them with there inverses -/
-lemma CommSq_of_CommSq_of_vertical_isos (f : W ⟶ X) (i : Y ⟶ Z) (g : W ≅ Y) (h : X ≅ Z)
-    (hcomm : CommSq f g.hom h.hom i) : CommSq i g.inv h.inv f :=
-  ⟨by rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp]; exact hcomm.w.symm⟩
+  ⟨by rw [← Category.assoc, Category.assoc, ← hsq₁.w, hsq₂.w, Category.assoc]⟩
 
 end CommSq
 
