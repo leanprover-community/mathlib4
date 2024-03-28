@@ -72,8 +72,11 @@ open Lean Parser Elab Command Meta
 /-- Gets the value of the `linter.dupNamespace` option. -/
 def getLinterDupNamespace (o : Options) : Bool := Linter.getLinterValue linter.dupNamespace o
 
-/-- `getIds stx` extracts the `declId` nodes from the `Syntax` `stx`. -/
+/-- `getIds stx` extracts the `declId` nodes from the `Syntax` `stx`.
+If `stx` is an `alias`, then it extracts an `ident`, instead of a `declId`. -/
+partial
 def getIds : Syntax → Array Syntax
+  | .node _ `Std.Tactic.Alias.alias args => #[args[2]!]
   | stx@(.node _ _ args) =>
     ((args.attach.map fun ⟨a, _⟩ => getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
   | _ => default
@@ -84,7 +87,7 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx => do
     match getIds stx with
       | #[id] =>
         let ns := (← getScope).currNamespace
-        let declName := ns ++ id[0].getId
+        let declName := ns ++ (if id.getKind == ``declId then id[0].getId else id.getId)
         let nm := declName.components
         let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) => x == y
           | return
