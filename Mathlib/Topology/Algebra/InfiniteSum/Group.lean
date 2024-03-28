@@ -220,7 +220,7 @@ theorem cauchySeq_finset_iff_prod_vanishing :
       rw [← Finset.prod_sdiff ht₁, ← Finset.prod_sdiff ht₂, mul_div_mul_right_eq_div]
     simp only [this]
     exact hde _ (h _ Finset.sdiff_disjoint) _ (h _ Finset.sdiff_disjoint)
-#align cauchy_seq_finset_iff_vanishing cauchySeq_finset_iff_prod_vanishing
+#align cauchy_seq_finset_iff_vanishing cauchySeq_finset_iff_sum_vanishing
 
 @[to_additive]
 theorem cauchySeq_finset_iff_tprod_vanishing :
