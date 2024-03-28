@@ -336,8 +336,8 @@ theorem Prodable.tprod_vanishing (hf : Prodable f) ⦃e : Set G⦄ (he : e ∈ �
   exact cauchySeq_finset_iff_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
 /-- The product over the complement of a finset tends to `1` when the finset grows to cover the
-whole space. This does not need a summability assumption, as otherwise all such products are one.
--/
+whole space. This does not need a multipliability assumption, as otherwise all such products are
+one. -/
 @[to_additive "The sum over the complement of a finset tends to `0` when the finset grows to cover
 the whole space. This does not need a summability assumption, as otherwise all such sums are zero."]
 theorem tendsto_tprod_compl_atTop_one (f : α → G) :

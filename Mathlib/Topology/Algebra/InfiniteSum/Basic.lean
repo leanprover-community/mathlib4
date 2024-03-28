@@ -522,7 +522,7 @@ lemma tprod_eq_tprod_diff_singleton {f : β → α} (s : Set β) {b : β} (hf₀
   tprod_setElem_eq_tprod_setElem_diff s {b} fun _ ha ↦ ha ▸ hf₀
 
 @[to_additive]
-theorem tprod_eq_tprod_of_ne_zero_bij {g : γ → α} (i : mulSupport g → β) (hi : Injective i)
+theorem tprod_eq_tprod_of_ne_one_bij {g : γ → α} (i : mulSupport g → β) (hi : Injective i)
     (hf : mulSupport f ⊆ Set.range i) (hfg : ∀ x, f (i x) = g x) : ∏' x, f x = ∏' y, g y := by
   rw [← tprod_subtype_mulSupport g, ← hi.tprod_eq hf]
   simp only [hfg]
@@ -531,7 +531,7 @@ theorem tprod_eq_tprod_of_ne_zero_bij {g : γ → α} (i : mulSupport g → β) 
 @[to_additive]
 theorem Equiv.tprod_eq_tprod_of_mulSupport {f : β → α} {g : γ → α} (e : mulSupport f ≃ mulSupport g)
     (he : ∀ x, g (e x) = f x) : ∏' x, f x = ∏' y, g y :=
-  .symm <| tprod_eq_tprod_of_ne_zero_bij _ (Subtype.val_injective.comp e.injective) (by simp) he
+  .symm <| tprod_eq_tprod_of_ne_one_bij _ (Subtype.val_injective.comp e.injective) (by simp) he
 #align equiv.tsum_eq_tsum_of_support Equiv.tsum_eq_tsum_of_support
 
 @[to_additive]
@@ -547,7 +547,7 @@ theorem tprod_dite_left (P : Prop) [Decidable P] (x : β → P → α) :
 #align tsum_dite_left tsum_dite_left
 
 @[to_additive (attr := simp)]
-lemma tprod_extend_zero {γ : Type*} {g : γ → β} (hg : Injective g) (f : γ → α) :
+lemma tprod_extend_one {γ : Type*} {g : γ → β} (hg : Injective g) (f : γ → α) :
     ∏' y, extend g f 1 y = ∏' x, f x := by
   have : mulSupport (extend g f 1) ⊆ Set.range g := mulSupport_subset_iff'.2 <| extend_apply' _ _
   simp_rw [← hg.tprod_eq this, hg.extend_apply]
