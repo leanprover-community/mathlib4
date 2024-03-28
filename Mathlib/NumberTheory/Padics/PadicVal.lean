@@ -136,7 +136,7 @@ theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
   by_cases h : 1 < p ∧ 0 < n
   · dsimp [padicValNat]
     rw [dif_pos ⟨Nat.ne_of_gt h.1,h.2⟩, maxPowDiv_eq_multiplicity_get h.1 h.2]
-  · simp only [not_and_or,not_gt_eq,le_zero_iff] at h
+  · simp only [not_and_or,not_gt_eq,Nat.le_zero] at h
     apply h.elim
     · intro h
       interval_cases p
