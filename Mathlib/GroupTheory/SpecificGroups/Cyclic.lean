@@ -332,6 +332,21 @@ theorem IsCyclic.exists_monoid_generator [Finite α] [IsCyclic α] :
 #align is_cyclic.exists_monoid_generator IsCyclic.exists_monoid_generator
 #align is_add_cyclic.exists_add_monoid_generator IsAddCyclic.exists_addMonoid_generator
 
+@[to_additive]
+lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf g = Nat.card α := by
+  obtain ⟨g, hg⟩ := h.exists_generator
+  use g
+  rw [← card_zpowers g, (eq_top_iff' (zpowers g)).mpr hg]
+  exact (Nat.card_congr (Equiv.Set.univ α))
+
+@[to_additive]
+lemma IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype [Fintype α] :
+    IsCyclic α ↔ ∃ g : α, orderOf g = Nat.card α := by
+  refine ⟨fun h ↦ h.exists_ofOrder_eq_natCard, fun h ↦ ?_⟩
+  obtain ⟨g, hg⟩ := h
+  refine isCyclic_of_orderOf_eq_card g ?_
+  simp [hg]
+
 section
 
 variable [DecidableEq α] [Fintype α]
