@@ -15,17 +15,14 @@ property: for any collection of sets `s ∈ l` with cardinality strictly less th
 their intersection belongs to `l` as well.
 
 # Main results
-* `CardinalInterFilter.filter_is_aleph0` establishes that every filter `l` is a
+* `Filter.cardinalInterFilter_aleph0` establishes that every filter `l` is a
     `CardinalInterFilter l aleph0`
 * `CardinalInterFilter.toCountableInterFilter` establishes that every `CardinalInterFilter l c` with
     `c > aleph0` is a `CountableInterFilter`.
 * `CountableInterFilter.toCardinalInterFilter` establishes that every `CountableInterFilter l` is a
     `CardinalInterFilter l aleph1`.
-* `CardinalInterFilter.to_lower_cardinality` establishes that we have `CardinalInterFilter l c` →
-  `CardinalInterFilter l a` for all `a < c`.
-
-
-Most results from CountableInterFilter generalise in a straightforward way.
+* `CardinalInterFilter.of_CardinalInterFilter_of_lt` establishes that we have
+  `CardinalInterFilter l c` → `CardinalInterFilter l a` for all `a < c`.
 
 ## Tags
 filter, cardinal
@@ -69,6 +66,12 @@ instance CountableInterFilter.toCardinalInterFilter (l : Filter α) [CountableIn
     CardinalInterFilter l (aleph 1) where
   cardinal_sInter_mem := fun S hS a ↦ CountableInterFilter.countable_sInter_mem S
     ((countable_iff_lt_aleph_one S).mpr hS) a
+
+theorem cardinalInterFilter_aleph_one_iff :
+    CardinalInterFilter l (aleph 1) ↔ CountableInterFilter l :=
+  ⟨fun _ ↦ ⟨fun S h a ↦
+    CardinalInterFilter.cardinal_sInter_mem S ((countable_iff_lt_aleph_one S).1 h) a⟩,
+   fun _ ↦ CountableInterFilter.toCardinalInterFilter l⟩
 
 /-- Every CardinalInterFilter for some c also is a CardinalInterFilter for some a < c -/
 theorem CardinalInterFilter.of_CardinalInterFilter_of_lt (l : Filter α) [CardinalInterFilter l c]
@@ -148,3 +151,5 @@ theorem EventuallyEq.cardinal_bInter {S : Set ι} (hS : #S < c)
     ⋂ i ∈ S, s i ‹_› =ᶠ[l] ⋂ i ∈ S, t i ‹_› :=
   (EventuallyLE.cardinal_bInter hS fun i hi => (h i hi).le).antisymm
     (EventuallyLE.cardinal_bInter hS fun i hi => (h i hi).symm.le)
+
+end Filter
