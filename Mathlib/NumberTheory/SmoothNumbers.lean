@@ -167,7 +167,7 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
     constructor
     · rw [factorization_mul (pos_iff_ne_zero.mp <| pos_pow_of_pos e hp.pos) hm₀]
       simp only [factorization_pow, Finsupp.coe_add, Finsupp.coe_smul, nsmul_eq_mul,
-        Pi.coe_nat, cast_id, Pi.add_apply, Pi.mul_apply, hp.factorization_self,
+        Pi.natCast_def, cast_id, Pi.add_apply, Pi.mul_apply, hp.factorization_self,
         mul_one, add_right_eq_self]
       rw [← factors_count_eq, count_eq_zero]
       exact fun H ↦ (hm p H).false

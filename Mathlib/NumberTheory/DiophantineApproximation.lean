@@ -142,7 +142,7 @@ theorem exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   obtain ⟨j, k, hk₀, hk₁, h⟩ := exists_int_int_abs_mul_sub_le ξ n_pos
   have hk := toNat_of_nonneg hk₀.le
   rw [← hk] at hk₀ hk₁ h
-  exact ⟨k.toNat, coe_nat_pos.mp hk₀, Nat.cast_le.mp hk₁, (round_le (↑k.toNat * ξ) j).trans h⟩
+  exact ⟨k.toNat, natCast_pos.mp hk₀, Nat.cast_le.mp hk₁, (round_le (↑k.toNat * ξ) j).trans h⟩
 #align real.exists_nat_abs_mul_sub_round_le Real.exists_nat_abs_mul_sub_round_le
 
 /-- *Dirichlet's approximation theorem:*
@@ -156,7 +156,7 @@ theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   have hk₀' : (0 : ℝ) < k := Int.cast_pos.mpr hk₀
   have hden : ((j / k : ℚ).den : ℤ) ≤ k := by
     convert le_of_dvd hk₀ (Rat.den_dvd j k)
-    exact Rat.coe_int_div_eq_divInt
+    exact Rat.intCast_div_eq_divInt
   refine' ⟨j / k, _, Nat.cast_le.mp (hden.trans hk₁)⟩
   rw [← div_div, le_div_iff (Nat.cast_pos.mpr <| Rat.pos _ : (0 : ℝ) < _)]
   refine' (mul_le_mul_of_nonneg_left (Int.cast_le.mpr hden : _ ≤ (k : ℝ)) (abs_nonneg _)).trans _

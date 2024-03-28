@@ -85,10 +85,10 @@ lemma cast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n) = (m ^ n : α)
   | n + 1 => by rw [_root_.pow_succ', _root_.pow_succ', cast_mul, cast_pow m n]
 #align nat.cast_pow Nat.cast_pow
 
-lemma coe_nat_dvd (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
-#align nat.coe_nat_dvd Nat.coe_nat_dvd
+lemma natCast_dvd_natCast (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
+#align nat.coe_nat_dvd Nat.natCast_dvd_natCast
 
-alias _root_.Dvd.dvd.natCast := coe_nat_dvd
+alias _root_.Dvd.dvd.natCast := natCast_dvd_natCast
 
 end Semiring
 end Nat
@@ -313,14 +313,14 @@ variable {π : α → Type*} [∀ a, NatCast (π a)]
 Was `by refine_struct { .. } <;> pi_instance_derive_field` -/
 instance natCast : NatCast (∀ a, π a) := { natCast := fun n _ ↦ n }
 
-theorem nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
+theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl
-#align pi.nat_apply Pi.nat_apply
+#align pi.nat_apply Pi.natCast_apply
 
 @[simp]
-theorem coe_nat (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
+theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
-#align pi.coe_nat Pi.coe_nat
+#align pi.coe_nat Pi.natCast_def
 
 @[simp]
 theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl

@@ -615,7 +615,7 @@ theorem xn_modEq_x2n_sub_lem {n j} (h : j ≤ n) : xn a1 (2 * n - j) + xn a1 j �
   rw [two_mul, add_tsub_assoc_of_le h, xn_add, add_assoc, ← zero_add 0]
   exact
     (dvd_mul_right _ _).modEq_zero_nat.add
-      (Int.coe_nat_dvd.1 <| by simpa [xz, yz] using h1).modEq_zero_nat
+      (Int.natCast_dvd_natCast.1 <| by simpa [xz, yz] using h1).modEq_zero_nat
 #align pell.xn_modeq_x2n_sub_lem Pell.xn_modEq_x2n_sub_lem
 
 theorem xn_modEq_x2n_sub {n j} (h : j ≤ 2 * n) : xn a1 (2 * n - j) + xn a1 j ≡ 0 [MOD xn a1 n] :=
@@ -877,7 +877,7 @@ theorem matiyasevic {a k x y} :
       have sx : s ≡ x [MOD u] := (xy_modEq_of_modEq b1 a1 ba k).left
       have tk : t ≡ k [MOD 4 * y] :=
         have : 4 * y ∣ b - 1 :=
-          Int.coe_nat_dvd.1 <| by rw [Int.ofNat_sub (le_of_lt b1)]; exact bm1.symm.dvd
+          Int.natCast_dvd_natCast.1 <| by rw [Int.ofNat_sub (le_of_lt b1)]; exact bm1.symm.dvd
         (yn_modEq_a_sub_one _ _).of_dvd this
       ⟨ky,
         Or.inr
@@ -904,7 +904,7 @@ theorem matiyasevic {a k x y} :
             have yd : 4 * yn a1 i ∣ 4 * n := mul_dvd_mul_left _ <| dvd_of_ysq_dvd a1 yv
             have jk : j ≡ k [MOD 4 * yn a1 i] :=
               have : 4 * yn a1 i ∣ b - 1 :=
-                Int.coe_nat_dvd.1 <| by rw [Int.ofNat_sub (le_of_lt b1)]; exact bm1.symm.dvd
+                Int.natCast_dvd_natCast.1 <| by rw [Int.ofNat_sub (le_of_lt b1)]; exact bm1.symm.dvd
               ((yn_modEq_a_sub_one b1 _).of_dvd this).symm.trans tk
             have ki : k + i < 4 * yn a1 i :=
               lt_of_le_of_lt (_root_.add_le_add ky (yn_ge_n a1 i)) <| by

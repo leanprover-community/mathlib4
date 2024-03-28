@@ -945,14 +945,14 @@ theorem adjoin_one : F⟮(1 : E)⟯ = ⊥ :=
 #align intermediate_field.adjoin_one IntermediateField.adjoin_one
 
 @[simp]
-theorem adjoin_int (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
-  exact adjoin_simple_eq_bot_iff.mpr (coe_int_mem ⊥ n)
-#align intermediate_field.adjoin_int IntermediateField.adjoin_int
+theorem adjoin_intCast (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
+  exact adjoin_simple_eq_bot_iff.mpr (intCast_mem ⊥ n)
+#align intermediate_field.adjoin_int IntermediateField.adjoin_intCast
 
 @[simp]
-theorem adjoin_nat (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
-  adjoin_simple_eq_bot_iff.mpr (coe_nat_mem ⊥ n)
-#align intermediate_field.adjoin_nat IntermediateField.adjoin_nat
+theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
+  adjoin_simple_eq_bot_iff.mpr (natCast_mem ⊥ n)
+#align intermediate_field.adjoin_nat IntermediateField.adjoin_natCast
 
 section AdjoinRank
 

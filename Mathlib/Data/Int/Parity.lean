@@ -217,7 +217,7 @@ theorem odd_coe_nat (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by
 
 @[simp]
 theorem natAbs_even : Even n.natAbs ↔ Even n := by
-  simp [even_iff_two_dvd, dvd_natAbs, coe_nat_dvd_left.symm]
+  simp [even_iff_two_dvd, dvd_natAbs, natCast_dvd.symm]
 #align int.nat_abs_even Int.natAbs_even
 
 -- Porting note (#10618): was simp. simp can prove this.

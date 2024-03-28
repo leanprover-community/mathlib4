@@ -210,7 +210,7 @@ theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite [SigmaFinite μ] {f g : 
       exact eventually_le_of_tendsto_lt hx this
     have L2 : ∀ᶠ n : ℕ in (atTop : Filter ℕ), g x ≤ (n : ℝ≥0) :=
       haveI : Tendsto (fun n : ℕ => ((n : ℝ≥0) : ℝ≥0∞)) atTop (𝓝 ∞) := by
-        simp only [ENNReal.coe_nat]
+        simp only [ENNReal.coe_natCast]
         exact ENNReal.tendsto_nat_nhds_top
       eventually_ge_of_tendsto_gt (hx.trans_le le_top) this
     apply Set.mem_iUnion.2

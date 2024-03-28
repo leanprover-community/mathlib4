@@ -228,7 +228,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
       Real.norm_of_nonneg (NNReal.coe_nonneg _), ← NNReal.coe_one,
       NNReal.coe_lt_coe]
   · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [← Nat.cast_one, ENNReal.coe_lt_coe_nat, Nat.cast_one] at hr
+    rw [← Nat.cast_one, ENNReal.coe_lt_natCast, Nat.cast_one] at hr
     apply FormalMultilinearSeries.le_radius_of_isBigO
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul]
     refine isBigO_of_le atTop (fun n ↦ ?_)

@@ -196,7 +196,7 @@ theorem X_pow_sub_C_irreducible_of_odd
     intro E _ _ x hx
     have : IsIntegral K x := not_not.mp fun h ↦ by
       simpa only [degree_zero, degree_X_pow_sub_C hp.pos,
-        WithBot.nat_ne_bot] using congr_arg degree (hx.symm.trans (dif_neg h))
+        WithBot.natCast_ne_bot] using congr_arg degree (hx.symm.trans (dif_neg h))
     apply IH (Nat.odd_mul.mp hn).2
     intros q hq hqn b hb
     apply ha q hq (dvd_mul_of_dvd_right hqn p) (Algebra.norm _ b)

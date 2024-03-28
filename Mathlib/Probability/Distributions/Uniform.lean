@@ -231,7 +231,7 @@ def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
     have : (s.card : ℝ≥0∞) ≠ 0 := by
       simpa only [Ne.def, Nat.cast_eq_zero, Finset.card_eq_zero] using
         Finset.nonempty_iff_ne_empty.1 hs
-    exact ENNReal.mul_inv_cancel this <| ENNReal.nat_ne_top s.card
+    exact ENNReal.mul_inv_cancel this <| ENNReal.natCast_ne_top s.card
   · exact fun x hx => by simp only [hx, if_false]
 #align pmf.uniform_of_finset PMF.uniformOfFinset
 
@@ -357,7 +357,7 @@ def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
         _ = 1 := by
           rw [← Nat.cast_sum, Multiset.toFinset_sum_count_eq s,
             ENNReal.inv_mul_cancel (Nat.cast_ne_zero.2 (hs ∘ Multiset.card_eq_zero.1))
-              (ENNReal.nat_ne_top _)]
+              (ENNReal.natCast_ne_top _)]
         )⟩
 #align pmf.of_multiset PMF.ofMultiset
 
@@ -379,7 +379,7 @@ theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support �
 
 theorem ofMultiset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofMultiset s hs a = 0 := by
   simpa only [ofMultiset_apply, ENNReal.div_eq_zero_iff, Nat.cast_eq_zero, Multiset.count_eq_zero,
-    ENNReal.nat_ne_top, or_false_iff] using ha
+    ENNReal.natCast_ne_top, or_false_iff] using ha
 #align pmf.of_multiset_apply_of_not_mem PMF.ofMultiset_apply_of_not_mem
 
 section Measure

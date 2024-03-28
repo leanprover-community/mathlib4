@@ -213,7 +213,7 @@ theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ
     obtain ⟨n, hn⟩ : ∃ n : ℕ, b < n * μ (φ ⁻¹' {∞}) := exists_nat_mul_gt h_meas (ne_of_lt hb)
     use (const α (n : ℝ≥0)).restrict (φ ⁻¹' {∞})
     simp only [lt_iSup_iff, exists_prop, coe_restrict, φ.measurableSet_preimage, coe_const,
-      ENNReal.coe_indicator, map_coe_ennreal_restrict, SimpleFunc.map_const, ENNReal.coe_nat,
+      ENNReal.coe_indicator, map_coe_ennreal_restrict, SimpleFunc.map_const, ENNReal.coe_natCast,
       restrict_const_lintegral]
     refine' ⟨indicator_le fun x hx => le_trans _ (hφ _), hn⟩
     simp only [mem_preimage, mem_singleton_iff] at hx
@@ -911,7 +911,7 @@ theorem ae_eq_of_ae_le_of_lintegral_le {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ
     have : ∫⁻ x, f x ∂μ + (↑n)⁻¹ * μ { x : α | f x + (n : ℝ≥0∞)⁻¹ ≤ g x } ≤ ∫⁻ x, f x ∂μ :=
       (lintegral_add_mul_meas_add_le_le_lintegral hfg hg n⁻¹).trans hgf
     rw [(ENNReal.cancel_of_ne hf).add_le_iff_nonpos_right, nonpos_iff_eq_zero, mul_eq_zero] at this
-    exact this.resolve_left (ENNReal.inv_ne_zero.2 (ENNReal.nat_ne_top _))
+    exact this.resolve_left (ENNReal.inv_ne_zero.2 (ENNReal.natCast_ne_top _))
   refine' hfg.mp ((ae_all_iff.2 this).mono fun x hlt hle => hle.antisymm _)
   suffices Tendsto (fun n : ℕ => f x + (n : ℝ≥0∞)⁻¹) atTop (𝓝 (f x)) from
     ge_of_tendsto' this fun i => (hlt i).le

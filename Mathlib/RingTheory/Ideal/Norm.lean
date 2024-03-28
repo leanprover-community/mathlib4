@@ -383,7 +383,7 @@ theorem absNorm_dvd_absNorm_of_le {I J : Ideal S} (h : J ≤ I) : Ideal.absNorm 
 
 theorem absNorm_dvd_norm_of_mem {I : Ideal S} {x : S} (h : x ∈ I) :
     ↑(Ideal.absNorm I) ∣ Algebra.norm ℤ x := by
-  rw [← Int.dvd_natAbs, ← absNorm_span_singleton x, Int.coe_nat_dvd]
+  rw [← Int.dvd_natAbs, ← absNorm_span_singleton x, Int.natCast_dvd_natCast]
   exact absNorm_dvd_absNorm_of_le ((span_singleton_le_iff_mem _).mpr h)
 #align ideal.abs_norm_dvd_norm_of_mem Ideal.absNorm_dvd_norm_of_mem
 

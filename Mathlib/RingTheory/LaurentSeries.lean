@@ -204,7 +204,7 @@ theorem coeff_coe (i : ℤ) :
     ((f : PowerSeries R) : LaurentSeries R).coeff i =
       if i < 0 then 0 else PowerSeries.coeff R i.natAbs f := by
   cases i
-  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.coe_nat_nonneg _).not_lt,
+  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_lt,
       Int.natAbs_ofNat]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,

@@ -54,7 +54,7 @@ instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
   surj' := by
     rintro ⟨n, d, hd, h⟩
     refine' ⟨⟨n, ⟨d, _⟩⟩, Rat.mul_den_eq_num⟩
-    rw [mem_nonZeroDivisors_iff_ne_zero, Int.coe_nat_ne_zero_iff_pos]
+    rw [mem_nonZeroDivisors_iff_ne_zero, Int.natCast_ne_zero_iff_pos]
     exact Nat.zero_lt_of_ne_zero hd
   exists_of_eq {x y} := by
     rw [eq_intCast, eq_intCast, Int.cast_inj]

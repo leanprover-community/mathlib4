@@ -219,7 +219,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
     have : (f a b).toReal ≤ n := Nat.le_of_ceil_le hn
     rw [← ENNReal.le_ofReal_iff_toReal_le (hf_ne_top a b) _] at this
     · refine' this.trans (le_of_eq _)
-      rw [ENNReal.ofReal_coe_nat]
+      rw [ENNReal.ofReal_natCast]
     · norm_cast
       exact zero_le _
   have h_zero : ∀ a b n, ⌈(f a b).toReal⌉₊ ≤ n → fs n a b = 0 := by

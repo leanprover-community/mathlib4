@@ -19,9 +19,9 @@ notation "ℤ" => Int
 
 namespace Int
 
-protected theorem coe_nat_eq (n : ℕ) : ↑n = Int.ofNat n :=
+protected theorem natCast_eq (n : ℕ) : ↑n = Int.ofNat n :=
   rfl
-#align int.coe_nat_eq Int.coe_nat_eq
+#align int.coe_nat_eq Int.natCast_eq
 
 #align int.of_nat_zero Int.ofNat_zero
 #align int.of_nat_one Int.ofNat_one

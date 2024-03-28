@@ -60,7 +60,7 @@ theorem Associates.finite_factors {I : Ideal R} (hI : I ≠ 0) :
   have h_supp : {v : HeightOneSpectrum R | ¬((Associates.mk v.asIdeal).count
       (Associates.mk I).factors : ℤ) = 0} = {v : HeightOneSpectrum R | v.asIdeal ∣ I} := by
     ext v
-    simp_rw [Int.coe_nat_eq_zero]
+    simp_rw [Int.natCast_eq_zero]
     exact Associates.count_ne_zero_iff_dvd hI v.irreducible
   rw [Filter.eventually_cofinite, h_supp]
   exact Ideal.finite_factors hI
@@ -77,7 +77,7 @@ theorem finite_mulSupport {I : Ideal R} (hI : I ≠ 0) :
         ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) ≠ 0} := by
     intro v hv h_zero
     have hv' : v.maxPowDividing I = 1 := by
-      rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, Int.coe_nat_eq_zero.mp h_zero,
+      rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, Int.natCast_eq_zero.mp h_zero,
         pow_zero _]
     exact hv hv'
   Finite.subset (Filter.eventually_cofinite.mp (Associates.finite_factors hI)) h_subset
