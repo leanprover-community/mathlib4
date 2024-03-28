@@ -536,4 +536,20 @@ theorem hilbertPolynomial_natDegree_eq_sub (hhP : hilbertPolynomial 𝒜 ℳ μ 
           rw [Polynomial.dvd_iff_isRoot] at this; exact this h'
         · simp only [one_ne_zero, or_false]; exact Nat.factorial_ne_zero _
 
+theorem exists_unique_polynomial :
+    ∃! (p : Polynomial ℚ), (∃ (N : ℕ), (∀ (n : ℕ) (_ : N < n),
+    (μ <| .of _ <| (ℳ n : Type u) : ℚ) = Polynomial.eval (n : ℚ) p)) :=
+  ⟨hilbertPolynomial 𝒜 ℳ μ S, ⟨(auxPolynomial 𝒜 ℳ μ S).natDegree, fun n hn ↦
+  additiveFunction_val_eq_hilbertPolynomial_eval 𝒜 ℳ μ S hS n hn⟩, λ q ⟨N, hqN⟩ ↦
+  eq_of_infinite_eval_eq q (hilbertPolynomial 𝒜 ℳ μ S) <| λ hfin ↦
+  Set.Infinite.image (Set.injOn_of_injective Nat.cast_injective _)
+  (Set.Ioi_infinite (max N (natDegree (auxPolynomial 𝒜 ℳ μ S))))
+  <| Set.Finite.subset hfin <| show @Nat.cast ℚ _ '' (Set.Ioi (max N
+  (natDegree (auxPolynomial 𝒜 ℳ μ S)))) ⊆ (@setOf ℚ fun x ↦
+  eval x q = eval x (hilbertPolynomial 𝒜 ℳ μ S)) by
+  intro x hx; simp only [Set.mem_image, Set.mem_Ioi, max_lt_iff, Set.mem_setOf_eq] at hx ⊢;
+  rcases hx with ⟨n, ⟨h1, h2⟩, h3⟩; rw [← h3, ← additiveFunction_val_eq_hilbertPolynomial_eval
+  𝒜 ℳ μ S hS n h2]; exact (Rat.ext (congrArg Rat.num (hqN n h1)) (congrArg Rat.den
+  (hqN n h1))).symm⟩
+
 end HilbertSerre
