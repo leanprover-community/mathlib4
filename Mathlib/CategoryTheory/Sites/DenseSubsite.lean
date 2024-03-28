@@ -98,6 +98,17 @@ lemma Functor.is_cover_of_isCoverDense (G : C ⥤ D) (K : GrothendieckTopology D
     [G.IsCoverDense K] (U : D) : Sieve.coverByImage G U ∈ K U := by
   apply Functor.IsCoverDense.is_cover
 
+lemma Functor.isCoverDense_of_generate_singleton_functor_π_mem (G : C ⥤ D)
+    (K : GrothendieckTopology D)
+    (h : ∀ B, ∃ (X : C) (f : G.obj X ⟶ B), Sieve.generate (Presieve.singleton f) ∈ K B) :
+    G.IsCoverDense K where
+  is_cover B := by
+    obtain ⟨X, f, h⟩ := h B
+    refine K.superset_covering ?_ h
+    intro Y f ⟨Z, g, _, h, w⟩
+    cases h
+    exact ⟨⟨_, g, _, w⟩⟩
+
 attribute [nolint docBlame] CategoryTheory.Functor.IsCoverDense.is_cover
 
 open Presieve Opposite
