@@ -3028,7 +3028,12 @@ import Mathlib.NumberTheory.SumTwoSquares
 import Mathlib.NumberTheory.VonMangoldt
 import Mathlib.NumberTheory.WellApproximable
 import Mathlib.NumberTheory.Wilson
-import Mathlib.NumberTheory.ZetaFunction
+import Mathlib.NumberTheory.ZetaFunctions.HurwitzZeta
+import Mathlib.NumberTheory.ZetaFunctions.HurwitzZetaEven
+import Mathlib.NumberTheory.ZetaFunctions.HurwitzZetaOdd
+import Mathlib.NumberTheory.ZetaFunctions.KernelBounds
+import Mathlib.NumberTheory.ZetaFunctions.RiemannZeta
+import Mathlib.NumberTheory.ZetaFunctions.SpecialValues
 import Mathlib.NumberTheory.ZetaValues
 import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
