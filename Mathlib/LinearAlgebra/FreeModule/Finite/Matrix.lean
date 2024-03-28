@@ -116,5 +116,5 @@ theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [Fintype n]
   rw [Matrix.vecMulVec_eq, Matrix.toLin'_mul]
   refine' le_trans (LinearMap.rank_comp_le_left _ _) _
   refine' (LinearMap.rank_le_domain _).trans_eq _
-  rw [rank_fun', Fintype.card_unit, Nat.cast_one]
+  rw [rank_fun', Fintype.card_ofSubsingleton, Nat.cast_one]
 #align matrix.rank_vec_mul_vec Matrix.rank_vecMulVec
