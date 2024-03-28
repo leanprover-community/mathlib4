@@ -46,7 +46,7 @@ def toFinsupp : ℕ →₀ M where
   toFun i := getD l i 0
   support := (Finset.range l.length).filter fun i => getD l i 0 ≠ 0
   mem_support_toFun n := by
-    simp only [Ne.def, Finset.mem_filter, Finset.mem_range, and_iff_right_iff_imp]
+    simp only [Ne, Finset.mem_filter, Finset.mem_range, and_iff_right_iff_imp]
     contrapose!
     exact getD_eq_default _ _
 #align list.to_finsupp List.toFinsupp

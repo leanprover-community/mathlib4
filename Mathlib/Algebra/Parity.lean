@@ -449,7 +449,7 @@ variable [CanonicallyOrderedCommSemiring α]
 -- either `2 • t` or `t + t` instead of `2 * t`.
 theorem Odd.pos [Nontrivial α] {n : α} (hn : Odd n) : 0 < n := by
   obtain ⟨k, rfl⟩ := hn
-  rw [pos_iff_ne_zero, Ne.def, add_eq_zero_iff, not_and']
+  rw [pos_iff_ne_zero, Ne, add_eq_zero_iff, not_and']
   exact fun h => (one_ne_zero h).elim
 #align odd.pos Odd.pos
 

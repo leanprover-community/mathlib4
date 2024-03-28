@@ -133,7 +133,7 @@ theorem erase_mem_lifts {p : S[X]} (n : ℕ) (h : p ∈ lifts f) : p.erase n ∈
     simp only [hk, RingHom.map_zero, erase_same]
   obtain ⟨i, hi⟩ := h k
   use i
-  simp only [hi, hk, erase_ne, Ne.def, not_false_iff]
+  simp only [hi, hk, erase_ne, Ne, not_false_iff]
 #align polynomial.erase_mem_lifts Polynomial.erase_mem_lifts
 
 section LiftDeg
@@ -159,7 +159,7 @@ theorem monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s �
     exact hzero hcoeff.symm
   rw [← C_mul_X_pow_eq_monomial]
   rw [← C_mul_X_pow_eq_monomial]
-  simp only [hzero, hqzero, Ne.def, not_false_iff, degree_C_mul_X_pow]
+  simp only [hzero, hqzero, Ne, not_false_iff, degree_C_mul_X_pow]
 #align polynomial.monomial_mem_lifts_and_degree_eq Polynomial.monomial_mem_lifts_and_degree_eq
 
 /-- A polynomial lifts if and only if it can be lifted to a polynomial of the same degree. -/
@@ -181,7 +181,7 @@ theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     rw [habs, eraseLead_zero, eq_self_iff_true, not_true] at erase_zero
     exact erase_zero
   have lead_zero : p.coeff p.natDegree ≠ 0 := by
-    rw [← leadingCoeff, Ne.def, leadingCoeff_eq_zero]; exact pzero
+    rw [← leadingCoeff, Ne, leadingCoeff_eq_zero]; exact pzero
   obtain ⟨lead, hlead⟩ :=
     monomial_mem_lifts_and_degree_eq
       (monomial_mem_lifts p.natDegree ((lifts_iff_coeff_lifts p).1 hlifts p.natDegree))

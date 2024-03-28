@@ -97,7 +97,7 @@ theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y := by
     by_cases h' : j' = i
     · rw [h']
       simp
-    · have : j'.succ ≠ i.succ := by rwa [Ne.def, succ_inj]
+    · have : j'.succ ≠ i.succ := by rwa [Ne, succ_inj]
       rw [update_noteq h', update_noteq this, cons_succ]
 #align fin.cons_update Fin.cons_update
 
@@ -127,7 +127,7 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
   by_cases h : j = 0
   · rw [h]
     simp
-  · simp only [h, update_noteq, Ne.def, not_false_iff]
+  · simp only [h, update_noteq, Ne, not_false_iff]
     let j' := pred j h
     have : j'.succ = j := succ_pred j h
     rw [← this, cons_succ, cons_succ]

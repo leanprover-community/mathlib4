@@ -414,7 +414,7 @@ Here and below, we introduce `p' = p - 2`, in order to avoid using subtraction i
 theorem two_lt_q (p' : ℕ) : 2 < q (p' + 2) := by
   refine (minFac_prime (one_lt_mersenne ?_).ne').two_le.lt_of_ne' ?_
   · exact le_add_left _ _
-  · rw [Ne.def, minFac_eq_two_iff, mersenne, Nat.pow_succ']
+  · rw [Ne, minFac_eq_two_iff, mersenne, Nat.pow_succ']
     exact Nat.two_not_dvd_two_mul_sub_one Nat.one_le_two_pow
 #align lucas_lehmer.two_lt_q LucasLehmer.two_lt_q
 

@@ -300,7 +300,7 @@ theorem sum_unitVec_mul_slice [Ring α] (x : Holor α (d :: ds)) :
   rw [Finset.sum_eq_single (Subtype.mk i <| Finset.mem_range.2 hid)]
   · simp
   · intro (b : { x // x ∈ Finset.range d }) (_ : b ∈ (Finset.range d).attach) (hbi : b ≠ ⟨i, _⟩)
-    have hbi' : i ≠ b := by simpa only [Ne.def, Subtype.ext_iff, Subtype.coe_mk] using hbi.symm
+    have hbi' : i ≠ b := by simpa only [Ne, Subtype.ext_iff, Subtype.coe_mk] using hbi.symm
     simp [hbi']
   · intro (hid' : Subtype.mk i _ ∉ Finset.attach (Finset.range d))
     exfalso

@@ -35,7 +35,7 @@ def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (o
     refine' OrderHom.ext _ _ (funext (Subobject.ind _ _))
     intro A f hf
     dsimp only [OrderHom.comp_coe, Function.comp_apply, kernelOrderHom_coe, Subobject.lift_mk,
-      cokernelOrderHom_coe, OrderHom.id_coe, id.def]
+      cokernelOrderHom_coe, OrderHom.id_coe, id]
     refine' Subobject.mk_eq_mk_of_comm _ _ ⟨_, _, Quiver.Hom.unop_inj _, Quiver.Hom.unop_inj _⟩ _
     · exact (Abelian.epiDesc f.unop _ (cokernel.condition (kernel.ι f.unop))).op
     · exact (cokernel.desc _ _ (kernel.condition f.unop)).op
@@ -49,7 +49,7 @@ def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (o
     refine' OrderHom.ext _ _ (funext (Subobject.ind _ _))
     intro A f hf
     dsimp only [OrderHom.comp_coe, Function.comp_apply, cokernelOrderHom_coe, Subobject.lift_mk,
-      kernelOrderHom_coe, OrderHom.id_coe, id.def, unop_op, Quiver.Hom.unop_op]
+      kernelOrderHom_coe, OrderHom.id_coe, id, unop_op, Quiver.Hom.unop_op]
     refine' Subobject.mk_eq_mk_of_comm _ _ ⟨_, _, _, _⟩ _
     · exact Abelian.monoLift f _ (kernel.condition (cokernel.π f))
     · exact kernel.lift _ _ (cokernel.condition f)

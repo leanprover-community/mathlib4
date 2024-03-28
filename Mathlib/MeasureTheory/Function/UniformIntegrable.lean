@@ -334,7 +334,7 @@ theorem snorm_indicator_le_of_bound {f : α → β} (hp_top : p ≠ ∞) {ε : �
     refine' le_trans hμ _
     rw [← ENNReal.ofReal_rpow_of_pos (div_pos hε hM),
       ENNReal.rpow_le_rpow_iff (ENNReal.toReal_pos hp hp_top), ENNReal.ofReal_div_of_pos hM]
-  · simpa only [ENNReal.ofReal_eq_zero, not_le, Ne.def]
+  · simpa only [ENNReal.ofReal_eq_zero, not_le, Ne]
 #align measure_theory.snorm_indicator_le_of_bound MeasureTheory.snorm_indicator_le_of_bound
 
 section
@@ -939,7 +939,7 @@ theorem uniformIntegrable_average
     · simp only [ENNReal.coe_eq_zero, inv_eq_zero, Nat.cast_eq_zero] at hn
       rw [nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_nat,
         ENNReal.inv_mul_cancel _ (ENNReal.nat_ne_top _), one_mul]
-      all_goals simpa only [Ne.def, Nat.cast_eq_zero]
+      all_goals simpa only [Ne, Nat.cast_eq_zero]
   · obtain ⟨C, hC⟩ := hf₃
     simp_rw [Finset.smul_sum]
     refine' ⟨C, fun n => (snorm_sum_le (fun i _ => (hf₁ i).const_smul _) hp).trans _⟩
@@ -953,7 +953,7 @@ theorem uniformIntegrable_average
     · simp only [ENNReal.coe_eq_zero, inv_eq_zero, Nat.cast_eq_zero] at hn
       rw [nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_nat,
         ENNReal.inv_mul_cancel _ (ENNReal.nat_ne_top _), one_mul]
-      all_goals simpa only [Ne.def, Nat.cast_eq_zero]
+      all_goals simpa only [Ne, Nat.cast_eq_zero]
 
 /-- The averaging of a uniformly integrable real-valued sequence is also uniformly integrable. -/
 theorem uniformIntegrable_average_real (hp : 1 ≤ p) {f : ℕ → α → ℝ} (hf : UniformIntegrable f p μ) :

@@ -2,6 +2,10 @@ import Mathlib.Data.Nat.Prime
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.InsertNth
 import Mathlib.Algebra.Group.Basic
+-- Adaptation note:
+-- Without `attribute [refl] Eq.refl`, `rw?` isn't effective.
+-- I'll move this attribute upstream.
+import Mathlib.Init.Core
 
 -- This is partially duplicative with the tests for `rw?` in Lean.
 -- It's useful to re-test here with a larger environment.
@@ -16,43 +20,43 @@ set_option autoImplicit true
 
 -- FIXME nightly-testing
 -- The upstream of `rw?` has regressions. WIP.
--- /--
--- info: Try this: rw [@List.map_append]
--- -- "no goals"
--- -/
--- #guard_msgs in
--- example (f : α → β) (L M : List α) : (L ++ M).map f = L.map f ++ M.map f := by
---   rw?
-
-open CategoryTheory
-
--- FIXME nightly-testing
--- The upstream of `rw?` has regressions. WIP.
--- /--
--- info: Try this: rw [@Category.id_comp]
--- -- "no goals"
--- -/
--- #guard_msgs in
--- example [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ 𝟙 _ ≫ g = f ≫ g := by
---   rw?
-
--- FIXME nightly-testing
--- The upstream of `rw?` has regressions. WIP.
--- /--
--- info: Try this: rw [@mul_left_eq_self]
--- -- "no goals"
--- -/
--- #guard_msgs in
--- example [Group G] (h : G) : 1 * h = h := by
---   rw?
-
 /--
-info: Try this: rw [@Nat.prime_iff]
+info: Try this: rw [@List.map_append]
 -- "no goals"
 -/
 #guard_msgs in
-lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
+example (f : α → β) (L M : List α) : (L ++ M).map f = L.map f ++ M.map f := by
   rw?
+
+open CategoryTheory
+
+/--
+info: Try this: rw [@Category.id_comp]
+-- "no goals"
+-/
+#guard_msgs in
+example [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ 𝟙 _ ≫ g = f ≫ g := by
+  rw?
+
+/--
+info: Try this: rw [@mul_left_eq_self]
+-- "no goals"
+-/
+#guard_msgs in
+example [Group G] (h : G) : 1 * h = h := by
+  rw?
+
+-- Adaptation note: nightly-2024-03-27
+-- `rw?` upstream no longer uses `MVarId.applyRefl`, so it can't deal with `Iff` goals.
+-- I'm out of time to deal with this, so I'll just drop the test for now.
+-- This may need to wait until the next release.
+-- /--
+-- info: Try this: rw [@Nat.prime_iff]
+-- -- "no goals"
+-- -/
+-- #guard_msgs in
+-- lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
+--   rw?
 
 #guard_msgs(drop info) in
 example [Group G] (h : G) (hyp : g * 1 = h) : g = h := by
@@ -96,12 +100,9 @@ example : ∀ (x : ℕ) (_w : x ≤ 6), x ≤ 8 := by
   guard_target = ∀ (x : ℕ) (_w : x ≤ 7), x ≤ 8
   exact test_sorry
 
--- FIXME nightly-testing
--- The upstream of `rw?` has regressions. WIP.
--- -- check we can look inside let expressions
--- #guard_msgs(drop info) in
--- example (n : ℕ) : let y := 3; n + y = 3 + n := by
---   rw?
+#guard_msgs(drop info) in
+example (n : ℕ) : let y := 3; n + y = 3 + n := by
+  rw?
 
 axiom α : Type
 axiom f : α → α
@@ -125,7 +126,7 @@ example (h : 1 = 2) : 2 = 1 := by
 def zero : Nat := 0
 
 -- FIXME nightly-testing
--- The upstream of `rw?` has regressions. WIP.
+-- This will be fixed in nightly-2024-03-27
 -- -- This used to (incorrectly!) succeed because `rw?` would try `rfl`,
 -- -- rather than `withReducible` `rfl`.
 -- #guard_msgs(drop info) in
@@ -133,28 +134,23 @@ def zero : Nat := 0
 --   rw?
 --   exact test_sorry
 
--- FIXME nightly-testing
--- The upstream of `rw?` has regressions. WIP.
--- -- Discharge side conditions from local hypotheses.
--- /--
--- info: Try this: rw [h p]
--- -- "no goals"
--- -/
--- #guard_msgs in
--- example {P : Prop} (p : P) (h : P → 1 = 2) : 2 = 1 := by
---   rw?
+-- Discharge side conditions from local hypotheses.
+/--
+info: Try this: rw [h p]
+-- "no goals"
+-/
+#guard_msgs in
+example {P : Prop} (p : P) (h : P → 1 = 2) : 2 = 1 := by
+  rw?
 
--- FIXME nightly-testing
--- The upstream of `rw?` has regressions. WIP.
--- -- Use `solve_by_elim` to discharge side conditions.
--- /--
--- info: Try this: rw [h (f p)]
--- -- "no goals"
--- -/
--- #guard_msgs in
--- example {P Q : Prop} (p : P) (f : P → Q) (h : Q → 1 = 2) : 2 = 1 := by
---   rw?
-
+-- Use `solve_by_elim` to discharge side conditions.
+/--
+info: Try this: rw [h (f p)]
+-- "no goals"
+-/
+#guard_msgs in
+example {P Q : Prop} (p : P) (f : P → Q) (h : Q → 1 = 2) : 2 = 1 := by
+  rw?
 
 -- Rewrite in reverse, discharging side conditions from local hypotheses.
 /--

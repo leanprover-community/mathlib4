@@ -892,11 +892,11 @@ theorem id_onBoundedFormula :
   ext f
   induction' f with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
-  · rw [onBoundedFormula, LHom.id_onTerm, id.def, id.def, id.def, Term.bdEqual]
+  · rw [onBoundedFormula, LHom.id_onTerm, id, id, id, Term.bdEqual]
   · rw [onBoundedFormula, LHom.id_onTerm]
     rfl
-  · rw [onBoundedFormula, ih1, ih2, id.def, id.def, id.def]
-  · rw [onBoundedFormula, ih3, id.def, id.def]
+  · rw [onBoundedFormula, ih1, ih2, id, id, id]
+  · rw [onBoundedFormula, ih3, id, id]
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Lhom.id_on_bounded_formula FirstOrder.Language.LHom.id_onBoundedFormula
 

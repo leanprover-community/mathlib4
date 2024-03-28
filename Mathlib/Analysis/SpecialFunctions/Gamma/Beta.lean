@@ -178,8 +178,8 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
       · rw [id_eq, ofReal_re]; exact hx.1
     have V : HasDerivAt (fun y : ℂ => (1 - y) ^ v) (-v * (1 - (x : ℂ)) ^ (v - 1)) ↑x := by
       have A := @HasDerivAt.cpow_const _ _ _ v (hasDerivAt_id (1 - (x : ℂ))) (Or.inl ?_)
-      swap; · rw [id.def, sub_re, one_re, ofReal_re, sub_pos]; exact hx.2
-      simp_rw [id.def] at A
+      swap; · rw [id, sub_re, one_re, ofReal_re, sub_pos]; exact hx.2
+      simp_rw [id] at A
       have B : HasDerivAt (fun y : ℂ => 1 - y) (-1) ↑x := by
         apply HasDerivAt.const_sub; apply hasDerivAt_id
       convert HasDerivAt.comp (↑x) A B using 1
@@ -191,12 +191,12 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   rw [add_sub_cancel_right, add_sub_cancel_right] at h_int
   have int_ev := intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le zero_le_one hc hder h_int
   have hF0 : F 0 = 0 := by
-    simp only [F, mul_eq_zero, ofReal_zero, cpow_eq_zero_iff, eq_self_iff_true, Ne.def,
+    simp only [F, mul_eq_zero, ofReal_zero, cpow_eq_zero_iff, eq_self_iff_true, Ne,
       true_and_iff, sub_zero, one_cpow, one_ne_zero, or_false_iff]
     contrapose! hu; rw [hu, zero_re]
   have hF1 : F 1 = 0 := by
     simp only [F, mul_eq_zero, ofReal_one, one_cpow, one_ne_zero, sub_self, cpow_eq_zero_iff,
-      eq_self_iff_true, Ne.def, true_and_iff, false_or_iff]
+      eq_self_iff_true, Ne, true_and_iff, false_or_iff]
     contrapose! hv; rw [hv, zero_re]
   rw [hF0, hF1, sub_zero, intervalIntegral.integral_sub, intervalIntegral.integral_const_mul,
     intervalIntegral.integral_const_mul] at int_ev

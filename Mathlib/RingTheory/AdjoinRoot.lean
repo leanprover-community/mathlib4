@@ -84,7 +84,7 @@ instance : DecidableEq (AdjoinRoot f) :=
 protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (AdjoinRoot f) :=
   Ideal.Quotient.nontrivial
     (by
-      simp_rw [Ne.def, span_singleton_eq_top, Polynomial.isUnit_iff, not_exists, not_and]
+      simp_rw [Ne, span_singleton_eq_top, Polynomial.isUnit_iff, not_exists, not_and]
       rintro x hx rfl
       exact h (degree_C hx.ne_zero))
 #align adjoin_root.nontrivial AdjoinRoot.nontrivial
@@ -262,7 +262,7 @@ theorem of.injective_of_degree_ne_zero [IsDomain R] (hf : f.degree ≠ 0) :
   · exact C_eq_zero.mp (eq_zero_of_zero_dvd (by rwa [h] at hp))
   · contrapose! hf with h_contra
     rw [← degree_C h_contra]
-    apply le_antisymm (degree_le_of_dvd hp (by rwa [Ne.def, C_eq_zero])) _
+    apply le_antisymm (degree_le_of_dvd hp (by rwa [Ne, C_eq_zero])) _
     rwa [degree_C h_contra, zero_le_degree_iff]
 #align adjoin_root.of.injective_of_degree_ne_zero AdjoinRoot.of.injective_of_degree_ne_zero
 
@@ -557,7 +557,7 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
   · have : mk f q = 0 := by rw [← commutes, RingHom.comp_apply, mk_self, RingHom.map_zero]
     exact mk_eq_zero.1 this
   · exact q_monic.ne_zero
-  · rwa [Ne.def, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
+  · rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
 #align adjoin_root.minpoly_root AdjoinRoot.minpoly_root
 
 /-- The elements `1, root f, ..., root f ^ (d - 1)` form a basis for `AdjoinRoot f`,
@@ -566,7 +566,7 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
   let f' := f * C f.leadingCoeff⁻¹
   have deg_f' : f'.natDegree = f.natDegree := by
     rw [natDegree_mul hf, natDegree_C, add_zero]
-    · rwa [Ne.def, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
+    · rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
   have minpoly_eq : minpoly K (root f) = f' := minpoly_root hf
   apply @Basis.mk _ _ _ fun i : Fin f.natDegree => root f ^ i.val
   · rw [← deg_f', ← minpoly_eq]

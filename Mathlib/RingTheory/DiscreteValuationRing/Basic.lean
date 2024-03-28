@@ -299,7 +299,7 @@ theorem of_ufd_of_unique_irreducible {R : Type u} [CommRing R] [IsDomain R]
     rintro ⟨I0, hI⟩
     apply span_singleton_eq_span_singleton.mpr
     apply h₂ _ hp
-    erw [Ne.def, span_singleton_eq_bot] at I0
+    erw [Ne, span_singleton_eq_bot] at I0
     rwa [UniqueFactorizationMonoid.irreducible_iff_prime, ← Ideal.span_singleton_prime I0]
 #align discrete_valuation_ring.of_ufd_of_unique_irreducible DiscreteValuationRing.of_ufd_of_unique_irreducible
 
@@ -352,7 +352,7 @@ open Submodule.IsPrincipal
 theorem ideal_eq_span_pow_irreducible {s : Ideal R} (hs : s ≠ ⊥) {ϖ : R} (hirr : Irreducible ϖ) :
     ∃ n : ℕ, s = Ideal.span {ϖ ^ n} := by
   have gen_ne_zero : generator s ≠ 0 := by
-    rw [Ne.def, ← eq_bot_iff_generator_eq_zero]
+    rw [Ne, ← eq_bot_iff_generator_eq_zero]
     assumption
   rcases associated_pow_irreducible gen_ne_zero hirr with ⟨n, u, hnu⟩
   use n

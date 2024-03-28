@@ -476,7 +476,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     _ = ∑ i in Finset.range (n + 1), (n ! : ℝ) * 1 * C * D ^ (n + 1) * ((n - i)! : ℝ)⁻¹ := by
       congr! with i hi
       · apply inv_mul_cancel
-        simpa only [Ne.def, Nat.cast_eq_zero] using i.factorial_ne_zero
+        simpa only [Ne, Nat.cast_eq_zero] using i.factorial_ne_zero
       · rw [← pow_add]
         congr 1
         rw [Nat.add_succ, Nat.succ_inj']
@@ -566,7 +566,7 @@ theorem norm_iteratedFDerivWithin_clm_apply {f : E → F →L[𝕜] G} {g : E �
   have hB : ‖B‖ ≤ 1 := by
     simp only [B, ContinuousLinearMap.opNorm_flip, ContinuousLinearMap.apply]
     refine' ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun f => _
-    simp only [ContinuousLinearMap.coe_id', id.def, one_mul]
+    simp only [ContinuousLinearMap.coe_id', id, one_mul]
     rfl
   exact B.norm_iteratedFDerivWithin_le_of_bilinear_of_le_one hf hg hs hx hn hB
 #align norm_iterated_fderiv_within_clm_apply norm_iteratedFDerivWithin_clm_apply

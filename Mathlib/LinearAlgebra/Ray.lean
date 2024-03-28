@@ -476,7 +476,7 @@ instance : InvolutiveNeg (Module.Ray R M)
 /-- A ray does not equal its own negation. -/
 theorem ne_neg_self [NoZeroSMulDivisors R M] (x : Module.Ray R M) : x ≠ -x := by
   induction' x using Module.Ray.ind with x hx
-  rw [neg_rayOfNeZero, Ne.def, ray_eq_iff]
+  rw [neg_rayOfNeZero, Ne, ray_eq_iff]
   exact mt eq_zero_of_sameRay_self_neg hx
 #align module.ray.ne_neg_self Module.Ray.ne_neg_self
 

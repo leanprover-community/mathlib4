@@ -355,7 +355,7 @@ theorem tsub_self_add (a b : α) : a - (a + b) = 0 :=
 #align tsub_self_add tsub_self_add
 
 theorem tsub_pos_iff_not_le : 0 < a - b ↔ ¬a ≤ b := by
-  rw [pos_iff_ne_zero, Ne.def, tsub_eq_zero_iff_le]
+  rw [pos_iff_ne_zero, Ne, tsub_eq_zero_iff_le]
 #align tsub_pos_iff_not_le tsub_pos_iff_not_le
 
 theorem tsub_pos_of_lt (h : a < b) : 0 < b - a :=

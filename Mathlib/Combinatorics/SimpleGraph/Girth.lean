@@ -36,7 +36,7 @@ lemma exists_girth_eq_length :
   refine' ⟨_, fun h ↦ _⟩
   · rintro ⟨a, w, hw, _⟩ hG
     exact hG _ hw
-  · simp_rw [← girth_eq_top, ← Ne.def, girth, iInf_subtype', iInf_sigma', ENat.iInf_coe_ne_top,
+  · simp_rw [← girth_eq_top, ← Ne.eq_def, girth, iInf_subtype', iInf_sigma', ENat.iInf_coe_ne_top,
       ← exists_prop, Subtype.exists', Sigma.exists', eq_comm] at h ⊢
     exact ciInf_mem _
 

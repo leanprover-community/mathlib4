@@ -241,7 +241,7 @@ theorem isTheta_cpow_const_rpow {b : ℂ} (hl : b.re = 0 → b ≠ 0 → ∀ᶠ 
     (fun x => f x ^ b) =Θ[l] fun x => abs (f x) ^ b.re :=
   isTheta_cpow_rpow isBoundedUnder_const <| by
     -- Porting note: was
-    -- simpa only [eventually_imp_distrib_right, Ne.def, ← not_frequently, not_imp_not, Imp.swap]
+    -- simpa only [eventually_imp_distrib_right, Ne, ← not_frequently, not_imp_not, Imp.swap]
     --   using hl
     -- but including `Imp.swap` caused an infinite loop
     convert hl

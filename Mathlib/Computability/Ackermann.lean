@@ -115,7 +115,7 @@ theorem ack_pos : ∀ m n, 0 < ack m n
 #align ack_pos ack_pos
 
 theorem one_lt_ack_succ_left : ∀ m n, 1 < ack (m + 1) n
-  | 0, n => by simp; omega
+  | 0, n => by simp
   | m + 1, 0 => by
     rw [ack_succ_zero]
     apply one_lt_ack_succ_left

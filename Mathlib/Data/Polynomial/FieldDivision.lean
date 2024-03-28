@@ -182,7 +182,7 @@ instance instNormalizationMonoid : NormalizationMonoid R[X] where
     Units.ext
       (by
         dsimp
-        rw [Ne.def, ← leadingCoeff_eq_zero] at *
+        rw [Ne, ← leadingCoeff_eq_zero] at *
         rw [leadingCoeff_mul, normUnit_mul hp0 hq0, Units.val_mul, C_mul])
   normUnit_coe_units u :=
     Units.ext
@@ -320,12 +320,12 @@ theorem mod_def : p % q = p %ₘ (q * C (leadingCoeff q)⁻¹) := rfl
 
 theorem modByMonic_eq_mod (p : R[X]) (hq : Monic q) : p %ₘ q = p % q :=
   show p %ₘ q = p %ₘ (q * C (leadingCoeff q)⁻¹) by
-    simp only [Monic.def'.1 hq, inv_one, mul_one, C_1]
+    simp only [Monic.def.1 hq, inv_one, mul_one, C_1]
 #align polynomial.mod_by_monic_eq_mod Polynomial.modByMonic_eq_mod
 
 theorem divByMonic_eq_div (p : R[X]) (hq : Monic q) : p /ₘ q = p / q :=
   show p /ₘ q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹)) by
-    simp only [Monic.def'.1 hq, inv_one, C_1, one_mul, mul_one]
+    simp only [Monic.def.1 hq, inv_one, C_1, one_mul, mul_one]
 #align polynomial.div_by_monic_eq_div Polynomial.divByMonic_eq_div
 
 theorem mod_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) :=
@@ -520,7 +520,7 @@ theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = 
 #align polynomial.coeff_inv_units Polynomial.coeff_inv_units
 
 theorem monic_normalize [DecidableEq R] (hp0 : p ≠ 0) : Monic (normalize p) := by
-  rw [Ne.def, ← leadingCoeff_eq_zero, ← Ne.def, ← isUnit_iff_ne_zero] at hp0
+  rw [Ne, ← leadingCoeff_eq_zero, ← Ne.eq_def, ← isUnit_iff_ne_zero] at hp0
   rw [Monic, leadingCoeff_normalize, normalize_eq_one]
   apply hp0
 #align polynomial.monic_normalize Polynomial.monic_normalize

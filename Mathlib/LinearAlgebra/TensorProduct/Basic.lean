@@ -880,7 +880,7 @@ attribute [local ext high] ext
 @[simp]
 theorem map_id : map (id : M →ₗ[R] M) (id : N →ₗ[R] N) = .id := by
   ext
-  simp only [mk_apply, id_coe, compr₂_apply, id.def, map_tmul]
+  simp only [mk_apply, id_coe, compr₂_apply, _root_.id, map_tmul]
 #align tensor_product.map_id TensorProduct.map_id
 
 @[simp]
@@ -1256,7 +1256,7 @@ theorem lTensor_id : (id : N →ₗ[R] N).lTensor M = id :=
 
 -- `simp` can prove this.
 theorem lTensor_id_apply (x : M ⊗[R] N) : (LinearMap.id : N →ₗ[R] N).lTensor M x = x := by
-  rw [lTensor_id, id_coe, id.def]
+  rw [lTensor_id, id_coe, id.eq_def]
 #align linear_map.ltensor_id_apply LinearMap.lTensor_id_apply
 
 @[simp]
@@ -1266,7 +1266,7 @@ theorem rTensor_id : (id : N →ₗ[R] N).rTensor M = id :=
 
 -- `simp` can prove this.
 theorem rTensor_id_apply (x : N ⊗[R] M) : (LinearMap.id : N →ₗ[R] N).rTensor M x = x := by
-  rw [rTensor_id, id_coe, id.def]
+  rw [rTensor_id, id_coe, id.eq_def]
 #align linear_map.rtensor_id_apply LinearMap.rTensor_id_apply
 
 variable {N}

@@ -1243,7 +1243,7 @@ theorem lintegral_lt_top {f : α →ₛ ℝ≥0∞} (hm : f.FinMeasSupp μ) (hf 
     f.lintegral μ < ∞ := by
   refine' sum_lt_top fun a ha => _
   rcases eq_or_ne a ∞ with (rfl | ha)
-  · simp only [ae_iff, Ne.def, Classical.not_not] at hf
+  · simp only [ae_iff, Ne, Classical.not_not] at hf
     simp [Set.preimage, hf]
   · by_cases ha0 : a = 0
     · subst a

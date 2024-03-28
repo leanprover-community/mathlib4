@@ -184,11 +184,11 @@ variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
 theorem condexpIndL1_of_measurableSet_of_measure_ne_top (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) : condexpIndL1 hm μ s x = condexpIndL1Fin hm hs hμs x := by
-  simp only [condexpIndL1, And.intro hs hμs, dif_pos, Ne.def, not_false_iff, and_self_iff]
+  simp only [condexpIndL1, And.intro hs hμs, dif_pos, Ne, not_false_iff, and_self_iff]
 #align measure_theory.condexp_ind_L1_of_measurable_set_of_measure_ne_top MeasureTheory.condexpIndL1_of_measurableSet_of_measure_ne_top
 
 theorem condexpIndL1_of_measure_eq_top (hμs : μ s = ∞) (x : G) : condexpIndL1 hm μ s x = 0 := by
-  simp only [condexpIndL1, hμs, eq_self_iff_true, not_true, Ne.def, dif_neg, not_false_iff,
+  simp only [condexpIndL1, hμs, eq_self_iff_true, not_true, Ne, dif_neg, not_false_iff,
     and_false_iff]
 #align measure_theory.condexp_ind_L1_of_measure_eq_top MeasureTheory.condexpIndL1_of_measure_eq_top
 

@@ -276,7 +276,7 @@ theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔
 #align topological_space.opens.not_nonempty_iff_eq_bot TopologicalSpace.Opens.not_nonempty_iff_eq_bot
 
 theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set α) := by
-  rw [Ne.def, ← not_nonempty_iff_eq_bot, not_not]
+  rw [Ne, ← not_nonempty_iff_eq_bot, not_not]
 #align topological_space.opens.ne_bot_iff_nonempty TopologicalSpace.Opens.ne_bot_iff_nonempty
 
 /-- An open set in the indiscrete topology is either empty or the whole space. -/

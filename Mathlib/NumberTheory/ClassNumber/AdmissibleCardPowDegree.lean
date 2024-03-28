@@ -159,7 +159,7 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
   · rwa [← hyz']
   by_cases hxz' : x = z
   · rwa [hxz', sub_self, map_zero]
-  rw [← Ne.def, ← sub_ne_zero] at hxy' hyz' hxz'
+  rw [← Ne.eq_def, ← sub_ne_zero] at hxy' hyz' hxz'
   refine' lt_of_le_of_lt _ (max_lt hxy hyz)
   rw [cardPowDegree_nonzero _ hxz', cardPowDegree_nonzero _ hxy',
     cardPowDegree_nonzero _ hyz']
@@ -224,7 +224,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
       have := (Classical.choose_spec (hg j₀)).2
       contradiction
     · rw [Fin.cons_succ, Fin.cons_succ] at approx
-      rw [Ne.def, Fin.succ_inj] at j_ne
+      rw [Ne, Fin.succ_inj] at j_ne
       have : j₀ = j₁ := (Classical.choose_spec (hg j₀)).1.symm.trans
         (((ht' (Classical.choose (hg j₀)) (Classical.choose (hg j₁))).mpr approx).trans
           (Classical.choose_spec (hg j₁)).1)

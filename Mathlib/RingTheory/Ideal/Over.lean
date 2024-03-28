@@ -410,7 +410,7 @@ lemma exists_ideal_comap_le_prime (P : Ideal R) [P.IsPrime]
     rintro _ ⟨⟨x, hx : x ∉ P, rfl⟩, hx'⟩
     exact (hx (hI hx')).elim
   have : Iₚ ≠ ⊤ := by
-    rw [Ne.def, Ideal.eq_top_iff_one, IsLocalization.mem_map_algebraMap_iff
+    rw [Ne, Ideal.eq_top_iff_one, IsLocalization.mem_map_algebraMap_iff
       (Algebra.algebraMapSubmonoid S P.primeCompl) Sₚ, not_exists]
     simp only [one_mul, IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S P.primeCompl),
       not_exists]

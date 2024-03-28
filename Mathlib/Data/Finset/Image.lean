@@ -278,7 +278,7 @@ theorem map_eq_empty : s.map f = ∅ ↔ s = ∅ :=
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty := by
-  rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne.def, map_eq_empty]
+  rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne, map_eq_empty]
 #align finset.map_nonempty Finset.map_nonempty
 
 alias ⟨_, Nonempty.map⟩ := map_nonempty

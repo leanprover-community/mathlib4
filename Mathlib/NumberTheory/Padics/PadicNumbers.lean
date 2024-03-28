@@ -1090,7 +1090,7 @@ theorem valuation_map_mul {x y : ℚ_[p]} (hx : x ≠ 0) (hy : y ≠ 0) :
     valuation (x * y : ℚ_[p]) = valuation x + valuation y := by
   have h_norm : ‖x * y‖ = ‖x‖ * ‖y‖ := norm_mul x y
   have hp_ne_one : (p : ℝ) ≠ 1 := by
-    rw [← Nat.cast_one, Ne.def, Nat.cast_inj]
+    rw [← Nat.cast_one, Ne, Nat.cast_inj]
     exact Nat.Prime.ne_one hp.elim
   have hp_pos : (0 : ℝ) < p := by
     rw [← Nat.cast_zero, Nat.cast_lt]

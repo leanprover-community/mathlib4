@@ -110,7 +110,7 @@ protected theorem dist_triangle (a b c : ℍ) : dist a c ≤ dist a b + dist b c
     div_mul_eq_mul_div]
   · gcongr
     exact EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist (a : ℂ) b c (conj (b : ℂ))
-  · rw [dist_comm, dist_pos, Ne.def, Complex.conj_eq_iff_im]
+  · rw [dist_comm, dist_pos, Ne, Complex.conj_eq_iff_im]
     exact b.im_ne_zero
 #align upper_half_plane.dist_triangle UpperHalfPlane.dist_triangle
 

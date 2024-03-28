@@ -238,7 +238,7 @@ try rewriting the current goal in the `SearchNode` by one of them,
 returning a `MLList MetaM SearchNode`, i.e. a lazy list of next possible goals.
 -/
 def rewrites (hyps : Array (Expr × Bool × Nat))
-    (lemmas : ModuleDiscrTreeRef (Name × Bool × Nat))
+    (lemmas : ModuleDiscrTreeRef (Name × RwDirection))
     (forbidden : NameSet := ∅) (n : SearchNode) : MLList MetaM SearchNode := .squash fun _ => do
   if ← isTracingEnabledFor `rw_search then do
     trace[rw_search] "searching:\n{← toString n}"
