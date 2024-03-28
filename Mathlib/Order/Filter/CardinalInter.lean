@@ -11,7 +11,7 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 # Filters with a cardinal intersection property
 
 In this file we define `CardinalInterFilter l c` to be the class of filters with the following
-property: for any collection of sets `s ∈ l` with cardinality strictly less than `c`, 
+property: for any collection of sets `s ∈ l` with cardinality strictly less than `c`,
 their intersection belongs to `l` as well.
 
 # Main results
@@ -37,8 +37,8 @@ open Set Filter Cardinal
 universe u
 variable {ι : Type u} {α β : Type u} {c : Cardinal.{u}}
 
-/-- A filter `l` has the countable intersection property if for any countable collection
-of sets `s ∈ l` their intersection belongs to `l` as well. -/
+/-- A filter `l` has the cardinal `c` intersection property if for any collection
+of less than `c` sets `s ∈ l`, their intersection belongs to `l` as well. -/
 class CardinalInterFilter (l : Filter α) (c : Cardinal.{u}) : Prop where
   /-- For a collection of sets `s ∈ l` with cardinality below c,
   their intersection belongs to `l` as well. -/
@@ -86,7 +86,7 @@ theorem cardinal_iInter_mem {s : ι → Set α} (hic : #ι < c) :
   rw [← sInter_range _]
   apply Iff.trans
   apply cardinal_sInter_mem (lt_of_le_of_lt Cardinal.mk_range_le hic)
-  exact forall_range_iff
+  exact forall_mem_range
 
 theorem cardinal_bInter_mem {S : Set ι} (hS : #S < c)
     {s : ∀ i ∈ S, Set α} :
