@@ -177,24 +177,30 @@ lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
 
 end
 
-/-!
-### `IntCast`
--/
+/-! ## `CommRing` -/
 
--- Either of these follows trivially from the other. Which one to
--- prove is not yet clear.
-proof_wanted ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = z
+lemma negOne_eq_allOnes (w : Nat) : -1#w = allOnes w  := rfl
+lemma natCast_eq (x w : Nat) : Nat.cast x = x#w       := rfl
 
-proof_wanted toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z
+theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = Int.cast z := by
+  cases w
+  case zero =>
+    simp only [eq_nil]
+  case succ w =>
+    simp only [Int.cast, IntCast.intCast, BitVec.ofInt]
+    unfold Int.castDef
+    cases' z with z z
+    · rfl
+    · simp only [cast_add, cast_one, neg_add_rev]
+      rw [← add_ofFin, ofFin_neg, ofFin_ofNat, ofNat_eq_ofNat, ofFin_neg, ofFin_natCast,
+        natCast_eq, negOne_eq_allOnes, ← sub_toAdd, allOnes_sub_eq_not]
 
-/-!
-## Ring
--/
+theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
+  apply toFin_inj.mpr <| (ofFin_intCast z).symm
 
--- TODO: generalize to `CommRing` after `ofFin_intCast` is proven
-instance : CommSemiring (BitVec w) :=
-  toFin_injective.commSemiring _
-    toFin_zero toFin_one toFin_add toFin_mul (Function.swap toFin_nsmul)
-    toFin_pow toFin_natCast
+instance : CommRing (BitVec w) :=
+  toFin_injective.commRing _
+    toFin_zero toFin_one toFin_add toFin_mul toFin_neg toFin_sub
+    (Function.swap toFin_nsmul) (Function.swap toFin_zsmul) toFin_pow toFin_natCast toFin_intCast
 
 end BitVec
