@@ -39,6 +39,9 @@ open
   Finsupp
   Polynomial
 
+-- mutes various `'done' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false
+
 -- Polynomial.degree_of_subsingleton.{u}
 #guard_msgs(drop info) in
 example {R : Type u} [Semiring R] {p : Polynomial R} [Subsingleton R] :
