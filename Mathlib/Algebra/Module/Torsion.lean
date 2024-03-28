@@ -873,3 +873,41 @@ theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
 #align add_monoid.is_torsion_iff_is_torsion_int AddMonoid.isTorsion_iff_isTorsion_int
 
 end AddMonoid
+
+namespace AddSubgroup
+
+variable (A : Type*) [AddCommGroup A] (n : ℕ)
+
+/-- The additive `n`-torsion subgroup for `n` in `ℕ`. -/
+@[reducible]
+def torsionBy := (Submodule.torsionBy ℤ A n).toAddSubgroup
+
+@[inherit_doc]
+scoped notation:max A"["n"]" => torsionBy A n
+
+variable {A n}
+
+lemma mem_torsionBy (x : A) : x ∈ A[n] ↔ n • x = 0 := by simp
+
+lemma nsmul_torsionBy_eq_zero (x : A[n]) : n • x = 0 :=
+  ZeroMemClass.coe_eq_zero.mp <| (mem_torsionBy _).mp x.property
+
+lemma mod_nsmul_torsionBy_eq_nsmul (m : A[n]) (s : ℕ) :
+    (s % n) • m = s • m := by
+  nth_rewrite 2 [← Nat.div_add_mod s n]
+  rw [add_smul, self_eq_add_left, mul_comm, mul_smul, nsmul_torsionBy_eq_zero, smul_zero]
+
+instance moduleZModTorsionBy [Fact (1 < n)] : Module (ZMod n) A[n] where
+  smul a m := a.val • m
+  one_smul m := show ZMod.val 1 • m = m by
+    rw [ZMod.val_one, one_smul]
+  mul_smul a b m := show (a * b).val • m = a.val • b.val • m by
+    rw [smul_smul, ZMod.val_mul, mod_nsmul_torsionBy_eq_nsmul]
+  smul_zero a := smul_zero a.val
+  smul_add a m₁ m₂ := smul_add a.val ..
+  add_smul a b m := show (a + b).val • m = a.val • m + b.val • m by
+    rw [← add_smul, ZMod.val_add, mod_nsmul_torsionBy_eq_nsmul]
+  zero_smul m := show (0 : ZMod n).val • m = 0 by
+    rw [ZMod.val_zero, zero_smul]
+
+end AddSubgroup
