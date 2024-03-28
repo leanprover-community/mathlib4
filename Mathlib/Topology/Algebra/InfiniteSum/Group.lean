@@ -7,7 +7,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.UniformGroup
 
 /-!
-# Infinite sums in topological groups
+# Infinite sums and products in topological groups
 
 Lemmas on topological sums in groups (as opposed to monoids).
 -/
@@ -22,157 +22,187 @@ variable {α β γ δ : Type*}
 
 section TopologicalGroup
 
-variable [AddCommGroup α] [TopologicalSpace α] [TopologicalAddGroup α]
+variable [CommGroup α] [TopologicalSpace α] [TopologicalGroup α]
 variable {f g : β → α} {a a₁ a₂ : α}
 
 -- `by simpa using` speeds up elaboration. Why?
-theorem HasSum.neg (h : HasSum f a) : HasSum (fun b ↦ -f b) (-a) := by
-  simpa only using h.map (-AddMonoidHom.id α) continuous_neg
+@[to_additive]
+theorem HasProd.inv (h : HasProd f a) : HasProd (fun b ↦ (f b)⁻¹) a⁻¹ := by
+  simpa only using h.map (MonoidHom.id α)⁻¹ continuous_inv
 #align has_sum.neg HasSum.neg
 
-theorem Summable.neg (hf : Summable f) : Summable fun b ↦ -f b :=
-  hf.hasSum.neg.summable
+@[to_additive]
+theorem Multipliable.inv (hf : Multipliable f) : Multipliable fun b ↦ (f b)⁻¹ :=
+  hf.hasProd.inv.multipliable
 #align summable.neg Summable.neg
 
-theorem Summable.of_neg (hf : Summable fun b ↦ -f b) : Summable f := by
-  simpa only [neg_neg] using hf.neg
+@[to_additive]
+theorem Multipliable.of_inv (hf : Multipliable fun b ↦ (f b)⁻¹) : Multipliable f := by
+  simpa only [inv_inv] using hf.inv
 #align summable.of_neg Summable.of_neg
 
-theorem summable_neg_iff : (Summable fun b ↦ -f b) ↔ Summable f :=
-  ⟨Summable.of_neg, Summable.neg⟩
+@[to_additive]
+theorem multipliable_inv_iff : (Multipliable fun b ↦ (f b)⁻¹) ↔ Multipliable f :=
+  ⟨Multipliable.of_inv, Multipliable.inv⟩
 #align summable_neg_iff summable_neg_iff
 
-theorem HasSum.sub (hf : HasSum f a₁) (hg : HasSum g a₂) :
-    HasSum (fun b ↦ f b - g b) (a₁ - a₂) := by
-  simp only [sub_eq_add_neg]
-  exact hf.add hg.neg
+@[to_additive]
+theorem HasProd.div (hf : HasProd f a₁) (hg : HasProd g a₂) :
+    HasProd (fun b ↦ f b / g b) (a₁ / a₂) := by
+  simp only [div_eq_mul_inv]
+  exact hf.mul hg.inv
 #align has_sum.sub HasSum.sub
 
-theorem Summable.sub (hf : Summable f) (hg : Summable g) : Summable fun b ↦ f b - g b :=
-  (hf.hasSum.sub hg.hasSum).summable
+@[to_additive]
+theorem Multipliable.div (hf : Multipliable f) (hg : Multipliable g) :
+    Multipliable fun b ↦ f b / g b :=
+  (hf.hasProd.div hg.hasProd).multipliable
 #align summable.sub Summable.sub
 
-theorem Summable.trans_sub (hg : Summable g) (hfg : Summable fun b ↦ f b - g b) : Summable f := by
-  simpa only [sub_add_cancel] using hfg.add hg
+@[to_additive]
+theorem Multipliable.trans_div (hg : Multipliable g) (hfg : Multipliable fun b ↦ f b / g b) :
+    Multipliable f := by
+  simpa only [div_mul_cancel] using hfg.mul hg
 #align summable.trans_sub Summable.trans_sub
 
-theorem summable_iff_of_summable_sub (hfg : Summable fun b ↦ f b - g b) :
-    Summable f ↔ Summable g :=
-  ⟨fun hf ↦ hf.trans_sub <| by simpa only [neg_sub] using hfg.neg, fun hg ↦ hg.trans_sub hfg⟩
+@[to_additive]
+theorem multipliable_iff_of_multipliable_div (hfg : Multipliable fun b ↦ f b / g b) :
+    Multipliable f ↔ Multipliable g :=
+  ⟨fun hf ↦ hf.trans_div <| by simpa only [inv_div] using hfg.inv, fun hg ↦ hg.trans_div hfg⟩
 #align summable_iff_of_summable_sub summable_iff_of_summable_sub
 
-theorem HasSum.update (hf : HasSum f a₁) (b : β) [DecidableEq β] (a : α) :
-    HasSum (update f b a) (a - f b + a₁) := by
-  convert (hasSum_ite_eq b (a - f b)).add hf with b'
+@[to_additive]
+theorem HasProd.update (hf : HasProd f a₁) (b : β) [DecidableEq β] (a : α) :
+    HasProd (update f b a) (a / f b * a₁) := by
+  convert (hasProd_ite_eq b (a / f b)).mul hf with b'
   by_cases h : b' = b
   · rw [h, update_same]
     simp [eq_self_iff_true, if_true, sub_add_cancel]
-  · simp only [h, update_noteq, if_false, Ne.def, zero_add, not_false_iff]
+  · simp only [h, update_noteq, if_false, Ne.def, one_mul, not_false_iff]
 #align has_sum.update HasSum.update
 
-theorem Summable.update (hf : Summable f) (b : β) [DecidableEq β] (a : α) :
-    Summable (update f b a) :=
-  (hf.hasSum.update b a).summable
+@[to_additive]
+theorem Multipliable.update (hf : Multipliable f) (b : β) [DecidableEq β] (a : α) :
+    Multipliable (update f b a) :=
+  (hf.hasProd.update b a).multipliable
 #align summable.update Summable.update
 
-theorem HasSum.hasSum_compl_iff {s : Set β} (hf : HasSum (f ∘ (↑) : s → α) a₁) :
-    HasSum (f ∘ (↑) : ↑sᶜ → α) a₂ ↔ HasSum f (a₁ + a₂) := by
-  refine' ⟨fun h ↦ hf.add_compl h, fun h ↦ _⟩
-  rw [hasSum_subtype_iff_indicator] at hf ⊢
-  rw [Set.indicator_compl]
-  simpa only [add_sub_cancel_left] using h.sub hf
+@[to_additive]
+theorem HasProd.hasProd_compl_iff {s : Set β} (hf : HasProd (f ∘ (↑) : s → α) a₁) :
+    HasProd (f ∘ (↑) : ↑sᶜ → α) a₂ ↔ HasProd f (a₁ * a₂) := by
+  refine' ⟨fun h ↦ hf.mul_compl h, fun h ↦ _⟩
+  rw [hasProd_subtype_iff_mulIndicator] at hf ⊢
+  rw [Set.mulIndicator_compl]
+  simpa only [div_eq_mul_inv, mul_inv_cancel_comm] using h.div hf
 #align has_sum.has_sum_compl_iff HasSum.hasSum_compl_iff
 
-theorem HasSum.hasSum_iff_compl {s : Set β} (hf : HasSum (f ∘ (↑) : s → α) a₁) :
-    HasSum f a₂ ↔ HasSum (f ∘ (↑) : ↑sᶜ → α) (a₂ - a₁) :=
-  Iff.symm <| hf.hasSum_compl_iff.trans <| by rw [add_sub_cancel]
+@[to_additive]
+theorem HasProd.hasProd_iff_compl {s : Set β} (hf : HasProd (f ∘ (↑) : s → α) a₁) :
+    HasProd f a₂ ↔ HasProd (f ∘ (↑) : ↑sᶜ → α) (a₂ / a₁) :=
+  Iff.symm <| hf.hasProd_compl_iff.trans <| by rw [mul_div_cancel]
 #align has_sum.has_sum_iff_compl HasSum.hasSum_iff_compl
 
-theorem Summable.summable_compl_iff {s : Set β} (hf : Summable (f ∘ (↑) : s → α)) :
-    Summable (f ∘ (↑) : ↑sᶜ → α) ↔ Summable f :=
-  ⟨fun ⟨_, ha⟩ ↦ (hf.hasSum.hasSum_compl_iff.1 ha).summable, fun ⟨_, ha⟩ ↦
-    (hf.hasSum.hasSum_iff_compl.1 ha).summable⟩
+@[to_additive]
+theorem Multipliable.multipliable_compl_iff {s : Set β} (hf : Multipliable (f ∘ (↑) : s → α)) :
+    Multipliable (f ∘ (↑) : ↑sᶜ → α) ↔ Multipliable f :=
+  ⟨fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_compl_iff.1 ha).multipliable, fun ⟨_, ha⟩ ↦
+    (hf.hasProd.hasProd_iff_compl.1 ha).multipliable⟩
 #align summable.summable_compl_iff Summable.summable_compl_iff
 
-protected theorem Finset.hasSum_compl_iff (s : Finset β) :
-    HasSum (fun x : { x // x ∉ s } ↦ f x) a ↔ HasSum f (a + ∑ i in s, f i) :=
-  (s.hasSum f).hasSum_compl_iff.trans <| by rw [add_comm]
+@[to_additive]
+protected theorem Finset.hasProd_compl_iff (s : Finset β) :
+    HasProd (fun x : { x // x ∉ s } ↦ f x) a ↔ HasProd f (a * ∏ i in s, f i) :=
+  (s.hasProd f).hasProd_compl_iff.trans <| by rw [mul_comm]
 #align finset.has_sum_compl_iff Finset.hasSum_compl_iff
 
-protected theorem Finset.hasSum_iff_compl (s : Finset β) :
-    HasSum f a ↔ HasSum (fun x : { x // x ∉ s } ↦ f x) (a - ∑ i in s, f i) :=
-  (s.hasSum f).hasSum_iff_compl
+@[to_additive]
+protected theorem Finset.hasProd_iff_compl (s : Finset β) :
+    HasProd f a ↔ HasProd (fun x : { x // x ∉ s } ↦ f x) (a / ∏ i in s, f i) :=
+  (s.hasProd f).hasProd_iff_compl
 #align finset.has_sum_iff_compl Finset.hasSum_iff_compl
 
-protected theorem Finset.summable_compl_iff (s : Finset β) :
-    (Summable fun x : { x // x ∉ s } ↦ f x) ↔ Summable f :=
-  (s.summable f).summable_compl_iff
+@[to_additive]
+protected theorem Finset.multipliable_compl_iff (s : Finset β) :
+    (Multipliable fun x : { x // x ∉ s } ↦ f x) ↔ Multipliable f :=
+  (s.multipliable f).multipliable_compl_iff
 #align finset.summable_compl_iff Finset.summable_compl_iff
 
-theorem Set.Finite.summable_compl_iff {s : Set β} (hs : s.Finite) :
-    Summable (f ∘ (↑) : ↑sᶜ → α) ↔ Summable f :=
-  (hs.summable f).summable_compl_iff
+@[to_additive]
+theorem Set.Finite.multipliable_compl_iff {s : Set β} (hs : s.Finite) :
+    Multipliable (f ∘ (↑) : ↑sᶜ → α) ↔ Multipliable f :=
+  (hs.multipliable f).multipliable_compl_iff
 #align set.finite.summable_compl_iff Set.Finite.summable_compl_iff
 
-theorem hasSum_ite_sub_hasSum [DecidableEq β] (hf : HasSum f a) (b : β) :
-    HasSum (fun n ↦ ite (n = b) 0 (f n)) (a - f b) := by
-  convert hf.update b 0 using 1
+@[to_additive]
+theorem hasProd_ite_div_hasProd [DecidableEq β] (hf : HasProd f a) (b : β) :
+    HasProd (fun n ↦ ite (n = b) 1 (f n)) (a / f b) := by
+  convert hf.update b 1 using 1
   · ext n
     rw [Function.update_apply]
-  · rw [sub_add_eq_add_sub, zero_add]
+  · rw [div_mul_eq_mul_div, one_mul]
 #align has_sum_ite_sub_has_sum hasSum_ite_sub_hasSum
 
-section tsum
+section tprod
 
 variable [T2Space α]
 
-theorem tsum_neg : ∑' b, -f b = -∑' b, f b := by
-  by_cases hf : Summable f
-  · exact hf.hasSum.neg.tsum_eq
-  · simp [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (mt Summable.of_neg hf)]
+@[to_additive]
+theorem tprod_inv : ∏' b, (f b)⁻¹ = (∏' b, f b)⁻¹ := by
+  by_cases hf : Multipliable f
+  · exact hf.hasProd.inv.tprod_eq
+  · simp [tprod_eq_one_of_not_multipliable hf,
+      tprod_eq_one_of_not_multipliable (mt Multipliable.of_inv hf)]
 #align tsum_neg tsum_neg
 
-theorem tsum_sub (hf : Summable f) (hg : Summable g) :
-    ∑' b, (f b - g b) = ∑' b, f b - ∑' b, g b :=
-  (hf.hasSum.sub hg.hasSum).tsum_eq
+@[to_additive]
+theorem tprod_div (hf : Multipliable f) (hg : Multipliable g) :
+    ∏' b, (f b / g b) = (∏' b, f b) / ∏' b, g b :=
+  (hf.hasProd.div hg.hasProd).tprod_eq
 #align tsum_sub tsum_sub
 
-theorem sum_add_tsum_compl {s : Finset β} (hf : Summable f) :
-    ((∑ x in s, f x) + ∑' x : ↑(s : Set β)ᶜ, f x) = ∑' x, f x :=
-  ((s.hasSum f).add_compl (s.summable_compl_iff.2 hf).hasSum).tsum_eq.symm
+@[to_additive]
+theorem prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :
+    (∏ x in s, f x) * ∏' x : ↑(s : Set β)ᶜ, f x = ∏' x, f x :=
+  ((s.hasProd f).mul_compl (s.multipliable_compl_iff.2 hf).hasProd).tprod_eq.symm
 #align sum_add_tsum_compl sum_add_tsum_compl
 
-/-- Let `f : β → α` be a sequence with summable series and let `b ∈ β` be an index.
-Lemma `tsum_eq_add_tsum_ite` writes `Σ f n` as the sum of `f b` plus the series of the
+/-- Let `f : β → α` be a multipliable function and let `b ∈ β` be an index.
+Lemma `tprod_eq_mul_tprod_ite` writes `∏ n, f n` as `f b` times the product of the
 remaining terms. -/
-theorem tsum_eq_add_tsum_ite [DecidableEq β] (hf : Summable f) (b : β) :
-    ∑' n, f n = f b + ∑' n, ite (n = b) 0 (f n) := by
-  rw [(hasSum_ite_sub_hasSum hf.hasSum b).tsum_eq]
-  exact (add_sub_cancel _ _).symm
+@[to_additive "Let `f : β → α` be a summable function and let `b ∈ β` be an index.
+Lemma `tsum_eq_add_tsum_ite` writes `Σ' n, f n` as `f b` plus the sum of the
+remaining terms."]
+theorem tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f) (b : β) :
+    ∏' n, f n = f b * ∏' n, ite (n = b) 1 (f n) := by
+  rw [(hasProd_ite_div_hasProd hf.hasProd b).tprod_eq]
+  exact (mul_div_cancel _ _).symm
 #align tsum_eq_add_tsum_ite tsum_eq_add_tsum_ite
 
-end tsum
+end tprod
 
 end TopologicalGroup
 
 section UniformGroup
 
-variable [AddCommGroup α] [UniformSpace α]
+variable [CommGroup α] [UniformSpace α]
 
-/-- The **Cauchy criterion** for infinite sums, also known as the **Cauchy convergence test** -/
-theorem summable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
-    Summable f ↔ CauchySeq fun s : Finset β ↦ ∑ b in s, f b := by
+/-- The **Cauchy criterion** for infinite products, also known as the **Cauchy convergence test** -/
+@[to_additive "The **Cauchy criterion** for infinite sums, also known as the
+**Cauchy convergence test**"]
+theorem multipliable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
+    Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b in s, f b := by
   classical exact cauchy_map_iff_exists_tendsto.symm
 #align summable_iff_cauchy_seq_finset summable_iff_cauchySeq_finset
 
-variable [UniformAddGroup α] {f g : β → α} {a a₁ a₂ : α}
+variable [UniformGroup α] {f g : β → α} {a a₁ a₂ : α}
 
-theorem cauchySeq_finset_iff_vanishing :
-    (CauchySeq fun s : Finset β ↦ ∑ b in s, f b) ↔
-      ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∑ b in t, f b) ∈ e := by
+@[to_additive]
+theorem cauchySeq_finset_iff_prod_vanishing :
+    (CauchySeq fun s : Finset β ↦ ∏ b in s, f b) ↔
+      ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b in t, f b) ∈ e := by
   classical
   simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
-    uniformity_eq_comap_nhds_zero α, tendsto_comap_iff, (· ∘ ·), atTop_neBot, true_and]
+    uniformity_eq_comap_nhds_one α, tendsto_comap_iff, (· ∘ ·), atTop_neBot, true_and]
   rw [tendsto_atTop']
   constructor
   · intro h e he
@@ -180,96 +210,109 @@ theorem cauchySeq_finset_iff_vanishing :
     use s₁ ∪ s₂
     intro t ht
     specialize h (s₁ ∪ s₂, s₁ ∪ s₂ ∪ t) ⟨le_sup_left, le_sup_of_le_left le_sup_right⟩
-    simpa only [Finset.sum_union ht.symm, add_sub_cancel_left] using h
+    simpa only [Finset.prod_union ht.symm, mul_div_cancel_left] using h
   · rintro h e he
-    rcases exists_nhds_half_neg he with ⟨d, hd, hde⟩
+    rcases exists_nhds_split_inv he with ⟨d, hd, hde⟩
     rcases h d hd with ⟨s, h⟩
     use (s, s)
     rintro ⟨t₁, t₂⟩ ⟨ht₁, ht₂⟩
-    have : ((∑ b in t₂, f b) - ∑ b in t₁, f b) = (∑ b in t₂ \ s, f b) - ∑ b in t₁ \ s, f b := by
-      rw [← Finset.sum_sdiff ht₁, ← Finset.sum_sdiff ht₂, add_sub_add_right_eq_sub]
+    have : ((∏ b in t₂, f b) / ∏ b in t₁, f b) = (∏ b in t₂ \ s, f b) / ∏ b in t₁ \ s, f b := by
+      rw [← Finset.prod_sdiff ht₁, ← Finset.prod_sdiff ht₂, mul_div_mul_right_eq_div]
     simp only [this]
     exact hde _ (h _ Finset.sdiff_disjoint) _ (h _ Finset.sdiff_disjoint)
-#align cauchy_seq_finset_iff_vanishing cauchySeq_finset_iff_vanishing
+#align cauchy_seq_finset_iff_vanishing cauchySeq_finset_iff_sum_vanishing
 
-theorem cauchySeq_finset_iff_tsum_vanishing :
-    (CauchySeq fun s : Finset β ↦ ∑ b in s, f b) ↔
-      ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∑' b : t, f b) ∈ e := by
-  simp_rw [cauchySeq_finset_iff_vanishing, Set.disjoint_left, disjoint_left]
+@[to_additive]
+theorem cauchySeq_finset_iff_tprod_vanishing :
+    (CauchySeq fun s : Finset β ↦ ∏ b in s, f b) ↔
+      ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∏' b : t, f b) ∈ e := by
+  simp_rw [cauchySeq_finset_iff_prod_vanishing, Set.disjoint_left, disjoint_left]
   refine ⟨fun vanish e he ↦ ?_, fun vanish e he ↦ ?_⟩
   · obtain ⟨o, ho, o_closed, oe⟩ := exists_mem_nhds_isClosed_subset he
     obtain ⟨s, hs⟩ := vanish o ho
     refine ⟨s, fun t hts ↦ oe ?_⟩
-    by_cases ht : Summable fun a : t ↦ f a
+    by_cases ht : Multipliable fun a : t ↦ f a
     · classical
-      refine o_closed.mem_of_tendsto ht.hasSum (eventually_of_forall fun t' ↦ ?_)
-      rw [← sum_subtype_map_embedding fun _ _ ↦ by rfl]
+      refine o_closed.mem_of_tendsto ht.hasProd (eventually_of_forall fun t' ↦ ?_)
+      rw [← prod_subtype_map_embedding fun _ _ ↦ by rfl]
       apply hs
       simp_rw [Finset.mem_map]
       rintro _ ⟨b, -, rfl⟩
       exact hts b.prop
-    · exact tsum_eq_zero_of_not_summable ht ▸ mem_of_mem_nhds ho
+    · exact tprod_eq_one_of_not_multipliable ht ▸ mem_of_mem_nhds ho
   · obtain ⟨s, hs⟩ := vanish _ he
-    exact ⟨s, fun t hts ↦ (t.tsum_subtype f).symm ▸ hs _ hts⟩
+    exact ⟨s, fun t hts ↦ (t.tprod_subtype f).symm ▸ hs _ hts⟩
 
 variable [CompleteSpace α]
 
-theorem summable_iff_vanishing :
-    Summable f ↔ ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∑ b in t, f b) ∈ e := by
-  rw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_vanishing]
+@[to_additive]
+theorem multipliable_iff_vanishing :
+    Multipliable f ↔
+    ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b in t, f b) ∈ e := by
+  rw [multipliable_iff_cauchySeq_finset, cauchySeq_finset_iff_prod_vanishing]
 #align summable_iff_vanishing summable_iff_vanishing
 
-theorem summable_iff_tsum_vanishing : Summable f ↔
-    ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∑' b : t, f b) ∈ e := by
-  rw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_tsum_vanishing]
+@[to_additive]
+theorem multipliable_iff_tprod_vanishing : Multipliable f ↔
+    ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∏' b : t, f b) ∈ e := by
+  rw [multipliable_iff_cauchySeq_finset, cauchySeq_finset_iff_tprod_vanishing]
 
 -- TODO: generalize to monoid with a uniform continuous subtraction operator: `(a + b) - b = a`
-theorem Summable.summable_of_eq_zero_or_self (hf : Summable f) (h : ∀ b, g b = 0 ∨ g b = f b) :
-    Summable g := by
+@[to_additive]
+theorem Multipliable.multipliable_of_eq_one_or_self (hf : Multipliable f)
+    (h : ∀ b, g b = 1 ∨ g b = f b) : Multipliable g := by
   classical
-  exact summable_iff_vanishing.2 fun e he ↦
-    let ⟨s, hs⟩ := summable_iff_vanishing.1 hf e he
+  exact multipliable_iff_vanishing.2 fun e he ↦
+    let ⟨s, hs⟩ := multipliable_iff_vanishing.1 hf e he
     ⟨s, fun t ht ↦
-      have eq : ∑ b in t.filter fun b ↦ g b = f b, f b = ∑ b in t, g b :=
+      have eq : ∏ b in t.filter fun b ↦ g b = f b, f b = ∏ b in t, g b :=
         calc
-          ∑ b in t.filter fun b ↦ g b = f b, f b = ∑ b in t.filter fun b ↦ g b = f b, g b :=
-            Finset.sum_congr rfl fun b hb ↦ (Finset.mem_filter.1 hb).2.symm
-          _ = ∑ b in t, g b := by
-           {refine' Finset.sum_subset (Finset.filter_subset _ _) _
+          ∏ b in t.filter fun b ↦ g b = f b, f b = ∏ b in t.filter fun b ↦ g b = f b, g b :=
+            Finset.prod_congr rfl fun b hb ↦ (Finset.mem_filter.1 hb).2.symm
+          _ = ∏ b in t, g b := by
+           {refine' Finset.prod_subset (Finset.filter_subset _ _) _
             intro b hbt hb
             simp only [Finset.mem_filter, and_iff_right hbt] at hb
             exact (h b).resolve_right hb}
       eq ▸ hs _ <| Finset.disjoint_of_subset_left (Finset.filter_subset _ _) ht⟩
 #align summable.summable_of_eq_zero_or_self Summable.summable_of_eq_zero_or_self
 
-protected theorem Summable.indicator (hf : Summable f) (s : Set β) : Summable (s.indicator f) :=
-  hf.summable_of_eq_zero_or_self <| Set.indicator_eq_zero_or_self _ _
+@[to_additive]
+protected theorem Multipliable.mulIndicator (hf : Multipliable f) (s : Set β) :
+    Multipliable (s.mulIndicator f) :=
+  hf.multipliable_of_eq_one_or_self <| Set.mulIndicator_eq_one_or_self _ _
 #align summable.indicator Summable.indicator
 
-theorem Summable.comp_injective {i : γ → β} (hf : Summable f) (hi : Injective i) :
-    Summable (f ∘ i) := by
-  simpa only [Set.indicator_range_comp] using
-    (hi.summable_iff (fun x hx ↦ Set.indicator_of_not_mem hx _)).2 (hf.indicator (Set.range i))
+@[to_additive]
+theorem Multipliable.comp_injective {i : γ → β} (hf : Multipliable f) (hi : Injective i) :
+    Multipliable (f ∘ i) := by
+  simpa only [Set.mulIndicator_range_comp] using
+    (hi.multipliable_iff (fun x hx ↦ Set.mulIndicator_of_not_mem hx _)).2
+    (hf.mulIndicator (Set.range i))
 #align summable.comp_injective Summable.comp_injective
 
-theorem Summable.subtype (hf : Summable f) (s : Set β) : Summable (f ∘ (↑) : s → α) :=
+@[to_additive]
+theorem Multipliable.subtype (hf : Multipliable f) (s : Set β) : Multipliable (f ∘ (↑) : s → α) :=
   hf.comp_injective Subtype.coe_injective
 #align summable.subtype Summable.subtype
 
-theorem summable_subtype_and_compl {s : Set β} :
-    ((Summable fun x : s ↦ f x) ∧ Summable fun x : ↑sᶜ ↦ f x) ↔ Summable f :=
-  ⟨and_imp.2 Summable.add_compl, fun h ↦ ⟨h.subtype s, h.subtype sᶜ⟩⟩
+@[to_additive]
+theorem multipliable_subtype_and_compl {s : Set β} :
+    ((Multipliable fun x : s ↦ f x) ∧ Multipliable fun x : ↑sᶜ ↦ f x) ↔ Multipliable f :=
+  ⟨and_imp.2 Multipliable.mul_compl, fun h ↦ ⟨h.subtype s, h.subtype sᶜ⟩⟩
 #align summable_subtype_and_compl summable_subtype_and_compl
 
-theorem tsum_subtype_add_tsum_subtype_compl [T2Space α] {f : β → α} (hf : Summable f) (s : Set β) :
-    ∑' x : s, f x + ∑' x : ↑sᶜ, f x = ∑' x, f x :=
-  ((hf.subtype s).hasSum.add_compl (hf.subtype { x | x ∉ s }).hasSum).unique hf.hasSum
+@[to_additive]
+theorem tprod_subtype_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipliable f)
+    (s : Set β) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
+  ((hf.subtype s).hasProd.mul_compl (hf.subtype { x | x ∉ s }).hasProd).unique hf.hasProd
 #align tsum_subtype_add_tsum_subtype_compl tsum_subtype_add_tsum_subtype_compl
 
-theorem sum_add_tsum_subtype_compl [T2Space α] {f : β → α} (hf : Summable f) (s : Finset β) :
-    ∑ x in s, f x + ∑' x : { x // x ∉ s }, f x = ∑' x, f x := by
-  rw [← tsum_subtype_add_tsum_subtype_compl hf s]
-  simp only [Finset.tsum_subtype', add_right_inj]
+@[to_additive]
+theorem prod_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipliable f) (s : Finset β) :
+    (∏ x in s, f x) * ∏' x : { x // x ∉ s }, f x = ∏' x, f x := by
+  rw [← tprod_subtype_mul_tprod_subtype_compl hf s]
+  simp only [Finset.tprod_subtype', mul_right_inj]
   rfl
 #align sum_add_tsum_subtype_compl sum_add_tsum_subtype_compl
 
@@ -277,40 +320,45 @@ end UniformGroup
 
 section TopologicalGroup
 
-variable {G : Type*} [TopologicalSpace G] [AddCommGroup G] [TopologicalAddGroup G] {f : α → G}
+variable {G : Type*} [TopologicalSpace G] [CommGroup G] [TopologicalGroup G] {f : α → G}
 
-theorem Summable.vanishing (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (0 : G)) :
-    ∃ s : Finset α, ∀ t, Disjoint t s → (∑ k in t, f k) ∈ e := by
+@[to_additive]
+theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (1 : G)) :
+    ∃ s : Finset α, ∀ t, Disjoint t s → (∏ k in t, f k) ∈ e := by
   classical
-  letI : UniformSpace G := TopologicalAddGroup.toUniformSpace G
-  have : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
-  exact cauchySeq_finset_iff_vanishing.1 hf.hasSum.cauchySeq e he
+  letI : UniformSpace G := TopologicalGroup.toUniformSpace G
+  have : UniformGroup G := comm_topologicalGroup_is_uniform
+  exact cauchySeq_finset_iff_prod_vanishing.1 hf.hasProd.cauchySeq e he
 #align summable.vanishing Summable.vanishing
 
-theorem Summable.tsum_vanishing (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 0) :
-    ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∑' b : t, f b) ∈ e := by
+@[to_additive]
+theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 1) :
+    ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∏' b : t, f b) ∈ e := by
   classical
-  letI : UniformSpace G := TopologicalAddGroup.toUniformSpace G
-  have : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
-  exact cauchySeq_finset_iff_tsum_vanishing.1 hf.hasSum.cauchySeq e he
+  letI : UniformSpace G := TopologicalGroup.toUniformSpace G
+  have : UniformGroup G := comm_topologicalGroup_is_uniform
+  exact cauchySeq_finset_iff_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
-/-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
-space. This does not need a summability assumption, as otherwise all sums are zero. -/
-theorem tendsto_tsum_compl_atTop_zero (f : α → G) :
-    Tendsto (fun s : Finset α ↦ ∑' a : { x // x ∉ s }, f a) atTop (𝓝 0) := by
+/-- The product over the complement of a finset tends to `1` when the finset grows to cover the
+whole space. This does not need a multipliability assumption, as otherwise all such products are
+one. -/
+@[to_additive "The sum over the complement of a finset tends to `0` when the finset grows to cover
+the whole space. This does not need a summability assumption, as otherwise all such sums are zero."]
+theorem tendsto_tprod_compl_atTop_one (f : α → G) :
+    Tendsto (fun s : Finset α ↦ ∏' a : { x // x ∉ s }, f a) atTop (𝓝 1) := by
   classical
-  by_cases H : Summable f
+  by_cases H : Multipliable f
   · intro e he
-    obtain ⟨s, hs⟩ := H.tsum_vanishing he
+    obtain ⟨s, hs⟩ := H.tprod_vanishing he
     rw [Filter.mem_map, mem_atTop_sets]
     exact ⟨s, fun t hts ↦ hs _ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
-  · refine tendsto_const_nhds.congr fun _ ↦ (tsum_eq_zero_of_not_summable ?_).symm
-    rwa [Finset.summable_compl_iff]
+  · refine tendsto_const_nhds.congr fun _ ↦ (tprod_eq_one_of_not_multipliable ?_).symm
+    rwa [Finset.multipliable_compl_iff]
 #align tendsto_tsum_compl_at_top_zero tendsto_tsum_compl_atTop_zero
 
-/-- Series divergence test: if `f` is a convergent series, then `f x` tends to zero along
-`cofinite`. -/
-theorem Summable.tendsto_cofinite_zero (hf : Summable f) : Tendsto f cofinite (𝓝 0) := by
+@[to_additive "Series divergence test: if `f` is a convergent series, then `f x` tends to zero along
+`cofinite`."]
+theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofinite (𝓝 1) := by
   intro e he
   rw [Filter.mem_map]
   rcases hf.vanishing he with ⟨s, hs⟩
@@ -318,31 +366,33 @@ theorem Summable.tendsto_cofinite_zero (hf : Summable f) : Tendsto f cofinite (�
   · simpa using hs {x} (disjoint_singleton_left.2 hx)
 #align summable.tendsto_cofinite_zero Summable.tendsto_cofinite_zero
 
-theorem Summable.countable_support [FirstCountableTopology G] [T1Space G]
-    (hf : Summable f) : f.support.Countable := by
-  simpa only [ker_nhds] using hf.tendsto_cofinite_zero.countable_compl_preimage_ker
+@[to_additive]
+theorem Multipliable.countable_mulSupport [FirstCountableTopology G] [T1Space G]
+    (hf : Multipliable f) : f.mulSupport.Countable := by
+  simpa only [ker_nhds] using hf.tendsto_cofinite_one.countable_compl_preimage_ker
 
-theorem summable_const_iff [Infinite β] [T2Space G] (a : G) :
-    Summable (fun _ : β ↦ a) ↔ a = 0 := by
+@[to_additive]
+theorem multipliable_const_iff [Infinite β] [T2Space G] (a : G) :
+    Multipliable (fun _ : β ↦ a) ↔ a = 1 := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · by_contra ha
-    have : {a}ᶜ ∈ 𝓝 0 := compl_singleton_mem_nhds (Ne.symm ha)
+    have : {a}ᶜ ∈ 𝓝 1 := compl_singleton_mem_nhds (Ne.symm ha)
     have : Finite β := by
-      simpa [← Set.finite_univ_iff] using h.tendsto_cofinite_zero this
+      simpa [← Set.finite_univ_iff] using h.tendsto_cofinite_one this
     exact not_finite β
   · rintro rfl
-    exact summable_zero
+    exact multipliable_one
 
-@[simp]
-theorem tsum_const [T2Space G] (a : G) : ∑' _ : β, a = Nat.card β • a := by
+@[to_additive (attr := simp)]
+theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := by
   rcases finite_or_infinite β with hβ|hβ
   · letI : Fintype β := Fintype.ofFinite β
-    rw [tsum_eq_sum (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
-    simp only [sum_const, Nat.card_eq_fintype_card, Fintype.card]
-  · simp only [Nat.card_eq_zero_of_infinite, zero_smul]
-    rcases eq_or_ne a 0 with rfl|ha
+    rw [tprod_eq_prod (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
+    simp only [prod_const, Nat.card_eq_fintype_card, Fintype.card]
+  · simp only [Nat.card_eq_zero_of_infinite, pow_zero]
+    rcases eq_or_ne a 1 with rfl|ha
     · simp
-    · apply tsum_eq_zero_of_not_summable
-      simpa [summable_const_iff] using ha
+    · apply tprod_eq_one_of_not_multipliable
+      simpa [multipliable_const_iff] using ha
 
 end TopologicalGroup
