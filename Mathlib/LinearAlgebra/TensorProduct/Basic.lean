@@ -1022,6 +1022,10 @@ theorem congr_symm_tmul (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (p : P) (q : Q) 
   rfl
 #align tensor_product.congr_symm_tmul TensorProduct.congr_symm_tmul
 
+theorem congr_symm (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
+    (congr f g).symm = congr f.symm g.symm :=
+  rfl
+
 variable (R M N P Q)
 
 /-- A tensor product analogue of `mul_left_comm`. -/
@@ -1120,10 +1124,18 @@ def lTensor (f : N →ₗ[R] P) : M ⊗[R] N →ₗ[R] M ⊗[R] P :=
   TensorProduct.map id f
 #align linear_map.ltensor LinearMap.lTensor
 
-/-- `rTensor f M : N₁ ⊗ M →ₗ N₂ ⊗ M` is the natural linear map induced by `f : N₁ →ₗ N₂`. -/
+/-- `rTensor M f : N₁ ⊗ M →ₗ N₂ ⊗ M` is the natural linear map induced by `f : N₁ →ₗ N₂`. -/
 def rTensor (f : N →ₗ[R] P) : N ⊗[R] M →ₗ[R] P ⊗[R] M :=
   TensorProduct.map f id
 #align linear_map.rtensor LinearMap.rTensor
+
+theorem _root_.TensorProduct.coe_congr_left_refl (f : N ≃ₗ[R] P) :
+    (TensorProduct.congr (LinearEquiv.refl R M) f).toLinearMap = lTensor M f :=
+  rfl
+
+theorem _root_.TensorProduct.coe_congr_right_refl (f : N ≃ₗ[R] P) :
+    (TensorProduct.congr f (LinearEquiv.refl R M)).toLinearMap = rTensor M f :=
+  rfl
 
 variable (g : P →ₗ[R] Q) (f : N →ₗ[R] P)
 
