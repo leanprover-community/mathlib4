@@ -436,6 +436,119 @@ lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fi
       · rwa [succ_le_castSucc_iff, lt_pred_iff]
       rw [succ_pred]
 
+lemma factor_δ_comp_lt {n m : ℕ } (f : ([m] : SimplexCategory) ⟶ [n+2])
+    (i1 i2 : Fin (n+3)) (i1_lt_i2 : i1<i2):
+    factor_δ (factor_δ f i2)  (Fin.predAbove (Fin.last (n+1)) i1) =
+    factor_δ (factor_δ f (i1))
+    (Fin.predAbove (0 : Fin (n+2)) i2) := by
+      unfold factor_δ
+      rw [Category.assoc,Category.assoc]
+      congr 1
+      have hi2: 0<i2 := by {contrapose! i1_lt_i2; simp_all}
+      have hi1: i1≤ Fin.castSucc (Fin.last (n+1)) := by
+        let h2 := (Fin.le_last i2)
+        rw [Fin.le_def] at h2
+        rw [Fin.lt_def] at i1_lt_i2
+        rw [Fin.le_def,Fin.coe_castSucc, Fin.val_last]
+        linarith
+      rw [Fin.predAbove_above 0 i2 hi2,Fin.predAbove_below (Fin.last (n+1)) i1 hi1]
+      by_cases hi22: i2=1
+      · subst hi22
+        have hi11 : i1=0:=by
+          rw [Fin.eq_iff_veq]
+          rw [Fin.lt_def] at i1_lt_i2
+          simpa using i1_lt_i2
+        subst hi11
+        rfl
+      · let l' := Fin.pred i2 (Fin.pos_iff_ne_zero.mp hi2)
+        have hl': 0< l':= by
+            rw [Fin.lt_def] at hi2
+            rw [Fin.eq_iff_veq,Fin.val_one] at hi22
+            rw [Fin.lt_def,Fin.val_zero, Fin.coe_pred, tsub_pos_iff_lt]
+            contrapose! hi22
+            exact Nat.le_antisymm hi22 hi2
+        have h12: l' = Fin.succ (Fin.predAbove 0 l'):= by
+          rw [Fin.eq_iff_veq,Fin.coe_pred, Fin.val_succ,Fin.predAbove_above 0 l' hl',Fin.coe_pred
+          ,Fin.coe_pred,tsub_add_cancel_of_le]
+          exact hl'
+        change σ l' ≫ _ =_
+        rw [h12,← σ_comp_σ]
+        congr 2
+        · rw [Fin.eq_iff_veq,Fin.coe_castSucc]
+          unfold Fin.predAbove
+          split <;> split
+          any_goals simp only [Fin.coe_castPred, Fin.coe_pred]
+          all_goals
+            rename_i h1 h2
+            simp only [Fin.castSucc_zero, Fin.lt_def, Fin.val_zero, Fin.coe_castPred, not_lt,
+              nonpos_iff_eq_zero] at h1 h2
+            simp only [h1,h2, ge_iff_le, zero_le, tsub_eq_zero_of_le]
+        · rw [Fin.le_def,Fin.predAbove_above 0 l' hl',Fin.coe_pred]
+          unfold Fin.predAbove
+          split
+          · simp
+            rw [Fin.le_def] at hi1
+            rw [Fin.lt_def] at hi2
+            rw [tsub_add_cancel_of_le]
+            exact (Nat.lt_iff_le_pred hi2).mp i1_lt_i2
+            exact hl'
+          · rename_i h1
+            rw [Fin.lt_def,Fin.castSucc_zero, Fin.val_zero, Fin.coe_castPred, not_lt,
+            nonpos_iff_eq_zero] at h1
+            simp only [Fin.coe_castPred,h1]
+            exact Nat.zero_le (↑i2 - 1 - 1)
+
+lemma factor_δ_comp_spec_lt {n m : ℕ } {f : ([m] : SimplexCategory) ⟶ [n+2]}
+    {i1 i2 : Fin (n+3)} (i1_lt_i2 : i1<i2)
+    (exclude_i1 :  ∀ k, f.toOrderHom k ≠  i1)
+    (exclude_i2 :  ∀ k, f.toOrderHom k ≠  i2):
+    (factor_δ (factor_δ f i1)
+    (Fin.predAbove 0 i2)) ≫ δ (Fin.predAbove 0 i2)
+    = factor_δ f i1 := by
+  apply factor_δ_spec
+  intro x
+  by_contra hXp
+  apply (congrArg ((δ i1).toOrderHom )) at hXp
+  change  ((factor_δ f i1)≫δ _ ).toOrderHom x = _ at hXp
+  rw [(factor_δ_spec f i1 exclude_i1)] at hXp
+  have hi2: 0<i2 := by
+     contrapose! i1_lt_i2
+     simp_all
+  have hi22:  (Hom.toOrderHom (δ i1)) (Fin.predAbove 0 i2)= i2 := by
+    change Fin.succAbove i1 _=_
+    rw [Fin.predAbove_above 0 i2 hi2,Fin.succAbove_above i1 _]
+    exact Fin.succ_pred i2 (LT.lt.ne' (LE.le.trans_lt (Fin.zero_le (Fin.castSucc 0)) hi2))
+    exact (Nat.lt_iff_le_pred hi2).mp i1_lt_i2
+  rw [hi22] at hXp
+  exact exclude_i2 x hXp
+
+lemma factor_δ_comp_spec_lt' {n m : ℕ } {f : ([m] : SimplexCategory) ⟶ [n+2]}
+    {i1 i2 : Fin (n+3)} (i1_lt_i2 : i1<i2)
+    (exclude_i1 :  ∀ k, f.toOrderHom k ≠  i1)
+    (exclude_i2 :  ∀ k, f.toOrderHom k ≠  i2):
+    (factor_δ (factor_δ f i2)
+    (Fin.predAbove (Fin.last (n+1)) i1))≫ δ (Fin.predAbove (Fin.last (n+1)) i1)
+    = (factor_δ f i2) := by
+  apply factor_δ_spec
+  intro x
+  by_contra hXp
+  apply (congrArg ((δ i2).toOrderHom )) at hXp
+  change  ((factor_δ f i2)≫δ _ ).toOrderHom x = _ at hXp
+  rw [(factor_δ_spec f i2 exclude_i2)] at hXp
+  have hi1: i1≤ Fin.castSucc (Fin.last (n+1)) := by
+      let h2 := (Fin.le_last i2)
+      rw [Fin.le_def] at h2
+      rw [Fin.lt_def] at i1_lt_i2
+      rw [Fin.le_def,Fin.coe_castSucc, Fin.val_last]
+      linarith
+  have hi12: (Hom.toOrderHom (δ i2)) (Fin.predAbove (Fin.last (n+1)) i1)= i1 := by
+    change Fin.succAbove i2 _=_
+    rw [Fin.predAbove_below (Fin.last (n+1)) i1 hi1,Fin.succAbove_below i2 ]
+    rfl
+    exact i1_lt_i2
+  rw [hi12] at hXp
+  exact exclude_i1 x hXp
+
 end Generators
 
 section Skeleton
