@@ -2716,6 +2716,7 @@ import Mathlib.Logic.Function.FromTypes
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.Function.OfArity
 import Mathlib.Logic.Godel.GodelBetaFunction
+import Mathlib.Logic.Godel.PartArith
 import Mathlib.Logic.Hydra
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Lemmas
