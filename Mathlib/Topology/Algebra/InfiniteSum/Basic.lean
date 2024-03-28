@@ -14,6 +14,7 @@ This file contains many simple lemmas on `tsum`, `HasSum` etc, which are placed 
 keep the basic file of definitions as short as possible.
 
 Results requiring a group (rather than monoid) structure on the target should go in `Group.lean`.
+
 -/
 
 noncomputable section
@@ -391,7 +392,8 @@ theorem tprod_fintype [Fintype β] (f : β → α) : ∏' b, f b = ∏ b, f b :=
 @[to_additive]
 theorem prod_eq_tprod_mulIndicator (f : β → α) (s : Finset β) :
     ∏ x in s, f x = ∏' x, Set.mulIndicator (↑s) f x := by
-  rw [tprod_eq_prod' (Set.mulSupport_mulIndicator_subset), Finset.prod_mulIndicator_subset _ Finset.Subset.rfl]
+  rw [tprod_eq_prod' (Set.mulSupport_mulIndicator_subset),
+      Finset.prod_mulIndicator_subset _ Finset.Subset.rfl]
 #align sum_eq_tsum_indicator sum_eq_tsum_indicator
 
 @[to_additive]
