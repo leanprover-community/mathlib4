@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Factorial.Basic
@@ -446,3 +447,29 @@ def evalRatDen : PositivityExt where eval {u α} _ _ e := do
     assumeInstancesCommute
     pure $ .positive q(den_pos $a)
   | _, _ => throwError "not Rat.num"
+
+/-- Extension for `posPart`. `a⁺` is always nonegative, and positive if `a` is. -/
+@[positivity _⁺]
+def evalPosPart : PositivityExt where eval zα pα e := do
+  match e with
+  | ~q(@posPart _ $instαlat $instαgrp $a) =>
+    assertInstancesCommute
+    match ← catchNone (core zα pα a) with
+    | .positive pf => return .positive q(posPart_pos $pf)
+    | _ => return .nonnegative q(posPart_nonneg $a)
+  | _ => throwError "not `posPart`"
+
+/-- Extension for `negPart`. `a⁻` is always nonegative. -/
+@[positivity _⁻]
+def evalNegPart : PositivityExt where eval _ _ e := do
+  match e with
+  | ~q(@negPart _ $instαlat $instαgrp $a) =>
+    assertInstancesCommute
+    return .nonnegative q(negPart_nonneg $a)
+  | _ => throwError "not `negPart`"
+
+-- There seems to be a bug in `Positivity.core` that makes it fail (instead of returning `.none`) in
+-- the first example
+example (a : ℤ) : 0 ≤ a⁺ := by positivity
+example (a : ℤ) (ha : 0 < a) : 0 < a⁺ := by positivity
+example (a : ℤ) : 0 ≤ a⁻ := by positivity
