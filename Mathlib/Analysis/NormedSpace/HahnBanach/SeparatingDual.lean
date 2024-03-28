@@ -146,12 +146,14 @@ theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
 open Filter
 open scoped Topology
 
+section
+variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [SeparatingDual 𝕜 E] [Nontrivial E]
+
 /-- If a space of linear maps from `E` to `F` is complete, and `E` is nontrivial, then `F` is
 complete. -/
-lemma completeSpace_of_completeSpace_continuousLinearMap
-    {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [SeparatingDual 𝕜 E]
-    [CompleteSpace (E →L[𝕜] F)] [Nontrivial E] : CompleteSpace F := by
+lemma completeSpace_of_completeSpace_continuousLinearMap [CompleteSpace (E →L[𝕜] F)] :
+    CompleteSpace F := by
   obtain ⟨v, hv⟩ : ∃ (v : E), v ≠ 0 := exists_ne 0
   obtain ⟨φ, hφ⟩ : ∃ φ : E →L[𝕜] 𝕜, φ v = 1 := exists_eq_one hv
   refine' Metric.complete_of_cauchySeq_tendsto fun f hf => _
@@ -163,6 +165,12 @@ lemma completeSpace_of_completeSpace_continuousLinearMap
     have : Continuous (fun (i : E →L[𝕜] F) ↦ i v) := by continuity
     exact (this.tendsto _).comp ha
   simpa [g, ContinuousLinearMap.smulRightL, hφ]
+
+lemma completeSpace_continuousLinearMap_iff :
+    CompleteSpace (E →L[𝕜] F) ↔ CompleteSpace F :=
+  ⟨fun h ↦ completeSpace_of_completeSpace_continuousLinearMap 𝕜 E F, fun h ↦ by infer_instance⟩
+
+end
 
 end Field
 
