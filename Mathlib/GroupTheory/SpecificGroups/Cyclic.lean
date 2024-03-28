@@ -454,7 +454,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   by_contra h0
   -- Must qualify `Finset.card_eq_zero` because of leanprover/lean4#2849
   -- Must specify the argument `α` to avoid mathlib4#10830
-  simp_rw [not_lt, _root_.le_zero_iff (α := ℕ), Finset.card_eq_zero] at h0
+  simp_rw [not_lt, Nat.le_zero, Finset.card_eq_zero] at h0
   apply lt_irrefl c
   calc
     c = ∑ m in c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
