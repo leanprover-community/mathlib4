@@ -62,20 +62,23 @@ open Filter (Tendsto)
 
 open Metric ContinuousLinearMap
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 R E F G : Type*}
 
-/-- A function `f` satisfies `IsBoundedLinearMap 𝕜 f` if it is linear and satisfies the
+section Semiring
+
+variable [Semiring R] [NormedAddCommGroup E] [Module R E] [NormedAddCommGroup F] [Module R F]
+  [NormedAddCommGroup G] [Module R G]
+
+/-- A function `f` satisfies `IsBoundedLinearMap R f` if it is linear and satisfies the
 inequality `‖f x‖ ≤ M * ‖x‖` for some positive constant `M`. -/
-structure IsBoundedLinearMap (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E → F) extends
-  IsLinearMap 𝕜 f : Prop where
+structure IsBoundedLinearMap (R : Type*) {E F : Type*} [Semiring R] [NormedAddCommGroup E]
+    [Module R E] [NormedAddCommGroup F] [Module R F] (f : E → F) extends
+    IsLinearMap R f : Prop where
   bound : ∃ M, 0 < M ∧ ∀ x : E, ‖f x‖ ≤ M * ‖x‖
 #align is_bounded_linear_map IsBoundedLinearMap
 
-theorem IsLinearMap.with_bound {f : E → F} (hf : IsLinearMap 𝕜 f) (M : ℝ)
-    (h : ∀ x : E, ‖f x‖ ≤ M * ‖x‖) : IsBoundedLinearMap 𝕜 f :=
+theorem IsLinearMap.with_bound {f : E → F} (hf : IsLinearMap R f) (M : ℝ)
+    (h : ∀ x : E, ‖f x‖ ≤ M * ‖x‖) : IsBoundedLinearMap R f :=
   ⟨hf,
     by_cases
       (fun (this : M ≤ 0) =>
@@ -84,65 +87,62 @@ theorem IsLinearMap.with_bound {f : E → F} (hf : IsLinearMap 𝕜 f) (M : ℝ)
       fun (this : ¬M ≤ 0) => ⟨M, lt_of_not_ge this, h⟩⟩
 #align is_linear_map.with_bound IsLinearMap.with_bound
 
-/-- A continuous linear map satisfies `IsBoundedLinearMap` -/
-theorem ContinuousLinearMap.isBoundedLinearMap (f : E →L[𝕜] F) : IsBoundedLinearMap 𝕜 f :=
-  { f.toLinearMap.isLinear with bound := f.bound }
-#align continuous_linear_map.is_bounded_linear_map ContinuousLinearMap.isBoundedLinearMap
-
 namespace IsBoundedLinearMap
 
-/-- Construct a linear map from a function `f` satisfying `IsBoundedLinearMap 𝕜 f`. -/
-def toLinearMap (f : E → F) (h : IsBoundedLinearMap 𝕜 f) : E →ₗ[𝕜] F :=
+/-- Construct a linear map from a function `f` satisfying `IsBoundedLinearMap R f`. -/
+def toLinearMap (f : E → F) (h : IsBoundedLinearMap R f) : E →ₗ[R] F :=
   IsLinearMap.mk' _ h.toIsLinearMap
 #align is_bounded_linear_map.to_linear_map IsBoundedLinearMap.toLinearMap
 
 /-- Construct a continuous linear map from `IsBoundedLinearMap`. -/
-def toContinuousLinearMap {f : E → F} (hf : IsBoundedLinearMap 𝕜 f) : E →L[𝕜] F :=
+def toContinuousLinearMap {f : E → F} (hf : IsBoundedLinearMap R f) : E →L[R] F :=
   { toLinearMap f hf with
     cont :=
       let ⟨C, _, hC⟩ := hf.bound
       AddMonoidHomClass.continuous_of_bound (toLinearMap f hf) C hC }
 #align is_bounded_linear_map.to_continuous_linear_map IsBoundedLinearMap.toContinuousLinearMap
 
-theorem zero : IsBoundedLinearMap 𝕜 fun _ : E => (0 : F) :=
-  (0 : E →ₗ[𝕜] F).isLinear.with_bound 0 <| by simp [le_refl]
+theorem zero : IsBoundedLinearMap R fun _ : E => (0 : F) :=
+  (0 : E →ₗ[R] F).isLinear.with_bound 0 <| by simp [le_refl]
 #align is_bounded_linear_map.zero IsBoundedLinearMap.zero
 
-theorem id : IsBoundedLinearMap 𝕜 fun x : E => x :=
+theorem id : IsBoundedLinearMap R fun x : E => x :=
   LinearMap.id.isLinear.with_bound 1 <| by simp [le_refl]
 #align is_bounded_linear_map.id IsBoundedLinearMap.id
 
-theorem fst : IsBoundedLinearMap 𝕜 fun x : E × F => x.1 := by
-  refine' (LinearMap.fst 𝕜 E F).isLinear.with_bound 1 fun x => _
+theorem fst : IsBoundedLinearMap R fun x : E × F => x.1 := by
+  refine' (LinearMap.fst R E F).isLinear.with_bound 1 fun x => _
   rw [one_mul]
   exact le_max_left _ _
 #align is_bounded_linear_map.fst IsBoundedLinearMap.fst
 
-theorem snd : IsBoundedLinearMap 𝕜 fun x : E × F => x.2 := by
-  refine' (LinearMap.snd 𝕜 E F).isLinear.with_bound 1 fun x => _
+theorem snd : IsBoundedLinearMap R fun x : E × F => x.2 := by
+  refine' (LinearMap.snd R E F).isLinear.with_bound 1 fun x => _
   rw [one_mul]
   exact le_max_right _ _
 #align is_bounded_linear_map.snd IsBoundedLinearMap.snd
 
 variable {f g : E → F}
 
-theorem smul (c : 𝕜) (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 (c • f) :=
+theorem smul [SeminormedRing 𝕜] [Module 𝕜 F] [BoundedSMul 𝕜 F] [SMulCommClass R 𝕜 F]
+    (c : 𝕜) (hf : IsBoundedLinearMap R f) :
+    IsBoundedLinearMap R (c • f) :=
   let ⟨hlf, M, _, hM⟩ := hf
   (c • hlf.mk' f).isLinear.with_bound (‖c‖ * M) fun x =>
     calc
-      ‖c • f x‖ = ‖c‖ * ‖f x‖ := norm_smul c (f x)
+      ‖c • f x‖ ≤ ‖c‖ * ‖f x‖ := norm_smul_le c (f x)
       _ ≤ ‖c‖ * (M * ‖x‖) := (mul_le_mul_of_nonneg_left (hM _) (norm_nonneg _))
       _ = ‖c‖ * M * ‖x‖ := (mul_assoc _ _ _).symm
 
 #align is_bounded_linear_map.smul IsBoundedLinearMap.smul
 
-theorem neg (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 fun e => -f e := by
-  rw [show (fun e => -f e) = fun e => (-1 : 𝕜) • f e by funext; simp]
-  exact smul (-1) hf
+theorem neg (hf : IsBoundedLinearMap R f) : IsBoundedLinearMap R fun e => -f e :=
+  let ⟨hlf, M, _, hM⟩ := hf
+  (-hlf.mk' f).isLinear.with_bound M fun x => by simpa using hM x
 #align is_bounded_linear_map.neg IsBoundedLinearMap.neg
 
-theorem add (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
-    IsBoundedLinearMap 𝕜 fun e => f e + g e :=
+theorem add (hf : IsBoundedLinearMap R f) (hg : IsBoundedLinearMap R g) :
+    IsBoundedLinearMap R fun e => f e + g e :=
   let ⟨hlf, Mf, _, hMf⟩ := hf
   let ⟨hlg, Mg, _, hMg⟩ := hg
   (hlf.mk' _ + hlg.mk' _).isLinear.with_bound (Mf + Mg) fun x =>
@@ -152,16 +152,21 @@ theorem add (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
 
 #align is_bounded_linear_map.add IsBoundedLinearMap.add
 
-theorem sub (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
-    IsBoundedLinearMap 𝕜 fun e => f e - g e := by simpa [sub_eq_add_neg] using add hf (neg hg)
+theorem sub (hf : IsBoundedLinearMap R f) (hg : IsBoundedLinearMap R g) :
+    IsBoundedLinearMap R fun e => f e - g e := by simpa [sub_eq_add_neg] using add hf (neg hg)
 #align is_bounded_linear_map.sub IsBoundedLinearMap.sub
 
-theorem comp {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) (hf : IsBoundedLinearMap 𝕜 f) :
-    IsBoundedLinearMap 𝕜 (g ∘ f) :=
-  (hg.toContinuousLinearMap.comp hf.toContinuousLinearMap).isBoundedLinearMap
+theorem comp {g : F → G} (hg : IsBoundedLinearMap R g) (hf : IsBoundedLinearMap R f) :
+    IsBoundedLinearMap R (g ∘ f) :=
+  let ⟨hlf, Mf, _, hMf⟩ := hf
+  let ⟨hlg, Mg, _, hMg⟩ := hg
+  (hlg.mk' _ ∘ₗ hlf.mk' _).isLinear.with_bound (Mg * Mf) fun x => by
+    calc
+      ‖g (f x)‖ ≤ Mg * ‖f x‖ := hMg (f x)
+      _ ≤ Mg * Mf * ‖x‖ := by rw [mul_assoc]; gcongr; apply hMf
 #align is_bounded_linear_map.comp IsBoundedLinearMap.comp
 
-protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
+protected theorem tendsto (x : E) (hf : IsBoundedLinearMap R f) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
   let ⟨hf, M, _, hM⟩ := hf
   tendsto_iff_norm_sub_tendsto_zero.2 <|
     squeeze_zero (fun e => norm_nonneg _)
@@ -174,11 +179,11 @@ protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (
       tendsto_const_nhds.mul (tendsto_norm_sub_self _))
 #align is_bounded_linear_map.tendsto IsBoundedLinearMap.tendsto
 
-theorem continuous (hf : IsBoundedLinearMap 𝕜 f) : Continuous f :=
+theorem continuous (hf : IsBoundedLinearMap R f) : Continuous f :=
   continuous_iff_continuousAt.2 fun _ => hf.tendsto _
 #align is_bounded_linear_map.continuous IsBoundedLinearMap.continuous
 
-theorem lim_zero_bounded_linear_map (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 0) (𝓝 0) :=
+theorem lim_zero_bounded_linear_map (hf : IsBoundedLinearMap R f) : Tendsto f (𝓝 0) (𝓝 0) :=
   (hf.1.mk' _).map_zero ▸ continuous_iff_continuousAt.1 hf.continuous 0
 #align is_bounded_linear_map.lim_zero_bounded_linear_map IsBoundedLinearMap.lim_zero_bounded_linear_map
 
@@ -186,19 +191,19 @@ section
 
 open Asymptotics Filter
 
-theorem isBigO_id {f : E → F} (h : IsBoundedLinearMap 𝕜 f) (l : Filter E) : f =O[l] fun x => x :=
+theorem isBigO_id {f : E → F} (h : IsBoundedLinearMap R f) (l : Filter E) : f =O[l] fun x => x :=
   let ⟨_, _, hM⟩ := h.bound
   IsBigO.of_bound _ (mem_of_superset univ_mem fun x _ => hM x)
 set_option linter.uppercaseLean3 false in
 #align is_bounded_linear_map.is_O_id IsBoundedLinearMap.isBigO_id
 
-theorem isBigO_comp {E : Type*} {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) {f : E → F}
+theorem isBigO_comp {E : Type*} {g : F → G} (hg : IsBoundedLinearMap R g) {f : E → F}
     (l : Filter E) : (fun x' => g (f x')) =O[l] f :=
   (hg.isBigO_id ⊤).comp_tendsto le_top
 set_option linter.uppercaseLean3 false in
 #align is_bounded_linear_map.is_O_comp IsBoundedLinearMap.isBigO_comp
 
-theorem isBigO_sub {f : E → F} (h : IsBoundedLinearMap 𝕜 f) (l : Filter E) (x : E) :
+theorem isBigO_sub {f : E → F} (h : IsBoundedLinearMap R f) (l : Filter E) (x : E) :
     (fun x' => f (x' - x)) =O[l] fun x' => x' - x :=
   isBigO_comp h l
 set_option linter.uppercaseLean3 false in
@@ -207,6 +212,17 @@ set_option linter.uppercaseLean3 false in
 end
 
 end IsBoundedLinearMap
+
+end Semiring
+
+variable [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
+variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
+
+/-- A continuous linear map satisfies `IsBoundedLinearMap` -/
+theorem ContinuousLinearMap.isBoundedLinearMap (f : E →L[𝕜] F) : IsBoundedLinearMap 𝕜 f :=
+  { f.toLinearMap.isLinear with bound := f.bound }
+#align continuous_linear_map.is_bounded_linear_map ContinuousLinearMap.isBoundedLinearMap
 
 section
 
