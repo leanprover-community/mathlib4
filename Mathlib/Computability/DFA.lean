@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson
+Authors: Fox Thomson, Chris Wong
 -/
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.List.Indexes
 import Mathlib.Computability.Language
 import Mathlib.Tactic.NormNum
 
@@ -91,8 +92,14 @@ theorem evalFrom_of_append (start : σ) (x y : List α) :
   x.foldl_append _ _ y
 #align DFA.eval_from_of_append DFA.evalFrom_of_append
 
+/-- `M.acceptsFrom` is the language of `x` such that `M.evalFrom start x` is an accept state. -/
+def acceptsFrom (start : σ) : Language α := {x | M.evalFrom start x ∈ M.accept}
+
+theorem mem_acceptsFrom (start : σ) (x : List α) :
+    x ∈ M.acceptsFrom start ↔ M.evalFrom start x ∈ M.accept := by rfl
+
 /-- `M.accepts` is the language of `x` such that `M.eval x` is an accept state. -/
-def accepts : Language α := {x | M.eval x ∈ M.accept}
+def accepts : Language α := M.acceptsFrom M.start
 #align DFA.accepts DFA.accepts
 
 theorem mem_accepts (x : List α) : x ∈ M.accepts ↔ M.evalFrom M.start x ∈ M.accept := by rfl
@@ -165,5 +172,40 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
   have h := M.evalFrom_of_pow hb hb'
   rwa [mem_accepts, evalFrom_of_append, evalFrom_of_append, h, hc]
 #align DFA.pumping_lemma DFA.pumping_lemma
+
+section equivOfStates
+
+variable {σ' : Type*} (f : σ ≃ σ') (M : DFA α σ)
+
+/-- Lift an equivalence on states to an equivalence on DFAs. -/
+def equivOfStates : DFA α σ ≃ DFA α σ' where
+  toFun M := ⟨fun s a => f (M.step (f.symm s) a), f M.start, f '' M.accept⟩
+  invFun M := ⟨fun s a => f.symm (M.step (f s) a), f.symm M.start, f.symm '' M.accept⟩
+  left_inv M := by simp
+  right_inv M := by simp
+
+@[simp]
+theorem equivOfStates_step (s : σ') (a : α) :
+    (equivOfStates f M).step s a = f (M.step (f.symm s) a) := rfl
+
+@[simp]
+theorem equivOfStates_start : (equivOfStates f M).start = f M.start := rfl
+
+@[simp]
+theorem equivOfStates_accept : (equivOfStates f M).accept = f '' M.accept := rfl
+
+@[simp]
+theorem equivOfStates_evalFrom (s : σ) (x : List α) :
+    (equivOfStates f M).evalFrom (f s) x = f (M.evalFrom s x) := by
+  induction x using List.list_reverse_induction with
+  | base => simp
+  | ind x a ih => simp [ih]
+
+@[simp]
+theorem equivOfStates_accepts : (equivOfStates f M).accepts = M.accepts := by
+  ext x
+  simp [mem_accepts]
+
+end equivOfStates
 
 end DFA
