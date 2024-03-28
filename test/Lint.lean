@@ -29,9 +29,18 @@ run_cmd Lean.Elab.Command.liftTermElabM do
 
 namespace Nat
 /--
-warning: The namespace 'Nat' is duplicated in the declaration 'Foo.Nat.Nat.Nats' [linter.dupNamespace]
+warning:
+The namespace 'Nat' is duplicated in the declaration 'Foo.Nat.Nat.Nats' [linter.dupNamespace]
 -/
 #guard_msgs in
 alias Nat.Nats := Nat
 
 end Nat
+end Foo
+
+namespace add
+/--
+warning: The namespace 'add' is duplicated in the declaration 'add.add' [linter.dupNamespace]
+-/
+#guard_msgs in
+export Nat (add)
