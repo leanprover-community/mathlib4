@@ -26,12 +26,10 @@ We prove the following facts:
   is bounded.
 -/
 
-
 variable {ι : Type*} {E P : Type*}
 
 open Metric Set
-
-open Pointwise Convex
+open scoped Convex
 
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
 variable {s t : Set E}
@@ -155,3 +153,87 @@ theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
   exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
 #align is_connected_set_of_same_ray_and_ne_zero isConnected_setOf_sameRay_and_ne_zero
+
+section
+
+variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
+
+/-- For `x` and `y` in a real vector space, if `x ≠ 0` and `0` is in the segment from
+`x` to `y` then `y` is on the line spanned by `x`.  -/
+theorem mem_span_of_zero_mem_segment {x y : E} (hx : x ≠ 0) (h : (0 : E) ∈ [x -[ℝ] y]) :
+    y ∈ Submodule.span ℝ ({x} : Set E) := by
+  rw [segment_eq_image] at h
+  rcases h with ⟨t, -, htxy⟩
+  rw [Submodule.mem_span_singleton]
+  use (t - 1) / t
+  have : t ≠ 0 := by
+    intro h
+    rw [h] at htxy
+    refine hx ?_
+    simpa using htxy
+  rw [← smul_eq_zero_iff_right (neg_ne_zero.mpr <| inv_ne_zero this), smul_add, smul_smul,
+    smul_smul, ← neg_one_mul, mul_assoc, mul_assoc, inv_mul_cancel this, mul_one, neg_one_smul,
+    add_neg_eq_zero] at htxy
+  convert htxy using 2
+  ring
+
+variable [TopologicalAddGroup E] [ContinuousSMul ℝ E]
+
+open AffineMap in
+/-- For `x` and `y` in a real vector space, if `x ≠ 0` and `y` is not on the line
+spanned by `x` then `x` and `y` can be joined by a path in the complement of `{0}`.  -/
+theorem joinedIn_compl_zero_of_not_mem_span {x y : E} (hx : x ≠ 0)
+    (hy : y ∉ Submodule.span ℝ {x}) : JoinedIn ({0}ᶜ : Set E) x y := by
+  refine JoinedIn.ofLine lineMap_continuous.continuousOn
+    (lineMap_apply_zero _ _) (lineMap_apply_one _ _) ?_
+  rw [← segment_eq_image_lineMap]
+  exact fun t ht h' ↦ (mt (mem_span_of_zero_mem_segment hx) hy) (h' ▸ ht)
+
+/-- In a real vector space whose dimension is at least two,
+the complement of `{0}` is path-connected. -/
+theorem isPathConnected_compl_zero_of_two_le_dim (hdim : 2 ≤ Module.rank ℝ E) :
+    IsPathConnected ({0}ᶜ : Set E) := by
+  rw [isPathConnected_iff]
+  constructor
+  · suffices 0 < Module.rank ℝ E by rwa [rank_pos_iff_exists_ne_zero] at this
+    exact lt_of_lt_of_le (by norm_num) hdim
+  · intro x hx y hy
+    by_cases h : y ∈ Submodule.span ℝ {x}
+    · rsuffices ⟨z, hzx⟩ : ∃ z, z ∉ Submodule.span ℝ {x}
+      · have hzy : z ∉ Submodule.span ℝ {y} := fun h' ↦
+          hzx (Submodule.mem_span_singleton_trans h' h)
+        exact (joinedIn_compl_zero_of_not_mem_span hx hzx).trans
+          (joinedIn_compl_zero_of_not_mem_span hy hzy).symm
+      by_contra h'
+      push_neg at h'
+      rw [← Submodule.eq_top_iff'] at h'
+      rw [← rank_top, ← h'] at hdim
+      suffices (2 : Cardinal) ≤ 1 from not_le_of_lt (by norm_num) this
+      have := hdim.trans (rank_span_le _)
+      rwa [Cardinal.mk_singleton] at this
+    · exact joinedIn_compl_zero_of_not_mem_span hx h
+
+variable {E F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+  [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGroup F] [ContinuousSMul ℝ F]
+
+/-- Let `E` be a linear subspace in a real vector space.
+If `E` has codimension at least two, its complement is path-connected. -/
+theorem isPathConnected_compl_of_two_le_codim {E : Submodule ℝ F}
+    (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) : IsPathConnected (Eᶜ : Set F) := by
+  rcases E.exists_isCompl with ⟨E', hE'⟩
+  refine isPathConnected_compl_of_isPathConnected_compl_zero hE'.symm
+    (isPathConnected_compl_zero_of_two_le_dim ?_)
+  rwa [← (E.quotientEquivOfIsCompl E' hE').rank_eq]
+
+/-- Let `E` be a linear subspace in a real vector space.
+If `E` has codimension at least two, its complement is connected. -/
+theorem isConnected_compl_of_two_le_codim {E : Submodule ℝ F} (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) :
+    IsConnected (Eᶜ : Set F) :=
+  (isPathConnected_compl_of_two_le_codim hcodim).isConnected
+
+theorem Submodule.connectedComponentIn_eq_self_of_two_le_codim (E : Submodule ℝ F)
+    (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) {x : F} (hx : x ∉ E) :
+    connectedComponentIn ((E : Set F)ᶜ) x = (E : Set F)ᶜ :=
+  (isConnected_compl_of_two_le_codim hcodim).2.connectedComponentIn hx
+
+end
