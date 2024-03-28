@@ -144,4 +144,44 @@ theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
 
 end Field
 
+
+open scoped NNReal
+
+lemma _root_.LipschitzWith.cauchySeq_image {α β : Type*} [MetricSpace α] [MetricSpace β] {K : ℝ≥0} {f : α → β}
+    (hf : LipschitzWith K f) {u : ℕ → α} (hu : CauchySeq u) :
+    CauchySeq (f ∘ u) := by
+  rcases cauchySeq_iff_le_tendsto_0.1 hu with ⟨b, b_nonneg, hb, blim⟩
+  refine cauchySeq_iff_le_tendsto_0.2 ⟨fun n ↦ K * b n, ?_, ?_, ?_⟩
+  · exact fun n ↦ mul_nonneg (by positivity) (b_nonneg n)
+  · exact fun n m N hn hm ↦ hf.dist_le_mul_of_le (hb n m N hn hm)
+  · rw [← mul_zero (K : ℝ)]
+    exact blim.const_mul _
+
+
+section
+
+#check LipschitzWith
+
+open Filter
+
+open scoped Topology
+
+lemma glou {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace 𝕜] [SeparatingDual 𝕜 E]
+    [CompleteSpace (E →L[𝕜] F)] [Nontrivial E] : CompleteSpace F := by
+  obtain ⟨v, hv⟩ : ∃ (v : E), v ≠ 0 := exists_ne 0
+  obtain ⟨φ, hφ⟩ : ∃ φ : E →L[𝕜] 𝕜, φ v ≠ 0 := exists_ne_zero hv
+  refine' Metric.complete_of_cauchySeq_tendsto fun f hf => _
+  let g : ℕ → (E →L[𝕜] F) := fun n ↦ ContinuousLinearMap.smulRightL 𝕜 E F φ (f n)
+  have : CauchySeq g := (ContinuousLinearMap.smulRightL 𝕜 E F φ).lipschitz.cauchySeq_image hf
+  obtain ⟨a, ha⟩ : ∃ a, Tendsto g atTop (𝓝 a) := cauchy_iff_exists_le_nhds.mp this
+  have : Tendsto (fun n ↦ g n v) atTop (𝓝 (a v)) := by
+    have : Continuous (fun (i : E →L[𝕜] F) ↦ i v) := by exact?
+
+
+
+
+
+end
+
 end SeparatingDual

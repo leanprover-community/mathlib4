@@ -66,8 +66,9 @@ variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {𝕜 : Type*} [IsR
 
 variable {F : H → α → E} {x₀ : H} {bound : α → ℝ} {ε : ℝ}
 
-lemma foo [CompleteSpace (ℝ →L[ℝ] E)] : CompleteSpace E := by
-  let f : E ≃ₗᵢ[ℝ] (ℝ →L[ℝ] E) := (ContinuousLinearMap.ring_lmap_equiv_self ℝ E).symm
+lemma foo [NormedSpace ℝ H] [Nontrivial H]
+    [CompleteSpace (H →L[ℝ] E)] : CompleteSpace E := by
+  have Z := SeparatingDual
 
 
 #exit

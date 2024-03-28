@@ -193,6 +193,15 @@ lemma _root_.Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
   simpa only [ge_iff_le, NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using
     lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
 
+lemma cauchySeq_image (hf : LipschitzWith K f) {u : ℕ → α} (hu : CauchySeq u) :
+    CauchySeq (f ∘ u) := by
+  rcases cauchySeq_iff_le_tendsto_0.1 hu with ⟨b, b_nonneg, hb, blim⟩
+  refine cauchySeq_iff_le_tendsto_0.2 ⟨fun n ↦ K * b n, ?_, ?_, ?_⟩
+  · exact fun n ↦ mul_nonneg (by positivity) (b_nonneg n)
+  · exact fun n m N hn hm ↦ hf.dist_le_mul_of_le (hb n m N hn hm)
+  · rw [← mul_zero (K : ℝ)]
+    exact blim.const_mul _
+
 end Metric
 
 section EMetric
