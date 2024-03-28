@@ -26,7 +26,7 @@ def sqrt (z : ℤ) : ℤ :=
 #align int.sqrt Int.sqrt
 
 theorem sqrt_eq (n : ℤ) : sqrt (n * n) = n.natAbs := by
-  rw [sqrt, ← natAbs_mul_self, toNat_coe_nat, Nat.sqrt_eq]
+  rw [sqrt, ← natAbs_mul_self, toNat_natCast, Nat.sqrt_eq]
 #align int.sqrt_eq Int.sqrt_eq
 
 theorem exists_mul_self (x : ℤ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=
@@ -34,7 +34,7 @@ theorem exists_mul_self (x : ℤ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :
 #align int.exists_mul_self Int.exists_mul_self
 
 theorem sqrt_nonneg (n : ℤ) : 0 ≤ sqrt n :=
-  coe_nat_nonneg _
+  natCast_nonneg _
 #align int.sqrt_nonneg Int.sqrt_nonneg
 
 /-- `IsSquare` can be decided on `ℤ` by checking against the square root. -/

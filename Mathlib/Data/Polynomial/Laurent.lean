@@ -379,7 +379,7 @@ theorem leftInverse_trunc_toLaurent :
   · intro f g hf hg
     simp only [hf, hg, _root_.map_add]
   · intro n r
-    simp only [Polynomial.toLaurent_C_mul_T, trunc_C_mul_T, Int.coe_nat_nonneg, Int.toNat_coe_nat,
+    simp only [Polynomial.toLaurent_C_mul_T, trunc_C_mul_T, Int.natCast_nonneg, Int.toNat_natCast,
       if_true]
 #align laurent_polynomial.left_inverse_trunc_to_laurent LaurentPolynomial.leftInverse_trunc_toLaurent
 

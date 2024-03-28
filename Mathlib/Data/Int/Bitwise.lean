@@ -67,7 +67,7 @@ theorem bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
     change (!Nat.bodd n) = !(bodd n)
     rw [bodd_coe]
 -- Porting note: Heavily refactored proof, used to work all with `simp`:
--- `cases n <;> simp [Neg.neg, Int.coe_nat_eq, Int.neg, bodd, -of_nat_eq_coe]`
+-- `cases n <;> simp [Neg.neg, Int.natCast_eq_ofNat, Int.neg, bodd, -of_nat_eq_coe]`
 #align int.bodd_neg Int.bodd_neg
 
 @[simp]

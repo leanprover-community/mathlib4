@@ -83,7 +83,7 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors
   by_contra! h'
   replace hroot := hroot _ h'
   simp only [IsRoot, eval_iterate_derivative_rootMultiplicity] at hroot
-  obtain ⟨q, hq⟩ := Nat.coe_nat_dvd (α := R) <| Nat.factorial_dvd_factorial h'
+  obtain ⟨q, hq⟩ := Nat.cast_dvd_cast (α := R) <| Nat.factorial_dvd_factorial h'
   rw [hq, mul_mem_nonZeroDivisors] at hnzd
   rw [nsmul_eq_mul, mul_left_mem_nonZeroDivisors_eq_zero_iff hnzd.1] at hroot
   exact eval_divByMonic_pow_rootMultiplicity_ne_zero t h hroot

@@ -207,7 +207,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
     clear hk a b
   · -- We will now show that the fibers of the solution set are described by a quadratic equation.
     intro x y
-    rw [← Int.coe_nat_inj', ← sub_eq_zero]
+    rw [← Int.natCast_inj, ← sub_eq_zero]
     apply eq_iff_eq_cancel_right.2
     simp; ring
   · -- Show that the solution set is symmetric in a and b.
@@ -265,7 +265,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
     clear hk a b
   · -- We will now show that the fibers of the solution set are described by a quadratic equation.
     intro x y
-    rw [← Int.coe_nat_inj', ← sub_eq_zero]
+    rw [← Int.natCast_inj, ← sub_eq_zero]
     apply eq_iff_eq_cancel_right.2
     simp; ring
   · -- Show that the solution set is symmetric in a and b.
