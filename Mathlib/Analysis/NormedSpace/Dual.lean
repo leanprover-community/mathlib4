@@ -39,7 +39,7 @@ dual
 noncomputable section
 
 open scoped Classical
-open Topology Bornology
+open Topology Bornology TopologicalSpace
 
 universe u v
 
@@ -50,10 +50,6 @@ section General
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
-/-- The topological dual of a seminormed space `E`. -/
-abbrev Dual : Type _ := E →L[𝕜] 𝕜
-#align normed_space.dual NormedSpace.Dual
 
 -- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_eq until
 -- leanprover/lean4#2522 is resolved; remove once fixed
@@ -87,21 +83,6 @@ theorem inclusionInDoubleDual_norm_le : ‖inclusionInDoubleDual 𝕜 E‖ ≤ 1
 theorem double_dual_bound (x : E) : ‖(inclusionInDoubleDual 𝕜 E) x‖ ≤ ‖x‖ := by
   simpa using ContinuousLinearMap.le_of_opNorm_le _ (inclusionInDoubleDual_norm_le 𝕜 E) x
 #align normed_space.double_dual_bound NormedSpace.double_dual_bound
-
-/-- The dual pairing as a bilinear form. -/
-def dualPairing : Dual 𝕜 E →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
-  ContinuousLinearMap.coeLM 𝕜
-#align normed_space.dual_pairing NormedSpace.dualPairing
-
-@[simp]
-theorem dualPairing_apply {v : Dual 𝕜 E} {x : E} : dualPairing 𝕜 E v x = v x :=
-  rfl
-#align normed_space.dual_pairing_apply NormedSpace.dualPairing_apply
-
-theorem dualPairing_separatingLeft : (dualPairing 𝕜 E).SeparatingLeft := by
-  rw [LinearMap.separatingLeft_iff_ker_eq_bot, LinearMap.ker_eq_bot]
-  exact ContinuousLinearMap.coe_injective
-#align normed_space.dual_pairing_separating_left NormedSpace.dualPairing_separatingLeft
 
 end General
 
